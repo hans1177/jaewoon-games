@@ -3140,122 +3140,93 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
   if typeof(position)~="Vector3" or (position-rootPart.Position).Magnitude>45 then
     position=rootPart.Position
   end
-  -- [거대 양팔 가드 이펙트] 양팔을 크게 휘두르는 동안 청백색 검기 잔상이 퍼지고
-  -- 양팔을 모아 막는 순간 승인된 공용 방어 충격파가 터진다. 신규 파츠/판정은 만들지 않는다.
+  -- [방어 이펙트] 승인된 방어만 청백색 팔 궤적·빛·대형 방어 파동을 재생한다.
   if actionId=="skill-meadow-guard" then
     local tweenService=game:GetService("TweenService")
     for _,side in ipairs({"Left","Right"}) do
       local arm=character:FindFirstChild(side.."LowerArm") or character:FindFirstChild(side.." Arm")
       local hand=character:FindFirstChild(side.."Hand") or arm
-      if arm and arm:IsA("BasePart") then
-        local wrist=Instance.new("Attachment")
-        wrist.Name="MeadowGuardWrist"..side
-        wrist.Position=Vector3.new(0,-arm.Size.Y*.43,-arm.Size.Z*.43)
-        wrist.Parent=arm
-        local elbow=Instance.new("Attachment")
-        elbow.Name="MeadowGuardElbow"..side
-        elbow.Position=Vector3.new(0,arm.Size.Y*.43,-arm.Size.Z*.43)
-        elbow.Parent=arm
-        local streak=Instance.new("Trail")
-        streak.Name="MeadowGuardForearmStreak"..side
-        streak.Attachment0=wrist
-        streak.Attachment1=elbow
-        streak.Color=ColorSequence.new({
-          ColorSequenceKeypoint.new(0,Color3.fromRGB(245,254,255)),
-          ColorSequenceKeypoint.new(.55,Color3.fromRGB(117,218,255)),
-          ColorSequenceKeypoint.new(1,Color3.fromRGB(61,126,255)),
+      if arm and arm:IsA("BasePart")
+        and meadowCommonVFX and type(meadowCommonVFX.AttachShortTrail)=="function" then
+        local ok,trail,controller=pcall(meadowCommonVFX.AttachShortTrail,arm,{
+          lifetime=reducedEffects and .18 or .38,
+          width=reducedEffects and .55 or 1,
+          axis=Vector3.new(0,1,0),length=math.max(.9,arm.Size.Y*1.4),
+          color=Color3.fromRGB(93,200,255),
         })
-        streak.Transparency=NumberSequence.new({
-          NumberSequenceKeypoint.new(0,.06),
-          NumberSequenceKeypoint.new(.6,.30),
-          NumberSequenceKeypoint.new(1,1),
-        })
-        streak.WidthScale=NumberSequence.new({
-          NumberSequenceKeypoint.new(0,1),
-          NumberSequenceKeypoint.new(.65,.65),
-          NumberSequenceKeypoint.new(1,0),
-        })
-        streak.Lifetime=reducedEffects and .16 or .32
-        streak.MinLength=.015
-        streak.FaceCamera=true
-        streak.LightEmission=1
-        streak.LightInfluence=0
-        streak.Parent=arm
-        task.delay(.72,function()
-          if streak.Parent then streak.Enabled=false end
-        end)
-        debris:AddItem(wrist,2.8)
-        debris:AddItem(elbow,2.8)
-        debris:AddItem(streak,2.8)
+        if ok and trail and controller then
+          trail.Name="MeadowGuardCrossSlash"..side
+          task.delay(.85,function() pcall(controller.Destroy) end)
+        end
       end
       if hand and hand:IsA("BasePart") then
         local glow=Instance.new("PointLight")
         glow.Name="MeadowGuardFistGlow"..side
-        glow.Color=Color3.fromRGB(110,211,255)
-        glow.Range=reducedEffects and 3.8 or 7
-        glow.Brightness=reducedEffects and .55 or 2.6
-        glow.Shadows=false
-        glow.Parent=hand
-        task.delay(.45,function()
+        glow.Color=Color3.fromRGB(100,215,255)
+        glow.Range=reducedEffects and 4 or 8
+        glow.Brightness=reducedEffects and .65 or 3
+        glow.Shadows=false;glow.Parent=hand
+        task.delay(.5,function()
           if glow.Parent then
-            tweenService:Create(glow,TweenInfo.new(.35,Enum.EasingStyle.Quad),{
-              Brightness=reducedEffects and .3 or .9,
+            tweenService:Create(glow,TweenInfo.new(.35),{
+              Brightness=reducedEffects and .35 or 1.1,
             }):Play()
           end
         end)
         task.delay(2.43,function()
-          if glow.Parent then
-            tweenService:Create(glow,TweenInfo.new(.3),{Brightness=0}):Play()
-          end
+          if glow.Parent then tweenService:Create(glow,TweenInfo.new(.3),{Brightness=0}):Play() end
         end)
         debris:AddItem(glow,2.8)
       end
     end
-    -- [방어 에너지 외곽선] 기존 캐릭터를 강조할 뿐 별도의 방패 모형은 만들지 않는다.
-    if not reducedEffects then
-      local aura=Instance.new("Highlight")
-      aura.Name="MeadowGuardBodyAura"
-      aura.Adornee=character
-      aura.DepthMode=Enum.HighlightDepthMode.Occluded
-      aura.FillColor=Color3.fromRGB(117,206,255)
-      aura.FillTransparency=.92
-      aura.OutlineColor=Color3.fromRGB(166,233,255)
-      aura.OutlineTransparency=.24
-      aura.Parent=character
-      task.delay(2.45,function()
-        if aura.Parent then
-          tweenService:Create(aura,TweenInfo.new(.28),{
-            FillTransparency=1,OutlineTransparency=1,
-          }):Play()
-        end
-      end)
-      debris:AddItem(aura,2.8)
-    end
-    -- [두 팔 충돌 순간] 공용 BLOCK_IMPACT 파티클 링과 파편을 얼굴 앞에 방출한다.
-    -- 기존 서버 승인 시퀀스만 사용하며 타격/데미지/무적은 변경하지 않는다.
-    task.delay(.37,function()
-      if rootPart.Parent and character.Parent
-        and meadowCommonVFX and type(meadowCommonVFX.Create)=="function"
-        and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
-        local ok,err=pcall(meadowCommonVFX.Create,"BLOCK_IMPACT",{
-          parent=workspace,
-          cframe=rootPart.CFrame*CFrame.new(0,1.15,-1.05),
-          color=Color3.fromRGB(227,249,255),
-          accent=Color3.fromRGB(73,181,255),
-          duration=reducedEffects and .24 or .43,
-          startDiameter=reducedEffects and 1.6 or 2.4,
-          endDiameter=reducedEffects and 3.2 or 6.4,
-          startSize=.65,
-          endSize=reducedEffects and 1.1 or 2.6,
-          count=reducedEffects and 2 or 8,
-          reducedMotion=reducedEffects,
-        })
-        if not ok then warn("마력숲 방어 충격파 실행 실패: "..tostring(err)) end
+    -- [푸른 에너지 실루엣] 기존 캐릭터만 강조하며 별도 방패 모델은 생성하지 않는다.
+    local aura=Instance.new("Highlight")
+    aura.Name="MeadowGuardBodyAura"
+    aura.Adornee=character
+    aura.DepthMode=Enum.HighlightDepthMode.Occluded
+    aura.FillColor=Color3.fromRGB(80,181,255)
+    aura.FillTransparency=reducedEffects and .92 or .76
+    aura.OutlineColor=Color3.fromRGB(201,244,255)
+    aura.OutlineTransparency=reducedEffects and .4 or .06
+    aura.Parent=character
+    task.delay(.7,function()
+      if aura.Parent then
+        tweenService:Create(aura,TweenInfo.new(.4),{
+          FillTransparency=.95,OutlineTransparency=.5,
+        }):Play()
       end
     end)
+    task.delay(2.45,function()
+      if aura.Parent then
+        tweenService:Create(aura,TweenInfo.new(.3),{
+          FillTransparency=1,OutlineTransparency=1,
+        }):Play()
+      end
+    end)
+    debris:AddItem(aura,2.8)
+    -- [2연속 파동] 방어 자세가 완성되는 순간과 바로 뒤 잔광을 공용 에셋으로 출력.
+    if meadowCommonVFX and type(meadowCommonVFX.Create)=="function"
+      and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
+      for index,delaySec in ipairs({.20,.53}) do
+        task.delay(delaySec,function()
+          if not rootPart.Parent or not character.Parent then return end
+          local ok,err=pcall(meadowCommonVFX.Create,index==1 and "BLOCK_IMPACT" or "SHAPE_BURST",{
+            parent=workspace,cframe=rootPart.CFrame*CFrame.new(0,1.55,-1.35),
+            color=index==1 and Color3.fromRGB(233,252,255) or Color3.fromRGB(112,209,255),
+            accent=index==1 and Color3.fromRGB(67,156,255) or Color3.fromRGB(246,240,180),
+            duration=reducedEffects and .25 or .48,
+            startDiameter=index==1 and 2 or 2.9,
+            endDiameter=reducedEffects and 4 or (index==1 and 8.3 or 6.5),
+            startSize=.7,endSize=reducedEffects and 1.4 or 3.3,
+            count=reducedEffects and 3 or (index==1 and 12 or 9),
+            reducedMotion=reducedEffects,
+          })
+          if not ok then warn("마력숲 방어 파동 오류: "..tostring(err)) end
+        end)
+      end
+    end
     return
   end
-  -- [회피 궤적] 공용 대시 이펙트의 부착점을 도약 방향 발로 옮긴다.
   local isDodge=actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right"
   local leadingSide=actionId=="skill-meadow-dodge-left" and "Left" or "Right"
   local hostPart=(isDodge and (
@@ -3277,25 +3248,62 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
     scale=1,autoCleanup=true,reducedMotion=UserInputService.TouchEnabled,
     vfx=meadowCommonVFX,
   }
-  -- [양다리 바람 잔상] 새 모델·도형 없이 기존 공용 텍스처 Trail만 재사용한다.
-  -- 원래 서버 승인 DODGE_EVASION_PULSE 및 DASH_STREAK 실행 경로는 그대로 보존한다.
-  if isDodge and meadowCommonVFX and type(meadowCommonVFX.AttachShortTrail)=="function" then
-    for _,side in ipairs({"Left","Right"}) do
-      local leg=character:FindFirstChild(side.."LowerLeg") or character:FindFirstChild(side.." Leg")
-      if leg and leg:IsA("BasePart") then
-        local ok,trail,controller=pcall(meadowCommonVFX.AttachShortTrail,leg,{
-          lifetime=reducedEffects and .12 or .25,
-          width=reducedEffects and .35 or .85,
-          axis=Vector3.new(1,0,0),
-          length=math.max(.65,leg.Size.X*.9),
-          color=side==leadingSide and Color3.fromRGB(118,218,255)
-            or Color3.fromRGB(255,213,129),
-        })
-        if ok and trail and controller then
-          trail.Name="MeadowDodgeWind"..side
-          task.delay(.40,function() if trail.Parent then trail.Enabled=false end end)
-          task.delay(.72,function() pcall(controller.Destroy) end)
+  -- [회피 바람] 1단·2단·3단의 팔·다리 궤적을 기존 공용 광선 텍스처로 강조한다.
+  if isDodge then
+    if meadowCommonVFX and type(meadowCommonVFX.AttachShortTrail)=="function" then
+      for _,side in ipairs({"Left","Right"}) do
+        for _,limb in ipairs({"LowerLeg","LowerArm"}) do
+          local part=character:FindFirstChild(side..limb)
+            or (limb=="LowerLeg" and character:FindFirstChild(side.." Leg"))
+            or (limb=="LowerArm" and character:FindFirstChild(side.." Arm"))
+          if part and part:IsA("BasePart") then
+            local ok,trail,controller=pcall(meadowCommonVFX.AttachShortTrail,part,{
+              lifetime=reducedEffects and .16 or .34,
+              width=reducedEffects and .4 or .92,
+              axis=limb=="LowerLeg" and Vector3.new(1,0,0) or Vector3.new(0,1,0),
+              length=math.max(.65,part.Size.Y*1.1),
+              color=side==leadingSide and Color3.fromRGB(82,204,255)
+                or Color3.fromRGB(251,198,103),
+            })
+            if ok and trail and controller then
+              trail.Name="MeadowDodgeCinemaTrail"..side..limb
+              task.delay(1.17,function() pcall(controller.Destroy) end)
+            end
+          end
         end
+      end
+    end
+    local aura=Instance.new("Highlight")
+    aura.Name="MeadowDodgeSpinAura"
+    aura.Adornee=character
+    aura.DepthMode=Enum.HighlightDepthMode.Occluded
+    aura.FillColor=Color3.fromRGB(96,181,255)
+    aura.FillTransparency=reducedEffects and .94 or .84
+    aura.OutlineColor=Color3.fromRGB(244,218,147)
+    aura.OutlineTransparency=reducedEffects and .65 or .19
+    aura.Parent=character
+    debris:AddItem(aura,1.12)
+    -- [1단 파랑/2단 황금/3단 착지 충격] 공용 회피 링과 파편 폭발을 단계별로 방출.
+    if meadowCommonVFX and type(meadowCommonVFX.Create)=="function"
+      and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
+      for index,delaySec in ipairs({.06,.36,.82}) do
+        task.delay(delaySec,function()
+          if not rootPart.Parent or not character.Parent then return end
+          local color=index==2 and Color3.fromRGB(255,210,127) or Color3.fromRGB(117,214,255)
+          local accent=index==2 and Color3.fromRGB(255,153,77) or Color3.fromRGB(239,249,255)
+          local ok,err=pcall(meadowCommonVFX.Create,
+            index==3 and "SHAPE_BURST" or "DODGE_EVASION_PULSE",{
+              parent=workspace,cframe=rootPart.CFrame*CFrame.new(0,-1.55,0),
+              duration=reducedEffects and .21 or .35,
+              color=color,accent=accent,
+              startDiameter=index==3 and 2.2 or 1.1,
+              endDiameter=reducedEffects and 3.4 or (index==3 and 8.4 or 5.3),
+              startSize=.42,endSize=reducedEffects and .9 or 2.1,
+              count=reducedEffects and 2 or (index==3 and 11 or 7),
+              reducedMotion=reducedEffects,
+            })
+          if not ok then warn("마력숲 회피 파동 오류: "..tostring(err)) end
+        end)
       end
     end
   end
@@ -3673,7 +3681,7 @@ local skillMotionMapping={
   Waist="Spine",Neck="Head",LeftShoulder="UpperArmL",RightShoulder="UpperArmR",
   LeftElbow="ForearmL",RightElbow="ForearmR",LeftWrist="HandL",RightWrist="HandR",
   LeftHip="ThighL",RightHip="ThighR",LeftKnee="ShinL",RightKnee="ShinR",
-  RootJoint="Spine",["Left Shoulder"]="UpperArmL",["Right Shoulder"]="UpperArmR",
+  Root="FlipRoot",RootJoint="Spine",["Left Shoulder"]="UpperArmL",["Right Shoulder"]="UpperArmR",
   ["Left Hip"]="ThighL",["Right Hip"]="ThighR",
 }
 local skillMotionStates={
@@ -3700,7 +3708,13 @@ end)
 player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
   -- [액션 모션 유지] 공격 승인 신호는 방어·회피·스킬 포즈의 종료 신호가 아니다.
   -- 서버가 승인한 액션별 연출 시간 동안 기존 모션을 끊지 않는다.
-  if skillMotionR15 and os.clock()>=skillMotionDeadline then finishMeadowSkillPose() end
+  if skillMotionR15 and (os.clock()>=skillMotionDeadline
+    or (skillMotionCharacter
+      and (skillMotionCharacter:GetAttribute("NativeSkillActionId")=="skill-meadow-dodge-left"
+        or skillMotionCharacter:GetAttribute("NativeSkillActionId")=="skill-meadow-dodge-right")
+      and os.clock()>=dodgePoseUntil)) then
+    finishMeadowSkillPose()
+  end
 end)
 player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   local id,serial=tostring(player:GetAttribute("ApprovedActionMotion") or ""):match("^([^:]+):(%d+)$")
@@ -3747,17 +3761,17 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   skillMotionAvailable.Chest=true
   -- Roblox 공식 Transform 방식: Animator 위에 PreSimulation 관절만 혼합한다.
   skillMotionR15=combatMotionSource.BindJointPose(skillMotionJoints,{
-    followAnimator=true,response=23,
+    followAnimator=true,response=27,responseByJoint={Root=110,RootJoint=110},
   })
   skillMotionCharacter=character
   skillMotionState=state
   skillMotionStart=os.clock()
-  -- [막기/회피] 서버의 기존 판정 시간과 캐릭터 자세를 일치시킨다.
-  -- 막기 2.8초, 패링 .42초, 회피 .46초. 서버 피해/무적/스태미너는 변경하지 않는다.
-  skillMotionDuration=isGuard and 2.8 or isParry and .42 or isDodge and .46
+  -- [연속 회피 연출] 시각 모션만 1.06초, 서버 회피 판정 .46초는 불변.
+  -- 기존 공격 잠금도 .46+.12초만 유지한다.
+  skillMotionDuration=isGuard and 2.8 or isParry and .42 or isDodge and 1.06
     or math.clamp(tonumber(meta.duration) or .7,.25,1.4)
   skillMotionDeadline=skillMotionStart+skillMotionDuration+(isGuard and 0 or .12)
-  if isDodge then dodgePoseUntil=skillMotionDeadline end
+  if isDodge then dodgePoseUntil=skillMotionStart+.46+.12 end
   character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
   character:SetAttribute("NativeSkillActionId",id)
 end)
@@ -3781,47 +3795,48 @@ RunService.PreSimulation:Connect(function(dt)
   if isDodge then
     local sign=actionId=="skill-meadow-dodge-left" and -1 or 1
     local leadLeft=sign<0
-    -- [측면 도약] 웅크렸다가 몸을 크게 젖히며 도약, 다리를 벌리고 낮게 착지한다.
-    -- 움직임·회피 판정은 기존 서버 권한 그대로 두고 R15 관절 표현만 교체한다.
-    local ready=math.clamp(phase/.115,0,1)
-    ready=ready*ready*(3-2*ready)
-    local settle=math.clamp((1-phase)/.22,0,1)
-    settle=settle*settle*(3-2*settle)
-    local stance=ready*settle
-    local flight=math.sin(math.pi*math.clamp((phase-.08)/.65,0,1))
-    local drive=math.sin(math.pi*math.clamp((phase-.025)/.46,0,1))
-    local landing=math.sin(math.pi*math.clamp((phase-.61)/.27,0,1))
-    local spring=math.sin(math.pi*math.clamp(phase/.15,0,1))
-    local lean=math.rad(35)*flight
-    -- 상체 약 35도 측면 기울기, 고개는 상대를 계속 향한다.
-    skillMotionTargets.Spine=CFrame.new(0,-.18*spring+.075*flight-.14*landing,0)
-      *CFrame.Angles(-.31*stance+.13*flight,-sign*.10*drive,-sign*lean*.78)
-    skillMotionTargets.Chest=CFrame.Angles(-.10*stance,-sign*.09*flight,-sign*lean*.22)
-    skillMotionTargets.Head=CFrame.Angles(.15*flight-.06*landing,sign*.07*flight,sign*.16*flight)
-    -- 이동 방향의 다리는 뻗고 반대 다리는 깊이 접어 도약 실루엣을 강화한다.
-    local leadingHip=-1.10*flight-.34*drive+.30*landing
-    local trailingHip=.66*flight+.28*drive-.20*landing
-    local leadingKnee=.26*drive+.37*landing
-    local trailingKnee=1.12*flight+.30*landing
-    skillMotionTargets.ThighL=CFrame.Angles(leadLeft and leadingHip or trailingHip,
-      0,leadLeft and -.38*flight or .30*flight)
-    skillMotionTargets.ThighR=CFrame.Angles(leadLeft and trailingHip or leadingHip,
-      0,leadLeft and -.30*flight or .38*flight)
-    skillMotionTargets.ShinL=CFrame.Angles(leadLeft and leadingKnee or trailingKnee,0,0)
-    skillMotionTargets.ShinR=CFrame.Angles(leadLeft and trailingKnee or leadingKnee,0,0)
-    skillMotionTargets.FootL=CFrame.Angles((leadLeft and -.34 or -.20)*flight+.18*landing,0,0)
-    skillMotionTargets.FootR=CFrame.Angles((leadLeft and -.20 or -.34)*flight+.18*landing,0,0)
-    -- 진행 방향 앞팔은 크게 내밀고 뒷팔은 뒤로 펼쳐 균형 잡는 동작.
+    -- [1단] 순간 숙임 → [2단] 양다리 옆도약 → [3단] 전방 360도 덤블링 후 착지.
+    -- 세 장면은 서버가 승인한 회피 한 번의 연출이며 무적·이동 판정을 추가하지 않는다.
+    local first=math.sin(math.pi*math.clamp(phase/.34,0,1))
+    local second=math.sin(math.pi*math.clamp((phase-.29)/.38,0,1))
+    local flip=math.clamp((phase-.60)/.31,0,1)
+    local flipping=math.sin(math.pi*flip)
+    local finish=math.clamp((phase-.91)/.09,0,1)
+    finish=finish*finish*(3-2*finish)
+    local anticipation=math.sin(math.pi*math.clamp(phase/.13,0,1))
+    -- 기존 루트 관절만 회전하고 실제 HumanoidRootPart 위치는 수정하지 않는다.
+    skillMotionTargets.FlipRoot=CFrame.new(0,.18*second+.7*flipping,0)
+      *CFrame.Angles(-2*math.pi*flip,sign*.08*second,sign*.08*first)
+    skillMotionTargets.Spine=CFrame.new(0,-.10*anticipation+.10*second-.04*finish,0)
+      *CFrame.Angles(-.27*first+.14*second,-sign*.86*second,-sign*.38*first)
+    skillMotionTargets.Chest=CFrame.Angles(-.08*first,-sign*.31*second,-sign*.18*first)
+    skillMotionTargets.Head=CFrame.Angles(.22*first-.12*second,sign*.23*second,0)
+    -- 다리: 1단 접기 / 2단 최대 펴기 / 3단 공중제비 무릎 당기기.
+    local leadHip=-.95*first-.56*second-1.18*flipping+.12*finish
+    local backHip=.48*first+.73*second-1.24*flipping+.08*finish
+    local leadKnee=.35*first+.24*second+1.9*flipping
+    local backKnee=.64*first+.14*second+1.9*flipping
+    skillMotionTargets.ThighL=CFrame.Angles(leadLeft and leadHip or backHip,0,
+      leadLeft and -.22*second or .32*second)
+    skillMotionTargets.ThighR=CFrame.Angles(leadLeft and backHip or leadHip,0,
+      leadLeft and -.32*second or .22*second)
+    skillMotionTargets.ShinL=CFrame.Angles(leadLeft and leadKnee or backKnee,0,0)
+    skillMotionTargets.ShinR=CFrame.Angles(leadLeft and backKnee or leadKnee,0,0)
+    skillMotionTargets.FootL=CFrame.Angles(-.29*second-.26*flipping+.1*finish,0,0)
+    skillMotionTargets.FootR=CFrame.Angles(-.29*second-.26*flipping+.1*finish,0,0)
+    -- 팔: 반대 방향 반동 → 양팔 전개 → 덤블링 시 모아 회전.
     skillMotionTargets.UpperArmL=CFrame.Angles(
-      leadLeft and (-.48*stance-1.14*flight) or (-.34*stance+.74*flight),
-      -.08*flight,leadLeft and -.55*flight or .40*flight)
+      leadLeft and (-1.19*first-.44*second-.86*flipping)
+        or (.62*first-.83*second-.86*flipping),
+      0,-.31*first-.72*second+.18*flipping)
     skillMotionTargets.UpperArmR=CFrame.Angles(
-      leadLeft and (-.34*stance+.74*flight) or (-.48*stance-1.14*flight),
-      .08*flight,leadLeft and -.40*flight or .55*flight)
-    skillMotionTargets.ForearmL=CFrame.Angles(leadLeft and -.37*stance or -.72*stance,0,-.09*flight)
-    skillMotionTargets.ForearmR=CFrame.Angles(leadLeft and -.72*stance or -.37*stance,0,.09*flight)
-    skillMotionTargets.HandL=CFrame.Angles(-.14*stance,0,0)
-    skillMotionTargets.HandR=CFrame.Angles(-.14*stance,0,0)
+      leadLeft and (.62*first-.83*second-.86*flipping)
+        or (-1.19*first-.44*second-.86*flipping),
+      0,.31*first+.72*second-.18*flipping)
+    skillMotionTargets.ForearmL=CFrame.Angles(-.37*first-.28*second-1.24*flipping,0,0)
+    skillMotionTargets.ForearmR=CFrame.Angles(-.37*first-.28*second-1.24*flipping,0,0)
+    skillMotionTargets.HandL=CFrame.Angles(-.12*flipping,0,0)
+    skillMotionTargets.HandR=CFrame.Angles(-.12*flipping,0,0)
   elseif isGuard or isParry then
     -- [방어 동작] 오른팔을 머리 위까지 확실하게 들어 공격 방향을 가리는 한팔 하이 가드.
     -- 짧은 들어올리기 → 머리 위 유지 → 자연스러운 자세 복귀.
@@ -3833,39 +3848,33 @@ RunService.PreSimulation:Connect(function(dt)
     local guard=rise*release
     local counter=isParry and math.sin(math.pi*phase) or 0
     if isGuard then
-      -- [크게 열고 강하게 닫는 양팔 가드] 좌우로 팔을 넓게 펼쳤다가 얼굴 앞에서 모아 차단.
-      -- 선행 몸 일으키기 → 양팔 펼치기 → 강한 교차 차단 → 낮게 버티기 → 복귀.
-      -- 서버 방어 지속 시간 2.8초, 공격/회피/쿨다운/저장 값은 그대로 유지한다.
-      local open=math.sin(math.pi*math.clamp(phase/.125,0,1))
-      local close=math.clamp((phase-.065)/.105,0,1)
+      -- [서서 막기] 엉덩이 내리기와 무릎 굽히기를 없앤 직립 양팔 X가드.
+      local open=math.sin(math.pi*math.clamp(phase/.13,0,1))
+      local close=math.clamp((phase-.045)/.12,0,1)
       close=close*close*(3-2*close)
       local brace=close*release
-      local squat=math.clamp((phase-.058)/.135,0,1)
-      squat=squat*squat*(3-2*squat)*release
-      local hit=math.sin(math.pi*math.clamp((phase-.14)/.105,0,1))
-      local breath=math.sin((os.clock()-skillMotionStart)*3.9)*.013*brace
-      -- 허리를 일으켜 기를 모은 후 상체를 크게 낮추며 방어에 체중을 싣는다.
-      skillMotionTargets.Spine=CFrame.new(0,.09*open-.29*squat-.035*hit+breath,-.045*squat)
-        *CFrame.Angles(.16*open-.34*squat-.06*hit,0,.02*hit)
-      skillMotionTargets.Chest=CFrame.Angles(.08*open-.16*brace,0,0)
-      skillMotionTargets.Head=CFrame.Angles(-.26*brace+.11*open,0,0)
-      -- [양팔 펼치기] 준비에서 어깨를 활짝 벌리고, 순간적으로 얼굴 앞쪽으로 내지른다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-.50*open-1.72*brace-.18*hit,
-        -.29*brace,-1.04*open+.52*brace)
-      skillMotionTargets.UpperArmR=CFrame.Angles(-.50*open-1.72*brace-.18*hit,
-        .29*brace,1.04*open-.52*brace)
-      -- [양팔 교차] 양 팔꿈치를 깊이 접어 손목까지 얼굴 정면을 가리는 자세.
-      skillMotionTargets.ForearmL=CFrame.Angles(-.20*open-1.54*brace,0,-.31*brace)
-      skillMotionTargets.ForearmR=CFrame.Angles(-.20*open-1.54*brace,0,.31*brace)
-      skillMotionTargets.HandL=CFrame.Angles(-.24*brace,0,-.14*brace)
-      skillMotionTargets.HandR=CFrame.Angles(-.24*brace,0,.14*brace)
-      -- [충격 받아내기] 양발을 넓게 벌리고 무릎을 크게 접어 중심을 낮춘다.
-      skillMotionTargets.ThighL=CFrame.Angles(.40*squat-.08*open,0,-.18*squat)
-      skillMotionTargets.ThighR=CFrame.Angles(.40*squat-.08*open,0,.18*squat)
-      skillMotionTargets.ShinL=CFrame.Angles(.48*squat,0,0)
-      skillMotionTargets.ShinR=CFrame.Angles(.48*squat,0,0)
-      skillMotionTargets.FootL=CFrame.Angles(-.16*squat,0,-.06*squat)
-      skillMotionTargets.FootR=CFrame.Angles(-.16*squat,0,.06*squat)
+      local impact=math.sin(math.pi*math.clamp((phase-.065)/.09,0,1))
+      local breath=math.sin((os.clock()-skillMotionStart)*4.3)*.012*brace
+      skillMotionTargets.Spine=CFrame.new(0,.09*open+.035*impact+breath,0)
+        *CFrame.Angles(.075*open-.055*brace,0,0)
+      skillMotionTargets.Chest=CFrame.Angles(.045*open-.035*brace,0,0)
+      skillMotionTargets.Head=CFrame.Angles(-.15*brace,0,0)
+      -- 양팔을 옆으로 크게 펼쳤다가 얼굴 앞에서 동시에 엑스자로 접는다.
+      skillMotionTargets.UpperArmL=CFrame.Angles(-.68*open-1.68*brace-.16*impact,
+        -.26*brace,-1.12*open+.56*brace)
+      skillMotionTargets.ForearmL=CFrame.Angles(-.36*open-1.52*brace,0,-.24*brace)
+      skillMotionTargets.HandL=CFrame.Angles(-.18*brace,0,-.12*brace)
+      skillMotionTargets.UpperArmR=CFrame.Angles(-.68*open-1.68*brace-.16*impact,
+        .26*brace,1.12*open-.56*brace)
+      skillMotionTargets.ForearmR=CFrame.Angles(-.36*open-1.52*brace,0,.24*brace)
+      skillMotionTargets.HandR=CFrame.Angles(-.18*brace,0,.12*brace)
+      -- 어깨 너비의 발 지지, 몸높이와 무릎 관절 유지.
+      skillMotionTargets.ThighL=CFrame.Angles(.025*brace,0,-.10*brace)
+      skillMotionTargets.ThighR=CFrame.Angles(.025*brace,0,.10*brace)
+      skillMotionTargets.ShinL=CFrame.identity
+      skillMotionTargets.ShinR=CFrame.identity
+      skillMotionTargets.FootL=CFrame.Angles(0,0,-.035*brace)
+      skillMotionTargets.FootR=CFrame.Angles(0,0,.035*brace)
     else
       skillMotionTargets.Spine=CFrame.new(0,-.06*guard,0)
         *CFrame.Angles(-.14*guard+.08*counter,-.10*guard,.07*guard)
@@ -3891,13 +3900,18 @@ RunService.PreSimulation:Connect(function(dt)
   end
   if humanoid.RigType==Enum.HumanoidRigType.R6 then
     -- [구형 아바타 회피] 기존 실제 몸통·팔·다리 관절에 같은 좌우 피하기 포즈를 연결한다.
-    skillMotionR15Targets.RootJoint=skillMotionTargets.Spine
+    skillMotionR15Targets.RootJoint=skillMotionTargets.FlipRoot
+      and (skillMotionTargets.FlipRoot*skillMotionTargets.Spine) or skillMotionTargets.Spine
     skillMotionR15Targets["Left Shoulder"]=skillMotionTargets.UpperArmL
     skillMotionR15Targets["Right Shoulder"]=skillMotionTargets.UpperArmR
     skillMotionR15Targets["Left Hip"]=skillMotionTargets.ThighL
     skillMotionR15Targets["Right Hip"]=skillMotionTargets.ThighR
   else
     combatMotionSource.MapCombatPoseToR15(skillMotionTargets,skillMotionR15Targets)
+    -- R15 기존 루트 관절만 활용하는 전신 시각 회전.
+    if skillMotionJoints.Root and skillMotionTargets.FlipRoot then
+      skillMotionR15Targets.Root=skillMotionTargets.FlipRoot
+    end
   end
   skillMotionR15.Step(skillMotionR15Targets,dt)
 end)
