@@ -198,6 +198,11 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     ];
     if(approvedNativeVillagePath.every(pattern=>pattern.test(raw))
       &&approvedWorldAsset.every(pattern=>pattern.test(nativeWorldAsset)))return true;
+    // [검사 병목] 마력숲 원본 모델 배치 경로가 끊겼다면
+    // 일반 색상 변경 검사로 건물 생성 PASS를 우회하지 않는다.
+    // 다른 게임의 기존 BUILDING 자산 소비 검사는 그대로 유지한다.
+    if(/\blocal\s+nativeVillageReady\s*=/.test(raw)
+      &&/\blocal\s+function\s+worldAsset\s*\(/.test(raw))return false;
   }
   // 모션은 관절 쓰기가 공용 모듈의 BindJointPose 내부에서 발생한다.
   // 선택 atom → 서버 승인 → R15 Motor6D → 실제 샘플·맵핑·프레임 Step이
