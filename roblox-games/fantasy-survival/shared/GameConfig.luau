@@ -148,6 +148,35 @@ local Config = {
     {Key="HuntingProficiency",Name="사냥",Source="야생동물 사냥"},
     {Key="AlchemyProficiency",Name="연금술",Source="물약 조합"},
   },
+  -- [장비·아이템] 위쳐식 장비 슬롯·제작법. 실제 능력치는 서버에서만 계산한다.
+  -- 기존 몬스터 보상과 무기 강화 수치는 유지하며 이 카탈로그는 새 선택 보너스만 제공한다.
+  MeadowEquipment = {
+    {Id="wanderer_blade",Name="방랑자의 검",Slot="Weapon",Category="무기",Attack=0,Defense=0,Icon=2,Starter=true,Desc="기본 검. 기존 전투 공격력은 그대로 유지돼."},
+    {Id="hunter_blade",Name="사냥꾼 장검",Slot="Weapon",Category="무기",Attack=4,Defense=0,Icon=2,Wood=8,Stone=5,Coins=20,Desc="숲의 사냥꾼이 사용하는 단련 장검."},
+    {Id="runic_blade",Name="룬 장검",Slot="Weapon",Category="무기",Attack=9,Defense=0,Icon=2,Wood=16,Stone=12,Coins=75,Desc="마력 문양이 새겨진 고급 검."},
+    {Id="forest_blade",Name="숲 수호자의 검",Slot="Weapon",Category="무기",Attack=15,Defense=0,Icon=2,Wood=30,Stone=24,Coins=150,Desc="숙련된 수호자를 위한 주 무기."},
+    {Id="travel_armor",Name="여행자 조끼",Slot="Chest",Category="갑옷",Attack=0,Defense=0,Icon=3,Starter=true,Desc="기본 방어구."},
+    {Id="hunter_armor",Name="사냥꾼 갑옷",Slot="Chest",Category="갑옷",Attack=0,Defense=3,Icon=3,Wood=9,Stone=6,Coins=15,Desc="가죽을 겹쳐 방어력을 높인 갑옷."},
+    {Id="guardian_armor",Name="수호자 흉갑",Slot="Chest",Category="갑옷",Attack=0,Defense=6,Icon=3,Wood=18,Stone=16,Coins=70,Desc="묵직한 흉갑. 피격 피해를 줄여."},
+    {Id="travel_gloves",Name="여행 장갑",Slot="Hands",Category="갑옷",Attack=0,Defense=0,Icon=3,Starter=true,Desc="기본 장갑."},
+    {Id="hunter_gloves",Name="강화 장갑",Slot="Hands",Category="갑옷",Attack=0,Defense=2,Icon=3,Wood=6,Stone=4,Coins=12,Desc="손을 보호하는 장갑."},
+    {Id="travel_pants",Name="여행 바지",Slot="Legs",Category="갑옷",Attack=0,Defense=0,Icon=3,Starter=true,Desc="기본 바지."},
+    {Id="guardian_pants",Name="수호자 바지",Slot="Legs",Category="갑옷",Attack=0,Defense=3,Icon=3,Wood=10,Stone=8,Coins=20,Desc="두터운 하체 방어구."},
+    {Id="travel_boots",Name="여행 장화",Slot="Feet",Category="갑옷",Attack=0,Defense=0,Icon=3,Starter=true,Desc="기본 장화."},
+    {Id="guardian_boots",Name="수호자 장화",Slot="Feet",Category="갑옷",Attack=0,Defense=2,Icon=3,Wood=8,Stone=7,Coins=18,Desc="발과 정강이를 보호하는 장화."},
+    {Id="moon_amulet",Name="달빛 부적",Slot="Accessory",Category="장신구",Attack=2,Defense=1,Icon=6,Wood=12,Stone=12,Coins=50,Desc="공격과 방어를 조금씩 높이는 부적."},
+  },
+  -- [회복 소모품] 한 번 제작하면 1개 소지, 사용 시 서버에서 1개 소비.
+  MeadowConsumables = {
+    {Id="herbal_tonic",Name="숲의 회복약",Category="소모품",Icon=7,Wood=3,Stone=2,Coins=8,Heal=30,Desc="체력을 최대 30 회복해."},
+    {Id="energy_tonic",Name="기력 영약",Category="소모품",Icon=7,Wood=4,Stone=1,Coins=8,Stamina=35,Desc="기력을 최대 35 회복해."},
+  },
+  MeadowTalentSchools = {
+    {Id="Martial",Name="검술",Category="무예",Desc="습득 단계마다 공격 피해 +1"},
+    {Id="Signs",Name="표식",Category="마력",Desc="습득 단계마다 마력 탄환 피해 +2"},
+    {Id="Defense",Name="방호",Category="방어",Desc="습득 단계마다 받는 피해 -1"},
+    {Id="Agility",Name="기동",Category="기동",Desc="습득 단계마다 최대 기력 변동 없이 회피력 향상"},
+  },
   -- 기존 Level/XP는 저장 호환에만 남기고 신규 성장은 누적 숙련도로 기록.
   InitialState = {
     Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,
@@ -157,6 +186,13 @@ local Config = {
     CookingProficiency = 0, CraftingProficiency = 0, GatheringProficiency = 0,
     BuildingProficiency = 0, HuntingProficiency = 0, AlchemyProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
+    -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
+    -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
+    MeadowGearOwned=2705,
+    MeadowEquipWeapon=1,MeadowEquipChest=5,MeadowEquipHands=8,
+    MeadowEquipLegs=10,MeadowEquipFeet=12,MeadowEquipAccessory=0,
+    MeadowPotionHealth=0,MeadowPotionStamina=0,
+    MeadowTalentMartial=0,MeadowTalentSigns=0,MeadowTalentDefense=0,MeadowTalentAgility=0,
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
     ResearchRecords = 0, ExplorationGroves = 0, RuinsDiscovered = 0, DawnTraceFound = 0, NightTraceFound = 0, CompanionQuestStage = 1, CompanionQuestProgress = 0,
     -- 구형 저장은 존재하지 않는 숫자 필드를 기본값으로 읽어 이관한다.
