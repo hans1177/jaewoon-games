@@ -4667,8 +4667,10 @@ RunService.PreSimulation:Connect(function(dt)
       fromPose=beat.hitPose;toPose=beat.hitPose;alpha=0
     else
       -- 수동 연타는 다음 버튼 입력 전에는 다음 타의 준비 포즈를 자동으로 실행하지 않는다.
-      local nextBeat=activeCombatRushStage>0 and nil
-        or activeCombatMartialTrack.beats[strikeIndex+1]
+      local nextBeat=nil
+      if activeCombatRushStage==0 then
+        nextBeat=activeCombatMartialTrack.beats[strikeIndex+1]
+      end
       fromPose=beat.hitPose
       toPose=nextBeat and nextBeat.loadPose or nil
       alpha=filmEase((elapsed-currentStep.recoil)/math.max(.001,currentStep.duration-currentStep.recoil))
