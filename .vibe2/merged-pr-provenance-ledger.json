@@ -148838,11 +148838,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_d9863b9e12843d0e995513fa",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-11674",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "6f1948ff8362da448c1bd627751c81b655068f94",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11674,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/forest-deer-motion-20261101",
+        "baseSha": "6f1948ff8362da448c1bd627751c81b655068f94",
+        "headSha": "e0c364c2fd6bd45bb81d0f77d0369b6e16d9b18a",
+        "mergeCommitSha": "85f21ce20060ce60b54e98a2d5d271b052b0c0aa",
+        "mergedAt": "2026-11-01T07:30:12Z",
+        "authorLogin": "hans1177",
+        "titleHash": "01e7e7809a60d7df1439a49141fbacd6e3a2ceaa349240a537c7dd78f3a6e6a2",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/forest-deer-motion-20261101",
+        "candidateSha": "e0c364c2fd6bd45bb81d0f77d0369b6e16d9b18a"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 452,
+        "deletedLineCount": 287,
+        "changedFiles": [
+          "assets/shared/forest/deer-animated.glb",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/fantasy-survival-roblox-ui.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
+          "tools/baeksu-war-author-meshes.py",
+          "tools/horror-combat-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          "assets/shared/forest/deer-animated.glb",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/fantasy-survival-roblox-ui.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
+          "tools/baeksu-war-author-meshes.py",
+          "tools/horror-combat-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11674",
+        "merge-commit:85f21ce20060ce60b54e98a2d5d271b052b0c0aa",
+        "base-main:6f1948ff8362da448c1bd627751c81b655068f94"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1183
+    "total": 1184
   }
 }
