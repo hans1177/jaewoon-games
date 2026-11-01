@@ -1701,6 +1701,13 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(server.includes('meadowRpg.transact(player,actionId)'));
   assert.ok(server.includes('meadowRpg.publishStats(player)'));
   assert.ok(client.includes('character:FindFirstChildOfClass("Tool")'));
+  // [실제 3D 캐릭터] 장비 리비전과 아바타 로딩 후 외형 갱신. 금지된 파츠 방어구는 생성하지 않는다.
+  assert.ok(client.includes('local lastPreviewCharacter,lastPreviewTool,lastPreviewGearRevision'));
+  assert.ok(client.includes('player:GetAttribute("MeadowGearRevision") or 0'));
+  assert.ok(client.includes('player.CharacterAppearanceLoaded:Connect(function(character)'));
+  assert.ok(client.includes('child:IsA("Accessory")'));
+  assert.ok(client.includes('previewNeedsRefresh=true'));
+  assert.ok(!client.includes('RobloxCommonCharacterGear'));
   // Minimap renders only real peer coordinates and already discovered server grove sectors.
   assert.ok(client.includes('radarField.Name="NearbyPlayers"'));
   assert.ok(client.includes('local discovered=player:GetAttribute("ExplorationGroves") or 0'));
