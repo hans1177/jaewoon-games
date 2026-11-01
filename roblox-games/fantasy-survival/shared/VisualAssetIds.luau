@@ -31,4 +31,8 @@ return {
  villageRoad=111747861789798,
  villageTallTree=100023007365542,
  villageCrookedTree=125721357527592,
+ villageHouseA=79619339370385,
+ villageHouseB=85109358521674,
+ villageHouseC=89024081628789,
+ villageHouseD=131806387316904,
 }
