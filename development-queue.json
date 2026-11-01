@@ -6389,7 +6389,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-01T07:03:42.322Z",
+      "updatedAt": "2026-11-01T07:04:11.429Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -7102,7 +7102,26 @@
         "authority": "roblox-open-cloud-pre-f9-validation-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 1,
+        "gameId": "fantasy-survival",
+        "sourceRevision": "6f1948ff8362da448c1bd627751c81b655068f94",
+        "artifactIdentity": "sha256:b329ba4fa37b2ccee8c5bd3032a0c7ec2ee7494ddbd8016f5d4ae7c9320b177e",
+        "artifactRunId": 41282717855,
+        "universeId": "10773436325",
+        "placeId": "108565970231899",
+        "candidateVersionNumber": 94,
+        "httpStatus": 429,
+        "failureStage": "CREATE",
+        "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
+        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
+        "externalCapacityDeferred": true,
+        "retryAfterSeconds": 145,
+        "retryNotBefore": "2026-11-01T07:06:35.920Z",
+        "observedAt": "2026-11-01T07:04:11.429Z",
+        "workflowRunId": 41283165605,
+        "authority": "roblox-open-cloud-engine-probe-failure"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
@@ -7113,7 +7132,7 @@
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": false,
+      "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -7132,9 +7151,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "robloxQualityBuildUpRequired": false,
       "robloxQualityBuildUpSourceRevision": null,
@@ -7694,9 +7713,9 @@
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
-        "sourceRevision": "d0066a7820df2a3990e03838df62f48d5e73f8e3",
-        "artifactIdentity": "sha256:1f1b401668ee3d2477a6dd441082d20270dd98bdd671cda67df80ac6c7d01092",
-        "candidateVersionNumber": 91,
+        "sourceRevision": "6f1948ff8362da448c1bd627751c81b655068f94",
+        "artifactIdentity": "sha256:b329ba4fa37b2ccee8c5bd3032a0c7ec2ee7494ddbd8016f5d4ae7c9320b177e",
+        "candidateVersionNumber": 94,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -7708,9 +7727,9 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-11-01T06:38:57.393Z"
+        "verifiedAt": "2026-11-01T07:04:11.429Z"
       },
-      "robloxMultiplayerQaPassedAt": "2026-11-01T06:38:57.393Z",
+      "robloxMultiplayerQaPassedAt": "2026-11-01T07:04:11.429Z",
       "robloxRuntimeLastObservationAttemptAt": "2026-11-01T06:38:57.393Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
@@ -9941,7 +9960,7 @@
       }
     }
   ],
-  "updatedAt": "2026-11-01T07:04:04.603Z",
+  "updatedAt": "2026-11-01T07:04:11.429Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
