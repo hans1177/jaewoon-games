@@ -26,8 +26,10 @@ permissions:
   contents: write
   pull-requests: write
 
+## [중복 등록 병목] 동일 main 소스의 로블록스 게시를 직렬화해 두 개의 에셋 업로드가 겹치지 않게 한다.
+## 실행 중인 게시를 취소하면 로블록스 자산 등록이 반쯤 끝나므로 마지막 실행을 보존한다.
 concurrency:
-  group: owner-roblox-dedicated-private-experiences-${{ inputs.game_id || github.sha }}
+  group: owner-roblox-dedicated-private-experiences-${{ inputs.game_id || 'main' }}
   cancel-in-progress: false
 
 env:
