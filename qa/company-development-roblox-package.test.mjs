@@ -1299,6 +1299,18 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.ok((villageHouses.match(/length=3/g)||[]).length>=5,'inns, farms, and workshops use longer footprints');
   assert.ok((villageHouses.match(/storeys=2/g)||[]).length>=2,'major buildings must have genuine second-story wall layouts');
   assert.ok((villageHouses.match(/roofPitch=/g)||[]).length===16,'every building needs an authored roof silhouette');
+  // [평지·집 실루엣 회귀] 단순 크기/색 차이가 아닌 ㄱ자 증축·측면 헛간·2층 처마를 실제 CC0 모듈로 구현한다.
+  assert.ok((villageHouses.match(/wing=-1/g)||[]).length>=7,'real side-wing silhouettes required');
+  assert.ok((villageHouses.match(/leanTo=true/g)||[]).length>=4,'distinct lean-to outbuildings required');
+  assert.ok((villageHouses.match(/balcony=true/g)||[]).length>=2,'inn and hall need a second-story canopy');
+  assert.match(server,/if house.wing then/);
+  assert.match(server,/if house.leanTo then/);
+  assert.match(server,/if house.balcony and house.storeys==2 then/);
+  assert.match(server,/MeadowVillageFlatGroundReady",true/);
+  assert.match(server,/meadowTerrain:FillBlock\\(CFrame.new\\(district\\[1\\],34,district\\[2\\]\\)/);
+  assert.doesNotMatch(server,/\\{x=-115,z=-92,r=41,y=-12\\}/);
+  assert.doesNotMatch(server,/\\{x=-292,z=-210,r=35,y=-13\\}/);
+
   assert.match(server,/MeadowVillageBuildingCount/);
   assert.match(server,/MeadowVillagePrefabReady/);
   // [중세 마을] 과거 진흙 언덕을 평평한 길로 바꾸고 원본 조립 모듈로 여섯 주거·생활 건물을 완성한다.
