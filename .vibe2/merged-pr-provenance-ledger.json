@@ -149210,11 +149210,129 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_4c1e4ce6c9e4718461112997",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-11685",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7e2c28959e43732a4855e619b2d8d4ddf1ed28be",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11685,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/fantasy-deer-wolf-guard-five-dodge-current-20261101",
+        "baseSha": "7e2c28959e43732a4855e619b2d8d4ddf1ed28be",
+        "headSha": "3da8a9e3ecd7dd9bd56f2f4ba3656278f600ed20",
+        "mergeCommitSha": "89cdaf23a5e81355eb3a8f5f414d5578302b4119",
+        "mergedAt": "2026-11-01T14:17:33Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0c6d5e7c0089816c24946fc471f0e656b07439270a52d9e122680389c76ce6ba",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/fantasy-deer-wolf-guard-five-dodge-current-20261101",
+        "candidateSha": "3da8a9e3ecd7dd9bd56f2f4ba3656278f600ed20"
+      },
+      "changeStats": {
+        "changedFileCount": 2,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 108,
+        "deletedLineCount": 71,
+        "changedFiles": [
+          "qa/fantasy-survival-roblox-ui.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/fantasy-survival-roblox-ui.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11685",
+        "merge-commit:89cdaf23a5e81355eb3a8f5f414d5578302b4119",
+        "base-main:7e2c28959e43732a4855e619b2d8d4ddf1ed28be"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1186
+    "total": 1187
   }
 }
