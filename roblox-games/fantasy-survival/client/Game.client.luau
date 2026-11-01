@@ -455,7 +455,6 @@ meadowActionGrid.CellSize=UDim2.new(.5,-5,0,54)
 meadowActionGrid.CellPadding=UDim2.fromOffset(6,6)
 meadowActionGrid.Parent=list
 local meadowActionButtons={}
-local renderMeadowSkills -- 기존 메뉴 스킬 상태를 왼쪽 패널에서만 갱신한다.
 for index, action in ipairs(Config.Actions) do
   local button = CommonUI.CreatePrimaryButton({minWidth=44,minHeight=52})
   button.Name = "ScopeAction" .. index
@@ -496,7 +495,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
         (action.Kind=="SKILL" and Color3.fromRGB(173,232,198) or Color3.fromRGB(235,242,255))
     end
   end
-  if renderMeadowSkills and gui:GetAttribute("GameMenuOpen")==true then renderMeadowSkills() end
+  if meadowActionButtons.refreshSkills and gui:GetAttribute("GameMenuOpen")==true then meadowActionButtons.refreshSkills() end
 end)
 -- [생존 탐색 피드백] 4개 숲 관찰 지점·기존 동물 프롬프트에서 받은 서버 단서만 표시한다.
 -- 6초 뒤 자동 사라지는 작은 알림. 기존 위험 예고·스킬·조이스틱을 가리지 않는다.
@@ -1219,11 +1218,11 @@ for _,action in ipairs(Config.Actions)do
     if not selectedSkill then selectedSkill=action end
     button.Activated:Connect(function()
       selectedSkill=action
-      if renderMeadowSkills then renderMeadowSkills() end
+      if meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end
     end)
   end
 end
-renderMeadowSkills=function()
+meadowActionButtons.refreshSkills=function()
   if not selectedSkill then return end
   local now=workspace:GetServerTimeNow()
   for _,row in ipairs(skillRows)do
@@ -1257,7 +1256,7 @@ for index,button in ipairs(skillFilterButtons)do
     for i,tab in ipairs(skillFilterButtons)do
       tab.BackgroundColor3=i==index and Color3.fromRGB(109,77,49) or Color3.fromRGB(35,33,31)
     end
-    renderMeadowSkills()
+    meadowActionButtons.refreshSkills()
   end)
   button.BackgroundColor3=index==1 and Color3.fromRGB(109,77,49) or Color3.fromRGB(35,33,31)
 end
@@ -1268,7 +1267,7 @@ skillUse.Activated:Connect(function()
   if meadowMenu then meadowMenu.close() end
   activateMeadowAction(selectedSkill.Id)
 end)
-renderMeadowSkills()
+meadowActionButtons.refreshSkills()
 return function()
   for index=1,#inventoryData do
     inventoryCards[index].Text=inventoryValue(index)
