@@ -211,8 +211,14 @@
       "evidence": [
         "web-vibe-independent:v1",
         "owner-source-authenticated",
-        "qa-required-before-pr-merge"
-      ]
+        "qa-required-before-pr-merge",
+        "web-vibe-recovery-failure:needs-source-or-provider-recheck"
+      ],
+      "recoveryFailureClass": "SOURCE_OR_UNCLASSIFIED",
+      "recoveryAttempts": 1,
+      "recoveryLastFailureAt": "2026-11-01T17:55:00.325Z",
+      "recoveryNextAt": "2026-11-01T18:25:00.325Z",
+      "blocker": null
     }
   ],
   "ingest": {
