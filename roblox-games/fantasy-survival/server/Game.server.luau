@@ -710,12 +710,12 @@ local function createMeadowVillage()
   -- [확장된 숲마을 길] 기존 시작점, 의뢰판, NPC와 단서 좌표를 보존한 채 외곽 생활구역으로 길을 뻗는다.
   -- 기본 파츠 대신 네이티브 Terrain만 사용한다. 곡선과 가지길로 규칙적인 격자 배열을 피한다.
   for _,path in ipairs({
-    {0,-86,25,45},{-3,-145,27,69},{3,-213,29,73},{-2,-284,27,91},
-    {-68,-122,141,13},{66,-124,135,12},
-    {-80,-190,159,14},{81,-194,163,13},
-    {-92,-263,182,14},{96,-268,191,13},
-    {-154,-165,12,101},{157,-170,12,104},
-    {-194,-266,11,98},{197,-270,11,96},
+    {0,-86,15,45},{-3,-145,15,69},{3,-213,16,73},{-2,-284,16,91},
+    {-68,-122,141,8},{66,-124,135,8},
+    {-80,-190,159,8},{81,-194,163,8},
+    {-92,-263,182,9},{96,-268,191,9},
+    {-154,-165,8,101},{157,-170,8,104},
+    {-194,-266,8,98},{197,-270,8,96},
   }) do
     meadowTerrain:FillBlock(CFrame.new(path[1],1.5,path[2]),
       Vector3.new(path[3],1.4,path[4]),Enum.Material.Ground)
@@ -742,7 +742,7 @@ local function createMeadowVillage()
   end
   -- [공동 광장] 공고 게시판과 주민 이동 중심은 원래 자리에 남는다.
   for _,plaza in ipairs({
-    {0,-111,42,30},{3,-157,41,32},{-7,-238,36,24},
+    {0,-111,29,22},{3,-157,28,24},{-7,-238,28,20},
   }) do
     meadowTerrain:FillBlock(CFrame.new(plaza[1],1.55,plaza[2]),
       Vector3.new(plaza[3],1.4,plaza[4]),Enum.Material.Cobblestone)
@@ -826,19 +826,86 @@ local function createMeadowVillage()
       -- 등록·로드 실패 시 해당 건물은 기존 조립형으로 남기고 저장 및 의뢰 좌표를 보존한다.
       local hasOriginalHouse=false
       if house.prefab and villageWholeHouseReady then
-        local houseModel=worldAsset(house.prefab,Vector3.new(house.x,3,house.z),
-          10.2*villageArchitectureScale*house.scale)
+        -- [완성형 CC0 집] 링크가 끊긴 원본 재질 때문에 거대 회색 집이 되지 않도록
+        -- 실제 원본 MeshPart만 집의 지붕/목재/회벽 팔레트로 마감한다.
+        local targetHeight=(house.storeys==2 and 8.1 or 6.5)*villageArchitectureScale*house.scale
+        local houseModel=worldAsset(house.prefab,Vector3.new(house.x,3,house.z),targetHeight)
+        if houseModel then
+          -- [실측 크기] 원본마다 다른 폭을 좁은 중앙 골목의 건물 부지에 맞춘다.
+          local _,sourceSize=houseModel:GetBoundingBox()
+          local maxFootprint=(house.storeys==2 and 34 or 28)*house.scale
+          local actualFootprint=math.max(sourceSize.X,sourceSize.Z)
+          if actualFootprint>maxFootprint then
+            houseModel:ScaleTo(houseModel:GetScale()*maxFootprint/actualFootprint)
+            local centered,scaledSize=houseModel:GetBoundingBox()
+            local rayParams=RaycastParams.new()
+            rayParams.FilterType=Enum.RaycastFilterType.Include
+            rayParams.FilterDescendantsInstances={meadowTerrain}
+            local ground=workspace:Raycast(Vector3.new(house.x,44,house.z),
+              Vector3.new(0,-105,0),rayParams)
+            if ground then
+              houseModel:PivotTo(houseModel:GetPivot()+Vector3.new(0,
+                ground.Position.Y+.15-(centered.Position.Y-scaledSize.Y*.5),0))
+            end
+          end
+          local meshCount=0
+          for _,mesh in ipairs(houseModel:GetDescendants()) do
+            if mesh:IsA("MeshPart") and mesh.Transparency<.98 then meshCount+=1 end
+          end
+          -- 원본이 한 덩어리로 깨진 경우 기존 정상 Kenney 집을 사용한다.
+          if meshCount<3 then
+            warn("마력숲 원본 완성형 집 메시 불완전: "..house.prefab)
+            houseModel:Destroy()
+            houseModel=nil
+          end
+        end
         if houseModel then
           houseModel.Name=house.name.."_OriginalCC0House"
           houseModel:SetAttribute("MeadowVillageScenery",true)
           houseModel:SetAttribute("VillageBuilding",house.name)
           houseModel:SetAttribute("VillageDistrict",houseIndex<=4 and "CENTRAL" or "FARMLAND")
           houseModel:PivotTo(houseModel:GetPivot()*CFrame.Angles(0,house.angle,0))
+          local fullBox,fullSize=houseModel:GetBoundingBox()
+          local roofHeight=fullBox.Position.Y-fullSize.Y*.5+fullSize.Y*.68
+          local plaster=house.timber:Lerp(Color3.fromRGB(220,201,170),.78)
+          for _,mesh in ipairs(houseModel:GetDescendants()) do
+            if mesh:IsA("MeshPart") then
+              local name=mesh.Name:lower()
+              local roof=name:find("roof",1,true) or name:find("shingle",1,true)
+                or name:find("thatch",1,true) or name:find("tile",1,true)
+                or (mesh.Position.Y>=roofHeight and mesh.Size.Y<fullSize.Y*.48)
+              local timber=name:find("beam",1,true) or name:find("wood",1,true)
+                or name:find("plank",1,true) or name:find("timber",1,true)
+                or name:find("door",1,true)
+              local stone=name:find("stone",1,true) or name:find("brick",1,true)
+                or name:find("chimney",1,true) or name:find("foundation",1,true)
+              local glass=name:find("glass",1,true) or name:find("window",1,true)
+              local appearance=mesh:FindFirstChildOfClass("SurfaceAppearance")
+              if appearance then appearance:Destroy() end
+              if mesh.TextureID~="" then mesh.TextureID="" end
+              mesh.MaterialVariant=""
+              mesh.Reflectance=0
+              if roof then
+                mesh.Color=house.roof
+                mesh.Material=Enum.Material.Slate
+              elseif glass then
+                mesh.Color=Color3.fromRGB(70,91,94)
+                mesh.Material=Enum.Material.Glass
+              elseif timber then
+                mesh.Color=house.timber
+                mesh.Material=Enum.Material.Wood
+              elseif stone then
+                mesh.Color=Color3.fromRGB(148,143,130)
+                mesh.Material=Enum.Material.Slate
+              else
+                mesh.Color=plaster
+                mesh.Material=Enum.Material.Concrete
+              end
+              mesh.CanCollide=true
+            end
+          end
           local signMesh=houseModel:FindFirstChildWhichIsA("MeshPart",true)
           if signMesh then
-            for _,mesh in ipairs(houseModel:GetDescendants()) do
-              if mesh:IsA("MeshPart") then mesh.CanCollide=true end
-            end
             local sign=Instance.new("BillboardGui")
             sign.Name="MeadowVillageHouseSign"
             sign.Adornee=signMesh
@@ -972,6 +1039,15 @@ local function createMeadowVillage()
           for _,mesh in ipairs(model:GetDescendants()) do
             if mesh:IsA("MeshPart") then
               mesh.CanCollide=piece.lift==0
+              -- [지붕 색 보존] 원본 청록색 텍스처가 집별 Slate·Wood 색을 덮지 않는다.
+              if piece.asset=="villageRoof" or piece.asset=="villageRoofEnd"
+                or piece.asset=="villageFlatRoof" or piece.asset=="villageWall"
+                or piece.asset=="villageStoneWall" then
+                local appearance=mesh:FindFirstChildOfClass("SurfaceAppearance")
+                if appearance then appearance:Destroy() end
+                if mesh.TextureID~="" then mesh.TextureID="" end
+                mesh.MaterialVariant=""
+              end
               if piece.asset=="villageRoof" or piece.asset=="villageRoofEnd" or piece.asset=="villageFlatRoof" then
                 mesh.Color=house.roof:Lerp(Color3.fromRGB(73,76,71),(partIndex%3)*.06)
                 mesh.Material=Enum.Material.Slate
