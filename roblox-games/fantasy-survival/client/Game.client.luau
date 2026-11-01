@@ -1060,12 +1060,12 @@ end
 local backpack=player:FindFirstChildOfClass("Backpack") or player:FindFirstChild("Backpack")
 local filterBar,filterButtons=CommonUI.CreateFilterBar({name="WitcherItemCategories",filters=categories,selectedIndex=1})
 filterBar.LayoutOrder=2;filterBar.Size=UDim2.new(1,-8,0,48);filterBar.Parent=meadowPages[2]
-local grid=Instance.new("Frame")
-grid.Name="MeadowInventoryGrid";grid.LayoutOrder=3
-grid.Size=UDim2.new(1,-8,0,100);grid.BackgroundTransparency=1;grid.Parent=meadowPages[2]
+local inventoryGrid=Instance.new("Frame")
+inventoryGrid.Name="MeadowInventoryGrid";inventoryGrid.LayoutOrder=3
+inventoryGrid.Size=UDim2.new(1,-8,0,100);inventoryGrid.BackgroundTransparency=1;inventoryGrid.Parent=meadowPages[2]
 local gridLayout=Instance.new("UIGridLayout")
 gridLayout.SortOrder=Enum.SortOrder.LayoutOrder;gridLayout.CellPadding=UDim2.fromOffset(8,8)
-gridLayout.Parent=grid
+gridLayout.Parent=inventoryGrid
 local detail=Instance.new("Frame")
 detail.Name="WitcherItemDetails";detail.LayoutOrder=4
 detail.Size=UDim2.new(1,-8,0,214);detail.BorderSizePixel=0;detail.BackgroundColor3=stone
@@ -1154,7 +1154,7 @@ end
 local function makeCard(item)
   local card=Instance.new("TextButton")
   card.Name="OwnedItemSlot";card.Text="";card.AutoButtonColor=true
-  card.BackgroundColor3=Color3.fromRGB(30,29,32);card.BorderSizePixel=0;card.Parent=grid
+  card.BackgroundColor3=Color3.fromRGB(30,29,32);card.BorderSizePixel=0;card.Parent=inventoryGrid
   local outline=Instance.new("UIStroke");outline.Color=Color3.fromRGB(92,83,68);outline.Parent=card
   local icon=Instance.new("ImageLabel")
   icon.Name="ExistingAssetIcon";icon.BackgroundTransparency=1;icon.Image=meadowIconAtlas
@@ -1176,15 +1176,15 @@ local function makeCard(item)
   return {button=card,name=name,count=value,border=outline}
 end
 local function layoutGrid()
-  local width=grid.AbsoluteSize.X
+  local width=inventoryGrid.AbsoluteSize.X
   if width<=0 then return end
   local columns=math.clamp(math.floor((width+8)/118),2,6)
   local cell=math.floor((width-(columns-1)*8-8)/columns)
   gridLayout.CellSize=UDim2.fromOffset(math.max(76,cell),104)
 end
-grid:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutGrid)
+inventoryGrid:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutGrid)
 gridLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-  grid.Size=UDim2.new(1,-8,0,math.max(110,gridLayout.AbsoluteContentSize.Y+4))
+  inventoryGrid.Size=UDim2.new(1,-8,0,math.max(110,gridLayout.AbsoluteContentSize.Y+4))
 end)
 local function renderInventory()
   local actual={}
