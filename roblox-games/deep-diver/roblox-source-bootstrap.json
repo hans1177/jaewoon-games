@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 6,
   "gameId": "deep-diver",
   "gameName": "심해 잠수부 · 검은 바다의 보물",
   "platform": "ROBLOX",
@@ -7,96 +7,27 @@
   "stage": "TARGET_PLATFORM_SOURCE_BIND",
   "sourcePath": "roblox-games/deep-diver",
   "sourceValidationPassed": true,
+  "sourceValidationBlockers": [],
   "runtimePassed": false,
   "independentQaPassed": false,
   "regressionPassed": false,
   "releaseClaim": false,
-  "saveRequired": true,
-  "approvedScopeCount": 6,
-  "robloxBuildProfile": {
-    "version": 1,
-    "targetPlatform": "ROBLOX",
-    "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-    "declaredGameCategory": "PUZZLE",
-    "genre": "Puzzle",
-    "subgenre": null,
-    "playMode": "COOP",
-    "multiplayerRequired": true,
-    "coopImplementationRequired": true,
-    "competitiveImplementationRequired": false,
-    "networkingRequired": true,
-    "multiplayerQaRequired": true,
-    "minimumParticipantsForRequiredQa": 2,
-    "displayLabelKo": "퍼즐 · 멀티·협동",
-    "designAxes": {
-      "genre": {
-        "id": "Puzzle",
-        "subgenre": "",
-        "rules": [
-          "탐험 중 적 패턴과 도구를 조합하는 전투: 상대의 빈틈과 주변 도구를 보고 접근·회피·공격 순서를 선택한다하면서 수관: 수관 아래와 위의 이동 길을 비교한다. 빛과 연결된 가지의 위치를 확인함일 때 은폐와 채집 경로가 달라진다",
-          "공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 유전자 변이: 환경이 다른 개체의 특성을 비교한다. 관찰한 차이를 환경 변화와 구분함일 때 사용할 특성과 다음 관찰 대상이 달라진다",
-          "탐험 중 적 패턴과 도구를 조합하는 전투로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다."
-        ]
-      },
-      "style": {
-        "id": "",
-        "visual": [],
-        "motion": []
-      },
-      "concept": {
-        "id": "",
-        "world": [],
-        "mood": []
-      },
-      "sourceRevision": null
-    },
-    "styleLock": null
-  },
-  "robloxPlatformProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-    "sessionModel": "Roblox social session model: 첫 세션부터 입력, 핵심 행동, 실제 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 설계한다.; fast join/rejoin and avatar-safe spawn flow for RPG · 슈팅 · 낚시 · 보드 플레이를 선호하는 글로벌 플레이어.",
-    "multiplayerRuntime": "Roblox server-authoritative COOP replication with join/leave sync and RemoteEvent validation.",
-    "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
-    "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
-    "saveAndNetwork": "Luau 서버가 판정·보상·진행·저장을 소유하고 RemoteEvent 입력을 검증한다. 기존 DataStore 키와 저장 구조 및 멀티 권한을 보존한다.",
-    "platformContentAdaptation": "게임 원본은 roblox-games/deep-diver/의 Luau다. 설계 문법의 상태 입출력·시스템 연결·콘텐츠를 기존 서버·공유·클라이언트 함수에 직접 구현한다. C# 변환 결과를 원본으로 사용하지 않는다.",
-    "internalReleaseTarget": "Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "validationEvidence": "설계 문법별 책임 함수·실제 상태 변경·콘텐츠 소스 차이를 연결해 기존 F0~F9 및 Roblox 클라우드 API 런타임에서 검증한다. 정적 검사와 실제 실행 증거를 구분한다."
-  },
-  "minimumDesignContractRequired": true,
-  "genreImplementationRequired": true,
-  "multiplayerImplementationRequired": true,
+  "existingSourcePreserved": true,
+  "gameplayAuthorityChanged": false,
+  "serverSourceChanged": false,
+  "foundationRepairApplied": false,
+  "studioMaterialRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "shared/RobloxCommonUI.luau",
-    "shared/RobloxCommonMaterials.luau",
-    "shared/RobloxCommonVFX.luau",
-    "shared/RobloxCommonMotion.luau",
-    "server/Game.server.luau",
-    "client/Game.client.luau",
-    "client/MaterialPresentation.client.luau",
-    "default.project.json"
+    "client/Game.client.luau"
   ],
-  "generationMode": "DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT",
-  "model": "none",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
   "vibe3LearningApplied": true,
-  "robloxPlaybookChecklist": [
-    "bind-roblox-source-and-place",
-    "separate-server-client-authority",
-    "validate-remotes-and-datastore-boundaries",
-    "run-real-roblox-runtime-and-independent-qa",
-    "verify-save-rejoin-and-mobile-ui-when-applicable",
-    "publish-only-after-exact-revision-pass",
-    "rank-responsible-source-before-edit",
-    "generate-3-to-5-independent-candidates",
-    "prefer-smallest-behavior-preserving-diff",
-    "run-syntax-tests-runtime-regression"
-  ],
   "recombinationRecipeId": "recombine_d6be758648f1f3bd",
+  "verifiedExternalLearningAppliedToExistingSource": true,
   "verifiedExternalLearningFirst": true,
   "verifiedExternalLearningCoveragePct": 100,
   "verifiedExternalLearningRetrievedCount": 7,
@@ -125,32 +56,6 @@
     "MOTION_AND_TRANSITIONS",
     "CONTEXTUAL_ONBOARDING"
   ],
-  "recombinationOperator": "adapt-motion-expression",
-  "recombinationSourceProjects": [
-    "external-commercial-angry-birds-2",
-    "external-commercial-royal-match"
-  ],
-  "learningFeatureBlend": [
-    "board-state",
-    "goal-loop",
-    "combo-feedback",
-    "touch-input",
-    "commercial-puzzle-runtime-architecture"
-  ],
-  "platformDesignProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-    "sessionModel": "Roblox social session model: 첫 세션부터 입력, 핵심 행동, 실제 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 설계한다.; fast join/rejoin and avatar-safe spawn flow for RPG · 슈팅 · 낚시 · 보드 플레이를 선호하는 글로벌 플레이어.",
-    "multiplayerRuntime": "Roblox server-authoritative COOP replication with join/leave sync and RemoteEvent validation.",
-    "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
-    "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
-    "saveAndNetwork": "Luau 서버가 판정·보상·진행·저장을 소유하고 RemoteEvent 입력을 검증한다. 기존 DataStore 키와 저장 구조 및 멀티 권한을 보존한다.",
-    "platformContentAdaptation": "게임 원본은 roblox-games/deep-diver/의 Luau다. 설계 문법의 상태 입출력·시스템 연결·콘텐츠를 기존 서버·공유·클라이언트 함수에 직접 구현한다. C# 변환 결과를 원본으로 사용하지 않는다.",
-    "internalReleaseTarget": "Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "validationEvidence": "설계 문법별 책임 함수·실제 상태 변경·콘텐츠 소스 차이를 연결해 기존 F0~F9 및 Roblox 클라우드 API 런타임에서 검증한다. 정적 검사와 실제 실행 증거를 구분한다."
-  },
-  "webPlatformHandoffLegacy": null,
-  "webPlatformHandoffRequired": false,
   "studioAssetBinding": {
     "version": 3,
     "bindingVersion": 2,
@@ -655,12 +560,12 @@
     "CHARACTER": "NOT_APPLICABLE",
     "CREATURE": "NOT_APPLICABLE",
     "BUILDING": "NOT_APPLICABLE",
-    "ENVIRONMENT": "NOT_APPLICABLE",
+    "ENVIRONMENT": "APPLIED",
     "WEAPON": "NOT_APPLICABLE",
     "SKILL": "NOT_APPLICABLE",
     "MATERIAL": "APPLIED",
     "AUDIO": "NOT_APPLICABLE",
-    "VFX": "NOT_APPLICABLE",
+    "VFX": "APPLIED",
     "UI": "APPLIED",
     "MOTION": "APPLIED",
     "PROP": "NOT_APPLICABLE"
@@ -714,23 +619,8 @@
     }
   },
   "implementationNotes": [
-    "approved scope count=6",
-    "roblox genre=Puzzle",
-    "play mode=COOP",
-    "multiplayer required=yes",
-    "genre core action is compiled from the approved Roblox build profile",
-    "minimum dual-platform design contract carried forward",
-    "Roblox platform session: Roblox social session model: 첫 세션부터 입력, 핵심 행동, 실제 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 설계한다.; fast join/rejoin and avatar-safe spawn flow for RPG · 슈팅 · 낚시 · 보드 플레이를 선호하는 글로벌 플레이어.",
-    "Roblox internal release target: Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "server-authoritative actions broadcast synchronized participant state to all clients",
-    "co-op source maintains SharedObjective across current participants",
-    "mobile-first ScreenGui exposes approved gameplay actions",
-    "new-game Roblox creation renders bounded UICorner/UIStroke/text-size responsive button and panel polish in existing client owner; existing inventory/world binding stays source and design gated",
-    "Studio base material binding applied: 360 semantic atoms; runtime verification still required",
-    "Vibe3 Roblox playbook applied: bind-roblox-source-and-place, separate-server-client-authority, validate-remotes-and-datastore-boundaries, run-real-roblox-runtime-and-independent-qa, verify-save-rejoin-and-mobile-ui-when-applicable, publish-only-after-exact-revision-pass, rank-responsible-source-before-edit, generate-3-to-5-independent-candidates, prefer-smallest-behavior-preserving-diff, run-syntax-tests-runtime-regression",
-    "verified APK principles are always adapted into Roblox environment/background, character animation/motion, skill VFX, camera feedback, UI/touch controls, gameplay state, and runtime QA",
-    "transformative recipe=recombine_d6be758648f1f3bd; operator=adapt-motion-expression; features=board-state, goal-loop, combo-feedback, touch-input, commercial-puzzle-runtime-architecture",
-    "persistent player state uses DataStoreService with safe fallback",
+    "existing Roblox gameplay source preserved",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
   "buildUpDirectiveId": null,
@@ -739,6 +629,6 @@
   "buildUpDirectiveFingerprint": null,
   "buildUpDirectiveConsumed": false,
   "buildUpDirectiveCompletionClaim": false,
-  "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-11-01T06:19:41.275Z"
+  "nextRequiredStage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+  "createdAt": "2026-11-01T06:25:04.358Z"
 }
