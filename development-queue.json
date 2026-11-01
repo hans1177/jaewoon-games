@@ -28,13 +28,20 @@
         "version": 1,
         "pass": true,
         "source": "design/deep-diver/2026-10-31/design-revised.json",
+        "date": "2026-10-31",
+        "releaseChecklist": {
+          "identity": true,
+          "coreLoop": true,
+          "sessionRules": true,
+          "signatureSystems": true,
+          "presentation": true
+        },
         "commonCoreReady": true,
         "platformProfiles": {
           "ROBLOX": true,
           "UNITY": true,
           "distinct": true
-        },
-        "migratedFromLegacy": false
+        }
       },
       "platformDesignProfiles": {
         "ROBLOX": {
@@ -52,7 +59,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-31T12:41:10.231Z",
-      "updatedAt": "2026-11-01T22:24:42.861Z",
+      "updatedAt": "2026-11-01T22:25:37.896Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -3743,7 +3750,12 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-01T22:24:43.129Z"
       },
-      "updatedAt": "2026-11-01T22:24:43.129Z"
+      "updatedAt": "2026-11-01T22:25:37.896Z",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "daechung-rpg",
@@ -3827,7 +3839,12 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-01T22:24:43.129Z"
       },
-      "updatedAt": "2026-11-01T22:24:43.129Z"
+      "updatedAt": "2026-11-01T22:25:37.896Z",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "horror-escape-room",
@@ -3911,7 +3928,12 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-01T22:24:43.129Z"
       },
-      "updatedAt": "2026-11-01T22:24:43.129Z"
+      "updatedAt": "2026-11-01T22:25:37.896Z",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "forgotten-continent",
@@ -3971,7 +3993,12 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
       "enqueuedAt": "2026-11-01T22:24:43.129Z",
-      "updatedAt": "2026-11-01T22:24:43.129Z"
+      "updatedAt": "2026-11-01T22:25:37.896Z",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "baeksu-war",
@@ -4055,10 +4082,15 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-01T22:24:43.129Z"
       },
-      "updatedAt": "2026-11-01T22:24:43.129Z"
+      "updatedAt": "2026-11-01T22:25:37.896Z",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-11-01T22:24:43.129Z",
+  "updatedAt": "2026-11-01T22:25:37.896Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
