@@ -174,31 +174,9 @@ test('existing Roblox BUILD_UP feeds source-only whole asset and action plan to 
 }));
 
 
-test('implemented gameplay visuals: linked rig attacks, actor animation phases and server-authorized forest combos',()=>{
-  const read=file=>fs.readFileSync(file,'utf8');
-  const animal=read('roblox-games/cozy-island/shared/WildlifeAnimator.luau');
-  const wildlifeServer=read('roblox-games/cozy-island/shared/SurvivalWildlife.luau');
-  const cozyClient=read('roblox-games/cozy-island/client/Game.client.luau');
-  const battle=read('roblox-games/cozy-island/server/BattleVisual.luau');
-  const forest=read('roblox-games/fantasy-survival/client/Game.client.luau');
-  assert.match(animal,/actingSpeed \*= 0\.14/);
-  assert.match(animal,/lastServerState/);
-  assert.match(animal,/WildlifeRenderedMotionState/);
-  assert.doesNotMatch(animal,/self\.model:SetAttribute\("WildlifeMotionState", nextState\)/);
-  assert.match(wildlifeServer,/WildlifeMotionSerial/);
-  assert.match(wildlifeServer,/model:SetAttribute\("WildlifeMotionState", nextState\)/);
-  assert.match(cozyClient,/local anticipate=state=="ATTACK"/);
-  assert.match(cozyClient,/local strike=state=="ATTACK"/);
-  assert.match(cozyClient,/local recoil=state=="HIT"/);
-  assert.match(cozyClient,/local collapse=state=="DEATH"/);
-  assert.match(cozyClient,/WildlifeMotionSerial/);
-  assert.match(cozyClient,/record\.gaitPhase\+=record\.smoothSpeed/);
-  assert.match(battle,/Instance\.new\("Motor6D"\)/);
-  assert.match(battle,/function marchAndStrike/);
-  assert.match(battle,/CozyBattleVisualOnly/);
-  assert.match(battle,/OwnsDamageAuthority",false/);
-  assert.match(battle,/BattleVisual\.finish\(player,won\)/);
-  // [활성 게임] 삭제된 RPG 대신 실제 마력숲 R15 서버 승인 기술과 시각·데미지 분리를 검증한다.
+// 삭제된 코지 아일랜드 검사만 제외하고 활성 마력숲 서버 승인 모션 검증을 유지한다.
+test('active Magic Forest server-approved combat motion remains visual only',()=>{
+  const forest=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   assert.match(forest,/playNativeCombatMotion=function\(approvedScope,approvedEvent,serverApproved\)/);
   assert.match(forest,/GetAttributeChangedSignal\("ApprovedCombatMotion"\)/);
   assert.match(forest,/local constraint=joint:IsA\("AnimationConstraint"\)/);
