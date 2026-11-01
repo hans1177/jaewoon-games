@@ -1416,6 +1416,12 @@ jobs:
     name: Roblox package + preflight + F0 ${{ matrix.gameId }}
     needs: technical-plan
     if: always() && needs.technical-plan.result == 'success' && needs.technical-plan.outputs.count != '0'
+    # [동일 게임 병목] 활성 F0 한 건은 보존하고 오래된 대기 중복만 최신 건으로 정리한다.
+    # 신규 파이프라인이나 검증 우회 없이 기존 게임별 F0 작업만 직렬화한다.
+    concurrency:
+      group: roblox-technical-f0-${{ matrix.gameId }}
+      queue: single
+      cancel-in-progress: false
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.technical-plan.outputs.matrix) }}
