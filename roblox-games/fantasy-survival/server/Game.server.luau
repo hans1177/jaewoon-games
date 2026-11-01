@@ -724,6 +724,14 @@ local function createMeadowVillage()
       villageDetailReady=false;break
     end
   end
+  -- [완성형 집 4종] 원본 .blend에서 내보낸 실제 CC0 집만 사용한다.
+  -- 게임별 Model ID 등록 전에는 기존 16개 조립형 집을 그대로 유지한다.
+  local villageWholeHouseReady=nativeVillageReady
+  for _,key in ipairs({"villageHouseA","villageHouseB","villageHouseC","villageHouseD"}) do
+    if typeof(NativeCreatureAssets[key])~="number" or NativeCreatureAssets[key]<1 then
+      villageWholeHouseReady=false;break
+    end
+  end
   -- [중세 숲마을 건축] 위처 3의 비대칭 농촌 배치만 참고하고 실제 CC0 모듈 외형은 유지한다.
   -- 기존 6동을 보존하되 생활·상업·농경·외곽 구역에 배치하고 서로 다른 실루엣을 만든다.
   local villageArchitectureScale=2.35
@@ -736,11 +744,11 @@ local function createMeadowVillage()
     local houses={
       {x=-99,z=-90,angle=0,name="Village_HealerHouse",label="약초상 · 의원",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,chimney=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(125,107,88),roof=Color3.fromRGB(82,91,78)},
-      {x=112,z=-93,angle=math.pi,name="Village_Guesthouse",label="마을 여관",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,masonry=true,chimney=true,archway=true,balcony=true,
+      {x=112,z=-93,angle=math.pi,name="Village_Guesthouse",label="마을 여관",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseA",masonry=true,chimney=true,archway=true,balcony=true,
        timber=Color3.fromRGB(151,117,88),roof=Color3.fromRGB(96,72,66)},
       {x=-116,z=-160,angle=0,name="Village_Workshop",label="대장간 · 공방",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(106,94,83),roof=Color3.fromRGB(73,79,79)},
-      {x=125,z=-158,angle=math.pi,name="Village_WardenHall",label="마을 회관",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,masonry=true,chimney=true,archway=true,balcony=true,wing=-1,wingZ=5.4,
+      {x=125,z=-158,angle=math.pi,name="Village_WardenHall",label="마을 회관",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseB",masonry=true,chimney=true,archway=true,balcony=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(146,119,91),roof=Color3.fromRGB(92,70,59)},
       {x=-96,z=-226,angle=0,name="Village_ResidentHouseWest",label="서쪽 주민집",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
        timber=Color3.fromRGB(153,132,107),roof=Color3.fromRGB(105,89,74)},
@@ -754,9 +762,9 @@ local function createMeadowVillage()
        timber=Color3.fromRGB(134,109,88),roof=Color3.fromRGB(97,86,70)},
       {x=207,z=-177,angle=math.pi*.87,name="Village_BakerHome",label="빵 굽는 집",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,leanTo=true,
        timber=Color3.fromRGB(162,126,96),roof=Color3.fromRGB(109,88,75)},
-      {x=-189,z=-250,angle=-math.pi*.06,name="Village_Granary",label="곡물 창고",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,masonry=true,flatRoof=true,leanTo=true,
+      {x=-189,z=-250,angle=-math.pi*.06,name="Village_Granary",label="곡물 창고",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,prefab="villageHouseC",masonry=true,flatRoof=true,leanTo=true,
        timber=Color3.fromRGB(129,107,81),roof=Color3.fromRGB(98,91,68)},
-      {x=196,z=-251,angle=math.pi*1.05,name="Village_Farmstead",label="농가 · 마구간",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,masonry=true,flatRoof=true,wing=-1,wingZ=5.4,
+      {x=196,z=-251,angle=math.pi*1.05,name="Village_Farmstead",label="농가 · 마구간",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,prefab="villageHouseD",masonry=true,flatRoof=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(117,98,75),roof=Color3.fromRGB(91,84,74)},
       {x=-104,z=-309,angle=.08,name="Village_SouthCottageWest",label="남쪽 농가",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
        timber=Color3.fromRGB(148,126,102),roof=Color3.fromRGB(89,86,77)},
@@ -768,6 +776,47 @@ local function createMeadowVillage()
        timber=Color3.fromRGB(123,102,87),roof=Color3.fromRGB(90,101,88)},
     }
     for houseIndex,house in ipairs(houses) do
+      -- [서로 다른 완성형 건물] 기존 여관·회관·창고·농가를 각각 별개 중세 모델로 구성.
+      -- 등록·로드 실패 시 해당 건물은 기존 조립형으로 남기고 저장 및 의뢰 좌표를 보존한다.
+      local hasOriginalHouse=false
+      if house.prefab and villageWholeHouseReady then
+        local houseModel=worldAsset(house.prefab,Vector3.new(house.x,3,house.z),
+          10.2*villageArchitectureScale*house.scale)
+        if houseModel then
+          houseModel.Name=house.name.."_OriginalCC0House"
+          houseModel:SetAttribute("MeadowVillageScenery",true)
+          houseModel:SetAttribute("VillageBuilding",house.name)
+          houseModel:SetAttribute("VillageDistrict",houseIndex<=4 and "CENTRAL" or "FARMLAND")
+          houseModel:PivotTo(houseModel:GetPivot()*CFrame.Angles(0,house.angle,0))
+          local signMesh=houseModel:FindFirstChildWhichIsA("MeshPart",true)
+          if signMesh then
+            for _,mesh in ipairs(houseModel:GetDescendants()) do
+              if mesh:IsA("MeshPart") then mesh.CanCollide=true end
+            end
+            local sign=Instance.new("BillboardGui")
+            sign.Name="MeadowVillageHouseSign"
+            sign.Adornee=signMesh
+            sign.Size=UDim2.fromOffset(158,28)
+            sign.StudsOffsetWorldSpace=Vector3.new(0,10.5,0)
+            sign.MaxDistance=72
+            sign.Parent=signMesh
+            local caption=Instance.new("TextLabel")
+            caption.Size=UDim2.fromScale(1,1)
+            caption.BackgroundTransparency=1
+            caption.Font=Enum.Font.GothamBold
+            caption.TextSize=14
+            caption.TextStrokeTransparency=.3
+            caption.TextColor3=Color3.fromRGB(246,216,163)
+            caption.Text=house.label
+            caption.Parent=sign
+            villageBuildings+=1
+            hasOriginalHouse=true
+          else
+            houseModel:Destroy()
+          end
+        end
+      end
+      if not hasOriginalHouse then
       -- [기존 Kenney 건물 모듈] 길이 2/3칸, 층수 1/2의 실제 문·창·벽·박공지붕으로 외형을 다르게 구성한다.
       local rowCount=house.length
       local roofRows=rowCount==3 and {-5.4,0,5.4} or {-2.7,2.7}
@@ -915,6 +964,7 @@ local function createMeadowVillage()
         if partIndex%4==0 then task.wait(.03) end
       end
       if created==#pieces then villageBuildings+=1 end
+      end -- 완성형 집과 조립형 집 중복 배치 금지
       if house.lantern then
         local scale=villageArchitectureScale*house.scale
         local sideX,sideZ=7.9*scale,house.doorZ*scale
