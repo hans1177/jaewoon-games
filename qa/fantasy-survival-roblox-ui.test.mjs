@@ -85,6 +85,17 @@ test('deer and wolf keep real source bones and documented Animator motion priori
   const visual=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
   assert.equal(native.models.deer.sourcePath,'assets/shared/forest/deer-animated.glb');
   assert.equal(native.models.wolf.sourcePath,'assets/shared/forest/wolf.fbx');
+  const deerBytes=fs.readFileSync(native.models.deer.sourcePath);
+  assert.equal(deerBytes.toString('ascii',0,4),'glTF');
+  assert.equal(deerBytes.readUInt32LE(8),deerBytes.length);
+  const deerJson=JSON.parse(deerBytes.subarray(20,20+deerBytes.readUInt32LE(12)).toString('utf8'));
+  assert.ok(deerJson.skins.some(skin=>skin.joints.length>=40),'deer must have a real skinned quadruped rig');
+  for(const name of ['Idle','Walk','Gallop']){
+    assert.ok(deerJson.animations.some(clip=>clip.name===name),'original deer clip: '+name);
+  }
+  const wolfBytes=fs.readFileSync(native.models.wolf.sourcePath);
+  assert.match(wolfBytes.toString('latin1'),/WolfArmature\\|Walk/);
+  assert.match(wolfBytes.toString('latin1'),/WolfArmature\\|Idle/);
   for(const joint of ['frontupperlegl','frontupperlegr','frontlowerlegl','frontlowerlegr',
       'backupperlegl','backupperlegr','backlowerlegl','backlowerlegr',
       'torso2','neck1','tail1']){
