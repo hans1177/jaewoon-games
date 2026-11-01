@@ -311,80 +311,15 @@ test('boss introduction uses authored dialogue once and preserves current attack
   assert.equal(new JaewoonCommonAI().decide({...context,bossScene:{...scene,engineApproved:false}}).state,JaewoonCommonAI.State.ATTACK);
 });
 
-// Unity 원본 소스 정적 회귀: 실물 런타임 조작이 아니며 APK/WebGL 실행 통과로 간주하지 않는다.
-test('Unity village life, story save, scout opt-in and boss reveal remain on original engine-owned paths',()=>{
-  const core=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/GameCore.cs',import.meta.url),'utf8');
-  const runtime=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
-  const visual=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
-  assert.match(core,/private const string SaveKey = "daechung-rpg-save-v1"/);
-  assert.match(core,/public List<string> witnessedStoryEvents = new\(\)/);
-  assert.match(core,/public bool TryRecordStoryEvent\(string eventId\)/);
-  assert.match(core,/Player\.witnessedStoryEvents\.Contains\(eventId\)/);
-  assert.match(core,/public bool TrySetScoutCompanion\(bool accompanying\)/);
-  assert.match(core,/Player\.scoutAccompanying = accompanying;/);
-  assert.match(core,/Player\.witnessedStoryEvents == null/);
-  assert.match(runtime,/DrawSocialControls\(\)/);
-  assert.match(runtime,/IsVillageResidentNearby\(id\)/);
-  assert.match(runtime,/TalkWithResident\(string id\)/);
-  assert.match(runtime,/TryRecordStoryEvent\("chief-introduction"\)/);
-  assert.match(runtime,/TryRecordStoryEvent\("smith-visit"\)/);
-  assert.match(runtime,/TryRecordStoryEvent\("ogre-sighted"\)/);
-  assert.match(runtime,/TryRecordStoryEvent\("ogre-defeated"\)/);
-  assert.match(runtime,/TrySetScoutCompanion\(true\)/);
-  assert.match(runtime,/TrySetScoutCompanion\(false\)/);
-  assert.match(runtime,/IsVillageResidentNearby\("scout"\) && _core\.TrySetScoutCompanion\(true\)/);
-  const travel=runtime.slice(runtime.indexOf('private void MoveTo('),runtime.indexOf('private void SpawnFirstEnemyInCurrentRegion('));
-  assert.ok(travel.indexOf('_visuals?.ShowBattle();')>=0 && travel.indexOf('_visuals?.ShowBattle();')<travel.indexOf('SpawnFirstEnemyInCurrentRegion(false);'),'battle must exist before boss scene');
-  assert.ok(travel.indexOf('_visuals?.PlayTravelToBattle();')>=0 && travel.indexOf('_visuals?.PlayTravelToBattle();')<travel.indexOf('SpawnFirstEnemyInCurrentRegion(false);'),'travel must start before boss reveal');
-  assert.match(travel,/_scoutInvitationPending = false;/);
-  assert.match(runtime,/if \(_scoutInvitationPending && \(_visuals == null \|\| !_visuals\.IsVillageResidentNearby\("scout"\)\)\)/);
-  assert.match(runtime,/_bossSceneUntil = 0f;\s+_visuals\?\.SkipBossReveal\(\);/);
-  assert.match(runtime,/DrawStoryPrompt\(Rect safe, float scale\)/);
-  assert.match(runtime,/GUI\.Button\(skip, "SKIP"\)/);
-  assert.match(visual,/Vector3\.MoveTowards\(at, destination/);
-  assert.match(visual,/InitializeVillageResidents\(\)/);
-  assert.match(visual,/public bool IsVillageResidentNearby\(string id\)/);
-  assert.match(visual,/public void PlayBossReveal\(\)/);
-  assert.match(visual,/public void SkipBossReveal\(\)/);
-  assert.match(visual,/public void SetNarrativeCompanion\(bool accompanying\)/);
-  assert.doesNotMatch(runtime,/ParticipantCount\s*\+\s*1|Connected\s*=\s*true/);
-  const storyOnly=core.slice(core.indexOf('public bool TryRecordStoryEvent('),core.indexOf('public bool HasStoryEvent('));
-  assert.doesNotMatch(storyOnly,/baseAttack\s*[+\-]=|gold\s*[+\-]=|experience\s*[+\-]=/);
-});
-test('Roblox village NPC roam and first-sighting boss scene keep original server save and party authority',()=>{
-  const server=fs.readFileSync(new URL('../roblox-games/daechung-rpg/server/Game.server.luau',import.meta.url),'utf8');
-  const client=fs.readFileSync(new URL('../roblox-games/daechung-rpg/client/Game.client.luau',import.meta.url),'utf8');
-  const config=fs.readFileSync(new URL('../roblox-games/daechung-rpg/shared/GameConfig.luau',import.meta.url),'utf8');
-  assert.match(server,/GetDataStore\("daechung-rpg-portal-v1"\)/);
-  assert.match(config,/MultiplayerRequired\s*=\s*true,MinimumParticipants=2,PartySlots=4/);
-  assert.match(server,/local livingResidents=\{\}/);
-  assert.match(server,/table\.insert\(livingResidents,\{part=npc,route=/);
-  assert.match(server,/prompt\(npc,"주민 "\.\.i,"대화하기"\)/);
-  assert.match(server,/n\(p,"CurrentZone",0\)~=0/);
-  assert.match(server,/resident\.route\[resident\.nextAnchor\]/);
-  assert.match(server,/part\.CFrame=CFrame\.lookAt\(nextPos,nextPos\+direction\)/);
-  assert.match(server,/nextNpcGreeting\[player\]=now\+28/);
-  assert.match(server,/feedback\(player,"NPC_INITIATED_TALK"\)/);
-  assert.match(server,/for _,observer in ipairs\(Players:GetPlayers\(\)\)do/);
-  assert.match(server,/n\(observer,"CurrentZone",0\)==e\.zone/);
-  assert.match(server,/observedHumanoid\.Health>0/);
-  assert.match(server,/bossSceneSeen\[observer\]\[id\]=true/);
-  assert.match(server,/observer:SetAttribute\("BossIntroLine"/);
-  assert.match(server,/observer:SetAttribute\("BossIntroId",id\)/);
-  assert.match(server,/e\.lastPlayerObservedAt=now/);
-  assert.match(server,/e\.roamTarget=e\.spawn\+Vector3\.new\(math\.cos\(a\)\*8,0,math\.sin\(a\)\*8\)/);
-  assert.match(server,/now-\(e\.lastPlayerObservedAt or -1000000\)<4/);
-  assert.match(server,/if e\.boss or e\.runBoss or e\.hiddenBoss or/);
-  assert.match(server,/if \(e\.part\.Position-e\.spawn\)\.Magnitude>z\.Leash then e\.part\.CFrame=CFrame\.new\(e\.spawn\)end/);
-  assert.match(server,/beginEnemyAttack\(e,target,now\)/);
-
-  assert.match(server,/if count>=C\.PartySlots-1 then/);
-  assert.match(server,/parties\[p\]\[def\.Id\]=true;spawnActiveCompanion/);
-  assert.match(client,/NPCSpeech/);
-  assert.match(client,/SkipBossCinematic/);
-  assert.match(client,/bossSkip\.Activated:Connect\(endBossCinematic\)/);
-  assert.match(client,/p:GetAttributeChangedSignal\("BossIntroId"\):Connect\(showBossCinematic\)/);
-  assert.doesNotMatch(client,/remote:FireServer\("BossIntroId"/);
+// [영구 삭제된 게임] 대충 RPG의 Unity/Roblox 소스는 현재 개발·릴리스 대상이 아니다.
+// 과거 파일이 남아 있거나 없더라도 이를 살아 있는 게임의 AI/모션 품질 검사로 사용하지 않는다.
+// 삭제 결정 자체는 소스 재생성 없이 기존 공식 게임 카탈로그에서 확인한다.
+test('retired Daechung RPG is excluded from active actor runtime regression',()=>{
+  const catalog=JSON.parse(fs.readFileSync(new URL('../game-catalog.json',import.meta.url),'utf8'));
+  assert.ok(catalog.permanentRemovalPolicy?.ids?.includes('daechung-rpg'),
+    'owner removed Daechung RPG, do not run archived Unity or Roblox source QA');
+  assert.equal(catalog.permanentRemovalPolicy?.automaticMaintenanceAllowed,false);
+  assert.equal(catalog.permanentRemovalPolicy?.reentryAllowed,false);
 });
 test('common AI memory is bounded idempotent and relationships remain directional state',()=>{
   const ai=new JaewoonCommonAI({memoryLimit:4});
