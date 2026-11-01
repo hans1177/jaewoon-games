@@ -2783,11 +2783,11 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
       end
       if areaName=="초원지역" then
         -- [구역별 위치 안내] 네 모서리·북쪽 능선·외곽 늑대 길목을 실제 좌표로 식별.
-        if x<=-275 and z<=-245 then areaName="남서 숲 외곽"
-        elseif x>=275 and z<=-245 then areaName="남동 숲 외곽"
-        elseif x<=-275 and z>=245 then areaName="북서 깊은 숲"
-        elseif x>=275 and z>=245 then areaName="북동 깊은 숲"
-        elseif z>=280 then areaName="북쪽 숲 능선"
+        if x<=-275 and z<=-245 then areaName="북서 숲 외곽"
+        elseif x>=275 and z<=-245 then areaName="북동 숲 외곽"
+        elseif x<=-275 and z>=245 then areaName="남서 깊은 숲"
+        elseif x>=275 and z>=245 then areaName="남동 깊은 숲"
+        elseif z>=280 then areaName="남쪽 숲 능선"
         elseif x<=-280 and z<0 then areaName="서쪽 늑대 숲길"
         elseif x>=280 and z<0 then areaName="동쪽 물길 외곽"
         else
