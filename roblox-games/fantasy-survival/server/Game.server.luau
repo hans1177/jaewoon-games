@@ -3022,7 +3022,8 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   if (defense.guardUntil or 0)>now then damage=math.ceil(damage*.5) end
   -- [갑옷 피해 경감] 완벽 방어·회피 판정 이후 실제 착용 장비와 방호 숙련만 적용.
   local _,armor=meadowRpg.stats(player)
-  humanoid:TakeDamage(math.max(1,damage-armor))
+  damage=math.max(1,damage-armor)
+  humanoid:TakeDamage(damage)
   setNumber(player,"Health",math.max(0,math.floor(humanoid.Health)))
 end
 
