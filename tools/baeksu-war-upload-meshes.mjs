@@ -76,14 +76,14 @@ if(provenance.version!==(fantasy?5:4)||!provenance.roles||Object.keys(provenance
 const ids={};const records={};const verifiedModels=new Map();
 for(const name of names){
  const originSource=fantasy?(manifest.models[name]||villageRows[name]):null;
- const extension=fantasy?path.extname(originSource?.sourcePath||originSource?.sourceFile||originSource?.archiveEntry||'').slice(1).toLowerCase():'glb';
+ const extension=fantasy?(provenance.roles[name]?.format||path.extname(originSource?.sourcePath||originSource?.sourceFile||originSource?.archiveEntry||'').slice(1)).toLowerCase():'glb';
  if(fantasy&&!['fbx','glb'].includes(extension))throw Error('FANTASY_UNSUPPORTED_NATIVE_FORMAT:'+name);
  const file=path.join(dir,name+'.'+extension);
  const bytes=await fs.readFile(file);
  if(bytes.length<1000||bytes.length>18*1024*1024||(extension==='fbx'?!bytes.subarray(0,18).toString().startsWith('Kaydara FBX Binary'):bytes.subarray(0,4).toString()!=='glTF'))throw Error('BAD_NATIVE_MODEL:'+name);
  const digest=crypto.createHash('sha256').update(bytes).digest('hex');
  const origin=provenance.roles[name];
- if(!origin||(fantasy?origin.sha256!==digest||originSource?.sourceSha256!==digest||origin.sourceSha256!==digest||origin.licenseEvidence!==originSource?.licenseEvidence:origin.glbSha256!==digest)||origin.license!=='CC0-1.0'||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||(!fantasy&&(!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4))){throw Error('CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:'+name);}
+ if(!origin||(fantasy?origin.sha256!==digest||originSource?.sourceSha256!==origin.sourceSha256||origin.licenseEvidence!==originSource?.licenseEvidence:origin.glbSha256!==digest)||origin.license!=='CC0-1.0'||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||(!fantasy&&(!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4))){throw Error('CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:'+name);}
  verifiedModels.set(name,{bytes,digest,origin,extension});
 }
 // Validate every original before the first irreversible Model registration.
@@ -92,7 +92,7 @@ for(const name of names){
  const {bytes,digest,origin,extension}=verifiedModels.get(name);
  const prior=oldRegistry?.models?.[name]||villageRows[name];
  if(prior&&Number.isSafeInteger(prior.assetId)&&prior.assetId>0
-   &&prior.sourceSha256===digest&&prior.sha256===digest
+   &&prior.sourceSha256===origin.sourceSha256&&prior.sha256===digest
    &&prior.license==='CC0-1.0'&&prior.licenseEvidence===origin.licenseEvidence){
    ids[name]=prior.assetId;
    records[name]=prior;
