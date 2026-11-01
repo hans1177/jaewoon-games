@@ -72,7 +72,7 @@ if '--game-id=fantasy-survival' in sys.argv:
   if catalog_path!=(ROOT/'assets/shared/party/sources.json').resolve():
    raise RuntimeError('FANTASY_VILLAGE_SOURCE_CATALOG_MISMATCH')
   catalog=json.loads(catalog_path.read_text())
-  if village.get('version')!=1 or len(village.get('models',{}))!=10:
+  if village.get('version')!=1 or len(village.get('models',{}))!=19:
    raise RuntimeError('FANTASY_VILLAGE_APPROVED_SOURCE_SET_REQUIRED')
   for role,row in village['models'].items():
    if not re.fullmatch(r'village[A-Z][A-Za-z]+',role):
