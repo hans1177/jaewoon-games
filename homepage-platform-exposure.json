@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-11-01T11:27:16.933Z",
+  "generatedAt": "2026-11-01T11:29:27.772Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -167,9 +167,9 @@
             "currentFloor": "F0_BEFORE_SOURCE_BIND",
             "stage": "TARGET_PLATFORM_SOURCE_BIND",
             "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-11-01T11:25:38.567Z",
-            "checkedAt": "2026-11-01T11:25:38.567Z",
-            "lastFailureAt": "2026-11-01T11:25:38.567Z",
+            "verifiedAt": "2026-11-01T11:29:27.356Z",
+            "checkedAt": "2026-11-01T11:29:27.356Z",
+            "lastFailureAt": "2026-11-01T11:29:27.356Z",
             "f0PassedAt": null,
             "candidatePublishedAt": null,
             "failureCode": "existing-source-tree-missing",
@@ -272,7 +272,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-01T11:25:38.567Z"
+      "updatedAt": "2026-11-01T11:29:27.356Z"
     },
     {
       "gameId": "bug-defense",
@@ -1601,15 +1601,15 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
-            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
-            "verifiedAt": "2026-11-01T11:21:43.877Z",
-            "checkedAt": "2026-11-01T11:24:36.797Z",
-            "lastFailureAt": null,
+            "currentFloor": "REPAIR_REQUIRED",
+            "stage": "REPAIR_REQUIRED",
+            "result": "REPAIR_REQUIRED",
+            "verifiedAt": "2026-11-01T11:29:20.065Z",
+            "checkedAt": "2026-11-01T11:29:20.065Z",
+            "lastFailureAt": "2026-11-01T11:29:20.065Z",
             "f0PassedAt": "2026-11-01T11:21:43.877Z",
             "candidatePublishedAt": null,
-            "failureCode": null,
+            "failureCode": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -1708,7 +1708,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-01T11:24:36.797Z"
+      "updatedAt": "2026-11-01T11:29:20.065Z"
     },
     {
       "gameId": "fifty-days",
