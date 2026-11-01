@@ -910,7 +910,9 @@ local function createMeadowVillage()
             sign.Name="MeadowVillageHouseSign"
             sign.Adornee=signMesh
             sign.Size=UDim2.fromOffset(158,28)
-            sign.StudsOffsetWorldSpace=Vector3.new(0,10.5,0)
+            -- [간판 위치] 작은 건물에서는 원래 10.5스터드 고정 오프셋이 공중에 뜬다.
+            sign.StudsOffsetWorldSpace=Vector3.new(0,
+              math.max(2,fullBox.Position.Y+fullSize.Y*.5-signMesh.Position.Y+1.5),0)
             sign.MaxDistance=72
             sign.Parent=signMesh
             local caption=Instance.new("TextLabel")
