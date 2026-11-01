@@ -2733,6 +2733,27 @@ radarVillage.TextStrokeTransparency=.3
 radarVillage.ZIndex=12
 radarVillage.Visible=false
 radarVillage.Parent=radarField
+-- [주민 길찾기] 기존 네 명의 실제 R15 NPC 위치를 미니맵에 표시한다.
+-- 추가 NPC/저장 필드 없이 기존 마을 배치와 움직이는 주민의 현재 위치만 읽는다.
+local radarVillagers={}
+for _,entry in ipairs({
+  {"Elder","촌"},{"Herbalist","약"},{"Tracker","추"},{"Guard","경"},
+}) do
+  local marker=Instance.new("TextLabel")
+  marker.Name="MeadowResidentMarker"..entry[1]
+  marker.BackgroundTransparency=1
+  marker.AnchorPoint=Vector2.new(.5,.5)
+  marker.Size=UDim2.fromOffset(16,16)
+  marker.Text=entry[2]
+  marker.TextSize=12
+  marker.Font=Enum.Font.GothamBold
+  marker.TextColor3=Color3.fromRGB(255,237,186)
+  marker.TextStrokeTransparency=.27
+  marker.ZIndex=12
+  marker.Visible=false
+  marker.Parent=radarField
+  radarVillagers[#radarVillagers+1]={id=entry[1],view=marker}
+end
 local radarContractSites={}
 for index=1,2 do
   local marker=Instance.new("TextLabel")
@@ -2813,6 +2834,17 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     and villageDx*villageDx+villageDz*villageDz<radarHalf*radarHalf
   if radarVillage.Visible then
     radarVillage.Position=UDim2.fromScale(.5+villageDx/radarSpan,.5+villageDz/radarSpan)
+  end
+  -- [NPC 위치] 실제 현재 위치를 따라가므로 길목 순찰 중에도 위치를 잘못 안내하지 않는다.
+  for _,row in ipairs(radarVillagers) do
+    local npc=world and world:FindFirstChild("Meadow_Villager_"..row.id)
+    local npcPosition=npc and npc:GetPivot().Position
+    local dx=npcPosition and npcPosition.X-mainRoot.Position.X or math.huge
+    local dz=npcPosition and npcPosition.Z-mainRoot.Position.Z or math.huge
+    row.view.Visible=npcPosition~=nil and dx*dx+dz*dz<radarHalf*radarHalf
+    if row.view.Visible then
+      row.view.Position=UDim2.fromScale(.5+dx/radarSpan,.5+dz/radarSpan)
+    end
   end
   local activeContract=Config.VillageContracts[player:GetAttribute("VillageContractIndex") or 1]
   local contractEvidence=player:GetAttribute("VillageContractEvidence") or 0
