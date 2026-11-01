@@ -4712,6 +4712,8 @@ local quadrupedFootPhases={
 }
 -- [늑대 질주] 뒷발 추진 → 앞발 착지 순서. 트로트처럼 두 발을 동시에 찍지 않는다.
 local wolfGallopOffsets={FL=.52,FR=.60,BL=.04,BR=.12}
+-- [사슴 원본 질주] 뒷발 추진 다음 앞발 착지: 걷기용 트로트와 다른 실제 4족 갤럽.
+local deerGallopOffsets={FL=.60,FR=.67,BL=.06,BR=.13}
 -- [몹 실제 리깅] 기존 Bone/Motor6D/AnimationConstraint의 채널명을 재사용한다.
 local nativeMobJointAlias={
   FrontLeftShoulder="FLHip",FrontRightShoulder="FRHip",
@@ -4848,6 +4850,15 @@ local function bindOriginalMob(model)
     bone008="BLHip",bone009="BLKnee",bone010="BLAnkle",
     bone011="BRHip",bone012="BRKnee",bone013="BRAnkle",
   }
+  -- [46본 사슴] GLB 원본 명칭을 실제 스킨 관절에 직접 연결한다.
+  -- IK와 End 뼈는 구동하지 않고 어깨/골반 위쪽 원본 뼈만 고관절로 사용한다.
+  local deerSourceChannels={
+    torso="Spine",torso2="Chest",neck1="Neck",tail1="Tail",
+    frontupperlegl="FLHip",frontupperlegr="FRHip",
+    frontlowerlegl="FLKnee",frontlowerlegr="FRKnee",
+    backupperlegl="BLHip",backupperlegr="BRHip",
+    backlowerlegl="BLKnee",backlowerlegr="BRKnee",
+  }
   local bounds,size=model:GetBoundingBox()
   for _,joint in ipairs(model:GetDescendants()) do
     -- 실제 관절 종류별 연결점을 읽는다. AnimationConstraint는 Attachment를 우선한다.
@@ -4856,7 +4867,9 @@ local function bindOriginalMob(model)
     if motor or constraint or joint:IsA("Bone") then
       local raw=joint.Name:lower()
       local key=raw:gsub("[^%w]","")
-      local name=(species=="wolf" and wolfSourceChannels[key]) or nativeMobJointAlias[joint.Name] or joint.Name
+      local name=(species=="wolf" and wolfSourceChannels[key])
+        or (species=="deer" and deerSourceChannels[key])
+        or nativeMobJointAlias[joint.Name] or joint.Name
       local location=joint:IsA("Bone") and joint.WorldPosition
         or constraint and joint.Attachment1.WorldPosition or joint.Part1.Position
       local relative=bounds:PointToObjectSpace(location)
@@ -4909,7 +4922,8 @@ local function bindOriginalMob(model)
         end
       end
       if sourceChannels[name] and (not joints[name] or constraint
-        or (species=="wolf" and joint:IsA("Bone") and not joints[name]:IsA("Bone"))) then
+        or (species=="wolf" and joint:IsA("Bone") and not joints[name]:IsA("Bone"))
+        or (species=="deer" and deerSourceChannels[key] and joint:IsA("Bone"))) then
         -- [원본 스킨 우선] 같은 이름의 연결부가 중복되면 늑대 메시를 실제로 변형하는 Bone을 사용한다.
         -- 다리를 새로 만들지 않고 기존 정규화된 원본 스킨 관절을 재사용한다.
         joints[name]=joint
@@ -4932,15 +4946,16 @@ local function bindOriginalMob(model)
   if species=="deer" or species=="wolf" or species=="bat" then
     for _,animation in ipairs(model:GetDescendants()) do
       if animation:IsA("Animation") and animation.AnimationId:match("^rbxassetid://[1-9]%d*$") then
-        local key=animation.Name:lower()
-        local mode=key:find("fly",1,true) and "FLY"
-          or key:find("walk",1,true) and "WALK"
-          or (key=="gallop" or key:find("gallop",1,true)
-            and not key:find("jump",1,true) or key:find("run",1,true)) and "RUN"
-          or key:find("idle",1,true) and "IDLE"
+        -- [공식 Animator] 이름에 Idle_HitReact가 포함되어도 대기 클립으로 잘못 선택하지 않는다.
+        -- 저작 GLB 애니메이션은 Roblox AnimationId로 독립 게시된 경우에만 재생한다.
+        local key=animation.Name:lower():match("[^|]+$") or animation.Name:lower()
+        local mode=key=="idle" and "IDLE"
+          or key=="walk" and "WALK"
+          or (key=="gallop" or key=="run") and "RUN"
+          or key=="fly" and "FLY"
+          or (key:find("hitreact",1,true) or key=="hit") and "HIT"
           or key:find("attack",1,true) and "ATTACK"
-          or key:find("dead",1,true) and "DEATH"
-          or key:find("death",1,true) and "DEATH" or nil
+          or (key=="dead" or key=="death") and "DEATH" or nil
         if mode and not nativeAnimations[mode] then nativeAnimations[mode]=animation end
       end
     end
@@ -4961,7 +4976,10 @@ local function bindOriginalMob(model)
       local ok,track=pcall(function()return animator:LoadAnimation(animation)end)
       if ok and track then
         track.Looped=mode=="WALK" or mode=="RUN" or mode=="IDLE" or mode=="FLY"
-        track.Priority=(mode=="ATTACK" or mode=="DEATH") and Enum.AnimationPriority.Action
+        -- [공식 우선순위] 대기 < 이동 < 공격/피격/사망.
+        track.Priority=(mode=="ATTACK" or mode=="HIT" or mode=="DEATH")
+          and Enum.AnimationPriority.Action
+          or mode=="IDLE" and Enum.AnimationPriority.Idle
           or Enum.AnimationPriority.Movement
         tracks[mode]=track
       end
@@ -5048,10 +5066,12 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
       if row.nativeTracks then
         -- [늑대 동작 복구] 원본 걷기/달리기 클립은 유지하고,
         -- 공격 예고·피격·회복 또는 공격 클립이 없는 경우 기존 원본 뼈의 절차 모션을 재사용한다.
-        local wolfAction=row.species=="wolf" and row.controller
-          and (mode=="ANTICIPATION" or mode=="RECOVERY" or mode=="HIT"
+        -- [사슴·늑대] 저작 클립이 없는 예고/회복은 Idle로 덮지 않고 실제 관절로 연출한다.
+        local quadrupedAction=(row.species=="wolf" or row.species=="deer") and row.controller
+          and (mode=="ANTICIPATION" or mode=="RECOVERY"
+            or (mode=="HIT" and not row.nativeTracks.HIT)
             or (mode=="ATTACK" and not row.nativeTracks.ATTACK))
-        if wolfAction then
+        if quadrupedAction then
           if row.playingTrack then row.playingTrack:Stop(.1);row.playingTrack=nil end
         else
           local track=row.nativeTracks[mode] or
@@ -5178,6 +5198,18 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           if row.available.Neck then row.poses.Neck=CFrame.Angles(-breath*.6,0,0) end
           if row.available.Head then row.poses.Head=CFrame.Angles(-breath*.55,math.sin(cycle*.5)*.065,0) end
           if row.available.Tail then row.poses.Tail=CFrame.Angles(0,math.sin(cycle*.7)*.105,0) end
+          -- [종별 대기] 사슴은 귀를 기울이는 목·머리의 경계 동작, 늑대는 코로 흔적을 찾는다.
+          -- 실제 Bone만 구동하고 AI/탐지거리/공격 판정은 절대 변경하지 않는다.
+          if row.species=="deer" then
+            local look=math.sin(cycle*.55)
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(-.035+math.sin(cycle)*.065,look*.045,0) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(.045+math.sin(cycle*.7)*.09,look*.13,0) end
+            if row.available.Tail then row.poses.Tail=CFrame.Angles(0,look*.10,0) end
+          elseif row.species=="wolf" then
+            local scent=math.sin(cycle*.8)
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(.045+scent*.08,0,0) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(-.04+scent*.10,math.sin(cycle*.4)*.11,0) end
+          end
           -- [4족 대기] 호흡에 맞춰 어깨와 뒷다리에 체중을 번갈아 실어 생명감을 준다.
           if row.plan=="QUADRUPED" then
             local weight=math.sin(cycle*.5)*(row.species=="boar" and .035 or .055)
@@ -5304,7 +5336,10 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             for _,foot in ipairs(quadrupedFootPhases) do
               local key=foot[1]
               local front=key:sub(1,1)=="F"
-              local offset=running and (wolf and wolfGallopOffsets[key] or foot[3]) or foot[2]
+              local offset=running
+                and (wolf and wolfGallopOffsets[key]
+                  or row.species=="deer" and deerGallopOffsets[key] or foot[3])
+                or foot[2]
               local legPhase=(phase+offset)%1
               local hip,knee,ankle
               if legPhase<stance then
@@ -5338,11 +5373,14 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             end
             -- 네 발의 힘이 척추·어깨·목·꼬리를 따라 전달된다.
             local suspension=math.sin(cycle*(running and 2 or 1))
-            local bounce=suspension*(running and (wolf and .075 or .057)
+            local deerRun=row.species=="deer" and running
+            local bounce=suspension*(running and (wolf and .075 or deerRun and .072 or .057)
               or heavy and .020 or .030)*pace
             local roll=math.sin(cycle)*(running and .027 or .034)*pace
-            local chestPitch=wolf and running and -.055*math.cos(cycle) or bounce
-            local waistPitch=wolf and running and .11*math.cos(cycle-.48) or -bounce*.46
+            local chestPitch=wolf and running and -.055*math.cos(cycle)
+              or deerRun and -.085*math.cos(cycle-.25)*pace or bounce
+            local waistPitch=wolf and running and .11*math.cos(cycle-.48)
+              or deerRun and .10*math.cos(cycle-.65)*pace or -bounce*.46
             local turn=wolf and row.turnLean or 0
             if row.available.Chest then
               row.poses.Chest=CFrame.Angles(chestPitch,turn*.24,roll+turn*.33)
