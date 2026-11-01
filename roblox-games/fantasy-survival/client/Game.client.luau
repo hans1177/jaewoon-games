@@ -4762,6 +4762,8 @@ RunService.PreSimulation:Connect(function(dt)
 end)
 
 
+-- [원본 몹 모션] 관련 상태·이벤트를 단일 책임 함수에 격리해 Luau 로컬 레지스터 상한 준수.
+local function initializeMeadowNativeMobMotion()
 -- Native 3D mob actions: existing CC0 MeshParts only. The game does not
 -- invent limbs, bones or model parts. Server-owned attack states remain authoritative.
 local meadowMobWorld=workspace:WaitForChild("FantasySurvivalWorld")
@@ -5559,6 +5561,9 @@ remote.OnClientEvent:Connect(function(kind,payload)
   end
 end)
 
+
+end
+initializeMeadowNativeMobMotion()
 
 -- [초원 자연 음향] Roblox Creator Store에서 배포하는 새소리·숲 음원만 사용한다.
 -- 플레이어별 로컬 재생: 서버 전투/오디오 이벤트에 영향을 주지 않고 실제 소리가 허용되지 않으면 조용히 유지.
