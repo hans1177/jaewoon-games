@@ -1912,15 +1912,19 @@ test('마력숲 장검 3연속 검술은 독립 입력 3단계로 연결되고 �
 });
 
 // 파일 구분: 마력숲 회피 모션 우선권·완벽 막기 연타 중단 회귀 검증.
-test('fantasy owner-approved three-stage dodge retains native joints and server authority',()=>{
+test('fantasy owner-approved five-stage dodge retains native joints and server authority',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   assert.match(client,/if os.clock\(\)<dodgePoseUntil then return false end/);
   assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and 1\.06/);
   assert.match(client,/dodgePoseUntil=skillMotionStart\+\.46\+\.12/);
-  assert.match(client,/local first=math\.sin\(math\.pi\*math\.clamp\(phase\/\.34,0,1\)\)/);
-  assert.match(client,/local second=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.29\)\/\.38,0,1\)\)/);
-  assert.match(client,/local flip=math\.clamp\(\(phase-\.60\)\/\.31,0,1\)/);
+  // [5단 회피] 현재 승인된 슬립·페인트·크로스·위빙·덤블링 단계와 루트 관절을 검증한다.
+  assert.match(client,/local first=math\.sin\(math\.pi\*math\.clamp\(phase\/\.23,0,1\)\)/);
+  assert.match(client,/local second=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.17\)\/\.24,0,1\)\)/);
+  assert.match(client,/local third=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.37\)\/\.24,0,1\)\)/);
+  assert.match(client,/local fourth=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.57\)\/\.23,0,1\)\)/);
+  assert.match(client,/local flip=math\.clamp\(\(phase-\.79\)\/\.18,0,1\)/);
+  assert.match(client,/local flipping=math\.sin\(math\.pi\*flip\)/);
   assert.match(client,/CFrame\.Angles\(-2\*math\.pi\*flip/);
   assert.match(client,/skillMotionTargets\.FlipRoot=CFrame\.new/);
   assert.match(client,/skillMotionR15Targets\.RootJoint=skillMotionTargets\.FlipRoot/);
@@ -1971,8 +1975,11 @@ test('fantasy upright X-guard and dodge preserve cooldown, defense and native jo
   const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
   assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and 1\.06/);
   assert.match(client,/if isGuard then[\s\S]*?local open=math\.sin/);
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.68\*open-1\.68\*brace/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-\.68\*open-1\.68\*brace/);
+  // [전면 가드] 현재 비대칭 양팔 전방 막기에서 팔·손과 다리 지지를 검사한다.
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.90\*open-1\.77\*brace-\.12\*impact/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.02\*open-1\.94\*brace-\.10\*impact/);
+  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-\.50\*open-1\.00\*brace/);
+  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-\.50\*open-1\.12\*brace/);
   assert.match(client,/skillMotionTargets\.ShinL=CFrame\.identity/);
   assert.match(client,/skillMotionTargets\.ShinR=CFrame\.identity/);
   assert.match(client,/skillMotionTargets\.FlipRoot=CFrame\.new/);
