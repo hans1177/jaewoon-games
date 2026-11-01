@@ -128,7 +128,12 @@ test('five-stage dodge stays inside existing server-authorized skill',()=>{
   assert.match(client,/local flip=math\.clamp/);
   assert.match(client,/ipairs\(\{\.05,\.23,\.44,\.65,\.96\}\)/);
   assert.match(client,/\[막기 전면 가드\]/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.02\*open-1\.94\*brace/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.30\*open-1\.08\*brace/);
+  assert.match(client,/skillMotionTargets\.FlipRoot=CFrame\.new\(0,\.20\*second/);
+  assert.match(client,/\[영화식 막기\]/);
+  assert.match(client,/ipairs\(\{\.11,\.30,\.66\}\)/);
+  assert.match(client,/MeadowDodgeCinemaTrail/);
+  assert.match(client,/endDiameter=reducedEffects and 3\.4 or \(index==5 and 10\.8 or 6\.2\)/);
   assert.match(client,/\[사슴 직립\]/);
   assert.match(client,/\[늑대 영화식 포식 액션\]/);
   // Preserved actual server dodge: 7-stud side move, 0.48s invulnerability, 4s cooldown.
