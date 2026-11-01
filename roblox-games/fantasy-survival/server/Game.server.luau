@@ -77,12 +77,18 @@ local nextEncounterCheck = 0
 local meadowEncounterSites = {
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-324,3,-91)},
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(324,3,-91)},
-  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-84,3,94)},
-  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(81,3,96)},
+  -- [남쪽 숲 2곳/남쪽 양 끝/북동 구석] 기존 늑대 능력치는 유지하고 깊이별로 분산한다.
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-142,3,143)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(143,3,148)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-307,3,292)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(307,3,289)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(318,3,-293)},
   -- [사용자 제거] 버섯 몬스터 서식지 4곳 폐쇄. 나머지 지역·몬스터 배치는 유지.
-  {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(-254,3,-226)},
-  {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(248,3,-224)},
-  {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(239,3,236)},
+  -- [네 구석 밤의 생태] 기존 박쥐를 북서·북동·남동으로 펼치고 남서에도 서식시킨다.
+  {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(-298,3,-285)},
+  {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(297,3,-282)},
+  {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(274,3,268)},
+  {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(-273,3,265)},
   -- [사용자 제거] 해골 몬스터 서식지 3곳도 폐쇄. 저장·기존 나머지 몬스터 배치는 유지.
   -- [마을 의뢰] 우두머리 늑대는 마을 서쪽 외곽 숲에만 스폰한다.
   {id="wolf",atom="HEAD_CANINE",tier=1,height=4.8,position=Vector3.new(-321,3,-193),questIndex=1,alpha=true},
@@ -609,12 +615,13 @@ local function villageNativeNpc(spec)
         if moving then tracks.idle:Stop(.15) else tracks.idle:Play(.2) end
       end
     end)
-    -- 마을 NPC는 이 지역 안에서만 움직이며 다른 게임의 경로탐색/전투 권한을 건드리지 않는다.
+    -- [경로 맞춤 주민 순찰] 기존 중앙 주민 4명은 자리 유지, 출입로 안내원만 길목을 순찰.
+    -- 서버의 기존 Humanoid:MoveTo를 그대로 쓰고 신규 AI/경로 탐색 구조는 만들지 않는다.
     root.Anchored=false
     pcall(function()root:SetNetworkOwner(nil)end)
     local home=spec.location
     task.spawn(function()
-      local offsets={Vector3.new(3,0,2),Vector3.new(-3,0,1),Vector3.new(0,0,0)}
+      local offsets=spec.patrolOffsets or {Vector3.new(3,0,2),Vector3.new(-3,0,1),Vector3.new(0,0,0)}
       while npc.Parent==gameWorld and humanoid.Health>0 do
         for _,offset in ipairs(offsets) do
           if npc.Parent~=gameWorld or humanoid.Health<=0 then break end
@@ -690,6 +697,9 @@ local function createMeadowVillage()
     {-162,-218,-186,-253},{167,-220,194,-251},
     {-98,-286,-106,-306},{95,-291,123,-310},
     {-158,-300,-215,-318},{163,-300,218,-320},
+    -- [마을 외부 출입로] 외곽 늑대·탐험 숲길로 연결되는 동/서문과 남쪽 농장 길.
+    {-187,-189,-233,-193},{188,-194,236,-196},
+    {-200,-315,-243,-315},{205,-318,241,-316},
   }) do
     for step=0,8 do
       local t=step/8
@@ -1214,12 +1224,17 @@ local function createMeadowVillage()
   local villagers={
     {id="Elder",name="촌장 나린",role="ELDER",location=Vector3.new(-7,5,-109),
       skin=Color3.fromRGB(208,165,132),cloth=Color3.fromRGB(91,106,83),pants=Color3.fromRGB(72,65,54)},
-    {id="Herbalist",name="약초상 미라",role="HERBALIST",location=Vector3.new(-25,5,-124),
-      skin=Color3.fromRGB(220,177,144),cloth=Color3.fromRGB(77,131,102),pants=Color3.fromRGB(100,82,69)},
-    {id="Tracker",name="추적자 라온",role="TRACKER",location=Vector3.new(22,5,-128),
-      skin=Color3.fromRGB(191,147,114),cloth=Color3.fromRGB(115,87,65),pants=Color3.fromRGB(67,68,69)},
-    {id="Guard",name="경비병 아린",role="GUARD",location=Vector3.new(10,5,-145),
-      skin=Color3.fromRGB(201,157,126),cloth=Color3.fromRGB(95,103,123),pants=Color3.fromRGB(62,70,81)},
+    -- [서쪽 골목] 약초상은 서쪽 숲길로 향하는 입구에, 동쪽 추적자는 동문 갈림길에 배치.
+    {id="Herbalist",name="약초상 미라",role="HERBALIST",location=Vector3.new(-68,5,-122),
+      skin=Color3.fromRGB(220,177,144),cloth=Color3.fromRGB(77,131,102),pants=Color3.fromRGB(100,82,69),
+      patrolOffsets={Vector3.new(-12,0,-4),Vector3.new(10,0,3),Vector3.zero}},
+    {id="Tracker",name="추적자 라온",role="TRACKER",location=Vector3.new(69,5,-129),
+      skin=Color3.fromRGB(191,147,114),cloth=Color3.fromRGB(115,87,65),pants=Color3.fromRGB(67,68,69),
+      patrolOffsets={Vector3.new(13,0,-3),Vector3.new(-9,0,4),Vector3.zero}},
+    -- [마을 남쪽 중심로] 경비병은 남쪽 주거/농경 구역 진입부를 순찰한다.
+    {id="Guard",name="경비병 아린",role="GUARD",location=Vector3.new(-2,5,-188),
+      skin=Color3.fromRGB(201,157,126),cloth=Color3.fromRGB(95,103,123),pants=Color3.fromRGB(62,70,81),
+      patrolOffsets={Vector3.new(6,0,-15),Vector3.new(-8,0,6),Vector3.zero}},
   }
   local readyCount=0
   for _,spec in ipairs(villagers) do
@@ -1617,6 +1632,14 @@ task.defer(function()
     {155,201,16},{181,193,13},{208,165,17},{221,125,14},
     {187,111,17},{145,223,13},{235,188,15},{205,231,17},
   }
+  -- [맵 네 끝 발견 지점] 기존 나무 CC0 모델과 WOODLAND 조사만 재사용한다.
+  -- 탐험 저장 비트 4개를 그대로 사용하며 별도 아이템/필드/의뢰를 만들지 않는다.
+  for _,corner in ipairs({
+    {-318,313,17,"OUTER"},{317,312,18,"OUTER"},
+    {-318,-312,16,"OUTER"},{318,-313,17,"OUTER"},
+  }) do
+    woodland[#woodland+1]=corner
+  end
   -- [숲 조성 / 원본 에셋] 멀리 분산된 나무를 8개 숲 군락으로 이어 화면 가장자리를 울창하게 채운다.
   -- 기존 수입 CC0 나무 원본만 복제한다. 시작지·공격 반경과 채집 나무 좌표는 그대로 둔다.
   -- 고정된 수식으로 매 입장 동일하게 배치하며 새 충돌·파츠·서버 전투 개체는 생성하지 않는다.
@@ -1697,8 +1720,9 @@ task.defer(function()
       end
       -- [접근성] 기존 네 초원 입구의 조사 지점만 남겨 프롬프트가 숲 전체를 가리지 않는다.
       -- 네 사분면별 발견 비트·퀘스트·저장 의미는 그대로 사용한다.
-      if index==6 or index==12 or index==18 or index==24 then
+      if index==6 or index==12 or index==18 or index==24 or spec[4]=="OUTER" then
         bindMeadowInspection(tree,"WOODLAND")
+        if spec[4]=="OUTER" then tree:SetAttribute("MeadowOuterCornerDiscovery",true) end
       end
       tree:PivotTo(tree:GetPivot()*CFrame.Angles(0,math.rad((index*137)%360),0))
       sceneryCount+=1
@@ -1728,6 +1752,34 @@ task.defer(function()
     {from=Vector2.new(128,-128),to=Vector2.new(226,-91)},
     {from=Vector2.new(-126,139),to=Vector2.new(-220,211)},
     {from=Vector2.new(134,139),to=Vector2.new(219,215)},
+    -- [북서/북동 외곽 순환] 마을 양쪽 출입로에서 늑대·박쥐 서식지를 따라 네 끝으로 연결.
+    -- 동쪽 개울은 Z=-154~154에서만 흐르므로 동문 통과는 Z=-195의 마른 길로 우회한다.
+    {from=Vector2.new(-228,-219),to=Vector2.new(-315,-193)},
+    {from=Vector2.new(-233,-193),to=Vector2.new(-315,-193)},
+    {from=Vector2.new(-315,-193),to=Vector2.new(-319,-94)},
+    {from=Vector2.new(-315,-193),to=Vector2.new(-319,-308)},
+    {from=Vector2.new(-319,-308),to=Vector2.new(-240,-315)},
+    {from=Vector2.new(231,-228),to=Vector2.new(316,-195)},
+    {from=Vector2.new(235,-195),to=Vector2.new(316,-195)},
+    {from=Vector2.new(316,-195),to=Vector2.new(319,-94)},
+    {from=Vector2.new(316,-195),to=Vector2.new(319,-308)},
+    {from=Vector2.new(319,-308),to=Vector2.new(241,-316)},
+    -- [남쪽 외곽 순환] 네 방향 숲의 기존 길을 북서/북동 끝과 북쪽 능선에 연결한다.
+    {from=Vector2.new(-234,233),to=Vector2.new(-309,308)},
+    {from=Vector2.new(236,238),to=Vector2.new(309,308)},
+    {from=Vector2.new(-309,308),to=Vector2.new(-155,316)},
+    {from=Vector2.new(-155,316),to=Vector2.new(0,317)},
+    {from=Vector2.new(0,317),to=Vector2.new(155,316)},
+    {from=Vector2.new(155,316),to=Vector2.new(309,308)},
+    -- [외곽 옆길] 서쪽 늑대 길과 남서 숲, 동쪽 늑대 길과 남동 숲을 이어 왕복만 강제하지 않는다.
+    {from=Vector2.new(-309,308),to=Vector2.new(-315,204)},
+    {from=Vector2.new(-315,204),to=Vector2.new(-315,100)},
+    {from=Vector2.new(-315,100),to=Vector2.new(-319,-3)},
+    {from=Vector2.new(-319,-3),to=Vector2.new(-319,-94)},
+    {from=Vector2.new(309,308),to=Vector2.new(315,204)},
+    {from=Vector2.new(315,204),to=Vector2.new(315,100)},
+    {from=Vector2.new(315,100),to=Vector2.new(319,-3)},
+    {from=Vector2.new(319,-3),to=Vector2.new(319,-94)},
   }
   for route,track in ipairs(tracks) do
     for step=1,34 do
@@ -1758,6 +1810,8 @@ task.defer(function()
     end
   end
   gameWorld:SetAttribute("MeadowNativeTrails",#tracks+#trailSpurs)
+  gameWorld:SetAttribute("MeadowOuterRouteBranches",#tracks-8)
+  gameWorld:SetAttribute("MeadowOuterDiscoveryCorners",4)
   -- [이끼 낀 암석] 나무 군락 바깥에만 Terrain 암반을 겹쳐 자연스럽게 노출한다.
   local forestRockCount=0
   for _,rock in ipairs({

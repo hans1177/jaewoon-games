@@ -2549,7 +2549,7 @@ radarFieldStroke.Transparency=.06
 radarFieldStroke.Parent=radarField
 -- 실제 서버의 흙길과 유적, 근처 몬스터만 지도에 표시한다.
 local radarTrails={}
-for route=1,8 do
+for route=1,36 do
   local segment=Instance.new("Frame")
   segment.Name="RealTrail"..route;segment.AnchorPoint=Vector2.new(.5,.5)
   segment.BorderSizePixel=0;segment.BackgroundColor3=Color3.fromRGB(239,211,142)
@@ -2566,9 +2566,45 @@ for index=1,3 do
   marker.ZIndex=11;marker.Visible=false;marker.Parent=radarField
   radarRuinMarkers[index]=marker
 end
+-- [초원 전체 탐험 지도] 서버의 오솔길과 외곽 길 36개를 동일 좌표로 표시한다.
+-- 기존 8개 마을/숲 길 + 누락된 4개 숲 분기 + 네 모서리 연결 24개.
 local radarTrailEndpoints={
-  {-51,-48,-177,-176},{58,-49,183,-177},{-54,62,-184,188},{56,63,192,196},
-  {-177,-176,-228,-219},{183,-177,231,-228},{-184,188,-234,233},{192,196,236,238},
+  {-51,-48,-177,-176},
+  {58,-49,183,-177},
+  {-54,62,-184,188},
+  {56,63,192,196},
+  {-177,-176,-228,-219},
+  {183,-177,231,-228},
+  {-184,188,-234,233},
+  {192,196,236,238}, -- 기존 표시 구간
+  {-132,-126,-231,-93},
+  {128,-128,226,-91},
+  {-126,139,-220,211},
+  {134,139,219,215}, -- 기존 숲 분기
+  {-228,-219,-315,-193},
+  {-233,-193,-315,-193},
+  {-315,-193,-319,-94},
+  {-315,-193,-319,-308},
+  {-319,-308,-240,-315},
+  {231,-228,316,-195},
+  {235,-195,316,-195},
+  {316,-195,319,-94},
+  {316,-195,319,-308},
+  {319,-308,241,-316},
+  {-234,233,-309,308},
+  {236,238,309,308},
+  {-309,308,-155,316},
+  {-155,316,0,317},
+  {0,317,155,316},
+  {155,316,309,308},
+  {-309,308,-315,204},
+  {-315,204,-315,100},
+  {-315,100,-319,-3},
+  {-319,-3,-319,-94},
+  {309,308,315,204},
+  {315,204,315,100},
+  {315,100,319,-3},
+  {319,-3,319,-94},
 }
 local radarRuinSites={{-122,-147},{137,139},{-154,122}}
 
@@ -2629,7 +2665,9 @@ radarCenter.Font=Enum.Font.GothamBold
 radarCenter.ZIndex=12
 radarCenter.Parent=radarField
 local grovePoints={
+  -- 기존 발견 지점 4곳 + 같은 저장 비트를 공유하는 맵 네 모서리 조사 지점.
   {-258,-206,1},{261,-219,2},{-270,220,4},{258,240,8},
+  {-318,-312,1},{318,-313,2},{-318,313,4},{317,312,8},
 }
 local groveMarkers={}
 for index=1,#grovePoints do
@@ -2695,6 +2733,27 @@ radarVillage.TextStrokeTransparency=.3
 radarVillage.ZIndex=12
 radarVillage.Visible=false
 radarVillage.Parent=radarField
+-- [주민 길찾기] 기존 네 명의 실제 R15 NPC 위치를 미니맵에 표시한다.
+-- 추가 NPC/저장 필드 없이 기존 마을 배치와 움직이는 주민의 현재 위치만 읽는다.
+local radarVillagers={}
+for _,entry in ipairs({
+  {"Elder","촌"},{"Herbalist","약"},{"Tracker","추"},{"Guard","경"},
+}) do
+  local marker=Instance.new("TextLabel")
+  marker.Name="MeadowResidentMarker"..entry[1]
+  marker.BackgroundTransparency=1
+  marker.AnchorPoint=Vector2.new(.5,.5)
+  marker.Size=UDim2.fromOffset(16,16)
+  marker.Text=entry[2]
+  marker.TextSize=12
+  marker.Font=Enum.Font.GothamBold
+  marker.TextColor3=Color3.fromRGB(255,237,186)
+  marker.TextStrokeTransparency=.27
+  marker.ZIndex=12
+  marker.Visible=false
+  marker.Parent=radarField
+  radarVillagers[#radarVillagers+1]={id=entry[1],view=marker}
+end
 local radarContractSites={}
 for index=1,2 do
   local marker=Instance.new("TextLabel")
@@ -2732,8 +2791,9 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   if world then
     local x,z=mainRoot.Position.X,mainRoot.Position.Z
     if (world:GetAttribute("MeadowVillageNPCCount") or 0)>0
-      and x*x+(z+111)*(z+111)<72*72 then
-      areaName="초원 마을"
+      and x>=-280 and x<=280 and z>=-351 and z<=-42 then
+      areaName=z<-250 and "초원 마을 · 농경지"
+        or math.abs(x)>155 and "초원 마을 · 외곽 길목" or "초원 마을"
     else
       for index,site in ipairs(radarRuinSites) do
         local dx,dz=x-site[1],z-site[2]
@@ -2743,18 +2803,28 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
         end
       end
       if areaName=="초원지역" then
-        for _,site in ipairs(grovePoints) do
-          local dx,dz=x-site[1],z-site[2]
-          if dx*dx+dz*dz<78*78 then
-            areaName="숲 가장자리"
-            break
+        -- [구역별 위치 안내] 네 모서리·북쪽 능선·외곽 늑대 길목을 실제 좌표로 식별.
+        if x<=-275 and z<=-245 then areaName="북서 숲 외곽"
+        elseif x>=275 and z<=-245 then areaName="북동 숲 외곽"
+        elseif x<=-275 and z>=245 then areaName="남서 깊은 숲"
+        elseif x>=275 and z>=245 then areaName="남동 깊은 숲"
+        elseif z>=280 then areaName="남쪽 숲 능선"
+        elseif x<=-280 and z<0 then areaName="서쪽 늑대 숲길"
+        elseif x>=280 and z<0 then areaName="동쪽 물길 외곽"
+        else
+          for _,site in ipairs(grovePoints) do
+            local dx,dz=x-site[1],z-site[2]
+            if dx*dx+dz*dz<78*78 then
+              areaName="숲 가장자리"
+              break
+            end
           end
         end
       end
     end
   end
   radarTitle.Text=areaName
-  local trailsReady=world and (world:GetAttribute("MeadowNativeTrails") or 0)>=8
+  local trailsReady=world and (world:GetAttribute("MeadowNativeTrails") or 0)>=36
   local mapSize=radarField.AbsoluteSize
   local radarSpan=270 -- 플레이어 주위 실제 135스터드 반경
   local radarHalf=radarSpan*.5
@@ -2764,6 +2834,17 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     and villageDx*villageDx+villageDz*villageDz<radarHalf*radarHalf
   if radarVillage.Visible then
     radarVillage.Position=UDim2.fromScale(.5+villageDx/radarSpan,.5+villageDz/radarSpan)
+  end
+  -- [NPC 위치] 실제 현재 위치를 따라가므로 길목 순찰 중에도 위치를 잘못 안내하지 않는다.
+  for _,row in ipairs(radarVillagers) do
+    local npc=world and world:FindFirstChild("Meadow_Villager_"..row.id)
+    local npcPosition=npc and npc:GetPivot().Position
+    local dx=npcPosition and npcPosition.X-mainRoot.Position.X or math.huge
+    local dz=npcPosition and npcPosition.Z-mainRoot.Position.Z or math.huge
+    row.view.Visible=npcPosition~=nil and dx*dx+dz*dz<radarHalf*radarHalf
+    if row.view.Visible then
+      row.view.Position=UDim2.fromScale(.5+dx/radarSpan,.5+dz/radarSpan)
+    end
   end
   local activeContract=Config.VillageContracts[player:GetAttribute("VillageContractIndex") or 1]
   local contractEvidence=player:GetAttribute("VillageContractEvidence") or 0
