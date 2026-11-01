@@ -1687,15 +1687,19 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   }else{
     assert.ok(client.includes('glyph.Name="SkillSymbol"'),'old client remains until official owner importer succeeds');
   }
-  // Item cards read existing server-authoritative values, without adding a saved schema.
+  // [장비 회귀] 실제 서버 재화·장비 목록은 클라이언트에서 표시만 하고 서버가 제작·저장한다.
   assert.ok(client.includes('inventoryGrid.Name="MeadowInventoryGrid"'));
   assert.ok(!client.includes('inventoryQuick.Name="MeadowInventoryQuick"'), 'left pocket shortcut must be removed');
   assert.ok(client.includes('meadowMenu.open(3)end'), 'journal shortcut remains');
   assert.ok(client.includes('pages=meadowPages'), 'inventory page remains inside original menu');
-  for(const attr of ['Wood','Stone','ResearchRecords','Coins','WeaponTier']){
-    assert.ok(client.includes('{"'+(attr==='Wood'?'나무':attr==='Stone'?'돌':attr==='ResearchRecords'?'연구 일지':attr==='Coins'?'재화':'강화 단계')+'","'+attr+'"'));
+  for(const [key,name] of [['Wood','나무'],['Stone','돌'],['ResearchRecords','연구 일지'],['Coins','소지금']]){
+    assert.ok(client.includes('{key="'+key+'",name="'+name+'"'),'real resource shown: '+key);
   }
-  assert.ok(client.includes('inventoryCards[index].Text='));
+  assert.ok(client.includes('for index,gear in ipairs(Config.MeadowEquipment or {})'));
+  assert.ok(client.includes('card.count.Text=itemValue(item)'));
+  assert.ok(client.includes('remote:FireServer("meadow:rpg:gear:"..op..":"..item.gear.Id)'));
+  assert.ok(server.includes('meadowRpg.transact(player,actionId)'));
+  assert.ok(server.includes('meadowRpg.publishStats(player)'));
   assert.ok(client.includes('character:FindFirstChildOfClass("Tool")'));
   // Minimap renders only real peer coordinates and already discovered server grove sectors.
   assert.ok(client.includes('radarField.Name="NearbyPlayers"'));
@@ -1816,8 +1820,10 @@ test('마력숲 버섯 몬스터는 출현하지 않고 실제 박쥐 원본 뼈
   assert.doesNotMatch(sites,/id="skeleton"/,'removed skeleton spawn sites must not return');
   assert.doesNotMatch(server,/skeleton="초원 해골"|SKELETON_CLEAVE|SKELETON_THRUST/);
   assert.doesNotMatch(client,/species~="skeleton"|SKELETON_CLEAVE|SKELETON_THRUST/);
-  assert.equal((sites.match(/id="bat"/g)||[]).length,4,'four active bat habitats cover the corners');
-  assert.equal((sites.match(/id="wolf"/g)||[]).length,8,'eight exterior wolf habitats including alpha');
+  assert.equal((sites.match(/id="bat"/g)||[]).length,5,'four corner habitats plus original contract bat');
+  assert.equal((sites.match(/id="wolf"/g)||[]).length,9,'eight original exterior wolves and a contract wolf');
+  assert.match(sites,/id="bat"[^\n]*questIndex=2/,'contract bat must remain outside village');
+  assert.match(sites,/id="wolf"[^\n]*questIndex=3/,'contract wolf must remain outside village');
   assert.equal((sites.match(/alpha=true/g)||[]).length,1,'exactly one approved alpha wolf boss');
   assert.doesNotMatch(server,/enemy\.kind=="mushroom"|mushroom="포자 버섯"/);
   assert.match(config,/bat=105975567112263/,'keep approved original CC0 bat');
@@ -2056,7 +2062,7 @@ test('fantasy owner-removed golem stays absent and exterior alpha wolf finishes 
   assert.match(server,/if target\.isAlpha then recordMeadowQuest\(player,"BOSS_KILL"\) end/);
   assert.match(server,/if eventName~="BOSS_KILL" then return end/);
   const wolves=[...sites.matchAll(/\{id="wolf"[^\n]*?position=Vector3\.new\((-?\d+),(-?\d+),(-?\d+)\)/g)];
-  assert.equal(wolves.length,8);
+  assert.equal(wolves.length,9,'all approved exterior wolves including contract wolf');
   for(const [,x,y,z] of wolves){
     assert.equal(+x>=-280&&+x<=280&&+z>=-351&&+z<=-42,false,'wolf inside village');
   }
@@ -2081,10 +2087,10 @@ test('마력숲 공격 승인이 액션을 조기 중단하지 않고 늑대 원
   assert.match(approve,/finishMeadowSkillPose\(\)/);
   assert.match(client,/species=="wolf" and joint:IsA\("Bone"\) and not joints\[name\]:IsA\("Bone"\)/);
   assert.match(client,/local controller=actualRig and meadowMobMotion and meadowMobMotion\.BindJointPose/);
-  assert.match(client,/local wolfAction=row\.species=="wolf" and row\.controller/);
+  assert.match(client,/local quadrupedAction=\(row\.species=="wolf" or row\.species=="deer"\) and row\.controller/);
   assert.match(client,/mode=="ATTACK" and not row\.nativeTracks\.ATTACK/);
   assert.match(client,/if row\.playingTrack then row\.playingTrack:Stop\(\.1\);row\.playingTrack=nil end/);
-  assert.match(client,/row\.species=="wolf" and row\.controller and missing/);
+  assert.match(client,/\(row\.species=="wolf" or row\.species=="deer"\) and row\.controller and missing/);
   assert.match(client,/track\.Length<=0/);
   assert.match(client,/model:SetAttribute\("NativeCreatureRigMode","ORIGINAL_JOINT_RIG"\)/);
   assert.match(client,/row\.controller\.Step\(row\.poses,poseDt\)/);
