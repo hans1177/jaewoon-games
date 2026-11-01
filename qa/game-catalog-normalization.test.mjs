@@ -359,11 +359,14 @@ assert.equal(catalog.normalization?.automaticFeatureExpansionFreezeForbidden,tru
     assert.equal(game.canonical.sources.roblox.projectPath,'roblox-games/'+id);
     assert.equal(game.canonical.sources.web.playable,false,'HTML prototype is never promoted');
   }
-  for(const id of ['bug-defense','amusement-tycoon','daechung-rpg','survival']){
+  for(const id of ['bug-defense','amusement-tycoon','survival']){
     const game=sourceCatalog.games.find(game=>game.id===id);
+    assert(game,'remaining registered native game must exist: '+id);
     assert.equal(game.unityProjectPath,'unity-games/'+id);
     assert.equal(game.canonical.sources.unity.projectPath,'unity-games/'+id);
   }
+  assert.equal(sourceCatalog.games.some(game=>game.id==='daechung-rpg'),false,
+    'permanently removed Daechung RPG must not be restored to the catalog');
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const ui=vm.runInNewContext(renderer+';({developmentRows,setExposure(value){platformExposure=value}})',{
     document:{readyState:'loading',addEventListener(){}}
