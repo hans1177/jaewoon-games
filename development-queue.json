@@ -28,20 +28,13 @@
         "version": 1,
         "pass": true,
         "source": "design/deep-diver/2026-10-31/design-revised.json",
-        "date": "2026-10-31",
-        "releaseChecklist": {
-          "identity": true,
-          "coreLoop": true,
-          "sessionRules": true,
-          "signatureSystems": true,
-          "presentation": true
-        },
         "commonCoreReady": true,
         "platformProfiles": {
           "ROBLOX": true,
           "UNITY": true,
           "distinct": true
-        }
+        },
+        "migratedFromLegacy": false
       },
       "platformDesignProfiles": {
         "ROBLOX": {
@@ -59,7 +52,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-31T12:41:10.231Z",
-      "updatedAt": "2026-11-01T21:42:55.167Z",
+      "updatedAt": "2026-11-01T21:50:07.681Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -1355,7 +1348,7 @@
       "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-01T21:46:13.440Z",
+      "updatedAt": "2026-11-01T21:50:07.957Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -3667,9 +3660,405 @@
         "updatedAt": "2026-11-01T14:40:16.038Z"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-10-31T17:52:14.990Z"
+    },
+    {
+      "gameId": "cozy-island",
+      "seedId": "OWNER-DESIGN-COZY-ISLAND",
+      "gameName": "포근섬",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "status": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "bidirectionalAutoPair": false,
+      "requestEitherStartsBoth": false,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/cozy-island"
+      },
+      "robloxProjectPath": "roblox-games/cozy-island",
+      "targetSourcePath": "roblox-games/cozy-island",
+      "sourcePath": "roblox-games/cozy-island",
+      "designBaselineSource": "design/cozy-island/2026-10-25/design-revised.json",
+      "designDate": "2026-10-25",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/cozy-island/2026-10-25/design-revised.json",
+        "date": "2026-10-25",
+        "releaseChecklist": {
+          "identity": true,
+          "coreLoop": true,
+          "sessionRules": true,
+          "signatureSystems": true,
+          "presentation": true
+        },
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        }
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-10-25/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "artbookTiming": "PARALLEL_NATIVE_PRESENTATION_SUPPORT",
+      "ownerPreservationPresentationUpgrade": false,
+      "presentationFirstPass": null,
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "enqueuedAt": "2026-11-01T21:50:07.957Z",
+      "robloxPublicationTarget": {
+        "version": 3,
+        "gameId": "cozy-island",
+        "universeId": "10767445741",
+        "placeId": "116850096561713",
+        "verified": true,
+        "verifiedAt": "2026-10-30T10:41:35.784Z",
+        "lastVerifiedAt": "2026-10-30T10:41:35.784Z",
+        "source": "owner-dedicated-github-bootstrap",
+        "authority": "roblox-canonical-publication-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "PUBLISHED_PRIVATE"
+      },
+      "robloxSharedTargetCurrent": false,
+      "robloxFastMvpSupersededBy": null,
+      "robloxDedicatedTargetRegistryBinding": {
+        "version": 1,
+        "source": "roblox-dedicated-targets.json",
+        "restoredAt": "2026-11-01T21:50:07.957Z"
+      },
+      "updatedAt": "2026-11-01T21:50:07.957Z"
+    },
+    {
+      "gameId": "daechung-rpg",
+      "seedId": "OWNER-DESIGN-DAECHUNG-RPG",
+      "gameName": "5포탈 RPG: 던전 파티",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "status": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "bidirectionalAutoPair": false,
+      "requestEitherStartsBoth": false,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/daechung-rpg"
+      },
+      "robloxProjectPath": "roblox-games/daechung-rpg",
+      "targetSourcePath": "roblox-games/daechung-rpg",
+      "sourcePath": "roblox-games/daechung-rpg",
+      "designBaselineSource": "design/daechung-rpg/2026-10-26/design-revised.json",
+      "designDate": "2026-10-26",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/daechung-rpg/2026-10-26/design-revised.json",
+        "date": "2026-10-26",
+        "releaseChecklist": {
+          "identity": true,
+          "coreLoop": true,
+          "sessionRules": true,
+          "signatureSystems": true,
+          "presentation": true
+        },
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        }
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/daechung-rpg/2026-10-26/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "artbookTiming": "PARALLEL_NATIVE_PRESENTATION_SUPPORT",
+      "ownerPreservationPresentationUpgrade": false,
+      "presentationFirstPass": null,
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "enqueuedAt": "2026-11-01T21:50:07.957Z",
+      "robloxPublicationTarget": {
+        "version": 3,
+        "gameId": "daechung-rpg",
+        "universeId": "10767445769",
+        "placeId": "126302702438348",
+        "verified": true,
+        "verifiedAt": "2026-10-30T06:04:21.063Z",
+        "lastVerifiedAt": "2026-10-30T06:04:21.063Z",
+        "source": "owner-dedicated-github-bootstrap",
+        "authority": "roblox-canonical-publication-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "PUBLISHED_PRIVATE"
+      },
+      "robloxSharedTargetCurrent": false,
+      "robloxFastMvpSupersededBy": null,
+      "robloxDedicatedTargetRegistryBinding": {
+        "version": 1,
+        "source": "roblox-dedicated-targets.json",
+        "restoredAt": "2026-11-01T21:50:07.957Z"
+      },
+      "updatedAt": "2026-11-01T21:50:07.957Z"
+    },
+    {
+      "gameId": "horror-escape-room",
+      "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
+      "gameName": "심야 대탈출",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "status": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "bidirectionalAutoPair": false,
+      "requestEitherStartsBoth": false,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/horror-escape-room"
+      },
+      "robloxProjectPath": "roblox-games/horror-escape-room",
+      "targetSourcePath": "roblox-games/horror-escape-room",
+      "sourcePath": "roblox-games/horror-escape-room",
+      "designBaselineSource": "design/horror-escape-room/2026-10-25/design-revised.json",
+      "designDate": "2026-10-25",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/horror-escape-room/2026-10-25/design-revised.json",
+        "date": "2026-10-25",
+        "releaseChecklist": {
+          "identity": true,
+          "coreLoop": true,
+          "sessionRules": true,
+          "signatureSystems": true,
+          "presentation": true
+        },
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        }
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-10-25/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "artbookTiming": "PARALLEL_NATIVE_PRESENTATION_SUPPORT",
+      "ownerPreservationPresentationUpgrade": false,
+      "presentationFirstPass": null,
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "enqueuedAt": "2026-11-01T21:50:07.957Z",
+      "robloxPublicationTarget": {
+        "version": 3,
+        "gameId": "horror-escape-room",
+        "universeId": "10767445796",
+        "placeId": "98222620265768",
+        "verified": true,
+        "verifiedAt": "2026-10-30T06:04:21.063Z",
+        "lastVerifiedAt": "2026-10-30T06:04:21.063Z",
+        "source": "owner-dedicated-github-bootstrap",
+        "authority": "roblox-canonical-publication-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "PUBLISHED_PRIVATE"
+      },
+      "robloxSharedTargetCurrent": false,
+      "robloxFastMvpSupersededBy": null,
+      "robloxDedicatedTargetRegistryBinding": {
+        "version": 1,
+        "source": "roblox-dedicated-targets.json",
+        "restoredAt": "2026-11-01T21:50:07.957Z"
+      },
+      "updatedAt": "2026-11-01T21:50:07.957Z"
+    },
+    {
+      "gameId": "forgotten-continent",
+      "seedId": "AUTO-MISSING-DESIGN-FORGOTTEN-CONTINENT",
+      "gameName": "잊혀진 대륙 | 2D 생존",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "status": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "bidirectionalAutoPair": false,
+      "requestEitherStartsBoth": false,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/forgotten-continent"
+      },
+      "robloxProjectPath": "roblox-games/forgotten-continent",
+      "targetSourcePath": "roblox-games/forgotten-continent",
+      "sourcePath": "roblox-games/forgotten-continent",
+      "designBaselineSource": "design/forgotten-continent/2026-10-26/design-revised.json",
+      "designDate": "2026-10-26",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/forgotten-continent/2026-10-26/design-revised.json",
+        "date": "2026-10-26",
+        "releaseChecklist": {
+          "identity": true,
+          "coreLoop": true,
+          "sessionRules": true,
+          "signatureSystems": true,
+          "presentation": true
+        },
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        }
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/forgotten-continent/2026-10-26/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "artbookTiming": "PARALLEL_NATIVE_PRESENTATION_SUPPORT",
+      "ownerPreservationPresentationUpgrade": false,
+      "presentationFirstPass": null,
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "enqueuedAt": "2026-11-01T21:50:07.957Z",
+      "updatedAt": "2026-11-01T21:50:07.957Z"
+    },
+    {
+      "gameId": "baeksu-war",
+      "seedId": "OWNER-PRESERVE-BAEKSU-WAR-20261026",
+      "gameName": "백수대전쟁",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "status": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "bidirectionalAutoPair": false,
+      "requestEitherStartsBoth": false,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/baeksu-war"
+      },
+      "robloxProjectPath": "roblox-games/baeksu-war",
+      "targetSourcePath": "roblox-games/baeksu-war",
+      "sourcePath": "roblox-games/baeksu-war",
+      "designBaselineSource": "design/baeksu-war/2026-10-27/design-revised.json",
+      "designDate": "2026-10-27",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/baeksu-war/2026-10-27/design-revised.json",
+        "date": "2026-10-27",
+        "releaseChecklist": {
+          "identity": true,
+          "coreLoop": true,
+          "sessionRules": true,
+          "signatureSystems": true,
+          "presentation": true
+        },
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        }
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/baeksu-war/2026-10-27/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "artbookTiming": "PARALLEL_NATIVE_PRESENTATION_SUPPORT",
+      "ownerPreservationPresentationUpgrade": true,
+      "presentationFirstPass": "ASSET_ADAPTATION",
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "enqueuedAt": "2026-11-01T21:50:07.957Z",
+      "robloxPublicationTarget": {
+        "version": 3,
+        "gameId": "baeksu-war",
+        "universeId": "10773115989",
+        "placeId": "120481433333785",
+        "verified": true,
+        "verifiedAt": "2026-10-27T01:18:03+09:00",
+        "lastVerifiedAt": "2026-10-27T01:18:03+09:00",
+        "source": "owner-baeksu-war-existing-target-official-open-cloud-success",
+        "authority": "roblox-canonical-publication-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "PUBLISHED_PRIVATE"
+      },
+      "robloxSharedTargetCurrent": false,
+      "robloxFastMvpSupersededBy": null,
+      "robloxDedicatedTargetRegistryBinding": {
+        "version": 1,
+        "source": "roblox-dedicated-targets.json",
+        "restoredAt": "2026-11-01T21:50:07.957Z"
+      },
+      "updatedAt": "2026-11-01T21:50:07.957Z"
     }
   ],
-  "updatedAt": "2026-11-01T21:48:43.357Z",
+  "updatedAt": "2026-11-01T21:50:07.957Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
