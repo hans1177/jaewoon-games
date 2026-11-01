@@ -94,8 +94,8 @@ test('deer and wolf keep real source bones and documented Animator motion priori
     assert.ok(deerJson.animations.some(clip=>clip.name===name),'original deer clip: '+name);
   }
   const wolfBytes=fs.readFileSync(native.models.wolf.sourcePath);
-  assert.match(wolfBytes.toString('latin1'),/WolfArmature\\|Walk/);
-  assert.match(wolfBytes.toString('latin1'),/WolfArmature\\|Idle/);
+  assert.match(wolfBytes.toString('latin1'),/WolfArmature\|Walk/);
+  assert.match(wolfBytes.toString('latin1'),/WolfArmature\|Idle/);
   for(const joint of ['frontupperlegl','frontupperlegr','frontlowerlegl','frontlowerlegr',
       'backupperlegl','backupperlegr','backlowerlegl','backlowerlegr',
       'torso2','neck1','tail1']){
