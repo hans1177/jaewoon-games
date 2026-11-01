@@ -1,5 +1,5 @@
 {
-  "version": 598,
+  "version": 599,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -3653,8 +3653,25 @@
     "permanentProjectRemoval": {
       "source": "game-catalog.json#permanentRemovalPolicy",
       "ids": [
+        "animation-test",
+        "ant-simulator",
+        "baeksu-war",
+        "cozy-island",
+        "crystal-defense",
+        "daechung-rpg",
+        "egg-heist",
+        "forgotten-continent",
+        "horror-escape-room",
+        "lost-dawn",
+        "portal-rpg",
+        "seed-action-survival-rogu-echoes-of-the-lost-star",
         "seed-roblox-battleground-fight-welcome-to-bloxburg",
-        "seed-roblox-obby-party-minigam-tower-of-hell"
+        "seed-roblox-obby-party-minigam-tower-of-hell",
+        "simple-rpg",
+        "survival2",
+        "tekken",
+        "vibe-asset-demo",
+        "wildlife-motion-sample"
       ],
       "plannerAction": "HARD_EXCLUDE_AND_CANCEL_EXISTING_TASKS",
       "postReleaseRecoveryAllowed": false,
@@ -6641,7 +6658,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-28",
+  "updatedAt": "2026-11-02",
   "priorityTiers": [
     {
       "tier": 1,
@@ -6654,14 +6671,26 @@
   ],
   "primaryPlatformRole": "LEGACY_COMPATIBILITY_ONLY_NOT_SCHEDULING_PRIORITY",
   "permanentProjectRemoval": {
-    "version": 2,
+    "version": 3,
     "authority": "OWNER_DIRECTIVE_2026-10-20",
     "ids": [
+      "animation-test",
+      "ant-simulator",
+      "baeksu-war",
+      "cozy-island",
+      "crystal-defense",
+      "daechung-rpg",
+      "egg-heist",
+      "forgotten-continent",
+      "horror-escape-room",
+      "lost-dawn",
+      "portal-rpg",
+      "seed-action-survival-rogu-echoes-of-the-lost-star",
       "seed-roblox-battleground-fight-welcome-to-bloxburg",
       "seed-roblox-obby-party-minigam-tower-of-hell",
-      "ant-simulator",
-      "crystal-defense",
-      "animation-test",
+      "simple-rpg",
+      "survival2",
+      "tekken",
       "vibe-asset-demo",
       "wildlife-motion-sample"
     ],
