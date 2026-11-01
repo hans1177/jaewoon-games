@@ -4002,8 +4002,8 @@ remote.OnClientEvent:Connect(function(kind,payload,actionId,sequence,targetPosit
 end)
 
 
--- [맨손 액션] 승인된 타격 이벤트 하나에 원본 R15 관절 포즈 5개를 연속 재생한다.
--- 연타는 순수 시각 효과이며 서버 피해·적중·보상·쿨다운은 기존 그대로 유지한다.
+-- [맨손 액션] 연타는 승인된 입력마다 1~5단의 고유 R15 관절 모션을 하나씩 사용한다.
+-- 다른 무술의 5타 연속 시각 연출과 서버의 피해·적중·보상·쿨다운은 변경하지 않는다.
 local basicUnarmedMoves={
   "U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:ELBOW_RIGHT","U:FRONT_KICK_R",
 }
@@ -4121,8 +4121,11 @@ for _,style in pairs(martialSkillTracks) do
     beat.hitPose=martialShot(beat.hit)
   end
 end
--- 재생 중 다른 기술을 누르면 그 기술의 5연타를 마지막에 이어서 재생한다.
--- 새 서버 타격은 절대 만들지 않고 이미 승인된 입력의 시각 포즈만 예약한다.
+-- [연타 5단계] 같은 연타 버튼을 연속 입력할 때마다 1→2→3→4→5→1단.
+-- 승인된 공격 1회당 시각 모션 한 단계만 사용한다. 1.4초를 넘기면 첫 단계로 복귀.
+local activeCombatRushStage=0
+-- 재생 중 다른 기술을 누르면 해당 기술은 기존 순서에 예약한다.
+-- 서버 타격 횟수·피해를 늘리거나 허공 명중 판정을 만들지 않는다.
 local activeCombatMartialTrack=nil
 local activeMartialScope=nil
 local activeMartialApproved=false
@@ -4154,6 +4157,7 @@ local function finishNativeCombatMotion()
   combatRecoveryUntil = nil
   activeCombatCombo = nil
   activeCombatMartialTrack = nil
+  activeCombatRushStage = 0
   activeMartialScope = nil
   activeMartialApproved = false
   activeMartialFinisherPlayed = false
@@ -4168,6 +4172,11 @@ player.CharacterAdded:Connect(function()
   swordComboAt=0
   swordComboProfile=nil
   swordComboCharacter=nil
+  local rush=martialSkillTracks["meadow-unarmed-rush"]
+  rush.stage=0
+  rush.at=0
+  rush.character=nil
+  if meadowSkillNameplates[1] then meadowSkillNameplates[1].Text="연타" end
   predictedCombatUntil=0
   table.clear(pendingCombatMotion)
 end)
@@ -4236,17 +4245,24 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
     return
   end
   if activeCombatCharacter ~= character then finishNativeCombatMotion() end
-  -- 이미 시작된 5타를 입력/서버 확인 이벤트가 중간에서 끊지 않는다.
-  -- 입력 자체와 서버의 실제 명중·피해 처리는 계속 허용한다.
+  -- [연타 입력] 같은 버튼 재입력은 현재 시각 타를 끝내고 다음 단계로 전환한다.
+  -- 동일 입력의 서버 승인 재통지는 새 단계를 시작하지 않고 승인 상태만 동기화한다.
+  -- 다른 무술과 검의 기존 자동 5타/3단계 재생을 끊지 않는다.
+  local stagedRush=profile=="UNARMED" and approvedScope=="meadow-unarmed-rush"
+    and martialSkillTracks[approvedScope]~=nil
   if activeCombatCombo and activeCombatCharacter==character
     and os.clock()-activeCombatStartedAt < activeCombatCombo.duration then
-    if profile=="UNARMED" and martialSkillTracks[approvedScope]
-      and martialSkillTracks[approvedScope]~=activeCombatMartialTrack then
-      queuedMartialAction={scope=approvedScope,sequence=approvedEvent,confirmed=serverApproved==true}
-    elseif serverApproved==true and activeMartialScope==approvedScope then
-      activeMartialApproved=true
+    if stagedRush and serverApproved~=true then
+      finishNativeCombatMotion()
+    else
+      if profile=="UNARMED" and martialSkillTracks[approvedScope]
+        and martialSkillTracks[approvedScope]~=activeCombatMartialTrack then
+        queuedMartialAction={scope=approvedScope,sequence=approvedEvent,confirmed=serverApproved==true}
+      elseif serverApproved==true and activeMartialScope==approvedScope then
+        activeMartialApproved=true
+      end
+      return true
     end
-    return true
   end
   local approvedIndex=tonumber(approvedEvent) or 1
   local chosenMoves={}
@@ -4258,8 +4274,15 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
       and os.clock()-swordComboAt<=1.15) and (swordComboStage%3+1) or 1
   end
   local martialTrack=profile=="UNARMED" and martialSkillTracks[approvedScope] or nil
-  if martialTrack then
-    -- 각 버튼의 1~5타는 고정된 영화식 연출. 승인 시퀀스가 순서를 섞지 않는다.
+  local selectedRushStage=0
+  if stagedRush then
+    -- [수동 5단] 연속 터치 1회=원본 1개 포즈. 공용 스킬·검 모션 재생 순서와 독립.
+    local now=os.clock()
+    selectedRushStage=(martialTrack.character==character and now-(martialTrack.at or 0)<=1.4)
+      and ((martialTrack.stage or 0)%5+1) or 1
+    chosenMoves[1]=martialTrack.beats[selectedRushStage].id
+  elseif martialTrack then
+    -- 나머지 3종의 기존 5타 자동 연출은 그대로 유지한다.
     for i,beat in ipairs(martialTrack.beats) do chosenMoves[i]=beat.id end
   elseif profile=="UNARMED" then
     local offset=(approvedIndex-1)%#basicUnarmedMoves
@@ -4275,6 +4298,20 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   local ok,combo=pcall(combatMotionSource.CreateCombatCombo,
     profile,chosenMoves,{speed=martialTrack and martialTrack.speed or (profile=="UNARMED" and 1.22 or 1)})
   if not ok or not combo or not combo.steps or #combo.steps~=#chosenMoves then return end
+  if stagedRush then
+    martialTrack.stage=selectedRushStage
+    martialTrack.at=os.clock()
+    martialTrack.character=character
+    if meadowSkillNameplates[1] then
+      meadowSkillNameplates[1].Text="연타 "..selectedRushStage.."/5"
+    end
+    local lastRushInput=martialTrack.at
+    task.delay(1.4,function()
+      if martialTrack.at==lastRushInput and meadowSkillNameplates[1] then
+        meadowSkillNameplates[1].Text="연타"
+      end
+    end)
+  end
   if swordProfile then
     swordComboStage=swordStage
     swordComboAt=os.clock()
@@ -4290,6 +4327,7 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   activeCombatCharacter = character
   activeCombatCombo = combo
   activeCombatMartialTrack = martialTrack
+  activeCombatRushStage = selectedRushStage
   activeMartialScope = martialTrack and approvedScope or nil
   activeMartialApproved = serverApproved==true
   activeMartialFinisherPlayed = false
@@ -4304,7 +4342,8 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   character:SetAttribute("NativeCombatJointCount",activeCombatController.jointCount)
   character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
   character:SetAttribute("NativeCombatActionId", chosenMoves[1])
-  character:SetAttribute("NativeCombatStrikeCount", #chosenMoves)
+  character:SetAttribute("NativeCombatStrikeCount", stagedRush and 5 or #chosenMoves)
+  character:SetAttribute("NativeCombatRushStage",selectedRushStage)
   character:SetAttribute("NativeSwordComboStage",swordStage)
   character:SetAttribute("NativeCombatStyle", swordProfile and "SWORD_THREE_STRIKES"
     or martialTrack and martialTrack.name or "BASIC")
@@ -4614,14 +4653,14 @@ RunService.PreSimulation:Connect(function(dt)
       authorizedImpact=true,grounded=humanoid.FloorMaterial~=Enum.Material.Air,
       visualSpeed=humanoid.MoveDirection.Magnitude,
       mobileTier=nativeTouchEnabled and "LOW" or "HIGH",
-      comboContinuity=#activeCombatCombo.steps==5 and .82 or 0,
-      intensity=#activeCombatCombo.steps==5 and 1.5 or 1,secondary=.7,
+      comboContinuity=(#activeCombatCombo.steps==5 or activeCombatRushStage>0) and .82 or 0,
+      intensity=(#activeCombatCombo.steps==5 or activeCombatRushStage>0) and 1.5 or 1,secondary=.7,
     })
   end
   if activeCombatMartialTrack then
     -- 공통 잽/킥 반복 대신 4개 무술 × 5타의 독립된 실제 관절 키포즈를 샘플한다.
     -- 준비 자세에서 타격으로 폭발하고, 다음 타의 준비 자세로 연속 블렌딩한다.
-    local beat=activeCombatMartialTrack.beats[strikeIndex]
+    local beat=activeCombatMartialTrack.beats[activeCombatRushStage>0 and activeCombatRushStage or strikeIndex]
     local elapsed=timeInAction-currentStep.start
     local fromPose,toPose,alpha
     if elapsed<currentStep.ready then
@@ -4632,7 +4671,11 @@ RunService.PreSimulation:Connect(function(dt)
     elseif elapsed<currentStep.recoil then
       fromPose=beat.hitPose;toPose=beat.hitPose;alpha=0
     else
-      local nextBeat=activeCombatMartialTrack.beats[strikeIndex+1]
+      -- 수동 연타는 다음 버튼 입력 전에는 다음 타의 준비 포즈를 자동으로 실행하지 않는다.
+      local nextBeat=nil
+      if activeCombatRushStage==0 then
+        nextBeat=activeCombatMartialTrack.beats[strikeIndex+1]
+      end
       fromPose=beat.hitPose
       toPose=nextBeat and nextBeat.loadPose or nil
       alpha=filmEase((elapsed-currentStep.recoil)/math.max(.001,currentStep.duration-currentStep.recoil))
@@ -4674,7 +4717,8 @@ RunService.PreSimulation:Connect(function(dt)
   if strikeIndex~=activeStrikeTrailIndex then
     activeStrikeTrailIndex=strikeIndex
     if activeCombatCharacter then
-      activeCombatCharacter:SetAttribute("NativeCombatStrikeIndex",strikeIndex)
+      activeCombatCharacter:SetAttribute("NativeCombatStrikeIndex",
+        activeCombatRushStage>0 and activeCombatRushStage or strikeIndex)
     end
     stopStrikeTrail()
     local swordSwing=activeCombatCombo.profileId=="SWORD"
@@ -4734,7 +4778,8 @@ RunService.PreSimulation:Connect(function(dt)
   -- [5타 막타] 서버 승인·다섯 번째 접촉에서 원본 손발에 곡선 Beam 연출을 만든다.
   -- 네모 입자 스프라이트 대신 빛의 곡선 궤적을 사용하고, 임의 메시/파트는 만들지 않는다.
   if activeCombatMartialTrack and activeMartialApproved and not activeMartialFinisherPlayed
-    and strikeIndex==5 and timeInAction-currentStep.start>=currentStep.contact then
+    and (strikeIndex==5 or activeCombatRushStage==5)
+    and timeInAction-currentStep.start>=currentStep.contact then
     activeMartialFinisherPlayed=true
     local style=activeCombatMartialTrack
     local limbName=style.name=="TORNADO_TAEKWONDO" and "LeftFoot"
