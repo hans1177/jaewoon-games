@@ -170,7 +170,7 @@ test('Forest original village models register before private publishing without 
   const registry=JSON.parse(fs.readFileSync(new URL('../roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json',import.meta.url),'utf8'));
   const source=fs.readFileSync(new URL('../tools/baeksu-war-upload-meshes.mjs',import.meta.url),'utf8');
   assert.equal(registry.villagePrefabs.sourceVerified,true);
-  assert.equal(Object.keys(registry.villagePrefabs.models).length,19);
+  assert.equal(Object.keys(registry.villagePrefabs.models).length,23);
   assert.match(workflow,/Register approved Forest village originals through the existing asset pipeline/);
   assert.match(workflow,/python3 tools\/baeksu-war-author-meshes\.py -- \/tmp\/forest-village-assets --game-id=fantasy-survival/);
   assert.match(workflow,/node tools\/baeksu-war-upload-meshes\.mjs \/tmp\/forest-village-assets \/tmp\/forest-village-receipt\.json --game-id=fantasy-survival/);
