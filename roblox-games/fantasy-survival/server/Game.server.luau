@@ -137,6 +137,9 @@ local function createStartingMeadow()
   meadowTerrain:SetMaterialColor(Enum.Material.LeafyGrass,meadowPalette.leafyGrass)
   meadowTerrain:SetMaterialColor(Enum.Material.Ground,meadowPalette.ground)
   meadowTerrain:SetMaterialColor(Enum.Material.Rock,meadowPalette.rock)
+  -- [초원 자연색] 원래 Terrain만 이용해 습지와 마른 강가 재질을 구별한다.
+  meadowTerrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(91,105,88))
+  meadowTerrain:SetMaterialColor(Enum.Material.Sand,Color3.fromRGB(166,150,112))
   -- Existing stone gathering sites are terrain outcrops, not fake rock parts.
   for _, pos in ipairs({Vector3.new(-35,2,31),Vector3.new(11,2,-39),Vector3.new(-7,2,43)}) do
     meadowTerrain:FillBall(pos-Vector3.new(0,4.5,0),5,Enum.Material.Rock)
@@ -176,6 +179,21 @@ end
 meadowAtmosphere.Color=Color3.fromRGB(181,210,193)
 meadowAtmosphere.Decay=Color3.fromRGB(98,121,108)
 meadowAtmosphere.Glare=.10
+-- [시간대 색감] Roblox 기존 Lighting 효과 1개만 사용해 숲의 계절감과 아침/저녁 온도를 부여.
+local meadowColorGrade=Lighting:FindFirstChild("MeadowColorGrade")
+if meadowColorGrade and not meadowColorGrade:IsA("ColorCorrectionEffect") then
+  meadowColorGrade:Destroy()
+  meadowColorGrade=nil
+end
+if not meadowColorGrade then
+  meadowColorGrade=Instance.new("ColorCorrectionEffect")
+  meadowColorGrade.Name="MeadowColorGrade"
+  meadowColorGrade.Parent=Lighting
+end
+meadowColorGrade.Enabled=true
+meadowColorGrade.Brightness=.015
+meadowColorGrade.Contrast=.065
+meadowColorGrade.Saturation=.095
 local lastMeadowClimateTick=-1
 local lastMeadowWeather=""
 
@@ -215,6 +233,19 @@ local function updateMeadowClimate()
   meadowAtmosphere.Haze+=(forestHaze-meadowAtmosphere.Haze)*.12
   meadowAtmosphere.Color=meadowAtmosphere.Color:Lerp(
     airColor:Lerp(meadowPalette.leaves,.11),.12)
+  -- [날씨 공기감] 새벽/밤은 청록, 석양은 따뜻한 빛. 과한 명암과 반짝임은 피한다.
+  local tint=hour>=16.5 and hour<20.5 and Color3.fromRGB(255,230,204)
+    or period=="NIGHT" and Color3.fromRGB(205,225,240)
+    or period=="DAWN" and Color3.fromRGB(236,245,229)
+    or Color3.fromRGB(255,250,236)
+  if weather=="STORM" or weather=="RAIN" then
+    tint=tint:Lerp(Color3.fromRGB(205,226,241),weather=="STORM" and .38 or .2)
+  end
+  meadowColorGrade.TintColor=meadowColorGrade.TintColor:Lerp(tint,.12)
+  local desiredContrast=weather=="FOG" and .025 or .075
+  local desiredSaturation=weather=="FOG" and .035 or .11
+  meadowColorGrade.Contrast+=(desiredContrast-meadowColorGrade.Contrast)*.12
+  meadowColorGrade.Saturation+=(desiredSaturation-meadowColorGrade.Saturation)*.12
   local cover=weather=="STORM" and .94 or weather=="RAIN" and .79
     or weather=="FOG" and .67 or weather=="SNOW" and .76 or .22
   local density=weather=="STORM" and .86 or weather=="RAIN" and .66
@@ -1713,6 +1744,14 @@ task.defer(function()
       -- [수관 색 변화] 등록 CC0 텍스처·메시 그대로, 잎 표면만 숲의 녹색 음영으로 변주한다.
       -- 몸통과 나무 채집 모델의 판정·재질은 바꾸지 않는다.
       local leafTone=leafTones[(index%#leafTones)+1]
+      -- [자연림 색감] 기존 CC0 나무 메시의 잎만 위치에 따라 청록/황록/짙은 녹색으로.
+      if spec[1]<-230 then
+        leafTone=leafTone:Lerp(Color3.fromRGB(58,105,76),.34)
+      elseif spec[1]>220 and math.abs(spec[2])<175 then
+        leafTone=leafTone:Lerp(Color3.fromRGB(83,152,144),.3)
+      elseif spec[2]>190 then
+        leafTone=leafTone:Lerp(Color3.fromRGB(157,154,91),.26)
+      end
       for _,surface in ipairs(tree:GetDescendants())do
         if surface:IsA("MeshPart") and surface.Material==Enum.Material.Fabric then
           surface.Color=surface.Color:Lerp(leafTone,.33)
