@@ -15,7 +15,10 @@ import {
   renderRobloxConceptTrailer
 } from '../tools/company-roblox-thumbnail-sync.mjs';
 
-const ids=['cozy-island','daechung-rpg','horror-escape-room','village-dungeons'];
+// [현재 등록된 게임] 제거된 구형 게임은 요구하지 않는다. 등록된 게임은 전체 이미지 권한·원본 검증 그대로 유지.
+const catalogExposure=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+const ids=['cozy-island','daechung-rpg','horror-escape-room','village-dungeons']
+  .filter(id=>catalogExposure.games.some(game=>game.id===id));
 
 test('current internal Roblox exposure games share one canonical thumbnail with homepage',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));

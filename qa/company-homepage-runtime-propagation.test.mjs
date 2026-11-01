@@ -340,10 +340,13 @@ test('visible game titles stay aligned with Roblox project titles',()=>{
     'horror-escape-room':'심야 대탈출'
   };
   for(const [id,title] of Object.entries(expected)){
-    const project=JSON.parse(fs.readFileSync(`roblox-games/${id}/default.project.json`,'utf8'));
-    assert.equal(project.name,title);
     const game=(catalog.games||[]).find(row=>row.id===id);
-    if(game)assert.equal(game.name,title);
+    if(!game)continue; // [실제 게시 목록] 제거된 게임의 프로젝트 파일은 재생성하지 않는다.
+    const source=`roblox-games/${id}/default.project.json`;
+    assert.ok(fs.existsSync(source),'advertised Roblox project is missing: '+id);
+    const project=JSON.parse(fs.readFileSync(source,'utf8'));
+    assert.equal(project.name,title);
+    assert.equal(game.name,title);
   }
 });
 
