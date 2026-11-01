@@ -2961,6 +2961,8 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   -- 4초 간격, 현재 방어 중이 아닐 때 좌/우 실제 공간이 비어 있는 경우만 발동한다.
   if (defense.guardUntil or 0)<=now and now>=(defense.nextAutoDodgeAt or 0) then
     local chance=math.clamp(.06+(meadowProficiencyPower(player)/2.2)*.007,.067,.28)
+    -- [기동 숙련] 새로운 투자 단계에만 회피 확률 보너스 적용. 기본 확률은 보존.
+    chance=math.clamp(chance+math.clamp(readNumber(player,"MeadowTalentAgility",0),0,3)*.015,.067,.325)
     if math.random()<chance then
       local character,_,root=liveMeadowCharacter(player)
       if character and root then
@@ -3397,6 +3399,7 @@ local function meadowBolt(player)
     if wall and wall.Distance<delta.Magnitude-2 then return false end
     local damage=math.floor(12+meadowProficiencyPower(player)*1.8/2.2
       +readNumber(player,"WeaponTier",0)*4)
+      +2*math.clamp(readNumber(player,"MeadowTalentSigns",0),0,3)
     return applyMeadowDamage(player,enemy,damage)
   end)
 end
