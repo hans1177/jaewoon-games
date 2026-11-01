@@ -681,28 +681,38 @@ local function characterEquipmentSlot(label,order,iconCell)
   return value
 end
 local equippedWeapon=characterEquipmentSlot("주 무기",3,2)
-local equippedSecondary=characterEquipmentSlot("보조 무기",4,2)
-local equippedArmor=characterEquipmentSlot("방어구",5,3)
-local equippedAccessory=characterEquipmentSlot("장신구",6,6)
+local equippedSecondary=characterEquipmentSlot("장갑",4,3)
+local equippedArmor=characterEquipmentSlot("흉갑",5,3)
+local equippedLegs=characterEquipmentSlot("바지",6,3)
+local equippedFeet=characterEquipmentSlot("장화",7,3)
+local equippedAccessory=characterEquipmentSlot("장신구",8,6)
 local masteryHeading=Instance.new("TextLabel")
-masteryHeading.Name="MasteryHeading";masteryHeading.LayoutOrder=7
+masteryHeading.Name="MasteryHeading";masteryHeading.LayoutOrder=9
 masteryHeading.Size=UDim2.new(1,-8,0,30);masteryHeading.BackgroundTransparency=1
 masteryHeading.Font=Enum.Font.GothamBold;masteryHeading.TextSize=17
 masteryHeading.Text="숙  련  /  MASTERIES";masteryHeading.TextColor3=meadowGold
 masteryHeading.TextXAlignment=Enum.TextXAlignment.Left;masteryHeading.Parent=meadowPages[1]
-meadowLabels[1].LayoutOrder=8
+meadowLabels[1].LayoutOrder=10
 meadowLabels[1].TextColor3=meadowParchment
 meadowLabels[1].TextSize=14
 return function(character,humanoid,tool)
   characterHeroName.Text=player.DisplayName
-  characterHeroSummary.Text=string.format("체력   %d / %d\n기력   %d / 100\n무기 강화   +%d\n보스 처치   %d",
+  characterHeroSummary.Text=string.format("체력 %d/%d · 기력 %d/100\n장비 공격 +%d · 방어 +%d\n무기 강화 +%d · 보스 %d",
     humanoid and humanoid.Health or 0,humanoid and humanoid.MaxHealth or 100,
-    player:GetAttribute("MeadowStamina") or 0,
-    player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
-  equippedWeapon.Text=tool and tool.Name or "맨손"
-  equippedSecondary.Text="장착 슬롯 없음"
-  equippedArmor.Text="장착 기능 미지원"
-  equippedAccessory.Text="장착 기능 미지원"
+    player:GetAttribute("MeadowStamina") or 0,player:GetAttribute("MeadowGearAttack") or 0,
+    player:GetAttribute("MeadowGearDefense") or 0,player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
+  local catalog=Config.MeadowEquipment or {}
+  local function equippedName(slot)
+    local index=player:GetAttribute("MeadowEquip"..slot)
+    local item=typeof(index)=="number" and catalog[index] or nil
+    return item and item.Name or "비어 있음"
+  end
+  equippedWeapon.Text=equippedName("Weapon")..(tool and (" · "..tool.Name) or "")
+  equippedSecondary.Text=equippedName("Hands")
+  equippedArmor.Text=equippedName("Chest")
+  equippedLegs.Text=equippedName("Legs")
+  equippedFeet.Text=equippedName("Feet")
+  equippedAccessory.Text=equippedName("Accessory")
 end
 end)()
 local function renderMeadowPages()
@@ -763,6 +773,10 @@ local function renderMeadowPages()
   end
 end
 for _,name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(renderMeadowPages) end
+for _,key in ipairs({"MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs",
+  "MeadowEquipFeet","MeadowEquipAccessory","MeadowGearAttack","MeadowGearDefense"})do
+  player:GetAttributeChangedSignal(key):Connect(renderMeadowPages)
+end
 player:GetAttributeChangedSignal("RunActive"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("QuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestStage"):Connect(renderMeadowPages)
@@ -1026,13 +1040,23 @@ local parchment=meadowParchment
 local gold=meadowGold
 local stone=Color3.fromRGB(40,38,40)
 local muted=Color3.fromRGB(163,163,157)
-local categories={"전체","재료","기록","재화","장비"}
+local categories={"전체","무기","갑옷","장신구","소모품","재료","기록","재화"}
 local data={
   {key="Wood",name="나무",category="재료",icon=4,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 기존 무기 강화에 사용돼."},
   {key="Stone",name="돌",category="재료",icon=4,color=Color3.fromRGB(169,191,200),description="바위에서 채집한 돌. 기존 무기 강화에 사용돼."},
   {key="ResearchRecords",name="연구 일지",category="기록",icon=5,color=Color3.fromRGB(221,183,111),description="메인 의뢰에서 발견한 연구 기록. 획득한 내용은 저널에 보관돼."},
   {key="Coins",name="소지금",category="재화",icon=4,color=Color3.fromRGB(226,191,92),description="서버에 기록된 현재 소지금."},
 }
+-- [장비 도감] 모든 제작법을 현재 가방에 표시하고 소유/장착은 서버 속성만 신뢰한다.
+for index,gear in ipairs(Config.MeadowEquipment or {})do
+  data[#data+1]={key="rpg-gear:"..gear.Id,name=gear.Name,category=gear.Category,icon=gear.Icon or 3,
+    color=gear.Attack>0 and Color3.fromRGB(218,145,111) or Color3.fromRGB(167,197,222),
+    description=gear.Desc,gear=gear,index=index}
+end
+for _,tonic in ipairs(Config.MeadowConsumables or {})do
+  data[#data+1]={key="rpg-tonic:"..tonic.Id,name=tonic.Name,category="소모품",icon=tonic.Icon or 7,
+    color=Color3.fromRGB(136,207,150),description=tonic.Desc,tonic=tonic}
+end
 local backpack=player:FindFirstChildOfClass("Backpack") or player:FindFirstChild("Backpack")
 local filterBar,filterButtons=CommonUI.CreateFilterBar({name="WitcherItemCategories",filters=categories,selectedIndex=1})
 filterBar.LayoutOrder=2;filterBar.Size=UDim2.new(1,-8,0,48);filterBar.Parent=meadowPages[2]
@@ -1044,7 +1068,7 @@ gridLayout.SortOrder=Enum.SortOrder.LayoutOrder;gridLayout.CellPadding=UDim2.fro
 gridLayout.Parent=grid
 local detail=Instance.new("Frame")
 detail.Name="WitcherItemDetails";detail.LayoutOrder=4
-detail.Size=UDim2.new(1,-8,0,170);detail.BorderSizePixel=0;detail.BackgroundColor3=stone
+detail.Size=UDim2.new(1,-8,0,214);detail.BorderSizePixel=0;detail.BackgroundColor3=stone
 detail.Parent=meadowPages[2]
 local border=Instance.new("UIStroke")
 border.Color=gold;border.Transparency=.16;border.Thickness=1.4;border.Parent=detail
@@ -1055,24 +1079,37 @@ title.TextColor3=gold;title.Font=Enum.Font.GothamBold;title.TextSize=17
 title.TextXAlignment=Enum.TextXAlignment.Left;title.Parent=detail
 local description=Instance.new("TextLabel")
 description.Name="SelectedItemDescription";description.Position=UDim2.fromOffset(12,40)
-description.Size=UDim2.new(1,-24,0,68);description.BackgroundTransparency=1
+description.Size=UDim2.new(1,-24,0,112);description.BackgroundTransparency=1
 description.Font=Enum.Font.GothamMedium;description.TextColor3=parchment;description.TextSize=13
 description.TextWrapped=true;description.TextXAlignment=Enum.TextXAlignment.Left
 description.TextYAlignment=Enum.TextYAlignment.Top;description.Parent=detail
 local equip=CommonUI.CreatePrimaryButton({name="WitcherEquipTool",text="선택 장비 착용",minHeight=48})
-equip.Position=UDim2.fromOffset(12,115);equip.Size=UDim2.new(1,-24,0,46)
+equip.Position=UDim2.fromOffset(12,158);equip.Size=UDim2.new(.5,-16,0,48)
 equip.BackgroundColor3=Color3.fromRGB(91,62,44);equip.Visible=false;equip.Parent=detail
+local secondary=CommonUI.CreatePrimaryButton({name="WitcherSecondaryItemAction",text="소모품 조합",minHeight=48})
+secondary.Position=UDim2.new(.5,4,0,158);secondary.Size=UDim2.new(.5,-16,0,48)
+secondary.BackgroundColor3=Color3.fromRGB(67,72,62);secondary.Visible=false;secondary.Parent=detail
 local itemCards={}
 local itemRows={}
 local selectedKey="Wood"
 local category="전체"
 local function owned(item)
-  if typeof(item.key)=="Instance" then
-    return item.key.Parent~=nil and 1 or 0
+  if item.gear then
+    local mask=math.max(0,tonumber(player:GetAttribute("MeadowGearOwned")) or 0)
+    return bit32.band(mask,bit32.lshift(1,item.index-1))~=0 and 1 or 0
   end
+  if item.tonic then
+    local key=item.tonic.Id=="herbal_tonic" and "MeadowPotionHealth" or "MeadowPotionStamina"
+    return math.max(0,tonumber(player:GetAttribute(key)) or 0)
+  end
+  if typeof(item.key)=="Instance" then return item.key.Parent~=nil and 1 or 0 end
   return math.max(0,tonumber(player:GetAttribute(item.key)) or 0)
 end
 local function itemValue(item)
+  if item.gear then
+    return owned(item)>0 and (player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index and "장착 중" or "보유") or "제작 가능"
+  end
+  if item.tonic then return tostring(math.floor(owned(item))).."개" end
   if typeof(item.key)=="Instance" then return item.key.Parent==player.Character and "장착 중" or "보유" end
   if item.key=="ResearchRecords" then return tostring(math.min(owned(item),#(Config.StoryRecords or {}))).."/"..tostring(#(Config.StoryRecords or {})) end
   return tostring(math.floor(owned(item)))
@@ -1081,20 +1118,36 @@ local function redrawSelection()
   local item=itemRows[selectedKey]
   if not item then
     title.Text="선택된 아이템 없음";description.Text="해당 분류에 보유 중인 아이템이 없어."
-    equip.Visible=false
+    equip.Visible=false;secondary.Visible=false
     return
   end
   title.Text=item.name.."  /  "..item.category
-  description.Text="소지 / 상태   "..itemValue(item).."\n\n"..item.description
+  local recipe=item.gear or item.tonic
+  local cost=recipe and string.format("제작: 나무 %d · 돌 %d · 재화 %d",recipe.Wood or 0,recipe.Stone or 0,recipe.Coins or 0) or ""
+  local stats=item.gear and string.format("공격 +%d  ·  방어 +%d\n",item.gear.Attack or 0,item.gear.Defense or 0) or ""
+  local feedback=player:GetAttribute("MeadowGearMessage")
+  description.Text="소지 / 상태   "..itemValue(item).."\n"..stats..(cost~="" and cost.."\n" or "")..
+    item.description..(recipe and typeof(feedback)=="string" and ("\n"..feedback) or "")
+  secondary.Visible=item.tonic~=nil
   for key,card in pairs(itemCards)do
     card.border.Color=key==selectedKey and gold or Color3.fromRGB(92,83,68)
     card.border.Thickness=key==selectedKey and 2 or 1
   end
-  equip.Visible=typeof(item.key)=="Instance"
+  equip.Visible=item.gear~=nil or item.tonic~=nil or typeof(item.key)=="Instance"
   if equip.Visible then
-    local equipped=item.key.Parent==player.Character
-    equip.Text=equipped and "현재 장착 중" or "선택 장비 착용"
-    equip.Active=not equipped and player:GetAttribute("ProfileReady")==true
+    if item.gear then
+      local has=owned(item)>0
+      local worn=player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index
+      equip.Text=not has and "장비 제작" or worn and "장착 해제" or "장착"
+      equip.Active=player:GetAttribute("ProfileReady")==true
+    elseif item.tonic then
+      equip.Text="물약 사용"
+      equip.Active=owned(item)>0 and player:GetAttribute("ProfileReady")==true
+    else
+      local equipped=item.key.Parent==player.Character
+      equip.Text=equipped and "현재 장착 중" or "장착"
+      equip.Active=not equipped and player:GetAttribute("ProfileReady")==true
+    end
     equip.AutoButtonColor=equip.Active
   end
 end
@@ -1140,7 +1193,7 @@ local function renderInventory()
     if not holder then return end
     for _,tool in ipairs(holder:GetChildren())do
       if tool:IsA("Tool") then
-        actual[#actual+1]={key=tool,name=tool.Name,category="장비",icon=2,
+        actual[#actual+1]={key=tool,name=tool.Name,category="무기",icon=2,
           color=Color3.fromRGB(194,208,230),description="실제 가방 또는 캐릭터에 존재하는 장비. 착용은 Roblox 기존 장착 기능을 사용해."}
       end
     end
@@ -1163,7 +1216,7 @@ local function renderInventory()
       card.name.Text=item.name
       card.count.Text=itemValue(item)
       card.count.TextColor3=item.color
-      local show=(category=="전체" or category==item.category) and (typeof(item.key)=="Instance" or owned(item)>0 or category=="전체")
+      local show=(category=="전체" or category==item.category) and (item.gear~=nil or item.tonic~=nil or typeof(item.key)=="Instance" or owned(item)>0 or category=="전체")
       card.button.Visible=show
       card.button.BackgroundColor3=owned(item)>0 and Color3.fromRGB(38,36,39) or Color3.fromRGB(25,25,27)
       if show and not firstVisible then firstVisible=item.key end
@@ -1189,13 +1242,28 @@ for index,button in ipairs(filterButtons)do
   button.BackgroundColor3=index==1 and Color3.fromRGB(105,70,45) or Color3.fromRGB(35,33,34)
 end
 equip.Activated:Connect(function()
-  local tool=selectedKey
-  if typeof(tool)~="Instance" or not tool:IsA("Tool") or not backpack or tool.Parent~=backpack then return end
   if player:GetAttribute("ProfileReady")~=true then return end
-  local human=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-  if not human or human.Health<=0 then return end
-  human:EquipTool(tool)
+  local item=itemRows[selectedKey]
+  if not item then return end
+  if item.gear then
+    local op=owned(item)<1 and "craft" or
+      (player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index and "unequip" or "equip")
+    remote:FireServer("meadow:rpg:gear:"..op..":"..item.gear.Id)
+  elseif item.tonic then
+    remote:FireServer("meadow:rpg:tonic:use:"..item.tonic.Id)
+  else
+    local tool=selectedKey
+    if typeof(tool)~="Instance" or not tool:IsA("Tool") or not backpack or tool.Parent~=backpack then return end
+    local human=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+    if human and human.Health>0 then human:EquipTool(tool) end
+  end
   renderInventory()
+end)
+secondary.Activated:Connect(function()
+  local item=itemRows[selectedKey]
+  if item and item.tonic and player:GetAttribute("ProfileReady")==true then
+    remote:FireServer("meadow:rpg:tonic:craft:"..item.tonic.Id)
+  end
 end)
 local function watchBackpack(bag)
   if not bag or not bag:IsA("Backpack") then return end
@@ -1215,7 +1283,9 @@ if player.Character then
   player.Character.ChildAdded:Connect(renderInventory)
   player.Character.ChildRemoved:Connect(renderInventory)
 end
-for _,name in ipairs({"Wood","Stone","Coins","ResearchRecords","ProfileReady"})do
+for _,name in ipairs({"Wood","Stone","Coins","ResearchRecords","ProfileReady","MeadowGearOwned",
+  "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
+  "MeadowEquipAccessory","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)
 end
 renderInventory()
@@ -1248,10 +1318,64 @@ local skillInfo={
   ["meadow-unarmed-kick"]={"무예","회전 발차기를 사용하는 기존 맨손 공격.",2},
   ["meadow-unarmed-elbow"]={"무예","팔꿈치와 무릎을 이용한 근접 연계 공격.",2},
 }
+-- [스킬 성장] 숙련도 50마다 1점. 기존 공격·저장 구조를 변경하지 않고 계열당 3단계.
+local talentPanel=Instance.new("Frame")
+talentPanel.Name="WitcherTalents";talentPanel.LayoutOrder=2
+talentPanel.Size=UDim2.new(1,-8,0,194);talentPanel.BackgroundTransparency=1;talentPanel.Parent=meadowPages[7]
+local talentHeader=Instance.new("TextLabel")
+talentHeader.Name="TalentPoints";talentHeader.Size=UDim2.new(1,0,0,30)
+talentHeader.BackgroundTransparency=1;talentHeader.Font=Enum.Font.GothamBold;talentHeader.TextSize=16
+talentHeader.TextColor3=gold;talentHeader.TextXAlignment=Enum.TextXAlignment.Left
+talentHeader.Parent=talentPanel
+local talentGrid=Instance.new("Frame")
+talentGrid.Name="TalentBranches";talentGrid.Position=UDim2.fromOffset(0,34)
+talentGrid.Size=UDim2.new(1,0,0,156);talentGrid.BackgroundTransparency=1;talentGrid.Parent=talentPanel
+local talentLayout=Instance.new("UIGridLayout")
+talentLayout.SortOrder=Enum.SortOrder.LayoutOrder
+talentLayout.CellPadding=UDim2.fromOffset(8,8);talentLayout.Parent=talentGrid
+local talentButtons={}
+for index,branch in ipairs(Config.MeadowTalentSchools or {})do
+  local b=Instance.new("TextButton")
+  b.Name="Talent_"..branch.Id;b.LayoutOrder=index;b.TextWrapped=true
+  b.Font=Enum.Font.GothamBold;b.TextSize=13;b.TextColor3=parchment
+  b.BackgroundColor3=Color3.fromRGB(37,36,40);b.BorderSizePixel=0;b.Parent=talentGrid
+  local stroke=Instance.new("UIStroke")
+  stroke.Color=skillColors[branch.Category] or gold;stroke.Parent=b
+  talentButtons[#talentButtons+1]={button=b,branch=branch}
+  b.Activated:Connect(function()
+    if player:GetAttribute("ProfileReady")==true then
+      remote:FireServer("meadow:rpg:talent:learn:"..branch.Id)
+    end
+  end)
+end
+local function layoutTalents()
+  local w=talentGrid.AbsoluteSize.X
+  if w<=0 then return end
+  local columns=w>=560 and 4 or 2
+  talentLayout.CellSize=UDim2.fromOffset(math.floor((w-(columns-1)*8)/columns),columns==4 and 143 or 70)
+end
+talentGrid:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutTalents)
+local function renderTalents()
+  local spent=0
+  for _,entry in ipairs(talentButtons)do
+    local level=math.clamp(tonumber(player:GetAttribute("MeadowTalent"..entry.branch.Id)) or 0,0,3)
+    spent+=level
+    entry.button.Text=entry.branch.Name.."  "..level.."/3\n"..entry.branch.Desc
+  end
+  local points=math.floor(math.max(0,tonumber(player:GetAttribute("CombatProficiency")) or 0)/50)
+  talentHeader.Text="전투 숙련 보상 · 남은 기술 점수 "..math.max(0,points-spent)
+  talentPanel.Size=UDim2.new(1,-8,0,talentGrid.AbsoluteSize.X>=560 and 190 or 194)
+end
+for _,name in ipairs({"CombatProficiency","MeadowTalentMartial","MeadowTalentSigns",
+  "MeadowTalentDefense","MeadowTalentAgility","MeadowGearRevision"})do
+  player:GetAttributeChangedSignal(name):Connect(renderTalents)
+end
+renderTalents()
+layoutTalents()
 local skillBar,skillButtons=CommonUI.CreateFilterBar({name="WitcherSkillCategories",filters=skillCategories,selectedIndex=1})
-skillBar.LayoutOrder=2;skillBar.Size=UDim2.new(1,-8,0,48);skillBar.Parent=meadowPages[7]
+skillBar.LayoutOrder=3;skillBar.Size=UDim2.new(1,-8,0,48);skillBar.Parent=meadowPages[7]
 local skillGrid=Instance.new("Frame")
-skillGrid.Name="WitcherSkillTree";skillGrid.LayoutOrder=3
+skillGrid.Name="WitcherSkillTree";skillGrid.LayoutOrder=4
 skillGrid.Size=UDim2.new(1,-8,0,100);skillGrid.BackgroundTransparency=1;skillGrid.Parent=meadowPages[7]
 local skillLayout=Instance.new("UIGridLayout")
 skillLayout.SortOrder=Enum.SortOrder.LayoutOrder
@@ -1267,7 +1391,7 @@ local function layoutSkills()
 end
 skillGrid:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutSkills)
 local skillDetail=Instance.new("Frame")
-skillDetail.Name="WitcherSkillDetails";skillDetail.LayoutOrder=4
+skillDetail.Name="WitcherSkillDetails";skillDetail.LayoutOrder=5
 skillDetail.Size=UDim2.new(1,-8,0,194);skillDetail.BorderSizePixel=0
 skillDetail.BackgroundColor3=stone;skillDetail.Parent=meadowPages[7]
 local skillBorder=Instance.new("UIStroke");skillBorder.Color=gold
