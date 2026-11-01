@@ -1224,12 +1224,17 @@ local function createMeadowVillage()
   local villagers={
     {id="Elder",name="촌장 나린",role="ELDER",location=Vector3.new(-7,5,-109),
       skin=Color3.fromRGB(208,165,132),cloth=Color3.fromRGB(91,106,83),pants=Color3.fromRGB(72,65,54)},
-    {id="Herbalist",name="약초상 미라",role="HERBALIST",location=Vector3.new(-25,5,-124),
-      skin=Color3.fromRGB(220,177,144),cloth=Color3.fromRGB(77,131,102),pants=Color3.fromRGB(100,82,69)},
-    {id="Tracker",name="추적자 라온",role="TRACKER",location=Vector3.new(22,5,-128),
-      skin=Color3.fromRGB(191,147,114),cloth=Color3.fromRGB(115,87,65),pants=Color3.fromRGB(67,68,69)},
-    {id="Guard",name="경비병 아린",role="GUARD",location=Vector3.new(10,5,-145),
-      skin=Color3.fromRGB(201,157,126),cloth=Color3.fromRGB(95,103,123),pants=Color3.fromRGB(62,70,81)},
+    -- [서쪽 골목] 약초상은 서쪽 숲길로 향하는 입구에, 동쪽 추적자는 동문 갈림길에 배치.
+    {id="Herbalist",name="약초상 미라",role="HERBALIST",location=Vector3.new(-68,5,-122),
+      skin=Color3.fromRGB(220,177,144),cloth=Color3.fromRGB(77,131,102),pants=Color3.fromRGB(100,82,69),
+      patrolOffsets={Vector3.new(-12,0,-4),Vector3.new(10,0,3),Vector3.zero}},
+    {id="Tracker",name="추적자 라온",role="TRACKER",location=Vector3.new(69,5,-129),
+      skin=Color3.fromRGB(191,147,114),cloth=Color3.fromRGB(115,87,65),pants=Color3.fromRGB(67,68,69),
+      patrolOffsets={Vector3.new(13,0,-3),Vector3.new(-9,0,4),Vector3.zero}},
+    -- [마을 남쪽 중심로] 경비병은 남쪽 주거/농경 구역 진입부를 순찰한다.
+    {id="Guard",name="경비병 아린",role="GUARD",location=Vector3.new(-2,5,-188),
+      skin=Color3.fromRGB(201,157,126),cloth=Color3.fromRGB(95,103,123),pants=Color3.fromRGB(62,70,81),
+      patrolOffsets={Vector3.new(6,0,-15),Vector3.new(-8,0,6),Vector3.zero}},
   }
   local readyCount=0
   for _,spec in ipairs(villagers) do
@@ -1243,30 +1248,6 @@ local function createMeadowVillage()
     end
     task.wait(.1)
   end
-  -- [동·서문 여행 안내] 실제 R15 주민을 외곽 갈림길에 배치해 맵 깊숙한 지역을 안내한다.
-  -- 의뢰 증인 4명과 의뢰 좌표, 주민 필수 숫자/보상/저장 데이터는 바꾸지 않는다.
-  local guideCount=0
-  for _,guide in ipairs({
-    {id="WestGuide",name="서쪽 숲길 안내인",role="ROUTE_GUIDE",
-      location=Vector3.new(-225,5,-191),skin=Color3.fromRGB(201,163,137),
-      cloth=Color3.fromRGB(78,106,82),pants=Color3.fromRGB(76,72,57),
-      patrolOffsets={Vector3.new(-12,0,-2),Vector3.new(6,0,1),Vector3.zero},
-      hint="서쪽 길을 따라 마을 밖으로 나가면 우두머리 늑대의 숲길이 나와. 북서 끝까지 올라가면 박쥐 서식지가 있고, 외곽을 남쪽으로 돌면 깊은 숲에 도착해."},
-    {id="EastGuide",name="동쪽 물길 안내인",role="ROUTE_GUIDE",
-      location=Vector3.new(222,5,-194),skin=Color3.fromRGB(190,150,120),
-      cloth=Color3.fromRGB(95,104,131),pants=Color3.fromRGB(67,73,69),
-      patrolOffsets={Vector3.new(13,0,0),Vector3.new(-6,0,-2),Vector3.zero},
-      hint="동쪽 숲으로 나가려면 남쪽 농장길을 거쳐 개울 아래쪽으로 돌아가. 북동쪽 모서리를 살펴본 뒤 동쪽 외곽 길을 따라 남동 숲까지 내려갈 수 있어."},
-  }) do
-    local guideNpc=villageNativeNpc(guide)
-    if guideNpc and villagePrompt(guideNpc,guide.name,"길 안내받기",function(player)
-      villageDialogue(player,guide.name,guide.hint)
-    end) then
-      guideCount+=1
-    end
-    task.wait(.1)
-  end
-  gameWorld:SetAttribute("MeadowVillageRouteGuideCount",guideCount)
   -- [위치별 사건 단서] 각 사건에 실제 조사 지점 1곳만 둔다.
   local evidenceCount=0
   for contractIndex,contract in ipairs(Config.VillageContracts) do
