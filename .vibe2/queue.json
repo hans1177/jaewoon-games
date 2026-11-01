@@ -313,7 +313,7 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "cancelled",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
@@ -345,7 +345,8 @@
       "sourceRoot": "roblox-games/simple-rpg",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "roblox"
+      "shard": "roblox",
+      "cancellationReason": "OWNER_PERMANENT_REMOVAL"
     },
     {
       "id": "daechung-rpg-region-controls-4-7",
@@ -360,7 +361,7 @@
       "dependencies": [],
       "priority": "high",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "cancelled",
       "retries": 3,
       "maxRetries": null,
       "ownerDirective": false,
@@ -383,7 +384,8 @@
       "speculativeEligible": false,
       "estimatedRisk": "low",
       "shard": "unity",
-      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "cancellationReason": "OWNER_PERMANENT_REMOVAL"
     },
     {
       "id": "daechung-rpg-save-null-guards",
@@ -398,7 +400,7 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "cancelled",
       "retries": 3,
       "maxRetries": null,
       "ownerDirective": false,
@@ -419,7 +421,8 @@
       "speculativeEligible": false,
       "estimatedRisk": "low",
       "shard": "unity",
-      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "cancellationReason": "OWNER_PERMANENT_REMOVAL"
     },
     {
       "id": "daechung-rpg-motion-routine-safety",
@@ -434,7 +437,7 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "cancelled",
       "retries": 3,
       "maxRetries": null,
       "ownerDirective": false,
@@ -455,7 +458,8 @@
       "speculativeEligible": false,
       "estimatedRisk": "low",
       "shard": "unity",
-      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "cancellationReason": "OWNER_PERMANENT_REMOVAL"
     },
     {
       "id": "insect-survival-explicit-maintenance-eb-games-insect-survival-insect-survival-28-html",
@@ -694,7 +698,7 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "cancelled",
       "retries": 3,
       "maxRetries": null,
       "ownerDirective": false,
@@ -723,7 +727,8 @@
       "speculativeEligible": false,
       "estimatedRisk": "medium",
       "shard": "web",
-      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "cancellationReason": "OWNER_PERMANENT_REMOVAL"
     },
     {
       "id": "seed-casual-realm-weaver-diagnostic-TOUCH-ACTION-UNSPECIFIED-index-html",
@@ -1008,7 +1013,7 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "cancelled",
       "retries": 3,
       "maxRetries": null,
       "ownerDirective": false,
@@ -1037,7 +1042,8 @@
       "speculativeEligible": false,
       "estimatedRisk": "medium",
       "shard": "web",
-      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "cancellationReason": "OWNER_PERMANENT_REMOVAL"
     },
     {
       "id": "seed-casual-realm-weaver-owner-full-web-game-rebuild-v1",
@@ -1754,7 +1760,7 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "cancelled",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
@@ -1778,7 +1784,8 @@
       "sourceRoot": "roblox-games/simple-rpg",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
-      "shard": "roblox"
+      "shard": "roblox",
+      "cancellationReason": "OWNER_PERMANENT_REMOVAL"
     }
   ]
 }
