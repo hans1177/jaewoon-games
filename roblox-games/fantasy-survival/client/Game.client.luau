@@ -3946,23 +3946,24 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
     aura.OutlineTransparency=reducedEffects and .65 or .19
     aura.Parent=character
     debris:AddItem(aura,1.12)
-    -- [1단 파랑/2단 황금/3단 착지 충격] 공용 회피 링과 파편 폭발을 단계별로 방출.
+    -- [회피 5단] 슬립/페인트/스텝/위빙/덤블링에 기존 공용 파동을 단계별로 연동.
     if meadowCommonVFX and type(meadowCommonVFX.Create)=="function"
       and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
-      for index,delaySec in ipairs({.06,.36,.82}) do
+      for index,delaySec in ipairs({.05,.23,.44,.65,.96}) do
         task.delay(delaySec,function()
           if not rootPart.Parent or not character.Parent then return end
-          local color=index==2 and Color3.fromRGB(255,210,127) or Color3.fromRGB(117,214,255)
-          local accent=index==2 and Color3.fromRGB(255,153,77) or Color3.fromRGB(239,249,255)
+          local color=index==5 and Color3.fromRGB(255,222,155)
+            or index%2==0 and Color3.fromRGB(255,210,127) or Color3.fromRGB(117,214,255)
+          local accent=index%2==0 and Color3.fromRGB(255,153,77) or Color3.fromRGB(239,249,255)
           local ok,err=pcall(meadowCommonVFX.Create,
-            index==3 and "SHAPE_BURST" or "DODGE_EVASION_PULSE",{
+            index==5 and "SHAPE_BURST" or "DODGE_EVASION_PULSE",{
               parent=workspace,cframe=rootPart.CFrame*CFrame.new(0,-1.55,0),
               duration=reducedEffects and .21 or .35,
               color=color,accent=accent,
-              startDiameter=index==3 and 2.2 or 1.1,
-              endDiameter=reducedEffects and 3.4 or (index==3 and 8.4 or 5.3),
+              startDiameter=index==5 and 2.2 or 1.1,
+              endDiameter=reducedEffects and 3.4 or (index==5 and 8.4 or 5.3),
               startSize=.42,endSize=reducedEffects and .9 or 2.1,
-              count=reducedEffects and 2 or (index==3 and 11 or 7),
+              count=reducedEffects and 2 or (index==5 and 11 or 7),
               reducedMotion=reducedEffects,
             })
           if not ok then warn("마력숲 회피 파동 오류: "..tostring(err)) end
@@ -4458,45 +4459,47 @@ RunService.PreSimulation:Connect(function(dt)
   if isDodge then
     local sign=actionId=="skill-meadow-dodge-left" and -1 or 1
     local leadLeft=sign<0
-    -- [1단] 순간 숙임 → [2단] 양다리 옆도약 → [3단] 전방 360도 덤블링 후 착지.
-    -- 세 장면은 서버가 승인한 회피 한 번의 연출이며 무적·이동 판정을 추가하지 않는다.
-    local first=math.sin(math.pi*math.clamp(phase/.34,0,1))
-    local second=math.sin(math.pi*math.clamp((phase-.29)/.38,0,1))
-    local flip=math.clamp((phase-.60)/.31,0,1)
+    -- [5단 회피 스킬] 1 슬립 → 2 역방향 페인트 → 3 크로스 스텝 → 4 낮은 위빙 → 5 덤블링 착지.
+    -- 단일 승인 기술의 연속 동작. 기존 서버 7스터드·.48초 무적·4초 쿨타임 그대로.
+    local first=math.sin(math.pi*math.clamp(phase/.23,0,1))
+    local second=math.sin(math.pi*math.clamp((phase-.17)/.24,0,1))
+    local third=math.sin(math.pi*math.clamp((phase-.37)/.24,0,1))
+    local fourth=math.sin(math.pi*math.clamp((phase-.57)/.23,0,1))
+    local flip=math.clamp((phase-.79)/.18,0,1)
     local flipping=math.sin(math.pi*flip)
-    local finish=math.clamp((phase-.91)/.09,0,1)
+    local finish=math.clamp((phase-.95)/.05,0,1)
     finish=finish*finish*(3-2*finish)
-    local anticipation=math.sin(math.pi*math.clamp(phase/.13,0,1))
+    local anticipation=math.sin(math.pi*math.clamp(phase/.10,0,1))
     -- 기존 루트 관절만 회전하고 실제 HumanoidRootPart 위치는 수정하지 않는다.
-    skillMotionTargets.FlipRoot=CFrame.new(0,.18*second+.7*flipping,0)
-      *CFrame.Angles(-2*math.pi*flip,sign*.08*second,sign*.08*first)
-    skillMotionTargets.Spine=CFrame.new(0,-.10*anticipation+.10*second-.04*finish,0)
-      *CFrame.Angles(-.27*first+.14*second,-sign*.86*second,-sign*.38*first)
-    skillMotionTargets.Chest=CFrame.Angles(-.08*first,-sign*.31*second,-sign*.18*first)
-    skillMotionTargets.Head=CFrame.Angles(.22*first-.12*second,sign*.23*second,0)
+    skillMotionTargets.FlipRoot=CFrame.new(0,.14*second+.20*third+.22*fourth+1.12*flipping,0)
+      *CFrame.Angles(-2*math.pi*flip,-sign*.16*third,sign*(.26*first-.24*second+.32*fourth))
+    skillMotionTargets.Spine=CFrame.new(0,-.10*anticipation+.12*third-.13*fourth-.04*finish,0)
+      *CFrame.Angles(-.30*first+.20*second+.18*third-.34*fourth,sign*(-.52*second+.65*third),sign*(-.38*first+.37*second-.32*fourth))
+    skillMotionTargets.Chest=CFrame.Angles(-.08*first+.21*third-.22*fourth,sign*(-.31*second+.38*third),sign*(-.18*first+.18*second))
+    skillMotionTargets.Head=CFrame.Angles(.22*first-.12*third+.30*fourth,sign*.23*third,0)
     -- 다리: 1단 접기 / 2단 최대 펴기 / 3단 공중제비 무릎 당기기.
-    local leadHip=-.95*first-.56*second-1.18*flipping+.12*finish
-    local backHip=.48*first+.73*second-1.24*flipping+.08*finish
-    local leadKnee=.35*first+.24*second+1.9*flipping
-    local backKnee=.64*first+.14*second+1.9*flipping
+    local leadHip=-.95*first+.46*second-.96*third-.64*fourth-1.18*flipping+.12*finish
+    local backHip=.48*first-.90*second+.71*third+.45*fourth-1.24*flipping+.08*finish
+    local leadKnee=.35*first+.24*second+.48*fourth+1.9*flipping
+    local backKnee=.64*second+.28*third+.60*fourth+1.9*flipping
     skillMotionTargets.ThighL=CFrame.Angles(leadLeft and leadHip or backHip,0,
-      leadLeft and -.22*second or .32*second)
+      leadLeft and -.22*second+.27*third or .32*second-.26*third)
     skillMotionTargets.ThighR=CFrame.Angles(leadLeft and backHip or leadHip,0,
-      leadLeft and -.32*second or .22*second)
+      leadLeft and -.32*second+.26*third or .22*second-.27*third)
     skillMotionTargets.ShinL=CFrame.Angles(leadLeft and leadKnee or backKnee,0,0)
     skillMotionTargets.ShinR=CFrame.Angles(leadLeft and backKnee or leadKnee,0,0)
-    skillMotionTargets.FootL=CFrame.Angles(-.29*second-.26*flipping+.1*finish,0,0)
+    skillMotionTargets.FootL=CFrame.Angles(-.24*second-.25*fourth-.26*flipping+.1*finish,0,0)
     skillMotionTargets.FootR=CFrame.Angles(-.29*second-.26*flipping+.1*finish,0,0)
     -- 팔: 반대 방향 반동 → 양팔 전개 → 덤블링 시 모아 회전.
     skillMotionTargets.UpperArmL=CFrame.Angles(
-      leadLeft and (-1.19*first-.44*second-.86*flipping)
-        or (.62*first-.83*second-.86*flipping),
-      0,-.31*first-.72*second+.18*flipping)
+      leadLeft and (-1.19*first-.44*second+.36*third-.75*fourth-.86*flipping)
+        or (.62*first-.83*second-.65*third-.78*fourth-.86*flipping),
+      0,-.31*first+.30*second-.69*third+.26*fourth+.18*flipping)
     skillMotionTargets.UpperArmR=CFrame.Angles(
-      leadLeft and (.62*first-.83*second-.86*flipping)
-        or (-1.19*first-.44*second-.86*flipping),
-      0,.31*first+.72*second-.18*flipping)
-    skillMotionTargets.ForearmL=CFrame.Angles(-.37*first-.28*second-1.24*flipping,0,0)
+      leadLeft and (.62*first-.83*second-.65*third-.78*fourth-.86*flipping)
+        or (-1.19*first-.44*second+.36*third-.75*fourth-.86*flipping),
+      0,.31*first-.30*second+.69*third-.26*fourth-.18*flipping)
+    skillMotionTargets.ForearmL=CFrame.Angles(-.37*first-.28*second-.32*third-1.04*fourth-1.24*flipping,0,0)
     skillMotionTargets.ForearmR=CFrame.Angles(-.37*first-.28*second-1.24*flipping,0,0)
     skillMotionTargets.HandL=CFrame.Angles(-.12*flipping,0,0)
     skillMotionTargets.HandR=CFrame.Angles(-.12*flipping,0,0)
@@ -4511,29 +4514,29 @@ RunService.PreSimulation:Connect(function(dt)
     local guard=rise*release
     local counter=isParry and math.sin(math.pi*phase) or 0
     if isGuard then
-      -- [서서 막기] 엉덩이 내리기와 무릎 굽히기를 없앤 직립 양팔 X가드.
-      local open=math.sin(math.pi*math.clamp(phase/.13,0,1))
-      local close=math.clamp((phase-.045)/.12,0,1)
+      -- [막기 전면 가드] 허리를 세우고 두 손을 얼굴·가슴 앞으로 크게 뻗는 격투 자세.
+      local open=math.sin(math.pi*math.clamp(phase/.12,0,1))
+      local close=math.clamp((phase-.035)/.14,0,1)
       close=close*close*(3-2*close)
       local brace=close*release
-      local impact=math.sin(math.pi*math.clamp((phase-.065)/.09,0,1))
+      local impact=math.sin(math.pi*math.clamp((phase-.075)/.12,0,1))
       local breath=math.sin((os.clock()-skillMotionStart)*4.3)*.012*brace
-      skillMotionTargets.Spine=CFrame.new(0,.09*open+.035*impact+breath,0)
-        *CFrame.Angles(.075*open-.055*brace,0,0)
-      skillMotionTargets.Chest=CFrame.Angles(.045*open-.035*brace,0,0)
-      skillMotionTargets.Head=CFrame.Angles(-.15*brace,0,0)
-      -- 양팔을 옆으로 크게 펼쳤다가 얼굴 앞에서 동시에 엑스자로 접는다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-.68*open-1.68*brace-.16*impact,
-        -.26*brace,-1.12*open+.56*brace)
-      skillMotionTargets.ForearmL=CFrame.Angles(-.36*open-1.52*brace,0,-.24*brace)
-      skillMotionTargets.HandL=CFrame.Angles(-.18*brace,0,-.12*brace)
-      skillMotionTargets.UpperArmR=CFrame.Angles(-.68*open-1.68*brace-.16*impact,
-        .26*brace,1.12*open-.56*brace)
-      skillMotionTargets.ForearmR=CFrame.Angles(-.36*open-1.52*brace,0,.24*brace)
-      skillMotionTargets.HandR=CFrame.Angles(-.18*brace,0,.12*brace)
+      skillMotionTargets.Spine=CFrame.new(0,.055*open+.035*impact+breath,-.07*brace)
+        *CFrame.Angles(.045*open-.035*brace,0,0)
+      skillMotionTargets.Chest=CFrame.Angles(-.035*brace,0,0)
+      skillMotionTargets.Head=CFrame.Angles(-.045*brace,0,0)
+      -- 양팔을 앞쪽으로 뻗고 팔꿈치를 접어 손이 정면 충격을 받도록 한다.
+      skillMotionTargets.UpperArmL=CFrame.Angles(-.90*open-1.77*brace-.12*impact,
+        -.13*brace,-.52*open-.22*brace)
+      skillMotionTargets.ForearmL=CFrame.Angles(-.50*open-1.00*brace,0,-.10*brace)
+      skillMotionTargets.HandL=CFrame.Angles(.22*brace,0,-.08*brace)
+      skillMotionTargets.UpperArmR=CFrame.Angles(-1.02*open-1.94*brace-.10*impact,
+        .15*brace,.52*open+.20*brace)
+      skillMotionTargets.ForearmR=CFrame.Angles(-.50*open-1.12*brace,0,.10*brace)
+      skillMotionTargets.HandR=CFrame.Angles(.22*brace,0,.08*brace)
       -- 어깨 너비의 발 지지, 몸높이와 무릎 관절 유지.
-      skillMotionTargets.ThighL=CFrame.Angles(.025*brace,0,-.10*brace)
-      skillMotionTargets.ThighR=CFrame.Angles(.025*brace,0,.10*brace)
+      skillMotionTargets.ThighL=CFrame.Angles(.018*brace,0,-.08*brace)
+      skillMotionTargets.ThighR=CFrame.Angles(.018*brace,0,.08*brace)
       skillMotionTargets.ShinL=CFrame.identity
       skillMotionTargets.ShinR=CFrame.identity
       skillMotionTargets.FootL=CFrame.Angles(0,0,-.035*brace)
@@ -5299,8 +5302,10 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           -- 실제 Bone만 구동하고 AI/탐지거리/공격 판정은 절대 변경하지 않는다.
           if row.species=="deer" then
             local look=math.sin(cycle*.55)
-            if row.available.Neck then row.poses.Neck=CFrame.Angles(-.035+math.sin(cycle)*.065,look*.045,0) end
-            if row.available.Head then row.poses.Head=CFrame.Angles(.045+math.sin(cycle*.7)*.09,look*.13,0) end
+            -- [사슴 직립] CC0 원본 기본 목과 머리는 이미 위를 본다. 과도한 고개 숙임을 없앤다.
+            if row.available.Chest then row.poses.Chest=CFrame.Angles(.012*math.sin(cycle),0,0) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(-.12+math.sin(cycle)*.022,look*.035,0) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(-.11+math.sin(cycle*.7)*.025,look*.06,0) end
             if row.available.Tail then row.poses.Tail=CFrame.Angles(0,look*.10,0) end
           elseif row.species=="wolf" then
             local scent=math.sin(cycle*.8)
@@ -5486,10 +5491,17 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
               row.poses.Spine=CFrame.Angles(waistPitch,-turn*.16,-roll*.65+turn*.17)
             end
             if row.available.Neck then
-              row.poses.Neck=CFrame.Angles(-chestPitch*.72,turn*.21,-roll*.34-turn*.21)
+              row.poses.Neck=CFrame.Angles(row.species=="deer" and
+                (-.12+math.sin(cycle)*.022) or -chestPitch*.72,turn*.21,-roll*.34-turn*.21)
             end
             if row.available.Head then
-              row.poses.Head=CFrame.Angles(-chestPitch*.50,-turn*.38,-roll*.20-turn*.15)
+              row.poses.Head=CFrame.Angles(row.species=="deer" and
+                (-.10+math.cos(cycle-.18)*.018) or -chestPitch*.50,-turn*.38,-roll*.20-turn*.15)
+            end
+            if row.species=="deer" then
+              -- [사슴 발 지지] 원본 기본 척추와 머리 높이를 지키면서 보폭만 표현한다.
+              if row.available.Chest then row.poses.Chest=CFrame.Angles(.018*math.sin(cycle),0,roll*.23) end
+              if row.available.Spine then row.poses.Spine=CFrame.Angles(-.024*math.sin(cycle),0,-roll*.20) end
             end
             if row.available.Tail then
               row.poses.Tail=CFrame.Angles(-waistPitch*.26,
@@ -5501,21 +5513,22 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             local bite=mode=="ATTACK" and math.sin(math.pi*phase) or 0
             local settle=mode=="RECOVERY" and (1-phase) or 0
             local lunge=model:GetAttribute("AttackPattern")=="WOLF_LUNGE" and 1.25 or 1
-            if row.available.Chest then row.poses.Chest=CFrame.Angles(-.17*windup-.36*bite*lunge+.13*settle,0,0) end
-            if row.available.Spine then row.poses.Spine=CFrame.Angles(.21*windup-.21*bite*lunge,0,0) end
-            if row.available.Neck then row.poses.Neck=CFrame.Angles(.22*windup-.48*bite*lunge+.13*settle,0,0) end
-            if row.available.Head then row.poses.Head=CFrame.Angles(.29*windup-.56*bite*lunge+.18*settle,0,0) end
-            if row.available.Jaw then row.poses.Jaw=CFrame.Angles(.22*windup+.70*bite,0,0) end
-            if row.available.Tail then row.poses.Tail=CFrame.Angles(.16*windup-.18*bite,0,0) end
+            -- [늑대 영화식 포식 액션] 크게 웅크림 → 뒷발 추진 → 상체 급격히 전진 → 목과 턱으로 물기.
+            if row.available.Chest then row.poses.Chest=CFrame.Angles(-.29*windup-.58*bite*lunge+.19*settle,0,.08*windup) end
+            if row.available.Spine then row.poses.Spine=CFrame.Angles(.37*windup-.34*bite*lunge,0,-.10*bite) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(.40*windup-.74*bite*lunge+.18*settle,0,.10*bite) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(.48*windup-.91*bite*lunge+.22*settle,0,-.12*bite) end
+            if row.available.Jaw then row.poses.Jaw=CFrame.Angles(.34*windup+1.01*bite,0,0) end
+            if row.available.Tail then row.poses.Tail=CFrame.Angles(.27*windup-.34*bite,math.sin(phase*math.pi*2)*.13,0) end
             for _,key in ipairs({"FL","FR"}) do
-              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(-.24*windup+.37*bite*lunge,0,0) end
-              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.25*windup+.16*bite,0,0) end
-              if row.available[key.."Ankle"] then row.poses[key.."Ankle"]=CFrame.Angles(-.07*windup-.16*bite,0,0) end
+              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(-.39*windup+.56*bite*lunge,0,0) end
+              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.40*windup+.28*bite,0,0) end
+              if row.available[key.."Ankle"] then row.poses[key.."Ankle"]=CFrame.Angles(-.15*windup-.26*bite,0,0) end
             end
             for _,key in ipairs({"BL","BR"}) do
-              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(.21*windup-.31*bite*lunge,0,0) end
-              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.35*windup+.09*bite,0,0) end
-              if row.available[key.."Ankle"] then row.poses[key.."Ankle"]=CFrame.Angles(-.15*windup+.12*bite,0,0) end
+              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(.33*windup-.48*bite*lunge,0,0) end
+              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.50*windup+.15*bite,0,0) end
+              if row.available[key.."Ankle"] then row.poses[key.."Ankle"]=CFrame.Angles(-.24*windup+.19*bite,0,0) end
             end
           elseif mode=="ANTICIPATION" or mode=="ATTACK" or mode=="RECOVERY" then
             -- [기존 초식동물] 사슴·멧돼지·토끼의 공격 연출은 그대로 유지한다.
@@ -5551,7 +5564,8 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           if row.available.ThighR then row.poses.ThighR=CFrame.Angles(shock and .26*lift or .12*lift,0,0) end
         end
         -- 실제 원본 관절이 있는 몹에만 종별 공격·추적 동작을 크게 합성한다.
-        local gain=mode=="ATTACK" and (row.species=="golem" and 1.75 or 1.6)
+        local gain=mode=="ATTACK" and (row.species=="golem" and 1.75
+          or row.species=="wolf" and 1.92 or 1.6)
           or mode=="RUN" and (row.plan=="QUADRUPED" and 1.08 or 1.42)
           or 1.10
         for joint,pose in pairs(row.poses) do
