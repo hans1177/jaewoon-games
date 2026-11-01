@@ -384,7 +384,9 @@ assert.equal(catalog.normalization?.automaticFeatureExpansionFreezeForbidden,tru
 // Cover bytes, titles and per-game typography must survive the canonical/runtime merge.
 {
   const manifest=JSON.parse(fs.readFileSync('assets/homepage-covers/manifest.json','utf8'));
-  const entries=Object.values(manifest.games);
+  // 영구 삭제 게임의 표지 검사는 제외하고 활성 게임의 표지 검증은 유지한다.
+  const permanentlyRemoved=new Set(catalog.permanentRemovalPolicy?.ids||[]);
+  const entries=Object.values(manifest.games).filter(row=>!permanentlyRemoved.has(row.gameId));
   assert(entries.length>0);
   assert.equal(new Set(entries.map(x=>x.typography)).size,entries.length,'each cover has its own title lettering');
   for(const row of entries){
