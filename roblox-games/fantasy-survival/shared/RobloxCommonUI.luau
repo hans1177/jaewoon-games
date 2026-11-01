@@ -4889,19 +4889,29 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  local tabs=nil
  local selectedPage=0
  local tabButtons={}
+ -- [마력숲] 기존 페이지 인덱스는 보존하고 화면 탭만 재배열한다.
+ local tabOrder=primary and primary.tabOrder
+ local function tabPage(tabIndex)
+  return tabOrder and tabOrder[tabIndex+1] or tabIndex
+ end
  local function selectPage(index)
   selectedPage=index
   list.Visible=index==0
   for i,page in ipairs(pages)do page.Visible=i==index end
   for i,button in ipairs(tabButtons)do
-   button.BackgroundColor3=i-1==index and Color3.fromRGB(59,93,77) or Color3.fromRGB(22,36,37)
+   button.BackgroundColor3=tabPage(i-1)==index and (primary and primary.witcherStyle and Color3.fromRGB(91,61,43) or Color3.fromRGB(59,93,77))
+     or (primary and primary.witcherStyle and Color3.fromRGB(33,31,33) or Color3.fromRGB(22,36,37))
    local underline=button:FindFirstChild("SelectedUnderline")
-   if underline then underline.Visible=i-1==index end
+   if underline then underline.Visible=tabPage(i-1)==index end
   end
   if primary and primary.onPageChanged then primary.onPageChanged(index) end
  end
  if #pages>0 then
-  local names={"활동"};for _,name in ipairs(primary.pageNames or {})do names[#names+1]=name end
+  local names={}
+  for tabIndex=0,#pages do
+   local pageIndex=tabPage(tabIndex)
+   names[#names+1]=pageIndex==0 and "활동" or (primary.pageNames and primary.pageNames[pageIndex]) or tostring(pageIndex)
+  end
   tabs,tabButtons=RobloxCommonUI.CreateFilterBar({name="MeadowMenuTabs",filters=names,selectedIndex=1})
   tabs.Parent=root;tabs.ZIndex=44
   local heading=Instance.new("TextLabel");heading.Name="MeadowMenuHeading"
@@ -4919,7 +4929,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
     icon.Position=UDim2.fromOffset(7,11);icon.ZIndex=46;icon.Parent=button
     button.Text="     "..button.Text
    end
-   button.Activated:Connect(function()selectPage(i-1)end)
+   button.Activated:Connect(function()selectPage(tabPage(i-1))end)
   end
   selectPage(0)
  end
@@ -5019,7 +5029,12 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
    menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(128,52)
    if quick then quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-8,1,-164);quick.Size=UDim2.fromOffset(128,56) end
   end
-  root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5);root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
+  root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5)
+  if primary and primary.witcherStyle then
+   root.Size=UDim2.fromOffset(math.min(820,v.X-16),math.min(720,v.Y-16))
+  else
+   root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
+  end
   close.AnchorPoint=Vector2.new(1,0);close.Position=UDim2.new(1,-8,0,8);close.Size=UDim2.fromOffset(72,52)
   local bodyTop=tabs and 122 or 68
   list.Position=UDim2.fromOffset(12,bodyTop);list.Size=UDim2.new(1,-24,1,-bodyTop-12)
