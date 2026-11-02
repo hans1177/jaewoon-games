@@ -1789,15 +1789,16 @@ do
   label(titlePanel,"GameSubtitle","안개가 걷히면, 또 다른 이야기가 시작된다",76,31,13,Color3.fromRGB(211,221,196))
   local continueButton=button(titlePanel,"Continue","이어하기",116)
   local newButton=button(titlePanel,"NewGame","새 게임",168)
-  local settingButton=button(titlePanel,"Settings","설정",220)
+  local settingButton=button(titlePanel,"Settings","설정 · 프롤로그 보기",220)
   local titleStatus=label(titlePanel,"SaveState","저장 기록 확인 중",266,29,12,Color3.fromRGB(203,214,195))
 
-  local options=panel("MeadowTitleSettings",390,268)
+  local options=panel("MeadowTitleSettings",390,310)
   options.Visible=false
   label(options,"SettingsTitle","환경 설정",18,44,25)
   local effectsButton=button(options,"Effects","효과음",83)
   local ambienceButton=button(options,"Ambience","환경음",135)
-  local settingsBack=button(options,"Back","돌아가기",193)
+  local replayButton=button(options,"ReplayPrologue","프롤로그 보고 입장",188)
+  local settingsBack=button(options,"Back","돌아가기",244)
   local function refreshArrivalOptions()
     effectsButton.Text="효과음  "..math.floor(meadowEffectsGroup.Volume*100+.5).."%"
     ambienceButton.Text="환경음  "..math.floor(meadowAmbienceGroup.Volume*100+.5).."%"
@@ -2215,6 +2216,10 @@ do
       startIntro(isFresh)
     end)
   end
+  replayButton.Activated:Connect(function()
+    -- [저장 보존] 기존 진행도를 초기화하지 않고 새 오프닝만 다시 본 뒤 입장한다.
+    loadRegion(true)
+  end)
   continueButton.Activated:Connect(function()
     -- 이어하기는 서버 준비를 기다리되 입력 자체를 무시하지 않는다.
     loadRegion(player:GetAttribute("MeadowProfileHadSave")~=true)
