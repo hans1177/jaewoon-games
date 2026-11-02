@@ -185,7 +185,7 @@ jobs:
           const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
           const ids=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
           const village=registry.villagePrefabs;
-          if(village?.sourceVerified!==true||Object.keys(village.models||{}).length!==23)
+          if(village?.sourceVerified!==true||Object.keys(village.models||{}).length!==24)
             throw Error('FOREST_VILLAGE_APPROVED_SOURCE_SET_REQUIRED');
           const valid=village.registrationVerified===true&&Object.entries(village.models).every(([role,row])=>
             Number.isSafeInteger(row.assetId)&&row.assetId>0
@@ -216,7 +216,7 @@ jobs:
           const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
           const village=registry.villagePrefabs;
           const ids=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
-          if(village?.registrationVerified!==true||Object.keys(village.models||{}).length!==23
+          if(village?.registrationVerified!==true||Object.keys(village.models||{}).length!==24
             ||!Object.entries(village.models).every(([role,row])=>
               Number.isSafeInteger(row.assetId)&&row.assetId>0
               &&(row.sourceFile.endsWith('.zip')?(/^[a-f0-9]{64}$/.test(row.sha256)&&row.sha256!==row.sourceSha256):row.sourceSha256===row.sha256)
@@ -228,10 +228,10 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git switch -c asset/fantasy-village-originals
           git add roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json roblox-games/fantasy-survival/shared/VisualAssetIds.luau
-          git commit -m 'assets(fantasy-survival): register 23 verified village originals'
+          git commit -m 'assets(fantasy-survival): register 24 verified village originals'
           git push origin HEAD:asset/fantasy-village-originals
           gh pr create --base main --head asset/fantasy-village-originals \
-            --title '마력숲 CC0 마을 건물 원본 23종 등록' \
+            --title '마력숲 CC0 마을·우물 원본 24종 등록' \
             --body '기존 검증된 CC0 원본 등록기로 발급받은 자산 ID와 해시를 반영한다. main 병합 및 Universe 자산 사용 권한 검증 전에는 게시하지 않는다.'
           echo "FOREST_VILLAGE_REGISTRATION_AWAIT_MAIN_MERGE"
           # 새 등록은 반드시 검증된 main 소스에서만 Place에 반영한다.
@@ -460,7 +460,7 @@ jobs:
           // [초원 마을] 기존 원본 에셋 사용 권한 검증을 동일한 공식 검수 단계에서 수행한다.
           const village=registry.villagePrefabs;
           if(village?.sourceVerified===true){
-            if(village.registrationVerified!==true||Object.keys(village.models||{}).length!==23)
+            if(village.registrationVerified!==true||Object.keys(village.models||{}).length!==24)
               throw Error('OWNER_FOREST_VILLAGE_MODEL_REGISTRATION_REQUIRED');
             const manifest=JSON.parse(fs.readFileSync('assets/shared/party/sources.json','utf8'));
             const priority=JSON.parse(fs.readFileSync('assets/external/simple-rpg/priority-v1/manifest.json','utf8'));
