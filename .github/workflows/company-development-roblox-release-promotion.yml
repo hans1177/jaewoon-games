@@ -1707,11 +1707,15 @@ jobs:
           }
           NODE
           game_ids="$(sed -n 's/^game_ids=//p' "$GITHUB_OUTPUT" | tail -n1)"
-          test -n "$game_ids"
-          echo "ROBLOX_THUMBNAIL_SYNC_GAMES=$game_ids"
+          # [정식 게시 대기] 검증용 후보만 있는 경우 기존 배포 승인 없이 업로드하지 않는다.
+          if [ -z "$game_ids" ]; then
+            echo 'ROBLOX_THUMBNAIL_SYNC=DEFERRED_NO_VERIFIED_CANONICAL_TARGET'
+          else
+            echo "ROBLOX_THUMBNAIL_SYNC_GAMES=$game_ids"
+          fi
 
       - name: Render official-source concept art previews without gameplay claims
-        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' && steps.thumbnail_games.outputs.game_ids != '' }}
         working-directory: main
         env:
           GAME_IDS: ${{ steps.thumbnail_games.outputs.game_ids }}
@@ -1754,6 +1758,8 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Render upload and verify shared thumbnails
+        # [권한 보호] 배포 대상이 없으면 PASS를 허위 기록하지 않고 작업 자체를 보류한다.
+        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' && steps.thumbnail_games.outputs.game_ids != '' }}
         id: thumbnail
         working-directory: main
         env:
@@ -1795,7 +1801,7 @@ jobs:
           fi
 
       - name: Publish exact game image to Roblox experience detail page
-        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' && steps.thumbnail_games.outputs.game_ids != '' }}
         working-directory: main
         env:
           GAME_IDS: ${{ steps.thumbnail_games.outputs.game_ids }}
@@ -1832,7 +1838,7 @@ jobs:
           echo 'ROBLOX_DETAIL_GAMEPLAY_VIDEO_IS_NOT_WEB_COMPANION=YES'
 
       - name: Archive native gameplay edits and separately labeled art previews
-        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' && steps.thumbnail_games.outputs.game_ids != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: roblox-video-production-${{ github.run_id }}
@@ -1845,7 +1851,7 @@ jobs:
           retention-days: 30
 
       - name: Persist verified thumbnail evidence to runtime
-        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' && steps.thumbnail_games.outputs.game_ids != '' }}
         working-directory: main
         env:
           GAME_IDS: ${{ steps.thumbnail_games.outputs.game_ids }}
