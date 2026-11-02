@@ -107,9 +107,10 @@ end
 -- All meadow vegetation and animals must come from the game's registered CC0 meshes.
 -- [숲 표면] 원본 CC0 메시·텍스처를 보존하는 공통 자연색 팔레트.
 local meadowPalette={
-  grass=Color3.fromRGB(100,151,97),leafyGrass=Color3.fromRGB(69,128,78),
-  ground=Color3.fromRGB(124,102,79),rock=Color3.fromRGB(123,130,120),
-  bark=Color3.fromRGB(112,87,66),leaves=Color3.fromRGB(88,154,91),
+  -- [중세 숲] 자연스러운 이끼·흙·암석 색을 기존 Terrain과 원본 CC0 나무에 적용한다.
+  grass=Color3.fromRGB(78,113,79),leafyGrass=Color3.fromRGB(60,92,66),
+  ground=Color3.fromRGB(102,83,69),rock=Color3.fromRGB(101,105,102),
+  bark=Color3.fromRGB(91,74,61),leaves=Color3.fromRGB(73,110,79),
   wolf=Color3.fromRGB(144,136,121),boar=Color3.fromRGB(126,101,83),
   deer=Color3.fromRGB(157,125,102),rabbit=Color3.fromRGB(181,176,157),
   bee=Color3.fromRGB(217,177,106),bat=Color3.fromRGB(125,129,138),
@@ -140,21 +141,25 @@ local function createStartingMeadow()
   meadowTerrain:SetMaterialColor(Enum.Material.Ground,meadowPalette.ground)
   meadowTerrain:SetMaterialColor(Enum.Material.Rock,meadowPalette.rock)
   -- [초원 자연색] 원래 Terrain만 이용해 습지와 마른 강가 재질을 구별한다.
-  meadowTerrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(91,105,88))
-  meadowTerrain:SetMaterialColor(Enum.Material.Sand,Color3.fromRGB(166,150,112))
+  meadowTerrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(81,70,62))
+  meadowTerrain:SetMaterialColor(Enum.Material.Sand,Color3.fromRGB(140,126,103))
   -- Existing stone gathering sites are terrain outcrops, not fake rock parts.
   for _, pos in ipairs({Vector3.new(-35,2,31),Vector3.new(11,2,-39),Vector3.new(-7,2,43)}) do
     meadowTerrain:FillBall(pos-Vector3.new(0,4.5,0),5,Enum.Material.Rock)
   end
+  -- [위처풍 자연광] 기본 캐릭터·모바일 시야를 보존하며 숲 그림자와 석재의 입체감을 강화한다.
   Lighting.ClockTime = 10.5
-  Lighting.Brightness = 2
-  Lighting.Ambient = Color3.fromRGB(97,118,107)
-  Lighting.OutdoorAmbient = Color3.fromRGB(155,176,149)
-  Lighting.EnvironmentDiffuseScale=.83
-  Lighting.EnvironmentSpecularScale=.16
+  Lighting.Brightness = 1.85
+  Lighting.Ambient = Color3.fromRGB(91,103,109)
+  Lighting.OutdoorAmbient = Color3.fromRGB(138,149,141)
+  Lighting.EnvironmentDiffuseScale=.72
+  Lighting.EnvironmentSpecularScale=.13
+  Lighting.GlobalShadows=true
+  Lighting.ShadowSoftness=.27
+  Lighting.ExposureCompensation=-.08
   gameWorld:SetAttribute("StartingRegion", "MEADOW")
   gameWorld:SetAttribute("GroundVisualSource", "ROBLOX_NATIVE_TERRAIN")
-  gameWorld:SetAttribute("MeadowVisualStyle", "SOFT_TOY_FOREST_CC0_MESH_V3")
+  gameWorld:SetAttribute("MeadowVisualStyle", "DARK_MEDIEVAL_FOREST_CC0_NATIVE_V4")
   gameWorld:SetAttribute("MeadowRegionWidth",meadowWorldSize)
   gameWorld:SetAttribute("MeadowRegionAreaScale",math.floor((meadowWorldSize/312)^2*100)/100)
   gameWorld:SetAttribute("MeadowOuterRegionReady",false)
@@ -178,9 +183,9 @@ if not meadowAtmosphere then
   meadowAtmosphere.Name="MeadowForestAtmosphere"
   meadowAtmosphere.Parent=Lighting
 end
-meadowAtmosphere.Color=Color3.fromRGB(181,210,193)
-meadowAtmosphere.Decay=Color3.fromRGB(98,121,108)
-meadowAtmosphere.Glare=.10
+meadowAtmosphere.Color=Color3.fromRGB(169,181,176)
+meadowAtmosphere.Decay=Color3.fromRGB(83,93,101)
+meadowAtmosphere.Glare=.04
 -- [시간대 색감] Roblox 기존 Lighting 효과 1개만 사용해 숲의 계절감과 아침/저녁 온도를 부여.
 local meadowColorGrade=Lighting:FindFirstChild("MeadowColorGrade")
 if meadowColorGrade and not meadowColorGrade:IsA("ColorCorrectionEffect") then
@@ -193,9 +198,9 @@ if not meadowColorGrade then
   meadowColorGrade.Parent=Lighting
 end
 meadowColorGrade.Enabled=true
-meadowColorGrade.Brightness=.015
-meadowColorGrade.Contrast=.065
-meadowColorGrade.Saturation=.095
+meadowColorGrade.Brightness=-.015
+meadowColorGrade.Contrast=.115
+meadowColorGrade.Saturation=-.085
 local lastMeadowClimateTick=-1
 local lastMeadowWeather=""
 
@@ -210,56 +215,57 @@ local function updateMeadowClimate()
   local morning=math.clamp((hour-5.25)/2.5,0,1)
   local evening=math.clamp((20.5-hour)/2.5,0,1)
   local sun=math.min(morning,evening)
-  local damp=weather=="STORM" and .66 or weather=="RAIN" and .79
-    or weather=="FOG" and .88 or weather=="SNOW" and .86 or 1
-  local brightness=math.max(.78,(.82+1.6*sun)*damp)
-  local lightColor=Color3.fromRGB(79,103,111):Lerp(Color3.fromRGB(148,167,143),sun)
-  local airColor=Color3.fromRGB(92,113,119):Lerp(Color3.fromRGB(169,188,165),sun)
+  local damp=weather=="STORM" and .72 or weather=="RAIN" and .83
+    or weather=="FOG" and .9 or weather=="SNOW" and .87 or 1
+  local brightness=math.max(.86,(.82+1.18*sun)*damp)
+  local lightColor=Color3.fromRGB(76,88,101):Lerp(Color3.fromRGB(126,139,133),sun)
+  local airColor=Color3.fromRGB(93,105,118):Lerp(Color3.fromRGB(143,155,151),sun)
   if weather=="STORM" or weather=="RAIN" then
-    lightColor=lightColor:Lerp(Color3.fromRGB(83,102,118),weather=="STORM" and .5 or .25)
-    airColor=airColor:Lerp(Color3.fromRGB(110,129,139),weather=="STORM" and .65 or .3)
+    lightColor=lightColor:Lerp(Color3.fromRGB(83,96,111),weather=="STORM" and .6 or .35)
+    airColor=airColor:Lerp(Color3.fromRGB(111,124,133),weather=="STORM" and .68 or .4)
   end
   Lighting.ClockTime=hour
   Lighting.Brightness=brightness
   Lighting.Ambient=lightColor
   Lighting.OutdoorAmbient=airColor
   Lighting.FogColor=airColor
-  Lighting.FogStart=weather=="FOG" and 35 or weather=="STORM" and 55 or 110
-  Lighting.FogEnd=weather=="FOG" and 210 or weather=="STORM" and 390
-    or weather=="RAIN" and 680 or 1600
+  Lighting.FogStart=weather=="FOG" and 45 or weather=="STORM" and 75
+    or weather=="RAIN" and 100 or 140
+  Lighting.FogEnd=weather=="FOG" and 265 or weather=="STORM" and 450
+    or weather=="RAIN" and 630 or 980
   -- [원근감] 수관 뒤는 옅게, 비/안개에는 서서히 짙게. 근처 적 시야는 보존한다.
-  local forestAirDensity=weather=="FOG" and .39 or weather=="STORM" and .31
-    or weather=="RAIN" and .26 or weather=="SNOW" and .22 or .17
-  local forestHaze=weather=="FOG" and 2.0 or weather=="STORM" and 1.5 or .95
+  local forestAirDensity=weather=="FOG" and .40 or weather=="STORM" and .34
+    or weather=="RAIN" and .30 or weather=="SNOW" and .26 or .23
+  local forestHaze=weather=="FOG" and 2.1 or weather=="STORM" and 1.65 or 1.25
   meadowAtmosphere.Density+=(forestAirDensity-meadowAtmosphere.Density)*.12
   meadowAtmosphere.Haze+=(forestHaze-meadowAtmosphere.Haze)*.12
   meadowAtmosphere.Color=meadowAtmosphere.Color:Lerp(
     airColor:Lerp(meadowPalette.leaves,.11),.12)
-  -- [날씨 공기감] 새벽/밤은 청록, 석양은 따뜻한 빛. 과한 명암과 반짝임은 피한다.
-  local tint=hour>=16.5 and hour<20.5 and Color3.fromRGB(255,230,204)
-    or period=="NIGHT" and Color3.fromRGB(205,225,240)
-    or period=="DAWN" and Color3.fromRGB(236,245,229)
-    or Color3.fromRGB(255,250,236)
+  -- [중세 숲] 낮의 푸른 먹구름과 황혼의 따뜻한 등불 색 대비를 표현한다.
+  local tint=hour>=16.5 and hour<20.5 and Color3.fromRGB(241,214,191)
+    or period=="NIGHT" and Color3.fromRGB(194,209,225)
+    or period=="DAWN" and Color3.fromRGB(222,228,212)
+    or Color3.fromRGB(224,229,217)
   if weather=="STORM" or weather=="RAIN" then
     tint=tint:Lerp(Color3.fromRGB(205,226,241),weather=="STORM" and .38 or .2)
   end
   meadowColorGrade.TintColor=meadowColorGrade.TintColor:Lerp(tint,.12)
-  local desiredContrast=weather=="FOG" and .025 or .075
-  local desiredSaturation=weather=="FOG" and .035 or .11
+  local desiredContrast=weather=="FOG" and .085 or .13
+  local desiredSaturation=weather=="FOG" and -.135 or -.085
   meadowColorGrade.Contrast+=(desiredContrast-meadowColorGrade.Contrast)*.12
   meadowColorGrade.Saturation+=(desiredSaturation-meadowColorGrade.Saturation)*.12
-  local cover=weather=="STORM" and .94 or weather=="RAIN" and .79
-    or weather=="FOG" and .67 or weather=="SNOW" and .76 or .22
-  local density=weather=="STORM" and .86 or weather=="RAIN" and .66
-    or weather=="FOG" and .55 or weather=="SNOW" and .64 or .27
+  local cover=weather=="STORM" and .96 or weather=="RAIN" and .86
+    or weather=="FOG" and .76 or weather=="SNOW" and .80 or .56
+  local density=weather=="STORM" and .87 or weather=="RAIN" and .72
+    or weather=="FOG" and .65 or weather=="SNOW" and .66 or .45
   local smooth=.12
   meadowClouds.Cover=meadowClouds.Cover+(cover-meadowClouds.Cover)*smooth
   meadowClouds.Density=meadowClouds.Density+(density-meadowClouds.Density)*smooth
   meadowClouds.Color=meadowClouds.Color:Lerp(
-    weather=="STORM" and Color3.fromRGB(78,93,115)
-      or weather=="RAIN" and Color3.fromRGB(151,166,177)
-      or weather=="SNOW" and Color3.fromRGB(210,224,229)
-      or Color3.fromRGB(241,246,236),smooth)
+    weather=="STORM" and Color3.fromRGB(81,94,107)
+      or weather=="RAIN" and Color3.fromRGB(134,147,157)
+      or weather=="SNOW" and Color3.fromRGB(190,202,204)
+      or Color3.fromRGB(181,191,186),smooth)
   gameWorld:SetAttribute("MeadowDayPhase",period)
   gameWorld:SetAttribute("MeadowClockMinutes",math.floor(hour*60))
   if weather~=lastMeadowWeather then
@@ -1124,6 +1130,17 @@ local function createMeadowVillage()
         if entryLantern then
           entryLantern.Name=house.name.."_EntranceLantern"
           entryLantern:SetAttribute("MeadowVillageScenery",true)
+          -- [등불] 원본 CC0 랜턴 메시에서만 빛을 내며 새 외형 파츠를 만들지 않는다.
+          local lanternMesh=entryLantern:FindFirstChildWhichIsA("MeshPart",true)
+          if lanternMesh then
+            local glow=Instance.new("PointLight")
+            glow.Name="MeadowVillageLanternGlow"
+            glow.Color=Color3.fromRGB(255,177,103)
+            glow.Brightness=.85
+            glow.Range=13
+            glow.Shadows=false
+            glow.Parent=lanternMesh
+          end
         end
       end
       task.wait(.04)
@@ -1201,9 +1218,9 @@ local function createMeadowVillage()
           if mesh then
             local glow=Instance.new("PointLight")
             glow.Name="MeadowVillageLanternGlow"
-            glow.Color=Color3.fromRGB(255,184,116)
-            glow.Brightness=.9
-            glow.Range=12
+            glow.Color=Color3.fromRGB(255,176,101)
+            glow.Brightness=1.05
+            glow.Range=15
             glow.Shadows=false
             glow.Parent=mesh
           end
@@ -1218,6 +1235,14 @@ local function createMeadowVillage()
       {-278,-209},{275,-218},{-274,-305},{276,-312},
       {-166,-41},{174,-47},{-53,-345},{51,-343},
       {-31,-68},{36,-70},{-164,-338},{164,-338},
+      -- [숲 원경] 이미 등록된 CC0 나무를 외곽에만 배치해 길·16채 집·몬스터 스폰을 보존한다.
+      {-261,-89},{-269,-149},{-264,-183},{-269,-247},
+      {-262,-284},{-246,-338},{-201,-44},{-116,-48},
+      {258,-95},{263,-148},{266,-209},{263,-267},
+      {264,-299},{248,-338},{208,-46},{119,-48},
+      {-238,-56},{-249,-104},{-250,-200},{-253,-272},
+      {243,-59},{249,-121},{252,-238},{246,-281},
+      {-119,-340},{-101,-344},{115,-342},{141,-338},
     }) do
       local tree=worldAsset("tree",Vector3.new(pos[1],3,pos[2]),
         16+((index*7)%5)*1.5)
