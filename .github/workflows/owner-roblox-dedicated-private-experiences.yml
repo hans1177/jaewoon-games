@@ -237,9 +237,9 @@ jobs:
           # 새 등록은 반드시 검증된 main 소스에서만 Place에 반영한다.
           exit 1
 
-      # [마력숲 일러스트] 사용자가 승인한 원본만 기존 비공개 Place의 에셋 등록 경로에 추가.
-      # 등록 ID가 main에 고정되기 전에는 아직 그림 없는 Place를 게시하지 않는다.
-      - name: Register Forest intro illustration and verify Universe permission
+      # [12개 개별 원화] 기존 비공개 게임의 자산 등록/권한 승인기를 직접 확장한다.
+      # 하나의 그림을 잘라 쓰지 않으며, 미인증 이미지 ID는 게임에 바인딩하지 않는다.
+      - name: Register 12 original prologue scenes and independent depth layers
         if: matrix.gameId == 'fantasy-survival'
         working-directory: main
         env:
@@ -247,118 +247,148 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
-          ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import crypto from 'node:crypto';
+          import {execFileSync} from 'node:child_process';
           import {introspectRobloxApiKey} from './tools/company-roblox-dedicated-experience.mjs';
-          const source='roblox-games/fantasy-survival/intro.jpg';
-          const configPath='roblox-games/fantasy-survival/shared/GameConfig.luau';
-          const original=fs.readFileSync(source);
-          const sha=crypto.createHash('sha256').update(original).digest('hex');
-          const expected='a535d55a0a6c2af4ce9fb2bfdb339fb1e3919f530af5d3cc51f0861a7c717eda';
-          if(sha!==expected||original.length!==575598||original.toString('binary',0,3)!=='\xff\xd8\xff')
-            throw Error('FOREST_INTRO_OWNER_ORIGINAL_HASH_MISMATCH');
-          const cfg=fs.readFileSync(configPath,'utf8');
-          const found=cfg.match(/\bCinematicIntroAtlasId\s*=\s*"(rbxassetid:\/\/([1-9]\d*))"/);
-          const bound=found?found[2]:'';
-          if(bound&&!cfg.includes('CinematicIntroAtlasSha256 = "'+expected+'"'))
-            throw Error('FOREST_INTRO_BINDING_PROVENANCE_MISMATCH');
+          const dir='roblox-games/fantasy-survival/';
+          const bundles=[
+            ['intro-1.zip','d84bfc30a9c6c5381059e978f98f96ab91dd1bb9c1e1dd60deecd0e84015b154'],
+            ['intro-2.zip','b073315a901e3e5a6ee5b7253040772bb3677f7b8a0011a9508fbf7bf574beae'],
+            ['intro-31.zip',null],
+            ['intro-32.zip',null],
+            ['intro-4.zip','a8d5231aee3e1149d7ee456f1eef30e381663a7807219b6fc58fde354715015b'],
+            ['intro-5.zip','a550f9bd42fd7ec37498f8d28863b3fb1531bc3dfaa8b3fbe9c8d8575d8316c4'],
+            ['intro-6.zip','fa58555e941beadc313a009a47b644b7b274cac47563c84cbff4c73ad74dfb9f'],
+          ];
+          const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+          const illustrations=[];
+          for(const [name,expected] of bundles){
+            const archive=dir+name;
+            if(expected&&sha(fs.readFileSync(archive))!==expected)throw Error('FOREST_INTRO_PACK_HASH_CHANGED:'+name);
+            const extract=file=>execFileSync('unzip',['-p',archive,file],{maxBuffer:6*1024*1024});
+            const manifest=JSON.parse(extract('manifest.json').toString('utf8'));
+            for(const row of manifest.scenes){
+              const bg=extract(row.file);
+              if(sha(bg)!==row.sha256||bg.length!==row.bytes)throw Error('FOREST_INTRO_BG_HASH_MISMATCH:'+row.index);
+              illustrations.push({index:row.index,type:'bg',data:bg,name:row.file,hash:row.sha256,mime:'image/jpeg'});
+              if(row.foreground){
+                const fg=extract(row.foreground);
+                if(sha(fg)!==row.foregroundSha256||fg.length!==row.foregroundBytes)
+                  throw Error('FOREST_INTRO_FG_HASH_MISMATCH:'+row.index);
+                illustrations.push({index:row.index,type:'fg',data:fg,name:row.foreground,hash:row.foregroundSha256,mime:'image/png'});
+              }
+            }
+          }
+          if(illustrations.length!==23||illustrations.filter(x=>x.type==='bg').length!==12||
+            illustrations.filter(x=>x.type==='fg').length!==11)
+            throw Error('FOREST_INTRO_SCENE_COUNT_MISMATCH');
+          const cfg=fs.readFileSync(dir+'shared/GameConfig.luau','utf8');
+          const bgBound=cfg.match(/CinematicIntroSceneIds\s*=\s*\{([^}]+)\}/);
+          const fgBound=cfg.match(/CinematicIntroForegroundIds\s*=\s*\{([^}]+)\}/);
+          const idsFrom=text=>[...(text||'').matchAll(/rbxassetid:\/\/([1-9]\d*)/g)].map(x=>x[1]);
+          const bgIds=idsFrom(bgBound?.[1]),fgIds=idsFrom(fgBound?.[1]);
+          const bound=bgIds.length===12&&fgIds.length===11;
           const universe=String(process.env.ROBLOX_UNIVERSE_ID||'');
           const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
-          const rawCookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
-          if(universe!=='10773436325'||!key)throw Error('FOREST_INTRO_AUTHORIZED_UNIVERSE_AND_API_KEY_REQUIRED');
-          const cookie=rawCookie?(rawCookie.includes('.ROBLOSECURITY=')?rawCookie:'.ROBLOSECURITY='+rawCookie+';'):'';
-          const read=async r=>r.json().catch(()=>({}));
-          const grant=async id=>{
+          const raw=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
+          const cookie=raw?(raw.includes('.ROBLOSECURITY=')?raw:'.ROBLOSECURITY='+raw+';'):'';
+          if(universe!=='10773436325'||!key)throw Error('FOREST_INTRO_OWNER_UNIVERSE_AUTH_REQUIRED');
+          const read=r=>r.json().catch(()=>({}));
+          const grant=async ids=>{
             const url='https://apis.roblox.com/asset-permissions-api/v1/assets/permissions';
-            const body=JSON.stringify({subjectType:'Universe',subjectId:universe,action:'Use',
-              requests:[{assetId:Number(id),grantToDependencies:true}]});
-            let answer,resp=await fetch(url,{method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
-              body,signal:AbortSignal.timeout(30000)});
-            answer=await read(resp);
-            const valid=()=>resp.ok&&Array.isArray(answer.successAssetIds)
-              &&answer.successAssetIds.map(String).includes(String(id))
-              &&(!Array.isArray(answer.errors)||answer.errors.length===0);
-            if(!valid()&&cookie){
+            const body=JSON.stringify({subjectType:'Universe',subjectId:universe,action:'Use',requests:ids.map(id=>({assetId:Number(id),grantToDependencies:true}))});
+            const valid=(r,j)=>r.ok&&Array.isArray(j.successAssetIds)
+              &&ids.every(id=>j.successAssetIds.map(String).includes(String(id)))
+              &&(!Array.isArray(j.errors)||j.errors.length===0);
+            let r=await fetch(url,{method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},body,signal:AbortSignal.timeout(40000)});
+            let j=await read(r);
+            if(!valid(r,j)&&cookie){
               const headers={'content-type':'application/json',cookie};
-              resp=await fetch(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(30000)});
-              if(resp.status===403&&resp.headers.get('x-csrf-token')){
-                headers['x-csrf-token']=resp.headers.get('x-csrf-token');
-                resp=await fetch(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(30000)});
+              r=await fetch(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(40000)});
+              if(r.status===403&&r.headers.get('x-csrf-token')){
+                headers['x-csrf-token']=r.headers.get('x-csrf-token');
+                r=await fetch(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(40000)});
               }
-              answer=await read(resp);
+              j=await read(r);
             }
-            if(!valid())throw Error('FOREST_INTRO_UNIVERSE_PERMISSION_UNVERIFIED_HTTP_'+resp.status);
+            if(!valid(r,j))throw Error('FOREST_INTRO_UNIVERSE_GRANT_UNVERIFIED_HTTP_'+r.status);
           };
           if(bound){
-            await grant(bound);
-            console.log('FOREST_INTRO_ATLAS_BOUND_ID='+bound);
+            const boundList=bgIds.concat(fgIds);
+            if(new Set(boundList).size!==23)throw Error('FOREST_INTRO_DUPLICATE_ASSET_ID');
+            await grant(boundList);
+            console.log('FOREST_INTRO_REGISTERED=23');
             console.log('FOREST_INTRO_UNIVERSE_GRANT=PASS');
             process.exit(0);
           }
           let creator=null;
           if(cookie){
-            const owner=await fetch('https://develop.roblox.com/v1/universes/'+universe,{
-              headers:{cookie},signal:AbortSignal.timeout(30000)});
-            const info=await read(owner);
-            if(owner.ok&&String(info.id)===universe&&Number(info.creatorTargetId)>0
-              &&['User','Group'].includes(info.creatorType))
-              creator={[info.creatorType==='Group'?'groupId':'userId']:String(info.creatorTargetId)};
+            const r=await fetch('https://develop.roblox.com/v1/universes/'+universe,{headers:{cookie},signal:AbortSignal.timeout(30000)});
+            const j=await read(r);
+            if(r.ok&&String(j.id)===universe&&Number(j.creatorTargetId)>0&&['User','Group'].includes(j.creatorType))
+              creator={[j.creatorType==='Group'?'groupId':'userId']:String(j.creatorTargetId)};
           }
           if(!creator){
             const scope=await introspectRobloxApiKey({apiKey:key});
-            const options=[];
-            for(const row of (scope.scopes||[])){
-              if(!/asset/i.test(row.name)||!/write|create/i.test(JSON.stringify(row.operations||[])))continue;
-              for(const id of (row.userIds||[]))if(/^[1-9]\d*$/.test(id))options.push({userId:id});
-              for(const id of (row.groupIds||[]))if(/^[1-9]\d*$/.test(id))options.push({groupId:id});
+            const rows=[];
+            for(const entry of scope.scopes||[]){
+              if(!/asset/i.test(entry.name)||!/write|create/i.test(JSON.stringify(entry.operations||[])))continue;
+              for(const id of entry.userIds||[])if(/^[1-9]\d*$/.test(id))rows.push({userId:id});
+              for(const id of entry.groupIds||[])if(/^[1-9]\d*$/.test(id))rows.push({groupId:id});
             }
-            const unique=[...new Map(options.map(c=>[JSON.stringify(c),c])).values()];
+            const unique=[...new Map(rows.map(x=>[JSON.stringify(x),x])).values()];
             if(unique.length===1)creator=unique[0];
           }
-          if(!creator)throw Error('FOREST_INTRO_ASSET_CREATOR_UNVERIFIED');
-          const form=new FormData();
-          form.append('request',JSON.stringify({assetType:'Image',displayName:'Mana Forest Story Prologue',
-            description:'Owner-authored illustrated game introduction; source SHA256 '+sha,
-            creationContext:{creator}}));
-          form.append('fileContent',new Blob([original],{type:'image/jpeg'}),'intro.jpg');
-          // [소유자 승인 등록] 기존 공용 이미지 등록기의 user-auth/CSRF 경로를 그대로 따른다.
-          // API 키가 이미지 업로드 권한을 갖지 않은 경우 인증된 소유자 쿠키를 사용한다.
-          const ownerAuth=!!cookie;
-          const assetBase='https://apis.roblox.com/assets/'+(ownerAuth?'user-auth/':'')+'v1/';
-          const assetRequest=async (url,method,body)=>{
-            let headers=ownerAuth?{cookie}:{'x-api-key':key};
-            let response=await fetch(url,{method,headers,body,signal:AbortSignal.timeout(60000)});
-            if(ownerAuth&&response.status===403&&response.headers.get('x-csrf-token')){
-              headers={...headers,'x-csrf-token':response.headers.get('x-csrf-token')};
-              response=await fetch(url,{method,headers,body,signal:AbortSignal.timeout(60000)});
+          if(!creator)throw Error('FOREST_INTRO_CREATOR_UNVERIFIED');
+          let csrf='';
+          const request=async (url,opts)=>{
+            const auth=!!cookie;
+            let headers=auth?{cookie}: {'x-api-key':key};
+            if(csrf&&auth)headers['x-csrf-token']=csrf;
+            let r=await fetch(url,{...opts,headers,signal:AbortSignal.timeout(60000)});
+            if(auth&&r.status===403&&r.headers.get('x-csrf-token')){
+              csrf=r.headers.get('x-csrf-token');
+              headers['x-csrf-token']=csrf;
+              r=await fetch(url,{...opts,headers,signal:AbortSignal.timeout(60000)});
             }
-            return response;
+            return r;
           };
-          let response=await assetRequest(assetBase+'assets','POST',form);
-          let op=await read(response);
-          if(!response.ok||!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))
-            throw Error('FOREST_INTRO_IMAGE_UPLOAD_REJECTED_HTTP_'+response.status);
-          const opPath=op.path,deadline=Date.now()+240000;
-          while(!op.done&&Date.now()<deadline){
-            await new Promise(resolve=>setTimeout(resolve,4000));
-            response=await assetRequest(assetBase+opPath,'GET');
-            op=await read(response);
-            if(!response.ok)throw Error('FOREST_INTRO_IMAGE_OPERATION_HTTP_'+response.status);
+          const base='https://apis.roblox.com/assets/'+(cookie?'user-auth/':'')+'v1/';
+          const registered=[];
+          for(const art of illustrations){
+            const form=new FormData();
+            form.append('request',JSON.stringify({assetType:'Image',
+              displayName:'Mana Forest Prologue '+String(art.index).padStart(2,'0')+' '+art.type,
+              description:'Original illustrated game scene; SHA256 '+art.hash,
+              creationContext:{creator}}));
+            form.append('fileContent',new Blob([art.data],{type:art.mime}),art.name);
+            let r=await request(base+'assets',{method:'POST',body:form});
+            let j=await read(r);
+            if(!r.ok||!/^operations\/[a-zA-Z0-9-]+$/.test(String(j.path||'')))
+              throw Error('FOREST_INTRO_UPLOAD_REJECTED_'+art.index+'_'+art.type+'_HTTP_'+r.status);
+            const operation=j.path,deadline=Date.now()+240000;
+            while(!j.done&&Date.now()<deadline){
+              await new Promise(resolve=>setTimeout(resolve,3500));
+              r=await request(base+operation,{method:'GET'});
+              j=await read(r);
+              if(!r.ok)throw Error('FOREST_INTRO_OPERATION_HTTP_'+r.status);
+            }
+            const id=String(j.response?.assetId||'');
+            if(!j.done||j.error||!/^[1-9]\d*$/.test(id))
+              throw Error('FOREST_INTRO_ASSET_ID_FAILED_'+art.index+'_'+art.type);
+            registered.push({...{index:art.index,type:art.type},assetId:id,sha256:art.hash});
+            console.log('FOREST_INTRO_UPLOADED_'+String(art.index).padStart(2,'0')+'_'+art.type.toUpperCase()+'='+id);
           }
-          const assetId=String(op.response?.assetId||'');
-          if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))
-            throw Error('FOREST_INTRO_IMAGE_ASSET_ID_UNVERIFIED');
-          await grant(assetId);
-          console.log('FOREST_INTRO_ATLAS_REGISTERED_ID='+assetId);
-          console.log('FOREST_INTRO_SOURCE_SHA256='+sha);
+          await grant(registered.map(x=>x.assetId));
+          console.log('FOREST_INTRO_SCENES_REGISTERED='+JSON.stringify(registered));
           console.log('FOREST_INTRO_UNIVERSE_GRANT=PASS');
-          // 등록과 소스 바인딩은 분리한다. 검증된 main 수정을 거쳐 동일 이미지로 재게시한다.
-          throw Error('FOREST_INTRO_ATLAS_MAIN_BIND_REQUIRED');
+          // 검증된 자산 ID를 main 소스에 고정한 다음, 다음 main 게시에서만 활성화한다.
+          throw Error('FOREST_INTRO_SCENE_IDS_MAIN_BIND_REQUIRED');
           NODE
 
       - name: Grant original Forest models to the existing private Universe
