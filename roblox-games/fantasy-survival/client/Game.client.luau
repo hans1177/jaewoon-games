@@ -2222,7 +2222,7 @@ do
   end)
   continueButton.Activated:Connect(function()
     -- 이어하기는 서버 준비를 기다리되 입력 자체를 무시하지 않는다.
-    loadRegion(player:GetAttribute("MeadowProfileHadSave")~=true)
+    loadRegion(false)
   end)
   local newGameWaiting=false
   newButton.Activated:Connect(function()
@@ -2246,7 +2246,7 @@ do
         return
       end
       if player:GetAttribute("MeadowProfileHadSave")~=true then
-        loadRegion(true)
+        loadRegion(false)
       else
         titlePanel.Visible=false
         confirmPanel.Visible=true
@@ -2265,7 +2265,7 @@ do
     if result=="SUCCESS" then
       confirmButton.Active=true
       confirmButton.Text="삭제 확인 · 새 게임 시작"
-      loadRegion(true)
+      loadRegion(false)
     elseif result=="SAVE_FAILED" or result=="UNAVAILABLE" then
       confirmButton.Active=true
       confirmButton.Text="다시 시도"
