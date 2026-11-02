@@ -1,0 +1,71 @@
+{
+  "version": 3,
+  "instruction": "외부 Android 게임을 black-box로 검증할 때 실행, 실제 게임 진입, 입력 반응, 프로세스 생존, 크래시 부재를 단계별 증거로 결속해 판정하고 코드·에셋·내부 알고리즘은 추출하거나 추론하지 않는다.",
+  "input": "{\n  \"evidenceMode\": \"EXTERNAL_BLACK_BOX\",\n  \"stages\": [\n    \"APP_LAUNCH\",\n    \"GAME_ENTRY\",\n    \"INPUT_EXERCISE\",\n    \"VISUAL_STATE_CHANGE\",\n    \"PROCESS_SURVIVAL\",\n    \"NO_FATAL_CRASH_OR_ANR\"\n  ],\n  \"stableBoundary\": \"CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY\",\n  \"runId\": 35129017248,\n  \"runNumber\": 42,\n  \"artifactId\": 10460453510,\n  \"artifactDigest\": \"sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d\"\n}",
+  "output": "검증된 관찰 원칙:\n- 프로세스 실행과 실제 게임 진입을 같은 것으로 취급하지 않는다.\n- 입력 주입만으로 성공 처리하지 않고 입력 전후의 의미 있는 화면 변화와 대상 프로세스 생존을 함께 확인한다.\n- 시스템 오버레이·동의 화면·게임 진입·입력 반응을 서로 다른 증거 단계로 보존한다.\n- 성공 범위는 캡처된 검증 구간으로 제한하고 장시간 안정성이나 숨은 규칙을 추정하지 않는다.\n- 부분 성공 뒤 실패가 생기면 성공 경계와 실패 경계를 모두 기록한다.\n- 외부 게임의 소스 코드, 에셋, 고유 UI 표현, 내부 알고리즘, 숨은 점수·경제 규칙은 black-box 학습 데이터로 추출하거나 복제하지 않는다.\n검증된 게임별 적용 원리:\n- APPLY: id=first-run-friction-separated-from-game-entry; scope=mobile-rpg-onboarding; lesson=Permission prompts, introductory slides and character creation are distinct pre-game states and should not be mistaken for successful RPG gameplay entry.; apply=For Roblox/mobile QA, preserve separate milestones for permission handling, onboarding, character setup and the first live gameplay dashboard.\n- APPLY: id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change.\n- APPLY: id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game.\n- APPLY: id=semantic-input-plus-runtime-survival; scope=qa-evidence; lesson=A gameplay navigation input becomes useful evidence when the before/after screens show a meaningful semantic transition and the target process remains foreground and crash-free.; apply=Bind gameplay input evidence to semantic before/after frames plus process, focus and crash checks.\n검증된 게임별 회피 원리:\n- AVOID: id=unchanged-screen-after-tap-is-not-input-pass; scope=black-box-input-automation; lesson=A prior tap left the visible home state unchanged, so process survival alone was insufficient to claim input-response success.; apply=If the intended input does not produce a meaningful visible state change, do not promote it; target a visible semantic control and capture a new before/after pair.\n검증된 학습 활용 범위:\n- ALLOWED: mobile RPG onboarding stage separation\n- ALLOWED: persistent primary-system navigation\n- ALLOWED: visible progression and danger cues\n- ALLOWED: input-to-visible-state evidence binding\n- ALLOWED: foreground/process/crash correlation\n- ALLOWED: portable RPG interaction lessons that may inform later Roblox-specific implementation and verification\n검증된 학습 금지 범위:\n- FORBIDDEN: treating Android evidence as Roblox runtime evidence\n- FORBIDDEN: inferring hidden combat, dungeon, economy or progression formulas\n- FORBIDDEN: copying game artwork, UI trade dress, names, text or implementation details into a Roblox game\n- FORBIDDEN: claims about long-run progression, balance or economy not measured by the captured validation window",
+  "distilledApplicationPrinciples": [
+    "id=first-run-friction-separated-from-game-entry; scope=mobile-rpg-onboarding; lesson=Permission prompts, introductory slides and character creation are distinct pre-game states and should not be mistaken for successful RPG gameplay entry.; apply=For Roblox/mobile QA, preserve separate milestones for permission handling, onboarding, character setup and the first live gameplay dashboard.",
+    "id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change.",
+    "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game.",
+    "id=semantic-input-plus-runtime-survival; scope=qa-evidence; lesson=A gameplay navigation input becomes useful evidence when the before/after screens show a meaningful semantic transition and the target process remains foreground and crash-free.; apply=Bind gameplay input evidence to semantic before/after frames plus process, focus and crash checks."
+  ],
+  "distilledAvoidancePrinciples": [
+    "id=unchanged-screen-after-tap-is-not-input-pass; scope=black-box-input-automation; lesson=A prior tap left the visible home state unchanged, so process survival alone was insufficient to claim input-response success.; apply=If the intended input does not produce a meaningful visible state change, do not promote it; target a visible semantic control and capture a new before/after pair."
+  ],
+  "distilledLearningUseAllowed": [
+    "mobile RPG onboarding stage separation",
+    "persistent primary-system navigation",
+    "visible progression and danger cues",
+    "input-to-visible-state evidence binding",
+    "foreground/process/crash correlation",
+    "portable RPG interaction lessons that may inform later Roblox-specific implementation and verification"
+  ],
+  "distilledLearningUseForbidden": [
+    "treating Android evidence as Roblox runtime evidence",
+    "inferring hidden combat, dungeon, economy or progression formulas",
+    "copying game artwork, UI trade dress, names, text or implementation details into a Roblox game",
+    "claims about long-run progression, balance or economy not measured by the captured validation window"
+  ],
+  "taskType": "qa",
+  "difficulty": "regression",
+  "lifecycle": "active",
+  "sourceKind": "external-black-box",
+  "project": "idle-fantasy",
+  "gameId": "idle-fantasy",
+  "candidateId": "external-black-box-idle-fantasy-run-42",
+  "sourceCommit": null,
+  "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d",
+  "independentQa": "BLACK_BOX_EVIDENCE_PASS",
+  "browserQa": "NOT_APPLICABLE",
+  "quality": {
+    "codeQuality": 1,
+    "noRegression": true,
+    "playImprovement": 0,
+    "ruleCompliance": 1,
+    "evidenceQuality": 1
+  },
+  "provenance": {
+    "sourceKind": "external-black-box",
+    "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d",
+    "gameId": "idle-fantasy",
+    "candidateId": "external-black-box-idle-fantasy-run-42",
+    "evidencePath": "company-learning/external-game-playtest/idle-fantasy-runtime-distillation.json",
+    "authority": "PRACTICE_ONLY_MIXED_EVIDENCE",
+    "runId": 35129017248,
+    "runNumber": 42,
+    "artifactId": 10460453510,
+    "artifactDigest": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d"
+  },
+  "verification": {
+    "independentQa": "BLACK_BOX_EVIDENCE_PASS",
+    "browserQa": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "blackBoxEvidence": "PASS",
+    "gameEntry": "PASS",
+    "inputResponse": "PASS",
+    "processSurvival": "PASS",
+    "noFatalCrashOrAnr": "PASS",
+    "proprietaryExtraction": false,
+    "stableBoundary": "CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY"
+  }
+}
