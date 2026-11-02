@@ -510,6 +510,21 @@ test('private runtime guard uses standard control runner while publish remains o
 });
 
 
+test('validation publish compares canonical Rojo inputs and never treats unbound cinematic art as source drift',()=>{
+  const publish=workflow.slice(workflow.indexOf('      - name: Verify unchanged source and exact F0 candidate evidence'),workflow.indexOf('      - name: Resolve retained immutable internal-release package'));
+  const execution=workflow.slice(workflow.indexOf('      - name: Publish exact package to validation target or F9-verified canonical target'),workflow.indexOf('      - name:',workflow.indexOf('      - name: Publish exact package to validation target or F9-verified canonical target')+20));
+  assert.match(publish,/\$SOURCE_ROOT\/default\.project\.json/);
+  assert.match(publish,/\$SOURCE_ROOT\/shared/);
+  assert.match(publish,/\$SOURCE_ROOT\/server/);
+  assert.match(publish,/\$SOURCE_ROOT\/client/);
+  assert.doesNotMatch(publish,/git ls-tree -r [^\n]*-- "\$SOURCE_ROOT" \|/);
+  assert.match(execution,/robloxBuildSourceChangedBetween\(/);
+  assert.match(execution,/ROBLOX_PUBLISH_STALE_BUILD_INPUTS/);
+  assert.match(execution,/PUBLISH_LATEST_MAIN_REVISION/);
+  assert.match(execution,/assertRobloxLatestPublishCandidate\(/);
+  assert.doesNotMatch(execution,/git ls-tree -r [^\n]*-- "\$SOURCE_ROOT" \|/);
+});
+
 test('pre-F9 validation publish requires exact F0 but never current F9',()=>{
   const sourceRevision='a'.repeat(40),artifactIdentity='sha256:build';
   const item={
