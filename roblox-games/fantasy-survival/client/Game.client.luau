@@ -1954,6 +1954,7 @@ do
   local openingCamera=workspace.CurrentCamera
   local originalCameraType=openingCamera and openingCamera.CameraType
   local originalSubject=openingCamera and openingCamera.CameraSubject
+  local originalFieldOfView=openingCamera and openingCamera.FieldOfView
   local activeTween=nil
   local runToken=0
   local function arrivalControls(enabled)
@@ -1970,6 +1971,7 @@ do
     if activeTween then activeTween:Cancel();activeTween=nil end
     if openingCamera and openingCamera.Parent then
       openingCamera.CameraType=Enum.CameraType.Custom
+      if originalFieldOfView then openingCamera.FieldOfView=originalFieldOfView end
       local character=player.Character
       local humanoid=character and character:FindFirstChildOfClass("Humanoid")
       if humanoid then openingCamera.CameraSubject=humanoid
@@ -1992,6 +1994,7 @@ do
     if not openingCamera then return end
     originalCameraType=openingCamera.CameraType
     originalSubject=openingCamera.CameraSubject
+    originalFieldOfView=openingCamera.FieldOfView
     openingCamera.CameraType=Enum.CameraType.Scriptable
     openingCamera.CFrame=CFrame.lookAt(Vector3.new(31,26,44),Vector3.new(0,5,-70))
   end
