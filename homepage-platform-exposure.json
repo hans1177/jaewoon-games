@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-11-02T15:45:19.433Z",
+  "generatedAt": "2026-11-02T15:46:50.044Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -1218,15 +1218,15 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRE_F0_OR_PENDING",
-            "verifiedAt": null,
-            "checkedAt": "2026-11-02T15:45:19.297Z",
-            "lastFailureAt": null,
+            "currentFloor": "F0_BEFORE_SOURCE_BIND",
+            "stage": "TARGET_PLATFORM_SOURCE_BIND",
+            "result": "REPAIR_REQUIRED",
+            "verifiedAt": "2026-11-02T15:46:49.942Z",
+            "checkedAt": "2026-11-02T15:46:49.942Z",
+            "lastFailureAt": "2026-11-02T15:46:49.942Z",
             "f0PassedAt": null,
             "candidatePublishedAt": null,
-            "failureCode": null,
+            "failureCode": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -1325,7 +1325,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-02T15:45:19.297Z"
+      "updatedAt": "2026-11-02T15:46:49.942Z"
     },
     {
       "gameId": "fifty-days",
