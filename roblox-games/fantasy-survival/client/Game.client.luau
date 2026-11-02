@@ -2222,7 +2222,7 @@ do
   end)
   continueButton.Activated:Connect(function()
     -- 이어하기는 서버 준비를 기다리되 입력 자체를 무시하지 않는다.
-    loadRegion(player:GetAttribute("MeadowProfileHadSave")~=true)
+    loadRegion(false)
   end)
   local newGameWaiting=false
   newButton.Activated:Connect(function()
