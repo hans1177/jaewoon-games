@@ -1275,8 +1275,11 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   const priority=JSON.parse(fs.readFileSync('assets/external/simple-rpg/priority-v1/manifest.json','utf8'));
   for(const [role,asset] of Object.entries(assets.villagePrefabs.models)){
     const completeHouse=/^villageHouse[A-D]$/.test(role);
+    const completeWell=role==='villageWell';
+    const external=JSON.parse(fs.readFileSync('assets/external/simple-rpg/manifest.json','utf8'));
     const source=completeHouse
       ?priority.packs.find(item=>asset.sourceFile==='assets/external/simple-rpg/priority-v1/'+item.file)
+      :completeWell?external.packs.find(item=>asset.sourceFile==='assets/external/simple-rpg/'+item.filename)
       :party.records.find(item=>item.file===asset.sourceFile);
     assert.ok(source,'licensed source archive or GLB missing: '+role);
     assert.equal(asset.sourceSha256,source.sha256,'verified source hash mismatch: '+role);
@@ -1284,18 +1287,21 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
     if(completeHouse){
       assert.equal(source.licenseDeclared,'CC0-1.0');
       assert.equal(source.licenseSourceUrl,'https://opengameart.org/content/medieval-house-pack');
+    }else if(completeWell){
+      assert.equal(source.sourceUrl,'https://opengameart.org/content/fantasy-town-kit');
+      assert.equal(asset.licenseEvidence,'https://kenney.nl/assets/fantasy-town-kit');
     }else{
       assert.equal(source.license,'CC0-1.0');
     }
     if(Number.isSafeInteger(asset.assetId)&&asset.assetId>0){
-      if(completeHouse)assert.match(asset.sha256,/^[a-f0-9]{64}$/);
+      if(completeHouse||completeWell)assert.match(asset.sha256,/^[a-f0-9]{64}$/);
       else assert.equal(asset.sha256,source.sha256,'registered native GLB hash mismatch: '+role);
     }else{
       assert.equal(assets.villagePrefabs.registrationVerified,false,'pending model cannot certify all originals');
       assert.equal(asset.universeGrantVerified,false,'never fake unverified Universe use');
     }
   }
-  assert.equal(Object.keys(assets.villagePrefabs.models).length,23,'houses and props must be source verified');
+  assert.equal(Object.keys(assets.villagePrefabs.models).length,24,'houses and props must be source verified');
   assert.match(server,/local villageWholeHouseReady=nativeVillageReady/);
   assert.match(server,/if house.prefab and villageWholeHouseReady then/);
   assert.match(server,/houseModel.Name=house.name/);
@@ -1368,13 +1374,13 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/local function villageNativeNpc\(spec\)/);
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
   // [마력숲 우물/의뢰 게시판] 기존 CC0 물표면을 보존하고 흰색 광장 덮개를 재도입하지 않는다.
-  assert.match(server,/\{"villageFountain",0,-146,5\.5,0\}/);
-  assert.match(server,/local propHeight=row\[1\]=="villageFountain" and row\[4\] or row\[4\]\*1\.3/);
+  assert.match(server,/table.insert\(furnishings,\{"villageWell",0,-146,5\.5,0\}\)/);
+  assert.match(server,/local propHeight=row\[1\]=="villageWell" and row\[4\] or row\[4\]\*1\.3/);
   assert.doesNotMatch(server,/\{"villageRoad",[^}]+\}/);
   assert.match(server,/scenery\.Name:match\("\^Meadow_Village_villageRoad_%d\+\$"\)/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowVillageWellReady",villageWellReady\)/);
   assert.match(server,/sign\.Name="MeadowVillageWellSign"/);
-  assert.match(server,/model:SetAttribute\("MeadowOriginalWaterSurfacePreserved",true\)/);
+  assert.match(server,/model:SetAttribute\("MeadowVillageWellOriginal",true\)/);
   assert.doesNotMatch(server,/meadowTerrain:FillBlock\(CFrame\.new\(plaza\[1\],1\.55,plaza\[2\]\)/);
   assert.doesNotMatch(server,/mesh\.Color=Color3\.fromRGB\(105,111,108\)/);
   assert.match(server,/local board=worldAsset\("villageWall",Vector3.new\(0,3,-101\),5\.2\)/);
