@@ -457,9 +457,9 @@
     "version": 1,
     "sourceManifest": "assets/shared/party/sources.json",
     "sourceVerified": true,
-    "registrationVerified": true,
+    "registrationVerified": false,
     "universeId": "10773436325",
-    "status": "REGISTERED_PENDING_EXACT_UNIVERSE_GRANT",
+    "status": "SOURCE_VERIFIED_PENDING_REGISTRATION",
     "models": {
       "villageWall": {
         "assetId": 96163872349532,
@@ -703,6 +703,17 @@
         "license": "CC0-1.0",
         "licenseEvidence": "https://opengameart.org/content/medieval-house-pack",
         "universeId": null
+      },
+      "villageWell": {
+        "assetId": null,
+        "sha256": null,
+        "source": "VERIFIED_CC0_ORIGINAL",
+        "sourceFile": "assets/external/simple-rpg/kenney_fantasy-town-kit_2.0.zip",
+        "sourceSha256": "1a7530c09f4d2fa2cdee259876f089334f8b1f27fa86a0c4f54ef86cdd8676ef",
+        "license": "CC0-1.0",
+        "licenseEvidence": "https://kenney.nl/assets/fantasy-town-kit",
+        "universeId": null,
+        "universeGrantVerified": false
       }
     },
     "runtimeVerified": false
