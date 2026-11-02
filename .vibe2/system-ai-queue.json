@@ -119542,7 +119542,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -119584,12 +119584,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:41366983935:1",
+      "reservedAt": "2026-11-02T00:29:21.558Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -121147,7 +121147,8 @@
         "system-ai-handoff-to-reservation:system-ai:41364997111:1",
         "actions-run:41364997111",
         "system-ai-handoff-to-reservation:system-ai:41366260918:1",
-        "actions-run:41366260918"
+        "actions-run:41366260918",
+        "system-ai-handoff-to-reservation:system-ai:41366983935:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1778,
@@ -121162,7 +121163,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-02T00:24:23.450Z"
+      "updatedAt": "2026-11-02T00:29:21.558Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
