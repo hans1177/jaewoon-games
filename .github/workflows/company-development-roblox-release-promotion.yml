@@ -1612,7 +1612,9 @@ jobs:
   thumbnail-sync:
     name: sync canonical Roblox and homepage thumbnails
     needs: release
-    if: ${{ always() && (github.event_name == 'push' || (github.event_name == 'schedule' && github.event.schedule == '17 2 * * *') || github.event_name == 'repository_dispatch' || inputs.thumbnail_only == true || needs.release.result == 'success') }}
+    # 검증용 109번 후보는 정식 게시 대상이 아니다. 본편 승인 전 썸네일 업로드를 요청하지 않는다.
+    # 기존 main/정기/캡처/명시적 썸네일 동기화 및 F9 최종 게시 경로는 그대로 유지한다.
+    if: ${{ always() && (github.event_name == 'push' || (github.event_name == 'schedule' && github.event.schedule == '17 2 * * *') || github.event_name == 'repository_dispatch' || inputs.thumbnail_only == true || (inputs.publish_stage == 'final' && needs.release.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
