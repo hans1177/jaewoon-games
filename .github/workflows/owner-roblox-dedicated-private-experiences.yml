@@ -326,16 +326,27 @@ jobs:
             description:'Owner-authored illustrated game introduction; source SHA256 '+sha,
             creationContext:{creator}}));
           form.append('fileContent',new Blob([original],{type:'image/jpeg'}),'intro.jpg');
-          let response=await fetch('https://apis.roblox.com/assets/v1/assets',{
-            method:'POST',headers:{'x-api-key':key},body:form,signal:AbortSignal.timeout(60000)});
+          // [소유자 승인 등록] 기존 공용 이미지 등록기의 user-auth/CSRF 경로를 그대로 따른다.
+          // API 키가 이미지 업로드 권한을 갖지 않은 경우 인증된 소유자 쿠키를 사용한다.
+          const ownerAuth=!!cookie;
+          const assetBase='https://apis.roblox.com/assets/'+(ownerAuth?'user-auth/':'')+'v1/';
+          const assetRequest=async (url,method,body)=>{
+            let headers=ownerAuth?{cookie}:{'x-api-key':key};
+            let response=await fetch(url,{method,headers,body,signal:AbortSignal.timeout(60000)});
+            if(ownerAuth&&response.status===403&&response.headers.get('x-csrf-token')){
+              headers={...headers,'x-csrf-token':response.headers.get('x-csrf-token')};
+              response=await fetch(url,{method,headers,body,signal:AbortSignal.timeout(60000)});
+            }
+            return response;
+          };
+          let response=await assetRequest(assetBase+'assets','POST',form);
           let op=await read(response);
           if(!response.ok||!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))
             throw Error('FOREST_INTRO_IMAGE_UPLOAD_REJECTED_HTTP_'+response.status);
           const opPath=op.path,deadline=Date.now()+240000;
           while(!op.done&&Date.now()<deadline){
             await new Promise(resolve=>setTimeout(resolve,4000));
-            response=await fetch('https://apis.roblox.com/assets/v1/'+opPath,{
-              headers:{'x-api-key':key},signal:AbortSignal.timeout(30000)});
+            response=await assetRequest(assetBase+opPath,'GET');
             op=await read(response);
             if(!response.ok)throw Error('FOREST_INTRO_IMAGE_OPERATION_HTTP_'+response.status);
           }
