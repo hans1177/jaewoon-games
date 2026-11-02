@@ -76,7 +76,7 @@ if '--game-id=fantasy-survival' in sys.argv:
   if catalog_path!=(ROOT/'assets/shared/party/sources.json').resolve():
    raise RuntimeError('FANTASY_VILLAGE_SOURCE_CATALOG_MISMATCH')
   catalog=json.loads(catalog_path.read_text())
-  if village.get('version')!=1 or len(village.get('models',{}))!=23:
+  if village.get('version')!=1 or len(village.get('models',{}))!=24:
    raise RuntimeError('FANTASY_VILLAGE_APPROVED_SOURCE_SET_REQUIRED')
   priority=json.loads((ROOT/'assets/external/simple-rpg/priority-v1/manifest.json').read_text())
   for role,row in village['models'].items():
@@ -144,6 +144,32 @@ if '--game-id=fantasy-survival' in sys.argv:
      'sha256':digest,'format':'glb','license':'CC0-1.0',
      'licenseEvidence':row['licenseEvidence'],'bytes':len(data),
      'sourceModel':blends[0].name}
+    continue
+   if role=='villageWell':
+    # [CC0 완성형 우물] 보유한 Kenney 원본 ZIP의 실제 Well GLB만 등록한다.
+    original=ROOT/'assets/external/simple-rpg/kenney_fantasy-town-kit_2.0.zip'
+    source_pack=json.loads((ROOT/'assets/external/simple-rpg/manifest.json').read_text())
+    pack=next((p for p in source_pack['packs'] if p['filename']==original.name),None)
+    if (source!=original.resolve() or not pack or pack['sha256']!=row['sourceSha256']
+      or pack['sourceUrl']!='https://opengameart.org/content/fantasy-town-kit'
+      or row['licenseEvidence']!='https://kenney.nl/assets/fantasy-town-kit'):
+     raise RuntimeError('MEADOW_WELL_CC0_PROVENANCE_INVALID')
+    raw=original.read_bytes()
+    if hashlib.sha256(raw).hexdigest()!=pack['sha256'] or len(raw)!=pack['archiveBytes']:
+     raise RuntimeError('MEADOW_WELL_CC0_DIGEST_INVALID')
+    with zipfile.ZipFile(io.BytesIO(raw)) as zipped:
+     names=[n for n in zipped.namelist() if Path(n).suffix.lower()=='.glb'
+      and re.search(r'(^|[-_ ])well($|[-_ ])',Path(n).stem.lower())
+      and 'fountain' not in Path(n).stem.lower() and '..' not in Path(n).parts]
+     if not names:raise RuntimeError('MEADOW_WELL_COMPLETE_ORIGINAL_NOT_FOUND')
+     chosen=sorted(names,key=lambda n:(0 if Path(n).stem.lower()=='well' else 1,len(n),n))[0]
+     data=zipped.read(chosen)
+    if len(data)<1000 or len(data)>18*1024*1024 or data[:4]!=b'glTF':
+     raise RuntimeError('MEADOW_WELL_ORIGINAL_GLB_INVALID')
+    (OUT/(role+'.glb')).write_bytes(data)
+    records[role]={'sourceFile':filename,'sourceSha256':row['sourceSha256'],
+     'sha256':hashlib.sha256(data).hexdigest(),'format':'glb','license':'CC0-1.0',
+     'licenseEvidence':row['licenseEvidence'],'sourceModel':chosen,'bytes':len(data)}
     continue
    if not source.is_relative_to((ROOT/'assets/shared/party').resolve()) or source.suffix!='.glb':
     raise RuntimeError('FANTASY_VILLAGE_ASSET_PATH_INVALID:'+role)
