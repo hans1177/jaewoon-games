@@ -1878,6 +1878,19 @@ do
   introTint.BackgroundTransparency=.65
   introTint.ZIndex=5
   introTint.Parent=introPanel
+  -- [일러스트 레이어] 등록·권한 검증된 그림 ID만 사용하는 화면 레이어.
+  -- 아직 그림 ID가 없다면 텍스트와 기존 월드 카메라 연출만 수행한다.
+  local storyArtwork=Instance.new("ImageLabel")
+  storyArtwork.Name="ApprovedStoryIllustration"
+  storyArtwork.BackgroundTransparency=1
+  storyArtwork.BorderSizePixel=0
+  storyArtwork.Size=UDim2.fromScale(1.14,1.14)
+  storyArtwork.Position=UDim2.fromScale(-.07,-.07)
+  storyArtwork.ScaleType=Enum.ScaleType.Crop
+  storyArtwork.ImageTransparency=1
+  storyArtwork.ZIndex=4
+  storyArtwork.Visible=false
+  storyArtwork.Parent=introPanel
   local introGradient=Instance.new("UIGradient")
   introGradient.Color=ColorSequence.new({
     ColorSequenceKeypoint.new(0,Color3.fromRGB(8,12,20)),
@@ -1957,6 +1970,12 @@ do
   local originalSubject=openingCamera and openingCamera.CameraSubject
   local originalFieldOfView=openingCamera and openingCamera.FieldOfView
   local activeTween=nil
+  local activeFovTween=nil
+  local activeArtTween=nil
+  local cameraMotionValue=nil
+  local cameraMotionConnection=nil
+  local cameraMotionIntensity=0
+  local cameraMotionStart=0
   local runToken=0
   local function arrivalControls(enabled)
     local scripts=player:FindFirstChild("PlayerScripts")
@@ -1970,6 +1989,10 @@ do
   end
   local function restoreCamera()
     if activeTween then activeTween:Cancel();activeTween=nil end
+    if activeFovTween then activeFovTween:Cancel();activeFovTween=nil end
+    if activeArtTween then activeArtTween:Cancel();activeArtTween=nil end
+    if cameraMotionConnection then cameraMotionConnection:Disconnect();cameraMotionConnection=nil end
+    if cameraMotionValue then cameraMotionValue:Destroy();cameraMotionValue=nil end
     if openingCamera and openingCamera.Parent then
       openingCamera.CameraType=Enum.CameraType.Custom
       if originalFieldOfView then openingCamera.FieldOfView=originalFieldOfView end
@@ -2081,7 +2104,6 @@ do
     }
     local total=0
     for _,scene in ipairs(scenes) do total+=scene.seconds end
-    local spent=0
     local finished=false
     local function finish()
       if finished or token~=runToken then return end
@@ -2093,53 +2115,143 @@ do
     TweenService:Create(storyProgress,TweenInfo.new(total,Enum.EasingStyle.Linear),{
       Size=UDim2.fromScale(1,1)
     }):Play()
+
+    -- [카메라] 시네마틱 푸시인·흔들림을 기존 월드 위에 합성한다.
+    -- 플레이어 이동과 서버 전투·저장에는 영향을 주지 않는다.
+    local RunService=game:GetService("RunService")
     local function moveStoryCamera(view,duration)
       openingCamera=workspace.CurrentCamera
       local character=player.Character
       local rootPart=character and character:FindFirstChild("HumanoidRootPart")
       if not openingCamera or not rootPart then return end
       if activeTween then activeTween:Cancel();activeTween=nil end
+      if activeFovTween then activeFovTween:Cancel();activeFovTween=nil end
+      if not cameraMotionValue then
+        cameraMotionValue=Instance.new("CFrameValue")
+        cameraMotionValue.Value=openingCamera.CFrame
+      end
+      if not cameraMotionConnection then
+        cameraMotionConnection=RunService.RenderStepped:Connect(function()
+          if not entranceOpen or token~=runToken then return end
+          local camera=workspace.CurrentCamera
+          if not camera or camera.CameraType~=Enum.CameraType.Scriptable or not cameraMotionValue then return end
+          local t=os.clock()-cameraMotionStart
+          local sway=math.sin(t*1.15)*.07
+          local tremor=cameraMotionIntensity*(.4+.6*math.sin(t*11)^2)
+          local x=math.sin(t*29)*tremor*.38+sway
+          local y=math.cos(t*24)*tremor*.24
+          local roll=math.sin(t*19)*tremor*.006
+          camera.CFrame=cameraMotionValue.Value*CFrame.new(x,y,0)*CFrame.Angles(0,0,roll)
+        end)
+      end
       local origin=rootPart.Position
       local target
       if view=="battle" then
-        target=CFrame.lookAt(origin+Vector3.new(37,28,38),origin+Vector3.new(0,5,-57))
+        target=CFrame.lookAt(origin+Vector3.new(34,23,33),origin+Vector3.new(0,4,-52))
       elseif view=="sweep" then
-        target=CFrame.lookAt(origin+Vector3.new(-36,21,24),origin+Vector3.new(0,4,-39))
+        target=CFrame.lookAt(origin+Vector3.new(-32,18,20),origin+Vector3.new(0,4,-33))
       elseif view=="sky" then
-        target=CFrame.lookAt(origin+Vector3.new(18,16,32),origin+Vector3.new(0,65,-28))
+        target=CFrame.lookAt(origin+Vector3.new(16,14,29),origin+Vector3.new(0,60,-24))
       elseif view=="seal" then
-        target=CFrame.lookAt(origin+Vector3.new(6,7,18),origin+Vector3.new(0,3,-10))
+        target=CFrame.lookAt(origin+Vector3.new(4,5,14),origin+Vector3.new(0,3,-10))
       elseif view=="fall" then
-        target=CFrame.lookAt(origin+Vector3.new(0,48,30),origin+Vector3.new(0,0,0))
+        target=CFrame.lookAt(origin+Vector3.new(0,47,27),origin+Vector3.new(0,0,0))
       else
-        target=CFrame.lookAt(origin+Vector3.new(-12,9,17),origin+Vector3.new(0,3,-6))
+        target=CFrame.lookAt(origin+Vector3.new(-10,8,15),origin+Vector3.new(0,3,-7))
       end
+      cameraMotionIntensity=view=="seal" and .55 or view=="fall" and .43 or view=="battle" and .23 or .06
+      cameraMotionStart=os.clock()
       openingCamera.CameraType=Enum.CameraType.Scriptable
-      activeTween=TweenService:Create(openingCamera,TweenInfo.new(math.max(.5,duration),Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
-        CFrame=target,FieldOfView=view=="fall" and 78 or view=="seal" and 48 or 63
+      activeTween=TweenService:Create(cameraMotionValue,TweenInfo.new(math.max(.5,duration),Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+        Value=target
       })
       activeTween:Play()
+      local fieldOfView=view=="fall" and 79 or view=="seal" and 49 or view=="battle" and 70 or 62
+      activeFovTween=TweenService:Create(openingCamera,TweenInfo.new(math.max(.5,duration*.65),Enum.EasingStyle.Sine),{
+        FieldOfView=fieldOfView
+      })
+      activeFovTween:Play()
     end
+
+    -- [움직이는 일러스트] 최종 그림이 Roblox에 등록·승인되면
+    -- Config.CinematicIntroIllustrations의 순서별 자산 ID를 같은 화면에 직접 연결한다.
+    local registeredStoryArt=Config.CinematicIntroIllustrations or {}
     task.spawn(function()
       for index,scene in ipairs(scenes) do
         if not entranceOpen or token~=runToken then return end
         introAct.Text=string.format("서막 · %02d/%02d  |  %s",index,#scenes,scene.chapter)
+        introAct.TextTransparency=1
+        introAct.Position=UDim2.fromScale(.04,.145)
         regionIntro.Text=scene.title
+        regionIntro.TextTransparency=1
+        regionIntro.Position=UDim2.fromScale(.12,.27)
         openingText.Text=scene.body
+        openingText.TextTransparency=1
+        openingText.Position=UDim2.fromScale(.10,.48)
         introSpeaker.Text=scene.speaker
+        introSpeaker.TextTransparency=1
         introDialogue.Text=scene.line
+        introDialogue.TextTransparency=1
+        introDialogue.Position=UDim2.fromScale(.10,.73)
+
+        -- 화면 위의 실제 등록 일러스트가 있으면 팬·줌을 적용한다.
+        if activeArtTween then activeArtTween:Cancel();activeArtTween=nil end
+        local imageId=registeredStoryArt[index]
+        if typeof(imageId)=="string" and imageId:match("^rbxassetid://%d+$") then
+          storyArtwork.Image=imageId
+          storyArtwork.Visible=true
+          storyArtwork.ImageTransparency=0
+          storyArtwork.Position=UDim2.fromScale(-.035,-.035)
+          storyArtwork.Size=UDim2.fromScale(1.07,1.07)
+          activeArtTween=TweenService:Create(storyArtwork,TweenInfo.new(scene.seconds,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+            Position=UDim2.fromScale(-.10,-.10),Size=UDim2.fromScale(1.20,1.20)
+          })
+          activeArtTween:Play()
+        else
+          storyArtwork.Visible=false
+          storyArtwork.Image=""
+        end
+
+        local color=scene.view=="seal" and Color3.fromRGB(150,67,224)
+          or scene.view=="sky" and Color3.fromRGB(244,204,118)
+          or scene.view=="battle" and Color3.fromRGB(226,100,50)
+          or Color3.fromRGB(6,9,15)
         introTint.BackgroundColor3=scene.tone
-        introTint.BackgroundTransparency=scene.view=="seal" and .30 or scene.view=="fall" and .20 or .62
-        introFlash.BackgroundTransparency=0
+        introTint.BackgroundTransparency=scene.view=="seal" and .28 or scene.view=="fall" and .16 or .60
+        introFlash.BackgroundColor3=color
+        introFlash.BackgroundTransparency=scene.view=="seal" and .07 or .14
         moveStoryCamera(scene.view,scene.seconds)
-        TweenService:Create(introFlash,TweenInfo.new(.75,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+
+        -- 텍스트가 화면 속으로 밀려 들어오는 모션. 모바일 화면을 벗어나지 않게 제한.
+        for _,row in ipairs({
+          {object=introAct,duration=.36,position=UDim2.fromScale(.075,.145)},
+          {object=regionIntro,duration=.68,position=UDim2.fromScale(.07,.25)},
+          {object=openingText,duration=.8,position=UDim2.fromScale(.08,.47)},
+          {object=introSpeaker,duration=.76},
+          {object=introDialogue,duration=.86,position=UDim2.fromScale(.08,.72)}
+        }) do
+          local goal={TextTransparency=0}
+          if row.position then goal.Position=row.position end
+          TweenService:Create(row.object,TweenInfo.new(row.duration,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),goal):Play()
+        end
+        TweenService:Create(introFlash,TweenInfo.new(.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
           BackgroundTransparency=1
         }):Play()
+        -- 봉인 순간·추락 순간에만 한 번 더 강한 충격 컷을 넣는다.
+        if scene.view=="seal" or scene.view=="fall" then
+          task.delay(scene.view=="seal" and 2.15 or 1.75,function()
+            if not entranceOpen or token~=runToken then return end
+            introFlash.BackgroundColor3=scene.view=="seal" and Color3.fromRGB(189,109,255) or Color3.fromRGB(8,9,23)
+            introFlash.BackgroundTransparency=.19
+            TweenService:Create(introFlash,TweenInfo.new(.75,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
+              BackgroundTransparency=1
+            }):Play()
+          end)
+        end
         local started=os.clock()
         while entranceOpen and token==runToken and os.clock()-started<scene.seconds do
-          task.wait(.1)
+          task.wait(.05)
         end
-        spent+=scene.seconds
       end
       finish()
     end)
