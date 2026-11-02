@@ -1857,21 +1857,99 @@ do
   fillCorner.CornerRadius=UDim.new(0,5)
   fillCorner.Parent=progressFill
 
+
+  -- [메인 스토리 오프닝] 기존 월드와 실제 아바타 카메라만 활용한다.
+  -- 미승인 전쟁 NPC/괴물/배경 모델은 생성하지 않는다. 기존 HUD·저장·전투 판정 불변.
   local introPanel=Instance.new("Frame")
   introPanel.Name="FirstArrivalScene"
   introPanel.Size=UDim2.fromScale(1,1)
-  introPanel.BackgroundTransparency=1
+  introPanel.BackgroundColor3=Color3.fromRGB(7,12,18)
+  introPanel.BackgroundTransparency=.38
+  introPanel.BorderSizePixel=0
+  introPanel.Active=true
   introPanel.Visible=false
   introPanel.Parent=backdrop
-  local regionIntro=label(introPanel,"RegionReveal","초원 지역",24,60,32)
-  regionIntro.Position=UDim2.fromScale(0,.17)
-  regionIntro.Size=UDim2.fromScale(1,.14)
-  label(introPanel,"OpeningText","새벽의 안개 너머로 숲의 울음이 들린다.",105,40,16)
+  local introTint=Instance.new("Frame")
+  introTint.Name="StoryAtmosphere"
+  introTint.Size=UDim2.fromScale(1,1)
+  introTint.BorderSizePixel=0
+  introTint.BackgroundColor3=Color3.fromRGB(23,34,43)
+  introTint.BackgroundTransparency=.65
+  introTint.ZIndex=5
+  introTint.Parent=introPanel
+  local introGradient=Instance.new("UIGradient")
+  introGradient.Color=ColorSequence.new({
+    ColorSequenceKeypoint.new(0,Color3.fromRGB(8,12,20)),
+    ColorSequenceKeypoint.new(.55,Color3.fromRGB(70,66,56)),
+    ColorSequenceKeypoint.new(1,Color3.fromRGB(7,10,16)),
+  })
+  introGradient.Rotation=90
+  introGradient.Parent=introTint
+  for _,top in ipairs({true,false}) do
+    local bar=Instance.new("Frame")
+    bar.Name=top and "CinemaTopBar" or "CinemaBottomBar"
+    bar.Position=top and UDim2.fromScale(0,0) or UDim2.fromScale(0,.89)
+    bar.Size=UDim2.fromScale(1,.11)
+    bar.BackgroundColor3=Color3.fromRGB(2,4,7)
+    bar.BorderSizePixel=0
+    bar.ZIndex=10
+    bar.Parent=introPanel
+  end
+  local introAct=label(introPanel,"StoryChapter","서막 · 빛의 배신",0,30,14,Color3.fromRGB(215,185,124))
+  introAct.Position=UDim2.fromScale(.075,.145)
+  introAct.Size=UDim2.fromScale(.85,.07)
+  introAct.TextXAlignment=Enum.TextXAlignment.Left
+  introAct.ZIndex=14
+  local regionIntro=label(introPanel,"RegionReveal","전쟁의 끝",0,80,34)
+  regionIntro.Position=UDim2.fromScale(.07,.25)
+  regionIntro.Size=UDim2.fromScale(.86,.2)
+  regionIntro.TextScaled=true
+  regionIntro.ZIndex=14
+  local titleSize=Instance.new("UITextSizeConstraint")
+  titleSize.MinTextSize=19;titleSize.MaxTextSize=38;titleSize.Parent=regionIntro
+  local openingText=label(introPanel,"OpeningText","",0,70,17,Color3.fromRGB(221,225,216))
+  openingText.Position=UDim2.fromScale(.08,.47)
+  openingText.Size=UDim2.fromScale(.84,.15)
+  openingText.ZIndex=14
+  local introSpeaker=label(introPanel,"DialogueSpeaker","",0,24,15,Color3.fromRGB(239,204,141))
+  introSpeaker.Position=UDim2.fromScale(.08,.66)
+  introSpeaker.Size=UDim2.fromScale(.84,.055)
+  introSpeaker.TextXAlignment=Enum.TextXAlignment.Left
+  introSpeaker.ZIndex=14
+  local introDialogue=label(introPanel,"DialogueLine","",0,68,18,Color3.fromRGB(255,246,221))
+  introDialogue.Position=UDim2.fromScale(.08,.72)
+  introDialogue.Size=UDim2.fromScale(.84,.14)
+  introDialogue.TextXAlignment=Enum.TextXAlignment.Left
+  introDialogue.ZIndex=14
+  local introFlash=Instance.new("Frame")
+  introFlash.Name="SceneTransition"
+  introFlash.Size=UDim2.fromScale(1,1)
+  introFlash.BackgroundColor3=Color3.fromRGB(5,8,14)
+  introFlash.BackgroundTransparency=1
+  introFlash.BorderSizePixel=0
+  introFlash.ZIndex=19
+  introFlash.Parent=introPanel
+  local storyProgressTrack=Instance.new("Frame")
+  storyProgressTrack.Name="StoryProgressTrack"
+  storyProgressTrack.Position=UDim2.fromScale(0,.885)
+  storyProgressTrack.Size=UDim2.fromScale(1,.005)
+  storyProgressTrack.BackgroundColor3=Color3.fromRGB(61,66,63)
+  storyProgressTrack.BorderSizePixel=0
+  storyProgressTrack.ZIndex=21
+  storyProgressTrack.Parent=introPanel
+  local storyProgress=Instance.new("Frame")
+  storyProgress.Name="StoryProgress"
+  storyProgress.Size=UDim2.fromScale(0,1)
+  storyProgress.BackgroundColor3=Color3.fromRGB(222,185,116)
+  storyProgress.BorderSizePixel=0
+  storyProgress.ZIndex=22
+  storyProgress.Parent=storyProgressTrack
   local skipButton=button(introPanel,"Skip","건너뛰기",170)
-  skipButton.AnchorPoint=Vector2.new(1,1)
-  skipButton.Position=UDim2.new(1,-20,1,-25)
-  skipButton.Size=UDim2.fromOffset(115,40)
-
+  skipButton.AnchorPoint=Vector2.new(1,0)
+  skipButton.Position=UDim2.new(1,-16,0,12)
+  skipButton.Size=UDim2.fromOffset(112,40)
+  skipButton.ZIndex=30
+  skipButton.BackgroundColor3=Color3.fromRGB(35,39,42)
   local entranceOpen=true
   local openingCamera=workspace.CurrentCamera
   local originalCameraType=openingCamera and openingCamera.CameraType
@@ -1951,23 +2029,55 @@ do
     progressFill.Size=UDim2.fromScale(ratio,1)
     loadingStatus.Text=message.." · "..math.floor(ratio*100+.5).."%"
   end
+
+  -- [첫 진입] 서버 프로필·월드 준비 이후에만 연출한다. 이어하기는 연출 생략.
+  -- 모든 문구는 극중 기록/증언이며, 빅브라더의 진짜 음모는 후속 탐험에서 밝힌다.
   local function startIntro(isFresh)
     loadPanel.Visible=false
     introPanel.Visible=isFresh
     if not isFresh then closeArrival();return end
     local token=runToken
-    local character=player.Character
-    local rootPart=character and character:FindFirstChild("HumanoidRootPart")
-    if openingCamera and rootPart then
-      openingCamera.CameraType=Enum.CameraType.Scriptable
-      openingCamera.CFrame=CFrame.lookAt(rootPart.Position+Vector3.new(14,12,17),
-        rootPart.Position+Vector3.new(0,2,-15))
-      activeTween=TweenService:Create(openingCamera,TweenInfo.new(4,Enum.EasingStyle.Sine),
-        {CFrame=CFrame.lookAt(rootPart.Position+Vector3.new(-8,6,11),
-          rootPart.Position+Vector3.new(0,3,-12))})
-      activeTween:Play()
-    end
-    regionIntro.Text="초원 지역"
+    local scenes={
+      {seconds=8,chapter="전쟁의 끝",title="빛 아래 선봉",
+        body="빛의 군주와 괴물 군주의 전쟁.\n렌스기사단은 가장 위험한 전선에 투입되었다.",
+        speaker="렌스 · 기사단장",line="전군, 앞으로! 오늘 이 전쟁을 끝낸다!",view="battle",tone=Color3.fromRGB(65,47,40)},
+      {seconds=8,chapter="렌스기사단",title="함께 싸운 네 사람",
+        body="기사단장 렌스. 돌격대장인 당신.\n보병대장 닉과 궁수대장 미나.",
+        speaker="닉 · 보병대장",line="돌격대장! 우리가 길을 열겠다!",view="sweep",tone=Color3.fromRGB(52,46,39)},
+      {seconds=7,chapter="빛의 명령",title="빅브라더",
+        body="승리를 앞둔 전장. 황금빛 아래서\n군주의 목소리가 울려 퍼졌다.",
+        speaker="빅브라더 · 빛의 군주",line="빛은 언제나 너희를 지켜보고 있다.",view="sky",tone=Color3.fromRGB(100,76,43)},
+      {seconds=7,chapter="멈춘 전쟁",title="승리 직전의 침묵",
+        body="괴물들의 함성이 멎고,\n낯선 마법진의 기운이 전장을 뒤덮었다.",
+        speaker="미나 · 궁수대장",line="잠깐... 이 마법은 우리 편의 것이야.",view="sweep",tone=Color3.fromRGB(58,49,74)},
+      {seconds=8,chapter="저주",title="마법사 미러",
+        body="빛의 군주를 섬기던 마법사가\n동료들에게 봉인의 저주를 내렸다.",
+        speaker="렌스 · 기사단장",line="미러! 네가 어째서 우리를 겨누는 거냐!",view="seal",tone=Color3.fromRGB(63,33,70)},
+      {seconds=8,chapter="저주",title="너희의 역할은 끝났다",
+        body="검이 허공을 가르고, 발밑의 세계가 갈라졌다.\n당신의 외침은 누구에게도 닿지 않았다.",
+        speaker="미러 · 궁정 마법사",line="너희의 역할은 여기까지다.",view="seal",tone=Color3.fromRGB(38,29,63)},
+      {seconds=7,chapter="흩어진 동료",title="렌스 · 닉 · 미나",
+        body="세 사람의 모습이 차례로 사라졌다.\n당신은 그들의 손을 붙잡지 못했다.",
+        speaker="주인공 · 돌격대장",line="반드시 찾아내겠어. 살아만 있어 줘.",view="fall",tone=Color3.fromRGB(30,31,60)},
+      {seconds=8,chapter="역사의 삭제",title="존재하지 않는 기사단",
+        body="왕국의 기록에는 단 한 줄만 남았다.\n‘렌스기사단은 존재한 적이 없다.’",
+        speaker="빅브라더 · 빛의 군주",line="충성스러운 기사들이여. 너희의 희생은 영원히 기억될 것이다.",view="sky",tone=Color3.fromRGB(23,25,34)},
+      {seconds=8,chapter="봉인",title="끝없는 추락",
+        body="기억은 부서지고, 전장은 멀어졌다.\n낯선 숲의 기운이 당신을 감쌌다.",
+        speaker="",line="",view="fall",tone=Color3.fromRGB(17,25,37)},
+      {seconds=8,chapter="마력숲",title="낯선 세계의 아침",
+        body="바람, 새소리, 그리고 알 수 없는 울음소리.\n전쟁은 사라지고 숲만 남았다.",
+        speaker="주인공",line="여긴... 어디지?",view="wake",tone=Color3.fromRGB(25,65,48)},
+      {seconds=7,chapter="남겨진 흔적",title="사라진 세 사람",
+        body="사라진 동료들의 흔적이 숲 어딘가에 있다.\n모든 진실은 아직 안개 속에 가려져 있다.",
+        speaker="주인공",line="렌스, 닉, 미나. 내가 너희를 찾겠다.",view="wake",tone=Color3.fromRGB(27,61,53)},
+      {seconds=8,chapter="첫 번째 여정",title="마 력 숲",
+        body="잊힌 기사들의 이야기\n첫 여정 · 렌스기사단의 흔적을 찾아라.",
+        speaker="",line="",view="wake",tone=Color3.fromRGB(23,48,43)},
+    }
+    local total=0
+    for _,scene in ipairs(scenes) do total+=scene.seconds end
+    local spent=0
     local finished=false
     local function finish()
       if finished or token~=runToken then return end
@@ -1975,7 +2085,60 @@ do
       closeArrival()
     end
     skipButton.Activated:Once(finish)
-    task.delay(4.3,finish)
+    storyProgress.Size=UDim2.fromScale(0,1)
+    TweenService:Create(storyProgress,TweenInfo.new(total,Enum.EasingStyle.Linear),{
+      Size=UDim2.fromScale(1,1)
+    }):Play()
+    local function moveStoryCamera(view,duration)
+      openingCamera=workspace.CurrentCamera
+      local character=player.Character
+      local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+      if not openingCamera or not rootPart then return end
+      if activeTween then activeTween:Cancel();activeTween=nil end
+      local origin=rootPart.Position
+      local target
+      if view=="battle" then
+        target=CFrame.lookAt(origin+Vector3.new(37,28,38),origin+Vector3.new(0,5,-57))
+      elseif view=="sweep" then
+        target=CFrame.lookAt(origin+Vector3.new(-36,21,24),origin+Vector3.new(0,4,-39))
+      elseif view=="sky" then
+        target=CFrame.lookAt(origin+Vector3.new(18,16,32),origin+Vector3.new(0,65,-28))
+      elseif view=="seal" then
+        target=CFrame.lookAt(origin+Vector3.new(6,7,18),origin+Vector3.new(0,3,-10))
+      elseif view=="fall" then
+        target=CFrame.lookAt(origin+Vector3.new(0,48,30),origin+Vector3.new(0,0,0))
+      else
+        target=CFrame.lookAt(origin+Vector3.new(-12,9,17),origin+Vector3.new(0,3,-6))
+      end
+      openingCamera.CameraType=Enum.CameraType.Scriptable
+      activeTween=TweenService:Create(openingCamera,TweenInfo.new(math.max(.5,duration),Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+        CFrame=target,FieldOfView=view=="fall" and 78 or view=="seal" and 48 or 63
+      })
+      activeTween:Play()
+    end
+    task.spawn(function()
+      for index,scene in ipairs(scenes) do
+        if not entranceOpen or token~=runToken then return end
+        introAct.Text=string.format("서막 · %02d/%02d  |  %s",index,#scenes,scene.chapter)
+        regionIntro.Text=scene.title
+        openingText.Text=scene.body
+        introSpeaker.Text=scene.speaker
+        introDialogue.Text=scene.line
+        introTint.BackgroundColor3=scene.tone
+        introTint.BackgroundTransparency=scene.view=="seal" and .30 or scene.view=="fall" and .20 or .62
+        introFlash.BackgroundTransparency=0
+        moveStoryCamera(scene.view,scene.seconds)
+        TweenService:Create(introFlash,TweenInfo.new(.75,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+          BackgroundTransparency=1
+        }):Play()
+        local started=os.clock()
+        while entranceOpen and token==runToken and os.clock()-started<scene.seconds do
+          task.wait(.1)
+        end
+        spent+=scene.seconds
+      end
+      finish()
+    end)
   end
   local function loadRegion(isFresh)
     if not entranceOpen then return end
