@@ -388,6 +388,8 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
       if forward.Magnitude<.15 then clone:Destroy();error("MEADOW_DEER_ANIMATED_FORWARD_UNVERIFIED") end
       forward=forward.Unit
       deerAlignment=CFrame.fromMatrix(Vector3.zero,forward:Cross(up).Unit,up,-forward):Inverse()
+      -- [동물 이동 루프 연결] 매 프레임 이동 피벗을 갱신할 때 직립 보정을 유지한다.
+      clone:SetAttribute("NativeDeerFacingCorrection",deerAlignment)
       clone:SetAttribute("NativeMobFacingYaw",0)
       clone:SetAttribute("NativeDeerOriginalRigUpright",true)
     end
@@ -3376,7 +3378,10 @@ RunService.Heartbeat:Connect(function(dt)
         -- [사슴 원본 뼈대 전방] 저작 모델의 머리-몸 축을 기준으로 정상 직립을 유지한다.
         local facing=CFrame.lookAt(animal.visualPosition,animal.visualPosition+forward)
         if animal.model:GetAttribute("MeadowWildlife")=="deer" then
-          facing*=CFrame.Angles(0,animal.model:GetAttribute("NativeMobFacingYaw") or 0,0)
+          -- [사슴 직립 유지] GLB 고유 축을 매 렌더 이동에도 동일하게 적용한다.
+          local correction=animal.model:GetAttribute("NativeDeerFacingCorrection")
+          facing*=typeof(correction)=="CFrame" and correction
+            or CFrame.Angles(0,animal.model:GetAttribute("NativeMobFacingYaw") or 0,0)
         end
         animal.model:PivotTo(facing)
       end
