@@ -177,8 +177,9 @@ if not verifiedLearningColorGrade then
   verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
   verifiedLearningColorGrade.Parent = verifiedLearningLighting
 end
-verifiedLearningColorGrade.Saturation = 0
-verifiedLearningColorGrade.Contrast = 0
+-- [다크 판타지 숲] 원본 색을 살리되 서버 날씨 보정과 동일한 방향으로 채도를 줄인다.
+verifiedLearningColorGrade.Saturation = -0.06
+verifiedLearningColorGrade.Contrast = 0.045
 verifiedLearningColorGrade.Brightness = 0
 verifiedLearningColorGrade:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
@@ -189,9 +190,9 @@ if not verifiedLearningBloom then
   verifiedLearningBloom.Name = "VerifiedLearningBloom"
   verifiedLearningBloom.Parent = verifiedLearningLighting
 end
-verifiedLearningBloom.Intensity = 0.22
-verifiedLearningBloom.Size = 18
-verifiedLearningBloom.Threshold = 1.1
+verifiedLearningBloom.Intensity = 0.12
+verifiedLearningBloom.Size = 16
+verifiedLearningBloom.Threshold = 1.3
 local verifiedLearningAtmosphere = verifiedLearningLighting:FindFirstChild("VerifiedLearningAtmosphere")
 if not verifiedLearningAtmosphere then
   verifiedLearningAtmosphere = Instance.new("Atmosphere")
@@ -2705,13 +2706,13 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     atmosphere.Haze=atmosphere.Haze+(targetHaze-atmosphere.Haze)*.14
     atmosphere.Glare=atmosphere.Glare+((storm and .01 or .07)-atmosphere.Glare)*.14
   end
-  local tint=night and Color3.fromRGB(176,193,226)
-    or period=="DAWN" and Color3.fromRGB(255,222,183)
-    or period=="DUSK" and Color3.fromRGB(255,210,177)
-    or Color3.fromRGB(255,255,255)
-  if storm then tint=tint:Lerp(Color3.fromRGB(183,199,212),.35)
-  elseif rainy then tint=tint:Lerp(Color3.fromRGB(211,220,230),.20)
-  elseif snow then tint=tint:Lerp(Color3.fromRGB(222,235,246),.25) end
+  local tint=night and Color3.fromRGB(176,193,207)
+    or period=="DAWN" and Color3.fromRGB(220,211,191)
+    or period=="DUSK" and Color3.fromRGB(228,200,178)
+    or Color3.fromRGB(216,227,213)
+  if storm then tint=tint:Lerp(Color3.fromRGB(180,195,206),.35)
+  elseif rainy then tint=tint:Lerp(Color3.fromRGB(204,215,221),.20)
+  elseif snow then tint=tint:Lerp(Color3.fromRGB(223,233,238),.25) end
   local now=os.clock()
   local camera=workspace.CurrentCamera
   local wet=rainy or storm
@@ -2748,7 +2749,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   end
   verifiedLearningColorGrade.TintColor=verifiedLearningColorGrade.TintColor:Lerp(tint,.12)
   verifiedLearningColorGrade.Saturation=verifiedLearningColorGrade.Saturation
-    +((fog and -.18 or storm and -.13 or -.02)-verifiedLearningColorGrade.Saturation)*.12
+    +((fog and -.21 or storm and -.16 or -.06)-verifiedLearningColorGrade.Saturation)*.12
   local flash=storm and now<climateLightningUntil
   local brightness=flash and .34 or (night and -.035 or 0)
   verifiedLearningColorGrade.Brightness=verifiedLearningColorGrade.Brightness

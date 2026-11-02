@@ -1225,15 +1225,15 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   assert.match(server,/forestAirDensity=weather=="FOG" and \.40/);
   assert.match(server,/Lighting\.GlobalShadows=true/);
   assert.match(server,/Lighting\.ShadowSoftness=\.27/);
-  assert.match(server,/meadowColorGrade\.Saturation=-\.085/);
+  assert.match(server,/meadowColorGrade\.Saturation=-\.18/);
   assert.match(server,/local cover=weather=="STORM" and \.96/);
-  assert.match(server,/DARK_MEDIEVAL_FOREST_CC0_NATIVE_V4/);
+  assert.match(server,/DARK_MEDIEVAL_FOREST_CC0_NATIVE_V5/);
   assert.match(server,/glow\.Parent=lanternMesh/);
   assert.match(server,/\{-119,-340\},\{-101,-344\}/);
   assert.match(server,/meadowAtmosphere.Density\+=\(forestAirDensity-meadowAtmosphere.Density\)\*\.12/);
   assert.match(server,/meadowAtmosphere.Color=meadowAtmosphere.Color:Lerp\(/);
   assert.match(server,/surface.Color=surface.Color:Lerp\(leafTone,\.33\)/);
-  assert.match(server,/surface.Material==Enum.Material.Fabric/);
+  assert.match(server,/surface.Material==Enum.Material.LeafyGrass/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowForestFloorCount",forestFloorCount\)/);
   assert.match(server,/index%6==0 and Enum.Material.Ground or Enum.Material.LeafyGrass/);
   assert.match(server,/if distance>84 and math.abs\(x\)<330/);
@@ -1527,7 +1527,12 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   for(const color of ['grass','leafyGrass','ground','rock','bark','leaves','wolf','boar','deer','rabbit']){
     assert.ok(server.includes(color+'=Color3.fromRGB('),'missing matte forest color: '+color);
   }
-  assert.match(server,/surface\.Material=bark and Enum\.Material\.Wood or Enum\.Material\.SmoothPlastic/);
+  assert.match(server,/surface\.Material=bark and Enum\.Material\.Wood or Enum\.Material\.LeafyGrass/);
+  // [원본 수목 라이선스] 토이 표면 삭제를 중지하고 CC0 텍스처를 유지한다.
+  const treeSource=server.slice(server.indexOf('elseif id=="tree" then'),server.indexOf('else\n            -- [야생동물 토이 표면]'));
+  assert.ok(treeSource.includes('surface.Material=bark and Enum.Material.Wood or Enum.Material.LeafyGrass'));
+  assert.doesNotMatch(treeSource,/appearance:Destroy\(\)|surface\.TextureID=""/);
+  assert.match(server,/Lighting\.ExposureCompensation=-\.12/);
   // 모션은 원본 스킨 관절의 4족 접지와 전방 물기만 조절한다.
   assert.match(client,/local quadrupedFootPhases=/);
   assert.match(client,/local wolfFourLegRig=species~="wolf"/);
