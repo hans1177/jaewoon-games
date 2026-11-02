@@ -359,30 +359,60 @@ jobs:
             return r;
           };
           const base='https://apis.roblox.com/assets/'+(cookie?'user-auth/':'')+'v1/';
+          // [등록 복구] 이전 실제 Roblox 성공 로그의 ID와 원본 SHA를 함께 검증해 중복 등록을 막는다.
+          const registeredReceipts={
+            '1:bg':['72108751885220','0b72201f7e3c1ed0ef6fc563f804d44649c24d470ba653acf1c38930eeab13ac'],
+            '1:fg':['111914313566974','d38f0af01eab62ce3035f8599d312673e145bd9f339c8df7901a06192de4a0b3'],
+            '2:bg':['109503451367036','0b764b0319cf43373eacc2a99ce34d36f165663bcf7608295521271508c72aa4'],
+            '2:fg':['120867921607093','ee4357714f0d94ea8e76aa0a997ed56fa239cb68dd01d2b5c904db92c68dea15'],
+            '3:bg':['74417332635767','66b7b4ce6503cfc85d6bdb30f9792ecc8ef8c86d2582f8ecb3992eb009c8752b'],
+            '3:fg':['125945487568822','49541515fb6a054ae89684e891a7f2acc45355e57c520b393e009341f66239e5'],
+          };
+          const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
           const registered=[];
           for(const art of illustrations){
+            const receipt=registeredReceipts[art.index+':'+art.type];
+            if(receipt){
+              if(receipt[1]!==art.hash)throw Error('FOREST_INTRO_RECEIPT_PROVENANCE_MISMATCH_'+art.index);
+              registered.push({index:art.index,type:art.type,assetId:receipt[0],sha256:art.hash});
+              console.log('FOREST_INTRO_REUSED_'+String(art.index).padStart(2,'0')+'_'+art.type.toUpperCase()+'='+receipt[0]);
+              continue;
+            }
             const form=new FormData();
             form.append('request',JSON.stringify({assetType:'Image',
               displayName:'Mana Forest Prologue '+String(art.index).padStart(2,'0')+' '+art.type,
               description:'Original illustrated game scene; SHA256 '+art.hash,
               creationContext:{creator}}));
             form.append('fileContent',new Blob([art.data],{type:art.mime}),art.name);
-            let r=await request(base+'assets',{method:'POST',body:form});
-            let j=await read(r);
+            let r=null,j=null;
+            for(let retry=0;retry<6;retry++){
+              if(retry>0)await sleep(18000+retry*12000);
+              r=await request(base+'assets',{method:'POST',body:form});
+              j=await read(r);
+              if(r.ok&&/^operations\/[a-zA-Z0-9-]+$/.test(String(j.path||'')))break;
+              if(![403,429,503].includes(r.status))break;
+              console.log('FOREST_INTRO_UPLOAD_BACKOFF_'+art.index+'_'+art.type+'_HTTP_'+r.status);
+            }
             if(!r.ok||!/^operations\/[a-zA-Z0-9-]+$/.test(String(j.path||'')))
               throw Error('FOREST_INTRO_UPLOAD_REJECTED_'+art.index+'_'+art.type+'_HTTP_'+r.status);
             const operation=j.path,deadline=Date.now()+240000;
+            let pollFailures=0;
             while(!j.done&&Date.now()<deadline){
-              await new Promise(resolve=>setTimeout(resolve,3500));
+              await sleep(4200+pollFailures*5000);
               r=await request(base+operation,{method:'GET'});
-              j=await read(r);
-              if(!r.ok)throw Error('FOREST_INTRO_OPERATION_HTTP_'+r.status);
+              const answer=await read(r);
+              if(r.ok){j=answer;pollFailures=0;}
+              else if([403,429,503].includes(r.status)&&pollFailures<6){
+                pollFailures++;
+                console.log('FOREST_INTRO_POLL_BACKOFF_'+art.index+'_'+art.type+'_HTTP_'+r.status);
+              }else throw Error('FOREST_INTRO_OPERATION_HTTP_'+r.status);
             }
             const id=String(j.response?.assetId||'');
             if(!j.done||j.error||!/^[1-9]\d*$/.test(id))
               throw Error('FOREST_INTRO_ASSET_ID_FAILED_'+art.index+'_'+art.type);
             registered.push({...{index:art.index,type:art.type},assetId:id,sha256:art.hash});
             console.log('FOREST_INTRO_UPLOADED_'+String(art.index).padStart(2,'0')+'_'+art.type.toUpperCase()+'='+id);
+            await sleep(6000);
           }
           await grant(registered.map(x=>x.assetId));
           console.log('FOREST_INTRO_SCENES_REGISTERED='+JSON.stringify(registered));
