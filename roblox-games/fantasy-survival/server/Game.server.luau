@@ -395,8 +395,8 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
     end
     -- [원본 CC0 숲 표면] 새 파츠 없이 수목·야생동물을 같은 무광 팔레트로 맞춘다.
     -- 원본 MeshId/TextureID/리그 및 자원·저장·충돌은 수정하지 않는다.
-    -- [새 사슴] 다운로드한 원본 암사슴의 실제 재질·색을 그대로 사용한다.
-    -- 기존 오류 사슴 FBX의 강제 단색 재질 처리는 더 이상 적용하지 않는다.
+    -- [사슴 갈색 피모] 기존 GLB 스킨에 갈색을 적용해 흰색 단색 출력을 없앤다.
+    -- 기존 뼈·텍스처·스킨·원형 부위는 유지하고 색상만 보정한다.
     local animalTint=id=="deer" and meadowPalette.deer
       or id=="boar" and meadowPalette.boar
       or id=="rabbit" and meadowPalette.rabbit or nil
@@ -1213,7 +1213,7 @@ local function createMeadowVillage()
       end
     end
     for index,row in ipairs(furnishings) do
-      -- [실제 우물] 기존 원본 분수 메시를 우물 크기로만 축소한다.
+      -- [실제 돌우물] 검증·등록된 완성형 Kenney Well 원본만 크기를 조절한다.
       local propHeight=row[1]=="villageWell" and row[4] or row[4]*1.3
       local model=worldAsset(row[1],Vector3.new(row[2],3,row[3]),propHeight)
       if model then
@@ -1230,8 +1230,8 @@ local function createMeadowVillage()
             end
           end
         elseif row[1]=="villageWell" then
-          -- [우물 복원] 등록된 CC0 원형 석조 원본을 실제 눈에 띄는 크기로 둔다.
-          -- 물·석재 원본 메시를 보존하며 새로운 기본 도형/가짜 건축 부품을 만들지 않는다.
+          -- [실제 우물] CC0 원본 석조 Well 메시를 눈에 띄는 크기로 배치한다.
+          -- 기존 원본 메시를 보존하며 기본 도형이나 분수를 대신 사용하지 않는다.
           model:SetAttribute("MeadowVillageWellOriginal",true)
           villageWellReady=true
           local wellMesh=model:FindFirstChildWhichIsA("MeshPart",true)
