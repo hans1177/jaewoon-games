@@ -627,6 +627,13 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.doesNotMatch(thumbnailJob,/\|\| needs\.release\.result == 'success'\)/);
   assert.match(thumbnailJob,/github\.event_name == 'push'/);
   assert.match(thumbnailJob,/inputs\.thumbnail_only == true/);
+  // 정본 게시 대상이 없으면 자동 미디어 작업을 보류하고 성공/업로드로 오인하지 않는다.
+  assert.match(workflow,/ROBLOX_THUMBNAIL_SYNC=DEFERRED_NO_VERIFIED_CANONICAL_TARGET/);
+  assert.doesNotMatch(workflow,/test -n "\$game_ids"/);
+  const thumbnailSection=workflow.split('  thumbnail-sync:')[1]||'';
+  assert.match(thumbnailSection,/steps\.thumbnail_games\.outputs\.game_ids != ''/);
+  assert.match(thumbnailSection,/name: Render upload and verify shared thumbnails\n\s*# \[권한 보호\][^\n]*\n\s*if:.*steps\.thumbnail_games\.outputs\.game_ids != ''/);
+  assert.match(thumbnailSection,/target\.verified===true&&target\.dedicated===true/);
   assert.match(workflow,/github\.event_name == 'push'/);
   assert.match(workflow,/name: Resolve thumbnail sync games/);
   assert.match(workflow,/target\.verified===true&&target\.dedicated===true/);
