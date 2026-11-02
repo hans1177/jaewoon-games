@@ -731,6 +731,13 @@ end
 local function createMeadowVillage()
   -- 외곽 지형 생성이 끝나고 조사 흔적을 배치해야 월드 확장에 흔적이 묻히지 않는다.
   while gameWorld:GetAttribute("MeadowOuterRegionReady")~=true do task.wait(.15) end
+  -- [중앙 흰색 바닥 제거] 얇은 길 메시가 높이 기준으로 과도하게 확대된 이전 배치만 정리한다.
+  -- 원래 Terrain 흙길·주거·NPC·퀘스트 지점은 건드리지 않는다.
+  for _,scenery in ipairs(gameWorld:GetChildren()) do
+    if scenery.Name:match("^Meadow_Village_villageRoad_%d+$") then
+      scenery:Destroy()
+    end
+  end
   -- [마을 평탄화] 초원 자체에 만들어진 봉우리와 뒤늦게 남는 울퉁불퉁한 언덕을 제거한다.
   -- 마을 구역의 Terrain만 고르게 정리하며 바위 채집/의뢰/모델 개체와 세이브는 손대지 않는다.
   -- 동쪽 외곽 개울과 북쪽의 원래 초원은 제외한다.
@@ -796,7 +803,7 @@ local function createMeadowVillage()
   -- 새 업로드가 아직 승인되지 않아도 기존 10종으로 이루어진 16개 집과 의뢰는 지운다거나 바꾸지 않는다.
   local villageDetailReady=nativeVillageReady
   for _,key in ipairs({"villageStoneWall","villageFlatRoof","villageChimney",
-    "villagePillar","villageArch","villageRuinWall","villageRoad",
+    "villagePillar","villageArch","villageRuinWall",
     "villageTallTree","villageCrookedTree"}) do
     if typeof(NativeCreatureAssets[key])~="number" or NativeCreatureAssets[key]<1 then
       villageDetailReady=false;break
@@ -815,6 +822,7 @@ local function createMeadowVillage()
   local villageArchitectureScale=2.35
   local villageBuildings=0
   local villageProps=0
+  local villageWellReady=false
   local expectedVillageBuildings=16
   if nativeVillageReady then
     -- [집 유형] 짧은 초가, 긴 농가/공방, 이층 여관/회관. 문 방향은 광장·골목을 향하게 한다.
@@ -1149,7 +1157,7 @@ local function createMeadowVillage()
     -- 기존 CC0 카트·울타리·등불을 농가와 골목에 비대칭 분산 배치한다.
     local furnishings={
       {"villageStall",-26,-148,3.15,.2},{"villageStall",26,-164,3.4,-.3},
-      {"villageFountain",0,-146,2.2,0},
+      {"villageFountain",0,-146,5.5,0},
       {"villageCart",-52,-165,6,.4},{"villageCart",54,-244,5.6,-.35},
       {"villageCart",-165,-234,6.1,.15},{"villageCart",176,-148,6.1,-.5},
       {"villageLantern",-17,-102,5,0},{"villageLantern",19,-113,5,0},
@@ -1175,8 +1183,6 @@ local function createMeadowVillage()
         {"villageRuinWall",-263,-181,6.2,.1},{"villageRuinWall",249,-302,5.6,-.2},
         {"villagePillar",-31,-151,5.0,0},{"villagePillar",30,-153,5.0,0},
         {"villagePillar",-32,-237,5.0,.1},{"villagePillar",32,-239,5.0,-.1},
-        {"villageRoad",-14,-115,1.1,.06},{"villageRoad",12,-158,1.1,-.07},
-        {"villageRoad",-11,-243,1.1,.05},{"villageRoad",12,-270,1.1,-.04},
         {"villageTallTree",-250,-125,15,.22},{"villageTallTree",258,-226,16,-.28},
         {"villageCrookedTree",-246,-300,12,.13},{"villageCrookedTree",240,-73,14,-.15},
       }) do
@@ -1201,10 +1207,31 @@ local function createMeadowVillage()
             end
           end
         elseif row[1]=="villageFountain" then
-          -- [원본 물·석재 표면] 모든 메시를 단색 회색 돌로 덮어 물마저 돌처럼 보이던 문제를 제거한다.
-          -- 등록된 CC0 원본의 색·재질·물 표면을 유지하며 새 파츠나 가짜 우물 구조를 만들지 않는다.
+          -- [우물 복원] 등록된 CC0 원형 석조 원본을 실제 눈에 띄는 크기로 둔다.
+          -- 물·석재 원본 메시를 보존하며 새로운 기본 도형/가짜 건축 부품을 만들지 않는다.
           model:SetAttribute("MeadowOriginalWaterSurfacePreserved",true)
-        elseif row[1]=="villageRoad" or row[1]=="villageRuinWall"
+          villageWellReady=true
+          local wellMesh=model:FindFirstChildWhichIsA("MeshPart",true)
+          if wellMesh then
+            local sign=Instance.new("BillboardGui")
+            sign.Name="MeadowVillageWellSign"
+            sign.Adornee=wellMesh
+            sign.Size=UDim2.fromOffset(118,30)
+            sign.StudsOffsetWorldSpace=Vector3.new(0,4.2,0)
+            sign.MaxDistance=85
+            sign.AlwaysOnTop=false
+            sign.Parent=wellMesh
+            local caption=Instance.new("TextLabel")
+            caption.Size=UDim2.fromScale(1,1)
+            caption.BackgroundTransparency=1
+            caption.Text="마을 우물"
+            caption.TextColor3=Color3.fromRGB(244,219,169)
+            caption.TextStrokeTransparency=.35
+            caption.Font=Enum.Font.GothamBold
+            caption.TextSize=17
+            caption.Parent=sign
+          end
+        elseif row[1]=="villageRuinWall"
           or row[1]=="villagePillar" or row[1]=="villageArch" then
           for _,mesh in ipairs(model:GetDescendants()) do
             if mesh:IsA("MeshPart") then
@@ -1255,6 +1282,7 @@ local function createMeadowVillage()
   end
   gameWorld:SetAttribute("MeadowVillageBuildingCount",villageBuildings)
   gameWorld:SetAttribute("MeadowVillagePropCount",villageProps)
+  gameWorld:SetAttribute("MeadowVillageWellReady",villageWellReady)
   gameWorld:SetAttribute("MeadowVillagePrefabReady",nativeVillageReady and villageBuildings==expectedVillageBuildings)
   -- [유적 제거] 예전 12개 파손 석벽을 집 옆에 세워 폐허로 보이던 배치를 제거한다.
   -- 돌벽을 집으로 위장하지 않으며 실제 마을 프리팹의 울타리·건물만 사용한다.

@@ -1368,8 +1368,12 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/local function villageNativeNpc\(spec\)/);
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
   // [마력숲 우물/의뢰 게시판] 기존 CC0 물표면을 보존하고 흰색 광장 덮개를 재도입하지 않는다.
-  assert.match(server,/\{"villageFountain",0,-146,2\.2,0\}/);
+  assert.match(server,/\{"villageFountain",0,-146,5\.5,0\}/);
   assert.match(server,/local propHeight=row\[1\]=="villageFountain" and row\[4\] or row\[4\]\*1\.3/);
+  assert.doesNotMatch(server,/\{"villageRoad",[^}]+\}/);
+  assert.match(server,/scenery\.Name:match\("\^Meadow_Village_villageRoad_%d\+\$"\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowVillageWellReady",villageWellReady\)/);
+  assert.match(server,/sign\.Name="MeadowVillageWellSign"/);
   assert.match(server,/model:SetAttribute\("MeadowOriginalWaterSurfacePreserved",true\)/);
   assert.doesNotMatch(server,/meadowTerrain:FillBlock\(CFrame\.new\(plaza\[1\],1\.55,plaza\[2\]\)/);
   assert.doesNotMatch(server,/mesh\.Color=Color3\.fromRGB\(105,111,108\)/);
