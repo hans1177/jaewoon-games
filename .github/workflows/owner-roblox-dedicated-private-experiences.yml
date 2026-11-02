@@ -391,7 +391,11 @@ jobs:
               j=await read(r);
               if(r.ok&&/^operations\/[a-zA-Z0-9-]+$/.test(String(j.path||'')))break;
               if(![403,429,503].includes(r.status))break;
-              console.log('FOREST_INTRO_UPLOAD_BACKOFF_'+art.index+'_'+art.type+'_HTTP_'+r.status);
+              const reason=String(j?.error?.code||j?.code||j?.errors?.[0]?.code||j?.message||'UNSPECIFIED')
+                .replace(/[^A-Za-z0-9_ .:-]/g,'_').slice(0,96);
+              console.log('FOREST_INTRO_UPLOAD_LIMIT_'+art.index+'_'+art.type+'_HTTP_'+r.status+'_REASON_'+reason);
+              // 영구 권한/쿼터 오류는 반복 요청으로 해결되지 않으므로 즉시 중단한다.
+              if(r.status===403&&!/temporary|throttl|rate|busy/i.test(reason))break;
             }
             if(!r.ok||!/^operations\/[a-zA-Z0-9-]+$/.test(String(j.path||'')))
               throw Error('FOREST_INTRO_UPLOAD_REJECTED_'+art.index+'_'+art.type+'_HTTP_'+r.status);
