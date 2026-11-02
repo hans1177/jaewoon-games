@@ -667,8 +667,8 @@ jobs:
           compare_status="$(gh api "repos/$GITHUB_REPOSITORY/compare/$SOURCE_REVISION...$(git rev-parse HEAD)" --jq '.status')"
           [[ "$compare_status" == ahead || "$compare_status" == identical ]]
           if [ "$PUBLISH_STAGE" != 'final' ]; then
-            source_runtime_tree="$(git ls-tree -r "$SOURCE_REVISION" -- "$SOURCE_ROOT" | awk -F '\t' -v excluded="$SOURCE_ROOT/roblox-source-bootstrap.json" '$2 != excluded' | sha256sum | awk '{print $1}')"
-            latest_runtime_tree="$(git ls-tree -r HEAD -- "$SOURCE_ROOT" | awk -F '\t' -v excluded="$SOURCE_ROOT/roblox-source-bootstrap.json" '$2 != excluded' | sha256sum | awk '{print $1}')"
+            source_runtime_tree="$(git ls-tree -r "$SOURCE_REVISION" -- "$SOURCE_ROOT/default.project.json" "$SOURCE_ROOT/shared" "$SOURCE_ROOT/server" "$SOURCE_ROOT/client" | sha256sum | awk '{print $1}')"
+            latest_runtime_tree="$(git ls-tree -r HEAD -- "$SOURCE_ROOT/default.project.json" "$SOURCE_ROOT/shared" "$SOURCE_ROOT/server" "$SOURCE_ROOT/client" | sha256sum | awk '{print $1}')"
             [ "$source_runtime_tree" = "$latest_runtime_tree" ]
           fi
           node --input-type=module <<'NODE'
@@ -853,8 +853,10 @@ jobs:
             git fetch --no-tags --depth=1 origin main
             git -C ../runtime fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
             git -C ../runtime show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-latest-publish-queue.json
-            export PUBLISH_SOURCE_TREE="$(git ls-tree -r "$SOURCE_REVISION" -- "$SOURCE_ROOT" | awk -F '\t' -v excluded="$SOURCE_ROOT/roblox-source-bootstrap.json" '$2 != excluded' | sha256sum | awk '{print $1}')"
-            export PUBLISH_LATEST_SOURCE_TREE="$(git ls-tree -r origin/main -- "$SOURCE_ROOT" | awk -F '\t' -v excluded="$SOURCE_ROOT/roblox-source-bootstrap.json" '$2 != excluded' | sha256sum | awk '{print $1}')"
+            # [정확한 빌드 입력] 기존 canonical source-drift 판정으로 Rojo 의존 에셋까지 확인한다.
+            export PUBLISH_LATEST_MAIN_REVISION="$(git rev-parse origin/main)"
+            export PUBLISH_SOURCE_TREE="$(git ls-tree -r "$SOURCE_REVISION" -- "$SOURCE_ROOT/default.project.json" "$SOURCE_ROOT/shared" "$SOURCE_ROOT/server" "$SOURCE_ROOT/client" | sha256sum | awk '{print $1}')"
+            export PUBLISH_LATEST_SOURCE_TREE="$(git ls-tree -r origin/main -- "$SOURCE_ROOT/default.project.json" "$SOURCE_ROOT/shared" "$SOURCE_ROOT/server" "$SOURCE_ROOT/client" | sha256sum | awk '{print $1}')"
             : > /tmp/roblox-final-release-publish.log
             set +e
             node --input-type=module <<'NODE' 2>&1 | tee /tmp/roblox-final-release-publish.log
@@ -862,9 +864,21 @@ jobs:
           import crypto from 'node:crypto';
           import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
           import {createRobloxRuntimeCandidatePublishPlan,publishRobloxPlace,assertRobloxLatestPublishCandidate} from './tools/vibe3-roblox-platform.mjs';
+          import {robloxBuildSourceChangedBetween} from './tools/company-roblox-source-drift-sync.mjs';
           import {execFileSync} from 'node:child_process';
           const latestQueue=JSON.parse(fs.readFileSync('/tmp/roblox-latest-publish-queue.json','utf8'));
           const item=(latestQueue.items||[]).find(row=>row.gameId===process.env.GAME_ID);
+          // 이미 검증한 F0 패키지의 실제 Rojo 입력만 비교한다.
+          // 비빌드 intro.jpg 변경은 허용하지만 .luau / project / 연결된 외부 자산 드리프트는 차단한다.
+          if(process.env.PUBLISH_STAGE!=='final'){
+            const changed=robloxBuildSourceChangedBetween({
+              repoRoot:process.cwd(),
+              gameId:process.env.GAME_ID,
+              fromRevision:process.env.SOURCE_REVISION,
+              toRevision:process.env.PUBLISH_LATEST_MAIN_REVISION
+            });
+            if(changed!==false)throw new Error('ROBLOX_PUBLISH_STALE_BUILD_INPUTS');
+          }
           assertRobloxLatestPublishCandidate({
             item,
             sourceRevision:process.env.SOURCE_REVISION,
