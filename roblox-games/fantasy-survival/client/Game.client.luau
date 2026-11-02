@@ -5501,7 +5501,8 @@ local function bindOriginalMob(model)
   -- [실제 원본 사슴·늑대 모션] 등록된 AnimationId가 있으면 저작된 걷기/달리기를 우선한다.
   -- 단순 뼈 회전은 원본 애니메이션을 찾지 못할 때만 기존 책임 관절에 적용한다.
   local nativeAnimations={}
-  if species=="deer" or species=="wolf" or species=="bat" then
+  -- [사슴 46본] 미등록 원본 AnimationId 대신 이미 구현된 실제 Bone 보행·질주 모션을 사용한다.
+  if species=="wolf" or species=="bat" then
     for _,animation in ipairs(model:GetDescendants()) do
       if animation:IsA("Animation") and animation.AnimationId:match("^rbxassetid://[1-9]%d*$") then
         -- [공식 Animator] 이름에 Idle_HitReact가 포함되어도 대기 클립으로 잘못 선택하지 않는다.

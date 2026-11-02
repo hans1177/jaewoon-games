@@ -358,10 +358,11 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
       nativeWorldScale=propScale
     end
     clone:ScaleTo(nativeWorldScale)
-    -- [실제 사슴 전방·접지] 46본 Quaternius 스킨의 머리·몸·발 기준으로 원본 방향을 판별한다.
-    -- 오래된 뒤집힌 모델이나 리그 누락 모델은 나타내지 않는다. 임의 파츠·가짜 포즈 없음.
+    -- [사슴 직립 보정] 원본 46개 본의 머리·몸통·네 발 기준으로 기울어진 GLB 축만 보정한다.
+    -- 소스 스킨, 관절, 이동 수치, 월드·세이브를 변경하지 않는다.
+    local deerAlignment=nil
     if id=="deer" then
-      local head,body,lowestFoot=nil,nil,math.huge
+      local head,body,feet=nil,nil,Vector3.zero
       local legs=0
       for _,bone in ipairs(clone:GetDescendants()) do
         if bone:IsA("Bone") then
@@ -370,28 +371,32 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
           elseif name=="torso" then body=bone.WorldPosition end
           if name=="frontlowerleg.l" or name=="frontlowerleg.r"
             or name=="backlowerleg.l" or name=="backlowerleg.r" then
+            feet+=bone.WorldPosition
             legs+=1
-            lowestFoot=math.min(lowestFoot,bone.WorldPosition.Y)
           end
         end
       end
-      if not head or not body or legs~=4 or body.Y-lowestFoot<.15 then
-        clone:Destroy()
-        error("MEADOW_DEER_ANIMATED_UPRIGHT_RIG_REQUIRED")
+      if not head or not body or legs~=4 then
+        clone:Destroy();error("MEADOW_DEER_ANIMATED_UPRIGHT_RIG_REQUIRED")
       end
-      local forward=clone:GetPivot():VectorToObjectSpace(
-        Vector3.new(head.X-body.X,0,head.Z-body.Z))
-      if forward.Magnitude<=.01 then
-        clone:Destroy()
-        error("MEADOW_DEER_ANIMATED_FORWARD_UNVERIFIED")
-      end
-      clone:SetAttribute("NativeMobFacingYaw",math.atan2(forward.X,-forward.Z))
+      local pivot=clone:GetPivot()
+      local up=pivot:VectorToObjectSpace(body-feet/legs)
+      local headAxis=pivot:VectorToObjectSpace(head-body)
+      if up.Magnitude<.15 then clone:Destroy();error("MEADOW_DEER_GROUND_AXIS_INVALID") end
+      up=up.Unit
+      local forward=headAxis-up*headAxis:Dot(up)
+      if forward.Magnitude<.15 then clone:Destroy();error("MEADOW_DEER_ANIMATED_FORWARD_UNVERIFIED") end
+      forward=forward.Unit
+      deerAlignment=CFrame.fromMatrix(Vector3.zero,forward:Cross(up).Unit,up,-forward):Inverse()
+      clone:SetAttribute("NativeMobFacingYaw",0)
+      clone:SetAttribute("NativeDeerOriginalRigUpright",true)
     end
     -- [원본 CC0 숲 표면] 새 파츠 없이 수목·야생동물을 같은 무광 팔레트로 맞춘다.
     -- 원본 MeshId/TextureID/리그 및 자원·저장·충돌은 수정하지 않는다.
     -- [새 사슴] 다운로드한 원본 암사슴의 실제 재질·색을 그대로 사용한다.
     -- 기존 오류 사슴 FBX의 강제 단색 재질 처리는 더 이상 적용하지 않는다.
-    local animalTint=id=="boar" and meadowPalette.boar
+    local animalTint=id=="deer" and meadowPalette.deer
+      or id=="boar" and meadowPalette.boar
       or id=="rabbit" and meadowPalette.rabbit or nil
     if animalTint or id=="tree" or id=="ruin" then
       for _,surface in ipairs(clone:GetDescendants()) do
@@ -416,13 +421,25 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
             -- [야생동물 토이 표면] 자갈/천 직물 대신 유광을 억제한 장난감 플라스틱.
             -- 원본 모델, 메시·리그·판정은 그대로 유지한다.
             surface.Color=animalTint
-            surface.Material=Enum.Material.Plastic
+            if id=="deer" then
+              local piece=surface.Name:lower()
+              if piece:find("antler",1,true) or piece:find("horn",1,true) then
+                surface.Color=Color3.fromRGB(169,143,104)
+              elseif piece:find("belly",1,true) or piece:find("chest",1,true) then
+                surface.Color=Color3.fromRGB(196,171,135)
+              elseif piece:find("hoof",1,true) then
+                surface.Color=Color3.fromRGB(61,52,44)
+              end
+              surface.Material=Enum.Material.SmoothPlastic
+            else
+              surface.Material=Enum.Material.Plastic
+            end
           end
           surface.Reflectance=0
         end
       end
     end
-    clone:PivotTo(CFrame.new(location))
+    clone:PivotTo(CFrame.new(location)*(deerAlignment or CFrame.new()))
     -- 수입 FBX의 래퍼가 장식 본체에서 떨어져 있어도 나무/동물 중심을 원래 위치에 정렬.
     local minX,maxX,minZ,maxZ=math.huge,-math.huge,math.huge,-math.huge
     for _,mesh in ipairs(clone:GetDescendants()) do
@@ -726,6 +743,11 @@ end
 local function createMeadowVillage()
   -- 외곽 지형 생성이 끝나고 조사 흔적을 배치해야 월드 확장에 흔적이 묻히지 않는다.
   while gameWorld:GetAttribute("MeadowOuterRegionReady")~=true do task.wait(.15) end
+  -- [이전 분수 정리] 이름만 우물이었던 원형 분수는 제거한다.
+  local oldFountain=gameWorld:FindFirstChild("Meadow_Village_Well")
+  if oldFountain and oldFountain:GetAttribute("CC0SourceModelId")==NativeCreatureAssets.villageFountain then
+    oldFountain:Destroy()
+  end
   -- [중앙 흰색 바닥 제거] 얇은 길 메시가 높이 기준으로 과도하게 확대된 이전 배치만 정리한다.
   -- 원래 Terrain 흙길·주거·NPC·퀘스트 지점은 건드리지 않는다.
   for _,scenery in ipairs(gameWorld:GetChildren()) do
@@ -784,7 +806,7 @@ local function createMeadowVillage()
   -- [실제 건물] 기둥/벽/지붕/문은 저장소 Kenney 원본 3D GLB 등록본만 사용한다.
   -- 마력숲 Universe의 모델 등록·사용 권한이 없으면 임의 파츠 집으로 대체하지 않는다.
   local villagePrefabKeys={"villageWall","villageDoor","villageWindow","villageRoof",
-    "villageRoofEnd","villageStall","villageFountain","villageFence","villageLantern","villageCart"}
+    "villageRoofEnd","villageStall","villageFence","villageLantern","villageCart"}
   -- [원본 건물] 승인된 BUILDING 선택값과 실제 Kenney 모델 ID를 모두 확인한다.
   local nativeVillageReady=table.find(studioBuildingAtoms,"WALL_SOLID")~=nil
     and table.find(studioBuildingAtoms,"DOOR_SINGLE")~=nil
@@ -1152,7 +1174,7 @@ local function createMeadowVillage()
     -- 기존 CC0 카트·울타리·등불을 농가와 골목에 비대칭 분산 배치한다.
     local furnishings={
       {"villageStall",-26,-148,3.15,.2},{"villageStall",26,-164,3.4,-.3},
-      {"villageFountain",0,-146,5.5,0},
+      -- 기존 분수 제외: CC0 Well 메시 등록 후에만 마을에 배치.
       {"villageCart",-52,-165,6,.4},{"villageCart",54,-244,5.6,-.35},
       {"villageCart",-165,-234,6.1,.15},{"villageCart",176,-148,6.1,-.5},
       {"villageLantern",-17,-102,5,0},{"villageLantern",19,-113,5,0},
@@ -1170,6 +1192,10 @@ local function createMeadowVillage()
       {"villageFence",-75,-326,4.8,0},{"villageFence",-57,-327,4.8,0},
       {"villageFence",85,-330,4.8,0},{"villageFence",105,-331,4.8,0},
     }
+    -- [실제 돌우물] 검증·등록한 Well 원본만 배치한다. 원통 파츠나 분수로 대체 금지.
+    if typeof(NativeCreatureAssets.villageWell)=="number" and NativeCreatureAssets.villageWell>0 then
+      table.insert(furnishings,{"villageWell",0,-146,5.5,0})
+    end
     -- [마을 소품] 실물 CC0 원본: 아치형 입구, 낡은 성벽, 돌기둥, 돌길, 두 종류의 나무.
     -- 모델의 게임별 사용권한이 미확정일 때는 기존 10종 소품만 유지한다.
     if villageDetailReady then
@@ -1186,10 +1212,10 @@ local function createMeadowVillage()
     end
     for index,row in ipairs(furnishings) do
       -- [실제 우물] 기존 원본 분수 메시를 우물 크기로만 축소한다.
-      local propHeight=row[1]=="villageFountain" and row[4] or row[4]*1.3
+      local propHeight=row[1]=="villageWell" and row[4] or row[4]*1.3
       local model=worldAsset(row[1],Vector3.new(row[2],3,row[3]),propHeight)
       if model then
-        model.Name=row[1]=="villageFountain" and "Meadow_Village_Well"
+        model.Name=row[1]=="villageWell" and "Meadow_Village_Well"
           or "Meadow_Village_"..row[1].."_"..index
         model:SetAttribute("MeadowVillageScenery",true)
         model:PivotTo(model:GetPivot()*CFrame.Angles(0,row[5],0))
@@ -1201,10 +1227,10 @@ local function createMeadowVillage()
               mesh.CanCollide=row[1]=="villageFence"
             end
           end
-        elseif row[1]=="villageFountain" then
+        elseif row[1]=="villageWell" then
           -- [우물 복원] 등록된 CC0 원형 석조 원본을 실제 눈에 띄는 크기로 둔다.
           -- 물·석재 원본 메시를 보존하며 새로운 기본 도형/가짜 건축 부품을 만들지 않는다.
-          model:SetAttribute("MeadowOriginalWaterSurfacePreserved",true)
+          model:SetAttribute("MeadowVillageWellOriginal",true)
           villageWellReady=true
           local wellMesh=model:FindFirstChildWhichIsA("MeshPart",true)
           if wellMesh then
