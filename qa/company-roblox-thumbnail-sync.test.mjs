@@ -621,6 +621,12 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.match(workflow,/thumbnail_only:/);
   assert.match(workflow,/if: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.thumbnail_only != true \}\}/);
   assert.match(workflow,/name: sync canonical Roblox and homepage thumbnails/);
+  // 검증용 비공개 후보에는 본편 썸네일 승인 근거가 없다. 최종 게시 및 기존 독립 미디어 작업은 유지한다.
+  const thumbnailJob=workflow.split('  thumbnail-sync:')[1]?.split('    steps:')[0]||'';
+  assert.match(thumbnailJob,/inputs\.publish_stage == 'final' && needs\.release\.result == 'success'/);
+  assert.doesNotMatch(thumbnailJob,/\|\| needs\.release\.result == 'success'\)/);
+  assert.match(thumbnailJob,/github\.event_name == 'push'/);
+  assert.match(thumbnailJob,/inputs\.thumbnail_only == true/);
   assert.match(workflow,/github\.event_name == 'push'/);
   assert.match(workflow,/name: Resolve thumbnail sync games/);
   assert.match(workflow,/target\.verified===true&&target\.dedicated===true/);
