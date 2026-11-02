@@ -3941,6 +3941,42 @@ local function bindNativeFoundationCharacter(character)
   character:SetAttribute("R15_AVATAR_READY", isR15)
   character:SetAttribute("NativeAvatarRig", isR15 and "R15" or "R15_REQUIRED")
   character:SetAttribute("MOVEMENT_CONFIRMED", true)
+  -- [캐릭터 이동 이펙트] 기존 R15 발걸음에 젖은 흙먼지를 작게 남긴다.
+  -- Roblox 기본 입자 텍스처·Attachment만 사용하며 새 건축 파츠나 외부 모델을 만들지 않는다.
+  -- 대기 중에는 입자를 끄고, 걷기/달리기 중에만 저밀도로 출력한다.
+  if isR15 and not rootPart:FindFirstChild("MeadowFootstepDustOrigin") then
+    local origin=Instance.new("Attachment")
+    origin.Name="MeadowFootstepDustOrigin"
+    origin.Position=Vector3.new(0,-2.65,0)
+    origin.Parent=rootPart
+    local dust=Instance.new("ParticleEmitter")
+    dust.Name="MeadowNativeFootstepDust"
+    dust.Texture="rbxasset://textures/particles/smoke_main.dds"
+    dust.Color=ColorSequence.new(Color3.fromRGB(135,118,100))
+    dust.Transparency=NumberSequence.new({
+      NumberSequenceKeypoint.new(0,.65),
+      NumberSequenceKeypoint.new(1,1),
+    })
+    dust.Size=NumberSequence.new({
+      NumberSequenceKeypoint.new(0,.22),
+      NumberSequenceKeypoint.new(1,.62),
+    })
+    dust.Lifetime=NumberRange.new(.25,.48)
+    dust.Speed=NumberRange.new(.25,.65)
+    dust.Drag=2
+    dust.SpreadAngle=Vector2.new(30,30)
+    dust.Rate=0
+    dust.Enabled=true
+    dust.Parent=origin
+    humanoid.Running:Connect(function(speed)
+      if dust.Parent then
+        dust.Rate=humanoid.Health>0 and speed>3 and 2.5 or 0
+      end
+    end)
+    humanoid.Died:Connect(function()
+      if dust.Parent then dust.Rate=0 end
+    end)
+  end
 end
 local function bindNativeFoundationPlayer(player)
   player.RespawnLocation = nativeFoundationSpawn
