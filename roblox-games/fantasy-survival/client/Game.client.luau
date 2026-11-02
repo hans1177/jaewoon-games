@@ -1892,6 +1892,39 @@ do
   storyArtwork.ZIndex=4
   storyArtwork.Visible=false
   storyArtwork.Parent=introPanel
+  -- [2.5D 독립 인물 레이어] 장면별 전경 PNG는 배경과 다른 방향으로 이동한다.
+  local storyForeground=Instance.new("ImageLabel")
+  storyForeground.Name="StoryParallaxForeground"
+  storyForeground.BackgroundTransparency=1
+  storyForeground.BorderSizePixel=0
+  storyForeground.Size=UDim2.fromScale(1.08,1.08)
+  storyForeground.Position=UDim2.fromScale(-.04,-.04)
+  storyForeground.ScaleType=Enum.ScaleType.Crop
+  storyForeground.ImageTransparency=1
+  storyForeground.ZIndex=6
+  storyForeground.Visible=false
+  storyForeground.Parent=introPanel
+  -- [화면 분위기] 기존 GUI에만 가벼운 불씨·낙하 입자를 추가한다.
+  local storyAtmosphere=Instance.new("Frame")
+  storyAtmosphere.Name="CinematicParticles"
+  storyAtmosphere.BackgroundTransparency=1
+  storyAtmosphere.Size=UDim2.fromScale(1,1)
+  storyAtmosphere.ClipsDescendants=true
+  storyAtmosphere.ZIndex=7
+  storyAtmosphere.Parent=introPanel
+  local cinematicParticles={}
+  for n=1,14 do
+    local spark=Instance.new("Frame")
+    spark.Name="CinematicParticle"..n
+    spark.Size=UDim2.fromOffset(2+(n%3),6+(n%4)*3)
+    spark.BackgroundColor3=Color3.fromRGB(242,151,72)
+    spark.BackgroundTransparency=.4
+    spark.BorderSizePixel=0
+    spark.Rotation=n*19
+    spark.ZIndex=8
+    spark.Parent=storyAtmosphere
+    cinematicParticles[n]=spark
+  end
   local introGradient=Instance.new("UIGradient")
   introGradient.Color=ColorSequence.new({
     ColorSequenceKeypoint.new(0,Color3.fromRGB(8,12,20)),
@@ -1973,6 +2006,8 @@ do
   local activeTween=nil
   local activeFovTween=nil
   local activeArtTween=nil
+  local activeFrontTween=nil
+  local activeParticleTweens={}
   local cameraMotionValue=nil
   local cameraMotionConnection=nil
   local cameraMotionIntensity=0
@@ -1992,6 +2027,9 @@ do
     if activeTween then activeTween:Cancel();activeTween=nil end
     if activeFovTween then activeFovTween:Cancel();activeFovTween=nil end
     if activeArtTween then activeArtTween:Cancel();activeArtTween=nil end
+    if activeFrontTween then activeFrontTween:Cancel();activeFrontTween=nil end
+    for _,particleTween in ipairs(activeParticleTweens) do particleTween:Cancel() end
+    table.clear(activeParticleTweens)
     if cameraMotionConnection then cameraMotionConnection:Disconnect();cameraMotionConnection=nil end
     if cameraMotionValue then cameraMotionValue:Destroy();cameraMotionValue=nil end
     if openingCamera and openingCamera.Parent then
@@ -2066,42 +2104,42 @@ do
     if not isFresh then closeArrival();return end
     local token=runToken
     local scenes={
-      {seconds=8,chapter="전쟁의 끝",title="빛 아래 선봉",
-        body="빛의 군주와 괴물 군주의 전쟁.\n렌스기사단은 가장 위험한 전선에 투입되었다.",
-        speaker="렌스 · 기사단장",line="전군, 앞으로! 오늘 이 전쟁을 끝낸다!",view="battle",tone=Color3.fromRGB(65,47,40)},
-      {seconds=8,chapter="렌스기사단",title="함께 싸운 네 사람",
-        body="기사단장 렌스. 돌격대장인 당신.\n보병대장 닉과 궁수대장 미나.",
-        speaker="닉 · 보병대장",line="돌격대장! 우리가 길을 열겠다!",view="sweep",tone=Color3.fromRGB(52,46,39)},
-      {seconds=7,chapter="빛의 명령",title="빅브라더",
-        body="승리를 앞둔 전장. 황금빛 아래서\n군주의 목소리가 울려 퍼졌다.",
-        speaker="빅브라더 · 빛의 군주",line="빛은 언제나 너희를 지켜보고 있다.",view="sky",tone=Color3.fromRGB(100,76,43)},
-      {seconds=7,chapter="멈춘 전쟁",title="승리 직전의 침묵",
-        body="괴물들의 함성이 멎고,\n낯선 마법진의 기운이 전장을 뒤덮었다.",
-        speaker="미나 · 궁수대장",line="잠깐... 이 마법은 우리 편의 것이야.",view="sweep",tone=Color3.fromRGB(58,49,74)},
-      {seconds=8,chapter="저주",title="마법사 미러",
-        body="빛의 군주를 섬기던 마법사가\n동료들에게 봉인의 저주를 내렸다.",
-        speaker="렌스 · 기사단장",line="미러! 네가 어째서 우리를 겨누는 거냐!",view="seal",tone=Color3.fromRGB(63,33,70)},
-      {seconds=8,chapter="저주",title="너희의 역할은 끝났다",
-        body="검이 허공을 가르고, 발밑의 세계가 갈라졌다.\n당신의 외침은 누구에게도 닿지 않았다.",
-        speaker="미러 · 궁정 마법사",line="너희의 역할은 여기까지다.",view="seal",tone=Color3.fromRGB(38,29,63)},
-      {seconds=7,chapter="흩어진 동료",title="렌스 · 닉 · 미나",
-        body="세 사람의 모습이 차례로 사라졌다.\n당신은 그들의 손을 붙잡지 못했다.",
-        speaker="주인공 · 돌격대장",line="반드시 찾아내겠어. 살아만 있어 줘.",view="fall",tone=Color3.fromRGB(30,31,60)},
-      {seconds=8,chapter="역사의 삭제",title="존재하지 않는 기사단",
-        body="왕국의 기록에는 단 한 줄만 남았다.\n‘렌스기사단은 존재한 적이 없다.’",
-        speaker="빅브라더 · 빛의 군주",line="충성스러운 기사들이여. 너희의 희생은 영원히 기억될 것이다.",view="sky",tone=Color3.fromRGB(23,25,34)},
-      {seconds=8,chapter="봉인",title="끝없는 추락",
-        body="기억은 부서지고, 전장은 멀어졌다.\n낯선 숲의 기운이 당신을 감쌌다.",
-        speaker="",line="",view="fall",tone=Color3.fromRGB(17,25,37)},
-      {seconds=8,chapter="마력숲",title="낯선 세계의 아침",
-        body="바람, 새소리, 그리고 알 수 없는 울음소리.\n전쟁은 사라지고 숲만 남았다.",
-        speaker="주인공",line="여긴... 어디지?",view="wake",tone=Color3.fromRGB(25,65,48)},
-      {seconds=7,chapter="남겨진 흔적",title="사라진 세 사람",
-        body="사라진 동료들의 흔적이 숲 어딘가에 있다.\n모든 진실은 아직 안개 속에 가려져 있다.",
-        speaker="주인공",line="렌스, 닉, 미나. 내가 너희를 찾겠다.",view="wake",tone=Color3.fromRGB(27,61,53)},
-      {seconds=8,chapter="첫 번째 여정",title="마 력 숲",
-        body="잊힌 기사들의 이야기\n첫 여정 · 렌스기사단의 흔적을 찾아라.",
-        speaker="",line="",view="wake",tone=Color3.fromRGB(23,48,43)},
+      {seconds=5,chapter="마지막 전선",title="불타는 성채",
+        body="끝나지 않던 전쟁. 렌스기사단은 성문 앞에 도착했다.",
+        speaker="렌스",line="닉, 왼쪽을 막아! 미나, 엄호해!",view="battle",tone=Color3.fromRGB(73,40,29),movement="push"},
+      {seconds=5,chapter="렌스기사단",title="네 명의 돌격",
+        body="렌스, 카인, 닉, 미나. 마지막까지 함께 싸웠던 네 사람.",
+        speaker="닉",line="카인! 여긴 내가 맡을 테니까 앞으로 가!",view="sweep",tone=Color3.fromRGB(64,38,30),movement="sweep"},
+      {seconds=5,chapter="빛의 군주",title="높은 성벽 위에서",
+        body="왕국의 군주 빅브라더는 전장을 내려다보고 있었다.",
+        speaker="빅브라더",line="수고했다. 모두 너희를 기억할 것이다.",view="sky",tone=Color3.fromRGB(104,72,38),movement="rise"},
+      {seconds=4,chapter="이상한 명령",title="전장이 멈춘 순간",
+        body="승리를 앞두고 퇴각 명령이 내려왔다. 이유는 알려지지 않았다.",
+        speaker="미나",line="잠깐, 우리 병사들이 왜 물러나는 거야?",view="sweep",tone=Color3.fromRGB(66,53,49),movement="sweep"},
+      {seconds=5,chapter="궁정 마법사",title="미러",
+        body="군주의 마법사 미러가 기사단 앞에 나타났다.",
+        speaker="렌스",line="미러? 무슨 일이야? 전투는 아직 안 끝났어.",view="seal",tone=Color3.fromRGB(62,39,80),movement="shock"},
+      {seconds=6,chapter="배신",title="봉인의 문양",
+        body="대답 대신 보랏빛 마법진이 펼쳐졌다. 기사단의 발이 묶였다.",
+        speaker="미러",line="계획이 바뀌었어. 너희는 여기서 끝이야.",view="seal",tone=Color3.fromRGB(70,35,92),movement="shock"},
+      {seconds=5,chapter="동료들",title="사라지는 손",
+        body="닉과 미나가 먼저 휩쓸렸다. 렌스가 카인을 향해 손을 뻗었다.",
+        speaker="렌스",line="카인! 손 잡아!",view="fall",tone=Color3.fromRGB(37,44,76),movement="fall"},
+      {seconds=4,chapter="역사의 삭제",title="기록에서 지워진 이름",
+        body="왕국의 역사에서는 렌스기사단의 이름이 사라졌다.",
+        speaker="빅브라더",line="이 일은 누구에게도 알려져서는 안 된다.",view="sky",tone=Color3.fromRGB(37,33,43),movement="pull"},
+      {seconds=5,chapter="균열",title="낯선 세계로",
+        body="성벽과 하늘이 뒤집혔다. 카인은 끝없이 아래로 떨어졌다.",
+        speaker="",line="",view="fall",tone=Color3.fromRGB(29,33,75),movement="fall"},
+      {seconds=6,chapter="각성",title="숲에서 눈을 뜨다",
+        body="젖은 흙냄새. 전쟁의 함성 대신 바람 소리만 들렸다.",
+        speaker="카인",line="...여긴 어디지?",view="wake",tone=Color3.fromRGB(30,59,48),movement="wake"},
+      {seconds=5,chapter="남겨진 흔적",title="기사단의 깃발",
+        body="낡은 깃발이 나무에 걸려 있었다. 여기에도 기사단이 있었던 것이다.",
+        speaker="",line="",view="wake",tone=Color3.fromRGB(37,46,47),movement="pull"},
+      {seconds=5,chapter="첫 번째 여정",title="흔적을 따라서",
+        body="렌스, 닉, 미나는 어디에 있을까. 카인은 숲으로 걸음을 옮겼다.",
+        speaker="",line="",view="wake",tone=Color3.fromRGB(37,41,61),movement="pull"},
     }
     local total=0
     for _,scene in ipairs(scenes) do total+=scene.seconds end
@@ -2174,17 +2212,20 @@ do
       activeFovTween:Play()
     end
 
-    -- [움직이는 일러스트] 최종 그림이 Roblox에 등록·승인되면
-    -- Config.CinematicIntroIllustrations의 순서별 자산 ID를 같은 화면에 직접 연결한다.
-    local registeredStoryArt=Config.CinematicIntroIllustrations or {}
-    -- [승인된 원본 그림 한 장] 사용자 오프닝 원본의 12개 컷 영역.
-    -- Roblox에 atlas.png 등록·사용권한 확인 후 Config.CinematicIntroAtlasId만 바인딩한다.
-    local introAtlasId=Config.CinematicIntroAtlasId
-    local introAtlasRects={
-      {0,0,1672,225},{0,236,553,269},{552,234,749,272},{0,0,1672,225},
-      {1294,235,378,271},{0,510,952,244},{0,510,952,244},{950,512,722,243},
-      {0,760,705,181},{0,760,705,181},{704,760,968,181},{704,760,968,181},
-    }
+    -- [12개 장면 원본 + 전경 레이어] 개별 등록 이미지를 재생한다. 아틀라스 크롭은 제거.
+    local registeredStoryArt=Config.CinematicIntroSceneIds or {}
+    local registeredStoryDepth=Config.CinematicIntroForegroundIds or {}
+    task.spawn(function()
+      local ContentProvider=game:GetService("ContentProvider")
+      local preload={}
+      for _,id in ipairs(registeredStoryArt) do
+        if typeof(id)=="string" then table.insert(preload,id) end
+      end
+      for _,id in ipairs(registeredStoryDepth) do
+        if typeof(id)=="string" then table.insert(preload,id) end
+      end
+      if #preload>0 then pcall(function() ContentProvider:PreloadAsync(preload) end) end
+    end)
     task.spawn(function()
       for index,scene in ipairs(scenes) do
         if not entranceOpen or token~=runToken then return end
@@ -2203,32 +2244,79 @@ do
         introDialogue.TextTransparency=1
         introDialogue.Position=UDim2.fromScale(.10,.73)
 
-        -- 화면 위의 실제 등록 일러스트가 있으면 팬·줌을 적용한다.
         if activeArtTween then activeArtTween:Cancel();activeArtTween=nil end
-        local atlasReady=typeof(introAtlasId)=="string" and introAtlasId:match("^rbxassetid://%d+$")~=nil
-        local imageId=atlasReady and introAtlasId or registeredStoryArt[index]
-        if typeof(imageId)=="string" and imageId:match("^rbxassetid://%d+$") then
+        if activeFrontTween then activeFrontTween:Cancel();activeFrontTween=nil end
+        for _,particleTween in ipairs(activeParticleTweens) do particleTween:Cancel() end
+        table.clear(activeParticleTweens)
+        local imageId=registeredStoryArt[index]
+        local frontId=registeredStoryDepth[index]
+        local validImage=typeof(imageId)=="string" and imageId:match("^rbxassetid://%d+$")~=nil
+        local validFront=typeof(frontId)=="string" and frontId:match("^rbxassetid://%d+$")~=nil
+        local direction=index%2==0 and 1 or -1
+        if validImage then
           storyArtwork.Image=imageId
+          storyArtwork.ImageRectOffset=Vector2.zero
+          storyArtwork.ImageRectSize=Vector2.zero
           storyArtwork.Visible=true
           storyArtwork.ImageTransparency=0
-          if atlasReady then
-            local rect=introAtlasRects[index]
-            storyArtwork.ImageRectOffset=Vector2.new(rect[1],rect[2])
-            storyArtwork.ImageRectSize=Vector2.new(rect[3],rect[4])
-          else
-            storyArtwork.ImageRectOffset=Vector2.zero
-            storyArtwork.ImageRectSize=Vector2.zero
-          end
-          storyArtwork.Position=UDim2.fromScale(-.035,-.035)
-          storyArtwork.Size=UDim2.fromScale(1.07,1.07)
+          storyArtwork.Rotation=0
+          storyArtwork.Position=UDim2.fromScale(-.045,-.045)
+          storyArtwork.Size=UDim2.fromScale(1.09,1.09)
+          local x=scene.movement=="sweep" and direction*.065
+            or scene.movement=="rise" and direction*.02 or direction*.035
+          local y=scene.movement=="fall" and .1 or scene.movement=="rise" and -.07 or -.035
           activeArtTween=TweenService:Create(storyArtwork,TweenInfo.new(scene.seconds,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
-            Position=UDim2.fromScale(-.10,-.10),Size=UDim2.fromScale(1.20,1.20)
+            Position=UDim2.fromScale(-.07+x,-.065+y),
+            Size=UDim2.fromScale(scene.movement=="shock" and 1.24 or 1.17,
+              scene.movement=="shock" and 1.24 or 1.17),
+            Rotation=scene.movement=="fall" and direction*1.7 or direction*.4,
           })
           activeArtTween:Play()
         else
-          -- 미등록·미승인 에셋을 표시하지 않는다. 기존 월드 카메라 컷신만 유지한다.
           storyArtwork.Visible=false
           storyArtwork.Image=""
+        end
+        if validFront then
+          storyForeground.Image=frontId
+          storyForeground.Visible=true
+          storyForeground.ImageTransparency=0
+          storyForeground.Rotation=0
+          storyForeground.Size=UDim2.fromScale(1.1,1.1)
+          storyForeground.Position=UDim2.fromScale(-.05,-.05)
+          local dx=scene.movement=="fall" and direction*.11 or -direction*.065
+          local dy=scene.movement=="fall" and .17 or scene.movement=="rise" and .055 or -.045
+          activeFrontTween=TweenService:Create(storyForeground,TweenInfo.new(scene.seconds,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+            Position=UDim2.fromScale(-.065+dx,-.075+dy),
+            Size=UDim2.fromScale(1.22,1.22),
+            Rotation=scene.movement=="shock" and direction*1.9 or direction*.7,
+          })
+          activeFrontTween:Play()
+        else
+          storyForeground.Visible=false
+          storyForeground.Image=""
+        end
+
+        -- [입자 연출] 전쟁은 불씨, 봉인은 마력 조각, 숲은 흩날리는 먼지.
+        for n,spark in ipairs(cinematicParticles) do
+          local x=((n*37+index*11)%100)/100
+          local drift=((n*19+index*13)%35)/100-.17
+          local fall=scene.movement=="fall"
+          spark.BackgroundColor3=scene.view=="seal" and Color3.fromRGB(186,112,249)
+            or scene.view=="fall" and Color3.fromRGB(148,223,199)
+            or scene.view=="wake" and Color3.fromRGB(160,190,165)
+            or Color3.fromRGB(245,147,73)
+          spark.BackgroundTransparency=scene.view=="wake" and .66 or .22
+          spark.Position=UDim2.fromScale(x,fall and -.08 or 1.05)
+          spark.Size=UDim2.fromOffset(1+n%3,scene.view=="seal" and 13 or 6+n%4*2)
+          spark.Rotation=22+(n*17)%77
+          local particle=TweenService:Create(spark,TweenInfo.new(scene.seconds*(.63+(n%4)*.1),
+            Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
+            Position=UDim2.fromScale(math.clamp(x+drift,0,.99),fall and 1.1 or -.12),
+            BackgroundTransparency=1,
+            Rotation=spark.Rotation+direction*50
+          })
+          table.insert(activeParticleTweens,particle)
+          particle:Play()
         end
 
         local color=scene.view=="seal" and Color3.fromRGB(150,67,224)
