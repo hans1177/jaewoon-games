@@ -1221,7 +1221,15 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   // 낮/밤/비/안개와 동기화한 네이티브 숲 대기 효과만 사용한다.
   assert.match(server,/meadowAtmosphere=Lighting:FindFirstChildOfClass\("Atmosphere"\)/);
   assert.match(server,/meadowAtmosphere=Instance.new\("Atmosphere"\)/);
-  assert.match(server,/forestAirDensity=weather=="FOG" and \.39/);
+  // [위처풍 숲] 안개·색감·그림자와 원본 랜턴 메시의 조명 계약을 현재 게임 소스에 맞춰 고정한다.
+  assert.match(server,/forestAirDensity=weather=="FOG" and \.40/);
+  assert.match(server,/Lighting\.GlobalShadows=true/);
+  assert.match(server,/Lighting\.ShadowSoftness=\.27/);
+  assert.match(server,/meadowColorGrade\.Saturation=-\.085/);
+  assert.match(server,/local cover=weather=="STORM" and \.96/);
+  assert.match(server,/DARK_MEDIEVAL_FOREST_CC0_NATIVE_V4/);
+  assert.match(server,/glow\.Parent=lanternMesh/);
+  assert.match(server,/\{-119,-340\},\{-101,-344\}/);
   assert.match(server,/meadowAtmosphere.Density\+=\(forestAirDensity-meadowAtmosphere.Density\)\*\.12/);
   assert.match(server,/meadowAtmosphere.Color=meadowAtmosphere.Color:Lerp\(/);
   assert.match(server,/surface.Color=surface.Color:Lerp\(leafTone,\.33\)/);
