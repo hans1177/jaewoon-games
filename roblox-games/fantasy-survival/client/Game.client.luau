@@ -2176,6 +2176,14 @@ do
     -- [움직이는 일러스트] 최종 그림이 Roblox에 등록·승인되면
     -- Config.CinematicIntroIllustrations의 순서별 자산 ID를 같은 화면에 직접 연결한다.
     local registeredStoryArt=Config.CinematicIntroIllustrations or {}
+    -- [승인된 원본 그림 한 장] 사용자 오프닝 원본의 12개 컷 영역.
+    -- Roblox에 atlas.png 등록·사용권한 확인 후 Config.CinematicIntroAtlasId만 바인딩한다.
+    local introAtlasId=Config.CinematicIntroAtlasId
+    local introAtlasRects={
+      {0,0,1672,225},{0,236,553,269},{552,234,749,272},{0,0,1672,225},
+      {1294,235,378,271},{0,510,952,244},{0,510,952,244},{950,512,722,243},
+      {0,760,705,181},{0,760,705,181},{704,760,968,181},{704,760,968,181},
+    }
     task.spawn(function()
       for index,scene in ipairs(scenes) do
         if not entranceOpen or token~=runToken then return end
@@ -2196,11 +2204,20 @@ do
 
         -- 화면 위의 실제 등록 일러스트가 있으면 팬·줌을 적용한다.
         if activeArtTween then activeArtTween:Cancel();activeArtTween=nil end
-        local imageId=registeredStoryArt[index]
+        local atlasReady=typeof(introAtlasId)=="string" and introAtlasId:match("^rbxassetid://%d+$")~=nil
+        local imageId=atlasReady and introAtlasId or registeredStoryArt[index]
         if typeof(imageId)=="string" and imageId:match("^rbxassetid://%d+$") then
           storyArtwork.Image=imageId
           storyArtwork.Visible=true
           storyArtwork.ImageTransparency=0
+          if atlasReady then
+            local rect=introAtlasRects[index]
+            storyArtwork.ImageRectOffset=Vector2.new(rect[1],rect[2])
+            storyArtwork.ImageRectSize=Vector2.new(rect[3],rect[4])
+          else
+            storyArtwork.ImageRectOffset=Vector2.zero
+            storyArtwork.ImageRectSize=Vector2.zero
+          end
           storyArtwork.Position=UDim2.fromScale(-.035,-.035)
           storyArtwork.Size=UDim2.fromScale(1.07,1.07)
           activeArtTween=TweenService:Create(storyArtwork,TweenInfo.new(scene.seconds,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
@@ -2208,6 +2225,7 @@ do
           })
           activeArtTween:Play()
         else
+          -- 미등록·미승인 에셋을 표시하지 않는다. 기존 월드 카메라 컷신만 유지한다.
           storyArtwork.Visible=false
           storyArtwork.Image=""
         end
