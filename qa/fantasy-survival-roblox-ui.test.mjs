@@ -113,6 +113,10 @@ test('deer and wolf keep real source bones and documented Animator motion priori
   assert.match(client,/row\.groundSpeed<\.35 then mode="IDLE"/);
   assert.match(client,/row\.controller\.Step\(row\.poses,poseDt\)/);
   assert.match(server,/NativeMobFacingYaw/);
+  assert.match(server,/NativeDeerOriginalRigUpright/);
+  assert.match(server,/deerAlignment=CFrame.fromMatrix/);
+  assert.match(server,/id=="deer" and meadowPalette.deer/);
+  assert.match(client,/if species=="wolf" or species=="bat" then/);
   assert.match(server,/closest<11 and "RUN" or "WALK"/);
   assert.match(visual,/deer=107866382568249/);
   assert.doesNotMatch(client,/Instance\.new\("Part"\).*Deer/);
