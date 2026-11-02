@@ -1719,3 +1719,23 @@ test('Daechung village source grounds the physical spawn on its plaza and respec
  const spawnTop=plazaTop-.2/2+.02+.2/2;
  assert.ok(Math.abs(spawnTop-plazaTop-.02)<1e-8);
 });
+
+test('exact published Studio actual play can enter existing internal QA despite non-simulating Open Cloud, while F9 Cloud hard gate stays locked',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  const f9=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  const internal=workflow.slice(workflow.indexOf('const exactStudioInternalValidation='),workflow.indexOf('const exactExternalRuntimeEvidenceReusable=',workflow.indexOf('const exactStudioInternalValidation=')));
+  assert.match(internal,/studioPlay\.pass===true/);
+  assert.match(internal,/studioPlay\.currentSourceArtifactBinding===true/);
+  assert.match(internal,/studioPlay\.publishedCandidateCrossCheckPassed===true/);
+  assert.match(internal,/studioPlay\.scenarioCoveragePass===true/);
+  assert.match(internal,/studioPlay\.functionalChainEvidence\?\.runtimeVerified===true/);
+  assert.doesNotMatch(internal,/!cloudApiOnly/);
+  assert.match(workflow,/if\(!serverDiagnosticEnabled\|\|exactStudioInternalValidation\)\{/);
+  const qa=workflow.slice(workflow.indexOf('if(!serverDiagnosticEnabled||exactStudioInternalValidation)'),workflow.indexOf('if(!process.env.ROBLOX_OPEN_CLOUD_API_KEY)',workflow.indexOf('if(!serverDiagnosticEnabled||exactStudioInternalValidation)')));
+  assert.match(qa,/item\.robloxRuntimeFoundationPassed=false/);
+  assert.match(qa,/item\.robloxRuntimePassed=false/);
+  assert.match(qa,/item\.robloxIndependentQaPassed=true/);
+  assert.match(qa,/f9Ids\.push\(item\.gameId\)/);
+  assert.match(f9,/runtime\.validationProvider!=='ROBLOX_OFFICIAL_CLOUD_API_ONLY'/);
+  assert.match(f9,/runtime\.openCloudImageEvidence\?\.imageContentPassed!==true/);
+});

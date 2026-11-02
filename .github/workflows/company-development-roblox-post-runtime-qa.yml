@@ -965,8 +965,11 @@ jobs:
               &&priorMultiplayer.artifactIdentity===artifactIdentity
             );
             const exactMultiplayerValidationReusable=exactPriorMultiplayerValidation||staticMultiplayerCodePass;
+            // [공식 Studio 실제 플레이] 별도 Cloud 구조 진단과 독립적으로
+            // 정확한 원본/아티팩트/게시 버전의 재현 증거만 내부 QA에 사용한다.
+            // F1 서버 실측 및 F9 최종 게이트는 이 검증으로 통과 처리하지 않는다.
             const exactStudioInternalValidation=
-              !cloudApiOnly&&studioPlay.pass===true
+              studioPlay.pass===true
               &&studioPlay.actualPlay===true
               &&studioPlay.runtimeVerified===true
               &&studioPlay.officialStudioMcp===true
@@ -976,6 +979,11 @@ jobs:
               &&studioPlay.sourceRevision===sourceRevision
               &&studioPlay.artifactIdentity===artifactIdentity
               &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
+              &&studioPlay.currentSourceArtifactBinding===true
+              &&studioPlay.publishedCandidateCrossCheckPassed===true
+              &&studioPlay.scenarioCoveragePass===true
+              &&studioPlay.functionalChainEvidence?.runtimeVerified===true
+              &&Array.isArray(studioPlay.errors)&&studioPlay.errors.length===0
               &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
             const exactExternalRuntimeEvidenceReusable=
               item.robloxRuntimeFoundationPassed===true
@@ -1038,7 +1046,9 @@ jobs:
               continue;
             }
 
-            if(!serverDiagnosticEnabled){
+            // [중복 대기 해소] 비시뮬레이션 Cloud 조회가 별도 검사로 남아 있어도
+            // 이미 실행/검증된 정확한 Studio 게임 플레이의 내부 QA는 정상 수용한다.
+            if(!serverDiagnosticEnabled||exactStudioInternalValidation){
               if(!exactStudioInternalValidation){
                 queueStudioFollowupIfEligible(item);
                 item.robloxRuntimeFoundationPassed=false;
