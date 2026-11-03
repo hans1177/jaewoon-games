@@ -4839,44 +4839,34 @@ test('Roblox native asset uses are counted while unconsumed configuration atoms 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-// RPG 공용 UI 자산 개선은 게임 상태가 아닌 표시 전환만 다룬다.
-test('shared RPG menu transition is interruptible and preserves direct interaction',()=>{
+// [현재 공용 메뉴] 퇴역 게임의 삭제된 복제 파일이 아니라 유지 중인 원본 모듈을 검사한다.
+test('shared RPG menu transition is interruptible without resurrecting a retired game',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  assert.equal(catalog.games.some(row=>row.id==='daechung-rpg'),false,'the retired game must not be silently restored');
+  assert.equal(fs.existsSync('roblox-games/daechung-rpg/shared/RPGMenu.luau'),false);
   const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
-  const consumer=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
-  assert.match(consumer,/local RaceData = require\(script\.Parent:WaitForChild\("RaceData"\)\)/,'retain existing game-specific race UI');
-  assert.match(consumer,/local TechTreeData = require\(script\.Parent:WaitForChild\("TechTreeData"\)\)/,'retain existing game-specific skill tree');
-  const sharedModel=fs.readFileSync('assets/roblox/rpg-menu/RPGMenuModel.luau','utf8');
-  const gameModel=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenuModel.luau','utf8');
-  assert.ok(sharedModel.length>0&&gameModel.length>0,'both shared and game-specific state models must remain present');
-  assert.match(source,/TweenService:Create\(overlay,TweenInfo\.new\(\.18/);
-  assert.match(source,/entranceTween:Cancel\(\)/);
-  assert.match(source,/panelTween:Cancel\(\)/);
-  assert.match(source,/panelScale.Scale=\.97/);
+  const model=fs.readFileSync('assets/roblox/rpg-menu/RPGMenuModel.luau','utf8');
+  assert.ok(model.length>0,'shared state model remains present');
+  assert.match(source,/TweenService:Create\\(overlay,TweenInfo\\.new\\(\\.18/);
+  assert.match(source,/entranceTween:Cancel\\(\\)/);
+  assert.match(source,/panelTween:Cancel\\(\\)/);
+  assert.match(source,/panelScale.Scale=\\.97/);
   assert.match(source,/panelScale.Scale=1/);
-  assert.match(source,/stopEntrance\(\)\s*\n\s*opened=value/);
-  assert.match(source,/if options\.onOpen then options\.onOpen\(value\)end/);
-  assert.match(source,/gui\.Destroying:Connect\(function\(\)\s*\n\s*stopEntrance\(\)/);
-  assert.match(consumer,/gui\.Destroying:Connect\(function\(\)\s*\n\s*stopEntrance\(\)/);
-  assert.match(consumer,/entranceTween:Cancel\(\)/);
-  assert.match(consumer,/panelTween:Cancel\(\)/);
+  assert.match(source,/stopEntrance\\(\\)\\s*\\n\\s*opened=value/);
+  assert.match(source,/if options\\.onOpen then options\\.onOpen\\(value\\)end/);
+  assert.match(source,/gui\\.Destroying:Connect\\(function\\(\\)\\s*\\n\\s*stopEntrance\\(\\)/);
 });
 
-// Shared RPG inventory labels must distinguish equipment from usable tools.
+// 보유 중인 공용 UI에만 착용 상태·분류 계약을 유지한다.
 test('shared RPG inventory labels show equipped state and correct slot category',()=>{
   const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
-  const consumer=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
-  assert.match(source,/b\.ItemState\.Text=row\.equipped and "착용 중" or \(row\.category=="장비" and "장비" or "도구"\)/);
-  assert.match(consumer,/b\.ItemState\.Text=row\.equipped and "착용 중" or \(row\.category=="장비" and "장비" or "도구"\)/);
+  assert.match(source,/b\\.ItemState\\.Text=row\\.equipped and "착용 중" or \\(row\\.category=="장비" and "장비" or "도구"\\)/);
 });
 
-// Status-only equipment is not an actionable Roblox Tool; do not show a dead equip button.
 test('shared RPG menu only offers equip action for real Tools',()=>{
-  const shared=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
-  const game=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
-  assert.match(shared,/itemAction\.Visible=row\.tool~=nil/);
-  assert.match(game,/itemAction\.Visible=row\.tool~=nil/);
-  assert.match(shared,/row\.tool and "배낭에서 선택한 도구야/);
-  assert.match(game,/row\.tool and "배낭에서 선택한 도구야/);
+  const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
+  assert.match(source,/itemAction\\.Visible=row\\.tool~=nil/);
+  assert.match(source,/row\\.tool and "배낭에서 선택한 도구야/);
 });
 
 test('Roblox native GLB usage maps exact loaded asset ID without promoting runtime verification',()=>{
