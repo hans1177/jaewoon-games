@@ -1290,23 +1290,39 @@ local function createMeadowVillage()
       if index%3==0 then task.wait(.05) end
     end
   end
-  -- [독립 돌우물] 집/상점 로딩 상태와 무관하게 중앙의 기존 분수를 지우고 원본 Kenney Well만 배치.
-  -- 등록/Universe 권한이 없으면 임의 분수나 Part를 만들지 않고 명확히 미준비로 기록한다.
+  -- [실물 돌우물] 독립 CC0 Innerscene 원본: 지붕과 테두리를 함께 실제 사람 크기로 배치한다.
+  -- 원본 GLB 총 높이 2.85m, 돌 테두리 높이 .80m·너비 1.44m, 지붕 너비 2.10m.
+  -- Roblox 성인 R15 약 5스터드 기준, 총 12.2스터드면 테두리 3.42·폭 6.16·지붕 폭 8.99.
+  -- 광장 중심 좌표, 건물·NPC·기존 의뢰/저장/몬스터 동선은 그대로 유지한다.
   if typeof(NativeCreatureAssets.villageWell)=="number" and NativeCreatureAssets.villageWell>0 then
-    local well=worldAsset("villageWell",Vector3.new(0,3,-146),5.5)
+    local wellHeightStuds=12.2
+    local well=worldAsset("villageWell",Vector3.new(0,3,-146),wellHeightStuds)
     if well then
       well.Name="Meadow_Village_Well"
       well:SetAttribute("MeadowVillageScenery",true)
       well:SetAttribute("MeadowVillageWellOriginal",true)
-      -- [실물 석조 우물] 원본 Well GLB의 돌 테두리·지붕 기둥만 충돌시킨다.
-      -- 두레박/밧줄/지붕은 장식으로 두며 임의 파츠나 분수 모델을 더하지 않는다.
+      well:SetAttribute("MeadowVillageWellHeightStuds",wellHeightStuds)
+      -- [위처풍 석재/목재] 진짜 원본 MeshPart·PBR·TextureID를 보존하고 무텍스처 면만 재질을 보정한다.
+      -- 테두리와 지붕 기둥만 충돌; 지붕·두레박·밧줄은 플레이어를 가로막지 않는다.
       for _,mesh in ipairs(well:GetDescendants()) do
         if mesh:IsA("MeshPart") then
           local name=mesh.Name:lower()
-          local solid=name:find("stone ring",1,true)~=nil
-            or name:find("roof post",1,true)~=nil
-          mesh.CanCollide=solid
-          mesh.CanQuery=solid
+          local ring=name:find("stone ring",1,true)~=nil
+          local post=name:find("roof post",1,true)~=nil
+          mesh.CanCollide=ring or post
+          mesh.CanQuery=ring or post
+          if mesh.TextureID=="" and not mesh:FindFirstChildOfClass("SurfaceAppearance") then
+            if ring then
+              mesh.Material=Enum.Material.Slate
+            elseif post or name:find("pitched roof",1,true) or name:find("windlass",1,true) then
+              mesh.Material=Enum.Material.WoodPlanks
+            elseif name:find("bucket bail",1,true) then
+              mesh.Material=Enum.Material.Metal
+            elseif name:find("rope",1,true) then
+              mesh.Material=Enum.Material.Fabric
+            end
+          end
+          mesh.Reflectance=0
         end
       end
       villageWellReady=true
