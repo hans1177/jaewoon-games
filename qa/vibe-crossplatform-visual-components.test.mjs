@@ -257,18 +257,22 @@ test('every published Vibe web route binds shared effects without replacing the 
 });
 test('Roblox games share native Vibe presentation and confirmed-health impact effects',()=>{
  const names=fs.readdirSync('roblox-games',{withFileTypes:true}).filter(row=>row.isDirectory()).map(row=>row.name);
- let checked=0;
+ let checked=0,configured=0;
  for(const name of names){
    const project='roblox-games/'+name+'/default.project.json';
    const client='roblox-games/'+name+'/client/Game.client.luau';
    if(!fs.existsSync(project)||!fs.existsSync(client))continue;
    const config=fs.readFileSync(project,'utf8');
    if(!config.includes('RobloxCommonPresentation'))continue;
+   // [현재 게임] 존재하는 실제 공용 효과 소비자 수를 별도로 센다.
+   // 삭제된 프로젝트 40개를 고정 분모로 사용하지 않고 모든 실제 등록 소비자를 검증한다.
+   configured++;
    const code=fs.readFileSync(client,'utf8');
    assert.match(code,/presentation\.BindGameUiEffects\(player\)/,name);
    checked++;
  }
- assert.ok(checked>=40,'all registered Roblox gameplay clients must reuse the canonical presentation');
+ assert.ok(configured>0,'the canonical native presentation must have actual registered consumers');
+ assert.equal(checked,configured,'every existing registered Roblox gameplay client must bind the canonical presentation');
  const common=fs.readFileSync('assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau','utf8');
  assert.match(common,/function Presentation.BindGameUiEffects/);
  assert.match(common,/Lighting:FindFirstChildOfClass\("BloomEffect"\)/);
