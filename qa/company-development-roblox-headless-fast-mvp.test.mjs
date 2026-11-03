@@ -181,17 +181,18 @@ test('Roblox F0 workflow fetches only exact source and latest runtime snapshot w
  assert.doesNotMatch(worker,/git fetch --no-tags origin "\$COMPANY_RUNTIME_BRANCH" main/);
 });
 
-test('cozy-island creates safe spawn before player binding and core loop evidence requires an accepted action',()=>{
- const source=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
- assert.equal((source.match(/local function tree\(parent,pos,scale\)/g)||[]).length,1);
- const worldBuild=source.indexOf('\nbuildWorld()\n');
- const playerBinding=source.indexOf('Players.PlayerAdded:Connect(bindPlayer)');
- assert.ok(worldBuild>0,'buildWorld call missing');
- assert.ok(playerBinding>worldBuild,'player binding must occur after safe world and spawn creation');
- assert.match(source,/local accepted=H\[a\]\(p\)/);
- assert.match(source,/if accepted==true then[\s\S]*foundationCheckpoint\("CORE_LOOP_READY"/);
+// [현재 게임] 퇴역 Cozy 대신 마력숲의 실제 스폰과 서버 게임플레이 권한을 확인한다.
+test('fantasy survival anchors the native spawn before foundation player binding and guards actions',()=>{
+  const source=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const spawn=source.indexOf('nativeFoundationSpawn.Parent = workspace');
+  const bind=source.indexOf('Players.PlayerAdded:Connect(bindNativeFoundationPlayer)');
+  assert.ok(spawn>=0&&bind>spawn,'native spawn must exist before foundation player binding');
+  assert.match(source,/nativeFoundationSpawn\.Anchored = true/);
+  assert.match(source,/nativeFoundationSpawn\.CanCollide = false/);
+  assert.match(source,/nativeFoundationSpawn\.Neutral = true/);
+  assert.match(source,/remote\.OnServerEvent:Connect\(function\(player, actionId\)/);
+  assert.match(source,/player:GetAttribute\("ProfileReady"\) ~= true then return end/);
 });
-
 
 test('F0 workflow preserves blocker evidence even when validation fails',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
@@ -203,36 +204,37 @@ test('F0 workflow preserves blocker evidence even when validation fails',()=>{
 });
 
 
-test('daechung-rpg foundation evidence is deduped and uses actual roundtrip semantics',()=>{
- const actualConfig=fs.readFileSync('roblox-games/daechung-rpg/shared/GameConfig.luau','utf8');
- const actualServer=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
- const actualClient=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
- const actualProject=fs.readFileSync('roblox-games/daechung-rpg/default.project.json','utf8');
- const r=inspectHeadlessSourceTexts({gameId:'daechung-rpg',sourcePath:'roblox-games/daechung-rpg',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:1,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config:actualConfig,server:actualServer,client:actualClient,project:actualProject});
- assert.equal(r.pass,true,r.blockers.join(','));
- assert.match(actualServer,/if foundationSeen\[name\]then return true end/);
- assert.match(actualServer,/foundationStore:GetAsync\("latest"\)/);
- assert.match(actualServer,/store:RemoveAsync\(probeKey\)/);
- assert.match(actualServer,/if #members>=2 then foundationCheckpoint\("MULTIPLAYER_SYNC"/);
- assert.match(actualServer,/if accepted then foundationCheckpoint\("CORE_LOOP_READY"/);
- assert.match(actualServer,/name=="REMOTE_PING"[\s\S]*FireClient\(p,"REMOTE_PONG"\)/);
- assert.match(actualClient,/REMOTE_PONG[\s\S]*REMOTE_ROUNDTRIP/);
- assert.match(actualClient,/foundationRemote:FireServer\("REMOTE_PING"\)/);
- const worldBuild=actualServer.indexOf('\nbuildWorld()\n');
- const playerBinding=actualServer.indexOf('Players.PlayerAdded:Connect(bindPlayer)');
- assert.ok(worldBuild>0&&playerBinding>worldBuild,'world and safe spawn must exist before player binding');
+// [증거] 현행 게임의 정합성 검사는 빌드가 있어도 SHA가 다르면 반드시 거절한다.
+test('current fantasy F0 rejects mismatched artifacts while retaining source and native compiler checks',()=>{
+  const root='roblox-games/fantasy-survival';
+  const config=fs.readFileSync(root+'/shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync(root+'/server/Game.server.luau','utf8');
+  const client=fs.readFileSync(root+'/client/Game.client.luau','utf8');
+  const project=fs.readFileSync(root+'/default.project.json','utf8');
+  const r=inspectHeadlessSourceTexts({
+    gameId:'fantasy-survival',sourcePath:root,sourceRevision:'a'.repeat(40),
+    artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'c'.repeat(64),
+    artifactRunId:1,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',
+    config,server,client,project
+  });
+  assert.equal(r.pass,false,'mismatched runtime artifact may never become F0 PASS');
+  assert.equal(r.checks.exactArtifact,false);
+  assert.equal(r.checks.nativeLanguageCompilePassed,true);
+  assert.match(server,/native-foundation-sentinel-v1/);
+  assert.match(client,/RuntimeFoundationReport/);
 });
 
-
-test('daechung-rpg runtime foundation survives late player binding and transient checkpoint writes',()=>{
- const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
- const client=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
- assert.match(server,/for attempt=1,4 do[\s\S]*foundationStore:UpdateAsync/);
- assert.match(server,/Players\.PlayerAdded:Connect\(bindPlayer\)/);
- assert.match(server,/for _,p in ipairs\(Players:GetPlayers\(\)\)do bindPlayer\(p\)end/);
- assert.match(server,/if name=="REMOTE_PING"then[\s\S]*if name=="REMOTE_ROUNDTRIP"then[\s\S]*local now=os\.clock\(\)/);
- assert.match(client,/local foundationRoundtrip=false/);
- assert.match(client,/for _=1,20 do[\s\S]*foundationRemote:FireServer\("REMOTE_PING"\)[\s\S]*task\.wait\(\.5\)/);
+// [재접속] 기존 서버의 지연 가입과 클라이언트 카메라·입력 준비 신호를 유지한다.
+test('fantasy survival foundation rebinds existing players and handles native readiness only on server',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  assert.match(server,/Players\.PlayerAdded:Connect\(bindNativeFoundationPlayer\)/);
+  assert.match(server,/for _, nativeFoundationPlayer in ipairs\(Players:GetPlayers\(\)\) do/);
+  assert.match(server,/task\.defer\(bindNativeFoundationPlayer, nativeFoundationPlayer\)/);
+  assert.match(server,/nativeFoundationRemote\.OnServerEvent:Connect\(function\(player/);
+  assert.match(client,/foundationRemote:FireServer\(/);
+  assert.match(client,/CAMERA_READY/);
+  assert.match(client,/INPUT_READY/);
 });
 
 test('F0 checkout and validation fan out across the full external-capacity matrix without workflow-wide serialization',()=>{
