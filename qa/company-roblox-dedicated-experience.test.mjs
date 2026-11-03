@@ -127,18 +127,28 @@ test('publishRobloxDedicatedPlace sends built place to exact dedicated target', 
 });
 
 
-test('dedicated Roblox project titles match the published Experience titles',()=>{
+test('dedicated Roblox titles are preserved without requiring retired game projects',()=>{
   const expected={
     'cozy-island':'포근섬: 작은 왕국 키우기',
     'daechung-rpg':'포탈 알피지',
     'horror-escape-room':'심야 대탈출',
+    'fantasy-survival':'마력숲 생존기',
   };
+  const workflow=fs.readFileSync(new URL('../.github/workflows/owner-roblox-dedicated-private-experiences.yml',import.meta.url),'utf8');
   for(const [gameId,title] of Object.entries(expected)){
-    const project=JSON.parse(fs.readFileSync(new URL(`../roblox-games/${gameId}/default.project.json`,import.meta.url),'utf8'));
-    assert.equal(project.name,title);
+    // 등록 대상의 공식 표시 이름은 보존한다. 삭제된 다른 게임의 원본을 부활시키지 않는다.
+    assert.ok(workflow.includes("gameId:'"+gameId+"',gameName: '"+title+"'"));
+    const projectFile=new URL(`../roblox-games/${gameId}/default.project.json`,import.meta.url);
+    if(fs.existsSync(projectFile)&&gameId!=='fantasy-survival'){
+      const project=JSON.parse(fs.readFileSync(projectFile,'utf8'));
+      assert.equal(project.name,title);
+    }
   }
+  const active=JSON.parse(fs.readFileSync(new URL('../roblox-games/fantasy-survival/default.project.json',import.meta.url),'utf8'));
+  const config=fs.readFileSync(new URL('../roblox-games/fantasy-survival/shared/GameConfig.luau',import.meta.url),'utf8');
+  assert.equal(active.name,'fantasy-survival');
+  assert.match(config,/GameName\s*=\s*"마력숲 생존기"/);
 });
-
 
 test('dedicated Roblox workflow recovers and persists the durable target registry',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/owner-roblox-dedicated-private-experiences.yml',import.meta.url),'utf8');
