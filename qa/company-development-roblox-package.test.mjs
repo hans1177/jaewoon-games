@@ -1330,6 +1330,18 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/piece.height\*houseScale\*roofPitch,piece.lift\*houseScale/);
   assert.match(server,/local roofRows=rowCount==3 and \{-5\.4,0,5\.4\} or \{-2\.7,2\.7\}/);
   assert.match(server,/local endZ=rowCount\*2\.7/);
+  // [실제 원본 박공] 조립형 집은 지붕 폭 안에 들어오도록 벽 폭을 줄인다.
+  assert.match(server,/local wallHalfWidth=2\.5/);
+  assert.match(server,/x=wallHalfWidth,z=z,height=5,lift=0/);
+  assert.match(server,/x=-wallHalfWidth,z=z,height=5,lift=0/);
+  assert.match(server,/x=roofOffset,z=z,height=gableHeight,lift=roofLift/);
+  assert.match(server,/local wingRoofX=w\*5\.3/);
+  assert.match(server,/local wingWallX=w\*8\.2/);
+  assert.match(server,/model:SetAttribute\("VillageRoofSilhouette",roofSilhouette\)/);
+  assert.match(server,/houseModel:SetAttribute\("VillageRoofSilhouette","COMPLETE_CC0_"\.\.house.prefab\)/);
+  assert.doesNotMatch(server,/x=6,z=z,height=5,lift=0/);
+  assert.doesNotMatch(server,/x=w\*11\.4,z=wingZ\+offset/);
+  assert.doesNotMatch(server,/asset=house\.flatRoof and villageDetailReady and "villageFlatRoof" or "villageRoof"/);
   assert.match(server,/for porchIndex=1,house.porch do/);
   const villageHouses=server.slice(server.indexOf('local houses={'),server.indexOf('for houseIndex,house in ipairs(houses)'));
   const houseSpecs=[...villageHouses.matchAll(/name="Village_([\w]+)"/g)].map(row=>row[1]);

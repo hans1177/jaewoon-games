@@ -941,17 +941,17 @@ local function createMeadowVillage()
           houseModel.Name=house.name.."_OriginalCC0House"
           houseModel:SetAttribute("MeadowVillageScenery",true)
           houseModel:SetAttribute("VillageBuilding",house.name)
+          houseModel:SetAttribute("VillageRoofSilhouette","COMPLETE_CC0_"..house.prefab)
           houseModel:SetAttribute("VillageDistrict",houseIndex<=4 and "CENTRAL" or "FARMLAND")
           houseModel:PivotTo(houseModel:GetPivot()*CFrame.Angles(0,house.angle,0))
           local fullBox,fullSize=houseModel:GetBoundingBox()
-          local roofHeight=fullBox.Position.Y-fullSize.Y*.5+fullSize.Y*.68
           local plaster=house.timber:Lerp(Color3.fromRGB(220,201,170),.78)
           for _,mesh in ipairs(houseModel:GetDescendants()) do
             if mesh:IsA("MeshPart") then
               local name=mesh.Name:lower()
+              -- [원형 완성형 집] 높이만으로 벽/창을 지붕으로 오분류하지 않는다.
               local roof=name:find("roof",1,true) or name:find("shingle",1,true)
                 or name:find("thatch",1,true) or name:find("tile",1,true)
-                or (mesh.Position.Y>=roofHeight and mesh.Size.Y<fullSize.Y*.48)
               local timber=name:find("beam",1,true) or name:find("wood",1,true)
                 or name:find("plank",1,true) or name:find("timber",1,true)
                 or name:find("door",1,true)
@@ -1010,41 +1010,48 @@ local function createMeadowVillage()
         end
       end
       if not hasOriginalHouse then
-      -- [기존 Kenney 건물 모듈] 길이 2/3칸, 층수 1/2의 실제 문·창·벽·박공지붕으로 외형을 다르게 구성한다.
+      -- [16종 중세 민가] 실제 GLB 벽(5 너비)과 경사지붕(폭 1.1/높이 .57)의 비율을 맞춘다.
+      -- 이전 x=±6 벽은 지붕 양옆으로 튀어나와 집이 찢어진 원인이었다.
       local rowCount=house.length
       local roofRows=rowCount==3 and {-5.4,0,5.4} or {-2.7,2.7}
       local endZ=rowCount*2.7
       local roofLift=house.storeys==2 and 9.65 or 4.65
+      local wallHalfWidth=2.5
+      local roofOffset=((houseIndex%5)-2)*.10
+      local gableHeight=3.7
+      local roofSilhouette=(house.storeys==2 and "TALL_GABLE" or "STEEP_GABLE")
+        ..(house.wing and "_CROSS_WING" or "")..(house.leanTo and "_LEAN_TO" or "")
+        ..(house.chimney and "_CHIMNEY" or "")
       local pieces={}
       for rowIndex,z in ipairs(roofRows) do
         pieces[#pieces+1]={asset=z==house.doorZ and "villageDoor"
           or (house.masonry and villageDetailReady and rowIndex%2==1 and "villageStoneWall")
           or (rowIndex%2==0 and "villageWindow" or "villageWall"),
-          x=6,z=z,height=5,lift=0}
+          x=wallHalfWidth,z=z,height=5,lift=0}
         pieces[#pieces+1]={asset=house.masonry and villageDetailReady and "villageStoneWall"
           or (house.sideWindow and "villageWindow" or "villageWall"),
-          x=-6,z=z,height=5,lift=0}
+          x=-wallHalfWidth,z=z,height=5,lift=0}
         if house.storeys==2 then
-          pieces[#pieces+1]={asset="villageWindow",x=6,z=z,height=5,lift=5}
-          pieces[#pieces+1]={asset=rowIndex%2==0 and "villageWall" or "villageWindow",x=-6,z=z,height=5,lift=5}
+          pieces[#pieces+1]={asset="villageWindow",x=wallHalfWidth,z=z,height=5,lift=5}
+          pieces[#pieces+1]={asset=rowIndex%2==0 and "villageWall" or "villageWindow",x=-wallHalfWidth,z=z,height=5,lift=5}
         end
-        pieces[#pieces+1]={asset=house.flatRoof and villageDetailReady and "villageFlatRoof" or "villageRoof",
-          x=0,z=z,height=3.7,lift=roofLift}
+        -- [본채] 모든 집에 오리지널 경사 박공지붕, 평지붕은 헛간에만.
+        pieces[#pieces+1]={asset="villageRoof",
+          x=roofOffset,z=z,height=gableHeight,lift=roofLift}
       end
       for _,sideZ in ipairs({-endZ,endZ}) do
-        for _,sideX in ipairs({-2.7,2.7}) do
-          pieces[#pieces+1]={asset=house.masonry and villageDetailReady and "villageStoneWall"
-            or (house.sideWindow and sideX<0 and "villageWindow" or "villageWall"),
-            x=sideX,z=sideZ,height=5,lift=0,angle=math.pi*.5}
-          if house.storeys==2 then
-            pieces[#pieces+1]={asset=sideX<0 and "villageWindow" or "villageWall",
-              x=sideX,z=sideZ,height=5,lift=5,angle=math.pi*.5}
-          end
+        -- [박공 양쪽] 폭 5 벽 한 개씩, 예전 두 개 병렬 배치로 생긴 과잉 폭 제거.
+        pieces[#pieces+1]={asset=house.masonry and villageDetailReady and "villageStoneWall"
+          or (house.sideWindow and sideZ<0 and "villageWindow" or "villageWall"),
+          x=0,z=sideZ,height=5,lift=0,angle=math.pi*.5}
+        if house.storeys==2 then
+          pieces[#pieces+1]={asset=sideZ>0 and "villageWindow" or "villageWall",
+            x=0,z=sideZ,height=5,lift=5,angle=math.pi*.5}
         end
-        pieces[#pieces+1]={asset="villageRoofEnd",x=0,z=sideZ,height=3.7,
-          lift=roofLift,angle=sideZ>0 and math.pi or 0}
+        pieces[#pieces+1]={asset="villageRoofEnd",x=roofOffset,z=sideZ,
+          height=gableHeight,lift=roofLift,angle=sideZ>0 and math.pi or 0}
       end
-      -- [완성형 건축 디테일] 기존 창/문 배치를 유지한 채 원본 굴뚝·석주·아치를 더한다.
+            -- [완성형 건축 디테일] 기존 창/문 배치를 유지한 채 원본 굴뚝·석주·아치를 더한다.
       -- Kenney 등록 모델 외의 단순 파츠·원형 장식은 사용하지 않는다.
       if villageDetailReady then
         if house.chimney then
@@ -1053,12 +1060,12 @@ local function createMeadowVillage()
         end
         if house.masonry then
           for _,offset in ipairs({-3.1,3.1}) do
-            pieces[#pieces+1]={asset="villagePillar",x=8,z=house.doorZ+offset,
+            pieces[#pieces+1]={asset="villagePillar",x=3.1,z=house.doorZ+offset,
               height=3.7,lift=0,decoration=true}
           end
         end
         if house.archway then
-          pieces[#pieces+1]={asset="villageArch",x=9.8,z=house.doorZ,
+          pieces[#pieces+1]={asset="villageArch",x=4.1,z=house.doorZ,
             height=4.9,lift=0,angle=math.pi*.5,decoration=true}
         end
       end
@@ -1066,38 +1073,43 @@ local function createMeadowVillage()
       -- 본채 측면에 직각으로 연결한다. 단색 집을 복제하지 않고 실제 외곽 실루엣을 바꾼다.
       -- 현관 반대편에 붙여 원래 문·NPC 동선을 가리지 않는다.
       if house.wing then
+        -- [실제 연결된 ㄱ자 옆채] 한 장의 경사지붕과 원본 벽 세 장을 연결.
+        -- 예전 겹친 두 지붕과 떨어져 있는 x=16.2 외벽은 제거.
         local w=house.wing
         local wingZ=house.wingZ or 0
-        for rowIndex,offset in ipairs({-2.7,2.7}) do
-          pieces[#pieces+1]={asset="villageRoof",x=w*11.4,z=wingZ+offset,
-            height=3.5,lift=4.65,angle=math.pi*.5}
-          pieces[#pieces+1]={asset=rowIndex==1 and "villageDoor" or "villageWindow",
-            x=w*16.2,z=wingZ+offset,height=5,lift=0,secondary=true}
-          pieces[#pieces+1]={asset="villageWall",
-            x=w*11.4,z=wingZ+offset*2,height=5,lift=0,angle=math.pi*.5}
+        local wingRoofX=w*5.3
+        local wingWallX=w*8.2
+        pieces[#pieces+1]={asset="villageRoof",x=wingRoofX,z=wingZ,
+          height=3.5,lift=4.65,angle=math.pi*.5}
+        pieces[#pieces+1]={asset="villageWindow",x=wingWallX,z=wingZ,
+          height=5,lift=0,secondary=true}
+        for _,side in ipairs({-2.5,2.5}) do
+          pieces[#pieces+1]={asset="villageWall",x=wingRoofX,z=wingZ+side,
+            height=5,lift=0,angle=math.pi*.5,secondary=true}
         end
-        pieces[#pieces+1]={asset="villageRoofEnd",x=w*16.2,z=wingZ,
+        pieces[#pieces+1]={asset="villageRoofEnd",x=wingWallX,z=wingZ,
           height=3.5,lift=4.65,angle=w<0 and -math.pi*.5 or math.pi*.5}
       end
-      -- [헛간·오두막] 낮은 측면 창고 차양. 원본 지붕 부재를 이용하고 빈 파츠는 만들지 않는다.
+            -- [헛간·오두막] 낮은 측면 창고 차양. 원본 지붕 부재를 이용하고 빈 파츠는 만들지 않는다.
       if house.leanTo then
-        for _,offset in ipairs({-2.7,2.7}) do
-          pieces[#pieces+1]={asset="villageRoof",x=-8.1,z=offset,
-            height=2.55,lift=3.15,angle=math.pi*.5,decoration=true}
+        -- [헛간 차양] 평판 원본 지붕을 본채 측면에 붙여 가로 길이에 맞춰 연결.
+        for _,z in ipairs(roofRows) do
+          pieces[#pieces+1]={asset=villageDetailReady and "villageFlatRoof" or "villageRoof",
+            x=-4.35,z=z,height=2.45,lift=3.05,angle=math.pi*.5,decoration=true}
         end
       end
-      -- [큰 건물 전면 회랑] 여관·회관의 2층 처마를 넓게 이어 단층 주택과 구별한다.
+            -- [큰 건물 전면 회랑] 여관·회관의 2층 처마를 넓게 이어 단층 주택과 구별한다.
       if house.balcony and house.storeys==2 then
         for _,offset in ipairs({-5.4,0,5.4}) do
-          pieces[#pieces+1]={asset="villageRoof",x=7.65,z=offset,
-            height=2.15,lift=5.1,angle=math.pi*.5,decoration=true}
+          pieces[#pieces+1]={asset=villageDetailReady and "villageFlatRoof" or "villageRoof",
+            x=4.05,z=offset,height=2.15,lift=5.1,angle=math.pi*.5,decoration=true}
         end
       end
       -- [차양] 집의 원본 지붕 메시를 재사용하며 단순 Part를 새로 생성하지 않는다.
       for porchIndex=1,house.porch do
         local porchZ=house.porch==1 and house.doorZ
           or (porchIndex==1 and house.doorZ-2.7 or house.doorZ+2.7)
-        pieces[#pieces+1]={asset="villageRoof",x=7.75,z=porchZ,height=2.2,
+        pieces[#pieces+1]={asset="villageRoof",x=4.05,z=porchZ,height=2.2,
           lift=3.25,angle=math.pi*.5,decoration=true}
       end
       local created=0
@@ -1115,6 +1127,7 @@ local function createMeadowVillage()
           model:SetAttribute("MeadowVillageScenery",true)
           model:SetAttribute("VillageBuilding",house.name)
           model:SetAttribute("VillageDistrict",houseIndex<=4 and "CENTRAL" or houseIndex<=10 and "RESIDENTIAL" or "FARMLAND")
+          model:SetAttribute("VillageRoofSilhouette",roofSilhouette)
           model:PivotTo(model:GetPivot()*CFrame.Angles(0,rot+(piece.angle or 0),0))
           for _,mesh in ipairs(model:GetDescendants()) do
             if mesh:IsA("MeshPart") then
@@ -1169,7 +1182,7 @@ local function createMeadowVillage()
       end -- 완성형 집과 조립형 집 중복 배치 금지
       if house.lantern then
         local scale=villageArchitectureScale*house.scale
-        local sideX,sideZ=7.9*scale,house.doorZ*scale
+        local sideX,sideZ=3.8*scale,house.doorZ*scale
         local x=house.x+sideX*math.cos(house.angle)-sideZ*math.sin(house.angle)
         local z=house.z+sideX*math.sin(house.angle)+sideZ*math.cos(house.angle)
         local entryLantern=worldAsset("villageLantern",Vector3.new(x,3,z),1.9,3.3*scale)
