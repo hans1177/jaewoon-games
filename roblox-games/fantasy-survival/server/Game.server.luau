@@ -108,9 +108,10 @@ end
 -- [다크 판타지 숲] 원본 CC0 메시·텍스처를 보존하는 공통 저채도 팔레트.
 local meadowPalette={
   -- [위처풍] 축축한 이끼·흙·풍화석과 검은 수관의 색을 기존 지형과 원본 나무에 적용한다.
-  grass=Color3.fromRGB(67,83,65),leafyGrass=Color3.fromRGB(54,72,58),
-  ground=Color3.fromRGB(83,71,62),rock=Color3.fromRGB(88,91,88),
-  bark=Color3.fromRGB(73,61,52),leaves=Color3.fromRGB(60,83,67),
+  -- [모바일 화면 검증 보정] 검은 바닥 대신 축축한 초록 잔디·갈색 흙·회색 석재를 읽히게 한다.
+  grass=Color3.fromRGB(108,120,91),leafyGrass=Color3.fromRGB(83,107,79),
+  ground=Color3.fromRGB(119,100,83),rock=Color3.fromRGB(104,106,100),
+  bark=Color3.fromRGB(84,72,60),leaves=Color3.fromRGB(75,100,76),
   wolf=Color3.fromRGB(144,136,121),boar=Color3.fromRGB(126,101,83),
   deer=Color3.fromRGB(157,125,102),rabbit=Color3.fromRGB(181,176,157),
   bee=Color3.fromRGB(217,177,106),bat=Color3.fromRGB(125,129,138),
@@ -122,6 +123,8 @@ local meadowTerrain = workspace.Terrain
 -- 면적 약 4.98배. 시작/적/자원 좌표 및 전투 수치를 옮기지 않는다.
 local meadowWorldSize=696
 local function createStartingMeadow()
+  -- [실제 지형 풀잎] 새 임시 모델 없이 Roblox Terrain의 기존 자연 풀 장식을 켠다.
+  meadowTerrain.Decoration=true
   meadowTerrain:FillBlock(CFrame.new(0, -4, 0), Vector3.new(312, 12, 312), Enum.Material.Grass)
   -- [마을 평탄지] 시작 초원에 산봉우리처럼 튀어나오던 Ridge/Knoll 지형을 만들지 않는다.
   -- 기존 채집 광맥 3곳·지표 잔디·몬스터/의뢰 좌표는 보존한다.
@@ -141,25 +144,25 @@ local function createStartingMeadow()
   meadowTerrain:SetMaterialColor(Enum.Material.Ground,meadowPalette.ground)
   meadowTerrain:SetMaterialColor(Enum.Material.Rock,meadowPalette.rock)
   -- [초원 자연색] 원래 Terrain만 이용해 습지와 마른 강가 재질을 구별한다.
-  meadowTerrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(66,60,54))
-  meadowTerrain:SetMaterialColor(Enum.Material.Sand,Color3.fromRGB(114,104,89))
+  meadowTerrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(91,82,70))
+  meadowTerrain:SetMaterialColor(Enum.Material.Sand,Color3.fromRGB(147,131,105))
   -- Existing stone gathering sites are terrain outcrops, not fake rock parts.
   for _, pos in ipairs({Vector3.new(-35,2,31),Vector3.new(11,2,-39),Vector3.new(-7,2,43)}) do
     meadowTerrain:FillBall(pos-Vector3.new(0,4.5,0),5,Enum.Material.Rock)
   end
   -- [위처풍 자연광] 기본 캐릭터·모바일 시야를 보존하며 숲 그림자와 석재의 입체감을 강화한다.
   Lighting.ClockTime = 10.5
-  Lighting.Brightness = 1.55
-  Lighting.Ambient = Color3.fromRGB(77,87,89)
-  Lighting.OutdoorAmbient = Color3.fromRGB(119,132,124)
-  Lighting.EnvironmentDiffuseScale=.65
-  Lighting.EnvironmentSpecularScale=.09
+  Lighting.Brightness = 2
+  Lighting.Ambient = Color3.fromRGB(104,112,110)
+  Lighting.OutdoorAmbient = Color3.fromRGB(148,153,134)
+  Lighting.EnvironmentDiffuseScale=.82
+  Lighting.EnvironmentSpecularScale=.13
   Lighting.GlobalShadows=true
   Lighting.ShadowSoftness=.27
-  Lighting.ExposureCompensation=-.12
+  Lighting.ExposureCompensation=.07
   gameWorld:SetAttribute("StartingRegion", "MEADOW")
   gameWorld:SetAttribute("GroundVisualSource", "ROBLOX_NATIVE_TERRAIN")
-  gameWorld:SetAttribute("MeadowVisualStyle", "DARK_MEDIEVAL_FOREST_CC0_NATIVE_V5")
+  gameWorld:SetAttribute("MeadowVisualStyle", "DARK_MEDIEVAL_FOREST_CC0_NATIVE_V6")
   gameWorld:SetAttribute("MeadowRegionWidth",meadowWorldSize)
   gameWorld:SetAttribute("MeadowRegionAreaScale",math.floor((meadowWorldSize/312)^2*100)/100)
   gameWorld:SetAttribute("MeadowOuterRegionReady",false)
@@ -198,9 +201,9 @@ if not meadowColorGrade then
   meadowColorGrade.Parent=Lighting
 end
 meadowColorGrade.Enabled=true
-meadowColorGrade.Brightness=-.012
-meadowColorGrade.Contrast=.16
-meadowColorGrade.Saturation=-.18
+meadowColorGrade.Brightness=.025
+meadowColorGrade.Contrast=.12
+meadowColorGrade.Saturation=-.10
 local lastMeadowClimateTick=-1
 local lastMeadowWeather=""
 
@@ -217,9 +220,10 @@ local function updateMeadowClimate()
   local sun=math.min(morning,evening)
   local damp=weather=="STORM" and .72 or weather=="RAIN" and .83
     or weather=="FOG" and .9 or weather=="SNOW" and .87 or 1
-  local brightness=math.max(.88,(.79+1.03*sun)*damp)
-  local lightColor=Color3.fromRGB(68,79,89):Lerp(Color3.fromRGB(113,125,118),sun)
-  local airColor=Color3.fromRGB(84,98,109):Lerp(Color3.fromRGB(131,144,137),sun)
+  -- [날씨+시야] 흐린 아침도 어두운 검정 바닥으로 뭉개지지 않도록 환경광 보존.
+  local brightness=math.max(1.15,(1.08+1.18*sun)*damp)
+  local lightColor=Color3.fromRGB(93,102,110):Lerp(Color3.fromRGB(151,158,146),sun)
+  local airColor=Color3.fromRGB(115,128,130):Lerp(Color3.fromRGB(171,175,157),sun)
   if weather=="STORM" or weather=="RAIN" then
     lightColor=lightColor:Lerp(Color3.fromRGB(74,86,99),weather=="STORM" and .6 or .35)
     airColor=airColor:Lerp(Color3.fromRGB(104,115,125),weather=="STORM" and .68 or .4)
@@ -250,14 +254,14 @@ local function updateMeadowClimate()
     tint=tint:Lerp(Color3.fromRGB(173,195,210),weather=="STORM" and .38 or .2)
   end
   meadowColorGrade.TintColor=meadowColorGrade.TintColor:Lerp(tint,.12)
-  local desiredContrast=weather=="FOG" and .11 or .17
-  local desiredSaturation=weather=="FOG" and -.23 or -.18
+  local desiredContrast=weather=="FOG" and .08 or .12
+  local desiredSaturation=weather=="FOG" and -.16 or -.10
   meadowColorGrade.Contrast+=(desiredContrast-meadowColorGrade.Contrast)*.12
   meadowColorGrade.Saturation+=(desiredSaturation-meadowColorGrade.Saturation)*.12
   local cover=weather=="STORM" and .96 or weather=="RAIN" and .88
-    or weather=="FOG" and .80 or weather=="SNOW" and .82 or .69
+    or weather=="FOG" and .80 or weather=="SNOW" and .82 or .53
   local density=weather=="STORM" and .87 or weather=="RAIN" and .76
-    or weather=="FOG" and .69 or weather=="SNOW" and .70 or .57
+    or weather=="FOG" and .69 or weather=="SNOW" and .70 or .41
   local smooth=.12
   meadowClouds.Cover=meadowClouds.Cover+(cover-meadowClouds.Cover)*smooth
   meadowClouds.Density=meadowClouds.Density+(density-meadowClouds.Density)*smooth
@@ -497,6 +501,15 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
     end
     if underside==math.huge then clone:Destroy();error("MEADOW_VISIBLE_CC0_MESH_MISSING") end
     clone:PivotTo(clone:GetPivot()+Vector3.new(0,ground.Position.Y+.15-underside+(heightAboveGround or 0),0))
+    -- [완성형 집·모듈·소품 중심] AssetService 모델 래퍼의 피벗은 화면 메시의 가운데가 아닐 수 있다.
+    -- 마을 모델은 실제 배치 중심으로 WorldPivot을 맞춰 지붕·울타리·카트의 회전 시 이탈을 막는다.
+    -- 동물 리그·본·전투·채집 모델의 기존 회전축은 변경하지 않는다.
+    if id:sub(1,7)=="village" then
+      clone.PrimaryPart=nil
+      clone.WorldPivot=CFrame.new(location.X,
+        ground.Position.Y+.15+(heightAboveGround or 0)+(targetHeight or 5)*.5,location.Z)
+      clone:SetAttribute("MeadowVillageVisualPivotCentered",true)
+    end
     clone:SetAttribute("MeadowSurfaceY",ground.Position.Y)
     clone.Name="Meadow_"..id
     clone.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
