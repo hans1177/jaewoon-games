@@ -174,15 +174,16 @@ jobs:
           echo "ROBLOX_COMMON_LIBRARY_SYNTAX_PASS=${#libraries[@]}"
           echo 'ROBLOX_COMMON_LIBRARY_RUNTIME_QUALITY=UNVERIFIED'
 
-      - name: Compile Cozy Island Luau source with official compiler
+      - name: Compile current Fantasy Survival Luau source with official compiler
         run: |
           set -euo pipefail
-          mapfile -d '' files < <(find roblox-games/cozy-island -type f -name '*.luau' -print0 | sort -z)
+          # [현재 게임] 카탈로그에서 삭제된 cozy-island 대신 마력숲 실제 소스를 검사한다.
+          mapfile -d '' files < <(find roblox-games/fantasy-survival -type f -name '*.luau' -print0 | sort -z)
           [ "${#files[@]}" -gt 0 ]
           for file in "${files[@]}"; do
             /tmp/luau-bin/luau-compile "$file" >/dev/null
           done
-          echo "COZY_ISLAND_LUAU_COMPILE_PASS=${#files[@]}"
+          echo "FANTASY_SURVIVAL_LUAU_COMPILE_PASS=${#files[@]}"
 
       - name: Compile Survival Luau source with official compiler
         run: |
@@ -194,11 +195,12 @@ jobs:
           done
           echo "SURVIVAL_LUAU_COMPILE_PASS=${#files[@]}"
 
-      - name: Verify Survival recovery and Daechung asset binding in Luau runtime
+      - name: Verify current Survival recovery in Luau runtime
         run: |
           set -euo pipefail
           test -x /tmp/luau-bin/luau
-          VIBE2_LUAU_BINARY=/tmp/luau-bin/luau node --test --test-name-pattern='survival|daechung' qa/roblox-game-repair-safety.test.mjs
+          # [현재 게임] 삭제된 daechung-rpg 테스트를 강제 실행하지 않는다.
+          VIBE2_LUAU_BINARY=/tmp/luau-bin/luau node --test --test-name-pattern='survival' qa/roblox-game-repair-safety.test.mjs
 
       - name: Check Vibe3 syntax
         run: |
