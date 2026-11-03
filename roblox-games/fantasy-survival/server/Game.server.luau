@@ -835,6 +835,7 @@ local function createMeadowVillage()
   end
   gameWorld:SetAttribute("MeadowVillageRoadRoutes",#villageRoadRoutes)
   gameWorld:SetAttribute("MeadowVillageRoadSegments",villageRoadSegments)
+  gameWorld:SetAttribute("MeadowVillageLayoutStyle","RUSTIC_WINDING_FOREST_VILLAGE")
   -- [마을 광장 바닥] 초원과 동떨어진 흰색 Cobblestone 직사각형 덮개는 두지 않는다.
   -- 기존 Grass 지면과 Ground 골목을 그대로 연결해 의뢰판·주민·우물 위치를 보존한다.
   -- [실제 건물] 기둥/벽/지붕/문은 저장소 Kenney 원본 3D GLB 등록본만 사용한다.
@@ -1220,17 +1221,17 @@ local function createMeadowVillage()
     -- [시장·생활 마당] 식탁처럼 보이던 가판대를 늘리지 않고 두 장터만 유지한다.
     -- 기존 CC0 카트·울타리·등불을 농가와 골목에 비대칭 분산 배치한다.
     local furnishings={
-      {"villageStall",-26,-148,3.15,.2},{"villageStall",26,-164,3.4,-.3},
-      {"villageCart",-52,-165,6,.4},{"villageCart",54,-244,5.6,-.35},
+      {"villageStall",-38,-142,3.15,.21},{"villageStall",37,-173,3.4,-.28},
+      {"villageCart",-65,-187,6,.34},{"villageCart",62,-253,5.6,-.31},
       {"villageCart",-165,-234,6.1,.15},{"villageCart",176,-148,6.1,-.5},
       {"villageLantern",-17,-102,5,0},{"villageLantern",19,-113,5,0},
       {"villageLantern",-14,-184,5,0},{"villageLantern",18,-201,5,0},
-      {"villageLantern",-25,-266,5,0},{"villageLantern",23,-278,5,0},
+      {"villageLantern",-33,-269,5,0},{"villageLantern",24,-285,5,0},
       {"villageLantern",-143,-119,4.8,0},{"villageLantern",157,-185,4.8,0},
-      {"villageFence",-154,-71,4.8,.16},{"villageFence",-156,-90,4.8,.16},
-      {"villageFence",167,-79,4.8,-.2},{"villageFence",168,-99,4.8,-.2},
-      {"villageFence",-145,-218,4.8,.4},{"villageFence",-158,-224,4.8,.4},
-      {"villageFence",146,-243,4.8,-.3},{"villageFence",159,-246,4.8,-.3},
+      {"villageFence",-153,-77,4.8,.22},{"villageFence",-159,-94,4.8,.14},
+      {"villageFence",167,-84,4.8,-.27},{"villageFence",173,-106,4.8,-.12},
+      {"villageFence",-145,-231,4.8,.32},{"villageFence",-163,-241,4.8,.14},
+      {"villageFence",149,-238,4.8,-.25},{"villageFence",165,-247,4.8,-.18},
       {"villageFence",-234,-150,4.8,math.pi*.5},{"villageFence",-234,-170,4.8,math.pi*.5},
       {"villageFence",243,-158,4.8,math.pi*.5},{"villageFence",243,-178,4.8,math.pi*.5},
       {"villageFence",-238,-278,4.8,.15},{"villageFence",-239,-295,4.8,.15},
