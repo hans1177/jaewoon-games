@@ -1,0 +1,255 @@
+<!doctype html>
+<!-- 파일명: web-games/medieval-defense/index.html -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#151c17">
+<title>왕국 최후의 성벽 · 중세 전쟁 디펜스</title>
+<style>
+/* 화면 */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#151c17;color:#f8e9ce;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+#field{position:fixed;inset:0;width:100%;height:100%;touch-action:none;display:block;background:#3b593e}
+#shade{position:fixed;inset:0;pointer-events:none;background:linear-gradient(#0b1415a0,transparent 22%,transparent 68%,#101712bb)}
+.hud{position:fixed;z-index:3;left:8px;right:8px;top:max(8px,env(safe-area-inset-top));display:flex;gap:8px;justify-content:space-between;align-items:flex-start;pointer-events:none}
+.crest,.scores,.panel{background:#13211eeb;border:1px solid #b69b62a3;border-radius:12px;box-shadow:0 5px 18px #0007;backdrop-filter:blur(6px)}
+.crest{padding:8px 10px;min-width:120px}.crest b{display:block;font-size:13px;color:#ffe09b}.crest small{display:block;font-size:9px;color:#b1c8bc;margin-top:3px}
+.scores{display:flex;gap:4px;padding:7px;flex-wrap:wrap;justify-content:flex-end;max-width:65vw}
+.stat{padding:5px 6px;font-size:10px;font-weight:900;white-space:nowrap;background:#ffffff12;border-radius:8px}
+.stat b{color:#ffe19b}
+#notice{position:fixed;z-index:4;top:80px;left:50%;transform:translateX(-50%);max-width:min(94vw,450px);padding:8px 12px;text-align:center;font-size:11px;color:#ffe4ad;white-space:normal;line-height:1.3;pointer-events:none}
+#selection{position:fixed;z-index:9;left:8px;right:8px;bottom:140px;display:none;align-items:center;justify-content:space-between;gap:6px;padding:8px;font-size:10px}
+#selection.on{display:flex}
+#selection strong{color:#ffdf9c}#selection button{padding:9px 11px;color:#fff2d2;background:#40543f;border:1px solid #bfa36b;border-radius:8px;font-size:11px;font-weight:800;white-space:nowrap}
+#selection button:disabled{opacity:.42}
+#dock{position:fixed;z-index:5;bottom:0;left:0;right:0;padding:8px 8px max(11px,env(safe-area-inset-bottom));background:#101b1bf7;border-top:2px solid #a68c55}
+#builds{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
+#builds::-webkit-scrollbar{display:none}
+.build{flex:1 0 97px;min-height:64px;padding:7px 8px;text-align:left;border:1px solid #72826b;border-radius:10px;background:#293d33;color:#fff0d4;min-width:0}
+.build b{display:block;font-size:12px;white-space:nowrap}.build small{display:block;color:#bacabd;font-size:9px;margin-top:4px}
+.build.on{background:#6c5731;outline:2px solid #ecc579}.build:disabled{opacity:.38}
+#actions{display:flex;gap:7px;margin-top:8px}
+#actions button{min-height:38px;border:1px solid #9f8554;border-radius:9px;background:#334a3d;color:#f7eacc;font-size:12px;font-weight:900}
+#startWave{flex:1;background:#d2a656!important;color:#192821!important}
+#pause,#speed{min-width:67px}
+#modal{position:fixed;z-index:30;inset:0;display:flex;justify-content:center;align-items:center;padding:20px;background:#0b1715e8}
+#modal[hidden]{display:none}
+.card{width:min(100%,440px);padding:24px 20px;border:2px solid #c9a86f;border-radius:18px;background:linear-gradient(145deg,#2b3b30,#162620);text-align:center;box-shadow:0 18px 60px #000a}
+.card .badge{font-size:42px}.card h1{color:#ffe0a0;margin:8px 0;font-size:26px;letter-spacing:-1px}
+.card p{font-size:12px;line-height:1.8;color:#d7ddcf}.card .rules{padding:10px;border-radius:10px;background:#0c1a18;color:#f6e6c5;font-size:11px;line-height:1.8}
+.card button{min-height:47px;width:100%;margin-top:12px;background:#e2b466;color:#17231d;border:0;border-radius:10px;font-weight:1000;font-size:14px}
+.card .second{background:#435b4b;color:#faf3e5;border:1px solid #819882}
+.card small{display:block;margin-top:10px;color:#8fb5ab;font-size:9px;line-height:1.55}
+#toast{position:fixed;z-index:12;top:26%;left:50%;transform:translate(-50%,-10px);background:#14291fef;color:#ffe6a7;border:1px solid #dac07a;padding:10px 13px;border-radius:10px;font-size:12px;font-weight:850;opacity:0;transition:.2s;pointer-events:none;text-align:center;max-width:90vw}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:400px){.crest{min-width:95px;padding:8px}.crest b{font-size:11px}.scores{max-width:68vw;padding:5px;gap:3px}.stat{font-size:9px;padding:4px}.build{flex-basis:95px;padding:7px 6px}.build b{font-size:10px}#selection{bottom:146px}}
+@media(max-height:620px){#notice{top:60px;font-size:10px}.build{min-height:53px}.build small{font-size:8px}#selection{bottom:124px}#dock{padding-top:5px}#actions button{min-height:32px}}
+</style>
+</head>
+<body>
+<canvas id="field" aria-label="중세 전쟁 디펜스 전장"></canvas><div id="shade"></div>
+<header class="hud">
+ <div class="crest"><b>왕국 최후의 성벽</b><small id="phase">전투 준비</small></div>
+ <div class="scores"><span class="stat">금화 <b id="gold">260</b></span><span class="stat">성벽 <b id="wall">20</b></span><span class="stat">공격 <b id="wave">1 / 10</b></span><span class="stat">적 <b id="enemies">0</b></span></div>
+</header>
+<div id="notice" class="panel">병력을 선택하고 전장의 노란 진지에 배치해.</div>
+<div id="selection" class="panel"><span id="selectedInfo"></span><button id="upgrade">강화</button><button id="sell">철수</button><button id="close">닫기</button></div>
+<footer id="dock">
+ <div id="builds">
+  <button class="build" data-kind="archer"><b>🏹 궁수 초소</b><small>90금화 · 원거리 연사</small></button>
+  <button class="build" data-kind="knight"><b>⚔️ 기사 주둔지</b><small>110금화 · 접근 저지</small></button>
+  <button class="build" data-kind="catapult"><b>💥 투석기 진지</b><small>175금화 · 범위 피해</small></button>
+ </div>
+ <div id="actions"><button id="startWave">⚑ 공격 막기 시작</button><button id="speed">속도 ×1</button><button id="pause">일시정지</button></div>
+</footer>
+<div id="toast"></div>
+<div id="modal"><div class="card"><div class="badge">🏰</div><h1 id="modalTitle">왕국 최후의 성벽</h1>
+<p id="modalText">위에서 내려다보는 2D 중세 전쟁 디펜스.<br>두 갈래 진격로로 쳐들어오는 적군을 막아!</p>
+<div class="rules" id="modalRules">궁수는 빠른 사격 · 기사는 근접 저지 · 투석기는 광역 공격<br>노란 진지에 배치하고 10번의 공격을 막으면 승리해.<br>5번째와 10번째 공격에는 적 지휘관이 등장해.</div>
+<button id="play">성벽 방어 시작</button><button id="reset" class="second" hidden>처음부터 다시</button>
+<small>그래픽 출처: 기존 저장소의 중세 건물·주민 에셋<br>SketchyLogic 외 / CC BY 3.0, Chris Morton / CC0</small>
+</div></div>
+<script>
+(()=>{
+'use strict';
+/* 메인: 게임 상태 */
+const $=id=>document.getElementById(id),canvas=$('field'),ctx=canvas.getContext('2d',{alpha:false}),SAVE='jaewoon-medieval-defense-v1';
+const W=960,H=640,MAX=10;
+const ROUTES=[
+[[-40,170],[170,170],[170,302],[426,302],[426,188],[670,188],[670,326],[820,326]],
+[[-40,495],[200,495],[200,385],[474,385],[474,514],[730,514],[730,326],[820,326]]
+];
+const SPOTS=[[95,278],[306,215],[319,425],[545,116],[547,283],[595,440],[820,195],[828,455],[69,398],[349,110],[727,419],[708,103]];
+const TYPES={
+ archer:{name:'궁수 초소',cost:90,damage:23,range:186,rate:.64,icon:'🏹'},
+ knight:{name:'기사 주둔지',cost:110,damage:35,range:128,rate:.9,icon:'⚔️'},
+ catapult:{name:'투석기 진지',cost:175,damage:73,range:228,rate:2.6,icon:'💥'}
+};
+const ASSET_ROOT='../../assets/shared/medieval/';
+const images={};
+for(const name of ['newgrass','oaktree','firtree','keep','watchtower','house','CitizenSheet']){
+ const img=new Image();img.src=ASSET_ROOT+name+'.png';images[name]=img;
+}
+let state={gold:260,wall:20,wave:1,towers:[],best:0,mode:'menu'},selectedKind=null,selected=-1;
+let monsters=[],shots=[],sparks=[],spawnWait=0,spawned=0,planned=[],last=0,acc=0,scale=1,originX=0,originY=0,flashUntil=0,toastTimer=0,raf=0,fast=1;
+function safeRead(){try{const v=JSON.parse(localStorage.getItem(SAVE)||'null');if(!v||v.version!==1)return null;return v;}catch{return null}}
+function save(){try{localStorage.setItem(SAVE,JSON.stringify({version:1,best:state.best,gold:state.gold,wall:state.wall,wave:state.wave,towers:state.towers.map(t=>({slot:t.slot,kind:t.kind,level:t.level}))}));}catch{}}
+function fresh(){state={gold:260,wall:20,wave:1,towers:[],best:state.best||0,mode:'ready'};monsters=[];shots=[];sparks=[];spawned=0;planned=[];selected=-1;selectedKind=null;fast=1;updateButtons();save()}
+function load(){const v=safeRead();if(!v||!Number.isInteger(v.wave)||v.wave<1||v.wave>MAX||!Number.isFinite(v.gold)||!Number.isFinite(v.wall)||v.wall<=0)return false;
+ const towers=Array.isArray(v.towers)?v.towers.filter(t=>Number.isInteger(t.slot)&&t.slot>=0&&t.slot<SPOTS.length&&TYPES[t.kind]&&t.level>=1&&t.level<=3).slice(0,SPOTS.length):[];
+ if(new Set(towers.map(t=>t.slot)).size!==towers.length)return false;
+ state={gold:Math.max(0,Math.min(v.gold,999999)),wall:Math.min(20,v.wall),wave:v.wave,towers:towers.map(t=>({...t,cool:0})),best:Math.min(MAX,Number(v.best)||0),mode:'ready'};
+ monsters=[];shots=[];sparks=[];planned=[];selected=-1;selectedKind=null;fast=1;updateButtons();return true;
+}
+function toast(msg){$('toast').textContent=msg;$('toast').classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('on'),1700)}
+function updateButtons(){
+ $('gold').textContent=Math.floor(state.gold);$('wall').textContent=Math.max(0,state.wall);$('wave').textContent=state.wave+' / '+MAX;
+ $('enemies').textContent=monsters.length;const battle=state.mode==='battle',done=state.mode==='won'||state.mode==='lost';
+ $('phase').textContent=done?'전쟁 종료':battle?'적의 공격 진행 중':'방어 진지 구축 중';
+ $('startWave').disabled=battle||done;$('startWave').textContent=battle?'⚔ 전투 중': '⚑ '+state.wave+'차 공격 시작';
+ $('pause').textContent=state.mode==='paused'?'계속':'일시정지';$('pause').disabled=done||state.mode==='menu';
+ $('speed').textContent='속도 ×'+fast;
+ for(const el of document.querySelectorAll('[data-kind]')){const kind=el.dataset.kind;el.classList.toggle('on',selectedKind===kind);el.disabled=done||state.mode==='menu'||state.gold<TYPES[kind].cost;}
+ const t=state.towers.find(t=>t.slot===selected);
+ $('selection').classList.toggle('on',!!t);
+ if(t){const type=TYPES[t.kind];const price=t.level<3?Math.floor(type.cost*(.8+t.level*.7)):0;
+ $('selectedInfo').innerHTML='<strong>'+type.icon+' '+type.name+'</strong> '+t.level+'단계';
+ $('upgrade').textContent=t.level===3?'최대 강화':'강화 '+price+'금';
+ $('upgrade').disabled=t.level===3||state.gold<price;$('sell').disabled=false;}
+}
+function openModal(title,message,button,reset){$('modalTitle').textContent=title;$('modalText').innerHTML=message;$('play').textContent=button;$('reset').hidden=!reset;$('modal').hidden=false}
+function start(){if(state.mode==='menu'){if(!load())fresh()}$('modal').hidden=true;state.mode='ready';toast('진지를 눌러 병력을 배치해!');updateButtons()}
+function end(won){state.mode=won?'won':'lost';state.best=Math.max(state.best,won?MAX:state.wave-1);
+ try{localStorage.removeItem(SAVE)}catch{};openModal(won?'왕국을 지켜냈다!':'성벽 함락',won?'10차 침공을 모두 격퇴했어!':'성벽이 무너졌어. 병력을 다시 배치해 봐.','다시 도전',false);updateButtons();}
+function startWave(){
+ if(state.mode!=='ready')return;state.mode='battle';selected=-1;selectedKind=null;spawned=0;spawnWait=.28;planned=[];
+ const n=7+state.wave*3;
+ for(let i=0;i<n;i++){const boss=(state.wave===5||state.wave===10)&&i===n-1;const k=boss?'boss':(i%6===0&&state.wave>=3?'shield':i%4===0?'runner':'foot');
+ planned.push({kind:k,route:i%2,scale:1+(state.wave-1)*.22});}
+ toast(state.wave+'차 적군이 진격한다!');updateButtons();
+}
+function spawnNext(){
+ const v=planned[spawned++],data={foot:{hp:110,speed:49,reward:14,attack:1},runner:{hp:72,speed:82,reward:13,attack:1},shield:{hp:210,speed:35,reward:25,attack:2},boss:{hp:900,speed:26,reward:130,attack:5}}[v.kind];
+ const hp=Math.floor(data.hp*v.scale);
+ monsters.push({kind:v.kind,route:v.route,segment:0,x:ROUTES[v.route][0][0],y:ROUTES[v.route][0][1],hp,max:hp,speed:data.speed,reward:data.reward,attack:data.attack,hit:0,slow:0});
+}
+function nearest(x,y,r){let target=null,score=-Infinity;for(const m of monsters){const d=Math.hypot(m.x-x,m.y-y);if(d>r)continue;const val=m.segment*350-d;if(val>score){score=val;target=m}}return target}
+function impact(x,y,r,dmg){for(const m of [...monsters]){const dd=Math.hypot(m.x-x,m.y-y);if(dd<r)hit(m,dmg*(1-.35*dd/r));}sparks.push({x,y,age:0,life:.45,radius:r,color:'#ffc56a'})}
+function hit(m,damage){if(!monsters.includes(m))return;const reduction=m.kind==='shield'?.7:1;m.hp-=damage*reduction;m.hit=.17;
+ if(m.hp<=0){monsters.splice(monsters.indexOf(m),1);state.gold+=m.reward;sparks.push({x:m.x,y:m.y,age:0,life:.4,radius:30,color:'#e3c477'});}}
+function fireTower(t,enemy){const cfg=TYPES[t.kind];const p=SPOTS[t.slot],sx=p[0],sy=p[1];
+ if(t.kind==='knight'){hit(enemy,cfg.damage*(1+.65*(t.level-1)));sparks.push({x:enemy.x,y:enemy.y,age:0,life:.25,radius:22,color:'#b4e0ee'});return;}
+ shots.push({kind:t.kind,x:sx,y:sy-23,target:enemy,tx:enemy.x,ty:enemy.y,speed:t.kind==='archer'?680:360,damage:cfg.damage*(1+.7*(t.level-1)),age:0});}
+function update(dt){
+ if(state.mode!=='battle')return;
+ spawnWait-=dt;
+ if(spawned<planned.length&&spawnWait<=0){spawnNext();spawnWait=(state.wave>5?.49:.59);}
+ for(const m of [...monsters]){
+  m.hit=Math.max(0,m.hit-dt);
+  let distance=m.speed*dt*(m.slow?0.65:1);const path=ROUTES[m.route];
+  while(distance>0&&monsters.includes(m)){
+   const dest=path[m.segment+1];if(!dest){monsters.splice(monsters.indexOf(m),1);state.wall-=m.attack;flashUntil=performance.now()+180;if(state.wall<=0){end(false);return;}break;}
+   const gap=Math.hypot(dest[0]-m.x,dest[1]-m.y);
+   if(gap<=distance){m.x=dest[0];m.y=dest[1];m.segment++;distance-=gap;}
+   else{m.x+=(dest[0]-m.x)*distance/gap;m.y+=(dest[1]-m.y)*distance/gap;distance=0;}
+  }
+ }
+ for(const t of state.towers){t.cool=(t.cool||0)-dt;if(t.cool>0)continue;const p=SPOTS[t.slot],cfg=TYPES[t.kind],enemy=nearest(p[0],p[1],cfg.range*(1+.09*(t.level-1)));if(!enemy)continue;fireTower(t,enemy);t.cool=cfg.rate/(1+.18*(t.level-1));}
+ for(const s of [...shots]){
+  s.age+=dt;const target=s.target;if(target&&monsters.includes(target)){s.tx=target.x;s.ty=target.y;}
+  const dx=s.tx-s.x,dy=s.ty-s.y,d=Math.hypot(dx,dy),step=s.speed*dt;
+  if(d<=step+6){shots.splice(shots.indexOf(s),1);if(s.kind==='catapult')impact(s.tx,s.ty,71,s.damage);else if(monsters.includes(target))hit(target,s.damage);}
+  else{s.x+=dx/d*step;s.y+=dy/d*step;}
+ }
+ for(const p of [...sparks]){p.age+=dt;if(p.age>p.life)sparks.splice(sparks.indexOf(p),1);}
+ if(spawned===planned.length&&monsters.length===0&&shots.length===0){state.best=Math.max(state.best,state.wave);if(state.wave===MAX){end(true);return;}const bonus=70+20*state.wave;state.gold+=bonus;toast(state.wave+'차 방어 성공! 보급 금화 +'+bonus);state.wave++;state.mode='ready';save();}
+ updateButtons();
+}
+/* 그래픽: 기존 중세 에셋만 사용 */
+function drawImg(name,x,y,w,h){const img=images[name];if(img?.complete&&img.naturalWidth){ctx.drawImage(img,x-w/2,y-h,w,h);return true;}return false}
+function drawPerson(x,y,frame,size,alpha=1){
+ const img=images.CitizenSheet;ctx.save();ctx.globalAlpha=alpha;
+ if(img?.complete&&img.naturalWidth){const col=frame%6,row=Math.floor(frame/6);const fw=33,fh=47;ctx.drawImage(img,col*44,row*51,fw,fh,x-size*.4,y-size,size*.8,size);}
+ else{ctx.font=(size*.85)+'px system-ui';ctx.textAlign='center';ctx.fillText('♞',x,y);}
+ ctx.restore();
+}
+function pathLine(points){
+ ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));
+ ctx.strokeStyle='#2c3626';ctx.lineWidth=77;ctx.stroke();ctx.strokeStyle='#a18c67';ctx.lineWidth=64;ctx.stroke();ctx.strokeStyle='#b2a17c';ctx.lineWidth=55;ctx.stroke();
+ ctx.setLineDash([4,16]);ctx.strokeStyle='#dfcaa1a0';ctx.lineWidth=2;ctx.stroke();ctx.setLineDash([]);
+}
+function roundBox(x,y,w,h,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
+function draw(){
+ const cw=canvas.clientWidth,ch=canvas.clientHeight,dpr=Math.min(2,window.devicePixelRatio||1);
+ if(canvas.width!==Math.round(cw*dpr)||canvas.height!==Math.round(ch*dpr)){canvas.width=Math.round(cw*dpr);canvas.height=Math.round(ch*dpr)}
+ const top=65,bottom=143,areaH=Math.max(120,ch-top-bottom);scale=Math.min(cw/W,areaH/H);
+ originX=(cw-W*scale)/2;originY=top+(areaH-H*scale)/2;
+ ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#1c2f26';ctx.fillRect(0,0,cw,ch);
+ ctx.save();ctx.translate(originX,originY);ctx.scale(scale,scale);
+ ctx.fillStyle='#536d46';ctx.fillRect(0,0,W,H);
+ const grass=images.newgrass;if(grass?.complete&&grass.naturalWidth){ctx.save();ctx.globalAlpha=.3;for(let x=0;x<W;x+=128)for(let y=0;y<H;y+=128)ctx.drawImage(grass,x,y,128,128);ctx.restore();}
+ for(const [x,y,n,s] of [[33,87,'oaktree',86],[259,82,'oaktree',82],[357,536,'firtree',94],[532,571,'oaktree',84],[765,75,'firtree',91],[939,108,'oaktree',80],[879,583,'firtree',95],[29,582,'oaktree',89]])drawImg(n,x,y,s,s);
+ for(const route of ROUTES)pathLine(route);
+ // 성벽과 실제 성 에셋
+ ctx.fillStyle='#3d4033';ctx.fillRect(859,70,35,510);ctx.fillStyle='#bdac89';ctx.fillRect(865,70,23,510);
+ for(let y=82;y<576;y+=37)drawImg('watchtower',877,y,31,42);
+ drawImg('keep',883,360,164,166);
+ for(let i=0;i<SPOTS.length;i++){
+  const [x,y]=SPOTS[i],t=state.towers.find(v=>v.slot===i);
+  ctx.beginPath();ctx.ellipse(x,y,39,23,0,0,Math.PI*2);ctx.fillStyle=t?'#3d4d36':'#796a41';ctx.fill();
+  ctx.strokeStyle=i===selected?'#ffffff':selectedKind&&!t?'#f4cd6c':'#c8af72';ctx.lineWidth=i===selected?5:3;ctx.stroke();
+  if(t){
+   const cfg=TYPES[t.kind];drawImg(t.kind==='catapult'?'house':'watchtower',x,y+9,t.kind==='catapult'?68:56,t.kind==='catapult'?58:75);
+   if(t.kind==='knight')drawPerson(x+12,y+8,7,52);
+   ctx.font='24px system-ui';ctx.textAlign='center';ctx.shadowColor='#000';ctx.shadowBlur=6;ctx.fillText(cfg.icon,x,y-58);ctx.shadowBlur=0;
+   ctx.fillStyle='#fce4a1';ctx.font='bold 15px system-ui';ctx.fillText('★'.repeat(t.level),x,y+39);
+   if(i===selected){ctx.beginPath();ctx.arc(x,y,cfg.range*(1+.09*(t.level-1)),0,Math.PI*2);ctx.fillStyle='#ffdf7f1b';ctx.fill();ctx.strokeStyle='#ffde79a8';ctx.lineWidth=2;ctx.stroke();}
+  }else{ctx.font='bold 29px system-ui';ctx.textAlign='center';ctx.fillStyle='#ebcf86';ctx.fillText('+',x,y+9);}
+ }
+ for(const m of monsters){
+  const big=m.kind==='boss',size=big?66:44;
+  drawPerson(m.x,m.y+10,m.kind==='runner'?1:m.kind==='shield'?4:big?10:0,size);
+  ctx.textAlign='center';ctx.font=(big?24:16)+'px system-ui';ctx.fillText(m.kind==='boss'?'👑':m.kind==='shield'?'🛡️':m.kind==='runner'?'⚡':'⚔️',m.x,m.y-size*.81);
+  roundBox(m.x-22,m.y-size-15,44,6,3,'#211c1a');roundBox(m.x-21,m.y-size-14,42*Math.max(0,m.hp/m.max),4,2,m.hit?'#fff6bb':'#d96b5d');
+ }
+ for(const s of shots){
+  ctx.save();ctx.translate(s.x,s.y);ctx.rotate(Math.atan2(s.ty-s.y,s.tx-s.x));
+  ctx.fillStyle=s.kind==='catapult'?'#2d2826':'#f7e2ac';roundBox(-12,-3,24,6,3,ctx.fillStyle);ctx.restore();
+ }
+ for(const p of sparks){const a=1-p.age/p.life;ctx.save();ctx.globalAlpha=a;ctx.beginPath();ctx.arc(p.x,p.y,p.radius*(p.age/p.life),0,Math.PI*2);ctx.strokeStyle=p.color;ctx.lineWidth=8*a;ctx.stroke();ctx.restore();}
+ if(performance.now()<flashUntil){ctx.fillStyle='#e7433433';ctx.fillRect(0,0,W,H);}
+ ctx.restore();
+}
+function frame(t){if(!last)last=t;const dt=Math.min(.045,(t-last)/1000);last=t;if(state.mode==='battle'){acc+=dt*fast;let n=0;while(acc>=.016&&n++<8){update(.016);acc-=.016;}}draw();raf=requestAnimationFrame(frame)}
+/* 입력 */
+function screenToWorld(evt){const r=canvas.getBoundingClientRect();return {x:(evt.clientX-r.left-originX)/scale,y:(evt.clientY-r.top-originY)/scale}}
+function selectSpot(evt){
+ if(['menu','won','lost'].includes(state.mode))return;
+ const p=screenToWorld(evt);if(p.x<0||p.x>W||p.y<0||p.y>H)return;
+ let idx=-1,d=Infinity;for(let i=0;i<SPOTS.length;i++){let v=Math.hypot(p.x-SPOTS[i][0],p.y-SPOTS[i][1]);if(v<48&&v<d){d=v;idx=i}}
+ if(idx<0){selected=-1;updateButtons();return;}
+ const tower=state.towers.find(t=>t.slot===idx);
+ if(tower){selected=idx;selectedKind=null;updateButtons();return;}
+ if(!selectedKind){toast('아래에서 병력을 먼저 선택해');return;}
+ const cfg=TYPES[selectedKind];if(state.gold<cfg.cost){toast('금화가 부족해');return;}
+ state.towers.push({slot:idx,kind:selectedKind,level:1,cool:0});state.gold-=cfg.cost;selected=idx;selectedKind=null;save();updateButtons();toast(cfg.name+' 배치 완료!');
+}
+canvas.addEventListener('pointerdown',selectSpot,{passive:true});
+document.querySelectorAll('[data-kind]').forEach(b=>b.addEventListener('click',()=>{selectedKind=b.dataset.kind;selected=-1;updateButtons();toast(TYPES[selectedKind].name+' 배치할 진지를 눌러')} ));
+$('upgrade').addEventListener('click',()=>{const t=state.towers.find(v=>v.slot===selected);if(!t||t.level>=3)return;const price=Math.floor(TYPES[t.kind].cost*(.8+t.level*.7));if(state.gold<price)return;state.gold-=price;t.level++;save();updateButtons()});
+$('sell').addEventListener('click',()=>{const idx=state.towers.findIndex(t=>t.slot===selected);if(idx<0)return;const t=state.towers.splice(idx,1)[0];state.gold+=Math.round(TYPES[t.kind].cost*(.45+.2*(t.level-1)));selected=-1;save();updateButtons()});
+$('close').addEventListener('click',()=>{selected=-1;updateButtons()});
+$('startWave').addEventListener('click',startWave);
+$('pause').addEventListener('click',()=>{if(state.mode==='battle')state.mode='paused';else if(state.mode==='paused')state.mode='battle';updateButtons()});
+$('speed').addEventListener('click',()=>{fast=fast===1?2:1;updateButtons()});
+$('play').addEventListener('click',()=>{if(['won','lost'].includes(state.mode))fresh();start()});
+$('reset').addEventListener('click',()=>{fresh();start()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.mode==='battle'){state.mode='paused';updateButtons()}});
+const existing=safeRead();if(existing&&existing.wall>0&&existing.wave<=10){$('modalText').innerHTML='마지막 방어 준비 상태를 저장해뒀어.<br>계속 전투하거나 처음부터 시작할 수 있어.';$('play').textContent='이어서 방어하기';$('reset').hidden=false;}
+updateButtons();raf=requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
