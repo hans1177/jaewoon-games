@@ -1366,7 +1366,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "ROBLOX_INTERNAL_STUDIO_VALIDATION_PASSED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-03T11:03:18.845Z",
+      "updatedAt": "2026-11-03T12:58:58.107Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -3680,7 +3680,40 @@
       "robloxF9Blockers": [
         "roblox-cloud-api-evidence-required"
       ],
-      "robloxF9FailureSignature": "ROBLOX_CLOUD_API_EVIDENCE_REQUIRED"
+      "robloxF9FailureSignature": "ROBLOX_CLOUD_API_EVIDENCE_REQUIRED",
+      "robloxThumbnailEvidence": {
+        "version": 1,
+        "gameId": "fantasy-survival",
+        "universeId": "10773436325",
+        "placeId": "108565970231899",
+        "sourcePath": "assets/homepage-covers/fantasy-survival.webp",
+        "sourceSha256": "ecd9b0e53943f1d64a2348ada4392a97458cb3bdb0e62be4677b87ab8929dea0",
+        "renderedPngSha256": "3425f79abc68e7703adc6ea3e3dee636fec871456c32aef0eff81096e1a32d7d",
+        "operationId": "tp1.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcGVyYXRpb25JZCI6ImNmZGVjYTA4LWU5NGYtNDFlMy04M2Q5LWQ1NzZiOTg2YmNlOCIsInVuaXZlcnNlSWQiOjEwNzczNDM2MzI1fQ.kuNlOMkENb3bYxlv9RQNk2BivK-lG-is8Qjz4iqOACw",
+        "homepageThumbnailId": "c2aacbbe-e3b3-4ade-9b8d-50e57efdb544",
+        "uploadStatus": "2",
+        "uploaded": true,
+        "verified": true,
+        "uploadedAt": "2026-11-03T12:58:58.107Z",
+        "authority": "ROBLOX_OPEN_CLOUD_THUMBNAIL_PERSONALIZATION"
+      },
+      "robloxDetailMediaEvidence": {
+        "version": 1,
+        "gameId": "fantasy-survival",
+        "universeId": "10773436325",
+        "placeId": "108565970231899",
+        "sourcePath": "assets/homepage-covers/fantasy-survival.webp",
+        "sourceSha256": "ecd9b0e53943f1d64a2348ada4392a97458cb3bdb0e62be4677b87ab8929dea0",
+        "renderedPngSha256": "3425f79abc68e7703adc6ea3e3dee636fec871456c32aef0eff81096e1a32d7d",
+        "privateValidationOnly": true,
+        "detailPublicationDeferred": true,
+        "imageStatus": "DEFERRED_PRE_F9_PRIVATE_VALIDATION",
+        "verifiedDetailImage": false,
+        "imageSyncFailure": null,
+        "videoStatus": "NATIVE_VIDEO_PUBLICATION_DEFERRED",
+        "published": false,
+        "authority": "ROBLOX_PRIVATE_VALIDATION_MEDIA_NOT_PUBLICATION"
+      }
     },
     {
       "gameId": "cozy-island",
@@ -4079,7 +4112,7 @@
       "updatedAt": "2026-11-03T10:02:00.718Z"
     }
   ],
-  "updatedAt": "2026-11-03T12:57:21.072Z",
+  "updatedAt": "2026-11-03T12:58:58.107Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
