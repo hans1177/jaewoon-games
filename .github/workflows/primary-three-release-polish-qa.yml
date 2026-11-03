@@ -10,7 +10,6 @@ on:
       - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/primary-three-world-visual-qa.test.mjs'
       - 'qa/gem-survivor-3d.test.mjs'
-      - 'qa/primary-three-world-visual-qa.test.mjs'
       - '.github/workflows/primary-three-release-polish-qa.yml'
   push:
     branches: [main]
@@ -22,7 +21,6 @@ on:
       - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/primary-three-world-visual-qa.test.mjs'
       - 'qa/gem-survivor-3d.test.mjs'
-      - 'qa/primary-three-world-visual-qa.test.mjs'
       - '.github/workflows/primary-three-release-polish-qa.yml'
 
 permissions:
@@ -38,4 +36,4 @@ jobs:
           node-version: '22'
       - name: Validate primary-three release polish
         run: |
-          node --test qa/horror-escape-room-release.test.mjs qa/fantasy-survival-mobile-tap-combat.test.mjs qa/gem-survivor-3d.test.mjs
+          node --test qa/horror-escape-room-release.test.mjs qa/primary-three-world-visual-qa.test.mjs qa/fantasy-survival-mobile-tap-combat.test.mjs qa/gem-survivor-3d.test.mjs
