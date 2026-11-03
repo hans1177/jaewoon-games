@@ -2522,7 +2522,7 @@ do
           task.delay(1.2,function()
             if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
             local paused={}
-            for _,motion in ipairs({activeArtTween,activeFrontTween,activeTween,activeFovTween}) do
+            for _,motion in pairs({art=activeArtTween,front=activeFrontTween,camera=activeTween,fov=activeFovTween}) do
               if motion and motion.PlaybackState==Enum.PlaybackState.Playing then
                 motion:Pause()
                 table.insert(paused,motion)
