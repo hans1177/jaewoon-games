@@ -708,8 +708,11 @@ local function redrawNativeAvatar(character,tool,force)
   local bounds,size=clone:GetBoundingBox()
   if size.Magnitude<.1 then clone:Destroy();return end
   local focus=bounds.Position+Vector3.new(0,size.Y*.04,0)
-  local distance=math.max(size.X*1.6,size.Y*1.25,size.Z*1.8,7)
-  previewCamera.CFrame=CFrame.lookAt(focus+Vector3.new(distance*.42,distance*.12,distance),focus)
+  -- [실제 아바타] 뷰포트 종횡비와 시야각으로 카메라를 맞춰 머리·발 잘림을 막는다.
+  local aspect=math.max(.55,characterViewport.AbsoluteSize.X/math.max(1,characterViewport.AbsoluteSize.Y))
+  local halfFov=math.tan(math.rad(previewCamera.FieldOfView*.5))
+  local distance=math.max(size.Y/(2*halfFov),size.X/(2*halfFov*aspect),size.Z*1.8,5)*1.35
+  previewCamera.CFrame=CFrame.lookAt(focus+Vector3.new(distance*.18,distance*.07,distance),focus)
   characterPortrait.Visible=false
   characterViewport.Visible=true
 end
@@ -724,23 +727,54 @@ characterHeroSummary.Name="HeroStatus";characterHeroSummary.Position=UDim2.fromO
 characterHeroSummary.Size=UDim2.new(1,-154,0,92)
 characterHeroSummary.BackgroundTransparency=1;characterHeroSummary.Font=Enum.Font.GothamMedium;characterHeroSummary.TextSize=13
 characterHeroSummary.TextColor3=meadowDim;characterHeroSummary.TextWrapped=true
-characterHeroSummary.TextXAlignment=Enum.TextXAlignment.Left;characterHeroSummary.Parent=characterHero
--- [모바일 크기] 가로 메뉴는 좌우 배치, 좁은 메뉴는 3D 인물 아래 상태 표시.
+characterHeroSummary.TextXAlignment=Enum.TextXAlignment.Left
+characterHeroSummary.TextYAlignment=Enum.TextYAlignment.Top;characterHeroSummary.Parent=characterHero
+-- [실제 능력치] 생명력과 기력은 서버/휴머노이드 값만 읽는다.
+local heroHealth=Instance.new("Frame")
+heroHealth.Name="CharacterHealthTrack";heroHealth.BackgroundColor3=Color3.fromRGB(44,62,57)
+heroHealth.BorderSizePixel=0;heroHealth.ClipsDescendants=true;heroHealth.Parent=characterHero
+local healthCorner=Instance.new("UICorner")
+healthCorner.CornerRadius=UDim.new(0,8);healthCorner.Parent=heroHealth
+local heroHealthFill=Instance.new("Frame")
+heroHealthFill.Name="Fill";heroHealthFill.BackgroundColor3=Color3.fromRGB(171,75,68)
+heroHealthFill.BorderSizePixel=0;heroHealthFill.Size=UDim2.fromScale(1,1);heroHealthFill.Parent=heroHealth
+local heroHealthText=Instance.new("TextLabel")
+heroHealthText.Name="HealthReadout";heroHealthText.BackgroundTransparency=1;heroHealthText.Size=UDim2.fromScale(1,1)
+heroHealthText.Font=Enum.Font.GothamBold;heroHealthText.TextSize=13
+heroHealthText.TextColor3=Color3.fromRGB(255,246,231);heroHealthText.ZIndex=3;heroHealthText.Parent=heroHealth
+local heroStamina=Instance.new("Frame")
+heroStamina.Name="CharacterStaminaTrack";heroStamina.BackgroundColor3=Color3.fromRGB(34,63,67)
+heroStamina.BorderSizePixel=0;heroStamina.ClipsDescendants=true;heroStamina.Parent=characterHero
+local staminaCorner=Instance.new("UICorner")
+staminaCorner.CornerRadius=UDim.new(0,8);staminaCorner.Parent=heroStamina
+local heroStaminaFill=Instance.new("Frame")
+heroStaminaFill.Name="Fill";heroStaminaFill.BackgroundColor3=Color3.fromRGB(53,154,188)
+heroStaminaFill.BorderSizePixel=0;heroStaminaFill.Size=UDim2.fromScale(1,1);heroStaminaFill.Parent=heroStamina
+local heroStaminaText=Instance.new("TextLabel")
+heroStaminaText.Name="StaminaReadout";heroStaminaText.BackgroundTransparency=1;heroStaminaText.Size=UDim2.fromScale(1,1)
+heroStaminaText.Font=Enum.Font.GothamBold;heroStaminaText.TextSize=13
+heroStaminaText.TextColor3=Color3.fromRGB(255,246,231);heroStaminaText.ZIndex=3;heroStaminaText.Parent=heroStamina
+-- [모바일 전신·계기판] 좁은 화면은 상하, 넓은 화면은 좌우 배치.
 local function layoutNativeAvatar()
   local width=characterHero.AbsoluteSize.X
   if width<=0 then return end
-  local narrow=width<460
-  characterHero.Size=UDim2.new(1,-8,0,narrow and 377 or 248)
-  local avatarSize=narrow and math.min(220,width-18) or 217
-  characterPortrait.Size=UDim2.fromOffset(avatarSize,narrow and 260 or 231)
+  local narrow=width<540
+  characterHero.Size=UDim2.new(1,-8,0,narrow and 427 or 278)
+  local avatarSize=narrow and math.min(230,width-24) or 245
+  characterPortrait.Size=UDim2.fromOffset(avatarSize,narrow and 252 or 256)
   characterPortrait.Position=narrow
-    and UDim2.new(.5,-avatarSize/2,0,8) or UDim2.fromOffset(8,8)
+    and UDim2.new(.5,-avatarSize/2,0,10) or UDim2.fromOffset(12,11)
   characterViewport.Size=characterPortrait.Size
   characterViewport.Position=characterPortrait.Position
-  characterHeroName.Position=narrow and UDim2.fromOffset(12,274) or UDim2.fromOffset(238,28)
-  characterHeroName.Size=narrow and UDim2.new(1,-24,0,34) or UDim2.new(1,-250,0,34)
-  characterHeroSummary.Position=narrow and UDim2.fromOffset(12,310) or UDim2.fromOffset(238,74)
-  characterHeroSummary.Size=narrow and UDim2.new(1,-24,0,62) or UDim2.new(1,-250,0,140)
+  local right=narrow and 14 or 273
+  characterHeroName.Position=UDim2.fromOffset(right,narrow and 270 or 19)
+  characterHeroName.Size=narrow and UDim2.new(1,-28,0,32) or UDim2.new(1,-290,0,32)
+  characterHeroSummary.Position=UDim2.fromOffset(right,narrow and 308 or 65)
+  characterHeroSummary.Size=narrow and UDim2.new(1,-28,0,46) or UDim2.new(1,-290,0,78)
+  heroHealth.Position=UDim2.fromOffset(right,narrow and 362 or 167)
+  heroHealth.Size=narrow and UDim2.new(1,-28,0,23) or UDim2.new(1,-291,0,24)
+  heroStamina.Position=UDim2.fromOffset(right,narrow and 393 or 207)
+  heroStamina.Size=heroHealth.Size
 end
 characterHero:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutNativeAvatar)
 task.defer(layoutNativeAvatar)
@@ -832,10 +866,16 @@ return function(character,humanoid,tool,force)
   masteryProgressLabel.Text=string.format("전투 숙련 %d  ·  다음 기술 점수까지 %d",combatMastery,50-combatMastery%50)
   masteryProgressFill.Size=UDim2.fromScale((combatMastery%50)/50,1)
   characterHeroName.Text=player.DisplayName
-  characterHeroSummary.Text=string.format("체력 %d/%d · 기력 %d/100\n장비 공격 +%d · 방어 +%d\n무기 강화 +%d · 보스 %d",
-    humanoid and humanoid.Health or 0,humanoid and humanoid.MaxHealth or 100,
-    player:GetAttribute("MeadowStamina") or 0,player:GetAttribute("MeadowGearAttack") or 0,
-    player:GetAttribute("MeadowGearDefense") or 0,player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
+  local health=humanoid and humanoid.Health or 0
+  local maximum=humanoid and humanoid.MaxHealth or 100
+  local stamina=tonumber(player:GetAttribute("MeadowStamina")) or 0
+  heroHealthFill.Size=UDim2.fromScale(math.clamp(health/math.max(1,maximum),0,1),1)
+  heroStaminaFill.Size=UDim2.fromScale(math.clamp(stamina/100,0,1),1)
+  heroHealthText.Text=string.format("체력  %d / %d",health,maximum)
+  heroStaminaText.Text=string.format("기력  %d / 100",stamina)
+  characterHeroSummary.Text=string.format("장비 공격 +%d  ·  방어 +%d\n무기 강화 +%d  ·  보스 %d",
+    player:GetAttribute("MeadowGearAttack") or 0,player:GetAttribute("MeadowGearDefense") or 0,
+    player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
   local catalog=Config.MeadowEquipment or {}
   local function equippedName(slot)
     local index=player:GetAttribute("MeadowEquip"..slot)
