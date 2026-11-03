@@ -895,37 +895,37 @@ local function createMeadowVillage()
     -- 원래 등장한 건물 이름을 유지해서 기존 컨텐츠 참조에 영향이 없게 한다.
     local houses={
       {x=-95,z=-84,angle=.17,name="Village_HealerHouse",label="약초상 · 의원",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,chimney=true,wing=-1,wingZ=2.7,
-       timber=Color3.fromRGB(125,107,88),roof=Color3.fromRGB(82,91,78)},
+       timber=Color3.fromRGB(125,107,88),roof=Color3.fromRGB(134,113,82)},
       {x=116,z=-100,angle=math.pi-.21,name="Village_Guesthouse",label="마을 여관",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseA",masonry=true,chimney=true,archway=true,balcony=true,
-       timber=Color3.fromRGB(151,117,88),roof=Color3.fromRGB(96,72,66)},
+       timber=Color3.fromRGB(151,117,88),roof=Color3.fromRGB(123,91,72)},
       {x=-121,z=-167,angle=.21,name="Village_Workshop",label="대장간 · 공방",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=5.4,
-       timber=Color3.fromRGB(106,94,83),roof=Color3.fromRGB(73,79,79)},
+       timber=Color3.fromRGB(106,94,83),roof=Color3.fromRGB(116,105,88)},
       {x=129,z=-154,angle=math.pi+.14,name="Village_WardenHall",label="마을 회관",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseB",masonry=true,chimney=true,archway=true,balcony=true,wing=-1,wingZ=5.4,
-       timber=Color3.fromRGB(146,119,91),roof=Color3.fromRGB(92,70,59)},
+       timber=Color3.fromRGB(146,119,91),roof=Color3.fromRGB(121,92,77)},
       {x=-108,z=-235,angle=-.18,name="Village_ResidentHouseWest",label="서쪽 주민집",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
-       timber=Color3.fromRGB(153,132,107),roof=Color3.fromRGB(105,89,74)},
+       timber=Color3.fromRGB(153,132,107),roof=Color3.fromRGB(139,112,82)},
       {x=107,z=-222,angle=math.pi+.23,name="Village_ResidentHouseEast",label="동쪽 주민집",scale=.96,length=2,storeys=1,roofPitch=1.09,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
-       timber=Color3.fromRGB(116,102,87),roof=Color3.fromRGB(92,104,92)},
+       timber=Color3.fromRGB(116,102,87),roof=Color3.fromRGB(123,118,95)},
       {x=-197,z=-80,angle=-.14,name="Village_WoodcutterHome",label="벌목꾼의 집",scale=.86,length=2,storeys=1,roofPitch=.96,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=2.7,
-       timber=Color3.fromRGB(119,103,80),roof=Color3.fromRGB(91,82,67)},
+       timber=Color3.fromRGB(119,103,80),roof=Color3.fromRGB(131,108,80)},
       {x=205,z=-112,angle=math.pi-.33,name="Village_WoodsmanHome",label="숲지기 오두막",scale=.91,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,leanTo=true,
-       timber=Color3.fromRGB(111,108,91),roof=Color3.fromRGB(85,95,76)},
+       timber=Color3.fromRGB(111,108,91),roof=Color3.fromRGB(122,110,80)},
       {x=-208,z=-170,angle=.24,name="Village_CarpenterHome",label="목수 작업집",scale=.94,length=3,storeys=1,roofPitch=.91,doorZ=0,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=-5.4,
-       timber=Color3.fromRGB(134,109,88),roof=Color3.fromRGB(97,86,70)},
+       timber=Color3.fromRGB(134,109,88),roof=Color3.fromRGB(138,111,83)},
       {x=203,z=-176,angle=math.pi-.25,name="Village_BakerHome",label="빵 굽는 집",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,leanTo=true,
-       timber=Color3.fromRGB(162,126,96),roof=Color3.fromRGB(109,88,75)},
+       timber=Color3.fromRGB(162,126,96),roof=Color3.fromRGB(142,102,80)},
       {x=-190,z=-258,angle=-.11,name="Village_Granary",label="곡물 창고",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,prefab="villageHouseC",masonry=true,flatRoof=true,leanTo=true,
-       timber=Color3.fromRGB(129,107,81),roof=Color3.fromRGB(98,91,68)},
+       timber=Color3.fromRGB(129,107,81),roof=Color3.fromRGB(147,118,88)},
       {x=196,z=-259,angle=math.pi+.19,name="Village_Farmstead",label="농가 · 마구간",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,prefab="villageHouseD",masonry=true,flatRoof=true,wing=-1,wingZ=5.4,
-       timber=Color3.fromRGB(117,98,75),roof=Color3.fromRGB(91,84,74)},
+       timber=Color3.fromRGB(117,98,75),roof=Color3.fromRGB(133,110,87)},
       {x=-109,z=-301,angle=.23,name="Village_SouthCottageWest",label="남쪽 농가",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
-       timber=Color3.fromRGB(148,126,102),roof=Color3.fromRGB(89,86,77)},
+       timber=Color3.fromRGB(148,126,102),roof=Color3.fromRGB(137,110,83)},
       {x=115,z=-321,angle=math.pi-.19,name="Village_SouthCottageEast",label="길가 주민집",scale=.92,length=2,storeys=1,roofPitch=1.02,doorZ=2.7,sideWindow=false,porch=1,lantern=false,flatRoof=true,leanTo=true,
-       timber=Color3.fromRGB(112,98,82),roof=Color3.fromRGB(91,77,65)},
+       timber=Color3.fromRGB(112,98,82),roof=Color3.fromRGB(127,101,78)},
       {x=-233,z=-314,angle=-.11,name="Village_OrchardHome",label="과수원 농가",scale=.84,length=2,storeys=1,roofPitch=.87,doorZ=2.7,sideWindow=true,porch=0,lantern=false,chimney=true,leanTo=true,
-       timber=Color3.fromRGB(133,121,98),roof=Color3.fromRGB(100,90,69)},
+       timber=Color3.fromRGB(133,121,98),roof=Color3.fromRGB(139,120,83)},
       {x=222,z=-325,angle=math.pi+.29,name="Village_EastFarmhouse",label="동쪽 농가",scale=.94,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
-       timber=Color3.fromRGB(123,102,87),roof=Color3.fromRGB(90,101,88)},
+       timber=Color3.fromRGB(123,102,87),roof=Color3.fromRGB(125,115,91)},
     }
     for houseIndex,house in ipairs(houses) do
       -- [서로 다른 완성형 건물] 기존 여관·회관·창고·농가를 각각 별개 중세 모델로 구성.
@@ -992,8 +992,9 @@ local function createMeadowVillage()
               mesh.MaterialVariant=""
               mesh.Reflectance=0
               if roof then
+                -- [위쳐풍 지붕] 원본 경사 메시 그대로, 민가에는 풍화 목재/여관에는 석재를 적용.
                 mesh.Color=house.roof
-                mesh.Material=Enum.Material.Slate
+                mesh.Material=house.masonry and Enum.Material.Slate or Enum.Material.WoodPlanks
               elseif glass then
                 mesh.Color=Color3.fromRGB(70,91,94)
                 mesh.Material=Enum.Material.Glass
@@ -1170,8 +1171,8 @@ local function createMeadowVillage()
                 mesh.MaterialVariant=""
               end
               if piece.asset=="villageRoof" or piece.asset=="villageRoofEnd" or piece.asset=="villageFlatRoof" then
-                mesh.Color=house.roof:Lerp(Color3.fromRGB(73,76,71),(partIndex%3)*.06)
-                mesh.Material=Enum.Material.Slate
+                mesh.Color=house.roof:Lerp(Color3.fromRGB(87,83,73),(partIndex%3)*.055)
+                mesh.Material=house.masonry and Enum.Material.Slate or Enum.Material.WoodPlanks
               elseif piece.asset=="villageStoneWall" or piece.asset=="villagePillar" or piece.asset=="villageArch" then
                 mesh.Color=Color3.fromRGB(137,133,117)
                 mesh.Material=Enum.Material.Slate
