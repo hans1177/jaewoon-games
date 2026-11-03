@@ -577,43 +577,33 @@ assert(map.RootJoint==nil,'COMBAT_MAPPING_MOVED_GAMEPLAY_ROOT')
 print('JOINT_POSE_BLEND_PASS')
 
 `;
- const consumer=fs.readFileSync(new URL('../roblox-games/daechung-rpg/client/Game.client.luau',import.meta.url),'utf8');
- const driver=consumer.slice(consumer.indexOf('local equippedComboCache={}'),consumer.indexOf('local nativePoseMotors='));
- assert.ok(driver.includes('stepEquippedCombatMotion'));
+ // [배포 중인 게임] 삭제된 포탈 RPG 전용 드라이버 대신 현재 마력숲의 실제 연결 소스를 검증한다.
+ const consumer=fs.readFileSync(new URL('../roblox-games/fantasy-survival/client/Game.client.luau',import.meta.url),'utf8');
+ for(const sourceMarker of [
+  'combatMotionSource.CreateCombatCombo(',
+  'combatMotionSource.SampleCombatCombo(',
+  'combatMotionSource.MapCombatPoseToR15(',
+  'combatMotionSource.BindJointPose(',
+  'RunService.PreSimulation:Connect(function(dt)',
+  'activeCombatController.Step(combatR15Targets,dt)',
+ ]){
+  assert.ok(consumer.includes(sourceMarker),'CURRENT_GAME_REAL_COMBAT_BINDING_MISSING:'+sourceMarker);
+ }
+ // 현재 R15 소비자가 선택하는 원본 콤보를 동일 모듈로 실행하고 각 프레임 자세와 복귀를 확인한다.
  const driverExercise=String.raw`
-local clock=100
-local os={clock=function()return clock end}
-local commonMotion=motion
-local jointEpoch={}
-mt.__index.ToObjectSpace=function(self,other)return self:Inverse()*other end
-local motors={}
-local original={}
-for _,name in ipairs({'Waist','Neck','LeftShoulder','RightShoulder','LeftElbow','RightElbow','LeftWrist','RightWrist','LeftHip','RightHip','LeftKnee','RightKnee','LeftAnkle','RightAnkle'})do
- local motor={Name=name,Part0={},Part1={},Parent=true,C0=CFrame.new(.1,.2,.3)}
- function motor:IsA(class)return class=='Motor6D'end
- motors[#motors+1]=motor;original[motor]=motor.C0
+local combo=motion.CreateCombatCombo('SWORD')
+assert(#combo.steps==3 and combo.duration>0,'CURRENT_SWORD_COMBO_MISSING')
+local seen={}
+for step=0,math.ceil((combo.duration+.13)*120) do
+ local time=step/120
+ local pose,index,done=motion.SampleCombatCombo(combo,time,{})
+ if not done then
+  assert(index>=1 and index<=3,'COMBO_INDEX_INVALID')
+  seen[index]=true
+  assert(pose.UpperArmL and pose.ForearmR and pose.Chest,'CURRENT_GAME_R15_JOINTS_MISSING')
+ end
 end
-local humanoid={Health=100,RigType=Enum.HumanoidRigType.R15}
-local rig={attributes={EquippedWeaponVisual='IronSword'},Destroying={Connect=function()end}}
-function rig:FindFirstChildOfClass(class)return class=='Humanoid'and humanoid or nil end
-function rig:GetAttribute(name)return self.attributes[name]end
-function rig:SetAttribute(name,value)self.attributes[name]=value end
-function rig:GetDescendants()return motors end
-local p={Character=rig}
-`+driver+String.raw`
-assert(startEquippedCombatMotion(rig),'LIVE_WEAPON_ROUTE_NOT_BOUND')
-local row=jointEpoch[rig]
-local started=row.weaponStarted
-clock+=.1;stepEquippedCombatMotion(.1)
-assert(startEquippedCombatMotion(rig) and row.weaponQueued,'REPEATED_ATTACK_NOT_QUEUED')
-assert(row.weaponStarted==started,'REPEATED_ATTACK_RESTARTED_FIRST_CUT')
-clock=started+row.weaponCombo.duration+.001;stepEquippedCombatMotion(1/60)
-assert(not row.weaponQueued and row.weaponStarted==clock,'QUEUED_CHAIN_DID_NOT_CONTINUE')
-rig.attributes.EquippedWeaponVisual='UnknownRemovedWeapon'
-clock+=.02;stepEquippedCombatMotion(.02)
-clock+=.2;stepEquippedCombatMotion(.1)
-assert(row.weaponCombo==nil and rig.attributes.WeaponMotionState=='CANCELLED','UNEQUIP_DID_NOT_RELEASE')
-for motor,base in pairs(original)do for i=1,12 do assert(math.abs(motor.C0[i]-base[i])<1e-8,'LIVE_WEAPON_BASELINE_DRIFT')end end
+assert(seen[1] and seen[2] and seen[3],'CURRENT_GAME_COMBO_CHAIN_MISSING')
 print('LIVE_WEAPON_CHAIN_PASS')
 `;
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'joint-pose-'));
@@ -628,7 +618,7 @@ print('LIVE_WEAPON_CHAIN_PASS')
 
 const combatCompiler=process.env.VIBE2_LUAU_COMPILER;
 test('deployed combat module and R15 consumer compile as complete Luau sources',{skip:!combatCompiler&&'Existing deployment CI supplies the native Luau compiler'},()=>{
- for(const relative of ['assets/roblox/common-motion-v1/RobloxCommonMotion.luau','roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau','roblox-games/daechung-rpg/client/Game.client.luau']){
+ for(const relative of ['assets/roblox/common-motion-v1/RobloxCommonMotion.luau','roblox-games/fantasy-survival/client/Game.client.luau','roblox-games/fantasy-survival/server/Game.server.luau']){
   const file=new URL('../'+relative,import.meta.url);
   const result=spawnSync(combatCompiler,['--null',file.pathname],{encoding:'utf8',timeout:15000,maxBuffer:1024*1024});
   assert.equal(result.status,0,relative+': '+(result.error?.message||result.stderr||result.stdout));
