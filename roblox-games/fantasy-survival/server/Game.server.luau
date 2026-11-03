@@ -839,8 +839,9 @@ local function createMeadowVillage()
         local x=a[1]+dx*t-dz/math.max(length,1)*bend
         local z=a[2]+dz*t+dx/math.max(length,1)*bend
         local radius=route.width*(.97+.055*math.sin(routeIndex*2.1+segment+t*5.6))
-        -- 지면 높이는 고정(+2): 파츠/길 덮개 없이 모바일 보행·NPC 의뢰 위치를 보존.
-        meadowTerrain:FillBall(Vector3.new(x,2.06-radius,z),radius,Enum.Material.Ground)
+        -- [보이는 흙길] 옛 도로가 잔디에 묻히지 않게 지면 위로 0.35만 올린다.
+        -- 실제 Terrain만 사용하며 모바일 보행과 NPC 의뢰 위치를 가리지 않는다.
+        meadowTerrain:FillBall(Vector3.new(x,2.06-radius+.35,z),radius,Enum.Material.Ground)
         if step%9==0 then task.wait() end
       end
       villageRoadSegments+=1
