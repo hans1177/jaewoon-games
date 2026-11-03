@@ -624,7 +624,7 @@ test('genre UI detection rejects unowned menu keywords and platform-incompatible
 });
 
 test('Vibe source worker applies genre menu suggestions only to exact SHA-matched editable responsibility',()=>{
-  const sourcePath='roblox-games/daechung-rpg/shared/RPGMenu.luau';
+  const sourcePath='roblox-games/fantasy-survival/client/Game.client.luau';
   const content=fs.readFileSync(sourcePath,'utf8');
   const sha256=createHash('sha256').update(content).digest('hex');
   const plan={
@@ -755,7 +755,7 @@ test('Vibe discovers only actual object-specific prompts with source identity, n
 });
 
 test('Vibe emits exact-source-bound object interaction guidance for editable server owners only',()=>{
-  const file='roblox-games/daechung-rpg/server/Game.server.luau';
+  const file='roblox-games/fantasy-survival/server/Game.server.luau';
   const content=fs.readFileSync(file,'utf8'),sha256=createHash('sha256').update(content).digest('hex');
   const object={
     kind:'TREASURE_CHEST',factory:'CreateContainerInteractionPrompt',
@@ -772,7 +772,7 @@ test('Vibe emits exact-source-bound object interaction guidance for editable ser
   assert.match(valid,/TREASURE_CHEST/);
   assert.match(valid,/CreateContainerInteractionPrompt/);
   assert.match(valid,/Preserve per-object InteractionKind, InteractionId/);
-  const scoped={...order,source:{root:'roblox-games/daechung-rpg'}};
+  const scoped={...order,source:{root:'roblox-games/fantasy-survival'}};
   const relative='server/Game.server.luau';
   const actualWorker=buildPrompt(scoped,{files:[{path:relative,content,editable:true}]},[relative]);
   assert.match(actualWorker,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
@@ -3348,21 +3348,8 @@ test('autonomous planner prioritizes holistic backfill before Studio asset backf
 
 test('priority Roblox games bind package asset families to actual native consumers in current game source',()=>{
   const cases=[
-    {
-      gameId:'daechung-rpg',
-      file:'roblox-games/daechung-rpg/client/Game.client.luau',
-      families:['VFX']
-    },
-    {
-      gameId:'horror-escape-room',
-      file:'roblox-games/horror-escape-room/client/Game.client.luau',
-      families:['AUDIO','VFX','PROP']
-    },
-    {
-      gameId:'cozy-island',
-      file:'roblox-games/cozy-island/client/Game.client.luau',
-      families:['CREATURE','ENVIRONMENT','MATERIAL','AUDIO','VFX','MOTION','PROP']
-    }
+    {gameId:'fantasy-survival',file:'roblox-games/fantasy-survival/client/Game.client.luau',families:['VFX','SKILL']},
+    {gameId:'deep-diver',file:'roblox-games/deep-diver/client/Game.client.luau',families:['UI']}
   ];
   for(const row of cases){
     const source=fs.readFileSync(row.file,'utf8');
@@ -4852,15 +4839,14 @@ test('Roblox native asset uses are counted while unconsumed configuration atoms 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-// RPG 공용 UI 자산 개선은 게임 상태가 아닌 표시 전환만 다룬다.
-test('shared RPG menu transition is interruptible and preserves direct interaction',()=>{
+// [현재 공용 메뉴] 퇴역 게임의 삭제된 복제 파일이 아니라 유지 중인 원본 모듈을 검사한다.
+test('shared RPG menu transition is interruptible without resurrecting a retired game',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  assert.equal(catalog.games.some(row=>row.id==='daechung-rpg'),false,'the retired game must not be silently restored');
+  assert.equal(fs.existsSync('roblox-games/daechung-rpg/shared/RPGMenu.luau'),false);
   const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
-  const consumer=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
-  assert.match(consumer,/local RaceData = require\(script\.Parent:WaitForChild\("RaceData"\)\)/,'retain existing game-specific race UI');
-  assert.match(consumer,/local TechTreeData = require\(script\.Parent:WaitForChild\("TechTreeData"\)\)/,'retain existing game-specific skill tree');
-  const sharedModel=fs.readFileSync('assets/roblox/rpg-menu/RPGMenuModel.luau','utf8');
-  const gameModel=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenuModel.luau','utf8');
-  assert.ok(sharedModel.length>0&&gameModel.length>0,'both shared and game-specific state models must remain present');
+  const model=fs.readFileSync('assets/roblox/rpg-menu/RPGMenuModel.luau','utf8');
+  assert.ok(model.length>0,'shared state model remains present');
   assert.match(source,/TweenService:Create\(overlay,TweenInfo\.new\(\.18/);
   assert.match(source,/entranceTween:Cancel\(\)/);
   assert.match(source,/panelTween:Cancel\(\)/);
@@ -4869,27 +4855,18 @@ test('shared RPG menu transition is interruptible and preserves direct interacti
   assert.match(source,/stopEntrance\(\)\s*\n\s*opened=value/);
   assert.match(source,/if options\.onOpen then options\.onOpen\(value\)end/);
   assert.match(source,/gui\.Destroying:Connect\(function\(\)\s*\n\s*stopEntrance\(\)/);
-  assert.match(consumer,/gui\.Destroying:Connect\(function\(\)\s*\n\s*stopEntrance\(\)/);
-  assert.match(consumer,/entranceTween:Cancel\(\)/);
-  assert.match(consumer,/panelTween:Cancel\(\)/);
 });
 
-// Shared RPG inventory labels must distinguish equipment from usable tools.
+// 보유 중인 공용 UI에만 착용 상태·분류 계약을 유지한다.
 test('shared RPG inventory labels show equipped state and correct slot category',()=>{
   const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
-  const consumer=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
   assert.match(source,/b\.ItemState\.Text=row\.equipped and "착용 중" or \(row\.category=="장비" and "장비" or "도구"\)/);
-  assert.match(consumer,/b\.ItemState\.Text=row\.equipped and "착용 중" or \(row\.category=="장비" and "장비" or "도구"\)/);
 });
 
-// Status-only equipment is not an actionable Roblox Tool; do not show a dead equip button.
 test('shared RPG menu only offers equip action for real Tools',()=>{
-  const shared=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
-  const game=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
-  assert.match(shared,/itemAction\.Visible=row\.tool~=nil/);
-  assert.match(game,/itemAction\.Visible=row\.tool~=nil/);
-  assert.match(shared,/row\.tool and "배낭에서 선택한 도구야/);
-  assert.match(game,/row\.tool and "배낭에서 선택한 도구야/);
+  const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
+  assert.match(source,/itemAction\.Visible=row\.tool~=nil/);
+  assert.match(source,/row\.tool and "배낭에서 선택한 도구야/);
 });
 
 test('Roblox native GLB usage maps exact loaded asset ID without promoting runtime verification',()=>{
@@ -5557,38 +5534,33 @@ test('F0-F9 automatically chooses the closest CC0 actor original while refusing 
 
 test('each existing Roblox F0 build-up sources real visible actors even without explicit asset roles',()=>{
  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
- const cozy=buildVibeAssetProductionPlan({
+ const live=buildVibeAssetProductionPlan({
   repoRoot:root,target:'roblox',
-  task:{gameId:'cozy-island',goal:'normal recurring F0-F9 source build-up'}
+  task:{gameId:'fantasy-survival',goal:'normal recurring F0-F9 source build-up'}
  });
- const detected=new Set(cozy.sourceActorRequirements.map(row=>row.family+':'+row.role));
- assert.ok(detected.has('CREATURE:boar'));
- assert.ok(detected.has('CREATURE:raider'));
- assert.ok(cozy.flowAssetRequirements.some(row=>row.family==='CREATURE'&&row.role==='boar'));
- assert.equal(cozy.sourceActorRequirements.every(row=>row.runtimeVerified===false),true);
- assert.equal(cozy.assetSupplySummary.runtimeVerificationGranted,false);
- const daechung=buildVibeAssetProductionPlan({
-  repoRoot:root,target:'roblox',
-  task:{gameId:'daechung-rpg',sourceRoot:'roblox-games/daechung-rpg',
-   goal:'normal recurring F0-F9 source build-up'}
- });
- assert.ok(daechung.sourceActorRequirements.some(row=>row.family==='CHARACTER'&&row.role==='village_chief'));
- assert.ok(daechung.sourceActorRequirements.length<=8,'bound the per-cycle original source selection cost');
+ const detected=new Set(live.sourceActorRequirements.map(row=>row.family+':'+row.role));
+ assert.ok(detected.has('CREATURE:wolf'),'real sites must discover wolves');
+ assert.ok(detected.has('CREATURE:bat'),'real sites must discover bats');
+ assert.equal(detected.has('CREATURE:golem'),false,'deleted golem spawns must not return');
+ assert.ok(live.flowAssetRequirements.some(row=>row.family==='CREATURE'&&row.role==='wolf'));
+ assert.equal(live.sourceActorRequirements.every(row=>row.runtimeVerified===false),true);
+ assert.equal(live.assetSupplySummary.runtimeVerificationGranted,false);
+ assert.ok(live.sourceActorRequirements.length<=8,'bounded per-cycle source discovery');
  const explicit=buildVibeAssetProductionPlan({
   repoRoot:root,target:'roblox',
-  task:{gameId:'cozy-island',goal:'normal build-up',
-   assetRequirements:[{family:'CREATURE',role:'boar'}]}
+  task:{gameId:'fantasy-survival',goal:'normal build-up',
+   assetRequirements:[{family:'CREATURE',role:'wolf'}]}
  });
- assert.equal(explicit.flowAssetRequirements.filter(row=>row.family==='CREATURE'&&row.role==='boar').length,1,
+ assert.equal(explicit.flowAssetRequirements.filter(row=>row.family==='CREATURE'&&row.role==='wolf').length,1,
   'an explicit task must not duplicate a source-discovered role');
  const wrongRoot=buildVibeAssetProductionPlan({
   repoRoot:root,target:'roblox',
-  task:{gameId:'cozy-island',sourceRoot:'roblox-games/daechung-rpg',
+  task:{gameId:'fantasy-survival',sourceRoot:'roblox-games/deep-diver',
    goal:'normal build-up'}
  });
  assert.deepEqual(wrongRoot.sourceActorRequirements,[],'never scan another game');
  const web=buildVibeAssetProductionPlan({
-  repoRoot:root,target:'web',task:{gameId:'cozy-island',goal:'normal web build-up'}
+  repoRoot:root,target:'web',task:{gameId:'fantasy-survival',goal:'normal web build-up'}
  });
  assert.deepEqual(web.sourceActorRequirements,[],'leave web organization unchanged');
  const sourceWorker=fs.readFileSync(path.join(root,'tools/vibe2-source-worker.mjs'),'utf8');
