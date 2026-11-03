@@ -1259,6 +1259,40 @@ test('completed worker artifacts release capacity and ordinary source locks befo
   assert.equal(selection.selected.some(row=>row.id==='same-lock'),true);
 });
 
+// [예약 OOM 회귀] 증거가 없으면 거대한 큐 복원을 실행하지 않고 원본 상태를 그대로 둔다.
+test('empty completed-worker artifact index skips queue parse without releasing any execution slot',()=>{
+  const folder=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-no-worker-results-'));
+  try{
+    const file=path.join(folder,'.vibe2','queue.json');
+    const input=path.join(folder,'artifacts.json');
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    const queue=JSON.stringify({tasks:[{
+      id:'forest-queued',gameId:'fantasy-survival',target:'roblox',
+      department:'development',type:'implementation',goal:'continue source work',status:'queued'
+    }]})+'\n';
+    fs.writeFileSync(file,queue);
+    for(const probe of [
+      {version:1,runs:[]},
+      {version:1,runs:[{runId:'123',artifactNames:['metadata-only']}]}
+    ]){
+      fs.writeFileSync(input,JSON.stringify(probe));
+      const result=runQueueCommand({command:'release-completed-worker-artifacts',queue:file,input});
+      assert.equal(result.released,0);
+      assert.equal(result.updated,false);
+      assert.equal(result.queueStateRecovered,false);
+      assert.equal(result.summary.nextTaskId,'UNCHANGED_UNREAD');
+      assert.equal(fs.readFileSync(file,'utf8'),queue,'zero results must not mutate canonical state');
+    }
+    fs.writeFileSync(input,JSON.stringify({version:1,unexpected:true}));
+    assert.throws(()=>runQueueCommand({command:'release-completed-worker-artifacts',queue:file,input}),
+      /VIBE2_WORKER_ARTIFACT_INDEX_INVALID/,'malformed evidence must not pass');
+    assert.equal(fs.readFileSync(file,'utf8'),queue);
+    fs.rmSync(input);
+    assert.throws(()=>runQueueCommand({command:'release-completed-worker-artifacts',queue:file,input}),
+      /VIBE2_WORKER_ARTIFACT_INDEX_INVALID/,'missing evidence must not pass');
+  }finally{fs.rmSync(folder,{recursive:true,force:true});}
+});
+
 test('worker artifact release ignores artifacts from a different reservation run', () => {
   const queue=createVibeContinuousQueue({tasks:[{id:'artifact-stale',gameId:'g',target:'web',department:'development',type:'implementation',goal:'x',status:'running',reservationRunId:'200',reservationId:'200:1',neuronExpectedVariants:1}]});
   const safe=workerArtifactTaskKey('artifact-stale');
