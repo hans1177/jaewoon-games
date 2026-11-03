@@ -35,15 +35,15 @@ test('Roblox post-work verification defaults to Open Cloud runtime plus image sa
  assert.match(workflow,/run_studio:[\s\S]*?default:\s*false/);
 });
 
-test('quality-hold only retries exact version read-only 403 diagnosis and never promotes Roblox F9',()=>{
+test('pending Roblox F9 can retry exact version read-only 403 diagnosis across changing Studio repair states',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- const start=workflow.indexOf('const qualityHoldServerReadCandidates=');
- const end=workflow.indexOf('for(const item of qualityHoldServerReadCandidates.slice(0,2))',start);
+ const start=workflow.indexOf('const pendingServerReadCandidates=');
+ const end=workflow.indexOf('for(const item of pendingServerReadCandidates.slice(0,2))',start);
  const qualityGate=workflow.indexOf('ROBLOX_FOUNDATION_PROCESSING_SKIPPED_ACTIVE_QUALITY_BUILDUP=',end);
  assert.ok(start>0&&end>start&&qualityGate>end,'read-only diagnosis must precede quality gate');
  const expression=workflow.slice(start,end);
  const select=new Function('q','requested','serverDiagnosticEnabled','process','Date',
-  expression+'\nreturn qualityHoldServerReadCandidates;');
+  expression+'\nreturn pendingServerReadCandidates;');
  const sourceRevision='a'.repeat(40),artifactIdentity='sha256:'+'b'.repeat(64);
  const candidate={published:true,sourceRevision,artifactIdentity,
   universeId:'10773436325',placeId:'108565970231899',versionNumber:132};
@@ -59,7 +59,9 @@ test('quality-hold only retries exact version read-only 403 diagnosis and never 
  const check=(row=item,opts={})=>select({items:[row]},opts.requested||'',
   opts.enabled??true,opts.env||processMock,opts.clock||clock).length;
  assert.equal(check(),1,'the 403 read must remain testable during Studio combat quality hold');
- assert.equal(check({...item,robloxQualityBuildUpRequired:false}),0);
+ assert.equal(check({...item,robloxQualityBuildUpRequired:false}),1,'read permission must be checked after quality hold clears');
+ assert.equal(check({...item,robloxFinalReviewPassed:true}),0);
+ assert.equal(check({...item,robloxPublicRelease:true}),0);
  assert.equal(check({...item,robloxRuntimeCandidateEvidence:{...candidate,versionNumber:133}}),0);
  assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,officialLiveServerObservation:{...runtime.officialLiveServerObservation,permissionDenied:false}}}),0);
  assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,officialLiveServerObservation:{...runtime.officialLiveServerObservation,observedAt:'2026-11-03T13:58:00Z'}}}),0);
