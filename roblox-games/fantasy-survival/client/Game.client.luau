@@ -2167,33 +2167,74 @@ do
   introTint.BorderSizePixel=0
   introTint.BackgroundColor3=Color3.fromRGB(23,34,43)
   introTint.BackgroundTransparency=.65
-  introTint.ZIndex=5
+  introTint.ZIndex=3
   introTint.Parent=introPanel
+  -- [기억의 무대] 승인 원화의 투명·불규칙한 가장자리를 마법 안개로 감싼다.
+  -- 직사각형 크롭이나 별도 이미지 복제 없이 같은 오프닝 GUI에서만 표현한다.
+  local storyVision=Instance.new("Frame")
+  storyVision.Name="MemoryVisionStage"
+  storyVision.BackgroundColor3=Color3.fromRGB(61,43,78)
+  storyVision.BackgroundTransparency=1
+  storyVision.BorderSizePixel=0
+  storyVision.Position=UDim2.fromScale(.075,.13)
+  storyVision.Size=UDim2.fromScale(.85,.66)
+  storyVision.ZIndex=4
+  storyVision.Visible=false
+  storyVision.Parent=introPanel
+  local storyVisionGradient=Instance.new("UIGradient")
+  storyVisionGradient.Color=ColorSequence.new(
+    Color3.fromRGB(20,13,36),Color3.fromRGB(91,50,113))
+  storyVisionGradient.Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,.92),
+    NumberSequenceKeypoint.new(.20,.36),
+    NumberSequenceKeypoint.new(.50,.08),
+    NumberSequenceKeypoint.new(.80,.36),
+    NumberSequenceKeypoint.new(1,.92),
+  })
+  storyVisionGradient.Rotation=12
+  storyVisionGradient.Parent=storyVision
   -- [일러스트 레이어] 등록·권한 검증된 그림 ID만 사용하는 화면 레이어.
   -- 아직 그림 ID가 없다면 텍스트와 기존 월드 카메라 연출만 수행한다.
   local storyArtwork=Instance.new("ImageLabel")
   storyArtwork.Name="ApprovedStoryIllustration"
   storyArtwork.BackgroundTransparency=1
   storyArtwork.BorderSizePixel=0
-  storyArtwork.Size=UDim2.fromScale(1.14,1.14)
-  storyArtwork.Position=UDim2.fromScale(-.07,-.07)
+  storyArtwork.Size=UDim2.fromScale(.97,.76)
+  storyArtwork.Position=UDim2.fromScale(.015,.095)
   storyArtwork.ScaleType=Enum.ScaleType.Fit
   storyArtwork.ImageTransparency=1
-  storyArtwork.ZIndex=4
+  storyArtwork.ZIndex=6
   storyArtwork.Visible=false
   storyArtwork.Parent=introPanel
+  -- [원화 가장자리] 화면 외곽은 안개로 사라지게 하고 원본 얼굴·몸은 유지한다.
+  local storyArtworkFade=Instance.new("UIGradient")
+  storyArtworkFade.Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,.70),
+    NumberSequenceKeypoint.new(.10,0),
+    NumberSequenceKeypoint.new(.90,0),
+    NumberSequenceKeypoint.new(1,.70),
+  })
+  storyArtworkFade.Parent=storyArtwork
   -- [독립 인물 초상] 승인 PNG 단독 컷. 얼굴·상반신 보호를 위해 자르거나 확대하지 않는다.
   local storyForeground=Instance.new("ImageLabel")
   storyForeground.Name="StoryParallaxForeground"
   storyForeground.BackgroundTransparency=1
   storyForeground.BorderSizePixel=0
-  storyForeground.Size=UDim2.fromScale(.96,.68)
-  storyForeground.Position=UDim2.fromScale(.02,.145)
+  storyForeground.Size=UDim2.fromScale(.95,.69)
+  storyForeground.Position=UDim2.fromScale(.025,.11)
   storyForeground.ScaleType=Enum.ScaleType.Fit
   storyForeground.ImageTransparency=1
   storyForeground.ZIndex=8
   storyForeground.Visible=false
   storyForeground.Parent=introPanel
+  local storyForegroundFade=Instance.new("UIGradient")
+  storyForegroundFade.Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,.78),
+    NumberSequenceKeypoint.new(.10,0),
+    NumberSequenceKeypoint.new(.90,0),
+    NumberSequenceKeypoint.new(1,.78),
+  })
+  storyForegroundFade.Parent=storyForeground
   -- [장면 이미지 단독 표시] 이전 컷의 복제본을 만들지 않아 잔상·중복 인물을 없앤다.
   -- [화면 분위기] 기존 GUI에만 가벼운 불씨·낙하 입자를 추가한다.
   local storyAtmosphere=Instance.new("Frame")
@@ -2316,6 +2357,13 @@ do
     subtitlePlate.Size=UDim2.fromScale(portrait and .96 or .90,.135)
     introDialogue.Position=UDim2.fromScale(.5,portrait and .860 or .856)
     introDialogue.Size=UDim2.fromScale(portrait and .90 or .84,.105)
+    -- [화면비 보호] 인물·전장 전체를 실제 안전 구역 안에 Fit으로 표시한다.
+    storyVision.Position=UDim2.fromScale(portrait and .035 or .075,portrait and .145 or .13)
+    storyVision.Size=UDim2.fromScale(portrait and .93 or .85,portrait and .635 or .66)
+    storyArtwork.Position=UDim2.fromScale(portrait and .02 or .015,portrait and .12 or .095)
+    storyArtwork.Size=UDim2.fromScale(portrait and .96 or .97,portrait and .71 or .76)
+    storyForeground.Position=UDim2.fromScale(portrait and .02 or .025,portrait and .155 or .11)
+    storyForeground.Size=UDim2.fromScale(portrait and .96 or .95,portrait and .62 or .69)
   end
   layoutIntroCaptions()
   introPanel:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutIntroCaptions)
@@ -2717,6 +2765,28 @@ do
         local showArtwork=validImage and not showFront
         storyArtwork.Visible=showArtwork
         storyForeground.Visible=showFront
+        -- [장면별 환영색] 잘린 듯한 PNG 투명 경계를 배경의 빛으로 연결한다.
+        storyVision.Visible=showFront or showArtwork
+        if storyVision.Visible then
+          storyVision.BackgroundTransparency=1
+          storyVision.BackgroundColor3=(scene.cinema=="crown" or scene.cinema=="siege"
+            or scene.cinema=="charge") and Color3.fromRGB(88,63,37)
+            or (scene.cinema=="omen" or scene.cinema=="betrayal" or scene.cinema=="erasure")
+              and Color3.fromRGB(64,36,92)
+            or scene.view=="fall" and Color3.fromRGB(39,58,83)
+            or Color3.fromRGB(34,71,61)
+          storyVisionGradient.Color=(scene.cinema=="crown" or scene.cinema=="siege"
+            or scene.cinema=="charge")
+              and ColorSequence.new(Color3.fromRGB(19,14,10),Color3.fromRGB(137,92,40))
+            or (scene.cinema=="omen" or scene.cinema=="betrayal" or scene.cinema=="erasure")
+              and ColorSequence.new(Color3.fromRGB(15,9,31),Color3.fromRGB(110,57,152))
+            or scene.view=="fall"
+              and ColorSequence.new(Color3.fromRGB(10,17,34),Color3.fromRGB(58,91,139))
+            or ColorSequence.new(Color3.fromRGB(11,27,27),Color3.fromRGB(76,116,83))
+          TweenService:Create(storyVision,TweenInfo.new(.75,Enum.EasingStyle.Sine),{
+            BackgroundTransparency=.37,
+          }):Play()
+        end
         if showArtwork then
           storyArtwork.Image=imageId
           storyArtwork.ImageRectOffset=Vector2.zero
@@ -2725,8 +2795,7 @@ do
           storyArtwork.ScaleType=Enum.ScaleType.Fit
           storyArtwork.Rotation=0
           -- [안전 패닝] 그림 전체를 보존한 채 화면 안쪽에서만 극히 조금 움직인다.
-          storyArtwork.Position=UDim2.fromScale(.01,.01)
-          storyArtwork.Size=UDim2.fromScale(.98,.98)
+          -- 실제 화면 크기에 맞춘 무크롭 위치는 layoutIntroCaptions에서 설정한다.
           storyForeground.Image=""
         elseif showFront then
           storyForeground.Image=frontId
@@ -2735,13 +2804,13 @@ do
           storyForeground.ImageTransparency=0
           storyForeground.ScaleType=Enum.ScaleType.Fit
           storyForeground.Rotation=0
-          storyForeground.Position=UDim2.fromScale(.02,.145)
-          storyForeground.Size=UDim2.fromScale(.96,.68)
+          -- 원본 투명 영역을 보존해 인물의 머리·손·발이 화면 밖으로 밀리지 않게 한다.
           storyArtwork.Image=""
         else
           storyArtwork.Image=""
           storyForeground.Image=""
         end
+        layoutIntroCaptions()
         -- [그림 호흡] 위쳐식 미세 이동. 이미지 영역 안에서만 움직여 얼굴·몸은 절대 자르지 않는다.
         -- 한 컷에 한 이미지만 사용하며, 다음 컷이 시작되면 이전 움직임을 취소한다.
         local storyImage=showFront and storyForeground or showArtwork and storyArtwork or nil
