@@ -5125,6 +5125,22 @@ export function buildVibeAssetProductionPlan({
         // dialogue text or design plans. Never infer HP, species or game rules.
         const executable=text.split(/\r?\n/).filter(line=>!/^\s*--/.test(line)).join('\n');
         for(const match of executable.matchAll(/\b(?:spawnMob|spawnEnemy|spawnCreature|Wildlife\.Spawn)\s*\(\s*["']([A-Za-z][A-Za-z0-9_]*)["']/g))add('CREATURE',match[1]);
+        // [현재 게임 서식지] 루프의 실제 spawnEnemy 호출에 연결된 테이블만 읽는다.
+        // 표/설명/삭제된 종의 id를 수집하지 않고, 자산 원본 요구만 추가한다.
+        if(/\\blocal\\s+function\\s+spawnEnemy\\s*\\(\\s*site\\s*,/.test(executable)
+          &&/\\bsite\\.id\\b/.test(executable)){
+          for(const table of executable.matchAll(/\\blocal\\s+([A-Za-z_]\\w*(?:EncounterSites|SpawnSites))\\s*=\\s*\\{([\\s\\S]*?)\\n\\s*\\}/g)){
+            const name=table[1],sites=table[2];
+            const loop=new RegExp('\\\\bfor\\\\s+([A-Za-z_]\\\\w*)\\\\s*,\\\\s*([A-Za-z_]\\\\w*)\\\\s+in\\\\s+ipairs\\\\s*\\\\(\\\\s*'+name+'\\\\s*\\\\)\\\\s+do','g');
+            for(const binding of executable.matchAll(loop)){
+              const invoker=new RegExp('\\\\bpcall\\\\s*\\\\(\\\\s*spawnEnemy\\\\s*,\\\\s*'+binding[2]+'\\\\s*,\\\\s*'+binding[1]+'\\\\s*\\\\)');
+              if(!invoker.test(executable.slice(binding.index)))continue;
+              for(const row of sites.matchAll(/\\{\\s*id\\s*=\\s*["']([A-Za-z][A-Za-z0-9_]*)["']\\s*,\\s*atom\\s*=\\s*["'][A-Z0-9_]+["']/g))
+                add('CREATURE',row[1]);
+              break;
+            }
+          }
+        }
       }
     }
   }
