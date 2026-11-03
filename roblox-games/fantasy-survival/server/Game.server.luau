@@ -123,8 +123,8 @@ local meadowTerrain = workspace.Terrain
 -- 면적 약 4.98배. 시작/적/자원 좌표 및 전투 수치를 옮기지 않는다.
 local meadowWorldSize=696
 local function createStartingMeadow()
-  -- [실제 지형 풀잎] 새 임시 모델 없이 Roblox Terrain의 기존 자연 풀 장식을 켠다.
-  meadowTerrain.Decoration=true
+  -- [실제 지면 표현] Roblox Terrain 기본 재질을 재사용한다.
+  -- Decoration 속성은 서버 Script에서 변경할 수 없으므로 건드리지 않는다.
   meadowTerrain:FillBlock(CFrame.new(0, -4, 0), Vector3.new(312, 12, 312), Enum.Material.Grass)
   -- [마을 평탄지] 시작 초원에 산봉우리처럼 튀어나오던 Ridge/Knoll 지형을 만들지 않는다.
   -- 기존 채집 광맥 3곳·지표 잔디·몬스터/의뢰 좌표는 보존한다.
