@@ -319,8 +319,8 @@ test('prologue uses exactly one source image per shot and keeps Big Brother and 
   assert.match(intro,/scene\.cinema=="erasure" and registeredStoryDepth\[3\]/);
   assert.match(intro,/storyForeground\.Position=UDim2\.fromScale\(\.02,\.145\)/);
   assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.96,\.68\)/);
-  assert.match(intro,/storyArtwork\.Position=UDim2\.fromScale\(0,0\)/);
-  assert.match(intro,/storyArtwork\.Size=UDim2\.fromScale\(1,1\)/);
+  assert.match(intro,/storyArtwork\.Position=UDim2\.fromScale\(\.01,\.01\)/);
+  assert.match(intro,/storyArtwork\.Size=UDim2\.fromScale\(\.98,\.98\)/);
   assert.match(intro,/local firstId=registeredStoryArt\[1\] or registeredStoryDepth\[1\]/);
   assert.match(intro,/for index,scene in ipairs\(scenes\) do\s+if index>1 then/);
   assert.match(intro,/local selected=\(portrait and typeof\(frontId\)=="string"\) and frontId/);
@@ -333,6 +333,32 @@ test('prologue uses exactly one source image per shot and keeps Big Brother and 
   assert.doesNotMatch(intro,/frontScale|frontZoom|frontX|frontY/);
   assert.match(intro,/introFlash\.BackgroundTransparency=1/);
   assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
+});
+
+test('12 authored prologue beats retain single-image framing and mobile-safe choreography',()=>{
+  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
+  assert.match(intro,/local storyImage=showFront and storyForeground or showArtwork and storyArtwork or nil/);
+  assert.match(intro,/activeStoryFocusTween:Cancel\(\)/);
+  assert.match(intro,/local maxX=math\.max\(0,1-storyImage\.Size\.X\.Scale\)/);
+  assert.match(intro,/local maxY=math\.max\(0,1-storyImage\.Size\.Y\.Scale\)/);
+  assert.match(intro,/math\.clamp\(position\.X\.Scale\+slowX,0,maxX\)/);
+  assert.match(intro,/math\.clamp\(position\.Y\.Scale\+slowY,0,maxY\)/);
+  assert.match(intro,/local quietPortrait=closeUp or scene\.cinema=="relic" or scene\.cinema=="dawn"/);
+  assert.match(intro,/spark\.Visible=scene\.cinema~="freeze" and \(not quietPortrait or n<=10\)/);
+  assert.match(intro,/local speechWait=/);
+  assert.match(intro,/local speechStep=/);
+  assert.match(intro,/task\.wait\(speechWait\)/);
+  assert.match(intro,/task\.wait\(speechStep\)/);
+  assert.match(intro,/local impactAt=nil/);
+  for(const cue of ['siege','charge','crown','omen','betrayal','reach','erasure','rift','dawn','relic','journey']){
+    assert.match(intro,new RegExp('scene\\.cinema=="'+cue+'" then\\s+impactAt='),'cinematic cue '+cue);
+  }
+  assert.match(intro,/if impactAt and not reducedEffects then/);
+  assert.match(intro,/currentStoryScene~=index then return end/);
+  assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
+  assert.match(intro,/local showArtwork=validImage and not showFront/);
+  assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
+  assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
 });
 
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{

@@ -2018,7 +2018,7 @@ do
   storyArtwork.ZIndex=4
   storyArtwork.Visible=false
   storyArtwork.Parent=introPanel
-  -- [2.5D 독립 인물 레이어] 장면별 전경 PNG는 배경과 다른 방향으로 이동한다.
+  -- [독립 인물 초상] 승인 PNG 단독 컷. 얼굴·상반신 보호를 위해 자르거나 확대하지 않는다.
   local storyForeground=Instance.new("ImageLabel")
   storyForeground.Name="StoryParallaxForeground"
   storyForeground.BackgroundTransparency=1
@@ -2191,6 +2191,7 @@ do
   local originalFieldOfView=openingCamera and openingCamera.FieldOfView
   local activeTween=nil
   local activeFovTween=nil
+  local activeStoryFocusTween=nil
   local activeParticleTweens={}
   local cameraMotionValue=nil
   local cameraMotionConnection=nil
@@ -2215,6 +2216,7 @@ do
   local function restoreCamera()
     if activeTween then activeTween:Cancel();activeTween=nil end
     if activeFovTween then activeFovTween:Cancel();activeFovTween=nil end
+    if activeStoryFocusTween then activeStoryFocusTween:Cancel();activeStoryFocusTween=nil end
     introDialogue.MaxVisibleGraphemes=-1
     regionIntro.MaxVisibleGraphemes=-1
     if activeAmbienceTween then activeAmbienceTween:Cancel();activeAmbienceTween=nil end
@@ -2476,7 +2478,15 @@ do
         introDialogue.MaxVisibleGraphemes=0
         subtitlePlate.BackgroundTransparency=.5
         subtitlePlate.Position=UDim2.fromScale(.5,.995)
+        -- [장면 감정선] 붉은 공성전, 보랏빛 배신, 차가운 추락, 녹색 새벽을 자막 테두리에도 반영한다.
+        subtitleOutline.Color=(scene.cinema=="omen" or scene.cinema=="betrayal")
+          and Color3.fromRGB(184,124,230)
+          or scene.view=="fall" and Color3.fromRGB(121,162,208)
+          or scene.view=="wake" and Color3.fromRGB(163,195,144)
+          or Color3.fromRGB(207,171,106)
+        subtitleOutline.Transparency=scene.cinema=="betrayal" and .36 or .58
 
+        if activeStoryFocusTween then activeStoryFocusTween:Cancel();activeStoryFocusTween=nil end
         -- [단일 이미지 장면] JPG 배경과 PNG 인물을 동시에 그리지 않는다.
         -- [인물 단독 컷] 빅브라더·미러·배신·역사 삭제는 승인 PNG 한 장만 표시한다.
         -- [안전 영역] 이미지 확대/이동/회전을 금지해 모바일에서 얼굴·몸이 잘리지 않게 한다.
@@ -2501,8 +2511,9 @@ do
           storyArtwork.ImageTransparency=0
           storyArtwork.ScaleType=Enum.ScaleType.Fit
           storyArtwork.Rotation=0
-          storyArtwork.Position=UDim2.fromScale(0,0)
-          storyArtwork.Size=UDim2.fromScale(1,1)
+          -- [안전 패닝] 그림 전체를 보존한 채 화면 안쪽에서만 극히 조금 움직인다.
+          storyArtwork.Position=UDim2.fromScale(.01,.01)
+          storyArtwork.Size=UDim2.fromScale(.98,.98)
           storyForeground.Image=""
         elseif showFront then
           storyForeground.Image=frontId
@@ -2518,29 +2529,64 @@ do
           storyArtwork.Image=""
           storyForeground.Image=""
         end
-        -- 전경과 배경은 매 컷 반드시 상호 배타적이며 이전 컷 이미지는 즉시 제거한다.
+        -- [그림 호흡] 위쳐식 미세 이동. 이미지 영역 안에서만 움직여 얼굴·몸은 절대 자르지 않는다.
+        -- 한 컷에 한 이미지만 사용하며, 다음 컷이 시작되면 이전 움직임을 취소한다.
+        local storyImage=showFront and storyForeground or showArtwork and storyArtwork or nil
+        if storyImage then
+          storyImage.ImageTransparency=.13
+          TweenService:Create(storyImage,TweenInfo.new(.46,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+            ImageTransparency=0,
+          }):Play()
+          if not reducedEffects then
+            local slowX=(scene.cinema=="charge" or scene.cinema=="journey") and .014
+              or scene.cinema=="rift" and -.012 or scene.cinema=="freeze" and 0 or .005
+            local slowY=scene.cinema=="rift" and .016 or scene.cinema=="dawn" and -.009
+              or scene.cinema=="crown" and -.006 or scene.cinema=="omen" and .006 or .003
+            local position=storyImage.Position
+            local maxX=math.max(0,1-storyImage.Size.X.Scale)
+            local maxY=math.max(0,1-storyImage.Size.Y.Scale)
+            activeStoryFocusTween=TweenService:Create(storyImage,TweenInfo.new(scene.seconds,
+              Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+              Position=UDim2.fromScale(
+                math.clamp(position.X.Scale+slowX,0,maxX),
+                math.clamp(position.Y.Scale+slowY,0,maxY)),
+            })
+            activeStoryFocusTween:Play()
+          end
+        end
 
-        -- [입자 연출] 전쟁은 불씨, 봉인은 마력 조각, 숲은 흩날리는 먼지.
+        -- [장면 입자 감독] 다키스트 던전식 절제된 불씨·봉인 파편·잿가루·새벽 안개.
+        -- 빅브라더·미러 장면은 좌우 가장자리만 지나가게 해서 얼굴 위로 입자가 겹치지 않는다.
+        local quietPortrait=closeUp or scene.cinema=="relic" or scene.cinema=="dawn"
         for n,spark in ipairs(cinematicParticles) do
-          local x=((n*37+index*11)%100)/100
-          local drift=((n*19+index*13)%35)/100-.17
+          local edge=quietPortrait and (n%2==0 and .845+(n%5)*.02 or .065+(n%5)*.018)
+          local x=edge or ((n*37+index*11)%100)/100
+          local drift=quietPortrait and (n%2==0 and .012 or -.012)
+            or ((n*19+index*13)%35)/100-.17
           local fall=scene.movement=="fall"
-          spark.BackgroundColor3=scene.view=="seal" and Color3.fromRGB(186,112,249)
-            or scene.view=="fall" and Color3.fromRGB(148,223,199)
-            or scene.view=="wake" and Color3.fromRGB(160,190,165)
-            or Color3.fromRGB(245,147,73)
-          spark.BackgroundTransparency=scene.view=="wake" and .66 or .22
-          spark.Position=UDim2.fromScale(x,fall and -.08 or 1.05)
-          spark.Size=UDim2.fromOffset(1+n%3,scene.view=="seal" and 13 or 6+n%4*2)
-          spark.Rotation=22+(n*17)%77
-          local particle=TweenService:Create(spark,TweenInfo.new(scene.seconds*(.63+(n%4)*.1),
-            Enum.EasingStyle.Linear,Enum.EasingDirection.InOut),{
-            Position=UDim2.fromScale(math.clamp(x+drift,0,.99),fall and 1.1 or -.12),
-            BackgroundTransparency=1,
-            Rotation=spark.Rotation+direction*50
-          })
-          table.insert(activeParticleTweens,particle)
-          particle:Play()
+          spark.Visible=scene.cinema~="freeze" and (not quietPortrait or n<=10)
+          if spark.Visible then
+            spark.BackgroundColor3=scene.cinema=="erasure" and Color3.fromRGB(125,121,134)
+              or scene.view=="seal" and Color3.fromRGB(186,112,249)
+              or scene.view=="fall" and Color3.fromRGB(148,223,199)
+              or scene.view=="wake" and Color3.fromRGB(163,189,151)
+              or scene.view=="sky" and Color3.fromRGB(238,198,121)
+              or Color3.fromRGB(245,147,73)
+            spark.BackgroundTransparency=quietPortrait and .74
+              or scene.view=="wake" and .67 or .32
+            spark.Position=UDim2.fromScale(x,fall and -.08 or 1.05)
+            spark.Size=UDim2.fromOffset(quietPortrait and 2 or 1+n%3,
+              quietPortrait and 8 or scene.view=="seal" and 12 or 6+n%4*2)
+            spark.Rotation=22+(n*17)%77
+            local particle=TweenService:Create(spark,TweenInfo.new(
+              scene.seconds*(.60+(n%4)*.09),Enum.EasingStyle.Linear),{
+              Position=UDim2.fromScale(math.clamp(x+drift,0,.99),fall and 1.1 or -.12),
+              BackgroundTransparency=1,
+              Rotation=spark.Rotation+direction*(quietPortrait and 18 or 50),
+            })
+            table.insert(activeParticleTweens,particle)
+            particle:Play()
+          end
         end
 
         local color=scene.view=="seal" and Color3.fromRGB(150,67,224)
@@ -2593,7 +2639,7 @@ do
           end)
         end
 
-        -- [시네마틱 자막] 상단 1줄/하단 최대 2줄. 배경 위로 인물을 가리지 않는다.
+        -- [시네마틱 자막] 상단 1줄/하단 최대 2줄. 인물 연출을 먼저 보여 준 다음 대사가 따라온다.
         TweenService:Create(subtitlePlate,TweenInfo.new(.45,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
           Position=UDim2.fromScale(.5,.982),BackgroundTransparency=.27,
         }):Play()
@@ -2605,14 +2651,22 @@ do
         TweenService:Create(introFlash,TweenInfo.new(.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
           BackgroundTransparency=1
         }):Play()
-        -- [대사 연출] 한국어 글자 단위로 표시한다. 건너뛰기·다음 장면 시에는 즉시 중단.
+        -- [대사 리듬] 반전은 긴 침묵, 돌격·구조는 빠른 호흡, 새벽은 느리게 깨어난다.
+        local speechWait=(scene.cinema=="freeze" or scene.cinema=="betrayal") and .95
+          or scene.cinema=="dawn" and 1.10
+          or (scene.cinema=="crown" or scene.cinema=="omen" or scene.cinema=="erasure") and .72
+          or .34
+        local speechStep=(scene.cinema=="charge" or scene.cinema=="reach") and .023
+          or scene.cinema=="dawn" and .065 or scene.cinema=="betrayal" and .054
+          or .037
         if introDialogue.Text~="" then
           local graphemes=utf8.len(introDialogue.Text) or 0
           task.spawn(function()
+            task.wait(speechWait)
             for visible=1,graphemes do
               if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
               introDialogue.MaxVisibleGraphemes=visible
-              task.wait(.035)
+              task.wait(speechStep)
             end
             if entranceOpen and token==runToken and currentStoryScene==index then
               introDialogue.MaxVisibleGraphemes=-1
@@ -2621,25 +2675,42 @@ do
         else
           introDialogue.MaxVisibleGraphemes=-1
         end
-        -- [전투 강조] 초상 컷의 얼굴은 섬광으로 가리지 않는다.
-        if not reducedEffects and scene.cinema=="siege" then
-          task.delay(1.05,function()
-            if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
-            introFlash.BackgroundColor3=Color3.fromRGB(233,132,67)
-            introFlash.BackgroundTransparency=.64
-            TweenService:Create(introFlash,TweenInfo.new(.55,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
-              BackgroundTransparency=1,
-            }):Play()
-          end)
+        -- [12장 리듬 큐] 각 장면의 감정 전환에 한 번만 반응한다.
+        -- 전투는 강한 불꽃, 배신은 차가운 봉인, 새벽·유물은 약한 빛. 초상 얼굴은 보호한다.
+        local impactAt=nil
+        local impactColor=Color3.fromRGB(235,177,109)
+        local impactOpacity=.90
+        local impactFade=.6
+        if scene.cinema=="siege" then
+          impactAt=1.05;impactColor=Color3.fromRGB(233,132,67);impactOpacity=.67;impactFade=.46
+        elseif scene.cinema=="charge" then
+          impactAt=1.55;impactColor=Color3.fromRGB(251,187,112);impactOpacity=.78;impactFade=.26
+        elseif scene.cinema=="crown" then
+          impactAt=2.3;impactColor=Color3.fromRGB(243,214,156);impactOpacity=.94;impactFade=1.2
+        elseif scene.cinema=="omen" then
+          impactAt=2.0;impactColor=Color3.fromRGB(153,104,214);impactOpacity=.93;impactFade=1.0
+        elseif scene.cinema=="betrayal" then
+          impactAt=2.15;impactColor=Color3.fromRGB(189,109,255);impactOpacity=.81;impactFade=.72
+        elseif scene.cinema=="reach" then
+          impactAt=2.45;impactColor=Color3.fromRGB(151,210,238);impactOpacity=.86;impactFade=.38
+        elseif scene.cinema=="erasure" then
+          impactAt=2.65;impactColor=Color3.fromRGB(63,57,73);impactOpacity=.91;impactFade=.65
+        elseif scene.cinema=="rift" then
+          impactAt=1.75;impactColor=Color3.fromRGB(8,9,23);impactOpacity=.60;impactFade=.95
+        elseif scene.cinema=="dawn" then
+          impactAt=2.85;impactColor=Color3.fromRGB(155,202,158);impactOpacity=.95;impactFade=1.1
+        elseif scene.cinema=="relic" then
+          impactAt=2.1;impactColor=Color3.fromRGB(236,202,147);impactOpacity=.95;impactFade=.8
+        elseif scene.cinema=="journey" then
+          impactAt=3.05;impactColor=Color3.fromRGB(164,184,206);impactOpacity=.95;impactFade=1.3
         end
-        -- 봉인 순간·추락 순간에만 한 번 더 강한 충격 컷을 넣는다.
-        if scene.cinema=="betrayal" or scene.view=="fall" then
-          task.delay(scene.cinema=="betrayal" and 2.15 or 1.75,function()
+        if impactAt and not reducedEffects then
+          task.delay(impactAt,function()
             if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
-            introFlash.BackgroundColor3=scene.cinema=="betrayal" and Color3.fromRGB(189,109,255) or Color3.fromRGB(8,9,23)
-            introFlash.BackgroundTransparency=scene.cinema=="betrayal" and .80 or .62
-            TweenService:Create(introFlash,TweenInfo.new(.75,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
-              BackgroundTransparency=1
+            introFlash.BackgroundColor3=impactColor
+            introFlash.BackgroundTransparency=impactOpacity
+            TweenService:Create(introFlash,TweenInfo.new(impactFade,Enum.EasingStyle.Sine),{
+              BackgroundTransparency=1,
             }):Play()
           end)
         end
