@@ -2356,6 +2356,8 @@ do
   local activeTween=nil
   local activeFovTween=nil
   local activeStoryFocusTween=nil
+  local activeStoryRevealTween=nil
+  local activeVignetteTween=nil
   local activeParticleTweens={}
   local cameraMotionValue=nil
   local cameraMotionConnection=nil
@@ -2381,6 +2383,8 @@ do
     if activeTween then activeTween:Cancel();activeTween=nil end
     if activeFovTween then activeFovTween:Cancel();activeFovTween=nil end
     if activeStoryFocusTween then activeStoryFocusTween:Cancel();activeStoryFocusTween=nil end
+    if activeStoryRevealTween then activeStoryRevealTween:Cancel();activeStoryRevealTween=nil end
+    if activeVignetteTween then activeVignetteTween:Cancel();activeVignetteTween=nil end
     introDialogue.MaxVisibleGraphemes=-1
     regionIntro.MaxVisibleGraphemes=-1
     if activeAmbienceTween then activeAmbienceTween:Cancel();activeAmbienceTween=nil end
@@ -2603,6 +2607,9 @@ do
       for index,scene in ipairs(scenes) do
         if not entranceOpen or token~=runToken then return end
         currentStoryScene=index
+        -- [이전 장면 종료] 다음 컷의 빛·인물 연출을 가리지 않도록 Tween을 먼저 정리한다.
+        if activeVignetteTween then activeVignetteTween:Cancel();activeVignetteTween=nil end
+        if activeStoryRevealTween then activeStoryRevealTween:Cancel();activeStoryRevealTween=nil end
         -- [장면별 색·음향·화면비] 원본 23개 등록 에셋과 기존 사운드그룹만 사용한다.
         local silence=scene.cinema=="freeze" or scene.cinema=="erasure"
         local audioLevel=silence and 0 or scene.cinema=="rift" and .18 or scene.cinema=="dawn" and .55 or 1
@@ -2631,8 +2638,19 @@ do
           or (scene.cinema=="omen" or scene.cinema=="betrayal") and ColorSequence.new(Color3.fromRGB(18,8,34),Color3.fromRGB(87,54,108))
           or scene.cinema=="crown" and ColorSequence.new(Color3.fromRGB(34,25,16),Color3.fromRGB(103,81,41))
           or ColorSequence.new(Color3.fromRGB(14,17,22),Color3.fromRGB(57,54,53))
+        -- [장면별 대사·제목] 전투의 황금색과 배신의 보라, 추락의 청색, 새벽의 녹색을 분리한다.
         regionIntro.TextColor3=(scene.cinema=="omen" or scene.cinema=="betrayal")
-          and Color3.fromRGB(235,203,255) or Color3.fromRGB(238,209,145)
+          and Color3.fromRGB(237,207,255)
+          or (scene.cinema=="freeze" or scene.cinema=="erasure") and Color3.fromRGB(202,198,195)
+          or scene.view=="fall" and Color3.fromRGB(185,210,244)
+          or scene.view=="wake" and Color3.fromRGB(211,230,191)
+          or Color3.fromRGB(238,209,145)
+        introDialogue.TextColor3=(scene.cinema=="omen" or scene.cinema=="betrayal")
+          and Color3.fromRGB(240,221,251)
+          or (scene.cinema=="freeze" or scene.cinema=="erasure") and Color3.fromRGB(221,220,219)
+          or scene.view=="fall" and Color3.fromRGB(209,227,251)
+          or scene.view=="wake" and Color3.fromRGB(224,239,211)
+          or Color3.fromRGB(255,242,211)
         regionIntro.TextStrokeTransparency=.12
         regionIntro.Text=scene.title
         regionIntro.TextTransparency=1
@@ -2697,10 +2715,18 @@ do
         -- 한 컷에 한 이미지만 사용하며, 다음 컷이 시작되면 이전 움직임을 취소한다.
         local storyImage=showFront and storyForeground or showArtwork and storyArtwork or nil
         if storyImage then
-          storyImage.ImageTransparency=.13
-          TweenService:Create(storyImage,TweenInfo.new(.46,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-            ImageTransparency=0,
-          }):Play()
+          -- [인물 등장] 금빛·보랏빛 초상은 천천히 드러내고 돌격은 바로 선명하게 한다.
+          -- 불투명도만 변화시키며 복제 이미지·자르기·화면 밖 줌은 사용하지 않는다.
+          local revealStart=reducedEffects and .04 or closeUp and .31
+            or scene.cinema=="dawn" and .46 or scene.cinema=="rift" and .23 or .12
+          local revealSeconds=reducedEffects and .18 or closeUp and .94
+            or scene.cinema=="dawn" and 1.35 or scene.cinema=="charge" and .28 or .54
+          storyImage.ImageTransparency=revealStart
+          activeStoryRevealTween=TweenService:Create(storyImage,
+            TweenInfo.new(revealSeconds,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
+              ImageTransparency=0,
+            })
+          activeStoryRevealTween:Play()
           if not reducedEffects then
             local slowX=(scene.cinema=="charge" or scene.cinema=="journey") and .014
               or scene.cinema=="rift" and -.012 or scene.cinema=="freeze" and 0 or .005
@@ -2876,6 +2902,23 @@ do
             TweenService:Create(introFlash,TweenInfo.new(impactFade,Enum.EasingStyle.Sine),{
               BackgroundTransparency=1,
             }):Play()
+            -- [감정 비트] 이미지·인물 위에 새 레이어를 겹치지 않고 기존 가장자리 명암만 잠깐 조인다.
+            local vignetteBase=cinematicVignette.BackgroundTransparency
+            local vignettePulse=math.max((scene.cinema=="betrayal" or scene.cinema=="erasure") and .36 or .49,vignetteBase-.14)
+            activeVignetteTween=TweenService:Create(cinematicVignette,
+              TweenInfo.new(math.max(.15,impactFade*.35),Enum.EasingStyle.Quad),{
+                BackgroundTransparency=vignettePulse,
+              })
+            activeVignetteTween:Play()
+            task.delay(impactFade*.56,function()
+              if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
+              if activeVignetteTween then activeVignetteTween:Cancel() end
+              activeVignetteTween=TweenService:Create(cinematicVignette,
+                TweenInfo.new(math.max(.3,impactFade*.70),Enum.EasingStyle.Sine),{
+                  BackgroundTransparency=vignetteBase,
+                })
+              activeVignetteTween:Play()
+            end)
           end)
         end
         local started=os.clock()
