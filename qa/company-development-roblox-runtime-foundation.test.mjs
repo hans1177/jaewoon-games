@@ -70,6 +70,10 @@ test('pending Roblox F9 can retry exact version read-only 403 diagnosis across c
  assert.equal(check(item,{env:{env:{ROBLOX_OPEN_CLOUD_API_KEY:''}}}),0);
  const body=workflow.slice(start,qualityGate);
  assert.match(body,/probeRobloxOpenCloudGameServerObservation/);
+ assert.match(body,/const officialServerReadByGame=new Map\(\)/);
+ assert.match(body,/officialServerReadByGame\.set\(item\.gameId,observation\)/);
+ assert.match(workflow,/let officialLiveServers=officialServerReadByGame\.get\(item\.gameId\)\|\|null/);
+ assert.match(workflow,/if\(!officialLiveServers\)\{/);
  assert.match(body,/officialLiveServerObservation:observation/);
  assert.match(body,/F9_GAMEPLAY_GATE_UNCHANGED/);
  assert.doesNotMatch(body,/robloxFinalReviewPassed\s*=\s*true|robloxPublicRelease\s*=\s*true|robloxRuntimePassed\s*=\s*true/);
