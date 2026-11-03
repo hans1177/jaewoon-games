@@ -909,6 +909,11 @@ return function(character,humanoid,tool,force)
   local combatMastery=math.floor(math.max(0,tonumber(player:GetAttribute("CombatProficiency")) or 0))
   masteryProgressLabel.Text=string.format("전투 숙련 %d  ·  다음 기술 점수까지 %d",combatMastery,50-combatMastery%50)
   masteryProgressFill.Size=UDim2.fromScale((combatMastery%50)/50,1)
+  -- [숙련 카드] 이 렌더 함수가 소유하는 카드 값만 업데이트한다.
+  for _,entry in ipairs(Config.Proficiencies or {}) do
+    local value=proficiencyValues[entry.Key]
+    if value then value.Text=tostring(math.floor(player:GetAttribute(entry.Key) or 0)) end
+  end
   characterHeroName.Text=player.DisplayName
   local health=humanoid and humanoid.Health or 0
   local maximum=humanoid and humanoid.MaxHealth or 100
@@ -941,10 +946,6 @@ local function renderMeadowPages()
   local tool=character and character:FindFirstChildOfClass("Tool")
   -- [캐릭터 숙련도] 이전 전투 숙련도 값을 유지하고 일곱 분야를 독립 표시한다.
   -- 사냥은 실제 늑대·박쥐 처치, 채집은 실제 수확, 제작은 장비 강화 성공에서만 증가한다.
-  for _,entry in ipairs(Config.Proficiencies or {}) do
-    local value=proficiencyValues[entry.Key]
-    if value then value.Text=tostring(math.floor(player:GetAttribute(entry.Key) or 0)) end
-  end
   renderWitcherCharacter(character,humanoid,tool,previewNeedsRefresh)
   previewNeedsRefresh=false
   meadowLabels[1].Text="※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해."
