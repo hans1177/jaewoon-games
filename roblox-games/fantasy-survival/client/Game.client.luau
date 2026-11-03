@@ -5545,7 +5545,7 @@ local function bindOriginalMob(model)
   -- [46본 사슴] GLB 원본 명칭을 실제 스킨 관절에 직접 연결한다.
   -- IK와 End 뼈는 구동하지 않고 어깨/골반 위쪽 원본 뼈만 고관절로 사용한다.
   local deerSourceChannels={
-    torso="Spine",torso2="Chest",neck1="Neck",tail1="Tail",
+    torso="Spine",torso2="Chest",neck1="Neck",head="Head",tail1="Tail",
     frontupperlegl="FLHip",frontupperlegr="FRHip",
     frontlowerlegl="FLKnee",frontlowerlegr="FRKnee",
     backupperlegl="BLHip",backupperlegr="BRHip",
@@ -5635,8 +5635,9 @@ local function bindOriginalMob(model)
   -- [실제 원본 사슴·늑대 모션] 등록된 AnimationId가 있으면 저작된 걷기/달리기를 우선한다.
   -- 단순 뼈 회전은 원본 애니메이션을 찾지 못할 때만 기존 책임 관절에 적용한다.
   local nativeAnimations={}
-  -- [사슴 46본] 미등록 원본 AnimationId 대신 이미 구현된 실제 Bone 보행·질주 모션을 사용한다.
-  if species=="wolf" or species=="bat" then
+  -- [사슴 46본] 정식 게시된 원본 Idle/Walk/Gallop 클립이 있으면 우선 사용한다.
+  -- 클립 ID가 없거나 재생 불가하면 기존 네 다리 Bone 보행·질주를 그대로 사용한다.
+  if species=="wolf" or species=="bat" or species=="deer" then
     for _,animation in ipairs(model:GetDescendants()) do
       if animation:IsA("Animation") and animation.AnimationId:match("^rbxassetid://[1-9]%d*$") then
         -- [공식 Animator] 이름에 Idle_HitReact가 포함되어도 대기 클립으로 잘못 선택하지 않는다.
