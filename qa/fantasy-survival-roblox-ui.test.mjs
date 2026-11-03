@@ -247,6 +247,8 @@ test('character sheet shows actual avatar, live vital gauges and separate seven 
     'characterViewport:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()',
     'heroHealth.Name="CharacterHealthTrack"',
     'heroStamina.Name="CharacterStaminaTrack"',
+    'heroHealthText.ZIndex=45',
+    'heroStaminaText.ZIndex=45',
     'heroHealthFill.Size=UDim2.fromScale(math.clamp(health/math.max(1,maximum),0,1),1)',
     'heroStaminaFill.Size=UDim2.fromScale(math.clamp(stamina/100,0,1),1)',
     'proficiencyGrid.Name="MeadowProficiencyCards"',
