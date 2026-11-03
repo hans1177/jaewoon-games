@@ -1,4 +1,6 @@
 -- Source-verified original CC0 FBX/GLB models. Exact Universe grant is required by canonical publishing.
+-- [마력숲 초원 마을] 원본 10종은 등록 실행 41142657598에서 실제 Roblox 자산 번호 발급을 확인함 (2026-10-30).
+-- [배포 권한] Universe 10773436325 자산 사용 허가 및 실제 Place 게시 여부는 별도 정식 검증이 필요함.
 -- DO NOT substitute procedural Part geometry if an asset is missing.
 return {
  wolf=99984238804613,
