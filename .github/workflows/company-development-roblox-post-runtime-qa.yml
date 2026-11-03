@@ -847,6 +847,7 @@ jobs:
               +':http='+(observation.status??'UNKNOWN')
               +':category='+(observation.accessFailureCategory||'NOT_CLASSIFIED')
               +':readScope='+(observation.readScopeCrosscheck?.state||'NOT_CHECKED')
+              +':keyAudit='+(observation.keyScopeAudit?.state||'NOT_CHECKED')
               +':active='+(observation.activeServerCount??'UNKNOWN')
               +':source='+(
                 candidate.sourceRevision===item.robloxSourceCommit
@@ -1243,6 +1244,7 @@ jobs:
                 +':state='+officialLiveServers.state
                 +':category='+(officialLiveServers.accessFailureCategory||'NOT_CLASSIFIED')
                 +':readScope='+(officialLiveServers.readScopeCrosscheck?.state||'NOT_CHECKED')
+                +':keyAudit='+(officialLiveServers.keyScopeAudit?.state||'NOT_CHECKED')
                 +':active='+(officialLiveServers.activeServerCount??'UNKNOWN'));
               // 정확한 후보의 관측 결과를 429 등 신규 Luau 작업 실패와 독립적으로 보존한다.
               const previousRuntime=item.robloxRuntimeFoundationEvidence||{};
