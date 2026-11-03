@@ -1370,17 +1370,23 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(nativeAuthor,/FANTASY_VILLAGE_SOURCE_DIGEST_MISMATCH/);
   assert.match(nativeUpload,/const villageRows=fantasy/);
   assert.match(nativeRelease,/OWNER_FOREST_VILLAGE_MODEL_BINDING_INVALID/);
+  assert.match(nativeRelease,/const completeWell=role==='villageWell'/);
+  assert.match(nativeRelease,/kenney\.license==='CC0-1.0'/);
+  assert.match(nativeRelease,/original\?\.sourceUrl==='https:\/\/opengameart\.org\/content\/fantasy-town-kit'/);
   assert.match(server,/local function createMeadowVillage\(\)/);
   assert.match(server,/local function villageNativeNpc\(spec\)/);
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
-  // [마력숲 우물/의뢰 게시판] 기존 CC0 물표면을 보존하고 흰색 광장 덮개를 재도입하지 않는다.
-  assert.match(server,/table.insert\(furnishings,\{"villageWell",0,-146,5\.5,0\}\)/);
-  assert.match(server,/local propHeight=row\[1\]=="villageWell" and row\[4\] or row\[4\]\*1\.3/);
+  // [마력숲 우물] 기존 분수 이름을 먼저 제거하고 원본 Kenney Well을 독립 배치한다.
+  assert.match(server,/scenery\.Name=="Meadow_Village_Well"/);
+  assert.match(server,/local well=worldAsset\("villageWell",Vector3\.new\(0,3,-146\),5\.5\)/);
+  assert.match(server,/local propHeight=row\[4\]\*1\.3/);
+  assert.doesNotMatch(server,/table\.insert\(furnishings,\{"villageWell"/);
   assert.doesNotMatch(server,/\{"villageRoad",[^}]+\}/);
   assert.match(server,/scenery\.Name:match\("\^Meadow_Village_villageRoad_%d\+\$"\)/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowVillageWellReady",villageWellReady\)/);
   assert.match(server,/sign\.Name="MeadowVillageWellSign"/);
-  assert.match(server,/model:SetAttribute\("MeadowVillageWellOriginal",true\)/);
+  assert.match(server,/well:SetAttribute\("MeadowVillageWellOriginal",true\)/);
+  assert.match(server,/warn\("마력숲 원본 돌우물 등록 대기/);
   assert.doesNotMatch(server,/meadowTerrain:FillBlock\(CFrame\.new\(plaza\[1\],1\.55,plaza\[2\]\)/);
   assert.doesNotMatch(server,/mesh\.Color=Color3\.fromRGB\(105,111,108\)/);
   assert.match(server,/local board=worldAsset\("villageWall",Vector3.new\(0,3,-101\),5\.2\)/);
@@ -1535,7 +1541,7 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   }
   assert.match(server,/surface\.Material=bark and Enum\.Material\.Wood or Enum\.Material\.LeafyGrass/);
   // [원본 수목 라이선스] 토이 표면 삭제를 중지하고 CC0 텍스처를 유지한다.
-  const treeSource=server.slice(server.indexOf('elseif id=="tree" then'),server.indexOf('else\n            -- [야생동물 토이 표면]'));
+  const treeSource=server.slice(server.indexOf('elseif id=="tree" then'),server.indexOf('else\n            -- [사슴 피모 복원]'));
   assert.ok(treeSource.includes('surface.Material=bark and Enum.Material.Wood or Enum.Material.LeafyGrass'));
   assert.doesNotMatch(treeSource,/appearance:Destroy\(\)|surface\.TextureID=""/);
   assert.match(server,/Lighting\.ExposureCompensation=-\.12/);

@@ -118,7 +118,12 @@ test('deer and wolf keep real source bones and documented Animator motion priori
   assert.match(server,/local correction=animal\.model:GetAttribute\("NativeDeerFacingCorrection"\)/);
   assert.match(server,/deerAlignment=CFrame.fromMatrix/);
   assert.match(server,/id=="deer" and meadowPalette.deer/);
-  assert.match(client,/if species=="wolf" or species=="bat" then/);
+  assert.match(client,/if species=="wolf" or species=="bat" or species=="deer" then/);
+  assert.match(client,/head="Head"/);
+  assert.match(server,/local towardFront=pivot:VectorToObjectSpace/);
+  assert.match(server,/MEADOW_DEER_FRONT_BACK_AXIS_INVALID/);
+  assert.match(server,/surface\.TextureID~=""/);
+  assert.match(server,/surface:FindFirstChildOfClass\("SurfaceAppearance"\)/);
   assert.match(server,/closest<11 and "RUN" or "WALK"/);
   assert.match(visual,/deer=107866382568249/);
   assert.doesNotMatch(client,/Instance\.new\("Part"\).*Deer/);
