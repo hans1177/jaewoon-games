@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-11-03T14:51:26.665Z",
+  "updatedAt": "2026-11-03T15:03:04.008Z",
   "games": [
     {
       "gameId": "deep-diver",
@@ -304,21 +304,22 @@
             "checks": {
               "design": true,
               "publication": false,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": true,
               "movement": false,
               "noRuntimeErrors": true
             },
             "blockers": [
               "publication",
+              "exactRuntime",
               "movement"
             ],
-            "sourceRevision": "6aa8eb271b8c77491e10d2286b9c102eef8928c7",
-            "artifactIdentity": "sha256:317849e403e11fc762c82b621434a2748d9268d5a4f0ef013edad92c1ca5275b",
-            "verifiedAt": "2026-11-03T14:44:14.492Z"
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
           },
           "internalReleasePublished": false,
-          "internalPlaytestPassed": true,
+          "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
           "publicReleaseReady": false,
@@ -328,13 +329,13 @@
               "technical": false,
               "realServerBoot": true,
               "exactRuntime": false,
-              "actualVibePlay": true,
+              "actualVibePlay": false,
               "vibeScenarioCoverage": false,
               "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
-              "multiplayer": true,
+              "multiplayer": false,
               "serverClientAuthority": false,
               "mobileAndPerformance": false,
               "security": false,
@@ -345,11 +346,13 @@
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
+              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
+              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
               "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
@@ -357,7 +360,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 132
+            "candidateVersionNumber": 0
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
