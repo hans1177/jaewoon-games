@@ -2537,6 +2537,17 @@ do
           camera.CFrame=cameraMotionValue.Value*CFrame.new(x,y,0)*CFrame.Angles(0,0,roll)
         end)
       end
+      -- [카메라 정지] 빅브라더·미러·배신·역사 삭제·퇴각은 실제 월드 카메라도 고정한다.
+      -- 정지 컷에서 배경의 불필요한 미끄러짐이 생기지 않도록 FOV/이동 트윈도 만들지 않는다.
+      local lockedCamera=cinema=="crown" or cinema=="omen" or cinema=="betrayal"
+        or cinema=="erasure" or cinema=="freeze"
+      if lockedCamera then
+        cameraMotionIntensity=0
+        cameraMotionStart=os.clock()
+        openingCamera.CameraType=Enum.CameraType.Scriptable
+        cameraMotionValue.Value=openingCamera.CFrame
+        return
+      end
       local origin=rootPart.Position
       local target
       if view=="battle" then
