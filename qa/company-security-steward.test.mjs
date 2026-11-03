@@ -48,15 +48,26 @@ test('literal secret is quarantined and report stores only redacted evidence',()
   assert.doesNotMatch(JSON.stringify(report),/ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ/);
 });
 
-test('only approved exact GitHub Pages OIDC is REVIEW, never silent PASS',()=>{
+test('exact approved Pages OIDC remains REVIEW while changed queue authority stays QUARANTINE',()=>{
   const file='.github/workflows/magic-forest-pages.yml';
-  const after=fs.readFileSync(file,'utf8');
+  const current=fs.readFileSync(file,'utf8');
+  // 과거 정확한 승인 케이스를 구성할 뿐, 실제 코드의 권한 허용 조건은 수정하지 않는다.
+  const after=current.replace(
+    /^    concurrency:\n      group: magic-forest-pages-main-publish\n(?:      #.*\n)*      queue: max\n      cancel-in-progress: false$/m,
+    '    concurrency:\n      group: magic-forest-pages-main-publish\n      cancel-in-progress: false'
+  );
+  assert.notEqual(after,current,'current queue extension is not the historical exact approval');
   const before=after.replace(/^      id-token: write\s*\n/m,'');
-  assert.notEqual(before,after,'test must detect the actual OIDC grant');
+  assert.notEqual(before,after,'test must detect the exact OIDC grant');
   assert.equal(isApprovedPagesOidcGrant(before,after),true);
   const patch=(target=file)=>'diff --git a/'+target+' b/'+target+'\n+++ b/'+target+
     '\n@@ -0,0 +206 @@\n+      id-token: write\n';
   const snapshots={[file]:{before,after}};
+  const currentBefore=current.replace(/^      id-token: write\s*\n/m,'');
+  assert.equal(isApprovedPagesOidcGrant(currentBefore,current),false);
+  const currentReport=scanSecurityPatch({patch:patch(),changedFiles:[file],
+    workflowSnapshots:{[file]:{before:currentBefore,after:current}}});
+  assert.equal(currentReport.verdict,'QUARANTINE','new Pages queue authority requires separate approval');
   const result=scanSecurityPatch({patch:patch(),changedFiles:[file],workflowSnapshots:snapshots});
   assert.equal(result.verdict,'REVIEW');
   assert.equal(result.findings.length,1);
