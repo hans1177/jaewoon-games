@@ -1997,6 +1997,22 @@ do
   storyAtmosphere.ClipsDescendants=true
   storyAtmosphere.ZIndex=7
   storyAtmosphere.Parent=introPanel
+  -- [시네마틱 명암] 기존 승인 원화에만 적용하는 무소재 비네트. 인물·건물 모델을 생성하지 않는다.
+  local cinematicVignette=Instance.new("Frame")
+  cinematicVignette.Name="DarkFantasyVignette"
+  cinematicVignette.Size=UDim2.fromScale(1,1)
+  cinematicVignette.BorderSizePixel=0
+  cinematicVignette.BackgroundColor3=Color3.fromRGB(3,6,8)
+  cinematicVignette.BackgroundTransparency=.42
+  cinematicVignette.ZIndex=9
+  cinematicVignette.Parent=introPanel
+  local vignetteGradient=Instance.new("UIGradient")
+  vignetteGradient.Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,.18),
+    NumberSequenceKeypoint.new(.5,1),
+    NumberSequenceKeypoint.new(1,.18),
+  })
+  vignetteGradient.Parent=cinematicVignette
   local cinematicParticles={}
   for n=1,14 do
     local spark=Instance.new("Frame")
@@ -2018,6 +2034,7 @@ do
   })
   introGradient.Rotation=90
   introGradient.Parent=introTint
+  local cinematicBars={}
   for _,top in ipairs({true,false}) do
     local bar=Instance.new("Frame")
     bar.Name=top and "CinemaTopBar" or "CinemaBottomBar"
@@ -2027,6 +2044,7 @@ do
     bar.BorderSizePixel=0
     bar.ZIndex=10
     bar.Parent=introPanel
+    cinematicBars[top and 1 or 2]=bar
   end
   local introAct=label(introPanel,"StoryChapter","서막 · 빛의 배신",0,30,14,Color3.fromRGB(215,185,124))
   introAct.Position=UDim2.fromScale(.075,.145)
@@ -2099,6 +2117,10 @@ do
   local cameraMotionStart=0
   local runToken=0
   local currentStoryScene=0
+  local introAmbienceBefore=nil
+  local introEffectsBefore=nil
+  local activeAmbienceTween=nil
+  local activeEffectsTween=nil
   local function arrivalControls(enabled)
     local scripts=player:FindFirstChild("PlayerScripts")
     local module=scripts and scripts:FindFirstChild("PlayerModule")
@@ -2117,6 +2139,11 @@ do
     departingArtwork.Visible=false
     departingForeground.Visible=false
     introDialogue.MaxVisibleGraphemes=-1
+    regionIntro.MaxVisibleGraphemes=-1
+    if activeAmbienceTween then activeAmbienceTween:Cancel();activeAmbienceTween=nil end
+    if activeEffectsTween then activeEffectsTween:Cancel();activeEffectsTween=nil end
+    if introAmbienceBefore~=nil then meadowAmbienceGroup.Volume=introAmbienceBefore;introAmbienceBefore=nil end
+    if introEffectsBefore~=nil then meadowEffectsGroup.Volume=introEffectsBefore;introEffectsBefore=nil end
     for _,particleTween in ipairs(activeParticleTweens) do particleTween:Cancel() end
     table.clear(activeParticleTweens)
     if cameraMotionConnection then cameraMotionConnection:Disconnect();cameraMotionConnection=nil end
@@ -2192,43 +2219,45 @@ do
     introPanel.Visible=isFresh
     if not isFresh then closeArrival();return end
     local token=runToken
+    introAmbienceBefore=meadowAmbienceGroup.Volume
+    introEffectsBefore=meadowEffectsGroup.Volume
     local scenes={
       {seconds=5,chapter="마지막 전선",title="불타는 성채",
         body="끝나지 않던 전쟁. 렌스기사단은 성문 앞에 도착했다.",
-        speaker="렌스",line="닉, 왼쪽을 막아! 미나, 엄호해!",view="battle",tone=Color3.fromRGB(73,40,29),movement="push"},
+        speaker="렌스",line="닉, 왼쪽을 막아! 미나, 엄호해!",view="battle",tone=Color3.fromRGB(73,40,29),movement="push",cinema="siege"},
       {seconds=5,chapter="렌스기사단",title="네 명의 돌격",
         body="렌스, 카인, 닉, 미나. 마지막까지 함께 싸웠던 네 사람.",
-        speaker="닉",line="카인! 여긴 내가 맡을 테니까 앞으로 가!",view="sweep",tone=Color3.fromRGB(64,38,30),movement="sweep"},
+        speaker="닉",line="카인! 여긴 내가 맡을 테니까 앞으로 가!",view="sweep",tone=Color3.fromRGB(64,38,30),movement="sweep",cinema="charge"},
       {seconds=5,chapter="빛의 군주",title="높은 성벽 위에서",
         body="왕국의 군주 빅브라더는 전장을 내려다보고 있었다.",
-        speaker="빅브라더",line="수고했다. 모두 너희를 기억할 것이다.",view="sky",tone=Color3.fromRGB(104,72,38),movement="rise"},
+        speaker="빅브라더",line="수고했다. 모두 너희를 기억할 것이다.",view="sky",tone=Color3.fromRGB(104,72,38),movement="rise",cinema="crown"},
       {seconds=4,chapter="이상한 명령",title="전장이 멈춘 순간",
         body="승리를 앞두고 퇴각 명령이 내려왔다. 이유는 알려지지 않았다.",
-        speaker="미나",line="잠깐, 우리 병사들이 왜 물러나는 거야?",view="sweep",tone=Color3.fromRGB(66,53,49),movement="sweep"},
+        speaker="미나",line="잠깐, 우리 병사들이 왜 물러나는 거야?",view="sweep",tone=Color3.fromRGB(66,53,49),movement="sweep",cinema="freeze"},
       {seconds=5,chapter="궁정 마법사",title="미러",
         body="군주의 마법사 미러가 기사단 앞에 나타났다.",
-        speaker="렌스",line="미러? 무슨 일이야? 전투는 아직 안 끝났어.",view="seal",tone=Color3.fromRGB(62,39,80),movement="shock"},
+        speaker="렌스",line="미러? 무슨 일이야? 전투는 아직 안 끝났어.",view="seal",tone=Color3.fromRGB(62,39,80),movement="shock",cinema="omen"},
       {seconds=6,chapter="배신",title="봉인의 문양",
         body="대답 대신 보랏빛 마법진이 펼쳐졌다. 기사단의 발이 묶였다.",
-        speaker="미러",line="계획이 바뀌었어. 너희는 여기서 끝이야.",view="seal",tone=Color3.fromRGB(70,35,92),movement="shock"},
+        speaker="미러",line="계획이 바뀌었어. 너희는 여기서 끝이야.",view="seal",tone=Color3.fromRGB(70,35,92),movement="shock",cinema="betrayal"},
       {seconds=5,chapter="동료들",title="사라지는 손",
         body="닉과 미나가 먼저 휩쓸렸다. 렌스가 카인을 향해 손을 뻗었다.",
-        speaker="렌스",line="카인! 손 잡아!",view="fall",tone=Color3.fromRGB(37,44,76),movement="fall"},
+        speaker="렌스",line="카인! 손 잡아!",view="fall",tone=Color3.fromRGB(37,44,76),movement="fall",cinema="reach"},
       {seconds=4,chapter="역사의 삭제",title="기록에서 지워진 이름",
         body="왕국의 역사에서는 렌스기사단의 이름이 사라졌다.",
-        speaker="빅브라더",line="이 일은 누구에게도 알려져서는 안 된다.",view="sky",tone=Color3.fromRGB(37,33,43),movement="pull"},
+        speaker="빅브라더",line="이 일은 누구에게도 알려져서는 안 된다.",view="sky",tone=Color3.fromRGB(37,33,43),movement="pull",cinema="erasure"},
       {seconds=5,chapter="균열",title="낯선 세계로",
         body="성벽과 하늘이 뒤집혔다. 카인은 끝없이 아래로 떨어졌다.",
-        speaker="",line="",view="fall",tone=Color3.fromRGB(29,33,75),movement="fall"},
+        speaker="",line="",view="fall",tone=Color3.fromRGB(29,33,75),movement="fall",cinema="rift"},
       {seconds=6,chapter="각성",title="숲에서 눈을 뜨다",
         body="젖은 흙냄새. 전쟁의 함성 대신 바람 소리만 들렸다.",
-        speaker="카인",line="...여긴 어디지?",view="wake",tone=Color3.fromRGB(30,59,48),movement="wake"},
+        speaker="카인",line="...여긴 어디지?",view="wake",tone=Color3.fromRGB(30,59,48),movement="wake",cinema="dawn"},
       {seconds=5,chapter="남겨진 흔적",title="기사단의 깃발",
         body="낡은 깃발이 나무에 걸려 있었다. 여기에도 기사단이 있었던 것이다.",
-        speaker="",line="",view="wake",tone=Color3.fromRGB(37,46,47),movement="pull"},
+        speaker="",line="",view="wake",tone=Color3.fromRGB(37,46,47),movement="pull",cinema="relic"},
       {seconds=5,chapter="첫 번째 여정",title="흔적을 따라서",
         body="렌스, 닉, 미나는 어디에 있을까. 카인은 숲으로 걸음을 옮겼다.",
-        speaker="",line="",view="wake",tone=Color3.fromRGB(37,41,61),movement="pull"},
+        speaker="",line="",view="wake",tone=Color3.fromRGB(37,41,61),movement="pull",cinema="journey"},
     }
     local total=0
     for _,scene in ipairs(scenes) do total+=scene.seconds end
@@ -2247,7 +2276,7 @@ do
     -- [카메라] 시네마틱 푸시인·흔들림을 기존 월드 위에 합성한다.
     -- 플레이어 이동과 서버 전투·저장에는 영향을 주지 않는다.
     local RunService=game:GetService("RunService")
-    local function moveStoryCamera(view,duration)
+    local function moveStoryCamera(view,duration,cinema)
       openingCamera=workspace.CurrentCamera
       local character=player.Character
       local rootPart=character and character:FindFirstChild("HumanoidRootPart")
@@ -2288,6 +2317,9 @@ do
         target=CFrame.lookAt(origin+Vector3.new(-10,8,15),origin+Vector3.new(0,3,-7))
       end
       cameraMotionIntensity=view=="seal" and .55 or view=="fall" and .43 or view=="battle" and .23 or .06
+      if cinema=="charge" then cameraMotionIntensity=.34
+      elseif cinema=="freeze" or cinema=="erasure" or cinema=="dawn" then cameraMotionIntensity=.012 end
+      cameraMotionIntensity*=reducedEffects and .48 or 1
       cameraMotionStart=os.clock()
       openingCamera.CameraType=Enum.CameraType.Scriptable
       activeTween=TweenService:Create(cameraMotionValue,TweenInfo.new(math.max(.5,duration),Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
@@ -2319,6 +2351,38 @@ do
       for index,scene in ipairs(scenes) do
         if not entranceOpen or token~=runToken then return end
         currentStoryScene=index
+        -- [장면별 색·음향·화면비] 원본 23장과 기존 사운드그룹만 사용한다.
+        local silence=scene.cinema=="freeze" or scene.cinema=="erasure"
+        local audioLevel=silence and 0 or scene.cinema=="rift" and .18 or scene.cinema=="dawn" and .55 or 1
+        if activeAmbienceTween then activeAmbienceTween:Cancel() end
+        if activeEffectsTween then activeEffectsTween:Cancel() end
+        activeAmbienceTween=TweenService:Create(meadowAmbienceGroup,TweenInfo.new(silence and .18 or .85),{
+          Volume=(introAmbienceBefore or 0)*audioLevel,
+        })
+        activeEffectsTween=TweenService:Create(meadowEffectsGroup,TweenInfo.new(silence and .18 or .65),{
+          Volume=(introEffectsBefore or 0)*(silence and 0 or scene.cinema=="betrayal" and .55 or 1),
+        })
+        activeAmbienceTween:Play()
+        activeEffectsTween:Play()
+        local height=(scene.cinema=="betrayal" or scene.cinema=="erasure") and .13
+          or (scene.cinema=="dawn" or scene.cinema=="journey") and .085 or .105
+        TweenService:Create(cinematicBars[1],TweenInfo.new(.8,Enum.EasingStyle.Sine),{
+          Size=UDim2.fromScale(1,height),
+        }):Play()
+        TweenService:Create(cinematicBars[2],TweenInfo.new(.8,Enum.EasingStyle.Sine),{
+          Position=UDim2.fromScale(0,1-height),Size=UDim2.fromScale(1,height),
+        }):Play()
+        cinematicVignette.BackgroundTransparency=(scene.cinema=="erasure" or scene.cinema=="betrayal") and .22
+          or scene.cinema=="dawn" and .65 or .43
+        introGradient.Color=(scene.cinema=="dawn" or scene.cinema=="relic" or scene.cinema=="journey")
+          and ColorSequence.new(Color3.fromRGB(13,30,27),Color3.fromRGB(55,75,61))
+          or (scene.cinema=="omen" or scene.cinema=="betrayal") and ColorSequence.new(Color3.fromRGB(18,8,34),Color3.fromRGB(87,54,108))
+          or scene.cinema=="crown" and ColorSequence.new(Color3.fromRGB(34,25,16),Color3.fromRGB(103,81,41))
+          or ColorSequence.new(Color3.fromRGB(14,17,22),Color3.fromRGB(57,54,53))
+        introAct.TextColor3=(scene.cinema=="omen" or scene.cinema=="betrayal") and Color3.fromRGB(220,188,248)
+          or scene.cinema=="dawn" and Color3.fromRGB(193,228,194) or Color3.fromRGB(215,185,124)
+        regionIntro.TextColor3=introAct.TextColor3
+        regionIntro.MaxVisibleGraphemes=-1
         introAct.Text=string.format("서막 · %02d/%02d  |  %s",index,#scenes,scene.chapter)
         introAct.TextTransparency=1
         introAct.Position=UDim2.fromScale(.04,.145)
@@ -2371,11 +2435,15 @@ do
           local x=scene.movement=="sweep" and direction*.065
             or scene.movement=="rise" and direction*.02 or direction*.035
           local y=scene.movement=="fall" and .1 or scene.movement=="rise" and -.07 or -.035
-          activeArtTween=TweenService:Create(storyArtwork,TweenInfo.new(scene.seconds,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+          local zoom=scene.cinema=="charge" and 1.26 or scene.cinema=="betrayal" and 1.27
+            or scene.cinema=="rift" and 1.29 or scene.cinema=="dawn" and 1.135
+            or scene.movement=="shock" and 1.24 or 1.17
+          local shotDuration=scene.cinema=="charge" and scene.seconds*.62 or scene.seconds
+          activeArtTween=TweenService:Create(storyArtwork,TweenInfo.new(shotDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
             Position=UDim2.fromScale(-.07+x,-.065+y),
-            Size=UDim2.fromScale(scene.movement=="shock" and 1.24 or 1.17,
-              scene.movement=="shock" and 1.24 or 1.17),
-            Rotation=scene.movement=="fall" and direction*1.7 or direction*.4,
+            Size=UDim2.fromScale(zoom,zoom),
+            Rotation=scene.cinema=="rift" and direction*4.2
+              or scene.movement=="fall" and direction*1.7 or direction*.4,
           })
           activeArtTween:Play()
         else
@@ -2393,8 +2461,11 @@ do
           local dy=scene.movement=="fall" and .17 or scene.movement=="rise" and .055 or -.045
           activeFrontTween=TweenService:Create(storyForeground,TweenInfo.new(scene.seconds,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
             Position=UDim2.fromScale(-.065+dx,-.075+dy),
-            Size=UDim2.fromScale(1.22,1.22),
-            Rotation=scene.movement=="shock" and direction*1.9 or direction*.7,
+            Size=UDim2.fromScale(scene.cinema=="reach" and 1.31
+              or scene.cinema=="betrayal" and 1.28 or 1.22,
+              scene.cinema=="reach" and 1.31 or scene.cinema=="betrayal" and 1.28 or 1.22),
+            Rotation=scene.cinema=="rift" and direction*3.5
+              or scene.movement=="shock" and direction*1.9 or direction*.7,
           })
           activeFrontTween:Play()
         else
@@ -2442,10 +2513,49 @@ do
           or scene.view=="battle" and Color3.fromRGB(226,100,50)
           or Color3.fromRGB(6,9,15)
         introTint.BackgroundColor3=scene.tone
-        introTint.BackgroundTransparency=scene.view=="seal" and .28 or scene.view=="fall" and .16 or .60
+        introTint.BackgroundTransparency=scene.view=="seal" and .32 or scene.view=="fall" and .28 or .60
         introFlash.BackgroundColor3=color
         introFlash.BackgroundTransparency=scene.view=="seal" and .07 or .14
-        moveStoryCamera(scene.view,scene.seconds)
+        moveStoryCamera(scene.view,scene.seconds,scene.cinema)
+        -- [기사단 퇴각·기록 삭제] 컷을 정지해 반전을 보여 주고 음향을 비운다.
+        if silence then
+          task.delay(1.2,function()
+            if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
+            local paused={}
+            for _,motion in pairs({art=activeArtTween,front=activeFrontTween,camera=activeTween,fov=activeFovTween}) do
+              if motion and motion.PlaybackState==Enum.PlaybackState.Playing then
+                motion:Pause()
+                table.insert(paused,motion)
+              end
+            end
+            introFlash.BackgroundColor3=Color3.fromRGB(8,10,15)
+            introFlash.BackgroundTransparency=.76
+            task.delay(.38,function()
+              if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
+              for _,motion in ipairs(paused) do
+                if motion.PlaybackState==Enum.PlaybackState.Paused then motion:Play() end
+              end
+              TweenService:Create(introFlash,TweenInfo.new(.33),{BackgroundTransparency=1}):Play()
+            end)
+          end)
+        elseif scene.cinema=="dawn" then
+          -- [숲의 새벽] 암전에서 실루엣과 녹색 빛으로 천천히 열린다.
+          introTint.BackgroundTransparency=.26
+          TweenService:Create(introTint,TweenInfo.new(2.8,Enum.EasingStyle.Sine),{
+            BackgroundTransparency=.82,
+          }):Play()
+        end
+        if scene.cinema=="erasure" then
+          -- [역사 삭제] 폭력 이미지 없이 타이틀이 기록에서 지워지는 효과.
+          task.delay(2.25,function()
+            local glyphs=utf8.len(scene.title) or 0
+            for count=glyphs,0,-1 do
+              if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
+              regionIntro.MaxVisibleGraphemes=count
+              task.wait(.075)
+            end
+          end)
+        end
 
         -- 텍스트가 화면 속으로 밀려 들어오는 모션. 모바일 화면을 벗어나지 않게 제한.
         for _,row in ipairs({
@@ -2481,7 +2591,7 @@ do
         -- 봉인 순간·추락 순간에만 한 번 더 강한 충격 컷을 넣는다.
         if scene.view=="seal" or scene.view=="fall" then
           task.delay(scene.view=="seal" and 2.15 or 1.75,function()
-            if not entranceOpen or token~=runToken then return end
+            if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
             introFlash.BackgroundColor3=scene.view=="seal" and Color3.fromRGB(189,109,255) or Color3.fromRGB(8,9,23)
             introFlash.BackgroundTransparency=.19
             TweenService:Create(introFlash,TweenInfo.new(.75,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{

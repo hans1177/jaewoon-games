@@ -217,3 +217,36 @@ test('registered 12-scene prologue keeps 23 unique approved layers and cleans up
   assert.match(client,/departingArtwork\.Visible=false\s+departingForeground\.Visible=false/);
   assert.match(client,/remote:FireServer\("meadow:enter-world"\)/);
 });
+
+
+test('dark-fantasy cinematic uses twelve distinct approved-image shots with safe mobile and skip behavior',()=>{
+  const scenes=client.match(/local scenes=\{([\s\S]*?)\n    \}\n    local total=0/);
+  assert.ok(scenes,'original twelve-story scene table must remain intact');
+  assert.deepEqual([...scenes[1].matchAll(/cinema="([^"]+)"/g)].map(x=>x[1]),[
+    'siege','charge','crown','freeze','omen','betrayal',
+    'reach','erasure','rift','dawn','relic','journey',
+  ]);
+  for(const marker of [
+    'DarkFantasyVignette',
+    'cinematicBars[top and 1 or 2]=bar',
+    'local silence=scene.cinema=="freeze" or scene.cinema=="erasure"',
+    'introGradient.Color=(scene.cinema=="dawn" or scene.cinema=="relic" or scene.cinema=="journey")',
+    'or (scene.cinema=="dawn" or scene.cinema=="journey") and .085 or .105',
+    'cameraMotionIntensity*=reducedEffects and .48 or 1',
+    'for _,motion in pairs({art=activeArtTween,front=activeFrontTween,camera=activeTween,fov=activeFovTween}) do',
+    'if motion.PlaybackState==Enum.PlaybackState.Paused then motion:Play() end',
+    'regionIntro.MaxVisibleGraphemes=count',
+    'introTint.BackgroundTransparency=.26',
+    'introAmbienceBefore=meadowAmbienceGroup.Volume',
+    'introEffectsBefore=meadowEffectsGroup.Volume',
+    'if introAmbienceBefore~=nil then meadowAmbienceGroup.Volume=introAmbienceBefore;introAmbienceBefore=nil end',
+    'if introEffectsBefore~=nil then meadowEffectsGroup.Volume=introEffectsBefore;introEffectsBefore=nil end',
+    'if not entranceOpen or token~=runToken or currentStoryScene~=index then return end',
+    'remote:FireServer("meadow:enter-world")',
+  ])assert.ok(client.includes(marker),'cinematic contract missing: '+marker);
+  assert.match(client,/local registeredStoryArt=Config.CinematicIntroSceneIds or \{\}/);
+  assert.match(client,/local registeredStoryDepth=Config.CinematicIntroForegroundIds or \{\}/);
+  assert.ok(client.includes('storyArtwork.Image=imageId'));
+  assert.ok(client.includes('storyForeground.Image=frontId'));
+  assert.doesNotMatch(scenes[1],/blood|gore|severed|corpse/i);
+});
