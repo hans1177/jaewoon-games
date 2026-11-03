@@ -73,7 +73,7 @@ test('non-simulating Studio quota guard only reuses identical source, artifact, 
  assert.ok(start>0&&end>start);
  const statement=workflow.slice(start,end);
  const decision=new Function('requested','retryOpenCloudOnly','c','sourceRevision','artifactIdentity','runtime','post','item','cloudImage',
-  statement+'\nreturn exactStudioHeadlessDiagnosticReusable;');
+  'const exactStudioPlay=item.robloxInternalVibePlayEvidence||{};\n'+statement+'\nreturn exactStudioHeadlessDiagnosticReusable;');
  const sourceRevision='a'.repeat(40),artifactIdentity='sha256:'+'b'.repeat(64);
  const c={published:true,universeId:'10773436325',placeId:'108565970231899',versionNumber:132,sourceRevision,artifactIdentity};
  const studio={pass:true,actualPlay:true,officialStudioMcp:true,localPlaceFile:true,
