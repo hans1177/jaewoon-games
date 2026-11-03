@@ -35,6 +35,37 @@ test('Roblox post-work verification defaults to Open Cloud runtime plus image sa
  assert.match(workflow,/run_studio:[\s\S]*?default:\s*false/);
 });
 
+test('automatic Roblox scans reuse exact Studio and non-simulating diagnostic instead of exhausting Luau quota',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const probe=workflow.slice(workflow.indexOf('      - name: Probe exact Roblox Open Cloud engine execution'),
+  workflow.indexOf('      - name: Read exact runtime sentinel and persist tester QA evidence'));
+ assert.match(probe,/const exactStudioHeadlessDiagnosticReusable=/);
+ assert.match(probe,/!requested&&!retryOpenCloudOnly/);
+ for(const match of [
+  "c.sourceRevision===sourceRevision",
+  "c.artifactIdentity===artifactIdentity",
+  "String(c.placeId||'')===String(runtime.placeId||'')",
+  "String(c.universeId||'')===String(runtime.universeId||'')",
+  "runtime.authority==='roblox-open-cloud-exact-engine-diagnostic-no-server-claim'",
+  "runtime.engineExecuted===true",
+  "runtime.simulationRunning===false",
+  "runtime.serverBootObserved===false",
+  "post.officialStudioMcpActualPlayPassed===true",
+  "exactStudioPlay.actualPlay===true",
+  "exactStudioPlay.officialStudioMcp===true",
+  "cloudImage.imageContentPassed===true",
+  "Number(cloudImage.requestContext?.versionNumber)===Number(c.versionNumber)",
+  "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_NON_SIMULATING_STUDIO_DIAGNOSTIC=",
+  "F9_SERVER_BOOT_STILL_REQUIRED",
+ ])assert.ok(probe.includes(match),'required binding or failure guard missing: '+match);
+ const decision=probe.slice(probe.indexOf('const exactStudioHeadlessDiagnosticReusable='),
+  probe.indexOf("return c.published===true&&Number(c.versionNumber)>0"));
+ assert.doesNotMatch(decision,/robloxRuntimePassed\s*=\s*true|robloxFinalReviewPassed\s*=\s*true|robloxPublicRelease\s*=\s*true/);
+ assert.match(workflow,/officialLiveServerObservation:officialLiveServers/);
+ assert.match(workflow,/previousRuntime\.sourceRevision===sourceRevision/);
+ assert.match(workflow,/Number\(previousRuntime\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
+});
+
 test('exact Studio QA retains a non-simulating Open Cloud 200 as diagnostic, not server boot or runtime PASS',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(workflow,/const studioCloudDiagnostic=engineProbeByGame\.get\(item\.gameId\)/);
