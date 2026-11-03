@@ -247,6 +247,8 @@ test('character sheet shows actual avatar, live vital gauges and separate seven 
     'characterViewport:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()',
     'heroHealth.Name="CharacterHealthTrack"',
     'heroStamina.Name="CharacterStaminaTrack"',
+    'heroHealthText.ZIndex=45',
+    'heroStaminaText.ZIndex=45',
     'heroHealthFill.Size=UDim2.fromScale(math.clamp(health/math.max(1,maximum),0,1),1)',
     'heroStaminaFill.Size=UDim2.fromScale(math.clamp(stamina/100,0,1),1)',
     'proficiencyGrid.Name="MeadowProficiencyCards"',
@@ -295,6 +297,8 @@ test('menu retains 8 original pages and keeps selected tab reachable on a short 
     'shortMenu and 53 or 72',
     'if subtitle then subtitle.Visible=not shortMenu end',
     'tabs.CanvasPosition=Vector2.new(target,0)',
+    'child.ZIndex=math.clamp(child.ZIndex,44,45)',
+    'if value then',
     'if input.KeyCode==Enum.KeyCode.ButtonB',
     'menu.Activated:Connect(function()setOpen(true);selectPage(selectedPage)end)',
   ])assert.ok(common.includes(key),key);

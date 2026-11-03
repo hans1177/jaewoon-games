@@ -5091,9 +5091,17 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  local function setOpen(value)
   opened=value;root.Visible=value;shade.Visible=value;hud.Visible=not value;menu.Visible=not value
   if quick then quick.Visible=not value end
-  for _,page in ipairs(pages)do
-   for _,child in ipairs(page:GetDescendants())do if child:IsA("GuiObject")then child.ZIndex=44 end end
-   page.ZIndex=43
+  if value then
+   -- [마력숲 메뉴 레이어] 원래 HUD의 큰 ZIndex는 탭/닫기 버튼 위로 뜨지 못하게 제한한다.
+   -- 이미 지정된 아이템 아이콘·글씨의 45층은 유지해 슬롯 뒤로 가려지지 않게 한다.
+   for _,page in ipairs(pages)do
+    page.ZIndex=43
+    for _,child in ipairs(page:GetDescendants())do
+     if child:IsA("GuiObject") then
+      child.ZIndex=math.clamp(child.ZIndex,44,45)
+     end
+    end
+   end
   end
   gui:SetAttribute("GameMenuOpen",value)
  end

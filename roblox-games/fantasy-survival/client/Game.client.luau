@@ -741,7 +741,7 @@ heroHealthFill.BorderSizePixel=0;heroHealthFill.Size=UDim2.fromScale(1,1);heroHe
 local heroHealthText=Instance.new("TextLabel")
 heroHealthText.Name="HealthReadout";heroHealthText.BackgroundTransparency=1;heroHealthText.Size=UDim2.fromScale(1,1)
 heroHealthText.Font=Enum.Font.GothamBold;heroHealthText.TextSize=13
-heroHealthText.TextColor3=Color3.fromRGB(255,246,231);heroHealthText.ZIndex=3;heroHealthText.Parent=heroHealth
+heroHealthText.TextColor3=Color3.fromRGB(255,246,231);heroHealthText.ZIndex=45;heroHealthText.Parent=heroHealth
 local heroStamina=Instance.new("Frame")
 heroStamina.Name="CharacterStaminaTrack";heroStamina.BackgroundColor3=Color3.fromRGB(34,63,67)
 heroStamina.BorderSizePixel=0;heroStamina.ClipsDescendants=true;heroStamina.Parent=characterHero
@@ -753,7 +753,7 @@ heroStaminaFill.BorderSizePixel=0;heroStaminaFill.Size=UDim2.fromScale(1,1);hero
 local heroStaminaText=Instance.new("TextLabel")
 heroStaminaText.Name="StaminaReadout";heroStaminaText.BackgroundTransparency=1;heroStaminaText.Size=UDim2.fromScale(1,1)
 heroStaminaText.Font=Enum.Font.GothamBold;heroStaminaText.TextSize=13
-heroStaminaText.TextColor3=Color3.fromRGB(255,246,231);heroStaminaText.ZIndex=3;heroStaminaText.Parent=heroStamina
+heroStaminaText.TextColor3=Color3.fromRGB(255,246,231);heroStaminaText.ZIndex=45;heroStaminaText.Parent=heroStamina
 -- [모바일 전신·계기판] 좁은 화면은 상하, 넓은 화면은 좌우 배치.
 local function layoutNativeAvatar()
   local width=characterHero.AbsoluteSize.X
