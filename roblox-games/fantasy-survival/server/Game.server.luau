@@ -422,22 +422,31 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
             surface.Color=bark and meadowPalette.bark or crown
             surface.Material=bark and Enum.Material.Wood or Enum.Material.LeafyGrass
           else
-            -- [사슴 피모 복원] 원본 TextureID/PBR이 있는 부위는 덮어칠수록 색이 날아간다.
-            -- 원본 스킨/재질을 살리고 실제 텍스처가 없는 메시에만 종별 피모색을 적용한다.
+            -- [사슴 원본 46본 피모] GLB에는 외부 이미지가 없고 7개 원본 재질색만 있다.
+            -- Roblox 수입 중 붙은 흰색 TextureID/PBR은 갈색 피모를 가리므로
+            -- 사슴 복제본에서만 걷어낸다. MeshId·Bone·Skin·애니메이션은 보존한다.
             if id=="deer" then
-              local textured=surface.TextureID~="" or surface:FindFirstChildOfClass("SurfaceAppearance")~=nil
-              if not textured then
-                local piece=surface.Name:lower()
+              local appearance=surface:FindFirstChildOfClass("SurfaceAppearance")
+              if appearance then appearance:Destroy() end
+              if surface.TextureID~="" then surface.TextureID="" end
+              surface.MaterialVariant=""
+              local piece=surface.Name:lower()
+              if piece:find("hoof",1,true) or piece:find("eye_black",1,true)
+                or piece:find("eye black",1,true) then
+                surface.Color=Color3.fromRGB(57,46,39)
+              elseif piece:find("eye_white",1,true) or piece:find("eye white",1,true) then
+                surface.Color=Color3.fromRGB(231,222,204)
+              elseif piece:find("antler",1,true) or piece:find("horn",1,true) then
+                surface.Color=Color3.fromRGB(169,143,104)
+              elseif piece:find("light",1,true) or piece:find("belly",1,true)
+                or piece:find("chest",1,true) then
+                surface.Color=Color3.fromRGB(201,173,135)
+              elseif piece:find("dark",1,true) then
+                surface.Color=Color3.fromRGB(112,69,45)
+              else
                 surface.Color=animalTint
-                if piece:find("antler",1,true) or piece:find("horn",1,true) then
-                  surface.Color=Color3.fromRGB(169,143,104)
-                elseif piece:find("belly",1,true) or piece:find("chest",1,true) then
-                  surface.Color=Color3.fromRGB(196,171,135)
-                elseif piece:find("hoof",1,true) then
-                  surface.Color=Color3.fromRGB(61,52,44)
-                end
-                surface.Material=Enum.Material.SmoothPlastic
               end
+              surface.Material=Enum.Material.SmoothPlastic
             else
               surface.Color=animalTint
               surface.Material=Enum.Material.Plastic
@@ -1288,6 +1297,17 @@ local function createMeadowVillage()
       well.Name="Meadow_Village_Well"
       well:SetAttribute("MeadowVillageScenery",true)
       well:SetAttribute("MeadowVillageWellOriginal",true)
+      -- [실물 석조 우물] 원본 Well GLB의 돌 테두리·지붕 기둥만 충돌시킨다.
+      -- 두레박/밧줄/지붕은 장식으로 두며 임의 파츠나 분수 모델을 더하지 않는다.
+      for _,mesh in ipairs(well:GetDescendants()) do
+        if mesh:IsA("MeshPart") then
+          local name=mesh.Name:lower()
+          local solid=name:find("stone ring",1,true)~=nil
+            or name:find("roof post",1,true)~=nil
+          mesh.CanCollide=solid
+          mesh.CanQuery=solid
+        end
+      end
       villageWellReady=true
       villageProps+=1
       local wellMesh=well:FindFirstChildWhichIsA("MeshPart",true)

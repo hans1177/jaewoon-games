@@ -1397,6 +1397,10 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/gameWorld:SetAttribute\("MeadowVillageWellReady",villageWellReady\)/);
   assert.match(server,/sign\.Name="MeadowVillageWellSign"/);
   assert.match(server,/well:SetAttribute\("MeadowVillageWellOriginal",true\)/);
+  assert.match(server,/local solid=name:find\("stone ring",1,true\)~=nil/);
+  assert.match(server,/name:find\("roof post",1,true\)~=nil/);
+  assert.match(server,/mesh.CanCollide=solid/);
+  assert.doesNotMatch(server,/\{"villageFountain",0,-146/);
   assert.match(server,/warn\("마력숲 원본 돌우물 등록 대기/);
   assert.doesNotMatch(server,/meadowTerrain:FillBlock\(CFrame\.new\(plaza\[1\],1\.55,plaza\[2\]\)/);
   assert.doesNotMatch(server,/mesh\.Color=Color3\.fromRGB\(105,111,108\)/);
@@ -1578,6 +1582,12 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   assert.match(server,/model:SetAttribute\("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP"\)/);
   assert.doesNotMatch(server,/surface\.Material=Enum\.Material\.Pebble/);
   assert.match(server,/surface\.Color=animalTint/);
+  // 사슴 원본 GLB에는 이미지 텍스처가 없으므로 수입된 흰색 PBR로 착색이 막혀서는 안 된다.
+  assert.match(server,/if id=="deer" then\s+local appearance=surface:FindFirstChildOfClass\("SurfaceAppearance"\)/);
+  assert.match(server,/if appearance then appearance:Destroy\(\) end/);
+  assert.match(server,/if surface.TextureID~="" then surface.TextureID="" end/);
+  assert.match(server,/surface.MaterialVariant=""/);
+  assert.doesNotMatch(server,/if not textured then/);
   assert.match(server,/surface\.Reflectance=0/);
   assert.doesNotMatch(server,/surface\.Material=wing and Enum\.Material\.Glass or bodyMaterial/);
   assert.match(server,/speed=isAlpha and 8\.4 or \(isBoss and 4\.8 or 7\.5\)/);
