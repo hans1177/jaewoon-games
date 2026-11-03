@@ -856,9 +856,48 @@ masteryProgressBackground.BackgroundColor3=Color3.fromRGB(70,63,56);masteryProgr
 local masteryProgressFill=Instance.new("Frame")
 masteryProgressFill.Name="MasteryProgressFill";masteryProgressFill.Size=UDim2.fromScale(0,1)
 masteryProgressFill.BackgroundColor3=meadowGold;masteryProgressFill.BorderSizePixel=0;masteryProgressFill.Parent=masteryProgressBackground
-meadowLabels[1].LayoutOrder=6
-meadowLabels[1].TextColor3=meadowParchment
-meadowLabels[1].TextSize=14
+-- [7가지 숙련] 긴 숫자 목록을 실제 서버 수치가 보이는 개별 성장 카드로 전환한다.
+local proficiencyGrid=Instance.new("Frame")
+proficiencyGrid.Name="MeadowProficiencyCards";proficiencyGrid.LayoutOrder=6
+proficiencyGrid.Size=UDim2.new(1,-8,0,190);proficiencyGrid.BackgroundTransparency=1
+proficiencyGrid.Parent=meadowPages[1]
+local proficiencyLayout=Instance.new("UIGridLayout")
+proficiencyLayout.SortOrder=Enum.SortOrder.LayoutOrder;proficiencyLayout.CellPadding=UDim2.fromOffset(8,8)
+proficiencyLayout.Parent=proficiencyGrid
+local proficiencyValues={}
+for index,entry in ipairs(Config.Proficiencies or {}) do
+  local card=Instance.new("Frame")
+  card.Name="Proficiency_"..entry.Key;card.LayoutOrder=index
+  card.BackgroundColor3=Color3.fromRGB(23,49,45);card.BorderSizePixel=0;card.Parent=proficiencyGrid
+  local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,9);corner.Parent=card
+  local edge=Instance.new("UIStroke");edge.Color=Color3.fromRGB(88,132,103)
+  edge.Transparency=.45;edge.Parent=card
+  local caption=Instance.new("TextLabel")
+  caption.Name="ProficiencyName";caption.Position=UDim2.fromOffset(11,0)
+  caption.Size=UDim2.new(1,-82,1,0);caption.BackgroundTransparency=1
+  caption.Text=entry.Name;caption.Font=Enum.Font.GothamMedium;caption.TextSize=13
+  caption.TextColor3=Color3.fromRGB(200,222,204)
+  caption.TextXAlignment=Enum.TextXAlignment.Left;caption.Parent=card
+  local amount=Instance.new("TextLabel")
+  amount.Name="ProficiencyValue";amount.AnchorPoint=Vector2.new(1,0)
+  amount.Position=UDim2.new(1,-11,0,0);amount.Size=UDim2.fromOffset(67,44)
+  amount.BackgroundTransparency=1;amount.Font=Enum.Font.GothamBold;amount.TextSize=17
+  amount.TextColor3=meadowGold;amount.TextXAlignment=Enum.TextXAlignment.Right
+  amount.Parent=card;proficiencyValues[entry.Key]=amount
+end
+local function layoutProficiencies()
+  local width=proficiencyGrid.AbsoluteSize.X
+  if width<=0 then return end
+  local columns=width>=650 and 3 or width>=280 and 2 or 1
+  local rows=math.ceil(#(Config.Proficiencies or {})/columns)
+  proficiencyLayout.CellSize=UDim2.fromOffset(math.floor((width-(columns-1)*8)/columns),44)
+  proficiencyGrid.Size=UDim2.new(1,-8,0,rows*44+math.max(0,rows-1)*8)
+end
+proficiencyGrid:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutProficiencies)
+task.defer(layoutProficiencies)
+meadowLabels[1].LayoutOrder=7
+meadowLabels[1].TextColor3=meadowDim
+meadowLabels[1].TextSize=12
 return function(character,humanoid,tool,force)
   -- [실제 착용 외형] 장비 수정, 아바타 외형 로딩 및 장착 도구 교체 시에만 복제한다.
   redrawNativeAvatar(character,tool,force)
@@ -897,15 +936,13 @@ local function renderMeadowPages()
   local tool=character and character:FindFirstChildOfClass("Tool")
   -- [캐릭터 숙련도] 이전 전투 숙련도 값을 유지하고 일곱 분야를 독립 표시한다.
   -- 사냥은 실제 늑대·박쥐 처치, 채집은 실제 수확, 제작은 장비 강화 성공에서만 증가한다.
-  local proficiencyLines={}
   for _,entry in ipairs(Config.Proficiencies or {}) do
-    proficiencyLines[#proficiencyLines+1]=string.format("%s  %d",
-      entry.Name,math.floor(player:GetAttribute(entry.Key) or 0))
+    local value=proficiencyValues[entry.Key]
+    if value then value.Text=tostring(math.floor(player:GetAttribute(entry.Key) or 0)) end
   end
   renderWitcherCharacter(character,humanoid,tool,previewNeedsRefresh)
   previewNeedsRefresh=false
-  meadowLabels[1].Text=string.format("%s\n\n전투 강화  +%d  ·  보스 처치  %d\n\n※ 요리·건축·연금술은 실제 제작 기능 연결 전에는 오르지 않아.",
-    table.concat(proficiencyLines,"\n"),player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
+  meadowLabels[1].Text="※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해."
   meadowLabels[2].Text=string.format("소지품 · 서버 기록\n숙련도 %d  ·  장착 %s\n저장 %s",
     math.floor(player:GetAttribute("CombatProficiency") or 0),tool and tool.Name or "맨손",
     tostring(player:GetAttribute("SaveStatus") or "불러오는 중"))
