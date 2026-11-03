@@ -280,9 +280,29 @@ test('original village well matches human-scale medieval proportions and keeps c
   assert.match(server,/worldAsset\("villageWell",Vector3\.new\(0,3,-146\),wellHeightStuds\)/);
   assert.match(server,/mesh\.CanCollide=ring or post/);
   assert.match(server,/mesh\.CanQuery=ring or post/);
-  assert.match(server,/mesh\.TextureID=="" and not mesh:FindFirstChildOfClass\("SurfaceAppearance"\)/);
+  // GLB has 6 tiny 64px palette PNGs; in-game clone substitutes real native textures.
+  assert.equal(source.images.length,6);
+  const binaryOffset=20+jsonSize+8;
+  for(const originalImage of source.images){
+    const view=source.bufferViews[originalImage.bufferView];
+    const offset=binaryOffset+view.byteOffset;
+    assert.equal(asset.readUInt32BE(offset+16),64,'original palette width');
+    assert.equal(asset.readUInt32BE(offset+20),64,'original palette height');
+  }
+  assert.match(server,/local palette=mesh:FindFirstChildOfClass\("SurfaceAppearance"\)/);
+  assert.match(server,/if palette then palette:Destroy\(\) end/);
+  assert.match(server,/if mesh\.TextureID~="" then mesh\.TextureID="" end/);
   assert.match(server,/mesh\.Material=Enum\.Material\.Slate/);
   assert.match(server,/mesh\.Material=Enum\.Material\.WoodPlanks/);
+  assert.match(server,/mesh\.Material=Enum\.Material\.CorrodedMetal/);
+  assert.match(server,/mesh\.Material=Enum\.Material\.Fabric/);
+  assert.match(server,/mesh\.Color=Color3\.fromRGB\(120,119,110\)/);
+  assert.match(server,/mesh\.Color=Color3\.fromRGB\(119,95,70\)/);
+  assert.match(server,/mesh\.CanTouch=false/);
+  assert.match(server,/mesh\.CastShadow=true/);
+  assert.match(server,/well:SetAttribute\("MeadowVillageWellSurface","WEATHERED_STONE_OAK"\)/);
+  assert.match(server,/well:FindFirstChild\("Well pitched roof 004",true\)/);
+  assert.match(server,/sign\.MaxDistance=52/);
   assert.match(server,/well:SetAttribute\("MeadowVillageWellOriginal",true\)/);
   assert.doesNotMatch(server,/worldAsset\("villageFountain"/);
 });

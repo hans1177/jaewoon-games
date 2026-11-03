@@ -1302,39 +1302,67 @@ local function createMeadowVillage()
       well:SetAttribute("MeadowVillageScenery",true)
       well:SetAttribute("MeadowVillageWellOriginal",true)
       well:SetAttribute("MeadowVillageWellHeightStuds",wellHeightStuds)
-      -- [위처풍 석재/목재] 진짜 원본 MeshPart·PBR·TextureID를 보존하고 무텍스처 면만 재질을 보정한다.
-      -- 테두리와 지붕 기둥만 충돌; 지붕·두레박·밧줄은 플레이어를 가로막지 않는다.
+      -- [중세 마을 우물 재질] 등록된 CC0 GLB의 메시 10개·형태·크기는 보존한다.
+      -- 원본에 내장된 64픽셀 단색 팔레트 6장은 마모·나뭇결이 없으므로 복제본에서만
+      -- Roblox 기본 석재·목재·금속 재질로 교체한다. 원본 에셋과 서버 저장/게임 규칙은 불변.
+      -- 돌 우물통과 지붕 지지대만 충돌하고 지붕·두레박·밧줄은 장식으로 유지한다.
       for _,mesh in ipairs(well:GetDescendants()) do
         if mesh:IsA("MeshPart") then
           local name=mesh.Name:lower()
           local ring=name:find("stone ring",1,true)~=nil
           local post=name:find("roof post",1,true)~=nil
+          local roof=name:find("pitched roof",1,true)~=nil
+          local windlass=name:find("windlass",1,true)~=nil
+          local iron=name:find("bucket bail",1,true)~=nil
+          local rope=name:find("rope",1,true)~=nil
+          local bucket=name:find("bucket",1,true)~=nil
           mesh.CanCollide=ring or post
           mesh.CanQuery=ring or post
-          if mesh.TextureID=="" and not mesh:FindFirstChildOfClass("SurfaceAppearance") then
-            if ring then
-              mesh.Material=Enum.Material.Slate
-            elseif post or name:find("pitched roof",1,true) or name:find("windlass",1,true) then
-              mesh.Material=Enum.Material.WoodPlanks
-            elseif name:find("bucket bail",1,true) then
-              mesh.Material=Enum.Material.Metal
-            elseif name:find("rope",1,true) then
-              mesh.Material=Enum.Material.Fabric
-            end
+          mesh.CanTouch=false
+          mesh.CastShadow=true
+          -- 원본 GLB의 단색 팔레트만 제거하며 MeshId/스케일/배치/구조는 유지한다.
+          local palette=mesh:FindFirstChildOfClass("SurfaceAppearance")
+          if palette then palette:Destroy() end
+          if mesh.TextureID~="" then mesh.TextureID="" end
+          mesh.MaterialVariant=""
+          if ring then
+            mesh.Material=Enum.Material.Slate
+            mesh.Color=Color3.fromRGB(120,119,110)
+          elseif roof then
+            mesh.Material=Enum.Material.WoodPlanks
+            mesh.Color=Color3.fromRGB(93,77,63)
+          elseif post then
+            mesh.Material=Enum.Material.Wood
+            mesh.Color=Color3.fromRGB(119,95,70)
+          elseif windlass then
+            mesh.Material=Enum.Material.Wood
+            mesh.Color=Color3.fromRGB(98,77,58)
+          elseif iron then
+            mesh.Material=Enum.Material.CorrodedMetal
+            mesh.Color=Color3.fromRGB(105,105,99)
+          elseif rope then
+            mesh.Material=Enum.Material.Fabric
+            mesh.Color=Color3.fromRGB(161,148,117)
+          elseif bucket then
+            mesh.Material=Enum.Material.WoodPlanks
+            mesh.Color=Color3.fromRGB(115,86,62)
           end
           mesh.Reflectance=0
         end
       end
+      well:SetAttribute("MeadowVillageWellSurface","WEATHERED_STONE_OAK")
       villageWellReady=true
       villageProps+=1
-      local wellMesh=well:FindFirstChildWhichIsA("MeshPart",true)
-      if wellMesh then
+      -- [상단 표지] 두레박이 아닌 실제 지붕을 기준으로 띄워 우물 입구를 가리지 않는다.
+      local wellMesh=well:FindFirstChild("Well pitched roof 004",true)
+        or well:FindFirstChildWhichIsA("MeshPart",true)
+      if wellMesh and wellMesh:IsA("MeshPart") then
         local sign=Instance.new("BillboardGui")
         sign.Name="MeadowVillageWellSign"
         sign.Adornee=wellMesh
         sign.Size=UDim2.fromOffset(118,30)
-        sign.StudsOffsetWorldSpace=Vector3.new(0,4.2,0)
-        sign.MaxDistance=85
+        sign.StudsOffsetWorldSpace=Vector3.new(0,1.65,0)
+        sign.MaxDistance=52
         sign.AlwaysOnTop=false
         sign.Parent=wellMesh
         local caption=Instance.new("TextLabel")
