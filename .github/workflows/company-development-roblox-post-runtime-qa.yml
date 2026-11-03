@@ -464,6 +464,52 @@ jobs:
               console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_EVIDENCE_REUSE='+item.gameId);
               return false;
             }
+            // [반복 429 방지] 검증 완료된 동일 비공개 후보의 비시뮬레이션 진단은
+            // 자동 스캔에서 다시 실행하지 않는다. 실제 서버 실행 증거로 승격하지 않으며
+            // 새 후보와 명시적 게임별 검증은 기존 공식 경로로 실행한다.
+            const exactStudioPlay=item.robloxInternalVibePlayEvidence||{};
+            const cloudImage=item.robloxCloudImageEvidence||{};
+            const exactStudioHeadlessDiagnosticReusable=
+              !requested&&!retryOpenCloudOnly
+              &&c.published===true
+              &&c.sourceRevision===sourceRevision
+              &&c.artifactIdentity===artifactIdentity
+              &&String(c.placeId||'')===String(runtime.placeId||'')
+              &&String(c.universeId||'')===String(runtime.universeId||'')
+              &&Number(c.versionNumber)>0
+              &&Number(runtime.candidateVersionNumber)===Number(c.versionNumber)
+              &&runtime.sourceRevision===sourceRevision
+              &&runtime.artifactIdentity===artifactIdentity
+              &&runtime.authority==='roblox-open-cloud-exact-engine-diagnostic-no-server-claim'
+              &&runtime.engineExecuted===true
+              &&runtime.exactPlace===true
+              &&runtime.exactVersion===true
+              &&runtime.simulationRunning===false
+              &&runtime.serverBootObserved===false
+              &&post.authority==='roblox-internal-studio-single-session-qa'
+              &&post.officialStudioMcpActualPlayPassed===true
+              &&post.sourceRevision===sourceRevision
+              &&post.artifactIdentity===artifactIdentity
+              &&Number(post.candidateVersionNumber)===Number(c.versionNumber)
+              &&exactStudioPlay.pass===true
+              &&exactStudioPlay.actualPlay===true
+              &&exactStudioPlay.officialStudioMcp===true
+              &&exactStudioPlay.localPlaceFile===true
+              &&exactStudioPlay.sourceRevision===sourceRevision
+              &&exactStudioPlay.artifactIdentity===artifactIdentity
+              &&String(exactStudioPlay.placeId||'')===String(c.placeId||'')
+              &&Number(exactStudioPlay.versionNumber)===Number(c.versionNumber)
+              &&cloudImage.imageContentPassed===true
+              &&String(cloudImage.requestContext?.sourceRevision||'')===sourceRevision
+              &&String(cloudImage.requestContext?.artifactIdentity||'')===artifactIdentity
+              &&String(cloudImage.requestContext?.universeId||'')===String(c.universeId||'')
+              &&String(cloudImage.requestContext?.placeId||'')===String(c.placeId||'')
+              &&Number(cloudImage.requestContext?.versionNumber)===Number(c.versionNumber);
+            if(exactStudioHeadlessDiagnosticReusable){
+              console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_NON_SIMULATING_STUDIO_DIAGNOSTIC='+item.gameId
+                +':version='+Number(c.versionNumber)+':F9_SERVER_BOOT_STILL_REQUIRED');
+              return false;
+            }
             return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
           }).sort((a,b)=>{
             if(!requested)return 0;
@@ -1089,6 +1135,18 @@ jobs:
                 +':version='+Number(candidate.versionNumber)
                 +':state='+officialLiveServers.state
                 +':active='+(officialLiveServers.activeServerCount??'UNKNOWN'));
+              // 정확한 후보의 관측 결과를 429 등 신규 Luau 작업 실패와 독립적으로 보존한다.
+              const previousRuntime=item.robloxRuntimeFoundationEvidence||{};
+              if(previousRuntime.sourceRevision===sourceRevision
+                &&previousRuntime.artifactIdentity===artifactIdentity
+                &&String(previousRuntime.universeId||'')===String(candidate.universeId)
+                &&String(previousRuntime.placeId||'')===String(candidate.placeId)
+                &&Number(previousRuntime.candidateVersionNumber)===Number(candidate.versionNumber)){
+                item.robloxRuntimeFoundationEvidence={
+                  ...previousRuntime,officialLiveServerObservation:officialLiveServers,
+                };
+                changed=true;
+              }
               if(studioCloudDiagnostic?.engineExecuted===true
                 &&studioCloudDiagnostic.exactPlace===true
                 &&studioCloudDiagnostic.exactVersion===true
