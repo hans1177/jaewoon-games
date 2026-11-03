@@ -237,8 +237,11 @@ test('official version-scoped server inspection fails closed for no server, deni
   const urls=[];
   const fetchImpl=async(url)=>{
    urls.push(url);
-   return urls.length===1?new Response('',{status:403})
-    :new Response('',{status:scopeStatus});
+   if(urls.length===1)return new Response('',{status:403});
+   if(urls.length===2)return new Response('',{status:scopeStatus});
+   return Response.json({enabled:true,expired:false,scopes:[
+    {name:'universe',operations:['read'],universeIds:['10773436325']}
+   ]});
   };
   const result=await probeRobloxOpenCloudGameServerObservation({...base,fetchImpl});
   assert.equal(result.available,false);
@@ -246,10 +249,44 @@ test('official version-scoped server inspection fails closed for no server, deni
   assert.equal(result.readScopeCrosscheck?.state,expected);
   assert.equal(result.actualGameScriptBootVerified,false);
   assert.equal(result.actualPlayerPlayVerified,false);
-  assert.equal(urls.length,2);
+  assert.equal(urls.length,scopeStatus===403?3:2);
   assert.match(urls[0],/\/versions\/132\/game-servers$/);
   assert.match(urls[1],/\/game-servers:filter-options$/);
+  if(scopeStatus===403){
+   assert.match(urls[2],/\/api-keys\/v1\/introspect$/);
+   assert.equal(result.keyScopeAudit?.state,'UNIVERSE_READ_SCOPE_AND_TARGET_PRESENT_BUT_SERVER_DENIED');
+  }else assert.equal(result.keyScopeAudit,null);
   assert.equal(JSON.stringify(result).includes(base.apiKey),false);
+ }
+ // [키 권한 진단] 실제 Actions 키를 공식 API에 조회한 결과만 사용한다.
+ // 사용자 ID, 키 이름, 다른 게임 목록, API 키 문자열을 증거로 저장하지 않는다.
+ for(const [metadata,expected] of [
+  [{enabled:true,expired:false,scopes:[]},'UNIVERSE_READ_SCOPE_NOT_IN_ACTIONS_KEY'],
+  [{enabled:true,expired:false,scopes:[{name:'universe',operations:['read'],universeIds:['99999']}]},
+   'PRIVATE_UNIVERSE_NOT_ALLOWED_IN_ACTIONS_KEY'],
+  [{enabled:true,expired:false,scopes:[{name:'universe',operations:['read'],universeIds:['10773436325']}]},
+   'UNIVERSE_READ_SCOPE_AND_TARGET_PRESENT_BUT_SERVER_DENIED'],
+  [{enabled:true,expired:false,scopes:[{name:'universe',operations:['read'],universeIds:['*']}]},
+   'UNIVERSE_READ_SCOPE_AND_TARGET_PRESENT_BUT_SERVER_DENIED'],
+  [{enabled:true,expired:false,scopes:[{name:'universe',operations:['read']}]},
+   'UNIVERSE_READ_SCOPE_AND_TARGET_PRESENT_BUT_SERVER_DENIED'],
+  [{enabled:false,expired:false,scopes:[]},'API_KEY_DISABLED'],
+  [{enabled:true,expired:true,scopes:[]},'API_KEY_EXPIRED'],
+ ]){
+  const requests=[];
+  const result=await probeRobloxOpenCloudGameServerObservation({...base,fetchImpl:async(url)=>{
+   requests.push(url);
+   return requests.length<3?new Response('',{status:403})
+    :Response.json({...metadata,name:'SECRET_KEY_NAME',authorizedUserId:123456});
+  }});
+  assert.equal(requests.length,3);
+  assert.equal(result.keyScopeAudit?.state,expected);
+  assert.equal(result.actualGameScriptBootVerified,false);
+  assert.equal(result.actualPlayerPlayVerified,false);
+  assert.equal(JSON.stringify(result).includes(base.apiKey),false);
+  assert.equal(JSON.stringify(result).includes('SECRET_KEY_NAME'),false);
+  assert.equal(JSON.stringify(result).includes('123456'),false);
+  assert.equal(JSON.stringify(result).includes('99999'),false);
  }
  const nested=await probeRobloxOpenCloudGameServerObservation({...base,
   fetchImpl:async()=>Response.json({errors:[{code:'MISSING_SCOPE',message:'required scope <universe:read>'}]},{status:403})
