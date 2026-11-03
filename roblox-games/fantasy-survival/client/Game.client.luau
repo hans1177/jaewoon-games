@@ -2221,7 +2221,7 @@ do
       for _,id in ipairs(registeredStoryArt) do
         if typeof(id)=="string" then table.insert(preload,id) end
       end
-      for _,id in ipairs(registeredStoryDepth) do
+      for _,id in pairs(registeredStoryDepth) do
         if typeof(id)=="string" then table.insert(preload,id) end
       end
       if #preload>0 then pcall(function() ContentProvider:PreloadAsync(preload) end) end
