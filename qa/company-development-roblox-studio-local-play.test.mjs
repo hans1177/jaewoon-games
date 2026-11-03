@@ -3299,6 +3299,27 @@ test('route optimization retains every waypoint safety check and refreshes long 
   assert.match(helper,/finalClientProbe=await collectStudioActualPlayProbe/);
 });
 
+test('Studio combat world probe recognizes real native mesh enemies without inventing movement or damage',()=>{
+  const start=helper.indexOf('function studioActualPlayWorldProbeSource');
+  const end=helper.indexOf('function studioActualPlayRuntimeProbeSource',start);
+  assert.ok(start>=0&&end>start);
+  const generate=new Function(helper.slice(start,end)+';return studioActualPlayWorldProbeSource;')();
+  const probe=generate({planRoutes:false});
+  const game=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(game,/model:SetAttribute\("EnemyHealth",hitPoints\)/);
+  assert.match(game,/model:SetAttribute\("EnemyMaxHealth",hitPoints\)/);
+  assert.match(game,/model:SetAttribute\("NativeMobMotion","IDLE"\)/);
+  assert.match(probe,/nativeMobHealth=d:GetAttribute\("EnemyHealth"\)/);
+  assert.match(probe,/nativeMobMaxHealth=d:GetAttribute\("EnemyMaxHealth"\)/);
+  assert.match(probe,/not dh and not isPlayer and typeof\(nativeMobHealth\)=="number"/);
+  assert.match(probe,/typeof\(nativeMobMaxHealth\)=="number" and nativeMobMaxHealth>0/);
+  assert.match(probe,/kind="NativeMeshModel"/);
+  assert.match(probe,/hp=nativeMobHealth,maxHp=nativeMobMaxHealth/);
+  assert.match(probe,/state=tostring\(d:GetAttribute\("NativeMobMotion"\)/);
+  assert.doesNotMatch(probe,/nativeMobHealth\s*=\s*[0-9]+|nativeMobMaxHealth\s*=\s*[0-9]+/);
+  assert.match(helper,/id:'adaptive-combat-surface'.*mobRows\.length>0.*timelineMobDynamic/);
+});
+
 test('lightweight route observations keep live world safety and entity fields',()=>{
   const start=helper.indexOf('function studioActualPlayWorldProbeSource');
   const end=helper.indexOf('function studioActualPlayRuntimeProbeSource',start);
