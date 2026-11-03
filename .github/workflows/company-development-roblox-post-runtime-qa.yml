@@ -589,6 +589,7 @@ jobs:
           import fs from 'node:fs';
           import {
             fetchRobloxRuntimeFoundationEvidence,
+            probeRobloxOpenCloudGameServerObservation,
             validateRobloxRuntimeFoundationEvidence,
             validateRobloxMultiplayerSourceContract,
           } from './tools/company-development-roblox-runtime-foundation.mjs';
@@ -1067,6 +1068,27 @@ jobs:
               // Studio 실제 플레이를 재사용할 때도 최신 공식 엔진 조회 결과를 정확한 후보에 기록하고
               // 과거 429 진단을 그대로 노출하지 않는다. F1/F9 실서버 승인은 여기서 하지 않는다.
               const studioCloudDiagnostic=engineProbeByGame.get(item.gameId);
+              let officialLiveServers=null;
+              try{
+                officialLiveServers=await probeRobloxOpenCloudGameServerObservation({
+                  universeId:String(candidate.universeId),
+                  placeId:String(candidate.placeId),
+                  versionNumber:Number(candidate.versionNumber),
+                  apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+                });
+              }catch(error){
+                officialLiveServers={
+                  version:1,available:false,permissionDenied:false,
+                  serverInstanceObserved:false,actualGameScriptBootVerified:false,
+                  state:'GAME_SERVER_LIST_REQUEST_UNAVAILABLE',
+                  error:String(error?.message||error).slice(0,180),
+                  authority:'roblox-official-version-scoped-game-server-observation',
+                };
+              }
+              console.log('ROBLOX_OFFICIAL_EXACT_VERSION_SERVER_LIST='+item.gameId
+                +':version='+Number(candidate.versionNumber)
+                +':state='+officialLiveServers.state
+                +':active='+(officialLiveServers.activeServerCount??'UNKNOWN'));
               if(studioCloudDiagnostic?.engineExecuted===true
                 &&studioCloudDiagnostic.exactPlace===true
                 &&studioCloudDiagnostic.exactVersion===true
@@ -1085,6 +1107,8 @@ jobs:
                   serverBootEvidence:studioCloudDiagnostic.serverBootEvidence||null,
                   openCloudWorldEvidence:studioCloudDiagnostic.worldEvidence||null,
                   openCloudImageEvidence:studioCloudDiagnostic.imageEvidence||null,
+                  officialLiveServerObservation:officialLiveServers,
+                  serverInstanceObserved:officialLiveServers?.serverInstanceObserved===true,
                   actualRuntimeEvidence:false,actualServerRuntimeEvidence:false,
                   actualClientRuntimeEvidence:false,onlineServerStartedVerified:false,
                   internalStudioValidationOnly:true,
