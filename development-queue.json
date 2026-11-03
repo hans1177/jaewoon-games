@@ -1366,7 +1366,7 @@
       "currentStep": "REPAIR_REQUIRED",
       "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-03T14:12:12.261Z",
+      "updatedAt": "2026-11-03T14:32:42.792Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2303,57 +2303,15 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_REGRESSION",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
+      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "robloxFailureSignature": "ROBLOX_F9_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_REQUIRED",
       "routingBlockers": [
-        "roblox-studio-mcp-play-repair-required"
+        "roblox-f9-official-studio-mcp-actual-play-required"
       ],
-      "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "6aa8eb271b8c77491e10d2286b9c102eef8928c7",
-      "robloxQualityFailureClass": "PRODUCT",
-      "robloxQualityBuildUpEvidence": {
-        "version": 1,
-        "sourceRevision": "6aa8eb271b8c77491e10d2286b9c102eef8928c7",
-        "artifactIdentity": "sha256:317849e403e11fc762c82b621434a2748d9268d5a4f0ef013edad92c1ca5275b",
-        "versionNumber": 132,
-        "failureStage": "VIBE_INTERNAL_PLAY",
-        "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
-        "qualityFailureKinds": [
-          "adaptive-combat-surface"
-        ],
-        "qualityFailureDetails": [
-          {
-            "id": "adaptive-combat-surface",
-            "repairSurface": "COMBAT_AI",
-            "priority": "CRITICAL",
-            "hint": "Repair combat targets, damage/state transitions, enemy liveness, attack feedback, and F9 AI movement.",
-            "observed": {
-              "combatSurfaceCount": 3,
-              "mobCount": 0,
-              "humanoidMobCount": 0,
-              "mobRigAnimationPass": true,
-              "mobMotion": {
-                "matched": 0,
-                "moved": 0,
-                "stateChanged": 0,
-                "healthChanged": 0,
-                "targetChanged": 0,
-                "dynamic": false
-              },
-              "timelineMobDynamic": false,
-              "combatActionCount": 0,
-              "combatEffectCount": 0
-            }
-          }
-        ],
-        "repairSurfaces": [
-          "COMBAT_AI"
-        ],
-        "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
-        "testedAt": "2026-11-03T14:12:12.261Z",
-        "workflowRunId": 41649855222,
-        "authority": "roblox-official-studio-mcp-product-quality-failure"
-      },
+      "robloxQualityBuildUpRequired": false,
+      "robloxQualityBuildUpSourceRevision": null,
+      "robloxQualityFailureClass": null,
+      "robloxQualityBuildUpEvidence": null,
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -4038,11 +3996,11 @@
           "observedImageRevision": false
         }
       },
-      "robloxF9PendingInParallel": true,
+      "robloxF9PendingInParallel": false,
       "robloxF9Blockers": [
-        "roblox-f9-nonsimulating-cloud-runtime-observation-pending"
+        "roblox-f9-official-studio-mcp-actual-play-required"
       ],
-      "robloxF9FailureSignature": "ROBLOX_F9_EXTERNAL_RUNTIME_OBSERVATION_PENDING",
+      "robloxF9FailureSignature": "ROBLOX_F9_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_REQUIRED",
       "robloxThumbnailEvidence": {
         "version": 1,
         "gameId": "fantasy-survival",
@@ -4719,7 +4677,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-11-03T14:27:14.702Z",
+  "updatedAt": "2026-11-03T14:32:42.792Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
