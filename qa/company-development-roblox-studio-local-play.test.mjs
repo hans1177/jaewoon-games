@@ -34,8 +34,35 @@ import {
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
 const helper=fs.readFileSync('tools/company-development-roblox-studio-local-play.mjs','utf8');
-const horrorServer=fs.readFileSync('roblox-games/horror-escape-room/server/Game.server.luau','utf8');
-const cozyServer=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
+// [활성 게임] 삭제된 게임 대신 현재 유지되는 Roblox 서버의 저장 초기화를 검증한다.
+const activeServerPaths=[
+  'roblox-games/fantasy-survival/server/Game.server.luau',
+  'roblox-games/gem-survivor/server/Game.server.luau'
+];
+// [시나리오 계약] 삭제된 게임 설정에 의존하지 않는 독립 회귀 테스트 입력.
+const studioRoundScenarioContract=Object.freeze({
+  version:1,required:true,
+  entryButtonTexts:['참가','출발'],
+  selectionButtonText:'역할 선택',
+  startButtonText:'바로 시작',
+  primaryActionButtonText:'회피',
+  afterStartWaitMs:4000,
+  requiredScenarios:[
+    'role-selection-interaction','round-running','logical-population-eight',
+    'hud-visible','action-ui-visible','design-runtime-binding',
+    'interaction-surface-present','world-geometry-present',
+    'primary-action-input','primary-action-effect','visual-capture-sane'
+  ],
+  expectations:{
+    acceptedRoundStates:['RUNNING'],acceptedRoles:['SURVIVOR','MONSTER'],
+    logicalPopulation:8,minimumHumans:1,minimumMonsters:1,
+    screenGuiName:'ScenarioHUD',minimumVisibleButtons:2,
+    requiredGuiObjects:['MidnightTopHUD','RoundActions'],
+    minimumPromptCount:2,minimumArenaParts:50,
+    minimumPrimaryActionDisplacement:0.25,minimumLightingBrightness:0.5,
+    workspaceAttributeEquals:{MapReady:true}
+  }
+});
 
 const source='a'.repeat(40);
 const artifact='sha256:'+'b'.repeat(64);
@@ -1089,14 +1116,14 @@ test('Studio MCP retries only infrastructure failures and skips restart after a 
   assert.doesNotMatch(studioMcpBlock,/\$success = \$false/);
 });
 
-test('local exact Studio boot does not abort before remotes when DataStore is unavailable',()=>{
-  for(const source of [horrorServer,cozyServer]){
-    assert.doesNotMatch(source,/local store=DSS:GetDataStore/);
-    assert.doesNotMatch(source,/local qaCaptureStore=DSS:GetDataStore/);
-    assert.doesNotMatch(source,/local foundationStore=DSS:GetDataStore/);
-    assert.match(source,/local store\s*\n\s*pcall\(function\(\)store=DSS:GetDataStore/);
-    assert.match(source,/local qaCaptureStore\s*\n\s*pcall\(function\(\)qaCaptureStore=DSS:GetDataStore/);
-    assert.match(source,/local foundationStore\s*\n\s*pcall\(function\(\)foundationStore=DSS:GetDataStore/);
+test('active Studio servers guard DataStore initialization before remotes even when storage is unavailable',()=>{
+  for(const file of activeServerPaths){
+    const source=fs.readFileSync(file,'utf8');
+    assert.doesNotMatch(source,/local store\s*=\s*DataStoreService:GetDataStore/);
+    assert.match(source,/local store\s*=\s*nil\s*\n\s*local storeOk, storeResult\s*=\s*pcall\(function\(\)/);
+    assert.match(source,/return DataStoreService:GetDataStore\(/);
+    assert.match(source,/if storeOk then store\s*=\s*storeResult end/);
+    assert.ok(source.indexOf('if storeOk then store = storeResult end')<source.indexOf('remote ='));
   }
 });
 
@@ -1425,12 +1452,12 @@ test('Studio MCP setting diagnostic CLI is part of the helper contract',()=>{
 
 
 test('declared Studio actual-play contract requires core progression UI action effect visual sanity and design binding',()=>{
-  const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
+  const contract=studioRoundScenarioContract;
   assert.equal(contract.required,true);
-  assert.deepEqual(contract.entryButtonTexts,['저택 들어가기','출정']);
-  assert.equal(contract.selectionButtonText,'인간');
-  assert.equal(contract.startButtonText,'혼자 바로 시작');
-  assert.equal(contract.primaryActionButtonText,'대시');
+  assert.deepEqual(contract.entryButtonTexts,['참가','출발']);
+  assert.equal(contract.selectionButtonText,'역할 선택');
+  assert.equal(contract.startButtonText,'바로 시작');
+  assert.equal(contract.primaryActionButtonText,'회피');
   assert.ok(contract.afterStartWaitMs>=4000);
   for(const id of ['role-selection-interaction','round-running','logical-population-eight','hud-visible','action-ui-visible','design-runtime-binding','interaction-surface-present','world-geometry-present','primary-action-input','primary-action-effect','visual-capture-sane'])assert.ok(contract.requiredScenarios.includes(id),id);
   const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
@@ -1490,7 +1517,7 @@ test('official Studio result preserves primary action feedback evidence through 
 });
 
 test('movement alone cannot pass a declared Studio actual-play scenario contract',()=>{
-  const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
+  const contract=studioRoundScenarioContract;
   const result=evaluateStudioActualPlayContract({
     contract,
     initialClientProbe:{player:{roundState:'INTERMISSION'},workspace:{ActivePopulation:0}},
@@ -1575,7 +1602,7 @@ test('declared Studio scenario probes the primary action before generic movement
 
 
 test('role preference intent survives later infection in scenario evaluation',()=>{
-  const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
+  const contract=studioRoundScenarioContract;
   const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
   const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
   const result=evaluateStudioActualPlayContract({
