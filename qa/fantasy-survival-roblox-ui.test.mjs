@@ -174,3 +174,18 @@ test('rush button advances independent 5-stage authored motions on each tap with
   assert.match(server,/if not target then\s*player:SetAttribute\("ApprovedActionTarget",rootPart.Position\)\s*return true,false/);
   assert.doesNotMatch(server,/NativeCombatRushStage/);
 });
+
+test('RPG panels retain the original server actions and responsive navigation',()=>{
+  for(const name of ['WitcherEquipmentGrid','CombatMasteryTrack','MasteryProgressFill',
+    'MeadowInventorySearch','MeadowInventoryEmpty','WitcherSkillDetails']){
+    assert.ok(client.includes(name),name);
+  }
+  for(const marker of ['local columns=width>=630 and 3 or width>=340 and 2 or 1',
+    'inventorySearch:GetPropertyChangedSignal("Text"):Connect(renderInventory)',
+    'inventoryEmpty.Visible=visibleCount==0',
+    'row.state.Text=remaining>.05 and ("대기 "..math.ceil(remaining).."초") or "사용 가능"',
+    'remote:FireServer("meadow:rpg:gear:"..op..":"..item.gear.Id)',
+    'remote:FireServer("meadow:rpg:talent:learn:"..branch.Id)']){
+    assert.ok(client.includes(marker),marker);
+  }
+});
