@@ -63,15 +63,17 @@ test('foundation sentinel blocks causally out-of-order boot world spawn characte
  assert.ok(r.blockers.includes('checkpointOrder'));
 });
 
-test('cozy island runtime probe uses monotonic sentinel sequence and full ground-contact timeout',()=>{
- const server=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
- assert.match(server,/data\.sequence=math\.max\(0,math\.floor\(tonumber\(data\.sequence\)or 0\)\)\+1/);
- assert.match(server,/row\.sequence=data\.sequence/);
- assert.match(server,/local deadline=os\.clock\(\)\+3/);
- assert.match(server,/task\.wait\(\.1\)/);
- assert.match(server,/SPAWN_FOUNDATION_MISSING/);
- assert.match(server,/INVALID_ROOT_POSITION/);
- assert.doesNotMatch(server,/task\.delay\(\.6,function\(\)/);
+// [현재 게임] 클라이언트가 임의 접지 증거를 만들지 못하도록 서버 검증 경로를 확인한다.
+test('fantasy survival native foundation signals ground and movement from authoritative server checks',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  assert.match(server,/native-foundation-sentinel-v1/);
+  assert.match(server,/GROUND_CONTACT/);
+  assert.match(server,/MOVEMENT_CONFIRMED/);
+  assert.match(server,/HumanoidRootPart/);
+  assert.match(server,/nativeFoundationRemote\.OnServerEvent:Connect/);
+  assert.match(client,/RuntimeFoundationReport/);
+  assert.doesNotMatch(server,/SetAttribute\("GROUND_CONTACT",\s*groundHit\s*~=\s*nil\)/);
 });
 
 test('foundation sentinel blocks floating character evidence without ground contact',()=>{
@@ -1707,17 +1709,18 @@ test('canonical F0 private runtime and F9 post-publish retain five exact cloud c
  assert.match(f9,/ROBLOX_POST_PUBLISH_SERVER_SCENARIOS=/);
 });
 
-test('Daechung village source grounds the physical spawn on its plaza and respects rig clearance without claiming runtime play',()=>{
- const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
- assert.match(server,/local plaza=ppart\(f,"VillagePlaza"/);
- assert.match(server,/foundationSpawn\.Position=Vector3\.new\(C\.VillageCenter\.X,plaza\.Position\.Y\+plaza\.Size\.Y\*\.5-foundationSpawn\.Size\.Y\*\.5\+\.02,C\.VillageCenter\.Z\)/);
- assert.match(server,/local feetClearance=\(h and h\.HipHeight or 2\)\+r\.Size\.Y\*\.5\+\.2/);
- assert.match(server,/local spawnTop=foundationSpawn\.Position\.Y\+foundationSpawn\.Size\.Y\*\.5/);
- assert.match(server,/p\.RespawnLocation=foundationSpawn/);
- // Geometric calculation, not observed physics: plaza top 2.35; spawn top 2.37.
- const plazaTop=1.2+2.3/2;
- const spawnTop=plazaTop-.2/2+.02+.2/2;
- assert.ok(Math.abs(spawnTop-plazaTop-.02)<1e-8);
+// [현재 게임] 마력숲의 엔진 스폰은 고정되고, 실제 이동은 캐릭터 R15에 위임한다.
+test('fantasy native spawn retains fixed neutral foundation with real ground and movement checks',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(server,/nativeFoundationSpawn = Instance\.new\("SpawnLocation"\)/);
+  assert.match(server,/nativeFoundationSpawn\.Size = Vector3\.new\(8, 1, 8\)/);
+  assert.match(server,/nativeFoundationSpawn\.Anchored = true/);
+  assert.match(server,/nativeFoundationSpawn\.CanCollide = false/);
+  assert.match(server,/nativeFoundationSpawn\.Neutral = true/);
+  assert.match(server,/player\.RespawnLocation = nativeFoundationSpawn/);
+  assert.match(server,/HumanoidRootPart/);
+  assert.match(server,/GROUND_CONTACT/);
+  assert.match(server,/MOVEMENT_CONFIRMED/);
 });
 
 test('exact published Studio actual play can enter existing internal QA despite non-simulating Open Cloud, while F9 Cloud hard gate stays locked',()=>{
