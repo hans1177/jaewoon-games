@@ -1962,7 +1962,7 @@ do
   storyArtwork.BorderSizePixel=0
   storyArtwork.Size=UDim2.fromScale(1.14,1.14)
   storyArtwork.Position=UDim2.fromScale(-.07,-.07)
-  storyArtwork.ScaleType=Enum.ScaleType.Crop
+  storyArtwork.ScaleType=Enum.ScaleType.Fit
   storyArtwork.ImageTransparency=1
   storyArtwork.ZIndex=4
   storyArtwork.Visible=false
@@ -1972,24 +1972,14 @@ do
   storyForeground.Name="StoryParallaxForeground"
   storyForeground.BackgroundTransparency=1
   storyForeground.BorderSizePixel=0
-  storyForeground.Size=UDim2.fromScale(1.08,1.08)
-  storyForeground.Position=UDim2.fromScale(-.04,-.04)
+  storyForeground.Size=UDim2.fromScale(.96,.68)
+  storyForeground.Position=UDim2.fromScale(.02,.145)
   storyForeground.ScaleType=Enum.ScaleType.Fit
   storyForeground.ImageTransparency=1
   storyForeground.ZIndex=8
   storyForeground.Visible=false
   storyForeground.Parent=introPanel
-  -- [장면 교차 전환] 이전 원화와 전경을 두 장만 재사용해 화면 끊김을 줄인다.
-  local departingArtwork=storyArtwork:Clone()
-  departingArtwork.Name="DepartingStoryIllustration"
-  departingArtwork.Image=""
-  departingArtwork.Visible=false
-  departingArtwork.Parent=introPanel
-  local departingForeground=storyForeground:Clone()
-  departingForeground.Name="DepartingStoryForeground"
-  departingForeground.Image=""
-  departingForeground.Visible=false
-  departingForeground.Parent=introPanel
+  -- [장면 이미지 단독 표시] 이전 컷의 복제본을 만들지 않아 잔상·중복 인물을 없앤다.
   -- [화면 분위기] 기존 GUI에만 가벼운 불씨·낙하 입자를 추가한다.
   local storyAtmosphere=Instance.new("Frame")
   storyAtmosphere.Name="CinematicParticles"
@@ -2104,11 +2094,13 @@ do
     local size=introPanel.AbsoluteSize
     if size.X<1 or size.Y<1 then return end
     local portrait=size.Y>size.X*1.1
-    regionIntro.Position=UDim2.fromScale(.5,portrait and .135 or .145)
-    regionIntro.Size=UDim2.fromScale(portrait and .92 or .86,portrait and .075 or .088)
-    subtitlePlate.Size=UDim2.fromScale(portrait and .96 or .90,portrait and .20 or .155)
-    introDialogue.Position=UDim2.fromScale(.5,portrait and .704 or .741)
-    introDialogue.Size=UDim2.fromScale(portrait and .90 or .84,portrait and .14 or .103)
+    -- [글자 영역 분리] 제목은 상단 레터박스, 대사는 하단 레터박스에 둔다.
+    regionIntro.Position=UDim2.fromScale(.5,portrait and .035 or .028)
+    regionIntro.Size=UDim2.fromScale(portrait and .72 or .66,portrait and .068 or .065)
+    subtitlePlate.Position=UDim2.fromScale(.5,.982)
+    subtitlePlate.Size=UDim2.fromScale(portrait and .96 or .90,.135)
+    introDialogue.Position=UDim2.fromScale(.5,portrait and .860 or .856)
+    introDialogue.Size=UDim2.fromScale(portrait and .90 or .84,.105)
   end
   layoutIntroCaptions()
   introPanel:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutIntroCaptions)
@@ -2122,7 +2114,7 @@ do
   introFlash.Parent=introPanel
   local storyProgressTrack=Instance.new("Frame")
   storyProgressTrack.Name="StoryProgressTrack"
-  storyProgressTrack.Position=UDim2.fromScale(0,.885)
+  storyProgressTrack.Position=UDim2.fromScale(0,.989)
   storyProgressTrack.Size=UDim2.fromScale(1,.005)
   storyProgressTrack.BackgroundColor3=Color3.fromRGB(61,66,63)
   storyProgressTrack.BorderSizePixel=0
@@ -2148,8 +2140,6 @@ do
   local originalFieldOfView=openingCamera and openingCamera.FieldOfView
   local activeTween=nil
   local activeFovTween=nil
-  local activeArtTween=nil
-  local activeFrontTween=nil
   local activeParticleTweens={}
   local cameraMotionValue=nil
   local cameraMotionConnection=nil
@@ -2174,10 +2164,6 @@ do
   local function restoreCamera()
     if activeTween then activeTween:Cancel();activeTween=nil end
     if activeFovTween then activeFovTween:Cancel();activeFovTween=nil end
-    if activeArtTween then activeArtTween:Cancel();activeArtTween=nil end
-    if activeFrontTween then activeFrontTween:Cancel();activeFrontTween=nil end
-    departingArtwork.Visible=false
-    departingForeground.Visible=false
     introDialogue.MaxVisibleGraphemes=-1
     regionIntro.MaxVisibleGraphemes=-1
     if activeAmbienceTween then activeAmbienceTween:Cancel();activeAmbienceTween=nil end
@@ -2432,105 +2418,50 @@ do
         introDialogue.TextTransparency=1
         introDialogue.MaxVisibleGraphemes=0
         subtitlePlate.BackgroundTransparency=.5
-        subtitlePlate.Position=UDim2.fromScale(.5,.883)
+        subtitlePlate.Position=UDim2.fromScale(.5,.995)
 
-        -- [원화 교차] 다음 그림을 교체하기 전에 움직이던 이전 그림의 마지막 프레임을 보존한다.
-        for _,pair in ipairs({{storyArtwork,departingArtwork},{storyForeground,departingForeground}}) do
-          local current,departing=pair[1],pair[2]
-          departing.Visible=index>1 and current.Visible and current.Image~=""
-          if departing.Visible then
-            departing.Image=current.Image
-            departing.ImageRectOffset=current.ImageRectOffset
-            departing.ImageRectSize=current.ImageRectSize
-            departing.Position=current.Position
-            departing.Size=current.Size
-            departing.Rotation=current.Rotation
-            departing.ImageTransparency=current.ImageTransparency
-          end
-        end
-
-        if activeArtTween then activeArtTween:Cancel();activeArtTween=nil end
-        if activeFrontTween then activeFrontTween:Cancel();activeFrontTween=nil end
+        -- [단일 이미지 장면] JPG 배경과 PNG 인물을 동시에 그리지 않는다.
+        -- [인물 단독 컷] 빅브라더·미러·배신·역사 삭제는 승인 PNG 한 장만 표시한다.
+        -- [안전 영역] 이미지 확대/이동/회전을 금지해 모바일에서 얼굴·몸이 잘리지 않게 한다.
         for _,particleTween in ipairs(activeParticleTweens) do particleTween:Cancel() end
         table.clear(activeParticleTweens)
         local imageId=registeredStoryArt[index]
-        -- [역사 삭제] 빅브라더의 승인 전경을 다시 쓰며 새 모델을 만들지 않는다.
+        -- [역사 삭제] 빅브라더 승인 전경 재사용. 새 자산·모델 생성 금지.
         local frontId=scene.cinema=="erasure" and registeredStoryDepth[3] or registeredStoryDepth[index]
         local validImage=typeof(imageId)=="string" and imageId:match("^rbxassetid://%d+$")~=nil
         local validFront=typeof(frontId)=="string" and frontId:match("^rbxassetid://%d+$")~=nil
         local direction=index%2==0 and 1 or -1
-        if validImage then
+        local closeUp=scene.cinema=="crown" or scene.cinema=="omen"
+          or scene.cinema=="betrayal" or scene.cinema=="erasure"
+        local showFront=validFront and (closeUp or not validImage)
+        local showArtwork=validImage and not showFront
+        storyArtwork.Visible=showArtwork
+        storyForeground.Visible=showFront
+        if showArtwork then
           storyArtwork.Image=imageId
           storyArtwork.ImageRectOffset=Vector2.zero
           storyArtwork.ImageRectSize=Vector2.zero
-          storyArtwork.Visible=true
           storyArtwork.ImageTransparency=0
+          storyArtwork.ScaleType=Enum.ScaleType.Fit
           storyArtwork.Rotation=0
-          storyArtwork.Position=UDim2.fromScale(-.035,-.035)
-          storyArtwork.Size=UDim2.fromScale(1.07,1.07)
-          -- [인물 중심 숏] 빅브라더·미러 장면은 배경을 고정하고, 전투·추락만 크게 이동한다.
-          local quietPortrait=scene.cinema=="crown" or scene.cinema=="omen" or scene.cinema=="erasure"
-          local x=quietPortrait and 0 or scene.movement=="sweep" and direction*.065
-            or scene.movement=="rise" and direction*.02 or direction*.035
-          local y=quietPortrait and 0 or scene.movement=="fall" and .1
-            or scene.movement=="rise" and -.07 or -.035
-          local zoom=quietPortrait and 1.075
-            or scene.cinema=="charge" and 1.15 or scene.cinema=="betrayal" and 1.11
-            or scene.cinema=="rift" and 1.19 or scene.cinema=="dawn" and 1.105 or 1.12
-          local margin=(zoom-1)/2
-          local shotDuration=scene.cinema=="charge" and scene.seconds*.62 or scene.seconds
-          activeArtTween=TweenService:Create(storyArtwork,TweenInfo.new(shotDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
-            Position=UDim2.fromScale(-margin+math.clamp(x,-margin,margin),-margin+math.clamp(y,-margin,margin)),
-            Size=UDim2.fromScale(zoom,zoom),
-            Rotation=scene.cinema=="rift" and direction*3
-              or scene.movement=="fall" and direction*1.2 or 0,
-          })
-          activeArtTween:Play()
-        else
-          storyArtwork.Visible=false
-          storyArtwork.Image=""
-        end
-        if validFront then
-          -- [인물 전경 우선] 네 명이 함께 나오는 컷은 전체 구도를 보존하고
-          -- 빅브라더/미러는 상반신 중심으로 크게, 얼굴을 가리지 않게 고정한다.
-          local fourPerson=scene.cinema=="siege" or scene.cinema=="charge" or scene.cinema=="freeze"
-          local closeUp=scene.cinema=="crown" or scene.cinema=="omen" or scene.cinema=="erasure"
-          local frontScale=fourPerson and 1.0 or closeUp and 1.27
-            or scene.cinema=="betrayal" and 1.13 or scene.cinema=="dawn" and 1.16
-            or scene.cinema=="rift" and 1.17 or 1.12
-          local frontX=-(frontScale-1)/2
-          local frontY=frontX+(closeUp and .035 or 0)
+          storyArtwork.Position=UDim2.fromScale(0,0)
+          storyArtwork.Size=UDim2.fromScale(1,1)
+          storyForeground.Image=""
+        elseif showFront then
           storyForeground.Image=frontId
           storyForeground.ImageRectOffset=Vector2.zero
           storyForeground.ImageRectSize=Vector2.zero
-          storyForeground.Visible=true
           storyForeground.ImageTransparency=0
+          storyForeground.ScaleType=Enum.ScaleType.Fit
           storyForeground.Rotation=0
-          storyForeground.Size=UDim2.fromScale(frontScale,frontScale)
-          storyForeground.Position=UDim2.fromScale(frontX,frontY)
-          local frontZoom=frontScale+(fourPerson and .015 or closeUp and .02 or .04)
-          activeFrontTween=TweenService:Create(storyForeground,TweenInfo.new(scene.seconds,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
-            Position=UDim2.fromScale(frontX-(frontZoom-frontScale)/2,frontY-(frontZoom-frontScale)/2),
-            Size=UDim2.fromScale(frontZoom,frontZoom),
-            Rotation=scene.cinema=="rift" and direction*2.1 or 0,
-          })
-          activeFrontTween:Play()
+          storyForeground.Position=UDim2.fromScale(.02,.145)
+          storyForeground.Size=UDim2.fromScale(.96,.68)
+          storyArtwork.Image=""
         else
-          storyForeground.Visible=false
+          storyArtwork.Image=""
           storyForeground.Image=""
         end
-
-        -- [장면 전환] 이전 그림은 짧게 녹여 사라지고, 새 장면의 원화·전경 이동은 계속된다.
-        for _,departing in ipairs({departingArtwork,departingForeground}) do
-          if departing.Visible then
-            TweenService:Create(departing,TweenInfo.new(.4,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
-              ImageTransparency=1,
-            }):Play()
-            task.delay(.45,function()
-              if entranceOpen and token==runToken and currentStoryScene==index then departing.Visible=false end
-            end)
-          end
-        end
+        -- 전경과 배경은 매 컷 반드시 상호 배타적이며 이전 컷 이미지는 즉시 제거한다.
 
         -- [입자 연출] 전쟁은 불씨, 봉인은 마력 조각, 숲은 흩날리는 먼지.
         for n,spark in ipairs(cinematicParticles) do
@@ -2563,22 +2494,21 @@ do
         introTint.BackgroundTransparency=scene.view=="seal" and .78 or scene.view=="sky" and .87
           or scene.view=="fall" and .7 or .81
         introFlash.BackgroundColor3=color
-        introFlash.BackgroundTransparency=(scene.cinema=="crown" or scene.cinema=="omen" or scene.cinema=="erasure") and .96
-          or scene.view=="seal" and .88 or .83
+        introFlash.BackgroundTransparency=1
         moveStoryCamera(scene.view,scene.seconds,scene.cinema)
         -- [기사단 퇴각·기록 삭제] 컷을 정지해 반전을 보여 주고 음향을 비운다.
         if silence then
           task.delay(1.2,function()
             if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
             local paused={}
-            for _,motion in pairs({art=activeArtTween,front=activeFrontTween,camera=activeTween,fov=activeFovTween}) do
+            for _,motion in pairs({camera=activeTween,fov=activeFovTween}) do
               if motion and motion.PlaybackState==Enum.PlaybackState.Playing then
                 motion:Pause()
                 table.insert(paused,motion)
               end
             end
             introFlash.BackgroundColor3=Color3.fromRGB(8,10,15)
-            introFlash.BackgroundTransparency=.76
+            introFlash.BackgroundTransparency=scene.cinema=="erasure" and .95 or .76
             task.delay(.38,function()
               if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
               for _,motion in ipairs(paused) do
@@ -2608,7 +2538,7 @@ do
 
         -- [시네마틱 자막] 상단 1줄/하단 최대 2줄. 배경 위로 인물을 가리지 않는다.
         TweenService:Create(subtitlePlate,TweenInfo.new(.45,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
-          Position=UDim2.fromScale(.5,.866),BackgroundTransparency=.27,
+          Position=UDim2.fromScale(.5,.982),BackgroundTransparency=.27,
         }):Play()
         for _,textLabel in ipairs({regionIntro,introDialogue}) do
           TweenService:Create(textLabel,TweenInfo.new(.54,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
@@ -2634,12 +2564,11 @@ do
         else
           introDialogue.MaxVisibleGraphemes=-1
         end
-        -- [영화식 장면 강조] 공성전의 첫 충돌과 군주의 선고에 짧은 빛 컷을 더한다.
-        if not reducedEffects and (scene.cinema=="siege" or scene.cinema=="crown") then
-          task.delay(scene.cinema=="siege" and 1.05 or 1.55,function()
+        -- [전투 강조] 초상 컷의 얼굴은 섬광으로 가리지 않는다.
+        if not reducedEffects and scene.cinema=="siege" then
+          task.delay(1.05,function()
             if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
-            introFlash.BackgroundColor3=scene.cinema=="siege" and Color3.fromRGB(233,132,67)
-              or Color3.fromRGB(255,211,129)
+            introFlash.BackgroundColor3=Color3.fromRGB(233,132,67)
             introFlash.BackgroundTransparency=.64
             TweenService:Create(introFlash,TweenInfo.new(.55,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
               BackgroundTransparency=1,
@@ -2647,11 +2576,11 @@ do
           end)
         end
         -- 봉인 순간·추락 순간에만 한 번 더 강한 충격 컷을 넣는다.
-        if scene.view=="seal" or scene.view=="fall" then
-          task.delay(scene.view=="seal" and 2.15 or 1.75,function()
+        if scene.cinema=="betrayal" or scene.view=="fall" then
+          task.delay(scene.cinema=="betrayal" and 2.15 or 1.75,function()
             if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
-            introFlash.BackgroundColor3=scene.view=="seal" and Color3.fromRGB(189,109,255) or Color3.fromRGB(8,9,23)
-            introFlash.BackgroundTransparency=scene.view=="seal" and .64 or .55
+            introFlash.BackgroundColor3=scene.cinema=="betrayal" and Color3.fromRGB(189,109,255) or Color3.fromRGB(8,9,23)
+            introFlash.BackgroundTransparency=scene.cinema=="betrayal" and .80 or .62
             TweenService:Create(introFlash,TweenInfo.new(.75,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
               BackgroundTransparency=1
             }):Play()
