@@ -1541,7 +1541,7 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   }
   assert.match(server,/surface\.Material=bark and Enum\.Material\.Wood or Enum\.Material\.LeafyGrass/);
   // [원본 수목 라이선스] 토이 표면 삭제를 중지하고 CC0 텍스처를 유지한다.
-  const treeSource=server.slice(server.indexOf('elseif id=="tree" then'),server.indexOf('else\n            -- [야생동물 토이 표면]'));
+  const treeSource=server.slice(server.indexOf('elseif id=="tree" then'),server.indexOf('else\n            -- [사슴 피모 복원]'));
   assert.ok(treeSource.includes('surface.Material=bark and Enum.Material.Wood or Enum.Material.LeafyGrass'));
   assert.doesNotMatch(treeSource,/appearance:Destroy\(\)|surface\.TextureID=""/);
   assert.match(server,/Lighting\.ExposureCompensation=-\.12/);
