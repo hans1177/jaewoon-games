@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -303977,72 +303975,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_6cd14835e1de39689f2b8869",
-          "taskId": "seed-roblox-story-rpg-adventur-blox-fruits-studio-evolution-roblox-usability-v4",
-          "workKey": null,
-          "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
-            "actions-run:41719252038",
-            "reservation-id:41719252038:1",
-            "capability-application-sample:1c95d6cb1cec49848400"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_1514582ffa3d7c8eafa7aa98",
-          "taskId": "seed-roblox-survival-horror-es-doors-studio-evolution-roblox-usability-v5",
-          "workKey": null,
-          "gameId": "seed-roblox-survival-horror-es-doors",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
-            "actions-run:41719252038",
-            "reservation-id:41719252038:1",
-            "capability-application-sample:2ea94c29af0e998d2652"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_a9ada88fc12e1ce57ed88dd0",
           "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-usability-v5",
           "workKey": null,
@@ -306080,6 +306012,72 @@
             "actions-run:41737647810",
             "reservation-id:41737647810:1",
             "capability-application-sample:dc8f2cf252c9eab9a5f5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_26f336684e1af6bddd84d3d3",
+          "taskId": "defense-studio-evolution-roblox-usability-v6",
+          "workKey": null,
+          "gameId": "defense",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
+            "actions-run:41741559005",
+            "reservation-id:41741559005:1",
+            "capability-application-sample:00dbd0769196bc45caf6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_557f72a1f33dfb2a15aa304a",
+          "taskId": "exorcist-office-studio-evolution-roblox-usability-v7",
+          "workKey": null,
+          "gameId": "exorcist-office",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
+            "actions-run:41741559005",
+            "reservation-id:41741559005:1",
+            "capability-application-sample:68bfd2939f9c7893846a"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -313001,72 +312999,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_21ec2be37b976c1fc90ce5d2",
-          "taskId": "seed-roblox-simulator-tycoon-i-adopt-me-studio-evolution-roblox-usability-v4",
-          "workKey": null,
-          "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
-            "actions-run:41719252038",
-            "reservation-id:41719252038:1",
-            "capability-application-sample:3ce071f2400557459a98"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_7fd4dca0bb34f731918e3608",
-          "taskId": "seed-roblox-story-rpg-adventur-blox-fruits-studio-evolution-roblox-usability-v4",
-          "workKey": null,
-          "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
-            "actions-run:41719252038",
-            "reservation-id:41719252038:1",
-            "capability-application-sample:1c95d6cb1cec49848400"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_4c0333c73a58e854b99bdc88",
           "taskId": "seed-roblox-survival-horror-es-doors-studio-evolution-roblox-usability-v5",
           "workKey": null,
@@ -315104,6 +315036,72 @@
             "actions-run:41737647810",
             "reservation-id:41737647810:1",
             "capability-application-sample:dc8f2cf252c9eab9a5f5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_adcbbcd1a67af72c7af2f3a3",
+          "taskId": "defense-studio-evolution-roblox-usability-v6",
+          "workKey": null,
+          "gameId": "defense",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
+            "actions-run:41741559005",
+            "reservation-id:41741559005:1",
+            "capability-application-sample:00dbd0769196bc45caf6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_512d48564057b2c4064de1df",
+          "taskId": "exorcist-office-studio-evolution-roblox-usability-v7",
+          "workKey": null,
+          "gameId": "exorcist-office",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
+            "actions-run:41741559005",
+            "reservation-id:41741559005:1",
+            "capability-application-sample:68bfd2939f9c7893846a"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -335814,72 +335812,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_b134039f6fc6154998f73b99",
-          "taskId": "seed-roblox-simulator-tycoon-i-adopt-me-studio-evolution-roblox-usability-v4",
-          "workKey": null,
-          "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
-            "actions-run:41719252038",
-            "reservation-id:41719252038:1",
-            "capability-application-sample:3ce071f2400557459a98"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_c500f984a8dcc9eec40cde05",
-          "taskId": "seed-roblox-story-rpg-adventur-blox-fruits-studio-evolution-roblox-usability-v4",
-          "workKey": null,
-          "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
-            "actions-run:41719252038",
-            "reservation-id:41719252038:1",
-            "capability-application-sample:1c95d6cb1cec49848400"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_8c839f2288dd6f7edcf86932",
           "taskId": "seed-roblox-survival-horror-es-doors-studio-evolution-roblox-usability-v5",
           "workKey": null,
@@ -337917,6 +337849,72 @@
             "actions-run:41737647810",
             "reservation-id:41737647810:1",
             "capability-application-sample:dc8f2cf252c9eab9a5f5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e708b2a38213395cfd9ffd9f",
+          "taskId": "defense-studio-evolution-roblox-usability-v6",
+          "workKey": null,
+          "gameId": "defense",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
+            "actions-run:41741559005",
+            "reservation-id:41741559005:1",
+            "capability-application-sample:00dbd0769196bc45caf6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_1c1d6953eff3c1c8ec803285",
+          "taskId": "exorcist-office-studio-evolution-roblox-usability-v7",
+          "workKey": null,
+          "gameId": "exorcist-office",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
+            "actions-run:41741559005",
+            "reservation-id:41741559005:1",
+            "capability-application-sample:68bfd2939f9c7893846a"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -341494,72 +341492,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_5a2de33b2c9d6dd0993a2f67",
-          "taskId": "party-rpg-studio-evolution-roblox-usability-v4",
-          "workKey": null,
-          "gameId": "party-rpg",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
-            "actions-run:41719252038",
-            "reservation-id:41719252038:1",
-            "capability-application-sample:c32a2854535410775d66"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_cfa7183623af0edf17ecd830",
-          "taskId": "realistic-builder-studio-evolution-roblox-usability-v5",
-          "workKey": null,
-          "gameId": "realistic-builder",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
-            "actions-run:41719252038",
-            "reservation-id:41719252038:1",
-            "capability-application-sample:eced47002d605f8197c5"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_fc6366bed85be78f4ce37230",
           "taskId": "seed-roblox-roleplay-life-avat-brookhaven-rp-studio-evolution-roblox-usability-v5",
           "workKey": null,
@@ -343597,6 +343529,72 @@
             "actions-run:41737647810",
             "reservation-id:41737647810:1",
             "capability-application-sample:dc8f2cf252c9eab9a5f5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_9167dab25295af8625a7bdf7",
+          "taskId": "defense-studio-evolution-roblox-usability-v6",
+          "workKey": null,
+          "gameId": "defense",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
+            "actions-run:41741559005",
+            "reservation-id:41741559005:1",
+            "capability-application-sample:00dbd0769196bc45caf6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_aef5c2dcafe5b0a85db4930f",
+          "taskId": "exorcist-office-studio-evolution-roblox-usability-v7",
+          "workKey": null,
+          "gameId": "exorcist-office",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
+            "actions-run:41741559005",
+            "reservation-id:41741559005:1",
+            "capability-application-sample:68bfd2939f9c7893846a"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -405862,72 +405860,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_6587a3fdd72c4f9b14147490",
-          "taskId": "seed-roblox-story-rpg-adventur-blox-fruits-studio-evolution-roblox-usability-v4",
-          "workKey": null,
-          "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
-            "actions-run:41719252038",
-            "reservation-id:41719252038:1",
-            "capability-application-sample:1c95d6cb1cec49848400"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_626fe5f0027937c7b86db465",
-          "taskId": "seed-roblox-survival-horror-es-doors-studio-evolution-roblox-usability-v5",
-          "workKey": null,
-          "gameId": "seed-roblox-survival-horror-es-doors",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
-            "actions-run:41719252038",
-            "reservation-id:41719252038:1",
-            "capability-application-sample:2ea94c29af0e998d2652"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_6e547f0362a9502d7f102417",
           "taskId": "star-frontier-studio-evolution-roblox-usability-v5",
           "workKey": null,
@@ -407965,6 +407897,72 @@
             "actions-run:41737647810",
             "reservation-id:41737647810:1",
             "capability-application-sample:dc8f2cf252c9eab9a5f5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a397b5e11fb9a6704f7a706e",
+          "taskId": "defense-studio-evolution-roblox-usability-v6",
+          "workKey": null,
+          "gameId": "defense",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
+            "actions-run:41741559005",
+            "reservation-id:41741559005:1",
+            "capability-application-sample:00dbd0769196bc45caf6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e565d708185940d55d483319",
+          "taskId": "exorcist-office-studio-evolution-roblox-usability-v7",
+          "workKey": null,
+          "gameId": "exorcist-office",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:a5681f06c4222e9334c592971400c6e66f6e4865",
+            "actions-run:41741559005",
+            "reservation-id:41741559005:1",
+            "capability-application-sample:68bfd2939f9c7893846a"
           ],
           "observedAt": null,
           "rawCodeStored": false,
