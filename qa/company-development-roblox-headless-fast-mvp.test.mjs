@@ -232,7 +232,9 @@ test('fantasy survival foundation rebinds existing players and handles native re
   assert.match(server,/for _, nativeFoundationPlayer in ipairs\(Players:GetPlayers\(\)\) do/);
   assert.match(server,/task\.defer\(bindNativeFoundationPlayer, nativeFoundationPlayer\)/);
   assert.match(server,/nativeFoundationRemote\.OnServerEvent:Connect\(function\(player/);
-  assert.match(client,/foundationRemote:FireServer\(/);
+  assert.match(client,/local endpoint=nativeFoundationRemote or ReplicatedStorage:WaitForChild\("RuntimeFoundationReport",12\)/);
+  assert.match(client,/endpoint:FireServer\("CAMERA_READY"\)/);
+  assert.match(client,/endpoint:FireServer\(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY"\)/);
   assert.match(client,/CAMERA_READY/);
   assert.match(client,/INPUT_READY/);
 });
