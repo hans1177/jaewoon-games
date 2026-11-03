@@ -3580,7 +3580,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "심해 잠수, 보물 4개 회수, 산소·체력, 거대 생물 회피, 음파·모바일 조작",
-        "updatedAt": "2026-11-03T07:50:11.006Z",
+        "updatedAt": "2026-11-03T08:01:19.244Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -3686,7 +3686,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "심해 잠수, 보물 4개 회수, 산소·체력, 거대 생물 회피, 음파·모바일 조작",
-            "updatedAt": "2026-11-03T07:50:11.006Z",
+            "updatedAt": "2026-11-03T08:01:19.244Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -4493,7 +4493,7 @@
         "playMode": "HYBRID",
         "playModeLabel": "혼합",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-11-03T07:49:53.504Z",
+        "updatedAt": "2026-11-03T08:08:33.459Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -4637,7 +4637,7 @@
             "playMode": "HYBRID",
             "playModeLabel": "혼합",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-11-03T07:49:53.504Z",
+            "updatedAt": "2026-11-03T08:08:33.459Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -8957,6 +8957,174 @@
       "webPublishedSourceTreeSha": ""
     },
     {
+      "id": "medieval-defense",
+      "name": "왕국 최후의 성벽 · 중세 전쟁 디펜스",
+      "description": "일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중",
+      "genre": [
+        "디펜스",
+        "전략",
+        "RPG",
+        "생존"
+      ],
+      "image": "",
+      "webPath": "web-games/medieval-defense",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "",
+      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "GENERAL_WEB_SOURCE_INTAKE",
+      "homepageCategory": "design-only",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+      "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
+      "web3dRedevelopmentRequired": true,
+      "ownerWebSourceRevision": "aafe573645f3c83449c2a72b7b442bf666376dee4c3f8d7cf59958821c0f8f98",
+      "ownerWebEntryFile": "web-games/medieval-defense/index.html",
+      "webDevelopmentResetRequired": true,
+      "productionTarget": "design-only",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "developmentActive": true,
+        "platform": "WEB",
+        "platformLabel": "웹",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "디펜스",
+          "전략",
+          "RPG",
+          "생존"
+        ],
+        "genreLabel": "장르 미평가",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "개발 작업 정보 없음",
+        "updatedAt": "2026-11-03T08:03:35.198Z",
+        "status": "ACTIVE",
+        "productionClass": "DESIGN_ONLY"
+      },
+      "selectedPlatform": "WEB",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 41,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "medieval-defense",
+          "name": "왕국 최후의 성벽 · 중세 전쟁 디펜스",
+          "description": "일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중",
+          "genres": [
+            "디펜스",
+            "전략",
+            "RPG",
+            "생존"
+          ],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/pwa-icon-512.png",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null,
+          "robloxThumbnail": null,
+          "robloxTitleArtwork": null
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DESIGN_ONLY",
+          "classSource": "GENERAL_WEB_SOURCE_INTAKE",
+          "target": "design-only",
+          "handling": "",
+          "selectedPlatform": "WEB",
+          "stage": "기획 · 아트북/컨셉/설계 최적화"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/medieval-defense",
+            "archive": true,
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "",
+            "sourceTreeSha": ""
+          },
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "design-only",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "기획 · 아트북/컨셉/설계 최적화",
+          "recentWork": "",
+          "runtime": {
+            "authority": "company-runtime",
+            "developmentActive": true,
+            "platform": "WEB",
+            "platformLabel": "웹",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "디펜스",
+              "전략",
+              "RPG",
+              "생존"
+            ],
+            "genreLabel": "장르 미평가",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "개발 작업 정보 없음",
+            "updatedAt": "2026-11-03T08:03:35.198Z",
+            "status": "ACTIVE",
+            "productionClass": "DESIGN_ONLY"
+          }
+        }
+      },
+      "catalogOrder": 41
+    },
+    {
       "id": "territory-war",
       "name": "영토전쟁",
       "description": "영지를 확장하는 전략 게임",
@@ -9006,7 +9174,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 41,
+        "catalogOrder": 42,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -9145,7 +9313,7 @@
           }
         }
       },
-      "catalogOrder": 41,
+      "catalogOrder": 42,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "targetPlatform": "ROBLOX",
@@ -9208,22 +9376,6 @@
       "webPublishedSourceTreeSha": "bd1cd06ff49b156e284f3d5946e8f9d368819175",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
-    },
-    {
-      "id": "card-grid-duel",
-      "name": "card-grid-duel",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
-      "lifecycleState": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "robloxProjectPath": "roblox-games/card-grid-duel",
-      "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
-      "sourceIntake": {
-        "kind": "EXISTING_ROJO_PROJECT",
-        "designVerified": false,
-        "runtimeVerified": false,
-        "externalReleaseApproved": false
-      }
     }
   ],
   "runtimeAuthority": "company-runtime",
@@ -9233,14 +9385,14 @@
     "UNITY"
   ],
   "runtimeCounts": {
-    "canonicalGames": 41,
-    "homepageInfo": 41,
-    "normalizedGames": 41,
-    "ownerWebAdded": 0,
+    "canonicalGames": 42,
+    "homepageInfo": 42,
+    "normalizedGames": 42,
+    "ownerWebAdded": 1,
     "ownerWebUpdated": 25,
     "ownerWebDisabled": 16,
     "runtimeCatalogAdded": 0,
-    "actualWebPlayableReconciled": 25
+    "actualWebPlayableReconciled": 26
   },
   "catalogSchemaVersion": 2,
   "normalization": {
