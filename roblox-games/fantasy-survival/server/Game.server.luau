@@ -1231,6 +1231,75 @@ local function createMeadowVillage()
       end
       task.wait(.04)
     end
+    -- [마을 숲 바닥·실물 수목] 평평한 검은 초원을 뒤덮던 단색 지면을
+    -- 기존 Roblox Terrain 잔디/낙엽의 낮은 얼룩과 승인된 CC0 굽은 나무로 채운다.
+    -- 건물 16채, 우물/게시판, 네 NPC, 굽은 길 16개와 상호작용 반경은 비운다.
+    local villageGroundPatches=0
+    local villageInteriorTrees=0
+    for index=1,540 do
+      local x=-265+((index*173)%529)+math.sin(index*.73)*3.1
+      local z=-341+((index*113)%285)+math.cos(index*1.31)*3.1
+      local position=Vector2.new(x,z)
+      local blocked=math.abs(x)>265 or z < -345 or z > -52
+        or (position-Vector2.new(0,-146)).Magnitude<25
+        or (position-Vector2.new(0,-101)).Magnitude<19
+        or (position-Vector2.new(-68,-122)).Magnitude<20
+        or (position-Vector2.new(69,-129)).Magnitude<20
+        or (position-Vector2.new(-2,-188)).Magnitude<19
+      if not blocked then
+        for _,house in ipairs(houses) do
+          if (position-Vector2.new(house.x,house.z)).Magnitude<30*house.scale then
+            blocked=true
+            break
+          end
+        end
+      end
+      if not blocked then
+        for _,route in ipairs(villageRoadRoutes) do
+          for segment=1,#route.points-1 do
+            local a,b=route.points[segment],route.points[segment+1]
+            local first=Vector2.new(a[1],a[2])
+            local axis=Vector2.new(b[1]-a[1],b[2]-a[2])
+            local t=math.clamp((position-first):Dot(axis)/math.max(1,axis:Dot(axis)),0,1)
+            if (position-(first+axis*t)).Magnitude<route.width+6 then
+              blocked=true
+              break
+            end
+          end
+          if blocked then break end
+        end
+      end
+      if not blocked and villageDetailReady and index%13==0 then
+        -- 실제 등록된 Kenney 구부러진 나무와 높은 나무만 사용한다. 임시 구체·원뿔 없음.
+        local treeType=index%3==0 and "villageTallTree" or "villageCrookedTree"
+        local height=23+((index*7)%5)*1.8
+        local tree=worldAsset(treeType,Vector3.new(x,3,z),height)
+        if tree then
+          tree.Name="Meadow_Village_InteriorTree_"..index
+          tree:SetAttribute("MeadowVillageScenery",true)
+          tree:SetAttribute("VillageTreeSource","REGISTERED_CC0")
+          tree:PivotTo(tree:GetPivot()*CFrame.Angles(0,math.rad((index*73)%360),0))
+          for _,mesh in ipairs(tree:GetDescendants()) do
+            if mesh:IsA("MeshPart") then
+              mesh.CanCollide=false
+              mesh.CanQuery=false
+              mesh.CastShadow=true
+            end
+          end
+          villageInteriorTrees+=1
+        end
+      elseif not blocked then
+        -- 반경 3~5 스터드, 지표 높이 변화 0.5 이내: 새 구조물/충돌 장식 생성 없음.
+        local radius=3+((index*11)%5)*.55
+        meadowTerrain:FillBall(Vector3.new(x,2.06-radius+.43,z),radius,
+          index%7==0 and Enum.Material.Ground or
+          index%5==0 and Enum.Material.Grass or Enum.Material.LeafyGrass)
+        villageGroundPatches+=1
+      end
+      if index%16==0 then task.wait() end
+    end
+    gameWorld:SetAttribute("MeadowVillageGroundPatchCount",villageGroundPatches)
+    gameWorld:SetAttribute("MeadowVillageInteriorTreeCount",villageInteriorTrees)
     -- [시장·생활 마당] 식탁처럼 보이던 가판대를 늘리지 않고 두 장터만 유지한다.
     -- 기존 CC0 카트·울타리·등불을 농가와 골목에 비대칭 분산 배치한다.
     local furnishings={
@@ -1321,11 +1390,22 @@ local function createMeadowVillage()
       {243,-59},{249,-121},{252,-238},{246,-281},
       {-119,-340},{-101,-344},{115,-342},{141,-338},
     }) do
-      local tree=worldAsset("tree",Vector3.new(pos[1],3,pos[2]),
-        16+((index*7)%5)*1.5)
+      -- [경계 수목] 원뿔처럼 반복되는 한 가지 나무 대신 기존 등록 원본 2종을 번갈아 사용.
+      local treeType=villageDetailReady
+        and (index%3==0 and "villageTallTree" or "villageCrookedTree") or "tree"
+      local tree=worldAsset(treeType,Vector3.new(pos[1],3,pos[2]),
+        23+((index*7)%5)*2)
       if tree then
         tree.Name="Meadow_Village_BoundaryTree_"..index
         tree:SetAttribute("MeadowVillageScenery",true)
+        tree:PivotTo(tree:GetPivot()*CFrame.Angles(0,math.rad((index*91)%360),0))
+        for _,mesh in ipairs(tree:GetDescendants()) do
+          if mesh:IsA("MeshPart") then
+            mesh.CanCollide=false
+            mesh.CanQuery=false
+            mesh.CastShadow=true
+          end
+        end
       end
       if index%3==0 then task.wait(.05) end
     end
