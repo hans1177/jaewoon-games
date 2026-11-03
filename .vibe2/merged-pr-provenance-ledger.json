@@ -152170,11 +152170,129 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_67e3273079f34057b1ba20cf",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-11747",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "79534eb08f638d8e78f7d29f41928f86d190a96c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11747,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/fantasy-forest-visual-repair-20261103",
+        "baseSha": "79534eb08f638d8e78f7d29f41928f86d190a96c",
+        "headSha": "142ac0a2ef7eceabd873dea1df57cff5017a97eb",
+        "mergeCommitSha": "2dcc18df4c81bcc60a870838c4f1f4fbe70fcb39",
+        "mergedAt": "2026-11-03T05:53:43Z",
+        "authorLogin": "hans1177",
+        "titleHash": "2b1b13059ed9989fd49752939233765bd3f961722e3989fac8f51eaf89c03971",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/fantasy-forest-visual-repair-20261103",
+        "candidateSha": "142ac0a2ef7eceabd873dea1df57cff5017a97eb"
+      },
+      "changeStats": {
+        "changedFileCount": 2,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 155,
+        "deletedLineCount": 49,
+        "changedFiles": [
+          "qa/company-development-roblox-package.test.mjs",
+          "roblox-games/fantasy-survival/server/Game.server.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/company-development-roblox-package.test.mjs",
+          "roblox-games/fantasy-survival/server/Game.server.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11747",
+        "merge-commit:2dcc18df4c81bcc60a870838c4f1f4fbe70fcb39",
+        "base-main:79534eb08f638d8e78f7d29f41928f86d190a96c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1211
+    "total": 1212
   }
 }
