@@ -80,7 +80,6 @@ jobs:
           const games=[
             {gameId:'cozy-island',gameName: '포근섬: 작은 왕국 키우기'},
             {gameId:'daechung-rpg',gameName: '포탈 알피지'},
-            {gameId:'horror-escape-room',gameName: '심야 대탈출'},
             {gameId:'fantasy-survival',gameName: '마력숲 생존기'},
           ];
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();

@@ -119,7 +119,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const queue=JSON.parse(fs.readFileSync('/tmp/roblox-current-runtime-queue.json','utf8'));
-          const allowed=new Set(['cozy-island','horror-escape-room','baeksu-war','daechung-rpg','fantasy-survival']);
+          const allowed=new Set(['cozy-island','baeksu-war','daechung-rpg','fantasy-survival']);
           // Cloud quota is shared, but Studio-only queued jobs consume no Cloud
           // Luau execution session and must not starve an already-due retry.
           const activeCloudRuns=fs.readFileSync('/tmp/roblox-active-cloud-qa-runs','utf8').trim().split(/\r?\n/).filter(Boolean);
@@ -164,7 +164,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          [[ "$GAME_ID" =~ ^(cozy-island|horror-escape-room|baeksu-war|daechung-rpg|fantasy-survival)$ ]]
+          [[ "$GAME_ID" =~ ^(cozy-island|baeksu-war|daechung-rpg|fantasy-survival)$ ]]
           gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID" -f retry_open_cloud_only=true
           echo "ROBLOX_OPEN_CLOUD_429_RETRY_DISPATCHED=$GAME_ID"
 

@@ -31,8 +31,6 @@ jobs:
           const j=JSON.parse(fs.readFileSync('/tmp/queued.json','utf8'));
           const rows=j.workflow_runs||[];
           const target=new Set([
-            '.github/workflows/horror-owner-system-publish.yml',
-            '.github/workflows/horror-manor-review.yml',
             '.github/workflows/roblox-skyline-studio-publish-dialog-probe.yml',
             '.github/workflows/roblox-skyline-studio-ui-probe.yml',
             '.github/workflows/roblox-skyline-recover-new-target-from-studio-logs.yml',
@@ -46,11 +44,6 @@ jobs:
           const boot=studio.filter(r=>String(r.path||'').endsWith('company-roblox-runner-pwsh-bootstrap.yml'))
             .sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
           if(boot[0])keep.add(Number(boot[0].id));
-
-          // Horror 검증은 최신 branch 검증 1개만 남긴다.
-          const horror=studio.filter(r=>String(r.path||'').endsWith('horror-owner-system-publish.yml'))
-            .sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
-          if(horror[0])keep.add(Number(horror[0].id));
 
           for(const r of studio){
             const id=Number(r.id);
