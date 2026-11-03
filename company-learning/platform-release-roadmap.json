@@ -1,5 +1,5 @@
 {
-  "version": 600,
+  "version": 601,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -2405,6 +2405,61 @@
       "verifiedResultsReturnToExistingLearningMotor": true,
       "externalAiSelfAcceptance": false,
       "externalAiDirectMainWrite": false,
+      "ownerApprovedPrSourceMerge": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-11-04",
+        "repository": "hans1177/jaewoon-games",
+        "gameId": "fantasy-survival",
+        "targetBranch": "main",
+        "scope": "EXACT_OWNER_APPROVED_SOURCE_PR_MERGE_ONLY",
+        "approvedPullRequests": [
+          {
+            "number": 11787,
+            "approvedHeadSha": "12b6640aeeae70f041cf484f6d7f108f80bf5fb7",
+            "ownerApprovalCommentId": 6605477602,
+            "sourceRole": "ROBLOX_OPENING_UI",
+            "allowedChangedFiles": [
+              "roblox-games/fantasy-survival/client/Game.client.luau",
+              "qa/fantasy-survival-roblox-ui.test.mjs"
+            ],
+            "requiredSuccessfulWorkflows": [
+              "Vibe QA",
+              "All Games Development Sync"
+            ]
+          },
+          {
+            "number": 11792,
+            "approvedHeadSha": "89b20b85b1d14c5480c85eb4f1709edf6c96148f",
+            "ownerApprovalCommentId": 6607148368,
+            "sourceRole": "VIBE_CANDIDATE_MANIFEST_IDENTITY_FIX",
+            "allowedChangedFiles": [
+              ".github/workflows/vibe2-candidate-release.yml",
+              "qa/vibe2-continuous-release-dispatch.test.mjs"
+            ],
+            "requiredSuccessfulWorkflows": [
+              "Vibe2 Core QA",
+              "Company Security Immune System",
+              "Main Write Guard",
+              "Company Evolution QA",
+              "All Games Development Sync"
+            ]
+          }
+        ],
+        "ownerApprovalMayReplaceIndependentPrReviewForTheseExactSourceOnlyMerges": true,
+        "headRevisionMustMatchOwnerApprovedRevision": true,
+        "exactHeadSuccessfulCiRequired": true,
+        "changedFileScopeMustMatchExactly": true,
+        "sourceOnlyMergeDoesNotClaimVibeFanInPass": true,
+        "sourceOnlyMergeDoesNotClaimStudioOrF9Pass": true,
+        "robloxActualStudioAndServerProofStillRequiredForPublication": true,
+        "canonicalPrivateAndPublicRobloxPublishBeforeF9Forbidden": true,
+        "existingReleasePipelineAndPostPublishQaRequired": true,
+        "existingGameSavesCombatAndBalancePreserved": true,
+        "externalAiSelfAcceptanceStillForbidden": true,
+        "genericExternalAiDirectMainWriteStillForbidden": true,
+        "noNewQueueWorkflowOrShadowPipeline": true,
+        "oneShotExactPrsOnly": true
+      },
       "ownsInternalPlaytestRepair": true,
       "externalAiContinuity": {
         "version": 1,
