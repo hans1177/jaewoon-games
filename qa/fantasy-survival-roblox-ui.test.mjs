@@ -250,3 +250,39 @@ test('dark-fantasy cinematic uses twelve distinct approved-image shots with safe
   assert.ok(client.includes('storyForeground.Image=frontId'));
   assert.doesNotMatch(scenes[1],/blood|gore|severed|corpse/i);
 });
+
+test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const asset=fs.readFileSync('assets/shared/party/village-well.glb');
+  assert.equal(asset.toString('ascii',0,4),'glTF');
+  assert.equal(asset.readUInt32LE(8),asset.length);
+  const jsonSize=asset.readUInt32LE(12);
+  const source=JSON.parse(asset.subarray(20,20+jsonSize).toString('utf8'));
+  const bounds=name=>{
+    const node=source.nodes.find(row=>row.name===name);
+    assert.ok(node&&Number.isInteger(node.mesh),'real original mesh: '+name);
+    const primitive=source.meshes[node.mesh].primitives[0];
+    const positions=source.accessors[primitive.attributes.POSITION];
+    return positions.max.map((max,i)=>max-positions.min[i]);
+  };
+  const roof=bounds('Well pitched roof 004');
+  const ring=bounds('Open well stone ring 001');
+  const fullHeight=source.meshes.flatMap(mesh=>mesh.primitives.map(primitive=>
+    source.accessors[primitive.attributes.POSITION])).reduce((span,row)=>({
+    min:Math.min(span.min,row.min[1]),max:Math.max(span.max,row.max[1]),
+  }),{min:Infinity,max:-Infinity});
+  const targetHeight=12.2;
+  const scale=targetHeight/(fullHeight.max-fullHeight.min);
+  assert.ok(Math.abs(ring[1]*scale-3.42)<.08,'stone ring should reach the R15 avatar waist');
+  assert.ok(Math.abs(ring[0]*scale-6.16)<.08,'real original stone ring diameter');
+  assert.ok(Math.abs(roof[0]*scale-8.99)<.08,'wide original pitched roof');
+  assert.match(server,/local wellHeightStuds=12\.2/);
+  assert.match(server,/worldAsset\("villageWell",Vector3\.new\(0,3,-146\),wellHeightStuds\)/);
+  assert.match(server,/mesh\.CanCollide=ring or post/);
+  assert.match(server,/mesh\.CanQuery=ring or post/);
+  assert.match(server,/mesh\.TextureID=="" and not mesh:FindFirstChildOfClass\("SurfaceAppearance"\)/);
+  assert.match(server,/mesh\.Material=Enum\.Material\.Slate/);
+  assert.match(server,/mesh\.Material=Enum\.Material\.WoodPlanks/);
+  assert.match(server,/well:SetAttribute\("MeadowVillageWellOriginal",true\)/);
+  assert.doesNotMatch(server,/worldAsset\("villageFountain"/);
+});
