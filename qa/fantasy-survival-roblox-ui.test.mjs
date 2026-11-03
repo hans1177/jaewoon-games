@@ -264,6 +264,21 @@ test('prologue has only two visible story texts and keeps key characters in the 
   assert.match(intro,/storyAtmosphere\.ZIndex=6/);
 });
 
+test('prologue keeps mobile crop-safe characters visible and starts after a bounded first-frame preload',()=>{
+  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
+  assert.match(intro,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
+  assert.match(intro,/introPanel:GetPropertyChangedSignal\("AbsoluteSize"\):Connect\(layoutIntroCaptions\)/);
+  assert.match(intro,/local portrait=size\.Y>size\.X\*1\.1/);
+  assert.match(intro,/local frontScale=fourPerson and 1\.0 or closeUp and 1\.27/);
+  assert.match(intro,/local firstShotDeadline=os\.clock\(\)\+2\.4/);
+  assert.match(intro,/if not entranceOpen or token~=runToken then return end\s+TweenService:Create\(storyProgress/);
+  assert.match(intro,/scene\.view=="seal" and \.64 or \.55/);
+  assert.match(intro,/local sway=math\.sin\(t\*1\.15\)\*cameraMotionIntensity\*\.12/);
+  assert.match(intro,/Position=UDim2\.fromScale\(-margin\+math\.clamp\(x,-margin,margin\)/);
+  assert.match(intro,/TweenService:Create\(departing,TweenInfo\.new\(\.4/);
+  assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
+});
+
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   const asset=fs.readFileSync('assets/shared/party/village-well.glb');

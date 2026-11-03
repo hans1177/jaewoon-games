@@ -1974,7 +1974,7 @@ do
   storyForeground.BorderSizePixel=0
   storyForeground.Size=UDim2.fromScale(1.08,1.08)
   storyForeground.Position=UDim2.fromScale(-.04,-.04)
-  storyForeground.ScaleType=Enum.ScaleType.Crop
+  storyForeground.ScaleType=Enum.ScaleType.Fit
   storyForeground.ImageTransparency=1
   storyForeground.ZIndex=8
   storyForeground.Visible=false
@@ -2099,6 +2099,19 @@ do
   introDialogue.ZIndex=14
   local dialogueSize=Instance.new("UITextSizeConstraint")
   dialogueSize.MinTextSize=15;dialogueSize.MaxTextSize=23;dialogueSize.Parent=introDialogue
+  -- [모바일 자막] 화면 비율이 바뀌어도 제목·대사 두 곳만 유지하고 인물의 중앙을 비운다.
+  local function layoutIntroCaptions()
+    local size=introPanel.AbsoluteSize
+    if size.X<1 or size.Y<1 then return end
+    local portrait=size.Y>size.X*1.1
+    regionIntro.Position=UDim2.fromScale(.5,portrait and .135 or .145)
+    regionIntro.Size=UDim2.fromScale(portrait and .92 or .86,portrait and .075 or .088)
+    subtitlePlate.Size=UDim2.fromScale(portrait and .96 or .90,portrait and .20 or .155)
+    introDialogue.Position=UDim2.fromScale(.5,portrait and .704 or .741)
+    introDialogue.Size=UDim2.fromScale(portrait and .90 or .84,portrait and .14 or .103)
+  end
+  layoutIntroCaptions()
+  introPanel:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutIntroCaptions)
   local introFlash=Instance.new("Frame")
   introFlash.Name="SceneTransition"
   introFlash.Size=UDim2.fromScale(1,1)
@@ -2285,9 +2298,6 @@ do
     end
     skipButton.Activated:Once(finish)
     storyProgress.Size=UDim2.fromScale(0,1)
-    TweenService:Create(storyProgress,TweenInfo.new(total,Enum.EasingStyle.Linear),{
-      Size=UDim2.fromScale(1,1)
-    }):Play()
 
     -- [카메라] 시네마틱 푸시인·흔들림을 기존 월드 위에 합성한다.
     -- 플레이어 이동과 서버 전투·저장에는 영향을 주지 않는다.
@@ -2309,7 +2319,7 @@ do
           local camera=workspace.CurrentCamera
           if not camera or camera.CameraType~=Enum.CameraType.Scriptable or not cameraMotionValue then return end
           local t=os.clock()-cameraMotionStart
-          local sway=math.sin(t*1.15)*.07
+          local sway=math.sin(t*1.15)*cameraMotionIntensity*.12
           local tremor=cameraMotionIntensity*(.4+.6*math.sin(t*11)^2)
           local x=math.sin(t*29)*tremor*.38+sway
           local y=math.cos(t*24)*tremor*.24
@@ -2353,18 +2363,34 @@ do
     -- [12개 장면 원본 + 인물 전경] 기존 등록 이미지를 그대로 재생한다. 아틀라스 크롭 없음.
     local registeredStoryArt=Config.CinematicIntroSceneIds or {}
     local registeredStoryDepth=Config.CinematicIntroForegroundIds or {}
+    -- [첫 장면 원화 준비] 1번 배경·4인 전경을 우선 준비한다. 지연은 최대 2.4초.
+    local firstShotReady=false
     task.spawn(function()
       local ContentProvider=game:GetService("ContentProvider")
-      local preload={}
-      for _,id in ipairs(registeredStoryArt) do
-        if typeof(id)=="string" then table.insert(preload,id) end
+      local first={}
+      for _,id in ipairs({registeredStoryArt[1],registeredStoryDepth[1]}) do
+        if typeof(id)=="string" then table.insert(first,id) end
       end
-      for _,id in pairs(registeredStoryDepth) do
-        if typeof(id)=="string" then table.insert(preload,id) end
+      if #first>0 then pcall(function() ContentProvider:PreloadAsync(first) end) end
+      firstShotReady=true
+      local remaining={}
+      for index,id in ipairs(registeredStoryArt) do
+        if index>1 and typeof(id)=="string" then table.insert(remaining,id) end
       end
-      if #preload>0 then pcall(function() ContentProvider:PreloadAsync(preload) end) end
+      for index,id in pairs(registeredStoryDepth) do
+        if index~=1 and typeof(id)=="string" then table.insert(remaining,id) end
+      end
+      if #remaining>0 then pcall(function() ContentProvider:PreloadAsync(remaining) end) end
     end)
     task.spawn(function()
+      local firstShotDeadline=os.clock()+2.4
+      while entranceOpen and token==runToken and not firstShotReady and os.clock()<firstShotDeadline do
+        task.wait(.05)
+      end
+      if not entranceOpen or token~=runToken then return end
+      TweenService:Create(storyProgress,TweenInfo.new(total,Enum.EasingStyle.Linear),{
+        Size=UDim2.fromScale(1,1),
+      }):Play()
       for index,scene in ipairs(scenes) do
         if not entranceOpen or token~=runToken then return end
         currentStoryScene=index
@@ -2442,15 +2468,19 @@ do
           storyArtwork.Rotation=0
           storyArtwork.Position=UDim2.fromScale(-.035,-.035)
           storyArtwork.Size=UDim2.fromScale(1.07,1.07)
-          local x=scene.movement=="sweep" and direction*.065
+          -- [인물 중심 숏] 빅브라더·미러 장면은 배경을 고정하고, 전투·추락만 크게 이동한다.
+          local quietPortrait=scene.cinema=="crown" or scene.cinema=="omen" or scene.cinema=="erasure"
+          local x=quietPortrait and 0 or scene.movement=="sweep" and direction*.065
             or scene.movement=="rise" and direction*.02 or direction*.035
-          local y=scene.movement=="fall" and .1 or scene.movement=="rise" and -.07 or -.035
-          local zoom=(scene.cinema=="crown" or scene.cinema=="omen" or scene.cinema=="erasure") and 1.075
+          local y=quietPortrait and 0 or scene.movement=="fall" and .1
+            or scene.movement=="rise" and -.07 or -.035
+          local zoom=quietPortrait and 1.075
             or scene.cinema=="charge" and 1.15 or scene.cinema=="betrayal" and 1.11
             or scene.cinema=="rift" and 1.19 or scene.cinema=="dawn" and 1.105 or 1.12
+          local margin=(zoom-1)/2
           local shotDuration=scene.cinema=="charge" and scene.seconds*.62 or scene.seconds
           activeArtTween=TweenService:Create(storyArtwork,TweenInfo.new(shotDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
-            Position=UDim2.fromScale(-.07+x,-.065+y),
+            Position=UDim2.fromScale(-margin+math.clamp(x,-margin,margin),-margin+math.clamp(y,-margin,margin)),
             Size=UDim2.fromScale(zoom,zoom),
             Rotation=scene.cinema=="rift" and direction*3
               or scene.movement=="fall" and direction*1.2 or 0,
@@ -2465,9 +2495,9 @@ do
           -- 빅브라더/미러는 상반신 중심으로 크게, 얼굴을 가리지 않게 고정한다.
           local fourPerson=scene.cinema=="siege" or scene.cinema=="charge" or scene.cinema=="freeze"
           local closeUp=scene.cinema=="crown" or scene.cinema=="omen" or scene.cinema=="erasure"
-          local frontScale=fourPerson and 1.07 or closeUp and 1.34
-            or scene.cinema=="betrayal" and 1.2 or scene.cinema=="dawn" and 1.25
-            or scene.cinema=="rift" and 1.22 or 1.16
+          local frontScale=fourPerson and 1.0 or closeUp and 1.27
+            or scene.cinema=="betrayal" and 1.13 or scene.cinema=="dawn" and 1.16
+            or scene.cinema=="rift" and 1.17 or 1.12
           local frontX=-(frontScale-1)/2
           local frontY=frontX+(closeUp and .035 or 0)
           storyForeground.Image=frontId
@@ -2478,7 +2508,7 @@ do
           storyForeground.Rotation=0
           storyForeground.Size=UDim2.fromScale(frontScale,frontScale)
           storyForeground.Position=UDim2.fromScale(frontX,frontY)
-          local frontZoom=frontScale+(fourPerson and .04 or closeUp and .025 or .055)
+          local frontZoom=frontScale+(fourPerson and .015 or closeUp and .02 or .04)
           activeFrontTween=TweenService:Create(storyForeground,TweenInfo.new(scene.seconds,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
             Position=UDim2.fromScale(frontX-(frontZoom-frontScale)/2,frontY-(frontZoom-frontScale)/2),
             Size=UDim2.fromScale(frontZoom,frontZoom),
@@ -2493,10 +2523,10 @@ do
         -- [장면 전환] 이전 그림은 짧게 녹여 사라지고, 새 장면의 원화·전경 이동은 계속된다.
         for _,departing in ipairs({departingArtwork,departingForeground}) do
           if departing.Visible then
-            TweenService:Create(departing,TweenInfo.new(.65,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+            TweenService:Create(departing,TweenInfo.new(.4,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
               ImageTransparency=1,
             }):Play()
-            task.delay(.7,function()
+            task.delay(.45,function()
               if entranceOpen and token==runToken and currentStoryScene==index then departing.Visible=false end
             end)
           end
@@ -2533,7 +2563,8 @@ do
         introTint.BackgroundTransparency=scene.view=="seal" and .78 or scene.view=="sky" and .87
           or scene.view=="fall" and .7 or .81
         introFlash.BackgroundColor3=color
-        introFlash.BackgroundTransparency=scene.view=="seal" and .07 or .14
+        introFlash.BackgroundTransparency=(scene.cinema=="crown" or scene.cinema=="omen" or scene.cinema=="erasure") and .96
+          or scene.view=="seal" and .88 or .83
         moveStoryCamera(scene.view,scene.seconds,scene.cinema)
         -- [기사단 퇴각·기록 삭제] 컷을 정지해 반전을 보여 주고 음향을 비운다.
         if silence then
@@ -2620,7 +2651,7 @@ do
           task.delay(scene.view=="seal" and 2.15 or 1.75,function()
             if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
             introFlash.BackgroundColor3=scene.view=="seal" and Color3.fromRGB(189,109,255) or Color3.fromRGB(8,9,23)
-            introFlash.BackgroundTransparency=.19
+            introFlash.BackgroundTransparency=scene.view=="seal" and .64 or .55
             TweenService:Create(introFlash,TweenInfo.new(.75,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
               BackgroundTransparency=1
             }):Play()
