@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g4-f6c78a62727c",
-  "directiveFingerprint": "f6c78a62727c8a36b7b1e9f16085966b8deb19428b3077f1fca8a6e1ce960aea",
-  "previousDirectiveFingerprint": "508fff98fc7c6bc71943cdb2b26ac49b82f42b5341c055a0f91cbe4a1d67ffe5",
-  "forbiddenRepeatFingerprint": "508fff98fc7c6bc71943cdb2b26ac49b82f42b5341c055a0f91cbe4a1d67ffe5",
+  "directiveId": "line-defense-build-up-g1-204bfe9b649b",
+  "directiveFingerprint": "204bfe9b649b23e244d72ac7f199333b47f8439449bb31897e446b7dd89250e3",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "line-defense",
   "gameName": "골목 군단 대전",
-  "generation": 4,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/line-defense",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
-    "previousDesignFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "line-defense",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
     "sourceTreeFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/line-defense",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/line-defense",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/line-defense/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/line-defense/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "fighter",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "fresh",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "persistTest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "persist",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "updateMeta",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/line-defense/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/line-defense/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "fighter",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "fresh",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "persistTest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "persist",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "updateMeta",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/line-defense/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/line-defense/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "fighter",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "fresh",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "persistTest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "persist",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "updateMeta",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/line-defense/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/line-defense/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "fighter",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "fresh",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "persistTest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "persist",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/line-defense/index.html",
+            "symbol": "updateMeta",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/line-defense/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/line-defense/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4385,18 +4527,18 @@
       },
       {
         "file": "web-games/line-defense/index.html",
-        "line": 295,
-        "kind": "FUNCTION",
-        "symbol": "updateMeta",
-        "context": "function updateMeta(){",
-        "score": 138
-      },
-      {
-        "file": "web-games/line-defense/index.html",
         "line": 251,
         "kind": "FUNCTION",
         "symbol": "persist",
         "context": "function persist(){try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}}",
+        "score": 122
+      },
+      {
+        "file": "web-games/line-defense/index.html",
+        "line": 295,
+        "kind": "FUNCTION",
+        "symbol": "updateMeta",
+        "context": "function updateMeta(){",
         "score": 122
       },
       {
@@ -4409,22 +4551,6 @@
       },
       {
         "file": "web-games/line-defense/index.html",
-        "line": 294,
-        "kind": "FUNCTION",
-        "symbol": "toast",
-        "context": "function toast(m){const t=q('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),1300)}",
-        "score": 98
-      },
-      {
-        "file": "web-games/line-defense/index.html",
-        "line": 593,
-        "kind": "FUNCTION",
-        "symbol": "enemyColor",
-        "context": "function enemyColor(k){return{mouse:'#c7b7a7',rabbit:'#ffb2aa',mole:'#8291a2',boar:'#d86d61',hornBoar:'#ad695a',goose:'#e6cf8a',seaWolf:'#5aa7c8',boss:'#7d746d'}[k]||'#ddd'}",
-        "score": 98
-      },
-      {
-        "file": "web-games/line-defense/index.html",
         "line": 252,
         "kind": "FUNCTION",
         "symbol": "resetAllProgress",
@@ -4433,10 +4559,10 @@
       },
       {
         "file": "web-games/line-defense/index.html",
-        "line": 390,
+        "line": 294,
         "kind": "FUNCTION",
-        "symbol": "onEnemyKilled",
-        "context": "function onEnemyKilled(enemy){",
+        "symbol": "toast",
+        "context": "function toast(m){const t=q('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),1300)}",
         "score": 90
       },
       {
@@ -4445,14 +4571,6 @@
         "kind": "FUNCTION",
         "symbol": "loop",
         "context": "function loop(now){if(!s||!s.running)return;const dt=Math.min(.035,(now-last)/1000||0);last=now;if(!s.paused)update(dt);draw();hud();if(s&&s.running)raf=requestAnimationFrame(loop)",
-        "score": 90
-      },
-      {
-        "file": "web-games/line-defense/index.html",
-        "line": 594,
-        "kind": "FUNCTION",
-        "symbol": "hud",
-        "context": "function hud(){",
         "score": 90
       },
       {
@@ -4481,22 +4599,6 @@
       },
       {
         "file": "web-games/line-defense/index.html",
-        "line": 559,
-        "kind": "FUNCTION",
-        "symbol": "visualOffsets",
-        "context": "function visualOffsets(list){",
-        "score": 82
-      },
-      {
-        "file": "web-games/line-defense/index.html",
-        "line": 570,
-        "kind": "FUNCTION",
-        "symbol": "actor",
-        "context": "function actor(f,g,visualY=0){",
-        "score": 82
-      },
-      {
-        "file": "web-games/line-defense/index.html",
         "line": 334,
         "kind": "FUNCTION",
         "symbol": "toggleSquad",
@@ -4505,10 +4607,34 @@
       },
       {
         "file": "web-games/line-defense/index.html",
-        "line": 387,
+        "line": 390,
         "kind": "FUNCTION",
-        "symbol": "spawn",
-        "context": "function spawn(k,tag=''){",
+        "symbol": "onEnemyKilled",
+        "context": "function onEnemyKilled(enemy){",
+        "score": 74
+      },
+      {
+        "file": "web-games/line-defense/index.html",
+        "line": 559,
+        "kind": "FUNCTION",
+        "symbol": "visualOffsets",
+        "context": "function visualOffsets(list){",
+        "score": 74
+      },
+      {
+        "file": "web-games/line-defense/index.html",
+        "line": 593,
+        "kind": "FUNCTION",
+        "symbol": "enemyColor",
+        "context": "function enemyColor(k){return{mouse:'#c7b7a7',rabbit:'#ffb2aa',mole:'#8291a2',boar:'#d86d61',hornBoar:'#ad695a',goose:'#e6cf8a',seaWolf:'#5aa7c8',boss:'#7d746d'}[k]||'#ddd'}",
+        "score": 74
+      },
+      {
+        "file": "web-games/line-defense/index.html",
+        "line": 594,
+        "kind": "FUNCTION",
+        "symbol": "hud",
+        "context": "function hud(){",
         "score": 74
       },
       {
@@ -4550,17 +4676,27 @@
         "symbol": "battleStats",
         "context": "function battleStats(id){",
         "score": 66
+      },
+      {
+        "file": "web-games/line-defense/index.html",
+        "line": 347,
+        "kind": "FUNCTION",
+        "symbol": "upgradeCharacter",
+        "context": "function upgradeCharacter(id){",
+        "score": 66
+      },
+      {
+        "file": "web-games/line-defense/index.html",
+        "line": 213,
+        "kind": "FUNCTION",
+        "symbol": "applyStoryUnlocks",
+        "context": "function applyStoryUnlocks(v,addNew=false){",
+        "score": 58
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 3,
-    "previousSourceTreeFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
-    "currentSourceTreeFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5689,9 +5825,9 @@
   ],
   "primaryFocus": "CORE_FUN",
   "thisLoopPrimaryGoal": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"골목 군단 대전\", 현재 책임 소스는 web-games/line-defense/index.html::fighter, web-games/line-defense/index.html::fresh, web-games/line-defense/index.html::persistTest, web-games/line-defense/index.html::updateMeta, web-games/line-defense/index.html::persist, web-games/line-defense/index.html::update, web-games/line-defense/index.html::toast, web-games/line-defense/index.html::enemyColor이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"골목 군단 대전\", 현재 책임 소스는 web-games/line-defense/index.html::fighter, web-games/line-defense/index.html::fresh, web-games/line-defense/index.html::persistTest, web-games/line-defense/index.html::persist, web-games/line-defense/index.html::updateMeta, web-games/line-defense/index.html::update, web-games/line-defense/index.html::resetAllProgress, web-games/line-defense/index.html::toast이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 web-games/line-defense/index.html::fighter, web-games/line-defense/index.html::fresh, web-games/line-defense/index.html::persistTest, web-games/line-defense/index.html::updateMeta, web-games/line-defense/index.html::persist, web-games/line-defense/index.html::update, web-games/line-defense/index.html::toast, web-games/line-defense/index.html::enemyColor에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 web-games/line-defense/index.html::fighter, web-games/line-defense/index.html::fresh, web-games/line-defense/index.html::persistTest, web-games/line-defense/index.html::persist, web-games/line-defense/index.html::updateMeta, web-games/line-defense/index.html::update, web-games/line-defense/index.html::resetAllProgress, web-games/line-defense/index.html::toast에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "골목 군단 대전를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "방어 시설 배치 × 역사적 세력 균형가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -5855,23 +5991,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 4,
-    "selectedThemeReason": "2 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "2 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 4,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -5907,7 +6040,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 160,
+        "score": 54,
         "gapDomains": [
           "INVENTORY_USABILITY",
           "EQUIPMENT_LOADOUT"
@@ -6022,12 +6155,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 4,
-    "previousGeneration": 3,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
-    "priorSourceFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6511,11 +6644,11 @@
       "gameId": "line-defense",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 4,
+        "generation": 1,
         "actorClass": "BOSS",
         "sourceOwnerFile": "web-games/line-defense/index.html",
-        "qualityAxis": "POSE_VELOCITY_CROSSFADE",
-        "featureId": "POSE_VELOCITY_CROSSFADE",
+        "qualityAxis": "NATIVE_RIG_BINDING",
+        "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -6527,7 +6660,7 @@
           "variants": [],
           "gameId": "line-defense",
           "actorClass": "BOSS",
-          "featureId": "POSE_VELOCITY_CROSSFADE",
+          "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -7217,20 +7350,20 @@
       },
       {
         "file": "web-games/line-defense/index.html",
-        "line": 295,
-        "kind": "FUNCTION",
-        "symbol": "updateMeta",
-        "currentBehavior": "function updateMeta(){",
-        "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateMeta의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/line-defense/index.html",
         "line": 251,
         "kind": "FUNCTION",
         "symbol": "persist",
         "currentBehavior": "function persist(){try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}}",
         "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 persist의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/line-defense/index.html",
+        "line": 295,
+        "kind": "FUNCTION",
+        "symbol": "updateMeta",
+        "currentBehavior": "function updateMeta(){",
+        "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateMeta의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7244,20 +7377,20 @@
       },
       {
         "file": "web-games/line-defense/index.html",
+        "line": 252,
+        "kind": "FUNCTION",
+        "symbol": "resetAllProgress",
+        "currentBehavior": "function resetAllProgress(){save=defaultSave();persist();updateMeta();buttons();toast('진행도를 처음부터 초기화했어')}",
+        "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 resetAllProgress의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/line-defense/index.html",
         "line": 294,
         "kind": "FUNCTION",
         "symbol": "toast",
         "currentBehavior": "function toast(m){const t=q('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),1300)}",
         "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 toast의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/line-defense/index.html",
-        "line": 593,
-        "kind": "FUNCTION",
-        "symbol": "enemyColor",
-        "currentBehavior": "function enemyColor(k){return{mouse:'#c7b7a7',rabbit:'#ffb2aa',mole:'#8291a2',boar:'#d86d61',hornBoar:'#ad695a',goose:'#e6cf8a',seaWolf:'#5aa7c8',boss:'#7d746d'}[k]||'#ddd'}",
-        "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 enemyColor의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -7282,13 +7415,13 @@
       },
       {
         "file": "web-games/line-defense/index.html",
-        "symbol": "updateMeta",
+        "symbol": "persist",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/line-defense/index.html",
-        "symbol": "persist",
+        "symbol": "updateMeta",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -7300,13 +7433,13 @@
       },
       {
         "file": "web-games/line-defense/index.html",
-        "symbol": "toast",
+        "symbol": "resetAllProgress",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/line-defense/index.html",
-        "symbol": "enemyColor",
+        "symbol": "toast",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -7392,6 +7525,29 @@
         "symbol": "fighter",
         "context": "function fighter(t,x,team){return Object.assign({},t,{x,team,uid:++fighterSeq,maxHp:t.hp,hp:t.hp,cd:Math.random()*.12,flash:0,dead:false})}",
         "score": 162,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "summon",
+            "spawn"
+          ],
+          "stateReads": [
+            "fighterSeq",
+            "t",
+            "x",
+            "hp"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function fighter(t,x,team){return Object.assign({},t,{x,team,uid:++fighterSeq,maxHp:t.hp,hp:t.hp,cd:Math.random()*.12,flash:0,dead:false})}",
         "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 fighter의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/line-defense/index.html::fighter이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7404,6 +7560,37 @@
         "symbol": "fresh",
         "context": "function fresh(mode='main',testStage=1){",
         "score": 162,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "castleMax"
+          ],
+          "calledBy": [
+            "start"
+          ],
+          "stateReads": [
+            "STAGE_PLANS",
+            "TEST_PLANS",
+            "save",
+            "h",
+            "hp",
+            "a"
+          ],
+          "stateWrites": [
+            "h"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE",
+            "COMBAT",
+            "AI",
+            "PROGRESSION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function fresh(mode='main',testStage=1){",
         "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 fresh의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/line-defense/index.html::fresh이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7416,21 +7603,28 @@
         "symbol": "persistTest",
         "context": "function persistTest(){try{localStorage.setItem(TEST_KEY,JSON.stringify(testSave))}catch(e){}}",
         "score": 138,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "finish"
+          ],
+          "stateReads": [
+            "testSave"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function persistTest(){try{localStorage.setItem(TEST_KEY,JSON.stringify(testSave))}catch(e){}}",
         "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 persistTest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/line-defense/index.html::persistTest이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/line-defense/index.html",
-        "line": 295,
-        "kind": "FUNCTION",
-        "symbol": "updateMeta",
-        "context": "function updateMeta(){",
-        "score": 138,
-        "currentBehavior": "function updateMeta(){",
-        "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateMeta의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/line-defense/index.html::updateMeta이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7440,9 +7634,84 @@
         "symbol": "persist",
         "context": "function persist(){try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}}",
         "score": 122,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "resetAllProgress",
+            "toggleSquad",
+            "upgradeCharacter",
+            "gacha",
+            "upgradeMeta",
+            "finish"
+          ],
+          "stateReads": [
+            "save"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function persist(){try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}}",
         "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 persist의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/line-defense/index.html::persist이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/line-defense/index.html",
+        "line": 295,
+        "kind": "FUNCTION",
+        "symbol": "updateMeta",
+        "context": "function updateMeta(){",
+        "score": 122,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "metaCost",
+            "remainingGachaIds"
+          ],
+          "calledBy": [
+            "resetAllProgress",
+            "toggleSquad",
+            "upgradeCharacter",
+            "gacha",
+            "upgradeMeta",
+            "finish"
+          ],
+          "stateReads": [
+            "MAX_SQUAD",
+            "U",
+            "save",
+            "left",
+            "k"
+          ],
+          "stateWrites": [
+            "left"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "SAVE",
+            "WORLD",
+            "AI",
+            "ECONOMY",
+            "PROGRESSION",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "function updateMeta(){",
+        "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateMeta의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/line-defense/index.html::updateMeta이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7452,9 +7721,91 @@
         "symbol": "update",
         "context": "function update(dt){",
         "score": 114,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "spawn",
+            "team",
+            "killReward",
+            "onEnemyKilled",
+            "finish"
+          ],
+          "calledBy": [
+            "loop"
+          ],
+          "stateReads": [
+            "v",
+            "base",
+            "i",
+            "dt",
+            "target",
+            "hp",
+            "a",
+            "k"
+          ],
+          "stateWrites": [
+            "i",
+            "target",
+            "hp",
+            "a"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "INTERACTION",
+            "COMBAT",
+            "AI",
+            "ECONOMY",
+            "PROGRESSION",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function update(dt){",
         "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/line-defense/index.html::update이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/line-defense/index.html",
+        "line": 252,
+        "kind": "FUNCTION",
+        "symbol": "resetAllProgress",
+        "context": "function resetAllProgress(){save=defaultSave();persist();updateMeta();buttons();toast('진행도를 처음부터 초기화했어')}",
+        "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "defaultSave",
+            "persist",
+            "updateMeta",
+            "buttons",
+            "toast"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "save"
+          ],
+          "stateWrites": [
+            "save"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PROGRESSION",
+            "CORE_STATE",
+            "SAVE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "function resetAllProgress(){save=defaultSave();persist();updateMeta();buttons();toast('진행도를 처음부터 초기화했어')}",
+        "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 resetAllProgress의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/line-defense/index.html::resetAllProgress이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7463,22 +7814,40 @@
         "kind": "FUNCTION",
         "symbol": "toast",
         "context": "function toast(m){const t=q('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),1300)}",
-        "score": 98,
+        "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "resetAllProgress",
+            "toggleSquad",
+            "upgradeCharacter",
+            "gacha",
+            "upgradeMeta",
+            "summon",
+            "spawn",
+            "team",
+            "hit",
+            "upgradeBattleWallet"
+          ],
+          "stateReads": [
+            "t"
+          ],
+          "stateWrites": [
+            "t"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function toast(m){const t=q('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),1300)}",
         "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 toast의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/line-defense/index.html::toast이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/line-defense/index.html",
-        "line": 593,
-        "kind": "FUNCTION",
-        "symbol": "enemyColor",
-        "context": "function enemyColor(k){return{mouse:'#c7b7a7',rabbit:'#ffb2aa',mole:'#8291a2',boar:'#d86d61',hornBoar:'#ad695a',goose:'#e6cf8a',seaWolf:'#5aa7c8',boss:'#7d746d'}[k]||'#ddd'}",
-        "score": 98,
-        "currentBehavior": "function enemyColor(k){return{mouse:'#c7b7a7',rabbit:'#ffb2aa',mole:'#8291a2',boar:'#d86d61',hornBoar:'#ad695a',goose:'#e6cf8a',seaWolf:'#5aa7c8',boss:'#7d746d'}[k]||'#ddd'}",
-        "intendedBehavior": "CORE_FUN primary goal \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 enemyColor의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/line-defense/index.html::enemyColor이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/line-defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -7570,8 +7939,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 골목 군단 대전의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7590,8 +7959,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7637,12 +8006,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 5,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7705,5 +8074,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:08.479Z"
+  "generatedAt": "2026-11-03T15:35:19.248Z"
 }

@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "kingshot-ad-build-up-g2-9547ad740c91",
-  "directiveFingerprint": "9547ad740c919583e76271552657dc54c34f6e6bb638381d573bb96e4dc86b32",
-  "previousDirectiveFingerprint": "10aea54bc9be257a0107332871c5543302e297acb73cd985c6d177d43120fef9",
-  "forbiddenRepeatFingerprint": "10aea54bc9be257a0107332871c5543302e297acb73cd985c6d177d43120fef9",
+  "directiveId": "kingshot-ad-build-up-g1-53ccb5dfb2ed",
+  "directiveFingerprint": "53ccb5dfb2ed4af1895955c3b544fa61e94cbd89d723759d6144bd0a8b382226",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "kingshot-ad",
   "gameName": "킹샷 광고풍",
-  "generation": 2,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/kingshot-ad",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "be8360d4a02b8daf8907fa661752fbd4580243e7f99549011a80b637aacae88e",
-    "previousDesignFingerprint": "be8360d4a02b8daf8907fa661752fbd4580243e7f99549011a80b637aacae88e",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "kingshot-ad",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "be8360d4a02b8daf8907fa661752fbd4580243e7f99549011a80b637aacae88e",
     "sourceTreeFingerprint": "1c1a217d4d94e5611e04b91892fca4894135c9949e6857df20adb1f6ebb4781a",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/kingshot-ad",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/kingshot-ad",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/kingshot-ad/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/kingshot-ad/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "spawnWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "recruit",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "updateHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "upgrade",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "toast",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/kingshot-ad/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/kingshot-ad/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "spawnWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "recruit",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "updateHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "upgrade",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "toast",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/kingshot-ad/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/kingshot-ad/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "spawnWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "recruit",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "updateHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "upgrade",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "toast",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/kingshot-ad/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/kingshot-ad/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "spawnWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "recruit",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "updateHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "upgrade",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/kingshot-ad/index.html",
+            "symbol": "toast",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/kingshot-ad/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/kingshot-ad/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4499,11 +4641,19 @@
       },
       {
         "file": "web-games/kingshot-ad/index.html",
+        "line": 68,
+        "kind": "FUNCTION",
+        "symbol": "resize",
+        "context": "function resize(){const d=Math.min(2,devicePixelRatio||1);cv.width=innerWidth*d;cv.height=innerHeight*d;cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';ctx.setTrans",
+        "score": 90
+      },
+      {
+        "file": "web-games/kingshot-ad/index.html",
         "line": 111,
         "kind": "FUNCTION",
         "symbol": "joyMove",
         "context": "function joyMove(e){const r=$('joy').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,m=r.width*.32,d=Math.hypot(dx,dy),k=d>m?m/d:1,p",
-        "score": 98
+        "score": 74
       },
       {
         "file": "web-games/kingshot-ad/index.html",
@@ -4511,15 +4661,7 @@
         "kind": "METHOD",
         "symbol": "addEventListener",
         "context": "addEventListener('keydown',e=>{keys[e.key]=true;if(e.code==='Space'){e.preventDefault();attack()}});addEventListener('keyup',e=>keys[e.key]=false);",
-        "score": 96
-      },
-      {
-        "file": "web-games/kingshot-ad/index.html",
-        "line": 68,
-        "kind": "FUNCTION",
-        "symbol": "resize",
-        "context": "function resize(){const d=Math.min(2,devicePixelRatio||1);cv.width=innerWidth*d;cv.height=innerHeight*d;cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';ctx.setTrans",
-        "score": 90
+        "score": 72
       },
       {
         "file": "web-games/kingshot-ad/index.html",
@@ -4551,7 +4693,7 @@
         "kind": "FUNCTION",
         "symbol": "draw",
         "context": "function draw(){",
-        "score": 58
+        "score": 50
       },
       {
         "file": "web-games/kingshot-ad/index.html",
@@ -4564,13 +4706,7 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 킹샷 광고풍를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "96fae63e1f8b39b22cf163f590cb42cee228467294be5820dc7785ea0454fa88",
-    "currentSourceTreeFingerprint": "1c1a217d4d94e5611e04b91892fca4894135c9949e6857df20adb1f6ebb4781a",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5925,21 +6061,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -5975,7 +6110,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 220,
+        "score": 78,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -6105,12 +6240,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "1c1a217d4d94e5611e04b91892fca4894135c9949e6857df20adb1f6ebb4781a",
-    "priorSourceFingerprint": "96fae63e1f8b39b22cf163f590cb42cee228467294be5820dc7785ea0454fa88",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6588,11 +6723,11 @@
       "gameId": "kingshot-ad",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 2,
+        "generation": 1,
         "actorClass": "PLAYER",
         "sourceOwnerFile": "web-games/kingshot-ad/index.html",
-        "qualityAxis": "POSE_VELOCITY_CROSSFADE",
-        "featureId": "POSE_VELOCITY_CROSSFADE",
+        "qualityAxis": "NATIVE_RIG_BINDING",
+        "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -6604,7 +6739,7 @@
           "variants": [],
           "gameId": "kingshot-ad",
           "actorClass": "PLAYER",
-          "featureId": "POSE_VELOCITY_CROSSFADE",
+          "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -7440,6 +7575,40 @@
         "symbol": "spawnWave",
         "context": "function spawnWave(){const n=4+state.wave*2;for(let i=0;i<n;i++){const heavy=state.wave>=3&&i%5===0;enemies.push({x:WORLD_W-100+Math.random()*70,y:150+Math.random()*(WORLD_H-300),r",
         "score": 266,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "toast"
+          ],
+          "calledBy": [
+            "update"
+          ],
+          "stateReads": [
+            "WORLD_W",
+            "state",
+            "i",
+            "n",
+            "heavy",
+            "x",
+            "y",
+            "r"
+          ],
+          "stateWrites": [
+            "i",
+            "n",
+            "heavy"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "WORLD",
+            "COMBAT",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function spawnWave(){const n=4+state.wave*2;for(let i=0;i<n;i++){const heavy=state.wave>=3&&i%5===0;enemies.push({x:WORLD_W-100+Math.random()*70,y:150+Math.random()*(WORLD_H-300),r",
         "intendedBehavior": "CORE_FUN primary goal \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 킹샷 광고풍를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 spawnWave의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 킹샷 광고풍의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/kingshot-ad/index.html::spawnWave이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7452,6 +7621,39 @@
         "symbol": "recruit",
         "context": "function recruit(){if(state.coin<20){toast('금화가 부족해');return}state.coin-=20;const a=Math.random()*Math.PI*2;soldiers.push({x:hero.x+Math.cos(a)*35,y:hero.y+Math.sin(a)*35,r:12,hp:7",
         "score": 258,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "toast",
+            "updateHud"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "state",
+            "hero",
+            "soldiers",
+            "a",
+            "x",
+            "y",
+            "r"
+          ],
+          "stateWrites": [
+            "state",
+            "soldiers",
+            "a"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "COMBAT",
+            "ECONOMY",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function recruit(){if(state.coin<20){toast('금화가 부족해');return}state.coin-=20;const a=Math.random()*Math.PI*2;soldiers.push({x:hero.x+Math.cos(a)*35,y:hero.y+Math.sin(a)*35,r:12,hp:7",
         "intendedBehavior": "CORE_FUN primary goal \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 킹샷 광고풍를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 recruit의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 킹샷 광고풍의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/kingshot-ad/index.html::recruit이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7464,6 +7666,34 @@
         "symbol": "updateHud",
         "context": "function updateHud(){$('wave').textContent='웨이브 '+state.wave;$('coin').textContent=state.coin;$('wood').textContent=state.wood;$('soldier').textContent=soldiers.filter(s=>s.hp>0).l",
         "score": 250,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "clamp"
+          ],
+          "calledBy": [
+            "recruit",
+            "upgrade",
+            "buildOrGather",
+            "attack",
+            "update"
+          ],
+          "stateReads": [
+            "state",
+            "soldiers"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "CORE_STATE",
+            "ECONOMY"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function updateHud(){$('wave').textContent='웨이브 '+state.wave;$('coin').textContent=state.coin;$('wood').textContent=state.wood;$('soldier').textContent=soldiers.filter(s=>s.hp>0).l",
         "intendedBehavior": "CORE_FUN primary goal \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 킹샷 광고풍를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateHud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 킹샷 광고풍의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/kingshot-ad/index.html::updateHud이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7476,6 +7706,31 @@
         "symbol": "upgrade",
         "context": "function upgrade(){if(state.coin<30){toast('금화가 부족해');return}state.coin-=30;state.heroDamage+=8;toast('검 공격력 +8');updateHud()}",
         "score": 226,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "toast",
+            "updateHud"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "state"
+          ],
+          "stateWrites": [
+            "state"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "ECONOMY",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function upgrade(){if(state.coin<30){toast('금화가 부족해');return}state.coin-=30;state.heroDamage+=8;toast('검 공격력 +8');updateHud()}",
         "intendedBehavior": "CORE_FUN primary goal \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 킹샷 광고풍를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 upgrade의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 킹샷 광고풍의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/kingshot-ad/index.html::upgrade이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7488,6 +7743,33 @@
         "symbol": "toast",
         "context": "function toast(t,s=1.6){$('notice').textContent=t;$('notice').classList.add('show');state.notice=s}",
         "score": 218,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "spawnWave",
+            "recruit",
+            "upgrade",
+            "buildOrGather",
+            "attack",
+            "update"
+          ],
+          "stateReads": [
+            "state"
+          ],
+          "stateWrites": [
+            "state"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function toast(t,s=1.6){$('notice').textContent=t;$('notice').classList.add('show');state.notice=s}",
         "intendedBehavior": "CORE_FUN primary goal \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 킹샷 광고풍를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 toast의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 킹샷 광고풍의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/kingshot-ad/index.html::toast이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7500,6 +7782,28 @@
         "symbol": "endGame",
         "context": "function endGame(){if(state.dead)return;state.dead=true;$('endTitle').textContent='성문이 무너졌어';$('endText').textContent='웨이브 '+state.wave+'까지 버텼어.';$('end').classList.add('show')}",
         "score": 154,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "update"
+          ],
+          "stateReads": [
+            "state"
+          ],
+          "stateWrites": [
+            "state"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function endGame(){if(state.dead)return;state.dead=true;$('endTitle').textContent='성문이 무너졌어';$('endText').textContent='웨이브 '+state.wave+'까지 버텼어.';$('end').classList.add('show')}",
         "intendedBehavior": "CORE_FUN primary goal \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 킹샷 광고풍를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 endGame의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 킹샷 광고풍의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/kingshot-ad/index.html::endGame이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7512,6 +7816,69 @@
         "symbol": "update",
         "context": "function update(dt){",
         "score": 154,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "spawnWave",
+            "clamp",
+            "dist",
+            "endGame",
+            "toast",
+            "updateHud"
+          ],
+          "calledBy": [
+            "loop"
+          ],
+          "stateReads": [
+            "WORLD_W",
+            "state",
+            "hero",
+            "camera",
+            "soldiers",
+            "d",
+            "a",
+            "now",
+            "target",
+            "mx",
+            "l",
+            "aliveEnemy",
+            "bd",
+            "dh",
+            "w",
+            "x",
+            "y",
+            "dt",
+            "r"
+          ],
+          "stateWrites": [
+            "state",
+            "hero",
+            "camera",
+            "d",
+            "target",
+            "mx",
+            "l",
+            "aliveEnemy",
+            "bd",
+            "dh",
+            "x",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "WORLD",
+            "INTERACTION",
+            "COMBAT",
+            "AI",
+            "ECONOMY",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function update(dt){",
         "intendedBehavior": "CORE_FUN primary goal \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 킹샷 광고풍를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 킹샷 광고풍의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/kingshot-ad/index.html::update이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7524,6 +7891,41 @@
         "symbol": "buildOrGather",
         "context": "function buildOrGather(){if(state.dead)return;",
         "score": 146,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dist",
+            "toast",
+            "updateHud"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "state",
+            "hero",
+            "d",
+            "bestTree",
+            "pad",
+            "bd"
+          ],
+          "stateWrites": [
+            "state",
+            "d",
+            "bestTree",
+            "pad",
+            "bd"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PLACEMENT",
+            "PRESENTATION",
+            "ECONOMY",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function buildOrGather(){if(state.dead)return;",
         "intendedBehavior": "CORE_FUN primary goal \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 킹샷 광고풍를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 buildOrGather의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 킹샷 광고풍의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/kingshot-ad/index.html::buildOrGather이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7628,8 +8030,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "킹샷 광고풍. 역사적 세력 균형·왕조의 정통성과 민심 전략. 킹샷 광고풍에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 킹샷 광고풍의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7648,8 +8050,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7695,12 +8097,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7770,5 +8172,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:13.232Z"
+  "generatedAt": "2026-11-03T15:35:18.381Z"
 }
