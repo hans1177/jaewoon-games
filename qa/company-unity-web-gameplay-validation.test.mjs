@@ -357,21 +357,16 @@ test('current Monster Adventure never fabricates shop, equipment or combat autho
  assert.match(source,/UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING/);
 });
 
-test('actual Unity browser touch visits character, inventory and shop with synchronized gold evidence',()=>{
-  assert.match(daechungUnitySource,/tabsCount=\{MenuTabs\.Length\}/);
-  assert.match(source,/tabCount=getBound\('tabsCount'\)/);
-  assert.match(source,/for\(const \[index,name\] of \[\[3,'CHARACTER'\],\[4,'INVENTORY'\],\[5,'SHOP'\]\]\)/);
-  assert.match(source,/await page\.touchscreen\.tap\(tapX,menuTarget\.y\)/);
-  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_PAGE_NOT_INTERACTIVE:/);
-  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_PLAYER_STATE_MISSING:/);
-  assert.match(source,/source=GAMECORE_V1_STATE/);
-  assert.match(source,/screenGold!==stateGold/);
-  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_GAMECORE_STATE_MISMATCH:/);
-  assert.match(source,/nativePlayerStateObserved:true/);
-  assert.match(source,/visitedPages\.push\('WORLD'\)/);
-  assert.doesNotMatch(source,/mobileMenuInteraction=\{pass:true,actualBrowserTouch:true,visitedPages:\['SOCIAL','WORLD'\]/);
+// [브라우저] 실제 터치 입력을 요구하고 미완성 콘텐츠를 통과시키지 않는다.
+test('current Unity browser requires real touch and rejects bootstrap-only gameplay promotion',()=>{
+ assert.match(monsterUnitySource,/Input\.touchCount > 0/);
+ assert.match(monsterUnitySource,/GUI\.Button\(/);
+ assert.match(source,/page\.touchscreen\.tap\(/);
+ assert.match(source,/UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING/);
+ assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_PAGE_NOT_INTERACTIVE:/);
+ assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_GAMECORE_STATE_MISMATCH:/);
+ assert.match(monsterUnitySource,/BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
 });
-
 
 test('모든 Unity Web 게임에서 실측 3D 메시 없는 QA PASS를 차단한다',()=>{
   assert.match(source,/UNITY_WEB_3D_ONLY_POLICY_REQUIRED/);
@@ -617,42 +612,28 @@ test('published Unity WebGL validation permits only exact official game URLs',()
 });
 
 
-test('Daechung 3D visual actor and world repair emits measured native-depth evidence rather than inventing PASS',()=>{
-  const source=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
-  const actor=source.slice(source.indexOf('private sealed class AnimatedActor'));
-  assert.match(source,/SPATIAL_DEPTH game=daechung-rpg source=UNITY_WORLD_MESH_DEPTH/);
-  assert.match(source,/Mathf\.RoundToInt\(Mathf\.Max\(0f, maxZ - minZ\) \* 100f\)/);
-  assert.match(source,/mesh\.bounds\.size\.z > 0\.02f/);
-  assert.match(source,/spriteGameplayActors=\{spriteGameplayActors\}/);
-  assert.match(source,/worldMeshes3d=\{worldMeshes3d\}/);
-  assert.match(source,/gameplayActors3d=\{gameplayActors3d\}/);
-  assert.match(source,/DaechungWorldTreeTrunk_/);
-  assert.match(source,/DaechungWorldTreeCanopy_/);
-  assert.match(actor,/GameObject\.CreatePrimitive\(shape\)/);
-  assert.match(actor,/part\.GetComponent<MeshRenderer>\(\)\.sharedMaterial = material/);
-  assert.match(actor,/UnityEngine\.Object\.Destroy\(collider\)/);
-  assert.doesNotMatch(actor,/AddComponent<SpriteRenderer>/);
-  assert.match(actor,/GetComponentsInChildren<Renderer>\(true\)/);
-  assert.match(source,/GameObject\.CreatePrimitive\(PrimitiveType\.Quad\)/);
-  assert.match(source,/_backdrop\.sharedMaterial\.mainTexture = sprite\.texture/);
-  assert.match(actor,/HasVisibleVolumetricMesh/);
-  assert.match(actor,/_model\.transform\.localRotation = Quaternion\.Euler/);
-  for(const symbol of ['SetIdentity','SetTint','FaceRight','SetVisible','AddClip','Play','Tick'])
-    assert.match(actor,new RegExp('\\b'+symbol+'\\('));
-  assert.match(source,/actor\.SetIdentity\(id\)/);
+// [3D] 자산 바인딩은 런타임 3축 공간 검증을 대체하지 못한다.
+test('current Monster Adventure binds native meshes without inventing observed volumetric PASS',()=>{
+ assert.match(monsterUnityBuild,/MeshFilter/);
+ assert.match(monsterUnityBuild,/MeshRenderer/);
+ assert.match(monsterUnityBuild,/sharedMesh/);
+ assert.match(monsterUnitySource,/JAEWOON_UNITY_WEB_QA LIBRARY_ASSETS game=/);
+ assert.match(monsterUnitySource,/SOURCE_BOUND_RUNTIME_UNVERIFIED/);
+ assert.match(source,/nativeMeshProof\.volumetricMeshes>0/);
+ assert.match(source,/UNITY_WEB_QA_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D/);
+ assert.match(source,/libraryAssetPromotionGranted:false/);
 });
 
-test('Daechung 3D scene work keeps the canonical combat, touch and save authority untouched',()=>{
-  const source=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
-  assert.match(source,/public void PlayCombatExchange\(bool enemyDefeated, bool playerDefeated\)/);
-  assert.match(source,/private IEnumerator CombatExchangeRoutine\(bool enemyDefeated, bool playerDefeated\)/);
-  assert.match(source,/public void ShowTown\(\)/);
-  assert.match(source,/public void ShowBattle\(\)/);
-  assert.doesNotMatch(source,/PlayerPrefs\.DeleteAll|DeleteKey\(|SaveKey\s*=|experienceReward\s*=|goldReward\s*=/);
-  assert.match(daechungUnitySource,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=daechung-rpg role=action/);
-  assert.match(daechungUnitySource,/private void RewardEnemyDefeat\(EnemyDefinition defeated\)/);
+// [게임 권한] 입력·진행도는 원래 C# 소스에서만 변경한다.
+test('current Unity scene keeps gameplay action and save responsibility while remaining unverified',()=>{
+ for(const method of ['StartGameplay','PerformAction','SafeReturn'])
+   assert.ok(monsterUnitySource.includes('private void '+method+'('),method);
+ assert.match(monsterUnitySource,/Input\.GetKeyDown\(KeyCode\.Space\)/);
+ assert.match(monsterUnitySource,/Input\.touchCount > 0/);
+ assert.match(monsterUnitySource,/PlayerPrefs\.SetInt\(SavePrefix\+"progress"/);
+ assert.match(monsterUnitySource,/BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
+ assert.doesNotMatch(monsterUnityBuild,/PlayerPrefs\.DeleteAll|PlayerPrefs\.DeleteKey/);
 });
-
 
 test('Unity native source F0 failure carries exact signature and file into existing causal-repair workflow',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
