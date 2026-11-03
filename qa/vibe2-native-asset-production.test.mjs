@@ -4847,26 +4847,26 @@ test('shared RPG menu transition is interruptible without resurrecting a retired
   const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
   const model=fs.readFileSync('assets/roblox/rpg-menu/RPGMenuModel.luau','utf8');
   assert.ok(model.length>0,'shared state model remains present');
-  assert.match(source,/TweenService:Create\\(overlay,TweenInfo\\.new\\(\\.18/);
-  assert.match(source,/entranceTween:Cancel\\(\\)/);
-  assert.match(source,/panelTween:Cancel\\(\\)/);
-  assert.match(source,/panelScale.Scale=\\.97/);
+  assert.match(source,/TweenService:Create\(overlay,TweenInfo\.new\(\.18/);
+  assert.match(source,/entranceTween:Cancel\(\)/);
+  assert.match(source,/panelTween:Cancel\(\)/);
+  assert.match(source,/panelScale.Scale=\.97/);
   assert.match(source,/panelScale.Scale=1/);
-  assert.match(source,/stopEntrance\\(\\)\\s*\\n\\s*opened=value/);
-  assert.match(source,/if options\\.onOpen then options\\.onOpen\\(value\\)end/);
-  assert.match(source,/gui\\.Destroying:Connect\\(function\\(\\)\\s*\\n\\s*stopEntrance\\(\\)/);
+  assert.match(source,/stopEntrance\(\)\s*\n\s*opened=value/);
+  assert.match(source,/if options\.onOpen then options\.onOpen\(value\)end/);
+  assert.match(source,/gui\.Destroying:Connect\(function\(\)\s*\n\s*stopEntrance\(\)/);
 });
 
 // 보유 중인 공용 UI에만 착용 상태·분류 계약을 유지한다.
 test('shared RPG inventory labels show equipped state and correct slot category',()=>{
   const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
-  assert.match(source,/b\\.ItemState\\.Text=row\\.equipped and "착용 중" or \\(row\\.category=="장비" and "장비" or "도구"\\)/);
+  assert.match(source,/b\.ItemState\.Text=row\.equipped and "착용 중" or \(row\.category=="장비" and "장비" or "도구"\)/);
 });
 
 test('shared RPG menu only offers equip action for real Tools',()=>{
   const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
-  assert.match(source,/itemAction\\.Visible=row\\.tool~=nil/);
-  assert.match(source,/row\\.tool and "배낭에서 선택한 도구야/);
+  assert.match(source,/itemAction\.Visible=row\.tool~=nil/);
+  assert.match(source,/row\.tool and "배낭에서 선택한 도구야/);
 });
 
 test('Roblox native GLB usage maps exact loaded asset ID without promoting runtime verification',()=>{
