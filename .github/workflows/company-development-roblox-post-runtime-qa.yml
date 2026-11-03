@@ -749,10 +749,11 @@ jobs:
           const transientRetryPath='/tmp/roblox-open-cloud-transient-retry-ids';
           const transientRetryIds=new Set(fs.existsSync(transientRetryPath)?fs.readFileSync(transientRetryPath,'utf8').split(/\r?\n/).map(v=>v.trim()).filter(Boolean):[]);
           const engineProbeByGame=new Map((Array.isArray(probeRows)?probeRows:[]).map(row=>[String(row?.gameId||''),row]));
-          // [공식 서버 조회] 품질 보강은 실제 플레이/F9의 차단 사유지만,
-          // 동일 비공개 후보의 권한 거부(403) 진단까지 막아서는 안 된다.
-          // 읽기 전용 공식 API만 10분당 최대 한 번 재검사하고 실서버 PASS로 승격하지 않는다.
-          const qualityHoldServerReadCandidates=(q.items||[]).filter(item=>{
+          const officialServerReadByGame=new Map(); // 동일 실행에서 공식 서버 API 조회를 중복하지 않는다.
+          // [공식 서버 조회] 스튜디오 전투 수리나 품질 상태가 바뀌어도
+          // 동일 비공개 후보의 권한 거부(403) 진단은 독립적으로 처리한다.
+          // 정확한 후보의 읽기 전용 API만 10분마다 재검사하며 F9 게임플레이 게이트는 유지한다.
+          const pendingServerReadCandidates=(q.items||[]).filter(item=>{
             if(requested&&item.gameId!==requested)return false;
             const candidate=item.robloxRuntimeCandidateEvidence||{};
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
@@ -762,8 +763,8 @@ jobs:
             const lastAt=Date.parse(String(previousRead.observedAt||''));
             return serverDiagnosticEnabled
               &&Boolean(process.env.ROBLOX_OPEN_CLOUD_API_KEY)
-              &&item.robloxQualityBuildUpRequired===true
-              &&item.robloxQualityBuildUpSourceRevision===sourceRevision
+              &&item.robloxFinalReviewPassed!==true
+              &&item.robloxPublicRelease!==true
               &&candidate.published===true
               &&candidate.sourceRevision===sourceRevision
               &&candidate.artifactIdentity===artifactIdentity
@@ -779,7 +780,7 @@ jobs:
               &&previousRead.permissionDenied===true
               &&(!Number.isFinite(lastAt)||Date.now()-lastAt>=10*60*1000);
           });
-          for(const item of qualityHoldServerReadCandidates.slice(0,2)){
+          for(const item of pendingServerReadCandidates.slice(0,2)){
             const candidate=item.robloxRuntimeCandidateEvidence;
             let observation;
             try{
@@ -802,13 +803,14 @@ jobs:
                 authority:'roblox-official-version-scoped-game-server-observation'
               };
             }
+            officialServerReadByGame.set(item.gameId,observation);
             item.robloxRuntimeFoundationEvidence={
               ...item.robloxRuntimeFoundationEvidence,
               officialLiveServerObservation:observation,
             };
             item.updatedAt=new Date().toISOString();
             changed=true;
-            console.log('ROBLOX_QUALITY_HOLD_EXACT_SERVER_READ='+item.gameId
+            console.log('ROBLOX_PENDING_EXACT_SERVER_READ='+item.gameId
               +':version='+Number(candidate.versionNumber)
               +':state='+observation.state
               +':http='+(observation.status??'UNKNOWN')
@@ -1180,9 +1182,10 @@ jobs:
               // Studio 실제 플레이를 재사용할 때도 최신 공식 엔진 조회 결과를 정확한 후보에 기록하고
               // 과거 429 진단을 그대로 노출하지 않는다. F1/F9 실서버 승인은 여기서 하지 않는다.
               const studioCloudDiagnostic=engineProbeByGame.get(item.gameId);
-              let officialLiveServers=null;
-              try{
-                officialLiveServers=await probeRobloxOpenCloudGameServerObservation({
+              let officialLiveServers=officialServerReadByGame.get(item.gameId)||null;
+              if(!officialLiveServers){
+                try{
+                  officialLiveServers=await probeRobloxOpenCloudGameServerObservation({
                   universeId:String(candidate.universeId),
                   placeId:String(candidate.placeId),
                   versionNumber:Number(candidate.versionNumber),
@@ -1196,6 +1199,7 @@ jobs:
                   error:String(error?.message||error).slice(0,180),
                   authority:'roblox-official-version-scoped-game-server-observation',
                 };
+              }
               }
               console.log('ROBLOX_OFFICIAL_EXACT_VERSION_SERVER_LIST='+item.gameId
                 +':version='+Number(candidate.versionNumber)
