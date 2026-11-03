@@ -610,9 +610,20 @@ for index,name in ipairs(meadowPageNames) do
     local label=Instance.new("TextLabel")
     label.Name="LiveDetails";label.BackgroundTransparency=1
     label.Size=UDim2.new(1,-8,0,0);label.AutomaticSize=Enum.AutomaticSize.Y
+    -- [전체 메뉴] 단순 텍스트 덩어리 대신 읽기 편한 정보 카드로 표시한다.
+    label.BackgroundTransparency=0;label.BackgroundColor3=Color3.fromRGB(21,48,45)
     label.TextColor3=Color3.fromRGB(229,239,228);label.Font=Enum.Font.GothamMedium
     label.TextSize=15;label.TextWrapped=true;label.TextXAlignment=Enum.TextXAlignment.Left
-    label.TextYAlignment=Enum.TextYAlignment.Top;label.Parent=page;meadowLabels[index]=label
+    label.TextYAlignment=Enum.TextYAlignment.Top;label.Parent=page
+    local textCorner=Instance.new("UICorner")
+    textCorner.CornerRadius=UDim.new(0,11);textCorner.Parent=label
+    local textBorder=Instance.new("UIStroke")
+    textBorder.Color=Color3.fromRGB(79,121,100);textBorder.Transparency=.45;textBorder.Parent=label
+    local textPadding=Instance.new("UIPadding")
+    textPadding.PaddingTop=UDim.new(0,13);textPadding.PaddingBottom=UDim.new(0,13)
+    textPadding.PaddingLeft=UDim.new(0,14);textPadding.PaddingRight=UDim.new(0,14)
+    textPadding.Parent=label
+    meadowLabels[index]=label
   end
 end
 local meadowJournal={}
@@ -913,7 +924,11 @@ for _,name in ipairs({"ExplorationGroves","DawnTraceFound","NightTraceFound","Ru
 end
 for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채집","scope-coreloop-1-6ebe58f496"},{"장비 강화","scope-coreloop-2-6c927cfa40"}})do
   local button=CommonUI.CreatePrimaryButton({name="MeadowHelper"..index,text=row[1],minHeight=52})
-  button.LayoutOrder=index;button.Size=UDim2.new(1,-8,0,54);button.Parent=meadowPages[5]
+  button.LayoutOrder=index;button.Size=UDim2.new(1,-8,0,54)
+  button.BackgroundColor3=Color3.fromRGB(40,92,69)
+  local helperGradient=button:FindFirstChildOfClass("UIGradient")
+  if helperGradient then helperGradient.Color=ColorSequence.new(Color3.fromRGB(62,121,88),Color3.fromRGB(29,66,56)) end
+  button.Parent=meadowPages[5]
   meadowHelperButtons[index]=button
   button.Activated:Connect(function()
     if player:GetAttribute("ProfileReady")==true then activateMeadowAction(row[2]) end
@@ -964,7 +979,11 @@ player.CharacterAdded:Connect(function(character)task.defer(bindMeadowMenuCharac
 if player.Character then task.defer(bindMeadowMenuCharacter,player.Character) end
 for index,name in ipairs({"효과음","환경음","타격 효과"}) do
   local button=CommonUI.CreatePrimaryButton({name="MeadowOption"..index,text=name,minHeight=52})
-  button.Size=UDim2.new(1,-8,0,54);button.LayoutOrder=index;button.Parent=meadowPages[4]
+  button.Size=UDim2.new(1,-8,0,54);button.LayoutOrder=index
+  button.BackgroundColor3=Color3.fromRGB(40,92,69)
+  local optionGradient=button:FindFirstChildOfClass("UIGradient")
+  if optionGradient then optionGradient.Color=ColorSequence.new(Color3.fromRGB(62,121,88),Color3.fromRGB(29,66,56)) end
+  button.Parent=meadowPages[4]
   local function refreshOption()
     local value=index==1 and meadowEffectsGroup.Volume or meadowAmbienceGroup.Volume
     button.Text=index==3 and ("타격 효과  ·  "..(reducedEffects and "간소화" or "기본"))
@@ -1232,7 +1251,7 @@ gridLayout.SortOrder=Enum.SortOrder.LayoutOrder;gridLayout.CellPadding=UDim2.fro
 gridLayout.Parent=inventoryGrid
 local detail=Instance.new("Frame")
 detail.Name="WitcherItemDetails";detail.LayoutOrder=6
-detail.Size=UDim2.new(1,-8,0,224);detail.BorderSizePixel=0;detail.BackgroundColor3=stone
+detail.Size=UDim2.new(1,-8,0,268);detail.BorderSizePixel=0;detail.BackgroundColor3=stone
 detail.Parent=meadowPages[2]
 local detailGradient=Instance.new("UIGradient")
 detailGradient.Color=ColorSequence.new(Color3.fromRGB(38,77,63),Color3.fromRGB(14,31,40))
@@ -1255,15 +1274,15 @@ title.TextColor3=gold;title.Font=Enum.Font.GothamBold;title.TextSize=18
 title.TextXAlignment=Enum.TextXAlignment.Left;title.Parent=detail
 local description=Instance.new("TextLabel")
 description.Name="SelectedItemDescription";description.Position=UDim2.fromOffset(12,68)
-description.Size=UDim2.new(1,-24,0,93);description.BackgroundTransparency=1
+description.Size=UDim2.new(1,-24,0,136);description.BackgroundTransparency=1
 description.Font=Enum.Font.GothamMedium;description.TextColor3=parchment;description.TextSize=13
 description.TextWrapped=true;description.TextXAlignment=Enum.TextXAlignment.Left
 description.TextYAlignment=Enum.TextYAlignment.Top;description.Parent=detail
 local equip=CommonUI.CreatePrimaryButton({name="WitcherEquipTool",text="선택 장비 착용",minHeight=48})
-equip.Position=UDim2.fromOffset(12,166);equip.Size=UDim2.new(1,-24,0,48)
+equip.Position=UDim2.fromOffset(12,210);equip.Size=UDim2.new(1,-24,0,48)
 equip.BackgroundColor3=Color3.fromRGB(54,112,84);equip.Visible=false;equip.Parent=detail
 local secondary=CommonUI.CreatePrimaryButton({name="WitcherSecondaryItemAction",text="소모품 조합",minHeight=48})
-secondary.Position=UDim2.new(.5,4,0,166);secondary.Size=UDim2.new(.5,-16,0,48)
+secondary.Position=UDim2.new(.5,4,0,210);secondary.Size=UDim2.new(.5,-16,0,48)
 secondary.BackgroundColor3=Color3.fromRGB(55,95,87);secondary.Visible=false;secondary.Parent=detail
 local inventoryEmpty=Instance.new("TextLabel")
 inventoryEmpty.Name="MeadowInventoryEmpty";inventoryEmpty.LayoutOrder=5
