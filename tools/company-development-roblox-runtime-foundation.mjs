@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
 
 const clean=v=>String(v??'').trim();
 const baseRequired=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','CORE_LOOP_READY'];
@@ -271,8 +272,32 @@ export async function probeRobloxOpenCloudGameServerObservation({
         readScopeCrosscheck=Object.freeze({status:0,state:'SAME_KEY_READ_SCOPE_CHECK_UNAVAILABLE'});
       }
     }
+    // [동일 키 검증] 두 공식 universe:read 요청이 403이면 Roblox의 공식 키
+    // 인트로스펙션으로 현재 Actions 비밀 키의 실제 권한/대상만 확인한다.
+    // 키 이름, 키 원문, 생성자 ID, 다른 게임 ID는 상태/로그로 내보내지 않는다.
+    let keyScopeAudit=null;
+    if(readScopeCrosscheck?.status===403){
+      try{
+        const meta=await introspectRobloxApiKey({apiKey:key,fetchImpl});
+        const scopeRows=meta.scopes.filter(row=>
+          row.name==='universe'&&row.operations.includes('read'));
+        const targetMatches=scopeRows.some(row=>
+          row.universeIds.length===0||row.universeIds.includes('*')||row.universeIds.includes(universe));
+        const auditState=meta.expired?'API_KEY_EXPIRED'
+          :!meta.enabled?'API_KEY_DISABLED'
+          :scopeRows.length===0?'UNIVERSE_READ_SCOPE_NOT_IN_ACTIONS_KEY'
+          :!targetMatches?'PRIVATE_UNIVERSE_NOT_ALLOWED_IN_ACTIONS_KEY'
+          :'UNIVERSE_READ_SCOPE_AND_TARGET_PRESENT_BUT_SERVER_DENIED';
+        keyScopeAudit=Object.freeze({state:auditState,
+          keyEnabled:meta.enabled,keyExpired:meta.expired,
+          universeReadGranted:scopeRows.length>0,
+          targetConfigured:targetMatches});
+      }catch{
+        keyScopeAudit=Object.freeze({state:'ACTIONS_KEY_INTROSPECTION_UNAVAILABLE'});
+      }
+    }
     return Object.freeze({...base,available:false,permissionDenied:true,
-      providerErrorCode:errorCode,accessFailureCategory,readScopeCrosscheck,
+      providerErrorCode:errorCode,accessFailureCategory,readScopeCrosscheck,keyScopeAudit,
       serverInstanceObserved:false,activeServerCount:null,
       state:'GAME_SERVER_READ_PERMISSION_UNAVAILABLE'});
   }
