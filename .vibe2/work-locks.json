@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1ea3bbi",
+      "worker": "vibe2",
+      "taskId": "exorcist-office-existing-web-assessment-v1",
+      "gameId": "exorcist-office",
+      "files": [
+        "web-games/exorcist-office/index.html"
+      ],
+      "baseSha": "1e49963b06493c530b425a99e1da0c9756098da9",
+      "runId": "41658255144",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-03T15:19:58.781Z",
+      "expiresAt": "2026-11-03T16:04:58.781Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:exorcist-office-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
