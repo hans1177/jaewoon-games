@@ -2139,8 +2139,8 @@ test('마력숲 모험 수첩은 캐릭터 인벤토리 저널 옵션 도우미�
  assert.match(ui,/page.Visible=i==index/);
  assert.match(ui,/CreateFilterBar\(\{name="MeadowMenuTabs"/);
  // [마력숲 탐험 수첩] 새 모바일 좌우 여백·본문 간격과 기존 페이지 선택을 함께 검증한다.
- assert.match(ui,/tabs.Size=UDim2.new\\(1,-28,0,50\\)/);
- assert.match(ui,/local bodyTop=tabs and \\(primary and primary\\.witcherStyle/);
+ assert.match(ui,/tabs.Size=UDim2.new\(1,-28,0,50\)/);
+ assert.match(ui,/local bodyTop=tabs and \(primary and primary\.witcherStyle/);
  assert.match(ui,/MeadowMenuSubtitle/);
  assert.doesNotMatch(client,/DataStoreService|HttpService:GetAsync/);
 });
