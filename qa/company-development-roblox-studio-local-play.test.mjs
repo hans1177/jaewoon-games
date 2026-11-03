@@ -2108,7 +2108,7 @@ test('missing local character aborts before movement and routes to exact-source 
 });
 
 test('Studio startup probe follows declared entry steps, exact start action, and blocking-overlay gates before normal QA',()=>{
-  assert.equal(ROBLOX_STUDIO_HARNESS_VERSION,17);
+  assert.equal(ROBLOX_STUDIO_HARNESS_VERSION,18);
   assert.match(helper,/ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE/);
   assert.match(helper,/initial-character-playable/);
   assert.match(helper,/const entryButtonTexts=launchStringList\(actualPlayContract\.entryButtonTexts\)/);
@@ -3262,7 +3262,13 @@ test('each Studio job downloads into a unique writable exact-content package dir
  const writable=block.indexOf('$places[0].IsReadOnly = $false');
  const launch=block.indexOf('$placeLaunchProcess = Start-Process');
  assert.ok(hashCheck>0&&writable>hashCheck&&launch>writable);
- assert.match(block,/CommandLine -notmatch \$legacyPattern/);
+  // [스튜디오 소유권] 이전 경로와 격리 경로 모두 자동 실행 소유 여부를 검증한다.
+  // 사용자가 연 스튜디오 창은 정리 대상에서 제외한다.
+  assert.match(block,/\$legacyOwned = \[string\]\$legacy\.CommandLine -match \$legacyPattern/);
+  assert.match(block,/\$isolatedQaOwned = \[string\]\$legacy\.CommandLine -match \$qaPattern/);
+  assert.match(block,/if \(-not \$legacyOwned -and -not \$isolatedQaOwned\)/);
+  assert.match(block,/ROBLOX_STUDIO_UNOWNED_PROCESS_PRESERVED/);
+  assert.match(block,/\$owned\.ProcessName -ne 'RobloxStudioBeta'/);
  assert.match(block,/CreationDate.ToUniversalTime/);
  assert.match(block,/Stop-Process -InputObject \$owned -Force/);
  assert.match(block,/if \(-not \$owned\.WaitForExit\(60000\)\)/);
