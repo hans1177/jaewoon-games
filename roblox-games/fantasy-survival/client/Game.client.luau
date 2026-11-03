@@ -2349,22 +2349,28 @@ do
     -- [12개 장면 원본 + 인물 전경] 기존 등록 이미지를 그대로 재생한다. 아틀라스 크롭 없음.
     local registeredStoryArt=Config.CinematicIntroSceneIds or {}
     local registeredStoryDepth=Config.CinematicIntroForegroundIds or {}
-    -- [첫 장면 원화 준비] 1번 배경·4인 전경을 우선 준비한다. 지연은 최대 2.4초.
+    -- [단일 이미지 사전 로딩] 실제 표시할 컷 한 장만 내려받아 모바일 메모리와 겹침을 줄인다.
+    -- 첫 장면은 JPG 우선, 이후 컷은 실제 단독 표시 규칙과 동일한 에셋만 준비한다.
     local firstShotReady=false
     task.spawn(function()
       local ContentProvider=game:GetService("ContentProvider")
-      local first={}
-      for _,id in ipairs({registeredStoryArt[1],registeredStoryDepth[1]}) do
-        if typeof(id)=="string" then table.insert(first,id) end
+      local firstId=registeredStoryArt[1] or registeredStoryDepth[1]
+      if typeof(firstId)=="string" then
+        pcall(function() ContentProvider:PreloadAsync({firstId}) end)
       end
-      if #first>0 then pcall(function() ContentProvider:PreloadAsync(first) end) end
       firstShotReady=true
       local remaining={}
-      for index,id in ipairs(registeredStoryArt) do
-        if index>1 and typeof(id)=="string" then table.insert(remaining,id) end
-      end
-      for index,id in pairs(registeredStoryDepth) do
-        if index~=1 and typeof(id)=="string" then table.insert(remaining,id) end
+      for index,scene in ipairs(scenes) do
+        if index>1 then
+          local frontIndex=scene.cinema=="erasure" and 3 or index
+          local frontId=registeredStoryDepth[frontIndex]
+          local imageId=registeredStoryArt[index]
+          local portrait=scene.cinema=="crown" or scene.cinema=="omen"
+            or scene.cinema=="betrayal" or scene.cinema=="erasure"
+          local selected=(portrait and typeof(frontId)=="string") and frontId
+            or typeof(imageId)=="string" and imageId or frontId
+          if typeof(selected)=="string" then table.insert(remaining,selected) end
+        end
       end
       if #remaining>0 then pcall(function() ContentProvider:PreloadAsync(remaining) end) end
     end)
