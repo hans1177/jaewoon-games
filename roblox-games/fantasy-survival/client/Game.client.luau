@@ -1307,7 +1307,7 @@ local parchment=meadowParchment
 local gold=meadowGold
 local stone=Color3.fromRGB(20,43,43)
 local muted=Color3.fromRGB(163,192,175)
-local categories={"전체","무기","갑옷","장신구","소모품","재료","기록","재화"}
+local categories={"전체","보유","무기","갑옷","장신구","소모품","재료","기록","재화"}
 local data={
   {key="Wood",name="나무",category="재료",icon=4,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 기존 무기 강화에 사용돼."},
   {key="Stone",name="돌",category="재료",icon=4,color=Color3.fromRGB(169,191,200),description="바위에서 채집한 돌. 기존 무기 강화에 사용돼."},
@@ -1580,7 +1580,8 @@ local function renderInventory()
       card.count.Text=itemValue(item)
       card.count.TextColor3=item.color
       local matches=search=="" or string.find(string.lower(item.name),search,1,true)~=nil
-      local show=matches and (category=="전체" or category==item.category) and (item.gear~=nil or item.tonic~=nil or typeof(item.key)=="Instance" or owned(item)>0 or category=="전체")
+      local show=matches and (category=="전체" or (category=="보유" and owned(item)>0) or category==item.category)
+        and (item.gear~=nil or item.tonic~=nil or typeof(item.key)=="Instance" or owned(item)>0 or category=="전체")
       card.button.Visible=show
       if show then visibleCount+=1 end
       card.button.BackgroundColor3=owned(item)>0 and Color3.fromRGB(27,54,48) or Color3.fromRGB(20,39,40)
@@ -1605,7 +1606,13 @@ for index,button in ipairs(filterButtons)do
   button.Activated:Connect(function()
     category=categories[index]
     for i,tab in ipairs(filterButtons)do
-      tab.BackgroundColor3=i==index and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
+      local current=i==index
+      tab.BackgroundColor3=current and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
+      tab.TextColor3=current and Color3.fromRGB(255,240,197) or Color3.fromRGB(191,215,198)
+      local underline=tab:FindFirstChild("SelectedUnderline")
+      if underline then underline.Visible=current end
+      local stroke=tab:FindFirstChildOfClass("UIStroke")
+      if stroke then stroke.Color=current and gold or Color3.fromRGB(78,120,101) end
     end
     renderInventory()
   end)
@@ -1859,7 +1866,13 @@ for index,button in ipairs(skillButtons)do
       end
     end
     for i,tab in ipairs(skillButtons)do
-      tab.BackgroundColor3=i==index and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
+      local current=i==index
+      tab.BackgroundColor3=current and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
+      tab.TextColor3=current and Color3.fromRGB(255,240,197) or Color3.fromRGB(191,215,198)
+      local underline=tab:FindFirstChild("SelectedUnderline")
+      if underline then underline.Visible=current end
+      local stroke=tab:FindFirstChildOfClass("UIStroke")
+      if stroke then stroke.Color=current and gold or Color3.fromRGB(78,120,101) end
     end
     meadowActionButtons.refreshSkills()
   end)
