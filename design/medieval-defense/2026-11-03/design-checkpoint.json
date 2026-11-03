@@ -3,7 +3,7 @@
   "gameId": "medieval-defense",
   "date": "2026-11-03",
   "seedId": "AUTO-MISSING-DESIGN-MEDIEVAL-DEFENSE",
-  "fingerprint": "150f9e4d13efc11bacfe4f9f21fae5864b26b90fd3a2802d2c009e909e33e097",
+  "fingerprint": "d6547fbe03ab420fd20ad6cc06ffae34904509f1d3a487641681c25078ae6169",
   "policyDigest": "b9091603519a968dea346dadc658b6edff013857d0ecf95c9bf45d66b673f19c",
   "engineDigest": "d49b5faefd3e6f0c6b5048d3f90488d088695c8b4ef6e5d43cd8b49975a1a07e",
   "ownerDesignEventId": null,
@@ -1148,7 +1148,7 @@
         "ROBLOX": {
           "platform": "ROBLOX",
           "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-          "sessionModel": "Roblox social session model: 첫 세션부터 입력, 핵심 행동, 실제 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 설계한다.; fast join/rejoin and avatar-safe spawn flow for 디펜스 · 전략 · RPG · 생존 플레이를 선호하는 글로벌 플레이어.",
+          "sessionModel": "Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 디펜스 · 전략 · RPG · 생존 플레이를 선호하는 글로벌 플레이어.",
           "multiplayerRuntime": "Roblox server-authoritative COOP replication with join/leave sync and RemoteEvent validation.",
           "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
           "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
@@ -1305,8 +1305,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "UI",
-            "role": "UI의 인과 표현 소재",
+            "family": "SKILL",
+            "role": "SKILL의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -1322,8 +1322,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "VFX",
-            "role": "VFX의 인과 표현 소재",
+            "family": "UI",
+            "role": "UI의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -1339,8 +1339,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "WEAPON",
-            "role": "WEAPON의 인과 표현 소재",
+            "family": "VFX",
+            "role": "VFX의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -1348,6 +1348,23 @@
               "VIBE_A"
             ],
             "useLocation": "요리의 되돌림 공간에서 세계 반응을 표시한다.",
+            "assetId": "",
+            "decision": "AUTHOR",
+            "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+            "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
+            "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+          },
+          {
+            "family": "WEAPON",
+            "role": "WEAPON의 인과 표현 소재",
+            "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+            "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+            "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
+            "ruleIds": [
+              "VIBE_B"
+            ],
+            "useLocation": "종교·신앙의 첫 선택 공간에서 세계 반응을 표시한다.",
             "assetId": "",
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
@@ -2780,7 +2797,7 @@
         "ROBLOX": {
           "platform": "ROBLOX",
           "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-          "sessionModel": "Roblox social session model: 첫 세션부터 입력, 핵심 행동, 실제 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 설계한다.; fast join/rejoin and avatar-safe spawn flow for 디펜스 · 전략 · RPG · 생존 플레이를 선호하는 글로벌 플레이어.",
+          "sessionModel": "Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 디펜스 · 전략 · RPG · 생존 플레이를 선호하는 글로벌 플레이어.",
           "multiplayerRuntime": "Roblox server-authoritative COOP replication with join/leave sync and RemoteEvent validation.",
           "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
           "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
@@ -2937,8 +2954,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "UI",
-            "role": "UI의 인과 표현 소재",
+            "family": "SKILL",
+            "role": "SKILL의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -2954,8 +2971,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "VFX",
-            "role": "VFX의 인과 표현 소재",
+            "family": "UI",
+            "role": "UI의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -2971,8 +2988,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "WEAPON",
-            "role": "WEAPON의 인과 표현 소재",
+            "family": "VFX",
+            "role": "VFX의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -2980,6 +2997,23 @@
               "VIBE_A"
             ],
             "useLocation": "요리의 되돌림 공간에서 세계 반응을 표시한다.",
+            "assetId": "",
+            "decision": "AUTHOR",
+            "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+            "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
+            "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+          },
+          {
+            "family": "WEAPON",
+            "role": "WEAPON의 인과 표현 소재",
+            "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+            "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+            "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
+            "ruleIds": [
+              "VIBE_B"
+            ],
+            "useLocation": "종교·신앙의 첫 선택 공간에서 세계 반응을 표시한다.",
             "assetId": "",
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
@@ -4412,7 +4446,7 @@
         "ROBLOX": {
           "platform": "ROBLOX",
           "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-          "sessionModel": "Roblox social session model: 첫 세션부터 입력, 핵심 행동, 실제 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 설계한다.; fast join/rejoin and avatar-safe spawn flow for 디펜스 · 전략 · RPG · 생존 플레이를 선호하는 글로벌 플레이어.",
+          "sessionModel": "Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 디펜스 · 전략 · RPG · 생존 플레이를 선호하는 글로벌 플레이어.",
           "multiplayerRuntime": "Roblox server-authoritative COOP replication with join/leave sync and RemoteEvent validation.",
           "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
           "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
@@ -4569,8 +4603,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "UI",
-            "role": "UI의 인과 표현 소재",
+            "family": "SKILL",
+            "role": "SKILL의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -4586,8 +4620,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "VFX",
-            "role": "VFX의 인과 표현 소재",
+            "family": "UI",
+            "role": "UI의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -4603,8 +4637,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "WEAPON",
-            "role": "WEAPON의 인과 표현 소재",
+            "family": "VFX",
+            "role": "VFX의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -4612,6 +4646,23 @@
               "VIBE_A"
             ],
             "useLocation": "요리의 되돌림 공간에서 세계 반응을 표시한다.",
+            "assetId": "",
+            "decision": "AUTHOR",
+            "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+            "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
+            "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+          },
+          {
+            "family": "WEAPON",
+            "role": "WEAPON의 인과 표현 소재",
+            "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+            "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+            "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
+            "ruleIds": [
+              "VIBE_B"
+            ],
+            "useLocation": "종교·신앙의 첫 선택 공간에서 세계 반응을 표시한다.",
             "assetId": "",
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
@@ -6126,7 +6177,7 @@
         "ROBLOX": {
           "platform": "ROBLOX",
           "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-          "sessionModel": "Roblox social session model: 첫 세션부터 입력, 핵심 행동, 실제 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 설계한다.; fast join/rejoin and avatar-safe spawn flow for 디펜스 · 전략 · RPG · 생존 플레이를 선호하는 글로벌 플레이어.",
+          "sessionModel": "Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 디펜스 · 전략 · RPG · 생존 플레이를 선호하는 글로벌 플레이어.",
           "multiplayerRuntime": "Roblox server-authoritative COOP replication with join/leave sync and RemoteEvent validation.",
           "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
           "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
@@ -6285,8 +6336,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "UI",
-            "role": "UI의 인과 표현 소재",
+            "family": "SKILL",
+            "role": "SKILL의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -6302,8 +6353,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "VFX",
-            "role": "VFX의 인과 표현 소재",
+            "family": "UI",
+            "role": "UI의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -6319,8 +6370,8 @@
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
-            "family": "WEAPON",
-            "role": "WEAPON의 인과 표현 소재",
+            "family": "VFX",
+            "role": "VFX의 인과 표현 소재",
             "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
             "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
             "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
@@ -6328,6 +6379,23 @@
               "VIBE_A"
             ],
             "useLocation": "요리의 되돌림 공간에서 세계 반응을 표시한다.",
+            "assetId": "",
+            "decision": "AUTHOR",
+            "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+            "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
+            "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+          },
+          {
+            "family": "WEAPON",
+            "role": "WEAPON의 인과 표현 소재",
+            "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+            "behavior": "자원 생산과 부대 구성의 상호작용 × 종교·신앙와 병력 편성과 거점 정복 × 요리의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+            "presentation": "의무의 갈등·공성탑의 특징을 조명·표면·동작으로 구분한다.",
+            "ruleIds": [
+              "VIBE_B"
+            ],
+            "useLocation": "종교·신앙의 첫 선택 공간에서 세계 반응을 표시한다.",
             "assetId": "",
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
@@ -6527,8 +6595,8 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "COMPLETE",
-  "createdAt": "2026-11-03T08:32:47.830Z",
-  "updatedAt": "2026-11-03T08:32:48.460Z",
+  "createdAt": "2026-11-03T08:49:18.461Z",
+  "updatedAt": "2026-11-03T08:49:19.107Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -6550,6 +6618,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -6614,6 +6683,7 @@
             "TABLE",
             "TRASHCAN"
           ],
+          "SKILL": [],
           "UI": [
             "CONTROL_ICON"
           ],
@@ -6689,6 +6759,17 @@
           },
           {
             "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "SKILL",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -6744,6 +6825,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -6808,6 +6890,7 @@
             "TABLE",
             "TRASHCAN"
           ],
+          "SKILL": [],
           "UI": [
             "CONTROL_ICON"
           ],
@@ -6883,6 +6966,17 @@
           },
           {
             "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "SKILL",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -6938,6 +7032,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -7002,6 +7097,7 @@
             "TABLE",
             "TRASHCAN"
           ],
+          "SKILL": [],
           "UI": [
             "CONTROL_ICON"
           ],
@@ -7077,6 +7173,17 @@
           },
           {
             "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "SKILL",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -7168,6 +7275,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -7266,6 +7374,21 @@
           },
           {
             "family": "PROP",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "SKILL",
             "assetId": null,
             "roleEvidence": {
               "requestedRoles": [],
@@ -7335,6 +7458,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -7433,6 +7557,21 @@
           },
           {
             "family": "PROP",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "SKILL",
             "assetId": null,
             "roleEvidence": {
               "requestedRoles": [],
@@ -7502,6 +7641,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -7614,6 +7754,21 @@
             "independentNativeRuntimeQaRequired": true
           },
           {
+            "family": "SKILL",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
             "family": "UI",
             "assetId": null,
             "roleEvidence": {
@@ -7665,5 +7820,6 @@
     "sourceApplicationOwner": "tools/vibe2-source-worker.mjs",
     "nativeRuntimeQaRequired": true
   },
-  "completedAt": "2026-11-03T08:32:48.460Z"
+  "completedAt": "2026-11-03T08:49:19.107Z",
+  "minimumPromotionDispatchedDigest": "659f821fe60db187ef5a6f9bf38d3e874398648908aba8dd40ef8dd57a703edc"
 }
