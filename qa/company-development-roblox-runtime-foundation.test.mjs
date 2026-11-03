@@ -294,6 +294,63 @@ test('cloud image validation rejects unsafe URLs corrupt payloads and metadata-o
  assert.equal(noUrl.state,'IMAGE_CONTENT_UNVERIFIED');
 });
 
+// 메인: 공식 개인화 목록의 ID만으로 이미지를 통과시키지 않고 실제 공식 CDN 바이트를 확인한다.
+test('personalization metadata without CDN URL uses exact universe official rendered thumbnail bytes',async()=>{
+ const universeId='10773436325';
+ const url='https://tr.rbxcdn.com/180DAY-example/768/432/GameMediaItem8/Png/noFilter';
+ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jS1sAAAAASUVORK5CYII=','base64');
+ const requests=[];
+ const result=await probeRobloxOpenCloudImageEvidence({
+  universeId,apiKey:'private-not-forwarded',networkRetryAttempts:1,fetchImpl:async(target,init={})=>{
+   requests.push({target,init});
+   if(String(target).startsWith('https://apis.roblox.com/'))
+    return Response.json({thumbnails:[{homepageThumbnailId:'c2aacbbe-e3b3-4ade-9b8d-50e57efdb544'}]});
+   if(String(target).startsWith('https://thumbnails.roblox.com/')){
+    assert.equal(init.headers?.['x-api-key'],undefined);
+    assert.equal(init.redirect,'error');
+    return Response.json({data:[{universeId:Number(universeId),error:null,thumbnails:[{targetId:108565970231899,state:'Completed',imageUrl:url,version:'TN3'}]}]});
+   }
+   assert.equal(target,url);
+   assert.equal(init.headers?.['x-api-key'],undefined);
+   assert.equal(init.redirect,'error');
+   return new Response(png,{headers:{'content-type':'image/png'}});
+  }
+ });
+ assert.equal(requests.length,3);
+ assert.equal(result.thumbnailCount,1);
+ assert.equal(result.imageLookupAuthority,'ROBLOX_OFFICIAL_UNIVERSE_GAME_THUMBNAIL_CDN');
+ assert.equal(result.officialGameThumbnailTargetId,'108565970231899');
+ assert.equal(result.imageContentChecked,true);
+ assert.equal(result.imageContentPassed,true);
+ assert.equal(result.imageContent[0].bytes,png.length);
+ assert.equal(result.personalizedImageContentMatched,false);
+ assert.equal(result.runtimeScreenshot,false);
+ assert.equal(result.exactRuntimeVersionImage,false);
+ assert.equal(result.imageVisualQualityVerified,false);
+});
+
+test('different universe or non-CDN official fallback never asserts verified image content',async()=>{
+ for(const scenario of ['WRONG_UNIVERSE','UNTRUSTED_CDN']){
+  let requests=0;
+  const evidence=await probeRobloxOpenCloudImageEvidence({
+   universeId:'10773436325',apiKey:'k',networkRetryAttempts:1,fetchImpl:async(target)=>{
+    requests++;
+    if(String(target).startsWith('https://apis.roblox.com/'))return Response.json({thumbnails:[{homepageThumbnailId:'uuid'}]});
+    if(String(target).startsWith('https://thumbnails.roblox.com/'))return Response.json({data:[{
+      universeId:scenario==='WRONG_UNIVERSE'?1:10773436325,error:null,
+      thumbnails:[{targetId:108565970231899,state:'Completed',
+        imageUrl:scenario==='UNTRUSTED_CDN'?'https://example.com/evil.png':'https://tr.rbxcdn.com/image.png'}]
+    }]});
+    throw new Error('unexpected CDN fetch');
+   }
+  });
+  assert.equal(evidence.imageContentPassed,false);
+  assert.equal(evidence.state,'IMAGE_CONTENT_UNVERIFIED');
+  if(scenario==='WRONG_UNIVERSE')assert.equal(requests,2);
+  if(scenario==='UNTRUSTED_CDN')assert.equal(evidence.imageContent[0].error,'UNTRUSTED_IMAGE_URL');
+ }
+});
+
 test('cloud workflow runs independent engine and image requests together and preserves sibling results on failure',async()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  const start=workflow.indexOf('          const probes=new Array(candidates.length);');
