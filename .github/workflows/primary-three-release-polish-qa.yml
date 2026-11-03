@@ -3,26 +3,26 @@ name: Primary Three Release Polish QA
 on:
   pull_request:
     paths:
-      - 'roblox-games/cozy-island/**'
-      - 'roblox-games/daechung-rpg/**'
-      - 'qa/cozy-rpg-release-hardening.test.mjs'
-      - 'qa/cozy-cc0-library-audit.test.mjs'
+      - 'roblox-games/fantasy-survival/**'
+      - 'web-games/fantasy-survival/**'
+      - 'web-games/gem-survivor/**'
+      - 'qa/fantasy-survival-mobile-tap-combat.test.mjs'
       - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/primary-three-world-visual-qa.test.mjs'
-      - 'qa/owner-daechung-publish-provenance.test.mjs'
-      - '.github/workflows/owner-daechung-rpg-direct-publish.yml'
+      - 'qa/gem-survivor-3d.test.mjs'
+      - 'qa/primary-three-world-visual-qa.test.mjs'
       - '.github/workflows/primary-three-release-polish-qa.yml'
   push:
     branches: [main]
     paths:
-      - 'roblox-games/cozy-island/**'
-      - 'roblox-games/daechung-rpg/**'
-      - 'qa/cozy-rpg-release-hardening.test.mjs'
-      - 'qa/cozy-cc0-library-audit.test.mjs'
+      - 'roblox-games/fantasy-survival/**'
+      - 'web-games/fantasy-survival/**'
+      - 'web-games/gem-survivor/**'
+      - 'qa/fantasy-survival-mobile-tap-combat.test.mjs'
       - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/primary-three-world-visual-qa.test.mjs'
-      - 'qa/owner-daechung-publish-provenance.test.mjs'
-      - '.github/workflows/owner-daechung-rpg-direct-publish.yml'
+      - 'qa/gem-survivor-3d.test.mjs'
+      - 'qa/primary-three-world-visual-qa.test.mjs'
       - '.github/workflows/primary-three-release-polish-qa.yml'
 
 permissions:
@@ -38,4 +38,4 @@ jobs:
           node-version: '22'
       - name: Validate primary-three release polish
         run: |
-          node --test qa/horror-escape-room-release.test.mjs qa/cozy-rpg-release-hardening.test.mjs qa/primary-three-world-visual-qa.test.mjs qa/cozy-cc0-library-audit.test.mjs qa/owner-daechung-publish-provenance.test.mjs
+          node --test qa/horror-escape-room-release.test.mjs qa/fantasy-survival-mobile-tap-combat.test.mjs qa/gem-survivor-3d.test.mjs
