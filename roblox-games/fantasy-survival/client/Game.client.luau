@@ -2904,7 +2904,7 @@ do
             }):Play()
             -- [감정 비트] 이미지·인물 위에 새 레이어를 겹치지 않고 기존 가장자리 명암만 잠깐 조인다.
             local vignetteBase=cinematicVignette.BackgroundTransparency
-            local vignettePulse=math.max(scene.cinema=="betrayal" and .43 or .57,vignetteBase-.14)
+            local vignettePulse=math.max((scene.cinema=="betrayal" or scene.cinema=="erasure") and .36 or .49,vignetteBase-.14)
             activeVignetteTween=TweenService:Create(cinematicVignette,
               TweenInfo.new(math.max(.15,impactFade*.35),Enum.EasingStyle.Quad),{
                 BackgroundTransparency=vignettePulse,
