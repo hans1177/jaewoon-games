@@ -1449,7 +1449,10 @@ test('worker result keeps throughput and actual workload telemetry inputs in the
     assert(resultStep.includes(key),`missing result telemetry env ${key}`);
   }
   assert(workflow.includes('git diff --cached --numstat -- "$SOURCE_ROOT"'));
-  assert(workflow.includes('JSON.stringify({version:3,results,tasks:queue.tasks||[]}'));
+  assert(workflow.includes('const taskSummaries=(queue.tasks||[]).map(({id,status,retries,packageId,target,department})=>({id,status,retries,packageId,target,department}))'));
+  assert(workflow.includes('JSON.stringify({version:3,results,tasks:taskSummaries}'));
+  assert(!workflow.includes('JSON.stringify({version:3,results,tasks:queue.tasks||[]}'));
+  // 큐 원본/증거는 기존 저장소에 남기고, 리뷰·처리량 집계에 필요한 필드만 결과 파일에 실어야 한다.
 });
 
 test('candidate failure telemetry survives a failed source worker step',()=>{
