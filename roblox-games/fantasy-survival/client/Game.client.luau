@@ -610,29 +610,53 @@ for index,name in ipairs(meadowPageNames) do
     local label=Instance.new("TextLabel")
     label.Name="LiveDetails";label.BackgroundTransparency=1
     label.Size=UDim2.new(1,-8,0,0);label.AutomaticSize=Enum.AutomaticSize.Y
+    -- [전체 메뉴] 단순 텍스트 덩어리 대신 읽기 편한 정보 카드로 표시한다.
+    label.BackgroundTransparency=0;label.BackgroundColor3=Color3.fromRGB(21,48,45)
     label.TextColor3=Color3.fromRGB(229,239,228);label.Font=Enum.Font.GothamMedium
     label.TextSize=15;label.TextWrapped=true;label.TextXAlignment=Enum.TextXAlignment.Left
-    label.TextYAlignment=Enum.TextYAlignment.Top;label.Parent=page;meadowLabels[index]=label
+    label.TextYAlignment=Enum.TextYAlignment.Top;label.Parent=page
+    local textCorner=Instance.new("UICorner")
+    textCorner.CornerRadius=UDim.new(0,11);textCorner.Parent=label
+    local textBorder=Instance.new("UIStroke")
+    textBorder.Color=Color3.fromRGB(79,121,100);textBorder.Transparency=.45;textBorder.Parent=label
+    local textPadding=Instance.new("UIPadding")
+    textPadding.PaddingTop=UDim.new(0,13);textPadding.PaddingBottom=UDim.new(0,13)
+    textPadding.PaddingLeft=UDim.new(0,14);textPadding.PaddingRight=UDim.new(0,14)
+    textPadding.Parent=label
+    meadowLabels[index]=label
   end
 end
 local meadowJournal={}
 local meadowHelperButtons={}
 -- [캐릭터창] 메뉴 생성과 전투 렌더에 필요한 외부 변수만 유지한다.
-local meadowGold=Color3.fromRGB(201,169,105)
-local meadowParchment=Color3.fromRGB(238,225,197)
+-- [마력숲 UI] 탐험 수첩 공통 색채
+local meadowGold=Color3.fromRGB(218,189,126)
+local meadowParchment=Color3.fromRGB(239,245,225)
 local renderWitcherCharacter=(function()
-local meadowDim=Color3.fromRGB(174,169,151)
+local meadowDim=Color3.fromRGB(169,195,178)
 local characterHero=Instance.new("Frame")
 characterHero.Name="WitcherCharacterPortrait";characterHero.LayoutOrder=1
-characterHero.Size=UDim2.new(1,-8,0,158)
-characterHero.BackgroundColor3=Color3.fromRGB(27,27,29)
+characterHero.Size=UDim2.new(1,-8,0,248)
+characterHero.BackgroundColor3=Color3.fromRGB(20,47,45)
 characterHero.BorderSizePixel=0;characterHero.Parent=meadowPages[1]
+local heroCorner=Instance.new("UICorner")
+heroCorner.CornerRadius=UDim.new(0,14);heroCorner.Parent=characterHero
+local heroGradient=Instance.new("UIGradient")
+heroGradient.Rotation=24
+heroGradient.Color=ColorSequence.new(Color3.fromRGB(39,81,65),Color3.fromRGB(12,28,37))
+heroGradient.Parent=characterHero
 local characterHeroOutline=Instance.new("UIStroke")
-characterHeroOutline.Color=meadowGold;characterHeroOutline.Transparency=.24;characterHeroOutline.Parent=characterHero
+characterHeroOutline.Color=meadowGold;characterHeroOutline.Thickness=1.4
+characterHeroOutline.Transparency=.25;characterHeroOutline.Parent=characterHero
 local characterPortrait=Instance.new("ImageLabel")
 characterPortrait.Name="PlayerPortrait"
 characterPortrait.Size=UDim2.fromOffset(126,142);characterPortrait.Position=UDim2.fromOffset(8,8)
-characterPortrait.BackgroundColor3=Color3.fromRGB(49,41,38);characterPortrait.BorderSizePixel=0
+characterPortrait.BackgroundColor3=Color3.fromRGB(15,37,37);characterPortrait.BorderSizePixel=0
+local portraitCorner=Instance.new("UICorner")
+portraitCorner.CornerRadius=UDim.new(0,9);portraitCorner.Parent=characterPortrait
+local portraitBorder=Instance.new("UIStroke")
+portraitBorder.Color=Color3.fromRGB(105,160,130)
+portraitBorder.Transparency=.4;portraitBorder.Parent=characterPortrait
 characterPortrait.ScaleType=Enum.ScaleType.Fit
 characterPortrait.Image=meadowAvatar.Image;characterPortrait.Parent=characterHero
 task.spawn(function()
@@ -692,7 +716,7 @@ end
 local characterHeroName=Instance.new("TextLabel")
 characterHeroName.Name="HeroName";characterHeroName.Position=UDim2.fromOffset(144,14)
 characterHeroName.Size=UDim2.new(1,-156,0,35)
-characterHeroName.BackgroundTransparency=1;characterHeroName.Font=Enum.Font.GothamBold;characterHeroName.TextSize=20
+characterHeroName.BackgroundTransparency=1;characterHeroName.Font=Enum.Font.Antique;characterHeroName.TextSize=23
 characterHeroName.TextColor3=meadowParchment;characterHeroName.TextXAlignment=Enum.TextXAlignment.Left
 characterHeroName.TextTruncate=Enum.TextTruncate.AtEnd;characterHeroName.Parent=characterHero
 local characterHeroSummary=Instance.new("TextLabel")
@@ -724,7 +748,7 @@ local equipmentHeading=Instance.new("TextLabel")
 equipmentHeading.Name="EquipmentHeading";equipmentHeading.LayoutOrder=2
 equipmentHeading.Size=UDim2.new(1,-8,0,30);equipmentHeading.BackgroundTransparency=1
 equipmentHeading.Font=Enum.Font.GothamBold;equipmentHeading.TextSize=17
-equipmentHeading.Text="장  비  /  EQUIPMENT";equipmentHeading.TextColor3=meadowGold
+equipmentHeading.Text="장착 장비  ·  6개 슬롯";equipmentHeading.TextColor3=meadowGold
 equipmentHeading.TextXAlignment=Enum.TextXAlignment.Left;equipmentHeading.Parent=meadowPages[1]
 -- [캐릭터 장비] 기존 여섯 슬롯을 게임 화면 폭에 따라 배치한다. 실제 장착/능력치는 서버 값을 유지한다.
 local equipmentGrid=Instance.new("Frame")
@@ -747,11 +771,11 @@ task.defer(layoutEquipment)
 local function characterEquipmentSlot(label,order,iconCell)
   local slot=Instance.new("Frame")
   slot.Name="EquipmentSlot"..order;slot.LayoutOrder=order
-  slot.Size=UDim2.new(1,-8,0,60);slot.BackgroundColor3=Color3.fromRGB(31,31,34)
+  slot.Size=UDim2.new(1,-8,0,60);slot.BackgroundColor3=Color3.fromRGB(22,49,46)
   slot.BorderSizePixel=0;slot.Parent=equipmentGrid
    local rounded=Instance.new("UICorner");rounded.CornerRadius=UDim.new(0,9);rounded.Parent=slot
-  local border=Instance.new("UIStroke");border.Color=Color3.fromRGB(105,89,65)
-  border.Transparency=.3;border.Parent=slot
+  local border=Instance.new("UIStroke");border.Color=Color3.fromRGB(112,158,121)
+  border.Transparency=.25;border.Thickness=1.2;border.Parent=slot
   local icon=Instance.new("ImageLabel")
   icon.Name="EquipmentIcon";icon.Position=UDim2.fromOffset(8,7);icon.Size=UDim2.fromOffset(44,44)
   icon.BackgroundTransparency=1;icon.Image=meadowIconAtlas
@@ -777,7 +801,7 @@ local masteryHeading=Instance.new("TextLabel")
 masteryHeading.Name="MasteryHeading";masteryHeading.LayoutOrder=4
 masteryHeading.Size=UDim2.new(1,-8,0,30);masteryHeading.BackgroundTransparency=1
 masteryHeading.Font=Enum.Font.GothamBold;masteryHeading.TextSize=17
-masteryHeading.Text="숙  련  /  MASTERIES";masteryHeading.TextColor3=meadowGold
+masteryHeading.Text="성장 기록  ·  숙련도";masteryHeading.TextColor3=meadowGold
 masteryHeading.TextXAlignment=Enum.TextXAlignment.Left;masteryHeading.Parent=meadowPages[1]
 -- [숙련 진행도] 기존 50 숙련도당 기술 점수 1점 규칙을 표시만 한다.
 local masteryTrack=Instance.new("Frame")
@@ -900,7 +924,11 @@ for _,name in ipairs({"ExplorationGroves","DawnTraceFound","NightTraceFound","Ru
 end
 for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채집","scope-coreloop-1-6ebe58f496"},{"장비 강화","scope-coreloop-2-6c927cfa40"}})do
   local button=CommonUI.CreatePrimaryButton({name="MeadowHelper"..index,text=row[1],minHeight=52})
-  button.LayoutOrder=index;button.Size=UDim2.new(1,-8,0,54);button.Parent=meadowPages[5]
+  button.LayoutOrder=index;button.Size=UDim2.new(1,-8,0,54)
+  button.BackgroundColor3=Color3.fromRGB(40,92,69)
+  local helperGradient=button:FindFirstChildOfClass("UIGradient")
+  if helperGradient then helperGradient.Color=ColorSequence.new(Color3.fromRGB(62,121,88),Color3.fromRGB(29,66,56)) end
+  button.Parent=meadowPages[5]
   meadowHelperButtons[index]=button
   button.Activated:Connect(function()
     if player:GetAttribute("ProfileReady")==true then activateMeadowAction(row[2]) end
@@ -951,7 +979,11 @@ player.CharacterAdded:Connect(function(character)task.defer(bindMeadowMenuCharac
 if player.Character then task.defer(bindMeadowMenuCharacter,player.Character) end
 for index,name in ipairs({"효과음","환경음","타격 효과"}) do
   local button=CommonUI.CreatePrimaryButton({name="MeadowOption"..index,text=name,minHeight=52})
-  button.Size=UDim2.new(1,-8,0,54);button.LayoutOrder=index;button.Parent=meadowPages[4]
+  button.Size=UDim2.new(1,-8,0,54);button.LayoutOrder=index
+  button.BackgroundColor3=Color3.fromRGB(40,92,69)
+  local optionGradient=button:FindFirstChildOfClass("UIGradient")
+  if optionGradient then optionGradient.Color=ColorSequence.new(Color3.fromRGB(62,121,88),Color3.fromRGB(29,66,56)) end
+  button.Parent=meadowPages[4]
   local function refreshOption()
     local value=index==1 and meadowEffectsGroup.Volume or meadowAmbienceGroup.Volume
     button.Text=index==3 and ("타격 효과  ·  "..(reducedEffects and "간소화" or "기본"))
@@ -981,11 +1013,11 @@ iconCredits.Text="액션 아이콘: Lorc · DarkZaitzev · Delapouite (CC BY 3.0
 iconCredits.Parent=meadowPages[4]
 renderMeadowPages()
 -- [메뉴 전용 위쳐풍] 기존 왼쪽 메뉴와 중앙 팝업만 변경. 오른쪽 액션/조이스틱 HUD는 그대로 둔다.
-root.BackgroundColor3=Color3.fromRGB(21,21,24)
-meadowPanelGradient.Color=ColorSequence.new(Color3.fromRGB(41,34,34),Color3.fromRGB(15,16,19))
+root.BackgroundColor3=Color3.fromRGB(12,28,30)
+meadowPanelGradient.Color=ColorSequence.new(Color3.fromRGB(32,66,56),Color3.fromRGB(9,23,30))
 local menuBorder=root:FindFirstChild("WitcherMenuBorder") or Instance.new("UIStroke")
 menuBorder.Name="WitcherMenuBorder";menuBorder.Color=meadowGold
-menuBorder.Thickness=2;menuBorder.Transparency=.08;menuBorder.Parent=root
+menuBorder.Thickness=1.5;menuBorder.Transparency=.16;menuBorder.Parent=root
 meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{
   compact=true,hideButton=true,menuLeft=true,witcherStyle=true,tabOrder={0,1,2,7,3,4,5,6},
   pages=meadowPages,pageNames=meadowPageNames,
@@ -998,7 +1030,7 @@ meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerSt
 })
 local menuHeading=root:FindFirstChild("MeadowMenuHeading")
 if menuHeading then
-  menuHeading.Text="마력숲  ·  인물과 장비"
+  menuHeading.Text="마력숲  ·  탐험 수첩"
   menuHeading.TextColor3=meadowGold
 end
 local witcherTabs=root:FindFirstChild("MeadowMenuTabs")
@@ -1016,6 +1048,7 @@ if witcherTabs then
           icon.Image=meadowIconAtlas;icon.ImageRectOffset=Vector2.new(atlasCell*64,0)
           icon.ImageRectSize=Vector2.new(64,64)
           icon.Size=UDim2.fromOffset(20,20);icon.Position=UDim2.fromOffset(6,13)
+          icon.ImageColor3=Color3.fromRGB(224,238,209)
           icon.ZIndex=46;icon.Parent=button
           button.Text="     "..button.Text
         end
@@ -1181,8 +1214,8 @@ inventoryRow.LayoutOrder=1
 local renderWitcherInventory=(function()
 local parchment=meadowParchment
 local gold=meadowGold
-local stone=Color3.fromRGB(40,38,40)
-local muted=Color3.fromRGB(163,163,157)
+local stone=Color3.fromRGB(20,43,43)
+local muted=Color3.fromRGB(163,192,175)
 local categories={"전체","무기","갑옷","장신구","소모품","재료","기록","재화"}
 local data={
   {key="Wood",name="나무",category="재료",icon=4,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 기존 무기 강화에 사용돼."},
@@ -1208,40 +1241,51 @@ local inventorySearch=CommonUI.CreateSearchField({
   name="MeadowInventorySearch",size=UDim2.new(1,-8,0,48)
 })
 inventorySearch.PlaceholderText="아이템 이름 검색"
-inventorySearch.LayoutOrder=3;inventorySearch.BackgroundColor3=Color3.fromRGB(34,32,37)
+inventorySearch.LayoutOrder=3;inventorySearch.BackgroundColor3=Color3.fromRGB(25,53,49)
 inventorySearch.Parent=meadowPages[2]
 local inventoryGrid=Instance.new("Frame")
-inventoryGrid.Name="MeadowInventoryGrid";inventoryGrid.LayoutOrder=5
+inventoryGrid.Name="MeadowInventoryGrid";inventoryGrid.LayoutOrder=4
 inventoryGrid.Size=UDim2.new(1,-8,0,100);inventoryGrid.BackgroundTransparency=1;inventoryGrid.Parent=meadowPages[2]
 local gridLayout=Instance.new("UIGridLayout")
 gridLayout.SortOrder=Enum.SortOrder.LayoutOrder;gridLayout.CellPadding=UDim2.fromOffset(8,8)
 gridLayout.Parent=inventoryGrid
 local detail=Instance.new("Frame")
-detail.Name="WitcherItemDetails";detail.LayoutOrder=4
-detail.Size=UDim2.new(1,-8,0,214);detail.BorderSizePixel=0;detail.BackgroundColor3=stone
+detail.Name="WitcherItemDetails";detail.LayoutOrder=6
+detail.Size=UDim2.new(1,-8,0,268);detail.BorderSizePixel=0;detail.BackgroundColor3=stone
 detail.Parent=meadowPages[2]
+local detailGradient=Instance.new("UIGradient")
+detailGradient.Color=ColorSequence.new(Color3.fromRGB(38,77,63),Color3.fromRGB(14,31,40))
+detailGradient.Rotation=42;detailGradient.Parent=detail
 local detailCorner=Instance.new("UICorner");detailCorner.CornerRadius=UDim.new(0,12);detailCorner.Parent=detail
 local border=Instance.new("UIStroke")
-border.Color=gold;border.Transparency=.16;border.Thickness=1.4;border.Parent=detail
+border.Color=gold;border.Transparency=.2;border.Thickness=1.4;border.Parent=detail
+-- [선택 아이템] 기존 등록 아이콘을 확대 표시한다.
+local detailPreview=Instance.new("ImageLabel")
+detailPreview.Name="SelectedItemIcon";detailPreview.AnchorPoint=Vector2.new(1,0)
+detailPreview.Position=UDim2.new(1,-12,0,10);detailPreview.Size=UDim2.fromOffset(54,54)
+detailPreview.BackgroundColor3=Color3.fromRGB(15,37,39);detailPreview.BorderSizePixel=0
+detailPreview.Image=meadowIconAtlas;detailPreview.ImageRectSize=Vector2.new(64,64);detailPreview.Parent=detail
+local detailIconCorner=Instance.new("UICorner")
+detailIconCorner.CornerRadius=UDim.new(0,8);detailIconCorner.Parent=detailPreview
 local title=Instance.new("TextLabel")
 title.Name="SelectedItem";title.Position=UDim2.fromOffset(12,8)
-title.Size=UDim2.new(1,-24,0,28);title.BackgroundTransparency=1
-title.TextColor3=gold;title.Font=Enum.Font.GothamBold;title.TextSize=17
+title.Size=UDim2.new(1,-90,0,32);title.BackgroundTransparency=1
+title.TextColor3=gold;title.Font=Enum.Font.GothamBold;title.TextSize=18
 title.TextXAlignment=Enum.TextXAlignment.Left;title.Parent=detail
 local description=Instance.new("TextLabel")
-description.Name="SelectedItemDescription";description.Position=UDim2.fromOffset(12,40)
-description.Size=UDim2.new(1,-24,0,112);description.BackgroundTransparency=1
+description.Name="SelectedItemDescription";description.Position=UDim2.fromOffset(12,68)
+description.Size=UDim2.new(1,-24,0,136);description.BackgroundTransparency=1
 description.Font=Enum.Font.GothamMedium;description.TextColor3=parchment;description.TextSize=13
 description.TextWrapped=true;description.TextXAlignment=Enum.TextXAlignment.Left
 description.TextYAlignment=Enum.TextYAlignment.Top;description.Parent=detail
 local equip=CommonUI.CreatePrimaryButton({name="WitcherEquipTool",text="선택 장비 착용",minHeight=48})
-equip.Position=UDim2.fromOffset(12,158);equip.Size=UDim2.new(.5,-16,0,48)
-equip.BackgroundColor3=Color3.fromRGB(91,62,44);equip.Visible=false;equip.Parent=detail
+equip.Position=UDim2.fromOffset(12,210);equip.Size=UDim2.new(1,-24,0,48)
+equip.BackgroundColor3=Color3.fromRGB(54,112,84);equip.Visible=false;equip.Parent=detail
 local secondary=CommonUI.CreatePrimaryButton({name="WitcherSecondaryItemAction",text="소모품 조합",minHeight=48})
-secondary.Position=UDim2.new(.5,4,0,158);secondary.Size=UDim2.new(.5,-16,0,48)
-secondary.BackgroundColor3=Color3.fromRGB(67,72,62);secondary.Visible=false;secondary.Parent=detail
+secondary.Position=UDim2.new(.5,4,0,210);secondary.Size=UDim2.new(.5,-16,0,48)
+secondary.BackgroundColor3=Color3.fromRGB(55,95,87);secondary.Visible=false;secondary.Parent=detail
 local inventoryEmpty=Instance.new("TextLabel")
-inventoryEmpty.Name="MeadowInventoryEmpty";inventoryEmpty.LayoutOrder=6
+inventoryEmpty.Name="MeadowInventoryEmpty";inventoryEmpty.LayoutOrder=5
 inventoryEmpty.Size=UDim2.new(1,-8,0,60);inventoryEmpty.BackgroundTransparency=1
 inventoryEmpty.Text="검색 조건에 맞는 항목이 없어.";inventoryEmpty.Font=Enum.Font.GothamMedium
 inventoryEmpty.TextSize=14;inventoryEmpty.TextColor3=muted;inventoryEmpty.Visible=false
@@ -1274,11 +1318,14 @@ end
 local function redrawSelection()
   local item=itemRows[selectedKey]
   if not item then
-    title.Text="선택된 아이템 없음";description.Text="해당 분류에 보유 중인 아이템이 없어."
+    title.Text="선택된 아이템 없음";description.Text="해당 분류에 맞는 아이템이 없어."
+    detailPreview.Visible=false
     equip.Visible=false;secondary.Visible=false
     return
   end
   title.Text=item.name.."  /  "..item.category
+  detailPreview.Visible=true
+  detailPreview.ImageRectOffset=Vector2.new(item.icon*64,0)
   local recipe=item.gear or item.tonic
   local cost=recipe and string.format("제작: 나무 %d · 돌 %d · 재화 %d",recipe.Wood or 0,recipe.Stone or 0,recipe.Coins or 0) or ""
   local stats=item.gear and string.format("공격 +%d  ·  방어 +%d\n",item.gear.Attack or 0,item.gear.Defense or 0) or ""
@@ -1286,9 +1333,13 @@ local function redrawSelection()
   description.Text="소지 / 상태   "..itemValue(item).."\n"..stats..(cost~="" and cost.."\n" or "")..
     item.description..(recipe and typeof(feedback)=="string" and ("\n"..feedback) or "")
   secondary.Visible=item.tonic~=nil
+  equip.Size=secondary.Visible and UDim2.new(.5,-16,0,48) or UDim2.new(1,-24,0,48)
   for key,card in pairs(itemCards)do
-    card.border.Color=key==selectedKey and gold or Color3.fromRGB(92,83,68)
-    card.border.Thickness=key==selectedKey and 2 or 1
+    local selected=key==selectedKey
+    card.border.Color=selected and gold or Color3.fromRGB(78,123,102)
+    card.border.Thickness=selected and 2.2 or 1
+    card.button.BackgroundColor3=selected and Color3.fromRGB(54,94,75)
+      or (owned(itemRows[key])>0 and Color3.fromRGB(27,54,48) or Color3.fromRGB(20,39,40))
   end
   equip.Visible=item.gear~=nil or item.tonic~=nil or typeof(item.key)=="Instance"
   if equip.Visible then
@@ -1311,9 +1362,9 @@ end
 local function makeCard(item)
   local card=Instance.new("TextButton")
   card.Name="OwnedItemSlot";card.Text="";card.AutoButtonColor=true
-  card.BackgroundColor3=Color3.fromRGB(30,29,32);card.BorderSizePixel=0;card.Parent=inventoryGrid
+  card.BackgroundColor3=Color3.fromRGB(27,54,48);card.BorderSizePixel=0;card.Parent=inventoryGrid
   local rounded=Instance.new("UICorner");rounded.CornerRadius=UDim.new(0,10);rounded.Parent=card
-  local outline=Instance.new("UIStroke");outline.Color=Color3.fromRGB(92,83,68);outline.Parent=card
+  local outline=Instance.new("UIStroke");outline.Color=Color3.fromRGB(78,123,102);outline.Transparency=.14;outline.Parent=card
   local icon=Instance.new("ImageLabel")
   icon.Name="ExistingAssetIcon";icon.BackgroundTransparency=1;icon.Image=meadowIconAtlas
   icon.ImageRectOffset=Vector2.new(item.icon*64,0);icon.ImageRectSize=Vector2.new(64,64)
@@ -1384,7 +1435,7 @@ local function renderInventory()
       local show=matches and (category=="전체" or category==item.category) and (item.gear~=nil or item.tonic~=nil or typeof(item.key)=="Instance" or owned(item)>0 or category=="전체")
       card.button.Visible=show
       if show then visibleCount+=1 end
-      card.button.BackgroundColor3=owned(item)>0 and Color3.fromRGB(38,36,39) or Color3.fromRGB(25,25,27)
+      card.button.BackgroundColor3=owned(item)>0 and Color3.fromRGB(27,54,48) or Color3.fromRGB(20,39,40)
       if show and not firstVisible then firstVisible=item.key end
     end
   end
@@ -1403,11 +1454,11 @@ for index,button in ipairs(filterButtons)do
   button.Activated:Connect(function()
     category=categories[index]
     for i,tab in ipairs(filterButtons)do
-      tab.BackgroundColor3=i==index and Color3.fromRGB(105,70,45) or Color3.fromRGB(35,33,34)
+      tab.BackgroundColor3=i==index and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
     end
     renderInventory()
   end)
-  button.BackgroundColor3=index==1 and Color3.fromRGB(105,70,45) or Color3.fromRGB(35,33,34)
+  button.BackgroundColor3=index==1 and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
 end
 equip.Activated:Connect(function()
   if player:GetAttribute("ProfileReady")~=true then return end
@@ -1657,11 +1708,11 @@ for index,button in ipairs(skillButtons)do
       end
     end
     for i,tab in ipairs(skillButtons)do
-      tab.BackgroundColor3=i==index and Color3.fromRGB(105,70,45) or Color3.fromRGB(35,33,34)
+      tab.BackgroundColor3=i==index and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
     end
     meadowActionButtons.refreshSkills()
   end)
-  button.BackgroundColor3=index==1 and Color3.fromRGB(105,70,45) or Color3.fromRGB(35,33,34)
+  button.BackgroundColor3=index==1 and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
 end
 skillUse.Activated:Connect(function()
   if not selectedSkill or player:GetAttribute("ProfileReady")~=true then return end
@@ -1717,7 +1768,7 @@ local function renderMeadowJournal()
   trackerTitle.Text=quest and ("메인  "..quest.Name.."  ▸") or "메인  초원 조사 기록 완료  ▸"
   trackerDetail.Text=quest and string.format("%s  (%d/%d)",quest.Instruction,progress,quest.Goal)
     or "연구 기록을 메뉴의 인벤토리에서 다시 볼 수 있어"
-  inventoryRow.Text="획득한 아이템 · 수량은 서버 기록 기준"
+  inventoryRow.Text="소지품  ·  실제 보유·제작·장비 기록"
   renderWitcherInventory()
   for index,info in ipairs(Config.MainQuests) do
     local state=index<stage and "완료" or index==stage and "진행 중" or "잠김"
