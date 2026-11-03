@@ -53,7 +53,7 @@ test('Roblox applied code coaching stays in current responsible files, ranks adv
 });
 
 test('Vibe Roblox source worker receives all company modules with hashes but does not claim gameplay application',()=>{
-  const order={target:'roblox',gameId:'daechung-rpg',source:{root:'roblox-games/daechung-rpg'},goal:'전투 모션 애니메이션 개선'};
+  // [실재 배포 게임] 삭제된 포탈 RPG 대신 현재 유지 중인 마력숲 책임 클라이언트를 검증한다.\n  const order={target:'roblox',gameId:'fantasy-survival',source:{root:'roblox-games/fantasy-survival'},goal:'전투 모션 애니메이션 개선'};
   const result=buildRobloxSourceCoaching({cwd:process.cwd(),order,responsibleFiles:['client/Game.client.luau']});
   assert.equal(result.evidence.retrieved,true);
   assert.equal(result.evidence.companyModulesApplicationVerified,false);
