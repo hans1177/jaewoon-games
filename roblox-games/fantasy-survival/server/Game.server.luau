@@ -789,39 +789,52 @@ local function createMeadowVillage()
     task.wait()
   end
   gameWorld:SetAttribute("MeadowVillageFlatGroundReady",true)
-  -- [확장된 숲마을 길] 기존 시작점, 의뢰판, NPC와 단서 좌표를 보존한 채 외곽 생활구역으로 길을 뻗는다.
-  -- 기본 파츠 대신 네이티브 Terrain만 사용한다. 곡선과 가지길로 규칙적인 격자 배열을 피한다.
-  for _,path in ipairs({
-    {0,-86,15,45},{-3,-145,15,69},{3,-213,16,73},{-2,-284,16,91},
-    {-68,-122,141,8},{66,-124,135,8},
-    {-80,-190,159,8},{81,-194,163,8},
-    {-92,-263,182,9},{96,-268,191,9},
-    {-154,-165,8,101},{157,-170,8,104},
-    {-194,-266,8,98},{197,-270,8,96},
-  }) do
-    meadowTerrain:FillBlock(CFrame.new(path[1],1.5,path[2]),
-      Vector3.new(path[3],1.4,path[4]),Enum.Material.Ground)
-  end
-  -- [구불구불한 골목] 두 생활구역 사이의 걸어서 갈 수 있는 지름길.
-  for _,lane in ipairs({
-    {-55,-85,-102,-96},{58,-85,111,-93},
-    {-76,-145,-119,-161},{76,-146,126,-160},
-    {-90,-209,-95,-227},{91,-210,110,-230},
-    {-162,-218,-186,-253},{167,-220,194,-251},
-    {-98,-286,-106,-306},{95,-291,123,-310},
-    {-158,-300,-215,-318},{163,-300,218,-320},
-    -- [마을 외부 출입로] 외곽 늑대·탐험 숲길로 연결되는 동/서문과 남쪽 농장 길.
-    {-187,-189,-233,-193},{188,-194,236,-196},
-    {-200,-315,-243,-315},{205,-318,241,-316},
-  }) do
-    for step=0,8 do
-      local t=step/8
-      meadowTerrain:FillBall(Vector3.new(
-        lane[1]+(lane[3]-lane[1])*t,-1.6,lane[2]+(lane[4]-lane[2])*t),
-        4.5,Enum.Material.Ground)
+  -- [위쳐풍 숲마을] 직선 격자 대신 실제 Terrain 흙길·우물 둘레길·농가 샛길.
+  -- 의뢰판(0,-101)·우물(0,-146)·촌장/NPC·기존 퀘스트 지점을 옮기지 않는다.
+  local villageRoadRoutes={
+    {width=5.6,points={{0,-53},{5,-78},{-4,-99},{-9,-118},{-19,-139},{-19,-160},{-3,-186},{8,-217},{-4,-251},{6,-285},{-2,-333}}},
+    -- [돌우물] 중심의 실제 원본 우물과 접근 공간은 비워 둔다.
+    {width=3.6,points={{-11,-126},{-19,-134},{-21,-147},{-18,-160},{-5,-170},{12,-167},{20,-153},{19,-138},{11,-128}}},
+    {width=4.7,points={{-6,-102},{-35,-112},{-62,-120},{-79,-108}}},
+    {width=4.2,points={{4,-103},{35,-108},{68,-124},{89,-107}}},
+    {width=4.3,points={{-20,-160},{-55,-168},{-82,-171},{-99,-181}}},
+    {width=4.5,points={{18,-162},{56,-158},{85,-163},{100,-179}}},
+    {width=4.2,points={{-5,-211},{-40,-214},{-75,-228},{-88,-249}}},
+    {width=4.4,points={{8,-216},{45,-225},{77,-228},{90,-246}}},
+    {width=4.3,points={{-5,-280},{-46,-289},{-80,-306},{-107,-335}}},
+    {width=4.2,points={{6,-289},{49,-306},{82,-318},{112,-336}}},
+    -- [외곽 생활권] 나무꾼집·농가·작업장으로 이어지는 자연스러운 수레길.
+    {width=4.2,points={{-64,-119},{-126,-127},{-151,-106},{-178,-103},{-204,-71}}},
+    {width=4.1,points={{70,-124},{129,-129},{158,-146},{180,-141},{217,-119}}},
+    {width=4.5,points={{-81,-171},{-137,-184},{-164,-217},{-175,-259},{-206,-294},{-238,-326}}},
+    {width=4.2,points={{85,-177},{133,-194},{165,-226},{184,-259},{211,-299},{240,-328}}},
+    -- [숲 탐험길] 안전한 마을 동·서문을 기존 외곽 숲길에 연결.
+    {width=4.5,points={{-165,-206},{-207,-198},{-245,-200},{-288,-209}}},
+    {width=4.5,points={{163,-206},{207,-200},{245,-199},{288,-211}}},
+  }
+  local villageRoadSegments=0
+  for routeIndex,route in ipairs(villageRoadRoutes) do
+    for segment=1,#route.points-1 do
+      local a,b=route.points[segment],route.points[segment+1]
+      local dx,dz=b[1]-a[1],b[2]-a[2]
+      local length=math.sqrt(dx*dx+dz*dz)
+      local steps=math.max(4,math.ceil(length/6))
+      for step=0,steps do
+        local t=step/steps
+        -- 양 끝은 고정하고 중앙에만 완만한 굴곡을 주어 샛길 연결을 보존한다.
+        local bend=math.sin(t*math.pi)*math.sin(routeIndex*1.7+segment*.9)*2.2
+        local x=a[1]+dx*t-dz/math.max(length,1)*bend
+        local z=a[2]+dz*t+dx/math.max(length,1)*bend
+        local radius=route.width*(.97+.055*math.sin(routeIndex*2.1+segment+t*5.6))
+        -- 지면 높이는 고정(+2): 파츠/길 덮개 없이 모바일 보행·NPC 의뢰 위치를 보존.
+        meadowTerrain:FillBall(Vector3.new(x,2.06-radius,z),radius,Enum.Material.Ground)
+        if step%9==0 then task.wait() end
+      end
+      villageRoadSegments+=1
     end
-    task.wait()
   end
+  gameWorld:SetAttribute("MeadowVillageRoadRoutes",#villageRoadRoutes)
+  gameWorld:SetAttribute("MeadowVillageRoadSegments",villageRoadSegments)
   -- [마을 광장 바닥] 초원과 동떨어진 흰색 Cobblestone 직사각형 덮개는 두지 않는다.
   -- 기존 Grass 지면과 Ground 골목을 그대로 연결해 의뢰판·주민·우물 위치를 보존한다.
   -- [실제 건물] 기둥/벽/지붕/문은 저장소 Kenney 원본 3D GLB 등록본만 사용한다.
@@ -866,37 +879,37 @@ local function createMeadowVillage()
     -- [집 유형] 짧은 초가, 긴 농가/공방, 이층 여관/회관. 문 방향은 광장·골목을 향하게 한다.
     -- 원래 등장한 건물 이름을 유지해서 기존 컨텐츠 참조에 영향이 없게 한다.
     local houses={
-      {x=-99,z=-90,angle=0,name="Village_HealerHouse",label="약초상 · 의원",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,chimney=true,wing=-1,wingZ=2.7,
+      {x=-95,z=-84,angle=.17,name="Village_HealerHouse",label="약초상 · 의원",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,chimney=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(125,107,88),roof=Color3.fromRGB(82,91,78)},
-      {x=112,z=-93,angle=math.pi,name="Village_Guesthouse",label="마을 여관",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseA",masonry=true,chimney=true,archway=true,balcony=true,
+      {x=116,z=-100,angle=math.pi-.21,name="Village_Guesthouse",label="마을 여관",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseA",masonry=true,chimney=true,archway=true,balcony=true,
        timber=Color3.fromRGB(151,117,88),roof=Color3.fromRGB(96,72,66)},
-      {x=-116,z=-160,angle=0,name="Village_Workshop",label="대장간 · 공방",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=5.4,
+      {x=-121,z=-167,angle=.21,name="Village_Workshop",label="대장간 · 공방",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(106,94,83),roof=Color3.fromRGB(73,79,79)},
-      {x=125,z=-158,angle=math.pi,name="Village_WardenHall",label="마을 회관",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseB",masonry=true,chimney=true,archway=true,balcony=true,wing=-1,wingZ=5.4,
+      {x=129,z=-154,angle=math.pi+.14,name="Village_WardenHall",label="마을 회관",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseB",masonry=true,chimney=true,archway=true,balcony=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(146,119,91),roof=Color3.fromRGB(92,70,59)},
-      {x=-96,z=-226,angle=0,name="Village_ResidentHouseWest",label="서쪽 주민집",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
+      {x=-108,z=-235,angle=-.18,name="Village_ResidentHouseWest",label="서쪽 주민집",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
        timber=Color3.fromRGB(153,132,107),roof=Color3.fromRGB(105,89,74)},
-      {x=109,z=-229,angle=math.pi,name="Village_ResidentHouseEast",label="동쪽 주민집",scale=.96,length=2,storeys=1,roofPitch=1.09,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
+      {x=107,z=-222,angle=math.pi+.23,name="Village_ResidentHouseEast",label="동쪽 주민집",scale=.96,length=2,storeys=1,roofPitch=1.09,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(116,102,87),roof=Color3.fromRGB(92,104,92)},
-      {x=-198,z=-89,angle=math.pi*.1,name="Village_WoodcutterHome",label="벌목꾼의 집",scale=.86,length=2,storeys=1,roofPitch=.96,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=2.7,
+      {x=-197,z=-80,angle=-.14,name="Village_WoodcutterHome",label="벌목꾼의 집",scale=.86,length=2,storeys=1,roofPitch=.96,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(119,103,80),roof=Color3.fromRGB(91,82,67)},
-      {x=201,z=-104,angle=math.pi*.91,name="Village_WoodsmanHome",label="숲지기 오두막",scale=.91,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,leanTo=true,
+      {x=205,z=-112,angle=math.pi-.33,name="Village_WoodsmanHome",label="숲지기 오두막",scale=.91,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,leanTo=true,
        timber=Color3.fromRGB(111,108,91),roof=Color3.fromRGB(85,95,76)},
-      {x=-198,z=-163,angle=math.pi*.12,name="Village_CarpenterHome",label="목수 작업집",scale=.94,length=3,storeys=1,roofPitch=.91,doorZ=0,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=-5.4,
+      {x=-208,z=-170,angle=.24,name="Village_CarpenterHome",label="목수 작업집",scale=.94,length=3,storeys=1,roofPitch=.91,doorZ=0,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=-5.4,
        timber=Color3.fromRGB(134,109,88),roof=Color3.fromRGB(97,86,70)},
-      {x=207,z=-177,angle=math.pi*.87,name="Village_BakerHome",label="빵 굽는 집",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,leanTo=true,
+      {x=203,z=-176,angle=math.pi-.25,name="Village_BakerHome",label="빵 굽는 집",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,leanTo=true,
        timber=Color3.fromRGB(162,126,96),roof=Color3.fromRGB(109,88,75)},
-      {x=-189,z=-250,angle=-math.pi*.06,name="Village_Granary",label="곡물 창고",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,prefab="villageHouseC",masonry=true,flatRoof=true,leanTo=true,
+      {x=-190,z=-258,angle=-.11,name="Village_Granary",label="곡물 창고",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,prefab="villageHouseC",masonry=true,flatRoof=true,leanTo=true,
        timber=Color3.fromRGB(129,107,81),roof=Color3.fromRGB(98,91,68)},
-      {x=196,z=-251,angle=math.pi*1.05,name="Village_Farmstead",label="농가 · 마구간",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,prefab="villageHouseD",masonry=true,flatRoof=true,wing=-1,wingZ=5.4,
+      {x=196,z=-259,angle=math.pi+.19,name="Village_Farmstead",label="농가 · 마구간",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,prefab="villageHouseD",masonry=true,flatRoof=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(117,98,75),roof=Color3.fromRGB(91,84,74)},
-      {x=-104,z=-309,angle=.08,name="Village_SouthCottageWest",label="남쪽 농가",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
+      {x=-109,z=-301,angle=.23,name="Village_SouthCottageWest",label="남쪽 농가",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
        timber=Color3.fromRGB(148,126,102),roof=Color3.fromRGB(89,86,77)},
-      {x=121,z=-309,angle=math.pi-.12,name="Village_SouthCottageEast",label="길가 주민집",scale=.92,length=2,storeys=1,roofPitch=1.02,doorZ=2.7,sideWindow=false,porch=1,lantern=false,flatRoof=true,leanTo=true,
+      {x=115,z=-321,angle=math.pi-.19,name="Village_SouthCottageEast",label="길가 주민집",scale=.92,length=2,storeys=1,roofPitch=1.02,doorZ=2.7,sideWindow=false,porch=1,lantern=false,flatRoof=true,leanTo=true,
        timber=Color3.fromRGB(112,98,82),roof=Color3.fromRGB(91,77,65)},
-      {x=-228,z=-320,angle=-.18,name="Village_OrchardHome",label="과수원 농가",scale=.84,length=2,storeys=1,roofPitch=.87,doorZ=2.7,sideWindow=true,porch=0,lantern=false,chimney=true,leanTo=true,
+      {x=-233,z=-314,angle=-.11,name="Village_OrchardHome",label="과수원 농가",scale=.84,length=2,storeys=1,roofPitch=.87,doorZ=2.7,sideWindow=true,porch=0,lantern=false,chimney=true,leanTo=true,
        timber=Color3.fromRGB(133,121,98),roof=Color3.fromRGB(100,90,69)},
-      {x=219,z=-320,angle=math.pi+.17,name="Village_EastFarmhouse",label="동쪽 농가",scale=.94,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
+      {x=222,z=-325,angle=math.pi+.29,name="Village_EastFarmhouse",label="동쪽 농가",scale=.94,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(123,102,87),roof=Color3.fromRGB(90,101,88)},
     }
     for houseIndex,house in ipairs(houses) do
