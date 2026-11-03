@@ -1387,9 +1387,11 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/local function createMeadowVillage\(\)/);
   assert.match(server,/local function villageNativeNpc\(spec\)/);
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
-  // [마력숲 우물] 기존 분수 이름을 먼저 제거하고 원본 Kenney Well을 독립 배치한다.
+  // [마력숲 실물 우물] 기존 분수를 제거하고 원본 Innerscene CC0 Well을 성인 R15 비율로 독립 배치한다.
   assert.match(server,/scenery\.Name=="Meadow_Village_Well"/);
-  assert.match(server,/local well=worldAsset\("villageWell",Vector3\.new\(0,3,-146\),5\.5\)/);
+  assert.match(server,/local wellHeightStuds=12\.2/);
+  assert.match(server,/local well=worldAsset\("villageWell",Vector3\.new\(0,3,-146\),wellHeightStuds\)/);
+  assert.match(server,/well:SetAttribute\("MeadowVillageWellHeightStuds",wellHeightStuds\)/);
   assert.match(server,/local propHeight=row\[4\]\*1\.3/);
   assert.doesNotMatch(server,/table\.insert\(furnishings,\{"villageWell"/);
   assert.doesNotMatch(server,/\{"villageRoad",[^}]+\}/);
@@ -1397,9 +1399,9 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/gameWorld:SetAttribute\("MeadowVillageWellReady",villageWellReady\)/);
   assert.match(server,/sign\.Name="MeadowVillageWellSign"/);
   assert.match(server,/well:SetAttribute\("MeadowVillageWellOriginal",true\)/);
-  assert.match(server,/local solid=name:find\("stone ring",1,true\)~=nil/);
-  assert.match(server,/name:find\("roof post",1,true\)~=nil/);
-  assert.match(server,/mesh.CanCollide=solid/);
+  assert.match(server,/local ring=name:find\("stone ring",1,true\)~=nil/);
+  assert.match(server,/local post=name:find\("roof post",1,true\)~=nil/);
+  assert.match(server,/mesh.CanCollide=ring or post/);
   assert.doesNotMatch(server,/\{"villageFountain",0,-146/);
   assert.match(server,/warn\("마력숲 원본 돌우물 등록 대기/);
   assert.doesNotMatch(server,/meadowTerrain:FillBlock\(CFrame\.new\(plaza\[1\],1\.55,plaza\[2\]\)/);
