@@ -279,6 +279,11 @@ test('prologue uses exactly one source image per shot and keeps Big Brother and 
   assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.96,\.68\)/);
   assert.match(intro,/storyArtwork\.Position=UDim2\.fromScale\(0,0\)/);
   assert.match(intro,/storyArtwork\.Size=UDim2\.fromScale\(1,1\)/);
+  assert.match(intro,/local firstId=registeredStoryArt\[1\] or registeredStoryDepth\[1\]/);
+  assert.match(intro,/for index,scene in ipairs\(scenes\) do\s+if index>1 then/);
+  assert.match(intro,/local selected=\(portrait and typeof\(frontId\)=="string"\) and frontId/);
+  assert.doesNotMatch(intro,/for index,id in ipairs\(registeredStoryArt\) do/);
+  assert.doesNotMatch(intro,/for index,id in pairs\(registeredStoryDepth\) do/);
   assert.match(intro,/local firstShotDeadline=os\.clock\(\)\+2\.4/);
   assert.match(intro,/if not entranceOpen or token~=runToken then return end\s+TweenService:Create\(storyProgress/);
   assert.match(intro,/local sway=math\.sin\(t\*1\.15\)\*cameraMotionIntensity\*\.12/);
