@@ -425,6 +425,34 @@ test('12 authored prologue beats retain single-image framing and mobile-safe cho
   assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
 });
 
+
+test('prologue reveals each single illustration with safe lighting and mobile reduced effects',()=>{
+  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
+  for(const marker of [
+    'local activeStoryRevealTween=nil',
+    'local activeVignetteTween=nil',
+    'if activeStoryRevealTween then activeStoryRevealTween:Cancel();activeStoryRevealTween=nil end',
+    'if activeVignetteTween then activeVignetteTween:Cancel();activeVignetteTween=nil end',
+    'local revealStart=reducedEffects and .04 or closeUp and .31',
+    'local revealSeconds=reducedEffects and .18 or closeUp and .94',
+    'activeStoryRevealTween=TweenService:Create(storyImage,',
+    'activeStoryRevealTween:Play()',
+    'local vignetteBase=cinematicVignette.BackgroundTransparency',
+    'local vignettePulse=math.max((scene.cinema=="betrayal" or scene.cinema=="erasure") and .36 or .49,vignetteBase-.14)',
+    'activeVignetteTween=TweenService:Create(cinematicVignette,',
+    'task.delay(impactFade*.56,function()',
+    'BackgroundTransparency=vignetteBase',
+    'introDialogue.TextColor3=',
+  ])assert.ok(intro.includes(marker),'missing intro direction: '+marker);
+  assert.match(intro,/if impactAt and not reducedEffects then/);
+  assert.match(intro,/if not entranceOpen or token~=runToken or currentStoryScene~=index then return end/);
+  assert.match(intro,/local showArtwork=validImage and not showFront/);
+  assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
+  assert.match(intro,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
+  assert.match(intro,/storyArtwork\.ScaleType=Enum\.ScaleType\.Fit/);
+  assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
+});
+
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   const asset=fs.readFileSync('assets/shared/party/village-well.glb');
