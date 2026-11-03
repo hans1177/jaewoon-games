@@ -643,6 +643,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           VIBE2_PREFLIGHT_CONTRACT_SHA: ${{ steps.contract.outputs.sha }}
+          # [큐 예약] 수백 MB의 무손실 기존 큐를 파싱할 때 기본 2 GiB V8 힙 OOM이 발생했다.
+          # 기존 reserve/release 명령과 큐 보관·잠금·검증은 그대로 유지하고 이 단계만 3.5 GiB로 제한한다.
+          NODE_OPTIONS: '--max-old-space-size=3584'
           VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '128'
           # The owner's direct game tasks borrow all 20 logical slots; unattended
           # automatic batches retain eight slots of headroom for owner/QA/release.
