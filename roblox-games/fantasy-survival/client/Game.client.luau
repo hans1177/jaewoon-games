@@ -4418,6 +4418,9 @@ local actionsById={}
 for _,action in ipairs(Config.Actions) do actionsById[action.Id]=action end
 local debris=game:GetService("Debris")
 local alreadyPlayedMeadowFX={}
+-- [막기 반동] 서버가 실제 타격을 확인한 시점만 관절 반발과 타격 효과를 낸다.
+local meadowGuardContactAt=-100
+local meadowGuardContactPerfect=false
 local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetPosition,sequence)
   local action=actionsById[actionId]
   actorUserId=typeof(actorUserId)=="number" and actorUserId or player.UserId
@@ -4437,102 +4440,99 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
   if typeof(position)~="Vector3" or (position-rootPart.Position).Magnitude>45 then
     position=rootPart.Position
   end
-  -- [방어 이펙트] 승인된 방어만 청백색 팔 궤적·빛·대형 방어 파동을 재생한다.
-  if actionId=="skill-meadow-guard" then
-    local tweenService=game:GetService("TweenService")
-    for _,side in ipairs({"Left","Right"}) do
-      local arm=character:FindFirstChild(side.."LowerArm") or character:FindFirstChild(side.." Arm")
-      local hand=character:FindFirstChild(side.."Hand") or arm
-      if arm and arm:IsA("BasePart")
-        and meadowCommonVFX and type(meadowCommonVFX.AttachShortTrail)=="function" then
-        local ok,trail,controller=pcall(meadowCommonVFX.AttachShortTrail,arm,{
-          lifetime=reducedEffects and .18 or .38,
-          width=reducedEffects and .55 or 1,
-          axis=Vector3.new(0,1,0),length=math.max(.9,arm.Size.Y*1.4),
-          color=Color3.fromRGB(93,200,255),
-        })
-        if ok and trail and controller then
-          trail.Name="MeadowGuardCrossSlash"..side
-          task.delay(.85,function() pcall(controller.Destroy) end)
-        end
-      end
-      if hand and hand:IsA("BasePart") then
-        local glow=Instance.new("PointLight")
-        glow.Name="MeadowGuardFistGlow"..side
-        glow.Color=Color3.fromRGB(100,215,255)
-        glow.Range=reducedEffects and 4 or 8
-        glow.Brightness=reducedEffects and .65 or 3
-        glow.Shadows=false;glow.Parent=hand
-        task.delay(.5,function()
-          if glow.Parent then
-            tweenService:Create(glow,TweenInfo.new(.35),{
-              Brightness=reducedEffects and .35 or 1.1,
-            }):Play()
-          end
-        end)
-        task.delay(2.43,function()
-          if glow.Parent then tweenService:Create(glow,TweenInfo.new(.3),{Brightness=0}):Play() end
-        end)
-        debris:AddItem(glow,2.8)
-      end
-    end
-    -- [방어 반동음] 기존 Roblox 내장 착지음을 낮게 조정해 승인된 막기 한 번에만 재생한다.
-    local guardImpactSound=Instance.new("Sound")
-    guardImpactSound.Name="MeadowGuardImpact"
-    guardImpactSound.SoundId="rbxasset://sounds/action_jump_land.mp3"
-    guardImpactSound.Volume=.29
-    guardImpactSound.PlaybackSpeed=.73
-    guardImpactSound.RollOffMinDistance=4
-    guardImpactSound.RollOffMaxDistance=24
-    guardImpactSound.SoundGroup=meadowEffectsGroup
-    guardImpactSound.Parent=rootPart
-    guardImpactSound:Play()
-    debris:AddItem(guardImpactSound,1.2)
-    -- [푸른 에너지 실루엣] 기존 캐릭터만 강조하며 별도 방패 모델은 생성하지 않는다.
-    local aura=Instance.new("Highlight")
-    aura.Name="MeadowGuardBodyAura"
-    aura.Adornee=character
-    aura.DepthMode=Enum.HighlightDepthMode.Occluded
-    aura.FillColor=Color3.fromRGB(80,181,255)
-    aura.FillTransparency=reducedEffects and .92 or .76
-    aura.OutlineColor=Color3.fromRGB(201,244,255)
-    aura.OutlineTransparency=reducedEffects and .4 or .06
-    aura.Parent=character
-    task.delay(.7,function()
-      if aura.Parent then
-        tweenService:Create(aura,TweenInfo.new(.4),{
-          FillTransparency=.95,OutlineTransparency=.5,
-        }):Play()
-      end
-    end)
-    task.delay(2.45,function()
-      if aura.Parent then
-        tweenService:Create(aura,TweenInfo.new(.3),{
-          FillTransparency=1,OutlineTransparency=1,
-        }):Play()
-      end
-    end)
-    debris:AddItem(aura,2.8)
-    -- [영화식 막기] 팔 교차 → 충격 반발 → 잔광. 기존 공용 VFX로 3회만 출력.
+  -- [서버 적중 확인] 게임이 실제 막기/튕겨내기를 승인한 때만 충격 불꽃을 출력한다.
+  -- 상용 액션게임처럼 방어 태세와 타격 피드백을 분리한다. 대형 가짜 방패·3중 원형 파동 금지.
+  local confirmedBlock=actionId=="skill-meadow-guard" and overrideVfx=="BLOCK_CONTACT"
+  local confirmedParry=actionId=="skill-meadow-parry" and overrideVfx=="PARRY_CONFIRMED"
+  if confirmedBlock or confirmedParry then
+    local perfect=confirmedParry
     if meadowCommonVFX and type(meadowCommonVFX.Create)=="function"
       and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
-      for index,delaySec in ipairs({.11,.30,.66}) do
-        task.delay(delaySec,function()
-          if not rootPart.Parent or not character.Parent then return end
-          local ok,err=pcall(meadowCommonVFX.Create,index==1 and "BLOCK_IMPACT" or "SHAPE_BURST",{
-            parent=workspace,cframe=rootPart.CFrame*CFrame.new(0,index==3 and 1.25 or 1.7,-1.3),
-            color=index==1 and Color3.fromRGB(238,254,255) or Color3.fromRGB(104,205,255),
-            accent=index==2 and Color3.fromRGB(255,235,173) or Color3.fromRGB(65,157,255),
-            duration=reducedEffects and .24 or .46,
-            startDiameter=index==1 and 2 or 2.6,
-            endDiameter=reducedEffects and 4 or (index==2 and 10 or 7.2),
-            startSize=.6,endSize=reducedEffects and 1.3 or 3.5,
-            count=reducedEffects and 3 or (index==2 and 14 or 9),
-            reducedMotion=reducedEffects,
-          })
-          if not ok then warn("마력숲 방어 파동 오류: "..tostring(err)) end
-        end)
+      local ok,err=pcall(meadowCommonVFX.Create,perfect and "PARRY_PERFECT_FLASH" or "BLOCK_IMPACT",{
+        parent=workspace,cframe=rootPart.CFrame*CFrame.new(0,1.65,-1.45),
+        color=perfect and Color3.fromRGB(255,246,185) or Color3.fromRGB(241,251,255),
+        accent=perfect and Color3.fromRGB(255,177,72) or Color3.fromRGB(96,204,255),
+        textureKey="slash",hideRing=true,
+        duration=reducedEffects and .20 or (perfect and .40 or .29),
+        startSize=perfect and 1.2 or .8,
+        endSize=reducedEffects and 1.35 or (perfect and 4.4 or 2.9),
+        count=reducedEffects and (perfect and 7 or 4) or (perfect and 17 or 11),
+        distance=perfect and 4.8 or 2.5,
+        reducedMotion=reducedEffects,
+      })
+      if not ok then warn("마력숲 확인된 막기 이펙트 오류: "..tostring(err)) end
+    end
+    local impactSound=Instance.new("Sound")
+    impactSound.Name=perfect and "MeadowPerfectParryImpact" or "MeadowGuardContactImpact"
+    impactSound.SoundId="rbxasset://sounds/action_jump_land.mp3"
+    impactSound.Volume=perfect and .53 or .37
+    impactSound.PlaybackSpeed=perfect and 1.16 or .86
+    impactSound.RollOffMinDistance=4
+    impactSound.RollOffMaxDistance=25
+    impactSound.SoundGroup=meadowEffectsGroup
+    impactSound.Parent=rootPart
+    impactSound:Play()
+    debris:AddItem(impactSound,1.1)
+    if sourcePlayer==player then
+      -- [모바일 안전] 화면을 가리지 않는 순간 명멸. 서버의 막기 성공에만 반응한다.
+      local impactOverlay=Instance.new("Frame")
+      impactOverlay.Name=perfect and "MeadowParryContactFlash" or "MeadowGuardContactFlash"
+      impactOverlay.Size=UDim2.fromScale(1,1)
+      impactOverlay.BackgroundColor3=perfect and Color3.fromRGB(255,221,146)
+        or Color3.fromRGB(178,225,255)
+      impactOverlay.BackgroundTransparency=reducedEffects and .985 or (perfect and .94 or .97)
+      impactOverlay.BorderSizePixel=0
+      impactOverlay.ZIndex=2
+      impactOverlay.Parent=gui
+      game:GetService("TweenService"):Create(impactOverlay,TweenInfo.new(perfect and .24 or .16),{
+        BackgroundTransparency=1,
+      }):Play()
+      debris:AddItem(impactOverlay,.32)
+    end
+    return
+  end
+  -- [막기 준비] 검술 하이 가드의 팔 움직임만 궤적으로 표시한다.
+  -- 몸 전체에 파란빛을 칠하거나 입력 때 타격 성공처럼 충격파를 세 번 재생하지 않는다.
+  if actionId=="skill-meadow-guard" or actionId=="skill-meadow-parry" then
+    local parrying=actionId=="skill-meadow-parry"
+    local tint=parrying and Color3.fromRGB(255,215,137) or Color3.fromRGB(193,218,224)
+    local tweenService=game:GetService("TweenService")
+    for _,side in ipairs(parrying and {"Right"} or {"Left","Right"}) do
+      local forearm=character:FindFirstChild(side.."LowerArm")
+        or character:FindFirstChild(side.." Arm")
+      if forearm and forearm:IsA("BasePart")
+        and meadowCommonVFX and type(meadowCommonVFX.AttachShortTrail)=="function" then
+        local ok,trail,controller=pcall(meadowCommonVFX.AttachShortTrail,forearm,{
+          lifetime=reducedEffects and .13 or .25,
+          width=reducedEffects and .31 or .55,
+          axis=Vector3.new(0,1,0),length=math.max(.75,forearm.Size.Y*1.15),
+          color=tint,
+        })
+        if ok and trail and controller then
+          trail.Name=parrying and "MeadowParryBladeLine" or "MeadowGuardHighArc"
+          task.delay(parrying and .30 or .48,function() pcall(controller.Destroy) end)
+        end
       end
+    end
+    if not parrying then
+      -- [유지 태세] 지속시간 2.8초에 맞춘 약한 호박색 윤곽만 남긴다.
+      local aura=Instance.new("Highlight")
+      aura.Name="MeadowGuardStanceAura"
+      aura.Adornee=character
+      aura.DepthMode=Enum.HighlightDepthMode.Occluded
+      aura.FillColor=Color3.fromRGB(210,163,100)
+      aura.FillTransparency=reducedEffects and .98 or .94
+      aura.OutlineColor=Color3.fromRGB(246,210,146)
+      aura.OutlineTransparency=reducedEffects and .82 or .56
+      aura.Parent=character
+      task.delay(2.35,function()
+        if aura.Parent then
+          tweenService:Create(aura,TweenInfo.new(.4),{
+            FillTransparency=1,OutlineTransparency=1,
+          }):Play()
+        end
+      end)
+      debris:AddItem(aura,2.85)
     end
     return
   end
@@ -4647,8 +4647,16 @@ end)
 remote.OnClientEvent:Connect(function(kind,payload,actionId,sequence,targetPosition)
   if kind=="MEADOW_ACTION_FX" then
     playApprovedMeadowEffect(actionId,nil,payload,targetPosition,sequence)
+  elseif kind=="MEADOW_REACTION" and payload=="BLOCK" then
+    -- [실제 방어 적중] 서버가 경감한 공격의 충격만 1회 재생한다.
+    meadowGuardContactAt=os.clock()
+    meadowGuardContactPerfect=false
+    playApprovedMeadowEffect("skill-meadow-guard","BLOCK_CONTACT",player.UserId)
   elseif kind=="MEADOW_REACTION" and payload=="PARRY" then
-    playApprovedMeadowEffect("skill-meadow-parry","PARRY_PERFECT_FLASH",player.UserId)
+    -- [완벽 막기] 실제 공격을 튕겼을 때만 금빛 충격과 몸통 반동을 출력한다.
+    meadowGuardContactAt=os.clock()
+    meadowGuardContactPerfect=true
+    playApprovedMeadowEffect("skill-meadow-parry","PARRY_CONFIRMED",player.UserId)
   end
 end)
 
@@ -5198,60 +5206,62 @@ RunService.PreSimulation:Connect(function(dt)
     skillMotionTargets.HandL=CFrame.Angles(-.20*flipping,0,0)
     skillMotionTargets.HandR=CFrame.Angles(-.20*flipping,0,0)
   elseif isGuard or isParry then
-    -- [방어 동작] 오른팔을 머리 위까지 확실하게 들어 공격 방향을 가리는 한팔 하이 가드.
-    -- 짧은 들어올리기 → 머리 위 유지 → 자연스러운 자세 복귀.
-    -- 캐릭터를 움직이거나 외형 파츠/무기를 생성하지 않는다.
-    local rise=math.clamp(phase/(isParry and .22 or .09),0,1)
+    -- [중세 검술 하이 가드] 몸을 숙이는 X자 막기를 없애고 서서 정면을 방호한다.
+    -- 오른 전완은 얼굴 앞 세로, 왼 전완은 가슴 앞 사선. 발은 지면에 유지한다.
+    local rise=math.clamp(phase/(isParry and .17 or .045),0,1)
     rise=rise*rise*(3-2*rise)
-    local release=math.clamp((1-phase)/(isParry and .45 or .08),0,1)
+    local release=math.clamp((1-phase)/(isParry and .22 or .055),0,1)
     release=release*release*(3-2*release)
-    local guard=rise*release
-    local counter=isParry and math.sin(math.pi*phase) or 0
+    local brace=rise*release
+    local elapsed=os.clock()-meadowGuardContactAt
+    local hit=math.sin(math.pi*math.clamp(elapsed/(meadowGuardContactPerfect and .25 or .19),0,1))
+    local breath=math.sin((os.clock()-skillMotionStart)*3.4)*.014*brace
     if isGuard then
-      -- [막기 전면 가드] 선 채로 양팔 X 가드 → 충격 반동 → 견고한 정면 방어 유지.
-      -- 기존 관절만 사용하며 쪼그린 자세·외형 파츠·새 방패를 만들지 않는다.
-      local open=math.sin(math.pi*math.clamp(phase/.115,0,1))
-      local close=math.clamp((phase-.025)/.13,0,1)
-      close=close*close*(3-2*close)
-      local brace=close*release
-      local impact=math.sin(math.pi*math.clamp((phase-.105)/.12,0,1))
-      local breath=math.sin((os.clock()-skillMotionStart)*3.8)*.014*brace
-      skillMotionTargets.FlipRoot=CFrame.Angles(0,.12*open-.08*impact,.065*open-.065*impact)
-      skillMotionTargets.Spine=CFrame.new(0,.045*open+.065*impact+breath,-.028*brace)
-        *CFrame.Angles(-.035*brace,.14*open-.12*impact,.085*open-.12*impact)
-      skillMotionTargets.Chest=CFrame.Angles(-.055*brace,-.10*impact,.045*open)
-      skillMotionTargets.Head=CFrame.Angles(.12*brace-.08*impact,-.07*impact,0)
-      -- [팔] 양 전완을 얼굴 앞에서 X자로 교차하고 충격 순간 팔꿈치만 짧게 밀린다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-1.17*open-1.03*brace-.16*impact,
-        -.20*brace,-.59*open-.40*brace)
-      skillMotionTargets.ForearmL=CFrame.Angles(-.72*open-.88*brace+.23*impact,0,-.18*brace)
-      skillMotionTargets.HandL=CFrame.Angles(.28*brace-.12*impact,0,-.12*brace)
-      skillMotionTargets.UpperArmR=CFrame.Angles(-1.30*open-1.08*brace-.20*impact,
-        .22*brace,.61*open+.39*brace)
-      skillMotionTargets.ForearmR=CFrame.Angles(-.71*open-.99*brace+.25*impact,0,.18*brace)
-      skillMotionTargets.HandR=CFrame.Angles(.28*brace-.12*impact,0,.12*brace)
-      -- [하체] 발바닥 지지와 허리 높이를 유지해 방어 자세가 주저앉지 않게 한다.
-      skillMotionTargets.ThighL=CFrame.Angles(.015*brace,0,-.09*brace)
-      skillMotionTargets.ThighR=CFrame.Angles(.015*brace,0,.09*brace)
+      -- [강한 읽힘] 준비→전면 가드→서버 적중 반동→자세 복귀. 대미지/이동은 건드리지 않는다.
+      local lift=math.sin(math.pi*math.clamp(phase/.055,0,1))
+      skillMotionTargets.FlipRoot=CFrame.Angles(0,.13*brace-.07*hit,.04*brace)
+      skillMotionTargets.Spine=CFrame.new(0,.065*brace+.065*hit+breath,-.028*brace)
+        *CFrame.Angles(-.11*brace+.13*hit,.21*brace-.14*hit,-.055*brace)
+      skillMotionTargets.Chest=CFrame.Angles(-.09*brace+.08*hit,.08*brace,.04*brace)
+      skillMotionTargets.Head=CFrame.Angles(.12*brace-.13*hit,-.06*brace,0)
+      -- [우측] 적 공격을 받아내는 주방어 팔. 타격 시 어깨가 뒤로 밀리고 즉시 복원된다.
+      skillMotionTargets.UpperArmR=CFrame.Angles(-1.72*brace-.16*lift+.23*hit,
+        .36*brace,.44*brace)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.42*brace+.31*hit,.10*brace,.12*brace)
+      skillMotionTargets.HandR=CFrame.Angles(.20*brace-.16*hit,0,.08*brace)
+      -- [좌측] 반대쪽 가슴/턱을 가리는 보조 가드. X자 팔 꼬임을 만들지 않는다.
+      skillMotionTargets.UpperArmL=CFrame.Angles(-.96*brace-.18*lift+.12*hit,
+        -.26*brace,-.38*brace)
+      skillMotionTargets.ForearmL=CFrame.Angles(-1.08*brace+.19*hit,-.10*brace,-.16*brace)
+      skillMotionTargets.HandL=CFrame.Angles(.14*brace,0,-.09*brace)
+      -- [하체] 실제 다리로 중심을 지지하며 원점 이동·쪼그림·공중 회전 없음.
+      skillMotionTargets.ThighL=CFrame.Angles(-.035*brace,0,-.065*brace)
+      skillMotionTargets.ThighR=CFrame.Angles(.035*brace,0,.065*brace)
       skillMotionTargets.ShinL=CFrame.identity
       skillMotionTargets.ShinR=CFrame.identity
-      skillMotionTargets.FootL=CFrame.Angles(0,0,-.04*brace)
-      skillMotionTargets.FootR=CFrame.Angles(0,0,.04*brace)
+      skillMotionTargets.FootL=CFrame.Angles(0,0,-.035*brace)
+      skillMotionTargets.FootR=CFrame.Angles(0,0,.035*brace)
     else
-      skillMotionTargets.Spine=CFrame.new(0,-.06*guard,0)
-        *CFrame.Angles(-.14*guard+.08*counter,-.10*guard,.07*guard)
-      skillMotionTargets.Chest=CFrame.Angles(-.11*guard,-.08*guard,0)
-      skillMotionTargets.Head=CFrame.Angles(.12*guard,.1*guard,0)
-      skillMotionTargets.UpperArmL=CFrame.Angles(-1.12*guard-.18*counter,-.17*guard,-.28*guard)
-      skillMotionTargets.UpperArmR=CFrame.Angles(-1.24*guard-.24*counter,.20*guard,.28*guard)
-      skillMotionTargets.ForearmL=CFrame.Angles(-1.08*guard,0,-.12*guard)
-      skillMotionTargets.ForearmR=CFrame.Angles(-1.16*guard,0,.12*guard)
-      skillMotionTargets.HandL=CFrame.Angles(-.12*guard,0,0)
-      skillMotionTargets.HandR=CFrame.Angles(-.12*guard,0,0)
-      skillMotionTargets.ThighL=CFrame.Angles(.12*guard,0,-.09*guard)
-      skillMotionTargets.ThighR=CFrame.Angles(.16*guard,0,.09*guard)
-      skillMotionTargets.ShinL=CFrame.Angles(.19*guard,0,0)
-      skillMotionTargets.ShinR=CFrame.Angles(.17*guard,0,0)
+      -- [완벽 막기] 세키로식 짧은 전방 쳐내기 동작. 성공 여부는 서버만 결정한다.
+      local snap=math.sin(math.pi*math.clamp((phase-.09)/.67,0,1))
+      skillMotionTargets.FlipRoot=CFrame.Angles(0,-.26*snap,.08*snap)
+      skillMotionTargets.Spine=CFrame.new(0,.035*brace+.055*hit,0)
+        *CFrame.Angles(-.16*brace+.13*hit,-.24*snap,.075*snap)
+      skillMotionTargets.Chest=CFrame.Angles(-.11*brace,.14*snap,0)
+      skillMotionTargets.Head=CFrame.Angles(.10*brace-.08*hit,.10*snap,0)
+      skillMotionTargets.UpperArmR=CFrame.Angles(-1.75*brace-.24*snap+.32*hit,
+        .38*brace,.52*brace)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.24*brace-.34*snap+.22*hit,0,.14*brace)
+      skillMotionTargets.HandR=CFrame.Angles(-.22*brace,0,.16*brace)
+      skillMotionTargets.UpperArmL=CFrame.Angles(-.86*brace+.28*snap,-.14*brace,-.32*brace)
+      skillMotionTargets.ForearmL=CFrame.Angles(-1.04*brace,0,-.15*brace)
+      skillMotionTargets.HandL=CFrame.Angles(.12*brace,0,0)
+      skillMotionTargets.ThighL=CFrame.Angles(-.025*brace,0,-.06*brace)
+      skillMotionTargets.ThighR=CFrame.Angles(.025*brace,0,.06*brace)
+      skillMotionTargets.ShinL=CFrame.identity
+      skillMotionTargets.ShinR=CFrame.identity
+      skillMotionTargets.FootL=CFrame.identity
+      skillMotionTargets.FootR=CFrame.identity
     end
   else
     local _,matched=combatMotionSource.SampleProceduralActorMotion(skillMotionState,phase,{
