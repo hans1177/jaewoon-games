@@ -196,6 +196,48 @@ test('RPG panels retain the original server actions and responsive navigation',(
   }
 });
 
+// [마력숲 UI 계획] 외부 게임의 정보 위계만 참고하고 기존 서버 동작·저장을 보존한다.
+test('forest RPG menu keeps the original eight pages with mobile navigation and distinct selection',()=>{
+  const common=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
+  const plan=fs.readFileSync('roblox-games/fantasy-survival/UI_PLAN.md','utf8');
+  assert.match(client,/meadowPageNames=\{"캐릭터","인벤토리","저널","옵션","도우미","동료","스킬"\}/);
+  assert.match(client,/tabOrder=\{0,1,2,7,3,4,5,6\}/);
+  assert.match(common,/MeadowMenuSubtitle/);
+  assert.match(common,/heading\.Font=primary and primary\.witcherStyle and Enum\.Font\.Antique/);
+  assert.match(common,/local active=tabPage\(i-1\)==index/);
+  assert.match(common,/local bodyTop=tabs and \(primary and primary\.witcherStyle and \(v\.Y<420/);
+  assert.match(common,/root\.Size=UDim2\.fromOffset\(math\.min\(900,v\.X-16\)/);
+  assert.match(common,/shade\.Activated:Connect\(function\(\)setOpen\(false\)end\)/);
+  assert.match(client,/if input\.KeyCode==Enum\.KeyCode\.C then meadowMenu\.open\(1\)/);
+  assert.match(plan,/디아블로 4/);
+  assert.match(plan,/모바일·접근성/);
+});
+
+test('inventory shows grid before real selected item detail and preserves actions',()=>{
+  const order=[
+    'inventoryGrid.Name="MeadowInventoryGrid";inventoryGrid.LayoutOrder=4',
+    'inventoryEmpty.Name="MeadowInventoryEmpty";inventoryEmpty.LayoutOrder=5',
+    'detail.Name="WitcherItemDetails";detail.LayoutOrder=6'
+  ];
+  for(const fragment of order)assert.ok(client.includes(fragment),fragment);
+  assert.ok(client.indexOf('local inventoryGrid=Instance.new("Frame")')<
+    client.indexOf('local detail=Instance.new("Frame")'));
+  for(const fragment of [
+    'detailPreview.Name="SelectedItemIcon"',
+    'detailPreview.Image=meadowIconAtlas',
+    'detailPreview.ImageRectOffset=Vector2.new(item.icon*64,0)',
+    'card.border.Thickness=selected and 2.2 or 1',
+    'equip.Size=secondary.Visible and UDim2.new(.5,-16,0,48) or UDim2.new(1,-24,0,48)',
+    'inventorySearch:GetPropertyChangedSignal("Text"):Connect(renderInventory)',
+    'remote:FireServer("meadow:rpg:gear:"..op..":"..item.gear.Id)',
+    'remote:FireServer("meadow:rpg:tonic:use:"..item.tonic.Id)',
+    'remote:FireServer("meadow:rpg:tonic:craft:"..item.tonic.Id)',
+    'human:EquipTool(tool)',
+  ])assert.ok(client.includes(fragment),fragment);
+  assert.match(client,/local columns=math\.clamp\(math\.floor\(\(width\+8\)\/118\),2,6\)/);
+  assert.match(client,/local columns=width>=630 and 3 or width>=340 and 2 or 1/);
+});
+
 test('registered 12-scene prologue keeps 23 unique approved layers and cleans up animations',()=>{
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
   const background=config.match(/CinematicIntroSceneIds\s*=\s*\{([^}]+)\}/);
