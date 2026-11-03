@@ -1626,8 +1626,8 @@ jobs:
   thumbnail-sync:
     name: sync canonical Roblox and homepage thumbnails
     needs: release
-    # 검증용 109번 후보는 정식 게시 대상이 아니다. 본편 승인 전 썸네일 업로드를 요청하지 않는다.
-    # 기존 main/정기/캡처/명시적 썸네일 동기화 및 F9 최종 게시 경로는 그대로 유지한다.
+    # 검증용 후보는 정식 게시 대상이 아니다. 인증된 전용 비공개 장소의 썸네일 메타데이터만 F9 전에 동기화한다.
+    # 공개 상세 이미지와 본편 게이트는 별도로 유지하며 F9 승인 전 정식 게시하지 않는다.
     if: ${{ always() && (github.event_name == 'push' || (github.event_name == 'schedule' && github.event.schedule == '17 2 * * *') || github.event_name == 'repository_dispatch' || inputs.thumbnail_only == true || (inputs.publish_stage == 'final' && needs.release.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -1704,16 +1704,32 @@ jobs:
             const ids=[];
             for(const item of queue.items||[]){
               const gameId=String(item?.gameId||'').trim();
-              const game=byId.get(gameId),target=item?.robloxPublicationTarget||{};
+              const game=byId.get(gameId);
+              const publishedTarget=item?.robloxPublicationTarget||{};
+              const privateTarget=item?.robloxValidationTarget||{};
+              const candidate=item?.robloxRuntimeCandidateEvidence||{};
+              const validTarget=target=>target.verified===true&&target.dedicated===true&&target.shared!==true
+                &&String(target.gameId||gameId)===gameId
+                &&/^[1-9][0-9]*$/.test(String(target.universeId||''))
+                &&/^[1-9][0-9]*$/.test(String(target.placeId||''));
+              const privateValidationReady=validTarget(privateTarget)
+                &&privateTarget.internalOnly===true&&privateTarget.publicDiscoveryAllowed===false
+                &&privateTarget.visibilityIntent==='PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'
+                &&privateTarget.bootstrapState==='PUBLISHED_PRIVATE'
+                &&candidate.published===true&&candidate.validationOnly===true
+                &&candidate.releaseClaim===false&&candidate.canonicalGameTarget===false
+                &&String(candidate.universeId)===String(privateTarget.universeId)
+                &&String(candidate.placeId)===String(privateTarget.placeId)
+                &&Number(candidate.versionNumber)>0
+                &&String(candidate.sourceRevision)===String(item.robloxSourceCommit||'')
+                &&String(candidate.artifactIdentity)===String(item.robloxBuildArtifactIdentity||'');
               const image=String(game?.canonical?.marketing?.thumbnail||game?.marketingThumbnail||'');
               const lifecycle=String(game?.canonical?.lifecycle?.state||game?.lifecycleState||'').toUpperCase();
               if(
                 ['ACTIVE','REBUILD'].includes(lifecycle)
-                &&target.verified===true&&target.dedicated===true&&target.shared!==true
-                &&String(target.gameId||gameId)===gameId
-                &&/^[1-9][0-9]*$/.test(String(target.universeId||''))
-                &&/^[1-9][0-9]*$/.test(String(target.placeId||''))
-                &&image.startsWith('assets/roblox-thumbnails/'+gameId+'.')
+                &&(validTarget(publishedTarget)||privateValidationReady)
+                &&(image.startsWith('assets/roblox-thumbnails/'+gameId+'.')
+                  ||image==='assets/homepage-covers/'+gameId+'.webp')
                 &&fs.existsSync(image)
               ) ids.push(gameId);
             }
