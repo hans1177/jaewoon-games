@@ -1277,16 +1277,23 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
     const completeHouse=/^villageHouse[A-D]$/.test(role);
     const completeWell=role==='villageWell';
     const external=JSON.parse(fs.readFileSync('assets/external/simple-rpg/manifest.json','utf8'));
+    const originalWell=completeWell&&asset.sourceFile==='assets/shared/party/village-well.glb';
     const source=completeHouse
       ?priority.packs.find(item=>asset.sourceFile==='assets/external/simple-rpg/priority-v1/'+item.file)
-      :completeWell?external.packs.find(item=>asset.sourceFile==='assets/external/simple-rpg/'+item.filename)
-      :party.records.find(item=>item.file===asset.sourceFile);
+      :originalWell
+        ?{sha256:crypto.createHash('sha256').update(fs.readFileSync(asset.sourceFile)).digest('hex')}
+        :completeWell?external.packs.find(item=>asset.sourceFile==='assets/external/simple-rpg/'+item.filename)
+        :party.records.find(item=>item.file===asset.sourceFile);
     assert.ok(source,'licensed source archive or GLB missing: '+role);
     assert.equal(asset.sourceSha256,source.sha256,'verified source hash mismatch: '+role);
     assert.equal(asset.license,'CC0-1.0','source license mismatch: '+role);
     if(completeHouse){
       assert.equal(source.licenseDeclared,'CC0-1.0');
       assert.equal(source.licenseSourceUrl,'https://opengameart.org/content/medieval-house-pack');
+    }else if(originalWell){
+      assert.equal(asset.licenseEvidence,'https://www.innerscene.com/tools/library/3d-parts/low-poly-medieval-well-7f4acee5');
+      assert.equal(asset.sha256,source.sha256);
+      assert.equal(asset.sourceModel,'low-poly-medieval-well.glb');
     }else if(completeWell){
       assert.equal(source.sourceUrl,'https://opengameart.org/content/fantasy-town-kit');
       assert.equal(asset.licenseEvidence,'https://kenney.nl/assets/fantasy-town-kit');
@@ -1368,11 +1375,15 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   const nativeUpload=fs.readFileSync('tools/baeksu-war-upload-meshes.mjs','utf8');
   const nativeRelease=fs.readFileSync('.github/workflows/owner-roblox-dedicated-private-experiences.yml','utf8');
   assert.match(nativeAuthor,/FANTASY_VILLAGE_SOURCE_DIGEST_MISMATCH/);
+  assert.match(nativeAuthor,/MEADOW_WELL_ORIGINAL_GLB_HEADER_INVALID/);
+  assert.match(nativeAuthor,/MEADOW_WELL_PINNED_SOURCE_SHA_MISMATCH/);
+  assert.match(nativeAuthor,/low-poly-medieval-well-7f4acee5/);
+  assert.match(nativeUpload,/const wellReplacement=fantasy/);
   assert.match(nativeUpload,/const villageRows=fantasy/);
   assert.match(nativeRelease,/OWNER_FOREST_VILLAGE_MODEL_BINDING_INVALID/);
   assert.match(nativeRelease,/const completeWell=role==='villageWell'/);
-  assert.match(nativeRelease,/kenney\.license==='CC0-1.0'/);
-  assert.match(nativeRelease,/original\?\.sourceUrl==='https:\/\/opengameart\.org\/content\/fantasy-town-kit'/);
+  assert.match(nativeRelease,/const wellEvidence='https:\/\/www\.innerscene\.com\/tools\/library\/3d-parts\/low-poly-medieval-well-7f4acee5'/);
+  assert.match(nativeRelease,/row\.sourceFile==='assets\/shared\/party\/village-well\.glb'/);
   assert.match(server,/local function createMeadowVillage\(\)/);
   assert.match(server,/local function villageNativeNpc\(spec\)/);
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);

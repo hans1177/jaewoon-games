@@ -76,6 +76,19 @@ if(provenance.version!==(fantasy?5:4)||!provenance.roles||Object.keys(provenance
 const ids={};const records={};const verifiedModels=new Map();
 for(const name of names){
  const originSource=fantasy?(manifest.models[name]||villageRows[name]):null;
+ // [대체 돌우물] 첫 다운로드 원본은 기존 24종 등록기의 provenance SHA와 실제 원본 파일로만 승인한다.
+ const wellReplacement=fantasy&&name==='villageWell'
+   &&provenance.roles[name]?.sourceFile==='assets/shared/party/village-well.glb'
+   &&provenance.roles[name]?.licenseEvidence==='https://www.innerscene.com/tools/library/3d-parts/low-poly-medieval-well-7f4acee5';
+ const legacyWellPending=wellReplacement&&originSource?.sourceFile==='assets/external/simple-rpg/kenney_fantasy-town-kit_2.0.zip'
+   &&originSource?.assetId==null
+   &&originSource?.sourceSha256==='1a7530c09f4d2fa2cdee259876f089334f8b1f27fa86a0c4f54ef86cdd8676ef';
+ const registeredWell=wellReplacement&&originSource?.sourceFile==='assets/shared/party/village-well.glb'
+   &&originSource?.sourceSha256===provenance.roles[name].sourceSha256
+   &&originSource?.licenseEvidence===provenance.roles[name].licenseEvidence;
+ const verifiedOrigin=wellReplacement
+   &&(legacyWellPending||registeredWell)
+   &&crypto.createHash('sha256').update(await fs.readFile('assets/shared/party/village-well.glb')).digest('hex')===provenance.roles[name].sourceSha256;
  const extension=fantasy?(provenance.roles[name]?.format||path.extname(originSource?.sourcePath||originSource?.sourceFile||originSource?.archiveEntry||'').slice(1)).toLowerCase():'glb';
  if(fantasy&&!['fbx','glb'].includes(extension))throw Error('FANTASY_UNSUPPORTED_NATIVE_FORMAT:'+name);
  const file=path.join(dir,name+'.'+extension);
@@ -83,7 +96,7 @@ for(const name of names){
  if(bytes.length<1000||bytes.length>18*1024*1024||(extension==='fbx'?!bytes.subarray(0,18).toString().startsWith('Kaydara FBX Binary'):bytes.subarray(0,4).toString()!=='glTF'))throw Error('BAD_NATIVE_MODEL:'+name);
  const digest=crypto.createHash('sha256').update(bytes).digest('hex');
  const origin=provenance.roles[name];
- if(!origin||(fantasy?origin.sha256!==digest||originSource?.sourceSha256!==origin.sourceSha256||origin.licenseEvidence!==originSource?.licenseEvidence:origin.glbSha256!==digest)||origin.license!=='CC0-1.0'||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||(!fantasy&&(!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4))){throw Error('CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:'+name);}
+ if(!origin||(fantasy?origin.sha256!==digest||(!verifiedOrigin&&(originSource?.sourceSha256!==origin.sourceSha256||origin.licenseEvidence!==originSource?.licenseEvidence)):origin.glbSha256!==digest)||origin.license!=='CC0-1.0'||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||(!fantasy&&(!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4))){throw Error('CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:'+name);}
  verifiedModels.set(name,{bytes,digest,origin,extension});
 }
 // Validate every original before the first irreversible Model registration.
