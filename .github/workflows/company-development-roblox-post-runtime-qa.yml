@@ -766,14 +766,16 @@ jobs:
               &&item.robloxFinalReviewPassed!==true
               &&item.robloxPublicRelease!==true
               &&candidate.published===true
-              &&candidate.sourceRevision===sourceRevision
-              &&candidate.artifactIdentity===artifactIdentity
+              // 현재 게임 소스가 새로 바뀌어도, 발행됐던 비공개 후보의
+              // 소스/파일/플레이스/버전과 이전 진단이 정확히 일치하면 읽기 검증은 가능하다.
+              // 이것을 최신 소스의 F9 통과 또는 서버 실행으로 승격하지 않는다.
+              &&candidate.sourceRevision===prior.sourceRevision
+              &&candidate.artifactIdentity===prior.artifactIdentity
               &&/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
               &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''))
               &&Number.isSafeInteger(Number(candidate.versionNumber))
               &&Number(candidate.versionNumber)>0
-              &&prior.sourceRevision===sourceRevision
-              &&prior.artifactIdentity===artifactIdentity
+              &&typeof sourceRevision==='string'&&typeof artifactIdentity==='string'
               &&String(prior.universeId||'')===String(candidate.universeId||'')
               &&String(prior.placeId||'')===String(candidate.placeId||'')
               &&Number(prior.candidateVersionNumber)===Number(candidate.versionNumber)
@@ -814,7 +816,12 @@ jobs:
               +':version='+Number(candidate.versionNumber)
               +':state='+observation.state
               +':http='+(observation.status??'UNKNOWN')
+              +':category='+(observation.accessFailureCategory||'NOT_CLASSIFIED')
               +':active='+(observation.activeServerCount??'UNKNOWN')
+              +':source='+(
+                candidate.sourceRevision===item.robloxSourceCommit
+                &&candidate.artifactIdentity===item.robloxBuildArtifactIdentity
+                  ?'CURRENT':'STALE_PRIVATE_CANDIDATE')
               +':F9_GAMEPLAY_GATE_UNCHANGED');
           }
           const candidates=(q.items||[]).filter(item=>{
