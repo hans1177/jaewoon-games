@@ -422,6 +422,7 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
             surface.Color=bark and meadowPalette.bark or crown
             surface.Material=bark and Enum.Material.Wood or Enum.Material.LeafyGrass
           else
+            -- [야생동물 토이 표면] 사슴 원본 7색 재질과 나머지 동물 표면은 분리 처리한다.
             -- [사슴 원본 46본 피모] GLB에는 외부 이미지가 없고 7개 원본 재질색만 있다.
             -- Roblox 수입 중 붙은 흰색 TextureID/PBR은 갈색 피모를 가리므로
             -- 사슴 복제본에서만 걷어낸다. MeshId·Bone·Skin·애니메이션은 보존한다.
