@@ -98,7 +98,7 @@ export function isApprovedPagesOidcGrant(before='',after=''){
   // gate requiring the existing deploy artifact to be ready. No arbitrary suffixes.
   if(!/^    needs: deploy$/m.test(job)||!/^    if: github\.event_name != 'pull_request' && needs\.deploy\.outputs\.source_current == 'true'(?: && needs\.deploy\.outputs\.artifact_ready == 'true')?$/m.test(job))return false;
   if(!/^    permissions:\n      contents: read\n      actions: write\n      pages: write\n      id-token: write\n      issues: write\n/m.test(job))return false;
-  if(!/^    concurrency:\n      group: magic-forest-pages-main-publish\n      cancel-in-progress: false$/m.test(job))return false;
+  if(!/^    concurrency:\n      group: magic-forest-pages-main-publish\n(?:      # [^\n]*\n)*(?:      queue: max\n)?      cancel-in-progress: false$/m.test(job))return false;
   if(!/^    environment:\n      name: github-pages\n/m.test(job))return false;
   if((job.match(/^        uses: actions\/deploy-pages@v4\s*$/gm)||[]).length!==1)return false;
   if((source.match(/^        uses: actions\/upload-pages-artifact@v4\s*$/gm)||[]).length!==1)return false;
