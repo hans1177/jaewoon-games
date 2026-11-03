@@ -749,6 +749,72 @@ jobs:
           const transientRetryPath='/tmp/roblox-open-cloud-transient-retry-ids';
           const transientRetryIds=new Set(fs.existsSync(transientRetryPath)?fs.readFileSync(transientRetryPath,'utf8').split(/\r?\n/).map(v=>v.trim()).filter(Boolean):[]);
           const engineProbeByGame=new Map((Array.isArray(probeRows)?probeRows:[]).map(row=>[String(row?.gameId||''),row]));
+          // [공식 서버 조회] 품질 보강은 실제 플레이/F9의 차단 사유지만,
+          // 동일 비공개 후보의 권한 거부(403) 진단까지 막아서는 안 된다.
+          // 읽기 전용 공식 API만 10분당 최대 한 번 재검사하고 실서버 PASS로 승격하지 않는다.
+          const qualityHoldServerReadCandidates=(q.items||[]).filter(item=>{
+            if(requested&&item.gameId!==requested)return false;
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const prior=item.robloxRuntimeFoundationEvidence||{};
+            const previousRead=prior.officialLiveServerObservation||{};
+            const lastAt=Date.parse(String(previousRead.observedAt||''));
+            return serverDiagnosticEnabled
+              &&Boolean(process.env.ROBLOX_OPEN_CLOUD_API_KEY)
+              &&item.robloxQualityBuildUpRequired===true
+              &&item.robloxQualityBuildUpSourceRevision===sourceRevision
+              &&candidate.published===true
+              &&candidate.sourceRevision===sourceRevision
+              &&candidate.artifactIdentity===artifactIdentity
+              &&/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
+              &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''))
+              &&Number.isSafeInteger(Number(candidate.versionNumber))
+              &&Number(candidate.versionNumber)>0
+              &&prior.sourceRevision===sourceRevision
+              &&prior.artifactIdentity===artifactIdentity
+              &&String(prior.universeId||'')===String(candidate.universeId||'')
+              &&String(prior.placeId||'')===String(candidate.placeId||'')
+              &&Number(prior.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&previousRead.permissionDenied===true
+              &&(!Number.isFinite(lastAt)||Date.now()-lastAt>=10*60*1000);
+          });
+          for(const item of qualityHoldServerReadCandidates.slice(0,2)){
+            const candidate=item.robloxRuntimeCandidateEvidence;
+            let observation;
+            try{
+              observation=await probeRobloxOpenCloudGameServerObservation({
+                universeId:String(candidate.universeId),
+                placeId:String(candidate.placeId),
+                versionNumber:Number(candidate.versionNumber),
+                apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+              });
+            }catch(error){
+              observation={
+                version:1,universeId:String(candidate.universeId),
+                placeId:String(candidate.placeId),
+                candidateVersionNumber:Number(candidate.versionNumber),
+                observedAt:new Date().toISOString(),available:false,permissionDenied:false,
+                serverInstanceObserved:false,activeServerCount:null,
+                actualGameScriptBootVerified:false,actualPlayerPlayVerified:false,
+                state:'GAME_SERVER_LIST_REQUEST_UNAVAILABLE',
+                error:String(error?.message||error).slice(0,180),
+                authority:'roblox-official-version-scoped-game-server-observation'
+              };
+            }
+            item.robloxRuntimeFoundationEvidence={
+              ...item.robloxRuntimeFoundationEvidence,
+              officialLiveServerObservation:observation,
+            };
+            item.updatedAt=new Date().toISOString();
+            changed=true;
+            console.log('ROBLOX_QUALITY_HOLD_EXACT_SERVER_READ='+item.gameId
+              +':version='+Number(candidate.versionNumber)
+              +':state='+observation.state
+              +':http='+(observation.status??'UNKNOWN')
+              +':active='+(observation.activeServerCount??'UNKNOWN')
+              +':F9_GAMEPLAY_GATE_UNCHANGED');
+          }
           const candidates=(q.items||[]).filter(item=>{
             if(requested&&item.gameId!==requested)return false;
             if(transientRetryIds.has(item.gameId)){
