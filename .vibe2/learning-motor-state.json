@@ -12,18 +12,18 @@
       "lastEvidence": "capability_ctrace_5f74ba87502b8d922847049e"
     },
     "STATE_MACHINE": {
-      "xp": 4298,
+      "xp": 4303,
       "level": 27,
       "verifiedSuccesses": 131,
-      "verifiedFailureLessons": 554,
-      "lastEvidence": "capability_ctrace_46c8dc058a2f8025b595cc87"
+      "verifiedFailureLessons": 555,
+      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
     },
     "COMBAT": {
-      "xp": 1706,
+      "xp": 1711,
       "level": 14,
       "verifiedSuccesses": 113,
-      "verifiedFailureLessons": 70,
-      "lastEvidence": "capability_ctrace_46c8dc058a2f8025b595cc87"
+      "verifiedFailureLessons": 71,
+      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
     },
     "AI": {
       "xp": 767,
@@ -68,18 +68,18 @@
       "lastEvidence": "capability_ctrace_bd8b9013205dc24481a824b8"
     },
     "DEBUGGING": {
-      "xp": 4310,
+      "xp": 4315,
       "level": 27,
       "verifiedSuccesses": 134,
-      "verifiedFailureLessons": 554,
-      "lastEvidence": "capability_ctrace_46c8dc058a2f8025b595cc87"
+      "verifiedFailureLessons": 555,
+      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
     },
     "RECOVERY": {
-      "xp": 1626,
+      "xp": 1631,
       "level": 14,
       "verifiedSuccesses": 116,
-      "verifiedFailureLessons": 50,
-      "lastEvidence": "capability_ctrace_46c8dc058a2f8025b595cc87"
+      "verifiedFailureLessons": 51,
+      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
     },
     "SECURITY": {
       "xp": 355,
@@ -117,11 +117,11 @@
       "lastEvidence": "capability_ctrace_d88b3fb6a7ce0fd1b13cc918"
     },
     "ANIMATION_FEEL": {
-      "xp": 2108,
+      "xp": 2113,
       "level": 16,
       "verifiedSuccesses": 104,
-      "verifiedFailureLessons": 172,
-      "lastEvidence": "capability_ctrace_46c8dc058a2f8025b595cc87"
+      "verifiedFailureLessons": 173,
+      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
     },
     "VFX": {
       "xp": 545,
@@ -306,11 +306,11 @@
       "lastEvidence": null
     },
     "LEVEL_DESIGN": {
-      "xp": 211,
+      "xp": 216,
       "level": 5,
       "verifiedSuccesses": 3,
-      "verifiedFailureLessons": 35,
-      "lastEvidence": "capability_ctrace_46c8dc058a2f8025b595cc87"
+      "verifiedFailureLessons": 36,
+      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
     },
     "NAVIGATION": {
       "xp": 0,
@@ -320,11 +320,11 @@
       "lastEvidence": null
     },
     "ROUTE_DESIGN": {
-      "xp": 211,
+      "xp": 216,
       "level": 5,
       "verifiedSuccesses": 3,
-      "verifiedFailureLessons": 35,
-      "lastEvidence": "capability_ctrace_46c8dc058a2f8025b595cc87"
+      "verifiedFailureLessons": 36,
+      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
     },
     "STREAMING": {
       "xp": 0,
@@ -1128,7 +1128,8 @@
     "capability_ctrace_955d5bb2a50a2eb34a013158",
     "capability_ctrace_ae93110af69af3bf5d39e900",
     "capability_ctrace_5b535b4a2f311591caee3aea",
-    "capability_ctrace_46c8dc058a2f8025b595cc87"
+    "capability_ctrace_46c8dc058a2f8025b595cc87",
+    "capability_ctrace_e34908a51e750460386c5d4f"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -1626,8 +1627,8 @@
       ]
     },
     "fail_179iwmr": {
-      "count": 1,
-      "lastEvidence": "capability_ctrace_46c8dc058a2f8025b595cc87",
+      "count": 2,
+      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f",
       "example": "SOURCE_CANDIDATE_GENERATION:VIBE4_OFFLINE_PATTERN_UNAVAILABLE",
       "domains": [
         "STATE_MACHINE",
@@ -29504,7 +29505,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-11-03T16:42:54.899Z",
+    "lastBuiltAt": "2026-11-03T17:02:50.739Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -39294,5 +39295,5 @@
     "failures": [],
     "seenEvidenceIds": []
   },
-  "updatedAt": "2026-11-03T16:42:54.899Z"
+  "updatedAt": "2026-11-03T17:02:50.739Z"
 }
