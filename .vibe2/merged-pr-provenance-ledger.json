@@ -155696,11 +155696,132 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_47f53037356f9b8e1f640caa",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11782",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "93f4ca9d0ae5e39328bb7bd36f27b7f4d3921e4d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11782,
+        "baseBranch": "main",
+        "headBranch": "magic-ui-layer-fix-20261103",
+        "baseSha": "93f4ca9d0ae5e39328bb7bd36f27b7f4d3921e4d",
+        "headSha": "ef06359638193b53d9f0d0dcb6aef35da081d2d4",
+        "mergeCommitSha": "12122dba7f232b98e0a9ddabeeee43fa31cb7121",
+        "mergedAt": "2026-11-03T08:30:20Z",
+        "authorLogin": "hans1177",
+        "titleHash": "6f6894b3598282767b32d8d95c66fac1cfb95becf58bab0a37ee1c2478e6c074",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "magic-ui-layer-fix-20261103",
+        "candidateSha": "ef06359638193b53d9f0d0dcb6aef35da081d2d4"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 18,
+        "deletedLineCount": 6,
+        "changedFiles": [
+          "qa/fantasy-survival-roblox-ui.test.mjs",
+          "roblox-games/fantasy-survival/UI_PLAN.md",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/fantasy-survival-roblox-ui.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11782",
+        "merge-commit:12122dba7f232b98e0a9ddabeeee43fa31cb7121",
+        "base-main:93f4ca9d0ae5e39328bb7bd36f27b7f4d3921e4d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1241
+    "total": 1242
   }
 }
