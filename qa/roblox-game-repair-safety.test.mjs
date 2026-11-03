@@ -6,7 +6,10 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 
 const read=file=>fs.readFileSync(file,'utf8');
-const cozy=read('roblox-games/cozy-island/server/Game.server.luau');
+// [현행 실행] 삭제된 게임의 이전 소스가 현재 Survival 단독 실행 검사를 중단하지 않게 한다.
+// 퇴역 게임 테스트가 별도로 실행될 때는 원본 없는 상태를 그대로 실패 처리한다.
+const cozy=fs.existsSync('roblox-games/cozy-island/server/Game.server.luau')
+  ?read('roblox-games/cozy-island/server/Game.server.luau'):null;
 const village=read('roblox-games/village-dungeons/server/Game.server.luau');
 const luau=process.env.VIBE2_LUAU_BINARY;
 function runLuau(source){
