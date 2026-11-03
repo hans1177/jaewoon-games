@@ -202,6 +202,53 @@ export async function fetchRobloxRuntimeFoundationEvidence({
   return body&&typeof body.value==='object'&&body.value!==null?body.value:body;
 }
 
+// [공식 온라인 서버 진단] Open Cloud Luau Task의 HTTP 200과 실제 게임 서버를 구분한다.
+// 게임 버전별 서버 목록은 실제 인스턴스 발견에만 사용하고 Game.server 실행이나 F9 PASS로 승격하지 않는다.
+export async function probeRobloxOpenCloudGameServerObservation({
+  universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,
+  networkRetryAttempts=2,networkRetryDelayMs=500,
+}={}){
+  const universe=clean(universeId),place=clean(placeId),key=clean(apiKey),version=Number(versionNumber);
+  if(!/^[1-9][0-9]*$/.test(universe)||!/^[1-9][0-9]*$/.test(place)
+    ||!Number.isSafeInteger(version)||version<=0)throw new Error('ROBLOX_GAME_SERVER_EXACT_TARGET_REQUIRED');
+  if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
+  if(typeof fetchImpl!=='function')throw new Error('fetch implementation required');
+  const endpoint='https://apis.roblox.com/server-management/v1/universes/'
+    +encodeURIComponent(universe)+'/places/'+encodeURIComponent(place)
+    +'/versions/'+encodeURIComponent(version)+'/game-servers';
+  const response=await fetchWithNetworkRetry(fetchImpl,endpoint,{headers:{'x-api-key':key}},{
+    attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OFFICIAL_LIVE_GAME_SERVER_LIST'
+  });
+  const status=Number(response?.status||0);
+  const observedAt=new Date().toISOString();
+  const base={version:1,universeId:universe,placeId:place,candidateVersionNumber:version,
+    observedAt,status,endpoint,requiredScope:'universe:read',
+    actualGameScriptBootVerified:false,actualPlayerPlayVerified:false,
+    authority:'roblox-official-version-scoped-game-server-observation'};
+  if(status===401||status===403)return Object.freeze({...base,available:false,
+    permissionDenied:true,serverInstanceObserved:false,activeServerCount:null,
+    state:'GAME_SERVER_READ_PERMISSION_UNAVAILABLE'});
+  if(!response.ok)return Object.freeze({...base,available:false,permissionDenied:false,
+    serverInstanceObserved:false,activeServerCount:null,state:'GAME_SERVER_LIST_HTTP_'+status});
+  let body;try{body=await response.json();}catch{
+    return Object.freeze({...base,available:false,permissionDenied:false,
+      serverInstanceObserved:false,activeServerCount:null,state:'GAME_SERVER_LIST_INVALID_JSON'});
+  }
+  const rows=Array.isArray(body?.gameServers)?body.gameServers
+    :Array.isArray(body?.servers)?body.servers
+    :Array.isArray(body?.data)?body.data
+    :null;
+  if(rows===null)return Object.freeze({...base,available:false,permissionDenied:false,
+    serverInstanceObserved:false,activeServerCount:null,state:'GAME_SERVER_LIST_SCHEMA_UNKNOWN'});
+  // 서버 식별자를 외부 로그/장기 상태에 노출하지 않는다. 공식 버전 경로에서 유효한 작업 ID만 집계한다.
+  const serverCount=rows.filter(row=>row&&typeof row==='object'
+    &&/^[a-f0-9-]{16,64}$/i.test(clean(row.jobId||row.id||row.serverId))).length;
+  return Object.freeze({...base,available:true,permissionDenied:false,
+    serverInstanceObserved:serverCount>0,activeServerCount:serverCount,
+    resultPageComplete:!clean(body?.nextPageToken||body?.nextPageCursor),
+    state:serverCount>0?'EXACT_VERSION_GAME_SERVER_INSTANCE_OBSERVED':'NO_ACTIVE_SERVER_ON_RESULT_PAGE'});
+}
+
 export async function probeRobloxOpenCloudImageEvidence({
   universeId='',apiKey='',fetchImpl=globalThis.fetch,networkRetryAttempts=4,networkRetryDelayMs=500,
 }={}){
