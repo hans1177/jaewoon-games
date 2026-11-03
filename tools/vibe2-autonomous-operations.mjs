@@ -157,11 +157,11 @@ export function checkAutonomousCandidate(task={},result={}){
     const candidateSha=proof.find(value=>/^candidate-sha:[a-f0-9]{40}$/i.test(value))?.slice('candidate-sha:'.length);
     const baseSha=clean(result.baseMainSha);
     const branch=clean(result.candidateBranch);
-    const sourceRoot=clean(identity.sourceRoot).replaceAll('\\','/').replace(/\\/+$/,'');
-    if(!/^vibe2\\/candidate\\//.test(branch)||!sha40(candidateSha)||!sha40(baseSha)
+    const sourceRoot=clean(identity.sourceRoot).replaceAll('\\','/');
+    if(!branch.startsWith('vibe2/candidate/')||!sha40(candidateSha)||!sha40(baseSha)
       ||candidateSha.toLowerCase()===baseSha.toLowerCase()
       ||lower(identity.target)!=='roblox'||clean(identity.gameId)!==clean(task.gameId)
-      ||!sourceRoot.startsWith('roblox-games/'+clean(task.gameId)))
+      ||!(sourceRoot==='roblox-games/'+clean(task.gameId)||sourceRoot.startsWith('roblox-games/'+clean(task.gameId)+'/')))
       return{accepted:false,reason:'AUTONOMOUS_ROBLOX_SOURCE_PROOF_MISSING',category:'SOURCE_PROOF'};
   }
   const before=result.runtimePerformance?.before||{},after=result.runtimePerformance?.after||{};
