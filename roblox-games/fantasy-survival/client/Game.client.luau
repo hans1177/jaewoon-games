@@ -601,7 +601,7 @@ for index,name in ipairs(meadowPageNames) do
   local page=Instance.new("ScrollingFrame")
   page.Name="MeadowPage"..index;page.BackgroundTransparency=1;page.BorderSizePixel=0
   page.AutomaticCanvasSize=Enum.AutomaticSize.Y;page.CanvasSize=UDim2.new()
-  page.ScrollBarThickness=3;page.ScrollingDirection=Enum.ScrollingDirection.Y
+  page.ScrollBarThickness=3;page.ScrollingDirection=Enum.ScrollingDirection.Y;page.ClipsDescendants=true
   page.Visible=false;page.Parent=root
   local layout=Instance.new("UIListLayout");layout.Padding=UDim.new(0,10)
   layout.SortOrder=Enum.SortOrder.LayoutOrder;layout.Parent=page
@@ -708,8 +708,11 @@ local function redrawNativeAvatar(character,tool,force)
   local bounds,size=clone:GetBoundingBox()
   if size.Magnitude<.1 then clone:Destroy();return end
   local focus=bounds.Position+Vector3.new(0,size.Y*.04,0)
-  local distance=math.max(size.X*1.6,size.Y*1.25,size.Z*1.8,7)
-  previewCamera.CFrame=CFrame.lookAt(focus+Vector3.new(distance*.42,distance*.12,distance),focus)
+  -- [실제 아바타] 뷰포트 종횡비와 시야각으로 카메라를 맞춰 머리·발 잘림을 막는다.
+  local aspect=math.max(.55,characterViewport.AbsoluteSize.X/math.max(1,characterViewport.AbsoluteSize.Y))
+  local halfFov=math.tan(math.rad(previewCamera.FieldOfView*.5))
+  local distance=math.max(size.Y/(2*halfFov),size.X/(2*halfFov*aspect),size.Z*1.8,5)*1.35
+  previewCamera.CFrame=CFrame.lookAt(focus+Vector3.new(distance*.18,distance*.07,distance),focus)
   characterPortrait.Visible=false
   characterViewport.Visible=true
 end
@@ -724,25 +727,61 @@ characterHeroSummary.Name="HeroStatus";characterHeroSummary.Position=UDim2.fromO
 characterHeroSummary.Size=UDim2.new(1,-154,0,92)
 characterHeroSummary.BackgroundTransparency=1;characterHeroSummary.Font=Enum.Font.GothamMedium;characterHeroSummary.TextSize=13
 characterHeroSummary.TextColor3=meadowDim;characterHeroSummary.TextWrapped=true
-characterHeroSummary.TextXAlignment=Enum.TextXAlignment.Left;characterHeroSummary.Parent=characterHero
--- [모바일 크기] 가로 메뉴는 좌우 배치, 좁은 메뉴는 3D 인물 아래 상태 표시.
+characterHeroSummary.TextXAlignment=Enum.TextXAlignment.Left
+characterHeroSummary.TextYAlignment=Enum.TextYAlignment.Top;characterHeroSummary.Parent=characterHero
+-- [실제 능력치] 생명력과 기력은 서버/휴머노이드 값만 읽는다.
+local heroHealth=Instance.new("Frame")
+heroHealth.Name="CharacterHealthTrack";heroHealth.BackgroundColor3=Color3.fromRGB(44,62,57)
+heroHealth.BorderSizePixel=0;heroHealth.ClipsDescendants=true;heroHealth.Parent=characterHero
+local healthCorner=Instance.new("UICorner")
+healthCorner.CornerRadius=UDim.new(0,8);healthCorner.Parent=heroHealth
+local heroHealthFill=Instance.new("Frame")
+heroHealthFill.Name="Fill";heroHealthFill.BackgroundColor3=Color3.fromRGB(171,75,68)
+heroHealthFill.BorderSizePixel=0;heroHealthFill.Size=UDim2.fromScale(1,1);heroHealthFill.Parent=heroHealth
+local heroHealthText=Instance.new("TextLabel")
+heroHealthText.Name="HealthReadout";heroHealthText.BackgroundTransparency=1;heroHealthText.Size=UDim2.fromScale(1,1)
+heroHealthText.Font=Enum.Font.GothamBold;heroHealthText.TextSize=13
+heroHealthText.TextColor3=Color3.fromRGB(255,246,231);heroHealthText.ZIndex=3;heroHealthText.Parent=heroHealth
+local heroStamina=Instance.new("Frame")
+heroStamina.Name="CharacterStaminaTrack";heroStamina.BackgroundColor3=Color3.fromRGB(34,63,67)
+heroStamina.BorderSizePixel=0;heroStamina.ClipsDescendants=true;heroStamina.Parent=characterHero
+local staminaCorner=Instance.new("UICorner")
+staminaCorner.CornerRadius=UDim.new(0,8);staminaCorner.Parent=heroStamina
+local heroStaminaFill=Instance.new("Frame")
+heroStaminaFill.Name="Fill";heroStaminaFill.BackgroundColor3=Color3.fromRGB(53,154,188)
+heroStaminaFill.BorderSizePixel=0;heroStaminaFill.Size=UDim2.fromScale(1,1);heroStaminaFill.Parent=heroStamina
+local heroStaminaText=Instance.new("TextLabel")
+heroStaminaText.Name="StaminaReadout";heroStaminaText.BackgroundTransparency=1;heroStaminaText.Size=UDim2.fromScale(1,1)
+heroStaminaText.Font=Enum.Font.GothamBold;heroStaminaText.TextSize=13
+heroStaminaText.TextColor3=Color3.fromRGB(255,246,231);heroStaminaText.ZIndex=3;heroStaminaText.Parent=heroStamina
+-- [모바일 전신·계기판] 좁은 화면은 상하, 넓은 화면은 좌우 배치.
 local function layoutNativeAvatar()
   local width=characterHero.AbsoluteSize.X
   if width<=0 then return end
-  local narrow=width<460
-  characterHero.Size=UDim2.new(1,-8,0,narrow and 377 or 248)
-  local avatarSize=narrow and math.min(220,width-18) or 217
-  characterPortrait.Size=UDim2.fromOffset(avatarSize,narrow and 260 or 231)
+  local narrow=width<540
+  characterHero.Size=UDim2.new(1,-8,0,narrow and 427 or 278)
+  local avatarSize=narrow and math.min(230,width-24) or 245
+  characterPortrait.Size=UDim2.fromOffset(avatarSize,narrow and 252 or 256)
   characterPortrait.Position=narrow
-    and UDim2.new(.5,-avatarSize/2,0,8) or UDim2.fromOffset(8,8)
+    and UDim2.new(.5,-avatarSize/2,0,10) or UDim2.fromOffset(12,11)
   characterViewport.Size=characterPortrait.Size
   characterViewport.Position=characterPortrait.Position
-  characterHeroName.Position=narrow and UDim2.fromOffset(12,274) or UDim2.fromOffset(238,28)
-  characterHeroName.Size=narrow and UDim2.new(1,-24,0,34) or UDim2.new(1,-250,0,34)
-  characterHeroSummary.Position=narrow and UDim2.fromOffset(12,310) or UDim2.fromOffset(238,74)
-  characterHeroSummary.Size=narrow and UDim2.new(1,-24,0,62) or UDim2.new(1,-250,0,140)
+  local right=narrow and 14 or 273
+  characterHeroName.Position=UDim2.fromOffset(right,narrow and 270 or 19)
+  characterHeroName.Size=narrow and UDim2.new(1,-28,0,32) or UDim2.new(1,-290,0,32)
+  characterHeroSummary.Position=UDim2.fromOffset(right,narrow and 308 or 65)
+  characterHeroSummary.Size=narrow and UDim2.new(1,-28,0,46) or UDim2.new(1,-290,0,78)
+  heroHealth.Position=UDim2.fromOffset(right,narrow and 362 or 167)
+  heroHealth.Size=narrow and UDim2.new(1,-28,0,23) or UDim2.new(1,-291,0,24)
+  heroStamina.Position=UDim2.fromOffset(right,narrow and 393 or 207)
+  heroStamina.Size=heroHealth.Size
 end
 characterHero:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutNativeAvatar)
+characterViewport:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+  if lastPreviewCharacter and lastPreviewCharacter.Parent then
+    redrawNativeAvatar(lastPreviewCharacter,lastPreviewTool,true)
+  end
+end)
 task.defer(layoutNativeAvatar)
 local equipmentHeading=Instance.new("TextLabel")
 equipmentHeading.Name="EquipmentHeading";equipmentHeading.LayoutOrder=2
@@ -822,20 +861,70 @@ masteryProgressBackground.BackgroundColor3=Color3.fromRGB(70,63,56);masteryProgr
 local masteryProgressFill=Instance.new("Frame")
 masteryProgressFill.Name="MasteryProgressFill";masteryProgressFill.Size=UDim2.fromScale(0,1)
 masteryProgressFill.BackgroundColor3=meadowGold;masteryProgressFill.BorderSizePixel=0;masteryProgressFill.Parent=masteryProgressBackground
-meadowLabels[1].LayoutOrder=6
-meadowLabels[1].TextColor3=meadowParchment
-meadowLabels[1].TextSize=14
+-- [7가지 숙련] 긴 숫자 목록을 실제 서버 수치가 보이는 개별 성장 카드로 전환한다.
+local proficiencyGrid=Instance.new("Frame")
+proficiencyGrid.Name="MeadowProficiencyCards";proficiencyGrid.LayoutOrder=6
+proficiencyGrid.Size=UDim2.new(1,-8,0,190);proficiencyGrid.BackgroundTransparency=1
+proficiencyGrid.Parent=meadowPages[1]
+local proficiencyLayout=Instance.new("UIGridLayout")
+proficiencyLayout.SortOrder=Enum.SortOrder.LayoutOrder;proficiencyLayout.CellPadding=UDim2.fromOffset(8,8)
+proficiencyLayout.Parent=proficiencyGrid
+local proficiencyValues={}
+for index,entry in ipairs(Config.Proficiencies or {}) do
+  local card=Instance.new("Frame")
+  card.Name="Proficiency_"..entry.Key;card.LayoutOrder=index
+  card.BackgroundColor3=Color3.fromRGB(23,49,45);card.BorderSizePixel=0;card.Parent=proficiencyGrid
+  local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,9);corner.Parent=card
+  local edge=Instance.new("UIStroke");edge.Color=Color3.fromRGB(88,132,103)
+  edge.Transparency=.45;edge.Parent=card
+  local caption=Instance.new("TextLabel")
+  caption.Name="ProficiencyName";caption.Position=UDim2.fromOffset(11,0)
+  caption.Size=UDim2.new(1,-82,1,0);caption.BackgroundTransparency=1
+  caption.Text=entry.Name;caption.Font=Enum.Font.GothamMedium;caption.TextSize=13
+  caption.TextColor3=Color3.fromRGB(200,222,204)
+  caption.TextXAlignment=Enum.TextXAlignment.Left;caption.Parent=card
+  local amount=Instance.new("TextLabel")
+  amount.Name="ProficiencyValue";amount.AnchorPoint=Vector2.new(1,0)
+  amount.Position=UDim2.new(1,-11,0,0);amount.Size=UDim2.fromOffset(67,44)
+  amount.BackgroundTransparency=1;amount.Font=Enum.Font.GothamBold;amount.TextSize=17
+  amount.TextColor3=meadowGold;amount.TextXAlignment=Enum.TextXAlignment.Right
+  amount.Parent=card;proficiencyValues[entry.Key]=amount
+end
+local function layoutProficiencies()
+  local width=proficiencyGrid.AbsoluteSize.X
+  if width<=0 then return end
+  local columns=width>=650 and 3 or width>=280 and 2 or 1
+  local rows=math.ceil(#(Config.Proficiencies or {})/columns)
+  proficiencyLayout.CellSize=UDim2.fromOffset(math.floor((width-(columns-1)*8)/columns),44)
+  proficiencyGrid.Size=UDim2.new(1,-8,0,rows*44+math.max(0,rows-1)*8)
+end
+proficiencyGrid:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutProficiencies)
+task.defer(layoutProficiencies)
+meadowLabels[1].LayoutOrder=7
+meadowLabels[1].TextColor3=meadowDim
+meadowLabels[1].TextSize=12
 return function(character,humanoid,tool,force)
   -- [실제 착용 외형] 장비 수정, 아바타 외형 로딩 및 장착 도구 교체 시에만 복제한다.
   redrawNativeAvatar(character,tool,force)
   local combatMastery=math.floor(math.max(0,tonumber(player:GetAttribute("CombatProficiency")) or 0))
   masteryProgressLabel.Text=string.format("전투 숙련 %d  ·  다음 기술 점수까지 %d",combatMastery,50-combatMastery%50)
   masteryProgressFill.Size=UDim2.fromScale((combatMastery%50)/50,1)
+  -- [숙련 카드] 이 렌더 함수가 소유하는 카드 값만 업데이트한다.
+  for _,entry in ipairs(Config.Proficiencies or {}) do
+    local value=proficiencyValues[entry.Key]
+    if value then value.Text=tostring(math.floor(player:GetAttribute(entry.Key) or 0)) end
+  end
   characterHeroName.Text=player.DisplayName
-  characterHeroSummary.Text=string.format("체력 %d/%d · 기력 %d/100\n장비 공격 +%d · 방어 +%d\n무기 강화 +%d · 보스 %d",
-    humanoid and humanoid.Health or 0,humanoid and humanoid.MaxHealth or 100,
-    player:GetAttribute("MeadowStamina") or 0,player:GetAttribute("MeadowGearAttack") or 0,
-    player:GetAttribute("MeadowGearDefense") or 0,player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
+  local health=humanoid and humanoid.Health or 0
+  local maximum=humanoid and humanoid.MaxHealth or 100
+  local stamina=tonumber(player:GetAttribute("MeadowStamina")) or 0
+  heroHealthFill.Size=UDim2.fromScale(math.clamp(health/math.max(1,maximum),0,1),1)
+  heroStaminaFill.Size=UDim2.fromScale(math.clamp(stamina/100,0,1),1)
+  heroHealthText.Text=string.format("체력  %d / %d",health,maximum)
+  heroStaminaText.Text=string.format("기력  %d / 100",stamina)
+  characterHeroSummary.Text=string.format("장비 공격 +%d  ·  방어 +%d\n무기 강화 +%d  ·  보스 %d",
+    player:GetAttribute("MeadowGearAttack") or 0,player:GetAttribute("MeadowGearDefense") or 0,
+    player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
   local catalog=Config.MeadowEquipment or {}
   local function equippedName(slot)
     local index=player:GetAttribute("MeadowEquip"..slot)
@@ -857,18 +946,10 @@ local function renderMeadowPages()
   local tool=character and character:FindFirstChildOfClass("Tool")
   -- [캐릭터 숙련도] 이전 전투 숙련도 값을 유지하고 일곱 분야를 독립 표시한다.
   -- 사냥은 실제 늑대·박쥐 처치, 채집은 실제 수확, 제작은 장비 강화 성공에서만 증가한다.
-  local proficiencyLines={}
-  for _,entry in ipairs(Config.Proficiencies or {}) do
-    proficiencyLines[#proficiencyLines+1]=string.format("%s  %d",
-      entry.Name,math.floor(player:GetAttribute(entry.Key) or 0))
-  end
   renderWitcherCharacter(character,humanoid,tool,previewNeedsRefresh)
   previewNeedsRefresh=false
-  meadowLabels[1].Text=string.format("%s\n\n전투 강화  +%d  ·  보스 처치  %d\n\n※ 요리·건축·연금술은 실제 제작 기능 연결 전에는 오르지 않아.",
-    table.concat(proficiencyLines,"\n"),player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
-  meadowLabels[2].Text=string.format("소지품 · 서버 기록\n숙련도 %d  ·  장착 %s\n저장 %s",
-    math.floor(player:GetAttribute("CombatProficiency") or 0),tool and tool.Name or "맨손",
-    tostring(player:GetAttribute("SaveStatus") or "불러오는 중"))
+  meadowLabels[1].Text="※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해."
+  meadowLabels[2].Text="소지품  /  저장 "..tostring(player:GetAttribute("SaveStatus") or "불러오는 중")
   meadowLabels[3].Text=string.format("초원 탐험 저널\n\n현재 지역 몬스터  %d\n\n%s\n\n관찰 기록은 이번 접속 중 발견한 단서야.",
     player:GetAttribute("AliveEnemies") or 0,
     #meadowJournal>0 and table.concat(meadowJournal,"\n\n") or "주변 동물과 숲의 조사 지점을 살펴봐. 발견한 단서가 여기에 기록돼.")
@@ -1025,6 +1106,15 @@ meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerSt
     renderMeadowPages()
     local heading=root:FindFirstChild("MeadowMenuHeading")
     if heading then heading.Text="마력숲  /  "..(index==0 and "활동" or meadowPageNames[index] or "모험") end
+    local subtitle=root:FindFirstChild("MeadowMenuSubtitle")
+    if subtitle then
+      local captions={
+        [0]="현재 할 수 있는 행동", [1]="전신 · 장비 · 숙련도", [2]="보유 · 제작법 · 아이템 상세",
+        [3]="메인 의뢰와 발견 기록", [4]="소리 · 화면 · 조작", [5]="지금 필요한 목표",
+        [6]="동료 의뢰와 진행 기록", [7]="전투 기술과 성장",
+      }
+      subtitle.Text=captions[index] or "마력숲 탐험"
+    end
     if index==7 and meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end
   end,
 })
@@ -1209,6 +1299,7 @@ end
 local inventoryRow=journalRow("ResourceItems",52)
 inventoryRow.Parent=meadowPages[2]
 inventoryRow.LayoutOrder=1
+inventoryRow.Visible=false -- 위 중복 배너 대신 실제 저장 상태 한 줄만 사용한다.
 -- [인벤토리·스킬창] 위쳐식 분류·선택·상세 패널. 실제 서버 수치와 Roblox Tool만 사용한다.
 -- [저장·밸런스 보존] 새로운 아이템, 효과, 드랍률, 스킬 포인트/잠금 상태를 만들지 않는다.
 local renderWitcherInventory=(function()
@@ -1216,7 +1307,7 @@ local parchment=meadowParchment
 local gold=meadowGold
 local stone=Color3.fromRGB(20,43,43)
 local muted=Color3.fromRGB(163,192,175)
-local categories={"전체","무기","갑옷","장신구","소모품","재료","기록","재화"}
+local categories={"전체","보유","무기","갑옷","장신구","소모품","재료","기록","재화"}
 local data={
   {key="Wood",name="나무",category="재료",icon=4,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 기존 무기 강화에 사용돼."},
   {key="Stone",name="돌",category="재료",icon=4,color=Color3.fromRGB(169,191,200),description="바위에서 채집한 돌. 기존 무기 강화에 사용돼."},
@@ -1243,16 +1334,33 @@ local inventorySearch=CommonUI.CreateSearchField({
 inventorySearch.PlaceholderText="아이템 이름 검색"
 inventorySearch.LayoutOrder=3;inventorySearch.BackgroundColor3=Color3.fromRGB(25,53,49)
 inventorySearch.Parent=meadowPages[2]
+-- [인벤토리 화면] 세로: 검색→격자→상세 / 가로: 격자와 상세를 나란히 둔다.
+local inventoryWorkspace=Instance.new("Frame")
+inventoryWorkspace.Name="MeadowInventoryWorkspace";inventoryWorkspace.LayoutOrder=4
+inventoryWorkspace.Size=UDim2.new(1,-8,0,330);inventoryWorkspace.BackgroundTransparency=1
+inventoryWorkspace.Parent=meadowPages[2]
+local inventoryCount=Instance.new("TextLabel")
+inventoryCount.Name="InventoryResultCount";inventoryCount.Position=UDim2.fromOffset(2,0)
+inventoryCount.Size=UDim2.new(1,-4,0,25);inventoryCount.BackgroundTransparency=1
+inventoryCount.TextColor3=muted;inventoryCount.Font=Enum.Font.GothamMedium;inventoryCount.TextSize=13
+inventoryCount.TextXAlignment=Enum.TextXAlignment.Left;inventoryCount.Parent=inventoryWorkspace
+local inventoryScroll=Instance.new("ScrollingFrame")
+inventoryScroll.Name="MeadowInventoryItemScroll";inventoryScroll.Position=UDim2.fromOffset(0,30)
+inventoryScroll.Size=UDim2.new(1,0,0,130);inventoryScroll.BackgroundTransparency=1;inventoryScroll.BorderSizePixel=0
+inventoryScroll.ScrollBarThickness=3;inventoryScroll.ScrollingDirection=Enum.ScrollingDirection.Y;inventoryScroll.ClipsDescendants=true
+inventoryScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y;inventoryScroll.CanvasSize=UDim2.new()
+inventoryScroll.ScrollingEnabled=false;inventoryScroll.Parent=inventoryWorkspace
 local inventoryGrid=Instance.new("Frame")
 inventoryGrid.Name="MeadowInventoryGrid";inventoryGrid.LayoutOrder=4
-inventoryGrid.Size=UDim2.new(1,-8,0,100);inventoryGrid.BackgroundTransparency=1;inventoryGrid.Parent=meadowPages[2]
+inventoryGrid.Size=UDim2.new(1,-6,0,100);inventoryGrid.BackgroundTransparency=1
+inventoryGrid.Parent=inventoryScroll
 local gridLayout=Instance.new("UIGridLayout")
 gridLayout.SortOrder=Enum.SortOrder.LayoutOrder;gridLayout.CellPadding=UDim2.fromOffset(8,8)
 gridLayout.Parent=inventoryGrid
 local detail=Instance.new("Frame")
 detail.Name="WitcherItemDetails";detail.LayoutOrder=6
 detail.Size=UDim2.new(1,-8,0,268);detail.BorderSizePixel=0;detail.BackgroundColor3=stone
-detail.Parent=meadowPages[2]
+detail.Parent=inventoryWorkspace
 local detailGradient=Instance.new("UIGradient")
 detailGradient.Color=ColorSequence.new(Color3.fromRGB(38,77,63),Color3.fromRGB(14,31,40))
 detailGradient.Rotation=42;detailGradient.Parent=detail
@@ -1272,12 +1380,21 @@ title.Name="SelectedItem";title.Position=UDim2.fromOffset(12,8)
 title.Size=UDim2.new(1,-90,0,32);title.BackgroundTransparency=1
 title.TextColor3=gold;title.Font=Enum.Font.GothamBold;title.TextSize=18
 title.TextXAlignment=Enum.TextXAlignment.Left;title.Parent=detail
+-- [긴 아이템 설명] 안내와 부족 재료·서버 피드백이 잘리지 않게 본문만 스크롤한다.
+local descriptionScroll=Instance.new("ScrollingFrame")
+descriptionScroll.Name="SelectedItemDescriptionScroll";descriptionScroll.Position=UDim2.fromOffset(12,68)
+descriptionScroll.Size=UDim2.new(1,-24,0,136);descriptionScroll.BackgroundTransparency=1
+descriptionScroll.BorderSizePixel=0;descriptionScroll.ScrollBarThickness=3
+descriptionScroll.ScrollingDirection=Enum.ScrollingDirection.Y
+descriptionScroll.CanvasSize=UDim2.new();descriptionScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+descriptionScroll.Parent=detail
 local description=Instance.new("TextLabel")
-description.Name="SelectedItemDescription";description.Position=UDim2.fromOffset(12,68)
-description.Size=UDim2.new(1,-24,0,136);description.BackgroundTransparency=1
+description.Name="SelectedItemDescription";description.Position=UDim2.fromOffset(0,0)
+description.Size=UDim2.new(1,-7,0,0);description.AutomaticSize=Enum.AutomaticSize.Y
+description.BackgroundTransparency=1
 description.Font=Enum.Font.GothamMedium;description.TextColor3=parchment;description.TextSize=13
 description.TextWrapped=true;description.TextXAlignment=Enum.TextXAlignment.Left
-description.TextYAlignment=Enum.TextYAlignment.Top;description.Parent=detail
+description.TextYAlignment=Enum.TextYAlignment.Top;description.Parent=descriptionScroll
 local equip=CommonUI.CreatePrimaryButton({name="WitcherEquipTool",text="선택 장비 착용",minHeight=48})
 equip.Position=UDim2.fromOffset(12,210);equip.Size=UDim2.new(1,-24,0,48)
 equip.BackgroundColor3=Color3.fromRGB(54,112,84);equip.Visible=false;equip.Parent=detail
@@ -1286,10 +1403,11 @@ secondary.Position=UDim2.new(.5,4,0,210);secondary.Size=UDim2.new(.5,-16,0,48)
 secondary.BackgroundColor3=Color3.fromRGB(55,95,87);secondary.Visible=false;secondary.Parent=detail
 local inventoryEmpty=Instance.new("TextLabel")
 inventoryEmpty.Name="MeadowInventoryEmpty";inventoryEmpty.LayoutOrder=5
+inventoryEmpty.Position=UDim2.fromOffset(0,12)
 inventoryEmpty.Size=UDim2.new(1,-8,0,60);inventoryEmpty.BackgroundTransparency=1
 inventoryEmpty.Text="검색 조건에 맞는 항목이 없어.";inventoryEmpty.Font=Enum.Font.GothamMedium
 inventoryEmpty.TextSize=14;inventoryEmpty.TextColor3=muted;inventoryEmpty.Visible=false
-inventoryEmpty.Parent=meadowPages[2]
+inventoryEmpty.Parent=inventoryScroll
 local itemCards={}
 local itemRows={}
 local selectedKey="Wood"
@@ -1308,7 +1426,7 @@ local function owned(item)
 end
 local function itemValue(item)
   if item.gear then
-    return owned(item)>0 and (player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index and "장착 중" or "보유") or "제작 가능"
+    return owned(item)>0 and (player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index and "장착 중" or "보유") or "미보유 · 제작법"
   end
   if item.tonic then return tostring(math.floor(owned(item))).."개" end
   if typeof(item.key)=="Instance" then return item.key.Parent==player.Character and "장착 중" or "보유" end
@@ -1361,44 +1479,74 @@ local function redrawSelection()
 end
 local function makeCard(item)
   local card=Instance.new("TextButton")
-  card.Name="OwnedItemSlot";card.Text="";card.AutoButtonColor=true
+  card.Name="OwnedItemSlot";card.Text="";card.AutoButtonColor=true;card.ZIndex=44
   card.BackgroundColor3=Color3.fromRGB(27,54,48);card.BorderSizePixel=0;card.Parent=inventoryGrid
   local rounded=Instance.new("UICorner");rounded.CornerRadius=UDim.new(0,10);rounded.Parent=card
   local outline=Instance.new("UIStroke");outline.Color=Color3.fromRGB(78,123,102);outline.Transparency=.14;outline.Parent=card
   local icon=Instance.new("ImageLabel")
-  icon.Name="ExistingAssetIcon";icon.BackgroundTransparency=1;icon.Image=meadowIconAtlas
+  icon.Name="ExistingAssetIcon";icon.BackgroundTransparency=1;icon.Image=meadowIconAtlas;icon.ZIndex=45
   icon.ImageRectOffset=Vector2.new(item.icon*64,0);icon.ImageRectSize=Vector2.new(64,64)
   icon.Size=UDim2.fromOffset(44,44);icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.new(.5,0,0,4);icon.Parent=card
   local name=Instance.new("TextLabel")
   name.Name="ItemName";name.Position=UDim2.new(0,3,0,53);name.Size=UDim2.new(1,-6,0,20)
-  name.BackgroundTransparency=1;name.Font=Enum.Font.GothamBold;name.TextSize=12;name.TextColor3=parchment
+  name.BackgroundTransparency=1;name.Font=Enum.Font.GothamBold;name.TextSize=12;name.TextColor3=parchment;name.ZIndex=45
   name.TextXAlignment=Enum.TextXAlignment.Center;name.TextTruncate=Enum.TextTruncate.AtEnd;name.Parent=card
   local value=Instance.new("TextLabel")
   value.Name="OwnedCount";value.Position=UDim2.new(0,3,0,74);value.Size=UDim2.new(1,-6,0,24)
-  value.BackgroundTransparency=1;value.Font=Enum.Font.GothamBold;value.TextSize=13
+  value.BackgroundTransparency=1;value.Font=Enum.Font.GothamBold;value.TextSize=13;value.ZIndex=45
   value.TextXAlignment=Enum.TextXAlignment.Center;value.TextColor3=item.color;value.Parent=card
   card.Activated:Connect(function()
     selectedKey=item.key
     redrawSelection()
-    -- [아이템 상세 이동] 긴 소지품 목록에서도 장착·제작 버튼까지 한 번에 접근할 수 있게 한다.
+    -- [선택 이동] 가로 화면은 옆의 상세를 유지하고 세로 화면은 상세 카드로 이동한다.
     local page=meadowPages[2]
-    local detailTop=page.CanvasPosition.Y+detail.AbsolutePosition.Y-page.AbsolutePosition.Y
-    page.CanvasPosition=Vector2.new(0,math.max(0,detailTop-8))
+    if inventoryWorkspace:GetAttribute("SplitLayout")==true then
+      local workspaceTop=page.CanvasPosition.Y+inventoryWorkspace.AbsolutePosition.Y-page.AbsolutePosition.Y
+      page.CanvasPosition=Vector2.new(0,math.max(0,workspaceTop-6))
+    else
+      local detailTop=page.CanvasPosition.Y+detail.AbsolutePosition.Y-page.AbsolutePosition.Y
+      page.CanvasPosition=Vector2.new(0,math.max(0,detailTop-8))
+    end
   end)
   return {button=card,name=name,count=value,border=outline}
+end
+-- [반응형 가방] 작은 화면은 3열+아래 상세, 넓은 화면은 독립 스크롤 격자+고정 상세.
+local inventoryShownCount=0
+local inventoryTotalCount=0
+local function layoutInventoryWorkspace()
+  local width=inventoryWorkspace.AbsoluteSize.X
+  if width<=0 then return end
+  local split=width>=620
+  local leftWidth=split and math.floor(width*.55) or width
+  local gridHeight=inventoryShownCount==0 and 74 or math.max(110,gridLayout.AbsoluteContentSize.Y+6)
+  inventoryWorkspace:SetAttribute("SplitLayout",split)
+  inventoryCount.Text=string.format("표시 %d개 / 전체 %d개  ·  선택해서 자세히 보기",inventoryShownCount,inventoryTotalCount)
+  inventoryCount.Size=UDim2.new(split and 0 or 1,split and (leftWidth-4) or -4,0,25)
+  inventoryScroll.Position=UDim2.fromOffset(0,30)
+  inventoryScroll.Size=UDim2.fromOffset(leftWidth,split and 232 or gridHeight)
+  inventoryScroll.ScrollingEnabled=split
+  detail.Position=split and UDim2.fromOffset(leftWidth+12,0)
+    or UDim2.fromOffset(0,30+gridHeight+12)
+  detail.Size=split and UDim2.fromOffset(width-leftWidth-12,268) or UDim2.fromOffset(width,268)
+  inventoryWorkspace.Size=UDim2.new(1,-8,0,split and 282 or 30+gridHeight+12+268)
 end
 local function layoutGrid()
   local width=inventoryGrid.AbsoluteSize.X
   if width<=0 then return end
-  local columns=math.clamp(math.floor((width+8)/118),2,6)
-  local cell=math.floor((width-(columns-1)*8-8)/columns)
-  gridLayout.CellSize=UDim2.fromOffset(math.max(76,cell),104)
+  local columns=math.clamp(math.floor((width+8)/103),2,6)
+  local cell=math.floor((width-(columns-1)*8-4)/columns)
+  gridLayout.CellSize=UDim2.fromOffset(math.max(82,cell),104)
+  inventoryGrid.Size=UDim2.new(1,-6,0,math.max(110,gridLayout.AbsoluteContentSize.Y+5))
+  layoutInventoryWorkspace()
 end
+inventoryWorkspace:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutInventoryWorkspace)
 inventoryGrid:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutGrid)
 gridLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-  inventoryGrid.Size=UDim2.new(1,-8,0,math.max(110,gridLayout.AbsoluteContentSize.Y+4))
+  inventoryGrid.Size=UDim2.new(1,-6,0,math.max(110,gridLayout.AbsoluteContentSize.Y+5))
+  layoutInventoryWorkspace()
 end)
+task.defer(layoutGrid)
 local function renderInventory()
   local actual={}
   for _,item in ipairs(data)do actual[#actual+1]=item end
@@ -1432,7 +1580,8 @@ local function renderInventory()
       card.count.Text=itemValue(item)
       card.count.TextColor3=item.color
       local matches=search=="" or string.find(string.lower(item.name),search,1,true)~=nil
-      local show=matches and (category=="전체" or category==item.category) and (item.gear~=nil or item.tonic~=nil or typeof(item.key)=="Instance" or owned(item)>0 or category=="전체")
+      local show=matches and (category=="전체" or (category=="보유" and owned(item)>0) or category==item.category)
+        and (item.gear~=nil or item.tonic~=nil or typeof(item.key)=="Instance" or owned(item)>0 or category=="전체")
       card.button.Visible=show
       if show then visibleCount+=1 end
       card.button.BackgroundColor3=owned(item)>0 and Color3.fromRGB(27,54,48) or Color3.fromRGB(20,39,40)
@@ -1445,8 +1594,11 @@ local function renderInventory()
   if not selectedKey or not present[selectedKey] or not itemCards[selectedKey].button.Visible then
     selectedKey=firstVisible
   end
-  redrawSelection()
+  inventoryShownCount=visibleCount
+  inventoryTotalCount=#actual
   inventoryEmpty.Visible=visibleCount==0
+  inventoryGrid.Visible=visibleCount>0
+  redrawSelection()
   layoutGrid()
 end
 inventorySearch:GetPropertyChangedSignal("Text"):Connect(renderInventory)
@@ -1454,7 +1606,13 @@ for index,button in ipairs(filterButtons)do
   button.Activated:Connect(function()
     category=categories[index]
     for i,tab in ipairs(filterButtons)do
-      tab.BackgroundColor3=i==index and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
+      local current=i==index
+      tab.BackgroundColor3=current and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
+      tab.TextColor3=current and Color3.fromRGB(255,240,197) or Color3.fromRGB(191,215,198)
+      local underline=tab:FindFirstChild("SelectedUnderline")
+      if underline then underline.Visible=current end
+      local stroke=tab:FindFirstChildOfClass("UIStroke")
+      if stroke then stroke.Color=current and gold or Color3.fromRGB(78,120,101) end
     end
     renderInventory()
   end)
@@ -1708,7 +1866,13 @@ for index,button in ipairs(skillButtons)do
       end
     end
     for i,tab in ipairs(skillButtons)do
-      tab.BackgroundColor3=i==index and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
+      local current=i==index
+      tab.BackgroundColor3=current and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
+      tab.TextColor3=current and Color3.fromRGB(255,240,197) or Color3.fromRGB(191,215,198)
+      local underline=tab:FindFirstChild("SelectedUnderline")
+      if underline then underline.Visible=current end
+      local stroke=tab:FindFirstChildOfClass("UIStroke")
+      if stroke then stroke.Color=current and gold or Color3.fromRGB(78,120,101) end
     end
     meadowActionButtons.refreshSkills()
   end)

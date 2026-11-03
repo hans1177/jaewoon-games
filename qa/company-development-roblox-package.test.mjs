@@ -1972,7 +1972,8 @@ test('마력숲은 전투·요리·제작·채집·건축·사냥·연금술 7�
   assert.match(server,/setNumber\(player,"CraftingProficiency"/);
   assert.match(server,/if target.kind=="wolf" or target.kind=="bat" then\s*setNumber\(player,"HuntingProficiency"/);
   assert.match(server,/target.HP<=0 then/);
-  assert.match(client,/table.concat\(proficiencyLines,"\\n"\)/);
+  assert.match(client,/proficiencyValues\[entry.Key\]/);
+  assert.match(client,/value.Text=tostring\(math.floor\(player:GetAttribute\(entry.Key\) or 0\)\)/);
   assert.match(server,/setNumber\(player,"CombatProficiency",readNumber\(player,"CombatProficiency",0\)\+experience\)/);
 });
 

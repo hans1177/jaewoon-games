@@ -4913,6 +4913,18 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
    local underline=button:FindFirstChild("SelectedUnderline")
    if underline then underline.Visible=tabPage(i-1)==index end
   end
+  -- [가로 탭] 선택된 페이지를 자동으로 스크롤 영역 중앙에 노출한다.
+  if tabs and tabs.AbsoluteSize.X>0 then
+   for i,button in ipairs(tabButtons)do
+    if tabPage(i-1)==index then
+     local offset=button.AbsolutePosition.X-tabs.AbsolutePosition.X+tabs.CanvasPosition.X
+     local maxScroll=math.max(0,tabs.AbsoluteCanvasSize.X-tabs.AbsoluteSize.X)
+     local target=math.clamp(offset-(tabs.AbsoluteSize.X-button.AbsoluteSize.X)*.5,0,maxScroll)
+     tabs.CanvasPosition=Vector2.new(target,0)
+     break
+    end
+   end
+  end
   if primary and primary.onPageChanged then primary.onPageChanged(index) end
  end
  if #pages>0 then
@@ -5063,11 +5075,14 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
    close.BackgroundColor3=Color3.fromRGB(42,76,64)
    close.TextColor3=Color3.fromRGB(245,242,224)
   end
-  local bodyTop=tabs and (primary and primary.witcherStyle and (v.Y<420 and 124 or 132) or 122) or 68
+  local shortMenu=primary and primary.witcherStyle and v.Y<420
+  local bodyTop=tabs and (primary and primary.witcherStyle and (shortMenu and 109 or 132) or 122) or 68
   list.Position=UDim2.fromOffset(14,bodyTop);list.Size=UDim2.new(1,-28,1,-bodyTop-12)
   if tabs then
-   tabs.Position=UDim2.fromOffset(14,primary and primary.witcherStyle and (v.Y<420 and 64 or 72) or 64)
+   tabs.Position=UDim2.fromOffset(14,primary and primary.witcherStyle and (shortMenu and 53 or 72) or 64)
    tabs.Size=UDim2.new(1,-28,0,50)
+   local subtitle=root:FindFirstChild("MeadowMenuSubtitle")
+   if subtitle then subtitle.Visible=not shortMenu end
    for _,page in ipairs(pages)do
     page.Position=UDim2.fromOffset(16,bodyTop);page.Size=UDim2.new(1,-32,1,-bodyTop-16)
    end
@@ -5082,14 +5097,22 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   end
   gui:SetAttribute("GameMenuOpen",value)
  end
- menu.Activated:Connect(function()setOpen(true)end)
+ menu.Activated:Connect(function()setOpen(true);selectPage(selectedPage)end)
  close.Activated:Connect(function()setOpen(false)end)
  -- [입력 복구] 메뉴 바깥을 터치하면 즉시 게임 화면으로 돌아간다.
  shade.Activated:Connect(function()setOpen(false)end)
+ -- [키보드·게임패드] 기존 스크롤·검색을 유지하면서 닫기 조작을 제공한다.
+ game:GetService("UserInputService").InputBegan:Connect(function(input,processed)
+  if not opened then return end
+  if input.KeyCode==Enum.KeyCode.ButtonB
+    or (input.KeyCode==Enum.KeyCode.Escape and not processed) then
+   setOpen(false)
+  end
+ end)
  gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
  layout();setOpen(false)
  return {isOpen=function()return opened end,close=function()setOpen(false)end,
-  open=function(index)selectPage(index or 0);setOpen(true)end}
+  open=function(index)setOpen(true);selectPage(index or 0)end}
 end
 
 

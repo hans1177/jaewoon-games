@@ -205,7 +205,7 @@ test('forest RPG menu keeps the original eight pages with mobile navigation and 
   assert.match(common,/MeadowMenuSubtitle/);
   assert.match(common,/heading\.Font=primary and primary\.witcherStyle and Enum\.Font\.Antique/);
   assert.match(common,/local active=tabPage\(i-1\)==index/);
-  assert.match(common,/local bodyTop=tabs and \(primary and primary\.witcherStyle and \(v\.Y<420/);
+  assert.match(common,/local bodyTop=tabs and \(primary and primary\.witcherStyle and \(shortMenu and 109 or 132\)/);
   assert.match(common,/root\.Size=UDim2\.fromOffset\(math\.min\(900,v\.X-16\)/);
   assert.match(common,/shade\.Activated:Connect\(function\(\)setOpen\(false\)end\)/);
   assert.match(client,/if input\.KeyCode==Enum\.KeyCode\.C then meadowMenu\.open\(1\)/);
@@ -234,8 +234,72 @@ test('inventory shows grid before real selected item detail and preserves action
     'remote:FireServer("meadow:rpg:tonic:craft:"..item.tonic.Id)',
     'human:EquipTool(tool)',
   ])assert.ok(client.includes(fragment),fragment);
-  assert.match(client,/local columns=math\.clamp\(math\.floor\(\(width\+8\)\/118\),2,6\)/);
+  assert.match(client,/local columns=math\.clamp\(math\.floor\(\(width\+8\)\/103\),2,6\)/);
   assert.match(client,/local columns=width>=630 and 3 or width>=340 and 2 or 1/);
+});
+
+// [실제 캐릭터·가방 화면] 서버 상태는 읽기 전용이고 새 화면 구성만 검증한다.
+test('character sheet shows actual avatar, live vital gauges and separate seven mastery cards',()=>{
+  for(const key of [
+    'characterViewport.Name="NativeAvatarPreview"',
+    'local aspect=math.max(.55,characterViewport.AbsoluteSize.X/math.max(1,characterViewport.AbsoluteSize.Y))',
+    'local distance=math.max(size.Y/(2*halfFov),size.X/(2*halfFov*aspect),size.Z*1.8,5)*1.35',
+    'characterViewport:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()',
+    'heroHealth.Name="CharacterHealthTrack"',
+    'heroStamina.Name="CharacterStaminaTrack"',
+    'heroHealthFill.Size=UDim2.fromScale(math.clamp(health/math.max(1,maximum),0,1),1)',
+    'heroStaminaFill.Size=UDim2.fromScale(math.clamp(stamina/100,0,1),1)',
+    'proficiencyGrid.Name="MeadowProficiencyCards"',
+    'value.Text=tostring(math.floor(player:GetAttribute(entry.Key) or 0))',
+  ])assert.ok(client.includes(key),key);
+  assert.match(client,/local columns=width>=650 and 3 or width>=280 and 2 or 1/);
+  assert.match(client,/local narrow=width<540/);
+  assert.match(client,/equippedWeapon.Text=equippedName\("Weapon"\)/);
+  assert.match(client,/equippedAccessory.Text=equippedName\("Accessory"\)/);
+});
+
+test('inventory uses split landscape and scrollable portrait details without changing server actions',()=>{
+  for(const key of [
+    'inventoryWorkspace.Name="MeadowInventoryWorkspace"',
+    'inventoryWorkspace.Parent=meadowPages[2]',
+    'inventoryScroll.Name="MeadowInventoryItemScroll"',
+    'inventoryGrid.Parent=inventoryScroll',
+    'detail.Parent=inventoryWorkspace',
+    'descriptionScroll.Name="SelectedItemDescriptionScroll"',
+    'description.AutomaticSize=Enum.AutomaticSize.Y',
+    'local split=width>=620',
+    'inventoryScroll.ScrollingEnabled=split',
+    'inventoryWorkspace:SetAttribute("SplitLayout",split)',
+    'detail.Position=split and UDim2.fromOffset(leftWidth+12,0)',
+    'inventoryShownCount=visibleCount',
+    'local categories={"전체","보유","무기","갑옷","장신구","소모품","재료","기록","재화"}',
+    '(category=="보유" and owned(item)>0)',
+    'local underline=tab:FindFirstChild("SelectedUnderline")',
+    'inventoryEmpty.Visible=visibleCount==0',
+    'inventoryGrid.Visible=visibleCount>0',
+    'item.gear.Slot',
+    'remote:FireServer("meadow:rpg:gear:"..op..":"..item.gear.Id)',
+    'remote:FireServer("meadow:rpg:tonic:use:"..item.tonic.Id)',
+    'remote:FireServer("meadow:rpg:tonic:craft:"..item.tonic.Id)',
+    'human:EquipTool(tool)'
+  ])assert.ok(client.includes(key),key);
+  assert.match(client,/inventorySearch:GetPropertyChangedSignal\("Text"\):Connect\(renderInventory\)/);
+  assert.doesNotMatch(client,/local DataStoreService=/);
+});
+
+test('menu retains 8 original pages and keeps selected tab reachable on a short screen',()=>{
+  const common=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
+  for(const key of [
+    'local shortMenu=primary and primary.witcherStyle and v.Y<420',
+    'shortMenu and 109 or 132',
+    'shortMenu and 53 or 72',
+    'if subtitle then subtitle.Visible=not shortMenu end',
+    'tabs.CanvasPosition=Vector2.new(target,0)',
+    'if input.KeyCode==Enum.KeyCode.ButtonB',
+    'menu.Activated:Connect(function()setOpen(true);selectPage(selectedPage)end)',
+  ])assert.ok(common.includes(key),key);
+  assert.ok(client.includes('tabOrder={0,1,2,7,3,4,5,6}'));
+  assert.ok(client.includes('subtitle.Text=captions[index] or "마력숲 탐험"'));
 });
 
 test('registered 12-scene prologue keeps 23 unique approved layers and cleans up animations',()=>{
