@@ -2252,7 +2252,12 @@ test('atomic completion sends a refill only when the same lane has runnable work
   const inputFile=path.join(dir,'result.json');
   const running={id:'active',gameId:'active',target:'roblox',department:'development',type:'implementation',goal:'active',status:'running',sourceRoot:'roblox-games/active',responsibleFiles:['src/main.luau'],reservationId:'atomic-refill:1',reservationRunId:'atomic-refill',reservationRunAttempt:1,reservedAt:'2026-09-20T10:00:00Z',neuronExpectedVariants:1};
   const blocked={id:'blocked',gameId:'blocked',target:'roblox',department:'development',type:'implementation',goal:'blocked',status:'queued',sourceRoot:'roblox-games/blocked',responsibleFiles:['src/main.luau'],dependencies:['missing']};
-  const result={taskId:'active',variant:'primary',outcome:'PASS',reservationId:'atomic-refill:1',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}};
+  // [예약 회귀] 실제 Roblox 개발 PASS와 동일한 후보·소스 변화 증거로 리필 로직을 검사한다.
+  const result={taskId:'active',variant:'primary',outcome:'PASS',reservationId:'atomic-refill:1',
+    metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2,changedFileCount:1,addedLineCount:4,deletedLineCount:0},
+    candidateBranch:'vibe2/candidate/active',baseMainSha:'a'.repeat(40),
+    candidateIdentity:{gameId:'active',target:'roblox',sourceRoot:'roblox-games/active'},
+    evidence:['candidate-sha:'+'b'.repeat(40)]};
   fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD'}));
   fs.writeFileSync(inputFile,JSON.stringify(result));
   fs.writeFileSync(queueFile,JSON.stringify(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[running,blocked]})));
