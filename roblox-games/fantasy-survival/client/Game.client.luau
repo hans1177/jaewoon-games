@@ -2014,7 +2014,7 @@ do
   })
   vignetteGradient.Parent=cinematicVignette
   local cinematicParticles={}
-  for n=1,14 do
+  for n=1,18 do
     local spark=Instance.new("Frame")
     spark.Name="CinematicParticle"..n
     spark.Size=UDim2.fromOffset(2+(n%3),6+(n%4)*3)
@@ -2046,31 +2046,106 @@ do
     bar.Parent=introPanel
     cinematicBars[top and 1 or 2]=bar
   end
+  -- [오프닝 명암·자막] 승인된 원화 위에만 생성하는 2D 연출. 새 캐릭터·파츠 없음.
+  local narrationPlate=Instance.new("Frame")
+  narrationPlate.Name="StoryNarrationPlate"
+  narrationPlate.Position=UDim2.fromScale(.065,.455)
+  narrationPlate.Size=UDim2.fromScale(.87,.165)
+  narrationPlate.BackgroundColor3=Color3.fromRGB(6,11,16)
+  narrationPlate.BackgroundTransparency=.35
+  narrationPlate.BorderSizePixel=0
+  narrationPlate.ZIndex=11
+  narrationPlate.Parent=introPanel
+  local narrationShade=Instance.new("UIGradient")
+  narrationShade.Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,.06),
+    NumberSequenceKeypoint.new(.74,.17),
+    NumberSequenceKeypoint.new(1,.9),
+  })
+  narrationShade.Parent=narrationPlate
+  local subtitlePlate=Instance.new("Frame")
+  subtitlePlate.Name="CharacterSubtitlePlate"
+  subtitlePlate.AnchorPoint=Vector2.new(.5,1)
+  subtitlePlate.Position=UDim2.fromScale(.5,.875)
+  subtitlePlate.Size=UDim2.fromScale(.90,.235)
+  subtitlePlate.BackgroundColor3=Color3.fromRGB(7,11,17)
+  subtitlePlate.BackgroundTransparency=.16
+  subtitlePlate.BorderSizePixel=0
+  subtitlePlate.ZIndex=11
+  subtitlePlate.Parent=introPanel
+  local subtitleShade=Instance.new("UIGradient")
+  subtitleShade.Color=ColorSequence.new({
+    ColorSequenceKeypoint.new(0,Color3.fromRGB(7,12,18)),
+    ColorSequenceKeypoint.new(.68,Color3.fromRGB(20,24,27)),
+    ColorSequenceKeypoint.new(1,Color3.fromRGB(7,12,18)),
+  })
+  subtitleShade.Rotation=12
+  subtitleShade.Parent=subtitlePlate
+  local subtitleOutline=Instance.new("UIStroke")
+  subtitleOutline.Color=Color3.fromRGB(207,171,106)
+  subtitleOutline.Thickness=1
+  subtitleOutline.Transparency=.58
+  subtitleOutline.Parent=subtitlePlate
+  local subtitleAccent=Instance.new("Frame")
+  subtitleAccent.Name="SpeakerAccent"
+  subtitleAccent.Position=UDim2.new(0,8,0,10)
+  subtitleAccent.Size=UDim2.new(0,3,1,-20)
+  subtitleAccent.BackgroundColor3=Color3.fromRGB(207,171,106)
+  subtitleAccent.BorderSizePixel=0
+  subtitleAccent.ZIndex=12
+  subtitleAccent.Parent=subtitlePlate
   local introAct=label(introPanel,"StoryChapter","서막 · 빛의 배신",0,30,14,Color3.fromRGB(215,185,124))
   introAct.Position=UDim2.fromScale(.075,.145)
   introAct.Size=UDim2.fromScale(.85,.07)
   introAct.TextXAlignment=Enum.TextXAlignment.Left
+  introAct.Font=Enum.Font.Antique
+  introAct.TextStrokeColor3=Color3.fromRGB(4,7,12)
+  introAct.TextStrokeTransparency=.4
   introAct.ZIndex=14
   local regionIntro=label(introPanel,"RegionReveal","전쟁의 끝",0,80,34)
   regionIntro.Position=UDim2.fromScale(.07,.25)
   regionIntro.Size=UDim2.fromScale(.86,.2)
   regionIntro.TextScaled=true
+  regionIntro.Font=Enum.Font.Antique
+  regionIntro.TextStrokeColor3=Color3.fromRGB(2,5,9)
+  regionIntro.TextStrokeTransparency=.18
   regionIntro.ZIndex=14
   local titleSize=Instance.new("UITextSizeConstraint")
   titleSize.MinTextSize=19;titleSize.MaxTextSize=38;titleSize.Parent=regionIntro
+  local characterFocus=label(introPanel,"SceneCharacterIdentity","",0,25,13,Color3.fromRGB(230,206,161))
+  characterFocus.Position=UDim2.fromScale(.08,.205)
+  characterFocus.Size=UDim2.fromScale(.84,.052)
+  characterFocus.TextXAlignment=Enum.TextXAlignment.Right
+  characterFocus.Font=Enum.Font.Antique
+  characterFocus.TextStrokeColor3=Color3.fromRGB(3,7,12)
+  characterFocus.TextStrokeTransparency=.28
+  characterFocus.ZIndex=14
   local openingText=label(introPanel,"OpeningText","",0,70,17,Color3.fromRGB(221,225,216))
   openingText.Position=UDim2.fromScale(.08,.47)
   openingText.Size=UDim2.fromScale(.84,.15)
+  openingText.TextXAlignment=Enum.TextXAlignment.Left
+  openingText.TextYAlignment=Enum.TextYAlignment.Center
+  openingText.Font=Enum.Font.GothamMedium
+  openingText.TextStrokeColor3=Color3.fromRGB(3,6,10)
+  openingText.TextStrokeTransparency=.45
   openingText.ZIndex=14
   local introSpeaker=label(introPanel,"DialogueSpeaker","",0,24,15,Color3.fromRGB(239,204,141))
   introSpeaker.Position=UDim2.fromScale(.08,.66)
   introSpeaker.Size=UDim2.fromScale(.84,.055)
   introSpeaker.TextXAlignment=Enum.TextXAlignment.Left
+  introSpeaker.Font=Enum.Font.Antique
+  introSpeaker.TextStrokeColor3=Color3.fromRGB(3,5,9)
+  introSpeaker.TextStrokeTransparency=.25
   introSpeaker.ZIndex=14
   local introDialogue=label(introPanel,"DialogueLine","",0,68,18,Color3.fromRGB(255,246,221))
   introDialogue.Position=UDim2.fromScale(.08,.72)
   introDialogue.Size=UDim2.fromScale(.84,.14)
   introDialogue.TextXAlignment=Enum.TextXAlignment.Left
+  introDialogue.TextYAlignment=Enum.TextYAlignment.Center
+  introDialogue.Font=Enum.Font.GothamSemibold
+  introDialogue.TextSize=20
+  introDialogue.TextStrokeColor3=Color3.fromRGB(2,5,10)
+  introDialogue.TextStrokeTransparency=.32
   introDialogue.ZIndex=14
   local introFlash=Instance.new("Frame")
   introFlash.Name="SceneTransition"
@@ -2236,28 +2311,37 @@ do
         speaker="미나",line="잠깐, 우리 병사들이 왜 물러나는 거야?",view="sweep",tone=Color3.fromRGB(66,53,49),movement="sweep",cinema="freeze"},
       {seconds=5,chapter="궁정 마법사",title="미러",
         body="군주의 마법사 미러가 기사단 앞에 나타났다.",
-        speaker="렌스",line="미러? 무슨 일이야? 전투는 아직 안 끝났어.",view="seal",tone=Color3.fromRGB(62,39,80),movement="shock",cinema="omen"},
+        focus="미러",speaker="렌스",line="미러? 무슨 일이야? 전투는 아직 안 끝났어.",view="seal",tone=Color3.fromRGB(62,39,80),movement="shock",cinema="omen"},
       {seconds=6,chapter="배신",title="봉인의 문양",
         body="대답 대신 보랏빛 마법진이 펼쳐졌다. 기사단의 발이 묶였다.",
         speaker="미러",line="계획이 바뀌었어. 너희는 여기서 끝이야.",view="seal",tone=Color3.fromRGB(70,35,92),movement="shock",cinema="betrayal"},
       {seconds=5,chapter="동료들",title="사라지는 손",
         body="닉과 미나가 먼저 휩쓸렸다. 렌스가 카인을 향해 손을 뻗었다.",
-        speaker="렌스",line="카인! 손 잡아!",view="fall",tone=Color3.fromRGB(37,44,76),movement="fall",cinema="reach"},
+        focus="카인",speaker="렌스",line="카인! 손 잡아!",view="fall",tone=Color3.fromRGB(37,44,76),movement="fall",cinema="reach"},
       {seconds=4,chapter="역사의 삭제",title="기록에서 지워진 이름",
         body="왕국의 역사에서는 렌스기사단의 이름이 사라졌다.",
         speaker="빅브라더",line="이 일은 누구에게도 알려져서는 안 된다.",view="sky",tone=Color3.fromRGB(37,33,43),movement="pull",cinema="erasure"},
       {seconds=5,chapter="균열",title="낯선 세계로",
         body="성벽과 하늘이 뒤집혔다. 카인은 끝없이 아래로 떨어졌다.",
-        speaker="",line="",view="fall",tone=Color3.fromRGB(29,33,75),movement="fall",cinema="rift"},
+        focus="카인",speaker="",line="",view="fall",tone=Color3.fromRGB(29,33,75),movement="fall",cinema="rift"},
       {seconds=6,chapter="각성",title="숲에서 눈을 뜨다",
         body="젖은 흙냄새. 전쟁의 함성 대신 바람 소리만 들렸다.",
         speaker="카인",line="...여긴 어디지?",view="wake",tone=Color3.fromRGB(30,59,48),movement="wake",cinema="dawn"},
       {seconds=5,chapter="남겨진 흔적",title="기사단의 깃발",
         body="낡은 깃발이 나무에 걸려 있었다. 여기에도 기사단이 있었던 것이다.",
-        speaker="",line="",view="wake",tone=Color3.fromRGB(37,46,47),movement="pull",cinema="relic"},
+        focus="카인",speaker="",line="",view="wake",tone=Color3.fromRGB(37,46,47),movement="pull",cinema="relic"},
       {seconds=5,chapter="첫 번째 여정",title="흔적을 따라서",
         body="렌스, 닉, 미나는 어디에 있을까. 카인은 숲으로 걸음을 옮겼다.",
-        speaker="",line="",view="wake",tone=Color3.fromRGB(37,41,61),movement="pull",cinema="journey"},
+        focus="카인",speaker="",line="",view="wake",tone=Color3.fromRGB(37,41,61),movement="pull",cinema="journey"},
+    }
+    -- [배역 식별] 인물 고유 색·직책을 고정해 빠른 컷에서도 화자와 화면 중심 인물을 구별한다.
+    local castIdentity={
+      ["렌스"]={title="렌스기사단 · 기사단장",tone=Color3.fromRGB(247,203,123)},
+      ["닉"]={title="렌스기사단 · 전위",tone=Color3.fromRGB(247,156,118)},
+      ["미나"]={title="렌스기사단 · 궁수",tone=Color3.fromRGB(156,205,255)},
+      ["카인"]={title="렌스기사단 · 생존자",tone=Color3.fromRGB(158,232,195)},
+      ["미러"]={title="궁정 마법사",tone=Color3.fromRGB(215,156,255)},
+      ["빅브라더"]={title="왕국의 군주",tone=Color3.fromRGB(255,217,129)},
     }
     local total=0
     for _,scene in ipairs(scenes) do total+=scene.seconds end
@@ -2382,6 +2466,7 @@ do
         introAct.TextColor3=(scene.cinema=="omen" or scene.cinema=="betrayal") and Color3.fromRGB(220,188,248)
           or scene.cinema=="dawn" and Color3.fromRGB(193,228,194) or Color3.fromRGB(215,185,124)
         regionIntro.TextColor3=introAct.TextColor3
+        regionIntro.TextStrokeTransparency=scene.cinema=="betrayal" and .08 or .18
         regionIntro.MaxVisibleGraphemes=-1
         introAct.Text=string.format("서막 · %02d/%02d  |  %s",index,#scenes,scene.chapter)
         introAct.TextTransparency=1
@@ -2389,15 +2474,32 @@ do
         regionIntro.Text=scene.title
         regionIntro.TextTransparency=1
         regionIntro.Position=UDim2.fromScale(.12,.27)
-        openingText.Text=scene.body
+        -- [화자와 중심 인물 분리] 미러 등장 장면도 대사 화자는 렌스로 유지한다.
+        local speaking=castIdentity[scene.speaker]
+        local focusName=scene.focus or scene.speaker
+        local featured=castIdentity[focusName]
+        local narrationOnly=scene.line==""
+        local accent=speaking and speaking.tone or Color3.fromRGB(216,200,170)
+        introSpeaker.Text=narrationOnly and "서막의 기록  ·  내레이션"
+          or (scene.speaker.."  ·  "..(speaking and speaking.title or "인물"))
+        introSpeaker.TextColor3=accent
+        subtitleAccent.BackgroundColor3=accent
+        subtitleOutline.Color=accent
+        characterFocus.Text=featured and ("인물  /  "..focusName.."  ·  "..featured.title) or "장면  /  숲의 기록"
+        characterFocus.TextColor3=featured and featured.tone or Color3.fromRGB(231,205,155)
+        characterFocus.TextTransparency=1
+        characterFocus.Position=UDim2.fromScale(.08,.19)
+        narrationPlate.Visible=not narrationOnly
+        openingText.Text=narrationOnly and "" or scene.body
         openingText.TextTransparency=1
         openingText.Position=UDim2.fromScale(.10,.48)
-        introSpeaker.Text=scene.speaker
         introSpeaker.TextTransparency=1
-        introDialogue.Text=scene.line
+        introDialogue.Text=narrationOnly and scene.body or scene.line
         introDialogue.TextTransparency=1
         introDialogue.MaxVisibleGraphemes=0
         introDialogue.Position=UDim2.fromScale(.10,.73)
+        subtitlePlate.BackgroundTransparency=.52
+        subtitlePlate.Position=UDim2.fromScale(.5,.895)
 
         -- [원화 교차] 다음 그림을 교체하기 전에 움직이던 이전 그림의 마지막 프레임을 보존한다.
         for _,pair in ipairs({{storyArtwork,departingArtwork},{storyForeground,departingForeground}}) do
@@ -2557,9 +2659,13 @@ do
           end)
         end
 
-        -- 텍스트가 화면 속으로 밀려 들어오는 모션. 모바일 화면을 벗어나지 않게 제한.
+        -- [시네마틱 타이포그래피] 모바일 안전 영역 내에서 인물 표식·자막을 분리해 입장시킨다.
+        TweenService:Create(subtitlePlate,TweenInfo.new(.48,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
+          Position=UDim2.fromScale(.5,.875),BackgroundTransparency=.16,
+        }):Play()
         for _,row in ipairs({
           {object=introAct,duration=.36,position=UDim2.fromScale(.075,.145)},
+          {object=characterFocus,duration=.56,position=UDim2.fromScale(.08,.205)},
           {object=regionIntro,duration=.68,position=UDim2.fromScale(.07,.25)},
           {object=openingText,duration=.8,position=UDim2.fromScale(.08,.47)},
           {object=introSpeaker,duration=.76},
@@ -2573,8 +2679,8 @@ do
           BackgroundTransparency=1
         }):Play()
         -- [대사 연출] 한국어 글자 단위로 표시한다. 건너뛰기·다음 장면 시에는 즉시 중단.
-        if scene.line~="" then
-          local graphemes=utf8.len(scene.line) or 0
+        if introDialogue.Text~="" then
+          local graphemes=utf8.len(introDialogue.Text) or 0
           task.spawn(function()
             for visible=1,graphemes do
               if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
@@ -2587,6 +2693,18 @@ do
           end)
         else
           introDialogue.MaxVisibleGraphemes=-1
+        end
+        -- [영화식 장면 강조] 공성전의 첫 충돌과 군주의 선고에 짧은 빛 컷을 더한다.
+        if not reducedEffects and (scene.cinema=="siege" or scene.cinema=="crown") then
+          task.delay(scene.cinema=="siege" and 1.05 or 1.55,function()
+            if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
+            introFlash.BackgroundColor3=scene.cinema=="siege" and Color3.fromRGB(233,132,67)
+              or Color3.fromRGB(255,211,129)
+            introFlash.BackgroundTransparency=.64
+            TweenService:Create(introFlash,TweenInfo.new(.55,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
+              BackgroundTransparency=1,
+            }):Play()
+          end)
         end
         -- 봉인 순간·추락 순간에만 한 번 더 강한 충격 컷을 넣는다.
         if scene.view=="seal" or scene.view=="fall" then
