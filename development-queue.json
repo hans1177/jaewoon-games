@@ -1370,10 +1370,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
-      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "canonicalState": "ROBLOX_INTERNAL_STUDIO_VALIDATION_PASSED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-03T15:53:55.786Z",
+      "updatedAt": "2026-11-03T15:55:46.983Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2169,7 +2169,7 @@
           "status": 200,
           "provider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
           "universeId": "10773436325",
-          "observedAt": "2026-11-03T15:35:33.932Z",
+          "observedAt": "2026-11-03T15:52:45.189Z",
           "endpoint": "https://apis.roblox.com/thumbnail-personalization-api/v1/universes/10773436325/thumbnails?maxPageSize=50",
           "imageMetadataAvailable": true,
           "thumbnailCount": 1,
@@ -2212,7 +2212,7 @@
           "universeId": "10773436325",
           "placeId": "108565970231899",
           "candidateVersionNumber": 133,
-          "observedAt": "2026-11-03T15:48:39.330Z",
+          "observedAt": "2026-11-03T15:55:47.410Z",
           "status": 403,
           "endpoint": "https://apis.roblox.com/server-management/v1/universes/10773436325/places/108565970231899/versions/133/game-servers",
           "requiredScope": "universe:read",
@@ -2238,8 +2238,8 @@
         "onlineServerStartedVerified": false,
         "internalStudioValidationOnly": true,
         "state": "ENGINE_TASK_ONLY_NO_ONLINE_SERVER",
-        "observedAt": "2026-11-03T15:38:36.135Z",
-        "workflowRunId": 41664867842,
+        "observedAt": "2026-11-03T15:55:46.983Z",
+        "workflowRunId": 41667619366,
         "authority": "roblox-open-cloud-exact-engine-diagnostic-no-server-claim"
       },
       "robloxStudioAssetRuntimeBindingPassed": true,
@@ -2253,7 +2253,7 @@
         "officialStudioMcp": true,
         "marker": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS",
         "authority": "roblox-studio-local-exact-build-asset-binding",
-        "verifiedAt": "2026-11-03T15:48:38.932Z"
+        "verifiedAt": "2026-11-03T15:55:46.983Z"
       },
       "robloxRuntimePassed": false,
       "robloxRuntimePassedAt": null,
@@ -2265,9 +2265,9 @@
       "robloxMobileControlUiPassed": false,
       "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": true,
-      "robloxIndependentQaPassedAt": "2026-11-03T15:48:38.932Z",
+      "robloxIndependentQaPassedAt": "2026-11-03T15:55:46.983Z",
       "robloxRegressionPassed": true,
-      "robloxRegressionPassedAt": "2026-11-03T15:48:38.932Z",
+      "robloxRegressionPassedAt": "2026-11-03T15:55:46.983Z",
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxF9ReleaseRegressionPassed": false,
@@ -2304,10 +2304,10 @@
           "officialStudioMcp": true,
           "marker": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS",
           "authority": "roblox-studio-local-exact-build-asset-binding",
-          "verifiedAt": "2026-11-03T15:48:38.932Z"
+          "verifiedAt": "2026-11-03T15:55:46.983Z"
         },
         "authority": "roblox-internal-studio-single-session-qa",
-        "verifiedAt": "2026-11-03T15:48:38.932Z"
+        "verifiedAt": "2026-11-03T15:55:46.983Z"
       },
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
@@ -2317,9 +2317,11 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_REGRESSION",
-      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_OBSERVATION",
-      "robloxFailureSignature": "ROBLOX_F9_EXTERNAL_RUNTIME_OBSERVATION_PENDING",
-      "routingBlockers": [],
+      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "routingBlockers": [
+        "roblox-final-review-pending"
+      ],
       "robloxQualityBuildUpRequired": false,
       "robloxQualityBuildUpSourceRevision": null,
       "robloxQualityFailureClass": null,
@@ -3695,9 +3697,9 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-11-03T15:48:38.932Z"
+        "verifiedAt": "2026-11-03T15:55:46.983Z"
       },
-      "robloxMultiplayerQaPassedAt": "2026-11-03T15:48:38.932Z",
+      "robloxMultiplayerQaPassedAt": "2026-11-03T15:55:46.983Z",
       "robloxRuntimeLastObservationAttemptAt": "2026-11-03T15:34:16.139Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
@@ -3846,7 +3848,7 @@
         "status": 200,
         "provider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
         "universeId": "10773436325",
-        "observedAt": "2026-11-03T15:35:33.932Z",
+        "observedAt": "2026-11-03T15:52:45.189Z",
         "endpoint": "https://apis.roblox.com/thumbnail-personalization-api/v1/universes/10773436325/thumbnails?maxPageSize=50",
         "imageMetadataAvailable": true,
         "thumbnailCount": 1,
@@ -4390,7 +4392,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-11-03T15:53:55.786Z",
+  "updatedAt": "2026-11-03T15:55:46.983Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
