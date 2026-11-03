@@ -516,18 +516,28 @@ jobs:
               throw Error('OWNER_FOREST_VILLAGE_MODEL_REGISTRATION_REQUIRED');
             const manifest=JSON.parse(fs.readFileSync('assets/shared/party/sources.json','utf8'));
             const priority=JSON.parse(fs.readFileSync('assets/external/simple-rpg/priority-v1/manifest.json','utf8'));
+            const kenney=JSON.parse(fs.readFileSync('assets/external/simple-rpg/manifest.json','utf8'));
             const villageIds=Object.entries(village.models).map(([role,row])=>{
               const completeHouse=row.sourceFile?.startsWith('assets/external/simple-rpg/priority-v1/')&&row.sourceFile.endsWith('.zip');
+              const completeWell=role==='villageWell'
+                &&row.sourceFile==='assets/external/simple-rpg/kenney_fantasy-town-kit_2.0.zip';
               const original=completeHouse
                 ?(priority.packs||[]).find(entry=>row.sourceFile==='assets/external/simple-rpg/priority-v1/'+entry.file)
-                :(manifest.records||[]).find(entry=>entry.file===row.sourceFile);
-              const originalDigest=completeHouse?original?.sha256:original?.sha256;
+                :completeWell
+                  ?(kenney.packs||[]).find(entry=>row.sourceFile==='assets/external/simple-rpg/'+entry.filename)
+                  :(manifest.records||[]).find(entry=>entry.file===row.sourceFile);
+              const originalDigest=original?.sha256;
               const provenanceValid=completeHouse
                 ?original?.licenseDeclared==='CC0-1.0'
                   &&original?.licenseSourceUrl==='https://opengameart.org/content/medieval-house-pack'
                   &&/^[a-f0-9]{64}$/.test(row.sha256)&&row.sha256!==row.sourceSha256
-                :original?.license==='CC0-1.0'&&row.sha256===row.sourceSha256
-                  &&row.licenseEvidence==='https://kenney.nl/assets/fantasy-town-kit';
+                :completeWell
+                  ?kenney.license==='CC0-1.0'
+                    &&original?.sourceUrl==='https://opengameart.org/content/fantasy-town-kit'
+                    &&/^[a-f0-9]{64}$/.test(row.sha256)&&row.sha256!==row.sourceSha256
+                    &&row.licenseEvidence==='https://kenney.nl/assets/fantasy-town-kit'
+                  :original?.license==='CC0-1.0'&&row.sha256===row.sourceSha256
+                    &&row.licenseEvidence==='https://kenney.nl/assets/fantasy-town-kit';
               if(!original||!provenanceValid||row.license!=='CC0-1.0'
                 ||originalDigest!==row.sourceSha256||row.licenseEvidence!==(completeHouse?original.licenseSourceUrl:'https://kenney.nl/assets/fantasy-town-kit')
                 ||!Number.isSafeInteger(row.assetId)||row.assetId<1
