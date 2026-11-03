@@ -482,7 +482,7 @@ test('cinematic v4 locks portrait frames, times silent title reveals and makes s
   assert.match(intro,/task\.delay\(titlePause,function\(\)\s+if not entranceOpen or token~=runToken or currentStoryScene~=index then return end/);
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
   assert.match(intro,/local showArtwork=validImage and not showFront/);
-  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.96,\.68\)/);
+  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.96,\.62\)/);
   assert.match(intro,/math\.clamp\(position\.X\.Scale\+slowX,0,maxX\)/);
   assert.match(intro,/math\.clamp\(position\.Y\.Scale\+slowY,0,maxY\)/);
   assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
