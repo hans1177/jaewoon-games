@@ -108,9 +108,10 @@ end
 -- [다크 판타지 숲] 원본 CC0 메시·텍스처를 보존하는 공통 저채도 팔레트.
 local meadowPalette={
   -- [위처풍] 축축한 이끼·흙·풍화석과 검은 수관의 색을 기존 지형과 원본 나무에 적용한다.
-  grass=Color3.fromRGB(67,83,65),leafyGrass=Color3.fromRGB(54,72,58),
-  ground=Color3.fromRGB(83,71,62),rock=Color3.fromRGB(88,91,88),
-  bark=Color3.fromRGB(73,61,52),leaves=Color3.fromRGB(60,83,67),
+  -- [모바일 화면 검증 보정] 검은 바닥 대신 축축한 초록 잔디·갈색 흙·회색 석재를 읽히게 한다.
+  grass=Color3.fromRGB(108,120,91),leafyGrass=Color3.fromRGB(83,107,79),
+  ground=Color3.fromRGB(119,100,83),rock=Color3.fromRGB(104,106,100),
+  bark=Color3.fromRGB(84,72,60),leaves=Color3.fromRGB(75,100,76),
   wolf=Color3.fromRGB(144,136,121),boar=Color3.fromRGB(126,101,83),
   deer=Color3.fromRGB(157,125,102),rabbit=Color3.fromRGB(181,176,157),
   bee=Color3.fromRGB(217,177,106),bat=Color3.fromRGB(125,129,138),
@@ -122,6 +123,8 @@ local meadowTerrain = workspace.Terrain
 -- 면적 약 4.98배. 시작/적/자원 좌표 및 전투 수치를 옮기지 않는다.
 local meadowWorldSize=696
 local function createStartingMeadow()
+  -- [실제 지면 표현] Roblox Terrain 기본 재질을 재사용한다.
+  -- Decoration 속성은 서버 Script에서 변경할 수 없으므로 건드리지 않는다.
   meadowTerrain:FillBlock(CFrame.new(0, -4, 0), Vector3.new(312, 12, 312), Enum.Material.Grass)
   -- [마을 평탄지] 시작 초원에 산봉우리처럼 튀어나오던 Ridge/Knoll 지형을 만들지 않는다.
   -- 기존 채집 광맥 3곳·지표 잔디·몬스터/의뢰 좌표는 보존한다.
@@ -141,25 +144,25 @@ local function createStartingMeadow()
   meadowTerrain:SetMaterialColor(Enum.Material.Ground,meadowPalette.ground)
   meadowTerrain:SetMaterialColor(Enum.Material.Rock,meadowPalette.rock)
   -- [초원 자연색] 원래 Terrain만 이용해 습지와 마른 강가 재질을 구별한다.
-  meadowTerrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(66,60,54))
-  meadowTerrain:SetMaterialColor(Enum.Material.Sand,Color3.fromRGB(114,104,89))
+  meadowTerrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(91,82,70))
+  meadowTerrain:SetMaterialColor(Enum.Material.Sand,Color3.fromRGB(147,131,105))
   -- Existing stone gathering sites are terrain outcrops, not fake rock parts.
   for _, pos in ipairs({Vector3.new(-35,2,31),Vector3.new(11,2,-39),Vector3.new(-7,2,43)}) do
     meadowTerrain:FillBall(pos-Vector3.new(0,4.5,0),5,Enum.Material.Rock)
   end
   -- [위처풍 자연광] 기본 캐릭터·모바일 시야를 보존하며 숲 그림자와 석재의 입체감을 강화한다.
   Lighting.ClockTime = 10.5
-  Lighting.Brightness = 1.55
-  Lighting.Ambient = Color3.fromRGB(77,87,89)
-  Lighting.OutdoorAmbient = Color3.fromRGB(119,132,124)
-  Lighting.EnvironmentDiffuseScale=.65
-  Lighting.EnvironmentSpecularScale=.09
+  Lighting.Brightness = 2
+  Lighting.Ambient = Color3.fromRGB(104,112,110)
+  Lighting.OutdoorAmbient = Color3.fromRGB(148,153,134)
+  Lighting.EnvironmentDiffuseScale=.82
+  Lighting.EnvironmentSpecularScale=.13
   Lighting.GlobalShadows=true
   Lighting.ShadowSoftness=.27
-  Lighting.ExposureCompensation=-.12
+  Lighting.ExposureCompensation=.07
   gameWorld:SetAttribute("StartingRegion", "MEADOW")
   gameWorld:SetAttribute("GroundVisualSource", "ROBLOX_NATIVE_TERRAIN")
-  gameWorld:SetAttribute("MeadowVisualStyle", "DARK_MEDIEVAL_FOREST_CC0_NATIVE_V5")
+  gameWorld:SetAttribute("MeadowVisualStyle", "DARK_MEDIEVAL_FOREST_CC0_NATIVE_V6")
   gameWorld:SetAttribute("MeadowRegionWidth",meadowWorldSize)
   gameWorld:SetAttribute("MeadowRegionAreaScale",math.floor((meadowWorldSize/312)^2*100)/100)
   gameWorld:SetAttribute("MeadowOuterRegionReady",false)
@@ -198,9 +201,9 @@ if not meadowColorGrade then
   meadowColorGrade.Parent=Lighting
 end
 meadowColorGrade.Enabled=true
-meadowColorGrade.Brightness=-.012
-meadowColorGrade.Contrast=.16
-meadowColorGrade.Saturation=-.18
+meadowColorGrade.Brightness=.025
+meadowColorGrade.Contrast=.12
+meadowColorGrade.Saturation=-.10
 local lastMeadowClimateTick=-1
 local lastMeadowWeather=""
 
@@ -217,9 +220,10 @@ local function updateMeadowClimate()
   local sun=math.min(morning,evening)
   local damp=weather=="STORM" and .72 or weather=="RAIN" and .83
     or weather=="FOG" and .9 or weather=="SNOW" and .87 or 1
-  local brightness=math.max(.88,(.79+1.03*sun)*damp)
-  local lightColor=Color3.fromRGB(68,79,89):Lerp(Color3.fromRGB(113,125,118),sun)
-  local airColor=Color3.fromRGB(84,98,109):Lerp(Color3.fromRGB(131,144,137),sun)
+  -- [날씨+시야] 흐린 아침도 어두운 검정 바닥으로 뭉개지지 않도록 환경광 보존.
+  local brightness=math.max(1.15,(1.08+1.18*sun)*damp)
+  local lightColor=Color3.fromRGB(93,102,110):Lerp(Color3.fromRGB(151,158,146),sun)
+  local airColor=Color3.fromRGB(115,128,130):Lerp(Color3.fromRGB(171,175,157),sun)
   if weather=="STORM" or weather=="RAIN" then
     lightColor=lightColor:Lerp(Color3.fromRGB(74,86,99),weather=="STORM" and .6 or .35)
     airColor=airColor:Lerp(Color3.fromRGB(104,115,125),weather=="STORM" and .68 or .4)
@@ -250,14 +254,14 @@ local function updateMeadowClimate()
     tint=tint:Lerp(Color3.fromRGB(173,195,210),weather=="STORM" and .38 or .2)
   end
   meadowColorGrade.TintColor=meadowColorGrade.TintColor:Lerp(tint,.12)
-  local desiredContrast=weather=="FOG" and .11 or .17
-  local desiredSaturation=weather=="FOG" and -.23 or -.18
+  local desiredContrast=weather=="FOG" and .08 or .12
+  local desiredSaturation=weather=="FOG" and -.16 or -.10
   meadowColorGrade.Contrast+=(desiredContrast-meadowColorGrade.Contrast)*.12
   meadowColorGrade.Saturation+=(desiredSaturation-meadowColorGrade.Saturation)*.12
   local cover=weather=="STORM" and .96 or weather=="RAIN" and .88
-    or weather=="FOG" and .80 or weather=="SNOW" and .82 or .69
+    or weather=="FOG" and .80 or weather=="SNOW" and .82 or .53
   local density=weather=="STORM" and .87 or weather=="RAIN" and .76
-    or weather=="FOG" and .69 or weather=="SNOW" and .70 or .57
+    or weather=="FOG" and .69 or weather=="SNOW" and .70 or .41
   local smooth=.12
   meadowClouds.Cover=meadowClouds.Cover+(cover-meadowClouds.Cover)*smooth
   meadowClouds.Density=meadowClouds.Density+(density-meadowClouds.Density)*smooth
@@ -497,6 +501,15 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
     end
     if underside==math.huge then clone:Destroy();error("MEADOW_VISIBLE_CC0_MESH_MISSING") end
     clone:PivotTo(clone:GetPivot()+Vector3.new(0,ground.Position.Y+.15-underside+(heightAboveGround or 0),0))
+    -- [완성형 집·모듈·소품 중심] AssetService 모델 래퍼의 피벗은 화면 메시의 가운데가 아닐 수 있다.
+    -- 마을 모델은 실제 배치 중심으로 WorldPivot을 맞춰 지붕·울타리·카트의 회전 시 이탈을 막는다.
+    -- 동물 리그·본·전투·채집 모델의 기존 회전축은 변경하지 않는다.
+    if id:sub(1,7)=="village" then
+      clone.PrimaryPart=nil
+      clone.WorldPivot=CFrame.new(location.X,
+        ground.Position.Y+.15+(heightAboveGround or 0)+(targetHeight or 5)*.5,location.Z)
+      clone:SetAttribute("MeadowVillageVisualPivotCentered",true)
+    end
     clone:SetAttribute("MeadowSurfaceY",ground.Position.Y)
     clone.Name="Meadow_"..id
     clone.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
@@ -826,8 +839,9 @@ local function createMeadowVillage()
         local x=a[1]+dx*t-dz/math.max(length,1)*bend
         local z=a[2]+dz*t+dx/math.max(length,1)*bend
         local radius=route.width*(.97+.055*math.sin(routeIndex*2.1+segment+t*5.6))
-        -- 지면 높이는 고정(+2): 파츠/길 덮개 없이 모바일 보행·NPC 의뢰 위치를 보존.
-        meadowTerrain:FillBall(Vector3.new(x,2.06-radius,z),radius,Enum.Material.Ground)
+        -- [보이는 흙길] 옛 도로가 잔디에 묻히지 않게 지면 위로 0.35만 올린다.
+        -- 실제 Terrain만 사용하며 모바일 보행과 NPC 의뢰 위치를 가리지 않는다.
+        meadowTerrain:FillBall(Vector3.new(x,2.06-radius+.35,z),radius,Enum.Material.Ground)
         if step%9==0 then task.wait() end
       end
       villageRoadSegments+=1
@@ -881,37 +895,37 @@ local function createMeadowVillage()
     -- 원래 등장한 건물 이름을 유지해서 기존 컨텐츠 참조에 영향이 없게 한다.
     local houses={
       {x=-95,z=-84,angle=.17,name="Village_HealerHouse",label="약초상 · 의원",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,chimney=true,wing=-1,wingZ=2.7,
-       timber=Color3.fromRGB(125,107,88),roof=Color3.fromRGB(82,91,78)},
+       timber=Color3.fromRGB(125,107,88),roof=Color3.fromRGB(134,113,82)},
       {x=116,z=-100,angle=math.pi-.21,name="Village_Guesthouse",label="마을 여관",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseA",masonry=true,chimney=true,archway=true,balcony=true,
-       timber=Color3.fromRGB(151,117,88),roof=Color3.fromRGB(96,72,66)},
+       timber=Color3.fromRGB(151,117,88),roof=Color3.fromRGB(123,91,72)},
       {x=-121,z=-167,angle=.21,name="Village_Workshop",label="대장간 · 공방",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=5.4,
-       timber=Color3.fromRGB(106,94,83),roof=Color3.fromRGB(73,79,79)},
+       timber=Color3.fromRGB(106,94,83),roof=Color3.fromRGB(116,105,88)},
       {x=129,z=-154,angle=math.pi+.14,name="Village_WardenHall",label="마을 회관",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseB",masonry=true,chimney=true,archway=true,balcony=true,wing=-1,wingZ=5.4,
-       timber=Color3.fromRGB(146,119,91),roof=Color3.fromRGB(92,70,59)},
+       timber=Color3.fromRGB(146,119,91),roof=Color3.fromRGB(121,92,77)},
       {x=-108,z=-235,angle=-.18,name="Village_ResidentHouseWest",label="서쪽 주민집",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
-       timber=Color3.fromRGB(153,132,107),roof=Color3.fromRGB(105,89,74)},
+       timber=Color3.fromRGB(153,132,107),roof=Color3.fromRGB(139,112,82)},
       {x=107,z=-222,angle=math.pi+.23,name="Village_ResidentHouseEast",label="동쪽 주민집",scale=.96,length=2,storeys=1,roofPitch=1.09,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
-       timber=Color3.fromRGB(116,102,87),roof=Color3.fromRGB(92,104,92)},
+       timber=Color3.fromRGB(116,102,87),roof=Color3.fromRGB(123,118,95)},
       {x=-197,z=-80,angle=-.14,name="Village_WoodcutterHome",label="벌목꾼의 집",scale=.86,length=2,storeys=1,roofPitch=.96,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=2.7,
-       timber=Color3.fromRGB(119,103,80),roof=Color3.fromRGB(91,82,67)},
+       timber=Color3.fromRGB(119,103,80),roof=Color3.fromRGB(131,108,80)},
       {x=205,z=-112,angle=math.pi-.33,name="Village_WoodsmanHome",label="숲지기 오두막",scale=.91,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,leanTo=true,
-       timber=Color3.fromRGB(111,108,91),roof=Color3.fromRGB(85,95,76)},
+       timber=Color3.fromRGB(111,108,91),roof=Color3.fromRGB(122,110,80)},
       {x=-208,z=-170,angle=.24,name="Village_CarpenterHome",label="목수 작업집",scale=.94,length=3,storeys=1,roofPitch=.91,doorZ=0,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=-5.4,
-       timber=Color3.fromRGB(134,109,88),roof=Color3.fromRGB(97,86,70)},
+       timber=Color3.fromRGB(134,109,88),roof=Color3.fromRGB(138,111,83)},
       {x=203,z=-176,angle=math.pi-.25,name="Village_BakerHome",label="빵 굽는 집",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,leanTo=true,
-       timber=Color3.fromRGB(162,126,96),roof=Color3.fromRGB(109,88,75)},
+       timber=Color3.fromRGB(162,126,96),roof=Color3.fromRGB(142,102,80)},
       {x=-190,z=-258,angle=-.11,name="Village_Granary",label="곡물 창고",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,prefab="villageHouseC",masonry=true,flatRoof=true,leanTo=true,
-       timber=Color3.fromRGB(129,107,81),roof=Color3.fromRGB(98,91,68)},
+       timber=Color3.fromRGB(129,107,81),roof=Color3.fromRGB(147,118,88)},
       {x=196,z=-259,angle=math.pi+.19,name="Village_Farmstead",label="농가 · 마구간",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,prefab="villageHouseD",masonry=true,flatRoof=true,wing=-1,wingZ=5.4,
-       timber=Color3.fromRGB(117,98,75),roof=Color3.fromRGB(91,84,74)},
+       timber=Color3.fromRGB(117,98,75),roof=Color3.fromRGB(133,110,87)},
       {x=-109,z=-301,angle=.23,name="Village_SouthCottageWest",label="남쪽 농가",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
-       timber=Color3.fromRGB(148,126,102),roof=Color3.fromRGB(89,86,77)},
+       timber=Color3.fromRGB(148,126,102),roof=Color3.fromRGB(137,110,83)},
       {x=115,z=-321,angle=math.pi-.19,name="Village_SouthCottageEast",label="길가 주민집",scale=.92,length=2,storeys=1,roofPitch=1.02,doorZ=2.7,sideWindow=false,porch=1,lantern=false,flatRoof=true,leanTo=true,
-       timber=Color3.fromRGB(112,98,82),roof=Color3.fromRGB(91,77,65)},
+       timber=Color3.fromRGB(112,98,82),roof=Color3.fromRGB(127,101,78)},
       {x=-233,z=-314,angle=-.11,name="Village_OrchardHome",label="과수원 농가",scale=.84,length=2,storeys=1,roofPitch=.87,doorZ=2.7,sideWindow=true,porch=0,lantern=false,chimney=true,leanTo=true,
-       timber=Color3.fromRGB(133,121,98),roof=Color3.fromRGB(100,90,69)},
+       timber=Color3.fromRGB(133,121,98),roof=Color3.fromRGB(139,120,83)},
       {x=222,z=-325,angle=math.pi+.29,name="Village_EastFarmhouse",label="동쪽 농가",scale=.94,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
-       timber=Color3.fromRGB(123,102,87),roof=Color3.fromRGB(90,101,88)},
+       timber=Color3.fromRGB(123,102,87),roof=Color3.fromRGB(125,115,91)},
     }
     for houseIndex,house in ipairs(houses) do
       -- [서로 다른 완성형 건물] 기존 여관·회관·창고·농가를 각각 별개 중세 모델로 구성.
@@ -978,8 +992,9 @@ local function createMeadowVillage()
               mesh.MaterialVariant=""
               mesh.Reflectance=0
               if roof then
+                -- [위쳐풍 지붕] 원본 경사 메시 그대로, 민가에는 풍화 목재/여관에는 석재를 적용.
                 mesh.Color=house.roof
-                mesh.Material=Enum.Material.Slate
+                mesh.Material=house.masonry and Enum.Material.Slate or Enum.Material.WoodPlanks
               elseif glass then
                 mesh.Color=Color3.fromRGB(70,91,94)
                 mesh.Material=Enum.Material.Glass
@@ -1156,8 +1171,8 @@ local function createMeadowVillage()
                 mesh.MaterialVariant=""
               end
               if piece.asset=="villageRoof" or piece.asset=="villageRoofEnd" or piece.asset=="villageFlatRoof" then
-                mesh.Color=house.roof:Lerp(Color3.fromRGB(73,76,71),(partIndex%3)*.06)
-                mesh.Material=Enum.Material.Slate
+                mesh.Color=house.roof:Lerp(Color3.fromRGB(87,83,73),(partIndex%3)*.055)
+                mesh.Material=house.masonry and Enum.Material.Slate or Enum.Material.WoodPlanks
               elseif piece.asset=="villageStoneWall" or piece.asset=="villagePillar" or piece.asset=="villageArch" then
                 mesh.Color=Color3.fromRGB(137,133,117)
                 mesh.Material=Enum.Material.Slate
@@ -1218,6 +1233,75 @@ local function createMeadowVillage()
       end
       task.wait(.04)
     end
+    -- [마을 숲 바닥·실물 수목] 평평한 검은 초원을 뒤덮던 단색 지면을
+    -- 기존 Roblox Terrain 잔디/낙엽의 낮은 얼룩과 승인된 CC0 굽은 나무로 채운다.
+    -- 건물 16채, 우물/게시판, 네 NPC, 굽은 길 16개와 상호작용 반경은 비운다.
+    local villageGroundPatches=0
+    local villageInteriorTrees=0
+    for index=1,540 do
+      local x=-265+((index*173)%529)+math.sin(index*.73)*3.1
+      local z=-341+((index*113)%285)+math.cos(index*1.31)*3.1
+      local position=Vector2.new(x,z)
+      local blocked=math.abs(x)>265 or z < -345 or z > -52
+        or (position-Vector2.new(0,-146)).Magnitude<25
+        or (position-Vector2.new(0,-101)).Magnitude<19
+        or (position-Vector2.new(-68,-122)).Magnitude<20
+        or (position-Vector2.new(69,-129)).Magnitude<20
+        or (position-Vector2.new(-2,-188)).Magnitude<19
+      if not blocked then
+        for _,house in ipairs(houses) do
+          if (position-Vector2.new(house.x,house.z)).Magnitude<30*house.scale then
+            blocked=true
+            break
+          end
+        end
+      end
+      if not blocked then
+        for _,route in ipairs(villageRoadRoutes) do
+          for segment=1,#route.points-1 do
+            local a,b=route.points[segment],route.points[segment+1]
+            local first=Vector2.new(a[1],a[2])
+            local axis=Vector2.new(b[1]-a[1],b[2]-a[2])
+            local t=math.clamp((position-first):Dot(axis)/math.max(1,axis:Dot(axis)),0,1)
+            if (position-(first+axis*t)).Magnitude<route.width+6 then
+              blocked=true
+              break
+            end
+          end
+          if blocked then break end
+        end
+      end
+      if not blocked and villageDetailReady and index%13==0 then
+        -- 실제 등록된 Kenney 구부러진 나무와 높은 나무만 사용한다. 임시 구체·원뿔 없음.
+        local treeType=index%3==0 and "villageTallTree" or "villageCrookedTree"
+        local height=23+((index*7)%5)*1.8
+        local tree=worldAsset(treeType,Vector3.new(x,3,z),height)
+        if tree then
+          tree.Name="Meadow_Village_InteriorTree_"..index
+          tree:SetAttribute("MeadowVillageScenery",true)
+          tree:SetAttribute("VillageTreeSource","REGISTERED_CC0")
+          tree:PivotTo(tree:GetPivot()*CFrame.Angles(0,math.rad((index*73)%360),0))
+          for _,mesh in ipairs(tree:GetDescendants()) do
+            if mesh:IsA("MeshPart") then
+              mesh.CanCollide=false
+              mesh.CanQuery=false
+              mesh.CastShadow=true
+            end
+          end
+          villageInteriorTrees+=1
+        end
+      elseif not blocked then
+        -- 반경 3~5 스터드, 지표 높이 변화 0.5 이내: 새 구조물/충돌 장식 생성 없음.
+        local radius=3+((index*11)%5)*.55
+        meadowTerrain:FillBall(Vector3.new(x,2.06-radius+.43,z),radius,
+          index%7==0 and Enum.Material.Ground or
+          index%5==0 and Enum.Material.Grass or Enum.Material.LeafyGrass)
+        villageGroundPatches+=1
+      end
+      if index%16==0 then task.wait() end
+    end
+    gameWorld:SetAttribute("MeadowVillageGroundPatchCount",villageGroundPatches)
+    gameWorld:SetAttribute("MeadowVillageInteriorTreeCount",villageInteriorTrees)
     -- [시장·생활 마당] 식탁처럼 보이던 가판대를 늘리지 않고 두 장터만 유지한다.
     -- 기존 CC0 카트·울타리·등불을 농가와 골목에 비대칭 분산 배치한다.
     local furnishings={
@@ -1308,11 +1392,22 @@ local function createMeadowVillage()
       {243,-59},{249,-121},{252,-238},{246,-281},
       {-119,-340},{-101,-344},{115,-342},{141,-338},
     }) do
-      local tree=worldAsset("tree",Vector3.new(pos[1],3,pos[2]),
-        16+((index*7)%5)*1.5)
+      -- [경계 수목] 원뿔처럼 반복되는 한 가지 나무 대신 기존 등록 원본 2종을 번갈아 사용.
+      local treeType=villageDetailReady
+        and (index%3==0 and "villageTallTree" or "villageCrookedTree") or "tree"
+      local tree=worldAsset(treeType,Vector3.new(pos[1],3,pos[2]),
+        23+((index*7)%5)*2)
       if tree then
         tree.Name="Meadow_Village_BoundaryTree_"..index
         tree:SetAttribute("MeadowVillageScenery",true)
+        tree:PivotTo(tree:GetPivot()*CFrame.Angles(0,math.rad((index*91)%360),0))
+        for _,mesh in ipairs(tree:GetDescendants()) do
+          if mesh:IsA("MeshPart") then
+            mesh.CanCollide=false
+            mesh.CanQuery=false
+            mesh.CastShadow=true
+          end
+        end
       end
       if index%3==0 then task.wait(.05) end
     end
