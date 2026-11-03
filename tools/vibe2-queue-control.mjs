@@ -1568,7 +1568,27 @@ export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVari
 }
 
 export function runQueueCommand(args = {}) {
+  const command = clean(args.command).toLowerCase();
   const file = queueFileFrom(args);
+  // [예약 슬롯 메모리 병목] 완료된 워커 산출물이 0개면 큐 전체를 JSON.parse하지 않는다.
+  // 기존 관찰 인덱스의 실제 증거를 먼저 검증한다. 미배포/미완료 슬롯은 일절 해제하지 않는다.
+  // 양수 산출물 또는 누락된 큐는 아래 기존 정식 검증/복구 경로를 그대로 사용한다.
+  if(command==='release-completed-worker-artifacts'&&fs.existsSync(file)&&fs.statSync(file).size>0){
+    const input=clean(args.input);
+    if(!input)throw new Error('--input artifact index json required');
+    const payload=readJson(input,null);
+    const runArtifacts=Array.isArray(payload)?payload:Array.isArray(payload?.runs)?payload.runs:null;
+    if(!runArtifacts)throw new Error('VIBE2_WORKER_ARTIFACT_INDEX_INVALID');
+    const hasCompletedWorkerResult=runArtifacts.some(row=>{
+      const runId=clean(row?.runId||row?.id);
+      const names=Array.isArray(row?.artifactNames)?row.artifactNames:Array.isArray(row?.artifacts)?row.artifacts:[];
+      return Boolean(runId)&&names.some(name=>clean(name).startsWith('vibe2-result-'));
+    });
+    if(!hasCompletedWorkerResult)return{
+      command,updated:false,released:0,releasedTaskIds:[],
+      queueStateRecovered:false,summary:{nextTaskId:'UNCHANGED_UNREAD'}
+    };
+  }
   const queueFileMissing=!fs.existsSync(file);
   const queueFileBlank=!queueFileMissing&&!clean(fs.readFileSync(file,'utf8'));
   const rawQueue = queueFileMissing || queueFileBlank ? {tasks:[]} : readVibeQueueStorage(file);
@@ -1592,7 +1612,6 @@ export function runQueueCommand(args = {}) {
   const queueStateRecovered=queueFileMissing||queueFileBlank;
   let queue = createVibeContinuousQueue(queueStateRecovered?{...rawQueue,maxConcurrentTasks:EXTERNAL_MATRIX_BATCH_MAX}:rawQueue);
   if(queueStateRecovered)writeJson(file,queue);
-  const command = clean(args.command).toLowerCase();
   const reservationPolicy=readJson(CANONICAL_RESERVATION_POLICY);
   const webGameFlowTarget=reservationPolicy?.developmentSpeedExecution?.webGameFlow?.enabled===true?reservationPolicy.developmentSpeedExecution.webGameFlow.targetConcurrentGames:0;
   const transientLockRecovery=['reserve','reserve-batch','neuron-complete'].includes(command)?recoverTransientWorkLockBlocks(queue):{recovered:0,queue};
