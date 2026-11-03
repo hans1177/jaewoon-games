@@ -176,7 +176,12 @@ test('Forest original village models register before private publishing without 
   assert.match(workflow,/node tools\/baeksu-war-upload-meshes\.mjs \/tmp\/forest-village-assets \/tmp\/forest-village-receipt\.json --game-id=fantasy-survival/);
   assert.match(workflow,/gh pr create --base main --head asset\/fantasy-village-originals/);
   assert.match(workflow,/FOREST_VILLAGE_REGISTRATION_AWAIT_MAIN_MERGE/);
-  assert.match(workflow,/exit 1\s+\n\s*- name: Grant original Forest models/);
+  assert.ok(workflow.indexOf('Register 12 original prologue scenes')<workflow.indexOf('Register approved Forest village originals'),
+    '23 original images must register independently before the unrelated village-well source gate');
+  assert.match(workflow,/FOREST_INTRO_AUTH_ROUTE/);
+  assert.match(workflow,/FOREST_INTRO_BINDING_PR_CREATED=YES/);
+  assert.match(workflow,/FOREST_INTRO_SCENE_IDS_MAIN_BIND_REQUIRED/);
+  assert.match(workflow,/FOREST_VILLAGE_REGISTRATION_AWAIT_MAIN_MERGE[\s\S]*?exit 1/);
   assert.match(source,/FANTASY_NATIVE_MODEL_REUSED/);
   assert.match(source,/registrationVerified:Object\.keys\(village\)\.length===Object\.keys\(villageRows\)\.length/);
   assert.match(workflow,/OWNER_FOREST_VILLAGE_MODEL_REGISTRATION_REQUIRED/);
