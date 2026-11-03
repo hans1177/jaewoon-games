@@ -269,8 +269,9 @@ test('game-primary keeps adaptive telemetry while reserving to fixed repeat-deve
 test('auxiliary reserve-batch is not capped by game-primary adaptive control',()=>{
   const files=tempFiles();
   try{
+    // [유효한 게임] 영구 삭제된 심야 대탈출 대신 배포 중인 마력숲으로 24개 독립 내부 자산을 검증한다.
     const tasks=Array.from({length:24},(_,i)=>({
-      id:`asset-task-${i}`,gameId:'horror-escape-room',target:'roblox',department:'graphics',type:'implementation',
+      id:`asset-task-${i}`,gameId:'fantasy-survival',target:'roblox',department:'graphics',type:'implementation',
       assetProductionLane:true,goal:'internal motion repair',status:'queued',sourceRoot:`assets/roblox/world-ghosts/motions/fixture-${i}`,
       responsibleFiles:['init.luau'],evidence:['asset-production-parallel:v1'],
       motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:`roblox-world-ghost-fixture-${i}`,clipId:'walk',sourcePath:'init.luau',objectCount:1,motionCount:1}
