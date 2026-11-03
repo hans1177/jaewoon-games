@@ -2318,7 +2318,9 @@ do
     -- [글자 영역 분리] 제목은 상단 레터박스, 대사는 하단 레터박스에 둔다.
     -- [세로 화면] 제목을 건너뛰기 버튼 아래에 두고 컷 원화는 검은 띠·자막 밖에 둔다.
     regionIntro.Position=UDim2.fromScale(.5,portrait and .105 or .028)
-    regionIntro.Size=UDim2.fromScale(portrait and .76 or .66,portrait and .065 or .065)
+    -- [가로 짧은 화면] 우측 건너뛰기 버튼 128px과 겹치지 않도록 제목 폭을 제한한다.
+    local landscapeTitleWidth=math.min(.66,math.max(.35,1-2*(128/size.X+.012)))
+    regionIntro.Size=UDim2.fromScale(portrait and .76 or landscapeTitleWidth,.065)
     storyArtwork.Position=UDim2.fromScale(.02,portrait and .18 or .16)
     storyArtwork.Size=UDim2.fromScale(.96,.62)
     storyForeground.Position=UDim2.fromScale(.02,portrait and .18 or .16)
