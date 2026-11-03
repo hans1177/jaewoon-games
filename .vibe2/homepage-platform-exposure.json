@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-11-03T15:35:51.115Z",
+  "updatedAt": "2026-11-03T15:41:43.606Z",
   "games": [
     {
       "gameId": "deep-diver",
@@ -315,10 +315,10 @@
             ],
             "sourceRevision": "1e49963b06493c530b425a99e1da0c9756098da9",
             "artifactIdentity": "sha256:5913f595d96a358e6db9f62231b2ad4e29b6a9a6aefa478b9329a4e02414c1de",
-            "verifiedAt": "2026-11-03T15:21:42.322Z"
+            "verifiedAt": "2026-11-03T15:35:59.066Z"
           },
           "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
+          "internalPlaytestPassed": true,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
           "publicReleaseReady": false,
@@ -328,7 +328,7 @@
               "technical": false,
               "realServerBoot": true,
               "exactRuntime": false,
-              "actualVibePlay": false,
+              "actualVibePlay": true,
               "vibeScenarioCoverage": false,
               "noBlockingTickets": false,
               "gameCompletion": false,
@@ -345,7 +345,6 @@
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
-              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
