@@ -34,11 +34,27 @@ import {
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
 const helper=fs.readFileSync('tools/company-development-roblox-studio-local-play.mjs','utf8');
-const horrorServer=fs.readFileSync('roblox-games/horror-escape-room/server/Game.server.luau','utf8');
-const cozyServer=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
+const fantasyServer=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
 
 const source='a'.repeat(40);
 const artifact='sha256:'+'b'.repeat(64);
+
+// [공통 역할 계약] 삭제한 게임과 무관한 판정 함수 전용 회귀 데이터.
+const roleRoundContract=Object.freeze({
+  required:true,entryButtonTexts:['참가','입장'],selectionButtonText:'역할 선택',
+  startButtonText:'게임 시작',primaryActionButtonText:'대시',afterStartWaitMs:4000,
+  requiredScenarios:[
+    'role-selection-interaction','round-running','logical-population-eight','hud-visible',
+    'action-ui-visible','design-runtime-binding','interaction-surface-present',
+    'world-geometry-present','primary-action-input','primary-action-effect','visual-capture-sane'
+  ],
+  expectations:{
+    acceptedRoundStates:['RUNNING'],acceptedRoles:['SURVIVOR'],logicalPopulation:8,
+    screenGuiName:'TestHUD',requiredGuiObjects:['TestHUD','TestActions'],
+    minimumVisibleButtons:2,minimumPromptCount:1,minimumArenaParts:5,
+    workspaceAttributeEquals:{DesignCodeSync:'ROUND_ROLE_TEST_V1'}
+  }
+});
 
 test('official Windows Studio MCP launcher runs from its signed install directory',()=>{
   const root=path.win32.join('C:\\','Users','studio-runner','AppData','Local','Roblox');
@@ -1089,15 +1105,14 @@ test('Studio MCP retries only infrastructure failures and skips restart after a 
   assert.doesNotMatch(studioMcpBlock,/\$success = \$false/);
 });
 
-test('local exact Studio boot does not abort before remotes when DataStore is unavailable',()=>{
-  for(const source of [horrorServer,cozyServer]){
-    assert.doesNotMatch(source,/local store=DSS:GetDataStore/);
-    assert.doesNotMatch(source,/local qaCaptureStore=DSS:GetDataStore/);
-    assert.doesNotMatch(source,/local foundationStore=DSS:GetDataStore/);
-    assert.match(source,/local store\s*\n\s*pcall\(function\(\)store=DSS:GetDataStore/);
-    assert.match(source,/local qaCaptureStore\s*\n\s*pcall\(function\(\)qaCaptureStore=DSS:GetDataStore/);
-    assert.match(source,/local foundationStore\s*\n\s*pcall\(function\(\)foundationStore=DSS:GetDataStore/);
-  }
+test('existing fantasy Studio boot tolerates unavailable DataStore before remote setup',()=>{
+  const source=fantasyServer.slice(0,1600);
+  assert.match(source,/local store = nil/);
+  assert.doesNotMatch(source,/local store\s*=\s*DataStoreService:GetDataStore/);
+  assert.match(source,/local storeOk, storeResult = pcall\(function\(\)/);
+  assert.match(source,/DataStoreService:GetDataStore\("fantasy-survival-development-v1"\)/);
+  assert.match(source,/if storeOk then store = storeResult end/);
+  assert.match(source,/local remote = ReplicatedStorage:FindFirstChild\(Config.RemoteName\)/);
 });
 
 test('Studio MCP opens the exact local Place as the single Studio before MCP and preserves exact-first retries',()=>{
@@ -1425,11 +1440,11 @@ test('Studio MCP setting diagnostic CLI is part of the helper contract',()=>{
 
 
 test('declared Studio actual-play contract requires core progression UI action effect visual sanity and design binding',()=>{
-  const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
+  const contract=roleRoundContract;
   assert.equal(contract.required,true);
-  assert.deepEqual(contract.entryButtonTexts,['저택 들어가기','출정']);
-  assert.equal(contract.selectionButtonText,'인간');
-  assert.equal(contract.startButtonText,'혼자 바로 시작');
+  assert.deepEqual(contract.entryButtonTexts,['참가','입장']);
+  assert.equal(contract.selectionButtonText,'역할 선택');
+  assert.equal(contract.startButtonText,'게임 시작');
   assert.equal(contract.primaryActionButtonText,'대시');
   assert.ok(contract.afterStartWaitMs>=4000);
   for(const id of ['role-selection-interaction','round-running','logical-population-eight','hud-visible','action-ui-visible','design-runtime-binding','interaction-surface-present','world-geometry-present','primary-action-input','primary-action-effect','visual-capture-sane'])assert.ok(contract.requiredScenarios.includes(id),id);
@@ -1443,9 +1458,9 @@ test('declared Studio actual-play contract requires core progression UI action e
     clientProbe:{
       player:{characterPresent:true,humanoidPresent:true,rootPresent:true,roundState:'RUNNING',role:'MONSTER',rootX:7,rootY:3,rootZ:0,velocityX:0,velocityY:0,velocityZ:0,humanCount:3,monsterCount:5},
       camera:{present:true},
-      ui:{screenGuiPresent:true,visibleButtons:2,required:{MidnightTopHUD:{present:true,visible:true,offscreen:false},RoundActions:{present:true,visible:true,offscreen:false}}},
+      ui:{screenGuiPresent:true,visibleButtons:2,required:{TestHUD:{present:true,visible:true,offscreen:false},TestActions:{present:true,visible:true,offscreen:false}}},
       world:{arenaPresent:true,arenaPartCount:80,proximityPromptCount:5},
-      workspace:{MapReady:true,ActivePopulation:8,HumanCount:3,MonsterCount:5,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'PRIMARY_THREE_FINAL_4V4_INFECTION_V1'},
+      workspace:{MapReady:true,ActivePopulation:8,HumanCount:3,MonsterCount:5,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'ROUND_ROLE_TEST_V1'},
       lighting:{brightness:1.8}
     },
     serverProbe:{workspace:{MapReady:true,ActivePopulation:8,HumanCount:3,MonsterCount:5}},
@@ -1490,7 +1505,7 @@ test('official Studio result preserves primary action feedback evidence through 
 });
 
 test('movement alone cannot pass a declared Studio actual-play scenario contract',()=>{
-  const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
+  const contract=roleRoundContract;
   const result=evaluateStudioActualPlayContract({
     contract,
     initialClientProbe:{player:{roundState:'INTERMISSION'},workspace:{ActivePopulation:0}},
@@ -1498,9 +1513,9 @@ test('movement alone cannot pass a declared Studio actual-play scenario contract
     clientProbe:{
       player:{characterPresent:true,humanoidPresent:true,rootPresent:true,roundState:'INTERMISSION',role:'WAITING',rootX:4,rootY:3,rootZ:0},
       camera:{present:true},
-      ui:{screenGuiPresent:true,visibleButtons:2,required:{MidnightTopHUD:{present:true,visible:true,offscreen:false},RoundActions:{present:false,visible:false,offscreen:false}}},
+      ui:{screenGuiPresent:true,visibleButtons:2,required:{TestHUD:{present:true,visible:true,offscreen:false},TestActions:{present:false,visible:false,offscreen:false}}},
       world:{arenaPresent:true,arenaPartCount:80,proximityPromptCount:5},
-      workspace:{MapReady:true,ActivePopulation:0,HumanCount:0,MonsterCount:0,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'PRIMARY_THREE_FINAL_4V4_INFECTION_V1'},
+      workspace:{MapReady:true,ActivePopulation:0,HumanCount:0,MonsterCount:0,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'ROUND_ROLE_TEST_V1'},
       lighting:{brightness:1.8}
     },
     serverProbe:{workspace:{MapReady:true,ActivePopulation:0,HumanCount:0,MonsterCount:0}},
@@ -1575,7 +1590,7 @@ test('declared Studio scenario probes the primary action before generic movement
 
 
 test('role preference intent survives later infection in scenario evaluation',()=>{
-  const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
+  const contract=roleRoundContract;
   const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
   const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
   const result=evaluateStudioActualPlayContract({
@@ -1586,9 +1601,9 @@ test('role preference intent survives later infection in scenario evaluation',()
     clientProbe:{
       player:{characterPresent:true,humanoidPresent:true,rootPresent:true,roundState:'RUNNING',role:'MONSTER',humanCount:4,monsterCount:4},
       camera:{present:true},
-      ui:{screenGuiPresent:true,visibleButtons:2,required:{MidnightTopHUD:{present:true,visible:true,offscreen:false},RoundActions:{present:true,visible:true,offscreen:false}}},
+      ui:{screenGuiPresent:true,visibleButtons:2,required:{TestHUD:{present:true,visible:true,offscreen:false},TestActions:{present:true,visible:true,offscreen:false}}},
       world:{arenaPresent:true,arenaPartCount:80,proximityPromptCount:5},
-      workspace:{MapReady:true,ActivePopulation:8,HumanCount:4,MonsterCount:4,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'PRIMARY_THREE_FINAL_4V4_INFECTION_V1'},
+      workspace:{MapReady:true,ActivePopulation:8,HumanCount:4,MonsterCount:4,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'ROUND_ROLE_TEST_V1'},
       lighting:{brightness:1.8}
     },
     serverProbe:{workspace:{MapReady:true,ActivePopulation:8,HumanCount:4,MonsterCount:4}},
