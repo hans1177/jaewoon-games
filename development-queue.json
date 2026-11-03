@@ -1366,7 +1366,7 @@
       "currentStep": "REPAIR_REQUIRED",
       "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-03T14:32:42.792Z",
+      "updatedAt": "2026-11-03T14:34:14.612Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -3837,25 +3837,21 @@
       "robloxRuntimeLastObservationAttemptAt": "2026-11-02T07:46:04.139Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
-        "sessionId": "41649855222:fantasy-survival:41605371516:132",
-        "workflowRunId": 41649855222,
+        "sessionId": "41654241360:fantasy-survival:41605371516:132",
+        "workflowRunId": 41654241360,
         "workflowRunAttempt": 1,
-        "controlRevision": "d6871cc78ae3c9dd10aa6ffc19581921fa0b8b26",
+        "controlRevision": "82cd357e3927416ebe6b9b8bc00ccff92d6f83bc",
         "gameId": "fantasy-survival",
         "sourceRevision": "6aa8eb271b8c77491e10d2286b9c102eef8928c7",
         "artifactIdentity": "sha256:317849e403e11fc762c82b621434a2748d9268d5a4f0ef013edad92c1ca5275b",
         "artifactRunId": 41605371516,
         "candidateVersionNumber": 132,
-        "status": "COMPLETED_PRODUCT_FAILURE",
-        "queuedAt": "2026-11-03T14:05:54.105Z",
+        "status": "QUEUED_FOR_STUDIO",
+        "queuedAt": "2026-11-03T14:34:14.612Z",
         "interruptionRetryCount": 0,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true,
-        "completedAt": "2026-11-03T14:12:12.261Z",
-        "resultPass": false,
-        "infrastructureFailure": false,
-        "currentSourceArtifactBinding": true
+        "companyRuntimeAuthoritative": true
       },
       "robloxFirstFrameGroundingEvidence": {
         "observed": true,
@@ -4677,7 +4673,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-11-03T14:32:42.792Z",
+  "updatedAt": "2026-11-03T14:34:14.612Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
