@@ -216,61 +216,44 @@ test('backlog preserves existing game-primary reservation and confines focused r
 });
 
 
-test('the owner three-game focus selects exactly Simple RPG Roblox and two existing Web sources',()=>{
+test('current owner exact focus keeps one approved Web game active and two slots unassigned',()=>{
   const repoRoot=process.cwd();
   const focus=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'))
     .developmentLifecycleMachine.focusedDevelopmentCaretakers;
-  assert.deepEqual(focus.ownerFocusedGameIds,['simple-rpg','insect-survival','cozy-island']);
-  assert.deepEqual(focus.ownerFocusedGamePlatforms,{
-    'simple-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'
-  });
+  // [중앙정책 검증] 목표 3개와 실제 지정된 1개를 구분한다. 삭제된 게임은 자동 복원하지 않는다.
+  assert.equal(focus.enabled,true);
+  assert.equal(focus.targetFocusedGames,3);
+  assert.equal(focus.maxFocusedGames,3);
+  assert.deepEqual(focus.ownerFocusedGameIds,['insect-survival']);
+  assert.deepEqual(focus.ownerFocusedGamePlatforms,{'insect-survival':'WEB'});
+  assert.equal(focus.targetFocusedGames-focus.ownerFocusedGameIds.length,2);
+  assert.equal(focus.focusScope,'OWNER_EXACT_GAME_AND_PLATFORM_ONLY');
+  assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,true);
   const liveCatalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
-  // [최신 오너 삭제 우선] 예전 3종 집중개발 정책은 삭제된 게임을 복원할 수 없다.
-  assert.equal(liveCatalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),true,
-    'latest owner deletion must override earlier owner focus');
+  for(const removedId of ['simple-rpg','cozy-island','horror-escape-room']){
+    assert.ok(liveCatalog.permanentRemovalPolicy?.ids?.includes(removedId),'owner-deleted game may not return: '+removedId);
+  }
   const realProjects=collectProjects({},liveCatalog,repoRoot,{items:[]});
-  assert.equal(realProjects.some(project=>project.gameId==='simple-rpg'),false,
-    'deleted Simple RPG cannot reenter the production queue');
-  for(const protectedId of ['seed-roblox-battleground-fight-welcome-to-bloxburg','seed-roblox-obby-party-minigam-tower-of-hell'])
-    assert.ok(liveCatalog.permanentRemovalPolicy?.ids?.includes(protectedId),
-      'other owner permanent removals must remain protected');
-  // 집중 대상 지정은 설계 승격 권한이 아니다. 현재 카탈로그의 설계 재검토 상태를
-  // 강제로 개발 상태로 취급하면 안 되며, 실제 개발 배정은 아래 승인 상태 fixture로 검증한다.
+  assert.ok(realProjects.every(project=>!liveCatalog.permanentRemovalPolicy?.ids?.includes(project.gameId)),
+    'no deleted project may reappear through focused planning');
   const insect=liveCatalog.games.find(game=>game.id==='insect-survival');
-  assert.ok(insect,'the focused game must remain registered');
+  assert.ok(insect,'current focused game must remain in the catalog');
   assert.equal(focusedCaretakerProject({gameId:insect.id,engine:'web'},repoRoot),true);
+  assert.equal(focusedCaretakerProject({gameId:insect.id,engine:'roblox'},repoRoot),false);
   if(insect.productionClass==='DESIGN_ONLY'&&!latestVerifiedDesign(repoRoot,insect.id)){
     assert.equal(realProjects.some(project=>project.gameId===insect.id&&project.engine==='web'),false,
-      'owner design reset must not be bypassed merely because the game remains focused');
-  }else{
-    assert.ok(realProjects.some(project=>project.gameId===insect.id&&project.engine==='web'
-      &&focusedCaretakerProject(project,repoRoot)),
-      'an admitted focused Web source must retain the focused lane');
+      'design-reset owner focus must not bypass a missing verified design');
   }
   assert.ok(realProjects.some(project=>project.gameId==='fantasy-survival'&&project.engine==='web'
     &&!focusedCaretakerProject(project,repoRoot)),
-    'fantasy-survival must remain developable but leave the focused lane');
-  const projects=collectProjects({}, {games:[
-    {id:'insect-survival',name:'곤충 생존기',productionClass:'DEVELOPMENT_CONFIRMED',
-      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/insect-survival/'},
-    {id:'cozy-island',name:'포근섬',productionClass:'DEVELOPMENT_CONFIRMED',
-      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/cozy-island/'}
+    'ordinary game development continues outside unfilled focus slots');
+  const fixture=collectProjects({}, {games:[
+    {id:'insect-survival',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/insect-survival/'},
+    {id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/fantasy-survival/'}
   ]},repoRoot,{items:[]});
-  const selected=projects.filter(project=>focusedCaretakerProject(project,repoRoot))
-    .map(project=>project.gameId+'|'+project.engine).sort();
-  assert.deepEqual(selected,[
-    'cozy-island|web','insect-survival|web'
-  ]);
-  assert.ok(projects.some(project=>project.gameId==='insect-survival'&&project.engine==='roblox'
-    &&!focusedCaretakerProject(project,repoRoot)),
-    'the matching Roblox counterpart must not consume a Web focus slot');
-  assert.ok(projects.some(project=>project.gameId==='cozy-island'&&project.engine==='roblox'
-    &&!focusedCaretakerProject(project,repoRoot)));
-  assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,true);
-  assert.equal(focus.targetFocusedGames,3);
-  assert.equal(focus.maxFocusedGames,3);
+  assert.deepEqual(fixture.filter(project=>focusedCaretakerProject(project,repoRoot))
+    .map(project=>project.gameId+'|'+project.engine).sort(),['insect-survival|web']);
 });
-
 test('exact focus lanes remain visible when generic backlog is full without bypassing work-package gates',()=>{
   const root=tempRepo();
   try{
@@ -5595,15 +5578,14 @@ test('queued rebuild and released caretaker receive lobby binding before backlog
     assert.equal(again.queue.tasks.find(t=>t.id==='task-0').goal,first.queue.tasks.find(t=>t.id==='task-0').goal);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
-test('real cozy-island Web source produces both code BUILD_UP and graphics replacement work',()=>{
+test('real fantasy-survival Web source produces code BUILD_UP and graphics replacement work',()=>{
   const repoRoot=path.resolve(process.cwd());
-  const sourceRoot='web-games/cozy-island';
+  const sourceRoot='web-games/fantasy-survival';
   assert.equal(fs.existsSync(path.join(repoRoot,sourceRoot,'index.html')),true);
-  assert.equal(fs.existsSync(path.join(repoRoot,sourceRoot,'style.css')),true);
-  assert.equal(fs.existsSync(path.join(repoRoot,sourceRoot,'game.js')),true);
+  assert.equal(fs.existsSync(path.join(repoRoot,sourceRoot,'world3d.mjs')),true);
 
   const project={
-    gameId:'cozy-island',
+    gameId:'fantasy-survival',
     name:'포근섬: 작은 왕국 키우기',
     engine:'web',
     target:'web',
@@ -5611,6 +5593,7 @@ test('real cozy-island Web source produces both code BUILD_UP and graphics repla
     lifecycleState:'ACTIVE',
     releaseState:'development-confirmed',
     existing:true,
+    ownerResumableBuildUp:true,
     source:'real-main-game-regression'
   };
   const queue=createVibeContinuousQueue({tasks:[],maxConcurrentTasks:256});
@@ -5659,16 +5642,15 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   const sourceRevision='e3ff6bb1a0ccd6eb8398da4431d413c28974267d';
   const artifactIdentity='sha256:'+'1'.repeat(64);
   const developmentQueue={items:[{
-    gameId:'horror-escape-room',
+    gameId:'fantasy-survival',
     gameName:'심야 대탈출',
     status:'ACTIVE',
     productionClass:'DEVELOPMENT_CONFIRMED',
     selectedPlatform:'ROBLOX',
     targetPlatform:'ROBLOX',
-    concurrentTargetPlatforms:['ROBLOX','UNITY'],
-    robloxProjectPath:'roblox-games/horror-escape-room',
-    unityProjectPath:'unity-games/horror-escape-room',
-    targetSourcePaths:{ROBLOX:'roblox-games/horror-escape-room',UNITY:'unity-games/horror-escape-room'},
+    concurrentTargetPlatforms:['ROBLOX'],
+    robloxProjectPath:'roblox-games/fantasy-survival',
+    targetSourcePaths:{ROBLOX:'roblox-games/fantasy-survival'},
     robloxBuildOrPackagePassed:true,
     robloxSourceCommit:sourceRevision,
     robloxBuildArtifactIdentity:artifactIdentity,
@@ -5687,7 +5669,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
     routingBlockers:['roblox-studio-internal-validation-pending']
   }]};
   const projects=collectProjects({},catalog,repoRoot,developmentQueue);
-  const robloxProject=projects.find(project=>project.gameId==='horror-escape-room'&&project.engine==='roblox');
+  const robloxProject=projects.find(project=>project.gameId==='fantasy-survival'&&project.engine==='roblox');
   assert.ok(robloxProject);
   assert.equal(robloxProject.ownerResumableBuildUp,true);
 
@@ -5752,7 +5734,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   });
   assert.equal(result.planned,true);
   assert.equal(result.planningBacklog.ownerResumableTargetBypass,true);
-  const resumed=result.tasks.find(task=>task.gameId==='horror-escape-room');
+  const resumed=result.tasks.find(task=>task.gameId==='fantasy-survival');
   assert.ok(resumed);
   assert.equal(resumed.maxRetries,null);
   assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
