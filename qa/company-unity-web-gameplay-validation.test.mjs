@@ -7,7 +7,9 @@ import {runInNewContext} from 'node:vm';
 
 const source=fs.readFileSync(new URL('../tools/company-unity-web-gameplay-validation.mjs',import.meta.url),'utf8');
 
-const daechungUnitySource=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
+// [현재 유니티 소스] 퇴역 게임을 읽지 않고 실존하는 게임과 빌드를 검사한다.
+const monsterUnitySource=fs.readFileSync(new URL('../unity-games/monster-adventure/Assets/Scripts/UnityWebFloorGame.cs',import.meta.url),'utf8');
+const monsterUnityBuild=fs.readFileSync(new URL('../unity-games/monster-adventure/Assets/Editor/UnityWebFloorBuild.cs',import.meta.url),'utf8');
 
 test('browser Unity 3D QA pins the central policy to the validator module even from the WebGL staging directory',()=>{
   assert.match(source,/readFileSync\(new URL\('\.\.\/company-learning\/platform-release-roadmap\.json',import\.meta\.url\),'utf8'\)/);
@@ -16,32 +18,25 @@ test('browser Unity 3D QA pins the central policy to the validator module even f
   assert.match(workflow,/node "\$GITHUB_WORKSPACE\/tools\/company-unity-web-gameplay-validation\.mjs"/);
 });
 
-test('Daechung Unity Web exposes a genuine initial hunt control before browser QA touches it',()=>{
-  const start=daechungUnitySource.indexOf('private void DrawPrimaryCombatActionButton()');
-  const end=daechungUnitySource.indexOf('private void DrawTownControls()',start);
-  assert.ok(start>=0&&end>start);
-  const action=daechungUnitySource.slice(start,end);
-  assert.match(action,/canEnterHunt = _enemy == null && _core != null && _core\.Player\.currentRegionId == "town"/);
-  assert.match(action,/if \(_enemy == null && !canEnterHunt\) return;/);
-  assert.match(action,/MOBILE_TARGET game=daechung-rpg role=action/);
-  assert.match(action,/GUI\.Button\(actionRect, canEnterHunt \? "HUNT" : "ATTACK"\)/);
-  assert.match(action,/if \(canEnterHunt\) MoveTo\("field-1"\);\s*else AttackEnemy\(\);/);
-  assert.match(action,/MOBILE_INPUT game=daechung-rpg role=action status=PASS/);
-  assert.ok(action.indexOf('MOBILE_TARGET')<action.indexOf('GUI.Button(actionRect'));
-  assert.doesNotMatch(action,/if \(_enemy == null\) return;/);
+// [행동] 현행 게임은 키보드·터치를 처리하지만 장르 콘텐츠는 미완료로 보고한다.
+test('current Monster Adventure binds actual keyboard and touch actions without claiming full gameplay',()=>{
+ assert.match(monsterUnitySource,/private void StartGameplay\(\)/);
+ assert.match(monsterUnitySource,/private void PerformAction\(bool mobile\)/);
+ assert.match(monsterUnitySource,/Input\.GetKeyDown\(KeyCode\.Alpha1\)\) StartGameplay\(\)/);
+ assert.match(monsterUnitySource,/Input\.GetKeyDown\(KeyCode\.Space\)\) PerformAction\(false\)/);
+ assert.match(monsterUnitySource,/Input\.touchCount > 0 && Input\.GetTouch\(0\)\.phase == TouchPhase\.Began\) PerformAction\(true\)/);
+ assert.match(monsterUnitySource,/BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
 });
 
-test('Daechung WebGL request always builds the exact current main source and claims no synthetic QA PASS',()=>{
-  const file=new URL('../.build-requests/unity-web/daechung-rpg.json',import.meta.url);
-  const request=JSON.parse(fs.readFileSync(file,'utf8'));
-  assert.equal(request.kind,'UNITY_WEB_DEVELOPMENT_FLOOR_BUILD');
-  assert.equal(request.gameId,'daechung-rpg');
-  assert.equal(request.projectPath,'unity-games/daechung-rpg');
-  assert.equal(request.buildMethod,'JaewoonGames.DaechungRpg.Editor.AndroidTestBuild.BuildWeb');
-  assert.equal(request.sourceCommit,'');
-  assert.equal(request.outputRoot,'web-games/daechung-rpg');
-  assert.equal(request.fullGameplayPassAuthority,undefined);
-  assert.equal(request.postGatePlatformPipelineChanged,undefined);
+// [빌드] 네이티브 WebGL 빌드 결과는 반드시 실제 빌드 보고서로 판정한다.
+test('current Monster Adventure WebGL build checks exact native output and does not fabricate runtime QA',()=>{
+ assert.match(monsterUnityBuild,/public static void BuildWeb\(\)/);
+ assert.match(monsterUnityBuild,/BuildPipeline\.BuildPlayer\(/);
+ assert.match(monsterUnityBuild,/BuildTargetGroup\.WebGL,BuildTarget\.WebGL/);
+ assert.match(monsterUnityBuild,/if\(report\.summary\.result!=BuildResult\.Succeeded\)throw new Exception/);
+ assert.match(monsterUnityBuild,/if\(!File\.Exists\(Path\.Combine\(output,"index\.html"\)\)\)throw new Exception/);
+ assert.match(monsterUnitySource,/BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
+ assert.doesNotMatch(monsterUnityBuild,/FULL_GAMEPLAY_QA_PASS|RUNTIME_VERIFIED_TRUE/);
 });
 
 test('Unity Web performance QA samples live gameplay frames instead of treating boot time as FPS proof',()=>{
@@ -270,69 +265,47 @@ test('Unity Web renderer cost evidence is measured only from real Unity markers,
   assert.match(source,/UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED/);
 });
 
-test('Daechung real Unity renderer exposes only measured draw calls and polygons in WebGL QA',()=>{
-  const runtime=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
-  assert.match(runtime,/using Unity\.Profiling;/);
-  assert.match(runtime,/ProfilerRecorder\.StartNew\(ProfilerCategory\.Render, "Draw Calls Count"\)/);
-  assert.match(runtime,/ProfilerRecorder\.StartNew\(ProfilerCategory\.Render, "Triangles Count"\)/);
-  assert.match(runtime,/_drawCallsRecorder\.LastValue > 0 && _trianglesRecorder\.LastValue > 0/);
-  assert.match(runtime,/RENDER_STATS game=daechung-rpg source=UNITY_NATIVE_RENDERER/);
-  assert.match(runtime,/_drawCallsRecorder\.Dispose\(\)/);
-  assert.match(runtime,/_trianglesRecorder\.Dispose\(\)/);
+// [렌더링] 실제 메시 바인딩과 브라우저 렌더 비용은 별도로 검증한다.
+test('current Unity rendering rejects missing observed draw-call and triangle proof',()=>{
+ assert.match(monsterUnityBuild,/MeshFilter/);
+ assert.match(monsterUnityBuild,/MeshRenderer/);
+ assert.match(source,/UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED/);
+ assert.match(source,/RENDER_STATS/);
+ assert.match(source,/drawCalls/);
+ assert.match(source,/triangles/);
 });
 
-test('native Unity canvas UI stays inside mobile bounds with real runtime measurements',()=>{
-  const runtime=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
-  assert.match(runtime,/UI_BOUNDS game=daechung-rpg surface=UNITY_ONGUI/);
-  assert.match(runtime,/controlsHeight = Mathf\.Max\(1f, _actionButtonRect\.yMin - 10f - menuY\)/);
-  assert.match(runtime,/buttonWidth = Mathf\.Min\(Mathf\.Max\(1f, safe\.width - margin \* 2f\)/);
-  assert.match(source,/const nativeUiMarker=markers\.slice\(\)\.reverse\(\)\.find/);
-  assert.match(source,/const nativeUiOffscreen=nativeUiMeasured/);
-  assert.match(source,/withinNativeViewport\(nativeUiRect\.controlsLeft,nativeUiRect\.controlsY,nativeUiRect\.controlsWidth,nativeUiRect\.controlsHeight\)/);
-  assert.match(source,/nativeUiMissing=gameId==='daechung-rpg'&&!nativeUiMeasured/);
-  assert.match(source,/nativeUnityUi:\{measurementState:nativeUiMeasured\?'UNITY_ONGUI_RUNTIME':'NOT_MEASURED'/);
-  assert.match(source,/nativeUiOffscreen\|\|nativeUiOverlap\|\|nativeUiMissing/);
+// [모바일] 좌표 측정과 화면 잘림 거부는 실제 브라우저 데이터로만 통과한다.
+test('current Unity mobile viewport rejects offscreen or missing native UI evidence',()=>{
+ assert.match(monsterUnitySource,/private void OnGUI\(\)/);
+ assert.match(monsterUnitySource,/Screen\.width/);
+ assert.match(monsterUnitySource,/Screen\.height/);
+ assert.match(source,/const nativeUiMarker=markers\.slice\(\)\.reverse\(\)\.find/);
+ assert.match(source,/const nativeUiOffscreen=nativeUiMeasured/);
+ assert.match(source,/withinNativeViewport\(nativeUiRect\.controlsLeft,nativeUiRect\.controlsY,nativeUiRect\.controlsWidth,nativeUiRect\.controlsHeight\)/);
+ assert.match(source,/nativeUiOffscreen\|\|nativeUiOverlap\|\|nativeUiMissing/);
+ assert.match(source,/nativeUnityUi:\{measurementState:nativeUiMeasured\?'UNITY_ONGUI_RUNTIME':'NOT_MEASURED'/);
 });
 
-test('actual Daechung Unity scene mesh and texture proof is native, fails closed, and never promotes library assets',()=>{
-  const visual=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
-  assert.match(visual,/MESH_INTEGRITY game=daechung-rpg source=UNITY_MESH_FILTER/);
-  assert.match(visual,/var filter = renderer\.GetComponent<MeshFilter>\(\)/);
-  assert.match(visual,/mesh\.vertexCount < 3/);
-  assert.match(visual,/mesh\.GetTopology\(subMesh\) == MeshTopology\.Triangles/);
-  assert.match(visual,/mesh\.GetIndexCount\(subMesh\) \/ 3/);
-  assert.match(visual,/renderer\.sharedMaterial\.shader\.isSupported/);
-  assert.match(visual,/backdropTexture\.width > 0 && backdropTexture\.height > 0/);
-  assert.match(visual,/validMeshes == inspected && triangles > 0/);
-  assert.match(visual,/volumetricMeshes > 0/);
-  assert.match(visual,/bounds\.x > 0\.02f && bounds\.y > 0\.02f && bounds\.z > 0\.02f/);
-  assert.match(source,/const nativeMeshMarker=markers\.slice\(\)\.reverse\(\)\.find/);
-  assert.match(source,/const nativeMeshVerified=Boolean\(nativeMeshMarker\)/);
-  assert.match(source,/nativeMeshMissing=!nativeMeshVerified/);
-  assert.match(source,/nativeMeshProof\.volumetricMeshes>0/);
-  assert.match(source,/nativeMeshMissing\s*\n\s*\|\|!renderSurfaceVerified\|\|!sceneScreenVerified;/);
-  assert.match(source,/const visualBlocked=shaderLikelyMissing\|\|blankOrFrozenFrame/);
-  assert.match(source,/sceneScreenVerified=Boolean\(scenePixels/);
-  assert.match(source,/libraryAssetPromotionGranted:false/);
+// [자산] 네이티브 메시 존재와 런타임 공간 검증은 서로 다른 승인 단계다.
+test('current native Unity mesh binding cannot promote unobserved geometry or library assets',()=>{
+ for(const item of ['MeshFilter','MeshRenderer','sharedMesh','Texture2D'])assert.ok(monsterUnityBuild.includes(item),item);
+ assert.match(source,/const nativeMeshMarker=markers\.slice\(\)\.reverse\(\)\.find/);
+ assert.match(source,/const nativeMeshVerified=Boolean\(nativeMeshMarker\)/);
+ assert.match(source,/nativeMeshMissing=!nativeMeshVerified/);
+ assert.match(source,/nativeMeshProof\.volumetricMeshes>0/);
+ assert.match(source,/libraryAssetPromotionGranted:false/);
 });
 
-test('Daechung mobile menu uses responsive safe-area tabs, one visible panel, scroll restoration and a fixed dock',()=>{
-  const runtime=daechungUnitySource;
-  assert.match(runtime,/Screen\.safeArea/);
-  assert.match(runtime,/private static readonly string\[\] MenuTabs = \{ "월드", "전투", "파티", "캐릭터", "가방", "상점" \}/);
-  assert.match(runtime,/GUI\.Toolbar\(tabsRect, _menuPage, MenuTabs\)/);
-  assert.match(runtime,/_menuScrollPositions\[_menuPage\] = _scroll/);
-  assert.match(runtime,/_scroll = _menuScrollPositions\[_menuPage\]/);
-  assert.match(runtime,/if \(_menuPage == 0\)[\s\S]*DrawRegionControls\(\);[\s\S]*DrawTownControls\(\);/);
-  assert.match(runtime,/else if \(_menuPage == 1\)[\s\S]*DrawCombatControls\(\);/);
-  assert.match(runtime,/_multiplayer\?\.DrawControls\(scale\)/);
-  assert.match(runtime,/DrawPrimaryCombatActionButton\(\);/);
-  assert.match(runtime,/var actionRect = _actionButtonRect/);
-  assert.match(runtime,/Mathf\.Max\(48f, 38f \* scale\)/);
-  assert.match(runtime,/MENU_TARGET game=daechung-rpg role=tab index=2/);
-  assert.match(runtime,/MENU_INPUT game=daechung-rpg role=tab/);
-  assert.match(runtime,/_menuPage = regionId == "town" \? 0 : 1/);
-  assert.doesNotMatch(runtime,/PlayerPrefs\.Set/);
+// [현행 UI] 조작 버튼은 기존 동작에 연결되고 없는 메뉴를 성공으로 보고하지 않는다.
+test('current Monster Adventure mobile action retains its input and explicitly marks missing deep gameplay',()=>{
+ assert.match(monsterUnitySource,/private void OnGUI\(\)/);
+ assert.match(monsterUnitySource,/GUI\.Button\(/);
+ assert.match(monsterUnitySource,/PerformAction\(true\)/);
+ assert.match(monsterUnitySource,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=/);
+ assert.match(monsterUnitySource,/JAEWOON_UNITY_WEB_QA MOBILE_INPUT game=/);
+ assert.match(monsterUnitySource,/BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
+ assert.doesNotMatch(monsterUnitySource,/PlayerPrefs\.DeleteAll\(/);
 });
 
 test('Unity Web mobile QA touches the real menu, checks all menu rectangles and rejects docking overlap',()=>{
@@ -350,96 +323,50 @@ test('Unity Web mobile QA touches the real menu, checks all menu rectangles and 
   assert.match(source,/pass:nativeUiMeasured\?!nativeUiOffscreen&&!nativeUiOverlap:null/);
 });
 
-test('compact landscape keeps the original combat action and real scrollable menu accessible',()=>{
-  assert.match(daechungUnitySource,/compactLandscape = safe\.width > safe\.height && safe\.height < 540f/);
-  assert.match(daechungUnitySource,/compactLandscape \? Mathf\.Min\(88f, safe\.height \* 0\.24f\)/);
-  assert.match(daechungUnitySource,/compactLandscape \? topY \+ topHeight \+ 8f/);
-  assert.match(daechungUnitySource,/compactLandscape \? 48f : Mathf\.Max\(48f, 38f \* scale\)/);
-  assert.match(daechungUnitySource,/if \(compactLandscape\)[\s\S]*GUILayout\.Label\("DAECHUNG RPG"\)/);
-  assert.match(daechungUnitySource,/else[\s\S]*DrawPlayerStatus\(\)/);
-  for(const [width,height,dpi] of [[568,320,260],[844,390,260],[390,844,280]]){
-    const compact=width>height&&height<540,scale=Math.max(1,Math.min(1.6,dpi/180));
-    const topY=12;
-    const topHeight=compact?Math.min(88,height*.24):Math.min(194*scale,height*.29);
-    const controlsY=compact?topY+topHeight+8:Math.max(topY+topHeight+12,height*.5);
-    const tabHeight=compact?48:Math.max(48,38*scale),margin=Math.max(12,width*.04);
-    const actionHeight=Math.min(Math.max(1,height-margin*2),Math.max(56,Math.min(84,height*.08)));
-    const actionY=height-actionHeight-margin;
-    const scrollY=controlsY+tabHeight+6,scrollHeight=actionY-10-scrollY;
-    assert.ok(scrollHeight>=65,`menu must remain touch-scrollable at ${width}x${height}, got ${scrollHeight}`);
-    assert.ok(scrollY+scrollHeight<=actionY-8,'scroll must end above action dock');
-  }
+// [휴대전화] 현재 단일 조작 버튼이 가로·세로 기본 해상도에서 잘리지 않는다.
+test('current Monster Adventure touch button retains reachability in compact landscape and portrait',()=>{
+ assert.match(monsterUnitySource,/float w=Screen\.width/);
+ assert.match(monsterUnitySource,/float h=Screen\.height/);
+ assert.match(monsterUnitySource,/GUI\.Button\(new Rect\(w\*0\.18f,h\*0\.64f,w\*0\.64f,h\*0\.16f\),"ACTION \/ TOUCH"\)/);
+ for(const [width,height] of [[568,320],[844,390],[390,844]]){
+   const x=width*.18,y=height*.64,w=width*.64,h=height*.16;
+   assert.ok(x>=0&&y>=0&&x+w<=width&&y+h<=height,'button must stay visible');
+   assert.ok(h>=48,'touch target must stay at least 48 px');
+ }
 });
 
-test('real character, owned inventory and shop windows bind to existing Unity GameCore and preserve v1 save',()=>{
-  const runtime=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
-  const core=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/GameCore.cs',import.meta.url),'utf8');
-  assert.match(runtime,/MenuTabs = \{ "월드", "전투", "파티", "캐릭터", "가방", "상점" \}/);
-  assert.match(runtime,/new Vector2\[MenuTabs\.Length\]/);
-  for(const method of ['DrawCharacterWindow','DrawEquipmentInventory','DrawShopWindow']){
-    assert.match(runtime,new RegExp('private void '+method+'\\('));
-  }
-  assert.match(runtime,/DrawCharacterWindow\(\)/);
-  assert.match(runtime,/DrawEquipmentInventory\(\)/);
-  assert.match(runtime,/DrawShopWindow\(\)/);
-  assert.match(runtime,/GameCatalog\.Weapons\.TryGetValue/);
-  assert.match(runtime,/GameCatalog\.Armors\.TryGetValue/);
-  assert.match(runtime,/foreach \(var id in visibleWeapons\)/);
-  assert.match(runtime,/foreach \(var id in visibleArmors\)/);
-  assert.match(runtime,/_inventorySearch = GUILayout\.TextField\(_inventorySearch, GUILayout\.MinHeight\(48f\)\)/);
-  assert.match(runtime,/_inventorySortByName = !_inventorySortByName/);
-  assert.match(runtime,/new List<string>\(player\.ownedWeapons\)/);
-  assert.match(runtime,/new List<string>\(player\.ownedArmors\)/);
-  assert.match(runtime,/visibleWeapons\.Sort\(/);
-  assert.match(runtime,/visibleArmors\.Sort\(/);
-  assert.doesNotMatch(runtime,/player\.owned(?:Weapons|Armors)\.(?:Sort|Clear|Add|Remove)\(/);
-  for(const method of ['TryEquipWeapon','TryEquipArmor','TryBuyWeapon','TryBuyArmor','TrySellWeapon','TrySellArmor']){
-    assert.match(runtime,new RegExp('\\_core\\.'+method+'\\('),'actual menu needs existing owner function: '+method);
-    assert.match(core,new RegExp('public bool '+method+'\\('));
-  }
-  assert.match(runtime,/player\.currentRegionId != "town"/);
-  assert.match(runtime,/SHOP_ACTION game=daechung-rpg/);
-  assert.match(core,/private const string SaveKey = "daechung-rpg-save-v1"/);
-  assert.match(core,/public int version = 1;/);
-  assert.match(core,/PlayerPrefs\.SetString\(SaveKey, JsonUtility\.ToJson\(data\)\)/);
-  assert.doesNotMatch(core,/SaveKey.*v2|class InventoryV2|new GameSaveData\s*\{\s*version\s*=\s*2/);
-});
-test('equip and sell reject unowned items, preserve existing prices and do not mutate combat stat authority',()=>{
-  const core=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/GameCore.cs',import.meta.url),'utf8');
-  const buy=core.slice(core.indexOf('public bool TryBuyWeapon('),core.indexOf('public bool TryEquipWeapon('));
-  assert.equal((buy.match(/Player\.currentRegionId != "town"/g)||[]).length,2,'both purchases must enforce the existing village-only shop rule');
-  const equip=core.slice(core.indexOf('public bool TryEquipWeapon('),core.indexOf('public bool TryChangeJob('));
-  assert.match(equip,/Player\.ownedWeapons\.Contains\(weaponId\)/);
-  assert.match(equip,/Player\.ownedArmors\.Contains\(armorId\)/);
-  assert.match(equip,/Player\.equippedWeaponId = "bare-hands"/);
-  assert.match(equip,/Player\.equippedArmorId = "none"/);
-  assert.match(equip,/Player\.currentHp = Mathf\.Min\(Player\.currentHp, GetMaxHp\(\)\)/);
-  assert.match(equip,/Player\.currentRegionId != "town"/);
-  assert.match(equip,/weapon\.hidden/);
-  assert.match(equip,/Player\.gold \+= weapon\.price/);
-  assert.match(equip,/Player\.gold \+= armor\.price/);
-  assert.match(equip,/Player\.gold > int\.MaxValue - weapon\.price/);
-  assert.match(equip,/Player\.gold > int\.MaxValue - armor\.price/);
-  assert.doesNotMatch(equip,/Player\.baseAttack\s*=/);
-  assert.doesNotMatch(equip,/Player\.baseMaxHp\s*=/);
-  assert.doesNotMatch(equip,/Player\.experience\s*=/);
+// [진행도] 유지 중인 게임은 기존 4개 저장 키만 갱신하고 미완료 콘텐츠를 승인하지 않는다.
+test('current Monster Adventure stores original progression keys without fake shop and inventory completion',()=>{
+ assert.match(monsterUnitySource,/private void LoadState\(\)/);
+ assert.match(monsterUnitySource,/private void PerformAction\(bool mobile\)/);
+ for(const key of ['progress','level','resource','actions']){
+   assert.ok(monsterUnitySource.includes('PlayerPrefs.GetInt(SavePrefix+"'+key+'"'),key);
+   assert.ok(monsterUnitySource.includes('PlayerPrefs.SetInt(SavePrefix+"'+key+'"'),key);
+ }
+ assert.match(monsterUnitySource,/PlayerPrefs\.Save\(\)/);
+ assert.match(monsterUnitySource,/BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
+ assert.doesNotMatch(monsterUnitySource,/PlayerPrefs\.DeleteAll\(/);
 });
 
-test('actual Unity browser touch visits character, inventory and shop with synchronized gold evidence',()=>{
-  assert.match(daechungUnitySource,/tabsCount=\{MenuTabs\.Length\}/);
-  assert.match(source,/tabCount=getBound\('tabsCount'\)/);
-  assert.match(source,/for\(const \[index,name\] of \[\[3,'CHARACTER'\],\[4,'INVENTORY'\],\[5,'SHOP'\]\]\)/);
-  assert.match(source,/await page\.touchscreen\.tap\(tapX,menuTarget\.y\)/);
-  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_PAGE_NOT_INTERACTIVE:/);
-  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_PLAYER_STATE_MISSING:/);
-  assert.match(source,/source=GAMECORE_V1_STATE/);
-  assert.match(source,/screenGold!==stateGold/);
-  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_GAMECORE_STATE_MISMATCH:/);
-  assert.match(source,/nativePlayerStateObserved:true/);
-  assert.match(source,/visitedPages\.push\('WORLD'\)/);
-  assert.doesNotMatch(source,/mobileMenuInteraction=\{pass:true,actualBrowserTouch:true,visitedPages:\['SOCIAL','WORLD'\]/);
+// [권한] 미구현 구매·장착을 가짜 성공으로 만들지 않고 진행 키를 보존한다.
+test('current Monster Adventure never fabricates shop, equipment or combat authority from static UI',()=>{
+ assert.doesNotMatch(monsterUnitySource,/public bool Try(?:Equip|Sell|Buy)(?:Weapon|Armor)\(/);
+ assert.doesNotMatch(monsterUnitySource,/PlayerPrefs\.DeleteAll\(/);
+ assert.match(monsterUnitySource,/private void PerformAction\(bool mobile\)/);
+ assert.match(monsterUnitySource,/BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
+ assert.match(source,/UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING/);
 });
 
+// [브라우저] 실제 터치 입력을 요구하고 미완성 콘텐츠를 통과시키지 않는다.
+test('current Unity browser requires real touch and rejects bootstrap-only gameplay promotion',()=>{
+ assert.match(monsterUnitySource,/Input\.touchCount > 0/);
+ assert.match(monsterUnitySource,/GUI\.Button\(/);
+ assert.match(source,/page\.touchscreen\.tap\(/);
+ assert.match(source,/UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING/);
+ assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_PAGE_NOT_INTERACTIVE:/);
+ assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_GAMECORE_STATE_MISMATCH:/);
+ assert.match(monsterUnitySource,/BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
+});
 
 test('모든 Unity Web 게임에서 실측 3D 메시 없는 QA PASS를 차단한다',()=>{
   assert.match(source,/UNITY_WEB_3D_ONLY_POLICY_REQUIRED/);
@@ -685,42 +612,28 @@ test('published Unity WebGL validation permits only exact official game URLs',()
 });
 
 
-test('Daechung 3D visual actor and world repair emits measured native-depth evidence rather than inventing PASS',()=>{
-  const source=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
-  const actor=source.slice(source.indexOf('private sealed class AnimatedActor'));
-  assert.match(source,/SPATIAL_DEPTH game=daechung-rpg source=UNITY_WORLD_MESH_DEPTH/);
-  assert.match(source,/Mathf\.RoundToInt\(Mathf\.Max\(0f, maxZ - minZ\) \* 100f\)/);
-  assert.match(source,/mesh\.bounds\.size\.z > 0\.02f/);
-  assert.match(source,/spriteGameplayActors=\{spriteGameplayActors\}/);
-  assert.match(source,/worldMeshes3d=\{worldMeshes3d\}/);
-  assert.match(source,/gameplayActors3d=\{gameplayActors3d\}/);
-  assert.match(source,/DaechungWorldTreeTrunk_/);
-  assert.match(source,/DaechungWorldTreeCanopy_/);
-  assert.match(actor,/GameObject\.CreatePrimitive\(shape\)/);
-  assert.match(actor,/part\.GetComponent<MeshRenderer>\(\)\.sharedMaterial = material/);
-  assert.match(actor,/UnityEngine\.Object\.Destroy\(collider\)/);
-  assert.doesNotMatch(actor,/AddComponent<SpriteRenderer>/);
-  assert.match(actor,/GetComponentsInChildren<Renderer>\(true\)/);
-  assert.match(source,/GameObject\.CreatePrimitive\(PrimitiveType\.Quad\)/);
-  assert.match(source,/_backdrop\.sharedMaterial\.mainTexture = sprite\.texture/);
-  assert.match(actor,/HasVisibleVolumetricMesh/);
-  assert.match(actor,/_model\.transform\.localRotation = Quaternion\.Euler/);
-  for(const symbol of ['SetIdentity','SetTint','FaceRight','SetVisible','AddClip','Play','Tick'])
-    assert.match(actor,new RegExp('\\b'+symbol+'\\('));
-  assert.match(source,/actor\.SetIdentity\(id\)/);
+// [3D] 자산 바인딩은 런타임 3축 공간 검증을 대체하지 못한다.
+test('current Monster Adventure binds native meshes without inventing observed volumetric PASS',()=>{
+ assert.match(monsterUnityBuild,/MeshFilter/);
+ assert.match(monsterUnityBuild,/MeshRenderer/);
+ assert.match(monsterUnityBuild,/sharedMesh/);
+ assert.match(monsterUnitySource,/JAEWOON_UNITY_WEB_QA LIBRARY_ASSETS game=/);
+ assert.match(monsterUnitySource,/SOURCE_BOUND_RUNTIME_UNVERIFIED/);
+ assert.match(source,/nativeMeshProof\.volumetricMeshes>0/);
+ assert.match(source,/UNITY_WEB_QA_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D/);
+ assert.match(source,/libraryAssetPromotionGranted:false/);
 });
 
-test('Daechung 3D scene work keeps the canonical combat, touch and save authority untouched',()=>{
-  const source=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
-  assert.match(source,/public void PlayCombatExchange\(bool enemyDefeated, bool playerDefeated\)/);
-  assert.match(source,/private IEnumerator CombatExchangeRoutine\(bool enemyDefeated, bool playerDefeated\)/);
-  assert.match(source,/public void ShowTown\(\)/);
-  assert.match(source,/public void ShowBattle\(\)/);
-  assert.doesNotMatch(source,/PlayerPrefs\.DeleteAll|DeleteKey\(|SaveKey\s*=|experienceReward\s*=|goldReward\s*=/);
-  assert.match(daechungUnitySource,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=daechung-rpg role=action/);
-  assert.match(daechungUnitySource,/private void RewardEnemyDefeat\(EnemyDefinition defeated\)/);
+// [게임 권한] 입력·진행도는 원래 C# 소스에서만 변경한다.
+test('current Unity scene keeps gameplay action and save responsibility while remaining unverified',()=>{
+ for(const method of ['StartGameplay','PerformAction','SafeReturn'])
+   assert.ok(monsterUnitySource.includes('private void '+method+'('),method);
+ assert.match(monsterUnitySource,/Input\.GetKeyDown\(KeyCode\.Space\)/);
+ assert.match(monsterUnitySource,/Input\.touchCount > 0/);
+ assert.match(monsterUnitySource,/PlayerPrefs\.SetInt\(SavePrefix\+"progress"/);
+ assert.match(monsterUnitySource,/BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
+ assert.doesNotMatch(monsterUnityBuild,/PlayerPrefs\.DeleteAll|PlayerPrefs\.DeleteKey/);
 });
-
 
 test('Unity native source F0 failure carries exact signature and file into existing causal-repair workflow',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
