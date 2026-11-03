@@ -457,6 +457,36 @@ test('prologue reveals each single illustration with safe lighting and mobile re
   assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
 });
 
+test('cinematic v4 locks portrait frames, times silent title reveals and makes single-image hard cuts',()=>{
+  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
+  for(const marker of [
+    'local lockedPortrait=closeUp or scene.cinema=="freeze"',
+    'if not reducedEffects and not lockedPortrait then',
+    'and (not reducedEffects or n<=4)',
+    'local transitionCut=scene.cinema=="erasure" or scene.cinema=="rift"',
+    'introFlash.BackgroundTransparency=transitionCut and .44 or 1',
+    'local titlePause=scene.cinema=="crown" and .46',
+    'local plateSeconds=scene.cinema=="dawn" and .78',
+    'if activeSceneFlashTween then activeSceneFlashTween:Cancel();activeSceneFlashTween=nil end',
+    'activeSceneFlashTween=TweenService:Create(introFlash,',
+    'introFlash.BackgroundTransparency=1',
+    'activeSceneFlashTween:Play()',
+    'scene.cinema=="betrayal" or scene.cinema=="rift" or scene.cinema=="dawn"',
+    'local finalHeight=scene.cinema=="betrayal" and .15',
+    'or scene.cinema=="rift" and .14 or .065',
+  ])assert.ok(intro.includes(marker),'cinematic direction missing: '+marker);
+  assert.match(intro,/task\.delay\(titlePause,function\(\)\s+if not entranceOpen or token~=runToken or currentStoryScene~=index then return end/);
+  assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
+  assert.match(intro,/local showArtwork=validImage and not showFront/);
+  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.96,\.68\)/);
+  assert.match(intro,/math\.clamp\(position\.X\.Scale\+slowX,0,maxX\)/);
+  assert.match(intro,/math\.clamp\(position\.Y\.Scale\+slowY,0,maxY\)/);
+  assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
+  assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
+  assert.equal([...intro.matchAll(/label\(introPanel,/g)].length,2);
+  assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
+});
+
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   const asset=fs.readFileSync('assets/shared/party/village-well.glb');
