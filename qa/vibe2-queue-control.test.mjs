@@ -86,8 +86,8 @@ test('오너 마력숲 최우선 바이브 구현 예약은 기존 3종 집중�
 
 test('focused existing queues get exact game-platform priority and spare workers still develop other games',()=>{
   const policy={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
-    enabled:true,ownerFocusedGameIds:['party-rpg','insect-survival','cozy-island'],
-    ownerFocusedGamePlatforms:{'party-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'},
+    enabled:true,ownerFocusedGameIds:['party-rpg','insect-survival','deep-diver'],
+    ownerFocusedGamePlatforms:{'party-rpg':'ROBLOX','insect-survival':'WEB','deep-diver':'WEB'},
     completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true}
   }},developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}};
   const task=(id,gameId,target)=>({id,gameId,target,department:'development',type:'implementation',
@@ -95,7 +95,7 @@ test('focused existing queues get exact game-platform priority and spare workers
     responsibleFiles:[`${id}.js`],priority:'normal'});
   const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
     task('normal-older','ordinary','roblox'),
-    task('wrong-platform','cozy-island','roblox'),
+    task('wrong-platform','deep-diver','roblox'),
     task('focus-rpg','party-rpg','roblox'),
     task('focus-web','insect-survival','web')
   ]});
@@ -451,8 +451,8 @@ function add(queue, id, gameId, target='unity', extra={}) {
 
 test('enqueue and reservation retain the exact single-object motion source binding',()=>{
   const unit={objectId:'ghost-one',clipId:'walk',sourcePath:'Motion.luau',sourceHash:'current-source',sourceWindow:'function Motion.walk() end',objectBindingEvidence:'ghost-one',clipBindingEvidence:'Motion.walk',objectCount:1,motionCount:1,estimatedModificationMinutes:60,lockedSource:['Motion.walk'],preservedAxes:{}};
-  const queue=add(createVibeContinuousQueue(),'ghost-one-walk','horror-escape-room','roblox',{
-    assetProductionLane:true,responsibleFiles:['roblox-games/horror-escape-room/Motion.luau'],
+  const queue=add(createVibeContinuousQueue(),'ghost-one-walk','fantasy-survival','roblox',{
+    assetProductionLane:true,responsibleFiles:['roblox-games/fantasy-survival/Motion.luau'],
     evidence:['asset-production-parallel:v1','single-object-motion-repair:v1'],motionRepairWorkUnit:unit
   });
   assert.deepEqual(queue.tasks[0].motionRepairWorkUnit,unit);
@@ -464,7 +464,7 @@ test('enqueue and reservation retain the exact single-object motion source bindi
 });
 
 test('internal asset focus reserves 63 independent objects without consuming game presentation tasks',()=>{
-  const tasks=Array.from({length:100},(_,i)=>({id:'motion-'+i,gameId:'horror-escape-room',target:'roblox',department:'graphics',type:'implementation',goal:'motion',assetProductionLane:true,ownerDirective:true,priority:'critical',status:'queued',sourceRoot:'assets/roblox/world-ghosts/motions',responsibleFiles:['assets/roblox/world-ghosts/motions/ghost-'+i+'.luau'],motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'ghost-'+i,clipId:'walk'}}));
+  const tasks=Array.from({length:100},(_,i)=>({id:'motion-'+i,gameId:'fantasy-survival',target:'roblox',department:'graphics',type:'implementation',goal:'motion',assetProductionLane:true,ownerDirective:true,priority:'critical',status:'queued',sourceRoot:'assets/roblox/world-ghosts/motions',responsibleFiles:['assets/roblox/world-ghosts/motions/ghost-'+i+'.luau'],motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'ghost-'+i,clipId:'walk'}}));
   tasks.push({id:'game-presentation',gameId:'other',target:'roblox',goal:'game',assetProductionLane:true,status:'queued',priority:'critical',ownerDirective:true,responsibleFiles:['roblox-games/other/client/Game.client.luau']});
   const policy={assetProductionParallelContract:{parallelism:{internalAssetFocus:{enabled:true}}}};
   const batch=reserveVibeTaskBatch({tasks,maxConcurrentTasks:256},{lane:'asset-development',maxConcurrentTasks:64,policy});
