@@ -164,79 +164,6 @@ jobs:
           if(registeredDedicated&&!currentDedicated)console.log('ROBLOX_DEDICATED_TARGET_RECOVERED_FROM_REGISTRY=YES');
           NODE
 
-      # [마력숲 원본 등록] 기존 CC0 생산기를 재사용한다. 등록이 안 된 상태에서는
-      # 이번 Place 게시를 중단하고 원본 ID/해시를 main 병합용 PR로 보존한다.
-      - name: Register approved Forest village originals through the existing asset pipeline
-        if: matrix.gameId == 'fantasy-survival'
-        working-directory: main
-        env:
-          ROBLOX_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
-          ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$ROBLOX_UNIVERSE_ID" = '10773436325'
-          if node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
-          const ids=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
-          const village=registry.villagePrefabs;
-          if(village?.sourceVerified!==true||Object.keys(village.models||{}).length!==24)
-            throw Error('FOREST_VILLAGE_APPROVED_SOURCE_SET_REQUIRED');
-          const valid=village.registrationVerified===true&&Object.entries(village.models).every(([role,row])=>
-            Number.isSafeInteger(row.assetId)&&row.assetId>0
-            &&ids.includes(role+'='+row.assetId));
-          process.exit(valid?0:1);
-          NODE
-          then
-            echo "FOREST_VILLAGE_REGISTERED=YES"
-            exit 0
-          fi
-          # 열려 있는 등록 PR을 중복 실행하거나 외부 자산을 중복 업로드하지 않는다.
-          if [[ "$(gh pr list --state open --head asset/fantasy-village-originals-24 --json number --jq 'length')" != "0" ]]; then
-            echo "FOREST_VILLAGE_REGISTRATION_PR_PENDING"
-            exit 1
-          fi
-          # 기존 원본 등록 경로에서만 네 개의 CC0 완성 집 메시를 변환한다.
-          # [원본 Blender GLB 변환] Ubuntu Blender는 glTF 내보내기에서
-          # NumPy를 요구한다. 존재하는 Blender만 검사하면 모듈 부족으로 실패한다.
-          if ! command -v blender >/dev/null 2>&1 || ! dpkg-query -W -f='${Status}' python3-numpy 2>/dev/null | grep -qx 'install ok installed'; then
-            sudo apt-get update -qq
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq blender python3-numpy
-          fi
-          python3 tools/baeksu-war-author-meshes.py -- /tmp/forest-village-assets --game-id=fantasy-survival
-          node tools/baeksu-war-upload-meshes.mjs /tmp/forest-village-assets /tmp/forest-village-receipt.json --game-id=fantasy-survival
-          # 기존 모델 ID를 보존하고 새 모델을 등록하고 기존 10종 원본 ID가 보존됐는지 재검사한다.
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
-          const village=registry.villagePrefabs;
-          const ids=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
-          if(village?.registrationVerified!==true||Object.keys(village.models||{}).length!==24
-            ||!Object.entries(village.models).every(([role,row])=>
-              Number.isSafeInteger(row.assetId)&&row.assetId>0
-              &&(row.sourceFile.endsWith('.zip')?(/^[a-f0-9]{64}$/.test(row.sha256)&&row.sha256!==row.sourceSha256):row.sourceSha256===row.sha256)
-              &&ids.includes(role+'='+row.assetId)))
-            throw Error('FOREST_VILLAGE_REGISTRATION_PROOF_INCOMPLETE');
-          console.log('FOREST_VILLAGE_REGISTERED_MODELS='+Object.keys(village.models).length);
-          NODE
-          git config user.name 'jaewoon-roblox-asset-register'
-          git config user.email 'actions@users.noreply.github.com'
-          git switch -c asset/fantasy-village-originals-24
-          git add roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json roblox-games/fantasy-survival/shared/VisualAssetIds.luau
-          git commit -m 'assets(fantasy-survival): register 24 verified village originals'
-          git push origin HEAD:asset/fantasy-village-originals-24
-          gh pr create --base main --head asset/fantasy-village-originals-24 \
-            --title '마력숲 CC0 마을·우물 원본 24종 등록' \
-            --body '기존 검증된 CC0 원본 등록기로 발급받은 자산 ID와 해시를 반영한다. main 병합 및 Universe 자산 사용 권한 검증 전에는 게시하지 않는다.'
-          echo "FOREST_VILLAGE_REGISTRATION_AWAIT_MAIN_MERGE"
-          # 새 등록은 반드시 검증된 main 소스에서만 Place에 반영한다.
-          exit 1
-
       # [12개 개별 원화] 기존 비공개 게임의 자산 등록/권한 승인기를 직접 확장한다.
       # 하나의 그림을 잘라 쓰지 않으며, 미인증 이미지 ID는 게임에 바인딩하지 않는다.
       - name: Register 12 original prologue scenes and independent depth layers
@@ -247,6 +174,7 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -345,20 +273,33 @@ jobs:
             if(unique.length===1)creator=unique[0];
           }
           if(!creator)throw Error('FOREST_INTRO_CREATOR_UNVERIFIED');
+          // [인증] 공식 Open Cloud 우선. 403 때 기존 소유자 인증으로 교차 확인하고 같은 방식으로 상태를 조회한다.
           let csrf='';
-          const request=async (url,opts)=>{
-            const auth=!!cookie;
-            let headers=auth?{cookie}: {'x-api-key':key};
-            if(csrf&&auth)headers['x-csrf-token']=csrf;
-            let r=await fetch(url,{...opts,headers,signal:AbortSignal.timeout(60000)});
-            if(auth&&r.status===403&&r.headers.get('x-csrf-token')){
-              csrf=r.headers.get('x-csrf-token');
-              headers['x-csrf-token']=csrf;
-              r=await fetch(url,{...opts,headers,signal:AbortSignal.timeout(60000)});
+          let imageAuth='cloud';
+          const request=async (suffix,opts)=>{
+            const send=async auth=>{
+              const headers=auth==='owner'?{cookie}:{'x-api-key':key};
+              if(auth==='owner'&&csrf)headers['x-csrf-token']=csrf;
+              const url='https://apis.roblox.com/assets/'+(auth==='owner'?'user-auth/':'')+'v1/'+suffix;
+              let r=await fetch(url,{...opts,headers,signal:AbortSignal.timeout(60000)});
+              if(auth==='owner'&&r.status===403&&r.headers.get('x-csrf-token')){
+                csrf=r.headers.get('x-csrf-token');
+                headers['x-csrf-token']=csrf;
+                r=await fetch(url,{...opts,headers,signal:AbortSignal.timeout(60000)});
+              }
+              return r;
+            };
+            const r=await send(imageAuth);
+            if(r.status!==403||!cookie)return r;
+            const fallback=imageAuth==='cloud'?'owner':'cloud';
+            const alternative=await send(fallback);
+            if(alternative.ok){
+              imageAuth=fallback;
+              console.log('FOREST_INTRO_AUTH_ROUTE='+fallback.toUpperCase());
+              return alternative;
             }
             return r;
           };
-          const base='https://apis.roblox.com/assets/'+(cookie?'user-auth/':'')+'v1/';
           // [등록 복구] 이전 실제 Roblox 성공 로그의 ID와 원본 SHA를 함께 검증해 중복 등록을 막는다.
           const registeredReceipts={
             '1:bg':['72108751885220','0b72201f7e3c1ed0ef6fc563f804d44649c24d470ba653acf1c38930eeab13ac'],
@@ -387,7 +328,7 @@ jobs:
             let r=null,j=null;
             for(let retry=0;retry<6;retry++){
               if(retry>0)await sleep(18000+retry*12000);
-              r=await request(base+'assets',{method:'POST',body:form});
+              r=await request('assets',{method:'POST',body:form});
               j=await read(r);
               if(r.ok&&/^operations\/[a-zA-Z0-9-]+$/.test(String(j.path||'')))break;
               if(![403,429,503].includes(r.status))break;
@@ -403,7 +344,7 @@ jobs:
             let pollFailures=0;
             while(!j.done&&Date.now()<deadline){
               await sleep(4200+pollFailures*5000);
-              r=await request(base+operation,{method:'GET'});
+              r=await request(operation,{method:'GET'});
               const answer=await read(r);
               if(r.ok){j=answer;pollFailures=0;}
               else if([403,429,503].includes(r.status)&&pollFailures<6){
@@ -418,12 +359,119 @@ jobs:
             console.log('FOREST_INTRO_UPLOADED_'+String(art.index).padStart(2,'0')+'_'+art.type.toUpperCase()+'='+id);
             await sleep(6000);
           }
-          await grant(registered.map(x=>x.assetId));
+          // [정합성] 실제 원본 12개 배경/11개 전경의 ID와 순서, 중복을 검증한다.
+          const scenes=registered.filter(x=>x.type==='bg').sort((a,b)=>a.index-b.index);
+          const depth=registered.filter(x=>x.type==='fg').sort((a,b)=>a.index-b.index);
+          const assetIds=registered.map(x=>x.assetId);
+          if(scenes.length!==12||depth.length!==11||new Set(assetIds).size!==23
+            ||scenes.some((x,i)=>x.index!==i+1)
+            ||new Set(depth.map(x=>x.index)).size!==11||depth.some(x=>x.index<1||x.index>12))
+            throw Error('FOREST_INTRO_ASSET_SET_INCOMPLETE');
+          await grant(assetIds);
           console.log('FOREST_INTRO_SCENES_REGISTERED='+JSON.stringify(registered));
           console.log('FOREST_INTRO_UNIVERSE_GRANT=PASS');
-          // 검증된 자산 ID를 main 소스에 고정한 다음, 다음 main 게시에서만 활성화한다.
+          // [반영] 검증된 ID만 기존 설정 파일에 기록하고 main에 직접 쓰지 않는다.
+          const configPath=dir+'shared/GameConfig.luau';
+          const anchor='  CinematicIntroAtlasSha256 = "a535d55a0a6c2af4ce9fb2bfdb339fb1e3919f530af5d3cc51f0861a7c717eda",';
+          const current=fs.readFileSync(configPath,'utf8');
+          if(!current.includes(anchor)||current.includes('CinematicIntroSceneIds ='))
+            throw Error('FOREST_INTRO_SCENE_CONFIG_CHANGED');
+          const row=entries=>entries.map(x=>'"rbxassetid://'+x.assetId+'"').join(', ');
+          const rowDepth=depth.map(x=>'['+x.index+']="rbxassetid://'+x.assetId+'"').join(', ');
+          const bind='\n  -- [검증된 2.5D 오프닝] 개별 원화 12장과 장면별 전경 11개의 실제 Roblox ID.'
+            +'\n  CinematicIntroSceneIds = {'+row(scenes)+'},'
+            +'\n  CinematicIntroForegroundIds = {'+rowDepth+'},';
+          fs.writeFileSync(configPath,current.replace(anchor,anchor+bind));
+          const run=(cmd,args)=>execFileSync(cmd,args,{stdio:'pipe',encoding:'utf8'}).trim();
+          const branch='asset/fantasy-intro-23-scenes';
+          run('git',['config','user.name','jaewoon-roblox-asset-register']);
+          run('git',['config','user.email','actions@users.noreply.github.com']);
+          const pending=run('gh',['pr','list','--state','open','--head',branch,'--json','number','--jq','length']);
+          if(pending!=='0')throw Error('FOREST_INTRO_BINDING_PR_PENDING');
+          run('git',['switch','-c',branch]);
+          run('git',['add',configPath]);
+          run('git',['commit','-m','assets(fantasy-survival): bind 23 verified intro images']);
+          run('git',['push','origin','HEAD:'+branch]);
+          run('gh',['pr','create','--base','main','--head',branch,
+            '--title','마력숲 2.5D 오프닝 원본 이미지 23개 등록',
+            '--body','원본 개별 ID 및 SHA와 Roblox Universe 사용 권한 검증 완료 후 기존 GameConfig에만 연결한다. main 병합 전까지 이전 오프닝 게시본을 유지한다.']);
+          console.log('FOREST_INTRO_BINDING_PR_CREATED=YES');
           throw Error('FOREST_INTRO_SCENE_IDS_MAIN_BIND_REQUIRED');
           NODE
+
+
+      # [마력숲 원본 등록] 기존 CC0 생산기를 재사용한다. 등록이 안 된 상태에서는
+      # 이번 Place 게시를 중단하고 원본 ID/해시를 main 병합용 PR로 보존한다.
+      - name: Register approved Forest village originals through the existing asset pipeline
+        if: matrix.gameId == 'fantasy-survival'
+        working-directory: main
+        env:
+          ROBLOX_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+          ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$ROBLOX_UNIVERSE_ID" = '10773436325'
+          if node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+          const ids=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
+          const village=registry.villagePrefabs;
+          if(village?.sourceVerified!==true||Object.keys(village.models||{}).length!==24)
+            throw Error('FOREST_VILLAGE_APPROVED_SOURCE_SET_REQUIRED');
+          const valid=village.registrationVerified===true&&Object.entries(village.models).every(([role,row])=>
+            Number.isSafeInteger(row.assetId)&&row.assetId>0
+            &&ids.includes(role+'='+row.assetId));
+          process.exit(valid?0:1);
+          NODE
+          then
+            echo "FOREST_VILLAGE_REGISTERED=YES"
+            exit 0
+          fi
+          # 열려 있는 등록 PR을 중복 실행하거나 외부 자산을 중복 업로드하지 않는다.
+          if [[ "$(gh pr list --state open --head asset/fantasy-village-originals-24 --json number --jq 'length')" != "0" ]]; then
+            echo "FOREST_VILLAGE_REGISTRATION_PR_PENDING"
+            exit 1
+          fi
+          # 기존 원본 등록 경로에서만 네 개의 CC0 완성 집 메시를 변환한다.
+          # [원본 Blender GLB 변환] Ubuntu Blender는 glTF 내보내기에서
+          # NumPy를 요구한다. 존재하는 Blender만 검사하면 모듈 부족으로 실패한다.
+          if ! command -v blender >/dev/null 2>&1 || ! dpkg-query -W -f='${Status}' python3-numpy 2>/dev/null | grep -qx 'install ok installed'; then
+            sudo apt-get update -qq
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq blender python3-numpy
+          fi
+          python3 tools/baeksu-war-author-meshes.py -- /tmp/forest-village-assets --game-id=fantasy-survival
+          node tools/baeksu-war-upload-meshes.mjs /tmp/forest-village-assets /tmp/forest-village-receipt.json --game-id=fantasy-survival
+          # 기존 모델 ID를 보존하고 새 모델을 등록하고 기존 10종 원본 ID가 보존됐는지 재검사한다.
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+          const village=registry.villagePrefabs;
+          const ids=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
+          if(village?.registrationVerified!==true||Object.keys(village.models||{}).length!==24
+            ||!Object.entries(village.models).every(([role,row])=>
+              Number.isSafeInteger(row.assetId)&&row.assetId>0
+              &&(row.sourceFile.endsWith('.zip')?(/^[a-f0-9]{64}$/.test(row.sha256)&&row.sha256!==row.sourceSha256):row.sourceSha256===row.sha256)
+              &&ids.includes(role+'='+row.assetId)))
+            throw Error('FOREST_VILLAGE_REGISTRATION_PROOF_INCOMPLETE');
+          console.log('FOREST_VILLAGE_REGISTERED_MODELS='+Object.keys(village.models).length);
+          NODE
+          git config user.name 'jaewoon-roblox-asset-register'
+          git config user.email 'actions@users.noreply.github.com'
+          git switch -c asset/fantasy-village-originals-24
+          git add roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json roblox-games/fantasy-survival/shared/VisualAssetIds.luau
+          git commit -m 'assets(fantasy-survival): register 24 verified village originals'
+          git push origin HEAD:asset/fantasy-village-originals-24
+          gh pr create --base main --head asset/fantasy-village-originals-24 \
+            --title '마력숲 CC0 마을·우물 원본 24종 등록' \
+            --body '기존 검증된 CC0 원본 등록기로 발급받은 자산 ID와 해시를 반영한다. main 병합 및 Universe 자산 사용 권한 검증 전에는 게시하지 않는다.'
+          echo "FOREST_VILLAGE_REGISTRATION_AWAIT_MAIN_MERGE"
+          # 새 등록은 반드시 검증된 main 소스에서만 Place에 반영한다.
+          exit 1
 
       - name: Grant original Forest models to the existing private Universe
         if: matrix.gameId == 'fantasy-survival'
