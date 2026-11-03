@@ -146,30 +146,57 @@ if '--game-id=fantasy-survival' in sys.argv:
      'sourceModel':blends[0].name}
     continue
    if role=='villageWell':
-    # [CC0 완성형 우물] 보유한 Kenney 원본 ZIP의 실제 Well GLB만 등록한다.
-    original=ROOT/'assets/external/simple-rpg/kenney_fantasy-town-kit_2.0.zip'
-    source_pack=json.loads((ROOT/'assets/external/simple-rpg/manifest.json').read_text())
-    pack=next((p for p in source_pack['packs'] if p['filename']==original.name),None)
-    if (source!=original.resolve() or not pack or pack['sha256']!=row['sourceSha256']
-      or pack['sourceUrl']!='https://opengameart.org/content/fantasy-town-kit'
-      or row['licenseEvidence']!='https://kenney.nl/assets/fantasy-town-kit'):
-     raise RuntimeError('MEADOW_WELL_CC0_PROVENANCE_INVALID')
-    raw=original.read_bytes()
-    if hashlib.sha256(raw).hexdigest()!=pack['sha256'] or len(raw)!=pack['archiveBytes']:
-     raise RuntimeError('MEADOW_WELL_CC0_DIGEST_INVALID')
-    with zipfile.ZipFile(io.BytesIO(raw)) as zipped:
-     names=[n for n in zipped.namelist() if Path(n).suffix.lower()=='.glb'
-      and re.search(r'(^|[-_ ])well($|[-_ ])',Path(n).stem.lower())
-      and 'fountain' not in Path(n).stem.lower() and '..' not in Path(n).parts]
-     if not names:raise RuntimeError('MEADOW_WELL_COMPLETE_ORIGINAL_NOT_FOUND')
-     chosen=sorted(names,key=lambda n:(0 if Path(n).stem.lower()=='well' else 1,len(n),n))[0]
-     data=zipped.read(chosen)
-    if len(data)<1000 or len(data)>18*1024*1024 or data[:4]!=b'glTF':
+    # [독립 CC0 우물 원본] 이전 분수/없는 Kenney Well 대신 Innerscene 원작 3D GLB만 사용한다.
+    # 최초 다운로드는 공식 공개 API 주소로 한정, 이후엔 저장소에 고정된 원본 SHA로만 재사용.
+    well_path=ROOT/'assets/shared/party/village-well.glb'
+    well_source='assets/shared/party/village-well.glb'
+    well_page='https://www.innerscene.com/tools/library/3d-parts/low-poly-medieval-well-7f4acee5'
+    well_url='https://www.innerscene.com/api/library/low-poly-medieval-well-7f4acee5/download'
+    legacy='assets/external/simple-rpg/kenney_fantasy-town-kit_2.0.zip'
+    if filename not in {legacy,well_source}:
+     raise RuntimeError('MEADOW_WELL_UNAPPROVED_SOURCE_PATH')
+    if filename==legacy and (
+      row.get('sourceSha256')!='1a7530c09f4d2fa2cdee259876f089334f8b1f27fa86a0c4f54ef86cdd8676ef'
+      or row.get('licenseEvidence')!='https://kenney.nl/assets/fantasy-town-kit'
+      or row.get('assetId') is not None):
+     raise RuntimeError('MEADOW_WELL_LEGACY_PENDING_PROVENANCE_CHANGED')
+    if filename==well_source and (row.get('licenseEvidence')!=well_page
+      or not re.fullmatch('[a-f0-9]{64}',row.get('sourceSha256',''))):
+     raise RuntimeError('MEADOW_WELL_REGISTERED_PROVENANCE_CHANGED')
+    if well_path.is_file():
+     data=well_path.read_bytes()
+    else:
+     if filename!=legacy:
+      raise RuntimeError('MEADOW_WELL_PINNED_SOURCE_MISSING')
+     request=urllib.request.Request(well_url,headers={'User-Agent':'Jaewoon-Forest-CC0-Well/1.0'})
+     with urllib.request.urlopen(request,timeout=35) as response:
+      if not response.url.startswith('https://files.innerscene.com/library/low-poly-medieval-well-7f4acee5/'):
+       raise RuntimeError('MEADOW_WELL_UNTRUSTED_DOWNLOAD_REDIRECT')
+      data=response.read(256*1024+1)
+    if not (1000<len(data)<256*1024) or data[:4]!=b'glTF':
      raise RuntimeError('MEADOW_WELL_ORIGINAL_GLB_INVALID')
+    if len(data)<28 or struct.unpack_from('<I',data,4)[0]!=2 or struct.unpack_from('<I',data,8)[0]!=len(data):
+     raise RuntimeError('MEADOW_WELL_ORIGINAL_GLB_HEADER_INVALID')
+    json_length=struct.unpack_from('<I',data,12)[0]
+    if json_length<100 or json_length>len(data)-20 or data[16:20]!=b'JSON':
+     raise RuntimeError('MEADOW_WELL_ORIGINAL_GLB_JSON_INVALID')
+    document=json.loads(data[20:20+json_length])
+    if not document.get('meshes') or not document.get('materials') or document.get('asset',{}).get('version')!='2.0':
+     raise RuntimeError('MEADOW_WELL_ORIGINAL_NATIVE_MESH_MISSING')
+    if document.get('extensionsRequired'):
+     raise RuntimeError('MEADOW_WELL_UNSUPPORTED_REQUIRED_EXTENSION')
+    if any(image.get('uri','').startswith(('http:','https:','../')) for image in document.get('images',[])):
+     raise RuntimeError('MEADOW_WELL_EXTERNAL_TEXTURE_FORBIDDEN')
+    digest=hashlib.sha256(data).hexdigest()
+    if filename==well_source and digest!=row['sourceSha256']:
+     raise RuntimeError('MEADOW_WELL_PINNED_SOURCE_SHA_MISMATCH')
+    if not well_path.is_file():
+     well_path.write_bytes(data)
     (OUT/(role+'.glb')).write_bytes(data)
-    records[role]={'sourceFile':filename,'sourceSha256':row['sourceSha256'],
-     'sha256':hashlib.sha256(data).hexdigest(),'format':'glb','license':'CC0-1.0',
-     'licenseEvidence':row['licenseEvidence'],'sourceModel':chosen,'bytes':len(data)}
+    records[role]={'sourceFile':well_source,'sourceSha256':digest,
+     'sha256':digest,'format':'glb','license':'CC0-1.0',
+     'licenseEvidence':well_page,'sourceUrl':well_url,
+     'sourceModel':'low-poly-medieval-well.glb','bytes':len(data)}
     continue
    if not source.is_relative_to((ROOT/'assets/shared/party').resolve()) or source.suffix!='.glb':
     raise RuntimeError('FANTASY_VILLAGE_ASSET_PATH_INVALID:'+role)
