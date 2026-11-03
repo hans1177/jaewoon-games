@@ -1205,8 +1205,9 @@ local filterBar,filterButtons=CommonUI.CreateFilterBar({name="WitcherItemCategor
 filterBar.LayoutOrder=2;filterBar.Size=UDim2.new(1,-8,0,48);filterBar.Parent=meadowPages[2]
 -- [인벤토리 검색] 이미 서버에 등록된 항목만 필터링하며 장비/소모품 기능은 그대로 사용한다.
 local inventorySearch=CommonUI.CreateSearchField({
-  name="MeadowInventorySearch",placeholder="아이템 이름 검색",size=UDim2.new(1,-8,0,48)
+  name="MeadowInventorySearch",size=UDim2.new(1,-8,0,48)
 })
+inventorySearch.PlaceholderText="아이템 이름 검색"
 inventorySearch.LayoutOrder=3;inventorySearch.BackgroundColor3=Color3.fromRGB(34,32,37)
 inventorySearch.Parent=meadowPages[2]
 local inventoryGrid=Instance.new("Frame")
