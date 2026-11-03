@@ -142,10 +142,28 @@ export function checkAutonomousCandidate(task={},result={}){
     ||!['implementation','code','build'].includes(lower(task.type))
     ||clean(result.outcome).toUpperCase()!=='PASS')return{accepted:true};
   const metrics=result.metrics||{};
-  // The worker always reports changedFileCount. Only a zero verified source
-  // mutation is rejected; no-op research/analysis tasks are not code changes.
-  if(Number.isFinite(metrics.changedFileCount)&&metrics.changedFileCount===0)
+  // [실제 소스] 변경 수가 누락된 PASS도 거부한다. 분석/학습 작업은 위에서 제외됐다.
+  if(!Number.isSafeInteger(metrics.changedFileCount)||metrics.changedFileCount<1)
     return{accepted:false,reason:'AUTONOMOUS_NO_SOURCE_CHANGE',category:'NO_OP'};
+  // [로블록스 빌드업] 게임 소스 변경의 원본·대상·커밋 증거를 기존 fan-in에서 검증한다.
+  // 생성 후보의 검증일 뿐 main 병합·실제 Studio 플레이·게시 성공을 의미하지 않는다.
+  if(lower(task.target)==='roblox'&&task.assetProductionLane!==true
+    &&lower(task.executionLane)!=='asset_development'){
+    const lines=Number(metrics.addedLineCount)+Number(metrics.deletedLineCount);
+    if(!Number.isSafeInteger(lines)||lines<1)
+      return{accepted:false,reason:'AUTONOMOUS_NO_SOURCE_CHANGE',category:'NO_OP'};
+    const identity=result.candidateIdentity||{};
+    const proof=(Array.isArray(result.evidence)?result.evidence:[]).map(clean);
+    const candidateSha=proof.find(value=>/^candidate-sha:[a-f0-9]{40}$/i.test(value))?.slice('candidate-sha:'.length);
+    const baseSha=clean(result.baseMainSha);
+    const branch=clean(result.candidateBranch);
+    const sourceRoot=clean(identity.sourceRoot).replaceAll('\\','/').replace(/\\/+$/,'');
+    if(!/^vibe2\\/candidate\\//.test(branch)||!sha40(candidateSha)||!sha40(baseSha)
+      ||candidateSha.toLowerCase()===baseSha.toLowerCase()
+      ||lower(identity.target)!=='roblox'||clean(identity.gameId)!==clean(task.gameId)
+      ||!sourceRoot.startsWith('roblox-games/'+clean(task.gameId)))
+      return{accepted:false,reason:'AUTONOMOUS_ROBLOX_SOURCE_PROOF_MISSING',category:'SOURCE_PROOF'};
+  }
   const before=result.runtimePerformance?.before||{},after=result.runtimePerformance?.after||{};
   const measured=Number.isFinite(Number(before.fps))&&Number.isFinite(Number(after.fps))
     &&Number(before.fps)>0&&Number(after.fps)>0;
