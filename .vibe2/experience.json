@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -126910,39 +126908,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_d81663c1dbf874288d688e09",
-          "taskId": "line-defense-web-startup-spatial-repair-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_20d2fced3f152813ab7e4829",
-            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
-          ],
-          "evidence": [
-            "base-main:4c7092141a766f76fbc88d0f7593d56f9ae0f18a",
-            "actions-run:40638886221",
-            "reservation-id:40638886221:1",
-            "capability-application-sample:70ccee0ff53c98497383"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_c96806595874646c0d42a082",
           "taskId": "line-defense-web-startup-spatial-repair-v1",
           "workKey": null,
@@ -129013,6 +128978,39 @@
             "actions-run:41043479686",
             "reservation-id:41043479686:1",
             "capability-application-sample:1160d370d553feff90c9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_14933676b8c9e1bef26e4b32",
+          "taskId": "line-defense-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_061bbbee164f6b943e5d7293",
+            "capability_ctrace_20d2fced3f152813ab7e4829",
+            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:d49e24c42bbebbd0bd9b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -154889,39 +154887,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_e1b127a3ecda39d6f86e3d2c",
-          "taskId": "line-defense-web-startup-spatial-repair-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_20d2fced3f152813ab7e4829",
-            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
-          ],
-          "evidence": [
-            "base-main:4c7092141a766f76fbc88d0f7593d56f9ae0f18a",
-            "actions-run:40638886221",
-            "reservation-id:40638886221:1",
-            "capability-application-sample:70ccee0ff53c98497383"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_87920601208d913bf9333eed",
           "taskId": "line-defense-web-startup-spatial-repair-v1",
           "workKey": null,
@@ -156992,6 +156957,39 @@
             "actions-run:41043479686",
             "reservation-id:41043479686:1",
             "capability-application-sample:1160d370d553feff90c9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_04eec5fdce44e146bf6eebec",
+          "taskId": "line-defense-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_061bbbee164f6b943e5d7293",
+            "capability_ctrace_20d2fced3f152813ab7e4829",
+            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:d49e24c42bbebbd0bd9b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -165659,105 +165657,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_694b8ec539327c9e1331f86a",
-          "taskId": "core-clash-4v4-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:1f9ce8d514640bec612ad49810ab4291f4217b26",
-            "actions-run:41112950614",
-            "reservation-id:41112950614:1",
-            "capability-application-sample:49ad823c718d805e72be"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_a7e25e7a05b62435d15218d0",
-          "taskId": "defense-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:1f9ce8d514640bec612ad49810ab4291f4217b26",
-            "actions-run:41112950614",
-            "reservation-id:41112950614:1",
-            "capability-application-sample:771deab68eb1ff599b81"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_437ff120f3f8525c574d1769",
-          "taskId": "defense-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:1f9ce8d514640bec612ad49810ab4291f4217b26",
-            "actions-run:41112950614",
-            "reservation-id:41112950614:1",
-            "capability-application-sample:ac775bc46448cf796058"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_1af9eb572a326110a416694e",
           "taskId": "defense-existing-web-assessment-v1",
           "workKey": null,
@@ -167762,6 +167661,105 @@
             "actions-run:41661943004",
             "reservation-id:41661943004:1",
             "capability-application-sample:c9b01bb78faaff9c6b75"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d1e6b1b178532cdae0d2e105",
+          "taskId": "kingshot-ad-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:f1140e494a420dbc0c8b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_fb4f63121b223af1e65957a0",
+          "taskId": "line-defense-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_061bbbee164f6b943e5d7293",
+            "capability_ctrace_20d2fced3f152813ab7e4829",
+            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:d49e24c42bbebbd0bd9b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_1a00e01e7727b869ad6c909e",
+          "taskId": "mini-empire-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "mini-empire",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:692bc9c7fed0f3f236c8"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -172691,72 +172689,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_68085f72c2d2e57da5f8a59d",
-          "taskId": "cat-step-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "cat-step",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:1f9ce8d514640bec612ad49810ab4291f4217b26",
-            "actions-run:41112950614",
-            "reservation-id:41112950614:1",
-            "capability-application-sample:d76c3b6f25400df86e0f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_54b885fea7541b6f54f8a0fb",
-          "taskId": "core-clash-4v4-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:1f9ce8d514640bec612ad49810ab4291f4217b26",
-            "actions-run:41112950614",
-            "reservation-id:41112950614:1",
-            "capability-application-sample:2c3c757cd7a8999a3ac3"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_c93a8c1f3c2bcb2ae71e443d",
           "taskId": "core-clash-4v4-existing-web-assessment-v1",
           "workKey": null,
@@ -174794,6 +174726,72 @@
             "actions-run:41661943004",
             "reservation-id:41661943004:1",
             "capability-application-sample:c9b01bb78faaff9c6b75"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c81822c4fb7076c17f3d629b",
+          "taskId": "kingshot-ad-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:f1140e494a420dbc0c8b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b7571bf65041701f27451861",
+          "taskId": "mini-empire-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "mini-empire",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:692bc9c7fed0f3f236c8"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -189194,72 +189192,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_4534c246e53e8678dcad4062",
-          "taskId": "core-clash-4v4-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:1f9ce8d514640bec612ad49810ab4291f4217b26",
-            "actions-run:41112950614",
-            "reservation-id:41112950614:1",
-            "capability-application-sample:44eb79fdf7ae8745cff5"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_22d87d7fc00cdd2e759c8c72",
-          "taskId": "core-clash-4v4-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:1f9ce8d514640bec612ad49810ab4291f4217b26",
-            "actions-run:41112950614",
-            "reservation-id:41112950614:1",
-            "capability-application-sample:49ad823c718d805e72be"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_21ba00e28942931903765e76",
           "taskId": "defense-existing-web-assessment-v1",
           "workKey": null,
@@ -191303,6 +191235,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_8a197e5e8c69713255b89b54",
+          "taskId": "kingshot-ad-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:f1140e494a420dbc0c8b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c7190b398099931328a2552f",
+          "taskId": "mini-empire-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "mini-empire",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:692bc9c7fed0f3f236c8"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -191475,39 +191473,6 @@
       "confirmations": 15,
       "confidence": 0.9375,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_84a36e665c408eddc30f2f7e",
-          "taskId": "line-defense-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_20d2fced3f152813ab7e4829",
-            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
-          ],
-          "evidence": [
-            "base-main:3ab492e99050feb484ff5b92afcbe15bb9e59115",
-            "actions-run:40877912420",
-            "reservation-id:40877912420:1",
-            "capability-application-sample:15d6edc45d7a32f41fe3"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_9fbfa735e9fad3f06ac46f9a",
@@ -193580,6 +193545,39 @@
             "actions-run:41658255144",
             "reservation-id:41658255144:1",
             "capability-application-sample:342bec78a31e58b0d74f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0598f29f2f629a79e3288637",
+          "taskId": "line-defense-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_061bbbee164f6b943e5d7293",
+            "capability_ctrace_20d2fced3f152813ab7e4829",
+            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:d49e24c42bbebbd0bd9b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196245,72 +196243,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_1b472ab6141b75781113b704",
-          "taskId": "core-clash-4v4-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:1f9ce8d514640bec612ad49810ab4291f4217b26",
-            "actions-run:41112950614",
-            "reservation-id:41112950614:1",
-            "capability-application-sample:44eb79fdf7ae8745cff5"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_d9233b07cbadbf9239c972f9",
-          "taskId": "core-clash-4v4-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:1f9ce8d514640bec612ad49810ab4291f4217b26",
-            "actions-run:41112950614",
-            "reservation-id:41112950614:1",
-            "capability-application-sample:49ad823c718d805e72be"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_34ad4c721b686957f975ce3b",
           "taskId": "defense-existing-web-assessment-v1",
           "workKey": null,
@@ -198348,6 +198280,72 @@
             "actions-run:41661943004",
             "reservation-id:41661943004:1",
             "capability-application-sample:c9b01bb78faaff9c6b75"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e92e26f1a6afebec9d7f71df",
+          "taskId": "kingshot-ad-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:f1140e494a420dbc0c8b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f05c034f570b30b73ed82674",
+          "taskId": "mini-empire-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "mini-empire",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:692bc9c7fed0f3f236c8"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -201191,72 +201189,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_5e7e1adbb3a3b1e20daae416",
-          "taskId": "cat-step-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "cat-step",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:1f9ce8d514640bec612ad49810ab4291f4217b26",
-            "actions-run:41112950614",
-            "reservation-id:41112950614:1",
-            "capability-application-sample:d76c3b6f25400df86e0f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_b7c788a155d9ea40d420c6c1",
-          "taskId": "core-clash-4v4-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:1f9ce8d514640bec612ad49810ab4291f4217b26",
-            "actions-run:41112950614",
-            "reservation-id:41112950614:1",
-            "capability-application-sample:2c3c757cd7a8999a3ac3"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_40a731d80999341cff010bd6",
           "taskId": "core-clash-4v4-existing-web-assessment-v1",
           "workKey": null,
@@ -203294,6 +203226,72 @@
             "actions-run:41661943004",
             "reservation-id:41661943004:1",
             "capability-application-sample:c9b01bb78faaff9c6b75"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_fe292c77104b496b195dec52",
+          "taskId": "kingshot-ad-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:f1140e494a420dbc0c8b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a46de4d9c512d3b492512935",
+          "taskId": "mini-empire-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "mini-empire",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:692bc9c7fed0f3f236c8"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -210724,39 +210722,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_db29afaeb97a50744019e007",
-          "taskId": "line-defense-web-startup-spatial-repair-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_20d2fced3f152813ab7e4829",
-            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
-          ],
-          "evidence": [
-            "base-main:4c7092141a766f76fbc88d0f7593d56f9ae0f18a",
-            "actions-run:40638886221",
-            "reservation-id:40638886221:1",
-            "capability-application-sample:70ccee0ff53c98497383"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_1e64d2628480c0817389a16d",
           "taskId": "line-defense-web-startup-spatial-repair-v1",
           "workKey": null,
@@ -212827,6 +212792,39 @@
             "actions-run:41043479686",
             "reservation-id:41043479686:1",
             "capability-application-sample:1160d370d553feff90c9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2f38793fcf0fd8a90452a647",
+          "taskId": "line-defense-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_061bbbee164f6b943e5d7293",
+            "capability_ctrace_20d2fced3f152813ab7e4829",
+            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
+          ],
+          "evidence": [
+            "base-main:68832470d3cb618d136b99f5fa5582dbe94f4bf0",
+            "actions-run:41661032096",
+            "reservation-id:41661032096:1",
+            "capability-application-sample:d49e24c42bbebbd0bd9b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
