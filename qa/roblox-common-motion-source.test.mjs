@@ -580,12 +580,12 @@ print('JOINT_POSE_BLEND_PASS')
  // [배포 중인 게임] 삭제된 포탈 RPG 전용 드라이버 대신 현재 마력숲의 실제 연결 소스를 검증한다.
  const consumer=fs.readFileSync(new URL('../roblox-games/fantasy-survival/client/Game.client.luau',import.meta.url),'utf8');
  for(const sourceMarker of [
-  'combatMotionSource.CreateCombatCombo(',
+  'pcall(combatMotionSource.CreateCombatCombo,',
   'combatMotionSource.SampleCombatCombo(',
   'combatMotionSource.MapCombatPoseToR15(',
   'combatMotionSource.BindJointPose(',
   'RunService.PreSimulation:Connect(function(dt)',
-  'activeCombatController.Step(combatR15Targets,dt)',
+  'activeCombatController.Step(combatR15Targets, dt)',
  ]){
   assert.ok(consumer.includes(sourceMarker),'CURRENT_GAME_REAL_COMBAT_BINDING_MISSING:'+sourceMarker);
  }
