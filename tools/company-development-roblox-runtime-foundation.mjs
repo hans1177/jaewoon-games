@@ -233,9 +233,12 @@ export async function probeRobloxOpenCloudGameServerObservation({
       const raw=await response.text();
       providerError=JSON.parse(raw.slice(0,4096));
     }catch{}
-    const providerCode=clean(providerError?.code||providerError?.error?.code);
+    const firstError=Array.isArray(providerError?.errors)?providerError.errors[0]:null;
+    const providerCode=clean(providerError?.code||providerError?.error?.code||firstError?.code);
     const errorCode=/^[a-z][a-z0-9_-]{1,63}$/i.test(providerCode)?providerCode:null;
-    const message=clean(providerError?.message||providerError?.error?.message||providerError?.errorMessage);
+    const message=clean(
+      providerError?.message||providerError?.error?.message||providerError?.errorMessage||firstError?.message
+    );
     const accessFailureCategory=
       /required scope|missing scope|insufficient scope|scope.*(missing|denied|invalid)|not.*scope/i.test(message)
         ?'SCOPE_NOT_GRANTED'
@@ -246,8 +249,30 @@ export async function probeRobloxOpenCloudGameServerObservation({
       :/universe|experience|target|resource/i.test(message)&&/permission|authoriz|access|not found|forbidden/i.test(message)
         ?'TARGET_OR_CREATOR_PERMISSION'
       :'UNCLASSIFIED_AUTHORIZATION_DENIAL';
+    // [읽기 권한 구분] 원문이 제공되지 않는 403에 한해 같은 인증 키로
+    // universe:read가 요구되는 공식 필터 조회를 1회 교차 확인한다.
+    // 비교 API가 200이면 동일 키의 범위/대상 권한은 있으므로 서버 버전 경로의 별도 거부다.
+    let readScopeCrosscheck=null;
+    if(status===403&&accessFailureCategory==='UNCLASSIFIED_AUTHORIZATION_DENIAL'){
+      const checkEndpoint='https://apis.roblox.com/server-management/v1/universes/'
+        +encodeURIComponent(universe)+'/places/'+encodeURIComponent(place)+'/game-servers:filter-options';
+      try{
+        const check=await fetchWithNetworkRetry(fetchImpl,checkEndpoint,{headers:{'x-api-key':key}},{
+          attempts:1,delayMs:0,label:'ROBLOX_SERVER_READ_SCOPE_CHECK'
+        });
+        const checkStatus=Number(check?.status||0);
+        readScopeCrosscheck=Object.freeze({
+          status:checkStatus,
+          state:checkStatus===200?'SAME_KEY_UNIVERSE_READ_ENDPOINT_AUTHORIZED'
+            :(checkStatus===401||checkStatus===403)?'SAME_KEY_UNIVERSE_READ_ENDPOINT_DENIED'
+            :'SAME_KEY_READ_SCOPE_CHECK_INCONCLUSIVE',
+        });
+      }catch{
+        readScopeCrosscheck=Object.freeze({status:0,state:'SAME_KEY_READ_SCOPE_CHECK_UNAVAILABLE'});
+      }
+    }
     return Object.freeze({...base,available:false,permissionDenied:true,
-      providerErrorCode:errorCode,accessFailureCategory,
+      providerErrorCode:errorCode,accessFailureCategory,readScopeCrosscheck,
       serverInstanceObserved:false,activeServerCount:null,
       state:'GAME_SERVER_READ_PERMISSION_UNAVAILABLE'});
   }
