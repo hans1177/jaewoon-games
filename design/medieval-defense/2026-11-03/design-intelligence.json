@@ -30,9 +30,9 @@
     "identityAnchors": [
       "일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중",
       "왕국 최후의 성벽 · 중세 전쟁 디펜스의 실제 플레이 핵심 행동과 선택을 구체화,행동 결과가 진행·위험·보상과 연결되는 반복 가능한 게임 루프,모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름",
-      "왕국 최후의 성벽 · 중세 전쟁 디펜스의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-      "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-      "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
+      "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+      "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
       "PRESERVE_OR_MIGRATE_BEFORE_SEMANTIC_CHANGE",
       "SINGLE"
     ],
@@ -245,6 +245,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -309,6 +310,7 @@
             "TABLE",
             "TRASHCAN"
           ],
+          "SKILL": [],
           "UI": [
             "CONTROL_ICON"
           ],
@@ -384,6 +386,17 @@
           },
           {
             "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "SKILL",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -439,6 +452,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -503,6 +517,7 @@
             "TABLE",
             "TRASHCAN"
           ],
+          "SKILL": [],
           "UI": [
             "CONTROL_ICON"
           ],
@@ -578,6 +593,17 @@
           },
           {
             "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "SKILL",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -633,6 +659,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -697,6 +724,7 @@
             "TABLE",
             "TRASHCAN"
           ],
+          "SKILL": [],
           "UI": [
             "CONTROL_ICON"
           ],
@@ -772,6 +800,17 @@
           },
           {
             "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "SKILL",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -971,9 +1010,9 @@
         "identityAnchors": [
           "일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중",
           "왕국 최후의 성벽 · 중세 전쟁 디펜스의 실제 플레이 핵심 행동과 선택을 구체화,행동 결과가 진행·위험·보상과 연결되는 반복 가능한 게임 루프,모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름",
-          "왕국 최후의 성벽 · 중세 전쟁 디펜스의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-          "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-          "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+          "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
           "PRESERVE_OR_MIGRATE_BEFORE_SEMANTIC_CHANGE",
           "SINGLE"
         ],
@@ -1429,9 +1468,9 @@
       "identityAnchors": [
         "일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중",
         "왕국 최후의 성벽 · 중세 전쟁 디펜스의 실제 플레이 핵심 행동과 선택을 구체화,행동 결과가 진행·위험·보상과 연결되는 반복 가능한 게임 루프,모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름",
-        "왕국 최후의 성벽 · 중세 전쟁 디펜스의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-        "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-        "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
         "PRESERVE_OR_MIGRATE_BEFORE_SEMANTIC_CHANGE",
         "SINGLE"
       ],
