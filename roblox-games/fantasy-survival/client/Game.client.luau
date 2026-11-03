@@ -726,11 +726,30 @@ equipmentHeading.Size=UDim2.new(1,-8,0,30);equipmentHeading.BackgroundTransparen
 equipmentHeading.Font=Enum.Font.GothamBold;equipmentHeading.TextSize=17
 equipmentHeading.Text="장  비  /  EQUIPMENT";equipmentHeading.TextColor3=meadowGold
 equipmentHeading.TextXAlignment=Enum.TextXAlignment.Left;equipmentHeading.Parent=meadowPages[1]
+-- [캐릭터 장비] 기존 여섯 슬롯을 게임 화면 폭에 따라 배치한다. 실제 장착/능력치는 서버 값을 유지한다.
+local equipmentGrid=Instance.new("Frame")
+equipmentGrid.Name="WitcherEquipmentGrid";equipmentGrid.LayoutOrder=3
+equipmentGrid.Size=UDim2.new(1,-8,0,448);equipmentGrid.BackgroundTransparency=1
+equipmentGrid.Parent=meadowPages[1]
+local equipmentLayout=Instance.new("UIGridLayout")
+equipmentLayout.SortOrder=Enum.SortOrder.LayoutOrder
+equipmentLayout.CellPadding=UDim2.fromOffset(8,8);equipmentLayout.Parent=equipmentGrid
+local function layoutEquipment()
+  local width=equipmentGrid.AbsoluteSize.X
+  if width<=0 then return end
+  local columns=width>=630 and 3 or width>=340 and 2 or 1
+  local rows=math.ceil(6/columns)
+  equipmentLayout.CellSize=UDim2.fromOffset(math.floor((width-(columns-1)*8)/columns),68)
+  equipmentGrid.Size=UDim2.new(1,-8,0,rows*68+(rows-1)*8)
+end
+equipmentGrid:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutEquipment)
+task.defer(layoutEquipment)
 local function characterEquipmentSlot(label,order,iconCell)
   local slot=Instance.new("Frame")
   slot.Name="EquipmentSlot"..order;slot.LayoutOrder=order
   slot.Size=UDim2.new(1,-8,0,60);slot.BackgroundColor3=Color3.fromRGB(31,31,34)
-  slot.BorderSizePixel=0;slot.Parent=meadowPages[1]
+  slot.BorderSizePixel=0;slot.Parent=equipmentGrid
+   local rounded=Instance.new("UICorner");rounded.CornerRadius=UDim.new(0,9);rounded.Parent=slot
   local border=Instance.new("UIStroke");border.Color=Color3.fromRGB(105,89,65)
   border.Transparency=.3;border.Parent=slot
   local icon=Instance.new("ImageLabel")
@@ -755,17 +774,39 @@ local equippedLegs=characterEquipmentSlot("바지",6,3)
 local equippedFeet=characterEquipmentSlot("장화",7,3)
 local equippedAccessory=characterEquipmentSlot("장신구",8,6)
 local masteryHeading=Instance.new("TextLabel")
-masteryHeading.Name="MasteryHeading";masteryHeading.LayoutOrder=9
+masteryHeading.Name="MasteryHeading";masteryHeading.LayoutOrder=4
 masteryHeading.Size=UDim2.new(1,-8,0,30);masteryHeading.BackgroundTransparency=1
 masteryHeading.Font=Enum.Font.GothamBold;masteryHeading.TextSize=17
 masteryHeading.Text="숙  련  /  MASTERIES";masteryHeading.TextColor3=meadowGold
 masteryHeading.TextXAlignment=Enum.TextXAlignment.Left;masteryHeading.Parent=meadowPages[1]
-meadowLabels[1].LayoutOrder=10
+-- [숙련 진행도] 기존 50 숙련도당 기술 점수 1점 규칙을 표시만 한다.
+local masteryTrack=Instance.new("Frame")
+masteryTrack.Name="CombatMasteryTrack";masteryTrack.LayoutOrder=5
+masteryTrack.Size=UDim2.new(1,-8,0,48);masteryTrack.BackgroundColor3=Color3.fromRGB(35,34,38)
+masteryTrack.BorderSizePixel=0;masteryTrack.Parent=meadowPages[1]
+local trackCorner=Instance.new("UICorner");trackCorner.CornerRadius=UDim.new(0,9);trackCorner.Parent=masteryTrack
+local masteryProgressLabel=Instance.new("TextLabel")
+masteryProgressLabel.Name="CombatMasteryNextPoint";masteryProgressLabel.Position=UDim2.fromOffset(10,5)
+masteryProgressLabel.Size=UDim2.new(1,-20,0,22);masteryProgressLabel.BackgroundTransparency=1
+masteryProgressLabel.Font=Enum.Font.GothamBold;masteryProgressLabel.TextSize=13
+masteryProgressLabel.TextXAlignment=Enum.TextXAlignment.Left;masteryProgressLabel.TextColor3=meadowParchment
+masteryProgressLabel.Parent=masteryTrack
+local masteryProgressBackground=Instance.new("Frame")
+masteryProgressBackground.Name="MasteryProgressBackground";masteryProgressBackground.Position=UDim2.fromOffset(10,31)
+masteryProgressBackground.Size=UDim2.new(1,-20,0,7);masteryProgressBackground.BorderSizePixel=0
+masteryProgressBackground.BackgroundColor3=Color3.fromRGB(70,63,56);masteryProgressBackground.Parent=masteryTrack
+local masteryProgressFill=Instance.new("Frame")
+masteryProgressFill.Name="MasteryProgressFill";masteryProgressFill.Size=UDim2.fromScale(0,1)
+masteryProgressFill.BackgroundColor3=meadowGold;masteryProgressFill.BorderSizePixel=0;masteryProgressFill.Parent=masteryProgressBackground
+meadowLabels[1].LayoutOrder=6
 meadowLabels[1].TextColor3=meadowParchment
 meadowLabels[1].TextSize=14
 return function(character,humanoid,tool,force)
   -- [실제 착용 외형] 장비 수정, 아바타 외형 로딩 및 장착 도구 교체 시에만 복제한다.
   redrawNativeAvatar(character,tool,force)
+  local combatMastery=math.floor(math.max(0,tonumber(player:GetAttribute("CombatProficiency")) or 0))
+  masteryProgressLabel.Text=string.format("전투 숙련 %d  ·  다음 기술 점수까지 %d",combatMastery,50-combatMastery%50)
+  masteryProgressFill.Size=UDim2.fromScale((combatMastery%50)/50,1)
   characterHeroName.Text=player.DisplayName
   characterHeroSummary.Text=string.format("체력 %d/%d · 기력 %d/100\n장비 공격 +%d · 방어 +%d\n무기 강화 +%d · 보스 %d",
     humanoid and humanoid.Health or 0,humanoid and humanoid.MaxHealth or 100,
@@ -950,6 +991,8 @@ meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerSt
   pages=meadowPages,pageNames=meadowPageNames,
   onPageChanged=function(index)
     renderMeadowPages()
+    local heading=root:FindFirstChild("MeadowMenuHeading")
+    if heading then heading.Text="마력숲  /  "..(index==0 and "활동" or meadowPageNames[index] or "모험") end
     if index==7 and meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end
   end,
 })
@@ -987,6 +1030,8 @@ UserInputService.InputBegan:Connect(function(input,processed)
   if input.KeyCode==Enum.KeyCode.C then meadowMenu.open(1)
   elseif input.KeyCode==Enum.KeyCode.I then meadowMenu.open(2)
   elseif input.KeyCode==Enum.KeyCode.K then meadowMenu.open(7)
+  elseif input.KeyCode==Enum.KeyCode.J then meadowMenu.open(3)
+  elseif input.KeyCode==Enum.KeyCode.O then meadowMenu.open(4)
   end
 end)
 local meadowHud=gui:FindFirstChild("MobileGameStatus")
@@ -1106,7 +1151,7 @@ local function journalRow(name,height)
   local row=Instance.new("TextLabel")
   row.Name=name
   row.Size=UDim2.new(1,0,0,height)
-  row.BackgroundColor3=Color3.fromRGB(30,60,48)
+  row.BackgroundColor3=Color3.fromRGB(36,35,39)
   row.BackgroundTransparency=.08
   row.BorderSizePixel=0
   row.TextXAlignment=Enum.TextXAlignment.Left
@@ -1120,6 +1165,8 @@ local function journalRow(name,height)
   local corner=Instance.new("UICorner")
   corner.CornerRadius=UDim.new(0,9)
   corner.Parent=row
+  local outline=Instance.new("UIStroke")
+  outline.Color=Color3.fromRGB(125,105,73);outline.Transparency=.64;outline.Parent=row
   local padding=Instance.new("UIPadding")
   padding.PaddingLeft=UDim.new(0,11)
   padding.PaddingRight=UDim.new(0,9)
@@ -1156,8 +1203,14 @@ end
 local backpack=player:FindFirstChildOfClass("Backpack") or player:FindFirstChild("Backpack")
 local filterBar,filterButtons=CommonUI.CreateFilterBar({name="WitcherItemCategories",filters=categories,selectedIndex=1})
 filterBar.LayoutOrder=2;filterBar.Size=UDim2.new(1,-8,0,48);filterBar.Parent=meadowPages[2]
+-- [인벤토리 검색] 이미 서버에 등록된 항목만 필터링하며 장비/소모품 기능은 그대로 사용한다.
+local inventorySearch=CommonUI.CreateSearchField({
+  name="MeadowInventorySearch",placeholder="아이템 이름 검색",size=UDim2.new(1,-8,0,48)
+})
+inventorySearch.LayoutOrder=3;inventorySearch.BackgroundColor3=Color3.fromRGB(34,32,37)
+inventorySearch.Parent=meadowPages[2]
 local inventoryGrid=Instance.new("Frame")
-inventoryGrid.Name="MeadowInventoryGrid";inventoryGrid.LayoutOrder=3
+inventoryGrid.Name="MeadowInventoryGrid";inventoryGrid.LayoutOrder=5
 inventoryGrid.Size=UDim2.new(1,-8,0,100);inventoryGrid.BackgroundTransparency=1;inventoryGrid.Parent=meadowPages[2]
 local gridLayout=Instance.new("UIGridLayout")
 gridLayout.SortOrder=Enum.SortOrder.LayoutOrder;gridLayout.CellPadding=UDim2.fromOffset(8,8)
@@ -1166,6 +1219,7 @@ local detail=Instance.new("Frame")
 detail.Name="WitcherItemDetails";detail.LayoutOrder=4
 detail.Size=UDim2.new(1,-8,0,214);detail.BorderSizePixel=0;detail.BackgroundColor3=stone
 detail.Parent=meadowPages[2]
+local detailCorner=Instance.new("UICorner");detailCorner.CornerRadius=UDim.new(0,12);detailCorner.Parent=detail
 local border=Instance.new("UIStroke")
 border.Color=gold;border.Transparency=.16;border.Thickness=1.4;border.Parent=detail
 local title=Instance.new("TextLabel")
@@ -1185,6 +1239,12 @@ equip.BackgroundColor3=Color3.fromRGB(91,62,44);equip.Visible=false;equip.Parent
 local secondary=CommonUI.CreatePrimaryButton({name="WitcherSecondaryItemAction",text="소모품 조합",minHeight=48})
 secondary.Position=UDim2.new(.5,4,0,158);secondary.Size=UDim2.new(.5,-16,0,48)
 secondary.BackgroundColor3=Color3.fromRGB(67,72,62);secondary.Visible=false;secondary.Parent=detail
+local inventoryEmpty=Instance.new("TextLabel")
+inventoryEmpty.Name="MeadowInventoryEmpty";inventoryEmpty.LayoutOrder=6
+inventoryEmpty.Size=UDim2.new(1,-8,0,60);inventoryEmpty.BackgroundTransparency=1
+inventoryEmpty.Text="검색 조건에 맞는 항목이 없어.";inventoryEmpty.Font=Enum.Font.GothamMedium
+inventoryEmpty.TextSize=14;inventoryEmpty.TextColor3=muted;inventoryEmpty.Visible=false
+inventoryEmpty.Parent=meadowPages[2]
 local itemCards={}
 local itemRows={}
 local selectedKey="Wood"
@@ -1251,6 +1311,7 @@ local function makeCard(item)
   local card=Instance.new("TextButton")
   card.Name="OwnedItemSlot";card.Text="";card.AutoButtonColor=true
   card.BackgroundColor3=Color3.fromRGB(30,29,32);card.BorderSizePixel=0;card.Parent=inventoryGrid
+  local rounded=Instance.new("UICorner");rounded.CornerRadius=UDim.new(0,10);rounded.Parent=card
   local outline=Instance.new("UIStroke");outline.Color=Color3.fromRGB(92,83,68);outline.Parent=card
   local icon=Instance.new("ImageLabel")
   icon.Name="ExistingAssetIcon";icon.BackgroundTransparency=1;icon.Image=meadowIconAtlas
@@ -1299,7 +1360,9 @@ local function renderInventory()
   collectTools(backpack)
   local present={}
   local order=0
+  local visibleCount=0
   local firstVisible=nil
+  local search=string.lower(inventorySearch.Text):gsub("^%s+",""):gsub("%s+$","")
   for _,item in ipairs(actual)do
     if not present[item.key] then
       present[item.key]=true;order+=1
@@ -1312,8 +1375,10 @@ local function renderInventory()
       card.name.Text=item.name
       card.count.Text=itemValue(item)
       card.count.TextColor3=item.color
-      local show=(category=="전체" or category==item.category) and (item.gear~=nil or item.tonic~=nil or typeof(item.key)=="Instance" or owned(item)>0 or category=="전체")
+      local matches=search=="" or string.find(string.lower(item.name),search,1,true)~=nil
+      local show=matches and (category=="전체" or category==item.category) and (item.gear~=nil or item.tonic~=nil or typeof(item.key)=="Instance" or owned(item)>0 or category=="전체")
       card.button.Visible=show
+      if show then visibleCount+=1 end
       card.button.BackgroundColor3=owned(item)>0 and Color3.fromRGB(38,36,39) or Color3.fromRGB(25,25,27)
       if show and not firstVisible then firstVisible=item.key end
     end
@@ -1325,8 +1390,10 @@ local function renderInventory()
     selectedKey=firstVisible
   end
   redrawSelection()
+  inventoryEmpty.Visible=visibleCount==0
   layoutGrid()
 end
+inventorySearch:GetPropertyChangedSignal("Text"):Connect(renderInventory)
 for index,button in ipairs(filterButtons)do
   button.Activated:Connect(function()
     category=categories[index]
@@ -1490,6 +1557,7 @@ local skillDetail=Instance.new("Frame")
 skillDetail.Name="WitcherSkillDetails";skillDetail.LayoutOrder=5
 skillDetail.Size=UDim2.new(1,-8,0,194);skillDetail.BorderSizePixel=0
 skillDetail.BackgroundColor3=stone;skillDetail.Parent=meadowPages[7]
+local skillCorner=Instance.new("UICorner");skillCorner.CornerRadius=UDim.new(0,12);skillCorner.Parent=skillDetail
 local skillBorder=Instance.new("UIStroke");skillBorder.Color=gold
 skillBorder.Transparency=.18;skillBorder.Parent=skillDetail
 local skillTitle=Instance.new("TextLabel")
@@ -1517,6 +1585,7 @@ for _,action in ipairs(Config.Actions)do
     card.Size=UDim2.fromOffset(110,110)
     card.BackgroundColor3=Color3.fromRGB(33,30,32);card.BorderSizePixel=0;card.Text=""
     card.Parent=skillGrid
+    local rounded=Instance.new("UICorner");rounded.CornerRadius=UDim.new(0,10);rounded.Parent=card
     local outline=Instance.new("UIStroke")
     outline.Color=skillColors[info[1]];outline.Thickness=1.2;outline.Transparency=.15;outline.Parent=card
     local symbol=Instance.new("ImageLabel")
@@ -1552,7 +1621,8 @@ meadowActionButtons.refreshSkills=function()
     local deadline=player:GetAttribute("MeadowReady_"..row.action.Id)
     local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
     row.button.Visible=skillCategory=="전체" or row.category==skillCategory
-    row.state.Text=remaining>.05 and (math.ceil(remaining).."초") or "준비"
+    row.state.Text=remaining>.05 and ("대기 "..math.ceil(remaining).."초") or "사용 가능"
+    row.state.TextColor3=remaining>.05 and Color3.fromRGB(172,165,160) or skillColors[row.category]
     row.outline.Thickness=row.action==selectedSkill and 3 or 1.2
     row.button.BackgroundColor3=row.action==selectedSkill and Color3.fromRGB(68,50,42) or Color3.fromRGB(33,30,32)
     if row.action==selectedSkill then current=row end
