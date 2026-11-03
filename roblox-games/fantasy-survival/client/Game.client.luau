@@ -943,9 +943,7 @@ local function renderMeadowPages()
   renderWitcherCharacter(character,humanoid,tool,previewNeedsRefresh)
   previewNeedsRefresh=false
   meadowLabels[1].Text="※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해."
-  meadowLabels[2].Text=string.format("소지품 · 서버 기록\n숙련도 %d  ·  장착 %s\n저장 %s",
-    math.floor(player:GetAttribute("CombatProficiency") or 0),tool and tool.Name or "맨손",
-    tostring(player:GetAttribute("SaveStatus") or "불러오는 중"))
+  meadowLabels[2].Text="소지품  /  저장 "..tostring(player:GetAttribute("SaveStatus") or "불러오는 중")
   meadowLabels[3].Text=string.format("초원 탐험 저널\n\n현재 지역 몬스터  %d\n\n%s\n\n관찰 기록은 이번 접속 중 발견한 단서야.",
     player:GetAttribute("AliveEnemies") or 0,
     #meadowJournal>0 and table.concat(meadowJournal,"\n\n") or "주변 동물과 숲의 조사 지점을 살펴봐. 발견한 단서가 여기에 기록돼.")
@@ -1286,6 +1284,7 @@ end
 local inventoryRow=journalRow("ResourceItems",52)
 inventoryRow.Parent=meadowPages[2]
 inventoryRow.LayoutOrder=1
+inventoryRow.Visible=false -- 위 중복 배너 대신 실제 저장 상태 한 줄만 사용한다.
 -- [인벤토리·스킬창] 위쳐식 분류·선택·상세 패널. 실제 서버 수치와 Roblox Tool만 사용한다.
 -- [저장·밸런스 보존] 새로운 아이템, 효과, 드랍률, 스킬 포인트/잠금 상태를 만들지 않는다.
 local renderWitcherInventory=(function()
@@ -1320,16 +1319,33 @@ local inventorySearch=CommonUI.CreateSearchField({
 inventorySearch.PlaceholderText="아이템 이름 검색"
 inventorySearch.LayoutOrder=3;inventorySearch.BackgroundColor3=Color3.fromRGB(25,53,49)
 inventorySearch.Parent=meadowPages[2]
+-- [인벤토리 화면] 세로: 검색→격자→상세 / 가로: 격자와 상세를 나란히 둔다.
+local inventoryWorkspace=Instance.new("Frame")
+inventoryWorkspace.Name="MeadowInventoryWorkspace";inventoryWorkspace.LayoutOrder=4
+inventoryWorkspace.Size=UDim2.new(1,-8,0,330);inventoryWorkspace.BackgroundTransparency=1
+inventoryWorkspace.Parent=meadowPages[2]
+local inventoryCount=Instance.new("TextLabel")
+inventoryCount.Name="InventoryResultCount";inventoryCount.Position=UDim2.fromOffset(2,0)
+inventoryCount.Size=UDim2.new(1,-4,0,25);inventoryCount.BackgroundTransparency=1
+inventoryCount.TextColor3=muted;inventoryCount.Font=Enum.Font.GothamMedium;inventoryCount.TextSize=13
+inventoryCount.TextXAlignment=Enum.TextXAlignment.Left;inventoryCount.Parent=inventoryWorkspace
+local inventoryScroll=Instance.new("ScrollingFrame")
+inventoryScroll.Name="MeadowInventoryItemScroll";inventoryScroll.Position=UDim2.fromOffset(0,30)
+inventoryScroll.Size=UDim2.new(1,0,0,130);inventoryScroll.BackgroundTransparency=1;inventoryScroll.BorderSizePixel=0
+inventoryScroll.ScrollBarThickness=3;inventoryScroll.ScrollingDirection=Enum.ScrollingDirection.Y
+inventoryScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y;inventoryScroll.CanvasSize=UDim2.new()
+inventoryScroll.ScrollingEnabled=false;inventoryScroll.Parent=inventoryWorkspace
 local inventoryGrid=Instance.new("Frame")
 inventoryGrid.Name="MeadowInventoryGrid";inventoryGrid.LayoutOrder=4
-inventoryGrid.Size=UDim2.new(1,-8,0,100);inventoryGrid.BackgroundTransparency=1;inventoryGrid.Parent=meadowPages[2]
+inventoryGrid.Size=UDim2.new(1,-6,0,100);inventoryGrid.BackgroundTransparency=1
+inventoryGrid.Parent=inventoryScroll
 local gridLayout=Instance.new("UIGridLayout")
 gridLayout.SortOrder=Enum.SortOrder.LayoutOrder;gridLayout.CellPadding=UDim2.fromOffset(8,8)
 gridLayout.Parent=inventoryGrid
 local detail=Instance.new("Frame")
 detail.Name="WitcherItemDetails";detail.LayoutOrder=6
 detail.Size=UDim2.new(1,-8,0,268);detail.BorderSizePixel=0;detail.BackgroundColor3=stone
-detail.Parent=meadowPages[2]
+detail.Parent=inventoryWorkspace
 local detailGradient=Instance.new("UIGradient")
 detailGradient.Color=ColorSequence.new(Color3.fromRGB(38,77,63),Color3.fromRGB(14,31,40))
 detailGradient.Rotation=42;detailGradient.Parent=detail
@@ -1349,12 +1365,21 @@ title.Name="SelectedItem";title.Position=UDim2.fromOffset(12,8)
 title.Size=UDim2.new(1,-90,0,32);title.BackgroundTransparency=1
 title.TextColor3=gold;title.Font=Enum.Font.GothamBold;title.TextSize=18
 title.TextXAlignment=Enum.TextXAlignment.Left;title.Parent=detail
+-- [긴 아이템 설명] 안내와 부족 재료·서버 피드백이 잘리지 않게 본문만 스크롤한다.
+local descriptionScroll=Instance.new("ScrollingFrame")
+descriptionScroll.Name="SelectedItemDescriptionScroll";descriptionScroll.Position=UDim2.fromOffset(12,68)
+descriptionScroll.Size=UDim2.new(1,-24,0,136);descriptionScroll.BackgroundTransparency=1
+descriptionScroll.BorderSizePixel=0;descriptionScroll.ScrollBarThickness=3
+descriptionScroll.ScrollingDirection=Enum.ScrollingDirection.Y
+descriptionScroll.CanvasSize=UDim2.new();descriptionScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+descriptionScroll.Parent=detail
 local description=Instance.new("TextLabel")
-description.Name="SelectedItemDescription";description.Position=UDim2.fromOffset(12,68)
-description.Size=UDim2.new(1,-24,0,136);description.BackgroundTransparency=1
+description.Name="SelectedItemDescription";description.Position=UDim2.fromOffset(0,0)
+description.Size=UDim2.new(1,-7,0,0);description.AutomaticSize=Enum.AutomaticSize.Y
+description.BackgroundTransparency=1
 description.Font=Enum.Font.GothamMedium;description.TextColor3=parchment;description.TextSize=13
 description.TextWrapped=true;description.TextXAlignment=Enum.TextXAlignment.Left
-description.TextYAlignment=Enum.TextYAlignment.Top;description.Parent=detail
+description.TextYAlignment=Enum.TextYAlignment.Top;description.Parent=descriptionScroll
 local equip=CommonUI.CreatePrimaryButton({name="WitcherEquipTool",text="선택 장비 착용",minHeight=48})
 equip.Position=UDim2.fromOffset(12,210);equip.Size=UDim2.new(1,-24,0,48)
 equip.BackgroundColor3=Color3.fromRGB(54,112,84);equip.Visible=false;equip.Parent=detail
@@ -1363,10 +1388,11 @@ secondary.Position=UDim2.new(.5,4,0,210);secondary.Size=UDim2.new(.5,-16,0,48)
 secondary.BackgroundColor3=Color3.fromRGB(55,95,87);secondary.Visible=false;secondary.Parent=detail
 local inventoryEmpty=Instance.new("TextLabel")
 inventoryEmpty.Name="MeadowInventoryEmpty";inventoryEmpty.LayoutOrder=5
+inventoryEmpty.Position=UDim2.fromOffset(0,12)
 inventoryEmpty.Size=UDim2.new(1,-8,0,60);inventoryEmpty.BackgroundTransparency=1
 inventoryEmpty.Text="검색 조건에 맞는 항목이 없어.";inventoryEmpty.Font=Enum.Font.GothamMedium
 inventoryEmpty.TextSize=14;inventoryEmpty.TextColor3=muted;inventoryEmpty.Visible=false
-inventoryEmpty.Parent=meadowPages[2]
+inventoryEmpty.Parent=inventoryScroll
 local itemCards={}
 local itemRows={}
 local selectedKey="Wood"
@@ -1458,24 +1484,54 @@ local function makeCard(item)
   card.Activated:Connect(function()
     selectedKey=item.key
     redrawSelection()
-    -- [아이템 상세 이동] 긴 소지품 목록에서도 장착·제작 버튼까지 한 번에 접근할 수 있게 한다.
+    -- [선택 이동] 가로 화면은 옆의 상세를 유지하고 세로 화면은 상세 카드로 이동한다.
     local page=meadowPages[2]
-    local detailTop=page.CanvasPosition.Y+detail.AbsolutePosition.Y-page.AbsolutePosition.Y
-    page.CanvasPosition=Vector2.new(0,math.max(0,detailTop-8))
+    if inventoryWorkspace:GetAttribute("SplitLayout")==true then
+      local workspaceTop=page.CanvasPosition.Y+inventoryWorkspace.AbsolutePosition.Y-page.AbsolutePosition.Y
+      page.CanvasPosition=Vector2.new(0,math.max(0,workspaceTop-6))
+    else
+      local detailTop=page.CanvasPosition.Y+detail.AbsolutePosition.Y-page.AbsolutePosition.Y
+      page.CanvasPosition=Vector2.new(0,math.max(0,detailTop-8))
+    end
   end)
   return {button=card,name=name,count=value,border=outline}
+end
+-- [반응형 가방] 작은 화면은 3열+아래 상세, 넓은 화면은 독립 스크롤 격자+고정 상세.
+local inventoryShownCount=0
+local inventoryTotalCount=0
+local function layoutInventoryWorkspace()
+  local width=inventoryWorkspace.AbsoluteSize.X
+  if width<=0 then return end
+  local split=width>=620
+  local leftWidth=split and math.floor(width*.55) or width
+  local gridHeight=inventoryShownCount==0 and 74 or math.max(110,gridLayout.AbsoluteContentSize.Y+6)
+  inventoryWorkspace:SetAttribute("SplitLayout",split)
+  inventoryCount.Text=string.format("표시 %d개 / 전체 %d개  ·  선택해서 자세히 보기",inventoryShownCount,inventoryTotalCount)
+  inventoryCount.Size=UDim2.new(split and 0 or 1,split and (leftWidth-4) or -4,0,25)
+  inventoryScroll.Position=UDim2.fromOffset(0,30)
+  inventoryScroll.Size=UDim2.fromOffset(leftWidth,split and 232 or gridHeight)
+  inventoryScroll.ScrollingEnabled=split
+  detail.Position=split and UDim2.fromOffset(leftWidth+12,0)
+    or UDim2.fromOffset(0,30+gridHeight+12)
+  detail.Size=split and UDim2.fromOffset(width-leftWidth-12,268) or UDim2.fromOffset(width,268)
+  inventoryWorkspace.Size=UDim2.new(1,-8,0,split and 282 or 30+gridHeight+12+268)
 end
 local function layoutGrid()
   local width=inventoryGrid.AbsoluteSize.X
   if width<=0 then return end
-  local columns=math.clamp(math.floor((width+8)/118),2,6)
-  local cell=math.floor((width-(columns-1)*8-8)/columns)
-  gridLayout.CellSize=UDim2.fromOffset(math.max(76,cell),104)
+  local columns=math.clamp(math.floor((width+8)/103),2,6)
+  local cell=math.floor((width-(columns-1)*8-4)/columns)
+  gridLayout.CellSize=UDim2.fromOffset(math.max(82,cell),104)
+  inventoryGrid.Size=UDim2.new(1,-6,0,math.max(110,gridLayout.AbsoluteContentSize.Y+5))
+  layoutInventoryWorkspace()
 end
+inventoryWorkspace:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutInventoryWorkspace)
 inventoryGrid:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutGrid)
 gridLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-  inventoryGrid.Size=UDim2.new(1,-8,0,math.max(110,gridLayout.AbsoluteContentSize.Y+4))
+  inventoryGrid.Size=UDim2.new(1,-6,0,math.max(110,gridLayout.AbsoluteContentSize.Y+5))
+  layoutInventoryWorkspace()
 end)
+task.defer(layoutGrid)
 local function renderInventory()
   local actual={}
   for _,item in ipairs(data)do actual[#actual+1]=item end
@@ -1522,8 +1578,11 @@ local function renderInventory()
   if not selectedKey or not present[selectedKey] or not itemCards[selectedKey].button.Visible then
     selectedKey=firstVisible
   end
-  redrawSelection()
+  inventoryShownCount=visibleCount
+  inventoryTotalCount=#actual
   inventoryEmpty.Visible=visibleCount==0
+  inventoryGrid.Visible=visibleCount>0
+  redrawSelection()
   layoutGrid()
 end
 inventorySearch:GetPropertyChangedSignal("Text"):Connect(renderInventory)
