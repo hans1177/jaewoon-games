@@ -1897,15 +1897,16 @@ test('fantasy original presentation binds selected character environment skills 
   for(const family of ['CHARACTER','SKILL','VFX'])assert.equal(robloxStudioAssetFamilyBoundInText(client,family),true,family);
   for(const family of ['ENVIRONMENT','PROP'])assert.equal(robloxStudioAssetFamilyBoundInText(server,family),true,family);
   assert.equal(robloxStudioAssetFamilyBoundInText(client.replace('hasStudioAssetAtom("CHARACTER","HAND_BARE")','true'),'CHARACTER'),false);
+  // [현재 게임] 여러 행동에 재사용된 동일 atom 선택기를 전부 무효화해야 연결 우회를 정확히 검출한다.
   for(const [family,moduleName,alias,atom] of [
     ['SKILL','RobloxCommonSkillPresentation','meadowSkillPresentation','CAST_HAND'],
     ['VFX','RobloxCommonVFX','meadowCommonVFX','IMPACT_FLASH'],
   ]){
     const check=source=>robloxStudioAssetFamilyBoundInText(source,family);
     const selector='hasStudioAssetAtom("'+family+'","'+atom+'")';
-    assert.equal(check(client.replace(selector,'true')),false,'unselected factory: '+family);
-    assert.equal(check(client.replace(selector,'not '+selector)),false,'negative selection: '+family);
-    assert.equal(check(client.replace(selector,selector+' or true')),false,'selection bypass: '+family);
+    assert.equal(check(client.replaceAll(selector,'true')),false,'unselected factory: '+family);
+    assert.equal(check(client.replaceAll(selector,'not '+selector)),false,'negative selection: '+family);
+    assert.equal(check(client.replaceAll(selector,selector+' or true')),false,'selection bypass: '+family);
     assert.equal(check(client.replaceAll(moduleName,'UntrustedFactory')),false,'unapproved module: '+family);
     assert.equal(check(client.replace('local actionsById={}',alias+' = function() end\nlocal actionsById={}')),false,'reassigned factory: '+family);
   }
