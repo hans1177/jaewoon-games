@@ -60,6 +60,12 @@ test('pending Roblox F9 can retry exact version read-only 403 diagnosis across c
   opts.enabled??true,opts.env||processMock,opts.clock||clock).length;
  assert.equal(check(),1,'the 403 read must remain testable during Studio combat quality hold');
  assert.equal(check({...item,robloxQualityBuildUpRequired:false}),1,'read permission must be checked after quality hold clears');
+ assert.equal(check({...item,robloxSourceCommit:'c'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'d'.repeat(64)}),1,
+  'a separately published private version must remain checkable when current game source changes');
+ assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,sourceRevision:'e'.repeat(40)}}),0,
+  'a different runtime source must not be mistaken for this private candidate');
+ assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,artifactIdentity:'sha256:'+'f'.repeat(64)}}),0,
+  'a different artifact may not reuse this version-bound diagnosis');
  assert.equal(check({...item,robloxFinalReviewPassed:true}),0);
  assert.equal(check({...item,robloxPublicRelease:true}),0);
  assert.equal(check({...item,robloxRuntimeCandidateEvidence:{...candidate,versionNumber:133}}),0);
@@ -197,6 +203,21 @@ test('official version-scoped server inspection fails closed for no server, deni
   assert.equal(result.serverInstanceObserved,false);
   assert.equal(result.activeServerCount,count);
   assert.equal(result.actualGameScriptBootVerified,false);
+ }
+ for(const [body,expected] of [
+  [{code:'PERMISSION_DENIED',message:'Missing required scope <universe:read>'},'SCOPE_NOT_GRANTED'],
+  [{code:'IP_DENIED',message:'API key IP address is not allowlisted'},'IP_RESTRICTION'],
+  [{code:'FORBIDDEN',message:'user does not have access to this experience'},'TARGET_OR_CREATOR_PERMISSION'],
+  [{code:'INVALID_KEY',message:'invalid api key'},'KEY_INACTIVE_OR_INVALID'],
+ ]) {
+  const result=await probeRobloxOpenCloudGameServerObservation({...base,
+   fetchImpl:async()=>Response.json(body,{status:403})});
+  assert.equal(result.permissionDenied,true);
+  assert.equal(result.accessFailureCategory,expected);
+  assert.equal(result.providerErrorCode,body.code);
+  assert.equal(result.actualGameScriptBootVerified,false);
+  assert.equal(JSON.stringify(result).includes(body.message),false,'never persist provider raw error body');
+  assert.equal(JSON.stringify(result).includes('test-secret'),false,'never leak credentials');
  }
  await assert.rejects(()=>probeRobloxOpenCloudGameServerObservation({...base,versionNumber:0}),
   /ROBLOX_GAME_SERVER_EXACT_TARGET_REQUIRED/);
