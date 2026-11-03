@@ -522,3 +522,14 @@ RunService.PreSimulation:Connect(function(dt)
   activeCombatController.Step(combatR15Targets, dt)
   if finished then finishNativeCombatMotion() end
 end)
+
+-- [공용 화면 효과] 등록된 RobloxCommonPresentation을 기존 플레이어 GUI에 한 번만 연결한다.
+-- 게임 플레이·피격 판정·저장 상태는 변경하지 않는다.
+task.defer(function()
+  local presentationModule = Shared:FindFirstChild("RobloxCommonPresentation")
+  if not presentationModule or not presentationModule:IsA("ModuleScript") then return end
+  local ok, presentation = pcall(require, presentationModule)
+  if ok and type(presentation.BindGameUiEffects) == "function" then
+    presentation.BindGameUiEffects(player)
+  end
+end)
