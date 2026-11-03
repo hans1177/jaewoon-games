@@ -1978,6 +1978,17 @@ do
   storyForeground.ZIndex=6
   storyForeground.Visible=false
   storyForeground.Parent=introPanel
+  -- [장면 교차 전환] 이전 원화와 전경을 두 장만 재사용해 화면 끊김을 줄인다.
+  local departingArtwork=storyArtwork:Clone()
+  departingArtwork.Name="DepartingStoryIllustration"
+  departingArtwork.Image=""
+  departingArtwork.Visible=false
+  departingArtwork.Parent=introPanel
+  local departingForeground=storyForeground:Clone()
+  departingForeground.Name="DepartingStoryForeground"
+  departingForeground.Image=""
+  departingForeground.Visible=false
+  departingForeground.Parent=introPanel
   -- [화면 분위기] 기존 GUI에만 가벼운 불씨·낙하 입자를 추가한다.
   local storyAtmosphere=Instance.new("Frame")
   storyAtmosphere.Name="CinematicParticles"
@@ -2087,6 +2098,7 @@ do
   local cameraMotionIntensity=0
   local cameraMotionStart=0
   local runToken=0
+  local currentStoryScene=0
   local function arrivalControls(enabled)
     local scripts=player:FindFirstChild("PlayerScripts")
     local module=scripts and scripts:FindFirstChild("PlayerModule")
@@ -2102,6 +2114,9 @@ do
     if activeFovTween then activeFovTween:Cancel();activeFovTween=nil end
     if activeArtTween then activeArtTween:Cancel();activeArtTween=nil end
     if activeFrontTween then activeFrontTween:Cancel();activeFrontTween=nil end
+    departingArtwork.Visible=false
+    departingForeground.Visible=false
+    introDialogue.MaxVisibleGraphemes=-1
     for _,particleTween in ipairs(activeParticleTweens) do particleTween:Cancel() end
     table.clear(activeParticleTweens)
     if cameraMotionConnection then cameraMotionConnection:Disconnect();cameraMotionConnection=nil end
@@ -2303,6 +2318,7 @@ do
     task.spawn(function()
       for index,scene in ipairs(scenes) do
         if not entranceOpen or token~=runToken then return end
+        currentStoryScene=index
         introAct.Text=string.format("서막 · %02d/%02d  |  %s",index,#scenes,scene.chapter)
         introAct.TextTransparency=1
         introAct.Position=UDim2.fromScale(.04,.145)
@@ -2316,7 +2332,23 @@ do
         introSpeaker.TextTransparency=1
         introDialogue.Text=scene.line
         introDialogue.TextTransparency=1
+        introDialogue.MaxVisibleGraphemes=0
         introDialogue.Position=UDim2.fromScale(.10,.73)
+
+        -- [원화 교차] 다음 그림을 교체하기 전에 움직이던 이전 그림의 마지막 프레임을 보존한다.
+        for _,pair in ipairs({{storyArtwork,departingArtwork},{storyForeground,departingForeground}}) do
+          local current,departing=pair[1],pair[2]
+          departing.Visible=index>1 and current.Visible and current.Image~=""
+          if departing.Visible then
+            departing.Image=current.Image
+            departing.ImageRectOffset=current.ImageRectOffset
+            departing.ImageRectSize=current.ImageRectSize
+            departing.Position=current.Position
+            departing.Size=current.Size
+            departing.Rotation=current.Rotation
+            departing.ImageTransparency=current.ImageTransparency
+          end
+        end
 
         if activeArtTween then activeArtTween:Cancel();activeArtTween=nil end
         if activeFrontTween then activeFrontTween:Cancel();activeFrontTween=nil end
@@ -2370,6 +2402,18 @@ do
           storyForeground.Image=""
         end
 
+        -- [장면 전환] 이전 그림은 짧게 녹여 사라지고, 새 장면의 원화·전경 이동은 계속된다.
+        for _,departing in ipairs({departingArtwork,departingForeground}) do
+          if departing.Visible then
+            TweenService:Create(departing,TweenInfo.new(.65,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+              ImageTransparency=1,
+            }):Play()
+            task.delay(.7,function()
+              if entranceOpen and token==runToken and currentStoryScene==index then departing.Visible=false end
+            end)
+          end
+        end
+
         -- [입자 연출] 전쟁은 불씨, 봉인은 마력 조각, 숲은 흩날리는 먼지.
         for n,spark in ipairs(cinematicParticles) do
           local x=((n*37+index*11)%100)/100
@@ -2418,6 +2462,22 @@ do
         TweenService:Create(introFlash,TweenInfo.new(.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
           BackgroundTransparency=1
         }):Play()
+        -- [대사 연출] 한국어 글자 단위로 표시한다. 건너뛰기·다음 장면 시에는 즉시 중단.
+        if scene.line~="" then
+          local graphemes=utf8.len(scene.line) or 0
+          task.spawn(function()
+            for visible=1,graphemes do
+              if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
+              introDialogue.MaxVisibleGraphemes=visible
+              task.wait(.035)
+            end
+            if entranceOpen and token==runToken and currentStoryScene==index then
+              introDialogue.MaxVisibleGraphemes=-1
+            end
+          end)
+        else
+          introDialogue.MaxVisibleGraphemes=-1
+        end
         -- 봉인 순간·추락 순간에만 한 번 더 강한 충격 컷을 넣는다.
         if scene.view=="seal" or scene.view=="fall" then
           task.delay(scene.view=="seal" and 2.15 or 1.75,function()
