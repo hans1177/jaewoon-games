@@ -2003,7 +2003,8 @@ do
   local arrivalGui=Instance.new("ScreenGui")
   arrivalGui.Name="MeadowArrivalScreen"
   arrivalGui.ResetOnSpawn=false
-  arrivalGui.IgnoreGuiInset=true
+  -- [기기 안전 영역] 시작 메뉴·건너뛰기 터치는 Roblox 상단 버튼과 노치 바깥에 배치한다.
+  arrivalGui.IgnoreGuiInset=false
   arrivalGui.DisplayOrder=100
   arrivalGui.Parent=player.PlayerGui
   local backdrop=Instance.new("Frame")
@@ -2023,11 +2024,17 @@ do
   shade.Rotation=90
   shade.Parent=backdrop
   local function panel(name,width,height)
-    local frame=Instance.new("Frame")
+    -- [모바일 첫 화면] 낮은 화면은 버튼 크기를 줄이지 않고 실제 패널 내부를 스크롤한다.
+    local frame=Instance.new("ScrollingFrame")
     frame.Name=name
     frame.AnchorPoint=Vector2.new(.5,.5)
     frame.Position=UDim2.fromScale(.5,.5)
-    frame.Size=UDim2.new(.9,0,0,height)
+    frame.Size=UDim2.new(.9,0,1,-24)
+    frame.CanvasSize=UDim2.fromOffset(0,height)
+    frame.ScrollingDirection=Enum.ScrollingDirection.Y
+    frame.ScrollBarThickness=4
+    frame.ScrollBarImageColor3=Color3.fromRGB(192,157,98)
+    frame.ClipsDescendants=true
     frame.BackgroundColor3=Color3.fromRGB(22,34,28)
     frame.BackgroundTransparency=.10
     frame.BorderSizePixel=0
@@ -2175,8 +2182,8 @@ do
   storyArtwork.Name="ApprovedStoryIllustration"
   storyArtwork.BackgroundTransparency=1
   storyArtwork.BorderSizePixel=0
-  storyArtwork.Size=UDim2.fromScale(1.14,1.14)
-  storyArtwork.Position=UDim2.fromScale(-.07,-.07)
+  storyArtwork.Size=UDim2.fromScale(.96,.62)
+  storyArtwork.Position=UDim2.fromScale(.02,.16)
   storyArtwork.ScaleType=Enum.ScaleType.Fit
   storyArtwork.ImageTransparency=1
   storyArtwork.ZIndex=4
@@ -2187,8 +2194,8 @@ do
   storyForeground.Name="StoryParallaxForeground"
   storyForeground.BackgroundTransparency=1
   storyForeground.BorderSizePixel=0
-  storyForeground.Size=UDim2.fromScale(.96,.68)
-  storyForeground.Position=UDim2.fromScale(.02,.145)
+  storyForeground.Size=UDim2.fromScale(.96,.62)
+  storyForeground.Position=UDim2.fromScale(.02,.16)
   storyForeground.ScaleType=Enum.ScaleType.Fit
   storyForeground.ImageTransparency=1
   storyForeground.ZIndex=8
@@ -2310,8 +2317,15 @@ do
     if size.X<1 or size.Y<1 then return end
     local portrait=size.Y>size.X*1.1
     -- [글자 영역 분리] 제목은 상단 레터박스, 대사는 하단 레터박스에 둔다.
-    regionIntro.Position=UDim2.fromScale(.5,portrait and .035 or .028)
-    regionIntro.Size=UDim2.fromScale(portrait and .72 or .66,portrait and .068 or .065)
+    -- [세로 화면] 제목을 건너뛰기 버튼 아래에 두고 컷 원화는 검은 띠·자막 밖에 둔다.
+    regionIntro.Position=UDim2.fromScale(.5,portrait and .105 or .028)
+    -- [가로 짧은 화면] 우측 건너뛰기 버튼 128px과 겹치지 않도록 제목 폭을 제한한다.
+    local landscapeTitleWidth=math.min(.66,math.max(.35,1-2*(128/size.X+.012)))
+    regionIntro.Size=UDim2.fromScale(portrait and .76 or landscapeTitleWidth,.065)
+    storyArtwork.Position=UDim2.fromScale(.02,portrait and .18 or .16)
+    storyArtwork.Size=UDim2.fromScale(.96,.62)
+    storyForeground.Position=UDim2.fromScale(.02,portrait and .18 or .16)
+    storyForeground.Size=UDim2.fromScale(.96,.62)
     subtitlePlate.Position=UDim2.fromScale(.5,.982)
     subtitlePlate.Size=UDim2.fromScale(portrait and .96 or .90,.135)
     introDialogue.Position=UDim2.fromScale(.5,portrait and .860 or .856)
@@ -2724,9 +2738,7 @@ do
           storyArtwork.ImageTransparency=0
           storyArtwork.ScaleType=Enum.ScaleType.Fit
           storyArtwork.Rotation=0
-          -- [안전 패닝] 그림 전체를 보존한 채 화면 안쪽에서만 극히 조금 움직인다.
-          storyArtwork.Position=UDim2.fromScale(.01,.01)
-          storyArtwork.Size=UDim2.fromScale(.98,.98)
+          -- [원화 안전 영역] 위치·크기는 layoutIntroCaptions가 화면 크기에 맞춰 관리한다.
           storyForeground.Image=""
         elseif showFront then
           storyForeground.Image=frontId
@@ -2735,8 +2747,7 @@ do
           storyForeground.ImageTransparency=0
           storyForeground.ScaleType=Enum.ScaleType.Fit
           storyForeground.Rotation=0
-          storyForeground.Position=UDim2.fromScale(.02,.145)
-          storyForeground.Size=UDim2.fromScale(.96,.68)
+          -- [전경 안전 영역] 확대/자르기 없이 제목과 하단 자막 사이에 유지한다.
           storyArtwork.Image=""
         else
           storyArtwork.Image=""
