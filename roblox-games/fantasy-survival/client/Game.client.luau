@@ -2511,8 +2511,9 @@ do
           storyArtwork.ImageTransparency=0
           storyArtwork.ScaleType=Enum.ScaleType.Fit
           storyArtwork.Rotation=0
-          storyArtwork.Position=UDim2.fromScale(0,0)
-          storyArtwork.Size=UDim2.fromScale(1,1)
+          -- [안전 패닝] 그림 전체를 보존한 채 화면 안쪽에서만 극히 조금 움직인다.
+          storyArtwork.Position=UDim2.fromScale(.01,.01)
+          storyArtwork.Size=UDim2.fromScale(.98,.98)
           storyForeground.Image=""
         elseif showFront then
           storyForeground.Image=frontId
