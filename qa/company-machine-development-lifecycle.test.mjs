@@ -77,3 +77,49 @@ test('rule5 permanently binds mandatory verified CC0 replacement and shared cons
   assert.doesNotMatch(audio,/외부 에셋은 CC0 또는 상업 이용/);
   assert.doesNotMatch(director,/외부 시각\/음원 에셋은 상업 이용과 수정 허용/);
 });
+
+test('one-shot explicit owner source merge keeps independent runtime, save and security gates unchanged',()=>{
+  const authority=roadmap.developmentLifecycleMachine.gameDevelopmentAuthority;
+  const merge=authority.ownerApprovedPrSourceMerge;
+  assert.equal(roadmap.version,601);
+  assert.equal(merge.version,1);
+  assert.equal(merge.authority,'OWNER_DIRECTIVE_2026-11-04');
+  assert.equal(merge.scope,'EXACT_OWNER_APPROVED_SOURCE_PR_MERGE_ONLY');
+  assert.equal(merge.repository,'hans1177/jaewoon-games');
+  assert.equal(merge.gameId,'fantasy-survival');
+  assert.equal(merge.targetBranch,'main');
+  assert.deepEqual(merge.approvedPullRequests.map(item=>item.number),[11787,11792]);
+  assert.deepEqual(merge.approvedPullRequests.map(item=>item.ownerApprovalCommentId),[6605477602,6607148368]);
+  assert.deepEqual(merge.approvedPullRequests.map(item=>item.approvedHeadSha),[
+    '12b6640aeeae70f041cf484f6d7f108f80bf5fb7',
+    '89b20b85b1d14c5480c85eb4f1709edf6c96148f'
+  ]);
+  for(const item of merge.approvedPullRequests){
+    assert.match(item.approvedHeadSha,/^[0-9a-f]{40}$/);
+    assert.equal(item.allowedChangedFiles.length,2);
+    assert.ok(item.requiredSuccessfulWorkflows.length>=2);
+    assert.equal(new Set(item.allowedChangedFiles).size,2);
+  }
+  assert.equal(merge.ownerApprovalMayReplaceIndependentPrReviewForTheseExactSourceOnlyMerges,true);
+  assert.equal(merge.exactHeadSuccessfulCiRequired,true);
+  assert.equal(merge.changedFileScopeMustMatchExactly,true);
+  for(const name of [
+    'sourceOnlyMergeDoesNotClaimVibeFanInPass',
+    'sourceOnlyMergeDoesNotClaimStudioOrF9Pass',
+    'robloxActualStudioAndServerProofStillRequiredForPublication',
+    'canonicalPrivateAndPublicRobloxPublishBeforeF9Forbidden',
+    'existingReleasePipelineAndPostPublishQaRequired',
+    'existingGameSavesCombatAndBalancePreserved',
+    'externalAiSelfAcceptanceStillForbidden',
+    'genericExternalAiDirectMainWriteStillForbidden',
+    'noNewQueueWorkflowOrShadowPipeline',
+    'oneShotExactPrsOnly'
+  ])assert.equal(merge[name],true,name);
+  assert.equal(authority.externalAiSelfAcceptance,false);
+  assert.equal(authority.externalAiDirectMainWrite,false);
+  assert.equal(roadmap.roblox.deploymentControl.verifiedCyclePublication.canonicalGameTargetPublishBeforeF9Forbidden,true);
+  const guard=read('.github/workflows/company-security-immune.yml');
+  assert.match(guard,/SECURITY_OWNER_EXACT_PR_MERGE_POLICY_SCOPE_REQUIRED/);
+  assert.match(guard,/changes.some\(key=>!\['version',ownerSourceMergeKey\]\.includes\(key\)\)/);
+  assert.match(guard,/ownerSourceMergeChanged&&key===ownerSourceMergeKey/);
+});
