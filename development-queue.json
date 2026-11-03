@@ -1346,9 +1346,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-03T01:49:08.911Z",
+      "updatedAt": "2026-11-03T01:49:37.724Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -1358,9 +1358,9 @@
         "capturedAt": "2026-10-12T02:12:43.338Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "c2561cf29a32297587188a30bf8cf29f0387737b",
+      "robloxSourceCommit": "f12688d3aef790ef52b4733e03199a0648f20274",
       "robloxSourceBootstrapPassedAt": "2026-11-03T01:43:05.505Z",
-      "robloxSourceBootstrapFailedAt": "2026-11-03T01:47:11.223Z",
+      "robloxSourceBootstrapFailedAt": "2026-11-03T01:49:37.724Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -1410,14 +1410,48 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-source-drift:CLIENT_PLACEHOLDER_FORBIDDEN"
+        "roblox-source-bootstrap:source-generation-failed"
       ],
-      "robloxQualityBuildUpRequired": false,
-      "robloxQualityBuildUpSourceRevision": null,
-      "robloxQualityFailureClass": null,
-      "robloxQualityBuildUpEvidence": null,
+      "robloxQualityBuildUpRequired": true,
+      "robloxQualityBuildUpSourceRevision": "f12688d3aef790ef52b4733e03199a0648f20274",
+      "robloxQualityFailureClass": "SOURCE_CONTRACT",
+      "robloxQualityBuildUpEvidence": {
+        "version": 1,
+        "gameId": "fantasy-survival",
+        "sourceRevision": "f12688d3aef790ef52b4733e03199a0648f20274",
+        "sourceTreeSha": "f1cfd5ca0ad6d5ea5dc851757b08b9a7ec6d083b",
+        "artifactIdentity": null,
+        "authority": "roblox-source-static-contract-failure",
+        "staticContract": {
+          "pass": false,
+          "blockers": [
+            "CLIENT_PLACEHOLDER_FORBIDDEN"
+          ]
+        },
+        "assetRepairContext": {
+          "libraryFingerprint": "76d1db6abb7b922fcebf760109bf1de2d65de4442d384f88213c7693e45e0177",
+          "baselineFingerprint": "dd7c3dfe63ff7b18e8288240b44c45f81eb87c0c1c080e6c980d2c7736887988",
+          "validatorFingerprint": "4fb511a4f435949ae8fbc6b147836e192f14e119d714770b7560295f5e3e1466"
+        },
+        "qualityFailureKinds": [
+          "CLIENT_PLACEHOLDER_FORBIDDEN"
+        ],
+        "repairSurfaces": [
+          "SOURCE_CONTRACT"
+        ],
+        "qualityFailureDetails": [
+          {
+            "id": "CLIENT_PLACEHOLDER_FORBIDDEN",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          }
+        ],
+        "workflowRunId": 41561909519,
+        "testedAt": "2026-11-03T01:49:37.724Z"
+      },
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -3338,7 +3372,7 @@
       "updatedAt": "2026-11-03T01:49:08.911Z"
     }
   ],
-  "updatedAt": "2026-11-03T01:49:08.911Z",
+  "updatedAt": "2026-11-03T01:49:37.724Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -3404,5 +3438,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
