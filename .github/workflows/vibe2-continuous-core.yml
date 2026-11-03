@@ -3211,7 +3211,10 @@ jobs:
           }).map(task=>String(task.id||'')).filter(Boolean));
           const resumed=read('/tmp/vibe2-stranded-results').filter(row=>eligible.has(String(row.taskId||'')));
           const results=[...current,...resumed];
-          fs.writeFileSync('/tmp/vibe2-fan-in.json',JSON.stringify({version:3,results,tasks:queue.tasks||[]},null,2)+'\n');
+          // [결과 병합] 전체 작업 원문은 기존 queue.json에서 읽는다. 전달물에는 집계·시스템 후보 조회에 필요한 필드만 보존한다.
+          // 모든 작업의 packageId/status는 유지해 완료율 분모를 바꾸지 않고, 대용량 목표·근거·진단 기록의 중복 직렬화만 막는다.
+          const taskSummaries=(queue.tasks||[]).map(({id,status,retries,packageId,target,department})=>({id,status,retries,packageId,target,department}));
+          fs.writeFileSync('/tmp/vibe2-fan-in.json',JSON.stringify({version:3,results,tasks:taskSummaries},null,2)+'\n');
           console.log(`VIBE2_FAN_IN_RESULT_COUNT=${results.length}`);
           console.log(`VIBE2_BATCH_EARLY_FAN_IN_ELIGIBLE=${eligible.size}`);
           console.log(`VIBE2_BATCH_EARLY_FAN_IN_RESULT_COUNT=${resumed.length}`);
