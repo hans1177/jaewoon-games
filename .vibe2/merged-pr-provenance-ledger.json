@@ -150506,11 +150506,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ef86cca1c62aee073ed3dd5c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-11721",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "50319d6b54f377f211e17dfdc58c8340421a2d0f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11721,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/fantasy-survival-deer-well-20261103",
+        "baseSha": "50319d6b54f377f211e17dfdc58c8340421a2d0f",
+        "headSha": "de8e1deffc5359477d5100396f8abdda3137d2cf",
+        "mergeCommitSha": "75326b52290ca96caa0b00bd18783a0279752e1a",
+        "mergedAt": "2026-11-03T02:00:45Z",
+        "authorLogin": "hans1177",
+        "titleHash": "ebf405de9f8e9edca5c4a12edcad0f5cf91bc6d7961f798f1602d64b2fa58c2d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/fantasy-survival-deer-well-20261103",
+        "candidateSha": "de8e1deffc5359477d5100396f8abdda3137d2cf"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 111,
+        "deletedLineCount": 78,
+        "changedFiles": [
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/fantasy-survival-roblox-ui.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/server/Game.server.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/fantasy-survival-roblox-ui.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/server/Game.server.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11721",
+        "merge-commit:75326b52290ca96caa0b00bd18783a0279752e1a",
+        "base-main:50319d6b54f377f211e17dfdc58c8340421a2d0f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1197
+    "total": 1198
   }
 }
