@@ -284,8 +284,9 @@ test('private runtime candidate uses the same shallow checkout contract while pr
   assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
   assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$SOURCE_REVISION"/);
   assert.match(workflow,/gh api "repos\/\$GITHUB_REPOSITORY\/compare\/\$SOURCE_REVISION\.\.\.\$\(git rev-parse HEAD\)"/);
-  assert.match(workflow,/git ls-tree -r "\$SOURCE_REVISION" -- "\$SOURCE_ROOT"[\s\S]*roblox-source-bootstrap\.json/);
-  assert.match(workflow,/git ls-tree -r origin\/main -- "\$SOURCE_ROOT"[\s\S]*roblox-source-bootstrap\.json/);
+  // [현행 소스] 후보와 현재 main의 실행 트리(shared/server/client)를 같은 경로로 비교한다.
+  assert.ok(workflow.includes('git ls-tree -r "$SOURCE_REVISION" -- "$SOURCE_ROOT/default.project.json" "$SOURCE_ROOT/shared" "$SOURCE_ROOT/server" "$SOURCE_ROOT/client" | sha256sum'));
+  assert.ok(workflow.includes('git ls-tree -r origin/main -- "$SOURCE_ROOT/default.project.json" "$SOURCE_ROOT/shared" "$SOURCE_ROOT/server" "$SOURCE_ROOT/client" | sha256sum'));
   assert.doesNotMatch(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
 });
 
