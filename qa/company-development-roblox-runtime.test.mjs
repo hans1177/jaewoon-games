@@ -399,55 +399,36 @@ test('only source-location header variants of first-party Roblox modules are equ
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
 
-test('simple RPG only plays game-specific common weapon motion from actual server-confirmed combat hits',()=>{
-  const client=fs.readFileSync('roblox-games/simple-rpg/client/Game.client.luau','utf8');
-  const server=fs.readFileSync('roblox-games/simple-rpg/server/Game.server.luau','utf8');
-  const project=JSON.parse(fs.readFileSync('roblox-games/simple-rpg/default.project.json','utf8'));
-  const damageAt=server.indexOf('chosen.Humanoid:TakeDamage(damage)');
-  const confirmedAt=server.indexOf('remote:FireClient(player, "CIV_HIT"');
-  assert.ok(damageAt>=0 && confirmedAt>damageAt,'only server-confirmed damage may trigger combat motion');
+// [현재 마력숲] 삭제된 RPG/백수전 게임 대신 실존 서버·클라이언트의 권한 경계를 검사한다.
+test('fantasy survival plays combat motion only through server-approved attributes',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const project=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/default.project.json','utf8'));
   assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,
     '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
   for(const signal of [
-    'commonMotion.CreateCombatCombo','commonMotion.MapCombatPoseToR15',
-    'commonMotion.BindJointPose','RunService.PreSimulation:Connect',
-    'humanoid.RigType ~= Enum.HumanoidRigType.R15'
-  ])assert.ok(client.includes(signal),signal);
-  for(const profile of ['UNARMED','SPEAR','SWORD','GREATSWORD']){
-    assert.ok(client.includes('profile = "'+profile+'"'),profile);
-  }
-  const hook=client.indexOf('elseif kind == "CIV_HIT" and typeof(payload) == "table"');
-  assert.ok(hook>=0);
-  assert.ok(client.slice(hook,hook+160).includes('playApprovedRpgCombatMotion()'));
+    'combatMotionSource.CreateCombatCombo','combatMotionSource.MapCombatPoseToR15',
+    'combatMotionSource.BindJointPose','combatMotionSource.SampleCombatCombo',
+    'GetAttributeChangedSignal("ApprovedCombatMotion")',
+    'playNativeCombatMotion(scope,tonumber(serial),true)'
+  ])assert.ok(client.includes(signal),'missing actual approved motion chain: '+signal);
+  assert.ok(server.includes('player:SetAttribute("ApprovedCombatMotion",approved)'));
   assert.equal(client.includes('remote:FireServer("CivNativeCombatMotion'),false);
+  assert.equal(server.includes('SetAttribute("Damage"'),false);
 });
 
-test('Baeksu native CC0 mesh creatures play bounded walk and server-confirmed hit poses without R15 assumptions',()=>{
-  const source=fs.readFileSync('roblox-games/baeksu-war/server/Game.server.luau','utf8');
-  const visual=fs.readFileSync('roblox-games/baeksu-war/shared/VisualKit.luau','utf8');
-  const config=fs.readFileSync('roblox-games/baeksu-war/shared/GameConfig.luau','utf8');
-  for(const required of [
-    'SaveKey="baeksu-war-v1"', 'Cap=55'
-  ])assert.ok(config.includes(required),required);
-  const damage=source.indexOf('u.Last=now;target.HP-=u.Damage');
-  const motion=source.indexOf('local attackAge=u.Last>0 and now-u.Last or math.huge');
-  assert.ok(damage>=0 && motion>damage,'server-confirmed damage precedes creature impact pose');
-  for(const required of [
-    'local striking=attackAge>=0 and attackAge<=.32',
-    'if moved or striking or u.VisualPoseActive then',
-    'VisualKit.PoseCreature(u.Visual,a.X+u.X,u.Z,',
-    'u.VisualPoseActive=moved or striking',
-  ])assert.ok(source.includes(required),required);
-  for(const required of [
-    'function Kit.PoseCreature(actor,x,z,yaw,motion)',
-    'actor:PivotTo(CFrame.new(x,terrainHeight(x,z)+offset+.04+bob,z+lunge)',
-    'local strike=math.sin(math.pi*age/.32)',
-    'bob=math.abs(math.sin(phase))*.085',
-  ])assert.ok(visual.includes(required),required);
-  // Approved imported meshes retain ground/physics authority; visual pivot never changes combat X/Z.
-  assert.equal(visual.includes('Instance.new("Part")'),false);
-  assert.equal(visual.includes('Enum.HumanoidRigType.R15'),false);
-  assert.equal(source.includes('SetAttribute("Damage"'),false);
+test('fantasy survival creatures are spawned by the current server habitat with safe wolf boundary',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  for(const id of ['simple-rpg','baeksu-war'])
+    assert.equal(catalog.games.some(game=>game.id===id),false,'retired games must not be restored: '+id);
+  assert.match(server,/local meadowEncounterSites = \{/);
+  assert.match(server,/local function spawnEnemy\(site, siteIndex\)/);
+  assert.match(server,/site.id=="wolf" and meadowVillageContains\(site.position\)/);
+  assert.match(server,/for index,site in ipairs\(meadowEncounterSites\)/);
+  assert.match(server,/pcall\(spawnEnemy,site,index\)/);
+  assert.match(server,/meadowEncounterSites\[target.siteIndex\]/);
+  assert.doesNotMatch(server,/SetAttribute\("Damage"/);
 });
 
 test('Roblox bootstrap reads the company material library but leaves verification to downstream runtime',()=>{
@@ -1531,7 +1512,9 @@ test('successful F0 checkpoints persist and dispatch per game before matrix fan-
 });
 
 test('Roblox native motion binding keeps Animator IK foot-contact and mobile frame evidence in real game clients',()=>{
-  for(const gameId of ['survival','monster-adventure','horror-escape-room']){
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  assert.equal(catalog.games.some(row=>row.id==='horror-escape-room'),false,'retired horror game is no longer a source fixture');
+  for(const gameId of ['survival','monster-adventure']){
     const client=fs.readFileSync(new URL('../roblox-games/'+gameId+'/client/Game.client.luau',import.meta.url),'utf8');
     assert.match(client,/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 7/);
     assert.match(client,/Instance\.new\("IKControl"\)/);
@@ -1626,9 +1609,9 @@ test('existing asset rebind migrates removed studioUi consumers and remains idem
   assert.doesNotMatch(importedBound,/Instance\.new\(/,'imported art must not acquire synthetic decoration');
   assert.equal(bind(importedBound),importedBound);
   assert.throws(()=>bind('local C=require(script.Parent.GameConfig)\nlocal object=template:Clone()\n'),/VISIBLE_TARGET_REQUIRED/);
-  const horror=fs.readFileSync(new URL('../roblox-games/horror-escape-room/client/Game.client.luau',import.meta.url),'utf8');
-  assert.match(horror,/chaseTint:SetAttribute\("StudioAssetAtoms", table\.concat\(studioAssetFamily\("UI"\), ","\)\)/);
-  assert.doesNotMatch(horror,/table\.concat\(studioUi\s*,/);
+  const live=fs.readFileSync(new URL('../roblox-games/fantasy-survival/client/Game.client.luau',import.meta.url),'utf8');
+  assert.match(live,/root:SetAttribute\("StudioAssetAtoms", table\.concat\(studioAssetFamily\("UI"\), ","\)\)/);
+  assert.doesNotMatch(live,/table\.concat\(studioUi\s*,/);
 });
 
 
