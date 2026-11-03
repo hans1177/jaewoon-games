@@ -3176,7 +3176,16 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
       end
     end
   end
-  if (defense.guardUntil or 0)>now then damage=math.ceil(damage*.5) end
+  if (defense.guardUntil or 0)>now then
+    -- [서버 확인된 막기] 기존 50% 경감 판정은 그대로 두고 실제 접촉 때만 시각 신호를 보낸다.
+    -- 연타를 맞아도 사운드·입자가 폭증하지 않게 0.12초 간격으로 1회만 알린다.
+    damage=math.ceil(damage*.5)
+    if now-(defense.lastBlockContactFXAt or -100) >=.12 then
+      defense.lastBlockContactFXAt=now
+      meadowDefense[player]=defense
+      remote:FireClient(player,"MEADOW_REACTION","BLOCK")
+    end
+  end
   -- [갑옷 피해 경감] 완벽 방어·회피 판정 이후 실제 착용 장비와 방호 숙련만 적용.
   local _,armor=meadowRpg.stats(player)
   damage=math.max(1,damage-armor)
