@@ -244,6 +244,35 @@ export async function probeRobloxOpenCloudImageEvidence({
   const largestArray=arrays.reduce((best,row)=>row.length>best.length?row:best,[]);
   const thumbnailCount=largestArray.length;
   const metadataAvailable=thumbnailCount>0||imageUrls.length>0;
+  // 메인: 개인화 목록에 CDN URL이 없을 때만 같은 universe의 공식 제공 이미지를 조회한다.
+  // 공식 이미지 전송 확인은 현재 후보의 실제 실행·스크린샷·개인화 이미지 동일성 증거가 아니다.
+  let imageLookupAuthority='ROBLOX_THUMBNAIL_PERSONALIZATION_METADATA';
+  let imageLookupFailure=null;
+  let officialGameThumbnailTargetId=null;
+  if(thumbnailCount>0&&imageUrls.length===0){
+    const lookupUrl='https://thumbnails.roblox.com/v1/games/multiget/thumbnails?'
+      +new URLSearchParams({universeIds:universe,size:'768x432',format:'Png',isCircular:'false'}).toString();
+    try{
+      const lookup=await fetchWithNetworkRetry(fetchImpl,lookupUrl,{redirect:'error'},{
+        attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OFFICIAL_GAME_THUMBNAIL_LOOKUP'
+      });
+      if(!lookup.ok)throw new Error('OFFICIAL_GAME_THUMBNAIL_HTTP_'+lookup.status);
+      const lookupBody=await lookup.json();
+      const rows=(Array.isArray(lookupBody?.data)?lookupBody.data:[])
+        .filter(row=>clean(row?.universeId)===universe&&row?.error==null);
+      const entries=rows.flatMap(row=>Array.isArray(row?.thumbnails)?row.thumbnails:[])
+        .filter(row=>row?.state==='Completed'&&/^[1-9][0-9]*$/.test(clean(row?.targetId))
+          &&typeof row?.imageUrl==='string'&&row.imageUrl.startsWith('https://'));
+      if(entries.length){
+        // URL 자체는 아래 공통 허용 도메인·서명·크기 검증을 반드시 거친다.
+        imageUrls.push(...entries.map(row=>row.imageUrl));
+        imageLookupAuthority='ROBLOX_OFFICIAL_UNIVERSE_GAME_THUMBNAIL_CDN';
+        officialGameThumbnailTargetId=clean(entries[0].targetId);
+      }else imageLookupFailure='OFFICIAL_GAME_THUMBNAIL_NOT_COMPLETED';
+    }catch(error){
+      imageLookupFailure=clean(error?.message||error).slice(0,180);
+    }
+  }
   const urls=[...new Set(imageUrls)];
   const imageContent=new Array(urls.length);
   const maxImageBytes=8*1024*1024;
@@ -298,6 +327,8 @@ export async function probeRobloxOpenCloudImageEvidence({
     imageMetadataAvailable:metadataAvailable,
     thumbnailCount,
     imageUrls:Object.freeze(urls),imageContent:Object.freeze(imageContent),
+    imageLookupAuthority,imageLookupFailure,officialGameThumbnailTargetId,
+    personalizedImageContentMatched:false,
     imageContentChecked:urls.length>0,imageContentPassed,imageVisualQualityVerified:false,
     metadataCoverage:'RETURNED_API_PAGE_ONLY',
     runtimeScreenshot:false,
