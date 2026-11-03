@@ -35,6 +35,16 @@ test('Roblox post-work verification defaults to Open Cloud runtime plus image sa
  assert.match(workflow,/run_studio:[\s\S]*?default:\s*false/);
 });
 
+test('exact Studio QA retains a non-simulating Open Cloud 200 as diagnostic, not server boot or runtime PASS',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(workflow,/const studioCloudDiagnostic=engineProbeByGame\.get\(item\.gameId\)/);
+  assert.match(workflow,/serverBootObserved=simulationObserved&&studioCloudDiagnostic\.serverBootObserved===true/);
+  assert.match(workflow,/onlineServerStartedVerified:false/);
+  assert.match(workflow,/actualRuntimeEvidence:false,actualServerRuntimeEvidence:false/);
+  assert.match(workflow,/roblox-open-cloud-exact-engine-diagnostic-no-server-claim/);
+  assert.match(workflow,/item\.robloxCloudImageEvidence=studioCloudDiagnostic\.imageEvidence\|\|null/);
+});
+
 test('event-driven Roblox runtime foundation QA has no delayed cron and does not require full git history',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
