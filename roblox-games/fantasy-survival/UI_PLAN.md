@@ -31,6 +31,30 @@
 - 메뉴를 연 동안 전투 버튼을 가리거나 원격 주문을 임의 발생시키지 않는다.
 - 이미 획득한 보유 아이템과 제작 가능한 미보유 장비를 **명확히 구분**한다.
 
+## 실제 코드 구현 기준 · 2026-11-03 재구현
+
+이 항목은 디자인 제안이 아니라 기존 Luau 책임 함수에 직접 연결할 구현 계약이야. 실제 Roblox Place 게시나 모바일 런타임 검증을 대신하지 않아.
+
+| 구역 | 확정된 동작 | 검증 위치 |
+| --- | --- | --- |
+| 캐릭터 전신 | 원래 플레이어 R15 및 실제 Tool을 복제하는 `NativeAvatarPreview`를 유지하고, ViewportFrame의 종횡비·시야각에 맞게 카메라를 다시 맞춰 머리/발 잘림 방지 | `redrawNativeAvatar`, `layoutNativeAvatar` |
+| 전투 상태 | 휴머노이드 Health/MaxHealth와 기존 `MeadowStamina` 속성으로 체력·기력 게이지, 실제 장비 공격·방어·강화·보스 기록 표시 | `renderWitcherCharacter` |
+| 숙련 정보 | 기존 `Config.Proficiencies` 7개를 개별 카드로 나누고 서버 속성 숫자만 표시. 숙련 보상 50:1 규칙 유지 | `renderMeadowPages`, `MeadowProficiencyCards` |
+| 소지품 세로 화면 | 검색·기존 분류 탭 아래에 3열 중심의 아이템 격자를 표시하고, 선택하면 아래 상세/장착/제작 버튼 위치로 스크롤 | `layoutGrid`, `layoutInventoryWorkspace` |
+| 소지품 가로 화면 | 폭 620 이상이면 격자 전용 스크롤과 오른쪽 고정 상세창으로 분리. 작은 높이에서는 전체 페이지 스크롤로 하단 버튼 접근 | `MeadowInventoryWorkspace`, `MeadowInventoryItemScroll` |
+| 항목 선택 | 선택 슬롯 강조, 수량/장착 상태/미보유 제작법 명확히 구분. 실제 서버 장착·해제·물약 사용·제작 명령은 기존 그대로 유지 | `redrawSelection`, `renderInventory` |
+| 긴 설명 | 조합 비용·설명·서버 반환 메시지가 136픽셀 표시 영역에서 사라지지 않도록 내부 텍스트 스크롤 | `SelectedItemDescriptionScroll` |
+| 전체 메뉴 | 기존 8개 페이지 유지. 세로 가로 스와이프 탭, 선택 탭 자동 중앙 정렬, 화면별 부제목, 짧은 화면 헤더 축소, 게임패드 B/닫기 | `RobloxCommonUI.AdaptActionMenu` |
+
+### UI 완성 판정
+
+1. 기본 화면과 메뉴를 연 상태에서 실제 아바타 머리·다리가 모두 보여야 해.
+2. 휴대전화 세로(360×640, 390×844)에서 검색, 카드 선택, 상세, 장착/제작/사용에 터치로 도달해야 해.
+3. 가로(844×390)에서 항목 격자와 상세창이 동시에 보여야 하고, 양쪽 스크롤·닫기 버튼이 잘리지 않아야 해.
+4. 화면 비율 변경 시 실제 6종 장비 칸과 7개 숙련도 카드가 내용과 겹치지 않아야 해.
+5. 장비·소모품·연구 기록·재화 수량 및 저장 재접속 결과는 변경 전 서버 상태와 일치해야 해.
+6. 소스 검사는 `qa/fantasy-survival-roblox-ui.test.mjs` 및 `qa/company-development-roblox-package.test.mjs`에서 실제 변경 구조를 검증해. 다만 이 검사만으로 Roblox 런타임 성공을 선언하지 않아.
+
 ## 변경·검증 기준
 
 - 책임 원본: `client/Game.client.luau`의 `renderWitcherCharacter`, `renderWitcherInventory`, `renderMeadowPages` 및 메뉴 연결부, `shared/RobloxCommonUI.luau#AdaptActionMenu` 직접 수정.
