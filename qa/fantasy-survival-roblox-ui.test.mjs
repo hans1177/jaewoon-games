@@ -461,6 +461,10 @@ test('cinematic v4 locks portrait frames, times silent title reveals and makes s
   const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
   for(const marker of [
     'local lockedPortrait=closeUp or scene.cinema=="freeze"',
+    'local lockedCamera=cinema=="crown" or cinema=="omen" or cinema=="betrayal"',
+    'or cinema=="erasure" or cinema=="freeze"',
+    'if lockedCamera then',
+    'cameraMotionValue.Value=openingCamera.CFrame',
     'if not reducedEffects and not lockedPortrait then',
     'and (not reducedEffects or n<=4)',
     'local transitionCut=scene.cinema=="erasure" or scene.cinema=="rift"',
