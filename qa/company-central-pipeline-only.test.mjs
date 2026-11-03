@@ -171,15 +171,14 @@ test('director recovery can only restart the central DEVELOPMENT_CONFIRMED runti
 });
 
 
-test('direct horror edits re-enter the canonical development flow',()=>{
+test('permanently removed games never wake the canonical development queue',()=>{
   const reconcile=read('.github/workflows/company-development-queue-reconcile.yml');
   const central=read('.github/workflows/company-development-confirmed-runtime.yml');
-  assert.match(reconcile,/roblox-games\/horror-escape-room\/\*\*/);
-  assert.match(reconcile,/assets\/roblox\/midnight-manor\/\*\*/);
+  assert.doesNotMatch(reconcile,/roblox-games\/horror-escape-room\/\*\*/);
+  assert.doesNotMatch(reconcile,/assets\/roblox\/midnight-manor\/\*\*/);
+  assert.match(reconcile,/roblox-games\/\*\*\/default\.project\.json/);
   assert.match(reconcile,/git add -- development-queue\.json game-catalog\.json game-seed-state\.json/);
-  // Explicit, centrally authorized per-game exclusions are allowed; no hardcoded horror exclusion is.
   assert.match(central,/developmentSpeedExecution\?\.perGameFailureIsolation\?\.ownerExcludedGameIds/);
-  assert.doesNotMatch(central,/\['horror-escape-room'\]/);
 });
 
 test('development coordinator dedupes unfinished Roblox games across revisions without locking game execution',()=>{
@@ -236,16 +235,11 @@ test('native child workflow changes stay child-owned while source wakes preserve
   assert.match(unity,/developmentAccess\?\.UNITY==='OWNER_HOLD'/);
 });
 
-test('owner horror edits automatically re-enter the canonical development flow',()=>{
-  const horror=read('.github/workflows/horror-owner-system-publish.yml');
+test('deleted horror publisher and retired Studio path cannot re-enter the canonical flow',()=>{
+  assert.equal(exists('.github/workflows/horror-owner-system-publish.yml'),false);
+  assert.equal(exists('.github/workflows/horror-manor-review.yml'),false);
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
-  assert.match(horror,/roblox-games\/horror-escape-room\/\*\*/);
-  assert.match(horror,/assets\/roblox\/midnight-manor\/\*\*/);
-  assert.match(horror,/actions: write/);
-  assert.match(horror,/gh workflow run company-design-promotion-sync\.yml/);
-  assert.match(horror,/--ref main/);
-  assert.match(horror,/HORROR_CANONICAL_FLOW=DESIGN_PROMOTION_TO_DEVELOPMENT/);
-  assert.doesNotMatch(development,/ownerExcludedGameIds[^\n]*horror-escape-room/);
+  assert.match(development,/company-development-roblox-runtime\.yml/);
 });
 
 test('platform exposure sync has no workflow-wide lock and Director has no hard-coded stale run ids',()=>{

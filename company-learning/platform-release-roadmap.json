@@ -1,5 +1,5 @@
 {
-  "version": 600,
+  "version": 601,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -1572,29 +1572,6 @@
         "postPublishQaFailureAction": "REPAIR_OR_RETRY_EXACT_FAILED_CYCLE_WITHOUT_ADVANCING_F0",
         "postPublishQaWorkflow": ".github/workflows/company-development-roblox-release-promotion.yml#post-publish-qa",
         "nextF0Workflow": ".github/workflows/company-roblox-source-drift-sync.yml"
-      },
-      "ownerDirectCanonicalPublishException": {
-        "version": 2,
-        "authority": "OWNER_DIRECTIVE_2026-10-02",
-        "enabled": true,
-        "gameIds": [
-          "horror-escape-room"
-        ],
-        "trigger": "EXPLICIT_OWNER_DIRECT_PUBLISH_INSTRUCTION",
-        "route": ".github/workflows/horror-owner-system-publish.yml",
-        "f9RequiredForOwnerDirectPublish": false,
-        "exactMainSourceRequired": true,
-        "canonicalPrivateTargetOnly": true,
-        "preserveCurrentPrivateVisibility": true,
-        "publicDiscoveryAllowed": false,
-        "releaseClaim": false,
-        "doesNotClaimF9Pass": true,
-        "doesNotReplaceOrSatisfyDevelopmentF0F9": true,
-        "developmentLoopContinuesIndependently": true,
-        "publicationFailureDoesNotBlockDevelopment": true,
-        "studioRequiredForOwnerDirectPublish": false,
-        "postBuildUpVerificationLevel": "CODE_AND_STATIC_QA",
-        "studioFailureDoesNotBlockOwnerDirectPublish": true
       },
       "validationProviderContract": {
         "version": 3,
@@ -4782,16 +4759,7 @@
           "historicalDeploymentAloneIsNotRelease": true,
           "existingGameplaySaveBalancePreserved": true,
           "externalPublicReleaseGateUnchanged": true,
-          "ownerConfirmedReleases": [
-            {
-              "gameId": "horror-escape-room",
-              "platform": "ROBLOX",
-              "placeId": "98222620265768",
-              "authority": "OWNER_DIRECTIVE",
-              "confirmedAt": "2026-09-30T13:42:15Z",
-              "runtimePassImplied": false
-            }
-          ],
+          "ownerConfirmedReleases": [],
           "experienceLabels": {
             "LOBBY": "로비 체험",
             "GAMEPLAY": "본게임 가능",
@@ -6651,7 +6619,7 @@
       }
     }
   },
-  "updatedAt": "2026-11-02",
+  "updatedAt": "2026-11-04",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9241,6 +9209,24 @@
       "implementationStatus": "NOT_IMPLEMENTED",
       "summaryKo": "A 중심·B 보조·C 작품 장르·D 소분류 창작·@ 무한 파고들기, 분류표와 기존 기본 플로어 안의 설계 방법 공식화",
       "codeWorkflowRuntimeDeploymentChanged": false
+    },
+    "retiredHorrorReleaseAuthorityCleanup20261104": {
+      "authority": "OWNER_REQUEST_2026-11-04",
+      "gameId": "horror-escape-room",
+      "action": "REVOKE_RETIRED_GAME_PUBLISH_AND_REVIEW_ROUTES_WITHOUT_RESTORING_SOURCE",
+      "activeReleaseExceptionRemoved": true,
+      "oldLobbyApprovalRemoved": true,
+      "oldAssetFocusDisabled": true,
+      "oldOwnerPathRemoved": true,
+      "oldThumbnailScopeRemoved": true,
+      "retainedPermanentRemoval": true,
+      "retainedHistoricalAudit": true,
+      "f0ToF9SequenceUnchanged": true,
+      "unverifiedRuntimeCannotPass": true,
+      "affectedRoutes": [
+        ".github/workflows/horror-owner-system-publish.yml",
+        ".github/workflows/horror-manor-review.yml"
+      ]
     }
   },
   "vibeExecutionLaneContract": {
@@ -15838,9 +15824,7 @@
       "assetDevelopmentWorkerModelRepullAfterSharedCacheHitForbidden": true,
       "assetDevelopmentCacheGeneration": 5,
       "internalAssetFocus": {
-        "enabled": true,
-        "gameId": "horror-escape-room",
-        "sourceRoot": "assets/roblox/world-ghosts/motions",
+        "enabled": false,
         "concurrentSlots": 63,
         "targetObjectCount": 100,
         "firstMotion": "walk",
@@ -22856,7 +22840,7 @@
     "ownerExclusiveDevelopment": {
       "version": 1,
       "authority": "OWNER_DIRECTIVE_2026-09-30",
-      "status": "ACTIVE",
+      "status": "INACTIVE",
       "mode": "OWNER_EXCLUSIVE_DIRECT_DEVELOPMENT",
       "scope": "EXPLICIT_GAME_IDS_ONLY",
       "gameIds": [],
@@ -22889,12 +22873,7 @@
       "implementationScope": {
         "repository": "hans1177/jaewoon-games",
         "branch": "main",
-        "gamePath": "roblox-games/horror-escape-room",
-        "policyPath": "company-learning/platform-release-roadmap.json",
-        "publicationTarget": {
-          "universeId": "10767445796",
-          "placeId": "98222620265768"
-        }
+        "policyPath": "company-learning/platform-release-roadmap.json"
       },
       "completionEvidence": [
         "EXACT_MAIN_SOURCE_REVISION",
@@ -30640,7 +30619,6 @@
       "currentInternalRobloxExposureGames": [
         "cozy-island",
         "daechung-rpg",
-        "horror-escape-room",
         "village-dungeons"
       ],
       "futureEligibleGames": "ANY_ROBLOX_GAME_WITH_VERIFIED_UNIVERSE_ID_AND_CANONICAL_MARKETING_IMAGE"

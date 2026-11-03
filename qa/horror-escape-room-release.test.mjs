@@ -19,3 +19,21 @@ test('삭제된 공포 탈출방은 정본 정책과 게임 목록에서 영구 
     assert.equal(policy.automaticMaintenanceAllowed,false);
   }
 });
+
+test('삭제된 게임의 게시 권한과 전용 검수 경로는 더 이상 활성화할 수 없다',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const gameId='horror-escape-room';
+  assert.equal(roadmap.roblox.deploymentControl.ownerDirectCanonicalPublishException,undefined);
+  assert.equal(roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate.ownerConfirmedReleases.some(row=>row.gameId===gameId),false);
+  assert.equal(roadmap.assetProductionParallelContract.parallelism.internalAssetFocus.enabled,false);
+  assert.equal(roadmap.ownerCanonicalRules.ownerExclusiveDevelopment.gameIds.includes(gameId),false);
+  assert.equal(roadmap.ownerCanonicalRules.ownerExclusiveDevelopment.implementationScope.gamePath,undefined);
+  assert.equal(roadmap.robloxHomepageThumbnailSyncContract.scope.currentInternalRobloxExposureGames.includes(gameId),false);
+  assert.equal(roadmap.finalDevelopmentLock.status,'LOCKED');
+  for(const file of [
+    '.github/workflows/horror-owner-system-publish.yml',
+    '.github/workflows/horror-manor-review.yml',
+    'qa/horror-manor.test.mjs',
+    'roblox-games/horror-escape-room/default.project.json',
+  ]) assert.equal(fs.existsSync(file),false,file);
+});
