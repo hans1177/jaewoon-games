@@ -209,12 +209,12 @@ test('registered 12-scene prologue keeps 23 unique approved layers and cleans up
   assert.deepEqual(foregrounds.map(x=>Number(x[1])),[1,2,3,4,5,6,7,9,10,11,12]);
   assert.match(client,/registeredStoryArt\[index\]/);
   assert.match(client,/registeredStoryDepth\[index\]/);
-  assert.match(client,/departingArtwork=storyArtwork:Clone\(\)/);
-  assert.match(client,/departingForeground=storyForeground:Clone\(\)/);
-  assert.match(client,/ImageTransparency=1,[\s\S]{0,200}\}\):Play\(\)/);
+  assert.doesNotMatch(client,/departingArtwork|departingForeground/);
+  assert.match(client,/storyArtwork.Visible=showArtwork/);
+  assert.match(client,/storyForeground.Visible=showFront/);
   assert.match(client,/introDialogue\.MaxVisibleGraphemes=visible/);
   assert.match(client,/currentStoryScene~=index then return/);
-  assert.match(client,/departingArtwork\.Visible=false\s+departingForeground\.Visible=false/);
+  assert.match(client,/local showFront=validFront and \(closeUp or not validImage\)/);
   assert.match(client,/remote:FireServer\("meadow:enter-world"\)/);
 });
 
@@ -233,7 +233,7 @@ test('dark-fantasy cinematic uses twelve distinct approved-image shots with safe
     'introGradient.Color=(scene.cinema=="dawn" or scene.cinema=="relic" or scene.cinema=="journey")',
     'or (scene.cinema=="dawn" or scene.cinema=="journey") and .085 or .105',
     'cameraMotionIntensity*=reducedEffects and .48 or 1',
-    'for _,motion in pairs({art=activeArtTween,front=activeFrontTween,camera=activeTween,fov=activeFovTween}) do',
+    'for _,motion in pairs({camera=activeTween,fov=activeFovTween}) do',
     'if motion.PlaybackState==Enum.PlaybackState.Paused then motion:Play() end',
     'regionIntro.MaxVisibleGraphemes=count',
     'introTint.BackgroundTransparency=.26',
@@ -264,18 +264,27 @@ test('prologue has only two visible story texts and keeps key characters in the 
   assert.match(intro,/storyAtmosphere\.ZIndex=6/);
 });
 
-test('prologue keeps mobile crop-safe characters visible and starts after a bounded first-frame preload',()=>{
+test('prologue uses exactly one source image per shot and keeps Big Brother and Mirror uncropped',()=>{
   const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
+  assert.match(intro,/storyArtwork\.ScaleType=Enum\.ScaleType\.Fit/);
   assert.match(intro,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
   assert.match(intro,/introPanel:GetPropertyChangedSignal\("AbsoluteSize"\):Connect\(layoutIntroCaptions\)/);
   assert.match(intro,/local portrait=size\.Y>size\.X\*1\.1/);
-  assert.match(intro,/local frontScale=fourPerson and 1\.0 or closeUp and 1\.27/);
+  assert.match(intro,/local showFront=validFront and \(closeUp or not validImage\)/);
+  assert.match(intro,/local showArtwork=validImage and not showFront/);
+  assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
+  assert.match(intro,/scene\.cinema=="betrayal" or scene\.cinema=="erasure"/);
+  assert.match(intro,/scene\.cinema=="erasure" and registeredStoryDepth\[3\]/);
+  assert.match(intro,/storyForeground\.Position=UDim2\.fromScale\(\.02,\.145\)/);
+  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.96,\.68\)/);
+  assert.match(intro,/storyArtwork\.Position=UDim2\.fromScale\(0,0\)/);
+  assert.match(intro,/storyArtwork\.Size=UDim2\.fromScale\(1,1\)/);
   assert.match(intro,/local firstShotDeadline=os\.clock\(\)\+2\.4/);
   assert.match(intro,/if not entranceOpen or token~=runToken then return end\s+TweenService:Create\(storyProgress/);
-  assert.match(intro,/scene\.view=="seal" and \.64 or \.55/);
   assert.match(intro,/local sway=math\.sin\(t\*1\.15\)\*cameraMotionIntensity\*\.12/);
-  assert.match(intro,/Position=UDim2\.fromScale\(-margin\+math\.clamp\(x,-margin,margin\)/);
-  assert.match(intro,/TweenService:Create\(departing,TweenInfo\.new\(\.4/);
+  assert.doesNotMatch(intro,/departingArtwork|departingForeground|activeArtTween|activeFrontTween/);
+  assert.doesNotMatch(intro,/frontScale|frontZoom|frontX|frontY/);
+  assert.match(intro,/introFlash\.BackgroundTransparency=1/);
   assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
 });
 
