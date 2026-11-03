@@ -758,6 +758,15 @@ jobs:
             const candidate=item.robloxRuntimeCandidateEvidence||{};
             const prior=item.robloxRuntimeFoundationEvidence||{};
             const previousRead=prior.officialLiveServerObservation||{};
+            const priorExact=
+              prior.sourceRevision===candidate.sourceRevision
+              &&prior.artifactIdentity===candidate.artifactIdentity
+              &&String(prior.universeId||'')===String(candidate.universeId||'')
+              &&String(prior.placeId||'')===String(candidate.placeId||'')
+              &&Number(prior.candidateVersionNumber)===Number(candidate.versionNumber);
+            const firstPublishedRead=
+              candidate.sourceRevision===String(item.robloxSourceCommit||'')
+              &&candidate.artifactIdentity===String(item.robloxBuildArtifactIdentity||'');
             const lastAt=Date.parse(String(previousRead.observedAt||''));
             return serverDiagnosticEnabled
               &&Boolean(process.env.ROBLOX_OPEN_CLOUD_API_KEY)
@@ -767,18 +776,21 @@ jobs:
               // 현재 게임 소스가 새로 바뀌어도, 발행됐던 비공개 후보의
               // 소스/파일/플레이스/버전과 이전 진단이 정확히 일치하면 읽기 검증은 가능하다.
               // 이것을 최신 소스의 F9 통과 또는 서버 실행으로 승격하지 않는다.
-              &&candidate.sourceRevision===prior.sourceRevision
-              &&candidate.artifactIdentity===prior.artifactIdentity
+              &&(priorExact||firstPublishedRead)
               &&/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
               &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''))
               &&Number.isSafeInteger(Number(candidate.versionNumber))
               &&Number(candidate.versionNumber)>0
-              &&String(prior.universeId||'')===String(candidate.universeId||'')
-              &&String(prior.placeId||'')===String(candidate.placeId||'')
-              &&Number(prior.candidateVersionNumber)===Number(candidate.versionNumber)
-              &&previousRead.permissionDenied===true
-              &&(!Number.isFinite(lastAt)||Date.now()-lastAt>=10*60*1000);
-          });
+              &&(
+                (priorExact&&(
+                  !Number.isFinite(lastAt)
+                  ||(previousRead.permissionDenied===true&&Date.now()-lastAt>=10*60*1000)
+                ))
+                ||(!priorExact&&firstPublishedRead)
+              );
+          }).sort((a,b)=>
+            String(b.robloxRuntimeCandidateEvidence?.publishedAt||'')
+              .localeCompare(String(a.robloxRuntimeCandidateEvidence?.publishedAt||'')));
           for(const item of pendingServerReadCandidates.slice(0,2)){
             const candidate=item.robloxRuntimeCandidateEvidence;
             let observation;
@@ -803,9 +815,29 @@ jobs:
               };
             }
             officialServerReadByGame.set(item.gameId,observation);
+            const previousRuntime=item.robloxRuntimeFoundationEvidence||{};
+            const priorExact=
+              previousRuntime.sourceRevision===candidate.sourceRevision
+              &&previousRuntime.artifactIdentity===candidate.artifactIdentity
+              &&String(previousRuntime.universeId||'')===String(candidate.universeId)
+              &&String(previousRuntime.placeId||'')===String(candidate.placeId)
+              &&Number(previousRuntime.candidateVersionNumber)===Number(candidate.versionNumber);
+            // 새 비공개 후보에 진단만 기록한다. 오래된 버전의 F1/엔진 증거는 계승하지 않는다.
+            const exactDiagnostic=priorExact?previousRuntime:{
+              version:3,gameId:item.gameId,
+              sourceRevision:String(candidate.sourceRevision),
+              artifactIdentity:String(candidate.artifactIdentity),
+              artifactRunId:Number(candidate.artifactRunId||0),
+              universeId:String(candidate.universeId),placeId:String(candidate.placeId),
+              candidateVersionNumber:Number(candidate.versionNumber),
+              engineExecuted:false,simulationRunning:false,serverBootObserved:false,
+              actualRuntimeEvidence:false,actualServerRuntimeEvidence:false,
+              actualClientRuntimeEvidence:false,onlineServerStartedVerified:false,
+              state:'OFFICIAL_PRIVATE_SERVER_READ_DIAGNOSTIC_ONLY',
+              authority:'roblox-official-exact-private-server-read-only'
+            };
             item.robloxRuntimeFoundationEvidence={
-              ...item.robloxRuntimeFoundationEvidence,
-              officialLiveServerObservation:observation,
+              ...exactDiagnostic,officialLiveServerObservation:observation,
             };
             item.updatedAt=new Date().toISOString();
             changed=true;
