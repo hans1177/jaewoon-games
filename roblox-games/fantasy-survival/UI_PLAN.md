@@ -42,7 +42,7 @@
 | 숙련 정보 | 기존 `Config.Proficiencies` 7개를 개별 카드로 나누고 서버 속성 숫자만 표시. 숙련 보상 50:1 규칙 유지 | `renderMeadowPages`, `MeadowProficiencyCards` |
 | 소지품 세로 화면 | 검색·기존 분류 탭 아래에 3열 중심의 아이템 격자를 표시하고, 선택하면 아래 상세/장착/제작 버튼 위치로 스크롤 | `layoutGrid`, `layoutInventoryWorkspace` |
 | 소지품 가로 화면 | 폭 620 이상이면 격자 전용 스크롤과 오른쪽 고정 상세창으로 분리. 작은 높이에서는 전체 페이지 스크롤로 하단 버튼 접근 | `MeadowInventoryWorkspace`, `MeadowInventoryItemScroll` |
-| 항목 선택 | 선택 슬롯 강조, 수량/장착 상태/미보유 제작법 명확히 구분. 실제 서버 장착·해제·물약 사용·제작 명령은 기존 그대로 유지 | `redrawSelection`, `renderInventory` |
+| 항목 선택 | 기존 8개 분류에 **보유** 필터 추가, 보유·미보유 제작법 구분, 선택 슬롯 강조와 분류 탭의 실제 선택 표시. 장착·해제·물약 사용·제작 명령은 기존 서버 경로 유지 | `redrawSelection`, `renderInventory` |
 | 긴 설명 | 조합 비용·설명·서버 반환 메시지가 136픽셀 표시 영역에서 사라지지 않도록 내부 텍스트 스크롤 | `SelectedItemDescriptionScroll` |
 | 전체 메뉴 | 기존 8개 페이지 유지. 세로 가로 스와이프 탭, 선택 탭 자동 중앙 정렬, 화면별 부제목, 짧은 화면 헤더 축소, 게임패드 B/닫기 | `RobloxCommonUI.AdaptActionMenu` |
 
