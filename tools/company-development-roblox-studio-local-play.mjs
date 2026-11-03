@@ -1275,6 +1275,13 @@ function studioActualPlayWorldProbeSource({planRoutes=true}={}){
     '  local mob=dh and not isPlayer and not companion and not npc and (string.find(lname,"enemy") or string.find(lname,"monster") or string.find(lname,"mob") or string.find(lname,"zombie") or string.find(lname,"boss") or string.find(lname,"raider") or d:GetAttribute("Enemy")==true or d:GetAttribute("IsEnemy")==true or d:GetAttribute("EnemyType")~=nil or d:GetAttribute("MobType")~=nil)',
     '  local okPivot,pivot=pcall(function() return d:GetPivot() end)',
     '  local pos=okPivot and pivot.Position or Vector3.new()',
+    // [마력숲 전투 계측] 실제 메시 모델 몬스터는 Humanoid가 아닌 서버 소유
+    // EnemyHealth/EnemyMaxHealth로 체력을 관리한다. 값이 관측된 모델만 기록한다.
+    '  local nativeMobHealth=d:GetAttribute("EnemyHealth")',
+    '  local nativeMobMaxHealth=d:GetAttribute("EnemyMaxHealth")',
+    '  if not dh and not isPlayer and typeof(nativeMobHealth)=="number" and typeof(nativeMobMaxHealth)=="number" and nativeMobMaxHealth>0 and #mobRows<80 then',
+    '   table.insert(mobRows,{name=d.Name,kind="NativeMeshModel",x=pos.X,y=pos.Y,z=pos.Z,hp=nativeMobHealth,maxHp=nativeMobMaxHealth,target=tostring(d:GetAttribute("TargetUserId") or ""),state=tostring(d:GetAttribute("NativeMobMotion") or d:GetAttribute("AttackState") or ""),aggro=tostring(d:GetAttribute("AttackState") or ""),dormant=d:GetAttribute("Dormant")})',
+    '  end',
     '  local animator=dh and dh:FindFirstChildOfClass("Animator")',
     '  local trackCount=0',
     '  if animator then local ok,tracks=pcall(function() return animator:GetPlayingAnimationTracks() end);if ok then trackCount=#tracks end end',
