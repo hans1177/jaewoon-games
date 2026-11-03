@@ -35,6 +35,50 @@ test('Roblox post-work verification defaults to Open Cloud runtime plus image sa
  assert.match(workflow,/run_studio:[\s\S]*?default:\s*false/);
 });
 
+test('pending Roblox F9 can retry exact version read-only 403 diagnosis across changing Studio repair states',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const start=workflow.indexOf('const pendingServerReadCandidates=');
+ const end=workflow.indexOf('for(const item of pendingServerReadCandidates.slice(0,2))',start);
+ const qualityGate=workflow.indexOf('ROBLOX_FOUNDATION_PROCESSING_SKIPPED_ACTIVE_QUALITY_BUILDUP=',end);
+ assert.ok(start>0&&end>start&&qualityGate>end,'read-only diagnosis must precede quality gate');
+ const expression=workflow.slice(start,end);
+ const select=new Function('q','requested','serverDiagnosticEnabled','process','Date',
+  expression+'\nreturn pendingServerReadCandidates;');
+ const sourceRevision='a'.repeat(40),artifactIdentity='sha256:'+'b'.repeat(64);
+ const candidate={published:true,sourceRevision,artifactIdentity,
+  universeId:'10773436325',placeId:'108565970231899',versionNumber:132};
+ const runtime={sourceRevision,artifactIdentity,
+  universeId:candidate.universeId,placeId:candidate.placeId,candidateVersionNumber:132,
+  serverBootObserved:false,actualRuntimeEvidence:false,
+  officialLiveServerObservation:{permissionDenied:true,status:403,observedAt:'2026-11-03T13:00:00Z'}};
+ const item={gameId:'fantasy-survival',robloxSourceCommit:sourceRevision,robloxBuildArtifactIdentity:artifactIdentity,
+  robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:sourceRevision,
+  robloxRuntimeCandidateEvidence:candidate,robloxRuntimeFoundationEvidence:runtime};
+ const processMock={env:{ROBLOX_OPEN_CLOUD_API_KEY:'mock-secret'}};
+ const clock={now:()=>Date.parse('2026-11-03T14:00:00Z'),parse:Date.parse};
+ const check=(row=item,opts={})=>select({items:[row]},opts.requested||'',
+  opts.enabled??true,opts.env||processMock,opts.clock||clock).length;
+ assert.equal(check(),1,'the 403 read must remain testable during Studio combat quality hold');
+ assert.equal(check({...item,robloxQualityBuildUpRequired:false}),1,'read permission must be checked after quality hold clears');
+ assert.equal(check({...item,robloxFinalReviewPassed:true}),0);
+ assert.equal(check({...item,robloxPublicRelease:true}),0);
+ assert.equal(check({...item,robloxRuntimeCandidateEvidence:{...candidate,versionNumber:133}}),0);
+ assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,officialLiveServerObservation:{...runtime.officialLiveServerObservation,permissionDenied:false}}}),0);
+ assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,officialLiveServerObservation:{...runtime.officialLiveServerObservation,observedAt:'2026-11-03T13:58:00Z'}}}),0);
+ assert.equal(check(item,{requested:'other-game'}),0);
+ assert.equal(check(item,{enabled:false}),0);
+ assert.equal(check(item,{env:{env:{ROBLOX_OPEN_CLOUD_API_KEY:''}}}),0);
+ const body=workflow.slice(start,qualityGate);
+ assert.match(body,/probeRobloxOpenCloudGameServerObservation/);
+ assert.match(workflow,/const officialServerReadByGame=new Map\(\)/);
+ assert.match(body,/officialServerReadByGame\.set\(item\.gameId,observation\)/);
+ assert.match(workflow,/let officialLiveServers=officialServerReadByGame\.get\(item\.gameId\)\|\|null/);
+ assert.match(workflow,/if\(!officialLiveServers\)\{/);
+ assert.match(body,/officialLiveServerObservation:observation/);
+ assert.match(body,/F9_GAMEPLAY_GATE_UNCHANGED/);
+ assert.doesNotMatch(body,/robloxFinalReviewPassed\s*=\s*true|robloxPublicRelease\s*=\s*true|robloxRuntimePassed\s*=\s*true/);
+});
+
 test('automatic Roblox scans reuse exact Studio and non-simulating diagnostic instead of exhausting Luau quota',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  const probe=workflow.slice(workflow.indexOf('      - name: Probe exact Roblox Open Cloud engine execution'),
