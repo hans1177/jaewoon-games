@@ -1860,7 +1860,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   // [터치 검수] 실제 로드되는 마력숲 전용 UI와 버튼 입력 복구를 확인한다.
   const actualUi=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
   assert.ok(actualUi.includes('if primary and primary.hideButton~=true then'));
-  assert.ok(actualUi.includes('open=function(index)selectPage(index or 0);setOpen(true)end'));
+  // [탭 중앙 정렬] 열기를 먼저 실행해야 숨겨진 탭의 실제 가로폭이 계산된다.
+  assert.ok(actualUi.includes('open=function(index)setOpen(true);selectPage(index or 0)end'));
+  assert.ok(actualUi.includes('menu.Activated:Connect(function()setOpen(true);selectPage(selectedPage)end)'));
   assert.ok(client.includes('meadowSkillDock.ZIndex=35'));
   assert.ok(client.includes('button.Active=true;button.Interactable=true'));
   assert.ok(client.includes('icon.Active=false;icon.Interactable=false'));
