@@ -1,5 +1,28 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-fjdi60",
+      "worker": "vibe2",
+      "taskId": "ocean-voyage-web-library-cc0-replacement-v1",
+      "gameId": "ocean-voyage",
+      "files": [
+        "web-games/ocean-voyage/index.html",
+        "web-games/ocean-voyage/main.mjs",
+        "web-games/ocean-voyage/engine.mjs",
+        "web-games/ocean-voyage/ocean3d.mjs"
+      ],
+      "baseSha": "a5681f06c4222e9334c592971400c6e66f6e4865",
+      "runId": "41698853560",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-03T19:11:06.709Z",
+      "expiresAt": "2026-11-03T19:56:06.709Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:ocean-voyage-web-library-cc0-replacement-v1"
+      ]
+    }
+  ]
 }
