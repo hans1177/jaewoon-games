@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
-import {fetchRobloxRuntimeFoundationEvidence,probeRobloxOpenCloudEngine,probeRobloxOpenCloudImageEvidence,validateRobloxRuntimeFoundationEvidence,validateRobloxMultiplayerSourceContract} from '../tools/company-development-roblox-runtime-foundation.mjs';
+import {fetchRobloxRuntimeFoundationEvidence,probeRobloxOpenCloudEngine,probeRobloxOpenCloudImageEvidence,probeRobloxOpenCloudGameServerObservation,validateRobloxRuntimeFoundationEvidence,validateRobloxMultiplayerSourceContract} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
 const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21,...(name==='MULTIPLAYER_SYNC'?{participantCount:2}:{})});
 const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'];
@@ -33,6 +33,129 @@ test('Roblox post-work verification defaults to Open Cloud runtime plus image sa
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_IMAGE_CHECK=/);
  assert.match(workflow,/openCloudImageEvidence:engineProbe\?\.imageEvidence\|\|null/);
  assert.match(workflow,/run_studio:[\s\S]*?default:\s*false/);
+});
+
+test('automatic Roblox scans reuse exact Studio and non-simulating diagnostic instead of exhausting Luau quota',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const probe=workflow.slice(workflow.indexOf('      - name: Probe exact Roblox Open Cloud engine execution'),
+  workflow.indexOf('      - name: Read exact runtime sentinel and persist tester QA evidence'));
+ assert.match(probe,/const exactStudioHeadlessDiagnosticReusable=/);
+ assert.match(probe,/!requested&&!retryOpenCloudOnly/);
+ for(const match of [
+  "c.sourceRevision===sourceRevision",
+  "c.artifactIdentity===artifactIdentity",
+  "String(c.placeId||'')===String(runtime.placeId||'')",
+  "String(c.universeId||'')===String(runtime.universeId||'')",
+  "runtime.authority==='roblox-open-cloud-exact-engine-diagnostic-no-server-claim'",
+  "runtime.engineExecuted===true",
+  "runtime.simulationRunning===false",
+  "runtime.serverBootObserved===false",
+  "post.officialStudioMcpActualPlayPassed===true",
+  "exactStudioPlay.actualPlay===true",
+  "exactStudioPlay.officialStudioMcp===true",
+  "cloudImage.imageContentPassed===true",
+  "Number(cloudImage.requestContext?.versionNumber)===Number(c.versionNumber)",
+  "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_NON_SIMULATING_STUDIO_DIAGNOSTIC=",
+  "F9_SERVER_BOOT_STILL_REQUIRED",
+ ])assert.ok(probe.includes(match),'required binding or failure guard missing: '+match);
+ const decision=probe.slice(probe.indexOf('const exactStudioHeadlessDiagnosticReusable='),
+  probe.indexOf("return c.published===true&&Number(c.versionNumber)>0"));
+ assert.doesNotMatch(decision,/robloxRuntimePassed\s*=\s*true|robloxFinalReviewPassed\s*=\s*true|robloxPublicRelease\s*=\s*true/);
+ assert.match(workflow,/officialLiveServerObservation:officialLiveServers/);
+ assert.match(workflow,/previousRuntime\.sourceRevision===sourceRevision/);
+ assert.match(workflow,/Number\(previousRuntime\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
+});
+
+test('non-simulating Studio quota guard only reuses identical source, artifact, place, version and image',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const start=workflow.indexOf('const exactStudioHeadlessDiagnosticReusable=');
+ const end=workflow.indexOf('if(exactStudioHeadlessDiagnosticReusable)',start);
+ assert.ok(start>0&&end>start);
+ const statement=workflow.slice(start,end);
+ const decision=new Function('requested','retryOpenCloudOnly','c','sourceRevision','artifactIdentity','runtime','post','item','cloudImage',
+  'const exactStudioPlay=item.robloxInternalVibePlayEvidence||{};\n'+statement+'\nreturn exactStudioHeadlessDiagnosticReusable;');
+ const sourceRevision='a'.repeat(40),artifactIdentity='sha256:'+'b'.repeat(64);
+ const c={published:true,universeId:'10773436325',placeId:'108565970231899',versionNumber:132,sourceRevision,artifactIdentity};
+ const studio={pass:true,actualPlay:true,officialStudioMcp:true,localPlaceFile:true,
+  sourceRevision,artifactIdentity,placeId:c.placeId,versionNumber:132};
+ const runtime={authority:'roblox-open-cloud-exact-engine-diagnostic-no-server-claim',
+  sourceRevision,artifactIdentity,universeId:c.universeId,placeId:c.placeId,
+  candidateVersionNumber:132,engineExecuted:true,exactPlace:true,exactVersion:true,
+  simulationRunning:false,serverBootObserved:false};
+ const post={authority:'roblox-internal-studio-single-session-qa',
+  officialStudioMcpActualPlayPassed:true,sourceRevision,artifactIdentity,candidateVersionNumber:132};
+ const cloudImage={imageContentPassed:true,requestContext:{
+  sourceRevision,artifactIdentity,universeId:c.universeId,placeId:c.placeId,versionNumber:132,
+ }};
+ const args=['',false,c,sourceRevision,artifactIdentity,runtime,post,
+  {robloxInternalVibePlayEvidence:studio},cloudImage];
+ assert.equal(decision(...args),true,'one unmodified exact candidate must skip repeat Luau task');
+ for(const [change,reason] of [
+  [[0,'fantasy-survival'],'explicit exact-game diagnosis'],
+  [[1,true],'forced Cloud retry'],
+  [[2,{...c,versionNumber:133}],'new place version'],
+  [[2,{...c,sourceRevision:'c'.repeat(40)}],'new candidate source'],
+  [[5,{...runtime,serverBootObserved:true}],'cannot reuse real server boot as non-simulating'],
+  [[7,{robloxInternalVibePlayEvidence:{...studio,officialStudioMcp:false}}],'not officially Studio-play-verified'],
+  [[8,{...cloudImage,imageContentPassed:false}],'unverified image'],
+  [[8,{...cloudImage,requestContext:{...cloudImage.requestContext,versionNumber:131}}],'wrong-version image']
+ ]){const changed=[...args];changed[change[0]]=change[1];
+  assert.equal(decision(...changed),false,reason+' must not suppress official probe');}
+});
+
+test('exact Studio QA retains a non-simulating Open Cloud 200 as diagnostic, not server boot or runtime PASS',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(workflow,/const studioCloudDiagnostic=engineProbeByGame\.get\(item\.gameId\)/);
+  assert.match(workflow,/serverBootObserved=simulationObserved&&studioCloudDiagnostic\.serverBootObserved===true/);
+  assert.match(workflow,/onlineServerStartedVerified:false/);
+  assert.match(workflow,/actualRuntimeEvidence:false,actualServerRuntimeEvidence:false/);
+  assert.match(workflow,/roblox-open-cloud-exact-engine-diagnostic-no-server-claim/);
+  assert.match(workflow,/item\.robloxCloudImageEvidence=studioCloudDiagnostic\.imageEvidence\|\|null/);
+});
+
+// [버전 132 서버 확인] 실제 서버 목록과 게임 스크립트의 실행 증거를 혼동하지 않는다.
+test('official version-scoped game server observation distinguishes live instances from Luau 200 without F9 claims',async()=>{
+ const requests=[];
+ const options={
+  universeId:'10773436325',placeId:'108565970231899',versionNumber:132,
+  apiKey:'test-secret',networkRetryAttempts:1,fetchImpl:async(url,init)=>{
+   requests.push({url,init});
+   return Response.json({gameServers:[{jobId:'c2aacbbe-e3b3-4ade-9b8d-50e57efdb544'}]});
+  }
+ };
+ const result=await probeRobloxOpenCloudGameServerObservation(options);
+ assert.equal(result.available,true);
+ assert.equal(result.serverInstanceObserved,true);
+ assert.equal(result.activeServerCount,1);
+ assert.equal(result.candidateVersionNumber,132);
+ assert.equal(result.actualGameScriptBootVerified,false);
+ assert.equal(result.actualPlayerPlayVerified,false);
+ assert.equal(result.state,'EXACT_VERSION_GAME_SERVER_INSTANCE_OBSERVED');
+ assert.match(requests[0].url,/\/universes\/10773436325\/places\/108565970231899\/versions\/132\/game-servers$/);
+ assert.equal(requests[0].init.headers['x-api-key'],'test-secret');
+ assert.equal(JSON.stringify(result).includes('test-secret'),false);
+ const source=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(source,/probeRobloxOpenCloudGameServerObservation/);
+ assert.match(source,/officialLiveServerObservation:officialLiveServers/);
+ assert.match(source,/actualRuntimeEvidence:false,actualServerRuntimeEvidence:false/);
+ assert.match(source,/onlineServerStartedVerified:false/);
+});
+
+test('official version-scoped server inspection fails closed for no server, denied permission or unknown schema',async()=>{
+ const base={universeId:'10773436325',placeId:'108565970231899',versionNumber:132,apiKey:'k',networkRetryAttempts:1};
+ for(const [response,state,count] of [
+  [Response.json({gameServers:[]}),'NO_ACTIVE_SERVER_ON_RESULT_PAGE',0],
+  [new Response('',{status:403}),'GAME_SERVER_READ_PERMISSION_UNAVAILABLE',null],
+  [Response.json({unrecognized:[{jobId:'c2aacbbe-e3b3-4ade-9b8d-50e57efdb544'}]}),'GAME_SERVER_LIST_SCHEMA_UNKNOWN',null]
+ ]){
+  const result=await probeRobloxOpenCloudGameServerObservation({...base,fetchImpl:async()=>response});
+  assert.equal(result.state,state);
+  assert.equal(result.serverInstanceObserved,false);
+  assert.equal(result.activeServerCount,count);
+  assert.equal(result.actualGameScriptBootVerified,false);
+ }
+ await assert.rejects(()=>probeRobloxOpenCloudGameServerObservation({...base,versionNumber:0}),
+  /ROBLOX_GAME_SERVER_EXACT_TARGET_REQUIRED/);
 });
 
 test('event-driven Roblox runtime foundation QA has no delayed cron and does not require full git history',()=>{
@@ -282,6 +405,63 @@ test('cloud image validation rejects unsafe URLs corrupt payloads and metadata-o
  const noUrl=await probeRobloxOpenCloudImageEvidence({universeId:'1',apiKey:'k',fetchImpl:async()=>new Response(JSON.stringify({thumbnails:[{homepageThumbnailId:'1'}]}))});
  assert.equal(noUrl.imageContentPassed,false);
  assert.equal(noUrl.state,'IMAGE_CONTENT_UNVERIFIED');
+});
+
+// 메인: 공식 개인화 목록의 ID만으로 이미지를 통과시키지 않고 실제 공식 CDN 바이트를 확인한다.
+test('personalization metadata without CDN URL uses exact universe official rendered thumbnail bytes',async()=>{
+ const universeId='10773436325';
+ const url='https://tr.rbxcdn.com/180DAY-example/768/432/GameMediaItem8/Png/noFilter';
+ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jS1sAAAAASUVORK5CYII=','base64');
+ const requests=[];
+ const result=await probeRobloxOpenCloudImageEvidence({
+  universeId,apiKey:'private-not-forwarded',networkRetryAttempts:1,fetchImpl:async(target,init={})=>{
+   requests.push({target,init});
+   if(String(target).startsWith('https://apis.roblox.com/'))
+    return Response.json({thumbnails:[{homepageThumbnailId:'c2aacbbe-e3b3-4ade-9b8d-50e57efdb544'}]});
+   if(String(target).startsWith('https://thumbnails.roblox.com/')){
+    assert.equal(init.headers?.['x-api-key'],undefined);
+    assert.equal(init.redirect,'error');
+    return Response.json({data:[{universeId:Number(universeId),error:null,thumbnails:[{targetId:108565970231899,state:'Completed',imageUrl:url,version:'TN3'}]}]});
+   }
+   assert.equal(target,url);
+   assert.equal(init.headers?.['x-api-key'],undefined);
+   assert.equal(init.redirect,'error');
+   return new Response(png,{headers:{'content-type':'image/png'}});
+  }
+ });
+ assert.equal(requests.length,3);
+ assert.equal(result.thumbnailCount,1);
+ assert.equal(result.imageLookupAuthority,'ROBLOX_OFFICIAL_UNIVERSE_GAME_THUMBNAIL_CDN');
+ assert.equal(result.officialGameThumbnailTargetId,'108565970231899');
+ assert.equal(result.imageContentChecked,true);
+ assert.equal(result.imageContentPassed,true);
+ assert.equal(result.imageContent[0].bytes,png.length);
+ assert.equal(result.personalizedImageContentMatched,false);
+ assert.equal(result.runtimeScreenshot,false);
+ assert.equal(result.exactRuntimeVersionImage,false);
+ assert.equal(result.imageVisualQualityVerified,false);
+});
+
+test('different universe or non-CDN official fallback never asserts verified image content',async()=>{
+ for(const scenario of ['WRONG_UNIVERSE','UNTRUSTED_CDN']){
+  let requests=0;
+  const evidence=await probeRobloxOpenCloudImageEvidence({
+   universeId:'10773436325',apiKey:'k',networkRetryAttempts:1,fetchImpl:async(target)=>{
+    requests++;
+    if(String(target).startsWith('https://apis.roblox.com/'))return Response.json({thumbnails:[{homepageThumbnailId:'uuid'}]});
+    if(String(target).startsWith('https://thumbnails.roblox.com/'))return Response.json({data:[{
+      universeId:scenario==='WRONG_UNIVERSE'?1:10773436325,error:null,
+      thumbnails:[{targetId:108565970231899,state:'Completed',
+        imageUrl:scenario==='UNTRUSTED_CDN'?'https://example.com/evil.png':'https://tr.rbxcdn.com/image.png'}]
+    }]});
+    throw new Error('unexpected CDN fetch');
+   }
+  });
+  assert.equal(evidence.imageContentPassed,false);
+  assert.equal(evidence.state,'IMAGE_CONTENT_UNVERIFIED');
+  if(scenario==='WRONG_UNIVERSE')assert.equal(requests,2);
+  if(scenario==='UNTRUSTED_CDN')assert.equal(evidence.imageContent[0].error,'UNTRUSTED_IMAGE_URL');
+ }
 });
 
 test('cloud workflow runs independent engine and image requests together and preserves sibling results on failure',async()=>{

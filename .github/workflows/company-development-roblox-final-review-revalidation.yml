@@ -409,14 +409,42 @@ jobs:
             if(!exact||tickets.length){
               const productBlocked=productReadiness.pass!==true;
               const studioPending=mandatoryStudioMcpActualPlay!==true;
-              const f9FailureSignature=studioPending?'ROBLOX_F9_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_REQUIRED':productBlocked?'ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS_FAILED':(!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE');
-              const f9Blocker=studioPending?'roblox-f9-official-studio-mcp-actual-play-required':productBlocked?'roblox-f9-gameplay-product-readiness-failed':(!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure');
-              const internalFlowNonBlocking=!studioPending&&!productBlocked&&(
-                item.robloxRuntimeFailureExternalReleaseOnly===true
-                ||item.robloxRuntimeFoundationInternalReleaseException===true
-                ||item.robloxInternalReleaseReady===true
+              const productSourceDefect=(productReadiness.blockers||[]).some(code=>
+                code==='F0_GAMEPLAY_PRODUCT_READINESS_MISSING'
+                ||code==='F9_STUDIO_SOURCE_QUALITY_MISSING'
+                ||String(code).startsWith('F9_STUDIO_SOURCE_QUALITY_GAP:')
+                ||(code==='F9_SPAWN_NOT_GROUNDED'&&runtime.simulationRunning===true
+                  &&runtime.openCloudWorldEvidence?.spawnGroundingObserved===true)
               );
-              if(productBlocked){
+              // 비시뮬레이션 클라우드 작업에서 스폰/서버를 관찰하지 못한 것은
+              // 게임 소스 결함이 아니므로 빌드업 재작업으로 보내지 않는다.
+              const externalObservationPending=productBlocked&&!productSourceDefect
+                &&internalStudioValidationAccepted===true
+                &&runtime.simulationRunning!==true
+                &&runtime.serverBootObserved!==true;
+              const f9FailureSignature=studioPending?'ROBLOX_F9_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_REQUIRED'
+                :externalObservationPending?'ROBLOX_F9_EXTERNAL_RUNTIME_OBSERVATION_PENDING'
+                :productBlocked?'ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS_FAILED'
+                :(!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE');
+              const f9Blocker=studioPending?'roblox-f9-official-studio-mcp-actual-play-required'
+                :externalObservationPending?'roblox-f9-nonsimulating-cloud-runtime-observation-pending'
+                :productBlocked?'roblox-f9-gameplay-product-readiness-failed'
+                :(!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure');
+              const internalFlowNonBlocking=!studioPending&&!productSourceDefect&&(
+                externalObservationPending
+                ||(!productBlocked&&(
+                  item.robloxRuntimeFailureExternalReleaseOnly===true
+                  ||item.robloxRuntimeFoundationInternalReleaseException===true
+                  ||item.robloxInternalReleaseReady===true
+                ))
+              );
+              if(productBlocked&&!productSourceDefect){
+                item.robloxQualityBuildUpRequired=false;
+                item.robloxQualityBuildUpSourceRevision=null;
+                item.robloxQualityFailureClass=null;
+                item.robloxQualityBuildUpEvidence=null;
+              }
+              if(productSourceDefect){
                 item.robloxQualityBuildUpRequired=true;
                 item.robloxQualityBuildUpSourceRevision=sourceRevision;
                 item.robloxQualityFailureClass='GAMEPLAY_PRODUCT_READINESS';

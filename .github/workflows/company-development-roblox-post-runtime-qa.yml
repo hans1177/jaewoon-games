@@ -464,6 +464,52 @@ jobs:
               console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_EVIDENCE_REUSE='+item.gameId);
               return false;
             }
+            // [반복 429 방지] 검증 완료된 동일 비공개 후보의 비시뮬레이션 진단은
+            // 자동 스캔에서 다시 실행하지 않는다. 실제 서버 실행 증거로 승격하지 않으며
+            // 새 후보와 명시적 게임별 검증은 기존 공식 경로로 실행한다.
+            const exactStudioPlay=item.robloxInternalVibePlayEvidence||{};
+            const cloudImage=item.robloxCloudImageEvidence||{};
+            const exactStudioHeadlessDiagnosticReusable=
+              !requested&&!retryOpenCloudOnly
+              &&c.published===true
+              &&c.sourceRevision===sourceRevision
+              &&c.artifactIdentity===artifactIdentity
+              &&String(c.placeId||'')===String(runtime.placeId||'')
+              &&String(c.universeId||'')===String(runtime.universeId||'')
+              &&Number(c.versionNumber)>0
+              &&Number(runtime.candidateVersionNumber)===Number(c.versionNumber)
+              &&runtime.sourceRevision===sourceRevision
+              &&runtime.artifactIdentity===artifactIdentity
+              &&runtime.authority==='roblox-open-cloud-exact-engine-diagnostic-no-server-claim'
+              &&runtime.engineExecuted===true
+              &&runtime.exactPlace===true
+              &&runtime.exactVersion===true
+              &&runtime.simulationRunning===false
+              &&runtime.serverBootObserved===false
+              &&post.authority==='roblox-internal-studio-single-session-qa'
+              &&post.officialStudioMcpActualPlayPassed===true
+              &&post.sourceRevision===sourceRevision
+              &&post.artifactIdentity===artifactIdentity
+              &&Number(post.candidateVersionNumber)===Number(c.versionNumber)
+              &&exactStudioPlay.pass===true
+              &&exactStudioPlay.actualPlay===true
+              &&exactStudioPlay.officialStudioMcp===true
+              &&exactStudioPlay.localPlaceFile===true
+              &&exactStudioPlay.sourceRevision===sourceRevision
+              &&exactStudioPlay.artifactIdentity===artifactIdentity
+              &&String(exactStudioPlay.placeId||'')===String(c.placeId||'')
+              &&Number(exactStudioPlay.versionNumber)===Number(c.versionNumber)
+              &&cloudImage.imageContentPassed===true
+              &&String(cloudImage.requestContext?.sourceRevision||'')===sourceRevision
+              &&String(cloudImage.requestContext?.artifactIdentity||'')===artifactIdentity
+              &&String(cloudImage.requestContext?.universeId||'')===String(c.universeId||'')
+              &&String(cloudImage.requestContext?.placeId||'')===String(c.placeId||'')
+              &&Number(cloudImage.requestContext?.versionNumber)===Number(c.versionNumber);
+            if(exactStudioHeadlessDiagnosticReusable){
+              console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_NON_SIMULATING_STUDIO_DIAGNOSTIC='+item.gameId
+                +':version='+Number(c.versionNumber)+':F9_SERVER_BOOT_STILL_REQUIRED');
+              return false;
+            }
             return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
           }).sort((a,b)=>{
             if(!requested)return 0;
@@ -589,6 +635,7 @@ jobs:
           import fs from 'node:fs';
           import {
             fetchRobloxRuntimeFoundationEvidence,
+            probeRobloxOpenCloudGameServerObservation,
             validateRobloxRuntimeFoundationEvidence,
             validateRobloxMultiplayerSourceContract,
           } from './tools/company-development-roblox-runtime-foundation.mjs';
@@ -1063,6 +1110,78 @@ jobs:
                 continue;
               }
 
+              // [진단/실행 분리] Open Cloud 200은 서버 시뮬레이션 증거가 아니다.
+              // Studio 실제 플레이를 재사용할 때도 최신 공식 엔진 조회 결과를 정확한 후보에 기록하고
+              // 과거 429 진단을 그대로 노출하지 않는다. F1/F9 실서버 승인은 여기서 하지 않는다.
+              const studioCloudDiagnostic=engineProbeByGame.get(item.gameId);
+              let officialLiveServers=null;
+              try{
+                officialLiveServers=await probeRobloxOpenCloudGameServerObservation({
+                  universeId:String(candidate.universeId),
+                  placeId:String(candidate.placeId),
+                  versionNumber:Number(candidate.versionNumber),
+                  apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+                });
+              }catch(error){
+                officialLiveServers={
+                  version:1,available:false,permissionDenied:false,
+                  serverInstanceObserved:false,actualGameScriptBootVerified:false,
+                  state:'GAME_SERVER_LIST_REQUEST_UNAVAILABLE',
+                  error:String(error?.message||error).slice(0,180),
+                  authority:'roblox-official-version-scoped-game-server-observation',
+                };
+              }
+              console.log('ROBLOX_OFFICIAL_EXACT_VERSION_SERVER_LIST='+item.gameId
+                +':version='+Number(candidate.versionNumber)
+                +':state='+officialLiveServers.state
+                +':active='+(officialLiveServers.activeServerCount??'UNKNOWN'));
+              // 정확한 후보의 관측 결과를 429 등 신규 Luau 작업 실패와 독립적으로 보존한다.
+              const previousRuntime=item.robloxRuntimeFoundationEvidence||{};
+              if(previousRuntime.sourceRevision===sourceRevision
+                &&previousRuntime.artifactIdentity===artifactIdentity
+                &&String(previousRuntime.universeId||'')===String(candidate.universeId)
+                &&String(previousRuntime.placeId||'')===String(candidate.placeId)
+                &&Number(previousRuntime.candidateVersionNumber)===Number(candidate.versionNumber)){
+                item.robloxRuntimeFoundationEvidence={
+                  ...previousRuntime,officialLiveServerObservation:officialLiveServers,
+                };
+                changed=true;
+              }
+              if(studioCloudDiagnostic?.engineExecuted===true
+                &&studioCloudDiagnostic.exactPlace===true
+                &&studioCloudDiagnostic.exactVersion===true
+                &&studioCloudDiagnostic.persistentFailure!==true
+                &&Number(studioCloudDiagnostic.versionNumber)===Number(candidate.versionNumber)){
+                const simulationObserved=studioCloudDiagnostic.simulationRunning===true;
+                const serverBootObserved=simulationObserved&&studioCloudDiagnostic.serverBootObserved===true;
+                const diagnostic={
+                  version:3,gameId:item.gameId,sourceRevision,artifactIdentity,
+                  artifactRunId:Number(candidate.artifactRunId||0),
+                  universeId:String(candidate.universeId),placeId:String(candidate.placeId),
+                  candidateVersionNumber:Number(candidate.versionNumber),
+                  engineExecuted:true,exactGame:true,exactPlace:true,exactVersion:true,
+                  exactEngineVersion:true,validationProvider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',
+                  simulationRunning:simulationObserved,serverBootObserved,
+                  serverBootEvidence:studioCloudDiagnostic.serverBootEvidence||null,
+                  openCloudWorldEvidence:studioCloudDiagnostic.worldEvidence||null,
+                  openCloudImageEvidence:studioCloudDiagnostic.imageEvidence||null,
+                  officialLiveServerObservation:officialLiveServers,
+                  serverInstanceObserved:officialLiveServers?.serverInstanceObserved===true,
+                  actualRuntimeEvidence:false,actualServerRuntimeEvidence:false,
+                  actualClientRuntimeEvidence:false,onlineServerStartedVerified:false,
+                  internalStudioValidationOnly:true,
+                  state:serverBootObserved?'ENGINE_TASK_SERVER_BOOT_MARKER_ONLY':'ENGINE_TASK_ONLY_NO_ONLINE_SERVER',
+                  observedAt:stamp,workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
+                  authority:'roblox-open-cloud-exact-engine-diagnostic-no-server-claim'
+                };
+                item.robloxRuntimeFoundationEvidence=diagnostic;
+                item.robloxCloudImageEvidence=studioCloudDiagnostic.imageEvidence||null;
+                console.log('ROBLOX_EXACT_ENGINE_DIAGNOSTIC_NO_SERVER_CLAIM='+
+                  item.gameId+':version='+Number(candidate.versionNumber)+
+                  ':simulation='+(simulationObserved?'YES':'NO')+
+                  ':cloudImage='+(studioCloudDiagnostic.imageEvidence?.imageContentPassed===true?'VERIFIED':'PENDING'));
+                changed=true;
+              }
               const multiplayerValidationPassed=multiplayer.known===true
                 &&(multiplayer.required!==true||item.robloxMultiplayerQaPassed===true||exactMultiplayerValidationReusable);
               if(multiplayer.required===true&&staticMultiplayerCodePass){

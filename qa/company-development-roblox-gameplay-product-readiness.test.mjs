@@ -529,6 +529,17 @@ test('F9 blocks exact engine execution without server boot actual play and real 
 });
 
 
+test('F9 routes non-simulating Cloud evidence debt away from gameplay source repair without authorizing release',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  assert.match(workflow,/const externalObservationPending=productBlocked&&!productSourceDefect/);
+  assert.match(workflow,/runtime\.simulationRunning!==true/);
+  assert.match(workflow,/ROBLOX_F9_EXTERNAL_RUNTIME_OBSERVATION_PENDING/);
+  assert.match(workflow,/if\(productBlocked&&!productSourceDefect\)\{/);
+  assert.match(workflow,/if\(productSourceDefect\)\{/);
+  assert.match(workflow,/const publicRuntimeAcceptance=false/);
+  assert.match(workflow,/item\.robloxF9ReleaseRegressionPassed=true/);
+});
+
 test('runtime keeps unrelated F0-to-private handoff parallel with source and technical workers',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   const technicalPlan=workflow.slice(workflow.indexOf('  technical-plan:'),workflow.indexOf('  technical-worker:'));
