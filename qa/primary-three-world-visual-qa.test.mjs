@@ -1,102 +1,41 @@
+// 파일명: qa/primary-three-world-visual-qa.test.mjs
+// 유지 중인 마력숲·보석 생존전 원본의 실제 입력·저장·렌더링 계약 검사.
+// 이 정적 검사는 Studio·온라인 서버 플레이 또는 F9 승인의 대체 근거가 아니다.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-const read=p=>fs.readFileSync(p,'utf8');
-const games=['cozy-island','daechung-rpg','horror-escape-room'];
 
-test('3개 내부 빌드는 QA 카메라와 서버 기록 통로를 유지한다',()=>{
- for(const id of games){
-  const config=read(`roblox-games/${id}/shared/GameConfig.luau`);
-  const qa=read(`roblox-games/${id}/shared/QACamera.luau`);
-  const client=read(`roblox-games/${id}/client/Game.client.luau`);
-  const server=read(`roblox-games/${id}/server/Game.server.luau`);
-  assert.match(config,/QACameraEnabled=true/);
-  assert.match(config,/QACaptureRemoteName="QACaptureReport"/);
-  for(const marker of ['CaptureService','TakeScreenshotCaptureAsync','PromptSaveCapturesToGallery','StartUploadCaptureAsync','CheckUploadCaptureStatusAsync','Enum.CameraType.Scriptable'])assert.match(qa,new RegExp(marker.replaceAll('.','\\.')));
-  assert.match(client,/QACamera\.install\(C,gui/);
-  assert.match(server,/qa-camera-captures-v1/);
-  assert.match(server,/qaCaptureStore:UpdateAsync\("latest"/);
- }
+const read=path=>fs.readFileSync(path,'utf8');
+const serverPath='roblox-games/fantasy-survival/server/Game.server.luau';
+const clientPath='roblox-games/fantasy-survival/client/Game.client.luau';
+const gemPath='web-games/gem-survivor/gem3d.mjs';
+
+test('현재 운영 게임 원본이 존재하고 삭제된 공포게임은 복원하지 않는다',()=>{
+  const catalog=JSON.parse(read('game-catalog.json'));
+  for(const gameId of ['fantasy-survival','gem-survivor'])
+    assert.ok(catalog.games.some(game=>game.id===gameId&&game.lifecycleState==='ACTIVE'),gameId);
+  for(const file of [serverPath,clientPath,gemPath,'web-games/gem-survivor/index.html'])
+    assert.ok(fs.statSync(file).size>0,file);
+  assert.equal(fs.existsSync('roblox-games/horror-escape-room'),false);
 });
 
-test('포근섬은 넓은 기본섬과 채집/NPC/몹 밀도를 가진다',()=>{
- const style=read('roblox-games/cozy-island/shared/VisualStyle.luau');
- const server=read('roblox-games/cozy-island/server/Game.server.luau');
- assert.match(style,/Size=Vector3\.new\(220,10,220\)/);
- for(const marker of ['ManualGatherForest','ManualGatherFarm','WoodNode','FoodNode','HomeNPCs','HomeMobs','WildBoar','IslandRaider','COZY_CC0_KAYKIT_NATIVE_V10','terrain:FillBlock','Enum.Material.Water','seaLevel','ChiefHat','StrawHat','VillageBoat','BoarBody','BoarSnout'])assert.match(server,new RegExp(marker.replaceAll('.','\\.')));
- assert.doesNotMatch(server,/CreateHumanoidModelFromDescription/);
- assert.doesNotMatch(server,/part\(world,"Sea"/);
+test('마력숲 서버는 플레이어·전투 체력·저장 책임을 유지한다',()=>{
+  const source=read(serverPath);
+  for(const marker of ['PlayerAdded','CharacterAdded','Humanoid','DataStoreService'])
+    assert.ok(source.includes(marker),marker);
 });
 
-test('대충 RPG는 5개 대형 지역과 보스 실루엣을 재사용한 수집형 동료를 가진다',()=>{
- const server=read('roblox-games/daechung-rpg/server/Game.server.luau');
- const config=read('roblox-games/daechung-rpg/shared/GameConfig.luau');
- assert.match(server,/Vector3\.new\(440,2,440\)/);
- assert.match(server,/for i=1,34 do themedProp/);
- assert.match(server,/for i=1,10 do spawnEnemy/);
- assert.match(server,/BossCompanionRoster/);
- assert.match(server,/ActiveBossCompanions/);
- assert.match(server,/VillageHouse/);
- for(const marker of ['RPG_FANTASY_PORTAL_WORLD_V5','RPG_STYLIZED_TOY_FANTASY_R15','MedievalAssetArmor','MedievalVillageHouse','ChiefCape','SwordGuard','HealerHood','SnowMound','SnowBeastBody','SnowBeastMuzzle','WolfBody','GolemBody','BanditTorso','KnightTorso'])assert.match(server,new RegExp(marker));
- // Native imported market props replaced the old primitive MarketStall label.
- assert.match(server,/assetProp\(f,ASSETS\.City,\{"market","stall","cart"\}/);
- assert.match(server,/native.Name="NativeLibraryActor"/);
- assert.match(server,/task.spawn\(bindNativeNpcVisual,r,nativeId\)/);
- assert.doesNotMatch(server,/local r=ppart\(parent,name,Vector3\.new\(3\.1,4\.2,2\.1\)\*scale/);
- assert.match(config,/BossCompanions=\{/);
+test('마력숲 클라이언트는 실제 캐릭터 입력과 UI 흐름을 유지한다',()=>{
+  const source=read(clientPath);
+  for(const marker of ['UserInputService','CharacterAdded','Humanoid'])
+    assert.ok(source.includes(marker),marker);
 });
 
-test('심야는 이동 가능한 어둠과 지도별 시각 기준점을 가진다',()=>{
- const client=read('roblox-games/horror-escape-room/client/Game.client.luau');
- const server=read('roblox-games/horror-escape-room/server/Game.server.luau');
- for(const marker of ['MiniMap','PlayerDot','mapLayouts','RunService.RenderStepped','CurrentMapId','MidnightArena','MapReady'])assert.match(client,new RegExp(marker.replaceAll('.','\\.')));
- for(const marker of ['HallGuideStrip','HospitalGuideStrip','ParkLandmarkSign','MIDNIGHT_"..map.Id.."_INFECTION_HORROR_V10','AssetService','EnergyPrompt','EnergyCorePrompt','LibraryWing','EmergencyWing','ArcadeZone','MapReady','SchoolRoofRim','ClassDoorGlass','LibraryShelfExtra'])assert.match(server,new RegExp(marker.replaceAll('.','\\.')));
- assert.match(server,/Name="EscapePrompt"/);
- assert.match(server,/Vector3\.new\(340,1,340\)/);
- assert.match(server,/Lighting\.Brightness=map\.Id=="SCHOOL"and 1\.82 or 1\.65/);
- assert.match(server,/MainHallCeiling/);
- assert.match(server,/LibraryCeiling/);
- assert.match(server,/lamp\.Transparency=\.12;glow\(lamp,Style\.SafeLight,18,\.72\)/);
- assert.match(server,/arena=ensureArena\(C\.Maps\[1\]\)/);
-});
-
-test('QA 캡처는 저장된 Capture를 권한 승인 뒤 업로드한다',()=>{
- for(const id of games){
-  const qa=read(`roblox-games/${id}/shared/QACamera.luau`);
-  const save=qa.indexOf('PromptSaveCapturesToGallery');
-  const permission=qa.lastIndexOf('PromptCaptureGalleryPermissionAsync');
-  const upload=qa.indexOf('uploadSavedCapture(entry.capture)');
-  assert.ok(save>=0&&permission>save,id+' permission order');
-  assert.ok(upload>permission,id+' upload order');
- }
-});
-
-
-test('심야 최종 아트 계약은 현실형 인간과 비정상 몬스터를 분리한다',()=>{
- const server=read('roblox-games/horror-escape-room/server/Game.server.luau');
- assert.match(server,/REALISTIC_HUMANS_ABERRANT_MONSTERS/);
- assert.match(server,/PRIMARY_THREE_FINAL_4V4_INFECTION_V1/);
- assert.match(server,/SchoolRoofRim/);
- assert.doesNotMatch(server,/SchoolMainRoof/);
-});
-
-test('대충 RPG 공용 GLB 캐릭터와 몬스터는 네이티브 바인딩 검증과 기본 외형 복구를 유지한다',()=>{
- const server=read('roblox-games/daechung-rpg/server/Game.server.luau');
- const visual=read('roblox-games/daechung-rpg/shared/VisualStyle.luau');
- assert.match(visual,/SharedPlayerModels=\{NONE=/);
- assert.match(visual,/SharedNpcModels=\{VillageChief=/);
- assert.match(visual,/SharedEnemyModels=\{MEADOW=/);
- assert.match(server,/SharedPlayerVisualState","RIG_RETARGET_REQUIRED"/);
- const rigFailure=server.indexOf('SharedPlayerVisualState","RIG_RETARGET_REQUIRED"');
- const defaultRigHide=server.indexOf('for _,part in ipairs(character:GetChildren())do',rigFailure);
- assert.ok(rigFailure>=0&&defaultRigHide>rigFailure,'unretargeted native asset must not hide the playable R15 avatar');
- const safeSource=server.slice(server.indexOf('if rigParts<7 then'),defaultRigHide);
- assert.match(safeSource,/folder:Destroy\(\)/,'release incomplete GLB rather than overlay an unanimated mannequin');
- assert.match(safeSource,/ARTICULATED_R15_LIMBS_UNAVAILABLE/);
- assert.match(safeSource,/\breturn\b/,'retain the working character before the default rig is hidden');
- assert.doesNotMatch(server,/SharedPlayerVisualState","FULL_MESH_BOUND"/,'unrigged full-body GLB is never a retarget PASS');
- assert.match(server,/RuntimeVisualReview","PENDING"/);
- assert.match(server,/MotionRetargetReview","PENDING"/);
- assert.match(server,/if fallbackAssetId and fallbackAssetId~=assetId/);
- assert.match(server,/if sharedEnemyId then task.spawn\(bindNativeNpcVisual,rootPart,sharedEnemyId\)end/);
+test('보석 생존전은 실제 WebGL 프레임으로 3D 장면을 렌더링한다',()=>{
+  const page=read('web-games/gem-survivor/index.html');
+  const renderer=read(gemPath);
+  assert.match(page,/gem3d\.mjs/);
+  assert.match(renderer,/new THREE\.WebGLRenderer\(/);
+  assert.match(renderer,/renderer\.render\(scene,camera\)/);
+  assert.match(renderer,/createGem3d/);
 });
