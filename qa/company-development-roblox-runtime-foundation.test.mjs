@@ -66,6 +66,43 @@ test('automatic Roblox scans reuse exact Studio and non-simulating diagnostic in
  assert.match(workflow,/Number\(previousRuntime\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
 });
 
+test('non-simulating Studio quota guard only reuses identical source, artifact, place, version and image',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const start=workflow.indexOf('const exactStudioHeadlessDiagnosticReusable=');
+ const end=workflow.indexOf('if(exactStudioHeadlessDiagnosticReusable)',start);
+ assert.ok(start>0&&end>start);
+ const statement=workflow.slice(start,end);
+ const decision=new Function('requested','retryOpenCloudOnly','c','sourceRevision','artifactIdentity','runtime','post','item','cloudImage',
+  statement+'\nreturn exactStudioHeadlessDiagnosticReusable;');
+ const sourceRevision='a'.repeat(40),artifactIdentity='sha256:'+'b'.repeat(64);
+ const c={published:true,universeId:'10773436325',placeId:'108565970231899',versionNumber:132,sourceRevision,artifactIdentity};
+ const studio={pass:true,actualPlay:true,officialStudioMcp:true,localPlaceFile:true,
+  sourceRevision,artifactIdentity,placeId:c.placeId,versionNumber:132};
+ const runtime={authority:'roblox-open-cloud-exact-engine-diagnostic-no-server-claim',
+  sourceRevision,artifactIdentity,universeId:c.universeId,placeId:c.placeId,
+  candidateVersionNumber:132,engineExecuted:true,exactPlace:true,exactVersion:true,
+  simulationRunning:false,serverBootObserved:false};
+ const post={authority:'roblox-internal-studio-single-session-qa',
+  officialStudioMcpActualPlayPassed:true,sourceRevision,artifactIdentity,candidateVersionNumber:132};
+ const cloudImage={imageContentPassed:true,requestContext:{
+  sourceRevision,artifactIdentity,universeId:c.universeId,placeId:c.placeId,versionNumber:132,
+ }};
+ const args=['',false,c,sourceRevision,artifactIdentity,runtime,post,
+  {robloxInternalVibePlayEvidence:studio},cloudImage];
+ assert.equal(decision(...args),true,'one unmodified exact candidate must skip repeat Luau task');
+ for(const [change,reason] of [
+  [[0,'fantasy-survival'],'explicit exact-game diagnosis'],
+  [[1,true],'forced Cloud retry'],
+  [[2,{...c,versionNumber:133}],'new place version'],
+  [[2,{...c,sourceRevision:'c'.repeat(40)}],'new candidate source'],
+  [[5,{...runtime,serverBootObserved:true}],'cannot reuse real server boot as non-simulating'],
+  [[7,{robloxInternalVibePlayEvidence:{...studio,officialStudioMcp:false}}],'not officially Studio-play-verified'],
+  [[8,{...cloudImage,imageContentPassed:false}],'unverified image'],
+  [[8,{...cloudImage,requestContext:{...cloudImage.requestContext,versionNumber:131}}],'wrong-version image']
+ ]){const changed=[...args];changed[change[0]]=change[1];
+  assert.equal(decision(...changed),false,reason+' must not suppress official probe');}
+});
+
 test('exact Studio QA retains a non-simulating Open Cloud 200 as diagnostic, not server boot or runtime PASS',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(workflow,/const studioCloudDiagnostic=engineProbeByGame\.get\(item\.gameId\)/);
