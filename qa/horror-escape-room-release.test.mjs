@@ -37,3 +37,21 @@ test('삭제된 게임의 게시 권한과 전용 검수 경로는 더 이상 �
     'roblox-games/horror-escape-room/default.project.json',
   ]) assert.equal(fs.existsSync(file),false,file);
 });
+
+test('공통 게시·재시작·이미지·런타임 경로는 삭제된 공포게임을 다시 선택하지 않는다',()=>{
+  for(const file of [
+    '.github/workflows/owner-roblox-dedicated-private-experiences.yml',
+    '.github/workflows/roblox-f0-restart.yml',
+    '.github/workflows/roblox-qa-camera-fetch.yml',
+    '.github/workflows/company-development-roblox-release-promotion.yml',
+  ]) {
+    const source=fs.readFileSync(file,'utf8');
+    assert.equal(source.includes(gameId),false,file);
+  }
+  const reset=fs.readFileSync('.github/workflows/roblox-f0-restart.yml','utf8');
+  assert.match(reset,/workflow_dispatch:/);
+  assert.match(reset,/required: true/);
+  assert.doesNotMatch(reset,/^  push:/m);
+  const assets=fs.readFileSync('.github/workflows/horror-combat-assets.yml','utf8');
+  assert.equal(assets.includes('roblox-games/'+gameId+'/'),false);
+});

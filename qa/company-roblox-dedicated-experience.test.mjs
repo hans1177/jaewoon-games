@@ -131,7 +131,6 @@ test('dedicated Roblox titles are preserved without requiring retired game proje
   const expected={
     'cozy-island':'포근섬: 작은 왕국 키우기',
     'daechung-rpg':'포탈 알피지',
-    'horror-escape-room':'심야 대탈출',
     'fantasy-survival':'마력숲 생존기',
   };
   const workflow=fs.readFileSync(new URL('../.github/workflows/owner-roblox-dedicated-private-experiences.yml',import.meta.url),'utf8');
@@ -158,7 +157,7 @@ test('dedicated Roblox workflow recovers and persists the durable target registr
   assert.match(workflow,/git add development-queue\.json roblox-dedicated-targets\.json/);
   assert.match(workflow,/gameName: '포근섬: 작은 왕국 키우기'/);
   assert.match(workflow,/gameName: '포탈 알피지'/);
-  assert.match(workflow,/gameName: '심야 대탈출'/);
+  assert.doesNotMatch(workflow,/gameId:'horror-escape-room'/);
   assert.match(workflow,/const canonicalSourceRevision=String\(item\.robloxSourceCommit\|\|''\)\.trim\(\)/);
   assert.match(workflow,/const canonicalArtifactIdentity=String\(item\.robloxBuildArtifactIdentity\|\|''\)\.trim\(\)/);
   assert.match(workflow,/DEDICATED_PUBLISH_ARTIFACT_NOT_BOUND_TO_CANONICAL_GAME_SOURCE/);

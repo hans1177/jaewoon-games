@@ -18,7 +18,7 @@ test('central policy keeps v496 per-game failure isolation in current revisions'
   assert.equal(isolation.ownerExcludedGameIds.includes('horror-escape-room'),false);
 });
 
-test('DEVELOPMENT_CONFIRMED workflow keeps explicit exclusions and permits resumed Midnight Escape',()=>{
+test('DEVELOPMENT_CONFIRMED workflow preserves per-game isolation and owner exclusions',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   assert.match(workflow,/const ownerExcludedGameIds=new Set\(roadmap\?\.developmentSpeedExecution\?\.perGameFailureIsolation\?\.ownerExcludedGameIds\|\|\[\]\)/);
   assert.match(workflow,/!ownerExcludedGameIds\.has\(item\.gameId\)/);
@@ -37,7 +37,7 @@ test('DEVELOPMENT_CONFIRMED workflow keeps explicit exclusions and permits resum
 });
 
 
-test('the actual native planner admits resumed Midnight Escape and still honors explicit exclusions',()=>{
+test('the actual native planner admits an active game and still honors explicit exclusions',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   const start=workflow.indexOf('          const q=JSON.parse');
@@ -45,19 +45,19 @@ test('the actual native planner admits resumed Midnight Escape and still honors 
   const code=workflow.slice(start,end);
   const run=roadmap=>{
     let output='';
-    const item={gameId:'horror-escape-room',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'};
+    const item={gameId:'fantasy-survival',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'};
     const fsMock={
       readFileSync:file=>JSON.stringify(file==='/tmp/development-queue.json'?{items:[item]}:
         file==='company-learning/platform-release-roadmap.json'?roadmap:{workflow_runs:[]}),
       appendFileSync:(_file,text)=>output+=text
     };
-    vm.runInNewContext(code,{fs:fsMock,process:{cwd:()=>'.',env:{REQUESTED_GAME_ID:'horror-escape-room',CURRENT_CONTROL_SHA:'a'.repeat(40),GITHUB_OUTPUT:'test'}},
+    vm.runInNewContext(code,{fs:fsMock,process:{cwd:()=>'.',env:{REQUESTED_GAME_ID:'fantasy-survival',CURRENT_CONTROL_SHA:'a'.repeat(40),GITHUB_OUTPUT:'test'}},
       platformDevelopmentEligible:()=>true,classifyUpperPlatformAdmission:()=>({state:'UPPER_PLATFORM'}),console:{log:()=>{}}});
     return output;
   };
-  assert.match(run(policy),/roblox_json=\["horror-escape-room"\]/);
+  assert.match(run(policy),/roblox_json=\["fantasy-survival"\]/);
   const held=structuredClone(policy);
-  held.developmentSpeedExecution.perGameFailureIsolation.ownerExcludedGameIds.push('horror-escape-room');
+  held.developmentSpeedExecution.perGameFailureIsolation.ownerExcludedGameIds.push('fantasy-survival');
   assert.match(run(held),/roblox_json=\[\]/);
 });
 
