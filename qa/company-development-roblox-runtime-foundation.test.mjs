@@ -228,6 +228,35 @@ test('official version-scoped server inspection fails closed for no server, deni
   assert.equal(JSON.stringify(result).includes(body.message),false,'never persist provider raw error body');
   assert.equal(JSON.stringify(result).includes('test-secret'),false,'never leak credentials');
  }
+ // [403 원인 검증] 서버 API가 오류 본문을 비우면 같은 universe:read 공식 API로 교차 확인한다.
+ for(const [scopeStatus,expected] of [
+  [200,'SAME_KEY_UNIVERSE_READ_ENDPOINT_AUTHORIZED'],
+  [403,'SAME_KEY_UNIVERSE_READ_ENDPOINT_DENIED'],
+  [404,'SAME_KEY_READ_SCOPE_CHECK_INCONCLUSIVE'],
+ ]) {
+  const urls=[];
+  const fetchImpl=async(url)=>{
+   urls.push(url);
+   return urls.length===1?new Response('',{status:403})
+    :new Response('',{status:scopeStatus});
+  };
+  const result=await probeRobloxOpenCloudGameServerObservation({...base,fetchImpl});
+  assert.equal(result.available,false);
+  assert.equal(result.readScopeCrosscheck?.status,scopeStatus);
+  assert.equal(result.readScopeCrosscheck?.state,expected);
+  assert.equal(result.actualGameScriptBootVerified,false);
+  assert.equal(result.actualPlayerPlayVerified,false);
+  assert.equal(urls.length,2);
+  assert.match(urls[0],/\/versions\/132\/game-servers$/);
+  assert.match(urls[1],/\/game-servers:filter-options$/);
+  assert.equal(JSON.stringify(result).includes(base.apiKey),false);
+ }
+ const nested=await probeRobloxOpenCloudGameServerObservation({...base,
+  fetchImpl:async()=>Response.json({errors:[{code:'MISSING_SCOPE',message:'required scope <universe:read>'}]},{status:403})
+ });
+ assert.equal(nested.accessFailureCategory,'SCOPE_NOT_GRANTED');
+ assert.equal(nested.providerErrorCode,'MISSING_SCOPE');
+ assert.equal(nested.readScopeCrosscheck,null,'clear missing-scope error must not add another request');
  await assert.rejects(()=>probeRobloxOpenCloudGameServerObservation({...base,versionNumber:0}),
   /ROBLOX_GAME_SERVER_EXACT_TARGET_REQUIRED/);
 });
