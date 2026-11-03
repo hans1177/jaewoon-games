@@ -62,13 +62,18 @@ test('pending Roblox F9 can retry exact version read-only 403 diagnosis across c
  assert.equal(check({...item,robloxQualityBuildUpRequired:false}),1,'read permission must be checked after quality hold clears');
  assert.equal(check({...item,robloxSourceCommit:'c'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'d'.repeat(64)}),1,
   'a separately published private version must remain checkable when current game source changes');
- assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,sourceRevision:'e'.repeat(40)}}),0,
-  'a different runtime source must not be mistaken for this private candidate');
- assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,artifactIdentity:'sha256:'+'f'.repeat(64)}}),0,
-  'a different artifact may not reuse this version-bound diagnosis');
+ assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,sourceRevision:'e'.repeat(40)}}),1,
+  'a new exact published candidate needs its own independent first server read');
+ assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,artifactIdentity:'sha256:'+'f'.repeat(64)}}),1,
+  'new exact published artifact may be read but old engine evidence must not be copied');
  assert.equal(check({...item,robloxFinalReviewPassed:true}),0);
  assert.equal(check({...item,robloxPublicRelease:true}),0);
- assert.equal(check({...item,robloxRuntimeCandidateEvidence:{...candidate,versionNumber:133}}),0);
+ assert.equal(check({...item,robloxRuntimeCandidateEvidence:{...candidate,versionNumber:133}}),1,
+  'new private place version requires a first official server permission check');
+ assert.equal(check({...item,robloxRuntimeFoundationEvidence:null}),1,
+  'newly published candidate without F1 evidence still permits read-only permission diagnosis');
+ assert.equal(check({...item,robloxRuntimeCandidateEvidence:{...candidate,sourceRevision:'d'.repeat(40)},robloxRuntimeFoundationEvidence:null}),0,
+  'source mismatch with no historical binding must not check an unrelated place candidate');
  assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,officialLiveServerObservation:{...runtime.officialLiveServerObservation,permissionDenied:false}}}),0);
  assert.equal(check({...item,robloxRuntimeFoundationEvidence:{...runtime,officialLiveServerObservation:{...runtime.officialLiveServerObservation,observedAt:'2026-11-03T13:58:00Z'}}}),0);
  assert.equal(check(item,{requested:'other-game'}),0);
@@ -81,6 +86,10 @@ test('pending Roblox F9 can retry exact version read-only 403 diagnosis across c
  assert.match(workflow,/let officialLiveServers=officialServerReadByGame\.get\(item\.gameId\)\|\|null/);
  assert.match(workflow,/if\(!officialLiveServers\)\{/);
  assert.match(body,/officialLiveServerObservation:observation/);
+ assert.match(body,/state:'OFFICIAL_PRIVATE_SERVER_READ_DIAGNOSTIC_ONLY'/);
+ assert.match(body,/engineExecuted:false,simulationRunning:false,serverBootObserved:false/);
+ assert.match(body,/actualRuntimeEvidence:false,actualServerRuntimeEvidence:false/);
+ assert.match(body,/candidate\.sourceRevision===prior\.sourceRevision|prior\.sourceRevision===candidate\.sourceRevision/);
  assert.match(body,/F9_GAMEPLAY_GATE_UNCHANGED/);
  assert.doesNotMatch(body,/robloxFinalReviewPassed\s*=\s*true|robloxPublicRelease\s*=\s*true|robloxRuntimePassed\s*=\s*true/);
 });
