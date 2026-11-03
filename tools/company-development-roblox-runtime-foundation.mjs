@@ -225,9 +225,32 @@ export async function probeRobloxOpenCloudGameServerObservation({
     observedAt,status,endpoint,requiredScope:'universe:read',
     actualGameScriptBootVerified:false,actualPlayerPlayVerified:false,
     authority:'roblox-official-version-scoped-game-server-observation'};
-  if(status===401||status===403)return Object.freeze({...base,available:false,
-    permissionDenied:true,serverInstanceObserved:false,activeServerCount:null,
-    state:'GAME_SERVER_READ_PERMISSION_UNAVAILABLE'});
+  if(status===401||status===403){
+    // [권한 진단] 인증 실패 원인은 공급자 응답에서 검증된 분류만 남긴다.
+    // 전체 오류 본문, 자격 증명, 사용자 식별자는 로그/장기 상태에 저장하지 않는다.
+    let providerError={};
+    try{
+      const raw=await response.text();
+      providerError=JSON.parse(raw.slice(0,4096));
+    }catch{}
+    const providerCode=clean(providerError?.code||providerError?.error?.code);
+    const errorCode=/^[a-z][a-z0-9_-]{1,63}$/i.test(providerCode)?providerCode:null;
+    const message=clean(providerError?.message||providerError?.error?.message||providerError?.errorMessage);
+    const accessFailureCategory=
+      /required scope|missing scope|insufficient scope|scope.*(missing|denied|invalid)|not.*scope/i.test(message)
+        ?'SCOPE_NOT_GRANTED'
+      :/ip address|ip restriction|ip allowlist|not allowed from.*ip/i.test(message)
+        ?'IP_RESTRICTION'
+      :/expir|revok|disabled.*key|invalid api key|api key.*invalid/i.test(message)
+        ?'KEY_INACTIVE_OR_INVALID'
+      :/universe|experience|target|resource/i.test(message)&&/permission|authoriz|access|not found|forbidden/i.test(message)
+        ?'TARGET_OR_CREATOR_PERMISSION'
+      :'UNCLASSIFIED_AUTHORIZATION_DENIAL';
+    return Object.freeze({...base,available:false,permissionDenied:true,
+      providerErrorCode:errorCode,accessFailureCategory,
+      serverInstanceObserved:false,activeServerCount:null,
+      state:'GAME_SERVER_READ_PERMISSION_UNAVAILABLE'});
+  }
   if(!response.ok)return Object.freeze({...base,available:false,permissionDenied:false,
     serverInstanceObserved:false,activeServerCount:null,state:'GAME_SERVER_LIST_HTTP_'+status});
   let body;try{body=await response.json();}catch{
