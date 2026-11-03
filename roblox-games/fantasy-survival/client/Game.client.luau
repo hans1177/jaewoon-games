@@ -2003,7 +2003,8 @@ do
   local arrivalGui=Instance.new("ScreenGui")
   arrivalGui.Name="MeadowArrivalScreen"
   arrivalGui.ResetOnSpawn=false
-  arrivalGui.IgnoreGuiInset=true
+  -- [기기 안전 영역] 시작 메뉴·건너뛰기 터치는 Roblox 상단 버튼과 노치 바깥에 배치한다.
+  arrivalGui.IgnoreGuiInset=false
   arrivalGui.DisplayOrder=100
   arrivalGui.Parent=player.PlayerGui
   local backdrop=Instance.new("Frame")
