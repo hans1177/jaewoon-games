@@ -186,7 +186,9 @@ test('all four games use independent numeric rooms with the original per-game pl
  const worker=fs.readFileSync('multiplayer/worker.js','utf8');
  const client=fs.readFileSync('multiplayer/multiplayer-client.js','utf8');
  const ocean=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
- const cozy=fs.readFileSync('web-games/cozy-island/kingdom-system.js','utf8');
+ const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+ assert.equal(catalog.games.some(row=>row.id==='cozy-island'),false,'retired frontend may not be restored by a stale QA fixture');
+ assert.equal(fs.existsSync('web-games/cozy-island/kingdom-system.js'),false);
  const party=fs.readFileSync('web-games/party-rpg/index.html','utf8');
  const renderer=fs.readFileSync('web-games/party-rpg/view.mjs','utf8');
  const oceanScene=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
@@ -221,9 +223,6 @@ test('all four games use independent numeric rooms with the original per-game pl
  assert.match(ocean,/createNumberRoomForGame\('ocean-voyage'\)/);
  assert.match(ocean,/joinNumberRoomForGame\('ocean-voyage',code\)/);
  assert.match(oceanScene,/setCoopShips\(list\)/);
- assert.match(cozy,/createNumberRoomForGame\('cozy-island'\)/);
- assert.match(cozy,/joinNumberRoomForGame\('cozy-island',code\)/);
- assert.doesNotMatch(cozy,/RTCPeerConnection|ks-peer-code|ks-own-code/);
  assert.match(party,/createNumberRoomForGame\('party-rpg'\)/);
  assert.match(party,/joinNumberRoomForGame\('party-rpg',number\)/);
  assert.match(renderer,/live\.coopPlayers/);
