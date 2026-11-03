@@ -190,3 +190,25 @@ test('RPG panels retain the original server actions and responsive navigation',(
     assert.ok(client.includes(marker),marker);
   }
 });
+
+test('registered 12-scene prologue keeps 23 unique approved layers and cleans up animations',()=>{
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const background=config.match(/CinematicIntroSceneIds\s*=\s*\{([^}]+)\}/);
+  const foreground=config.match(/CinematicIntroForegroundIds\s*=\s*\{([^}]+)\}/);
+  assert.ok(background&&foreground,'registered originals must be available to the existing intro');
+  const backgrounds=[...background[1].matchAll(/rbxassetid:\/\/(\d+)/g)].map(x=>x[1]);
+  const foregrounds=[...foreground[1].matchAll(/\[(\d+)\]="rbxassetid:\/\/(\d+)"/g)];
+  assert.equal(backgrounds.length,12);
+  assert.equal(foregrounds.length,11);
+  assert.equal(new Set([...backgrounds,...foregrounds.map(x=>x[2])]).size,23);
+  assert.deepEqual(foregrounds.map(x=>Number(x[1])),[1,2,3,4,5,6,7,9,10,11,12]);
+  assert.match(client,/registeredStoryArt\[index\]/);
+  assert.match(client,/registeredStoryDepth\[index\]/);
+  assert.match(client,/departingArtwork=storyArtwork:Clone\(\)/);
+  assert.match(client,/departingForeground=storyForeground:Clone\(\)/);
+  assert.match(client,/ImageTransparency=1,[\s\S]{0,200}\}\):Play\(\)/);
+  assert.match(client,/introDialogue\.MaxVisibleGraphemes=visible/);
+  assert.match(client,/currentStoryScene~=index then return/);
+  assert.match(client,/departingArtwork\.Visible=false\s+departingForeground\.Visible=false/);
+  assert.match(client,/remote:FireServer\("meadow:enter-world"\)/);
+});
