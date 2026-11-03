@@ -187,3 +187,19 @@ test('maintenance takes over only after exact published source and QA are both p
  const src=fs.readFileSync('tools/vibe2-post-release-focus.mjs','utf8');
  assert.match(src,/verifiedMaintenanceMode/);
 });
+
+test('Roblox autonomous build-up rejects absent source evidence and mismatched game identity',()=>{
+ const row=task('roblox-build-up',{target:'roblox',gameId:'magic-forest',status:'running',
+   responsibleFiles:['roblox-games/magic-forest/server/Game.server.luau']});
+ const actual={outcome:'PASS',metrics:{changedFileCount:1,addedLineCount:12,deletedLineCount:4},
+   candidateBranch:'vibe2/candidate/magic-forest-test',baseMainSha:sha,
+   candidateIdentity:{gameId:'magic-forest',target:'roblox',sourceRoot:'roblox-games/magic-forest'},
+   evidence:['candidate-sha:'+newer]};
+ assert.equal(checkAutonomousCandidate(row,{...actual,metrics:{}}).reason,'AUTONOMOUS_NO_SOURCE_CHANGE');
+ assert.equal(checkAutonomousCandidate(row,{...actual,metrics:{changedFileCount:1}}).reason,'AUTONOMOUS_NO_SOURCE_CHANGE');
+ assert.equal(checkAutonomousCandidate(row,{...actual,evidence:[]}).reason,'AUTONOMOUS_ROBLOX_SOURCE_PROOF_MISSING');
+ assert.equal(checkAutonomousCandidate(row,{...actual,candidateIdentity:{...actual.candidateIdentity,gameId:'other'}}).reason,'AUTONOMOUS_ROBLOX_SOURCE_PROOF_MISSING');
+ assert.equal(checkAutonomousCandidate(row,{...actual,candidateBranch:'vibe2/candidate/magic-forest-test',baseMainSha:newer}).reason,'AUTONOMOUS_ROBLOX_SOURCE_PROOF_MISSING');
+ assert.equal(checkAutonomousCandidate(row,actual).accepted,true);
+ assert.equal(checkAutonomousCandidate({...row,ownerDirective:true},{outcome:'PASS',metrics:{changedFileCount:0}}).accepted,true);
+});
