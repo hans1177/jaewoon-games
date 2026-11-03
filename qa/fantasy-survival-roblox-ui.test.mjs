@@ -508,6 +508,9 @@ test('opening panels scroll when short and all twelve story images stay clear of
     const imageBottom=imageTop+.62;
     const titleBottom=(portrait?.105:.028)+.065;
     assert.ok(titleBottom<imageTop,'title overlaps art '+width+'x'+height);
+    const landscapeTitleWidth=Math.min(.66,Math.max(.35,1-2*(128/width+.012)));
+    if(!portrait)assert.ok((1-landscapeTitleWidth)*width/2<=width/2 &&
+      (1+landscapeTitleWidth)*width/2<=width-128,'skip button overlaps title '+width+'x'+height);
     assert.ok(imageTop>=.15,'upper letterbox hides image '+width+'x'+height);
     assert.ok(imageBottom<=.85,'lower letterbox hides image '+width+'x'+height);
     const visiblePanelHeight=Math.min(306,height-24);
