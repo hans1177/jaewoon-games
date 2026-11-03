@@ -4951,7 +4951,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       for(const candidate of packageTasks){
         const pkg=buildWorkPackage({tasks:[candidate],project:{...project,projectPath:candidate.sourceRoot},sequence:++sequence,policy});
         if(!pkg.accepted)throw new Error('INTERNAL_MOTION_WORK_PACKAGE_REJECTED:'+candidate.id);
-        queue=createVibeContinuousQueue({tasks:[...queue.tasks,...pkg.tasks],maxConcurrentTasks:queue.maxConcurrentTasks});
+        // [메인] 신규 패키지만 기존 정규화기로 검증하고, 현재 기획 큐에 이어 붙인다.
+        // 전체 이력의 반복 정규화/복제는 마지막에 한 번 수행한다.
+        const normalizedMotionTasks=createVibeContinuousQueue({tasks:pkg.tasks,maxConcurrentTasks:queue.maxConcurrentTasks}).tasks;
+        queue={...queue,tasks:[...queue.tasks,...normalizedMotionTasks]};
         planned.push(...pkg.tasks);packages.push(pkg);
       }
       continue;
@@ -4972,7 +4975,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     const acceptedTasks=project.ownerResumableBuildUp===true
       ?pkg.tasks.map(task=>({...task,maxRetries:null,retryPolicy:'UNLIMITED_CAUSAL_REPAIR'}))
       :pkg.tasks;
-    queue=createVibeContinuousQueue({tasks:[...queue.tasks,...acceptedTasks],maxConcurrentTasks:queue.maxConcurrentTasks});
+    // [메인] 책임 파일·DAG 충돌 판정은 기존 전체 작업 배열을 계속 참조한다.
+    // 신규 작업은 정규화하되 매 패키지마다 수백 MB의 기존 이력을 재복제하지 않는다.
+    const normalizedAcceptedTasks=createVibeContinuousQueue({tasks:acceptedTasks,maxConcurrentTasks:queue.maxConcurrentTasks}).tasks;
+    queue={...queue,tasks:[...queue.tasks,...normalizedAcceptedTasks]};
     planned.push(...acceptedTasks);
     packages.push({...pkg,tasks:acceptedTasks});
     if(acceptedTasks.some(task=>task.executionLane==='GAME_PRIMARY'))activeGameIds.add(project.gameId);
@@ -4984,6 +4990,8 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     if(ownerResumableSeedRequired)ownerResumableMissingLaneKeys.delete(ownerResumableLaneKey);
     if(focusedSeed)focusedMissingLaneKeys.delete(ownerResumableLaneKey);
   }
+  // [저장] 기존 완전 정규화·동결 계약을 마지막에 한 번 적용한다.
+  queue=createVibeContinuousQueue(queue);
   const workloadTelemetry=computeWorkloadTelemetry(queue,packages);
   const quantityTargetMet=workloadTelemetry.plannedFeaturePackageCount>=policy.targetFeaturePackagesPerCycle||workloadTelemetry.plannedRelatedImprovementCount>=policy.minRelatedImprovementsPerPackage;
   const cycleTarget={
@@ -5160,8 +5168,18 @@ export function runVibe2AutoPlanner({
       catalog:readJson(catalogFile,{}),repoRoot,policy:docs[0]});
     result={...result,queue:owned.queue,ownerRobloxPatch:{taskId:owned.taskId,added:owned.added,merged:owned.merged===true,resume:owned.resume||null}};
   }
-  const normalizedBefore=createVibeContinuousQueue(queueBefore);
-  const queueSynchronized=JSON.stringify(normalizedBefore.tasks)!==JSON.stringify(result.queue?.tasks||[]);
+  // [저장] 원래와 똑같이 모든 작업 필드를 비교하되, 두 대형 JSON 문자열을 한 번에 만들지 않는다.
+  const previousTasks=createVibeContinuousQueue(queueBefore).tasks;
+  const nextTasks=result.queue?.tasks||[];
+  let queueSynchronized=previousTasks.length!==nextTasks.length;
+  if(!queueSynchronized){
+    for(let index=0;index<previousTasks.length;index++){
+      if(JSON.stringify(previousTasks[index])!==JSON.stringify(nextTasks[index])){
+        queueSynchronized=true;
+        break;
+      }
+    }
+  }
   const directiveRoot=path.join(path.dirname(path.resolve(resolvedQueueFile)),'build-up-directives');
   const directiveWrites=[];
   const directivesById=new Map();

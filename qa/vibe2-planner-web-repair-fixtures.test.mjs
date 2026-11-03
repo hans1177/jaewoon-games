@@ -66,6 +66,11 @@ test('existing WEB_VIBE_REPAIR_REQUIRED source plans one exact-stage repair and 
     assert.deepEqual(exact[0].responsibleFiles,[`${relative}/index.html`]);
     assert.ok(exact[0].evidence.includes('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'));
     assert.ok(exact[0].evidence.includes('recovery-exact-stage:WEB_REPAIR'));
+    // [검증] 신규 패키지만 처리해도 최종 큐·작업은 기존 정규화/동결 계약을 유지한다.
+    assert.equal(Object.isFrozen(first.queue),true);
+    assert.equal(Object.isFrozen(first.queue.tasks),true);
+    assert.equal(Object.isFrozen(exact[0]),true);
+    assert.equal(first.queue.tasks.length,new Set(first.queue.tasks.map(row=>row.id)).size);
 
     const second=planVibe2AutonomousTasks({
       status:{projects:[]},
@@ -76,6 +81,8 @@ test('existing WEB_VIBE_REPAIR_REQUIRED source plans one exact-stage repair and 
       maxConcurrentTasks:4,
     });
     assert.equal(second.queue.tasks.filter(row=>row.id===`${gameId}-web-runtime-repair-v1`).length,1);
+    assert.equal(Object.isFrozen(second.queue),true);
+    assert.equal(Object.isFrozen(second.queue.tasks),true);
   }finally{
     fs.rmSync(root,{recursive:true,force:true});
   }
