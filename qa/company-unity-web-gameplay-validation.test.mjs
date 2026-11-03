@@ -620,7 +620,9 @@ test('current Monster Adventure binds native meshes without inventing observed v
  assert.match(monsterUnitySource,/JAEWOON_UNITY_WEB_QA LIBRARY_ASSETS game=/);
  assert.match(monsterUnitySource,/SOURCE_BOUND_RUNTIME_UNVERIFIED/);
  assert.match(source,/nativeMeshProof\.volumetricMeshes>0/);
- assert.match(source,/UNITY_WEB_QA_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D/);
+ assert.match(source,/nativeDepthProof\.spriteGameplayActors===0/);
+ assert.match(source,/nativeDepthProof\.cameraPerspective===1/);
+ assert.match(source,/nativeDepthProof\.worldDepthCm>=50/);
  assert.match(source,/libraryAssetPromotionGranted:false/);
 });
 
