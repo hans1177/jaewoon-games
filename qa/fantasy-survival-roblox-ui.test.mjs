@@ -251,6 +251,19 @@ test('dark-fantasy cinematic uses twelve distinct approved-image shots with safe
   assert.doesNotMatch(scenes[1],/blood|gore|severed|corpse/i);
 });
 
+test('prologue has only two visible story texts and keeps key characters in the approved foreground',()=>{
+  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
+  assert.equal([...intro.matchAll(/label\(introPanel,/g)].length,2,'only title and dialogue labels should exist');
+  assert.doesNotMatch(intro,/StoryChapter|SceneCharacterIdentity|OpeningText|DialogueSpeaker/);
+  assert.match(intro,/regionIntro\.Text=scene\.title/);
+  assert.match(intro,/introDialogue\.Text=scene\.subtitle/);
+  assert.match(intro,/scene\.cinema=="erasure" and registeredStoryDepth\[3\]/);
+  assert.match(intro,/local closeUp=scene\.cinema=="crown" or scene\.cinema=="omen"/);
+  assert.match(intro,/cameraMotionIntensity=0/);
+  assert.match(intro,/storyForeground\.ZIndex=8/);
+  assert.match(intro,/storyAtmosphere\.ZIndex=6/);
+});
+
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   const asset=fs.readFileSync('assets/shared/party/village-well.glb');
