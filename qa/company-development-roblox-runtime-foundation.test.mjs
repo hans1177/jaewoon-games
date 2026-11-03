@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
-import {fetchRobloxRuntimeFoundationEvidence,probeRobloxOpenCloudEngine,probeRobloxOpenCloudImageEvidence,validateRobloxRuntimeFoundationEvidence,validateRobloxMultiplayerSourceContract} from '../tools/company-development-roblox-runtime-foundation.mjs';
+import {fetchRobloxRuntimeFoundationEvidence,probeRobloxOpenCloudEngine,probeRobloxOpenCloudImageEvidence,probeRobloxOpenCloudGameServerObservation,validateRobloxRuntimeFoundationEvidence,validateRobloxMultiplayerSourceContract} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
 const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21,...(name==='MULTIPLAYER_SYNC'?{participantCount:2}:{})});
 const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'];
@@ -43,6 +43,51 @@ test('exact Studio QA retains a non-simulating Open Cloud 200 as diagnostic, not
   assert.match(workflow,/actualRuntimeEvidence:false,actualServerRuntimeEvidence:false/);
   assert.match(workflow,/roblox-open-cloud-exact-engine-diagnostic-no-server-claim/);
   assert.match(workflow,/item\.robloxCloudImageEvidence=studioCloudDiagnostic\.imageEvidence\|\|null/);
+});
+
+// [버전 132 서버 확인] 실제 서버 목록과 게임 스크립트의 실행 증거를 혼동하지 않는다.
+test('official version-scoped game server observation distinguishes live instances from Luau 200 without F9 claims',async()=>{
+ const requests=[];
+ const options={
+  universeId:'10773436325',placeId:'108565970231899',versionNumber:132,
+  apiKey:'test-secret',networkRetryAttempts:1,fetchImpl:async(url,init)=>{
+   requests.push({url,init});
+   return Response.json({gameServers:[{jobId:'c2aacbbe-e3b3-4ade-9b8d-50e57efdb544'}]});
+  }
+ };
+ const result=await probeRobloxOpenCloudGameServerObservation(options);
+ assert.equal(result.available,true);
+ assert.equal(result.serverInstanceObserved,true);
+ assert.equal(result.activeServerCount,1);
+ assert.equal(result.candidateVersionNumber,132);
+ assert.equal(result.actualGameScriptBootVerified,false);
+ assert.equal(result.actualPlayerPlayVerified,false);
+ assert.equal(result.state,'EXACT_VERSION_GAME_SERVER_INSTANCE_OBSERVED');
+ assert.match(requests[0].url,/\/universes\/10773436325\/places\/108565970231899\/versions\/132\/game-servers$/);
+ assert.equal(requests[0].init.headers['x-api-key'],'test-secret');
+ assert.equal(JSON.stringify(result).includes('test-secret'),false);
+ const source=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(source,/probeRobloxOpenCloudGameServerObservation/);
+ assert.match(source,/officialLiveServerObservation:officialLiveServers/);
+ assert.match(source,/actualRuntimeEvidence:false,actualServerRuntimeEvidence:false/);
+ assert.match(source,/onlineServerStartedVerified:false/);
+});
+
+test('official version-scoped server inspection fails closed for no server, denied permission or unknown schema',async()=>{
+ const base={universeId:'10773436325',placeId:'108565970231899',versionNumber:132,apiKey:'k',networkRetryAttempts:1};
+ for(const [response,state,count] of [
+  [Response.json({gameServers:[]}),'NO_ACTIVE_SERVER_ON_RESULT_PAGE',0],
+  [new Response('',{status:403}),'GAME_SERVER_READ_PERMISSION_UNAVAILABLE',null],
+  [Response.json({unrecognized:[{jobId:'c2aacbbe-e3b3-4ade-9b8d-50e57efdb544'}]}),'GAME_SERVER_LIST_SCHEMA_UNKNOWN',null]
+ ]){
+  const result=await probeRobloxOpenCloudGameServerObservation({...base,fetchImpl:async()=>response});
+  assert.equal(result.state,state);
+  assert.equal(result.serverInstanceObserved,false);
+  assert.equal(result.activeServerCount,count);
+  assert.equal(result.actualGameScriptBootVerified,false);
+ }
+ await assert.rejects(()=>probeRobloxOpenCloudGameServerObservation({...base,versionNumber:0}),
+  /ROBLOX_GAME_SERVER_EXACT_TARGET_REQUIRED/);
 });
 
 test('event-driven Roblox runtime foundation QA has no delayed cron and does not require full git history',()=>{
