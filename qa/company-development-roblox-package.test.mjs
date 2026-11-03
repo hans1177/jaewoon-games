@@ -1366,8 +1366,26 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
 
   assert.match(server,/MeadowVillageBuildingCount/);
   assert.match(server,/MeadowVillagePrefabReady/);
-  // [중세 마을] 과거 진흙 언덕을 평평한 길로 바꾸고 원본 조립 모듈로 여섯 주거·생활 건물을 완성한다.
-  assert.match(server,/meadowTerrain:FillBlock\(CFrame.new\(path\[1\],1\.5,path\[2\]\)/);
+  // [위쳐풍 마을 배치] 기존 고정 NPC/우물/의뢰 좌표는 유지하고, 좌우 대칭 격자도로만 대체한다.
+  const roadStart=server.indexOf('local villageRoadRoutes={');
+  const roadEnd=server.indexOf('-- [마을 광장 바닥]',roadStart);
+  assert.ok(roadStart>=0&&roadEnd>roadStart,'licensed forest village road source must exist');
+  const roadSource=server.slice(roadStart,roadEnd);
+  assert.equal((roadSource.match(/\{width=[\d.]+,points=/g)||[]).length,16,'16 connected rustic lanes');
+  assert.match(roadSource,/meadowTerrain:FillBall\(Vector3.new\(x,2\.06-radius,z\),radius,Enum\.Material\.Ground\)/);
+  assert.match(roadSource,/local bend=math\.sin\(t\*math\.pi\)/);
+  assert.doesNotMatch(roadSource,/meadowTerrain:FillBlock|Instance\.new\("Part"\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowVillageRoadRoutes",#villageRoadRoutes\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowVillageLayoutStyle","RUSTIC_WINDING_FOREST_VILLAGE"\)/);
+  assert.match(server,/local villageCenter=Vector3.new\(0,3,-111\)/);
+  for(const location of ['Vector3.new(-7,5,-109)','Vector3.new(-68,5,-122)',
+    'Vector3.new(69,5,-129)','Vector3.new(-2,5,-188)'])
+    assert.ok(server.includes(location),'existing village quest NPC positions unchanged: '+location);
+  const authoredHouses=[...villageHouses.matchAll(/\{x=(-?\d+),z=(-?\d+),angle=([^,]+),name="Village_([^"]+)"/g)];
+  assert.equal(authoredHouses.length,16,'all licensed village houses remain');
+  assert.ok(new Set(authoredHouses.map(row=>Number(row[2]))).size>=14,'cottages must not be in mirrored grid rows');
+  assert.ok(authoredHouses.every(row=>Math.abs(Number(row[1]))<=258
+    &&Number(row[2])>=-340&&Number(row[2])<=-65),'all house centers stay in safe village bounds');
   // [광장 바닥] 흰색 Cobblestone 덮개를 요구하던 이전 검사 제거. 원래 흙길은 유지한다.
   assert.doesNotMatch(server,/meadowTerrain:FillBlock\(CFrame.new\(plaza\[1\],1\.55,plaza\[2\]\)/);
   assert.match(server,/local expectedVillageBuildings=16/);
