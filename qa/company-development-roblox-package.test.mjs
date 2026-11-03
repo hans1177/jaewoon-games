@@ -2056,20 +2056,27 @@ test('마력숲 15도 옆 스텝과 자연스러운 착지 곡선 검증',()=>{
   assert.ok(Math.abs(hop(0))<1e-9&&Math.abs(hop(1))<1e-9);
 });
 
-// [마력숲 막기/회피] 공식 R15 관절 타이밍과 서버 판정을 연결하며 기존 밸런스를 유지한다.
-test('fantasy upright X-guard and dodge preserve cooldown, defense and native joint authority',()=>{
+// [마력숲 막기/회피] 기존 승인된 서버 판정에 실제 R15 하이 가드와 접촉 충격을 연결한다.
+test('fantasy upright high guard and dodge preserve cooldown, defense and native joint authority',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
   const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
   assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and 1\.06/);
-  assert.match(client,/if isGuard then[\s\S]*?local open=math\.sin/);
-  // [전면 X 가드] 고개·허리 세움, 교차 전완과 하체 지지를 실제 관절 수치로 확인한다.
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.17\*open-1\.03\*brace-\.16\*impact/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.30\*open-1\.08\*brace-\.20\*impact/);
-  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-\.72\*open-\.88\*brace/);
-  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-\.71\*open-\.99\*brace/);
-  assert.match(client,/ipairs\(\{\.11,\.30,\.66\}\)/);
+  assert.match(client,/if isGuard then[\s\S]*?local lift=math\.sin/);
+  // [하이 가드] 서서 오른팔을 높이, 왼팔은 가슴 앞에 두며 타격 때만 상체가 반발한다.
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.96\*brace-\.18\*lift\+\.12\*hit/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.72\*brace-\.16\*lift\+\.23\*hit/);
+  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-1\.08\*brace\+\.19\*hit/);
+  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.42\*brace\+\.31\*hit/);
+  assert.match(client,/local elapsed=os\.clock\(\)-meadowGuardContactAt/);
+  // [정확한 타격 시각화] 가짜 3중 링을 없애고 서버가 확인한 실제 피격만 화려하게 표시한다.
+  assert.doesNotMatch(client,/ipairs\(\{\.11,\.30,\.66\}\)/);
+  assert.match(client,/overrideVfx=="BLOCK_CONTACT"/);
+  assert.match(client,/overrideVfx=="PARRY_CONFIRMED"/);
+  assert.match(client,/textureKey="slash",hideRing=true/);
+  assert.match(server,/remote:FireClient\(player,"MEADOW_REACTION","BLOCK"\)/);
+  assert.match(server,/now-\(defense\.lastBlockContactFXAt or -100\) >=\.12/);
   assert.match(client,/\[5단 회피 스킬\]/);
   assert.match(client,/skillMotionTargets\.ShinL=CFrame\.identity/);
   assert.match(client,/skillMotionTargets\.ShinR=CFrame\.identity/);
