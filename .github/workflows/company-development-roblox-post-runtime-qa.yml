@@ -756,8 +756,6 @@ jobs:
           const pendingServerReadCandidates=(q.items||[]).filter(item=>{
             if(requested&&item.gameId!==requested)return false;
             const candidate=item.robloxRuntimeCandidateEvidence||{};
-            const sourceRevision=String(item.robloxSourceCommit||'').trim();
-            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
             const prior=item.robloxRuntimeFoundationEvidence||{};
             const previousRead=prior.officialLiveServerObservation||{};
             const lastAt=Date.parse(String(previousRead.observedAt||''));
@@ -775,7 +773,6 @@ jobs:
               &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''))
               &&Number.isSafeInteger(Number(candidate.versionNumber))
               &&Number(candidate.versionNumber)>0
-              &&typeof sourceRevision==='string'&&typeof artifactIdentity==='string'
               &&String(prior.universeId||'')===String(candidate.universeId||'')
               &&String(prior.placeId||'')===String(candidate.placeId||'')
               &&Number(prior.candidateVersionNumber)===Number(candidate.versionNumber)
