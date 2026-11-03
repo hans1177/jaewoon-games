@@ -496,6 +496,7 @@ test('cinematic v4 locks portrait frames, times silent title reveals and makes s
 // [오프닝 모바일 회귀] 시작 화면 버튼 접근성과 12개 컷 공통 안전 영역을 정적 확인한다.
 test('opening panels scroll when short and all twelve story images stay clear of letterboxes',()=>{
   const arrival=client.slice(client.indexOf('-- [첫 화면]'),client.indexOf('  local function loadRegion('));
+  assert.match(arrival,/arrivalGui\.IgnoreGuiInset=false/);
   assert.match(arrival,/local frame=Instance.new\("ScrollingFrame"\)/);
   assert.match(arrival,/frame\.Size=UDim2\.new\(\.9,0,1,-24\)/);
   assert.match(arrival,/frame\.CanvasSize=UDim2\.fromOffset\(0,height\)/);
@@ -513,7 +514,7 @@ test('opening panels scroll when short and all twelve story images stay clear of
       (1+landscapeTitleWidth)*width/2<=width-128,'skip button overlaps title '+width+'x'+height);
     assert.ok(imageTop>=.15,'upper letterbox hides image '+width+'x'+height);
     assert.ok(imageBottom<=.85,'lower letterbox hides image '+width+'x'+height);
-    const visiblePanelHeight=Math.min(306,height-24);
+    const visiblePanelHeight=Math.min(306,height-48-24);
     assert.ok(height>=330||visiblePanelHeight<306,'short-panel scrolling needed '+width+'x'+height);
   }
 });
