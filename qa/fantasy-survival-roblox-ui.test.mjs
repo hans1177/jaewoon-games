@@ -385,10 +385,10 @@ test('prologue uses exactly one source image per shot and keeps Big Brother and 
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
   assert.match(intro,/scene\.cinema=="betrayal" or scene\.cinema=="erasure"/);
   assert.match(intro,/scene\.cinema=="erasure" and registeredStoryDepth\[3\]/);
-  assert.match(intro,/storyForeground\.Position=UDim2\.fromScale\(\.02,\.145\)/);
-  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.96,\.68\)/);
-  assert.match(intro,/storyArtwork\.Position=UDim2\.fromScale\(\.01,\.01\)/);
-  assert.match(intro,/storyArtwork\.Size=UDim2\.fromScale\(\.98,\.98\)/);
+  assert.match(intro,/storyForeground\.Position=UDim2\.fromScale\(\.02,portrait and \.18 or \.16\)/);
+  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.96,\.62\)/);
+  assert.match(intro,/storyArtwork\.Position=UDim2\.fromScale\(\.02,portrait and \.18 or \.16\)/);
+  assert.match(intro,/storyArtwork\.Size=UDim2\.fromScale\(\.96,\.62\)/);
   assert.match(intro,/local firstId=registeredStoryArt\[1\] or registeredStoryDepth\[1\]/);
   assert.match(intro,/for index,scene in ipairs\(scenes\) do\s+if index>1 then/);
   assert.match(intro,/local selected=\(portrait and typeof\(frontId\)=="string"\) and frontId/);
@@ -489,6 +489,28 @@ test('cinematic v4 locks portrait frames, times silent title reveals and makes s
   assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
   assert.equal([...intro.matchAll(/label\(introPanel,/g)].length,2);
   assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
+});
+
+// [오프닝 모바일 회귀] 시작 화면 버튼 접근성과 12개 컷 공통 안전 영역을 정적 확인한다.
+test('opening panels scroll when short and all twelve story images stay clear of letterboxes',()=>{
+  const arrival=client.slice(client.indexOf('-- [첫 화면]'),client.indexOf('  local function loadRegion('));
+  assert.match(arrival,/local frame=Instance.new\("ScrollingFrame"\)/);
+  assert.match(arrival,/frame\.Size=UDim2\.new\(\.9,0,1,-24\)/);
+  assert.match(arrival,/frame\.CanvasSize=UDim2\.fromOffset\(0,height\)/);
+  assert.match(arrival,/frame\.ScrollingDirection=Enum\.ScrollingDirection\.Y/);
+  assert.match(arrival,/introPanel:GetPropertyChangedSignal\("AbsoluteSize"\):Connect\(layoutIntroCaptions\)/);
+  assert.doesNotMatch(arrival,/storyArtwork\.Size=UDim2\.fromScale\(1\.14,1\.14\)/);
+  for(const [width,height] of [[360,640],[390,844],[844,390],[640,360],[800,300],[1280,720]]){
+    const portrait=height>width*1.1;
+    const imageTop=portrait?.18:.16;
+    const imageBottom=imageTop+.62;
+    const titleBottom=(portrait?.105:.028)+.065;
+    assert.ok(titleBottom<imageTop,'title overlaps art '+width+'x'+height);
+    assert.ok(imageTop>=.15,'upper letterbox hides image '+width+'x'+height);
+    assert.ok(imageBottom<=.85,'lower letterbox hides image '+width+'x'+height);
+    const visiblePanelHeight=Math.min(306,height-24);
+    assert.ok(height>=330||visiblePanelHeight<306,'short-panel scrolling needed '+width+'x'+height);
+  }
 });
 
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
