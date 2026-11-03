@@ -33,16 +33,35 @@ export function resolveRobloxThumbnailTarget({catalog={},queue={},gameId=''}) {
     &&canonical?.identity?.image===source;
   const dedicatedArt=source.startsWith('assets/roblox-thumbnails/'+id+'.');
   if(!dedicatedArt&&!existingCover)throw new Error('ROBLOX_THUMBNAIL_SOURCE_NOT_CANONICAL:'+source);
-  // 메인: Roblox 공식 서버에 검증된 해당 게임의 전용 universe/place만 업로드한다.
+  // 메인: 인증된 정식 장소를 우선하고, F9 이전에는 같은 게임의 격리된 비공개 검증 장소만 허용한다.
+  // 썸네일 검증은 본편 게시나 실제 서버 실행/F9 승인 증거가 아니다.
   const item=(queue.items||[]).find(row=>clean(row?.gameId)===id)||{};
-  const target=item.robloxPublicationTarget||{};
-  if(target.verified!==true||target.dedicated!==true||target.shared===true
-    ||clean(target.gameId||id)!==id
-    ||!validId(target.universeId)||!validId(target.placeId)){
+  const publication=item.robloxPublicationTarget||{};
+  const validation=item.robloxValidationTarget||{};
+  const candidate=item.robloxRuntimeCandidateEvidence||{};
+  const validDedicated=target=>target.verified===true&&target.dedicated===true
+    &&target.shared!==true&&clean(target.gameId||id)===id
+    &&validId(target.universeId)&&validId(target.placeId);
+  const canonicalVerified=validDedicated(publication);
+  const privateValidationVerified=validDedicated(validation)
+    &&validation.internalOnly===true&&validation.publicDiscoveryAllowed===false
+    &&validation.visibilityIntent==='PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'
+    &&validation.bootstrapState==='PUBLISHED_PRIVATE'
+    &&candidate.published===true&&candidate.validationOnly===true
+    &&candidate.releaseClaim===false&&candidate.canonicalGameTarget===false
+    &&validId(candidate.versionNumber)
+    &&clean(candidate.universeId)===clean(validation.universeId)
+    &&clean(candidate.placeId)===clean(validation.placeId)
+    &&/^[a-f0-9]{40}$/i.test(clean(candidate.sourceRevision))
+    &&/^sha256:[a-f0-9]{64}$/i.test(clean(candidate.artifactIdentity))
+    &&candidate.sourceRevision===item.robloxSourceCommit
+    &&candidate.artifactIdentity===item.robloxBuildArtifactIdentity;
+  if(!canonicalVerified&&!privateValidationVerified)
     throw new Error('ROBLOX_THUMBNAIL_VERIFIED_DEDICATED_TARGET_MISSING:'+id);
-  }
+  const target=canonicalVerified?publication:validation;
   return Object.freeze({
     gameId:id,source,universeId:clean(target.universeId),placeId:clean(target.placeId),
+    privateValidationOnly:!canonicalVerified,
     name:clean(canonical?.identity?.name||game.name||id),
     approvedExistingCover:existingCover,
     coverSha256:existingCover?cover.sha256:null,
@@ -419,6 +438,22 @@ export async function syncRobloxHomepageThumbnail({
   console.log('ROBLOX_THUMBNAIL_SOURCE_SHA256='+validated.sha256);
   console.log('ROBLOX_THUMBNAIL_RENDER=PASS:size='+rendered.size);
   if(detailOnly){
+    // 비공개 검증 장소에서는 공개 상세 이미지/미디어 게시를 시작하지 않는다.
+    if(target.privateValidationOnly===true){
+      const evidence={
+        version:1,gameId:target.gameId,universeId:target.universeId,placeId:target.placeId,
+        sourcePath:target.source,sourceSha256:validated.sha256,
+        renderedPngSha256:rendered.sha256,
+        privateValidationOnly:true,detailPublicationDeferred:true,
+        imageStatus:'DEFERRED_PRE_F9_PRIVATE_VALIDATION',
+        verifiedDetailImage:false,imageSyncFailure:null,
+        videoStatus:'NATIVE_VIDEO_PUBLICATION_DEFERRED',
+        published:false,authority:'ROBLOX_PRIVATE_VALIDATION_MEDIA_NOT_PUBLICATION'
+      };
+      if(clean(outputPath))writeJson(path.resolve(root,outputPath),evidence);
+      console.log('ROBLOX_DETAIL_IMAGE=DEFERRED_PRE_F9_PRIVATE_VALIDATION:'+target.gameId);
+      return evidence;
+    }
     const previous=(queue.items||[]).find(item=>clean(item?.gameId)===target.gameId)?.robloxDetailMediaEvidence||{};
     const samePreviousUpload=previous.gameId===target.gameId
       &&previous.universeId===target.universeId
