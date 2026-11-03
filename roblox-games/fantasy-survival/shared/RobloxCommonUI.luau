@@ -5091,14 +5091,13 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  local function setOpen(value)
   opened=value;root.Visible=value;shade.Visible=value;hud.Visible=not value;menu.Visible=not value
   if quick then quick.Visible=not value end
-  if value then selectPage(selectedPage) end
   for _,page in ipairs(pages)do
    for _,child in ipairs(page:GetDescendants())do if child:IsA("GuiObject")then child.ZIndex=44 end end
    page.ZIndex=43
   end
   gui:SetAttribute("GameMenuOpen",value)
  end
- menu.Activated:Connect(function()setOpen(true)end)
+ menu.Activated:Connect(function()setOpen(true);selectPage(selectedPage)end)
  close.Activated:Connect(function()setOpen(false)end)
  -- [입력 복구] 메뉴 바깥을 터치하면 즉시 게임 화면으로 돌아간다.
  shade.Activated:Connect(function()setOpen(false)end)
@@ -5113,7 +5112,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
  layout();setOpen(false)
  return {isOpen=function()return opened end,close=function()setOpen(false)end,
-  open=function(index)selectPage(index or 0);setOpen(true)end}
+  open=function(index)setOpen(true);selectPage(index or 0)end}
 end
 
 
