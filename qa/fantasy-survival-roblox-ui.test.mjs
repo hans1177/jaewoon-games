@@ -306,3 +306,40 @@ test('original village well matches human-scale medieval proportions and keeps c
   assert.match(server,/well:SetAttribute\("MeadowVillageWellOriginal",true\)/);
   assert.doesNotMatch(server,/worldAsset\("villageFountain"/);
 });
+
+
+test('guard and perfect parry reuse R15 high guard with server-confirmed cinematic contact',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const common=fs.readFileSync('assets/roblox/common-vfx-v1/RobloxCommonVFX.luau','utf8');
+  // [기존 밸런스] 자세 2.8초, 완벽 방어 .28초, 기본 경감 50%, 패링 .42초를 고정한다.
+  for(const token of ['defense.guardUntil=now+2.8','defense.perfectGuardUntil=now+.28',
+    'defense.parryUntil=now+.42','damage=math.ceil(damage*.5)']){
+    assert.ok(server.includes(token),'defense authority changed: '+token);
+  }
+  assert.match(server,/now-\(defense\.lastBlockContactFXAt or -100\) >=\.12/);
+  assert.match(server,/remote:FireClient\(player,"MEADOW_REACTION","BLOCK"\)/);
+  assert.match(server,/remote:FireClient\(player,"MEADOW_REACTION","PARRY"\)/);
+  // [모션] 독립 준비·유지·접촉 반동, 무릎을 굽힌 쭈그림과 임의 메시 방패 금지.
+  assert.match(client,/-- \[중세 검술 하이 가드\]/);
+  assert.match(client,/local meadowGuardContactAt=-100/);
+  assert.match(client,/os\.clock\(\)-meadowGuardContactAt/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.72\*brace/);
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.96\*brace/);
+  assert.match(client,/skillMotionTargets\.ShinL=CFrame\.identity/);
+  assert.match(client,/-- \[완벽 막기\] 세키로식 짧은 전방 쳐내기 동작/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.75\*brace/);
+  // [입자] 실제 서버 적중만 대형 불꽃, 막기 진입은 팔 궤적과 약한 잔광.
+  assert.match(client,/overrideVfx=="BLOCK_CONTACT"/);
+  assert.match(client,/overrideVfx=="PARRY_CONFIRMED"/);
+  assert.match(client,/textureKey="slash",hideRing=true/);
+  assert.match(client,/count=reducedEffects and \(perfect and 7 or 4\)/);
+  assert.match(client,/if sourcePlayer==player then/);
+  assert.match(client,/MeadowGuardStanceAura/);
+  assert.match(client,/MeadowGuardContactFlash/);
+  assert.match(client,/MeadowParryContactFlash/);
+  assert.doesNotMatch(client,/MeadowGuardBodyAura|MeadowGuardFistGlow|MeadowGuardCrossSlash/);
+  assert.doesNotMatch(client,/for index,delaySec in ipairs\(\{\.11,\.30,\.66\}\)/);
+  assert.match(common,/function RobloxCommonVFX\.CreateBlockImpact\(options\)/);
+  assert.match(common,/function RobloxCommonVFX\.CreatePerfectParryFlash\(options\)/);
+  assert.doesNotMatch(server,/defense\.guardUntil=now\+[3-9]/);
+});
