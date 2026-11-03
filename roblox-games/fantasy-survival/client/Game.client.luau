@@ -777,6 +777,11 @@ local function layoutNativeAvatar()
   heroStamina.Size=heroHealth.Size
 end
 characterHero:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutNativeAvatar)
+characterViewport:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+  if lastPreviewCharacter and lastPreviewCharacter.Parent then
+    redrawNativeAvatar(lastPreviewCharacter,lastPreviewTool,true)
+  end
+end)
 task.defer(layoutNativeAvatar)
 local equipmentHeading=Instance.new("TextLabel")
 equipmentHeading.Name="EquipmentHeading";equipmentHeading.LayoutOrder=2
@@ -1100,6 +1105,15 @@ meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerSt
     renderMeadowPages()
     local heading=root:FindFirstChild("MeadowMenuHeading")
     if heading then heading.Text="마력숲  /  "..(index==0 and "활동" or meadowPageNames[index] or "모험") end
+    local subtitle=root:FindFirstChild("MeadowMenuSubtitle")
+    if subtitle then
+      local captions={
+        [0]="현재 할 수 있는 행동", [1]="전신 · 장비 · 숙련도", [2]="보유 · 제작법 · 아이템 상세",
+        [3]="메인 의뢰와 발견 기록", [4]="소리 · 화면 · 조작", [5]="지금 필요한 목표",
+        [6]="동료 의뢰와 진행 기록", [7]="전투 기술과 성장",
+      }
+      subtitle.Text=captions[index] or "마력숲 탐험"
+    end
     if index==7 and meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end
   end,
 })
@@ -1411,7 +1425,7 @@ local function owned(item)
 end
 local function itemValue(item)
   if item.gear then
-    return owned(item)>0 and (player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index and "장착 중" or "보유") or "제작 가능"
+    return owned(item)>0 and (player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index and "장착 중" or "보유") or "미보유 · 제작법"
   end
   if item.tonic then return tostring(math.floor(owned(item))).."개" end
   if typeof(item.key)=="Instance" then return item.key.Parent==player.Character and "장착 중" or "보유" end
@@ -1464,22 +1478,22 @@ local function redrawSelection()
 end
 local function makeCard(item)
   local card=Instance.new("TextButton")
-  card.Name="OwnedItemSlot";card.Text="";card.AutoButtonColor=true
+  card.Name="OwnedItemSlot";card.Text="";card.AutoButtonColor=true;card.ZIndex=44
   card.BackgroundColor3=Color3.fromRGB(27,54,48);card.BorderSizePixel=0;card.Parent=inventoryGrid
   local rounded=Instance.new("UICorner");rounded.CornerRadius=UDim.new(0,10);rounded.Parent=card
   local outline=Instance.new("UIStroke");outline.Color=Color3.fromRGB(78,123,102);outline.Transparency=.14;outline.Parent=card
   local icon=Instance.new("ImageLabel")
-  icon.Name="ExistingAssetIcon";icon.BackgroundTransparency=1;icon.Image=meadowIconAtlas
+  icon.Name="ExistingAssetIcon";icon.BackgroundTransparency=1;icon.Image=meadowIconAtlas;icon.ZIndex=45
   icon.ImageRectOffset=Vector2.new(item.icon*64,0);icon.ImageRectSize=Vector2.new(64,64)
   icon.Size=UDim2.fromOffset(44,44);icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.new(.5,0,0,4);icon.Parent=card
   local name=Instance.new("TextLabel")
   name.Name="ItemName";name.Position=UDim2.new(0,3,0,53);name.Size=UDim2.new(1,-6,0,20)
-  name.BackgroundTransparency=1;name.Font=Enum.Font.GothamBold;name.TextSize=12;name.TextColor3=parchment
+  name.BackgroundTransparency=1;name.Font=Enum.Font.GothamBold;name.TextSize=12;name.TextColor3=parchment;name.ZIndex=45
   name.TextXAlignment=Enum.TextXAlignment.Center;name.TextTruncate=Enum.TextTruncate.AtEnd;name.Parent=card
   local value=Instance.new("TextLabel")
   value.Name="OwnedCount";value.Position=UDim2.new(0,3,0,74);value.Size=UDim2.new(1,-6,0,24)
-  value.BackgroundTransparency=1;value.Font=Enum.Font.GothamBold;value.TextSize=13
+  value.BackgroundTransparency=1;value.Font=Enum.Font.GothamBold;value.TextSize=13;value.ZIndex=45
   value.TextXAlignment=Enum.TextXAlignment.Center;value.TextColor3=item.color;value.Parent=card
   card.Activated:Connect(function()
     selectedKey=item.key
