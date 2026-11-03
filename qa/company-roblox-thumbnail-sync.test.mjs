@@ -65,6 +65,50 @@ test('fantasy-survival reuses only its existing hash-verified game-owned cover a
     /ROBLOX_THUMBNAIL_SOURCE_NOT_CANONICAL/);
 });
 
+// [비공개 후보] F9 승인 이전에는 정확한 검증 장소에서만 공식 이미지 메타데이터를 준비한다.
+test('private F9 validation thumbnail uses exact restricted candidate and never invents a canonical release',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  const sourceRevision='a'.repeat(40);
+  const artifactIdentity='sha256:'+'b'.repeat(64);
+  const target={
+    gameId:'fantasy-survival',universeId:'10773436325',placeId:'108565970231899',
+    verified:true,dedicated:true,shared:false,internalOnly:true,
+    publicDiscoveryAllowed:false,visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
+    bootstrapState:'PUBLISHED_PRIVATE'
+  };
+  const candidate={
+    published:true,validationOnly:true,releaseClaim:false,canonicalGameTarget:false,
+    sourceRevision,artifactIdentity,
+    universeId:target.universeId,placeId:target.placeId,versionNumber:132
+  };
+  const item={
+    gameId:'fantasy-survival',robloxSourceCommit:sourceRevision,
+    robloxBuildArtifactIdentity:artifactIdentity,
+    robloxValidationTarget:target,robloxRuntimeCandidateEvidence:candidate
+  };
+  const resolved=resolveRobloxThumbnailTarget({
+    catalog,queue:{items:[item]},gameId:'fantasy-survival'
+  });
+  assert.equal(resolved.privateValidationOnly,true);
+  assert.equal(resolved.universeId,target.universeId);
+  assert.equal(resolved.placeId,target.placeId);
+  assert.equal(resolved.approvedExistingCover,true);
+  assert.equal(item.robloxPublicationTarget,undefined);
+  for(const patch of [
+    {robloxValidationTarget:{...target,publicDiscoveryAllowed:true}},
+    {robloxValidationTarget:{...target,internalOnly:false}},
+    {robloxValidationTarget:{...target,verified:false}},
+    {robloxValidationTarget:{...target,shared:true}},
+    {robloxRuntimeCandidateEvidence:{...candidate,versionNumber:0}},
+    {robloxRuntimeCandidateEvidence:{...candidate,validationOnly:false}},
+    {robloxRuntimeCandidateEvidence:{...candidate,releaseClaim:true}},
+    {robloxRuntimeCandidateEvidence:{...candidate,sourceRevision:'c'.repeat(40)}},
+    {robloxRuntimeCandidateEvidence:{...candidate,universeId:'999'}},
+  ])assert.throws(()=>resolveRobloxThumbnailTarget({
+    catalog,queue:{items:[{...item,...patch}]},gameId:'fantasy-survival'
+  }),/ROBLOX_THUMBNAIL_VERIFIED_DEDICATED_TARGET_MISSING/);
+});
+
 test('homepage renderer and manager prefer canonical marketing thumbnail',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
