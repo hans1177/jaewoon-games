@@ -2365,7 +2365,7 @@ do
         activeAmbienceTween:Play()
         activeEffectsTween:Play()
         local height=(scene.cinema=="betrayal" or scene.cinema=="erasure") and .13
-          or scene.cinema=="dawn" or scene.cinema=="journey" and .085 or .105
+          or (scene.cinema=="dawn" or scene.cinema=="journey") and .085 or .105
         TweenService:Create(cinematicBars[1],TweenInfo.new(.8,Enum.EasingStyle.Sine),{
           Size=UDim2.fromScale(1,height),
         }):Play()
@@ -2374,7 +2374,7 @@ do
         }):Play()
         cinematicVignette.BackgroundTransparency=(scene.cinema=="erasure" or scene.cinema=="betrayal") and .22
           or scene.cinema=="dawn" and .65 or .43
-        introGradient.Color=scene.cinema=="dawn" or scene.cinema=="relic" or scene.cinema=="journey"
+        introGradient.Color=(scene.cinema=="dawn" or scene.cinema=="relic" or scene.cinema=="journey")
           and ColorSequence.new(Color3.fromRGB(13,30,27),Color3.fromRGB(55,75,61))
           or (scene.cinema=="omen" or scene.cinema=="betrayal") and ColorSequence.new(Color3.fromRGB(18,8,34),Color3.fromRGB(87,54,108))
           or scene.cinema=="crown" and ColorSequence.new(Color3.fromRGB(34,25,16),Color3.fromRGB(103,81,41))
