@@ -546,6 +546,10 @@ test('pre-F9 validation publish requires exact F0 but never current F9',()=>{
   const candidate={item,sourceRevision,artifactIdentity,sourceTree:'tree',latestSourceTree:'tree',publishStage:'validation'};
   assert.equal(assertRobloxLatestPublishCandidate(candidate),true);
   assert.equal(assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:'c'.repeat(40)}}),true);
+  // 이전 111번 오류는 수정된 F0 후보의 검증을 막지 않는다. 현재 소스와 증거 누락은 차단한다.
+  assert.equal(assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxStudioLocalPlayRepairRequired:true,robloxInternalVibePlayEvidence:{sourceRevision:'c'.repeat(40),pass:false}}}),true);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxStudioLocalPlayRepairRequired:true,robloxInternalVibePlayEvidence:{sourceRevision,pass:false}}}),/ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxStudioLocalPlayRepairRequired:true}}),/ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
   assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:sourceRevision}}),/ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
   assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxQualityBuildUpRequired:true}}),/ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
   assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxFoundationF0Passed:false}}),/ROBLOX_PUBLISH_CURRENT_F0_REQUIRED/);

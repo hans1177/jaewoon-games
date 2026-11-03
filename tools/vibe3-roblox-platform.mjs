@@ -498,6 +498,11 @@ export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifact
   const qualityRepairRevision=clean(item?.robloxQualityBuildUpSourceRevision);
   const currentQualityRepair=item?.robloxQualityBuildUpRequired===true
     &&(!qualityRepairRevision||qualityRepairRevision===sourceRevision);
+  // 이전 소스에서 재현된 Studio 오류는 새 소스의 비공개 검증을 막지 않는다.
+  // 증거에 소스 식별자가 없다면 검증 불가로 계속 차단한다.
+  const studioRepairRevision=clean(item?.robloxInternalVibePlayEvidence?.sourceRevision);
+  const currentStudioRepair=item?.robloxStudioLocalPlayRepairRequired===true
+    &&(!studioRepairRevision||studioRepairRevision===sourceRevision);
   if(stage==='final'){
     const entry=(item?.robloxCanonicalPublishQueue||[]).find(row=>row?.cycleId===publishCycleId);
     if(!entry||publishCycleId!==sourceRevision+':'+artifactIdentity||entry.gameId!==item.gameId||
@@ -521,7 +526,7 @@ export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifact
       String(candidate.universeId)!==String(entry.validationUniverseId)||String(candidate.placeId)!==String(entry.validationPlaceId))
       throw new Error('ROBLOX_PUBLISH_EXACT_CYCLE_EVIDENCE_REQUIRED');
     const currentCycle=item.robloxSourceCommit===sourceRevision&&item.robloxBuildArtifactIdentity===artifactIdentity;
-    if(currentCycle&&(currentQualityRepair||item.robloxStudioLocalPlayRepairRequired===true))
+    if(currentCycle&&(currentQualityRepair||currentStudioRepair))
       throw new Error('ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED');
     const newerPublished=(item.robloxCanonicalPublishQueue||[]).some(row=>row?.cycleId!==publishCycleId&&row?.status==='PUBLISHED'&&
       Date.parse(row.enqueuedAt)>Date.parse(entry.enqueuedAt));
@@ -534,7 +539,7 @@ export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifact
     throw new Error('ROBLOX_PUBLISH_STALE_SOURCE_REVISION');
   if(!artifactIdentity || item.robloxBuildSourceRevision!==sourceRevision || item.robloxBuildArtifactIdentity!==artifactIdentity)
     throw new Error('ROBLOX_PUBLISH_STALE_BUILD_ARTIFACT');
-  if(currentQualityRepair || item.robloxStudioLocalPlayRepairRequired===true)
+  if(currentQualityRepair || currentStudioRepair)
     throw new Error('ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED');
   const f0=item.robloxFoundationF0Evidence||{};
   if(item.robloxFoundationF0Passed!==true || item.robloxBuildPreflightPassed!==true || item.robloxBuildOrPackagePassed!==true ||
