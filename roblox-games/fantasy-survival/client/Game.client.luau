@@ -1329,6 +1329,10 @@ local function makeCard(item)
   card.Activated:Connect(function()
     selectedKey=item.key
     redrawSelection()
+    -- [아이템 상세 이동] 긴 소지품 목록에서도 장착·제작 버튼까지 한 번에 접근할 수 있게 한다.
+    local page=meadowPages[2]
+    local detailTop=page.CanvasPosition.Y+detail.AbsolutePosition.Y-page.AbsolutePosition.Y
+    page.CanvasPosition=Vector2.new(0,math.max(0,detailTop-8))
   end)
   return {button=card,name=name,count=value,border=outline}
 end
