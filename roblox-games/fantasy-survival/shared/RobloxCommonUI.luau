@@ -4899,8 +4899,17 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   list.Visible=index==0
   for i,page in ipairs(pages)do page.Visible=i==index end
   for i,button in ipairs(tabButtons)do
-   button.BackgroundColor3=tabPage(i-1)==index and (primary and primary.witcherStyle and Color3.fromRGB(91,61,43) or Color3.fromRGB(59,93,77))
-     or (primary and primary.witcherStyle and Color3.fromRGB(33,31,33) or Color3.fromRGB(22,36,37))
+   button.BackgroundColor3=tabPage(i-1)==index and (primary and primary.witcherStyle and Color3.fromRGB(53,106,81) or Color3.fromRGB(59,93,77))
+     or (primary and primary.witcherStyle and Color3.fromRGB(24,49,44) or Color3.fromRGB(22,36,37))
+   if primary and primary.witcherStyle then
+    local active=tabPage(i-1)==index
+    button.TextColor3=active and Color3.fromRGB(251,240,202) or Color3.fromRGB(176,205,186)
+    local buttonStroke=button:FindFirstChildOfClass("UIStroke")
+    if buttonStroke then
+     buttonStroke.Color=active and Color3.fromRGB(218,189,126) or Color3.fromRGB(75,116,95)
+     buttonStroke.Thickness=active and 1.7 or 1
+    end
+   end
    local underline=button:FindFirstChild("SelectedUnderline")
    if underline then underline.Visible=tabPage(i-1)==index end
   end
@@ -4915,10 +4924,21 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   tabs,tabButtons=RobloxCommonUI.CreateFilterBar({name="MeadowMenuTabs",filters=names,selectedIndex=1})
   tabs.Parent=root;tabs.ZIndex=44
   local heading=Instance.new("TextLabel");heading.Name="MeadowMenuHeading"
-  heading.Position=UDim2.fromOffset(16,12);heading.Size=UDim2.new(1,-110,0,40)
-  heading.BackgroundTransparency=1;heading.Text="마력숲 · 모험 수첩"
-  heading.TextColor3=Color3.fromRGB(235,235,211);heading.Font=Enum.Font.GothamBold
-  heading.TextSize=19;heading.TextXAlignment=Enum.TextXAlignment.Left;heading.ZIndex=44;heading.Parent=root
+  heading.Position=UDim2.fromOffset(20,10);heading.Size=UDim2.new(1,-116,0,32)
+  heading.BackgroundTransparency=1;heading.Text="마력숲 · 탐험 수첩"
+  heading.TextColor3=Color3.fromRGB(218,189,126)
+  heading.Font=primary and primary.witcherStyle and Enum.Font.Antique or Enum.Font.GothamBold
+  heading.TextSize=primary and primary.witcherStyle and 24 or 19
+  heading.TextXAlignment=Enum.TextXAlignment.Left;heading.ZIndex=44;heading.Parent=root
+  if primary and primary.witcherStyle then
+   -- [탐험 메뉴] 기능 요약을 제목과 분리하고 탭 아래로 실제 콘텐츠를 배치한다.
+   local subtitle=Instance.new("TextLabel")
+   subtitle.Name="MeadowMenuSubtitle";subtitle.Position=UDim2.fromOffset(22,40)
+   subtitle.Size=UDim2.new(1,-128,0,19);subtitle.BackgroundTransparency=1
+   subtitle.Text="장비 · 소지품 · 탐험 기록"
+   subtitle.TextColor3=Color3.fromRGB(166,199,176);subtitle.Font=Enum.Font.GothamMedium
+   subtitle.TextSize=12;subtitle.TextXAlignment=Enum.TextXAlignment.Left;subtitle.ZIndex=44;subtitle.Parent=root
+  end
   for i,button in ipairs(tabButtons)do
    button.ZIndex=45
    if i>1 and primary.iconAtlas and primary.iconAtlas~="" then
@@ -4978,7 +4998,9 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  end
  local shade=Instance.new("TextButton");shade.Name="ActionMenuShade";shade.Size=UDim2.fromScale(1,1)
  shade.Text="";shade.AutoButtonColor=false
- shade.BackgroundColor3=Color3.new(0,0,0);shade.BackgroundTransparency=.35;shade.Active=true;shade.ZIndex=40;shade.Visible=false;shade.Parent=gui
+ shade.BackgroundColor3=Color3.new(0,0,0)
+ shade.BackgroundTransparency=primary and primary.witcherStyle and .24 or .35
+ shade.Active=true;shade.ZIndex=40;shade.Visible=false;shade.Parent=gui
  root.ZIndex=41;list.ZIndex=42;close.ZIndex=43
  for _,item in ipairs(list:GetDescendants())do if item:IsA("GuiObject")then item.ZIndex=43 end end
  -- [마력숲 UI] 작은 상태창·상단 메뉴·하단 공격 버튼의 위치를 화면에 맞춰 재배치한다.
@@ -5031,15 +5053,21 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   end
   root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5)
   if primary and primary.witcherStyle then
-   root.Size=UDim2.fromOffset(math.min(820,v.X-16),math.min(720,v.Y-16))
+   root.Size=UDim2.fromOffset(math.min(900,v.X-16),math.min(740,v.Y-16))
   else
    root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
   end
-  close.AnchorPoint=Vector2.new(1,0);close.Position=UDim2.new(1,-8,0,8);close.Size=UDim2.fromOffset(72,52)
-  local bodyTop=tabs and 122 or 68
-  list.Position=UDim2.fromOffset(12,bodyTop);list.Size=UDim2.new(1,-24,1,-bodyTop-12)
+  close.AnchorPoint=Vector2.new(1,0)
+  close.Position=UDim2.new(1,-10,0,9);close.Size=UDim2.fromOffset(76,48)
+  if primary and primary.witcherStyle then
+   close.BackgroundColor3=Color3.fromRGB(42,76,64)
+   close.TextColor3=Color3.fromRGB(245,242,224)
+  end
+  local bodyTop=tabs and (primary and primary.witcherStyle and (v.Y<420 and 124 or 132) or 122) or 68
+  list.Position=UDim2.fromOffset(14,bodyTop);list.Size=UDim2.new(1,-28,1,-bodyTop-12)
   if tabs then
-   tabs.Position=UDim2.fromOffset(12,64);tabs.Size=UDim2.new(1,-24,0,50)
+   tabs.Position=UDim2.fromOffset(14,primary and primary.witcherStyle and (v.Y<420 and 64 or 72) or 64)
+   tabs.Size=UDim2.new(1,-28,0,50)
    for _,page in ipairs(pages)do
     page.Position=UDim2.fromOffset(16,bodyTop);page.Size=UDim2.new(1,-32,1,-bodyTop-16)
    end
