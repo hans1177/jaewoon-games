@@ -601,7 +601,7 @@ for index,name in ipairs(meadowPageNames) do
   local page=Instance.new("ScrollingFrame")
   page.Name="MeadowPage"..index;page.BackgroundTransparency=1;page.BorderSizePixel=0
   page.AutomaticCanvasSize=Enum.AutomaticSize.Y;page.CanvasSize=UDim2.new()
-  page.ScrollBarThickness=3;page.ScrollingDirection=Enum.ScrollingDirection.Y
+  page.ScrollBarThickness=3;page.ScrollingDirection=Enum.ScrollingDirection.Y;page.ClipsDescendants=true
   page.Visible=false;page.Parent=root
   local layout=Instance.new("UIListLayout");layout.Padding=UDim.new(0,10)
   layout.SortOrder=Enum.SortOrder.LayoutOrder;layout.Parent=page
@@ -1347,7 +1347,7 @@ inventoryCount.TextXAlignment=Enum.TextXAlignment.Left;inventoryCount.Parent=inv
 local inventoryScroll=Instance.new("ScrollingFrame")
 inventoryScroll.Name="MeadowInventoryItemScroll";inventoryScroll.Position=UDim2.fromOffset(0,30)
 inventoryScroll.Size=UDim2.new(1,0,0,130);inventoryScroll.BackgroundTransparency=1;inventoryScroll.BorderSizePixel=0
-inventoryScroll.ScrollBarThickness=3;inventoryScroll.ScrollingDirection=Enum.ScrollingDirection.Y
+inventoryScroll.ScrollBarThickness=3;inventoryScroll.ScrollingDirection=Enum.ScrollingDirection.Y;inventoryScroll.ClipsDescendants=true
 inventoryScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y;inventoryScroll.CanvasSize=UDim2.new()
 inventoryScroll.ScrollingEnabled=false;inventoryScroll.Parent=inventoryWorkspace
 local inventoryGrid=Instance.new("Frame")
