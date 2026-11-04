@@ -156051,11 +156051,169 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_506ed985a8f19b3c84b5b9f1",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11801",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "0114c72c2b4933d86a4ffa71fcbe202f059e849c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11801,
+        "baseBranch": "main",
+        "headBranch": "fix/retired-horror-active-workflows-20261104",
+        "baseSha": "0114c72c2b4933d86a4ffa71fcbe202f059e849c",
+        "headSha": "60dd6e71cf82a82023c78ea8d910b8499b5b7694",
+        "mergeCommitSha": "cfb05e7d339fcba98e016e3fec99b840dae930b5",
+        "mergedAt": "2026-11-04T01:28:43Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b2d0b94535d35b4241fd5abdd19d89ef4b6e18b94c822914c7af253b21c2d2f3",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/retired-horror-active-workflows-20261104",
+        "candidateSha": "60dd6e71cf82a82023c78ea8d910b8499b5b7694"
+      },
+      "changeStats": {
+        "changedFileCount": 22,
+        "codingRelevantFileCount": 22,
+        "addedLineCount": 160,
+        "deletedLineCount": 153,
+        "changedFiles": [
+          ".github/workflows/company-development-queue-reconcile.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml",
+          ".github/workflows/horror-combat-assets.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          ".github/workflows/primary-three-release-polish-qa.yml",
+          ".github/workflows/roblox-f0-restart.yml",
+          ".github/workflows/roblox-qa-camera-fetch.yml",
+          ".github/workflows/vibe-qa.yml",
+          "qa/company-central-pipeline-only.test.mjs",
+          "qa/company-design-gate-scoring-v2.test.mjs",
+          "qa/company-development-cycle-isolation.test.mjs",
+          "qa/company-development-roblox-final-review-revalidation.test.mjs",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-development-roblox-runtime-foundation.test.mjs",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "qa/company-roblox-source-drift-sync.test.mjs",
+          "qa/company-roblox-thumbnail-sync.test.mjs",
+          "qa/company-security-steward.test.mjs",
+          "qa/primary-three-world-visual-qa.test.mjs",
+          "tools/company-development-roblox-runtime-foundation.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-queue-reconcile.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml",
+          ".github/workflows/horror-combat-assets.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          ".github/workflows/primary-three-release-polish-qa.yml",
+          ".github/workflows/roblox-f0-restart.yml",
+          ".github/workflows/roblox-qa-camera-fetch.yml",
+          ".github/workflows/vibe-qa.yml",
+          "qa/company-central-pipeline-only.test.mjs",
+          "qa/company-design-gate-scoring-v2.test.mjs",
+          "qa/company-development-cycle-isolation.test.mjs",
+          "qa/company-development-roblox-final-review-revalidation.test.mjs",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-development-roblox-runtime-foundation.test.mjs",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "qa/company-roblox-source-drift-sync.test.mjs",
+          "qa/company-roblox-thumbnail-sync.test.mjs",
+          "qa/company-security-steward.test.mjs",
+          "qa/primary-three-world-visual-qa.test.mjs",
+          "tools/company-development-roblox-runtime-foundation.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11801",
+        "merge-commit:cfb05e7d339fcba98e016e3fec99b840dae930b5",
+        "base-main:0114c72c2b4933d86a4ffa71fcbe202f059e849c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1244
+    "total": 1245
   }
 }
