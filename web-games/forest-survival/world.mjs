@@ -87,7 +87,8 @@ export async function createWorld(canvas){
    const tile=copy('ground',groundRoot);
    const s=10.15/Math.max(.01,floorSource.size.x),t=10.15/Math.max(.01,floorSource.size.z);
    tile.scale.set(s,1,t);
-   tile.position.set(5+x*10.0,0,5+z*10.0);
+   // 바닥 OBJ는 두께가 1m다. 윗면을 y=0에 맞춰 발이 땅속에 잠기지 않게 한다.
+   tile.position.set(5+x*10.0,-floorSource.size.y,5+z*10.0);
  }
  const resources=[];
  function resource(key,x,z,id){
