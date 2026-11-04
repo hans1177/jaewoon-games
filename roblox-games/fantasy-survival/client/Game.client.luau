@@ -199,7 +199,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 카메라·표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
-local meadowPaintedHudAtlas="" -- ORIGINAL_PAINTED_HUD_ATLAS
+local meadowPaintedHudAtlas="rbxassetid://71333073665947" -- ORIGINAL_PAINTED_HUD_ATLAS
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
   fist="rbxassetid://127661757924412",
