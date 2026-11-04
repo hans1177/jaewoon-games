@@ -19,12 +19,46 @@ local ContextActionService = game:GetService("ContextActionService")
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
--- [2.5D 카메라 / 메인] 실제 승인된 3D 메시를 고정 원근 경사 시점에서 보여준다.
--- Roblox 이동·터치 조이스틱과 서버 전투/진행/저장 권한은 그대로 유지한다.
+-- [카메라 / 메인] 자유 3D를 기본값으로 사용하고 옵션에서 근접 3D·기존 2.5D로 전환한다.
+-- 기존 이동·터치 조이스틱·전투·서버 저장값에는 영향을 주지 않는 접속 중 화면 설정이다.
+local meadowCameraModes={"자유 3D","근접 3D","2.5D 경사"}
+local meadowCameraMode=1
+local meadowOriginalCameraMin=player.CameraMinZoomDistance
+local meadowOriginalCameraMax=player.CameraMaxZoomDistance
 local paintedCameraFrame=nil
+local function applyMeadowCameraMode()
+  paintedCameraFrame=nil
+  if meadowCameraMode==3 then return end
+  player.CameraMode=Enum.CameraMode.Classic
+  player.CameraMaxZoomDistance=meadowCameraMode==2 and 14 or math.max(36,meadowOriginalCameraMax)
+  player.CameraMinZoomDistance=meadowCameraMode==2 and 4 or math.min(2,meadowOriginalCameraMin)
+  local camera=workspace.CurrentCamera
+  if not camera or player:GetAttribute("MeadowEnteredWorld")~=true then return end
+  local character=player.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  if humanoid then camera.CameraSubject=humanoid end
+  camera.CameraType=Enum.CameraType.Custom
+  camera.FieldOfView=70
+end
+local function cycleMeadowCameraMode()
+  meadowCameraMode=meadowCameraMode%#meadowCameraModes+1
+  applyMeadowCameraMode()
+end
+player:GetAttributeChangedSignal("MeadowEnteredWorld"):Connect(function()
+  if player:GetAttribute("MeadowEnteredWorld")==true then applyMeadowCameraMode() end
+end)
+player.CharacterAdded:Connect(function(character)
+  task.spawn(function()
+    character:WaitForChild("Humanoid",8)
+    if player.Character==character and player:GetAttribute("MeadowEnteredWorld")==true then
+      applyMeadowCameraMode()
+    end
+  end)
+end)
+-- [기존 2.5D] 선택했을 때에만 현재 캐릭터를 원근 경사로 따라간다.
 game:GetService("RunService"):BindToRenderStep("MeadowPainted25DCamera",
   Enum.RenderPriority.Camera.Value+1,function(dt)
-    if player:GetAttribute("MeadowEnteredWorld")~=true then
+    if player:GetAttribute("MeadowEnteredWorld")~=true or meadowCameraMode~=3 then
       paintedCameraFrame=nil
       return
     end
@@ -32,7 +66,8 @@ game:GetService("RunService"):BindToRenderStep("MeadowPainted25DCamera",
     local root=character and character:FindFirstChild("HumanoidRootPart")
     local human=character and character:FindFirstChildOfClass("Humanoid")
     local camera=workspace.CurrentCamera
-    if not camera or not root or not human or human.Health<=0 then
+    if not camera or camera:GetAttribute("MeadowBossScene")==true
+      or not root or not human or human.Health<=0 then
       paintedCameraFrame=nil
       return
     end
@@ -158,7 +193,7 @@ gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 -- [단일 체력바] Roblox 기본 체력 UI와 전용 체력바의 이중 표시를 제거한다.
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
--- [마력숲 옵션] 접속 중 표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
+-- [마력숲 옵션] 접속 중 카메라·표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
@@ -989,7 +1024,17 @@ local function renderMeadowPages()
   -- 사냥은 실제 늑대·박쥐 처치, 채집은 실제 수확, 제작은 장비 강화 성공에서만 증가한다.
   renderWitcherCharacter(character,humanoid,tool,previewNeedsRefresh)
   previewNeedsRefresh=false
-  meadowLabels[1].Text="※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해."
+  -- [망토 상태] 서버가 실제 장착에 성공했는지 캐릭터창에서 바로 확인한다.
+  local capeState=character and character:GetAttribute("OpeningCapeState") or nil
+  local capeWorn=character and character:FindFirstChild("MeadowWornCrimsonCape")
+  local capeText=capeState=="ATTACHED" and capeWorn and "빨간 망토 착용 중"
+    or capeState=="LOADING" and "빨간 망토 불러오는 중"
+    or capeState=="RETRYING" and "빨간 망토 연결 재시도 중"
+    or capeState=="R15_REQUIRED" and "망토 장착 불가 · R15 필요"
+    or capeState=="REGISTERED_OWNER_MESH_MISSING" and "망토 원본 등록 확인 필요"
+    or capeState=="LOAD_FAILED" and "망토 로딩 실패 · 다시 입장해 줘"
+    or "빨간 망토 장착 확인 중"
+  meadowLabels[1].Text="※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n"..capeText
   meadowLabels[2].Text="소지품  /  저장 "..tostring(player:GetAttribute("SaveStatus") or "불러오는 중")
   meadowLabels[3].Text=string.format("초원 탐험 저널\n\n현재 지역 몬스터  %d\n\n%s\n\n관찰 기록은 이번 접속 중 발견한 단서야.",
     player:GetAttribute("AliveEnemies") or 0,
@@ -1223,6 +1268,7 @@ local function bindMeadowMenuCharacter(character)
       capeArrivalWindUntil=os.clock()+2.8
     end
   end)
+  meadowCharacterConnections[#meadowCharacterConnections+1]=character:GetAttributeChangedSignal("OpeningCapeState"):Connect(renderMeadowPages)
   meadowCharacterConnections[#meadowCharacterConnections+1]=character:GetAttributeChangedSignal("OpeningCapeAttached"):Connect(function()
     -- [직접 장착된 실제 망토] 서버가 진홍색 원본과 용접을 확인한 뒤 펄럭임과 장비창을 갱신한다.
     if character:GetAttribute("OpeningCapeAttached")==true then
@@ -1265,6 +1311,21 @@ for index,name in ipairs({"효과음","환경음","타격 효과"}) do
   end)
   refreshOption()
 end
+-- [카메라 옵션] Roblox 기본 카메라는 손가락 드래그/마우스 회전과 확대를 지원한다.
+local meadowCameraOption=CommonUI.CreatePrimaryButton({
+  name="MeadowCameraMode",text="카메라 시점",minHeight=52
+})
+meadowCameraOption.LayoutOrder=4
+meadowCameraOption.Size=UDim2.new(1,-8,0,54)
+meadowCameraOption.Parent=meadowPages[4]
+local function refreshMeadowCameraOption()
+  meadowCameraOption.Text="카메라  ·  "..meadowCameraModes[meadowCameraMode].."   눌러 변경"
+end
+meadowCameraOption.Activated:Connect(function()
+  cycleMeadowCameraMode()
+  refreshMeadowCameraOption()
+end)
+refreshMeadowCameraOption()
 -- [라이선스] 외부 전투 아이콘 저작자 표기를 옵션 화면에 제공한다.
 local iconCredits=Instance.new("TextLabel")
 iconCredits.Name="ActionIconCredits"
@@ -2595,17 +2656,24 @@ do
   local settingButton=button(titlePanel,"Settings","설정 · 프롤로그 보기",220)
   local titleStatus=label(titlePanel,"SaveState","저장 기록 확인 중",266,29,12,Color3.fromRGB(203,214,195))
 
-  local options=panel("MeadowTitleSettings",390,310)
+  local options=panel("MeadowTitleSettings",390,368)
   options.Visible=false
   label(options,"SettingsTitle","환경 설정",18,44,25)
   local effectsButton=button(options,"Effects","효과음",83)
   local ambienceButton=button(options,"Ambience","환경음",135)
-  local replayButton=button(options,"ReplayPrologue","프롤로그 보고 입장",188)
-  local settingsBack=button(options,"Back","돌아가기",244)
+  local cameraButton=button(options,"CameraMode","카메라 시점",187)
+  local replayButton=button(options,"ReplayPrologue","프롤로그 보고 입장",239)
+  local settingsBack=button(options,"Back","돌아가기",295)
   local function refreshArrivalOptions()
     effectsButton.Text="효과음  "..math.floor(meadowEffectsGroup.Volume*100+.5).."%"
     ambienceButton.Text="환경음  "..math.floor(meadowAmbienceGroup.Volume*100+.5).."%"
+    cameraButton.Text="카메라  ·  "..meadowCameraModes[meadowCameraMode]
   end
+  cameraButton.Activated:Connect(function()
+    cycleMeadowCameraMode()
+    refreshArrivalOptions()
+    refreshMeadowCameraOption()
+  end)
   effectsButton.Activated:Connect(function()
     meadowEffectsGroup.Volume=meadowEffectsGroup.Volume>.9 and 0 or math.min(1,meadowEffectsGroup.Volume+.25)
     refreshArrivalOptions()
@@ -3053,7 +3121,7 @@ do
       gui.Enabled=true
       meadowVitalsGui.Enabled=true
       arrivalControls(true)
-      -- [입장/복구] 첫 플레이와 이어하기 모두 게임화면에서만 2.5D 시점을 활성화한다.
+      -- [입장/복구] 첫 플레이와 이어하기 모두 선택한 카메라 시점을 사용한다.
       player:SetAttribute("MeadowEnteredWorld",true)
       if arrivalGui.Parent then arrivalGui:Destroy() end
     end
@@ -4646,12 +4714,12 @@ layoutMeadowCombatUi()
 local editLayoutButton=CommonUI.CreatePrimaryButton({
   name="MeadowEditActionLayout",text="상단 4개 버튼 위치 변경",minHeight=52
 })
-editLayoutButton.LayoutOrder=4
+editLayoutButton.LayoutOrder=5
 editLayoutButton.Size=UDim2.new(1,-8,0,52)
 editLayoutButton.Parent=meadowPages[4]
 local editLayoutPreview=Instance.new("Frame")
 editLayoutPreview.Name="MeadowTopActionPreview"
-editLayoutPreview.LayoutOrder=5
+editLayoutPreview.LayoutOrder=6
 editLayoutPreview.Size=UDim2.new(1,-8,0,220)
 editLayoutPreview.BackgroundColor3=Color3.fromRGB(24,36,34)
 editLayoutPreview.BorderSizePixel=0
