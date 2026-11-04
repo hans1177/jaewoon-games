@@ -1560,7 +1560,7 @@ local function layoutMeadowReferenceHud()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local landscape=v.X>v.Y
-  local step=landscape and math.floor(math.clamp(v.X/20.8,31,39)) or math.floor(math.clamp(v.X/9.8,33,40))
+  local step=math.floor(math.clamp((v.X-18)/6,40,48))
   local menuWidth=step*6
   meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+21)
   meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-9,0,landscape and 7 or 70) -- [세로 화면] HP·얼굴 다음 줄
@@ -1572,15 +1572,15 @@ local function layoutMeadowReferenceHud()
       if caption then caption.Size=UDim2.fromOffset(step-2,14) end
     end
   end
-  local slotSize=landscape and math.floor(math.clamp(v.X/21,30,40))
-    or math.floor(math.clamp(v.X/11.5,26,34))
+  local columns=(not landscape and v.X<440) and 5 or 10
+  local slotSize=math.floor(math.clamp((v.X-24)/columns-2,40,44))
   local gap=2
-  local barWidth=(slotSize+gap)*10-gap
-  meadowReferenceHotbar.Size=UDim2.fromOffset(barWidth,slotSize)
+  local barWidth=(slotSize+gap)*columns-gap
+  meadowReferenceHotbar.Size=UDim2.fromOffset(barWidth,(slotSize+gap)*math.ceil(10/columns)-gap)
   meadowReferenceHotbar.Position=UDim2.new(.5,landscape and -34 or 0,1,landscape and -9 or -99)
   for index,slot in ipairs(referenceHotbarSlots)do
     slot.Size=UDim2.fromOffset(slotSize,slotSize)
-    slot.Position=UDim2.fromOffset((index-1)*(slotSize+gap),0)
+    slot.Position=UDim2.fromOffset(((index-1)%columns)*(slotSize+gap),math.floor((index-1)/columns)*(slotSize+gap))
   end
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowReferenceHud)
@@ -5222,8 +5222,8 @@ local function layoutMeadowCombatUi()
   meadowSkillDock.Position=UDim2.new(1,-math.floor(8*scale),1,-math.floor(offset*scale))
   -- [시안 참고] 오른쪽 큰 검 / 위쪽 마력·질주 / 좌측 회피 / 아래 점프.
   local positions={
-    {156,113,38}, -- 기술: 보라빛 충격
-    {114,154,39}, -- 좌측 회피
+    {150,111,38}, -- 기술: 보라빛 충격
+    {100,149,39}, -- 좌측 회피
     {170,75,39}, -- 막기는 하단 8번 단축키
     {40,72,36}, -- 물약은 하단 5번 단축키
   }
@@ -5259,7 +5259,7 @@ local function layoutMeadowCombatUi()
   meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(135*scale),math.floor(139*scale))
   local jumpSize=math.max(38,math.floor(43*scale))
   meadowSkillButtons.referenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)
-  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(76*scale),math.floor(180*scale))
+  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(66*scale),math.floor(187*scale))
   -- [기존 점프 이중 터치 방지] 공식 모바일 JumpButton만 숨기고 실제 점프 기능은 위 버튼에 연결.
   if UserInputService.TouchEnabled then
     local touchGui=player.PlayerGui:FindFirstChild("TouchGui")
