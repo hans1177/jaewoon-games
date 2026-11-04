@@ -71,6 +71,12 @@ test('main-first live quest tracker and first-play interactive controls',()=>{
   assert.doesNotMatch(client,/player:SetAttribute\("MeadowTutorial/);
 });
 
+test('mobile interaction highlight uses actual server prompt activation range',()=>{
+  assert.match(client,/local function updateMeadowPromptHighlight\(\)[\s\S]*?Magnitude<=prompt\.MaxActivationDistance/);
+  assert.match(client,/promptService\.PromptShown:Connect\(function\(prompt\)/);
+  assert.match(client,/promptService\.PromptHidden:Connect\(function\(prompt\)/);
+});
+
 test('touch dock retains authoritative original actions and server request path',()=>{
   assert.match(client,/button\.Activated:Connect\(function\(\)\s*if gui:GetAttribute\("GameMenuOpen"\)==true then return end\s*local submitted=activateMeadowAction\(skillActionId\)/);
   assert.match(client,/remote:FireServer\(actionId\)/);
