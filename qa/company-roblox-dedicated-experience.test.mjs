@@ -187,7 +187,7 @@ test('Forest original village models register before private publishing without 
   assert.match(workflow,/Register approved Forest village originals through the existing asset pipeline/);
   assert.match(workflow,/python3 tools\/baeksu-war-author-meshes\.py -- \/tmp\/forest-village-assets --game-id=fantasy-survival/);
   assert.match(workflow,/node tools\/baeksu-war-upload-meshes\.mjs \/tmp\/forest-village-assets \/tmp\/forest-village-receipt\.json --game-id=fantasy-survival/);
-  assert.match(workflow,/gh pr create --base main --head asset\/fantasy-village-originals/);
+  assert.match(workflow,/gh pr create --base main --head asset\/fantasy-worn-cape-rigged/);
   assert.match(workflow,/FOREST_VILLAGE_REGISTRATION_AWAIT_MAIN_MERGE/);
   assert.ok(workflow.indexOf('Register approved Forest village originals')<workflow.indexOf('Register 12 original prologue scenes'),
     'owner requested licensed well registration before unrelated prologue image upload retries');
