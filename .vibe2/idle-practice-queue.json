@@ -424,11 +424,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_85db81b69282663e194c1627",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_85db81b69282663e194c1627",
-      "phase4PairId": "phase4-pair-1a6qdpy",
+      "phase4PairId": "phase4-pair-zkeb3v",
       "phase4Role": "CONTROL",
-      "holdoutGameId": "deep-diver",
+      "holdoutGameId": "baeksu-war",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-c93dzk",
+      "unseenProblemFingerprint": "phase4-unseen-13l1r5h",
       "mayPromoteGeneralization": false
     },
     {
@@ -443,11 +443,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_85db81b69282663e194c1627",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_85db81b69282663e194c1627",
-      "phase4PairId": "phase4-pair-1a6qdpy",
+      "phase4PairId": "phase4-pair-zkeb3v",
       "phase4Role": "CHALLENGER",
-      "holdoutGameId": "deep-diver",
+      "holdoutGameId": "baeksu-war",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-c93dzk",
+      "unseenProblemFingerprint": "phase4-unseen-13l1r5h",
       "mayPromoteGeneralization": false
     },
     {
@@ -462,11 +462,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_41147755bdb5947f1fd1278f",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f",
-      "phase4PairId": "phase4-pair-1vajj2e",
+      "phase4PairId": "phase4-pair-19kwgyz",
       "phase4Role": "CONTROL",
-      "holdoutGameId": "deep-diver",
+      "holdoutGameId": "baeksu-war",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1qv9zls",
+      "unseenProblemFingerprint": "phase4-unseen-vhss3p",
       "mayPromoteGeneralization": false
     },
     {
@@ -481,11 +481,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_41147755bdb5947f1fd1278f",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f",
-      "phase4PairId": "phase4-pair-1vajj2e",
+      "phase4PairId": "phase4-pair-19kwgyz",
       "phase4Role": "CHALLENGER",
-      "holdoutGameId": "deep-diver",
+      "holdoutGameId": "baeksu-war",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1qv9zls",
+      "unseenProblemFingerprint": "phase4-unseen-vhss3p",
       "mayPromoteGeneralization": false
     },
     {
@@ -500,11 +500,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_d2ee6e412a4de5a362ff451b",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_d2ee6e412a4de5a362ff451b",
-      "phase4PairId": "phase4-pair-1xz8j71",
+      "phase4PairId": "phase4-pair-vdykqk",
       "phase4Role": "CONTROL",
-      "holdoutGameId": "deep-diver",
+      "holdoutGameId": "baeksu-war",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-16t8sj",
+      "unseenProblemFingerprint": "phase4-unseen-rq71pe",
       "mayPromoteGeneralization": false
     },
     {
@@ -519,11 +519,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_d2ee6e412a4de5a362ff451b",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_d2ee6e412a4de5a362ff451b",
-      "phase4PairId": "phase4-pair-1xz8j71",
+      "phase4PairId": "phase4-pair-vdykqk",
       "phase4Role": "CHALLENGER",
-      "holdoutGameId": "deep-diver",
+      "holdoutGameId": "baeksu-war",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-16t8sj",
+      "unseenProblemFingerprint": "phase4-unseen-rq71pe",
       "mayPromoteGeneralization": false
     },
     {
@@ -1865,16 +1865,6 @@
       ]
     },
     {
-      "id": "gap-combat-l14",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "COMBAT"
-      ]
-    },
-    {
       "id": "gap-recovery-l14",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1885,13 +1875,13 @@
       ]
     },
     {
-      "id": "gap-animation_feel-l16",
-      "kind": "ANIMATION_FEEL_DRILL",
+      "id": "gap-combat-l15",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "ANIMATION_FEEL"
+        "COMBAT"
       ]
     },
     {
@@ -1922,6 +1912,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "UI_STATE"
+      ]
+    },
+    {
+      "id": "gap-animation_feel-l17",
+      "kind": "ANIMATION_FEEL_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ANIMATION_FEEL"
       ]
     },
     {
