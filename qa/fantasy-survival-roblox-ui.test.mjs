@@ -371,7 +371,7 @@ test('prologue has only two visible story texts and keeps key characters in the 
   assert.match(intro,/local closeUp=scene\.cinema=="crown" or scene\.cinema=="omen"/);
   assert.match(intro,/cameraMotionIntensity=0/);
   assert.match(intro,/storyForeground\.ZIndex=8/);
-  assert.match(intro,/storyAtmosphere\.ZIndex=6/);
+  assert.match(intro,/storyAtmosphere\.ZIndex=9/);
 });
 
 test('prologue uses exactly one source image per shot and keeps Big Brother and Mirror uncropped',()=>{
@@ -421,7 +421,7 @@ test('12 authored prologue beats retain single-image framing and mobile-safe cho
   for(const cue of ['siege','charge','crown','omen','betrayal','reach','erasure','rift','dawn','relic','journey']){
     assert.match(intro,new RegExp('scene\\.cinema=="'+cue+'" then\\s+impactAt='),'cinematic cue '+cue);
   }
-  assert.match(intro,/if impactAt and not reducedEffects then/);
+  assert.match(intro,/if impactAt then/);
   assert.match(intro,/currentStoryScene~=index then return end/);
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
   assert.match(intro,/local showArtwork=validImage\s+local showFront=validFront and not showArtwork/);
@@ -437,8 +437,8 @@ test('prologue reveals each single illustration with safe lighting and mobile re
     'local activeVignetteTween=nil',
     'if activeStoryRevealTween then activeStoryRevealTween:Cancel();activeStoryRevealTween=nil end',
     'if activeVignetteTween then activeVignetteTween:Cancel();activeVignetteTween=nil end',
-    'local revealStart=reducedEffects and .04 or closeUp and .31',
-    'local revealSeconds=reducedEffects and .18 or closeUp and .94',
+    'local revealStart=reducedEffects and .38 or closeUp and .31',
+    'local revealSeconds=reducedEffects and .62 or closeUp and .94',
     'activeStoryRevealTween=TweenService:Create(storyImage,',
     'activeStoryRevealTween:Play()',
     'local vignetteBase=cinematicVignette.BackgroundTransparency',
@@ -448,7 +448,7 @@ test('prologue reveals each single illustration with safe lighting and mobile re
     'BackgroundTransparency=vignetteBase',
     'introDialogue.TextColor3=',
   ])assert.ok(intro.includes(marker),'missing intro direction: '+marker);
-  assert.match(intro,/if impactAt and not reducedEffects then/);
+  assert.match(intro,/if impactAt then/);
   assert.match(intro,/if not entranceOpen or token~=runToken or currentStoryScene~=index then return end/);
   assert.match(intro,/local showArtwork=validImage\s+local showFront=validFront and not showArtwork/);
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
@@ -465,8 +465,8 @@ test('cinematic v4 locks portrait frames, times silent title reveals and makes s
     'or cinema=="erasure" or cinema=="freeze"',
     'if lockedCamera then',
     'cameraMotionValue.Value=openingCamera.CFrame',
-    'if not reducedEffects and not lockedPortrait then',
-    'and (not reducedEffects or n<=4)',
+    'if not lockedPortrait then',
+    'and (not reducedEffects or n<=14)',
     'local transitionCut=scene.cinema=="erasure" or scene.cinema=="rift"',
     'introFlash.BackgroundTransparency=transitionCut and .44 or 1',
     'local titlePause=scene.cinema=="crown" and .46',
@@ -489,6 +489,23 @@ test('cinematic v4 locks portrait frames, times silent title reveals and makes s
   assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
   assert.equal([...intro.matchAll(/label\(introPanel,/g)].length,2);
   assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
+});
+
+test('touch-screen prologue keeps cinematic light, fog, zoom and impacts visible',()=>{
+  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
+  assert.match(client,/local reducedEffects=game:GetService\("UserInputService"\)\.TouchEnabled/);
+  assert.match(intro,/cinematicLight\.Visible=not silence/);
+  assert.match(intro,/cinematicMist\.Visible=\s*\(scene\.cinema=="omen"/);
+  assert.match(intro,/if not lockedPortrait then/);
+  assert.match(intro,/if impactAt then/);
+  assert.match(intro,/and \(not reducedEffects or n<=14\)/);
+  assert.match(intro,/activeStoryColorTween=TweenService:Create\(storyImage,/);
+  assert.match(intro,/ImageColor3=Color3\.fromRGB\(255,255,255\)/);
+  assert.match(intro,/if activeStoryColorTween then activeStoryColorTween:Cancel\(\);activeStoryColorTween=nil end/);
+  assert.doesNotMatch(intro,/cinematicLight\.Visible=not reducedEffects/);
+  assert.doesNotMatch(intro,/if impactAt and not reducedEffects then/);
+  assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
+  assert.match(intro,/local showFront=validFront and not showArtwork/);
 });
 
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
