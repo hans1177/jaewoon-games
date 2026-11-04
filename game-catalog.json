@@ -9174,6 +9174,55 @@
       "webPublishedSourceTreeSha": "bd1cd06ff49b156e284f3d5946e8f9d368819175",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
+    },
+    {
+      "id": "forest-survival",
+      "name": "숲의 끝 · 생존 협동",
+      "description": "로그인 없이 1~10번 서버에 참가하는 협동 야생 생존게임",
+      "genre": [
+        "생존",
+        "협동",
+        "모험"
+      ],
+      "image": "assets/homepage-covers/wild-survival.webp",
+      "webPath": "web-games/forest-survival",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "selectedPlatform": "WEB",
+      "canonical": {
+        "schemaVersion": 1,
+        "identity": {
+          "gameId": "forest-survival",
+          "name": "숲의 끝 · 생존 협동",
+          "description": "협동 생존게임",
+          "genres": [
+            "생존",
+            "협동"
+          ]
+        },
+        "lifecycle": {
+          "state": "ACTIVE"
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "selectedPlatform": "WEB"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/forest-survival",
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA"
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "web-games/forest-survival/"
+          }
+        }
+      }
     }
   ],
   "runtimeAuthority": "company-runtime",
@@ -9408,5 +9457,7 @@
     ],
     "nativeExecutionAccessUnaffected": true
   },
-  "ownerStoppedGameIds": ["horror-escape-room"]
+  "ownerStoppedGameIds": [
+    "horror-escape-room"
+  ]
 }
