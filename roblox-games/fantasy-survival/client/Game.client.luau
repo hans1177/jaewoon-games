@@ -3416,6 +3416,7 @@ do
         camera.CameraType=Enum.CameraType.Scriptable
         camera.FieldOfView=scene.fov
         local activeScene=index
+        local sceneStarted=os.clock()
         if cameraMotionConnection then cameraMotionConnection:Disconnect() end
         cameraMotionConnection=RunService.RenderStepped:Connect(function()
           if not entranceOpen or token~=runToken or currentStoryScene~=activeScene then return end
@@ -3424,7 +3425,19 @@ do
           local target=sceneFocus(scene)
           local at=cameraMotionValue.Value.Position
           if (target-at).Magnitude<.1 then return end
-          liveCamera.CFrame=CFrame.lookAt(at,target)
+          local elapsed=os.clock()-sceneStarted
+          -- [실제 카메라 반동] 전쟁 충격·배신의 기울임·추락의 회전, 플레이어 위치는 그대로.
+          local beat=(scene.cinema=="siege" or scene.cinema=="charge") and 1.1
+            or scene.cinema=="betrayal" and 1.85 or scene.cinema=="rift" and 1.85 or 0
+          local kick=beat>0 and math.exp(-math.abs(elapsed-beat)*7) or 0
+          local shake=kick*(reducedEffects and .028 or .11)
+          local roll=scene.cinema=="rift" and math.sin(elapsed*.8)*.025
+            or scene.cinema=="betrayal" and .013
+            or scene.cinema=="freeze" and 0 or math.sin(elapsed*.4)*.003
+          local offset=Vector3.new(math.sin(elapsed*39)*shake,
+            math.cos(elapsed*33)*shake*.55,0)
+          liveCamera.CFrame=CFrame.lookAt(at+offset,target)*CFrame.Angles(0,0,roll)
+          if introDepth.Enabled then introDepth.FocusDistance=(target-at).Magnitude end
         end)
         if scene.cinema~="freeze" and scene.cinema~="erasure" then
           activeTween=TweenService:Create(cameraMotionValue,
@@ -3433,6 +3446,12 @@ do
             })
           activeTween:Play()
         end
+        activeFovTween=TweenService:Create(camera,TweenInfo.new(scene.seconds*.68,
+          Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+          FieldOfView=scene.fov+(scene.cinema=="rift" and 13
+            or scene.cinema=="charge" and 7 or scene.cinema=="dawn" and -7 or -3),
+        })
+        activeFovTween:Play()
         cinematicVignette.BackgroundTransparency=(scene.cinema=="betrayal" or scene.cinema=="erasure")
           and .62 or scene.cinema=="dawn" and .92 or .83
         local isSilent=scene.cinema=="freeze" or scene.cinema=="erasure"
