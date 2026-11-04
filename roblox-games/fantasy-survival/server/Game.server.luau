@@ -4378,6 +4378,46 @@ local function bindNativeFoundationPlayer(player)
         if attached then break end
       end
     end
+    -- [낡은 진홍색 망토] 기존 인증된 장신구 메시만 재질 수정한다. 새 파츠·모델 생성 없음.
+    -- 기존 아바타 옷/장신구, 전투/저장 상태와 분리된 외형 처리다.
+    if attached then
+      local wornCape=character:FindFirstChild("Dark Green Wide Cape")
+      if wornCape and wornCape:IsA("Accessory") then
+        wornCape:SetAttribute("MeadowCrimsonWornCape",true)
+        local section=0
+        for _,detail in ipairs(wornCape:GetDescendants()) do
+          if detail:IsA("MeshPart") then
+            section+=1
+            local appearance=detail:FindFirstChildOfClass("SurfaceAppearance")
+            if appearance then appearance:Destroy() end
+            detail.TextureID=""
+            detail.Material=Enum.Material.Fabric
+            -- 단색 플라스틱 대신 짙은 피빛 천. 원본이 다중 메시일 때는 이음새를 더 어둡게.
+            detail.Color=section%4==0 and Color3.fromRGB(87,34,37)
+              or section%3==0 and Color3.fromRGB(109,43,46)
+              or Color3.fromRGB(130,49,51)
+            detail.Reflectance=0
+            detail.DoubleSided=true
+            detail.CanCollide=false
+            detail.CanTouch=false
+            detail.CanQuery=false
+            detail.Massless=true
+          elseif detail:IsA("SpecialMesh") then
+            -- MeshPart 아닌 원본 특수 메시에서도 초록 원본 무늬가 남지 않도록 한다.
+            detail.TextureId=""
+            detail.VertexColor=Vector3.new(1,1,1)
+          elseif detail:IsA("BasePart") then
+            detail.Color=Color3.fromRGB(123,43,47)
+            detail.Material=Enum.Material.Fabric
+            detail.Reflectance=0
+            detail.CanCollide=false
+            detail.CanTouch=false
+            detail.CanQuery=false
+            detail.Massless=true
+          end
+        end
+      end
+    end
     character:SetAttribute("OpeningCapeAttached", attached)
     if not attached then
       warn("마력숲 오프닝 망토 메시 또는 장착 연결 확인 실패: " .. tostring(capeId))
