@@ -2414,10 +2414,10 @@ do
   cinematicLight.Name="CinematicLightSweep"
   cinematicLight.AnchorPoint=Vector2.new(.5,.5)
   cinematicLight.Position=UDim2.fromScale(-.35,.5)
-  cinematicLight.Size=UDim2.fromScale(.36,1.5)
+  cinematicLight.Size=UDim2.fromScale(.48,1.5)
   cinematicLight.Rotation=19
   cinematicLight.BackgroundColor3=Color3.fromRGB(238,187,122)
-  cinematicLight.BackgroundTransparency=.27
+  cinematicLight.BackgroundTransparency=.17
   cinematicLight.BorderSizePixel=0
   cinematicLight.ZIndex=9
   cinematicLight.Visible=false
@@ -2426,8 +2426,8 @@ do
   lightFalloff.Transparency=NumberSequence.new({
     NumberSequenceKeypoint.new(0,1),
     NumberSequenceKeypoint.new(.23,.92),
-    NumberSequenceKeypoint.new(.5,.24),
-    NumberSequenceKeypoint.new(.77,.92),
+    NumberSequenceKeypoint.new(.5,.12),
+    NumberSequenceKeypoint.new(.77,.86),
     NumberSequenceKeypoint.new(1,1),
   })
   lightFalloff.Parent=cinematicLight
@@ -2437,7 +2437,7 @@ do
   cinematicMist.Size=UDim2.fromScale(1,.4)
   cinematicMist.Position=UDim2.fromScale(0,1)
   cinematicMist.BackgroundColor3=Color3.fromRGB(120,176,153)
-  cinematicMist.BackgroundTransparency=.63
+  cinematicMist.BackgroundTransparency=.43
   cinematicMist.BorderSizePixel=0
   cinematicMist.ZIndex=9
   cinematicMist.Visible=false
@@ -2583,6 +2583,7 @@ do
   local activeFovTween=nil
   local activeStoryFocusTween=nil
   local activeStoryRevealTween=nil
+  local activeStoryColorTween=nil
   local activeVignetteTween=nil
   local activeSceneFlashTween=nil
   local activeParticleTweens={}
@@ -2614,6 +2615,7 @@ do
     if activeFovTween then activeFovTween:Cancel();activeFovTween=nil end
     if activeStoryFocusTween then activeStoryFocusTween:Cancel();activeStoryFocusTween=nil end
     if activeStoryRevealTween then activeStoryRevealTween:Cancel();activeStoryRevealTween=nil end
+    if activeStoryColorTween then activeStoryColorTween:Cancel();activeStoryColorTween=nil end
     if activeVignetteTween then activeVignetteTween:Cancel();activeVignetteTween=nil end
     if activeSceneFlashTween then activeSceneFlashTween:Cancel();activeSceneFlashTween=nil end
     if activeLightTween then activeLightTween:Cancel();activeLightTween=nil end
@@ -2982,6 +2984,7 @@ do
         -- [이전 장면 종료] 다음 컷의 빛·인물 연출을 가리지 않도록 Tween을 먼저 정리한다.
         if activeVignetteTween then activeVignetteTween:Cancel();activeVignetteTween=nil end
         if activeStoryRevealTween then activeStoryRevealTween:Cancel();activeStoryRevealTween=nil end
+        if activeStoryColorTween then activeStoryColorTween:Cancel();activeStoryColorTween=nil end
         if activeSceneFlashTween then activeSceneFlashTween:Cancel();activeSceneFlashTween=nil end
         if activeLightTween then activeLightTween:Cancel();activeLightTween=nil end
         if activeMistTween then activeMistTween:Cancel();activeMistTween=nil end
@@ -2994,7 +2997,8 @@ do
         local silence=scene.cinema=="freeze" or scene.cinema=="erasure"
         -- [장면별 실제 움직임] 공성전은 붉은 섬광, 봉인은 보라 광선,
         -- 추락은 푸른 균열, 새벽은 안개와 초록빛으로 구분한다.
-        cinematicLight.Visible=not reducedEffects and not silence
+        -- 모바일 터치 입력은 저사양 판정이 아니다. 기기와 무관하게 광선 연출을 재생한다.
+        cinematicLight.Visible=not silence
         cinematicLight.BackgroundColor3=(scene.cinema=="omen" or scene.cinema=="betrayal")
           and Color3.fromRGB(202,124,255) or scene.view=="fall"
           and Color3.fromRGB(101,177,255) or scene.view=="wake"
@@ -3009,7 +3013,7 @@ do
             })
           activeLightTween:Play()
         end
-        cinematicMist.Visible=not reducedEffects and
+        cinematicMist.Visible=
           (scene.cinema=="omen" or scene.cinema=="rift" or scene.cinema=="dawn" or scene.cinema=="journey")
         if cinematicMist.Visible then
           cinematicMist.BackgroundColor3=scene.cinema=="omen" and Color3.fromRGB(126,91,194)
@@ -3163,15 +3167,15 @@ do
           storyForeground.Image=""
         end
         layoutIntroCaptions()
-        -- [그림 호흡] 위쳐식 미세 이동. 이미지 영역 안에서만 움직여 얼굴·몸은 절대 자르지 않는다.
+        -- [그림 호흡] 모바일에서도 승인 원화 한 장을 자르지 않고 줌인·색광으로 살아 움직이게 한다.
         -- 한 컷에 한 이미지만 사용하며, 다음 컷이 시작되면 이전 움직임을 취소한다.
         local storyImage=showFront and storyForeground or showArtwork and storyArtwork or nil
         if storyImage then
           -- [영화식 장면 등장] 금빛·보랏빛 전체 원화는 천천히 드러낸다.
           -- 불투명도만 변화시키며 복제 이미지·자르기·화면 밖 줌은 사용하지 않는다.
-          local revealStart=reducedEffects and .04 or closeUp and .31
+          local revealStart=reducedEffects and .38 or closeUp and .31
             or scene.cinema=="dawn" and .46 or scene.cinema=="rift" and .23 or .12
-          local revealSeconds=reducedEffects and .18 or closeUp and .94
+          local revealSeconds=reducedEffects and .62 or closeUp and .94
             or scene.cinema=="dawn" and 1.35 or scene.cinema=="charge" and .28 or .54
           storyImage.ImageTransparency=revealStart
           activeStoryRevealTween=TweenService:Create(storyImage,
@@ -3179,10 +3183,24 @@ do
               ImageTransparency=0,
             })
           activeStoryRevealTween:Play()
+          -- [실제 원화 변화] 모바일에서도 빛의 색이 장면 안에서 살아나도록 색 보정한다.
+          -- 새 이미지·복제 인물·3D 모델 없이 현재 승인된 한 컷의 색만 원상 복귀시킨다.
+          storyImage.ImageColor3=(scene.cinema=="siege" or scene.cinema=="charge")
+            and Color3.fromRGB(202,143,119)
+            or (scene.cinema=="omen" or scene.cinema=="betrayal")
+              and Color3.fromRGB(188,146,220)
+            or scene.view=="fall" and Color3.fromRGB(147,176,223)
+            or scene.view=="wake" and Color3.fromRGB(169,213,182)
+            or Color3.fromRGB(221,193,156)
+          activeStoryColorTween=TweenService:Create(storyImage,
+            TweenInfo.new(reducedEffects and 1.55 or 2.15,Enum.EasingStyle.Sine,Enum.EasingDirection.Out),{
+              ImageColor3=Color3.fromRGB(255,255,255),
+            })
+          activeStoryColorTween:Play()
           -- [원화 고정 컷] 군주·미러·배신·기록 삭제·퇴각은 완전히 정지시킨다.
           -- 움직이는 컷은 그림 전체가 남도록 기존 안전 영역 안에서만 이동한다.
           local lockedPortrait=closeUp or scene.cinema=="freeze"
-          if not reducedEffects and not lockedPortrait then
+          if not lockedPortrait then
             local slowX=(scene.cinema=="charge" or scene.cinema=="journey") and .014
               or scene.cinema=="rift" and -.012 or scene.cinema=="freeze" and 0 or .005
             local slowY=scene.cinema=="rift" and .016 or scene.cinema=="dawn" and -.009
@@ -3191,10 +3209,10 @@ do
             local originalSize=storyImage.Size
             local maxX=math.max(0,1-storyImage.Size.X.Scale)
             local maxY=math.max(0,1-storyImage.Size.Y.Scale)
-            -- [진짜 카메라 이동] 전체 JPG를 90~93%에서 원래 크기로 당겨 7~10% 전진.
+            -- [진짜 카메라 이동] 모바일에서도 전체 JPG를 84~89%에서 원래 크기로 당겨 시선을 이동한다.
             -- Fit·기존 최대 크기를 지켜 어느 기기에서도 이미지가 잘리지 않는다.
-            local openingScale=scene.cinema=="charge" and .90
-              or scene.cinema=="rift" and .91 or .93
+            local openingScale=scene.cinema=="charge" and .84
+              or scene.cinema=="rift" and .86 or .89
             storyImage.Size=UDim2.fromScale(
               originalSize.X.Scale*openingScale,originalSize.Y.Scale*openingScale)
             storyImage.Position=UDim2.fromScale(
@@ -3221,7 +3239,7 @@ do
             or ((n*19+index*13)%35)/100-.17
           local fall=scene.movement=="fall"
           spark.Visible=scene.cinema~="freeze" and (not quietPortrait or n<=10)
-            and (not reducedEffects or n<=4)
+            and (not reducedEffects or n<=14)
           if spark.Visible then
             spark.BackgroundColor3=scene.cinema=="erasure" and Color3.fromRGB(125,121,134)
               or scene.view=="seal" and Color3.fromRGB(186,112,249)
@@ -3229,8 +3247,8 @@ do
               or scene.view=="wake" and Color3.fromRGB(163,189,151)
               or scene.view=="sky" and Color3.fromRGB(238,198,121)
               or Color3.fromRGB(245,147,73)
-            spark.BackgroundTransparency=quietPortrait and .74
-              or scene.view=="wake" and .67 or .32
+            spark.BackgroundTransparency=quietPortrait and .58
+              or scene.view=="wake" and .54 or .22
             spark.Position=UDim2.fromScale(x,fall and -.08 or 1.05)
             spark.Size=UDim2.fromOffset(quietPortrait and 2 or 1+n%3,
               quietPortrait and 8 or scene.view=="seal" and 12 or 6+n%4*2)
@@ -3384,7 +3402,7 @@ do
         elseif scene.cinema=="journey" then
           impactAt=3.05;impactColor=Color3.fromRGB(164,184,206);impactOpacity=.95;impactFade=1.3
         end
-        if impactAt and not reducedEffects then
+        if impactAt then
           task.delay(impactAt,function()
             if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
             if activeSceneFlashTween then activeSceneFlashTween:Cancel() end
