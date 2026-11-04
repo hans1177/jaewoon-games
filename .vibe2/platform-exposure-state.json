@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-11-04T14:28:32.969Z",
+  "updatedAt": "2026-11-04T16:00:17.467Z",
   "games": [
     {
       "gameId": "room-survival",
@@ -297,13 +297,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -311,6 +311,7 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -388,13 +389,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -402,6 +403,7 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -523,14 +525,13 @@
               "design": true,
               "publication": false,
               "exactRuntime": false,
-              "lobby": false,
+              "lobby": true,
               "movement": false,
               "noRuntimeErrors": true
             },
             "blockers": [
               "publication",
               "exactRuntime",
-              "lobby",
               "movement"
             ],
             "sourceRevision": null,
