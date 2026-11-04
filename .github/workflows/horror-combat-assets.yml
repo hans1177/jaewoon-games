@@ -9,6 +9,7 @@ on:
       - 'roblox-games/fantasy-survival/icons.png'
       - 'roblox-games/fantasy-survival/right-icons.png'
       - 'roblox-games/fantasy-survival/painted-icons.png'
+      - 'roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json'
       - 'roblox-games/fantasy-survival/action-icons/**'
       - 'assets/roblox/common-ui-v1/icons.png'
       - 'assets/roblox/common-ui-v1/panel.png'
@@ -23,6 +24,10 @@ on:
     inputs:
       painted_hud_only:
         description: 마력숲 오너 제작 시안 아이콘 16종 기존 경로 등록
+        type: boolean
+        default: false
+      illustrated_hud_only:
+        description: 마력숲 21종 시안 원화의 기존 Universe 이미지 사용 권한 확인
         type: boolean
         default: false
       magic_ui_only:
@@ -69,6 +74,7 @@ jobs:
       - name: Import combat model and verified shared PBR sources
         env:
           PAINTED_HUD_ONLY: ${{ inputs.painted_hud_only || false }}
+          ILLUSTRATED_HUD_ONLY: ${{ inputs.illustrated_hud_only || false }}
           MAGIC_UI_ONLY: ${{ inputs.magic_ui_only || false }}
           FOREST_ACTION_ICONS_ONLY: ${{ inputs.forest_action_icons_only || false }}
           UI_ONLY: ${{ inputs.ui_only || false }}
@@ -78,7 +84,9 @@ jobs:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$PAINTED_HUD_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/painted-icons.png | grep -q .; then
+          if [ "$ILLUSTRATED_HUD_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json | grep -q .; then
+            node tools/horror-combat-assets.mjs --illustrated-hud-only
+          elif [ "$PAINTED_HUD_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/painted-icons.png | grep -q .; then
             node tools/horror-combat-assets.mjs --painted-hud-only
           elif [ "$FOREST_ACTION_ICONS_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- .github/workflows/horror-combat-assets.yml | grep -q .; then
             node tools/horror-combat-assets.mjs --magic-action-icons-only

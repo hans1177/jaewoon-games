@@ -52,6 +52,45 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
+// [마력숲 21종 원화] 이미 등록된 오너 지정 이미지의 현재 Universe 사용 권한만 검증·부여한다.
+// 이전 16칸 PNG와 권한은 건드리지 않으며 새 원화의 원본 업로드/런타임 검증을 지어내지 않는다.
+if(process.argv.includes('--illustrated-hud-only')){
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const clientPath='roblox-games/fantasy-survival/client/Game.client.luau';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ const art=registry.illustratedHudIcons;
+ if(registry.gameId!=='fantasy-survival'||!art
+   ||art.assetId!=='112814533400088'||art.universeId!=='10773436325'
+   ||art.sourceEvidenceSha256!=='1348c0364650dadbef6c15ee5983b1285013979ae142b139df4813cec5367263'
+   ||art.width!==2172||art.height!==724||art.iconCount!==21)
+   throw Error('FOREST_21_ICON_OWNER_SOURCE_METADATA_INVALID');
+ const client=fs.readFileSync(clientPath,'utf8');
+ if(!client.includes('local meadowPaintedHudAtlas="rbxassetid://'+art.assetId+'"'))
+   throw Error('FOREST_21_ICON_SOURCE_BINDING_MISMATCH');
+ if(art.universeUseGrantVerified===true&&art.authorizedUniverseIds?.includes(art.universeId)){
+   console.log('FOREST_21_ICON_UNIVERSE_GRANT_ALREADY_VERIFIED='+art.assetId);
+   process.exit(0);
+ }
+ const thumb=await request('https://thumbnails.roblox.com/v1/assets?assetIds='+art.assetId
+   +'&size=420x420&format=Png&isCircular=false');
+ if(thumb.data?.[0]?.targetId!==Number(art.assetId)
+   ||thumb.data?.[0]?.state!=='Completed'||!thumb.data?.[0]?.imageUrl)
+   throw Error('FOREST_21_ICON_ASSET_NOT_RESOLVED');
+ const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+   method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+   body:JSON.stringify({subjectType:'Universe',subjectId:art.universeId,action:'Use',
+     requests:[{assetId:Number(art.assetId),grantToDependencies:true}]})
+ });
+ if(grant.errors?.length)throw Error('FOREST_21_ICON_UNIVERSE_PERMISSION_REJECTED');
+ art.universeUseGrantVerified=true;
+ art.authorizedUniverseIds=[art.universeId];
+ art.runtimeVerified=false;
+ art.importVerified=false; // 업로드 원본과 Roblox 이미지 내용의 동일성은 별도 실증 필요.
+ fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+ console.log('FOREST_21_ICON_UNIVERSE_GRANT_VERIFIED='+art.assetId);
+ process.exit(0);
+}
+
 // [마력숲 시안 오너 제작 그림 아이콘] 기존 이미지 업로드·권한 검사 경로에서 16칸 아틀라스를 등록.
 if(process.argv.includes('--painted-hud-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
