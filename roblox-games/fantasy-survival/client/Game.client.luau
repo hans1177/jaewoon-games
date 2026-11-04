@@ -2816,8 +2816,27 @@ do
     NumberSequenceKeypoint.new(1,.78),
   })
   storyForegroundFade.Parent=storyForeground
-  -- [장면 이미지 단독 표시] 이전 컷의 복제본을 만들지 않아 잔상·중복 인물을 없앤다.
-  -- [화면 분위기] 기존 GUI에만 가벼운 불씨·낙하 입자를 추가한다.
+  -- [먼 공기 / 별도 시차층] 전경 PNG나 배경 JPG의 재사용 없이 깊이만 만드는 안개층.
+  local storyFarHaze=Instance.new("Frame")
+  storyFarHaze.Name="StoryFarDepthHaze"
+  storyFarHaze.Position=UDim2.fromScale(-.06,.58)
+  storyFarHaze.Size=UDim2.fromScale(1.12,.38)
+  storyFarHaze.BackgroundColor3=Color3.fromRGB(151,189,204)
+  storyFarHaze.BackgroundTransparency=.91
+  storyFarHaze.BorderSizePixel=0
+  storyFarHaze.ZIndex=7
+  storyFarHaze.Visible=false
+  storyFarHaze.Parent=introPanel
+  local storyFarGradient=Instance.new("UIGradient")
+  storyFarGradient.Rotation=90
+  storyFarGradient.Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,1),
+    NumberSequenceKeypoint.new(.34,.94),
+    NumberSequenceKeypoint.new(.72,.32),
+    NumberSequenceKeypoint.new(1,1),
+  })
+  storyFarGradient.Parent=storyFarHaze
+  -- [화면 분위기] 기존 승인 원화 한 장과 별도 조명·대기층만 사용한다.
   local storyAtmosphere=Instance.new("Frame")
   storyAtmosphere.Name="CinematicParticles"
   storyAtmosphere.BackgroundTransparency=1
@@ -2831,9 +2850,9 @@ do
   cinematicLight.Name="IntroLayeredMoonlight"
   cinematicLight.AnchorPoint=Vector2.new(.5,.5)
   cinematicLight.Position=UDim2.fromScale(-.22,.4)
-  cinematicLight.Size=UDim2.fromScale(.88,1.45)
+  cinematicLight.Size=UDim2.fromScale(.36,1.34)
   cinematicLight.BackgroundColor3=Color3.fromRGB(171,207,240)
-  cinematicLight.BackgroundTransparency=.88
+  cinematicLight.BackgroundTransparency=.93
   cinematicLight.BorderSizePixel=0
   cinematicLight.Rotation=14
   cinematicLight.ZIndex=9
@@ -2854,7 +2873,7 @@ do
   cinematicVignette.Size=UDim2.fromScale(1,1)
   cinematicVignette.BorderSizePixel=0
   cinematicVignette.BackgroundColor3=Color3.fromRGB(3,6,8)
-  cinematicVignette.BackgroundTransparency=.74
+  cinematicVignette.BackgroundTransparency=.86
   cinematicVignette.ZIndex=7
   cinematicVignette.Parent=introPanel
   local vignetteGradient=Instance.new("UIGradient")
@@ -2889,7 +2908,7 @@ do
   cinematicShadow.Size=UDim2.fromScale(.68,1.6)
   cinematicShadow.Rotation=8
   cinematicShadow.BackgroundColor3=Color3.fromRGB(7,11,16)
-  cinematicShadow.BackgroundTransparency=.18
+  cinematicShadow.BackgroundTransparency=.84
   cinematicShadow.BorderSizePixel=0
   cinematicShadow.ZIndex=9
   cinematicShadow.Visible=false
@@ -2910,7 +2929,7 @@ do
   cinematicMist.Size=UDim2.fromScale(1,.4)
   cinematicMist.Position=UDim2.fromScale(0,1)
   cinematicMist.BackgroundColor3=Color3.fromRGB(120,176,153)
-  cinematicMist.BackgroundTransparency=.54
+  cinematicMist.BackgroundTransparency=.88
   cinematicMist.BorderSizePixel=0
   cinematicMist.ZIndex=9
   cinematicMist.Visible=false
@@ -3071,6 +3090,25 @@ do
   local activeShadowTween=nil
   local activeMistTween=nil
   local activeLightTween=nil
+  local activeFarHazeTween=nil
+  local introHiddenParts={}
+  local function setIntroPlayerHidden(hidden)
+    -- [원화/캐릭터 중복 방지] 인물 PNG 컷에만 3D 아바타를 로컬에서 감추고 원래 값을 복구한다.
+    -- 서버 캐릭터와 HP/전투/장비/망토/저장 정보는 절대로 변경하지 않는다.
+    for part,transparency in pairs(introHiddenParts) do
+      if part.Parent then part.LocalTransparencyModifier=transparency end
+    end
+    table.clear(introHiddenParts)
+    if not hidden then return end
+    local character=player.Character
+    if not character then return end
+    for _,part in ipairs(character:GetDescendants()) do
+      if part:IsA("BasePart") then
+        introHiddenParts[part]=part.LocalTransparencyModifier
+        part.LocalTransparencyModifier=1
+      end
+    end
+  end
   local activeArtImpactTween=nil
   local activeActorGestureTween=nil
   local activeActorEraseTween=nil
@@ -3107,6 +3145,9 @@ do
     if activeShadowTween then activeShadowTween:Cancel();activeShadowTween=nil end
     if activeMistTween then activeMistTween:Cancel();activeMistTween=nil end
     if activeLightTween then activeLightTween:Cancel();activeLightTween=nil end
+    if activeFarHazeTween then activeFarHazeTween:Cancel();activeFarHazeTween=nil end
+    setIntroPlayerHidden(false)
+    storyFarHaze.Visible=false
     if activeArtImpactTween then activeArtImpactTween:Cancel();activeArtImpactTween=nil end
     if activeActorGestureTween then activeActorGestureTween:Cancel();activeActorGestureTween=nil end
     if activeActorEraseTween then activeActorEraseTween:Cancel();activeActorEraseTween=nil end
@@ -3377,6 +3418,7 @@ do
     cinematicShadow.Visible=false
     cinematicMist.Visible=false
     cinematicLight.Visible=false
+    storyFarHaze.Visible=false
     for _,spark in ipairs(cinematicParticles) do spark.Visible=false end
     task.defer(function()
       local ids={}
@@ -3518,16 +3560,20 @@ do
         if activeShadowTween then activeShadowTween:Cancel() end
         if activeMistTween then activeMistTween:Cancel() end
         if activeLightTween then activeLightTween:Cancel() end
+        if activeFarHazeTween then activeFarHazeTween:Cancel() end
         for _,motion in ipairs(activeParticleTweens) do motion:Cancel() end
         table.clear(activeParticleTweens)
         local artworkId=(Config.CinematicIntroSceneIds or {})[index]
         local foregroundId=(Config.CinematicIntroForegroundIds or {})[index]
         local artworkAvailable=type(artworkId)=="string" and artworkId:match("^rbxassetid://%d+$")~=nil
         local foregroundAvailable=type(foregroundId)=="string" and foregroundId:match("^rbxassetid://%d+$")~=nil
-        -- [깊이 분리] 홀수 컷=그림만, 짝수 컷=실제 월드+투명 인물만.
-        -- 전경이 없으면 원본 그림을 단독 사용한다. 단 한 컷에서도 둘 다 Visible이 될 수 없다.
-        local usePaintedBackdrop=artworkAvailable and (index%2==1 or not foregroundAvailable)
-        local useWorldActor=foregroundAvailable and not usePaintedBackdrop
+        -- [2.5D 연출 감독] 장면 내용에 따라 풍경 컷 또는 투명 인물 컷 한 종류만 선택한다.
+        -- 짝수/홀수 무작위 교대 대신 실제 R15 촬영 장면에만 분리 인물을 사용한다.
+        local actorShot=scene.cinema=="charge" or scene.cinema=="reach"
+          or scene.cinema=="rift" or scene.cinema=="journey"
+        local useWorldActor=actorShot and foregroundAvailable
+        local usePaintedBackdrop=artworkAvailable and not useWorldActor
+        setIntroPlayerHidden(useWorldActor and scene.actor=="PLAYER")
         storyArtwork.Visible=usePaintedBackdrop
         storyArtwork.Image=usePaintedBackdrop and artworkId or ""
         storyArtwork.ImageTransparency=1
@@ -3536,7 +3582,7 @@ do
         storyForeground.Image=useWorldActor and foregroundId or ""
         storyForeground.ImageTransparency=1
         storyForeground.Rotation=0
-        storyVision.Visible=usePaintedBackdrop
+        storyVision.Visible=false
         backdrop.BackgroundTransparency=usePaintedBackdrop and .06 or 1
         introPanel.BackgroundTransparency=usePaintedBackdrop and .1 or 1
         introTint.BackgroundTransparency=usePaintedBackdrop and .9 or .98
@@ -3570,32 +3616,55 @@ do
           activeActorGestureTween:Play()
           activeActorEraseTween:Play()
         end
-        -- [독립 연출] 장면별 색온도, 천천히 움직이는 빛 결, 원근 안개, 반딧불.
+        -- [제작한 2.5D 연출] 먼 안개/가까운 안개/빛줄기는 모두 서로 다른 깊이·속도.
         local activeVisual=usePaintedBackdrop or useWorldActor
-        cinematicShadow.Visible=activeVisual and not reducedEffects
+        local isDramatic=scene.cinema=="siege" or scene.cinema=="betrayal"
+          or scene.cinema=="erasure" or scene.cinema=="rift"
+        local isWarm=scene.cinema=="siege" or scene.cinema=="charge"
+          or scene.cinema=="dawn" or scene.cinema=="journey"
+        local isVoid=scene.cinema=="betrayal" or scene.cinema=="omen"
+          or scene.cinema=="rift" or scene.cinema=="erasure"
+        storyFarHaze.Visible=activeVisual
+        storyFarHaze.BackgroundColor3=isVoid and Color3.fromRGB(121,102,179)
+          or isWarm and Color3.fromRGB(209,193,149) or Color3.fromRGB(143,183,198)
+        storyFarHaze.BackgroundTransparency=reducedEffects and .97 or .90
+        storyFarHaze.Position=UDim2.fromScale(-direction*.065,.59)
+        activeFarHazeTween=TweenService:Create(storyFarHaze,
+          TweenInfo.new(artDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+            Position=UDim2.fromScale(direction*.04,.55),
+            BackgroundTransparency=reducedEffects and .99 or .94,
+          })
+        if storyFarHaze.Visible then activeFarHazeTween:Play() end
+        cinematicShadow.Visible=activeVisual and not reducedEffects and isDramatic
         cinematicMist.Visible=activeVisual
+        cinematicMist.BackgroundTransparency=reducedEffects and .97 or .88
+        cinematicMist.BackgroundColor3=isVoid and Color3.fromRGB(115,95,177)
+          or isWarm and Color3.fromRGB(205,210,172) or Color3.fromRGB(120,176,153)
         cinematicLight.Visible=activeVisual and not reducedEffects
+          and scene.cinema~="freeze" and scene.cinema~="erasure"
         cinematicLight.BackgroundColor3=(scene.cinema=="betrayal" or scene.cinema=="rift")
           and Color3.fromRGB(122,127,229)
           or (scene.cinema=="dawn" or scene.cinema=="journey")
           and Color3.fromRGB(208,230,184)
           or Color3.fromRGB(238,197,149)
-        cinematicLight.Position=UDim2.fromScale(-.25,.4)
-        cinematicLight.BackgroundTransparency=.88
+        cinematicLight.Position=UDim2.fromScale(direction>0 and -.24 or 1.12,.40)
+        cinematicLight.Rotation=direction>0 and -18 or 18
+        cinematicLight.BackgroundTransparency=.93
         activeLightTween=TweenService:Create(cinematicLight,
           TweenInfo.new(artDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
-            Position=UDim2.fromScale(.98,.52),
-            BackgroundTransparency=.95,
+            Position=UDim2.fromScale(direction>0 and .08 or .87,.47),
+            BackgroundTransparency=.96,
           })
         if cinematicLight.Visible then activeLightTween:Play() end
         cinematicShadow.Position=UDim2.fromScale(-.65,.5)
-        cinematicMist.Position=UDim2.fromScale(-.035,.86)
+        cinematicMist.Position=UDim2.fromScale(-direction*.075,.85)
         activeShadowTween=TweenService:Create(cinematicShadow,
           TweenInfo.new(artDuration,Enum.EasingStyle.Sine),{
             Position=UDim2.fromScale(1.60,.5)})
         activeMistTween=TweenService:Create(cinematicMist,
           TweenInfo.new(artDuration,Enum.EasingStyle.Sine),{
-            Position=UDim2.fromScale(.045,.79)})
+            Position=UDim2.fromScale(direction*.05,.79),
+            BackgroundTransparency=.94})
         if cinematicShadow.Visible then activeShadowTween:Play() end
         if cinematicMist.Visible then activeMistTween:Play() end
         for n,spark in ipairs(cinematicParticles) do

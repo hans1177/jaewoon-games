@@ -366,8 +366,13 @@ test('intro renders only one of original painted backdrop and separated 3D actor
   const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
   assert.match(intro,/local artworkId=\(Config\.CinematicIntroSceneIds or \{\}\)\[index\]/);
   assert.match(intro,/local foregroundId=\(Config\.CinematicIntroForegroundIds or \{\}\)\[index\]/);
-  assert.match(intro,/local usePaintedBackdrop=artworkAvailable and \(index%2==1 or not foregroundAvailable\)/);
-  assert.match(intro,/local useWorldActor=foregroundAvailable and not usePaintedBackdrop/);
+  assert.match(intro,/local actorShot=scene\.cinema=="charge" or scene\.cinema=="reach"/);
+  assert.match(intro,/local useWorldActor=actorShot and foregroundAvailable/);
+  assert.match(intro,/local usePaintedBackdrop=artworkAvailable and not useWorldActor/);
+  assert.match(intro,/setIntroPlayerHidden\(useWorldActor and scene\.actor=="PLAYER"\)/);
+  assert.match(client,/local function setIntroPlayerHidden\(hidden\)/);
+  assert.match(client,/if part\.Parent then part\.LocalTransparencyModifier=transparency end/);
+  assert.match(client,/setIntroPlayerHidden\(false\)/);
   assert.match(intro,/storyArtwork\.Visible=usePaintedBackdrop/);
   assert.match(intro,/storyForeground\.Visible=useWorldActor/);
   assert.match(intro,/storyArtwork\.Image=usePaintedBackdrop and artworkId or ""/);
@@ -380,6 +385,12 @@ test('intro renders only one of original painted backdrop and separated 3D actor
   assert.match(client,/spark\.Image="rbxasset:\/\/textures\/particles\/sparkles_main\.dds"/);
   assert.match(intro,/activeLightTween=TweenService:Create\(cinematicLight,/);
   assert.match(intro,/if cinematicLight\.Visible then activeLightTween:Play\(\) end/);
+  assert.match(client,/storyFarHaze\.ZIndex=7/);
+  assert.match(intro,/activeFarHazeTween=TweenService:Create\(storyFarHaze,/);
+  assert.match(client,/if activeFarHazeTween then activeFarHazeTween:Cancel\(\);activeFarHazeTween=nil end/);
+  assert.match(intro,/cinematicShadow\.Visible=activeVisual and not reducedEffects and isDramatic/);
+  assert.match(intro,/storyVision\.Visible=false/);
+  assert.doesNotMatch(intro,/storyArtwork\.Visible=true.*storyForeground\.Visible=true/s);
   assert.match(intro,/spark\.ImageTransparency=\.52/);
   assert.doesNotMatch(intro,/spark\.BackgroundTransparency=\.44/);
   assert.match(client,/if activeLightTween then activeLightTween:Cancel\(\);activeLightTween=nil end/);
