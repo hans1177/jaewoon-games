@@ -3680,8 +3680,10 @@ do
     local ready=player:GetAttribute("ProfileReady")==true
     local saved=player:GetAttribute("MeadowProfileHadSave")==true
     local sessionOnly=player:GetAttribute("SaveStatus")=="SESSION_ONLY"
-    continueButton.Text=saved and "이어하기" or "모험 시작"
-    titleStatus.Text=not ready and "저장 기록 확인 중"
+    local loadFailed=player:GetAttribute("MeadowProfileLoadState")=="FAILED"
+    continueButton.Text=loadFailed and "서버 연결 다시 시도" or saved and "이어하기" or "모험 시작"
+    titleStatus.Text=not ready and (loadFailed and "서버 데이터 준비 오류 · 재시도 가능"
+      or "서버 연결 중 · 버튼을 누르면 준비 후 시작")
       or sessionOnly and "임시 플레이 · 저장소 연결 실패"
       or saved and "저장된 진행도 확인됨" or "새로운 모험 준비 완료"
     -- 프로필 지연 중에도 시작 입력은 받고 실제 입장만 서버 승인 후 수행한다.
@@ -3693,6 +3695,7 @@ do
   player:GetAttributeChangedSignal("ProfileReady"):Connect(updateTitleStatus)
   player:GetAttributeChangedSignal("SaveStatus"):Connect(updateTitleStatus)
   player:GetAttributeChangedSignal("MeadowProfileHadSave"):Connect(updateTitleStatus)
+  player:GetAttributeChangedSignal("MeadowProfileLoadState"):Connect(updateTitleStatus)
   updateTitleStatus()
 
   -- [로딩 상태] 가짜 지역 등록과 발견 배지를 생성하지 않는다.
@@ -4266,15 +4269,30 @@ do
     loadPanel.Visible=true
     setProgress(0,0,"서버 및 저장 기록 확인")
     task.spawn(function()
-      -- 실제 서버 프로필 및 클라이언트 스트리밍된 캐릭터가 준비될 때만 다음 단계로 이동한다.
-      local profileDeadline=os.clock()+35
+      -- [입장 대기] 서버가 늦게 준비되어도 첫 터치가 사라지지 않도록 로딩 화면을 유지한다.
+      -- 데이터 복원 실패는 기존 서버 저장 API로만 재시도한다. 클라이언트 저장 조작 없음.
+      local profileDeadline=os.clock()+90
+      local retrySent=false
+      local retryStarted=0
       while entranceOpen and token==runToken and player:GetAttribute("ProfileReady")~=true
-        and os.clock()<profileDeadline do task.wait(.1) end
+        and os.clock()<profileDeadline do
+        local failed=player:GetAttribute("MeadowProfileLoadState")=="FAILED"
+        if failed and not retrySent then
+          retrySent=true
+          retryStarted=os.clock()
+          remote:FireServer("meadow:profile:retry")
+        elseif failed and retrySent and os.clock()-retryStarted>14 then
+          break
+        end
+        setProgress(0,0,failed and "서버 프로필 복구 재시도" or "서버 저장 정보 연결 중")
+        task.wait(.2)
+      end
       if not entranceOpen or token~=runToken then return end
       if player:GetAttribute("ProfileReady")~=true then
         loadPanel.Visible=false
         titlePanel.Visible=true
-        titleStatus.Text="서버 저장 정보 연결 지연 · 다시 시도해"
+        titleStatus.Text=player:GetAttribute("MeadowProfileLoadState")=="FAILED"
+          and "서버 프로필 준비 실패 · 다시 시작해" or "서버 연결 지연 · 다시 시도해"
         return
       end
       setProgress(0,0,"저장 데이터 확인")
@@ -4340,26 +4358,46 @@ do
   newButton.Activated:Connect(function()
     if newGameWaiting or not entranceOpen then return end
     newGameWaiting=true
+    -- [새 게임 첫 터치] 저장 데이터가 준비될 때까지 버튼이 먹통처럼 보이지 않게 한다.
+    titlePanel.Visible=false
+    options.Visible=false
+    loadPanel.Visible=true
+    setProgress(0,0,"새 게임 시작 전 기존 저장 확인")
     task.spawn(function()
-      if player:GetAttribute("ProfileReady")~=true then
-        titleStatus.Text="저장 정보 연결 중 · 새 게임 준비"
-        local deadline=os.clock()+35
-        while entranceOpen and player:GetAttribute("ProfileReady")~=true
-          and os.clock()<deadline do task.wait(.1) end
+      local deadline=os.clock()+90
+      local retrySent=false
+      local retryStarted=0
+      while entranceOpen and player:GetAttribute("ProfileReady")~=true
+        and os.clock()<deadline do
+        local failed=player:GetAttribute("MeadowProfileLoadState")=="FAILED"
+        if failed and not retrySent then
+          retrySent=true
+          retryStarted=os.clock()
+          remote:FireServer("meadow:profile:retry")
+        elseif failed and retrySent and os.clock()-retryStarted>14 then
+          break
+        end
+        setProgress(0,0,failed and "저장 정보 복구 재시도" or "서버 저장 정보 연결 중")
+        task.wait(.2)
       end
       newGameWaiting=false
       if not entranceOpen then return end
       if player:GetAttribute("ProfileReady")~=true then
-        titleStatus.Text="서버 저장 정보 연결 지연 · 다시 시도해"
+        loadPanel.Visible=false
+        titlePanel.Visible=true
+        titleStatus.Text="서버 저장 정보 준비 실패 · 다시 시도해"
         return
       end
       if player:GetAttribute("SaveStatus")=="SESSION_ONLY" then
+        loadPanel.Visible=false
+        titlePanel.Visible=true
         titleStatus.Text="저장 연결 실패 · 기존 데이터 초기화 불가"
         return
       end
       if player:GetAttribute("MeadowProfileHadSave")~=true then
         loadRegion(true)
       else
+        loadPanel.Visible=false
         titlePanel.Visible=false
         confirmPanel.Visible=true
       end

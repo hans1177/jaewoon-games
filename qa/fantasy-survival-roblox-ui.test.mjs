@@ -641,3 +641,26 @@ test('guard and perfect parry reuse R15 high guard with server-confirmed cinemat
   assert.match(common,/function RobloxCommonVFX\.CreatePerfectParryFlash\(options\)/);
   assert.doesNotMatch(server,/defense\.guardUntil=now\+[3-9]/);
 });
+
+// [마력숲 입장 회귀] 저장된 진행도와 서버 준비가 어긋나도 모바일 첫 터치가 사라지지 않게 한다.
+test('fantasy saved game start shows progress and retries only a failed server profile',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const intro=client.slice(client.indexOf('  local function updateTitleStatus()'),client.indexOf('  replayButton.Activated:Connect(function()'));
+  const buttons=client.slice(client.indexOf('  replayButton.Activated:Connect(function()'),client.indexOf('end\n\n-- [마을 NPC 대화]'));
+  assert.match(server,/player:SetAttribute\("MeadowProfileLoadState","LOADING"\)/);
+  assert.match(server,/local restored,restoreReason=pcall\(function\(\)/);
+  assert.match(server,/persistenceAllowed\[player\]=false\s+profileBindingStarted\[player\]=nil\s+player:SetAttribute\("SaveStatus","SAVE_FAILED"\)/);
+  assert.match(server,/local activated,activateReason=pcall\(function\(\)/);
+  assert.match(server,/player:SetAttribute\("MeadowProfileLoadState","READY"\)\s+player:SetAttribute\("ProfileReady", true\)/);
+  assert.match(server,/if actionId=="meadow:profile:retry" then/);
+  assert.match(server,/player:GetAttribute\("MeadowProfileLoadState"\)~="FAILED"/);
+  assert.match(server,/if player:GetAttribute\("ProfileReady"\)~=true then return end/);
+  assert.match(intro,/player:GetAttributeChangedSignal\("MeadowProfileLoadState"\):Connect\(updateTitleStatus\)/);
+  assert.match(buttons,/continueButton\.Activated:Connect\(function\(\)[\s\S]*?loadRegion\(false\)/);
+  assert.match(buttons,/newButton\.Activated:Connect\(function\(\)[\s\S]*?loadPanel\.Visible=true/);
+  assert.match(intro,/local profileDeadline=os\.clock\(\)\+90/);
+  assert.match(intro,/remote:FireServer\("meadow:profile:retry"\)/);
+  assert.match(buttons,/if player:GetAttribute\("MeadowProfileHadSave"\)~=true then\s+loadRegion\(true\)\s+else\s+loadPanel\.Visible=false/);
+  assert.match(server,/if not store then error\("SURVIVAL_DATASTORE_UNAVAILABLE"\) end/);
+  assert.match(server,/return store:UpdateAsync\("player:"\.\.player\.UserId/);
+});

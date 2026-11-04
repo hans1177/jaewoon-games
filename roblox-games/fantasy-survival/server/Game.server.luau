@@ -3984,6 +3984,8 @@ local function onSurvivalPlayerAdded(player)
   if profileBindingStarted[player] then return end
   profileBindingStarted[player] = true
   player:SetAttribute("ProfileReady", false)
+  -- [프로필 준비 상태] 저장 데이터를 덮어쓰거나 서버 권한을 우회하지 않고 로드 오류를 표시한다.
+  player:SetAttribute("MeadowProfileLoadState","LOADING")
   local ok, saved = pcall(function()
     if not store then error("SURVIVAL_DATASTORE_UNAVAILABLE") end
     return store:GetAsync("player:" .. player.UserId)
@@ -4011,6 +4013,7 @@ local function onSurvivalPlayerAdded(player)
   persistenceAllowed[player] = validSaved
   player:SetAttribute("MeadowProfileHadSave",validSaved and typeof(saved)=="table")
   player:SetAttribute("MeadowNewGameResult","IDLE")
+  local restored,restoreReason=pcall(function()
   if validSaved and typeof(saved) == "table" then
     for key, fallback in pairs(Config.InitialState) do
       local value = saved[key]
@@ -4027,10 +4030,32 @@ local function onSurvivalPlayerAdded(player)
   else
     initializePlayer(player)
   end
+  end)
+  if not restored then
+    -- [저장 보호] 부분 복원 실패를 정상 프로필이라고 표시하거나 저장 가능으로 변경하지 않는다.
+    persistenceAllowed[player]=false
+    profileBindingStarted[player]=nil
+    player:SetAttribute("SaveStatus","SAVE_FAILED")
+    player:SetAttribute("MeadowProfileLoadState","FAILED")
+    warn("MEADOW_PROFILE_RESTORE_FAILED: "..tostring(restoreReason))
+    return
+  end
   player:SetAttribute("SaveStatus", validSaved and "READY" or "SESSION_ONLY")
-  meadowRpg.publishStats(player)
-  player:SetAttribute("MeadowStamina",100)
-  bindSurvivalHealth(player)
+  local activated,activateReason=pcall(function()
+    meadowRpg.publishStats(player)
+    player:SetAttribute("MeadowStamina",100)
+    bindSurvivalHealth(player)
+  end)
+  if not activated then
+    -- [복원 재시도] 필수 능력치/체력 연결 실패 시 시작을 막고 서버에 재요청할 수 있게 한다.
+    persistenceAllowed[player]=false
+    profileBindingStarted[player]=nil
+    player:SetAttribute("SaveStatus","SAVE_FAILED")
+    player:SetAttribute("MeadowProfileLoadState","FAILED")
+    warn("MEADOW_PROFILE_ACTIVATION_FAILED: "..tostring(activateReason))
+    return
+  end
+  player:SetAttribute("MeadowProfileLoadState","READY")
   player:SetAttribute("ProfileReady", true)
   broadcastSurvivalState(player)
   if resumePosition then
@@ -4065,7 +4090,20 @@ for _, player in ipairs(Players:GetPlayers()) do
   task.defer(onSurvivalPlayerAdded, player)
 end
 remote.OnServerEvent:Connect(function(player, actionId)
-  if typeof(actionId) ~= "string" or player:GetAttribute("ProfileReady") ~= true then return end
+  if typeof(actionId)~="string" then return end
+  -- [서버 프로필 재연결] 실패를 명시적으로 받은 같은 플레이어에 한해 기존 로더로 재시도한다.
+  -- 미완료 로드 동시 실행/요청 폭증/세이브 초기화는 금지하며 준비 전 게임 행동은 계속 거부한다.
+  if actionId=="meadow:profile:retry" then
+    if player:GetAttribute("ProfileReady")==true
+      or player:GetAttribute("MeadowProfileLoadState")~="FAILED"
+      or profileBindingStarted[player] then return end
+    local now=os.clock()
+    if now-(player:GetAttribute("MeadowProfileRetryAt") or -100)<8 then return end
+    player:SetAttribute("MeadowProfileRetryAt",now)
+    task.defer(onSurvivalPlayerAdded,player)
+    return
+  end
+  if player:GetAttribute("ProfileReady")~=true then return end
   if actionId=="meadow:enter-world" then
     -- 타이틀 입장이 끝난 세션만 종료 시점의 위치와 진행도를 저장한다.
     player:SetAttribute("MeadowEnteredWorld",true)
