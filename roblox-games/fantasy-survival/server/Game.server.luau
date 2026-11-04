@@ -155,8 +155,8 @@ local function createStartingMeadow()
   Lighting.Brightness = 2
   Lighting.Ambient = Color3.fromRGB(104,112,110)
   Lighting.OutdoorAmbient = Color3.fromRGB(148,153,134)
-  Lighting.EnvironmentDiffuseScale=.82
-  Lighting.EnvironmentSpecularScale=.13
+  Lighting.EnvironmentDiffuseScale=.94
+  Lighting.EnvironmentSpecularScale=.18
   Lighting.GlobalShadows=true
   Lighting.ShadowSoftness=.27
   Lighting.ExposureCompensation=.07
@@ -201,9 +201,9 @@ if not meadowColorGrade then
   meadowColorGrade.Parent=Lighting
 end
 meadowColorGrade.Enabled=true
-meadowColorGrade.Brightness=.025
-meadowColorGrade.Contrast=.12
-meadowColorGrade.Saturation=-.10
+meadowColorGrade.Brightness=.035
+meadowColorGrade.Contrast=.17
+meadowColorGrade.Saturation=.025
 local lastMeadowClimateTick=-1
 local lastMeadowWeather=""
 
@@ -223,7 +223,7 @@ local function updateMeadowClimate()
   -- [날씨+시야] 흐린 아침도 어두운 검정 바닥으로 뭉개지지 않도록 환경광 보존.
   local brightness=math.max(1.15,(1.08+1.18*sun)*damp)
   local lightColor=Color3.fromRGB(93,102,110):Lerp(Color3.fromRGB(151,158,146),sun)
-  local airColor=Color3.fromRGB(115,128,130):Lerp(Color3.fromRGB(171,175,157),sun)
+  local airColor=Color3.fromRGB(119,139,156):Lerp(Color3.fromRGB(181,192,178),sun)
   if weather=="STORM" or weather=="RAIN" then
     lightColor=lightColor:Lerp(Color3.fromRGB(74,86,99),weather=="STORM" and .6 or .35)
     airColor=airColor:Lerp(Color3.fromRGB(104,115,125),weather=="STORM" and .68 or .4)
@@ -246,16 +246,16 @@ local function updateMeadowClimate()
   meadowAtmosphere.Color=meadowAtmosphere.Color:Lerp(
     airColor:Lerp(meadowPalette.leaves,.11),.12)
   -- [중세 숲] 낮의 푸른 먹구름과 황혼의 따뜻한 등불 색 대비를 표현한다.
-  local tint=hour>=16.5 and hour<20.5 and Color3.fromRGB(218,196,172)
-    or period=="NIGHT" and Color3.fromRGB(171,192,205)
-    or period=="DAWN" and Color3.fromRGB(202,208,191)
-    or Color3.fromRGB(205,218,205)
+  local tint=hour>=16.5 and hour<20.5 and Color3.fromRGB(231,206,179)
+    or period=="NIGHT" and Color3.fromRGB(172,193,219)
+    or period=="DAWN" and Color3.fromRGB(211,215,195)
+    or Color3.fromRGB(221,231,220)
   if weather=="STORM" or weather=="RAIN" then
     tint=tint:Lerp(Color3.fromRGB(173,195,210),weather=="STORM" and .38 or .2)
   end
   meadowColorGrade.TintColor=meadowColorGrade.TintColor:Lerp(tint,.12)
-  local desiredContrast=weather=="FOG" and .08 or .12
-  local desiredSaturation=weather=="FOG" and -.16 or -.10
+  local desiredContrast=weather=="FOG" and .10 or .17
+  local desiredSaturation=weather=="FOG" and -.06 or .025
   meadowColorGrade.Contrast+=(desiredContrast-meadowColorGrade.Contrast)*.12
   meadowColorGrade.Saturation+=(desiredSaturation-meadowColorGrade.Saturation)*.12
   local cover=weather=="STORM" and .96 or weather=="RAIN" and .88
@@ -1526,6 +1526,21 @@ local function createMeadowVillage()
           end
           mesh.Reflectance=0
         end
+      end
+      -- [광장 파란 빛] 승인된 실물 우물 MeshPart에만 청색 조명을 추가한다.
+      -- 없는 수정 크리스털을 임의 파츠로 만들지 않는다.
+      local lightHost=well:FindFirstChildWhichIsA("MeshPart",true)
+      if lightHost then
+        local glow=lightHost:FindFirstChild("MeadowWellAzureGlow")
+        if not glow then
+          glow=Instance.new("PointLight")
+          glow.Name="MeadowWellAzureGlow"
+          glow.Parent=lightHost
+        end
+        glow.Color=Color3.fromRGB(83,183,244)
+        glow.Brightness=1.35
+        glow.Range=19
+        glow.Shadows=false
       end
       well:SetAttribute("MeadowVillageWellSurface","WEATHERED_STONE_OAK")
       villageWellReady=true
