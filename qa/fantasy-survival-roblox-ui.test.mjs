@@ -379,7 +379,7 @@ test('approved original art uses exclusive 2.5D foreground or background, never 
   assert.match(intro,/activeFarHazeTween=TweenService:Create\(storyFarHaze,/);
   assert.match(intro,/activeLightTween=TweenService:Create\(cinematicLight,/);
   assert.match(intro,/activeMistTween=TweenService:Create\(cinematicMist,/);
-  assert.match(intro,/setIntroPlayerHidden\(false\)/);
+  assert.match(client,/setIntroPlayerHidden\(false\)/);
   assert.match(intro,/ContentProvider"\):PreloadAsync\(ids\)/);
   assert.match(client,/storyArtwork\.ScaleType=Enum\.ScaleType\.Fit/);
   assert.match(client,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
