@@ -28,20 +28,13 @@
         "version": 1,
         "pass": true,
         "source": "design/deep-diver/2026-10-31/design-revised.json",
-        "date": "2026-10-31",
-        "releaseChecklist": {
-          "identity": true,
-          "coreLoop": true,
-          "sessionRules": true,
-          "signatureSystems": true,
-          "presentation": true
-        },
         "commonCoreReady": true,
         "platformProfiles": {
           "ROBLOX": true,
           "UNITY": true,
           "distinct": true
-        }
+        },
+        "migratedFromLegacy": false
       },
       "platformDesignProfiles": {
         "ROBLOX": {
@@ -59,7 +52,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-31T12:41:10.231Z",
-      "updatedAt": "2026-11-04T01:31:35.285Z",
+      "updatedAt": "2026-11-04T01:32:45.800Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -1373,7 +1366,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-04T01:32:13.539Z",
+      "updatedAt": "2026-11-04T01:32:46.218Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4130,12 +4123,21 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-04T01:30:10.352Z"
       },
-      "updatedAt": "2026-11-04T01:31:35.285Z",
+      "updatedAt": "2026-11-04T01:32:46.218Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
-      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
+      "sourceRootBootstrapRequired": false,
+      "legacyWebReference": {
+        "webSourcePath": null,
+        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+        "webValidationRequired": false,
+        "capturedAt": "2026-11-04T01:32:45.800Z"
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "daechung-rpg",
@@ -4219,12 +4221,21 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-04T01:30:10.352Z"
       },
-      "updatedAt": "2026-11-04T01:31:35.285Z",
+      "updatedAt": "2026-11-04T01:32:46.218Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
-      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
+      "sourceRootBootstrapRequired": false,
+      "legacyWebReference": {
+        "webSourcePath": null,
+        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+        "webValidationRequired": false,
+        "capturedAt": "2026-11-04T01:32:45.800Z"
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "horror-escape-room",
@@ -4308,12 +4319,21 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-04T01:30:10.352Z"
       },
-      "updatedAt": "2026-11-04T01:31:35.285Z",
+      "updatedAt": "2026-11-04T01:32:46.218Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
-      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
+      "sourceRootBootstrapRequired": false,
+      "legacyWebReference": {
+        "webSourcePath": null,
+        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+        "webValidationRequired": false,
+        "capturedAt": "2026-11-04T01:32:45.800Z"
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "forgotten-continent",
@@ -4373,12 +4393,21 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
       "enqueuedAt": "2026-11-04T01:30:10.352Z",
-      "updatedAt": "2026-11-04T01:31:35.285Z",
+      "updatedAt": "2026-11-04T01:32:46.218Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
-      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
+      "sourceRootBootstrapRequired": false,
+      "legacyWebReference": {
+        "webSourcePath": null,
+        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+        "webValidationRequired": false,
+        "capturedAt": "2026-11-04T01:32:45.800Z"
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "baeksu-war",
@@ -4462,15 +4491,24 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-04T01:30:10.352Z"
       },
-      "updatedAt": "2026-11-04T01:31:35.285Z",
+      "updatedAt": "2026-11-04T01:32:46.218Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
-      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
+      "sourceRootBootstrapRequired": false,
+      "legacyWebReference": {
+        "webSourcePath": null,
+        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+        "webValidationRequired": false,
+        "capturedAt": "2026-11-04T01:32:45.800Z"
+      },
+      "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-11-04T01:32:13.539Z",
+  "updatedAt": "2026-11-04T01:32:46.218Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
