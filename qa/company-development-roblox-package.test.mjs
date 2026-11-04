@@ -2359,7 +2359,8 @@ test('Forest title is created before blocking world waits and entry stays save-s
   assert.match(client,/local loadPanel=panel\("MeadowMapLoading",390,178\)/);
   assert.match(client,/setProgress\(0,0,"서버 및 저장 기록 확인"\)/);
   assert.match(client,/continueButton\.Active=true/);
-  assert.match(client,/local profileDeadline=os\.clock\(\)\+35/);
+  assert.match(client,/local profileDeadline=os\.clock\(\)\+90/);
+  assert.match(client,/remote:FireServer\("meadow:profile:retry"\)/);
   assert.match(client,/local newGameWaiting=false/);
   assert.match(client,/if player:GetAttribute\("SaveStatus"\)=="SESSION_ONLY" then/);
   assert.match(client,/remote:FireServer\("meadow:new-game:confirm"\)/);
