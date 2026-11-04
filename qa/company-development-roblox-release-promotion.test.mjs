@@ -788,8 +788,8 @@ test('approved Roblox games including exact fantasy candidate auto-retry only du
  const retry=workflow.slice(start,end);
  assert.ok(retry.includes('runs-on: ubuntu-slim'));
  assert.ok(retry.includes("github.event.schedule == '*/10 * * * *'"));
- assert.ok(retry.includes("new Set(['cozy-island','horror-escape-room','baeksu-war','daechung-rpg','fantasy-survival'])"));
- assert.ok(retry.includes('[[ "$GAME_ID" =~ ^(cozy-island|horror-escape-room|baeksu-war|daechung-rpg|fantasy-survival)$ ]]'));
+ assert.ok(retry.includes("new Set(['cozy-island','baeksu-war','daechung-rpg','fantasy-survival'])"));
+ assert.ok(retry.includes('[[ "$GAME_ID" =~ ^(cozy-island|baeksu-war|daechung-rpg|fantasy-survival)$ ]]'));
  assert.ok(retry.includes('Number(failure.candidateVersionNumber)===Number(candidate.versionNumber)'));
  assert.ok(retry.includes("item.robloxFoundationF0Passed===true"));
  assert.ok(retry.includes("candidate.published===true&&(candidate.validationOnly===true||("));

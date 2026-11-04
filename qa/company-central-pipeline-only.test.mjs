@@ -171,15 +171,14 @@ test('director recovery can only restart the central DEVELOPMENT_CONFIRMED runti
 });
 
 
-test('direct horror edits re-enter the canonical development flow',()=>{
+test('retired horror source edits do not wake the shared development queue',()=>{
   const reconcile=read('.github/workflows/company-development-queue-reconcile.yml');
   const central=read('.github/workflows/company-development-confirmed-runtime.yml');
-  assert.match(reconcile,/roblox-games\/horror-escape-room\/\*\*/);
-  assert.match(reconcile,/assets\/roblox\/midnight-manor\/\*\*/);
+  assert.doesNotMatch(reconcile,/roblox-games\/horror-escape-room\/\*\*/);
+  assert.doesNotMatch(reconcile,/assets\/roblox\/midnight-manor\/\*\*/);
+  assert.match(reconcile,/roblox-games\/\*\*\/default\.project\.json/);
   assert.match(reconcile,/git add -- development-queue\.json game-catalog\.json game-seed-state\.json/);
-  // Explicit, centrally authorized per-game exclusions are allowed; no hardcoded horror exclusion is.
   assert.match(central,/developmentSpeedExecution\?\.perGameFailureIsolation\?\.ownerExcludedGameIds/);
-  assert.doesNotMatch(central,/\['horror-escape-room'\]/);
 });
 
 test('development coordinator dedupes unfinished Roblox games across revisions without locking game execution',()=>{

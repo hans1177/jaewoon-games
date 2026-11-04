@@ -561,7 +561,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
         seedGameplaySketch:proposal.gameplaySketch,
         pendingSeedGrammarNotAuthored:false,
         originalMultiplayerMode:proposal.multiplayerDesignMode,
-        allGamesMultiplayerRequired:true,
+        ownerPreservationDesign:false,allGamesMultiplayerRequired:true,
         playableRequirements:designPlayabilityRequirements(seed,sourceText),
         designAssetFamilies:[],designAssetLibrary:null,
         seedFlowSystemBlueprint:{},factPack:{},fs,

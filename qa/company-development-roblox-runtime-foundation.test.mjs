@@ -201,7 +201,7 @@ test('official version-scoped game server observation distinguishes live instanc
 });
 
 test('official version-scoped server inspection fails closed for no server, denied permission or unknown schema',async()=>{
- const base={universeId:'10773436325',placeId:'108565970231899',versionNumber:132,apiKey:'k',networkRetryAttempts:1};
+ const base={universeId:'10773436325',placeId:'108565970231899',versionNumber:132,apiKey:'QA_SECRET_NEVER_PERSIST_F9_SCOPE_9B61D731',networkRetryAttempts:1};
  for(const [response,state,count] of [
   [Response.json({gameServers:[]}),'NO_ACTIVE_SERVER_ON_RESULT_PAGE',0],
   [new Response('',{status:403}),'GAME_SERVER_READ_PERMISSION_UNAVAILABLE',null],

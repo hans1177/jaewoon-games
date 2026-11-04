@@ -157,7 +157,10 @@ test('F9 requires gameplay product readiness and routes failures back to Vibe bu
   assert.match(workflow,/evaluateRobloxF9ProductReadiness/);
   assert.match(workflow,/ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS=/);
   assert.match(workflow,/productReadiness\.pass===true[\s\S]*item\.robloxFoundationF0Passed===true/);
-  assert.match(workflow,/const internalFlowNonBlocking=!studioPending&&!productBlocked&&\(/);
+  assert.match(workflow,/const productSourceDefect=/);
+  assert.match(workflow,/const externalObservationPending=productBlocked&&!productSourceDefect/);
+  assert.match(workflow,/const internalFlowNonBlocking=!studioPending&&!productSourceDefect&&\(/);
+  assert.match(workflow,/if\(productSourceDefect\)/);
   assert.match(workflow,/item\.robloxQualityBuildUpRequired=true/);
   assert.match(workflow,/item\.robloxQualityBuildUpSourceRevision=sourceRevision/);
   assert.match(workflow,/roblox-f9-gameplay-product-readiness-failure/);

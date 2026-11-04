@@ -1,18 +1,13 @@
 name: Roblox F0 Restart & Resync
 
-run-name: F0 restart · ${{ inputs.game_id || 'horror-escape-room' }}
+run-name: F0 restart · ${{ inputs.game_id }}
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/roblox-f0-restart.yml'
   workflow_dispatch:
     inputs:
       game_id:
         description: Exact Roblox gameId to rebind from current main and restart from F0
         required: true
-        default: horror-escape-room
         type: string
 
 permissions:
@@ -20,7 +15,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: roblox-f0-restart-${{ inputs.game_id || 'horror-escape-room' }}
+  group: roblox-f0-restart-${{ inputs.game_id }}
   cancel-in-progress: false
 
 jobs:
@@ -30,17 +25,25 @@ jobs:
     steps:
       - name: Validate exact game id
         env:
-          GAME_ID: ${{ inputs.game_id || 'horror-escape-room' }}
+          GAME_ID: ${{ inputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
           [[ "$GAME_ID" =~ ^[a-z0-9][a-z0-9-]{1,48}$ ]]
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const gameId=process.env.GAME_ID;
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          if(catalog.permanentRemovalPolicy?.ids?.includes(gameId)||
+             !catalog.games.some(game=>game.id===gameId&&game.lifecycleState==='ACTIVE'))
+            throw new Error('ROBLOX_F0_RESTART_GAME_NOT_ACTIVE');
+          NODE
           echo "ROBLOX_F0_RESTART_GAME_ID=$GAME_ID"
 
       - name: Restart canonical Roblox pipeline from current main
         env:
           GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ inputs.game_id || 'horror-escape-room' }}
+          GAME_ID: ${{ inputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
