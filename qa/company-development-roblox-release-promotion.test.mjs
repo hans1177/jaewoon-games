@@ -160,7 +160,8 @@ test('fantasy-survival foundation waits for actual meadow and gates core loop on
     'live server must bind the world, remote, and player state before input approval');
   assert.match(server,/while player.Parent==Players and gameWorld:GetAttribute\("MeadowOuterRegionReady"\)~=true/);
   assert.match(server,/player:SetAttribute\("ProfileReady", true\)/);
-  assert.match(server,/if typeof\(actionId\) ~= "string" or player:GetAttribute\("ProfileReady"\) ~= true then return end/);
+  assert.match(server,/if typeof\(actionId\)\s*~=\s*"string" then return end/);
+  assert.match(server,/if actionId=="meadow:profile:retry" then[\s\S]*?task\.defer\(onSurvivalPlayerAdded,player\)\s+return\s+end\s+if player:GetAttribute\("ProfileReady"\)\s*~=\s*true then return end\s+if actionId=="meadow:enter-world" then/);
   assert.match(server,/if actionId=="meadow:enter-world" then/);
   assert.match(server,/player:SetAttribute\("MeadowEnteredWorld",true\)/);
   assert.match(server,/if player:GetAttribute\("MeadowEnteredWorld"\)~=true then return false end/);
