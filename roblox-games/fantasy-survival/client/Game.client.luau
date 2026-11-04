@@ -1654,6 +1654,7 @@ local function layoutMeadowEnergy()
   meadowEnergy.Visible=visible
 end
 meadowVitalsGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowEnergy)
+player:GetAttributeChangedSignal("Level"):Connect(layoutMeadowEnergy) -- [시안 상태창] 레벨 변경 즉시 표시
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(layoutMeadowEnergy)
 layoutMeadowEnergy()
 
