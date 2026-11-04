@@ -219,7 +219,7 @@ if '--game-id=fantasy-survival' in sys.argv:
      or cape.get('parentSourceFile')!='unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCape.obj'
      or cape.get('parentSourceGitBlob')!='6a011e694414ae3a5ef03d348158fdfbef9da93a'
      or cape.get('license')!='PROJECT_ORIGINAL'
-     or cape.get('meshVersion')!=1 or not cape_path.is_file()):
+     or cape.get('meshVersion')!=2 or cape.get('length')!='HIP_LENGTH' or not cape_path.is_file()):
   raise RuntimeError('FOREST_WORN_CAPE_PROJECT_ORIGINAL_APPROVAL_REQUIRED')
  cape_bytes=cape_path.read_bytes()
  cape_digest=hashlib.sha256(cape_bytes).hexdigest()
