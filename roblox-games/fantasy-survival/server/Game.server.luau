@@ -4241,36 +4241,99 @@ local function bindNativeFoundationCharacter(character)
 end
 local function bindNativeFoundationPlayer(player)
   player.RespawnLocation = nativeFoundationSpawn
-  -- [오프닝 망토] 기존 R15 외형을 보존하고 정식 Roblox 뒤 장신구만 추가한다.
-  -- 캐릭터가 리스폰해도 기존 Roblox 아바타 로딩 경로에서 다시 적용한다.
+  -- [오프닝 망토] 캐릭터가 생성된 바로 그 회차에서 기본 외형 로딩을 기다린다.
+  -- CharacterAppearanceLoaded만 기다리면 기존 캐릭터나 빨리 로딩된 캐릭터를 놓칠 수 있다.
   local function applyOpeningCape(character)
-    if player.Character ~= character or not character.Parent then return end
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if not humanoid or humanoid.Health <= 0 then return end
-    local capeId = tostring(Config.OpeningCapeAccessoryId or "")
-    if capeId == "" or capeId == "0" then return end
+    local humanoid = character:WaitForChild("Humanoid", 10)
+    if player.Character ~= character or not humanoid or humanoid.Health <= 0 then return end
+    if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+      warn("마력숲 오프닝 망토 장착 불가: R15 아바타 필요")
+      return
+    end
+    local deadline = os.clock() + 8
+    while player.Character == character and not player:HasAppearanceLoaded() and os.clock() < deadline do
+      task.wait(.15)
+    end
+    if player.Character ~= character or humanoid.Health <= 0 then return end
+    task.wait() -- Roblox 기본 아바타 장신구 삽입과 같은 프레임에 겹치지 않는다.
+    local capeId = tonumber(Config.OpeningCapeAccessoryId)
+    if not capeId or capeId <= 0 then
+      warn("마력숲 오프닝 망토 에셋 ID 누락")
+      return
+    end
+    local description
     local ok, reason = pcall(function()
-      local appearance = humanoid:GetAppliedDescription()
-      local worn = appearance.BackAccessory or ""
-      if not string.find("," .. worn .. ",", "," .. capeId .. ",", 1, true) then
-        appearance.BackAccessory = worn == "" and capeId or (worn .. "," .. capeId)
-        humanoid:ApplyDescriptionAsync(appearance)
+      description = humanoid:GetAppliedDescription()
+      local accessories = description:GetAccessories(true)
+      local alreadyListed = false
+      for _, accessory in ipairs(accessories) do
+        if accessory.AssetId == capeId then
+          alreadyListed = true
+          break
+        end
       end
-      appearance:Destroy()
+      if not alreadyListed then
+        -- 기존 아바타의 레이어드 의상과 다른 장신구는 모두 보존한다.
+        -- 단단한 Back 장신구는 Order 없이 SetAccessories(true)에 전달해야 한다.
+        accessories[#accessories + 1] = {
+          AssetId = capeId,
+          AccessoryType = Enum.AccessoryType.Back,
+        }
+        description:SetAccessories(accessories, true)
+      end
+      local attached = false
+      for _, accessory in ipairs(humanoid:GetAccessories()) do
+        if accessory.Name == "Dark Green Wide Cape" then
+          local handle = accessory:FindFirstChild("Handle")
+          attached = handle ~= nil and handle:FindFirstChild("AccessoryWeld") ~= nil
+          if attached then break end
+        end
+      end
+      if not attached then
+        humanoid:ApplyDescriptionAsync(description)
+        -- 외형은 기록됐어도 실제 장신구 메시가 누락되면 공식 리셋으로 1회 재생성한다.
+        attached = false
+        for _, accessory in ipairs(humanoid:GetAccessories()) do
+          if accessory.Name == "Dark Green Wide Cape" then
+            local handle = accessory:FindFirstChild("Handle")
+            attached = handle ~= nil and handle:FindFirstChild("AccessoryWeld") ~= nil
+            if attached then break end
+          end
+        end
+        if not attached and player.Character == character then
+          humanoid:ApplyDescriptionResetAsync(description)
+        end
+      end
     end)
-    if not ok then warn("마력숲 오프닝 망토 다운로드/착용 실패: " .. tostring(reason)) end
-  end
-  player.CharacterAppearanceLoaded:Connect(applyOpeningCape)
-  if player.Character then
-    task.defer(bindNativeFoundationCharacter, player.Character)
-    if player:HasAppearanceLoaded() then
-      task.defer(applyOpeningCape, player.Character)
+    if description then description:Destroy() end
+    if player.Character ~= character then return end
+    if not ok then
+      warn("마력숲 오프닝 망토 다운로드/착용 실패: " .. tostring(reason))
+      character:SetAttribute("OpeningCapeAttached", false)
+      return
+    end
+    -- 명세상 착용 성공이 아니라 실제 Handle 용접이 보일 때만 착용 완료로 기록한다.
+    local attached = false
+    for _, accessory in ipairs(humanoid:GetAccessories()) do
+      if accessory.Name == "Dark Green Wide Cape" then
+        local handle = accessory:FindFirstChild("Handle")
+        attached = handle ~= nil and handle:FindFirstChild("AccessoryWeld") ~= nil
+        if attached then break end
+      end
+    end
+    character:SetAttribute("OpeningCapeAttached", attached)
+    if not attached then
+      warn("마력숲 오프닝 망토 메시 또는 장착 연결 확인 실패: " .. tostring(capeId))
     end
   end
-  player.CharacterAdded:Connect(function(character)
+  local function onCharacterAdded(character)
     player.RespawnLocation = nativeFoundationSpawn
     bindNativeFoundationCharacter(character)
-  end)
+    -- 스폰·부활 모두 외형 로딩 경로를 보존한 뒤 한 번만 망토 착용을 시도한다.
+    task.spawn(applyOpeningCape, character)
+  end
+  player.CharacterAdded:Connect(onCharacterAdded)
+  if player.Character then task.defer(onCharacterAdded, player.Character) end
 end
 Players.PlayerAdded:Connect(bindNativeFoundationPlayer)
 for _, nativeFoundationPlayer in ipairs(Players:GetPlayers()) do
