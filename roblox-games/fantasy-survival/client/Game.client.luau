@@ -19,6 +19,38 @@ local ContextActionService = game:GetService("ContextActionService")
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
+-- [2.5D 카메라 / 메인] 실제 승인된 3D 메시를 고정 원근 경사 시점에서 보여준다.
+-- Roblox 이동·터치 조이스틱과 서버 전투/진행/저장 권한은 그대로 유지한다.
+local paintedCameraFrame=nil
+game:GetService("RunService"):BindToRenderStep("MeadowPainted25DCamera",
+  Enum.RenderPriority.Camera.Value+1,function(dt)
+    if player:GetAttribute("MeadowEnteredWorld")~=true then
+      paintedCameraFrame=nil
+      return
+    end
+    local character=player.Character
+    local root=character and character:FindFirstChild("HumanoidRootPart")
+    local human=character and character:FindFirstChildOfClass("Humanoid")
+    local camera=workspace.CurrentCamera
+    if not camera or not root or not human or human.Health<=0 then
+      paintedCameraFrame=nil
+      return
+    end
+    local portrait=camera.ViewportSize.Y>camera.ViewportSize.X
+    local offset=portrait and Vector3.new(21,27,35) or Vector3.new(24,23,34)
+    local focus=root.Position+Vector3.new(0,2.5,0)+root.CFrame.LookVector*1.7
+    local wanted=CFrame.lookAt(focus+offset,focus)
+    if not paintedCameraFrame or (paintedCameraFrame.Position-wanted.Position).Magnitude>75 then
+      paintedCameraFrame=wanted
+    else
+      paintedCameraFrame=paintedCameraFrame:Lerp(wanted,1-math.exp(-math.clamp(dt,0,.08)*7))
+    end
+    if camera.CameraType~=Enum.CameraType.Scriptable then
+      camera.CameraType=Enum.CameraType.Scriptable
+    end
+    camera.CFrame=paintedCameraFrame
+    camera.FieldOfView=portrait and 48 or 51
+  end)
 local CommonUI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
@@ -3021,6 +3053,8 @@ do
       gui.Enabled=true
       meadowVitalsGui.Enabled=true
       arrivalControls(true)
+      -- [입장/복구] 첫 플레이와 이어하기 모두 게임화면에서만 2.5D 시점을 활성화한다.
+      player:SetAttribute("MeadowEnteredWorld",true)
       if arrivalGui.Parent then arrivalGui:Destroy() end
     end
     if not showVillageReveal then finishArrival();return end
@@ -3111,9 +3145,6 @@ do
         if originalFieldOfView then camera.FieldOfView=originalFieldOfView end
       end
       finishArrival()
-      -- [첫 마을 실제 캐릭터 등장] 검증된 캐릭터로 돌아온 바로 그 순간 바람을 재생한다.
-      -- 속도와 전투·저장은 변경하지 않으며 기존 망토 렌더러에서만 처리한다.
-      player:SetAttribute("MeadowEnteredWorld",true)
     end
     skipReveal.Activated:Connect(finishReveal)
     task.spawn(function()
@@ -3239,18 +3270,29 @@ do
     }
     local total=0
     for _,scene in ipairs(scenes) do total+=scene.seconds end
-    -- [월드 표시] 2D 원화·가짜 깊이 레이어·입자는 전부 숨겨 게임 월드가 실제 보이게 한다.
-    backdrop.BackgroundTransparency=1
-    introPanel.BackgroundTransparency=1
-    introTint.BackgroundTransparency=.96
-    storyVision.Visible=false
+    -- [오프닝 원화] 기존 승인 12장과 같은 장면의 전경 11개를 다시 활성화한다.
+    -- 3D 카메라·실제 NPC 촬영은 계속 유지하며 원화만 전경 레이어로 더한다.
+    backdrop.BackgroundTransparency=.08
+    introPanel.BackgroundTransparency=.12
+    introTint.BackgroundTransparency=.86
+    storyVision.Visible=true
     storyArtwork.Visible=false
     storyForeground.Visible=false
-    storyArtwork.Image=""
-    storyForeground.Image=""
     cinematicShadow.Visible=false
     cinematicMist.Visible=false
     for _,spark in ipairs(cinematicParticles) do spark.Visible=false end
+    task.defer(function()
+      local ids={}
+      for _,id in ipairs(Config.CinematicIntroSceneIds or {}) do
+        if type(id)=="string" then ids[#ids+1]=id end
+      end
+      for _,id in pairs(Config.CinematicIntroForegroundIds or {}) do
+        if type(id)=="string" then ids[#ids+1]=id end
+      end
+      if #ids>0 then
+        pcall(function() game:GetService("ContentProvider"):PreloadAsync(ids) end)
+      end
+    end)
     storyCurtain.BackgroundColor3=Color3.fromRGB(5,8,11)
     storyCurtain.BackgroundTransparency=0
     storyProgress.Size=UDim2.fromScale(0,1)
@@ -3370,11 +3412,88 @@ do
         if activeAmbienceTween then activeAmbienceTween:Cancel();activeAmbienceTween=nil end
         if activeEffectsTween then activeEffectsTween:Cancel();activeEffectsTween=nil end
 
-        -- [장면 시작] 완전히 어두운 장막 뒤에서 실물 카메라 컷을 변경한다.
+        -- [장면별 2.5D] 승인 원화의 뒤/앞 레이어에 서로 다른 시차와 조명을 부여한다.
+        -- 원화는 Fit 배치라서 얼굴·망토를 억지로 확대하거나 잘라내지 않는다.
         storyCurtain.BackgroundTransparency=0
-        storyArtwork.Visible=false
-        storyForeground.Visible=false
-        storyVision.Visible=false
+        for _,motion in ipairs({activeStoryFocusTween,activeStoryRevealTween,
+          activeStoryColorTween,activeArtImpactTween,activeActorGestureTween,
+          activeActorEraseTween,activeShadowTween,activeMistTween}) do
+          if motion then motion:Cancel() end
+        end
+        for _,motion in ipairs(activeParticleTweens) do motion:Cancel() end
+        table.clear(activeParticleTweens)
+        local artworkId=(Config.CinematicIntroSceneIds or {})[index]
+        local foregroundId=(Config.CinematicIntroForegroundIds or {})[index]
+        local artworkAvailable=type(artworkId)=="string" and artworkId:match("^rbxassetid://%d+$")~=nil
+        local foregroundAvailable=artworkAvailable and type(foregroundId)=="string"
+          and foregroundId:match("^rbxassetid://%d+$")~=nil
+        storyArtwork.Visible=artworkAvailable
+        storyArtwork.Image=artworkAvailable and artworkId or ""
+        storyArtwork.ImageTransparency=1
+        storyArtwork.Rotation=0
+        storyForeground.Visible=foregroundAvailable
+        storyForeground.Image=foregroundAvailable and foregroundId or ""
+        storyForeground.ImageTransparency=1
+        storyForeground.Rotation=0
+        storyVision.Visible=artworkAvailable
+        layoutIntroCaptions()
+        local artFrom=storyArtwork.Position
+        local foreFrom=storyForeground.Position
+        local direction=index%2==0 and -1 or 1
+        storyArtwork.Position=artFrom+UDim2.fromScale(-direction*.010,.003)
+        storyForeground.Position=foreFrom+UDim2.fromScale(direction*.012,-.005)
+        local artDuration=math.max(1,scene.seconds-.5)
+        if artworkAvailable then
+          activeStoryFocusTween=TweenService:Create(storyArtwork,
+            TweenInfo.new(artDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+              Position=artFrom+UDim2.fromScale(direction*.011,-.005),
+              Rotation=direction*.5,
+            })
+          activeStoryRevealTween=TweenService:Create(storyArtwork,
+            TweenInfo.new(.8,Enum.EasingStyle.Sine),{ImageTransparency=.025})
+          activeStoryFocusTween:Play()
+          activeStoryRevealTween:Play()
+        end
+        if foregroundAvailable then
+          activeActorGestureTween=TweenService:Create(storyForeground,
+            TweenInfo.new(artDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+              Position=foreFrom+UDim2.fromScale(-direction*.016,.006),
+              Rotation=-direction*.75,
+            })
+          activeActorEraseTween=TweenService:Create(storyForeground,
+            TweenInfo.new(.95,Enum.EasingStyle.Sine),{ImageTransparency=.08})
+          activeActorGestureTween:Play()
+          activeActorEraseTween:Play()
+        end
+        -- [빛·대기 원화 보정] 실제 배경/캐릭터 새 파츠 없이 그림자와 안개의 깊이만 애니메이션.
+        cinematicShadow.Visible=artworkAvailable and not reducedEffects
+        cinematicMist.Visible=artworkAvailable
+        cinematicShadow.Position=UDim2.fromScale(-.65,.5)
+        cinematicMist.Position=UDim2.fromScale(-.035,.86)
+        activeShadowTween=TweenService:Create(cinematicShadow,
+          TweenInfo.new(artDuration,Enum.EasingStyle.Sine),{
+            Position=UDim2.fromScale(1.60,.5)})
+        activeMistTween=TweenService:Create(cinematicMist,
+          TweenInfo.new(artDuration,Enum.EasingStyle.Sine),{
+            Position=UDim2.fromScale(.045,.79)})
+        if cinematicShadow.Visible then activeShadowTween:Play() end
+        if cinematicMist.Visible then activeMistTween:Play() end
+        for n,spark in ipairs(cinematicParticles) do
+          spark.Visible=artworkAvailable and (not reducedEffects or n<=6)
+          if spark.Visible then
+            spark.BackgroundColor3=(scene.cinema=="dawn" or scene.cinema=="journey")
+              and Color3.fromRGB(173,221,183) or Color3.fromRGB(226,168,112)
+            spark.Position=UDim2.fromScale((n*37%99)/100,.66+(n*13%29)/100)
+            local particleTween=TweenService:Create(spark,
+              TweenInfo.new(artDuration,Enum.EasingStyle.Linear),{
+                Position=spark.Position+UDim2.fromScale(direction*.013,-.065),
+                BackgroundTransparency=.96,
+              })
+            spark.BackgroundTransparency=.44
+            activeParticleTweens[#activeParticleTweens+1]=particleTween
+            particleTween:Play()
+          end
+        end
         local focus,focusSubject=sceneFocus(scene)
         -- [월드 원형 강조] 기존 모델을 변경하지 않고 촬영 중 로컬 윤곽만 비춘다.
         if activeSubjectHighlight then activeSubjectHighlight:Destroy();activeSubjectHighlight=nil end
