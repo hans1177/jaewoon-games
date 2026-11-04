@@ -6906,6 +6906,7 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
 end)
 -- [스킬 모션 지역 범위] 기존 서버 승인 신호·관절 제어를 한 영역으로 묶어 레지스터를 절약한다.
 do
+local function connectMeadowSkillMotion()
 -- Original Roblox 61-motion library: cast, guard, parry, dodge, craft,
 -- gather and emote use only available R15 joints and server-approved actions.
 -- Existing Animator continues driving walk/run/jump underneath visual overlays.
@@ -7167,6 +7168,8 @@ RunService.PreSimulation:Connect(function(dt)
   end
   skillMotionR15.Step(skillMotionR15Targets,dt)
 end)
+end
+connectMeadowSkillMotion()
 end -- [스킬 모션 지역 범위 종료] 전투 콤보 감시자는 별도로 유지한다.
 
 RunService.PreSimulation:Connect(function(dt)
