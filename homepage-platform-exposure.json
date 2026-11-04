@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-11-04T12:50:36.528Z",
+  "generatedAt": "2026-11-04T12:54:05.811Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -166,13 +166,13 @@
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
             "currentFloor": "F0_BEFORE_SOURCE_BIND",
             "stage": "TARGET_PLATFORM_SOURCE_BIND",
-            "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-11-04T12:38:15.205Z",
-            "checkedAt": "2026-11-04T12:39:57.208Z",
-            "lastFailureAt": "2026-11-04T12:38:15.205Z",
+            "result": "PRE_F0_OR_PENDING",
+            "verifiedAt": null,
+            "checkedAt": "2026-11-04T12:53:53.088Z",
+            "lastFailureAt": null,
             "f0PassedAt": null,
             "candidatePublishedAt": null,
-            "failureCode": "existing-source-tree-missing",
+            "failureCode": null,
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -272,7 +272,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-04T12:39:57.208Z"
+      "updatedAt": "2026-11-04T12:53:53.088Z"
     },
     {
       "gameId": "bug-defense",
@@ -536,7 +536,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-04T12:34:55.365Z"
+      "updatedAt": "2026-11-04T12:53:53.088Z"
     },
     {
       "gameId": "cat-step",
@@ -955,13 +955,13 @@
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
             "currentFloor": "F0_BEFORE_SOURCE_BIND",
             "stage": "TARGET_PLATFORM_SOURCE_BIND",
-            "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-11-04T12:38:15.205Z",
-            "checkedAt": "2026-11-04T12:39:57.208Z",
-            "lastFailureAt": "2026-11-04T12:38:15.205Z",
+            "result": "PRE_F0_OR_PENDING",
+            "verifiedAt": null,
+            "checkedAt": "2026-11-04T12:53:53.088Z",
+            "lastFailureAt": null,
             "f0PassedAt": null,
             "candidatePublishedAt": null,
-            "failureCode": "existing-source-tree-missing",
+            "failureCode": null,
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -1061,7 +1061,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-04T12:39:57.208Z"
+      "updatedAt": "2026-11-04T12:53:53.088Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -1084,13 +1084,13 @@
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
             "currentFloor": "F0_BEFORE_SOURCE_BIND",
             "stage": "TARGET_PLATFORM_SOURCE_BIND",
-            "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-11-04T12:38:15.205Z",
-            "checkedAt": "2026-11-04T12:39:57.208Z",
-            "lastFailureAt": "2026-11-04T12:38:15.205Z",
+            "result": "PRE_F0_OR_PENDING",
+            "verifiedAt": null,
+            "checkedAt": "2026-11-04T12:53:53.088Z",
+            "lastFailureAt": null,
             "f0PassedAt": null,
             "candidatePublishedAt": null,
-            "failureCode": "existing-source-tree-missing",
+            "failureCode": null,
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -1190,7 +1190,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-04T12:39:57.208Z"
+      "updatedAt": "2026-11-04T12:53:53.088Z"
     },
     {
       "gameId": "deep-diver",
@@ -1215,7 +1215,7 @@
             "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
             "result": "REPAIR_REQUIRED",
             "verifiedAt": "2026-11-03T08:01:19.244Z",
-            "checkedAt": "2026-11-04T12:39:57.208Z",
+            "checkedAt": "2026-11-04T12:53:52.627Z",
             "lastFailureAt": "2026-11-03T08:01:19.244Z",
             "f0PassedAt": null,
             "candidatePublishedAt": null,
@@ -1232,13 +1232,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1246,6 +1246,7 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1288,13 +1289,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1302,6 +1303,7 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1320,7 +1322,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-04T12:39:57.208Z"
+      "updatedAt": "2026-11-04T12:53:52.627Z"
     },
     {
       "gameId": "defense",
@@ -1737,11 +1739,11 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "REPAIR_REQUIRED",
-            "stage": "REPAIR_REQUIRED",
+            "currentFloor": "F0_BEFORE_SOURCE_BIND",
+            "stage": "TARGET_PLATFORM_SOURCE_BIND",
             "result": "REPAIR_REQUIRED",
             "verifiedAt": "2026-11-04T12:40:49.459Z",
-            "checkedAt": "2026-11-04T12:40:49.459Z",
+            "checkedAt": "2026-11-04T12:53:53.088Z",
             "lastFailureAt": "2026-11-04T12:40:49.459Z",
             "f0PassedAt": "2026-11-04T12:31:47.262Z",
             "candidatePublishedAt": null,
@@ -1845,7 +1847,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-04T12:40:49.459Z"
+      "updatedAt": "2026-11-04T12:53:53.088Z"
     },
     {
       "gameId": "fifty-days",
@@ -2132,13 +2134,13 @@
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
             "currentFloor": "F0_BEFORE_SOURCE_BIND",
             "stage": "TARGET_PLATFORM_SOURCE_BIND",
-            "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-11-04T12:38:15.205Z",
-            "checkedAt": "2026-11-04T12:39:57.208Z",
-            "lastFailureAt": "2026-11-04T12:38:15.205Z",
+            "result": "PRE_F0_OR_PENDING",
+            "verifiedAt": null,
+            "checkedAt": "2026-11-04T12:53:53.088Z",
+            "lastFailureAt": null,
             "f0PassedAt": null,
             "candidatePublishedAt": null,
-            "failureCode": "existing-source-tree-missing",
+            "failureCode": null,
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -2239,7 +2241,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-04T12:39:57.208Z"
+      "updatedAt": "2026-11-04T12:53:53.088Z"
     },
     {
       "gameId": "gem-survivor",
@@ -2394,13 +2396,13 @@
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
             "currentFloor": "F0_BEFORE_SOURCE_BIND",
             "stage": "TARGET_PLATFORM_SOURCE_BIND",
-            "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-11-04T12:38:15.205Z",
-            "checkedAt": "2026-11-04T12:39:57.208Z",
-            "lastFailureAt": "2026-11-04T12:38:15.205Z",
+            "result": "PRE_F0_OR_PENDING",
+            "verifiedAt": null,
+            "checkedAt": "2026-11-04T12:53:53.088Z",
+            "lastFailureAt": null,
             "f0PassedAt": null,
             "candidatePublishedAt": null,
-            "failureCode": "existing-source-tree-missing",
+            "failureCode": null,
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -2495,7 +2497,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-04T12:39:57.208Z"
+      "updatedAt": "2026-11-04T12:53:53.088Z"
     },
     {
       "gameId": "human-go",
@@ -4368,7 +4370,7 @@
             "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
             "result": "REPAIR_REQUIRED",
             "verifiedAt": "2026-11-04T12:44:42.960Z",
-            "checkedAt": "2026-11-04T12:44:42.960Z",
+            "checkedAt": "2026-11-04T12:53:53.088Z",
             "lastFailureAt": "2026-11-04T12:44:42.960Z",
             "f0PassedAt": null,
             "candidatePublishedAt": null,
@@ -4473,7 +4475,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-04T12:44:42.960Z"
+      "updatedAt": "2026-11-04T12:53:53.088Z"
     },
     {
       "gameId": "seed-casual-realm-weaver",
