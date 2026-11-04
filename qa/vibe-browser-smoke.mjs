@@ -918,6 +918,49 @@ try{
    console.log('WILD_SURVIVAL_LIVE_WEBGL_3D_AND_MOVEMENT=PASS');
    await game.close();
  }
+ // 숲의 끝: 실제 공개 모바일 화면에서 3D 이동·조이스틱·제작·인벤토리를 검사한다.
+ if(liveBase&&testedSourceTrees['forest-survival']){
+  activeGameId='forest-survival';
+  const game=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const exceptions=[];
+  game.on('pageerror',error=>exceptions.push(error.message));
+  try{
+   const response=await game.goto(liveBase+'web-games/forest-survival/',{waitUntil:'domcontentloaded',timeout:30000});
+   assert.equal(response?.status(),200,'FOREST_SURVIVAL_PUBLIC_ROUTE_404');
+   await game.waitForFunction(()=>!document.querySelector('#solo')?.disabled,null,{timeout:50000});
+   assert.equal(await game.locator('#rest').count(),0,'FOREST_SURVIVAL_REST_BUTTON_REMAINED');
+   await game.locator('#solo').click();
+   await game.waitForFunction(()=>Number(document.body.dataset.webglFrames)>5,null,{timeout:20000});
+   const actual3D=await game.evaluate(()=>{
+    const canvas=document.querySelector('#world'),gl=canvas?.getContext('webgl2');
+    return !!gl&&gl instanceof WebGL2RenderingContext&&canvas.clientWidth>0&&canvas.clientHeight>0;
+   });
+   assert.equal(actual3D,true,'FOREST_SURVIVAL_MOBILE_WEBGL2_NOT_DRAWING');
+   const canvas=game.locator('#world'),before=await canvas.screenshot();
+   await game.keyboard.down('d');await game.waitForTimeout(1100);await game.keyboard.up('d');
+   const afterKey=await canvas.screenshot();
+   assert.equal(before.equals(afterKey),false,'FOREST_SURVIVAL_KEYBOARD_MOVEMENT_NOT_RENDERED');
+   const joy=await game.locator('#joy').boundingBox();
+   assert.ok(joy,'FOREST_SURVIVAL_JOYSTICK_MISSING');
+   await game.mouse.move(joy.x+joy.width/2,joy.y+joy.height/2);
+   await game.mouse.down();
+   await game.mouse.move(joy.x+joy.width/2+25,joy.y+joy.height/2);
+   await game.waitForTimeout(650);await game.mouse.up();
+   const afterTouch=await canvas.screenshot();
+   assert.equal(afterKey.equals(afterTouch),false,'FOREST_SURVIVAL_JOYSTICK_MOVEMENT_NOT_RENDERED');
+   await game.locator('#craft').click();
+   assert.equal(await game.locator('#bag').evaluate(el=>el.classList.contains('show')),true,'FOREST_SURVIVAL_CRAFT_PANEL_NOT_OPEN');
+   assert.match(await game.locator('#craftStone').innerText(),/나무 3 \/ 돌 2/,'FOREST_SURVIVAL_STONE_RECIPE_UNCLEAR');
+   assert.match(await game.locator('#craftIron').innerText(),/철광석 2 \/ 나무 1/,'FOREST_SURVIVAL_IRON_RECIPE_UNCLEAR');
+   await game.locator('#bagClose').click();
+   await game.locator('#inventory').click();
+   assert.equal((await game.locator('#bagGrid').innerText()).includes('철광석'),true,'FOREST_SURVIVAL_IRON_INVENTORY_MISSING');
+   await game.locator('#bagClose').click();
+   assert.deepEqual(exceptions,[],'FOREST_SURVIVAL_UNCAUGHT_PAGE_ERRORS');
+   observedGames.add('forest-survival');
+   console.log('FOREST_SURVIVAL_MOBILE_3D_MOVEMENT_JOYSTICK_CRAFT_INVENTORY=PASS');
+  }finally{await game.close();}
+ }
  if(liveBase){
   const finalManifestResponse=await page.request.get(liveBase+'web-games/publish-manifest.json');
   assert.ok(finalManifestResponse.ok(),'POST_PUBLISH_FINAL_MANIFEST_HTTP');
