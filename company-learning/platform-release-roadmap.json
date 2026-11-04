@@ -30885,6 +30885,13 @@
       ],
       "chatExecution": {
         "chatgptDirectCoding": true,
+        "ownerDirectedGitHubGameSourceEditAllowed": true,
+        "ownerDirectedEditScope": "EXPLICIT_OWNER_CHAT_GAME_SOURCE_REQUEST_ONLY",
+        "ownerDirectedEditUsesExistingResponsibleFiles": true,
+        "ownerDirectedEditMayProceedBeforeVibeQueueApproval": true,
+        "ownerDirectedMainIntegration": "EXISTING_CANONICAL_OWNER_AUTHORIZED_MAIN_MERGE",
+        "ownerDirectedEditDoesNotGrantAutonomousWorkerDirectMainWrite": true,
+        "ownerDirectedEditRetainsCentralPreflightSecurityAndF0F9ReleaseGates": true,
         "explicitOwnerActionWords": [
           "진행",
           "적용",
