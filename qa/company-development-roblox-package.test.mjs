@@ -1790,7 +1790,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   // [장비 회귀] 실제 서버 재화·장비 목록은 클라이언트에서 표시만 하고 서버가 제작·저장한다.
   assert.ok(client.includes('inventoryGrid.Name="MeadowInventoryGrid"'));
   assert.ok(!client.includes('inventoryQuick.Name="MeadowInventoryQuick"'), 'left pocket shortcut must be removed');
-  assert.ok(client.includes('meadowMenu.open(5)end'), 'quest helper shortcut remains');
+  assert.ok(client.includes('if meadowTutorialAdvance then meadowTutorialAdvance(2) end'), 'quest helper input advances the tutorial');
   assert.ok(client.includes('characterShortcut.Activated:Connect(function()meadowMenu.open(1)end)'), 'character shortcut opens original character page');
   assert.ok(client.includes('hideMenuButton=true'), 'redundant left menu stays hidden');
   assert.ok(client.includes('pages=meadowPages'), 'inventory page remains inside original menu');
