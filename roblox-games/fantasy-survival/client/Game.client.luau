@@ -1503,6 +1503,12 @@ for index=1,10 do
   icon.Position=UDim2.fromScale(.11,.11)
   icon.ZIndex=26
   icon.Parent=slot
+  task.delay(5,function()
+    if not icon.Parent or icon.IsLoaded then return end
+    icon.ImageRectSize=Vector2.new(40,40)
+    icon.ImageRectOffset=Vector2.new((index-1)*40,0)
+    icon.Image="rbxassetid://71333073665947"
+  end)
   local quantity=Instance.new("TextLabel")
   quantity.Name="ItemCount"
   quantity.Text=""
@@ -5042,6 +5048,20 @@ local function applyMeadowRightActionImage(button,role)
   icon.ZIndex=20
   icon.Active=false;icon.Interactable=false
   icon.Parent=button
+  if paintedX then
+    task.delay(5,function()
+      if not icon.Parent or icon.IsLoaded then return end
+      if role=="jump" then
+        icon.Visible=false
+        button.Text="↑"
+        button.TextSize=28
+      else
+        icon.ImageRectOffset=Vector2.new(atlasX,0)
+        icon.ImageRectSize=Vector2.new(40,40)
+        icon.Image="rbxassetid://81665484719308"
+      end
+    end)
+  end
   return true
 end
 -- [시안 이름표] 어두운 화면에서도 스킬명이 가려지지 않도록 버튼 아래 별도 검정·금색 이름표를 둔다.
@@ -5190,6 +5210,12 @@ swordIcon.Position=UDim2.fromScale(.12,.1)
 swordIcon.Size=UDim2.fromScale(.78,.78)
 swordIcon.ZIndex=20
 swordIcon.Parent=meadowPrimarySword
+task.delay(5,function()
+  if not swordIcon.Parent or swordIcon.IsLoaded then return end
+  swordIcon.ImageRectOffset=Vector2.zero
+  swordIcon.ImageRectSize=Vector2.new(40,40)
+  swordIcon.Image="rbxassetid://71333073665947"
+end)
 meadowPrimarySword.Activated:Connect(function()
   if gui:GetAttribute("GameMenuOpen")~=true and primaryCombatAction then
     if activateMeadowAction(primaryCombatAction.Id) then meadowAttackAttemptAt=os.clock() end
