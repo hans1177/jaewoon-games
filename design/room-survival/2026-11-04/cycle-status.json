@@ -132,12 +132,12 @@
   },
   "runtimeMetrics": {
     "phaseMs": {
-      "designer_draft": 370,
+      "designer_draft": 374,
       "deterministic_pre_gate": 17,
-      "designer_pre_gate_repair_1": 195,
-      "deterministic_pre_gate_after_repair_1": 24,
-      "designer_pre_gate_repair_2": 186,
-      "deterministic_pre_gate_after_repair_2": 13,
+      "designer_pre_gate_repair_1": 197,
+      "deterministic_pre_gate_after_repair_1": 15,
+      "designer_pre_gate_repair_2": 218,
+      "deterministic_pre_gate_after_repair_2": 15,
       "deterministic_department_evidence": 4
     },
     "phaseBudgetMs": {
@@ -287,17 +287,17 @@
       },
       "targetPlatformProject": {
         "required": false,
-        "platform": null,
+        "platform": "ROBLOX",
         "present": false,
         "path": null,
-        "projectField": null
+        "projectField": "robloxProjectPath"
       },
       "targetPlatformTechnical": {
         "required": false,
-        "platform": null,
+        "platform": "ROBLOX",
         "pass": false,
         "source": null,
-        "evidenceFile": null
+        "evidenceFile": "roblox-technical-validation.json"
       },
       "revalidation": {
         "conditional": true,
@@ -330,7 +330,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-11-04T11:57:55.074Z"
+    "checkedAt": "2026-11-04T12:08:52.998Z"
   },
   "artbookUi": {
     "status": "WAITING",
