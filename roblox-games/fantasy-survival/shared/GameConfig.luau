@@ -7,7 +7,7 @@ local Config = {
   GameName = "마력숲 생존기",
   -- [오프닝 망토] 소유 프로젝트 원본 3D 메시를 직접 편집한 4군데 찢어진 진홍색 망토.
   -- 길이: 어깨~엉덩이 1.52스터드. 기존 네이티브 원본 에셋 등록·Universe 권한 경로만 사용.
-  -- 원본: roblox-games/fantasy-survival/assets/worn-cape.obj / 에셋 ID는 VisualAssetIds의 wornCape.
+  -- 원본: roblox-games/fantasy-survival/assets/worn-cape.obj / 3본 스킨 실물 등록 ID 92370050558893 (VisualAssetIds.wornCape).
   OpeningCapeModelKey = "wornCape",
   -- [오프닝 일러스트] 소유자 승인 원본 단일 그림, Roblox 이미지 등록 및 Universe 권한 검증 완료.
   CinematicIntroAtlasId = "rbxassetid://100481673402406",
