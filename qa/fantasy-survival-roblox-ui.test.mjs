@@ -116,7 +116,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/heading=heading\.Unit[\s\S]*?offset=-heading/);
   assert.match(client,/title\.Text = "" -- \[시안\]/);
   // The 16 original icons are 640x40, not the old 8-cell 512x64 fallback.
-  assert.match(client,/rbxassetid:\/\/71333073665947/);
+  assert.match(client,/rbxassetid:\/\/112814533400088/);
   assert.match(client,/rbxassetid:\/\/81665484719308/);
   const registry=JSON.parse(fs.readFileSync("roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json","utf8"));
   assert.equal(String(registry.paintedHudIcons.assetId),"71333073665947");
