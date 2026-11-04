@@ -1588,6 +1588,17 @@ local function createMeadowVillage()
       local bounds,extent=tree:GetBoundingBox()
       local crownY=bounds.Position.Y+extent.Y*.27
       local shimmerHost=nil
+      local distinctLeafMeshes=false
+      for _,part in ipairs(tree:GetDescendants()) do
+        if part:IsA("MeshPart") then
+          local label=part.Name:lower()
+          if label:find("leaf",1,true) or label:find("crown",1,true)
+            or label:find("foliage",1,true) then
+            distinctLeafMeshes=true
+            break
+          end
+        end
+      end
       for _,mesh in ipairs(tree:GetDescendants()) do
         if mesh:IsA("MeshPart") then
           -- 소유·해시가 검증된 나무 형태는 그대로. 렌더 색과 소재만 변경한다.
@@ -1596,9 +1607,12 @@ local function createMeadowVillage()
           mesh.CanQuery=false
           mesh.CastShadow=true
           local name=mesh.Name:lower()
-          local crown=name:find("leaf",1,true) or name:find("crown",1,true)
-            or name:find("foliage",1,true) or name:find("branch",1,true)
-            or mesh.Position.Y>crownY
+          -- 단일 메시 원본은 이름에 leaves가 없으므로 전체 색조를 푸르게 적용한다.
+          -- 실제 분리된 수관 메시가 있으면 줄기는 어두운 목재로 유지한다.
+          local crown=not distinctLeafMeshes
+            or name:find("leaf",1,true) or name:find("crown",1,true)
+            or name:find("foliage",1,true)
+            or (name:find("branch",1,true) and mesh.Position.Y>crownY)
           if crown then
             local surface=mesh:FindFirstChildOfClass("SurfaceAppearance")
             if surface then surface:Destroy() end
