@@ -96,7 +96,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'local referenceMenuItems=', 'local referenceHotbarSlots={}',
     'local hotbarActions={','local function layoutMeadowReferenceHud()',
     'local step=landscape and math.floor(math.clamp(v.X/20.8,31,39))',
-    'meadowReferenceHotbar.Position=UDim2.new(.5,landscape and -34 or 0',
+    'meadowReferenceHotbar.Position=UDim2.new(landscape and .44 or .5,0',
     'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(135*scale)',
     'meadowHealthTrack.Position=UDim2.fromOffset(x,top+16)',
     'meadowEnergy.Position=UDim2.fromOffset(x,top+30)',
