@@ -71,7 +71,7 @@ test('main-first live quest tracker and first-play interactive controls',()=>{
 });
 
 test('touch dock retains authoritative original actions and server request path',()=>{
-  assert.match(client,/button\.Activated:Connect\(function\(\)\s*if gui:GetAttribute\("GameMenuOpen"\)==true then return end\s*activateMeadowAction\(skillActionId\)/);
+  assert.match(client,/button\.Activated:Connect\(function\(\)\s*if gui:GetAttribute\("GameMenuOpen"\)==true then return end\s*local submitted=activateMeadowAction\(skillActionId\)/);
   assert.match(client,/remote:FireServer\(actionId\)/);
   assert.match(client,/meadowRadar\.Name="MeadowExplorerRadar"/);
   for(const action of ['meadow-unarmed-rush','skill-meadow-dodge-left',
