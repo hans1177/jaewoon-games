@@ -95,6 +95,9 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'ReferenceCharacterName','ReferenceHotbar','ReferenceMenu',
     'local referenceMenuItems=', 'local referenceHotbarSlots={}',
     'local hotbarActions={','local function layoutMeadowReferenceHud()',
+    'local step=landscape and math.floor(math.clamp(v.X/21,30,36))',
+    'meadowReferenceHotbar.Position=UDim2.new(.5,landscape and -40 or 0',
+    'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(127*scale)',
     'meadowHealthTrack.Position=UDim2.fromOffset(66,top+17)',
     'meadowEnergy.Position=UDim2.fromOffset(66,top+36)',
     'questTracker.Position=UDim2.fromOffset(v.X-width-12,top)',
@@ -116,7 +119,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/ImageRectSize=Vector2\.new\(meadowPaintedHudAtlas~="" and 40 or 64/);
   for(const [w,h] of [[1536,709],[852,393],[720,400],[640,360],[390,844],[360,640]]){
     const landscape=w>h;
-    const step=landscape?Math.floor(Math.max(38,Math.min(48,w/15)))
+    const step=landscape?Math.floor(Math.max(30,Math.min(36,w/21)))
       :Math.floor(Math.max(33,Math.min(40,w/9.8)));
     const width=step*6;
     assert.ok(w-width-9>0,'top menu clipped '+w+'x'+h);
