@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-cs744b",
+      "worker": "vibe2",
+      "taskId": "gem-survivor-existing-web-assessment-v1",
+      "gameId": "gem-survivor",
+      "files": [
+        "web-games/gem-survivor/index.html"
+      ],
+      "baseSha": "869675a2cd844832d1dd1600cd88d5785ce1381a",
+      "runId": "41903067814",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-04T20:08:08.421Z",
+      "expiresAt": "2026-11-04T20:53:08.421Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:gem-survivor-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
