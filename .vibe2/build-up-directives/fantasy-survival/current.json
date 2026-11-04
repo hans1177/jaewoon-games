@@ -10628,25 +10628,7 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "17d4e1cb9077689d2b284c79dcc5bdce7dc4f52e",
-      "artifactIdentity": "sha256:7e970c9bf585cda715f053dd7026d519f105d036bf00fbeacbab9e7ddabde796",
-      "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 41830417483,
-      "testedAt": "2026-11-04T12:40:49.459Z",
-      "repairSurfaces": [
-        "MOBILE_UI"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "adaptive-ui-commercial-quality",
-          "repairSurface": "MOBILE_UI",
-          "priority": "HIGH",
-          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
-          "observed": "{\"offscreenButtons\":0,\"undersizedTouchButtons\":6,\"suboptimalTouchButtons\":12,\"textOverflowButtons\":0,\"overlapPairs\":1,\"largeOverlayCount\":0,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "VIBE_INTERNAL_PLAY",
     "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
     "blockers": [
