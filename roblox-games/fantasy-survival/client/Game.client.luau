@@ -2825,7 +2825,7 @@ do
   storyFarHaze.BackgroundColor3=Color3.fromRGB(151,189,204)
   storyFarHaze.BackgroundTransparency=.91
   storyFarHaze.BorderSizePixel=0
-  storyFarHaze.ZIndex=5
+  storyFarHaze.ZIndex=7
   storyFarHaze.Visible=false
   storyFarHaze.Parent=introPanel
   local storyFarGradient=Instance.new("UIGradient")
