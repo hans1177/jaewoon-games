@@ -1831,7 +1831,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local scale=landscape and math.clamp\(\(v.Y-20\)\/370,\.76,1\.12\) or math.clamp\(v.X\/390/);
   assert.ok(client.includes('for index,button in ipairs(meadowSkillButtons)do'));
   assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(/);
-  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(\(cx-originalSize\/2\)\*scale\)/);
+  // [좌표 검증] 사용자 이동 저장 오프셋을 적용한 최신 상단 버튼의 시각 좌표를 검사한다.
+  assert.match(client,/local visualX=row\[1\]\+\(saved\[1\]-default\[1\]\)\*212/);
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(\(visualX-row\[3\]\*\.5\)\*scale\)/);
   assert.ok(!client.includes('button.Text=locked and "맨손 전용"'),
     'retired combat cooldown redraw must not race the current semicircle button state');
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
