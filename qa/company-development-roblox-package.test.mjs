@@ -1741,8 +1741,8 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
   assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-(?:math.floor\()?/);
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
-  assert.ok(client.includes('trackerTitle.Visible=false;trackerDetail.Visible=false'));
-  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(48,48)'));
+  assert.ok(client.includes('trackerTitle.Visible=true'));
+  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(width,70)'));
   assert.ok(client.includes('meadowHealthTrack.Size=UDim2.fromOffset(width,21)'));
   assert.ok(client.includes('meadowEnergy.Size=UDim2.fromOffset(width,21)'));
   assert.ok(client.includes('meadowEnergy.Position=UDim2.new(.5,0,0,top+25)'));
@@ -1790,7 +1790,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   // [장비 회귀] 실제 서버 재화·장비 목록은 클라이언트에서 표시만 하고 서버가 제작·저장한다.
   assert.ok(client.includes('inventoryGrid.Name="MeadowInventoryGrid"'));
   assert.ok(!client.includes('inventoryQuick.Name="MeadowInventoryQuick"'), 'left pocket shortcut must be removed');
-  assert.ok(client.includes('meadowMenu.open(3)end'), 'journal shortcut remains');
+  assert.ok(client.includes('meadowMenu.open(5)end'), 'quest helper shortcut remains');
+  assert.ok(client.includes('characterShortcut.Activated:Connect(function()meadowMenu.open(1)end)'), 'character shortcut opens original character page');
+  assert.ok(client.includes('hideMenuButton=true'), 'redundant left menu stays hidden');
   assert.ok(client.includes('pages=meadowPages'), 'inventory page remains inside original menu');
   for(const [key,name] of [['Wood','나무'],['Stone','돌'],['ResearchRecords','연구 일지'],['Coins','소지금']]){
     assert.ok(client.includes('{key="'+key+'",name="'+name+'"'),'real resource shown: '+key);
@@ -1814,7 +1816,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('bit32.band(discovered,point[3])~=0'));
   assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
   assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
-  assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
+  assert.ok(client.includes('compact=true,hideButton=true,hideMenuButton=true,menuLeft=true'));
   assert.match(client,/local scale=landscape and math.clamp\(\(v.Y-20\)\/370,\.76,1\.12\) or math.clamp\(v.X\/390/);
   assert.ok(client.includes('for index,button in ipairs(meadowSkillButtons)do'));
   assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(/);
@@ -2172,7 +2174,7 @@ test('마력숲 동료 의뢰와 인트로는 기존 메인·저장을 보존한
  assert.ok(recorder.indexOf('CompanionQuestStage')<recorder.indexOf('if not quest then return end'));
  assert.doesNotMatch(recorder,/awardProgress|Coins|XP/);
  assert.match(client,/info.Story or ""/);
- assert.match(client,/questTracker.Activated:Connect\(function\(\)meadowMenu.open\(3\)end\)/);
+ assert.match(client,/questTracker.Activated:Connect\(function\(\)meadowMenu.open\(5\)end\)/);
  assert.doesNotMatch(client,/local journalShade=/);
  assert.match(client,/task.delay\(bossScene and 1\.5 or 2\.5/);
  assert.match(client,/skip.Activated:Connect\(closeIntro\)/);
