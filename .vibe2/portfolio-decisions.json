@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-11-04T12:51:01.766Z",
+  "generatedAt": "2026-11-04T14:28:29.827Z",
   "decisions": [
     {
       "gameId": "amusement-tycoon",
@@ -168,7 +168,7 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 1
+          "repeatedFailureSignal": 256
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -645,7 +645,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 256
@@ -1054,6 +1054,36 @@
       "ownerApprovalGate": false
     },
     {
+      "gameId": "card-grid-duel",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 1,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 0
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
       "gameId": "cozy-island",
       "decision": "CONTINUE",
       "reason": "NORMAL_ACTIVE_DEVELOPMENT",
@@ -1192,36 +1222,6 @@
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": false
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "card-grid-duel",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 1,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 0
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
         },
         "balance": {
           "structuralCoreFailure": false
