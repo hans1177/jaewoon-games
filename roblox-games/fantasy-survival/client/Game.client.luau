@@ -1446,8 +1446,8 @@ for index,info in ipairs(referenceMenuItems) do
   icon.ImageRectOffset=Vector2.new(({0,243,480,717,954,1191})[index],8)
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,0)
-  icon.Position=UDim2.fromScale(.5,.11)
-  icon.Size=UDim2.fromScale(.65,.65)
+  icon.Position=UDim2.fromScale(.5,0)
+  icon.Size=UDim2.fromScale(1,1)
   icon.ZIndex=28
   icon.Parent=button
   local caption=Instance.new("TextLabel")
@@ -1579,7 +1579,7 @@ local function layoutMeadowReferenceHud()
   local gap=2
   local barWidth=(slotSize+gap)*columns-gap
   meadowReferenceHotbar.Size=UDim2.fromOffset(barWidth,(slotSize+gap)*math.ceil(10/columns)-gap)
-  meadowReferenceHotbar.Position=UDim2.new(.5,landscape and -34 or 0,1,landscape and -9 or -99)
+  meadowReferenceHotbar.Position=UDim2.new(landscape and .44 or .5,0,1,landscape and -9 or -99)
   for index,slot in ipairs(referenceHotbarSlots)do
     slot.Size=UDim2.fromOffset(slotSize,slotSize)
     slot.Position=UDim2.fromOffset(((index-1)%columns)*(slotSize+gap),math.floor((index-1)/columns)*(slotSize+gap))
