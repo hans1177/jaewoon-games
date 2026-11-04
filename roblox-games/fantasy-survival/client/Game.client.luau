@@ -537,7 +537,7 @@ local meadowHealthTrack,meadowHealthControl=CommonUI.CreateHealthBar({name="Mead
 meadowHealthTrack.Parent=root
 local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
-  status.Text = string.format("오픈월드 · 주변 몬스터 %d",player:GetAttribute("AliveEnemies") or 0)
+  status.Text="" -- [필요 없는 작은 글씨 제거] 월드/몬스터 수는 기본 화면에 표시하지 않는다.
   local character=player.Character
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
   local hp=humanoid and humanoid.Health or (player:GetAttribute("Health") or 0)
@@ -547,10 +547,11 @@ local function render()
   if player:GetAttribute("ProfileReady") ~= true then
     status.Text = "프로필 불러오는 중 · 전투 잠시 대기"
   elseif saveStatus == "SESSION_ONLY" then
-    status.Text ..= "\n임시 플레이 · 이번 접속의 진행은 저장되지 않음"
+    status.Text = "임시 플레이 · 이번 접속의 진행은 저장되지 않음"
   elseif saveStatus == "SAVE_FAILED" then
-    status.Text ..= "\n저장 실패 · 기존 저장 데이터 보호 중"
+    status.Text = "저장 실패 · 기존 저장 데이터 보호 중"
   end
+  status.Visible=status.Text~="" -- 로딩/저장 오류에 한해서만 기존 안내를 유지한다.
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
@@ -590,6 +591,8 @@ end
 task.defer(reportNativeFoundationReady)
 
 -- [공유 HUD 참조] 메뉴 구성 구역 밖의 모바일 버튼·자원바에서 같은 실제 GUI를 사용한다.
+local meadowTutorialAdvance,meadowTutorialRestart -- [첫 플레이 안내] 기존 게임 입력을 관찰하기만 한다.
+local meadowQuestGuideButton -- [튜토리얼 강조] 실사용 중인 퀘스트 버튼을 그대로 가리킨다.
 local meadowVitalsGui, meadowPages, meadowMenu, energyFill, energyLabel
 
 do
@@ -975,8 +978,37 @@ local function renderMeadowPages()
     or tier<10 and (player:GetAttribute("Wood") or 0)>=cost and (player:GetAttribute("Stone") or 0)>=cost
       and "강화 재료가 준비됐어. 아래 장비 강화를 누르면 서버가 비용을 확인해."
     or "나무와 돌 가까이에서 채집해. 전투 중에는 공격 예고에 맞춰 막으면 연타를 끊을 수 있어."
-  meadowLabels[5].Text="지금 할 일\n\n"..(quest and quest.Instruction.."\n\n" or "")..suggestion..string.format("\n\n다음 강화 비용  나무 %d · 돌 %d\n\n조작 안내\n화면 탭: 기본 공격\n연속권·승룡권: 맨손 스킬\n막기 직후 적중: 완벽 막기\n어퍼컷: 스테미너 20 소모\n발차기: 스테미너 14 소모",cost,cost)
+  -- [의뢰 도우미] 메인 > 마을 서브 > 동료 서브 순서. 모든 수치는 서버의 기존 저장 속성만 읽는다.
   local companionStage=player:GetAttribute("CompanionQuestStage") or 1
+  local companion=Config.CompanionRequests and Config.CompanionRequests[companionStage]
+  local companionUnlocked=companion and (player:GetAttribute("QuestStage") or 1)>=companion.UnlockMainStage
+  local villageStage=player:GetAttribute("VillageContractIndex") or 1
+  local village=Config.VillageContracts and Config.VillageContracts[villageStage]
+  local villagePhase=player:GetAttribute("VillageContractPhase") or 0
+  local villageMask=player:GetAttribute("VillageContractEvidence") or 0
+  local villageProgress=0
+  if village then
+    local witness=bit32.lshift(1,village.Witness-1)
+    villageProgress=(bit32.band(villageMask,witness)~=0 and 1 or 0)
+      +(bit32.band(villageMask,8)~=0 and 1 or 0)
+      +(bit32.band(villageMask,64)~=0 and 1 or 0)
+  end
+  local mainText=quest and string.format("%s\n%s  (%d/%d)",quest.Name,quest.Instruction,
+    player:GetAttribute("QuestProgress") or 0,quest.Goal) or "완료 · 연구 기록 수집을 마쳤어."
+  local villageText=village and string.format("%s · %s\n%s",village.Name,village.Issuer,
+    villagePhase==0 and "촌장에게 의뢰 수락" or villagePhase==2 and "촌장에게 조사 결과 보고"
+    or string.format("진행 중 · 단서 %d/3 · %s",villageProgress,village.EnemyName)) or "마을 의뢰 모두 완료"
+  local companionText=companion and string.format("%s\n%s",companion.Name,
+    companionUnlocked and string.format("%s (%d/%d)",companion.Instruction,
+      player:GetAttribute("CompanionQuestProgress") or 0,companion.Goal)
+      or string.format("메인 의뢰 %d단계에 해금",companion.UnlockMainStage)) or "동료 의뢰 모두 완료"
+  meadowLabels[5].Text="진행 중인 의뢰\n\n【메인 퀘스트】\n"..mainText..
+    "\n\n【서브 · 마을】\n"..villageText..
+    "\n\n【서브 · 동료】\n"..companionText..
+    "\n\n【다음 행동 안내】\n"..suggestion..
+    string.format("\n\n다음 강화 재료: 나무 %d · 돌 %d",cost,cost)..
+    "\n\n【처음 조작】\n왼쪽 조이스틱/WASD: 이동\n왼쪽 퀘스트 도우미: 의뢰 확인\n빈 화면 터치/클릭: 기본 공격\n오른쪽 회피·막기: 적의 공격 대응\n상호작용: 주민 대화·단서·채집"
+
   local companionLines={"동료 통신 · 선택 의뢰","메인 퀘스트와 독립적으로 진행돼."}
   for index,request in ipairs(Config.CompanionRequests or {})do
     local unlocked=(player:GetAttribute("QuestStage") or 1)>=request.UnlockMainStage
@@ -1015,6 +1047,17 @@ for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채�
     if player:GetAttribute("ProfileReady")==true then activateMeadowAction(row[2]) end
   end)
 end
+-- [초반 튜토리얼 재실행] 기존 도우미 페이지에서 누구나 조작 안내를 다시 볼 수 있다.
+local tutorialReplay=CommonUI.CreatePrimaryButton({name="MeadowTutorialReplay",text="조작 튜토리얼 다시 시작",minHeight=52})
+tutorialReplay.LayoutOrder=4
+tutorialReplay.Size=UDim2.new(1,-8,0,54)
+tutorialReplay.Parent=meadowPages[5]
+tutorialReplay.Activated:Connect(function()
+  if meadowTutorialRestart then
+    meadowTutorialRestart()
+    meadowMenu.close()
+  end
+end)
 player:GetAttributeChangedSignal("MeadowSurvivalHintSerial"):Connect(function()
   local clue=player:GetAttribute("MeadowSurvivalHint")
   if typeof(clue)=="string" and clue~="" and not table.find(meadowJournal,clue) then
@@ -1230,6 +1273,7 @@ questTracker.AutoButtonColor=true
 questTracker.Text=""
 questTracker.ZIndex=8
 questTracker.Parent=gui
+meadowQuestGuideButton=questTracker
 local trackerCorner=Instance.new("UICorner")
 trackerCorner.CornerRadius=UDim.new(0,11)
 trackerCorner.Parent=questTracker
@@ -1267,6 +1311,29 @@ trackerDetail.TextSize=12
 trackerDetail.TextWrapped=true
 trackerDetail.ZIndex=9
 trackerDetail.Parent=questTracker
+-- [퀘스트 추적] 메인 아래에 실제 진행 중인 마을·동료 서브 의뢰만 간추려 표시한다.
+local trackerVillage=Instance.new("TextLabel")
+trackerVillage.Name="QuestSideVillage"
+trackerVillage.BackgroundTransparency=1
+trackerVillage.TextColor3=Color3.fromRGB(206,228,209)
+trackerVillage.Font=Enum.Font.GothamMedium
+trackerVillage.TextSize=11
+trackerVillage.TextWrapped=true
+trackerVillage.TextXAlignment=Enum.TextXAlignment.Left
+trackerVillage.TextYAlignment=Enum.TextYAlignment.Top
+trackerVillage.ZIndex=9
+trackerVillage.Parent=questTracker
+local trackerCompanion=Instance.new("TextLabel")
+trackerCompanion.Name="QuestSideCompanion"
+trackerCompanion.BackgroundTransparency=1
+trackerCompanion.TextColor3=Color3.fromRGB(206,228,209)
+trackerCompanion.Font=Enum.Font.GothamMedium
+trackerCompanion.TextSize=11
+trackerCompanion.TextWrapped=true
+trackerCompanion.TextXAlignment=Enum.TextXAlignment.Left
+trackerCompanion.TextYAlignment=Enum.TextYAlignment.Top
+trackerCompanion.ZIndex=9
+trackerCompanion.Parent=questTracker
 
 local journalScroll=meadowPages[3]
 local function journalRow(name,height)
@@ -1928,9 +1995,31 @@ local function renderMeadowJournal()
   end
   if villageIndex>#Config.VillageContracts then villageLines[#villageLines+1]="마을 의뢰 모두 완료" end
   villageContractRow.Text=table.concat(villageLines,"\n\n")
-  trackerTitle.Text="퀘스트 도우미"
-  trackerDetail.Text=quest and string.format("%s · %d/%d\n%s",quest.Name,progress,quest.Goal,quest.Instruction)
-    or "메인 의뢰 완료\n연구 기록은 인벤토리에서 확인"
+  trackerTitle.Text="퀘스트 도우미   ▸"
+  trackerDetail.Text=quest and string.format("메인 · %s\n%d/%d  %s",quest.Name,progress,quest.Goal,quest.Instruction)
+    or "메인 · 완료\n연구 기록은 인벤토리에서 확인"
+  local village=Config.VillageContracts[villageIndex]
+  if village then
+    local witness=bit32.lshift(1,village.Witness-1)
+    local count=(bit32.band(villageMask,witness)~=0 and 1 or 0)
+      +(bit32.band(villageMask,8)~=0 and 1 or 0)
+      +(bit32.band(villageMask,64)~=0 and 1 or 0)
+    trackerVillage.Text="서브 · 마을  "..village.Name..
+      "\n"..(villagePhase==0 and "촌장에게 수락" or villagePhase==2 and "촌장에게 보고"
+      or string.format("현장 단서 %d/3",count))
+  else
+    trackerVillage.Text="서브 · 마을  완료"
+  end
+  local companionStage=player:GetAttribute("CompanionQuestStage") or 1
+  local companion=Config.CompanionRequests[companionStage]
+  if companion then
+    local unlocked=stage>=companion.UnlockMainStage
+    trackerCompanion.Text="서브 · 동료  "..companion.Name.."\n"..
+      (unlocked and string.format("진행 %d/%d",player:GetAttribute("CompanionQuestProgress") or 0,companion.Goal)
+      or string.format("메인 %d단계 해금",companion.UnlockMainStage))
+  else
+    trackerCompanion.Text="서브 · 동료  완료"
+  end
   inventoryRow.Text="소지품  ·  실제 보유·제작·장비 기록"
   renderWitcherInventory()
   for index,info in ipairs(Config.MainQuests) do
@@ -1947,21 +2036,24 @@ local function renderMeadowJournal()
     storyRows[index].TextColor3=has and Color3.fromRGB(245,244,208) or Color3.fromRGB(161,180,164)
   end
 end
--- [왼쪽 퀘스트 도우미] 기존 저널 버튼을 현재 목표 카드와 도우미 메뉴로 전환한다.
+-- [왼쪽 의뢰 추적] 항상 메인·마을 서브·동료 서브를 순서대로 표시하고 눌러 상세를 연다.
 questTracker.Name="MeadowQuestHelperButton"
 questTracker.Text=""
 questTracker.BackgroundColor3=Color3.fromRGB(20,48,40)
 questTracker.BackgroundTransparency=.06
 trackerTitle.Visible=true
-trackerTitle.Text="퀘스트 도우미"
+trackerTitle.Text="퀘스트 도우미   ▸"
 trackerTitle.TextSize=14
 trackerTitle.TextTruncate=Enum.TextTruncate.AtEnd
 trackerDetail.Visible=true
-trackerDetail.Position=UDim2.fromOffset(11,31)
-trackerDetail.Size=UDim2.new(1,-21,0,34)
-trackerDetail.TextSize=11
-trackerDetail.TextTruncate=Enum.TextTruncate.AtEnd
-questTracker.Activated:Connect(function()meadowMenu.open(5)end)
+trackerDetail.TextSize=12
+trackerDetail.TextYAlignment=Enum.TextYAlignment.Top
+trackerVillage.Visible=true
+trackerCompanion.Visible=true
+questTracker.Activated:Connect(function()
+  if meadowTutorialAdvance then meadowTutorialAdvance(2) end
+  meadowMenu.open(5)
+end)
 
 -- [왼쪽 캐릭터창] 기존 3D 아바타·장비·숙련도 페이지와 실제 썸네일을 재사용한다.
 local characterShortcut=Instance.new("TextButton")
@@ -2011,11 +2103,17 @@ local function layoutMeadowJournal()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local portrait=v.X<v.Y
-  local top=portrait and 104 or 8
-  local width=portrait and 138 or 156
+  local top=portrait and 108 or 8
+  local width=math.floor(math.clamp(v.X*.24,202,252))
   questTracker.Position=UDim2.fromOffset(9,top)
-  questTracker.Size=UDim2.fromOffset(width,70)
-  characterShortcut.Position=UDim2.fromOffset(9,top+78)
+  questTracker.Size=UDim2.fromOffset(width,166)
+  trackerDetail.Position=UDim2.fromOffset(11,31)
+  trackerDetail.Size=UDim2.new(1,-21,0,52)
+  trackerVillage.Position=UDim2.fromOffset(11,86)
+  trackerVillage.Size=UDim2.new(1,-21,0,37)
+  trackerCompanion.Position=UDim2.fromOffset(11,126)
+  trackerCompanion.Size=UDim2.new(1,-21,0,37)
+  characterShortcut.Position=UDim2.fromOffset(9,top+174)
   characterShortcut.Size=UDim2.fromOffset(width,56)
 end
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
@@ -2026,7 +2124,8 @@ end)
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
 layoutMeadowJournal()
 for _,name in ipairs({"QuestStage","QuestProgress","QuestWood","QuestStone","ResearchRecords","Wood","Stone","Coins","WeaponTier",
-  "VillageContractIndex","VillageContractPhase","VillageContractEvidence","VillageContractOutcomes"}) do
+  "VillageContractIndex","VillageContractPhase","VillageContractEvidence","VillageContractOutcomes",
+  "CompanionQuestStage","CompanionQuestProgress"}) do
   player:GetAttributeChangedSignal(name):Connect(renderMeadowJournal)
 end
 renderMeadowJournal()
@@ -2051,6 +2150,163 @@ remote.OnClientEvent:Connect(function(kind,payload)
   end)
 end)
 
+end
+
+-- [초반 실전 튜토리얼] 첫 플레이에서만 실제 이동·의뢰 버튼·공격·회피 입력으로 단계 진행.
+-- 저장 키·보상·스테미너·서버 전투 판정은 건드리지 않으며 도우미에서 언제든 다시 시작할 수 있다.
+do
+  local tutorialStep=1
+  local tutorialForced=false
+  local tutorialDone=false
+  local tutorialOrigin=nil
+  local tutorialToken=0
+  local tutorialElapsed=0
+  local tutorialCard=Instance.new("Frame")
+  tutorialCard.Name="MeadowBeginnerTutorial"
+  tutorialCard.AnchorPoint=Vector2.new(.5,1)
+  tutorialCard.Size=UDim2.fromOffset(386,96)
+  tutorialCard.BackgroundColor3=Color3.fromRGB(15,41,36)
+  tutorialCard.BackgroundTransparency=.06
+  tutorialCard.BorderSizePixel=0
+  tutorialCard.Active=false
+  tutorialCard.Visible=false
+  tutorialCard.ZIndex=26
+  tutorialCard.Parent=gui
+  local tutorialCorner=Instance.new("UICorner")
+  tutorialCorner.CornerRadius=UDim.new(0,13)
+  tutorialCorner.Parent=tutorialCard
+  local tutorialBorder=Instance.new("UIStroke")
+  tutorialBorder.Color=Color3.fromRGB(233,199,127)
+  tutorialBorder.Thickness=1.6
+  tutorialBorder.Parent=tutorialCard
+  local tutorialTitle=Instance.new("TextLabel")
+  tutorialTitle.Name="StepTitle"
+  tutorialTitle.Position=UDim2.fromOffset(14,7)
+  tutorialTitle.Size=UDim2.new(1,-108,0,26)
+  tutorialTitle.BackgroundTransparency=1
+  tutorialTitle.TextXAlignment=Enum.TextXAlignment.Left
+  tutorialTitle.TextColor3=Color3.fromRGB(253,226,157)
+  tutorialTitle.Font=Enum.Font.GothamBold
+  tutorialTitle.TextSize=15
+  tutorialTitle.ZIndex=27
+  tutorialTitle.Parent=tutorialCard
+  local tutorialMessage=Instance.new("TextLabel")
+  tutorialMessage.Name="StepInstruction"
+  tutorialMessage.Position=UDim2.fromOffset(14,34)
+  tutorialMessage.Size=UDim2.new(1,-28,0,54)
+  tutorialMessage.BackgroundTransparency=1
+  tutorialMessage.TextXAlignment=Enum.TextXAlignment.Left
+  tutorialMessage.TextYAlignment=Enum.TextYAlignment.Top
+  tutorialMessage.TextWrapped=true
+  tutorialMessage.TextColor3=Color3.fromRGB(238,248,236)
+  tutorialMessage.Font=Enum.Font.GothamMedium
+  tutorialMessage.TextSize=14
+  tutorialMessage.ZIndex=27
+  tutorialMessage.Parent=tutorialCard
+  local tutorialSkip=Instance.new("TextButton")
+  tutorialSkip.Name="SkipTutorial"
+  tutorialSkip.Position=UDim2.new(1,-90,0,7)
+  tutorialSkip.Size=UDim2.fromOffset(78,30)
+  tutorialSkip.BackgroundColor3=Color3.fromRGB(49,79,69)
+  tutorialSkip.BorderSizePixel=0
+  tutorialSkip.Text="건너뛰기"
+  tutorialSkip.TextColor3=Color3.fromRGB(245,245,225)
+  tutorialSkip.Font=Enum.Font.GothamBold
+  tutorialSkip.TextSize=11
+  tutorialSkip.ZIndex=28
+  tutorialSkip.Parent=tutorialCard
+  local skipCorner=Instance.new("UICorner")
+  skipCorner.CornerRadius=UDim.new(0,8)
+  skipCorner.Parent=tutorialSkip
+  local steps={
+    {"이동","왼쪽 조이스틱을 밀어 이동해 봐.\nPC: W·A·S·D  |  8칸 정도 이동하면 다음 안내로 넘어가."},
+    {"퀘스트 확인","왼쪽 '퀘스트 도우미'를 눌러 봐.\n메인 퀘스트를 먼저 보고 마을·동료 서브 의뢰를 확인해."},
+    {"기본 공격","빈 게임 화면을 한 번 터치해 공격해 봐.\nPC: 빈 화면 클릭  |  메뉴·버튼을 누르면 공격하지 않아."},
+    {"회피 연습","오른쪽 '회피' 버튼을 눌러 봐.\n막기·상호작용·가방도 오른쪽에 있어. 튜토리얼은 보상과 무관해."},
+    {"완료","조작 안내 완료! 메인 의뢰를 따라 초원 동물과 숲 가장자리를 조사해.\n다시 보고 싶으면 퀘스트 도우미에서 재시작할 수 있어."}
+  }
+  local function layoutTutorial()
+    local v=gui.AbsoluteSize
+    if v.X<=0 or v.Y<=0 then return end
+    local portrait=v.X<v.Y
+    tutorialCard.Size=UDim2.fromOffset(math.min(386,math.max(260,v.X-24)),portrait and 106 or 96)
+    tutorialCard.Position=UDim2.new(.5,0,1,portrait and -168 or -18)
+    tutorialMessage.Size=UDim2.new(1,-28,0,portrait and 65 or 55)
+  end
+  local function refreshTutorial()
+    local active=player:GetAttribute("ProfileReady")==true
+      and (tutorialForced or player:GetAttribute("MeadowProfileHadSave")~=true)
+      and not tutorialDone and gui.Enabled==true and gui:GetAttribute("GameMenuOpen")~=true
+    tutorialCard.Visible=active
+    local current=steps[tutorialStep]
+    tutorialTitle.Text="초보 모험 안내  "..math.min(tutorialStep,4).."/4 · "..current[1]
+    tutorialMessage.Text=current[2]
+    tutorialSkip.Visible=tutorialStep<=4
+    local questStroke=meadowQuestGuideButton and meadowQuestGuideButton:FindFirstChildOfClass("UIStroke")
+    if questStroke then
+      questStroke.Thickness=active and tutorialStep==2 and 3 or 1.2
+      questStroke.Color=active and tutorialStep==2 and Color3.fromRGB(253,223,117)
+        or Color3.fromRGB(131,194,150)
+    end
+    local dock=gui:FindFirstChild("MeadowR15SkillDock")
+    local dodge=dock and dock:FindFirstChild("R15Skill2")
+    local dodgeStroke=dodge and dodge:FindFirstChildOfClass("UIStroke")
+    if dodgeStroke then dodgeStroke.Thickness=active and tutorialStep==4 and 3 or 2 end
+  end
+  meadowTutorialAdvance=function(expected)
+    if tutorialDone or tutorialStep~=expected or gui.Enabled~=true
+      or player:GetAttribute("ProfileReady")~=true then return end
+    tutorialStep+=1
+    tutorialOrigin=nil
+    tutorialToken+=1
+    refreshTutorial()
+    if tutorialStep==5 then
+      local completedToken=tutorialToken
+      task.delay(3,function()
+        if tutorialToken~=completedToken then return end
+        tutorialDone=true
+        refreshTutorial()
+      end)
+    end
+  end
+  meadowTutorialRestart=function()
+    tutorialForced=true
+    tutorialDone=false
+    tutorialStep=1
+    tutorialOrigin=nil
+    tutorialToken+=1
+    refreshTutorial()
+  end
+  tutorialSkip.Activated:Connect(function()
+    tutorialDone=true
+    tutorialToken+=1
+    refreshTutorial()
+  end)
+  gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutTutorial)
+  gui:GetPropertyChangedSignal("Enabled"):Connect(refreshTutorial)
+  gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(refreshTutorial)
+  player:GetAttributeChangedSignal("ProfileReady"):Connect(refreshTutorial)
+  player:GetAttributeChangedSignal("MeadowProfileHadSave"):Connect(refreshTutorial)
+  game:GetService("RunService").Heartbeat:Connect(function(dt)
+    tutorialElapsed+=dt
+    if tutorialElapsed<.3 then return end
+    tutorialElapsed=0
+    if tutorialStep~=1 or not tutorialCard.Visible then return end
+    local character=player.Character
+    local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+    local human=character and character:FindFirstChildOfClass("Humanoid")
+    if not rootPart or not human or human.Health<=0 then return end
+    if not tutorialOrigin then
+      tutorialOrigin=rootPart.Position
+      return
+    end
+    local delta=rootPart.Position-tutorialOrigin
+    if Vector3.new(delta.X,0,delta.Z).Magnitude>=8 and human.MoveDirection.Magnitude>.12 then
+      meadowTutorialAdvance(1)
+    end
+  end)
+  layoutTutorial()
+  refreshTutorial()
 end
 
 -- [첫 화면] 기존 초원 월드·R15 캐릭터·음향을 그대로 배경에 사용한다.
@@ -3980,7 +4236,10 @@ local function activateMeadowWorldTap(point)
   if now-lastMeadowWorldTap<.13 then return end
   lastMeadowWorldTap=now
   if activateNearbyMeadowInteraction(point) then return end
-  if primaryCombatAction then activateMeadowAction(primaryCombatAction.Id) end
+  if primaryCombatAction then
+    activateMeadowAction(primaryCombatAction.Id)
+    if meadowTutorialAdvance then meadowTutorialAdvance(3) end
+  end
 end
 -- 원본 월드 탭은 유지하고, 투명 HUD가 입력을 처리한 경우 TouchTap으로 정상 공격을 복구한다.
 UserInputService.TouchTapInWorld:Connect(function(position,processedByUI)
@@ -4179,6 +4438,7 @@ for index,skill in ipairs(meleeSkills)do
   button.Activated:Connect(function()
     if gui:GetAttribute("GameMenuOpen")==true then return end
     activateMeadowAction(skillActionId)
+    if index==2 and meadowTutorialAdvance then meadowTutorialAdvance(4) end
   end)
 end
 -- 기본 공격은 기존 화면 터치/키보드로 계속 사용하고 별도 공격 버튼은 제거한다.

@@ -1742,7 +1742,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-(?:math.floor\()?/);
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
   assert.ok(client.includes('trackerTitle.Visible=true'));
-  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(width,70)'));
+  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(width,166)'));
   assert.ok(client.includes('meadowHealthTrack.Size=UDim2.fromOffset(width,21)'));
   assert.ok(client.includes('meadowEnergy.Size=UDim2.fromOffset(width,21)'));
   assert.ok(client.includes('meadowEnergy.Position=UDim2.new(.5,0,0,top+25)'));
@@ -2174,7 +2174,7 @@ test('마력숲 동료 의뢰와 인트로는 기존 메인·저장을 보존한
  assert.ok(recorder.indexOf('CompanionQuestStage')<recorder.indexOf('if not quest then return end'));
  assert.doesNotMatch(recorder,/awardProgress|Coins|XP/);
  assert.match(client,/info.Story or ""/);
- assert.match(client,/questTracker.Activated:Connect\(function\(\)meadowMenu.open\(5\)end\)/);
+ assert.match(client,/questTracker.Activated:Connect\(function\(\)\s*if meadowTutorialAdvance then meadowTutorialAdvance\(2\) end\s*meadowMenu.open\(5\)/);
  assert.doesNotMatch(client,/local journalShade=/);
  assert.match(client,/task.delay\(bossScene and 1\.5 or 2\.5/);
  assert.match(client,/skip.Activated:Connect\(closeIntro\)/);

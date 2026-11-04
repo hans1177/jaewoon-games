@@ -21,13 +21,40 @@ test('mobile menu and stamina handles stay visible outside the original do block
     'local energyFill=Instance.new("Frame")',
     'local energyLabel=Instance.new("TextLabel")'
   ])assert.ok(!client.includes(shadow),'out-of-scope shadow: '+shadow);
-  const boundary=client.indexOf('\nend\n\n-- [첫 화면]');
+  const boundary=client.indexOf('\nend\n\n-- [초반 실전 튜토리얼]');
   assert.ok(boundary>0);
   const after=client.slice(boundary);
   assert.ok(after.includes('editLayoutButton.Parent=meadowPages[4]'));
   assert.ok(after.includes('if info[1]=="MEADOW_INVENTORY" then meadowMenu.open(2)'));
   assert.ok(after.includes('energyFill.Size=UDim2.fromScale'));
   assert.ok(after.includes('energyLabel.Text=ready and string.format'));
+});
+
+// [튜토리얼/퀘스트] 저장과 전투 권한을 수정하지 않고 실제 입력으로만 초반 안내를 진행한다.
+test('main-first live quest tracker and first-play interactive controls',()=>{
+  assert.doesNotMatch(client,/오픈월드 · 주변 몬스터/);
+  assert.ok(client.includes('status.Visible=status.Text~=""'));
+  const helper=client.slice(client.indexOf('  -- [의뢰 도우미]'),client.indexOf('  local companionLines='));
+  const main=helper.indexOf('【메인 퀘스트】');
+  const village=helper.indexOf('【서브 · 마을】');
+  const companion=helper.indexOf('【서브 · 동료】');
+  assert.ok(main>=0&&main<village&&village<companion);
+  for(const text of [
+    'Config.MainQuests','Config.VillageContracts','Config.CompanionRequests',
+    'VillageContractEvidence','CompanionQuestProgress','QuestProgress',
+    'QuestSideVillage','QuestSideCompanion',
+    'questTracker.Size=UDim2.fromOffset(width,166)',
+    'MeadowBeginnerTutorial','MeadowTutorialReplay',
+    'meadowTutorialAdvance(1)','meadowTutorialAdvance(2)',
+    'meadowTutorialAdvance(3)','meadowTutorialAdvance(4)',
+    'gui:GetPropertyChangedSignal("Enabled"):Connect(refreshTutorial)',
+    'tutorialSkip.Activated:Connect(function()'
+  ])assert.ok(client.includes(text),'missing quest/touch binding: '+text);
+  assert.match(client,/Vector3\.new\(delta\.X,0,delta\.Z\)\.Magnitude>=8/);
+  assert.match(client,/human\.MoveDirection\.Magnitude>\.12/);
+  assert.match(client,/player:GetAttribute\("MeadowProfileHadSave"\)~=true/);
+  assert.match(client,/if index==2 and meadowTutorialAdvance then meadowTutorialAdvance\(4\) end/);
+  assert.doesNotMatch(client,/player:SetAttribute\("MeadowTutorial/);
 });
 
 test('touch dock retains authoritative original actions and server request path',()=>{
