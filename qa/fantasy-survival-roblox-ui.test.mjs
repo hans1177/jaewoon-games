@@ -62,6 +62,7 @@ test('main-first live quest tracker and first-play interactive controls',()=>{
     'MeadowQuestWorldMarker','QuestNavigation',
     'questWorldMarker.Adornee=bestHost','guidePrompts[descendant]=true',
     'descendant.Name=="MeadowSurvivalInspect"','descendant.Name=="GatherPrompt"',
+    'workspace.ChildAdded:Connect(bindMeadowQuestWorld)',
     'questTracker.Size=UDim2.fromOffset(width,height)',
     'local compact=not portrait and v.Y<420'
   ])assert.ok(client.includes(source),'missing verified input or real quest marker: '+source);
