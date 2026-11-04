@@ -1030,7 +1030,7 @@ local function renderMeadowPages()
   local capeText=capeState=="ATTACHED" and capeWorn and "빨간 망토 착용 중"
     or capeState=="LOADING" and "빨간 망토 불러오는 중"
     or capeState=="RETRYING" and "빨간 망토 연결 재시도 중"
-    or capeState=="R15_REQUIRED" and "망토 장착 불가 · R15 필요"
+    or capeState=="TORSO_MISSING" and "망토 장착 불가 · 몸통 없음"
     or capeState=="REGISTERED_OWNER_MESH_MISSING" and "망토 원본 등록 확인 필요"
     or capeState=="LOAD_FAILED" and "망토 로딩 실패 · 다시 입장해 줘"
     or "빨간 망토 장착 확인 중"
@@ -1175,7 +1175,7 @@ local function bindMeadowMenuCharacter(character)
   local capeArrivalWindUntil=0
   local capeRoot=character:FindFirstChild("HumanoidRootPart")
   local function bindWornCape(child)
-    if not child or not child:IsA("Accessory")
+    if not child or not child:IsA("Model")
       or child.Name~="MeadowWornCrimsonCape" then return end
     if capeAccessory==child and capeWeld and capeWeld.Parent then return end
     -- 기본 장착 후 Weld 생성이 한 프레임 늦을 수 있으므로 기존 로딩을 비동기로 기다린다.
@@ -1199,7 +1199,7 @@ local function bindMeadowMenuCharacter(character)
     end)
   end
   local function onCharacterChildChanged(child)
-    if child:IsA("Accessory") then
+    if child:IsA("Model") and child.Name=="MeadowWornCrimsonCape" then
       if child.Parent==character then
         bindWornCape(child)
       elseif child==capeAccessory then
@@ -1207,7 +1207,7 @@ local function bindMeadowMenuCharacter(character)
         table.clear(capeBones)
       end
     end
-    if child:IsA("Tool") or child:IsA("Accessory") or child:IsA("Shirt")
+    if child:IsA("Tool") or child:IsA("Accessory") or (child:IsA("Model") and child.Name=="MeadowWornCrimsonCape") or child:IsA("Shirt")
       or child:IsA("Pants") or child:IsA("ShirtGraphic") or child:IsA("BodyColors") then
       previewNeedsRefresh=true
     end
