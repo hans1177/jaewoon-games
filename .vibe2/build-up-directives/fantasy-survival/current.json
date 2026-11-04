@@ -1,27 +1,27 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g1-f8091bee9526",
-  "directiveFingerprint": "f8091bee952616c1b2d4f9f80448ed32748a0fb41b607e14b60c27f2bb909265",
-  "previousDirectiveFingerprint": null,
-  "forbiddenRepeatFingerprint": null,
+  "directiveId": "fantasy-survival-build-up-g2-9556ab5925f7",
+  "directiveFingerprint": "9556ab5925f7ea7b919d2bbe76c13adb5454ce20703a3efc6e8e9d618af85e9b",
+  "previousDirectiveFingerprint": "f8091bee952616c1b2d4f9f80448ed32748a0fb41b607e14b60c27f2bb909265",
+  "forbiddenRepeatFingerprint": "f8091bee952616c1b2d4f9f80448ed32748a0fb41b607e14b60c27f2bb909265",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 1,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-  "previousDirectiveOutcome": null,
+  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+  "previousDirectiveOutcome": "blocked",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+  "sourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
   "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
   "designSourceBuildUp": {
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
-    "previousDesignFingerprint": null,
-    "sameApprovedDesign": false,
+    "previousDesignFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
+    "sameApprovedDesign": true,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -346,7 +346,7 @@
           "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
           "VFX_AUDIO_CAMERA_POLISH_MOBILE"
         ],
-        "sourceTreeFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+        "sourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
         "rule": "MAIN_A_NAMED_GAME_SYSTEM_B_EXISTING_GAME_SYSTEMS; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -493,7 +493,7 @@
       "nextAction": "OPTIONAL_COMPATIBILITY_COMPARISON_ONLY_ROBLOX_LUAU_REMAINS_ORIGINAL"
     },
     "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
-    "sourceTreeFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+    "sourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
     "multiplayerMode": "HYBRID",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -1095,7 +1095,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+    "sourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
     "mode": "PRESERVATION_PRESENTATION_MILESTONES_ONLY",
     "authoredItemCount": 48,
     "authoredCounts": {
@@ -10106,44 +10106,44 @@
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH"
     ],
     "signals": {
-      "combat": 1143,
-      "progression": 1042,
+      "combat": 1153,
+      "progression": 1088,
       "ai": 295,
-      "save": 330,
-      "multiplayer": 58,
-      "animation": 460,
-      "motionStates": 1733,
+      "save": 354,
+      "multiplayer": 59,
+      "animation": 468,
+      "motionStates": 1764,
       "gameFeel": 190,
-      "vfx": 355,
-      "camera": 298,
+      "vfx": 364,
+      "camera": 299,
       "audio": 50,
       "audioDynamics": 32,
-      "ui": 1594,
-      "uiFlow": 1567,
+      "ui": 1597,
+      "uiFlow": 1579,
       "entryFlow": 14,
       "loadingFlow": 3,
-      "input": 239,
-      "map": 1403,
-      "landmark": 47,
-      "interaction": 662,
-      "inventory": 482,
+      "input": 243,
+      "map": 1430,
+      "landmark": 50,
+      "interaction": 665,
+      "inventory": 492,
       "equipment": 207,
-      "settings": 65,
-      "feedback": 171,
+      "settings": 66,
+      "feedback": 193,
       "session": 90,
-      "content": 2035,
-      "choice": 1822,
+      "content": 2041,
+      "choice": 1824,
       "connection": 9,
-      "performance": 118,
-      "lighting": 209,
-      "primitive": 59,
+      "performance": 119,
+      "lighting": 233,
+      "primitive": 60,
       "todo": 0,
-      "errorRecovery": 113
+      "errorRecovery": 134
     },
     "topFiles": [
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "score": 2697
+        "score": 2735
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -10151,7 +10151,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "score": 1525
+        "score": 1559
       },
       {
         "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
@@ -10193,7 +10193,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3145,
+        "line": 3374,
         "kind": "FUNCTION",
         "symbol": "setEnemyAttackState",
         "context": "local function setEnemyAttackState(enemy, state)",
@@ -10209,7 +10209,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 1811,
+        "line": 2040,
         "kind": "FUNCTION",
         "symbol": "equipped",
         "context": "local function equipped(player,slot)",
@@ -10265,7 +10265,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 1905,
+        "line": 1978,
         "kind": "FUNCTION",
         "symbol": "itemValue",
         "context": "local function itemValue(item)",
@@ -10273,7 +10273,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 5853,
+        "line": 6088,
         "kind": "FUNCTION",
         "symbol": "updateMeadowQuestDirection",
         "context": "local function updateMeadowQuestDirection()",
@@ -10313,7 +10313,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 4399,
+        "line": 4625,
         "kind": "FUNCTION",
         "symbol": "bindForestClimate",
         "context": "local function bindForestClimate(model)",
@@ -10321,7 +10321,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 1786,
+        "line": 2015,
         "kind": "FUNCTION",
         "symbol": "awardProgress",
         "context": "local function awardProgress(player, experience, coinReward)",
@@ -10329,7 +10329,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3242,
+        "line": 3471,
         "kind": "FUNCTION",
         "symbol": "chooseMeadowMobSkill",
         "context": "local function chooseMeadowMobSkill(enemy)",
@@ -10369,7 +10369,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 3522,
+        "line": 3662,
         "kind": "FUNCTION",
         "symbol": "showArrivalCamera",
         "context": "local function showArrivalCamera()",
@@ -10377,7 +10377,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 1831,
+        "line": 2060,
         "kind": "FUNCTION",
         "symbol": "publishStats",
         "context": "local function publishStats(player)",
@@ -10385,7 +10385,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 2992,
+        "line": 3221,
         "kind": "FUNCTION",
         "symbol": "applyMeadowDamage",
         "context": "local function applyMeadowDamage(player,target,damage)",
@@ -10417,7 +10417,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 2385,
+        "line": 2458,
         "kind": "FUNCTION",
         "symbol": "renderMeadowJournal",
         "context": "local function renderMeadowJournal()",
@@ -10425,7 +10425,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 2864,
+        "line": 2956,
         "kind": "FUNCTION",
         "symbol": "refreshArrivalOptions",
         "context": "local function refreshArrivalOptions()",
@@ -10433,7 +10433,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 4575,
+        "line": 4801,
         "kind": "FUNCTION",
         "symbol": "showIntro",
         "context": "local function showIntro(boss)",
@@ -10441,7 +10441,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 6465,
+        "line": 6700,
         "kind": "FUNCTION",
         "symbol": "finishNativeCombatMotion",
         "context": "local function finishNativeCombatMotion()",
@@ -10449,7 +10449,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 7284,
+        "line": 7522,
         "kind": "FUNCTION",
         "symbol": "updateEnemyLabel",
         "context": "local function updateEnemyLabel()",
@@ -10473,7 +10473,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 1819,
+        "line": 2048,
         "kind": "FUNCTION",
         "symbol": "stats",
         "context": "local function stats(player)",
@@ -10481,7 +10481,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 2057,
+        "line": 2286,
         "kind": "FUNCTION",
         "symbol": "inspectMeadowSurvival",
         "context": "local function inspectMeadowSurvival(player,model,subject)",
@@ -10537,7 +10537,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 3540,
+        "line": 3680,
         "kind": "FUNCTION",
         "symbol": "updateTitleStatus",
         "context": "local function updateTitleStatus()",
@@ -10545,7 +10545,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 4564,
+        "line": 4790,
         "kind": "FUNCTION",
         "symbol": "closeIntro",
         "context": "local function closeIntro()",
@@ -10553,7 +10553,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 4644,
+        "line": 4870,
         "kind": "FUNCTION",
         "symbol": "activateNearbyMeadowInteraction",
         "context": "local function activateNearbyMeadowInteraction(screenPosition)",
@@ -10561,7 +10561,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 5945,
+        "line": 6180,
         "kind": "FUNCTION",
         "symbol": "updateMeadowPromptHighlight",
         "context": "local function updateMeadowPromptHighlight()",
@@ -10569,7 +10569,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 7254,
+        "line": 7492,
         "kind": "FUNCTION",
         "symbol": "bindOriginalMob",
         "context": "local function bindOriginalMob(model)",
@@ -10618,20 +10618,32 @@
     ]
   },
   "previousVersionDelta": {
-    "state": "NO_PREVIOUS_DIRECTIVE"
+    "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
+    "previousFocus": "USABILITY",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+    "currentSourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
+    "sourceChanged": true,
+    "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+    "failureStage": "F0_SOURCE_INTEGRITY",
+    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
     "blockers": [
-      "roblox-build-package-revalidation-pending"
+      "roblox-f0-source-preflight-failed"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
-    "regressionPassed": false
+    "regressionPassed": false,
+    "f0SourcePreflightFailure": {
+      "sourceRevision": "266ba17188c429528a5eab0bb743dbaa14488109",
+      "stage": "F0_SOURCE_INTEGRITY",
+      "signature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+      "runtimeObserved": false
+    }
   },
   "multiplayerImplementation": {
     "required": false,
@@ -11859,7 +11871,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 5285719,
+        "sourceBytes": 5309587,
         "largestFileBytes": 625443,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -11892,8 +11904,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -11903,9 +11915,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -11941,7 +11954,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 76,
+        "score": 218,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -12058,7 +12071,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "fantasy-survival",
     "sourceRoot": "roblox-games/fantasy-survival",
-    "sourceTreeFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+    "sourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -12068,7 +12081,7 @@
       "assetReferences": 3,
       "missingReferences": 0
     },
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "sourceOnly": true,
     "qualityComplete": false,
     "evidenceScope": {
@@ -15895,12 +15908,12 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 1,
-    "previousGeneration": 0,
+    "generation": 2,
+    "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
-    "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
+    "sourceFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
+    "priorSourceFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -15918,7 +15931,7 @@
     "version": 1,
     "gameId": "fantasy-survival",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+    "sourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -16843,8 +16856,8 @@
       "gameId": "fantasy-survival",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 1,
-        "actorClass": "BOSS",
+        "generation": 2,
+        "actorClass": "CREATURE",
         "sourceOwnerFile": "roblox-games/fantasy-survival/client/Game.client.luau",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
@@ -16858,7 +16871,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "fantasy-survival",
-          "actorClass": "BOSS",
+          "actorClass": "CREATURE",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -17100,7 +17113,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+      "sourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -17124,7 +17137,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+      "sourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -17197,7 +17210,7 @@
     "gameId": "fantasy-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+    "sourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -17776,7 +17789,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3145,
+        "line": 3374,
         "kind": "FUNCTION",
         "symbol": "setEnemyAttackState",
         "currentBehavior": "local function setEnemyAttackState(enemy, state)",
@@ -17794,7 +17807,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 1811,
+        "line": 2040,
         "kind": "FUNCTION",
         "symbol": "equipped",
         "currentBehavior": "local function equipped(player,slot)",
@@ -17984,7 +17997,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3145,
+        "line": 3374,
         "kind": "FUNCTION",
         "symbol": "setEnemyAttackState",
         "context": "local function setEnemyAttackState(enemy, state)",
@@ -18008,7 +18021,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 1811,
+        "line": 2040,
         "kind": "FUNCTION",
         "symbol": "equipped",
         "context": "local function equipped(player,slot)",
@@ -18200,16 +18213,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "SOURCE_PREFLIGHT_FAILED",
+      "reason": "exact same-game F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED source preflight failed at 266ba17188c429528a5eab0bb743dbaa14488109; investigate and repair responsible source, then rerun canonical F0 before F1 or publication",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "52b6db0d3011b76cb2c3a70ec424ff16ecca530a09dda47f3dc33a2717d1dfc7",
+      "sourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING"
+      "failureStage": "F0_SOURCE_INTEGRITY",
+      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -18220,8 +18233,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial USABILITY build-up has no previous generation effect to compare"
+    "action": "CAUSAL_REPAIR",
+    "reason": "exact same-game F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED source preflight failed at 266ba17188c429528a5eab0bb743dbaa14488109; investigate and repair responsible source, then rerun canonical F0 before F1 or publication"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -18267,12 +18280,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 2,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-    "sourceChangedSincePrevious": false,
+    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -18327,5 +18340,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-04T07:54:24.000Z"
+  "generatedAt": "2026-11-04T09:31:20.855Z"
 }
