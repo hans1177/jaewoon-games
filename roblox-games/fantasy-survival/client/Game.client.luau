@@ -2969,19 +2969,54 @@ do
   })
   storyVisionGradient.Rotation=12
   storyVisionGradient.Parent=storyVision
-  -- [일러스트 레이어] 등록·권한 검증된 그림 ID만 사용하는 화면 레이어.
-  -- 아직 그림 ID가 없다면 텍스트와 기존 월드 카메라 연출만 수행한다.
+  -- [오프닝 전용 페인팅 2.5D] 원화의 픽셀 영역을 세 겹이 아닌 서로 배타적인
+  -- 하늘·중경·지면 절편으로 나눠 각기 다른 카메라 속도로 움직인다.
+  -- 3D 월드에는 붙이지 않으며 기존 인물·완성 원화가 중첩되지 않게 한다.
+  local storyPaintStage=Instance.new("Frame")
+  storyPaintStage.Name="IntroPainted25DStage"
+  storyPaintStage.AnchorPoint=Vector2.new(.5,.5)
+  storyPaintStage.Position=UDim2.fromScale(.5,.45)
+  storyPaintStage.Size=UDim2.fromScale(.96,.71)
+  storyPaintStage.BackgroundTransparency=1
+  storyPaintStage.BorderSizePixel=0
+  storyPaintStage.ClipsDescendants=true
+  storyPaintStage.ZIndex=6
+  storyPaintStage.Visible=false
+  storyPaintStage.Parent=introPanel
   local storyArtwork=Instance.new("ImageLabel")
   storyArtwork.Name="ApprovedStoryIllustration"
   storyArtwork.BackgroundTransparency=1
   storyArtwork.BorderSizePixel=0
-  storyArtwork.Size=UDim2.fromScale(.97,.76)
-  storyArtwork.Position=UDim2.fromScale(.015,.095)
-  storyArtwork.ScaleType=Enum.ScaleType.Fit
+  storyArtwork.Size=UDim2.fromScale(1.028,.34)
+  storyArtwork.Position=UDim2.fromScale(-.014,.43)
+  storyArtwork.ScaleType=Enum.ScaleType.Stretch
   storyArtwork.ImageTransparency=1
   storyArtwork.ZIndex=6
   storyArtwork.Visible=false
-  storyArtwork.Parent=introPanel
+  storyArtwork.Parent=storyPaintStage
+  -- [실제 독립 시차층] 같은 픽셀을 다시 그리지 않고 원화의 상·하 영역만 분담한다.
+  local storySky=Instance.new("ImageLabel")
+  storySky.Name="PrologueDistantSky"
+  storySky.BackgroundTransparency=1
+  storySky.BorderSizePixel=0
+  storySky.Size=UDim2.fromScale(1.014,.43)
+  storySky.Position=UDim2.fromScale(-.007,0)
+  storySky.ScaleType=Enum.ScaleType.Stretch
+  storySky.ImageTransparency=1
+  storySky.ZIndex=6
+  storySky.Visible=false
+  storySky.Parent=storyPaintStage
+  local storyGround=Instance.new("ImageLabel")
+  storyGround.Name="PrologueNearGround"
+  storyGround.BackgroundTransparency=1
+  storyGround.BorderSizePixel=0
+  storyGround.Size=UDim2.fromScale(1.05,.23)
+  storyGround.Position=UDim2.fromScale(-.025,.77)
+  storyGround.ScaleType=Enum.ScaleType.Stretch
+  storyGround.ImageTransparency=1
+  storyGround.ZIndex=7
+  storyGround.Visible=false
+  storyGround.Parent=storyPaintStage
   -- [원화 가장자리] 화면 외곽은 안개로 사라지게 하고 원본 얼굴·몸은 유지한다.
   local storyArtworkFade=Instance.new("UIGradient")
   storyArtworkFade.Transparency=NumberSequence.new({
@@ -3226,8 +3261,15 @@ do
     -- [화면비 보호] 인물·전장 전체를 실제 안전 구역 안에 Fit으로 표시한다.
     storyVision.Position=UDim2.fromScale(portrait and .035 or .075,portrait and .145 or .13)
     storyVision.Size=UDim2.fromScale(portrait and .93 or .85,portrait and .635 or .66)
-    storyArtwork.Position=UDim2.fromScale(portrait and .02 or .015,portrait and .12 or .095)
-    storyArtwork.Size=UDim2.fromScale(portrait and .96 or .97,portrait and .71 or .76)
+    -- [화면비] 잘라낸 원화 3조각을 원본 화면비 안에서만 표시해 찌그러짐을 막는다.
+    local contentSize=storyArtwork.ContentImageSize
+    local ratio=(contentSize.X>1 and contentSize.Y>1)
+      and contentSize.X/contentSize.Y or (16/9)
+    local viewWidth=size.X*(portrait and .98 or .96)
+    local viewHeight=size.Y*(portrait and .70 or .76)
+    local fitWidth=math.min(viewWidth,viewHeight*ratio)
+    storyPaintStage.Size=UDim2.fromOffset(math.floor(fitWidth),math.floor(fitWidth/ratio))
+    storyPaintStage.Position=UDim2.fromScale(.5,portrait and .45 or .47)
     storyForeground.Position=UDim2.fromScale(portrait and .02 or .025,portrait and .155 or .11)
     storyForeground.Size=UDim2.fromScale(portrait and .96 or .95,portrait and .62 or .69)
   end
@@ -3278,6 +3320,7 @@ do
   local activeTween=nil
   local activeFovTween=nil
   local activeStoryFocusTween=nil
+  local activePaintTweens={}
   local activeStoryRevealTween=nil
   local activeStoryColorTween=nil
   local activeVignetteTween=nil
@@ -3334,6 +3377,11 @@ do
     if activeTween then activeTween:Cancel();activeTween=nil end
     if activeFovTween then activeFovTween:Cancel();activeFovTween=nil end
     if activeStoryFocusTween then activeStoryFocusTween:Cancel();activeStoryFocusTween=nil end
+    for _,motion in ipairs(activePaintTweens) do motion:Cancel() end
+    table.clear(activePaintTweens)
+    storyPaintStage.Visible=false
+    storySky.Visible=false
+    storyGround.Visible=false
     if activeStoryRevealTween then activeStoryRevealTween:Cancel();activeStoryRevealTween=nil end
     if activeStoryColorTween then activeStoryColorTween:Cancel();activeStoryColorTween=nil end
     if activeVignetteTween then activeVignetteTween:Cancel();activeVignetteTween=nil end
@@ -3603,13 +3651,16 @@ do
     }
     local total=0
     for _,scene in ipairs(scenes) do total+=scene.seconds end
-    -- [오프닝 원화] 기존 승인 12장과 같은 장면의 전경 11개를 다시 활성화한다.
-    -- 3D 카메라·실제 NPC 촬영은 계속 유지하며 원화만 전경 레이어로 더한다.
+    -- [2.5D 페인팅 오프닝] 단일 이미지 통째 패닝을 제거하고 비중복 3개 시차 레이어로 사용한다.
+    -- 전경 캐릭터 컷은 별도이며 플레이어 실제 모델과 이중으로 나타나지 않는다.
     backdrop.BackgroundTransparency=.08
     introPanel.BackgroundTransparency=.12
     introTint.BackgroundTransparency=.86
     storyVision.Visible=true
     storyArtwork.Visible=false
+    storySky.Visible=false
+    storyGround.Visible=false
+    storyPaintStage.Visible=false
     storyForeground.Visible=false
     cinematicShadow.Visible=false
     cinematicMist.Visible=false
@@ -3750,6 +3801,8 @@ do
         -- [장면 감독] 한 화면에 완성 JPG + 같은 장면 PNG를 절대 중첩하지 않는다.
         storyCurtain.BackgroundTransparency=0
         if activeStoryFocusTween then activeStoryFocusTween:Cancel() end
+        for _,motion in ipairs(activePaintTweens) do motion:Cancel() end
+        table.clear(activePaintTweens)
         if activeStoryRevealTween then activeStoryRevealTween:Cancel() end
         if activeActorGestureTween then activeActorGestureTween:Cancel() end
         if activeActorEraseTween then activeActorEraseTween:Cancel() end
@@ -3770,10 +3823,15 @@ do
         local useWorldActor=actorShot and foregroundAvailable
         local usePaintedBackdrop=artworkAvailable and not useWorldActor
         setIntroPlayerHidden(useWorldActor and scene.actor=="PLAYER")
+        -- [원화 2.5D] 한 장 전체를 중첩 렌더하지 않는다. 세 이미지에 원본 픽셀의
+        -- 서로 다른 직사각 영역만 배분하여 실제 분리된 하늘/원경/지면 절편을 만든다.
+        storyPaintStage.Visible=usePaintedBackdrop
         storyArtwork.Visible=usePaintedBackdrop
+        storySky.Visible=usePaintedBackdrop
+        storyGround.Visible=usePaintedBackdrop
         storyArtwork.Image=usePaintedBackdrop and artworkId or ""
-        storyArtwork.ImageTransparency=1
-        storyArtwork.Rotation=0
+        storySky.Image=usePaintedBackdrop and artworkId or ""
+        storyGround.Image=usePaintedBackdrop and artworkId or ""
         storyForeground.Visible=useWorldActor
         storyForeground.Image=useWorldActor and foregroundId or ""
         storyForeground.ImageTransparency=1
@@ -3783,22 +3841,60 @@ do
         introPanel.BackgroundTransparency=usePaintedBackdrop and .1 or 1
         introTint.BackgroundTransparency=usePaintedBackdrop and .9 or .98
         layoutIntroCaptions()
-        local artFrom=storyArtwork.Position
         local foreFrom=storyForeground.Position
         local direction=index%2==0 and -1 or 1
-        storyArtwork.Position=artFrom+UDim2.fromScale(-direction*.009,.002)
         storyForeground.Position=foreFrom+UDim2.fromScale(direction*.01,-.003)
         local artDuration=math.max(1,scene.seconds-.5)
         if usePaintedBackdrop then
-          activeStoryFocusTween=TweenService:Create(storyArtwork,
-            TweenInfo.new(artDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
-              Position=artFrom+UDim2.fromScale(direction*.01,-.004),
-              Rotation=direction*.22,
-            })
-          activeStoryRevealTween=TweenService:Create(storyArtwork,
-            TweenInfo.new(.8,Enum.EasingStyle.Sine),{ImageTransparency=.005})
-          activeStoryFocusTween:Play()
-          activeStoryRevealTween:Play()
+          local pixelSize=storyArtwork.ContentImageSize
+          local imageWidth=pixelSize.X>1 and math.floor(pixelSize.X) or 1024
+          local imageHeight=pixelSize.Y>1 and math.floor(pixelSize.Y) or 576
+          local skyHeight=math.floor(imageHeight*.43)
+          local middleHeight=math.floor(imageHeight*.34)
+          local groundHeight=imageHeight-skyHeight-middleHeight
+          storySky.ImageRectOffset=Vector2.new(0,0)
+          storySky.ImageRectSize=Vector2.new(imageWidth,skyHeight)
+          storyArtwork.ImageRectOffset=Vector2.new(0,skyHeight)
+          storyArtwork.ImageRectSize=Vector2.new(imageWidth,middleHeight)
+          storyGround.ImageRectOffset=Vector2.new(0,skyHeight+middleHeight)
+          storyGround.ImageRectSize=Vector2.new(imageWidth,groundHeight)
+          local planes={
+            {label=storySky,y=0,x=-.007,overscan=.003},
+            {label=storyArtwork,y=.43,x=-.014,overscan=.010},
+            {label=storyGround,y=.77,x=-.025,overscan=.020},
+          }
+          for _,plane in ipairs(planes) do
+            local sprite=plane.label
+            sprite.ImageTransparency=1
+            sprite.Position=UDim2.fromScale(plane.x-direction*plane.overscan*.5,plane.y)
+            local motion=TweenService:Create(sprite,
+              TweenInfo.new(artDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+                Position=UDim2.fromScale(plane.x+direction*plane.overscan*.5,
+                  plane.y-(plane.overscan*.14)),
+              })
+            local reveal=TweenService:Create(sprite,
+              TweenInfo.new(.85,Enum.EasingStyle.Sine),{ImageTransparency=.005})
+            activePaintTweens[#activePaintTweens+1]=motion
+            activePaintTweens[#activePaintTweens+1]=reveal
+            motion:Play()
+            reveal:Play()
+          end
+          -- [화질 회복] 신규 원화 로딩 직후 Roblox가 알려 주는 실제 픽셀 치수로
+          -- 세 절편을 갱신한다. 이미지 로딩 실패 시 크기 1024x576 기본값을 사용한다.
+          task.delay(.35,function()
+            if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
+            local actual=storyArtwork.ContentImageSize
+            if actual.X<=1 or actual.Y<=1 then return end
+            local w,h=math.floor(actual.X),math.floor(actual.Y)
+            local sky=math.floor(h*.43)
+            local middle=math.floor(h*.34)
+            storySky.ImageRectSize=Vector2.new(w,sky)
+            storyArtwork.ImageRectOffset=Vector2.new(0,sky)
+            storyArtwork.ImageRectSize=Vector2.new(w,middle)
+            storyGround.ImageRectOffset=Vector2.new(0,sky+middle)
+            storyGround.ImageRectSize=Vector2.new(w,h-sky-middle)
+            layoutIntroCaptions()
+          end)
         end
         if useWorldActor then
           -- 실제 3D 월드가 원경으로 움직일 때 인물 PNG는 독립적으로 약하게 후행한다.

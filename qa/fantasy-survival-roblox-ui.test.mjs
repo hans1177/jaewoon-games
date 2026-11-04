@@ -388,7 +388,24 @@ test('intro renders only one of original painted backdrop and separated 3D actor
   assert.match(intro,/storyArtwork\.Image=usePaintedBackdrop and artworkId or ""/);
   assert.match(intro,/storyForeground\.Image=useWorldActor and foregroundId or ""/);
   assert.match(intro,/backdrop\.BackgroundTransparency=usePaintedBackdrop and \.06 or 1/);
-  assert.match(intro,/activeStoryFocusTween=TweenService:Create\(storyArtwork,/);
+  assert.match(client,/local storyPaintStage=Instance\.new\("Frame"\)/);
+  assert.match(client,/storyPaintStage\.Name="IntroPainted25DStage"/);
+  assert.match(client,/storyPaintStage\.ClipsDescendants=true/);
+  assert.match(client,/storyArtwork\.Parent=storyPaintStage/);
+  assert.match(intro,/storyPaintStage\.Visible=usePaintedBackdrop/);
+  assert.match(client,/storySky\.Name="PrologueDistantSky"/);
+  assert.match(client,/storyGround\.Name="PrologueNearGround"/);
+  assert.match(intro,/storySky\.ImageRectOffset=Vector2\.new\(0,0\)/);
+  assert.match(intro,/storyArtwork\.ImageRectOffset=Vector2\.new\(0,skyHeight\)/);
+  assert.match(intro,/storyGround\.ImageRectOffset=Vector2\.new\(0,skyHeight\+middleHeight\)/);
+  assert.match(intro,/storySky\.ImageRectSize=Vector2\.new\(imageWidth,skyHeight\)/);
+  assert.match(intro,/storyArtwork\.ImageRectSize=Vector2\.new\(imageWidth,middleHeight\)/);
+  assert.match(intro,/storyGround\.ImageRectSize=Vector2\.new\(imageWidth,groundHeight\)/);
+  assert.match(intro,/local planes=\{/);
+  assert.match(intro,/for _,plane in ipairs\(planes\) do/);
+  assert.match(intro,/activePaintTweens\[#activePaintTweens\+1\]=motion/);
+  assert.match(intro,/local actual=storyArtwork\.ContentImageSize/);
+  assert.match(client,/for _,motion in ipairs\(activePaintTweens\) do motion:Cancel\(\) end/);
   assert.match(intro,/activeActorGestureTween=TweenService:Create\(storyForeground,/);
   assert.match(intro,/ContentProvider"\):PreloadAsync\(ids\)/);
   assert.match(client,/local cinematicLight=Instance\.new\("Frame"\)/);
@@ -404,9 +421,10 @@ test('intro renders only one of original painted backdrop and separated 3D actor
   assert.match(intro,/spark\.ImageTransparency=\.52/);
   assert.doesNotMatch(intro,/spark\.BackgroundTransparency=\.44/);
   assert.match(client,/if activeLightTween then activeLightTween:Cancel\(\);activeLightTween=nil end/);
-  assert.match(client,/storyArtwork\.ScaleType=Enum\.ScaleType\.Fit/);
+  assert.match(client,/storyArtwork\.ScaleType=Enum\.ScaleType\.Stretch/);
   assert.match(client,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
-  assert.doesNotMatch(intro,/ImageRectOffset|ImageRectSize|openingScale/);
+  assert.match(client,/storyPaintStage\.Size=UDim2\.fromOffset\(math\.floor\(fitWidth\),math\.floor\(fitWidth\/ratio\)\)/);
+  assert.doesNotMatch(intro,/openingScale/);
 });
 
 test('native world prologue preserves all twelve scripted beats and camera coverage',()=>{
@@ -429,7 +447,8 @@ test('native world prologue preserves all twelve scripted beats and camera cover
     'activeTween=TweenService:Create(cameraMotionValue,',
     'Value=ending',
     'camera.CameraType=Enum.CameraType.Scriptable',
-    'storyArtwork.Visible=usePaintedBackdrop','storyForeground.Visible=useWorldActor',
+    'storyArtwork.Visible=usePaintedBackdrop','storySky.Visible=usePaintedBackdrop',
+    'storyGround.Visible=usePaintedBackdrop','storyForeground.Visible=useWorldActor',
     'backdrop.BackgroundTransparency=usePaintedBackdrop and .06 or 1',
     'introPanel.BackgroundTransparency=usePaintedBackdrop and .1 or 1',
     'skipButton.Activated:Once(finish)',
