@@ -1,0 +1,449 @@
+<!doctype html>
+<!-- 파일명: web-games/forest-survival/index.html -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#14291f">
+<title>숲의 끝 · 생존 협동</title>
+<style>
+/* 메인: 모바일 우선 게임 HUD, 로그인 없는 숫자방 */
+:root{font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#fff2d9;background:#122218}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;touch-action:none}
+button,input{font:inherit}
+button{cursor:pointer;border:1px solid #c4ab72;border-radius:9px;background:#344f36;color:#ffe9bf;font-weight:800;padding:10px}
+button:disabled{opacity:.45}
+button:active{filter:brightness(1.25)}
+#world{width:100vw;height:100dvh;display:block}
+#hud{position:absolute;z-index:3;top:calc(7px + env(safe-area-inset-top));left:9px;right:9px;display:none;pointer-events:none}
+.hudline{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.badge{border:1px solid #a6bb8b66;border-radius:8px;padding:6px 9px;background:#10271dda;font-size:12px;box-shadow:0 4px 12px #0007}
+.badge strong{color:#f8db8f}
+#roomBar{margin-top:6px;pointer-events:auto;display:flex;gap:6px;align-items:center}
+#roomBar button{min-height:30px;padding:4px 9px;font-size:11px}
+#tip{max-width:94vw;margin-top:7px;padding:8px;background:#122b21d9;border:1px solid #a9c39888;border-radius:8px;font-size:12px;opacity:0;transition:opacity .15s}
+#tip.show{opacity:1}
+#controls{display:none;position:absolute;z-index:5;bottom:calc(12px + env(safe-area-inset-bottom));left:9px;right:9px;align-items:end;justify-content:space-between;gap:9px;pointer-events:none}
+#joy{position:relative;flex:0 0 108px;width:108px;height:108px;border-radius:50%;border:3px solid #b9d5be91;background:#173b2acb;pointer-events:auto;touch-action:none}
+#stick{position:absolute;left:32px;top:32px;width:40px;height:40px;border-radius:50%;background:#d4d8b3b8;border:2px solid #fff9}
+#actions{display:grid;grid-template-columns:repeat(3,minmax(0,58px));gap:6px;pointer-events:auto}
+#actions button{min-width:0;min-height:51px;padding:3px;font-size:12px;box-shadow:0 4px 14px #0008}
+#actions .danger{background:#8b4033}
+#actions .utility{background:#5a6133}
+#start{position:absolute;z-index:10;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#071b15ed,#1c392aef);padding:16px;overflow:auto}
+#start.hidden{display:none}
+.card{width:min(100%,425px);padding:24px 18px;border-radius:18px;border:2px solid #d4c187a8;background:linear-gradient(140deg,#2b4831,#14251f);box-shadow:0 12px 45px #0009}
+h1{font-size:29px;margin:0 0 8px;color:#f9df9b}
+.subtitle{font-size:13px;line-height:1.75;color:#d8e1cb}
+.card .big{display:block;width:100%;padding:14px;margin-top:11px;background:#48784d;font-size:16px}
+.join{display:flex;gap:7px;margin-top:12px}
+.join input{min-width:0;flex:1;height:49px;border:1px solid #a8bc86;background:#10251b;color:#fff6d0;border-radius:9px;padding:9px;text-align:center;font-size:20px}
+.join button{width:110px}
+#netStatus{min-height:43px;line-height:1.5;font-size:12px;color:#ffe4a2;margin-top:12px}
+.note{font-size:11px;color:#bfcfb8;line-height:1.6}
+#bag{display:none;position:absolute;z-index:8;inset:0;background:#07130ee6;align-items:center;justify-content:center;padding:12px}
+#bag.show{display:flex}
+#bagInner{width:min(100%,440px);max-height:85dvh;overflow:auto;padding:18px;border:2px solid #c7af7e;border-radius:14px;background:#233b2c}
+#bagInner h2{margin:0 0 15px}
+#bagGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.item{border:1px solid #899d78;padding:11px 7px;border-radius:9px;background:#143025;font-size:12px;min-height:65px}
+.item b{display:block;font-size:18px;color:#f7d98e;margin-top:5px}
+#bagClose{margin-top:15px;width:100%}
+#statusText{position:absolute;z-index:4;left:50%;top:50%;transform:translate(-50%,-50%);max-width:88vw;display:none;padding:13px;border-radius:10px;background:#12261fea;text-align:center;font-weight:700}
+@media(max-width:370px){#actions{grid-template-columns:repeat(3,50px);gap:4px}#actions button{min-height:46px;font-size:11px}#joy{flex-basis:92px;width:92px;height:92px}#stick{left:27px;top:27px;width:34px;height:34px}.badge{font-size:10px;padding:5px 6px}}
+</style>
+<script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js","three/addons/":"../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/"}}</script>
+</head>
+<body>
+<canvas id="world" aria-label="입체 야생 숲"></canvas>
+<div id="statusText"></div>
+<div id="hud">
+  <div class="hudline">
+   <div class="badge">♥ 체력 <strong id="hp">100</strong></div>
+   <div class="badge">허기 <strong id="food">100</strong></div>
+   <div class="badge">기력 <strong id="stamina">100</strong></div>
+   <div class="badge"><strong id="day">1일 낮</strong></div>
+   <div class="badge">생존 <strong id="safe">안전</strong></div>
+  </div>
+  <div id="roomBar"><span id="roomLabel" class="badge">혼자 생존 중</span><button id="share">초대 링크</button><button id="leave">나가기</button></div>
+  <div id="tip" role="status"></div>
+</div>
+<div id="controls">
+ <div id="joy"><div id="stick"></div></div>
+ <div id="actions">
+  <button id="attack" class="danger">공격</button><button id="gather" class="utility">채집</button><button id="eat">먹기</button>
+  <button id="craft">창 제작</button><button id="rest">휴식</button><button id="inventory">가방</button>
+ </div>
+</div>
+<section id="bag"><div id="bagInner"><h2>인벤토리</h2><div id="bagGrid"></div><button id="bagClose">닫기</button></div></section>
+<section id="start"><div class="card">
+ <h1>숲의 끝</h1>
+ <div class="subtitle">광활한 숲에서 자원을 모아 살아남아. 처음 35초는 안전해.<br>공격형 4종: 멧돼지·늑대 / 밤에만 호랑이·박쥐.<br>위험한 동물은 주로 지도 가장자리에 등장하고, 토끼·사슴은 드물게 어디서나 나타나.</div>
+ <button id="solo" class="big" disabled>혼자 시작</button>
+ <button id="create" class="big" disabled>멀티 방 만들기 · 4명까지</button>
+ <div class="join"><input id="code" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="방 번호 1~10" aria-label="방 번호"><button id="join" disabled>방 참가</button></div>
+ <div id="netStatus" role="status">입체 숲을 불러오는 중이야.</div>
+ <div class="note">회원가입 필요 없음 · 방을 만들면 1~10 중 사용하지 않는 번호가 발급돼 · 번호와 링크를 친구에게 공유해.</div>
+</div></section>
+<script type="module">
+// 임포트: 기존 무료 멀티 WebSocket과 CC0 3D 월드
+import {createWorld} from './world.mjs';
+import {JaewoonMultiplayerClient} from '../../multiplayer/multiplayer-client.js';
+const $=id=>document.getElementById(id);
+const GAME='forest-survival',KEY='jg-forest-survival-v1',SIZE=2400;
+const mobStats={
+ boar:{name:'멧돼지',hp:80,speed:60,hit:11},
+ wolf:{name:'늑대',hp:64,speed:100,hit:9},
+ tiger:{name:'호랑이',hp:140,speed:106,hit:18},
+ bat:{name:'박쥐',hp:40,speed:116,hit:7}
+};
+const names={wood:'나무',stone:'돌',berry:'열매',fiber:'섬유',meat:'고기',spear:'창'};
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const noise=seed=>{const t=Math.sin(seed*128.37+33.73)*43758.5453;return t-Math.floor(t)};
+function makePlayer(id,name){
+ return {id:id||'solo',name:name||'탐험가',type:'hero',x:1200+rnd(-45,45),y:1200+rnd(-45,45),angle:0,hp:100,food:100,stamina:100,inv:{wood:0,stone:0,berry:2,fiber:0,meat:0,spear:0},hitAt:-100,gatherAt:-100,restAt:-100};
+}
+function fresh(){
+ return {started:false,day:1,time:0,elapsed:0,mobs:[],neutrals:[],players:[],taken:{},lastMob:0,lastNeutral:0,serial:0};
+}
+const nodes=[];
+for(let i=0;i<66;i++){
+ const kind=i%6<3?'wood':i%6===3?'stone':'berry';
+ const x=120+noise(i+11)*2160,y=120+noise(i+901)*2160;
+ if(Math.hypot(x-1200,y-1200)<155)continue;
+ nodes.push({id:i,type:kind,x,y});
+}
+let S=fresh(),scene=null,last=performance.now(),noticeUntil=0,frameAt=0,lastUi=0,keys={};
+const joy={id:null,x:0,y:0},input={x:0,y:0,attack:0,gather:0,eat:0,rest:0,craft:0};
+const net={client:null,mode:'solo',connected:false,id:'solo',host:'',roster:[],code:'',inputs:new Map(),seq:0,lastFrame:0,sendAt:0,lastInputAt:0};
+const isHost=()=>net.mode==='solo'||(net.connected&&net.id===net.host);
+const me=()=>S.players.find(p=>p.id===net.id);
+function alertText(text){$('tip').textContent=text;$('tip').classList.add('show');noticeUntil=performance.now()+2600;}
+function statusText(text){$('netStatus').textContent=text;}
+function showGame(){S.started=true;$('start').classList.add('hidden');$('hud').style.display='block';$('controls').style.display='flex';}
+function saveSolo(){
+ if(net.mode!=='solo'||!S.started)return;
+ try{localStorage.setItem(KEY,JSON.stringify({day:S.day,time:S.time,elapsed:S.elapsed,players:S.players,mobs:S.mobs,neutrals:S.neutrals,taken:S.taken,serial:S.serial,lastMob:S.lastMob,lastNeutral:S.lastNeutral}));}catch{}
+}
+function startSolo(){
+ net.mode='solo';net.connected=false;net.id='solo';net.host='solo';net.code='';net.roster=[];
+ S=fresh();
+ try{
+  const old=JSON.parse(localStorage.getItem(KEY)||'null');
+  if(old&&Array.isArray(old.players)&&old.players.length&&Number.isFinite(old.time)){
+   S={...S,...old,started:true,players:old.players,neutrals:Array.isArray(old.neutrals)?old.neutrals:[],mobs:Array.isArray(old.mobs)?old.mobs:[],taken:old.taken&&typeof old.taken==='object'?old.taken:{}};
+   S.players[0].id='solo';
+  }
+ }catch{}
+ if(!S.players.length)S.players.push(makePlayer('solo','탐험가'));
+ updateRoomBar();showGame();alertText('가장자리로 가면 위험해. 나무·돌·열매를 모아 봐.');
+}
+function spawnPoint(outer){
+ if(outer){
+  const side=Math.floor(rnd(0,4)),v=rnd(80,2320),edge=rnd(50,330);
+  return {x:side===0?edge:side===1?2400-edge:v,y:side===2?edge:side===3?2400-edge:v};
+ }
+ let p;
+ do{p={x:rnd(100,2300),y:rnd(100,2300)}}while(Math.hypot(p.x-1200,p.y-1200)<420);
+ return p;
+}
+function spawnMob(type){
+ const stats=mobStats[type],p=spawnPoint(Math.random()<.84);
+ S.mobs.push({id:'m'+ ++S.serial,type,x:p.x,y:p.y,angle:0,hp:stats.hp,maxHp:stats.hp,attackAt:0,dx:0,dy:0,wander:0});
+}
+function spawnNeutral(){
+ const type=Math.random()<.63?'rabbit':'deer';
+ S.neutrals.push({id:'n'+ ++S.serial,type,x:rnd(75,2325),y:rnd(75,2325),hp:type==='rabbit'?20:60,angle:0,dx:0,dy:0,wander:0});
+}
+// 메인: 채집과 제작은 방장 게임 상태에서만 판정한다.
+function collect(p){
+ if(S.elapsed-p.gatherAt<.55)return;
+ p.gatherAt=S.elapsed;
+ let closest=null,d=105;
+ for(const node of nodes){
+  if((S.taken[node.id]||0)>S.elapsed)continue;
+  const m=dist(p,node);if(m<d){closest=node;d=m;}
+ }
+ if(!closest){if(p.id===net.id)alertText('가까운 나무·돌·풀을 찾아 이동해.');return;}
+ S.taken[closest.id]=S.elapsed+100;
+ if(closest.type==='wood'){p.inv.wood+=2;p.inv.fiber++;}
+ if(closest.type==='stone')p.inv.stone+=2;
+ if(closest.type==='berry')p.inv.berry+=2;
+ if(p.id===net.id)alertText(names[closest.type]+' 획득');
+}
+function attack(p){
+ if(S.elapsed-p.hitAt<.48)return;
+ p.hitAt=S.elapsed;
+ let target=null,d=p.inv.spear>0?118:79,kind='';
+ for(const m of S.mobs){const n=dist(p,m);if(n<d){target=m;d=n;kind='mob';}}
+ for(const n of S.neutrals){const v=dist(p,n);if(v<d){target=n;d=v;kind='neutral';}}
+ if(!target)return;
+ target.hp-=p.inv.spear>0?34:13;
+ if(target.hp<=0){
+  if(kind==='mob'){S.mobs=S.mobs.filter(m=>m!==target);p.inv.meat+=2;}
+  else{S.neutrals=S.neutrals.filter(n=>n!==target);p.inv.meat++;}
+  if(p.id===net.id)alertText('사냥 성공 · 고기 획득');
+ }
+}
+function consume(p){
+ if(p.inv.berry>0){p.inv.berry--;p.food=clamp(p.food+20,0,100);p.stamina=clamp(p.stamina+10,0,100);}
+ else if(p.inv.meat>0){p.inv.meat--;p.food=clamp(p.food+34,0,100);p.hp=clamp(p.hp+7,0,100);}
+ else if(p.id===net.id)alertText('먹을 음식이 없어.');
+}
+function craft(p){
+ if(p.inv.spear){if(p.id===net.id)alertText('이미 창을 가지고 있어.');return;}
+ if(p.inv.wood<3||p.inv.stone<2){if(p.id===net.id)alertText('창 제작: 나무 3개와 돌 2개가 필요해.');return;}
+ p.inv.wood-=3;p.inv.stone-=2;p.inv.spear=1;
+ if(p.id===net.id)alertText('창 제작 완료 · 공격력이 강해졌어.');
+}
+function rest(p){
+ if(S.elapsed-p.restAt<8)return;
+ p.restAt=S.elapsed;p.stamina=clamp(p.stamina+26,0,100);
+ if(p.id===net.id)alertText('잠깐 쉬어서 기력을 회복했어.');
+}
+function processInput(p,move,dt){
+ if(!p||p.hp<=0)return;
+ const x=clamp(Number(move.x)||0,-1,1),y=clamp(Number(move.y)||0,-1,1),l=Math.hypot(x,y);
+ if(l>.08){
+  const speed=p.stamina<10?94:165;
+  p.x=clamp(p.x+x/Math.max(1,l)*speed*dt,35,SIZE-35);
+  p.y=clamp(p.y+y/Math.max(1,l)*speed*dt,35,SIZE-35);
+  p.angle=Math.atan2(-x,-y);
+  p.stamina=clamp(p.stamina-dt*.56,0,100);
+ }
+ if(move.attack&&move.attack!==p._attack){p._attack=move.attack;attack(p);}
+ if(move.gather&&move.gather!==p._gather){p._gather=move.gather;collect(p);}
+ if(move.eat&&move.eat!==p._eat){p._eat=move.eat;consume(p);}
+ if(move.rest&&move.rest!==p._rest){p._rest=move.rest;rest(p);}
+ if(move.craft&&move.craft!==p._craft){p._craft=move.craft;craft(p);}
+}
+function simulateAnimals(dt){
+ const night=S.time>=180;
+ for(const mob of S.mobs){
+  if((mob.type==='tiger'||mob.type==='bat')&&!night)continue;
+  let nearest=null,d=360;
+  for(const p of S.players)if(p.hp>0){const v=dist(p,mob);if(v<d){nearest=p;d=v;}}
+  if(nearest){
+   const dx=(nearest.x-mob.x)/(d||1),dy=(nearest.y-mob.y)/(d||1);
+   mob.x+=dx*mobStats[mob.type].speed*dt;mob.y+=dy*mobStats[mob.type].speed*dt;
+   mob.angle=Math.atan2(-dx,-dy);
+   if(d<56&&S.elapsed-mob.attackAt>1.15){
+    mob.attackAt=S.elapsed;nearest.hp=clamp(nearest.hp-mobStats[mob.type].hit,0,100);
+   }
+  }else{
+   mob.wander-=dt;
+   if(mob.wander<=0){mob.wander=rnd(2,5);const a=rnd(0,Math.PI*2);mob.dx=Math.cos(a);mob.dy=Math.sin(a);}
+   mob.x=clamp(mob.x+mob.dx*dt*27,35,2365);
+   mob.y=clamp(mob.y+mob.dy*dt*27,35,2365);
+  }
+ }
+ for(const animal of S.neutrals){
+  let nearest=null,d=270;
+  for(const p of S.players)if(p.hp>0&&dist(p,animal)<d){nearest=p;d=dist(p,animal);}
+  if(nearest){
+   const dx=(animal.x-nearest.x)/(d||1),dy=(animal.y-nearest.y)/(d||1);
+   animal.x=clamp(animal.x+dx*dt*110,35,2365);
+   animal.y=clamp(animal.y+dy*dt*110,35,2365);
+   animal.angle=Math.atan2(-dx,-dy);
+  }else{
+   animal.wander-=dt;
+   if(animal.wander<=0){animal.wander=rnd(2,5);const a=rnd(0,6.28);animal.dx=Math.cos(a);animal.dy=Math.sin(a);}
+   animal.x=clamp(animal.x+animal.dx*dt*19,35,2365);
+   animal.y=clamp(animal.y+animal.dy*dt*19,35,2365);
+  }
+ }
+}
+function update(dt){
+ S.elapsed+=dt;S.time+=dt;
+ if(S.time>=300){S.time-=300;S.day++;S.mobs=S.mobs.filter(m=>m.type==='wolf'||m.type==='boar');}
+ if(S.elapsed>=35&&S.elapsed-S.lastMob>=16&&S.mobs.length<11){
+  S.lastMob=S.elapsed;
+  const type=S.time>=180?(Math.random()<.5?'tiger':'bat'):(Math.random()<.55?'boar':'wolf');
+  spawnMob(type);
+ }
+ if(S.elapsed>8&&S.elapsed-S.lastNeutral>=48&&S.neutrals.length<6){
+  S.lastNeutral=S.elapsed;spawnNeutral();
+ }
+ // 단일 방장이 4인 이동·공격·자원·동물 상태를 계산한다.
+ for(const p of S.players){
+  const move=p.id===net.id?input:net.inputs.get(p.id)||{};
+  processInput(p,move,dt);
+  p.food=clamp(p.food-dt*.16,0,100);
+  p.stamina=clamp(p.stamina+dt*.25,0,100);
+  if(p.food<=0)p.hp=clamp(p.hp-dt*1.7,0,100);
+ }
+ simulateAnimals(dt);
+ for(const p of S.players)if(p.hp<=0){
+  p.hp=100;p.food=70;p.stamina=100;p.x=1200;p.y=1200;p.inv={wood:0,stone:0,berry:2,fiber:0,meat:0,spear:0};
+  if(p.id===net.id)alertText('쓰러져서 숲 중앙에서 다시 시작해.');
+ }
+}
+function frameState(){
+ return {day:S.day,time:Math.round(S.time*100)/100,elapsed:Math.round(S.elapsed*100)/100,
+  players:S.players,mobs:S.mobs,neutrals:S.neutrals,taken:S.taken,serial:S.serial,lastMob:S.lastMob,lastNeutral:S.lastNeutral};
+}
+function applyFrame(data){
+ if(!data||!Array.isArray(data.players)||data.players.length>4||!Array.isArray(data.mobs)||data.mobs.length>15||!Array.isArray(data.neutrals)||data.neutrals.length>8)return;
+ if(!Number.isFinite(data.time)||!Number.isFinite(data.elapsed)||!data.taken||typeof data.taken!=='object')return;
+ S={...S,...data,started:true};showGame();updateRoomBar();
+}
+function syncRoster(rows){
+ net.roster=(Array.isArray(rows)?rows:[]).slice(0,4);
+ net.host=net.roster[0]?.userId||'';
+ if(isHost()){
+  if(!S.started){S=fresh();S.started=true;}
+  for(const user of net.roster)if(!S.players.some(p=>p.id===user.userId))S.players.push(makePlayer(user.userId,user.nickname));
+  S.players=S.players.filter(p=>net.roster.some(r=>r.userId===p.id));
+  showGame();
+ }
+ updateRoomBar();
+}
+function receiveMessage(msg){
+ if(msg.type==='connected'){
+  net.connected=true;net.id=msg.userId;syncRoster(msg.players||[]);
+  showGame();statusText('멀티 접속 완료');return;
+ }
+ if(msg.type==='presence'){syncRoster(msg.players||[]);return;}
+ if(msg.type!=='event'||!net.connected||msg.userId===net.id)return;
+ if(msg.action==='forest-intent'&&isHost()){
+  if(!net.roster.some(p=>p.userId===msg.userId))return;
+  if(!Number.isFinite(msg.x)||!Number.isFinite(msg.y)||Math.abs(msg.x)>1||Math.abs(msg.y)>1)return;
+  net.inputs.set(msg.userId,{x:msg.x,y:msg.y,attack:Number(msg.attack)||0,gather:Number(msg.gather)||0,eat:Number(msg.eat)||0,rest:Number(msg.rest)||0,craft:Number(msg.craft)||0});
+ }
+ if(msg.action==='forest-frame'&&!isHost()&&msg.userId===net.host&&Number.isInteger(msg.seq)&&msg.seq>net.lastFrame){
+  net.lastFrame=msg.seq;applyFrame(msg.state);
+ }
+}
+function multiplayer(){
+ if(net.client)return net.client;
+ const client=new JaewoonMultiplayerClient();
+ client.on('message_received',e=>receiveMessage(e.detail));
+ client.on('websocket_disconnected',()=>{
+  net.connected=false;statusText('연결 복구 중이야. 서버에 연결되지 않으면 나가기를 눌러.');
+  alertText('멀티 연결이 끊겼어. 자동 재접속을 시도해.');
+ });
+ net.client=client;return client;
+}
+async function roomAction(action){
+ const code=$('code').value.trim();
+ if(action==='join'&&!/^(?:[1-9]|10)$/.test(code)){statusText('1~10 숫자 중 하나를 입력해.');return;}
+ for(const key of ['solo','create','join'])$(key).disabled=true;
+ statusText('멀티 서버 연결 중...');
+ const client=multiplayer();
+ let result;
+ try{result=action==='create'?await client.createNumberRoomForGame(GAME):await client.joinNumberRoomForGame(GAME,code);}
+ catch(e){result={ok:false,data:{error:'network_error'}};}
+ if(!result?.ok){
+  const err=result?.data?.error;
+  statusText(({rooms_full:'열 개의 방이 모두 사용 중이야.',room_full:'방이 가득 찼어.',room_not_found:'그 방 번호가 없어.',network_error:'멀티 서버에 연결할 수 없어.',invalid_game:'멀티 서버 버전을 갱신해야 해.'})[err]||'멀티 서버가 응답하지 않아: '+(err||'연결 실패'));
+  for(const key of ['solo','create','join'])$(key).disabled=false;
+  return;
+ }
+ net.mode='room';net.connected=false;net.id='';net.code=String(result.data.inviteCode);net.lastFrame=0;
+ S=fresh();$('code').value=net.code;
+ statusText('방 번호 '+net.code+' · 접속 중...');
+ for(const key of ['solo','create','join'])$(key).disabled=false;
+}
+async function leave(){
+ if(net.client&&net.mode==='room')await net.client.leaveGemRoom();
+ net.mode='solo';net.connected=false;net.id='solo';net.host='solo';net.code='';net.roster=[];net.inputs.clear();
+ S=fresh();$('bag').classList.remove('show');$('start').classList.remove('hidden');$('hud').style.display='none';$('controls').style.display='none';
+ statusText('방에서 나왔어. 혼자 시작하거나 다른 방에 들어갈 수 있어.');
+}
+function updateRoomBar(){
+ $('roomLabel').textContent=net.mode==='room'?'멀티 '+net.code+'번 방 · '+net.roster.length+'/4명':'혼자 생존 중';
+ $('share').style.display=net.mode==='room'?'':'none';
+}
+function renderHud(){
+ const p=me();if(!p)return;
+ $('hp').textContent=Math.ceil(p.hp);
+ $('food').textContent=Math.ceil(p.food);
+ $('stamina').textContent=Math.ceil(p.stamina);
+ $('day').textContent=S.day+'일 '+(S.time>=180?'밤':'낮');
+ $('safe').textContent=S.elapsed<35?'초반 안전':S.time>=180?'야간 위험':'탐험 중';
+ $('craft').textContent=p.inv.spear?'창 보유':'창 제작';
+ if($('bag').classList.contains('show')){
+  $('bagGrid').replaceChildren();
+  for(const [key,name] of Object.entries(names)){
+   const div=document.createElement('div');div.className='item';div.textContent=name;
+   const num=document.createElement('b');num.textContent=String(p.inv[key]||0);div.appendChild(num);$('bagGrid').appendChild(div);
+  }
+ }
+}
+function doAction(name){input[name]++;}
+function moveAxis(){
+ const x=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x;
+ const y=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;
+ const l=Math.hypot(x,y);
+ input.x=l>1?x/l:x;input.y=l>1?y/l:y;
+}
+function loop(now){
+ const dt=clamp((now-last)/1000,0,.045);last=now;
+ if(S.started&&scene){
+  moveAxis();
+  if(isHost())update(dt);
+  else if(net.connected&&now-net.lastInputAt>85){net.lastInputAt=now;net.client.sendEvent({action:'forest-intent',...input});}
+  if(net.mode==='room'&&net.connected&&isHost()&&now-net.sendAt>135){
+   net.sendAt=now;net.client.sendEvent({action:'forest-frame',seq:++net.seq,state:frameState()});
+  }
+  const p=me();
+  const follow=p||S.players[0];
+  if(follow)scene.render({...S,follow});
+  if(now-lastUi>120){lastUi=now;renderHud();}
+  if(net.mode==='solo'&&Math.floor(S.elapsed)%10===0&&now-frameAt>10000){frameAt=now;saveSolo();}
+ }
+ if(now>noticeUntil)$('tip').classList.remove('show');
+ requestAnimationFrame(loop);
+}
+addEventListener('keydown',e=>{
+ const k=e.key.toLowerCase();
+ if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();
+ keys[k]=true;
+ if(e.repeat)return;
+ if(k===' ')doAction('attack');if(k==='e')doAction('gather');if(k==='f')doAction('eat');
+ if(k==='c')doAction('craft');if(k==='r')doAction('rest');
+ if(k==='i')$('bag').classList.toggle('show');
+});
+addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+const stick=$('joy'),knob=$('stick');
+function point(e){
+ const r=stick.getBoundingClientRect(),radius=r.width*.29;
+ let x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;
+ const l=Math.hypot(x,y);if(l>radius){x=x/l*radius;y=y/l*radius;}
+ joy.x=x/radius;joy.y=y/radius;knob.style.transform='translate('+x+'px,'+y+'px)';
+}
+stick.addEventListener('pointerdown',e=>{joy.id=e.pointerId;stick.setPointerCapture(e.pointerId);point(e);});
+stick.addEventListener('pointermove',e=>{if(e.pointerId===joy.id)point(e);});
+function stopJoy(e){if(e.pointerId===joy.id){joy.id=null;joy.x=joy.y=0;knob.style.transform='';}}
+stick.addEventListener('pointerup',stopJoy);stick.addEventListener('pointercancel',stopJoy);
+for(const name of ['attack','gather','eat','craft','rest'])$(name).onclick=()=>doAction(name);
+$('inventory').onclick=()=>{$('bag').classList.add('show');renderHud();};
+$('bagClose').onclick=()=>$('bag').classList.remove('show');
+$('solo').onclick=startSolo;
+$('create').onclick=()=>roomAction('create');
+$('join').onclick=()=>roomAction('join');
+$('leave').onclick=leave;
+$('code').addEventListener('input',e=>e.target.value=e.target.value.replace(/[^0-9]/g,'').slice(0,2));
+$('share').onclick=async()=>{
+ const link=location.href.split('?')[0]+'?room='+encodeURIComponent(net.code);
+ try{await navigator.clipboard.writeText(link);alertText('초대 링크 복사 완료 · 친구는 방 번호 '+net.code+'을 입력해.');}
+ catch{alertText('이 주소와 방 번호 '+net.code+'을 친구에게 공유해.');}
+};
+const invited=new URLSearchParams(location.search).get('room');
+if(/^(?:[1-9]|10)$/.test(invited||''))$('code').value=invited;
+try{
+ scene=await createWorld($('world'));
+ $('netStatus').textContent='입체 숲 준비 완료 · 게임 방을 선택해.';
+ for(const key of ['solo','create','join'])$(key).disabled=false;
+}catch(error){
+ $('statusText').style.display='block';
+ $('statusText').textContent='3D 실행 오류: '+String(error?.message||error);
+ statusText('3D 게임을 불러오지 못했어. 브라우저를 새로고침해.');
+}
+updateRoomBar();requestAnimationFrame(loop);
+addEventListener('pagehide',saveSolo);
+</script>
+</body>
+</html>
