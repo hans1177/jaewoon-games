@@ -50,6 +50,7 @@ h1{font-size:29px;margin:0 0 8px;color:#f9df9b}
 .item{border:1px solid #899d78;padding:11px 7px;border-radius:9px;background:#143025;font-size:12px;min-height:65px}
 .item b{display:block;font-size:18px;color:#f7d98e;margin-top:5px}
 #bagClose{margin-top:15px;width:100%}
+#craftChoices button{display:block;width:100%;padding:12px;margin-top:9px;text-align:left}
 #statusText{position:absolute;z-index:4;left:50%;top:50%;transform:translate(-50%,-50%);max-width:88vw;display:none;padding:13px;border-radius:10px;background:#12261fea;text-align:center;font-weight:700}
 @media(max-width:370px){#actions{grid-template-columns:repeat(3,50px);gap:4px}#actions button{min-height:46px;font-size:11px}#joy{flex-basis:92px;width:92px;height:92px}#stick{left:27px;top:27px;width:34px;height:34px}.badge{font-size:10px;padding:5px 6px}}
 </style>
@@ -64,7 +65,7 @@ h1{font-size:29px;margin:0 0 8px;color:#f9df9b}
    <div class="badge">허기 <strong id="food">100</strong></div>
    <div class="badge">기력 <strong id="stamina">100</strong></div>
    <div class="badge"><strong id="day">1일 낮</strong></div>
-   <div class="badge">생존 <strong id="safe">안전</strong></div>
+   <div class="badge">생존 <strong id="safe">안전</strong></div><div class="badge">장비 <strong id="weapon">맨손</strong></div><div class="badge">주변 <strong id="nearby">없음</strong></div>
   </div>
   <div id="roomBar"><span id="roomLabel" class="badge">혼자 생존 중</span><button id="share">초대 링크</button><button id="leave">나가기</button></div>
   <div id="tip" role="status"></div>
@@ -73,10 +74,10 @@ h1{font-size:29px;margin:0 0 8px;color:#f9df9b}
  <div id="joy"><div id="stick"></div></div>
  <div id="actions">
   <button id="attack" class="danger">공격</button><button id="gather" class="utility">채집</button><button id="eat">먹기</button>
-  <button id="craft">창 제작</button><button id="rest">휴식</button><button id="inventory">가방</button>
+  <button id="craft">제작</button><button id="inventory">가방</button>
  </div>
 </div>
-<section id="bag"><div id="bagInner"><h2>인벤토리</h2><div id="bagGrid"></div><button id="bagClose">닫기</button></div></section>
+<section id="bag"><div id="bagInner"><h2 id="bagTitle">인벤토리</h2><div id="bagGrid"></div><div id="craftChoices" hidden><p class="note">나무와 돌로 돌창을 만들고, 드문 철광석을 모아 철창으로 강화할 수 있어.</p><button id="craftStone" class="big">돌창 제작 · 나무 3 / 돌 2</button><button id="craftIron" class="big">철창 강화 · 철광석 2 / 나무 1</button></div><button id="bagClose">닫기</button></div></section>
 <section id="start"><div class="card">
  <h1>숲의 끝</h1>
  <div class="subtitle">광활한 숲에서 자원을 모아 살아남아. 처음 35초는 안전해.<br>공격형 4종: 멧돼지·늑대 / 밤에만 호랑이·박쥐.<br>위험한 동물은 주로 지도 가장자리에 등장하고, 토끼·사슴은 드물게 어디서나 나타나.</div>
@@ -98,25 +99,26 @@ const mobStats={
  tiger:{name:'호랑이',hp:140,speed:106,hit:18},
  bat:{name:'박쥐',hp:40,speed:116,hit:7}
 };
-const names={wood:'나무',stone:'돌',berry:'열매',fiber:'섬유',meat:'고기',spear:'창'};
+const names={wood:'나무',stone:'돌',iron:'철광석',berry:'열매',fiber:'섬유',meat:'고기',spear:'돌창',ironSpear:'철창'};
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const noise=seed=>{const t=Math.sin(seed*128.37+33.73)*43758.5453;return t-Math.floor(t)};
 function makePlayer(id,name){
- return {id:id||'solo',name:name||'탐험가',type:'hero',x:1200+rnd(-45,45),y:1200+rnd(-45,45),angle:0,hp:100,food:100,stamina:100,inv:{wood:0,stone:0,berry:2,fiber:0,meat:0,spear:0},hitAt:-100,gatherAt:-100,restAt:-100};
+ return {id:id||'solo',name:name||'탐험가',type:'hero',x:1200+rnd(-45,45),y:1200+rnd(-45,45),angle:0,hp:100,food:100,stamina:100,inv:{wood:0,stone:0,iron:0,berry:2,fiber:0,meat:0,spear:0,ironSpear:0},vx:0,vy:0,hitAt:-100,gatherAt:-100};
 }
 function fresh(){
  return {started:false,day:1,time:0,elapsed:0,mobs:[],neutrals:[],players:[],taken:{},lastMob:0,lastNeutral:0,serial:0};
 }
 const nodes=[];
-for(let i=0;i<66;i++){
- const kind=i%6<3?'wood':i%6===3?'stone':'berry';
+for(let i=0;i<71;i++){
+ // 원래 66개 자원은 좌표·아이디를 유지하고 철광석 5개만 희귀하게 추가한다.
+ const kind=i>=66?'iron':i%6<3?'wood':i%6===3?'stone':'berry';
  const x=120+noise(i+11)*2160,y=120+noise(i+901)*2160;
  if(Math.hypot(x-1200,y-1200)<155)continue;
  nodes.push({id:i,type:kind,x,y});
 }
 let S=fresh(),scene=null,last=performance.now(),noticeUntil=0,frameAt=0,lastUi=0,keys={};
-const joy={id:null,x:0,y:0},input={x:0,y:0,attack:0,gather:0,eat:0,rest:0,craft:0};
+const joy={id:null,x:0,y:0},input={x:0,y:0,attack:0,gather:0,eat:0,craftStone:0,craftIron:0};
 const net={client:null,mode:'solo',connected:false,id:'solo',host:'',roster:[],code:'',inputs:new Map(),seq:0,lastFrame:0,sendAt:0,lastInputAt:0};
 const isHost=()=>net.mode==='solo'||(net.connected&&net.id===net.host);
 const me=()=>S.players.find(p=>p.id===net.id);
@@ -135,6 +137,8 @@ function startSolo(){
   if(old&&Array.isArray(old.players)&&old.players.length&&Number.isFinite(old.time)){
    S={...S,...old,started:true,players:old.players,neutrals:Array.isArray(old.neutrals)?old.neutrals:[],mobs:Array.isArray(old.mobs)?old.mobs:[],taken:old.taken&&typeof old.taken==='object'?old.taken:{}};
    S.players[0].id='solo';
+   S.players[0].inv={wood:0,stone:0,iron:0,berry:2,fiber:0,meat:0,spear:0,ironSpear:0,...S.players[0].inv};
+   S.players[0].vx=0;S.players[0].vy=0;
   }
  }catch{}
  if(!S.players.length)S.players.push(makePlayer('solo','탐험가'));
@@ -170,17 +174,18 @@ function collect(p){
  S.taken[closest.id]=S.elapsed+100;
  if(closest.type==='wood'){p.inv.wood+=2;p.inv.fiber++;}
  if(closest.type==='stone')p.inv.stone+=2;
+ if(closest.type==='iron')p.inv.iron=(p.inv.iron||0)+1;
  if(closest.type==='berry')p.inv.berry+=2;
  if(p.id===net.id)alertText(names[closest.type]+' 획득');
 }
 function attack(p){
  if(S.elapsed-p.hitAt<.48)return;
  p.hitAt=S.elapsed;
- let target=null,d=p.inv.spear>0?118:79,kind='';
+ let target=null,d=p.inv.ironSpear>0?132:p.inv.spear>0?118:79,kind='';
  for(const m of S.mobs){const n=dist(p,m);if(n<d){target=m;d=n;kind='mob';}}
  for(const n of S.neutrals){const v=dist(p,n);if(v<d){target=n;d=v;kind='neutral';}}
  if(!target)return;
- target.hp-=p.inv.spear>0?34:13;
+ target.hp-=p.inv.ironSpear>0?43:p.inv.spear>0?34:13;
  if(target.hp<=0){
   if(kind==='mob'){S.mobs=S.mobs.filter(m=>m!==target);p.inv.meat+=2;}
   else{S.neutrals=S.neutrals.filter(n=>n!==target);p.inv.meat++;}
@@ -192,32 +197,42 @@ function consume(p){
  else if(p.inv.meat>0){p.inv.meat--;p.food=clamp(p.food+34,0,100);p.hp=clamp(p.hp+7,0,100);}
  else if(p.id===net.id)alertText('먹을 음식이 없어.');
 }
-function craft(p){
- if(p.inv.spear){if(p.id===net.id)alertText('이미 창을 가지고 있어.');return;}
- if(p.inv.wood<3||p.inv.stone<2){if(p.id===net.id)alertText('창 제작: 나무 3개와 돌 2개가 필요해.');return;}
+// 제작: 기존 돌창 저장값(spear)은 유지하고 철광석 강화만 추가한다.
+function craft(p,iron=false){
+ if(!p.inv)p.inv={};
+ if(iron){
+  if(p.inv.ironSpear){if(p.id===net.id)alertText('이미 철창을 가지고 있어.');return;}
+  if(!p.inv.spear){if(p.id===net.id)alertText('먼저 돌창을 제작해야 해.');return;}
+  if((p.inv.iron||0)<2||(p.inv.wood||0)<1){if(p.id===net.id)alertText('철창 강화: 철광석 2개와 나무 1개가 필요해.');return;}
+  p.inv.iron-=2;p.inv.wood--;p.inv.ironSpear=1;
+  if(p.id===net.id)alertText('철창 강화 성공 · 공격 범위와 위력이 증가했어.');
+  return;
+ }
+ if(p.inv.spear){if(p.id===net.id)alertText('돌창이 이미 있어. 철광석을 모아 강화해.');return;}
+ if(p.inv.wood<3||p.inv.stone<2){if(p.id===net.id)alertText('돌창 제작: 나무 3개와 돌 2개가 필요해.');return;}
  p.inv.wood-=3;p.inv.stone-=2;p.inv.spear=1;
- if(p.id===net.id)alertText('창 제작 완료 · 공격력이 강해졌어.');
-}
-function rest(p){
- if(S.elapsed-p.restAt<8)return;
- p.restAt=S.elapsed;p.stamina=clamp(p.stamina+26,0,100);
- if(p.id===net.id)alertText('잠깐 쉬어서 기력을 회복했어.');
+ if(p.id===net.id)alertText('돌창 제작 성공 · 근접 공격이 강해졌어.');
 }
 function processInput(p,move,dt){
  if(!p||p.hp<=0)return;
- const x=clamp(Number(move.x)||0,-1,1),y=clamp(Number(move.y)||0,-1,1),l=Math.hypot(x,y);
- if(l>.08){
-  const speed=p.stamina<10?94:165;
-  p.x=clamp(p.x+x/Math.max(1,l)*speed*dt,35,SIZE-35);
-  p.y=clamp(p.y+y/Math.max(1,l)*speed*dt,35,SIZE-35);
-  p.angle=Math.atan2(-x,-y);
-  p.stamina=clamp(p.stamina-dt*.56,0,100);
- }
+ const x=clamp(Number(move.x)||0,-1,1),y=clamp(Number(move.y)||0,-1,1),length=Math.hypot(x,y);
+ const moving=length>.08,speed=p.stamina<10?94:165;
+ const targetX=moving?x/Math.max(1,length)*speed:0,targetY=moving?y/Math.max(1,length)*speed:0;
+ // 급출발·급정지 대신 가속과 감속. 대각선 속도는 직진과 동일하다.
+ const response=1-Math.exp(-dt*(moving?9:13));
+ p.vx=(Number(p.vx)||0)+(targetX-(Number(p.vx)||0))*response;
+ p.vy=(Number(p.vy)||0)+(targetY-(Number(p.vy)||0))*response;
+ if(Math.abs(p.vx)<.3)p.vx=0;
+ if(Math.abs(p.vy)<.3)p.vy=0;
+ p.x=clamp(p.x+p.vx*dt,35,SIZE-35);
+ p.y=clamp(p.y+p.vy*dt,35,SIZE-35);
+ if(Math.hypot(p.vx,p.vy)>8)p.angle=Math.atan2(-p.vx,-p.vy);
+ if(moving)p.stamina=clamp(p.stamina-dt*.56,0,100);
  if(move.attack&&move.attack!==p._attack){p._attack=move.attack;attack(p);}
  if(move.gather&&move.gather!==p._gather){p._gather=move.gather;collect(p);}
  if(move.eat&&move.eat!==p._eat){p._eat=move.eat;consume(p);}
- if(move.rest&&move.rest!==p._rest){p._rest=move.rest;rest(p);}
- if(move.craft&&move.craft!==p._craft){p._craft=move.craft;craft(p);}
+ if(move.craftStone&&move.craftStone!==p._craftStone){p._craftStone=move.craftStone;craft(p,false);}
+ if(move.craftIron&&move.craftIron!==p._craftIron){p._craftIron=move.craftIron;craft(p,true);}
 }
 function simulateAnimals(dt){
  const night=S.time>=180;
@@ -276,7 +291,7 @@ function update(dt){
  }
  simulateAnimals(dt);
  for(const p of S.players)if(p.hp<=0){
-  p.hp=100;p.food=70;p.stamina=100;p.x=1200;p.y=1200;p.inv={wood:0,stone:0,berry:2,fiber:0,meat:0,spear:0};
+  p.hp=100;p.food=70;p.stamina=100;p.x=1200;p.y=1200;p.inv={wood:0,stone:0,iron:0,berry:2,fiber:0,meat:0,spear:0,ironSpear:0};p.vx=0;p.vy=0;
   if(p.id===net.id)alertText('쓰러져서 숲 중앙에서 다시 시작해.');
  }
 }
@@ -310,7 +325,7 @@ function receiveMessage(msg){
  if(msg.action==='forest-intent'&&isHost()){
   if(!net.roster.some(p=>p.userId===msg.userId))return;
   if(!Number.isFinite(msg.x)||!Number.isFinite(msg.y)||Math.abs(msg.x)>1||Math.abs(msg.y)>1)return;
-  net.inputs.set(msg.userId,{x:msg.x,y:msg.y,attack:Number(msg.attack)||0,gather:Number(msg.gather)||0,eat:Number(msg.eat)||0,rest:Number(msg.rest)||0,craft:Number(msg.craft)||0});
+  net.inputs.set(msg.userId,{x:msg.x,y:msg.y,attack:Number(msg.attack)||0,gather:Number(msg.gather)||0,eat:Number(msg.eat)||0,craftStone:Number(msg.craftStone)||0,craftIron:Number(msg.craftIron)||0});
  }
  if(msg.action==='forest-frame'&&!isHost()&&msg.userId===net.host&&Number.isInteger(msg.seq)&&msg.seq>net.lastFrame){
   net.lastFrame=msg.seq;applyFrame(msg.state);
@@ -333,7 +348,7 @@ async function roomAction(action){
  statusText('멀티 서버 연결 중...');
  const client=multiplayer();
  let result;
- try{result=action==='create'?await client.createNumberRoomForGame(GAME):await client.joinNumberRoomForGame(GAME,code);}
+ try{result=action==='create'?await client.createNumberRoomForGame(GAME,false):await client.joinNumberRoomForGame(GAME,code,false);}
  catch(e){result={ok:false,data:{error:'network_error'}};}
  if(!result?.ok){
   const err=result?.data?.error;
@@ -344,6 +359,7 @@ async function roomAction(action){
  net.mode='room';net.connected=false;net.id='';net.code=String(result.data.inviteCode);net.lastFrame=0;
  S=fresh();$('code').value=net.code;
  statusText('방 번호 '+net.code+' · 접속 중...');
+ if(!client.connectRoom(result.data.roomId))statusText('방 연결에 실패했어. 다시 시도해.');
  for(const key of ['solo','create','join'])$(key).disabled=false;
 }
 async function leave(){
@@ -363,7 +379,14 @@ function renderHud(){
  $('stamina').textContent=Math.ceil(p.stamina);
  $('day').textContent=S.day+'일 '+(S.time>=180?'밤':'낮');
  $('safe').textContent=S.elapsed<35?'초반 안전':S.time>=180?'야간 위험':'탐험 중';
- $('craft').textContent=p.inv.spear?'창 보유':'창 제작';
+ $('weapon').textContent=p.inv.ironSpear?'철창':p.inv.spear?'돌창':'맨손';
+ let near='없음',nearest=105;
+ for(const node of nodes){if((S.taken[node.id]||0)>S.elapsed)continue;const d=dist(p,node);if(d<nearest){nearest=d;near=names[node.type];}}
+ $('nearby').textContent=near;
+ $('bagTitle').textContent=$('bag').dataset.mode==='craft'?'제작':'인벤토리';
+ $('craftChoices').hidden=$('bag').dataset.mode!=='craft';
+ $('craftStone').disabled=!!p.inv.spear||p.inv.wood<3||p.inv.stone<2;
+ $('craftIron').disabled=!!p.inv.ironSpear||!p.inv.spear||(p.inv.iron||0)<2||p.inv.wood<1;
  if($('bag').classList.contains('show')){
   $('bagGrid').replaceChildren();
   for(const [key,name] of Object.entries(names)){
@@ -374,8 +397,9 @@ function renderHud(){
 }
 function doAction(name){input[name]++;}
 function moveAxis(){
- const x=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x;
- const y=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;
+ const blocked=$('bag').classList.contains('show')||document.hidden;
+ const x=blocked?0:(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x;
+ const y=blocked?0:(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;
  const l=Math.hypot(x,y);
  input.x=l>1?x/l:x;input.y=l>1?y/l:y;
 }
@@ -400,11 +424,14 @@ function loop(now){
 addEventListener('keydown',e=>{
  const k=e.key.toLowerCase();
  if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();
+ if(!S.started||document.activeElement===$('code'))return;
+ if(k==='escape'){$('bag').classList.remove('show');return;}
+ if($('bag').classList.contains('show')&&!['c','i'].includes(k))return;
  keys[k]=true;
  if(e.repeat)return;
  if(k===' ')doAction('attack');if(k==='e')doAction('gather');if(k==='f')doAction('eat');
- if(k==='c')doAction('craft');if(k==='r')doAction('rest');
- if(k==='i')$('bag').classList.toggle('show');
+ if(k==='c'){$('bag').dataset.mode='craft';$('bag').classList.add('show');renderHud();}
+ if(k==='i'){$('bag').dataset.mode='inventory';$('bag').classList.toggle('show');renderHud();}
 });
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 const stick=$('joy'),knob=$('stick');
@@ -418,8 +445,12 @@ stick.addEventListener('pointerdown',e=>{joy.id=e.pointerId;stick.setPointerCapt
 stick.addEventListener('pointermove',e=>{if(e.pointerId===joy.id)point(e);});
 function stopJoy(e){if(e.pointerId===joy.id){joy.id=null;joy.x=joy.y=0;knob.style.transform='';}}
 stick.addEventListener('pointerup',stopJoy);stick.addEventListener('pointercancel',stopJoy);
-for(const name of ['attack','gather','eat','craft','rest'])$(name).onclick=()=>doAction(name);
-$('inventory').onclick=()=>{$('bag').classList.add('show');renderHud();};
+ addEventListener('blur',()=>{keys={};joy.id=null;joy.x=joy.y=0;knob.style.transform='';});
+for(const name of ['attack','gather','eat'])$(name).onclick=()=>doAction(name);
+ $('craft').onclick=()=>{$('bag').dataset.mode='craft';$('bag').classList.add('show');renderHud();};
+ $('craftStone').onclick=()=>doAction('craftStone');
+ $('craftIron').onclick=()=>doAction('craftIron');
+$('inventory').onclick=()=>{$('bag').dataset.mode='inventory';$('bag').classList.add('show');renderHud();};
 $('bagClose').onclick=()=>$('bag').classList.remove('show');
 $('solo').onclick=startSolo;
 $('create').onclick=()=>roomAction('create');
