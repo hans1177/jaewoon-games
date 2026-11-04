@@ -189,6 +189,7 @@ jobs:
           const cape=registry.capePrefab;
           const capeReady=cape?.sourceVerified===true&&cape.registrationVerified===true
             &&cape.license==='PROJECT_ORIGINAL'&&cape.hemTearCount===4
+            &&cape.clothBones===3&&cape.length==='HIP_LENGTH'
             &&Number.isSafeInteger(cape.assetId)&&cape.assetId>0
             &&ids.includes('wornCape='+cape.assetId);
           const valid=capeReady&&village.registrationVerified===true&&Object.entries(village.models).every(([role,row])=>
@@ -227,6 +228,7 @@ jobs:
               &&(row.sourceFile.endsWith('.zip')?(/^[a-f0-9]{64}$/.test(row.sha256)&&row.sha256!==row.sourceSha256):row.sourceSha256===row.sha256)
               &&ids.includes(role+'='+row.assetId))
             ||cape?.registrationVerified!==true||cape.hemTearCount!==4
+            ||cape.clothBones!==3||cape.length!=='HIP_LENGTH'
             ||!Number.isSafeInteger(cape.assetId)||cape.assetId<1
             ||!ids.includes('wornCape='+cape.assetId))
             throw Error('FOREST_WORN_CAPE_OR_VILLAGE_REGISTRATION_PROOF_INCOMPLETE');
@@ -559,6 +561,7 @@ jobs:
           const cape=registry.capePrefab;
           if(cape?.sourceVerified===true){
             if(cape.registrationVerified!==true||cape.license!=='PROJECT_ORIGINAL'||cape.hemTearCount!==4
+              ||cape.clothBones!==3||cape.length!=='HIP_LENGTH'
               ||cape.sourceFile!=='roblox-games/fantasy-survival/assets/worn-cape.obj'
               ||sha(fs.readFileSync(cape.sourceFile))!==cape.sourceSha256
               ||!Number.isSafeInteger(cape.assetId)||cape.assetId<1
