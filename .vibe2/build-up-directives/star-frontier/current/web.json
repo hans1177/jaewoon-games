@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "star-frontier-build-up-g2-33fed0d1f0b1",
-  "directiveFingerprint": "33fed0d1f0b179e691e12946289a376cfd7935d4a3066158ec13ddc80561b41c",
-  "previousDirectiveFingerprint": "fed18dbaed99fd2eacda833cea530d7151c33b8d9f097a972d74417183070257",
-  "forbiddenRepeatFingerprint": "fed18dbaed99fd2eacda833cea530d7151c33b8d9f097a972d74417183070257",
+  "directiveId": "star-frontier-build-up-g1-b55ddefbab3f",
+  "directiveFingerprint": "b55ddefbab3fbddb45402f384d00a7c47c03f7518f95608abed7132762a5d42b",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "star-frontier",
   "gameName": "별길 개척자",
-  "generation": 2,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/star-frontier",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "f7083eab25514f3062076eb6499cdb94e202708d64d8246b5f0741cc7e81d1a3",
-    "previousDesignFingerprint": "f7083eab25514f3062076eb6499cdb94e202708d64d8246b5f0741cc7e81d1a3",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "star-frontier",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "f7083eab25514f3062076eb6499cdb94e202708d64d8246b5f0741cc7e81d1a3",
     "sourceTreeFingerprint": "28a639139ae20537f245d23aa4d461d0be54858808b40e371eb9be651635bb4a",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/star-frontier",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/star-frontier",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/star-frontier/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/star-frontier/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "nearStation",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "nearGate",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "spawnSector",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "updateBullets",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "drawPlayer",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/star-frontier/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/star-frontier/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "nearStation",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "nearGate",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "spawnSector",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "updateBullets",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "drawPlayer",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/star-frontier/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/star-frontier/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "nearStation",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "nearGate",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "spawnSector",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "updateBullets",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "drawPlayer",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/star-frontier/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/star-frontier/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "nearStation",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "nearGate",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "spawnSector",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "updateBullets",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/star-frontier/index.html",
+            "symbol": "drawPlayer",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/star-frontier/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/star-frontier/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4588,13 +4730,7 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 별길 개척자를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "aad9726f697f19b657ad035dffc6b95440938601da6954e0f7e0a498b4564f3d",
-    "currentSourceTreeFingerprint": "28a639139ae20537f245d23aa4d461d0be54858808b40e371eb9be651635bb4a",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5924,21 +6060,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -5974,7 +6109,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 220,
+        "score": 78,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -6096,12 +6231,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "28a639139ae20537f245d23aa4d461d0be54858808b40e371eb9be651635bb4a",
-    "priorSourceFingerprint": "aad9726f697f19b657ad035dffc6b95440938601da6954e0f7e0a498b4564f3d",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6578,11 +6713,11 @@
       "gameId": "star-frontier",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 2,
+        "generation": 1,
         "actorClass": "PLAYER",
         "sourceOwnerFile": "web-games/star-frontier/index.html",
-        "qualityAxis": "POSE_VELOCITY_CROSSFADE",
-        "featureId": "POSE_VELOCITY_CROSSFADE",
+        "qualityAxis": "NATIVE_RIG_BINDING",
+        "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -6594,7 +6729,7 @@
           "variants": [],
           "gameId": "star-frontier",
           "actorClass": "PLAYER",
-          "featureId": "POSE_VELOCITY_CROSSFADE",
+          "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -7429,6 +7564,35 @@
         "symbol": "nearStation",
         "context": "function nearStation(){return dist(state.player.x,state.player.y,state.station.x,state.station.y)<state.station.r+85}",
         "score": 138,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dist"
+          ],
+          "calledBy": [
+            "openStation",
+            "sellOre",
+            "upgrade",
+            "repair",
+            "updateContextButton",
+            "useContext"
+          ],
+          "stateReads": [
+            "state",
+            "x",
+            "r",
+            "y"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function nearStation(){return dist(state.player.x,state.player.y,state.station.x,state.station.y)<state.station.r+85}",
         "intendedBehavior": "CORE_FUN primary goal \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 별길 개척자를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 nearStation의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 별길 개척자의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/star-frontier/index.html::nearStation이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7441,6 +7605,32 @@
         "symbol": "nearGate",
         "context": "function nearGate(){return dist(state.player.x,state.player.y,state.gate.x,state.gate.y)<state.gate.r+70}",
         "score": 138,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dist"
+          ],
+          "calledBy": [
+            "warp",
+            "updateContextButton",
+            "useContext"
+          ],
+          "stateReads": [
+            "state",
+            "x",
+            "r",
+            "y"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function nearGate(){return dist(state.player.x,state.player.y,state.gate.x,state.gate.y)<state.gate.r+70}",
         "intendedBehavior": "CORE_FUN primary goal \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 별길 개척자를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 nearGate의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 별길 개척자의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/star-frontier/index.html::nearGate이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7453,6 +7643,60 @@
         "symbol": "spawnSector",
         "context": "function spawnSector(){",
         "score": 130,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "currentSector",
+            "seeded",
+            "dist",
+            "spawnEnemy",
+            "updateHud"
+          ],
+          "calledBy": [
+            "warp"
+          ],
+          "stateReads": [
+            "TAU",
+            "WORLD",
+            "state",
+            "x",
+            "i",
+            "s",
+            "count",
+            "attempt",
+            "salt",
+            "r",
+            "hp",
+            "enemyCount",
+            "y",
+            "w"
+          ],
+          "stateWrites": [
+            "state",
+            "x",
+            "i",
+            "s",
+            "count",
+            "attempt",
+            "salt",
+            "r",
+            "hp",
+            "enemyCount",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "WORLD",
+            "COMBAT",
+            "AI",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function spawnSector(){",
         "intendedBehavior": "CORE_FUN primary goal \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 별길 개척자를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 spawnSector의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 별길 개척자의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/star-frontier/index.html::spawnSector이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7465,6 +7709,44 @@
         "symbol": "updateBullets",
         "context": "function updateBullets(dt){",
         "score": 106,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dist",
+            "hitPlayer"
+          ],
+          "calledBy": [
+            "step"
+          ],
+          "stateReads": [
+            "WORLD",
+            "state",
+            "x",
+            "i",
+            "r",
+            "dmg",
+            "b",
+            "y",
+            "w",
+            "dt"
+          ],
+          "stateWrites": [
+            "x",
+            "i",
+            "b",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "WORLD",
+            "COMBAT"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function updateBullets(dt){",
         "intendedBehavior": "CORE_FUN primary goal \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 별길 개척자를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateBullets의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 별길 개척자의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/star-frontier/index.html::updateBullets이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7477,6 +7759,42 @@
         "symbol": "drawPlayer",
         "context": "function drawPlayer(c){",
         "score": 98,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "sx",
+            "sy"
+          ],
+          "calledBy": [
+            "draw"
+          ],
+          "stateReads": [
+            "TAU",
+            "state",
+            "keys",
+            "x",
+            "y",
+            "g",
+            "c"
+          ],
+          "stateWrites": [
+            "x",
+            "y",
+            "g"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "SAVE",
+            "WORLD",
+            "GOAL_STATE",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function drawPlayer(c){",
         "intendedBehavior": "CORE_FUN primary goal \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 별길 개척자를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 drawPlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 별길 개척자의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/star-frontier/index.html::drawPlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7489,6 +7807,45 @@
         "symbol": "hitPlayer",
         "context": "function hitPlayer(dmg){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "flashDamage",
+            "updateHud",
+            "maxHp",
+            "showNotice",
+            "save"
+          ],
+          "calledBy": [
+            "updateBullets"
+          ],
+          "stateReads": [
+            "state",
+            "x",
+            "hp",
+            "dmg",
+            "lost",
+            "y"
+          ],
+          "stateWrites": [
+            "state",
+            "x",
+            "hp",
+            "lost",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "SAVE",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function hitPlayer(dmg){",
         "intendedBehavior": "CORE_FUN primary goal \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 별길 개척자를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 hitPlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 별길 개척자의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/star-frontier/index.html::hitPlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7501,6 +7858,27 @@
         "symbol": "laserDamage",
         "context": "function laserDamage(){return 24+(state.laserLevel-1)*9}",
         "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "fire"
+          ],
+          "stateReads": [
+            "state"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "PROGRESSION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function laserDamage(){return 24+(state.laserLevel-1)*9}",
         "intendedBehavior": "CORE_FUN primary goal \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 별길 개척자를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 laserDamage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 별길 개척자의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/star-frontier/index.html::laserDamage이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7513,6 +7891,28 @@
         "symbol": "sellPrice",
         "context": "function sellPrice(){return Math.floor(6*sectors[state.sector].oreMul)}",
         "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "updateHud",
+            "sellOre"
+          ],
+          "stateReads": [
+            "sectors",
+            "state"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "ECONOMY",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function sellPrice(){return Math.floor(6*sectors[state.sector].oreMul)}",
         "intendedBehavior": "CORE_FUN primary goal \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 별길 개척자를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 sellPrice의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 별길 개척자의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/star-frontier/index.html::sellPrice이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7612,8 +8012,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 별길 개척자의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7632,8 +8032,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7679,12 +8079,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7753,5 +8153,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:13.611Z"
+  "generatedAt": "2026-11-04T02:35:39.837Z"
 }

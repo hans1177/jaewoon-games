@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "realistic-builder-build-up-g3-81c89edd5be7",
-  "directiveFingerprint": "81c89edd5be70ca7d6ef9538ff7199f56a82cc617e0aa751c5333b02410c072c",
-  "previousDirectiveFingerprint": "2732353a93453f76a763c0b95e2404af75fc9fe42bc2bdf667a2be91cb260c20",
-  "forbiddenRepeatFingerprint": "2732353a93453f76a763c0b95e2404af75fc9fe42bc2bdf667a2be91cb260c20",
+  "directiveId": "realistic-builder-build-up-g1-282e83907c32",
+  "directiveFingerprint": "282e83907c32b9ab9cd465590617d40b6501edeb038d0735058b96b985c17231",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "realistic-builder",
   "gameName": "현실 건축가",
-  "generation": 3,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/realistic-builder",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "f1d959dc9dc9908d3578ce66370701d93c03d9159c65c7a295028a85a03ccd75",
-    "previousDesignFingerprint": "f1d959dc9dc9908d3578ce66370701d93c03d9159c65c7a295028a85a03ccd75",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "realistic-builder",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "f1d959dc9dc9908d3578ce66370701d93c03d9159c65c7a295028a85a03ccd75",
     "sourceTreeFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/realistic-builder",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/realistic-builder",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/realistic-builder/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/realistic-builder/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "nearestNode",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "actionById",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "costText",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "renderActions",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "animate",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/realistic-builder/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/realistic-builder/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "nearestNode",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "actionById",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "costText",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "renderActions",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "animate",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/realistic-builder/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/realistic-builder/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "nearestNode",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "actionById",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "costText",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "renderActions",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "animate",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/realistic-builder/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/realistic-builder/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "nearestNode",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "actionById",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "costText",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "renderActions",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/realistic-builder/index.html",
+            "symbol": "animate",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/realistic-builder/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/realistic-builder/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4575,22 +4717,6 @@
       },
       {
         "file": "web-games/realistic-builder/index.html",
-        "line": 229,
-        "kind": "FUNCTION",
-        "symbol": "rebuildAllStructures",
-        "context": "function rebuildAllStructures(){Object.keys(state.structures).forEach(rebuildStructureVisual);}",
-        "score": 66
-      },
-      {
-        "file": "web-games/realistic-builder/index.html",
-        "line": 233,
-        "kind": "FUNCTION",
-        "symbol": "updateInventory",
-        "context": "function updateInventory(){",
-        "score": 66
-      },
-      {
-        "file": "web-games/realistic-builder/index.html",
         "line": 276,
         "kind": "FUNCTION",
         "symbol": "placeBuildAt",
@@ -4611,6 +4737,22 @@
         "kind": "FUNCTION",
         "symbol": "dist2",
         "context": "function dist2(ax,az,bx,bz){var x=ax-bx,z=az-bz;return Math.sqrt(x*x+z*z);}",
+        "score": 58
+      },
+      {
+        "file": "web-games/realistic-builder/index.html",
+        "line": 229,
+        "kind": "FUNCTION",
+        "symbol": "rebuildAllStructures",
+        "context": "function rebuildAllStructures(){Object.keys(state.structures).forEach(rebuildStructureVisual);}",
+        "score": 58
+      },
+      {
+        "file": "web-games/realistic-builder/index.html",
+        "line": 233,
+        "kind": "FUNCTION",
+        "symbol": "updateInventory",
+        "context": "function updateInventory(){",
         "score": 58
       },
       {
@@ -4640,13 +4782,7 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현실 건축가를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
-    "currentSourceTreeFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5976,12 +6112,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 3,
+        "WORLD_ECOLOGY_STORY_CHAIN": 1,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -5990,8 +6126,6 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "WORLD_ECOLOGY_STORY_CHAIN",
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN"
       ],
       "requiredThemes": [
@@ -6027,7 +6161,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 196,
+        "score": 72,
         "gapDomains": [
           "MAP_EXPANSION",
           "WORLD_DENSITY",
@@ -6156,12 +6290,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 3,
-    "previousGeneration": 2,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
-    "priorSourceFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6667,11 +6801,11 @@
       "gameId": "realistic-builder",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 3,
+        "generation": 1,
         "actorClass": "PLAYER",
         "sourceOwnerFile": "web-games/realistic-builder/index.html",
-        "qualityAxis": "BODY_PLAN_LOCOMOTION",
-        "featureId": "BODY_PLAN_LOCOMOTION",
+        "qualityAxis": "NATIVE_RIG_BINDING",
+        "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -6683,7 +6817,7 @@
           "variants": [],
           "gameId": "realistic-builder",
           "actorClass": "PLAYER",
-          "featureId": "BODY_PLAN_LOCOMOTION",
+          "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -7519,6 +7653,33 @@
         "symbol": "nearestNode",
         "context": "function nearestNode(){var best=null,bd=999;nodes.forEach(function(n){var d=dist2(player.position.x,player.position.z,n.x,n.z);if(d<bd){bd=d;best=n;}});return best&&bd<=2.35?{node:",
         "score": 98,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dist2"
+          ],
+          "calledBy": [
+            "updateStatus"
+          ],
+          "stateReads": [
+            "x",
+            "player",
+            "nodes",
+            "best",
+            "d",
+            "n"
+          ],
+          "stateWrites": [
+            "best",
+            "d"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function nearestNode(){var best=null,bd=999;nodes.forEach(function(n){var d=dist2(player.position.x,player.position.z,n.x,n.z);if(d<bd){bd=d;best=n;}});return best&&bd<=2.35?{node:",
         "intendedBehavior": "CORE_FUN primary goal \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현실 건축가를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 nearestNode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 현실 건축가의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/realistic-builder/index.html::nearestNode이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7531,6 +7692,24 @@
         "symbol": "actionById",
         "context": "function actionById(id){return actions.find(function(a){return a.id===id;});}",
         "score": 98,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "placeBuildAt"
+          ],
+          "stateReads": [
+            "actions",
+            "a"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function actionById(id){return actions.find(function(a){return a.id===id;});}",
         "intendedBehavior": "CORE_FUN primary goal \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현실 건축가를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 actionById의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 현실 건축가의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/realistic-builder/index.html::actionById이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7543,6 +7722,28 @@
         "symbol": "costText",
         "context": "function costText(cost){return Object.keys(cost).map(function(k){return defs[k].label+' '+cost[k];}).join(' · ');}",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "placeBuildAt"
+          ],
+          "stateReads": [
+            "defs",
+            "k",
+            "keys"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "ECONOMY",
+            "WORLD"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function costText(cost){return Object.keys(cost).map(function(k){return defs[k].label+' '+cost[k];}).join(' · ');}",
         "intendedBehavior": "CORE_FUN primary goal \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현실 건축가를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 costText의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 현실 건축가의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/realistic-builder/index.html::costText이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7555,6 +7756,42 @@
         "symbol": "renderActions",
         "context": "function renderActions(){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "updateStatus"
+          ],
+          "calledBy": [
+            "placeBuildAt"
+          ],
+          "stateReads": [
+            "buildMode",
+            "b",
+            "actions",
+            "bar",
+            "type",
+            "a"
+          ],
+          "stateWrites": [
+            "buildMode",
+            "b",
+            "bar",
+            "type"
+          ],
+          "storageKeys": [],
+          "events": [
+            "click"
+          ],
+          "systems": [
+            "PRESENTATION",
+            "PLACEMENT",
+            "CORE_STATE",
+            "INPUT"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function renderActions(){",
         "intendedBehavior": "CORE_FUN primary goal \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현실 건축가를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 renderActions의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 현실 건축가의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/realistic-builder/index.html::renderActions이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7567,6 +7804,79 @@
         "symbol": "animate",
         "context": "function animate(now){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "clamp",
+            "syncDryVisuals",
+            "renderDryList",
+            "updateStatus"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "DRY_MS",
+            "state",
+            "input",
+            "x",
+            "renderer",
+            "mobileRender",
+            "maxRenderRatio",
+            "renderRatio",
+            "scene",
+            "camera",
+            "player",
+            "leg1",
+            "leg2",
+            "arm1",
+            "arm2",
+            "y",
+            "d",
+            "max",
+            "now",
+            "cx",
+            "keys",
+            "last",
+            "dt",
+            "kx"
+          ],
+          "stateWrites": [
+            "state",
+            "x",
+            "renderRatio",
+            "camera",
+            "player",
+            "leg1",
+            "leg2",
+            "arm1",
+            "arm2",
+            "y",
+            "cx",
+            "last",
+            "dt",
+            "kx",
+            "ix",
+            "len",
+            "angle",
+            "speed",
+            "dryState",
+            "renderElapsed",
+            "measuredFps",
+            "nextRatio"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "WORLD",
+            "PROGRESSION",
+            "INPUT",
+            "GOAL_STATE",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function animate(now){",
         "intendedBehavior": "CORE_FUN primary goal \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현실 건축가를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 animate의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 현실 건축가의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/realistic-builder/index.html::animate이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7579,6 +7889,29 @@
         "symbol": "toast",
         "context": "function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove(",
         "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "placeBuildAt"
+          ],
+          "stateReads": [
+            "toastTimer",
+            "el"
+          ],
+          "stateWrites": [
+            "toastTimer",
+            "el"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove(",
         "intendedBehavior": "CORE_FUN primary goal \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현실 건축가를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 toast의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 현실 건축가의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/realistic-builder/index.html::toast이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7591,6 +7924,39 @@
         "symbol": "nearestDry",
         "context": "function nearestDry(readyOnly){var best=null,bd=999;state.drying.forEach(function(d){var ready=Date.now()-d.startedAt>=DRY_MS;if(readyOnly&&!ready)return;var dd=dist2(player.positi",
         "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dist2"
+          ],
+          "calledBy": [
+            "updateStatus"
+          ],
+          "stateReads": [
+            "DRY_MS",
+            "state",
+            "x",
+            "player",
+            "best",
+            "d",
+            "ready",
+            "dd",
+            "now"
+          ],
+          "stateWrites": [
+            "best",
+            "ready",
+            "dd"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function nearestDry(readyOnly){var best=null,bd=999;state.drying.forEach(function(d){var ready=Date.now()-d.startedAt>=DRY_MS;if(readyOnly&&!ready)return;var dd=dist2(player.positi",
         "intendedBehavior": "CORE_FUN primary goal \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현실 건축가를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 nearestDry의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 현실 건축가의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/realistic-builder/index.html::nearestDry이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7603,6 +7969,38 @@
         "symbol": "updateStatus",
         "context": "function updateStatus(){",
         "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "nearestDry",
+            "nearestNode"
+          ],
+          "calledBy": [
+            "renderActions",
+            "animate"
+          ],
+          "stateReads": [
+            "defs",
+            "buildMode",
+            "d",
+            "n",
+            "type"
+          ],
+          "stateWrites": [
+            "d",
+            "n"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "PLACEMENT",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function updateStatus(){",
         "intendedBehavior": "CORE_FUN primary goal \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현실 건축가를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateStatus의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 현실 건축가의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/realistic-builder/index.html::updateStatus이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7702,8 +8100,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 현실 건축가의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7722,8 +8120,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7769,12 +8167,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7843,5 +8241,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:13.489Z"
+  "generatedAt": "2026-11-04T02:35:38.120Z"
 }
