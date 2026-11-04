@@ -211,3 +211,12 @@ test('owner-direct push selects Forest when the dedicated workflow changes',()=>
   assert.match(workflow,/needs\.contract\.outputs\.count != '0'/);
   assert.match(workflow,/OWNER_DIRECT_SELECTED_GAMES=/);
 });
+
+test('unrelated web commits do not starve the canonical Roblox owner publisher',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/owner-roblox-dedicated-private-experiences.yml',import.meta.url),'utf8');
+  assert.match(workflow,/git diff --quiet HEAD FETCH_HEAD -- roblox-games\/ assets\/roblox\/ assets\/shared\/ assets\/external\//);
+  assert.match(workflow,/OWNER_STALE_MAIN_REVISION=UNCHANGED_ROBLOX_SOURCE/);
+  assert.match(workflow,/OWNER_STALE_MAIN_REVISION=SKIP_SUPERSEDED_SOURCE/);
+  assert.match(workflow,/git diff --name-only "\$BEFORE_SHA" HEAD -- roblox-games\//);
+  assert.doesNotMatch(workflow,/git push --force/);
+});
