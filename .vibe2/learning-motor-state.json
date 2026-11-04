@@ -12,18 +12,18 @@
       "lastEvidence": "capability_ctrace_5f74ba87502b8d922847049e"
     },
     "STATE_MACHINE": {
-      "xp": 4303,
+      "xp": 4308,
       "level": 27,
       "verifiedSuccesses": 131,
-      "verifiedFailureLessons": 555,
-      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
+      "verifiedFailureLessons": 556,
+      "lastEvidence": "capability_ctrace_d7abc9cd9f913ec766d64625"
     },
     "COMBAT": {
-      "xp": 1711,
+      "xp": 1716,
       "level": 14,
       "verifiedSuccesses": 113,
-      "verifiedFailureLessons": 71,
-      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
+      "verifiedFailureLessons": 72,
+      "lastEvidence": "capability_ctrace_d7abc9cd9f913ec766d64625"
     },
     "AI": {
       "xp": 767,
@@ -68,25 +68,25 @@
       "lastEvidence": "capability_ctrace_bd8b9013205dc24481a824b8"
     },
     "DEBUGGING": {
-      "xp": 4315,
+      "xp": 4320,
       "level": 27,
       "verifiedSuccesses": 134,
-      "verifiedFailureLessons": 555,
-      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
+      "verifiedFailureLessons": 556,
+      "lastEvidence": "capability_ctrace_d7abc9cd9f913ec766d64625"
     },
     "RECOVERY": {
-      "xp": 1631,
+      "xp": 1636,
       "level": 14,
       "verifiedSuccesses": 116,
-      "verifiedFailureLessons": 51,
-      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
+      "verifiedFailureLessons": 52,
+      "lastEvidence": "capability_ctrace_d7abc9cd9f913ec766d64625"
     },
     "SECURITY": {
-      "xp": 355,
+      "xp": 360,
       "level": 7,
       "verifiedSuccesses": 13,
-      "verifiedFailureLessons": 43,
-      "lastEvidence": "capability_ctrace_5f8b04f2525a6688fa6853c7"
+      "verifiedFailureLessons": 44,
+      "lastEvidence": "capability_ctrace_d7abc9cd9f913ec766d64625"
     },
     "PERFORMANCE": {
       "xp": 24,
@@ -96,11 +96,11 @@
       "lastEvidence": "exp_i00mwv"
     },
     "ASSET_PRODUCTION": {
-      "xp": 1360,
+      "xp": 1365,
       "level": 13,
       "verifiedSuccesses": 15,
-      "verifiedFailureLessons": 236,
-      "lastEvidence": "capability_ctrace_46c8dc058a2f8025b595cc87"
+      "verifiedFailureLessons": 237,
+      "lastEvidence": "capability_ctrace_d7abc9cd9f913ec766d64625"
     },
     "ASSET_ADAPTATION": {
       "xp": 382,
@@ -117,11 +117,11 @@
       "lastEvidence": "capability_ctrace_d88b3fb6a7ce0fd1b13cc918"
     },
     "ANIMATION_FEEL": {
-      "xp": 2113,
+      "xp": 2118,
       "level": 16,
       "verifiedSuccesses": 104,
-      "verifiedFailureLessons": 173,
-      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
+      "verifiedFailureLessons": 174,
+      "lastEvidence": "capability_ctrace_d7abc9cd9f913ec766d64625"
     },
     "VFX": {
       "xp": 545,
@@ -306,11 +306,11 @@
       "lastEvidence": null
     },
     "LEVEL_DESIGN": {
-      "xp": 216,
+      "xp": 221,
       "level": 5,
       "verifiedSuccesses": 3,
-      "verifiedFailureLessons": 36,
-      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
+      "verifiedFailureLessons": 37,
+      "lastEvidence": "capability_ctrace_d7abc9cd9f913ec766d64625"
     },
     "NAVIGATION": {
       "xp": 0,
@@ -320,11 +320,11 @@
       "lastEvidence": null
     },
     "ROUTE_DESIGN": {
-      "xp": 216,
+      "xp": 221,
       "level": 5,
       "verifiedSuccesses": 3,
-      "verifiedFailureLessons": 36,
-      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f"
+      "verifiedFailureLessons": 37,
+      "lastEvidence": "capability_ctrace_d7abc9cd9f913ec766d64625"
     },
     "STREAMING": {
       "xp": 0,
@@ -1129,7 +1129,8 @@
     "capability_ctrace_ae93110af69af3bf5d39e900",
     "capability_ctrace_5b535b4a2f311591caee3aea",
     "capability_ctrace_46c8dc058a2f8025b595cc87",
-    "capability_ctrace_e34908a51e750460386c5d4f"
+    "capability_ctrace_e34908a51e750460386c5d4f",
+    "capability_ctrace_d7abc9cd9f913ec766d64625"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -1627,8 +1628,8 @@
       ]
     },
     "fail_179iwmr": {
-      "count": 2,
-      "lastEvidence": "capability_ctrace_e34908a51e750460386c5d4f",
+      "count": 3,
+      "lastEvidence": "capability_ctrace_d7abc9cd9f913ec766d64625",
       "example": "SOURCE_CANDIDATE_GENERATION:VIBE4_OFFLINE_PATTERN_UNAVAILABLE",
       "domains": [
         "STATE_MACHINE",
@@ -1638,7 +1639,8 @@
         "ASSET_PRODUCTION",
         "ANIMATION_FEEL",
         "LEVEL_DESIGN",
-        "ROUTE_DESIGN"
+        "ROUTE_DESIGN",
+        "SECURITY"
       ]
     }
   },
@@ -29505,7 +29507,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-11-03T17:02:50.739Z",
+    "lastBuiltAt": "2026-11-04T04:50:13.163Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -39295,5 +39297,5 @@
     "failures": [],
     "seenEvidenceIds": []
   },
-  "updatedAt": "2026-11-03T17:02:50.739Z"
+  "updatedAt": "2026-11-04T04:50:13.163Z"
 }
