@@ -157,7 +157,7 @@ function spawnPoint(outer){
 }
 function spawnMob(type){
  const stats=mobStats[type],p=spawnPoint(Math.random()<.84);
- S.mobs.push({id:'m'+ ++S.serial,type,x:p.x,y:p.y,angle:0,hp:stats.hp,maxHp:stats.hp,attackAt:0,dx:0,dy:0,wander:0});
+ S.mobs.push({id:'m'+ ++S.serial,type,x:p.x,y:p.y,angle:0,hp:stats.hp,maxHp:stats.hp,attackAt:0,dx:0,dy:0,wander:0,huntUntil:0,huntCheckAt:type==='wolf'?S.elapsed+rnd(35,65):0,openedPreyIds:[],stunUntil:0});
 }
 function spawnNeutral(){
  const type=Math.random()<.63?'rabbit':'deer';
@@ -238,25 +238,73 @@ function processInput(p,move,dt){
 }
 function simulateAnimals(dt){
  const night=S.time>=180;
+ const animals=[...S.mobs.filter(m=>m.hp>0&&(night||m.type!=='tiger'&&m.type!=='bat')),...S.neutrals.filter(n=>n.hp>0)];
  for(const mob of S.mobs){
-  if((mob.type==='tiger'||mob.type==='bat')&&!night)continue;
-  let nearest=null,d=360;
-  for(const p of S.players)if(p.hp>0){const v=dist(p,mob);if(v<d){nearest=p;d=v;}}
+  if(mob.hp<=0||((mob.type==='tiger'||mob.type==='bat')&&!night))continue;
+  if(mob.type==='wolf'){
+   if(!Number.isFinite(mob.huntCheckAt)||mob.huntCheckAt<=0)mob.huntCheckAt=S.elapsed+rnd(35,65);
+   if(S.elapsed>=mob.huntCheckAt){
+    if(S.elapsed>=(mob.huntUntil||0)&&Math.random()<.45){mob.huntUntil=S.elapsed+30;mob.openedPreyIds=[];}
+    mob.huntCheckAt=S.elapsed+rnd(50,80);
+   }
+  }
+  if((mob.stunUntil||0)>S.elapsed)continue;
+  let nearest=null,d=360,playerTarget=false;
+  if((mob.retaliateUntil||0)>S.elapsed){
+   const attacker=animals.find(n=>n.type==='wolf'&&n.id===mob.retaliateId);
+   if(attacker){nearest=attacker;d=dist(mob,attacker);}
+  }
+  if(!nearest&&mob.type==='wolf'&&(mob.huntUntil||0)>S.elapsed){
+   d=480;
+   for(const other of animals)if(other!==mob&&other.hp>0){
+    const v=dist(mob,other);if(v<d){d=v;nearest=other;}
+   }
+  }
+  if(!nearest){
+   d=360;
+   for(const p of S.players)if(p.hp>0){const v=dist(p,mob);if(v<d){nearest=p;d=v;playerTarget=true;}}
+  }
   if(nearest){
    const dx=(nearest.x-mob.x)/(d||1),dy=(nearest.y-mob.y)/(d||1);
    mob.x+=dx*mobStats[mob.type].speed*dt;mob.y+=dy*mobStats[mob.type].speed*dt;
    mob.angle=Math.atan2(-dx,-dy);
-   if(d<56&&S.elapsed-mob.attackAt>1.15){
-    mob.attackAt=S.elapsed;nearest.hp=clamp(nearest.hp-mobStats[mob.type].hit,0,100);
+   if(d<56&&S.elapsed-(mob.attackAt||0)>1.15&&nearest.hp>0){
+    mob.attackAt=S.elapsed;
+    let damage=mobStats[mob.type].hit;
+    if(!playerTarget){
+     if(mob.type==='wolf'&&(mob.huntUntil||0)>S.elapsed){
+      if(!Array.isArray(mob.openedPreyIds))mob.openedPreyIds=[];
+      if(!mob.openedPreyIds.includes(nearest.id)){
+       mob.openedPreyIds.push(nearest.id);
+       if(Math.random()<.3){damage*=1.5;nearest.stunUntil=S.elapsed+2;mob.leapAt=S.elapsed;}
+      }
+     }
+     nearest.hp=Math.max(0,nearest.hp-damage);
+     if(nearest.hp>0&&mob.type==='wolf'){nearest.retaliateId=mob.id;nearest.retaliateUntil=S.elapsed+14;}
+    }else nearest.hp=clamp(nearest.hp-damage,0,100);
    }
   }else{
    mob.wander-=dt;
    if(mob.wander<=0){mob.wander=rnd(2,5);const a=rnd(0,Math.PI*2);mob.dx=Math.cos(a);mob.dy=Math.sin(a);}
    mob.x=clamp(mob.x+mob.dx*dt*27,35,2365);
    mob.y=clamp(mob.y+mob.dy*dt*27,35,2365);
+   mob.angle=Math.atan2(-mob.dx,-mob.dy);
   }
  }
  for(const animal of S.neutrals){
+  if(animal.hp<=0||(animal.stunUntil||0)>S.elapsed)continue;
+  const wolf=(animal.retaliateUntil||0)>S.elapsed
+   ?S.mobs.find(m=>m.type==='wolf'&&m.id===animal.retaliateId&&m.hp>0):null;
+  if(wolf){
+   const d=dist(animal,wolf),dx=(wolf.x-animal.x)/(d||1),dy=(wolf.y-animal.y)/(d||1);
+   animal.x=clamp(animal.x+dx*dt*100,35,2365);
+   animal.y=clamp(animal.y+dy*dt*100,35,2365);
+   animal.angle=Math.atan2(-dx,-dy);
+   if(d<58&&S.elapsed-(animal.attackAt||0)>1.4){
+    animal.attackAt=S.elapsed;wolf.hp=Math.max(0,wolf.hp-(animal.type==='deer'?7:3));
+   }
+   continue;
+  }
   let nearest=null,d=270;
   for(const p of S.players)if(p.hp>0&&dist(p,animal)<d){nearest=p;d=dist(p,animal);}
   if(nearest){
@@ -269,8 +317,12 @@ function simulateAnimals(dt){
    if(animal.wander<=0){animal.wander=rnd(2,5);const a=rnd(0,6.28);animal.dx=Math.cos(a);animal.dy=Math.sin(a);}
    animal.x=clamp(animal.x+animal.dx*dt*19,35,2365);
    animal.y=clamp(animal.y+animal.dy*dt*19,35,2365);
+   animal.angle=Math.atan2(-animal.dx,-animal.dy);
   }
  }
+ // 쓰러진 야생 동물은 월드에서 제거한다.
+ S.mobs=S.mobs.filter(m=>m.hp>0);
+ S.neutrals=S.neutrals.filter(n=>n.hp>0);
 }
 function update(dt){
  S.elapsed+=dt;S.time+=dt;
