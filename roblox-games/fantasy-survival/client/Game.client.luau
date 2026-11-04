@@ -3043,9 +3043,14 @@ do
     local reveal=Instance.new("Frame")
     reveal.Name="FirstVillageArrival"
     reveal.Size=UDim2.fromScale(1,1)
-    reveal.BackgroundTransparency=1
+    reveal.BackgroundColor3=Color3.fromRGB(5,9,10)
+    reveal.BackgroundTransparency=0
     reveal.BorderSizePixel=0
     reveal.Parent=arrivalGui
+    -- [첫 마을] 오프닝 암전에서 실제 마을과 아바타가 나타난다.
+    TweenService:Create(reveal,TweenInfo.new(1.25,Enum.EasingStyle.Sine),{
+      BackgroundTransparency=1,
+    }):Play()
     local topBar=Instance.new("Frame")
     topBar.Name="CinematicTop"
     topBar.Size=UDim2.fromScale(1,.09)
@@ -3134,7 +3139,8 @@ do
       local origin=rootPart.Position
       local destination=CFrame.lookAt(origin+Vector3.new(10,9,17),origin+Vector3.new(0,3,-5))
       -- 카메라가 실물 마을을 내려다본 뒤 실제 플레이어 망토·얼굴 쪽으로 이동한다.
-      revealTween=TweenService:Create(camera,TweenInfo.new(reducedEffects and 1.5 or 3.1,
+      local revealSeconds=reducedEffects and 2.4 or 3.4
+      revealTween=TweenService:Create(camera,TweenInfo.new(revealSeconds,
         Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
           CFrame=destination,FieldOfView=59,
         })
@@ -3143,7 +3149,7 @@ do
       local dustOrigin=rootPart:FindFirstChild("MeadowFootstepDustOrigin")
       local dust=dustOrigin and dustOrigin:FindFirstChild("MeadowNativeFootstepDust")
       if dust then dust:Emit(reducedEffects and 4 or 11) end
-      task.wait(reducedEffects and 1.5 or 3.1)
+      task.wait(revealSeconds)
       if not revealActive then return end
       line.Text="첫 단서는 마을의 촌장 나린에게 있다. 여기서 다시 여정이 시작된다."
       chapter.Text="초원 마을  ·  새로운 여정"
@@ -3416,7 +3422,12 @@ do
             })
           activeMistTween:Play()
         end
-        local audioLevel=silence and 0 or scene.cinema=="rift" and .18 or scene.cinema=="dawn" and .55 or 1
+        -- [사건별 믹스] 퇴각·기록 삭제는 침묵, 배신은 저음, 새벽은 숲소리 회복.
+        local audioLevel=silence and 0 or scene.cinema=="siege" and .45
+          or scene.cinema=="charge" and .28 or scene.cinema=="crown" and .62
+          or scene.cinema=="omen" and .26 or scene.cinema=="betrayal" and .15
+          or scene.cinema=="reach" and .32 or scene.cinema=="rift" and .12
+          or scene.cinema=="dawn" and .78 or scene.cinema=="relic" and .46 or .66
         if activeAmbienceTween then activeAmbienceTween:Cancel() end
         if activeEffectsTween then activeEffectsTween:Cancel() end
         activeAmbienceTween=TweenService:Create(meadowAmbienceGroup,TweenInfo.new(silence and .18 or .85),{
@@ -3702,14 +3713,15 @@ do
         -- 배경·인물 단독 이미지 규칙과 이전 컷 즉시 제거는 그대로 유지한다.
         local transitionCut=scene.cinema=="erasure" or scene.cinema=="rift"
         storyCurtain.BackgroundColor3=Color3.fromRGB(6,9,13)
-        storyCurtain.BackgroundTransparency=transitionCut and .20 or .45
+        storyCurtain.BackgroundTransparency=.06
         moveStoryCamera(scene.view,scene.seconds,scene.cinema)
         -- [기사단 퇴각·기록 삭제] 컷을 정지해 반전을 보여 주고 음향을 비운다.
         if silence then
           task.delay(1.2,function()
             if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
             local paused={}
-            for _,motion in pairs({camera=activeTween,fov=activeFovTween}) do
+            -- [정지 컷] 실제 카메라·원화 이동을 동시에 멈춰 반전의 시간을 만든다.
+            for _,motion in pairs({camera=activeTween,fov=activeFovTween,art=activeStoryFocusTween}) do
               if motion and motion.PlaybackState==Enum.PlaybackState.Playing then
                 motion:Pause()
                 table.insert(paused,motion)
@@ -3861,6 +3873,16 @@ do
             end)
           end)
         end
+        -- [컷 사이 암전] 원화 한 장을 교체하기 전에 먼저 잉크막으로 어둡게 한다.
+        task.delay(math.max(.4,scene.seconds-.52),function()
+          if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
+          if activeCurtainTween then activeCurtainTween:Cancel() end
+          activeCurtainTween=TweenService:Create(storyCurtain,
+            TweenInfo.new(.46,Enum.EasingStyle.Sine,Enum.EasingDirection.In),{
+              BackgroundTransparency=.06,
+            })
+          activeCurtainTween:Play()
+        end)
         local started=os.clock()
         while entranceOpen and token==runToken and os.clock()-started<scene.seconds do
           task.wait(.05)
