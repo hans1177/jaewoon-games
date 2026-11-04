@@ -2479,30 +2479,30 @@ local function renderMeadowJournal()
   end
   if villageIndex>#Config.VillageContracts then villageLines[#villageLines+1]="마을 의뢰 모두 완료" end
   villageContractRow.Text=table.concat(villageLines,"\n\n")
-  trackerTitle.Text="퀘스트 도우미   ▸"
-  trackerDetail.Text=quest and string.format("메인 · %s\n%d/%d  %s",quest.Name,progress,quest.Goal,quest.Instruction)
-    or "메인 · 완료\n연구 기록은 인벤토리에서 확인"
+  trackerTitle.Text=quest and ("❖ [메인] "..quest.Name) or "❖ [메인] 완료"
+  trackerDetail.Text=quest and string.format("☐ %s  (%d/%d)",quest.Instruction,progress,quest.Goal)
+    or "☑ 메인 의뢰 완료"
   local village=Config.VillageContracts[villageIndex]
   if village then
     local witness=bit32.lshift(1,village.Witness-1)
     local count=(bit32.band(villageMask,witness)~=0 and 1 or 0)
       +(bit32.band(villageMask,8)~=0 and 1 or 0)
       +(bit32.band(villageMask,64)~=0 and 1 or 0)
-    trackerVillage.Text="서브 · 마을  "..village.Name..
-      "\n"..(villagePhase==0 and "촌장에게 수락" or villagePhase==2 and "촌장에게 보고"
+    trackerVillage.Text="◆ [서브] "..village.Name.."\n  ☐ "..
+      (villagePhase==0 and "촌장에게 수락" or villagePhase==2 and "촌장에게 보고"
       or string.format("현장 단서 %d/3",count))
   else
-    trackerVillage.Text="서브 · 마을  완료"
+    trackerVillage.Text="◆ [서브] 마을 의뢰 완료"
   end
   local companionStage=player:GetAttribute("CompanionQuestStage") or 1
   local companion=Config.CompanionRequests[companionStage]
   if companion then
     local unlocked=stage>=companion.UnlockMainStage
-    trackerCompanion.Text="서브 · 동료  "..companion.Name.."\n"..
-      (unlocked and string.format("진행 %d/%d",player:GetAttribute("CompanionQuestProgress") or 0,companion.Goal)
-      or string.format("메인 %d단계 해금",companion.UnlockMainStage))
+    trackerCompanion.Text="☐ "..companion.Name.."  "..
+      (unlocked and string.format("(%d/%d)",player:GetAttribute("CompanionQuestProgress") or 0,companion.Goal)
+      or string.format("(메인 %d단계 해금)",companion.UnlockMainStage))
   else
-    trackerCompanion.Text="서브 · 동료  완료"
+    trackerCompanion.Text="☑ 동료 의뢰 완료"
   end
   inventoryRow.Text="소지품  ·  실제 보유·제작·장비 기록"
   renderWitcherInventory()
@@ -2523,17 +2523,31 @@ end
 -- [왼쪽 의뢰 추적] 항상 메인·마을 서브·동료 서브를 순서대로 표시하고 눌러 상세를 연다.
 questTracker.Name="MeadowQuestHelperButton"
 questTracker.Text=""
-questTracker.BackgroundColor3=Color3.fromRGB(20,48,40)
-questTracker.BackgroundTransparency=.06
+-- [참고 이미지 검은 의뢰판] 실시간 메인/서브 기록을 작은 체크리스트로 표현한다.
+questTracker.BackgroundColor3=Color3.fromRGB(12,15,19)
+questTracker.BackgroundTransparency=.18
+local questRim=questTracker:FindFirstChildOfClass("UIStroke")
+if questRim then
+  questRim.Color=Color3.fromRGB(130,112,76)
+  questRim.Transparency=.5
+end
 trackerTitle.Visible=true
-trackerTitle.Text="퀘스트 도우미   ▸"
-trackerTitle.TextSize=14
+trackerTitle.Font=Enum.Font.GothamBold
+trackerTitle.TextColor3=Color3.fromRGB(244,188,72)
+trackerTitle.TextSize=11
 trackerTitle.TextTruncate=Enum.TextTruncate.AtEnd
 trackerDetail.Visible=true
-trackerDetail.TextSize=12
+trackerDetail.TextColor3=Color3.fromRGB(242,235,222)
+trackerDetail.TextSize=10
 trackerDetail.TextYAlignment=Enum.TextYAlignment.Top
 trackerVillage.Visible=true
+trackerVillage.TextColor3=Color3.fromRGB(118,199,255)
+trackerVillage.TextSize=10
 trackerCompanion.Visible=true
+trackerCompanion.TextColor3=Color3.fromRGB(226,234,241)
+trackerCompanion.TextSize=10
+trackerNavigation.TextSize=9
+trackerNavigation.TextColor3=Color3.fromRGB(183,183,172)
 questTracker.Activated:Connect(function()
   if meadowTutorialAdvance then meadowTutorialAdvance(2) end
   meadowMenu.open(5)
@@ -2583,27 +2597,32 @@ end)
 characterShortcut.Activated:Connect(function()meadowMenu.open(1)end)
 
 -- [모바일] 세로 화면은 중앙 체력바 아래에 배치하고 조이스틱과 겹치지 않도록 한다.
+-- [우측 상단] 여섯 메뉴 아이콘 바로 아래에 메인/서브 의뢰를 배치한다.
 local function layoutMeadowJournal()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
-  local portrait=v.X<v.Y
-  local compact=not portrait and v.Y<420
-  local top=portrait and 122 or 62
-  local width=math.floor(math.clamp(v.X*.23,168,270))
-  local height=compact and 140 or 182
-  questTracker.Position=UDim2.fromOffset(v.X-width-12,top)
+  local landscape=v.X>v.Y
+  local compact=landscape and v.Y<530
+  local menuStep=landscape and math.floor(math.clamp(v.X/20.8,31,39))
+    or math.floor(math.clamp(v.X/9.8,33,40))
+  local top=landscape and menuStep+38 or menuStep+48
+  local width=math.floor(math.clamp(v.X*(landscape and .23 or .42),151,238))
+  local height=compact and 126 or 157
+  questTracker.Position=UDim2.fromOffset(v.X-width-8,top)
   questTracker.Size=UDim2.fromOffset(width,height)
-  trackerDetail.Position=UDim2.fromOffset(11,31)
-  trackerDetail.Size=UDim2.new(1,-21,0,compact and 37 or 52)
-  trackerVillage.Position=UDim2.fromOffset(11,compact and 70 or 86)
-  trackerVillage.Size=UDim2.new(1,-21,0,compact and 26 or 37)
-  trackerCompanion.Position=UDim2.fromOffset(11,compact and 97 or 126)
-  trackerCompanion.Size=UDim2.new(1,-21,0,compact and 26 or 37)
-  trackerNavigation.Position=UDim2.fromOffset(11,compact and 124 or 166)
-  trackerNavigation.Size=UDim2.new(1,-21,0,20)
+  trackerTitle.Position=UDim2.fromOffset(8,6)
+  trackerTitle.Size=UDim2.new(1,-14,0,17)
+  trackerDetail.Position=UDim2.fromOffset(10,24)
+  trackerDetail.Size=UDim2.new(1,-18,0,compact and 30 or 40)
+  trackerVillage.Position=UDim2.fromOffset(9,compact and 57 or 68)
+  trackerVillage.Size=UDim2.new(1,-18,0,compact and 32 or 42)
+  trackerCompanion.Position=UDim2.fromOffset(10,compact and 93 or 111)
+  trackerCompanion.Size=UDim2.new(1,-18,0,compact and 21 or 24)
+  trackerNavigation.Position=UDim2.fromOffset(9,compact and 113 or 138)
+  trackerNavigation.Size=UDim2.new(1,-17,0,14)
   characterShortcut.Position=UDim2.fromOffset(9,top+height+8)
   characterShortcut.Size=UDim2.fromOffset(width,compact and 42 or 56)
-  characterShortcut.Visible=false -- [시안] 좌측 중복 캐릭터 버튼은 상단 얼굴·메뉴로 통합한다.
+  characterShortcut.Visible=false
 end
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   local visible=gui:GetAttribute("GameMenuOpen")~=true
@@ -4892,7 +4911,7 @@ meadowSkillDock.AnchorPoint=Vector2.new(1,1)
 meadowSkillDock.Parent=gui
 -- 외부 CC0 등록 아틀라스의 실제 의미가 맞는 아이콘만 매칭한다.
 local meleeSkills={
-  {"meadow-unarmed-rush","연타",Color3.fromRGB(243,87,46),nil,"fist"},
+  {"meadow-unarmed-rush","연타",Color3.fromRGB(125,105,218),nil,"fist"},
   {"skill-meadow-dodge-left","회피",Color3.fromRGB(246,179,73),nil,"dodge"},
   {"skill-meadow-guard","막기",Color3.fromRGB(71,160,246),nil,"guard"},
   {"skill-meadow-heal","물약",Color3.fromRGB(224,85,94),nil,"potion"},
@@ -5172,10 +5191,10 @@ local function layoutMeadowCombatUi()
   meadowSkillDock.Position=UDim2.new(1,-math.floor(8*scale),1,-math.floor(offset*scale))
   -- [시안 참고] 오른쪽 큰 검 / 위쪽 마력·질주 / 좌측 회피 / 아래 점프.
   local positions={
-    {104,57,42}, -- 원래 연타
-    {66,142,43}, -- 원래 좌우 회피
-    {170,75,39}, -- 원래 막기
-    {40,72,36}, -- 원래 물약
+    {156,113,38}, -- 기술: 보라빛 충격
+    {114,154,39}, -- 좌측 회피
+    {170,75,39}, -- 막기는 하단 8번 단축키
+    {40,72,36}, -- 물약은 하단 5번 단축키
   }
   for index,button in ipairs(meadowSkillButtons) do
     local row=positions[index]
@@ -5188,6 +5207,11 @@ local function layoutMeadowCombatUi()
     button.Size=UDim2.fromOffset(size,size)
     button.Position=UDim2.fromOffset(math.floor((visualX-row[3]*.5)*scale),
       math.floor((visualY-row[3]*.5)*scale))
+    -- [시안 오른쪽] 검·기술·회피·질주·점프 5개만 표시.
+    -- 숨긴 막기와 회복은 8·5번 단축바에 그대로 연결한다.
+    button.Visible=index==1 or index==2
+    local icon=button:FindFirstChild("OriginalRightActionIcon")
+    if icon and index==1 then icon.ImageColor3=Color3.fromRGB(169,127,255) end
     local plate=meadowSkillNameplates[index]
     plate.Visible=false -- 원형 전투 아이콘만 유지해 참고 화면과 동일한 밀도로 표시.
     plate.Size=UDim2.fromOffset(0,0)
@@ -5198,15 +5222,15 @@ local function layoutMeadowCombatUi()
     if index==2 then
       local size=math.max(36,math.floor(43*scale))
       button.Size=UDim2.fromOffset(size,size)
-      button.Position=UDim2.fromOffset(math.floor(174*scale),math.floor(9*scale))
+      button.Position=UDim2.fromOffset(math.floor(174*scale),math.floor(78*scale))
     end
   end
   local swordSize=math.max(62,math.floor(76*scale))
   meadowSkillButtons.primarySword.Size=UDim2.fromOffset(swordSize,swordSize)
-  meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(127*scale),math.floor(125*scale))
+  meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(135*scale),math.floor(139*scale))
   local jumpSize=math.max(38,math.floor(43*scale))
   meadowSkillButtons.referenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)
-  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(86*scale),math.floor(180*scale))
+  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(76*scale),math.floor(180*scale))
   -- [기존 점프 이중 터치 방지] 공식 모바일 JumpButton만 숨기고 실제 점프 기능은 위 버튼에 연결.
   if UserInputService.TouchEnabled then
     local touchGui=player.PlayerGui:FindFirstChild("TouchGui")
