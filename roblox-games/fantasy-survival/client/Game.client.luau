@@ -1409,6 +1409,8 @@ UserInputService.InputBegan:Connect(function(input,processed)
   elseif input.KeyCode==Enum.KeyCode.O then meadowMenu.open(4)
   end
 end)
+-- [아이콘 HUD / 지역 스코프] 기존 21종 이미지와 서버 동작을 그대로 두고 Luau 200 레지스터 제한만 해결한다.
+do
 -- [시안 상단 여섯 메뉴] 기존 메뉴 페이지를 그대로 호출하고 아이콘·위치만 교체한다.
 local meadowReferenceMenu=Instance.new("Frame")
 meadowReferenceMenu.Name="MeadowReferenceTopMenu"
@@ -1589,6 +1591,7 @@ gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   meadowReferenceHotbar.Visible=visible
 end)
 layoutMeadowReferenceHud()
+end -- [아이콘 HUD] 연결 이벤트는 유지하고 최상위 레지스터는 반환한다.
 
 local meadowHud=gui:FindFirstChild("MobileGameStatus")
 if meadowHud then
