@@ -5742,11 +5742,19 @@ updateMeadowQuestDirection()
 local function updateMeadowPromptHighlight()
   promptHighlight.Enabled=false
   if gui:GetAttribute("GameMenuOpen")==true then return end
+  local character=player.Character
+  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+  if not rootPart then return end
   for prompt in pairs(shownMeadowPrompts) do
     if prompt.Parent and prompt.Enabled then
       local host=prompt.Parent:IsA("Attachment") and prompt.Parent.Parent or prompt.Parent
-      if host and (host:IsA("BasePart") or host:IsA("Model")) then
-        promptHighlight.Adornee=host;promptHighlight.Enabled=true;return
+      local hostPosition=host and (host:IsA("BasePart") and host.Position
+        or host:IsA("Model") and host:GetPivot().Position)
+      -- [모바일 상호작용] 멀리 등록된 주민은 실제 활성 거리 밖에서 강조하지 않는다.
+      if hostPosition and (hostPosition-rootPart.Position).Magnitude<=prompt.MaxActivationDistance then
+        promptHighlight.Adornee=host
+        promptHighlight.Enabled=true
+        return
       end
     end
   end
