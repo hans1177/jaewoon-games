@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g3-85bd2d327cae",
-  "directiveFingerprint": "85bd2d327caeef50a655cc2ad6e324b9b11221b456a4ab320875bc98e7ed554b",
-  "previousDirectiveFingerprint": "4eaa027a3ae91759b002cc8d3b6c4400b3d75f713eba08110a9ad80bbd217627",
-  "forbiddenRepeatFingerprint": "4eaa027a3ae91759b002cc8d3b6c4400b3d75f713eba08110a9ad80bbd217627",
+  "directiveId": "village-dungeons-build-up-g1-f83b759565ed",
+  "directiveFingerprint": "f83b759565edd04110f5886e944eb2d31554b681dceb794f59ee1ac28c3c25c2",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 3,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/village-dungeons",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "cdad43d028171a1ced7694f48cb05b30c88afee3bd5b7d5c8cf1d16ca0e12e47",
-    "previousDesignFingerprint": "cdad43d028171a1ced7694f48cb05b30c88afee3bd5b7d5c8cf1d16ca0e12e47",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "village-dungeons",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "cdad43d028171a1ced7694f48cb05b30c88afee3bd5b7d5c8cf1d16ca0e12e47",
     "sourceTreeFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/village-dungeons",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/village-dungeons",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/village-dungeons/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/village-dungeons/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "claimQuest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "progressTarget",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "questDone",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "qState",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "updatePrompt",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/village-dungeons/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/village-dungeons/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "claimQuest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "progressTarget",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "questDone",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "qState",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "updatePrompt",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/village-dungeons/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/village-dungeons/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "claimQuest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "progressTarget",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "questDone",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "qState",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "updatePrompt",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/village-dungeons/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/village-dungeons/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "claimQuest",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "progressTarget",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "questDone",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "qState",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/village-dungeons/index.html",
+            "symbol": "updatePrompt",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/village-dungeons/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/village-dungeons/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4529,11 +4671,27 @@
       },
       {
         "file": "web-games/village-dungeons/index.html",
-        "line": 767,
-        "kind": "FUNCTION",
-        "symbol": "openQuestList",
-        "context": "function openQuestList(){",
-        "score": 74
+        "line": 802,
+        "kind": "METHOD",
+        "symbol": "attackBtn.onclick",
+        "context": "attackBtn.onclick=function(){initAudio();attack();};",
+        "score": 72
+      },
+      {
+        "file": "web-games/village-dungeons/index.html",
+        "line": 803,
+        "kind": "METHOD",
+        "symbol": "interactBtn.onclick",
+        "context": "interactBtn.onclick=function(){initAudio();interact();};",
+        "score": 72
+      },
+      {
+        "file": "web-games/village-dungeons/index.html",
+        "line": 804,
+        "kind": "METHOD",
+        "symbol": "returnBtn.onclick",
+        "context": "returnBtn.onclick=function(){initAudio();returnTown();};",
+        "score": 72
       },
       {
         "file": "web-games/village-dungeons/index.html",
@@ -4549,14 +4707,6 @@
         "kind": "FUNCTION",
         "symbol": "nextXp",
         "context": "function nextXp(){return state.level*100;}",
-        "score": 58
-      },
-      {
-        "file": "web-games/village-dungeons/index.html",
-        "line": 416,
-        "kind": "FUNCTION",
-        "symbol": "desiredMusic",
-        "context": "function desiredMusic(){",
         "score": 58
       },
       {
@@ -4585,30 +4735,16 @@
       },
       {
         "file": "web-games/village-dungeons/index.html",
-        "line": 856,
+        "line": 767,
         "kind": "FUNCTION",
-        "symbol": "animate",
-        "context": "function animate(now){",
+        "symbol": "openQuestList",
+        "context": "function openQuestList(){",
         "score": 58
-      },
-      {
-        "file": "web-games/village-dungeons/index.html",
-        "line": 553,
-        "kind": "METHOD",
-        "symbol": "setTimeout",
-        "context": "setTimeout(function(){buildTown();},550);",
-        "score": 56
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 마을 던전 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
-    "currentSourceTreeFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5893,22 +6029,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -5944,7 +6078,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 190,
+        "score": 66,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -6061,12 +6195,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 3,
-    "previousGeneration": 2,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
-    "priorSourceFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6623,8 +6757,8 @@
       "gameId": "village-dungeons",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 3,
-        "actorClass": "NPC",
+        "generation": 1,
+        "actorClass": "BOSS",
         "sourceOwnerFile": "web-games/village-dungeons/index.html",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
@@ -6638,7 +6772,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "village-dungeons",
-          "actorClass": "NPC",
+          "actorClass": "BOSS",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -7519,6 +7653,50 @@
         "symbol": "claimQuest",
         "context": "function claimQuest(id){",
         "score": 122,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "qState",
+            "questDone",
+            "addXP",
+            "save",
+            "closeModal",
+            "toastMsg",
+            "buildTown",
+            "updateHUD"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "QUESTS",
+            "s",
+            "state",
+            "x",
+            "q",
+            "status"
+          ],
+          "stateWrites": [
+            "s",
+            "state",
+            "q",
+            "status"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "AI",
+            "PROGRESSION",
+            "SAVE",
+            "PLACEMENT",
+            "WORLD",
+            "ECONOMY",
+            "GOAL_STATE",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function claimQuest(id){",
         "intendedBehavior": "CORE_FUN primary goal \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 마을 던전 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 claimQuest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 마을 던전 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/village-dungeons/index.html::claimQuest이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7531,6 +7709,40 @@
         "symbol": "progressTarget",
         "context": "function progressTarget(kind,target){",
         "score": 106,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "qState",
+            "toastMsg",
+            "save",
+            "updateHUD"
+          ],
+          "calledBy": [
+            "killEnemy",
+            "interact"
+          ],
+          "stateReads": [
+            "QUESTS",
+            "s",
+            "q",
+            "status"
+          ],
+          "stateWrites": [
+            "s"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "INTERACTION",
+            "PROGRESSION",
+            "SAVE",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function progressTarget(kind,target){",
         "intendedBehavior": "CORE_FUN primary goal \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 마을 던전 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 progressTarget의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 마을 던전 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/village-dungeons/index.html::progressTarget이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7543,6 +7755,29 @@
         "symbol": "questDone",
         "context": "function questDone(q){return qState(q.id).progress>=q.need;}",
         "score": 98,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "qState"
+          ],
+          "calledBy": [
+            "openQuestGiver",
+            "claimQuest"
+          ],
+          "stateReads": [
+            "q"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PROGRESSION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function questDone(q){return qState(q.id).progress>=q.need;}",
         "intendedBehavior": "CORE_FUN primary goal \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 마을 던전 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 questDone의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 마을 던전 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/village-dungeons/index.html::questDone이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7555,6 +7790,35 @@
         "symbol": "qState",
         "context": "function qState(id){return state.quests[id];}",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "questDone",
+            "progressTarget",
+            "activeQuests",
+            "updateHUD",
+            "nextGiverQuest",
+            "openQuestGiver",
+            "acceptQuest",
+            "claimQuest",
+            "openQuestList",
+            "interact"
+          ],
+          "stateReads": [
+            "state"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "PROGRESSION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function qState(id){return state.quests[id];}",
         "intendedBehavior": "CORE_FUN primary goal \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 마을 던전 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 qState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 마을 던전 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/village-dungeons/index.html::qState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7567,6 +7831,37 @@
         "symbol": "updatePrompt",
         "context": "function updatePrompt(){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "nearestInteractable"
+          ],
+          "calledBy": [
+            "animate"
+          ],
+          "stateReads": [
+            "currentInteract",
+            "prompt",
+            "interactBtn",
+            "label"
+          ],
+          "stateWrites": [
+            "currentInteract",
+            "prompt",
+            "interactBtn",
+            "label"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "INTERACTION",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function updatePrompt(){",
         "intendedBehavior": "CORE_FUN primary goal \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 마을 던전 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updatePrompt의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 마을 던전 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/village-dungeons/index.html::updatePrompt이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7579,6 +7874,35 @@
         "symbol": "equipItem",
         "context": "function equipItem(kind,id){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "save",
+            "updateHUD",
+            "renderShop"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "state",
+            "owned"
+          ],
+          "stateWrites": [
+            "state",
+            "owned"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "SAVE",
+            "COMBAT",
+            "ECONOMY",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function equipItem(kind,id){",
         "intendedBehavior": "CORE_FUN primary goal \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 마을 던전 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 equipItem의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 마을 던전 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/village-dungeons/index.html::equipItem이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7591,6 +7915,31 @@
         "symbol": "weaponPower",
         "context": "function weaponPower(){",
         "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "totalAttack"
+          ],
+          "stateReads": [
+            "WEAPONS",
+            "state",
+            "item",
+            "x"
+          ],
+          "stateWrites": [
+            "item"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function weaponPower(){",
         "intendedBehavior": "CORE_FUN primary goal \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 마을 던전 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 weaponPower의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 마을 던전 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/village-dungeons/index.html::weaponPower이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7603,6 +7952,43 @@
         "symbol": "buyItem",
         "context": "function buyItem(kind,id){",
         "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "toastMsg",
+            "save",
+            "updateHUD",
+            "renderShop"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "WEAPONS",
+            "ARMORS",
+            "state",
+            "item",
+            "x",
+            "items",
+            "owned"
+          ],
+          "stateWrites": [
+            "state",
+            "item",
+            "items",
+            "owned"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "ECONOMY",
+            "SAVE",
+            "COMBAT",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function buyItem(kind,id){",
         "intendedBehavior": "CORE_FUN primary goal \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 마을 던전 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 buyItem의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 마을 던전 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/village-dungeons/index.html::buyItem이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7697,8 +8083,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 마을 던전 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7717,8 +8103,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7764,12 +8150,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7832,5 +8218,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:08.585Z"
+  "generatedAt": "2026-11-04T02:46:54.555Z"
 }
