@@ -4320,135 +4320,122 @@ local function bindNativeFoundationPlayer(player)
   player.RespawnLocation = nativeFoundationSpawn
   -- [오프닝 망토] 캐릭터가 생성된 바로 그 회차에서 기본 외형 로딩을 기다린다.
   -- CharacterAppearanceLoaded만 기다리면 기존 캐릭터나 빨리 로딩된 캐릭터를 놓칠 수 있다.
+  -- [오프닝 망토 / 서버 직접 장착] 로블록스 공식 무료 빨간 망토(BackAccessory)를 불러온다.
+  -- 외부 유료 UGC·설명 전체 재적용은 쓰지 않고 기존 아바타 장비·저장·전투를 보존한다.
   local function applyOpeningCape(character)
-    local humanoid = character:WaitForChild("Humanoid", 10)
-    if player.Character ~= character or not humanoid or humanoid.Health <= 0 then return end
-    if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-      warn("마력숲 오프닝 망토 장착 불가: R15 아바타 필요")
+    local humanoid=character:WaitForChild("Humanoid",10)
+    if player.Character~=character or not humanoid or humanoid.Health<=0 then return end
+    if humanoid.RigType~=Enum.HumanoidRigType.R15 then
+      character:SetAttribute("OpeningCapeAttached",false)
+      character:SetAttribute("OpeningCapeState","R15_REQUIRED")
+      warn("마력숲 망토 장착 불가: R15 캐릭터가 아님")
       return
     end
-    local deadline = os.clock() + 8
-    while player.Character == character and not player:HasAppearanceLoaded() and os.clock() < deadline do
-      task.wait(.15)
-    end
-    if player.Character ~= character or humanoid.Health <= 0 then return end
-    task.wait() -- Roblox 기본 아바타 장신구 삽입과 같은 프레임에 겹치지 않는다.
-    local capeId = tonumber(Config.OpeningCapeAccessoryId)
-    if not capeId or capeId <= 0 then
-      warn("마력숲 오프닝 망토 에셋 ID 누락")
+    -- Roblox 기본 아바타 로딩 뒤 게임 전용 망토 한 개만 장착한다.
+    local deadline=os.clock()+9
+    while player.Character==character and not player:HasAppearanceLoaded()
+      and os.clock()<deadline do task.wait(.15) end
+    if player.Character~=character or humanoid.Health<=0 then return end
+    local capeId=tonumber(Config.OpeningCapeAccessoryId)
+    if not capeId or capeId<=0 then
+      character:SetAttribute("OpeningCapeAttached",false)
+      character:SetAttribute("OpeningCapeState","SOURCE_MISSING")
+      warn("마력숲 망토 자산 ID 누락")
       return
     end
-    local description
-    local ok, reason = pcall(function()
-      description = humanoid:GetAppliedDescription()
-      local accessories = description:GetAccessories(true)
-      local alreadyListed = false
-      for _, accessory in ipairs(accessories) do
-        if accessory.AssetId == capeId then
-          alreadyListed = true
-          break
+    local oldCape=character:FindFirstChild("MeadowWornCrimsonCape")
+    if oldCape and oldCape:IsA("Accessory") then
+      local oldHandle=oldCape:FindFirstChild("Handle")
+      if oldHandle and oldHandle:FindFirstChild("AccessoryWeld") then
+        character:SetAttribute("OpeningCapeAttached",true)
+        character:SetAttribute("OpeningCapeState","ATTACHED")
+        return
+      end
+      oldCape:Destroy()
+    end
+    local loadedModel
+    local attached=false
+    local ok,reason=pcall(function()
+      loadedModel=game:GetService("InsertService"):LoadAsset(capeId)
+      local cape=loadedModel and loadedModel:FindFirstChildWhichIsA("Accessory",true)
+      if not cape then error("OFFICIAL_BACK_ACCESSORY_NOT_LOADED") end
+      cape.Parent=nil
+      loadedModel:Destroy()
+      loadedModel=nil
+      cape.Name="MeadowWornCrimsonCape"
+      -- [낡은 진홍색 천] Roblox 공식 실물 메시만 재질·색상을 변경한다.
+      -- DoubleSided는 Studio 전용 속성이므로 런타임에 절대 기록하지 않는다.
+      local meshCount=0
+      for _,detail in ipairs(cape:GetDescendants()) do
+        if detail:IsA("MeshPart") then
+          meshCount+=1
+          local appearance=detail:FindFirstChildOfClass("SurfaceAppearance")
+          if appearance then appearance:Destroy() end
+          detail.TextureID=""
+          detail.Material=Enum.Material.Fabric
+          detail.Color=meshCount%3==0 and Color3.fromRGB(87,33,39)
+            or meshCount%2==0 and Color3.fromRGB(112,39,45)
+            or Color3.fromRGB(127,46,50)
+          detail.Reflectance=0
+        elseif detail:IsA("SpecialMesh") then
+          detail.TextureId=""
+          detail.VertexColor=Vector3.new(1,1,1)
+        elseif detail:IsA("BasePart") then
+          detail.Color=Color3.fromRGB(120,42,47)
+          detail.Material=Enum.Material.Fabric
+          detail.Reflectance=0
+        end
+        if detail:IsA("BasePart") then
+          detail.CanCollide=false
+          detail.CanTouch=false
+          detail.CanQuery=false
+          detail.Massless=true
+          detail.Anchored=false
         end
       end
-      if not alreadyListed then
-        -- 기존 아바타의 레이어드 의상과 다른 장신구는 모두 보존한다.
-        -- 단단한 Back 장신구는 Order 없이 SetAccessories(true)에 전달해야 한다.
-        accessories[#accessories + 1] = {
-          AssetId = capeId,
-          AccessoryType = Enum.AccessoryType.Back,
-        }
-        description:SetAccessories(accessories, true)
+      local handle=cape:FindFirstChild("Handle")
+      if not handle or not handle:IsA("BasePart") then
+        cape:Destroy()
+        error("OFFICIAL_CAPE_HANDLE_MISSING")
       end
-      local attached = false
-      for _, accessory in ipairs(humanoid:GetAccessories()) do
-        if accessory.Name:match("^%s*(.-)%s*$") == "Dark Green Wide Cape" then
-          local handle = accessory:FindFirstChild("Handle")
-          attached = handle ~= nil and handle:FindFirstChild("AccessoryWeld") ~= nil
-          if attached then break end
+      humanoid:AddAccessory(cape)
+      if player.Character~=character or not cape:IsDescendantOf(character) then
+        cape:Destroy()
+        error("OFFICIAL_CAPE_ATTACH_ABORTED")
+      end
+      local joint=handle:FindFirstChild("AccessoryWeld")
+      if not joint then
+        -- [기존 R15 Attachments] 자동 장착이 실패한 경우 같은 실제 부착점을 직접 연결한다.
+        local torso=character:FindFirstChild("UpperTorso")
+        local torsoAttachment=torso and torso:FindFirstChild("BodyBackAttachment")
+        local handleAttachment=handle:FindFirstChild("BodyBackAttachment")
+        if torsoAttachment and handleAttachment then
+          joint=Instance.new("Weld")
+          joint.Name="AccessoryWeld"
+          joint.Part0=torso
+          joint.Part1=handle
+          joint.C0=torsoAttachment.CFrame
+          joint.C1=handleAttachment.CFrame
+          joint.Parent=handle
         end
       end
+      attached=joint~=nil and joint:IsA("Weld") and joint.Part0~=nil
+        and cape.Parent==character and handle.Parent==cape
       if not attached then
-        humanoid:ApplyDescriptionAsync(description)
-        -- 외형은 기록됐어도 실제 장신구 메시가 누락되면 공식 리셋으로 1회 재생성한다.
-        attached = false
-        for _, accessory in ipairs(humanoid:GetAccessories()) do
-          if accessory.Name:match("^%s*(.-)%s*$") == "Dark Green Wide Cape" then
-            local handle = accessory:FindFirstChild("Handle")
-            attached = handle ~= nil and handle:FindFirstChild("AccessoryWeld") ~= nil
-            if attached then break end
-          end
-        end
-        if not attached and player.Character == character then
-          humanoid:ApplyDescriptionResetAsync(description)
-        end
+        cape:Destroy()
+        error("OFFICIAL_CAPE_WELD_MISSING")
       end
+      cape:SetAttribute("MeadowCrimsonWornCape",true)
+      cape:SetAttribute("MeadowCapeMeshCount",meshCount)
     end)
-    if description then description:Destroy() end
-    if player.Character ~= character then return end
-    if not ok then
-      warn("마력숲 오프닝 망토 다운로드/착용 실패: " .. tostring(reason))
-      character:SetAttribute("OpeningCapeAttached", false)
-      return
-    end
-    -- 명세상 착용 성공이 아니라 실제 Handle 용접이 보일 때만 착용 완료로 기록한다.
-    local attached = false
-    for _, accessory in ipairs(humanoid:GetAccessories()) do
-      if accessory.Name:match("^%s*(.-)%s*$") == "Dark Green Wide Cape" then
-        local handle = accessory:FindFirstChild("Handle")
-        attached = handle ~= nil and handle:FindFirstChild("AccessoryWeld") ~= nil
-        if attached then break end
-      end
-    end
-    -- [낡은 진홍색 망토] 기존 인증된 장신구 메시만 재질 수정한다. 새 파츠·모델 생성 없음.
-    -- 기존 아바타 옷/장신구, 전투/저장 상태와 분리된 외형 처리다.
-    if attached then
-      -- [원인 수정] 카탈로그 실제 이름은 "Dark Green Wide Cape "로 마지막에 공백이 있다.
-      -- Roblox 아바타가 이름을 정규화하더라도 동일한 실물 Accessory를 찾는다.
-      local wornCape
-      for _,item in ipairs(humanoid:GetAccessories()) do
-        if item.Name:match("^%s*(.-)%s*$")=="Dark Green Wide Cape" then
-          wornCape=item
-          break
-        end
-      end
-      if wornCape and wornCape:IsA("Accessory") then
-        wornCape:SetAttribute("MeadowCrimsonWornCape",true)
-        local section=0
-        for _,detail in ipairs(wornCape:GetDescendants()) do
-          if detail:IsA("MeshPart") then
-            section+=1
-            local appearance=detail:FindFirstChildOfClass("SurfaceAppearance")
-            if appearance then appearance:Destroy() end
-            detail.TextureID=""
-            detail.Material=Enum.Material.Fabric
-            -- 단색 플라스틱 대신 짙은 피빛 천. 원본이 다중 메시일 때는 이음새를 더 어둡게.
-            detail.Color=section%4==0 and Color3.fromRGB(87,34,37)
-              or section%3==0 and Color3.fromRGB(109,43,46)
-              or Color3.fromRGB(130,49,51)
-            detail.Reflectance=0
-            detail.DoubleSided=true
-            detail.CanCollide=false
-            detail.CanTouch=false
-            detail.CanQuery=false
-            detail.Massless=true
-          elseif detail:IsA("SpecialMesh") then
-            -- MeshPart 아닌 원본 특수 메시에서도 초록 원본 무늬가 남지 않도록 한다.
-            detail.TextureId=""
-            detail.VertexColor=Vector3.new(1,1,1)
-          elseif detail:IsA("BasePart") then
-            detail.Color=Color3.fromRGB(123,43,47)
-            detail.Material=Enum.Material.Fabric
-            detail.Reflectance=0
-            detail.CanCollide=false
-            detail.CanTouch=false
-            detail.CanQuery=false
-            detail.Massless=true
-          end
-        end
-      end
-    end
-    character:SetAttribute("OpeningCapeAttached", attached)
-    if not attached then
-      warn("마력숲 오프닝 망토 메시 또는 장착 연결 확인 실패: " .. tostring(capeId))
+    if loadedModel then loadedModel:Destroy() end
+    if player.Character~=character then return end
+    character:SetAttribute("OpeningCapeAttached",ok and attached)
+    character:SetAttribute("OpeningCapeState",ok and attached and "ATTACHED" or "LOAD_FAILED")
+    if ok and attached then
+      print("마력숲 망토 장착 확인: 공식 무료 붉은 망토 / " .. tostring(capeId))
+    else
+      warn("마력숲 망토 실제 장착 실패: " .. tostring(reason))
     end
   end
   local function onCharacterAdded(character)
