@@ -2749,8 +2749,9 @@ do
 
         if activeStoryFocusTween then activeStoryFocusTween:Cancel();activeStoryFocusTween=nil end
         -- [단일 이미지 장면] JPG 배경과 PNG 인물을 동시에 그리지 않는다.
-        -- [인물 단독 컷] 빅브라더·미러·배신·역사 삭제는 승인 PNG 한 장만 표시한다.
-        -- [안전 영역] 이미지 확대/이동/회전을 금지해 모바일에서 얼굴·몸이 잘리지 않게 한다.
+        -- [완전한 원화 컷] 군주·미러·배신·역사 삭제는 찢긴 투명 PNG 대신
+        -- 전체 장면이 담긴 승인 JPG를 우선한다. PNG는 배경이 없는 컷에만 사용한다.
+        -- 모바일에서도 확대·크롭 없이 원본 전체가 드러나는 영화식 기억 장면이다.
         for _,particleTween in ipairs(activeParticleTweens) do particleTween:Cancel() end
         table.clear(activeParticleTweens)
         local imageId=registeredStoryArt[index]
@@ -2761,11 +2762,14 @@ do
         local direction=index%2==0 and 1 or -1
         local closeUp=scene.cinema=="crown" or scene.cinema=="omen"
           or scene.cinema=="betrayal" or scene.cinema=="erasure"
-        local showFront=validFront and (closeUp or not validImage)
-        local showArtwork=validImage and not showFront
+        -- [찢긴 초상 제거] 이전 closeUp 우선 PNG가 화면 한쪽에만 떠 있는 원인.
+        -- 모든 원화 등록 장면은 완전한 JPG 한 장을 Fit으로 표시한다.
+        -- JPG가 정말 없는 장면에서만 승인된 투명 PNG로 돌아간다.
+        local showArtwork=validImage
+        local showFront=validFront and not showArtwork
         storyArtwork.Visible=showArtwork
         storyForeground.Visible=showFront
-        -- [장면별 환영색] 잘린 듯한 PNG 투명 경계를 배경의 빛으로 연결한다.
+        -- [장면별 환영색] 전체 원화를 중앙에 두고 바깥 공간을 기억의 빛으로 연결한다.
         storyVision.Visible=showFront or showArtwork
         if storyVision.Visible then
           storyVision.BackgroundTransparency=1
@@ -2794,8 +2798,8 @@ do
           storyArtwork.ImageTransparency=0
           storyArtwork.ScaleType=Enum.ScaleType.Fit
           storyArtwork.Rotation=0
-          -- [안전 패닝] 그림 전체를 보존한 채 화면 안쪽에서만 극히 조금 움직인다.
-          -- 실제 화면 크기에 맞춘 무크롭 위치는 layoutIntroCaptions에서 설정한다.
+          -- [전체 원화] 그림이 화면보다 커지지 않으며 원본 가장자리까지 보존한다.
+          -- 실제 화면 크기에 맞춘 위치는 layoutIntroCaptions에서 설정한다.
           storyForeground.Image=""
         elseif showFront then
           storyForeground.Image=frontId
@@ -2815,7 +2819,7 @@ do
         -- 한 컷에 한 이미지만 사용하며, 다음 컷이 시작되면 이전 움직임을 취소한다.
         local storyImage=showFront and storyForeground or showArtwork and storyArtwork or nil
         if storyImage then
-          -- [인물 등장] 금빛·보랏빛 초상은 천천히 드러내고 돌격은 바로 선명하게 한다.
+          -- [영화식 장면 등장] 금빛·보랏빛 전체 원화는 천천히 드러낸다.
           -- 불투명도만 변화시키며 복제 이미지·자르기·화면 밖 줌은 사용하지 않는다.
           local revealStart=reducedEffects and .04 or closeUp and .31
             or scene.cinema=="dawn" and .46 or scene.cinema=="rift" and .23 or .12
@@ -2827,7 +2831,7 @@ do
               ImageTransparency=0,
             })
           activeStoryRevealTween:Play()
-          -- [인물 고정 컷] 군주·미러·배신·기록 삭제·퇴각은 완전히 정지시킨다.
+          -- [원화 고정 컷] 군주·미러·배신·기록 삭제·퇴각은 완전히 정지시킨다.
           -- 움직이는 컷은 그림 전체가 남도록 기존 안전 영역 안에서만 이동한다.
           local lockedPortrait=closeUp or scene.cinema=="freeze"
           if not reducedEffects and not lockedPortrait then
