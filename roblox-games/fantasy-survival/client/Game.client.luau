@@ -3359,9 +3359,7 @@ do
     storyVision.Position=UDim2.fromScale(portrait and .035 or .075,portrait and .145 or .13)
     storyVision.Size=UDim2.fromScale(portrait and .93 or .85,portrait and .635 or .66)
     -- [화면비] 잘라낸 원화 3조각을 원본 화면비 안에서만 표시해 찌그러짐을 막는다.
-    local contentSize=storyArtwork.ContentImageSize
-    local ratio=(contentSize.X>1 and contentSize.Y>1)
-      and contentSize.X/contentSize.Y or (16/9)
+    local ratio=16/9
     local viewWidth=size.X*(portrait and .98 or .96)
     local viewHeight=size.Y*(portrait and .70 or .76)
     local fitWidth=math.min(viewWidth,viewHeight*ratio)
