@@ -30,9 +30,9 @@
     "identityAnchors": [
       "일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중",
       "야생 협동 생존의 실제 플레이 핵심 행동과 선택을 구체화,행동 결과가 진행·위험·보상과 연결되는 반복 가능한 게임 루프,모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름",
-      "야생 협동 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-      "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-      "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
+      "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
       "PRESERVE_OR_MIGRATE_BEFORE_SEMANTIC_CHANGE",
       "SINGLE"
     ],
@@ -242,6 +242,7 @@
           "BUILDING",
           "CHARACTER",
           "ENVIRONMENT",
+          "MATERIAL",
           "MOTION",
           "PROP",
           "SKILL",
@@ -268,6 +269,7 @@
             "FOLIAGE",
             "TREE"
           ],
+          "MATERIAL": [],
           "MOTION": [],
           "PROP": [
             "APPLE",
@@ -361,6 +363,17 @@
             }
           },
           {
+            "family": "MATERIAL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
             "family": "MOTION",
             "action": "HOLD",
             "assetId": null,
@@ -373,13 +386,21 @@
           },
           {
             "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "tycoon-rugDoormat",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "mat"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
             }
           },
           {
@@ -436,6 +457,7 @@
           "BUILDING",
           "CHARACTER",
           "ENVIRONMENT",
+          "MATERIAL",
           "MOTION",
           "PROP",
           "SKILL",
@@ -462,6 +484,7 @@
             "FOLIAGE",
             "TREE"
           ],
+          "MATERIAL": [],
           "MOTION": [],
           "PROP": [
             "APPLE",
@@ -555,6 +578,17 @@
             }
           },
           {
+            "family": "MATERIAL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
             "family": "MOTION",
             "action": "HOLD",
             "assetId": null,
@@ -567,13 +601,21 @@
           },
           {
             "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "tycoon-rugDoormat",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "mat"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
             }
           },
           {
@@ -630,6 +672,7 @@
           "BUILDING",
           "CHARACTER",
           "ENVIRONMENT",
+          "MATERIAL",
           "MOTION",
           "PROP",
           "SKILL",
@@ -656,6 +699,7 @@
             "FOLIAGE",
             "TREE"
           ],
+          "MATERIAL": [],
           "MOTION": [],
           "PROP": [
             "APPLE",
@@ -749,6 +793,17 @@
             }
           },
           {
+            "family": "MATERIAL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
             "family": "MOTION",
             "action": "HOLD",
             "assetId": null,
@@ -761,13 +816,21 @@
           },
           {
             "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "tycoon-rugDoormat",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "mat"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
             }
           },
           {
@@ -817,7 +880,33 @@
         ]
       }
     },
-    "assetFacts": {}
+    "assetFacts": {
+      "tycoon-rugDoormat": {
+        "family": "PROP",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "mat"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "role": "MAT",
+        "sourcePath": "assets/shared/tycoon/rugDoormat.glb",
+        "platform": "SHARED_3D_SOURCE",
+        "license": "CC0-1.0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "UNVERIFIED",
+        "productionVerified": false
+      }
+    }
   },
   "report": {
     "version": 2,
@@ -971,9 +1060,9 @@
         "identityAnchors": [
           "일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중",
           "야생 협동 생존의 실제 플레이 핵심 행동과 선택을 구체화,행동 결과가 진행·위험·보상과 연결되는 반복 가능한 게임 루프,모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름",
-          "야생 협동 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-          "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-          "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
+          "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+          "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
           "PRESERVE_OR_MIGRATE_BEFORE_SEMANTIC_CHANGE",
           "SINGLE"
         ],
@@ -1429,9 +1518,9 @@
       "identityAnchors": [
         "일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중",
         "야생 협동 생존의 실제 플레이 핵심 행동과 선택을 구체화,행동 결과가 진행·위험·보상과 연결되는 반복 가능한 게임 루프,모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름",
-        "야생 협동 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-        "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-        "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
         "PRESERVE_OR_MIGRATE_BEFORE_SEMANTIC_CHANGE",
         "SINGLE"
       ],
