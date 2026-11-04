@@ -1424,30 +1424,21 @@ local referenceMenuItems={
 for index,info in ipairs(referenceMenuItems) do
   local button=Instance.new("TextButton")
   button.Name="ReferenceMenu"..index
-  button.BackgroundColor3=Color3.fromRGB(21,25,31)
-  button.BackgroundTransparency=.16
+  button.BackgroundTransparency=1
   button.BorderSizePixel=0
   button.Text=""
   button.ZIndex=27
   button.Parent=meadowReferenceMenu
-  local round=Instance.new("UICorner")
-  round.CornerRadius=UDim.new(1,0)
-  round.Parent=button
-  local rim=Instance.new("UIStroke")
-  rim.Color=Color3.fromRGB(148,157,159)
-  rim.Thickness=1.2
-  rim.Transparency=.22
-  rim.Parent=button
   local icon=Instance.new("ImageLabel")
   icon.Name="ReferenceIcon"
   icon.BackgroundTransparency=1
-  icon.Image=meadowPaintedHudAtlas
-  icon.ImageRectSize=Vector2.new(232,232)
-  icon.ImageRectOffset=Vector2.new(({0,243,480,717,954,1191})[index],8)
+  icon.Image="rbxassetid://71333073665947"
+  icon.ImageRectSize=Vector2.new(40,40)
+  icon.ImageRectOffset=Vector2.new(info[3]*40,0)
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.fromScale(.5,0)
-  icon.Size=UDim2.fromScale(1,1)
+  icon.Size=UDim2.fromScale(.66,.66)
   icon.ZIndex=28
   icon.Parent=button
   local caption=Instance.new("TextLabel")
@@ -1459,7 +1450,7 @@ for index,info in ipairs(referenceMenuItems) do
   caption.TextScaled=true
   caption.BackgroundTransparency=1
   caption.AnchorPoint=Vector2.new(.5,0)
-  caption.Position=UDim2.new(.5,0,1,1)
+  caption.Position=UDim2.new(.5,0,.66,1)
   caption.ZIndex=28
   caption.Parent=button
   button.Activated:Connect(function()meadowMenu.open(info[2])end)
@@ -1565,7 +1556,7 @@ local function layoutMeadowReferenceHud()
   local step=math.floor(math.clamp((v.X-18)/6,40,48))
   local menuWidth=step*6
   meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+21)
-  meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-9,0,landscape and 7 or 70) -- [세로 화면] HP·얼굴 다음 줄
+  meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-4,0,landscape and 2 or 70) -- [세로 화면] HP·얼굴 다음 줄
   for index,button in ipairs(meadowReferenceMenu:GetChildren())do
     if button:IsA("TextButton") then
       button.Size=UDim2.fromOffset(step-6,step-6)
@@ -2612,7 +2603,7 @@ local function layoutMeadowJournal()
   local landscape=v.X>v.Y
   local compact=landscape and v.Y<530
   local menuStep=math.floor(math.clamp((v.X-18)/6,40,48))
-  local top=(landscape and 7 or 70)+menuStep+21 -- [세로 화면] 상단 아이콘과 의뢰판 분리
+  local top=(landscape and 2 or 70)+menuStep+14 -- [세로 화면] 상단 아이콘과 의뢰판 분리
   local width=math.floor(math.clamp(v.X*(landscape and .23 or .42),151,238))
   local height=compact and 126 or 157
   questTracker.Position=UDim2.fromOffset(v.X-width-8,top)
