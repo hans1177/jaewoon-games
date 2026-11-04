@@ -4493,8 +4493,8 @@
         "playMode": "HYBRID",
         "playModeLabel": "혼합",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-11-04T11:19:03.762Z",
-        "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+        "updatedAt": "2026-11-04T11:24:17.457Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "WEB",
@@ -4637,8 +4637,8 @@
             "playMode": "HYBRID",
             "playModeLabel": "혼합",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-11-04T11:19:03.762Z",
-            "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+            "updatedAt": "2026-11-04T11:24:17.457Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -4947,6 +4947,171 @@
       "web3dRedevelopmentRequired": true
     },
     {
+      "id": "forest-survival",
+      "name": "숲의 끝 · 생존 협동",
+      "description": "로그인 없이 1~10번 서버에 참가하는 협동 야생 생존게임",
+      "genre": [
+        "생존",
+        "협동",
+        "모험"
+      ],
+      "image": "assets/homepage-covers/wild-survival.webp",
+      "webPath": "web-games/forest-survival",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "selectedPlatform": "WEB",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 23,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "forest-survival",
+          "name": "숲의 끝 · 생존 협동",
+          "description": "로그인 없이 1~10번 서버에 참가하는 협동 야생 생존게임",
+          "genres": [
+            "생존",
+            "협동",
+            "모험"
+          ],
+          "image": "assets/homepage-covers/wild-survival.webp",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/homepage-covers/wild-survival.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null,
+          "robloxThumbnail": null,
+          "robloxTitleArtwork": null
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "CURRENT_EVIDENCE_STATE",
+          "target": "ROBLOX_UNITY",
+          "handling": "",
+          "selectedPlatform": "WEB",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/forest-survival",
+            "archive": true,
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "",
+            "sourceTreeSha": ""
+          },
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "",
+          "runtime": {
+            "authority": "company-runtime",
+            "developmentActive": true,
+            "platform": "WEB",
+            "platformLabel": "웹",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "생존",
+              "협동",
+              "모험"
+            ],
+            "genreLabel": "생존 · 협동 · 모험",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "개발 작업 정보 없음",
+            "updatedAt": "2026-11-04T11:23:12.436Z",
+            "status": "ACTIVE",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "developmentActive": true,
+        "platform": "WEB",
+        "platformLabel": "웹",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "생존",
+          "협동",
+          "모험"
+        ],
+        "genreLabel": "생존 · 협동 · 모험",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "개발 작업 정보 없음",
+        "updatedAt": "2026-11-04T11:23:12.436Z",
+        "status": "ACTIVE",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "catalogOrder": 23,
+      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+      "ownerDirectWebUpload": true,
+      "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
+      "web3dRedevelopmentRequired": true,
+      "ownerWebSourceRevision": "14328236511b15d0a2e30eca29911ac8bd1a754b466f1195c86348e9b0e6e201",
+      "ownerWebEntryFile": "web-games/forest-survival/index.html",
+      "webDevelopmentResetRequired": true,
+      "productionClassSource": "CURRENT_EVIDENCE_STATE",
+      "productionTarget": "ROBLOX_UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발"
+    },
+    {
       "id": "gem-survivor",
       "name": "보석 생존전",
       "description": "사용자 직접 업로드 웹게임",
@@ -5002,7 +5167,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 23,
+        "catalogOrder": 24,
         "authority": "company-runtime",
         "identity": {
           "gameId": "gem-survivor",
@@ -5145,7 +5310,7 @@
           }
         }
       },
-      "catalogOrder": 23,
+      "catalogOrder": 24,
       "homepageMedia": {
         "gameId": "gem-survivor",
         "titleEn": "GEM SURVIVOR",
@@ -5250,7 +5415,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 24,
+        "catalogOrder": 25,
         "authority": "company-runtime",
         "identity": {
           "gameId": "kingshot-ad",
@@ -5393,7 +5558,7 @@
           }
         }
       },
-      "catalogOrder": 24,
+      "catalogOrder": 25,
       "homepageMedia": {
         "gameId": "kingshot-ad",
         "titleEn": "KINGSHOT",
@@ -5495,7 +5660,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 25,
+        "catalogOrder": 26,
         "authority": "company-runtime",
         "identity": {
           "gameId": "mini-empire",
@@ -5610,7 +5775,7 @@
           }
         }
       },
-      "catalogOrder": 25,
+      "catalogOrder": 26,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/mini-empire/index.html",
@@ -5689,7 +5854,7 @@
       "ownerWebEntryFile": "web-games/moon-ruins/index.html",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 26,
+        "catalogOrder": 27,
         "authority": "company-runtime",
         "identity": {
           "gameId": "moon-ruins",
@@ -5802,7 +5967,7 @@
           }
         }
       },
-      "catalogOrder": 26,
+      "catalogOrder": 27,
       "webPublishedRoute": "web-games/moon-ruins/",
       "webPublishedSourceTreeSha": "3c9df920247cf1c63815df0f09de12cc790b92ca",
       "concurrentTargetPlatforms": [
@@ -5851,7 +6016,7 @@
       "homepageRecentWork": "Kenney CC0 3D 범선, 8개 항구 교역, A* 항로, 함포전, 운송 계약, 저장 기능 구현 · 런타임 및 배포 검증 대기",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "selectedPlatform": "WEB",
-      "catalogOrder": 27,
+      "catalogOrder": 28,
       "updatedAt": "2026-10-20T19:38:00+09:00",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -5883,7 +6048,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 27,
+        "catalogOrder": 28,
         "authority": "company-runtime",
         "identity": {
           "gameId": "ocean-voyage",
@@ -6073,7 +6238,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 28,
+        "catalogOrder": 29,
         "authority": "company-runtime",
         "identity": {
           "gameId": "party-rpg",
@@ -6216,7 +6381,7 @@
           }
         }
       },
-      "catalogOrder": 28,
+      "catalogOrder": 29,
       "homepageMedia": {
         "gameId": "party-rpg",
         "titleEn": "PARTY RPG",
@@ -6321,7 +6486,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 29,
+        "catalogOrder": 30,
         "authority": "company-runtime",
         "identity": {
           "gameId": "realistic-builder",
@@ -6464,7 +6629,7 @@
           }
         }
       },
-      "catalogOrder": 29,
+      "catalogOrder": 30,
       "homepageMedia": {
         "gameId": "realistic-builder",
         "titleEn": "REALISTIC BUILDER",
@@ -6566,7 +6731,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 30,
+        "catalogOrder": 31,
         "authority": "company-runtime",
         "identity": {
           "gameId": "restaurant-tycoon",
@@ -6681,7 +6846,7 @@
           }
         }
       },
-      "catalogOrder": 30,
+      "catalogOrder": 31,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/restaurant-tycoon/index.html",
@@ -6761,7 +6926,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 31,
+        "catalogOrder": 32,
         "authority": "company-runtime",
         "identity": {
           "gameId": "star-frontier",
@@ -6902,7 +7067,7 @@
           }
         }
       },
-      "catalogOrder": 31,
+      "catalogOrder": 32,
       "homepageMedia": {
         "gameId": "star-frontier",
         "titleEn": "STAR FRONTIER",
@@ -7007,7 +7172,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 32,
+        "catalogOrder": 33,
         "authority": "company-runtime",
         "identity": {
           "gameId": "tower-choice-rpg",
@@ -7150,7 +7315,7 @@
           }
         }
       },
-      "catalogOrder": 32,
+      "catalogOrder": 33,
       "homepageMedia": {
         "gameId": "tower-choice-rpg",
         "titleEn": "TEN FLOOR TOWER",
@@ -7252,7 +7417,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 33,
+        "catalogOrder": 34,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -7395,7 +7560,7 @@
           }
         }
       },
-      "catalogOrder": 33,
+      "catalogOrder": 34,
       "selectedPlatform": "WEB",
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
@@ -7503,7 +7668,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 34,
+        "catalogOrder": 35,
         "authority": "company-runtime",
         "identity": {
           "gameId": "bug-defense",
@@ -7616,7 +7781,7 @@
           }
         }
       },
-      "catalogOrder": 34,
+      "catalogOrder": 35,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -7695,7 +7860,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 35,
+        "catalogOrder": 36,
         "authority": "company-runtime",
         "identity": {
           "gameId": "insect-survival",
@@ -7836,7 +8001,7 @@
           }
         }
       },
-      "catalogOrder": 35,
+      "catalogOrder": 36,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -7941,7 +8106,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 36,
+        "catalogOrder": 37,
         "authority": "company-runtime",
         "identity": {
           "gameId": "chess-battle",
@@ -8080,7 +8245,7 @@
           }
         }
       },
-      "catalogOrder": 36,
+      "catalogOrder": 37,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8193,7 +8358,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 37,
+        "catalogOrder": 38,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go",
@@ -8304,7 +8469,7 @@
           }
         }
       },
-      "catalogOrder": 37,
+      "catalogOrder": 38,
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8375,7 +8540,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 38,
+        "catalogOrder": 39,
         "authority": "company-runtime",
         "identity": {
           "gameId": "island-village",
@@ -8488,7 +8653,7 @@
           }
         }
       },
-      "catalogOrder": 38,
+      "catalogOrder": 39,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8568,7 +8733,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 39,
+        "catalogOrder": 40,
         "authority": "company-runtime",
         "identity": {
           "gameId": "monster-adventure",
@@ -8709,7 +8874,7 @@
           }
         }
       },
-      "catalogOrder": 39,
+      "catalogOrder": 40,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8820,7 +8985,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 40,
+        "catalogOrder": 41,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival",
@@ -8931,7 +9096,7 @@
           }
         }
       },
-      "catalogOrder": 40,
+      "catalogOrder": 41,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -8955,174 +9120,6 @@
       },
       "webPublishedRoute": "",
       "webPublishedSourceTreeSha": ""
-    },
-    {
-      "id": "forest-survival",
-      "name": "숲의 끝 · 생존 협동",
-      "description": "일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중",
-      "genre": [
-        "RPG",
-        "생존",
-        "액션",
-        "보드"
-      ],
-      "image": "",
-      "webPath": "web-games/forest-survival",
-      "hasWebArchive": true,
-      "homepageWebPlayable": false,
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "homepageDisplayMode": "",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "lifecycleState": "ACTIVE",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "GENERAL_WEB_SOURCE_INTAKE",
-      "homepageCategory": "design-only",
-      "ownerDirectWebUpload": true,
-      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-      "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
-      "web3dRedevelopmentRequired": true,
-      "ownerWebSourceRevision": "14328236511b15d0a2e30eca29911ac8bd1a754b466f1195c86348e9b0e6e201",
-      "ownerWebEntryFile": "web-games/forest-survival/index.html",
-      "webDevelopmentResetRequired": true,
-      "productionTarget": "design-only",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "developmentActive": true,
-        "platform": "WEB",
-        "platformLabel": "웹",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "RPG",
-          "생존",
-          "액션",
-          "보드"
-        ],
-        "genreLabel": "장르 미평가",
-        "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-11-02",
-        "status": "ACTIVE",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "selectedPlatform": "WEB",
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 41,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "forest-survival",
-          "name": "숲의 끝 · 생존 협동",
-          "description": "일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중",
-          "genres": [
-            "RPG",
-            "생존",
-            "액션",
-            "보드"
-          ],
-          "image": "assets/pwa-icon-512.png",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/pwa-icon-512.png",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null,
-          "robloxThumbnail": null,
-          "robloxTitleArtwork": null
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "GENERAL_WEB_SOURCE_INTAKE",
-          "target": "design-only",
-          "handling": "",
-          "selectedPlatform": "WEB",
-          "stage": "기획 · 아트북/컨셉/설계 최적화"
-        },
-        "sources": {
-          "web": {
-            "path": "web-games/forest-survival",
-            "archive": true,
-            "playable": false,
-            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "web": {
-            "route": "",
-            "sourceTreeSha": ""
-          },
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "기획 · 아트북/컨셉/설계 최적화",
-          "recentWork": "",
-          "runtime": {
-            "authority": "company-runtime",
-            "developmentActive": true,
-            "platform": "WEB",
-            "platformLabel": "웹",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "RPG",
-              "생존",
-              "액션",
-              "보드"
-            ],
-            "genreLabel": "장르 미평가",
-            "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-11-02",
-            "status": "ACTIVE",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 41
     },
     {
       "id": "medieval-defense",
@@ -9544,22 +9541,6 @@
       "webPublishedSourceTreeSha": "bd1cd06ff49b156e284f3d5946e8f9d368819175",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
-    },
-    {
-      "id": "card-grid-duel",
-      "name": "card-grid-duel",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
-      "lifecycleState": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "robloxProjectPath": "roblox-games/card-grid-duel",
-      "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
-      "sourceIntake": {
-        "kind": "EXISTING_ROJO_PROJECT",
-        "designVerified": false,
-        "runtimeVerified": false,
-        "externalReleaseApproved": false
-      }
     }
   ],
   "runtimeAuthority": "company-runtime",
@@ -9572,8 +9553,8 @@
     "canonicalGames": 43,
     "homepageInfo": 43,
     "normalizedGames": 43,
-    "ownerWebAdded": 2,
-    "ownerWebUpdated": 25,
+    "ownerWebAdded": 1,
+    "ownerWebUpdated": 26,
     "ownerWebDisabled": 16,
     "runtimeCatalogAdded": 0,
     "actualWebPlayableReconciled": 27
