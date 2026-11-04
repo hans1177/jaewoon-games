@@ -303,10 +303,18 @@ if '--game-id=fantasy-survival' in sys.argv:
  cape_glb=output.read_bytes()
  if len(cape_glb)<1000 or len(cape_glb)>18*1024*1024 or not cape_glb.startswith(b'glTF'):
   raise RuntimeError('FOREST_WORN_CAPE_NATIVE_GLB_INVALID')
+ # [실물 관절 검증] GLB 스킨이 실제로 3개 본을 포함하지 않으면 종이처럼 보이는
+ # 정적 원본을 등록하지 않는다. Blender 결과의 glTF JSON 직접 검증.
+ document=json.loads(cape_glb[20:20+struct.unpack_from('<I',cape_glb,12)[0]])
+ nodes={node.get('name','') for node in document.get('nodes',[])}
+ skins=document.get('skins',[])
+ if (not skins or len(skins[0].get('joints',[]))<3
+     or not {'CapeShoulder','CapeFoldMiddle','CapeTornHem'}.issubset(nodes)):
+  raise RuntimeError('FOREST_WORN_CAPE_CLOTH_BONE_RIG_NOT_EXPORTED')
  records['wornCape']={'sourceFile':cape['sourceFile'],'sourceSha256':cape_digest,
   'sha256':hashlib.sha256(cape_glb).hexdigest(),'format':'glb',
   'license':'PROJECT_ORIGINAL','licenseEvidence':cape['licenseEvidence'],
-  'sourceModel':'MagicForestCape.obj','bytes':len(cape_glb),'hemTearCount':4}
+  'sourceModel':'MagicForestCape.obj','bytes':len(cape_glb),'hemTearCount':4,'clothBones':3,'length':'HIP_LENGTH'}
  (OUT/'provenance.json').write_text(json.dumps({'version':5,'gameId':'fantasy-survival',
   'sourceManifestSha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),'roles':records},indent=2)+'\n')
  print('FANTASY_NATIVE_ORIGINALS_VERIFIED='+str(len(records)))
