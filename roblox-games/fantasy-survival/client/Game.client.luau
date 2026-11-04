@@ -1099,7 +1099,7 @@ local function bindMeadowMenuCharacter(character)
   local capeRoot=character:FindFirstChild("HumanoidRootPart")
   local function bindWornCape(child)
     if not child or not child:IsA("Accessory")
-      or child.Name:match("^%s*(.-)%s*$")~="Dark Green Wide Cape" then return end
+      or child.Name~="MeadowWornCrimsonCape" then return end
     if capeAccessory==child and capeWeld and capeWeld.Parent then return end
     -- 기본 장착 후 Weld 생성이 한 프레임 늦을 수 있으므로 기존 로딩을 비동기로 기다린다.
     task.spawn(function()
@@ -1192,16 +1192,10 @@ local function bindMeadowMenuCharacter(character)
     end
   end)
   meadowCharacterConnections[#meadowCharacterConnections+1]=character:GetAttributeChangedSignal("OpeningCapeAttached"):Connect(function()
-    -- [카탈로그 이름 공백 대응] 서버가 진홍색 실제 장착을 확인하면 원본 Accessory를 다시 찾는다.
-    -- 모형 이름이 끝 공백을 포함해도 착용·펄럭임 및 캐릭터창 외형을 정상 갱신한다.
+    -- [직접 장착된 실제 망토] 서버가 진홍색 원본과 용접을 확인한 뒤 펄럭임과 장비창을 갱신한다.
     if character:GetAttribute("OpeningCapeAttached")==true then
       if not capeWeld then
-        for _,item in ipairs(character:GetChildren()) do
-          if item:IsA("Accessory") and item.Name:match("^%s*(.-)%s*$")=="Dark Green Wide Cape" then
-            bindWornCape(item)
-            break
-          end
-        end
+        bindWornCape(character:FindFirstChild("MeadowWornCrimsonCape"))
       end
       previewNeedsRefresh=true
       renderMeadowPages()
@@ -3117,6 +3111,9 @@ do
         if originalFieldOfView then camera.FieldOfView=originalFieldOfView end
       end
       finishArrival()
+      -- [첫 마을 실제 캐릭터 등장] 검증된 캐릭터로 돌아온 바로 그 순간 바람을 재생한다.
+      -- 속도와 전투·저장은 변경하지 않으며 기존 망토 렌더러에서만 처리한다.
+      player:SetAttribute("MeadowEnteredWorld",true)
     end
     skipReveal.Activated:Connect(finishReveal)
     task.spawn(function()
