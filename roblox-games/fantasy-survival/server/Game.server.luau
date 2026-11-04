@@ -1694,13 +1694,15 @@ local function createMeadowVillage()
       end
       if archHost then
         local center=gateway:GetPivot().Position+Vector3.new(0,1.0,0)
+        -- [입체 수정 광선] 실제 석조 원본을 관통하는 앞·뒤 깊이의 3D 다면체 빛면.
+        -- 크리스털 메시가 아닌 광학 효과이며 별도 가짜 물리 파츠를 추가하지 않는다.
         local crystalOffsets={
-          Vector3.new(0,7.5,0),
-          Vector3.new(2.9,4.5,0),
-          Vector3.new(2.3,-3.4,0),
-          Vector3.new(0,-7.0,0),
-          Vector3.new(-2.3,-3.4,0),
-          Vector3.new(-2.9,4.5,0),
+          Vector3.new(0,7.5,-.75),
+          Vector3.new(2.9,4.5,.85),
+          Vector3.new(2.3,-3.4,-.65),
+          Vector3.new(0,-7.0,.75),
+          Vector3.new(-2.3,-3.4,-.65),
+          Vector3.new(-2.9,4.5,.85),
         }
         local corners={}
         for i,offset in ipairs(crystalOffsets) do
