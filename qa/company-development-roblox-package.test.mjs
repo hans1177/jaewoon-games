@@ -1779,6 +1779,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('activateMeadowAction(primaryCombatAction.Id)'));
   assert.ok(client.includes('local meadowRadar=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowSkillCooldowns={}'));
+  // [로블록스 한도] 원본 61동작 라이브러리의 스코프는 후속 전투 콤보에서 분리한다.
+  assert.match(client,/do\n-- Original Roblox 61-motion library:/);
+  assert.match(client,/end -- \[스킬 모션 지역 범위 종료\] 전투 콤보 감시자는 별도로 유지한다\./);
   // Registered CC0 icons must match actual action roles; unknown spell artwork is never invented.
   const icons=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8')).interfaceIcons;
   assert.equal(icons.assetId,'102668066491590');
