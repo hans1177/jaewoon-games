@@ -199,7 +199,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 카메라·표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
-local meadowPaintedHudAtlas="rbxassetid://112814533400088" -- ORIGINAL_PAINTED_HUD_ATLAS
+local meadowPaintedHudAtlas="rbxassetid://71333073665947" -- REGISTERED_ORIGINAL_PAINTED_ICON_ATLAS_16_X_40
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
   fist="rbxassetid://127661757924412",
@@ -1418,7 +1418,7 @@ meadowReferenceMenu.BackgroundTransparency=1
 meadowReferenceMenu.ZIndex=26
 meadowReferenceMenu.Parent=gui
 local referenceMenuItems={
-  {"가방",2,10},{"제작",2,11},{"건설",0,12},
+  {"가방",2,10},{"제작",2,11},{"건설",2,12},
   {"도감",3,13},{"연구일지",3,14},{"설정",4,15},
 }
 for index,info in ipairs(referenceMenuItems) do
@@ -1442,8 +1442,8 @@ for index,info in ipairs(referenceMenuItems) do
   icon.Name="ReferenceIcon"
   icon.BackgroundTransparency=1
   icon.Image=meadowPaintedHudAtlas
-  icon.ImageRectSize=Vector2.new(232,232)
-  icon.ImageRectOffset=Vector2.new(({0,243,480,717,954,1191})[index],8)
+  icon.ImageRectSize=Vector2.new(40,40)
+  icon.ImageRectOffset=Vector2.new(info[3]*40,0)
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.fromScale(.5,.11)
@@ -1471,7 +1471,6 @@ meadowReferenceHotbar.BackgroundTransparency=1
 meadowReferenceHotbar.ZIndex=24
 meadowReferenceHotbar.Parent=gui
 local referenceHotbarSlots={}
-local hotbarEdges={8,240,468,691,910,1108,1310,1510,1719,1942,2165}
 -- [참고 화면 단축바] 기존 서버 기술·소모품 동작만 사용한다.
 local hotbarActions={
   function() if primaryCombatAction then activateMeadowAction(primaryCombatAction.Id) end end,
@@ -1505,8 +1504,8 @@ for index=1,10 do
   icon.Name="ReferenceItemIcon"
   icon.BackgroundTransparency=1
   icon.Image=meadowPaintedHudAtlas
-  icon.ImageRectSize=Vector2.new(hotbarEdges[index+1]-hotbarEdges[index],220)
-  icon.ImageRectOffset=Vector2.new(hotbarEdges[index],252)
+  icon.ImageRectSize=Vector2.new(40,40)
+  icon.ImageRectOffset=Vector2.new((index-1)*40,0)
   icon.ScaleType=Enum.ScaleType.Fit
   icon.Size=UDim2.fromScale(.78,.78)
   icon.Position=UDim2.fromScale(.11,.11)
@@ -2612,7 +2611,7 @@ local function layoutMeadowJournal()
   local compact=landscape and v.Y<530
   local menuStep=landscape and math.floor(math.clamp(v.X/20.8,31,39))
     or math.floor(math.clamp(v.X/9.8,33,40))
-  local top=landscape and menuStep+38 or menuStep+123 -- [세로 화면] 상단 아이콘과 의뢰판 분리
+  local top=landscape and menuStep+12 or menuStep+123 -- [세로 화면] 상단 아이콘과 의뢰판 분리
   local width=math.floor(math.clamp(v.X*(landscape and .23 or .42),151,238))
   local height=compact and 126 or 157
   questTracker.Position=UDim2.fromOffset(v.X-width-8,top)
@@ -5045,16 +5044,17 @@ end
 -- [오른쪽 전용 그림 아이콘] 연타·회피·막기·상호작용·질주는 승인된 전용 그림으로 교체한다.
 -- 물약과 가방은 현재 등록된 개별 CC0 이미지를 그대로 사용하고, 서버 액션 바인딩은 유지한다.
 local function applyMeadowRightActionImage(button,role)
-  local atlasX=({sprint=8,fist=246,dodge=480,jump=715})[role]
-  local imageId=atlasX and meadowPaintedHudAtlas or meadowRealActionIcons[role]
+  if role=="jump" then button.Text="↑";button.TextSize=28;return true end
+  local atlasX=({sprint=160,fist=40,dodge=120,guard=80,interact=200,bag=240})[role]
+  local imageId=atlasX and "rbxassetid://81665484719308" or meadowRealActionIcons[role]
   if not imageId then return false end
   local icon=Instance.new("ImageLabel")
   icon.Name="OriginalRightActionIcon"
   icon.BackgroundTransparency=1
   icon.Image=imageId
   if atlasX then
-    icon.ImageRectOffset=Vector2.new(atlasX,480)
-    icon.ImageRectSize=Vector2.new(232,240)
+    icon.ImageRectOffset=Vector2.new(atlasX,0)
+    icon.ImageRectSize=Vector2.new(40,40)
   end
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,.5)
@@ -5171,7 +5171,7 @@ for index,info in ipairs(meadowUtilityActions)do
   label.Size=UDim2.new(1,-2,0,13)
   label.BackgroundTransparency=1
   label.Text=info[2]
-  label.Visible=true
+  label.Visible=false -- [시안] 오른쪽 원형 터치 아이콘에는 중복 글자를 겹치지 않는다.
   label.TextColor3=Color3.fromRGB(255,245,222)
   label.TextStrokeColor3=Color3.fromRGB(5,8,13)
   label.TextStrokeTransparency=.25
@@ -5205,8 +5205,8 @@ local swordIcon=Instance.new("ImageLabel")
 swordIcon.Name="ReferenceSwordIcon"
 swordIcon.BackgroundTransparency=1
 swordIcon.Image=meadowPaintedHudAtlas
-swordIcon.ImageRectOffset=Vector2.new(944,480)
-swordIcon.ImageRectSize=Vector2.new(240,240)
+swordIcon.ImageRectOffset=Vector2.new(0,0)
+swordIcon.ImageRectSize=Vector2.new(40,40)
 swordIcon.Position=UDim2.fromScale(.12,.1)
 swordIcon.Size=UDim2.fromScale(.78,.78)
 swordIcon.ZIndex=20

@@ -106,7 +106,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'meadowRadar:GetAttribute("ReferenceRadarVisible")==true and gui:GetAttribute("GameMenuOpen")~=true',
     'mapToggle.Activated:Connect(function()'
   ])assert.ok(client.includes(marker),'missing reference HUD: '+marker);
-  for(const page of ['{"가방",2,10}','{"제작",2,11}','{"건설",0,12}',
+  for(const page of ['{"가방",2,10}','{"제작",2,11}','{"건설",2,12}',
     '{"도감",3,13}','{"연구일지",3,14}','{"설정",4,15}']){
     assert.ok(client.includes(page),'top menu icon/page missing: '+page);
   }
@@ -116,9 +116,17 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/heading=heading\.Unit[\s\S]*?offset=-heading/);
   assert.match(client,/title\.Text = "" -- \[시안\]/);
   // The 16 original icons are 640x40, not the old 8-cell 512x64 fallback.
-  assert.match(client,/rbxassetid:\/\/112814533400088/);
-  assert.match(client,/ImageRectSize=Vector2\.new\(232,232\)/);
-  assert.match(client,/ImageRectOffset=Vector2\.new\(hotbarEdges\[index\],252\)/);
+  assert.match(client,/rbxassetid:\/\/71333073665947/);
+  assert.match(client,/rbxassetid:\/\/81665484719308/);
+  const registry=JSON.parse(fs.readFileSync("roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json","utf8"));
+  assert.equal(String(registry.paintedHudIcons.assetId),"71333073665947");
+  assert.equal(registry.paintedHudIcons.width,640);
+  assert.equal(registry.paintedHudIcons.cellSize,40);
+  assert.equal(String(registry.rightActionIcons.assetId),"81665484719308");
+  assert.equal(registry.paintedHudIcons.importVerified,true);
+  assert.equal(registry.rightActionIcons.importVerified,true);
+  assert.match(client,/ImageRectSize=Vector2\.new\(40,40\)/);
+  assert.match(client,/ImageRectOffset=Vector2\.new\(\(index-1\)\*40,0\)/);
   assert.match(client,/applyMeadowRightActionImage\(meadowReferenceJump,"jump"\)/);
   // [실제 시안] HP·기력·숙련 EXP, 검·기술·회피·질주·점프, 10개 단축바.
   for(const marker of [
