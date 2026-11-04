@@ -59,7 +59,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-11-04T12:04:52.759Z",
-      "updatedAt": "2026-11-04T15:29:08.177Z",
+      "updatedAt": "2026-11-04T15:35:40.468Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -584,11 +584,11 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildSourceRevision": "869675a2cd844832d1dd1600cd88d5785ce1381a",
+      "robloxBuildFailedAt": "2026-11-04T15:35:40.468Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -621,18 +621,18 @@
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "1092b71802a017eddd34d1a4071537ffc14b66e4",
+      "robloxQualityBuildUpSourceRevision": "869675a2cd844832d1dd1600cd88d5785ce1381a",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "room-survival",
-        "sourceRevision": "1092b71802a017eddd34d1a4071537ffc14b66e4",
+        "sourceRevision": "869675a2cd844832d1dd1600cd88d5785ce1381a",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 41856445198,
-        "testedAt": "2026-11-04T15:23:12.837Z",
+        "workflowRunId": 41858233576,
+        "testedAt": "2026-11-04T15:35:40.468Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT",
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL",
@@ -1196,7 +1196,7 @@
         "sourceTreeSha": "1c4b208e6ed07324d8cb67acc7aa835c4c74cd23",
         "assetRepairContext": {
           "libraryFingerprint": "76d1db6abb7b922fcebf760109bf1de2d65de4442d384f88213c7693e45e0177",
-          "baselineFingerprint": "18bf233e5997119572514d86c75408cf2db621939f4e1ceeb087f8278585ec44",
+          "baselineFingerprint": "7ad56f612050ddde640b673cb64b1743733602a978d4c447e5b5c793ce724633",
           "validatorFingerprint": "4fb511a4f435949ae8fbc6b147836e192f14e119d714770b7560295f5e3e1466"
         },
         "repairSurfaces": [
@@ -5672,7 +5672,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-11-04T15:29:29.647Z",
+  "updatedAt": "2026-11-04T15:35:40.468Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -5739,5 +5739,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "robloxSourceParallelism": null,
+  "robloxTechnicalParallelism": null
 }
