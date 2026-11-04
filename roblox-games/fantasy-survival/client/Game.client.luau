@@ -1561,7 +1561,7 @@ local function layoutMeadowReferenceHud()
   local step=landscape and math.floor(math.clamp(v.X/20.8,31,39)) or math.floor(math.clamp(v.X/9.8,33,40))
   local menuWidth=step*6
   meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+21)
-  meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-9,0,landscape and 7 or 8)
+  meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-9,0,landscape and 7 or 70) -- [세로 화면] HP·얼굴 다음 줄
   for index,button in ipairs(meadowReferenceMenu:GetChildren())do
     if button:IsA("TextButton") then
       button.Size=UDim2.fromOffset(step-6,step-6)
@@ -2605,7 +2605,7 @@ local function layoutMeadowJournal()
   local compact=landscape and v.Y<530
   local menuStep=landscape and math.floor(math.clamp(v.X/20.8,31,39))
     or math.floor(math.clamp(v.X/9.8,33,40))
-  local top=landscape and menuStep+38 or menuStep+48
+  local top=landscape and menuStep+38 or menuStep+123 -- [세로 화면] 상단 아이콘과 의뢰판 분리
   local width=math.floor(math.clamp(v.X*(landscape and .23 or .42),151,238))
   local height=compact and 126 or 157
   questTracker.Position=UDim2.fromOffset(v.X-width-8,top)
