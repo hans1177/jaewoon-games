@@ -1350,6 +1350,7 @@ meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerSt
   pages=meadowPages,pageNames=meadowPageNames,
   onPageChanged=function(index)
     renderMeadowPages()
+    if index==4 then refreshMeadowCameraOption() end
     local heading=root:FindFirstChild("MeadowMenuHeading")
     if heading then heading.Text="마력숲  /  "..(index==0 and "활동" or meadowPageNames[index] or "모험") end
     local subtitle=root:FindFirstChild("MeadowMenuSubtitle")
@@ -2672,7 +2673,6 @@ do
   cameraButton.Activated:Connect(function()
     cycleMeadowCameraMode()
     refreshArrivalOptions()
-    refreshMeadowCameraOption()
   end)
   effectsButton.Activated:Connect(function()
     meadowEffectsGroup.Volume=meadowEffectsGroup.Volume>.9 and 0 or math.min(1,meadowEffectsGroup.Volume+.25)
