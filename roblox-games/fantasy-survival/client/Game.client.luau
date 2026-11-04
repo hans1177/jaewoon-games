@@ -2701,7 +2701,8 @@ do
     NumberSequenceKeypoint.new(1,.70),
   })
   storyArtworkFade.Parent=storyArtwork
-  -- [독립 인물 초상] 승인 PNG 단독 컷. 얼굴·상반신 보호를 위해 자르거나 확대하지 않는다.
+  -- [인물 컷] 승인 PNG 한 장으로 캐릭터의 기울임·다가옴·추락을 연출한다.
+  -- 같은 장면의 JPG와 중복하지 않으므로 인물이 두 번 나타나지 않는다.
   local storyForeground=Instance.new("ImageLabel")
   storyForeground.Name="StoryParallaxForeground"
   storyForeground.BackgroundTransparency=1
@@ -2927,6 +2928,14 @@ do
   skipButton.Size=UDim2.fromOffset(112,40)
   skipButton.ZIndex=30
   skipButton.BackgroundColor3=Color3.fromRGB(35,39,42)
+  -- [시네마틱 음향] 기존 Roblox 내장 착지 음원을 사건 박자에만 짧게 재생한다.
+  local introBeatSound=Instance.new("Sound")
+  introBeatSound.Name="MeadowPrologueBeat"
+  introBeatSound.SoundId="rbxasset://sounds/action_jump_land.mp3"
+  introBeatSound.SoundGroup=meadowEffectsGroup
+  introBeatSound.Volume=0
+  introBeatSound.Looped=false
+  introBeatSound.Parent=game:GetService("SoundService")
   local entranceOpen=true
   local openingCamera=workspace.CurrentCamera
   local originalCameraType=openingCamera and openingCamera.CameraType
@@ -2943,6 +2952,10 @@ do
   local activeShadowTween=nil
   local activeMistTween=nil
   local activeArtImpactTween=nil
+  local activeActorGestureTween=nil
+  local activeActorEraseTween=nil
+  local activeDepthTween=nil
+  local activeFogDepthTween=nil
   local cameraMotionValue=nil
   local cameraMotionConnection=nil
   local cameraMotionIntensity=0
@@ -2974,6 +2987,12 @@ do
     if activeShadowTween then activeShadowTween:Cancel();activeShadowTween=nil end
     if activeMistTween then activeMistTween:Cancel();activeMistTween=nil end
     if activeArtImpactTween then activeArtImpactTween:Cancel();activeArtImpactTween=nil end
+    if activeActorGestureTween then activeActorGestureTween:Cancel();activeActorGestureTween=nil end
+    if activeActorEraseTween then activeActorEraseTween:Cancel();activeActorEraseTween=nil end
+    if activeDepthTween then activeDepthTween:Cancel();activeDepthTween=nil end
+    if activeFogDepthTween then activeFogDepthTween:Cancel();activeFogDepthTween=nil end
+    introBeatSound:Stop()
+    introBeatSound:Destroy()
     cinematicShadow.Visible=false
     cinematicMist.Visible=false
     storyCurtain.BackgroundTransparency=1
@@ -3214,6 +3233,12 @@ do
     }
     local total=0
     for _,scene in ipairs(scenes) do total+=scene.seconds end
+    -- [전장/인물 분리] 원본 JPG 넓은 장면과 PNG 인물 클로즈업을 교차한다.
+    -- 등록된 이미지 한 장만 보여 중복 인물·숨은 복제본이 생기지 않는다.
+    local portraitShots={
+      crown=true,omen=true,betrayal=true,reach=true,
+      erasure=true,rift=true,dawn=true,relic=true,
+    }
     local finished=false
     local function finish()
       if finished or token~=runToken then return end
@@ -3316,7 +3341,8 @@ do
           local imageId=registeredStoryArt[index]
           -- [원본 우선 사전 로딩] 실제 화면에 표시하는 전체 JPG를 내려받고,
           -- 배경이 없는 컷에서만 승인된 PNG 전경을 대체 로딩한다.
-          local selected=typeof(imageId)=="string" and imageId or frontId
+          local portraitId=portraitShots[scene.cinema] and typeof(frontId)=="string" and frontId or nil
+          local selected=portraitId or (typeof(imageId)=="string" and imageId or frontId)
           if typeof(selected)=="string" then table.insert(remaining,selected) end
         end
       end
@@ -3342,6 +3368,10 @@ do
         if activeShadowTween then activeShadowTween:Cancel();activeShadowTween=nil end
         if activeMistTween then activeMistTween:Cancel();activeMistTween=nil end
         if activeArtImpactTween then activeArtImpactTween:Cancel();activeArtImpactTween=nil end
+        if activeActorGestureTween then activeActorGestureTween:Cancel();activeActorGestureTween=nil end
+        if activeActorEraseTween then activeActorEraseTween:Cancel();activeActorEraseTween=nil end
+        if activeDepthTween then activeDepthTween:Cancel();activeDepthTween=nil end
+        if activeFogDepthTween then activeFogDepthTween:Cancel();activeFogDepthTween=nil end
         cinematicShadow.Visible=false
         cinematicMist.Visible=false
         storyArtwork.Rotation=0
@@ -3352,6 +3382,7 @@ do
         -- 작은 화면에서도 광원 번쩍임 없이 원화와 분위기만 움직인다.
         cinematicShadow.Visible=scene.cinema~="dawn" and scene.cinema~="relic"
           and scene.cinema~="journey"
+        cinematicShadow.BackgroundTransparency=portraitShots[scene.cinema] and .62 or .37
         cinematicShadow.Rotation=scene.view=="fall" and -12
           or scene.cinema=="betrayal" and 17 or 8
         cinematicShadow.Position=UDim2.fromScale(scene.view=="fall" and 1.56 or -.56,.5)
@@ -3372,6 +3403,12 @@ do
             or Color3.fromRGB(113,108,101)
           cinematicMist.BackgroundTransparency=.54
           cinematicMist.Position=UDim2.fromScale(0,.92)
+          mistFalloff.Offset=Vector2.new(-.22,0)
+          activeFogDepthTween=TweenService:Create(mistFalloff,
+            TweenInfo.new(scene.seconds,Enum.EasingStyle.Sine),{
+              Offset=Vector2.new(.22,0),
+            })
+          activeFogDepthTween:Play()
           activeMistTween=TweenService:Create(cinematicMist,
             TweenInfo.new(scene.seconds*.96,Enum.EasingStyle.Sine,Enum.EasingDirection.Out),{
               Position=UDim2.fromScale(0,.54),
@@ -3469,8 +3506,9 @@ do
         -- [찢긴 초상 제거] 이전 closeUp 우선 PNG가 화면 한쪽에만 떠 있는 원인.
         -- 모든 원화 등록 장면은 완전한 JPG 한 장을 Fit으로 표시한다.
         -- JPG가 정말 없는 장면에서만 승인된 투명 PNG로 돌아간다.
-        local showArtwork=validImage
-        local showFront=validFront and not showArtwork
+        -- [컷 선택] 전투·퇴각·출발은 넓은 JPG, 인물·배신·추락은 투명 PNG.
+        local showFront=validFront and (portraitShots[scene.cinema]==true or not validImage)
+        local showArtwork=validImage and not showFront
         storyArtwork.Visible=showArtwork
         storyForeground.Visible=showFront
         -- [장면별 환영색] 전체 원화를 중앙에 두고 바깥 공간을 기억의 빛으로 연결한다.
@@ -3491,8 +3529,15 @@ do
             or scene.view=="fall"
               and ColorSequence.new(Color3.fromRGB(10,17,34),Color3.fromRGB(58,91,139))
             or ColorSequence.new(Color3.fromRGB(11,27,27),Color3.fromRGB(76,116,83))
+          -- [원경 시차] 기억 배경과 PNG 배우·앞쪽 안개가 서로 다른 속도로 이동한다.
+          storyVisionGradient.Offset=Vector2.new(-.18,-.06)
+          activeDepthTween=TweenService:Create(storyVisionGradient,
+            TweenInfo.new(scene.seconds,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+              Offset=Vector2.new(.18,.06),
+            })
+          activeDepthTween:Play()
           TweenService:Create(storyVision,TweenInfo.new(.75,Enum.EasingStyle.Sine),{
-            BackgroundTransparency=.37,
+            BackgroundTransparency=showFront and .24 or .37,
           }):Play()
         end
         if showArtwork then
@@ -3549,21 +3594,26 @@ do
               ImageColor3=Color3.fromRGB(255,255,255),
             })
           activeStoryColorTween:Play()
-          -- [인물 안전] 모든 원화는 화면 안에서만 2.5D 줌. 인물 컷의 좌우 흔들림은 막는다.
+          -- [컷별 움직임] 원경 JPG는 느린 팬, PNG 배우는 감정별 기울임·다가옴·낙하.
+          -- 얼굴·손발을 자르지 않는 Fit 방식으로 실제 장면의 스케일이 달라진다.
           local lockedPortrait=closeUp or scene.cinema=="freeze"
           if storyImage.Visible then
-            local slowX=lockedPortrait and 0 or (scene.cinema=="charge" or scene.cinema=="journey") and .014
-              or scene.cinema=="rift" and -.012 or scene.cinema=="freeze" and 0 or .005
-            local slowY=lockedPortrait and 0 or scene.cinema=="rift" and .016 or scene.cinema=="dawn" and -.009
-              or scene.cinema=="crown" and -.006 or scene.cinema=="omen" and .006 or .003
+            local slowX=showFront and (scene.cinema=="betrayal" and -.018
+              or scene.cinema=="reach" and .028 or scene.cinema=="rift" and -.025
+              or scene.cinema=="omen" and -.015 or .012)
+              or (scene.cinema=="charge" or scene.cinema=="journey") and .014 or .005
+            local slowY=showFront and (scene.cinema=="reach" and -.028
+              or scene.cinema=="rift" and .070 or scene.cinema=="dawn" and -.021
+              or scene.cinema=="betrayal" and .025 or -.010)
+              or scene.cinema=="dawn" and -.009 or .003
+            if scene.cinema=="freeze" then slowX=0;slowY=0 end
             local position=storyImage.Position
             local originalSize=storyImage.Size
             local maxX=math.max(0,1-storyImage.Size.X.Scale)
             local maxY=math.max(0,1-storyImage.Size.Y.Scale)
-            -- [그림 호흡] 전 컷을 85~91%에서 원래 크기로 천천히 돌려 인물을 잘라내지 않는다.
-            -- Fit·기존 최대 크기를 지켜 어느 기기에서도 이미지가 잘리지 않는다.
-            local openingScale=lockedPortrait and .91
-              or scene.cinema=="charge" and .85 or scene.cinema=="rift" and .86 or .88
+            local openingScale=showFront and (scene.cinema=="rift" and .82
+              or scene.cinema=="reach" and .85 or .87)
+              or scene.cinema=="charge" and .85 or .89
             storyImage.Size=UDim2.fromScale(
               originalSize.X.Scale*openingScale,originalSize.Y.Scale*openingScale)
             storyImage.Position=UDim2.fromScale(
@@ -3577,6 +3627,36 @@ do
                 math.clamp(position.Y.Scale+slowY,0,maxY)),
             })
             activeStoryFocusTween:Play()
+            if showFront then
+              -- [배우 연기] 원본 PNG를 움직인다. 가짜 관절·임시 캐릭터를 만들지 않는다.
+              local actorBeat=scene.cinema=="crown" and 1.75
+                or scene.cinema=="omen" and 1.3 or scene.cinema=="betrayal" and 1.95
+                or scene.cinema=="reach" and 1.65 or scene.cinema=="erasure" and 2.1
+                or scene.cinema=="rift" and 1.15 or scene.cinema=="dawn" and 2.3 or 1.75
+              local turn=scene.cinema=="crown" and -1.7
+                or scene.cinema=="omen" and 2.3 or scene.cinema=="betrayal" and 3.0
+                or scene.cinema=="reach" and -3.6 or scene.cinema=="rift" and -4.5
+                or scene.cinema=="dawn" and -1.2 or 1.25
+              task.delay(actorBeat,function()
+                if not entranceOpen or token~=runToken or currentStoryScene~=index
+                  or not storyImage.Visible then return end
+                if activeActorGestureTween then activeActorGestureTween:Cancel() end
+                activeActorGestureTween=TweenService:Create(storyImage,
+                  TweenInfo.new(.72,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+                    Rotation=turn,
+                  })
+                activeActorGestureTween:Play()
+                task.delay(.83,function()
+                  if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
+                  if activeActorGestureTween then activeActorGestureTween:Cancel() end
+                  activeActorGestureTween=TweenService:Create(storyImage,
+                    TweenInfo.new(.95,Enum.EasingStyle.Sine,Enum.EasingDirection.Out),{
+                      Rotation=0,
+                    })
+                  activeActorGestureTween:Play()
+                end)
+              end)
+            end
           end
         end
 
