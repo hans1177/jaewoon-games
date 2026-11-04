@@ -2564,16 +2564,141 @@ do
       elseif originalSubject and originalSubject.Parent then openingCamera.CameraSubject=originalSubject end
     end
   end
-  local function closeArrival()
+  -- [첫 마을 실플레이 등장] 기존 캐릭터와 완성형 초원 마을을 실제 카메라로 보여 준다.
+  -- 첫 오프닝 재생/새 게임에만 사용하며 이어하기·복구 위치·저장 규칙은 건드리지 않는다.
+  local function closeArrival(showVillageReveal)
     if not entranceOpen then return end
     entranceOpen=false
     runToken+=1
     remote:FireServer("meadow:enter-world")
     restoreCamera()
-    gui.Enabled=true
-    meadowVitalsGui.Enabled=true
-    arrivalControls(true)
-    arrivalGui:Destroy()
+    local function finishArrival()
+      gui.Enabled=true
+      meadowVitalsGui.Enabled=true
+      arrivalControls(true)
+      if arrivalGui.Parent then arrivalGui:Destroy() end
+    end
+    if not showVillageReveal then finishArrival();return end
+    local character=player.Character
+    local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+    local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+    local camera=workspace.CurrentCamera
+    if not character or not rootPart or not humanoid or not camera or humanoid.Health<=0 then
+      finishArrival()
+      return
+    end
+    -- 기존 UI 뒷배경을 걷어 실제 마을과 실제 R15 아바타가 보이게 한다.
+    backdrop.Visible=false
+    local reveal=Instance.new("Frame")
+    reveal.Name="FirstVillageArrival"
+    reveal.Size=UDim2.fromScale(1,1)
+    reveal.BackgroundTransparency=1
+    reveal.BorderSizePixel=0
+    reveal.Parent=arrivalGui
+    local topBar=Instance.new("Frame")
+    topBar.Name="CinematicTop"
+    topBar.Size=UDim2.fromScale(1,.09)
+    topBar.BackgroundColor3=Color3.fromRGB(8,17,15)
+    topBar.BackgroundTransparency=.04
+    topBar.BorderSizePixel=0
+    topBar.Parent=reveal
+    local bottomBar=Instance.new("Frame")
+    bottomBar.Name="CinematicBottom"
+    bottomBar.AnchorPoint=Vector2.new(0,1)
+    bottomBar.Position=UDim2.fromScale(0,1)
+    bottomBar.Size=UDim2.fromScale(1,.23)
+    bottomBar.BackgroundColor3=Color3.fromRGB(8,17,15)
+    bottomBar.BackgroundTransparency=.12
+    bottomBar.BorderSizePixel=0
+    bottomBar.Parent=reveal
+    local chapter=Instance.new("TextLabel")
+    chapter.Name="FirstVillageTitle"
+    chapter.Position=UDim2.new(0,16,.77,0)
+    chapter.Size=UDim2.new(1,-32,0,35)
+    chapter.BackgroundTransparency=1
+    chapter.Font=Enum.Font.GothamBold
+    chapter.TextSize=26
+    chapter.TextColor3=Color3.fromRGB(247,215,156)
+    chapter.TextStrokeTransparency=.35
+    chapter.TextXAlignment=Enum.TextXAlignment.Left
+    chapter.Text="제1장  ·  초원 마을"
+    chapter.Parent=reveal
+    local line=Instance.new("TextLabel")
+    line.Name="VillageArrivalNarration"
+    line.Position=UDim2.new(0,16,.77,40)
+    line.Size=UDim2.new(1,-32,0,54)
+    line.BackgroundTransparency=1
+    line.Font=Enum.Font.GothamMedium
+    line.TextSize=15
+    line.TextWrapped=true
+    line.TextColor3=Color3.fromRGB(229,230,212)
+    line.TextXAlignment=Enum.TextXAlignment.Left
+    line.TextYAlignment=Enum.TextYAlignment.Top
+    line.Text="기억을 잃은 카인 앞에, 숲속 작은 마을의 등불이 나타났다."
+    line.Parent=reveal
+    local skipReveal=Instance.new("TextButton")
+    skipReveal.Name="SkipVillageArrival"
+    skipReveal.AnchorPoint=Vector2.new(1,0)
+    skipReveal.Position=UDim2.new(1,-12,0,12)
+    skipReveal.Size=UDim2.fromOffset(108,40)
+    skipReveal.BackgroundColor3=Color3.fromRGB(28,43,35)
+    skipReveal.BackgroundTransparency=.15
+    skipReveal.BorderSizePixel=0
+    skipReveal.Text="건너뛰기"
+    skipReveal.TextColor3=Color3.fromRGB(252,238,205)
+    skipReveal.Font=Enum.Font.GothamBold
+    skipReveal.TextSize=15
+    skipReveal.Parent=reveal
+    local skipCorner=Instance.new("UICorner")
+    skipCorner.CornerRadius=UDim.new(0,8)
+    skipCorner.Parent=skipReveal
+    local revealActive=true
+    local revealTween
+    local function finishReveal()
+      if not revealActive then return end
+      revealActive=false
+      if revealTween then revealTween:Cancel();revealTween=nil end
+      if camera and camera.Parent then
+        camera.CameraType=Enum.CameraType.Custom
+        camera.CameraSubject=humanoid
+        if originalFieldOfView then camera.FieldOfView=originalFieldOfView end
+      end
+      finishArrival()
+    end
+    skipReveal.Activated:Connect(finishReveal)
+    task.spawn(function()
+      -- [스트리밍 안전] 마을이 늦게 도착하더라도 시간 제한 후 캐릭터로 진입한다.
+      local world=workspace:FindFirstChild("FantasySurvivalWorld")
+      local deadline=os.clock()+2.5
+      while revealActive and world and world:GetAttribute("MeadowVillageWellReady")~=true
+        and os.clock()<deadline do task.wait(.1) end
+      if not revealActive then return end
+      if player.Character~=character or humanoid.Health<=0 or not rootPart.Parent then
+        finishReveal()
+        return
+      end
+      camera.CameraType=Enum.CameraType.Scriptable
+      camera.FieldOfView=70
+      camera.CFrame=CFrame.lookAt(Vector3.new(-28,26,-48),Vector3.new(0,5,-113))
+      local origin=rootPart.Position
+      local destination=CFrame.lookAt(origin+Vector3.new(10,9,17),origin+Vector3.new(0,3,-5))
+      -- 카메라가 실물 마을을 내려다본 뒤 실제 플레이어 망토·얼굴 쪽으로 이동한다.
+      revealTween=TweenService:Create(camera,TweenInfo.new(reducedEffects and 1.5 or 3.1,
+        Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+          CFrame=destination,FieldOfView=59,
+        })
+      revealTween:Play()
+      -- [흙먼지 등장] 기존 캐릭터에 있던 발걸음 파티클만 재사용한다.
+      local dustOrigin=rootPart:FindFirstChild("MeadowFootstepDustOrigin")
+      local dust=dustOrigin and dustOrigin:FindFirstChild("MeadowNativeFootstepDust")
+      if dust then dust:Emit(reducedEffects and 4 or 11) end
+      task.wait(reducedEffects and 1.5 or 3.1)
+      if not revealActive then return end
+      line.Text="첫 단서는 마을의 촌장 나린에게 있다. 여기서 다시 여정이 시작된다."
+      chapter.Text="초원 마을  ·  새로운 여정"
+      task.wait(reducedEffects and .6 or 1.5)
+      finishReveal()
+    end)
   end
   local function showArrivalCamera()
     openingCamera=workspace.CurrentCamera
@@ -2661,7 +2786,7 @@ do
     local function finish()
       if finished or token~=runToken then return end
       finished=true
-      closeArrival()
+      closeArrival(true)
     end
     skipButton.Activated:Once(finish)
     storyProgress.Size=UDim2.fromScale(0,1)
