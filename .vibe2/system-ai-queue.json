@@ -121890,7 +121890,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -121933,12 +121933,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:41812892775:1",
+      "reservedAt": "2026-11-04T10:18:46.461Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -122353,7 +122353,8 @@
         "system-ai-handoff-to-reservation:system-ai:41810912793:1",
         "actions-run:41810912793",
         "system-ai-handoff-to-reservation:system-ai:41811829044:1",
-        "actions-run:41811829044"
+        "actions-run:41811829044",
+        "system-ai-handoff-to-reservation:system-ai:41812892775:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1750,
@@ -122368,7 +122369,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-04T10:14:26.093Z"
+      "updatedAt": "2026-11-04T10:18:46.461Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
