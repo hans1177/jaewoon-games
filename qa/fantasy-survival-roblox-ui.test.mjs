@@ -100,7 +100,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'questTracker.Position=UDim2.fromOffset(v.X-width-12,top)',
     'local visualX=row[1]+(saved[1]-default[1])*212',
     'local visualY=row[2]+(saved[2]-default[2])*216',
-    'meadowRadarEnabled and gui:GetAttribute("GameMenuOpen")~=true',
+    'meadowRadar:GetAttribute("ReferenceRadarVisible")==true and gui:GetAttribute("GameMenuOpen")~=true',
     'mapToggle.Activated:Connect(function()'
   ])assert.ok(client.includes(marker),'missing reference HUD: '+marker);
   for(const page of ['{"캐릭",1,10}','{"제작",2,11}','{"건설",0,12}',
