@@ -36,4 +36,5 @@ return {
  villageHouseC=89024081628789,
  villageHouseD=131806387316904,
  villageWell=108733651071071,
+ wornCape=116918939922383,
 }
