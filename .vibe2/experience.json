@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -165659,39 +165657,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_7f62a52a51f91293e29a336f",
-          "taskId": "fifty-days-web-startup-spatial-repair-v2",
-          "workKey": null,
-          "gameId": "fifty-days",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:869675a2cd844832d1dd1600cd88d5785ce1381a",
-            "actions-run:41903518305",
-            "reservation-id:41903518305:1",
-            "capability-application-sample:cbea282527ddba53457b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_8fd127b0df359f7b74f0da2c",
           "taskId": "fifty-days-web-startup-spatial-repair-v2",
           "workKey": null,
@@ -167762,6 +167727,39 @@
             "actions-run:41926654071",
             "reservation-id:41926654071:1",
             "capability-application-sample:50b535c1813182a6d963"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6b9a2148568b964725def8b7",
+          "taskId": "gem-survivor-web-startup-spatial-repair-v5",
+          "workKey": null,
+          "gameId": "gem-survivor",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:a6145f0b0a57a172c3e5b259b885c06055b4c744",
+            "actions-run:41931811365",
+            "reservation-id:41931811365:1",
+            "capability-application-sample:436c8e6a4695dba51f2f"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -172691,39 +172689,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_34f9b2d1a436613bd692e69a",
-          "taskId": "dice-battle-board-web-startup-spatial-repair-v4",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:869675a2cd844832d1dd1600cd88d5785ce1381a",
-            "actions-run:41903518305",
-            "reservation-id:41903518305:1",
-            "capability-application-sample:2b2dae56aa180a0eb55b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_73595aeb9c2316ebca5c22f5",
           "taskId": "dice-battle-board-web-startup-spatial-repair-v4",
           "workKey": null,
@@ -174794,6 +174759,39 @@
             "actions-run:41926654071",
             "reservation-id:41926654071:1",
             "capability-application-sample:dbf5113446ac47824ac9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_974f8b06d3bcce7fb8552036",
+          "taskId": "gem-survivor-web-startup-spatial-repair-v5",
+          "workKey": null,
+          "gameId": "gem-survivor",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:a6145f0b0a57a172c3e5b259b885c06055b4c744",
+            "actions-run:41931811365",
+            "reservation-id:41931811365:1",
+            "capability-application-sample:436c8e6a4695dba51f2f"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -189194,39 +189192,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_c909253004c148d462d33305",
-          "taskId": "exorcist-office-web-startup-spatial-repair-v4",
-          "workKey": null,
-          "gameId": "exorcist-office",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:869675a2cd844832d1dd1600cd88d5785ce1381a",
-            "actions-run:41903518305",
-            "reservation-id:41903518305:1",
-            "capability-application-sample:8d6ae64a474c8e49a454"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_63682dfb372d84d1c319cc14",
           "taskId": "fifty-days-web-startup-spatial-repair-v2",
           "workKey": null,
@@ -191297,6 +191262,39 @@
             "actions-run:41926654071",
             "reservation-id:41926654071:1",
             "capability-application-sample:497aca5c84dae12b08a6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c440b144b0573a79d8f28452",
+          "taskId": "gem-survivor-web-startup-spatial-repair-v5",
+          "workKey": null,
+          "gameId": "gem-survivor",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:a6145f0b0a57a172c3e5b259b885c06055b4c744",
+            "actions-run:41931811365",
+            "reservation-id:41931811365:1",
+            "capability-application-sample:436c8e6a4695dba51f2f"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196245,39 +196243,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_59d5080c3331d6ff012f95a7",
-          "taskId": "exorcist-office-web-startup-spatial-repair-v4",
-          "workKey": null,
-          "gameId": "exorcist-office",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:869675a2cd844832d1dd1600cd88d5785ce1381a",
-            "actions-run:41903518305",
-            "reservation-id:41903518305:1",
-            "capability-application-sample:8d6ae64a474c8e49a454"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_5b93c2f2d15c8e90c4e81917",
           "taskId": "fifty-days-web-startup-spatial-repair-v2",
           "workKey": null,
@@ -198348,6 +198313,39 @@
             "actions-run:41926654071",
             "reservation-id:41926654071:1",
             "capability-application-sample:497aca5c84dae12b08a6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0ba33b9b2e1ce000498f692d",
+          "taskId": "gem-survivor-web-startup-spatial-repair-v5",
+          "workKey": null,
+          "gameId": "gem-survivor",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:a6145f0b0a57a172c3e5b259b885c06055b4c744",
+            "actions-run:41931811365",
+            "reservation-id:41931811365:1",
+            "capability-application-sample:436c8e6a4695dba51f2f"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -201191,39 +201189,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_aea2f6cc217f43df2b6bfe92",
-          "taskId": "dice-battle-board-web-startup-spatial-repair-v4",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:869675a2cd844832d1dd1600cd88d5785ce1381a",
-            "actions-run:41903518305",
-            "reservation-id:41903518305:1",
-            "capability-application-sample:2b2dae56aa180a0eb55b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_d3142c050bea03c6611b253b",
           "taskId": "dice-battle-board-web-startup-spatial-repair-v4",
           "workKey": null,
@@ -203294,6 +203259,39 @@
             "actions-run:41926654071",
             "reservation-id:41926654071:1",
             "capability-application-sample:417d14bda010c7bf2d51"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a57c4dba785d1b7d557f01d4",
+          "taskId": "gem-survivor-web-startup-spatial-repair-v5",
+          "workKey": null,
+          "gameId": "gem-survivor",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:a6145f0b0a57a172c3e5b259b885c06055b4c744",
+            "actions-run:41931811365",
+            "reservation-id:41931811365:1",
+            "capability-application-sample:436c8e6a4695dba51f2f"
           ],
           "observedAt": null,
           "rawCodeStored": false,
