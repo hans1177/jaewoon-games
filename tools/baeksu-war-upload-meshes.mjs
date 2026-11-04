@@ -107,7 +107,7 @@ for(const name of names){
  &&originSource.parentSourceGitBlob==='6a011e694414ae3a5ef03d348158fdfbef9da93a'
  &&crypto.createHash('sha256').update(await fs.readFile(origin.sourceFile)).digest('hex')===origin.sourceSha256;
  const validLicense=origin?.license==='CC0-1.0'||ownerCape;
- if(!origin||(fantasy?origin.sha256!==digest||(!verifiedOrigin&&(originSource?.sourceSha256!==origin.sourceSha256||origin.licenseEvidence!==originSource?.licenseEvidence)):origin.glbSha256!==digest)||!validLicense||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||(!fantasy&&(!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4))){throw Error('CC0_OR_OWNER_ORIGINAL_SOURCE_HASH_UNVERIFIED:'+name);}
+ if(!origin||(fantasy?origin.sha256!==digest||(!verifiedOrigin&&(originSource?.sourceSha256!==origin.sourceSha256||origin.licenseEvidence!==originSource?.licenseEvidence)):origin.glbSha256!==digest)||!validLicense||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||(!fantasy&&(!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4))){throw Error((name==='wornCape'?'OWNER_ORIGINAL_SOURCE_HASH_UNVERIFIED:':'CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:')+name);}
  verifiedModels.set(name,{bytes,digest,origin,extension});
 }
 // Validate every original before the first irreversible Model registration.
