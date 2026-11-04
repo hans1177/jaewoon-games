@@ -3680,16 +3680,36 @@ local function meadowSkill(player,id,execute)
   if not interval then return false end
   local cooldowns=meadowSkillCooldown[player] or {}
   local now=os.clock()
-  if now<(cooldowns[id] or 0) then return false end
+  -- [회피 공용 쿨다운] 버튼 하나가 좌/우 어느 방향을 선택해도 4초를 공유한다.
+  -- 기존 두 기술 ID·서버 이동·무적·간격은 그대로 두고 방향 교체 연속 사용만 막는다.
+  local isDodge=id=="skill-meadow-dodge-left" or id=="skill-meadow-dodge-right"
+  local dodgeLeft="skill-meadow-dodge-left"
+  local dodgeRight="skill-meadow-dodge-right"
+  local nextReady=cooldowns[id] or 0
+  if isDodge then
+    nextReady=math.max(nextReady,cooldowns[dodgeLeft] or 0,cooldowns[dodgeRight] or 0)
+  end
+  if now<nextReady then return false end
   local character,humanoid,root=liveMeadowCharacter(player)
   if not character then return false end
   player:SetAttribute("ApprovedActionTarget",root.Position)
   local accepted=execute(character,humanoid,root,now)
   if accepted~=true then return false end
-  cooldowns[id]=now+interval
+  local nextCooldown=now+interval
+  local readyAt=workspace:GetServerTimeNow()+interval
+  cooldowns[id]=nextCooldown
+  if isDodge then
+    cooldowns[dodgeLeft]=nextCooldown
+    cooldowns[dodgeRight]=nextCooldown
+  end
   meadowSkillCooldown[player]=cooldowns
-  -- Server time is synchronized for mobile countdown labels.
-  player:SetAttribute("MeadowReady_"..id,workspace:GetServerTimeNow()+interval)
+  -- [모바일 쿨다운 일치] 서버에서 승인된 회피만 양방향 남은 시간에 함께 반영한다.
+  if isDodge then
+    player:SetAttribute("MeadowReady_"..dodgeLeft,readyAt)
+    player:SetAttribute("MeadowReady_"..dodgeRight,readyAt)
+  else
+    player:SetAttribute("MeadowReady_"..id,readyAt)
+  end
   return true
 end
 local function meadowHeavy(player)
