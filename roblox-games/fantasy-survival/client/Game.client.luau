@@ -199,7 +199,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 카메라·표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
-local meadowPaintedHudAtlas="rbxassetid://71333073665947" -- ORIGINAL_PAINTED_HUD_ATLAS
+local meadowPaintedHudAtlas="rbxassetid://112814533400088" -- ORIGINAL_PAINTED_HUD_ATLAS
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
   fist="rbxassetid://127661757924412",
@@ -1439,10 +1439,10 @@ for index,info in ipairs(referenceMenuItems) do
   local icon=Instance.new("ImageLabel")
   icon.Name="ReferenceIcon"
   icon.BackgroundTransparency=1
-  icon.Image=meadowPaintedHudAtlas~="" and meadowPaintedHudAtlas or meadowIconAtlas
-  icon.ImageRectSize=Vector2.new(meadowPaintedHudAtlas~="" and 40 or 64,meadowPaintedHudAtlas~="" and 40 or 64)
-  icon.ImageRectOffset=Vector2.new((meadowPaintedHudAtlas~="" and info[3] or (info[3]%8))* (meadowPaintedHudAtlas~="" and 40 or 64),0)
-  icon.ImageColor3=Color3.fromRGB(242,241,223)
+  icon.Image=meadowPaintedHudAtlas
+  icon.ImageRectSize=Vector2.new(232,232)
+  icon.ImageRectOffset=Vector2.new(({0,243,480,717,954,1191})[index],8)
+  icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.fromScale(.5,.11)
   icon.Size=UDim2.fromScale(.65,.65)
@@ -1469,7 +1469,7 @@ meadowReferenceHotbar.BackgroundTransparency=1
 meadowReferenceHotbar.ZIndex=24
 meadowReferenceHotbar.Parent=gui
 local referenceHotbarSlots={}
-local hotbarIcons={0,1,2,3,4,5,6,7,8,9}
+local hotbarEdges={8,240,468,691,910,1108,1310,1510,1719,1942,2165}
 -- [참고 화면 단축바] 기존 서버 기술·소모품 동작만 사용한다.
 local hotbarActions={
   function() if primaryCombatAction then activateMeadowAction(primaryCombatAction.Id) end end,
@@ -1502,9 +1502,10 @@ for index=1,10 do
   local icon=Instance.new("ImageLabel")
   icon.Name="ReferenceItemIcon"
   icon.BackgroundTransparency=1
-  icon.Image=meadowPaintedHudAtlas~="" and meadowPaintedHudAtlas or meadowIconAtlas
-  icon.ImageRectSize=Vector2.new(meadowPaintedHudAtlas~="" and 40 or 64,meadowPaintedHudAtlas~="" and 40 or 64)
-  icon.ImageRectOffset=Vector2.new((meadowPaintedHudAtlas~="" and hotbarIcons[index] or hotbarIcons[index]%8)*(meadowPaintedHudAtlas~="" and 40 or 64),0)
+  icon.Image=meadowPaintedHudAtlas
+  icon.ImageRectSize=Vector2.new(hotbarEdges[index+1]-hotbarEdges[index],220)
+  icon.ImageRectOffset=Vector2.new(hotbarEdges[index],252)
+  icon.ScaleType=Enum.ScaleType.Fit
   icon.Size=UDim2.fromScale(.78,.78)
   icon.Position=UDim2.fromScale(.11,.11)
   icon.ZIndex=26
@@ -5038,12 +5039,17 @@ end
 -- [오른쪽 전용 그림 아이콘] 연타·회피·막기·상호작용·질주는 승인된 전용 그림으로 교체한다.
 -- 물약과 가방은 현재 등록된 개별 CC0 이미지를 그대로 사용하고, 서버 액션 바인딩은 유지한다.
 local function applyMeadowRightActionImage(button,role)
-  local imageId=meadowRealActionIcons[role]
+  local atlasX=({sprint=8,fist=246,dodge=480,jump=715})[role]
+  local imageId=atlasX and meadowPaintedHudAtlas or meadowRealActionIcons[role]
   if not imageId then return false end
   local icon=Instance.new("ImageLabel")
   icon.Name="OriginalRightActionIcon"
   icon.BackgroundTransparency=1
   icon.Image=imageId
+  if atlasX then
+    icon.ImageRectOffset=Vector2.new(atlasX,480)
+    icon.ImageRectSize=Vector2.new(232,240)
+  end
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,.5)
   icon.Position=UDim2.fromScale(.5,.45)
@@ -5192,9 +5198,9 @@ meadowSkillButtons.primarySword=meadowPrimarySword
 local swordIcon=Instance.new("ImageLabel")
 swordIcon.Name="ReferenceSwordIcon"
 swordIcon.BackgroundTransparency=1
-swordIcon.Image=meadowPaintedHudAtlas~="" and meadowPaintedHudAtlas or meadowIconAtlas
-swordIcon.ImageRectOffset=Vector2.new(0,0)
-swordIcon.ImageRectSize=Vector2.new(meadowPaintedHudAtlas~="" and 40 or 64,meadowPaintedHudAtlas~="" and 40 or 64)
+swordIcon.Image=meadowPaintedHudAtlas
+swordIcon.ImageRectOffset=Vector2.new(944,480)
+swordIcon.ImageRectSize=Vector2.new(240,240)
 swordIcon.Position=UDim2.fromScale(.12,.1)
 swordIcon.Size=UDim2.fromScale(.78,.78)
 swordIcon.ZIndex=20
@@ -5207,10 +5213,11 @@ end)
 -- [시안 점프] Roblox 기존 Humanoid 점프만 실행하고 기본 조이스틱은 유지.
 local meadowReferenceJump=Instance.new("TextButton")
 meadowReferenceJump.Name="ReferenceJump"
-meadowReferenceJump.Text="↑"
+meadowReferenceJump.Text=""
 meadowReferenceJump.TextSize=27
 styleMeadowCombatButton(meadowReferenceJump,Color3.fromRGB(130,143,159))
 meadowReferenceJump.Parent=meadowSkillDock
+applyMeadowRightActionImage(meadowReferenceJump,"jump")
 meadowSkillButtons.referenceJump=meadowReferenceJump
 meadowReferenceJump.Activated:Connect(function()
   if gui:GetAttribute("GameMenuOpen")==true then return end
@@ -5248,8 +5255,6 @@ local function layoutMeadowCombatUi()
     -- [시안 오른쪽] 검·기술·회피·질주·점프 5개만 표시.
     -- 숨긴 막기와 회복은 8·5번 단축바에 그대로 연결한다.
     button.Visible=index==1 or index==2
-    local icon=button:FindFirstChild("OriginalRightActionIcon")
-    if icon and index==1 then icon.ImageColor3=Color3.fromRGB(169,127,255) end
     local plate=meadowSkillNameplates[index]
     plate.Visible=false -- 원형 전투 아이콘만 유지해 참고 화면과 동일한 밀도로 표시.
     plate.Size=UDim2.fromOffset(0,0)
