@@ -381,16 +381,14 @@ test('native world prologue preserves all twelve scripted beats and camera cover
   ]);
   assert.deepEqual([...sceneTable[1].matchAll(/seconds=(\d+),title=/g)].map(x=>Number(x[1])),
     [5,5,5,4,5,6,5,4,5,6,5,5]);
-  for(const key of ['Guard','Elder','Tracker','PLAYER','BOARD','WELL']){
+  for(const key of ['RUIN_1','RUIN_2','RUIN_3','PLAYER']){
     assert.ok(sceneTable[1].includes('actor="'+key+'"'),key+' real source missing');
   }
   for(const cue of [
-    'world:FindFirstChild("Meadow_Villager_"..scene.actor)',
-    'world:FindFirstChild("Meadow_Village_ContractBoard")',
-    'world:FindFirstChild("Meadow_Village_Well")',
-    'root.Position+Vector3.new(0,scene.actor=="PLAYER" and 1.7 or 2.2,0)',
+    'world:FindFirstChild("Meadow_"..(scene.actor=="RUIN_1"',
+    'root.Position+Vector3.new(0,scene.actor=="PLAYER" and 1.6 or 3,0)',
     'cameraMotionConnection=RunService.RenderStepped:Connect(function()',
-    'liveCamera.CFrame=CFrame.lookAt(at,target)',
+    'liveCamera.CFrame=CFrame.lookAt(at+offset,target)*CFrame.Angles(0,0,roll)',
     'activeTween=TweenService:Create(cameraMotionValue,',
     'Value=ending',
     'camera.CameraType=Enum.CameraType.Scriptable',
@@ -436,6 +434,35 @@ test('twelve real-world beats use existing sound, movement and narration instead
   assert.match(intro,/TweenService:Create\(cinematicBars\[1\]/);
   assert.match(intro,/TweenService:Create\(cinematicBars\[2\]/);
   assert.doesNotMatch(intro,/storyImage|showFront|showArtwork|portraitShots|cinematicLight|CinematicLightSweep/);
+});
+
+test('twelve cinematic beats use licensed particle VFX and weather grading without fake actors',()=>{
+  const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
+  for(const source of [
+    'local approvedFXModule=Shared:FindFirstChild("RobloxCommonVFX")',
+    'pcall(approvedFX.Create,asset,{',
+    'hideFlash=true,hideRing=true,particlesOnly=true',
+    'DESTRUCTION_BURST','WEATHER_GUST_PULSE','BOSS_WARNING_PULSE',
+    'STATUS_PULSE','DEBUFF_PULSE','CRITICAL_BURST','DISMANTLE_SHARDS',
+    'ENVIRONMENT_MOTE_PULSE','QUEST_UPDATE_PULSE',
+    'local introGrade=Instance.new("ColorCorrectionEffect")',
+    'local introBloom=Instance.new("BloomEffect")',
+    'local introBlur=Instance.new("BlurEffect")',
+    'local introDepth=Instance.new("DepthOfFieldEffect")',
+    'activeSubjectHighlight=Instance.new("Highlight")',
+    'TweenService:Create(introGrade,',
+    'TweenService:Create(introBloom,',
+    'TweenService:Create(introBlur,',
+    'if introDepth.Enabled then introDepth.FocusDistance=(target-at).Magnitude end',
+    'activeFovTween=TweenService:Create(camera,',
+    'playSceneFX(scene,activeScene)',
+    'introGrade:Destroy()','introBloom:Destroy()',
+    'introBlur:Destroy()','introDepth:Destroy()',
+  ]) assert.ok(intro.includes(source),'cinematic effect missing: '+source);
+  assert.ok(intro.indexOf('local introGrade=Instance.new')<intro.indexOf('local function finish()'),
+    'skip cleanup must capture live effect locals');
+  assert.doesNotMatch(intro,/actor="Guard"|actor="Elder"|actor="Tracker"/);
+  assert.doesNotMatch(intro,/Instance\.new\("Part"\)|CreateHumanoidModelFromDescription/);
 });
 
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
