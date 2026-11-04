@@ -81,7 +81,8 @@ h1{font-size:29px;margin:0 0 8px;color:#f9df9b}
 <section id="start"><div class="card">
  <h1>숲의 끝</h1>
  <div class="subtitle">광활한 숲에서 자원을 모아 살아남아. 처음 35초는 안전해.<br>공격형 4종: 멧돼지·늑대 / 밤에만 호랑이·박쥐.<br>위험한 동물은 주로 지도 가장자리에 등장하고, 토끼·사슴은 드물게 어디서나 나타나.</div>
- <button id="solo" class="big" disabled>혼자 시작</button>
+ <button id="solo" class="big" disabled>새 게임</button>
+ <button id="continue" class="big" disabled style="display:none">이어하기</button>
  <button id="create" class="big" disabled>멀티 방 만들기 · 4명까지</button>
  <div class="join"><input id="code" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="방 번호 1~10" aria-label="방 번호"><button id="join" disabled>방 참가</button></div>
  <div id="netStatus" role="status">입체 숲을 불러오는 중이야.</div>
@@ -129,10 +130,11 @@ function saveSolo(){
  if(net.mode!=='solo'||!S.started)return;
  try{localStorage.setItem(KEY,JSON.stringify({day:S.day,time:S.time,elapsed:S.elapsed,players:S.players,mobs:S.mobs,neutrals:S.neutrals,taken:S.taken,serial:S.serial,lastMob:S.lastMob,lastNeutral:S.lastNeutral}));}catch{}
 }
-function startSolo(){
+function startSolo(resume=false){
  net.mode='solo';net.connected=false;net.id='solo';net.host='solo';net.code='';net.roster=[];
  S=fresh();
- try{
+ if(!resume){try{localStorage.removeItem(KEY);}catch{}}
+ if(resume)try{
   const old=JSON.parse(localStorage.getItem(KEY)||'null');
   if(old&&Array.isArray(old.players)&&old.players.length&&Number.isFinite(old.time)){
    S={...S,...old,started:true,players:old.players,neutrals:Array.isArray(old.neutrals)?old.neutrals:[],mobs:Array.isArray(old.mobs)?old.mobs:[],taken:old.taken&&typeof old.taken==='object'?old.taken:{}};
@@ -142,7 +144,7 @@ function startSolo(){
   }
  }catch{}
  if(!S.players.length)S.players.push(makePlayer('solo','탐험가'));
- updateRoomBar();showGame();alertText('가장자리로 가면 위험해. 나무·돌·열매를 모아 봐.');
+ updateRoomBar();showGame();alertText('가장자리로 가면 위험해. 나무·돌·열매·철광석을 모아 봐.');
 }
 function spawnPoint(outer){
  if(outer){
@@ -344,7 +346,7 @@ function multiplayer(){
 async function roomAction(action){
  const code=$('code').value.trim();
  if(action==='join'&&!/^(?:[1-9]|10)$/.test(code)){statusText('1~10 숫자 중 하나를 입력해.');return;}
- for(const key of ['solo','create','join'])$(key).disabled=true;
+ for(const key of ['solo','continue','create','join'])$(key).disabled=true;
  statusText('멀티 서버 연결 중...');
  const client=multiplayer();
  let result;
@@ -353,20 +355,22 @@ async function roomAction(action){
  if(!result?.ok){
   const err=result?.data?.error;
   statusText(({rooms_full:'열 개의 방이 모두 사용 중이야.',room_full:'방이 가득 찼어.',room_not_found:'그 방 번호가 없어.',network_error:'멀티 서버에 연결할 수 없어.',invalid_game:'멀티 서버 버전을 갱신해야 해.'})[err]||'멀티 서버가 응답하지 않아: '+(err||'연결 실패'));
-  for(const key of ['solo','create','join'])$(key).disabled=false;
+  for(const key of ['solo','continue','create','join'])$(key).disabled=false;
   return;
  }
  net.mode='room';net.connected=false;net.id='';net.code=String(result.data.inviteCode);net.lastFrame=0;
  S=fresh();$('code').value=net.code;
  statusText('방 번호 '+net.code+' · 접속 중...');
  if(!client.connectRoom(result.data.roomId))statusText('방 연결에 실패했어. 다시 시도해.');
- for(const key of ['solo','create','join'])$(key).disabled=false;
+ for(const key of ['solo','continue','create','join'])$(key).disabled=false;
 }
 async function leave(){
+ if(net.mode==='solo'&&S.started)saveSolo();
  if(net.client&&net.mode==='room')await net.client.leaveGemRoom();
  net.mode='solo';net.connected=false;net.id='solo';net.host='solo';net.code='';net.roster=[];net.inputs.clear();
  S=fresh();$('bag').classList.remove('show');$('start').classList.remove('hidden');$('hud').style.display='none';$('controls').style.display='none';
- statusText('방에서 나왔어. 혼자 시작하거나 다른 방에 들어갈 수 있어.');
+ statusText('게임을 나왔어. 새 게임이나 이어하기를 선택해.');
+ try{$('continue').style.display=localStorage.getItem(KEY)?'':'none';}catch{}
 }
 function updateRoomBar(){
  $('roomLabel').textContent=net.mode==='room'?'멀티 '+net.code+'번 방 · '+net.roster.length+'/4명':'혼자 생존 중';
@@ -452,7 +456,8 @@ for(const name of ['attack','gather','eat'])$(name).onclick=()=>doAction(name);
  $('craftIron').onclick=()=>doAction('craftIron');
 $('inventory').onclick=()=>{$('bag').dataset.mode='inventory';$('bag').classList.add('show');renderHud();};
 $('bagClose').onclick=()=>$('bag').classList.remove('show');
-$('solo').onclick=startSolo;
+$('solo').onclick=()=>startSolo(false);
+$('continue').onclick=()=>startSolo(true);
 $('create').onclick=()=>roomAction('create');
 $('join').onclick=()=>roomAction('join');
 $('leave').onclick=leave;
@@ -467,7 +472,8 @@ if(/^(?:[1-9]|10)$/.test(invited||''))$('code').value=invited;
 try{
  scene=await createWorld($('world'));
  $('netStatus').textContent='입체 숲 준비 완료 · 게임 방을 선택해.';
- for(const key of ['solo','create','join'])$(key).disabled=false;
+ try{$('continue').style.display=localStorage.getItem(KEY)?'':'none';}catch{}
+ for(const key of ['solo','continue','create','join'])$(key).disabled=false;
 }catch(error){
  $('statusText').style.display='block';
  $('statusText').textContent='3D 실행 오류: '+String(error?.message||error);
