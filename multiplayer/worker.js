@@ -2,7 +2,7 @@
 const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8' };
 // 메인: 보석 생존전 전용 한 자리 숫자 게스트 방. 기존 계정·매칭 규칙은 유지한다.
 const GEM_GAME_ID = 'gem-survivor';
-const NUMBER_ROOM_GAMES = new Set(['gem-survivor', 'ocean-voyage', 'cozy-island', 'party-rpg']);
+const NUMBER_ROOM_GAMES = new Set(['gem-survivor', 'ocean-voyage', 'cozy-island', 'party-rpg', 'forest-survival']);
 const GEM_ROOM_TTL_MS = 60 * 60 * 1000;
 
 function json(data, status = 200, extra = {}) {
@@ -266,7 +266,7 @@ export class Matchmaker {
   async gemCreate(gameId = GEM_GAME_ID) {
     if (!NUMBER_ROOM_GAMES.has(gameId)) return json({ error: 'invalid_game' }, 400);
     const rooms = await this.gemRooms(gameId);
-    const free = Array.from({ length: 10 }, (_, i) => String(i)).filter(code => !rooms[code]);
+    const free = Array.from({ length: 10 }, (_, i) => String(gameId === 'forest-survival' ? i + 1 : i)).filter(code => !rooms[code]);
     if (!free.length) return json({ error: 'rooms_full', message: '열 개의 방이 모두 사용 중이야.' }, 409);
     const index = crypto.getRandomValues(new Uint32Array(1))[0] % free.length;
     const inviteCode = free[index];
@@ -282,7 +282,7 @@ export class Matchmaker {
   async gemJoin({ inviteCode, gameId = GEM_GAME_ID }) {
     const code = String(inviteCode ?? '').trim();
     if (!NUMBER_ROOM_GAMES.has(gameId)) return json({ error: 'invalid_game' }, 400);
-    if (!/^[0-9]$/.test(code)) return json({ error: 'invalid_room_number' }, 400);
+    if (!(gameId === 'forest-survival' ? /^(?:[1-9]|10)$/.test(code) : /^[0-9]$/.test(code))) return json({ error: 'invalid_room_number' }, 400);
     const rooms = await this.gemRooms(gameId);
     const room = rooms[code];
     if (!room) return json({ error: 'room_not_found' }, 404);
