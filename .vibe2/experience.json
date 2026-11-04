@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -165659,39 +165657,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_976655c62dfc31eae8cf772d",
-          "taskId": "core-clash-4v4-web-startup-spatial-repair-v11",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:a77a214d7018158ff46ff8ffa3f632ee927f3b56",
-            "actions-run:41840911331",
-            "reservation-id:41840911331:1",
-            "capability-application-sample:aa9e8cc63e0b1f761538"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_58c78684a6555fb3ba372fc5",
           "taskId": "defense-web-startup-spatial-repair-v10",
           "workKey": null,
@@ -167762,6 +167727,39 @@
             "actions-run:41887770146",
             "reservation-id:41887770146:1",
             "capability-application-sample:17febe0d52a923f440b5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_811baf993f59b48ed18e93e2",
+          "taskId": "fifty-days-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:869675a2cd844832d1dd1600cd88d5785ce1381a",
+            "actions-run:41891609656",
+            "reservation-id:41891609656:1",
+            "capability-application-sample:3afe7af013fce34cad98"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -172691,39 +172689,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_9d8fe43ee9db4875c1702626",
-          "taskId": "cat-step-web-startup-spatial-repair-v11",
-          "workKey": null,
-          "gameId": "cat-step",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:a77a214d7018158ff46ff8ffa3f632ee927f3b56",
-            "actions-run:41840911331",
-            "reservation-id:41840911331:1",
-            "capability-application-sample:5618a734f85410c254e0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_b88ed1218428b6e89e1621f8",
           "taskId": "core-clash-4v4-web-startup-spatial-repair-v11",
           "workKey": null,
@@ -174794,6 +174759,39 @@
             "actions-run:41887770146",
             "reservation-id:41887770146:1",
             "capability-application-sample:17febe0d52a923f440b5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3673de25494280ce1141927a",
+          "taskId": "fifty-days-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:869675a2cd844832d1dd1600cd88d5785ce1381a",
+            "actions-run:41891609656",
+            "reservation-id:41891609656:1",
+            "capability-application-sample:3afe7af013fce34cad98"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -189194,39 +189192,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_9466285c3718dfbbe5ba6758",
-          "taskId": "amusement-tycoon-studio-evolution-roblox-usability-v8",
-          "workKey": null,
-          "gameId": "amusement-tycoon",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f62c06d7a9d2bb196bb41171",
-            "capability_ctrace_c438ccd9ed818081d8bd94fa",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:8d8e956b632993659dad1a9d975f32409cb21513",
-            "actions-run:41845944418",
-            "reservation-id:41845944418:1",
-            "capability-application-sample:9dc95c4b4a109b802cde"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_a7bdd6f08420d94ce1ba1c3e",
           "taskId": "cat-step-web-startup-spatial-repair-v12",
           "workKey": null,
@@ -191297,6 +191262,39 @@
             "actions-run:41887770146",
             "reservation-id:41887770146:1",
             "capability-application-sample:17febe0d52a923f440b5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_01d04f04a7a0990b07a5cebe",
+          "taskId": "fifty-days-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:869675a2cd844832d1dd1600cd88d5785ce1381a",
+            "actions-run:41891609656",
+            "reservation-id:41891609656:1",
+            "capability-application-sample:3afe7af013fce34cad98"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196245,39 +196243,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_7fdb3c2089a2db88bd1237c5",
-          "taskId": "amusement-tycoon-studio-evolution-roblox-usability-v8",
-          "workKey": null,
-          "gameId": "amusement-tycoon",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f62c06d7a9d2bb196bb41171",
-            "capability_ctrace_c438ccd9ed818081d8bd94fa",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:8d8e956b632993659dad1a9d975f32409cb21513",
-            "actions-run:41845944418",
-            "reservation-id:41845944418:1",
-            "capability-application-sample:9dc95c4b4a109b802cde"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_0321369f1ca4398e9e7b7fc7",
           "taskId": "cat-step-web-startup-spatial-repair-v12",
           "workKey": null,
@@ -198348,6 +198313,39 @@
             "actions-run:41887770146",
             "reservation-id:41887770146:1",
             "capability-application-sample:17febe0d52a923f440b5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_50b8682ebd9be6561e423c22",
+          "taskId": "fifty-days-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:869675a2cd844832d1dd1600cd88d5785ce1381a",
+            "actions-run:41891609656",
+            "reservation-id:41891609656:1",
+            "capability-application-sample:3afe7af013fce34cad98"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -201191,39 +201189,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_278df3976828db9d62f08ef3",
-          "taskId": "cat-step-web-startup-spatial-repair-v11",
-          "workKey": null,
-          "gameId": "cat-step",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:a77a214d7018158ff46ff8ffa3f632ee927f3b56",
-            "actions-run:41840911331",
-            "reservation-id:41840911331:1",
-            "capability-application-sample:5618a734f85410c254e0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_946c224ce91e37f1e971b737",
           "taskId": "core-clash-4v4-web-startup-spatial-repair-v11",
           "workKey": null,
@@ -203294,6 +203259,39 @@
             "actions-run:41887770146",
             "reservation-id:41887770146:1",
             "capability-application-sample:17febe0d52a923f440b5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b726c75760c994817cedfdde",
+          "taskId": "fifty-days-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "fifty-days",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:869675a2cd844832d1dd1600cd88d5785ce1381a",
+            "actions-run:41891609656",
+            "reservation-id:41891609656:1",
+            "capability-application-sample:3afe7af013fce34cad98"
           ],
           "observedAt": null,
           "rawCodeStored": false,
