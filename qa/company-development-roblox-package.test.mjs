@@ -1704,10 +1704,11 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.doesNotMatch(client,/GuiService.TouchControlsEnabled=false|Controls:Disable\(\)/);
   assert.match(controls,/meadowSkillDock.Position=UDim2.new/);
   assert.match(client,/meadowSkillDock.Visible=gui:GetAttribute\("GameMenuOpen"\)~=true/);
-  // [모바일 배치] 우측 조작창은 오른쪽 2픽셀로 붙고, 좁은 가로화면에서는 미니맵과 간섭하지 않는다.
-  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-math.floor\(2\*scale\)/);
-  assert.match(client,/v.Y<350 and 12 or 14/);
-  assert.match(client,/or 116\)\*scale/);
+  // [시안 우측 배치] 실제 버튼은 오른쪽 8픽셀 여백, 조이스틱 상단 여백을 유지한다.
+  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-math.floor\(8\*scale\)/);
+  assert.match(client,/local offset=landscape and 12 or 104/);
+  assert.match(client,/meadowPrimarySword\.Activated:Connect\(function\(\)/);
+  assert.match(client,/meadowReferenceJump\.Activated:Connect\(function\(\)/);
   // [미니맵] 지도는 상단에 밀착시키고 실제 위치 이름→축소 좌표 순서로 표시한다.
   assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapWidth,mapDiameter\+40\)/);
   assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(\s*math.floor\(dodgeCenter-radarOrigin.X\+\.5\),\s*math.floor\(healthTop-radarOrigin.Y\+\.5\)\s*\)/);
@@ -1743,9 +1744,10 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
   assert.ok(client.includes('trackerTitle.Visible=true'));
   assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(width,height)'));
-  assert.ok(client.includes('meadowHealthTrack.Size=UDim2.fromOffset(width,21)'));
-  assert.ok(client.includes('meadowEnergy.Size=UDim2.fromOffset(width,21)'));
-  assert.ok(client.includes('meadowEnergy.Position=UDim2.new(.5,0,0,top+25)'));
+  assert.ok(client.includes('meadowHealthTrack.Size=UDim2.fromOffset(width,16)'));
+  assert.ok(client.includes('meadowHealthTrack.Position=UDim2.fromOffset(66,top+17)'));
+  assert.ok(client.includes('meadowEnergy.Size=UDim2.fromOffset(width,16)'));
+  assert.ok(client.includes('meadowEnergy.Position=UDim2.fromOffset(66,top+36)'));
   assert.ok(client.includes('local radarTrailEndpoints={'));
   // [좌표 일치] 실제 36개 지형 길을 미니맵이 그대로 표시해야 한다.
   const trackBlock=server.slice(server.indexOf('local tracks={'),server.indexOf('for route,track in ipairs(tracks)'));
