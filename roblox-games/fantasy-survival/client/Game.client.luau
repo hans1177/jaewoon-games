@@ -2648,10 +2648,9 @@ do
           local frontIndex=scene.cinema=="erasure" and 3 or index
           local frontId=registeredStoryDepth[frontIndex]
           local imageId=registeredStoryArt[index]
-          local portrait=scene.cinema=="crown" or scene.cinema=="omen"
-            or scene.cinema=="betrayal" or scene.cinema=="erasure"
-          local selected=(portrait and typeof(frontId)=="string") and frontId
-            or typeof(imageId)=="string" and imageId or frontId
+          -- [원본 우선 사전 로딩] 실제 화면에 표시하는 전체 JPG를 내려받고,
+          -- 배경이 없는 컷에서만 승인된 PNG 전경을 대체 로딩한다.
+          local selected=typeof(imageId)=="string" and imageId or frontId
           if typeof(selected)=="string" then table.insert(remaining,selected) end
         end
       end
