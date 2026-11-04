@@ -3375,9 +3375,42 @@ do
         storyArtwork.Visible=false
         storyForeground.Visible=false
         storyVision.Visible=false
-        local focus=sceneFocus(scene)
+        local focus,focusSubject=sceneFocus(scene)
+        -- [월드 원형 강조] 기존 모델을 변경하지 않고 촬영 중 로컬 윤곽만 비춘다.
+        if activeSubjectHighlight then activeSubjectHighlight:Destroy();activeSubjectHighlight=nil end
+        if focusSubject and (focusSubject:IsA("Model") or focusSubject:IsA("BasePart")) then
+          activeSubjectHighlight=Instance.new("Highlight")
+          activeSubjectHighlight.Name="MeadowStorySubject"
+          activeSubjectHighlight.Adornee=focusSubject
+          activeSubjectHighlight.FillColor=introPalettes[scene.cinema] or Color3.fromRGB(222,218,203)
+          activeSubjectHighlight.OutlineColor=activeSubjectHighlight.FillColor
+          activeSubjectHighlight.FillTransparency=reducedEffects and .96 or .89
+          activeSubjectHighlight.OutlineTransparency=reducedEffects and .88 or .66
+          activeSubjectHighlight.DepthMode=Enum.HighlightDepthMode.Occluded
+          activeSubjectHighlight.Parent=camera
+        end
         local starting=CFrame.lookAt(focus+scene.start,focus)
         local ending=CFrame.lookAt(focus+scene.finish,focus)
+        -- [색·초점 감독] 12개 사건을 같은 필터로 처리하지 않고 각 컷에 맞게 조정한다.
+        local sceneTint=introPalettes[scene.cinema] or Color3.fromRGB(255,255,255)
+        TweenService:Create(introGrade,TweenInfo.new(.78,Enum.EasingStyle.Sine),{
+          TintColor=sceneTint,
+          Saturation=(scene.cinema=="freeze" or scene.cinema=="erasure") and -.82
+            or scene.cinema=="dawn" and .11 or -.25,
+          Contrast=(scene.cinema=="betrayal" or scene.cinema=="rift") and .38 or .17,
+          Brightness=(scene.cinema=="dawn" or scene.cinema=="journey") and .10
+            or scene.cinema=="erasure" and -.20 or -.035,
+        }):Play()
+        TweenService:Create(introBloom,TweenInfo.new(.8,Enum.EasingStyle.Sine),{
+          Intensity=(scene.cinema=="dawn" or scene.cinema=="omen") and .32
+            or scene.cinema=="erasure" and 0 or .16,
+          Threshold=scene.cinema=="dawn" and 1.35 or 1.85,
+        }):Play()
+        TweenService:Create(introBlur,TweenInfo.new(.75,Enum.EasingStyle.Sine),{
+          Size=scene.cinema=="erasure" and (reducedEffects and 2 or 5)
+            or scene.cinema=="freeze" and 1.4 or 0,
+        }):Play()
+        introDepth.FocusDistance=(focus-starting.Position).Magnitude
         if not cameraMotionValue then cameraMotionValue=Instance.new("CFrameValue") end
         cameraMotionValue.Value=starting
         camera.CameraType=Enum.CameraType.Scriptable
