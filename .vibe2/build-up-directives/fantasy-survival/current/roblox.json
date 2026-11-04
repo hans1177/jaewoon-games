@@ -10638,12 +10638,7 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "f0SourcePreflightFailure": {
-      "sourceRevision": "8579b933045c8860c932884ac431a54b81cf6596",
-      "stage": "F0_SOURCE_INTEGRITY",
-      "signature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
-      "runtimeObserved": false
-    }
+    "f0SourcePreflightFailure": null
   },
   "multiplayerImplementation": {
     "required": false,
@@ -18233,8 +18228,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "exact same-game F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED source preflight failed at 8579b933045c8860c932884ac431a54b81cf6596; investigate and repair responsible source, then rerun canonical F0 before F1 or publication"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "previous F0 source failure is no longer the active canonical game-stage observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
