@@ -155,6 +155,10 @@ test('dedicated Roblox workflow recovers and persists the durable target registr
   assert.match(workflow,/ROBLOX_DEDICATED_TARGET_RECOVERED_FROM_REGISTRY=YES/);
   assert.match(workflow,/registry\.targets\.findIndex/);
   assert.match(workflow,/git add development-queue\.json roblox-dedicated-targets\.json/);
+  assert.match(workflow,/for i in 1 2 3 4 5 6 7 8 9 10; do[\s\S]*?git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"[\s\S]*?node <<'NODE'/);
+  assert.match(workflow,/ROBLOX_DEDICATED_PERSIST_SUCCESS_ATTEMPT/);
+  assert.match(workflow,/ROBLOX_DEDICATED_PERSIST_CONCURRENT_WRITE_RETRY_EXHAUSTED/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(workflow,/gameName: '포근섬: 작은 왕국 키우기'/);
   assert.match(workflow,/gameName: '포탈 알피지'/);
   assert.doesNotMatch(workflow,/gameId:'horror-escape-room'/);
@@ -183,7 +187,7 @@ test('Forest original village models register before private publishing without 
   assert.match(workflow,/Register approved Forest village originals through the existing asset pipeline/);
   assert.match(workflow,/python3 tools\/baeksu-war-author-meshes\.py -- \/tmp\/forest-village-assets --game-id=fantasy-survival/);
   assert.match(workflow,/node tools\/baeksu-war-upload-meshes\.mjs \/tmp\/forest-village-assets \/tmp\/forest-village-receipt\.json --game-id=fantasy-survival/);
-  assert.match(workflow,/gh pr create --base main --head asset\/fantasy-village-originals/);
+  assert.match(workflow,/gh pr create --base main --head asset\/fantasy-worn-cape-rigged/);
   assert.match(workflow,/FOREST_VILLAGE_REGISTRATION_AWAIT_MAIN_MERGE/);
   assert.ok(workflow.indexOf('Register approved Forest village originals')<workflow.indexOf('Register 12 original prologue scenes'),
     'owner requested licensed well registration before unrelated prologue image upload retries');
