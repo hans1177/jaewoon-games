@@ -353,274 +353,89 @@ test('menu retains 8 original pages and keeps selected tab reachable on a short 
   assert.ok(client.includes('subtitle.Text=captions[index] or "마력숲 탐험"'));
 });
 
-test('registered 12-scene prologue keeps 23 unique approved layers and cleans up animations',()=>{
+test('approved cinematic asset registry remains unchanged but the intro does not display cropped art',()=>{
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
-  const background=config.match(/CinematicIntroSceneIds\s*=\s*\{([^}]+)\}/);
-  const foreground=config.match(/CinematicIntroForegroundIds\s*=\s*\{([^}]+)\}/);
-  assert.ok(background&&foreground,'registered originals must be available to the existing intro');
-  const backgrounds=[...background[1].matchAll(/rbxassetid:\/\/(\d+)/g)].map(x=>x[1]);
-  const foregrounds=[...foreground[1].matchAll(/\[(\d+)\]="rbxassetid:\/\/(\d+)"/g)];
+  const art=config.match(/CinematicIntroSceneIds\s*=\s*\{([^}]+)\}/);
+  const front=config.match(/CinematicIntroForegroundIds\s*=\s*\{([^}]+)\}/);
+  assert.ok(art&&front,'approved originals must be preserved for existing game data');
+  const backgrounds=[...art[1].matchAll(/rbxassetid:\/\/(\d+)/g)].map(x=>x[1]);
+  const foregrounds=[...front[1].matchAll(/\[(\d+)\]="rbxassetid:\/\/(\d+)"/g)];
   assert.equal(backgrounds.length,12);
   assert.equal(foregrounds.length,11);
   assert.equal(new Set([...backgrounds,...foregrounds.map(x=>x[2])]).size,23);
-  assert.deepEqual(foregrounds.map(x=>Number(x[1])),[1,2,3,4,5,6,7,9,10,11,12]);
-  assert.match(client,/registeredStoryArt\[index\]/);
-  assert.match(client,/registeredStoryDepth\[index\]/);
-  assert.doesNotMatch(client,/departingArtwork|departingForeground/);
-  assert.match(client,/storyArtwork.Visible=showArtwork/);
-  assert.match(client,/storyForeground.Visible=showFront/);
-  assert.match(client,/introDialogue\.MaxVisibleGraphemes=visible/);
-  assert.match(client,/currentStoryScene~=index then return/);
-  assert.match(client,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)/);
+  const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
+  assert.match(intro,/storyArtwork\.Visible=false/);
+  assert.match(intro,/storyForeground\.Visible=false/);
+  assert.match(intro,/storyArtwork\.Image=""/);
+  assert.match(intro,/storyForeground\.Image=""/);
+  assert.doesNotMatch(intro,/storyArtwork\.Image=imageId|storyForeground\.Image=frontId/);
+  assert.doesNotMatch(intro,/ImageRectOffset|ImageRectSize|ContentProvider:PreloadAsync|openingScale|activeStoryFocusTween=TweenService:Create/);
+});
+
+test('native world prologue preserves all twelve scripted beats and camera coverage',()=>{
+  const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
+  const sceneTable=intro.match(/local scenes=\{([\s\S]*?)\n    \}\n    local total=0/);
+  assert.ok(sceneTable);
+  assert.deepEqual([...sceneTable[1].matchAll(/cinema="([^"]+)"/g)].map(x=>x[1]),[
+    'siege','charge','crown','freeze','omen','betrayal','reach','erasure','rift','dawn','relic','journey'
+  ]);
+  assert.deepEqual([...sceneTable[1].matchAll(/seconds=(\d+),title=/g)].map(x=>Number(x[1])),
+    [5,5,5,4,5,6,5,4,5,6,5,5]);
+  for(const key of ['Guard','Elder','Tracker','PLAYER','BOARD','WELL']){
+    assert.ok(sceneTable[1].includes('actor="'+key+'"'),key+' real source missing');
+  }
+  for(const cue of [
+    'world:FindFirstChild("Meadow_Villager_"..scene.actor)',
+    'world:FindFirstChild("Meadow_Village_ContractBoard")',
+    'world:FindFirstChild("Meadow_Village_Well")',
+    'root.Position+Vector3.new(0,scene.actor=="PLAYER" and 1.7 or 2.2,0)',
+    'cameraMotionConnection=RunService.RenderStepped:Connect(function()',
+    'liveCamera.CFrame=CFrame.lookAt(at,target)',
+    'activeTween=TweenService:Create(cameraMotionValue,',
+    'Value=ending',
+    'camera.CameraType=Enum.CameraType.Scriptable',
+    'storyArtwork.Visible=false','storyForeground.Visible=false',
+    'backdrop.BackgroundTransparency=1','introPanel.BackgroundTransparency=1',
+    'skipButton.Activated:Once(finish)',
+    'closeArrival(true)',
+  ]) assert.ok(intro.includes(cue),'world film marker missing: '+cue);
+  assert.doesNotMatch(intro,/Instance\.new\("Part"\)|CreateHumanoidModelFromDescription|Humanoid:MoveTo|character:PivotTo|player.Character:PivotTo/);
   assert.match(client,/remote:FireServer\("meadow:enter-world"\)/);
 });
 
-
-test('dark-fantasy cinematic uses twelve distinct approved-image shots with safe mobile and skip behavior',()=>{
-  const scenes=client.match(/local scenes=\{([\s\S]*?)\n    \}\n    local total=0/);
-  assert.ok(scenes,'original twelve-story scene table must remain intact');
-  assert.deepEqual([...scenes[1].matchAll(/cinema="([^"]+)"/g)].map(x=>x[1]),[
-    'siege','charge','crown','freeze','omen','betrayal',
-    'reach','erasure','rift','dawn','relic','journey',
-  ]);
-  for(const marker of [
-    'DarkFantasyVignette',
-    'cinematicBars[top and 1 or 2]=bar',
-    'local silence=scene.cinema=="freeze" or scene.cinema=="erasure"',
-    'introGradient.Color=(scene.cinema=="dawn" or scene.cinema=="relic" or scene.cinema=="journey")',
-    'or (scene.cinema=="dawn" or scene.cinema=="journey") and .085 or .105',
-    'cameraMotionIntensity*=reducedEffects and .48 or 1',
-    'for _,motion in pairs({camera=activeTween,fov=activeFovTween,art=activeStoryFocusTween}) do',
-    'if motion.PlaybackState==Enum.PlaybackState.Paused then motion:Play() end',
-    'regionIntro.MaxVisibleGraphemes=count',
-    'introTint.BackgroundTransparency=.26',
-    'introAmbienceBefore=meadowAmbienceGroup.Volume',
-    'introEffectsBefore=meadowEffectsGroup.Volume',
-    'if introAmbienceBefore~=nil then meadowAmbienceGroup.Volume=introAmbienceBefore;introAmbienceBefore=nil end',
-    'if introEffectsBefore~=nil then meadowEffectsGroup.Volume=introEffectsBefore;introEffectsBefore=nil end',
-    'if not entranceOpen or token~=runToken or currentStoryScene~=index then return end',
-    'remote:FireServer("meadow:enter-world")',
-  ])assert.ok(client.includes(marker),'cinematic contract missing: '+marker);
-  assert.match(client,/local registeredStoryArt=Config.CinematicIntroSceneIds or \{\}/);
-  assert.match(client,/local registeredStoryDepth=Config.CinematicIntroForegroundIds or \{\}/);
-  assert.ok(client.includes('storyArtwork.Image=imageId'));
-  assert.ok(client.includes('storyForeground.Image=frontId'));
-  assert.doesNotMatch(scenes[1],/blood|gore|severed|corpse/i);
-});
-
-test('prologue has only two visible story texts and keeps key characters in the approved foreground',()=>{
+test('native world cinematic protects the mobile screen and restores controls and camera',()=>{
   const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
-  assert.equal([...intro.matchAll(/label\(introPanel,/g)].length,2,'only title and dialogue labels should exist');
-  assert.doesNotMatch(intro,/StoryChapter|SceneCharacterIdentity|OpeningText|DialogueSpeaker/);
-  assert.match(intro,/regionIntro\.Text=scene\.title/);
-  assert.match(intro,/introDialogue\.Text=scene\.subtitle/);
-  assert.match(intro,/scene\.cinema=="erasure" and registeredStoryDepth\[3\]/);
-  assert.match(intro,/local closeUp=scene\.cinema=="crown" or scene\.cinema=="omen"/);
-  assert.match(intro,/cameraMotionIntensity=0/);
-  assert.match(intro,/storyForeground\.ZIndex=8/);
-  assert.match(intro,/storyAtmosphere\.ZIndex=9/);
-});
-
-test('prologue uses exactly one source image per shot and keeps Big Brother and Mirror uncropped',()=>{
-  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
-  assert.match(intro,/storyArtwork\.ScaleType=Enum\.ScaleType\.Fit/);
-  assert.match(intro,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
-  assert.match(intro,/introPanel:GetPropertyChangedSignal\("AbsoluteSize"\):Connect\(layoutIntroCaptions\)/);
   assert.match(intro,/local portrait=size\.Y>size\.X\*1\.1/);
-  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)/);
-  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)\s+local showArtwork=validImage and not showFront/);
-  assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
-  assert.match(intro,/scene\.cinema=="betrayal" or scene\.cinema=="erasure"/);
-  assert.match(intro,/scene\.cinema=="erasure" and registeredStoryDepth\[3\]/);
-  assert.match(intro,/storyForeground\.Position=UDim2\.fromScale\(\.025,\.11\)/);
-  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.95,\.69\)/);
-  assert.match(intro,/storyArtwork\.Position=UDim2\.fromScale\(\.015,\.095\)/);
-  assert.match(intro,/storyArtwork\.Size=UDim2\.fromScale\(\.97,\.76\)/);
-  assert.match(intro,/local firstId=registeredStoryArt\[1\] or registeredStoryDepth\[1\]/);
-  assert.match(intro,/for index,scene in ipairs\(scenes\) do\s+if index>1 then/);
-  assert.match(intro,/local selected=portraitId or \(typeof\(imageId\)=="string" and imageId or frontId\)/);
-  assert.doesNotMatch(intro,/for index,id in ipairs\(registeredStoryArt\) do/);
-  assert.doesNotMatch(intro,/for index,id in pairs\(registeredStoryDepth\) do/);
-  assert.match(intro,/local firstShotDeadline=os\.clock\(\)\+2\.4/);
-  assert.match(intro,/if not entranceOpen or token~=runToken then return end\s+TweenService:Create\(storyProgress/);
-  assert.match(intro,/local sway=math\.sin\(t\*1\.15\)\*cameraMotionIntensity\*\.12/);
-  assert.doesNotMatch(intro,/departingArtwork|departingForeground|activeArtTween|activeFrontTween/);
-  assert.doesNotMatch(intro,/frontScale|frontZoom|frontX|frontY/);
-  assert.match(intro,/storyCurtain\.BackgroundTransparency=1/);
-  assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
-});
-
-test('12 authored prologue beats retain single-image framing and mobile-safe choreography',()=>{
-  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
-  assert.match(intro,/local storyImage=showFront and storyForeground or showArtwork and storyArtwork or nil/);
-  assert.match(intro,/activeStoryFocusTween:Cancel\(\)/);
-  assert.match(intro,/local maxX=math\.max\(0,1-storyImage\.Size\.X\.Scale\)/);
-  assert.match(intro,/local maxY=math\.max\(0,1-storyImage\.Size\.Y\.Scale\)/);
-  assert.match(intro,/math\.clamp\(position\.X\.Scale\+slowX,0,maxX\)/);
-  assert.match(intro,/math\.clamp\(position\.Y\.Scale\+slowY,0,maxY\)/);
-  assert.match(intro,/local quietPortrait=closeUp or scene\.cinema=="relic" or scene\.cinema=="dawn"/);
-  assert.match(intro,/spark\.Visible=scene\.cinema~="freeze" and \(not quietPortrait or n<=10\)/);
-  assert.match(intro,/local speechWait=/);
-  assert.match(intro,/local speechStep=/);
-  assert.match(intro,/task\.wait\(speechWait\)/);
-  assert.match(intro,/task\.wait\(speechStep\)/);
-  assert.match(intro,/local impactAt=nil/);
-  for(const cue of ['siege','charge','crown','omen','betrayal','reach','erasure','rift','dawn','relic','journey']){
-    assert.match(intro,new RegExp('scene\\.cinema=="'+cue+'" then\\s+impactAt='),'cinematic cue '+cue);
-  }
-  assert.match(intro,/if impactAt then/);
-  assert.match(intro,/currentStoryScene~=index then return end/);
-  assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
-  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)\s+local showArtwork=validImage and not showFront/);
-  assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
-  assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
-});
-
-
-test('prologue reveals each single illustration with safe lighting and mobile reduced effects',()=>{
-  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
-  for(const marker of [
-    'local activeStoryRevealTween=nil',
-    'local activeVignetteTween=nil',
-    'if activeStoryRevealTween then activeStoryRevealTween:Cancel();activeStoryRevealTween=nil end',
-    'if activeVignetteTween then activeVignetteTween:Cancel();activeVignetteTween=nil end',
-    'local revealStart=reducedEffects and .38 or closeUp and .31',
-    'local revealSeconds=reducedEffects and .62 or closeUp and .94',
-    'activeStoryRevealTween=TweenService:Create(storyImage,',
-    'activeStoryRevealTween:Play()',
-    'local vignetteBase=cinematicVignette.BackgroundTransparency',
-    'local vignettePulse=math.max((scene.cinema=="betrayal" or scene.cinema=="erasure") and .36 or .49,vignetteBase-.18)',
-    'activeVignetteTween=TweenService:Create(cinematicVignette,',
-    'task.delay(impactFade*.65,function()',
-    'BackgroundTransparency=vignetteBase',
-    'introDialogue.TextColor3=',
-  ])assert.ok(intro.includes(marker),'missing intro direction: '+marker);
-  assert.match(intro,/if impactAt then/);
-  assert.match(intro,/if not entranceOpen or token~=runToken or currentStoryScene~=index then return end/);
-  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)\s+local showArtwork=validImage and not showFront/);
-  assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
-  assert.match(intro,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
-  assert.match(intro,/storyArtwork\.ScaleType=Enum\.ScaleType\.Fit/);
-  assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
-});
-
-test('cinematic v4 locks portrait frames, times silent title reveals and makes single-image hard cuts',()=>{
-  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
-  for(const marker of [
-    'local lockedPortrait=closeUp or scene.cinema=="freeze"',
-    'local lockedCamera=cinema=="crown" or cinema=="omen" or cinema=="betrayal"',
-    'or cinema=="erasure" or cinema=="freeze"',
-    'if lockedCamera then',
-    'cameraMotionValue.Value=openingCamera.CFrame',
-    'if storyImage.Visible then',
-    'and (not reducedEffects or n<=14)',
-    'local transitionCut=scene.cinema=="erasure" or scene.cinema=="rift"',
-    'storyCurtain.BackgroundTransparency=.06',
-    'local titlePause=scene.cinema=="crown" and .46',
-    'local plateSeconds=scene.cinema=="dawn" and .78',
-    'if activeCurtainTween then activeCurtainTween:Cancel();activeCurtainTween=nil end',
-    'activeCurtainTween=TweenService:Create(storyCurtain,',
-    'storyCurtain.BackgroundTransparency=1',
-    'activeCurtainTween:Play()',
-    'scene.cinema=="betrayal" or scene.cinema=="rift" or scene.cinema=="dawn"',
-    'local finalHeight=scene.cinema=="betrayal" and .15',
-    'or scene.cinema=="rift" and .14 or .065',
-  ])assert.ok(intro.includes(marker),'cinematic direction missing: '+marker);
-  assert.match(intro,/task\.delay\(titlePause,function\(\)\s+if not entranceOpen or token~=runToken or currentStoryScene~=index then return end/);
-  assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
-  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)\s+local showArtwork=validImage and not showFront/);
-  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.95,\.69\)/);
-  assert.match(intro,/math\.clamp\(position\.X\.Scale\+slowX,0,maxX\)/);
-  assert.match(intro,/math\.clamp\(position\.Y\.Scale\+slowY,0,maxY\)/);
-  assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
-  assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
-  assert.equal([...intro.matchAll(/label\(introPanel,/g)].length,2);
-  assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
-});
-
-test('touch-screen prologue keeps cinematic light, fog, zoom and impacts visible',()=>{
-  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
-  assert.match(client,/local reducedEffects=game:GetService\("UserInputService"\)\.TouchEnabled/);
-  assert.match(intro,/cinematicShadow\.Visible=scene\.cinema~="dawn"/);
-  assert.match(intro,/cinematicMist\.Visible=not silence/);
-  assert.match(intro,/if storyImage.Visible then/);
-  assert.match(intro,/if impactAt then/);
-  assert.match(intro,/and \(not reducedEffects or n<=14\)/);
-  assert.match(intro,/activeStoryColorTween=TweenService:Create\(storyImage,/);
-  assert.match(intro,/ImageColor3=Color3\.fromRGB\(255,255,255\)/);
-  assert.match(intro,/if activeStoryColorTween then activeStoryColorTween:Cancel\(\);activeStoryColorTween=nil end/);
-  assert.doesNotMatch(intro,/cinematicShadow\.Visible=not reducedEffects/);
-  assert.doesNotMatch(intro,/if impactAt and not reducedEffects then/);
-  assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
-  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)/);
-});
-
-test('prologue uses shadow, ink and fog instead of a bright scene flash',()=>{
-  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
-  assert.match(intro,/cinematicShadow\.Name="MemoryPassingShadow"/);
-  assert.match(intro,/storyCurtain\.Name="MemoryInkCurtain"/);
-  assert.match(intro,/activeShadowTween=TweenService:Create\(cinematicShadow,/);
-  assert.match(intro,/cinematicMist\.Visible=not silence/);
-  assert.match(intro,/local openingScale=showFront and \(scene\.cinema=="rift"/);
-  assert.match(intro,/storyCurtain\.BackgroundColor3=Color3\.fromRGB\(6,9,13\)/);
-  assert.doesNotMatch(intro,/CinematicLightSweep|impactColor=|impactOpacity=|introFlash|activeSceneFlashTween/);
-  assert.match(intro,/if activeShadowTween then activeShadowTween:Cancel\(\);activeShadowTween=nil end/);
-  assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
-  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)/);
-});
-
-test('left and right dodge share 4-second server cooldown without changing guard balance',()=>{
-  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
-  const skill=server.slice(server.indexOf('local function meadowSkill(player,id,execute)'),server.indexOf('local function meadowHeavy(player)'));
-  assert.match(skill,/nextReady=math\.max\(nextReady,cooldowns\[dodgeLeft\] or 0,cooldowns\[dodgeRight\] or 0\)/);
-  assert.match(skill,/cooldowns\[dodgeLeft\]=nextCooldown\s+cooldowns\[dodgeRight\]=nextCooldown/);
-  assert.match(skill,/player:SetAttribute\("MeadowReady_"\.\.dodgeRight,readyAt\)/);
-  assert.match(server,/defense\.guardUntil=now\+2\.8/);
-  assert.match(server,/defense\.perfectGuardUntil=now\+\.28/);
-  assert.match(server,/damage=math\.ceil\(damage\*\.5\)/);
-  assert.match(server,/defense\.dodgeUntil=now\+\.48/);
-  assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
-});
-
-test('cinematic foreground actors use approved PNG cuts with scene-specific acting and safe depth',()=>{
-  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
-  const shots=intro.match(/local portraitShots=\{([\s\S]*?)\n    \}/);
-  assert.ok(shots);
-  for(const scene of ['crown','omen','betrayal','reach','erasure','rift','dawn','relic']){
-    assert.match(shots[1],new RegExp('\\b'+scene+'=true\\b'),'missing approved actor scene '+scene);
-  }
-  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)/);
-  assert.match(intro,/local showArtwork=validImage and not showFront/);
-  assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
-  assert.match(intro,/local portraitId=portraitShots\[scene\.cinema\]/);
-  assert.match(intro,/local actorBeat=scene\.cinema=="crown"/);
-  assert.match(intro,/activeActorGestureTween=TweenService:Create\(storyImage,/);
-  assert.match(intro,/activeActorEraseTween=TweenService:Create\(storyImage,/);
-  assert.match(intro,/activeDepthTween=TweenService:Create\(storyVisionGradient,/);
-  assert.match(intro,/activeFogDepthTween=TweenService:Create\(mistFalloff,/);
-  assert.match(intro,/if activeActorGestureTween then activeActorGestureTween:Cancel\(\);activeActorGestureTween=nil end/);
-  assert.match(intro,/if activeDepthTween then activeDepthTween:Cancel\(\);activeDepthTween=nil end/);
-  assert.match(intro,/if activeFogDepthTween then activeFogDepthTween:Cancel\(\);activeFogDepthTween=nil end/);
-  assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
-  assert.doesNotMatch(intro,/Instance\.new\("Part"\)|CinematicLightSweep/);
-});
-
-test('prologue makes audio, silhouette and scene changes on authored story beats',()=>{
-  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
-  assert.match(intro,/introBeatSound\.Name="MeadowPrologueBeat"/);
-  assert.match(intro,/introBeatSound\.SoundId="rbxasset:\/\/sounds\/action_jump_land\.mp3"/);
-  assert.match(intro,/introBeatSound\.SoundGroup=meadowEffectsGroup/);
-  assert.match(intro,/introBeatSound:Stop\(\)\s+introBeatSound:Destroy\(\)/);
-  assert.match(intro,/introBeatSound\.PlaybackSpeed=scene\.cinema=="betrayal"/);
-  assert.match(intro,/introBeatSound:Play\(\)/);
-  assert.match(intro,/for step=1,2 do\s+task\.delay\(step\*\.34,function\(\)/);
-  assert.match(intro,/local audioLevel=silence and 0 or scene\.cinema=="siege"/);
-  assert.match(intro,/art=activeStoryFocusTween/);
-  assert.match(intro,/task\.delay\(math\.max\(\.4,scene\.seconds-\.52\),function\(\)/);
+  assert.match(intro,/introDialogue\.Position=UDim2\.fromScale\(\.5,portrait and \.860 or \.856\)/);
+  assert.match(intro,/storyCurtain\.BackgroundColor3=Color3\.fromRGB\(5,8,11\)/);
+  assert.match(intro,/activeCurtainTween=TweenService:Create\(storyCurtain,/);
+  assert.match(intro,/storyCurtain\.BackgroundTransparency=0/);
+  assert.match(intro,/if cameraMotionConnection then cameraMotionConnection:Disconnect\(\);cameraMotionConnection=nil end/);
+  assert.match(intro,/if cameraMotionValue then cameraMotionValue:Destroy\(\);cameraMotionValue=nil end/);
+  assert.match(intro,/openingCamera\.CameraType=Enum\.CameraType\.Custom/);
+  assert.match(intro,/arrivalControls\(true\)/);
+  assert.match(intro,/meadowVitalsGui\.Enabled=true/);
+  assert.match(intro,/introBeatSound:Destroy\(\)/);
+  assert.match(intro,/local function closeArrival\(showVillageReveal\)/);
   assert.match(intro,/local revealSeconds=reducedEffects and 2\.4 or 3\.4/);
   assert.match(intro,/TweenService:Create\(reveal,TweenInfo\.new\(1\.25,Enum\.EasingStyle\.Sine\)/);
-  assert.match(intro,/local portraitShots=\{/);
-  assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
+  assert.equal([...intro.matchAll(/label\(introPanel,/g)].length,2,'title and subtitles only');
+});
+
+test('twelve real-world beats use existing sound, movement and narration instead of images',()=>{
+  const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
+  assert.match(intro,/introBeatSound\.PlaybackSpeed=scene\.cinema=="betrayal"/);
+  assert.match(intro,/introBeatSound:Play\(\)/);
+  assert.match(intro,/local isSilent=scene\.cinema=="freeze" or scene\.cinema=="erasure"/);
+  assert.match(intro,/local beatAt=\(scene\.cinema=="siege" or scene\.cinema=="charge"\)/);
+  assert.match(intro,/regionIntro\.Text=scene\.title/);
+  assert.match(intro,/introDialogue\.Text=scene\.subtitle/);
+  assert.match(intro,/introDialogue\.MaxVisibleGraphemes=i/);
+  assert.match(intro,/regionIntro\.MaxVisibleGraphemes=count/);
+  assert.match(intro,/task\.delay\(scene\.seconds-\.55,function\(\)/);
+  assert.match(intro,/TweenService:Create\(cinematicBars\[1\]/);
+  assert.match(intro,/TweenService:Create\(cinematicBars\[2\]/);
+  assert.doesNotMatch(intro,/storyImage|showFront|showArtwork|portraitShots|cinematicLight|CinematicLightSweep/);
 });
 
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
