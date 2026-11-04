@@ -35251,7 +35251,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-11-04T11:38:53.021Z",
+      "updatedAt": "2026-11-04T12:13:41.345Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -106166,7 +106166,7 @@
       "MOBILE_FIRST": true,
       "autoMissingDesignIntake": true,
       "createdAt": "2026-10-31T12:24:18.028Z",
-      "updatedAt": "2026-11-04T11:38:52.470Z",
+      "updatedAt": "2026-11-04T12:13:39.252Z",
       "novelGrammarBackfill": {
         "version": 5,
         "source": "CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009",
@@ -106222,7 +106222,7 @@
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-31T12:51:30.955Z",
-        "migratedAt": "2026-11-04T11:38:52.470Z"
+        "migratedAt": "2026-11-04T12:13:39.252Z"
       },
       "productionTier": 2,
       "selectedPlatform": "ROBLOX"
@@ -112005,7 +112005,7 @@
       "MOBILE_FIRST": true,
       "autoMissingDesignIntake": true,
       "createdAt": "2026-11-04T11:23:12.436Z",
-      "updatedAt": "2026-11-04T12:04:52.759Z",
+      "updatedAt": "2026-11-04T12:13:41.345Z",
       "novelGrammarBackfill": {
         "version": 5,
         "source": "CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009",
@@ -112048,7 +112048,7 @@
         }
       },
       "promotion": {
-        "from": "DESIGN_ONLY",
+        "from": "DEVELOPMENT_CONFIRMED",
         "to": "DEVELOPMENT_CONFIRMED",
         "reason": "MINIMUM_ROBLOX_DESIGN_READY",
         "requestedPlatform": "ROBLOX",
@@ -112063,7 +112063,8 @@
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-11-04T12:04:52.759Z"
-      }
+      },
+      "strictDesignReviewRefreshRequired": true
     }
   ],
   "seedMaterials": [
@@ -117719,7 +117720,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-11-04T12:04:52.759Z",
+  "updatedAt": "2026-11-04T12:13:41.345Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
@@ -117865,5 +117866,6 @@
       "medieval-defense",
       "territory-war"
     ]
-  }
+  },
+  "policyAuthority": "company-learning/platform-release-roadmap.json"
 }
