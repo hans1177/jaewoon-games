@@ -290,13 +290,14 @@
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 2,
+        "developmentConfirmed": 3,
         "designOnly": 8
       },
       "releaseConfirmedGameIds": [],
       "developmentConfirmedGameIds": [
         "RUNTIME-deep-diver",
-        "RUNTIME-fantasy-survival"
+        "RUNTIME-fantasy-survival",
+        "RUNTIME-room-survival"
       ],
       "designOnlyGameIds": [
         "P0001",
@@ -319,7 +320,8 @@
           "P0101",
           "P0103",
           "RUNTIME-fantasy-survival",
-          "RUNTIME-deep-diver"
+          "RUNTIME-deep-diver",
+          "RUNTIME-room-survival"
         ],
         "paused": [],
         "rebuild": [],
@@ -332,11 +334,11 @@
       },
       "pipeline": {
         "target": 60,
-        "count": 10,
+        "count": 11,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 50
+        "deficit": 49
       },
       "ranking": [
         {
@@ -428,6 +430,21 @@
           "targetPlatform": "WEB",
           "targetPlatformReady": true,
           "sourceReady": true
+        },
+        {
+          "rank": 7,
+          "rawEvidenceRank": 7,
+          "gameId": "RUNTIME-room-survival",
+          "slug": "room-survival",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "UNCLASSIFIED",
+          "evidenceScore": 0,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": false,
+          "sourceReady": false
         }
       ],
       "source": [
