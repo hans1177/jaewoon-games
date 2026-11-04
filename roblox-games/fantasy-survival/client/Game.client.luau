@@ -3213,27 +3213,27 @@ do
     -- 위치 오프셋만 카메라에 적용하고 NPC/플레이어의 실제 CFrame은 절대로 변경하지 않는다.
     local scenes={
       {seconds=5,title="마지막 전선",subtitle="렌스기사단은 성문 앞에 도착했다.",
-        cinema="siege",actor="Guard",start=Vector3.new(-48,28,35),finish=Vector3.new(-19,17,27),fov=74},
+        cinema="siege",actor="RUIN_1",start=Vector3.new(-48,28,35),finish=Vector3.new(-19,17,27),fov=74},
       {seconds=5,title="네 명의 돌격",subtitle="렌스, 카인, 닉, 미나가 성문을 향해 달려갔다.",
-        cinema="charge",actor="Guard",start=Vector3.new(16,9,26),finish=Vector3.new(5,7,13),fov=66},
+        cinema="charge",actor="PLAYER",start=Vector3.new(16,9,26),finish=Vector3.new(5,7,13),fov=66},
       {seconds=5,title="빅브라더",subtitle="수고했다. 모두 너희를 기억할 것이다.",
-        cinema="crown",actor="Elder",start=Vector3.new(8,6,14),finish=Vector3.new(-6,5,9),fov=52},
+        cinema="crown",actor="RUIN_2",start=Vector3.new(8,6,14),finish=Vector3.new(-6,5,9),fov=52},
       {seconds=4,title="퇴각 명령",subtitle="잠깐, 우리 병사들이 왜 물러나는 거야?",
-        cinema="freeze",actor="Guard",start=Vector3.new(-5,12,19),finish=Vector3.new(-5,12,19),fov=62},
+        cinema="freeze",actor="RUIN_1",start=Vector3.new(-5,12,19),finish=Vector3.new(-5,12,19),fov=62},
       {seconds=5,title="미러",subtitle="미러? 무슨 일이야? 전투는 아직 안 끝났어.",
-        cinema="omen",actor="Tracker",start=Vector3.new(-12,6,18),finish=Vector3.new(6,5,10),fov=56},
+        cinema="omen",actor="RUIN_2",start=Vector3.new(-12,6,18),finish=Vector3.new(6,5,10),fov=56},
       {seconds=6,title="배신과 봉인",subtitle="계획이 바뀌었어. 너희는 여기서 끝이야.",
-        cinema="betrayal",actor="Tracker",start=Vector3.new(13,7,10),finish=Vector3.new(-7,6,16),fov=50},
+        cinema="betrayal",actor="RUIN_3",start=Vector3.new(13,7,10),finish=Vector3.new(-7,6,16),fov=50},
       {seconds=5,title="사라지는 동료들",subtitle="카인! 손 잡아!",
         cinema="reach",actor="PLAYER",start=Vector3.new(-9,5,12),finish=Vector3.new(4,4,7),fov=65},
       {seconds=4,title="역사 삭제",subtitle="이 일은 누구에게도 알려져서는 안 된다.",
-        cinema="erasure",actor="BOARD",start=Vector3.new(0,24,16),finish=Vector3.new(0,24,16),fov=47},
+        cinema="erasure",actor="RUIN_3",start=Vector3.new(0,24,16),finish=Vector3.new(0,24,16),fov=47},
       {seconds=5,title="추락",subtitle="카인은 끝없이 아래로 떨어졌다.",
         cinema="rift",actor="PLAYER",start=Vector3.new(1,52,18),finish=Vector3.new(-5,10,14),fov=78},
       {seconds=6,title="낯선 숲",subtitle="...여긴 어디지?",
         cinema="dawn",actor="PLAYER",start=Vector3.new(35,22,-32),finish=Vector3.new(12,10,18),fov=71},
       {seconds=5,title="기사단의 흔적",subtitle="낡은 깃발에 기사단의 문양이 남아 있었다.",
-        cinema="relic",actor="WELL",start=Vector3.new(-11,12,16),finish=Vector3.new(3,6,8),fov=57},
+        cinema="relic",actor="RUIN_2",start=Vector3.new(-11,12,16),finish=Vector3.new(3,6,8),fov=57},
       {seconds=5,title="첫 번째 여정",subtitle="렌스, 닉, 미나는 어디에 있을까.",
         cinema="journey",actor="PLAYER",start=Vector3.new(-25,16,24),finish=Vector3.new(13,9,18),fov=64},
     }
@@ -3243,6 +3243,11 @@ do
     local function finish()
       if finished or token~=runToken then return end
       finished=true
+      if activeSubjectHighlight then activeSubjectHighlight:Destroy();activeSubjectHighlight=nil end
+      introGrade:Destroy()
+      introBloom:Destroy()
+      introBlur:Destroy()
+      introDepth:Destroy()
       closeArrival(true)
     end
     skipButton.Activated:Once(finish)
@@ -3266,35 +3271,88 @@ do
       Size=UDim2.fromScale(1,1),
     }):Play()
 
-    -- [실제 위치] 주민은 서버가 이미 만든 공식 R15과 기존 순찰 이동을 그대로 사용한다.
-    -- 객체 스트리밍이 지연되면 같은 마을의 실제 좌표를 조준하며 가짜 인물을 추가하지 않는다.
-    local npcHomes={
-      Elder=Vector3.new(-7,5,-109),Tracker=Vector3.new(69,5,-129),
-      Guard=Vector3.new(-2,5,-188),
+    -- [실제 기억 장소] 화면에 존재하지 않는 빅브라더·미러를 마을 주민으로 위장하지 않는다.
+    -- 기존 CC0 석벽 유적 세 곳과 플레이어 R15만 실물 촬영 대상으로 사용한다.
+    local ruinHomes={
+      RUIN_1=Vector3.new(-122,3,-147),RUIN_2=Vector3.new(137,3,139),
+      RUIN_3=Vector3.new(-154,3,122),
     }
     local function sceneFocus(scene)
       local world=workspace:FindFirstChild("FantasySurvivalWorld")
-      local model=nil
-      if scene.actor=="PLAYER" then
-        model=player.Character
-      elseif world and npcHomes[scene.actor] then
-        model=world:FindFirstChild("Meadow_Villager_"..scene.actor)
-      elseif world and scene.actor=="BOARD" then
-        model=world:FindFirstChild("Meadow_Village_ContractBoard")
-      elseif world and scene.actor=="WELL" then
-        model=world:FindFirstChild("Meadow_Village_Well")
+      local model=scene.actor=="PLAYER" and player.Character
+        or (world and world:FindFirstChild("Meadow_"..(scene.actor=="RUIN_1" and "Ruin_1"
+          or scene.actor=="RUIN_2" and "Ruin_2" or "Ruin_3")))
+      local root=model and (model:FindFirstChild("HumanoidRootPart")
+        or model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart",true))
+      if root then
+        return root.Position+Vector3.new(0,scene.actor=="PLAYER" and 1.6 or 3,0),model
       end
-      local root=model and (model:FindFirstChild("HumanoidRootPart") or model.PrimaryPart
-        or model:FindFirstChildWhichIsA("BasePart",true))
-      if root then return root.Position+Vector3.new(0,scene.actor=="PLAYER" and 1.7 or 2.2,0) end
-      if npcHomes[scene.actor] then return npcHomes[scene.actor]+Vector3.new(0,2,0) end
-      if scene.actor=="BOARD" then return Vector3.new(0,7,-101) end
-      if scene.actor=="WELL" then return Vector3.new(0,5,-146) end
+      local fallback=ruinHomes[scene.actor]
+      if fallback then return fallback+Vector3.new(0,3,0),nil end
       local character=player.Character
       local playerRoot=character and character:FindFirstChild("HumanoidRootPart")
-      return playerRoot and playerRoot.Position+Vector3.new(0,2,0) or Vector3.new(0,7,-115)
+      return playerRoot and playerRoot.Position+Vector3.new(0,1.6,0)
+        or Vector3.new(0,7,-115),character
     end
 
+    -- [시네마틱 시각 효과] 기존 월드의 픽셀과 CC0 VFX 모듈만 가공한다.
+    -- 새 건물·몬스터·임시 인물·Part 모델은 만들지 않는다. 모바일 성능에 따라 후처리 강도를 낮춘다.
+    local Lighting=game:GetService("Lighting")
+    local introGrade=Instance.new("ColorCorrectionEffect")
+    introGrade.Name="MeadowIntroColorGrade";introGrade.Enabled=true
+    introGrade.Parent=Lighting
+    local introBloom=Instance.new("BloomEffect")
+    introBloom.Name="MeadowIntroBloom";introBloom.Enabled=true
+    introBloom.Intensity=.16;introBloom.Size=18;introBloom.Threshold=2
+    introBloom.Parent=Lighting
+    local introBlur=Instance.new("BlurEffect")
+    introBlur.Name="MeadowIntroBlur";introBlur.Size=0;introBlur.Parent=Lighting
+    local introDepth=Instance.new("DepthOfFieldEffect")
+    introDepth.Name="MeadowIntroFocus";introDepth.Enabled=not reducedEffects
+    introDepth.FarIntensity=.12;introDepth.NearIntensity=.06
+    introDepth.InFocusRadius=16;introDepth.FocusDistance=20
+    introDepth.Parent=Lighting
+    local approvedFXModule=Shared:FindFirstChild("RobloxCommonVFX")
+    local approvedFX=nil
+    if approvedFXModule and approvedFXModule:IsA("ModuleScript") then
+      local ok,result=pcall(require,approvedFXModule)
+      if ok and type(result)=="table" and type(result.Create)=="function" then approvedFX=result end
+    end
+    local activeSubjectHighlight=nil
+    local introFxCues={
+      siege="DESTRUCTION_BURST",charge="WEATHER_GUST_PULSE",
+      crown="BOSS_WARNING_PULSE",omen="STATUS_PULSE",
+      betrayal="DEBUFF_PULSE",reach="CRITICAL_BURST",
+      erasure="DISMANTLE_SHARDS",rift="WEATHER_GUST_PULSE",
+      dawn="ENVIRONMENT_MOTE_PULSE",relic="QUEST_UPDATE_PULSE",
+      journey="ENVIRONMENT_MOTE_PULSE",
+    }
+    local introPalettes={
+      siege=Color3.fromRGB(222,116,72),charge=Color3.fromRGB(241,167,105),
+      crown=Color3.fromRGB(213,178,109),freeze=Color3.fromRGB(117,127,146),
+      omen=Color3.fromRGB(161,103,207),betrayal=Color3.fromRGB(115,65,187),
+      reach=Color3.fromRGB(119,146,230),erasure=Color3.fromRGB(88,89,111),
+      rift=Color3.fromRGB(92,116,239),dawn=Color3.fromRGB(151,197,146),
+      relic=Color3.fromRGB(179,171,118),journey=Color3.fromRGB(111,166,153),
+    }
+    local function playSceneFX(scene,sceneIndex)
+      if not entranceOpen or token~=runToken or currentStoryScene~=sceneIndex then return end
+      local asset=introFxCues[scene.cinema]
+      if approvedFX and asset then
+        local location=sceneFocus(scene)
+        local color=introPalettes[scene.cinema] or Color3.fromRGB(212,207,200)
+        -- 기존 공용 이펙트 중 섬광·원형 충격파는 숨기고 원본 파편·안개만 재생한다.
+        pcall(approvedFX.Create,asset,{
+          parent=workspace,cframe=CFrame.new(location),
+          color=color,accent=color,
+          count=reducedEffects and 4 or 12,scale=reducedEffects and .95 or 2.2,
+          duration=.65,mist=scene.cinema=="omen" or scene.cinema=="betrayal"
+            or scene.cinema=="rift" or scene.cinema=="dawn",
+          hideFlash=true,hideRing=true,particlesOnly=true,
+          reducedMotion=reducedEffects,
+        })
+      end
+    end
     -- [카메라] 기존 RunService·TweenService로 실제 월드의 카메라만 이동하고
     -- 촬영 대상의 이동 위치를 매 프레임 따라가며 보간한다.
     local RunService=game:GetService("RunService")
