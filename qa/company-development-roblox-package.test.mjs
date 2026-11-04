@@ -1742,7 +1742,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-(?:math.floor\()?/);
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
   assert.ok(client.includes('trackerTitle.Visible=true'));
-  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(width,166)'));
+  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(width,height)'));
   assert.ok(client.includes('meadowHealthTrack.Size=UDim2.fromOffset(width,21)'));
   assert.ok(client.includes('meadowEnergy.Size=UDim2.fromOffset(width,21)'));
   assert.ok(client.includes('meadowEnergy.Position=UDim2.new(.5,0,0,top+25)'));
