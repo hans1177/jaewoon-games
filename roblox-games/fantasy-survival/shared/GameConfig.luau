@@ -5,10 +5,10 @@ local Config = {
   SaveEnabled = true,
   GameId = "fantasy-survival",
   GameName = "마력숲 생존기",
-  -- [오프닝 망토] Roblox 공식 제작 BackAccessory, 기존 유료 UGC 대신 무료 공개된 실물 원본 사용.
-  -- 원본: https://www.roblox.com/catalog/2758798961/Red-Carpet-Cape / Roblox 제작 / 가격 0 Robux.
-  -- 서버에서 InsertService로 직접 로딩하고 원본 실루엣 범위 안에서 무광 낡은 진홍색 천 처리.
-  OpeningCapeAccessoryId = 2758798961,
+  -- [오프닝 망토] 소유 프로젝트 원본 3D 메시를 직접 편집한 4군데 찢어진 진홍색 망토.
+  -- 길이: 어깨~엉덩이 1.52스터드. 기존 네이티브 원본 에셋 등록·Universe 권한 경로만 사용.
+  -- 원본: roblox-games/fantasy-survival/assets/worn-cape.obj / 에셋 ID는 VisualAssetIds의 wornCape.
+  OpeningCapeModelKey = "wornCape",
   -- [오프닝 일러스트] 소유자 승인 원본 단일 그림, Roblox 이미지 등록 및 Universe 권한 검증 완료.
   CinematicIntroAtlasId = "rbxassetid://100481673402406",
   CinematicIntroAtlasSha256 = "a535d55a0a6c2af4ce9fb2bfdb339fb1e3919f530af5d3cc51f0861a7c717eda",
