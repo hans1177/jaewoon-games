@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -150305,7 +150305,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -150347,12 +150347,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:41820705699:1",
+      "reservedAt": "2026-11-04T11:31:20.934Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -150532,7 +150532,8 @@
         "system-ai-handoff-to-reservation:system-ai:41818100701:1",
         "actions-run:41818100701",
         "system-ai-handoff-to-reservation:system-ai:41819233683:1",
-        "actions-run:41819233683"
+        "actions-run:41819233683",
+        "system-ai-handoff-to-reservation:system-ai:41820705699:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1722,
@@ -150547,7 +150548,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-04T11:24:54.832Z"
+      "updatedAt": "2026-11-04T11:31:20.934Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
@@ -193215,6 +193216,7 @@
       "department": "planning-growth-marketing",
       "taskType": "marketing",
       "gameId": "forest-survival",
+      "jointDecisionRequired": true,
       "goal": "Create the current non-financial growth/marketing execution package for 숲의 끝 · 생존 협동 (forest-survival). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
       "responsibleFiles": [
         "company-learning/marketing/forest-survival/latest.json"
@@ -193235,7 +193237,21 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/forest-survival/latest.json --game-id=forest-survival"
       ],
       "dependencies": [],
+      "relatedTaskIds": [],
+      "blockedTaskIds": [],
       "retries": 0,
+      "recurrenceCount": 0,
+      "failureStage": null,
+      "failureSignature": null,
+      "failureClass": null,
+      "handoffCount": 0,
+      "previousReservationId": null,
+      "blastRadius": null,
+      "knownGoodRevision": null,
+      "repairRisk": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
       "reservationId": null,
       "reservedAt": null,
@@ -193252,10 +193268,10 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
+      "impactScore": 0,
+      "impactComponents": null,
       "createdAt": "2026-11-04T11:28:01.729Z",
       "updatedAt": "2026-11-04T11:28:01.729Z"
     }
-  ],
-  "updatedAt": "2026-11-04T11:28:01.729Z"
+  ]
 }
