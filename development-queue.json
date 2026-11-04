@@ -1373,7 +1373,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-04T09:01:44.356Z",
+      "updatedAt": "2026-11-04T09:04:50.737Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -1384,7 +1384,7 @@
       },
       "strictDesignReviewRefreshRequired": true,
       "robloxSourceCommit": "b76477164df8a5733a2ffb6367960e60f70bf452",
-      "robloxSourceBootstrapPassedAt": "2026-11-04T09:01:44.356Z",
+      "robloxSourceBootstrapPassedAt": "2026-11-04T09:04:50.737Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -1396,56 +1396,7 @@
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "fantasy-survival",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-11-04T08:47:50.834Z",
-        "sourceRevision": "3f0c3e7e8f95aa8efcfa62da1c4da58a64781492",
-        "artifactIdentity": "sha256:60be05555a773903a9422dec9ea7355c8266ace500cff8d805d87aca1598877e",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "gemini-3.8-flash",
-            "graphics": "gemini-3.8-flash",
-            "development": "gemini-3.8-flash",
-            "qa": "gemini-3.8-flash",
-            "balance": "gemini-3.8-flash"
-          },
-          "sharedModel": "gemini-3.8-flash",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "robloxLaneEligible": true,
-          "directRoblox": true,
-          "concurrentRoblox": false,
-          "build": {
-            "sourceRevision": "3f0c3e7e8f95aa8efcfa62da1c4da58a64781492",
-            "artifactIdentity": "sha256:60be05555a773903a9422dec9ea7355c8266ace500cff8d805d87aca1598877e",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "gemini-3.5-flash-lite",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "All required build evidence and exact deterministic package identity checks have passed successfully. The package is eligible to start runtime testing."
-          }
-        ],
-        "blockers": [],
-        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
-        "authority": "roblox-exact-package-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -1484,9 +1435,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
+        "roblox-build-package-pending"
       ],
       "robloxQualityBuildUpRequired": false,
       "robloxQualityBuildUpSourceRevision": null,
@@ -2243,7 +2194,7 @@
       }
     }
   ],
-  "updatedAt": "2026-11-04T09:03:27.684Z",
+  "updatedAt": "2026-11-04T09:04:50.737Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
