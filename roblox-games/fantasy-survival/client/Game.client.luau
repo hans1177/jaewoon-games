@@ -3047,10 +3047,7 @@ do
     reveal.BackgroundTransparency=0
     reveal.BorderSizePixel=0
     reveal.Parent=arrivalGui
-    -- [첫 마을] 오프닝 암전에서 실제 마을과 아바타가 나타난다.
-    TweenService:Create(reveal,TweenInfo.new(1.25,Enum.EasingStyle.Sine),{
-      BackgroundTransparency=1,
-    }):Play()
+    -- [첫 마을] 실제 카메라·월드가 준비될 때까지 암전으로 가리고 나서 화면을 연다.
     local topBar=Instance.new("Frame")
     topBar.Name="CinematicTop"
     topBar.Size=UDim2.fromScale(1,.09)
@@ -3136,6 +3133,10 @@ do
       camera.CameraType=Enum.CameraType.Scriptable
       camera.FieldOfView=70
       camera.CFrame=CFrame.lookAt(Vector3.new(-28,26,-48),Vector3.new(0,5,-113))
+      -- [첫 마을 오픈] 스트리밍 뒤 실제 월드를 바라보는 카메라가 잡힌 다음 암전을 걷는다.
+      TweenService:Create(reveal,TweenInfo.new(1.25,Enum.EasingStyle.Sine),{
+        BackgroundTransparency=1,
+      }):Play()
       local origin=rootPart.Position
       local destination=CFrame.lookAt(origin+Vector3.new(10,9,17),origin+Vector3.new(0,3,-5))
       -- 카메라가 실물 마을을 내려다본 뒤 실제 플레이어 망토·얼굴 쪽으로 이동한다.
