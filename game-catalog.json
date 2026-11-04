@@ -1,6 +1,6 @@
 {
   "version": 33,
-  "updatedAt": "2026-11-04T11:51:00.796Z",
+  "updatedAt": "2026-11-02",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -37,6 +37,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -292,6 +293,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -545,6 +547,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -802,6 +805,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "selectedPlatform": "WEB",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -1275,6 +1279,162 @@
       "webPublishedSourceTreeSha": "b430538daa6a6b3f6a8114b77748b0edb0b704f8"
     },
     {
+      "id": "room-survival",
+      "name": "야생 협동 생존",
+      "description": "개발확정 · Roblox 개발",
+      "genre": [
+        "PUZZLE"
+      ],
+      "image": "",
+      "featured": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "productionTarget": "ROBLOX_UNITY",
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/room-survival"
+      },
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
+      "homepageWebPlayable": false,
+      "updatedAt": "2026-11-04T11:51:00.796Z",
+      "lifecycleState": "ACTIVE",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "developmentActive": true,
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "PUZZLE"
+        ],
+        "genreLabel": "PUZZLE",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "최소 설계 계약 완료 · Roblox 개발 진행",
+        "updatedAt": "2026-11-04T11:51:00.796Z",
+        "status": "PENDING_ROBLOX_SOURCE_BIND",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 6,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "room-survival",
+          "name": "야생 협동 생존",
+          "description": "개발확정 · Roblox 개발",
+          "genres": [
+            "PUZZLE"
+          ],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/pwa-icon-512.png",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null,
+          "robloxThumbnail": null,
+          "robloxTitleArtwork": null
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "MINIMUM_ROBLOX_DESIGN_READY",
+          "target": "ROBLOX_UNITY",
+          "handling": "",
+          "selectedPlatform": "ROBLOX",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": false,
+            "playable": false,
+            "state": "",
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "",
+            "sourceTreeSha": ""
+          },
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
+          "runtime": {
+            "authority": "company-runtime",
+            "developmentActive": true,
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "PUZZLE"
+            ],
+            "genreLabel": "PUZZLE",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "최소 설계 계약 완료 · Roblox 개발 진행",
+            "updatedAt": "2026-11-04T11:51:00.796Z",
+            "status": "PENDING_ROBLOX_SOURCE_BIND",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 6
+    },
+    {
       "id": "seed-casual-realm-weaver",
       "name": "세계의 직조자",
       "description": "캐주얼 세계 창조 게임",
@@ -1300,6 +1460,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -1325,7 +1486,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 6,
+        "catalogOrder": 7,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-casual-realm-weaver",
@@ -1436,7 +1597,7 @@
           }
         }
       },
-      "catalogOrder": 6,
+      "catalogOrder": 7,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1487,6 +1648,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -1512,7 +1674,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 7,
+        "catalogOrder": 8,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -1623,7 +1785,7 @@
           }
         }
       },
-      "catalogOrder": 7,
+      "catalogOrder": 8,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1674,6 +1836,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -1699,7 +1862,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 8,
+        "catalogOrder": 9,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-puzzle-chromatic-cascade",
@@ -1810,7 +1973,7 @@
           }
         }
       },
-      "catalogOrder": 8,
+      "catalogOrder": 9,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1891,7 +2054,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 9,
+        "catalogOrder": 10,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -2006,7 +2169,7 @@
           }
         }
       },
-      "catalogOrder": 9,
+      "catalogOrder": 10,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2080,7 +2243,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 10,
+        "catalogOrder": 11,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
@@ -2195,7 +2358,7 @@
           }
         }
       },
-      "catalogOrder": 10,
+      "catalogOrder": 11,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2269,7 +2432,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 11,
+        "catalogOrder": 12,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -2384,7 +2547,7 @@
           }
         }
       },
-      "catalogOrder": 11,
+      "catalogOrder": 12,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2458,7 +2621,7 @@
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 12,
+        "catalogOrder": 13,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-survival-horror-es-doors",
@@ -2573,7 +2736,7 @@
           }
         }
       },
-      "catalogOrder": 12,
+      "catalogOrder": 13,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2617,6 +2780,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -2642,7 +2806,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 13,
+        "catalogOrder": 14,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -2781,7 +2945,7 @@
           }
         }
       },
-      "catalogOrder": 13,
+      "catalogOrder": 14,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "PERMANENTLY_REMOVED_REJECTED_TEST",
@@ -2865,6 +3029,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -2890,7 +3055,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 14,
+        "catalogOrder": 15,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -3001,7 +3166,7 @@
           }
         }
       },
-      "catalogOrder": 14,
+      "catalogOrder": 15,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3082,7 +3247,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 15,
+        "catalogOrder": 16,
         "authority": "company-runtime",
         "identity": {
           "gameId": "cat-step",
@@ -3225,7 +3390,7 @@
           }
         }
       },
-      "catalogOrder": 15,
+      "catalogOrder": 16,
       "homepageMedia": {
         "gameId": "cat-step",
         "titleEn": "CAT STEP",
@@ -3329,7 +3494,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 16,
+        "catalogOrder": 17,
         "authority": "company-runtime",
         "identity": {
           "gameId": "core-clash-4v4",
@@ -3472,7 +3637,7 @@
           }
         }
       },
-      "catalogOrder": 16,
+      "catalogOrder": 17,
       "homepageMedia": {
         "gameId": "core-clash-4v4",
         "titleEn": "CORE CLASH",
@@ -3531,22 +3696,23 @@
         "3D"
       ],
       "image": "assets/page-bg-v4.webp",
-      "webPath": null,
+      "webPath": "web-games/deep-diver",
       "hasWebArchive": true,
       "featured": false,
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
-      "productionTarget": "ROBLOX",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_DIRECT_NEW_WEB_GAME",
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "selectedPlatform": "WEB",
-      "catalogOrder": 17,
-      "homepageStage": "개발확정 · Roblox 개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox 설계 보강 완료",
+      "catalogOrder": 18,
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "심해 잠수, 보물 4개 회수, 산소·체력, 거대 생물 회피, 음파·모바일 조작",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "ownerWebEntryFile": "web-games/deep-diver/index.html",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -3570,13 +3736,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "심해 잠수, 보물 4개 회수, 산소·체력, 거대 생물 회피, 음파·모바일 조작",
-        "updatedAt": "2026-11-04T11:39:35.262Z",
+        "updatedAt": "2026-11-04T11:51:00.384Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 17,
+        "catalogOrder": 18,
         "authority": "company-runtime",
         "identity": {
           "gameId": "deep-diver",
@@ -3676,7 +3842,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "심해 잠수, 보물 4개 회수, 산소·체력, 거대 생물 회피, 음파·모바일 조작",
-            "updatedAt": "2026-11-04T11:39:35.262Z",
+            "updatedAt": "2026-11-04T11:51:00.384Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -3688,12 +3854,9 @@
       "ownerWebSourceRevision": "68c41b492bf9233543df0fbe2ec788c119b1569986ff7109b70d9f845c59c8c5",
       "webDevelopmentResetRequired": true,
       "concurrentTargetPlatforms": [
-        "ROBLOX"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/deep-diver"
-      },
-      "updatedAt": "2026-11-04T11:51:00.384Z"
+        "ROBLOX",
+        "UNITY"
+      ]
     },
     {
       "id": "defense",
@@ -3751,7 +3914,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 18,
+        "catalogOrder": 19,
         "authority": "company-runtime",
         "identity": {
           "gameId": "defense",
@@ -3894,7 +4057,7 @@
           }
         }
       },
-      "catalogOrder": 18,
+      "catalogOrder": 19,
       "homepageMedia": {
         "gameId": "defense",
         "titleEn": "FOREST DEFENSE",
@@ -3999,7 +4162,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 19,
+        "catalogOrder": 20,
         "authority": "company-runtime",
         "identity": {
           "gameId": "dice-battle-board",
@@ -4142,7 +4305,7 @@
           }
         }
       },
-      "catalogOrder": 19,
+      "catalogOrder": 20,
       "homepageMedia": {
         "gameId": "dice-battle-board",
         "titleEn": "DICE BATTLE",
@@ -4247,7 +4410,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 20,
+        "catalogOrder": 21,
         "authority": "company-runtime",
         "identity": {
           "gameId": "exorcist-office",
@@ -4390,7 +4553,7 @@
           }
         }
       },
-      "catalogOrder": 20,
+      "catalogOrder": 21,
       "homepageMedia": {
         "gameId": "exorcist-office",
         "titleEn": "EXORCIST OFFICE",
@@ -4450,7 +4613,7 @@
         "보드"
       ],
       "image": "assets/homepage-covers/fantasy-survival.webp",
-      "webPath": null,
+      "webPath": "web-games/fantasy-survival",
       "hasWebArchive": true,
       "homepageWebPlayable": false,
       "homepageOfficialCard": false,
@@ -4458,7 +4621,7 @@
       "homepageDisplayMode": "",
       "lifecycleState": "ACTIVE",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "homepageCategory": "development-confirmed",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -4486,14 +4649,14 @@
         "playMode": "HYBRID",
         "playModeLabel": "혼합",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-11-04T11:38:53.021Z",
+        "updatedAt": "2026-11-04T11:51:00.796Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
-      "selectedPlatform": "ROBLOX",
+      "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 21,
+        "catalogOrder": 22,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fantasy-survival",
@@ -4630,23 +4793,26 @@
             "playMode": "HYBRID",
             "playModeLabel": "혼합",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-11-04T11:38:53.021Z",
+            "updatedAt": "2026-11-04T11:51:00.796Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 21,
-      "productionTarget": "ROBLOX",
-      "homepageStage": "개발확정 · Roblox 개발",
+      "catalogOrder": 22,
+      "productionTarget": "ROBLOX_UNITY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "concurrentTargetPlatforms": [
-        "ROBLOX"
+        "ROBLOX",
+        "UNITY"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/fantasy-survival"
+        "ROBLOX": "roblox-games/fantasy-survival",
+        "UNITY": "unity-games/fantasy-survival"
       },
-      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
-      "updatedAt": "2026-11-04T11:51:00.796Z",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "updatedAt": "2026-09-21T15:09:50.123Z",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageMedia": {
         "gameId": "fantasy-survival",
         "titleEn": "MANA FOREST",
@@ -4690,8 +4856,7 @@
       "webPublishedSourceTreeSha": "adc0915ec88a44ae3214ff900ffc7520c9e67d05",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true,
-      "marketingThumbnail": "assets/homepage-covers/fantasy-survival.webp",
-      "productionTier": 2
+      "marketingThumbnail": "assets/homepage-covers/fantasy-survival.webp"
     },
     {
       "id": "fifty-days",
@@ -4747,7 +4912,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 22,
+        "catalogOrder": 23,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fifty-days",
@@ -4888,7 +5053,7 @@
           }
         }
       },
-      "catalogOrder": 22,
+      "catalogOrder": 23,
       "homepageMedia": {
         "gameId": "fifty-days",
         "titleEn": "FIFTY DAYS",
@@ -4956,7 +5121,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 23,
+        "catalogOrder": 24,
         "authority": "company-runtime",
         "identity": {
           "gameId": "forest-survival",
@@ -5086,12 +5251,12 @@
         "status": "ACTIVE",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
-      "catalogOrder": 23,
+      "catalogOrder": 24,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerDirectWebUpload": true,
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true,
-      "ownerWebSourceRevision": "14328236511b15d0a2e30eca29911ac8bd1a754b466f1195c86348e9b0e6e201",
+      "ownerWebSourceRevision": "4a68a48f99814b817722570f43c44fbf9f3e1a85b57a2be6b113b2edbddb084e",
       "ownerWebEntryFile": "web-games/forest-survival/index.html",
       "webDevelopmentResetRequired": true,
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
@@ -5158,7 +5323,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 24,
+        "catalogOrder": 25,
         "authority": "company-runtime",
         "identity": {
           "gameId": "gem-survivor",
@@ -5301,7 +5466,7 @@
           }
         }
       },
-      "catalogOrder": 24,
+      "catalogOrder": 25,
       "homepageMedia": {
         "gameId": "gem-survivor",
         "titleEn": "GEM SURVIVOR",
@@ -5406,7 +5571,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 25,
+        "catalogOrder": 26,
         "authority": "company-runtime",
         "identity": {
           "gameId": "kingshot-ad",
@@ -5549,7 +5714,7 @@
           }
         }
       },
-      "catalogOrder": 25,
+      "catalogOrder": 26,
       "homepageMedia": {
         "gameId": "kingshot-ad",
         "titleEn": "KINGSHOT",
@@ -5623,6 +5788,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "실시간 3D 지도, 주택·농장·제철소·병영·전차 공장·포탑, 보병·전차·헬기, 거점 3곳, 저장 기능",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -5650,7 +5816,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 26,
+        "catalogOrder": 27,
         "authority": "company-runtime",
         "identity": {
           "gameId": "mini-empire",
@@ -5765,7 +5931,7 @@
           }
         }
       },
-      "catalogOrder": 26,
+      "catalogOrder": 27,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/mini-empire/index.html",
@@ -5844,7 +6010,7 @@
       "ownerWebEntryFile": "web-games/moon-ruins/index.html",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 27,
+        "catalogOrder": 28,
         "authority": "company-runtime",
         "identity": {
           "gameId": "moon-ruins",
@@ -5957,7 +6123,7 @@
           }
         }
       },
-      "catalogOrder": 27,
+      "catalogOrder": 28,
       "webPublishedRoute": "web-games/moon-ruins/",
       "webPublishedSourceTreeSha": "3c9df920247cf1c63815df0f09de12cc790b92ca",
       "concurrentTargetPlatforms": [
@@ -6004,8 +6170,9 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "Kenney CC0 3D 범선, 8개 항구 교역, A* 항로, 함포전, 운송 계약, 저장 기능 구현 · 런타임 및 배포 검증 대기",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "selectedPlatform": "WEB",
-      "catalogOrder": 28,
+      "catalogOrder": 29,
       "updatedAt": "2026-10-20T19:38:00+09:00",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -6037,7 +6204,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 28,
+        "catalogOrder": 29,
         "authority": "company-runtime",
         "identity": {
           "gameId": "ocean-voyage",
@@ -6227,7 +6394,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 29,
+        "catalogOrder": 30,
         "authority": "company-runtime",
         "identity": {
           "gameId": "party-rpg",
@@ -6370,7 +6537,7 @@
           }
         }
       },
-      "catalogOrder": 29,
+      "catalogOrder": 30,
       "homepageMedia": {
         "gameId": "party-rpg",
         "titleEn": "PARTY RPG",
@@ -6475,7 +6642,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 30,
+        "catalogOrder": 31,
         "authority": "company-runtime",
         "identity": {
           "gameId": "realistic-builder",
@@ -6618,7 +6785,7 @@
           }
         }
       },
-      "catalogOrder": 30,
+      "catalogOrder": 31,
       "homepageMedia": {
         "gameId": "realistic-builder",
         "titleEn": "REALISTIC BUILDER",
@@ -6692,6 +6859,7 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "초기 메뉴 3종, 영업 2분 후 메뉴 2종 해금, 손님 주문·조리·서빙, 테이블 확장, 요리사 고용, 저장",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -6719,7 +6887,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 31,
+        "catalogOrder": 32,
         "authority": "company-runtime",
         "identity": {
           "gameId": "restaurant-tycoon",
@@ -6834,7 +7002,7 @@
           }
         }
       },
-      "catalogOrder": 31,
+      "catalogOrder": 32,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/restaurant-tycoon/index.html",
@@ -6914,7 +7082,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 32,
+        "catalogOrder": 33,
         "authority": "company-runtime",
         "identity": {
           "gameId": "star-frontier",
@@ -7055,7 +7223,7 @@
           }
         }
       },
-      "catalogOrder": 32,
+      "catalogOrder": 33,
       "homepageMedia": {
         "gameId": "star-frontier",
         "titleEn": "STAR FRONTIER",
@@ -7160,7 +7328,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 33,
+        "catalogOrder": 34,
         "authority": "company-runtime",
         "identity": {
           "gameId": "tower-choice-rpg",
@@ -7303,7 +7471,7 @@
           }
         }
       },
-      "catalogOrder": 33,
+      "catalogOrder": 34,
       "homepageMedia": {
         "gameId": "tower-choice-rpg",
         "titleEn": "TEN FLOOR TOWER",
@@ -7377,6 +7545,7 @@
       "developmentHandling": "OWNER_NEW_GAME_DESIGN_PIPELINE",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -7404,7 +7573,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 34,
+        "catalogOrder": 35,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -7547,7 +7716,7 @@
           }
         }
       },
-      "catalogOrder": 34,
+      "catalogOrder": 35,
       "selectedPlatform": "WEB",
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
@@ -7628,6 +7797,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -7654,7 +7824,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 35,
+        "catalogOrder": 36,
         "authority": "company-runtime",
         "identity": {
           "gameId": "bug-defense",
@@ -7767,7 +7937,7 @@
           }
         }
       },
-      "catalogOrder": 35,
+      "catalogOrder": 36,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -7819,6 +7989,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -7845,7 +8016,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 36,
+        "catalogOrder": 37,
         "authority": "company-runtime",
         "identity": {
           "gameId": "insect-survival",
@@ -7986,7 +8157,7 @@
           }
         }
       },
-      "catalogOrder": 36,
+      "catalogOrder": 37,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -8065,6 +8236,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -8090,7 +8262,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 37,
+        "catalogOrder": 38,
         "authority": "company-runtime",
         "identity": {
           "gameId": "chess-battle",
@@ -8229,7 +8401,7 @@
           }
         }
       },
-      "catalogOrder": 37,
+      "catalogOrder": 38,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8316,6 +8488,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -8341,7 +8514,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 38,
+        "catalogOrder": 39,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go",
@@ -8452,7 +8625,7 @@
           }
         }
       },
-      "catalogOrder": 38,
+      "catalogOrder": 39,
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8496,6 +8669,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -8522,7 +8696,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 39,
+        "catalogOrder": 40,
         "authority": "company-runtime",
         "identity": {
           "gameId": "island-village",
@@ -8635,7 +8809,7 @@
           }
         }
       },
-      "catalogOrder": 39,
+      "catalogOrder": 40,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8715,7 +8889,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 40,
+        "catalogOrder": 41,
         "authority": "company-runtime",
         "identity": {
           "gameId": "monster-adventure",
@@ -8856,7 +9030,7 @@
           }
         }
       },
-      "catalogOrder": 40,
+      "catalogOrder": 41,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8868,6 +9042,7 @@
       },
       "updatedAt": "2026-09-21T15:09:50.123Z",
       "homepageDisplayMode": "",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "ownerWebSourceRevision": "1430d58b33bc169ea7e8f01593872a7e96aade8c4b5ef9de07463380583666e5",
@@ -8940,6 +9115,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -8965,7 +9141,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 41,
+        "catalogOrder": 42,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival",
@@ -9076,7 +9252,7 @@
           }
         }
       },
-      "catalogOrder": 41,
+      "catalogOrder": 42,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -9159,7 +9335,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 42,
+        "catalogOrder": 43,
         "authority": "company-runtime",
         "identity": {
           "gameId": "medieval-defense",
@@ -9267,7 +9443,7 @@
           }
         }
       },
-      "catalogOrder": 42
+      "catalogOrder": 43
     },
     {
       "id": "territory-war",
@@ -9293,6 +9469,7 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -9318,7 +9495,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 43,
+        "catalogOrder": 44,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -9457,7 +9634,7 @@
           }
         }
       },
-      "catalogOrder": 43,
+      "catalogOrder": 44,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "targetPlatform": "ROBLOX",
@@ -9520,174 +9697,6 @@
       "webPublishedSourceTreeSha": "bd1cd06ff49b156e284f3d5946e8f9d368819175",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
-    },
-    {
-      "id": "cozy-island",
-      "name": "포근섬",
-      "description": "개발확정 · Roblox 개발",
-      "genre": [
-        "CASUAL"
-      ],
-      "image": "",
-      "featured": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
-      "productionTier": 2,
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX"
-      ],
-      "productionTarget": "ROBLOX",
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/cozy-island"
-      },
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "homepageStage": "개발확정 · Roblox 개발",
-      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
-      "homepageWebPlayable": false,
-      "updatedAt": "2026-11-04T11:51:00.796Z"
-    },
-    {
-      "id": "daechung-rpg",
-      "name": "5포탈 RPG: 던전 파티",
-      "description": "개발확정 · Roblox 개발",
-      "genre": [
-        "CASUAL"
-      ],
-      "image": "",
-      "featured": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
-      "productionTier": 2,
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX"
-      ],
-      "productionTarget": "ROBLOX",
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/daechung-rpg"
-      },
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "homepageStage": "개발확정 · Roblox 개발",
-      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
-      "homepageWebPlayable": false,
-      "updatedAt": "2026-11-04T11:51:00.796Z"
-    },
-    {
-      "id": "horror-escape-room",
-      "name": "심야 대탈출",
-      "description": "개발확정 · Roblox 개발",
-      "genre": [
-        "CASUAL"
-      ],
-      "image": "",
-      "featured": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
-      "productionTier": 2,
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX"
-      ],
-      "productionTarget": "ROBLOX",
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/horror-escape-room"
-      },
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "homepageStage": "개발확정 · Roblox 개발",
-      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
-      "homepageWebPlayable": false,
-      "updatedAt": "2026-11-04T11:51:00.796Z"
-    },
-    {
-      "id": "forgotten-continent",
-      "name": "잊혀진 대륙 | 2D 생존",
-      "description": "개발확정 · Roblox 개발",
-      "genre": [
-        "ACTION SURVIVAL ROGUELITE"
-      ],
-      "image": "",
-      "featured": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
-      "productionTier": 2,
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX"
-      ],
-      "productionTarget": "ROBLOX",
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/forgotten-continent"
-      },
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "homepageStage": "개발확정 · Roblox 개발",
-      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
-      "homepageWebPlayable": false,
-      "updatedAt": "2026-11-04T11:51:00.796Z"
-    },
-    {
-      "id": "baeksu-war",
-      "name": "백수대전쟁",
-      "description": "개발확정 · Roblox 개발",
-      "genre": [
-        "STRATEGY TYCOON"
-      ],
-      "image": "",
-      "featured": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
-      "productionTier": 2,
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX"
-      ],
-      "productionTarget": "ROBLOX",
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/baeksu-war"
-      },
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "homepageStage": "개발확정 · Roblox 개발",
-      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
-      "homepageWebPlayable": false,
-      "updatedAt": "2026-11-04T11:51:00.796Z"
-    },
-    {
-      "id": "room-survival",
-      "name": "야생 협동 생존",
-      "description": "개발확정 · Roblox 개발",
-      "genre": [
-        "PUZZLE"
-      ],
-      "image": "",
-      "featured": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
-      "productionTier": 2,
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX"
-      ],
-      "productionTarget": "ROBLOX",
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/room-survival"
-      },
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "homepageStage": "개발확정 · Roblox 개발",
-      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
-      "homepageWebPlayable": false,
-      "updatedAt": "2026-11-04T11:51:00.796Z"
     }
   ],
   "runtimeAuthority": "company-runtime",
@@ -9697,13 +9706,13 @@
     "UNITY"
   ],
   "runtimeCounts": {
-    "canonicalGames": 43,
-    "homepageInfo": 43,
-    "normalizedGames": 43,
+    "canonicalGames": 44,
+    "homepageInfo": 44,
+    "normalizedGames": 44,
     "ownerWebAdded": 1,
     "ownerWebUpdated": 26,
     "ownerWebDisabled": 16,
-    "runtimeCatalogAdded": 0,
+    "runtimeCatalogAdded": 1,
     "actualWebPlayableReconciled": 27
   },
   "catalogSchemaVersion": 2,
