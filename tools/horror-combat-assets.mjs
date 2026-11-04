@@ -52,6 +52,69 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
+// [마력숲 시안 오너 제작 그림 아이콘] 기존 이미지 업로드·권한 검사 경로에서 16칸 아틀라스를 등록.
+if(process.argv.includes('--painted-hud-only')){
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const clientPath='roblox-games/fantasy-survival/client/Game.client.luau';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ const art=registry.paintedHudIcons;
+ if(registry.gameId!=='fantasy-survival'||!art
+   ||art.source!=='OWNER_REQUESTED_ORIGINAL_ICON_ART'||art.license!=='OWNER_CREATED_UI'
+   ||art.path!=='roblox-games/fantasy-survival/painted-icons.png'
+   ||art.universeId!=='10773436325'||art.width!==640||art.height!==40||art.columns!==16
+   ||art.sha256!=='2f884f108a6cc1763e898ecbbe744eeaafb220062d971cec49c316943fd470a9')
+   throw Error('PAINTED_HUD_PROVENANCE_INVALID');
+ const bytes=fs.readFileSync(art.path);
+ const sourceSha=crypto.createHash('sha256').update(bytes).digest('hex');
+ if(sourceSha!==art.sha256||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+   ||bytes.readUInt32BE(16)!==640||bytes.readUInt32BE(20)!==40)
+   throw Error('PAINTED_HUD_SOURCE_HASH_OR_PNG_INVALID');
+ let id=String(art.assetId||'');
+ const client=fs.readFileSync(clientPath,'utf8');
+ if(/^[1-9]\d*$/.test(id)&&art.importedSourceHash===sourceSha
+   &&art.importVerified===true&&art.authorizedUniverseIds?.includes(art.universeId)
+   &&client.includes('local meadowPaintedHudAtlas="rbxassetid://'+id+'" -- ORIGINAL_PAINTED_HUD_ATLAS')){
+   console.log('PAINTED_HUD_ALREADY_BOUND='+id);
+   process.exit(0);
+ }
+ if(!/^[1-9]\d*$/.test(id)||art.importedSourceHash!==sourceSha){
+   const form=new FormData();
+   form.append('request',JSON.stringify({assetType:'Image',displayName:'Magic Forest Original Illustrated HUD',description:'Owner-requested original 16-sprite fantasy HUD atlas, source sha256 '+sourceSha,creationContext:{creator}}));
+   form.append('fileContent',new Blob([bytes],{type:'image/png'}),'painted-icons.png');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(op.path||''))throw Error('PAINTED_HUD_OPERATION_INVALID');
+   const deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+     await new Promise(resolve=>setTimeout(resolve,4000));
+     op=await request('https://apis.roblox.com/assets/v1/'+op.path,{headers:{'x-api-key':key}});
+   }
+   if(!op.done||op.error||!(/^[1-9]\d*$/.test(String(op.response?.assetId||''))))throw Error('PAINTED_HUD_IMPORT_FAILED');
+   id=String(op.response.assetId);
+   art.assetId=id;
+   art.importedSourceHash=sourceSha;
+   art.importVerified=false;
+   art.runtimeVerified=false;
+   registry.paintedHudIcons=art;
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+ }
+ const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+   method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+   body:JSON.stringify({subjectType:'Universe',subjectId:art.universeId,action:'Use',
+     requests:[{assetId:Number(id),grantToDependencies:true}]})
+ });
+ if(grant.errors?.length)throw Error('PAINTED_HUD_PERMISSION_FAILED');
+ art.importVerified=true;
+ art.authorizedUniverseIds=[art.universeId];
+ art.runtimeVerified=false;
+ fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+ const anchor=/local meadowPaintedHudAtlas="[^"]*" -- ORIGINAL_PAINTED_HUD_ATLAS/;
+ if(!anchor.test(client))throw Error('PAINTED_HUD_CLIENT_ANCHOR_MISSING');
+ fs.writeFileSync(clientPath,client.replace(anchor,
+   'local meadowPaintedHudAtlas="rbxassetid://'+id+'" -- ORIGINAL_PAINTED_HUD_ATLAS'));
+ console.log('PAINTED_HUD_REGISTERED='+id);
+ process.exit(0);
+}
+
 // [마력숲 오른쪽 실제 아이콘] 외부 PNG 5종 등록, 기존 CC0 물약·가방 2종 보존.
 // 사진에서 자른 40px 아틀라스나 게임 안에서 임의로 조립한 아이콘을 금지한다.
 if(process.argv.includes('--magic-action-icons-only')){

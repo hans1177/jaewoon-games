@@ -72,8 +72,12 @@ game:GetService("RunService"):BindToRenderStep("MeadowPainted25DCamera",
       return
     end
     local portrait=camera.ViewportSize.Y>camera.ViewportSize.X
-    local offset=portrait and Vector3.new(21,27,35) or Vector3.new(24,23,34)
-    local focus=root.Position+Vector3.new(0,2.5,0)+root.CFrame.LookVector*1.7
+    -- [화면 시안] 실제 캐릭터 등 뒤에서 마을 쪽을 보는 3인칭 구도. 전투와 서버 상태는 유지.
+    local heading=Vector3.new(root.CFrame.LookVector.X,0,root.CFrame.LookVector.Z)
+    if heading.Magnitude<.1 then heading=Vector3.new(0,0,-1) end
+    heading=heading.Unit
+    local offset=-heading*(portrait and 19 or 23)+Vector3.new(0,portrait and 9 or 10,0)
+    local focus=root.Position+Vector3.new(0,2.5,0)+heading*(portrait and 7 or 10)
     local wanted=CFrame.lookAt(focus+offset,focus)
     if not paintedCameraFrame or (paintedCameraFrame.Position-wanted.Position).Magnitude>75 then
       paintedCameraFrame=wanted
@@ -195,6 +199,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 카메라·표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
+local meadowPaintedHudAtlas="" -- ORIGINAL_PAINTED_HUD_ATLAS
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
   fist="rbxassetid://127661757924412",
@@ -456,7 +461,7 @@ title.Position = UDim2.fromOffset(10, 8)
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.fromRGB(245, 248, 255)
 title.TextScaled = true
-title.Text = "마력숲  ·  시작 초원"
+title.Text = "" -- [시안] 왼쪽 게임 제목은 표시하지 않는다.
 title.TextXAlignment=Enum.TextXAlignment.Left
 title.TextSize=19
 title.TextScaled=false
@@ -1352,7 +1357,7 @@ meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerSt
     renderMeadowPages()
     if index==4 then refreshMeadowCameraOption() end
     local heading=root:FindFirstChild("MeadowMenuHeading")
-    if heading then heading.Text="마력숲  /  "..(index==0 and "활동" or meadowPageNames[index] or "모험") end
+    if heading then heading.Text="탐험  /  "..(index==0 and "활동" or meadowPageNames[index] or "모험") end
     local subtitle=root:FindFirstChild("MeadowMenuSubtitle")
     if subtitle then
       local captions={
@@ -1367,7 +1372,7 @@ meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerSt
 })
 local menuHeading=root:FindFirstChild("MeadowMenuHeading")
 if menuHeading then
-  menuHeading.Text="마력숲  ·  탐험 수첩"
+  menuHeading.Text="탐험 수첩"
   menuHeading.TextColor3=meadowGold
 end
 local witcherTabs=root:FindFirstChild("MeadowMenuTabs")
@@ -1404,6 +1409,157 @@ UserInputService.InputBegan:Connect(function(input,processed)
   elseif input.KeyCode==Enum.KeyCode.O then meadowMenu.open(4)
   end
 end)
+-- [시안 상단 여섯 메뉴] 기존 메뉴 페이지를 그대로 호출하고 아이콘·위치만 교체한다.
+local meadowReferenceMenu=Instance.new("Frame")
+meadowReferenceMenu.Name="MeadowReferenceTopMenu"
+meadowReferenceMenu.BackgroundTransparency=1
+meadowReferenceMenu.ZIndex=26
+meadowReferenceMenu.Parent=gui
+local referenceMenuItems={
+  {"캐릭",1,10},{"제작",2,11},{"건설",0,12},
+  {"도감",3,13},{"연구일지",3,14},{"설정",4,15},
+}
+for index,info in ipairs(referenceMenuItems) do
+  local button=Instance.new("TextButton")
+  button.Name="ReferenceMenu"..index
+  button.BackgroundColor3=Color3.fromRGB(21,25,31)
+  button.BackgroundTransparency=.16
+  button.BorderSizePixel=0
+  button.Text=""
+  button.ZIndex=27
+  button.Parent=meadowReferenceMenu
+  local round=Instance.new("UICorner")
+  round.CornerRadius=UDim.new(1,0)
+  round.Parent=button
+  local rim=Instance.new("UIStroke")
+  rim.Color=Color3.fromRGB(148,157,159)
+  rim.Thickness=1.2
+  rim.Transparency=.22
+  rim.Parent=button
+  local icon=Instance.new("ImageLabel")
+  icon.Name="ReferenceIcon"
+  icon.BackgroundTransparency=1
+  icon.Image=meadowPaintedHudAtlas~="" and meadowPaintedHudAtlas or meadowIconAtlas
+  icon.ImageRectSize=Vector2.new(meadowPaintedHudAtlas~="" and 40 or 64,meadowPaintedHudAtlas~="" and 40 or 64)
+  icon.ImageRectOffset=Vector2.new((meadowPaintedHudAtlas~="" and info[3] or (info[3]%8))* (meadowPaintedHudAtlas~="" and 40 or 64),0)
+  icon.ImageColor3=Color3.fromRGB(242,241,223)
+  icon.AnchorPoint=Vector2.new(.5,0)
+  icon.Position=UDim2.fromScale(.5,.11)
+  icon.Size=UDim2.fromScale(.65,.65)
+  icon.ZIndex=28
+  icon.Parent=button
+  local caption=Instance.new("TextLabel")
+  caption.Name="ReferenceCaption"
+  caption.Text=info[1]
+  caption.Font=Enum.Font.GothamBold
+  caption.TextColor3=Color3.fromRGB(248,246,235)
+  caption.TextStrokeTransparency=.36
+  caption.TextScaled=true
+  caption.BackgroundTransparency=1
+  caption.AnchorPoint=Vector2.new(.5,0)
+  caption.Position=UDim2.new(.5,0,1,1)
+  caption.ZIndex=28
+  caption.Parent=button
+  button.Activated:Connect(function()meadowMenu.open(info[2])end)
+end
+local meadowReferenceHotbar=Instance.new("Frame")
+meadowReferenceHotbar.Name="MeadowReferenceHotbar"
+meadowReferenceHotbar.AnchorPoint=Vector2.new(.5,1)
+meadowReferenceHotbar.BackgroundTransparency=1
+meadowReferenceHotbar.ZIndex=24
+meadowReferenceHotbar.Parent=gui
+local referenceHotbarSlots={}
+local hotbarIcons={0,1,2,3,4,5,6,7,8,9}
+local hotbarActions={
+  function() if primaryCombatAction then activateMeadowAction(primaryCombatAction.Id) end end,
+  function() activateMeadowAction("scope-coreloop-1-6ebe58f496") end,
+  function() meadowMenu.open(0) end,
+  function() meadowMenu.open(2) end,
+  function() activateMeadowAction("skill-meadow-heal") end,
+  function() meadowMenu.open(2) end,
+  function() activateMeadowAction("skill-meadow-dodge-left") end,
+  function() activateMeadowAction("skill-meadow-guard") end,
+  function() meadowMenu.open(3) end,
+  function() meadowMenu.open(2) end,
+}
+for index=1,10 do
+  local slot=Instance.new("TextButton")
+  slot.Name="ReferenceHotbar"..index
+  slot.Text=""
+  slot.BackgroundColor3=Color3.fromRGB(33,27,25)
+  slot.BackgroundTransparency=.08
+  slot.BorderSizePixel=0
+  slot.ZIndex=25
+  slot.Parent=meadowReferenceHotbar
+  local corner=Instance.new("UICorner")
+  corner.CornerRadius=UDim.new(0,4)
+  corner.Parent=slot
+  local stroke=Instance.new("UIStroke")
+  stroke.Color=index==1 and Color3.fromRGB(238,201,124) or Color3.fromRGB(116,100,82)
+  stroke.Thickness=index==1 and 2 or 1.1
+  stroke.Parent=slot
+  local icon=Instance.new("ImageLabel")
+  icon.Name="ReferenceItemIcon"
+  icon.BackgroundTransparency=1
+  icon.Image=meadowPaintedHudAtlas~="" and meadowPaintedHudAtlas or meadowIconAtlas
+  icon.ImageRectSize=Vector2.new(meadowPaintedHudAtlas~="" and 40 or 64,meadowPaintedHudAtlas~="" and 40 or 64)
+  icon.ImageRectOffset=Vector2.new((meadowPaintedHudAtlas~="" and hotbarIcons[index] or hotbarIcons[index]%8)*(meadowPaintedHudAtlas~="" and 40 or 64),0)
+  icon.Size=UDim2.fromScale(.78,.78)
+  icon.Position=UDim2.fromScale(.11,.11)
+  icon.ZIndex=26
+  icon.Parent=slot
+  local number=Instance.new("TextLabel")
+  number.Name="SlotNumber"
+  number.Text=index==10 and "0" or tostring(index)
+  number.BackgroundTransparency=1
+  number.Position=UDim2.fromOffset(3,1)
+  number.Size=UDim2.fromOffset(12,11)
+  number.TextColor3=Color3.fromRGB(249,234,208)
+  number.Font=Enum.Font.GothamBold
+  number.TextSize=10
+  number.TextStrokeTransparency=.25
+  number.ZIndex=27
+  number.Parent=slot
+  slot.Activated:Connect(function()
+    if gui:GetAttribute("GameMenuOpen")~=true then hotbarActions[index]() end
+  end)
+  referenceHotbarSlots[index]=slot
+end
+local function layoutMeadowReferenceHud()
+  local v=gui.AbsoluteSize
+  if v.X<=0 or v.Y<=0 then return end
+  local landscape=v.X>v.Y
+  local step=landscape and math.floor(math.clamp(v.X/15,38,48)) or math.floor(math.clamp(v.X/9.8,33,40))
+  local menuWidth=step*6
+  meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+21)
+  meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-9,0,landscape and 7 or 8)
+  for index,button in ipairs(meadowReferenceMenu:GetChildren())do
+    if button:IsA("TextButton") then
+      button.Size=UDim2.fromOffset(step-8,step-8)
+      button.Position=UDim2.fromOffset((index-1)*step+4,0)
+      local caption=button:FindFirstChild("ReferenceCaption")
+      if caption then caption.Size=UDim2.fromOffset(step-2,14) end
+    end
+  end
+  local slotSize=landscape and math.floor(math.clamp(v.X/21,30,40))
+    or math.floor(math.clamp(v.X/11.5,26,34))
+  local gap=2
+  local barWidth=(slotSize+gap)*10-gap
+  meadowReferenceHotbar.Size=UDim2.fromOffset(barWidth,slotSize)
+  meadowReferenceHotbar.Position=UDim2.new(.5,0,1,landscape and -7 or -99)
+  for index,slot in ipairs(referenceHotbarSlots)do
+    slot.Size=UDim2.fromOffset(slotSize,slotSize)
+    slot.Position=UDim2.fromOffset((index-1)*(slotSize+gap),0)
+  end
+end
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowReferenceHud)
+gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
+  local visible=gui:GetAttribute("GameMenuOpen")~=true
+  meadowReferenceMenu.Visible=visible
+  meadowReferenceHotbar.Visible=visible
+end)
+layoutMeadowReferenceHud()
+
 local meadowHud=gui:FindFirstChild("MobileGameStatus")
 if meadowHud then
   meadowAvatar.Parent=meadowHud;meadowAvatar.Visible=false
@@ -1447,17 +1603,55 @@ energyLabel.BackgroundTransparency=1;energyLabel.Text="스테미너 100 / 100"
 energyLabel.TextColor3=Color3.fromRGB(248,253,255)
 energyLabel.TextSize=12;energyLabel.Font=Enum.Font.GothamBold
 energyLabel.ZIndex=11;energyLabel.Parent=meadowEnergy
+-- [시안 좌상단] 아바타 얼굴, 실제 체력·스테미너, 닉네임을 하나의 작은 HUD로 표시한다.
+local meadowPortrait=Instance.new("ImageButton")
+meadowPortrait.Name="ReferenceCharacterPortrait"
+meadowPortrait.BackgroundColor3=Color3.fromRGB(42,31,29)
+meadowPortrait.BorderSizePixel=0
+meadowPortrait.Image=meadowAvatar.Image
+meadowPortrait.ZIndex=13
+meadowPortrait.Parent=meadowVitalsGui
+local portraitStroke=Instance.new("UIStroke")
+portraitStroke.Color=Color3.fromRGB(190,147,95)
+portraitStroke.Thickness=1.6
+portraitStroke.Parent=meadowPortrait
+local portraitCorner=Instance.new("UICorner")
+portraitCorner.CornerRadius=UDim.new(0,5)
+portraitCorner.Parent=meadowPortrait
+meadowAvatar:GetPropertyChangedSignal("Image"):Connect(function()meadowPortrait.Image=meadowAvatar.Image end)
+meadowPortrait.Activated:Connect(function()meadowMenu.open(1)end)
+local meadowPortraitName=Instance.new("TextLabel")
+meadowPortraitName.Name="ReferenceCharacterName"
+meadowPortraitName.BackgroundTransparency=1
+meadowPortraitName.TextColor3=Color3.fromRGB(250,244,230)
+meadowPortraitName.TextStrokeTransparency=.4
+meadowPortraitName.Font=Enum.Font.GothamBold
+meadowPortraitName.TextSize=11
+meadowPortraitName.TextXAlignment=Enum.TextXAlignment.Left
+meadowPortraitName.ZIndex=12
+meadowPortraitName.Parent=meadowVitalsGui
 local function layoutMeadowEnergy()
   local v=meadowVitalsGui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
-  local width=math.floor(math.min(300,math.max(180,v.X*.28)))
-  local top=v.X>v.Y and 12 or 38
-  meadowHealthTrack.Size=UDim2.fromOffset(width,21)
-  meadowHealthTrack.Position=UDim2.new(.5,0,0,top)
-  meadowEnergy.Size=UDim2.fromOffset(width,21)
-  meadowEnergy.Position=UDim2.new(.5,0,0,top+25)
-  meadowHealthTrack.Visible=gui:GetAttribute("GameMenuOpen")~=true
-  meadowEnergy.Visible=gui:GetAttribute("GameMenuOpen")~=true
+  local landscape=v.X>v.Y
+  local top=landscape and 12 or 43
+  local width=math.floor(math.clamp(v.X*.19,108,156))
+  meadowPortrait.Size=UDim2.fromOffset(50,50)
+  meadowPortrait.Position=UDim2.fromOffset(10,top)
+  meadowPortraitName.Position=UDim2.fromOffset(66,top-2)
+  meadowPortraitName.Size=UDim2.fromOffset(width,16)
+  meadowPortraitName.Text="Lv. "..tostring(player:GetAttribute("Level") or 1).."  "..player.DisplayName
+  meadowHealthTrack.AnchorPoint=Vector2.new(0,0)
+  meadowHealthTrack.Size=UDim2.fromOffset(width,16)
+  meadowHealthTrack.Position=UDim2.fromOffset(66,top+17)
+  meadowEnergy.AnchorPoint=Vector2.new(0,0)
+  meadowEnergy.Size=UDim2.fromOffset(width,16)
+  meadowEnergy.Position=UDim2.fromOffset(66,top+36)
+  local visible=gui:GetAttribute("GameMenuOpen")~=true
+  meadowPortrait.Visible=visible
+  meadowPortraitName.Visible=visible
+  meadowHealthTrack.Visible=visible
+  meadowEnergy.Visible=visible
 end
 meadowVitalsGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowEnergy)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(layoutMeadowEnergy)
@@ -2321,10 +2515,10 @@ local function layoutMeadowJournal()
   if v.X<=0 or v.Y<=0 then return end
   local portrait=v.X<v.Y
   local compact=not portrait and v.Y<420
-  local top=portrait and 108 or 8
-  local width=math.floor(math.clamp(v.X*.24,202,252))
-  local height=compact and 146 or 196
-  questTracker.Position=UDim2.fromOffset(9,top)
+  local top=portrait and 122 or 62
+  local width=math.floor(math.clamp(v.X*.23,168,270))
+  local height=compact and 140 or 182
+  questTracker.Position=UDim2.fromOffset(v.X-width-12,top)
   questTracker.Size=UDim2.fromOffset(width,height)
   trackerDetail.Position=UDim2.fromOffset(11,31)
   trackerDetail.Size=UDim2.new(1,-21,0,compact and 37 or 52)
@@ -2336,11 +2530,12 @@ local function layoutMeadowJournal()
   trackerNavigation.Size=UDim2.new(1,-21,0,20)
   characterShortcut.Position=UDim2.fromOffset(9,top+height+8)
   characterShortcut.Size=UDim2.fromOffset(width,compact and 42 or 56)
+  characterShortcut.Visible=false -- [시안] 좌측 중복 캐릭터 버튼은 상단 얼굴·메뉴로 통합한다.
 end
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   local visible=gui:GetAttribute("GameMenuOpen")~=true
   questTracker.Visible=visible
-  characterShortcut.Visible=visible
+  characterShortcut.Visible=false
 end)
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
 layoutMeadowJournal()
@@ -4760,50 +4955,86 @@ for index,info in ipairs(meadowUtilityActions)do
   end)
   meadowUtilityButtons[index]=button
 end
--- [오른쪽 터치 UI] 아래 3개는 고정. 상단 4개만 저장된 사용자 위치를 사용한다.
+-- [시안 주 공격] 검 모양 버튼도 기존 기본 공격 ID만 전달한다. 새 피해·쿨다운 없음.
+local meadowPrimarySword=Instance.new("TextButton")
+meadowPrimarySword.Name="ReferencePrimarySword"
+meadowPrimarySword.Text=""
+styleMeadowCombatButton(meadowPrimarySword,Color3.fromRGB(207,181,112))
+meadowPrimarySword.Parent=meadowSkillDock
+local swordIcon=Instance.new("ImageLabel")
+swordIcon.Name="ReferenceSwordIcon"
+swordIcon.BackgroundTransparency=1
+swordIcon.Image=meadowPaintedHudAtlas~="" and meadowPaintedHudAtlas or meadowIconAtlas
+swordIcon.ImageRectOffset=Vector2.new(0,0)
+swordIcon.ImageRectSize=Vector2.new(meadowPaintedHudAtlas~="" and 40 or 64,meadowPaintedHudAtlas~="" and 40 or 64)
+swordIcon.Position=UDim2.fromScale(.12,.1)
+swordIcon.Size=UDim2.fromScale(.78,.78)
+swordIcon.ZIndex=20
+swordIcon.Parent=meadowPrimarySword
+meadowPrimarySword.Activated:Connect(function()
+  if gui:GetAttribute("GameMenuOpen")~=true and primaryCombatAction then
+    if activateMeadowAction(primaryCombatAction.Id) then meadowAttackAttemptAt=os.clock() end
+  end
+end)
+-- [시안 점프] Roblox 기존 Humanoid 점프만 실행하고 기본 조이스틱은 유지.
+local meadowReferenceJump=Instance.new("TextButton")
+meadowReferenceJump.Name="ReferenceJump"
+meadowReferenceJump.Text="↑"
+meadowReferenceJump.TextSize=27
+styleMeadowCombatButton(meadowReferenceJump,Color3.fromRGB(130,143,159))
+meadowReferenceJump.Parent=meadowSkillDock
+meadowReferenceJump.Activated:Connect(function()
+  if gui:GetAttribute("GameMenuOpen")==true then return end
+  local human=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+  if human and human.Health>0 then human.Jump=true end
+end)
+-- [오른쪽 터치 UI] 기존 전투·회피·방어·회복은 버튼 객체와 실제 원격 명령을 유지한다.
 local function layoutMeadowCombatUi()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local landscape=v.X>v.Y
-  -- [좁은 가로 화면] 미니맵 충돌 보정은 기존 도크 기준으로 계산한다.
-  -- [오른쪽 버튼 전체] 보정 후 도크를 실제로 위로 올려, 기존 보정이 이동량을 상쇄하지 않게 한다.
   local scale=landscape and math.clamp((v.Y-20)/370,.76,1.12) or math.clamp(v.X/390,.76,1)
-  local dockLift=math.floor(40*scale)
-  local dockHeight=math.floor(260*scale)
-  local utilityTop=140 -- [보조 버튼] 상호작용·질주·가방 3개를 같은 가로선에서 위로 이동한다.
-  local bottomInset=math.floor((landscape and (v.Y<350 and 12 or 14) or 116)*scale)
-  local compactLandscape=landscape and v.Y<450
-  local mapDiameter=compactLandscape and (v.Y<350 and 80 or 88) or v.X<480 and 96 or math.floor(math.clamp(v.Y*.17,98,124))
-  local dodgeTop=v.Y-bottomInset-dockHeight+math.floor((260*meadowTopPositions[2][2]-37)*scale)
-  local radarTop=landscape and 12 or 38 -- 중앙 체력바 상단과 같은 높이.
-  local mapBottom=radarTop+mapDiameter+40
-  local utilityBottom=v.Y-bottomInset-dockHeight+math.floor(utilityTop*scale)+math.max(44,math.floor(45*scale))
-  local availableShift=math.max(0,v.Y-8-utilityBottom)
-  local shift=compactLandscape and math.min(availableShift,math.max(0,mapBottom+8-dodgeTop)) or 0
-  meadowSkillDock.Size=UDim2.fromOffset(math.floor(235*scale),dockHeight)
-  meadowSkillDock.Position=UDim2.new(1,-math.floor(2*scale),1,-bottomInset-dockLift+math.floor(shift))
+  local offset=landscape and 12 or 104 -- [세로화면] Roblox 이동 조이스틱·기본 하단 공간.
+  meadowSkillDock.Size=UDim2.fromOffset(math.floor(212*scale),math.floor(216*scale))
+  meadowSkillDock.Position=UDim2.new(1,-math.floor(8*scale),1,-math.floor(offset*scale))
+  -- [시안 참고] 오른쪽 큰 검 / 위쪽 마력·질주 / 좌측 회피 / 아래 점프.
+  local positions={
+    {104,57,42}, -- 원래 연타
+    {66,142,43}, -- 원래 좌우 회피
+    {170,75,39}, -- 원래 막기
+    {40,72,36}, -- 원래 물약
+  }
   for index,button in ipairs(meadowSkillButtons) do
-    local p=meadowTopPositions[index]
-    local originalSize=index==4 and 46 or 74
-    local size=math.floor(originalSize*scale)
-    local cx,cy=235*p[1],260*p[2]
+    local row=positions[index]
+    local size=math.max(34,math.floor(row[3]*scale))
+    local saved=meadowTopPositions[index]
+    local default=meadowTopDefaults[index]
+    -- [저장 보존] 기존 사용자 버튼 이동량을 시안 기본 위치에 이어서 적용한다.
+    local visualX=row[1]+(saved[1]-default[1])*212
+    local visualY=row[2]+(saved[2]-default[2])*216
     button.Size=UDim2.fromOffset(size,size)
-    button.Position=UDim2.fromOffset(math.floor((cx-originalSize/2)*scale),math.floor((cy-originalSize/2)*scale))
-    local nameplate=meadowSkillNameplates[index]
-    nameplate.Size=UDim2.fromOffset(math.floor((originalSize+3)*scale),math.floor(19*scale))
-    nameplate.Position=UDim2.fromOffset(math.floor((cx-(originalSize+3)/2)*scale),
-      math.floor((cy+originalSize/2-12)*scale))
-    nameplate.TextSize=math.max(9,math.floor(12*scale))
+    button.Position=UDim2.fromOffset(math.floor((visualX-row[3]*.5)*scale),
+      math.floor((visualY-row[3]*.5)*scale))
+    local plate=meadowSkillNameplates[index]
+    plate.Visible=false -- 원형 전투 아이콘만 유지해 참고 화면과 동일한 밀도로 표시.
+    plate.Size=UDim2.fromOffset(0,0)
   end
-  -- [보조 버튼] 위치는 위로만 이동하고 크기·순서·터치 기능은 그대로 유지한다.
-  for index,button in ipairs(meadowUtilityButtons) do
-    local size=math.max(44,math.floor(45*scale)) -- [터치 크기] 작은 가로 화면에서도 버튼 최소 크기를 유지한다.
-    button.Size=UDim2.fromOffset(size,size)
-    button.Position=UDim2.fromOffset(math.floor((50+(index-1)*66-22.5)*scale),
-      math.floor(utilityTop*scale))
-    button.TextSize=math.max(15,math.floor(22*scale))
+  for index,button in ipairs(meadowUtilityButtons)do
+    -- 보조 채집·가방은 하단 단축창에서도 접근할 수 있어 화면 오른쪽 중복 표시만 정리.
+    button.Visible=index==2
+    if index==2 then
+      local size=math.max(36,math.floor(43*scale))
+      button.Size=UDim2.fromOffset(size,size)
+      button.Position=UDim2.fromOffset(math.floor(174*scale),math.floor(9*scale))
+    end
   end
-  -- Roblox 기본 점프 아이콘만 제거한다.
+  local swordSize=math.max(62,math.floor(76*scale))
+  meadowPrimarySword.Size=UDim2.fromOffset(swordSize,swordSize)
+  meadowPrimarySword.Position=UDim2.fromOffset(math.floor(147*scale),math.floor(125*scale))
+  local jumpSize=math.max(38,math.floor(43*scale))
+  meadowReferenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)
+  meadowReferenceJump.Position=UDim2.fromOffset(math.floor(86*scale),math.floor(180*scale))
+  -- [기존 점프 이중 터치 방지] 공식 모바일 JumpButton만 숨기고 실제 점프 기능은 위 버튼에 연결.
   if UserInputService.TouchEnabled then
     local touchGui=player.PlayerGui:FindFirstChild("TouchGui")
     local jump=touchGui and touchGui:FindFirstChild("JumpButton",true)
@@ -4983,6 +5214,7 @@ gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
 end)
 -- [미니맵] 실제 플레이어 좌표와 발견한 숲 지점만 표시한다.
 -- 체력바와 같은 전체 화면 좌표계를 사용해 Roblox 기본 상단 UI 여백으로 인한 아래 밀림을 없앤다.
+local meadowRadarEnabled=false -- [시안 기본 상태] 미니맵은 옵션에서 다시 표시할 수 있다.
 local meadowRadar=Instance.new("Frame")
 meadowRadar.Name="MeadowExplorerRadar"
 meadowRadar.AnchorPoint=Vector2.new(1,0)
@@ -5488,7 +5720,7 @@ local function layoutMeadowRadar()
   radarCoordinates.Position=UDim2.fromOffset(3,mapDiameter+25)
   radarCoordinates.Size=UDim2.new(1,-6,0,13)
   radarCoordinates.TextSize=9
-  meadowRadar.Visible=gui:GetAttribute("GameMenuOpen")~=true
+  meadowRadar.Visible=meadowRadarEnabled and gui:GetAttribute("GameMenuOpen")~=true
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
 meadowVitalsGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
@@ -5498,6 +5730,18 @@ meadowSkillButtons[2]:GetPropertyChangedSignal("AbsolutePosition"):Connect(layou
 meadowSkillButtons[2]:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(layoutMeadowRadar)
 alignMeadowRadar=layoutMeadowRadar
+-- [기존 미니맵 기능 보존] 참고 화면에는 숨기고, 옵션에서 언제든 복구할 수 있다.
+local mapToggle=CommonUI.CreatePrimaryButton({
+  name="MeadowRadarToggle",text="미니맵 표시",minHeight=48
+})
+mapToggle.LayoutOrder=10
+mapToggle.Size=UDim2.new(1,-8,0,48)
+mapToggle.Parent=meadowPages[4]
+mapToggle.Activated:Connect(function()
+  meadowRadarEnabled=not meadowRadarEnabled
+  mapToggle.Text=meadowRadarEnabled and "미니맵 숨기기" or "미니맵 표시"
+  layoutMeadowRadar()
+end)
 layoutMeadowRadar()
 do
 -- [전투 UI 상태] 서버가 제공한 실제 쿨다운만 표시한다. 임의 쿨다운은 없다.
