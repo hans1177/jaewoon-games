@@ -1571,6 +1571,204 @@ local function createMeadowVillage()
   else
     warn("마력숲 원본 돌우물 등록 대기: villageWell CC0 Model ID 없음")
   end
+  -- [마력숲 마을 / 중앙 3D 배경] 실제 CC0 승인 등록 메시만 재사용한다.
+  -- [원본] 마력나무=Kenney tree-crooked.glb / 수정문 석조 틀=Kenney wall-arch.glb
+  -- [광원] Attachments/Beams/Particles는 원본 MeshPart에만 붙이며 새 기본 파츠·가짜 크리스털 모델 없음.
+  -- [저장·진행] 기존 우물, NPC, 퀘스트, 통행·전투·지형·세이브는 변경하지 않는다.
+  local groveTreeReady=false
+  local crystalGateReady=false
+  if villageDetailReady then
+    -- [후경 마력나무] 마을 북쪽 수풀, 중앙 우물 뒤로 보이는 거대한 진짜 굽은 나무 메시.
+    local tree=worldAsset("villageCrookedTree",Vector3.new(7,3,-359),75)
+    if tree then
+      tree.Name="Meadow_Village_AncientAzureTree"
+      tree:SetAttribute("MeadowVillageScenery",true)
+      tree:SetAttribute("MeadowLandmarkRole","AZURE_ANCIENT_TREE")
+      tree:SetAttribute("MeadowOriginalCC0Source","assets/shared/party/tree-crooked.glb")
+      local bounds,extent=tree:GetBoundingBox()
+      local crownY=bounds.Position.Y+extent.Y*.27
+      local shimmerHost=nil
+      for _,mesh in ipairs(tree:GetDescendants()) do
+        if mesh:IsA("MeshPart") then
+          -- 소유·해시가 검증된 나무 형태는 그대로. 렌더 색과 소재만 변경한다.
+          mesh.CanCollide=false
+          mesh.CanTouch=false
+          mesh.CanQuery=false
+          mesh.CastShadow=true
+          local name=mesh.Name:lower()
+          local crown=name:find("leaf",1,true) or name:find("crown",1,true)
+            or name:find("foliage",1,true) or name:find("branch",1,true)
+            or mesh.Position.Y>crownY
+          if crown then
+            local surface=mesh:FindFirstChildOfClass("SurfaceAppearance")
+            if surface then surface:Destroy() end
+            mesh.TextureID=""
+            mesh.Color=Color3.fromRGB(69,131,191)
+            mesh.Material=Enum.Material.SmoothPlastic
+            shimmerHost=shimmerHost or mesh
+          else
+            mesh.Color=Color3.fromRGB(75,69,84)
+            mesh.Material=Enum.Material.Wood
+            shimmerHost=shimmerHost or mesh
+          end
+        end
+      end
+      local host=shimmerHost
+      if host then
+        local halo=Instance.new("Highlight")
+        halo.Name="MeadowAncientTreeOutline"
+        halo.Adornee=tree
+        halo.FillColor=Color3.fromRGB(75,128,196)
+        halo.FillTransparency=.94
+        halo.OutlineColor=Color3.fromRGB(60,153,227)
+        halo.OutlineTransparency=.57
+        halo.DepthMode=Enum.HighlightDepthMode.Occluded
+        halo.Parent=tree
+        local crownLight=Instance.new("PointLight")
+        crownLight.Name="MeadowTreeAzureLight"
+        crownLight.Color=Color3.fromRGB(64,157,250)
+        crownLight.Brightness=2.05
+        crownLight.Range=39
+        crownLight.Shadows=false
+        crownLight.Parent=host
+        local moteAttachment=Instance.new("Attachment")
+        moteAttachment.Name="MeadowTreeGlowingMotes"
+        moteAttachment.Position=host.CFrame:PointToObjectSpace(bounds.Position+Vector3.new(0,extent.Y*.3,0))
+        moteAttachment.Parent=host
+        local motes=Instance.new("ParticleEmitter")
+        motes.Name="MeadowTreeFireflies"
+        motes.Texture="rbxasset://textures/particles/sparkles_main.dds"
+        motes.Color=ColorSequence.new(Color3.fromRGB(73,173,255),Color3.fromRGB(184,225,255))
+        motes.LightEmission=.88
+        motes.LightInfluence=0
+        motes.Lifetime=NumberRange.new(3,5)
+        motes.Rate=8
+        motes.Speed=NumberRange.new(.9,2.0)
+        motes.SpreadAngle=Vector2.new(180,180)
+        motes.Size=NumberSequence.new({
+          NumberSequenceKeypoint.new(0,.24),
+          NumberSequenceKeypoint.new(.35,.61),
+          NumberSequenceKeypoint.new(1,0)
+        })
+        motes.Transparency=NumberSequence.new({
+          NumberSequenceKeypoint.new(0,1),
+          NumberSequenceKeypoint.new(.28,.12),
+          NumberSequenceKeypoint.new(1,1)
+        })
+        motes.Parent=moteAttachment
+        groveTreeReady=true
+      end
+    end
+    -- [광장 수정문] 기존 우물보다 뒤쪽에 진짜 CC0 석조 아치를 배치한다.
+    -- 단순 크리스털 파츠를 만들지 않고 내부의 보석형 빛 경계·푸른 마력 입자를 3D 광선으로 표현한다.
+    local gateway=worldAsset("villageArch",Vector3.new(0,3,-185),24)
+    if gateway then
+      gateway.Name="Meadow_Village_AzureCrystalGate"
+      gateway:SetAttribute("MeadowVillageScenery",true)
+      gateway:SetAttribute("MeadowLandmarkRole","AZURE_CRYSTAL_GATE")
+      gateway:SetAttribute("MeadowOriginalCC0Source","assets/shared/party/wall-arch.glb")
+      local archHost=gateway:FindFirstChildWhichIsA("MeshPart",true)
+      for _,mesh in ipairs(gateway:GetDescendants()) do
+        if mesh:IsA("MeshPart") then
+          mesh.CanCollide=false -- [통로] 플레이어와 의뢰 경로는 보존한다.
+          mesh.CanTouch=false
+          mesh.CanQuery=false
+          mesh.CastShadow=true
+          mesh.Material=Enum.Material.Slate
+          mesh.Color=Color3.fromRGB(100,111,132)
+        end
+      end
+      if archHost then
+        local center=gateway:GetPivot().Position+Vector3.new(0,1.0,0)
+        local crystalOffsets={
+          Vector3.new(0,7.5,0),
+          Vector3.new(2.9,4.5,0),
+          Vector3.new(2.3,-3.4,0),
+          Vector3.new(0,-7.0,0),
+          Vector3.new(-2.3,-3.4,0),
+          Vector3.new(-2.9,4.5,0),
+        }
+        local corners={}
+        for i,offset in ipairs(crystalOffsets) do
+          local point=Instance.new("Attachment")
+          point.Name="MeadowCrystalRayVertex"..i
+          point.Position=archHost.CFrame:PointToObjectSpace(center+offset)
+          point.Parent=archHost
+          corners[i]=point
+        end
+        local function rayBetween(a,b,inner)
+          local beam=Instance.new("Beam")
+          beam.Name=inner and "MeadowCrystalInnerRay" or "MeadowCrystalEdgeRay"
+          beam.Attachment0=corners[a]
+          beam.Attachment1=corners[b]
+          beam.Color=ColorSequence.new(
+            inner and Color3.fromRGB(63,175,249) or Color3.fromRGB(116,224,255),
+            Color3.fromRGB(210,246,255)
+          )
+          beam.LightEmission=1
+          beam.LightInfluence=0
+          beam.Transparency=NumberSequence.new({
+            NumberSequenceKeypoint.new(0,.1),
+            NumberSequenceKeypoint.new(.45,inner and .6 or .23),
+            NumberSequenceKeypoint.new(1,.1)
+          })
+          beam.Width0=inner and .09 or .21
+          beam.Width1=inner and .09 or .21
+          beam.FaceCamera=true
+          beam.Segments=2
+          beam.Parent=archHost
+        end
+        for i=1,#corners do rayBetween(i,i%#corners+1,false) end
+        for _,edge in ipairs({{1,3},{1,5},{2,4},{4,6},{2,5},{3,6}}) do
+          rayBetween(edge[1],edge[2],true)
+        end
+        local core=Instance.new("Attachment")
+        core.Name="MeadowCrystalMagicCore"
+        core.Position=archHost.CFrame:PointToObjectSpace(center)
+        core.Parent=archHost
+        local light=Instance.new("PointLight")
+        light.Name="MeadowCrystalInnerGlow"
+        light.Color=Color3.fromRGB(58,176,255)
+        light.Brightness=2.4
+        light.Range=34
+        light.Shadows=false
+        light.Parent=core
+        local sparks=Instance.new("ParticleEmitter")
+        sparks.Name="MeadowCrystalShimmer"
+        sparks.Texture="rbxasset://textures/particles/sparkles_main.dds"
+        sparks.Color=ColorSequence.new(Color3.fromRGB(73,186,255),Color3.fromRGB(234,247,255))
+        sparks.LightEmission=1
+        sparks.LightInfluence=0
+        sparks.Rate=17
+        sparks.Lifetime=NumberRange.new(1.6,3.6)
+        sparks.Speed=NumberRange.new(.3,1.8)
+        sparks.SpreadAngle=Vector2.new(160,160)
+        sparks.Shape=Enum.ParticleEmitterShape.Box
+        sparks.ShapeStyle=Enum.ParticleEmitterShapeStyle.Volume
+        sparks.ShapeInOut=Enum.ParticleEmitterShapeInOut.Outward
+        sparks.Size=NumberSequence.new({
+          NumberSequenceKeypoint.new(0,.35),
+          NumberSequenceKeypoint.new(.5,.7),
+          NumberSequenceKeypoint.new(1,0)
+        })
+        sparks.Transparency=NumberSequence.new({
+          NumberSequenceKeypoint.new(0,1),
+          NumberSequenceKeypoint.new(.2,.15),
+          NumberSequenceKeypoint.new(1,1)
+        })
+        sparks.Parent=core
+        crystalGateReady=true
+      end
+    end
+  end
+  gameWorld:SetAttribute("MeadowAzureTreeReady",groveTreeReady)
+  gameWorld:SetAttribute("MeadowCrystalGateReady",crystalGateReady)
+  gameWorld:SetAttribute("MeadowLandmarkAssetSource",groveTreeReady and crystalGateReady
+    and "REGISTERED_KENNEY_CC0_NATIVE_MESH_AND_NATIVE_VFX" or "CC0_SOURCE_UNAVAILABLE")
+  if not groveTreeReady or not crystalGateReady then
+    warn("마력숲 마력나무/수정문 승인 3D 메시 로딩 미완료: tree="..tostring(groveTreeReady)
+      .." crystalGate="..tostring(crystalGateReady))
+  end
   gameWorld:SetAttribute("MeadowVillageBuildingCount",villageBuildings)
   gameWorld:SetAttribute("MeadowVillagePropCount",villageProps)
   gameWorld:SetAttribute("MeadowVillageWellReady",villageWellReady)
