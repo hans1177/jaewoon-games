@@ -324,7 +324,7 @@ test('registered 12-scene prologue keeps 23 unique approved layers and cleans up
   assert.match(client,/storyForeground.Visible=showFront/);
   assert.match(client,/introDialogue\.MaxVisibleGraphemes=visible/);
   assert.match(client,/currentStoryScene~=index then return/);
-  assert.match(client,/local showFront=validFront and \(closeUp or not validImage\)/);
+  assert.match(client,/local showFront=validFront and not showArtwork/);
   assert.match(client,/remote:FireServer\("meadow:enter-world"\)/);
 });
 
@@ -380,18 +380,18 @@ test('prologue uses exactly one source image per shot and keeps Big Brother and 
   assert.match(intro,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
   assert.match(intro,/introPanel:GetPropertyChangedSignal\("AbsoluteSize"\):Connect\(layoutIntroCaptions\)/);
   assert.match(intro,/local portrait=size\.Y>size\.X\*1\.1/);
-  assert.match(intro,/local showFront=validFront and \(closeUp or not validImage\)/);
-  assert.match(intro,/local showArtwork=validImage and not showFront/);
+  assert.match(intro,/local showFront=validFront and not showArtwork/);
+  assert.match(intro,/local showArtwork=validImage\s+local showFront=validFront and not showArtwork/);
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
   assert.match(intro,/scene\.cinema=="betrayal" or scene\.cinema=="erasure"/);
   assert.match(intro,/scene\.cinema=="erasure" and registeredStoryDepth\[3\]/);
-  assert.match(intro,/storyForeground\.Position=UDim2\.fromScale\(\.02,\.145\)/);
-  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.96,\.68\)/);
-  assert.match(intro,/storyArtwork\.Position=UDim2\.fromScale\(\.01,\.01\)/);
-  assert.match(intro,/storyArtwork\.Size=UDim2\.fromScale\(\.98,\.98\)/);
+  assert.match(intro,/storyForeground\.Position=UDim2\.fromScale\(\.025,\.11\)/);
+  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.95,\.69\)/);
+  assert.match(intro,/storyArtwork\.Position=UDim2\.fromScale\(\.015,\.095\)/);
+  assert.match(intro,/storyArtwork\.Size=UDim2\.fromScale\(\.97,\.76\)/);
   assert.match(intro,/local firstId=registeredStoryArt\[1\] or registeredStoryDepth\[1\]/);
   assert.match(intro,/for index,scene in ipairs\(scenes\) do\s+if index>1 then/);
-  assert.match(intro,/local selected=\(portrait and typeof\(frontId\)=="string"\) and frontId/);
+  assert.match(intro,/local selected=typeof\(imageId\)=="string" and imageId or frontId/);
   assert.doesNotMatch(intro,/for index,id in ipairs\(registeredStoryArt\) do/);
   assert.doesNotMatch(intro,/for index,id in pairs\(registeredStoryDepth\) do/);
   assert.match(intro,/local firstShotDeadline=os\.clock\(\)\+2\.4/);
@@ -424,7 +424,7 @@ test('12 authored prologue beats retain single-image framing and mobile-safe cho
   assert.match(intro,/if impactAt and not reducedEffects then/);
   assert.match(intro,/currentStoryScene~=index then return end/);
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
-  assert.match(intro,/local showArtwork=validImage and not showFront/);
+  assert.match(intro,/local showArtwork=validImage\s+local showFront=validFront and not showArtwork/);
   assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
   assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
 });
@@ -450,7 +450,7 @@ test('prologue reveals each single illustration with safe lighting and mobile re
   ])assert.ok(intro.includes(marker),'missing intro direction: '+marker);
   assert.match(intro,/if impactAt and not reducedEffects then/);
   assert.match(intro,/if not entranceOpen or token~=runToken or currentStoryScene~=index then return end/);
-  assert.match(intro,/local showArtwork=validImage and not showFront/);
+  assert.match(intro,/local showArtwork=validImage\s+local showFront=validFront and not showArtwork/);
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
   assert.match(intro,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
   assert.match(intro,/storyArtwork\.ScaleType=Enum\.ScaleType\.Fit/);
@@ -481,8 +481,8 @@ test('cinematic v4 locks portrait frames, times silent title reveals and makes s
   ])assert.ok(intro.includes(marker),'cinematic direction missing: '+marker);
   assert.match(intro,/task\.delay\(titlePause,function\(\)\s+if not entranceOpen or token~=runToken or currentStoryScene~=index then return end/);
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
-  assert.match(intro,/local showArtwork=validImage and not showFront/);
-  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.96,\.68\)/);
+  assert.match(intro,/local showArtwork=validImage\s+local showFront=validFront and not showArtwork/);
+  assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.95,\.69\)/);
   assert.match(intro,/math\.clamp\(position\.X\.Scale\+slowX,0,maxX\)/);
   assert.match(intro,/math\.clamp\(position\.Y\.Scale\+slowY,0,maxY\)/);
   assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
