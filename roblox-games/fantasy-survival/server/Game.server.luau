@@ -4241,7 +4241,32 @@ local function bindNativeFoundationCharacter(character)
 end
 local function bindNativeFoundationPlayer(player)
   player.RespawnLocation = nativeFoundationSpawn
-  if player.Character then task.defer(bindNativeFoundationCharacter, player.Character) end
+  -- [오프닝 망토] 기존 R15 외형을 보존하고 정식 Roblox 뒤 장신구만 추가한다.
+  -- 캐릭터가 리스폰해도 기존 Roblox 아바타 로딩 경로에서 다시 적용한다.
+  local function applyOpeningCape(character)
+    if player.Character ~= character or not character.Parent then return end
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid or humanoid.Health <= 0 then return end
+    local capeId = tostring(Config.OpeningCapeAccessoryId or "")
+    if capeId == "" or capeId == "0" then return end
+    local ok, reason = pcall(function()
+      local appearance = humanoid:GetAppliedDescription()
+      local worn = appearance.BackAccessory or ""
+      if not string.find("," .. worn .. ",", "," .. capeId .. ",", 1, true) then
+        appearance.BackAccessory = worn == "" and capeId or (worn .. "," .. capeId)
+        humanoid:ApplyDescriptionAsync(appearance)
+      end
+      appearance:Destroy()
+    end)
+    if not ok then warn("마력숲 오프닝 망토 다운로드/착용 실패: " .. tostring(reason)) end
+  end
+  player.CharacterAppearanceLoaded:Connect(applyOpeningCape)
+  if player.Character then
+    task.defer(bindNativeFoundationCharacter, player.Character)
+    if player:HasAppearanceLoaded() then
+      task.defer(applyOpeningCape, player.Character)
+    end
+  end
   player.CharacterAdded:Connect(function(character)
     player.RespawnLocation = nativeFoundationSpawn
     bindNativeFoundationCharacter(character)
