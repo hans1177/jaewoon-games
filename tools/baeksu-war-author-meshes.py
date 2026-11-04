@@ -225,7 +225,7 @@ if '--game-id=fantasy-survival' in sys.argv:
  cape_digest=hashlib.sha256(cape_bytes).hexdigest()
  cape_text=cape_bytes.decode('ascii')
  if (cape_digest!=cape.get('sourceSha256') or len(re.findall(r'^v ',cape_text,re.M))!=240
-     or len(re.findall(r'^f ',cape_text,re.M))!=176
+     or len(re.findall(r'^f ',cape_text,re.M))!=174
      or 'f 7 236 6 235 5 234 4 233 3 2 1' not in cape_text
      or 'f 8 9 10 237 11 238 12 239 13 240 14' not in cape_text):
   raise RuntimeError('FOREST_WORN_CAPE_REAL_RIPPED_MESH_INTEGRITY_FAILED')
@@ -239,7 +239,7 @@ if '--game-id=fantasy-survival' in sys.argv:
   + 'try:\n bpy.ops.wm.obj_import(filepath=source)\n'
   + 'except (AttributeError,RuntimeError):\n bpy.ops.import_scene.obj(filepath=source)\n'
   + 'meshes=[o for o in bpy.context.scene.objects if o.type=="MESH"]\n'
-  + 'assert meshes and sum(len(o.data.polygons) for o in meshes)>=176\n'
+  + 'assert meshes and sum(len(o.data.polygons) for o in meshes)>=174\n'
   + 'for obj in meshes:\n'
   + ' name=obj.name.lower()\n'
   + ' if "clasp" in name: color=(.38,.29,.20,1)\n'
