@@ -4991,6 +4991,10 @@ local function styleMeadowCombatButton(button,color)
   button.TextWrapped=true
   button.ZIndex=14
   button.Active=true;button.Interactable=true -- [모바일 입력] 실제 버튼만 터치를 처리한다.
+  local aspect=Instance.new("UIAspectRatioConstraint")
+  aspect.AspectRatio=1
+  aspect.AspectType=Enum.AspectType.FitWithinMaxSize
+  aspect.Parent=button
   local corner=Instance.new("UICorner")
   corner.CornerRadius=UDim.new(1,0);corner.Parent=button
   local border=Instance.new("UIStroke")
