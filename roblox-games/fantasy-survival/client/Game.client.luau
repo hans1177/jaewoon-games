@@ -1529,7 +1529,7 @@ local function layoutMeadowReferenceHud()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local landscape=v.X>v.Y
-  local step=landscape and math.floor(math.clamp(v.X/15,38,48)) or math.floor(math.clamp(v.X/9.8,33,40))
+  local step=landscape and math.floor(math.clamp(v.X/21,30,36)) or math.floor(math.clamp(v.X/9.8,33,40))
   local menuWidth=step*6
   meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+21)
   meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-9,0,landscape and 7 or 8)
@@ -1546,7 +1546,7 @@ local function layoutMeadowReferenceHud()
   local gap=2
   local barWidth=(slotSize+gap)*10-gap
   meadowReferenceHotbar.Size=UDim2.fromOffset(barWidth,slotSize)
-  meadowReferenceHotbar.Position=UDim2.new(.5,0,1,landscape and -7 or -99)
+  meadowReferenceHotbar.Position=UDim2.new(.5,landscape and -40 or 0,1,landscape and -7 or -99)
   for index,slot in ipairs(referenceHotbarSlots)do
     slot.Size=UDim2.fromOffset(slotSize,slotSize)
     slot.Position=UDim2.fromOffset((index-1)*(slotSize+gap),0)
@@ -5035,7 +5035,7 @@ local function layoutMeadowCombatUi()
   end
   local swordSize=math.max(62,math.floor(76*scale))
   meadowSkillButtons.primarySword.Size=UDim2.fromOffset(swordSize,swordSize)
-  meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(147*scale),math.floor(125*scale))
+  meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(127*scale),math.floor(125*scale))
   local jumpSize=math.max(38,math.floor(43*scale))
   meadowSkillButtons.referenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)
   meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(86*scale),math.floor(180*scale))
