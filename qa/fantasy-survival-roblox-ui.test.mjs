@@ -353,7 +353,7 @@ test('menu retains 8 original pages and keeps selected tab reachable on a short 
   assert.ok(client.includes('subtitle.Text=captions[index] or "마력숲 탐험"'));
 });
 
-test('approved original art is layered in a non-cropped animated 2.5D intro',()=>{
+test('approved original art uses exclusive 2.5D foreground or background, never duplicate subjects',()=>{
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
   const art=config.match(/CinematicIntroSceneIds\s*=\s*\{([^}]+)\}/);
   const front=config.match(/CinematicIntroForegroundIds\s*=\s*\{([^}]+)\}/);
@@ -366,12 +366,20 @@ test('approved original art is layered in a non-cropped animated 2.5D intro',()=
   const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
   assert.match(intro,/local artworkId=\(Config\.CinematicIntroSceneIds or \{\}\)\[index\]/);
   assert.match(intro,/local foregroundId=\(Config\.CinematicIntroForegroundIds or \{\}\)\[index\]/);
-  assert.match(intro,/storyArtwork\.Visible=artworkAvailable/);
-  assert.match(intro,/storyForeground\.Visible=foregroundAvailable/);
-  assert.match(intro,/storyArtwork\.Image=artworkAvailable and artworkId or ""/);
-  assert.match(intro,/storyForeground\.Image=foregroundAvailable and foregroundId or ""/);
+  assert.match(intro,/local showActor=actorShot and foregroundAvailable/);
+  assert.match(intro,/local showPainting=artworkAvailable and not showActor/);
+  assert.match(intro,/storyArtwork\.Visible=showPainting/);
+  assert.match(intro,/storyForeground\.Visible=showActor/);
+  assert.match(intro,/storyArtwork\.Image=showPainting and artworkId or ""/);
+  assert.match(intro,/storyForeground\.Image=showActor and foregroundId or ""/);
+  assert.match(intro,/setIntroPlayerHidden\(showActor and scene\.actor=="PLAYER"\)/);
+  assert.doesNotMatch(intro,/storyArtwork\.Visible=artworkAvailable|storyForeground\.Visible=foregroundAvailable/);
   assert.match(intro,/activeStoryFocusTween=TweenService:Create\(storyArtwork,/);
   assert.match(intro,/activeActorGestureTween=TweenService:Create\(storyForeground,/);
+  assert.match(intro,/activeFarHazeTween=TweenService:Create\(storyFarHaze,/);
+  assert.match(intro,/activeLightTween=TweenService:Create\(cinematicLight,/);
+  assert.match(intro,/activeMistTween=TweenService:Create\(cinematicMist,/);
+  assert.match(intro,/setIntroPlayerHidden\(false\)/);
   assert.match(intro,/ContentProvider"\):PreloadAsync\(ids\)/);
   assert.match(client,/storyArtwork\.ScaleType=Enum\.ScaleType\.Fit/);
   assert.match(client,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
@@ -398,8 +406,8 @@ test('native world prologue preserves all twelve scripted beats and camera cover
     'activeTween=TweenService:Create(cameraMotionValue,',
     'Value=ending',
     'camera.CameraType=Enum.CameraType.Scriptable',
-    'storyArtwork.Visible=artworkAvailable','storyForeground.Visible=foregroundAvailable',
-    'backdrop.BackgroundTransparency=.08','introPanel.BackgroundTransparency=.12',
+    'storyArtwork.Visible=showPainting','storyForeground.Visible=showActor',
+    'backdrop.BackgroundTransparency=.99','introPanel.BackgroundTransparency=1',
     'skipButton.Activated:Once(finish)',
     'closeArrival(true)',
   ]) assert.ok(intro.includes(cue),'world film marker missing: '+cue);
@@ -439,7 +447,7 @@ test('native world cinematic protects the mobile screen and restores controls an
   assert.equal([...intro.matchAll(/label\(introPanel,/g)].length,2,'title and subtitles only');
 });
 
-test('twelve real-world beats use existing sound, movement and narration instead of images',()=>{
+test('twelve real-world beats use sound, movement and narration along with exclusive 2.5D art',()=>{
   const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
   assert.match(intro,/introBeatSound\.PlaybackSpeed=scene\.cinema=="betrayal"/);
   assert.match(intro,/introBeatSound:Play\(\)/);
@@ -452,7 +460,7 @@ test('twelve real-world beats use existing sound, movement and narration instead
   assert.match(intro,/task\.delay\(scene\.seconds-\.55,function\(\)/);
   assert.match(intro,/TweenService:Create\(cinematicBars\[1\]/);
   assert.match(intro,/TweenService:Create\(cinematicBars\[2\]/);
-  assert.doesNotMatch(intro,/storyImage|showFront|showArtwork|portraitShots|cinematicLight|CinematicLightSweep/);
+  assert.doesNotMatch(intro,/storyImage|showFront|showArtwork|portraitShots|CinematicLightSweep/);
 });
 
 test('twelve cinematic beats use licensed particle VFX and weather grading without fake actors',()=>{
