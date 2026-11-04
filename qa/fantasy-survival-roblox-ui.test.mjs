@@ -353,7 +353,7 @@ test('menu retains 8 original pages and keeps selected tab reachable on a short 
   assert.ok(client.includes('subtitle.Text=captions[index] or "마력숲 탐험"'));
 });
 
-test('approved cinematic asset registry remains unchanged but the intro does not display cropped art',()=>{
+test('approved original art is layered in a non-cropped animated 2.5D intro',()=>{
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
   const art=config.match(/CinematicIntroSceneIds\s*=\s*\{([^}]+)\}/);
   const front=config.match(/CinematicIntroForegroundIds\s*=\s*\{([^}]+)\}/);
@@ -364,12 +364,18 @@ test('approved cinematic asset registry remains unchanged but the intro does not
   assert.equal(foregrounds.length,11);
   assert.equal(new Set([...backgrounds,...foregrounds.map(x=>x[2])]).size,23);
   const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
-  assert.match(intro,/storyArtwork\.Visible=false/);
-  assert.match(intro,/storyForeground\.Visible=false/);
-  assert.match(intro,/storyArtwork\.Image=""/);
-  assert.match(intro,/storyForeground\.Image=""/);
-  assert.doesNotMatch(intro,/storyArtwork\.Image=imageId|storyForeground\.Image=frontId/);
-  assert.doesNotMatch(intro,/ImageRectOffset|ImageRectSize|ContentProvider:PreloadAsync|openingScale|activeStoryFocusTween=TweenService:Create/);
+  assert.match(intro,/local artworkId=\(Config\.CinematicIntroSceneIds or \{\}\)\[index\]/);
+  assert.match(intro,/local foregroundId=\(Config\.CinematicIntroForegroundIds or \{\}\)\[index\]/);
+  assert.match(intro,/storyArtwork\.Visible=artworkAvailable/);
+  assert.match(intro,/storyForeground\.Visible=foregroundAvailable/);
+  assert.match(intro,/storyArtwork\.Image=artworkAvailable and artworkId or ""/);
+  assert.match(intro,/storyForeground\.Image=foregroundAvailable and foregroundId or ""/);
+  assert.match(intro,/activeStoryFocusTween=TweenService:Create\(storyArtwork,/);
+  assert.match(intro,/activeActorGestureTween=TweenService:Create\(storyForeground,/);
+  assert.match(intro,/ContentProvider"\):PreloadAsync\(ids\)/);
+  assert.match(client,/storyArtwork\.ScaleType=Enum\.ScaleType\.Fit/);
+  assert.match(client,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
+  assert.doesNotMatch(intro,/ImageRectOffset|ImageRectSize|openingScale/);
 });
 
 test('native world prologue preserves all twelve scripted beats and camera coverage',()=>{
@@ -392,13 +398,26 @@ test('native world prologue preserves all twelve scripted beats and camera cover
     'activeTween=TweenService:Create(cameraMotionValue,',
     'Value=ending',
     'camera.CameraType=Enum.CameraType.Scriptable',
-    'storyArtwork.Visible=false','storyForeground.Visible=false',
-    'backdrop.BackgroundTransparency=1','introPanel.BackgroundTransparency=1',
+    'storyArtwork.Visible=artworkAvailable','storyForeground.Visible=foregroundAvailable',
+    'backdrop.BackgroundTransparency=.08','introPanel.BackgroundTransparency=.12',
     'skipButton.Activated:Once(finish)',
     'closeArrival(true)',
   ]) assert.ok(intro.includes(cue),'world film marker missing: '+cue);
   assert.doesNotMatch(intro,/Instance\.new\("Part"\)|CreateHumanoidModelFromDescription|Humanoid:MoveTo|character:PivotTo|player.Character:PivotTo/);
   assert.match(client,/remote:FireServer\("meadow:enter-world"\)/);
+});
+
+test('2.5D gameplay camera follows the actual Roblox mesh with mobile-safe transition',()=>{
+  assert.match(client,/BindToRenderStep\("MeadowPainted25DCamera"/);
+  assert.match(client,/Enum\.RenderPriority\.Camera\.Value\+1/);
+  assert.match(client,/if player:GetAttribute\("MeadowEnteredWorld"\)~=true then/);
+  assert.match(client,/local focus=root\.Position\+Vector3\.new\(0,2\.5,0\)/);
+  assert.match(client,/camera\.CFrame=paintedCameraFrame/);
+  assert.match(client,/camera\.FieldOfView=portrait and 48 or 51/);
+  const intro=client.slice(client.indexOf('  local function closeArrival(showVillageReveal)'),client.indexOf('  local function loadRegion('));
+  assert.equal([...intro.matchAll(/player:SetAttribute\("MeadowEnteredWorld",true\)/g)].length,1);
+  assert.match(intro,/local function finishArrival\(\)/);
+  assert.doesNotMatch(intro,/Instance\.new\("Part"\)|Instance\.new\("WedgePart"\)/);
 });
 
 test('native world cinematic protects the mobile screen and restores controls and camera',()=>{
