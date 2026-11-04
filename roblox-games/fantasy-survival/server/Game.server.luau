@@ -889,6 +889,8 @@ local function createMeadowVillage()
   local villageBuildings=0
   local villageProps=0
   local villageWellReady=false
+  -- [마을 생활감] 검증된 원본 CC0 랜턴에만 빛과 불씨를 연결한다. 장식 파츠 신규 제작 없음.
+  local villageLanternLights={}
   local expectedVillageBuildings=16
   if nativeVillageReady then
     -- [집 유형] 짧은 초가, 긴 농가/공방, 이층 여관/회관. 문 방향은 광장·골목을 향하게 한다.
@@ -1158,6 +1160,35 @@ local function createMeadowVillage()
           model:SetAttribute("VillageDistrict",houseIndex<=4 and "CENTRAL" or houseIndex<=10 and "RESIDENTIAL" or "FARMLAND")
           model:SetAttribute("VillageRoofSilhouette",roofSilhouette)
           model:PivotTo(model:GetPivot()*CFrame.Angles(0,rot+(piece.angle or 0),0))
+          -- [대장간·농가 굴뚝 연기] 등록된 실제 CC0 굴뚝 메시 꼭대기에만 매우 작은 연무를 만든다.
+          if piece.asset=="villageChimney" then
+            local top=model:FindFirstChildWhichIsA("MeshPart",true)
+            if top then
+              local mouth=Instance.new("Attachment")
+              mouth.Name="VillageChimneyFlue"
+              mouth.Position=Vector3.new(0,top.Size.Y*.48,0)
+              mouth.Parent=top
+              local smoke=Instance.new("ParticleEmitter")
+              smoke.Name="MeadowVillageHearthSmoke"
+              smoke.Texture="rbxasset://textures/particles/smoke_main.dds"
+              smoke.Color=ColorSequence.new(Color3.fromRGB(135,130,117),Color3.fromRGB(175,175,164))
+              smoke.Transparency=NumberSequence.new({
+                NumberSequenceKeypoint.new(0,.78),
+                NumberSequenceKeypoint.new(.38,.65),
+                NumberSequenceKeypoint.new(1,1),
+              })
+              smoke.Size=NumberSequence.new({
+                NumberSequenceKeypoint.new(0,.55),
+                NumberSequenceKeypoint.new(1,2.2),
+              })
+              smoke.Lifetime=NumberRange.new(2.8,4.4)
+              smoke.Speed=NumberRange.new(.6,1.25)
+              smoke.Drag=1.4
+              smoke.SpreadAngle=Vector2.new(13,13)
+              smoke.Rate=.7
+              smoke.Parent=mouth
+            end
+          end
           for _,mesh in ipairs(model:GetDescendants()) do
             if mesh:IsA("MeshPart") then
               mesh.CanCollide=piece.lift==0
@@ -1228,6 +1259,7 @@ local function createMeadowVillage()
             glow.Range=13
             glow.Shadows=false
             glow.Parent=lanternMesh
+            villageLanternLights[#villageLanternLights+1]=glow
           end
         end
       end
@@ -1312,6 +1344,11 @@ local function createMeadowVillage()
       {"villageLantern",-14,-184,5,0},{"villageLantern",18,-201,5,0},
       {"villageLantern",-33,-269,5,0},{"villageLantern",24,-285,5,0},
       {"villageLantern",-143,-119,4.8,0},{"villageLantern",157,-185,4.8,0},
+      -- [첫마을 동선] 실제 등록된 랜턴·수레를 골목 가장자리에 분산해 살아 있는 거리로 연출.
+      -- 촌장·우물·의뢰판·주요 흙길의 충돌/접근 지점은 비워 둔다.
+      {"villageLantern",-22,-69,4.5,.1},{"villageLantern",27,-86,4.5,-.1},
+      {"villageLantern",-27,-205,4.8,.2},{"villageLantern",27,-280,4.8,-.2},
+      {"villageCart",-135,-285,5.5,.32},{"villageCart",147,-291,5.8,-.27},
       {"villageFence",-153,-77,4.8,.22},{"villageFence",-159,-94,4.8,.14},
       {"villageFence",167,-84,4.8,-.27},{"villageFence",173,-106,4.8,-.12},
       {"villageFence",-145,-231,4.8,.32},{"villageFence",-163,-241,4.8,.14},
@@ -1371,12 +1408,30 @@ local function createMeadowVillage()
             glow.Range=15
             glow.Shadows=false
             glow.Parent=mesh
+            villageLanternLights[#villageLanternLights+1]=glow
           end
         end
         villageProps+=1
       end
       if index%4==0 then task.wait(.03) end
     end
+    -- [저녁 마을] 밤에는 밝아지고 낮에는 잔잔하게 남는 등불. 원본 MeshPart/PointLight만 갱신.
+    -- 폰에서도 1.3초 간격으로 20여 개 조명만 바꾸며 전투·저장 데이터와 무관하다.
+    gameWorld:SetAttribute("MeadowVillageLivingLights",#villageLanternLights)
+    task.spawn(function()
+      while gameWorld.Parent and #villageLanternLights>0 do
+        local night=gameWorld:GetAttribute("MeadowDayPhase")=="NIGHT"
+        local now=os.clock()
+        for index,glow in ipairs(villageLanternLights) do
+          if glow.Parent then
+            local flicker=math.sin(now*1.7+index*2.2)*.12
+            glow.Brightness=(night and 1.42 or .43)+flicker
+            glow.Range=night and 18 or 11
+          end
+        end
+        task.wait(1.3)
+      end
+    end)
     -- [마을 바깥 풍경] 몬스터 모델로 마을 장식을 만드는 대신 CC0 나무만 외곽에 둔다.
     for index,pos in ipairs({
       {-259,-57},{271,-62},{-275,-121},{270,-128},
@@ -4172,7 +4227,9 @@ if not nativeFoundationSpawn then
 end
 nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
 nativeFoundationSpawn.Transparency = 1 -- Engine spawn locator only, never visible scenery
-nativeFoundationSpawn.Position = Vector3.new(0, 3, 0)
+-- [제1마을 실제 등장] 처음 접속/부활 위치는 초원 마을 북쪽 흙길.
+-- 저장된 이어하기 위치는 기존 MeadowResumeReady 복구가 우선하며 변경하지 않는다.
+nativeFoundationSpawn.Position = Vector3.new(0, 3, -75)
 nativeFoundationSpawn.Anchored = true
 nativeFoundationSpawn.CanCollide = false
 nativeFoundationSpawn.CanTouch = false
