@@ -4956,12 +4956,14 @@ for index,info in ipairs(meadowUtilityActions)do
   end)
   meadowUtilityButtons[index]=button
 end
+do
 -- [시안 주 공격] 검 모양 버튼도 기존 기본 공격 ID만 전달한다. 새 피해·쿨다운 없음.
 local meadowPrimarySword=Instance.new("TextButton")
 meadowPrimarySword.Name="ReferencePrimarySword"
 meadowPrimarySword.Text=""
 styleMeadowCombatButton(meadowPrimarySword,Color3.fromRGB(207,181,112))
 meadowPrimarySword.Parent=meadowSkillDock
+meadowSkillButtons.primarySword=meadowPrimarySword
 local swordIcon=Instance.new("ImageLabel")
 swordIcon.Name="ReferenceSwordIcon"
 swordIcon.BackgroundTransparency=1
@@ -4984,11 +4986,13 @@ meadowReferenceJump.Text="↑"
 meadowReferenceJump.TextSize=27
 styleMeadowCombatButton(meadowReferenceJump,Color3.fromRGB(130,143,159))
 meadowReferenceJump.Parent=meadowSkillDock
+meadowSkillButtons.referenceJump=meadowReferenceJump
 meadowReferenceJump.Activated:Connect(function()
   if gui:GetAttribute("GameMenuOpen")==true then return end
   local human=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
   if human and human.Health>0 then human.Jump=true end
 end)
+end -- [기존 버튼 테이블] 아이콘 객체 생성 지역변수는 이 블록에서 정리.
 -- [오른쪽 터치 UI] 기존 전투·회피·방어·회복은 버튼 객체와 실제 원격 명령을 유지한다.
 local function layoutMeadowCombatUi()
   local v=gui.AbsoluteSize
@@ -5030,11 +5034,11 @@ local function layoutMeadowCombatUi()
     end
   end
   local swordSize=math.max(62,math.floor(76*scale))
-  meadowPrimarySword.Size=UDim2.fromOffset(swordSize,swordSize)
-  meadowPrimarySword.Position=UDim2.fromOffset(math.floor(147*scale),math.floor(125*scale))
+  meadowSkillButtons.primarySword.Size=UDim2.fromOffset(swordSize,swordSize)
+  meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(147*scale),math.floor(125*scale))
   local jumpSize=math.max(38,math.floor(43*scale))
-  meadowReferenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)
-  meadowReferenceJump.Position=UDim2.fromOffset(math.floor(86*scale),math.floor(180*scale))
+  meadowSkillButtons.referenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)
+  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(86*scale),math.floor(180*scale))
   -- [기존 점프 이중 터치 방지] 공식 모바일 JumpButton만 숨기고 실제 점프 기능은 위 버튼에 연결.
   if UserInputService.TouchEnabled then
     local touchGui=player.PlayerGui:FindFirstChild("TouchGui")
@@ -5215,9 +5219,9 @@ gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
 end)
 -- [미니맵] 실제 플레이어 좌표와 발견한 숲 지점만 표시한다.
 -- 체력바와 같은 전체 화면 좌표계를 사용해 Roblox 기본 상단 UI 여백으로 인한 아래 밀림을 없앤다.
-local meadowRadarEnabled=false -- [시안 기본 상태] 미니맵은 옵션에서 다시 표시할 수 있다.
 local meadowRadar=Instance.new("Frame")
 meadowRadar.Name="MeadowExplorerRadar"
+meadowRadar:SetAttribute("ReferenceRadarVisible",false) -- [시안] 지도는 옵션에서 표시
 meadowRadar.AnchorPoint=Vector2.new(1,0)
 meadowRadar.Size=UDim2.fromOffset(128,151)
 meadowRadar.BackgroundColor3=Color3.fromRGB(13,30,28)
@@ -5721,7 +5725,7 @@ local function layoutMeadowRadar()
   radarCoordinates.Position=UDim2.fromOffset(3,mapDiameter+25)
   radarCoordinates.Size=UDim2.new(1,-6,0,13)
   radarCoordinates.TextSize=9
-  meadowRadar.Visible=meadowRadarEnabled and gui:GetAttribute("GameMenuOpen")~=true
+  meadowRadar.Visible=meadowRadar:GetAttribute("ReferenceRadarVisible")==true and gui:GetAttribute("GameMenuOpen")~=true
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
 meadowVitalsGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
@@ -5732,6 +5736,7 @@ meadowSkillButtons[2]:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMea
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(layoutMeadowRadar)
 alignMeadowRadar=layoutMeadowRadar
 -- [기존 미니맵 기능 보존] 참고 화면에는 숨기고, 옵션에서 언제든 복구할 수 있다.
+do
 local mapToggle=CommonUI.CreatePrimaryButton({
   name="MeadowRadarToggle",text="미니맵 표시",minHeight=48
 })
@@ -5739,10 +5744,12 @@ mapToggle.LayoutOrder=10
 mapToggle.Size=UDim2.new(1,-8,0,48)
 mapToggle.Parent=meadowPages[4]
 mapToggle.Activated:Connect(function()
-  meadowRadarEnabled=not meadowRadarEnabled
-  mapToggle.Text=meadowRadarEnabled and "미니맵 숨기기" or "미니맵 표시"
+  local shown=meadowRadar:GetAttribute("ReferenceRadarVisible")==true
+  meadowRadar:SetAttribute("ReferenceRadarVisible",not shown)
+  mapToggle.Text=shown and "미니맵 표시" or "미니맵 숨기기"
   layoutMeadowRadar()
 end)
+end
 layoutMeadowRadar()
 do
 -- [전투 UI 상태] 서버가 제공한 실제 쿨다운만 표시한다. 임의 쿨다운은 없다.
