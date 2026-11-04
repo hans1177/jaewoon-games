@@ -210,6 +210,66 @@ if '--game-id=fantasy-survival' in sys.argv:
    records[role]={'sourceFile':filename,'sourceSha256':row['sourceSha256'],
     'sha256':row['sourceSha256'],'format':'glb','license':'CC0-1.0',
     'licenseEvidence':row['licenseEvidence'],'bytes':len(data)}
+ # [마력숲 망토] 기존 프로젝트 소유 3D 원본을 사용자가 요청한 헤진 밑단으로 직접 수정한 OBJ.
+ # 신규 파츠/임의 프리미티브 생성 없음. 원본 출처/정점/실제 찢김과 SHA를 검사한 뒤 GLB로 수출.
+ cape=json.loads((ROOT/'roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json').read_text()).get('capePrefab',{})
+ cape_path=ROOT/'roblox-games/fantasy-survival/assets/worn-cape.obj'
+ if (cape.get('sourceVerified') is not True or cape.get('hemTearCount')!=4
+     or cape.get('sourceFile')!='roblox-games/fantasy-survival/assets/worn-cape.obj'
+     or cape.get('parentSourceFile')!='unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCape.obj'
+     or cape.get('parentSourceGitBlob')!='6a011e694414ae3a5ef03d348158fdfbef9da93a'
+     or cape.get('license')!='PROJECT_ORIGINAL'
+     or cape.get('meshVersion')!=1 or not cape_path.is_file()):
+  raise RuntimeError('FOREST_WORN_CAPE_PROJECT_ORIGINAL_APPROVAL_REQUIRED')
+ cape_bytes=cape_path.read_bytes()
+ cape_digest=hashlib.sha256(cape_bytes).hexdigest()
+ cape_text=cape_bytes.decode('ascii')
+ if (cape_digest!=cape.get('sourceSha256') or len(re.findall(r'^v ',cape_text,re.M))!=240
+     or len(re.findall(r'^f ',cape_text,re.M))!=176
+     or 'f 7 236 6 235 5 234 4 233 3 2 1' not in cape_text
+     or 'f 8 9 10 237 11 238 12 239 13 240 14' not in cape_text):
+  raise RuntimeError('FOREST_WORN_CAPE_REAL_RIPPED_MESH_INTEGRITY_FAILED')
+ if shutil.which('blender') is None:
+  raise RuntimeError('FOREST_WORN_CAPE_BLENDER_EXPORTER_REQUIRED')
+ output=OUT/'wornCape.glb'
+ expression=(
+  'import bpy\n'
+  + 'bpy.ops.object.select_all(action="SELECT");bpy.ops.object.delete(use_global=False)\n'
+  + 'source='+repr(str(cape_path))+'\n'
+  + 'try:\n bpy.ops.wm.obj_import(filepath=source)\n'
+  + 'except (AttributeError,RuntimeError):\n bpy.ops.import_scene.obj(filepath=source)\n'
+  + 'meshes=[o for o in bpy.context.scene.objects if o.type=="MESH"]\n'
+  + 'assert meshes and sum(len(o.data.polygons) for o in meshes)>=176\n'
+  + 'for obj in meshes:\n'
+  + ' name=obj.name.lower()\n'
+  + ' if "clasp" in name: color=(.38,.29,.20,1)\n'
+  + ' elif "collar" in name: color=(.14,.065,.065,1)\n'
+  + ' elif "fold" in name: color=(.39,.095,.11,1)\n'
+  + ' else: color=(.29,.055,.072,1)\n'
+  + ' mat=bpy.data.materials.new("MeadowWornCrimson_"+obj.name)\n'
+  + ' mat.diffuse_color=color;mat.use_nodes=True\n'
+  + ' bsdf=mat.node_tree.nodes.get("Principled BSDF")\n'
+  + ' if bsdf:\n'
+  + '  bsdf.inputs["Base Color"].default_value=color\n'
+  + '  bsdf.inputs["Roughness"].default_value=.94\n'
+  + ' obj.data.materials.clear();obj.data.materials.append(mat)\n'
+  + ' bpy.context.view_layer.objects.active=obj\n'
+  + 'for o in bpy.context.selected_objects:o.select_set(False)\n'
+  + 'for o in meshes:o.select_set(True)\n'
+  + 'bpy.context.view_layer.objects.active=meshes[0]\n'
+  + 'if len(meshes)>1:bpy.ops.object.join()\n'
+  + 'bpy.ops.export_scene.gltf(filepath='+repr(str(output))
+  + ',export_format="GLB",use_selection=True,export_animations=False)\n'
+ )
+ subprocess.run(['blender','--background','--disable-autoexec','--python-use-system-env','--python-expr',expression],
+  check=True,timeout=180)
+ cape_glb=output.read_bytes()
+ if len(cape_glb)<1000 or len(cape_glb)>18*1024*1024 or not cape_glb.startswith(b'glTF'):
+  raise RuntimeError('FOREST_WORN_CAPE_NATIVE_GLB_INVALID')
+ records['wornCape']={'sourceFile':cape['sourceFile'],'sourceSha256':cape_digest,
+  'sha256':hashlib.sha256(cape_glb).hexdigest(),'format':'glb',
+  'license':'PROJECT_ORIGINAL','licenseEvidence':cape['licenseEvidence'],
+  'sourceModel':'MagicForestCape.obj','bytes':len(cape_glb),'hemTearCount':4}
  (OUT/'provenance.json').write_text(json.dumps({'version':5,'gameId':'fantasy-survival',
   'sourceManifestSha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),'roles':records},indent=2)+'\n')
  print('FANTASY_NATIVE_ORIGINALS_VERIFIED='+str(len(records)))
