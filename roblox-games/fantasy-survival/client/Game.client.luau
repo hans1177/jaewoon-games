@@ -1098,7 +1098,8 @@ local function bindMeadowMenuCharacter(character)
   local capeArrivalWindUntil=0
   local capeRoot=character:FindFirstChild("HumanoidRootPart")
   local function bindWornCape(child)
-    if not child or not child:IsA("Accessory") or child.Name~="Dark Green Wide Cape" then return end
+    if not child or not child:IsA("Accessory")
+      or child.Name:match("^%s*(.-)%s*$")~="Dark Green Wide Cape" then return end
     if capeAccessory==child and capeWeld and capeWeld.Parent then return end
     -- 기본 장착 후 Weld 생성이 한 프레임 늦을 수 있으므로 기존 로딩을 비동기로 기다린다.
     task.spawn(function()
@@ -1191,9 +1192,19 @@ local function bindMeadowMenuCharacter(character)
     end
   end)
   meadowCharacterConnections[#meadowCharacterConnections+1]=character:GetAttributeChangedSignal("OpeningCapeAttached"):Connect(function()
-    -- 로블록스 장신구가 늦게 로드되더라도 서버의 실제 장착 확정 시 재연결한다.
-    if character:GetAttribute("OpeningCapeAttached")==true and not capeWeld then
-      bindWornCape(character:FindFirstChild("Dark Green Wide Cape"))
+    -- [카탈로그 이름 공백 대응] 서버가 진홍색 실제 장착을 확인하면 원본 Accessory를 다시 찾는다.
+    -- 모형 이름이 끝 공백을 포함해도 착용·펄럭임 및 캐릭터창 외형을 정상 갱신한다.
+    if character:GetAttribute("OpeningCapeAttached")==true then
+      if not capeWeld then
+        for _,item in ipairs(character:GetChildren()) do
+          if item:IsA("Accessory") and item.Name:match("^%s*(.-)%s*$")=="Dark Green Wide Cape" then
+            bindWornCape(item)
+            break
+          end
+        end
+      end
+      previewNeedsRefresh=true
+      renderMeadowPages()
     end
   end)
   for _,accessory in ipairs(character:GetChildren()) do bindWornCape(accessory) end
