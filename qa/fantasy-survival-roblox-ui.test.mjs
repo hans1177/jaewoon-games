@@ -46,7 +46,7 @@ test('main-first live quest tracker and first-play interactive controls',()=>{
     'questTracker.Size=UDim2.fromOffset(width,166)',
     'MeadowBeginnerTutorial','MeadowTutorialReplay',
     'meadowTutorialAdvance(1)','meadowTutorialAdvance(2)',
-    'meadowTutorialAdvance(3)','meadowTutorialAdvance(4)',
+    'meadowTutorialAdvance(3)','meadowTutorialAdvance(4)','meadowTutorialAdvance(5)',
     'gui:GetPropertyChangedSignal("Enabled"):Connect(refreshTutorial)',
     'tutorialSkip.Activated:Connect(function()'
   ])assert.ok(client.includes(text),'missing quest/touch binding: '+text);
@@ -54,6 +54,8 @@ test('main-first live quest tracker and first-play interactive controls',()=>{
   assert.match(client,/human\.MoveDirection\.Magnitude>\.12/);
   assert.match(client,/player:GetAttribute\("MeadowProfileHadSave"\)~=true/);
   assert.match(client,/if index==2 and meadowTutorialAdvance then meadowTutorialAdvance\(4\) end/);
+  assert.match(client,/if index==1 and meadowTutorialAdvance then meadowTutorialAdvance\(5\) end/);
+  assert.ok(client.includes('if tutorialStep==6 then'),'completion follows real interaction input');
   assert.doesNotMatch(client,/player:SetAttribute\("MeadowTutorial/);
 });
 

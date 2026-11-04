@@ -2316,7 +2316,8 @@ do
     {"이동","왼쪽 조이스틱을 밀어 이동해 봐.\nPC: W·A·S·D  |  8칸 정도 이동하면 다음 안내로 넘어가."},
     {"퀘스트 확인","왼쪽 '퀘스트 도우미'를 눌러 봐.\n메인 퀘스트를 먼저 보고 마을·동료 서브 의뢰를 확인해."},
     {"기본 공격","빈 게임 화면을 한 번 터치해 공격해 봐.\nPC: 빈 화면 클릭  |  메뉴·버튼을 누르면 공격하지 않아."},
-    {"회피 연습","오른쪽 '회피' 버튼을 눌러 봐.\n막기·상호작용·가방도 오른쪽에 있어. 튜토리얼은 보상과 무관해."},
+    {"회피 연습","오른쪽 '회피' 버튼을 눌러 봐.\n막기는 적의 공격을 방어하는 실제 기술이야."},
+    {"상호작용","주민이나 조사 지점 가까이에서 오른쪽 '상호작용'을 눌러 봐.\n주민 대화·조사·채집은 원래 게임의 서버 기능을 이용해."},
     {"완료","조작 안내 완료! 메인 의뢰를 따라 초원 동물과 숲 가장자리를 조사해.\n다시 보고 싶으면 퀘스트 도우미에서 재시작할 수 있어."}
   }
   local function layoutTutorial()
@@ -2333,9 +2334,9 @@ do
       and not tutorialDone and gui.Enabled==true and gui:GetAttribute("GameMenuOpen")~=true
     tutorialCard.Visible=active
     local current=steps[tutorialStep]
-    tutorialTitle.Text="초보 모험 안내  "..math.min(tutorialStep,4).."/4 · "..current[1]
+    tutorialTitle.Text="초보 모험 안내  "..math.min(tutorialStep,5).."/5 · "..current[1]
     tutorialMessage.Text=current[2]
-    tutorialSkip.Visible=tutorialStep<=4
+    tutorialSkip.Visible=tutorialStep<=5
     local questStroke=meadowQuestGuideButton and meadowQuestGuideButton:FindFirstChildOfClass("UIStroke")
     if questStroke then
       questStroke.Thickness=active and tutorialStep==2 and 3 or 1.2
@@ -2346,6 +2347,9 @@ do
     local dodge=dock and dock:FindFirstChild("R15Skill2")
     local dodgeStroke=dodge and dodge:FindFirstChildOfClass("UIStroke")
     if dodgeStroke then dodgeStroke.Thickness=active and tutorialStep==4 and 3 or 2 end
+    local interact=dock and dock:FindFirstChild("MeadowUtility1")
+    local interactStroke=interact and interact:FindFirstChildOfClass("UIStroke")
+    if interactStroke then interactStroke.Thickness=active and tutorialStep==5 and 3 or 2 end
   end
   meadowTutorialAdvance=function(expected)
     if tutorialDone or tutorialStep~=expected or gui.Enabled~=true
@@ -2354,7 +2358,7 @@ do
     tutorialOrigin=nil
     tutorialToken+=1
     refreshTutorial()
-    if tutorialStep==5 then
+    if tutorialStep==6 then
       local completedToken=tutorialToken
       task.delay(3,function()
         if tutorialToken~=completedToken then return end
@@ -4604,6 +4608,7 @@ for index,info in ipairs(meadowUtilityActions)do
     if info[1]=="MEADOW_INVENTORY" then meadowMenu.open(2)
     elseif info[1]=="skill-meadow-sprint" then meadowSprintAuto=not meadowSprintAuto
     elseif not activateNearbyMeadowInteraction(nil) then activateMeadowAction(info[1]) end
+    if index==1 and meadowTutorialAdvance then meadowTutorialAdvance(5) end
   end)
   meadowUtilityButtons[index]=button
 end
