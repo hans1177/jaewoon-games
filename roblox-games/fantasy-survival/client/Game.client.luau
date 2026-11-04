@@ -3854,6 +3854,36 @@ do
                 })
               activeArtImpactTween:Play()
             end
+            -- [사건 동기 음향] 내장 효과음 1개를 장면의 충돌 순간에만 저음으로 재생한다.
+            -- 돌격은 세 번의 발걸음, 배신·추락은 한 번의 둔탁한 타격으로 구분한다.
+            if scene.cinema=="siege" or scene.cinema=="charge" or scene.cinema=="betrayal"
+              or scene.cinema=="reach" or scene.cinema=="rift" then
+              introBeatSound:Stop()
+              introBeatSound.PlaybackSpeed=scene.cinema=="betrayal" and .58
+                or scene.cinema=="rift" and .63 or scene.cinema=="charge" and .93 or .75
+              introBeatSound.Volume=scene.cinema=="betrayal" and .32
+                or scene.cinema=="charge" and .22 or .26
+              introBeatSound:Play()
+              if scene.cinema=="charge" then
+                for step=1,2 do
+                  task.delay(step*.34,function()
+                    if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
+                    introBeatSound:Stop()
+                    introBeatSound.PlaybackSpeed=.93+step*.09
+                    introBeatSound.Volume=.18
+                    introBeatSound:Play()
+                  end)
+                end
+              end
+            end
+            -- [기록 삭제] 제목과 함께 인물 전경도 천천히 사라져 기억 자체가 지워진다.
+            if scene.cinema=="erasure" and showFront and storyImage then
+              activeActorEraseTween=TweenService:Create(storyImage,
+                TweenInfo.new(.94,Enum.EasingStyle.Sine,Enum.EasingDirection.In),{
+                  ImageTransparency=.94,
+                })
+              activeActorEraseTween:Play()
+            end
             -- [감정 비트] 화면 전체를 번쩍이지 않고 그림의 가장자리만 천천히 어둡게 만든다.
             local vignetteBase=cinematicVignette.BackgroundTransparency
             local vignettePulse=math.max((scene.cinema=="betrayal" or scene.cinema=="erasure") and .36 or .49,vignetteBase-.18)
