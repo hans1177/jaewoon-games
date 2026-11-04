@@ -3944,9 +3944,7 @@ do
         storyForeground.Position=foreFrom+UDim2.fromScale(direction*.01,-.003)
         local artDuration=math.max(1,scene.seconds-.5)
         if usePaintedBackdrop then
-          local pixelSize=storyArtwork.ContentImageSize
-          local imageWidth=pixelSize.X>1 and math.floor(pixelSize.X) or 1024
-          local imageHeight=pixelSize.Y>1 and math.floor(pixelSize.Y) or 576
+          local imageWidth,imageHeight=1024,576
           local skyHeight=math.floor(imageHeight*.43)
           local middleHeight=math.floor(imageHeight*.34)
           local groundHeight=imageHeight-skyHeight-middleHeight
@@ -3977,22 +3975,6 @@ do
             motion:Play()
             reveal:Play()
           end
-          -- [화질 회복] 신규 원화 로딩 직후 Roblox가 알려 주는 실제 픽셀 치수로
-          -- 세 절편을 갱신한다. 이미지 로딩 실패 시 크기 1024x576 기본값을 사용한다.
-          task.delay(.35,function()
-            if not entranceOpen or token~=runToken or currentStoryScene~=index then return end
-            local actual=storyArtwork.ContentImageSize
-            if actual.X<=1 or actual.Y<=1 then return end
-            local w,h=math.floor(actual.X),math.floor(actual.Y)
-            local sky=math.floor(h*.43)
-            local middle=math.floor(h*.34)
-            storySky.ImageRectSize=Vector2.new(w,sky)
-            storyArtwork.ImageRectOffset=Vector2.new(0,sky)
-            storyArtwork.ImageRectSize=Vector2.new(w,middle)
-            storyGround.ImageRectOffset=Vector2.new(0,sky+middle)
-            storyGround.ImageRectSize=Vector2.new(w,h-sky-middle)
-            layoutIntroCaptions()
-          end)
         end
         if useWorldActor then
           -- 실제 3D 월드가 원경으로 움직일 때 인물 PNG는 독립적으로 약하게 후행한다.
