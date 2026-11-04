@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-11-04T12:21:01.779Z",
+  "updatedAt": "2026-11-04T12:51:03.642Z",
   "games": [
     {
       "gameId": "room-survival",
@@ -294,13 +294,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -308,7 +308,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -386,13 +385,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -400,7 +399,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -521,14 +519,13 @@
               "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": false
+              "noRuntimeErrors": true
             },
             "blockers": [
               "publication",
               "exactRuntime",
               "lobby",
-              "movement",
-              "noRuntimeErrors"
+              "movement"
             ],
             "sourceRevision": null,
             "artifactIdentity": null,
