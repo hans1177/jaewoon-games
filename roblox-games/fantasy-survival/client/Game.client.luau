@@ -3515,15 +3515,26 @@ do
         -- [사건 큐] 사용자 효과음 볼륨 설정을 따르며 내장 소리만 시간에 맞춰 사용한다.
         local beatAt=(scene.cinema=="siege" or scene.cinema=="charge") and 1.1
           or (scene.cinema=="betrayal" or scene.cinema=="reach" or scene.cinema=="rift") and 1.85
-          or nil
+          or scene.cinema=="crown" and 1.9 or scene.cinema=="omen" and 1.65
+          or scene.cinema=="erasure" and 2.3 or scene.cinema=="dawn" and 2.1
+          or scene.cinema=="relic" and 1.7 or scene.cinema=="journey" and 2.3 or nil
         if beatAt then
           task.delay(beatAt,function()
             if not entranceOpen or token~=runToken or currentStoryScene~=activeScene then return end
+            playSceneFX(scene,activeScene)
+            -- [무음 감정] 그날의 말과 침묵을 빛 대신 먼지·안개로 처리한다.
+            if scene.cinema=="crown" or scene.cinema=="omen" or scene.cinema=="erasure"
+              or scene.cinema=="dawn" or scene.cinema=="relic" or scene.cinema=="journey" then return end
             introBeatSound:Stop()
             introBeatSound.PlaybackSpeed=scene.cinema=="betrayal" and .62
               or scene.cinema=="rift" and .7 or .94
             introBeatSound.Volume=.27
             introBeatSound:Play()
+          end)
+        end
+        if scene.cinema=="siege" or scene.cinema=="charge" or scene.cinema=="rift" then
+          task.delay(scene.seconds*.70,function()
+            playSceneFX(scene,activeScene)
           end)
         end
         if scene.cinema=="erasure" then
