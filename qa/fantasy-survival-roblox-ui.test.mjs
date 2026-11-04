@@ -428,7 +428,7 @@ test('prologue uses exactly one source image per shot and keeps Big Brother and 
   assert.match(intro,/local sway=math\.sin\(t\*1\.15\)\*cameraMotionIntensity\*\.12/);
   assert.doesNotMatch(intro,/departingArtwork|departingForeground|activeArtTween|activeFrontTween/);
   assert.doesNotMatch(intro,/frontScale|frontZoom|frontX|frontY/);
-  assert.match(intro,/introFlash\.BackgroundTransparency=1/);
+  assert.match(intro,/storyCurtain\.BackgroundTransparency=1/);
   assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
 });
 
@@ -471,9 +471,9 @@ test('prologue reveals each single illustration with safe lighting and mobile re
     'activeStoryRevealTween=TweenService:Create(storyImage,',
     'activeStoryRevealTween:Play()',
     'local vignetteBase=cinematicVignette.BackgroundTransparency',
-    'local vignettePulse=math.max((scene.cinema=="betrayal" or scene.cinema=="erasure") and .36 or .49,vignetteBase-.14)',
+    'local vignettePulse=math.max((scene.cinema=="betrayal" or scene.cinema=="erasure") and .36 or .49,vignetteBase-.18)',
     'activeVignetteTween=TweenService:Create(cinematicVignette,',
-    'task.delay(impactFade*.56,function()',
+    'task.delay(impactFade*.65,function()',
     'BackgroundTransparency=vignetteBase',
     'introDialogue.TextColor3=',
   ])assert.ok(intro.includes(marker),'missing intro direction: '+marker);
@@ -494,16 +494,16 @@ test('cinematic v4 locks portrait frames, times silent title reveals and makes s
     'or cinema=="erasure" or cinema=="freeze"',
     'if lockedCamera then',
     'cameraMotionValue.Value=openingCamera.CFrame',
-    'if not lockedPortrait then',
+    'if storyImage.Visible then',
     'and (not reducedEffects or n<=14)',
     'local transitionCut=scene.cinema=="erasure" or scene.cinema=="rift"',
-    'introFlash.BackgroundTransparency=transitionCut and .44 or 1',
+    'storyCurtain.BackgroundTransparency=transitionCut and .20 or .45',
     'local titlePause=scene.cinema=="crown" and .46',
     'local plateSeconds=scene.cinema=="dawn" and .78',
-    'if activeSceneFlashTween then activeSceneFlashTween:Cancel();activeSceneFlashTween=nil end',
-    'activeSceneFlashTween=TweenService:Create(introFlash,',
-    'introFlash.BackgroundTransparency=1',
-    'activeSceneFlashTween:Play()',
+    'if activeCurtainTween then activeCurtainTween:Cancel();activeCurtainTween=nil end',
+    'activeCurtainTween=TweenService:Create(storyCurtain,',
+    'storyCurtain.BackgroundTransparency=1',
+    'activeCurtainTween:Play()',
     'scene.cinema=="betrayal" or scene.cinema=="rift" or scene.cinema=="dawn"',
     'local finalHeight=scene.cinema=="betrayal" and .15',
     'or scene.cinema=="rift" and .14 or .065',
@@ -523,18 +523,45 @@ test('cinematic v4 locks portrait frames, times silent title reveals and makes s
 test('touch-screen prologue keeps cinematic light, fog, zoom and impacts visible',()=>{
   const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
   assert.match(client,/local reducedEffects=game:GetService\("UserInputService"\)\.TouchEnabled/);
-  assert.match(intro,/cinematicLight\.Visible=not silence/);
-  assert.match(intro,/cinematicMist\.Visible=\s*\(scene\.cinema=="omen"/);
-  assert.match(intro,/if not lockedPortrait then/);
+  assert.match(intro,/cinematicShadow\.Visible=scene\.cinema~="dawn"/);
+  assert.match(intro,/cinematicMist\.Visible=not silence/);
+  assert.match(intro,/if storyImage.Visible then/);
   assert.match(intro,/if impactAt then/);
   assert.match(intro,/and \(not reducedEffects or n<=14\)/);
   assert.match(intro,/activeStoryColorTween=TweenService:Create\(storyImage,/);
   assert.match(intro,/ImageColor3=Color3\.fromRGB\(255,255,255\)/);
   assert.match(intro,/if activeStoryColorTween then activeStoryColorTween:Cancel\(\);activeStoryColorTween=nil end/);
-  assert.doesNotMatch(intro,/cinematicLight\.Visible=not reducedEffects/);
+  assert.doesNotMatch(intro,/cinematicShadow\.Visible=not reducedEffects/);
   assert.doesNotMatch(intro,/if impactAt and not reducedEffects then/);
   assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
   assert.match(intro,/local showFront=validFront and not showArtwork/);
+});
+
+test('prologue uses shadow, ink and fog instead of a bright scene flash',()=>{
+  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
+  assert.match(intro,/cinematicShadow\.Name="MemoryPassingShadow"/);
+  assert.match(intro,/storyCurtain\.Name="MemoryInkCurtain"/);
+  assert.match(intro,/activeShadowTween=TweenService:Create\(cinematicShadow,/);
+  assert.match(intro,/cinematicMist\.Visible=not silence/);
+  assert.match(intro,/local openingScale=lockedPortrait and \.91/);
+  assert.match(intro,/storyCurtain\.BackgroundColor3=Color3\.fromRGB\(6,9,13\)/);
+  assert.doesNotMatch(intro,/CinematicLightSweep|impactColor=|impactOpacity=|introFlash|activeSceneFlashTween/);
+  assert.match(intro,/if activeShadowTween then activeShadowTween:Cancel\(\);activeShadowTween=nil end/);
+  assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
+  assert.match(intro,/local showFront=validFront and not showArtwork/);
+});
+
+test('left and right dodge share 4-second server cooldown without changing guard balance',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const skill=server.slice(server.indexOf('local function meadowSkill(player,id,execute)'),server.indexOf('local function meadowHeavy(player)'));
+  assert.match(skill,/nextReady=math\.max\(nextReady,cooldowns\[dodgeLeft\] or 0,cooldowns\[dodgeRight\] or 0\)/);
+  assert.match(skill,/cooldowns\[dodgeLeft\]=nextCooldown\s+cooldowns\[dodgeRight\]=nextCooldown/);
+  assert.match(skill,/player:SetAttribute\("MeadowReady_"\.\.dodgeRight,readyAt\)/);
+  assert.match(server,/defense\.guardUntil=now\+2\.8/);
+  assert.match(server,/defense\.perfectGuardUntil=now\+\.28/);
+  assert.match(server,/damage=math\.ceil\(damage\*\.5\)/);
+  assert.match(server,/defense\.dodgeUntil=now\+\.48/);
+  assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
 });
 
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
