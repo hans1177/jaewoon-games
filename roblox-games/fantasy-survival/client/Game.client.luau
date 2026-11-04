@@ -615,7 +615,7 @@ local function render()
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
   local hp=humanoid and humanoid.Health or (player:GetAttribute("Health") or 0)
   local maxHp=humanoid and humanoid.MaxHealth or 100
-  meadowHealthControl.SetRatio(maxHp>0 and hp/maxHp or 0,string.format("체력 %d / %d",hp,maxHp))
+  meadowHealthControl.SetRatio(maxHp>0 and hp/maxHp or 0,string.format("%d / %d",hp,maxHp))
   local saveStatus = player:GetAttribute("SaveStatus")
   if player:GetAttribute("ProfileReady") ~= true then
     status.Text = "프로필 불러오는 중 · 전투 잠시 대기"
@@ -1416,7 +1416,7 @@ meadowReferenceMenu.BackgroundTransparency=1
 meadowReferenceMenu.ZIndex=26
 meadowReferenceMenu.Parent=gui
 local referenceMenuItems={
-  {"캐릭",1,10},{"제작",2,11},{"건설",0,12},
+  {"가방",2,10},{"제작",2,11},{"건설",0,12},
   {"도감",3,13},{"연구일지",3,14},{"설정",4,15},
 }
 for index,info in ipairs(referenceMenuItems) do
@@ -1470,14 +1470,15 @@ meadowReferenceHotbar.ZIndex=24
 meadowReferenceHotbar.Parent=gui
 local referenceHotbarSlots={}
 local hotbarIcons={0,1,2,3,4,5,6,7,8,9}
+-- [참고 화면 단축바] 기존 서버 기술·소모품 동작만 사용한다.
 local hotbarActions={
   function() if primaryCombatAction then activateMeadowAction(primaryCombatAction.Id) end end,
   function() activateMeadowAction("scope-coreloop-1-6ebe58f496") end,
-  function() meadowMenu.open(0) end,
+  function() activateMeadowAction("scope-coreloop-1-6ebe58f496") end,
+  function() if primaryCombatAction then activateMeadowAction(primaryCombatAction.Id) end end,
+  function() remote:FireServer("meadow:rpg:tonic:use:herbal_tonic") end,
+  function() remote:FireServer("meadow:rpg:tonic:use:energy_tonic") end,
   function() meadowMenu.open(2) end,
-  function() activateMeadowAction("skill-meadow-heal") end,
-  function() meadowMenu.open(2) end,
-  function() activateMeadowAction("skill-meadow-dodge-left") end,
   function() activateMeadowAction("skill-meadow-guard") end,
   function() meadowMenu.open(3) end,
   function() meadowMenu.open(2) end,
@@ -1508,6 +1509,19 @@ for index=1,10 do
   icon.Position=UDim2.fromScale(.11,.11)
   icon.ZIndex=26
   icon.Parent=slot
+  local quantity=Instance.new("TextLabel")
+  quantity.Name="ItemCount"
+  quantity.AnchorPoint=Vector2.new(1,1)
+  quantity.Position=UDim2.new(1,-2,1,-2)
+  quantity.Size=UDim2.fromOffset(24,13)
+  quantity.BackgroundTransparency=1
+  quantity.Font=Enum.Font.GothamBold
+  quantity.TextSize=11
+  quantity.TextXAlignment=Enum.TextXAlignment.Right
+  quantity.TextColor3=Color3.fromRGB(252,239,201)
+  quantity.TextStrokeTransparency=.2
+  quantity.ZIndex=27
+  quantity.Parent=slot
   local number=Instance.new("TextLabel")
   number.Name="SlotNumber"
   number.Text=index==10 and "0" or tostring(index)
@@ -1525,17 +1539,32 @@ for index=1,10 do
   end)
   referenceHotbarSlots[index]=slot
 end
+-- [실제 인벤토리] 서버가 보유량을 확정한 회복약·기력약만 수량 표시.
+local function refreshReferenceHotbar()
+  for index,attribute in pairs({[5]="MeadowPotionHealth",[6]="MeadowPotionStamina"}) do
+    local slot=referenceHotbarSlots[index]
+    local caption=slot and slot:FindFirstChild("ItemCount")
+    if caption then
+      local amount=math.max(0,math.floor(tonumber(player:GetAttribute(attribute)) or 0))
+      caption.Text=amount>0 and tostring(amount) or ""
+    end
+  end
+end
+for _,attribute in ipairs({"MeadowPotionHealth","MeadowPotionStamina"}) do
+  player:GetAttributeChangedSignal(attribute):Connect(refreshReferenceHotbar)
+end
+refreshReferenceHotbar()
 local function layoutMeadowReferenceHud()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local landscape=v.X>v.Y
-  local step=landscape and math.floor(math.clamp(v.X/21,30,36)) or math.floor(math.clamp(v.X/9.8,33,40))
+  local step=landscape and math.floor(math.clamp(v.X/20.8,31,39)) or math.floor(math.clamp(v.X/9.8,33,40))
   local menuWidth=step*6
   meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+21)
   meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-9,0,landscape and 7 or 8)
   for index,button in ipairs(meadowReferenceMenu:GetChildren())do
     if button:IsA("TextButton") then
-      button.Size=UDim2.fromOffset(step-8,step-8)
+      button.Size=UDim2.fromOffset(step-6,step-6)
       button.Position=UDim2.fromOffset((index-1)*step+4,0)
       local caption=button:FindFirstChild("ReferenceCaption")
       if caption then caption.Size=UDim2.fromOffset(step-2,14) end
@@ -1546,7 +1575,7 @@ local function layoutMeadowReferenceHud()
   local gap=2
   local barWidth=(slotSize+gap)*10-gap
   meadowReferenceHotbar.Size=UDim2.fromOffset(barWidth,slotSize)
-  meadowReferenceHotbar.Position=UDim2.new(.5,landscape and -40 or 0,1,landscape and -7 or -99)
+  meadowReferenceHotbar.Position=UDim2.new(.5,landscape and -34 or 0,1,landscape and -9 or -99)
   for index,slot in ipairs(referenceHotbarSlots)do
     slot.Size=UDim2.fromOffset(slotSize,slotSize)
     slot.Position=UDim2.fromOffset((index-1)*(slotSize+gap),0)
@@ -1573,27 +1602,32 @@ end
 meadowVitalsGui=Instance.new("ScreenGui")
 meadowVitalsGui.Name="MeadowTopVitals"
 meadowVitalsGui.ResetOnSpawn=false
-meadowVitalsGui.ScreenInsets=Enum.ScreenInsets.None
+meadowVitalsGui.ScreenInsets=gui.ScreenInsets -- [모바일] Roblox 메뉴 안전영역과 일치
 meadowVitalsGui.DisplayOrder=gui.DisplayOrder+1
 meadowVitalsGui.Parent=gui.Parent
 meadowHealthTrack.Parent=meadowVitalsGui
 meadowHealthTrack.AnchorPoint=Vector2.new(.5,0)
 meadowHealthTrack.ZIndex=9
 local meadowHealthFill=meadowHealthTrack:FindFirstChild("Fill")
-if meadowHealthFill then meadowHealthFill.ZIndex=10 end
+if meadowHealthFill then
+  meadowHealthFill.ZIndex=10
+  meadowHealthFill.BackgroundColor3=Color3.fromRGB(190,57,63)
+  local gradient=meadowHealthFill:FindFirstChildOfClass("UIGradient")
+  if gradient then gradient.Color=ColorSequence.new(Color3.fromRGB(211,82,84),Color3.fromRGB(155,41,55)) end
+end
 local meadowHealthText=meadowHealthTrack:FindFirstChild("Value")
 if meadowHealthText then meadowHealthText.ZIndex=11 end
 -- [중앙 최상단 HUD] 기존 체력바와 서버 스테미너를 같은 폭으로 연속 표시한다.
 local meadowEnergy=Instance.new("Frame")
 meadowEnergy.Name="MeadowStamina"
 meadowEnergy.AnchorPoint=Vector2.new(.5,0)
-meadowEnergy.BackgroundColor3=Color3.fromRGB(12,33,43)
+meadowEnergy.BackgroundColor3=Color3.fromRGB(17,24,31)
 meadowEnergy.BorderSizePixel=0;meadowEnergy.ZIndex=9;meadowEnergy.Parent=meadowVitalsGui
 local energyCorner=Instance.new("UICorner")
 energyCorner.CornerRadius=UDim.new(1,0);energyCorner.Parent=meadowEnergy
 energyFill=Instance.new("Frame")
 energyFill.Name="StaminaFill";energyFill.Size=UDim2.fromScale(1,1)
-energyFill.BackgroundColor3=Color3.fromRGB(42,169,232)
+energyFill.BackgroundColor3=Color3.fromRGB(55,142,223)
 energyFill.BorderSizePixel=0;energyFill.ZIndex=10;energyFill.Parent=meadowEnergy
 local energyFillCorner=Instance.new("UICorner")
 energyFillCorner.CornerRadius=UDim.new(1,0);energyFillCorner.Parent=energyFill
@@ -1603,6 +1637,28 @@ energyLabel.BackgroundTransparency=1;energyLabel.Text="스테미너 100 / 100"
 energyLabel.TextColor3=Color3.fromRGB(248,253,255)
 energyLabel.TextSize=12;energyLabel.Font=Enum.Font.GothamBold
 energyLabel.ZIndex=11;energyLabel.Parent=meadowEnergy
+-- [상단 EXP] 기존 전투 숙련도 50단위 진행 상태를 표현만 하며 신규 저장값은 만들지 않는다.
+local meadowExperience=Instance.new("Frame")
+meadowExperience.Name="MeadowExperience"
+meadowExperience.BackgroundColor3=Color3.fromRGB(17,20,22)
+meadowExperience.BorderSizePixel=0
+meadowExperience.ZIndex=9
+meadowExperience.Parent=meadowVitalsGui
+local meadowExpFill=Instance.new("Frame")
+meadowExpFill.Name="ExperienceFill"
+meadowExpFill.BackgroundColor3=Color3.fromRGB(171,148,105)
+meadowExpFill.BorderSizePixel=0
+meadowExpFill.ZIndex=10
+meadowExpFill.Parent=meadowExperience
+local meadowExpText=Instance.new("TextLabel")
+meadowExpText.Name="ExperienceText"
+meadowExpText.BackgroundTransparency=1
+meadowExpText.Size=UDim2.fromScale(1,1)
+meadowExpText.Font=Enum.Font.GothamBold
+meadowExpText.TextSize=9
+meadowExpText.TextColor3=Color3.fromRGB(240,231,212)
+meadowExpText.ZIndex=11
+meadowExpText.Parent=meadowExperience
 -- [시안 좌상단] 아바타 얼굴, 실제 체력·스테미너, 닉네임을 하나의 작은 HUD로 표시한다.
 local meadowPortrait=Instance.new("ImageButton")
 meadowPortrait.Name="ReferenceCharacterPortrait"
@@ -1630,31 +1686,47 @@ meadowPortraitName.TextSize=11
 meadowPortraitName.TextXAlignment=Enum.TextXAlignment.Left
 meadowPortraitName.ZIndex=12
 meadowPortraitName.Parent=meadowVitalsGui
+-- [상단 프로필] 아바타 얼굴과 HP·기력·숙련 EXP가 참고 화면처럼 세 줄로 붙는다.
 local function layoutMeadowEnergy()
   local v=meadowVitalsGui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local landscape=v.X>v.Y
-  local top=landscape and 12 or 43
-  local width=math.floor(math.clamp(v.X*.19,108,156))
-  meadowPortrait.Size=UDim2.fromOffset(50,50)
-  meadowPortrait.Position=UDim2.fromOffset(10,top)
-  meadowPortraitName.Position=UDim2.fromOffset(66,top-2)
+  local top=landscape and 8 or 9
+  local portraitSize=landscape and 49 or 47
+  local width=math.floor(math.clamp(v.X*(landscape and .17 or .24),111,158))
+  local x=portraitSize+14
+  meadowPortrait.Size=UDim2.fromOffset(portraitSize,portraitSize)
+  meadowPortrait.Position=UDim2.fromOffset(9,top)
+  meadowPortraitName.Position=UDim2.fromOffset(x,top-2)
   meadowPortraitName.Size=UDim2.fromOffset(width,16)
-  meadowPortraitName.Text="Lv. "..tostring(player:GetAttribute("Level") or 1).."  "..player.DisplayName
+  meadowPortraitName.Text="Lv."..tostring(player:GetAttribute("Level") or 1).." "..player.DisplayName
   meadowHealthTrack.AnchorPoint=Vector2.new(0,0)
-  meadowHealthTrack.Size=UDim2.fromOffset(width,16)
-  meadowHealthTrack.Position=UDim2.fromOffset(66,top+17)
+  meadowHealthTrack.Size=UDim2.fromOffset(width,11)
+  meadowHealthTrack.Position=UDim2.fromOffset(x,top+16)
   meadowEnergy.AnchorPoint=Vector2.new(0,0)
-  meadowEnergy.Size=UDim2.fromOffset(width,16)
-  meadowEnergy.Position=UDim2.fromOffset(66,top+36)
+  meadowEnergy.Size=UDim2.fromOffset(width,11)
+  meadowEnergy.Position=UDim2.fromOffset(x,top+30)
+  local stamina=math.clamp(tonumber(player:GetAttribute("MeadowStamina")) or 0,0,100)
+  energyFill.Size=UDim2.fromScale(stamina/100,1)
+  energyLabel.Text=string.format("%d / 100",stamina)
+  energyLabel.TextSize=10
+  meadowExperience.Size=UDim2.fromOffset(width,8)
+  meadowExperience.Position=UDim2.fromOffset(x,top+44)
+  local mastery=math.max(0,tonumber(player:GetAttribute("CombatProficiency")) or 0)
+  local progress=mastery%50/50
+  meadowExpFill.Size=UDim2.fromScale(progress,1)
+  meadowExpText.Text=string.format("EXP %.0f%%",progress*100)
   local visible=gui:GetAttribute("GameMenuOpen")~=true
   meadowPortrait.Visible=visible
   meadowPortraitName.Visible=visible
   meadowHealthTrack.Visible=visible
   meadowEnergy.Visible=visible
+  meadowExperience.Visible=visible
 end
 meadowVitalsGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowEnergy)
-player:GetAttributeChangedSignal("Level"):Connect(layoutMeadowEnergy) -- [시안 상태창] 레벨 변경 즉시 표시
+for _,attribute in ipairs({"Level","MeadowStamina","CombatProficiency"}) do
+  player:GetAttributeChangedSignal(attribute):Connect(layoutMeadowEnergy)
+end
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(layoutMeadowEnergy)
 layoutMeadowEnergy()
 
