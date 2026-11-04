@@ -364,7 +364,7 @@ test('registered 12-scene prologue keeps 23 unique approved layers and cleans up
   assert.match(client,/storyForeground.Visible=showFront/);
   assert.match(client,/introDialogue\.MaxVisibleGraphemes=visible/);
   assert.match(client,/currentStoryScene~=index then return/);
-  assert.match(client,/local showFront=validFront and not showArtwork/);
+  assert.match(client,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)/);
   assert.match(client,/remote:FireServer\("meadow:enter-world"\)/);
 });
 
@@ -383,7 +383,7 @@ test('dark-fantasy cinematic uses twelve distinct approved-image shots with safe
     'introGradient.Color=(scene.cinema=="dawn" or scene.cinema=="relic" or scene.cinema=="journey")',
     'or (scene.cinema=="dawn" or scene.cinema=="journey") and .085 or .105',
     'cameraMotionIntensity*=reducedEffects and .48 or 1',
-    'for _,motion in pairs({camera=activeTween,fov=activeFovTween}) do',
+    'for _,motion in pairs({camera=activeTween,fov=activeFovTween,art=activeStoryFocusTween}) do',
     'if motion.PlaybackState==Enum.PlaybackState.Paused then motion:Play() end',
     'regionIntro.MaxVisibleGraphemes=count',
     'introTint.BackgroundTransparency=.26',
@@ -420,8 +420,8 @@ test('prologue uses exactly one source image per shot and keeps Big Brother and 
   assert.match(intro,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
   assert.match(intro,/introPanel:GetPropertyChangedSignal\("AbsoluteSize"\):Connect\(layoutIntroCaptions\)/);
   assert.match(intro,/local portrait=size\.Y>size\.X\*1\.1/);
-  assert.match(intro,/local showFront=validFront and not showArtwork/);
-  assert.match(intro,/local showArtwork=validImage\s+local showFront=validFront and not showArtwork/);
+  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)/);
+  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)\s+local showArtwork=validImage and not showFront/);
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
   assert.match(intro,/scene\.cinema=="betrayal" or scene\.cinema=="erasure"/);
   assert.match(intro,/scene\.cinema=="erasure" and registeredStoryDepth\[3\]/);
@@ -431,7 +431,7 @@ test('prologue uses exactly one source image per shot and keeps Big Brother and 
   assert.match(intro,/storyArtwork\.Size=UDim2\.fromScale\(\.97,\.76\)/);
   assert.match(intro,/local firstId=registeredStoryArt\[1\] or registeredStoryDepth\[1\]/);
   assert.match(intro,/for index,scene in ipairs\(scenes\) do\s+if index>1 then/);
-  assert.match(intro,/local selected=typeof\(imageId\)=="string" and imageId or frontId/);
+  assert.match(intro,/local selected=portraitId or \(typeof\(imageId\)=="string" and imageId or frontId\)/);
   assert.doesNotMatch(intro,/for index,id in ipairs\(registeredStoryArt\) do/);
   assert.doesNotMatch(intro,/for index,id in pairs\(registeredStoryDepth\) do/);
   assert.match(intro,/local firstShotDeadline=os\.clock\(\)\+2\.4/);
@@ -464,7 +464,7 @@ test('12 authored prologue beats retain single-image framing and mobile-safe cho
   assert.match(intro,/if impactAt then/);
   assert.match(intro,/currentStoryScene~=index then return end/);
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
-  assert.match(intro,/local showArtwork=validImage\s+local showFront=validFront and not showArtwork/);
+  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)\s+local showArtwork=validImage and not showFront/);
   assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
   assert.doesNotMatch(intro,/departingArtwork|departingForeground|frontScale|frontZoom/);
 });
@@ -490,7 +490,7 @@ test('prologue reveals each single illustration with safe lighting and mobile re
   ])assert.ok(intro.includes(marker),'missing intro direction: '+marker);
   assert.match(intro,/if impactAt then/);
   assert.match(intro,/if not entranceOpen or token~=runToken or currentStoryScene~=index then return end/);
-  assert.match(intro,/local showArtwork=validImage\s+local showFront=validFront and not showArtwork/);
+  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)\s+local showArtwork=validImage and not showFront/);
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
   assert.match(intro,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
   assert.match(intro,/storyArtwork\.ScaleType=Enum\.ScaleType\.Fit/);
@@ -508,7 +508,7 @@ test('cinematic v4 locks portrait frames, times silent title reveals and makes s
     'if storyImage.Visible then',
     'and (not reducedEffects or n<=14)',
     'local transitionCut=scene.cinema=="erasure" or scene.cinema=="rift"',
-    'storyCurtain.BackgroundTransparency=transitionCut and .20 or .45',
+    'storyCurtain.BackgroundTransparency=.06',
     'local titlePause=scene.cinema=="crown" and .46',
     'local plateSeconds=scene.cinema=="dawn" and .78',
     'if activeCurtainTween then activeCurtainTween:Cancel();activeCurtainTween=nil end',
@@ -521,7 +521,7 @@ test('cinematic v4 locks portrait frames, times silent title reveals and makes s
   ])assert.ok(intro.includes(marker),'cinematic direction missing: '+marker);
   assert.match(intro,/task\.delay\(titlePause,function\(\)\s+if not entranceOpen or token~=runToken or currentStoryScene~=index then return end/);
   assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
-  assert.match(intro,/local showArtwork=validImage\s+local showFront=validFront and not showArtwork/);
+  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)\s+local showArtwork=validImage and not showFront/);
   assert.match(intro,/storyForeground\.Size=UDim2\.fromScale\(\.95,\.69\)/);
   assert.match(intro,/math\.clamp\(position\.X\.Scale\+slowX,0,maxX\)/);
   assert.match(intro,/math\.clamp\(position\.Y\.Scale\+slowY,0,maxY\)/);
@@ -545,7 +545,7 @@ test('touch-screen prologue keeps cinematic light, fog, zoom and impacts visible
   assert.doesNotMatch(intro,/cinematicShadow\.Visible=not reducedEffects/);
   assert.doesNotMatch(intro,/if impactAt and not reducedEffects then/);
   assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
-  assert.match(intro,/local showFront=validFront and not showArtwork/);
+  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)/);
 });
 
 test('prologue uses shadow, ink and fog instead of a bright scene flash',()=>{
@@ -554,12 +554,12 @@ test('prologue uses shadow, ink and fog instead of a bright scene flash',()=>{
   assert.match(intro,/storyCurtain\.Name="MemoryInkCurtain"/);
   assert.match(intro,/activeShadowTween=TweenService:Create\(cinematicShadow,/);
   assert.match(intro,/cinematicMist\.Visible=not silence/);
-  assert.match(intro,/local openingScale=lockedPortrait and \.91/);
+  assert.match(intro,/local openingScale=showFront and \(scene\.cinema=="rift"/);
   assert.match(intro,/storyCurtain\.BackgroundColor3=Color3\.fromRGB\(6,9,13\)/);
   assert.doesNotMatch(intro,/CinematicLightSweep|impactColor=|impactOpacity=|introFlash|activeSceneFlashTween/);
   assert.match(intro,/if activeShadowTween then activeShadowTween:Cancel\(\);activeShadowTween=nil end/);
   assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
-  assert.match(intro,/local showFront=validFront and not showArtwork/);
+  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)/);
 });
 
 test('left and right dodge share 4-second server cooldown without changing guard balance',()=>{
@@ -573,6 +573,47 @@ test('left and right dodge share 4-second server cooldown without changing guard
   assert.match(server,/damage=math\.ceil\(damage\*\.5\)/);
   assert.match(server,/defense\.dodgeUntil=now\+\.48/);
   assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
+});
+
+test('cinematic foreground actors use approved PNG cuts with scene-specific acting and safe depth',()=>{
+  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
+  const shots=intro.match(/local portraitShots=\{([\s\S]*?)\n    \}/);
+  assert.ok(shots);
+  for(const scene of ['crown','omen','betrayal','reach','erasure','rift','dawn','relic']){
+    assert.match(shots[1],new RegExp('\\b'+scene+'=true\\b'),'missing approved actor scene '+scene);
+  }
+  assert.match(intro,/local showFront=validFront and \(portraitShots\[scene\.cinema\]==true or not validImage\)/);
+  assert.match(intro,/local showArtwork=validImage and not showFront/);
+  assert.match(intro,/storyArtwork\.Visible=showArtwork\s+storyForeground\.Visible=showFront/);
+  assert.match(intro,/local portraitId=portraitShots\[scene\.cinema\]/);
+  assert.match(intro,/local actorBeat=scene\.cinema=="crown"/);
+  assert.match(intro,/activeActorGestureTween=TweenService:Create\(storyImage,/);
+  assert.match(intro,/activeActorEraseTween=TweenService:Create\(storyImage,/);
+  assert.match(intro,/activeDepthTween=TweenService:Create\(storyVisionGradient,/);
+  assert.match(intro,/activeFogDepthTween=TweenService:Create\(mistFalloff,/);
+  assert.match(intro,/if activeActorGestureTween then activeActorGestureTween:Cancel\(\);activeActorGestureTween=nil end/);
+  assert.match(intro,/if activeDepthTween then activeDepthTween:Cancel\(\);activeDepthTween=nil end/);
+  assert.match(intro,/if activeFogDepthTween then activeFogDepthTween:Cancel\(\);activeFogDepthTween=nil end/);
+  assert.match(intro,/skipButton\.Activated:Once\(finish\)/);
+  assert.doesNotMatch(intro,/Instance\.new\("Part"\)|CinematicLightSweep/);
+});
+
+test('prologue makes audio, silhouette and scene changes on authored story beats',()=>{
+  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
+  assert.match(intro,/introBeatSound\.Name="MeadowPrologueBeat"/);
+  assert.match(intro,/introBeatSound\.SoundId="rbxasset:\/\/sounds\/action_jump_land\.mp3"/);
+  assert.match(intro,/introBeatSound\.SoundGroup=meadowEffectsGroup/);
+  assert.match(intro,/introBeatSound:Stop\(\)\s+introBeatSound:Destroy\(\)/);
+  assert.match(intro,/introBeatSound\.PlaybackSpeed=scene\.cinema=="betrayal"/);
+  assert.match(intro,/introBeatSound:Play\(\)/);
+  assert.match(intro,/for step=1,2 do\s+task\.delay\(step\*\.34,function\(\)/);
+  assert.match(intro,/local audioLevel=silence and 0 or scene\.cinema=="siege"/);
+  assert.match(intro,/art=activeStoryFocusTween/);
+  assert.match(intro,/task\.delay\(math\.max\(\.4,scene\.seconds-\.52\),function\(\)/);
+  assert.match(intro,/local revealSeconds=reducedEffects and 2\.4 or 3\.4/);
+  assert.match(intro,/TweenService:Create\(reveal,TweenInfo\.new\(1\.25,Enum\.EasingStyle\.Sine\)/);
+  assert.match(intro,/local portraitShots=\{/);
+  assert.match(intro,/remote:FireServer\("meadow:enter-world"\)/);
 });
 
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
