@@ -13477,8 +13477,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "야생 협동 생존. 경제·산업·윤리학 액션. 야생 협동 생존에서 탐험 중 적 패턴과 도구를 조합하는 전투 × 경제·산업과 제작과 방어 거점 관리 × 윤리학이 서로 결과를 되돌려 바꾸며 스릴러·판타지의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "REGRESSION",
+      "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged",
       "runtimeObserved": false
     },
     "baseline": {
@@ -13497,8 +13497,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial USABILITY build-up has no previous generation effect to compare"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
