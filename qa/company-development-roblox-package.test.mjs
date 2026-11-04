@@ -1225,10 +1225,11 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   assert.match(server,/forestAirDensity=weather=="FOG" and \.40/);
   assert.match(server,/Lighting\.GlobalShadows=true/);
   assert.match(server,/Lighting\.ShadowSoftness=\.27/);
-  assert.match(server,/meadowColorGrade\.Saturation=-\.10/);
+  assert.match(server,/meadowColorGrade\.Saturation=\.025/);
   assert.match(server,/local cover=weather=="STORM" and \.96/);
   assert.match(server,/DARK_MEDIEVAL_FOREST_CC0_NATIVE_V6/);
   assert.match(server,/glow\.Parent=lanternMesh/);
+  assert.match(server,/glow\.Name="MeadowWellAzureGlow"/);
   assert.match(server,/\{-119,-340\},\{-101,-344\}/);
   assert.match(server,/meadowAtmosphere.Density\+=\(forestAirDensity-meadowAtmosphere.Density\)\*\.12/);
   assert.match(server,/meadowAtmosphere.Color=meadowAtmosphere.Color:Lerp\(/);
@@ -1237,7 +1238,7 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   // [사진 회귀] 검은 초원·유실된 수목·비중심 건축 피벗의 원인을 확인한다.
   assert.match(server,/grass=Color3\.fromRGB\(108,120,91\)/);
   assert.match(server,/local brightness=math\.max\(1\.15/);
-  assert.match(server,/meadowColorGrade\.Brightness=\.025/);
+  assert.match(server,/meadowColorGrade\.Brightness=\.035/);
   assert.doesNotMatch(server,/meadowTerrain\.Decoration=true/);
   assert.match(server,/clone\.WorldPivot=CFrame\.new\(location\.X,/);
   assert.match(server,/clone:SetAttribute\("MeadowVillageVisualPivotCentered",true\)/);
