@@ -117,7 +117,7 @@ export async function createWorld(canvas){
    });
    return Object.values(bones).map(b=>({bone:b,base:b.rotation.x,side:/left/i.test(b.name)?1:-1,arm:/arm/i.test(b.name)}));
  };
- function syncActors(rows,dt){
+ function syncActors(rows,dt,elapsed){
    const present=new Set(),smooth=1-Math.exp(-dt*15),turn=1-Math.exp(-dt*12);
    for(const row of rows){
      if(!row||!Number.isFinite(row.x)||!Number.isFinite(row.y)||row.hp<=0)continue;
@@ -128,7 +128,7 @@ export async function createWorld(canvas){
      if(!actor){
        actor=copy(type,actorRoot);objects.set(id,actor);
        actor.position.set(row.x/SCALE,0,row.y/SCALE);
-       actor.rotation.y=Number.isFinite(row.angle)?row.angle:0;
+       actor.rotation.y=(Number.isFinite(row.angle)?row.angle:0)+Math.PI;
        const clips=library[type].clips||[];
        const mixer=clips.length?new THREE.AnimationMixer(actor.children[0]):null;
        const walking=clips.find(c=>/walk|run|jog|move/i.test(c.name));
@@ -146,7 +146,7 @@ export async function createWorld(canvas){
      else{actor.position.x+=(goalX-oldX)*smooth;actor.position.z+=(goalZ-oldZ)*smooth;}
      const travel=Math.hypot(actor.position.x-oldX,actor.position.z-oldZ);
      if(Number.isFinite(row.angle)){
-       const difference=Math.atan2(Math.sin(row.angle-actor.rotation.y),Math.cos(row.angle-actor.rotation.y));
+       const facing=row.angle+Math.PI;const difference=Math.atan2(Math.sin(facing-actor.rotation.y),Math.cos(facing-actor.rotation.y));
        actor.rotation.y+=difference*turn;
      }
      const m=actor.userData.motion;
@@ -165,7 +165,9 @@ export async function createWorld(canvas){
          limb.bone.rotation.x=limb.base+stride*limb.side*magnitude*(limb.arm?-1:1);
        }
      }
-     if(type==='bat')actor.position.y=.65+Math.sin(performance.now()*.003+row.x)*.1;
+     const leap=elapsed-(Number(row.leapAt)||-100);const bounce=type==='wolf'&&leap>=0&&leap<.65?Math.sin(leap/.65*Math.PI):0;
+     actor.position.y=(type==='bat'?.65+Math.sin(performance.now()*.003+row.x)*.1:0)+bounce*.72;
+     actor.rotation.x=bounce*.18;
    }
    for(const [id,obj] of objects)if(!present.has(id)){actorRoot.remove(obj);objects.delete(id);}
  }
@@ -184,7 +186,7 @@ export async function createWorld(canvas){
    scene.background.copy(skyNight).lerp(skyDay,blend);
    scene.fog.color.copy(scene.background);
    hemi.intensity=2-darkness*1.5;sunlight.intensity=2.1-darkness*1.94;
-   syncActors([...state.players,...state.mobs,...state.neutrals],dt);
+   syncActors([...state.players,...state.mobs,...state.neutrals],dt,state.elapsed);
    const x=clamp(state.follow.x,30,2370)/SCALE,z=clamp(state.follow.y,30,2370)/SCALE;
    // 카메라를 지도 축과 일치시켜 위·아래·좌·우 입력이 화면 움직임과 일치한다.
    cameraGoal.set(x,0,z);
