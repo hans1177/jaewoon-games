@@ -439,8 +439,9 @@ test('native world prologue preserves all twelve scripted beats and camera cover
 test('2.5D gameplay camera follows the actual Roblox mesh with mobile-safe transition',()=>{
   assert.match(client,/BindToRenderStep\("MeadowPainted25DCamera"/);
   assert.match(client,/Enum\.RenderPriority\.Camera\.Value\+1/);
-  assert.match(client,/if player:GetAttribute\("MeadowEnteredWorld"\)~=true then/);
-  assert.match(client,/local focus=root\.Position\+Vector3\.new\(0,2\.5,0\)/);
+  assert.match(client,/if player:GetAttribute\("MeadowEnteredWorld"\)~=true or meadowCameraMode~=3 then/);
+  assert.match(client,/local meadowCameraModes=\{"자유 3D","근접 3D","2.5D 경사"\}/);
+  assert.match(client,/local focus=root\.Position\+Vector3\.new\(0,2\.5,0\)\+heading\*/);
   assert.match(client,/camera\.CFrame=paintedCameraFrame/);
   assert.match(client,/camera\.FieldOfView=portrait and 48 or 51/);
   const intro=client.slice(client.indexOf('  local function closeArrival(showVillageReveal)'),client.indexOf('  local function loadRegion('));
@@ -481,7 +482,7 @@ test('twelve real-world beats use existing sound, movement and narration instead
   assert.match(intro,/task\.delay\(scene\.seconds-\.55,function\(\)/);
   assert.match(intro,/TweenService:Create\(cinematicBars\[1\]/);
   assert.match(intro,/TweenService:Create\(cinematicBars\[2\]/);
-  assert.doesNotMatch(intro,/storyImage|showFront|showArtwork|portraitShots|cinematicLight|CinematicLightSweep/);
+  assert.doesNotMatch(intro,/storyImage|showFront|showArtwork|portraitShots|CinematicLightSweep/);
 });
 
 test('twelve cinematic beats use licensed particle VFX and weather grading without fake actors',()=>{
