@@ -3239,19 +3239,6 @@ do
     }
     local total=0
     for _,scene in ipairs(scenes) do total+=scene.seconds end
-    local finished=false
-    local function finish()
-      if finished or token~=runToken then return end
-      finished=true
-      if activeSubjectHighlight then activeSubjectHighlight:Destroy();activeSubjectHighlight=nil end
-      introGrade:Destroy()
-      introBloom:Destroy()
-      introBlur:Destroy()
-      introDepth:Destroy()
-      closeArrival(true)
-    end
-    skipButton.Activated:Once(finish)
-
     -- [월드 표시] 2D 원화·가짜 깊이 레이어·입자는 전부 숨겨 게임 월드가 실제 보이게 한다.
     backdrop.BackgroundTransparency=1
     introPanel.BackgroundTransparency=1
@@ -3353,6 +3340,19 @@ do
         })
       end
     end
+    local finished=false
+    local function finish()
+      if finished or token~=runToken then return end
+      finished=true
+      if activeSubjectHighlight then activeSubjectHighlight:Destroy();activeSubjectHighlight=nil end
+      introGrade:Destroy()
+      introBloom:Destroy()
+      introBlur:Destroy()
+      introDepth:Destroy()
+      closeArrival(true)
+    end
+    skipButton.Activated:Once(finish)
+
     -- [카메라] 기존 RunService·TweenService로 실제 월드의 카메라만 이동하고
     -- 촬영 대상의 이동 위치를 매 프레임 따라가며 보간한다.
     local RunService=game:GetService("RunService")
