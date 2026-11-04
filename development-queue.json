@@ -1373,7 +1373,7 @@
       "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-04T02:29:14.032Z",
+      "updatedAt": "2026-11-04T02:32:12.780Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2800,51 +2800,8 @@
         "updatedAt": "2026-11-04T02:28:32.239Z"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-11-04T01:41:33.657Z",
-      "robloxCloudImageEvidence": {
-        "available": true,
-        "permissionDenied": false,
-        "status": 200,
-        "provider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
-        "universeId": "10773436325",
-        "observedAt": "2026-11-04T01:34:46.648Z",
-        "endpoint": "https://apis.roblox.com/thumbnail-personalization-api/v1/universes/10773436325/thumbnails?maxPageSize=50",
-        "imageMetadataAvailable": true,
-        "thumbnailCount": 1,
-        "imageUrls": [
-          "https://tr.rbxcdn.com/180DAY-980ef4b4b4639b6cfe29a484e537e847/768/432/GameMediaItem8/Png/noFilter"
-        ],
-        "imageContent": [
-          {
-            "imageUrl": "https://tr.rbxcdn.com/180DAY-980ef4b4b4639b6cfe29a484e537e847/768/432/GameMediaItem8/Png/noFilter",
-            "contentType": "image/png",
-            "bytes": 28158,
-            "sha256": "b372d3554694a9518f568d243b4f9797e76d1e6cb5db433d8a40ddfabad2887c",
-            "contentSignatureMatched": true
-          }
-        ],
-        "imageLookupAuthority": "ROBLOX_OFFICIAL_UNIVERSE_GAME_THUMBNAIL_CDN",
-        "imageLookupFailure": null,
-        "officialGameThumbnailTargetId": "108565970231899",
-        "personalizedImageContentMatched": false,
-        "imageContentChecked": true,
-        "imageContentPassed": true,
-        "imageVisualQualityVerified": false,
-        "metadataCoverage": "RETURNED_API_PAGE_ONLY",
-        "runtimeScreenshot": false,
-        "exactRuntimeVersionImage": false,
-        "state": "PASS_CLOUD_IMAGE_TRANSPORT",
-        "authority": "roblox-open-cloud-thumbnail-image-sanity",
-        "limitation": "THUMBNAIL_METADATA_IS_VISUAL_SANITY_ONLY_NOT_EXACT_RUNTIME_RENDER_PROOF",
-        "requestContext": {
-          "sourceRevision": "1e49963b06493c530b425a99e1da0c9756098da9",
-          "artifactIdentity": "sha256:5913f595d96a358e6db9f62231b2ad4e29b6a9a6aefa478b9329a4e02414c1de",
-          "universeId": "10773436325",
-          "placeId": "108565970231899",
-          "versionNumber": 133,
-          "observedImageRevision": false
-        }
-      },
-      "robloxF9PendingInParallel": true,
+      "robloxCloudImageEvidence": null,
+      "robloxF9PendingInParallel": false,
       "robloxF9Blockers": [
         "roblox-f9-nonsimulating-cloud-runtime-observation-pending"
       ],
@@ -2885,7 +2842,7 @@
       }
     }
   ],
-  "updatedAt": "2026-11-04T02:31:00.167Z",
+  "updatedAt": "2026-11-04T02:32:12.780Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
