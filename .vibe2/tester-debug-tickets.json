@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-11-04T09:04:47.125Z",
+  "updatedAt": "2026-11-04T09:30:46.010Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -12119,8 +12119,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-04T09:04:47.103Z",
-      "occurrenceCount": 32
+      "updatedAt": "2026-11-04T09:30:45.986Z",
+      "occurrenceCount": 33
     },
     {
       "id": "bug-265b5406b2bdecc5e87f",
@@ -12295,6 +12295,30 @@
       "updatedAt": "2026-11-04T08:46:01.587Z",
       "occurrenceCount": 1,
       "verificationScope": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY"
+    },
+    {
+      "id": "bug-9bccd479a38b22ee29b2",
+      "gameId": "fantasy-survival",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "HIGH",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-f0-source-preflight-failed",
+        "{\"sourceRevision\":\"266ba17188c429528a5eab0bb743dbaa14488109\",\"buildSourceRevision\":\"266ba17188c429528a5eab0bb743dbaa14488109\",\"artifactIdentity\":\"sha256:7e51578279d4637f5b7a63ddc67c6c6de7af05d46e0d8e426561a979ce7f4974\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "F0_SOURCE_INTEGRITY",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-11-04T09:30:45.986Z",
+      "updatedAt": "2026-11-04T09:30:45.986Z",
+      "occurrenceCount": 1
     }
   ],
   "webPlaytestObservations": [
@@ -12322,7 +12346,7 @@
       "target": "web",
       "sourceRoot": "web-games/ocean-voyage",
       "sourceTreeSha": "bd78acee4969637fdadce382f6b8972746319860",
-      "sourceRevision": "ccdbe700aec78f3cca494f8cb3bf8547d8deab8b",
+      "sourceRevision": "266ba17188c429528a5eab0bb743dbaa14488109",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12331,8 +12355,8 @@
         "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "41800066384",
-      "observedAt": "2026-11-04T08:46:01.587Z"
+      "runId": "41805155625",
+      "observedAt": "2026-11-04T09:30:45.986Z"
     },
     {
       "gameId": "gem-survivor",
@@ -12340,7 +12364,7 @@
       "target": "web",
       "sourceRoot": "web-games/gem-survivor",
       "sourceTreeSha": "a662a98c0cf0e044d31fb7fbb54134d79c7eb629",
-      "sourceRevision": "ccdbe700aec78f3cca494f8cb3bf8547d8deab8b",
+      "sourceRevision": "266ba17188c429528a5eab0bb743dbaa14488109",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12349,8 +12373,8 @@
         "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "41800066384",
-      "observedAt": "2026-11-04T08:46:01.587Z"
+      "runId": "41805155625",
+      "observedAt": "2026-11-04T09:30:45.986Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -12358,7 +12382,7 @@
       "target": "web",
       "sourceRoot": "web-games/fantasy-survival",
       "sourceTreeSha": "3163049507b2c5e6c2e73a53f7b8c1b20d68d45e",
-      "sourceRevision": "5a2713e77f41c3ada726d395b61ccdc34dd820ae",
+      "sourceRevision": "266ba17188c429528a5eab0bb743dbaa14488109",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12367,8 +12391,8 @@
         "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "41791725596",
-      "observedAt": "2026-11-04T07:50:37.493Z"
+      "runId": "41805155625",
+      "observedAt": "2026-11-04T09:30:45.986Z"
     },
     {
       "gameId": "cozy-island",
