@@ -3415,11 +3415,15 @@ do
         -- [장면별 2.5D] 승인 원화의 뒤/앞 레이어에 서로 다른 시차와 조명을 부여한다.
         -- 원화는 Fit 배치라서 얼굴·망토를 억지로 확대하거나 잘라내지 않는다.
         storyCurtain.BackgroundTransparency=0
-        for _,motion in ipairs({activeStoryFocusTween,activeStoryRevealTween,
-          activeStoryColorTween,activeArtImpactTween,activeActorGestureTween,
-          activeActorEraseTween,activeShadowTween,activeMistTween}) do
-          if motion then motion:Cancel() end
-        end
+        -- [장면 교체] Luau 배열의 nil 틈 때문에 취소가 중단되지 않도록 각 기존 트윈을 개별 정리한다.
+        if activeStoryFocusTween then activeStoryFocusTween:Cancel() end
+        if activeStoryRevealTween then activeStoryRevealTween:Cancel() end
+        if activeStoryColorTween then activeStoryColorTween:Cancel() end
+        if activeArtImpactTween then activeArtImpactTween:Cancel() end
+        if activeActorGestureTween then activeActorGestureTween:Cancel() end
+        if activeActorEraseTween then activeActorEraseTween:Cancel() end
+        if activeShadowTween then activeShadowTween:Cancel() end
+        if activeMistTween then activeMistTween:Cancel() end
         for _,motion in ipairs(activeParticleTweens) do motion:Cancel() end
         table.clear(activeParticleTweens)
         local artworkId=(Config.CinematicIntroSceneIds or {})[index]
