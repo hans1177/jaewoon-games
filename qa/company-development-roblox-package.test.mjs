@@ -2342,6 +2342,24 @@ test('registered Forest buildings consume selected BUILDING atoms and real nativ
     source.replace('template = AssetService:LoadAssetAsync(modelId)','template = nil'),
     'BUILDING'
   ),false,'a missing original-model load cannot pass building verification');
+  // [실물 3D 마력숲 광장] 기존 승인 Kenney 원본에서만 나무·아치 형태를 가져온다.
+  const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  for(const role of ['villageCrookedTree','villageArch']){
+    const row=registry.villagePrefabs.models[role];
+    assert.equal(row.license,'CC0-1.0');
+    assert.equal(row.source,'VERIFIED_CC0_ORIGINAL');
+    assert.ok(Number.isSafeInteger(row.assetId)&&row.assetId>0);
+  }
+  const scenery=source.slice(source.indexOf('local groveTreeReady=false'),
+    source.indexOf('gameWorld:SetAttribute("MeadowVillageBuildingCount"'));
+  for(const marker of [
+    'worldAsset("villageCrookedTree",Vector3.new(7,3,-359),75)',
+    'worldAsset("villageArch",Vector3.new(0,3,-185),24)',
+    'MeadowAncientTreeOutline','MeadowTreeFireflies',
+    'MeadowCrystalEdgeRay','MeadowCrystalInnerRay','MeadowCrystalShimmer',
+    'MeadowAzureTreeReady','MeadowCrystalGateReady',
+  ])assert.ok(scenery.includes(marker),'missing real landmark mesh/vfx: '+marker);
+  assert.doesNotMatch(scenery,/Instance.new\("(?:Part|WedgePart|Ball|Cylinder)"\)/);
 });
 
 
