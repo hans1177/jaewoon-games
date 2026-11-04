@@ -10628,13 +10628,31 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "17d4e1cb9077689d2b284c79dcc5bdce7dc4f52e",
+      "artifactIdentity": "sha256:7e970c9bf585cda715f053dd7026d519f105d036bf00fbeacbab9e7ddabde796",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 41830417483,
+      "testedAt": "2026-11-04T12:40:49.459Z",
+      "repairSurfaces": [
+        "MOBILE_UI"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":0,\"undersizedTouchButtons\":6,\"suboptimalTouchButtons\":12,\"textOverflowButtons\":0,\"overlapPairs\":1,\"largeOverlayCount\":0,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0}"
+        }
+      ]
+    },
     "failureStage": "F0_SOURCE_INTEGRITY",
     "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
     "blockers": [
       "roblox-f0-source-preflight-failed"
     ],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
@@ -18208,9 +18226,9 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "SOURCE_PREFLIGHT_FAILED",
-      "reason": "exact same-game F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED source preflight failed at 8579b933045c8860c932884ac431a54b81cf6596; investigate and repair responsible source, then rerun canonical F0 before F1 or publication",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure requires source repair before another observation",
+      "runtimeObserved": true
     },
     "baseline": {
       "sourceTreeFingerprint": "ff5c47f2b7a97a7a4b2ab9d2c266a60703efae9ef7d3c005233f6decec17e95f",
@@ -18228,8 +18246,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "previous F0 source failure is no longer the active canonical game-stage observation"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
