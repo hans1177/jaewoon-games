@@ -2242,7 +2242,8 @@ do
   storyAtmosphere.BackgroundTransparency=1
   storyAtmosphere.Size=UDim2.fromScale(1,1)
   storyAtmosphere.ClipsDescendants=true
-  storyAtmosphere.ZIndex=6
+  -- [실제 화면 연출] 승인 원화의 앞에서 빛·날씨가 움직인다. 자막은 가리지 않는다.
+  storyAtmosphere.ZIndex=9
   storyAtmosphere.Parent=introPanel
   -- [시네마틱 명암] 기존 승인 원화에만 적용하는 무소재 비네트. 인물·건물 모델을 생성하지 않는다.
   local cinematicVignette=Instance.new("Frame")
@@ -2261,7 +2262,7 @@ do
   })
   vignetteGradient.Parent=cinematicVignette
   local cinematicParticles={}
-  for n=1,18 do
+  for n=1,26 do
     local spark=Instance.new("Frame")
     spark.Name="CinematicParticle"..n
     spark.Size=UDim2.fromOffset(2+(n%3),6+(n%4)*3)
@@ -2269,10 +2270,52 @@ do
     spark.BackgroundTransparency=.4
     spark.BorderSizePixel=0
     spark.Rotation=n*19
-    spark.ZIndex=6
+    spark.ZIndex=9
     spark.Parent=storyAtmosphere
     cinematicParticles[n]=spark
   end
+  -- [오리·할로우 나이트 참고] 별도 원화/모델 없이 기존 한 컷 위로 실제 광선이 통과한다.
+  local cinematicLight=Instance.new("Frame")
+  cinematicLight.Name="CinematicLightSweep"
+  cinematicLight.AnchorPoint=Vector2.new(.5,.5)
+  cinematicLight.Position=UDim2.fromScale(-.35,.5)
+  cinematicLight.Size=UDim2.fromScale(.36,1.5)
+  cinematicLight.Rotation=19
+  cinematicLight.BackgroundColor3=Color3.fromRGB(238,187,122)
+  cinematicLight.BackgroundTransparency=.27
+  cinematicLight.BorderSizePixel=0
+  cinematicLight.ZIndex=9
+  cinematicLight.Visible=false
+  cinematicLight.Parent=storyAtmosphere
+  local lightFalloff=Instance.new("UIGradient")
+  lightFalloff.Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,1),
+    NumberSequenceKeypoint.new(.23,.92),
+    NumberSequenceKeypoint.new(.5,.24),
+    NumberSequenceKeypoint.new(.77,.92),
+    NumberSequenceKeypoint.new(1,1),
+  })
+  lightFalloff.Parent=cinematicLight
+  -- [장면 환경] 새벽 안개·차원 균열만 화면 하단에서 흘러들어온다.
+  local cinematicMist=Instance.new("Frame")
+  cinematicMist.Name="CinematicMovingMist"
+  cinematicMist.Size=UDim2.fromScale(1,.4)
+  cinematicMist.Position=UDim2.fromScale(0,1)
+  cinematicMist.BackgroundColor3=Color3.fromRGB(120,176,153)
+  cinematicMist.BackgroundTransparency=.63
+  cinematicMist.BorderSizePixel=0
+  cinematicMist.ZIndex=9
+  cinematicMist.Visible=false
+  cinematicMist.Parent=storyAtmosphere
+  local mistFalloff=Instance.new("UIGradient")
+  mistFalloff.Rotation=90
+  mistFalloff.Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,1),
+    NumberSequenceKeypoint.new(.32,.85),
+    NumberSequenceKeypoint.new(.75,.46),
+    NumberSequenceKeypoint.new(1,.88),
+  })
+  mistFalloff.Parent=cinematicMist
   local introGradient=Instance.new("UIGradient")
   introGradient.Color=ColorSequence.new({
     ColorSequenceKeypoint.new(0,Color3.fromRGB(8,12,20)),
@@ -2408,6 +2451,9 @@ do
   local activeVignetteTween=nil
   local activeSceneFlashTween=nil
   local activeParticleTweens={}
+  local activeLightTween=nil
+  local activeMistTween=nil
+  local activeArtImpactTween=nil
   local cameraMotionValue=nil
   local cameraMotionConnection=nil
   local cameraMotionIntensity=0
@@ -2435,6 +2481,11 @@ do
     if activeStoryRevealTween then activeStoryRevealTween:Cancel();activeStoryRevealTween=nil end
     if activeVignetteTween then activeVignetteTween:Cancel();activeVignetteTween=nil end
     if activeSceneFlashTween then activeSceneFlashTween:Cancel();activeSceneFlashTween=nil end
+    if activeLightTween then activeLightTween:Cancel();activeLightTween=nil end
+    if activeMistTween then activeMistTween:Cancel();activeMistTween=nil end
+    if activeArtImpactTween then activeArtImpactTween:Cancel();activeArtImpactTween=nil end
+    cinematicLight.Visible=false
+    cinematicMist.Visible=false
     introFlash.BackgroundTransparency=1
     introDialogue.MaxVisibleGraphemes=-1
     regionIntro.MaxVisibleGraphemes=-1
@@ -2672,8 +2723,46 @@ do
         if activeVignetteTween then activeVignetteTween:Cancel();activeVignetteTween=nil end
         if activeStoryRevealTween then activeStoryRevealTween:Cancel();activeStoryRevealTween=nil end
         if activeSceneFlashTween then activeSceneFlashTween:Cancel();activeSceneFlashTween=nil end
+        if activeLightTween then activeLightTween:Cancel();activeLightTween=nil end
+        if activeMistTween then activeMistTween:Cancel();activeMistTween=nil end
+        if activeArtImpactTween then activeArtImpactTween:Cancel();activeArtImpactTween=nil end
+        cinematicLight.Visible=false
+        cinematicMist.Visible=false
+        storyArtwork.Rotation=0
+        storyForeground.Rotation=0
         -- [장면별 색·음향·화면비] 원본 23개 등록 에셋과 기존 사운드그룹만 사용한다.
         local silence=scene.cinema=="freeze" or scene.cinema=="erasure"
+        -- [장면별 실제 움직임] 공성전은 붉은 섬광, 봉인은 보라 광선,
+        -- 추락은 푸른 균열, 새벽은 안개와 초록빛으로 구분한다.
+        cinematicLight.Visible=not reducedEffects and not silence
+        cinematicLight.BackgroundColor3=(scene.cinema=="omen" or scene.cinema=="betrayal")
+          and Color3.fromRGB(202,124,255) or scene.view=="fall"
+          and Color3.fromRGB(101,177,255) or scene.view=="wake"
+          and Color3.fromRGB(168,233,179) or Color3.fromRGB(255,188,104)
+        cinematicLight.Rotation=scene.view=="fall" and -22 or scene.cinema=="charge" and 37 or 19
+        cinematicLight.Position=UDim2.fromScale(scene.view=="fall" and 1.3 or -.32,.5)
+        if cinematicLight.Visible then
+          activeLightTween=TweenService:Create(cinematicLight,
+            TweenInfo.new(math.max(.8,scene.seconds*.76),Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+              Position=UDim2.fromScale(scene.view=="fall" and -.32 or 1.3,.5),
+              Rotation=cinematicLight.Rotation+(scene.cinema=="betrayal" and 13 or 5),
+            })
+          activeLightTween:Play()
+        end
+        cinematicMist.Visible=not reducedEffects and
+          (scene.cinema=="omen" or scene.cinema=="rift" or scene.cinema=="dawn" or scene.cinema=="journey")
+        if cinematicMist.Visible then
+          cinematicMist.BackgroundColor3=scene.cinema=="omen" and Color3.fromRGB(126,91,194)
+            or scene.cinema=="rift" and Color3.fromRGB(79,111,185)
+            or Color3.fromRGB(125,189,151)
+          cinematicMist.Position=UDim2.fromScale(0,.93)
+          activeMistTween=TweenService:Create(cinematicMist,
+            TweenInfo.new(scene.seconds,Enum.EasingStyle.Sine,Enum.EasingDirection.Out),{
+              Position=UDim2.fromScale(0,.65),
+              BackgroundTransparency=.84,
+            })
+          activeMistTween:Play()
+        end
         local audioLevel=silence and 0 or scene.cinema=="rift" and .18 or scene.cinema=="dawn" and .55 or 1
         if activeAmbienceTween then activeAmbienceTween:Cancel() end
         if activeEffectsTween then activeEffectsTween:Cancel() end
@@ -2839,10 +2928,21 @@ do
             local slowY=scene.cinema=="rift" and .016 or scene.cinema=="dawn" and -.009
               or scene.cinema=="crown" and -.006 or scene.cinema=="omen" and .006 or .003
             local position=storyImage.Position
+            local originalSize=storyImage.Size
             local maxX=math.max(0,1-storyImage.Size.X.Scale)
             local maxY=math.max(0,1-storyImage.Size.Y.Scale)
+            -- [진짜 카메라 이동] 전체 JPG를 90~93%에서 원래 크기로 당겨 7~10% 전진.
+            -- Fit·기존 최대 크기를 지켜 어느 기기에서도 이미지가 잘리지 않는다.
+            local openingScale=scene.cinema=="charge" and .90
+              or scene.cinema=="rift" and .91 or .93
+            storyImage.Size=UDim2.fromScale(
+              originalSize.X.Scale*openingScale,originalSize.Y.Scale*openingScale)
+            storyImage.Position=UDim2.fromScale(
+              position.X.Scale+originalSize.X.Scale*(1-openingScale)*.5,
+              position.Y.Scale+originalSize.Y.Scale*(1-openingScale)*.5)
             activeStoryFocusTween=TweenService:Create(storyImage,TweenInfo.new(scene.seconds,
               Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+              Size=originalSize,
               Position=UDim2.fromScale(
                 math.clamp(position.X.Scale+slowX,0,maxX),
                 math.clamp(position.Y.Scale+slowY,0,maxY)),
@@ -3035,6 +3135,18 @@ do
                 BackgroundTransparency=1,
               })
             activeSceneFlashTween:Play()
+            -- [충격 프레임] 월드 카메라 뒤가 아닌 눈에 보이는 원화에 짧은 반동을 준다.
+            if storyImage and storyImage.Visible
+              and (scene.cinema=="siege" or scene.cinema=="charge"
+                or scene.cinema=="betrayal" or scene.cinema=="reach" or scene.cinema=="rift") then
+              if activeArtImpactTween then activeArtImpactTween:Cancel() end
+              storyImage.Rotation=scene.cinema=="rift" and -1.7 or 1.4
+              activeArtImpactTween=TweenService:Create(storyImage,
+                TweenInfo.new(.38,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{
+                  Rotation=0,
+                })
+              activeArtImpactTween:Play()
+            end
             -- [감정 비트] 이미지·인물 위에 새 레이어를 겹치지 않고 기존 가장자리 명암만 잠깐 조인다.
             local vignetteBase=cinematicVignette.BackgroundTransparency
             local vignettePulse=math.max((scene.cinema=="betrayal" or scene.cinema=="erasure") and .36 or .49,vignetteBase-.14)
