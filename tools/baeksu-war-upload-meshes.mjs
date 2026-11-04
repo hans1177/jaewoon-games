@@ -112,6 +112,7 @@ for(const name of names){
 // Keep existing authorized IDs instead of reuploading the seven deployed originals.
 for(const name of names){
  const {bytes,digest,origin,extension}=verifiedModels.get(name);
+ const ownerCape=fantasy&&name==='wornCape'&&origin.license==='PROJECT_ORIGINAL';
  const prior=oldRegistry?.models?.[name]||villageRows[name]||(name==='wornCape'?oldRegistry?.capePrefab:null);
  if(prior&&Number.isSafeInteger(prior.assetId)&&prior.assetId>0
    &&prior.sourceSha256===origin.sourceSha256&&prior.sha256===digest
