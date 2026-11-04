@@ -2730,7 +2730,7 @@ do
   fillCorner.Parent=progressFill
 
 
-  -- [메인 스토리 오프닝] 기존 월드와 실제 아바타 카메라만 활용한다.
+  -- [2.5D 오프닝 / 메인] 실물 월드와 완성 그림을 분리해 중복 인물 노출을 막는다.
   -- 미승인 전쟁 NPC/괴물/배경 모델은 생성하지 않는다. 기존 HUD·저장·전투 판정 불변.
   local introPanel=Instance.new("Frame")
   introPanel.Name="FirstArrivalScene"
@@ -2795,7 +2795,7 @@ do
     NumberSequenceKeypoint.new(1,.70),
   })
   storyArtworkFade.Parent=storyArtwork
-  -- [인물 컷] 승인 PNG 한 장으로 캐릭터의 기울임·다가옴·추락을 연출한다.
+  -- [분리 인물 컷] 투명 PNG는 실물 월드 앞에만, 완성 JPG는 독립 장면에만 사용한다.
   -- 같은 장면의 JPG와 중복하지 않으므로 인물이 두 번 나타나지 않는다.
   local storyForeground=Instance.new("ImageLabel")
   storyForeground.Name="StoryParallaxForeground"
@@ -2826,6 +2826,28 @@ do
   -- [실제 화면 연출] 승인 원화의 앞에서 그림자와 안개만 흐른다. 자막은 가리지 않는다.
   storyAtmosphere.ZIndex=9
   storyAtmosphere.Parent=introPanel
+  -- [광선 / 연출효과] 가벼운 화면 그라디언트로 위치·강도를 따로 움직인다.
+  local cinematicLight=Instance.new("Frame")
+  cinematicLight.Name="IntroLayeredMoonlight"
+  cinematicLight.AnchorPoint=Vector2.new(.5,.5)
+  cinematicLight.Position=UDim2.fromScale(-.22,.4)
+  cinematicLight.Size=UDim2.fromScale(.88,1.45)
+  cinematicLight.BackgroundColor3=Color3.fromRGB(171,207,240)
+  cinematicLight.BackgroundTransparency=.88
+  cinematicLight.BorderSizePixel=0
+  cinematicLight.Rotation=14
+  cinematicLight.ZIndex=9
+  cinematicLight.Visible=false
+  cinematicLight.Parent=storyAtmosphere
+  local cinematicLightFade=Instance.new("UIGradient")
+  cinematicLightFade.Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,1),
+    NumberSequenceKeypoint.new(.16,.98),
+    NumberSequenceKeypoint.new(.45,.32),
+    NumberSequenceKeypoint.new(.65,.68),
+    NumberSequenceKeypoint.new(1,1),
+  })
+  cinematicLightFade.Parent=cinematicLight
   -- [시네마틱 명암] 기존 승인 원화에만 적용하는 무소재 비네트. 인물·건물 모델을 생성하지 않는다.
   local cinematicVignette=Instance.new("Frame")
   cinematicVignette.Name="DarkFantasyVignette"
@@ -2842,14 +2864,17 @@ do
     NumberSequenceKeypoint.new(1,.18),
   })
   vignetteGradient.Parent=cinematicVignette
+  -- [별도 반딧불] 직사각형 파츠 대신 기존 Roblox 내장 텍스처를 사용한다.
   local cinematicParticles={}
   for n=1,16 do
-    local spark=Instance.new("Frame")
+    local spark=Instance.new("ImageLabel")
     spark.Name="CinematicParticle"..n
-    spark.Size=UDim2.fromOffset(2+(n%3),6+(n%4)*3)
-    spark.BackgroundColor3=Color3.fromRGB(242,151,72)
-    spark.BackgroundTransparency=.4
-    spark.BorderSizePixel=0
+    spark.Size=UDim2.fromOffset(5+(n%4)*2,5+(n%4)*2)
+    spark.BackgroundTransparency=1
+    spark.Image="rbxasset://textures/particles/sparkles_main.dds"
+    spark.ImageColor3=Color3.fromRGB(232,190,124)
+    spark.ImageTransparency=.5
+    spark.ScaleType=Enum.ScaleType.Fit
     spark.Rotation=n*19
     spark.ZIndex=9
     spark.Parent=storyAtmosphere
@@ -3045,6 +3070,7 @@ do
   local activeParticleTweens={}
   local activeShadowTween=nil
   local activeMistTween=nil
+  local activeLightTween=nil
   local activeArtImpactTween=nil
   local activeActorGestureTween=nil
   local activeActorEraseTween=nil
@@ -3080,6 +3106,7 @@ do
     if activeCurtainTween then activeCurtainTween:Cancel();activeCurtainTween=nil end
     if activeShadowTween then activeShadowTween:Cancel();activeShadowTween=nil end
     if activeMistTween then activeMistTween:Cancel();activeMistTween=nil end
+    if activeLightTween then activeLightTween:Cancel();activeLightTween=nil end
     if activeArtImpactTween then activeArtImpactTween:Cancel();activeArtImpactTween=nil end
     if activeActorGestureTween then activeActorGestureTween:Cancel();activeActorGestureTween=nil end
     if activeActorEraseTween then activeActorEraseTween:Cancel();activeActorEraseTween=nil end
@@ -3089,6 +3116,7 @@ do
     introBeatSound:Destroy()
     cinematicShadow.Visible=false
     cinematicMist.Visible=false
+    cinematicLight.Visible=false
     storyCurtain.BackgroundTransparency=1
     introDialogue.MaxVisibleGraphemes=-1
     regionIntro.MaxVisibleGraphemes=-1
@@ -3298,7 +3326,7 @@ do
     loadingStatus.Text=message.." · "..math.floor(ratio*100+.5).."%"
   end
 
-  -- [메인] 3D 월드 시네마틱: 승인 원화 크롭/회전/확대 대신 기존 초원 월드의 실물 NPC·플레이어만 촬영한다.
+  -- [메인] 2.5D 원화+실물 월드 교차 컷. 완성 그림과 인물 분리본 동시 노출 금지.
   -- 실제 주민의 기존 순찰·플레이어의 현재 좌표를 활용하며 퀘스트·전투·저장·이동 상태는 변경하지 않는다.
   -- 기존 12장면과 자막은 보존한다. 과거 등장인물의 미승인 대체 모델은 생성하지 않는다.
   local function startIntro(isFresh)
@@ -3348,6 +3376,7 @@ do
     storyForeground.Visible=false
     cinematicShadow.Visible=false
     cinematicMist.Visible=false
+    cinematicLight.Visible=false
     for _,spark in ipairs(cinematicParticles) do spark.Visible=false end
     task.defer(function()
       local ids={}
@@ -3480,66 +3509,85 @@ do
         if activeAmbienceTween then activeAmbienceTween:Cancel();activeAmbienceTween=nil end
         if activeEffectsTween then activeEffectsTween:Cancel();activeEffectsTween=nil end
 
-        -- [장면별 2.5D] 승인 원화의 뒤/앞 레이어에 서로 다른 시차와 조명을 부여한다.
-        -- 원화는 Fit 배치라서 얼굴·망토를 억지로 확대하거나 잘라내지 않는다.
+        -- [장면 감독] 한 화면에 완성 JPG + 같은 장면 PNG를 절대 중첩하지 않는다.
         storyCurtain.BackgroundTransparency=0
-        -- [장면 교체] Luau 배열의 nil 틈 때문에 취소가 중단되지 않도록 각 기존 트윈을 개별 정리한다.
         if activeStoryFocusTween then activeStoryFocusTween:Cancel() end
         if activeStoryRevealTween then activeStoryRevealTween:Cancel() end
-        if activeStoryColorTween then activeStoryColorTween:Cancel() end
-        if activeArtImpactTween then activeArtImpactTween:Cancel() end
         if activeActorGestureTween then activeActorGestureTween:Cancel() end
         if activeActorEraseTween then activeActorEraseTween:Cancel() end
         if activeShadowTween then activeShadowTween:Cancel() end
         if activeMistTween then activeMistTween:Cancel() end
+        if activeLightTween then activeLightTween:Cancel() end
         for _,motion in ipairs(activeParticleTweens) do motion:Cancel() end
         table.clear(activeParticleTweens)
         local artworkId=(Config.CinematicIntroSceneIds or {})[index]
         local foregroundId=(Config.CinematicIntroForegroundIds or {})[index]
         local artworkAvailable=type(artworkId)=="string" and artworkId:match("^rbxassetid://%d+$")~=nil
-        local foregroundAvailable=artworkAvailable and type(foregroundId)=="string"
-          and foregroundId:match("^rbxassetid://%d+$")~=nil
-        storyArtwork.Visible=artworkAvailable
-        storyArtwork.Image=artworkAvailable and artworkId or ""
+        local foregroundAvailable=type(foregroundId)=="string" and foregroundId:match("^rbxassetid://%d+$")~=nil
+        -- [깊이 분리] 홀수 컷=그림만, 짝수 컷=실제 월드+투명 인물만.
+        -- 전경이 없으면 원본 그림을 단독 사용한다. 단 한 컷에서도 둘 다 Visible이 될 수 없다.
+        local usePaintedBackdrop=artworkAvailable and (index%2==1 or not foregroundAvailable)
+        local useWorldActor=foregroundAvailable and not usePaintedBackdrop
+        storyArtwork.Visible=usePaintedBackdrop
+        storyArtwork.Image=usePaintedBackdrop and artworkId or ""
         storyArtwork.ImageTransparency=1
         storyArtwork.Rotation=0
-        storyForeground.Visible=foregroundAvailable
-        storyForeground.Image=foregroundAvailable and foregroundId or ""
+        storyForeground.Visible=useWorldActor
+        storyForeground.Image=useWorldActor and foregroundId or ""
         storyForeground.ImageTransparency=1
         storyForeground.Rotation=0
-        storyVision.Visible=artworkAvailable
+        storyVision.Visible=usePaintedBackdrop
+        backdrop.BackgroundTransparency=usePaintedBackdrop and .06 or 1
+        introPanel.BackgroundTransparency=usePaintedBackdrop and .1 or 1
+        introTint.BackgroundTransparency=usePaintedBackdrop and .9 or .98
         layoutIntroCaptions()
         local artFrom=storyArtwork.Position
         local foreFrom=storyForeground.Position
         local direction=index%2==0 and -1 or 1
-        storyArtwork.Position=artFrom+UDim2.fromScale(-direction*.010,.003)
-        storyForeground.Position=foreFrom+UDim2.fromScale(direction*.012,-.005)
+        storyArtwork.Position=artFrom+UDim2.fromScale(-direction*.009,.002)
+        storyForeground.Position=foreFrom+UDim2.fromScale(direction*.01,-.003)
         local artDuration=math.max(1,scene.seconds-.5)
-        if artworkAvailable then
+        if usePaintedBackdrop then
           activeStoryFocusTween=TweenService:Create(storyArtwork,
             TweenInfo.new(artDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
-              Position=artFrom+UDim2.fromScale(direction*.011,-.005),
-              Rotation=direction*.5,
+              Position=artFrom+UDim2.fromScale(direction*.01,-.004),
+              Rotation=direction*.22,
             })
           activeStoryRevealTween=TweenService:Create(storyArtwork,
-            TweenInfo.new(.8,Enum.EasingStyle.Sine),{ImageTransparency=.025})
+            TweenInfo.new(.8,Enum.EasingStyle.Sine),{ImageTransparency=.005})
           activeStoryFocusTween:Play()
           activeStoryRevealTween:Play()
         end
-        if foregroundAvailable then
+        if useWorldActor then
+          -- 실제 3D 월드가 원경으로 움직일 때 인물 PNG는 독립적으로 약하게 후행한다.
           activeActorGestureTween=TweenService:Create(storyForeground,
             TweenInfo.new(artDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
-              Position=foreFrom+UDim2.fromScale(-direction*.016,.006),
-              Rotation=-direction*.75,
+              Position=foreFrom+UDim2.fromScale(-direction*.012,.005),
+              Rotation=-direction*.4,
             })
           activeActorEraseTween=TweenService:Create(storyForeground,
-            TweenInfo.new(.95,Enum.EasingStyle.Sine),{ImageTransparency=.08})
+            TweenInfo.new(.8,Enum.EasingStyle.Sine),{ImageTransparency=.015})
           activeActorGestureTween:Play()
           activeActorEraseTween:Play()
         end
-        -- [빛·대기 원화 보정] 실제 배경/캐릭터 새 파츠 없이 그림자와 안개의 깊이만 애니메이션.
-        cinematicShadow.Visible=artworkAvailable and not reducedEffects
-        cinematicMist.Visible=artworkAvailable
+        -- [독립 연출] 장면별 색온도, 천천히 움직이는 빛 결, 원근 안개, 반딧불.
+        local activeVisual=usePaintedBackdrop or useWorldActor
+        cinematicShadow.Visible=activeVisual and not reducedEffects
+        cinematicMist.Visible=activeVisual
+        cinematicLight.Visible=activeVisual and not reducedEffects
+        cinematicLight.BackgroundColor3=(scene.cinema=="betrayal" or scene.cinema=="rift")
+          and Color3.fromRGB(122,127,229)
+          or (scene.cinema=="dawn" or scene.cinema=="journey")
+          and Color3.fromRGB(208,230,184)
+          or Color3.fromRGB(238,197,149)
+        cinematicLight.Position=UDim2.fromScale(-.25,.4)
+        cinematicLight.BackgroundTransparency=.88
+        activeLightTween=TweenService:Create(cinematicLight,
+          TweenInfo.new(artDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+            Position=UDim2.fromScale(.98,.52),
+            BackgroundTransparency=.95,
+          })
+        if cinematicLight.Visible then activeLightTween:Play() end
         cinematicShadow.Position=UDim2.fromScale(-.65,.5)
         cinematicMist.Position=UDim2.fromScale(-.035,.86)
         activeShadowTween=TweenService:Create(cinematicShadow,
@@ -3551,17 +3599,17 @@ do
         if cinematicShadow.Visible then activeShadowTween:Play() end
         if cinematicMist.Visible then activeMistTween:Play() end
         for n,spark in ipairs(cinematicParticles) do
-          spark.Visible=artworkAvailable and (not reducedEffects or n<=6)
+          spark.Visible=activeVisual and (not reducedEffects or n<=5)
           if spark.Visible then
-            spark.BackgroundColor3=(scene.cinema=="dawn" or scene.cinema=="journey")
+            spark.ImageColor3=(scene.cinema=="dawn" or scene.cinema=="journey")
               and Color3.fromRGB(173,221,183) or Color3.fromRGB(226,168,112)
-            spark.Position=UDim2.fromScale((n*37%99)/100,.66+(n*13%29)/100)
+            spark.Position=UDim2.fromScale((n*37%99)/100,.58+(n*13%32)/100)
+            spark.ImageTransparency=.52
             local particleTween=TweenService:Create(spark,
-              TweenInfo.new(artDuration,Enum.EasingStyle.Linear),{
-                Position=spark.Position+UDim2.fromScale(direction*.013,-.065),
-                BackgroundTransparency=.96,
+              TweenInfo.new(artDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
+                Position=spark.Position+UDim2.fromScale(direction*.021,-.082),
+                ImageTransparency=.98,
               })
-            spark.BackgroundTransparency=.44
             activeParticleTweens[#activeParticleTweens+1]=particleTween
             particleTween:Play()
           end
