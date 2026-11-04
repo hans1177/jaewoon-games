@@ -1093,11 +1093,13 @@ local function bindMeadowMenuCharacter(character)
   local capeRoot=character:FindFirstChild("HumanoidRootPart")
   local function bindWornCape(child)
     if not child or not child:IsA("Accessory") or child.Name~="Dark Green Wide Cape" then return end
+    if capeAccessory==child and capeWeld and capeWeld.Parent then return end
     -- 기본 장착 후 Weld 생성이 한 프레임 늦을 수 있으므로 기존 로딩을 비동기로 기다린다.
     task.spawn(function()
       local handle=child:WaitForChild("Handle",8)
       local joint=handle and handle:WaitForChild("AccessoryWeld",8)
       if character~=player.Character or child.Parent~=character or not joint or not joint:IsA("Weld") then return end
+      if capeAccessory==child and capeWeld and capeWeld.Parent then return end
       capeAccessory=child
       capeWeld=joint
       capeRestC0=joint.C0
@@ -1132,7 +1134,8 @@ local function bindMeadowMenuCharacter(character)
   meadowCharacterConnections[#meadowCharacterConnections+1]=game:GetService("RunService").RenderStepped:Connect(function(dt)
     if character~=player.Character or not capeWeld or not capeWeld.Parent
       or not capeRestC0 or not capeAccessory or capeAccessory.Parent~=character then return end
-    local root=capeRoot
+    local root=capeRoot or character:FindFirstChild("HumanoidRootPart")
+    capeRoot=root
     if not root or not root.Parent or not human or human.Health<=0 then return end
     local velocity=root.AssemblyLinearVelocity
     local planar=Vector3.new(velocity.X,0,velocity.Z)
@@ -1174,6 +1177,12 @@ local function bindMeadowMenuCharacter(character)
   meadowCharacterConnections[#meadowCharacterConnections+1]=player:GetAttributeChangedSignal("MeadowEnteredWorld"):Connect(function()
     if player:GetAttribute("MeadowEnteredWorld")==true then
       capeArrivalWindUntil=os.clock()+2.8
+    end
+  end)
+  meadowCharacterConnections[#meadowCharacterConnections+1]=character:GetAttributeChangedSignal("OpeningCapeAttached"):Connect(function()
+    -- 로블록스 장신구가 늦게 로드되더라도 서버의 실제 장착 확정 시 재연결한다.
+    if character:GetAttribute("OpeningCapeAttached")==true and not capeWeld then
+      bindWornCape(character:FindFirstChild("Dark Green Wide Cape"))
     end
   end)
   for _,accessory in ipairs(character:GetChildren()) do bindWornCape(accessory) end
