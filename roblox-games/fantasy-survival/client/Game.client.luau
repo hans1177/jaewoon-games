@@ -5616,10 +5616,15 @@ local function registerMeadowPrompt(descendant)
   end
 end
 local worldPrompts=workspace:FindFirstChild("FantasySurvivalWorld")
-if worldPrompts then
-  for _,descendant in ipairs(worldPrompts:GetDescendants()) do registerMeadowPrompt(descendant) end
-  worldPrompts.DescendantAdded:Connect(registerMeadowPrompt)
+-- [목적지 안내] 월드가 HUD보다 늦게 복제되어도 기존 실제 조사·채집 프롬프트를 등록한다.
+local function bindMeadowQuestWorld(world)
+  if not world or world.Name~="FantasySurvivalWorld" then return end
+  worldPrompts=world
+  for _,descendant in ipairs(world:GetDescendants()) do registerMeadowPrompt(descendant) end
+  world.DescendantAdded:Connect(registerMeadowPrompt)
 end
+if worldPrompts then bindMeadowQuestWorld(worldPrompts) end
+workspace.ChildAdded:Connect(bindMeadowQuestWorld)
 local questWorldMarker=Instance.new("BillboardGui")
 questWorldMarker.Name="MeadowQuestWorldMarker"
 questWorldMarker.Size=UDim2.fromOffset(156,36)
