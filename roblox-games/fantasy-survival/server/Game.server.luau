@@ -4360,7 +4360,7 @@ local function bindNativeFoundationPlayer(player)
       end
       local attached = false
       for _, accessory in ipairs(humanoid:GetAccessories()) do
-        if accessory.Name == "Dark Green Wide Cape" then
+        if accessory.Name:match("^%s*(.-)%s*$") == "Dark Green Wide Cape" then
           local handle = accessory:FindFirstChild("Handle")
           attached = handle ~= nil and handle:FindFirstChild("AccessoryWeld") ~= nil
           if attached then break end
@@ -4371,7 +4371,7 @@ local function bindNativeFoundationPlayer(player)
         -- 외형은 기록됐어도 실제 장신구 메시가 누락되면 공식 리셋으로 1회 재생성한다.
         attached = false
         for _, accessory in ipairs(humanoid:GetAccessories()) do
-          if accessory.Name == "Dark Green Wide Cape" then
+          if accessory.Name:match("^%s*(.-)%s*$") == "Dark Green Wide Cape" then
             local handle = accessory:FindFirstChild("Handle")
             attached = handle ~= nil and handle:FindFirstChild("AccessoryWeld") ~= nil
             if attached then break end
@@ -4392,7 +4392,7 @@ local function bindNativeFoundationPlayer(player)
     -- 명세상 착용 성공이 아니라 실제 Handle 용접이 보일 때만 착용 완료로 기록한다.
     local attached = false
     for _, accessory in ipairs(humanoid:GetAccessories()) do
-      if accessory.Name == "Dark Green Wide Cape" then
+      if accessory.Name:match("^%s*(.-)%s*$") == "Dark Green Wide Cape" then
         local handle = accessory:FindFirstChild("Handle")
         attached = handle ~= nil and handle:FindFirstChild("AccessoryWeld") ~= nil
         if attached then break end
@@ -4401,7 +4401,15 @@ local function bindNativeFoundationPlayer(player)
     -- [낡은 진홍색 망토] 기존 인증된 장신구 메시만 재질 수정한다. 새 파츠·모델 생성 없음.
     -- 기존 아바타 옷/장신구, 전투/저장 상태와 분리된 외형 처리다.
     if attached then
-      local wornCape=character:FindFirstChild("Dark Green Wide Cape")
+      -- [원인 수정] 카탈로그 실제 이름은 "Dark Green Wide Cape "로 마지막에 공백이 있다.
+      -- Roblox 아바타가 이름을 정규화하더라도 동일한 실물 Accessory를 찾는다.
+      local wornCape
+      for _,item in ipairs(humanoid:GetAccessories()) do
+        if item.Name:match("^%s*(.-)%s*$")=="Dark Green Wide Cape" then
+          wornCape=item
+          break
+        end
+      end
       if wornCape and wornCape:IsA("Accessory") then
         wornCape:SetAttribute("MeadowCrimsonWornCape",true)
         local section=0
