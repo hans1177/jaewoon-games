@@ -4320,8 +4320,9 @@ local function bindNativeFoundationPlayer(player)
   player.RespawnLocation = nativeFoundationSpawn
   -- [오프닝 망토] 캐릭터가 생성된 바로 그 회차에서 기본 외형 로딩을 기다린다.
   -- CharacterAppearanceLoaded만 기다리면 기존 캐릭터나 빨리 로딩된 캐릭터를 놓칠 수 있다.
-  -- [오프닝 망토 / 서버 직접 장착] 로블록스 공식 무료 빨간 망토(BackAccessory)를 불러온다.
-  -- 외부 유료 UGC·설명 전체 재적용은 쓰지 않고 기존 아바타 장비·저장·전투를 보존한다.
+  -- [마력숲 낡은 붉은 망토] 기존 프로젝트가 소유한 3D 찢어진 메시를 원본 에셋 경로에서 장착한다.
+  -- 등록/Universe 권한이 없으면 가짜 Part·유료 카탈로그·평평한 패널로 대체하지 않는다.
+  -- 캐릭터 외형만 변경하고 기존 착용 장비·저장 구조·게임 규칙은 손대지 않는다.
   local function applyOpeningCape(character)
     local humanoid=character:WaitForChild("Humanoid",10)
     if player.Character~=character or not humanoid or humanoid.Health<=0 then return end
@@ -4331,111 +4332,98 @@ local function bindNativeFoundationPlayer(player)
       warn("마력숲 망토 장착 불가: R15 캐릭터가 아님")
       return
     end
-    -- Roblox 기본 아바타 로딩 뒤 게임 전용 망토 한 개만 장착한다.
     local deadline=os.clock()+9
     while player.Character==character and not player:HasAppearanceLoaded()
       and os.clock()<deadline do task.wait(.15) end
     if player.Character~=character or humanoid.Health<=0 then return end
-    local capeId=tonumber(Config.OpeningCapeAccessoryId)
-    if not capeId or capeId<=0 then
+    local capeKey=Config.OpeningCapeModelKey
+    local capeId=type(capeKey)=="string" and NativeCreatureAssets[capeKey] or nil
+    if typeof(capeId)~="number" or capeId<=0 then
       character:SetAttribute("OpeningCapeAttached",false)
-      character:SetAttribute("OpeningCapeState","SOURCE_MISSING")
-      warn("마력숲 망토 자산 ID 누락")
+      character:SetAttribute("OpeningCapeState","REGISTERED_OWNER_MESH_MISSING")
+      warn("마력숲 헤진 망토 등록/Universe 승인 ID 없음: "..tostring(capeKey))
       return
     end
     local oldCape=character:FindFirstChild("MeadowWornCrimsonCape")
     if oldCape and oldCape:IsA("Accessory") then
-      local oldHandle=oldCape:FindFirstChild("Handle")
-      if oldHandle and oldHandle:FindFirstChild("AccessoryWeld") then
+      local handle=oldCape:FindFirstChild("Handle")
+      local joint=handle and handle:FindFirstChild("AccessoryWeld")
+      if joint and joint:IsA("Weld") and joint.Part0 and joint.Part1==handle
+        and oldCape:GetAttribute("MeadowOwnerOriginalCape")==true then
         character:SetAttribute("OpeningCapeAttached",true)
         character:SetAttribute("OpeningCapeState","ATTACHED")
         return
       end
       oldCape:Destroy()
     end
-    local loadedModel
-    local attached=false
+    local loadedModel,attached,failedReason=nil,false,nil
     local ok,reason=pcall(function()
-      loadedModel=game:GetService("InsertService"):LoadAsset(capeId)
-      local cape=loadedModel and loadedModel:FindFirstChildWhichIsA("Accessory",true)
-      if not cape then error("OFFICIAL_BACK_ACCESSORY_NOT_LOADED") end
-      cape.Parent=nil
+      -- [기존 승인 네이티브 에셋] 다른 초원 모델과 같은 LoadAssetAsync/Universe 권한 사용.
+      loadedModel=AssetService:LoadAssetAsync(capeId)
+      if not loadedModel or not loadedModel:IsA("Model") then
+        error("WORN_CAPE_NATIVE_MODEL_LOAD_FAILED")
+      end
+      local handle=loadedModel:FindFirstChildWhichIsA("MeshPart",true)
+      if not handle then error("WORN_CAPE_REAL_MESHPART_MISSING") end
+      local meshCount=0
+      for _,item in ipairs(loadedModel:GetDescendants()) do
+        if item:IsA("MeshPart") then meshCount+=1 end
+        if item:IsA("LuaSourceContainer") or item:IsA("RemoteEvent")
+          or item:IsA("RemoteFunction") or item:IsA("Tool") then
+          item:Destroy()
+        end
+      end
+      -- 검증된 OBJ는 Blender에서 실물 접힘·깃·고리를 하나의 원본 MeshPart로 합쳤다.
+      if meshCount~=1 then error("WORN_CAPE_IMPORT_MESH_COUNT_INVALID:"..meshCount) end
+      local torso=character:FindFirstChild("UpperTorso")
+      local back=torso and torso:FindFirstChild("BodyBackAttachment")
+      if not torso or not back or not back:IsA("Attachment") then
+        error("WORN_CAPE_R15_BACK_ATTACHMENT_MISSING")
+      end
+      local cape=Instance.new("Accessory")
+      cape.Name="MeadowWornCrimsonCape"
+      handle.Parent=cape
+      handle.Name="Handle"
+      handle.Anchored=false
+      handle.CanCollide=false
+      handle.CanTouch=false
+      handle.CanQuery=false
+      handle.Massless=true
+      handle.Reflectance=0
+      handle.Material=Enum.Material.Fabric
+      -- 원본 GLB의 붉은 마모·그림자 재질을 보존하며 SurfaceAppearance를 강제로 지우지 않는다.
+      -- 원본의 찢어진 밑단 길이는 어깨~엉덩이 약 1.52스터드로 이미 모델 자체에서 제한된다.
+      local weld=Instance.new("Weld")
+      weld.Name="AccessoryWeld"
+      weld.Part0=torso
+      weld.Part1=handle
+      weld.C0=back.CFrame*CFrame.new(0,-.12,.12)
+      weld.C1=CFrame.new(0,handle.Size.Y*.47,0)*CFrame.Angles(0,math.pi,0)
+      weld.Parent=handle
+      cape:SetAttribute("MeadowCrimsonWornCape",true)
+      cape:SetAttribute("MeadowOwnerOriginalCape",true)
+      cape:SetAttribute("MeadowCapeMeshCount",meshCount)
+      cape:SetAttribute("MeadowCapeHemTears",4)
+      cape:SetAttribute("MeadowCapeLength","HIP_LENGTH")
+      cape.Parent=character
       loadedModel:Destroy()
       loadedModel=nil
-      cape.Name="MeadowWornCrimsonCape"
-      -- [낡은 진홍색 천] Roblox 공식 실물 메시만 재질·색상을 변경한다.
-      -- DoubleSided는 Studio 전용 속성이므로 런타임에 절대 기록하지 않는다.
-      local meshCount=0
-      for _,detail in ipairs(cape:GetDescendants()) do
-        if detail:IsA("MeshPart") then
-          meshCount+=1
-          local appearance=detail:FindFirstChildOfClass("SurfaceAppearance")
-          if appearance then appearance:Destroy() end
-          detail.TextureID=""
-          detail.Material=Enum.Material.Fabric
-          detail.Color=meshCount%3==0 and Color3.fromRGB(87,33,39)
-            or meshCount%2==0 and Color3.fromRGB(112,39,45)
-            or Color3.fromRGB(127,46,50)
-          detail.Reflectance=0
-        elseif detail:IsA("SpecialMesh") then
-          detail.TextureId=""
-          detail.VertexColor=Vector3.new(1,1,1)
-        elseif detail:IsA("BasePart") then
-          detail.Color=Color3.fromRGB(120,42,47)
-          detail.Material=Enum.Material.Fabric
-          detail.Reflectance=0
-        end
-        if detail:IsA("BasePart") then
-          detail.CanCollide=false
-          detail.CanTouch=false
-          detail.CanQuery=false
-          detail.Massless=true
-          detail.Anchored=false
-        end
-      end
-      local handle=cape:FindFirstChild("Handle")
-      if not handle or not handle:IsA("BasePart") then
-        cape:Destroy()
-        error("OFFICIAL_CAPE_HANDLE_MISSING")
-      end
-      humanoid:AddAccessory(cape)
-      if player.Character~=character or not cape:IsDescendantOf(character) then
-        cape:Destroy()
-        error("OFFICIAL_CAPE_ATTACH_ABORTED")
-      end
-      local joint=handle:FindFirstChild("AccessoryWeld")
-      if not joint then
-        -- [기존 R15 Attachments] 자동 장착이 실패한 경우 같은 실제 부착점을 직접 연결한다.
-        local torso=character:FindFirstChild("UpperTorso")
-        local torsoAttachment=torso and torso:FindFirstChild("BodyBackAttachment")
-        local handleAttachment=handle:FindFirstChild("BodyBackAttachment")
-        if torsoAttachment and handleAttachment then
-          joint=Instance.new("Weld")
-          joint.Name="AccessoryWeld"
-          joint.Part0=torso
-          joint.Part1=handle
-          joint.C0=torsoAttachment.CFrame
-          joint.C1=handleAttachment.CFrame
-          joint.Parent=handle
-        end
-      end
-      attached=joint~=nil and joint:IsA("Weld") and joint.Part0~=nil
-        and cape.Parent==character and handle.Parent==cape
+      attached=player.Character==character and cape.Parent==character
+        and weld.Part0==torso and weld.Part1==handle
       if not attached then
         cape:Destroy()
-        error("OFFICIAL_CAPE_WELD_MISSING")
+        error("WORN_CAPE_NATIVE_WELD_ATTACH_FAILED")
       end
-      cape:SetAttribute("MeadowCrimsonWornCape",true)
-      cape:SetAttribute("MeadowCapeMeshCount",meshCount)
     end)
+    failedReason=reason
     if loadedModel then loadedModel:Destroy() end
     if player.Character~=character then return end
     character:SetAttribute("OpeningCapeAttached",ok and attached)
     character:SetAttribute("OpeningCapeState",ok and attached and "ATTACHED" or "LOAD_FAILED")
     if ok and attached then
-      print("마력숲 망토 장착 확인: 공식 무료 붉은 망토 / " .. tostring(capeId))
+      print("마력숲 망토 실제 장착: 소유 원본 헤진 빨강 / 엉덩이 길이 / 메시ID="..capeId)
     else
-      warn("마력숲 망토 실제 장착 실패: " .. tostring(reason))
+      warn("마력숲 망토 원본 메시 실제 장착 실패: "..tostring(failedReason))
     end
   end
   local function onCharacterAdded(character)
