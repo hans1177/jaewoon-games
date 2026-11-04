@@ -1612,6 +1612,8 @@ meadowVitalsGui.Parent=gui.Parent
 meadowHealthTrack.Parent=meadowVitalsGui
 meadowHealthTrack.AnchorPoint=Vector2.new(.5,0)
 meadowHealthTrack.ZIndex=9
+-- [상단 상태 HUD / 지역 스코프] 기존 캐릭터·체력·기력·숙련도 표시를 유지하며 Luau 레지스터를 반환한다.
+do
 local meadowHealthFill=meadowHealthTrack:FindFirstChild("Fill")
 if meadowHealthFill then
   meadowHealthFill.ZIndex=10
@@ -1733,6 +1735,7 @@ for _,attribute in ipairs({"Level","MeadowStamina","CombatProficiency"}) do
 end
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(layoutMeadowEnergy)
 layoutMeadowEnergy()
+end -- [상단 상태 HUD] 연결된 표시·갱신 이벤트는 유지한다.
 
 -- [왼쪽 HUD] 기본 메뉴 버튼을 감추고 퀘스트 도우미·캐릭터 단축창으로 교체한다.
 -- [스토리·아이템 HUD] 실제 서버 퀘스트와 DataStore 소장 기록만 보여준다.
