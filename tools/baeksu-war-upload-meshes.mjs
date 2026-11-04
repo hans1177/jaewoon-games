@@ -101,6 +101,8 @@ for(const name of names){
  const ownerCape=fantasy&&name==='wornCape'
  &&origin?.license==='PROJECT_ORIGINAL'&&originSource?.license==='PROJECT_ORIGINAL'
  &&origin.hemTearCount===4&&originSource.hemTearCount===4
+ &&origin.clothBones===3&&originSource.clothBones===3
+ &&origin.length==='HIP_LENGTH'&&originSource.length==='HIP_LENGTH'
  &&origin.sourceFile==='roblox-games/fantasy-survival/assets/worn-cape.obj'
  &&originSource.parentSourceGitBlob==='6a011e694414ae3a5ef03d348158fdfbef9da93a'
  &&crypto.createHash('sha256').update(await fs.readFile(origin.sourceFile)).digest('hex')===origin.sourceSha256;
