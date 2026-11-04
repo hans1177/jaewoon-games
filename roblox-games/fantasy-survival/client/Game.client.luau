@@ -199,7 +199,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 카메라·표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
-local meadowPaintedHudAtlas="rbxassetid://112814533400088" -- [등록 원화] 시안 아이콘 21종
+local meadowPaintedHudAtlas="rbxassetid://112814533400088" -- [시안 원화] 2172x724 / 21종, 실제 접근 상태는 게시 후 검증
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
   fist="rbxassetid://127661757924412",
@@ -1432,15 +1432,22 @@ for index,info in ipairs(referenceMenuItems) do
   local icon=Instance.new("ImageLabel")
   icon.Name="ReferenceIcon"
   icon.BackgroundTransparency=1
-  icon.Image="rbxassetid://71333073665947"
-  icon.ImageRectSize=Vector2.new(40,40)
-  icon.ImageRectOffset=Vector2.new(info[3]*40,0)
+  icon.Image=meadowPaintedHudAtlas
+  icon.ImageRectSize=Vector2.new(225,220)
+  icon.ImageRectOffset=Vector2.new(({13,251,487,727,963,1199})[index],8)
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.fromScale(.5,0)
   icon.Size=UDim2.fromScale(.66,.66)
   icon.ZIndex=28
   icon.Parent=button
+  -- [메뉴 아이콘] 원화가 로드되지 않을 때만 이미 등록한 16칸 원본으로 복구.
+  task.delay(5,function()
+    if not icon.Parent or icon.IsLoaded then return end
+    icon.ImageRectSize=Vector2.new(40,40)
+    icon.ImageRectOffset=Vector2.new(info[3]*40,0)
+    icon.Image="rbxassetid://71333073665947"
+  end)
   local caption=Instance.new("TextLabel")
   caption.Name="ReferenceCaption"
   caption.Text=info[1]
@@ -1496,8 +1503,8 @@ for index=1,10 do
   icon.BackgroundTransparency=1
   icon.Image=meadowPaintedHudAtlas
   local edges={8,240,468,691,910,1108,1310,1510,1719,1942,2165}
-  icon.ImageRectSize=Vector2.new(edges[index+1]-edges[index],220)
-  icon.ImageRectOffset=Vector2.new(edges[index],252)
+  icon.ImageRectSize=Vector2.new(edges[index+1]-edges[index],224)
+  icon.ImageRectOffset=Vector2.new(edges[index],240)
   icon.ScaleType=Enum.ScaleType.Fit
   icon.Size=UDim2.fromScale(.78,.78)
   icon.Position=UDim2.fromScale(.11,.11)
@@ -5026,7 +5033,7 @@ end
 -- [오른쪽 전용 그림 아이콘] 연타·회피·막기·상호작용·질주는 승인된 전용 그림으로 교체한다.
 -- 물약과 가방은 현재 등록된 개별 CC0 이미지를 그대로 사용하고, 서버 액션 바인딩은 유지한다.
 local function applyMeadowRightActionImage(button,role)
-  local paintedX=({sprint=8,fist=246,dodge=480,jump=715})[role]
+  local paintedX=({sprint=12,fist=248,dodge=485,jump=721})[role]
   local atlasX=({sprint=160,fist=40,dodge=120,guard=80,interact=200,bag=240})[role]
   local imageId=paintedX and meadowPaintedHudAtlas or atlasX and "rbxassetid://81665484719308" or meadowRealActionIcons[role]
   if not imageId then return false end
@@ -5035,8 +5042,8 @@ local function applyMeadowRightActionImage(button,role)
   icon.BackgroundTransparency=1
   icon.Image=imageId
   if paintedX then
-    icon.ImageRectOffset=Vector2.new(paintedX,480)
-    icon.ImageRectSize=Vector2.new(232,240)
+    icon.ImageRectOffset=Vector2.new(paintedX,460)
+    icon.ImageRectSize=Vector2.new(225,236)
   elseif atlasX then
     icon.ImageRectOffset=Vector2.new(atlasX,0)
     icon.ImageRectSize=Vector2.new(40,40)
@@ -5056,9 +5063,10 @@ local function applyMeadowRightActionImage(button,role)
         button.Text="↑"
         button.TextSize=28
       else
-        icon.ImageRectOffset=Vector2.new(atlasX,0)
-        icon.ImageRectSize=Vector2.new(40,40)
-        icon.Image="rbxassetid://81665484719308"
+        -- [전투 아이콘] 해당 역할의 승인된 개별 원본을 사용한다.
+        icon.ImageRectOffset=Vector2.zero
+        icon.ImageRectSize=Vector2.zero
+        icon.Image=meadowRealActionIcons[role]
       end
     end)
   end
@@ -5204,8 +5212,8 @@ local swordIcon=Instance.new("ImageLabel")
 swordIcon.Name="ReferenceSwordIcon"
 swordIcon.BackgroundTransparency=1
 swordIcon.Image=meadowPaintedHudAtlas
-swordIcon.ImageRectOffset=Vector2.new(944,480)
-swordIcon.ImageRectSize=Vector2.new(240,240)
+swordIcon.ImageRectOffset=Vector2.new(946,460)
+swordIcon.ImageRectSize=Vector2.new(235,236)
 swordIcon.Position=UDim2.fromScale(.12,.1)
 swordIcon.Size=UDim2.fromScale(.78,.78)
 swordIcon.ZIndex=20
