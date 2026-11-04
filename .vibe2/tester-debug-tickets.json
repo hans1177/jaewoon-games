@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-11-04T07:50:37.518Z",
+  "updatedAt": "2026-11-04T08:03:10.718Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -12119,8 +12119,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-04T07:50:37.493Z",
-      "occurrenceCount": 27
+      "updatedAt": "2026-11-04T08:03:10.696Z",
+      "occurrenceCount": 28
     },
     {
       "id": "bug-265b5406b2bdecc5e87f",
@@ -12241,6 +12241,30 @@
       "createdAt": "2026-11-03T14:48:50.438Z",
       "updatedAt": "2026-11-03T14:48:50.438Z",
       "occurrenceCount": 1
+    },
+    {
+      "id": "bug-eb3be63425285f2cf3e3",
+      "gameId": "gem-survivor",
+      "surface": "WEB",
+      "phase": "POST_PUBLICATION_PLAYTEST",
+      "severity": "HIGH",
+      "category": "UNKNOWN",
+      "signature": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('button[data-hero=\"guardian\"]')",
+      "reproduction": "RERUN_EXISTING_PUBLISHED_WEB_BROWSER_SMOKE_ON_THE_SAME_GAME_SOURCE",
+      "responsibleFiles": [
+        "web-games/gem-survivor/index.html"
+      ],
+      "evidence": [
+        "web-browser-playtest-run:41793310565",
+        "web-browser-playtest-source:08957d4e4b65bc6086194b4908aae8bf68c7d189",
+        "web-browser-playtest-tree:a662a98c0cf0e044d31fb7fbb54134d79c7eb629"
+      ],
+      "exactFailedStage": "WEB_POST_PUBLICATION_PLAYTEST",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "status": "OPEN",
+      "createdAt": "2026-11-04T08:03:10.696Z",
+      "updatedAt": "2026-11-04T08:03:10.696Z",
+      "occurrenceCount": 1
     }
   ],
   "webPlaytestObservations": [
@@ -12268,7 +12292,7 @@
       "target": "web",
       "sourceRoot": "web-games/ocean-voyage",
       "sourceTreeSha": "bd78acee4969637fdadce382f6b8972746319860",
-      "sourceRevision": "5a2713e77f41c3ada726d395b61ccdc34dd820ae",
+      "sourceRevision": "08957d4e4b65bc6086194b4908aae8bf68c7d189",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12277,26 +12301,27 @@
         "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "41791725596",
-      "observedAt": "2026-11-04T07:50:37.493Z"
+      "runId": "41793310565",
+      "observedAt": "2026-11-04T08:03:10.696Z"
     },
     {
       "gameId": "gem-survivor",
-      "runtimePassed": true,
+      "runtimePassed": false,
+      "failureSignature": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('button[data-hero=\"guardian\"]')\n",
       "target": "web",
       "sourceRoot": "web-games/gem-survivor",
       "sourceTreeSha": "a662a98c0cf0e044d31fb7fbb54134d79c7eb629",
-      "sourceRevision": "5a2713e77f41c3ada726d395b61ccdc34dd820ae",
+      "sourceRevision": "08957d4e4b65bc6086194b4908aae8bf68c7d189",
       "runtimeObserved": true,
-      "failureStage": null,
+      "failureStage": "WEB_POST_PUBLICATION_PLAYTEST",
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
       "sharedSourceTrees": {
         "assets": "80037f4afecb237a5bcbdf7e64fc40d2ec3ee9c2",
         "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "41791725596",
-      "observedAt": "2026-11-04T07:50:37.493Z"
+      "runId": "41793310565",
+      "observedAt": "2026-11-04T08:03:10.696Z"
     },
     {
       "gameId": "fantasy-survival",
