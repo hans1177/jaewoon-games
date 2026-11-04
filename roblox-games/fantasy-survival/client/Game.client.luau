@@ -1100,7 +1100,7 @@ local menuBorder=root:FindFirstChild("WitcherMenuBorder") or Instance.new("UIStr
 menuBorder.Name="WitcherMenuBorder";menuBorder.Color=meadowGold
 menuBorder.Thickness=1.5;menuBorder.Transparency=.16;menuBorder.Parent=root
 meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{
-  compact=true,hideButton=true,menuLeft=true,witcherStyle=true,tabOrder={0,1,2,7,3,4,5,6},
+  compact=true,hideButton=true,hideMenuButton=true,menuLeft=true,witcherStyle=true,tabOrder={0,1,2,7,3,4,5,6},
   pages=meadowPages,pageNames=meadowPageNames,
   onPageChanged=function(index)
     renderMeadowPages()
@@ -1216,8 +1216,7 @@ meadowVitalsGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowEne
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(layoutMeadowEnergy)
 layoutMeadowEnergy()
 
-local meadowMenuButton=gui:FindFirstChild("GameActionsMenu")
-if meadowMenuButton then meadowMenuButton.Text="☰";meadowMenuButton.TextSize=22 end
+-- [왼쪽 HUD] 기본 메뉴 버튼을 감추고 퀘스트 도우미·캐릭터 단축창으로 교체한다.
 -- [스토리·아이템 HUD] 실제 서버 퀘스트와 DataStore 소장 기록만 보여준다.
 -- 중앙 게임 화면과 점프/전투 영역은 비워 두고 좌상단에 펼침 단추만 둔다.
 local questTracker=Instance.new("TextButton")
@@ -1929,9 +1928,9 @@ local function renderMeadowJournal()
   end
   if villageIndex>#Config.VillageContracts then villageLines[#villageLines+1]="마을 의뢰 모두 완료" end
   villageContractRow.Text=table.concat(villageLines,"\n\n")
-  trackerTitle.Text=quest and ("메인  "..quest.Name.."  ▸") or "메인  초원 조사 기록 완료  ▸"
-  trackerDetail.Text=quest and string.format("%s  (%d/%d)",quest.Instruction,progress,quest.Goal)
-    or "연구 기록을 메뉴의 인벤토리에서 다시 볼 수 있어"
+  trackerTitle.Text="퀘스트 도우미"
+  trackerDetail.Text=quest and string.format("%s · %d/%d\n%s",quest.Name,progress,quest.Goal,quest.Instruction)
+    or "메인 의뢰 완료\n연구 기록은 인벤토리에서 확인"
   inventoryRow.Text="소지품  ·  실제 보유·제작·장비 기록"
   renderWitcherInventory()
   for index,info in ipairs(Config.MainQuests) do
@@ -1948,23 +1947,82 @@ local function renderMeadowJournal()
     storyRows[index].TextColor3=has and Color3.fromRGB(245,244,208) or Color3.fromRGB(161,180,164)
   end
 end
--- [퀘스트 접기] 작은 아이콘을 눌러 원본 저널에서 진행도와 목표를 확인한다.
-questTracker.Text="임무";questTracker.TextSize=11;questTracker.Font=Enum.Font.GothamBold
-questTracker.TextColor3=Color3.fromRGB(246,244,222)
-trackerTitle.Visible=false;trackerDetail.Visible=false
-questTracker.Activated:Connect(function()meadowMenu.open(3)end)
-gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
-  questTracker.Visible=gui:GetAttribute("GameMenuOpen")~=true
+-- [왼쪽 퀘스트 도우미] 기존 저널 버튼을 현재 목표 카드와 도우미 메뉴로 전환한다.
+questTracker.Name="MeadowQuestHelperButton"
+questTracker.Text=""
+questTracker.BackgroundColor3=Color3.fromRGB(20,48,40)
+questTracker.BackgroundTransparency=.06
+trackerTitle.Visible=true
+trackerTitle.Text="퀘스트 도우미"
+trackerTitle.TextSize=14
+trackerTitle.TextTruncate=Enum.TextTruncate.AtEnd
+trackerDetail.Visible=true
+trackerDetail.Position=UDim2.fromOffset(11,31)
+trackerDetail.Size=UDim2.new(1,-21,0,34)
+trackerDetail.TextSize=11
+trackerDetail.TextTruncate=Enum.TextTruncate.AtEnd
+questTracker.Activated:Connect(function()meadowMenu.open(5)end)
+
+-- [왼쪽 캐릭터창] 기존 3D 아바타·장비·숙련도 페이지와 실제 썸네일을 재사용한다.
+local characterShortcut=Instance.new("TextButton")
+characterShortcut.Name="MeadowCharacterButton"
+characterShortcut.Text="캐릭터창"
+characterShortcut.TextColor3=Color3.fromRGB(246,244,222)
+characterShortcut.Font=Enum.Font.GothamBold
+characterShortcut.TextSize=15
+characterShortcut.TextXAlignment=Enum.TextXAlignment.Right
+characterShortcut.BackgroundColor3=Color3.fromRGB(20,48,40)
+characterShortcut.BackgroundTransparency=.06
+characterShortcut.BorderSizePixel=0
+characterShortcut.AutoButtonColor=true
+characterShortcut.ZIndex=8
+characterShortcut.Parent=gui
+local characterShortcutCorner=Instance.new("UICorner")
+characterShortcutCorner.CornerRadius=UDim.new(0,11)
+characterShortcutCorner.Parent=characterShortcut
+local characterShortcutStroke=Instance.new("UIStroke")
+characterShortcutStroke.Color=Color3.fromRGB(131,194,150)
+characterShortcutStroke.Transparency=.25
+characterShortcutStroke.Thickness=1.2
+characterShortcutStroke.Parent=characterShortcut
+local characterShortcutPadding=Instance.new("UIPadding")
+characterShortcutPadding.PaddingRight=UDim.new(0,11)
+characterShortcutPadding.Parent=characterShortcut
+local characterShortcutIcon=Instance.new("ImageLabel")
+characterShortcutIcon.Name="RealAvatarThumbnail"
+characterShortcutIcon.Size=UDim2.fromOffset(36,36)
+characterShortcutIcon.Position=UDim2.fromOffset(10,10)
+characterShortcutIcon.BackgroundColor3=Color3.fromRGB(42,74,57)
+characterShortcutIcon.BackgroundTransparency=.2
+characterShortcutIcon.BorderSizePixel=0
+characterShortcutIcon.Image=meadowAvatar.Image
+characterShortcutIcon.ZIndex=9
+characterShortcutIcon.Parent=characterShortcut
+local characterIconCorner=Instance.new("UICorner")
+characterIconCorner.CornerRadius=UDim.new(1,0)
+characterIconCorner.Parent=characterShortcutIcon
+meadowAvatar:GetPropertyChangedSignal("Image"):Connect(function()
+  characterShortcutIcon.Image=meadowAvatar.Image
 end)
+characterShortcut.Activated:Connect(function()meadowMenu.open(1)end)
+
+-- [모바일] 세로 화면은 중앙 체력바 아래에 배치하고 조이스틱과 겹치지 않도록 한다.
 local function layoutMeadowJournal()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
-  local short=v.Y<440
-  -- [왼쪽] 주머니 단축버튼 없이 메뉴와 접힌 임무만 유지한다.
-  questTracker.Position=UDim2.fromOffset(9,74)
-  questTracker.Size=UDim2.fromOffset(48,48)
-  -- 체력·스테미너는 위 중앙 HUD에서만 배치한다.
+  local portrait=v.X<v.Y
+  local top=portrait and 104 or 8
+  local width=portrait and 138 or 156
+  questTracker.Position=UDim2.fromOffset(9,top)
+  questTracker.Size=UDim2.fromOffset(width,70)
+  characterShortcut.Position=UDim2.fromOffset(9,top+78)
+  characterShortcut.Size=UDim2.fromOffset(width,56)
 end
+gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
+  local visible=gui:GetAttribute("GameMenuOpen")~=true
+  questTracker.Visible=visible
+  characterShortcut.Visible=visible
+end)
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
 layoutMeadowJournal()
 for _,name in ipairs({"QuestStage","QuestProgress","QuestWood","QuestStone","ResearchRecords","Wood","Stone","Coins","WeaponTier",

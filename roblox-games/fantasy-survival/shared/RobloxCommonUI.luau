@@ -5089,7 +5089,8 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   end
  end
  local function setOpen(value)
-  opened=value;root.Visible=value;shade.Visible=value;hud.Visible=not value;menu.Visible=not value
+  opened=value;root.Visible=value;shade.Visible=value;hud.Visible=not value
+   menu.Visible=not value and not (primary and primary.hideMenuButton==true)
   if quick then quick.Visible=not value end
   if value then
    -- [마력숲 메뉴 레이어] 원래 HUD의 큰 ZIndex는 탭/닫기 버튼 위로 뜨지 못하게 제한한다.
