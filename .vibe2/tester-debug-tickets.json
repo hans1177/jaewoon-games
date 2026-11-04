@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-11-04T08:24:55.868Z",
+  "updatedAt": "2026-11-04T08:46:01.607Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -12119,8 +12119,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-04T08:24:55.847Z",
-      "occurrenceCount": 30
+      "updatedAt": "2026-11-04T08:46:01.587Z",
+      "occurrenceCount": 31
     },
     {
       "id": "bug-265b5406b2bdecc5e87f",
@@ -12257,14 +12257,17 @@
       "evidence": [
         "web-browser-playtest-run:41793310565",
         "web-browser-playtest-source:08957d4e4b65bc6086194b4908aae8bf68c7d189",
-        "web-browser-playtest-tree:a662a98c0cf0e044d31fb7fbb54134d79c7eb629"
+        "web-browser-playtest-tree:a662a98c0cf0e044d31fb7fbb54134d79c7eb629",
+        "web-browser-playtest-pass-run:41800066384",
+        "web-browser-playtest-pass-source:ccdbe700aec78f3cca494f8cb3bf8547d8deab8b"
       ],
       "exactFailedStage": "WEB_POST_PUBLICATION_PLAYTEST",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "createdAt": "2026-11-04T08:03:10.696Z",
-      "updatedAt": "2026-11-04T08:03:10.696Z",
-      "occurrenceCount": 1
+      "updatedAt": "2026-11-04T08:46:01.587Z",
+      "occurrenceCount": 1,
+      "verificationScope": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY"
     },
     {
       "id": "bug-63faccf0ea8d860a6fc6",
@@ -12281,14 +12284,17 @@
       "evidence": [
         "web-browser-playtest-run:41794952226",
         "web-browser-playtest-source:0f0317ad9a12fceb28c5e97c2b455b85daa137a2",
-        "web-browser-playtest-tree:a662a98c0cf0e044d31fb7fbb54134d79c7eb629"
+        "web-browser-playtest-tree:a662a98c0cf0e044d31fb7fbb54134d79c7eb629",
+        "web-browser-playtest-pass-run:41800066384",
+        "web-browser-playtest-pass-source:ccdbe700aec78f3cca494f8cb3bf8547d8deab8b"
       ],
       "exactFailedStage": "WEB_POST_PUBLICATION_PLAYTEST",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "createdAt": "2026-11-04T08:09:10.323Z",
-      "updatedAt": "2026-11-04T08:09:10.323Z",
-      "occurrenceCount": 1
+      "updatedAt": "2026-11-04T08:46:01.587Z",
+      "occurrenceCount": 1,
+      "verificationScope": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY"
     }
   ],
   "webPlaytestObservations": [
@@ -12316,7 +12322,7 @@
       "target": "web",
       "sourceRoot": "web-games/ocean-voyage",
       "sourceTreeSha": "bd78acee4969637fdadce382f6b8972746319860",
-      "sourceRevision": "0f0317ad9a12fceb28c5e97c2b455b85daa137a2",
+      "sourceRevision": "ccdbe700aec78f3cca494f8cb3bf8547d8deab8b",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12325,27 +12331,26 @@
         "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "41794952226",
-      "observedAt": "2026-11-04T08:09:10.323Z"
+      "runId": "41800066384",
+      "observedAt": "2026-11-04T08:46:01.587Z"
     },
     {
       "gameId": "gem-survivor",
-      "runtimePassed": false,
-      "failureSignature": "page.waitForFunction: Timeout 60000ms exceeded.",
+      "runtimePassed": true,
       "target": "web",
       "sourceRoot": "web-games/gem-survivor",
       "sourceTreeSha": "a662a98c0cf0e044d31fb7fbb54134d79c7eb629",
-      "sourceRevision": "0f0317ad9a12fceb28c5e97c2b455b85daa137a2",
+      "sourceRevision": "ccdbe700aec78f3cca494f8cb3bf8547d8deab8b",
       "runtimeObserved": true,
-      "failureStage": "WEB_POST_PUBLICATION_PLAYTEST",
+      "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
       "sharedSourceTrees": {
         "assets": "80037f4afecb237a5bcbdf7e64fc40d2ec3ee9c2",
         "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "41794952226",
-      "observedAt": "2026-11-04T08:09:10.323Z"
+      "runId": "41800066384",
+      "observedAt": "2026-11-04T08:46:01.587Z"
     },
     {
       "gameId": "fantasy-survival",

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-11-04T08:25:33.073Z",
+  "generatedAt": "2026-11-04T08:46:38.621Z",
   "decisions": [
     {
       "gameId": "amusement-tycoon",
@@ -45,7 +45,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 2,
+          "activeTasks": 3,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 256
@@ -495,7 +495,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 2,
+          "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 256
@@ -645,7 +645,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 2,
+          "activeTasks": 3,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 256
@@ -675,7 +675,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 2,
+          "activeTasks": 3,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 256
@@ -705,7 +705,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 2,
+          "activeTasks": 3,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 256
@@ -735,7 +735,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 0,
+          "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 0
@@ -765,7 +765,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 0
@@ -785,8 +785,8 @@
     },
     {
       "gameId": "ocean-voyage",
-      "decision": "CONTINUE",
-      "reason": "NORMAL_ACTIVE_DEVELOPMENT",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "evidence": {
@@ -795,13 +795,13 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 0,
+          "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 0
         },
         "qa": {
-          "criticalRuntimeOrGateBlocker": false
+          "criticalRuntimeOrGateBlocker": true
         },
         "balance": {
           "structuralCoreFailure": false
