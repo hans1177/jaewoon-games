@@ -4327,7 +4327,9 @@ local function bindNativeFoundationPlayer(player)
   local function clearUnwantedHeadwear(character)
     for _,item in ipairs(character:GetChildren()) do
       if item:IsA("Accessory") and item.Name~="MeadowWornCrimsonCape"
-        and item.AccessoryType==Enum.AccessoryType.Hat then
+        and item.AccessoryType==Enum.AccessoryType.Hat
+        and not item:FindFirstChild("HairAttachment",true)
+        and not string.lower(item.Name):find("hair",1,true) then
         item:Destroy()
       end
     end
@@ -4395,9 +4397,12 @@ local function bindNativeFoundationPlayer(player)
           end
         end
         if meshCount~=1 then error("WORN_CAPE_IMPORT_MESH_COUNT_INVALID:"..meshCount) end
-        if handle.Size.Y<.9 or handle.Size.Y>3.4 then
+        if handle.Size.Y<.15 or handle.Size.Y>30 then
           error("WORN_CAPE_REAL_SIZE_INVALID:"..tostring(handle.Size.Y))
         end
+        -- [스케일 보정] GLB 길이를 스터드로 정규화한다. 기존 실물 메시와 찢어진 밑단은 유지.
+        local capeScale=1.52/handle.Size.Y
+        handle.Size=handle.Size*capeScale
         -- [등 장착] 캐릭터가 가진 뒤쪽 어태치먼트, 없으면 현재 몸통의 등 위치.
         local back=torso:FindFirstChild("BodyBackAttachment")
         local backFrame=back and back:IsA("Attachment") and back.CFrame
