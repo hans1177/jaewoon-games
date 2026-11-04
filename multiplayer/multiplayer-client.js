@@ -140,7 +140,7 @@ export class JaewoonMultiplayerClient extends EventTarget {
   }
 
   applyGemRoom(data = {}, autoConnectRoom = true) {
-    if (!data.guestToken || !data.roomId || !['gem-survivor', 'ocean-voyage', 'cozy-island', 'party-rpg'].includes(data.gameId)) return;
+    if (!data.guestToken || !data.roomId || !['gem-survivor', 'ocean-voyage', 'cozy-island', 'party-rpg', 'forest-survival'].includes(data.gameId)) return;
     this.guestToken = data.guestToken;
     this.currentMode = 'coop';
     this.currentGameId = data.gameId;
@@ -163,7 +163,7 @@ export class JaewoonMultiplayerClient extends EventTarget {
   }
 
   async createNumberRoomForGame(gameId, autoConnectRoom = true) {
-    if (!['ocean-voyage', 'cozy-island', 'party-rpg', 'gem-survivor'].includes(gameId)) return { ok: false, status: 400, data: { error: 'invalid_game' } };
+    if (!['ocean-voyage', 'cozy-island', 'party-rpg', 'gem-survivor', 'forest-survival'].includes(gameId)) return { ok: false, status: 400, data: { error: 'invalid_game' } };
     if (this.guestToken) await this.leaveGemRoom();
     const result = await this.request('/guest/create', { method: 'POST', body: { gameId }, auth: false });
     if (result.ok) this.applyGemRoom(result.data, autoConnectRoom);
@@ -171,9 +171,9 @@ export class JaewoonMultiplayerClient extends EventTarget {
   }
 
   async joinNumberRoomForGame(gameId, number, autoConnectRoom = true) {
-    if (!['ocean-voyage', 'cozy-island', 'party-rpg', 'gem-survivor'].includes(gameId)) return { ok: false, status: 400, data: { error: 'invalid_game' } };
+    if (!['ocean-voyage', 'cozy-island', 'party-rpg', 'gem-survivor', 'forest-survival'].includes(gameId)) return { ok: false, status: 400, data: { error: 'invalid_game' } };
     const inviteCode = String(number ?? '').trim();
-    if (!/^[0-9]$/.test(inviteCode)) return { ok: false, status: 400, data: { error: 'invalid_room_number' } };
+    if (!(gameId === 'forest-survival' ? /^(?:[1-9]|10)$/.test(inviteCode) : /^[0-9]$/.test(inviteCode))) return { ok: false, status: 400, data: { error: 'invalid_room_number' } };
     if (this.guestToken) await this.leaveGemRoom();
     const result = await this.request('/guest/join', { method: 'POST', body: { gameId, inviteCode }, auth: false });
     if (result.ok) this.applyGemRoom(result.data, autoConnectRoom);
