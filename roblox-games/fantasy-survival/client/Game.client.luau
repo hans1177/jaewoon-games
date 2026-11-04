@@ -1040,7 +1040,43 @@ local function bindMeadowMenuCharacter(character)
       render();renderMeadowPages()
     end)
   end
+  -- [낡은 붉은 망토 펄럭임] 캐릭터 전용 실제 AccessoryWeld와 기존 Bone만 움직인다.
+  -- 걷기/질주/회전/도약별 후행·복원 속도를 달리하며 전투·아바타 리그를 교체하지 않는다.
+  local capeWeld,capeRestC0,capeAccessory=nil,nil,nil
+  local capeBones={}
+  local capePitch,capeRoll,capeTurn=0,0,0
+  local capeClock=0
+  local capeRoot=character:FindFirstChild("HumanoidRootPart")
+  local function bindWornCape(child)
+    if not child or not child:IsA("Accessory") or child.Name~="Dark Green Wide Cape" then return end
+    -- 기본 장착 후 Weld 생성이 한 프레임 늦을 수 있으므로 기존 로딩을 비동기로 기다린다.
+    task.spawn(function()
+      local handle=child:WaitForChild("Handle",8)
+      local joint=handle and handle:WaitForChild("AccessoryWeld",8)
+      if character~=player.Character or child.Parent~=character or not joint or not joint:IsA("Weld") then return end
+      capeAccessory=child
+      capeWeld=joint
+      capeRestC0=joint.C0
+      capePitch,capeRoll,capeTurn=0,0,0
+      capeClock=0
+      table.clear(capeBones)
+      -- 원래 제작된 뼈가 있으면 끝단으로 갈수록 더 크게 흔들린다. 새 본/파츠 생성 금지.
+      for _,descendant in ipairs(child:GetDescendants()) do
+        if descendant:IsA("Bone") then
+          capeBones[#capeBones+1]={bone=descendant,rest=descendant.Transform}
+        end
+      end
+    end)
+  end
   local function onCharacterChildChanged(child)
+    if child:IsA("Accessory") then
+      if child.Parent==character then
+        bindWornCape(child)
+      elseif child==capeAccessory then
+        capeWeld,capeRestC0,capeAccessory=nil,nil,nil
+        table.clear(capeBones)
+      end
+    end
     if child:IsA("Tool") or child:IsA("Accessory") or child:IsA("Shirt")
       or child:IsA("Pants") or child:IsA("ShirtGraphic") or child:IsA("BodyColors") then
       previewNeedsRefresh=true
@@ -1049,6 +1085,47 @@ local function bindMeadowMenuCharacter(character)
   end
   meadowCharacterConnections[#meadowCharacterConnections+1]=character.ChildAdded:Connect(onCharacterChildChanged)
   meadowCharacterConnections[#meadowCharacterConnections+1]=character.ChildRemoved:Connect(onCharacterChildChanged)
+  meadowCharacterConnections[#meadowCharacterConnections+1]=game:GetService("RunService").RenderStepped:Connect(function(dt)
+    if character~=player.Character or not capeWeld or not capeWeld.Parent
+      or not capeRestC0 or not capeAccessory or capeAccessory.Parent~=character then return end
+    local root=capeRoot
+    if not root or not root.Parent or not human or human.Health<=0 then return end
+    local velocity=root.AssemblyLinearVelocity
+    local planar=Vector3.new(velocity.X,0,velocity.Z)
+    local walk=math.max(human.WalkSpeed,6)
+    local speed=planar.Magnitude
+    local stride=math.clamp(speed/math.max(walk*1.55,17),0,1)
+    local lateral=math.clamp(root.CFrame.RightVector:Dot(planar)/walk,-1,1)
+    local state=human:GetState()
+    local airborne=state==Enum.HumanoidStateType.Jumping
+      or state==Enum.HumanoidStateType.Freefall
+    local recovering=state==Enum.HumanoidStateType.Landed
+    local flutterStrength=(.012+stride*.080)*(reducedEffects and .62 or 1)
+    capeClock+=dt*(stride>.05 and (5.2+stride*6) or 2.1)
+    -- 바람에 뜬 천이 몸보다 한 박자 늦게 따라오도록 저주파 관성을 둔다.
+    local targetPitch=.025+stride*.29+(airborne and .19 or 0)
+      +(recovering and -.09 or 0)
+    local targetRoll=lateral*.14+math.sin(capeClock*.48)*(.018+stride*.035)
+    local targetTurn=math.clamp(-lateral*.12,-.15,.15)
+    local response=math.clamp(dt*(airborne and 3.3 or 4.6),0,1)
+    capePitch+=(targetPitch-capePitch)*response
+    capeRoll+=(targetRoll-capeRoll)*response
+    capeTurn+=(targetTurn-capeTurn)*math.clamp(dt*3.2,0,1)
+    local edgeRipple=math.sin(capeClock)*flutterStrength
+      +math.sin(capeClock*.61+1.1)*flutterStrength*.46
+    capeWeld.C0=capeRestC0*CFrame.Angles(capePitch+edgeRipple*.36,
+      capeTurn*.55,capeRoll+edgeRipple*.30)
+    for index,entry in ipairs(capeBones) do
+      if entry.bone.Parent then
+        local weight=index/math.max(#capeBones,1)
+        entry.bone.Transform=entry.rest*CFrame.Angles(
+          capePitch*weight*.44+edgeRipple*weight,
+          capeTurn*weight*.7,
+          capeRoll*weight*.53+math.sin(capeClock-index*.72)*flutterStrength*weight)
+      end
+    end
+  end)
+  for _,accessory in ipairs(character:GetChildren()) do bindWornCape(accessory) end
   renderMeadowPages()
 end
 player.CharacterAppearanceLoaded:Connect(function(character)
