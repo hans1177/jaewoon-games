@@ -1854,7 +1854,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/UserInputService.TouchTap:Connect\(function\(positions\)/);
   assert.match(client,/if positions and #positions==1 then activateMeadowWorldTap\(positions\[1\]\) end/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
-  assert.match(client,/elseif not activateNearbyMeadowInteraction\(nil\) then activateMeadowAction\(info\[1\]\) end/);
+  assert.match(client,/meadowInteractionAttemptAt=os\.clock\(\)[\s\S]*?if not activateNearbyMeadowInteraction\(nil\) then[\s\S]*?activateMeadowAction\(info\[1\]\)/);
   assert.ok(client.includes('button.Active=true -- [터치] 서버에서 프로필'));
   assert.match(client,/target:InputHoldBegin\(\)/);
   assert.doesNotMatch(client,/TouchTapInWorld:Connect\(function\(positions,processedByUI\)/);

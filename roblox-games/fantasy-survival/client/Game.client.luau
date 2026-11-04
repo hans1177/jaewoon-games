@@ -2400,16 +2400,15 @@ do
     refreshTutorial()
   end
   -- [서버 승인 입력] 퀘스트 안내는 실제 서버 승인·자원 증감·조사 응답 후에만 진행한다.
-  player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
-    local motion=tostring(player:GetAttribute("ApprovedCombatMotion") or "")
+  -- [기존 애니메이션 승인 콜백 보존] 별도 모션 승인 리스너를 가로채지 않고 속성 변화만 관찰한다.
+  player.AttributeChanged:Connect(function(name)
+    if name~="ApprovedActionMotion" then return end
+    local motion=tostring(player:GetAttribute(name) or "")
     if primaryCombatAction and meadowAttackAttemptAt>0
       and os.clock()-meadowAttackAttemptAt<2
       and string.find(motion,primaryCombatAction.Id..":",1,true)==1 then
       meadowTutorialAdvance(3)
     end
-  end)
-  player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
-    local motion=tostring(player:GetAttribute("ApprovedActionMotion") or "")
     if meadowDodgeAttemptAt>0 and os.clock()-meadowDodgeAttemptAt<2
       and (string.find(motion,"skill-meadow-dodge-left:",1,true)==1
         or string.find(motion,"skill-meadow-dodge-right:",1,true)==1) then
