@@ -1,27 +1,27 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g1-7be7cdeef8d2",
-  "directiveFingerprint": "7be7cdeef8d29ab49d510400853f5932952bf873bc278a2baad6699e127717e5",
-  "previousDirectiveFingerprint": null,
-  "forbiddenRepeatFingerprint": null,
+  "directiveId": "fantasy-survival-build-up-g2-f3400f4ada13",
+  "directiveFingerprint": "f3400f4ada136b24b3d9b33a7891a36ed3d15ba8d760688afbf1edd6f1b27af5",
+  "previousDirectiveFingerprint": "7be7cdeef8d29ab49d510400853f5932952bf873bc278a2baad6699e127717e5",
+  "forbiddenRepeatFingerprint": "7be7cdeef8d29ab49d510400853f5932952bf873bc278a2baad6699e127717e5",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 1,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-  "previousDirectiveOutcome": null,
+  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+  "previousDirectiveOutcome": "blocked",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/fantasy-survival",
-  "sourceTreeFingerprint": "8e6ecdbb2fceca13ab883a14434f654d3e59f572412cf7e6ee9f120098faf138",
+  "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
   "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
   "designSourceBuildUp": {
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
-    "previousDesignFingerprint": null,
-    "sameApprovedDesign": false,
+    "previousDesignFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
+    "sameApprovedDesign": true,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -346,7 +346,7 @@
           "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
           "VFX_AUDIO_CAMERA_POLISH_MOBILE"
         ],
-        "sourceTreeFingerprint": "8e6ecdbb2fceca13ab883a14434f654d3e59f572412cf7e6ee9f120098faf138",
+        "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
         "rule": "MAIN_A_NAMED_GAME_SYSTEM_B_EXISTING_GAME_SYSTEMS; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -367,7 +367,7 @@
     "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
-    "sourceTreeFingerprint": "8e6ecdbb2fceca13ab883a14434f654d3e59f572412cf7e6ee9f120098faf138",
+    "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
     "multiplayerMode": "HYBRID",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -983,7 +983,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "8e6ecdbb2fceca13ab883a14434f654d3e59f572412cf7e6ee9f120098faf138",
+    "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
     "mode": "PRESERVATION_PRESENTATION_MILESTONES_ONLY",
     "authoredItemCount": 48,
     "authoredCounts": {
@@ -10474,11 +10474,17 @@
     ]
   },
   "previousVersionDelta": {
-    "state": "NO_PREVIOUS_DIRECTIVE"
+    "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
+    "previousFocus": "PRESENTATION",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "8e6ecdbb2fceca13ab883a14434f654d3e59f572412cf7e6ee9f120098faf138",
+    "currentSourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
+    "sourceChanged": true,
+    "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
-    "sourceRevision": "5a2713e77f41c3ada726d395b61ccdc34dd820ae",
+    "sourceRevision": "80f4b5b7116c6fa1e0da4ab11f05b56cd962a6e6",
     "playtestFinding": "",
     "responsibleSource": "",
     "studioQualityFailure": null,
@@ -11716,7 +11722,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 8796639,
+        "sourceBytes": 9233161,
         "largestFileBytes": 1365275,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -11749,8 +11755,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -11760,9 +11766,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -11798,7 +11805,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 76,
+        "score": 218,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -11913,12 +11920,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 1,
-    "previousGeneration": 0,
+    "generation": 2,
+    "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "8e6ecdbb2fceca13ab883a14434f654d3e59f572412cf7e6ee9f120098faf138",
-    "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
+    "sourceFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
+    "priorSourceFingerprint": "8e6ecdbb2fceca13ab883a14434f654d3e59f572412cf7e6ee9f120098faf138",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -11936,7 +11943,7 @@
     "version": 1,
     "gameId": "fantasy-survival",
     "platform": "WEB",
-    "sourceTreeFingerprint": "8e6ecdbb2fceca13ab883a14434f654d3e59f572412cf7e6ee9f120098faf138",
+    "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -12738,9 +12745,9 @@
       "gameId": "fantasy-survival",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 1,
-        "actorClass": "BOSS",
-        "sourceOwnerFile": "web-games/fantasy-survival/index.html",
+        "generation": 2,
+        "actorClass": "CREATURE",
+        "sourceOwnerFile": "web-games/fantasy-survival/research-log-2.html",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
@@ -12753,7 +12760,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "fantasy-survival",
-          "actorClass": "BOSS",
+          "actorClass": "CREATURE",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -12993,7 +13000,7 @@
     "gameId": "fantasy-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "8e6ecdbb2fceca13ab883a14434f654d3e59f572412cf7e6ee9f120098faf138",
+    "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -13878,12 +13885,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
-      "runtimeObserved": false
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "8e6ecdbb2fceca13ab883a14434f654d3e59f572412cf7e6ee9f120098faf138",
+      "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
       "runtimeObserved": true,
       "runtimePassed": true,
       "failureStage": null,
@@ -13898,8 +13905,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial PRESENTATION build-up has no previous generation effect to compare"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -13945,12 +13952,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 2,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-    "sourceChangedSincePrevious": false,
+    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -14005,5 +14012,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-04T07:54:03.844Z"
+  "generatedAt": "2026-11-04T11:03:12.253Z"
 }
