@@ -116,7 +116,10 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/heading=heading\.Unit[\s\S]*?offset=-heading/);
   assert.match(client,/title\.Text = "" -- \[시안\]/);
   // The 16 original icons are 640x40, not the old 8-cell 512x64 fallback.
-  assert.match(client,/ImageRectSize=Vector2\.new\(meadowPaintedHudAtlas~="" and 40 or 64/);
+  assert.match(client,/rbxassetid:\/\/112814533400088/);
+  assert.match(client,/ImageRectSize=Vector2\.new\(232,232\)/);
+  assert.match(client,/ImageRectOffset=Vector2\.new\(hotbarEdges\[index\],252\)/);
+  assert.match(client,/applyMeadowRightActionImage\(meadowReferenceJump,"jump"\)/);
   // [실제 시안] HP·기력·숙련 EXP, 검·기술·회피·질주·점프, 10개 단축바.
   for(const marker of [
     'meadowExperience.Name="MeadowExperience"',
