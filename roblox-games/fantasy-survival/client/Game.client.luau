@@ -101,12 +101,12 @@ local function activateMeadowAction(actionId)
   end
   if combat then
     local cost=actionId=="meadow-unarmed-uppercut" and 20 or actionId=="meadow-unarmed-kick" and 14 or 0
-    if (player:GetAttribute("MeadowStamina") or 0)<cost then return end
+    if (player:GetAttribute("MeadowStamina") or 0)<cost then return false end
     local character=player.Character
     local human=character and character:FindFirstChildOfClass("Humanoid")
-    if not human or human.Health<=0 or player:GetAttribute("ProfileReady")~=true then return end
+    if not human or human.Health<=0 or player:GetAttribute("ProfileReady")~=true then return false end
     local now=os.clock()
-    if now<predictedCombatUntil then return end
+    if now<predictedCombatUntil then return false end
     predictedCombatUntil=now+.42
     predictedCombatSequence+=1
     if playNativeCombatMotion then
@@ -116,6 +116,7 @@ local function activateMeadowAction(actionId)
     end
   end
   remote:FireServer(actionId)
+  return true -- [튜토리얼 판정] 서버로 정상 전송된 요청에만 진행 표시
 end
 
 local gui = Instance.new("ScreenGui")
@@ -592,6 +593,11 @@ task.defer(reportNativeFoundationReady)
 
 -- [공유 HUD 참조] 메뉴 구성 구역 밖의 모바일 버튼·자원바에서 같은 실제 GUI를 사용한다.
 local meadowTutorialAdvance,meadowTutorialRestart -- [첫 플레이 안내] 기존 게임 입력을 관찰하기만 한다.
+local meadowTutorialStep=0
+local meadowQuestNavLabel -- [실제 목적지 길잡이] 기존 의뢰 카드에 안내를 추가한다.
+local meadowInteractionAttemptAt=0
+local meadowAttackAttemptAt=0
+local meadowDodgeAttemptAt=0
 local meadowQuestGuideButton -- [튜토리얼 강조] 실사용 중인 퀘스트 버튼을 그대로 가리킨다.
 local meadowVitalsGui, meadowPages, meadowMenu, energyFill, energyLabel
 
@@ -1428,6 +1434,19 @@ trackerCompanion.TextXAlignment=Enum.TextXAlignment.Left
 trackerCompanion.TextYAlignment=Enum.TextYAlignment.Top
 trackerCompanion.ZIndex=9
 trackerCompanion.Parent=questTracker
+local trackerNavigation=Instance.new("TextLabel")
+trackerNavigation.Name="QuestNavigation"
+trackerNavigation.BackgroundTransparency=1
+trackerNavigation.TextColor3=Color3.fromRGB(253,219,142)
+trackerNavigation.Font=Enum.Font.GothamBold
+trackerNavigation.TextSize=11
+trackerNavigation.TextWrapped=false
+trackerNavigation.TextTruncate=Enum.TextTruncate.AtEnd
+trackerNavigation.TextXAlignment=Enum.TextXAlignment.Left
+trackerNavigation.Text="길잡이 · 현재 의뢰 목표를 찾는 중"
+trackerNavigation.ZIndex=9
+trackerNavigation.Parent=questTracker
+meadowQuestNavLabel=trackerNavigation
 
 local journalScroll=meadowPages[3]
 local function journalRow(name,height)
@@ -2197,18 +2216,22 @@ local function layoutMeadowJournal()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local portrait=v.X<v.Y
+  local compact=not portrait and v.Y<420
   local top=portrait and 108 or 8
   local width=math.floor(math.clamp(v.X*.24,202,252))
+  local height=compact and 146 or 196
   questTracker.Position=UDim2.fromOffset(9,top)
-  questTracker.Size=UDim2.fromOffset(width,166)
+  questTracker.Size=UDim2.fromOffset(width,height)
   trackerDetail.Position=UDim2.fromOffset(11,31)
-  trackerDetail.Size=UDim2.new(1,-21,0,52)
-  trackerVillage.Position=UDim2.fromOffset(11,86)
-  trackerVillage.Size=UDim2.new(1,-21,0,37)
-  trackerCompanion.Position=UDim2.fromOffset(11,126)
-  trackerCompanion.Size=UDim2.new(1,-21,0,37)
-  characterShortcut.Position=UDim2.fromOffset(9,top+174)
-  characterShortcut.Size=UDim2.fromOffset(width,56)
+  trackerDetail.Size=UDim2.new(1,-21,0,compact and 37 or 52)
+  trackerVillage.Position=UDim2.fromOffset(11,compact and 70 or 86)
+  trackerVillage.Size=UDim2.new(1,-21,0,compact and 26 or 37)
+  trackerCompanion.Position=UDim2.fromOffset(11,compact and 97 or 126)
+  trackerCompanion.Size=UDim2.new(1,-21,0,compact and 26 or 37)
+  trackerNavigation.Position=UDim2.fromOffset(11,compact and 124 or 166)
+  trackerNavigation.Size=UDim2.new(1,-21,0,20)
+  characterShortcut.Position=UDim2.fromOffset(9,top+height+8)
+  characterShortcut.Size=UDim2.fromOffset(width,compact and 42 or 56)
 end
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   local visible=gui:GetAttribute("GameMenuOpen")~=true
@@ -2333,6 +2356,7 @@ do
       and (tutorialForced or player:GetAttribute("MeadowProfileHadSave")~=true)
       and not tutorialDone and gui.Enabled==true and gui:GetAttribute("GameMenuOpen")~=true
     tutorialCard.Visible=active
+    meadowTutorialStep=active and tutorialStep or 0
     local current=steps[tutorialStep]
     tutorialTitle.Text="초보 모험 안내  "..math.min(tutorialStep,5).."/5 · "..current[1]
     tutorialMessage.Text=current[2]
@@ -2374,6 +2398,41 @@ do
     tutorialOrigin=nil
     tutorialToken+=1
     refreshTutorial()
+  end
+  -- [서버 승인 입력] 퀘스트 안내는 실제 서버 승인·자원 증감·조사 응답 후에만 진행한다.
+  player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
+    local motion=tostring(player:GetAttribute("ApprovedCombatMotion") or "")
+    if primaryCombatAction and meadowAttackAttemptAt>0
+      and os.clock()-meadowAttackAttemptAt<2
+      and string.find(motion,primaryCombatAction.Id..":",1,true)==1 then
+      meadowTutorialAdvance(3)
+    end
+  end)
+  player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
+    local motion=tostring(player:GetAttribute("ApprovedActionMotion") or "")
+    if meadowDodgeAttemptAt>0 and os.clock()-meadowDodgeAttemptAt<2
+      and (string.find(motion,"skill-meadow-dodge-left:",1,true)==1
+        or string.find(motion,"skill-meadow-dodge-right:",1,true)==1) then
+      meadowTutorialAdvance(4)
+    end
+  end)
+  player:GetAttributeChangedSignal("MeadowSurvivalHintSerial"):Connect(function()
+    if meadowInteractionAttemptAt>0 and os.clock()-meadowInteractionAttemptAt<2 then
+      meadowTutorialAdvance(5)
+    end
+  end)
+  remote.OnClientEvent:Connect(function(kind)
+    if kind=="MEADOW_VILLAGE_DIALOG" and meadowInteractionAttemptAt>0
+      and os.clock()-meadowInteractionAttemptAt<2 then
+      meadowTutorialAdvance(5)
+    end
+  end)
+  for _,attribute in ipairs({"Wood","Stone"}) do
+    player:GetAttributeChangedSignal(attribute):Connect(function()
+      if meadowInteractionAttemptAt>0 and os.clock()-meadowInteractionAttemptAt<2 then
+        meadowTutorialAdvance(5)
+      end
+    end)
   end
   tutorialSkip.Activated:Connect(function()
     tutorialDone=true
@@ -4309,7 +4368,8 @@ local function activateNearbyMeadowInteraction(screenPosition)
   local target,bestDistance=nil,math.huge
   for prompt in pairs(shownMeadowPrompts) do
     local host=prompt.Parent
-    if prompt.Name=="MeadowVillageInteraction" and prompt.Enabled
+    if (prompt.Name=="MeadowVillageInteraction" or prompt.Name=="MeadowSurvivalInspect"
+      or prompt.Name=="GatherPrompt") and prompt.Enabled
       and host and host:IsA("BasePart") and prompt:IsDescendantOf(workspace) then
       local distance=(host.Position-rootPart.Position).Magnitude
       if distance<=prompt.MaxActivationDistance and distance<16 then
@@ -4352,9 +4412,8 @@ local function activateMeadowWorldTap(point)
   if now-lastMeadowWorldTap<.13 then return end
   lastMeadowWorldTap=now
   if activateNearbyMeadowInteraction(point) then return end
-  if primaryCombatAction then
-    activateMeadowAction(primaryCombatAction.Id)
-    if meadowTutorialAdvance then meadowTutorialAdvance(3) end
+  if primaryCombatAction and activateMeadowAction(primaryCombatAction.Id) then
+    meadowAttackAttemptAt=os.clock()
   end
 end
 -- 원본 월드 탭은 유지하고, 투명 HUD가 입력을 처리한 경우 TouchTap으로 정상 공격을 복구한다.
@@ -4553,8 +4612,8 @@ for index,skill in ipairs(meleeSkills)do
   local skillActionId=skill[1] -- [오른쪽 터치] 각 버튼의 서버 기술 ID를 자기 입력에 고정한다.
   button.Activated:Connect(function()
     if gui:GetAttribute("GameMenuOpen")==true then return end
-    activateMeadowAction(skillActionId)
-    if index==2 and meadowTutorialAdvance then meadowTutorialAdvance(4) end
+    local submitted=activateMeadowAction(skillActionId)
+    if index==2 and submitted then meadowDodgeAttemptAt=os.clock() end
   end)
 end
 -- 기본 공격은 기존 화면 터치/키보드로 계속 사용하고 별도 공격 버튼은 제거한다.
@@ -4607,8 +4666,12 @@ for index,info in ipairs(meadowUtilityActions)do
     if gui:GetAttribute("GameMenuOpen")==true then return end
     if info[1]=="MEADOW_INVENTORY" then meadowMenu.open(2)
     elseif info[1]=="skill-meadow-sprint" then meadowSprintAuto=not meadowSprintAuto
-    elseif not activateNearbyMeadowInteraction(nil) then activateMeadowAction(info[1]) end
-    if index==1 and meadowTutorialAdvance then meadowTutorialAdvance(5) end
+    elseif info[1]=="scope-coreloop-1-6ebe58f496" then
+      meadowInteractionAttemptAt=os.clock()
+      if not activateNearbyMeadowInteraction(nil) then
+        activateMeadowAction(info[1]) -- 채집 성공 시 서버가 갱신한 자원 속성으로만 다음 단계
+      end
+    else activateMeadowAction(info[1]) end
   end)
   meadowUtilityButtons[index]=button
 end
@@ -5406,20 +5469,137 @@ promptHighlight.Name="MeadowInteractionTarget";promptHighlight.FillTransparency=
 promptHighlight.OutlineColor=Color3.fromRGB(150,231,182)
 promptHighlight.OutlineTransparency=.12;promptHighlight.DepthMode=Enum.HighlightDepthMode.Occluded
 promptHighlight.Enabled=false;promptHighlight.Parent=gui
+-- [실제 의뢰 목적지] 기존 서버 ProximityPrompt에만 마커를 연결한다. 가짜 위치·목표·보상 생성 금지.
+local guidePrompts={}
+local function registerMeadowPrompt(descendant)
+  if not descendant:IsA("ProximityPrompt") then return end
+  if descendant.Name=="MeadowVillageInteraction" then
+    shownMeadowPrompts[descendant]=true
+  end
+  if descendant.Name=="MeadowVillageInteraction" or descendant.Name=="MeadowSurvivalInspect"
+    or descendant.Name=="GatherPrompt" then
+    guidePrompts[descendant]=true
+  end
+end
 local worldPrompts=workspace:FindFirstChild("FantasySurvivalWorld")
 if worldPrompts then
-  -- 최초 접속 때 이미 생성된 대화 프롬프트와 나중에 스트리밍되는 프롬프트를 모두 추적한다.
-  for _,descendant in ipairs(worldPrompts:GetDescendants()) do
-    if descendant:IsA("ProximityPrompt") and descendant.Name=="MeadowVillageInteraction" then
-      shownMeadowPrompts[descendant]=true
+  for _,descendant in ipairs(worldPrompts:GetDescendants()) do registerMeadowPrompt(descendant) end
+  worldPrompts.DescendantAdded:Connect(registerMeadowPrompt)
+end
+local questWorldMarker=Instance.new("BillboardGui")
+questWorldMarker.Name="MeadowQuestWorldMarker"
+questWorldMarker.Size=UDim2.fromOffset(156,36)
+questWorldMarker.StudsOffsetWorldSpace=Vector3.new(0,4,0)
+questWorldMarker.AlwaysOnTop=true
+questWorldMarker.MaxDistance=180
+questWorldMarker.Enabled=false
+questWorldMarker.Parent=player.PlayerGui
+local questMarkerText=Instance.new("TextLabel")
+questMarkerText.BackgroundColor3=Color3.fromRGB(19,42,35)
+questMarkerText.BackgroundTransparency=.08
+questMarkerText.BorderSizePixel=0
+questMarkerText.Size=UDim2.fromScale(1,1)
+questMarkerText.Text="◆ 현재 의뢰"
+questMarkerText.TextColor3=Color3.fromRGB(252,224,153)
+questMarkerText.Font=Enum.Font.GothamBold
+questMarkerText.TextSize=13
+questMarkerText.ZIndex=2
+questMarkerText.Parent=questWorldMarker
+local questMarkerCorner=Instance.new("UICorner")
+questMarkerCorner.CornerRadius=UDim.new(0,8)
+questMarkerCorner.Parent=questMarkerText
+local function updateMeadowQuestDirection()
+  questWorldMarker.Enabled=false
+  if not meadowQuestNavLabel or gui.Enabled~=true or gui:GetAttribute("GameMenuOpen")==true then return end
+  if player:GetAttribute("ProfileReady")~=true then
+    meadowQuestNavLabel.Text="길잡이 · 기록 불러오는 중"
+    return
+  end
+  local character=player.Character
+  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+  if not rootPart then return end
+  local stage=math.clamp(player:GetAttribute("QuestStage") or 1,1,#Config.MainQuests+1)
+  local villageStage=math.clamp(player:GetAttribute("VillageContractIndex") or 1,1,#Config.VillageContracts+1)
+  local village=Config.VillageContracts[villageStage]
+  local villagePhase=player:GetAttribute("VillageContractPhase") or 0
+  local villageMask=player:GetAttribute("VillageContractEvidence") or 0
+  local best,bestHost,bestDistance=nil,nil,math.huge
+  local bestKind="메인 목표"
+  for prompt in pairs(guidePrompts) do
+    if not prompt:IsDescendantOf(workspace) then
+      guidePrompts[prompt]=nil
+    elseif prompt.Enabled then
+      local host=prompt.Parent
+      if host and host:IsA("BasePart") then
+        local relevant=false
+        local kind="메인 목표"
+        if meadowTutorialStep==5 then
+          relevant=true
+          kind="조작 연습"
+        elseif stage==1 and prompt.Name=="MeadowSurvivalInspect" then
+          relevant=prompt.ObjectText~="오래된 유적"
+        elseif stage==2 and (player:GetAttribute("QuestWood") or 0)==0 then
+          relevant=prompt.Name=="GatherPrompt" and prompt.ActionText=="나무 채집"
+        elseif stage==5 then
+          relevant=prompt.Name=="MeadowSurvivalInspect" and prompt.ObjectText=="숲 가장자리"
+        elseif stage>#Config.MainQuests and village then
+          kind="마을 서브"
+          if villagePhase==0 or villagePhase==2 then
+            relevant=prompt.Name=="MeadowVillageInteraction" and prompt.ObjectText=="촌장 나린"
+          elseif villagePhase==1 then
+            local witnessBit=bit32.lshift(1,village.Witness-1)
+            if bit32.band(villageMask,witnessBit)==0 then
+              relevant=prompt.Name=="MeadowVillageInteraction" and prompt.ObjectText==village.WitnessName
+            elseif bit32.band(villageMask,8)==0 then
+              local node=host.Parent
+              while node and node~=worldPrompts and node~=workspace do
+                if node:GetAttribute("VillageContractIndex")==villageStage then relevant=true;break end
+                node=node.Parent
+              end
+            end
+          end
+        end
+        if relevant then
+          local distance=(host.Position-rootPart.Position).Magnitude
+          if distance<bestDistance then
+            best,bestHost,bestDistance=prompt,host,distance
+            bestKind=kind
+          end
+        end
+      end
     end
   end
-  worldPrompts.DescendantAdded:Connect(function(descendant)
-    if descendant:IsA("ProximityPrompt") and descendant.Name=="MeadowVillageInteraction" then
-      shownMeadowPrompts[descendant]=true
-    end
-  end)
+  if best and bestHost then
+    local delta=bestHost.Position-rootPart.Position
+    local direction=math.abs(delta.X)>math.abs(delta.Z)
+      and (delta.X>0 and "동쪽" or "서쪽")
+      or (delta.Z>0 and "남쪽" or "북쪽")
+    meadowQuestNavLabel.Text=string.format("◆ %s · %s %d 거리",best.ObjectText,direction,math.floor(bestDistance+.5))
+    questMarkerText.Text="◆ "..bestKind
+    questWorldMarker.Adornee=bestHost
+    questWorldMarker.Enabled=true
+  elseif meadowTutorialStep==5 then
+    meadowQuestNavLabel.Text="◆ 주민·조사 대상 가까이 이동"
+  elseif stage==2 and (player:GetAttribute("QuestWood") or 0)>0 then
+    meadowQuestNavLabel.Text="◆ 메인 · 돌 채집 지점 탐색"
+  elseif stage==3 or stage==4 then
+    meadowQuestNavLabel.Text="◆ 메인 · 초원 몬스터 탐색"
+  elseif stage==6 then
+    meadowQuestNavLabel.Text="◆ 메인 · 마을 서쪽 숲 탐색"
+  elseif stage>#Config.MainQuests then
+    meadowQuestNavLabel.Text=village and ("◆ 서브 · "..village.Name) or "◆ 의뢰 모두 완료"
+  else
+    meadowQuestNavLabel.Text="◆ 메인 · 실제 조사 지점 탐색"
+  end
 end
+local guideRefreshElapsed=0
+game:GetService("RunService").Heartbeat:Connect(function(dt)
+  guideRefreshElapsed+=dt
+  if guideRefreshElapsed<1.1 then return end
+  guideRefreshElapsed=0
+  updateMeadowQuestDirection()
+end)
+updateMeadowQuestDirection()
 local function updateMeadowPromptHighlight()
   promptHighlight.Enabled=false
   if gui:GetAttribute("GameMenuOpen")==true then return end

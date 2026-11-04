@@ -43,7 +43,7 @@ test('main-first live quest tracker and first-play interactive controls',()=>{
     'Config.MainQuests','Config.VillageContracts','Config.CompanionRequests',
     'VillageContractEvidence','CompanionQuestProgress','QuestProgress',
     'QuestSideVillage','QuestSideCompanion',
-    'questTracker.Size=UDim2.fromOffset(width,166)',
+    'questTracker.Size=UDim2.fromOffset(width,height)',
     'MeadowBeginnerTutorial','MeadowTutorialReplay',
     'meadowTutorialAdvance(1)','meadowTutorialAdvance(2)',
     'meadowTutorialAdvance(3)','meadowTutorialAdvance(4)','meadowTutorialAdvance(5)',
@@ -53,9 +53,20 @@ test('main-first live quest tracker and first-play interactive controls',()=>{
   assert.match(client,/Vector3\.new\(delta\.X,0,delta\.Z\)\.Magnitude>=8/);
   assert.match(client,/human\.MoveDirection\.Magnitude>\.12/);
   assert.match(client,/player:GetAttribute\("MeadowProfileHadSave"\)~=true/);
-  assert.match(client,/if index==2 and meadowTutorialAdvance then meadowTutorialAdvance\(4\) end/);
-  assert.match(client,/if index==1 and meadowTutorialAdvance then meadowTutorialAdvance\(5\) end/);
+  assert.match(client,/if index==2 and submitted then meadowDodgeAttemptAt=os.clock\(\) end/);
+  assert.match(client,/meadowInteractionAttemptAt=os.clock\(\)/);
   assert.ok(client.includes('if tutorialStep==6 then'),'completion follows real interaction input');
+  for(const source of [
+    'ApprovedCombatMotion','ApprovedActionMotion','MeadowSurvivalHintSerial',
+    'MEADOW_VILLAGE_DIALOG','meadowAttackAttemptAt','meadowDodgeAttemptAt',
+    'MeadowQuestWorldMarker','QuestNavigation',
+    'questWorldMarker.Adornee=bestHost','guidePrompts[descendant]=true',
+    'descendant.Name=="MeadowSurvivalInspect"','descendant.Name=="GatherPrompt"',
+    'questTracker.Size=UDim2.fromOffset(width,height)',
+    'local compact=not portrait and v.Y<420'
+  ])assert.ok(client.includes(source),'missing verified input or real quest marker: '+source);
+  assert.doesNotMatch(client,/if index==1 and meadowTutorialAdvance then meadowTutorialAdvance\(5\) end/);
+  assert.match(client,/if meadowInteractionAttemptAt>0 and os.clock\(\)-meadowInteractionAttemptAt<2/);
   assert.doesNotMatch(client,/player:SetAttribute\("MeadowTutorial/);
 });
 
