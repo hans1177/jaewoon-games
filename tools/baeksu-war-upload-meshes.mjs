@@ -67,7 +67,9 @@ const manifest=fantasy?JSON.parse(manifestBytes):null;
 const oldRegistry=fantasy?JSON.parse(await fs.readFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8').catch(()=>'{"models":{}}')):null;
 const villageRows=fantasy&&oldRegistry.villagePrefabs?.sourceVerified===true
  ?oldRegistry.villagePrefabs.models||{}:{};
-const names=fantasy?[...Object.keys(manifest.models),...Object.keys(villageRows)]
+// [게임 원본 의상] 기존 네이티브 에셋 등록기가 프로젝트 소유 망토 하나를 추가 검증한다.
+const capeRow=fantasy&&oldRegistry.capePrefab?.sourceVerified===true?oldRegistry.capePrefab:null;
+const names=fantasy?[...Object.keys(manifest.models),...Object.keys(villageRows),...(capeRow?['wornCape']:[])]
  :['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
 if(fantasy&&(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true||manifest.license!=='CC0-1.0'
  ||Object.keys(manifest.models||{}).sort().join(',')!=='bat,bee,boar,deer,golem,mushroom,rabbit,ruin,skeleton,tree,wolf'
@@ -75,7 +77,7 @@ if(fantasy&&(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true
 if(provenance.version!==(fantasy?5:4)||!provenance.roles||Object.keys(provenance.roles).sort().join(',')!==[...names].sort().join(','))throw Error('CC0_PROVENANCE_ROLES_MISMATCH');
 const ids={};const records={};const verifiedModels=new Map();
 for(const name of names){
- const originSource=fantasy?(manifest.models[name]||villageRows[name]):null;
+ const originSource=fantasy?(manifest.models[name]||villageRows[name]||(name==='wornCape'?capeRow:null)):null;
  // [대체 돌우물] 첫 다운로드 원본은 기존 24종 등록기의 provenance SHA와 실제 원본 파일로만 승인한다.
  const wellReplacement=fantasy&&name==='villageWell'
    &&provenance.roles[name]?.sourceFile==='assets/shared/party/village-well.glb'
@@ -96,17 +98,24 @@ for(const name of names){
  if(bytes.length<1000||bytes.length>18*1024*1024||(extension==='fbx'?!bytes.subarray(0,18).toString().startsWith('Kaydara FBX Binary'):bytes.subarray(0,4).toString()!=='glTF'))throw Error('BAD_NATIVE_MODEL:'+name);
  const digest=crypto.createHash('sha256').update(bytes).digest('hex');
  const origin=provenance.roles[name];
- if(!origin||(fantasy?origin.sha256!==digest||(!verifiedOrigin&&(originSource?.sourceSha256!==origin.sourceSha256||origin.licenseEvidence!==originSource?.licenseEvidence)):origin.glbSha256!==digest)||origin.license!=='CC0-1.0'||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||(!fantasy&&(!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4))){throw Error('CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:'+name);}
+ const ownerCape=fantasy&&name==='wornCape'
+ &&origin?.license==='PROJECT_ORIGINAL'&&originSource?.license==='PROJECT_ORIGINAL'
+ &&origin.hemTearCount===4&&originSource.hemTearCount===4
+ &&origin.sourceFile==='roblox-games/fantasy-survival/assets/worn-cape.obj'
+ &&originSource.parentSourceGitBlob==='6a011e694414ae3a5ef03d348158fdfbef9da93a'
+ &&crypto.createHash('sha256').update(await fs.readFile(origin.sourceFile)).digest('hex')===origin.sourceSha256;
+ const validLicense=origin?.license==='CC0-1.0'||ownerCape;
+ if(!origin||(fantasy?origin.sha256!==digest||(!verifiedOrigin&&(originSource?.sourceSha256!==origin.sourceSha256||origin.licenseEvidence!==originSource?.licenseEvidence)):origin.glbSha256!==digest)||!validLicense||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||(!fantasy&&(!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4))){throw Error('CC0_OR_OWNER_ORIGINAL_SOURCE_HASH_UNVERIFIED:'+name);}
  verifiedModels.set(name,{bytes,digest,origin,extension});
 }
 // Validate every original before the first irreversible Model registration.
 // Keep existing authorized IDs instead of reuploading the seven deployed originals.
 for(const name of names){
  const {bytes,digest,origin,extension}=verifiedModels.get(name);
- const prior=oldRegistry?.models?.[name]||villageRows[name];
+ const prior=oldRegistry?.models?.[name]||villageRows[name]||(name==='wornCape'?oldRegistry?.capePrefab:null);
  if(prior&&Number.isSafeInteger(prior.assetId)&&prior.assetId>0
    &&prior.sourceSha256===origin.sourceSha256&&prior.sha256===digest
-   &&prior.license==='CC0-1.0'&&prior.licenseEvidence===origin.licenseEvidence){
+   &&prior.license===origin.license&&prior.licenseEvidence===origin.licenseEvidence){
    ids[name]=prior.assetId;
    records[name]=prior;
    console.log('FANTASY_NATIVE_MODEL_REUSED='+name+':'+prior.assetId);
@@ -114,7 +123,7 @@ for(const name of names){
  }
  const form=new FormData();
  form.set('request',JSON.stringify({assetType:'Model',displayName:(fantasy?'마력숲 생존기':'백수대전쟁')+' 3D '+name,
-  description:'Licensed CC0 original 3D asset for '+(fantasy?'fantasy-survival':'baeksu-war')+'. Source sha256 '+origin.sourceSha256+'. Model sha256 '+digest,
+  description:(origin.license==='PROJECT_ORIGINAL'?'Game owner original authored cape':'Licensed CC0 original 3D asset')+' for '+(fantasy?'fantasy-survival':'baeksu-war')+'. Source sha256 '+origin.sourceSha256+'. Model sha256 '+digest,
   creationContext:{creator:{userId:Number(creator)}}}));
  form.set('fileContent',new Blob([bytes],{type:extension==='fbx'?'model/fbx':'model/gltf-binary'}),name+'.'+extension);
  const op=await req('https://apis.roblox.com/assets/v1/assets',{method:'POST',body:form});
@@ -135,7 +144,7 @@ for(const name of names){
  });
  if(Array.isArray(grant.errors)&&grant.errors.length)throw Error('UNIVERSE_GRANT_FAILED:'+name+':'+JSON.stringify(grant.errors).slice(0,300));
  }
- ids[name]=id;records[name]={assetId:id,sha256:digest,source:'VERIFIED_CC0_ORIGINAL',sourceFile:origin.sourceFile,sourceSha256:origin.sourceSha256,sourceModel:origin.sourceModel,license:origin.license,licenseEvidence:origin.licenseEvidence,universeId:fantasy?null:UNIVERSE};
+ ids[name]=id;records[name]={assetId:id,sha256:digest,source:ownerCape?'VERIFIED_OWNER_ORIGINAL':'VERIFIED_CC0_ORIGINAL',sourceFile:origin.sourceFile,sourceSha256:origin.sourceSha256,sourceModel:origin.sourceModel,license:origin.license,licenseEvidence:origin.licenseEvidence,universeId:fantasy?null:UNIVERSE,...(ownerCape?{hemTearCount:4}:{} )};
  console.log((fantasy?'FANTASY_NATIVE_MODEL_REGISTERED=':'BAEKSU_WAR_CC0_MESH_GRANTED=')+name+':'+id);
  await fs.writeFile(receipt,JSON.stringify({version:fantasy?5:4,gameId:fantasy?'fantasy-survival':'baeksu-war',universeId:fantasy?null:UNIVERSE,placeId:fantasy?null:PLACE,models:records},null,2)+'\n');
 }
@@ -151,9 +160,11 @@ await fs.writeFile('roblox-games/'+(fantasy?'fantasy-survival':'baeksu-war')+'/s
 if(fantasy){
  const core={};
  const village={};
+ let registeredCape=null;
  for(const [role,row] of Object.entries(records)){
    if(Object.prototype.hasOwnProperty.call(manifest.models,role))core[role]=row;
    else if(Object.prototype.hasOwnProperty.call(villageRows,role))village[role]=row;
+   else if(role==='wornCape'&&capeRow)registeredCape=row;
    else throw Error('FOREST_UNEXPECTED_ASSET_ROLE:'+role);
  }
  const villagePrefabs=oldRegistry.villagePrefabs&&Object.keys(villageRows).length>0
@@ -163,6 +174,7 @@ if(fantasy){
  await fs.writeFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json',
   JSON.stringify({...oldRegistry,version:2,gameId:'fantasy-survival',nativeRegistrationVersion:1,
    registrationVerified:true,sourceManifestSha256:provenance.sourceManifestSha256,
-   grantRequiredAtPublish:true,runtimeVerified:false,models:core,villagePrefabs},null,2)+'\n');
+   grantRequiredAtPublish:true,runtimeVerified:false,models:core,villagePrefabs,
+   ...(registeredCape?{capePrefab:{...capeRow,...registeredCape,registrationVerified:true,status:'REGISTERED_PENDING_EXACT_UNIVERSE_GRANT',runtimeVerified:false}}:{})},null,2)+'\n');
 }
 console.log((fantasy?'FANTASY_NATIVE_REGISTERED_MODELS=':'BAEKSU_WAR_VERIFIED_CC0_MODELS=')+names.length);
