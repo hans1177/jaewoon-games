@@ -155,6 +155,10 @@ test('dedicated Roblox workflow recovers and persists the durable target registr
   assert.match(workflow,/ROBLOX_DEDICATED_TARGET_RECOVERED_FROM_REGISTRY=YES/);
   assert.match(workflow,/registry\.targets\.findIndex/);
   assert.match(workflow,/git add development-queue\.json roblox-dedicated-targets\.json/);
+  assert.match(workflow,/for i in 1 2 3 4 5 6 7 8 9 10; do[\s\S]*?git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"[\s\S]*?node <<'NODE'/);
+  assert.match(workflow,/ROBLOX_DEDICATED_PERSIST_SUCCESS_ATTEMPT/);
+  assert.match(workflow,/ROBLOX_DEDICATED_PERSIST_CONCURRENT_WRITE_RETRY_EXHAUSTED/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(workflow,/gameName: '포근섬: 작은 왕국 키우기'/);
   assert.match(workflow,/gameName: '포탈 알피지'/);
   assert.doesNotMatch(workflow,/gameId:'horror-escape-room'/);
