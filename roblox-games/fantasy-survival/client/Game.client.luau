@@ -1046,6 +1046,7 @@ local function bindMeadowMenuCharacter(character)
   local capeBones={}
   local capePitch,capeRoll,capeTurn=0,0,0
   local capeClock=0
+  local capeArrivalWindUntil=0
   local capeRoot=character:FindFirstChild("HumanoidRootPart")
   local function bindWornCape(child)
     if not child or not child:IsA("Accessory") or child.Name~="Dark Green Wide Cape" then return end
@@ -1100,10 +1101,12 @@ local function bindMeadowMenuCharacter(character)
     local airborne=state==Enum.HumanoidStateType.Jumping
       or state==Enum.HumanoidStateType.Freefall
     local recovering=state==Enum.HumanoidStateType.Landed
-    local flutterStrength=(.012+stride*.080)*(reducedEffects and .62 or 1)
+    -- [첫 마을 진입] 실제 오프닝에서 게임 화면으로 돌아올 때 한 번만 바람이 휙 지난다.
+    local openingGust=math.clamp((capeArrivalWindUntil-os.clock())/2.8,0,1)
+    local flutterStrength=(.012+stride*.080+openingGust*.12)*(reducedEffects and .62 or 1)
     capeClock+=dt*(stride>.05 and (5.2+stride*6) or 2.1)
     -- 바람에 뜬 천이 몸보다 한 박자 늦게 따라오도록 저주파 관성을 둔다.
-    local targetPitch=.025+stride*.29+(airborne and .19 or 0)
+    local targetPitch=.025+stride*.29+openingGust*.27+(airborne and .19 or 0)
       +(recovering and -.09 or 0)
     local targetRoll=lateral*.14+math.sin(capeClock*.48)*(.018+stride*.035)
     local targetTurn=math.clamp(-lateral*.12,-.15,.15)
@@ -1123,6 +1126,11 @@ local function bindMeadowMenuCharacter(character)
           capeTurn*weight*.7,
           capeRoll*weight*.53+math.sin(capeClock-index*.72)*flutterStrength*weight)
       end
+    end
+  end)
+  meadowCharacterConnections[#meadowCharacterConnections+1]=player:GetAttributeChangedSignal("MeadowEnteredWorld"):Connect(function()
+    if player:GetAttribute("MeadowEnteredWorld")==true then
+      capeArrivalWindUntil=os.clock()+2.8
     end
   end)
   for _,accessory in ipairs(character:GetChildren()) do bindWornCape(accessory) end
