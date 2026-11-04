@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-11-04T05:48:00.749Z",
+  "updatedAt": "2026-11-04T07:03:25.661Z",
   "games": [
     {
       "gameId": "deep-diver",
@@ -306,17 +306,19 @@
               "design": true,
               "publication": false,
               "exactRuntime": false,
-              "lobby": true,
+              "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
               "publication",
               "exactRuntime",
-              "movement"
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
             ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "5af4995c1be05849b560741a752b0a0565e7b8a7",
+            "artifactIdentity": "sha256:0cb0abcd532ad38f7d8d05a30b78a16f9569f5bac5f3e7c4ae9db285103cbe95",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -361,7 +363,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 0
+            "candidateVersionNumber": 150
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
