@@ -199,7 +199,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 카메라·표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
-local meadowPaintedHudAtlas="rbxassetid://71333073665947" -- REGISTERED_ORIGINAL_PAINTED_ICON_ATLAS_16_X_40
+local meadowPaintedHudAtlas="rbxassetid://112814533400088" -- REGISTERED_PAINTED_HUD_ATLAS
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
   fist="rbxassetid://127661757924412",
@@ -1442,8 +1442,8 @@ for index,info in ipairs(referenceMenuItems) do
   icon.Name="ReferenceIcon"
   icon.BackgroundTransparency=1
   icon.Image=meadowPaintedHudAtlas
-  icon.ImageRectSize=Vector2.new(40,40)
-  icon.ImageRectOffset=Vector2.new(info[3]*40,0)
+  icon.ImageRectSize=Vector2.new(232,232)
+  icon.ImageRectOffset=Vector2.new(({0,243,480,717,954,1191})[index],8)
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.fromScale(.5,.11)
@@ -1504,8 +1504,9 @@ for index=1,10 do
   icon.Name="ReferenceItemIcon"
   icon.BackgroundTransparency=1
   icon.Image=meadowPaintedHudAtlas
-  icon.ImageRectSize=Vector2.new(40,40)
-  icon.ImageRectOffset=Vector2.new((index-1)*40,0)
+  local edges={8,240,468,691,910,1108,1310,1510,1719,1942,2165}
+  icon.ImageRectSize=Vector2.new(edges[index+1]-edges[index],220)
+  icon.ImageRectOffset=Vector2.new(edges[index],252)
   icon.ScaleType=Enum.ScaleType.Fit
   icon.Size=UDim2.fromScale(.78,.78)
   icon.Position=UDim2.fromScale(.11,.11)
@@ -5044,15 +5045,18 @@ end
 -- [오른쪽 전용 그림 아이콘] 연타·회피·막기·상호작용·질주는 승인된 전용 그림으로 교체한다.
 -- 물약과 가방은 현재 등록된 개별 CC0 이미지를 그대로 사용하고, 서버 액션 바인딩은 유지한다.
 local function applyMeadowRightActionImage(button,role)
-  if role=="jump" then button.Text="↑";button.TextSize=28;return true end
+  local paintedX=({sprint=8,fist=246,dodge=480,jump=715})[role]
   local atlasX=({sprint=160,fist=40,dodge=120,guard=80,interact=200,bag=240})[role]
-  local imageId=atlasX and "rbxassetid://81665484719308" or meadowRealActionIcons[role]
+  local imageId=paintedX and meadowPaintedHudAtlas or atlasX and "rbxassetid://81665484719308" or meadowRealActionIcons[role]
   if not imageId then return false end
   local icon=Instance.new("ImageLabel")
   icon.Name="OriginalRightActionIcon"
   icon.BackgroundTransparency=1
   icon.Image=imageId
-  if atlasX then
+  if paintedX then
+    icon.ImageRectOffset=Vector2.new(paintedX,480)
+    icon.ImageRectSize=Vector2.new(232,240)
+  elseif atlasX then
     icon.ImageRectOffset=Vector2.new(atlasX,0)
     icon.ImageRectSize=Vector2.new(40,40)
   end
@@ -5205,8 +5209,8 @@ local swordIcon=Instance.new("ImageLabel")
 swordIcon.Name="ReferenceSwordIcon"
 swordIcon.BackgroundTransparency=1
 swordIcon.Image=meadowPaintedHudAtlas
-swordIcon.ImageRectOffset=Vector2.new(0,0)
-swordIcon.ImageRectSize=Vector2.new(40,40)
+swordIcon.ImageRectOffset=Vector2.new(944,480)
+swordIcon.ImageRectSize=Vector2.new(240,240)
 swordIcon.Position=UDim2.fromScale(.12,.1)
 swordIcon.Size=UDim2.fromScale(.78,.78)
 swordIcon.ZIndex=20
