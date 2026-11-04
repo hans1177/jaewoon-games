@@ -353,7 +353,7 @@ test('menu retains 8 original pages and keeps selected tab reachable on a short 
   assert.ok(client.includes('subtitle.Text=captions[index] or "마력숲 탐험"'));
 });
 
-test('approved original art is layered in a non-cropped animated 2.5D intro',()=>{
+test('intro renders only one of original painted backdrop and separated 3D actor',()=>{
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
   const art=config.match(/CinematicIntroSceneIds\s*=\s*\{([^}]+)\}/);
   const front=config.match(/CinematicIntroForegroundIds\s*=\s*\{([^}]+)\}/);
@@ -366,13 +366,23 @@ test('approved original art is layered in a non-cropped animated 2.5D intro',()=
   const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
   assert.match(intro,/local artworkId=\(Config\.CinematicIntroSceneIds or \{\}\)\[index\]/);
   assert.match(intro,/local foregroundId=\(Config\.CinematicIntroForegroundIds or \{\}\)\[index\]/);
-  assert.match(intro,/storyArtwork\.Visible=artworkAvailable/);
-  assert.match(intro,/storyForeground\.Visible=foregroundAvailable/);
-  assert.match(intro,/storyArtwork\.Image=artworkAvailable and artworkId or ""/);
-  assert.match(intro,/storyForeground\.Image=foregroundAvailable and foregroundId or ""/);
+  assert.match(intro,/local usePaintedBackdrop=artworkAvailable and \(index%2==1 or not foregroundAvailable\)/);
+  assert.match(intro,/local useWorldActor=foregroundAvailable and not usePaintedBackdrop/);
+  assert.match(intro,/storyArtwork\.Visible=usePaintedBackdrop/);
+  assert.match(intro,/storyForeground\.Visible=useWorldActor/);
+  assert.match(intro,/storyArtwork\.Image=usePaintedBackdrop and artworkId or ""/);
+  assert.match(intro,/storyForeground\.Image=useWorldActor and foregroundId or ""/);
+  assert.match(intro,/backdrop\.BackgroundTransparency=usePaintedBackdrop and \.06 or 1/);
   assert.match(intro,/activeStoryFocusTween=TweenService:Create\(storyArtwork,/);
   assert.match(intro,/activeActorGestureTween=TweenService:Create\(storyForeground,/);
   assert.match(intro,/ContentProvider"\):PreloadAsync\(ids\)/);
+  assert.match(client,/local cinematicLight=Instance\.new\("Frame"\)/);
+  assert.match(client,/spark\.Image="rbxasset:\/\/textures\/particles\/sparkles_main\.dds"/);
+  assert.match(intro,/activeLightTween=TweenService:Create\(cinematicLight,/);
+  assert.match(intro,/if cinematicLight\.Visible then activeLightTween:Play\(\) end/);
+  assert.match(intro,/spark\.ImageTransparency=\.52/);
+  assert.doesNotMatch(intro,/spark\.BackgroundTransparency=\.44/);
+  assert.match(client,/if activeLightTween then activeLightTween:Cancel\(\);activeLightTween=nil end/);
   assert.match(client,/storyArtwork\.ScaleType=Enum\.ScaleType\.Fit/);
   assert.match(client,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
   assert.doesNotMatch(intro,/ImageRectOffset|ImageRectSize|openingScale/);
@@ -398,8 +408,9 @@ test('native world prologue preserves all twelve scripted beats and camera cover
     'activeTween=TweenService:Create(cameraMotionValue,',
     'Value=ending',
     'camera.CameraType=Enum.CameraType.Scriptable',
-    'storyArtwork.Visible=artworkAvailable','storyForeground.Visible=foregroundAvailable',
-    'backdrop.BackgroundTransparency=.08','introPanel.BackgroundTransparency=.12',
+    'storyArtwork.Visible=usePaintedBackdrop','storyForeground.Visible=useWorldActor',
+    'backdrop.BackgroundTransparency=usePaintedBackdrop and .06 or 1',
+    'introPanel.BackgroundTransparency=usePaintedBackdrop and .1 or 1',
     'skipButton.Activated:Once(finish)',
     'closeArrival(true)',
   ]) assert.ok(intro.includes(cue),'world film marker missing: '+cue);
@@ -421,7 +432,7 @@ test('2.5D gameplay camera follows the actual Roblox mesh with mobile-safe trans
 });
 
 test('native world cinematic protects the mobile screen and restores controls and camera',()=>{
-  const intro=client.slice(client.indexOf('-- [메인 스토리 오프닝]'),client.indexOf('  local function loadRegion('));
+  const intro=client.slice(client.indexOf('-- [2.5D 오프닝 / 메인]'),client.indexOf('  local function loadRegion('));
   assert.match(intro,/local portrait=size\.Y>size\.X\*1\.1/);
   assert.match(intro,/introDialogue\.Position=UDim2\.fromScale\(\.5,portrait and \.860 or \.856\)/);
   assert.match(intro,/storyCurtain\.BackgroundColor3=Color3\.fromRGB\(5,8,11\)/);
