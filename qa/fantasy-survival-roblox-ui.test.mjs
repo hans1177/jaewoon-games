@@ -64,7 +64,7 @@ test('main-first live quest tracker and first-play interactive controls',()=>{
     'descendant.Name=="MeadowSurvivalInspect"','descendant.Name=="GatherPrompt"',
     'workspace.ChildAdded:Connect(bindMeadowQuestWorld)',
     'questTracker.Size=UDim2.fromOffset(width,height)',
-    'local compact=not portrait and v.Y<420'
+    'local compact=landscape and v.Y<530'
   ])assert.ok(client.includes(source),'missing verified input or real quest marker: '+source);
   assert.doesNotMatch(client,/if index==1 and meadowTutorialAdvance then meadowTutorialAdvance\(5\) end/);
   assert.match(client,/if meadowInteractionAttemptAt>0 and os.clock\(\)-meadowInteractionAttemptAt<2/);
@@ -95,18 +95,18 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'ReferenceCharacterName','ReferenceHotbar','ReferenceMenu',
     'local referenceMenuItems=', 'local referenceHotbarSlots={}',
     'local hotbarActions={','local function layoutMeadowReferenceHud()',
-    'local step=landscape and math.floor(math.clamp(v.X/21,30,36))',
-    'meadowReferenceHotbar.Position=UDim2.new(.5,landscape and -40 or 0',
-    'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(127*scale)',
-    'meadowHealthTrack.Position=UDim2.fromOffset(66,top+17)',
-    'meadowEnergy.Position=UDim2.fromOffset(66,top+36)',
-    'questTracker.Position=UDim2.fromOffset(v.X-width-12,top)',
+    'local step=landscape and math.floor(math.clamp(v.X/20.8,31,39))',
+    'meadowReferenceHotbar.Position=UDim2.new(.5,landscape and -34 or 0',
+    'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(135*scale)',
+    'meadowHealthTrack.Position=UDim2.fromOffset(x,top+16)',
+    'meadowEnergy.Position=UDim2.fromOffset(x,top+30)',
+    'questTracker.Position=UDim2.fromOffset(v.X-width-8,top)',
     'local visualX=row[1]+(saved[1]-default[1])*212',
     'local visualY=row[2]+(saved[2]-default[2])*216',
     'meadowRadar:GetAttribute("ReferenceRadarVisible")==true and gui:GetAttribute("GameMenuOpen")~=true',
     'mapToggle.Activated:Connect(function()'
   ])assert.ok(client.includes(marker),'missing reference HUD: '+marker);
-  for(const page of ['{"캐릭",1,10}','{"제작",2,11}','{"건설",0,12}',
+  for(const page of ['{"가방",2,10}','{"제작",2,11}','{"건설",0,12}',
     '{"도감",3,13}','{"연구일지",3,14}','{"설정",4,15}']){
     assert.ok(client.includes(page),'top menu icon/page missing: '+page);
   }
@@ -117,9 +117,22 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/title\.Text = "" -- \[시안\]/);
   // The 16 original icons are 640x40, not the old 8-cell 512x64 fallback.
   assert.match(client,/ImageRectSize=Vector2\.new\(meadowPaintedHudAtlas~="" and 40 or 64/);
+  // [실제 시안] HP·기력·숙련 EXP, 검·기술·회피·질주·점프, 10개 단축바.
+  for(const marker of [
+    'meadowExperience.Name="MeadowExperience"',
+    'meadowHealthTrack.Position=UDim2.fromOffset(x,top+16)',
+    'meadowEnergy.Position=UDim2.fromOffset(x,top+30)',
+    'meadowExperience.Position=UDim2.fromOffset(x,top+44)',
+    'local function refreshReferenceHotbar()',
+    'remote:FireServer("meadow:rpg:tonic:use:herbal_tonic")',
+    'remote:FireServer("meadow:rpg:tonic:use:energy_tonic")',
+    'trackerTitle.Text=quest and ("❖ [메인] "..quest.Name)',
+    'button.Visible=index==1 or index==2',
+    'meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(76*scale)',
+  ])assert.ok(client.includes(marker),'painted reference HUD lost: '+marker);
   for(const [w,h] of [[1536,709],[852,393],[720,400],[640,360],[390,844],[360,640]]){
     const landscape=w>h;
-    const step=landscape?Math.floor(Math.max(30,Math.min(36,w/21)))
+    const step=landscape?Math.floor(Math.max(31,Math.min(39,w/20.8)))
       :Math.floor(Math.max(33,Math.min(40,w/9.8)));
     const width=step*6;
     assert.ok(w-width-9>0,'top menu clipped '+w+'x'+h);
