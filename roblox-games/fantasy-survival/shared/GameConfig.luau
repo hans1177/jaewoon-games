@@ -5,10 +5,10 @@ local Config = {
   SaveEnabled = true,
   GameId = "fantasy-survival",
   GameName = "마력숲 생존기",
-  -- [낡은 붉은 망토] 기존 연결한 Roblox 카탈로그 BackAccessory 모델만 사용한다.
-  -- 기존 녹색 원본을 서버에서 어두운 진홍색 무광 천으로 바꾸고 클라이언트에서 기존 관절/본만 움직인다.
-  -- 원본: https://www.roblox.com/catalog/16248065253 / Valkenheim UGC 2. 메시 실루엣은 원본 범위로 제한된다.
-  OpeningCapeAccessoryId = 16248065253,
+  -- [오프닝 망토] Roblox 공식 제작 BackAccessory, 기존 유료 UGC 대신 무료 공개된 실물 원본 사용.
+  -- 원본: https://www.roblox.com/catalog/2758798961/Red-Carpet-Cape / Roblox 제작 / 가격 0 Robux.
+  -- 서버에서 InsertService로 직접 로딩하고 원본 실루엣 범위 안에서 무광 낡은 진홍색 천 처리.
+  OpeningCapeAccessoryId = 2758798961,
   -- [오프닝 일러스트] 소유자 승인 원본 단일 그림, Roblox 이미지 등록 및 Universe 권한 검증 완료.
   CinematicIntroAtlasId = "rbxassetid://100481673402406",
   CinematicIntroAtlasSha256 = "a535d55a0a6c2af4ce9fb2bfdb339fb1e3919f530af5d3cc51f0861a7c717eda",
