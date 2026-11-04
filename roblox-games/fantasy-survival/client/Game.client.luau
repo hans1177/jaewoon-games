@@ -1149,6 +1149,9 @@ local function bindMeadowMenuCharacter(character)
     local speed=planar.Magnitude
     local stride=math.clamp(speed/math.max(walk*1.55,17),0,1)
     local lateral=math.clamp(root.CFrame.RightVector:Dot(planar)/walk,-1,1)
+    -- [천의 관성] 급선회·뒷걸음에는 몸의 방향 회전보다 망토 가장자리가 늦게 쏠린다.
+    local turnRate=math.clamp(root.AssemblyAngularVelocity.Y/5,-1,1)
+    local backward=math.clamp(-root.CFrame.LookVector:Dot(planar)/walk,0,1)
     local state=human:GetState()
     local airborne=state==Enum.HumanoidStateType.Jumping
       or state==Enum.HumanoidStateType.Freefall
@@ -1158,16 +1161,18 @@ local function bindMeadowMenuCharacter(character)
     local flutterStrength=(.012+stride*.080+openingGust*.12)*(reducedEffects and .62 or 1)
     capeClock+=dt*(stride>.05 and (5.2+stride*6) or 2.1)
     -- 바람에 뜬 천이 몸보다 한 박자 늦게 따라오도록 저주파 관성을 둔다.
-    local targetPitch=.025+stride*.29+openingGust*.27+(airborne and .19 or 0)
-      +(recovering and -.09 or 0)
-    local targetRoll=lateral*.14+math.sin(capeClock*.48)*(.018+stride*.035)
-    local targetTurn=math.clamp(-lateral*.12,-.15,.15)
+    local targetPitch=.025+stride*.29+openingGust*.27+backward*.07
+      +(airborne and .19 or 0)+(recovering and -.09 or 0)
+    local targetRoll=lateral*.14-turnRate*.085
+      +math.sin(capeClock*.48)*(.018+stride*.035)
+    local targetTurn=math.clamp(-lateral*.12-turnRate*.11,-.21,.21)
     local response=math.clamp(dt*(airborne and 3.3 or 4.6),0,1)
     capePitch+=(targetPitch-capePitch)*response
     capeRoll+=(targetRoll-capeRoll)*response
     capeTurn+=(targetTurn-capeTurn)*math.clamp(dt*3.2,0,1)
     local edgeRipple=math.sin(capeClock)*flutterStrength
       +math.sin(capeClock*.61+1.1)*flutterStrength*.46
+      +math.sin(capeClock*1.41+capeTurn*3)*flutterStrength*.18
     capeWeld.C0=capeRestC0*CFrame.Angles(capePitch+edgeRipple*.36,
       capeTurn*.55,capeRoll+edgeRipple*.30)
     for index,entry in ipairs(capeBones) do
