@@ -121,7 +121,7 @@ test('fantasy survival keeps a source-owned open-world encounter, attack, harves
   assert.match(server,/humanoid\.Died:Connect/);
   assert.match(server,/persistenceAllowed\[player\] = validSaved/);
   assert.match(server,/if persistenceAllowed\[player\] ~= true or not store then return false end/);
-  assert.match(server,/player:GetAttribute\("ProfileReady"\) ~= true/);
+  assert.match(server,/player:GetAttribute\("ProfileReady"\)\s*~=\s*true/);
   assert.match(server,/local merged = typeof\(previous\) == "table" and table\.clone\(previous\) or \{\}/);
   assert.match(server,/game:BindToClose\(function\(\)/);
   assert.match(server,/Players\.PlayerAdded:Connect\(onSurvivalPlayerAdded\)/);
