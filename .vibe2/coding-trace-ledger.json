@@ -14,403 +14,6 @@
   "traces": [
     {
       "version": 1,
-      "traceId": "ctrace_47cba0e6c0f782c50c26abed",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "village-dungeons-existing-web-assessment-v1",
-        "workKey": null,
-        "gameId": "village-dungeons",
-        "target": "web",
-        "roadmapVersion": null,
-        "baseMainSha": "189f5e3812550435fe83bb7b1ce5b52703d5a336",
-        "variant": "primary",
-        "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 마을 던전 RPG\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nid="
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "acceptQuest",
-          "animate",
-          "claimQuest",
-          "buildArea"
-        ],
-        "primarySystems": [
-          "PLACEMENT",
-          "WORLD",
-          "PRESENTATION",
-          "SAVE",
-          "COMBAT",
-          "AI",
-          "CORE_STATE",
-          "PROGRESSION",
-          "GOAL_STATE",
-          "ECONOMY"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "SAVE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "web|EXTERNAL_AI_UNAVAILABLE|OTHER|TIMEOUT|WEB_NATIVE_AUTHORING|WEB_STRUCTURAL_CONTINUITY",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 0,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 89427,
-        "candidateMs": 5733,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:40520826624",
-        "reservation-id:40520826624:1",
-        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_309a8fa7844ab9ab154ae8e7",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "wild-survival-existing-web-assessment-v1",
-        "workKey": null,
-        "gameId": "wild-survival",
-        "target": "web",
-        "roadmapVersion": null,
-        "baseMainSha": "189f5e3812550435fe83bb7b1ce5b52703d5a336",
-        "variant": "primary",
-        "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 야생 생존\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.\n[TRANSFORMATIVE_RECOMBINATION_CONTEXT]\nreci"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "draw",
-          "attack",
-          "loop",
-          "die",
-          "updateHud",
-          "craft"
-        ],
-        "primarySystems": [
-          "PRESENTATION",
-          "CORE_STATE",
-          "AI",
-          "ECONOMY",
-          "SAVE",
-          "COMBAT",
-          "WORLD",
-          "PROGRESSION"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "SAVE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "web|EXTERNAL_AI_UNAVAILABLE|MALFORMED_OUTPUT|OTHER|WEB_STRUCTURAL_CONTINUITY",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 0,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 96221,
-        "candidateMs": 6485,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:40520826624",
-        "reservation-id:40520826624:1",
-        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_41da37f101fd20979a9466c9",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "zombie-survival-existing-web-assessment-v1",
-        "workKey": null,
-        "gameId": "zombie-survival",
-        "target": "web",
-        "roadmapVersion": null,
-        "baseMainSha": "189f5e3812550435fe83bb7b1ce5b52703d5a336",
-        "variant": "primary",
-        "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 좀비 생존기\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nid=zom"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "update",
-          "addWeaponToInventory"
-        ],
-        "primarySystems": [
-          "COMBAT",
-          "PRESENTATION",
-          "CORE_STATE",
-          "PLACEMENT",
-          "WORLD",
-          "AI",
-          "INPUT",
-          "GOAL_STATE"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "PLACEMENT",
-          "AI",
-          "PROGRESSION",
-          "ECONOMY"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "web|OTHER",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 0,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 82925,
-        "candidateMs": 4816,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:40520826624",
-        "reservation-id:40520826624:1",
-        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
       "traceId": "ctrace_4eccff0ca5c53b14b9201c83",
       "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
       "source": "VIBE2_WORKER_RESULT",
@@ -676978,13 +676581,401 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_89d14138bee21ca4df5d0f7a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "mini-empire-web-autonomous-build-up-v1",
+        "workKey": null,
+        "gameId": "mini-empire",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "22d42012ee84cb83ef4d742cc9f90c3a47a6b1d4",
+        "variant": "primary",
+        "goal": "[WEB_AUTONOMOUS_BUILD_UP] mini-empire 세대 1 / CORE_FUN\n핵심 조작→행동→결과의 재미와 적 대응을 기존 게임 규칙 안에서 강화한다. 적·보스·NPC AI가 실제 존재하는 게임에서는 인식·거리 유지·추격·회피·측면 이동·협동·공격 시점의 실패를 기존 AI 책임 함수에서 수리하고 실제 플레이로 검증한다. 체력·공격력·드롭·보상·밸런스 수치·엔진 판정·저장은 변경하지 않는다.\n검증된 전 세대·현재 소스·승인 설계·실제 플레이 문제를 비교해 한 가지 일관된 게임 기능 아이디어를 선택하고 기존 함수에 실제 구현한다. 문서·라벨·검증 버튼만 변경해 완료 처리하지 않는다. 기존 게임 정체성·밸런스·성벽/경제/동맹 같은 핵심 기능·저장 키와 저장 의미를 임의로 변경하지 않는다. 승인 근거 없는 신규 밸런스 변경은 금지한다. 해당 게임의 기존 BUILD_UP→F0~F9 후보·모바일 브라우저·저장·회귀·정확한 소스 revision 검증 후에만 다음 세대로 이어간다. 새 큐·워크플로·래퍼·우회 배포를 만들지 않는다.\n현재 회차 실제 플레이 효과는 미검증이다. 예측·정적 검사·타 게임 관측을 이 게임의 실제 플레이 통과로 기록하지 않는다.\n\n[WORK PACKAGE AUTO-EXPANSION]\n1. 직접 관련 오류 처리·예외 경로와 실패 피드백을 보강한다.\n2. 현재 책임 시스템과 인벤토리·진행·전투·상호작용 중 실"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "nativeRepair": {
+          "selectedRecipe": null,
+          "candidateCount": 0,
+          "attempts": 0,
+          "rejected": 0,
+          "sourceBound": false,
+          "runtimeVerified": false,
+          "learningVerified": false
+        },
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "simulate",
+          "clickTile"
+        ],
+        "primarySystems": [
+          "SAVE",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "INPUT",
+          "PLACEMENT",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|MOBILE_INPUT|SAVE_RESTORE|STATE_FLOW|RELEASE|AI|MOBILE_INPUT|PERFORMANCE|PROGRESSION|SAVE|STATE_MACHINE|UI_STATE|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "VIBE4_OFFLINE_PATTERN_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 64011,
+        "candidateMs": 3279,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:41809376057",
+        "reservation-id:41809376057:1",
+        "source-generation-failure:VIBE4_OFFLINE_PATTERN_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_1a78a34728edee9765c998a9",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "moon-ruins-web-library-cc0-replacement-v1",
+        "workKey": null,
+        "gameId": "moon-ruins",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "22d42012ee84cb83ef4d742cc9f90c3a47a6b1d4",
+        "variant": "primary",
+        "goal": "[ALL_PLATFORM_LIBRARY_CC0_REPLACEMENT] 현재 게임의 승인 설계와 실제 책임 소스를 먼저 읽고 모델·크리처·모션·장비·건물·환경·재질·VFX·UI·오디오의 실제 사용 바인딩을 조사한다. 등록 라이브러리와 assets/asset-license-ledger.json의 출처·CC0 라이선스·원본 SHA256을 검증한 원본 및 추적 가능한 게임별 파생만 사용하도록 교체한다. 같은 자산도 이 게임의 실루엣·역할·비율·재질·모션·조명·UI에 맞게 변형하고 공용 원본은 덮어쓰지 않는다. 다른 플랫폼 원본은 승인된 리그·접점·클립·텍스처 호환성을 검증한 네이티브 파생으로 기존 렌더·모션 책임 함수에 연결한다. 상업 이용 가능·회사 소유·플랫폼 기본 제공은 CC0 증거가 아니다. 부족한 자산은 기존 공급 요구에 연결하고 자체 제작 fallback이나 무관한 종으로 채우지 않는다. 비액션 게임에 전투를 추가하지 않는다. 현재 책임 범위의 교체만 구현하고 나머지 소비처·미호환·미확인 자산은 구체 GAP로 다음 기존 BUILD_UP에 연결한다. 게임 판정·밸런스·진행·저장·네트워크 권한을 보존한다. 교체한 같은 빌드의 전후 화면·모션 연속 프레임·모바일 조작·성능·저장 회귀와 기존 F0~F9 증거를 확보한 뒤에만 완료로 판정한다. 구형 자산은 모든 소비처가 검증된 대체로 연결된 뒤에만 제거한다. 보류 플랫폼이나 삭제 게임을 임"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "nativeRepair": {
+          "selectedRecipe": null,
+          "candidateCount": 0,
+          "attempts": 0,
+          "rejected": 0,
+          "sourceBound": false,
+          "runtimeVerified": false,
+          "learningVerified": false
+        },
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "playSound",
+          "buy"
+        ],
+        "primarySystems": [
+          "AI",
+          "PROGRESSION",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "ECONOMY",
+          "COMBAT",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|PLACEMENT|STATE_FLOW|RUNTIME|RELEASE|ASSET_ADAPTATION|ASSET_PRODUCTION|PERFORMANCE|STATE_MACHINE|UI_STATE|VFX|VISUAL_IDENTITY|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "VIBE4_OFFLINE_PATTERN_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 83295,
+        "candidateMs": 3279,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:41809376057",
+        "reservation-id:41809376057:1",
+        "source-generation-failure:VIBE4_OFFLINE_PATTERN_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_4b92170fd3d2ae5c2bacb4e3",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "ocean-voyage-web-library-cc0-replacement-v1",
+        "workKey": null,
+        "gameId": "ocean-voyage",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": null,
+        "variant": "primary",
+        "goal": "[ALL_PLATFORM_LIBRARY_CC0_REPLACEMENT] 현재 게임의 승인 설계와 실제 책임 소스를 먼저 읽고 모델·크리처·모션·장비·건물·환경·재질·VFX·UI·오디오의 실제 사용 바인딩을 조사한다. 등록 라이브러리와 assets/asset-license-ledger.json의 출처·CC0 라이선스·원본 SHA256을 검증한 원본 및 추적 가능한 게임별 파생만 사용하도록 교체한다. 같은 자산도 이 게임의 실루엣·역할·비율·재질·모션·조명·UI에 맞게 변형하고 공용 원본은 덮어쓰지 않는다. 다른 플랫폼 원본은 승인된 리그·접점·클립·텍스처 호환성을 검증한 네이티브 파생으로 기존 렌더·모션 책임 함수에 연결한다. 상업 이용 가능·회사 소유·플랫폼 기본 제공은 CC0 증거가 아니다. 부족한 자산은 기존 공급 요구에 연결하고 자체 제작 fallback이나 무관한 종으로 채우지 않는다. 비액션 게임에 전투를 추가하지 않는다. 현재 책임 범위의 교체만 구현하고 나머지 소비처·미호환·미확인 자산은 구체 GAP로 다음 기존 BUILD_UP에 연결한다. 게임 판정·밸런스·진행·저장·네트워크 권한을 보존한다. 교체한 같은 빌드의 전후 화면·모션 연속 프레임·모바일 조작·성능·저장 회귀와 기존 F0~F9 증거를 확보한 뒤에만 완료로 판정한다. 구형 자산은 모든 소비처가 검증된 대체로 연결된 뒤에만 제거한다. 보류 플랫폼이나 삭제 게임을 임"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "nativeRepair": {
+          "selectedRecipe": null,
+          "candidateCount": 0,
+          "attempts": 0,
+          "rejected": 0,
+          "sourceBound": false,
+          "runtimeVerified": false,
+          "learningVerified": false
+        },
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|PLACEMENT|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|PERFORMANCE|PROGRESSION|STATE_MACHINE|UI_STATE|VFX|VISUAL_IDENTITY|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "BLOCKED",
+        "blocker": "work-lock-conflict:not-acquired",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 58976,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:41809376057",
+        "reservation-id:41809376057:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 4,
+    "added": 3,
     "refreshed": 0,
     "total": 5000,
     "verified": 0,
-    "failures": 4942
+    "failures": 4941
   }
 }
