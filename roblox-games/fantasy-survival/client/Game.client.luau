@@ -205,7 +205,7 @@ local meadowArt={skillSheet="rbxassetid://88875753640260",gearSheet="rbxassetid:
   rarityName={Common="일반",Uncommon="고급",Rare="희귀",Epic="영웅",Legendary="전설"},
   skillCell={["skill-meadow-heavy"]=0,["skill-meadow-sweep"]=1,["skill-meadow-bolt"]=2,["skill-meadow-guard"]=3,["skill-meadow-parry"]=4,
     ["skill-meadow-dodge-left"]=5,["skill-meadow-dodge-right"]=6,["skill-meadow-sprint"]=7,["skill-meadow-heal"]=8,["skill-meadow-focus"]=9,
-    ["skill-meadow-emote"]=10,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
+    ["skill-meadow-emote"]=10,["skill-meadow-oath"]=8,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
     Martial=15,Signs=16,Defense=17,Agility=18},
   slotEmpty={Weapon=36,Chest=37,Hands=38,Legs=39,Feet=40,Accessory=41}}
 function meadowArt.skill(icon,key)
@@ -239,6 +239,28 @@ meadowEffectsGroup.Parent=game:GetService("SoundService")
 local meadowAmbienceGroup=Instance.new("SoundGroup")
 meadowAmbienceGroup.Name="MeadowAmbience";meadowAmbienceGroup.Volume=.75
 meadowAmbienceGroup.Parent=game:GetService("SoundService")
+-- [효과음] 로블록스 내장 사운드만 사용(추가 업로드 불필요). 같은 소리는 .06초 안에 겹치지 않는다.
+meadowArt.sfxFiles={
+  swing="rbxasset://sounds/swordslash.wav",lunge="rbxasset://sounds/swordlunge.wav",
+  unsheath="rbxasset://sounds/unsheath.wav",hit="rbxasset://sounds/snap.mp3",
+  thud="rbxasset://sounds/action_jump_land.mp3",click="rbxasset://sounds/button.wav",
+  ping="rbxasset://sounds/electronicpingshort.wav",win="rbxasset://sounds/victory.wav",
+  hurt="rbxasset://sounds/collide.wav",whoosh="rbxasset://sounds/action_jump.mp3",
+}
+meadowArt.sfxAt={}
+meadowArt.sfx=function(name,volume,pitch)
+  local id=meadowArt.sfxFiles[name]
+  if not id then return end
+  local now=os.clock()
+  if now-(meadowArt.sfxAt[name] or 0)<.06 then return end
+  meadowArt.sfxAt[name]=now
+  local sound=Instance.new("Sound")
+  sound.Name="MeadowSfx_"..name;sound.SoundId=id;sound.Volume=volume or .5
+  sound.PlaybackSpeed=pitch or 1;sound.SoundGroup=meadowEffectsGroup
+  sound.Parent=game:GetService("SoundService")
+  sound:Play()
+  game:GetService("Debris"):AddItem(sound,2)
+end
 local root = Instance.new("Frame")
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
@@ -2450,6 +2472,7 @@ local skillInfo={
   ["skill-meadow-sprint"]={"기동","기존 서버 질주로 거리를 빠르게 좁히거나 벌려.",6},
   ["skill-meadow-heal"]={"마력","기존 서버의 회복 기술. 위험할 때 체력을 회복해.",7},
   ["skill-meadow-focus"]={"마력","기존 서버 마력 집중 효과를 발동해.",7},
+  ["skill-meadow-oath"]={"무예","각성기. 기사단 연대기 2편 이상 필요. 체력 35% 회복 후 18칸 안 적 최대 12마리에 3배 피해를 준다. 재사용 90초.",2},
   ["skill-meadow-emote"]={"기타","인사 모션을 재생해. 전투 피해는 발생하지 않아.",5},
   ["meadow-unarmed-rush"]={"무예","잽과 훅을 연속으로 사용하는 맨손 공격.",2},
   ["meadow-unarmed-uppercut"]={"무예","적을 향해 크게 올려치는 승룡 어퍼컷.",2},
@@ -2722,11 +2745,11 @@ skillText.TextColor3=parchment;skillText.Font=Enum.Font.GothamMedium;skillText.T
 skillText.TextXAlignment=Enum.TextXAlignment.Left;skillText.TextYAlignment=Enum.TextYAlignment.Top
 skillText.TextWrapped=true;skillText.Parent=skillDetail
 local skillUse=CommonUI.CreatePrimaryButton({name="UseWitcherSkill",text="기술 사용",minHeight=52})
-skillUse.Position=UDim2.fromOffset(12,134);skillUse.Size=UDim2.new(.5,-16,0,52)
+skillUse.Position=UDim2.fromOffset(12,134);skillUse.Size=UDim2.new(1/3,-12,0,52)
 skillUse.BackgroundColor3=Color3.fromRGB(98,65,45);skillUse.Parent=skillDetail
 -- [퀵슬롯] 선택한 기술을 오른쪽 전투 버튼에 등록한다. 같은 기술을 다시 누르면 해제.
 local skillQuick=CommonUI.CreatePrimaryButton({name="RegisterQuickSkill",text="전투 버튼 등록",minHeight=52})
-skillQuick.Position=UDim2.new(.5,4,0,134);skillQuick.Size=UDim2.new(.5,-16,0,52)
+skillQuick.Position=UDim2.new(1/3,2,0,134);skillQuick.Size=UDim2.new(1/3,-8,0,52)
 skillQuick.BackgroundColor3=Color3.fromRGB(46,86,98);skillQuick.Parent=skillDetail
 local skillRows={}
 local selectedSkill=nil
@@ -2833,6 +2856,7 @@ do
   local function setMode(tree)
     talentPanel.Visible=tree
     skillBar.Visible=not tree;skillGrid.Visible=not tree;skillDetail.Visible=not tree
+    local dz=meadowPages[7]:FindFirstChild("QuickSlotDrop");if dz then dz.Visible=not tree end
     meadowLabels[7].Visible=false
     for i,b in ipairs(modeButtons)do
       local on=(i==2)==tree
@@ -2852,6 +2876,99 @@ do
   end
   setMode(false)
 end
+-- [모션 미리보기] 메뉴를 닫고 내 캐릭터가 선택한 기술 모션을 서버 소비 없이 재생한 뒤 스킬창으로 돌아온다.
+do
+  local preview=CommonUI.CreatePrimaryButton({name="PreviewSkillMotion",text="모션 미리보기",minHeight=52})
+  preview.Position=UDim2.new(2/3,-2,0,134);preview.Size=UDim2.new(1/3,-10,0,52)
+  preview.BackgroundColor3=Color3.fromRGB(70,60,104);preview.Parent=skillDetail
+  local serial=9000000
+  local running=false
+  preview.Activated:Connect(function()
+    if running or not selectedSkill then return end
+    local action=selectedSkill
+    running=true
+    meadowArt.sfx("click",.4,1)
+    meadowMenu.close()
+    task.delay(.5,function()
+      pcall(function()
+        if action.Kind=="COMBAT" then
+          if playNativeCombatMotion then playNativeCombatMotion(action.Id,1) end
+        else
+          serial+=1
+          player:SetAttribute("ApprovedActionMotion",action.Id..":"..serial)
+        end
+        meadowArt.sfx("swing",.4,1)
+      end)
+      task.delay(2.2,function()
+        running=false
+        pcall(function() meadowMenu.open(7) end)
+      end)
+    end)
+  end)
+end
+-- [끌어서 등록] 기술 카드를 아래 "전투 버튼 슬롯"에 끌어 놓으면 오른쪽 전투 버튼에 등록된다.
+do
+  local drop=Instance.new("Frame")
+  drop.Name="QuickSlotDrop";drop.LayoutOrder=6;drop.Size=UDim2.new(1,-8,0,52)
+  drop.BackgroundColor3=Color3.fromRGB(24,49,45);drop.BorderSizePixel=0;drop.Parent=meadowPages[7]
+  local dc=Instance.new("UICorner");dc.CornerRadius=UDim.new(0,12);dc.Parent=drop
+  local ds=Instance.new("UIStroke");ds.Color=gold;ds.Thickness=2;ds.Transparency=.3;ds.Parent=drop
+  local dropLabel=Instance.new("TextLabel")
+  dropLabel.BackgroundTransparency=1;dropLabel.Size=UDim2.fromScale(1,1);dropLabel.TextWrapped=true
+  dropLabel.Font=Enum.Font.GothamBold;dropLabel.TextSize=13;dropLabel.TextColor3=Color3.fromRGB(230,240,222)
+  dropLabel.Parent=drop
+  local function refreshDrop()
+    local id=meadowActionButtons.quickSkillId
+    local name=id and "등록됨"
+    if id then for _,action in ipairs(Config.Actions)do if action.Id==id then name=action.Label end end end
+    dropLabel.Text="⬇ 기술 카드를 여기로 끌어 놓으면 전투 버튼 등록\n현재 슬롯: "..(id and name or "비어 있음")
+  end
+  refreshDrop()
+  local ghost=Instance.new("TextLabel")
+  ghost.Name="SkillDragGhost";ghost.Size=UDim2.fromOffset(110,40);ghost.AnchorPoint=Vector2.new(.5,.5)
+  ghost.BackgroundColor3=Color3.fromRGB(54,112,84);ghost.TextColor3=Color3.new(1,1,1)
+  ghost.Font=Enum.Font.GothamBlack;ghost.TextSize=14;ghost.Visible=false;ghost.ZIndex=200;ghost.Parent=gui
+  local gc=Instance.new("UICorner");gc.CornerRadius=UDim.new(0,10);gc.Parent=ghost
+  local drag=nil
+  local function overDrop(pos)
+    local a,sz=drop.AbsolutePosition,drop.AbsoluteSize
+    return pos.X>=a.X and pos.X<=a.X+sz.X and pos.Y>=a.Y-6 and pos.Y<=a.Y+sz.Y+6
+  end
+  for _,row in ipairs(skillRows)do
+    row.button.InputBegan:Connect(function(input)
+      local kind=input.UserInputType
+      if kind~=Enum.UserInputType.Touch and kind~=Enum.UserInputType.MouseButton1 then return end
+      drag={input=input,row=row,start=Vector2.new(input.Position.X,input.Position.Y),moved=false}
+    end)
+  end
+  UserInputService.InputChanged:Connect(function(input)
+    if not drag then return end
+    if input~=drag.input and input.UserInputType~=Enum.UserInputType.MouseMovement then return end
+    local pos=Vector2.new(input.Position.X,input.Position.Y)
+    if not drag.moved and (pos-drag.start).Magnitude>24 then
+      drag.moved=true;ghost.Text=drag.row.action.Label;ghost.Visible=true
+    end
+    if drag.moved then
+      ghost.Position=UDim2.fromOffset(pos.X,pos.Y)
+      ds.Thickness=overDrop(pos) and 4 or 2
+    end
+  end)
+  UserInputService.InputEnded:Connect(function(input)
+    if not drag then return end
+    local kind=input.UserInputType
+    if kind~=Enum.UserInputType.Touch and kind~=Enum.UserInputType.MouseButton1 then return end
+    local current=drag;drag=nil
+    ghost.Visible=false;ds.Thickness=2
+    if current.moved and overDrop(Vector2.new(input.Position.X,input.Position.Y)) then
+      local id=current.row.action.Id
+      local cell=skillInfo[id] and skillInfo[id][3] or 2
+      meadowActionButtons.setQuickSkill(id,cell,current.row.action.Label,current.row.category)
+      meadowArt.sfx("ping",.5,1.1)
+      refreshDrop();meadowActionButtons.refreshSkills()
+    end
+  end)
+  meadowActionButtons.refreshDrop=refreshDrop
+end
 skillQuick.Activated:Connect(function()
   if not selectedSkill or not meadowActionButtons.setQuickSkill then return end
   local same=meadowActionButtons.quickSkillId==selectedSkill.Id
@@ -2859,6 +2976,8 @@ skillQuick.Activated:Connect(function()
   for _,entry in ipairs(skillRows)do if entry.action==selectedSkill then row=entry end end
   local cell=skillInfo[selectedSkill.Id] and skillInfo[selectedSkill.Id][3] or 2
   meadowActionButtons.setQuickSkill(not same and selectedSkill.Id or nil,cell,selectedSkill.Label,row and row.category)
+  meadowArt.sfx("ping",.4,1)
+  if meadowActionButtons.refreshDrop then meadowActionButtons.refreshDrop() end
   meadowActionButtons.refreshSkills()
 end)
 skillUse.Activated:Connect(function()
@@ -7117,6 +7236,9 @@ remote.OnClientEvent:Connect(function(kind,payload)
       impact.Parent=soundRoot
       impact:Play()
       game:GetService("Debris"):AddItem(impact,1.2)
+      -- 선명한 타격 레이어: 마무리는 묵직한 찌르기 소리를 더한다.
+      meadowArt.sfx("hit",payload.finisher and .55 or .38,payload.finisher and .8 or (1.05+math.random()*.2))
+      if payload.finisher then meadowArt.sfx("lunge",.35,.9) end
     end
   end
   local hitFlash=Instance.new("Frame")
@@ -7803,6 +7925,12 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   activeMartialFinisherPlayed = false
   queuedMartialAction = nil
   activeCombatStartedAt = os.clock()
+  if swordProfile then
+    local deep=swordStage or 1
+    meadowArt.sfx(deep>=5 and "lunge" or "swing",.5,.9+deep*.07)
+  elseif profile=="UNARMED" then
+    meadowArt.sfx("whoosh",.3,1.3)
+  end
   activeCombatController = activeCombatController or combatMotionSource.BindJointPose(joints, {
     followAnimator = true,response = 42,
   })
@@ -9348,4 +9476,33 @@ end)
   for _,name in ipairs({"WorldDiscovered","QuestStage","BountyIndex"}) do
     player:GetAttributeChangedSignal(name):Connect(refresh)
   end
+end)()
+
+-- [칼든 자세] 검을 든 동안 전투 중이 아닐 때 오른팔을 앞으로 들어 올려 칼끝을 세운 '준비 자세'로 보이게 한다.
+-- 걷기·대기 애니메이션 위에 오른쪽 어깨·팔꿈치만 더하고, 공격·스킬 모션 중에는 즉시 물러난다.
+;(function()
+  local weight=0
+  local function swordEquipped(character)
+    local tool=character and character:FindFirstChildOfClass("Tool")
+    if not tool then return false end
+    local profile=tool:GetAttribute("WeaponMotionProfile") or tool.Name
+    return profile=="장검" or profile=="철검" or profile=="SWORD" or profile=="LONGSWORD" or profile=="GREATSWORD"
+  end
+  RunService.PreSimulation:Connect(function(dt)
+    local character=player.Character
+    local busy=activeCombatCombo~=nil or os.clock()<skillMotionDeadline
+    local want=(not busy) and swordEquipped(character)
+    weight+=((want and 1 or 0)-weight)*math.min(1,dt*9)
+    if weight<.02 or not character then return end
+    pcall(function()
+      local shoulder=character:FindFirstChild("RightShoulder",true)
+      local elbow=character:FindFirstChild("RightElbow",true)
+      if shoulder and (shoulder:IsA("Motor6D") or shoulder:IsA("AnimationConstraint")) then
+        shoulder.Transform=shoulder.Transform*CFrame.Angles(math.rad(-38)*weight,0,math.rad(-8)*weight)
+      end
+      if elbow and (elbow:IsA("Motor6D") or elbow:IsA("AnimationConstraint")) then
+        elbow.Transform=elbow.Transform*CFrame.Angles(math.rad(-48)*weight,0,0)
+      end
+    end)
+  end)
 end)()

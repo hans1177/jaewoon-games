@@ -3979,7 +3979,7 @@ local meadowSkillSeconds={
   ["skill-meadow-guard"]=9,["skill-meadow-parry"]=7,
   ["skill-meadow-dodge-left"]=4,["skill-meadow-dodge-right"]=4,
   ["skill-meadow-sprint"]=8,["skill-meadow-heal"]=16,
-  ["skill-meadow-focus"]=13,["skill-meadow-emote"]=3,
+  ["skill-meadow-focus"]=13,["skill-meadow-emote"]=3,["skill-meadow-oath"]=90,
 }
 local function meadowSkill(player,id,execute)
   local interval=meadowSkillSeconds[id]
@@ -4265,6 +4265,25 @@ local function meadowHeal(player)
     return true
   end)
 end
+-- [각성기 · 기사단의 맹세] 기사단 연대기를 2편 이상 모으면 해금. 체력 35% 회복 + 18칸 안 적 최대 12마리에 3배 피해.
+local function meadowOath(player)
+  if readNumber(player,"ResearchRecords",0)<2 then return false end
+  return meadowSkill(player,"skill-meadow-oath",function(_,humanoid,root)
+    humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.35)
+    setNumber(player,"Health",math.floor(humanoid.Health))
+    local damage=math.floor((16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8)*3)
+    local struck=0
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+    for _,enemy in ipairs(enemies) do
+      if struck<12 and enemy.HP>0 and enemy.model.Parent and (enemy.position-root.Position).Magnitude<=18 then
+        struck+=1
+        applyMeadowDamage(player,enemy,damage)
+      end
+    end
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+    return true
+  end)
+end
 local function meadowFocus(player)
   return meadowSkill(player,"skill-meadow-focus",function(_,_,root,now)
     meadowFocusUntil[player]=now+5
@@ -4304,6 +4323,7 @@ local handlers={
   ["skill-meadow-sprint"]=meadowSprint,
   ["skill-meadow-heal"]=meadowHeal,
   ["skill-meadow-focus"]=meadowFocus,
+  ["skill-meadow-oath"]=meadowOath,
   ["skill-meadow-emote"]=meadowEmote,
 }
 

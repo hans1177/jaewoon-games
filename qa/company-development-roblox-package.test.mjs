@@ -1076,13 +1076,13 @@ test('Fantasy Survival melee, 11 skills and 3 original CC0 mob motion/skill fami
   const sourceSkill=fs.readFileSync('assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau','utf8');
   const sourceVFX=fs.readFileSync('assets/roblox/common-vfx-v1/RobloxCommonVFX.luau','utf8');
   const actions=[...cfg.matchAll(/\{ Id = "([^"]+)", Label = "([^"]+)", Kind = "([^"]+)", Order = (\d+)/g)];
-  assert.equal(actions.length,21,'10 existing actions + 11 meadow skills');
-  assert.equal(new Set(actions.map(row=>row[1])).size,21,'all actions have unique real server routes');
+  assert.equal(actions.length,22,'10 existing actions + 12 meadow skills (+기사단의 맹세)');
+  assert.equal(new Set(actions.map(row=>row[1])).size,22,'all actions have unique real server routes');
   for(const [,,label,kind] of actions){
     assert.ok(label.length>0 && ['COMBAT','SURVIVAL','GATHER','PROGRESSION','SKILL'].includes(kind));
   }
   const skillRows=cfg.split('\n').filter(row=>row.includes('Id = "skill-meadow-'));
-  assert.equal(skillRows.length,11);
+  assert.equal(skillRows.length,12);
   for(const row of skillRows){
     const id=row.match(/Id = "([^"]+)"/)?.[1];
     const motion=row.match(/MotionAtom = "([^"]+)"/)?.[1];
