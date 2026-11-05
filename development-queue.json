@@ -2678,7 +2678,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-05T07:09:36.158Z",
+      "updatedAt": "2026-11-05T07:12:22.128Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4713,8 +4713,8 @@
         "version": 1,
         "gameId": "fantasy-survival",
         "gameName": "마력숲 생존기",
-        "sourceRevision": "023c780561ff46df08e7cf3d0c53fb776ca6d6c6",
-        "artifactIdentity": "sha256:e893d6c156ba6bf8efce636f05d60a762a85d726d7b72f01fce008028067193c",
+        "sourceRevision": "5d498d61810436abb18aaad8e122520ee6487f27",
+        "artifactIdentity": "sha256:58bafcc65fb71ee0d10938bf31066e7a3b07837fe16afcc7bacee973c521e91a",
         "universeId": "10773436325",
         "placeId": "108565970231899",
         "reusedTarget": true,
@@ -4722,29 +4722,53 @@
         "configured": true,
         "private": true,
         "published": true,
-        "versionNumber": 216,
+        "versionNumber": 217,
         "stage": "PASS",
-        "checkedAt": "2026-11-05T07:06:18.578Z",
+        "checkedAt": "2026-11-05T07:10:56.680Z",
         "authority": "owner-direct-github-dedicated-private-publish",
         "avatarRig": "R15",
         "postPublishQa": {
-          "exactPublishedVersionVerified": false,
+          "exactPublishedVersionVerified": true,
           "avatarRigConfigured": "R15",
-          "state": "EXTERNAL_CAPACITY_DEFERRED",
-          "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
-          "motionProbe": null,
+          "state": "COMPLETE",
+          "error": null,
+          "motionProbe": {
+            "actions": [
+              {
+                "id": "U:JAB_LEFT",
+                "pass": true,
+                "changedJointCount": 8
+              },
+              {
+                "id": "U:UPPERCUT_RIGHT",
+                "pass": true,
+                "changedJointCount": 8
+              },
+              {
+                "id": "U:ROUND_KICK_R",
+                "pass": true,
+                "changedJointCount": 11
+              },
+              {
+                "id": "U:ELBOW_RIGHT",
+                "pass": true,
+                "changedJointCount": 8
+              }
+            ],
+            "libraryLoaded": true
+          },
           "realPlayerGameplayVerified": false,
           "clientMotionPlaybackVerified": false,
           "authority": "roblox-open-cloud-exact-place-version-luau-task",
-          "checkedAt": "2026-11-05T07:06:20.012Z"
+          "checkedAt": "2026-11-05T07:11:01.557Z"
         },
         "pass": true,
-        "completedAt": "2026-11-05T07:06:20.012Z",
-        "workflowRunId": 41984605198,
+        "completedAt": "2026-11-05T07:11:01.558Z",
+        "workflowRunId": 41985134545,
         "releaseClaim": false,
         "f9PassClaim": false,
         "postPublishVerification": "PENDING",
-        "updatedAt": "2026-11-05T07:07:53.156Z"
+        "updatedAt": "2026-11-05T07:12:22.128Z"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-11-04T14:45:12.664Z",
       "robloxCloudImageEvidence": null,
@@ -4796,7 +4820,7 @@
       }
     }
   ],
-  "updatedAt": "2026-11-05T07:12:13.911Z",
+  "updatedAt": "2026-11-05T07:12:22.128Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
