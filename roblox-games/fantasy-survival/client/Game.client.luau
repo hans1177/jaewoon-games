@@ -11026,6 +11026,12 @@ end)()
       local phase=player:GetAttribute("VillageContractPhase") or 0
       local mask=player:GetAttribute("VillageContractEvidence") or 0
       if phase==1 then
+        -- 1) 주민 진술(약초상·추적자·경비병) → 2) 현장 단서 → 3) 전투 순서로 안내한다.
+        local witnessAt={[1]={-68,-122},[2]={69,-129},[3]={-2,-188}}
+        local w=village.Witness
+        if w and witnessAt[w] and bit32.band(mask,bit32.lshift(1,w-1))==0 then
+          return witnessAt[w][1],witnessAt[w][2],(village.WitnessName or "주민").." (진술 듣기)"
+        end
         if bit32.band(mask,8)==0 and village.Sites and village.Sites[1] then
           return village.Sites[1][1],village.Sites[1][2],"단서 조사: "..village.Name
         end
