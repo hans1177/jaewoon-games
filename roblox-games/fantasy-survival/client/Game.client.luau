@@ -4801,11 +4801,13 @@ do
         local finished=false
         local connection=nil
         local openingScore=nil
+        local openingScoreEq=nil
         local function finishOpening24()
           if finished then return end
           finished=true
           if connection then connection:Disconnect();connection=nil end
           if openingScore then
+            openingScoreEq=nil
             -- 건너뛰기·종료 때 음악은 갑자기 끊지 않고 0.6초 동안 줄이며 끈다.
             local score=openingScore;openingScore=nil
             pcall(function()
@@ -4822,67 +4824,52 @@ do
           return p*p*(3-2*p)
         end
         -- [카메라] 장면별 감속과 정지를 사용하고 충격은 중요한 순간에만 부여한다.
+        -- [카메라 연출] 24컷 각각의 감정에 맞는 구도·정적·시선 이동. 공통 등속 흔들기 금지.
         local function cameraFor(scene,lt)
           local u=math.clamp(lt/scene.seconds,0,1)
           local p=smooth(u)
-          local dir=scene.chShift[1]>=0 and 1 or -1
-          local kind=scene.camera
-          local scale,rotation,tx,ty=1.022,0,0,0
-          if kind=="push" then
-            scale=1.018+.038*p
-            tx=dir*(-5+10*p)
-            ty=4-8*p
-          elseif kind=="pan" then
-            scale=1.041
-            tx=dir*(14-28*p)
-            ty=3-6*p
-          elseif kind=="tilt" then
-            scale=1.026+.015*p
-            rotation=dir*(-.35+.7*p)
-            ty=-6+12*p
-          elseif kind=="orbit" then
-            scale=1.038+.012*p
-            rotation=dir*(-.55+1.1*p)
-            tx=dir*(-7+14*p)
-          elseif kind=="cut" then
-            -- 배신의 정적 뒤 인물에게 천천히 접근한다.
-            local reveal=smooth(math.clamp((u-.18)/.82,0,1))
-            scale=1.024+.035*reveal
-            tx=dir*5*reveal
-          elseif kind=="zoom" then
-            scale=1.027+.058*p
-            ty=5-10*p
-          elseif kind=="zoomout" then
-            scale=1.074-.052*p
-            ty=-8+16*p
-          elseif kind=="rise" then
-            scale=1.035+.007*p
-            ty=12-19*p
-          elseif kind=="pullback" then
-            scale=1.061-.041*p
-            ty=-4+7*p
-          elseif kind=="spin" then
-            -- 추락은 과한 회전보다 방향 전환과 속도로 표현한다.
-            scale=1.043+.025*p
-            rotation=-1.15+2.3*p
-            ty=-11+22*p
-          elseif kind=="fade" then
-            scale=1.023+.017*p
-            tx=dir*(-3+6*p)
-          elseif kind=="particles" then
-            scale=1.019+.020*p
-            tx=dir*(3-6*p)
-          elseif kind=="shake" then
-            scale=1.026+.014*p
-            tx=dir*(3-6*p)
+          local id=scene.id
+          local scale,rotation,tx,ty=1.025,0,0,0
+          if id==1 then scale=1.012+.037*p;tx=-8+16*p;ty=4-8*p
+          elseif id==2 then scale=1.038;tx=16-31*smooth(math.clamp(u/.78,0,1));rotation=-.25+.5*p
+          elseif id==3 then scale=1.015+.045*p;ty=7-12*p
+          elseif id==4 then scale=1.050+.008*p;tx=-3+6*p
+          elseif id==5 then scale=1.021+.043*p;tx=7-11*p;ty=3-6*p
+          elseif id==6 then scale=1.030+.010*p;tx=-5+7*p
+          elseif id==7 then scale=1.024+.040*p;tx=5-9*p
+          elseif id==8 then scale=1.047;tx=-17+33*smooth(math.clamp(u/.75,0,1))
+          elseif id==9 then scale=1.021+.047*p;rotation=-.40+.8*p;ty=6-9*p
+          elseif id==10 then scale=1.029+.026*p;tx=6-11*p
+          elseif id==11 then
+            -- 배신: 짧게 화면을 고정한 후 급격히 인물에게 접근한다.
+            local reveal=smooth(math.clamp((u-.21)/.55,0,1))
+            scale=1.022+.059*reveal
+            tx=-4+8*reveal
+          elseif id==12 then scale=1.044+.011*p;ty=4-6*p
+          elseif id==13 then scale=1.049+.015*p;tx=3-6*p
+          elseif id==14 then scale=1.035+.029*p;ty=-4+7*p
+          elseif id==15 then
+            -- 렌스의 목소리만 남는 빈 전장, 금지된 인물 원화는 사용하지 않는다.
+            scale=1.015+.012*p
+          elseif id==16 then scale=1.025+.053*p;ty=8-12*p
+          elseif id==17 then scale=1.060-.026*p;tx=-8+12*p
+          elseif id==18 then scale=1.011+.024*p;ty=6-11*p
+          elseif id==19 then scale=1.023+.061*smooth(math.clamp(u/.68,0,1));rotation=-.65+1.3*p;ty=-5+11*p
+          elseif id==20 then scale=1.095-.070*p;ty=-13+22*p
+          elseif id==21 then scale=1.046-.020*p;ty=11-14*p
+          elseif id==22 then scale=1.030+.015*p;tx=-7+11*p
+          elseif id==23 then scale=1.022+.021*p;ty=5-8*p
+          elseif id==24 then scale=1.054-.034*p;tx=4-7*p
           end
-          if kind=="shake" or kind=="spin" then
-            local after=lt-.13
-            if after>0 and after<.32 then
-              local envelope=math.sin(math.pi*after/.32)*(1-smooth(after/.32))
-              local impact=(kind=="spin" and 4.5 or 3.5)*envelope
-              tx+=impact*math.sin(after*54)
-              ty+=impact*.7*math.sin(after*43+.6)
+          -- [충돌] 한 번의 감쇠 진동. 컷 전체 흔들기와 임의 회전은 제거한다.
+          local impactAt=(id==4 and .09) or (id==7 and .18) or (id==13 and .16) or (id==19 and .08)
+          if impactAt then
+            local d=lt-impactAt
+            local duration=(id==19 and .34 or .27)
+            if d>0 and d<duration then
+              local amount=(id==19 and 4.4 or 2.8)*math.sin(math.pi*d/duration)*(1-smooth(d/duration))
+              tx+=amount*math.sin(d*55)
+              ty+=amount*.65*math.sin(d*46+.5)
             end
           end
           return p,scale,rotation,tx,ty
@@ -4920,7 +4907,7 @@ do
           local imageIds={}
           for _,scene in ipairs(openingScenes) do
             imageIds[#imageIds+1]=scene.bg
-            imageIds[#imageIds+1]=scene.ch
+            if scene.ch~="" then imageIds[#imageIds+1]=scene.ch end
             imageIds[#imageIds+1]=scene.fg
           end
           local preloaded=false
@@ -4931,8 +4918,17 @@ do
             local score=Instance.new("Sound")
             score.Name="MeadowOpeningScore"
             score.SoundId=scoreId
-            score.Volume=.8
+            score.Volume=.24
             score.Looped=false
+            -- [초반 음악] 기존 등록곡을 낮은 현·저음 중심으로 재편곡한 전주처럼 들리게 시작한다.
+            -- 전쟁이 시작되는 4~10초에 고·중음과 박력을 점진적으로 회복한다.
+            local eq=Instance.new("EqualizerSoundEffect")
+            eq.Name="PrologueWarPrelude"
+            eq.LowGain=4
+            eq.MidGain=-22
+            eq.HighGain=-40
+            eq.Parent=score
+            openingScoreEq=eq
             if meadowEffectsGroup then score.SoundGroup=meadowEffectsGroup end
             score.Parent=game:GetService("SoundService")
             openingScore=score
@@ -4963,7 +4959,7 @@ do
               local a=k*3
               if scene then
                 prefetch[a+1].Image=scene.bg
-                prefetch[a+2].Image=scene.ch
+                prefetch[a+2].Image=scene.ch or ""
                 prefetch[a+3].Image=scene.fg
               end
             end
@@ -4994,13 +4990,29 @@ do
             if not entranceOpen or token~=runToken then finishOpening24();return end
             local t=os.clock()-startClock
             if t>=total then finishOpening24();return end
+            -- [음악 동기화] 조용한 저음 전주 → 돌격 상승 → 배신·희생의 정적 → 균열 재상승.
+            if openingScore then
+              local rise=smooth(math.clamp((t-3.2)/7,0,1))
+              if openingScoreEq then
+                openingScoreEq.LowGain=4*(1-rise)
+                openingScoreEq.MidGain=-22*(1-rise)
+                openingScoreEq.HighGain=-40*(1-rise)
+              end
+              local quiet=1
+              if t>=24.4 and t<25.35 then
+                quiet=.44+.56*smooth(math.clamp((t-24.4)/.95,0,1))
+              elseif t>=33.6 and t<35.1 then
+                quiet=.32+.68*smooth(math.clamp((t-33.6)/1.5,0,1))
+              end
+              openingScore.Volume=(.24+.56*rise)*quiet
+            end
             local index=math.max(current,1)
             while index<#openingScenes and t>=starts[index]+openingScenes[index].seconds do index+=1 end
             local scene=openingScenes[index]
             if index~=current then
               if current>0 then
                 local previousScene=openingScenes[current]
-                ghostBg.Image=previousScene.bg;ghostCh.Image=previousScene.ch;ghostFg.Image=previousScene.fg
+                ghostBg.Image=previousScene.bg;ghostCh.Image=previousScene.ch or "";ghostFg.Image=previousScene.fg
                 ghostBg.Size=bgLayer.Size;ghostBg.Position=bgLayer.Position;ghostBg.Rotation=bgLayer.Rotation
                 ghostCh.Size=chLayer.Size;ghostCh.Position=chLayer.Position;ghostCh.Rotation=chLayer.Rotation
                 ghostFg.Size=fgLayer.Size;ghostFg.Position=fgLayer.Position;ghostFg.Rotation=fgLayer.Rotation
@@ -5009,7 +5021,7 @@ do
               currentStoryScene=index
               warm(index+1)
               bgLayer.Image=scene.bg
-              chLayer.Image=scene.ch
+              chLayer.Image=scene.ch or ""
               fgLayer.Image=scene.fg
               subtitle.Text=scene.line
             end
@@ -5017,24 +5029,28 @@ do
             local camera=workspace.CurrentCamera
             local k=camera and camera.ViewportSize.X/1280 or 1
             local p,scale,rot,tx,ty=cameraFor(scene,lt)
-            -- [레이어] 세 층이 같은 카메라를 따르되 깊이에 따른 작은 오프셋만 적용한다.
-            -- 인물 호흡은 컷 시작·끝에 0으로 돌아와 장면 전환에서 튀지 않는다.
+            -- [원화 합성] 중간 9~18컷은 배경·인물·전경을 하나의 화판처럼 묶어 정렬을 고정한다.
+            -- 먼 전장·안개 숲만 제한된 시차를 허용한다. 따로 튀는 크기·회전·호흡은 금지.
+            local locked=scene.id>=9 and scene.id<=18
+            local depth=locked and 0 or (scene.fx=="mist" and .20 or .36)
             local travel=(p-.5)*2
-            local breathe=math.sin(math.pi*math.clamp(lt/scene.seconds,0,1))
-            local chDrift=scene.chShift[1]*.46*travel
-            local fgDrift=scene.fgShift[1]*.26*travel*(scene.chShift[1]>=0 and -1 or 1)
-            bgLayer.Size=UDim2.fromScale(scale+.034,scale+.034)
-            bgLayer.Position=UDim2.new(.5,tx*.62*k,.5,ty*.62*k)
-            bgLayer.Rotation=rot*.6
-            chLayer.Size=UDim2.fromScale(scale+.008,scale+.008)
-            chLayer.Position=UDim2.new(.5,(tx+chDrift)*k,.5,(ty+1.35*breathe*math.sin(lt*1.7+scene.id*.3))*k)
-            chLayer.Rotation=rot*.85
-            fgLayer.Size=UDim2.fromScale(scale+.018,scale+.018)
-            fgLayer.Position=UDim2.new(.5,(tx*1.24+fgDrift)*k,.5,(ty*1.24+1.75*breathe*math.sin(lt*.9+scene.id*.45))*k)
+            local offsetX=tx*k
+            local offsetY=ty*k
+            local plateScale=scale+.018
+            local farShift=scene.chShift[1]*.28*travel*depth*k
+            local nearShift=scene.fgShift[1]*.22*travel*depth*k
+            bgLayer.Size=UDim2.fromScale(plateScale,plateScale)
+            chLayer.Size=UDim2.fromScale(plateScale,plateScale)
+            fgLayer.Size=UDim2.fromScale(plateScale,plateScale)
+            bgLayer.Position=UDim2.new(.5,offsetX,.5,offsetY)
+            chLayer.Position=UDim2.new(.5,offsetX+farShift,.5,offsetY)
+            fgLayer.Position=UDim2.new(.5,offsetX+nearShift,.5,offsetY)
+            bgLayer.Rotation=rot
+            chLayer.Rotation=rot
             fgLayer.Rotation=rot
             -- 직전 컷 크로스 디졸브(0.5초). 충격 컷(하드 컷)은 디졸브 없이 번쩍임으로 넘어간다.
-            local hardCut=({[4]=true,[7]=true,[9]=true,[11]=true,[13]=true,[19]=true,[21]=true})[scene.id]
-            local dissolveTime=scene.fx=="mist" and .65 or .43
+            local hardCut=scene.id==4 or scene.id==7 or scene.id==11 or scene.id==13 or scene.id==15 or scene.id==19 or scene.id==21
+            local dissolveTime=scene.fx=="mist" and .75 or (scene.fx=="embers" and .32 or .48)
             local fade=(hardCut or index==1) and 1 or smooth(math.clamp(lt/dissolveTime,0,1))
             ghostBg.ImageTransparency=fade;ghostCh.ImageTransparency=fade;ghostFg.ImageTransparency=fade
             -- [화면비] 영화 띠는 모바일 자막 영역 바깥에 유지한다.
@@ -5046,7 +5062,10 @@ do
             if t<.6 then opacity=1-smooth(t/.6) end
             if t>total-.8 then opacity=math.max(opacity,1-smooth((total-t)/.8)) end
             if scene.camera=="fade" then
-              opacity=math.max(opacity,.22*math.sin(math.pi*math.clamp((p-.52)/.48,0,1)))
+              opacity=math.max(opacity,.12*math.sin(math.pi*math.clamp((p-.52)/.48,0,1)))
+            elseif scene.id==15 then
+              -- [무언의 전장] 인물을 지운 장면에 짧은 검은 정적을 둔다.
+              opacity=math.max(opacity,.43*(1-smooth(math.clamp(lt/.38,0,1))))
             end
             curtain.BackgroundTransparency=1-opacity
             -- [충격] 전장·배신·균열 순간의 짧은 광량 변화.

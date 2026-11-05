@@ -17,7 +17,7 @@ Module.Scenes={
  {id=12,seconds=1.6,camera="zoom",fx="magic",bgScale={1,1},chShift={-14,-0},fgShift={28,0},speaker="",line=""},
  {id=13,seconds=2.2,camera="shake",fx="magic",bgScale={1,1},chShift={14,0},fgShift={28,0},speaker="닉",line="…안 움직여."},
  {id=14,seconds=2.4,camera="fade",fx="magic",bgScale={1,1},chShift={-14,0},fgShift={28,0},speaker="미나",line="카인, 손!"},
- {id=15,seconds=2.8,camera="fade",fx="magic",bgScale={1,1},chShift={14,-0},fgShift={0,0},speaker="렌스",line="가라, 카인."},
+ {id=15,seconds=2.8,camera="hold",fx="embers",bgScale={1,1},chShift={0,0},fgShift={0,0},hideCharacter=true,speaker="렌스",line="가라, 카인."},
  {id=16,seconds=2.4,camera="push",fx="magic",bgScale={1,1},chShift={-14,0},fgShift={28,0},speaker="카인",line="미나! 렌스! 닉!"},
  {id=17,seconds=2.6,camera="pan",fx="embers",bgScale={1,1},chShift={14,0},fgShift={28,0},speaker="빅브라더",line="기록에서 지워라."},
  {id=18,seconds=2.6,camera="particles",fx="embers",bgScale={1,1},chShift={-14,-0},fgShift={0,0},speaker="",line="기사단의 기록이 재가 되었다."},
@@ -40,7 +40,8 @@ function Module.Resolve()
   local bg,ch,fg=ids[key.."_bg"],ids[key.."_ch"],ids[key.."_fg"]
   if not validId(bg) or not validId(ch) or not validId(fg) then return nil end
   local copy=table.clone(scene)
-  copy.bg,copy.ch,copy.fg=bg,ch,fg
+  -- [원화 제외] 15번 금발·은발 2인 컷은 해당 24컷 공연 어디에서도 이미지로 로드하지 않는다.
+  copy.bg,copy.ch,copy.fg=bg,(scene.hideCharacter and "" or ch),fg
   out[#out+1]=copy
  end
  return out
