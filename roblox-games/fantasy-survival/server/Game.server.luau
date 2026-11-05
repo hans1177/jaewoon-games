@@ -5082,8 +5082,8 @@ local function bindNativeFoundationPlayer(player)
             item:Destroy()
           end
         end
-        if meshCount~=1 then error("WORN_CAPE_IMPORT_MESH_COUNT_INVALID:"..meshCount) end
-        if handle.Size.Y<.15 or handle.Size.Y>30 then
+        if meshCount<1 then error("WORN_CAPE_IMPORT_MESH_COUNT_INVALID:"..meshCount) end
+        if handle.Size.Y<=.001 then
           error("WORN_CAPE_REAL_SIZE_INVALID:"..tostring(handle.Size.Y))
         end
         -- [스케일 보정] GLB 길이를 스터드로 정규화한다. 기존 실물 메시와 찢어진 밑단은 유지.
@@ -5098,6 +5098,13 @@ local function bindNativeFoundationPlayer(player)
         handle.Name="Handle"
         -- 수동 장착만 사용한다. Accessory로 캐릭터에 넣으면 Roblox가 머리에 붙일 수 있다.
         handle.Parent=cape
+        for _,extra in ipairs(loadedModel:GetDescendants()) do
+          if extra:IsA("MeshPart") and extra~=handle then
+            extra.Anchored=false;extra.CanCollide=false;extra.CanTouch=false;extra.CanQuery=false;extra.Massless=true
+            local keep=Instance.new("WeldConstraint");keep.Part0=handle;keep.Part1=extra;keep.Parent=extra
+            extra.Parent=cape
+          end
+        end
         local previousWeld=handle:FindFirstChild("AccessoryWeld")
         if previousWeld then previousWeld:Destroy() end
         handle.Anchored=false
@@ -5142,6 +5149,7 @@ local function bindNativeFoundationPlayer(player)
         return
       end
       lastReason=tostring(reason)
+      character:SetAttribute("OpeningCapeReason",string.sub(lastReason,1,80))
       if attempt<3 then
         character:SetAttribute("OpeningCapeState","RETRYING")
         task.wait(attempt*1.5)

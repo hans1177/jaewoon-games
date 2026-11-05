@@ -1311,6 +1311,22 @@ local function renderMeadowPages()
     or capeState=="LOAD_FAILED" and "망토 로딩 실패 · 다시 입장해 줘"
     or "빨간 망토 장착 확인 중"
   meadowLabels[1].Text="※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n"..capeText
+  -- [망토 표시] 아바타 위에 망토 상태를 바로 보여 준다(실패하면 이유도).
+  do
+    local hero=meadowPages[1]:FindFirstChild("WitcherCharacterPortrait")
+    if hero then
+      local badge=hero:FindFirstChild("CapeBadge")
+      if not badge then
+        badge=Instance.new("TextLabel");badge.Name="CapeBadge";badge.AnchorPoint=Vector2.new(.5,0);badge.Position=UDim2.new(.5,0,0,2)
+        badge.Size=UDim2.fromOffset(220,18);badge.BackgroundTransparency=1;badge.Font=Enum.Font.GothamBold;badge.TextSize=12
+        badge.ZIndex=30;badge.Parent=hero
+      end
+      local worn=capeState=="ATTACHED" and capeWorn
+      local reason=character and character:GetAttribute("OpeningCapeReason")
+      badge.Text=worn and "망토 착용 중" or ("망토 "..(capeText:gsub("^빨간 망토 ",""))..(reason and (" · "..reason) or ""))
+      badge.TextColor3=worn and Color3.fromRGB(150,255,170) or Color3.fromRGB(255,190,150)
+    end
+  end
   meadowLabels[2].Text="소지품  /  저장 "..tostring(player:GetAttribute("SaveStatus") or "불러오는 중")
   meadowLabels[2].Visible=false -- [가방 공간] 저장 상태 줄은 화면을 차지하지 않게 숨긴다(오류는 HUD 상태로 표시).
   meadowLabels[3].Text=string.format("초원 탐험 저널\n\n현재 지역 몬스터  %d\n\n%s\n\n관찰 기록은 이번 접속 중 발견한 단서야.",
