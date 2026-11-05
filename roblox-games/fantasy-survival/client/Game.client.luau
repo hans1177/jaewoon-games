@@ -9190,8 +9190,8 @@ end)
   overlay.Size=UDim2.fromScale(1,1);overlay.BackgroundColor3=Color3.fromRGB(4,10,10)
   overlay.BackgroundTransparency=.35;overlay.ZIndex=60;overlay.Visible=false;overlay.Parent=layer
   local panel=Instance.new("Frame")
-  panel.AnchorPoint=Vector2.new(.5,.5);panel.Position=UDim2.fromScale(.5,.5)
-  panel.Size=UDim2.new(.94,0,.82,0);panel.BackgroundColor3=Color3.fromRGB(18,32,30)
+  panel.AnchorPoint=Vector2.new(.5,1);panel.Position=UDim2.new(.5,0,1,-10)
+  panel.Size=UDim2.new(.94,0,.78,0);panel.BackgroundColor3=Color3.fromRGB(18,32,30)
   panel.ZIndex=61;panel.Parent=overlay
   local constraint=Instance.new("UISizeConstraint");constraint.MaxSize=Vector2.new(820,470);constraint.Parent=panel
   Instance.new("UICorner",panel).CornerRadius=UDim.new(0,14)
@@ -9205,7 +9205,7 @@ end)
   legend.Font=Enum.Font.Gotham;legend.TextSize=12;legend.TextXAlignment=Enum.TextXAlignment.Left
   legend.TextColor3=Color3.fromRGB(190,208,196);legend.Text="● 내 위치   ★ 메인 목표   ◆ 현상금 게시판   ⛺ 거점   ▶ 마력의 길";legend.ZIndex=62;legend.Parent=panel
   local close=Instance.new("TextButton")
-  close.Text="✕";close.Font=Enum.Font.GothamBold;close.TextSize=20;close.TextColor3=Color3.fromRGB(255,244,214)
+  close.Text="X";close.Font=Enum.Font.GothamBold;close.TextSize=20;close.TextColor3=Color3.fromRGB(255,244,214)
   close.BackgroundColor3=Color3.fromRGB(70,38,38);close.Position=UDim2.new(1,-48,0,8);close.Size=UDim2.fromOffset(38,34)
   close.ZIndex=63;close.Parent=panel;Instance.new("UICorner",close).CornerRadius=UDim.new(0,9)
   local strip=Instance.new("Frame")

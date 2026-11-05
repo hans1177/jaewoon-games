@@ -4960,7 +4960,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
     -- [위쪽 잘림 수정] 공용 목록은 세로 가운데 정렬이라 스크롤 영역에서 첫 탭들이 위로 잘렸다.
     tabLayout.VerticalAlignment=Enum.VerticalAlignment.Top
    end
-   for _,tabButton in ipairs(tabButtons)do tabButton.Size=UDim2.fromOffset(80,68) end
+   for _,tabButton in ipairs(tabButtons)do tabButton.Size=UDim2.fromOffset(80,58) end
    -- [직접 스와이프] 기본 스크롤이 버튼 위 드래그에서 안 먹는 문제를 피하려고 입력을 직접 처리한다.
    tabs.ScrollingEnabled=false
    local inputService=game:GetService("UserInputService")
@@ -5177,8 +5177,8 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   if primary and primary.sideTabs then
    -- [메뉴 크기] 화면 전체를 덮지 않고 인기 로블록스 게임처럼 가운데 창으로 둔다.
    if v.X>v.Y then
-    root.Size=UDim2.fromOffset(math.floor(math.clamp(v.X*.78,math.min(v.X-16,440),860)),
-     math.floor(math.clamp(v.Y*.86,math.min(v.Y-16,260),620)))
+    root.Size=UDim2.fromOffset(math.floor(math.clamp(v.X*.86,math.min(v.X-16,440),940)),
+     math.floor(math.clamp(v.Y*.94,math.min(v.Y-8,260),640)))
    else
     root.Size=UDim2.fromOffset(v.X-16,math.floor(math.clamp(v.Y*.78,300,760)))
    end
@@ -5207,7 +5207,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   local bodyTop=tabs and (primary and primary.witcherStyle and (shortMenu and 109 or 132) or 122) or 68
   local sideTabs=tabs and primary and primary.sideTabs==true
   local bodyLeft=14
-  if sideTabs then bodyTop=64;bodyLeft=106 end
+  if sideTabs then bodyTop=58;bodyLeft=106 end
   list.Position=UDim2.fromOffset(bodyLeft,bodyTop);list.Size=UDim2.new(1,-bodyLeft-14,1,-bodyTop-12)
   if sideTabs then
    tabs.Position=UDim2.fromOffset(10,bodyTop);tabs.Size=UDim2.new(0,86,1,-bodyTop-12)
