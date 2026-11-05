@@ -143,7 +143,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/meadowReferenceHotbar.Position=UDim2.new\(\.5,0,1,-99\)/);
   assert.match(client,/questTracker.BackgroundColor3=Color3.fromRGB\(19,19,18\)/);
   assert.match(client,/local height=compact and 156 or 186/);
-  assert.match(client,/local width=math.floor\(math.clamp\(v.X\*\(landscape and \.30 or \.42\),landscape and 190 or 132,landscape and 262 or 238\)\)/);
+  assert.match(client,/local width=math.floor\(math.clamp\(v.X\*\(landscape and \.32 or \.46\),landscape and 210 or 150,landscape and 300 or 270\)\)/);
   assert.match(client,/local positions=\{\s+\{66,165,44\}/);
   assert.match(client,/\{116,165,44\}/);
   assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(179\*scale-size\*\.5\),math.floor\(102\*scale-size\*\.5\)\)/);
