@@ -1525,6 +1525,18 @@ meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerSt
   pages=meadowPages,pageNames=meadowPageNames,
   onPageChanged=function(index)
     renderMeadowPages()
+    -- [투명 유리창] 메뉴 뒤로 게임 화면이 비쳐 보이게 창·카드 배경을 반투명으로 만든다.
+    task.defer(function()
+      root.BackgroundTransparency=.3
+      local shade=gui:FindFirstChild("ActionMenuShade")
+      if shade then shade.BackgroundTransparency=.82 end
+      for _,d in ipairs(root:GetDescendants())do
+        if d:IsA("GuiObject") and d.BackgroundTransparency<.3 and d.Name~="SkillPointDot"
+          and not (d:IsA("TextButton") and d.Text=="X") and not d:IsA("ScrollingFrame") then
+          d.BackgroundTransparency=.3
+        end
+      end
+    end)
     if index==4 then refreshMeadowCameraOption() end
     local heading=root:FindFirstChild("MeadowMenuHeading")
     if heading then heading.Text="탐험  /  "..(meadowPageNames[index] or "모험") end
