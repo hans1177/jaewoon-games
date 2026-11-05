@@ -395,7 +395,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -998,5 +998,37 @@ do
   }
   for _, line in ipairs(Config.RecruitLines) do table.insert(Config.QuestLines, line) end
 end
+
+
+-- [지역 랜드마크] 멀리서도 보이는 거대 구조물(석상·첨탑·분화구·빛기둥). 처음 조사하면 경험치와 이야기를 얻고 지도에 ✪로 기록된다.
+-- Stat: 석상 모델 키 / 높이. Shape: 지형 장식 종류.
+Config.WorldMap.Landmarks = {
+  {Id="beacon", Zone="meadow", Name="봉화 언덕의 불탑", X=650, Z=-520, Statue=nil, Shape="spire", Light={255,190,90},
+   Lore="렌스기사단이 길 잃은 이를 부르려 세운 봉화탑. 마지막 불은 20년째 꺼지지 않았다. 누가 기름을 대는지는 아무도 모른다."},
+  {Id="lighthouse", Zone="windcliff", Name="해풍 절벽의 파수 석상", X=-2100, Z=500, Statue="orc", Height=46, Shape="plateau", Light={150,210,255},
+   Lore="바다를 향해 선 거대한 오크 석상. 절벽의 주민은 이 석상이 폭풍을 막는다고 믿고 매년 소금을 바친다."},
+  {Id="rootaltar", Zone="worldtree", Name="세계수 뿌리 제단", X=1500, Z=-600, Statue=nil, Shape="giantTree", Light={120,255,170},
+   Lore="숲의 시작이라는 거목. 뿌리 사이 제단에는 '숲은 진짜가 아니다'라는 낙서가 그림자처럼 번져 있다."},
+  {Id="crater", Zone="volcano", Name="잿불 분화구의 악마상", X=2600, Z=500, Statue="demon", Height=60, Shape="crater", Light={255,110,50},
+   Lore="분화구 한가운데 묶인 악마. 쇠사슬은 홍염 기사단이 벼린 것이다. 사슬이 하나 끊어질 때마다 화산이 운다."},
+  {Id="obelisk", Zone="oasis", Name="모래 오벨리스크 군", X=3800, Z=-500, Statue="raptor", Height=40, Shape="obelisks", Light={255,230,140},
+   Lore="미나의 장부 첫 장이 새겨진 돌기둥들. 기둥이 그리는 그림자가 가리키는 곳에 침몰한 사원이 있다."},
+  {Id="mistTower", Zone="swamp", Name="안개 마녀의 탑", X=5000, Z=-500, Statue="toad", Height=36, Shape="spire", Light={160,255,200},
+   Lore="안개가 걷히지 않는 늪 한가운데 솟은 탑. 마녀는 이 탑이 늪의 숨구멍이라 말한다. 막으면 숲 전체가 마른다고."},
+  {Id="gate", Zone="citadel", Name="불타는 성문의 쌍거인", X=5900, Z=500, Statue="skullorc", Height=70, Shape="gate", Light={255,90,40},
+   Lore="성채 정문을 떠받치는 거대한 두 전사. 문이 열리면 그들이 걸어 나온다는 전설이 있다."},
+  {Id="throne", Zone="highland", Name="고원 설인의 왕좌", X=-1500, Z=-1900, Statue="yeti", Height=64, Shape="plateau", Light={210,235,255},
+   Lore="바위 위에 앉은 거대 설인. 사냥꾼들은 그 곁을 지날 때 모자를 벗는다. 왕좌에는 사냥꾼 발자국만 남았다."},
+  {Id="altarOrc", Zone="canyon", Name="해골 대족장의 제단", X=2000, Z=-1900, Statue="skullorc", Height=56, Shape="spire", Light={255,140,70},
+   Lore="협곡 붉은 벽에 새겨진 제단. 전쟁 전 오크 부족이 기사단과 맺은 휴전 맹세가 아직 읽힌다."},
+  {Id="rift", Zone="chaos", Name="심연의 균열", X=4800, Z=-2000, Statue="demon", Height=92, Shape="crack", Light={190,90,255},
+   Lore="땅이 갈라져 보랏빛 마력이 솟는다. 균열 속 거대한 손이 문을 밀고 있다. 이곳이 미러의 탑으로 가는 길목이다."},
+  {Id="toadMonument", Zone="wetland", Name="습원 대두꺼비 기념비", X=-1000, Z=1900, Statue="toad", Height=44, Shape="pool", Light={150,255,190},
+   Lore="습원 주민이 세운 두꺼비 기념비. 비가 오면 석상 입에서 약수가 흘러내린다. 약초꾼들의 성지."},
+  {Id="sphinx", Zone="desert", Name="황금 사막의 스핑크스", X=3200, Z=2000, Statue="beastman", Height=62, Shape="obelisks", Light={255,215,120},
+   Lore="수수께끼를 묻는 석상. 대답 대신 이름을 부르면 길을 연다는 소문이 있다. 이프가 이곳에서 처음 이름을 잊었다."},
+  {Id="shrineDead", Zone="deadmarsh", Name="죽은 늪의 사당", X=5600, Z=1900, Statue="tribal", Height=38, Shape="pool", Light={110,160,255},
+   Lore="푸른 불이 떠다니는 늪 사당. 사당 석상은 주술사의 모습이며, 불빛은 이름을 잃은 단원들이라고 한다."},
+}
 
 return table.freeze(Config)

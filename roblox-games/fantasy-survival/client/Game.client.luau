@@ -9592,7 +9592,12 @@ end)
   local bounds=world.Bounds
   local width,height=bounds.X1-bounds.X0,bounds.Z1-bounds.Z0
   local function fx(x) return (x-bounds.X0)/width end
-  local function fz(z) return (z-bounds.Z0)/height end
+  local mapImage=world.MapImage
+  local function fz(z)
+    local t=(z-bounds.Z0)/height
+    if mapImage then return mapImage.Top+mapImage.Span*t end
+    return t
+  end
   local overlay=Instance.new("TextButton")
   overlay.Name="MeadowFullMap";overlay.Text="";overlay.AutoButtonColor=false
   overlay.Size=UDim2.fromScale(1,1);overlay.BackgroundColor3=Color3.fromRGB(4,10,10)
@@ -9612,7 +9617,7 @@ end)
   legend.BackgroundTransparency=1;legend.Position=UDim2.fromOffset(16,32);legend.Size=UDim2.new(1,-32,0,18)
   legend.Font=Enum.Font.Gotham;legend.TextSize=12;legend.TextXAlignment=Enum.TextXAlignment.Left
   legend.TextColor3=Color3.fromRGB(190,208,196);legend.ZIndex=62;legend.Parent=panel
-  legend.Text="▲●⌂✦ 발견한 장소   ● 내 위치   ◆ 발견한 이정표(누르면 빠른 이동)   ◇ 미발견   ★ 메인 목표   ▣ 초원 마을   북쪽이 위"
+  legend.Text="▲●⌂✦✪ 발견한 장소   ● 내 위치   ◆ 발견한 이정표(누르면 빠른 이동)   ◇ 미발견   ★ 메인 목표   ▣ 초원 마을   북쪽이 위"
   local close=Instance.new("TextButton")
   close.Text="X";close.Font=Enum.Font.GothamBold;close.TextSize=20;close.TextColor3=Color3.fromRGB(255,244,214)
   close.BackgroundColor3=Color3.fromRGB(70,38,38);close.Position=UDim2.new(1,-48,0,6);close.Size=UDim2.fromOffset(38,32)
@@ -9620,8 +9625,13 @@ end)
   local field=Instance.new("Frame")
   field.AnchorPoint=Vector2.new(.5,1);field.Position=UDim2.new(.5,0,1,-10)
   field.Size=UDim2.new(1,-20,1,-62);field.BackgroundColor3=Color3.fromRGB(14,16,14);field.ZIndex=62;field.ClipsDescendants=true;field.Parent=panel
-  local ratio=Instance.new("UIAspectRatioConstraint");ratio.AspectRatio=width/height;ratio.AspectType=Enum.AspectType.ScaleWithParentSize
+  local ratio=Instance.new("UIAspectRatioConstraint");ratio.AspectRatio=mapImage and mapImage.W/mapImage.H or width/height;ratio.AspectType=Enum.AspectType.ScaleWithParentSize
   ratio.DominantAxis=Enum.DominantAxis.Width;ratio.Parent=field
+  if mapImage then
+    local picture=Instance.new("ImageLabel")
+    picture.BackgroundTransparency=1;picture.Size=UDim2.fromScale(1,1);picture.Image="rbxassetid://"..mapImage.Asset
+    picture.ScaleType=Enum.ScaleType.Stretch;picture.ZIndex=62;picture.Parent=field
+  end
   -- 지역 칸(100스터드)을 처음 열 때 나눠서 만든다. 색은 지역색, 미발견 지역은 어둡게.
   local tiles={}
   local cellFrames={}
@@ -9645,6 +9655,7 @@ end)
           local index=world.Grid[row][col]
           local frame=Instance.new("Frame")
           frame.BorderSizePixel=0
+          frame.Visible=not mapImage
           frame.Position=UDim2.fromScale((col-1)/world.Cols,(row-1)/world.Rows)
           frame.Size=UDim2.fromScale(1/world.Cols+.0006,1/world.Rows+.0006)
           local zone=world.Zones[index]
@@ -9656,6 +9667,7 @@ end)
         if row%3==0 then task.wait() end
       end
       -- 큰길 · 강 · 경계 산맥(전체 지도 장식, 실제 지형과 같은 공식).
+      if not mapImage then
       local function bar(x0,z0,x1,z1,color,thick,order)
         local ax,az,bx,bz=fx(x0),fz(z0),fx(x1),fz(z1)
         local f=Instance.new("Frame");f.BorderSizePixel=0;f.BackgroundColor3=color;f.ZIndex=order
@@ -9693,9 +9705,10 @@ end)
         end
         if row%6==0 then task.wait() end
       end
+      end
       for index,tile in ipairs(tiles) do
         local n=count[index] or 1
-        tile.name.Position=UDim2.fromScale((sumX[index] or 1)/n/world.Cols,(sumZ[index] or 1)/n/world.Rows)
+        tile.name.Position=UDim2.fromScale((sumX[index] or 1)/n/world.Cols,fz(bounds.Z0+((sumZ[index] or 1)/n/world.Rows)*height))
         tile.seen=nil
       end
     end)
@@ -9734,6 +9747,14 @@ end)
     mark.Size=UDim2.fromOffset(14,14);mark.Font=Enum.Font.GothamBlack;mark.TextSize=12;mark.Text=poi.Icon
     mark.TextColor3=Color3.fromRGB(255,236,170);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=field
     poiMarkers[index]=mark
+  end
+  local lmMarks={}
+  for index,lm in ipairs(world.Landmarks or {}) do
+    local mark=Instance.new("TextLabel")
+    mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(lm.X),fz(lm.Z))
+    mark.Size=UDim2.fromOffset(16,16);mark.Font=Enum.Font.GothamBlack;mark.TextSize=15;mark.Text="✪"
+    mark.TextColor3=Color3.fromRGB(255,170,80);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=field
+    lmMarks[index]=mark
   end
   local dot=Instance.new("TextLabel")
   dot.BackgroundTransparency=1;dot.AnchorPoint=Vector2.new(.5,.5);dot.Size=UDim2.fromOffset(22,22)
@@ -9794,6 +9815,12 @@ end)
       local flag=bit32.lshift(1,(index-1)%30)
       mark.Visible=bit32.band(index<=30 and found1 or found2,flag)~=0
     end
+    local lmMask=player:GetAttribute("LandmarkMask") or 0
+    for index,mark in ipairs(lmMarks) do
+      local lm=world.Landmarks[index]
+      local seen=bit32.band(lmMask,bit32.lshift(1,index-1))~=0
+      mark.Visible=seen
+    end
     dot.Position=UDim2.fromScale(math.clamp(fx(x),.01,.99),math.clamp(fz(z),.01,.99))
   end
   local acc=0
@@ -9816,7 +9843,7 @@ end)
     if processed or UserInputService:GetFocusedTextBox() then return end
     if input.KeyCode==Enum.KeyCode.M then setOpen(not overlay.Visible) end
   end)
-  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage","PoiFound1","PoiFound2","QLMirror","QLMina","QLNick","QLSera","QLGarden","QLSeraJ","QLRowenJ","QLDoranJ","QLIfaJ","QLHarJ","QLRiaJ","QLMorganJ","QLBarenJ","QLTiboJ","QLCassianJ","CompanionOwned","CompanionActive"}) do
+  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage","PoiFound1","PoiFound2","LandmarkMask","QLMirror","QLMina","QLNick","QLSera","QLGarden","QLSeraJ","QLRowenJ","QLDoranJ","QLIfaJ","QLHarJ","QLRiaJ","QLMorganJ","QLBarenJ","QLTiboJ","QLCassianJ","CompanionOwned","CompanionActive"}) do
     player:GetAttributeChangedSignal(name):Connect(refresh)
   end
 end)()

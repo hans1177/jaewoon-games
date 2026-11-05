@@ -6516,6 +6516,75 @@ do
     alpha=true,bonusBoss=true,zoneTag="garden",lord=true,drops={{"Crystal",1,6},{"Magma",1,4},{"Claw",1,4}},position=Vector3.new(gardenCenter.X,3,-120)})
 end
 
+-- [지역 랜드마크] 멀리서도 보이는 거대 석상·첨탑·분화구·빛기둥. 모델은 등록된 mon_* 메시만 거대하게 쓰고, 지형은 Terrain으로 만든다.
+do
+  local lms=Config.WorldMap.Landmarks
+  for index,lm in ipairs(lms) do
+    task.spawn(function()
+      task.wait(5+index*.3)
+      local base=Vector3.new(lm.X,3,lm.Z)
+      local terrain=workspace.Terrain
+      pcall(function()
+        local shape=lm.Shape
+        if shape=="spire" then
+          terrain:FillCylinder(CFrame.new(base+Vector3.new(0,34,0)),68,9,Enum.Material.Rock)
+          terrain:FillCylinder(CFrame.new(base+Vector3.new(0,80,0)),24,4,Enum.Material.Slate)
+        elseif shape=="plateau" then
+          terrain:FillCylinder(CFrame.new(base+Vector3.new(0,6,0)),12,40,Enum.Material.Rock)
+          terrain:FillCylinder(CFrame.new(base+Vector3.new(0,13,0)),4,26,Enum.Material.Slate)
+        elseif shape=="crater" then
+          terrain:FillCylinder(CFrame.new(base+Vector3.new(0,5,0)),10,56,Enum.Material.Basalt)
+          terrain:FillCylinder(CFrame.new(base+Vector3.new(0,8,0)),4,30,Enum.Material.CrackedLava)
+        elseif shape=="obelisks" then
+          for k=0,4 do
+            local a=k*math.pi*2/5
+            terrain:FillBlock(CFrame.new(base+Vector3.new(math.cos(a)*34,22,math.sin(a)*34))*CFrame.Angles(0,a,0),Vector3.new(6,44,6),Enum.Material.Sandstone)
+          end
+        elseif shape=="gate" then
+          terrain:FillBlock(CFrame.new(base+Vector3.new(-40,40,0)),Vector3.new(14,80,14),Enum.Material.Basalt)
+          terrain:FillBlock(CFrame.new(base+Vector3.new(40,40,0)),Vector3.new(14,80,14),Enum.Material.Basalt)
+          terrain:FillBlock(CFrame.new(base+Vector3.new(0,82,0)),Vector3.new(94,10,14),Enum.Material.Basalt)
+        elseif shape=="crack" then
+          terrain:FillBlock(CFrame.new(base+Vector3.new(0,-2,0)),Vector3.new(10,8,90),Enum.Material.Air)
+          terrain:FillBlock(CFrame.new(base+Vector3.new(0,-5,0)),Vector3.new(10,2,90),Enum.Material.Neon)
+        elseif shape=="pool" then
+          terrain:FillCylinder(CFrame.new(base+Vector3.new(0,1,0)),3,46,Enum.Material.Water)
+        elseif shape=="giantTree" then
+          local tree=worldAsset("tree",base,120)
+          if tree then tree.Name="Landmark_"..lm.Id;tree:SetAttribute("MeadowScenery",true) end
+        end
+      end)
+      if lm.Statue then
+        local statue=worldAsset(lm.Statue,base+Vector3.new(0,(lm.Shape=="plateau" and 16) or (lm.Shape=="crater" and 8) or 0,0),lm.Height or 40)
+        if statue then statue.Name="Landmark_"..lm.Id;statue:SetAttribute("MeadowScenery",true) end
+      end
+      local anchor=Instance.new("Attachment");anchor.Name="Landmark_"..lm.Id;anchor.WorldPosition=base+Vector3.new(0,2,0);anchor.Parent=workspace.Terrain
+      local color=Color3.fromRGB(lm.Light[1],lm.Light[2],lm.Light[3])
+      local beam=Instance.new("ParticleEmitter");beam.Color=ColorSequence.new(color);beam.LightEmission=1;beam.Rate=40
+      beam.Lifetime=NumberRange.new(6,8);beam.Speed=NumberRange.new(22,30);beam.EmissionDirection=Enum.NormalId.Top
+      beam.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,5),NumberSequenceKeypoint.new(1,0)});beam.Parent=anchor
+      local prompt=Instance.new("ProximityPrompt");prompt.ActionText="조사하기";prompt.ObjectText=lm.Name;prompt.HoldDuration=.8
+      prompt.MaxActivationDistance=16;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+      prompt.Triggered:Connect(function(player)
+        if player:GetAttribute("ProfileReady")~=true then return end
+        local flag=bit32.lshift(1,index-1)
+        local mask=readNumber(player,"LandmarkMask",0)
+        local text=lm.Lore
+        if bit32.band(mask,flag)==0 then
+          mask=bit32.bor(mask,flag)
+          setNumber(player,"LandmarkMask",mask)
+          local count=0
+          for i=1,#lms do if bit32.band(mask,bit32.lshift(1,i-1))~=0 then count+=1 end end
+          setNumber(player,"Coins",readNumber(player,"Coins",0)+60)
+          pcall(awardProgress,player,60,40)
+          text="[랜드마크 "..count.."/"..#lms.."] "..lm.Lore.."\n(보상 60 재화)"
+        end
+        pcall(function() villageDialogue(player,lm.Name,text) end)
+      end)
+    end)
+  end
+end
+
 -- [지역 발견] 실제 위치가 지역 안에 들어가면 서버가 발견 비트를 기록한다(1 초원·2 숲·4 화산·8 오아시스).
 task.spawn(function()
   local bits={}
