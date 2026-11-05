@@ -10981,32 +10981,14 @@ end)()
       g.Parent=head
       table.insert(tint,tail);table.insert(tint,head);table.insert(tint,cover)
     else
-      -- 3단 쉐브론: 위→아래로 순서대로 밝아지는 애니메이션(a:SetAttribute 없이 바깥에서 Heartbeat로 구동)
-      local chevs={}
-      for i=1,3 do
-        local y=.12+(i-1)*.27
-        local L,T=.46,.15
-        local function bar(sign)
-          return shape(L,T,.5+sign*L*.3535,y+L*.3535-.04,-sign*45,i,false,Color3.fromRGB(255,244,190),true)
-        end
-        local l,r=bar(-1),bar(1)
-        local fill=Instance.new("UIGradient");fill.Color=ColorSequence.new(Color3.fromRGB(255,252,225),Color3.fromRGB(255,196,56));fill.Rotation=90
-        fill.Parent=l;fill:Clone().Parent=r
-        chevs[i]={l,r}
+      -- 단순한 한 줄 화살표(V자). 아래로 통통 튀는 건 바깥에서 위치로 처리한다.
+      local L,T=.56,.14
+      local function bar(sign)
+        return shape(L,T,.5+sign*L*.3535,.34+L*.3535,-sign*45,1,false,Color3.fromRGB(255,244,190),true)
       end
-      a:SetAttribute("Chevron",true)
-      tint=chevs
-      a:GetPropertyChangedSignal("Name") -- 보존용(더미)
-      task.spawn(function()
-        while a.Parent do
-          local t=os.clock()*2.4
-          for i,pair in ipairs(chevs) do
-            local k=(math.sin(t-i*.9)+1)/2
-            for _,f in ipairs(pair) do f.BackgroundTransparency=.55*(1-k);local st=f:FindFirstChildOfClass("UIStroke");if st then st.Transparency=.55*(1-k) end end
-          end
-          task.wait()
-        end
-      end)
+      local l,r=bar(-1),bar(1)
+      local fill=Instance.new("UIGradient");fill.Color=ColorSequence.new(Color3.fromRGB(255,252,225),Color3.fromRGB(255,200,60));fill.Rotation=90
+      fill.Parent=l;fill:Clone().Parent=r
     end
     return a,function(color)
       if kind=="pin" then for _,f in ipairs(tint) do f.BackgroundColor3=color end end
@@ -11079,14 +11061,15 @@ end)()
   end)
   -- ===== 길 안내 버튼: 지도 바로 아래 =====
   local guideChip=Instance.new("TextButton")
-  guideChip.Name="MeadowGuideChip";guideChip.AnchorPoint=Vector2.new(.5,0);guideChip.Size=UDim2.fromOffset(96,22)
-  guideChip.BackgroundColor3=Color3.fromRGB(34,72,52);guideChip.BackgroundTransparency=.25;guideChip.BorderSizePixel=0
-  guideChip.Font=Enum.Font.GothamMedium;guideChip.TextSize=12;guideChip.TextStrokeTransparency=1;guideChip.TextColor3=Color3.fromRGB(255,240,197);guideChip.ZIndex=29;guideChip.Parent=guiRoot
-  Instance.new("UICorner",guideChip).CornerRadius=UDim.new(0,8)
-  local guideChipStroke=Instance.new("UIStroke");guideChipStroke.Color=Color3.fromRGB(218,189,126);guideChipStroke.Thickness=1;guideChipStroke.Parent=guideChip
+  guideChip.Name="MeadowGuideChip";guideChip.AnchorPoint=Vector2.new(.5,0);guideChip.Size=UDim2.new(0,24,1,-20)
+  guideChip.BackgroundColor3=Color3.fromRGB(13,30,28);guideChip.BackgroundTransparency=.1;guideChip.BorderSizePixel=0
+  guideChip.Font=Enum.Font.Gotham;guideChip.TextSize=11;guideChip.TextStrokeTransparency=1;guideChip.TextColor3=Color3.fromRGB(255,240,197);guideChip.ZIndex=29;guideChip.Parent=guiRoot
+  Instance.new("UICorner",guideChip).CornerRadius=UDim.new(0,9)
+  local guideChipStroke=Instance.new("UIStroke");guideChipStroke.Color=Color3.fromRGB(220,176,91);guideChipStroke.Thickness=1.5;guideChipStroke.Parent=guideChip
   local function paintGuide()
-    guideChip.Text=guideOff and "길 안내 OFF" or "◆ 길 안내 ON"
-    guideChip.BackgroundColor3=guideOff and Color3.fromRGB(60,40,40) or Color3.fromRGB(34,72,52)
+    guideChip.Text=guideOff and "◇\n길\n안\n내" or "◆\n길\n안\n내"
+    guideChip.TextColor3=guideOff and Color3.fromRGB(150,150,140) or Color3.fromRGB(140,235,160)
+    guideChip.BackgroundColor3=guideOff and Color3.fromRGB(30,28,28) or Color3.fromRGB(13,30,28)
   end
   guideChip.Activated:Connect(function()
     guideOff=not guideOff;paintGuide();pref("guide",guideOff and 1 or 0)
@@ -11099,8 +11082,8 @@ end)()
       radar=player.PlayerGui:FindFirstChild("MeadowExplorerRadar",true)
       if not radar then task.wait(.5) end
     until radar
-    guideChip.AnchorPoint=Vector2.new(.5,0)
-    guideChip.Position=UDim2.new(.5,0,0,5)
+    guideChip.AnchorPoint=Vector2.new(1,0)
+    guideChip.Position=UDim2.new(0,-4,0,0)
     guideChip.ZIndex=30
     guideChip.Parent=radar
   end)
