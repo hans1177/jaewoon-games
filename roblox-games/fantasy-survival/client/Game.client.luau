@@ -871,32 +871,51 @@ local heroStaminaText=Instance.new("TextLabel")
 heroStaminaText.Name="StaminaReadout";heroStaminaText.BackgroundTransparency=1;heroStaminaText.Size=UDim2.fromScale(1,1)
 heroStaminaText.Font=Enum.Font.GothamBold;heroStaminaText.TextSize=13
 heroStaminaText.TextColor3=Color3.fromRGB(255,246,231);heroStaminaText.ZIndex=45;heroStaminaText.Parent=heroStamina
--- [모바일 전신·계기판] 좁은 화면은 상하, 넓은 화면은 좌우 배치.
+-- [아바타 둘레 장비칸] 아바타 좌우에 장비 6칸(왼쪽 무기·장갑·흉갑 / 오른쪽 바지·장화·장신구)을 둔다.
+local heroSlots={}
+for order,spec in ipairs({{"무기",2},{"장갑",3},{"흉갑",3},{"바지",3},{"장화",3},{"장신구",6}}) do
+  local frame=Instance.new("Frame")
+  frame.Name="HeroEquipSlot"..order;frame.BackgroundColor3=Color3.fromRGB(30,62,56);frame.BorderSizePixel=0;frame.Parent=characterHero
+  local frameCorner=Instance.new("UICorner");frameCorner.CornerRadius=UDim.new(0,10);frameCorner.Parent=frame
+  local frameEdge=Instance.new("UIStroke");frameEdge.Thickness=2;frameEdge.Color=Color3.fromRGB(88,120,104);frameEdge.Parent=frame
+  local frameIcon=Instance.new("ImageLabel")
+  frameIcon.Name="SlotIcon";frameIcon.BackgroundTransparency=1;frameIcon.AnchorPoint=Vector2.new(.5,0)
+  frameIcon.Position=UDim2.new(.5,0,0,4);frameIcon.Size=UDim2.fromOffset(34,34)
+  frameIcon.Image=meadowIconAtlas;frameIcon.ImageRectOffset=Vector2.new(spec[2]*64,0);frameIcon.ImageRectSize=Vector2.new(64,64)
+  frameIcon.ImageTransparency=.5;frameIcon.Parent=frame
+  local frameName=Instance.new("TextLabel")
+  frameName.Name="SlotCaption";frameName.BackgroundTransparency=1;frameName.AnchorPoint=Vector2.new(.5,1)
+  frameName.Position=UDim2.new(.5,0,1,-3);frameName.Size=UDim2.new(1,-4,0,16);frameName.Text=spec[1]
+  frameName.Font=Enum.Font.GothamBold;frameName.TextSize=11;frameName.TextColor3=Color3.fromRGB(190,205,196);frameName.Parent=frame
+  frameName.TextTruncate=Enum.TextTruncate.AtEnd
+  heroSlots[order]={frame=frame,icon=frameIcon,edge=frameEdge,name=frameName,default=spec[1]}
+end
+-- [모바일 전신·계기판] 장비 좌우 + 가운데 아바타, 아래에 이름·체력·기력·능력치 카드.
 local function layoutNativeAvatar()
   local width=characterHero.AbsoluteSize.X
   if width<=0 then return end
-  local narrow=width<440
-  characterHero.Size=UDim2.new(1,-8,0,narrow and 484 or 214)
-  local avatarSize=narrow and math.min(230,width-24) or 150
-  characterPortrait.Size=UDim2.fromOffset(avatarSize,narrow and 252 or 192)
-  characterPortrait.Position=narrow
-    and UDim2.new(.5,-avatarSize/2,0,10) or UDim2.fromOffset(12,11)
+  local slot=width<360 and 52 or 60
+  local gap=math.floor((192-slot*3)/2)
+  local avatarWidth=math.clamp(width-slot*2-36,110,260)
+  characterHero.Size=UDim2.new(1,-8,0,352)
+  characterPortrait.Size=UDim2.fromOffset(avatarWidth,192)
+  characterPortrait.Position=UDim2.fromOffset(math.floor((width-avatarWidth)/2),10)
   characterViewport.Size=characterPortrait.Size
   characterViewport.Position=characterPortrait.Position
-  local right=narrow and 14 or 180
-  characterHeroName.Position=UDim2.fromOffset(right,narrow and 270 or 10)
-  characterHeroName.Size=narrow and UDim2.new(1,-28,0,32) or UDim2.new(1,-196,0,30)
-  characterHeroSummary.Position=UDim2.fromOffset(right,narrow and 308 or 46)
-  characterHeroSummary.Size=narrow and UDim2.new(1,-28,0,46) or UDim2.new(1,-196,0,60)
-  heroHealth.Position=UDim2.fromOffset(right,narrow and 362 or 48)
-  heroHealth.Size=narrow and UDim2.new(1,-28,0,23) or UDim2.new(1,-197,0,26)
-  heroStamina.Position=UDim2.fromOffset(right,narrow and 393 or 82)
-  heroStamina.Size=heroHealth.Size
-  heroChips.Position=UDim2.fromOffset(right,narrow and 428 or 114)
-  heroChips.Size=narrow and UDim2.new(1,-28,0,44) or UDim2.new(1,-197,0,92)
-  local chipColumns=narrow and 4 or 2
-  local chipWidth=math.floor((heroChips.AbsoluteSize.X-(chipColumns-1)*6)/chipColumns)
-  heroChipGrid.CellSize=UDim2.fromOffset(math.max(40,chipWidth),narrow and 44 or 43)
+  for order,entry in ipairs(heroSlots) do
+    local column=order<=3 and 0 or 1
+    local row=(order-1)%3
+    entry.frame.Size=UDim2.fromOffset(slot,slot)
+    entry.frame.Position=UDim2.fromOffset(column==0 and 8 or width-8-slot,10+row*(slot+gap))
+  end
+  characterHeroName.Position=UDim2.fromOffset(12,208)
+  characterHeroName.Size=UDim2.new(1,-24,0,28)
+  characterHeroName.TextXAlignment=Enum.TextXAlignment.Center
+  heroHealth.Position=UDim2.fromOffset(12,240);heroHealth.Size=UDim2.new(1,-24,0,24)
+  heroStamina.Position=UDim2.fromOffset(12,268);heroStamina.Size=UDim2.new(1,-24,0,24)
+  heroChips.Position=UDim2.fromOffset(12,298);heroChips.Size=UDim2.new(1,-24,0,46)
+  local chipWidth=math.floor((heroChips.AbsoluteSize.X-18)/4)
+  heroChipGrid.CellSize=UDim2.fromOffset(math.max(40,chipWidth),46)
 end
 characterHero:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutNativeAvatar)
 characterViewport:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
@@ -1060,7 +1079,14 @@ return function(character,humanoid,tool,force)
   equippedLegs.Text=equippedName("Legs")
   equippedFeet.Text=equippedName("Feet")
   equippedAccessory.Text=equippedName("Accessory")
-  for _,label in ipairs({equippedWeapon,equippedSecondary,equippedArmor,equippedLegs,equippedFeet,equippedAccessory}) do
+  for order,label in ipairs({equippedWeapon,equippedSecondary,equippedArmor,equippedLegs,equippedFeet,equippedAccessory}) do
+    local heroSlot=heroSlots[order]
+    if heroSlot then
+      local have=not string.find(label.Text,"비어 있음",1,true)
+      heroSlot.icon.ImageTransparency=have and 0 or .6
+      heroSlot.edge.Color=have and meadowGold or Color3.fromRGB(88,120,104)
+      heroSlot.name.Text=have and (string.gsub(label.Text," · .*$","")) or heroSlot.default
+    end
     local filled=not string.find(label.Text,"비어 있음",1,true)
     local edge=label.Parent:FindFirstChildOfClass("UIStroke")
     if edge then edge.Color=filled and meadowGold or Color3.fromRGB(88,120,104) end

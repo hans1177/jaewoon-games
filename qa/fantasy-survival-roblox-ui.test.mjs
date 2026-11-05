@@ -412,7 +412,7 @@ test('character sheet shows actual avatar, live vital gauges and separate seven 
     'value.Text=tostring(math.floor(player:GetAttribute(entry.Key) or 0))',
   ])assert.ok(client.includes(key),key);
   assert.match(client,/local columns=width>=650 and 3 or width>=280 and 2 or 1/);
-  assert.match(client,/local narrow=width<440/);
+  assert.match(client,/local slot=width<360 and 52 or 60/);
   assert.match(client,/equippedWeapon.Text=equippedName\("Weapon"\)/);
   assert.match(client,/equippedAccessory.Text=equippedName\("Accessory"\)/);
 });
