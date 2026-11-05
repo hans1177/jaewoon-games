@@ -761,6 +761,39 @@ for index,name in ipairs(meadowPageNames) do
     meadowLabels[index]=label
   end
 end
+-- [섹션 칩] 퀘스트·세계 탭의 긴 글을 칩으로 나눠 한 번에 한 주제만 보여 준다.
+meadowArt.sections={}
+meadowArt.applySection=function(pageIndex)
+  local info=meadowArt.sections[pageIndex]
+  if not info or not info.texts then return end
+  meadowLabels[pageIndex].Text=info.texts[info.selected] or ""
+  for i,chip in ipairs(info.chips)do
+    local on=i==info.selected
+    chip.BackgroundColor3=on and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
+    chip.TextColor3=on and Color3.fromRGB(255,240,197) or Color3.fromRGB(191,215,198)
+  end
+end
+for pageIndex,names in pairs({[3]={"메인","서브","현상금","도움말"},[6]={"지역","도감","파티·야영","수수께끼","이야기"}})do
+  local bar=Instance.new("Frame")
+  bar.Name="SectionChips";bar.LayoutOrder=0;bar.BackgroundTransparency=1;bar.Size=UDim2.new(1,-8,0,38);bar.Parent=meadowPages[pageIndex]
+  local chipLayout=Instance.new("UIListLayout")
+  chipLayout.FillDirection=Enum.FillDirection.Horizontal;chipLayout.Padding=UDim.new(0,6);chipLayout.Parent=bar
+  local info={selected=1,chips={}}
+  meadowArt.sections[pageIndex]=info
+  for i,name in ipairs(names)do
+    local chip=Instance.new("TextButton")
+    chip.Size=UDim2.new(1/#names,-6,1,0);chip.Text=name;chip.Font=Enum.Font.GothamBold;chip.TextSize=13
+    chip.BorderSizePixel=0;chip.AutoButtonColor=true;chip.Parent=bar
+    local cc=Instance.new("UICorner");cc.CornerRadius=UDim.new(0,10);cc.Parent=chip
+    local cs=Instance.new("UIStroke");cs.Color=Color3.fromRGB(218,189,126);cs.Transparency=.4;cs.Parent=chip
+    chip.Activated:Connect(function()
+      info.selected=i;meadowArt.applySection(pageIndex)
+      meadowPages[pageIndex].CanvasPosition=Vector2.new(0,0)
+    end)
+    info.chips[i]=chip
+  end
+  meadowLabels[pageIndex].LayoutOrder=1
+end
 local meadowJournal={}
 local meadowHelperButtons={}
 -- [캐릭터창] 메뉴 생성과 전투 렌더에 필요한 외부 변수만 유지한다.
@@ -1221,6 +1254,7 @@ local function renderMeadowPages()
     companionUnlocked and string.format("%s (%d/%d)",companion.Instruction,
       player:GetAttribute("CompanionQuestProgress") or 0,companion.Goal)
       or string.format("메인 의뢰 %d단계에 해금",companion.UnlockMainStage)) or "동료 의뢰 모두 완료"
+  local journalBase=meadowLabels[3].Text
   meadowLabels[5].Text="진행 중인 의뢰\n\n【메인 퀘스트】\n"..mainText..
     "\n\n【서브 · 마을】\n"..villageText..
     "\n\n【현상금】\n"..bountyText..
@@ -1238,6 +1272,10 @@ local function renderMeadowPages()
   end
   -- [세계 탭] 지역 4개(1부)와 파티 4인 구성을 한곳에 표시한다. 구현 전 지역·영입은 잠금으로 보여 준다.
   local worldLines={"세계 · 1부 지역 4곳 (엔딩 없이 진행)"}
+  local dexLines={"몬스터 도감 (처치할수록 기록이 열려)"}
+  local partyLines={"파티 (최대 4인)\n1. 나 (플레이어)"}
+  local mystLines={"마력숲의 수수께끼 (진행하면 하나씩 풀려)"}
+  local storyLines={"1부 메인 이야기 (07~12장)"}
   local statusText={Open="탐험 가능",Planned="준비 중",Reserved="2부 이후"}
   local discovered=player:GetAttribute("WorldDiscovered") or 1
   local regionBits={meadow=1,worldtree=2,volcano=4,oasis=8}
@@ -1247,34 +1285,39 @@ local function renderMeadowPages()
     worldLines[#worldLines+1]=string.format("%d. %s  [%s%s]%s",index,region.Name,statusText[region.Status] or "잠김",
       bit and (seen and " · 발견" or " · 미발견") or "",seen and region.Story and ("\n   "..region.Story) or "")
   end
-  worldLines[#worldLines+1]="\n몬스터 도감 (처치할수록 기록이 열려)"
   for _,entry in ipairs(Config.Bestiary or {})do
     local kills=player:GetAttribute(entry.Field) or 0
     if kills<=0 then
-      worldLines[#worldLines+1]="· ???  (아직 만나지 못함)"
+      dexLines[#dexLines+1]="· ???  (아직 만나지 못함)"
     else
-      worldLines[#worldLines+1]=string.format("· %s  처치 %d  /  서식지: %s",entry.Name,kills,entry.Habitat)
+      dexLines[#dexLines+1]=string.format("· %s  처치 %d  /  서식지: %s",entry.Name,kills,entry.Habitat)
       for tier,need in ipairs({1,5,15})do
-        worldLines[#worldLines+1]="   "..(kills>=need and entry.Lore[tier] or string.format("   (처치 %d회에 열림)",need))
+        dexLines[#dexLines+1]="   "..(kills>=need and entry.Lore[tier] or string.format("   (처치 %d회에 열림)",need))
       end
     end
   end
-  worldLines[#worldLines+1]=string.format("\n기사단 야영지  숲 %d/3 · 화산 %d/3 · 오아시스 %d/3  (입구 근처 모닥불에서 복구)",
+  partyLines[#partyLines+1]=string.format("기사단 야영지  숲 %d/3 · 화산 %d/3 · 오아시스 %d/3  (입구 근처 모닥불에서 복구)",
     player:GetAttribute("CampWorldtree") or 0,player:GetAttribute("CampVolcano") or 0,player:GetAttribute("CampOasis") or 0)
-  worldLines[#worldLines+1]="\n파티 (최대 4인)\n1. 나 (플레이어)"
   for index,member in ipairs(Config.PartyMembers or {})do
-    worldLines[#worldLines+1]=string.format("%d. %s · %s  [%s]\n   %s",index+1,member.Name,member.Role,
+    partyLines[#partyLines+1]=string.format("%d. %s · %s  [%s]\n   %s",index+1,member.Name,member.Role,
       member.Source=="Main" and "메인 동료 · 준비 중" or "서브 동료 · 준비 중",member.Story)
   end
-  worldLines[#worldLines+1]="\n마력숲의 수수께끼 (진행하면 하나씩 풀려)"
   local questStageNow=player:GetAttribute("QuestStage") or 1
   for _,mystery in ipairs(Config.Mysteries or {})do
-    worldLines[#worldLines+1]=questStageNow>=mystery.Stage and ("· "..mystery.Text) or "· ???"
+    mystLines[#mystLines+1]=questStageNow>=mystery.Stage and ("· "..mystery.Text) or "· ???"
   end
-  worldLines[#worldLines+1]="\n1부 메인 이야기 (07~12장)"
-  for _,beat in ipairs(Config.MainStoryPart1 or {})do worldLines[#worldLines+1]=beat.Name.."\n   "..beat.Text end
-  meadowLabels[6].Text=table.concat(worldLines,"\n").."\n\n"..table.concat(companionLines,"\n\n")
-  meadowLabels[3].Text=meadowLabels[5].Text.."\n\n"..meadowLabels[3].Text
+  for _,beat in ipairs(Config.MainStoryPart1 or {})do storyLines[#storyLines+1]=beat.Name.."\n   "..beat.Text end
+  local sec=meadowArt.sections
+  sec[6].texts={table.concat(worldLines,"\n"),table.concat(dexLines,"\n"),table.concat(partyLines,"\n"),
+    table.concat(mystLines,"\n"),table.concat(storyLines,"\n")}
+  local howTo=string.match(meadowLabels[5].Text,"【처음 조작】.*") or ""
+  sec[3].texts={
+    "【메인 퀘스트】\n"..mainText.."\n\n【다음 행동 안내】\n"..suggestion..string.format("\n\n다음 강화 재료: 나무 %d · 돌 %d",cost,cost),
+    "【서브 · 마을】\n"..villageText.."\n\n"..table.concat(companionLines,"\n\n"),
+    "【현상금 게시판】\n"..bountyText,
+    howTo.."\n\n"..journalBase,
+  }
+  meadowArt.applySection(3);meadowArt.applySection(6)
   for _,button in ipairs(meadowHelperButtons) do
     button.Active=ready
     button.TextTransparency=ready and 0 or .5
