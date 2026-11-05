@@ -3627,6 +3627,40 @@ remote.OnClientEvent:Connect(function(kind,payload)
     return
   end
   if kind~="MEADOW_QUEST_UPDATE" or typeof(payload)~="table" then return end
+  -- [스카이림·오딧세이식 퀘스트 완료 연출] 화면 중앙 위에 큰 문구가 서서히 떠올랐다 사라진다.
+  do
+    local TweenService=game:GetService("TweenService")
+    local banner=gui:FindFirstChild("MeadowQuestCompleteBanner")
+    if banner then banner:Destroy() end
+    banner=Instance.new("Frame")
+    banner.Name="MeadowQuestCompleteBanner"
+    banner.AnchorPoint=Vector2.new(.5,0);banner.Position=UDim2.new(.5,0,.16,0)
+    banner.Size=UDim2.fromOffset(460,120);banner.BackgroundTransparency=1;banner.Active=false;banner.ZIndex=60
+    banner.Parent=gui
+    local function line(text,y,height,size,font,color)
+      local label=Instance.new("TextLabel")
+      label.BackgroundTransparency=1;label.Position=UDim2.fromOffset(0,y);label.Size=UDim2.new(1,0,0,height)
+      label.Font=font;label.TextSize=size;label.TextColor3=color;label.Text=text;label.TextTransparency=1
+      label.TextStrokeTransparency=1;label.ZIndex=61;label.TextWrapped=true;label.Parent=banner
+      return label
+    end
+    local gold=Color3.fromRGB(236,212,150)
+    local labels={
+      line("퀘스트 완료",0,40,30,Enum.Font.GothamMedium,gold),
+      line(tostring(payload.completed or ""),44,26,19,Enum.Font.Gotham,Color3.fromRGB(240,240,232)),
+      line(payload.record and ("기사단 연대기 "..payload.record.." 획득") or "",72,22,15,Enum.Font.Gotham,Color3.fromRGB(190,214,204)),
+      line(payload.nextQuest and ("다음  ·  "..tostring(payload.nextQuest)) or "",96,22,15,Enum.Font.Gotham,Color3.fromRGB(176,196,184)),
+    }
+    for _,label in ipairs(labels) do
+      TweenService:Create(label,TweenInfo.new(.9,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+    end
+    task.delay(4.2,function()
+      for _,label in ipairs(labels) do
+        if label.Parent then TweenService:Create(label,TweenInfo.new(1.2),{TextTransparency=1}):Play() end
+      end
+      task.delay(1.3,function() if banner.Parent then banner:Destroy() end end)
+    end)
+  end
   meadowSurvivalHint.Text="메인 완료: "..tostring(payload.completed or "")
     ..(payload.record and ("  ·  기사단 연대기 "..payload.record.." 획득!") or "")
   meadowSurvivalHint.Visible=true

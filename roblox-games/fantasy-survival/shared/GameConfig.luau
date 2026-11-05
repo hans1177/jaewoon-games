@@ -394,7 +394,7 @@ local Config = {
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
     ResearchRecords = 0, ExplorationGroves = 0, RuinsDiscovered = 0, DawnTraceFound = 0, NightTraceFound = 0, CompanionQuestStage = 1, CompanionQuestProgress = 0,
     -- 구형 저장은 존재하지 않는 숫자 필드를 기본값으로 읽어 이관한다.
-    VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0,
+    NarinStory = 0, VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0,
     -- [이어하기] 이전 프로필에 없는 필드는 0으로 마이그레이션. 서버 검증된 위치만 복원한다.
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,

@@ -603,6 +603,28 @@ local function villageDialogue(player,title,message,options)
   })
 end
 local function villageBoardDialogue(player,sourcePosition)
+  -- [스토리 연결 · 오딧세이식 대화 선택] 초원 메인 퀘스트(05 연대기)를 마치면 촌장 나린이 기사단 이야기를 꺼낸다.
+  local story=readNumber(player,"NarinStory",0)
+  if readNumber(player,"QuestStage",1)>=6 then
+    villageSessions[player]={position=sourcePosition or villageCenter,expires=os.clock()+60}
+    if story==0 then
+      villageDialogue(player,"촌장 나린 · 지워진 기사단",
+        "…그 문양. 네가 가져온 연대기에 새겨진 렌스기사단의 문장이구나.\n\n나도 이 마을에서 눈을 뜬 날 이전은 기억나지 않아. "..
+        "다만 서쪽 숲으로 들어간 기사들의 이름만은 낡은 의뢰판 뒷면에 새겨져 있었지. 렌스, 카인, 미나, 닉.\n\n"..
+        "네가 카인이라면… 나는 오래전부터 너를 기다렸는지도 몰라.",{
+        {label="그 의뢰판을 보여 줘 (진실을 묻는다)",action="village:story:1"},
+        {label="이 마을이 무엇을 숨기는지 말해 (의심한다)",action="village:story:2"},
+        {label="지금은 마을 일이 먼저야 (미룬다)",action="village:story:3"},
+      })
+      return
+    elseif story==1 then
+      villageDialogue(player,"촌장 나린","의뢰판 뒷면의 이름들은 네 동료의 것이야. 서쪽 숲의 우두머리 늑대를 넘어야 세계수로 길이 열려. 그곳에서 닉을 찾아.")
+      return
+    elseif story==2 then
+      villageDialogue(player,"촌장 나린","의심하는 건 당연해. 그래도 숲이 사람의 이름을 먹는다는 건 사실이야. 서쪽 길목의 우두머리부터 쓰러뜨려야 해.")
+      return
+    end
+  end
   local index,contract=villageCurrentContract(player)
   if not contract then
     villageDialogue(player,"초원 마을 · 의뢰 완료","세 의뢰의 진상을 모두 기록했어. 기사단 연대기는 그대로 이어져.")
@@ -670,6 +692,23 @@ local function villageChoose(player,actionId)
   local session=villageSessions[player]
   if not session or os.clock()>session.expires
     or not villageNear(player,session.position,16) then return end
+  local storyPick=actionId:match("^village:story:([123])$")
+  if storyPick and readNumber(player,"NarinStory",0)==0 and readNumber(player,"QuestStage",1)>=6 then
+    local pick=tonumber(storyPick)
+    setNumber(player,"NarinStory",pick)
+    villageInteractionCooldown[player]=os.clock()
+    villageSessions[player]=nil
+    if pick==3 then
+      setNumber(player,"NarinStory",0) -- 미루면 다시 말을 걸 수 있다.
+      villageDialogue(player,"촌장 나린","그래, 서두를 일은 아니야. 준비가 되면 다시 와.")
+      return
+    end
+    setNumber(player,"Coins",readNumber(player,"Coins",0)+(pick==1 and 40 or 25))
+    villageDialogue(player,"촌장 나린",pick==1
+      and "의뢰판 뒷면에 네 이름이 있었어. 길은 서쪽 숲 우두머리 너머로 이어져. (재화 +40 · 스토리: 진실을 택했어)"
+      or "…좋아, 의심은 살아남는 자의 몫이야. 숲의 이름 도둑을 막아 줘. (재화 +25 · 스토리: 의심을 택했어)")
+    return
+  end
   local index,contract=villageCurrentContract(player)
   if not contract then return end
   local phase=readNumber(player,"VillageContractPhase",0)
