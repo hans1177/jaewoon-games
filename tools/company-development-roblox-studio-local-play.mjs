@@ -2726,6 +2726,11 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           const m=out.match(/(\d+),(\d+)/);
           if(m){const mt=client.tool('user_mouse_input');await client.call('user_mouse_input',mouseClickArgs(mt.inputSchema||{},studioId,Number(m[1]),Number(m[2])));report.log.push({step:n,click:st.text,at:m[0]});}
           else report.log.push({step:n,click:st.text,at:'NOT_FOUND'});
+        }else if(st.type==='click_from_luau'){
+          const out=await luau(st.ctx||'Client',st.code);
+          const m=out.match(/(\d+),(\d+)/);
+          if(m){const mt=client.tool('user_mouse_input');await client.call('user_mouse_input',mouseClickArgs(mt.inputSchema||{},studioId,Number(m[1]),Number(m[2])));report.log.push({step:n,click:st.label||'luau',at:m[0],out:out.slice(0,200)});}
+          else report.log.push({step:n,click:st.label||'luau',at:'NOT_FOUND',out:out.slice(0,200)});
         }else if(st.type==='capture'){
           const capTool=client.tool('screen_capture');
           const a=fillRequired((()=>{const x={};setStudioId(x,capTool.inputSchema||{},studioId);return x;})(),capTool.inputSchema||{});
