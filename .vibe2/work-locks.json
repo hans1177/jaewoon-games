@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1x6vpl",
+      "worker": "vibe2",
+      "taskId": "kingshot-ad-web-startup-spatial-repair-v7",
+      "gameId": "kingshot-ad",
+      "files": [
+        "web-games/kingshot-ad/index.html"
+      ],
+      "baseSha": "65ca52ee221de2f026aee49a3eabb1f0606e8df7",
+      "runId": "41951687919",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-05T02:15:26.522Z",
+      "expiresAt": "2026-11-05T03:00:26.522Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:kingshot-ad-web-startup-spatial-repair-v7"
+      ]
+    }
+  ]
 }
