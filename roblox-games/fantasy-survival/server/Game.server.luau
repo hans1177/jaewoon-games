@@ -156,7 +156,7 @@ local meadowPalette={
   ground=Color3.fromRGB(119,100,83),rock=Color3.fromRGB(104,106,100),
   bark=Color3.fromRGB(84,72,60),leaves=Color3.fromRGB(75,100,76),
   -- [몹 고유색] 전부 회색·흰색으로 보이던 단색을 종별 자연색으로 바꾼다.
-  wolf=Color3.fromRGB(132,118,104),boar=Color3.fromRGB(122,82,58),
+  wolf=Color3.fromRGB(92,74,60),boar=Color3.fromRGB(122,82,58),
   deer=Color3.fromRGB(178,116,68),rabbit=Color3.fromRGB(214,196,160),
   bee=Color3.fromRGB(236,184,58),bat=Color3.fromRGB(96,80,128),
   golem=Color3.fromRGB(112,138,104),
@@ -3249,7 +3249,7 @@ local function spawnEnemy(site, siteIndex)
   -- 기존 Pebble/바둑판 원본 몸통 텍스처를 제거하되, 원본 메시·뼈·사지·물리 및 종별 색상은 보존.
   -- 원본 템플릿은 수정하지 않고 스폰 복제본만 바꾼다. 새 장식 파츠를 만들지 않는다.
   -- 별도 미세 돌기 PBR 노멀맵은 Roblox에 업로드·권한 확인된 승인 자산이 있어야 실제 적용 가능.
-  local bodyTint=isBoss and meadowPalette.golem or isAlpha and Color3.fromRGB(78,87,94)
+  local bodyTint=isBoss and meadowPalette.golem or isAlpha and Color3.fromRGB(54,60,74)
     or meadowPalette[partId] or meadowPalette.wolf
   for _,surface in ipairs(model:GetDescendants()) do
     if surface:IsA("MeshPart") and not site.model then
