@@ -31,12 +31,12 @@ local Specialties: { Specialty } = {
 		perk = { discoverFields = { "Botany", "Medicine" }, discoverBonus = 0.25 }, xpOn = { "Botany", "Medicine" } },
 	{ id = "zoologist", name = "동물학자", summary = "동물 카드 발견 확률 +25%",
 		perk = { discoverFields = { "Zoology" }, discoverBonus = 0.25 }, xpOn = { "Zoology" } },
-	{ id = "collector", name = "유물수집가", summary = "유물·유적·광물 카드 등록 코인 +50%",
-		perk = { coinFields = { "Relic", "Site", "Mineral" }, coinMult = 0.5 }, xpOn = { "Relic", "Site", "Mineral" } },
+	{ id = "collector", name = "유물수집가", summary = "유물·유적·광물·예술·건축·언어 카드 등록 코인 +50%",
+		perk = { coinFields = { "Relic", "Site", "Mineral", "Art", "Architecture", "Language" }, coinMult = 0.5 }, xpOn = { "Relic", "Site", "Mineral", "Art", "Architecture", "Language" } },
 	{ id = "cartographer", name = "지도제작자", summary = "항해 속도 +10%",
-		perk = { speedMult = 0.1 }, xpOn = { "voyage", "Geography", "Astronomy" } },
+		perk = { speedMult = 0.1 }, xpOn = { "voyage", "Geography", "Astronomy", "Navigation", "Weather", "Shipbuilding" } },
 	{ id = "merchant", name = "무역가", summary = "되파는 비율 +2%",
-		perk = { sellBonus = 0.02 }, xpOn = { "trade" } },
+		perk = { sellBonus = 0.02 }, xpOn = { "trade", "Goods" } },
 }
 
 local Companions: { Companion } = {

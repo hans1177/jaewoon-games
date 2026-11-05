@@ -1348,7 +1348,7 @@ do
 				n += 1
 			end
 		end
-		check("field has enough cards " .. f.id, n >= 3, n)
+		check("field has enough cards " .. f.id, n >= 15, n)
 	end
 	local st = newState("england")
 	local v = S.View.build(st, ctx)

@@ -23,6 +23,14 @@
 4. `CardArt.snippet.luau`의 `rbxassetid://0`을 실제 ID로 바꿔 `src/ReplicatedStorage/Shared/CardArt.luau`에 붙인다.
 5. Studio에서 도감 → 분야 → 카드 상세에서 그림과 출처가 나오는지 확인한다.
 
+## 자동 업로드 (Open Cloud, 무료)
+1. `python3 tools/gen_art_list.py 목록.csv` — 모든 카드의 양식 생성. file/credit/license 칸을 채운다 (name, field 열은 참고용).
+2. `python3 tools/prepare_card_art.py 원본폴더 목록.csv 출력폴더`
+3. Creator Hub → Open Cloud → API Keys에서 키 생성(Assets 읽기/쓰기). **키는 채팅/코드에 적지 말고 환경변수로만 사용.**
+4. `export ROBLOX_API_KEY=... ROBLOX_USER_ID=...` 후 `python3 tools/upload_card_art.py 출력폴더 목록.csv` (먼저 `--dry-run`으로 확인).
+5. 생성된 `CardArt.entries.luau`를 `CardArt.luau`의 Art 표에 붙여 넣는다. 이미 올린 카드는 `uploaded.json`에 기록되어 다시 올리지 않는다.
+- 이미지는 Roblox 자동 검수를 거친다. 게임에서는 Decal ID를 `rbxthumb://` 주소로 불러온다.
+
 ## "실사 사진 vs 일러스트"
 - 동식물·광물·유적은 실사 사진이 도감 느낌이 가장 좋다.
 - 신화 괴물, 옛 장면, 사진이 없는 옛 발명품은 옛 판화/도판(공개 도메인) 또는 직접 그린 일러스트가 어울린다.
