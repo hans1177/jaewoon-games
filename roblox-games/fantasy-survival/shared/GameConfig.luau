@@ -140,6 +140,13 @@ local Config = {
     {Id="oasis",Name="오아시스 지하",Part=1,Status="Planned",UnlockMainStage=11,Story="모래서약 기사단의 오아시스. 물에 비친 얼굴이 이름을 묻는다. 미나의 장부에서 전쟁의 진실이 드러난다."},
     {Id="swamp",Name="안개 늪지",Part=1,Status="Open",Story="걸어서 이어진 대륙 동쪽의 늪. 고블린 무리와 독두꺼비, 늪 원혼 거미가 길을 막고, 안개 골렘이 늪의 중심을 지킨다."},
     {Id="citadel",Name="불타는 성채",Part=1,Status="Open",Story="대륙 끝의 불타는 성채. 악마와 해골 오크 병사가 지키고, 늑대인간 족장이 성채 군주로 군림한다. 희귀 재료의 최고 산지."},
+    {Id="windcliff",Name="바람 절벽",Part=1,Status="Open",Story="서쪽 해안의 절벽 지대. 약탈 고블린과 늑대가 길목을 노리고, 오크 군단장이 요새를 차지했다."},
+    {Id="highland",Name="북부 고원",Part=1,Status="Open",Story="마을 북쪽의 거친 고원. 설인과 늑대인간이 어슬렁거리고 고원의 왕이 군림한다."},
+    {Id="canyon",Name="고대 협곡",Part=1,Status="Open",Story="붉은 사암 협곡. 해골 오크와 암살자, 랩터가 길을 막고 대족장이 제단을 지킨다."},
+    {Id="chaos",Name="혼돈의 대지",Part=1,Status="Open",Story="균열이 갈라진 검은 평원. 악마와 서리 마귀가 들끓는 위험 지대."},
+    {Id="wetland",Name="남부 습원",Part=1,Status="Open",Story="마을 남쪽의 질척한 습지. 독두꺼비와 고블린, 거미가 많고 재료가 풍부하다."},
+    {Id="desert",Name="황금 사막",Part=1,Status="Open",Story="남쪽의 끝없는 모래 바다. 독거미와 랩터, 암살자가 사냥한다."},
+    {Id="deadmarsh",Name="죽음의 늪",Part=1,Status="Open",Story="남동쪽 끝의 썩은 늪. 주술전사와 악마, 죽은 늪 거미가 산다."},
     {Id="mist-swamp",Name="안개 늪",Part=2,Status="Reserved"},
     {Id="frost-plateau",Name="서리 고원",Part=2,Status="Reserved"},
     {Id="sunken-capital",Name="잠긴 왕도",Part=2,Status="Reserved"},
@@ -696,4 +703,34 @@ end
 for _,tonic in ipairs(Config.MeadowConsumables) do
   if tonic.Id=="herbal_tonic" then tonic.RedLeaf=2 else tonic.Moonbloom=1;tonic.Mushroom=1 end
 end
+
+-- [대륙 지도] 서버 지형·몬스터 배치와 클라이언트 전체 지도가 같은 표를 읽는다. +X=동쪽, +Z=남쪽.
+Config.WorldMap = {
+  Bounds = {X0 = -2400, X1 = 6400, Z0 = -2400, Z1 = 2400},
+  Village = {X0 = -352, X1 = 352, Z0 = -352, Z1 = 352},
+  Zones = {
+    {Id="windcliff", Name="바람 절벽", Bit=64,   X0=-2400,X1=-352, Z0=-1250,Z1=1250, Color={118,150,96}},
+    {Id="meadow",    Name="초원 평야", Bit=1,    X0=-352, X1=950,  Z0=-1250,Z1=1250, Color={78,140,82}},
+    {Id="worldtree", Name="세계수 숲", Bit=2,    X0=950,  X1=2190, Z0=-1250,Z1=1250, Color={40,110,98}},
+    {Id="volcano",   Name="재의 황야", Bit=4,    X0=2190, X1=3390, Z0=-1250,Z1=1250, Color={130,56,42}},
+    {Id="oasis",     Name="모래 폐허", Bit=8,    X0=3390, X1=4300, Z0=-1250,Z1=1250, Color={190,160,98}},
+    {Id="swamp",     Name="안개 늪지", Bit=16,   X0=4300, X1=5300, Z0=-1250,Z1=1250, Color={70,92,66}},
+    {Id="citadel",   Name="불타는 성채", Bit=32, X0=5300, X1=6400, Z0=-1250,Z1=1250, Color={96,40,40}},
+    {Id="highland",  Name="북부 고원", Bit=128,  X0=-2400,X1=400,  Z0=-2400,Z1=-1250, Color={128,128,120}},
+    {Id="canyon",    Name="고대 협곡", Bit=256,  X0=400,  X1=3000, Z0=-2400,Z1=-1250, Color={150,102,70}},
+    {Id="chaos",     Name="혼돈의 대지", Bit=512, X0=3000, X1=6400, Z0=-2400,Z1=-1250, Color={82,46,70}},
+    {Id="wetland",   Name="남부 습원", Bit=1024, X0=-2400,X1=1500, Z0=1250, Z1=2400, Color={74,112,84}},
+    {Id="desert",    Name="황금 사막", Bit=2048, X0=1500, X1=4300, Z0=1250, Z1=2400, Color={214,184,118}},
+    {Id="deadmarsh", Name="죽음의 늪", Bit=4096, X0=4300, X1=6400, Z0=1250, Z1=2400, Color={58,70,52}},
+  },
+  Waypoints = {
+    {"초원 이정표",520,-300},{"숲 어귀 야영지",1000,500},{"세계수 제단",1300,-700},{"갈림길 주막터",1800,300},
+    {"부서진 감시탑",2100,-800},{"재의 제단",2500,600},{"용암 감시초소",2900,-500},{"옛 광산 입구",3200,800},
+    {"모래 오벨리스크",3700,-650},{"침몰한 사원",4100,500},{"안개 부두",4600,-700},{"늪 마녀의 오두막",4900,700},
+    {"저주받은 성문",5500,-600},{"불꽃 대장간 터",5800,700},{"성채 외곽 초소",6100,-300},{"군주의 옥좌 앞",6300,300},
+    {"북부 감시탑",-1200,-1800},{"고대 협곡 제단",1600,-1900},{"혼돈의 균열",4500,-1800},{"바람 절벽 등대",-1700,300},
+    {"남부 습원 부두",-600,1900},{"황금 사막 폐허",2900,1900},{"죽음의 늪 사당",5300,1900},{"서쪽 옛 요새",-1800,-800},
+  },
+}
+
 return table.freeze(Config)

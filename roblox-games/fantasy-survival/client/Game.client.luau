@@ -1279,7 +1279,8 @@ local function renderMeadowPages()
   local storyLines={"1부 메인 이야기 (07~12장)"}
   local statusText={Open="탐험 가능",Planned="준비 중",Reserved="2부 이후"}
   local discovered=player:GetAttribute("WorldDiscovered") or 1
-  local regionBits={meadow=1,worldtree=2,volcano=4,oasis=8,swamp=16,citadel=32}
+  local regionBits={}
+  for _,zone in ipairs(Config.WorldMap.Zones) do regionBits[zone.Id]=zone.Bit end
   for index,region in ipairs(Config.Regions or {})do
     local bit=regionBits[region.Id]
     local seen=bit==nil or bit32.band(discovered,bit)~=0
@@ -1288,8 +1289,8 @@ local function renderMeadowPages()
   end
   do
     local count=0
-    for i=0,15 do if bit32.band(player:GetAttribute("WaypointMask") or 0,bit32.lshift(1,i))~=0 then count+=1 end end
-    worldLines[#worldLines+1]=string.format("발견한 이정표 %d/16 — 이정표를 조사하면 빠른 이동 거점이 된다.",count)
+    for i=0,23 do if bit32.band(player:GetAttribute("WaypointMask") or 0,bit32.lshift(1,i))~=0 then count+=1 end end
+    worldLines[#worldLines+1]=string.format("발견한 이정표 %d/24 — 이정표를 조사하면 빠른 이동 거점이 된다.",count)
   end
   for _,entry in ipairs(Config.Bestiary or {})do
     local kills=player:GetAttribute(entry.Field) or 0
@@ -9500,8 +9501,8 @@ end)
 
 
 
--- [전체 지도] 미니맵을 누르거나 M 키를 누르면 1부 지역 4곳과 현재 위치·목표·현상금을 보여준다.
--- 지역 발견 여부는 서버가 기록한 WorldDiscovered 비트만 사용하고, 위치는 실제 캐릭터 좌표다.
+-- [전체 지도] 미니맵을 누르거나 M 키를 누르면 대륙 전체(13개 지역)를 보여준다. 발견한 이정표를 누르면 서버 검증 후 빠른 이동.
+-- 지역 발견은 서버가 기록한 WorldDiscovered 비트, 이정표 발견은 WaypointMask 비트, 위치는 실제 캐릭터 좌표만 쓴다.
 ;(function()
   local RunService=game:GetService("RunService")
   local UserInputService=game:GetService("UserInputService")
@@ -9514,105 +9515,119 @@ end)
   end
   if not radar then return end
   local layer=radar.Parent
-  local regions={
-    {id="meadow",name="초원 마을 (튜토리얼)",bit=1,center=0,half=348,color=Color3.fromRGB(70,130,78)},
-    {id="worldtree",name="세계수 숲",bit=2,center=1200,half=210,color=Color3.fromRGB(40,110,98)},
-    {id="volcano",name="화산 협곡",bit=4,center=2400,half=210,color=Color3.fromRGB(130,56,42)},
-    {id="oasis",name="오아시스 지하",bit=8,center=3600,half=210,color=Color3.fromRGB(190,160,98)},
-    {id="swamp",name="안개 늪지",bit=16,center=4800,half=500,color=Color3.fromRGB(70,92,66)},
-    {id="citadel",name="불타는 성채",bit=32,center=5850,half=550,color=Color3.fromRGB(96,40,40)},
-  }
-  local gate={worldtree="메인 6장",volcano="메인 9장",oasis="메인 10장",swamp="자유 탐험",citadel="자유 탐험"}
+  local world=Config.WorldMap
+  local bounds=world.Bounds
+  local width,height=bounds.X1-bounds.X0,bounds.Z1-bounds.Z0
+  local function fx(x) return (x-bounds.X0)/width end
+  local function fz(z) return (z-bounds.Z0)/height end
   local overlay=Instance.new("TextButton")
   overlay.Name="MeadowFullMap";overlay.Text="";overlay.AutoButtonColor=false
   overlay.Size=UDim2.fromScale(1,1);overlay.BackgroundColor3=Color3.fromRGB(4,10,10)
-  overlay.BackgroundTransparency=.35;overlay.ZIndex=60;overlay.Visible=false;overlay.Parent=layer
+  overlay.BackgroundTransparency=.3;overlay.ZIndex=60;overlay.Visible=false;overlay.Parent=layer
   local panel=Instance.new("Frame")
-  panel.AnchorPoint=Vector2.new(.5,1);panel.Position=UDim2.new(.5,0,1,-10)
-  panel.Size=UDim2.new(.94,0,.78,0);panel.BackgroundColor3=Color3.fromRGB(18,32,30)
+  panel.AnchorPoint=Vector2.new(.5,.5);panel.Position=UDim2.fromScale(.5,.5)
+  panel.Size=UDim2.new(.96,0,.92,0);panel.BackgroundColor3=Color3.fromRGB(26,22,16)
   panel.ZIndex=61;panel.Parent=overlay
-  local constraint=Instance.new("UISizeConstraint");constraint.MaxSize=Vector2.new(820,470);constraint.Parent=panel
+  local limit=Instance.new("UISizeConstraint");limit.MaxSize=Vector2.new(1100,640);limit.Parent=panel
   Instance.new("UICorner",panel).CornerRadius=UDim.new(0,14)
   local border=Instance.new("UIStroke");border.Color=Color3.fromRGB(218,189,126);border.Thickness=2.5;border.Parent=panel
   local title=Instance.new("TextLabel")
-  title.BackgroundTransparency=1;title.Position=UDim2.fromOffset(16,8);title.Size=UDim2.new(1,-70,0,30)
-  title.Font=Enum.Font.GothamBlack;title.TextSize=20;title.TextXAlignment=Enum.TextXAlignment.Left
-  title.TextColor3=Color3.fromRGB(255,244,214);title.Text="전체 지도 · 1부";title.ZIndex=62;title.Parent=panel
+  title.BackgroundTransparency=1;title.Position=UDim2.fromOffset(16,6);title.Size=UDim2.new(1,-70,0,26)
+  title.Font=Enum.Font.GothamBlack;title.TextSize=19;title.TextXAlignment=Enum.TextXAlignment.Left
+  title.TextColor3=Color3.fromRGB(255,244,214);title.Text="마력숲 대륙 전체 지도";title.ZIndex=62;title.Parent=panel
   local legend=Instance.new("TextLabel")
-  legend.BackgroundTransparency=1;legend.Position=UDim2.fromOffset(16,38);legend.Size=UDim2.new(1,-32,0,20)
+  legend.BackgroundTransparency=1;legend.Position=UDim2.fromOffset(16,32);legend.Size=UDim2.new(1,-32,0,18)
   legend.Font=Enum.Font.Gotham;legend.TextSize=12;legend.TextXAlignment=Enum.TextXAlignment.Left
-  legend.TextColor3=Color3.fromRGB(190,208,196);legend.Text="● 내 위치   ★ 메인 목표   ◆ 현상금 게시판   ⛺ 거점   ▶ 마력의 길";legend.ZIndex=62;legend.Parent=panel
+  legend.TextColor3=Color3.fromRGB(190,208,196);legend.ZIndex=62;legend.Parent=panel
+  legend.Text="● 내 위치   ◆ 발견한 이정표(누르면 빠른 이동)   ◇ 미발견   ★ 메인 목표   ▣ 초원 마을   북쪽이 위"
   local close=Instance.new("TextButton")
   close.Text="X";close.Font=Enum.Font.GothamBold;close.TextSize=20;close.TextColor3=Color3.fromRGB(255,244,214)
-  close.BackgroundColor3=Color3.fromRGB(70,38,38);close.Position=UDim2.new(1,-48,0,8);close.Size=UDim2.fromOffset(38,34)
+  close.BackgroundColor3=Color3.fromRGB(70,38,38);close.Position=UDim2.new(1,-48,0,6);close.Size=UDim2.fromOffset(38,32)
   close.ZIndex=63;close.Parent=panel;Instance.new("UICorner",close).CornerRadius=UDim.new(0,9)
-  local strip=Instance.new("Frame")
-  strip.BackgroundTransparency=1;strip.Position=UDim2.fromOffset(12,70);strip.Size=UDim2.new(1,-24,1,-82);strip.ZIndex=62;strip.Parent=panel
-  local layout=Instance.new("UIListLayout")
-  layout.FillDirection=Enum.FillDirection.Horizontal;layout.Padding=UDim.new(0,10);layout.SortOrder=Enum.SortOrder.LayoutOrder
-  layout.HorizontalAlignment=Enum.HorizontalAlignment.Center;layout.Parent=strip
+  local field=Instance.new("Frame")
+  field.AnchorPoint=Vector2.new(.5,1);field.Position=UDim2.new(.5,0,1,-10)
+  field.Size=UDim2.new(1,-20,1,-62);field.BackgroundColor3=Color3.fromRGB(14,16,14);field.ZIndex=62;field.ClipsDescendants=true;field.Parent=panel
+  local ratio=Instance.new("UIAspectRatioConstraint");ratio.AspectRatio=width/height;ratio.AspectType=Enum.AspectType.ScaleWithParentSize
+  ratio.DominantAxis=Enum.DominantAxis.Width;ratio.Parent=field
   local tiles={}
-  for index,region in ipairs(regions) do
+  for index,zone in ipairs(world.Zones) do
     local tile=Instance.new("Frame")
-    tile.LayoutOrder=index;tile.Size=UDim2.new(1/#regions,-8,1,0);tile.BackgroundColor3=region.color;tile.ZIndex=62;tile.Parent=strip
-    Instance.new("UICorner",tile).CornerRadius=UDim.new(0,10)
-    local edge=Instance.new("UIStroke");edge.Color=Color3.fromRGB(230,206,150);edge.Thickness=1.6;edge.Parent=tile
+    tile.Position=UDim2.fromScale(fx(zone.X0),fz(zone.Z0))
+    tile.Size=UDim2.fromScale((zone.X1-zone.X0)/width,(zone.Z1-zone.Z0)/height)
+    tile.BackgroundColor3=Color3.fromRGB(zone.Color[1],zone.Color[2],zone.Color[3]);tile.BorderSizePixel=0;tile.ZIndex=63;tile.Parent=field
+    local edge=Instance.new("UIStroke");edge.Color=Color3.fromRGB(20,20,16);edge.Thickness=1.4;edge.Parent=tile
     local fade=Instance.new("UIGradient");fade.Rotation=90
-    fade.Color=ColorSequence.new(Color3.fromRGB(255,255,255),Color3.fromRGB(70,70,70));fade.Parent=tile
+    fade.Color=ColorSequence.new(Color3.fromRGB(255,255,255),Color3.fromRGB(150,150,150));fade.Parent=tile
     local name=Instance.new("TextLabel")
-    name.BackgroundTransparency=1;name.Position=UDim2.fromOffset(6,6);name.Size=UDim2.new(1,-12,0,34);name.TextWrapped=true
-    name.Font=Enum.Font.GothamBold;name.TextSize=13;name.TextColor3=Color3.fromRGB(255,250,232);name.ZIndex=63;name.Parent=tile
-    local info=Instance.new("TextLabel")
-    info.BackgroundTransparency=1;info.Position=UDim2.new(0,6,1,-62);info.Size=UDim2.new(1,-12,0,56);info.TextWrapped=true
-    info.TextYAlignment=Enum.TextYAlignment.Bottom;info.Font=Enum.Font.Gotham;info.TextSize=11
-    info.TextColor3=Color3.fromRGB(240,240,230);info.ZIndex=63;info.Parent=tile
-    local field=Instance.new("Frame")
-    field.BackgroundColor3=Color3.fromRGB(10,18,16);field.BackgroundTransparency=.55
-    field.Position=UDim2.fromOffset(8,46);field.Size=UDim2.new(1,-16,1,-116);field.ZIndex=63;field.ClipsDescendants=true;field.Parent=tile
-    Instance.new("UICorner",field).CornerRadius=UDim.new(0,8)
-    local dot=Instance.new("TextLabel")
-    dot.BackgroundTransparency=1;dot.Size=UDim2.fromOffset(18,18);dot.AnchorPoint=Vector2.new(.5,.5)
-    dot.Font=Enum.Font.GothamBold;dot.TextSize=18;dot.Text="●";dot.TextColor3=Color3.fromRGB(255,222,92)
-    dot.ZIndex=66;dot.Visible=false;dot.Parent=field
-    local badges=Instance.new("TextLabel")
-    badges.BackgroundTransparency=1;badges.Position=UDim2.fromOffset(4,2);badges.Size=UDim2.new(1,-8,0,18)
-    badges.Font=Enum.Font.GothamBold;badges.TextSize=13;badges.TextXAlignment=Enum.TextXAlignment.Left
-    badges.TextColor3=Color3.fromRGB(255,232,150);badges.ZIndex=65;badges.Parent=field
-    tiles[index]={tile=tile,name=name,info=info,dot=dot,badges=badges,field=field,edge=edge}
+    name.BackgroundTransparency=1;name.Size=UDim2.fromScale(1,1);name.TextWrapped=true
+    name.Font=Enum.Font.GothamBold;name.TextScaled=true;name.TextColor3=Color3.fromRGB(255,250,232);name.TextStrokeTransparency=.35
+    name.ZIndex=64;name.Parent=tile
+    local cap=Instance.new("UITextSizeConstraint");cap.MaxTextSize=15;cap.MinTextSize=7;cap.Parent=name
+    tiles[index]={tile=tile,name=name}
   end
-  local function questRegion(stage)
+  -- 마을 표시.
+  local village=world.Village
+  local villageMark=Instance.new("TextLabel")
+  villageMark.BackgroundTransparency=1;villageMark.AnchorPoint=Vector2.new(.5,.5)
+  villageMark.Position=UDim2.fromScale(fx(0),fz(0));villageMark.Size=UDim2.fromOffset(30,30)
+  villageMark.Font=Enum.Font.GothamBlack;villageMark.TextSize=24;villageMark.Text="▣";villageMark.TextColor3=Color3.fromRGB(255,236,170)
+  villageMark.TextStrokeTransparency=0;villageMark.ZIndex=66;villageMark.Parent=field
+  -- 이정표 버튼.
+  local markers={}
+  for index,spec in ipairs(world.Waypoints) do
+    local marker=Instance.new("TextButton")
+    marker.AnchorPoint=Vector2.new(.5,.5);marker.Position=UDim2.fromScale(fx(spec[2]),fz(spec[3]))
+    marker.Size=UDim2.fromOffset(24,24);marker.BackgroundTransparency=1
+    marker.Font=Enum.Font.GothamBlack;marker.TextSize=20;marker.Text="◇";marker.TextColor3=Color3.fromRGB(200,200,200)
+    marker.TextStrokeTransparency=0;marker.ZIndex=67;marker.Parent=field
+    local label=Instance.new("TextLabel")
+    label.BackgroundTransparency=1;label.Position=UDim2.new(.5,-50,1,-2);label.Size=UDim2.fromOffset(100,14)
+    label.Font=Enum.Font.GothamBold;label.TextSize=10;label.TextColor3=Color3.fromRGB(255,244,214);label.TextStrokeTransparency=.2
+    label.Text="";label.ZIndex=68;label.Parent=marker
+    marker.Activated:Connect(function()
+      if bit32.band(player:GetAttribute("WaypointMask") or 0,bit32.lshift(1,index-1))~=0 then
+        remote:FireServer("wp:map:"..index)
+        overlay.Visible=false
+      end
+    end)
+    markers[index]={button=marker,label=label}
+  end
+  local dot=Instance.new("TextLabel")
+  dot.BackgroundTransparency=1;dot.AnchorPoint=Vector2.new(.5,.5);dot.Size=UDim2.fromOffset(22,22)
+  dot.Font=Enum.Font.GothamBlack;dot.TextSize=22;dot.Text="●";dot.TextColor3=Color3.fromRGB(255,222,92)
+  dot.TextStrokeTransparency=0;dot.ZIndex=70;dot.Parent=field
+  local goal=Instance.new("TextLabel")
+  goal.BackgroundTransparency=1;goal.AnchorPoint=Vector2.new(.5,.5);goal.Size=UDim2.fromOffset(22,22)
+  goal.Font=Enum.Font.GothamBlack;goal.TextSize=22;goal.Text="★";goal.TextColor3=Color3.fromRGB(255,120,90)
+  goal.TextStrokeTransparency=0;goal.ZIndex=69;goal.Parent=field
+  local zoneOfStage=function(stage)
     return stage<=6 and "meadow" or stage<=9 and "worldtree" or stage==10 and "volcano" or stage<=12 and "oasis" or nil
   end
   local function refresh()
     if not overlay.Visible then return end
     local discovered=player:GetAttribute("WorldDiscovered") or 1
-    local stage=player:GetAttribute("QuestStage") or 1
-    local target=questRegion(stage)
-    local bountyIndex=player:GetAttribute("BountyIndex") or 1
-    local bounty=Config.Bounties and Config.Bounties[bountyIndex]
+    local mask=player:GetAttribute("WaypointMask") or 0
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     local x=root and root.Position.X or 0
     local z=root and root.Position.Z or 0
-    for index,region in ipairs(regions) do
-      local entry=tiles[index]
-      local seen=bit32.band(discovered,region.bit)~=0
-      entry.name.Text=seen and region.name or "???"
-      entry.tile.BackgroundTransparency=seen and 0 or .55
-      local here=x>=region.center-region.half-20 and x<=region.center+region.half+20
-      local badge=""
-      if target==region.id then badge=badge.."★ " end
-      if bounty and bounty.Region==region.id and region.id~="meadow" then badge=badge.."◆ " end
-      if region.id~="meadow" and seen then badge=badge.."▶ " end
-      entry.badges.Text=badge
-      local lock=gate[region.id]
-      entry.info.Text=seen and (here and "현재 지역" or "발견한 지역") or (lock and ("미발견 · "..lock.." 이후 이동") or "미발견")
-      entry.dot.Visible=here
-      if here then
-        entry.dot.Position=UDim2.fromScale(math.clamp(.5+(x-region.center)/(region.half*2),.04,.96),math.clamp(.5+(z/(region.half*2)),.06,.94))
+    local target=zoneOfStage(player:GetAttribute("QuestStage") or 1)
+    goal.Visible=false
+    for index,zone in ipairs(world.Zones) do
+      local seen=bit32.band(discovered,zone.Bit)~=0
+      tiles[index].name.Text=seen and zone.Name or "???"
+      tiles[index].tile.BackgroundTransparency=seen and 0 or .5
+      if zone.Id==target then
+        goal.Visible=true
+        goal.Position=UDim2.fromScale(fx((zone.X0+zone.X1)/2),fz((zone.Z0+zone.Z1)/2)-.04)
       end
-      entry.edge.Color=here and Color3.fromRGB(255,222,92) or Color3.fromRGB(230,206,150)
-      entry.edge.Thickness=here and 3 or 1.6
     end
+    for index,marker in ipairs(markers) do
+      local found=bit32.band(mask,bit32.lshift(1,index-1))~=0
+      marker.button.Text=found and "◆" or "◇"
+      marker.button.TextColor3=found and Color3.fromRGB(130,230,255) or Color3.fromRGB(170,170,170)
+      marker.label.Text=found and world.Waypoints[index][1] or ""
+    end
+    dot.Position=UDim2.fromScale(math.clamp(fx(x),.01,.99),math.clamp(fz(z),.01,.99))
   end
   local acc=0
   RunService.Heartbeat:Connect(function(dt)
@@ -9626,7 +9641,6 @@ end)
   end
   close.Activated:Connect(function() setOpen(false) end)
   overlay.Activated:Connect(function() setOpen(false) end)
-  -- 미니맵 위에 투명 버튼을 얹어 누르면 전체 지도를 연다.
   local tap=Instance.new("TextButton")
   tap.Name="MeadowFullMapOpen";tap.Text="";tap.BackgroundTransparency=1
   tap.Size=UDim2.fromScale(1,1);tap.ZIndex=30;tap.Parent=radar
@@ -9635,7 +9649,7 @@ end)
     if processed or UserInputService:GetFocusedTextBox() then return end
     if input.KeyCode==Enum.KeyCode.M then setOpen(not overlay.Visible) end
   end)
-  for _,name in ipairs({"WorldDiscovered","QuestStage","BountyIndex"}) do
+  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage"}) do
     player:GetAttributeChangedSignal(name):Connect(refresh)
   end
 end)()

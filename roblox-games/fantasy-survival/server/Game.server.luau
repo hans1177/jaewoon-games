@@ -2223,8 +2223,11 @@ local function meadowRegionOf(player)
   local character=player.Character
   local root=character and character:FindFirstChild("HumanoidRootPart")
   if not root then return "meadow" end
-  local x=root.Position.X
-  return x>5300 and "citadel" or x>4300 and "swamp" or x>3300 and "oasis" or x>2100 and "volcano" or x>900 and "worldtree" or "meadow"
+  local x,z=root.Position.X,root.Position.Z
+  for _,zone in ipairs(Config.WorldMap.Zones) do
+    if x>=zone.X0 and x<zone.X1 and z>=zone.Z0 and z<zone.Z1 then return zone.Id end
+  end
+  return x>3300 and "oasis" or x>2100 and "volcano" or x>900 and "worldtree" or "meadow"
 end
 local function recordMeadowQuest(player, eventName)
   if player:GetAttribute("ProfileReady")~=true then return end
@@ -5310,77 +5313,114 @@ do
   gate(oasisCenter+Vector3.new(-175,4,0),"화산 협곡으로 귀환",Color3.fromRGB(255,130,70),1,"",volcanoCenter+Vector3.new(160,6,0))
 end
 
--- [오픈월드 연결] 마을(x≈0)에서 동쪽으로 끊김 없이 이어지는 대륙. 섬이던 숲·화산·오아시스를 걸어서 잇고
--- 안개 늪지(x≈4800)와 불타는 성채(x≈6000)를 더한다. 지역은 지형·길·산맥·변종 몬스터 서식지로 구분한다.
+-- [오픈월드 대륙] 마을을 중심으로 동서남북으로 이어진 13개 지역(Config.WorldMap). 섬이던 숲·화산·오아시스는 걸어서 이어지고,
+-- 지역마다 바닥·큰길·외곽 산맥·변종 몬스터 풀을 갖는다. 마을 구역(Config.WorldMap.Village)은 기존 지형을 그대로 둔다.
 do
-  local owBands={
-    {name="초원 변두리",x0=348,x1=950,material=Enum.Material.Grass,tier=1,
-      pool={{"wolf",nil,nil,3.4,1},{"wolf","goblinscout","초원 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"bat",nil,nil,3.3,1}}},
-    {name="세계수 외곽",x0=950,x1=2190,material=Enum.Material.LeafyGrass,tier=3,
-      pool={{"wolf","beastman","저주받은 웨어울프",5.4,1.5,{{"Claw",.6},{"Hide",.7},{"Fang",.3}}},{"wolf","wolf","숲 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3}}},
-        {"wolf","spider","숲 거미",3,1.1,{{"Fang",.5},{"Mushroom",.3}}},{"bat",nil,nil,3.4,1}}},
-    {name="재의 황야",x0=2190,x1=3390,material=Enum.Material.Basalt,tier=5,
-      pool={{"wolf","orc","화산 오크",4.6,1.7,{{"Ore",.5},{"Hide",.6}}},{"wolf","skullorc","해골 가면 오크",4.8,1.9,{{"Ore",.5},{"Magma",.3},{"Claw",.3}}},
-        {"wolf","demon","잿불 악마",5.2,2,{{"Magma",.5},{"Crystal",.3},{"Claw",.4}}},{"wolf","raptor","화산 랩터",4.4,1.5,{{"Hide",.6},{"Fang",.4},{"Claw",.4}}}}},
-    {name="모래 폐허",x0=3390,x1=4300,material=Enum.Material.Sand,tier=6,
-      pool={{"wolf","fangspider","사막 독거미",3.4,1.5,{{"Fang",.6},{"Ectoplasm",.2}}},{"wolf","bladespider","칼날 거미",3.8,1.7,{{"Fang",.5},{"Claw",.4}}},
-        {"wolf","assassin","모래 암살자",4.2,1.6,{{"Claw",.5},{"Moonbloom",.2}}},{"wolf","raptor","사막 랩터",4.4,1.6,{{"Hide",.6},{"Claw",.4}}},{"bat",nil,nil,3.4,1}}},
-    {name="안개 늪지",x0=4300,x1=5300,material=Enum.Material.Mud,tier=7,
-      pool={{"wolf","goblin","늪 고블린",3.2,1.3,{{"Ore",.3},{"Mushroom",.4}}},{"wolf","goblinscout","늪 척후병",3,1.2,{{"Hide",.4},{"Mushroom",.3}}},
-        {"wolf","toad","독두꺼비",3,1.6,{{"Mushroom",.7},{"Hide",.3}}},{"wolf","tribal","늪 주술전사",4.4,1.8,{{"Moonbloom",.4},{"Ore",.3}}},
-        {"ghost","spider","늪 원혼 거미",3.4,1.5,{{"Ectoplasm",.6},{"Fang",.3}}}}},
-    {name="불타는 성채",x0=5300,x1=6400,material=Enum.Material.Slate,tier=9,
-      pool={{"wolf","demon","성채 악마",5.4,2.3,{{"Magma",.6},{"Crystal",.4},{"Claw",.4}}},{"wolf","skullorc","성채 해골 오크",5,2.2,{{"Ore",.6},{"Magma",.3}}},
-        {"wolf","orc","성채 오크 병사",4.8,2,{{"Ore",.6},{"Hide",.5}}},{"wolf","assassin","그림자 암살자",4.4,1.9,{{"Claw",.6},{"Crystal",.3}}}}},
+  local world=Config.WorldMap
+  local mats={windcliff=Enum.Material.Ground,meadow=Enum.Material.Grass,worldtree=Enum.Material.LeafyGrass,volcano=Enum.Material.Basalt,
+    oasis=Enum.Material.Sand,swamp=Enum.Material.Mud,citadel=Enum.Material.Slate,highland=Enum.Material.Rock,canyon=Enum.Material.Sandstone,
+    chaos=Enum.Material.Basalt,wetland=Enum.Material.Mud,desert=Enum.Material.Sand,deadmarsh=Enum.Material.Mud}
+  local zoneTier={windcliff=2,meadow=1,worldtree=3,volcano=5,oasis=6,swamp=7,citadel=9,highland=4,canyon=6,chaos=8,wetland=3,desert=6,deadmarsh=8}
+  local pools={
+    windcliff={{"wolf","goblinscout","절벽 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"wolf","tribal","절벽 주술전사",4.2,1.4,{{"Moonbloom",.3},{"Ore",.3}}},{"wolf","wolf","절벽 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3}}}},
+    meadow={{"wolf",nil,nil,3.4,1},{"wolf","goblinscout","초원 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"bat",nil,nil,3.3,1}},
+    worldtree={{"wolf","beastman","저주받은 웨어울프",5.4,1.5,{{"Claw",.6},{"Hide",.7},{"Fang",.3}}},{"wolf","wolf","숲 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3}}},
+      {"wolf","spider","숲 거미",3,1.1,{{"Fang",.5},{"Mushroom",.3}}},{"bat",nil,nil,3.4,1}},
+    volcano={{"wolf","orc","화산 오크",4.6,1.7,{{"Ore",.5},{"Hide",.6}}},{"wolf","skullorc","해골 가면 오크",4.8,1.9,{{"Ore",.5},{"Magma",.3},{"Claw",.3}}},
+      {"wolf","demon","잿불 악마",5.2,2,{{"Magma",.5},{"Crystal",.3},{"Claw",.4}}},{"wolf","raptor","화산 랩터",4.4,1.5,{{"Hide",.6},{"Fang",.4},{"Claw",.4}}}},
+    oasis={{"wolf","fangspider","사막 독거미",3.4,1.5,{{"Fang",.6},{"Ectoplasm",.2}}},{"wolf","bladespider","칼날 거미",3.8,1.7,{{"Fang",.5},{"Claw",.4}}},
+      {"wolf","assassin","모래 암살자",4.2,1.6,{{"Claw",.5},{"Moonbloom",.2}}},{"wolf","raptor","사막 랩터",4.4,1.6,{{"Hide",.6},{"Claw",.4}}},{"bat",nil,nil,3.4,1}},
+    swamp={{"wolf","goblin","늪 고블린",3.2,1.3,{{"Ore",.3},{"Mushroom",.4}}},{"wolf","toad","독두꺼비",3,1.6,{{"Mushroom",.7},{"Hide",.3}}},
+      {"wolf","tribal","늪 주술전사",4.4,1.8,{{"Moonbloom",.4},{"Ore",.3}}},{"ghost","spider","늪 원혼 거미",3.4,1.5,{{"Ectoplasm",.6},{"Fang",.3}}}},
+    citadel={{"wolf","demon","성채 악마",5.4,2.3,{{"Magma",.6},{"Crystal",.4},{"Claw",.4}}},{"wolf","skullorc","성채 해골 오크",5,2.2,{{"Ore",.6},{"Magma",.3}}},
+      {"wolf","orc","성채 오크 병사",4.8,2,{{"Ore",.6},{"Hide",.5}}},{"wolf","assassin","그림자 암살자",4.4,1.9,{{"Claw",.6},{"Crystal",.3}}}},
+    highland={{"wolf","yeti","고원 설인",5.6,1.7,{{"Hide",.7},{"Claw",.5}}},{"wolf","beastman","고원 늑대인간",5.2,1.6,{{"Claw",.6},{"Fang",.4}}},{"wolf","orc","고원 오크 약탈자",4.6,1.6,{{"Ore",.5},{"Hide",.5}}}},
+    canyon={{"wolf","skullorc","협곡 해골 오크",4.8,1.9,{{"Ore",.5},{"Claw",.3}}},{"wolf","assassin","협곡 암살자",4.2,1.7,{{"Claw",.5},{"Crystal",.2}}},{"wolf","raptor","협곡 랩터",4.4,1.6,{{"Hide",.6},{"Fang",.4}}},{"wolf","bladespider","칼날 거미",3.8,1.7,{{"Fang",.5}}}},
+    chaos={{"wolf","demon","혼돈의 악마",5.4,2.2,{{"Magma",.6},{"Crystal",.4}}},{"wolf","frostfiend","서리 마귀",5.4,2.1,{{"Crystal",.5},{"Claw",.4}}},{"wolf","skullorc","혼돈의 오크",5,2.1,{{"Ore",.5},{"Magma",.3}}}},
+    wetland={{"wolf","toad","습원 독두꺼비",3,1.5,{{"Mushroom",.7},{"Hide",.3}}},{"wolf","goblin","습원 고블린",3.2,1.3,{{"Mushroom",.4},{"Ore",.3}}},{"wolf","spider","습원 거미",3,1.2,{{"Fang",.5}}}},
+    desert={{"wolf","fangspider","황금 독거미",3.4,1.6,{{"Fang",.6}}},{"wolf","raptor","사막 랩터",4.4,1.6,{{"Hide",.6},{"Claw",.4}}},{"wolf","assassin","황금 암살자",4.2,1.7,{{"Claw",.5},{"Moonbloom",.3}}},{"bat",nil,nil,3.4,1}},
+    deadmarsh={{"wolf","tribal","죽음의 주술전사",4.6,2,{{"Moonbloom",.5},{"Ore",.3}}},{"wolf","demon","늪의 악마",5.4,2.3,{{"Magma",.5},{"Crystal",.4}}},{"ghost","spider","죽은 늪 거미",3.4,1.6,{{"Ectoplasm",.7},{"Fang",.3}}}},
   }
-  -- 지형: 지역 띠마다 바닥 재질, 길, 북·남 산맥.
+  local village=world.Village
+  -- 사각형에서 마을 구역을 뺀 나머지를 최대 4조각으로 칠한다.
+  local function paint(terrain,x0,x1,z0,z1,material,top)
+    local function block(a0,a1,b0,b1)
+      if a1-a0<1 or b1-b0<1 then return end
+      terrain:FillBlock(CFrame.new((a0+a1)/2,top and .5 or -4,(b0+b1)/2),Vector3.new(a1-a0,top and 3 or 12,b1-b0),material)
+    end
+    if x1<=village.X0 or x0>=village.X1 or z1<=village.Z0 or z0>=village.Z1 then block(x0,x1,z0,z1);return end
+    block(x0,x1,z0,math.max(z0,village.Z0))
+    block(x0,x1,math.min(z1,village.Z1),z1)
+    block(x0,math.max(x0,village.X0),math.max(z0,village.Z0),math.min(z1,village.Z1))
+    block(math.min(x1,village.X1),x1,math.max(z0,village.Z0),math.min(z1,village.Z1))
+  end
   task.spawn(function()
     task.wait(1)
     local ok,err=pcall(function()
       local terrain=workspace.Terrain
       local random=Random.new(4417)
-      for _,band in ipairs(owBands) do
-        local len=band.x1-band.x0
-        local cx=(band.x0+band.x1)/2
-        terrain:FillBlock(CFrame.new(cx,-4,0),Vector3.new(len,12,2500),band.material)
-        terrain:FillBlock(CFrame.new(cx,.5,0),Vector3.new(len,3,12),Enum.Material.Cobblestone) -- 큰길
-        for _=1,math.floor(len/12) do
-          local x=random:NextNumber(band.x0,band.x1)
-          local z=random:NextNumber(-1180,1180)
-          if math.abs(z)>14 then
-            terrain:FillBall(Vector3.new(x,random:NextNumber(-4,2),z),random:NextNumber(9,26),
-              band.material==Enum.Material.Sand and Enum.Material.Sandstone or band.material==Enum.Material.Grass and Enum.Material.LeafyGrass or Enum.Material.Rock)
+      terrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(62,66,50))
+      for _,zone in ipairs(world.Zones) do
+        paint(terrain,zone.X0,zone.X1,zone.Z0,zone.Z1,mats[zone.Id],false)
+        local area=(zone.X1-zone.X0)*(zone.Z1-zone.Z0)
+        for _=1,math.floor(area/25000) do
+          local x=random:NextNumber(zone.X0,zone.X1)
+          local z=random:NextNumber(zone.Z0,zone.Z1)
+          if not (x>village.X0-30 and x<village.X1+30 and z>village.Z0-30 and z<village.Z1+30) then
+            local hill=mats[zone.Id]==Enum.Material.Sand and Enum.Material.Sandstone or mats[zone.Id]==Enum.Material.Grass and Enum.Material.LeafyGrass or Enum.Material.Rock
+            terrain:FillBall(Vector3.new(x,random:NextNumber(-4,2),z),random:NextNumber(10,34),hill)
           end
         end
-        for x=band.x0,band.x1,70 do
-          for _,side in ipairs({-1,1}) do
-            local radius=random:NextNumber(48,100)
-            terrain:FillBall(Vector3.new(x+random:NextNumber(-20,20),radius*.3,side*(1260+radius*.45)),radius,Enum.Material.Rock)
-            terrain:FillBall(Vector3.new(x,radius*.85,side*(1260+radius*.45)),radius*.55,Enum.Material.Snow)
+        if zone.Id=="swamp" or zone.Id=="wetland" or zone.Id=="deadmarsh" then
+          for _=1,math.floor(area/60000) do
+            terrain:FillBall(Vector3.new(random:NextNumber(zone.X0+20,zone.X1-20),-5.6,random:NextNumber(zone.Z0+20,zone.Z1-20)),random:NextNumber(10,24),Enum.Material.Water)
+          end
+        end
+        if zone.Id=="citadel" or zone.Id=="chaos" then
+          for _=1,math.floor(area/60000) do
+            terrain:FillBall(Vector3.new(random:NextNumber(zone.X0+20,zone.X1-20),-5.4,random:NextNumber(zone.Z0+20,zone.Z1-20)),random:NextNumber(5,12),Enum.Material.CrackedLava)
           end
         end
         task.wait()
       end
-      terrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(62,66,50))
-      for _=1,60 do
-        terrain:FillBall(Vector3.new(random:NextNumber(4400,5200),-5.6,random:NextNumber(-1100,1100)),random:NextNumber(10,22),Enum.Material.Water)
+      -- 큰길: 동서 대로(z=0)와 남북 대로(x=0, x=3000).
+      local b=world.Bounds
+      paint(terrain,b.X0,b.X1,-6,6,Enum.Material.Cobblestone,true)
+      paint(terrain,-6,6,b.Z0,b.Z1,Enum.Material.Cobblestone,true)
+      paint(terrain,2994,3006,b.Z0,b.Z1,Enum.Material.Cobblestone,true)
+      -- 대륙 외곽 산맥.
+      for x=b.X0,b.X1,70 do
+        for _,z in ipairs({b.Z0,b.Z1}) do
+          local radius=random:NextNumber(50,110)
+          local side=z<0 and -1 or 1
+          terrain:FillBall(Vector3.new(x,radius*.3,z+side*radius*.45),radius,Enum.Material.Rock)
+          terrain:FillBall(Vector3.new(x,radius*.85,z+side*radius*.45),radius*.55,Enum.Material.Snow)
+        end
       end
-      for _=1,60 do
-        terrain:FillBall(Vector3.new(random:NextNumber(5400,6300),-5.4,random:NextNumber(-1100,1100)),random:NextNumber(5,12),Enum.Material.CrackedLava)
+      for z=b.Z0,b.Z1,70 do
+        for _,x in ipairs({b.X0,b.X1}) do
+          local radius=random:NextNumber(50,110)
+          local side=x<0 and -1 or 1
+          terrain:FillBall(Vector3.new(x+side*radius*.45,radius*.3,z),radius,Enum.Material.Rock)
+          terrain:FillBall(Vector3.new(x+side*radius*.45,radius*.85,z),radius*.55,Enum.Material.Snow)
+        end
       end
-      -- 식생: 띠마다 나무를 길 주변에 흩뿌린다(등록 CC0 나무만).
-      local treeBands={{348,2190,90,Color3.fromRGB(70,110,60),.25},{3390,4300,24,Color3.fromRGB(176,160,84),.4},
-        {4300,5300,70,Color3.fromRGB(70,80,58),.55},{5300,6400,45,Color3.fromRGB(34,30,34),.8}}
-      for _,tb in ipairs(treeBands) do
-        for index=1,tb[3] do
-          local x=random:NextNumber(tb[1],tb[2])
-          local z=random:NextNumber(-1150,1150)
-          if math.abs(z)>20 then
+      -- 식생: 지역별 나무 밀도(등록 CC0 나무만).
+      local treeDensity={windcliff=26,meadow=26,worldtree=60,volcano=20,oasis=6,swamp=40,citadel=18,highland=30,canyon=14,chaos=16,wetland=50,desert=5,deadmarsh=36}
+      local treeTint={windcliff=Color3.fromRGB(96,120,70),meadow=Color3.fromRGB(70,110,60),worldtree=Color3.fromRGB(50,100,70),volcano=Color3.fromRGB(38,34,34),
+        oasis=Color3.fromRGB(176,160,84),swamp=Color3.fromRGB(70,80,58),citadel=Color3.fromRGB(34,30,34),highland=Color3.fromRGB(86,96,80),canyon=Color3.fromRGB(120,90,60),
+        chaos=Color3.fromRGB(60,40,56),wetland=Color3.fromRGB(64,100,72),desert=Color3.fromRGB(176,160,84),deadmarsh=Color3.fromRGB(50,60,46)}
+      for _,zone in ipairs(world.Zones) do
+        for index=1,treeDensity[zone.Id] or 10 do
+          local x=random:NextNumber(zone.X0+10,zone.X1-10)
+          local z=random:NextNumber(zone.Z0+10,zone.Z1-10)
+          local nearVillage=x>village.X0-20 and x<village.X1+20 and z>village.Z0-20 and z<village.Z1+20
+          if not nearVillage and math.abs(z)>20 and math.abs(x)>20 and math.abs(x-3000)>20 then
             local tree=worldAsset("tree",Vector3.new(x,3,z),random:NextNumber(14,26))
             if tree then
-              tree.Name="OpenWorldTree_"..index;tree:SetAttribute("MeadowScenery",true)
+              tree.Name="OpenWorldTree_"..zone.Id.."_"..index;tree:SetAttribute("MeadowScenery",true)
               for _,surface in ipairs(tree:GetDescendants()) do
-                if surface:IsA("MeshPart") then surface.Color=surface.Color:Lerp(tb[4],tb[5]) end
+                if surface:IsA("MeshPart") then surface.Color=surface.Color:Lerp(treeTint[zone.Id],.5) end
               end
             end
           end
@@ -5391,30 +5431,41 @@ do
     end)
     if not ok then warn("오픈월드 생성 실패: "..tostring(err)) end
   end)
-  -- 서식지: 띠별 변종 풀에서 길 양옆으로 배치한다. 5번째마다 정예(체력·피해 상향, 큰 몸집).
+  -- 서식지: 면적에 비례해 지역별 변종 풀에서 배치. 5번째마다 정예(체력·피해 상향, 큰 몸집).
   local random=Random.new(9031)
   local count=0
-  for _,band in ipairs(owBands) do
-    local sites=math.floor((band.x1-band.x0)/14)
+  for _,zone in ipairs(world.Zones) do
+    local pool=pools[zone.Id]
+    local sites=math.floor((zone.X1-zone.X0)*(zone.Z1-zone.Z0)/65000)
     for index=1,sites do
-      local spec=band.pool[random:NextInteger(1,#band.pool)]
-      local x=band.x0+((index-.5)/sites)*(band.x1-band.x0)+random:NextNumber(-18,18)
-      local z=random:NextNumber(30,1100)*(index%2==0 and 1 or -1)
-      local elite=index%5==0
-      local tierGain=math.floor((x-band.x0)/400)
-      table.insert(meadowEncounterSites,{id=spec[1],atom=spec[1]=="bat" and "WING_LEATHER" or "HEAD_CANINE",model=spec[2],
-        name=spec[3] and (elite and "정예 "..spec[3] or spec[3]) or nil,
-        tier=math.min(10,band.tier+tierGain+(elite and 1 or 0)),height=spec[4]*(elite and 1.25 or 1),
-        hp=spec[2] and spec[5]*(elite and 1.8 or 1) or nil,dmg=spec[2] and (spec[5]*.8)*(elite and 1.4 or 1) or nil,
-        drops=spec[6],position=Vector3.new(x,3,z)})
-      count+=1
+      local spec=pool[random:NextInteger(1,#pool)]
+      local x=random:NextNumber(zone.X0+30,zone.X1-30)
+      local z=random:NextNumber(zone.Z0+30,zone.Z1-30)
+      local inVillage=x>village.X0-60 and x<village.X1+60 and z>village.Z0-60 and z<village.Z1+60
+      if not inVillage then
+        local elite=index%5==0
+        local tierGain=math.floor((math.abs(x-zone.X0))/500)
+        table.insert(meadowEncounterSites,{id=spec[1],atom=spec[1]=="bat" and "WING_LEATHER" or "HEAD_CANINE",model=spec[2],
+          name=spec[3] and (elite and "정예 "..spec[3] or spec[3]) or nil,
+          tier=math.min(10,zoneTier[zone.Id]+tierGain+(elite and 1 or 0)),height=spec[4]*(elite and 1.25 or 1),
+          hp=spec[2] and spec[5]*(elite and 1.8 or 1) or nil,dmg=spec[2] and (spec[5]*.8)*(elite and 1.4 or 1) or nil,
+          drops=spec[6],position=Vector3.new(x,3,z)})
+        count+=1
+      end
     end
   end
-  -- 거점 보스: 성채 군주(웨어울프 족장)와 늪 수호자(정령 골렘)와 화산 가운데 악마 군주.
+  -- 지역 군주(보스).
   for _,boss in ipairs({
     {x=5900,z=0,model="chieftain",name="성채의 군주 · 늑대인간 족장",height=9,hp=5,dmg=2.4,tier=10,drops={{"Crystal",1,4},{"Claw",1,3},{"Magma",.8,2}}},
     {x=4800,z=60,model="spiritgolem",name="늪의 수호자 · 안개 골렘",height=9,hp=4.5,dmg=2.2,tier=8,drops={{"Crystal",1,3},{"Ore",1,3},{"Ectoplasm",.8,2}}},
     {x=2800,z=-40,model="demon",name="잿불의 군주 · 심연 악마",height=8,hp=4.2,dmg=2.2,tier=6,drops={{"Magma",1,3},{"Crystal",.8,2},{"Claw",.8,2}}},
+    {x=-1200,z=-1900,model="yeti",name="북부 고원의 왕 · 거대 설인",height=9,hp=4,dmg=2,tier=5,drops={{"Hide",1,4},{"Claw",1,3}}},
+    {x=1700,z=-1950,model="skullorc",name="협곡의 대족장 · 해골 오크",height=8,hp=4.2,dmg=2.1,tier=7,drops={{"Ore",1,4},{"Magma",.8,2}}},
+    {x=4600,z=-1900,model="demon",name="혼돈의 지배자 · 심연 군주",height=9,hp=5,dmg=2.4,tier=9,drops={{"Crystal",1,4},{"Magma",1,3}}},
+    {x=-600,z=1950,model="toad",name="습원의 군주 · 거대 두꺼비",height=6,hp=3.5,dmg=1.8,tier=4,drops={{"Mushroom",1,4},{"Hide",1,3}}},
+    {x=3000,z=1950,model="raptor",name="황금 사막의 폭군 · 거대 랩터",height=8,hp=4,dmg=2,tier=7,drops={{"Hide",1,4},{"Fang",1,3},{"Claw",1,3}}},
+    {x=5300,z=1950,model="spiritgolem",name="죽음의 늪 수호자 · 망령 골렘",height=9,hp=5,dmg=2.3,tier=9,drops={{"Crystal",1,4},{"Ectoplasm",1,3}}},
+    {x=-1800,z=0,model="orc",name="바람 절벽의 대장 · 오크 군단장",height=7,hp=3.6,dmg=1.8,tier=4,drops={{"Ore",1,4},{"Hide",1,3}}},
   }) do
     table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=boss.model,name=boss.name,tier=boss.tier,height=boss.height,
       hp=boss.hp,dmg=boss.dmg,drops=boss.drops,alpha=true,position=Vector3.new(boss.x,3,boss.z)})
@@ -5463,12 +5514,7 @@ end
 -- [이정표 · 장소 발견] 대륙 곳곳의 이정표를 처음 조사하면 위치가 저장되고 보상을 받는다.
 -- 이정표에서는 이미 발견한 동쪽·서쪽 이정표(마을 포함)로 빠르게 이동한다. 이동 선택은 서버가 거리·발견 여부를 다시 확인한다.
 do
-  local waypoints={
-    {"초원 이정표",520,-300},{"숲 어귀 야영지",1000,500},{"세계수 제단",1300,-700},{"갈림길 주막터",1800,300},
-    {"부서진 감시탑",2100,-800},{"재의 제단",2500,600},{"용암 감시초소",2900,-500},{"옛 광산 입구",3200,800},
-    {"모래 오벨리스크",3700,-650},{"침몰한 사원",4100,500},{"안개 부두",4600,-700},{"늪 마녀의 오두막",4900,700},
-    {"저주받은 성문",5500,-600},{"불꽃 대장간 터",5800,700},{"성채 외곽 초소",6100,-300},{"군주의 옥좌 앞",6300,300},
-  }
+  local waypoints=Config.WorldMap.Waypoints
   local villageSpawn=Vector3.new(-110,6,-86)
   local sessions={}
   local function discovered(player,index) return bit32.band(readNumber(player,"WaypointMask",0),bit32.lshift(1,index-1))~=0 end
@@ -5520,7 +5566,19 @@ do
       end)
     end
   end)
+  local lastMapTravel={}
   remote.OnServerEvent:Connect(function(player,action)
+    -- 전체 지도에서 발견한 이정표를 눌러 이동(스카이림식). 발견 여부·쿨다운·생존은 서버가 확인한다.
+    if typeof(action)=="string" and action:match("^wp:map:%d+$") then
+      local index=tonumber(action:match("%d+"))
+      local spec=waypoints[index]
+      local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+      if spec and discovered(player,index) and humanoid and humanoid.Health>0 and os.clock()-(lastMapTravel[player] or 0)>4 then
+        lastMapTravel[player]=os.clock()
+        travelTo(player,Vector3.new(spec[2],3,spec[3]))
+      end
+      return
+    end
     if action~="wp:east" and action~="wp:west" then return end
     local session=sessions[player]
     if not session or os.clock()>session.expires then return end
@@ -5547,11 +5605,11 @@ do
     [8]={"orc","광산의 광인",5},[9]={"assassin","오벨리스크의 그림자",4.8},[10]={"bladespider","사원의 수호 거미",4.6},
     [11]={"toad","안개 두꺼비 왕",4},[12]={"tribal","마녀의 하수인",5},[13]={"demon","성문의 악마",6},
     [14]={"orc","대장간의 불꽃 오크",5.6},[15]={"skullorc","초소 지휘관",5.6},[16]={"demon","옥좌의 집행자",6.6},
+    [17]={"yeti","북부 감시탑의 괴수",5.8},[18]={"skullorc","협곡 제단의 사제",5.4},[19]={"frostfiend","혼돈의 균열 마귀",5.6},[20]={"goblin","등대의 해적 두목",4.4},
+    [21]={"toad","부두의 독두꺼비 왕",4.4},[22]={"fangspider","폐허의 독거미 여왕",4.8},[23]={"tribal","사당의 늪 주술사",5.2},[24]={"beastman","옛 요새의 저주받은 기사",5.8},
   }
-  local anchors={ -- 이정표 좌표(위 이정표 목록과 동일)
-    {520,-300},{1000,500},{1300,-700},{1800,300},{2100,-800},{2500,600},{2900,-500},{3200,800},
-    {3700,-650},{4100,500},{4600,-700},{4900,700},{5500,-600},{5800,700},{6100,-300},{6300,300},
-  }
+  local anchors={}
+  for index,spec in ipairs(Config.WorldMap.Waypoints) do anchors[index]={spec[2],spec[3]} end
   local sessions={}
   local function bit(index) return bit32.lshift(1,index-1) end
   local function say(player,title,text,options) pcall(function() villageDialogue(player,title,text,options) end) end
@@ -5685,7 +5743,8 @@ end
 
 -- [지역 발견] 실제 위치가 지역 안에 들어가면 서버가 발견 비트를 기록한다(1 초원·2 숲·4 화산·8 오아시스).
 task.spawn(function()
-  local bits={meadow=1,worldtree=2,volcano=4,oasis=8,swamp=16,citadel=32}
+  local bits={}
+  for _,zone in ipairs(Config.WorldMap.Zones) do bits[zone.Id]=zone.Bit end
   while true do
     task.wait(3)
     for _,player in ipairs(Players:GetPlayers()) do
