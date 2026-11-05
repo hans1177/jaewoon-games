@@ -200,7 +200,7 @@ pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiTyp
 -- [마력숲 옵션] 접속 중 카메라·표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
 -- [스킬·장비 신규 원화] 스킬 아이콘 5x5(200px) / 장비 아이콘 8x8(128px). 자산 ID가 비어 있으면 기존 아틀라스를 그대로 쓴다.
-local meadowArt={skillSheet="",gearSheet="",
+local meadowArt={skillSheet="rbxassetid://88875753640260",gearSheet="rbxassetid://129911424873839",
   rarityColor={Common=Color3.fromRGB(176,176,170),Uncommon=Color3.fromRGB(96,196,112),Rare=Color3.fromRGB(84,150,230),Epic=Color3.fromRGB(170,100,226),Legendary=Color3.fromRGB(244,182,58)},
   rarityName={Common="일반",Uncommon="고급",Rare="희귀",Epic="영웅",Legendary="전설"},
   skillCell={["skill-meadow-heavy"]=0,["skill-meadow-sweep"]=1,["skill-meadow-bolt"]=2,["skill-meadow-guard"]=3,["skill-meadow-parry"]=4,
