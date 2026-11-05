@@ -395,7 +395,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -732,5 +732,33 @@ Config.WorldMap = {
     {"남부 습원 부두",-600,1900},{"황금 사막 폐허",2900,1900},{"죽음의 늪 사당",5300,1900},{"서쪽 옛 요새",-1800,-800},
   },
 }
+
+
+-- [탐험 지점] 스카이림식 자동 발견: 가까이 가면 이름이 뜨고 지도에 기록된다. 좌표는 고정 시드로 서버·클라이언트가 같게 만든다.
+do
+  local random = Random.new(2718)
+  local kinds = {
+    {Id="ruin", Icon="▲", Names={"무너진 신전","잊힌 제단","부서진 석상","옛 기사단 초소","이끼 낀 성벽"}},
+    {Id="cave", Icon="●", Names={"어두운 동굴","메아리 동굴","박쥐 소굴","광부의 갱도","젖은 굴"}},
+    {Id="camp", Icon="⌂", Names={"버려진 야영지","약탈자의 캠프","사냥꾼의 쉼터","불탄 마차","상인의 흔적"}},
+    {Id="shrine", Icon="✦", Names={"마력의 샘","고대 비석","속삭이는 돌","별빛 제단","잊힌 무덤"}},
+  }
+  local pois = {}
+  local village = Config.WorldMap.Village
+  for _, zone in ipairs(Config.WorldMap.Zones) do
+    local count = math.max(3, math.floor((zone.X1 - zone.X0) * (zone.Z1 - zone.Z0) / 1100000))
+    for _ = 1, count do
+      if #pois >= 60 then break end
+      local x = random:NextNumber(zone.X0 + 60, zone.X1 - 60)
+      local z = random:NextNumber(zone.Z0 + 60, zone.Z1 - 60)
+      if not (x > village.X0 - 80 and x < village.X1 + 80 and z > village.Z0 - 80 and z < village.Z1 + 80) then
+        local kind = kinds[random:NextInteger(1, #kinds)]
+        table.insert(pois, {Name = kind.Names[random:NextInteger(1, #kind.Names)], Kind = kind.Id, Icon = kind.Icon,
+          X = math.floor(x), Z = math.floor(z), Zone = zone.Id})
+      end
+    end
+  end
+  Config.WorldMap.Pois = pois
+end
 
 return table.freeze(Config)

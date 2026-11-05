@@ -9539,7 +9539,7 @@ end)
   legend.BackgroundTransparency=1;legend.Position=UDim2.fromOffset(16,32);legend.Size=UDim2.new(1,-32,0,18)
   legend.Font=Enum.Font.Gotham;legend.TextSize=12;legend.TextXAlignment=Enum.TextXAlignment.Left
   legend.TextColor3=Color3.fromRGB(190,208,196);legend.ZIndex=62;legend.Parent=panel
-  legend.Text="● 내 위치   ◆ 발견한 이정표(누르면 빠른 이동)   ◇ 미발견   ★ 메인 목표   ▣ 초원 마을   북쪽이 위"
+  legend.Text="▲●⌂✦ 발견한 장소   ● 내 위치   ◆ 발견한 이정표(누르면 빠른 이동)   ◇ 미발견   ★ 메인 목표   ▣ 초원 마을   북쪽이 위"
   local close=Instance.new("TextButton")
   close.Text="X";close.Font=Enum.Font.GothamBold;close.TextSize=20;close.TextColor3=Color3.fromRGB(255,244,214)
   close.BackgroundColor3=Color3.fromRGB(70,38,38);close.Position=UDim2.new(1,-48,0,6);close.Size=UDim2.fromOffset(38,32)
@@ -9592,6 +9592,14 @@ end)
     end)
     markers[index]={button=marker,label=label}
   end
+  local poiMarkers={}
+  for index,poi in ipairs(world.Pois or {}) do
+    local mark=Instance.new("TextLabel")
+    mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(poi.X),fz(poi.Z))
+    mark.Size=UDim2.fromOffset(14,14);mark.Font=Enum.Font.GothamBlack;mark.TextSize=12;mark.Text=poi.Icon
+    mark.TextColor3=Color3.fromRGB(255,236,170);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=field
+    poiMarkers[index]=mark
+  end
   local dot=Instance.new("TextLabel")
   dot.BackgroundTransparency=1;dot.AnchorPoint=Vector2.new(.5,.5);dot.Size=UDim2.fromOffset(22,22)
   dot.Font=Enum.Font.GothamBlack;dot.TextSize=22;dot.Text="●";dot.TextColor3=Color3.fromRGB(255,222,92)
@@ -9627,6 +9635,11 @@ end)
       marker.button.TextColor3=found and Color3.fromRGB(130,230,255) or Color3.fromRGB(170,170,170)
       marker.label.Text=found and world.Waypoints[index][1] or ""
     end
+    local found1,found2=player:GetAttribute("PoiFound1") or 0,player:GetAttribute("PoiFound2") or 0
+    for index,mark in ipairs(poiMarkers) do
+      local flag=bit32.lshift(1,(index-1)%30)
+      mark.Visible=bit32.band(index<=30 and found1 or found2,flag)~=0
+    end
     dot.Position=UDim2.fromScale(math.clamp(fx(x),.01,.99),math.clamp(fz(z),.01,.99))
   end
   local acc=0
@@ -9649,7 +9662,7 @@ end)
     if processed or UserInputService:GetFocusedTextBox() then return end
     if input.KeyCode==Enum.KeyCode.M then setOpen(not overlay.Visible) end
   end)
-  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage"}) do
+  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage","PoiFound1","PoiFound2"}) do
     player:GetAttributeChangedSignal(name):Connect(refresh)
   end
 end)()

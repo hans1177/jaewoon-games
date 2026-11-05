@@ -3275,7 +3275,7 @@ local function spawnEnemy(site, siteIndex)
   end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,oilClass=oilClass,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
+    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,oilClass=oilClass,poiGuard=site.poiGuard,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
     banditIdle=banditIdle,banditWalk=banditWalk,
     damage=isAlpha and math.floor(13*(site.dmg or 1)) or math.floor(((isBoss and 20 or 6)+math.floor(site.tier/2))*(site.dmg or 1)),
     speed=isAlpha and 8.4 or (isBoss and 4.8 or 7.5),position=location,spawnPosition=location,siteIndex=siteIndex,
@@ -5739,6 +5739,71 @@ do
       say("던전을 정복했다! 수정·마그마·광석과 큰 보상을 얻었다.")
     end)
   end
+end
+
+-- [탐험 지점 · 자동 발견] 가까이 가면 장소가 기록되고 보상을 받는다. 각 지점에는 수호 몬스터와 한 번만 열 수 있는 보물이 있다.
+do
+  local pois=Config.WorldMap.Pois
+  local function poiBit(index) return index<=30 and "PoiFound1" or "PoiFound2",bit32.lshift(1,(index-1)%30) end
+  local function lootBit(index) return index<=30 and "PoiLoot1" or "PoiLoot2",bit32.lshift(1,(index-1)%30) end
+  local guardians={windcliff="goblin",meadow="goblinscout",worldtree="beastman",volcano="skullorc",oasis="assassin",swamp="tribal",
+    citadel="demon",highland="yeti",canyon="skullorc",chaos="demon",wetland="toad",desert="fangspider",deadmarsh="tribal"}
+  local rewards={ruin={"Crystal","Ore"},cave={"Ore","Mushroom"},camp={"Hide","Fang"},shrine={"Moonbloom","Crystal"}}
+  for index,poi in ipairs(pois) do
+    local position=Vector3.new(poi.X,3,poi.Z)
+    table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=guardians[poi.Zone] or "wolf",name="수호자 · "..poi.Name,
+      tier=6,height=5,hp=3,dmg=1.5,drops={{rewards[poi.Kind][1],.9,2}},poiGuard=index,position=position+Vector3.new(14,0,10)})
+    task.spawn(function()
+      task.wait(4+index*.15)
+      local stone=worldAsset(poi.Kind=="cave" and "ruin" or "ruin",position,poi.Kind=="shrine" and 6 or 9)
+      if stone then stone.Name="Poi_"..index;stone:SetAttribute("MeadowScenery",true) end
+      local anchor=Instance.new("Attachment");anchor.Name="PoiChest_"..index;anchor.WorldPosition=position+Vector3.new(-6,.5,-4);anchor.Parent=workspace.Terrain
+      local glow=Instance.new("ParticleEmitter");glow.Color=ColorSequence.new(Color3.fromRGB(255,226,120));glow.LightEmission=1
+      glow.Rate=10;glow.Lifetime=NumberRange.new(2,3);glow.Size=NumberSequence.new(.6);glow.Parent=anchor
+      local prompt=Instance.new("ProximityPrompt");prompt.ActionText="보물 열기";prompt.ObjectText=poi.Name;prompt.HoldDuration=.7
+      prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+      prompt.Triggered:Connect(function(player)
+        if player:GetAttribute("ProfileReady")~=true then return end
+        for _,enemy in ipairs(enemies) do
+          if enemy.poiGuard==index and enemy.HP>0 and enemy.model.Parent then
+            pcall(function() villageDialogue(player,poi.Name,"수호자가 아직 지키고 있다. 먼저 쓰러뜨려라.") end);return
+          end
+        end
+        local field,flag=lootBit(index)
+        if bit32.band(readNumber(player,field,0),flag)~=0 then
+          pcall(function() villageDialogue(player,poi.Name,"이미 비워 둔 보물이다.") end);return
+        end
+        setNumber(player,field,bit32.bor(readNumber(player,field,0),flag))
+        local pair=rewards[poi.Kind]
+        setNumber(player,pair[1],readNumber(player,pair[1],0)+2)
+        setNumber(player,pair[2],readNumber(player,pair[2],0)+2)
+        pcall(awardProgress,player,40,50)
+        pcall(function() villageDialogue(player,poi.Name,"보물을 찾았다! 재료와 재화를 얻었다.") end)
+      end)
+    end)
+  end
+  task.spawn(function()
+    while true do
+      task.wait(2)
+      for _,player in ipairs(Players:GetPlayers()) do
+        local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if root and player:GetAttribute("ProfileReady")==true then
+          for index,poi in ipairs(pois) do
+            local dx,dz=root.Position.X-poi.X,root.Position.Z-poi.Z
+            if dx*dx+dz*dz<75*75 then
+              local field,flag=poiBit(index)
+              local mask=readNumber(player,field,0)
+              if bit32.band(mask,flag)==0 then
+                setNumber(player,field,bit32.bor(mask,flag))
+                pcall(awardProgress,player,25,15)
+                pcall(function() villageDialogue(player,"장소 발견 · "..poi.Name,"새로운 장소가 지도에 기록됐다. 수호자를 쓰러뜨리면 보물을 열 수 있다.") end)
+              end
+            end
+          end
+        end
+      end
+    end
+  end)
 end
 
 -- [지역 발견] 실제 위치가 지역 안에 들어가면 서버가 발견 비트를 기록한다(1 초원·2 숲·4 화산·8 오아시스).
