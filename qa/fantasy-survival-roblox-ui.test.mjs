@@ -100,7 +100,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale)',
     'meadowHealthTrack.Position=UDim2.fromOffset(x,top+16)',
     'meadowEnergy.Position=UDim2.fromOffset(x,top+30)',
-    'questTracker.Position=UDim2.fromOffset(v.X-width-8,top)',
+    'questTracker.Position=UDim2.fromOffset(questLeft,questTop)',
     'local visualX=row[1]+(saved[1]-default[1])*212',
     'local visualY=row[2]+(saved[2]-default[2])*216',
     'meadowRadar:GetAttribute("ReferenceRadarVisible")==true and gui:GetAttribute("GameMenuOpen")~=true',

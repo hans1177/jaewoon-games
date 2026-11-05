@@ -2665,7 +2665,10 @@ local function layoutMeadowJournal()
   local top=(landscape and 4 or 70)+menuStep+(landscape and 24 or 14)
   local width=math.floor(math.clamp(v.X*(landscape and .19 or .42),132,238))
   local height=compact and 100 or 157
-  questTracker.Position=UDim2.fromOffset(v.X-width-8,top)
+  -- [가로 화면] 오른쪽 전투 버튼과 겹치지 않도록 퀘스트창은 왼쪽 체력바 아래에 둔다.
+  local questLeft=landscape and 10 or v.X-width-8
+  local questTop=landscape and math.floor(v.Y*.32) or top
+  questTracker.Position=UDim2.fromOffset(questLeft,questTop)
   questTracker.Size=UDim2.fromOffset(width,height)
   trackerTitle.Position=UDim2.fromOffset(compact and 19 or 8,compact and 3 or 6)
   trackerTitle.Size=UDim2.new(1,compact and -22 or -14,0,compact and 13 or 17)
@@ -2687,7 +2690,8 @@ local function layoutMeadowJournal()
     questIcon.Size=UDim2.fromOffset(compact and 12 or 22,compact and 12 or 22)
     questIcon.Position=UDim2.fromOffset(compact and 5 or 8,compact and 3 or 7)
   end
-  characterShortcut.Position=UDim2.fromOffset(9,top+height+8)
+  characterShortcut.Position=landscape and UDim2.fromOffset(questLeft+width+8,questTop)
+    or UDim2.fromOffset(9,top+height+8)
   characterShortcut.Size=UDim2.fromOffset(width,compact and 42 or 56)
   characterShortcut.Visible=false
 end
@@ -6027,11 +6031,17 @@ local function layoutMeadowRadar()
   local v=layer and layer:IsA("ScreenGui") and layer.AbsoluteSize or gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   -- [상단 중앙 가로 지도] 화면 맨 위 가운데. 가로가 길고 세로는 낮게 둔다(좌우 메뉴·체력바와 겹치지 않음).
-  local mapWidth=math.floor(math.clamp(v.X*.30,170,320))
+  -- 가로 화면: 로블록스 상단바(왼쪽)와 상단 메뉴 6개(오른쪽) 사이 빈 공간의 가운데에 둔다.
+  local landscape=v.X>v.Y
+  local menuStep=landscape and math.floor(math.clamp(v.X/15,47,55))
+    or math.floor(math.clamp((v.X-18)/6,47,52))
+  local freeLeft=landscape and math.floor(v.X*.29) or 8
+  local freeRight=landscape and (v.X-menuStep*6-6-10) or (v.X-8)
+  local mapWidth=math.floor(math.clamp(freeRight-freeLeft,150,330))
   local mapHeight=math.floor(math.clamp(mapWidth*.27,46,84))
   meadowRadar.Size=UDim2.fromOffset(mapWidth,mapHeight+20)
   meadowRadar.AnchorPoint=Vector2.new(.5,0)
-  meadowRadar.Position=UDim2.new(.5,0,0,2)
+  meadowRadar.Position=UDim2.fromOffset(math.floor((freeLeft+freeRight)*.5),landscape and 2 or menuStep+22)
   radarField.AnchorPoint=Vector2.new(.5,0)
   radarField.Position=UDim2.new(.5,0,0,1)
   radarField.Size=UDim2.fromOffset(mapWidth,mapHeight)

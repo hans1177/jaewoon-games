@@ -59,7 +59,7 @@ if(process.argv.includes('--illustrated-hud-only')){
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
  const art=registry.illustratedHudIconsV2;
  const imagePath='roblox-games/fantasy-survival/illustrated-icons.png';
- const expected='5fe23c0209fe4d6e2f1f8c9847fe679cc69955c10511857ec0f4f7cf68dab11b';
+ const expected='8c96adc30c90edc6eec5d2cb447d832963c01b585fe16b34507421f9984f73ff';
  if(registry.gameId!=='fantasy-survival'||!art
    ||art.source!=='OWNER_REQUESTED_GENERATED_21_ICON_ART'||art.license!=='OWNER_CREATED_UI'
    ||art.path!==imagePath||art.universeId!=='10773436325'
@@ -67,7 +67,7 @@ if(process.argv.includes('--illustrated-hud-only')){
    throw Error('FOREST_21_ICON_V2_PROVENANCE_INVALID');
  const bytes=fs.readFileSync(imagePath);
  const sourceSha=crypto.createHash('sha256').update(bytes).digest('hex');
- if(sourceSha!==expected||bytes.length!==1284479
+ if(sourceSha!==expected||bytes.length!==1312934
    ||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
    ||bytes.readUInt32BE(16)!==1000||bytes.readUInt32BE(20)!==1000)
    throw Error('FOREST_21_ICON_V2_SOURCE_HASH_OR_PNG_INVALID');
