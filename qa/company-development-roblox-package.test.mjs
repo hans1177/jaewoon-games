@@ -1715,7 +1715,7 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.match(client,/meadowSkillButtons\.primarySword\.Position=UDim2\.fromOffset/);
   assert.match(client,/meadowSkillButtons\.referenceJump\.Position=UDim2\.fromOffset/);
   assert.match(client,/local step=landscape and math\.floor\(math\.clamp\(v\.X\/15,47,55\)\)/);
-  assert.match(client,/meadowSkillButtons\.primarySword\.Position=UDim2\.fromOffset\(math\.floor\(146\*scale\)/);
+  assert.match(client,/meadowSkillButtons\.primarySword\.Position=UDim2\.fromOffset\(math\.floor\(134\*scale\)/);
   // [미니맵] 지도는 상단에 밀착시키고 실제 위치 이름→축소 좌표 순서로 표시한다.
   assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapWidth,mapHeight\+20\)/);
   assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(math.floor\(\(freeLeft\+freeRight\)\*\.5\)/);

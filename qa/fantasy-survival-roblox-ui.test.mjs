@@ -97,7 +97,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'local hotbarActions={','local function layoutMeadowReferenceHud()',
     'local step=landscape and math.floor(math.clamp(v.X/15,47,55))',
     'meadowReferenceHotbar.Position=UDim2.new(.5,0,1,-99)',
-    'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale)',
+    'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(134*scale)',
     'meadowHealthTrack.Position=UDim2.fromOffset(x,top+16)',
     'meadowEnergy.Position=UDim2.fromOffset(x,top+30)',
     'questTracker.Position=UDim2.fromOffset(questLeft,questTop)',
@@ -144,11 +144,11 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/questTracker.BackgroundColor3=Color3.fromRGB\(19,19,18\)/);
   assert.match(client,/local height=compact and 100 or 157/);
   assert.match(client,/local width=math.floor\(math.clamp\(v.X\*\(landscape and \.19 or \.42\),132,238\)\)/);
-  assert.match(client,/local positions=\{\s+\{150,92,38\}/);
-  assert.match(client,/\{112,160,40\}/);
-  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(152\*scale\),math.floor\(50\*scale\)\)/);
-  assert.match(client,/meadowSkillButtons.primarySword.Position=UDim2.fromOffset\(math.floor\(146\*scale\),math.floor\(132\*scale\)\)/);
-  assert.match(client,/local swordSize=math.max\(60,math.floor\(66\*scale\)\)/);
+  assert.match(client,/local positions=\{\s+\{150,92,44\}/);
+  assert.match(client,/\{94,168,44\}/);
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(172\*scale-size\*\.5\),math.floor\(90\*scale-size\*\.5\)\)/);
+  assert.match(client,/meadowSkillButtons.primarySword.Position=UDim2.fromOffset\(math.floor\(134\*scale\),math.floor\(130\*scale\)\)/);
+  assert.match(client,/local swordSize=math.max\(64,math.floor\(76\*scale\)\)/);
   assert.match(client,/meadowSkillButtons.referenceJump.Position=UDim2.fromOffset\(math.floor\(30\*scale\),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor\(6\*scale\)\)/);
   // 원화 자체에 포함된 링을 또 그리지 않는다.
   assert.match(client,/if rim then rim.Enabled=false end/);
@@ -157,10 +157,10 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/local step=landscape and math.floor\(math.clamp\(v.X\/15,47,55\)\)\s+or math.floor\(math.clamp\(\(v.X-18\)\/6,47,52\)\)/);
   assert.match(client,/local menuStep=landscape and math.floor\(math.clamp\(v.X\/15,47,55\)\)\s+or math.floor\(math.clamp\(\(v.X-18\)\/6,47,52\)\)/);
   assert.match(client,/local slotSize=landscape and math.floor\(math.clamp\(v.X\/17,44,52\)\)\s+or math.floor\(math.clamp\(\(v.X-24\)\/columns-2,44,48\)\)/);
-  assert.match(client,/local columns=\(landscape and \(v.X-150-dockReserve<tenWide\) or \(not landscape and v.X<560\)\) and 5 or 10/);
+  assert.match(client,/local columns=5 -- \[요청\] 단축바는 1~5번 5칸만 표시/);
   assert.match(client,/local size=math.max\(46,math.floor\(row\[3\]\*scale\)\)/);
   assert.match(client,/local jumpSize=math.max\(54,math.floor\(54\*scale\)\)/);
-  assert.match(client,/local size=math.max\(46,math.floor\(40\*scale\)\)/);
+  assert.match(client,/local size=math.max\(46,math.floor\(44\*scale\)\)/);
 
   const sheet={width:1000,height:1000};
   const cropRows=[

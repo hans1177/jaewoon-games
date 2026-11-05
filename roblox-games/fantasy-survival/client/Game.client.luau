@@ -1613,12 +1613,12 @@ local function layoutMeadowReferenceHud()
   local dockScale=math.clamp((v.Y-20)/370,.76,1.12)*1.3
   local dockReserve=landscape and math.floor(226*dockScale)+8 or 0
   local tenWide=(landscape and math.floor(math.clamp(v.X/17,44,52)) or 44)*10+18
-  local columns=(landscape and (v.X-150-dockReserve<tenWide) or (not landscape and v.X<560)) and 5 or 10
+  local columns=5 -- [요청] 단축바는 1~5번 5칸만 표시
   local slotSize=landscape and math.floor(math.clamp(v.X/17,44,52))
     or math.floor(math.clamp((v.X-24)/columns-2,44,48))
   local gap=2
   local barWidth=(slotSize+gap)*columns-gap
-  meadowReferenceHotbar.Size=UDim2.fromOffset(barWidth,(slotSize+gap)*math.ceil(10/columns)-gap)
+  meadowReferenceHotbar.Size=UDim2.fromOffset(barWidth,slotSize)
   if landscape then
     -- 왼쪽 이동 조이스틱(약 150)과 오른쪽 전투 버튼 영역(약 150) 사이에 단축바를 둔다.
     local minCenter=150+barWidth/2
@@ -1628,6 +1628,7 @@ local function layoutMeadowReferenceHud()
     meadowReferenceHotbar.Position=UDim2.new(.5,0,1,-99)
   end
   for index,slot in ipairs(referenceHotbarSlots)do
+    slot.Visible=index<=5
     slot.Size=UDim2.fromOffset(slotSize,slotSize)
     slot.Position=UDim2.fromOffset(((index-1)%columns)*(slotSize+gap),math.floor((index-1)/columns)*(slotSize+gap))
   end
@@ -5091,7 +5092,7 @@ end
 -- 물약과 가방은 현재 등록된 개별 CC0 이미지를 그대로 사용하고, 서버 액션 바인딩은 유지한다.
 local function applyMeadowRightActionImage(button,role)
   local paintedCell=({sprint=Vector2.new(200,600),fist=Vector2.new(400,600),dodge=Vector2.new(600,600),jump=Vector2.new(800,600)})[role]
-  local atlasX=({sprint=160,fist=40,dodge=120,guard=80,interact=200,bag=240})[role]
+  local atlasX=({sprint=160,fist=40,dodge=120,interact=200,bag=240})[role] -- 막기는 승인된 512px 원본 사용
   local imageId=paintedCell and meadowPaintedHudAtlas or atlasX and "rbxassetid://81665484719308" or meadowRealActionIcons[role]
   if not imageId then return false end
   local icon=Instance.new("ImageLabel")
@@ -5326,9 +5327,9 @@ local function layoutMeadowCombatUi()
   meadowSkillDock.Position=UDim2.new(1,-math.floor(14*scale),1,-math.floor(offset*(landscape and 1 or scale)))
   -- [시안 참고] 오른쪽 큰 검 / 위쪽 마력·질주 / 좌측 회피 / 아래 점프.
   local positions={
-    {150,92,38}, -- 보라색 기술은 오른쪽 HUD에서 숨김(공격·회피·막기·질주만 표시)
-    {112,160,40}, -- 회피: 검 왼쪽
-    {122,104,40}, -- 막기: 검 왼쪽 위
+    {150,92,44}, -- 보라색 기술은 오른쪽 HUD에서 숨김(공격·회피·막기·질주만 표시)
+    {94,168,44}, -- 회피: 검 바로 왼쪽
+    {117,113,44}, -- 막기: 검 왼쪽 위(대각)
     {40,72,36}, -- 물약은 기존 단축바 5번
   }
   for index,button in ipairs(meadowSkillButtons) do
@@ -5353,15 +5354,17 @@ local function layoutMeadowCombatUi()
     -- 보조 채집·가방은 하단 단축창에서도 접근할 수 있어 화면 오른쪽 중복 표시만 정리.
     button.Visible=index==2
     if index==2 then
-      local size=math.max(46,math.floor(40*scale))
+      local size=math.max(46,math.floor(44*scale))
       button.Size=UDim2.fromOffset(size,size)
-      button.Position=UDim2.fromOffset(math.floor(152*scale),math.floor(50*scale))
+      -- 질주: 검 바로 위. 세 보조 버튼은 검 중심에서 같은 거리의 부채꼴로 배치한다.
+      button.Position=UDim2.fromOffset(math.floor(172*scale-size*.5),math.floor(90*scale-size*.5))
     end
   end
-  local swordSize=math.max(60,math.floor(66*scale))
+  local swordSize=math.max(64,math.floor(76*scale))
   meadowSkillButtons.primarySword.Size=UDim2.fromOffset(swordSize,swordSize)
-  meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale),math.floor(132*scale))
+  meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(134*scale),math.floor(130*scale))
   local jumpSize=math.max(54,math.floor(54*scale))
+  meadowSkillButtons.referenceJump.Visible=false -- [요청] 점프 버튼 제거
   meadowSkillButtons.referenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)
   meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(30*scale),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor(6*scale))
   -- [기존 점프 이중 터치 방지] 공식 모바일 JumpButton만 숨기고 실제 점프 기능은 위 버튼에 연결.
