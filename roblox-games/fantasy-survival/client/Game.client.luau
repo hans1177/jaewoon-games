@@ -778,7 +778,7 @@ end)
 -- [전투 HUD] 실제 휴머노이드 최대 체력을 기준으로 표시한다.
 local meadowHealthTrack,meadowHealthControl=CommonUI.CreateHealthBar({name="MeadowHealth",text="체력",textSize=11})
 meadowHealthTrack.Parent=root
-local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
+local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","Ingot","Leather","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
   status.Text="" -- [필요 없는 작은 글씨 제거] 월드/몬스터 수는 기본 화면에 표시하지 않는다.
   local character=player.Character
@@ -1362,9 +1362,9 @@ local function renderMeadowPages()
     or save=="SESSION_ONLY" and "이번 접속은 임시 플레이야. 진행이 저장되지 않으니 재접속 후 상태를 확인해."
     or save=="SAVE_FAILED" and "저장에 실패했어. 기존 저장은 보호 중이야."
     or player:GetAttribute("RunActive")~=true and "생존 시작을 눌러 초원 전투를 시작해."
-    or tier<10 and (player:GetAttribute("Wood") or 0)>=cost and (player:GetAttribute("Stone") or 0)>=cost
-      and "강화 재료가 준비됐어. 아래 장비 강화를 누르면 서버가 비용을 확인해."
-    or "나무와 돌 가까이에서 채집해. 전투 중에는 공격 예고에 맞춰 막으면 연타를 끊을 수 있어."
+    or tier<10 and (player:GetAttribute("Ingot") or 0)>=(Config.TemperCost(tier,player:GetAttribute("CraftingProficiency") or 0))
+      and "단련 재료가 준비됐어. 아래 장비 강화를 누르면 서버가 비용을 확인해."
+    or "광석을 캐서 마을 화로에서 주괴로 제련해. 전투 중에는 공격 예고에 맞춰 막으면 연타를 끊을 수 있어."
   -- [의뢰 도우미] 메인 > 마을 서브 > 동료 서브 순서. 모든 수치는 서버의 기존 저장 속성만 읽는다.
   local companionStage=player:GetAttribute("CompanionQuestStage") or 1
   local companion=Config.CompanionRequests and Config.CompanionRequests[companionStage]
@@ -1402,7 +1402,7 @@ local function renderMeadowPages()
     "\n\n【현상금】\n"..bountyText..
     "\n\n【서브 · 동료】\n"..companionText..
     "\n\n【다음 행동 안내】\n"..suggestion..
-    string.format("\n\n다음 강화 재료: 나무 %d · 돌 %d · 광석 %d",cost,cost,1+math.floor(((player:GetAttribute("WeaponTier") or 0))/2))..
+    string.format("\n\n다음 단련 재료: 철 주괴 %d · 무두질 가죽 %d",Config.TemperCost(player:GetAttribute("WeaponTier") or 0,player:GetAttribute("CraftingProficiency") or 0))..
     "\n\n【처음 조작】\n왼쪽 조이스틱/WASD: 이동\n왼쪽 퀘스트 도우미: 의뢰 확인\n빈 화면 터치/클릭: 기본 공격\n오른쪽 회피·막기: 적의 공격 대응\n상호작용: 주민 대화·단서·채집"
 
   local companionLines={"동료 통신 · 선택 의뢰","메인 퀘스트와 독립적으로 진행돼."}
@@ -1507,7 +1507,7 @@ local function renderMeadowPages()
     table.concat(mystLines,"\n"),table.concat(storyLines,"\n")}
   local howTo=string.match(meadowLabels[5].Text,"【처음 조작】.*") or ""
   sec[3].texts={
-    "【메인 퀘스트】\n"..mainText.."\n\n【다음 행동 안내】\n"..suggestion..string.format("\n\n다음 강화 재료: 나무 %d · 돌 %d · 광석 %d",cost,cost,1+math.floor(((player:GetAttribute("WeaponTier") or 0))/2)),
+    "【메인 퀘스트】\n"..mainText.."\n\n【다음 행동 안내】\n"..suggestion..string.format("\n\n다음 단련 재료: 철 주괴 %d · 무두질 가죽 %d",Config.TemperCost(player:GetAttribute("WeaponTier") or 0,player:GetAttribute("CraftingProficiency") or 0)),
     "【서브 · 마을】\n"..villageText.."\n\n"..table.concat(companionLines,"\n\n"),
     "【현상금 게시판】\n"..bountyText,
     howTo.."\n\n"..journalBase,
@@ -2496,7 +2496,10 @@ local function redrawSelection()
     end
     cost="제작 재료: "..table.concat(parts," · ")
   end
-  local stats=item.gear and string.format("%s 등급  ·  공격 +%d  ·  방어 +%d\n%s",meadowArt.rarityName[item.gear.Rarity or "Common"] or "일반",item.gear.Attack or 0,item.gear.Defense or 0,
+  local classKey=item.gear and Config.GearWeaponClass and Config.GearWeaponClass[item.gear.Id]
+  local classInfo=classKey and Config.WeaponClasses[classKey]
+  local stats=item.gear and string.format("%s 등급  ·  공격 +%d  ·  방어 +%d\n%s%s",meadowArt.rarityName[item.gear.Rarity or "Common"] or "일반",item.gear.Attack or 0,item.gear.Defense or 0,
+    classInfo and ("무기 계열 "..classInfo.Name.."  ·  어울리는 스킬 강화\n") or "",
     (item.gear.Need or 0)>0 and string.format("필요 전투 숙련 %d\n",item.gear.Need) or "") or ""
   local feedback=player:GetAttribute("MeadowGearMessage")
   description.Text="소지 / 상태   "..itemValue(item).."\n"..stats..(cost~="" and cost.."\n" or "")..
@@ -2808,9 +2811,9 @@ schoolTab.BackgroundTransparency=1;schoolTab.Parent=talentPanel
 for index,school in ipairs(Config.MeadowSkillSchools or {}) do
   local button=Instance.new("TextButton")
   button.Name="School_"..school.Id;button.Position=UDim2.new((index-1)/5,2,0,0)
-  button.Size=UDim2.new(1/5,-4,1,0);button.Text=school.Name
+  button.Size=UDim2.new(1/5,-4,1,0);button.Text=school.Name..(school.Weapon and ('\n'..school.Weapon) or '')
   button.BackgroundColor3=Color3.fromRGB(23,44,40);button.BorderSizePixel=0
-  button.TextColor3=parchment;button.Font=Enum.Font.GothamBold;button.TextSize=13;button.Parent=schoolTab
+  button.TextColor3=parchment;button.Font=Enum.Font.GothamBold;button.TextSize=12;button.TextWrapped=true;button.Parent=schoolTab
   local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,7);corner.Parent=button
   button.Activated:Connect(function()
     selectedSchool=index

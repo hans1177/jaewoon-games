@@ -2998,11 +2998,18 @@ local meadowRpg=(function()
     player:SetAttribute("MeadowGearDefense",defense)
   end
   local function charge(player,item)
-    for _,field in ipairs(Config.CostFields)do
-      if readNumber(player,field,0)<(item[field] or 0) then return false end
+    -- [스카이림식 대장 기술] 제작 숙련 단계마다 주괴·가죽 요구량이 1개씩 줄어든다(최소 1개).
+    local rank=Config.SmithingRank(readNumber(player,"CraftingProficiency",0))
+    local function need(field)
+      local base=item[field] or 0
+      if base>0 and (field=="Ingot" or field=="Leather") then return math.max(1,base-rank) end
+      return base
     end
     for _,field in ipairs(Config.CostFields)do
-      local cost=item[field] or 0
+      if readNumber(player,field,0)<need(field) then return false end
+    end
+    for _,field in ipairs(Config.CostFields)do
+      local cost=need(field)
       if cost>0 then setNumber(player,field,readNumber(player,field,0)-cost) end
     end
     return true
@@ -4740,14 +4747,11 @@ end
 local function upgradeEquipment(player)
   local tier=readNumber(player,"WeaponTier",0)
   if tier>=10 then return false end
-  local wood=readNumber(player,"Wood",0)
-  local stone=readNumber(player,"Stone",0)
-  local cost=2+tier
-  local oreCost=1+math.floor(tier/2)
-  if wood<cost or stone<cost or readNumber(player,"Ore",0)<oreCost then return false end
-  setNumber(player,"Ore",readNumber(player,"Ore",0)-oreCost)
-  setNumber(player,"Wood",wood-cost)
-  setNumber(player,"Stone",stone-cost)
+  -- [스카이림식 단련] 주괴(+3·6·9강마다 무두질 가죽)로 무기를 갈고 다듬는다. 제작 숙련이 높을수록 재료가 줄어든다.
+  local ingotCost,leatherCost=Config.TemperCost(tier,readNumber(player,"CraftingProficiency",0))
+  if readNumber(player,"Ingot",0)<ingotCost or readNumber(player,"Leather",0)<leatherCost then return false end
+  setNumber(player,"Ingot",readNumber(player,"Ingot",0)-ingotCost)
+  if leatherCost>0 then setNumber(player,"Leather",readNumber(player,"Leather",0)-leatherCost) end
   setNumber(player,"WeaponTier",tier+1)
   -- [제작 숙련도] 실제 자원을 소모한 기존 장비 강화 성공만 기록한다.
   setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)
@@ -5695,9 +5699,12 @@ local function meadowTreeAction(player,index,charged)
   state.currentSchool=node.School
   state.currentSkill=node.Id
   local success=meadowSkill(player,node.Id,function(character,humanoid,root,now)
-    local range=node.Range+(rank==3 and choice=="B" and 5 or 0)
+    local weaponItem=meadowRpg.equippedWeapon(player)
+    local weaponClass=Config.WeaponClasses[(weaponItem and Config.GearWeaponClass[weaponItem.Id]) or "Sword"]
+    local affinity=weaponClass and weaponClass.Schools[node.School] or .9 -- 계열에 안 맞는 무기는 약간 약하다.
+    local range=node.Range+(rank==3 and choice=="B" and 5 or 0)+((weaponClass and weaponClass.RangeBonus and weaponClass.RangeBonus[node.School]) or 0)
     local target=nearestEnemy(root,range)
-    local base=16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8
+    local base=(16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8)*affinity
     local power=math.floor(base*(node.Advanced and 2.1 or .9)*(1+.13*(rank-1))*
       (rank==3 and choice=="A" and 1.2 or 1)*(charged and 1.55 or 1))
     local radius=12+(rank==3 and choice=="B" and 4 or 0)

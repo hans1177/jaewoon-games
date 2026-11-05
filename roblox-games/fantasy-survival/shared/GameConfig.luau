@@ -1456,6 +1456,32 @@ Config.MeadowSkillNodes = {
   {Id="mf-magic-3-5",Index=89,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=5,Name="치유의 물결",Kind="ACTIVE",Mode="HEAL_AOE",Description="근처 아군과 함께 체력을 회복해.",Advanced=false,Gauge=26,Cooldown=13,Range=34,IconCell=9},
   {Id="mf-magic-3-6",Index=90,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=6,Name="생명의 공명",Kind="ACTIVE",Mode="RALLY",Description="기력을 크게 소모해 주변 아군을 회복·보호해.",Advanced=true,Gauge=70,Cooldown=38,Range=34,IconCell=9},
 }
+-- [스카이림식 대장 기술] 제작 숙련이 쌓일수록 강화·제작 재료가 줄어든다(40마다 1단, 최대 3단).
+Config.SmithingRank=function(craftingProficiency)
+  return math.clamp(math.floor((tonumber(craftingProficiency) or 0)/40),0,3)
+end
+-- 무기 단련(강화): 주괴(+3·6·9강마다 무두질 가죽). 나무·돌·날광석은 쓰지 않는다.
+Config.TemperCost=function(tier,craftingProficiency)
+  local rank=Config.SmithingRank(craftingProficiency)
+  return math.max(1,1+math.floor(tier*.8)-rank),math.floor(tier/3)
+end
+-- [오디세이식 무기 계열] 계열마다 어울리는 스킬 계열이 있고, 맞는 무기를 들면 해당 계열 스킬이 강해진다.
+Config.WeaponClasses={
+  Sword={Name="검",Schools={Warrior=1.25,Guardian=1.15}},
+  Greatsword={Name="대검",Schools={Warrior=1.35,Guardian=1.1}},
+  Axe={Name="도끼",Schools={Warrior=1.3,Guardian=1.2}},
+  Dagger={Name="단검",Schools={Shadow=1.35}},
+  Bow={Name="활",Schools={Hunter=1.35},RangeBonus={Hunter=14}},
+  Staff={Name="지팡이",Schools={Magic=1.3}},
+}
+Config.GearWeaponClass={wanderer_blade="Sword",hunter_blade="Sword",runic_blade="Sword",forest_blade="Sword",
+  dew_dagger="Dagger",thorn_axe="Axe",worldtree_staff="Staff",magma_greatsword="Greatsword",
+  hunter_bow="Bow",wind_bow="Bow",worldtree_bow="Bow"}
+Config.MeadowSkillSchools[1].Weapon="검·대검·도끼"
+Config.MeadowSkillSchools[2].Weapon="검·도끼(방패 준비 중)"
+Config.MeadowSkillSchools[3].Weapon="활"
+Config.MeadowSkillSchools[4].Weapon="단검"
+Config.MeadowSkillSchools[5].Weapon="지팡이"
 Config.MeadowSkillNodeById = {}
 for _,node in ipairs(Config.MeadowSkillNodes) do
   Config.MeadowSkillNodeById[node.Id]=node
