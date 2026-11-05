@@ -6972,6 +6972,25 @@ do
   end
 end
 
+-- [3D 아이템] 등록된 CC0 아이템 메시를 서버가 한 번 불러와 ReplicatedStorage에 둔다. 클라이언트 퀵슬롯이 복제해서 회전 3D로 보여 준다.
+do
+  local folder=ReplicatedStorage:FindFirstChild("MeadowItemModels") or Instance.new("Folder")
+  folder.Name="MeadowItemModels";folder.Parent=ReplicatedStorage
+  for key,id in pairs(NativeCreatureAssets) do
+    if type(key)=="string" and key:sub(1,5)=="item_" then
+      task.spawn(function()
+        local ok,model=pcall(function() return AssetService:LoadAssetAsync(id) end)
+        if not ok or not model then warn("마력숲 아이템 모델 불러오기 실패: "..key) return end
+        for _,item in ipairs(model:GetDescendants()) do
+          if item:IsA("LuaSourceContainer") or item:IsA("RemoteEvent") or item:IsA("RemoteFunction") or item:IsA("Tool") then item:Destroy()
+          elseif item:IsA("BasePart") then item.Anchored=true;item.CanCollide=false;item.CanTouch=false;item.CanQuery=false end
+        end
+        model.Name=key;model.Parent=folder
+      end)
+    end
+  end
+end
+
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
 -- 도달/재료 판정은 2초마다, 처치 판정은 몬스터 처치 시점에 확인한다. 거울 정원은 메인 줄 완료(HiddenOpen)로 열린다.
 do

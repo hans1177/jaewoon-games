@@ -10211,8 +10211,52 @@ end)()
     slot.Activated:Connect(function() press(i) end)
     slots[i]={slot=slot,icon=icon,shade=shade,timer=timer,edge=e,count=count}
   end
-  function meadowArt.setQuickIcon(icon,id)
+  -- [3D 아이템] 칸 위에 뷰포트를 얹어 CC0 아이템 메시를 천천히 돌려 보여 준다. 모델이 아직 없으면 평면 아이콘을 쓴다.
+  local itemKeyOf={["@weapon"]="item_sword",["@interact"]="item_axe_small",["@hp"]="item_potion1_filled",["@sp"]="item_potion3_filled",["@oil"]="item_potion4_filled"}
+  local spinners={}
+  local itemFolder=ReplicatedStorage:FindFirstChild("MeadowItemModels")
+  local function ensureViewport(slotUi,key)
+    local holder=slotUi.slot
+    local view=holder:FindFirstChild("Item3D")
+    itemFolder=itemFolder or ReplicatedStorage:FindFirstChild("MeadowItemModels")
+    local template=itemFolder and itemFolder:FindFirstChild(key)
+    if not template then
+      if view then view.Visible=false end
+      return false
+    end
+    if view and view:GetAttribute("ItemKey")==key then view.Visible=true return true end
+    if view then view:Destroy();spinners[view]=nil end
+    view=Instance.new("ViewportFrame")
+    view.Name="Item3D";view:SetAttribute("ItemKey",key);view.BackgroundTransparency=1;view.BorderSizePixel=0
+    view.Size=UDim2.fromScale(1,1);view.ZIndex=31;view.Ambient=Color3.fromRGB(190,190,200);view.LightColor=Color3.fromRGB(255,244,220)
+    view.Parent=holder
+    local model=template:Clone();model.Parent=view
+    local cframe,size=model:GetBoundingBox()
+    model:PivotTo(CFrame.new(-cframe.Position)*model:GetPivot())
+    local radius=math.max(size.X,size.Y,size.Z)
+    local camera=Instance.new("Camera");camera.FieldOfView=35
+    camera.CFrame=CFrame.new(Vector3.new(0,radius*.35,radius*2.1),Vector3.new(0,0,0))
+    view.CurrentCamera=camera;camera.Parent=view
+    spinners[view]={model=model,angle=math.random()*6}
+    return true
+  end
+  RunService.Heartbeat:Connect(function(dt)
+    for view,entry in pairs(spinners) do
+      if not view.Parent then spinners[view]=nil
+      elseif view.Visible then
+        entry.angle+=dt*1.1
+        entry.model:PivotTo(CFrame.Angles(math.rad(-18),entry.angle,math.rad(12)))
+      end
+    end
+  end)
+  function meadowArt.setQuickIcon(icon,id,slotUi)
     icon.ImageColor3=Color3.new(1,1,1)
+    if slotUi then
+      local key=itemKeyOf[id]
+      if key and ensureViewport(slotUi,key) then icon.Visible=false return end
+      local view=slotUi.slot:FindFirstChild("Item3D")
+      if view then view.Visible=false end
+    end
     if id=="@weapon" then meadowArt.gear(icon,0)
     elseif id=="@interact" then icon.Image=meadowRealActionIcons.interact;icon.ImageRectSize=Vector2.zero;icon.ImageRectOffset=Vector2.zero
     elseif id=="@hp" then meadowArt.gear(icon,32)
@@ -10224,7 +10268,8 @@ end)()
     for i=1,COUNT do
       local id=meadowArt.quickIds[i]
       slots[i].icon.Visible=id~=nil and id~=false
-      if id then meadowArt.setQuickIcon(slots[i].icon,id) end
+      if id then meadowArt.setQuickIcon(slots[i].icon,id,slots[i])
+      else local view=slots[i].slot:FindFirstChild("Item3D");if view then view.Visible=false end end
     end
     if meadowArt.refreshQuickTray then meadowArt.refreshQuickTray() end
   end
@@ -10235,6 +10280,10 @@ end)()
       if player:GetAttribute("ProfileReady")==true then break end
       task.wait(.5)
     end
+    -- 서버가 3D 아이템 모델을 올릴 때까지 몇 번 다시 그린다.
+    task.spawn(function()
+      for _=1,15 do task.wait(2);if meadowArt.refreshQuickHud then meadowArt.refreshQuickHud() end end
+    end)
     if (tonumber(player:GetAttribute("QuickInit")) or 0)>=1 then
       for i=1,COUNT do
         local code=tonumber(player:GetAttribute("QuickSlot"..i)) or 0
@@ -10264,15 +10313,17 @@ end)()
       local slotUi=slots[i]
       slotUi.edge.Color=Color3.fromRGB(218,189,126)
       slotUi.count.Text="";slotUi.icon.ImageTransparency=0
+      local view3d=slotUi.slot:FindFirstChild("Item3D")
+      if view3d then view3d.ImageTransparency=0 end
       slotUi.shade.Visible=false;slotUi.timer.Text=""
       if id=="@weapon" then
         slotUi.edge.Color=armed and Color3.fromRGB(120,255,170) or Color3.fromRGB(218,189,126)
       elseif id=="@hp" then
-        slotUi.count.Text=hp>0 and tostring(hp) or "";slotUi.icon.ImageTransparency=hp>0 and 0 or .6
+        slotUi.count.Text=hp>0 and tostring(hp) or "";slotUi.icon.ImageTransparency=hp>0 and 0 or .6;if view3d then view3d.ImageTransparency=hp>0 and 0 or .6 end
       elseif id=="@sp" then
-        slotUi.count.Text=sp>0 and tostring(sp) or "";slotUi.icon.ImageTransparency=sp>0 and 0 or .6
+        slotUi.count.Text=sp>0 and tostring(sp) or "";slotUi.icon.ImageTransparency=sp>0 and 0 or .6;if view3d then view3d.ImageTransparency=sp>0 and 0 or .6 end
       elseif id=="@oil" then
-        slotUi.count.Text=oilCharges>0 and tostring(oilCharges) or "";slotUi.icon.ImageTransparency=oilCharges>0 and 0 or .45
+        slotUi.count.Text=oilCharges>0 and tostring(oilCharges) or "";slotUi.icon.ImageTransparency=oilCharges>0 and 0 or .45;if view3d then view3d.ImageTransparency=oilCharges>0 and 0 or .45 end
       elseif id and id~="@interact" then
         local deadline=player:GetAttribute("MeadowReady_"..id)
         local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
