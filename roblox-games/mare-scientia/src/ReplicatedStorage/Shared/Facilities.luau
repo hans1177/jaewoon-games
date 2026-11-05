@@ -5,10 +5,12 @@
 local Facilities = {
 	bank = { "london", "amsterdam", "genoa", "venice", "hamburg", "seville" },
 	guild = { "london", "amsterdam", "antwerp", "hamburg", "venice", "lisbon", "bergen", "marseille", "gdansk" },
+	harbormaster = { "london", "amsterdam", "venice", "lisbon", "seville", "copenhagen", "bergen", "marseille", "hamburg", "stockholm" },
 	palace = { "london", "amsterdam", "copenhagen", "stockholm", "venice", "lisbon", "seville", "naples" },
 }
 
-Facilities.NAMES = { bank = "은행", guild = "상인 길드", palace = "왕궁" }
+Facilities.NAMES = { bank = "은행", guild = "상인 길드", palace = "왕궁", harbormaster = "항만청" }
+Facilities.INSURANCE_RATE = 0.08 -- 배 값 대비 보험료 (최소 100)
 Facilities.PALACE_NAMES = {
 	london = "잉글랜드 왕궁", amsterdam = "총독 관저", copenhagen = "덴마크 왕궁", stockholm = "스웨덴 왕궁",
 	venice = "총독궁", lisbon = "포르투갈 왕궁", seville = "스페인 궁정", naples = "나폴리 왕궁",

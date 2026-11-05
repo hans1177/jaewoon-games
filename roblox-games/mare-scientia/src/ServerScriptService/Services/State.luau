@@ -25,7 +25,9 @@ return function(D)
 			day = 0,
 			startYear = startYear,
 			portId = nation.startPort,
-			ship = { id = def.id, hull = def.hull, crew = def.crew, supplies = 30 },
+			ship = { id = def.id, hull = def.hull, crew = def.crew, supplies = 30, cannon = "basic", plating = 0 },
+			license = 0,
+			insured = false,
 			cargo = {},
 			basis = {},
 			discovered = {},
@@ -57,7 +59,7 @@ return function(D)
 	end
 
 	function State.shipDef(state)
-		return D.Ships.Ships[state.ship.id]
+		return D.Ships.refit(D.Ships.Ships[state.ship.id], state.ship.cannon, state.ship.plating)
 	end
 
 	function State.techSum(state, field)
@@ -145,11 +147,16 @@ return function(D)
 
 		if type(saved.ship) == "table" and D.Ships.Ships[saved.ship.id] then
 			local def = D.Ships.Ships[saved.ship.id]
+			local cannon = if type(saved.ship.cannon) == "string" and D.Ships.CannonById[saved.ship.cannon] then saved.ship.cannon else "basic"
+			local plating = math.floor(num(saved.ship.plating, 0, 0, #D.Ships.Plating))
+			local rdef = D.Ships.refit(def, cannon, plating)
 			s.ship = {
 				id = def.id,
-				hull = math.floor(num(saved.ship.hull, def.hull, 1, def.hull)),
+				hull = math.floor(num(saved.ship.hull, rdef.hull, 1, rdef.hull)),
 				crew = math.floor(num(saved.ship.crew, def.crew, 1, def.crew)),
 				supplies = math.floor(num(saved.ship.supplies, 0, 0, MAX_SUPPLIES)),
+				cannon = cannon,
+				plating = plating,
 			}
 		end
 
@@ -256,6 +263,8 @@ return function(D)
 			s.bank.loan = math.floor(num(saved.bank.loan, 0, 0, 1e12))
 			s.bank.lastDay = math.floor(num(saved.bank.lastDay, 0, 0, 1e9))
 		end
+		s.license = math.floor(num(saved.license, 0, 0, #D.Ships.Licenses))
+		s.insured = saved.insured == true
 		s.title = math.floor(num(saved.title, 0, 0, #D.Facilities.TITLES))
 		if type(saved.contract) == "table" and D.Ports.Goods[saved.contract.goodId] and D.Ports.Ports[saved.contract.toPortId] then
 			local c = saved.contract
@@ -343,6 +352,8 @@ return function(D)
 			bank = state.bank,
 			contract = state.contract,
 			title = state.title,
+			license = state.license,
+			insured = state.insured,
 			story = state.story,
 		}
 	end

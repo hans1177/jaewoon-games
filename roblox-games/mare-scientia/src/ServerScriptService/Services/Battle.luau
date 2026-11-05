@@ -42,7 +42,7 @@ return function(D, S)
 			speed = def.speed,
 			steam = def.steam,
 			fuel = if def.steam then (state.cargo.coal or 0) else 0,
-			cannonMult = 1 + S.State.techSum(state, "cannonMult") + S.Perk.cannonBonus(state) + 0.02 * (battleLv - 1),
+			cannonMult = 1 + S.State.techSum(state, "cannonMult") + S.Perk.cannonBonus(state) + S.Shipyard.cannonMult(state) + 0.02 * (battleLv - 1),
 			meleeMult = 1 + 0.03 * (battleLv - 1),
 			pumpReduction = S.State.techSum(state, "pumpReduction"),
 			skills = skills,
@@ -95,14 +95,20 @@ return function(D, S)
 			S.Perk.addAffinity(state, 2, msgs)
 			return true
 		elseif result.winner == "b" then
-			local lost = math.floor(state.coins * 0.1)
-			state.coins -= lost
-			for goodId, qty in table.clone(state.cargo) do
-				S.State.removeCargo(state, goodId, math.floor(qty / 2))
+			local lost = 0
+			if state.insured then
+				state.insured = false
+				table.insert(msgs, "보험이 손실을 막아 주었다 (보험 소멸)")
+			else
+				lost = math.floor(state.coins * 0.1)
+				state.coins -= lost
+				for goodId, qty in table.clone(state.cargo) do
+					S.State.removeCargo(state, goodId, math.floor(qty / 2))
+				end
 			end
 			state.ship.hull = math.max(1, math.floor(S.State.shipDef(state).hull * 0.2))
 			state.stats.battlesLost += 1
-			table.insert(msgs, string.format("패배... 화물 절반과 %d코인을 잃고 간신히 도망쳤다", lost))
+			table.insert(msgs, if lost > 0 or not state.insured then string.format("패배... 화물 절반과 %d코인을 잃고 간신히 도망쳤다", lost) else "패배... 하지만 보험 덕에 손실은 없었다")
 			S.State.gainXp(state, "battle", math.floor(reward.xp / 4), msgs)
 			return false
 		end

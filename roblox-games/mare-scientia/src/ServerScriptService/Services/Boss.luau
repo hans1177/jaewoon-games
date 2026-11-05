@@ -75,8 +75,14 @@ return function(D, S)
 			S.State.gainXp(state, "battle", boss.rewardXp, msgs)
 			S.Perk.addAffinity(state, 5, msgs)
 		elseif result.winner == "b" then
-			local lost = math.floor(state.coins * 0.05)
-			state.coins -= lost
+			local lost = 0
+			if state.insured then
+				state.insured = false
+				table.insert(msgs, "보험이 손실을 막아 주었다 (보험 소멸)")
+			else
+				lost = math.floor(state.coins * 0.05)
+				state.coins -= lost
+			end
 			state.ship.hull = math.max(1, math.floor(S.State.shipDef(state).hull * 0.2))
 			state.stats.battlesLost += 1
 			table.insert(msgs, string.format("괴물에게 밀려 %d코인을 잃고 도망쳤다", lost))

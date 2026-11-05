@@ -221,6 +221,47 @@ return function(D, S)
 		return true, "계약을 포기했다 (명성 -2)"
 	end
 
+	-- 항만청 ------------------------------------------------------------
+
+	local function insurancePrice(state)
+		return math.max(100, math.floor(D.Ships.Ships[state.ship.id].price * F.INSURANCE_RATE))
+	end
+
+	function handlers.BuyLicense(state)
+		if not hasHere(state, "harbormaster") then
+			return false, "이 항구에는 항만청이 없어요"
+		end
+		local lic = D.Ships.Licenses[state.license + 1]
+		if not lic then
+			return false, "이미 최고 면허예요"
+		end
+		if state.fame < lic.fame then
+			return false, string.format("명성 %d이 필요해요 (지금 %d)", lic.fame, state.fame)
+		end
+		if state.coins < lic.fee then
+			return false, string.format("수수료 %d코인이 필요해요", lic.fee)
+		end
+		state.coins -= lic.fee
+		state.license += 1
+		return true, string.format("'%s'를 받았다 (-%d). 등급 %d 배를 살 수 있다", lic.name, lic.fee, state.license + 1)
+	end
+
+	function handlers.BuyInsurance(state)
+		if not hasHere(state, "harbormaster") then
+			return false, "이 항구에는 항만청이 없어요"
+		end
+		if state.insured then
+			return false, "이미 보험에 들었어요"
+		end
+		local price = insurancePrice(state)
+		if state.coins < price then
+			return false, string.format("보험료 %d코인이 필요해요", price)
+		end
+		state.coins -= price
+		state.insured = true
+		return true, string.format("해상 보험에 가입했다 (-%d). 패배해도 이번 한 번은 화물과 코인을 지킨다", price)
+	end
+
 	-- 왕궁 --------------------------------------------------------------
 
 	local function titleBonus(state)
@@ -250,5 +291,6 @@ return function(D, S)
 		offers = offers,
 		contractExpired = contractExpired,
 		titleBonus = titleBonus,
+		insurancePrice = insurancePrice,
 	}
 end

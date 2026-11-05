@@ -814,6 +814,27 @@ local function renderHarbor()
 		end
 	end
 
+	if fac.harbormaster then
+		local hm = view.harbormaster
+		section("항만청")
+		add(function()
+			local lic = if hm.nextLicense then string.format("다음 면허 '%s': 명성 %d · 수수료 %d", hm.nextLicense.name, hm.nextLicense.fame, hm.nextLicense.fee) else "최고 면허를 받았어요"
+			return mkLabel(content, string.format("현재 면허: %s\n%s\n등급 N+1 배를 사려면 면허 N단계가 필요해요.", hm.license or "없음", lic), 13, COLORS.text, false)
+		end)
+		if hm.nextLicense then
+			add(function()
+				return mkRow(content, hm.nextLicense.name, string.format("명성 %d · 수수료 %d코인", hm.nextLicense.fame, hm.nextLicense.fee), {
+					{ text = "발급", color = COLORS.gold, onClick = function() call("BuyLicense", {}) end },
+				}, 52)
+			end)
+		end
+		add(function()
+			return mkRow(content, "해상 보험", if hm.insured then "가입 중 (패배 손실을 한 번 막아 줘요)" else string.format("보험료 %d코인 · 패배 시 코인·화물 손실 방지 1회", hm.insurancePrice), {
+				{ text = if hm.insured then "가입중" else "가입", color = COLORS.blue, onClick = function() call("BuyInsurance", {}) end, enabled = not hm.insured },
+			}, 56)
+		end)
+	end
+
 	if fac.palace then
 		local pl = view.palace
 		section(pl.name)
@@ -962,6 +983,36 @@ local function renderYard()
 	if not yard.available then
 		add(function() return mkLabel(content, "이 항구에는 조선소가 없어서 배를 살 수 없어요. 수리도 조선소가 있는 항구에서만 할 수 있어요.", 13, COLORS.gold, false) end)
 	end
+	local rf = view.refit
+	add(function() return mkHeader(content, string.format("개조 (우리 배: 등급 %d · %s)", rf.class, rf.className)) end)
+	add(function()
+		return mkLabel(content, "새 배를 사면 대포와 보강은 초기화돼요. 대포가 무거울수록 화물칸이 줄어요.", 12, COLORS.muted, false)
+	end)
+	for _, c in rf.cannons do
+		add(function()
+			local sub = string.format("%s\n위력 +%d%% · 무게 화물 -%d%%", c.summary, math.floor(c.mult * 100 + 0.5), math.floor(c.weight * 100 + 0.5))
+			if c.locked then
+				sub ..= "\n" .. c.locked
+			end
+			return mkRow(content, c.name, sub, {
+				{ text = if c.owned then "장착중" else (if c.price == 0 then "기본" else tostring(c.price)), color = COLORS.steam, onClick = function() call("BuyCannon", { cannonId = c.id }) end,
+					enabled = yard.available and not c.owned and not c.locked },
+			}, 80)
+		end)
+	end
+	if rf.nextPlating then
+		local np = rf.nextPlating
+		add(function()
+			local sub = string.format("선체 +%d%% · 무게 화물 -%d%% (현재 %d단계)", math.floor(np.hull * 100 + 0.5), math.floor(np.weight * 100 + 0.5), rf.plating)
+			if np.locked then
+				sub ..= "\n" .. np.locked
+			end
+			return mkRow(content, "선체 보강: " .. np.name, sub, {
+				{ text = tostring(np.price), color = COLORS.green, onClick = function() call("BuyPlating", {}) end, enabled = yard.available and not np.locked },
+			}, 70)
+		end)
+	end
+	add(function() return mkHeader(content, "배 목록") end)
 	for _, s in yard.ships do
 		add(function()
 			local sub = string.format("%s\n화물 %d · 속도 %d · 선체 %d · 포 %d · 선원 %d", s.summary, s.cargo, s.speed, s.hull, s.cannons, s.crew)
@@ -969,7 +1020,7 @@ local function renderYard()
 				sub ..= "\n" .. s.locked
 			end
 			local label = if s.owned then "보유중" else (if s.price == 0 then "기본" else tostring(s.price))
-			return mkRow(content, s.name .. (if s.steam then " (증기)" else ""), sub, {
+			return mkRow(content, string.format("[등급%d] ", s.class) .. s.name .. (if s.steam then " (증기)" else ""), sub, {
 				{ text = label, color = if s.steam then COLORS.steam else COLORS.blue, onClick = function() call("BuyShip", { shipId = s.id }) end,
 					enabled = yard.available and not s.owned and not s.locked },
 			}, 92)

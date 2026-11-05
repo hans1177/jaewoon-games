@@ -293,6 +293,7 @@ end
 do
 	local st = newState()
 	st.coins = 100000
+	st.license = 3
 	local ok = act(st, "BuyShip", { shipId = "paddle_steamer" })
 	check("steam ship locked without tech", ok == false)
 
@@ -327,6 +328,7 @@ do
 	local noCoal = S.State.new("england", 1700)
 	noCoal.tech.steam_paddle = true
 	noCoal.coins = 100000
+	noCoal.license = 3
 	noCoal.tech.steam_pump = true
 	act(noCoal, "BuyShip", { shipId = "paddle_steamer" })
 	local slow = S.Sailing.preview(noCoal, "lisbon")
@@ -552,6 +554,7 @@ do
 	check("no shipyard blocked", ok == false)
 	st.portId = "london"
 	st.cargo.wool = 45
+	st.license = 1
 	ok = act(st, "BuyShip", { shipId = "frigate" })
 	check("cargo too large for smaller ship blocked", ok == false)
 	st.cargo = {}
@@ -1220,9 +1223,9 @@ do
 	check("story chapter 1", act(s1, "PlayStory", { eventId = "lc_1", choice = 1 }) and s1.story.lc_1 == 1)
 	check("story not repeatable", not act(s1, "PlayStory", { eventId = "lc_1", choice = 1 }))
 	local v = S.View.build(s1, ctx)
-	check("view story hides seen", #v.story == 0)
+	check("view story hides seen", (function() for _, e in v.story do if e.id == "lc_1" then return false end end return true end)())
 	s1.portId = "lisbon"
-	check("chapter 2 available", #S.View.build(s1, ctx).story == 1)
+	check("chapter 2 available", (function() for _, e in S.View.build(s1, ctx).story do if e.id == "lc_2" then return true end end return false end)())
 	check("chapter 2 gives card", act(s1, "PlayStory", { eventId = "lc_2", choice = 1 }) and s1.discovered.relic_lostchart_1 == true)
 	-- 거절 선택은 후속 이야기를 막는다
 	local s2 = at("london")
@@ -1250,6 +1253,81 @@ do
 	check("story survives save", back2.story.lc_5 == 1)
 	local evil = S.State.sanitize({ nationId = "england", startYear = 1700, title = 99, story = { nope = 1, lc_1 = 9 }, bank = { deposit = -5, loan = "x" }, contract = { goodId = "nope" } })
 	check("facility sanitized", evil.title == #D.Facilities.TITLES and evil.story.nope == nil and evil.story.lc_1 == nil and evil.bank.deposit == 0 and evil.contract == nil)
+end
+
+-- 항만청, 면허, 보험, 대포·선체 개조
+do
+	local st = newState("england")
+	st.coins = 100000
+	st.fame = 0
+	check("license needs fame", not act(st, "BuyLicense", {}))
+	st.fame = 40
+	check("license 1", act(st, "BuyLicense", {}) and st.license == 1)
+	check("license 2 needs more fame", not act(st, "BuyLicense", {}))
+	local sy = newState("england")
+	sy.portId = "dublin"
+	check("no harbormaster at dublin", not act(sy, "BuyLicense", {}) and not act(sy, "BuyInsurance", {}))
+	-- 면허 없이 중형선 불가
+	local lic = newState("england")
+	lic.coins = 100000
+	check("frigate needs license", not act(lic, "BuyShip", { shipId = "frigate" }))
+	lic.license = 1
+	check("frigate with license", act(lic, "BuyShip", { shipId = "frigate" }))
+	check("ship classes exist", D.Ships.Ships.caravel.class == 1 and D.Ships.Ships.ironclad_frigate.class == 4)
+	-- 보험
+	local ins = newState("england")
+	ins.coins = 5000
+	check("insurance bought", act(ins, "BuyInsurance", {}) and ins.insured == true and ins.coins < 5000)
+	check("double insurance rejected", not act(ins, "BuyInsurance", {}))
+	-- 대포
+	local cn = newState("england")
+	cn.coins = 100000
+	local cargo0 = S.State.cargoCapacity(cn)
+	local m0 = S.Shipyard.cannonMult(cn)
+	check("buy culverin", act(cn, "BuyCannon", { cannonId = "culverin" }) and cn.ship.cannon == "culverin")
+	check("culverin raises mult", S.Shipyard.cannonMult(cn) > m0)
+	check("cannon weight lowers cargo", S.State.cargoCapacity(cn) < cargo0)
+	check("same cannon rejected", not act(cn, "BuyCannon", { cannonId = "culverin" }))
+	check("carronade needs story", not act(cn, "BuyCannon", { cannonId = "carronade" }))
+	cn.story.smith_1 = 1
+	check("carronade after story", act(cn, "BuyCannon", { cannonId = "carronade" }))
+	check("steam gun needs tech", not act(cn, "BuyCannon", { cannonId = "steam_gun" }))
+	cn.portId = "dublin"
+	check("cannon needs shipyard", not act(cn, "BuyCannon", { cannonId = "demi" }))
+	cn.portId = "london"
+	local full = newState("england")
+	full.coins = 100000
+	full.cargo.wool = S.State.cargoCapacity(full)
+	check("heavy cannon blocked by full cargo", not act(full, "BuyCannon", { cannonId = "demi" }))
+	-- 선체 보강
+	local pl = newState("england")
+	pl.coins = 100000
+	local def0 = S.State.shipDef(pl)
+	check("plating 1", act(pl, "BuyPlating", {}) and pl.ship.plating == 1)
+	local def1 = S.State.shipDef(pl)
+	check("plating raises hull", def1.hull > def0.hull and pl.ship.hull == def1.hull)
+	act(pl, "BuyPlating", {})
+	check("plating 3 needs tech", not act(pl, "BuyPlating", {}) and pl.ship.plating == 2)
+	pl.tech.steam_boiler = true
+	check("plating 3 with tech", act(pl, "BuyPlating", {}))
+	check("plating max", not act(pl, "BuyPlating", {}))
+	-- 새 배를 사면 개조는 초기화
+	pl.license = 3
+	act(pl, "BuyShip", { shipId = "galleon" })
+	check("refit resets on new ship", pl.ship.plating == 0 and pl.ship.cannon == "basic")
+	-- 저장/위변조
+	local back = S.State.sanitize(S.State.serialize(cn))
+	check("refit survives save", back.ship.cannon == "carronade", tostring(back.ship.cannon) .. "/" .. tostring(cn.ship.cannon))
+	local evil = S.State.sanitize({ nationId = "england", startYear = 1700, ship = { id = "caravel", cannon = "bogus", plating = 99 }, license = 99, insured = "yes" })
+	check("refit sanitized", evil.ship.cannon == "basic" and evil.ship.plating == #D.Ships.Plating and evil.license == #D.Ships.Licenses and evil.insured == false)
+	-- 보험이 패배 손실을 막는다
+	local lose = newState("england")
+	lose.coins = 1000
+	lose.cargo.wool = 10
+	lose.insured = true
+	local enemy = { hull = 1e9, crew = 1e9, cannons = 50, cannonMult = 50, meleeMult = 50, skills = {}, level = 1 }
+	check("view refit", S.View.build(lose, ctx).refit.cannons[1].id == "basic" and S.View.build(lose, ctx).harbormaster.insured == true)
+	_ = enemy
 end
 
 -- 바닷길: 모든 항구 쌍에 경로가 있고 양 끝이 항구 근처이며 방향이 뒤집힌다

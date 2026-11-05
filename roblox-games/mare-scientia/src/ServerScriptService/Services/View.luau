@@ -130,7 +130,9 @@ return function(D, S)
 				cannons = s.cannons,
 				crew = s.crew,
 				summary = s.summary,
-				locked = locked,
+				class = s.class,
+				className = D.Ships.ClassNames[s.class],
+				locked = locked or (if s.class >= 2 and state.license < s.class - 1 then "면허 필요: " .. D.Ships.Licenses[s.class - 1].name else nil),
 				owned = (s.id == state.ship.id),
 			})
 		end
@@ -304,7 +306,7 @@ return function(D, S)
 			S.Facility.accrue(state)
 			S.Facility.contractExpired(state)
 			view.facilities = {}
-			for _, kind in { "bank", "guild", "palace" } do
+			for _, kind in { "bank", "guild", "palace", "harbormaster" } do
 				if D.Facilities.has(kind, port.id) then
 					table.insert(view.facilities, kind)
 				end
@@ -355,6 +357,28 @@ return function(D, S)
 					end
 				end
 			end
+		end
+
+		do
+			local base = D.Ships.Ships[state.ship.id]
+			view.refit = { class = base.class, className = D.Ships.ClassNames[base.class], cannons = {}, cannonId = state.ship.cannon, plating = state.ship.plating }
+			for _, c in D.Ships.Cannons do
+				table.insert(view.refit.cannons, {
+					id = c.id, name = c.name, price = c.price, mult = c.mult, weight = c.weight, summary = c.summary,
+					owned = c.id == state.ship.cannon, locked = S.Shipyard.cannonBlock(state, c),
+				})
+			end
+			local nextPl = D.Ships.Plating[state.ship.plating + 1]
+			if nextPl then
+				view.refit.nextPlating = { name = nextPl.name, price = nextPl.price, hull = nextPl.hull, weight = nextPl.weight, locked = S.Shipyard.plateBlock(state, state.ship.plating + 1) }
+			end
+			local lic = D.Ships.Licenses[state.license + 1]
+			view.harbormaster = {
+				license = if state.license > 0 then D.Ships.Licenses[state.license].name else nil,
+				nextLicense = if lic then { name = lic.name, fame = lic.fame, fee = lic.fee } else nil,
+				insured = state.insured,
+				insurancePrice = S.Facility.insurancePrice(state),
+			}
 		end
 
 		view.lastBattle = state.lastBattle

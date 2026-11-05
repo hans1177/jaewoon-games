@@ -27,6 +27,9 @@ return function(D, S)
 		if def.techReq and not state.tech[def.techReq] then
 			return false, "연구가 필요해요: " .. D.Tech.Tech[def.techReq].name
 		end
+		if def.class >= 2 and state.license < def.class - 1 then
+			return false, string.format("항만청 면허가 필요해요: %s", D.Ships.Licenses[def.class - 1].name)
+		end
 		local old = S.State.shipDef(state)
 		local net = def.price - math.floor(old.price * TRADE_IN_RATE)
 		if net > state.coins then
@@ -41,8 +44,90 @@ return function(D, S)
 			hull = def.hull,
 			crew = math.min(state.ship.crew, def.crew),
 			supplies = state.ship.supplies,
+			cannon = "basic",
+			plating = 0,
 		}
 		return true, string.format("%s 인수 (-%d)", def.name, net)
+	end
+
+	-- 현재 개조가 주는 대포 위력 보너스
+	local function cannonMult(state)
+		local c = D.Ships.CannonById[state.ship.cannon or "basic"]
+		return if c then c.mult else 0
+	end
+
+	local function cannonBlock(state, c)
+		if c.techReq and not state.tech[c.techReq] then
+			return "연구 필요: " .. D.Tech.Tech[c.techReq].name
+		end
+		if c.storyReq and not state.story[c.storyReq] then
+			return "이야기 필요"
+		end
+		return nil
+	end
+
+	local function plateBlock(state, level)
+		local pl = D.Ships.Plating[level]
+		if pl and pl.techReq and not state.tech[pl.techReq] then
+			return "연구 필요: " .. D.Tech.Tech[pl.techReq].name
+		end
+		return nil
+	end
+
+	function handlers.BuyCannon(state, p)
+		if not currentPort(state).shipyard then
+			return false, "이 항구에는 조선소가 없어요"
+		end
+		local c = type(p.cannonId) == "string" and D.Ships.CannonById[p.cannonId]
+		if not c then
+			return false, "잘못된 요청"
+		end
+		if (state.ship.cannon or "basic") == c.id then
+			return false, "이미 장착했어요"
+		end
+		local block = cannonBlock(state, c)
+		if block then
+			return false, block
+		end
+		local old = D.Ships.CannonById[state.ship.cannon or "basic"]
+		local net = c.price - math.floor(old.price * 0.5)
+		if net > state.coins then
+			return false, string.format("코인이 부족해요 (필요 %d)", net)
+		end
+		local newDef = D.Ships.refit(D.Ships.Ships[state.ship.id], c.id, state.ship.plating)
+		if S.State.cargoUsed(state) > S.State.cargoCapacityFor(state, newDef) then
+			return false, "대포가 무거워 화물이 넘쳐요. 화물을 먼저 비워 주세요"
+		end
+		state.coins -= math.max(0, net)
+		state.ship.cannon = c.id
+		return true, string.format("%s 장착 (-%d)", c.name, math.max(0, net))
+	end
+
+	function handlers.BuyPlating(state)
+		if not currentPort(state).shipyard then
+			return false, "이 항구에는 조선소가 없어요"
+		end
+		local level = (state.ship.plating or 0) + 1
+		local pl = D.Ships.Plating[level]
+		if not pl then
+			return false, "이미 최고 단계예요"
+		end
+		local block = plateBlock(state, level)
+		if block then
+			return false, block
+		end
+		if pl.price > state.coins then
+			return false, string.format("코인이 부족해요 (필요 %d)", pl.price)
+		end
+		local newDef = D.Ships.refit(D.Ships.Ships[state.ship.id], state.ship.cannon, level)
+		if S.State.cargoUsed(state) > S.State.cargoCapacityFor(state, newDef) then
+			return false, "보강으로 무거워져 화물이 넘쳐요. 화물을 먼저 비워 주세요"
+		end
+		local oldDef = S.State.shipDef(state)
+		state.coins -= pl.price
+		state.ship.plating = level
+		state.ship.hull += newDef.hull - oldDef.hull
+		return true, string.format("%s 완료 (-%d)", pl.name, pl.price)
 	end
 
 	local function cost(state, base)
@@ -94,6 +179,9 @@ return function(D, S)
 
 	return {
 		handlers = handlers,
+		cannonMult = cannonMult,
+		cannonBlock = cannonBlock,
+		plateBlock = plateBlock,
 		REPAIR_COST = REPAIR_COST,
 		HIRE_COST = HIRE_COST,
 		SUPPLY_COST = SUPPLY_COST,
