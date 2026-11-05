@@ -66,6 +66,19 @@ gui.Name = "MareScientiaGui"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
+-- 전체 화면 장면(항해 연출, 이야기, 카드 상세)은 별도 ScreenGui에 띄운다.
+-- 같은 화면에 두면 ZIndex 규칙 때문에 장면의 그림이 배경 뒤로 숨는 문제가 있었다.
+local function overlayGui(name, order)
+	local g = Instance.new("ScreenGui")
+	g.Name = name
+	g.ResetOnSpawn = false
+	g.IgnoreGuiInset = true
+	g.DisplayOrder = order
+	g.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	g.Parent = player:WaitForChild("PlayerGui")
+	return g
+end
+
 -- UI 도우미 ---------------------------------------------------------------
 
 local function corner(obj, radius)
@@ -261,6 +274,10 @@ end
 
 local RunService = game:GetService("RunService")
 
+local function hypot(a, b) -- Luau에는 math.hypot이 없다
+	return math.sqrt(a * a + b * b)
+end
+
 local function mkBox(parent, pos, size, color, alpha)
 	local f = Instance.new("Frame")
 	f.Position = pos
@@ -296,7 +313,9 @@ local function playVoyage(fromName, toName, days, steam, path)
 	overlay.BackgroundColor3 = Color3.fromRGB(120, 180, 225)
 	overlay.BorderSizePixel = 0
 	overlay.ZIndex = 50
-	overlay.Parent = gui
+	local layer = overlayGui("Overlay", 20)
+	overlay.Parent = layer
+	overlay.Destroying:Connect(function() task.defer(function() layer:Destroy() end) end)
 
 	-- 하늘 위쪽, 바다 아래쪽
 	mkBox(overlay, UDim2.fromScale(0, 0.5), UDim2.fromScale(1, 0.5), Color3.fromRGB(34, 96, 150))
@@ -376,7 +395,7 @@ local function playVoyage(fromName, toName, days, steam, path)
 	drawLand(inset)
 	local cum, total = { 0 }, 0
 	for i = 1, #path - 1 do
-		total += math.hypot((path[i + 1][1] - path[i][1]), (path[i + 1][2] - path[i][2]) * 0.66)
+		total += hypot((path[i + 1][1] - path[i][1]), (path[i + 1][2] - path[i][2]) * 0.66)
 		cum[i + 1] = total
 		for kk = 0, 6 do
 			local f = kk / 6
@@ -484,7 +503,15 @@ local function sail(portId)
 	end
 	local result = call("Sail", { portId = portId })
 	if result and result.ok then
-		playVoyage(from, view.player.portName, days, steam, SeaRoutes.path(fromId, portId, PortData.Ports))
+		local ok, err = pcall(playVoyage, from, view.player.portName, days, steam, SeaRoutes.path(fromId, portId, PortData.Ports))
+		if not ok then
+			warn("[Game] voyage scene error:", err)
+			for _, g in player.PlayerGui:GetChildren() do
+				if g.Name == "Overlay" then
+					g:Destroy()
+				end
+			end
+		end
 	end
 end
 
@@ -580,7 +607,9 @@ local function playStory(ev)
 	overlay.BackgroundColor3 = Color3.new(0, 0, 0)
 	overlay.BorderSizePixel = 0
 	overlay.ZIndex = 60
-	overlay.Parent = gui
+	local layer = overlayGui("Overlay", 20)
+	overlay.Parent = layer
+	overlay.Destroying:Connect(function() task.defer(function() layer:Destroy() end) end)
 	local picture = mkBox(overlay, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.56), Color3.new(0, 0, 0))
 	picture.ClipsDescendants = true
 	paintScene(picture, ev.art)
@@ -601,8 +630,8 @@ local function playStory(ev)
 
 	local chapter = Instance.new("TextLabel")
 	chapter.BackgroundTransparency = 1
-	chapter.Position = UDim2.fromOffset(12, 8)
-	chapter.Size = UDim2.new(1, -24, 0, 22)
+	chapter.Position = UDim2.fromOffset(110, 14)
+	chapter.Size = UDim2.new(1, -122, 0, 22)
 	chapter.Font = Enum.Font.GothamBold
 	chapter.TextSize = 15
 	chapter.TextXAlignment = Enum.TextXAlignment.Left
@@ -743,6 +772,9 @@ end
 local function add(builder)
 	local obj = builder()
 	obj.LayoutOrder = nextOrder()
+	if obj.Parent == nil then
+		obj.Parent = content -- 직접 만든 프레임(지도, 카드 격자)도 목록에 넣는다
+	end
 	return obj
 end
 
@@ -1115,7 +1147,9 @@ local function showCardDetail(card)
 	overlay.Text = ""
 	overlay.AutoButtonColor = false
 	overlay.ZIndex = 40
-	overlay.Parent = gui
+	local layer = overlayGui("Overlay", 20)
+	overlay.Parent = layer
+	overlay.Destroying:Connect(function() task.defer(function() layer:Destroy() end) end)
 	local box = Instance.new("Frame")
 	box.AnchorPoint = Vector2.new(0.5, 0.5)
 	box.Position = UDim2.fromScale(0.5, 0.5)
@@ -1467,13 +1501,12 @@ local function renderMap()
 	local function mapY(lat) return (Geo.latMax - lat) / (Geo.latMax - Geo.latMin) end
 	add(function()
 		local frame = Instance.new("Frame")
-		frame.Size = UDim2.new(1, 0, 0, 300)
+		-- 지도 비율(가로/세로)에 맞춰 높이를 직접 정한다 (UIAspectRatioConstraint는 스크롤 목록 안에서 높이가 0이 됐다)
+		local mapW = math.max(200, content.AbsoluteSize.X - 10)
+		frame.Size = UDim2.new(1, -6, 0, math.floor(mapW / ((Geo.cols * cosLat) / Geo.rows)))
 		frame.BackgroundColor3 = Color3.fromRGB(38, 82, 120)
 		frame.BorderSizePixel = 0
 		frame.ClipsDescendants = true
-		local ratio = Instance.new("UIAspectRatio")
-		ratio.AspectRatio = (Geo.cols * cosLat) / Geo.rows
-		ratio.Parent = frame
 		drawLand(frame)
 		-- 해역 이름
 		for _, sea in SEA_NAMES do
@@ -1494,7 +1527,7 @@ local function renderMap()
 			local path = SeaRoutes.path(view.player.portId, selectedPort, PortData.Ports)
 			for i = 1, #path - 1 do
 				local a, b = path[i], path[i + 1]
-				local steps = math.max(1, math.floor(math.hypot(b[1] - a[1], b[2] - a[2]) / 0.35))
+				local steps = math.max(1, math.floor(hypot(b[1] - a[1], b[2] - a[2]) / 0.35))
 				for k = 0, steps do
 					local t = k / steps
 					local dotm = Instance.new("Frame")
