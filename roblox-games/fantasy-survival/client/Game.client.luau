@@ -2892,11 +2892,17 @@ local learnB=CommonUI.CreatePrimaryButton({name="SkillNodeLearnB",text="B 분기
 learnB.Position=UDim2.new(.5,4,0,111);learnB.Size=UDim2.new(.5,-12,0,42)
 learnB.Parent=detail
 local nodeQuick=CommonUI.CreatePrimaryButton({name="SkillNodeQuick",text="퀵슬롯 등록",minHeight=42})
-nodeQuick.Position=UDim2.new(0,8,0,160);nodeQuick.Size=UDim2.new(.5,-12,0,42)
+nodeQuick.Position=UDim2.new(0,8,0,160);nodeQuick.Size=UDim2.new(1/3,-10,0,42)
 nodeQuick.BackgroundColor3=Color3.fromRGB(46,86,98);nodeQuick.Parent=detail
 local nodeUse=CommonUI.CreatePrimaryButton({name="SkillNodeUse",text="바로 사용",minHeight=42})
-nodeUse.Position=UDim2.new(.5,4,0,160);nodeUse.Size=UDim2.new(.5,-12,0,42)
+nodeUse.Position=UDim2.new(1/3,2,0,160);nodeUse.Size=UDim2.new(1/3,-6,0,42)
 nodeUse.BackgroundColor3=Color3.fromRGB(107,70,45);nodeUse.Parent=detail
+local nodePreview=CommonUI.CreatePrimaryButton({name="SkillNodePreview",text="미리보기",minHeight=42})
+nodePreview.Position=UDim2.new(2/3,0,0,160);nodePreview.Size=UDim2.new(1/3,-8,0,42)
+nodePreview.BackgroundColor3=Color3.fromRGB(70,60,104);nodePreview.Parent=detail
+nodePreview.Activated:Connect(function()
+  if selectedNode and meadowActionButtons.previewById then meadowActionButtons.previewById(selectedNode.Id) end
+end)
 nodeQuick.Activated:Connect(function()
   if selectedNode and meadowActionButtons.quickById then meadowActionButtons.quickById(selectedNode.Id) end
 end)
@@ -3008,7 +3014,7 @@ renderTree=function()
       "\n최종 강화: "..branchText..(rank==3 and " · 선택 "..choice or "")
     local isActive=node.Kind=="ACTIVE"
     local learned=rank>0
-    nodeQuick.Visible=isActive;nodeUse.Visible=isActive
+    nodeQuick.Visible=isActive;nodeUse.Visible=isActive;nodePreview.Visible=isActive
     nodeQuick.Text=learned and "퀵슬롯 등록" or "잠김";nodeUse.Text=learned and "바로 사용" or "잠김"
     nodeQuick.Active=learned;nodeUse.Active=learned
     learnA.Visible=true;learnB.Visible=rank==2
@@ -3226,9 +3232,8 @@ do
   preview.BackgroundColor3=Color3.fromRGB(70,60,104);preview.Parent=skillDetail
   local serial=9000000
   local running=false
-  preview.Activated:Connect(function()
-    if running or not selectedSkill then return end
-    local action=selectedSkill
+  local function runPreview(action)
+    if running or not action then return end
     running=true
     meadowArt.sfx("click",.4,1)
     meadowMenu.close()
@@ -3247,7 +3252,13 @@ do
         pcall(function() meadowMenu.open(7) end)
       end)
     end)
-  end)
+  end
+  preview.Activated:Connect(function() runPreview(selectedSkill) end)
+  meadowActionButtons.previewById=function(id)
+    for _,row in ipairs(skillRows) do
+      if row.action.Id==id then selectedSkill=row.action;runPreview(row.action);return end
+    end
+  end
 end
 -- [스킬창 장착칸] 하단 다섯 칸과 같은 저장 값을 사용한다.
 do
