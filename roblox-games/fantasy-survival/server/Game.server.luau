@@ -2229,11 +2229,76 @@ local function createMeadowVillage()
       skin=Color3.fromRGB(201,157,126),cloth=Color3.fromRGB(95,103,123),pants=Color3.fromRGB(62,70,81),
       patrolOffsets={Vector3.new(6,0,-15),Vector3.new(-8,0,6),Vector3.zero}},
   }
+  -- [마을 사람들] 퀘스트와 무관한 생활 NPC. 말을 걸 때마다 다른 대사가 돌아가며 나오고
+  -- 렌스기사단·카인 이야기와 마을 사건의 소문을 흘린다. 보상·진행도·저장에는 영향이 없다.
+  local ambientLines={
+    Innkeeper={"여관주인 돌라",{
+      "어서 와. 오늘 밤 묵을 거면 방이 있어. 요즘은 손님이 통 없지만.",
+      "저 기사단 깃발을 알아보는 손님이 가끔 와. 다들 말없이 한참 보다 가더라.",
+      "밤마다 우물 쪽에서 박쥐 소리가 들린다던데, 경비병 아린이 잘 알 거야."}},
+    Smith={"대장장이 브란",{
+      "검이 무뎌졌으면 가져와. 기억은 못 벼려도 칼날은 벼릴 수 있지.",
+      "숲 늑대 털이 대장간 앞까지 날려 와. 서쪽 길은 조심해.",
+      "렌스기사단 문장이 새겨진 칼자루를 여러 번 고쳤어. 누구 것인지는 기억이 안 나."}},
+    Farmer={"농부 하르",{
+      "올해는 곡식 자루가 자꾸 사라져. 수레가 습격당한 뒤로는 더 그래.",
+      "동쪽 숲에서 밤마다 날개 소리가 나. 가축이 겁먹었어.",
+      "촌장 나린은 우리 모두에게 일을 나눠 줘. 기억을 잃어도 하루는 계속되니까."}},
+    Baker={"제빵사 펠",{
+      "갓 구운 빵이야. 배고프면 마을 광장 근처에서 약초도 구할 수 있어.",
+      "길 잃은 사람들이 이 마을로 흘러와. 너처럼 이름밖에 기억 못 하는 사람도 있지.",
+      "약초상 미라가 열병 걸린 아이 얘기를 했어. 그 약초가 사라졌다더라."}},
+    Child={"아이 토리",{
+      "깃발 있는 아저씨 알아! 아니, 그냥 낡은 깃발이야.",
+      "촌장님이 그러는데 숲에는 이름 없는 기사들이 아직 있대.",
+      "우물 근처에서 이상한 불빛 봤어. 비밀이야!"}},
+    Keeper={"창고지기 마르",{
+      "곡물 창고는 내가 지켜. 도적단 표식이 수레 근처에 떨어져 있었어.",
+      "서쪽 초원 늑대가 길목을 막고 있어. 보급이 끊긴 지 며칠째야.",
+      "렌스, 닉, 미나... 그 이름들, 어디서 들어본 것 같은데."}},
+  }
+  local ambientSpecs={
+    {id="Innkeeper",name="여관주인 돌라",role="AMBIENT",location=Vector3.new(70,5,-110),
+      skin=Color3.fromRGB(214,171,138),cloth=Color3.fromRGB(139,84,62),pants=Color3.fromRGB(74,60,52),
+      patrolOffsets={Vector3.new(-6,0,3),Vector3.new(5,0,-4),Vector3.zero}},
+    {id="Smith",name="대장장이 브란",role="AMBIENT",location=Vector3.new(-80,5,-190),
+      skin=Color3.fromRGB(186,142,112),cloth=Color3.fromRGB(78,78,86),pants=Color3.fromRGB(60,56,52),
+      patrolOffsets={Vector3.new(5,0,6),Vector3.new(-4,0,-5),Vector3.zero}},
+    {id="Farmer",name="농부 하르",role="AMBIENT",location=Vector3.new(160,5,-276),
+      skin=Color3.fromRGB(205,160,126),cloth=Color3.fromRGB(150,126,84),pants=Color3.fromRGB(88,72,56),
+      patrolOffsets={Vector3.new(8,0,-6),Vector3.new(-6,0,5),Vector3.zero}},
+    {id="Baker",name="제빵사 펠",role="AMBIENT",location=Vector3.new(160,5,-186),
+      skin=Color3.fromRGB(224,182,150),cloth=Color3.fromRGB(226,214,190),pants=Color3.fromRGB(96,80,66),
+      patrolOffsets={Vector3.new(-5,0,5),Vector3.new(6,0,-3),Vector3.zero}},
+    {id="Child",name="아이 토리",role="AMBIENT",location=Vector3.new(12,5,-140),
+      skin=Color3.fromRGB(226,184,152),cloth=Color3.fromRGB(88,128,160),pants=Color3.fromRGB(90,80,70),
+      patrolOffsets={Vector3.new(10,0,8),Vector3.new(-10,0,4),Vector3.new(0,0,-9),Vector3.zero}},
+    {id="Keeper",name="창고지기 마르",role="AMBIENT",location=Vector3.new(-165,5,-262),
+      skin=Color3.fromRGB(196,152,120),cloth=Color3.fromRGB(104,96,72),pants=Color3.fromRGB(70,64,56),
+      patrolOffsets={Vector3.new(6,0,5),Vector3.new(-5,0,-4),Vector3.zero}},
+  }
+  local ambientTalk={}
+  for _,spec in ipairs(ambientSpecs) do
+    -- 지형 높이에 맞춰 발을 땅에 붙인다(앵커 NPC가 떠 있거나 묻히지 않게).
+    local rp=RaycastParams.new()
+    rp.FilterType=Enum.RaycastFilterType.Include
+    rp.FilterDescendantsInstances={meadowTerrain}
+    local hit=workspace:Raycast(Vector3.new(spec.location.X,80,spec.location.Z),Vector3.new(0,-160,0),rp)
+    if hit then spec.location=Vector3.new(spec.location.X,hit.Position.Y+3.1,spec.location.Z) end
+    villagers[#villagers+1]=spec
+  end
   local readyCount=0
   for _,spec in ipairs(villagers) do
     local npc=villageNativeNpc(spec)
     if npc then
-      local callback=spec.role=="ELDER" and villageBoardDialogue
+      local callback=spec.role=="AMBIENT" and function(player)
+          local row=ambientLines[spec.id]
+          local n=((ambientTalk[player] or {})[spec.id] or 0)%#row[2]+1
+          ambientTalk[player]=ambientTalk[player] or {}
+          ambientTalk[player][spec.id]=n
+          villageDialogue(player,row[1],row[2][n])
+        end
+        or spec.role=="ELDER" and villageBoardDialogue
         or spec.role=="HERBALIST" and function(player) villageInvestigate(player,1,spec.name) end
         or spec.role=="TRACKER" and function(player) villageInvestigate(player,2,spec.name) end
         or function(player) villageInvestigate(player,3,spec.name) end
