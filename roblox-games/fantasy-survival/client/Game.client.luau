@@ -7693,7 +7693,7 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   local swordStage=0
   if swordProfile then
     swordStage=(swordComboCharacter==character and swordComboProfile==profile
-      and os.clock()-swordComboAt<=1.15) and (swordComboStage%3+1) or 1
+      and os.clock()-swordComboAt<=1.15) and (swordComboStage%math.clamp(player:GetAttribute("MeadowComboMax") or 1,1,5)+1) or 1
   end
   local martialTrack=profile=="UNARMED" and martialSkillTracks[approvedScope] or nil
   local selectedRushStage=0
@@ -7714,7 +7714,7 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
     local routeOk,route=pcall(combatMotionSource.CreateCombatCombo,profile)
     if not routeOk or not route or #route.steps==0 then return end
     if swordProfile and #route.steps<3 then return end
-    chosenMoves[1]=route.steps[swordProfile and swordStage or ((approvedIndex-1)%#route.steps+1)].id
+    chosenMoves[1]=route.steps[swordProfile and ((swordStage-1)%3+1) or ((approvedIndex-1)%#route.steps+1)].id
   end
   -- 공용 CreateCombatCombo는 불변 객체다. 기존 맨손 5타와 검 1타별 포즈를 재사용한다.
   local ok,combo=pcall(combatMotionSource.CreateCombatCombo,
@@ -8186,12 +8186,12 @@ RunService.PreSimulation:Connect(function(dt)
       if host and host:IsA("BasePart") then
         local style=activeCombatMartialTrack
         local color=style and style.color or swordSwing and
-          (swordComboStage==3 and Color3.fromRGB(255,221,174) or Color3.fromRGB(195,214,219))
+          (swordComboStage>=5 and Color3.fromRGB(255,120,90) or swordComboStage>=3 and Color3.fromRGB(255,221,174) or Color3.fromRGB(195,214,219))
           or (leg and Color3.fromRGB(124,245,220) or Color3.fromRGB(255,207,112))
         local ok,_,controller=pcall(combatVFX.AttachShortTrail,host,{
           color=color,lifetime=nativeTouchEnabled and .19 or .32,
-          width=style and style.trailWidth or swordSwing and .52 or (nativeTouchEnabled and .6 or .76),
-          length=style and 3.2 or swordSwing and (swordComboStage==3 and 2.8 or 1.9) or 1.3,
+          width=style and style.trailWidth or swordSwing and (.4+swordComboStage*.12) or (nativeTouchEnabled and .6 or .76),
+          length=style and 3.2 or swordSwing and (({1.5,1.9,2.4,2.9,4.2})[math.clamp(swordComboStage,1,5)]) or 1.3,
         })
         if ok and controller then activeStrikeTrail=controller end
       end

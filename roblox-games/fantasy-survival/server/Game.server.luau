@@ -70,6 +70,7 @@ local CurrentWave = 0
 local WaveState = "OPEN_WORLD"
 local worldClock = 0
 local attackCooldown = {}
+local comboChain = {}
 local MAX_ENEMIES = 22
 local nextEncounterCheck = 0
 -- [지역 서식지] 마을 내부의 늑대를 외곽 숲으로 이동하고 골렘 출현 지점을 제거한다.
@@ -2034,7 +2035,7 @@ local meadowRpg=(function()
     Accessory="MeadowEquipAccessory"}
   local talents={Martial="MeadowTalentMartial",Signs="MeadowTalentSigns",
     Defense="MeadowTalentDefense",Agility="MeadowTalentAgility"}
-  local talentMax={Agility=5} -- 회피는 5단, 나머지 계열은 3단.
+  local talentMax={Agility=5,Martial=5} -- 회피·검술은 5단, 나머지 계열은 3단.
   local gearById,tonicById={},{}
   for index,item in ipairs(items)do gearById[item.Id]={entry=item,index=index} end
   for _,item in ipairs(tonics)do tonicById[item.Id]=item end
@@ -2055,7 +2056,7 @@ local meadowRpg=(function()
         defense+=item.Defense or 0
       end
     end
-    return attack+math.clamp(readNumber(player,"MeadowTalentMartial",0),0,3),
+    return attack+math.clamp(readNumber(player,"MeadowTalentMartial",0),0,5),
       defense+math.clamp(readNumber(player,"MeadowTalentDefense",0),0,3)
   end
   local function publishStats(player)
@@ -3369,7 +3370,27 @@ local function attackEnemy(player)
   end
   local weaponTier=readNumber(player,"WeaponTier",0)
   local damage=math.floor(16+meadowProficiencyPower(player)+weaponTier*8)
-  return applyMeadowDamage(player,target,damage),true
+  -- [연타 단계] 검술을 찍은 만큼만 연타가 깊어진다: 점수 0~1=1단, 2=2단 … 5=5단.
+  -- 1단은 단순 타격, 5단은 주변 적까지 베는 화려한 마무리.
+  local rank=math.clamp(readNumber(player,"MeadowTalentMartial",0),0,5)
+  local cap=1+math.floor(rank*.8)
+  local chain=comboChain[player]
+  local stage=(chain and now-chain.at<=1.3) and (chain.stage%cap+1) or 1
+  if stage>cap then stage=1 end
+  comboChain[player]={stage=stage,at=now}
+  player:SetAttribute("MeadowComboStage",stage)
+  player:SetAttribute("MeadowComboMax",cap)
+  local mult=({1,1.1,1.25,1.45,2.1})[stage]
+  local hit=applyMeadowDamage(player,target,math.floor(damage*mult))
+  if stage>=5 then
+    for _,other in ipairs(enemies) do
+      if other~=target and other.HP>0 and other.model.Parent
+        and (other.position-rootPart.Position).Magnitude<=11 then
+        applyMeadowDamage(player,other,math.floor(damage*mult*.6))
+      end
+    end
+  end
+  return hit,true
 end
 
 local function unarmedSkillAttack(player,staminaCost)

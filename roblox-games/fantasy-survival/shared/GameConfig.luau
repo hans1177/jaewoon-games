@@ -347,7 +347,7 @@ local Config = {
     {Id="energy_tonic",Art=34,Name="기력 영약",Category="소모품",Icon=7,Wood=4,Stone=1,Coins=8,Stamina=35,Desc="기력을 최대 35 회복해."},
   },
   MeadowTalentSchools = {
-    {Id="Martial",Name="검술",Category="무예",Desc="습득 단계마다 공격 피해 +1"},
+    {Id="Martial",Name="검술",Category="무예",Max=5,Desc="습득 단계마다 공격 피해 +1, 연타 깊이 확장(1단 단순→5단 주변 적까지 베는 마무리)"},
     {Id="Signs",Name="표식",Category="마력",Desc="습득 단계마다 마력 탄환 피해 +2"},
     {Id="Defense",Name="방호",Category="방어",Desc="습득 단계마다 받는 피해 -1"},
     {Id="Agility",Name="회피",Category="기동",Max=5,Desc="찍은 점수만큼 회피가 연속 단계로 이어지고 5단은 적 배후 도약"},

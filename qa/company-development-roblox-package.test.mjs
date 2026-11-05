@@ -2014,8 +2014,8 @@ test('마력숲 장검 3연속 검술은 독립 입력 3단계로 연결되고 �
   assert.match(client,/hasStudioAssetAtom\("MOTION","ATTACK_LIGHT_3"\)/);
   assert.match(client,/RunService.PreSimulation:Connect\(function\(dt\)/);
   assert.match(client,/os\.clock\(\)-swordComboAt<=1\.15/);
-  assert.match(client,/swordComboStage%3\+1/);
-  assert.match(client,/chosenMoves\[1\]=route\.steps\[swordProfile and swordStage/);
+  assert.match(client,/swordComboStage%math\.clamp\(player:GetAttribute\("MeadowComboMax"\) or 1,1,5\)\+1/);
+  assert.match(client,/chosenMoves\[1\]=route\.steps\[swordProfile and \(\(swordStage-1\)%3\+1\)/);
   assert.match(client,/character:SetAttribute\("NativeSwordComboStage",swordStage\)/);
   assert.match(client,/swordComboStage=0\s+swordComboAt=0\s+swordComboProfile=nil/);
   assert.match(client,/combatMotionSource\.MapCombatPoseToR15\(combatPoseTargets, combatR15Targets\)/);
@@ -2028,6 +2028,7 @@ test('마력숲 장검 3연속 검술은 독립 입력 3단계로 연결되고 �
     assert.ok(motion.includes('id="'+id+'"'));
   assert.match(server,/attackCooldown\[player\]=now\+\.42/);
   assert.match(server,/local damage=math\.floor\(16\+meadowProficiencyPower\(player\)\+weaponTier\*8\)/);
+  assert.match(server,/local cap=1\+math\.floor\(rank\*\.8\)/);
   assert.doesNotMatch(client,/Instance\.new\("Sword"\)|Instance\.new\("Shield"\)/);
 });
 
