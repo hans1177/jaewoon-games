@@ -2945,7 +2945,9 @@ end)
 -- [전투 성향] 모델 종류에 따라 공격 방식을 나눈다. mage: 원거리 마법탄·광역 폭발, rogue: 빠른 찌르기·연속 베기,
 -- 이름 있는 보스(named): 후반 충격파. 서버가 판정·피해를 소유하며 클라이언트는 연출만 한다.
 local mobStyleByModel={mage="mage",skmage="mage",witch="mage",frostfiend="mage",demon="mage",
-  rogue="rogue",roguehooded="rogue",skrogue="rogue",assassin="rogue",wasp="rogue",fox="rogue"}
+  rogue="rogue",roguehooded="rogue",skrogue="rogue",assassin="rogue",wasp="rogue",fox="rogue",
+  -- 뼈대가 없는 몸통 메시는 깡충 뛰는 몬스터로 쓴다(서버 피벗 점프).
+  goblin="hopper",goblinscout="hopper",beastman="hopper"}
 
 -- [신화 합성체] 등록된 CC0 모델 여러 개를 한 몸으로 합쳐 신화 괴물을 만든다(히드라·켄타우로스·아라크네 등).
 -- 새 도형 파츠를 만들지 않고 실제 메시 모델만 겹쳐 붙인다. 각 조각은 몸통 모델 안으로 옮겨 함께 움직인다.
@@ -3698,6 +3700,11 @@ local function animateMeadowOriginalMob(enemy,now)
     or kind=="golem" and .38 or aerial and .5 or -.18) or 0
   if kind=="bat" then leap=0 end
   movingHeight+=leap+recoil*(kind=="golem" and -.28 or .24)
+  -- [깡충 몬스터] 뼈대가 없는 몸통 모델은 통째로 튀어 오르며 이동하고, 공격 예고에 크게 도약한다.
+  if enemy.style=="hopper" then
+    local hop=math.abs(math.sin(now*5.2+enemy.spawnPosition.X*.13))
+    movingHeight=(inMotion and hop*1.15 or not attacking and hop*.12 or 0)+(attacking and .95 or 0)+recoil*.2
+  end
   local attackPitch=attacking and (kind=="wolf" and -.14
     or kind=="golem" and -.34 or aerial and -.58 or .42)
     or recoil>.02 and (kind=="golem" and .22 or aerial and .35 or -.26)*recoil or 0
