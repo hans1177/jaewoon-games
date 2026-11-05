@@ -1048,8 +1048,10 @@ return function(character,humanoid,tool,force)
   -- [실제 착용 외형] 장비 수정, 아바타 외형 로딩 및 장착 도구 교체 시에만 복제한다.
   redrawNativeAvatar(character,tool,force)
   local combatMastery=math.floor(math.max(0,tonumber(player:GetAttribute("CombatProficiency")) or 0))
-  masteryProgressLabel.Text=string.format("전투 숙련 %d  ·  다음 기술 점수까지 %d",combatMastery,50-combatMastery%50)
-  masteryProgressFill.Size=UDim2.fromScale((combatMastery%50)/50,1)
+  local earnedPoints,pointProgress,pointCost=Config.TalentPointProgress(combatMastery)
+  masteryProgressLabel.Text=pointCost>0 and string.format("전투 숙련 %d  ·  기술 점수 %d개  ·  다음까지 %d",combatMastery,earnedPoints,pointCost-pointProgress)
+    or string.format("전투 숙련 %d  ·  기술 점수 최대(%d개)",combatMastery,earnedPoints)
+  masteryProgressFill.Size=UDim2.fromScale(pointCost>0 and pointProgress/pointCost or 1,1)
   -- [숙련 카드] 이 렌더 함수가 소유하는 카드 값만 업데이트한다.
   for _,entry in ipairs(Config.Proficiencies or {}) do
     local value=proficiencyValues[entry.Key]
@@ -1838,7 +1840,8 @@ local function layoutMeadowEnergy()
   meadowExperience.Size=UDim2.fromOffset(width,8)
   meadowExperience.Position=UDim2.fromOffset(x,top+44)
   local mastery=math.max(0,tonumber(player:GetAttribute("CombatProficiency")) or 0)
-  local progress=mastery%50/50
+  local _,pointProgress,pointCost=Config.TalentPointProgress(mastery)
+  local progress=pointCost>0 and pointProgress/pointCost or 1
   meadowExpFill.Size=UDim2.fromScale(progress,1)
   meadowExpText.Text=string.format("EXP %.0f%%",progress*100)
   local visible=gui:GetAttribute("GameMenuOpen")~=true
@@ -2378,7 +2381,7 @@ local skillInfo={
   ["meadow-unarmed-kick"]={"무예","회전 발차기를 사용하는 기존 맨손 공격.",2},
   ["meadow-unarmed-elbow"]={"무예","팔꿈치와 무릎을 이용한 근접 연계 공격.",2},
 }
--- [스킬 성장] 숙련도 50마다 1점. 기존 공격·저장 구조를 변경하지 않고 계열당 3단계.
+-- [스킬 성장] 숙련 누적 곡선(첫 30, 이후 +10)으로 점수 획득. 기존 공격·저장 구조는 유지.
 local talentPanel=Instance.new("Frame")
 talentPanel.Name="WitcherTalents";talentPanel.LayoutOrder=2
 talentPanel.Size=UDim2.new(1,-8,0,446);talentPanel.BackgroundTransparency=1;talentPanel.Parent=meadowPages[7]
@@ -2492,7 +2495,7 @@ local function renderTalents()
     levels[entry]=math.clamp(tonumber(player:GetAttribute("MeadowTalent"..entry.branch.Id)) or 0,0,entry.max)
     spent+=levels[entry]
   end
-  local points=math.floor(math.max(0,tonumber(player:GetAttribute("CombatProficiency")) or 0)/50)
+  local points=Config.TalentPointProgress(tonumber(player:GetAttribute("CombatProficiency")) or 0)
   local remaining=math.max(0,points-spent)
   for _,entry in ipairs(talentButtons)do
     local level=levels[entry]
@@ -2526,7 +2529,7 @@ local function renderTalents()
       dot.Visible=remaining>0
     end
   end
-  talentHeader.Text="스킬 트리  ·  남은 기술 점수 "..remaining.."  (숙련 50마다 1점)"
+  talentHeader.Text="스킬 트리  ·  남은 기술 점수 "..remaining.."  (점수가 쌓일수록 다음 점수에 숙련이 더 필요)"
   talentPanel.Size=UDim2.new(1,-8,0,34+talentGridHeight+90+50)
 end
 for _,name in ipairs({"CombatProficiency","MeadowTalentMartial","MeadowTalentSigns",

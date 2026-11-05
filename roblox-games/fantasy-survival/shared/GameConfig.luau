@@ -187,6 +187,14 @@ local Config = {
     {Id="Defense",Name="방호",Category="방어",Desc="습득 단계마다 받는 피해 -1"},
     {Id="Agility",Name="회피",Category="기동",Max=5,Desc="찍은 점수만큼 회피가 연속 단계로 이어지고 5단은 적 배후 도약"},
   },
+  -- [기술 점수 곡선] 점수가 쌓일수록 다음 점수 비용이 커진다(첫 점수 30, 이후 +10씩, 최대 14점).
+  -- 누적 비용 5n²+25n. 트리 전체(검술3·표식3·방호3·회피5=14점)는 누적 숙련 1330, 보통 사냥 약 110마리 분량.
+  TalentPointProgress = function(mastery)
+    local m = math.max(0, mastery or 0)
+    local earned = math.min(14, math.floor((-25 + math.sqrt(625 + 20 * m)) / 10))
+    local spentCost = 5 * earned * earned + 25 * earned
+    return earned, m - spentCost, earned >= 14 and 0 or (30 + 10 * earned)
+  end,
   -- 기존 Level/XP는 저장 호환에만 남기고 신규 성장은 누적 숙련도로 기록.
   InitialState = {
     Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,

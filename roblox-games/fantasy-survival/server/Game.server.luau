@@ -2156,7 +2156,7 @@ local meadowRpg=(function()
       local rank=math.clamp(readNumber(player,key,0),0,cap)
       local spent=0
       for otherId,other in pairs(talents)do spent+=math.clamp(readNumber(player,other,0),0,talentMax[otherId] or 3) end
-      local earned=math.floor(math.max(0,readNumber(player,"CombatProficiency",0))/50)
+      local earned=Config.TalentPointProgress(readNumber(player,"CombatProficiency",0))
       if rank>=cap then feedback(player,"이미 최대 "..cap.."단계야.");return true end
       if spent>=earned then feedback(player,"남은 기술 점수가 없어.");return true end
       setNumber(player,key,rank+1)
