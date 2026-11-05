@@ -4651,7 +4651,7 @@
         "playMode": "HYBRID",
         "playModeLabel": "혼합",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-11-05T13:30:00.570Z",
+        "updatedAt": "2026-11-05T13:47:20.852Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -4795,7 +4795,7 @@
             "playMode": "HYBRID",
             "playModeLabel": "혼합",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-11-05T13:30:00.570Z",
+            "updatedAt": "2026-11-05T13:47:20.852Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -7523,6 +7523,173 @@
       "web3dRedevelopmentRequired": true
     },
     {
+      "id": "turn-rpg",
+      "name": "잃어버린 왕국",
+      "description": "사냥터 4곳과 보스 사냥터, NPC 퀘스트 11개, 장비 19종이 있는 3D 턴제 RPG",
+      "genre": [
+        "RPG",
+        "턴제",
+        "모험"
+      ],
+      "image": "assets/pwa-icon-512.png",
+      "webPath": "web-games/turn-rpg",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
+      "homepageCategory": "development-confirmed",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+      "ownerWebEntryFile": "web-games/turn-rpg/index.html",
+      "productionTarget": "ROBLOX_UNITY",
+      "selectedPlatform": "WEB",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 35,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "turn-rpg",
+          "name": "잃어버린 왕국",
+          "description": "사냥터 4곳과 보스 사냥터, NPC 퀘스트 11개, 장비 19종이 있는 3D 턴제 RPG",
+          "genres": [
+            "RPG",
+            "턴제",
+            "모험"
+          ],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/pwa-icon-512.png",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null,
+          "robloxThumbnail": null,
+          "robloxTitleArtwork": null
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_GAME_BUILD",
+          "target": "ROBLOX_UNITY",
+          "handling": "",
+          "selectedPlatform": "WEB",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/turn-rpg",
+            "archive": true,
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "",
+            "sourceTreeSha": ""
+          },
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "",
+          "runtime": {
+            "authority": "company-runtime",
+            "developmentActive": true,
+            "platform": "WEB",
+            "platformLabel": "웹",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "RPG",
+              "턴제",
+              "모험"
+            ],
+            "genreLabel": "RPG · 턴제 · 모험",
+            "subgenre": "",
+            "playMode": "",
+            "playModeLabel": "플레이 방식 미평가",
+            "latestWork": "개발 작업 정보 없음",
+            "updatedAt": "2026-11-02",
+            "status": "ACTIVE",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "developmentActive": true,
+        "platform": "WEB",
+        "platformLabel": "웹",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "RPG",
+          "턴제",
+          "모험"
+        ],
+        "genreLabel": "RPG · 턴제 · 모험",
+        "subgenre": "",
+        "playMode": "",
+        "playModeLabel": "플레이 방식 미평가",
+        "latestWork": "개발 작업 정보 없음",
+        "updatedAt": "2026-11-02",
+        "status": "ACTIVE",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "catalogOrder": 35,
+      "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
+      "web3dRedevelopmentRequired": true,
+      "ownerWebSourceRevision": "ed57759c8453bac88e32da02cdba0810b8a304e658b847ddbad8f2b18f794274",
+      "webDevelopmentResetRequired": true,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ]
+    },
+    {
       "id": "zombie-survival",
       "name": "좀비 생존기",
       "description": "하루마다 선택을 내리며 30일을 버티는 좀비 아포칼립스 생존 게임",
@@ -7575,7 +7742,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 35,
+        "catalogOrder": 36,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -7718,7 +7885,7 @@
           }
         }
       },
-      "catalogOrder": 35,
+      "catalogOrder": 36,
       "selectedPlatform": "WEB",
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
@@ -7826,7 +7993,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 36,
+        "catalogOrder": 37,
         "authority": "company-runtime",
         "identity": {
           "gameId": "bug-defense",
@@ -7939,7 +8106,7 @@
           }
         }
       },
-      "catalogOrder": 36,
+      "catalogOrder": 37,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8018,7 +8185,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 37,
+        "catalogOrder": 38,
         "authority": "company-runtime",
         "identity": {
           "gameId": "insect-survival",
@@ -8159,7 +8326,7 @@
           }
         }
       },
-      "catalogOrder": 37,
+      "catalogOrder": 38,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -8264,7 +8431,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 38,
+        "catalogOrder": 39,
         "authority": "company-runtime",
         "identity": {
           "gameId": "chess-battle",
@@ -8403,7 +8570,7 @@
           }
         }
       },
-      "catalogOrder": 38,
+      "catalogOrder": 39,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8516,7 +8683,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 39,
+        "catalogOrder": 40,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go",
@@ -8627,7 +8794,7 @@
           }
         }
       },
-      "catalogOrder": 39,
+      "catalogOrder": 40,
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8698,7 +8865,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 40,
+        "catalogOrder": 41,
         "authority": "company-runtime",
         "identity": {
           "gameId": "island-village",
@@ -8811,7 +8978,7 @@
           }
         }
       },
-      "catalogOrder": 40,
+      "catalogOrder": 41,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8891,7 +9058,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 41,
+        "catalogOrder": 42,
         "authority": "company-runtime",
         "identity": {
           "gameId": "monster-adventure",
@@ -9032,7 +9199,7 @@
           }
         }
       },
-      "catalogOrder": 41,
+      "catalogOrder": 42,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -9143,7 +9310,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 42,
+        "catalogOrder": 43,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival",
@@ -9254,7 +9421,7 @@
           }
         }
       },
-      "catalogOrder": 42,
+      "catalogOrder": 43,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -9337,7 +9504,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 43,
+        "catalogOrder": 44,
         "authority": "company-runtime",
         "identity": {
           "gameId": "medieval-defense",
@@ -9445,7 +9612,7 @@
           }
         }
       },
-      "catalogOrder": 43
+      "catalogOrder": 44
     },
     {
       "id": "territory-war",
@@ -9497,7 +9664,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 44,
+        "catalogOrder": 45,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -9636,7 +9803,7 @@
           }
         }
       },
-      "catalogOrder": 44,
+      "catalogOrder": 45,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "targetPlatform": "ROBLOX",
@@ -9699,22 +9866,6 @@
       "webPublishedSourceTreeSha": "bd1cd06ff49b156e284f3d5946e8f9d368819175",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
-    },
-    {
-      "id": "card-grid-duel",
-      "name": "card-grid-duel",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
-      "lifecycleState": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "robloxProjectPath": "roblox-games/card-grid-duel",
-      "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
-      "sourceIntake": {
-        "kind": "EXISTING_ROJO_PROJECT",
-        "designVerified": false,
-        "runtimeVerified": false,
-        "externalReleaseApproved": false
-      }
     }
   ],
   "runtimeAuthority": "company-runtime",
@@ -9724,14 +9875,14 @@
     "UNITY"
   ],
   "runtimeCounts": {
-    "canonicalGames": 44,
-    "homepageInfo": 44,
-    "normalizedGames": 44,
+    "canonicalGames": 45,
+    "homepageInfo": 45,
+    "normalizedGames": 45,
     "ownerWebAdded": 1,
-    "ownerWebUpdated": 26,
+    "ownerWebUpdated": 27,
     "ownerWebDisabled": 16,
     "runtimeCatalogAdded": 1,
-    "actualWebPlayableReconciled": 27
+    "actualWebPlayableReconciled": 28
   },
   "catalogSchemaVersion": 2,
   "normalization": {
