@@ -810,7 +810,7 @@ end
 local characterHeroName=Instance.new("TextLabel")
 characterHeroName.Name="HeroName";characterHeroName.Position=UDim2.fromOffset(144,14)
 characterHeroName.Size=UDim2.new(1,-156,0,35)
-characterHeroName.BackgroundTransparency=1;characterHeroName.Font=Enum.Font.Antique;characterHeroName.TextSize=23
+characterHeroName.BackgroundTransparency=1;characterHeroName.Font=Enum.Font.GothamBlack;characterHeroName.TextSize=22
 characterHeroName.TextColor3=meadowParchment;characterHeroName.TextXAlignment=Enum.TextXAlignment.Left
 characterHeroName.TextTruncate=Enum.TextTruncate.AtEnd;characterHeroName.Parent=characterHero
 local characterHeroSummary=Instance.new("TextLabel")
@@ -819,7 +819,33 @@ characterHeroSummary.Size=UDim2.new(1,-154,0,92)
 characterHeroSummary.BackgroundTransparency=1;characterHeroSummary.Font=Enum.Font.GothamMedium;characterHeroSummary.TextSize=13
 characterHeroSummary.TextColor3=meadowDim;characterHeroSummary.TextWrapped=true
 characterHeroSummary.TextXAlignment=Enum.TextXAlignment.Left
-characterHeroSummary.TextYAlignment=Enum.TextYAlignment.Top;characterHeroSummary.Parent=characterHero
+characterHeroSummary.TextYAlignment=Enum.TextYAlignment.Top;characterHeroSummary.Visible=false;characterHeroSummary.Parent=characterHero
+-- [능력치 카드] 흩어진 글자 대신 색 있는 4개 카드로 공격·방어·강화·보스를 보여 준다.
+local heroChips=Instance.new("Frame")
+heroChips.Name="HeroStatChips";heroChips.BackgroundTransparency=1;heroChips.Parent=characterHero
+local heroChipGrid=Instance.new("UIGridLayout")
+heroChipGrid.SortOrder=Enum.SortOrder.LayoutOrder;heroChipGrid.CellPadding=UDim2.fromOffset(6,6);heroChipGrid.Parent=heroChips
+local heroChipValues={}
+for order,spec in ipairs({{"공격",Color3.fromRGB(176,74,64)},{"방어",Color3.fromRGB(62,122,170)},
+  {"무기 강화",Color3.fromRGB(190,146,52)},{"보스",Color3.fromRGB(120,84,160)}}) do
+  local chip=Instance.new("Frame")
+  chip.Name="StatChip"..order;chip.LayoutOrder=order;chip.BackgroundColor3=spec[2];chip.BorderSizePixel=0;chip.Parent=heroChips
+  local chipCorner=Instance.new("UICorner");chipCorner.CornerRadius=UDim.new(0,9);chipCorner.Parent=chip
+  local chipEdge=Instance.new("UIStroke");chipEdge.Color=Color3.fromRGB(255,236,190);chipEdge.Transparency=.55;chipEdge.Thickness=1.5;chipEdge.Parent=chip
+  local chipShade=Instance.new("UIGradient");chipShade.Rotation=90
+  chipShade.Color=ColorSequence.new(Color3.fromRGB(255,255,255),Color3.fromRGB(120,120,120));chipShade.Parent=chip
+  local chipName=Instance.new("TextLabel")
+  chipName.BackgroundTransparency=1;chipName.Position=UDim2.fromOffset(8,3);chipName.Size=UDim2.new(1,-16,0,16)
+  chipName.Font=Enum.Font.GothamBold;chipName.TextSize=12;chipName.Text=spec[1]
+  chipName.TextColor3=Color3.fromRGB(255,244,222);chipName.TextXAlignment=Enum.TextXAlignment.Left;chipName.Parent=chip
+  local chipValue=Instance.new("TextLabel")
+  chipValue.BackgroundTransparency=1;chipValue.Position=UDim2.fromOffset(8,19);chipValue.Size=UDim2.new(1,-16,0,22)
+  chipValue.Font=Enum.Font.GothamBlack;chipValue.TextSize=18;chipValue.Text="0"
+  chipValue.TextColor3=Color3.new(1,1,1);chipValue.TextXAlignment=Enum.TextXAlignment.Left;chipValue.Parent=chip
+  local chipInk=Instance.new("UIStroke");chipInk.Color=Color3.new(0,0,0);chipInk.Thickness=1;chipInk.Transparency=.4
+  chipInk.ApplyStrokeMode=Enum.ApplyStrokeMode.Contextual;chipInk.Parent=chipValue
+  heroChipValues[order]=chipValue
+end
 -- [실제 능력치] 생명력과 기력은 서버/휴머노이드 값만 읽는다.
 local heroHealth=Instance.new("Frame")
 heroHealth.Name="CharacterHealthTrack";heroHealth.BackgroundColor3=Color3.fromRGB(44,62,57)
@@ -850,7 +876,7 @@ local function layoutNativeAvatar()
   local width=characterHero.AbsoluteSize.X
   if width<=0 then return end
   local narrow=width<440
-  characterHero.Size=UDim2.new(1,-8,0,narrow and 427 or 214)
+  characterHero.Size=UDim2.new(1,-8,0,narrow and 484 or 214)
   local avatarSize=narrow and math.min(230,width-24) or 150
   characterPortrait.Size=UDim2.fromOffset(avatarSize,narrow and 252 or 192)
   characterPortrait.Position=narrow
@@ -858,14 +884,19 @@ local function layoutNativeAvatar()
   characterViewport.Size=characterPortrait.Size
   characterViewport.Position=characterPortrait.Position
   local right=narrow and 14 or 180
-  characterHeroName.Position=UDim2.fromOffset(right,narrow and 270 or 12)
+  characterHeroName.Position=UDim2.fromOffset(right,narrow and 270 or 10)
   characterHeroName.Size=narrow and UDim2.new(1,-28,0,32) or UDim2.new(1,-196,0,30)
   characterHeroSummary.Position=UDim2.fromOffset(right,narrow and 308 or 46)
   characterHeroSummary.Size=narrow and UDim2.new(1,-28,0,46) or UDim2.new(1,-196,0,60)
-  heroHealth.Position=UDim2.fromOffset(right,narrow and 362 or 118)
-  heroHealth.Size=narrow and UDim2.new(1,-28,0,23) or UDim2.new(1,-197,0,28)
-  heroStamina.Position=UDim2.fromOffset(right,narrow and 393 or 154)
+  heroHealth.Position=UDim2.fromOffset(right,narrow and 362 or 48)
+  heroHealth.Size=narrow and UDim2.new(1,-28,0,23) or UDim2.new(1,-197,0,26)
+  heroStamina.Position=UDim2.fromOffset(right,narrow and 393 or 82)
   heroStamina.Size=heroHealth.Size
+  heroChips.Position=UDim2.fromOffset(right,narrow and 428 or 114)
+  heroChips.Size=narrow and UDim2.new(1,-28,0,44) or UDim2.new(1,-197,0,92)
+  local chipColumns=narrow and 4 or 2
+  local chipWidth=math.floor((heroChips.AbsoluteSize.X-(chipColumns-1)*6)/chipColumns)
+  heroChipGrid.CellSize=UDim2.fromOffset(math.max(40,chipWidth),narrow and 44 or 43)
 end
 characterHero:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutNativeAvatar)
 characterViewport:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
@@ -901,11 +932,11 @@ task.defer(layoutEquipment)
 local function characterEquipmentSlot(label,order,iconCell)
   local slot=Instance.new("Frame")
   slot.Name="EquipmentSlot"..order;slot.LayoutOrder=order
-  slot.Size=UDim2.new(1,-8,0,60);slot.BackgroundColor3=Color3.fromRGB(22,49,46)
+  slot.Size=UDim2.new(1,-8,0,60);slot.BackgroundColor3=Color3.fromRGB(30,62,56)
   slot.BorderSizePixel=0;slot.Parent=equipmentGrid
    local rounded=Instance.new("UICorner");rounded.CornerRadius=UDim.new(0,9);rounded.Parent=slot
   local border=Instance.new("UIStroke");border.Color=Color3.fromRGB(112,158,121)
-  border.Transparency=.25;border.Thickness=1.2;border.Parent=slot
+  border.Transparency=.1;border.Thickness=2;border.Parent=slot
   local icon=Instance.new("ImageLabel")
   icon.Name="EquipmentIcon";icon.Position=UDim2.fromOffset(8,7);icon.Size=UDim2.fromOffset(44,44)
   icon.BackgroundTransparency=1;icon.Image=meadowIconAtlas
@@ -1013,9 +1044,10 @@ return function(character,humanoid,tool,force)
   heroStaminaFill.Size=UDim2.fromScale(math.clamp(stamina/100,0,1),1)
   heroHealthText.Text=string.format("체력  %d / %d",health,maximum)
   heroStaminaText.Text=string.format("기력  %d / 100",stamina)
-  characterHeroSummary.Text=string.format("장비 공격 +%d  ·  방어 +%d\n무기 강화 +%d  ·  보스 %d",
-    player:GetAttribute("MeadowGearAttack") or 0,player:GetAttribute("MeadowGearDefense") or 0,
-    player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
+  heroChipValues[1].Text="+"..tostring(player:GetAttribute("MeadowGearAttack") or 0)
+  heroChipValues[2].Text="+"..tostring(player:GetAttribute("MeadowGearDefense") or 0)
+  heroChipValues[3].Text="+"..tostring(player:GetAttribute("WeaponTier") or 0)
+  heroChipValues[4].Text=tostring(player:GetAttribute("Bosses") or 0)
   local catalog=Config.MeadowEquipment or {}
   local function equippedName(slot)
     local index=player:GetAttribute("MeadowEquip"..slot)
@@ -1028,6 +1060,12 @@ return function(character,humanoid,tool,force)
   equippedLegs.Text=equippedName("Legs")
   equippedFeet.Text=equippedName("Feet")
   equippedAccessory.Text=equippedName("Accessory")
+  for _,label in ipairs({equippedWeapon,equippedSecondary,equippedArmor,equippedLegs,equippedFeet,equippedAccessory}) do
+    local filled=not string.find(label.Text,"비어 있음",1,true)
+    local edge=label.Parent:FindFirstChildOfClass("UIStroke")
+    if edge then edge.Color=filled and meadowGold or Color3.fromRGB(88,120,104) end
+    label.TextColor3=filled and meadowParchment or Color3.fromRGB(140,160,150)
+  end
 end
 end)()
 local previewNeedsRefresh=false
