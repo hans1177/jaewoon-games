@@ -699,6 +699,14 @@ for _,item in ipairs(Config.MeadowEquipment) do
     elseif item.Slot=="Feet" then add("Hide",t);add("BatWing",t)
     else add("Moonbloom",t);add("Crystal",t-1);add("Ectoplasm",t-3) end
   end
+  -- [위쳐·스카이림식 제작] 장비 제작은 나무·돌을 쓰지 않는다. 사냥한 몬스터 부위(가죽·송곳니·발톱·날개),
+  -- 광맥의 광석·화산석, 약초·결정으로만 만든다. 나무·돌은 시설 건설과 무기 강화에만 남긴다.
+  if not item.Starter then
+    item.Wood=nil
+    item.Stone=nil
+    -- 고급 이상 장비는 철광석 한두 개를 기본으로 더해 대장간 제작의 느낌을 준다.
+    if t and item.Slot~="Accessory" and (item.Ore or 0)==0 then item.Ore=t end
+  end
 end
 for _,tonic in ipairs(Config.MeadowConsumables) do
   if tonic.Id=="herbal_tonic" then tonic.RedLeaf=2 else tonic.Moonbloom=1;tonic.Mushroom=1 end
