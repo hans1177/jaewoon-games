@@ -77,7 +77,11 @@ local meadowOil={
   classOf={beastman="beast",wolf="beast",raptor="beast",toad="beast",chieftain="beast",yeti="beast",keltir="beast",
     spider="arachnid",fangspider="arachnid",bladespider="arachnid",
     orc="human",skullorc="human",goblin="human",goblinscout="human",tribal="human",assassin="human",
-    demon="demon",frostfiend="demon"},
+    demon="demon",frostfiend="demon",
+    fox="beast",husky="beast",bull="beast",horse="beast",stag="beast",deer="beast",donkey="beast",snake="beast",snakeangry="beast",rat="beast",wasp="arachnid",
+    mage="human",rogue="human",roguehooded="human",knight="human",barbarian="human",king="human",adventurer="human",punk="human",farmer="human",
+    witch="human",womansoldier="human",womanmedieval="human",knightchar="human",
+    skmage="demon",skwarrior="demon",skrogue="demon",skminion="demon",spiritgolem="demon"},
   kindClass={wolf="beast",bat="beast",ghost="demon",bee="arachnid"},
   names={beast="야수 오일",arachnid="거미 오일",human="인간형 오일",demon="퇴마 오일"},
   recipes={beast={{"Hide",1},{"Fang",1}},arachnid={{"Fang",1},{"Mushroom",1}},human={{"Ore",1},{"Hide",1}},demon={{"Magma",1},{"Crystal",1}}},
@@ -2945,9 +2949,7 @@ end)
 -- [전투 성향] 모델 종류에 따라 공격 방식을 나눈다. mage: 원거리 마법탄·광역 폭발, rogue: 빠른 찌르기·연속 베기,
 -- 이름 있는 보스(named): 후반 충격파. 서버가 판정·피해를 소유하며 클라이언트는 연출만 한다.
 local mobStyleByModel={mage="mage",skmage="mage",witch="mage",frostfiend="mage",demon="mage",
-  rogue="rogue",roguehooded="rogue",skrogue="rogue",assassin="rogue",wasp="rogue",fox="rogue",
-  -- 뼈대가 없는 몸통 메시는 깡충 뛰는 몬스터로 쓴다(서버 피벗 점프).
-  goblin="hopper",goblinscout="hopper",beastman="hopper"}
+  rogue="rogue",roguehooded="rogue",skrogue="rogue",assassin="rogue",wasp="rogue",fox="rogue"}
 
 -- [신화 합성체] 등록된 CC0 모델 여러 개를 한 몸으로 합쳐 신화 괴물을 만든다(히드라·켄타우로스·아라크네 등).
 -- 새 도형 파츠를 만들지 않고 실제 메시 모델만 겹쳐 붙인다. 각 조각은 몸통 모델 안으로 옮겨 함께 움직인다.
@@ -3700,11 +3702,6 @@ local function animateMeadowOriginalMob(enemy,now)
     or kind=="golem" and .38 or aerial and .5 or -.18) or 0
   if kind=="bat" then leap=0 end
   movingHeight+=leap+recoil*(kind=="golem" and -.28 or .24)
-  -- [깡충 몬스터] 뼈대가 없는 몸통 모델은 통째로 튀어 오르며 이동하고, 공격 예고에 크게 도약한다.
-  if enemy.style=="hopper" then
-    local hop=math.abs(math.sin(now*5.2+enemy.spawnPosition.X*.13))
-    movingHeight=(inMotion and hop*1.15 or not attacking and hop*.12 or 0)+(attacking and .95 or 0)+recoil*.2
-  end
   local attackPitch=attacking and (kind=="wolf" and -.14
     or kind=="golem" and -.34 or aerial and -.58 or .42)
     or recoil>.02 and (kind=="golem" and .22 or aerial and .35 or -.26)*recoil or 0
@@ -5411,22 +5408,22 @@ do
     chaos=Enum.Material.Basalt,wetland=Enum.Material.Mud,desert=Enum.Material.Sand,deadmarsh=Enum.Material.Mud}
   local zoneTier={windcliff=2,meadow=1,worldtree=3,volcano=5,oasis=6,swamp=7,citadel=9,highland=4,canyon=6,chaos=8,wetland=3,desert=6,deadmarsh=8}
   local pools={
-    windcliff={{"wolf","goblinscout","절벽 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"wolf","tribal","절벽 주술전사",4.2,1.4,{{"Moonbloom",.3},{"Ore",.3}}},{"wolf","wolf","절벽 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3}}}},
-    meadow={{"wolf",nil,nil,3.4,1},{"wolf","goblinscout","초원 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"bat",nil,nil,3.3,1}},
-    worldtree={{"wolf","beastman","저주받은 웨어울프",5.4,1.5,{{"Claw",.6},{"Hide",.7},{"Fang",.3}}},{"wolf","wolf","숲 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3}}},
+    windcliff={{"wolf","roguehooded","절벽 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"wolf","tribal","절벽 주술전사",4.2,1.4,{{"Moonbloom",.3},{"Ore",.3}}},{"wolf","wolf","절벽 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3}}}},
+    meadow={{"wolf",nil,nil,3.4,1},{"wolf","roguehooded","초원 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"bat",nil,nil,3.3,1}},
+    worldtree={{"wolf","barbarian","저주받은 웨어울프",5.4,1.5,{{"Claw",.6},{"Hide",.7},{"Fang",.3}}},{"wolf","wolf","숲 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3}}},
       {"wolf","spider","숲 거미",3,1.1,{{"Fang",.5},{"Mushroom",.3}}},{"bat",nil,nil,3.4,1}},
     volcano={{"wolf","orc","화산 오크",4.6,1.7,{{"Ore",.5},{"Hide",.6}}},{"wolf","skullorc","해골 가면 오크",4.8,1.9,{{"Ore",.5},{"Magma",.3},{"Claw",.3}}},
       {"wolf","demon","잿불 악마",5.2,2,{{"Magma",.5},{"Crystal",.3},{"Claw",.4}}},{"wolf","raptor","화산 랩터",4.4,1.5,{{"Hide",.6},{"Fang",.4},{"Claw",.4}}}},
     oasis={{"wolf","fangspider","사막 독거미",3.4,1.5,{{"Fang",.6},{"Ectoplasm",.2}}},{"wolf","bladespider","칼날 거미",3.8,1.7,{{"Fang",.5},{"Claw",.4}}},
       {"wolf","assassin","모래 암살자",4.2,1.6,{{"Claw",.5},{"Moonbloom",.2}}},{"wolf","raptor","사막 랩터",4.4,1.6,{{"Hide",.6},{"Claw",.4}}},{"bat",nil,nil,3.4,1}},
-    swamp={{"wolf","goblin","늪 고블린",3.2,1.3,{{"Ore",.3},{"Mushroom",.4}}},{"wolf","toad","독두꺼비",3,1.6,{{"Mushroom",.7},{"Hide",.3}}},
+    swamp={{"wolf","rogue","늪 고블린",3.2,1.3,{{"Ore",.3},{"Mushroom",.4}}},{"wolf","toad","독두꺼비",3,1.6,{{"Mushroom",.7},{"Hide",.3}}},
       {"wolf","tribal","늪 주술전사",4.4,1.8,{{"Moonbloom",.4},{"Ore",.3}}},{"ghost","spider","늪 원혼 거미",3.4,1.5,{{"Ectoplasm",.6},{"Fang",.3}}}},
     citadel={{"wolf","demon","성채 악마",5.4,2.3,{{"Magma",.6},{"Crystal",.4},{"Claw",.4}}},{"wolf","skullorc","성채 해골 오크",5,2.2,{{"Ore",.6},{"Magma",.3}}},
       {"wolf","orc","성채 오크 병사",4.8,2,{{"Ore",.6},{"Hide",.5}}},{"wolf","assassin","그림자 암살자",4.4,1.9,{{"Claw",.6},{"Crystal",.3}}}},
-    highland={{"wolf","yeti","고원 설인",5.6,1.7,{{"Hide",.7},{"Claw",.5}}},{"wolf","beastman","고원 늑대인간",5.2,1.6,{{"Claw",.6},{"Fang",.4}}},{"wolf","orc","고원 오크 약탈자",4.6,1.6,{{"Ore",.5},{"Hide",.5}}}},
+    highland={{"wolf","yeti","고원 설인",5.6,1.7,{{"Hide",.7},{"Claw",.5}}},{"wolf","barbarian","고원 늑대인간",5.2,1.6,{{"Claw",.6},{"Fang",.4}}},{"wolf","orc","고원 오크 약탈자",4.6,1.6,{{"Ore",.5},{"Hide",.5}}}},
     canyon={{"wolf","skullorc","협곡 해골 오크",4.8,1.9,{{"Ore",.5},{"Claw",.3}}},{"wolf","assassin","협곡 암살자",4.2,1.7,{{"Claw",.5},{"Crystal",.2}}},{"wolf","raptor","협곡 랩터",4.4,1.6,{{"Hide",.6},{"Fang",.4}}},{"wolf","bladespider","칼날 거미",3.8,1.7,{{"Fang",.5}}}},
     chaos={{"wolf","demon","혼돈의 악마",5.4,2.2,{{"Magma",.6},{"Crystal",.4}}},{"wolf","frostfiend","서리 마귀",5.4,2.1,{{"Crystal",.5},{"Claw",.4}}},{"wolf","skullorc","혼돈의 오크",5,2.1,{{"Ore",.5},{"Magma",.3}}}},
-    wetland={{"wolf","toad","습원 독두꺼비",3,1.5,{{"Mushroom",.7},{"Hide",.3}}},{"wolf","goblin","습원 고블린",3.2,1.3,{{"Mushroom",.4},{"Ore",.3}}},{"wolf","spider","습원 거미",3,1.2,{{"Fang",.5}}}},
+    wetland={{"wolf","toad","습원 독두꺼비",3,1.5,{{"Mushroom",.7},{"Hide",.3}}},{"wolf","rogue","습원 고블린",3.2,1.3,{{"Mushroom",.4},{"Ore",.3}}},{"wolf","spider","습원 거미",3,1.2,{{"Fang",.5}}}},
     desert={{"wolf","fangspider","황금 독거미",3.4,1.6,{{"Fang",.6}}},{"wolf","raptor","사막 랩터",4.4,1.6,{{"Hide",.6},{"Claw",.4}}},{"wolf","assassin","황금 암살자",4.2,1.7,{{"Claw",.5},{"Moonbloom",.3}}},{"bat",nil,nil,3.4,1}},
     deadmarsh={{"wolf","tribal","죽음의 주술전사",4.6,2,{{"Moonbloom",.5},{"Ore",.3}}},{"wolf","demon","늪의 악마",5.4,2.3,{{"Magma",.5},{"Crystal",.4}}},{"ghost","spider","죽은 늪 거미",3.4,1.6,{{"Ectoplasm",.7},{"Fang",.3}}}},
   }
@@ -5735,13 +5732,13 @@ end
 -- 일부 이정표에는 던전 입구가 있어 대륙 동쪽 밖의 지하 방(전용 몬스터·보스·보물상자)으로 들어간다.
 do
   local contracts={
-    [2]={"beastman","저주받은 사냥꾼",5.6},[3]={"spider","세계수 거미 여왕",4.6},[4]={"wolf","회색 우두머리",4.6},
-    [5]={"goblin","탑의 약탈 대장",4.2},[6]={"skullorc","재의 제단 사제",5.4},[7]={"raptor","용암 사냥꾼",5},
+    [2]={"barbarian","저주받은 사냥꾼",5.6},[3]={"spider","세계수 거미 여왕",4.6},[4]={"wolf","회색 우두머리",4.6},
+    [5]={"rogue","탑의 약탈 대장",4.2},[6]={"skullorc","재의 제단 사제",5.4},[7]={"raptor","용암 사냥꾼",5},
     [8]={"orc","광산의 광인",5},[9]={"assassin","오벨리스크의 그림자",4.8},[10]={"bladespider","사원의 수호 거미",4.6},
     [11]={"toad","안개 두꺼비 왕",4},[12]={"tribal","마녀의 하수인",5},[13]={"demon","성문의 악마",6},
     [14]={"orc","대장간의 불꽃 오크",5.6},[15]={"skullorc","초소 지휘관",5.6},[16]={"demon","옥좌의 집행자",6.6},
-    [17]={"yeti","북부 감시탑의 괴수",5.8},[18]={"skullorc","협곡 제단의 사제",5.4},[19]={"frostfiend","혼돈의 균열 마귀",5.6},[20]={"goblin","등대의 해적 두목",4.4},
-    [21]={"toad","부두의 독두꺼비 왕",4.4},[22]={"fangspider","폐허의 독거미 여왕",4.8},[23]={"tribal","사당의 늪 주술사",5.2},[24]={"beastman","옛 요새의 저주받은 기사",5.8},
+    [17]={"yeti","북부 감시탑의 괴수",5.8},[18]={"skullorc","협곡 제단의 사제",5.4},[19]={"frostfiend","혼돈의 균열 마귀",5.6},[20]={"rogue","등대의 해적 두목",4.4},
+    [21]={"toad","부두의 독두꺼비 왕",4.4},[22]={"fangspider","폐허의 독거미 여왕",4.8},[23]={"tribal","사당의 늪 주술사",5.2},[24]={"barbarian","옛 요새의 저주받은 기사",5.8},
   }
   local anchors={}
   for index,spec in ipairs(Config.WorldMap.Waypoints) do anchors[index]={spec[2],spec[3]} end
@@ -5802,7 +5799,7 @@ do
     {name="잊힌 지하묘지",entry=4,cx=8000,boss={"spiritgolem","묘지의 수문장 · 석상 골렘",8,4.5},
       mobs={"spider","fangspider","bladespider","spider","fangspider"},tier=5},
     {name="고블린 소굴",entry=8,cx=8400,boss={"orc","소굴의 왕 · 거대 오크",7,4},
-      mobs={"goblin","goblinscout","goblin","tribal","goblinscout"},tier=6},
+      mobs={"rogue","roguehooded","rogue","tribal","roguehooded"},tier=6},
     {name="심연의 제단",entry=12,cx=8800,boss={"demon","제단의 군주 · 심연 악마",8,5},
       mobs={"demon","skullorc","assassin","demon","skullorc"},tier=8},
   }
@@ -5882,7 +5879,7 @@ do
   local pois=Config.WorldMap.Pois
   local function poiBit(index) return index<=30 and "PoiFound1" or "PoiFound2",bit32.lshift(1,(index-1)%30) end
   local function lootBit(index) return index<=30 and "PoiLoot1" or "PoiLoot2",bit32.lshift(1,(index-1)%30) end
-  local guardians={windcliff="goblin",meadow="goblinscout",worldtree="beastman",volcano="skullorc",oasis="assassin",swamp="tribal",
+  local guardians={windcliff="rogue",meadow="roguehooded",worldtree="barbarian",volcano="skullorc",oasis="assassin",swamp="tribal",
     citadel="demon",highland="yeti",canyon="skullorc",chaos="demon",wetland="toad",desert="fangspider",deadmarsh="tribal"}
   local rewards={ruin={"Crystal","Ore"},cave={"Ore","Mushroom"},camp={"Hide","Fang"},shrine={"Moonbloom","Crystal"}}
   for index,poi in ipairs(pois) do
@@ -5966,11 +5963,11 @@ end
 -- [동굴 던전 6곳 · 유물] 동굴 지점마다 지역에 맞는 지하 방으로 들어간다. 보스 상자는 유물 1개를 준다(유물 수×5% 공격 피해).
 do
   local rooms={
-    {name="해적 동굴",mobs={"goblin","goblinscout","tribal"},boss={"orc","동굴 해적왕",7,3.6},zones={"windcliff","meadow"},tier=3},
-    {name="뿌리 밑 굴",mobs={"beastman","spider","wolf"},boss={"beastman","뿌리의 군주 · 거대 늑대인간",8,4},zones={"worldtree"},tier=4},
+    {name="해적 동굴",mobs={"rogue","roguehooded","tribal"},boss={"orc","동굴 해적왕",7,3.6},zones={"windcliff","meadow"},tier=3},
+    {name="뿌리 밑 굴",mobs={"barbarian","spider","wolf"},boss={"barbarian","뿌리의 군주 · 거대 늑대인간",8,4},zones={"worldtree"},tier=4},
     {name="용암 갱도",mobs={"orc","skullorc","demon"},boss={"demon","갱도의 군주 · 용암 악마",8,4.6},zones={"volcano"},tier=6},
     {name="모래 무덤",mobs={"fangspider","assassin","raptor"},boss={"raptor","무덤의 폭군 · 거대 랩터",8,4.4},zones={"oasis","desert"},tier=6},
-    {name="독 늪 동굴",mobs={"toad","goblin","spider"},boss={"toad","늪 동굴의 왕 · 거대 두꺼비",6,3.8},zones={"swamp","wetland","deadmarsh"},tier=7},
+    {name="독 늪 동굴",mobs={"toad","rogue","spider"},boss={"toad","늪 동굴의 왕 · 거대 두꺼비",6,3.8},zones={"swamp","wetland","deadmarsh"},tier=7},
     {name="혼돈의 균열 동굴",mobs={"demon","frostfiend","skullorc"},boss={"spiritgolem","균열의 수호자 · 망령 골렘",9,5},zones={"citadel","highland","canyon","chaos"},tier=9},
   }
   local roomOfZone={}
@@ -6403,10 +6400,10 @@ do
     wetland={"늪지의 대두꺼비","습원 고블린 대왕","안개 속의 포식자"},desert={"모래 폭군","황금 전갈의 주인","신기루 사냥꾼"},
     deadmarsh={"죽은 늪의 성자","썩은 숲의 왕","망령 사제"},
   }
-  local models={windcliff={"goblin","tribal","orc"},meadow={"wolf","goblinscout","beastman"},worldtree={"beastman","spider","chieftain"},
-    volcano={"skullorc","demon","orc"},oasis={"raptor","assassin","bladespider"},swamp={"tribal","toad","goblin"},
-    citadel={"orc","demon","skullorc"},highland={"yeti","beastman","orc"},canyon={"skullorc","assassin","raptor"},
-    chaos={"demon","frostfiend","skullorc"},wetland={"toad","goblin","spider"},desert={"raptor","fangspider","assassin"},
+  local models={windcliff={"rogue","tribal","orc"},meadow={"wolf","roguehooded","barbarian"},worldtree={"barbarian","spider","chieftain"},
+    volcano={"skullorc","demon","orc"},oasis={"raptor","assassin","bladespider"},swamp={"tribal","toad","rogue"},
+    citadel={"orc","demon","skullorc"},highland={"yeti","barbarian","orc"},canyon={"skullorc","assassin","raptor"},
+    chaos={"demon","frostfiend","skullorc"},wetland={"toad","rogue","spider"},desert={"raptor","fangspider","assassin"},
     deadmarsh={"tribal","demon","spider"}}
   local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
   local random=Random.new(5521)
@@ -6431,7 +6428,7 @@ end
 do
   local lords={
     windcliff={"해풍 요새의 영주 바르간","king","knight"},meadow={"붉은 깃발 대장 로크","knightchar","rogue"},
-    worldtree={"숲의 파수 영주 엘더우드","beastman","chieftain"},volcano={"홍염 기사단 잔당 카일","skullorc","orc"},
+    worldtree={"숲의 파수 영주 엘더우드","barbarian","chieftain"},volcano={"홍염 기사단 잔당 카일","skullorc","orc"},
     oasis={"사막 상단의 지배자 자파르","king","adventurer"},swamp={"늪 마녀단의 수장 모르가나","witch","farmer"},
     citadel={"몰락한 성주 아이젠","knight","skwarrior"},highland={"고원 족장 보르가","chieftain","yeti"},
     canyon={"협곡 군벌 라자크","barbarian","roguehooded"},chaos={"혼돈 사도 벨리알","mage","skmage"},
@@ -6467,13 +6464,13 @@ end
 
 -- [지역 야생 무리 · 길목 순찰] 지역마다 고유 몬스터 무리를 곳곳에 두고, 큰길에는 도적 순찰대를 둔다. 모델은 등록된 mon_*만 쓴다.
 do
-  local pools={windcliff={"goblin","goblinscout","tribal"},meadow={"wolf","fox","husky","keltir"},worldtree={"spider","wasp","fox","beastman","fangspider"},
+  local pools={windcliff={"rogue","roguehooded","tribal"},meadow={"wolf","fox","husky","keltir"},worldtree={"spider","wasp","fox","barbarian","fangspider"},
     volcano={"skullorc","demon","orc"},oasis={"raptor","bladespider","assassin"},swamp={"toad","snake","wasp","spider"},
     citadel={"orc","skullorc","demon"},highland={"yeti","wolf","bull","husky"},canyon={"skullorc","raptor","orc"},
     chaos={"demon","frostfiend","spiritgolem"},wetland={"toad","snake","rat","keltir"},desert={"snakeangry","fangspider","raptor","wasp"},
     deadmarsh={"skminion","skwarrior","spiritgolem","rat"}}
   local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
-  local labels={goblin="고블린",goblinscout="고블린 척후병",tribal="부족 전사",wolf="들늑대",keltir="켈티르",spider="거미",beastman="야수인간",fangspider="독니 거미",
+  local labels={rogue="도적",roguehooded="후드 도적",barbarian="야만인",tribal="부족 전사",wolf="들늑대",keltir="켈티르",spider="거미",fangspider="독니 거미",
     skullorc="해골 오크",demon="악마",orc="오크",raptor="랩터",bladespider="칼날거미",assassin="암살자",toad="독두꺼비",yeti="설인",frostfiend="서리 마귀",
     spiritgolem="영혼 골렘",chieftain="족장",fox="붉은 여우",husky="들개",bull="성난 황소",snake="독사",snakeangry="사막 코브라",wasp="거대 말벌",rat="역병 쥐",skminion="해골 졸개",skwarrior="해골 전사"}
   local random=Random.new(8123)
@@ -6521,7 +6518,7 @@ end
 do
   -- 구성원: {모델, 이름, 높이, hp배수, dmg배수, 드랍}
   local factions={
-    bandit={"도적단",{{"rogue","칼잡이 도적",4.8,1.2,1.3,{{"Hide",.7,2},{"Ore",.5,1}}},{"roguehooded","후드 도적",4.8,1.5,1.2,{{"Hide",.7,2}}},{"goblin","소매치기",4.2,.9,.9,{{"Ore",.6,2}}}},
+    bandit={"도적단",{{"rogue","칼잡이 도적",4.8,1.2,1.3,{{"Hide",.7,2},{"Ore",.5,1}}},{"roguehooded","후드 도적",4.8,1.5,1.2,{{"Hide",.7,2}}},{"rogue","소매치기",4.2,.9,.9,{{"Ore",.6,2}}}},
       {"king","도적 두목",7,4,1.9,{{"Crystal",1,3},{"Ore",1,3}}}},
     cult={"이단 교단",{{"farmer","이단 신도",4.8,1.1,1.1,{{"Moonbloom",.5,1}}},{"mage","피의 의식 사제",5,1.4,1.5,{{"Crystal",.6,2}}},{"orc","교단 집행자",6.2,2,1.5,{{"Hide",.7,2}}}},
       {"witch","대사제",6.5,4.5,2,{{"Crystal",1,5},{"Moonbloom",1,3}}}},
@@ -6612,6 +6609,43 @@ do
     end
   end
   workspace:SetAttribute("MythicBossCount",count)
+end
+
+-- [변종 괴물] 뼈대가 있는 모델 둘 이상을 합친 완전히 다른 몬스터. 본체의 뼈로 움직이고 덧붙인 조각은 몸에 고정된다.
+-- 지역마다 2종씩 정예로 자리 잡는다. 이름과 외형, 공격 방식(style)이 모두 다르다.
+do
+  local variants={
+    {key="twinhound",name="쌍두 사냥개 오르토스",model="wolf",height=4.8,hp=3,dmg=1.9,compose={{model="husky",height=4.4,up=.5,fwd=-.3,side=.22,yaw=10}},zones={"meadow","highland","windcliff"}},
+    {key="gargoyle",name="날개 달린 가고일 군주",model="demon",height=8,hp=4,dmg=2.2,style="mage",compose={{model="spiritgolem",height=7,up=.7,fwd=.28}},zones={"volcano","citadel","chaos"}},
+    {key="vampire",name="박쥐 날개 흡혈 와이트",model="skrogue",height=5,hp=3,dmg=2,style="rogue",compose={{model="spiritgolem",height=5,up=.65,fwd=.25}},zones={"deadmarsh","chaos","oasis"}},
+    {key="twinogre",name="쌍생 거인 에틴",model="orc",height=8,hp=4.5,dmg=2.3,compose={{model="orc",height=7,up=.5,fwd=0,side=.38,yaw=-10}},zones={"canyon","highland","citadel"}},
+    {key="forestqueen",name="사슴 탄 숲의 여왕",model="stag",height=5.6,hp=3.5,dmg=1.9,style="mage",compose={{model="witch",height=4.4,up=.4,fwd=-.1}},zones={"worldtree","wetland","meadow"}},
+    {key="bullknight",name="철갑 황소 기사",model="bull",height=5,hp=4,dmg=2.2,compose={{model="knight",height=4.2,up=.38,fwd=-.05}},zones={"windcliff","canyon","highland"}},
+    {key="wolfrider",name="늑대 기수 약탈자",model="wolf",height=4.6,hp=2.8,dmg=1.8,style="rogue",compose={{model="roguehooded",height=3.2,up=.4,fwd=0}},zones={"meadow","worldtree","highland"}},
+    {key="skullcarrier",name="해골 짊어진 거인",model="orc",height=9,hp=4.2,dmg=2.3,compose={{model="skminion",height=3,up=.85,side=.25},{model="skminion",height=3,up=.85,side=-.25}},zones={"deadmarsh","volcano","swamp"}},
+    {key="snakeshaman",name="독사 두른 오크 주술사",model="orc",height=7,hp=3.5,dmg=2,style="mage",compose={{model="snakeangry",height=5,up=.65,fwd=0,pitch=-65},{model="snakeangry",height=4.4,up=.7,fwd=-.1,side=.18,pitch=-70}},zones={"swamp","desert","wetland"}},
+    {key="ratking",name="역병 쥐왕",model="rat",height=4.2,hp=3.5,dmg=1.8,compose={{model="rat",height=2,up=.6,side=-.2,fwd=.1},{model="rat",height=2,up=.6,side=.2,fwd=.1},{model="rat",height=2,up=.7,fwd=-.2}},zones={"wetland","deadmarsh","worldtree"}},
+    {key="frosttwin",name="서리 머리 둘 설인",model="yeti",height=8,hp=4,dmg=2.2,compose={{model="wolf",height=3.6,up=.85,side=.28,fwd=-.1}},zones={"highland","chaos","canyon"}},
+    {key="mireWitch",name="독거미 탄 마녀 아라크네아",model="fangspider",height=4,hp=3.4,dmg=2,style="mage",compose={{model="witch",height=4.6,up=.4,fwd=-.15}},zones={"swamp","worldtree","desert"}},
+    {key="sandjackal",name="사막 자칼 전사",model="fox",height=5,hp=3,dmg=1.9,style="rogue",compose={{model="womansoldier",height=3.6,up=.4}},zones={"desert","oasis","canyon"}},
+    {key="donkeyking",name="당나귀 탄 방랑 왕",model="donkey",height=4.4,hp=3,dmg=1.8,compose={{model="king",height=3.8,up=.4}},zones={"meadow","windcliff","wetland"}},
+  }
+  local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
+  local random=Random.new(4417)
+  local village=Config.WorldMap.Village
+  local count=0
+  for _,variant in ipairs(variants) do
+    for _,zoneId in ipairs(variant.zones) do
+      local x,z=Config.WorldMap.RandomPoint(zoneId,random,120)
+      if x and not (x>village.X0-150 and x<village.X1+150 and z>village.Z0-150 and z<village.Z1+150) then
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=variant.model,name="변종 · "..variant.name,tier=tiers[zoneId]+1>10 and 10 or tiers[zoneId]+1,
+          height=variant.height,hp=variant.hp,dmg=variant.dmg,alpha=true,zoneTag=zoneId,style=variant.style,compose=variant.compose,
+          drops={{"Crystal",1,3},{"Hide",1,3},{"Fang",.7,2},{"Ore",.6,2}},position=Vector3.new(x,3,z)})
+        count+=1
+      end
+    end
+  end
+  workspace:SetAttribute("VariantMonsterCount",count)
 end
 
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
