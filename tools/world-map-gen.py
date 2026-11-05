@@ -39,6 +39,12 @@ for k in keys:
     col+=m[...,None]*c
 col*= (0.86+0.28*noise(mh,mw,60,4))[...,None]
 col*= (0.94+0.12*noise(mh,mw,10,5,3))[...,None]
+rel=gaussian_filter(noise(mh,mw,140,6)*60,2.0)
+gyv,gxv=np.gradient(rel)
+col*= np.clip(1+(-gxv-gyv)*.35,.88,1.12)[...,None]
+bdm=np.zeros((mh,mw),bool); bdm[:,1:]|=zid[:,1:]!=zid[:,:-1]; bdm[1:,:]|=zid[1:,:]!=zid[:-1,:]
+bdm=gaussian_filter(bdm.astype(float),2.2)
+col*= (1-np.clip(bdm*1.6,0,.28))[...,None]
 img=bg.copy(); img[T:B,L:R]=col
 im=Image.fromarray(np.clip(img,0,255).astype(np.uint8)); d=ImageDraw.Draw(im,'RGBA')
 # 큰길
@@ -79,8 +85,20 @@ rivers=[
  ([(6050,-800),(5650,-500),(5250,-700),(4650,-900)],1.2,3.4),
  ([(3800,1250),(4300,1500),(4750,1250)],1.1,2.6),
 ]
+mains=[]
 for pts,w0,w1 in rivers:
-    x,y=spline(pts); draw_river(x,y,w0,w1)
+    if w1>5:
+        x,y=spline(pts); mains.append((x,y)); draw_river(x,y,w0,w1)
+for pts,w0,w1 in rivers:
+    if w1<=5:
+        x,y=spline(pts)
+        if mains:
+            best=None
+            for mx,my in mains:
+                dd=np.hypot(mx-x[-1],my-y[-1]); j=dd.argmin()
+                if best is None or dd[j]<best[0]: best=(dd[j],mx[j],my[j])
+            x[-6:]=np.linspace(x[-6],best[1],6); y[-6:]=np.linspace(y[-6],best[2],6)
+        draw_river(x,y,w0,w1)
 for (lx_,lz_,rx,rz) in [(3650,330,170,95),(4950,760,150,80),(-700,1500,160,85)]:
     d.ellipse([gx(lx_)-rx/8800*PW,gz(lz_)-rz/4800*PH,gx(lx_)+rx/8800*PW,gz(lz_)+rz/4800*PH],fill=(112,170,214,255),outline=(56,84,112,255),width=S)
 def tree(px,py,sz,c):
@@ -93,10 +111,11 @@ for l in open('/tmp/luau/map.txt'):
         p=l.split(); zi_name[p[2]]=int(p[1])
 def scatter(zname,count,sz,c,seed):
     r=np.random.default_rng(seed); k=zi_name[zname]
+    fm=noise(mh,mw,70,seed)
     for _ in range(count):
         x=int(r.integers(8,mw-8)); y=int(r.integers(8,mh-8))
-        if zid[y,x]==k: tree(L+x,T+y,sz*S*r.uniform(.8,1.3),tuple(int(v) for v in (np.array(c)*r.uniform(.85,1.15))))
-scatter("worldtree",1500,3.6,(34,94,66),31)
+        if zid[y,x]==k and fm[y,x]>.48: tree(L+x,T+y,sz*S*r.uniform(.8,1.3),tuple(int(v) for v in (np.array(c)*r.uniform(.85,1.15))))
+scatter("worldtree",2600,3.6,(34,94,66),31)
 scatter("meadow",220,3.2,(56,126,64),32)
 scatter("wetland",420,3.2,(52,104,70),33)
 scatter("windcliff",160,3.0,(78,126,72),34)
@@ -127,16 +146,35 @@ range_([(-1200,1350),(-300,1450),(700,1350)],190,6.5,9,20,46)
 range_([(2000,1300),(3000,1350),(3900,1300)],190,6.5,9,20,47)
 range_([(2150,-120),(2400,-170),(2650,-90)],200,4.5,16,36,48)
 peaks.sort()
+pr=np.random.default_rng(77)
+# 산기슭 언덕
+for py,px,h,k in peaks[::2]:
+    for _ in range(2):
+        ox=pr.normal(0,h*1.1); oy=h*pr.uniform(.1,.5)
+        r_=h*pr.uniform(.45,.8)
+        d.ellipse([px+ox-r_*1.3,py+oy-r_*.35,px+ox+r_*1.3,py+oy+r_*.45],fill=(120,104,80,46))
 for py,px,h,k in peaks:
     w=h*.95*k
-    d.ellipse([px-w*1.1,py-h*.12,px+w*1.3,py+h*.22],fill=(40,30,20,70))
-    lean=w*0.12*(1 if int(px)%2 else -1)
-    top=(px+lean,py-h)
-    d.polygon([(px-w,py),top,(px+w*.15,py)],fill=(184,168,146,255))
-    d.polygon([top,(px+w,py),(px+w*.15,py)],fill=(92,78,66,255))
-    d.polygon([(px-w*.45,py-h*.55),top,(px+w*.05,py-h*.5)],fill=(214,206,190,255))
-    d.line([top,(px+w*.15,py)],fill=(60,48,40,255),width=max(1,S//2))
-    d.line([(px+w*.3,py-h*.5),(px+w*.55,py-h*.2)],fill=(70,58,48,255),width=max(1,S//2))
+    d.ellipse([px-w*1.0,py-h*.10,px+w*1.5,py+h*.24],fill=(40,30,20,80))
+    nL=pr.integers(2,5); nR=pr.integers(2,5)
+    tx=px+w*pr.uniform(-.18,.18); ty=py-h
+    left=[(px-w,py)]
+    for i in range(1,nL+1):
+        f=i/(nL+1); left.append((px-w*(1-f)+pr.normal(0,w*.07)+(tx-px)*f, py-h*f**.85+pr.normal(0,h*.05)))
+    left.append((tx,ty))
+    right=[(tx,ty)]
+    for i in range(1,nR+1):
+        f=i/(nR+1); right.append((tx+(px+w-tx)*f+pr.normal(0,w*.07), ty+(py-ty)*f**1.15+pr.normal(0,h*.05)))
+    right.append((px+w,py))
+    mid=(px+w*.1,py)
+    d.polygon(left+[mid],fill=(190,174,150,255))
+    d.polygon(right+[mid],fill=(98,82,68,255))
+    # 밝은 윗면과 능선 해칭
+    d.polygon([left[-3] if len(left)>3 else left[1],left[-2] if len(left)>2 else left[1],left[-1],(tx-w*.05,ty+h*.35)],fill=(224,216,198,230))
+    for i in range(5):
+        f=pr.uniform(.2,.9); x1=tx+(px+w-tx)*f*.7; y1=ty+(py-ty)*f
+        d.line([(x1,y1),(x1+w*.12,y1+h*.18)],fill=(62,50,42,220),width=max(1,S//2))
+    d.line(left[-3:]+right[:3],fill=(66,54,44,255),width=max(1,S//2))
 vx,vy=gx(2400),gz(-60)
 d.ellipse([vx-9*S,vy-34*S,vx+9*S,vy-28*S],fill=(214,96,40,255),outline=(70,40,30,255))
 # 테두리
@@ -168,4 +206,4 @@ d.ellipse([cx-r*1.15,cy-r*1.15,cx+r*1.15,cy+r*1.15],outline=(60,40,26,255),width
 for lab,ox,oy in (("북",-5,-r/S-14),("남",-5,r/S+2),("서",-r/S-14,-6),("동",r/S+4,-6)):
     d.text((cx+ox*S,cy+oy*S),lab,font=F(0,9),fill=(60,40,26,255))
 out=im.filter(ImageFilter.UnsharpMask(1.5,50,2)).resize((1024,680),Image.LANCZOS)
-out.save('/tmp/claude-0/map/world-map4.png'); print(out.size, L/S/1024,(R-L)/S/1024,T/S/680,PH/S/680)
+out.save('/tmp/claude-0/map/world-map5.png'); print(out.size, L/S/1024,(R-L)/S/1024,T/S/680,PH/S/680)
