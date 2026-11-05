@@ -3025,7 +3025,7 @@ skillText.TextWrapped=true;skillText.Parent=skillDetail
 local skillUse=CommonUI.CreatePrimaryButton({name="UseWitcherSkill",text="기술 사용",minHeight=52})
 skillUse.Position=UDim2.fromOffset(12,134);skillUse.Size=UDim2.new(1/3,-12,0,52)
 skillUse.BackgroundColor3=Color3.fromRGB(98,65,45);skillUse.Parent=skillDetail
--- [퀵슬롯] 선택한 기술을 오른쪽 전투 버튼에 등록한다. 같은 기술을 다시 누르면 해제.
+-- [스킬 장착] 선택한 기술을 화면 하단 네 칸에 등록·교체한다.
 local skillQuick=CommonUI.CreatePrimaryButton({name="RegisterQuickSkill",text="퀵슬롯 등록",minHeight=52})
 skillQuick.Position=UDim2.new(1/3,2,0,134);skillQuick.Size=UDim2.new(1/3,-8,0,52)
 skillQuick.BackgroundColor3=Color3.fromRGB(46,86,98);skillQuick.Parent=skillDetail
@@ -3078,7 +3078,9 @@ meadowActionButtons.refreshSkills=function()
     local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
     row.button.Visible=skillCategory=="전체" or row.category==skillCategory
     local lockText=meadowArt.skillLock(row.action.Id)
-    row.state.Text=lockText and ("잠김 · "..lockText) or (remaining>.05 and ("대기 "..math.ceil(remaining).."초") or "사용 가능")
+    local equippedSlot=nil
+    for slot=1,4 do if meadowArt.quickIds[slot]==row.action.Id then equippedSlot=slot;break end end
+    row.state.Text=lockText and ("잠김 · "..lockText) or (remaining>.05 and ("대기 "..math.ceil(remaining).."초") or (equippedSlot and (equippedSlot.."번 장착 중") or "사용 가능"))
     row.state.TextColor3=lockText and Color3.fromRGB(200,120,110) or (remaining>.05 and Color3.fromRGB(172,165,160) or skillColors[row.category])
     row.state.TextSize=lockText and 10 or 11
     local iconImg=row.button:FindFirstChild("SkillIcon")
@@ -3096,10 +3098,15 @@ meadowActionButtons.refreshSkills=function()
   skillTitle.TextColor3=skillColors[current.category]
   local cooldown=selectedSkill.Cooldown
   local cooldownText=typeof(cooldown)=="number" and (tostring(cooldown).."초") or "기본 공격 판정"
+  local selLock=meadowArt.skillLock(selectedSkill.Id)
+  local equipped={}
+  for slot=1,4 do
+    if meadowArt.quickIds[slot]==selectedSkill.Id then equipped[#equipped+1]=tostring(slot) end
+  end
+  local equippedText=#equipped>0 and ("장착 중 · "..table.concat(equipped,", ").."번") or "미장착"
   skillText.Text=current.description.."\n\n재사용 "..cooldownText..
     "  ·  "..(selLock and ("아직 못 배웠어: 스킬 트리 > "..selLock) or (remaining>.05 and (math.ceil(remaining).."초 남음") or (available and "사용 가능" or "캐릭터 대기")))
-    .."\n퀵슬롯 등록 → 화면 아래 1~5번 칸을 눌러 바로 사용"
-  local selLock=meadowArt.skillLock(selectedSkill.Id)
+    .."\n"..equippedText.." · 하단 1~4번 칸을 선택해 장착·교체"
   skillQuick.Text=selLock and "잠김" or "퀵슬롯 등록"
   skillQuick.BackgroundColor3=selLock and Color3.fromRGB(70,60,60) or Color3.fromRGB(46,86,98)
   available=available and not selLock
@@ -3190,7 +3197,7 @@ do
     end)
   end)
 end
--- [하단 퀵슬롯 등록] 2~5번 칸에 기술을 끌어 놓거나, 카드 선택 후 칸을 눌러 등록한다.
+-- [스킬창 장착칸] 하단 네 칸과 같은 저장 값을 사용한다. 다섯 번째 기존 저장 값은 보존한다.
 do
   local tray=Instance.new("Frame")
   tray.Name="QuickSlotDrop";tray.LayoutOrder=6;tray.Size=UDim2.new(1,-8,0,96)
@@ -3198,9 +3205,9 @@ do
   local tc=Instance.new("UICorner");tc.CornerRadius=UDim.new(0,12);tc.Parent=tray
   local ts=Instance.new("UIStroke");ts.Color=gold;ts.Thickness=2;ts.Transparency=.3;ts.Parent=tray
   local head=Instance.new("TextLabel")
-  head.BackgroundTransparency=1;head.Position=UDim2.fromOffset(10,4);head.Size=UDim2.new(1,-20,0,20)
+  head.BackgroundTransparency=1;head.Position=UDim2.fromOffset(10,4);head.Size=UDim2.new(1,-20,0,24)
   head.Font=Enum.Font.GothamBold;head.TextSize=12;head.TextXAlignment=Enum.TextXAlignment.Left
-  head.TextColor3=Color3.fromRGB(230,240,222);head.Text="하단 퀵슬롯 1~5번  ·  기술 카드를 끌어 놓거나 선택 후 칸을 누르면 등록, 선택 없이 누르면 무기·채집·약 순환";head.Parent=tray
+  head.TextColor3=Color3.fromRGB(230,240,222);head.TextSize=11;head.TextWrapped=true;head.Text="하단 스킬 4칸 · 기술 선택 → 장착할 칸 선택";head.Parent=tray
   local boxes={}
   local function actionLabel(id)
     for _,action in ipairs(Config.Actions)do if action.Id==id then return action.Label end end
@@ -3223,16 +3230,19 @@ do
     return 0
   end
   local function assign(slot,id)
+    if slot<1 or slot>4 then return end
+    if id and meadowArt.skillLock(id) then return end
     meadowArt.quickIds[slot]=id
     remote:FireServer("quick:set:"..slot..":"..quickCode(id))
     refreshDrop()
+    if meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end
     if meadowArt.refreshQuickHud then meadowArt.refreshQuickHud() end
     meadowArt.sfx("ping",.5,1.1)
   end
-  for i=1,5 do
+  for i=1,4 do
     local box=Instance.new("TextButton")
     box.Name="QuickBox"..i;box.Text="";box.AutoButtonColor=true
-    box.Position=UDim2.new((i-1)/5,3,0,28);box.Size=UDim2.new(1/5,-6,0,62)
+    box.Position=UDim2.new((i-1)/4,3,0,28);box.Size=UDim2.new(1/4,-6,0,62)
     box.BackgroundColor3=Color3.fromRGB(33,50,48);box.BorderSizePixel=0;box.Parent=tray
     local bc=Instance.new("UICorner");bc.CornerRadius=UDim.new(0,10);bc.Parent=box
     local be=Instance.new("UIStroke");be.Color=Color3.fromRGB(90,120,106);be.Parent=box
@@ -3305,11 +3315,11 @@ do
   meadowActionButtons.refreshDrop=refreshDrop
   meadowArt.refreshQuickTray=refreshDrop
   meadowArt.assignQuick=assign
-  tray.Visible=false -- 퀵슬롯은 메인 화면에서 바로 바꾼다(스킬 창에는 두지 않는다).
+  tray.Visible=true -- 기본 전투 기술 탭에서 장착칸을 바로 보여 준다.
 end
 skillQuick.Activated:Connect(function()
   if not selectedSkill then return end
-  -- 고른 기술을 화면 아래 퀵슬롯(1~5번)에 넣는다. 눌러서 바로 쓰는 단축 칸이야.
+  -- 고른 기술을 화면 아래 퀵슬롯(1~4번)에 넣는다. 눌러서 바로 쓰는 단축 칸이야.
   if meadowArt.openSlotChooser then meadowArt.openSlotChooser(selectedSkill.Id,selectedSkill.Label) end
 end)
 skillUse.Activated:Connect(function()
@@ -10632,9 +10642,9 @@ end)()
   end
 end)()
 
--- [하단 퀵슬롯] 5칸. 칸마다 무기·채집·체력약·기력약·오일·기술 중 골라 등록한다(보관함 메뉴의 퀵슬롯 칸).
+-- [하단 퀵슬롯] 4칸. 칸마다 무기·채집·체력약·기력약·오일·기술 중 골라 등록한다(보관함 메뉴의 퀵슬롯 칸).
 ;(function()
-  local COUNT=5
+  local COUNT=4
   local bar=Instance.new("Frame")
   bar.Name="MeadowQuickBar";bar.AnchorPoint=Vector2.new(.5,1);bar.Position=UDim2.new(.5,0,1,-8)
   bar.Size=UDim2.fromOffset(COUNT*52+(COUNT-1)*4,52);bar.BackgroundTransparency=1;bar.ZIndex=30;bar.Parent=gui
@@ -10971,7 +10981,7 @@ end)()
   end)
   UserInputService.InputBegan:Connect(function(input,processed)
     if processed or UserInputService:GetFocusedTextBox() then return end
-    local keys={Enum.KeyCode.One,Enum.KeyCode.Two,Enum.KeyCode.Three,Enum.KeyCode.Four,Enum.KeyCode.Five}
+    local keys={Enum.KeyCode.One,Enum.KeyCode.Two,Enum.KeyCode.Three,Enum.KeyCode.Four}
     for i,code in ipairs(keys)do if input.KeyCode==code then press(i) end end
   end)
   task.spawn(function()
