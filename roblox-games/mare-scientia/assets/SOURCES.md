@@ -1,10 +1,20 @@
-# Mare Scientia 3D asset sources
+# Mare Scientia 3D 자산 출처
 
-마레 시엔티아(17~18세기 항구 무역·탐험 RPG)용 선박·부두·마을 3D 자산 원본.
+17~18세기 유럽 항구 교역·항해·탐험 RPG용 실제 3D 모델 원본. 기존 저장소의 검증된 자산을 동일 Git blob으로 복사했으며 원본은 유지했다.
 
-- `naval/`: Kenney Pirate Kit, 11 GLB (범선·부두·구조물·대포·상자 등). 원본: `web-games/ocean-voyage/assets/`. CC0: https://kenney.nl/assets/pirate-kit
-- `town/`: Tiny Treats Homely House, 22 OBJ + 각 MTL (주택·문·울타리·나무·포장도로 등). 원본: `assets/shared/homely-house/`. CC0: https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `naval/` | 범선·부두·항구 소품 GLB 11개 | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `town/` | 집·문·울타리·나무 OBJ 22개와 MTL 22개 | Tiny Treats · CC0-1.0 | https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0 |
+| `town/` | 성벽·지붕·장터·우물·길·수목 등 GLB 24개 | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `people/` | 선원·항구 노동자·주민·귀족·경비병 FBX 10개 | Quaternius · CC0-1.0 | https://opengameart.org/content/animated-characters-pack |
 
-원본과 동일한 Git blob을 복사해 바이너리 손상 없이 보관했다. 라이선스는 각각 CC0 1.0 Universal이며 상업 이용·변형이 가능하다. 원본은 삭제하지 않는다.
+원본 위치:
+- `web-games/ocean-voyage/assets/`
+- `assets/shared/homely-house/`
+- `assets/shared/party/` (license.txt, sources.json)
+- `assets/roblox/actors/sources/quaternius-characters/FBX/` (manifest.json)
 
-**상태:** 모델 소스 확보만 완료. GLB/OBJ는 Roblox Studio에 실제 MeshPart로 가져와 크기·재질·충돌·앵커 및 복제 경로를 확인해야 하며, GitHub에 저장했다고 Roblox 게임에 자동 적용되지는 않는다. 현 단계에서 실행·모바일·게시 검증을 완료했다고 주장하지 않는다.
+라이선스: 모든 자산이 CC0-1.0으로 상업적 이용·수정 가능하며 출처는 추적한다. 최종 사용 전에 해당 게임 시대에 맞는 외형·재질 재구성이 필요하다.
+
+**실제 게임 적용 전 단계**: GLB/OBJ/FBX는 GitHub에 확보된 원본이다. Roblox Studio에서 MeshPart로 변환·가져오기, 앵커·충돌·크기 조정, 모델 배치 및 서버/클라이언트 로드 경로 검증을 거쳐야 한다. 이 작업만으로 Roblox 체험의 항구가 표시되거나 게시되는 것은 아니다.
