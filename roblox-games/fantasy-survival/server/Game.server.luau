@@ -4860,3 +4860,96 @@ game:BindToClose(function()
   local started = os.clock()
   while remaining > 0 and os.clock() - started < 12 do task.wait(.1) end
 end)
+
+-- [세계수 숲 · 1부 2지역] 초원 바깥(x=+1200)에 Roblox Terrain과 등록된 CC0 나무 메시로만 만든 별도 지역.
+-- 메인 6장(우두머리 늑대)을 끝내 QuestStage가 7 이상일 때 마을 서쪽 입구의 상호작용으로 이동한다.
+-- 새 몬스터·퀘스트 판정은 아직 없고, 지역 배경과 입구/귀환만 제공한다(7~9장은 다음 단계).
+do
+  local forestCenter=Vector3.new(1200,0,0)
+  local function makePortal(position,label,action,color)
+    local anchor=Instance.new("Attachment")
+    anchor.Name="Portal_"..label;anchor.WorldPosition=position;anchor.Parent=workspace.Terrain
+    local glow=Instance.new("ParticleEmitter")
+    glow.Color=ColorSequence.new(color);glow.LightEmission=1;glow.Rate=26;glow.Lifetime=NumberRange.new(1.4,2.2)
+    glow.Speed=NumberRange.new(1.5,4);glow.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.8),NumberSequenceKeypoint.new(1,0)})
+    glow.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.2),NumberSequenceKeypoint.new(1,1)})
+    glow.EmissionDirection=Enum.NormalId.Top;glow.SpreadAngle=Vector2.new(30,30);glow.Parent=anchor
+    local light=Instance.new("PointLight")
+    light.Color=color;light.Range=22;light.Brightness=2.4;light.Parent=anchor
+    local prompt=Instance.new("ProximityPrompt")
+    prompt.ActionText=label;prompt.ObjectText="마력의 길";prompt.HoldDuration=.6
+    prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+    prompt.Triggered:Connect(function(player) action(player) end)
+  end
+  local function travel(player,target)
+    local character=player.Character
+    local root=character and character:FindFirstChild("HumanoidRootPart")
+    if root then character:PivotTo(CFrame.new(target)) end
+  end
+  task.spawn(function()
+    task.wait(4)
+    local ok,err=pcall(function()
+      local terrain=workspace.Terrain
+      terrain:FillBlock(CFrame.new(forestCenter.X,-4,forestCenter.Z),Vector3.new(420,12,420),Enum.Material.LeafyGrass)
+      local random=Random.new(70717)
+      for _=1,70 do
+        local x=forestCenter.X+random:NextNumber(-190,190)
+        local z=forestCenter.Z+random:NextNumber(-190,190)
+        terrain:FillBall(Vector3.new(x,-5.6,z),random:NextNumber(7,15),random:NextNumber()<.5 and Enum.Material.Mud or Enum.Material.Ground)
+      end
+      terrain:SetMaterialColor(Enum.Material.LeafyGrass,Color3.fromRGB(46,86,70))
+      terrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(58,52,50))
+      -- 중앙의 거대 세계수: 등록된 CC0 나무 메시를 크게 키워 사용한다.
+      local giant=worldAsset("tree",forestCenter+Vector3.new(0,3,0),150)
+      if giant then
+        giant.Name="WorldTree_Giant";giant:SetAttribute("MeadowScenery",true)
+        for _,surface in ipairs(giant:GetDescendants())do
+          if surface:IsA("MeshPart") then surface.Color=surface.Color:Lerp(Color3.fromRGB(86,190,150),.28) end
+        end
+        local aura=Instance.new("Attachment");aura.WorldPosition=forestCenter+Vector3.new(0,6,0);aura.Parent=terrain
+        local pollen=Instance.new("ParticleEmitter")
+        pollen.Color=ColorSequence.new(Color3.fromRGB(150,255,205));pollen.LightEmission=1;pollen.Rate=40
+        pollen.Lifetime=NumberRange.new(5,8);pollen.Speed=NumberRange.new(1,3);pollen.SpreadAngle=Vector2.new(180,180)
+        pollen.Size=NumberSequence.new(.5);pollen.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.2,.2),NumberSequenceKeypoint.new(1,1)})
+        pollen.Parent=aura
+        local glow=Instance.new("PointLight");glow.Color=Color3.fromRGB(120,255,190);glow.Range=60;glow.Brightness=1.8;glow.Parent=aura
+      end
+      -- 외곽 숲: 같은 CC0 나무를 다양한 크기와 청록 음영으로 배치한다.
+      local placed=0
+      for index=1,46 do
+        local angle=random:NextNumber(0,math.pi*2)
+        local radius=random:NextNumber(55,185)
+        local position=forestCenter+Vector3.new(math.cos(angle)*radius,3,math.sin(angle)*radius)
+        if (position-(forestCenter+Vector3.new(0,3,170))).Magnitude<24 then continue end
+        local tree=worldAsset("tree",position,random:NextNumber(26,52))
+        if tree then
+          placed+=1
+          tree.Name="WorldTreeForest_"..index;tree:SetAttribute("MeadowScenery",true)
+          local tone=Color3.fromRGB(40,96,78):Lerp(Color3.fromRGB(92,150,110),random:NextNumber())
+          for _,surface in ipairs(tree:GetDescendants())do
+            if surface:IsA("MeshPart") and surface.Color.G>surface.Color.R then surface.Color=tone end
+          end
+        end
+        if index%6==0 then task.wait() end
+      end
+      workspace:SetAttribute("WorldTreeForestReady",true)
+      workspace:SetAttribute("WorldTreeForestTrees",placed)
+    end)
+    if not ok then warn("세계수 숲 생성 실패: "..tostring(err)) end
+  end)
+  -- 초원 서쪽 입구와 숲 귀환 지점.
+  makePortal(Vector3.new(-120,4,-96),"세계수 숲으로 이동",function(player)
+    if readNumber(player,"QuestStage",1)<7 then
+      pcall(function() villageDialogue(player,"마력의 길","아직 길이 닫혀 있어. 서쪽 숲의 우두머리 늑대(메인 6장)를 쓰러뜨려.") end)
+      return
+    end
+    if workspace:GetAttribute("WorldTreeForestReady")~=true then
+      pcall(function() villageDialogue(player,"마력의 길","숲의 마력이 아직 모이는 중이야. 잠시 뒤 다시 시도해.") end)
+      return
+    end
+    travel(player,forestCenter+Vector3.new(0,6,150))
+  end,Color3.fromRGB(120,255,190))
+  makePortal(forestCenter+Vector3.new(0,4,170),"초원 마을로 귀환",function(player)
+    travel(player,Vector3.new(-110,6,-86))
+  end,Color3.fromRGB(255,214,130))
+end
