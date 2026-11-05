@@ -616,6 +616,16 @@ local function render()
   local hp=humanoid and humanoid.Health or (player:GetAttribute("Health") or 0)
   local maxHp=humanoid and humanoid.MaxHealth or 100
   meadowHealthControl.SetRatio(maxHp>0 and hp/maxHp or 0,string.format("%d / %d",hp,maxHp))
+  -- [시안 체력바] SetRatio가 호출될 때마다 초록으로 되돌리므로 호출 직후 시안의 붉은 체력바를 다시 적용한다.
+  local healthFillBar=meadowHealthTrack:FindFirstChild("Fill")
+  if healthFillBar then
+    local healthBase=Color3.fromRGB(196,52,58)
+    healthFillBar.BackgroundColor3=healthBase
+    local healthGradient=healthFillBar:FindFirstChildOfClass("UIGradient")
+    if healthGradient then
+      healthGradient.Color=ColorSequence.new(healthBase:Lerp(Color3.new(1,1,1),.18),healthBase:Lerp(Color3.new(0,0,0),.22))
+    end
+  end
   local saveStatus = player:GetAttribute("SaveStatus")
   if player:GetAttribute("ProfileReady") ~= true then
     status.Text = "프로필 불러오는 중 · 전투 잠시 대기"
@@ -1519,6 +1529,12 @@ for index=1,10 do
     icon.ImageRectSize=Vector2.new(40,40)
     icon.ImageRectOffset=Vector2.new((index-1)*40,0)
     icon.Image="rbxassetid://71333073665947"
+    -- [시안 슬롯 틀] 원화 속 틀이 없을 때는 시안처럼 어두운 칸과 얇은 금속 테두리를 코드로 그린다.
+    slot.BackgroundTransparency=.28
+    stroke.Transparency=.08
+    stroke.Thickness=index==1 and 2 or 1.4
+    icon.Size=UDim2.new(1,-8,1,-8)
+    icon.Position=UDim2.fromOffset(4,4)
   end)
   local quantity=Instance.new("TextLabel")
   quantity.Name="ItemCount"
