@@ -4348,6 +4348,7 @@ local function liveMeadowCharacter(player)
 end
 local function applyMeadowDamage(player,target,damage)
   if not target or target.HP<=0 or not target.model.Parent then return false end
+  player:SetAttribute("MeadowCombatUntil",workspace:GetServerTimeNow()+8)
   if (meadowFocusUntil[player] or 0)>os.clock() then damage=math.floor(damage*1.25) end
   do
     local relics=readNumber(player,"RelicMask",0)
@@ -4693,6 +4694,7 @@ local function chooseMeadowMobSkill(enemy)
 end
 local function applyMeadowMobHit(player,humanoid,damage,attacker)
   if player:GetAttribute("ProfileReady")~=true or humanoid.Health<=0 then return end
+  player:SetAttribute("MeadowCombatUntil",workspace:GetServerTimeNow()+8)
   local defense=meadowDefense[player] or {}
   local now=os.clock()
   if (defense.dodgeUntil or 0)>now then return end
@@ -5422,8 +5424,8 @@ local function meadowHeal(player)
 end
 -- [각성기 · 기사단의 맹세] 기사단 연대기를 2편 이상 모으면 해금. 체력 35% 회복 + 18칸 안 적 최대 12마리에 3배 피해.
 local function meadowOath(player)
-  if readNumber(player,"ResearchRecords",0)<2 then return false end
-  return meadowSkill(player,"skill-meadow-oath",function(_,humanoid,root)
+  if readNumber(player,"ResearchRecords",0)<2 or readNumber(player,"MeadowStamina",100)<70 then return false end
+  local activated=meadowSkill(player,"skill-meadow-oath",function(_,humanoid,root)
     humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.35)
     setNumber(player,"Health",math.floor(humanoid.Health))
     local damage=math.floor((16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8)*3)
@@ -5438,6 +5440,8 @@ local function meadowOath(player)
     player:SetAttribute("ApprovedActionTarget",root.Position)
     return true
   end)
+  if activated then player:SetAttribute("MeadowStamina",math.max(0,readNumber(player,"MeadowStamina",0)-70)) end
+  return activated
 end
 local function meadowFocus(player)
   return meadowSkill(player,"skill-meadow-focus",function(_,_,root,now)
@@ -5451,6 +5455,145 @@ local function meadowEmote(player)
     player:SetAttribute("ApprovedActionTarget",root.Position)
     return true
   end)
+end
+
+
+-- [90노드 실제 발동] 기존 서버 피해·방어·쿨다운 처리 안에서만 실행한다.
+for _,node in ipairs(Config.MeadowSkillNodes or {}) do
+  if node.Kind=="ACTIVE" then meadowSkillSeconds[node.Id]=node.Cooldown end
+end
+local function meadowTreeAction(player,index)
+  local node=Config.MeadowSkillNodes[index]
+  if not node or node.Kind~="ACTIVE" then return false end
+  local rank=meadowRpg.nodeRank(player,index)
+  if rank<1 or readNumber(player,"MeadowStamina",100)<node.Gauge then return false end
+  local choice=rank==3 and meadowRpg.nodeChoice(player,index) or "A"
+  local mode=node.Mode
+  local success=meadowSkill(player,node.Id,function(character,humanoid,root,now)
+    local range=node.Range+(rank==3 and choice=="B" and 5 or 0)
+    local target=nearestEnemy(root,range)
+    local base=16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8
+    local power=math.floor(base*(node.Advanced and 2.1 or .9)*(1+.13*(rank-1))*
+      (rank==3 and choice=="A" and 1.2 or 1))
+    local radius=12+(rank==3 and choice=="B" and 4 or 0)
+    local function strike(enemy,scale)
+      if not enemy or enemy.HP<=0 or not enemy.model.Parent
+        or (enemy.position-root.Position).Magnitude>range+2 then return false end
+      player:SetAttribute("ApprovedActionTarget",enemy.position)
+      return applyMeadowDamage(player,enemy,math.floor(power*(scale or 1)))
+    end
+    local function crowd(center,count,scale)
+      local hits=0
+      for _,enemy in ipairs(enemies) do
+        if hits<count and enemy.HP>0 and enemy.model.Parent
+          and (enemy.position-center).Magnitude<=radius and strike(enemy,scale) then hits+=1 end
+      end
+      return hits>0
+    end
+    local function guard(member,seconds)
+      local defense=meadowDefense[member] or {}
+      defense.guardUntil=math.max(defense.guardUntil or 0,now+seconds)
+      meadowDefense[member]=defense
+    end
+    if mode=="HEAL" or mode=="HEAL_AOE" or mode=="RALLY" or mode=="OATH" or mode=="SHIELD" then
+      local affected=false
+      for _,member in ipairs(Players:GetPlayers()) do
+        local char=member.Character
+        local hr=char and char:FindFirstChild("HumanoidRootPart")
+        local h=char and char:FindFirstChildOfClass("Humanoid")
+        if hr and h and h.Health>0 and
+          (hr.Position-root.Position).Magnitude<=(mode=="HEAL" and .5 or 18) then
+          if mode~="SHIELD" then
+            h.Health=math.min(h.MaxHealth,h.Health+(node.Advanced and 36 or 25)+rank*3)
+            if member==player then setNumber(player,"Health",math.floor(h.Health)) end
+          end
+          if mode=="SHIELD" or mode=="OATH" or mode=="RALLY" then guard(member,mode=="SHIELD" and 3 or 6) end
+          affected=true
+        end
+      end
+      if mode=="HEAL" and choice=="B" and rank==3 and affected then
+        for i=1,2 do task.delay(i*1.5,function()
+          if humanoid.Parent and humanoid.Health>0 then humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+10) end
+        end) end
+      end
+      return affected
+    elseif mode=="GUARD" or mode=="BULWARK" or mode=="LAST_STAND" or mode=="PARRY" then
+      guard(player,mode=="BULWARK" and 8 or mode=="LAST_STAND" and 6 or 3)
+      if mode=="PARRY" then (function()
+        local defense=meadowDefense[player]
+        defense.parryUntil=now+.45
+      end)() end
+      if mode=="LAST_STAND" then humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.3) end
+      return true
+    elseif mode=="FURY" or mode=="OVERLOAD" then
+      meadowFocusUntil[player]=now+7
+      return true
+    elseif mode=="VANISH" or mode=="BLINK" then
+      local defense=meadowDefense[player] or {}
+      defense.dodgeUntil=now+.85;meadowDefense[player]=defense
+      if mode=="BLINK" then
+        local forward=root.CFrame.LookVector
+        local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude
+        ray.FilterDescendantsInstances={character};ray.RespectCanCollide=true
+        if not workspace:Raycast(root.Position+Vector3.new(0,1,0),forward*6,ray) then
+          local pos=root.Position+forward*6
+          local floorRay=RaycastParams.new();floorRay.FilterType=Enum.RaycastFilterType.Include
+          floorRay.FilterDescendantsInstances={meadowTerrain}
+          local floor=workspace:Raycast(pos+Vector3.new(0,8,0),Vector3.new(0,-18,0),floorRay)
+          if floor and floor.Material~=Enum.Material.Water and floor.Normal.Y>=.65 then character:PivotTo(character:GetPivot()+forward*6) end
+        end
+      end
+      return true
+    elseif mode=="MARK" then
+      if not target or target.HP<=0 then return false end
+      target.meadowMarkOwner=player.UserId;target.meadowMarkUntil=now+8
+      target.model:SetAttribute("MeadowMarkedUntil",workspace:GetServerTimeNow()+8)
+      return true
+    elseif mode=="ROOT" or mode=="TRAP" or mode=="SMOKE" or mode=="SMOKE_ADV" or mode=="STUN" then
+      local candidates={}
+      if mode=="SMOKE" or mode=="SMOKE_ADV" then
+        for _,enemy in ipairs(enemies) do
+          if enemy.HP>0 and (enemy.position-root.Position).Magnitude<=radius
+            and #candidates<(mode=="SMOKE_ADV" and 8 or 3) then table.insert(candidates,enemy) end
+        end
+      elseif target then candidates[1]=target end
+      if #candidates==0 then return false end
+      for _,enemy in ipairs(candidates) do
+        cancelEnemyWindup(enemy)
+        local duration=enemy.isBoss and .55 or (mode=="TRAP" and 2.4 or 1.4)
+        enemy.stunUntil=math.max(enemy.stunUntil or 0,now+duration)
+        enemy.model:SetAttribute("NativeMobStunnedUntil",workspace:GetServerTimeNow()+duration)
+        setEnemyAttackState(enemy,"STUNNED")
+        if mode=="STUN" then strike(enemy,1.05) end
+      end
+      return true
+    elseif mode=="RESONATE" then
+      if not target or target.meadowMarkOwner~=player.UserId or
+        (target.meadowMarkUntil or 0)<now then return false end
+      target.meadowMarkUntil=0
+      return crowd(target.position,8,1.2)
+    elseif mode=="EXECUTE" then
+      return target and target.HP<=target.maxHP*.38 and strike(target,2) or false
+    elseif mode=="SWEEP" or mode=="FAN" or mode=="RAIN" or mode=="SPLIT" or mode=="BURST" or mode=="NIGHT" or mode=="HUNT" then
+      return crowd((mode=="SWEEP" or mode=="FAN") and root.Position or
+        (target and target.position or root.Position),node.Advanced and 9 or 4,.85)
+    elseif mode=="PIERCE" or mode=="CHAIN" or mode=="BOLT" and choice=="B" and rank==3 then
+      return target and crowd(target.position,4,.9) or false
+    elseif mode=="FOCUS_STRIKE" then
+      if not target then return false end
+      local hit=false
+      for i=1,3 do if target.HP>0 and strike(target,.65) then hit=true end end
+      return hit
+    elseif mode=="DASH" then
+      return strike(target,1.15)
+    else
+      return strike(target,mode=="SNIPE" and 1.7 or 1)
+    end
+  end)
+  if success then
+    player:SetAttribute("MeadowStamina",math.max(0,readNumber(player,"MeadowStamina",0)-node.Gauge))
+  end
+  return success
 end
 
 local handlers={
@@ -5481,6 +5624,12 @@ local handlers={
   ["skill-meadow-oath"]=meadowOath,
   ["skill-meadow-emote"]=meadowEmote,
 }
+for _,node in ipairs(Config.MeadowSkillNodes or {}) do
+  if node.Kind=="ACTIVE" then
+    local index=node.Index
+    handlers[node.Id]=function(player) return meadowTreeAction(player,index) end
+  end
+end
 
 local function bindSurvivalHealth(player)
   local function bindCharacter(character)
