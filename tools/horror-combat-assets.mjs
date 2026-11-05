@@ -155,6 +155,12 @@ if(process.argv.includes('--monster-assets-only')){
   skminion:['Skeleton_Minion','KayKit Skeletons/Skeleton_Minion','/tmp/kks/addons/kaykit_character_pack_skeletons/Characters/gltf'],
   skrogue:['Skeleton_Rogue','KayKit Skeletons/Skeleton_Rogue','/tmp/kks/addons/kaykit_character_pack_skeletons/Characters/gltf'],
   skwarrior:['Skeleton_Warrior','KayKit Skeletons/Skeleton_Warrior','/tmp/kks/addons/kaykit_character_pack_skeletons/Characters/gltf'],
+  dragon:['Dragon_Evolved','Quaternius Ultimate Monsters/Dragon_Evolved','/tmp/mf/enemies'],
+  ghost:['Ghost','Quaternius Ultimate Monsters/Ghost','/tmp/mf/enemies'],
+  ghostskull:['Ghost_Skull','Quaternius Ultimate Monsters/Ghost_Skull','/tmp/mf/enemies'],
+  mushroomking:['Mushroom_King','Quaternius Ultimate Monsters/Mushroom_King','/tmp/mf/enemies'],
+  wingdemon:['Demon','Quaternius Ultimate Monsters/Demon','/tmp/mf/enemies'],
+  glub:['Glub','Quaternius Ultimate Monsters/Glub','/tmp/mf/enemies'],
   trex:['Trex','Quaternius Animated Dinosaur Pack','/tmp/qs/public/glb/dinosaurs_pack'],
   triceratops:['Triceratops','Quaternius Animated Dinosaur Pack','/tmp/qs/public/glb/dinosaurs_pack'],
   stegosaurus:['Stegosaurus','Quaternius Animated Dinosaur Pack','/tmp/qs/public/glb/dinosaurs_pack'],
@@ -192,6 +198,10 @@ if(process.argv.includes('--monster-assets-only')){
  const pack=registry.monsterPackV2;
 fs.rmSync('/tmp/kks',{recursive:true,force:true});
  execFileSync('git',['clone','--depth','1','-q','https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0.git','/tmp/kks']);
+ fs.rmSync('/tmp/mf',{recursive:true,force:true});
+ execFileSync('git',['clone','--depth','1','-q','https://github.com/Dallolz/moorfall-assets.git','/tmp/mf']);
+ const mfReadme=fs.readFileSync('/tmp/mf/README.md','utf8'),mfLicense=fs.readFileSync('/tmp/mf/LICENSE.md','utf8');
+ if(!/CC0/.test(mfLicense)||!/Quaternius Ultimate Monsters/.test(mfReadme)||!/toutes CC0/.test(mfReadme))throw Error('MOORFALL_LICENSE_EVIDENCE_MISSING');
  fs.rmSync('/tmp/qs',{recursive:true,force:true});
  execFileSync('git',['clone','--depth','1','--filter=blob:none','--sparse','-q','https://github.com/trebeljahr/quaternius-showcase.git','/tmp/qs']);
  execFileSync('git',['-C','/tmp/qs','sparse-checkout','set','public/glb/dinosaurs_pack','public/glb/easy_enemies_pack','public/glb/modular_men','public/glb/modular_women','public/glb/single_knight_pack','public/glb/animals_pack']);
@@ -212,7 +222,7 @@ fs.rmSync('/tmp/kks',{recursive:true,force:true});
  };
  const humanLicense=fs.readFileSync('/tmp/nj-mmo/client/public/models/characters/LICENSE.txt','utf8');
  if(!/Creative Commons Zero, CC0/.test(humanLicense))throw Error('HUMAN_LICENSE_EVIDENCE_MISSING');
- const alreadyBound=new Set(['demon','frostfiend','orc','skullorc','tribal','assassin','yeti','beastman','spiritgolem','raptor','goblin','goblinscout','spider','fangspider','bladespider','chieftain','wolf','toad','keltir','mage','rogue','roguehooded','knight','barbarian']);
+ const alreadyBound=new Set(['demon','frostfiend','orc','skullorc','tribal','assassin','yeti','beastman','spiritgolem','raptor','spider','fangspider','bladespider','chieftain','wolf','toad','keltir','goblin','goblinscout','mage','rogue','roguehooded','knight','barbarian','skmage','skminion','skrogue','skwarrior','trex','triceratops','stegosaurus','parasaur','apatosaur','snake','snakeangry','wasp','rat','king','adventurer','punk','farmer','witch','womansoldier','womanmedieval','knightchar','fox','stag','deer','bull','horse','husky','donkey']);
  for(const [key,[file,origin,dir]] of Object.entries(files)){
   if(alreadyBound.has(key))continue;
   let assetId=String(pack.assetIds[key]||'');
