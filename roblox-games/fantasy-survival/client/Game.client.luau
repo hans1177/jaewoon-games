@@ -3259,6 +3259,8 @@ do
   end)
   meadowActionButtons.refreshDrop=refreshDrop
   meadowArt.refreshQuickTray=refreshDrop
+  meadowArt.assignQuick=assign
+  tray.Visible=false -- 퀵슬롯은 메인 화면에서 바로 바꾼다(스킬 창에는 두지 않는다).
 end
 skillQuick.Activated:Connect(function()
   if not selectedSkill or not meadowActionButtons.setQuickSkill then return end
@@ -10375,6 +10377,10 @@ end)()
       if activateMeadowAction(id)==false then quickSay("지금은 쓸 수 없어(기력·무기 확인)") end
     end
   end
+  local holdToken,holdFired={},{}
+  local quickEditMode=false
+  local openQuickPicker=nil
+  local editButton
   for i=1,COUNT do
     local slot=Instance.new("TextButton")
     slot.Name="QuickSlot"..i;slot.Text="";slot.AutoButtonColor=true;slot.Size=UDim2.fromOffset(52,52)
@@ -10401,7 +10407,28 @@ end)()
     local timer=Instance.new("TextLabel")
     timer.BackgroundTransparency=1;timer.Size=UDim2.fromScale(1,1);timer.Font=Enum.Font.GothamBlack;timer.TextSize=18
     timer.TextColor3=Color3.new(1,1,1);timer.Text="";timer.ZIndex=35;timer.Parent=slot
-    slot.Activated:Connect(function() press(i) end)
+    -- 길게 누르거나(편집 모드면 그냥 눌러서) 무엇을 넣을지 고른다.
+    slot.InputBegan:Connect(function(input)
+      if input.UserInputType~=Enum.UserInputType.Touch and input.UserInputType~=Enum.UserInputType.MouseButton1 then return end
+      holdToken[i]=(holdToken[i] or 0)+1
+      local token=holdToken[i]
+      task.delay(.55,function()
+        if holdToken[i]==token and input.UserInputState~=Enum.UserInputState.End then
+          holdFired[i]=true
+          if openQuickPicker then openQuickPicker(i) end
+        end
+      end)
+    end)
+    slot.InputEnded:Connect(function(input)
+      if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then
+        holdToken[i]=(holdToken[i] or 0)+1
+      end
+    end)
+    slot.Activated:Connect(function()
+      if holdFired[i] then holdFired[i]=false return end
+      if quickEditMode then if openQuickPicker then openQuickPicker(i) end return end
+      press(i)
+    end)
     slots[i]={slot=slot,icon=icon,shade=shade,timer=timer,edge=e,count=count}
   end
   -- [3D 아이템] 칸 위에 뷰포트를 얹어 CC0 아이템 메시를 천천히 돌려 보여 준다. 모델이 아직 없으면 평면 아이콘을 쓴다.
@@ -10465,6 +10492,65 @@ end)()
       else local view=slots[i].slot:FindFirstChild("Item3D");if view then view.Visible=false end end
     end
     if meadowArt.refreshQuickTray then meadowArt.refreshQuickTray() end
+  end
+  -- [퀵슬롯 선택창] 무기·채집·약·오일·전투 기술 중 하나를 골라 칸에 넣는다.
+  do
+    local picker=Instance.new("Frame")
+    picker.Name="MeadowQuickPicker";picker.AnchorPoint=Vector2.new(.5,.5);picker.Position=UDim2.fromScale(.5,.5)
+    picker.Size=UDim2.fromOffset(300,300);picker.BackgroundColor3=Color3.fromRGB(18,28,28);picker.BackgroundTransparency=.06
+    picker.Visible=false;picker.ZIndex=90;picker.Parent=gui
+    Instance.new("UICorner",picker).CornerRadius=UDim.new(0,12)
+    local stroke=Instance.new("UIStroke");stroke.Color=Color3.fromRGB(218,189,126);stroke.Thickness=2;stroke.Parent=picker
+    local title=Instance.new("TextLabel")
+    title.BackgroundTransparency=1;title.Position=UDim2.fromOffset(12,6);title.Size=UDim2.new(1,-60,0,26)
+    title.Font=Enum.Font.GothamBlack;title.TextSize=16;title.TextXAlignment=Enum.TextXAlignment.Left
+    title.TextColor3=Color3.fromRGB(255,240,205);title.ZIndex=91;title.Parent=picker
+    local closeBtn=Instance.new("TextButton")
+    closeBtn.AnchorPoint=Vector2.new(1,0);closeBtn.Position=UDim2.new(1,-8,0,6);closeBtn.Size=UDim2.fromOffset(34,28)
+    closeBtn.BackgroundColor3=Color3.fromRGB(120,40,40);closeBtn.Font=Enum.Font.GothamBlack;closeBtn.TextSize=16
+    closeBtn.TextColor3=Color3.new(1,1,1);closeBtn.Text="X";closeBtn.ZIndex=92;closeBtn.Parent=picker
+    Instance.new("UICorner",closeBtn).CornerRadius=UDim.new(0,8)
+    local list=Instance.new("ScrollingFrame")
+    list.BackgroundTransparency=1;list.BorderSizePixel=0;list.Position=UDim2.fromOffset(8,38);list.Size=UDim2.new(1,-16,1,-46)
+    list.ScrollBarThickness=5;list.CanvasSize=UDim2.new();list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.ZIndex=91;list.Parent=picker
+    local lay=Instance.new("UIListLayout");lay.Padding=UDim.new(0,4);lay.SortOrder=Enum.SortOrder.LayoutOrder;lay.Parent=list
+    local target=1
+    local function choose(id)
+      if meadowArt.assignQuick then meadowArt.assignQuick(target,id) end
+      meadowArt.refreshQuickHud()
+      picker.Visible=false
+    end
+    local function option(order,label,id)
+      local b=Instance.new("TextButton")
+      b.LayoutOrder=order;b.Size=UDim2.new(1,-4,0,38);b.BackgroundColor3=Color3.fromRGB(33,50,48);b.BorderSizePixel=0
+      b.Font=Enum.Font.GothamBold;b.TextSize=14;b.TextColor3=Color3.new(1,1,1);b.Text=label;b.ZIndex=92;b.Parent=list
+      Instance.new("UICorner",b).CornerRadius=UDim.new(0,8)
+      b.Activated:Connect(function() choose(id) end)
+    end
+    local order=0
+    for _,id in ipairs(meadowArt.quickSpecial) do order+=1;option(order,meadowArt.quickSpecialLabel[id],id) end
+    for _,action in ipairs(Config.Actions) do
+      if action.Kind=="COMBAT" and action.Label then order+=1;option(order,"기술 · "..action.Label,action.Id) end
+    end
+    order+=1;option(order,"비우기",false)
+    closeBtn.Activated:Connect(function() picker.Visible=false end)
+    openQuickPicker=function(i)
+      target=i;title.Text=i.."번 칸에 넣을 것";picker.Visible=true
+    end
+    -- 편집 단추: 켜 두면 칸을 눌러 바로 바꾼다.
+    editButton=Instance.new("TextButton")
+    editButton.Name="QuickEdit";editButton.LayoutOrder=99;editButton.Size=UDim2.fromOffset(40,52)
+    editButton.BackgroundColor3=Color3.fromRGB(18,30,30);editButton.BackgroundTransparency=.2;editButton.BorderSizePixel=0
+    editButton.Font=Enum.Font.GothamBold;editButton.TextSize=12;editButton.TextColor3=Color3.fromRGB(255,240,197);editButton.Text="편집"
+    editButton.ZIndex=30;editButton.Parent=bar
+    Instance.new("UICorner",editButton).CornerRadius=UDim.new(0,11)
+    bar.Size=UDim2.fromOffset(COUNT*52+(COUNT-1)*4+44,52)
+    editButton.Activated:Connect(function()
+      quickEditMode=not quickEditMode
+      editButton.Text=quickEditMode and "완료" or "편집"
+      editButton.BackgroundColor3=quickEditMode and Color3.fromRGB(70,110,60) or Color3.fromRGB(18,30,30)
+      if quickEditMode then quickSay("바꿀 칸을 눌러 · 길게 눌러도 돼") end
+    end)
   end
   meadowArt.refreshQuickHud()
   -- 저장된 배치를 프로필이 준비되면 한 번 불러온다.
