@@ -862,28 +862,40 @@ local function createMeadowVillage()
     task.wait()
   end
   gameWorld:SetAttribute("MeadowVillageFlatGroundReady",true)
-  -- [위쳐풍 숲마을] 직선 격자 대신 실제 Terrain 흙길·우물 둘레길·농가 샛길.
-  -- 의뢰판(0,-101)·우물(0,-146)·촌장/NPC·기존 퀘스트 지점을 옮기지 않는다.
+  -- [마을 구역 / 퀘스트 동선] 광장(촌장/게시판)에서 서쪽 약초, 동쪽 추적,
+  -- 우물/경비 초소, 양쪽 사냥 출구, 남부 생활·농경 구역으로 실제 Terrain 흙길을 잇는다.
+  -- 몬스터·단서·NPC·저장 좌표는 그대로 두고 기존 모델 주택의 문 앞으로 샛길을 낸다.
   local villageRoadRoutes={
-    {width=5.6,points={{0,-53},{5,-78},{-4,-99},{-9,-118},{-19,-139},{-19,-160},{-3,-186},{8,-217},{-4,-251},{6,-285},{-2,-333}}},
-    -- [돌우물] 중심의 실제 원본 우물과 접근 공간은 비워 둔다.
-    {width=3.6,points={{-11,-126},{-19,-134},{-21,-147},{-18,-160},{-5,-170},{12,-167},{20,-153},{19,-138},{11,-128}}},
-    {width=4.7,points={{-6,-102},{-35,-112},{-62,-120},{-79,-108}}},
-    {width=4.2,points={{4,-103},{35,-108},{68,-124},{89,-107}}},
-    {width=4.3,points={{-20,-160},{-55,-168},{-82,-171},{-99,-181}}},
-    {width=4.5,points={{18,-162},{56,-158},{85,-163},{100,-179}}},
-    {width=4.2,points={{-5,-211},{-40,-214},{-75,-228},{-88,-249}}},
-    {width=4.4,points={{8,-216},{45,-225},{77,-228},{90,-246}}},
-    {width=4.3,points={{-5,-280},{-46,-289},{-80,-306},{-107,-335}}},
-    {width=4.2,points={{6,-289},{49,-306},{82,-318},{78,-338}}},
-    -- [외곽 생활권] 나무꾼집·농가·작업장으로 이어지는 자연스러운 수레길.
-    {width=4.2,points={{-64,-119},{-126,-127},{-151,-106},{-178,-103},{-208,-108}}},
-    {width=4.1,points={{70,-124},{129,-129},{158,-146},{180,-141},{228,-145}}},
-    {width=4.5,points={{-81,-191},{-135,-204},{-161,-231},{-158,-274},{-190,-289},{-208,-336},{-250,-341}}},
-    {width=4.2,points={{85,-193},{135,-207},{159,-230},{168,-268},{169,-307},{185,-345},{261,-347}}},
-    -- [숲 탐험길] 안전한 마을 동·서문을 기존 외곽 숲길에 연결.
-    {width=4.5,points={{-165,-206},{-207,-198},{-245,-200},{-288,-209}}},
-    {width=4.5,points={{163,-206},{207,-200},{245,-199},{288,-211}}},
+    -- [첫 진입] 북쪽 진입로 → 게시판 → 돌우물 → 수정문 → 남부 정착지
+    {width=6.1,points={{0,-53},{3,-79},{-3,-101},{-7,-128},{-9,-146},{-4,-169},{0,-187},{3,-220},{-2,-252},{2,-287},{-2,-333}}},
+    {width=3.7,points={{-11,-126},{-20,-137},{-21,-150},{-17,-161},{-5,-169},{13,-164},{20,-152},{18,-139},{10,-128}}},
+    -- [의뢰 1] 의뢰판 → 약초상 미라 → 찢긴 약초 꾸러미
+    {width=5.1,points={{-5,-105},{-34,-116},{-42,-128},{-68,-122},{-78,-131}}},
+    -- [의뢰 3] 의뢰판 → 추적자 라온 → 보급 수레 조사
+    {width=5.1,points={{4,-104},{34,-115},{69,-129},{72,-163},{57,-207},{28,-214},{5,-219}}},
+    -- [의뢰 2] 우물의 봉인석 → 경비병 아린
+    {width=4.6,points={{-9,-146},{-18,-159},{-24,-174},{-2,-188}}},
+    -- [중앙 마을] 여관·시장, 회관, 공방으로 이어지는 골목
+    {width=4.4,points={{35,-115},{54,-106},{78,-100}}},
+    {width=4.4,points={{69,-129},{79,-146},{86,-161}}},
+    {width=4.4,points={{-18,-159},{-50,-176},{-73,-184},{-87,-191}}},
+    -- [서문 / 의뢰 1] 약초상 → 서쪽 숲 → 우두머리 늑대
+    {width=5.1,points={{-68,-122},{-107,-153},{-139,-178},{-149,-213},{-191,-221},{-239,-217},{-282,-211},{-317,-194}}},
+    -- [서문 / 의뢰 3] 수레 현장 이후 남부 골목을 통해 서쪽 초원 늑대
+    {width=4.8,points={{3,-219},{-38,-219},{-81,-223},{-120,-234},{-168,-235},{-215,-234},{-261,-232},{-300,-233}}},
+    -- [동문 / 의뢰 2] 경비 초소 → 동쪽 숲 → 황혼 박쥐
+    {width=5.1,points={{1,-189},{37,-202},{58,-208},{73,-174},{110,-203},{160,-217},{209,-214},{250,-210},{300,-212}}},
+    -- [직업 마을] 약초집·벌목집·목수집, 여관·빵집·숲지기집
+    {width=4.1,points={{-78,-131},{-119,-123},{-151,-113},{-167,-109}}},
+    {width=4.1,points={{-107,-153},{-137,-170},{-160,-190}}},
+    {width=4.1,points={{78,-100},{116,-105},{149,-112},{164,-113}}},
+    {width=4.1,points={{110,-203},{140,-192},{164,-182}}},
+    -- [주거 지구] 대로와 가까운 집 문까지만 샛길 연결
+    {width=4.0,points={{-38,-219},{-64,-243},{-79,-252}}},
+    {width=4.0,points={{28,-214},{56,-235},{75,-247}}},
+    -- [남부 농경 지구] 창고·마구간·과수원과 동서 출입
+    {width=4.5,points={{-2,-280},{-46,-288},{-76,-298},{-93,-308},{-147,-289},{-170,-271},{-208,-311}}},
+    {width=4.5,points={{2,-280},{48,-288},{77,-298},{92,-310},{145,-291},{168,-274},{207,-313}}},
   }
   local villageRoadSegments=0
   for routeIndex,route in ipairs(villageRoadRoutes) do
@@ -909,7 +921,8 @@ local function createMeadowVillage()
   end
   gameWorld:SetAttribute("MeadowVillageRoadRoutes",#villageRoadRoutes)
   gameWorld:SetAttribute("MeadowVillageRoadSegments",villageRoadSegments)
-  gameWorld:SetAttribute("MeadowVillageLayoutStyle","RUSTIC_WINDING_FOREST_VILLAGE")
+  gameWorld:SetAttribute("MeadowVillageLayoutStyle","WITCHER_SKYRIM_QUEST_DISTRICTS_V2")
+  gameWorld:SetAttribute("MeadowVillageDistricts","CIVIC,HERBALISTS,MARKET,CRAFT,RESIDENTIAL,FARMLAND,FOREST_EDGE")
   -- [마을 광장 바닥] 초원과 동떨어진 흰색 Cobblestone 직사각형 덮개는 두지 않는다.
   -- 기존 Grass 지면과 Ground 골목을 그대로 연결해 의뢰판·주민·우물 위치를 보존한다.
   -- [실제 건물] 기둥/벽/지붕/문은 저장소 Kenney 원본 3D GLB 등록본만 사용한다.
@@ -943,8 +956,8 @@ local function createMeadowVillage()
       villageWholeHouseReady=false;break
     end
   end
-  -- [중세 숲마을 건축] 위처 3의 비대칭 농촌 배치만 참고하고 실제 CC0 모듈 외형은 유지한다.
-  -- 기존 6동을 보존하되 생활·상업·농경·외곽 구역에 배치하고 서로 다른 실루엣을 만든다.
+  -- [위쳐·스카이림식 구역] 기존 16채를 북쪽 여관/시장, 서쪽 약초·공방, 동쪽 회관,
+  -- 남쪽 주민·농가, 외곽 숲지기 생활권으로 묶는다. 실제 CC0 완성형·모듈만 사용한다.
   local villageArchitectureScale=2.35
   local villageBuildings=0
   local villageProps=0
@@ -956,37 +969,37 @@ local function createMeadowVillage()
     -- [집 유형] 짧은 초가, 긴 농가/공방, 이층 여관/회관. 문 방향은 광장·골목을 향하게 한다.
     -- 원래 등장한 건물 이름을 유지해서 기존 컨텐츠 참조에 영향이 없게 한다.
     local houses={
-      {x=-95,z=-84,angle=.17,name="Village_HealerHouse",label="약초상 · 의원",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,chimney=true,wing=-1,wingZ=2.7,
+      {x=-91,z=-133,angle=.17,name="Village_HealerHouse",label="약초상 · 의원",district="HERBALISTS",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,chimney=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(125,107,88),roof=Color3.fromRGB(134,113,82)},
-      {x=116,z=-100,angle=math.pi-.21,name="Village_Guesthouse",label="마을 여관",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseA",masonry=true,chimney=true,archway=true,balcony=true,
+      {x=92,z=-99,angle=math.pi-.21,name="Village_Guesthouse",label="마을 여관",district="MARKET",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseA",masonry=true,chimney=true,archway=true,balcony=true,
        timber=Color3.fromRGB(151,117,88),roof=Color3.fromRGB(123,91,72)},
-      {x=-121,z=-167,angle=.21,name="Village_Workshop",label="대장간 · 공방",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=5.4,
+      {x=-98,z=-193,angle=.21,name="Village_Workshop",label="대장간 · 공방",district="CRAFT",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(106,94,83),roof=Color3.fromRGB(116,105,88)},
-      {x=129,z=-154,angle=math.pi+.14,name="Village_WardenHall",label="마을 회관",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseB",masonry=true,chimney=true,archway=true,balcony=true,wing=-1,wingZ=5.4,
+      {x=99,z=-161,angle=math.pi+.14,name="Village_WardenHall",label="마을 회관",district="CIVIC",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseB",masonry=true,chimney=true,archway=true,balcony=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(146,119,91),roof=Color3.fromRGB(121,92,77)},
-      {x=-108,z=-235,angle=-.18,name="Village_ResidentHouseWest",label="서쪽 주민집",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
+      {x=-89,z=-256,angle=-.18,name="Village_ResidentHouseWest",label="서쪽 주민집",district="RESIDENTIAL",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
        timber=Color3.fromRGB(153,132,107),roof=Color3.fromRGB(139,112,82)},
-      {x=107,z=-222,angle=math.pi+.23,name="Village_ResidentHouseEast",label="동쪽 주민집",scale=.96,length=2,storeys=1,roofPitch=1.09,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
+      {x=89,z=-250,angle=math.pi+.23,name="Village_ResidentHouseEast",label="동쪽 주민집",district="RESIDENTIAL",scale=.96,length=2,storeys=1,roofPitch=1.09,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(116,102,87),roof=Color3.fromRGB(123,118,95)},
-      {x=-197,z=-80,angle=-.14,name="Village_WoodcutterHome",label="벌목꾼의 집",scale=.86,length=2,storeys=1,roofPitch=.96,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=2.7,
+      {x=-178,z=-109,angle=-.14,name="Village_WoodcutterHome",label="벌목꾼의 집",district="FOREST_EDGE",scale=.86,length=2,storeys=1,roofPitch=.96,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(119,103,80),roof=Color3.fromRGB(131,108,80)},
-      {x=205,z=-112,angle=math.pi-.33,name="Village_WoodsmanHome",label="숲지기 오두막",scale=.91,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,leanTo=true,
+      {x=178,z=-112,angle=math.pi-.33,name="Village_WoodsmanHome",label="숲지기 오두막",district="FOREST_EDGE",scale=.91,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,leanTo=true,
        timber=Color3.fromRGB(111,108,91),roof=Color3.fromRGB(122,110,80)},
-      {x=-208,z=-170,angle=.24,name="Village_CarpenterHome",label="목수 작업집",scale=.94,length=3,storeys=1,roofPitch=.91,doorZ=0,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=-5.4,
+      {x=-179,z=-191,angle=.24,name="Village_CarpenterHome",label="목수 작업집",district="CRAFT",scale=.94,length=3,storeys=1,roofPitch=.91,doorZ=0,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=-5.4,
        timber=Color3.fromRGB(134,109,88),roof=Color3.fromRGB(138,111,83)},
-      {x=203,z=-176,angle=math.pi-.25,name="Village_BakerHome",label="빵 굽는 집",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,leanTo=true,
+      {x=178,z=-180,angle=math.pi-.25,name="Village_BakerHome",label="빵 굽는 집",district="MARKET",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,leanTo=true,
        timber=Color3.fromRGB(162,126,96),roof=Color3.fromRGB(142,102,80)},
-      {x=-190,z=-258,angle=-.11,name="Village_Granary",label="곡물 창고",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,prefab="villageHouseC",masonry=true,flatRoof=true,leanTo=true,
+      {x=-182,z=-270,angle=-.11,name="Village_Granary",label="곡물 창고",district="FARMLAND",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,prefab="villageHouseC",masonry=true,flatRoof=true,leanTo=true,
        timber=Color3.fromRGB(129,107,81),roof=Color3.fromRGB(147,118,88)},
-      {x=196,z=-259,angle=math.pi+.19,name="Village_Farmstead",label="농가 · 마구간",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,prefab="villageHouseD",masonry=true,flatRoof=true,wing=-1,wingZ=5.4,
+      {x=182,z=-274,angle=math.pi+.19,name="Village_Farmstead",label="농가 · 마구간",district="FARMLAND",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,prefab="villageHouseD",masonry=true,flatRoof=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(117,98,75),roof=Color3.fromRGB(133,110,87)},
-      {x=-109,z=-301,angle=.23,name="Village_SouthCottageWest",label="남쪽 농가",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
+      {x=-104,z=-312,angle=.23,name="Village_SouthCottageWest",label="남쪽 농가",district="RESIDENTIAL",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
        timber=Color3.fromRGB(148,126,102),roof=Color3.fromRGB(137,110,83)},
-      {x=115,z=-321,angle=math.pi-.19,name="Village_SouthCottageEast",label="길가 주민집",scale=.92,length=2,storeys=1,roofPitch=1.02,doorZ=2.7,sideWindow=false,porch=1,lantern=false,flatRoof=true,leanTo=true,
+      {x=105,z=-312,angle=math.pi-.19,name="Village_SouthCottageEast",label="길가 주민집",district="RESIDENTIAL",scale=.92,length=2,storeys=1,roofPitch=1.02,doorZ=2.7,sideWindow=false,porch=1,lantern=false,flatRoof=true,leanTo=true,
        timber=Color3.fromRGB(112,98,82),roof=Color3.fromRGB(127,101,78)},
-      {x=-233,z=-314,angle=-.11,name="Village_OrchardHome",label="과수원 농가",scale=.84,length=2,storeys=1,roofPitch=.87,doorZ=2.7,sideWindow=true,porch=0,lantern=false,chimney=true,leanTo=true,
+      {x=-229,z=-323,angle=-.11,name="Village_OrchardHome",label="과수원 농가",district="FARMLAND",scale=.84,length=2,storeys=1,roofPitch=.87,doorZ=2.7,sideWindow=true,porch=0,lantern=false,chimney=true,leanTo=true,
        timber=Color3.fromRGB(133,121,98),roof=Color3.fromRGB(139,120,83)},
-      {x=222,z=-325,angle=math.pi+.29,name="Village_EastFarmhouse",label="동쪽 농가",scale=.94,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
+      {x=226,z=-324,angle=math.pi+.29,name="Village_EastFarmhouse",label="동쪽 농가",district="FARMLAND",scale=.94,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(123,102,87),roof=Color3.fromRGB(125,115,91)},
     }
     for houseIndex,house in ipairs(houses) do
@@ -1032,7 +1045,7 @@ local function createMeadowVillage()
           houseModel:SetAttribute("MeadowVillageScenery",true)
           houseModel:SetAttribute("VillageBuilding",house.name)
           houseModel:SetAttribute("VillageRoofSilhouette","COMPLETE_CC0_"..house.prefab)
-          houseModel:SetAttribute("VillageDistrict",houseIndex<=4 and "CENTRAL" or "FARMLAND")
+          houseModel:SetAttribute("VillageDistrict",house.district)
           houseModel:PivotTo(houseModel:GetPivot()*CFrame.Angles(0,house.angle,0))
           local fullBox,fullSize=houseModel:GetBoundingBox()
           local plaster=house.timber:Lerp(Color3.fromRGB(220,201,170),.78)
@@ -1217,7 +1230,7 @@ local function createMeadowVillage()
           model.Name=house.name.."_"..partIndex
           model:SetAttribute("MeadowVillageScenery",true)
           model:SetAttribute("VillageBuilding",house.name)
-          model:SetAttribute("VillageDistrict",houseIndex<=4 and "CENTRAL" or houseIndex<=10 and "RESIDENTIAL" or "FARMLAND")
+          model:SetAttribute("VillageDistrict",house.district)
           model:SetAttribute("VillageRoofSilhouette",roofSilhouette)
           model:PivotTo(model:GetPivot()*CFrame.Angles(0,rot+(piece.angle or 0),0))
           -- [대장간·농가 굴뚝 연기] 등록된 실제 CC0 굴뚝 메시 꼭대기에만 매우 작은 연무를 만든다.
@@ -1397,7 +1410,7 @@ local function createMeadowVillage()
     -- [시장·생활 마당] 식탁처럼 보이던 가판대를 늘리지 않고 두 장터만 유지한다.
     -- 기존 CC0 카트·울타리·등불을 농가와 골목에 비대칭 분산 배치한다.
     local furnishings={
-      {"villageStall",-38,-142,3.15,.21},{"villageStall",37,-173,3.4,-.28},
+      {"villageStall",-42,-151,3.15,.21},{"villageStall",43,-151,3.4,-.28},
       {"villageCart",-65,-187,6,.34},{"villageCart",62,-253,5.6,-.31},
       {"villageCart",-165,-234,6.1,.15},{"villageCart",176,-148,6.1,-.5},
       {"villageLantern",-17,-102,5,0},{"villageLantern",19,-113,5,0},
@@ -1424,7 +1437,7 @@ local function createMeadowVillage()
     -- 모델의 게임별 사용권한이 미확정일 때는 기존 10종 소품만 유지한다.
     if villageDetailReady then
       for _,extra in ipairs({
-        {"villageArch",-34,-111,5.4,.25},{"villageArch",37,-239,5.5,-.24},
+        {"villageArch",-251,-218,11.2,math.pi*.5,"서문 · 늑대 숲"},{"villageArch",251,-210,11.2,math.pi*.5,"동문 · 황혼 박쥐"},
         {"villageRuinWall",-263,-181,6.2,.1},{"villageRuinWall",249,-302,5.6,-.2},
         {"villagePillar",-31,-151,5.0,0},{"villagePillar",30,-153,5.0,0},
         {"villagePillar",-32,-237,5.0,.1},{"villagePillar",32,-239,5.0,-.1},
@@ -1441,6 +1454,30 @@ local function createMeadowVillage()
         model.Name="Meadow_Village_"..row[1].."_"..index
         model:SetAttribute("MeadowVillageScenery",true)
         model:PivotTo(model:GetPivot()*CFrame.Angles(0,row[5],0))
+        -- [길잡이] 실제 등록된 석조 아치에만 동서문 표시를 달아 외곽 전투 동선을 명확히 한다.
+        if row[6] then
+          model:SetAttribute("VillageGate",row[6])
+          local gateMesh=model:FindFirstChildWhichIsA("MeshPart",true)
+          if gateMesh then
+            local sign=Instance.new("BillboardGui")
+            sign.Name="MeadowVillageGateSign"
+            sign.Adornee=gateMesh
+            sign.Size=UDim2.fromOffset(186,32)
+            sign.StudsOffsetWorldSpace=Vector3.new(0,propHeight*.6,0)
+            sign.MaxDistance=95
+            sign.AlwaysOnTop=false
+            sign.Parent=gateMesh
+            local caption=Instance.new("TextLabel")
+            caption.Size=UDim2.fromScale(1,1)
+            caption.BackgroundTransparency=1
+            caption.Font=Enum.Font.GothamBold
+            caption.TextSize=16
+            caption.TextStrokeTransparency=.28
+            caption.TextColor3=Color3.fromRGB(247,219,168)
+            caption.Text=row[6]
+            caption.Parent=sign
+          end
+        end
         if row[1]=="villageFence" or row[1]=="villageCart" then
           for _,mesh in ipairs(model:GetDescendants()) do
             if mesh:IsA("MeshPart") then
@@ -2003,7 +2040,13 @@ local function createMeadowVillage()
   for contractIndex,contract in ipairs(Config.VillageContracts) do
     for sceneIndex,site in ipairs(contract.Sites) do
       local scenePosition=Vector3.new(site[1],3,site[2])
-      local model=worldAsset("ruin",scenePosition,3.8)
+      -- [현장별 실물 단서] 약초 꾸러미=원본 가죽 주머니, 우물 봉인석=원본 석벽,
+      -- 수레 습격=원본 나무 수레. 등록/로딩 실패 시 기존 승인된 유적 메시로만 복구한다.
+      local clueAsset=contractIndex==1 and "item_pouch"
+        or contractIndex==2 and (villageDetailReady and "villageRuinWall" or "ruin")
+        or "villageCart"
+      local model=worldAsset(clueAsset,scenePosition,contractIndex==3 and 5.2 or 3.8)
+      if not model then model=worldAsset("ruin",scenePosition,3.8) end
       if model then
         model.Name="Meadow_Village_Evidence_"..contractIndex.."_"..sceneIndex
         model:SetAttribute("VillageContractIndex",contractIndex)
@@ -2032,13 +2075,8 @@ local function createMeadowVillage()
           caption.Parent=marker
         end
       end
-      -- 실제 숲 외곽까지 이어지는 다져진 길을 Terrain에만 조성한다.
-      for step=1,9 do
-        local t=step/9
-        local x=scenePosition.X*t
-        local z=-146+(scenePosition.Z+146)*t
-        meadowTerrain:FillBall(Vector3.new(x,-1.5,z),3.2,Enum.Material.Ground)
-      end
+      -- 조사 지점까지의 보행길은 위 villageRoadRoutes와 연결한다.
+      -- 우물에서 단서까지 무조건 직선으로 긋던 중복 길은 생성하지 않는다.
       task.wait(.08)
     end
   end
