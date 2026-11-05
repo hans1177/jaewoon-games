@@ -161,6 +161,13 @@ if(process.argv.includes('--monster-assets-only')){
   mushroomking:['Mushroom_King','Quaternius Ultimate Monsters/Mushroom_King','/tmp/mf/enemies'],
   wingdemon:['Demon','Quaternius Ultimate Monsters/Demon','/tmp/mf/enemies'],
   glub:['Glub','Quaternius Ultimate Monsters/Glub','/tmp/mf/enemies'],
+  birb:['Birb','Quaternius Ultimate Monsters/Big/Birb','/tmp/um/assets/Ultimate Monsters/Big/glTF'],
+  cactoro:['Cactoro','Quaternius Ultimate Monsters/Big/Cactoro','/tmp/um/assets/Ultimate Monsters/Big/glTF'],
+  fish:['Fish','Quaternius Ultimate Monsters/Big/Fish','/tmp/um/assets/Ultimate Monsters/Big/glTF'],
+  monkroose:['Monkroose','Quaternius Ultimate Monsters/Big/Monkroose','/tmp/um/assets/Ultimate Monsters/Big/glTF'],
+  ninja:['Ninja','Quaternius Ultimate Monsters/Big/Ninja','/tmp/um/assets/Ultimate Monsters/Big/glTF'],
+  dragonlite:['Dragon','Quaternius Ultimate Monsters/Flying/Dragon','/tmp/um/assets/Ultimate Monsters/Flying/glTF'],
+  hywirl:['Hywirl','Quaternius Ultimate Monsters/Flying/Hywirl','/tmp/um/assets/Ultimate Monsters/Flying/glTF'],
   trex:['Trex','Quaternius Animated Dinosaur Pack','/tmp/qs/public/glb/dinosaurs_pack'],
   triceratops:['Triceratops','Quaternius Animated Dinosaur Pack','/tmp/qs/public/glb/dinosaurs_pack'],
   stegosaurus:['Stegosaurus','Quaternius Animated Dinosaur Pack','/tmp/qs/public/glb/dinosaurs_pack'],
@@ -198,6 +205,10 @@ if(process.argv.includes('--monster-assets-only')){
  const pack=registry.monsterPackV2;
 fs.rmSync('/tmp/kks',{recursive:true,force:true});
  execFileSync('git',['clone','--depth','1','-q','https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0.git','/tmp/kks']);
+ fs.rmSync('/tmp/um',{recursive:true,force:true});
+ execFileSync('git',['clone','--depth','1','--filter=blob:none','--sparse','-q','https://github.com/mlflabs/brain.git','/tmp/um']);
+ execFileSync('git',['-C','/tmp/um','sparse-checkout','set','assets/Ultimate Monsters']);
+ if(!/CC0 1\.0 Universal/.test(fs.readFileSync('/tmp/um/assets/Ultimate Monsters/License.txt','utf8')))throw Error('ULTIMATE_MONSTERS_LICENSE_EVIDENCE_MISSING');
  fs.rmSync('/tmp/mf',{recursive:true,force:true});
  execFileSync('git',['clone','--depth','1','-q','https://github.com/Dallolz/moorfall-assets.git','/tmp/mf']);
  const mfReadme=fs.readFileSync('/tmp/mf/README.md','utf8'),mfLicense=fs.readFileSync('/tmp/mf/LICENSE.md','utf8');
@@ -222,7 +233,7 @@ fs.rmSync('/tmp/kks',{recursive:true,force:true});
  };
  const humanLicense=fs.readFileSync('/tmp/nj-mmo/client/public/models/characters/LICENSE.txt','utf8');
  if(!/Creative Commons Zero, CC0/.test(humanLicense))throw Error('HUMAN_LICENSE_EVIDENCE_MISSING');
- const alreadyBound=new Set(['demon','frostfiend','orc','skullorc','tribal','assassin','yeti','beastman','spiritgolem','raptor','spider','fangspider','bladespider','chieftain','wolf','toad','keltir','goblin','goblinscout','mage','rogue','roguehooded','knight','barbarian','skmage','skminion','skrogue','skwarrior','trex','triceratops','stegosaurus','parasaur','apatosaur','snake','snakeangry','wasp','rat','king','adventurer','punk','farmer','witch','womansoldier','womanmedieval','knightchar','fox','stag','deer','bull','horse','husky','donkey']);
+ const alreadyBound=new Set(['demon','frostfiend','orc','skullorc','tribal','assassin','yeti','beastman','spiritgolem','raptor','spider','fangspider','bladespider','chieftain','wolf','toad','keltir','goblin','goblinscout','mage','rogue','roguehooded','knight','barbarian','skmage','skminion','skrogue','skwarrior','dragon','ghost','ghostskull','mushroomking','wingdemon','glub','trex','triceratops','stegosaurus','parasaur','apatosaur','snake','snakeangry','wasp','rat','king','adventurer','punk','farmer','witch','womansoldier','womanmedieval','knightchar','fox','stag','deer','bull','horse','husky','donkey']);
  for(const [key,[file,origin,dir]] of Object.entries(files)){
   if(alreadyBound.has(key))continue;
   let assetId=String(pack.assetIds[key]||'');
