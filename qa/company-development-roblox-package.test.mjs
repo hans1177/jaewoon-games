@@ -1723,7 +1723,7 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.match(client,/south.Text="S"/);
   assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,1\)/);
   assert.match(client,/radarTitle.Position=UDim2.fromOffset\(0,mapHeight\+4\)/);
-  assert.match(client,/radarCoordinates.Position=UDim2.new\(\.5,2,0,mapHeight\+4\)/);
+  assert.match(client,/radarCoordinates.Position=UDim2.new\(\.66,2,0,mapHeight\+4\)/);
   assert.match(client,/radarCoordinates.TextSize=9/);
   assert.match(client,/radarTitle.Font=Enum.Font.Gotham/);
   assert.match(client,/radarTitle.Text=areaName/);

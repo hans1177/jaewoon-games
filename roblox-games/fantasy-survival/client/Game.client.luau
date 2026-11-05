@@ -4616,7 +4616,7 @@ meadowClimateChip.Name="MeadowClimateStatus"
 meadowClimateChip.Position=UDim2.fromOffset(9,203)
 meadowClimateChip.Size=UDim2.fromOffset(202,28)
 meadowClimateChip.BackgroundColor3=Color3.fromRGB(20,44,46)
-meadowClimateChip.BackgroundTransparency=.13
+meadowClimateChip.BackgroundTransparency=1 -- 글씨만 표시
 meadowClimateChip.BorderSizePixel=0
 meadowClimateChip.TextColor3=Color3.fromRGB(243,249,235)
 meadowClimateChip.TextSize=13
@@ -4712,9 +4712,7 @@ end
 local function renderMeadowClimate()
   local v=gui.AbsoluteSize
   local short=v.Y>0 and v.Y<440
-  meadowClimateChip.Position=UDim2.fromOffset(9,191)
-  meadowClimateChip.Size=UDim2.fromOffset(125,24)
-  meadowClimateChip.TextSize=10
+  -- 위치·크기는 지도 아래 줄(초원 마을 옆)에서 layoutMeadowRadar가 정한다.
   meadowClimateChip.Visible=gui:GetAttribute("GameMenuOpen")~=true
     and gui:GetAttribute("StoryJournalOpen")~=true
   if not meadowClimateWorld then return end
@@ -6046,10 +6044,20 @@ local function layoutMeadowRadar()
   radarField.Position=UDim2.new(.5,0,0,1)
   radarField.Size=UDim2.fromOffset(mapWidth,mapHeight)
   radarTitle.Position=UDim2.fromOffset(0,mapHeight+4)
-  radarTitle.Size=UDim2.new(.5,-2,0,16)
+  radarTitle.Size=UDim2.new(.3,-2,0,16)
   radarTitle.TextSize=10
-  radarCoordinates.Position=UDim2.new(.5,2,0,mapHeight+4)
-  radarCoordinates.Size=UDim2.new(.5,-2,0,16)
+  -- [지도 아래 한 줄] 초원 마을 · 날씨/시간(글씨만) · 좌표
+  local climateChip=gui:FindFirstChild("MeadowClimateStatus") or meadowRadar:FindFirstChild("MeadowClimateStatus")
+  if climateChip then
+    climateChip.Parent=meadowRadar
+    climateChip.AnchorPoint=Vector2.zero
+    climateChip.Position=UDim2.new(.3,0,0,mapHeight+4)
+    climateChip.Size=UDim2.new(.36,0,0,16)
+    climateChip.TextSize=10
+    climateChip.ZIndex=10
+  end
+  radarCoordinates.Position=UDim2.new(.66,2,0,mapHeight+4)
+  radarCoordinates.Size=UDim2.new(.34,-2,0,16)
   radarCoordinates.TextSize=9
   meadowRadar.Visible=meadowRadar:GetAttribute("ReferenceRadarVisible")==true and gui:GetAttribute("GameMenuOpen")~=true
 end
@@ -6245,7 +6253,7 @@ local function updateMeadowQuestDirection()
     meadowQuestNavLabel.Text=string.format("◆ %s · %s %d 거리",best.ObjectText,direction,math.floor(bestDistance+.5))
     questMarkerText.Text="◆ "..bestKind
     questWorldMarker.Adornee=bestHost
-    questWorldMarker.Enabled=true
+    questWorldMarker.Enabled=false -- [요청] 화면의 "메인 목표" 말풍선 표시 제거
   elseif meadowTutorialStep==5 then
     meadowQuestNavLabel.Text="◆ 주민·조사 대상 가까이 이동"
   elseif stage==2 and (player:GetAttribute("QuestWood") or 0)>0 then
