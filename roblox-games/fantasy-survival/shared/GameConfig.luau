@@ -98,6 +98,35 @@ local Config = {
      Instruction="마을 서쪽 숲의 우두머리 늑대 1마리 처치",
      Story="동료 연구원과 다음 탐사를 준비하려면 초원의 위협을 먼저 정리해야 한다. 수문장의 공격 예고를 보고, 연타는 완벽 막기로 끊어라."},
   },
+  -- [1부 구성] 지역 4개 + 엔딩 없는 메인 스토리. 2부 이후 지역은 이름만 예약한다.
+  -- 상태 Open만 현재 플레이 가능하고 나머지는 지역 맵·몬스터·퀘스트 구현 전까지 잠금이다.
+  Regions = {
+    {Id="meadow",Name="초원 마을",Part=1,Status="Open",Story="연구 일지의 시작. 마을 사람들과 늑대 우두머리의 위협."},
+    {Id="worldtree",Name="세계수 숲",Part=1,Status="Planned",UnlockMainStage=7,Story="사라진 기사단의 깃발과 저주받은 늑대 울음. 닉의 흔적을 쫓는다."},
+    {Id="volcano",Name="불꽃 화산 협곡",Part=1,Status="Planned",UnlockMainStage=10,Story="기사단 야영지 잔해와 화염 골렘. 미나가 남긴 표식이 처음 나타난다."},
+    {Id="oasis",Name="오아시스 지하",Part=1,Status="Planned",UnlockMainStage=11,Story="거대 벌레의 소굴. 1부 마지막에 미나의 단서를 찾는다."},
+    {Id="mist-swamp",Name="안개 늪",Part=2,Status="Reserved"},
+    {Id="frost-plateau",Name="서리 고원",Part=2,Status="Reserved"},
+    {Id="sunken-capital",Name="잠긴 왕도",Part=2,Status="Reserved"},
+    {Id="star-lake",Name="별빛 호수",Part=2,Status="Reserved"},
+    {Id="dragon-ridge",Name="용의 등뼈 산맥",Part=2,Status="Reserved"},
+    {Id="abyss-gate",Name="심연의 문",Part=2,Status="Reserved"},
+  },
+  -- [1부 메인 스토리 12장] 7~12장은 해당 지역 구현 후 열린다. 1부는 엔딩 없이 미나의 단서에서 끝난다.
+  MainStoryPart1 = {
+    {Stage=7,Name="07 · 사라진 기사단의 깃발",Region="worldtree",Text="세계수 숲 입구에서 실종된 기사단의 찢어진 깃발을 발견한다."},
+    {Stage=8,Name="08 · 저주받은 울음",Region="worldtree",Text="깃발 곁에서 사람과 늑대가 뒤섞인 괴물이 나타난다. 기사단원 닉이 저주로 늑대인간이 된 모습이다."},
+    {Stage=9,Name="09 · 닉의 맹세",Region="worldtree",Text="닉을 쓰러뜨리지 않고 저주를 눌러 정신을 되찾게 한다. 닉이 첫 동료로 합류한다(저주가 심해지면 폭주)."},
+    {Stage=10,Name="10 · 불타는 야영지",Region="volcano",Text="화산 협곡의 기사단 야영지에서 미나의 표식이 새겨진 갑옷 조각을 찾는다."},
+    {Stage=11,Name="11 · 모래 아래의 기록",Region="oasis",Text="오아시스 지하로 내려가 거대 벌레를 물리치고 기사단 마지막 기록을 회수한다."},
+    {Stage=12,Name="12 · 미나의 단서",Region="oasis",Text="기록 끝에서 미나의 손글씨와 닉의 저주를 만든 자의 이름이 드러난다. 이야기는 2부로 이어진다."},
+  },
+  -- [파티 4인] 플레이어 + 메인 동료 1명 + 서브 퀘스트 동료 2명. 영입 기능은 구현 전까지 잠금이다.
+  PartyMembers = {
+    {Id="nick",Name="닉",Role="늑대인간 전사",Source="Main",UnlockMainStage=9,Story="저주로 늑대 괴물이 된 기사단원. 메인 1부에서 합류한다."},
+    {Id="sera",Name="세라",Role="방패 기사",Source="Side",Story="실종된 다른 기사단의 방패 기사. 서브 의뢰 '무너진 방패선'으로 영입."},
+    {Id="rowen",Name="로웬",Role="추적 궁수",Source="Side",Story="실종된 다른 기사단의 궁수. 서브 의뢰 '마지막 화살'로 영입."},
+  },
   -- [초원 마을 의뢰] 주민 진술 1개 · 현장 단서 1개 · 실전 전투 1회.
   -- 기존 저장 키·선택별 보상은 유지하고, 이전 조사 기록 비트는 마이그레이션 호환한다.
   VillageContracts = {

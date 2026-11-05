@@ -1206,7 +1206,21 @@ local function renderMeadowPages()
     local progress=index<companionStage and request.Goal or index==companionStage and (player:GetAttribute("CompanionQuestProgress") or 0) or 0
     companionLines[#companionLines+1]=string.format("【%s】 %s\n%s\n%s  %d/%d",status,request.Name,request.Message,request.Instruction,progress,request.Goal)
   end
-  meadowLabels[6].Text=table.concat(companionLines,"\n\n")
+  -- [세계 탭] 지역 4개(1부)와 파티 4인 구성을 한곳에 표시한다. 구현 전 지역·영입은 잠금으로 보여 준다.
+  local worldLines={"세계 · 1부 지역 4곳 (엔딩 없이 진행)"}
+  local statusText={Open="탐험 가능",Planned="준비 중",Reserved="2부 이후"}
+  for index,region in ipairs(Config.Regions or {})do
+    worldLines[#worldLines+1]=string.format("%d. %s  [%s]%s",index,region.Name,statusText[region.Status] or "잠김",region.Story and ("\n   "..region.Story) or "")
+  end
+  worldLines[#worldLines+1]="\n파티 (최대 4인)\n1. 나 (플레이어)"
+  for index,member in ipairs(Config.PartyMembers or {})do
+    worldLines[#worldLines+1]=string.format("%d. %s · %s  [%s]\n   %s",index+1,member.Name,member.Role,
+      member.Source=="Main" and "메인 동료 · 준비 중" or "서브 동료 · 준비 중",member.Story)
+  end
+  worldLines[#worldLines+1]="\n1부 메인 이야기 (07~12장)"
+  for _,beat in ipairs(Config.MainStoryPart1 or {})do worldLines[#worldLines+1]=beat.Name.."\n   "..beat.Text end
+  meadowLabels[6].Text=table.concat(worldLines,"\n").."\n\n"..table.concat(companionLines,"\n\n")
+  meadowLabels[3].Text=meadowLabels[5].Text.."\n\n"..meadowLabels[3].Text
   for _,button in ipairs(meadowHelperButtons) do
     button.Active=ready
     button.TextTransparency=ready and 0 or .5
