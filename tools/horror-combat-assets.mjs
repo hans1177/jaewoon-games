@@ -212,7 +212,9 @@ fs.rmSync('/tmp/kks',{recursive:true,force:true});
  };
  const humanLicense=fs.readFileSync('/tmp/nj-mmo/client/public/models/characters/LICENSE.txt','utf8');
  if(!/Creative Commons Zero, CC0/.test(humanLicense))throw Error('HUMAN_LICENSE_EVIDENCE_MISSING');
+ const alreadyBound=new Set(['demon','frostfiend','orc','skullorc','tribal','assassin','yeti','beastman','spiritgolem','raptor','goblin','goblinscout','spider','fangspider','bladespider','chieftain','wolf','toad','keltir','mage','rogue','roguehooded','knight','barbarian']);
  for(const [key,[file,origin,dir]] of Object.entries(files)){
+  if(alreadyBound.has(key))continue;
   let assetId=String(pack.assetIds[key]||'');
   if(!/^[1-9]\d*$/.test(assetId)){
    const root=dir&&dir.startsWith('/')?dir:'/tmp/nj-mmo/client/public/models/'+(dir||'monsters');
