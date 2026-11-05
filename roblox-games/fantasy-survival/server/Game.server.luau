@@ -3889,7 +3889,8 @@ local function updateEnemyAI(dt,now)
           local offset=Vector3.new(desired.X-root.Position.X,0,desired.Z-root.Position.Z)
           if offset.Magnitude>1 and offset.Magnitude<closest then
             closest=offset.Magnitude
-            escape=offset.Unit*math.min(9,(14-closest)*.85)
+            local deerFlee=animal.model:GetAttribute("MeadowWildlife")=="deer"
+            escape=offset.Unit*math.min(deerFlee and 18 or 9,(14-closest)*(deerFlee and 1.7 or .85))
           end
         end
       end
@@ -3921,6 +3922,10 @@ local function updateEnemyAI(dt,now)
         animal.nextGroundSample=now+.5
       end
       desired+=Vector3.new(0,animal.groundDelta or 0,0)
+      -- [사슴 도약] 도망칠 땐 갤럽에 맞춰 위로 뛰어오르며 달린다(표시용 이동, 판정 없음).
+      if animalMode=="RUN" then
+        desired+=Vector3.new(0,math.abs(math.sin(now*7.5))*1.1,0)
+      end
       local previous=animal.position or animal.origin
       local movement=Vector3.new(desired.X-previous.X,0,desired.Z-previous.Z)
       if movement.Magnitude>.025 then animal.visualFacing=movement.Unit end
