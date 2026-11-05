@@ -16,6 +16,8 @@ local D = {
 	Combat = require("./Shared/Combat"),
 	Bosses = require("./Shared/Bosses"),
 	Specialties = require("./Shared/Specialties"),
+	Facilities = require("./Shared/Facilities"),
+	Story = require("./Shared/Story"),
 	Harbor = require("./Shared/Harbor"),
 	SeaRoutes = require("./Shared/SeaRoutes"),
 }
@@ -141,6 +143,13 @@ do
 	end
 	for _, b in D.Bosses.Bosses do
 		obtainable[b.cardId] = true
+	end
+	for _, e in D.Story.Events do
+		for _, c in e.choices do
+			if c.effect.cardId then
+				obtainable[c.effect.cardId] = true
+			end
+		end
 	end
 	for _, c in D.Cards.Cards do
 		check("card has an acquisition path " .. c.id, obtainable[c.id] == true)
@@ -1141,6 +1150,106 @@ do
 	check("harbor survives save", back.harbor[st.portId] == st.harbor[st.portId])
 	local evil = S.State.sanitize({ nationId = "england", startYear = 1700, harbor = { nowhere = 5, london = -9, dublin = 77 } })
 	check("harbor sanitized", evil.harbor.nowhere == nil and evil.harbor.london == 0 and evil.harbor.dublin == 77)
+end
+
+-- 시설: 은행, 길드, 왕궁, 이야기
+do
+	local function at(portId)
+		local st = newState("england")
+		st.portId = portId
+		st.coins = 5000
+		st.fame = 500
+		return st
+	end
+	-- 은행
+	local st = at("london")
+	check("bank at london", act(st, "Deposit", { amount = 1000 }) and st.bank.deposit == 1000 and st.coins == 4000)
+	check("deposit more than owned clamps", act(st, "Deposit", { amount = 999999 }) and st.coins == 0)
+	st.day += 60
+	act(st, "Withdraw", { amount = 100 })
+	check("deposit interest after 60 days", st.bank.deposit > 5000 - 100, st.bank.deposit)
+	check("bad amount rejected", not act(st, "Deposit", { amount = -5 }) and not act(st, "Deposit", { amount = 0 / 0 }))
+	local st2 = at("dublin")
+	check("no bank at dublin", not act(st2, "Deposit", { amount = 10 }))
+	st2 = at("london")
+	st2.fame = 0
+	check("loan limit by fame", not act(st2, "Borrow", { amount = D.Facilities.BANK.LOAN_BASE + 1 }) == false)
+	check("loan capped", st2.bank.loan == D.Facilities.BANK.LOAN_BASE)
+	st2.day += 90
+	act(st2, "Repay", { amount = 1 })
+	check("loan interest grows", st2.bank.loan > D.Facilities.BANK.LOAN_BASE)
+	local debt = st2.bank.loan
+	st2.coins = 99999
+	act(st2, "Repay", { amount = 999999 })
+	check("repay clears", st2.bank.loan == 0 and st2.coins == 99999 - debt)
+	-- 길드 계약
+	local g = at("london")
+	local offers = S.Facility.offers(g)
+	check("3 guild offers", #offers == 3)
+	check("offers are stable", S.Facility.offers(g)[1].goodId == offers[1].goodId and S.Facility.offers(g)[2].toPortId == offers[2].toPortId)
+	check("no offers without guild", #S.Facility.offers(at("naples")) == 0)
+	check("accept contract", act(g, "AcceptContract", { index = 1 }) and g.contract ~= nil)
+	check("second contract rejected", not act(g, "AcceptContract", { index = 2 }))
+	check("turn in wrong port rejected", not act(g, "TurnInContract", {}))
+	g.portId = g.contract.toPortId
+	check("turn in without goods rejected", not act(g, "TurnInContract", {}))
+	g.cargo[g.contract.goodId] = g.contract.amount
+	local reward, coins0 = g.contract.reward, g.coins
+	check("turn in pays", act(g, "TurnInContract", {}) and g.coins == coins0 + reward and g.contract == nil)
+	g.portId = "london"
+	act(g, "AcceptContract", { index = 1 })
+	g.day += D.Facilities.GUILD.DEADLINE_DAYS + 1
+	g.portId = g.contract.toPortId
+	g.cargo[g.contract.goodId] = 99
+	check("expired contract rejected", not act(g, "TurnInContract", {}))
+	-- 왕궁
+	local pal = at("london")
+	pal.fame = 10
+	check("title needs fame", not act(pal, "Audience", {}))
+	pal.fame = 60
+	local c0 = pal.coins
+	check("knight title", act(pal, "Audience", {}) and pal.title == 1 and pal.coins == c0 + D.Facilities.TITLES[1].coins)
+	check("title sell bonus", S.Facility.titleBonus(pal) == D.Facilities.TITLE_SELL_BONUS)
+	check("next title needs more fame", not act(pal, "Audience", {}))
+	check("no palace at dublin", not act(at("dublin"), "Audience", {}))
+	-- 이야기
+	local s1 = at("london")
+	s1.fame = 0
+	check("story needs choice", not act(s1, "PlayStory", { eventId = "lc_1" }))
+	check("story wrong port", not act(s1, "PlayStory", { eventId = "lc_2", choice = 1 }))
+	check("story chapter 1", act(s1, "PlayStory", { eventId = "lc_1", choice = 1 }) and s1.story.lc_1 == 1)
+	check("story not repeatable", not act(s1, "PlayStory", { eventId = "lc_1", choice = 1 }))
+	local v = S.View.build(s1, ctx)
+	check("view story hides seen", #v.story == 0)
+	s1.portId = "lisbon"
+	check("chapter 2 available", #S.View.build(s1, ctx).story == 1)
+	check("chapter 2 gives card", act(s1, "PlayStory", { eventId = "lc_2", choice = 1 }) and s1.discovered.relic_lostchart_1 == true)
+	-- 거절 선택은 후속 이야기를 막는다
+	local s2 = at("london")
+	act(s2, "PlayStory", { eventId = "lc_1", choice = 2 })
+	s2.portId = "lisbon"
+	check("declined path blocks chapter 2", not act(s2, "PlayStory", { eventId = "lc_2", choice = 1 }))
+	-- 선택 조건
+	local s3 = at("venice")
+	s3.story = { lc_1 = 1, lc_2 = 1 }
+	s3.fame = 50
+	check("fame-gated choice rejected", not act(s3, "PlayStory", { eventId = "lc_3", choice = 2 }))
+	check("paid choice needs coins", (function() s3.coins = 100 return not act(s3, "PlayStory", { eventId = "lc_3", choice = 1 }) end)())
+	-- 마지막 장은 세 조각이 필요하다
+	local s5 = at("amsterdam")
+	s5.story = { lc_1 = 1, lc_2 = 1, lc_3 = 1, lc_4 = 1 }
+	check("finale needs cards", not act(s5, "PlayStory", { eventId = "lc_5", choice = 1 }))
+	for _, c in { "relic_lostchart_1", "relic_lostchart_2", "relic_lostchart_3" } do
+		s5.discovered[c] = true
+	end
+	check("finale works", act(s5, "PlayStory", { eventId = "lc_5", choice = 1 }) and s5.discovered.relic_lostchart == true)
+	-- 저장
+	local back = S.State.sanitize(S.State.serialize(g))
+	check("facility state survives save", back.title == g.title and back.bank.deposit == g.bank.deposit)
+	local back2 = S.State.sanitize(S.State.serialize(s5))
+	check("story survives save", back2.story.lc_5 == 1)
+	local evil = S.State.sanitize({ nationId = "england", startYear = 1700, title = 99, story = { nope = 1, lc_1 = 9 }, bank = { deposit = -5, loan = "x" }, contract = { goodId = "nope" } })
+	check("facility sanitized", evil.title == #D.Facilities.TITLES and evil.story.nope == nil and evil.story.lc_1 == nil and evil.bank.deposit == 0 and evil.contract == nil)
 end
 
 -- 바닷길: 모든 항구 쌍에 경로가 있고 양 끝이 항구 근처이며 방향이 뒤집힌다

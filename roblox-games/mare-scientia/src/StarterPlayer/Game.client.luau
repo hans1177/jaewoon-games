@@ -488,6 +488,250 @@ local function sail(portId)
 	end
 end
 
+-- 이야기 장면: 코드로 그린 일러스트 + 대화 + 선택지 ----------------------------------------
+
+local function mkRound(parent, pos, size, color, alpha, anchor)
+	local f = mkBox(parent, pos, size, color, alpha)
+	if anchor then
+		f.AnchorPoint = anchor
+	end
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(1, 0)
+	c.Parent = f
+	return f
+end
+
+local ART = {
+	palace = { sky = Color3.fromRGB(235, 214, 170), floor = Color3.fromRGB(120, 60, 60) },
+	tavern = { sky = Color3.fromRGB(90, 56, 38), floor = Color3.fromRGB(60, 38, 26) },
+	harbor = { sky = Color3.fromRGB(240, 170, 110), floor = Color3.fromRGB(46, 96, 140) },
+	ruins = { sky = Color3.fromRGB(170, 150, 140), floor = Color3.fromRGB(88, 80, 74) },
+	observatory = { sky = Color3.fromRGB(16, 22, 52), floor = Color3.fromRGB(40, 44, 60) },
+	storm = { sky = Color3.fromRGB(52, 62, 78), floor = Color3.fromRGB(28, 52, 80) },
+	library = { sky = Color3.fromRGB(110, 76, 50), floor = Color3.fromRGB(70, 46, 32) },
+}
+
+local function paintScene(parent, art, t)
+	local pal = ART[art] or ART.harbor
+	parent.BackgroundColor3 = pal.sky
+	mkBox(parent, UDim2.fromScale(0, 0.62), UDim2.fromScale(1, 0.38), pal.floor)
+	if art == "palace" then
+		for i = 0, 3 do
+			mkBox(parent, UDim2.fromScale(0.08 + i * 0.28, 0.1), UDim2.fromScale(0.06, 0.52), Color3.fromRGB(245, 235, 210))
+			mkBox(parent, UDim2.fromScale(0.07 + i * 0.28, 0.08), UDim2.fromScale(0.08, 0.03), Color3.fromRGB(224, 190, 110))
+		end
+		mkBox(parent, UDim2.fromScale(0.3, 0.12), UDim2.fromScale(0.4, 0.4), Color3.fromRGB(170, 200, 230))
+		mkBox(parent, UDim2.fromScale(0.42, 0.04), UDim2.fromScale(0.16, 0.16), Color3.fromRGB(150, 30, 40))
+		mkBox(parent, UDim2.fromScale(0.28, 0.62), UDim2.fromScale(0.44, 0.38), Color3.fromRGB(150, 30, 40))
+	elseif art == "tavern" then
+		for i = 0, 6 do
+			mkBox(parent, UDim2.fromScale(i / 7, 0), UDim2.fromScale(0.005, 0.62), Color3.fromRGB(60, 38, 26))
+		end
+		mkRound(parent, UDim2.fromScale(0.82, 0.22), UDim2.fromOffset(60, 60), Color3.fromRGB(255, 210, 110), 0.35, Vector2.new(0.5, 0.5))
+		mkBox(parent, UDim2.fromScale(0.8, 0.22), UDim2.fromOffset(6, 18), Color3.fromRGB(255, 240, 200))
+		for i = 0, 2 do
+			mkBox(parent, UDim2.fromScale(0.05 + i * 0.1, 0.5), UDim2.fromScale(0.08, 0.2), Color3.fromRGB(120, 80, 46))
+		end
+		mkBox(parent, UDim2.fromScale(0, 0.7), UDim2.fromScale(1, 0.06), Color3.fromRGB(130, 88, 52))
+	elseif art == "harbor" then
+		mkRound(parent, UDim2.fromScale(0.72, 0.3), UDim2.fromOffset(64, 64), Color3.fromRGB(255, 226, 150), 0, Vector2.new(0.5, 0.5))
+		mkBox(parent, UDim2.fromScale(0, 0.6), UDim2.fromScale(1, 0.02), Color3.fromRGB(255, 220, 180), 0.4)
+		for i = 0, 2 do
+			mkBox(parent, UDim2.fromScale(0.1 + i * 0.12, 0.3 - i * 0.03), UDim2.fromOffset(4, 90), Color3.fromRGB(70, 45, 28))
+			mkBox(parent, UDim2.fromScale(0.1 + i * 0.12, 0.34 - i * 0.03), UDim2.fromOffset(34, 38), Color3.fromRGB(245, 238, 220))
+		end
+		mkBox(parent, UDim2.fromScale(0, 0.78), UDim2.fromScale(0.5, 0.04), Color3.fromRGB(110, 80, 56))
+	elseif art == "ruins" then
+		for i = 0, 4 do
+			mkBox(parent, UDim2.fromScale(0.08 + i * 0.19, 0.62 - (0.16 + (i % 3) * 0.08)), UDim2.fromScale(0.07, 0.16 + (i % 3) * 0.08), Color3.fromRGB(200, 190, 175))
+		end
+		local v = mkBox(parent, UDim2.fromScale(0.6, 0.12), UDim2.fromScale(0.36, 0.5), Color3.fromRGB(80, 66, 62))
+		v.Rotation = 0
+		mkRound(parent, UDim2.fromScale(0.78, 0.1), UDim2.fromOffset(70, 40), Color3.fromRGB(110, 100, 100), 0.3, Vector2.new(0.5, 0.5))
+	elseif art == "observatory" then
+		for i = 1, 26 do
+			mkBox(parent, UDim2.fromScale((i * 0.137) % 1, (i * 0.091) % 0.55), UDim2.fromOffset(2, 2), Color3.new(1, 1, 1), 0.2)
+		end
+		mkRound(parent, UDim2.fromScale(0.18, 0.18), UDim2.fromOffset(44, 44), Color3.fromRGB(240, 236, 210), 0, Vector2.new(0.5, 0.5))
+		local dome = mkRound(parent, UDim2.fromScale(0.7, 0.62), UDim2.fromOffset(190, 150), Color3.fromRGB(86, 90, 112), 0, Vector2.new(0.5, 1))
+		mkBox(dome, UDim2.fromScale(0.45, 0), UDim2.fromScale(0.1, 0.6), Color3.fromRGB(20, 24, 40))
+	elseif art == "storm" then
+		for i = 0, 3 do
+			mkRound(parent, UDim2.fromScale(0.1 + i * 0.25, 0.1 + (i % 2) * 0.07), UDim2.fromOffset(150, 46), Color3.fromRGB(34, 40, 52), 0.1, Vector2.new(0.5, 0.5))
+		end
+		mkBox(parent, UDim2.fromScale(0.62, 0.15), UDim2.fromOffset(5, 80), Color3.fromRGB(255, 245, 180))
+		for i = 1, 12 do
+			mkBox(parent, UDim2.fromScale((i * 0.19) % 1, 0.64 + (i % 5) * 0.06), UDim2.fromOffset(46, 3), Color3.new(1, 1, 1), 0.5)
+		end
+	elseif art == "library" then
+		for i = 0, 3 do
+			mkBox(parent, UDim2.fromScale(0.04 + i * 0.25, 0.08), UDim2.fromScale(0.2, 0.54), Color3.fromRGB(88, 56, 36))
+			for r = 0, 3 do
+				mkBox(parent, UDim2.fromScale(0.05 + i * 0.25, 0.12 + r * 0.13), UDim2.fromScale(0.18, 0.09), Color3.fromRGB(150 - i * 14, 100 + r * 20, 70))
+			end
+		end
+	end
+end
+
+local function playStory(ev)
+	local overlay = Instance.new("Frame")
+	overlay.Name = "StoryScene"
+	overlay.Size = UDim2.fromScale(1, 1)
+	overlay.BackgroundColor3 = Color3.new(0, 0, 0)
+	overlay.BorderSizePixel = 0
+	overlay.ZIndex = 60
+	overlay.Parent = gui
+	local picture = mkBox(overlay, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.56), Color3.new(0, 0, 0))
+	picture.ClipsDescendants = true
+	paintScene(picture, ev.art)
+
+	-- 등장 인물 (실루엣): 머리, 몸, 두건
+	local npc = mkBox(picture, UDim2.fromScale(0.5, 0.95), UDim2.fromOffset(90, 150), Color3.new(0, 0, 0), 1)
+	npc.AnchorPoint = Vector2.new(0.5, 1)
+	local body = mkBox(npc, UDim2.fromOffset(10, 56), UDim2.fromOffset(70, 94), Color3.fromRGB(58, 44, 70))
+	local bc = Instance.new("UICorner")
+	bc.CornerRadius = UDim.new(0.3, 0)
+	bc.Parent = body
+	mkBox(npc, UDim2.fromOffset(2, 66), UDim2.fromOffset(86, 6), Color3.fromRGB(224, 170, 69))
+	mkRound(npc, UDim2.fromOffset(45, 34), UDim2.fromOffset(40, 40), Color3.fromRGB(232, 196, 160), 0, Vector2.new(0.5, 0.5))
+	local hat = mkBox(npc, UDim2.fromOffset(20, 6), UDim2.fromOffset(50, 18), Color3.fromRGB(40, 30, 52))
+	local hc = Instance.new("UICorner")
+	hc.CornerRadius = UDim.new(0.5, 0)
+	hc.Parent = hat
+
+	local chapter = Instance.new("TextLabel")
+	chapter.BackgroundTransparency = 1
+	chapter.Position = UDim2.fromOffset(12, 8)
+	chapter.Size = UDim2.new(1, -24, 0, 22)
+	chapter.Font = Enum.Font.GothamBold
+	chapter.TextSize = 15
+	chapter.TextXAlignment = Enum.TextXAlignment.Left
+	chapter.TextColor3 = Color3.new(1, 1, 1)
+	chapter.TextStrokeTransparency = 0.4
+	chapter.Text = (if ev.chapter then ev.chapter .. " · " else "") .. ev.title
+	chapter.ZIndex = 61
+	chapter.Parent = overlay
+
+	-- 대화창
+	local box = mkBox(overlay, UDim2.fromScale(0, 0.56), UDim2.fromScale(1, 0.44), Color3.fromRGB(24, 28, 38))
+	local nameTag = Instance.new("TextLabel")
+	nameTag.BackgroundTransparency = 1
+	nameTag.Position = UDim2.fromOffset(14, 6)
+	nameTag.Size = UDim2.new(1, -28, 0, 20)
+	nameTag.Font = Enum.Font.GothamBold
+	nameTag.TextSize = 14
+	nameTag.TextXAlignment = Enum.TextXAlignment.Left
+	nameTag.TextColor3 = COLORS.gold
+	nameTag.Text = ev.npc
+	nameTag.Parent = box
+	local text = Instance.new("TextLabel")
+	text.BackgroundTransparency = 1
+	text.Position = UDim2.fromOffset(14, 30)
+	text.Size = UDim2.new(1, -28, 1, -40)
+	text.Font = Enum.Font.Gotham
+	text.TextSize = 15
+	text.TextWrapped = true
+	text.TextXAlignment = Enum.TextXAlignment.Left
+	text.TextYAlignment = Enum.TextYAlignment.Top
+	text.TextColor3 = COLORS.text
+	text.Parent = box
+	local next = Instance.new("TextButton")
+	next.BackgroundTransparency = 1
+	next.Size = UDim2.fromScale(1, 1)
+	next.Text = ""
+	next.ZIndex = 2
+	next.Parent = box
+	local hint = Instance.new("TextLabel")
+	hint.BackgroundTransparency = 1
+	hint.Position = UDim2.new(0, 0, 1, -20)
+	hint.Size = UDim2.new(1, -12, 0, 16)
+	hint.Font = Enum.Font.Gotham
+	hint.TextSize = 11
+	hint.TextXAlignment = Enum.TextXAlignment.Right
+	hint.TextColor3 = COLORS.muted
+	hint.Text = "화면을 누르면 다음"
+	hint.Parent = box
+
+	local function typeLine(line)
+		text.Text = line
+		text.MaxVisibleGraphemes = 0
+		local n = utf8.len(line) or #line
+		for i = 1, n do
+			if not overlay.Parent then
+				return
+			end
+			text.MaxVisibleGraphemes = i
+			task.wait(0.015)
+		end
+		text.MaxVisibleGraphemes = -1
+	end
+
+	local done = false
+	local function close()
+		done = true
+		overlay:Destroy()
+	end
+	local idx = 1
+	local advancing = false
+	local function showChoices()
+		next:Destroy()
+		hint.Text = ""
+		text.Size = UDim2.new(1, -28, 0, 40)
+		text.Text = ev.lines[#ev.lines]
+		text.TextSize = 13
+		local list = Instance.new("Frame")
+		list.BackgroundTransparency = 1
+		list.Position = UDim2.fromOffset(14, 70)
+		list.Size = UDim2.new(1, -28, 1, -76)
+		list.Parent = box
+		local lay = Instance.new("UIListLayout")
+		lay.Padding = UDim.new(0, 5)
+		lay.Parent = list
+		for _, ch in ev.choices do
+			local label = ch.text
+			local b = mkButton(list, label, COLORS.blue, UDim2.new(1, 0, 0, 36), function()
+				local result = call("PlayStory", { eventId = ev.id, choice = ch.index })
+				if result and result.ok then
+					for _, c in list:GetChildren() do
+						if c:IsA("TextButton") then
+							c:Destroy()
+						end
+					end
+					nameTag.Text = ""
+					text.TextSize = 14
+					text.Size = UDim2.new(1, -28, 1, -80)
+					text.Text = result.message
+					text.MaxVisibleGraphemes = -1
+					local ok = mkButton(list, "닫기", COLORS.gold, UDim2.new(1, 0, 0, 36), close, true)
+					ok.LayoutOrder = 9
+					list.Position = UDim2.new(0, 14, 1, -46)
+					list.Size = UDim2.new(1, -28, 0, 40)
+				end
+			end, true)
+			b.TextSize = 13
+		end
+	end
+	next.Activated:Connect(function()
+		if advancing then
+			return
+		end
+		advancing = true
+		idx += 1
+		if idx > #ev.lines then
+			showChoices()
+		else
+			typeLine(ev.lines[idx])
+		end
+		advancing = false
+	end)
+	task.spawn(function()
+		typeLine(ev.lines[1])
+	end)
+	while not done and overlay.Parent do
+		task.wait(0.2)
+	end
+end
+
 -- 탭 화면 -------------------------------------------------------------------
 
 local order = 0
@@ -512,6 +756,80 @@ local function renderHarbor()
 		local nextText = if h.nextAt then string.format("다음 단계까지 %d 더 투자", h.nextAt - h.invested) else "최고 단계예요"
 		return mkLabel(content, string.format("누적 투자 %d · %s\n혜택: 이 항구에서 팔 때 +%d%%, 수리·고용·보급 비용 -%d%%", h.invested, nextText, math.floor(h.sellBonus * 100 + 0.5), math.floor(h.discount * 100 + 0.5)), 13, COLORS.text, false)
 	end)
+	local function section(title)
+		add(function() return mkHeader(content, title) end)
+	end
+	local fac = {}
+	for _, k in view.facilities do
+		fac[k] = true
+	end
+
+	if #view.story > 0 then
+		section("이야기")
+		for _, ev in view.story do
+			add(function()
+				return mkRow(content, ev.title, (if ev.chapter then ev.chapter .. " · " else "") .. ev.npc, {
+					{ text = "듣기", color = COLORS.gold, onClick = function() playStory(ev) end },
+				}, 52)
+			end)
+		end
+	end
+
+	if fac.bank then
+		local b = view.bank
+		section("은행")
+		add(function()
+			return mkLabel(content, string.format("예금 %d (30일 이자 %.1f%%)\n대출 %d / 한도 %d (30일 이자 %d%%)", b.deposit, b.depositRate * 100, b.loan, b.limit, b.loanRate * 100), 13, COLORS.text, false)
+		end)
+		for _, amt in { 100, 1000, 10000 } do
+			add(function()
+				return mkRow(content, string.format("%d 코인", amt), "예금 / 인출 / 대출 / 상환", {
+					{ text = "예금", color = COLORS.green, onClick = function() call("Deposit", { amount = amt }) end },
+					{ text = "인출", color = COLORS.grey, onClick = function() call("Withdraw", { amount = amt }) end },
+					{ text = "대출", color = COLORS.gold, onClick = function() call("Borrow", { amount = amt }) end },
+					{ text = "상환", color = COLORS.blue, onClick = function() call("Repay", { amount = amt }) end },
+				}, 56)
+			end)
+		end
+	end
+
+	if fac.guild then
+		section("상인 길드")
+		local g = view.guild
+		if g.contract then
+			local c = g.contract
+			add(function()
+				return mkRow(content, string.format("진행 중: %s %d개 → %s", c.goodName, c.amount, c.toPortName), string.format("보상 %d · 남은 %d일 · 보유 %d", c.reward, c.daysLeft, c.have), {
+					{ text = "납품", color = COLORS.green, onClick = function() call("TurnInContract", {}) end },
+					{ text = "포기", color = COLORS.red, onClick = function() call("AbandonContract", {}) end },
+				}, 60)
+			end)
+		end
+		for _, o in g.offers do
+			add(function()
+				return mkRow(content, string.format("%s %d개 → %s", o.goodName, o.amount, o.toPortName), string.format("보상 %d코인 · 명성 +%d", o.reward, o.fame), {
+					{ text = "계약", color = COLORS.blue, onClick = function() call("AcceptContract", { index = o.index }) end },
+				}, 56)
+			end)
+		end
+	end
+
+	if fac.palace then
+		local pl = view.palace
+		section(pl.name)
+		add(function()
+			local t = if pl.nextTitle then string.format("다음 작위 '%s': 명성 %d 필요 (보상 %d코인)", pl.nextTitle, pl.nextFame, pl.nextCoins) else "최고 작위를 받았어요"
+			return mkLabel(content, string.format("현재 작위: %s\n%s", pl.title or "없음", t), 13, COLORS.text, false)
+		end)
+		if pl.nextTitle then
+			add(function()
+				return mkRow(content, "알현하기", "명성이 충분하면 작위를 받아요", {
+					{ text = "알현", color = COLORS.gold, onClick = function() call("Audience", {}) end },
+				}, 52)
+			end)
+		end
+	end
+
 	add(function() return mkHeader(content, "교역소 투자") end)
 	for _, amt in h.options do
 		add(function()

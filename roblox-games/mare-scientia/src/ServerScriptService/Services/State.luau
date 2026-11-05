@@ -41,6 +41,10 @@ return function(D)
 			companions = {},
 			affinity = {},
 			harbor = {},
+			bank = { deposit = 0, loan = 0, lastDay = 0 },
+			contract = nil,
+			title = 0,
+			story = {},
 		}
 	end
 
@@ -247,6 +251,31 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.bank) == "table" then
+			s.bank.deposit = math.floor(num(saved.bank.deposit, 0, 0, 1e12))
+			s.bank.loan = math.floor(num(saved.bank.loan, 0, 0, 1e12))
+			s.bank.lastDay = math.floor(num(saved.bank.lastDay, 0, 0, 1e9))
+		end
+		s.title = math.floor(num(saved.title, 0, 0, #D.Facilities.TITLES))
+		if type(saved.contract) == "table" and D.Ports.Goods[saved.contract.goodId] and D.Ports.Ports[saved.contract.toPortId] then
+			local c = saved.contract
+			s.contract = {
+				goodId = c.goodId,
+				amount = math.floor(num(c.amount, 1, 1, 100)),
+				toPortId = c.toPortId,
+				reward = math.floor(num(c.reward, 0, 0, 1e7)),
+				fame = math.floor(num(c.fame, 0, 0, 1000)),
+				deadline = math.floor(num(c.deadline, 0, 0, 1e9)),
+			}
+		end
+		if type(saved.story) == "table" then
+			for id, choice in saved.story do
+				local e = type(id) == "string" and D.Story.ById[id]
+				if e and type(choice) == "number" and e.choices[math.floor(choice)] then
+					s.story[id] = math.floor(choice)
+				end
+			end
+		end
 		if type(saved.harbor) == "table" then
 			for id, v in saved.harbor do
 				if type(id) == "string" and D.Ports.Ports[id] then
@@ -311,6 +340,10 @@ return function(D)
 			companions = state.companions,
 			affinity = state.affinity,
 			harbor = state.harbor,
+			bank = state.bank,
+			contract = state.contract,
+			title = state.title,
+			story = state.story,
 		}
 	end
 

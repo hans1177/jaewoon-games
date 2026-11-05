@@ -300,6 +300,63 @@ return function(D, S)
 			end
 		end
 
+		do
+			S.Facility.accrue(state)
+			S.Facility.contractExpired(state)
+			view.facilities = {}
+			for _, kind in { "bank", "guild", "palace" } do
+				if D.Facilities.has(kind, port.id) then
+					table.insert(view.facilities, kind)
+				end
+			end
+			view.bank = {
+				deposit = state.bank.deposit,
+				loan = state.bank.loan,
+				limit = S.Facility.loanLimit(state),
+				depositRate = D.Facilities.BANK.DEPOSIT_RATE,
+				loanRate = D.Facilities.BANK.LOAN_RATE,
+			}
+			view.guild = { offers = S.Facility.offers(state), contract = nil }
+			if state.contract then
+				local c = state.contract
+				view.guild.contract = {
+					goodName = D.Ports.Goods[c.goodId].name,
+					amount = c.amount,
+					toPortName = D.Ports.Ports[c.toPortId].name,
+					toPortId = c.toPortId,
+					reward = c.reward,
+					daysLeft = c.deadline - state.day,
+					have = state.cargo[c.goodId] or 0,
+				}
+			end
+			local nextTitle = D.Facilities.TITLES[state.title + 1]
+			view.palace = {
+				name = D.Facilities.PALACE_NAMES[port.id],
+				title = if state.title > 0 then D.Facilities.TITLES[state.title].name else nil,
+				nextTitle = if nextTitle then nextTitle.name else nil,
+				nextFame = if nextTitle then nextTitle.fame else nil,
+				nextCoins = if nextTitle then nextTitle.coins else nil,
+			}
+			view.story = {}
+			for _, e in D.Story.Events do
+				if e.portId == port.id then
+					local reason = S.Story.blockReason(state, e)
+					if not reason then
+						table.insert(view.story, {
+							id = e.id, title = e.title, chapter = e.chapter, art = e.art, npc = e.npc, lines = e.lines,
+							choices = (function()
+								local out = {}
+								for i, c in e.choices do
+									table.insert(out, { index = i, text = c.text, minFame = c.minFame, cost = c.cost })
+								end
+								return out
+							end)(),
+						})
+					end
+				end
+			end
+		end
+
 		view.lastBattle = state.lastBattle
 		return view
 	end
