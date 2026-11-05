@@ -425,6 +425,7 @@ local Config = {
     { Id = "skill-meadow-heal", Label = "회복", Kind = "SKILL", Order = 19, MotionAtom = "CAST_BURST", SkillAtom = "IMPACT_SMALL", VfxAtom = "HEAL_PULSE", Cooldown = 16, LearningPattern = "roblox-native-action" },
     { Id = "skill-meadow-focus", Label = "마력 집중", Kind = "SKILL", Order = 20, MotionAtom = "CHANNEL_LOOP", SkillAtom = "IMPACT_SMALL", VfxAtom = "BUFF_PULSE", Cooldown = 13, LearningPattern = "roblox-native-action" },
     { Id = "skill-meadow-oath", Label = "기사단의 맹세", Kind = "SKILL", Order = 22, MotionAtom = "CHANNEL_LOOP", SkillAtom = "IMPACT_SMALL", VfxAtom = "BUFF_PULSE", Cooldown = 90, LearningPattern = "roblox-native-action" },
+    { Id = "skill-meadow-ultimate", Label = "궁극기", Kind = "SKILL", Order = 23, MotionAtom = "CHANNEL_LOOP", SkillAtom = "IMPACT_SMALL", VfxAtom = "SHAPE_BURST", Cooldown = 2, LearningPattern = "roblox-native-action" },
     { Id = "skill-meadow-emote", Label = "인사", Kind = "SKILL", Order = 21, MotionAtom = "EMOTE_WAVE", VfxAtom = "QUEST_UPDATE_PULSE", Cooldown = 3, LearningPattern = "roblox-native-action" },
   },
   -- STUDIO_ASSET_BINDING_BEGIN

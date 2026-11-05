@@ -4473,8 +4473,29 @@ local function liveMeadowCharacter(player)
   if not human or human.Health<=0 or not rootPart then return nil,nil,nil end
   return character,human,rootPart
 end
+-- [아드레날린] 오디세이식 궁극기 게이지(0~100, 저장 안 함). 명중·피격으로 차고 비전투 6초 뒤 서서히 줄어든다.
+local ultimateRunning={}
+local function addAdrenaline(player,amount)
+  if ultimateRunning[player] then return end
+  local now=os.clock()
+  player:SetAttribute("MeadowAdrenalineAt",now)
+  player:SetAttribute("MeadowAdrenaline",math.clamp(math.floor((tonumber(player:GetAttribute("MeadowAdrenaline")) or 0)+amount),0,100))
+end
+task.spawn(function()
+  while true do
+    task.wait(1)
+    local now=os.clock()
+    for _,member in ipairs(Players:GetPlayers()) do
+      local value=tonumber(member:GetAttribute("MeadowAdrenaline")) or 0
+      if value>0 and now-(tonumber(member:GetAttribute("MeadowAdrenalineAt")) or 0)>6 then
+        member:SetAttribute("MeadowAdrenaline",math.max(0,value-2))
+      end
+    end
+  end
+end)
 local function applyMeadowDamage(player,target,damage)
   if not target or target.HP<=0 or not target.model.Parent then return false end
+  addAdrenaline(player,3)
   player:SetAttribute("MeadowCombatUntil",workspace:GetServerTimeNow()+8)
   if (meadowFocusUntil[player] or 0)>os.clock() then damage=math.floor(damage*1.25) end
   do
@@ -5011,6 +5032,7 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
       remote:FireClient(player,"MEADOW_REACTION","BLOCK")
     end
   end
+  addAdrenaline(player,2)
   -- [지속 방호] 정면 막기·포위 대응·일회성 위기 보호.
   local guardRank=meadowRpg.passiveLevel(player,"G_FRONT")
   if (defense.guardUntil or 0)>now and guardRank>0 then
@@ -5384,7 +5406,7 @@ local meadowSkillSeconds={
   ["skill-meadow-guard"]=9,["skill-meadow-parry"]=7,
   ["skill-meadow-dodge-left"]=4,["skill-meadow-dodge-right"]=4,
   ["skill-meadow-sprint"]=8,["skill-meadow-heal"]=16,
-  ["skill-meadow-focus"]=13,["skill-meadow-emote"]=3,["skill-meadow-oath"]=90,
+  ["skill-meadow-focus"]=13,["skill-meadow-emote"]=3,["skill-meadow-oath"]=90,["skill-meadow-ultimate"]=2,
 }
 local function meadowSkill(player,id,execute)
   local interval=meadowSkillSeconds[id]
@@ -5691,6 +5713,56 @@ local function meadowOath(player)
   if activated then player:SetAttribute("MeadowStamina",math.max(0,readNumber(player,"MeadowStamina",0)-70)) end
   return activated
 end
+-- [궁극기] 아드레날린 100에서 발동. 장착한 무기 클래스마다 효과가 다르다. 피해는 기존 applyMeadowDamage를 그대로 쓴다.
+local function meadowUltimate(player)
+  if (tonumber(player:GetAttribute("MeadowAdrenaline")) or 0)<100 then return false end
+  local weaponItem=meadowRpg.equippedWeapon(player)
+  local cls=(weaponItem and Config.GearWeaponClass[weaponItem.Id]) or "Sword"
+  local activated=meadowSkill(player,"skill-meadow-ultimate",function(_,humanoid,root)
+    local base=(16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8)*3
+    player:SetAttribute("MeadowAdrenaline",0)
+    ultimateRunning[player]=true
+    local function inRange(r,limit)
+      local list={}
+      for _,enemy in ipairs(enemies) do
+        if #list<limit and enemy.HP>0 and enemy.model.Parent and (enemy.position-root.Position).Magnitude<=r then list[#list+1]=enemy end
+      end
+      return list
+    end
+    local function hitAll(list,scale)
+      for _,enemy in ipairs(list) do applyMeadowDamage(player,enemy,math.floor(base*scale)) end
+    end
+    local function stun(list,seconds)
+      local now=os.clock()
+      for _,enemy in ipairs(list) do
+        if enemy.HP>0 and not enemy.isBoss then enemy.stunUntil=now+seconds end
+      end
+    end
+    local list
+    if cls=="Greatsword" then list=inRange(16,12);hitAll(list,1.6);stun(list,1.5)
+    elseif cls=="Axe" then list=inRange(14,12);hitAll(list,1.1);task.delay(.5,function() hitAll(inRange(14,12),1.1) end)
+    elseif cls=="Dagger" then
+      local target=nearestEnemy(root,16)
+      if target then for i=0,5 do task.delay(i*.18,function() if target.HP>0 then applyMeadowDamage(player,target,math.floor(base*.5)) end end) end end
+    elseif cls=="Bow" then list=inRange(34,6);hitAll(list,1.3)
+    elseif cls=="Staff" then list=inRange(22,12);hitAll(list,1.5)
+    else
+      local target=nearestEnemy(root,18)
+      if target then for i=0,4 do task.delay(i*.2,function() if target.HP>0 then applyMeadowDamage(player,target,math.floor(base*.6)) end end) end end
+      -- 방패(한손+방패 자세)면 철벽 반격: 잠시 방어 상태 + 체력 15% 회복.
+      if meadowRpg.nodeRank(player,19)>0 then
+        local defense=meadowDefense[player] or {}
+        defense.guardUntil=math.max(defense.guardUntil or 0,os.clock()+4)
+        meadowDefense[player]=defense
+        humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.15)
+        setNumber(player,"Health",math.floor(humanoid.Health))
+      end
+    end
+    task.delay(1.5,function() ultimateRunning[player]=nil end)
+    return true
+  end)
+  return activated
+end
 local function meadowFocus(player)
   return meadowSkill(player,"skill-meadow-focus",function(_,_,root,now)
     meadowFocusUntil[player]=now+5
@@ -5925,6 +5997,7 @@ local handlers={
   ["skill-meadow-heal"]=meadowHeal,
   ["skill-meadow-focus"]=meadowFocus,
   ["skill-meadow-oath"]=meadowOath,
+  ["skill-meadow-ultimate"]=meadowUltimate,
   ["skill-meadow-emote"]=meadowEmote,
 }
 for _,node in ipairs(Config.MeadowSkillNodes or {}) do
@@ -6217,6 +6290,15 @@ remote.OnServerEvent:Connect(function(player, actionId)
       player:SetAttribute("ApprovedCombatMotion",approved)
       break
     end
+  end
+  -- [맨손 기술 통합] 맨손(도구 없음)으로 근접 트리 기술을 쓰면 기존 맨손 연타·어퍼컷·발차기·팔꿈치 모션으로 재생한다.
+  -- 새 모션은 만들지 않고 기존 승인 모션 ID만 매핑한다. 피해 계산은 트리 기술 그대로다.
+  if not combatAction and character and not character:FindFirstChildOfClass("Tool") then
+    local treeNode=Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[combatActionId]
+    local map={STRIKE="meadow-unarmed-uppercut",FOCUS_STRIKE="meadow-unarmed-uppercut",MULTI="meadow-unarmed-rush",
+      SWEEP="meadow-unarmed-kick",DASH="meadow-unarmed-elbow",STUN="meadow-unarmed-elbow"}
+    local unarmedId=treeNode and (treeNode.School=="Warrior" or treeNode.School=="Guardian" or treeNode.School=="Shadow") and map[treeNode.Mode]
+    if unarmedId then player:SetAttribute("ApprovedCombatMotion",unarmedId..":"..tostring(approvedSequence)) end
   end
   -- 허공 공격은 관절 모션만 재생한다. 명중 효과·처치·점수는 만들지 않는다.
   if not combatAction or combatHit==true then

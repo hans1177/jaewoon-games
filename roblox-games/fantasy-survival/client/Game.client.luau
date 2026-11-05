@@ -207,7 +207,7 @@ local meadowArt={skillSheet="rbxassetid://129030506278489",gearSheet="rbxassetid
   rarityName={Common="일반",Uncommon="고급",Rare="희귀",Epic="영웅",Legendary="전설"},
   skillCell={["skill-meadow-heavy"]=0,["skill-meadow-sweep"]=1,["skill-meadow-bolt"]=2,["skill-meadow-guard"]=3,["skill-meadow-parry"]=4,
     ["skill-meadow-dodge-left"]=5,["skill-meadow-dodge-right"]=6,["skill-meadow-sprint"]=7,["skill-meadow-heal"]=8,["skill-meadow-focus"]=9,
-    ["skill-meadow-emote"]=10,["skill-meadow-oath"]=15,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
+    ["skill-meadow-emote"]=10,["skill-meadow-oath"]=15,["skill-meadow-ultimate"]=15,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
     Martial=15,Signs=16,Defense=17,Agility=18},
   slotEmpty={Weapon=36,Chest=37,Hands=38,Legs=39,Feet=40,Accessory=41}}
 -- [90노드 아이콘] 기존 정식 스킬 아이콘 시트를 재사용한다.
@@ -2107,6 +2107,16 @@ energyLabel.BackgroundTransparency=1;energyLabel.Text="스테미너 100 / 100"
 energyLabel.TextColor3=Color3.fromRGB(248,253,255)
 energyLabel.TextSize=12;energyLabel.Font=Enum.Font.GothamBold
 energyLabel.ZIndex=11;energyLabel.Parent=meadowEnergy
+-- [아드레날린 바] 궁극기 게이지. 서버 MeadowAdrenaline 값을 표시만 한다.
+meadowArt.adrBar=Instance.new("Frame")
+meadowArt.adrBar.Name="MeadowAdrenaline";meadowArt.adrBar.BackgroundColor3=Color3.fromRGB(30,22,16)
+meadowArt.adrBar.BorderSizePixel=0;meadowArt.adrBar.ZIndex=9;meadowArt.adrBar.Parent=meadowVitalsGui
+Instance.new("UICorner",meadowArt.adrBar).CornerRadius=UDim.new(1,0)
+meadowArt.adrFill=Instance.new("Frame")
+meadowArt.adrFill.Name="AdrenalineFill";meadowArt.adrFill.Size=UDim2.fromScale(0,1)
+meadowArt.adrFill.BackgroundColor3=Color3.fromRGB(224,128,52);meadowArt.adrFill.BorderSizePixel=0
+meadowArt.adrFill.ZIndex=10;meadowArt.adrFill.Parent=meadowArt.adrBar
+Instance.new("UICorner",meadowArt.adrFill).CornerRadius=UDim.new(1,0)
 -- [상단 EXP] 기존 전투 숙련도 50단위 진행 상태를 표현만 하며 신규 저장값은 만들지 않는다.
 local meadowExperience=Instance.new("Frame")
 meadowExperience.Name="MeadowExperience"
@@ -2176,6 +2186,14 @@ local function layoutMeadowEnergy()
   meadowEnergy.AnchorPoint=Vector2.new(0,0)
   meadowEnergy.Size=UDim2.fromOffset(width,11)
   meadowEnergy.Position=UDim2.fromOffset(x,top+30)
+  if meadowArt.adrBar then
+    meadowArt.adrBar.Size=UDim2.fromOffset(width,6)
+    meadowArt.adrBar.Position=UDim2.fromOffset(x,top+54)
+    local adr=math.clamp(tonumber(player:GetAttribute("MeadowAdrenaline")) or 0,0,100)
+    meadowArt.adrFill.Size=UDim2.fromScale(adr/100,1)
+    meadowArt.adrFill.BackgroundColor3=adr>=100 and Color3.fromRGB(255,214,92) or Color3.fromRGB(224,128,52)
+    meadowArt.adrBar.Visible=gui:GetAttribute("GameMenuOpen")~=true
+  end
   local stamina=math.clamp(tonumber(player:GetAttribute("MeadowStamina")) or 0,0,100)
   energyFill.Size=UDim2.fromScale(stamina/100,1)
   energyLabel.Text=string.format("%d / 100",stamina)
@@ -2195,7 +2213,7 @@ local function layoutMeadowEnergy()
   meadowExperience.Visible=visible
 end
 meadowVitalsGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowEnergy)
-for _,attribute in ipairs({"Level","MeadowStamina","CombatProficiency"}) do
+for _,attribute in ipairs({"Level","MeadowStamina","CombatProficiency","MeadowAdrenaline"}) do
   player:GetAttributeChangedSignal(attribute):Connect(layoutMeadowEnergy)
 end
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(layoutMeadowEnergy)
@@ -2773,6 +2791,7 @@ local skillInfo={
   ["skill-meadow-heal"]={"마력","체력을 회복해. 위험할 때 써.",7},
   ["skill-meadow-focus"]={"마력","잠깐 마력을 모아 강해져.",7},
   ["skill-meadow-oath"]={"수호","각성기. 체력 회복 + 주변 적 전체에 3배 피해. 재사용 90초.",2},
+  ["skill-meadow-ultimate"]={"전사","궁극기. 아드레날린 100%일 때 발동. 무기마다 효과가 달라(대검 기절 강타, 도끼 이중 회전, 단검 연속 암습, 활 폭우, 지팡이 폭발, 검·방패 연속 베기·철벽). 때리거나 맞으면 차.",15},
   ["skill-meadow-emote"]={"기타","인사 동작. 전투 효과 없음.",5},
   ["meadow-unarmed-rush"]={"전사","맨손 잽·훅 연타.",2},
   ["meadow-unarmed-uppercut"]={"전사","크게 올려치는 승룡 어퍼컷.",2},
@@ -2790,7 +2809,7 @@ end
 -- 사용형 60개는 기존 Config.Actions/서버 액션 ID로, 지속형 30개는 슬롯 없이 습득한다.
 local talentPanel=Instance.new("Frame")
 talentPanel.Name="WitcherTalents";talentPanel.LayoutOrder=2
-talentPanel.Size=UDim2.new(1,-8,0,1160);talentPanel.BackgroundTransparency=1;talentPanel.Parent=meadowPages[7]
+talentPanel.Size=UDim2.new(1,-8,0,1214);talentPanel.BackgroundTransparency=1;talentPanel.Parent=meadowPages[7]
 local selectedSchool=1
 local selectedNode=Config.MeadowSkillNodes[1]
 local talentRows={}
@@ -2872,7 +2891,7 @@ for school=1,5 do
 end
 local detail=Instance.new("Frame")
 detail.Name="SkillNodeDetail";detail.Position=UDim2.fromOffset(0,604)
-detail.Size=UDim2.new(1,0,0,160);detail.BackgroundColor3=Color3.fromRGB(19,35,33)
+detail.Size=UDim2.new(1,0,0,214);detail.BackgroundColor3=Color3.fromRGB(19,35,33)
 detail.BorderSizePixel=0;detail.Parent=talentPanel
 local dc=Instance.new("UICorner");dc.CornerRadius=UDim.new(0,10);dc.Parent=detail
 local detailTitle=Instance.new("TextLabel")
@@ -2891,6 +2910,24 @@ learnA.Parent=detail
 local learnB=CommonUI.CreatePrimaryButton({name="SkillNodeLearnB",text="B 분기",minHeight=42})
 learnB.Position=UDim2.new(.5,4,0,111);learnB.Size=UDim2.new(.5,-12,0,42)
 learnB.Parent=detail
+local nodeQuick=CommonUI.CreatePrimaryButton({name="SkillNodeQuick",text="퀵슬롯 등록",minHeight=42})
+nodeQuick.Position=UDim2.new(0,8,0,160);nodeQuick.Size=UDim2.new(1/3,-10,0,42)
+nodeQuick.BackgroundColor3=Color3.fromRGB(46,86,98);nodeQuick.Parent=detail
+local nodeUse=CommonUI.CreatePrimaryButton({name="SkillNodeUse",text="바로 사용",minHeight=42})
+nodeUse.Position=UDim2.new(1/3,2,0,160);nodeUse.Size=UDim2.new(1/3,-6,0,42)
+nodeUse.BackgroundColor3=Color3.fromRGB(107,70,45);nodeUse.Parent=detail
+local nodePreview=CommonUI.CreatePrimaryButton({name="SkillNodePreview",text="미리보기",minHeight=42})
+nodePreview.Position=UDim2.new(2/3,0,0,160);nodePreview.Size=UDim2.new(1/3,-8,0,42)
+nodePreview.BackgroundColor3=Color3.fromRGB(70,60,104);nodePreview.Parent=detail
+nodePreview.Activated:Connect(function()
+  if selectedNode and meadowActionButtons.previewById then meadowActionButtons.previewById(selectedNode.Id) end
+end)
+nodeQuick.Activated:Connect(function()
+  if selectedNode and meadowActionButtons.quickById then meadowActionButtons.quickById(selectedNode.Id) end
+end)
+nodeUse.Activated:Connect(function()
+  if selectedNode and meadowActionButtons.useById then meadowActionButtons.useById(selectedNode.Id) end
+end)
 local function buyNode(choice)
   if player:GetAttribute("ProfileReady")~=true or not selectedNode then return end
   local rank=rankOf(selectedNode)
@@ -2901,41 +2938,41 @@ learnA.Activated:Connect(function() buyNode("A") end)
 learnB.Activated:Connect(function() buyNode("B") end)
 
 local presetTitle=Instance.new("TextLabel")
-presetTitle.BackgroundTransparency=1;presetTitle.Position=UDim2.fromOffset(5,775)
+presetTitle.BackgroundTransparency=1;presetTitle.Position=UDim2.fromOffset(5,829)
 presetTitle.Size=UDim2.new(1,-10,0,22);presetTitle.Font=Enum.Font.GothamBold
 presetTitle.TextSize=13;presetTitle.TextXAlignment=Enum.TextXAlignment.Left
 presetTitle.TextColor3=gold;presetTitle.Text="장착 조합 3개 · 전투 밖에서 저장/전환";presetTitle.Parent=talentPanel
 for preset,name in ipairs({"탐험용","보스용","협동용"}) do
   local label=Instance.new("TextLabel")
   label.Name="MeadowPreset"..preset;label.BackgroundTransparency=1
-  label.Position=UDim2.new(0,5,0,800+(preset-1)*45)
+  label.Position=UDim2.new(0,5,0,854+(preset-1)*45)
   label.Size=UDim2.new(.4,-8,0,38);label.Font=Enum.Font.GothamBold;label.TextSize=12
   label.TextColor3=parchment;label.TextXAlignment=Enum.TextXAlignment.Left;label.Parent=talentPanel
   local save=CommonUI.CreatePrimaryButton({name="SavePreset"..preset,text="저장",minHeight=38})
-  save.Position=UDim2.new(.4,0,0,800+(preset-1)*45);save.Size=UDim2.new(.27,-4,0,38);save.Parent=talentPanel
+  save.Position=UDim2.new(.4,0,0,854+(preset-1)*45);save.Size=UDim2.new(.27,-4,0,38);save.Parent=talentPanel
   local load=CommonUI.CreatePrimaryButton({name="LoadPreset"..preset,text="전환",minHeight=38})
-  load.Position=UDim2.new(.68,0,0,800+(preset-1)*45);load.Size=UDim2.new(.31,-4,0,38);load.Parent=talentPanel
+  load.Position=UDim2.new(.68,0,0,854+(preset-1)*45);load.Size=UDim2.new(.31,-4,0,38);load.Parent=talentPanel
   save.Activated:Connect(function() remote:FireServer("meadow:rpg:loadout:save:"..preset) end)
   load.Activated:Connect(function() remote:FireServer("meadow:rpg:loadout:activate:"..preset) end)
   loadoutRows[preset]={name=name,label=label,load=load}
 end
 
 local legacyTitle=Instance.new("TextLabel")
-legacyTitle.BackgroundTransparency=1;legacyTitle.Position=UDim2.fromOffset(5,943)
+legacyTitle.BackgroundTransparency=1;legacyTitle.Position=UDim2.fromOffset(5,997)
 legacyTitle.Size=UDim2.new(1,-10,0,25);legacyTitle.Font=Enum.Font.GothamBold
 legacyTitle.TextSize=13;legacyTitle.TextXAlignment=Enum.TextXAlignment.Left
 legacyTitle.TextColor3=gold;legacyTitle.Parent=talentPanel
 for i,school in ipairs(Config.MeadowTalentSchools or {}) do
   local button=CommonUI.CreatePrimaryButton({name="LegacySkill_"..school.Id,text=school.Name,minHeight=44})
-  button.Position=UDim2.new((i-1)/4,2,0,970);button.Size=UDim2.new(.25,-4,0,44)
+  button.Position=UDim2.new((i-1)/4,2,0,1024);button.Size=UDim2.new(.25,-4,0,44)
   button.Parent=talentPanel;legacyButtons[i]={button=button,school=school}
   button.Activated:Connect(function() remote:FireServer("meadow:rpg:talent:learn:"..school.Id) end)
 end
 local resetButton=CommonUI.CreatePrimaryButton({name="TalentReset",text="스킬 점수 초기화 · 30코인",minHeight=42})
-resetButton.Position=UDim2.fromOffset(3,1021);resetButton.Size=UDim2.new(1,-6,0,42)
+resetButton.Position=UDim2.fromOffset(3,1075);resetButton.Size=UDim2.new(1,-6,0,42)
 resetButton.BackgroundColor3=Color3.fromRGB(98,52,48);resetButton.Parent=talentPanel
 local resetConfirm=Instance.new("Frame")
-resetConfirm.Name="MeadowResetConfirm";resetConfirm.Position=UDim2.fromOffset(0,1069)
+resetConfirm.Name="MeadowResetConfirm";resetConfirm.Position=UDim2.fromOffset(0,1123)
 resetConfirm.Size=UDim2.new(1,0,0,85);resetConfirm.BackgroundColor3=Color3.fromRGB(50,35,33)
 resetConfirm.Visible=false;resetConfirm.Parent=talentPanel
 local confirmLabel=Instance.new("TextLabel")
@@ -2994,6 +3031,11 @@ renderTree=function()
     detailText.Text=node.Description.."\n현재 단계 "..rank.." / 다음 단계 "..math.min(3,rank+1)..
       " · "..(prior and "선행 조건 만족" or "같은 분기의 앞 노드 필요")..
       "\n최종 강화: "..branchText..(rank==3 and " · 선택 "..choice or "")
+    local isActive=node.Kind=="ACTIVE"
+    local learned=rank>0
+    nodeQuick.Visible=isActive;nodeUse.Visible=isActive;nodePreview.Visible=isActive
+    nodeQuick.Text=learned and "퀵슬롯 등록" or "잠김";nodeUse.Text=learned and "바로 사용" or "잠김"
+    nodeQuick.Active=learned;nodeUse.Active=learned
     learnA.Visible=true;learnB.Visible=rank==2
     learnA.Size=rank==2 and UDim2.new(.5,-12,0,42) or UDim2.new(1,-16,0,42)
     learnA.Text=rank==3 and "최고 단계" or ready and (rank==2 and "A 분기 습득" or "다음 단계 습득") or "잠김 / 점수 부족"
@@ -3120,7 +3162,7 @@ meadowActionButtons.refreshSkills=function()
   for _,row in ipairs(skillRows)do
     local deadline=player:GetAttribute("MeadowReady_"..row.action.Id)
     local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
-    row.button.Visible=skillCategory=="전체" or row.category==skillCategory
+    row.button.Visible=(skillCategory=="전체" or row.category==skillCategory) and not (Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[row.action.Id]) and not string.find(row.action.Id,"meadow-unarmed-",1,true)
     local lockText=meadowArt.skillLock(row.action.Id)
     local equippedSlot=nil
     for slot=1,5 do if meadowArt.quickIds[slot]==row.action.Id then equippedSlot=slot;break end end
@@ -3185,36 +3227,22 @@ for index,button in ipairs(skillButtons)do
   end)
   button.BackgroundColor3=index==1 and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
 end
--- [스킬창 2분할] 맨 위 큰 토글로 "전투 기술(사용·등록)"과 "스킬 트리(투자)"를 나눠 긴 스크롤을 없앤다.
+-- [스킬창 통합] 오디세이식 한 화면: 맨 위 장착칸 → 스킬 트리(노드에서 바로 습득·등록·사용) → 아래 기본 기술.
 do
-  local modeBar=Instance.new("Frame")
-  modeBar.Name="SkillModeBar";modeBar.LayoutOrder=0;modeBar.BackgroundTransparency=1
-  modeBar.Size=UDim2.new(1,-8,0,40);modeBar.Parent=meadowPages[7]
-  local modeLayout=Instance.new("UIListLayout")
-  modeLayout.FillDirection=Enum.FillDirection.Horizontal;modeLayout.Padding=UDim.new(0,8);modeLayout.Parent=modeBar
-  local modeButtons={}
-  local function setMode(tree)
-    talentPanel.Visible=tree
-    skillBar.Visible=not tree;skillGrid.Visible=not tree;skillDetail.Visible=not tree
-    local dz=meadowPages[7]:FindFirstChild("QuickSlotDrop");if dz then dz.Visible=true end
-    meadowLabels[7].Visible=false
-    for i,b in ipairs(modeButtons)do
-      local on=(i==2)==tree
-      b.BackgroundColor3=on and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
-      b.TextColor3=on and Color3.fromRGB(255,240,197) or Color3.fromRGB(191,215,198)
-    end
-    meadowPages[7].CanvasPosition=Vector2.new(0,0)
-  end
-  for i,label in ipairs({"전투 기술  ·  사용 / 등록","스킬 트리  ·  점수 투자"})do
-    local b=Instance.new("TextButton")
-    b.Name="SkillMode"..i;b.Size=UDim2.new(.5,-4,1,0);b.Text=label;b.AutoButtonColor=true
-    b.Font=Enum.Font.GothamBold;b.TextSize=14;b.BorderSizePixel=0;b.Parent=modeBar
-    local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,10);c.Parent=b
-    local e=Instance.new("UIStroke");e.Color=gold;e.Transparency=.35;e.Parent=b
-    b.Activated:Connect(function() setMode(i==2) end)
-    modeButtons[i]=b
-  end
-  setMode(false)
+  talentPanel.Visible=true
+  skillBar.Visible=false
+  meadowLabels[7].Visible=false
+  local basicTitle=Instance.new("TextLabel")
+  basicTitle.Name="BasicSkillsTitle";basicTitle.LayoutOrder=3;basicTitle.BackgroundTransparency=1
+  basicTitle.Size=UDim2.new(1,-8,0,26);basicTitle.Font=Enum.Font.GothamBold;basicTitle.TextSize=13
+  basicTitle.TextXAlignment=Enum.TextXAlignment.Left;basicTitle.TextColor3=gold
+  basicTitle.Text="기본 기술 · 트리 없이 쓰는 기술";basicTitle.Parent=meadowPages[7]
+  talentPanel.LayoutOrder=2
+  skillGrid.LayoutOrder=4
+  skillDetail.LayoutOrder=5
+  local dz=meadowPages[7]:FindFirstChild("QuickSlotDrop")
+  if dz then dz.LayoutOrder=1;dz.Visible=true end
+  meadowPages[7].CanvasPosition=Vector2.new(0,0)
 end
 -- [모션 미리보기] 메뉴를 닫고 내 캐릭터가 선택한 기술 모션을 서버 소비 없이 재생한 뒤 스킬창으로 돌아온다.
 do
@@ -3223,9 +3251,8 @@ do
   preview.BackgroundColor3=Color3.fromRGB(70,60,104);preview.Parent=skillDetail
   local serial=9000000
   local running=false
-  preview.Activated:Connect(function()
-    if running or not selectedSkill then return end
-    local action=selectedSkill
+  local function runPreview(action)
+    if running or not action then return end
     running=true
     meadowArt.sfx("click",.4,1)
     meadowMenu.close()
@@ -3244,12 +3271,18 @@ do
         pcall(function() meadowMenu.open(7) end)
       end)
     end)
-  end)
+  end
+  preview.Activated:Connect(function() runPreview(selectedSkill) end)
+  meadowActionButtons.previewById=function(id)
+    for _,row in ipairs(skillRows) do
+      if row.action.Id==id then selectedSkill=row.action;runPreview(row.action);return end
+    end
+  end
 end
 -- [스킬창 장착칸] 하단 다섯 칸과 같은 저장 값을 사용한다.
 do
   local tray=Instance.new("Frame")
-  tray.Name="QuickSlotDrop";tray.LayoutOrder=6;tray.Size=UDim2.new(1,-8,0,96)
+  tray.Name="QuickSlotDrop";tray.LayoutOrder=1;tray.Size=UDim2.new(1,-8,0,96)
   tray.BackgroundColor3=Color3.fromRGB(24,49,45);tray.BorderSizePixel=0;tray.Parent=meadowPages[7]
   local tc=Instance.new("UICorner");tc.CornerRadius=UDim.new(0,12);tc.Parent=tray
   local ts=Instance.new("UIStroke");ts.Color=gold;ts.Thickness=2;ts.Transparency=.3;ts.Parent=tray
@@ -3383,6 +3416,29 @@ skillUse.Activated:Connect(function()
   if meadowMenu then meadowMenu.close() end
   activateMeadowAction(selectedSkill.Id)
 end)
+meadowActionButtons.quickById=function(id)
+  for _,row in ipairs(skillRows) do
+    if row.action.Id==id then
+      selectedSkill=row.action
+      if meadowArt.skillLock(id) then return end
+      if meadowArt.openSlotChooser then meadowArt.openSlotChooser(id,row.action.Label) end
+      return
+    end
+  end
+end
+meadowActionButtons.useById=function(id)
+  for _,row in ipairs(skillRows) do
+    if row.action.Id==id then selectedSkill=row.action;break end
+  end
+  if not selectedSkill or selectedSkill.Id~=id or player:GetAttribute("ProfileReady")~=true then return end
+  local human=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+  if not human or human.Health<=0 then return end
+  local deadline=player:GetAttribute("MeadowReady_"..id)
+  if typeof(deadline)=="number" and deadline>workspace:GetServerTimeNow() then return end
+  if meadowArt.skillLock(id) then return end
+  if meadowMenu then meadowMenu.close() end
+  activateMeadowAction(id)
+end
 meadowActionButtons.refreshSkills()
 return renderInventory
 end)()
