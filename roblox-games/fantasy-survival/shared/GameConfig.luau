@@ -116,7 +116,7 @@ local Config = {
   -- [1부 구성] 지역 4개 + 엔딩 없는 메인 스토리. 2부 이후 지역은 이름만 예약한다.
   -- 상태 Open만 현재 플레이 가능하고 나머지는 지역 맵·몬스터·퀘스트 구현 전까지 잠금이다.
   Regions = {
-    {Id="meadow",Name="초원 마을",Part=1,Status="Open",Story="카인이 눈을 뜬 곳. 정체성을 잊은 마을 사람들과 늑대 우두머리의 위협."},
+    {Id="meadow",Name="초원 마을 (튜토리얼)",Part=1,Status="Open",Tutorial=true,Story="조작과 전투를 익히는 튜토리얼 지역. 카인이 눈을 뜬 곳. 정체성을 잊은 마을 사람들과 늑대 우두머리의 위협."},
     {Id="worldtree",Name="세계수 숲",Part=1,Status="Planned",UnlockMainStage=7,Story="추락한 카인이 렌스기사단의 낡은 깃발을 따라간다. 저주받은 늑대 울음 끝에 닉이 있다."},
     {Id="volcano",Name="불꽃 화산 협곡",Part=1,Status="Planned",UnlockMainStage=10,Story="렌스기사단 야영지 잔해와 화염 골렘. 렌스와 미나의 표식이 남아 있다."},
     {Id="oasis",Name="오아시스 지하",Part=1,Status="Planned",UnlockMainStage=11,Story="거대 벌레의 소굴. 미러가 지운 기록 속에서 1부 마지막 미나의 단서를 찾는다."},
