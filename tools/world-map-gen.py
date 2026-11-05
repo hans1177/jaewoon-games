@@ -62,20 +62,7 @@ ridge([(2250,-80),(2400,-130),(2550,-60)],28,1.25,16,.5)                        
 ridge([(-1100,1250),(-300,1400),(700,1300)],28,.8,17)                                      # 남부 구릉
 ridge([(2000,1250),(3000,1300),(3900,1250)],26,.8,18)                                     # 사막 남쪽 바위능선
 hgt=np.clip(gaussian_filter(hgt,1.4),0,1.4)
-# hillshade (빛: 북서쪽)
-gyv,gxv=np.gradient(hgt*38)
-shade=np.clip(.5+(-gxv-gyv)*1.9,0,1.25)
-mt=np.clip(hgt*2.4,0,1)
-rock=np.array([128,118,104])
-rockc=rock[None,None,:]*(0.55+0.75*shade)[...,None]
-hi=np.clip((hgt-.62)*4,0,1)[...,None]   # 높은 곳은 연회색 바위(눈 없음)
-rockc=rockc*(1-hi)+np.array([190,184,172])*(0.7+0.5*shade)[...,None]*hi
-col=col*(1-mt[...,None])+rockc*mt[...,None]
-# 산 그림자(남동쪽으로 길게)
-sh=np.roll(np.roll(hgt,6,axis=1),8,axis=0)
-cast=np.clip((sh-hgt)*3.5,0,.45)
-col*= (1-cast)[...,None]*np.ones(3)
-# ---- 숲 질감(세계수·초원·습원): 어두운 점
+
 def stipple(mask,dens,color,size,seed):
     global col
     r=np.random.default_rng(seed)
@@ -84,55 +71,87 @@ def stipple(mask,dens,color,size,seed):
     ys,xs=np.nonzero(mask)
     for i in r.choice(len(ys),min(n,len(ys)),replace=False):
         x,y=xs[i],ys[i]
-        if hgt[y,x]>.25: continue
+        if Hh[y,x]>.62: continue
         s=size*(0.7+0.6*r.random())
         d.ellipse([x-s,y-s*.8,x+s,y+s*.8],fill=color+(110,))
         d.ellipse([x-s*.6-1,y-s*.9,x+s*.4,y-s*.1],fill=(color[0]+30,color[1]+34,color[2]+20,70))
     col=np.array(im).astype(float)
+
+# ===== Skyrim식: 기복 있는 실제 높이 + 기울인 시점 =====
+zm=lambda n:gaussian_filter((zid==names[n]).astype(float),20)
 names={v[0]:k for k,v in cols.items()}
-stipple(zid==names['worldtree'],.012,(22,70,52),4.2,21)
-stipple(zid==names['meadow'],.0016,(40,100,52),3.4,22)
-stipple(zid==names['wetland'],.004,(40,84,58),3.6,23)
-stipple(zid==names['windcliff'],.0014,(60,100,60),3.2,24)
-stipple(zid==names['swamp'],.004,(34,50,40),3.6,25)
-stipple(zid==names['deadmarsh'],.003,(30,38,34),3.4,26)
-# 사막 모래 물결
-dune=np.sin((xx*.05+yy*.03)+noise(60,5)*14)*.5+.5
-dm=(gaussian_filter((zid==names['desert']).astype(float),6)+gaussian_filter((zid==names['oasis']).astype(float),6))[...,None]
-col=col*(1-.10*dm*dune[...,None])+0*dm
-# 화산 용암 균열
-lv=gaussian_filter((zid==names['volcano']).astype(float),6)
-crack=np.abs(noise(24,31)-.5)<.012
-col[crack&(lv>.85)&(hgt<.9)]=[230,110,40]
-# 혼돈 균열 보라빛
-cm=gaussian_filter((zid==names['chaos']).astype(float),6)
-crack2=np.abs(noise(30,32)-.5)<.010
-col[crack2&(cm>.85)&(hgt<.4)]=[170,80,200]
-# ---- 강
-im=Image.fromarray(np.clip(col,0,255).astype(np.uint8)); d=ImageDraw.Draw(im)
+base=(noise(220,51)-.5)*.30+(noise(90,52)-.5)*.14
+base+=zm('highland')*.30+zm('canyon')*.12+zm('windcliff')*.10+zm('citadel')*.08
+base-=zm('desert')*.05+zm('wetland')*.08+zm('deadmarsh')*.10+zm('swamp')*.06
+edge=np.minimum.reduce([xx,W-xx,yy,H-yy])
+coast=edge-(noise(90,41)*70+26)
+landm=np.clip(coast/14,0,1)
+rg=np.clip(1-np.abs(2*noise(70,81,4)-1),0,1); rg=rg**1.3
+mmask=np.clip(gaussian_filter(hgt,3)*1.6,0,1)
+Hh=np.clip(base+.25,0,1)*.30+mmask*(.25+.75*rg)*.95
+Hh=np.nan_to_num(gaussian_filter(Hh,2.0)*landm)
+# 강: 낮은 곳을 따라 높이를 파낸다
+rv=Image.new('L',(W,H),0); rd=ImageDraw.Draw(rv)
 def river(pts,w=5):
     P=[]
     for (a,b),(c,e) in zip(pts[:-1],pts[1:]):
         for t in np.linspace(0,1,30,endpoint=False):
             P.append((wx(a+(c-a)*t)+np.sin(t*9+a)*14,wz(b+(e-b)*t)+np.cos(t*7+b)*10))
-    d.line(P,fill=(40,80,110),width=w+2,joint='curve')
-    d.line(P,fill=(92,146,184),width=max(2,w-2),joint='curve')
+    rd.line(P,fill=255,width=w,joint='curve')
 river([(-1400,-2150),(-1200,-1500),(-700,-900),(-500,-200),(-400,600),(-700,1400),(-900,2400)],6)
 river([(1500,-1500),(1300,-800),(1100,-100),(1300,500),(1500,1300),(1700,2400)],5)
 river([(4600,-2100),(4300,-1200),(4700,-400),(5000,600),(5000,1400),(5200,2400)],6)
-col=np.array(im).astype(float)
-# ---- 바다 + 해안선
-land=gaussian_filter(np.ones((H,W)),1)
-edge=np.minimum.reduce([xx,W-xx,yy,H-yy])
-coast=edge-(noise(90,41)*70+20)
-lm=np.clip(coast/6,0,1)
-sea=np.array([30,62,92])*(0.8+0.3*noise(50,42))[...,None]
-foam=np.exp(-((coast-2)/5)**2)[...,None]*np.array([170,200,210])*.55
-shore=np.exp(-((coast-14)/16)**2)[...,None]*np.array([40,40,30])*.0
-col=col*lm[...,None]+sea*(1-lm[...,None])+foam*(coast>-12)[...,None]*(1-lm[...,None]*0)
-# 비네트 + 양피지 테두리
-v=1-.22*(((xx/W-.5)**2+(yy/H-.5)**2)*2)
-col*=v[...,None]
-out=Image.fromarray(np.clip(col,0,255).astype(np.uint8)).filter(ImageFilter.UnsharpMask(2,60,3))
-out=out.resize((1024,int(1024*H/W)),Image.LANCZOS)
-out.save('/tmp/claude-0/map/world-map.png'); print(out.size)
+rm=gaussian_filter(np.array(rv).astype(float)/255,1.2)
+Hh=Hh-rm*.04
+# 색: 채도를 낮춘 스카이림 팔레트
+gray=col.mean(axis=2,keepdims=True)
+c=col*.62+gray*.38
+c*= (0.80+0.35*n1)[...,None]
+gy2,gx2=np.gradient(gaussian_filter(Hh,1.0)*55)
+sh=np.clip(.80+(-gx2-gy2)*1.6,.30,1.4)
+slope=np.clip(np.hypot(gx2,gy2)*1.4,0,1)
+rockc=np.array([92,80,66])*(0.55+0.7*np.clip(sh,0,1.2))[...,None]
+m=np.clip(slope*1.2+np.clip(Hh-.55,0,1)*1.6,0,1)[...,None]
+c=c*(1-m*.7)+rockc*m*.7
+hi=np.clip((Hh-.95)*6,0,1)[...,None]*0
+c=c*(1-hi*.8)+np.array([196,192,184])*(0.7+0.4*sh)[...,None]*hi*.55
+c*=(sh[...,None]**1.2)*1.2
+c=np.clip(c,0,255)
+col=c
+stipple(zid==names['worldtree'],.012,(20,64,48),4.0,21)
+stipple(zid==names['meadow'],.0016,(38,92,50),3.2,22)
+stipple(zid==names['wetland'],.004,(38,80,56),3.4,23)
+stipple(zid==names['windcliff'],.0014,(56,96,58),3.0,24)
+stipple(zid==names['swamp'],.004,(32,48,38),3.4,25)
+stipple(zid==names['deadmarsh'],.003,(28,36,32),3.2,26)
+c=col
+# 강 색 + 바다
+c=c*(1-rm[...,None]*.9)+np.array([86,140,176])*rm[...,None]*.9
+sea=np.array([34,66,92])*(0.8+0.3*noise(50,42))[...,None]
+foam=np.exp(-((coast-4)/6)**2)[...,None]*np.array([175,200,205])*.5
+c=c*landm[...,None]+sea*(1-landm[...,None])+foam*(1-landm[...,None])
+# ---- 기울인 투영 (z는 선형, 높이는 위로 솟음)
+TOP=.10; SPAN=.86; K=.06*H
+out=np.zeros((H,W,3)); out[:]=np.array([40,74,100])
+bgn=noise(60,61); out*= (0.8+.5*bgn)[...,None]
+gh=H
+for r in range(gh):
+    base_y=(TOP+SPAN*r/gh)*H
+    ys=(base_y-Hh[r]*K).astype(int)
+    nxt=min(gh-1,r+1); ys2=((TOP+SPAN*(r+1)/gh)*H-Hh[nxt]*K).astype(int)
+    ln=np.maximum(1,ys2-ys+1)
+    ln=np.minimum(ln,40)
+    cc=c[r]
+    for k in range(int(ln.max())):
+        sel=ln>k
+        y=np.clip(ys+k,0,H-1)
+        out[y[sel],np.arange(W)[sel]]=cc[sel]*(1-.0*k)
+# 안개/구름 + 비네트
+haze=np.clip((yy/H-.78)*3,0,1)*.0
+cl=np.clip(noise(120,71)-.55,0,1)*2.2*np.clip(1-np.abs(yy/H-.5)*1.6,0,1)
+out=out*(1-cl[...,None]*.35)+np.array([210,216,220])*cl[...,None]*.35
+v=1-.30*(((xx/W-.5)**2+(yy/H-.5)**2)*2)
+out*=v[...,None]
+img=Image.fromarray(np.clip(out,0,255).astype(np.uint8)).filter(ImageFilter.UnsharpMask(2,70,3))
+img=img.resize((1024,int(1024*H/W)),Image.LANCZOS)
+img.save('/tmp/claude-0/map/world-map2.png');print(img.size)
