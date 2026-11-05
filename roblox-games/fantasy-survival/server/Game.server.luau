@@ -2881,6 +2881,46 @@ local meadowRpg=(function()
   local talents={Martial="MeadowTalentMartial",Signs="MeadowTalentSigns",
     Defense="MeadowTalentDefense",Agility="MeadowTalentAgility"}
   local talentMax={Agility=5,Martial=5} -- 회피·검술은 5단, 나머지 계열은 3단.
+  -- [90노드 보관] 기존 숫자 세이브에 10개×3비트로 기록. 슬롯/기존 재능은 바꾸지 않는다.
+  local nodes=Config.MeadowSkillNodes or {}
+  local passiveIndex={}
+  for _,node in ipairs(nodes) do if node.Kind=="PASSIVE" then passiveIndex[node.Mode]=node.Index end end
+  local function nodeValue(player,index)
+    if typeof(index)~="number" or index~=math.floor(index) or index<1 or index>#nodes then return 0 end
+    local field="MeadowSkillBits"..math.ceil(index/10)
+    return bit32.extract(math.floor(readNumber(player,field,0)),((index-1)%10)*3,3)
+  end
+  local function nodeRank(player,index)
+    return bit32.band(nodeValue(player,index),3)
+  end
+  local function nodeChoice(player,index)
+    return bit32.band(nodeValue(player,index),4)~=0 and "B" or "A"
+  end
+  local function passiveLevel(player,mode)
+    local index=passiveIndex[mode]
+    return index and nodeRank(player,index) or 0
+  end
+  local function spentNodes(player)
+    local spent=0
+    for index=1,#nodes do spent+=nodeRank(player,index) end
+    return spent
+  end
+  local function setNode(player,index,rank,choice)
+    local field="MeadowSkillBits"..math.ceil(index/10)
+    local packed=math.floor(readNumber(player,field,0))
+    local value=math.clamp(rank,0,3)+(choice=="B" and rank==3 and 4 or 0)
+    setNumber(player,field,bit32.replace(packed,value,((index-1)%10)*3,3))
+  end
+  local function validQuickCode(player,code)
+    if code==0 or (code>=1 and code<=5) then return true end
+    if code>=1001 and code<=1000+#nodes then
+      local index=code-1000
+      return nodes[index] and nodes[index].Kind=="ACTIVE" and nodeRank(player,index)>0 or false
+    end
+    return code>=10 and code<=1000 and Config.Actions[code-9]~=nil
+      and Config.MeadowSkillNodeById[Config.Actions[code-9].Id]==nil
+  end
+
   local gearById,tonicById={},{}
   for index,item in ipairs(items)do gearById[item.Id]={entry=item,index=index} end
   for _,item in ipairs(tonics)do tonicById[item.Id]=item end
@@ -2994,6 +3034,73 @@ local meadowRpg=(function()
         feedback(player,tonic.Name.." 사용")
         return true
       end
+
+    elseif group=="tree" then
+      if verb=="learn" then
+        local number,choice=id:match("^(%d+)([AB]?)$")
+        local index=tonumber(number)
+        local node=index and nodes[index]
+        if not node then return false end
+        local rank=nodeRank(player,index)
+        if rank>=3 then feedback(player,"이미 최고 3단계야.");return true end
+        local available=Config.MeadowSkillPointProgress(readNumber(player,"CombatProficiency",0))
+        if spentNodes(player)>=available then feedback(player,"남은 스킬 점수가 없어.");return true end
+        if node.Step>1 and nodeRank(player,index-1)<1 then
+          feedback(player,"같은 분기의 앞 노드를 먼저 배워야 해.");return true
+        end
+        if rank==2 and choice=="" then
+          feedback(player,"최종 강화 A 또는 B를 골라야 해.");return true
+        end
+        setNode(player,index,rank+1,choice)
+        feedback(player,node.Name.." "..(rank+1).."/3 습득")
+        return true
+      elseif verb=="reset" and id=="all" then
+        if spentNodes(player)<1 then feedback(player,"초기화할 스킬이 없어.");return true end
+        if readNumber(player,"Coins",0)<30 then feedback(player,"초기화 비용 코인 30개가 부족해.");return true end
+        setNumber(player,"Coins",readNumber(player,"Coins",0)-30)
+        for index=1,9 do setNumber(player,"MeadowSkillBits"..index,0) end
+        -- 새 기술이 잠겼다면 저장된 퀵칸에서만 비운다. 기존 기술과 재능은 보존한다.
+        for slot=1,5 do
+          local key="QuickSlot"..slot
+          if readNumber(player,key,0)>=1001 then setNumber(player,key,0) end
+        end
+        feedback(player,"90노드 점수를 되돌렸어. 기존 재능은 유지됐어.")
+        return true
+      end
+    elseif group=="loadout" then
+      local preset=tonumber(id)
+      if not preset or preset~=math.floor(preset) or preset<1 or preset>3 then return false end
+      if workspace:GetServerTimeNow()<(player:GetAttribute("MeadowCombatUntil") or 0) then
+        feedback(player,"전투가 끝난 뒤 조합을 변경할 수 있어.");return true
+      end
+      if verb=="save" then
+        -- 아직 퀵슬롯을 편집하지 않은 계정은 기존 기본 배치를 저장한다.
+        local defaults={1,3,0,0,0}
+        for i,action in ipairs(Config.Actions)do
+          if action.Id=="skill-meadow-heavy" then defaults[3]=9+i end
+          if action.Id=="skill-meadow-sweep" then defaults[4]=9+i end
+          if action.Id=="skill-meadow-bolt" then defaults[5]=9+i end
+        end
+        for slot=1,5 do
+          local value=readNumber(player,"QuickInit",0)>=1 and readNumber(player,"QuickSlot"..slot,0) or defaults[slot]
+          setNumber(player,"MeadowLoadout"..preset.."Slot"..slot,validQuickCode(player,value) and value or 0)
+        end
+        setNumber(player,"MeadowLoadoutSaved"..preset,1)
+        feedback(player,({"탐험","보스","협동"})[preset].." 조합 저장")
+        return true
+      elseif verb=="activate" then
+        if readNumber(player,"MeadowLoadoutSaved"..preset,0)~=1 then
+          feedback(player,"먼저 해당 조합을 저장해야 해.");return true
+        end
+        for slot=1,5 do
+          local code=readNumber(player,"MeadowLoadout"..preset.."Slot"..slot,0)
+          setNumber(player,"QuickSlot"..slot,validQuickCode(player,code) and code or 0)
+        end
+        setNumber(player,"QuickInit",1)
+        setNumber(player,"MeadowLoadoutActive",preset)
+        feedback(player,({"탐험","보스","협동"})[preset].." 조합 적용")
+        return true
+      end
     elseif group=="talent" and verb=="reset" and id=="all" then
       -- [스킬 초기화] 코인 30개로 4계열 단계를 모두 0으로 되돌려 점수를 다시 나눈다.
       local invested=0
@@ -3022,7 +3129,8 @@ local meadowRpg=(function()
     end
     return false
   end
-  return {transact=transact,stats=stats,publishStats=publishStats}
+  return {transact=transact,stats=stats,publishStats=publishStats,
+    nodeRank=nodeRank,nodeChoice=nodeChoice,passiveLevel=passiveLevel,validQuickCode=validQuickCode}
 end)()
 
 -- [메인 퀘스트·연구 기록 아이템]
@@ -6568,7 +6676,8 @@ do
     if typeof(action)=="string" and action:match("^quick:set:%d:%d+$") then
       local slotIndex,value=action:match("^quick:set:(%d):(%d+)$")
       slotIndex,value=tonumber(slotIndex),tonumber(value)
-      local valid=slotIndex>=1 and slotIndex<=5 and (value==0 or (value>=1 and value<=5) or (value>=10 and Config.Actions[value-9]~=nil))
+      local valid=slotIndex>=1 and slotIndex<=5 and meadowRpg.validQuickCode(player,value)
+        and player:GetAttribute("ProfileReady")==true
       if valid then
         setNumber(player,"QuickInit",1)
         setNumber(player,"QuickSlot"..slotIndex,value)
