@@ -255,6 +255,184 @@ local function amount()
 	return AMOUNTS[amountIndex]
 end
 
+-- 항해 연출: 바다 위를 달리는 배, 날아다니는 갈매기, 일렁이는 파도 ----------------------
+
+local RunService = game:GetService("RunService")
+
+local function mkBox(parent, pos, size, color, alpha)
+	local f = Instance.new("Frame")
+	f.Position = pos
+	f.Size = size
+	f.BackgroundColor3 = color
+	f.BackgroundTransparency = alpha or 0
+	f.BorderSizePixel = 0
+	f.Parent = parent
+	return f
+end
+
+local function playVoyage(fromName, toName, days, steam)
+	local overlay = Instance.new("TextButton") -- 누르면 건너뛰기
+	overlay.Name = "VoyageScene"
+	overlay.Size = UDim2.fromScale(1, 1)
+	overlay.Text = ""
+	overlay.AutoButtonColor = false
+	overlay.BackgroundColor3 = Color3.fromRGB(120, 180, 225)
+	overlay.BorderSizePixel = 0
+	overlay.ZIndex = 50
+	overlay.Parent = gui
+
+	-- 하늘 위쪽, 바다 아래쪽
+	local sea = mkBox(overlay, UDim2.fromScale(0, 0.5), UDim2.fromScale(1, 0.5), Color3.fromRGB(34, 96, 150))
+	mkBox(overlay, UDim2.fromScale(0, 0.5), UDim2.new(1, 0, 0, 2), Color3.fromRGB(220, 240, 255), 0.3)
+	mkBox(overlay, UDim2.fromScale(0.78, 0.12), UDim2.fromOffset(46, 46), Color3.fromRGB(255, 236, 170)).Parent = overlay -- 해
+	local sun = overlay:GetChildren()[#overlay:GetChildren()]
+	local sc = Instance.new("UICorner")
+	sc.CornerRadius = UDim.new(1, 0)
+	sc.Parent = sun
+
+	-- 구름
+	local clouds = {}
+	for i = 1, 3 do
+		local c = mkBox(overlay, UDim2.fromScale(0.2 * i + 0.1, 0.08 + 0.07 * i), UDim2.fromOffset(70 + 20 * i, 16), Color3.new(1, 1, 1), 0.25)
+		local cc = Instance.new("UICorner")
+		cc.CornerRadius = UDim.new(1, 0)
+		cc.Parent = c
+		table.insert(clouds, c)
+	end
+
+	-- 파도 줄무늬
+	local waves = {}
+	for i = 1, 14 do
+		local w = mkBox(overlay, UDim2.fromScale((i * 0.37) % 1, 0.54 + (i % 7) * 0.065), UDim2.fromOffset(40 + (i % 3) * 18, 3), Color3.new(1, 1, 1), 0.6)
+		table.insert(waves, { f = w, speed = 0.12 + (i % 4) * 0.05 })
+	end
+
+	-- 배 (도형으로 그린 범선)
+	local ship = Instance.new("Frame")
+	ship.AnchorPoint = Vector2.new(0.5, 0.8)
+	ship.Position = UDim2.fromScale(0.5, 0.56)
+	ship.Size = UDim2.fromOffset(150, 120)
+	ship.BackgroundTransparency = 1
+	ship.Parent = overlay
+	local hull = mkBox(ship, UDim2.fromOffset(10, 86), UDim2.fromOffset(130, 26), Color3.fromRGB(110, 70, 40))
+	local hc = Instance.new("UICorner")
+	hc.CornerRadius = UDim.new(0.45, 0)
+	hc.Parent = hull
+	mkBox(ship, UDim2.fromOffset(10, 90), UDim2.fromOffset(130, 3), Color3.fromRGB(224, 170, 69))
+	mkBox(ship, UDim2.fromOffset(72, 8), UDim2.fromOffset(4, 80), Color3.fromRGB(70, 45, 28)) -- 돛대
+	mkBox(ship, UDim2.fromOffset(78, 14), UDim2.fromOffset(46, 34), Color3.fromRGB(245, 238, 220))
+	mkBox(ship, UDim2.fromOffset(78, 52), UDim2.fromOffset(52, 30), Color3.fromRGB(235, 226, 204))
+	mkBox(ship, UDim2.fromOffset(30, 34), UDim2.fromOffset(38, 46), Color3.fromRGB(240, 232, 212))
+	mkBox(ship, UDim2.fromOffset(76, 2), UDim2.fromOffset(18, 8), Color3.fromRGB(214, 82, 76)) -- 깃발
+	local smoke = {}
+	if steam then
+		mkBox(ship, UDim2.fromOffset(112, 56), UDim2.fromOffset(12, 30), Color3.fromRGB(60, 60, 66))
+		for i = 1, 4 do
+			local p = mkBox(ship, UDim2.fromOffset(112, 50), UDim2.fromOffset(14, 14), Color3.fromRGB(190, 190, 195), 0.3)
+			local pc = Instance.new("UICorner")
+			pc.CornerRadius = UDim.new(1, 0)
+			pc.Parent = p
+			table.insert(smoke, p)
+		end
+	end
+
+	-- 갈매기: 두 날개(회전하는 얇은 막대)가 퍼덕인다
+	local gulls = {}
+	for i = 1, 5 do
+		local g = Instance.new("Frame")
+		g.BackgroundTransparency = 1
+		g.AnchorPoint = Vector2.new(0.5, 0.5)
+		g.Size = UDim2.fromOffset(34, 14)
+		g.Parent = overlay
+		local l = mkBox(g, UDim2.fromOffset(0, 6), UDim2.fromOffset(18, 3), Color3.new(1, 1, 1))
+		local r = mkBox(g, UDim2.fromOffset(16, 6), UDim2.fromOffset(18, 3), Color3.new(1, 1, 1))
+		l.AnchorPoint, r.AnchorPoint = Vector2.new(1, 0.5), Vector2.new(0, 0.5)
+		l.Position, r.Position = UDim2.fromOffset(17, 7), UDim2.fromOffset(17, 7)
+		table.insert(gulls, { f = g, l = l, r = r, y = 0.1 + 0.07 * i, phase = i * 1.3, speed = 0.09 + 0.03 * (i % 3), x0 = (i * 0.23) % 1 })
+	end
+
+	-- 안내 글자와 진행 막대
+	local title = Instance.new("TextLabel")
+	title.BackgroundTransparency = 1
+	title.Position = UDim2.new(0, 0, 0, 14)
+	title.Size = UDim2.new(1, 0, 0, 26)
+	title.Font = Enum.Font.GothamBold
+	title.TextSize = 20
+	title.TextColor3 = Color3.new(1, 1, 1)
+	title.Text = string.format("%s → %s", fromName, toName)
+	title.ZIndex = 51
+	title.Parent = overlay
+	local dayLabel = Instance.new("TextLabel")
+	dayLabel.BackgroundTransparency = 1
+	dayLabel.Position = UDim2.new(0, 0, 1, -60)
+	dayLabel.Size = UDim2.new(1, 0, 0, 20)
+	dayLabel.Font = Enum.Font.Gotham
+	dayLabel.TextSize = 14
+	dayLabel.TextColor3 = Color3.fromRGB(230, 240, 250)
+	dayLabel.ZIndex = 51
+	dayLabel.Parent = overlay
+	local barBack = mkBox(overlay, UDim2.new(0.1, 0, 1, -34), UDim2.new(0.8, 0, 0, 6), Color3.fromRGB(20, 50, 80))
+	local bar = mkBox(barBack, UDim2.fromScale(0, 0), UDim2.fromScale(0, 1), Color3.fromRGB(224, 170, 69))
+	local hint = Instance.new("TextLabel")
+	hint.BackgroundTransparency = 1
+	hint.Position = UDim2.new(0, 0, 1, -22)
+	hint.Size = UDim2.new(1, 0, 0, 16)
+	hint.Font = Enum.Font.Gotham
+	hint.TextSize = 11
+	hint.TextColor3 = Color3.fromRGB(200, 215, 230)
+	hint.Text = "화면을 누르면 건너뛰어요"
+	hint.ZIndex = 51
+	hint.Parent = overlay
+
+	local DURATION = math.clamp(2 + days * 0.4, 3, 6)
+	local skipped = false
+	overlay.Activated:Connect(function() skipped = true end)
+	local t = 0
+	while t < DURATION and not skipped and overlay.Parent do
+		local dt = RunService.Heartbeat:Wait()
+		t += dt
+		local k = math.clamp(t / DURATION, 0, 1)
+		bar.Size = UDim2.fromScale(k, 1)
+		dayLabel.Text = string.format("%d / %d일째", math.max(1, math.ceil(k * days)), days)
+		ship.Position = UDim2.new(0.5, 0, 0.56 + math.sin(t * 2.2) * 0.008, 0)
+		ship.Rotation = math.sin(t * 1.7) * 3
+		for i, w in waves do
+			local x = (w.f.Position.X.Scale - w.speed * dt) % 1.1
+			w.f.Position = UDim2.new(x - 0.05, 0, w.f.Position.Y.Scale, 0)
+		end
+		for _, c in clouds do
+			c.Position = UDim2.new((c.Position.X.Scale + 0.01 * dt) % 1.2 - 0.1, 0, c.Position.Y.Scale, 0)
+		end
+		for i, p in smoke do
+			local q = (t * 0.8 + i * 0.25) % 1
+			p.Position = UDim2.fromOffset(112 - q * 38, 50 - q * 46)
+			p.BackgroundTransparency = 0.3 + q * 0.7
+		end
+		for _, g in gulls do
+			local x = (g.x0 + t * g.speed) % 1.2 - 0.1
+			g.f.Position = UDim2.new(x, 0, g.y + math.sin(t * 1.5 + g.phase) * 0.02, 0)
+			local flap = math.sin(t * 9 + g.phase) * 28
+			g.l.Rotation = -flap
+			g.r.Rotation = flap
+		end
+	end
+	overlay:Destroy()
+end
+
+local function sail(portId)
+	local from = view.player.portName
+	local days, steam = 1, view.ship.steam
+	for _, r in view.routes do
+		if r.id == portId then
+			days = r.days
+		end
+	end
+	local result = call("Sail", { portId = portId })
+	if result and result.ok then
+		playVoyage(from, view.player.portName, days, steam)
+	end
+end
+
 -- 탭 화면 -------------------------------------------------------------------
 
 local order = 0
@@ -367,7 +545,7 @@ local function renderRoute()
 				warn = " ⚠ 석탄 없음"
 			end
 			return mkRow(content, r.name, string.format("%d일 · %d km · 보급품 %d%s%s", r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
-				{ text = "출항", color = COLORS.blue, onClick = function() call("Sail", { portId = r.id }) end },
+				{ text = "출항", color = COLORS.blue, onClick = function() sail(r.id) end },
 			}, 56)
 		end)
 	end
@@ -646,7 +824,7 @@ local function renderMap()
 			if r.id == selectedPort then
 				add(function()
 					return mkRow(content, r.name, string.format("%d일 · %d km · 보급품 %d%s", r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else ""), {
-						{ text = "출항", color = COLORS.blue, onClick = function() selectedPort = nil; call("Sail", { portId = r.id }) end },
+						{ text = "출항", color = COLORS.blue, onClick = function() selectedPort = nil; sail(r.id) end },
 					}, 56)
 				end)
 			end
