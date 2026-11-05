@@ -5328,9 +5328,9 @@ local function layoutMeadowCombatUi()
   meadowSkillDock.Position=UDim2.new(1,-math.floor(14*scale),1,-math.floor(offset*(landscape and 1 or scale)))
   -- [시안 참고] 오른쪽 큰 검 / 위쪽 마력·질주 / 좌측 회피 / 아래 점프.
   local positions={
-    {150,92,38}, -- [시안] 보라색 기술: 검 위쪽
-    {100,138,39}, -- [시안] 회피: 검 왼쪽
-    {170,75,39}, -- 막기는 기존 단축바 8번
+    {150,92,38}, -- 보라색 기술은 오른쪽 HUD에서 숨김(공격·회피·막기·질주만 표시)
+    {112,160,40}, -- 회피: 검 왼쪽
+    {122,104,40}, -- 막기: 검 왼쪽 위
     {40,72,36}, -- 물약은 기존 단축바 5번
   }
   for index,button in ipairs(meadowSkillButtons) do
@@ -5346,7 +5346,7 @@ local function layoutMeadowCombatUi()
       math.floor(visualY*scale-size*.5))
     -- [시안 오른쪽] 검·기술·회피·질주·점프 5개만 표시.
     -- 숨긴 막기와 회복은 8·5번 단축바에 그대로 연결한다.
-    button.Visible=index==1 or index==2
+    button.Visible=index==2 or index==3
     local plate=meadowSkillNameplates[index]
     plate.Visible=false -- 원형 전투 아이콘만 유지해 참고 화면과 동일한 밀도로 표시.
     plate.Size=UDim2.fromOffset(0,0)
@@ -5355,9 +5355,9 @@ local function layoutMeadowCombatUi()
     -- 보조 채집·가방은 하단 단축창에서도 접근할 수 있어 화면 오른쪽 중복 표시만 정리.
     button.Visible=index==2
     if index==2 then
-      local size=math.max(46,math.floor(35*scale))
+      local size=math.max(46,math.floor(40*scale))
       button.Size=UDim2.fromOffset(size,size)
-      button.Position=UDim2.fromOffset(math.floor(168*scale),math.floor(30*scale))
+      button.Position=UDim2.fromOffset(math.floor(152*scale),math.floor(50*scale))
     end
   end
   local swordSize=math.max(60,math.floor(66*scale))
@@ -5365,7 +5365,7 @@ local function layoutMeadowCombatUi()
   meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale),math.floor(132*scale))
   local jumpSize=math.max(46,math.floor(46*scale))
   meadowSkillButtons.referenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)
-  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(52*scale),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor(6*scale))
+  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(38*scale),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor(6*scale))
   -- [기존 점프 이중 터치 방지] 공식 모바일 JumpButton만 숨기고 실제 점프 기능은 위 버튼에 연결.
   if UserInputService.TouchEnabled then
     local touchGui=player.PlayerGui:FindFirstChild("TouchGui")
