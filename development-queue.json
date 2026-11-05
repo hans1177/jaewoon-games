@@ -59,7 +59,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-11-04T12:04:52.759Z",
-      "updatedAt": "2026-11-05T05:45:40.137Z",
+      "updatedAt": "2026-11-05T05:46:35.099Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -584,11 +584,11 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-package:roblox-package-result-missing"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": "869675a2cd844832d1dd1600cd88d5785ce1381a",
-      "robloxBuildFailedAt": "2026-11-05T05:45:40.137Z",
+      "robloxBuildFailedAt": "2026-11-05T05:46:35.099Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -621,7 +621,7 @@
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-package-result-missing",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "869675a2cd844832d1dd1600cd88d5785ce1381a",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
@@ -631,8 +631,8 @@
         "sourceRevision": "869675a2cd844832d1dd1600cd88d5785ce1381a",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 41974638318,
-        "testedAt": "2026-11-05T05:44:01.913Z",
+        "workflowRunId": 41974928107,
+        "testedAt": "2026-11-05T05:46:35.099Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT",
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL",
@@ -5048,7 +5048,7 @@
       }
     }
   ],
-  "updatedAt": "2026-11-05T05:46:05.945Z",
+  "updatedAt": "2026-11-05T05:46:35.099Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
