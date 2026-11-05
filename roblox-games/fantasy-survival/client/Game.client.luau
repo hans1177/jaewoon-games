@@ -4399,11 +4399,11 @@ do
           return f
         end
         local topBar=solidFrame("LetterboxTop",27,Color3.new(0,0,0))
-        topBar.Size=UDim2.fromScale(1,.06)
+        topBar.Size=UDim2.fromScale(1,.1)
         local bottomBar=solidFrame("LetterboxBottom",27,Color3.new(0,0,0))
         bottomBar.AnchorPoint=Vector2.new(0,1)
         bottomBar.Position=UDim2.fromScale(0,1)
-        bottomBar.Size=UDim2.fromScale(1,.06)
+        bottomBar.Size=UDim2.fromScale(1,.1)
         local curtain=solidFrame("Curtain",28,Color3.new(0,0,0))
         curtain.Size=UDim2.fromScale(1,1)
         curtain.BackgroundTransparency=0
@@ -4581,34 +4581,51 @@ do
             local camera=workspace.CurrentCamera
             local k=camera and camera.ViewportSize.X/1280 or 1
             local p,s,rot,tx,ty=cameraFor(scene,lt)
-            -- 확대·회전·화면 흔들림 없이, 배경은 고정하고 인물·전경만 옆으로 천천히 움직인다.
+            -- 확대·회전 없이 연출한다: 위아래 검은 띠가 가리는 범위 안에서 배경을 세로로 살짝 밀고,
+            -- 인물은 숨 쉬듯 움직이며 전경은 반대로 흐르는 3겹 시차. 충격 컷은 짧게 흔든다.
+            local dirY=(scene.id%2==0) and 1 or -1
+            local shakeX,shakeY=0,0
+            if scene.camera=="shake" or scene.camera=="spin" then
+              local amp=7*math.max(0,1-lt/1.1)
+              shakeX=amp*math.sin(lt*61)*math.cos(lt*23)
+              shakeY=amp*math.sin(lt*47+1)
+            end
             bgLayer.Size=UDim2.fromScale(1,1)
-            bgLayer.Position=UDim2.fromScale(.5,.5)
+            bgLayer.Position=UDim2.new(.5,0,.5,((p-.5)*2*13*dirY+shakeY)*k)
             bgLayer.Rotation=0
             chLayer.Size=UDim2.fromScale(1,1)
-            chLayer.Position=UDim2.new(.5,scene.chShift[1]*(p-.5)*2*k,.5,0)
+            chLayer.Position=UDim2.new(.5,(scene.chShift[1]*(p-.5)*2+shakeX*1.4)*k,.5,(3*math.sin(t*1.7+scene.id)+shakeY*1.4)*k)
             chLayer.Rotation=0
             fgLayer.Size=UDim2.fromScale(1,1)
-            fgLayer.Position=UDim2.new(.5,scene.fgShift[1]*(.5-p)*2*k,.5,0)
+            fgLayer.Position=UDim2.new(.5,(scene.fgShift[1]*(.5-p)*2+shakeX*2)*k,.5,(-5*math.sin(t*1.1+scene.id*.7)+shakeY*2)*k)
             fgLayer.Rotation=0
+            local barOpen=smooth(math.min(t/1.4,1))
+            topBar.Size=UDim2.fromScale(1,.1+.4*(1-barOpen))
+            bottomBar.Size=UDim2.fromScale(1,.1+.4*(1-barOpen))
             local opacity=0
             if t<.6 then opacity=1-smooth(t/.6) end
             if t>total-.8 then opacity=math.max(opacity,1-smooth((total-t)/.8)) end
             if scene.camera=="fade" then opacity=math.max(opacity,.75*smooth((p-.55)/.45)) end
             opacity=math.max(opacity,.55*(1-math.clamp(lt/.12,0,1)),.55*math.clamp((lt-(scene.seconds-.12))/.12,0,1))
             curtain.BackgroundTransparency=1-opacity
-            flash.BackgroundTransparency=(scene.id==11 and lt<.2) and (1-(1-lt/.2)*.65) or 1
+            local flashPower=({[9]=.35,[11]=.7,[14]=.45,[19]=.85,[21]=.5})[scene.id]
+            flash.BackgroundTransparency=(flashPower and lt<.28) and (1-(1-lt/.28)*flashPower) or 1
             local subtitleAlpha=0
             if scene.line~="" and lt>.15 then
               subtitleAlpha=math.clamp(math.min(lt/.2,(scene.seconds-.1-lt)/.2),0,1)
             end
+            subtitle.MaxVisibleGraphemes=scene.line~="" and math.floor(math.max(0,lt-.2)*17)+1 or -1
             subtitle.TextTransparency=1-subtitleAlpha
             subtitle.TextStrokeTransparency=1-subtitleAlpha
             local titleAlpha=(index==#openingScenes and lt>1.8) and smooth((lt-1.8)/1) or 0
             title.TextTransparency=1-titleAlpha
             title.TextStrokeTransparency=1-titleAlpha
-            fog.Visible=scene.fx=="mist"
-            if fog.Visible then fogGradient.Offset=Vector2.new(math.sin(t*.4)*.3,0) end
+            fog.Visible=true
+            local grade=({embers={Color3.fromRGB(255,120,40),.86},magic={Color3.fromRGB(160,70,230),.89},rift={Color3.fromRGB(100,150,255),.87},mist={Color3.fromRGB(205,232,214),.9}})[scene.fx]
+            fog.BackgroundColor3=grade[1]
+            local flicker=scene.fx=="embers" and .05*math.sin(t*9)*math.sin(t*3.1+1) or .025*math.sin(t*2.3)
+            fog.BackgroundTransparency=math.clamp(grade[2]+flicker,.7,.98)
+            fogGradient.Offset=Vector2.new(math.sin(t*.4+scene.id)*.35,0)
             updateSparks(scene.fx,t,k)
           end)
         end)
