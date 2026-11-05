@@ -395,7 +395,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -758,7 +758,31 @@ do
       end
     end
   end
+  local notes = {
+    ruin = {"석벽에 렌스기사단 문장이 새겨져 있다. 문장 아래 '숲을 지켜라'라는 글자가 지워졌다.","부서진 방패 아래 서약문 한 조각. 서명란에 이름이 둘 있었는데 하나가 칼로 긁혀 있다.",
+      "제단에 식은 촛농이 남아 있다. 누군가 매일 밤 이곳에 와서 같은 이름을 불렀다.","무너진 벽 틈에 보급 장부 쪽지. 숫자가 전쟁 내내 같다.","기사의 투구가 돌 위에 놓여 있다. 안쪽에 아이가 쓴 편지가 접혀 있다.","석상의 눈이 가려져 있다. 누가 일부러 본 것을 가리려 했다."},
+    cave = {"동굴 벽에 긁은 숫자들. 날짜인지 사람 수인지 알 수 없다.","젖은 바닥에 군화 자국이 한 방향으로만 이어진다. 나온 자국은 없다.","광부의 곡괭이 옆에 마력 결정 조각. 만지면 속삭임이 들린다.","박쥐 떼가 날아간 자리에 낡은 깃발. 렌스기사단의 것이다.","굴 안쪽 벽에 지도가 그려져 있다. 한 곳에 붉은 X 표시.","횃불이 아직 타고 있다. 방금 전까지 누군가 있었다."},
+    camp = {"식은 모닥불 곁에 일기장. 마지막 줄: '내일은 숲이 열린다던데.'","약탈자의 캠프. 훔친 물건 중에 기사단 인장이 섞여 있다.","사냥꾼의 쉼터. 벽에 늑대 발자국과 '저주받은 개체는 목걸이를 찬다'는 메모.","불탄 마차 잔해. 짐칸에서 미나 군수대장의 서명이 든 보급 상자가 나왔다.","버려진 천막 안에 반쯤 쓰다 만 편지. 받는 이는 '카인'이다.","상인의 흔적. 팔지 못한 약초 꾸러미와 '여기도 안전하지 않다'는 쪽지."},
+    shrine = {"샘물이 수면 아래서 빛난다. 비친 얼굴이 내 것이 아니다.","고대 비석에 마력숲의 지도. 지금의 숲과 모양이 다르다.","속삭이는 돌이 이름을 묻는다. 대답하지 못하자 조용해졌다.","별빛 제단 위에 꽃이 놓여 있다. 갓 꺾은 것이다.","잊힌 무덤. 묘비에 이름 대신 숫자만 새겨져 있다.","마력이 흐르는 돌. 숲이 진짜가 아니라는 낙서가 남아 있다."},
+  }
+  for index, poi in ipairs(pois) do
+    poi.Note = notes[poi.Kind][((index * 5) % 6) + 1]
+  end
   Config.WorldMap.Pois = pois
-end
+  -- 기록 조각 장: 발견한 장소 수에 따라 열리는 이야기. 순서와 상관없이 어디서든 모을 수 있다(자유 탐험의 메인 줄기).
+  Config.WorldMap.Chapters = {
+    {Need = 5,  Title = "기사단의 흔적", Text = "렌스기사단은 20년 전 마력숲을 지키려 대륙 전역에 초소를 세웠다. 흩어진 기록은 같은 날짜에서 끊긴다.", Coins = 80},
+    {Need = 12, Title = "갈라진 서약", Text = "서약문에는 두 이름이 있었다. 한 사람은 숲을 닫자고, 한 사람은 열어 두자고 했다. 한 이름은 지워졌다.", Coins = 160},
+    {Need = 20, Title = "침묵의 장부", Text = "보급 장부의 숫자는 전쟁 내내 같다. 줄지 않은 보급품은 누구를 위한 것이었을까.", Coins = 260},
+    {Need = 30, Title = "거짓 숲의 비밀", Text = "지도 속 숲과 지금의 숲은 다르다. 누군가 마력으로 숲을 새로 지었다. 이곳은 원본이 아니다.", Coins = 400},
+    {Need = 45, Title = "미러의 탑", Text = "비춘 얼굴을 가두는 탑. 사라진 단원들의 이름이 탑 아래에 묻혀 있다. 카인의 이름도 거기 있다.", Coins = 600},
+    {Need = 60, Title = "마지막 기록", Text = "모든 조각을 모았다. 기사단은 숲을 지키지 못한 게 아니라, 스스로 숲이 되어 대륙을 지켰다. 이야기는 이제 네 선택으로 이어진다.", Coins = 1000},
+  }
+  -- 유물: 던전 보스 상자에서 하나씩 얻는다. 보유 수만큼 모든 공격 피해 +5%.
+  Config.WorldMap.Relics = {
+    "해적왕의 나침반","뿌리 지킴이의 씨앗","용암 심장","모래 여왕의 눈물","독개구리 왕관","혼돈의 파편",
+    "지하묘지 수문장의 인장","고블린 왕의 이빨","심연 제단의 불씨",
+  }
+
 
 return table.freeze(Config)

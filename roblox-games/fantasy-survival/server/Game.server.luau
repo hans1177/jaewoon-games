@@ -3353,6 +3353,12 @@ end
 local function applyMeadowDamage(player,target,damage)
   if not target or target.HP<=0 or not target.model.Parent then return false end
   if (meadowFocusUntil[player] or 0)>os.clock() then damage=math.floor(damage*1.25) end
+  do
+    local relics=readNumber(player,"RelicMask",0)
+    local n=0
+    while relics>0 do n+=relics%2;relics=relics//2 end
+    if n>0 then damage=math.floor(damage*(1+.05*n)) end
+  end
   if target.oilClass and player:GetAttribute("MeadowOilClass")==target.oilClass then
     local charges=player:GetAttribute("MeadowOilCharges") or 0
     if charges>0 then
@@ -5732,6 +5738,7 @@ do
       local flag=bit32.lshift(1,index-1)
       if bit32.band(mask,flag)~=0 then say("이미 비워 둔 상자다.");return end
       setNumber(player,"DungeonCleared",bit32.bor(mask,flag))
+      setNumber(player,"RelicMask",bit32.bor(readNumber(player,"RelicMask",0),bit32.lshift(1,6+index-1)))
       setNumber(player,"Crystal",readNumber(player,"Crystal",0)+3+index)
       setNumber(player,"Magma",readNumber(player,"Magma",0)+2+index)
       setNumber(player,"Ore",readNumber(player,"Ore",0)+4+index)
@@ -5796,7 +5803,24 @@ do
               if bit32.band(mask,flag)==0 then
                 setNumber(player,field,bit32.bor(mask,flag))
                 pcall(awardProgress,player,25,15)
-                pcall(function() villageDialogue(player,"장소 발견 · "..poi.Name,"새로운 장소가 지도에 기록됐다. 수호자를 쓰러뜨리면 보물을 열 수 있다.") end)
+                local total=0
+                for i=1,#pois do
+                  local f,b=poiBit(i)
+                  if bit32.band(readNumber(player,f,0),b)~=0 then total+=1 end
+                end
+                local text="[기록 조각 "..total.."/"..#pois.."] "..poi.Note.."\n수호자를 쓰러뜨리면 보물을 열 수 있다."
+                local chapters=Config.WorldMap.Chapters
+                local chapterMask=readNumber(player,"ChapterMask",0)
+                for ci,chapter in ipairs(chapters) do
+                  local cflag=bit32.lshift(1,ci-1)
+                  if total>=chapter.Need and bit32.band(chapterMask,cflag)==0 then
+                    chapterMask=bit32.bor(chapterMask,cflag)
+                    setNumber(player,"ChapterMask",chapterMask)
+                    setNumber(player,"Coins",readNumber(player,"Coins",0)+chapter.Coins)
+                    text=text.."\n\n— 기록 해금: "..chapter.Title.." —\n"..chapter.Text.."\n(보상 "..chapter.Coins.." 재화)"
+                  end
+                end
+                pcall(function() villageDialogue(player,"장소 발견 · "..poi.Name,text) end)
               end
             end
           end
@@ -5804,6 +5828,98 @@ do
       end
     end
   end)
+end
+
+-- [동굴 던전 6곳 · 유물] 동굴 지점마다 지역에 맞는 지하 방으로 들어간다. 보스 상자는 유물 1개를 준다(유물 수×5% 공격 피해).
+do
+  local rooms={
+    {name="해적 동굴",mobs={"goblin","goblinscout","tribal"},boss={"orc","동굴 해적왕",7,3.6},zones={"windcliff","meadow"},tier=3},
+    {name="뿌리 밑 굴",mobs={"beastman","spider","wolf"},boss={"beastman","뿌리의 군주 · 거대 늑대인간",8,4},zones={"worldtree"},tier=4},
+    {name="용암 갱도",mobs={"orc","skullorc","demon"},boss={"demon","갱도의 군주 · 용암 악마",8,4.6},zones={"volcano"},tier=6},
+    {name="모래 무덤",mobs={"fangspider","assassin","raptor"},boss={"raptor","무덤의 폭군 · 거대 랩터",8,4.4},zones={"oasis","desert"},tier=6},
+    {name="독 늪 동굴",mobs={"toad","goblin","spider"},boss={"toad","늪 동굴의 왕 · 거대 두꺼비",6,3.8},zones={"swamp","wetland","deadmarsh"},tier=7},
+    {name="혼돈의 균열 동굴",mobs={"demon","frostfiend","skullorc"},boss={"spiritgolem","균열의 수호자 · 망령 골렘",9,5},zones={"citadel","highland","canyon","chaos"},tier=9},
+  }
+  local roomOfZone={}
+  for index,room in ipairs(rooms) do for _,zone in ipairs(room.zones) do roomOfZone[zone]=index end end
+  local drops={goblin={{"Ore",.4}},goblinscout={{"Hide",.4}},tribal={{"Moonbloom",.4}},beastman={{"Claw",.6},{"Hide",.5}},spider={{"Fang",.5}},wolf={{"Hide",.5}},
+    orc={{"Ore",.5}},skullorc={{"Ore",.5},{"Magma",.3}},demon={{"Magma",.5},{"Crystal",.4}},fangspider={{"Fang",.6}},assassin={{"Claw",.5}},raptor={{"Hide",.5},{"Claw",.4}},
+    toad={{"Mushroom",.6}},frostfiend={{"Crystal",.5}}}
+  local returnTo={}
+  task.spawn(function()
+    task.wait(2)
+    local terrain=workspace.Terrain
+    for index in ipairs(rooms) do
+      local cx=9300+index*400
+      terrain:FillBlock(CFrame.new(cx,20,0),Vector3.new(190,64,190),Enum.Material.Slate)
+      terrain:FillBlock(CFrame.new(cx,24,0),Vector3.new(170,44,170),Enum.Material.Air)
+      for _,spot in ipairs({{-55,-55},{55,-55},{-55,55},{55,55},{0,0}}) do
+        terrain:FillCylinder(CFrame.new(cx+spot[1],22,spot[2]),44,9,Enum.Material.Basalt)
+        local lamp=Instance.new("Attachment");lamp.WorldPosition=Vector3.new(cx+spot[1],12,spot[2]+7);lamp.Parent=terrain
+        local light=Instance.new("PointLight");light.Color=Color3.fromRGB(255,170,90);light.Range=48;light.Brightness=2.2;light.Parent=lamp
+      end
+    end
+  end)
+  for index,room in ipairs(rooms) do
+    local cx=9300+index*400
+    local random=Random.new(3300+index)
+    for i,model in ipairs(room.mobs) do
+      for _=1,2 do
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=model,tier=room.tier,height=model:find("spider") and 3.6 or 4.4,
+          hp=1.8,dmg=1.3,drops=drops[model],dungeon=100+index,position=Vector3.new(cx+random:NextNumber(-65,65),3,random:NextNumber(-65,30))})
+      end
+    end
+    table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=room.boss[1],name=room.boss[2],tier=room.tier+2,height=room.boss[3],
+      hp=room.boss[4],dmg=2,alpha=true,dungeon=100+index,drops={{"Crystal",1,3},{"Ore",1,3}},position=Vector3.new(cx,3,-50)})
+    local exitAnchor=Instance.new("Attachment");exitAnchor.WorldPosition=Vector3.new(cx,4,74);exitAnchor.Parent=workspace.Terrain
+    local exit=Instance.new("ProximityPrompt");exit.ActionText="동굴 탈출";exit.ObjectText=room.name;exit.HoldDuration=.6
+    exit.MaxActivationDistance=12;exit.RequiresLineOfSight=false;exit.Parent=exitAnchor
+    exit.Triggered:Connect(function(player)
+      local character=player.Character
+      if character and character:FindFirstChild("HumanoidRootPart") then character:PivotTo(CFrame.new(returnTo[player] or Vector3.new(-110,6,-86))) end
+    end)
+    local chest=Instance.new("Attachment");chest.WorldPosition=Vector3.new(cx,4,-72);chest.Parent=workspace.Terrain
+    local glow=Instance.new("ParticleEmitter");glow.Color=ColorSequence.new(Color3.fromRGB(255,226,120));glow.LightEmission=1
+    glow.Rate=16;glow.Lifetime=NumberRange.new(2,3);glow.Size=NumberSequence.new(.8);glow.Parent=chest
+    local open=Instance.new("ProximityPrompt");open.ActionText="유물 상자 열기";open.ObjectText=room.name;open.HoldDuration=.8
+    open.MaxActivationDistance=12;open.RequiresLineOfSight=false;open.Parent=chest
+    open.Triggered:Connect(function(player)
+      local function say(text) pcall(function() villageDialogue(player,room.name,text) end) end
+      for _,enemy in ipairs(enemies) do
+        if enemy.dungeon==100+index and enemy.HP>0 and enemy.model.Parent then say("아직 몬스터가 남아 있다. 모두 처치해야 상자가 열린다.");return end
+      end
+      local flag=bit32.lshift(1,index-1)
+      local mask=readNumber(player,"RelicMask",0)
+      if bit32.band(mask,flag)~=0 then say("이미 유물을 가져갔다.");return end
+      setNumber(player,"RelicMask",bit32.bor(mask,flag))
+      setNumber(player,"Crystal",readNumber(player,"Crystal",0)+4)
+      setNumber(player,"Ore",readNumber(player,"Ore",0)+4)
+      pcall(awardProgress,player,200+index*70,150+index*50)
+      say("유물을 얻었다: "..Config.WorldMap.Relics[index].."\n모든 공격 피해가 영구히 5% 오른다.")
+    end)
+  end
+  -- 동굴 지점마다 입구.
+  for index,poi in ipairs(Config.WorldMap.Pois) do
+    local roomIndex=roomOfZone[poi.Zone]
+    if poi.Kind=="cave" and roomIndex then
+      local entry=Vector3.new(poi.X+10,3,poi.Z-10)
+      task.spawn(function()
+        task.wait(5+index*.1)
+        local anchor=Instance.new("Attachment");anchor.WorldPosition=entry;anchor.Parent=workspace.Terrain
+        local glow=Instance.new("ParticleEmitter");glow.Color=ColorSequence.new(Color3.fromRGB(120,120,150));glow.LightEmission=.5;glow.Rate=18
+        glow.Lifetime=NumberRange.new(2,3);glow.Speed=NumberRange.new(1,3);glow.Size=NumberSequence.new(1.2);glow.Parent=anchor
+        local prompt=Instance.new("ProximityPrompt");prompt.ActionText="동굴 진입";prompt.ObjectText=rooms[roomIndex].name.." (권장 단계 "..rooms[roomIndex].tier..")"
+        prompt.HoldDuration=.6;prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+        prompt.Triggered:Connect(function(player)
+          local character=player.Character
+          if character and character:FindFirstChild("HumanoidRootPart") then
+            returnTo[player]=entry+Vector3.new(0,5,0)
+            character:PivotTo(CFrame.new(Vector3.new(9300+roomIndex*400,5,66)))
+          end
+        end)
+      end)
+    end
+  end
 end
 
 -- [지역 발견] 실제 위치가 지역 안에 들어가면 서버가 발견 비트를 기록한다(1 초원·2 숲·4 화산·8 오아시스).

@@ -1292,6 +1292,20 @@ local function renderMeadowPages()
     for i=0,23 do if bit32.band(player:GetAttribute("WaypointMask") or 0,bit32.lshift(1,i))~=0 then count+=1 end end
     worldLines[#worldLines+1]=string.format("발견한 이정표 %d/24 — 이정표를 조사하면 빠른 이동 거점이 된다.",count)
   end
+  do
+    local chapterMask=player:GetAttribute("ChapterMask") or 0
+    worldLines[#worldLines+1]="— 기사단 기록 (장소를 발견하면 조각이 모인다) —"
+    for ci,chapter in ipairs(Config.WorldMap.Chapters)do
+      local open=bit32.band(chapterMask,bit32.lshift(1,ci-1))~=0
+      worldLines[#worldLines+1]=open and string.format("· %s\n   %s",chapter.Title,chapter.Text) or string.format("· ??? (장소 %d곳 발견 시 열림)",chapter.Need)
+    end
+    local relicMask,relicCount=player:GetAttribute("RelicMask") or 0,0
+    local names={}
+    for ri,name in ipairs(Config.WorldMap.Relics)do
+      if bit32.band(relicMask,bit32.lshift(1,ri-1))~=0 then relicCount+=1;names[#names+1]=name end
+    end
+    worldLines[#worldLines+1]=string.format("— 유물 %d/%d  (공격 피해 +%d%%) —\n%s",relicCount,#Config.WorldMap.Relics,relicCount*5,#names>0 and table.concat(names,", ") or "던전 보스 상자에서 얻는다.")
+  end
   for _,entry in ipairs(Config.Bestiary or {})do
     local kills=player:GetAttribute(entry.Field) or 0
     if kills<=0 then
