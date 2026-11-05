@@ -6304,14 +6304,16 @@ local function activateNearbyMeadowInteraction(screenPosition)
       or prompt.Name=="GatherPrompt") and prompt.Enabled
       and host and host:IsA("BasePart") and prompt:IsDescendantOf(workspace) then
       local distance=(host.Position-rootPart.Position).Magnitude
-      if distance<=prompt.MaxActivationDistance and distance<16 then
+      if distance<=prompt.MaxActivationDistance+(prompt.Name=="GatherPrompt" and 3 or 0) and distance<18 then
         local score=distance
         if screenPosition then
           if not camera then continue end
           local projected,visible=camera:WorldToViewportPoint(host.Position)
           if not visible or projected.Z<=0 then continue end
           local offset=(Vector2.new(projected.X,projected.Y)-screenPosition).Magnitude
-          if offset>65 then continue end
+          -- 나무·바위는 크고 중심점이 몸통 안쪽이라 화면에서 대충 눌러도 되게 허용 범위를 넓힌다.
+          local tolerance=prompt.Name=="GatherPrompt" and 190 or 65
+          if offset>tolerance then continue end
           score=offset+distance*.5
         end
         if score<bestDistance then target,bestDistance=prompt,score end

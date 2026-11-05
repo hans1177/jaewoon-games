@@ -3183,8 +3183,8 @@ local function createResourceNodes()
         prompt.Name="GatherPrompt"
         prompt.ActionText=spec.kind=="STONE" and "돌 채집" or spec.kind=="ORE" and "광석 채굴" or spec.kind=="HERB" and "약초 채집" or "채집"
         prompt.ObjectText=spec.kind=="STONE" and "바위" or spec.kind=="ORE" and "광맥" or "약초 덤불"
-        prompt.MaxActivationDistance=12
-        prompt.HoldDuration=.55
+        prompt.MaxActivationDistance=14
+        prompt.HoldDuration=.3
         prompt.RequiresLineOfSight=false
         prompt.Parent=anchor
         prompt.Triggered:Connect(function(player) gatherResource(player,node) end)
@@ -3194,8 +3194,8 @@ local function createResourceNodes()
         prompt.Name="GatherPrompt"
         prompt.ActionText="나무 채집"
         prompt.ObjectText="초원 나무"
-        prompt.MaxActivationDistance=12
-        prompt.HoldDuration=.55
+        prompt.MaxActivationDistance=14
+        prompt.HoldDuration=.3
         prompt.RequiresLineOfSight=false
         prompt.Parent=mesh
         prompt.Triggered:Connect(function(player) gatherResource(player,node) end)
