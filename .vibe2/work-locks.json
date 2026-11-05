@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-e6pm1q",
+      "worker": "vibe2",
+      "taskId": "room-survival-studio-evolution-roblox-usability-v12",
+      "gameId": "room-survival",
+      "files": [
+        "roblox-games/room-survival/client/Game.client.luau",
+        "roblox-games/room-survival/shared/GameConfig.luau",
+        "roblox-games/room-survival/server/Game.server.luau",
+        "roblox-games/room-survival/client/MaterialPresentation.client.luau",
+        "roblox-games/room-survival/shared/RobloxCommonUI.luau",
+        "roblox-games/room-survival/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "e78a07c56a60eeaa46e6d04b3821a122f5000805",
+      "runId": "42064680287",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-05T16:43:28.469Z",
+      "expiresAt": "2026-11-05T17:28:28.469Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:room-survival-studio-evolution-roblox-usability-v12"
+      ]
+    }
+  ]
 }
