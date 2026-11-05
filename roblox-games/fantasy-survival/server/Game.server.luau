@@ -914,6 +914,14 @@ local function createMeadowVillage()
         -- [보이는 흙길] 옛 도로가 잔디에 묻히지 않게 지면 위로 0.35만 올린다.
         -- 실제 Terrain만 사용하며 모바일 보행과 NPC 의뢰 위치를 가리지 않는다.
         meadowTerrain:FillBall(Vector3.new(x,2.06-radius+.35,z),radius,Enum.Material.Ground)
+        -- [마을 돌길] 주 출입로·여관·회관 앞에만 닳은 자갈길을 자연스럽게 드러낸다.
+        if (routeIndex==1 and z>-183 and step%4==0)
+          or (routeIndex==6 and step%5==0)
+          or (routeIndex==7 and step%5==0) then
+          local stoneRadius=1.55+((routeIndex+segment+step)%3)*.19
+          meadowTerrain:FillBall(Vector3.new(x,2.06-stoneRadius+.48,z),
+            stoneRadius,Enum.Material.Cobblestone)
+        end
         if step%9==0 then task.wait() end
       end
       villageRoadSegments+=1
@@ -964,6 +972,7 @@ local function createMeadowVillage()
   local villageWellReady=false
   -- [마을 생활감] 검증된 원본 CC0 랜턴에만 빛과 불씨를 연결한다. 장식 파츠 신규 제작 없음.
   local villageLanternLights={}
+  local villageWindowLightCount=0
   local expectedVillageBuildings=16
   if nativeVillageReady then
     -- [집 유형] 짧은 초가, 긴 농가/공방, 이층 여관/회관. 문 방향은 광장·골목을 향하게 한다.
@@ -1006,6 +1015,7 @@ local function createMeadowVillage()
       -- [서로 다른 완성형 건물] 기존 여관·회관·창고·농가를 각각 별개 중세 모델로 구성.
       -- 등록·로드 실패 시 해당 건물은 기존 조립형으로 남기고 저장 및 의뢰 좌표를 보존한다.
       local hasOriginalHouse=false
+      local houseWindowLit=false
       if house.prefab and villageWholeHouseReady then
         -- [완성형 CC0 집] 링크가 끊긴 원본 재질 때문에 거대 회색 집이 되지 않도록
         -- 실제 원본 MeshPart만 집의 지붕/목재/회벽 팔레트로 마감한다.
@@ -1086,6 +1096,27 @@ local function createMeadowVillage()
               mesh.CanCollide=true
             end
           end
+          -- [밤의 여관·회관] 원본 집의 실제 창문 메시만 빛나게 한다.
+          if house.lantern then
+            for _,window in ipairs(houseModel:GetDescendants()) do
+              if window:IsA("MeshPart") then
+                local label=window.Name:lower()
+                if label:find("window",1,true) or label:find("glass",1,true) then
+                  local light=Instance.new("PointLight")
+                  light.Name="MeadowVillageWindowGlow"
+                  light.Color=Color3.fromRGB(255,193,124)
+                  light.Brightness=0
+                  light.Range=10
+                  light.Shadows=false
+                  light.Parent=window
+                  villageLanternLights[#villageLanternLights+1]=light
+                  villageWindowLightCount+=1
+                  houseWindowLit=true
+                  break
+                end
+              end
+            end
+          end
           local signMesh=houseModel:FindFirstChildWhichIsA("MeshPart",true)
           if signMesh then
             local sign=Instance.new("BillboardGui")
@@ -1095,7 +1126,8 @@ local function createMeadowVillage()
             -- [간판 위치] 작은 건물에서는 원래 10.5스터드 고정 오프셋이 공중에 뜬다.
             sign.StudsOffsetWorldSpace=Vector3.new(0,
               math.max(2,fullBox.Position.Y+fullSize.Y*.5-signMesh.Position.Y+1.5),0)
-            sign.MaxDistance=72
+            sign.MaxDistance=(house.district=="MARKET" or house.district=="CIVIC"
+              or house.district=="HERBALISTS" or house.district=="CRAFT") and 50 or 29
             sign.Parent=signMesh
             local caption=Instance.new("TextLabel")
             caption.Size=UDim2.fromScale(1,1)
@@ -1286,6 +1318,22 @@ local function createMeadowVillage()
               end
             end
           end
+          -- [밤의 주거지] 기존 CC0 벽창에만 창문 불빛을 한 집당 하나 켠다.
+          if piece.asset=="villageWindow" and house.lantern and not houseWindowLit then
+            local host=model:FindFirstChildWhichIsA("MeshPart",true)
+            if host then
+              local light=Instance.new("PointLight")
+              light.Name="MeadowVillageWindowGlow"
+              light.Color=Color3.fromRGB(255,193,124)
+              light.Brightness=0
+              light.Range=10
+              light.Shadows=false
+              light.Parent=host
+              villageLanternLights[#villageLanternLights+1]=light
+              villageWindowLightCount+=1
+              houseWindowLit=true
+            end
+          end
           if piece.asset=="villageDoor" and not piece.secondary then
             local front=model:FindFirstChildWhichIsA("MeshPart",true)
             if front then
@@ -1294,7 +1342,8 @@ local function createMeadowVillage()
               sign.Adornee=front
               sign.Size=UDim2.fromOffset(158,28)
               sign.StudsOffsetWorldSpace=Vector3.new(0,7.8,0)
-              sign.MaxDistance=72
+              sign.MaxDistance=(house.district=="MARKET" or house.district=="CIVIC"
+              or house.district=="HERBALISTS" or house.district=="CRAFT") and 50 or 29
               sign.Parent=front
               local caption=Instance.new("TextLabel")
               caption.Size=UDim2.fromScale(1,1)
@@ -1340,7 +1389,7 @@ local function createMeadowVillage()
     end
     -- [마을 숲 바닥·실물 수목] 평평한 검은 초원을 뒤덮던 단색 지면을
     -- 기존 Roblox Terrain 잔디/낙엽의 낮은 얼룩과 승인된 CC0 굽은 나무로 채운다.
-    -- 건물 16채, 우물/게시판, 네 NPC, 굽은 길 16개와 상호작용 반경은 비운다.
+    -- 건물 16채, 우물/게시판, 네 NPC, 굽은 길 19개와 상호작용 반경은 비운다.
     local villageGroundPatches=0
     local villageInteriorTrees=0
     for index=1,540 do
@@ -1512,6 +1561,122 @@ local function createMeadowVillage()
       end
       if index%4==0 then task.wait(.03) end
     end
+    -- [위쳐·스카이림식 생활 공간] 실제 등록된 CC0 모델만 구역별로 재사용한다.
+    -- 장식은 퀘스트·길·충돌·경제의 소유권을 갖지 않는다.
+    local villageLivedInScenes={
+      -- [약초상 뒷마당] 약초 꾸러미·약병·울타리.
+      {"villageFence",-120,-116,4.4,.14,"HERBALISTS"},
+      {"villageFence",-121,-143,4.4,.05,"HERBALISTS"},
+      {"item_potion1_filled",-128,-131,1.8,.32,"HERBALISTS"},
+      {"item_pouch",-126,-149,2.4,-.24,"HERBALISTS"},
+      {"villageCart",-135,-136,5.5,.27,"HERBALISTS"},
+      -- [여관·장터] 짐수레·천막·보따리.
+      {"villageStall",54,-76,5.1,.23,"MARKET"},
+      {"item_chalice",50,-87,1.65,.12,"MARKET"},
+      {"item_backpack",143,-131,3.0,-.35,"MARKET"},
+      {"item_pouch",136,-132,2.4,.27,"MARKET"},
+      {"villageCart",152,-137,6.1,-.3,"MARKET"},
+      {"item_chickenleg",159,-155,1.7,.28,"MARKET"},
+      -- [대장간·목수] 작업용 망치·벌목 도끼·석재와 장작.
+      {"item_hammer_double",-130,-202,2.4,-.18,"CRAFT"},
+      {"item_rock_1",-141,-195,3.3,.19,"CRAFT"},
+      {"item_woodlog",-135,-209,3.4,.38,"CRAFT"},
+      {"villageCart",-148,-211,5.8,-.25,"CRAFT"},
+      {"item_axe_small",-215,-183,2.2,.28,"CRAFT"},
+      {"item_woodlog",-221,-199,3.6,-.14,"CRAFT"},
+      {"item_woodlog",-216,-212,3.0,.36,"CRAFT"},
+      -- [숲 가장자리] 벌목꾼·숲지기의 작업 흔적.
+      {"item_woodlog",-215,-121,4.1,.32,"FOREST_EDGE"},
+      {"item_axe_small",-210,-131,2.5,-.18,"FOREST_EDGE"},
+      {"villageCart",-222,-136,5.8,.43,"FOREST_EDGE"},
+      {"item_bow_wooden",216,-130,2.5,.18,"FOREST_EDGE"},
+      {"villageFence",227,-143,5.0,-.18,"FOREST_EDGE"},
+      -- [주거지] 땔감·보따리·가벼운 뒷마당.
+      {"villageFence",-126,-260,4.6,.12,"RESIDENTIAL"},
+      {"item_woodlog",-129,-276,2.9,-.29,"RESIDENTIAL"},
+      {"item_pouch",128,-256,2.0,.34,"RESIDENTIAL"},
+      {"villageCart",139,-265,5.2,-.21,"RESIDENTIAL"},
+      {"villageFence",143,-282,4.4,-.12,"RESIDENTIAL"},
+      -- [농가·창고] 곡물 수송로를 따라 수레·울타리.
+      {"villageFence",-237,-266,4.7,.12,"FARMLAND"},
+      {"villageFence",-239,-284,4.7,.08,"FARMLAND"},
+      {"villageCart",-228,-284,5.7,-.16,"FARMLAND"},
+      {"item_pouch",-213,-298,2.6,.19,"FARMLAND"},
+      {"item_woodlog",221,-291,3.2,-.19,"FARMLAND"},
+      {"villageFence",242,-291,4.8,-.17,"FARMLAND"},
+      {"item_pouch",250,-322,2.7,.13,"FARMLAND"},
+      {"villageCart",247,-276,5.6,.3,"FARMLAND"},
+      -- [동서 숲길] 등록된 실제 랜턴에만 밤빛을 더한다.
+      {"villageLantern",-243,-234,4.3,0,"GATE"},
+      {"villageLantern",241,-229,4.3,0,"GATE"},
+    }
+    local livedInCount=0
+    for index,row in ipairs(villageLivedInScenes) do
+      local position=Vector2.new(row[2],row[3])
+      local protected=false
+      for _,node in ipairs({
+        {0,-101,19},{0,-146,19},{-68,-122,15},{69,-129,15},
+        {-2,-188,15},{-41,-128,13},{-24,-174,13},{57,-207,13},
+      }) do
+        if (position-Vector2.new(node[1],node[2])).Magnitude<node[3] then
+          protected=true
+          break
+        end
+      end
+      if not protected then
+        local item=worldAsset(row[1],Vector3.new(row[2],3,row[3]),row[4])
+        if item then
+          item.Name="Meadow_Village_LivedIn_"..row[6].."_"..index
+          item:SetAttribute("MeadowVillageScenery",true)
+          item:SetAttribute("VillageDistrict",row[6])
+          item:SetAttribute("VillageDressingSource","REGISTERED_CC0_NATIVE_ASSET")
+          -- 수입 모델의 피벗이 떠 있어도 보이는 메시 중심으로만 회전한다.
+          local box=item:GetBoundingBox()
+          item:PivotTo(CFrame.new(box.Position)*CFrame.Angles(0,row[5],0)
+            *CFrame.new(-box.Position)*item:GetPivot())
+          for _,mesh in ipairs(item:GetDescendants()) do
+            if mesh:IsA("MeshPart") then
+              mesh.CanCollide=false
+              mesh.CanQuery=false
+              mesh.CanTouch=false
+              if row[1]=="villageFence" or row[1]=="villageCart" then
+                mesh.Material=Enum.Material.Wood
+                mesh.Color=row[6]=="FARMLAND" and Color3.fromRGB(121,104,78)
+                  or row[6]=="CRAFT" and Color3.fromRGB(102,83,69)
+                  or Color3.fromRGB(130,104,80)
+              end
+            end
+          end
+          if row[1]=="villageLantern" then
+            local host=item:FindFirstChildWhichIsA("MeshPart",true)
+            if host then
+              local light=Instance.new("PointLight")
+              light.Name="MeadowVillageLanternGlow"
+              light.Color=Color3.fromRGB(255,179,111)
+              light.Brightness=0
+              light.Range=13
+              light.Shadows=false
+              light.Parent=host
+              villageLanternLights[#villageLanternLights+1]=light
+            end
+          end
+          livedInCount+=1
+        end
+      end
+      if index%5==0 then task.wait(.03) end
+    end
+    gameWorld:SetAttribute("MeadowVillageLivedInDetailCount",livedInCount)
+    gameWorld:SetAttribute("MeadowVillageWindowLightCount",villageWindowLightCount)
+    -- [농가 밭] 조립형 직사각 밭 대신 낮은 Terrain 흙얼룩으로 경작 흔적을 남긴다.
+    for _,patch in ipairs({
+      {-218,-305,2.8},{-224,-309,3.3},{-236,-307,2.5},
+      {-198,-322,2.9},{-185,-331,2.5},
+      {201,-302,2.7},{213,-306,3.1},{219,-311,2.6},
+      {191,-334,2.6},{241,-336,2.4},
+    }) do
+      meadowTerrain:FillBall(Vector3.new(patch[1],2.06-patch[3]+.38,patch[2]),
+        patch[3],Enum.Material.Ground)
+    end
     -- [저녁 마을] 밤에는 밝아지고 낮에는 잔잔하게 남는 등불. 원본 MeshPart/PointLight만 갱신.
     -- 폰에서도 1.3초 간격으로 20여 개 조명만 바꾸며 전투·저장 데이터와 무관하다.
     gameWorld:SetAttribute("MeadowVillageLivingLights",#villageLanternLights)
@@ -1522,8 +1687,13 @@ local function createMeadowVillage()
         for index,glow in ipairs(villageLanternLights) do
           if glow.Parent then
             local flicker=math.sin(now*1.7+index*2.2)*.12
-            glow.Brightness=(night and 1.42 or .43)+flicker
-            glow.Range=night and 18 or 11
+            if glow.Name=="MeadowVillageWindowGlow" then
+              glow.Brightness=night and (.62+flicker*.3) or 0
+              glow.Range=night and 12 or 0
+            else
+              glow.Brightness=(night and 1.42 or .43)+flicker
+              glow.Range=night and 18 or 11
+            end
           end
         end
         task.wait(1.3)
