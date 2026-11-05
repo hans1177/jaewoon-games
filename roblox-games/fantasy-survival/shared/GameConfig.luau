@@ -353,6 +353,36 @@ local Config = {
     {Id="hunter_bow",Rarity="Uncommon",Name="사냥꾼 활",Slot="Weapon",Category="무기",Attack=4,Defense=0,Icon=2,Bow=true,Coins=30,Desc="가죽과 철로 보강한 사냥용 활. 멀리서 노려 쏘고, 거리에 따라 치명타가 터져."},
     {Id="wind_bow",Rarity="Rare",Need=60,Name="바람결 활",Slot="Weapon",Category="무기",Attack=9,Defense=0,Icon=2,Bow=true,Coins=90,Desc="가볍고 빠른 장궁. 연사 속도가 빠르고 사거리가 길어."},
     {Id="worldtree_bow",Rarity="Epic",Need=220,Name="세계수 장궁",Slot="Weapon",Category="무기",Attack=15,Defense=0,Icon=2,Bow=true,Coins=170,Desc="세계수 가지로 만든 장궁. 급소를 꿰뚫으면 큰 피해를 줘."},
+    -- [실물 3D 무기 확장] CC0 승인 모델, 기존 35개 장비 인덱스·아이템 저장 비트 유지.
+    {Id="iron_arming_sword",Rarity="Uncommon",Need=0,Name="철제 무장검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="item_sword",ForgeOnly=true,Tint={180,195,175},Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="마력숲 대장간에서 제련·제작 가능한 철제 무장검."},
+    {Id="veteran_longsword",Rarity="Rare",Need=60,Name="베테랑 장검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="item_sword",ForgeOnly=true,Tint={170,200,225},Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Crystal=1,Desc="마력숲 대장간에서 제련·제작 가능한 베테랑 장검."},
+    {Id="royal_gilded_sword",Rarity="Epic",Need=220,Name="왕실 금장검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="item_sword_golden",ForgeOnly=true,Tint={190,175,230},Attack=15,Defense=0,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Crystal=2,Desc="마력숲 대장간에서 제련·제작 가능한 왕실 금장검."},
+    {Id="ancient_rune_sword",Rarity="Legendary",Need=700,Name="고대 룬 장검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="item_sword_golden",ForgeOnly=true,Tint={210,191,232},Attack=24,Defense=0,Icon=2,Art=18,Ingot=9,Leather=4,Coins=420,Crystal=4,Magma=3,Desc="마력숲 대장간에서 제련·제작 가능한 고대 룬 장검."},
+    {Id="mercenary_greatsword",Rarity="Uncommon",Need=0,Name="용병 대검",Slot="Weapon",Category="무기",WeaponFamily="Greatsword",ModelKey="item_sword_big",ForgeOnly=true,Tint={180,195,175},Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="마력숲 대장간에서 제련·제작 가능한 용병 대검."},
+    {Id="iron_greatblade",Rarity="Rare",Need=60,Name="철제 양손 대검",Slot="Weapon",Category="무기",WeaponFamily="Greatsword",ModelKey="item_sword_big",ForgeOnly=true,Tint={170,200,225},Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Crystal=1,Desc="마력숲 대장간에서 제련·제작 가능한 철제 양손 대검."},
+    {Id="guardian_greatblade",Rarity="Epic",Need=220,Name="수호자 거대검",Slot="Weapon",Category="무기",WeaponFamily="Greatsword",ModelKey="item_sword_big",ForgeOnly=true,Tint={190,175,230},Attack=15,Defense=0,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Crystal=2,Desc="마력숲 대장간에서 제련·제작 가능한 수호자 거대검."},
+    {Id="hunter_skinning_knife",Rarity="Uncommon",Need=0,Name="사냥용 가죽칼",Slot="Weapon",Category="무기",WeaponFamily="Dagger",ModelKey="item_dagger",ForgeOnly=true,Tint={180,195,175},Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="마력숲 대장간에서 제련·제작 가능한 사냥용 가죽칼."},
+    {Id="shadow_assassin_dagger",Rarity="Rare",Need=60,Name="그림자 단검",Slot="Weapon",Category="무기",WeaponFamily="Dagger",ModelKey="item_dagger",ForgeOnly=true,Tint={170,200,225},Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Crystal=1,Desc="마력숲 대장간에서 제련·제작 가능한 그림자 단검."},
+    {Id="moonlit_dagger",Rarity="Epic",Need=220,Name="달빛 의식단검",Slot="Weapon",Category="무기",WeaponFamily="Dagger",ModelKey="item_dagger",ForgeOnly=true,Tint={190,175,230},Attack=15,Defense=0,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Crystal=2,Desc="마력숲 대장간에서 제련·제작 가능한 달빛 의식단검."},
+    {Id="scout_hatchet",Rarity="Uncommon",Need=0,Name="정찰병 손도끼",Slot="Weapon",Category="무기",WeaponFamily="Axe",ModelKey="vxToolAxe",ForgeOnly=true,Tint={180,195,175},Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="마력숲 대장간에서 제련·제작 가능한 정찰병 손도끼."},
+    {Id="woodsman_axe",Rarity="Uncommon",Need=0,Name="숲지기 도끼",Slot="Weapon",Category="무기",WeaponFamily="Axe",ModelKey="item_axe_small",ForgeOnly=true,Tint={180,195,175},Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="마력숲 대장간에서 제련·제작 가능한 숲지기 도끼."},
+    {Id="iron_battleaxe",Rarity="Rare",Need=60,Name="철제 전투도끼",Slot="Weapon",Category="무기",WeaponFamily="Axe",ModelKey="item_axe_small",ForgeOnly=true,Tint={170,200,225},Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Crystal=1,Desc="마력숲 대장간에서 제련·제작 가능한 철제 전투도끼."},
+    {Id="rune_reaver_axe",Rarity="Epic",Need=220,Name="룬 각인 도끼",Slot="Weapon",Category="무기",WeaponFamily="Axe",ModelKey="item_axe_small",ForgeOnly=true,Tint={190,175,230},Attack=15,Defense=0,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Crystal=2,Desc="마력숲 대장간에서 제련·제작 가능한 룬 각인 도끼."},
+    {Id="forge_hammer",Rarity="Uncommon",Need=0,Name="대장장이 전투망치",Slot="Weapon",Category="무기",WeaponFamily="Hammer",ModelKey="item_hammer_double",ForgeOnly=true,Tint={180,195,175},Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="마력숲 대장간에서 제련·제작 가능한 대장장이 전투망치."},
+    {Id="steel_warhammer",Rarity="Rare",Need=60,Name="강철 전쟁망치",Slot="Weapon",Category="무기",WeaponFamily="Hammer",ModelKey="item_hammer_double",ForgeOnly=true,Tint={170,200,225},Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Crystal=1,Desc="마력숲 대장간에서 제련·제작 가능한 강철 전쟁망치."},
+    {Id="thunder_maul",Rarity="Epic",Need=220,Name="천둥 철퇴",Slot="Weapon",Category="무기",WeaponFamily="Hammer",ModelKey="item_hammer_double",ForgeOnly=true,Tint={190,175,230},Attack=15,Defense=0,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Crystal=2,Desc="마력숲 대장간에서 제련·제작 가능한 천둥 철퇴."},
+    {Id="apprentice_staff",Rarity="Uncommon",Need=0,Name="수습 마도사 지팡이",Slot="Weapon",Category="무기",WeaponFamily="Staff",ModelKey="item_staff",ForgeOnly=true,Tint={180,195,175},Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="마력숲 대장간에서 제련·제작 가능한 수습 마도사 지팡이."},
+    {Id="grove_staff",Rarity="Rare",Need=60,Name="수풀 주술봉",Slot="Weapon",Category="무기",WeaponFamily="Staff",ModelKey="item_staff",ForgeOnly=true,Tint={170,200,225},Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Crystal=1,Desc="마력숲 대장간에서 제련·제작 가능한 수풀 주술봉."},
+    {Id="ember_staff",Rarity="Epic",Need=220,Name="잿불 마법봉",Slot="Weapon",Category="무기",WeaponFamily="Staff",ModelKey="item_staff",ForgeOnly=true,Tint={190,175,230},Attack=15,Defense=0,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Crystal=2,Desc="마력숲 대장간에서 제련·제작 가능한 잿불 마법봉."},
+    {Id="crystal_staff",Rarity="Legendary",Need=700,Name="수정 마도봉",Slot="Weapon",Category="무기",WeaponFamily="Staff",ModelKey="item_staff",ForgeOnly=true,Tint={210,191,232},Attack=24,Defense=0,Icon=2,Art=18,Ingot=9,Leather=4,Coins=420,Crystal=4,Magma=3,Desc="마력숲 대장간에서 제련·제작 가능한 수정 마도봉."},
+    {Id="scout_shortbow",Rarity="Uncommon",Need=0,Name="정찰병 단궁",Slot="Weapon",Category="무기",WeaponFamily="Bow",ModelKey="item_bow_wooden",ForgeOnly=true,Tint={180,195,175},Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Bow=true,Desc="마력숲 대장간에서 제련·제작 가능한 정찰병 단궁."},
+    {Id="oak_recurve_bow",Rarity="Rare",Need=60,Name="참나무 곡궁",Slot="Weapon",Category="무기",WeaponFamily="Bow",ModelKey="item_bow_wooden",ForgeOnly=true,Tint={170,200,225},Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Crystal=1,Bow=true,Desc="마력숲 대장간에서 제련·제작 가능한 참나무 곡궁."},
+    {Id="hunter_longbow",Rarity="Epic",Need=220,Name="명사수 장궁",Slot="Weapon",Category="무기",WeaponFamily="Bow",ModelKey="item_bow_wooden",ForgeOnly=true,Tint={190,175,230},Attack=15,Defense=0,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Crystal=2,Bow=true,Desc="마력숲 대장간에서 제련·제작 가능한 명사수 장궁."},
+    {Id="arcane_bow",Rarity="Legendary",Need=700,Name="비전 마력활",Slot="Weapon",Category="무기",WeaponFamily="Bow",ModelKey="item_bow_wooden",ForgeOnly=true,Tint={210,191,232},Attack=24,Defense=0,Icon=2,Art=18,Ingot=9,Leather=4,Coins=420,Crystal=4,Magma=3,Bow=true,Desc="마력숲 대장간에서 제련·제작 가능한 비전 마력활."},
+    {Id="forest_guard_shield",Rarity="Uncommon",Need=0,Name="숲 경비병 방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="vxShieldA",ForgeOnly=true,Tint={180,195,175},Attack=0,Defense=2,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="마력숲 대장간에서 제련·제작 가능한 숲 경비병 방패."},
+    {Id="knight_shield",Rarity="Rare",Need=60,Name="기사단 방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="vxShieldB",ForgeOnly=true,Tint={170,200,225},Attack=0,Defense=3,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Crystal=1,Desc="마력숲 대장간에서 제련·제작 가능한 기사단 방패."},
+    {Id="sun_shield",Rarity="Epic",Need=220,Name="금빛 수호 방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="vxShieldC",ForgeOnly=true,Tint={190,175,230},Attack=0,Defense=4,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Crystal=2,Desc="마력숲 대장간에서 제련·제작 가능한 금빛 수호 방패."},
+    {Id="dusk_shield",Rarity="Legendary",Need=700,Name="황혼의 방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="vxShieldD",ForgeOnly=true,Tint={210,191,232},Attack=0,Defense=5,Icon=2,Art=18,Ingot=9,Leather=4,Coins=420,Crystal=4,Magma=3,Desc="마력숲 대장간에서 제련·제작 가능한 황혼의 방패."},
   },
   -- [회복 소모품] 한 번 제작하면 1개 소지, 사용 시 서버에서 1개 소비.
   MeadowConsumables = {
@@ -388,7 +418,7 @@ local Config = {
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
     MeadowGearOwned=2705,MeadowGearOwned2=0,
     MeadowEquipWeapon=1,MeadowEquipChest=5,MeadowEquipHands=8,
-    MeadowEquipLegs=10,MeadowEquipFeet=12,MeadowEquipAccessory=0,
+    MeadowEquipLegs=10,MeadowEquipFeet=12,MeadowEquipAccessory=0,MeadowEquipShield=0,
     MeadowPotionHealth=0,MeadowPotionStamina=0,
     MeadowTalentMartial=0,MeadowTalentSigns=0,MeadowTalentDefense=0,MeadowTalentAgility=0,
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
@@ -700,6 +730,7 @@ for _,item in ipairs(Config.MeadowEquipment) do
   if t and not item.Starter then
     local function add(field,n) if n>0 then item[field]=(item[field] or 0)+n end end
     if item.Slot=="Weapon" then add("Ore",2*t);add("Fang",t-1);if item.Bow then add("Hide",2*t) end
+    elseif item.Slot=="Shield" then add("Ore",2*t);add("Hide",2*t)
     elseif item.Slot=="Chest" then add("Hide",2*t);add("Magma",t-2)
     elseif item.Slot=="Hands" then add("Hide",t);add("Claw",t)
     elseif item.Slot=="Legs" then add("Hide",t);add("Ore",t)
@@ -1471,6 +1502,8 @@ Config.WeaponClasses={
   Sword={Name="검",Schools={Warrior=1.25,Guardian=1.15}},
   Greatsword={Name="대검",Schools={Warrior=1.35,Guardian=1.1}},
   Axe={Name="도끼",Schools={Warrior=1.3,Guardian=1.2}},
+  Hammer={Name="망치·철퇴",Schools={Warrior=1.3,Guardian=1.2}},
+  Shield={Name="방패",Schools={Guardian=1.25}},
   Dagger={Name="단검",Schools={Shadow=1.35}},
   Bow={Name="활",Schools={Hunter=1.35},RangeBonus={Hunter=14}},
   Staff={Name="지팡이",Schools={Magic=1.3}},
@@ -1478,8 +1511,36 @@ Config.WeaponClasses={
 Config.GearWeaponClass={wanderer_blade="Sword",hunter_blade="Sword",runic_blade="Sword",forest_blade="Sword",
   dew_dagger="Dagger",thorn_axe="Axe",worldtree_staff="Staff",magma_greatsword="Greatsword",
   hunter_bow="Bow",wind_bow="Bow",worldtree_bow="Bow"}
-Config.MeadowSkillSchools[1].Weapon="검·대검·도끼"
-Config.MeadowSkillSchools[2].Weapon="검·도끼 + 방패"
+-- [새 무기 계열] 기존 서버 공격·스킬 계산과 결합한다.
+for id,className in pairs({
+  iron_arming_sword="Sword",
+  veteran_longsword="Sword",
+  royal_gilded_sword="Sword",
+  ancient_rune_sword="Sword",
+  mercenary_greatsword="Greatsword",
+  iron_greatblade="Greatsword",
+  guardian_greatblade="Greatsword",
+  hunter_skinning_knife="Dagger",
+  shadow_assassin_dagger="Dagger",
+  moonlit_dagger="Dagger",
+  scout_hatchet="Axe",
+  woodsman_axe="Axe",
+  iron_battleaxe="Axe",
+  rune_reaver_axe="Axe",
+  forge_hammer="Hammer",
+  steel_warhammer="Hammer",
+  thunder_maul="Hammer",
+  apprentice_staff="Staff",
+  grove_staff="Staff",
+  ember_staff="Staff",
+  crystal_staff="Staff",
+  scout_shortbow="Bow",
+  oak_recurve_bow="Bow",
+  hunter_longbow="Bow",
+  arcane_bow="Bow",
+}) do Config.GearWeaponClass[id]=className end
+Config.MeadowSkillSchools[1].Weapon="검·대검·도끼·망치"
+Config.MeadowSkillSchools[2].Weapon="검·도끼·망치 + 방패"
 Config.MeadowSkillSchools[3].Weapon="활"
 Config.MeadowSkillSchools[4].Weapon="단검"
 Config.MeadowSkillSchools[5].Weapon="지팡이"
