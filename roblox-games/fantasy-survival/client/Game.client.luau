@@ -8682,7 +8682,7 @@ RunService.PreSimulation:Connect(function(dt)
     local breath=math.sin((os.clock()-skillMotionStart)*3.4)*.014*brace
     if isGuard and skillMotionCharacter:FindFirstChildOfClass("Tool") then
       -- [검 든 막기] 검을 든 손 모양에 맞춘 세 가지 자세. 1=옆으로 선 중단 막기, 2=머리 위 지붕 막기, 3=두 손 수평 막기.
-      local variant=math.clamp(math.floor(tonumber(player:GetAttribute("QAGuardVariant")) or 1),1,3)
+      local variant=math.clamp(math.floor(tonumber(player:GetAttribute("QAGuardVariant")) or 3),1,3)
       local pose=meadowGuardArmedPoses[variant]
       local recoil=.16*hit
       for joint,v in pairs(pose) do
