@@ -2684,6 +2684,67 @@ export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',
   return report;
 }
 
+
+export async function runStudioScript({mcpCommand='',expectedStudioName='',outDir='',steps=[]}={}){
+  const client=new McpStdioClient({...mcpCommandArgs(mcpCommand),timeoutMs:90000});
+  fs.mkdirSync(outDir,{recursive:true});
+  const report={log:[],errors:[]};
+  let studioId='',started=false;
+  const luau=async(ctx,code)=>{
+    const t=client.tool('execute_luau');
+    const r=await client.call('execute_luau',executeLuauArgs(t.inputSchema||{},studioId,code,ctx));
+    return flattenText(r,[]).join('\n');
+  };
+  try{
+    await client.connect();
+    await client.waitForTools(['list_roblox_studios','get_studio_state','start_stop_play','screen_capture','execute_luau'],{attempts:20,delayMs:3000});
+    for(let i=1;i<=60&&!studioId;i++){
+      const listed=await client.call('list_roblox_studios',{});
+      if(collectStudios(listed,[]).length){
+        const cand=chooseStudio(listed,expectedStudioName);
+        try{
+          const t=client.tool('get_studio_state');const a={};setStudioId(a,t.inputSchema||{},cand.studioId);
+          await client.call('get_studio_state',fillRequired(a,t.inputSchema||{}));
+          studioId=cand.studioId;
+        }catch{await wait(3000);}
+      }else await wait(3000);
+    }
+    if(!studioId)throw new Error('NO_STUDIO');
+    const playTool=client.tool('start_stop_play');
+    await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,true));
+    started=true;
+    let n=0;
+    for(const st of steps){
+      try{
+        if(st.type==='wait'){await wait(st.ms||1000);}
+        else if(st.type==='luau'){
+          const out=await luau(st.ctx||'Client',st.code);
+          report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000)});
+        }else if(st.type==='click_text'){
+          const code='local p=game:GetService("Players").LocalPlayer.PlayerGui local out="NONE" for _,d in ipairs(p:GetDescendants()) do if d:IsA("TextButton") and d.Text==\''+String(st.text).replace(/'/g,"")+'\' and d.Visible then out=string.format("%d,%d",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) break end end print("BTN:"..out) return out';
+          const out=await luau('Client',code);
+          const m=out.match(/(\d+),(\d+)/);
+          if(m){const mt=client.tool('user_mouse_input');await client.call('user_mouse_input',mouseClickArgs(mt.inputSchema||{},studioId,Number(m[1]),Number(m[2])));report.log.push({step:n,click:st.text,at:m[0]});}
+          else report.log.push({step:n,click:st.text,at:'NOT_FOUND'});
+        }else if(st.type==='capture'){
+          const capTool=client.tool('screen_capture');
+          const a=fillRequired((()=>{const x={};setStudioId(x,capTool.inputSchema||{},studioId);return x;})(),capTool.inputSchema||{});
+          const r=await client.call('screen_capture',a);
+          const imgs=collectImages(r,[],outDir,String(st.name||'cap'+n));
+          report.log.push({step:n,capture:st.name,files:imgs.length});
+        }
+      }catch(e){report.errors.push('step'+n+':'+clean(e?.message||e).slice(0,300));}
+      n++;
+    }
+  }catch(e){report.errors.push(clean(e?.message||e).slice(0,400));}
+  finally{
+    if(started&&studioId){try{const t=client.tool('start_stop_play');await client.call('start_stop_play',startStopArgs(t.inputSchema||{},studioId,false));}catch{}}
+    client.close();
+  }
+  fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(report,null,1));
+  return report;
+}
+
 export async function runOfficialStudioMcpPlay({
   mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000,
   settingState='',settingCandidatePathCount=-1,actualPlayContractPath='',auditProfile='FAST_DEEP',singleWindow=true,multiplayerSourceEvidence=null,runtimeIdentity={}
@@ -4288,6 +4349,12 @@ async function main(){
       :planned;
     writeJson(a.output,matrix);
     console.log('ROBLOX_STUDIO_MCP_PLAN_COUNT='+matrix.include.length);
+    return;
+  }
+  if(mode==='studio-script'){
+    const steps=JSON.parse(fs.readFileSync(clean(a['script']),'utf8'));
+    const rep=await runStudioScript({mcpCommand:clean(a['mcp-command']),expectedStudioName:clean(a['studio-name']),outDir:clean(a['out-dir']),steps});
+    console.log('STUDIO_SCRIPT_ERRORS='+rep.errors.length+' LOG='+rep.log.length);
     return;
   }
   if(mode==='opening-capture'){
