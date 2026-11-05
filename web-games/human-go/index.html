@@ -4842,6 +4842,7 @@ function handleAutoEventNode(){
 async function nextStep(){
   if(busy) return;
   busy=true;
+  const maxHpBeforeStep=G.maxHp;
   try{
   nextBtn.disabled=true;
   mapHero.classList.add('run');
@@ -4991,6 +4992,7 @@ async function nextStep(){
   }catch(err){
     console.error('게임 진행 오류', {stage:G.stage,step:G.step,job:G.job}, err);
     if(G.inBattle){
+      if(G.maxHp>maxHpBeforeStep && hasEquippedPet('porcupine')) removePetBattleHpBonus();
       G.inBattle=false;
       stopBattleBgm(true);
     }
