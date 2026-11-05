@@ -4957,6 +4957,8 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
     tabLayout.FillDirection=Enum.FillDirection.Vertical
     tabLayout.HorizontalAlignment=Enum.HorizontalAlignment.Center
     tabLayout.Padding=UDim.new(0,6)
+    -- [위쪽 잘림 수정] 공용 목록은 세로 가운데 정렬이라 스크롤 영역에서 첫 탭들이 위로 잘렸다.
+    tabLayout.VerticalAlignment=Enum.VerticalAlignment.Top
    end
    for _,tabButton in ipairs(tabButtons)do tabButton.Size=UDim2.fromOffset(80,68) end
    -- [직접 스와이프] 기본 스크롤이 버튼 위 드래그에서 안 먹는 문제를 피하려고 입력을 직접 처리한다.
