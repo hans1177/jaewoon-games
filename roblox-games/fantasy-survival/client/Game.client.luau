@@ -1438,7 +1438,7 @@ for index,info in ipairs(referenceMenuItems) do
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.fromScale(.5,0)
-  icon.Size=UDim2.fromScale(.66,.66)
+  icon.Size=UDim2.fromScale(1,1)
   icon.ZIndex=28
   icon.Parent=button
   -- [메뉴 아이콘] 원화가 로드되지 않을 때만 이미 등록한 16칸 원본으로 복구.
@@ -1453,11 +1453,13 @@ for index,info in ipairs(referenceMenuItems) do
   caption.Text=info[1]
   caption.Font=Enum.Font.GothamBold
   caption.TextColor3=Color3.fromRGB(248,246,235)
-  caption.TextStrokeTransparency=.36
-  caption.TextScaled=true
+  caption.TextStrokeTransparency=.3
+  caption.TextScaled=false
+  caption.TextSize=10
+  caption.TextWrapped=false
   caption.BackgroundTransparency=1
   caption.AnchorPoint=Vector2.new(.5,0)
-  caption.Position=UDim2.new(.5,0,.66,1)
+  caption.Position=UDim2.new(.5,0,1,1)
   caption.ZIndex=28
   caption.Parent=button
   button.Activated:Connect(function()meadowMenu.open(info[2])end)
@@ -1486,8 +1488,9 @@ for index=1,10 do
   local slot=Instance.new("TextButton")
   slot.Name="ReferenceHotbar"..index
   slot.Text=""
+  -- [시안 단축바] 금속 테두리와 검정 슬롯은 등록된 원화 안에 있으므로 중복 배경을 없앤다.
   slot.BackgroundColor3=Color3.fromRGB(33,27,25)
-  slot.BackgroundTransparency=.08
+  slot.BackgroundTransparency=1
   slot.BorderSizePixel=0
   slot.ZIndex=25
   slot.Parent=meadowReferenceHotbar
@@ -1497,6 +1500,7 @@ for index=1,10 do
   local stroke=Instance.new("UIStroke")
   stroke.Color=index==1 and Color3.fromRGB(238,201,124) or Color3.fromRGB(116,100,82)
   stroke.Thickness=index==1 and 2 or 1.1
+  stroke.Transparency=1
   stroke.Parent=slot
   local icon=Instance.new("ImageLabel")
   icon.Name="ReferenceItemIcon"
@@ -1506,8 +1510,8 @@ for index=1,10 do
   icon.ImageRectSize=Vector2.new(edges[index+1]-edges[index],224)
   icon.ImageRectOffset=Vector2.new(edges[index],240)
   icon.ScaleType=Enum.ScaleType.Fit
-  icon.Size=UDim2.fromScale(.78,.78)
-  icon.Position=UDim2.fromScale(.11,.11)
+  icon.Size=UDim2.fromScale(1,1)
+  icon.Position=UDim2.fromScale(0,0)
   icon.ZIndex=26
   icon.Parent=slot
   task.delay(5,function()
@@ -1565,25 +1569,28 @@ refreshReferenceHotbar()
 local function layoutMeadowReferenceHud()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
+  -- [시안 기준 709x446] 상단 6개는 오른쪽 끝에서 34px 간격, 10칸 단축바는 화면 폭 49%로 정렬.
   local landscape=v.X>v.Y
-  local step=math.floor(math.clamp((v.X-18)/6,40,48))
+  local step=landscape and math.floor(math.clamp(v.X/20.8,31,39))
+    or math.floor(math.clamp((v.X-18)/6,40,48))
   local menuWidth=step*6
-  meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+21)
-  meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-4,0,landscape and 2 or 70) -- [세로 화면] HP·얼굴 다음 줄
+  meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+17)
+  meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-4,0,landscape and 2 or 70)
   for index,button in ipairs(meadowReferenceMenu:GetChildren())do
     if button:IsA("TextButton") then
-      button.Size=UDim2.fromOffset(step-6,step-6)
-      button.Position=UDim2.fromOffset((index-1)*step+4,0)
+      button.Size=UDim2.fromOffset(step-3,step-3)
+      button.Position=UDim2.fromOffset((index-1)*step+1,0)
       local caption=button:FindFirstChild("ReferenceCaption")
-      if caption then caption.Size=UDim2.fromOffset(step-2,14) end
+      if caption then caption.Size=UDim2.fromOffset(step+12,13) end
     end
   end
   local columns=(not landscape and v.X<440) and 5 or 10
-  local slotSize=math.floor(math.clamp((v.X-24)/columns-2,40,44))
+  local slotSize=landscape and math.floor(math.clamp(v.X/21,30,40))
+    or math.floor(math.clamp((v.X-24)/columns-2,40,44))
   local gap=2
   local barWidth=(slotSize+gap)*columns-gap
   meadowReferenceHotbar.Size=UDim2.fromOffset(barWidth,(slotSize+gap)*math.ceil(10/columns)-gap)
-  meadowReferenceHotbar.Position=UDim2.new(landscape and .44 or .5,0,1,landscape and -9 or -99)
+  meadowReferenceHotbar.Position=UDim2.new(landscape and .44 or .5,0,1,landscape and -13 or -99)
   for index,slot in ipairs(referenceHotbarSlots)do
     slot.Size=UDim2.fromOffset(slotSize,slotSize)
     slot.Position=UDim2.fromOffset(((index-1)%columns)*(slotSize+gap),math.floor((index-1)/columns)*(slotSize+gap))
@@ -1749,8 +1756,9 @@ local questTracker=Instance.new("TextButton")
 questTracker.Name="MeadowMainQuest"
 questTracker.Size=UDim2.fromOffset(290,64)
 questTracker.Position=UDim2.fromOffset(10,130)
-questTracker.BackgroundColor3=Color3.fromRGB(22,47,39)
-questTracker.BackgroundTransparency=.08
+-- [시안 퀘스트판] 오른쪽 작은 반투명 흑색 패널. 기존 퀘스트 데이터·버튼 기능은 유지한다.
+questTracker.BackgroundColor3=Color3.fromRGB(19,19,18)
+questTracker.BackgroundTransparency=.19
 questTracker.BorderSizePixel=0
 questTracker.AutoButtonColor=true
 questTracker.Text=""
@@ -1758,12 +1766,12 @@ questTracker.ZIndex=8
 questTracker.Parent=gui
 meadowQuestGuideButton=questTracker
 local trackerCorner=Instance.new("UICorner")
-trackerCorner.CornerRadius=UDim.new(0,11)
+trackerCorner.CornerRadius=UDim.new(0,4)
 trackerCorner.Parent=questTracker
 local trackerStroke=Instance.new("UIStroke")
-trackerStroke.Color=Color3.fromRGB(131,194,150)
-trackerStroke.Transparency=.25
-trackerStroke.Thickness=1.2
+trackerStroke.Color=Color3.fromRGB(124,107,83)
+trackerStroke.Transparency=.75
+trackerStroke.Thickness=.8
 trackerStroke.Parent=questTracker
 local trackerTitle=Instance.new("TextLabel")
 trackerTitle.Name="QuestTitle"
@@ -2615,22 +2623,33 @@ local function layoutMeadowJournal()
   if v.X<=0 or v.Y<=0 then return end
   local landscape=v.X>v.Y
   local compact=landscape and v.Y<530
-  local menuStep=math.floor(math.clamp((v.X-18)/6,40,48))
-  local top=(landscape and 2 or 70)+menuStep+14 -- [세로 화면] 상단 아이콘과 의뢰판 분리
-  local width=math.floor(math.clamp(v.X*(landscape and .23 or .42),151,238))
-  local height=compact and 126 or 157
+  local menuStep=landscape and math.floor(math.clamp(v.X/20.8,31,39))
+    or math.floor(math.clamp((v.X-18)/6,40,48))
+  local top=(landscape and 4 or 70)+menuStep+(landscape and 24 or 14)
+  local width=math.floor(math.clamp(v.X*(landscape and .19 or .42),132,238))
+  local height=compact and 100 or 157
   questTracker.Position=UDim2.fromOffset(v.X-width-8,top)
   questTracker.Size=UDim2.fromOffset(width,height)
-  trackerTitle.Position=UDim2.fromOffset(8,6)
-  trackerTitle.Size=UDim2.new(1,-14,0,17)
-  trackerDetail.Position=UDim2.fromOffset(10,24)
-  trackerDetail.Size=UDim2.new(1,-18,0,compact and 30 or 40)
-  trackerVillage.Position=UDim2.fromOffset(9,compact and 57 or 68)
-  trackerVillage.Size=UDim2.new(1,-18,0,compact and 32 or 42)
-  trackerCompanion.Position=UDim2.fromOffset(10,compact and 93 or 111)
-  trackerCompanion.Size=UDim2.new(1,-18,0,compact and 21 or 24)
-  trackerNavigation.Position=UDim2.fromOffset(9,compact and 113 or 138)
+  trackerTitle.Position=UDim2.fromOffset(compact and 19 or 8,compact and 3 or 6)
+  trackerTitle.Size=UDim2.new(1,compact and -22 or -14,0,compact and 13 or 17)
+  trackerTitle.TextSize=compact and 9 or 15
+  trackerDetail.Position=UDim2.fromOffset(compact and 7 or 10,compact and 18 or 24)
+  trackerDetail.Size=UDim2.new(1,compact and -10 or -18,0,compact and 23 or 40)
+  trackerDetail.TextSize=compact and 8 or 12
+  trackerVillage.Position=UDim2.fromOffset(compact and 7 or 9,compact and 45 or 68)
+  trackerVillage.Size=UDim2.new(1,compact and -10 or -18,0,compact and 23 or 42)
+  trackerVillage.TextSize=compact and 8 or 11
+  trackerCompanion.Position=UDim2.fromOffset(compact and 7 or 10,compact and 71 or 111)
+  trackerCompanion.Size=UDim2.new(1,compact and -10 or -18,0,compact and 23 or 24)
+  trackerCompanion.TextSize=compact and 8 or 11
+  trackerNavigation.Position=UDim2.fromOffset(9,compact and 92 or 138)
   trackerNavigation.Size=UDim2.new(1,-17,0,14)
+  trackerNavigation.Visible=not compact
+  local questIcon=questTracker:FindFirstChild("CC0QuestIcon")
+  if questIcon then
+    questIcon.Size=UDim2.fromOffset(compact and 12 or 22,compact and 12 or 22)
+    questIcon.Position=UDim2.fromOffset(compact and 5 or 8,compact and 3 or 7)
+  end
   characterShortcut.Position=UDim2.fromOffset(9,top+height+8)
   characterShortcut.Size=UDim2.fromOffset(width,compact and 42 or 56)
   characterShortcut.Visible=false
@@ -5030,12 +5049,18 @@ local function applyMeadowRightActionImage(button,role)
   end
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,.5)
-  icon.Position=UDim2.fromScale(.5,.45)
-  icon.Size=UDim2.fromScale(.76,.76)
+  icon.Position=UDim2.fromScale(.5,.5)
+  icon.Size=UDim2.fromScale(1,1)
   icon.ZIndex=20
   icon.Active=false;icon.Interactable=false
   icon.Parent=button
   if paintedX then
+    -- [원화 테두리] 원형 동판/광택 테두리는 21종 이미지 자체에 있어 별도 테두리와 겹치지 않는다.
+    button.BackgroundTransparency=1
+    local rim=button:FindFirstChild("GoldSkillRim")
+    if rim then rim.Enabled=false end
+    local inner=button:FindFirstChild("PolishedInnerRing")
+    if inner then inner.Visible=false end
     task.delay(5,function()
       if not icon.Parent or icon.IsLoaded then return end
       if role=="jump" then
@@ -5194,10 +5219,16 @@ swordIcon.BackgroundTransparency=1
 swordIcon.Image=meadowPaintedHudAtlas
 swordIcon.ImageRectOffset=Vector2.new(946,460)
 swordIcon.ImageRectSize=Vector2.new(235,236)
-swordIcon.Position=UDim2.fromScale(.12,.1)
-swordIcon.Size=UDim2.fromScale(.78,.78)
+swordIcon.Position=UDim2.fromScale(0,0)
+swordIcon.Size=UDim2.fromScale(1,1)
 swordIcon.ZIndex=20
 swordIcon.Parent=meadowPrimarySword
+-- [원화 검] 원화에 포함된 원형 청동 링을 별도의 원형 테두리로 다시 그리지 않는다.
+meadowPrimarySword.BackgroundTransparency=1
+local swordRim=meadowPrimarySword:FindFirstChild("GoldSkillRim")
+if swordRim then swordRim.Enabled=false end
+local swordInner=meadowPrimarySword:FindFirstChild("PolishedInnerRing")
+if swordInner then swordInner.Visible=false end
 task.delay(5,function()
   if not swordIcon.Parent or swordIcon.IsLoaded then return end
   swordIcon.ImageRectOffset=Vector2.zero
@@ -5235,10 +5266,10 @@ local function layoutMeadowCombatUi()
   meadowSkillDock.Position=UDim2.new(1,-math.floor(8*scale),1,-math.floor(offset*scale))
   -- [시안 참고] 오른쪽 큰 검 / 위쪽 마력·질주 / 좌측 회피 / 아래 점프.
   local positions={
-    {150,111,38}, -- 기술: 보라빛 충격
-    {100,149,39}, -- 좌측 회피
-    {170,75,39}, -- 막기는 하단 8번 단축키
-    {40,72,36}, -- 물약은 하단 5번 단축키
+    {156,111,38}, -- [시안] 보라색 기술: 검 왼쪽 위
+    {121,139,39}, -- [시안] 회피: 기술 아래 왼쪽
+    {170,75,39}, -- 막기는 기존 단축바 8번
+    {40,72,36}, -- 물약은 기존 단축바 5번
   }
   for index,button in ipairs(meadowSkillButtons) do
     local row=positions[index]
@@ -5262,17 +5293,17 @@ local function layoutMeadowCombatUi()
     -- 보조 채집·가방은 하단 단축창에서도 접근할 수 있어 화면 오른쪽 중복 표시만 정리.
     button.Visible=index==2
     if index==2 then
-      local size=math.max(36,math.floor(43*scale))
+      local size=math.max(34,math.floor(35*scale))
       button.Size=UDim2.fromOffset(size,size)
-      button.Position=UDim2.fromOffset(math.floor(174*scale),math.floor(78*scale))
+      button.Position=UDim2.fromOffset(math.floor(179*scale),math.floor(78*scale))
     end
   end
-  local swordSize=math.max(62,math.floor(76*scale))
+  local swordSize=math.max(60,math.floor(66*scale))
   meadowSkillButtons.primarySword.Size=UDim2.fromOffset(swordSize,swordSize)
-  meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(135*scale),math.floor(139*scale))
-  local jumpSize=math.max(38,math.floor(43*scale))
+  meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale),math.floor(132*scale))
+  local jumpSize=math.max(38,math.floor(38*scale))
   meadowSkillButtons.referenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)
-  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(66*scale),meadowSkillDock.Size.Y.Offset-jumpSize)
+  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(92*scale),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor(17*scale))
   -- [기존 점프 이중 터치 방지] 공식 모바일 JumpButton만 숨기고 실제 점프 기능은 위 버튼에 연결.
   if UserInputService.TouchEnabled then
     local touchGui=player.PlayerGui:FindFirstChild("TouchGui")
