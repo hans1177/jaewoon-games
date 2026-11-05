@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1j7fnnp",
+      "worker": "vibe2",
+      "taskId": "moon-ruins-existing-web-assessment-v1",
+      "gameId": "moon-ruins",
+      "files": [
+        "web-games/moon-ruins/index.html"
+      ],
+      "baseSha": "ba770c2c939ebcd4a7cd900d41c728e2b5686ef5",
+      "runId": "41992887979",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-05T08:31:53.797Z",
+      "expiresAt": "2026-11-05T09:16:53.797Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:moon-ruins-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
