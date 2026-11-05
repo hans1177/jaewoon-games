@@ -116,7 +116,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/heading=heading\.Unit[\s\S]*?offset=-heading/);
   assert.match(client,/title\.Text = "" -- \[시안\]/);
   // [시안 원화] 상단 6 / 하단 단축바 10 / 전투 5 = 21종을 같은 1000x1000(5x5, 200px 칸) 아틀라스에 연결.
-  assert.match(client,/local meadowPaintedHudAtlas="rbxassetid:\/\/123876288949666"/);
+  assert.match(client,/local meadowPaintedHudAtlas="rbxassetid:\/\/72401341143669"/);
   assert.match(client,/icon\.ImageRectSize=Vector2\.new\(200,200\)/);
   assert.match(client,/icon\.ImageRectOffset=Vector2\.new\(\(\{0,200,400,600,800,0\}\)\[index\],\(\{0,0,0,0,0,200\}\)\[index\]\)/);
   assert.match(client,/local hudCell=index\+5/);
@@ -174,7 +174,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   }
   const registry=JSON.parse(fs.readFileSync("roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json","utf8"));
   // [신규 21종 HUD] 등록·사용 승인된 정확한 원본 이미지가 런타임 연결에 쓰여야 한다.
-  assert.equal(String(registry.illustratedHudIconsV2.assetId),"123876288949666");
+  assert.equal(String(registry.illustratedHudIconsV2.assetId),"72401341143669");
   assert.equal(registry.illustratedHudIconsV2.width,1000);
   assert.equal(registry.illustratedHudIconsV2.height,1000);
   assert.ok(registry.illustratedHudIconsV2.width<=1024&&registry.illustratedHudIconsV2.height<=1024,"atlas must stay within Roblox 1024px limit");
