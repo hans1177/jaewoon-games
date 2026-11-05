@@ -2942,6 +2942,11 @@ task.defer(function()
   if sceneryCount==0 then warn("마력숲 초원 나무 로딩 0개: 등록 CC0 자산 및 Place 사용 권한 확인 필요") end
 end)
 
+-- [전투 성향] 모델 종류에 따라 공격 방식을 나눈다. mage: 원거리 마법탄·광역 폭발, rogue: 빠른 찌르기·연속 베기,
+-- 이름 있는 보스(named): 후반 충격파. 서버가 판정·피해를 소유하며 클라이언트는 연출만 한다.
+local mobStyleByModel={mage="mage",skmage="mage",witch="mage",frostfiend="mage",demon="mage",
+  rogue="rogue",roguehooded="rogue",skrogue="rogue",assassin="rogue",wasp="rogue",fox="rogue"}
+
 -- [신화 합성체] 등록된 CC0 모델 여러 개를 한 몸으로 합쳐 신화 괴물을 만든다(히드라·켄타우로스·아라크네 등).
 -- 새 도형 파츠를 만들지 않고 실제 메시 모델만 겹쳐 붙인다. 각 조각은 몸통 모델 안으로 옮겨 함께 움직인다.
 -- spec: model(mon_ 키), height(스터드), up/fwd/side(몸통 경계상자 대비 비율, 중심 기준), yaw/pitch(도), 본체 앞이 -Z라고 가정한다.
@@ -3327,7 +3332,7 @@ local function spawnEnemy(site, siteIndex)
   end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,oilClass=oilClass,poiGuard=site.poiGuard,bonusBoss=site.bonusBoss,zoneTag=site.zoneTag,named=site.named,lord=site.lord,contractNo=site.contractIndex,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
+    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,style=site.style or mobStyleByModel[site.model or ''],oilClass=oilClass,poiGuard=site.poiGuard,bonusBoss=site.bonusBoss,zoneTag=site.zoneTag,named=site.named,lord=site.lord,contractNo=site.contractIndex,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
     banditIdle=banditIdle,banditWalk=banditWalk,
     damage=isAlpha and math.floor(13*(site.dmg or 1)) or math.floor(((isBoss and 20 or 6)+math.floor(site.tier/2))*(site.dmg or 1)),
     speed=isAlpha and 8.4 or (isBoss and 4.8 or 7.5),position=location,spawnPosition=location,siteIndex=siteIndex,
@@ -3733,6 +3738,9 @@ local function chooseMeadowMobSkill(enemy)
   local second=((enemy.isBoss or enemy.isAlpha) and enemy.HP<=enemy.maxHP*.5)
     or enemy.attackSerial%2==0
   local pattern=enemy.isBoss and (second and "GOLEM_SHOCKWAVE" or "GOLEM_SLAM")
+    or enemy.named and second and enemy.HP<=enemy.maxHP*.6 and "GOLEM_SHOCKWAVE"
+    or enemy.style=="mage" and (second and "ARCANE_NOVA" or "ARCANE_BOLT")
+    or enemy.style=="rogue" and (second and "BANDIT_FEINT" or "BANDIT_SLASH")
     or enemy.kind=="bee" and (second and "BEE_STING" or "BEE_SWEEP")
     or enemy.kind=="boar" and (second and "BOAR_TUSK" or "BOAR_CHARGE")
     or enemy.kind=="bat" and (second and "BAT_SWEEP" or "BAT_DIVE")
@@ -3985,6 +3993,7 @@ local function updateEnemyAI(dt,now)
         local distance=offset.Magnitude
         -- Three source-authored enemy patterns; authoritative damage and saves are unchanged.
         local attackRange=(enemy.kind=="bee" or enemy.kind=="bat") and 5.6
+          or enemy.style=="mage" and 14
           or (enemy.isBoss and 5.2 or enemy.isAlpha and 5.0 or 4.4)
         -- [공통 전방 주시] 공격 예고 중에는 실제 목표 방향을 바라보되 판정은 기존 서버 규칙으로만 한다.
         if distance>.05 and (enemy.windupUntil or distance<=attackRange) then
@@ -3993,7 +4002,8 @@ local function updateEnemyAI(dt,now)
         if enemy.windupUntil then
           -- 공격 예고 중 대상이 사라지거나 거리를 벌렸다면 피해 없이 취소한다.
           local activeRange=enemy.attackPattern=="GOLEM_SHOCKWAVE" and 8.4
-            or enemy.attackPattern=="WOLF_LUNGE" and 6.5 or attackRange
+            or enemy.attackPattern=="WOLF_LUNGE" and 6.5
+            or enemy.attackPattern=="GOLEM_SHOCKWAVE" and 8.4 or attackRange
           if targetPlayer.UserId~=enemy.windupTargetUserId or distance>activeRange+1 or targetHuman.Health<=0 then
             cancelEnemyWindup(enemy)
           elseif now>=enemy.windupUntil then
@@ -4018,6 +4028,17 @@ local function updateEnemyAI(dt,now)
                   if (enemy.stunUntil or 0)>now then break end
                 end
               end
+            elseif enemy.attackPattern=="ARCANE_NOVA" then
+              -- 마법 폭발: 대상 주변 6스터드 안의 플레이어를 한 번씩 맞춘다.
+              for _,victim in ipairs(Players:GetPlayers()) do
+                local avatar=victim.Character
+                local root=avatar and avatar:FindFirstChild("HumanoidRootPart")
+                local human=avatar and avatar:FindFirstChildOfClass("Humanoid")
+                if root and human and (root.Position-targetRoot.Position).Magnitude<=6 then
+                  applyMeadowMobHit(victim,human,hitDamage,enemy)
+                  if (enemy.stunUntil or 0)>now then break end
+                end
+              end
             else
               applyMeadowMobHit(targetPlayer,targetHuman,hitDamage,enemy)
             end
@@ -4031,8 +4052,10 @@ local function updateEnemyAI(dt,now)
               enemy.comboHit=nil
             end
             enemy.model:SetAttribute("NativeMobLastImpact",workspace:GetServerTimeNow())
+            local arcane=enemy.style=="mage" and (enemy.attackPattern=="ARCANE_BOLT" or enemy.attackPattern=="ARCANE_NOVA")
             remote:FireAllClients("MEADOW_MOB_ATTACK",{
-              species=enemy.kind,pattern=enemy.attackPattern,position=enemy.position,
+              species=enemy.kind,pattern=enemy.attackPattern,
+              position=arcane and (targetRoot.Position-enemy.visualFacing*1.0) or enemy.position,
               facing=enemy.visualFacing,
             })
           end
@@ -4074,7 +4097,7 @@ local function updateEnemyAI(dt,now)
           enemy.comboHit=1
           enemy.windupTargetUserId=targetPlayer.UserId
           enemy.windupUntil=now+(enemy.isBoss and .68 or
-            ((pattern=="WOLF_LUNGE" or pattern=="BOAR_CHARGE") and .55
+            ((pattern=="WOLF_LUNGE" or pattern=="BOAR_CHARGE" or pattern=="ARCANE_BOLT" or pattern=="ARCANE_NOVA") and .55
               or (enemy.kind=="bee" or enemy.kind=="bat") and .32 or .42))
           setEnemyAttackState(enemy,"ANTICIPATION")
         end

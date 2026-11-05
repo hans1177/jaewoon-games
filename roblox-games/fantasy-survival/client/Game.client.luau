@@ -8738,15 +8738,18 @@ local function mobVfx(pattern,where,stage,facing)
     or pattern=="BAT_DIVE" or pattern=="BAT_SWEEP"
   local wolf=pattern=="WOLF_BITE" or pattern=="WOLF_LUNGE"
   local boar=pattern=="BOAR_CHARGE" or pattern=="BOAR_TUSK"
-  local tint=boss and Color3.fromRGB(255,131,91)
+  local arcane=pattern=="ARCANE_BOLT" or pattern=="ARCANE_NOVA"
+  local tint=arcane and Color3.fromRGB(176,110,255)
+    or boss and Color3.fromRGB(255,131,91)
     or flying and Color3.fromRGB(243,224,123)
     or wolf and Color3.fromRGB(173,217,245)
     or boar and Color3.fromRGB(210,157,119)
     or Color3.fromRGB(163,219,164)
-  local accent=boss and Color3.fromRGB(255,222,168)
+  local accent=arcane and Color3.fromRGB(235,214,255)
+    or boss and Color3.fromRGB(255,222,168)
     or wolf and Color3.fromRGB(222,246,255)
     or Color3.fromRGB(244,241,219)
-  local charge=pattern=="WOLF_LUNGE" or pattern=="BOAR_CHARGE"
+  local charge=pattern=="WOLF_LUNGE" or pattern=="BOAR_CHARGE" or pattern=="ARCANE_NOVA"
     or pattern=="GOLEM_SLAM" or pattern=="GOLEM_SHOCKWAVE"
   local effect=stage=="DEATH" and "DESTRUCTION_BURST"
     or stage=="ANTICIPATION" and (boss and "BOSS_WARNING_PULSE" or "ATTACK_TELEGRAPH_PULSE")
@@ -8863,15 +8866,43 @@ local function bindOriginalMob(model)
     backupperlegl="BLHip",backupperlegr="BRHip",
     backlowerlegl="BLKnee",backlowerlegr="BRKnee",
   }
+  -- [쥐 원본 리그] 쥐는 UpLeg/LowLeg 이름을 쓴다. 보조 뼈(FrontLeg 등)는 구동하지 않는다.
+  local ratSourceChannels={
+    torso="Spine",neck="Neck",head="Head",tail1="Tail",
+    frontuplegl="FLHip",frontuplegr="FRHip",frontlowlegl="FLKnee",frontlowlegr="FRKnee",
+    backuplegl="BLHip",backuplegr="BRHip",backlowlegl="BLKnee",backlowlegr="BRKnee",
+  }
+  -- [리그 판별] 변종 모델은 종류가 다른 뼈대를 가진다. 이름으로 4족/2족/곤충을 구분해 알맞은 관절 채널을 쓴다.
+  -- 합성 신화 괴물의 부속 조각(MythicParts)은 정적이므로 본체 뼈만 읽는다.
+  local rigNames={}
+  for _,item in ipairs(model:GetDescendants()) do
+    if (item:IsA("Bone") or item:IsA("Motor6D")) and not item:FindFirstAncestor("MythicParts") then
+      rigNames[item.Name:lower():gsub("[^%w]","")]=true
+    end
+  end
+  if species=="wolf" or species=="deer" then
+    if rigNames.frontupperlegl or rigNames.frontuplegl then
+      species=species=="deer" and "deer" or "wolf"
+    elseif rigNames.upperarml and rigNames.upperlegl then
+      species="golem"
+    elseif rigNames.wing4l then
+      species="bat"
+    elseif rigNames.wingl and rigNames.wingr then
+      species="bee"
+    end
+  end
+  -- 뼈 이름이 정확히 일치하는 실제 다리·팔 뼈를 보조 뼈보다 우선한다.
+  local preferredBones={upperlegl=true,upperlegr=true,lowerlegl=true,lowerlegr=true,upperarml=true,upperarmr=true}
   local bounds,size=model:GetBoundingBox()
   for _,joint in ipairs(model:GetDescendants()) do
+   if not joint:FindFirstAncestor("MythicParts") then
     -- 실제 관절 종류별 연결점을 읽는다. AnimationConstraint는 Attachment를 우선한다.
     local motor=joint:IsA("Motor6D") and joint.Part0 and joint.Part1
     local constraint=joint:IsA("AnimationConstraint") and joint.Attachment0 and joint.Attachment1
     if motor or constraint or joint:IsA("Bone") then
       local raw=joint.Name:lower()
       local key=raw:gsub("[^%w]","")
-      local name=(species=="wolf" and wolfSourceChannels[key])
+      local name=(species=="wolf" and (wolfSourceChannels[key] or deerSourceChannels[key] or ratSourceChannels[key]))
         or (species=="deer" and deerSourceChannels[key])
         or nativeMobJointAlias[joint.Name] or joint.Name
       local location=joint:IsA("Bone") and joint.WorldPosition
@@ -8927,6 +8958,8 @@ local function bindOriginalMob(model)
       end
       if sourceChannels[name] and (not joints[name] or constraint
         or (species=="wolf" and joint:IsA("Bone") and not joints[name]:IsA("Bone"))
+        or (species=="wolf" and (deerSourceChannels[key] or ratSourceChannels[key]) and joint:IsA("Bone"))
+        or (species=="golem" and preferredBones[key] and joint:IsA("Bone"))
         or (species=="deer" and deerSourceChannels[key] and joint:IsA("Bone"))) then
         -- [원본 스킨 우선] 같은 이름의 연결부가 중복되면 늑대 메시를 실제로 변형하는 Bone을 사용한다.
         -- 다리를 새로 만들지 않고 기존 정규화된 원본 스킨 관절을 재사용한다.
@@ -8934,6 +8967,7 @@ local function bindOriginalMob(model)
         available[name]=true
       end
     end
+   end
   end
   local count=0
   for _ in pairs(joints) do count+=1 end
