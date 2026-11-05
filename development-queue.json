@@ -2671,7 +2671,7 @@
       "currentStep": "REPAIR_REQUIRED",
       "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-05T00:29:47.277Z",
+      "updatedAt": "2026-11-05T00:30:20.185Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -3384,7 +3384,56 @@
         "authority": "roblox-open-cloud-pre-f9-validation-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 3,
+        "gameId": "fantasy-survival",
+        "sourceRevision": "08ebb9936fb5f9515469f30cbe228c1587cc2c85",
+        "artifactIdentity": "sha256:d4b527c6a1f4b25cb3f156144cbbf8dff8e4ca28717c8e254ac5b5bb2d93b6fd",
+        "artifactRunId": 41940266340,
+        "universeId": "10773436325",
+        "placeId": "108565970231899",
+        "candidateVersionNumber": 176,
+        "engineExecuted": false,
+        "simulationRunning": false,
+        "serverBootObserved": false,
+        "actualRuntimeEvidence": false,
+        "actualServerRuntimeEvidence": false,
+        "actualClientRuntimeEvidence": false,
+        "onlineServerStartedVerified": false,
+        "state": "OFFICIAL_PRIVATE_SERVER_READ_DIAGNOSTIC_ONLY",
+        "authority": "roblox-official-exact-private-server-read-only",
+        "officialLiveServerObservation": {
+          "version": 1,
+          "universeId": "10773436325",
+          "placeId": "108565970231899",
+          "candidateVersionNumber": 176,
+          "observedAt": "2026-11-05T00:30:19.952Z",
+          "status": 403,
+          "endpoint": "https://apis.roblox.com/server-management/v1/universes/10773436325/places/108565970231899/versions/176/game-servers",
+          "requiredScope": "universe:read",
+          "actualGameScriptBootVerified": false,
+          "actualPlayerPlayVerified": false,
+          "authority": "roblox-official-version-scoped-game-server-observation",
+          "available": false,
+          "permissionDenied": true,
+          "providerErrorCode": null,
+          "accessFailureCategory": "UNCLASSIFIED_AUTHORIZATION_DENIAL",
+          "readScopeCrosscheck": {
+            "status": 403,
+            "state": "SAME_KEY_UNIVERSE_READ_ENDPOINT_DENIED"
+          },
+          "keyScopeAudit": {
+            "state": "UNIVERSE_READ_SCOPE_NOT_IN_ACTIONS_KEY",
+            "keyEnabled": true,
+            "keyExpired": false,
+            "universeReadGranted": false,
+            "targetConfigured": false
+          },
+          "serverInstanceObserved": false,
+          "activeServerCount": null,
+          "state": "GAME_SERVER_READ_PERMISSION_UNAVAILABLE"
+        }
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
@@ -5410,7 +5459,7 @@
       "updatedAt": "2026-11-05T00:19:06.409Z"
     }
   ],
-  "updatedAt": "2026-11-05T00:30:12.696Z",
+  "updatedAt": "2026-11-05T00:30:20.185Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
