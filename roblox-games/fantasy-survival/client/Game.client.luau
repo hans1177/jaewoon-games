@@ -4443,11 +4443,18 @@ do
           limit.Parent=label
           return label
         end
-        local subtitle=textLayer("Subtitle",26,34)
+        local subtitle=textLayer("Subtitle",30,34)
         subtitle.AnchorPoint=Vector2.new(.5,1)
-        subtitle.Position=UDim2.fromScale(.5,.92)
-        subtitle.Size=UDim2.fromScale(.9,.09)
+        subtitle.Position=UDim2.fromScale(.5,.885)
+        subtitle.Size=UDim2.fromScale(.9,.075)
+        subtitle.TextScaled=false
         subtitle.TextColor3=Color3.new(1,1,1)
+        local speakerLabel=textLayer("Speaker",30,22)
+        speakerLabel.AnchorPoint=Vector2.new(.5,1)
+        speakerLabel.Position=UDim2.fromScale(.5,.815)
+        speakerLabel.Size=UDim2.fromScale(.4,.04)
+        speakerLabel.TextScaled=false
+        speakerLabel.TextColor3=Color3.fromRGB(232,196,120)
         local title=textLayer("OpeningTitle",26,110)
         title.AnchorPoint=Vector2.new(.5,.5)
         title.Position=UDim2.fromScale(.72,.55)
@@ -4555,7 +4562,13 @@ do
             imageIds[#imageIds+1]=scene.ch
             imageIds[#imageIds+1]=scene.fg
           end
-          pcall(function() ContentProvider:PreloadAsync(imageIds) end)
+          local preloaded=false
+          task.spawn(function()
+            pcall(function() ContentProvider:PreloadAsync(imageIds) end)
+            preloaded=true
+          end)
+          local waited=0
+          while not preloaded and waited<7 and not finished do waited+=task.wait(.1) end
           if finished or not entranceOpen or token~=runToken then return end
           local total=0
           local starts={}
@@ -4611,7 +4624,12 @@ do
             if t<.6 then opacity=1-smooth(t/.6) end
             if t>total-.8 then opacity=math.max(opacity,1-smooth((total-t)/.8)) end
             if scene.camera=="fade" then opacity=math.max(opacity,.75*smooth((p-.55)/.45)) end
-            opacity=math.max(opacity,.55*(1-math.clamp(lt/.12,0,1)),.55*math.clamp((lt-(scene.seconds-.12))/.12,0,1))
+            local hardCut=({[11]=true,[19]=true,[21]=true,[4]=true,[9]=true})[scene.id]
+            if not hardCut and index>1 then opacity=math.max(opacity,.9*(1-smooth(math.clamp(lt/.28,0,1))))
+            end
+            if index<#openingScenes and not ({[11]=true,[19]=true,[21]=true,[4]=true,[9]=true})[openingScenes[index+1].id] then
+              opacity=math.max(opacity,.9*smooth(math.clamp((lt-(scene.seconds-.22))/.22,0,1)))
+            end
             curtain.BackgroundTransparency=1-opacity
             local flashPower=({[9]=.35,[11]=.7,[14]=.45,[19]=.85,[21]=.5})[scene.id]
             flash.BackgroundTransparency=(flashPower and lt<.28) and (1-(1-lt/.28)*flashPower) or 1
@@ -4620,6 +4638,12 @@ do
               subtitleAlpha=math.clamp(math.min(lt/.2,(scene.seconds-.1-lt)/.2),0,1)
             end
             subtitle.MaxVisibleGraphemes=scene.line~="" and math.floor(math.max(0,lt-.2)*17)+1 or -1
+            subtitle.TextSize=math.clamp(math.floor(26*k),15,34)
+            speakerLabel.TextSize=math.clamp(math.floor(18*k),12,24)
+            speakerLabel.Text=scene.speaker or ""
+            speakerLabel.TextTransparency=1-subtitleAlpha
+            speakerLabel.TextStrokeTransparency=1-subtitleAlpha
+            subtitle.TextColor3=(scene.speaker~=nil and scene.speaker~="") and Color3.new(1,1,1) or Color3.fromRGB(214,205,182)
             subtitle.TextTransparency=1-subtitleAlpha
             subtitle.TextStrokeTransparency=1-subtitleAlpha
             local titleAlpha=(index==#openingScenes and lt>1.8) and smooth((lt-1.8)/1) or 0
