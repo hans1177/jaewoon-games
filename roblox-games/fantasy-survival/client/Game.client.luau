@@ -5089,7 +5089,7 @@ local function applyMeadowRightActionImage(button,role)
   icon.ZIndex=20
   icon.Active=false;icon.Interactable=false
   icon.Parent=button
-  if paintedX then
+  if paintedCell then
     -- [원화 테두리] 원형 동판/광택 테두리는 21종 이미지 자체에 있어 별도 테두리와 겹치지 않는다.
     button.BackgroundTransparency=1
     local rim=button:FindFirstChild("GoldSkillRim")
