@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-11-05T05:43:55.260Z",
+  "generatedAt": "2026-11-05T05:45:02.710Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -276,6 +276,138 @@
         }
       ],
       "updatedAt": "2026-10-19T04:34:35.302Z"
+    },
+    {
+      "gameId": "card-grid-duel",
+      "gameName": "card-grid-duel",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "floorProgress": {
+            "tracked": false,
+            "queueState": "NOT_IN_ACTIVE_ROBLOX_RUNTIME_QUEUE",
+            "currentFloor": null,
+            "stage": null,
+            "result": "UNCONFIRMED",
+            "verifiedAt": null,
+            "checkedAt": null,
+            "lastFailureAt": null,
+            "f0PassedAt": null,
+            "candidatePublishedAt": null,
+            "failureCode": null,
+            "completedCycles": 0
+          },
+          "developmentState": "WAITING_SOURCE",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-11-02"
     },
     {
       "gameId": "cat-step",
@@ -1218,13 +1350,13 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRE_F0_OR_PENDING",
-            "verifiedAt": null,
-            "checkedAt": "2026-11-05T05:43:00.287Z",
+            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
+            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
+            "verifiedAt": "2026-11-05T05:44:01.913Z",
+            "checkedAt": "2026-11-05T05:44:01.913Z",
             "lastFailureAt": null,
-            "f0PassedAt": null,
+            "f0PassedAt": "2026-11-05T05:44:01.913Z",
             "candidatePublishedAt": null,
             "failureCode": null,
             "completedCycles": 0
@@ -1326,7 +1458,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-05T05:43:00.287Z"
+      "updatedAt": "2026-11-05T05:44:01.913Z"
     },
     {
       "gameId": "fifty-days",
@@ -3594,9 +3726,9 @@
             "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
             "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
             "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-11-05T05:17:50.794Z",
-            "checkedAt": "2026-11-05T05:40:15.500Z",
-            "lastFailureAt": "2026-11-05T05:17:50.794Z",
+            "verifiedAt": "2026-11-05T05:44:01.913Z",
+            "checkedAt": "2026-11-05T05:44:01.913Z",
+            "lastFailureAt": "2026-11-05T05:44:01.913Z",
             "f0PassedAt": null,
             "candidatePublishedAt": null,
             "failureCode": "roblox-package-asset-binding-failed",
@@ -3700,7 +3832,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-05T05:40:15.500Z"
+      "updatedAt": "2026-11-05T05:44:01.913Z"
     },
     {
       "gameId": "seed-casual-realm-weaver",
