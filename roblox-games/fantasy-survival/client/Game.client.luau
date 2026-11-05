@@ -4640,6 +4640,40 @@ do
           end)
           local waited=0
           while not preloaded and waited<7 and not finished do waited+=task.wait(.1) end
+          -- [미리 불러오기] 다음 컷 몇 장을 투명한 작은 이미지로 먼저 그려 두어 컷 전환 때 검은 화면이 없게 한다.
+          local prefetch={}
+          for slot=1,12 do
+            local label=Instance.new("ImageLabel")
+            label.Name="Prefetch"..slot
+            label.BackgroundTransparency=1
+            label.ImageTransparency=.98
+            label.Size=UDim2.fromOffset(2,2)
+            label.Position=UDim2.fromOffset(slot*3,0)
+            label.ZIndex=2
+            label.Parent=stage
+            prefetch[slot]=label
+          end
+          local function warm(fromIndex)
+            for k=0,3 do
+              local scene=openingScenes[fromIndex+k]
+              local a=k*3
+              if scene then
+                prefetch[a+1].Image=scene.bg
+                prefetch[a+2].Image=scene.ch
+                prefetch[a+3].Image=scene.fg
+              end
+            end
+          end
+          warm(1)
+          do
+            local warmWait=0
+            while not finished and warmWait<8 do
+              local ready=true
+              for slot=1,6 do if not prefetch[slot].IsLoaded then ready=false end end
+              if ready then break end
+              warmWait+=task.wait(.1)
+            end
+          end
           if finished or not entranceOpen or token~=runToken then return end
           local total=0
           local starts={}
@@ -4662,6 +4696,7 @@ do
             if index~=current then
               current=index
               currentStoryScene=index
+              warm(index+1)
               bgLayer.Image=scene.bg
               chLayer.Image=scene.ch
               fgLayer.Image=scene.fg
