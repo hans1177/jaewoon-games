@@ -160801,11 +160801,138 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_7c8b9f48777bccba7cad4987",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11934",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8513e535373406647e436c33daa03b751d0f0c79",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11934,
+        "baseBranch": "main",
+        "headBranch": "feature/fantasy-opening-24-v7",
+        "baseSha": "8513e535373406647e436c33daa03b751d0f0c79",
+        "headSha": "892412a017da398a5e3a80953164968d4587e71b",
+        "mergeCommitSha": "fcf4da90c32b1863dcd533782bff550082ec1aee",
+        "mergedAt": "2026-11-05T08:13:01Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a6adf72ccfcb8f73c340a92afb75094f73ad63acf99abecf0c14ce95c590065c",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feature/fantasy-opening-24-v7",
+        "candidateSha": "892412a017da398a5e3a80953164968d4587e71b"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 208,
+        "deletedLineCount": 15,
+        "changedFiles": [
+          ".github/workflows/fantasy-opening-audio.yml",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/opening24/audio.json",
+          "roblox-games/fantasy-survival/opening24/opening-score.ogg.b64.txt",
+          "roblox-games/fantasy-survival/shared/Opening24.luau",
+          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
+          "tools/fantasy-opening-audio.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/fantasy-opening-audio.yml",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/opening24/audio.json",
+          "roblox-games/fantasy-survival/shared/Opening24.luau",
+          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
+          "tools/fantasy-opening-audio.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11934",
+        "merge-commit:fcf4da90c32b1863dcd533782bff550082ec1aee",
+        "base-main:8513e535373406647e436c33daa03b751d0f0c79"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1282
+    "total": 1283
   }
 }
