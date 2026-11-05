@@ -46,6 +46,9 @@ return function(D, S)
 		local startFuel = me.fuel
 		local foe = D.Combat.boss(boss, me.steam)
 		table.insert(msgs, string.format("%s이(가) 모습을 드러냈다!", boss.name))
+		for _, line in S.Perk.companionLines(state, "battle") do
+			table.insert(msgs, line)
+		end
 		if me.steam then
 			table.insert(msgs, "증기 엔진 소리에 괴물이 더 사나워졌다")
 		end
@@ -65,6 +68,9 @@ return function(D, S)
 			state.fame += boss.rewardFame
 			state.stats.battlesWon += 1
 			table.insert(msgs, string.format("%s을(를) 물리쳤다! 보상 %d코인, 명성 +%d", boss.name, boss.rewardCoins, boss.rewardFame))
+			for _, line in S.Perk.companionLines(state, "win") do
+				table.insert(msgs, line)
+			end
 			S.Discovery.grantCard(state, boss.cardId, msgs)
 			S.State.gainXp(state, "battle", boss.rewardXp, msgs)
 		elseif result.winner == "b" then

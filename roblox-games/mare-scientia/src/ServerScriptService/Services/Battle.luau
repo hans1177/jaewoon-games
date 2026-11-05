@@ -4,6 +4,19 @@
 return function(D, S)
 	local handlers = {}
 
+	-- 스킬을 쓸 수 없는 이유 (쓸 수 있으면 nil)
+	local function skillBlock(state, s)
+		if s.techReq and not state.tech[s.techReq] then
+			return "연구 필요: " .. D.Tech.Tech[s.techReq].name
+		end
+		if s.grantedBy and state.specialty ~= s.grantedBy and not table.find(state.companions, s.grantedBy) then
+			local sp = D.Specialties.SpecialtyById[s.grantedBy]
+			local co = D.Specialties.CompanionById[s.grantedBy]
+			return "필요: " .. (if sp then sp.name .. " 전문 분야" else (if co then co.name .. " 동료" else s.grantedBy))
+		end
+		return nil
+	end
+
 	local function playerFighter(state)
 		local def = S.State.shipDef(state)
 		local battleLv = state.careers.battle.level
@@ -11,7 +24,7 @@ return function(D, S)
 		local skills = {}
 		for _, id in state.loadout do
 			local s = D.Skills.Skills[id]
-			if s and (not s.techReq or state.tech[s.techReq]) and #skills < slots then
+			if s and S.Battle.skillBlock(state, s) == nil and #skills < slots then
 				table.insert(skills, id)
 			end
 		end
@@ -59,6 +72,9 @@ return function(D, S)
 
 		state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = enemy.name }
 		table.insert(msgs, string.format("사략선 '%s'(Lv.%d)와 조우!", enemy.name, enemyLv))
+		for _, line in S.Perk.companionLines(state, "battle") do
+			table.insert(msgs, line)
+		end
 
 		if result.winner == "a" then
 			local coins = if result.reason == "boarded" or result.reason == "surrender"
@@ -68,6 +84,9 @@ return function(D, S)
 			state.fame += reward.fame
 			state.stats.battlesWon += 1
 			table.insert(msgs, string.format("승리! 전리품 %d코인, 명성 +%d", coins, reward.fame))
+			for _, line in S.Perk.companionLines(state, "win") do
+				table.insert(msgs, line)
+			end
 			S.State.gainXp(state, "battle", reward.xp, msgs)
 			return true
 		elseif result.winner == "b" then
@@ -109,8 +128,9 @@ return function(D, S)
 			if not s or seen[id] then
 				return false, "잘못된 스킬이에요"
 			end
-			if s.techReq and not state.tech[s.techReq] then
-				return false, "연구가 필요해요: " .. D.Tech.Tech[s.techReq].name
+			local block = S.Battle.skillBlock(state, s)
+			if block then
+				return false, block
 			end
 			seen[id] = true
 			table.insert(list, id)
@@ -125,5 +145,5 @@ return function(D, S)
 		return true, "자동스킬 우선순위를 저장했어요"
 	end
 
-	return { handlers = handlers, playerFighter = playerFighter, encounter = encounter, enemyLevel = enemyLevel }
+	return { handlers = handlers, skillBlock = skillBlock, playerFighter = playerFighter, encounter = encounter, enemyLevel = enemyLevel }
 end

@@ -125,8 +125,21 @@ return function(D, S)
 		return true, "동료와 헤어졌다. 다시 영입할 수 있다"
 	end
 
+	-- 전투 시작/승리 때 동료들이 하는 말
+	local function companionLines(state, kind)
+		local lines = {}
+		for _, id in state.companions do
+			local c = Sp.CompanionById[id]
+			if c then
+				table.insert(lines, string.format("%s: \"%s\"", c.name, if kind == "win" then c.winLine else c.battleLine))
+			end
+		end
+		return lines
+	end
+
 	return {
 		handlers = handlers,
+		companionLines = companionLines,
 		discoverBonus = discoverBonus,
 		coinMult = coinMult,
 		speedMult = speedMult,

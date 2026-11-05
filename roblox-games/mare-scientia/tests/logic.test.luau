@@ -908,6 +908,86 @@ do
 	end
 end
 
+-- 전문 분야·동료 전용 스킬 -----------------------------------------------
+do
+	local granted = {}
+	for _, id in D.Skills.Order do
+		local sk = D.Skills.Skills[id]
+		check("skill in order exists " .. id, sk ~= nil)
+		if sk.grantedBy then
+			granted[id] = true
+			check("grantedBy valid " .. id, D.Specialties.SpecialtyById[sk.grantedBy] ~= nil or D.Specialties.CompanionById[sk.grantedBy] ~= nil)
+		end
+	end
+	local st = newState("england")
+	st.careers.battle.level = 12
+	local ok, msg = act(st, "SetLoadout", { skills = { "herbal_remedy" } })
+	check("specialty skill locked without specialty", not ok, msg)
+	st.specialty = "botanist"
+	ok = act(st, "SetLoadout", { skills = { "herbal_remedy", "broadside" } })
+	check("specialty skill equips with specialty", ok)
+	check("fighter has specialty skill", table.find(S.Battle.playerFighter(st).skills, "herbal_remedy") ~= nil)
+	st.specialty = "zoologist"
+	check("fighter drops skill after change", table.find(S.Battle.playerFighter(st).skills, "herbal_remedy") == nil)
+	ok = act(st, "SetLoadout", { skills = { "star_fix" } })
+	check("companion skill locked", not ok)
+	st.companions = { "c_halley" }
+	ok = act(st, "SetLoadout", { skills = { "star_fix", "pressure_valve" } })
+	check("pressure_valve needs papin", not ok)
+	ok = act(st, "SetLoadout", { skills = { "star_fix" } })
+	check("companion skill equips", ok)
+	local view = S.View.build(st, ctx)
+	local lockedCount = 0
+	for _, s in view.loadout.skills do
+		if s.locked then
+			lockedCount += 1
+		end
+	end
+	check("view marks locked skills", lockedCount >= 5)
+
+	-- 각 전용 스킬이 실제로 전투에서 발동한다 (로그에 이름이 남는다)
+	local names = {
+		herbal_remedy = "약초 치료", predator_decoy = "맹수 울음", relic_ward = "유물의 가호", chart_course = "해도 항로 차단",
+		bribe_gunners = "뇌물 공작", star_fix = "별자리 조준", pressure_valve = "압력 밸브 방출",
+	}
+	for id, name in names do
+		local me = S.Battle.playerFighter(newState("england"))
+		me.skills = { id }
+		me.crew, me.maxCrew = 40, 60
+		me.hull, me.maxHull = 60, 100
+		local used = false
+		for _ = 1, 20 do
+			local r = D.Combat.run(me, D.Combat.pirate(3, rng), rng)
+			for _, line in r.log do
+				if string.find(line, name, 1, true) then
+					used = true
+				end
+			end
+			if used then
+				break
+			end
+		end
+		check("skill fires in battle " .. id, used)
+	end
+end
+
+-- 동료 대사 ---------------------------------------------------------
+do
+	for _, c in D.Specialties.Companions do
+		check("companion has lines " .. c.id, #c.battleLine > 0 and #c.winLine > 0)
+	end
+	local st = newState("england")
+	check("no lines without companions", #S.Perk.companionLines(st, "battle") == 0)
+	st.companions = { "c_halley", "c_papin" }
+	check("lines per companion", #S.Perk.companionLines(st, "battle") == 2 and #S.Perk.companionLines(st, "win") == 2)
+	st.careers.battle.level = 10
+	st.ship.id = "galleon"
+	local d = S.State.shipDef(st)
+	st.ship.hull, st.ship.crew = d.hull, d.crew
+	local ok, msg = act(st, "Hunt", {})
+	check("hunt message has companion line", ok and string.find(msg, "에드먼드 핼리", 1, true) ~= nil, msg)
+end
+
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
 	error("tests failed")

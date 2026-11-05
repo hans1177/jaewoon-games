@@ -234,7 +234,7 @@ return function(D, S)
 				cooldown = s.cooldown,
 				summary = s.summary,
 				steamOnly = s.steamOnly,
-				locked = if s.techReq and not state.tech[s.techReq] then D.Tech.Tech[s.techReq].name else nil,
+				locked = S.Battle.skillBlock(state, s),
 			})
 		end
 

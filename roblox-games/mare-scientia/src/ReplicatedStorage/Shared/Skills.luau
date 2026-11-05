@@ -8,6 +8,7 @@ export type Skill = {
 	cooldown: number, -- 라운드
 	steamOnly: boolean, -- 증기선 전용
 	techReq: string?, -- 필요한 기술
+	grantedBy: string?, -- 이 전문 분야이거나 이 동료와 함께일 때만 쓸 수 있다 (Specialties.luau 의 id)
 	summary: string,
 }
 
@@ -57,11 +58,40 @@ local Skills: { [string]: Skill } = {
 		techReq = "steam_hook",
 		summary = "갈고리로 적을 붙잡아 한 라운드 행동 불능",
 	},
+	herbal_remedy = {
+		id = "herbal_remedy", name = "약초 치료", phase = "boarding", cooldown = 3, steamOnly = false,
+		grantedBy = "botanist", summary = "약초로 부상한 선원을 크게 회복 (식물학자)",
+	},
+	predator_decoy = {
+		id = "predator_decoy", name = "맹수 울음", phase = "ranged", cooldown = 4, steamOnly = false,
+		grantedBy = "zoologist", summary = "적 선원이 겁먹어 컨디션이 떨어진다 (동물학자)",
+	},
+	relic_ward = {
+		id = "relic_ward", name = "유물의 가호", phase = "any", cooldown = 5, steamOnly = false,
+		grantedBy = "collector", summary = "수집한 유물의 힘으로 선체를 크게 수리 (유물수집가)",
+	},
+	chart_course = {
+		id = "chart_course", name = "해도 항로 차단", phase = "ranged", cooldown = 4, steamOnly = false,
+		grantedBy = "cartographer", summary = "얕은 곳으로 몰아 적 속도를 크게 낮춘다 (지도제작자)",
+	},
+	bribe_gunners = {
+		id = "bribe_gunners", name = "뇌물 공작", phase = "boarding", cooldown = 7, steamOnly = false,
+		grantedBy = "merchant", summary = "적 일부를 매수해 한 라운드 행동 불능 (무역가)",
+	},
+	star_fix = {
+		id = "star_fix", name = "별자리 조준", phase = "ranged", cooldown = 4, steamOnly = false,
+		grantedBy = "c_halley", summary = "천문 계산으로 정밀 사격, 큰 선체 피해 (동료 핼리)",
+	},
+	pressure_valve = {
+		id = "pressure_valve", name = "압력 밸브 방출", phase = "ranged", cooldown = 5, steamOnly = false,
+		grantedBy = "c_papin", summary = "압력솥의 증기를 뿜어 큰 피해, 석탄 불필요 (동료 파팽)",
+	},
 }
 
 local Order = {
 	"broadside", "chain_shot", "grapeshot", "ram", "repair",
 	"rally", "cutlass_flurry", "pistol_volley", "surgeon", "steam_burst", "steam_hook",
+	"herbal_remedy", "predator_decoy", "relic_ward", "chart_course", "bribe_gunners", "star_fix", "pressure_valve",
 }
 
 local DefaultLoadout = { "broadside", "grapeshot", "cutlass_flurry", "pistol_volley" }

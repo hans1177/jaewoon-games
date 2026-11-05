@@ -22,6 +22,8 @@ export type Companion = {
 	minFame: number,
 	summary: string,
 	perk: Perk,
+	battleLine: string, -- 전투가 시작될 때 하는 말
+	winLine: string, -- 이겼을 때 하는 말
 }
 
 local Specialties: { Specialty } = {
@@ -40,22 +42,34 @@ local Specialties: { Specialty } = {
 local Companions: { Companion } = {
 	{ id = "c_merian", name = "마리아 메리안", scholarId = "merian", fee = 300, minFame = 60,
 		summary = "곤충·식물을 정밀하게 그리는 박물화가. 동물·식물 카드 발견 +15%",
-		perk = { discoverFields = { "Zoology", "Botany" }, discoverBonus = 0.15 } },
+		perk = { discoverFields = { "Zoology", "Botany" }, discoverBonus = 0.15 },
+		battleLine = "적 배 갑판 위의 벌레까지 그리고 싶지만... 지금은 몸부터 지켜요!",
+		winLine = "무사해서 다행이에요. 이 장면도 스케치해 둘게요." },
 	{ id = "c_halley", name = "에드먼드 핼리", scholarId = "halley", fee = 500, minFame = 80,
 		summary = "천문·항해에 밝은 학자. 항해 속도 +8%, 천문·지리 카드 발견 +15%",
-		perk = { speedMult = 0.08, discoverFields = { "Astronomy", "Geography" }, discoverBonus = 0.15 } },
+		perk = { speedMult = 0.08, discoverFields = { "Astronomy", "Geography" }, discoverBonus = 0.15 },
+		battleLine = "풍향과 별을 계산했네. 지금 쏘면 맞을 걸세!",
+		winLine = "계산대로군. 오늘 밤 하늘 관측도 기대되는걸." },
 	{ id = "c_leeuwenhoek", name = "안톤 판 레이우엔훅", scholarId = "leeuwenhoek", fee = 400, minFame = 70,
 		summary = "현미경 관찰의 대가. 물리·화학·의학 카드 발견 +15%",
-		perk = { discoverFields = { "Physics", "Chemistry", "Medicine" }, discoverBonus = 0.15 } },
+		perk = { discoverFields = { "Physics", "Chemistry", "Medicine" }, discoverBonus = 0.15 },
+		battleLine = "렌즈 상자는 안전한 곳에 두었다오. 어서 싸웁시다!",
+		winLine = "전투 중에 튄 물방울도 현미경으로 봐야겠소." },
 	{ id = "c_linnaeus", name = "카를 린네", scholarId = "linnaeus", fee = 600, minFame = 120,
 		summary = "식물 분류의 아버지. 식물·광물·동물 카드 발견 +20%",
-		perk = { discoverFields = { "Botany", "Mineral", "Zoology" }, discoverBonus = 0.2 } },
+		perk = { discoverFields = { "Botany", "Mineral", "Zoology" }, discoverBonus = 0.2 },
+		battleLine = "전투 중에도 분류는 계속된다네. 저 배는 '해적속'이지.",
+		winLine = "해적속 하나를 정리했군. 다음엔 식물 차례일세." },
 	{ id = "c_boyle", name = "로버트 보일", scholarId = "boyle", fee = 450, minFame = 60,
 		summary = "실험 화학자. 화학 카드 발견 +20%, 유리·와인 교역 이문에 밝아 되파는 비율 +1%",
-		perk = { discoverFields = { "Chemistry" }, discoverBonus = 0.2, sellBonus = 0.01 } },
+		perk = { discoverFields = { "Chemistry" }, discoverBonus = 0.2, sellBonus = 0.01 },
+		battleLine = "화약의 연소를 직접 볼 기회군. 침착하게 합시다.",
+		winLine = "결과는 실험으로 확인되었소. 우리가 이겼소." },
 	{ id = "c_papin", name = "드니 파팽", scholarId = "papin", fee = 500, minFame = 60,
 		summary = "증기 장치 기술자. 포격 +5%",
-		perk = { cannonMult = 0.05 } },
+		perk = { cannonMult = 0.05 },
+		battleLine = "압력 게이지를 확인했소. 증기는 언제든 준비되어 있소!",
+		winLine = "압력이 아주 잘 버텨 줬소. 뿌듯하군." },
 }
 
 local SpecialtyById: { [string]: Specialty } = {}

@@ -114,6 +114,25 @@ local function rangedAttack(x: Runtime, y: Runtime, rng: () -> number, say: (str
 		f.hull = math.min(f.maxHull, f.hull + f.maxHull * 0.08)
 		hullDmg = base * 0.5
 		text = "응급 수리"
+	elseif id == "relic_ward" then
+		f.hull = math.min(f.maxHull, f.hull + f.maxHull * 0.14)
+		hullDmg = base * 0.5
+		text = "유물의 가호"
+	elseif id == "predator_decoy" then
+		hullDmg = base * 0.4
+		crewDmg = base * 0.15
+		y.luck = math.max(0.7, y.luck - 0.1)
+		text = "맹수 울음"
+	elseif id == "chart_course" then
+		hullDmg = base * 1.0
+		y.speedDebuff = math.min(0.5, y.speedDebuff + 0.35)
+		text = "해도 항로 차단"
+	elseif id == "star_fix" then
+		hullDmg = base * 2.0
+		text = "별자리 조준"
+	elseif id == "pressure_valve" then
+		hullDmg = base * 2.2
+		text = "압력 밸브 방출"
 	end
 
 	local d = math.floor(hullDmg * (1 - y.f.pumpReduction) + 0.5)
@@ -161,6 +180,18 @@ local function boardingAttack(x: Runtime, y: Runtime, rng: () -> number, say: (s
 		f.hull = math.min(f.maxHull, f.hull + f.maxHull * 0.08)
 		dmg = base * 0.7
 		text = "응급 수리"
+	elseif id == "relic_ward" then
+		f.hull = math.min(f.maxHull, f.hull + f.maxHull * 0.14)
+		dmg = base * 0.6
+		text = "유물의 가호"
+	elseif id == "herbal_remedy" then
+		f.crew = math.min(f.maxCrew, f.crew + math.floor(f.maxCrew * 0.09 + 0.5))
+		dmg = base * 0.7
+		text = "약초 치료"
+	elseif id == "bribe_gunners" then
+		y.stunned = 1
+		dmg = base * 0.5
+		text = "뇌물 공작"
 	end
 
 	local d = math.floor(dmg + 0.5)

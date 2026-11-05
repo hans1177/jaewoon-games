@@ -537,7 +537,7 @@ local function renderBattle()
 			local idx = indexOf(s.id)
 			local sub = string.format("%s · 쿨타임 %d라운드%s", s.summary, s.cooldown, if s.steamOnly then " · 증기선 전용(석탄)" else "")
 			if s.locked then
-				sub ..= "\n연구 필요: " .. s.locked
+				sub ..= "\n" .. s.locked
 			end
 			local title = (if idx then string.format("%d. ", idx) else "") .. s.name
 			local buttons = {
