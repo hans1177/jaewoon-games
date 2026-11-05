@@ -9394,6 +9394,27 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         if traveled>.015 and traveled<=5 then row.travel+=traveled end
         if row.groundSpeed<.35 then mode="IDLE" end
       end
+      -- [달릴 때 흙먼지] 늑대·사슴·멧돼지가 달리면 발밑에 흙먼지가 날린다(표시용 효과).
+      if row.plan=="QUADRUPED" then
+        if not row.dust then
+          local anchor=Instance.new("Attachment");anchor.Name="MobDustAnchor";anchor.Parent=workspace.Terrain
+          local emitter=Instance.new("ParticleEmitter");emitter.Name="MobDust";emitter.Parent=anchor
+          emitter.Texture="rbxasset://textures/particles/smoke_main.dds"
+          emitter.Color=ColorSequence.new(Color3.fromRGB(150,132,104))
+          emitter.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.55),NumberSequenceKeypoint.new(1,1)})
+          emitter.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.5),NumberSequenceKeypoint.new(1,1.9)})
+          emitter.Lifetime=NumberRange.new(.35,.7);emitter.Speed=NumberRange.new(.8,2.2)
+          emitter.SpreadAngle=Vector2.new(25,25);emitter.Rate=0;emitter.LightEmission=0;emitter.Drag=3
+          emitter.Acceleration=Vector3.new(0,1.2,0)
+          local box,boxSize=model:GetBoundingBox()
+          row.dustFoot=(box.Position.Y-boxSize.Y*.5)-model:GetPivot().Position.Y
+          row.dust=emitter;row.dustAnchor=anchor
+          model.Destroying:Once(function() anchor:Destroy() end)
+        end
+        local pivotPosition=model:GetPivot().Position
+        row.dustAnchor.WorldPosition=pivotPosition+Vector3.new(0,row.dustFoot+.15,0)
+        row.dust.Rate=(mode=="RUN" and row.groundSpeed>2.5) and (row.species=="wolf" and 26 or 20) or 0
+      end
       if mode~=row.lastMode then
         -- [모션 전환] 이전 원본 리그 포즈에서 새 행동으로 연속 보간한다.
         table.clear(row.transitionFrom)
@@ -9757,7 +9778,13 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           local converted={}
           for joint,pose in pairs(row.poses) do
             local fix=fixes[joint]
-            converted[joint]=(fix and typeof(pose)=="CFrame") and (fix.pre*pose.Rotation*fix.post) or pose
+            local source=pose
+            -- 사슴은 무릎·발목이 앞으로 접혀 어색했다. 발이 뒤로 접히도록 굽힘 방향을 뒤집는다.
+            if row.species=="deer" and typeof(pose)=="CFrame"
+              and (joint:sub(-4)=="Knee" or joint:sub(-5)=="Ankle") then
+              source=pose.Rotation:Inverse()
+            end
+            converted[joint]=(fix and typeof(source)=="CFrame") and (fix.pre*source.Rotation*fix.post) or source
           end
           row.controller.Step(converted,poseDt)
         else

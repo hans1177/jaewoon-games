@@ -148,6 +148,11 @@
   "ms": 5000
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local W=workspace:FindFirstChild(\"FantasySurvivalWorld\") local o={}\nfor _,m in ipairs(W:GetChildren()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\")==\"bat\" then table.insert(o,\"== bat \"..m.Name)\n for _,d in ipairs(m:GetDescendants()) do if d:IsA(\"MeshPart\") then table.insert(o,string.format(\"  %s col=(%d,%d,%d) mat=%s size=(%.1f,%.1f,%.1f)\",d.Name,d.Color.R*255,d.Color.G*255,d.Color.B*255,tostring(d.Material),d.Size.X,d.Size.Y,d.Size.Z)) end end break end end\nprint(table.concat(o,\"\\n\")) return table.concat(o,\"\\n\")"
+ },
+ {
   "type": "capture",
   "name": "bat0"
  },
