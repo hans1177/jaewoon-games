@@ -5571,9 +5571,16 @@ local function meadowTreeAction(player,index)
   local node=Config.MeadowSkillNodes[index]
   if not node or node.Kind~="ACTIVE" then return false end
   local rank=meadowRpg.nodeRank(player,index)
-  if rank<1 or readNumber(player,"MeadowStamina",100)<node.Gauge then return false end
+  if rank<1 then return false end
+  local discount=node.School=="Magic" and 3*meadowRpg.passiveLevel(player,"M_ACCURATE") or 0
+  local cost=math.max(0,node.Gauge-discount)
+  if readNumber(player,"MeadowStamina",100)<cost then return false end
   local choice=rank==3 and meadowRpg.nodeChoice(player,index) or "A"
   local mode=node.Mode
+  local state=meadowTreeCombat[player] or {}
+  meadowTreeCombat[player]=state
+  state.currentSchool=node.School
+  state.currentSkill=node.Id
   local success=meadowSkill(player,node.Id,function(character,humanoid,root,now)
     local range=node.Range+(rank==3 and choice=="B" and 5 or 0)
     local target=nearestEnemy(root,range)
@@ -5581,6 +5588,7 @@ local function meadowTreeAction(player,index)
     local power=math.floor(base*(node.Advanced and 2.1 or .9)*(1+.13*(rank-1))*
       (rank==3 and choice=="A" and 1.2 or 1))
     local radius=12+(rank==3 and choice=="B" and 4 or 0)
+    if mode=="RESONATE" then radius+=3*meadowRpg.passiveLevel(player,"M_SPREAD") end
     local function strike(enemy,scale)
       if not enemy or enemy.HP<=0 or not enemy.model.Parent
         or (enemy.position-root.Position).Magnitude>range+2 then return false end
@@ -5592,6 +5600,10 @@ local function meadowTreeAction(player,index)
       for _,enemy in ipairs(enemies) do
         if hits<count and enemy.HP>0 and enemy.model.Parent
           and (enemy.position-center).Magnitude<=radius and strike(enemy,scale) then hits+=1 end
+      end
+      if hits>1 and node.School=="Hunter" and meadowRpg.passiveLevel(player,"H_PIERCE")>0 then
+        player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)
+          +hits*meadowRpg.passiveLevel(player,"H_PIERCE")*2))
       end
       return hits>0
     end
@@ -5609,10 +5621,31 @@ local function meadowTreeAction(player,index)
         if hr and h and h.Health>0 and
           (hr.Position-root.Position).Magnitude<=(mode=="HEAL" and .5 or 18) then
           if mode~="SHIELD" then
-            h.Health=math.min(h.MaxHealth,h.Health+(node.Advanced and 36 or 25)+rank*3)
+            local healing=(node.Advanced and 36 or 25)+rank*3
+            local overflow=math.max(0,h.Health+healing-h.MaxHealth)
+            h.Health=math.min(h.MaxHealth,h.Health+healing)
             if member==player then setNumber(player,"Health",math.floor(h.Health)) end
+            if overflow>0 and meadowRpg.passiveLevel(player,"M_OVERHEAL")>0 then
+              guard(member,1.6+.6*meadowRpg.passiveLevel(player,"M_OVERHEAL"))
+            end
           end
-          if mode=="SHIELD" or mode=="OATH" or mode=="RALLY" then guard(member,mode=="SHIELD" and 3 or 6) end
+          if mode=="SHIELD" or mode=="OATH" or mode=="RALLY" then
+            local duration=mode=="SHIELD" and 3 or 6
+            guard(member,duration)
+            if meadowRpg.passiveLevel(player,"M_SHIELD_REFUND")>0 then
+              task.delay(duration+.05,function()
+                if member.Parent==Players and (meadowDefense[member] or {}).guardUntil<=os.clock()+.1
+                  and player.Parent==Players then
+                  player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)
+                    +3*meadowRpg.passiveLevel(player,"M_SHIELD_REFUND")))
+                end
+              end)
+            end
+            if member~=player and meadowRpg.passiveLevel(player,"G_ALLY")>0 then
+              player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)
+                +2*meadowRpg.passiveLevel(player,"G_ALLY")))
+            end
+          end
           affected=true
         end
       end
@@ -5624,10 +5657,10 @@ local function meadowTreeAction(player,index)
       return affected
     elseif mode=="GUARD" or mode=="BULWARK" or mode=="LAST_STAND" or mode=="PARRY" then
       guard(player,mode=="BULWARK" and 8 or mode=="LAST_STAND" and 6 or 3)
-      if mode=="PARRY" then (function()
+      if mode=="PARRY" then
         local defense=meadowDefense[player]
         defense.parryUntil=now+.45
-      end)() end
+      end
       if mode=="LAST_STAND" then humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.3) end
       return true
     elseif mode=="FURY" or mode=="OVERLOAD" then
@@ -5635,6 +5668,10 @@ local function meadowTreeAction(player,index)
       return true
     elseif mode=="VANISH" or mode=="BLINK" then
       local defense=meadowDefense[player] or {}
+      if mode=="VANISH" and meadowRpg.passiveLevel(player,"S_DETECT")>0 then
+        player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)
+          +2*meadowRpg.passiveLevel(player,"S_DETECT")))
+      end
       defense.dodgeUntil=now+.85;meadowDefense[player]=defense
       if mode=="BLINK" then
         local forward=root.CFrame.LookVector
@@ -5692,11 +5729,24 @@ local function meadowTreeAction(player,index)
     elseif mode=="DASH" then
       return strike(target,1.15)
     else
-      return strike(target,mode=="SNIPE" and 1.7 or 1)
+      local hit=strike(target,mode=="SNIPE" and 1.7 or 1)
+      if not hit and mode=="BACKSTAB" and meadowRpg.passiveLevel(player,"S_ESCAPE")>0 then
+        local defense=meadowDefense[player] or {}
+        defense.dodgeUntil=math.max(defense.dodgeUntil or 0,now+.15*meadowRpg.passiveLevel(player,"S_ESCAPE"))
+        meadowDefense[player]=defense
+      end
+      return hit
     end
   end)
+  state.currentSchool=nil
+  state.currentSkill=nil
   if success then
-    player:SetAttribute("MeadowStamina",math.max(0,readNumber(player,"MeadowStamina",0)-node.Gauge))
+    if node.School=="Magic" then
+      state.lastSpell=node.Id
+      state.lastSpellAt=os.clock()
+    end
+    if mode=="STUN" then state.lastHeavyAt=os.clock() end
+    player:SetAttribute("MeadowStamina",math.max(0,readNumber(player,"MeadowStamina",0)-cost))
   end
   return success
 end
