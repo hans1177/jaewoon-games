@@ -380,11 +380,16 @@ if(process.argv.includes('--village-extra-only')){
  // [마을 추가 모델] Kenney Fantasy Town Kit(CC0) GLB를 Model 자산으로 올리고 이 게임 유니버스에 사용 권한을 준다.
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
- const group=registry.villageExtraV1;
- if(registry.gameId!=='fantasy-survival'||!group||group.license!=='CC0-1.0'||group.universeId!=='10773436325')
-  throw Error('VILLAGE_EXTRA_PROVENANCE_INVALID');
+ // V1: Fantasy Town Kit, V2: Survival/Food/Nature/Fantasy Town Kit 추가분(모두 Kenney CC0).
+ const kenneyEvidence=new Set(['https://kenney.nl/assets/fantasy-town-kit','https://kenney.nl/assets/survival-kit',
+  'https://kenney.nl/assets/food-kit','https://kenney.nl/assets/nature-kit']);
+ for(const groupName of ['villageExtraV1','villageExtraV2']){
+ const group=registry[groupName];
+ if(!group)continue;
+ if(registry.gameId!=='fantasy-survival'||group.license!=='CC0-1.0'||group.universeId!=='10773436325')
+  throw Error('VILLAGE_EXTRA_PROVENANCE_INVALID:'+groupName);
  for(const [name,art] of Object.entries(group.models)){
-  if(art.license!=='CC0-1.0'||art.licenseEvidence!=='https://kenney.nl/assets/fantasy-town-kit')throw Error('VILLAGE_EXTRA_LICENSE_INVALID:'+name);
+  if(art.license!=='CC0-1.0'||!kenneyEvidence.has(art.licenseEvidence))throw Error('VILLAGE_EXTRA_LICENSE_INVALID:'+name);
   const bytes=fs.readFileSync(art.path);
   const sourceSha=crypto.createHash('sha256').update(bytes).digest('hex');
   if(sourceSha!==art.sha256||bytes.length!==art.bytes||bytes.subarray(0,4).toString()!=='glTF')throw Error('VILLAGE_EXTRA_SOURCE_INVALID:'+name);
@@ -392,7 +397,7 @@ if(process.argv.includes('--village-extra-only')){
   if(!/^[1-9]\d*$/.test(assetId)||art.importedSourceHash!==sourceSha){
    const form=new FormData();
    form.append('request',JSON.stringify({assetType:'Model',displayName:'Mana Forest Village '+name,
-    description:'Kenney Fantasy Town Kit CC0 model sha256 '+sourceSha,creationContext:{creator}}));
+    description:'Kenney CC0 model sha256 '+sourceSha,creationContext:{creator}}));
    form.append('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),art.path.split('/').pop());
    let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
    if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('VILLAGE_EXTRA_OPERATION_INVALID:'+name);
@@ -416,6 +421,7 @@ if(process.argv.includes('--village-extra-only')){
    fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
    console.log('VILLAGE_EXTRA_REGISTERED='+name+':'+assetId);
   }
+ }
  }
  process.exit(0);
 }
