@@ -11035,14 +11035,17 @@ end)()
     guideOff=not guideOff;paintGuide();pref("guide",guideOff and 1 or 0)
     meadowArt.sfx("click",.4,1)
   end)
-  RunService.RenderStepped:Connect(function()
-    local radar=guiRoot:FindFirstChild("MeadowExplorerRadar",true) or player.PlayerGui:FindFirstChild("MeadowExplorerRadar",true)
-    local show=radar and radar.Visible and gui:GetAttribute("GameMenuOpen")~=true
-    guideChip.Visible=show and true or false
-    if show then
-      local o=guiRoot.AbsolutePosition
-      guideChip.Position=UDim2.fromOffset(radar.AbsolutePosition.X+radar.AbsoluteSize.X/2-o.X,radar.AbsolutePosition.Y+6-o.Y)
-    end
+  -- 지도 프레임 안(맨 위 중앙)에 붙인다. 지도가 숨겨지면 같이 숨겨진다.
+  task.spawn(function()
+    local radar
+    repeat
+      radar=player.PlayerGui:FindFirstChild("MeadowExplorerRadar",true)
+      if not radar then task.wait(.5) end
+    until radar
+    guideChip.AnchorPoint=Vector2.new(.5,0)
+    guideChip.Position=UDim2.new(.5,0,0,5)
+    guideChip.ZIndex=30
+    guideChip.Parent=radar
   end)
   -- ===== 튜토리얼: 조작 → 메뉴 → 스킬창 → 기술 1개 배우기 (실제로 할 때까지 안 끝난다) =====
   local function findText(cls,text)
