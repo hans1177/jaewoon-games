@@ -1,0 +1,40 @@
+[
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "click_text",
+  "text": "모험 시작"
+ },
+ {
+  "type": "wait",
+  "ms": 14000
+ },
+ {
+  "type": "click_text",
+  "text": "건너뛰기"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "capture",
+  "name": "world"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local W=workspace:FindFirstChild(\"FantasySurvivalWorld\") local o={} local cam=workspace.CurrentCamera\nlocal pos=game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:GetPivot().Position\ntable.insert(o,\"player \"..tostring(pos))\nlocal n=0\nfor _,m in ipairs(W:GetChildren()) do if m:IsA(\"Model\") then\n local sp=m:GetAttribute(\"Species\") or m:GetAttribute(\"MeadowWildlife\")\n if sp==\"wolf\" or sp==\"deer\" then\n  n+=1 if n<=8 then\n   local nb=0 local nm=0 for _,d in ipairs(m:GetDescendants()) do if d:IsA(\"Bone\") then nb+=1 end if d:IsA(\"Motor6D\") then nm+=1 end end\n   local anim=0 for _,d in ipairs(m:GetDescendants()) do if d:IsA(\"Animation\") then anim+=1 end end\n   table.insert(o,string.format(\"%s sp=%s mot=%s rig=%s pos=%s bones=%d motors=%d anims=%d dist=%.0f\",m.Name,tostring(sp),tostring(m:GetAttribute(\"NativeMobMotion\")),tostring(m:GetAttribute(\"NativeCreatureRigMode\")),tostring(m:GetPivot().Position),nb,nm,anim,pos and (m:GetPivot().Position-pos).Magnitude or -1))\n  end\n end\nend end\ntable.insert(o,\"total=\"..n)\nprint(table.concat(o,\"\\n\")) return table.concat(o,\"\\n\")"
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local W=workspace:FindFirstChild(\"FantasySurvivalWorld\") local o={} local cam=workspace.CurrentCamera\nlocal pos=game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:GetPivot().Position\ntable.insert(o,\"player \"..tostring(pos))\nlocal n=0\nfor _,m in ipairs(W:GetChildren()) do if m:IsA(\"Model\") then\n local sp=m:GetAttribute(\"Species\") or m:GetAttribute(\"MeadowWildlife\")\n if sp==\"wolf\" or sp==\"deer\" then\n  n+=1 if n<=8 then\n   local nb=0 local nm=0 for _,d in ipairs(m:GetDescendants()) do if d:IsA(\"Bone\") then nb+=1 end if d:IsA(\"Motor6D\") then nm+=1 end end\n   local anim=0 for _,d in ipairs(m:GetDescendants()) do if d:IsA(\"Animation\") then anim+=1 end end\n   table.insert(o,string.format(\"%s sp=%s mot=%s rig=%s pos=%s bones=%d motors=%d anims=%d dist=%.0f\",m.Name,tostring(sp),tostring(m:GetAttribute(\"NativeMobMotion\")),tostring(m:GetAttribute(\"NativeCreatureRigMode\")),tostring(m:GetPivot().Position),nb,nm,anim,pos and (m:GetPivot().Position-pos).Magnitude or -1))\n  end\n end\nend end\ntable.insert(o,\"total=\"..n)\nprint(table.concat(o,\"\\n\")) return table.concat(o,\"\\n\")"
+ }
+]

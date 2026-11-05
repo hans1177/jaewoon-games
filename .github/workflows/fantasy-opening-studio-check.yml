@@ -2,6 +2,12 @@ name: Fantasy Opening Studio Check
 
 on:
   workflow_dispatch:
+    inputs:
+      script:
+        description: Studio script JSON path in repo (empty = opening capture)
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: write
@@ -60,7 +66,11 @@ jobs:
           $out = Join-Path $env:RUNNER_TEMP 'opening-frames'
           Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
           try {
-            & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=opening-capture "--mcp-command=$mcp" '--studio-name=openingcheck' "--out-dir=$out"
+            if ('${{ inputs.script }}' -ne '') {
+              & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=main/${{ inputs.script }}" "--mcp-command=$mcp" '--studio-name=openingcheck' "--out-dir=$out"
+            } else {
+              & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=opening-capture "--mcp-command=$mcp" '--studio-name=openingcheck' "--out-dir=$out"
+            }
             Write-Host "NODE_EXIT=$LASTEXITCODE"
           } finally {
             Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
@@ -76,5 +86,5 @@ jobs:
           git config user.email 'opening-check-bot@users.noreply.github.com'
           git add -A
           git commit -q -m "opening studio frames run ${{ github.run_id }}"
-          git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/opening-studio-frames
+          git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/${{ inputs.script != '' && 'studio-script-out' || 'opening-studio-frames' }}
           Write-Host "PUBLISHED=$LASTEXITCODE"
