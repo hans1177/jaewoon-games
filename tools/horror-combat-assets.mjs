@@ -346,6 +346,18 @@ fs.rmSync('/tmp/kks',{recursive:true,force:true});
 }
 
 // [마력숲 빨간 찢어진 망토] 이미 등록된 망토 메시 자산에 마력숲 Universe 사용 권한만 부여한다.
+if(process.argv.includes('--cape-check-only')){
+ // 망토 원본 상태 점검: 에셋 종류·검열·권한을 로그로만 출력한다.
+ const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+ const ids={wornCape:registry.capePrefab.assetId,itemStaff:78185257363571};
+ for(const [name,id] of Object.entries(ids)){
+  try{
+   const d=await request('https://apis.roblox.com/assets/v1/assets/'+id+'?readMask=assetType,displayName,description,moderationResult,revisionId,creationContext',{headers:{'x-api-key':key}});
+   console.log('CAPE_CHECK '+name+' '+id+' '+JSON.stringify({type:d.assetType,name:d.displayName,mod:d.moderationResult,rev:d.revisionId,creator:d.creationContext?.creator}));
+  }catch(e){console.log('CAPE_CHECK '+name+' '+id+' ERROR '+e.message);}
+ }
+ process.exit(0);
+}
 if(process.argv.includes('--cape-grant-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
