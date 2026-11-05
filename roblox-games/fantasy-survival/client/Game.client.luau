@@ -1261,7 +1261,7 @@ local function renderMeadowPages()
     "\n\n【현상금】\n"..bountyText..
     "\n\n【서브 · 동료】\n"..companionText..
     "\n\n【다음 행동 안내】\n"..suggestion..
-    string.format("\n\n다음 강화 재료: 나무 %d · 돌 %d",cost,cost)..
+    string.format("\n\n다음 강화 재료: 나무 %d · 돌 %d · 광석 %d",cost,cost,1+math.floor(((player:GetAttribute("WeaponTier") or 0))/2))..
     "\n\n【처음 조작】\n왼쪽 조이스틱/WASD: 이동\n왼쪽 퀘스트 도우미: 의뢰 확인\n빈 화면 터치/클릭: 기본 공격\n오른쪽 회피·막기: 적의 공격 대응\n상호작용: 주민 대화·단서·채집"
 
   local companionLines={"동료 통신 · 선택 의뢰","메인 퀘스트와 독립적으로 진행돼."}
@@ -1313,7 +1313,7 @@ local function renderMeadowPages()
     table.concat(mystLines,"\n"),table.concat(storyLines,"\n")}
   local howTo=string.match(meadowLabels[5].Text,"【처음 조작】.*") or ""
   sec[3].texts={
-    "【메인 퀘스트】\n"..mainText.."\n\n【다음 행동 안내】\n"..suggestion..string.format("\n\n다음 강화 재료: 나무 %d · 돌 %d",cost,cost),
+    "【메인 퀘스트】\n"..mainText.."\n\n【다음 행동 안내】\n"..suggestion..string.format("\n\n다음 강화 재료: 나무 %d · 돌 %d · 광석 %d",cost,cost,1+math.floor(((player:GetAttribute("WeaponTier") or 0))/2)),
     "【서브 · 마을】\n"..villageText.."\n\n"..table.concat(companionLines,"\n\n"),
     "【현상금 게시판】\n"..bountyText,
     howTo.."\n\n"..journalBase,
@@ -2138,8 +2138,14 @@ local stone=Color3.fromRGB(20,43,43)
 local muted=Color3.fromRGB(163,192,175)
 local categories={"전체","보유","무기","갑옷","장신구","소모품","재료","기록","재화"}
 local data={
-  {key="Wood",name="나무",category="재료",icon=4,art=34,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 기존 무기 강화에 사용돼."},
-  {key="Stone",name="돌",category="재료",icon=4,art=35,color=Color3.fromRGB(169,191,200),description="바위에서 채집한 돌. 기존 무기 강화에 사용돼."},
+  {key="Wood",name="나무",category="재료",icon=4,art=34,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 장비 제작, 무기 강화, 건설에 사용돼."},
+  {key="Herb",name="약초",category="재료",icon=4,color=Color3.fromRGB(122,200,120),description=Config.Materials[1].Desc},
+  {key="Fiber",name="질긴 섬유",category="재료",icon=4,color=Color3.fromRGB(196,184,120),description=Config.Materials[2].Desc},
+  {key="Ore",name="광석",category="재료",icon=4,color=Color3.fromRGB(150,160,190),description=Config.Materials[3].Desc},
+  {key="Hide",name="가죽",category="재료",icon=4,color=Color3.fromRGB(176,120,80),description=Config.Materials[4].Desc},
+  {key="Fang",name="송곳니",category="재료",icon=4,color=Color3.fromRGB(235,228,210),description=Config.Materials[5].Desc},
+  {key="Crystal",name="마력 결정",category="재료",icon=4,color=Color3.fromRGB(140,150,240),description=Config.Materials[6].Desc},
+  {key="Stone",name="돌",category="재료",icon=4,art=35,color=Color3.fromRGB(169,191,200),description="바위에서 채집한 돌. 장비 제작, 무기 강화, 건설에 사용돼."},
   {key="ResearchRecords",name="기사단 연대기",category="기록",icon=5,color=Color3.fromRGB(221,183,111),description="메인 의뢰에서 발견한 기사단 기록. 획득한 내용은 저널에 보관돼."},
   {key="Coins",name="소지금",category="재화",icon=4,color=Color3.fromRGB(226,191,92),description="서버에 기록된 현재 소지금."},
 }
@@ -2277,7 +2283,19 @@ local function redrawSelection()
   detailPreview.ImageRectOffset=Vector2.new(item.icon*64,0)
   meadowArt.gear(detailPreview,item.art)
   local recipe=item.gear or item.tonic
-  local cost=recipe and string.format("제작: 나무 %d · 돌 %d · 재화 %d",recipe.Wood or 0,recipe.Stone or 0,recipe.Coins or 0) or ""
+  local cost=""
+  if recipe then
+    local parts={}
+    local names={Wood="나무",Stone="돌",Hide="가죽",Fiber="섬유",Ore="광석",Herb="약초",Crystal="결정",Fang="송곳니",Coins="재화"}
+    for _,field in ipairs(Config.CostFields)do
+      local need=recipe[field] or 0
+      if need>0 then
+        local have=math.floor(tonumber(player:GetAttribute(field)) or 0)
+        parts[#parts+1]=string.format("%s %d/%d%s",names[field],have,need,have>=need and "" or " ✗")
+      end
+    end
+    cost="제작 재료: "..table.concat(parts," · ")
+  end
   local stats=item.gear and string.format("%s 등급  ·  공격 +%d  ·  방어 +%d\n%s",meadowArt.rarityName[item.gear.Rarity or "Common"] or "일반",item.gear.Attack or 0,item.gear.Defense or 0,
     (item.gear.Need or 0)>0 and string.format("필요 전투 숙련 %d\n",item.gear.Need) or "") or ""
   local feedback=player:GetAttribute("MeadowGearMessage")
@@ -2499,7 +2517,7 @@ if player.Character then
   player.Character.ChildAdded:Connect(renderInventory)
   player.Character.ChildRemoved:Connect(renderInventory)
 end
-for _,name in ipairs({"Wood","Stone","Coins","ResearchRecords","ProfileReady","MeadowGearOwned",
+for _,name in ipairs({"Wood","Stone","Herb","Fiber","Ore","Hide","Fang","Crystal","Coins","ResearchRecords","ProfileReady","MeadowGearOwned",
   "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
   "MeadowEquipAccessory","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)

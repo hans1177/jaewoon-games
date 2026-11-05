@@ -2065,10 +2065,10 @@ local meadowRpg=(function()
     player:SetAttribute("MeadowGearDefense",defense)
   end
   local function charge(player,item)
-    for _,field in ipairs({"Wood","Stone","Coins"})do
+    for _,field in ipairs(Config.CostFields)do
       if readNumber(player,field,0)<(item[field] or 0) then return false end
     end
-    for _,field in ipairs({"Wood","Stone","Coins"})do
+    for _,field in ipairs(Config.CostFields)do
       local cost=item[field] or 0
       if cost>0 then setNumber(player,field,readNumber(player,field,0)-cost) end
     end
@@ -2267,20 +2267,30 @@ local function gatherResource(player, node)
   local rootPart = character and character:FindFirstChild("HumanoidRootPart")
   if not rootPart or not node then return false end
   if node.model and not node.model.Parent then return false end
-  if not node.model and node.kind~="STONE" then return false end
+  if not node.model and node.kind=="WOOD" then return false end
   local sourcePos=node.model and node.model:GetPivot().Position or node.position
   if (rootPart.Position-sourcePos).Magnitude>14 then return false end
   local now = os.clock()
   if now < node.readyAt then return false end
   node.readyAt = now + 11
   if node.model then node.model:SetAttribute("NextHarvestAt", node.readyAt) end
-  local material = node.kind == "WOOD" and "Wood" or "Stone"
+  local material = node.kind == "WOOD" and "Wood" or node.kind == "HERB" and "Herb"
+    or node.kind == "ORE" and "Ore" or "Stone"
   setNumber(player, material, readNumber(player, material, 0) + 2)
+  -- [잡템 드랍] 채집할 때 가끔 다른 재료가 함께 나온다. 모두 제작·강화·물약에 쓰인다.
+  local luck=math.min(.25,readNumber(player,"GatheringProficiency",0)*.005)
+  local function bonus(field,chance,amount)
+    if math.random()<chance+luck then setNumber(player,field,readNumber(player,field,0)+(amount or 1)) end
+  end
+  if node.kind=="WOOD" then bonus("Fiber",.4);bonus("Herb",.12)
+  elseif node.kind=="STONE" then bonus("Ore",.35);bonus("Crystal",.05)
+  elseif node.kind=="HERB" then bonus("Fiber",.5)
+  elseif node.kind=="ORE" then bonus("Stone",.6);bonus("Crystal",.12) end
   awardProgress(player, 3, 1)
   -- [채집 숙련도] 기존 재화·전투 경험치·자원 2개 보상은 그대로 둔다.
   setNumber(player,"GatheringProficiency",readNumber(player,"GatheringProficiency",0)+1)
   player:SetAttribute("LastApprovedScope", "resource-harvest")
-  recordMeadowQuest(player,node.kind)
+  if node.kind=="WOOD" or node.kind=="STONE" then recordMeadowQuest(player,node.kind) end
   broadcastSurvivalState(player)
   return true
 end
@@ -2293,13 +2303,39 @@ local function createResourceNodes()
     {kind="STONE",position=Vector3.new(-35,2,31)},
     {kind="STONE",position=Vector3.new(11,2,-39)},
     {kind="STONE",position=Vector3.new(-7,2,43)},
+    {kind="HERB",position=Vector3.new(20,2,-55)},
+    {kind="HERB",position=Vector3.new(-18,2,-60)},
+    {kind="HERB",position=Vector3.new(45,2,5)},
+    {kind="ORE",position=Vector3.new(-45,2,-5)},
+    {kind="ORE",position=Vector3.new(30,2,45)},
   }
   for _, spec in ipairs(sites) do
     local model = spec.visual and worldAsset(spec.visual,spec.position,11) or nil
-    if spec.kind == "STONE" or model then
+    if spec.kind ~= "WOOD" or model then
       local node={model=model,position=spec.position,kind=spec.kind,readyAt=0}
       table.insert(resourceNodes,node)
       local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
+      if not mesh then
+        -- 나무 외 채집점(돌·약초·광석)은 지형으로 모양을 만들고 투명 Attachment에 프롬프트를 둔다.
+        local terrain=workspace.Terrain
+        pcall(function()
+          if spec.kind=="STONE" then terrain:FillBall(spec.position+Vector3.new(0,1.2,0),3.4,Enum.Material.Rock)
+          elseif spec.kind=="ORE" then terrain:FillBall(spec.position+Vector3.new(0,1.2,0),3,Enum.Material.Slate)
+            terrain:FillBall(spec.position+Vector3.new(1.6,2.4,0),1.6,Enum.Material.CrackedLava)
+          else terrain:FillBall(spec.position+Vector3.new(0,.6,0),3,Enum.Material.LeafyGrass) end
+        end)
+        local anchor=Instance.new("Attachment")
+        anchor.Name="MeadowGatherAnchor";anchor.WorldPosition=spec.position+Vector3.new(0,3,0);anchor.Parent=terrain
+        local prompt=Instance.new("ProximityPrompt")
+        prompt.Name="GatherPrompt"
+        prompt.ActionText=spec.kind=="STONE" and "돌 채집" or spec.kind=="ORE" and "광석 채굴" or spec.kind=="HERB" and "약초 채집" or "채집"
+        prompt.ObjectText=spec.kind=="STONE" and "바위" or spec.kind=="ORE" and "광맥" or "약초 덤불"
+        prompt.MaxActivationDistance=12
+        prompt.HoldDuration=.55
+        prompt.RequiresLineOfSight=false
+        prompt.Parent=anchor
+        prompt.Triggered:Connect(function(player) gatherResource(player,node) end)
+      end
       if mesh then
         local prompt=Instance.new("ProximityPrompt")
         prompt.Name="GatherPrompt"
@@ -3299,6 +3335,16 @@ local function applyMeadowDamage(player,target,damage)
     for i=#enemies,1,-1 do if enemies[i]==target then table.remove(enemies,i);break end end
     awardProgress(player,target.isBoss and 75 or target.isAlpha and 35 or 12,
       target.isBoss and 45 or target.isAlpha and 18 or 5)
+    -- [몬스터 잡템] 처치한 몬스터가 가죽·송곳니·마력 결정을 떨군다. 제작·강화·물약에 쓴다.
+    do
+      local function drop(field,chance,amount)
+        if math.random()<chance then setNumber(player,field,readNumber(player,field,0)+(amount or 1)) end
+      end
+      drop("Hide",target.kind=="wolf" and .8 or target.kind=="bandit" and .5 or .25,target.isAlpha and 3 or 1)
+      drop("Fang",target.kind=="wolf" and .35 or .1,target.isAlpha and 2 or 1)
+      drop("Crystal",(target.kind=="ghost" or target.kind=="bat") and .35 or .12,target.isBoss and 4 or 1)
+      drop("Fiber",target.kind=="bee" and .6 or .1)
+    end
     -- [사냥 숙련도] 실제 서버에서 처치가 확정된 늑대·박쥐만 기록한다.
     -- 살아 있는 사슴·토끼 관찰은 사냥으로 인정하지 않으며 도감·드랍 변경 없음.
     -- [몬스터 도감] 서버가 확정한 처치만 기록한다.
@@ -3425,7 +3471,9 @@ local function upgradeEquipment(player)
   local wood=readNumber(player,"Wood",0)
   local stone=readNumber(player,"Stone",0)
   local cost=2+tier
-  if wood<cost or stone<cost then return false end
+  local oreCost=1+math.floor(tier/2)
+  if wood<cost or stone<cost or readNumber(player,"Ore",0)<oreCost then return false end
+  setNumber(player,"Ore",readNumber(player,"Ore",0)-oreCost)
   setNumber(player,"Wood",wood-cost)
   setNumber(player,"Stone",stone-cost)
   setNumber(player,"WeaponTier",tier+1)

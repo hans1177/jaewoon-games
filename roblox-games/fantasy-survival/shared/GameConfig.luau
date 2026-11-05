@@ -369,6 +369,7 @@ local Config = {
     CookingProficiency = 0, CraftingProficiency = 0, GatheringProficiency = 0,
     BuildingProficiency = 0, HuntingProficiency = 0, AlchemyProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
+    Herb = 0, Fiber = 0, Ore = 0, Hide = 0, Fang = 0, Crystal = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
     MeadowGearOwned=2705,
@@ -654,4 +655,28 @@ local Config = {
   -- VERIFIED_EXTERNAL_LEARNING_BINDING_END
 }
 
+
+-- [잡템 제작 연결] 약초·섬유·광석·가죽·송곳니·마력 결정은 채집·사냥으로 얻고, 장비 제작·무기 강화·물약에 쓴다.
+Config.CostFields={"Wood","Stone","Hide","Fiber","Ore","Herb","Crystal","Fang","Coins"}
+Config.Materials={
+  {Field="Herb",Name="약초",Desc="약초 덤불·나무 채집에서 나와. 물약 조합과 장신구 제작에 쓰여."},
+  {Field="Fiber",Name="질긴 섬유",Desc="나무·약초·벌에서 나와. 방어구와 물약 제작에 쓰여."},
+  {Field="Ore",Name="광석",Desc="광맥·바위에서 나와. 무기 제작과 무기 강화(단계마다 필요)에 쓰여."},
+  {Field="Hide",Name="가죽",Desc="늑대·도적 등 몬스터가 떨어뜨려. 방어구 제작에 쓰여."},
+  {Field="Fang",Name="송곳니",Desc="늑대와 우두머리가 떨어뜨려. 영웅·전설 장비 제작에 쓰여."},
+  {Field="Crystal",Name="마력 결정",Desc="원혼·박쥐·광맥에서 드물게 나와. 희귀 이상 장비 제작에 쓰여."},
+}
+for _,item in ipairs(Config.MeadowEquipment) do
+  local tier=({Uncommon=1,Rare=2,Epic=3,Legendary=4})[item.Rarity or "Common"]
+  if tier and not item.Starter then
+    if item.Slot=="Weapon" then item.Ore=(item.Ore or 0)+2*tier
+    elseif item.Slot=="Accessory" then item.Herb=(item.Herb or 0)+2*tier;item.Fiber=(item.Fiber or 0)+tier
+    else item.Hide=(item.Hide or 0)+2*tier;item.Fiber=(item.Fiber or 0)+tier end
+    if tier>=2 then item.Crystal=(item.Crystal or 0)+tier-1 end
+    if tier>=3 then item.Fang=(item.Fang or 0)+tier-2 end
+  end
+end
+for _,tonic in ipairs(Config.MeadowConsumables) do
+  if tonic.Id=="herbal_tonic" then tonic.Herb=2 else tonic.Herb=1;tonic.Fiber=1 end
+end
 return table.freeze(Config)
