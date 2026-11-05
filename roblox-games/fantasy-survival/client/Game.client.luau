@@ -10093,6 +10093,7 @@ end)
 remote.OnClientEvent:Connect(function(kind,payload)
   if kind~="MEADOW_BOW_SHOT" or typeof(payload)~="table"
     or typeof(payload.from)~="Vector3" or typeof(payload.to)~="Vector3" then return end
+  local TweenService=game:GetService("TweenService")
   local terrain=workspace.Terrain
   local a0=Instance.new("Attachment");a0.WorldPosition=payload.from;a0.Parent=terrain
   local a1=Instance.new("Attachment");a1.WorldPosition=payload.from;a1.Parent=terrain
