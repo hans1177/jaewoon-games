@@ -97,7 +97,7 @@ if(process.argv.includes('--camp-assets-only')){
  process.exit(0);
 }
 
-// [마력숲 몬스터] Quaternius CC0 애니메이션 몬스터 팩(OpenGameArt)에서 용·슬라임 FBX를 받아 Roblox Model로 등록한다.
+// [마력숲 몬스터] Quaternius CC0 애니메이션 몬스터 팩(OpenGameArt)에서 용 FBX를 받아 Roblox Model로 등록한다.
 if(process.argv.includes('--monster-assets-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
@@ -115,7 +115,7 @@ if(process.argv.includes('--monster-assets-only')){
  registry.monsterPackV1=registry.monsterPackV1||{license:'CC0-1.0',creator:'Quaternius',
   licenseEvidence:'https://opengameart.org/content/lowpoly-animated-monsters',zipSha256:zipSha,universeId:targetUniverse,assetIds:{}};
  const pack=registry.monsterPackV1;
- for(const name of ['Dragon','Slime']){
+ for(const name of ['Dragon']){
   let assetId=String(pack.assetIds[name]||'');
   if(!/^[1-9]\d*$/.test(assetId)){
    const bytes=fs.readFileSync('/tmp/monster-zip/out/Animated Monster Pack by @Quaternius/FBX/'+name+'.fbx');

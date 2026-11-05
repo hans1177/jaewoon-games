@@ -26,7 +26,7 @@ on:
   workflow_dispatch:
     inputs:
       monster_assets_only:
-        description: 마력숲 CC0 몬스터(용·슬라임) 등록
+        description: 마력숲 CC0 몬스터(용) 등록
         type: boolean
         default: false
       painted_hud_only:
