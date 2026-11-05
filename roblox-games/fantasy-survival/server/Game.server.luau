@@ -5772,7 +5772,11 @@ do
       local key,value=action:match("^ui:pref:(%a+):(%d+)$")
       value=tonumber(value)
       if key=="guide" and (value==0 or value==1) then setNumber(player,"GuideOff",value)
-      elseif key=="tut" and value<=99 then setNumber(player,"TutorialStep",value) end
+      elseif key=="tut" and value<=99 then setNumber(player,"TutorialStep",value)
+      elseif key=="grant" and value==1 and readNumber(player,"TutorialStep",0)<99 then
+        -- 튜토리얼 선물: 첫 기술 점수 1개를 받을 만큼 숙련도를 채운다(한 번만).
+        if readNumber(player,"CombatProficiency",0)<30 then setNumber(player,"CombatProficiency",30) end
+      end
       return
     end
     if typeof(action)=="string" and action:match("^quick:set:%d:%d+$") then
