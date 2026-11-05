@@ -4525,10 +4525,19 @@ do
         introPanel.BackgroundTransparency=0
         local finished=false
         local connection=nil
+        local openingScore=nil
         local function finishOpening24()
           if finished then return end
           finished=true
           if connection then connection:Disconnect();connection=nil end
+          if openingScore then
+            -- 건너뛰기·종료 때 음악은 갑자기 끊지 않고 0.6초 동안 줄이며 끈다.
+            local score=openingScore;openingScore=nil
+            pcall(function()
+              TweenService:Create(score,TweenInfo.new(.6),{Volume=0}):Play()
+              task.delay(.7,function() score:Destroy() end)
+            end)
+          end
           if stage.Parent then stage:Destroy() end
           if token==runToken then closeArrival(true) end
         end
@@ -4594,6 +4603,20 @@ do
             imageIds[#imageIds+1]=scene.fg
           end
           local preloaded=false
+          -- 오프닝 음악(60초, 컷 시작 시각에 맞춰 합성한 곡). ID가 없으면 소리 없이 진행한다.
+          local scoreOk,scoreIds=pcall(function() return require(Shared:WaitForChild("OpeningAudioId",3)) end)
+          local scoreId=scoreOk and type(scoreIds)=="table" and scoreIds.score or nil
+          if type(scoreId)=="string" and scoreId:match("^rbxassetid://%d+$") and not finished then
+            local score=Instance.new("Sound")
+            score.Name="MeadowOpeningScore"
+            score.SoundId=scoreId
+            score.Volume=.8
+            score.Looped=false
+            if meadowEffectsGroup then score.SoundGroup=meadowEffectsGroup end
+            score.Parent=game:GetService("SoundService")
+            openingScore=score
+            imageIds[#imageIds+1]=score
+          end
           task.spawn(function()
             pcall(function() ContentProvider:PreloadAsync(imageIds) end)
             preloaded=true
@@ -4609,6 +4632,7 @@ do
             Size=UDim2.fromScale(1,1),
           }):Play()
           local startClock=os.clock()
+          if openingScore then openingScore.TimePosition=0;openingScore:Play() end
           local current=0
           connection=RunService.RenderStepped:Connect(function()
             if finished then return end

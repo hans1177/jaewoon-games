@@ -1,0 +1,58 @@
+# [마력숲] 오프닝 60초 사운드트랙을 로블록스 오디오로 등록한다. 같은 해시는 다시 올리지 않는다.
+name: Fantasy Opening Audio
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'roblox-games/fantasy-survival/opening24/audio.json'
+      - 'roblox-games/fantasy-survival/opening24/opening-score.ogg.b64.txt'
+      - 'tools/fantasy-opening-audio.mjs'
+      - '.github/workflows/fantasy-opening-audio.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: fantasy-opening-audio
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Upload opening score and grant Universe use
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        run: node tools/fantasy-opening-audio.mjs
+      - name: Open asset binding PR
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'fantasy-opening-audio'
+          git config user.email 'actions@users.noreply.github.com'
+          for binding_path in roblox-games/fantasy-survival/opening24/audio-uploaded.json roblox-games/fantasy-survival/shared/OpeningAudioId.luau; do
+            if test -e "$binding_path"; then git add -- "$binding_path"; fi
+          done
+          if git diff --cached --quiet; then
+            echo 'OPENING_AUDIO_BINDING_ALREADY_CURRENT=YES'
+            exit 0
+          fi
+          git commit -m 'assets: bind opening score audio id'
+          branch="automation/fantasy-opening-audio-${GITHUB_RUN_ID}"
+          git push origin "HEAD:refs/heads/$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title '마력숲 오프닝 음악 ID 연결' --body '오너 요청으로 직접 합성한 60초 오프닝 사운드트랙의 로블록스 오디오 ID와 Universe 사용 권한 승인 결과를 기록한다. 등록과 권한이 모두 성공한 경우에만 OpeningAudioId.luau 가 채워지며, 그렇지 않으면 소리 없이 재생된다. 등록 성공은 게임 내 청취 검증 완료를 뜻하지 않는다.')"
+          echo "OPENING_AUDIO_BINDING_PR=$pr_url"
