@@ -142,8 +142,8 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/meadowReferenceHotbar.Position=UDim2.new\(0,math.floor\(math.clamp\(v.X\*\.46,minCenter,maxCenter\)\),1,-13\)/);
   assert.match(client,/meadowReferenceHotbar.Position=UDim2.new\(\.5,0,1,-99\)/);
   assert.match(client,/questTracker.BackgroundColor3=Color3.fromRGB\(19,19,18\)/);
-  assert.match(client,/local height=compact and 100 or 157/);
-  assert.match(client,/local width=math.floor\(math.clamp\(v.X\*\(landscape and \.19 or \.42\),132,238\)\)/);
+  assert.match(client,/local height=compact and 124 or 157/);
+  assert.match(client,/local width=math.floor\(math.clamp\(v.X\*\(landscape and \.30 or \.42\),landscape and 190 or 132,landscape and 262 or 238\)\)/);
   assert.match(client,/local positions=\{\s+\{150,92,44\}/);
   assert.match(client,/\{116,165,44\}/);
   assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(179\*scale-size\*\.5\),math.floor\(102\*scale-size\*\.5\)\)/);
@@ -717,7 +717,7 @@ test('guard and perfect parry reuse R15 high guard with server-confirmed cinemat
   assert.match(client,/overrideVfx=="BLOCK_CONTACT"/);
   assert.match(client,/overrideVfx=="PARRY_CONFIRMED"/);
   assert.match(client,/textureKey="slash",hideRing=true/);
-  assert.match(client,/count=reducedEffects and \(perfect and 7 or 4\)/);
+  assert.match(client,/count=reducedEffects and \(perfect and 9 or 6\)/);
   assert.match(client,/if sourcePlayer==player then/);
   assert.match(client,/MeadowGuardStanceAura/);
   assert.match(client,/MeadowGuardContactFlash/);

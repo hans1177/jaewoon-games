@@ -2664,32 +2664,32 @@ local function layoutMeadowJournal()
   local menuStep=landscape and math.floor(math.clamp(v.X/15,47,55))
     or math.floor(math.clamp((v.X-18)/6,47,52))
   local top=(landscape and 4 or 70)+menuStep+(landscape and 24 or 14)
-  local width=math.floor(math.clamp(v.X*(landscape and .19 or .42),132,238))
-  local height=compact and 100 or 157
+  local width=math.floor(math.clamp(v.X*(landscape and .30 or .42),landscape and 190 or 132,landscape and 262 or 238))
+  local height=compact and 124 or 157 -- [가독성] 작은 글씨 확대
   -- [가로 화면] 오른쪽 전투 버튼과 겹치지 않도록 퀘스트창은 왼쪽 체력바 아래에 둔다.
   local questLeft=landscape and 10 or v.X-width-8
   local questTop=landscape and math.max(0,118-math.floor(gui.AbsolutePosition.Y)) or top -- 화면 기준 체력바 바로 아래(상단 안전영역 보정)
   questTracker.Position=UDim2.fromOffset(questLeft,questTop)
   questTracker.Size=UDim2.fromOffset(width,height)
-  trackerTitle.Position=UDim2.fromOffset(compact and 19 or 8,compact and 3 or 6)
-  trackerTitle.Size=UDim2.new(1,compact and -22 or -14,0,compact and 13 or 17)
-  trackerTitle.TextSize=compact and 9 or 15
-  trackerDetail.Position=UDim2.fromOffset(compact and 7 or 10,compact and 18 or 24)
-  trackerDetail.Size=UDim2.new(1,compact and -10 or -18,0,compact and 23 or 40)
-  trackerDetail.TextSize=compact and 8 or 12
-  trackerVillage.Position=UDim2.fromOffset(compact and 7 or 9,compact and 45 or 68)
-  trackerVillage.Size=UDim2.new(1,compact and -10 or -18,0,compact and 23 or 42)
-  trackerVillage.TextSize=compact and 8 or 11
-  trackerCompanion.Position=UDim2.fromOffset(compact and 7 or 10,compact and 71 or 111)
-  trackerCompanion.Size=UDim2.new(1,compact and -10 or -18,0,compact and 23 or 24)
-  trackerCompanion.TextSize=compact and 8 or 11
+  trackerTitle.Position=UDim2.fromOffset(compact and 24 or 8,compact and 4 or 6)
+  trackerTitle.Size=UDim2.new(1,compact and -28 or -14,0,compact and 18 or 17)
+  trackerTitle.TextSize=compact and 14 or 15
+  trackerDetail.Position=UDim2.fromOffset(compact and 8 or 10,compact and 26 or 24)
+  trackerDetail.Size=UDim2.new(1,compact and -14 or -18,0,compact and 30 or 40)
+  trackerDetail.TextSize=compact and 12 or 12
+  trackerVillage.Position=UDim2.fromOffset(compact and 8 or 9,compact and 60 or 68)
+  trackerVillage.Size=UDim2.new(1,compact and -14 or -18,0,compact and 30 or 42)
+  trackerVillage.TextSize=compact and 12 or 11
+  trackerCompanion.Position=UDim2.fromOffset(compact and 8 or 10,compact and 94 or 111)
+  trackerCompanion.Size=UDim2.new(1,compact and -14 or -18,0,compact and 24 or 24)
+  trackerCompanion.TextSize=compact and 12 or 11
   trackerNavigation.Position=UDim2.fromOffset(9,compact and 92 or 138)
   trackerNavigation.Size=UDim2.new(1,-17,0,14)
   trackerNavigation.Visible=not compact
   local questIcon=questTracker:FindFirstChild("CC0QuestIcon")
   if questIcon then
-    questIcon.Size=UDim2.fromOffset(compact and 12 or 22,compact and 12 or 22)
-    questIcon.Position=UDim2.fromOffset(compact and 5 or 8,compact and 3 or 7)
+    questIcon.Size=UDim2.fromOffset(compact and 18 or 22,compact and 18 or 22)
+    questIcon.Position=UDim2.fromOffset(compact and 5 or 8,compact and 4 or 7)
   end
   characterShortcut.Position=landscape and UDim2.fromOffset(questLeft+width+8,questTop)
     or UDim2.fromOffset(9,top+height+8)
@@ -6492,11 +6492,11 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
         color=perfect and Color3.fromRGB(255,246,185) or Color3.fromRGB(241,251,255),
         accent=perfect and Color3.fromRGB(255,177,72) or Color3.fromRGB(96,204,255),
         textureKey="slash",hideRing=true,
-        duration=reducedEffects and .20 or (perfect and .40 or .29),
-        startSize=perfect and 1.2 or .8,
-        endSize=reducedEffects and 1.35 or (perfect and 4.4 or 2.9),
-        count=reducedEffects and (perfect and 7 or 4) or (perfect and 17 or 11),
-        distance=perfect and 4.8 or 2.5,
+        duration=reducedEffects and .24 or (perfect and .55 or .42),
+        startSize=perfect and 1.6 or 1.1,
+        endSize=reducedEffects and 1.8 or (perfect and 6.4 or 4.6),
+        count=reducedEffects and (perfect and 9 or 6) or (perfect and 30 or 22),
+        distance=perfect and 6.5 or 4,
         reducedMotion=reducedEffects,
       })
       if not ok then warn("마력숲 확인된 막기 이펙트 오류: "..tostring(err)) end
@@ -6504,8 +6504,8 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
     local impactSound=Instance.new("Sound")
     impactSound.Name=perfect and "MeadowPerfectParryImpact" or "MeadowGuardContactImpact"
     impactSound.SoundId="rbxasset://sounds/action_jump_land.mp3"
-    impactSound.Volume=perfect and .53 or .37
-    impactSound.PlaybackSpeed=perfect and 1.16 or .86
+    impactSound.Volume=perfect and .8 or .62
+    impactSound.PlaybackSpeed=perfect and 1.22 or .78
     impactSound.RollOffMinDistance=4
     impactSound.RollOffMaxDistance=25
     impactSound.SoundGroup=meadowEffectsGroup
@@ -6519,7 +6519,7 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
       impactOverlay.Size=UDim2.fromScale(1,1)
       impactOverlay.BackgroundColor3=perfect and Color3.fromRGB(255,221,146)
         or Color3.fromRGB(178,225,255)
-      impactOverlay.BackgroundTransparency=reducedEffects and .985 or (perfect and .94 or .97)
+      impactOverlay.BackgroundTransparency=reducedEffects and .975 or (perfect and .80 or .88)
       impactOverlay.BorderSizePixel=0
       impactOverlay.ZIndex=2
       impactOverlay.Parent=gui
@@ -6527,6 +6527,21 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
         BackgroundTransparency=1,
       }):Play()
       debris:AddItem(impactOverlay,.32)
+      -- [막기 타격감] 서버가 막기를 승인한 순간 화면이 짧게 흔들린다(저사양·감소 효과 모드 제외).
+      local shakeHumanoid=character:FindFirstChildOfClass("Humanoid")
+      if shakeHumanoid and not reducedEffects then
+        task.spawn(function()
+          local startedAt=os.clock()
+          local length=perfect and .32 or .22
+          local power=perfect and .55 or .34
+          while os.clock()-startedAt<length and shakeHumanoid.Parent do
+            local fade=1-(os.clock()-startedAt)/length
+            shakeHumanoid.CameraOffset=Vector3.new((math.random()-.5)*power*fade,(math.random()-.5)*power*fade,0)
+            task.wait()
+          end
+          if shakeHumanoid.Parent then shakeHumanoid.CameraOffset=Vector3.zero end
+        end)
+      end
     end
     return
   end
@@ -6542,8 +6557,8 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
       if forearm and forearm:IsA("BasePart")
         and meadowCommonVFX and type(meadowCommonVFX.AttachShortTrail)=="function" then
         local ok,trail,controller=pcall(meadowCommonVFX.AttachShortTrail,forearm,{
-          lifetime=reducedEffects and .13 or .25,
-          width=reducedEffects and .31 or .55,
+          lifetime=reducedEffects and .16 or .42,
+          width=reducedEffects and .38 or .95,
           axis=Vector3.new(0,1,0),length=math.max(.75,forearm.Size.Y*1.15),
           color=tint,
         })
@@ -6559,10 +6574,15 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
       aura.Name="MeadowGuardStanceAura"
       aura.Adornee=character
       aura.DepthMode=Enum.HighlightDepthMode.Occluded
-      aura.FillColor=Color3.fromRGB(210,163,100)
-      aura.FillTransparency=reducedEffects and .98 or .94
-      aura.OutlineColor=Color3.fromRGB(246,210,146)
-      aura.OutlineTransparency=reducedEffects and .82 or .56
+      aura.FillColor=Color3.fromRGB(120,190,255)
+      aura.FillTransparency=reducedEffects and .95 or .72
+      aura.OutlineColor=Color3.fromRGB(190,235,255)
+      aura.OutlineTransparency=reducedEffects and .5 or .05
+      if not reducedEffects then
+        -- [시작 임팩트] 방어 자세를 잡는 순간 강하게 빛났다가 유지 윤곽으로 가라앉는다.
+        aura.FillTransparency=.35
+        tweenService:Create(aura,TweenInfo.new(.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{FillTransparency=.72}):Play()
+      end
       aura.Parent=character
       task.delay(2.35,function()
         if aura.Parent then
