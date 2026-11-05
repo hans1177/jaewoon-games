@@ -141,24 +141,27 @@ if(process.argv.includes('--item-assets-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
  const targetUniverse='10773436325';
- const names=['Sword','Sword_Golden','Sword_big','Dagger','Axe_small','Bow_Wooden','Hammer_Double','Potion1_Filled','Potion2_Filled','Potion3_Filled','Potion4_Filled','Potion5_Filled','Pouch','Backpack','Chalice','Book1_Closed','Crystal1','Key1','Ring1','Coin'];
- const {execFileSync}=await import('node:child_process');
+ const names=[['rpg_items_pack','Sword'],['rpg_items_pack','Sword_Golden'],['rpg_items_pack','Sword_big'],['rpg_items_pack','Dagger'],['rpg_items_pack','Axe_small'],['rpg_items_pack','Bow_Wooden'],['rpg_items_pack','Hammer_Double'],['rpg_items_pack','Potion1_Filled'],['rpg_items_pack','Potion2_Filled'],['rpg_items_pack','Potion3_Filled'],['rpg_items_pack','Potion4_Filled'],['rpg_items_pack','Potion5_Filled'],['rpg_items_pack','Pouch'],['rpg_items_pack','Backpack'],['rpg_items_pack','Chalice'],['rpg_items_pack','Book1_Closed'],['rpg_items_pack','Crystal1'],['rpg_items_pack','Key1'],['rpg_items_pack','Ring1'],['rpg_items_pack','Coin'],
+  ['rpg_items_pack','Armor_Leather'],['rpg_items_pack','Armor_Metal'],['rpg_items_pack','Armor_Golden'],['rpg_items_pack','Armor_Black'],['rpg_items_pack','Glove'],['rpg_items_pack','Necklace1'],['rpg_items_pack','Ring2'],['rpg_items_pack','Scroll'],['rpg_items_pack','Heart'],['rpg_items_pack','Skull'],['rpg_items_pack','Star'],['rpg_items_pack','Gold_Ingots'],['rpg_items_pack','Mineral'],['rpg_items_pack','Bone'],['rpg_items_pack','ChickenLeg'],
+  ['survival_pack','WoodLog'],['survival_pack','Torch'],['nature_pack','Rock_1']];
  fs.rmSync('/tmp/qsi',{recursive:true,force:true});
+ const {execFileSync}=await import('node:child_process');
  execFileSync('git',['clone','--depth','1','--filter=blob:none','--sparse','-q','https://github.com/trebeljahr/quaternius-showcase.git','/tmp/qsi']);
- execFileSync('git',['-C','/tmp/qsi','sparse-checkout','set','public/glb/rpg_items_pack']);
- if(!/`rpg_items_pack`[^\n]*CC0-1\.0/.test(fs.readFileSync('/tmp/qsi/LICENSES.md','utf8')))throw Error('RPG_ITEMS_LICENSE_EVIDENCE_MISSING');
+ execFileSync('git',['-C','/tmp/qsi','sparse-checkout','set','public/glb/rpg_items_pack','public/glb/survival_pack','public/glb/nature_pack']);
+ const lic=fs.readFileSync('/tmp/qsi/LICENSES.md','utf8');
+ for(const pk of ['rpg_items_pack','survival_pack','nature_pack'])if(!new RegExp('`'+pk+'`[^\\n]*CC0-1\\.0').test(lic))throw Error('ITEM_LICENSE_EVIDENCE_MISSING:'+pk);
  registry.itemPackV1=registry.itemPackV1||{license:'CC0-1.0',author:'Quaternius',licenseEvidence:'https://quaternius.com/packs/ultimaterpg.html',assetIds:{},sources:{}};
  const pack=registry.itemPackV1;
- for(const name of names){
+ for(const [packName,name] of names){
   const key='item_'+name.toLowerCase();
   let assetId=String(pack.assetIds[key]||'');
   if(!/^[1-9]\d*$/.test(assetId)){
-   const bytes=fs.readFileSync('/tmp/qsi/public/glb/rpg_items_pack/'+name+'.glb');
+   const bytes=fs.readFileSync('/tmp/qsi/public/glb/'+packName+'/'+name+'.glb');
    if(bytes.toString('utf8',0,4)!=='glTF')throw Error('ITEM_GLB_INVALID:'+name);
    const sha=crypto.createHash('sha256').update(bytes).digest('hex');
    const form=new FormData();
    form.append('request',JSON.stringify({assetType:'Model',displayName:'Mana Forest Item '+name,
-    description:'Quaternius CC0 Ultimate RPG Pack '+name+' sha256 '+sha,creationContext:{creator}}));
+    description:'Quaternius CC0 '+packName+' '+name+' sha256 '+sha,creationContext:{creator}}));
    form.append('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),key+'.glb');
    let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key0},body:form});
    if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('ITEM_OPERATION_INVALID:'+name);
@@ -169,7 +172,7 @@ if(process.argv.includes('--item-assets-only')){
    }
    assetId=String(op.response?.assetId||'');
    if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))throw Error('ITEM_UPLOAD_FAILED:'+name+':'+JSON.stringify(op.error||{}).slice(0,300));
-   pack.assetIds[key]=assetId;pack.sources[key]={file:name+'.glb',origin:'Quaternius Ultimate RPG Pack/'+name,sha256:sha};
+   pack.assetIds[key]=assetId;pack.sources[key]={file:name+'.glb',origin:'Quaternius '+packName+'/'+name,sha256:sha};
    fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
   }
   const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
