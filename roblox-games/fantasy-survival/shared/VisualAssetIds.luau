@@ -140,4 +140,7 @@ return {
  item_star=118825509898110,
  item_torch=97644076537890,
  item_woodlog=79047513534472,
+ item_staff=78185257363571,
+ item_boots=80950977293578,
+ item_pants=127216069013090,
 }

@@ -239,6 +239,9 @@ do
       if gearKeys[item.gear.Id] then return gearKeys[item.gear.Id] end
       if armorKeys[item.gear.Id] then return armorKeys[item.gear.Id] end
       if item.gear.Slot=="Hands" then return "item_glove" end
+      if item.gear.Slot=="Legs" then return "item_pants" end
+      if item.gear.Slot=="Feet" then return "item_boots" end
+      if item.gear.Id=="worldtree_staff" then return "item_staff" end
       if item.gear.Category=="장신구" then return "item_ring1" end
       return nil
     end
