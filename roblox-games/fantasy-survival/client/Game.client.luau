@@ -205,7 +205,7 @@ local meadowArt={skillSheet="rbxassetid://88875753640260",gearSheet="rbxassetid:
   rarityName={Common="일반",Uncommon="고급",Rare="희귀",Epic="영웅",Legendary="전설"},
   skillCell={["skill-meadow-heavy"]=0,["skill-meadow-sweep"]=1,["skill-meadow-bolt"]=2,["skill-meadow-guard"]=3,["skill-meadow-parry"]=4,
     ["skill-meadow-dodge-left"]=5,["skill-meadow-dodge-right"]=6,["skill-meadow-sprint"]=7,["skill-meadow-heal"]=8,["skill-meadow-focus"]=9,
-    ["skill-meadow-emote"]=10,["skill-meadow-oath"]=8,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
+    ["skill-meadow-emote"]=10,["skill-meadow-oath"]=15,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
     Martial=15,Signs=16,Defense=17,Agility=18},
   slotEmpty={Weapon=36,Chest=37,Hands=38,Legs=39,Feet=40,Accessory=41}}
 function meadowArt.skill(icon,key)
@@ -2137,8 +2137,8 @@ local stone=Color3.fromRGB(20,43,43)
 local muted=Color3.fromRGB(163,192,175)
 local categories={"전체","보유","무기","갑옷","장신구","소모품","재료","기록","재화"}
 local data={
-  {key="Wood",name="나무",category="재료",icon=4,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 기존 무기 강화에 사용돼."},
-  {key="Stone",name="돌",category="재료",icon=4,color=Color3.fromRGB(169,191,200),description="바위에서 채집한 돌. 기존 무기 강화에 사용돼."},
+  {key="Wood",name="나무",category="재료",icon=4,art=34,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 기존 무기 강화에 사용돼."},
+  {key="Stone",name="돌",category="재료",icon=4,art=35,color=Color3.fromRGB(169,191,200),description="바위에서 채집한 돌. 기존 무기 강화에 사용돼."},
   {key="ResearchRecords",name="기사단 연대기",category="기록",icon=5,color=Color3.fromRGB(221,183,111),description="메인 의뢰에서 발견한 기사단 기록. 획득한 내용은 저널에 보관돼."},
   {key="Coins",name="소지금",category="재화",icon=4,color=Color3.fromRGB(226,191,92),description="서버에 기록된 현재 소지금."},
 }
@@ -6049,7 +6049,9 @@ meadowActionButtons.setQuickSkill=function(id,cell,label,category)
     icon.Image=meadowIconAtlas;icon.ImageRectSize=Vector2.new(64,64);icon.ZIndex=20
     icon.Active=false;icon.Interactable=false;icon.Parent=quick
   end
+  icon.Image=meadowIconAtlas;icon.ImageRectSize=Vector2.new(64,64)
   icon.ImageRectOffset=Vector2.new((cell or 2)*64,0)
+  if id then meadowArt.skill(icon,id) end -- 스킬 시트의 전용 아이콘을 우선 사용
   icon.Visible=id~=nil
   quick.BackgroundColor3=Color3.fromRGB(30,31,29)
   gui:SetAttribute("MeadowQuickRevision",(gui:GetAttribute("MeadowQuickRevision") or 0)+1)
