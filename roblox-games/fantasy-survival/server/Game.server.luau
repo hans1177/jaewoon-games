@@ -3272,6 +3272,11 @@ local function spawnEnemy(site, siteIndex)
         surface.Color=Color3.fromRGB(190,228,235)
       elseif smoothDetail then
         surface.Material=Enum.Material.SmoothPlastic
+        -- [박쥐 눈] 어둠 속에서 붉게 빛나는 눈.
+        if partId=="bat" and partName:find("eye",1,true) then
+          surface.Material=Enum.Material.Neon
+          surface.Color=Color3.fromRGB(255,72,52)
+        end
       else
         -- 구형 Pebble 돌무늬/체크 무늬는 원본 메시의 본체에서 제거한다.
         -- 원본 모델 템플릿은 유지하므로 기존 에셋을 파괴하거나 덮어쓰지 않는다.
