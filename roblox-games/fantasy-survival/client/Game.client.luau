@@ -2667,7 +2667,7 @@ local function layoutMeadowJournal()
   local height=compact and 100 or 157
   -- [가로 화면] 오른쪽 전투 버튼과 겹치지 않도록 퀘스트창은 왼쪽 체력바 아래에 둔다.
   local questLeft=landscape and 10 or v.X-width-8
-  local questTop=landscape and math.floor(v.Y*.32) or top
+  local questTop=landscape and math.max(0,118-math.floor(gui.AbsolutePosition.Y)) or top -- 화면 기준 체력바 바로 아래(상단 안전영역 보정)
   questTracker.Position=UDim2.fromOffset(questLeft,questTop)
   questTracker.Size=UDim2.fromOffset(width,height)
   trackerTitle.Position=UDim2.fromOffset(compact and 19 or 8,compact and 3 or 6)
