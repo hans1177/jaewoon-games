@@ -4914,7 +4914,17 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
    if underline then underline.Visible=tabPage(i-1)==index end
   end
   -- [가로 탭] 선택된 페이지를 자동으로 스크롤 영역 중앙에 노출한다.
-  if tabs and tabs.AbsoluteSize.X>0 then
+  if tabs and tabs.AbsoluteSize.X>0 and primary and primary.sideTabs then
+   -- [세로 탭] 선택된 탭이 보이도록 위아래로만 스크롤한다.
+   for i,button in ipairs(tabButtons)do
+    if tabPage(i-1)==index then
+     local offset=button.AbsolutePosition.Y-tabs.AbsolutePosition.Y+tabs.CanvasPosition.Y
+     local maxScroll=math.max(0,tabs.AbsoluteCanvasSize.Y-tabs.AbsoluteSize.Y)
+     tabs.CanvasPosition=Vector2.new(0,math.clamp(offset-(tabs.AbsoluteSize.Y-button.AbsoluteSize.Y)*.5,0,maxScroll))
+     break
+    end
+   end
+  elseif tabs and tabs.AbsoluteSize.X>0 then
    for i,button in ipairs(tabButtons)do
     if tabPage(i-1)==index then
      local offset=button.AbsolutePosition.X-tabs.AbsolutePosition.X+tabs.CanvasPosition.X
@@ -4935,6 +4945,20 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   end
   tabs,tabButtons=RobloxCommonUI.CreateFilterBar({name="MeadowMenuTabs",filters=names,selectedIndex=1})
   tabs.Parent=root;tabs.ZIndex=44
+  if primary and primary.sideTabs then
+   -- [외부 로블록스 게임식 왼쪽 세로 탭] 큰 아이콘 탭을 왼쪽 열에 세로로 쌓는다.
+   tabs.ScrollingDirection=Enum.ScrollingDirection.Y
+   tabs.AutomaticCanvasSize=Enum.AutomaticSize.Y
+   tabs.CanvasSize=UDim2.fromOffset(0,0)
+   tabs.ScrollBarThickness=0
+   local tabLayout=tabs:FindFirstChildOfClass("UIListLayout")
+   if tabLayout then
+    tabLayout.FillDirection=Enum.FillDirection.Vertical
+    tabLayout.HorizontalAlignment=Enum.HorizontalAlignment.Center
+    tabLayout.Padding=UDim.new(0,6)
+   end
+   for _,tabButton in ipairs(tabButtons)do tabButton.Size=UDim2.fromOffset(68,58) end
+  end
   local heading=Instance.new("TextLabel");heading.Name="MeadowMenuHeading"
   heading.Position=UDim2.fromOffset(20,10);heading.Size=UDim2.new(1,-116,0,32)
   heading.BackgroundTransparency=1;heading.Text="마력숲 · 탐험 수첩"
@@ -5071,14 +5095,36 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   end
   close.AnchorPoint=Vector2.new(1,0)
   close.Position=UDim2.new(1,-10,0,9);close.Size=UDim2.fromOffset(76,48)
-  if primary and primary.witcherStyle then
+  if primary and primary.sideTabs then
+   -- [빨간 X 닫기] 유명 로블록스 게임처럼 오른쪽 위 모서리에 걸친 큰 둥근 닫기 버튼.
+   close.Position=UDim2.new(1,-6,0,6);close.Size=UDim2.fromOffset(46,46)
+   close.Text="✕";close.TextSize=22;close.Font=Enum.Font.GothamBlack
+   close.BackgroundColor3=Color3.fromRGB(226,62,66);close.TextColor3=Color3.fromRGB(255,255,255)
+   local closeCorner=close:FindFirstChildOfClass("UICorner")
+   if closeCorner then closeCorner.CornerRadius=UDim.new(0,12) end
+   local closeGradient=close:FindFirstChildOfClass("UIGradient")
+   if closeGradient then closeGradient.Color=ColorSequence.new(Color3.fromRGB(255,102,96),Color3.fromRGB(184,34,48)) end
+  end
+  if primary and primary.witcherStyle and not primary.sideTabs then
    close.BackgroundColor3=Color3.fromRGB(42,76,64)
    close.TextColor3=Color3.fromRGB(245,242,224)
   end
   local shortMenu=primary and primary.witcherStyle and v.Y<420
   local bodyTop=tabs and (primary and primary.witcherStyle and (shortMenu and 109 or 132) or 122) or 68
-  list.Position=UDim2.fromOffset(14,bodyTop);list.Size=UDim2.new(1,-28,1,-bodyTop-12)
-  if tabs then
+  local sideTabs=tabs and primary and primary.sideTabs==true
+  local bodyLeft=14
+  if sideTabs then bodyTop=64;bodyLeft=92 end
+  list.Position=UDim2.fromOffset(bodyLeft,bodyTop);list.Size=UDim2.new(1,-bodyLeft-14,1,-bodyTop-12)
+  if sideTabs then
+   tabs.Position=UDim2.fromOffset(10,bodyTop);tabs.Size=UDim2.new(0,74,1,-bodyTop-12)
+   local subtitle=root:FindFirstChild("MeadowMenuSubtitle")
+   if subtitle then subtitle.Visible=true;subtitle.Position=UDim2.fromOffset(22,38);subtitle.Size=UDim2.new(1,-90,0,18) end
+   local heading=root:FindFirstChild("MeadowMenuHeading")
+   if heading then heading.Position=UDim2.fromOffset(20,8);heading.Size=UDim2.new(1,-90,0,30) end
+   for _,page in ipairs(pages)do
+    page.Position=UDim2.fromOffset(bodyLeft+2,bodyTop);page.Size=UDim2.new(1,-bodyLeft-18,1,-bodyTop-14)
+   end
+  elseif tabs then
    tabs.Position=UDim2.fromOffset(14,primary and primary.witcherStyle and (shortMenu and 53 or 72) or 64)
    tabs.Size=UDim2.new(1,-28,0,50)
    local subtitle=root:FindFirstChild("MeadowMenuSubtitle")

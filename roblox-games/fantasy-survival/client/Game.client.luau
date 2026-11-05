@@ -1359,9 +1359,9 @@ root.BackgroundColor3=Color3.fromRGB(12,28,30)
 meadowPanelGradient.Color=ColorSequence.new(Color3.fromRGB(32,66,56),Color3.fromRGB(9,23,30))
 local menuBorder=root:FindFirstChild("WitcherMenuBorder") or Instance.new("UIStroke")
 menuBorder.Name="WitcherMenuBorder";menuBorder.Color=meadowGold
-menuBorder.Thickness=1.5;menuBorder.Transparency=.16;menuBorder.Parent=root
+menuBorder.Thickness=3;menuBorder.Transparency=0;menuBorder.Parent=root
 meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{
-  compact=true,hideButton=true,hideMenuButton=true,menuLeft=true,witcherStyle=true,tabOrder={0,1,2,7,3,4,5,6},
+  compact=true,hideButton=true,hideMenuButton=true,menuLeft=true,witcherStyle=true,sideTabs=true,tabOrder={0,1,2,7,3,4,5,6},
   pages=meadowPages,pageNames=meadowPageNames,
   onPageChanged=function(index)
     renderMeadowPages()
@@ -1383,7 +1383,9 @@ meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerSt
 local menuHeading=root:FindFirstChild("MeadowMenuHeading")
 if menuHeading then
   menuHeading.Text="탐험 수첩"
-  menuHeading.TextColor3=meadowGold
+  menuHeading.TextColor3=Color3.fromRGB(255,244,214)
+  menuHeading.Font=Enum.Font.GothamBlack;menuHeading.TextSize=22
+  menuHeading.TextStrokeColor3=Color3.fromRGB(8,14,16);menuHeading.TextStrokeTransparency=.1
 end
 local witcherTabs=root:FindFirstChild("MeadowMenuTabs")
 if witcherTabs then
@@ -1391,6 +1393,8 @@ if witcherTabs then
     if button:IsA("TextButton") then
       button.TextColor3=meadowParchment
       button.Font=Enum.Font.GothamBold
+      button.TextSize=11;button.TextWrapped=false;button.TextTruncate=Enum.TextTruncate.AtEnd
+      button.TextYAlignment=Enum.TextYAlignment.Bottom
       local index=button:GetAttribute("FilterIndex")
       if typeof(index)=="number" and index>1 then
         local atlasCell=({3,4,2,5,6,7,3})[index-1]
@@ -1399,10 +1403,10 @@ if witcherTabs then
           icon.Name="CC0MenuIcon";icon.BackgroundTransparency=1
           icon.Image=meadowIconAtlas;icon.ImageRectOffset=Vector2.new(atlasCell*64,0)
           icon.ImageRectSize=Vector2.new(64,64)
-          icon.Size=UDim2.fromOffset(20,20);icon.Position=UDim2.fromOffset(6,13)
+          -- [세로 탭] 큰 아이콘을 위에, 짧은 이름을 아래에 둔다.
+          icon.Size=UDim2.fromOffset(28,28);icon.Position=UDim2.new(.5,-14,0,5)
           icon.ImageColor3=Color3.fromRGB(224,238,209)
           icon.ZIndex=46;icon.Parent=button
-          button.Text="     "..button.Text
         end
       end
       local underline=button:FindFirstChild("SelectedUnderline")
