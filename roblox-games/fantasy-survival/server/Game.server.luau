@@ -598,6 +598,8 @@ local function villageCurrentContract(player)
   return index,Config.VillageContracts[index]
 end
 local smithSessions={}
+local foodBuff={}
+local cookSessions={}
 local function villageDialogue(player,title,message,options)
   remote:FireClient(player,"MEADOW_VILLAGE_DIALOG",{
     title=title,message=message,options=options or {},
@@ -3304,6 +3306,7 @@ local meadowRpg=(function()
   end
   return {transact=transact,stats=stats,publishStats=publishStats,equippedWeapon=function(player) return equipped(player,"Weapon") end,
     equippedShield=function(player) return equipped(player,"Shield") end,
+    equippedChest=function(player) return equipped(player,"Chest") end,
     nodeRank=nodeRank,nodeChoice=nodeChoice,passiveLevel=passiveLevel,validQuickCode=validQuickCode}
 end)()
 
@@ -3377,6 +3380,35 @@ local function refreshBowVisual(player)
   weld.C0=CFrame.new(0,-.35,-.15)*CFrame.Angles(0,math.rad(90),math.rad(-90))
   weld.Parent=visual
 end
+-- [갑옷 외형] 착용 중인 흉갑을 등록된 CC0 갑옷 메시로 상체에 붙인다. 등급별로 가죽/금속/흑철/황금 모델을 쓴다.
+local armorModelByRarity={Common="item_armor_leather",Uncommon="item_armor_leather",Rare="item_armor_metal",Epic="item_armor_black",Legendary="item_armor_golden"}
+local function refreshArmorVisual(player)
+  local character=player.Character
+  if not character then return end
+  local old=character:FindFirstChild("MeadowArmorVisual")
+  if old then old:Destroy() end
+  local chest=meadowRpg.equippedChest and meadowRpg.equippedChest(player)
+  if not chest then return end
+  local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+  if not torso then return end
+  local model=worldAsset(armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather",Vector3.new(0,-900,0),2.5)
+  local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
+  if not mesh then if model then model:Destroy() end return end
+  local visual=mesh:Clone()
+  model:Destroy()
+  visual.Name="MeadowArmorVisual"
+  visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
+  visual.Parent=character
+  local weld=Instance.new("Weld");weld.Part0=torso;weld.Part1=visual
+  weld.C0=CFrame.new(0,.1,0)
+  weld.Parent=visual
+end
+local function watchArmorVisual(player)
+  player:GetAttributeChangedSignal("MeadowEquipChest"):Connect(function() refreshArmorVisual(player) end)
+  player.CharacterAdded:Connect(function() task.wait(1.8);refreshArmorVisual(player) end)
+end
+for _,existing in ipairs(Players:GetPlayers()) do watchArmorVisual(existing) end
+Players.PlayerAdded:Connect(watchArmorVisual)
 local function watchBowVisual(player)
   player:GetAttributeChangedSignal("MeadowEquipWeapon"):Connect(function() refreshBowVisual(player) end)
   player:GetAttributeChangedSignal("MeadowGearOwned2"):Connect(function() refreshBowVisual(player) end)
@@ -4661,6 +4693,10 @@ end
 local function applyMeadowDamage(player,target,damage,isDot)
   if not target or target.HP<=0 or not target.model.Parent then return false end
   if not isDot then addAdrenaline(player,3) end
+  do
+    local fb=foodBuff[player]
+    if fb and fb.atk and fb.untilT>os.clock() then damage=math.floor(damage*(1+fb.atk)) end
+  end
   player:SetAttribute("MeadowCombatUntil",workspace:GetServerTimeNow()+8)
   if (meadowFocusUntil[player] or 0)>os.clock() then damage=math.floor(damage*1.25) end
   do
@@ -4818,6 +4854,7 @@ local function applyMeadowDamage(player,target,damage,isDot)
       if (kind=="wolf" or kind=="bandit") and math.random()<math.min(.5,readNumber(player,"HuntingProficiency",0)*.01) then
         setNumber(player,"Hide",readNumber(player,"Hide",0)+1)
       end
+      drop("Meat",kind=="wolf" and .55 or kind=="bandit" and .3 or kind=="boar" and .6 or .06,target.isAlpha and 2 or 1)
       drop("BatWing",kind=="bat" and .7 or 0)
       drop("Claw",kind=="wolf" and .6 or 0,target.isAlpha and 2 or 1)
       drop("Ectoplasm",kind=="ghost" and .6 or 0)
@@ -5221,6 +5258,10 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
     end
   end
   addAdrenaline(player,2)
+  do
+    local fb=foodBuff[player]
+    if fb and fb.def and fb.untilT>os.clock() then damage=math.max(1,math.floor(damage*(1-fb.def))) end
+  end
   -- [지속 방호] 정면 막기·포위 대응·일회성 위기 보호.
   local guardRank=meadowRpg.passiveLevel(player,"G_FRONT")
   if (defense.guardUntil or 0)>now and guardRank>0 then
@@ -6490,6 +6531,50 @@ remote.OnServerEvent:Connect(function(player, actionId)
     member:SetAttribute("MeadowGearMessage",text)
     member:SetAttribute("MeadowGearRevision",(member:GetAttribute("MeadowGearRevision") or 0)+1)
   end
+  if actionId:match("^cook:%d$") then
+    if os.clock()>(cookSessions[player] or 0) then return end
+    local station=Config.CookStation
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not root or (Vector3.new(root.Position.X,0,root.Position.Z)-Vector3.new(station.X,0,station.Z)).Magnitude>station.Radius+8 then return end
+    local dish=Config.MeadowFoods[tonumber(actionId:sub(-1))]
+    if not dish then return end
+    local skill=readNumber(player,"CookingProficiency",0)
+    if skill<dish.Need then villageDialogue(player,"식당 화덕","요리 숙련 "..dish.Need.."이 필요해. (지금 "..skill..")");return end
+    for _,field in ipairs({"Meat","Mushroom","Moonbloom","RedLeaf","Coins"}) do
+      if readNumber(player,field,0)<(dish[field] or 0) then
+        villageDialogue(player,"식당 화덕","재료가 모자라. "..dish.Name..": "..dish.Desc);return
+      end
+    end
+    for _,field in ipairs({"Meat","Mushroom","Moonbloom","RedLeaf","Coins"}) do
+      if (dish[field] or 0)>0 then setNumber(player,field,readNumber(player,field,0)-dish[field]) end
+    end
+    setNumber(player,"CookingProficiency",skill+1)
+    local character,humanoid=player.Character,player.Character:FindFirstChildOfClass("Humanoid")
+    if dish.Heal and humanoid and humanoid.Health>0 then
+      local ticks=math.max(1,dish.Seconds and math.min(10,dish.Seconds) or 1)
+      for i=1,ticks do
+        task.delay(i-1,function()
+          local h=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+          if h and h.Health>0 then
+            h.Health=math.min(h.MaxHealth,h.Health+dish.Heal/ticks)
+            setNumber(player,"Health",math.floor(h.Health))
+          end
+        end)
+      end
+    end
+    if dish.Stamina then player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)+dish.Stamina)) end
+    if dish.Adrenaline then addAdrenaline(player,dish.Adrenaline) end
+    if dish.Atk or dish.Def then
+      foodBuff[player]={atk=dish.Atk,def=dish.Def,untilT=os.clock()+(dish.Seconds or 300)}
+      player:SetAttribute("MeadowFoodName",dish.Name)
+      task.delay((dish.Seconds or 300)+1,function()
+        local fb=foodBuff[player]
+        if fb and fb.untilT<=os.clock() then foodBuff[player]=nil;player:SetAttribute("MeadowFoodName",nil) end
+      end)
+    end
+    villageDialogue(player,"식당 화덕",dish.Name.."을(를) 맛있게 먹었어!\n"..dish.Desc.."\n요리 숙련 "..(skill+1))
+    return
+  end
   if actionId=="smith:train" or actionId=="smith:info" then
     if os.clock()>(smithSessions[player] or 0) then return end
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -6516,12 +6601,15 @@ remote.OnServerEvent:Connect(function(player, actionId)
     if pick==0 then setNumber(player,"MeadowRune",0);runeNote(player,"각인을 지웠어.");return end
     local rune=Config.Runes[pick]
     if not rune or readNumber(player,"MeadowRune",0)==pick then return end
+    if not nearStation(player,"Anvil") then runeNote(player,"각인은 마을 대장간 모루 가까이에서 할 수 있어.");return end
+    if smithLevelOf(player)<3 then runeNote(player,"각인은 대장 Lv3부터 가능해. (지금 Lv"..smithLevelOf(player)..")");return end
     if readNumber(player,rune.Material,0)<rune.Amount or readNumber(player,"Coins",0)<rune.Coins then
       runeNote(player,rune.Name.." 각인: "..rune.Material.." "..rune.Amount.."개 + 코인 "..rune.Coins.." 필요해.");return
     end
     setNumber(player,rune.Material,readNumber(player,rune.Material,0)-rune.Amount)
     setNumber(player,"Coins",readNumber(player,"Coins",0)-rune.Coins)
     setNumber(player,"MeadowRune",pick)
+    addSmithXp(player,8)
     runeNote(player,rune.Name.." 각인을 새겼어. "..rune.Desc);return
   end
   if actionId=="ult:set:1" or actionId=="ult:set:2" then
@@ -8771,6 +8859,43 @@ task.spawn(function()
     end
   end
 end)
+-- [식당 화덕] 요리 메뉴. 해금된 레시피(요리 숙련)만 선택지에 나온다.
+task.spawn(function()
+  task.wait(10)
+  local station=Config.CookStation
+  local rp=RaycastParams.new()
+  rp.FilterType=Enum.RaycastFilterType.Include
+  rp.FilterDescendantsInstances={meadowTerrain}
+  local hit=workspace:Raycast(Vector3.new(station.X,80,station.Z),Vector3.new(0,-160,0),rp)
+  local model=worldAsset(station.Model,Vector3.new(station.X,(hit and hit.Position.Y or 3)+1,station.Z),station.Height)
+  if not model then return end
+  model.Name="Meadow_Cook_Hearth"
+  model:SetAttribute("MeadowVillageScenery",true)
+  for _,mesh in ipairs(model:GetDescendants()) do
+    if mesh:IsA("MeshPart") then mesh.CanCollide=false;mesh.CanQuery=true;mesh.CanTouch=false end
+  end
+  villagePrompt(model,station.Name,"요리하기",function(player)
+    local skill=readNumber(player,"CookingProficiency",0)
+    local options,lines={},{}
+    for index,dish in ipairs(Config.MeadowFoods) do
+      if skill>=dish.Need then
+        local parts={}
+        for _,field in ipairs({"Meat","Mushroom","Moonbloom","RedLeaf","Coins"}) do
+          if (dish[field] or 0)>0 then
+            parts[#parts+1]=(Config.MaterialByField[field] and Config.MaterialByField[field].Name or "재화").." "..dish[field]
+          end
+        end
+        lines[#lines+1]=dish.Name.." — "..dish.Desc.." ("..table.concat(parts,", ")..")"
+        options[#options+1]={label=dish.Name,action="cook:"..index}
+      else
+        lines[#lines+1]="🔒 "..dish.Name.." — 요리 숙련 "..dish.Need.." 필요"
+      end
+    end
+    cookSessions[player]=os.clock()+60
+    villageDialogue(player,"식당 화덕 · 요리 숙련 "..skill,table.concat(lines,"\n"),options)
+  end)
+end)
+
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
 -- 도달/재료 판정은 2초마다, 처치 판정은 몬스터 처치 시점에 확인한다. 거울 정원은 메인 줄 완료(HiddenOpen)로 열린다.
 do

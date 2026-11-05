@@ -248,7 +248,7 @@ do
     end
     return item and item.gear and tints[item.gear.Id] or nil
   end
-  local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Steel="item_gold_ingots",Leather="item_bone"}
+  local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Steel="item_gold_ingots",Meat="item_chickenleg",Leather="item_bone"}
   function meadowArt.itemKeyFor(item)
     if not item then return nil end
     if item.gear then
@@ -783,7 +783,7 @@ end)
 -- [전투 HUD] 실제 휴머노이드 최대 체력을 기준으로 표시한다.
 local meadowHealthTrack,meadowHealthControl=CommonUI.CreateHealthBar({name="MeadowHealth",text="체력",textSize=11})
 meadowHealthTrack.Parent=root
-local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","SmithXp","Steel","ArmorTier","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","Ingot","Leather","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
+local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","SmithXp","Steel","Meat","ArmorTier","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","Ingot","Leather","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
   status.Text="" -- [필요 없는 작은 글씨 제거] 월드/몬스터 수는 기본 화면에 표시하지 않는다.
   local character=player.Character
@@ -2780,7 +2780,7 @@ if player.Character then
   player.Character.ChildAdded:Connect(renderInventory)
   player.Character.ChildRemoved:Connect(renderInventory)
 end
-for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Ingot","Steel","SmithXp","Leather","Coins","ResearchRecords","ProfileReady","MeadowGearOwned","MeadowGearOwned2",
+for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Ingot","Steel","Meat","SmithXp","Leather","Coins","ResearchRecords","ProfileReady","MeadowGearOwned","MeadowGearOwned2",
   "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
   "MeadowEquipAccessory","MeadowEquipShield","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)
@@ -6146,7 +6146,9 @@ do
   close.Activated:Connect(function()dialog.Visible=false end)
   local choices={}
   local choiceActions={}
-  for i=1,2 do
+  local dialogHeight=300
+  local visibleChoices=2
+  for i=1,5 do
     local button=Instance.new("TextButton")
     button.Name="Choice"..i
     button.Position=UDim2.new(0,14,0,182+(i-1)*61)
@@ -6167,8 +6169,7 @@ do
       local action=choiceActions[i]
       if action and dialog.Visible then
         dialog.Visible=false
-        choiceActions[1]=nil
-        choiceActions[2]=nil
+        for k=1,5 do choiceActions[k]=nil end
         remote:FireServer(action)
       end
     end)
@@ -6176,12 +6177,17 @@ do
   local function layoutDialogue()
     local v=gui.AbsoluteSize
     if v.Y>0 then
-      local h=math.clamp(v.Y-36,230,320)
+      local h=math.clamp(v.Y-36,230,360)
+      dialogHeight=h
       dialog.Size=UDim2.new(.9,0,0,h)
-      storyScroll.Size=UDim2.new(1,-28,0,h-178)
+      -- 선택지가 많으면 버튼을 작게 줄이고 본문 영역을 남은 만큼만 쓴다.
+      local count=math.max(1,visibleChoices)
+      local bh=count>2 and 38 or 50
+      local gap=count>2 and 42 or 56
+      storyScroll.Size=UDim2.new(1,-28,0,math.max(60,h-60-count*gap))
       for i,button in ipairs(choices)do
-        button.Position=UDim2.new(0,14,0,h-128+(i-1)*56)
-        button.Size=UDim2.new(1,-28,0,50)
+        button.Position=UDim2.new(0,14,0,h-8-count*gap+(i-1)*gap)
+        button.Size=UDim2.new(1,-28,0,bh)
       end
     end
   end
@@ -6195,11 +6201,15 @@ do
     for i,button in ipairs(choices)do
       local option=typeof(payload.options)=="table" and payload.options[i] or nil
       local action=option and option.action
-      local permitted=action=="wp:east" or action=="wp:west" or action=="co:toggle" or action=="ql:1" or action=="ql:2" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
+      local permitted=(typeof(action)=="string" and (action:match("^village:story:%d$") or action:match("^smith:%a+$") or action:match("^cook:%d$")) ~= nil) or action=="wp:east" or action=="wp:west" or action=="co:toggle" or action=="ql:1" or action=="ql:2" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
       button.Visible=permitted
       choiceActions[i]=permitted and action or nil
       if permitted then button.Text=tostring(option.label or "선택") end
     end
+    local shown=0
+    for i=1,5 do if choiceActions[i] then shown=i end end
+    visibleChoices=math.max(1,shown)
+    layoutDialogue()
     dialog.Visible=true
   end)
   player.CharacterAdded:Connect(function()dialog.Visible=false end)
@@ -10870,7 +10880,7 @@ end)()
   local names={Wood="나무",Stone="돌",Coins="재화"}
   local fields={"Wood","Stone"}
   for _,mat in ipairs(Config.Materials or {}) do names[mat.Field]=mat.Name;table.insert(fields,mat.Field) end
-  local keys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Steel="item_gold_ingots",Leather="item_bone"}
+  local keys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Steel="item_gold_ingots",Meat="item_chickenleg",Leather="item_bone"}
   local order=0
   local last={}
   local function toast(field,amount)

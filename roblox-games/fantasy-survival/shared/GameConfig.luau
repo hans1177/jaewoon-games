@@ -413,7 +413,7 @@ local Config = {
     BuildingProficiency = 0, HuntingProficiency = 0, AlchemyProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     RedLeaf = 0, Moonbloom = 0, Mushroom = 0, Ore = 0, Crystal = 0, Magma = 0,
-    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0, Steel = 0, ArmorTier = 0, SmithXp = 0, QLSmith = 0, QLSmithP = 0, QLSmith2 = 0, QLSmith2P = 0, QLSmith3 = 0, QLSmith3P = 0,
+    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0, Steel = 0, Meat = 0, ArmorTier = 0, SmithXp = 0, QLSmith = 0, QLSmithP = 0, QLSmith2 = 0, QLSmith2P = 0, QLSmith3 = 0, QLSmith3P = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
     MeadowGearOwned=2705,MeadowGearOwned2=0,
@@ -714,6 +714,7 @@ Config.Materials={
   {Field="BatWing",Name="박쥐 날개",Kind="부위",Value=4,Color={120,100,150},Desc="박쥐가 떨어뜨려. 신발 제작에 쓰여."},
   {Field="Claw",Name="늑대 발톱",Kind="부위",Value=3,Color={205,195,175},Desc="늑대가 떨어뜨려. 장갑 제작에 쓰여."},
   {Field="Ingot",Name="철 주괴",Kind="가공",Value=14,Color={190,196,206},Desc="화로에서 광석 2개를 녹여 만들어. 무기·갑옷 제작의 핵심 재료야.",Refine={From="Ore",Need=2,Verb="제련",Note="광석 2 → 주괴 1",Station="Smelter"}},
+  {Field="Meat",Name="생고기",Kind="부위",Value=4,Color={196,98,92},Desc="늑대·산적에게서 얻어. 마을 식당 화덕에서 요리하면 회복과 버프를 줘.",Drop="늑대·산적"},
   {Field="Steel",Name="강철 주괴",Kind="가공",Value=44,Color={146,168,196},Desc="제련로에서 철 주괴 3개를 담금질해 만들어. 대장 Lv4부터 가능하고, 희귀 이상 무기·방패의 재료야.",Refine={From="Ingot",Need=3,Verb="강철 제련",Note="주괴 3 → 강철 주괴 1 (대장 Lv4)",Level=4,Station="Smelter"}},
   {Field="Leather",Name="무두질 가죽",Kind="가공",Value=10,Color={150,98,60},Desc="가죽 걸이에서 늑대 가죽 2장을 가공해 만들어. 갑옷·장화·장갑에 쓰여.",Refine={From="Hide",Need=2,Verb="무두질",Note="가죽 2 → 무두질 가죽 1",Station="Tanner"}},
   {Field="Ectoplasm",Name="원혼의 잔재",Kind="부위",Value=8,Color={150,230,220},Desc="원혼이 남기는 차가운 잔재. 전설 장신구 제작에 쓰여."},
@@ -1520,6 +1521,15 @@ Config.MeadowSkillNodes = {
   {Id="mf-magic-3-4",Index=88,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=4,Name="초과 치유",Kind="PASSIVE",Mode="M_OVERHEAL",Description="초과 회복량을 짧은 보호 효과로 바꾼다.",Advanced=false,Gauge=0,Cooldown=0,Range=34,IconCell=9},
   {Id="mf-magic-3-5",Index=89,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=5,Name="치유의 물결",Kind="ACTIVE",Mode="HEAL_AOE",Description="근처 아군과 함께 체력을 회복해.",Advanced=false,Gauge=26,Cooldown=13,Range=34,IconCell=9},
   {Id="mf-magic-3-6",Index=90,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=6,Name="생명의 공명",Kind="ACTIVE",Mode="RALLY",Description="기력을 크게 소모해 주변 아군을 회복·보호해.",Advanced=true,Gauge=70,Cooldown=38,Range=34,IconCell=9},
+}
+-- [스카이림식 요리] 마을 식당 화덕에서 요리하면 즉시 먹고 회복·버프를 얻는다. 요리할수록 숙련(CookingProficiency)이 올라 새 레시피가 열린다.
+Config.CookStation={Name="식당 화덕",X=63,Z=-104,Radius=16,Model="vxPotStew",Height=2.6}
+Config.MeadowFoods={
+  {Id=1,Name="구운 늑대 고기",Need=0,Meat=2,Heal=50,Seconds=10,Desc="체력을 10초에 걸쳐 50 회복"},
+  {Id=2,Name="숲 버섯 스튜",Need=3,Meat=1,Mushroom=2,RedLeaf=1,Def=.10,Seconds=300,Desc="5분간 받는 피해 -10%"},
+  {Id=3,Name="달빛 약초 수프",Need=6,Moonbloom=1,Mushroom=1,Stamina=60,Adrenaline=20,Desc="기력 +60 · 아드레날린 +20"},
+  {Id=4,Name="사냥꾼의 파이",Need=10,Meat=3,RedLeaf=2,Coins=20,Atk=.10,Seconds=300,Desc="5분간 주는 피해 +10%"},
+  {Id=5,Name="마력숲 연회",Need=20,Meat=4,Mushroom=2,Moonbloom=2,RedLeaf=2,Coins=80,Atk=.12,Def=.08,Heal=80,Seconds=900,Desc="15분간 피해 +12% · 받는 피해 -8% · 체력 80 회복"},
 }
 -- [스카이림식 대장 기술] 제련·무두질·제작·단련을 할 때마다 대장 경험치(SmithXp)가 쌓이고 대장 레벨(1~10)이 오른다.
 -- 레벨 4·7·10에서 주괴·가죽 요구량이 1개씩 줄고(최대 3단), Lv3 제련 추가 산출, Lv5 강철 제련 비용 절감, Lv8 제작 환급 퍽이 열린다.
