@@ -6732,8 +6732,8 @@ local function layoutMeadowCombatUi()
   -- [시안 참고] 오른쪽 큰 검 / 위쪽 마력·질주 / 좌측 회피 / 아래 점프.
   local positions={
     {66,165,44}, -- 퀵슬롯: 스킬 페이지에서 등록한 기술(등록 전에는 숨김)
-    {116,165,44}, -- 회피: 검 바로 왼쪽(검과 간격 7)
-    {134,121,44}, -- 막기: 검 왼쪽 위(대각)
+    {110,165,54}, -- 회피: 검 바로 왼쪽(크게)
+    {126,108,54}, -- 막기: 검 왼쪽 위(크게)
     {40,72,36}, -- 물약은 기존 단축바 5번
   }
   for index,button in ipairs(meadowSkillButtons) do
@@ -6758,10 +6758,10 @@ local function layoutMeadowCombatUi()
     -- 보조 채집·가방은 하단 단축창에서도 접근할 수 있어 화면 오른쪽 중복 표시만 정리.
     button.Visible=index==2
     if index==2 then
-      local size=math.max(46,math.floor(44*scale))
+      local size=math.max(42,math.floor(36*scale))
       button.Size=UDim2.fromOffset(size,size)
       -- 질주: 검 바로 위. 세 보조 버튼은 검 중심에서 같은 거리의 부채꼴로 배치한다.
-      button.Position=UDim2.fromOffset(math.floor(179*scale-size*.5),math.floor(102*scale-size*.5))
+      button.Position=UDim2.fromOffset(math.floor(182*scale-size*.5),math.floor(94*scale-size*.5))
     end
   end
   local swordSize=math.max(60,math.floor(66*scale))
@@ -11020,44 +11020,14 @@ end)()
     end
     return fromLines(false)
   end
-  -- ===== 아이콘 만들기(이미지 없이 UI로 그림) =====
-  -- kind "pin": 지도 핀(물방울 + 흰 점 + 하이라이트) / kind "chevron": 겹쳐 흐르는 3단 쉐브론. 기본 방향=아래.
-  local GOLD=Color3.fromRGB(255,206,64)
+  -- ===== 아이콘: 오너 제작 길 안내 시트(guide-icons.png) — 왼쪽 퀘스트 마커, 오른쪽 안내 화살표(기본 방향=아래) =====
+  local GUIDE_SHEET="rbxassetid://109238389541686"
   local function makeArrow(parent,px,name,baseZ,kind)
-    baseZ=baseZ or 0
-    local a=Instance.new("Frame")
-    a.Name=name;a.AnchorPoint=Vector2.new(.5,.5);a.Size=UDim2.fromOffset(px,px);a.BackgroundTransparency=1;a.Parent=parent
-    local tint={}
-    local function shape(w,h,x,y,rot,z,round,color,stroke)
-      local f=Instance.new("Frame")
-      f.AnchorPoint=Vector2.new(.5,.5);f.Size=UDim2.fromOffset(w*px,h*px);f.Position=UDim2.fromOffset(x*px,y*px)
-      f.Rotation=rot;f.BackgroundColor3=color;f.BorderSizePixel=0;f.ZIndex=baseZ+z;f.Parent=a
-      Instance.new("UICorner",f).CornerRadius=round and UDim.new(1,0) or UDim.new(0,math.max(3,px*.07))
-      if stroke then
-        local st=Instance.new("UIStroke");st.Color=Color3.fromRGB(58,30,4);st.Thickness=math.max(2,px*.045);st.Parent=f
-      end
-      return f
-    end
-    if kind=="pin" then
-      -- 금빛 보석 마름모(원신·젤다식 퀘스트 마커): 바깥 금색 + 안쪽 밝은 마름모 + 하이라이트
-      local outer=shape(.56,.56,.5,.42,45,1,false,GOLD,true)
-      local inner=shape(.3,.3,.5,.42,45,2,false,Color3.fromRGB(255,248,205),false)
-      local g=Instance.new("UIGradient");g.Color=ColorSequence.new(Color3.fromRGB(255,236,140),Color3.fromRGB(238,150,24));g.Rotation=90
-      g.Parent=outer
-      table.insert(tint,outer)
-    else
-      -- 단순한 한 줄 화살표(V자). 아래로 통통 튀는 건 바깥에서 위치로 처리한다.
-      local L,T=.56,.14
-      local function bar(sign)
-        return shape(L,T,.5+sign*L*.3535,.34+L*.3535,-sign*45,1,false,Color3.fromRGB(255,244,190),true)
-      end
-      local l,r=bar(-1),bar(1)
-      local fill=Instance.new("UIGradient");fill.Color=ColorSequence.new(Color3.fromRGB(255,252,225),Color3.fromRGB(255,200,60));fill.Rotation=90
-      fill.Parent=l;fill:Clone().Parent=r
-    end
-    return a,function(color)
-      if kind=="pin" then for _,f in ipairs(tint) do f.BackgroundColor3=color end end
-    end
+    local a=Instance.new("ImageLabel")
+    a.Name=name;a.AnchorPoint=Vector2.new(.5,.5);a.Size=UDim2.fromOffset(px,px);a.BackgroundTransparency=1
+    a.Image=GUIDE_SHEET;a.ImageRectSize=Vector2.new(256,256);a.ImageRectOffset=Vector2.new(kind=="pin" and 0 or 256,0)
+    a.ScaleType=Enum.ScaleType.Fit;a.ZIndex=(baseZ or 0)+1;a.Parent=parent
+    return a,function(color) a.ImageColor3=color end
   end
   -- ===== 화면 마커(크고 움직이는 목표 표시) =====
   -- 외부 게임(젤다·원신·WoW 퀘스트 화살표) 방식: 큰 핀이 위아래로 튀고, 파동 링이 퍼지고, 먼 목표는 하늘로 빛기둥이 솟는다.
@@ -11120,7 +11090,7 @@ end)()
     pulseStroke.Transparency=t
     pulse.Visible=inside
     local near=dist<45
-    pinColor(near and Color3.fromRGB(120,255,150) or Color3.fromRGB(255,214,70))
+    pinColor(near and Color3.fromRGB(190,255,200) or Color3.new(1,1,1))
     infoLabel.Text=string.format("%s\n%dm",tlabel or "목표",math.floor(dist))
     marker.Visible=true
   end)
