@@ -12,14 +12,16 @@ HIDE='local g=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(g:GetDescenda
 CAM='local RS=game:GetService("RunService") if _G.QACamConn then _G.QACamConn:Disconnect() end local off=Vector3.new(3.2,2.4,-7.5) _G.QACamConn=RS.RenderStepped:Connect(function() local cam=workspace.CurrentCamera local c=game.Players.LocalPlayer.Character local r=c and c:FindFirstChild("HumanoidRootPart") if not r then return end cam.CameraType=Enum.CameraType.Scriptable local base=_G.QAFace or r.CFrame local pos=r.Position+base.RightVector*off.X+Vector3.new(0,off.Y,0)+base.LookVector*(-off.Z) cam.CFrame=CFrame.lookAt(pos,r.Position+Vector3.new(0,1.2,0)) end) return "cam"'
 ERRS='local o={} for _,m in ipairs(game:GetService("LogService"):GetLogHistory()) do if m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning then table.insert(o,m.message:sub(1,220)) end end local n=#o local out={} for i=math.max(1,n-40),n do table.insert(out,o[i]) end return n.." issues\\n"+"".join([]) if false else n.." issues\\n"..table.concat(out,"\\n")'
 ERRS=ERRS.replace('"\\\\n"+"".join([]) if false else ','')
+def byname(n): return 'local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA("GuiButton") and d.Name=="%s" and d.Visible and d.AbsoluteSize.X>0 then return string.format("%%d,%%d",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return "NONE"'%n
+TOOLQ='local p=game.Players:GetPlayers()[1] local c=p.Character local t=c and c:FindFirstChildOfClass("Tool") return "equipped="..tostring(t and t.Name)'
 def trig(i,aid): return lu(f'game.Players:GetPlayers()[1]:SetAttribute("QAAction","{aid}|{i}") return "fired {aid}"',"Server")
 def run(ids,steps,start=0):
     for k,aid in enumerate(ids):
-        steps+=[trig(start+k,aid),cap(f"{aid}-a"),wait(250),cap(f"{aid}-b"),wait(450),cap(f"{aid}-c"),wait(1200)]
+        steps+=[trig(start+k,aid),wait(550),cap(f"{aid}-a"),wait(150),cap(f"{aid}-b"),wait(500),cap(f"{aid}-c"),wait(1200)]
 def build(only=None):
     s=[wait(9000),ct("모험 시작")]
     for i in range(5): s+=[wait(6000),cf(SKIP,"skip")]
-    s+=[wait(7000),lu(SETUP,"Server"),wait(1500),lu(HIDE),lu(CAM),wait(800),cap("00-idle-sword")]
+    s+=[wait(7000),lu(SETUP,"Server"),wait(1500),lu(HIDE),lu(CAM),cf(byname("QuickSlot1"),"equip-sword"),wait(2500),lu(TOOLQ,"Server"),cap("00-idle-sword")]
     armed=["skill-meadow-guard","skill-meadow-parry","skill-meadow-dodge-left","skill-meadow-dodge-right","skill-meadow-heavy","skill-meadow-sweep","skill-meadow-bolt","skill-meadow-heal","skill-meadow-focus","skill-meadow-oath","skill-meadow-sprint","skill-meadow-emote","scope-corefun-ea77622450","scope-coreloop-0-9b2d4dfbc6"]
     unarmed=["meadow-unarmed-rush","meadow-unarmed-uppercut","meadow-unarmed-kick","meadow-unarmed-elbow"]
     if only:
