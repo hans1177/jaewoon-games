@@ -4887,7 +4887,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  local compact=primary and primary.compact==true
  local pages=primary and primary.pages or {}
  local tabs=nil
- local selectedPage=0
+ local selectedPage=(primary and primary.tabOrder and primary.tabOrder[1]) or 0
  local tabButtons={}
  local tabDragMoved=false -- [세로 탭 스와이프] 끌어서 스크롤한 직후의 탭 선택 방지
  -- [마력숲] 기존 페이지 인덱스는 보존하고 화면 탭만 재배열한다.
@@ -4940,7 +4940,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  end
  if #pages>0 then
   local names={}
-  for tabIndex=0,#pages do
+  for tabIndex=0,(tabOrder and #tabOrder-1 or #pages) do
    local pageIndex=tabPage(tabIndex)
    names[#names+1]=pageIndex==0 and "활동" or (primary.pageNames and primary.pageNames[pageIndex]) or tostring(pageIndex)
   end
@@ -5073,7 +5073,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
     selectPage(tabPage(i-1))
    end)
   end
-  selectPage(0)
+  selectPage(selectedPage)
  end
  gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
  local hud=Instance.new("Frame");hud.Name="MobileGameStatus";hud.BackgroundTransparency=1;hud.Parent=gui
@@ -5265,7 +5265,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
  layout();setOpen(false)
  return {isOpen=function()return opened end,close=function()setOpen(false)end,
-  open=function(index)setOpen(true);selectPage(index or 0)end}
+  open=function(index)setOpen(true);selectPage(index or selectedPage)end}
 end
 
 

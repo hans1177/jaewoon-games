@@ -1878,7 +1878,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   const actualUi=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
   assert.ok(actualUi.includes('if primary and primary.hideButton~=true then'));
   // [탭 중앙 정렬] 열기를 먼저 실행해야 숨겨진 탭의 실제 가로폭이 계산된다.
-  assert.ok(actualUi.includes('open=function(index)setOpen(true);selectPage(index or 0)end'));
+  assert.ok(actualUi.includes('open=function(index)setOpen(true);selectPage(index or selectedPage)end'));
   assert.ok(actualUi.includes('menu.Activated:Connect(function()setOpen(true);selectPage(selectedPage)end)'));
   assert.ok(client.includes('meadowSkillDock.ZIndex=35'));
   assert.ok(client.includes('button.Active=true;button.Interactable=true'));
@@ -2146,7 +2146,7 @@ test('마력숲 완벽 막기는 공격자만 기절시키고 연타 총 피해�
 test('마력숲 모험 수첩은 캐릭터 인벤토리 저널 옵션 도우미를 실제 상태에 연결한다',()=>{
  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
  const ui=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
- for(const name of ['캐릭터','인벤토리','저널','옵션','도우미'])assert.ok(client.includes('"'+name+'"'));
+ for(const name of ['캐릭터','인벤토리','퀘스트','옵션','도우미'])assert.ok(client.includes('"'+name+'"'));
  assert.match(client,/meadowEffectsGroup.Volume/);
  assert.match(client,/impact.SoundGroup=meadowEffectsGroup/);
  assert.match(client,/forestBed.SoundGroup=meadowAmbienceGroup/);
@@ -2186,7 +2186,7 @@ test('마력숲 동료 의뢰와 인트로는 기존 메인·저장을 보존한
  assert.ok(recorder.indexOf('CompanionQuestStage')<recorder.indexOf('if not quest then return end'));
  assert.doesNotMatch(recorder,/awardProgress|Coins|XP/);
  assert.match(client,/info.Story or ""/);
- assert.match(client,/questTracker.Activated:Connect\(function\(\)\s*if meadowTutorialAdvance then meadowTutorialAdvance\(2\) end\s*meadowMenu.open\(5\)/);
+ assert.match(client,/questTracker.Activated:Connect\(function\(\)\s*if meadowTutorialAdvance then meadowTutorialAdvance\(2\) end\s*meadowMenu.open\(3\)/);
  assert.doesNotMatch(client,/local journalShade=/);
  assert.match(client,/task.delay\(bossScene and 1\.5 or 2\.5/);
  assert.match(client,/skip.Activated:Connect\(closeIntro\)/);

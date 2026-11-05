@@ -353,8 +353,8 @@ test('RPG panels retain the original server actions and responsive navigation',(
 test('forest RPG menu keeps the original eight pages with mobile navigation and distinct selection',()=>{
   const common=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
   const plan=fs.readFileSync('roblox-games/fantasy-survival/UI_PLAN.md','utf8');
-  assert.match(client,/meadowPageNames=\{"캐릭터","인벤토리","저널","옵션","도우미","동료","스킬"\}/);
-  assert.match(client,/tabOrder=\{0,1,2,7,3,4,5,6\}/);
+  assert.match(client,/meadowPageNames=\{"캐릭터","인벤토리","퀘스트","옵션","도우미","세계","스킬"\}/);
+  assert.match(client,/tabOrder=\{1,2,7,3,6,4\}/);
   assert.match(common,/MeadowMenuSubtitle/);
   assert.match(common,/heading\.Font=primary and primary\.witcherStyle and Enum\.Font\.Antique/);
   assert.match(common,/local active=tabPage\(i-1\)==index/);
@@ -455,7 +455,7 @@ test('menu retains 8 original pages and keeps selected tab reachable on a short 
     'if input.KeyCode==Enum.KeyCode.ButtonB',
     'menu.Activated:Connect(function()setOpen(true);selectPage(selectedPage)end)',
   ])assert.ok(common.includes(key),key);
-  assert.ok(client.includes('tabOrder={0,1,2,7,3,4,5,6}'));
+  assert.ok(client.includes('tabOrder={1,2,7,3,6,4}'));
   assert.ok(client.includes('subtitle.Text=captions[index] or "마력숲 탐험"'));
 });
 

@@ -709,7 +709,7 @@ do
 -- [게임 메뉴] 현재 서버 상태만 읽는 캐릭터·소지품·저널과 실제 동작하는 옵션.
 meadowPages={}
 local meadowLabels={}
-local meadowPageNames={"캐릭터","인벤토리","저널","옵션","도우미","동료","스킬"}
+local meadowPageNames={"캐릭터","인벤토리","퀘스트","옵션","도우미","세계","스킬"}
 for index,name in ipairs(meadowPageNames) do
   local page=Instance.new("ScrollingFrame")
   page.Name="MeadowPage"..index;page.BackgroundTransparency=1;page.BorderSizePixel=0
@@ -1227,11 +1227,11 @@ for _,name in ipairs({"ExplorationGroves","DawnTraceFound","NightTraceFound","Ru
 end
 for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채집","scope-coreloop-1-6ebe58f496"},{"장비 강화","scope-coreloop-2-6c927cfa40"}})do
   local button=CommonUI.CreatePrimaryButton({name="MeadowHelper"..index,text=row[1],minHeight=52})
-  button.LayoutOrder=index;button.Size=UDim2.new(1,-8,0,54)
+  button.LayoutOrder=100+index;button.Size=UDim2.new(1,-8,0,54)
   button.BackgroundColor3=Color3.fromRGB(40,92,69)
   local helperGradient=button:FindFirstChildOfClass("UIGradient")
   if helperGradient then helperGradient.Color=ColorSequence.new(Color3.fromRGB(62,121,88),Color3.fromRGB(29,66,56)) end
-  button.Parent=meadowPages[5]
+  button.Parent=meadowPages[4]
   meadowHelperButtons[index]=button
   button.Activated:Connect(function()
     if player:GetAttribute("ProfileReady")==true then activateMeadowAction(row[2]) end
@@ -1239,9 +1239,9 @@ for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채�
 end
 -- [초반 튜토리얼 재실행] 기존 도우미 페이지에서 누구나 조작 안내를 다시 볼 수 있다.
 local tutorialReplay=CommonUI.CreatePrimaryButton({name="MeadowTutorialReplay",text="조작 튜토리얼 다시 시작",minHeight=52})
-tutorialReplay.LayoutOrder=4
+tutorialReplay.LayoutOrder=104
 tutorialReplay.Size=UDim2.new(1,-8,0,54)
-tutorialReplay.Parent=meadowPages[5]
+tutorialReplay.Parent=meadowPages[4]
 tutorialReplay.Activated:Connect(function()
   if meadowTutorialRestart then
     meadowTutorialRestart()
@@ -1453,19 +1453,19 @@ local menuBorder=root:FindFirstChild("WitcherMenuBorder") or Instance.new("UIStr
 menuBorder.Name="WitcherMenuBorder";menuBorder.Color=meadowGold
 menuBorder.Thickness=3;menuBorder.Transparency=0;menuBorder.Parent=root
 meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{
-  compact=true,hideButton=true,hideMenuButton=true,menuLeft=true,witcherStyle=true,sideTabs=true,tabOrder={0,1,2,7,3,4,5,6},
+  compact=true,hideButton=true,hideMenuButton=true,menuLeft=true,witcherStyle=true,sideTabs=true,tabOrder={1,2,7,3,6,4},
   pages=meadowPages,pageNames=meadowPageNames,
   onPageChanged=function(index)
     renderMeadowPages()
     if index==4 then refreshMeadowCameraOption() end
     local heading=root:FindFirstChild("MeadowMenuHeading")
-    if heading then heading.Text="탐험  /  "..(index==0 and "활동" or meadowPageNames[index] or "모험") end
+    if heading then heading.Text="탐험  /  "..(meadowPageNames[index] or "모험") end
     local subtitle=root:FindFirstChild("MeadowMenuSubtitle")
     if subtitle then
       local captions={
         [0]="현재 할 수 있는 행동", [1]="전신 · 장비 · 숙련도", [2]="보유 · 제작법 · 아이템 상세",
-        [3]="메인 의뢰와 발견 기록", [4]="소리 · 화면 · 조작", [5]="지금 필요한 목표",
-        [6]="동료 의뢰와 진행 기록", [7]="전투 기술과 성장",
+        [3]="메인 · 의뢰 · 지금 목표", [4]="소리 · 화면 · 조작 · 도움말", [5]="지금 필요한 목표",
+        [6]="지역 · 동료 · 이야기 기록", [7]="전투 기술과 성장",
       }
       subtitle.Text=captions[index] or "마력숲 탐험"
     end
@@ -1488,8 +1488,8 @@ if witcherTabs then
       button.TextSize=13;button.TextWrapped=false;button.TextTruncate=Enum.TextTruncate.AtEnd
       button.TextYAlignment=Enum.TextYAlignment.Bottom
       local index=button:GetAttribute("FilterIndex")
-      if typeof(index)=="number" and index>1 then
-        local atlasCell=({3,4,2,5,6,7,3})[index-1]
+      if typeof(index)=="number" then
+        local atlasCell=({3,4,2,5,7,6})[index]
         if atlasCell then
           local icon=Instance.new("ImageLabel")
           icon.Name="CC0MenuIcon";icon.BackgroundTransparency=1
@@ -2836,7 +2836,7 @@ trackerNavigation.TextSize=9
 trackerNavigation.TextColor3=Color3.fromRGB(183,183,172)
 questTracker.Activated:Connect(function()
   if meadowTutorialAdvance then meadowTutorialAdvance(2) end
-  meadowMenu.open(5)
+  meadowMenu.open(3)
 end)
 
 -- [왼쪽 캐릭터창] 기존 3D 아바타·장비·숙련도 페이지와 실제 썸네일을 재사용한다.
