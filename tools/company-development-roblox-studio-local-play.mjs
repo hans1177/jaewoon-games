@@ -2611,6 +2611,57 @@ export function evaluateDaechungCloudStudioChecks({
       realTargetDamageObserved:damage,studioRejoinStatePreserved:saved}};
 }
 
+
+export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',outDir='',times=[3,8,14,21,28,36,44,52,58]}={}){
+  const client=new McpStdioClient({...mcpCommandArgs(mcpCommand),timeoutMs:60000});
+  fs.mkdirSync(outDir,{recursive:true});
+  const report={frames:[],console:[],errors:[]};
+  let studioId='',started=false;
+  try{
+    await client.connect();
+    await client.waitForTools(['list_roblox_studios','get_studio_state','start_stop_play','screen_capture','get_console_output'],{attempts:20,delayMs:3000});
+    for(let i=1;i<=60&&!studioId;i++){
+      const listed=await client.call('list_roblox_studios',{});
+      if(collectStudios(listed,[]).length){
+        const cand=chooseStudio(listed,expectedStudioName);
+        try{
+          const t=client.tool('get_studio_state');const a={};setStudioId(a,t.inputSchema||{},cand.studioId);
+          await client.call('get_studio_state',fillRequired(a,t.inputSchema||{}));
+          studioId=cand.studioId;
+        }catch{await wait(3000);}
+      }else await wait(3000);
+    }
+    if(!studioId)throw new Error('NO_STUDIO');
+    const playTool=client.tool('start_stop_play');
+    await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,true));
+    started=true;
+    const t0=Date.now();
+    const capTool=client.tool('screen_capture');
+    for(const sec of times){
+      const remain=sec*1000-(Date.now()-t0);
+      if(remain>0)await wait(remain);
+      try{
+        const a=fillRequired((()=>{const x={};setStudioId(x,capTool.inputSchema||{},studioId);return x;})(),capTool.inputSchema||{});
+        const r=await client.call('screen_capture',a);
+        const imgs=collectImages(r,[],outDir,'intro-t'+String(sec).padStart(2,'0'));
+        report.frames.push({sec,files:imgs.map(x=>x.path||'')});
+        console.log('OPENING_FRAME='+sec+':'+imgs.length);
+      }catch(e){report.errors.push('frame'+sec+':'+clean(e?.message||e).slice(0,200));}
+    }
+    try{
+      const ct=client.tool('get_console_output');const a={};setStudioId(a,ct.inputSchema||{},studioId);
+      const c=await client.call('get_console_output',fillRequired(a,ct.inputSchema||{}));
+      report.console=flattenText(c,[]).join('\n').split('\n').slice(-300);
+    }catch(e){report.errors.push('console:'+clean(e?.message||e).slice(0,200));}
+  }catch(e){report.errors.push(clean(e?.message||e).slice(0,400));}
+  finally{
+    if(started&&studioId){try{const t=client.tool('start_stop_play');await client.call('start_stop_play',startStopArgs(t.inputSchema||{},studioId,false));}catch{}}
+    client.close();
+  }
+  fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(report,null,1));
+  return report;
+}
+
 export async function runOfficialStudioMcpPlay({
   mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000,
   settingState='',settingCandidatePathCount=-1,actualPlayContractPath='',auditProfile='FAST_DEEP',singleWindow=true,multiplayerSourceEvidence=null,runtimeIdentity={}
@@ -4215,6 +4266,11 @@ async function main(){
       :planned;
     writeJson(a.output,matrix);
     console.log('ROBLOX_STUDIO_MCP_PLAN_COUNT='+matrix.include.length);
+    return;
+  }
+  if(mode==='opening-capture'){
+    const rep=await captureOpeningFrames({mcpCommand:clean(a['mcp-command']),expectedStudioName:clean(a['studio-name']),outDir:clean(a['out-dir'])});
+    console.log('OPENING_CAPTURE_ERRORS='+rep.errors.length+' FRAMES='+rep.frames.length);
     return;
   }
   if(mode==='mcp-cleanup'){
