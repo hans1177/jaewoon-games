@@ -234,7 +234,7 @@ do
   local RunSvc=game:GetService("RunService")
   local views={}
   local gearKeys={wanderer_blade="item_sword",hunter_blade="item_sword",runic_blade="item_sword_golden",forest_blade="item_sword_golden",
-    dew_dagger="item_dagger",thorn_axe="item_axe_small",magma_greatsword="item_sword_big"}
+    dew_dagger="item_dagger",thorn_axe="item_axe_small",hunter_bow="item_bow_wooden",wind_bow="item_bow_wooden",worldtree_bow="item_bow_wooden",magma_greatsword="item_sword_big"}
   local armorKeys={travel_armor="item_armor_leather",hunter_armor="item_armor_metal2",moss_robe="item_armor_leather",frost_leather="item_armor_leather",
     guardian_armor="item_armor_metal",magma_plate="item_armor_metal",worldtree_mail="item_armor_golden",
     moon_amulet="item_necklace1",fang_necklace="item_necklace1",herb_bracelet="item_ring2"}
@@ -2443,8 +2443,8 @@ local selectedKey="Wood"
 local category="전체"
 local function owned(item)
   if item.gear then
-    local mask=math.max(0,tonumber(player:GetAttribute("MeadowGearOwned")) or 0)
-    return bit32.band(mask,bit32.lshift(1,item.index-1))~=0 and 1 or 0
+    local mask=math.max(0,tonumber(player:GetAttribute(item.index>32 and "MeadowGearOwned2" or "MeadowGearOwned")) or 0)
+    return bit32.band(mask,bit32.lshift(1,(item.index-1)%32))~=0 and 1 or 0
   end
   if item.tonic then
     local key=item.tonic.Id=="herbal_tonic" and "MeadowPotionHealth" or "MeadowPotionStamina"
@@ -2738,7 +2738,7 @@ if player.Character then
   player.Character.ChildAdded:Connect(renderInventory)
   player.Character.ChildRemoved:Connect(renderInventory)
 end
-for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Ingot","Leather","Coins","ResearchRecords","ProfileReady","MeadowGearOwned",
+for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Ingot","Leather","Coins","ResearchRecords","ProfileReady","MeadowGearOwned","MeadowGearOwned2",
   "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
   "MeadowEquipAccessory","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)
@@ -10088,6 +10088,31 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
       end
     end
   end
+end)
+-- [활 사격 연출] 화살 모델 없이 빛줄기(Beam)와 명중 섬광만 쓴다. 실제 피해는 서버가 계산한 값이다.
+remote.OnClientEvent:Connect(function(kind,payload)
+  if kind~="MEADOW_BOW_SHOT" or typeof(payload)~="table"
+    or typeof(payload.from)~="Vector3" or typeof(payload.to)~="Vector3" then return end
+  local terrain=workspace.Terrain
+  local a0=Instance.new("Attachment");a0.WorldPosition=payload.from;a0.Parent=terrain
+  local a1=Instance.new("Attachment");a1.WorldPosition=payload.from;a1.Parent=terrain
+  local beam=Instance.new("Beam")
+  beam.Attachment0=a0;beam.Attachment1=a1
+  beam.FaceCamera=true;beam.LightEmission=1;beam.Width0=.16;beam.Width1=.03
+  beam.Color=ColorSequence.new(payload.weak and Color3.fromRGB(255,214,110) or Color3.fromRGB(235,244,255))
+  beam.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.1),NumberSequenceKeypoint.new(1,.55)})
+  beam.Parent=terrain
+  local flight=math.clamp((payload.to-payload.from).Magnitude/160,.08,.3)
+  local tween=TweenService:Create(a1,TweenInfo.new(flight,Enum.EasingStyle.Linear),{WorldPosition=payload.to})
+  tween:Play()
+  tween.Completed:Once(function()
+    local fade=TweenService:Create(a0,TweenInfo.new(.12),{WorldPosition=payload.to})
+    fade:Play()
+    if payload.weak then
+      local flash=Instance.new("PointLight");flash.Color=Color3.fromRGB(255,214,110);flash.Range=10;flash.Brightness=3;flash.Parent=a1
+    end
+    task.delay(.14,function() beam:Destroy();a0:Destroy();a1:Destroy() end)
+  end)
 end)
 remote.OnClientEvent:Connect(function(kind,payload)
   if typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end

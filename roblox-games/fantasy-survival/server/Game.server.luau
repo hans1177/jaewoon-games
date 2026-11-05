@@ -2924,12 +2924,21 @@ local meadowRpg=(function()
   local gearById,tonicById={},{}
   for index,item in ipairs(items)do gearById[item.Id]={entry=item,index=index} end
   for _,item in ipairs(tonics)do tonicById[item.Id]=item end
+  -- 장비 33번째부터는 두 번째 비트마스크(MeadowGearOwned2)에 저장한다.
+  local function hasGear(player,index)
+    local field=index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
+    local mask=math.max(0,readNumber(player,field,0))
+    return bit32.band(mask,bit32.lshift(1,(index-1)%32))~=0
+  end
+  local function grantGear(player,index)
+    local field=index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
+    setNumber(player,field,bit32.bor(math.max(0,readNumber(player,field,0)),bit32.lshift(1,(index-1)%32)))
+  end
   local function equipped(player,slot)
     local index=readNumber(player,slots[slot],0)
     local item=items[index]
     if not item or item.Slot~=slot then return nil end
-    local owned=math.max(0,readNumber(player,"MeadowGearOwned",0))
-    if bit32.band(owned,bit32.lshift(1,index-1))==0 then return nil end
+    if not hasGear(player,index) then return nil end
     return item
   end
   local function stats(player)
@@ -2997,18 +3006,17 @@ local meadowRpg=(function()
     end
     if group=="gear" and gear then
       local item,index=gear.entry,gear.index
-      local bit=bit32.lshift(1,index-1)
-      local owned=math.max(0,readNumber(player,"MeadowGearOwned",0))
+      local ownedGear=hasGear(player,index)
       if verb=="craft" then
-        if bit32.band(owned,bit)~=0 then feedback(player,"이미 보유한 장비야.");return true end
+        if ownedGear then feedback(player,"이미 보유한 장비야.");return true end
         if readNumber(player,"CombatProficiency",0)<(item.Need or 0) then feedback(player,"전투 숙련 "..tostring(item.Need).."이 필요해.");return true end
         if not charge(player,item) then feedback(player,"재료 또는 소지금이 부족해.");return true end
-        setNumber(player,"MeadowGearOwned",bit32.bor(owned,bit))
+        grantGear(player,index)
         setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)
         feedback(player,item.Name.." 제작 완료")
         return true
       elseif verb=="equip" then
-        if bit32.band(owned,bit)==0 then feedback(player,"먼저 장비를 제작해.");return true end
+        if not ownedGear then feedback(player,"먼저 장비를 제작해.");return true end
         local key=slots[item.Slot]
         if not key then return false end
         setNumber(player,key,index)
@@ -3146,9 +3154,42 @@ local meadowRpg=(function()
     end
     return false
   end
-  return {transact=transact,stats=stats,publishStats=publishStats,
+  return {transact=transact,stats=stats,publishStats=publishStats,equippedWeapon=function(player) return equipped(player,"Weapon") end,
     nodeRank=nodeRank,nodeChoice=nodeChoice,passiveLevel=passiveLevel,validQuickCode=validQuickCode}
 end)()
+
+-- [활 장착 외형] 등록된 CC0 활 메시(item_bow_wooden)를 왼손에 용접한다. 장검 도구는 집어넣는다.
+local function refreshBowVisual(player)
+  local character=player.Character
+  if not character then return end
+  local old=character:FindFirstChild("MeadowBowVisual")
+  if old then old:Destroy() end
+  local weapon=meadowRpg.equippedWeapon(player)
+  if not weapon or not weapon.Bow then return end
+  local human=character:FindFirstChildOfClass("Humanoid")
+  if human then human:UnequipTools() end
+  local hand=character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm")
+  if not hand then return end
+  local model=worldAsset("item_bow_wooden",Vector3.new(0,-900,0),3.4)
+  local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
+  if not mesh then if model then model:Destroy() end return end
+  local visual=mesh:Clone()
+  model:Destroy()
+  visual.Name="MeadowBowVisual"
+  visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
+  visual.Parent=character
+  local weld=Instance.new("Weld")
+  weld.Part0=hand;weld.Part1=visual
+  weld.C0=CFrame.new(0,-.35,-.15)*CFrame.Angles(0,math.rad(90),math.rad(-90))
+  weld.Parent=visual
+end
+local function watchBowVisual(player)
+  player:GetAttributeChangedSignal("MeadowEquipWeapon"):Connect(function() refreshBowVisual(player) end)
+  player:GetAttributeChangedSignal("MeadowGearOwned2"):Connect(function() refreshBowVisual(player) end)
+  player.CharacterAdded:Connect(function() task.wait(1.5);refreshBowVisual(player) end)
+end
+for _,existing in ipairs(Players:GetPlayers()) do watchBowVisual(existing) end
+Players.PlayerAdded:Connect(watchBowVisual)
 
 -- [메인 퀘스트·연구 기록 아이템]
 -- 채집·관찰·실제 몬스터 처치·유적 수문장 처치에만 연결한다.
@@ -4588,7 +4629,11 @@ local function attackEnemy(player)
   local now=os.clock()
   if now<(attackCooldown[player] or 0) then return false end
   attackCooldown[player]=now+.42
-  local target=nearestEnemy(rootPart,25)
+  -- [활] 활을 장착하면 사거리 45의 원거리 사격: 연사는 느리지만 거리에 비례해 치명타(최대 +90%)가 터진다.
+  local weapon=meadowRpg.equippedWeapon(player)
+  local isBow=weapon and weapon.Bow==true
+  if isBow then attackCooldown[player]=now+(weapon.Id=="wind_bow" and .5 or .66) end
+  local target=nearestEnemy(rootPart,isBow and 45 or 25)
   -- 유효한 공격 입력은 허공에서도 동작한다. 명중·피해·보상은 분리한다.
   if not target then
     player:SetAttribute("ApprovedActionTarget",rootPart.Position)
@@ -4607,6 +4652,14 @@ local function attackEnemy(player)
   player:SetAttribute("MeadowComboStage",stage)
   player:SetAttribute("MeadowComboMax",cap)
   local mult=({1,1.1,1.25,1.45,2.1})[stage]
+  if isBow then
+    local distance=(target.position-rootPart.Position).Magnitude
+    local crit=math.clamp((distance-8)/37,0,1)*.9 -- 멀수록 급소 명중
+    local marksman=math.min(.45,readNumber(player,"HuntingProficiency",0)*.008)
+    local shot=math.floor(damage*1.15*(1+crit)*(1+marksman))
+    remote:FireAllClients("MEADOW_BOW_SHOT",{from=rootPart.Position+Vector3.new(0,1.6,0),to=target.position+Vector3.new(0,1.6,0),weak=crit>.55})
+    return applyMeadowDamage(player,target,shot),true
+  end
   local hit=applyMeadowDamage(player,target,math.floor(damage*mult))
   if stage>=5 then
     for _,other in ipairs(enemies) do

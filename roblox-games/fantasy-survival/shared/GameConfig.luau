@@ -349,6 +349,10 @@ local Config = {
     {Id="fang_necklace",Rarity="Uncommon",Need=70,Name="송곳니 목걸이",Slot="Accessory",Category="장신구",Attack=3,Defense=0,Icon=2,Wood=12,Stone=12,Coins=45,Desc="사냥한 늑대의 송곳니 목걸이."},
     {Id="worldtree_ring",Rarity="Epic",Need=320,Name="세계수 반지",Slot="Accessory",Category="장신구",Attack=4,Defense=4,Icon=2,Wood=30,Stone=30,Coins=170,Desc="세계수 가지로 만든 반지."},
     {Id="abyss_eye",Rarity="Legendary",Need=900,Name="심연의 눈",Slot="Accessory",Category="장신구",Attack=8,Defense=8,Icon=2,Wood=60,Stone=60,Coins=400,Desc="심연을 들여다보는 전설의 눈."},
+    -- [활 · 오디세이식 원거리 계열] 등록된 CC0 활 모델(item_bow_wooden) 사용. 33번째부터는 MeadowGearOwned2 비트에 저장한다.
+    {Id="hunter_bow",Rarity="Uncommon",Name="사냥꾼 활",Slot="Weapon",Category="무기",Attack=4,Defense=0,Icon=2,Bow=true,Coins=30,Desc="가죽과 철로 보강한 사냥용 활. 멀리서 노려 쏘고, 거리에 따라 치명타가 터져."},
+    {Id="wind_bow",Rarity="Rare",Need=60,Name="바람결 활",Slot="Weapon",Category="무기",Attack=9,Defense=0,Icon=2,Bow=true,Coins=90,Desc="가볍고 빠른 장궁. 연사 속도가 빠르고 사거리가 길어."},
+    {Id="worldtree_bow",Rarity="Epic",Need=220,Name="세계수 장궁",Slot="Weapon",Category="무기",Attack=15,Defense=0,Icon=2,Bow=true,Coins=170,Desc="세계수 가지로 만든 장궁. 급소를 꿰뚫으면 큰 피해를 줘."},
   },
   -- [회복 소모품] 한 번 제작하면 1개 소지, 사용 시 서버에서 1개 소비.
   MeadowConsumables = {
@@ -382,7 +386,7 @@ local Config = {
     Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
-    MeadowGearOwned=2705,
+    MeadowGearOwned=2705,MeadowGearOwned2=0,
     MeadowEquipWeapon=1,MeadowEquipChest=5,MeadowEquipHands=8,
     MeadowEquipLegs=10,MeadowEquipFeet=12,MeadowEquipAccessory=0,
     MeadowPotionHealth=0,MeadowPotionStamina=0,
@@ -694,7 +698,7 @@ for _,item in ipairs(Config.MeadowEquipment) do
   local t=({Uncommon=1,Rare=2,Epic=3,Legendary=4})[item.Rarity or "Common"]
   if t and not item.Starter then
     local function add(field,n) if n>0 then item[field]=(item[field] or 0)+n end end
-    if item.Slot=="Weapon" then add("Ore",2*t);add("Fang",t-1)
+    if item.Slot=="Weapon" then add("Ore",2*t);add("Fang",t-1);if item.Bow then add("Hide",2*t) end
     elseif item.Slot=="Chest" then add("Hide",2*t);add("Magma",t-2)
     elseif item.Slot=="Hands" then add("Hide",t);add("Claw",t)
     elseif item.Slot=="Legs" then add("Hide",t);add("Ore",t)
