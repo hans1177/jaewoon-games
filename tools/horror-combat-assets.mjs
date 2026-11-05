@@ -379,7 +379,7 @@ if(process.argv.includes('--cape-grant-only')){
 if(process.argv.includes('--gear-icons-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
- for(const keyName of ['skillIconSheetV1','gearIconSheetV1']){
+ for(const keyName of ['skillIconSheetV1','gearIconSheetV1','guideIconSheetV1']){
   const art=registry[keyName];
   if(registry.gameId!=='fantasy-survival'||!art||art.license!=='OWNER_CREATED_UI'||art.universeId!=='10773436325')
    throw Error('GEAR_ICON_PROVENANCE_INVALID:'+keyName);

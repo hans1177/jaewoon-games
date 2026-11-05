@@ -12,6 +12,7 @@ on:
       - 'roblox-games/fantasy-survival/illustrated-icons.png'
       - 'roblox-games/fantasy-survival/skill-icons.png'
       - 'roblox-games/fantasy-survival/item-icons.png'
+      - 'roblox-games/fantasy-survival/guide-icons.png'
       - 'roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json'
       - 'roblox-games/fantasy-survival/action-icons/**'
       - 'assets/roblox/common-ui-v1/icons.png'
@@ -129,7 +130,7 @@ jobs:
             node tools/horror-combat-assets.mjs --cape-check-only
           elif [ "$CAPE_GRANT_ONLY" = "true" ]; then
             node tools/horror-combat-assets.mjs --cape-grant-only
-          elif git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/skill-icons.png roblox-games/fantasy-survival/item-icons.png | grep -q .; then
+          elif git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/skill-icons.png roblox-games/fantasy-survival/item-icons.png roblox-games/fantasy-survival/guide-icons.png | grep -q .; then
             node tools/horror-combat-assets.mjs --gear-icons-only
           elif [ "$ILLUSTRATED_HUD_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json | grep -q .; then
             node tools/horror-combat-assets.mjs --illustrated-hud-only
