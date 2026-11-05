@@ -2084,6 +2084,15 @@ local meadowRpg=(function()
     if not group or not verb or not id then return false end
     local gear=gearById[id]
     local tonic=tonicById[id]
+    if group=="loot" and verb=="sell" then
+      local mat=Config.MaterialByField[id]
+      if not mat then return false end
+      if readNumber(player,id,0)<1 then feedback(player,mat.Name.."이(가) 없어.");return true end
+      setNumber(player,id,readNumber(player,id,0)-1)
+      setNumber(player,"Coins",readNumber(player,"Coins",0)+mat.Value)
+      feedback(player,mat.Name.." 1개 판매  +"..mat.Value.." 재화")
+      return true
+    end
     if group=="gear" and gear then
       local item,index=gear.entry,gear.index
       local bit=bit32.lshift(1,index-1)
@@ -2274,7 +2283,7 @@ local function gatherResource(player, node)
   if now < node.readyAt then return false end
   node.readyAt = now + 11
   if node.model then node.model:SetAttribute("NextHarvestAt", node.readyAt) end
-  local material = node.kind == "WOOD" and "Wood" or node.kind == "HERB" and "Herb"
+  local material = node.kind == "WOOD" and "Wood" or node.kind == "HERB" and "RedLeaf"
     or node.kind == "ORE" and "Ore" or "Stone"
   setNumber(player, material, readNumber(player, material, 0) + 2)
   -- [잡템 드랍] 채집할 때 가끔 다른 재료가 함께 나온다. 모두 제작·강화·물약에 쓰인다.
@@ -2282,9 +2291,10 @@ local function gatherResource(player, node)
   local function bonus(field,chance,amount)
     if math.random()<chance+luck then setNumber(player,field,readNumber(player,field,0)+(amount or 1)) end
   end
-  if node.kind=="WOOD" then bonus("Herb",.15)
+  if node.kind=="WOOD" then bonus("Mushroom",.3)
   elseif node.kind=="STONE" then bonus("Ore",.35);bonus("Crystal",.05)
-  elseif node.kind=="ORE" then bonus("Stone",.6);bonus("Crystal",.12) end
+  elseif node.kind=="HERB" then bonus("Moonbloom",.25);bonus("Mushroom",.2)
+  elseif node.kind=="ORE" then bonus("Stone",.6);bonus("Crystal",.12);bonus("Magma",.2) end
   awardProgress(player, 3, 1)
   -- [채집 숙련도] 기존 재화·전투 경험치·자원 2개 보상은 그대로 둔다.
   setNumber(player,"GatheringProficiency",readNumber(player,"GatheringProficiency",0)+1)
@@ -3339,8 +3349,14 @@ local function applyMeadowDamage(player,target,damage)
       local function drop(field,chance,amount)
         if math.random()<chance then setNumber(player,field,readNumber(player,field,0)+(amount or 1)) end
       end
-      drop("Hide",target.kind=="wolf" and .8 or target.kind=="bandit" and .5 or .25,target.isAlpha and 3 or 1)
-      drop("Crystal",(target.kind=="ghost" or target.kind=="bat") and .35 or .12,target.isBoss and 4 or 1)
+      local kind=target.kind
+      drop("Hide",kind=="wolf" and .8 or kind=="bandit" and .5 or .15,target.isAlpha and 3 or 1)
+      drop("Fang",kind=="wolf" and .35 or .05,target.isAlpha and 2 or 1)
+      drop("BatWing",kind=="bat" and .7 or 0)
+      drop("Stinger",kind=="bee" and .8 or 0)
+      drop("Ectoplasm",kind=="ghost" and .6 or 0)
+      drop("Crystal",(kind=="ghost" or kind=="bat") and .3 or .08,target.isBoss and 4 or 1)
+      drop("Magma",target.isBoss and 1 or 0.03,target.isBoss and 3 or 1)
     end
     -- [사냥 숙련도] 실제 서버에서 처치가 확정된 늑대·박쥐만 기록한다.
     -- 살아 있는 사슴·토끼 관찰은 사냥으로 인정하지 않으며 도감·드랍 변경 없음.

@@ -2139,14 +2139,15 @@ local muted=Color3.fromRGB(163,192,175)
 local categories={"전체","보유","무기","갑옷","장신구","소모품","재료","기록","재화"}
 local data={
   {key="Wood",name="나무",category="재료",icon=4,art=34,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 장비 제작, 무기 강화, 건설에 사용돼."},
-  {key="Herb",name="약초",category="재료",icon=4,color=Color3.fromRGB(122,200,120),description=Config.Materials[1].Desc},
-  {key="Ore",name="광석",category="재료",icon=4,color=Color3.fromRGB(150,160,190),description=Config.Materials[2].Desc},
-  {key="Hide",name="가죽",category="재료",icon=4,color=Color3.fromRGB(176,120,80),description=Config.Materials[3].Desc},
-  {key="Crystal",name="마력 결정",category="재료",icon=4,color=Color3.fromRGB(140,150,240),description=Config.Materials[4].Desc},
   {key="Stone",name="돌",category="재료",icon=4,art=35,color=Color3.fromRGB(169,191,200),description="바위에서 채집한 돌. 장비 제작, 무기 강화, 건설에 사용돼."},
   {key="ResearchRecords",name="기사단 연대기",category="기록",icon=5,color=Color3.fromRGB(221,183,111),description="메인 의뢰에서 발견한 기사단 기록. 획득한 내용은 저널에 보관돼."},
   {key="Coins",name="소지금",category="재화",icon=4,color=Color3.fromRGB(226,191,92),description="서버에 기록된 현재 소지금."},
 }
+for _,mat in ipairs(Config.Materials)do
+  data[#data+1]={key=mat.Field,name=mat.Name,category="재료",icon=4,mat=mat,
+    color=Color3.fromRGB(mat.Color[1],mat.Color[2],mat.Color[3]),
+    description="["..mat.Kind.."] "..mat.Desc.."\n판매가 "..mat.Value.." 재화"}
+end
 -- [장비 도감] 모든 제작법을 현재 가방에 표시하고 소유/장착은 서버 속성만 신뢰한다.
 for index,gear in ipairs(Config.MeadowEquipment or {})do
   data[#data+1]={key="rpg-gear:"..gear.Id,name=gear.Name,category=gear.Category,icon=gear.Icon or 3,
@@ -2284,7 +2285,8 @@ local function redrawSelection()
   local cost=""
   if recipe then
     local parts={}
-    local names={Wood="나무",Stone="돌",Hide="가죽",Ore="광석",Herb="약초",Crystal="결정",Coins="재화"}
+    local names={Wood="나무",Stone="돌",Coins="재화"}
+    for _,mat in ipairs(Config.Materials)do names[mat.Field]=mat.Name end
     for _,field in ipairs(Config.CostFields)do
       local need=recipe[field] or 0
       if need>0 then
@@ -2308,7 +2310,7 @@ local function redrawSelection()
     card.button.BackgroundColor3=selected and Color3.fromRGB(54,94,75)
       or (owned(itemRows[key])>0 and Color3.fromRGB(27,54,48) or Color3.fromRGB(20,39,40))
   end
-  equip.Visible=item.gear~=nil or item.tonic~=nil or typeof(item.key)=="Instance"
+  equip.Visible=item.gear~=nil or item.tonic~=nil or item.mat~=nil or typeof(item.key)=="Instance"
   if equip.Visible then
     if item.gear then
       local has=owned(item)>0
@@ -2317,6 +2319,9 @@ local function redrawSelection()
       equip.Active=player:GetAttribute("ProfileReady")==true
     elseif item.tonic then
       equip.Text="물약 사용"
+      equip.Active=owned(item)>0 and player:GetAttribute("ProfileReady")==true
+    elseif item.mat then
+      equip.Text=string.format("1개 판매  +%d 재화",item.mat.Value)
       equip.Active=owned(item)>0 and player:GetAttribute("ProfileReady")==true
     else
       local equipped=item.key.Parent==player.Character
@@ -2483,6 +2488,8 @@ equip.Activated:Connect(function()
     remote:FireServer("meadow:rpg:gear:"..op..":"..item.gear.Id)
   elseif item.tonic then
     remote:FireServer("meadow:rpg:tonic:use:"..item.tonic.Id)
+  elseif item.mat then
+    remote:FireServer("meadow:rpg:loot:sell:"..item.mat.Field)
   else
     local tool=selectedKey
     if typeof(tool)~="Instance" or not tool:IsA("Tool") or not backpack or tool.Parent~=backpack then return end
@@ -2515,7 +2522,7 @@ if player.Character then
   player.Character.ChildAdded:Connect(renderInventory)
   player.Character.ChildRemoved:Connect(renderInventory)
 end
-for _,name in ipairs({"Wood","Stone","Herb","Ore","Hide","Crystal","Coins","ResearchRecords","ProfileReady","MeadowGearOwned",
+for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Stinger","Ectoplasm","Coins","ResearchRecords","ProfileReady","MeadowGearOwned",
   "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
   "MeadowEquipAccessory","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)

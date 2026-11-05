@@ -369,7 +369,8 @@ local Config = {
     CookingProficiency = 0, CraftingProficiency = 0, GatheringProficiency = 0,
     BuildingProficiency = 0, HuntingProficiency = 0, AlchemyProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
-    Herb = 0, Ore = 0, Hide = 0, Crystal = 0,
+    RedLeaf = 0, Moonbloom = 0, Mushroom = 0, Ore = 0, Crystal = 0, Magma = 0,
+    Hide = 0, Fang = 0, BatWing = 0, Stinger = 0, Ectoplasm = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
     MeadowGearOwned=2705,
@@ -656,24 +657,41 @@ local Config = {
 }
 
 
--- [잡템 제작 연결] 약초·광석·가죽·마력 결정(단순 4종)은 채집·사냥으로 얻고, 장비 제작·무기 강화·물약에 쓴다.
-Config.CostFields={"Wood","Stone","Herb","Ore","Hide","Crystal","Coins"}
+-- [잡템] 스카이림·위쳐보다 단순하게: 약초 3 · 광물 3 · 몬스터 부위 5 = 11종. 모두 제작·물약에 쓰고, 남는 건 팔 수 있다.
 Config.Materials={
-  {Field="Herb",Name="약초",Desc="약초 덤불·나무에서 나와. 물약 조합과 장신구 제작에 쓰여."},
-  {Field="Ore",Name="광석",Desc="광맥·바위에서 나와. 무기 제작과 무기 강화에 쓰여."},
-  {Field="Hide",Name="가죽",Desc="늑대·도적 등 몬스터가 떨어뜨려. 방어구 제작에 쓰여."},
-  {Field="Crystal",Name="마력 결정",Desc="원혼·박쥐·광맥에서 드물게 나와. 희귀 이상 장비 제작에 쓰여."},
+  {Field="RedLeaf",Name="붉은잎",Kind="약초",Value=3,Color={210,90,90},Desc="약초 덤불에서 나오는 붉은 잎. 체력 물약 재료야."},
+  {Field="Moonbloom",Name="달맞이꽃",Kind="약초",Value=4,Color={190,200,255},Desc="약초 덤불에서 드물게 나와. 기력 물약과 장신구 재료야."},
+  {Field="Mushroom",Name="숲 버섯",Kind="약초",Value=2,Color={196,160,120},Desc="나무 밑동에서 주워. 기력 물약 재료야."},
+  {Field="Ore",Name="철광석",Kind="광물",Value=5,Color={150,160,190},Desc="광맥·바위에서 나와. 무기·각반 제작과 무기 강화에 쓰여."},
+  {Field="Crystal",Name="마력 결정",Kind="광물",Value=12,Color={140,150,240},Desc="원혼·박쥐·광맥에서 드물게 나와. 희귀 이상 장신구·장비 제작에 쓰여."},
+  {Field="Magma",Name="화산석",Kind="광물",Value=9,Color={240,120,60},Desc="광맥과 보스에게서 얻어. 영웅 이상 갑옷 제작에 쓰여."},
+  {Field="Hide",Name="늑대 가죽",Kind="부위",Value=4,Color={176,120,80},Desc="늑대·도적이 떨어뜨려. 방어구 제작의 기본 재료야."},
+  {Field="Fang",Name="날카로운 송곳니",Kind="부위",Value=7,Color={235,228,210},Desc="늑대와 우두머리가 떨어뜨려. 희귀 이상 무기 제작에 쓰여."},
+  {Field="BatWing",Name="박쥐 날개",Kind="부위",Value=4,Color={120,100,150},Desc="박쥐가 떨어뜨려. 신발 제작에 쓰여."},
+  {Field="Stinger",Name="벌침",Kind="부위",Value=3,Color={230,200,70},Desc="벌이 떨어뜨려. 장갑 제작에 쓰여."},
+  {Field="Ectoplasm",Name="원혼의 잔재",Kind="부위",Value=8,Color={150,230,220},Desc="원혼이 남기는 차가운 잔재. 전설 장신구 제작에 쓰여."},
 }
+Config.MaterialByField={}
+Config.CostFields={"Wood","Stone"}
+for _,mat in ipairs(Config.Materials) do
+  Config.MaterialByField[mat.Field]=mat
+  table.insert(Config.CostFields,mat.Field)
+end
+table.insert(Config.CostFields,"Coins")
+-- 부위별 대표 재료: 무기=철광석+송곳니, 가슴=가죽+화산석, 장갑=가죽+벌침, 각반=가죽+철광석, 신발=가죽+박쥐 날개, 장신구=달맞이꽃+결정+잔재.
 for _,item in ipairs(Config.MeadowEquipment) do
-  local tier=({Uncommon=1,Rare=2,Epic=3,Legendary=4})[item.Rarity or "Common"]
-  if tier and not item.Starter then
-    if item.Slot=="Weapon" then item.Ore=(item.Ore or 0)+2*tier
-    elseif item.Slot=="Accessory" then item.Herb=(item.Herb or 0)+2*tier
-    else item.Hide=(item.Hide or 0)+2*tier end
-    if tier>=2 then item.Crystal=(item.Crystal or 0)+tier-1 end
+  local t=({Uncommon=1,Rare=2,Epic=3,Legendary=4})[item.Rarity or "Common"]
+  if t and not item.Starter then
+    local function add(field,n) if n>0 then item[field]=(item[field] or 0)+n end end
+    if item.Slot=="Weapon" then add("Ore",2*t);add("Fang",t-1)
+    elseif item.Slot=="Chest" then add("Hide",2*t);add("Magma",t-2)
+    elseif item.Slot=="Hands" then add("Hide",t);add("Stinger",t)
+    elseif item.Slot=="Legs" then add("Hide",t);add("Ore",t)
+    elseif item.Slot=="Feet" then add("Hide",t);add("BatWing",t)
+    else add("Moonbloom",t);add("Crystal",t-1);add("Ectoplasm",t-3) end
   end
 end
 for _,tonic in ipairs(Config.MeadowConsumables) do
-  tonic.Herb=tonic.Id=="herbal_tonic" and 2 or 1
+  if tonic.Id=="herbal_tonic" then tonic.RedLeaf=2 else tonic.Moonbloom=1;tonic.Mushroom=1 end
 end
 return table.freeze(Config)
