@@ -6396,15 +6396,16 @@ do
   local packs=0
   for _,zone in ipairs(Config.WorldMap.Zones) do
     local pool=pools[zone.Id]
-    for g=1,6 do
+    for g=1,14 do
       local x,z=Config.WorldMap.RandomPoint(zone.Id,random,100)
       if pool and x and outsideVillage(x,z) then
         local model=pool[(g-1)%#pool+1]
-        local size=2+g%2
+        local size=2+g%3
         for k=1,size do
           local a=k*math.pi*2/size
-          table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=model,name=labels[model] or "몬스터",tier=tiers[zone.Id],
-            height=4+tiers[zone.Id]*.12,hp=1.2,dmg=1,zoneTag=zone.Id,
+          local elite=(g%5==0 and k==1)
+          table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=model,name=(elite and "우두머리 " or "")..(labels[model] or "몬스터"),tier=tiers[zone.Id]+(elite and 1 or 0),
+            height=(elite and 6.5 or 4)+tiers[zone.Id]*.12,hp=elite and 3 or 1.2,dmg=elite and 1.6 or 1,alpha=elite or nil,zoneTag=zone.Id,
             drops={{"Hide",.6,2},{"Fang",.4,1}},position=Vector3.new(x+math.cos(a)*10,3,z+math.sin(a)*10)})
           packs+=1
         end
