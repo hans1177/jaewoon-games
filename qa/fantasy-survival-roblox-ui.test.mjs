@@ -115,17 +115,16 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/meadowReferenceJump\.Activated:Connect\(function\(\)[\s\S]*?human\.Jump=true/);
   assert.match(client,/heading=heading\.Unit[\s\S]*?offset=-heading/);
   assert.match(client,/title\.Text = "" -- \[시안\]/);
-  // [시안 원화] 상단 6 / 하단 단축바 10 / 전투 5 = 21종을 같은 2172x724 아틀라스에 연결.
-  assert.match(client,/local meadowPaintedHudAtlas="rbxassetid:\/\/83418483770404"/);
-  assert.match(client,/icon\.ImageRectSize=Vector2\.new\(225,220\)/);
-  assert.match(client,/icon\.ImageRectOffset=Vector2\.new\(\(\{13,251,487,727,963,1199\}\)\[index\],8\)/);
-  assert.match(client,/icon\.ImageRectSize=Vector2\.new\(edges\[index\+1\]-edges\[index\],224\)/);
-  assert.match(client,/icon\.ImageRectOffset=Vector2\.new\(edges\[index\],240\)/);
-  assert.match(client,/local paintedX=\(\{sprint=12,fist=248,dodge=485,jump=721\}\)\[role\]/);
-  assert.match(client,/icon\.ImageRectOffset=Vector2\.new\(paintedX,460\)/);
-  assert.match(client,/icon\.ImageRectSize=Vector2\.new\(225,236\)/);
-  assert.match(client,/swordIcon\.ImageRectOffset=Vector2\.new\(946,460\)/);
-  assert.match(client,/swordIcon\.ImageRectSize=Vector2\.new\(235,236\)/);
+  // [시안 원화] 상단 6 / 하단 단축바 10 / 전투 5 = 21종을 같은 1000x1000(5x5, 200px 칸) 아틀라스에 연결.
+  assert.match(client,/local meadowPaintedHudAtlas="rbxassetid:\/\/123876288949666"/);
+  assert.match(client,/icon\.ImageRectSize=Vector2\.new\(200,200\)/);
+  assert.match(client,/icon\.ImageRectOffset=Vector2\.new\(\(\{0,200,400,600,800,0\}\)\[index\],\(\{0,0,0,0,0,200\}\)\[index\]\)/);
+  assert.match(client,/local hudCell=index\+5/);
+  assert.match(client,/icon\.ImageRectOffset=Vector2\.new\(\(hudCell%5\)\*200,math\.floor\(hudCell\/5\)\*200\)/);
+  assert.match(client,/local paintedCell=\(\{sprint=Vector2\.new\(200,600\),fist=Vector2\.new\(400,600\),dodge=Vector2\.new\(600,600\),jump=Vector2\.new\(800,600\)\}\)\[role\]/);
+  assert.match(client,/icon\.ImageRectOffset=paintedCell/);
+  assert.match(client,/swordIcon\.ImageRectOffset=Vector2\.new\(0,800\)/);
+  assert.match(client,/swordIcon\.ImageRectSize=Vector2\.new\(200,200\)/);
   // [실패 복구] 원화 로드가 실패한 메뉴·단축바·전투 버튼만 이미 등록한 원본으로 교체.
   assert.match(client,/icon\.ImageRectOffset=Vector2\.new\(info\[3\]\*40,0\)/);
   assert.match(client,/icon\.ImageRectOffset=Vector2\.new\(\(index-1\)\*40,0\)/);
@@ -165,12 +164,11 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.ok(Math.abs(barX-138)<6&&barWidth>=342&&barWidth<=355,'reference hotbar width/x mismatch');
   assert.ok(questTop>=60&&questTop<=68&&questWidth<=140,'reference right quest panel shifted');
 
-  const sheet={width:2172,height:724};
+  const sheet={width:1000,height:1000};
   const cropRows=[
-    ...[13,251,487,727,963,1199].map(x=>[x,8,225,220]),
-    ...[8,240,468,691,910,1108,1310,1510,1719,1942].map((x,i,arr)=>[x,240,([240,468,691,910,1108,1310,1510,1719,1942,2165][i]||2165)-x,224]),
-    ...[12,248,485,721].map(x=>[x,460,225,236]),
-    [946,460,235,236]
+    ...[0,1,2,3,4,5].map(i=>[(i%5)*200,Math.floor(i/5)*200,200,200]),
+    ...[6,7,8,9,10,11,12,13,14,15].map(i=>[(i%5)*200,Math.floor(i/5)*200,200,200]),
+    ...[16,17,18,19,20].map(i=>[(i%5)*200,Math.floor(i/5)*200,200,200])
   ];
   assert.equal(cropRows.length,21);
   for(const [x,y,width,height] of cropRows){
@@ -178,7 +176,10 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   }
   const registry=JSON.parse(fs.readFileSync("roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json","utf8"));
   // [신규 21종 HUD] 등록·사용 승인된 정확한 원본 이미지가 런타임 연결에 쓰여야 한다.
-  assert.equal(String(registry.illustratedHudIconsV2.assetId),"83418483770404");
+  assert.equal(String(registry.illustratedHudIconsV2.assetId),"123876288949666");
+  assert.equal(registry.illustratedHudIconsV2.width,1000);
+  assert.equal(registry.illustratedHudIconsV2.height,1000);
+  assert.ok(registry.illustratedHudIconsV2.width<=1024&&registry.illustratedHudIconsV2.height<=1024,"atlas must stay within Roblox 1024px limit");
   assert.equal(registry.illustratedHudIconsV2.importVerified,true);
   assert.equal(registry.illustratedHudIconsV2.universeUseGrantVerified,true);
   assert.ok(registry.illustratedHudIconsV2.authorizedUniverseIds.includes("10773436325"));
