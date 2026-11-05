@@ -4607,12 +4607,16 @@ do
           image.Size=UDim2.fromScale(1,1)
           image.BackgroundTransparency=1
           image.BorderSizePixel=0
-          image.ScaleType=Enum.ScaleType.Crop
+          -- [잘림 방지] 그림 전체가 보이도록 Fit. 비율이 다르면 검은 여백이 생기고 그림은 잘리지 않는다.
+          image.ScaleType=Enum.ScaleType.Fit
           image.ZIndex=z
           image.Parent=stage
           return image
         end
         local bgLayer,chLayer,fgLayer=imageLayer("Background",21),imageLayer("Character",22),imageLayer("Foreground",23)
+        -- [컷 전환] 직전 컷을 위에 겹쳐 두고 서서히 지워 크로스 디졸브로 넘어간다.
+        local ghostBg,ghostCh,ghostFg=imageLayer("GhostBackground",26),imageLayer("GhostCharacter",26),imageLayer("GhostForeground",26)
+        ghostBg.ImageTransparency=1;ghostCh.ImageTransparency=1;ghostFg.ImageTransparency=1
         local function solidFrame(name,z,color)
           local f=Instance.new("Frame")
           f.Name=name
@@ -4622,12 +4626,24 @@ do
           f.Parent=stage
           return f
         end
+        -- [자막 가독성] 화면 아래에 어두운 그라데이션을 깔아 어떤 그림 위에서도 글씨가 읽히게 한다.
+        local subtitleShade=solidFrame("SubtitleShade",27,Color3.new(0,0,0))
+        subtitleShade.AnchorPoint=Vector2.new(0,1)
+        subtitleShade.Position=UDim2.fromScale(0,1)
+        subtitleShade.Size=UDim2.fromScale(1,.3)
+        subtitleShade.BackgroundTransparency=0
+        local shadeGradient=Instance.new("UIGradient")
+        shadeGradient.Rotation=90
+        shadeGradient.Transparency=NumberSequence.new({
+          NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.55,.55),NumberSequenceKeypoint.new(1,.12),
+        })
+        shadeGradient.Parent=subtitleShade
         local topBar=solidFrame("LetterboxTop",27,Color3.new(0,0,0))
-        topBar.Size=UDim2.fromScale(1,.1)
+        topBar.Size=UDim2.fromScale(1,0)
         local bottomBar=solidFrame("LetterboxBottom",27,Color3.new(0,0,0))
         bottomBar.AnchorPoint=Vector2.new(0,1)
         bottomBar.Position=UDim2.fromScale(0,1)
-        bottomBar.Size=UDim2.fromScale(1,.1)
+        bottomBar.Size=UDim2.fromScale(1,0)
         local curtain=solidFrame("Curtain",28,Color3.new(0,0,0))
         curtain.Size=UDim2.fromScale(1,1)
         curtain.BackgroundTransparency=0
@@ -4662,16 +4678,16 @@ do
           limit.Parent=label
           return label
         end
-        local subtitle=textLayer("Subtitle",30,34)
+        local subtitle=textLayer("Subtitle",30,46)
         subtitle.AnchorPoint=Vector2.new(.5,1)
-        subtitle.Position=UDim2.fromScale(.5,.885)
-        subtitle.Size=UDim2.fromScale(.9,.075)
+        subtitle.Position=UDim2.fromScale(.5,.93)
+        subtitle.Size=UDim2.fromScale(.9,.085)
         subtitle.TextScaled=false
         subtitle.TextColor3=Color3.new(1,1,1)
-        local speakerLabel=textLayer("Speaker",30,22)
+        local speakerLabel=textLayer("Speaker",30,30)
         speakerLabel.AnchorPoint=Vector2.new(.5,1)
-        speakerLabel.Position=UDim2.fromScale(.5,.815)
-        speakerLabel.Size=UDim2.fromScale(.4,.04)
+        speakerLabel.Position=UDim2.fromScale(.5,.855)
+        speakerLabel.Size=UDim2.fromScale(.4,.045)
         speakerLabel.TextScaled=false
         speakerLabel.TextColor3=Color3.fromRGB(232,196,120)
         local title=textLayer("OpeningTitle",26,110)
@@ -4680,6 +4696,14 @@ do
         title.Size=UDim2.fromScale(.4,.22)
         title.Text="마력숲"
         title.TextColor3=Color3.fromRGB(240,220,160)
+        local chapterLabel=textLayer("OpeningChapter",30,30)
+        chapterLabel.AnchorPoint=Vector2.new(0,0)
+        chapterLabel.Position=UDim2.fromScale(.045,.06)
+        chapterLabel.Size=UDim2.fromScale(.5,.06)
+        chapterLabel.TextScaled=false
+        chapterLabel.TextXAlignment=Enum.TextXAlignment.Left
+        chapterLabel.TextColor3=Color3.fromRGB(232,196,120)
+        chapterLabel.Text="프롤로그  ·  마지막 전장"
         local sparks={}
         local sparkRandom=Random.new(2411)
         for i=1,(reducedEffects and 18 or 36) do
@@ -4865,6 +4889,13 @@ do
             while index<#openingScenes and t>=starts[index]+openingScenes[index].seconds do index+=1 end
             local scene=openingScenes[index]
             if index~=current then
+              if current>0 then
+                local previousScene=openingScenes[current]
+                ghostBg.Image=previousScene.bg;ghostCh.Image=previousScene.ch;ghostFg.Image=previousScene.fg
+                ghostBg.Size=bgLayer.Size;ghostBg.Position=bgLayer.Position
+                ghostCh.Size=chLayer.Size;ghostCh.Position=chLayer.Position
+                ghostFg.Size=fgLayer.Size;ghostFg.Position=fgLayer.Position
+              end
               current=index
               currentStoryScene=index
               warm(index+1)
@@ -4880,34 +4911,35 @@ do
             -- 확대·회전 없이 연출한다: 위아래 검은 띠가 가리는 범위 안에서 배경을 세로로 살짝 밀고,
             -- 인물은 숨 쉬듯 움직이며 전경은 반대로 흐르는 3겹 시차. 충격 컷은 짧게 흔든다.
             local dirY=(scene.id%2==0) and 1 or -1
+            local dirX=(scene.id%3==0) and -1 or 1
             local shakeX,shakeY=0,0
             if scene.camera=="shake" or scene.camera=="spin" then
-              local amp=7*math.max(0,1-lt/1.1)
+              local amp=9*math.max(0,1-lt/1.1)
               shakeX=amp*math.sin(lt*61)*math.cos(lt*23)
               shakeY=amp*math.sin(lt*47+1)
             end
-            bgLayer.Size=UDim2.fromScale(1,1)
-            bgLayer.Position=UDim2.new(.5,0,.5,((p-.5)*2*13*dirY+shakeY)*k)
+            -- [3겹 시차] 배경은 가장자리가 비지 않게 7% 크게 깔고(고정 배율, 확대 연출 아님) 천천히 흐른다.
+            -- 인물은 배경과 반대로 더 크게, 전경은 가장 크게 움직여 깊이를 만든다.
+            local pe=smooth(math.clamp(lt/scene.seconds,0,1))
+            local drift=(pe-.5)*2
+            bgLayer.Size=UDim2.fromScale(1.07,1.07)
+            bgLayer.Position=UDim2.new(.5,(drift*30*dirX*k+shakeX*.6),.5,(drift*20*dirY*k+shakeY*.6))
             bgLayer.Rotation=0
             chLayer.Size=UDim2.fromScale(1,1)
-            chLayer.Position=UDim2.new(.5,(scene.chShift[1]*(p-.5)*2+shakeX*1.4)*k,.5,(3*math.sin(t*1.7+scene.id)+shakeY*1.4)*k)
+            chLayer.Position=UDim2.new(.5,(-drift*dirX*34*k+scene.chShift[1]*(p-.5)*k+shakeX*1.4),.5,(5*math.sin(t*1.7+scene.id)*k+shakeY*1.4))
             chLayer.Rotation=0
             fgLayer.Size=UDim2.fromScale(1,1)
-            fgLayer.Position=UDim2.new(.5,(scene.fgShift[1]*(.5-p)*2+shakeX*2)*k,.5,(-5*math.sin(t*1.1+scene.id*.7)+shakeY*2)*k)
+            fgLayer.Position=UDim2.new(.5,(drift*dirX*(scene.fgShift[1]>0 and 62 or 0)*k+shakeX*2),.5,(-7*math.sin(t*1.1+scene.id*.7)*k+shakeY*2))
             fgLayer.Rotation=0
-            local barOpen=smooth(math.min(t/1.4,1))
-            topBar.Size=UDim2.fromScale(1,.1+.4*(1-barOpen))
-            bottomBar.Size=UDim2.fromScale(1,.1+.4*(1-barOpen))
+            -- 직전 컷 크로스 디졸브(0.5초). 충격 컷(하드 컷)은 디졸브 없이 번쩍임으로 넘어간다.
+            local dissolveIn=({[11]=true,[19]=true,[21]=true,[4]=true,[9]=true})[scene.id]
+            local fade=(dissolveIn or index==1) and 1 or smooth(math.clamp(lt/.5,0,1))
+            ghostBg.ImageTransparency=fade;ghostCh.ImageTransparency=fade;ghostFg.ImageTransparency=fade
+            local barOpen=1
             local opacity=0
             if t<.6 then opacity=1-smooth(t/.6) end
             if t>total-.8 then opacity=math.max(opacity,1-smooth((total-t)/.8)) end
             if scene.camera=="fade" then opacity=math.max(opacity,.75*smooth((p-.55)/.45)) end
-            local hardCut=({[11]=true,[19]=true,[21]=true,[4]=true,[9]=true})[scene.id]
-            if not hardCut and index>1 then opacity=math.max(opacity,.9*(1-smooth(math.clamp(lt/.28,0,1))))
-            end
-            if index<#openingScenes and not ({[11]=true,[19]=true,[21]=true,[4]=true,[9]=true})[openingScenes[index+1].id] then
-              opacity=math.max(opacity,.9*smooth(math.clamp((lt-(scene.seconds-.22))/.22,0,1)))
-            end
             curtain.BackgroundTransparency=1-opacity
             local flashPower=({[9]=.35,[11]=.7,[14]=.45,[19]=.85,[21]=.5})[scene.id]
             flash.BackgroundTransparency=(flashPower and lt<.28) and (1-(1-lt/.28)*flashPower) or 1
@@ -4916,14 +4948,20 @@ do
               subtitleAlpha=math.clamp(math.min(lt/.2,(scene.seconds-.1-lt)/.2),0,1)
             end
             subtitle.MaxVisibleGraphemes=scene.line~="" and math.floor(math.max(0,lt-.2)*17)+1 or -1
-            subtitle.TextSize=math.clamp(math.floor(26*k),15,34)
-            speakerLabel.TextSize=math.clamp(math.floor(18*k),12,24)
+            subtitle.TextSize=math.clamp(math.floor(31*k),18,46)
+            speakerLabel.TextSize=math.clamp(math.floor(21*k),13,30)
             speakerLabel.Text=scene.speaker or ""
             speakerLabel.TextTransparency=1-subtitleAlpha
             speakerLabel.TextStrokeTransparency=1-subtitleAlpha
             subtitle.TextColor3=(scene.speaker~=nil and scene.speaker~="") and Color3.new(1,1,1) or Color3.fromRGB(214,205,182)
             subtitle.TextTransparency=1-subtitleAlpha
             subtitle.TextStrokeTransparency=1-subtitleAlpha
+            local chapterAlpha=0
+            if t>.9 and t<4.4 then chapterAlpha=math.clamp(math.min((t-.9)/.7,(4.4-t)/.7),0,1) end
+            chapterLabel.TextSize=math.clamp(math.floor(20*k),13,30)
+            chapterLabel.TextTransparency=1-chapterAlpha
+            chapterLabel.TextStrokeTransparency=1-chapterAlpha
+            subtitleShade.BackgroundTransparency=1-math.clamp(subtitleAlpha,0,1)
             local titleAlpha=(index==#openingScenes and lt>1.8) and smooth((lt-1.8)/1) or 0
             title.TextTransparency=1-titleAlpha
             title.TextStrokeTransparency=1-titleAlpha
