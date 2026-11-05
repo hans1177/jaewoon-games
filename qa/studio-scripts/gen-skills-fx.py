@@ -29,7 +29,7 @@ def build(only=None):
     if not only or "guard-variants" in only:
         for v in (1,2,3):
             s+=[lu(f'game.Players:GetPlayers()[1]:SetAttribute("QAGuardVariant",{v}) return "v{v}"',"Server"),wait(300)]
-            run(["skill-meadow-guard"],s,200+v*10)
+            s+=[trig(200+v*10,"skill-meadow-guard"),wait(450),lu('local c=game.Players.LocalPlayer.Character local j=c.Humanoid.RigType.Name local a=c:GetAttribute("NativeSkillActionId") local ua=c:FindFirstChild("RightUpperArm") local sh=c:FindFirstChild("RightShoulder",true) return "rig="..j.." act="..tostring(a).." tool="..tostring(c:FindFirstChildOfClass("Tool")).." shT="..tostring(sh and sh.Transform)'),cap(f"guardV{v}-a"),wait(400),cap(f"guardV{v}-b"),wait(2200)]
             s+=[lu(f'return "variant {v} done"')]
     run(armed,s,0)
     if unarmed:
