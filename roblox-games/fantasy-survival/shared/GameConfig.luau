@@ -379,7 +379,7 @@ local Config = {
     BuildingProficiency = 0, HuntingProficiency = 0, AlchemyProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     RedLeaf = 0, Moonbloom = 0, Mushroom = 0, Ore = 0, Crystal = 0, Magma = 0,
-    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0,
+    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
     MeadowGearOwned=2705,
@@ -678,6 +678,8 @@ Config.Materials={
   {Field="Fang",Name="날카로운 송곳니",Kind="부위",Value=7,Color={235,228,210},Desc="늑대와 우두머리가 떨어뜨려. 희귀 이상 무기 제작에 쓰여."},
   {Field="BatWing",Name="박쥐 날개",Kind="부위",Value=4,Color={120,100,150},Desc="박쥐가 떨어뜨려. 신발 제작에 쓰여."},
   {Field="Claw",Name="늑대 발톱",Kind="부위",Value=3,Color={205,195,175},Desc="늑대가 떨어뜨려. 장갑 제작에 쓰여."},
+  {Field="Ingot",Name="철 주괴",Kind="가공",Value=14,Color={190,196,206},Desc="화로에서 광석 2개를 녹여 만들어. 무기·갑옷 제작의 핵심 재료야.",Refine={From="Ore",Need=2,Verb="제련",Note="광석 2 → 주괴 1"}},
+  {Field="Leather",Name="무두질 가죽",Kind="가공",Value=10,Color={150,98,60},Desc="가죽 걸이에서 늑대 가죽 2장을 가공해 만들어. 갑옷·장화·장갑에 쓰여.",Refine={From="Hide",Need=2,Verb="무두질",Note="가죽 2 → 무두질 가죽 1"}},
   {Field="Ectoplasm",Name="원혼의 잔재",Kind="부위",Value=8,Color={150,230,220},Desc="원혼이 남기는 차가운 잔재. 전설 장신구 제작에 쓰여."},
 }
 Config.MaterialByField={}
@@ -704,8 +706,11 @@ for _,item in ipairs(Config.MeadowEquipment) do
   if not item.Starter then
     item.Wood=nil
     item.Stone=nil
+    -- [스카이림식 가공] 날것(광석·가죽)이 아니라 제련·무두질한 재료(주괴·가죽)로 만든다. 2:1 환산.
+    if (item.Ore or 0)>0 then item.Ingot=math.ceil(item.Ore/2);item.Ore=nil end
+    if (item.Hide or 0)>0 then item.Leather=math.ceil(item.Hide/2);item.Hide=nil end
     -- 고급 이상 장비는 철광석 한두 개를 기본으로 더해 대장간 제작의 느낌을 준다.
-    if t and item.Slot~="Accessory" and (item.Ore or 0)==0 then item.Ore=t end
+    if t and item.Slot~="Accessory" and (item.Ingot or 0)==0 then item.Ingot=math.max(1,math.ceil(t/2)) end
   end
 end
 for _,tonic in ipairs(Config.MeadowConsumables) do

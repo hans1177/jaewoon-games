@@ -244,7 +244,7 @@ do
   function meadowArt.itemTintFor(item)
     return item and item.gear and tints[item.gear.Id] or nil
   end
-  local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1"}
+  local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Leather="item_bone"}
   function meadowArt.itemKeyFor(item)
     if not item then return nil end
     if item.gear then
@@ -2501,7 +2501,13 @@ local function redrawSelection()
   local feedback=player:GetAttribute("MeadowGearMessage")
   description.Text="소지 / 상태   "..itemValue(item).."\n"..stats..(cost~="" and cost.."\n" or "")..
     item.description..(recipe and typeof(feedback)=="string" and ("\n"..feedback) or "")
-  secondary.Visible=item.tonic~=nil
+  -- 광석·가죽 같은 날것은 '제련/무두질' 버튼이 같이 보이고, 가공품은 판매만 한다.
+  local refineSource=nil
+  for _,mat in ipairs(Config.Materials)do
+    if mat.Refine and mat.Refine.From==(item.mat and item.mat.Field) then refineSource=mat end
+  end
+  secondary.Text=item.tonic and "소모품 조합" or (refineSource and refineSource.Refine.Verb.."  ("..refineSource.Refine.Note..")" or "소모품 조합")
+  secondary.Visible=item.tonic~=nil or refineSource~=nil
   equip.Size=secondary.Visible and UDim2.new(.5,-16,0,48) or UDim2.new(1,-24,0,48)
   for key,card in pairs(itemCards)do
     local selected=key==selectedKey
@@ -2706,6 +2712,12 @@ secondary.Activated:Connect(function()
   local item=itemRows[selectedKey]
   if item and item.tonic and player:GetAttribute("ProfileReady")==true then
     remote:FireServer("meadow:rpg:tonic:craft:"..item.tonic.Id)
+  elseif item and item.mat and player:GetAttribute("ProfileReady")==true then
+    for _,mat in ipairs(Config.Materials)do
+      if mat.Refine and mat.Refine.From==item.mat.Field then
+        remote:FireServer("meadow:rpg:loot:refine:"..mat.Field)
+      end
+    end
   end
 end)
 local function watchBackpack(bag)
@@ -2726,7 +2738,7 @@ if player.Character then
   player.Character.ChildAdded:Connect(renderInventory)
   player.Character.ChildRemoved:Connect(renderInventory)
 end
-for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Coins","ResearchRecords","ProfileReady","MeadowGearOwned",
+for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Ingot","Leather","Coins","ResearchRecords","ProfileReady","MeadowGearOwned",
   "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
   "MeadowEquipAccessory","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)
@@ -10629,7 +10641,7 @@ end)()
   local names={Wood="나무",Stone="돌",Coins="재화"}
   local fields={"Wood","Stone"}
   for _,mat in ipairs(Config.Materials or {}) do names[mat.Field]=mat.Name;table.insert(fields,mat.Field) end
-  local keys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1"}
+  local keys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Leather="item_bone"}
   local order=0
   local last={}
   local function toast(field,amount)

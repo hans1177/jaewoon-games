@@ -2969,6 +2969,23 @@ local meadowRpg=(function()
     if not group or not verb or not id then return false end
     local gear=gearById[id]
     local tonic=tonicById[id]
+    if group=="loot" and verb=="refine" then
+      -- [제련·무두질] 대장간 화로/가죽 걸이 근처(마을 중심 90 이내)에서만 가공한다.
+      local mat=Config.MaterialByField[id]
+      local rule=mat and mat.Refine
+      if not rule then return false end
+      local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+      if not root or Vector3.new(root.Position.X,0,root.Position.Z-(-150)).Magnitude>260 then
+        feedback(player,"마을 대장간 근처에서만 "..rule.Verb.."할 수 있어.");return true
+      end
+      local have=readNumber(player,rule.From,0)
+      if have<rule.Need then feedback(player,Config.MaterialByField[rule.From].Name.." "..rule.Need.."개가 필요해.");return true end
+      setNumber(player,rule.From,have-rule.Need)
+      setNumber(player,id,readNumber(player,id,0)+1)
+      setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)
+      feedback(player,mat.Name.." 1개 완성  ("..rule.Note..")")
+      return true
+    end
     if group=="loot" and verb=="sell" then
       local mat=Config.MaterialByField[id]
       if not mat then return false end
@@ -4488,6 +4505,10 @@ local function applyMeadowDamage(player,target,damage)
       if target.variant then kind="variant" end -- 변종은 siteDrops만 쓴다.
       drop("Hide",kind=="wolf" and .8 or kind=="bandit" and .5 or .15,target.isAlpha and 3 or 1)
       drop("Fang",kind=="wolf" and .35 or .05,target.isAlpha and 2 or 1)
+      -- [스카이림식 가죽 손질] 사냥 숙련이 오를수록 짐승에게서 가죽을 한 장 더 벗겨낸다(최대 50%).
+      if (kind=="wolf" or kind=="bandit") and math.random()<math.min(.5,readNumber(player,"HuntingProficiency",0)*.01) then
+        setNumber(player,"Hide",readNumber(player,"Hide",0)+1)
+      end
       drop("BatWing",kind=="bat" and .7 or 0)
       drop("Claw",kind=="wolf" and .6 or 0,target.isAlpha and 2 or 1)
       drop("Ectoplasm",kind=="ghost" and .6 or 0)
