@@ -3880,6 +3880,7 @@ do
     local edge=Instance.new("UIStroke")
     edge.Color=primary and Color3.fromRGB(255,240,190) or Color3.fromRGB(190,156,92)
     edge.Thickness=primary and 2.5 or 1.5
+    edge.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
     edge.Parent=b
     local shine=Instance.new("UIGradient")
     shine.Color=primary and ColorSequence.new(Color3.fromRGB(255,224,140),Color3.fromRGB(190,138,60))
@@ -7468,8 +7469,8 @@ local function layoutMeadowRadar()
     or math.floor(math.clamp((v.X-18)/6,47,52))
   local freeLeft=landscape and math.floor(v.X*.29) or 8
   local freeRight=landscape and (v.X-menuStep*6-6-10) or (v.X-8)
-  local mapWidth=math.floor(math.clamp(freeRight-freeLeft,150,330))
-  local mapHeight=math.floor(math.clamp(mapWidth*.27,46,84))
+  local mapWidth=math.floor(math.clamp((freeRight-freeLeft)*.72,140,236))
+  local mapHeight=math.floor(math.clamp(mapWidth*.25,38,60))
   meadowRadar.Size=UDim2.fromOffset(mapWidth,mapHeight+20)
   meadowRadar.AnchorPoint=Vector2.new(.5,0)
   meadowRadar.Position=UDim2.fromOffset(math.floor((freeLeft+freeRight)*.5),landscape and 2 or menuStep+22)
@@ -11019,15 +11020,12 @@ end)()
       return f
     end
     if kind=="pin" then
-      -- 물방울: 둥근 머리 + 45° 회전한 꼬리(아래쪽 뾰족)
-      local tail=shape(.46,.46,.5,.56,45,1,false,GOLD,true)
-      local head=shape(.66,.66,.5,.36,0,2,true,GOLD,true)
-      local cover=shape(.58,.58,.5,.38,0,3,true,GOLD,false)
-      local dot=shape(.26,.26,.5,.36,0,4,true,Color3.fromRGB(255,255,255),false)
-      local shine=shape(.14,.08,.38,.2,-30,4,true,Color3.fromRGB(255,250,220),false)
-      local g=Instance.new("UIGradient");g.Color=ColorSequence.new(Color3.fromRGB(255,240,150),Color3.fromRGB(240,160,30));g.Rotation=90
-      g.Parent=head
-      table.insert(tint,tail);table.insert(tint,head);table.insert(tint,cover)
+      -- 금빛 보석 마름모(원신·젤다식 퀘스트 마커): 바깥 금색 + 안쪽 밝은 마름모 + 하이라이트
+      local outer=shape(.56,.56,.5,.42,45,1,false,GOLD,true)
+      local inner=shape(.3,.3,.5,.42,45,2,false,Color3.fromRGB(255,248,205),false)
+      local g=Instance.new("UIGradient");g.Color=ColorSequence.new(Color3.fromRGB(255,236,140),Color3.fromRGB(238,150,24));g.Rotation=90
+      g.Parent=outer
+      table.insert(tint,outer)
     else
       -- 단순한 한 줄 화살표(V자). 아래로 통통 튀는 건 바깥에서 위치로 처리한다.
       local L,T=.56,.14
@@ -11060,7 +11058,7 @@ end)()
   infoLabel.Size=UDim2.fromOffset(150,38);infoLabel.Font=Enum.Font.GothamMedium;infoLabel.TextSize=13;infoLabel.TextWrapped=true
   infoLabel.TextColor3=Color3.fromRGB(255,244,205);infoLabel.TextStrokeTransparency=1;infoLabel.ZIndex=27;infoLabel.Parent=marker
   Instance.new("UICorner",infoLabel).CornerRadius=UDim.new(0,10)
-  local infoStroke=Instance.new("UIStroke");infoStroke.Color=Color3.fromRGB(255,214,70);infoStroke.Thickness=1;infoStroke.Parent=infoLabel
+  local infoStroke=Instance.new("UIStroke");infoStroke.Color=Color3.fromRGB(255,214,70);infoStroke.Thickness=1;infoStroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;infoStroke.Parent=infoLabel
   local beam=Instance.new("Part")
   beam.Name="MeadowGuideBeam";beam.Anchored=true;beam.CanCollide=false;beam.CanQuery=false;beam.CanTouch=false
   beam.CastShadow=false;beam.Material=Enum.Material.Neon;beam.Color=Color3.fromRGB(255,214,70);beam.Transparency=.6
@@ -11113,7 +11111,7 @@ end)()
   guideChip.BackgroundColor3=Color3.fromRGB(13,30,28);guideChip.BackgroundTransparency=.1;guideChip.BorderSizePixel=0
   guideChip.Font=Enum.Font.Gotham;guideChip.TextSize=11;guideChip.TextStrokeTransparency=1;guideChip.TextColor3=Color3.fromRGB(255,240,197);guideChip.ZIndex=29;guideChip.Parent=guiRoot
   Instance.new("UICorner",guideChip).CornerRadius=UDim.new(0,9)
-  local guideChipStroke=Instance.new("UIStroke");guideChipStroke.Color=Color3.fromRGB(220,176,91);guideChipStroke.Thickness=1.5;guideChipStroke.Parent=guideChip
+  local guideChipStroke=Instance.new("UIStroke");guideChipStroke.Color=Color3.fromRGB(220,176,91);guideChipStroke.Thickness=1.5;guideChipStroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;guideChipStroke.Parent=guideChip
   local function paintGuide()
     guideChip.Text=guideOff and "◇\n길\n안\n내" or "◆\n길\n안\n내"
     guideChip.TextColor3=guideOff and Color3.fromRGB(150,150,140) or Color3.fromRGB(140,235,160)
@@ -11166,7 +11164,8 @@ end)()
     {"카메라 돌리기","화면 오른쪽 빈 곳을 끌면 시야가 돌아가.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.62,guiRoot.AbsoluteSize.Y*.45),"down" end,nil},
     {"전투 버튼","큰 칼 = 공격 · 방패 = 막기 · 소용돌이 = 회피 · 질주 = 자동질주 ON/OFF",function() return Vector2.new(guiRoot.AbsoluteSize.X*.9,guiRoot.AbsoluteSize.Y*.72),"left" end,nil},
     {"퀵슬롯","아래 1~5칸을 누르면 바로 써. '편집'을 눌러 칸을 바꿀 수 있어.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.88),"down" end,nil},
-    {"퀘스트와 길 안내","왼쪽 퀘스트창이 할 일이야. 노란 화살표를 따라가. 지도 위 '길 안내'로 끄고 켜.",function() local c=guideChip.Visible and center(guideChip) or Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.28);return c,"up" end,nil},
+    {"퀘스트와 길 안내","왼쪽 퀘스트창이 지금 할 일이야. 노란 보석 표시를 따라가면 돼.",function() local c=guideChip.Visible and center(guideChip) or Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.28);return c,"up" end,nil},
+    {"길 안내 켜고 끄기","지도 왼쪽 '길 안내' 버튼을 눌러 봐. 끄면 표시가 사라지고, 다시 누르면 켜져.",function() local c=guideChip.Visible and center(guideChip) or nil;return c,"up" end,"guide"},
     {"메뉴 열기","오른쪽 위 '가방'을 눌러 메뉴를 열어 봐.",function() local l=findText("TextLabel","가방");return l and (center(l)+Vector2.new(0,-26)) or Vector2.new(guiRoot.AbsoluteSize.X*.62,40),"up" end,"menu"},
     {"스킬 탭","메뉴 아래쪽 탭에서 '스킬'을 눌러.",function() local t=findText("TextButton","스킬");return t and center(t) or nil,"down" end,"skillpage"},
     {"기술 배우기","금색 칸(무술)을 눌러 고르고 '습득!'을 눌러. 첫 점수는 선물이야!",function()
@@ -11190,7 +11189,7 @@ end)()
   ctitle.TextColor3=Color3.fromRGB(255,232,160);ctitle.ZIndex=121;ctitle.Parent=card
   local cbody=Instance.new("TextLabel")
   cbody.BackgroundTransparency=1;cbody.Position=UDim2.fromOffset(0,22);cbody.Size=UDim2.new(1,0,0,52)
-  cbody.Font=Enum.Font.Gotham;cbody.TextSize=13;cbody.TextWrapped=true;cbody.TextXAlignment=Enum.TextXAlignment.Center
+  cbody.Font=Enum.Font.Gotham;cbody.TextSize=14;cbody.TextWrapped=true;cbody.TextXAlignment=Enum.TextXAlignment.Center
   cbody.TextStrokeColor3=Color3.new(0,0,0);cbody.TextStrokeTransparency=.35
   cbody.TextYAlignment=Enum.TextYAlignment.Top;cbody.TextColor3=Color3.fromRGB(236,242,230);cbody.ZIndex=121;cbody.Parent=card
   local nextBtn=Instance.new("TextButton")
@@ -11205,9 +11204,11 @@ end)()
   ring.AnchorPoint=Vector2.new(.5,.5);ring.BackgroundTransparency=1;ring.Visible=false;ring.ZIndex=129;ring.Parent=guiRoot
   Instance.new("UICorner",ring).CornerRadius=UDim.new(1,0)
   local ringStroke=Instance.new("UIStroke");ringStroke.Color=Color3.fromRGB(255,214,70);ringStroke.Thickness=4;ringStroke.Parent=ring
+  local function idx(title) for i,st in ipairs(steps) do if st[1]==title then return i end end return 1 end
   local current=0
   local moveStart=nil
   local granted=false
+  local guideAtShow=false
   local function finish()
     current=0;card.Visible=false;pointer.Visible=false;ring.Visible=false
     tutorialStep=99;pref("tut",99)
@@ -11226,6 +11227,7 @@ end)()
     card.Visible=true
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     moveStart=root and root.Position or nil
+    guideAtShow=guideOff
     if s[4]=="menu" and not granted then granted=true;pref("grant",1) end
     if i<50 then pref("tut",math.min(i,49)) end
   end
@@ -11240,12 +11242,15 @@ end)()
     if cond=="move" then
       local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
       if root and moveStart and (root.Position-moveStart).Magnitude>10 then show(current+1) return end
+    elseif cond=="guide" and guideOff~=guideAtShow then
+      -- 눌러 본 뒤에는 다시 켜 둔다.
+      guideOff=false;paintGuide();pref("guide",0);show(current+1) return
     elseif cond=="menu" and menuOpen() then show(current+1) return
     elseif cond=="skillpage" and skillPageOpen() then show(current+1) return
     elseif cond=="learned" and anyTalent() then show(current+1) return end
     -- 메뉴가 닫히면 메뉴 단계로 되돌린다.
-    if (cond=="skillpage" or cond=="learned" or steps[current][1]=="퀵슬롯 등록") and not menuOpen() then show(6) return end
-    if cond=="learned" and not skillPageOpen() then show(7) return end
+    if (cond=="skillpage" or cond=="learned" or steps[current][1]=="퀵슬롯 등록") and not menuOpen() then show(idx("메뉴 열기")) return end
+    if cond=="learned" and not skillPageOpen() then show(idx("스킬 탭")) return end
     -- 카드 위치: 평소엔 위쪽(퀵슬롯·버튼을 안 가림), 메뉴가 열려 있으면 아래쪽.
     local radar=player.PlayerGui:FindFirstChild("MeadowExplorerRadar",true)
     if menuOpen() then
@@ -11281,7 +11286,7 @@ end)()
     if tutorialStep<99 and not started then
       started=true
       task.wait(2.5)
-      if menuOpen() then show(6) else show(1) end
+      if menuOpen() then show(idx("메뉴 열기")) else show(1) end
     else
       gui:SetAttribute("TutorialOverviewDone",true)
     end
