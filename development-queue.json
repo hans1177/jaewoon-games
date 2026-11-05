@@ -2671,7 +2671,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-05T00:19:06.409Z",
+      "updatedAt": "2026-11-05T00:20:16.768Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -3096,7 +3096,38 @@
         "retryNotBefore": "2026-11-05T00:15:58.614Z",
         "observedAt": "2026-11-05T00:06:09.396Z",
         "workflowRunId": 41938588731,
-        "authority": "roblox-open-cloud-engine-probe-failure"
+        "authority": "roblox-open-cloud-engine-probe-failure",
+        "officialLiveServerObservation": {
+          "version": 1,
+          "universeId": "10773436325",
+          "placeId": "108565970231899",
+          "candidateVersionNumber": 175,
+          "observedAt": "2026-11-05T00:20:16.603Z",
+          "status": 403,
+          "endpoint": "https://apis.roblox.com/server-management/v1/universes/10773436325/places/108565970231899/versions/175/game-servers",
+          "requiredScope": "universe:read",
+          "actualGameScriptBootVerified": false,
+          "actualPlayerPlayVerified": false,
+          "authority": "roblox-official-version-scoped-game-server-observation",
+          "available": false,
+          "permissionDenied": true,
+          "providerErrorCode": null,
+          "accessFailureCategory": "UNCLASSIFIED_AUTHORIZATION_DENIAL",
+          "readScopeCrosscheck": {
+            "status": 403,
+            "state": "SAME_KEY_UNIVERSE_READ_ENDPOINT_DENIED"
+          },
+          "keyScopeAudit": {
+            "state": "UNIVERSE_READ_SCOPE_NOT_IN_ACTIONS_KEY",
+            "keyEnabled": true,
+            "keyExpired": false,
+            "universeReadGranted": false,
+            "targetConfigured": false
+          },
+          "serverInstanceObserved": false,
+          "activeServerCount": null,
+          "state": "GAME_SERVER_READ_PERMISSION_UNAVAILABLE"
+        }
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
@@ -4267,7 +4298,7 @@
       "updatedAt": "2026-11-05T00:19:06.409Z"
     }
   ],
-  "updatedAt": "2026-11-05T00:19:48.988Z",
+  "updatedAt": "2026-11-05T00:20:16.768Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
