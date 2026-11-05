@@ -96,6 +96,8 @@ return function(D, S)
 		state.portId = toId
 		state.stats.visited[toId] = true
 		S.State.gainXp(state, "adventure", days * 2 + math.floor(dist / 200), msgs)
+		S.Perk.gainSpec(state, "voyage", days * 3, msgs)
+		S.Perk.addAffinity(state, 1, msgs)
 		return true, table.concat(msgs, "\n")
 	end
 

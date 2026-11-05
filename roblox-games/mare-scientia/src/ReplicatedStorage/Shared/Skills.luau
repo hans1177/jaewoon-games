@@ -8,6 +8,7 @@ export type Skill = {
 	cooldown: number, -- 라운드
 	steamOnly: boolean, -- 증기선 전용
 	techReq: string?, -- 필요한 기술
+	grantedLevel: number?, -- 전문 분야 스킬이면 필요한 전문 레벨
 	grantedBy: string?, -- 이 전문 분야이거나 이 동료와 함께일 때만 쓸 수 있다 (Specialties.luau 의 id)
 	summary: string,
 }
@@ -59,23 +60,23 @@ local Skills: { [string]: Skill } = {
 		summary = "갈고리로 적을 붙잡아 한 라운드 행동 불능",
 	},
 	herbal_remedy = {
-		id = "herbal_remedy", name = "약초 치료", phase = "boarding", cooldown = 3, steamOnly = false,
+		id = "herbal_remedy", grantedLevel = 3, name = "약초 치료", phase = "boarding", cooldown = 3, steamOnly = false,
 		grantedBy = "botanist", summary = "약초로 부상한 선원을 크게 회복 (식물학자)",
 	},
 	predator_decoy = {
-		id = "predator_decoy", name = "맹수 울음", phase = "ranged", cooldown = 4, steamOnly = false,
+		id = "predator_decoy", grantedLevel = 3, name = "맹수 울음", phase = "ranged", cooldown = 4, steamOnly = false,
 		grantedBy = "zoologist", summary = "적 선원이 겁먹어 컨디션이 떨어진다 (동물학자)",
 	},
 	relic_ward = {
-		id = "relic_ward", name = "유물의 가호", phase = "any", cooldown = 5, steamOnly = false,
+		id = "relic_ward", grantedLevel = 3, name = "유물의 가호", phase = "any", cooldown = 5, steamOnly = false,
 		grantedBy = "collector", summary = "수집한 유물의 힘으로 선체를 크게 수리 (유물수집가)",
 	},
 	chart_course = {
-		id = "chart_course", name = "해도 항로 차단", phase = "ranged", cooldown = 4, steamOnly = false,
+		id = "chart_course", grantedLevel = 3, name = "해도 항로 차단", phase = "ranged", cooldown = 4, steamOnly = false,
 		grantedBy = "cartographer", summary = "얕은 곳으로 몰아 적 속도를 크게 낮춘다 (지도제작자)",
 	},
 	bribe_gunners = {
-		id = "bribe_gunners", name = "뇌물 공작", phase = "boarding", cooldown = 7, steamOnly = false,
+		id = "bribe_gunners", grantedLevel = 3, name = "뇌물 공작", phase = "boarding", cooldown = 7, steamOnly = false,
 		grantedBy = "merchant", summary = "적 일부를 매수해 한 라운드 행동 불능 (무역가)",
 	},
 	star_fix = {

@@ -18,6 +18,8 @@ return function(D, S)
 		state.fame += card.reward.fame
 		table.insert(msgs, string.format("도감 등록: %s [%s] (+%d코인, 명성 +%d)", card.name, card.rarity, coins, card.reward.fame))
 		S.State.gainXp(state, "adventure", RARITY_XP[card.rarity] or 15, msgs)
+		S.Perk.gainSpec(state, card.field, RARITY_XP[card.rarity] or 15, msgs)
+		S.Perk.addAffinity(state, 1, msgs)
 		return true
 	end
 

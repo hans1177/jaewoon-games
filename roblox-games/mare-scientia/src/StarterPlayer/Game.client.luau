@@ -290,7 +290,7 @@ local function renderStatus()
 	for _, sp in view.specialties.list do
 		add(function()
 			local mine = view.specialties.current == sp.id
-			local sub = sp.summary
+			local sub = sp.summary .. string.format(" · 전문 Lv.%d", sp.level) .. (if sp.nextXp > 0 then string.format(" (%d/%d)", sp.xp, sp.nextXp) else " (최대)")
 			if view.specialties.current and not mine then
 				sub ..= string.format(" · 변경 %d코인", view.specialties.changeFee)
 			end
@@ -303,7 +303,7 @@ local function renderStatus()
 	add(function() return mkHeader(content, string.format("동료 (최대 %d명)", view.companions.max)) end)
 	for _, c in view.companions.list do
 		add(function()
-			local sub = string.format("%s\n영입 %d코인%s", c.summary, c.fee, if c.blocked and not c.joined then " · " .. c.blocked else "")
+			local sub = string.format("%s\n영입 %d코인 · 호감도 %d (%s)%s", c.summary, c.fee, c.affinity, ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier], if c.blocked and not c.joined then " · " .. c.blocked else "")
 			local btn = if c.joined
 				then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
 				else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }

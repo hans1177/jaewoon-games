@@ -5,15 +5,41 @@ return function(D, S)
 	local handlers = {}
 	local Sp = D.Specialties
 
+	local NUMERIC = { "discoverBonus", "coinMult", "speedMult", "sellBonus", "cannonMult" }
+
+	local function scaled(perk, k)
+		if k == 1 then
+			return perk
+		end
+		local c = table.clone(perk)
+		for _, key in NUMERIC do
+			if c[key] then
+				c[key] = c[key] * k
+			end
+		end
+		return c
+	end
+
+	-- 전문 분야 레벨 (아직 한 번도 안 올렸으면 1)
+	local function specLevel(state, specId)
+		local rec = state.specLevels[specId]
+		return if rec then rec.level else 1
+	end
+
+	local function affinityOf(state, companionId)
+		return state.affinity[companionId] or 0
+	end
+
 	local function activePerks(state)
 		local list = {}
 		if state.specialty and Sp.SpecialtyById[state.specialty] then
-			table.insert(list, Sp.SpecialtyById[state.specialty].perk)
+			local k = Sp.levelMult(specLevel(state, state.specialty))
+			table.insert(list, scaled(Sp.SpecialtyById[state.specialty].perk, k))
 		end
 		for _, id in state.companions do
 			local c = Sp.CompanionById[id]
 			if c then
-				table.insert(list, c.perk)
+				table.insert(list, scaled(c.perk, Sp.affinityMult(affinityOf(state, id))))
 			end
 		end
 		return list
@@ -63,6 +89,51 @@ return function(D, S)
 
 	local function cannonBonus(state)
 		return sum(state, "cannonMult")
+	end
+
+	-- 전문 분야 경험치: kind 는 카드 분야 또는 "voyage" / "trade"
+	local function gainSpec(state, kind, amount, msgs)
+		local sp = state.specialty and Sp.SpecialtyById[state.specialty]
+		if not sp or amount <= 0 or not table.find(sp.xpOn, kind) then
+			return false
+		end
+		local rec = state.specLevels[sp.id]
+		if not rec then
+			rec = { level = 1, xp = 0 }
+			state.specLevels[sp.id] = rec
+		end
+		if rec.level >= Sp.MAX_LEVEL then
+			return false
+		end
+		rec.xp += math.floor(amount)
+		local up = false
+		while rec.level < Sp.MAX_LEVEL and rec.xp >= Sp.xpForNext(rec.level) do
+			rec.xp -= Sp.xpForNext(rec.level)
+			rec.level += 1
+			up = true
+			if msgs then
+				table.insert(msgs, string.format("%s 전문 레벨 %d!%s", sp.name, rec.level, if rec.level == Sp.SKILL_LEVEL then " (전용 스킬 해금)" else ""))
+			end
+		end
+		if rec.level >= Sp.MAX_LEVEL then
+			rec.xp = 0
+		end
+		return up
+	end
+
+	-- 함께하는 동료 모두와 호감도가 오른다. 단계가 오르면 메시지를 남긴다.
+	local function addAffinity(state, amount, msgs)
+		for _, id in state.companions do
+			local c = Sp.CompanionById[id]
+			if c then
+				local before = affinityOf(state, id)
+				local after = math.min(Sp.MAX_AFFINITY, before + amount)
+				state.affinity[id] = after
+				if msgs and Sp.affinityTier(after) > Sp.affinityTier(before) then
+					table.insert(msgs, string.format("%s와(과)의 유대가 깊어졌다 (효과 x%.2f)", c.name, Sp.affinityMult(after)))
+				end
+			end
+		end
 	end
 
 	function handlers.SetSpecialty(state, p)
@@ -140,6 +211,10 @@ return function(D, S)
 	return {
 		handlers = handlers,
 		companionLines = companionLines,
+		gainSpec = gainSpec,
+		addAffinity = addAffinity,
+		specLevel = specLevel,
+		affinityOf = affinityOf,
 		discoverBonus = discoverBonus,
 		coinMult = coinMult,
 		speedMult = speedMult,

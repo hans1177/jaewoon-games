@@ -30,6 +30,13 @@ local Sites: { Site } = {
 	{ id = "orkney_village", name = "오크니 신석기 마을", portId = "edinburgh", minLevel = 4, days = 3, pool = { "site_skara_brae" } },
 	{ id = "viking_harbor", name = "옛 바이킹 항구", portId = "bergen", minLevel = 2, days = 1, pool = { "relic_viking_ship", "ast_aurora" } },
 	{ id = "seville_groves", name = "과달키비르 강변 숲", portId = "seville", minLevel = 1, days = 1, pool = { "bot_cork_oak", "geo_canary_current" } },
+	{ id = "marseille_calanques", name = "칼랑크 해안", portId = "marseille", minLevel = 1, days = 1, pool = { "geo_mistral", "bot_citrus" } },
+	{ id = "genoa_gardens", name = "리구리아 언덕 정원", portId = "genoa", minLevel = 1, days = 1, pool = { "bot_citrus" } },
+	{ id = "venice_arsenal", name = "베네치아 조선소 자료실", portId = "venice", minLevel = 2, days = 1, pool = { "relic_arsenal" } },
+	{ id = "venice_lagoon", name = "베네치아 석호", portId = "venice", minLevel = 1, days = 1, pool = { "zoo_lagoon_birds" } },
+	{ id = "livorno_lab", name = "토스카나 실험실", portId = "livorno", minLevel = 2, days = 1, pool = { "zoo_redi_experiment" } },
+	{ id = "vesuvius_slopes", name = "베수비오 기슭", portId = "naples", minLevel = 3, days = 2, pool = { "min_vesuvius" } },
+	{ id = "pompeii_ruins", name = "폼페이 발굴지", portId = "naples", minLevel = 4, days = 3, pool = { "site_pompeii" } },
 	{ id = "lisbon_apothecary", name = "리스본 약재상", portId = "lisbon", minLevel = 2, days = 1, pool = { "med_cinchona" } },
 	{ id = "hamburg_docks", name = "함부르크 항구 도서관", portId = "hamburg", minLevel = 2, days = 1, pool = { "phy_pendulum" } },
 }

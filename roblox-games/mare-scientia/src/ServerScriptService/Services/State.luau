@@ -37,7 +37,9 @@ return function(D)
 			scholarsMet = {},
 			bosses = {},
 			specialty = nil,
+			specLevels = {},
 			companions = {},
+			affinity = {},
 		}
 	end
 
@@ -214,6 +216,24 @@ return function(D)
 		if type(saved.specialty) == "string" and D.Specialties.SpecialtyById[saved.specialty] then
 			s.specialty = saved.specialty
 		end
+		if type(saved.specLevels) == "table" then
+			for id, rec in saved.specLevels do
+				if type(id) == "string" and D.Specialties.SpecialtyById[id] and type(rec) == "table" then
+					local lv = math.floor(num(rec.level, 1, 1, D.Specialties.MAX_LEVEL))
+					s.specLevels[id] = {
+						level = lv,
+						xp = if lv >= D.Specialties.MAX_LEVEL then 0 else math.floor(num(rec.xp, 0, 0, 1e7)),
+					}
+				end
+			end
+		end
+		if type(saved.affinity) == "table" then
+			for id, v in saved.affinity do
+				if type(id) == "string" and D.Specialties.CompanionById[id] then
+					s.affinity[id] = math.floor(num(v, 0, 0, D.Specialties.MAX_AFFINITY))
+				end
+			end
+		end
 		if type(saved.companions) == "table" then
 			for _, id in saved.companions do
 				if
@@ -279,7 +299,9 @@ return function(D)
 			scholarsMet = state.scholarsMet,
 			bosses = state.bosses,
 			specialty = state.specialty,
+			specLevels = state.specLevels,
 			companions = state.companions,
+			affinity = state.affinity,
 		}
 	end
 

@@ -12,7 +12,7 @@ export type Perk = {
 	cannonMult: number?, -- 포격 +
 }
 
-export type Specialty = { id: string, name: string, summary: string, perk: Perk }
+export type Specialty = { id: string, name: string, summary: string, perk: Perk, xpOn: { string } } -- xpOn: 경험치를 주는 카드 분야 또는 "voyage"/"trade"
 
 export type Companion = {
 	id: string,
@@ -28,15 +28,15 @@ export type Companion = {
 
 local Specialties: { Specialty } = {
 	{ id = "botanist", name = "식물학자", summary = "식물·약용·의학 카드 발견 확률 +25%",
-		perk = { discoverFields = { "Botany", "Medicine" }, discoverBonus = 0.25 } },
+		perk = { discoverFields = { "Botany", "Medicine" }, discoverBonus = 0.25 }, xpOn = { "Botany", "Medicine" } },
 	{ id = "zoologist", name = "동물학자", summary = "동물 카드 발견 확률 +25%",
-		perk = { discoverFields = { "Zoology" }, discoverBonus = 0.25 } },
+		perk = { discoverFields = { "Zoology" }, discoverBonus = 0.25 }, xpOn = { "Zoology" } },
 	{ id = "collector", name = "유물수집가", summary = "유물·유적·광물 카드 등록 코인 +50%",
-		perk = { coinFields = { "Relic", "Site", "Mineral" }, coinMult = 0.5 } },
+		perk = { coinFields = { "Relic", "Site", "Mineral" }, coinMult = 0.5 }, xpOn = { "Relic", "Site", "Mineral" } },
 	{ id = "cartographer", name = "지도제작자", summary = "항해 속도 +10%",
-		perk = { speedMult = 0.1 } },
+		perk = { speedMult = 0.1 }, xpOn = { "voyage", "Geography", "Astronomy" } },
 	{ id = "merchant", name = "무역가", summary = "되파는 비율 +2%",
-		perk = { sellBonus = 0.02 } },
+		perk = { sellBonus = 0.02 }, xpOn = { "trade" } },
 }
 
 local Companions: { Companion } = {
@@ -86,6 +86,33 @@ return {
 	SpecialtyById = SpecialtyById,
 	Companions = Companions,
 	CompanionById = CompanionById,
+	MAX_AFFINITY = 100,
+	-- 호감도 단계: 0~29 낯선 사이(x1.0), 30~69 믿는 사이(x1.15), 70 이상 오랜 벗(x1.3)
+	affinityTier = function(affinity: number): number
+		if affinity >= 70 then
+			return 3
+		elseif affinity >= 30 then
+			return 2
+		end
+		return 1
+	end,
+	affinityMult = function(affinity: number): number
+		if affinity >= 70 then
+			return 1.3
+		elseif affinity >= 30 then
+			return 1.15
+		end
+		return 1
+	end,
+	MAX_LEVEL = 5,
+	SKILL_LEVEL = 3, -- 전문 분야 전용 스킬이 열리는 전문 레벨
+	-- 전문 레벨 L 의 보너스 배율: 1.0, 1.2, 1.4, 1.6, 1.8
+	levelMult = function(level: number): number
+		return 1 + 0.2 * (math.clamp(level, 1, 5) - 1)
+	end,
+	xpForNext = function(level: number): number
+		return math.floor(40 * level ^ 1.5)
+	end,
 	CHANGE_FEE = 200, -- 전문 분야를 바꿀 때의 비용 (처음 고를 때는 무료)
 	MAX_COMPANIONS = 2,
 }

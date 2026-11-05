@@ -132,6 +132,11 @@ do
 	end
 	-- 모든 카드는 얻을 길이 있어야 한다 (학자, 탐험 지점, 또는 장거리 항해의 해류 기록)
 	obtainable.geo_gulfstream = true
+	for _, q in D.Quests.Quests do
+		if q.rewardCardId then
+			obtainable[q.rewardCardId] = true
+		end
+	end
 	for _, b in D.Bosses.Bosses do
 		obtainable[b.cardId] = true
 	end
@@ -631,12 +636,12 @@ do
 	local st = newState()
 	local v = S.View.build(st, ctx)
 	check("view has player", v.player.portName == "런던" and v.player.year == 1700)
-	check("view goods", #v.goods == 16)
+	check("view goods", #v.goods == (function() local n = 0 for _ in D.Ports.Goods do n += 1 end return n end)())
 	check("view routes", #v.routes == (function() local n = 0 for _ in D.Ports.Ports do n += 1 end return n - 1 end)())
 	check("view codex", v.codex.total == #D.Cards.Cards and v.codex.found == 0)
 	check("view hides unfound names", v.codex.cards[1].name == "???")
 	check("view tech", #v.tech == 6)
-	check("view quests", #v.quests.available == #D.Quests.Quests)
+	check("view quests", #v.quests.available == (function() local n = 0 for _, q in D.Quests.Quests do if not q.companionId then n += 1 end end return n end)())
 	check("view loadout", v.loadout.slots == 3)
 	check("view shipyard", v.shipyard.available == true and #v.shipyard.ships == 6)
 	check("view scholars at london", #v.scholars >= 4)
@@ -924,6 +929,9 @@ do
 	local ok, msg = act(st, "SetLoadout", { skills = { "herbal_remedy" } })
 	check("specialty skill locked without specialty", not ok, msg)
 	st.specialty = "botanist"
+	ok, msg = act(st, "SetLoadout", { skills = { "herbal_remedy", "broadside" } })
+	check("specialty skill needs spec level 3", not ok, msg)
+	st.specLevels.botanist = { level = D.Specialties.SKILL_LEVEL, xp = 0 }
 	ok = act(st, "SetLoadout", { skills = { "herbal_remedy", "broadside" } })
 	check("specialty skill equips with specialty", ok)
 	check("fighter has specialty skill", table.find(S.Battle.playerFighter(st).skills, "herbal_remedy") ~= nil)
@@ -986,6 +994,117 @@ do
 	st.ship.hull, st.ship.crew = d.hull, d.crew
 	local ok, msg = act(st, "Hunt", {})
 	check("hunt message has companion line", ok and string.find(msg, "에드먼드 핼리", 1, true) ~= nil, msg)
+end
+
+-- 전문 분야 레벨과 호감도 -------------------------------------------
+do
+	local Sp = D.Specialties
+	local st = newState("england")
+	check("gainSpec without specialty ignored", S.Perk.gainSpec(st, "Botany", 100) == false)
+	st.specialty = "botanist"
+	check("gainSpec wrong kind ignored", S.Perk.gainSpec(st, "trade", 100) == false)
+	check("level 1 mult is 1", S.Perk.discoverBonus(st, "Botany") == 0.25)
+	local msgs = {}
+	S.Perk.gainSpec(st, "Botany", Sp.xpForNext(1), msgs)
+	check("level up on enough xp", st.specLevels.botanist.level == 2 and #msgs == 1)
+	check("level 2 bonus scales", math.abs(S.Perk.discoverBonus(st, "Botany") - 0.25 * 1.2) < 1e-9)
+	for _ = 1, 30 do
+		S.Perk.gainSpec(st, "Medicine", 5000)
+	end
+	check("level capped", st.specLevels.botanist.level == Sp.MAX_LEVEL and st.specLevels.botanist.xp == 0)
+	-- 분야를 바꿔도 레벨은 보존된다
+	st.coins = 1000
+	act(st, "SetSpecialty", { specialtyId = "merchant" })
+	act(st, "SetSpecialty", { specialtyId = "botanist" })
+	check("spec level kept after switching", st.specLevels.botanist.level == Sp.MAX_LEVEL)
+
+	-- 탐험으로 전문 경험치가 쌓인다
+	local g = newState("england")
+	g.specialty = "botanist"
+	g.portId = "london"
+	for _ = 1, 200 do
+		g.ship.supplies = 99
+		act(g, "Explore", { siteId = "london_fields" })
+	end
+	check("exploring grants specialty xp", g.specLevels.botanist ~= nil and (g.specLevels.botanist.level > 1 or g.specLevels.botanist.xp > 0))
+
+	-- 호감도
+	local a = newState("england")
+	a.companions = { "c_halley" }
+	local base = S.Perk.speedMult(a)
+	local m2 = {}
+	S.Perk.addAffinity(a, 30, m2)
+	check("affinity tier up message", #m2 == 1 and a.affinity.c_halley == 30)
+	check("affinity raises perk", S.Perk.speedMult(a) > base)
+	S.Perk.addAffinity(a, 500)
+	check("affinity capped", a.affinity.c_halley == Sp.MAX_AFFINITY)
+	a.companions = {}
+	S.Perk.addAffinity(a, 10)
+	check("no affinity without companion", a.affinity.c_halley == Sp.MAX_AFFINITY)
+
+	-- 해전 승리로 호감도가 오른다
+	local b = newState("england")
+	b.companions = { "c_papin" }
+	b.careers.battle.level = 15
+	b.ship.id = "galleon"
+	local d = S.State.shipDef(b)
+	b.ship.hull, b.ship.crew = d.hull, d.crew
+	for _ = 1, 10 do
+		b.ship.hull, b.ship.crew = d.hull, d.crew
+		act(b, "Hunt", {})
+	end
+	check("battle wins raise affinity", (b.affinity.c_papin or 0) >= 2)
+
+	-- 저장 왕복과 변조 방어
+	local saved = S.State.serialize(st)
+	local back = S.State.sanitize(saved)
+	check("specLevels roundtrip", back and back.specLevels.botanist.level == Sp.MAX_LEVEL)
+	local s2 = S.State.serialize(a)
+	s2.specLevels = { botanist = { level = 99, xp = -5 }, ghost = { level = 3 }, merchant = "x" }
+	s2.affinity = { c_halley = 9999, ghost = 5, c_papin = -3 }
+	back = S.State.sanitize(s2)
+	check("specLevels sanitized", back and back.specLevels.botanist.level == Sp.MAX_LEVEL and back.specLevels.ghost == nil and back.specLevels.merchant == nil)
+	check("affinity sanitized", back and back.affinity.c_halley == Sp.MAX_AFFINITY and back.affinity.ghost == nil and back.affinity.c_papin == 0)
+end
+
+-- 동료 퀘스트 -------------------------------------------------------
+do
+	for _, q in D.Quests.Quests do
+		if q.companionId then
+			check("companion quest companion exists " .. q.id, D.Specialties.CompanionById[q.companionId] ~= nil)
+			check("companion quest card exists " .. q.id, q.rewardCardId and D.Cards.ById[q.rewardCardId] ~= nil)
+		end
+		if q.kind == "field" then
+			check("field quest has field " .. q.id, q.fieldId ~= nil)
+		end
+	end
+	local st = newState("england")
+	local ok, msg = act(st, "Accept", { questId = "cq_merian" })
+	check("companion quest hidden at low affinity", not ok, msg)
+	st.affinity.c_merian = 20
+	local names = {}
+	for _, q in S.View.build(st, ctx).quests.available do
+		names[q.id] = true
+	end
+	check("companion quest visible at affinity", names.cq_merian == true and names.cq_halley == nil)
+	ok = act(st, "Accept", { questId = "cq_merian" })
+	check("companion quest accepted", ok)
+	ok = act(st, "Claim", { questId = "cq_merian" })
+	check("claim blocked without progress", not ok)
+	st.discovered.zoo_reindeer, st.discovered.zoo_puffin, st.discovered.zoo_metamorphosis = true, true, true
+	local coins0 = st.coins
+	ok, msg = act(st, "Claim", { questId = "cq_merian" })
+	check("field quest claim works", ok and st.quests.done.cq_merian and st.discovered.zoo_surinam_insects == true, msg)
+	check("field quest rewards coins", st.coins > coins0 + 800)
+	-- 모든 동료 퀘스트의 카드는 중복 없이 발견 목록에 들어간다
+	local s2 = newState("england")
+	s2.affinity.c_boyle = 50
+	act(s2, "Accept", { questId = "cq_boyle" })
+	s2.portId = "london"
+	s2.cargo.glass = 6
+	act(s2, "TurnIn", { questId = "cq_boyle" })
+	ok = act(s2, "Claim", { questId = "cq_boyle" })
+	check("deliver companion quest works", ok and s2.discovered.che_air_pump == true)
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))

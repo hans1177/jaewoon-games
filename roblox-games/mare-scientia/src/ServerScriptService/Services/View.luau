@@ -190,7 +190,7 @@ return function(D, S)
 					amount = q.amount,
 					rewardCoins = q.rewardCoins,
 				})
-			elseif not state.quests.done[q.id] then
+			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) then
 				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary, rewardCoins = q.rewardCoins })
 			end
 		end
@@ -240,7 +240,15 @@ return function(D, S)
 
 		view.specialties = { current = state.specialty, changeFee = D.Specialties.CHANGE_FEE, list = {} }
 		for _, sp in D.Specialties.Specialties do
-			table.insert(view.specialties.list, { id = sp.id, name = sp.name, summary = sp.summary })
+			local rec = state.specLevels[sp.id]
+			table.insert(view.specialties.list, {
+				id = sp.id,
+				name = sp.name,
+				summary = sp.summary,
+				level = if rec then rec.level else 1,
+				xp = if rec then rec.xp else 0,
+				nextXp = if rec and rec.level >= D.Specialties.MAX_LEVEL then 0 else D.Specialties.xpForNext(if rec then rec.level else 1),
+			})
 		end
 		view.companions = { max = D.Specialties.MAX_COMPANIONS, list = {} }
 		for _, c in D.Specialties.Companions do
@@ -250,6 +258,8 @@ return function(D, S)
 				summary = c.summary,
 				fee = c.fee,
 				joined = table.find(state.companions, c.id) ~= nil,
+				affinity = state.affinity[c.id] or 0,
+				tier = D.Specialties.affinityTier(state.affinity[c.id] or 0),
 				blocked = S.Perk.recruitBlock(state, c),
 			})
 		end

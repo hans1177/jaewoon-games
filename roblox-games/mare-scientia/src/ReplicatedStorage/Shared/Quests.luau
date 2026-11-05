@@ -14,6 +14,10 @@ export type Quest = {
 	rewardFame: number,
 	rewardCareer: string?, -- "trade" | "adventure" | "battle"
 	rewardXp: number,
+	fieldId: string?, -- kind "field": 이 분야의 도감 카드 수
+	companionId: string?, -- 이 동료와 호감도가 minAffinity 이상일 때만 나타난다
+	minAffinity: number?,
+	rewardCardId: string?, -- 완료 보상으로 받는 도감 카드
 }
 
 local Quests: { Quest } = {
@@ -45,6 +49,29 @@ local Quests: { Quest } = {
 		amount = 20, rewardCoins = 3000, rewardFame = 100, rewardCareer = "adventure", rewardXp = 400 },
 	{ id = "q_sea_wolf", name = "바다의 늑대", summary = "해전에서 10번 승리", kind = "win",
 		amount = 10, rewardCoins = 2000, rewardFame = 60, rewardCareer = "battle", rewardXp = 300 },
+	{ id = "q_mediterranean", name = "지중해 순항", summary = "서로 다른 항구 15곳 방문", kind = "visit",
+		amount = 15, rewardCoins = 2500, rewardFame = 80, rewardCareer = "adventure", rewardXp = 300 },
+	{ id = "q_silk_road", name = "비단 교역", summary = "비단 5개를 런던에 납품", kind = "deliver", goodId = "silk", portId = "london",
+		amount = 5, rewardCoins = 1400, rewardFame = 30, rewardCareer = "trade", rewardXp = 160 },
+	-- 동료 전용 퀘스트 (호감도가 쌓이면 나타난다)
+	{ id = "cq_merian", name = "메리안의 스케치북", summary = "동물 카드 3장 발견", kind = "field", fieldId = "Zoology",
+		amount = 3, companionId = "c_merian", minAffinity = 20, rewardCardId = "zoo_surinam_insects",
+		rewardCoins = 800, rewardFame = 30, rewardCareer = "adventure", rewardXp = 150 },
+	{ id = "cq_halley", name = "혜성의 귀환", summary = "천문 카드 3장 발견", kind = "field", fieldId = "Astronomy",
+		amount = 3, companionId = "c_halley", minAffinity = 20, rewardCardId = "ast_halley_prediction",
+		rewardCoins = 900, rewardFame = 35, rewardCareer = "adventure", rewardXp = 160 },
+	{ id = "cq_leeuwenhoek", name = "렌즈와 빛", summary = "물리 카드 4장 발견", kind = "field", fieldId = "Physics",
+		amount = 4, companionId = "c_leeuwenhoek", minAffinity = 20, rewardCardId = "phy_lens_grinding",
+		rewardCoins = 900, rewardFame = 35, rewardCareer = "adventure", rewardXp = 160 },
+	{ id = "cq_linnaeus", name = "자연의 체계", summary = "식물 카드 4장 발견", kind = "field", fieldId = "Botany",
+		amount = 4, companionId = "c_linnaeus", minAffinity = 20, rewardCardId = "bot_systema_naturae",
+		rewardCoins = 1200, rewardFame = 45, rewardCareer = "adventure", rewardXp = 200 },
+	{ id = "cq_boyle", name = "공기 펌프 실험", summary = "유리 6개를 런던에 납품", kind = "deliver", goodId = "glass", portId = "london",
+		amount = 6, companionId = "c_boyle", minAffinity = 20, rewardCardId = "che_air_pump",
+		rewardCoins = 1000, rewardFame = 35, rewardCareer = "trade", rewardXp = 150 },
+	{ id = "cq_papin", name = "안전 밸브", summary = "증기 윈치 연구 완료", kind = "research", techId = "steam_winch",
+		amount = 1, companionId = "c_papin", minAffinity = 20, rewardCardId = "phy_safety_valve",
+		rewardCoins = 1000, rewardFame = 40, rewardCareer = "adventure", rewardXp = 170 },
 }
 
 local ById: { [string]: Quest } = {}

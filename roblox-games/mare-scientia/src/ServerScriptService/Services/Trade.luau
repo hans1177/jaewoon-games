@@ -74,6 +74,7 @@ return function(D, S)
 		local msgs = { string.format("%s %d개 판매 (+%d)", D.Ports.Goods[goodId].name, amount, revenue) }
 		if profit > 0 then
 			S.State.gainXp(state, "trade", math.floor(profit / 8) + 1, msgs)
+			S.Perk.gainSpec(state, "trade", math.floor(profit / 10) + 1, msgs)
 		end
 		return true, table.concat(msgs, "\n")
 	end

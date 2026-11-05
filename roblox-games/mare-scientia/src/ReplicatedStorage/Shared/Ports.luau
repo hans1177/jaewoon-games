@@ -47,12 +47,14 @@ local Goods: { [string]: Good } = {
 	beer = { id = "beer", name = "맥주", basePrice = 30 },
 	sugar = { id = "sugar", name = "설탕", basePrice = 65 },
 	tea = { id = "tea", name = "차", basePrice = 130 },
+	olive_oil = { id = "olive_oil", name = "올리브유", basePrice = 55 },
+	silk = { id = "silk", name = "비단", basePrice = 160 },
 }
 
 local Ports: { [string]: Port } = {
 	london = {
 		id = "london", name = "런던", country = "england", lat = 51.51, lon = -0.13,
-		produces = { "wool", "coal" }, demands = { "spice", "wine", "amber", "tea" }, shipyard = true,
+		produces = { "wool", "coal" }, demands = { "spice", "wine", "amber", "tea", "silk" }, shipyard = true,
 	},
 	amsterdam = {
 		id = "amsterdam", name = "암스테르담", country = "netherlands", lat = 52.37, lon = 4.90,
@@ -76,11 +78,11 @@ local Ports: { [string]: Port } = {
 	},
 	hamburg = {
 		id = "hamburg", name = "함부르크", country = "germany", lat = 53.55, lon = 9.99,
-		produces = { "beer", "cloth" }, demands = { "fish", "fur", "sugar" }, shipyard = false,
+		produces = { "beer", "cloth" }, demands = { "fish", "fur", "sugar", "olive_oil" }, shipyard = false,
 	},
 	bergen = {
 		id = "bergen", name = "베르겐", country = "norway", lat = 60.39, lon = 5.32,
-		produces = { "fish", "fur" }, demands = { "salt", "wine", "cloth" }, shipyard = false,
+		produces = { "fish", "fur" }, demands = { "salt", "wine", "cloth", "olive_oil" }, shipyard = false,
 	},
 	edinburgh = {
 		id = "edinburgh", name = "에든버러", country = "scotland", lat = 55.95, lon = -3.19,
@@ -105,6 +107,26 @@ local Ports: { [string]: Port } = {
 	seville = {
 		id = "seville", name = "세비야", country = "spain", lat = 37.39, lon = -5.98,
 		produces = { "wine", "sugar" }, demands = { "wool", "fur", "iron" }, shipyard = false,
+	},
+	marseille = {
+		id = "marseille", name = "마르세유", country = "france", lat = 43.30, lon = 5.37,
+		produces = { "olive_oil", "salt" }, demands = { "wool", "timber", "tea" }, shipyard = true,
+	},
+	genoa = {
+		id = "genoa", name = "제노바", country = "italy", lat = 44.41, lon = 8.93,
+		produces = { "silk", "olive_oil" }, demands = { "wool", "iron", "beer" }, shipyard = false,
+	},
+	venice = {
+		id = "venice", name = "베네치아", country = "venice", lat = 45.44, lon = 12.32,
+		produces = { "glass", "silk" }, demands = { "wool", "fur", "iron" }, shipyard = true,
+	},
+	livorno = {
+		id = "livorno", name = "리보르노", country = "tuscany", lat = 43.55, lon = 10.31,
+		produces = { "olive_oil", "wine" }, demands = { "coal", "fish", "fur" }, shipyard = false,
+	},
+	naples = {
+		id = "naples", name = "나폴리", country = "naples", lat = 40.85, lon = 14.27,
+		produces = { "wine", "silk" }, demands = { "iron", "timber", "coal" }, shipyard = false,
 	},
 	lisbon = {
 		id = "lisbon", name = "리스본", country = "portugal", lat = 38.72, lon = -9.14,
@@ -137,6 +159,11 @@ local Nations: { [string]: Nation } = {
 		id = "sweden", name = "스웨덴", startPort = "gothenburg",
 		summary = "자연 연구 (모험 경험 +20%)",
 		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.2, battleXpMult = 1,
+	},
+	venice = {
+		id = "venice", name = "베네치아 공화국", startPort = "venice",
+		summary = "지중해 무역 전통 (판매 비율 +3%, 시작 코인 -100)",
+		speedMult = 1, sellBonus = 0.03, startCoins = -100, adventureXpMult = 1, battleXpMult = 1,
 	},
 }
 

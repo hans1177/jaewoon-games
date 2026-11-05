@@ -9,6 +9,10 @@ return function(D, S)
 		if s.techReq and not state.tech[s.techReq] then
 			return "연구 필요: " .. D.Tech.Tech[s.techReq].name
 		end
+		local spDef = s.grantedBy and D.Specialties.SpecialtyById[s.grantedBy]
+		if spDef and state.specialty == s.grantedBy and S.Perk.specLevel(state, s.grantedBy) < (s.grantedLevel or 1) then
+			return string.format("%s 전문 레벨 %d 필요", spDef.name, s.grantedLevel or 1)
+		end
 		if s.grantedBy and state.specialty ~= s.grantedBy and not table.find(state.companions, s.grantedBy) then
 			local sp = D.Specialties.SpecialtyById[s.grantedBy]
 			local co = D.Specialties.CompanionById[s.grantedBy]
@@ -88,6 +92,7 @@ return function(D, S)
 				table.insert(msgs, line)
 			end
 			S.State.gainXp(state, "battle", reward.xp, msgs)
+			S.Perk.addAffinity(state, 2, msgs)
 			return true
 		elseif result.winner == "b" then
 			local lost = math.floor(state.coins * 0.1)

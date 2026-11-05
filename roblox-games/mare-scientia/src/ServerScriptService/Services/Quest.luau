@@ -18,6 +18,15 @@ return function(D, S)
 			return state.stats.battlesWon - a.baseWins
 		elseif quest.kind == "visit" then
 			return S.State.countVisited(state)
+		elseif quest.kind == "field" then
+			local n = 0
+			for cardId in state.discovered do
+				local c = D.Cards.ById[cardId]
+				if c and c.field == quest.fieldId then
+					n += 1
+				end
+			end
+			return n
 		elseif quest.kind == "research" then
 			return if state.tech[quest.techId] then 1 else 0
 		end
@@ -32,6 +41,14 @@ return function(D, S)
 		return n
 	end
 
+	-- 동료 전용 퀘스트는 호감도가 모자라면 아직 보이지 않는다
+	local function visible(state, quest)
+		if quest.companionId then
+			return (state.affinity[quest.companionId] or 0) >= (quest.minAffinity or 0)
+		end
+		return true
+	end
+
 	function handlers.Accept(state, p)
 		local quest = type(p.questId) == "string" and D.Quests.ById[p.questId]
 		if not quest then
@@ -39,6 +56,9 @@ return function(D, S)
 		end
 		if state.quests.done[quest.id] then
 			return false, "이미 완료한 퀘스트예요"
+		end
+		if not visible(state, quest) then
+			return false, "동료와 더 가까워져야 해요"
 		end
 		if state.quests.active[quest.id] then
 			return false, "이미 진행 중이에요"
@@ -84,8 +104,11 @@ return function(D, S)
 		if quest.rewardCareer then
 			S.State.gainXp(state, quest.rewardCareer, quest.rewardXp, msgs)
 		end
+		if quest.rewardCardId then
+			S.Discovery.grantCard(state, quest.rewardCardId, msgs)
+		end
 		return true, table.concat(msgs, "\n")
 	end
 
-	return { handlers = handlers, progress = progress }
+	return { handlers = handlers, progress = progress, visible = visible }
 end

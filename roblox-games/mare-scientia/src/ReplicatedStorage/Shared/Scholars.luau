@@ -47,6 +47,10 @@ local Scholars: { Scholar } = {
 		cardId = "phy_thermometer", line = "끓는 물과 얼음 사이를 백 칸으로 나누면 누구나 같은 온도를 말할 수 있소." },
 	{ id = "banks", name = "조지프 뱅크스", portId = "london", fromYear = 1766, toYear = 1820, minFame = 120,
 		cardId = "bot_pacific_plants", line = "먼 바다의 식물을 보면 세계가 얼마나 넓은지 알게 되지요." },
+	{ id = "redi", name = "프란체스코 레디", portId = "livorno", fromYear = 1655, toYear = 1697, minFame = 50,
+		cardId = "zoo_redi_experiment", line = "고기를 천으로 덮어 두면 구더기는 생기지 않소. 직접 해 보시오." },
+	{ id = "malpighi", name = "마르첼로 말피기", portId = "genoa", fromYear = 1660, toYear = 1694, minFame = 60,
+		cardId = "bot_plant_anatomy", line = "현미경 아래에서 나무의 속은 작은 관들로 가득하다오." },
 	{ id = "linnaeus", name = "카를 린네", portId = "gothenburg", fromYear = 1735, toYear = 1778, minFame = 80,
 		cardId = "bot_binomial", line = "이름을 두 단어로 줄이면 모든 식물을 정리할 수 있다네." },
 }

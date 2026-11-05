@@ -73,6 +73,7 @@ return function(D, S)
 			end
 			S.Discovery.grantCard(state, boss.cardId, msgs)
 			S.State.gainXp(state, "battle", boss.rewardXp, msgs)
+			S.Perk.addAffinity(state, 5, msgs)
 		elseif result.winner == "b" then
 			local lost = math.floor(state.coins * 0.05)
 			state.coins -= lost

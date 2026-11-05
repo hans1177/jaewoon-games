@@ -61,6 +61,25 @@ local Bosses: { Boss } = {
 		rewardXp = 260,
 		cardId = "myth_sea_serpent",
 	},
+	{
+		id = "siren",
+		name = "세이렌",
+		summary = "지중해 바위섬에서 노래로 뱃사람을 홀린다는 괴물. 홀리는 노래에 선원들이 흔들린다.",
+		portIds = { "venice", "naples", "marseille", "genoa" },
+		minBattleLevel = 6,
+		cooldownDays = 25,
+		hull = 230,
+		crew = 46,
+		cannons = 13,
+		cannonMult = 1,
+		meleeMult = 1.15,
+		steamRage = 1.0,
+		skills = { "broadside", "chain_shot", "cutlass_flurry" },
+		rewardCoins = 1100,
+		rewardFame = 45,
+		rewardXp = 320,
+		cardId = "myth_siren",
+	},
 }
 
 local ById: { [string]: Boss } = {}
