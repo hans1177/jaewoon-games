@@ -5072,7 +5072,7 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
     -- [방패 장비] 한손 무기(검·도끼)+방패 자세 습득 시 막기 경감 50%→60%(방패 외형과 같은 조건).
     local shieldW=meadowRpg.equippedWeapon(player)
     local shieldCls=shieldW and shieldW.Id and Config.GearWeaponClass[shieldW.Id]
-    local shielded=(shieldCls=="Sword" or shieldCls=="Axe") and meadowRpg.nodeRank(player,19)>0
+    local shielded=meadowRpg.equippedShield(player)~=nil or ((shieldCls=="Sword" or shieldCls=="Axe") and meadowRpg.nodeRank(player,19)>0)
     damage=math.ceil(damage*.5)
     if shielded then damage=math.max(1,math.ceil(damage*.8)) end
     if now-(defense.lastBlockContactFXAt or -100) >=.12 then
@@ -5830,7 +5830,7 @@ local function meadowUltimate(player)
         guardFor(4)
       else sequence(nearestEnemy(root,18),5,.2,.6) end -- A 5연속 베기
       -- 방패(한손+방패 자세)면 철벽 반격: 잠시 방어 상태 + 체력 15% 회복.
-      if meadowRpg.nodeRank(player,19)>0 then
+      if meadowRpg.equippedShield(player)~=nil or meadowRpg.nodeRank(player,19)>0 then
         guardFor(4)
         humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.15)
         setNumber(player,"Health",math.floor(humanoid.Health))
