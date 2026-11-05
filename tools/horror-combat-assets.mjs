@@ -407,7 +407,7 @@ if(process.argv.includes('--village-extra-only')){
     op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
    }
    assetId=String(op.response?.assetId||'');
-   if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))throw Error('VILLAGE_EXTRA_UPLOAD_FAILED:'+name);
+   if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId)){console.log('VILLAGE_EXTRA_FAILED='+name+':'+JSON.stringify(op.error||'timeout').slice(0,200));continue;}
    art.assetId=assetId;art.importedSourceHash=sourceSha;art.universeUseGrantVerified=false;
    fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
    console.log('VILLAGE_EXTRA_UPLOADED='+name+':'+assetId);
