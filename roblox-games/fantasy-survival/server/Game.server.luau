@@ -5801,6 +5801,12 @@ local function meadowUltimate(player)
     if cls=="Greatsword" then
       if alt then list=inRange(22,12);hitAll(list,.9);task.delay(.5,function() hitAll(inRange(22,12),.9) end) -- B 회전 휩쓸기
       else list=inRange(16,12);hitAll(list,1.6);stun(list,1.5) end -- A 지면 강타
+    elseif cls=="Hammer" then
+      if alt then -- B 철퇴 내려찍기: 단일 강타 + 주변 충격 + 4초 방어
+        local target=nearestEnemy(root,18)
+        if target then applyMeadowDamage(player,target,math.floor(base*3.8)) end
+        hitAll(inRange(10,8),.7);guardFor(4)
+      else list=inRange(18,12);hitAll(list,1.4);stun(list,1) end -- A 대지 충격
     elseif cls=="Axe" then
       if alt then -- B 도약 내려찍기
         local target=nearestEnemy(root,20)
