@@ -152,6 +152,36 @@ if(process.argv.includes('--item-assets-only')){
  for(const pk of ['rpg_items_pack','survival_pack','nature_pack'])if(!new RegExp('`'+pk+'`[^\\n]*CC0-1\\.0').test(lic))throw Error('ITEM_LICENSE_EVIDENCE_MISSING:'+pk);
  registry.itemPackV1=registry.itemPackV1||{license:'CC0-1.0',author:'Quaternius',licenseEvidence:'https://quaternius.com/packs/ultimaterpg.html',assetIds:{},sources:{}};
  const pack=registry.itemPackV1;
+ const localItems=[['item_staff','assets/roblox/items/staff.glb','KayKit Adventurers Pack staff.gltf (CC0, 텍스처 내장 GLB로 재포장)'],
+  ['item_boots','assets/roblox/items/boots.glb','오너 지시 직접 제작 장화(꼭짓점 색 로프트 메시)'],
+  ['item_pants','assets/roblox/items/pants.glb','오너 지시 직접 제작 바지(꼭짓점 색 로프트 메시)']];
+ for(const [lkey,lpath,lorigin] of localItems){
+  let assetId=String(pack.assetIds[lkey]||'');
+  if(!/^[1-9]\d*$/.test(assetId)){
+   const bytes=fs.readFileSync(lpath);
+   if(bytes.toString('utf8',0,4)!=='glTF')throw Error('ITEM_LOCAL_GLB_INVALID:'+lkey);
+   const sha=crypto.createHash('sha256').update(bytes).digest('hex');
+   const form=new FormData();
+   form.append('request',JSON.stringify({assetType:'Model',displayName:'Mana Forest Item '+lkey,description:lorigin+' sha256 '+sha,creationContext:{creator}}));
+   form.append('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),lkey+'.glb');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key0},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('ITEM_OPERATION_INVALID:'+lkey);
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+    await new Promise(resolve=>setTimeout(resolve,4000));
+    op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key0}});
+   }
+   assetId=String(op.response?.assetId||'');
+   if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))throw Error('ITEM_UPLOAD_FAILED:'+lkey+':'+JSON.stringify(op.error||{}).slice(0,300));
+   pack.assetIds[lkey]=assetId;pack.sources[lkey]={file:lpath,origin:lorigin,sha256:sha};
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+  }
+  const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+   method:'PATCH',headers:{'x-api-key':key0,'content-type':'application/json'},
+   body:JSON.stringify({subjectType:'Universe',subjectId:targetUniverse,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})});
+  if(grant.errors?.length)throw Error('ITEM_PERMISSION_REJECTED:'+lkey);
+  console.log('ITEM_ASSET='+lkey+':'+assetId);
+ }
  for(const [packName,name] of names){
   const key='item_'+name.toLowerCase();
   let assetId=String(pack.assetIds[key]||'');
