@@ -1478,7 +1478,7 @@ Config.GearWeaponClass={wanderer_blade="Sword",hunter_blade="Sword",runic_blade=
   dew_dagger="Dagger",thorn_axe="Axe",worldtree_staff="Staff",magma_greatsword="Greatsword",
   hunter_bow="Bow",wind_bow="Bow",worldtree_bow="Bow"}
 Config.MeadowSkillSchools[1].Weapon="검·대검·도끼"
-Config.MeadowSkillSchools[2].Weapon="검·도끼(방패 준비 중)"
+Config.MeadowSkillSchools[2].Weapon="검·도끼 + 방패"
 Config.MeadowSkillSchools[3].Weapon="활"
 Config.MeadowSkillSchools[4].Weapon="단검"
 Config.MeadowSkillSchools[5].Weapon="지팡이"

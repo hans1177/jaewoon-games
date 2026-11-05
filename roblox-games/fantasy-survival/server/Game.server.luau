@@ -3210,7 +3210,27 @@ local function refreshBowVisual(player)
   if not character then return end
   local old=character:FindFirstChild("MeadowBowVisual")
   if old then old:Destroy() end
+  local oldShield=character:FindFirstChild("MeadowShieldVisual")
+  if oldShield then oldShield:Destroy() end
   local weapon=meadowRpg.equippedWeapon(player)
+  -- [방패 외형] 한손 무기(검·도끼)+수호 '방패 자세'(노드 19) 습득 시 왼팔에 CC0 방패(Cethiel)를 붙인다.
+  if weapon and not weapon.Bow and weapon.Id then
+    local cls=Config.GearWeaponClass[weapon.Id]
+    local arm=character:FindFirstChild("LeftLowerArm") or character:FindFirstChild("Left Arm")
+    if (cls=="Sword" or cls=="Axe") and arm and (meadowRpg.nodeRank(player,19) or 0)>0 then
+      local sm=worldAsset("vxShieldA",Vector3.new(0,-900,0),2.4)
+      local sp=sm and sm:FindFirstChildWhichIsA("MeshPart",true)
+      if sp then
+        local sv=sp:Clone();sm:Destroy()
+        sv.Name="MeadowShieldVisual"
+        sv.Anchored=false;sv.CanCollide=false;sv.CanTouch=false;sv.CanQuery=false;sv.Massless=true
+        sv.Parent=character
+        local sw=Instance.new("Weld");sw.Part0=arm;sw.Part1=sv
+        sw.C0=CFrame.new(-.55,0,-.1)*CFrame.Angles(0,math.rad(-90),0)
+        sw.Parent=sv
+      elseif sm then sm:Destroy() end
+    end
+  end
   if not weapon or not weapon.Bow then return end
   local human=character:FindFirstChildOfClass("Humanoid")
   if human then human:UnequipTools() end
@@ -3232,6 +3252,7 @@ end
 local function watchBowVisual(player)
   player:GetAttributeChangedSignal("MeadowEquipWeapon"):Connect(function() refreshBowVisual(player) end)
   player:GetAttributeChangedSignal("MeadowGearOwned2"):Connect(function() refreshBowVisual(player) end)
+  player:GetAttributeChangedSignal("MeadowSkillBits3"):Connect(function() refreshBowVisual(player) end)
   player.CharacterAdded:Connect(function() task.wait(1.5);refreshBowVisual(player) end)
 end
 for _,existing in ipairs(Players:GetPlayers()) do watchBowVisual(existing) end
