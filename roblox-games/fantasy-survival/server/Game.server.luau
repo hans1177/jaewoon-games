@@ -4999,7 +4999,11 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   if (defense.guardUntil or 0)>now then
     -- [서버 확인된 막기] 기존 50% 경감 판정은 그대로 두고 실제 접촉 때만 시각 신호를 보낸다.
     -- 연타를 맞아도 사운드·입자가 폭증하지 않게 0.12초 간격으로 1회만 알린다.
-    damage=math.ceil(damage*.5)
+    -- [방패 장비] 한손 무기(검·도끼)+방패 자세 습득 시 막기 경감 50%→60%(방패 외형과 같은 조건).
+    local shieldW=meadowRpg.equippedWeapon(player)
+    local shieldCls=shieldW and shieldW.Id and Config.GearWeaponClass[shieldW.Id]
+    local shielded=(shieldCls=="Sword" or shieldCls=="Axe") and meadowRpg.nodeRank(player,19)>0
+    damage=math.ceil(damage*(shielded and .4 or .5))
     if now-(defense.lastBlockContactFXAt or -100) >=.12 then
       defense.lastBlockContactFXAt=now
       meadowDefense[player]=defense
