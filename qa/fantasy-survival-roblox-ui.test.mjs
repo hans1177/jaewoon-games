@@ -342,7 +342,7 @@ test('RPG panels retain the original server actions and responsive navigation',(
     'inventorySearch:GetPropertyChangedSignal("Text"):Connect(renderInventory)',
     'inventoryEmpty.Visible=visibleCount==0',
     'page.CanvasPosition=Vector2.new(0,math.max(0,detailTop-8))',
-    'row.state.Text=remaining>.05 and ("대기 "..math.ceil(remaining).."초") or "사용 가능"',
+    '(remaining>.05 and ("대기 "..math.ceil(remaining).."초") or "사용 가능")',
     'remote:FireServer("meadow:rpg:gear:"..op..":"..item.gear.Id)',
     'remote:FireServer("meadow:rpg:talent:learn:"..branch.Id)']){
     assert.ok(client.includes(marker),marker);

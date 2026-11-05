@@ -5745,6 +5745,13 @@ do
       end
       return
     end
+    if typeof(action)=="string" and action:match("^ui:pref:%a+:%d+$") then
+      local key,value=action:match("^ui:pref:(%a+):(%d+)$")
+      value=tonumber(value)
+      if key=="guide" and (value==0 or value==1) then setNumber(player,"GuideOff",value)
+      elseif key=="tut" and value<=99 then setNumber(player,"TutorialStep",value) end
+      return
+    end
     if typeof(action)=="string" and action:match("^quick:set:%d:%d+$") then
       local slotIndex,value=action:match("^quick:set:(%d):(%d+)$")
       slotIndex,value=tonumber(slotIndex),tonumber(value)

@@ -10713,3 +10713,224 @@ end)()
     end
   end)
 end)()
+
+-- [길 안내 + 첫 접속 튜토리얼] 외부 게임(젤다·원신식 목표 마커, 단계별 코치 카드)을 참고했다.
+-- 목표 마커는 현재 퀘스트 위치를 화면에 띄우고, 화면 밖이면 가장자리 화살표로 방향을 알려 준다. 왼쪽 버튼으로 켜고 끈다.
+;(function()
+  local guiRoot=gui
+  local function pref(key,value) pcall(function() remote:FireServer("ui:pref:"..key..":"..value) end) end
+  local guideOff=false
+  local tutorialStep=0
+  local started=false
+  -- ===== 목표 찾기 =====
+  local function zoneSeed(id)
+    for _,z in ipairs(Config.WorldMap.Zones) do if z.Id==id then return z.Seed[1],z.Seed[2] end end
+  end
+  local function stepTarget(step)
+    if step.X then return step.X,step.Z end
+    if step.Type=="kill" then
+      if step.Boss then
+        for _,c in ipairs(Config.WorldMap.Cursed or {}) do if c.Id==step.Boss then return c.X,c.Z end end
+      end
+      if step.Lord and step.Zone then
+        local seat=workspace:GetAttribute("LordSeat_"..step.Zone)
+        if typeof(seat)=="Vector3" then return seat.X,seat.Z end
+      end
+      if step.Zone then return zoneSeed(step.Zone) end
+    end
+    return nil
+  end
+  local function findTarget()
+    local lines=Config.QuestLines or {}
+    local function fromLines(wantMain)
+      for _,line in ipairs(lines) do
+        if (line.Kind=="Main")==wantMain then
+          local stage=player:GetAttribute(line.Field) or 0
+          local step=line.Steps[stage]
+          if stage>=1 and step then
+            local x,z=stepTarget(step)
+            if x then return x,z,step.Title end
+          end
+        end
+      end
+    end
+    local x,z,label=fromLines(true)
+    if x then return x,z,label end
+    local idx=player:GetAttribute("VillageContractIndex") or 1
+    local village=Config.VillageContracts and Config.VillageContracts[idx]
+    if village then
+      local phase=player:GetAttribute("VillageContractPhase") or 0
+      local mask=player:GetAttribute("VillageContractEvidence") or 0
+      if phase==1 then
+        if bit32.band(mask,8)==0 and village.Sites and village.Sites[1] then
+          return village.Sites[1][1],village.Sites[1][2],"단서 조사: "..village.Name
+        end
+        if bit32.band(mask,64)==0 and village.EnemySite then
+          return village.EnemySite[1],village.EnemySite[2],village.EnemyName
+        end
+      else
+        return 0,-111,village.Issuer.." (마을 광장)"
+      end
+    end
+    return fromLines(false)
+  end
+  -- ===== 화면 마커 =====
+  local marker=Instance.new("Frame")
+  marker.Name="MeadowGuideMarker";marker.AnchorPoint=Vector2.new(.5,.5);marker.Size=UDim2.fromOffset(150,56)
+  marker.BackgroundTransparency=1;marker.Visible=false;marker.ZIndex=25;marker.Parent=guiRoot
+  local diamond=Instance.new("TextLabel")
+  diamond.BackgroundTransparency=1;diamond.Size=UDim2.fromOffset(150,28);diamond.Font=Enum.Font.GothamBlack;diamond.TextSize=26
+  diamond.Text="◆";diamond.TextColor3=Color3.fromRGB(255,214,70);diamond.TextStrokeTransparency=0;diamond.ZIndex=26;diamond.Parent=marker
+  local infoLabel=Instance.new("TextLabel")
+  infoLabel.BackgroundColor3=Color3.fromRGB(12,22,22);infoLabel.BackgroundTransparency=.35;infoLabel.Position=UDim2.fromOffset(0,28)
+  infoLabel.Size=UDim2.fromOffset(150,26);infoLabel.Font=Enum.Font.GothamBold;infoLabel.TextSize=12;infoLabel.TextWrapped=true
+  infoLabel.TextColor3=Color3.fromRGB(255,240,200);infoLabel.ZIndex=26;infoLabel.Parent=marker
+  Instance.new("UICorner",infoLabel).CornerRadius=UDim.new(0,8)
+  local camera=workspace.CurrentCamera
+  local tx,tz,tlabel=nil,nil,nil
+  local lastFind=0
+  RunService.RenderStepped:Connect(function()
+    if guideOff or player:GetAttribute("ProfileReady")~=true or gui:GetAttribute("GameMenuOpen")==true then marker.Visible=false return end
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    camera=workspace.CurrentCamera
+    if not root or not camera then marker.Visible=false return end
+    if os.clock()-lastFind>.7 then lastFind=os.clock();tx,tz,tlabel=findTarget() end
+    if not tx then marker.Visible=false return end
+    local dx,dz=tx-root.Position.X,tz-root.Position.Z
+    local dist=math.sqrt(dx*dx+dz*dz)
+    if dist<14 then marker.Visible=false return end
+    local pos=Vector3.new(tx,root.Position.Y+7,tz)
+    local sp,onScreen=camera:WorldToViewportPoint(pos)
+    local size=guiRoot.AbsoluteSize
+    local px,py=sp.X,sp.Y
+    local rot=0
+    if sp.Z<0 then px,py=size.X-px,size.Y-py end
+    local margin=60
+    local inside=onScreen and px>margin and px<size.X-margin and py>margin and py<size.Y-margin
+    if not inside then
+      -- 화면 밖: 가장자리에 붙이고 방향을 가리킨다.
+      local cx,cy=size.X/2,size.Y/2
+      local vx,vy=px-cx,py-cy
+      local scale=math.min((cx-margin)/math.max(1,math.abs(vx)),(cy-margin-30)/math.max(1,math.abs(vy)))
+      px,py=cx+vx*scale,cy+vy*scale
+      rot=math.deg(math.atan2(vy,vx))+90
+    end
+    marker.Position=UDim2.fromOffset(px,py)
+    diamond.Text=inside and "◆" or "▲"
+    diamond.Rotation=inside and 0 or rot
+    local bob=math.sin(os.clock()*4)*3
+    diamond.Position=UDim2.fromOffset(0,inside and bob or 0)
+    infoLabel.Text=string.format("%s · %dm",tlabel or "목표",math.floor(dist))
+    infoLabel.Size=UDim2.fromOffset(150,#(tlabel or "")>12 and 38 or 26)
+    marker.Visible=true
+  end)
+  -- ===== 왼쪽 버튼(길 안내 · 도움말) =====
+  local chips=Instance.new("Frame")
+  chips.Name="MeadowHelpChips";chips.AnchorPoint=Vector2.new(1,1);chips.Position=UDim2.new(.5,-190,1,-8)
+  chips.Size=UDim2.fromOffset(86,92);chips.BackgroundTransparency=1;chips.ZIndex=28;chips.Parent=guiRoot
+  local function chip(order,text)
+    local b=Instance.new("TextButton")
+    b.LayoutOrder=order;b.Size=UDim2.fromOffset(86,42);b.BackgroundColor3=Color3.fromRGB(18,30,30);b.BackgroundTransparency=.2
+    b.BorderSizePixel=0;b.Font=Enum.Font.GothamBold;b.TextSize=13;b.TextColor3=Color3.fromRGB(255,240,197);b.Text=text;b.ZIndex=29;b.Parent=chips
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,10)
+    local st=Instance.new("UIStroke");st.Color=Color3.fromRGB(218,189,126);st.Thickness=1.5;st.Transparency=.2;st.Parent=b
+    return b
+  end
+  local chipLayout=Instance.new("UIListLayout");chipLayout.Padding=UDim.new(0,8);chipLayout.SortOrder=Enum.SortOrder.LayoutOrder;chipLayout.Parent=chips
+  local guideChip=chip(1,"길 안내 ON")
+  local helpChip=chip(2,"도움말")
+  local function paintGuide()
+    guideChip.Text=guideOff and "길 안내 OFF" or "길 안내 ON"
+    guideChip.BackgroundColor3=guideOff and Color3.fromRGB(60,40,40) or Color3.fromRGB(34,72,52)
+  end
+  guideChip.Activated:Connect(function()
+    guideOff=not guideOff;paintGuide();pref("guide",guideOff and 1 or 0)
+    meadowArt.sfx("click",.4,1)
+  end)
+  -- ===== 튜토리얼 코치 카드 =====
+  local steps={
+    {"이동하기","왼쪽 아래 조이스틱을 밀어 걸어 봐. 달리려면 더 세게 밀어.",{.1,.84},0,"move"},
+    {"카메라 돌리기","화면 오른쪽 빈 곳을 손가락으로 끌면 시야가 돌아가.",{.62,.45},0,nil},
+    {"전투 버튼","오른쪽 큰 칼 버튼은 공격이야. 옆 버튼은 방어·회피·질주. 적이 번쩍이면 막거나 피해!",{.88,.62},-90,nil},
+    {"퀵슬롯","아래 1~5번 칸을 눌러 무기·약·기술을 바로 써. '편집'을 누르고 칸을 누르면 바꿀 수 있어.",{.5,.88},180,nil},
+    {"퀘스트와 길 안내","왼쪽 퀘스트창이 지금 할 일이야. 노란 ◆ 마커를 따라가면 목표가 나와. 가까워지면 사라져.",{.2,.42},-90,nil},
+    {"메뉴","오른쪽 위 아이콘: 가방·대장간·마을·도감·기사단·설정. 기술 배우기는 가방 메뉴의 '스킬'에서 해.",{.82,.1},0,nil},
+    {"켜고 끄기","퀵슬롯 왼쪽 '길 안내' 버튼으로 마커를 켜고 끌 수 있어. '도움말'을 누르면 이 안내를 다시 볼 수 있어.",{.28,.9},-90,nil},
+  }
+  local card=Instance.new("Frame")
+  card.Name="MeadowTutorialCard";card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,.2,0)
+  card.Size=UDim2.fromOffset(400,150);card.BackgroundColor3=Color3.fromRGB(16,28,28);card.BackgroundTransparency=.04
+  card.Visible=false;card.ZIndex=80;card.Parent=guiRoot
+  Instance.new("UICorner",card).CornerRadius=UDim.new(0,14)
+  local cs=Instance.new("UIStroke");cs.Color=Color3.fromRGB(218,189,126);cs.Thickness=2;cs.Parent=card
+  local ctitle=Instance.new("TextLabel")
+  ctitle.BackgroundTransparency=1;ctitle.Position=UDim2.fromOffset(14,8);ctitle.Size=UDim2.new(1,-28,0,26)
+  ctitle.Font=Enum.Font.GothamBlack;ctitle.TextSize=18;ctitle.TextXAlignment=Enum.TextXAlignment.Left
+  ctitle.TextColor3=Color3.fromRGB(255,232,160);ctitle.ZIndex=81;ctitle.Parent=card
+  local cbody=Instance.new("TextLabel")
+  cbody.BackgroundTransparency=1;cbody.Position=UDim2.fromOffset(14,38);cbody.Size=UDim2.new(1,-28,0,64)
+  cbody.Font=Enum.Font.GothamMedium;cbody.TextSize=14;cbody.TextWrapped=true;cbody.TextXAlignment=Enum.TextXAlignment.Left
+  cbody.TextYAlignment=Enum.TextYAlignment.Top;cbody.TextColor3=Color3.fromRGB(236,242,230);cbody.ZIndex=81;cbody.Parent=card
+  local nextBtn=Instance.new("TextButton")
+  nextBtn.AnchorPoint=Vector2.new(1,1);nextBtn.Position=UDim2.new(1,-12,1,-10);nextBtn.Size=UDim2.fromOffset(96,34)
+  nextBtn.BackgroundColor3=Color3.fromRGB(54,112,84);nextBtn.Font=Enum.Font.GothamBold;nextBtn.TextSize=15
+  nextBtn.TextColor3=Color3.new(1,1,1);nextBtn.ZIndex=82;nextBtn.Parent=card
+  Instance.new("UICorner",nextBtn).CornerRadius=UDim.new(0,10)
+  local skipBtn=Instance.new("TextButton")
+  skipBtn.AnchorPoint=Vector2.new(0,1);skipBtn.Position=UDim2.new(0,12,1,-10);skipBtn.Size=UDim2.fromOffset(86,34)
+  skipBtn.BackgroundColor3=Color3.fromRGB(70,46,46);skipBtn.Font=Enum.Font.GothamBold;skipBtn.TextSize=14
+  skipBtn.TextColor3=Color3.new(1,1,1);skipBtn.Text="건너뛰기";skipBtn.ZIndex=82;skipBtn.Parent=card
+  Instance.new("UICorner",skipBtn).CornerRadius=UDim.new(0,10)
+  local pageLabel=Instance.new("TextLabel")
+  pageLabel.AnchorPoint=Vector2.new(.5,1);pageLabel.Position=UDim2.new(.5,0,1,-16);pageLabel.Size=UDim2.fromOffset(80,20)
+  pageLabel.BackgroundTransparency=1;pageLabel.Font=Enum.Font.GothamBold;pageLabel.TextSize=13
+  pageLabel.TextColor3=Color3.fromRGB(190,205,196);pageLabel.ZIndex=82;pageLabel.Parent=card
+  local pointer=Instance.new("TextLabel")
+  pointer.Name="TutorialPointer";pointer.AnchorPoint=Vector2.new(.5,.5);pointer.Size=UDim2.fromOffset(40,40)
+  pointer.BackgroundTransparency=1;pointer.Font=Enum.Font.GothamBlack;pointer.TextSize=36;pointer.Text="▲"
+  pointer.TextColor3=Color3.fromRGB(255,214,70);pointer.TextStrokeTransparency=0;pointer.Visible=false;pointer.ZIndex=85;pointer.Parent=guiRoot
+  local current=0
+  local moveStart=nil
+  local function finish()
+    current=0;card.Visible=false;pointer.Visible=false
+    tutorialStep=99;pref("tut",99)
+  end
+  local function show(i)
+    if i>#steps then finish() return end
+    current=i
+    local s=steps[i]
+    ctitle.Text=string.format("튜토리얼 %d/%d · %s",i,#steps,s[1])
+    cbody.Text=s[2]
+    pageLabel.Text=""
+    nextBtn.Text=i==#steps and "시작!" or "다음"
+    pointer.Position=UDim2.fromScale(s[3][1],s[3][2]);pointer.Rotation=s[4]
+    pointer.Visible=true;card.Visible=true
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    moveStart=root and root.Position or nil
+    if i>1 then pref("tut",i) end
+  end
+  nextBtn.Activated:Connect(function() meadowArt.sfx("click",.4,1);show(current+1) end)
+  skipBtn.Activated:Connect(function() meadowArt.sfx("click",.4,1);finish() end)
+  helpChip.Activated:Connect(function() meadowArt.sfx("click",.4,1);show(1) end)
+  RunService.Heartbeat:Connect(function()
+    if not card.Visible then return end
+    pointer.Position=UDim2.new(pointer.Position.X.Scale,0,pointer.Position.Y.Scale,math.sin(os.clock()*5)*5)
+    -- 이동 단계는 실제로 걸으면 자동으로 넘어간다.
+    if current==1 and moveStart then
+      local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+      if root and (root.Position-moveStart).Magnitude>12 then show(2) end
+    end
+  end)
+  -- ===== 저장값 읽기, 첫 접속이면 자동 시작 =====
+  task.spawn(function()
+    while player:GetAttribute("ProfileReady")~=true do task.wait(.5) end
+    guideOff=(player:GetAttribute("GuideOff") or 0)==1
+    tutorialStep=player:GetAttribute("TutorialStep") or 0
+    paintGuide()
+    if tutorialStep<99 and not started then
+      started=true
+      task.wait(2.5)
+      show(math.clamp(tutorialStep>=1 and tutorialStep or 1,1,#steps))
+    end
+  end)
+end)()
