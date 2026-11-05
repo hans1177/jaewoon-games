@@ -10952,29 +10952,65 @@ end)()
     end
     return fromLines(false)
   end
-  -- ===== 화살표 모양 만들기: 줄기 + 마름모 머리, 어두운 외곽선(이미지 없이 UI로 그린다). 기본 방향=아래 ▼ =====
-  local function makeArrow(parent,px,name,baseZ)
+  -- ===== 아이콘 만들기(이미지 없이 UI로 그림) =====
+  -- kind "pin": 지도 핀(물방울 + 흰 점 + 하이라이트) / kind "chevron": 겹쳐 흐르는 3단 쉐브론. 기본 방향=아래.
+  local GOLD=Color3.fromRGB(255,206,64)
+  local function makeArrow(parent,px,name,baseZ,kind)
+    baseZ=baseZ or 0
     local a=Instance.new("Frame")
     a.Name=name;a.AnchorPoint=Vector2.new(.5,.5);a.Size=UDim2.fromOffset(px,px);a.BackgroundTransparency=1;a.Parent=parent
-    local parts={}
-    local function box(w,h,x,y,rot,z)
+    local tint={}
+    local function shape(w,h,x,y,rot,z,round,color,stroke)
       local f=Instance.new("Frame")
       f.AnchorPoint=Vector2.new(.5,.5);f.Size=UDim2.fromOffset(w*px,h*px);f.Position=UDim2.fromOffset(x*px,y*px)
-      f.Rotation=rot;f.BackgroundColor3=Color3.fromRGB(255,214,70);f.BorderSizePixel=0;f.ZIndex=(baseZ or 0)+z;f.Parent=a
-      Instance.new("UICorner",f).CornerRadius=UDim.new(0,math.max(2,px*.06))
-      local st=Instance.new("UIStroke");st.Color=Color3.fromRGB(70,38,6);st.Thickness=math.max(2,px*.05);st.Parent=f
-      table.insert(parts,f)
+      f.Rotation=rot;f.BackgroundColor3=color;f.BorderSizePixel=0;f.ZIndex=baseZ+z;f.Parent=a
+      Instance.new("UICorner",f).CornerRadius=round and UDim.new(1,0) or UDim.new(0,math.max(3,px*.07))
+      if stroke then
+        local st=Instance.new("UIStroke");st.Color=Color3.fromRGB(58,30,4);st.Thickness=math.max(2,px*.045);st.Parent=f
+      end
+      return f
     end
-    box(.26,.5,.5,.26,0,1)
-    box(.52,.52,.5,.62,45,2)
-    -- 줄기 아래쪽 이음매를 머리 색으로 덮는다.
-    box(.2,.34,.5,.3,0,3)
-    for _,f in ipairs(parts) do
-      local st=f:FindFirstChildOfClass("UIStroke")
-      if f.ZIndex==(baseZ or 0)+3 then st.Enabled=false end
+    if kind=="pin" then
+      -- 물방울: 둥근 머리 + 45° 회전한 꼬리(아래쪽 뾰족)
+      local tail=shape(.46,.46,.5,.56,45,1,false,GOLD,true)
+      local head=shape(.66,.66,.5,.36,0,2,true,GOLD,true)
+      local cover=shape(.58,.58,.5,.38,0,3,true,GOLD,false)
+      local dot=shape(.26,.26,.5,.36,0,4,true,Color3.fromRGB(255,255,255),false)
+      local shine=shape(.14,.08,.38,.2,-30,4,true,Color3.fromRGB(255,250,220),false)
+      local g=Instance.new("UIGradient");g.Color=ColorSequence.new(Color3.fromRGB(255,240,150),Color3.fromRGB(240,160,30));g.Rotation=90
+      g.Parent=head
+      table.insert(tint,tail);table.insert(tint,head);table.insert(tint,cover)
+    else
+      -- 3단 쉐브론: 위→아래로 순서대로 밝아지는 애니메이션(a:SetAttribute 없이 바깥에서 Heartbeat로 구동)
+      local chevs={}
+      for i=1,3 do
+        local y=.12+(i-1)*.27
+        local L,T=.46,.15
+        local function bar(sign)
+          return shape(L,T,.5+sign*L*.3535,y+L*.3535-.04,-sign*45,i,false,Color3.fromRGB(255,244,190),true)
+        end
+        local l,r=bar(-1),bar(1)
+        local fill=Instance.new("UIGradient");fill.Color=ColorSequence.new(Color3.fromRGB(255,252,225),Color3.fromRGB(255,196,56));fill.Rotation=90
+        fill.Parent=l;fill:Clone().Parent=r
+        chevs[i]={l,r}
+      end
+      a:SetAttribute("Chevron",true)
+      tint=chevs
+      a:GetPropertyChangedSignal("Name") -- 보존용(더미)
+      task.spawn(function()
+        while a.Parent do
+          local t=os.clock()*2.4
+          for i,pair in ipairs(chevs) do
+            local k=(math.sin(t-i*.9)+1)/2
+            for _,f in ipairs(pair) do f.BackgroundTransparency=.55*(1-k);local st=f:FindFirstChildOfClass("UIStroke");if st then st.Transparency=.55*(1-k) end end
+          end
+          task.wait()
+        end
+      end)
     end
-    a:SetAttribute("Parts",#parts)
-    return a,function(color) for _,f in ipairs(parts) do f.BackgroundColor3=color end end
+    return a,function(color)
+      if kind=="pin" then for _,f in ipairs(tint) do f.BackgroundColor3=color end end
+    end
   end
   -- ===== 화면 마커(크고 움직이는 목표 표시) =====
   -- 외부 게임(젤다·원신·WoW 퀘스트 화살표) 방식: 큰 핀이 위아래로 튀고, 파동 링이 퍼지고, 먼 목표는 하늘로 빛기둥이 솟는다.
@@ -10986,7 +11022,7 @@ end)()
   pulse.BackgroundTransparency=1;pulse.ZIndex=25;pulse.Parent=marker
   Instance.new("UICorner",pulse).CornerRadius=UDim.new(1,0)
   local pulseStroke=Instance.new("UIStroke");pulseStroke.Color=Color3.fromRGB(255,214,70);pulseStroke.Thickness=4;pulseStroke.Parent=pulse
-  local pin,pinColor=makeArrow(marker,70,"MarkerArrow",27)
+  local pin,pinColor=makeArrow(marker,66,"MarkerArrow",27,"pin")
   pin.Position=UDim2.fromOffset(95,56)
   local infoLabel=Instance.new("TextLabel")
   infoLabel.AnchorPoint=Vector2.new(.5,0);infoLabel.Position=UDim2.fromOffset(95,98)
@@ -11132,7 +11168,7 @@ end)()
   nextBtn.TextColor3=Color3.new(1,1,1);nextBtn.ZIndex=122;nextBtn.Parent=card
   Instance.new("UICorner",nextBtn).CornerRadius=UDim.new(0,10)
   -- 큰 포인터(▼▲◀) + 퍼지는 링
-  local pointer=makeArrow(guiRoot,64,"TutorialPointer",130)
+  local pointer=makeArrow(guiRoot,70,"TutorialPointer",130,"chevron")
   pointer.Visible=false
   local ring=Instance.new("Frame")
   ring.AnchorPoint=Vector2.new(.5,.5);ring.BackgroundTransparency=1;ring.Visible=false;ring.ZIndex=129;ring.Parent=guiRoot
