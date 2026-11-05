@@ -2034,6 +2034,7 @@ local meadowRpg=(function()
     Accessory="MeadowEquipAccessory"}
   local talents={Martial="MeadowTalentMartial",Signs="MeadowTalentSigns",
     Defense="MeadowTalentDefense",Agility="MeadowTalentAgility"}
+  local talentMax={Agility=5} -- 회피는 5단, 나머지 계열은 3단.
   local gearById,tonicById={},{}
   for index,item in ipairs(items)do gearById[item.Id]={entry=item,index=index} end
   for _,item in ipairs(tonics)do tonicById[item.Id]=item end
@@ -2140,7 +2141,7 @@ local meadowRpg=(function()
     elseif group=="talent" and verb=="reset" and id=="all" then
       -- [스킬 초기화] 코인 30개로 4계열 단계를 모두 0으로 되돌려 점수를 다시 나눈다.
       local invested=0
-      for _,key in pairs(talents)do invested+=math.clamp(readNumber(player,key,0),0,3) end
+      for otherId,key in pairs(talents)do invested+=math.clamp(readNumber(player,key,0),0,talentMax[otherId] or 3) end
       if invested<=0 then feedback(player,"초기화할 스킬이 없어.");return true end
       if readNumber(player,"Coins",0)<30 then feedback(player,"초기화에는 코인 30개가 필요해.");return true end
       setNumber(player,"Coins",readNumber(player,"Coins",0)-30)
@@ -2151,15 +2152,16 @@ local meadowRpg=(function()
     elseif group=="talent" and verb=="learn" then
       local key=talents[id]
       if not key then return false end
-      local rank=math.clamp(readNumber(player,key,0),0,3)
+      local cap=talentMax[id] or 3
+      local rank=math.clamp(readNumber(player,key,0),0,cap)
       local spent=0
-      for _,other in pairs(talents)do spent+=math.clamp(readNumber(player,other,0),0,3) end
+      for otherId,other in pairs(talents)do spent+=math.clamp(readNumber(player,other,0),0,talentMax[otherId] or 3) end
       local earned=math.floor(math.max(0,readNumber(player,"CombatProficiency",0))/50)
-      if rank>=3 then feedback(player,"이미 최대 3단계야.");return true end
+      if rank>=cap then feedback(player,"이미 최대 "..cap.."단계야.");return true end
       if spent>=earned then feedback(player,"남은 기술 점수가 없어.");return true end
       setNumber(player,key,rank+1)
       publishStats(player)
-      feedback(player,id.." 숙련 "..tostring(rank+1).."/3")
+      feedback(player,id.." 숙련 "..tostring(rank+1).."/"..cap)
       return true
     end
     return false
@@ -3523,7 +3525,7 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   if (defense.guardUntil or 0)<=now and now>=(defense.nextAutoDodgeAt or 0) then
     local chance=math.clamp(.06+(meadowProficiencyPower(player)/2.2)*.007,.067,.28)
     -- [기동 숙련] 새로운 투자 단계에만 회피 확률 보너스 적용. 기본 확률은 보존.
-    chance=math.clamp(chance+math.clamp(readNumber(player,"MeadowTalentAgility",0),0,3)*.015,.067,.325)
+    chance=math.clamp(chance+math.clamp(readNumber(player,"MeadowTalentAgility",0),0,5)*.015,.067,.325)
     if math.random()<chance then
       local character,_,root=liveMeadowCharacter(player)
       if character and root then
@@ -3921,9 +3923,9 @@ local meadowSkillSeconds={
 local function meadowSkill(player,id,execute)
   local interval=meadowSkillSeconds[id]
   if not interval then return false end
-  -- [기동 3단계] 회피 재사용 대기 4초 → 3초.
+  -- [회피 5단] 점수 5개를 채우면 회피 재사용 대기 4초 → 3초.
   if (id=="skill-meadow-dodge-left" or id=="skill-meadow-dodge-right")
-    and readNumber(player,"MeadowTalentAgility",0)>=3 then interval=3 end
+    and readNumber(player,"MeadowTalentAgility",0)>=5 then interval=3 end
   local cooldowns=meadowSkillCooldown[player] or {}
   local now=os.clock()
   -- [회피 공용 쿨다운] 버튼 하나가 좌/우 어느 방향을 선택해도 4초를 공유한다.
@@ -3937,8 +3939,10 @@ local function meadowSkill(player,id,execute)
   end
   local chain=isDodge and meadowDodgeChain[player] or nil
   local pendingStage=1
+  -- [회피 점수] 회피에 찍은 점수만큼 이어 쓸 수 있는 단계가 열린다(0점은 1단 기본 회피).
+  local maxStage=math.clamp(math.floor(readNumber(player,"MeadowTalentAgility",0)),1,5)
   if isDodge then
-    if chain and now<chain.window and chain.stage<5 then
+    if chain and now<chain.window and chain.stage<maxStage then
       nextReady=chain.shortReady;pendingStage=chain.stage+1
     elseif chain then
       nextReady=chain.nextChainAt
@@ -3961,8 +3965,8 @@ local function meadowSkill(player,id,execute)
   local readyAt=workspace:GetServerTimeNow()+interval
   if isDodge then
     chain.stage=pendingStage
-    if pendingStage==1 or pendingStage>=5 then chain.nextChainAt=now+interval end
-    if pendingStage>=5 then
+    if pendingStage==1 or pendingStage>=maxStage then chain.nextChainAt=now+interval end
+    if pendingStage>=maxStage then
       chain.window=0
       readyAt=workspace:GetServerTimeNow()+interval
     else
@@ -3979,7 +3983,7 @@ local function meadowSkill(player,id,execute)
       end)
     end
     player:SetAttribute("MeadowDodgeStage",pendingStage)
-    player:SetAttribute("MeadowDodgeWindow",pendingStage>=5 and 0 or workspace:GetServerTimeNow()+1.8)
+    player:SetAttribute("MeadowDodgeWindow",pendingStage>=maxStage and 0 or workspace:GetServerTimeNow()+1.8)
   end
   cooldowns[id]=nextCooldown
   if isDodge then
@@ -4142,6 +4146,8 @@ local function meadowDodge(player,sign,id)
     local hopHeight=(not overhead and not elevatedWall) and hopBase or 0
     local defense=meadowDefense[player] or {}
     defense.dodgeUntil=now+(behind and .7 or .48)
+    -- 회피 점수 1개당 무적 +.03초.
+    defense.dodgeUntil+=.03*math.clamp(readNumber(player,"MeadowTalentAgility",0),0,5)
     meadowDefense[player]=defense
     player:SetAttribute("ApprovedActionTarget",root.Position)
     local oldAutoRotate=humanoid.AutoRotate

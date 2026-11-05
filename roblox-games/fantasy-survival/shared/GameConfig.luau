@@ -185,7 +185,7 @@ local Config = {
     {Id="Martial",Name="검술",Category="무예",Desc="습득 단계마다 공격 피해 +1"},
     {Id="Signs",Name="표식",Category="마력",Desc="습득 단계마다 마력 탄환 피해 +2"},
     {Id="Defense",Name="방호",Category="방어",Desc="습득 단계마다 받는 피해 -1"},
-    {Id="Agility",Name="기동",Category="기동",Desc="습득 단계마다 최대 기력 변동 없이 회피력 향상"},
+    {Id="Agility",Name="회피",Category="기동",Max=5,Desc="찍은 점수만큼 회피가 연속 단계로 이어지고 5단은 적 배후 도약"},
   },
   -- 기존 Level/XP는 저장 호환에만 남기고 신규 성장은 누적 숙련도로 기록.
   InitialState = {

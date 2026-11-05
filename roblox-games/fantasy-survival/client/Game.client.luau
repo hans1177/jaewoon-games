@@ -2367,8 +2367,8 @@ local skillInfo={
   ["skill-meadow-bolt"]={"마력","시야가 닿는 32칸 안의 적에게 마력 탄환을 발사해.",7},
   ["skill-meadow-guard"]={"방어","2.8초 방어 자세. 시작 직후 0.28초는 완벽 방어 구간이야.",3},
   ["skill-meadow-parry"]={"방어","짧은 0.42초 동안 공격을 정확하게 튕겨내는 타이밍 기술.",3},
-  ["skill-meadow-dodge-left"]={"기동","적을 주시하며 왼쪽으로 빠지는 회피 동작.",6},
-  ["skill-meadow-dodge-right"]={"기동","적을 주시하며 오른쪽으로 빠지는 회피 동작.",6},
+  ["skill-meadow-dodge-left"]={"기동","적을 주시하며 왼쪽으로 빠지는 회피. 스킬 트리 회피 점수만큼 연속 단계(5단은 적 배후 도약).",6},
+  ["skill-meadow-dodge-right"]={"기동","적을 주시하며 오른쪽으로 빠지는 회피. 스킬 트리 회피 점수만큼 연속 단계(5단은 적 배후 도약).",6},
   ["skill-meadow-sprint"]={"기동","기존 서버 질주로 거리를 빠르게 좁히거나 벌려.",6},
   ["skill-meadow-heal"]={"마력","기존 서버의 회복 기술. 위험할 때 체력을 회복해.",7},
   ["skill-meadow-focus"]={"마력","기존 서버 마력 집중 효과를 발동해.",7},
@@ -2393,10 +2393,10 @@ talentGrid.Size=UDim2.new(1,0,0,292);talentGrid.BackgroundTransparency=1;talentG
 -- [스킬 트리] 4갈래 × 3단계. 위에서 아래로 선으로 이어지고, 배운 칸·배울 수 있는 칸·잠긴 칸을 색으로 구분한다.
 local talentPerks=Instance.new("TextLabel")
 talentPerks.Name="TalentPerks";talentPerks.BackgroundTransparency=1;talentPerks.Position=UDim2.fromOffset(0,330)
-talentPerks.Size=UDim2.new(1,0,0,62);talentPerks.TextWrapped=true;talentPerks.Font=Enum.Font.GothamMedium
+talentPerks.Size=UDim2.new(1,0,0,80);talentPerks.TextWrapped=true;talentPerks.Font=Enum.Font.GothamMedium
 talentPerks.TextSize=12;talentPerks.TextColor3=Color3.fromRGB(200,210,203);talentPerks.TextXAlignment=Enum.TextXAlignment.Left
 talentPerks.TextYAlignment=Enum.TextYAlignment.Top;talentPerks.Parent=talentPanel
-talentPerks.Text="3단계 특전  ·  검술: 회전 베기 8마리·12칸  ·  표식: 마력 탄환 사거리 40칸\n방호: 방어 자세 3.6초·완벽 방어 0.36초  ·  기동: 회피 재사용 3초"
+talentPerks.Text="3단계 특전  ·  검술: 회전 베기 8마리·12칸  ·  표식: 마력 탄환 사거리 40칸  ·  방호: 방어 자세 3.6초·완벽 방어 0.36초\n회피: 찍은 점수 = 연속 단계(1.8초 안에 이어 누르기). 5단은 적 배후 도약, 5점이면 재사용 3초"
 local talentReset=CommonUI.CreatePrimaryButton({name="TalentReset",text="점수 초기화  ·  코인 30",minHeight=44})
 talentReset.Position=UDim2.fromOffset(0,396);talentReset.Size=UDim2.new(1,0,0,44)
 talentReset.BackgroundColor3=Color3.fromRGB(98,52,48);talentReset.Parent=talentPanel
@@ -2405,11 +2405,12 @@ talentReset.Activated:Connect(function()
 end)
 local talentEffects={
   Martial={"공격 +1","공격 +2","공격 +3"},Signs={"탄환 +2","탄환 +4","탄환 +6"},
-  Defense={"피해 -1","피해 -2","피해 -3"},Agility={"회피 +1.5%","회피 +3%","회피 +4.5%"},
+  Defense={"피해 -1","피해 -2","피해 -3"},Agility={"1단 회피","2단 연속","3단 연속","4단 연속","5단 배후"},
 }
 local talentIcons={Martial=2,Signs=7,Defense=3,Agility=6}
 local talentButtons={}
 local talentColumns={}
+local columnHeights={}
 local function learnTalent(branch)
   if player:GetAttribute("ProfileReady")==true then
     remote:FireServer("meadow:rpg:talent:learn:"..branch.Id)
@@ -2430,22 +2431,26 @@ for index,branch in ipairs(Config.MeadowTalentSchools or {})do
   local titleInk=Instance.new("UIStroke");titleInk.Color=Color3.new(0,0,0);titleInk.Thickness=1
   titleInk.Transparency=.35;titleInk.ApplyStrokeMode=Enum.ApplyStrokeMode.Contextual;titleInk.Parent=title
   local nodes={}
-  for step=1,3 do
-    local top=40+(step-1)*84
-    if step<3 then
+  local maxLevel=branch.Max or 3
+  local nodeSize=maxLevel>3 and 44 or 50
+  local spacing=maxLevel>3 and 76 or 84
+  columnHeights[index]=40+(maxLevel-1)*spacing+nodeSize+24
+  for step=1,maxLevel do
+    local top=40+(step-1)*spacing
+    if step<maxLevel then
       local link=Instance.new("Frame")
-      link.Name="Link"..step;link.AnchorPoint=Vector2.new(.5,0);link.Position=UDim2.new(.5,0,0,top+66)
-      link.Size=UDim2.fromOffset(4,34);link.BorderSizePixel=0;link.BackgroundColor3=Color3.fromRGB(70,82,78);link.Parent=column
-      nodes[step+3]=link
+      link.Name="Link"..step;link.AnchorPoint=Vector2.new(.5,0);link.Position=UDim2.new(.5,0,0,top+nodeSize+18)
+      link.Size=UDim2.fromOffset(4,spacing-nodeSize-18);link.BorderSizePixel=0;link.BackgroundColor3=Color3.fromRGB(70,82,78);link.Parent=column
+      nodes[step+10]=link
     end
     local node=Instance.new("TextButton")
     node.Name="TalentNode"..step;node.AnchorPoint=Vector2.new(.5,0);node.Position=UDim2.new(.5,0,0,top)
-    node.Size=UDim2.fromOffset(50,50);node.Text="";node.AutoButtonColor=false
+    node.Size=UDim2.fromOffset(nodeSize,nodeSize);node.Text="";node.AutoButtonColor=false
     node.BackgroundColor3=Color3.fromRGB(40,46,46);node.BorderSizePixel=0;node.Parent=column
     local nodeCorner=Instance.new("UICorner");nodeCorner.CornerRadius=UDim.new(0,12);nodeCorner.Parent=node
     local nodeEdge=Instance.new("UIStroke");nodeEdge.Thickness=2;nodeEdge.Color=Color3.fromRGB(86,96,92);nodeEdge.Parent=node
     local icon=Instance.new("ImageLabel")
-    icon.Name="NodeIcon";icon.BackgroundTransparency=1;icon.Position=UDim2.fromOffset(7,7);icon.Size=UDim2.fromOffset(36,36)
+    icon.Name="NodeIcon";icon.BackgroundTransparency=1;icon.Position=UDim2.fromOffset(7,7);icon.Size=UDim2.fromOffset(nodeSize-14,nodeSize-14)
     icon.Image=meadowIconAtlas;icon.ImageRectOffset=Vector2.new((talentIcons[branch.Id] or 2)*64,0)
     icon.ImageRectSize=Vector2.new(64,64);icon.Parent=node
     local badge=Instance.new("TextLabel")
@@ -2455,15 +2460,20 @@ for index,branch in ipairs(Config.MeadowTalentSchools or {})do
     local badgeCorner=Instance.new("UICorner");badgeCorner.CornerRadius=UDim.new(1,0);badgeCorner.Parent=badge
     local effect=Instance.new("TextLabel")
     effect.Name="NodeEffect";effect.BackgroundTransparency=1;effect.AnchorPoint=Vector2.new(.5,0)
-    effect.Position=UDim2.new(.5,0,0,top+52);effect.Size=UDim2.new(1,-6,0,16)
+    effect.Position=UDim2.new(.5,0,0,top+nodeSize+2);effect.Size=UDim2.new(1,-6,0,16)
     effect.Font=Enum.Font.GothamBold;effect.TextSize=12;effect.Text=talentEffects[branch.Id][step]
     effect.TextColor3=Color3.fromRGB(170,180,174);effect.Parent=column
     node.Activated:Connect(function() learnTalent(branch) end)
     nodes[step]={node=node,edge=nodeEdge,icon=icon,effect=effect,badge=badge}
   end
   talentColumns[#talentColumns+1]=column
-  talentButtons[#talentButtons+1]={button=column,branch=branch,title=title,nodes=nodes,tint=tint}
+  talentButtons[#talentButtons+1]={button=column,branch=branch,title=title,nodes=nodes,tint=tint,max=maxLevel}
 end
+local talentGridHeight=0
+for _,height in pairs(columnHeights)do talentGridHeight=math.max(talentGridHeight,height) end
+talentGrid.Size=UDim2.new(1,0,0,talentGridHeight)
+talentPerks.Position=UDim2.fromOffset(0,34+talentGridHeight+6)
+talentReset.Position=UDim2.fromOffset(0,34+talentGridHeight+90)
 local function layoutTalents()
   local w=talentGrid.AbsoluteSize.X
   if w<=0 then return end
@@ -2471,7 +2481,7 @@ local function layoutTalents()
   local width=math.floor((w-gap*3)/4)
   for index,column in ipairs(talentColumns)do
     column.Position=UDim2.fromOffset((index-1)*(width+gap),0)
-    column.Size=UDim2.fromOffset(width,292)
+    column.Size=UDim2.fromOffset(width,columnHeights[index] or 292)
   end
 end
 talentGrid:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutTalents)
@@ -2479,15 +2489,15 @@ local function renderTalents()
   local spent=0
   local levels={}
   for _,entry in ipairs(talentButtons)do
-    levels[entry]=math.clamp(tonumber(player:GetAttribute("MeadowTalent"..entry.branch.Id)) or 0,0,3)
+    levels[entry]=math.clamp(tonumber(player:GetAttribute("MeadowTalent"..entry.branch.Id)) or 0,0,entry.max)
     spent+=levels[entry]
   end
   local points=math.floor(math.max(0,tonumber(player:GetAttribute("CombatProficiency")) or 0)/50)
   local remaining=math.max(0,points-spent)
   for _,entry in ipairs(talentButtons)do
     local level=levels[entry]
-    entry.title.Text=entry.branch.Name.."  "..level.."/3"
-    for step=1,3 do
+    entry.title.Text=entry.branch.Name.."  "..level.."/"..entry.max
+    for step=1,entry.max do
       local node=entry.nodes[step]
       local learned=level>=step
       local learnable=level+1==step and remaining>0
@@ -2498,7 +2508,7 @@ local function renderTalents()
       node.effect.TextColor3=learned and Color3.fromRGB(255,240,197) or (learnable and gold or Color3.fromRGB(130,140,134))
       node.badge.BackgroundColor3=learned and Color3.fromRGB(20,24,24) or (learnable and gold or Color3.fromRGB(46,52,52))
       node.badge.TextColor3=learnable and Color3.fromRGB(30,24,14) or Color3.new(1,1,1)
-      local link=entry.nodes[step+3]
+      local link=entry.nodes[step+10]
       if link then link.BackgroundColor3=level>step and entry.tint or Color3.fromRGB(70,82,78) end
     end
   end
@@ -2517,7 +2527,7 @@ local function renderTalents()
     end
   end
   talentHeader.Text="스킬 트리  ·  남은 기술 점수 "..remaining.."  (숙련 50마다 1점)"
-  talentPanel.Size=UDim2.new(1,-8,0,446)
+  talentPanel.Size=UDim2.new(1,-8,0,34+talentGridHeight+90+50)
 end
 for _,name in ipairs({"CombatProficiency","MeadowTalentMartial","MeadowTalentSigns",
   "MeadowTalentDefense","MeadowTalentAgility","MeadowGearRevision"})do
@@ -6638,9 +6648,10 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
       end
       local stage=tonumber(player:GetAttribute("MeadowDodgeStage")) or 0
       local window=tonumber(player:GetAttribute("MeadowDodgeWindow")) or 0
-      local live=stage>0 and stage<5 and now<window
+      local maxStage=math.clamp(math.floor(tonumber(player:GetAttribute("MeadowTalentAgility")) or 0),1,5)
+      local live=stage>0 and stage<maxStage and now<window
       tag.Visible=live
-      if live then tag.Text=stage.."/5  연속" end
+      if live then tag.Text=stage.."/"..maxStage.."  연속" end
     end
   end
   for index,button in ipairs(meadowUtilityButtons)do
