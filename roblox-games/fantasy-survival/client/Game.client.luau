@@ -9694,7 +9694,7 @@ end)
   legend.BackgroundTransparency=1;legend.Position=UDim2.fromOffset(16,32);legend.Size=UDim2.new(1,-32,0,18)
   legend.Font=Enum.Font.Gotham;legend.TextSize=12;legend.TextXAlignment=Enum.TextXAlignment.Left
   legend.TextColor3=Color3.fromRGB(190,208,196);legend.ZIndex=62;legend.Parent=panel
-  legend.Text="✪ 랜드마크·⌂ 마을(눌러서 설명·이동)  ✖ 영주 거점  ❖ 저주받은 자  ? 미발견  ▲●✦ 발견 장소  ! 퀘스트  ◆ 이정표(빠른 이동)  ◇ 미발견  ★ 메인 목표  ● 내 위치"
+  legend.Text="★ 랜드마크  ⌂ 마을  ▲ 영주 거점  ❖ 저주받은 자  ? 미발견  ! 퀘스트  ◆ 이정표(이동)  ◇ 미발견  ▣ 마을  ● 내 위치   확대: 두 손가락 · +/- 버튼"
   local close=Instance.new("TextButton")
   close.Text="X";close.Font=Enum.Font.GothamBold;close.TextSize=20;close.TextColor3=Color3.fromRGB(255,244,214)
   close.BackgroundColor3=Color3.fromRGB(70,38,38);close.Position=UDim2.new(1,-48,0,6);close.Size=UDim2.fromOffset(38,32)
@@ -9704,10 +9704,68 @@ end)
   field.Size=UDim2.new(1,-20,1,-62);field.BackgroundColor3=Color3.fromRGB(14,16,14);field.ZIndex=62;field.ClipsDescendants=true;field.Parent=panel
   local ratio=Instance.new("UIAspectRatioConstraint");ratio.AspectRatio=mapImage and mapImage.W/mapImage.H or width/height;ratio.AspectType=Enum.AspectType.ScaleWithParentSize
   ratio.DominantAxis=Enum.DominantAxis.Width;ratio.Parent=field
+  -- 확대/이동용 캔버스: 지도 그림과 모든 표시가 이 안에 들어간다. field는 잘라내는 창 역할.
+  local canvas=Instance.new("Frame")
+  canvas.Name="MapCanvas";canvas.BackgroundTransparency=1;canvas.BorderSizePixel=0
+  canvas.Size=UDim2.fromScale(1,1);canvas.Position=UDim2.fromScale(0,0);canvas.ZIndex=62;canvas.Parent=field
+  local zoom,panX,panY=1,0,0
+  local function applyZoom(newZoom,fx_,fy_)
+    newZoom=math.clamp(newZoom,1,5)
+    local cx=(fx_-panX)/zoom;local cy=(fy_-panY)/zoom
+    zoom=newZoom
+    panX=math.clamp(fx_-cx*zoom,1-zoom,0);panY=math.clamp(fy_-cy*zoom,1-zoom,0)
+    canvas.Size=UDim2.fromScale(zoom,zoom);canvas.Position=UDim2.fromScale(panX,panY)
+  end
+  local function zoomButton(text,order,fn)
+    local b=Instance.new("TextButton")
+    b.AnchorPoint=Vector2.new(1,0);b.Position=UDim2.new(1,-8,0,8+order*40);b.Size=UDim2.fromOffset(34,34)
+    b.BackgroundColor3=Color3.fromRGB(32,24,16);b.BackgroundTransparency=.1;b.Font=Enum.Font.GothamBlack;b.TextSize=20
+    b.TextColor3=Color3.fromRGB(255,240,205);b.Text=text;b.ZIndex=80;b.Parent=field
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,8)
+    b.Activated:Connect(fn)
+  end
+  zoomButton("+",0,function() applyZoom(zoom*1.5,.5,.5) end)
+  zoomButton("-",1,function() applyZoom(zoom/1.5,.5,.5) end)
+  zoomButton("1",2,function() applyZoom(1,.5,.5) end)
+  do
+    local dragging,startPos,startPan
+    field.InputBegan:Connect(function(input)
+      if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+        dragging=true;startPos=input.Position;startPan=Vector2.new(panX,panY)
+      end
+    end)
+    field.InputEnded:Connect(function(input)
+      if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then dragging=false end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+      if not overlay.Visible then return end
+      if dragging and zoom>1 and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
+        local size=field.AbsoluteSize
+        local dx=(input.Position.X-startPos.X)/size.X
+        local dy=(input.Position.Y-startPos.Y)/size.Y
+        panX=math.clamp(startPan.X+dx,1-zoom,0);panY=math.clamp(startPan.Y+dy,1-zoom,0)
+        canvas.Position=UDim2.fromScale(panX,panY)
+      elseif input.UserInputType==Enum.UserInputType.MouseWheel then
+        applyZoom(zoom*(input.Position.Z>0 and 1.25 or .8),.5,.5)
+      end
+    end)
+    local pinchBase=1
+    UserInputService.TouchPinch:Connect(function(positions,scale,velocity,state)
+      if not overlay.Visible then return end
+      if state==Enum.UserInputState.Begin then pinchBase=zoom;dragging=false end
+      local size,origin=field.AbsoluteSize,field.AbsolutePosition
+      local cx,cy=.5,.5
+      if positions and positions[1] and positions[2] then
+        local mid=(positions[1]+positions[2])/2
+        cx=math.clamp((mid.X-origin.X)/size.X,0,1);cy=math.clamp((mid.Y-origin.Y)/size.Y,0,1)
+      end
+      applyZoom(pinchBase*scale,cx,cy)
+    end)
+  end
   if mapImage then
     local picture=Instance.new("ImageLabel")
     picture.BackgroundTransparency=1;picture.Size=UDim2.fromScale(1,1);picture.Image="rbxassetid://"..mapImage.Asset
-    picture.ScaleType=Enum.ScaleType.Stretch;picture.ZIndex=62;picture.Parent=field
+    picture.ScaleType=Enum.ScaleType.Stretch;picture.ZIndex=62;picture.Parent=canvas
   end
   -- 지역 칸(100스터드)을 처음 열 때 나눠서 만든다. 색은 지역색, 미발견 지역은 어둡게.
   local tiles={}
@@ -9716,7 +9774,7 @@ end)
     local label=Instance.new("TextLabel")
     label.BackgroundTransparency=1;label.AnchorPoint=Vector2.new(.5,.5);label.Size=UDim2.fromScale(.14,.06)
     label.Font=Enum.Font.GothamBold;label.TextScaled=true;label.TextColor3=Color3.fromRGB(255,250,232);label.TextStrokeTransparency=.2
-    label.ZIndex=64;label.Parent=field
+    label.ZIndex=64;label.Parent=canvas
     local cap=Instance.new("UITextSizeConstraint");cap.MaxTextSize=16;cap.MinTextSize=7;cap.Parent=label
     tiles[index]={name=label,seen=nil}
     cellFrames[index]={}
@@ -9737,7 +9795,7 @@ end)
           frame.Size=UDim2.fromScale(1/world.Cols+.0006,1/world.Rows+.0006)
           local zone=world.Zones[index]
           frame.BackgroundColor3=Color3.fromRGB(zone.Color[1],zone.Color[2],zone.Color[3])
-          frame.ZIndex=63;frame.Parent=field
+          frame.ZIndex=63;frame.Parent=canvas
           table.insert(cellFrames[index],frame)
           sumX[index]=(sumX[index] or 0)+col;sumZ[index]=(sumZ[index] or 0)+row;count[index]=(count[index] or 0)+1
         end
@@ -9751,7 +9809,7 @@ end)
         f.AnchorPoint=Vector2.new(.5,.5);f.Position=UDim2.fromScale((ax+bx)/2,(az+bz)/2)
         local aw,ah=field.AbsoluteSize.X,field.AbsoluteSize.Y
         local dx,dy=(bx-ax)*aw,(bz-az)*ah
-        f.Size=UDim2.fromOffset(math.sqrt(dx*dx+dy*dy)+1,thick);f.Rotation=math.deg(math.atan2(dy,dx));f.Parent=field
+        f.Size=UDim2.fromOffset(math.sqrt(dx*dx+dy*dy)+1,thick);f.Rotation=math.deg(math.atan2(dy,dx));f.Parent=canvas
       end
       bar(bounds.X0,0,bounds.X1,0,Color3.fromRGB(214,180,130),3,65)
       bar(0,bounds.Z0,0,bounds.Z1,Color3.fromRGB(214,180,130),3,65)
@@ -9776,7 +9834,7 @@ end)
               local mark=Instance.new("TextLabel")
               mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(x),fz(z))
               mark.Size=UDim2.fromOffset(10,10);mark.Font=Enum.Font.GothamBold;mark.TextSize=10;mark.Text="▲"
-              mark.TextColor3=Color3.fromRGB(96,84,74);mark.ZIndex=65;mark.Parent=field
+              mark.TextColor3=Color3.fromRGB(96,84,74);mark.ZIndex=65;mark.Parent=canvas
             end
           end
         end
@@ -9796,7 +9854,7 @@ end)
   villageMark.BackgroundTransparency=1;villageMark.AnchorPoint=Vector2.new(.5,.5)
   villageMark.Position=UDim2.fromScale(fx(0),fz(0));villageMark.Size=UDim2.fromOffset(30,30)
   villageMark.Font=Enum.Font.GothamBlack;villageMark.TextSize=24;villageMark.Text="▣";villageMark.TextColor3=Color3.fromRGB(255,236,170)
-  villageMark.TextStrokeTransparency=0;villageMark.ZIndex=66;villageMark.Parent=field
+  villageMark.TextStrokeTransparency=0;villageMark.ZIndex=66;villageMark.Parent=canvas
   -- 이정표 버튼.
   local markers={}
   for index,spec in ipairs(world.Waypoints) do
@@ -9804,7 +9862,7 @@ end)
     marker.AnchorPoint=Vector2.new(.5,.5);marker.Position=UDim2.fromScale(fx(spec[2]),fz(spec[3]))
     marker.Size=UDim2.fromOffset(24,24);marker.BackgroundTransparency=1
     marker.Font=Enum.Font.GothamBlack;marker.TextSize=20;marker.Text="◇";marker.TextColor3=Color3.fromRGB(200,200,200)
-    marker.TextStrokeTransparency=0;marker.ZIndex=67;marker.Parent=field
+    marker.TextStrokeTransparency=0;marker.ZIndex=67;marker.Parent=canvas
     local label=Instance.new("TextLabel")
     label.BackgroundTransparency=1;label.Position=UDim2.new(.5,-50,1,-2);label.Size=UDim2.fromOffset(100,14)
     label.Font=Enum.Font.GothamBold;label.TextSize=10;label.TextColor3=Color3.fromRGB(255,244,214);label.TextStrokeTransparency=.2
@@ -9822,7 +9880,7 @@ end)
     local mark=Instance.new("TextLabel")
     mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(poi.X),fz(poi.Z))
     mark.Size=UDim2.fromOffset(14,14);mark.Font=Enum.Font.GothamBlack;mark.TextSize=12;mark.Text=poi.Icon
-    mark.TextColor3=Color3.fromRGB(255,236,170);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=field
+    mark.TextColor3=Color3.fromRGB(255,236,170);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=canvas
     poiMarkers[index]=mark
   end
   -- 지도 하단 안내줄: 랜드마크·마을을 누르면 설명이 뜬다.
@@ -9858,15 +9916,15 @@ end)
   for index,lm in ipairs(world.Landmarks or {}) do
     local mark=Instance.new("TextButton")
     mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(lm.X),fz(lm.Z))
-    mark.Size=UDim2.fromOffset(22,22);mark.Font=Enum.Font.GothamBlack;mark.TextSize=18;mark.Text="✪"
-    mark.TextColor3=Color3.fromRGB(255,170,80);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=field
+    mark.Size=UDim2.fromOffset(22,22);mark.Font=Enum.Font.GothamBlack;mark.TextSize=18;mark.Text="★"
+    mark.TextColor3=Color3.fromRGB(255,170,80);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=canvas
     local name=Instance.new("TextLabel")
     name.BackgroundTransparency=1;name.Position=UDim2.new(.5,-55,1,-4);name.Size=UDim2.fromOffset(110,12)
     name.Font=Enum.Font.GothamBold;name.TextSize=9;name.TextColor3=Color3.fromRGB(255,222,160);name.TextStrokeTransparency=.1
     name.Text="";name.ZIndex=66;name.Parent=mark
     mark.Activated:Connect(function()
       local lmMask=player:GetAttribute("LandmarkMask") or 0
-      if bit32.band(lmMask,bit32.lshift(1,index-1))~=0 then showInfo("✪ "..lm.Name.."\n"..lm.Lore,"wp:lm:"..index)
+      if bit32.band(lmMask,bit32.lshift(1,index-1))~=0 then showInfo("★ "..lm.Name.."\n"..lm.Lore,"wp:lm:"..index)
       else showInfo("? 아직 가 보지 못한 곳. 이 지역 어딘가에 거대한 무언가가 있다는 소문이 돈다.") end
     end)
     lmMarks[index]={mark=mark,name=name}
@@ -9876,7 +9934,7 @@ end)
     local mark=Instance.new("TextButton")
     mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(town.X),fz(town.Z))
     mark.Size=UDim2.fromOffset(22,22);mark.Font=Enum.Font.GothamBlack;mark.TextSize=18;mark.Text="⌂"
-    mark.TextColor3=Color3.fromRGB(255,214,140);mark.TextStrokeTransparency=0;mark.ZIndex=66;mark.Visible=false;mark.Parent=field
+    mark.TextColor3=Color3.fromRGB(255,214,140);mark.TextStrokeTransparency=0;mark.ZIndex=66;mark.Visible=false;mark.Parent=canvas
     local name=Instance.new("TextLabel")
     name.BackgroundTransparency=1;name.Position=UDim2.new(.5,-40,1,-4);name.Size=UDim2.fromOffset(80,13)
     name.Font=Enum.Font.GothamBold;name.TextSize=10;name.TextColor3=Color3.fromRGB(255,240,205);name.TextStrokeTransparency=.2
@@ -9891,11 +9949,11 @@ end)
   for _,zone in ipairs(world.Zones) do
     local mark=Instance.new("TextButton")
     mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5)
-    mark.Size=UDim2.fromOffset(20,20);mark.Font=Enum.Font.GothamBlack;mark.TextSize=16;mark.Text="✖"
-    mark.TextColor3=Color3.fromRGB(235,90,80);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=field
+    mark.Size=UDim2.fromOffset(20,20);mark.Font=Enum.Font.GothamBlack;mark.TextSize=16;mark.Text="▲"
+    mark.TextColor3=Color3.fromRGB(235,90,80);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=canvas
     mark.Activated:Connect(function()
       local who=workspace:GetAttribute("LordName_"..zone.Id)
-      showInfo("✖ "..zone.Name.." 영주 거점"..(who and ("\n"..who.." · 쓰러뜨리면 지역의 비밀이 풀린다.") or ""))
+      showInfo("▲ "..zone.Name.." 영주 거점"..(who and ("\n"..who.." · 쓰러뜨리면 지역의 비밀이 풀린다.") or ""))
     end)
     lordMarks[zone.Id]={mark=mark,zone=zone}
   end
@@ -9905,7 +9963,7 @@ end)
     local mark=Instance.new("TextButton")
     mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(c.X),fz(c.Z))
     mark.Size=UDim2.fromOffset(24,24);mark.Font=Enum.Font.GothamBlack;mark.TextSize=20;mark.Text="❖"
-    mark.TextColor3=Color3.fromRGB(200,90,255);mark.TextStrokeTransparency=0;mark.ZIndex=69;mark.Visible=false;mark.Parent=field
+    mark.TextColor3=Color3.fromRGB(200,90,255);mark.TextStrokeTransparency=0;mark.ZIndex=69;mark.Visible=false;mark.Parent=canvas
     local name=Instance.new("TextLabel")
     name.BackgroundTransparency=1;name.Position=UDim2.new(.5,-60,1,-4);name.Size=UDim2.fromOffset(120,12)
     name.Font=Enum.Font.GothamBold;name.TextSize=9;name.TextColor3=Color3.fromRGB(230,190,255);name.TextStrokeTransparency=.1
@@ -9916,19 +9974,19 @@ end)
   local dot=Instance.new("TextLabel")
   dot.BackgroundTransparency=1;dot.AnchorPoint=Vector2.new(.5,.5);dot.Size=UDim2.fromOffset(22,22)
   dot.Font=Enum.Font.GothamBlack;dot.TextSize=22;dot.Text="●";dot.TextColor3=Color3.fromRGB(255,222,92)
-  dot.TextStrokeTransparency=0;dot.ZIndex=70;dot.Parent=field
+  dot.TextStrokeTransparency=0;dot.ZIndex=70;dot.Parent=canvas
   local questMarks={}
   for index,line in ipairs(Config.QuestLines or {})do
     local mark=Instance.new("TextLabel")
     mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Size=UDim2.fromOffset(22,22)
     mark.Font=Enum.Font.GothamBlack;mark.TextSize=22;mark.Text="!";mark.TextColor3=Color3.fromRGB(255,214,60)
-    mark.TextStrokeTransparency=0;mark.ZIndex=69;mark.Visible=false;mark.Parent=field
+    mark.TextStrokeTransparency=0;mark.ZIndex=69;mark.Visible=false;mark.Parent=canvas
     questMarks[index]=mark
   end
   local goal=Instance.new("TextLabel")
   goal.BackgroundTransparency=1;goal.AnchorPoint=Vector2.new(.5,.5);goal.Size=UDim2.fromOffset(22,22)
   goal.Font=Enum.Font.GothamBlack;goal.TextSize=22;goal.Text="★";goal.TextColor3=Color3.fromRGB(255,120,90)
-  goal.TextStrokeTransparency=0;goal.ZIndex=69;goal.Parent=field
+  goal.TextStrokeTransparency=0;goal.ZIndex=69;goal.Parent=canvas
   local zoneOfStage=function(stage)
     return stage<=6 and "meadow" or stage<=9 and "worldtree" or stage==10 and "volcano" or stage<=12 and "oasis" or nil
   end
@@ -9980,7 +10038,7 @@ end)
       local lm=world.Landmarks[index]
       local seen=bit32.band(lmMask,bit32.lshift(1,index-1))~=0
       entry.mark.Visible=seen or zoneSeen(lm.Zone)
-      entry.mark.Text=seen and "✪" or "?"
+      entry.mark.Text=seen and "★" or "?"
       entry.mark.TextColor3=seen and Color3.fromRGB(255,170,80) or Color3.fromRGB(190,190,190)
       entry.name.Text=seen and lm.Name or ""
     end
