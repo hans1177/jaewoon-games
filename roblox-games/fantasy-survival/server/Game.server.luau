@@ -6218,6 +6218,15 @@ remote.OnServerEvent:Connect(function(player, actionId)
       break
     end
   end
+  -- [맨손 기술 통합] 맨손(도구 없음)으로 근접 트리 기술을 쓰면 기존 맨손 연타·어퍼컷·발차기·팔꿈치 모션으로 재생한다.
+  -- 새 모션은 만들지 않고 기존 승인 모션 ID만 매핑한다. 피해 계산은 트리 기술 그대로다.
+  if not combatAction and character and not character:FindFirstChildOfClass("Tool") then
+    local treeNode=Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[combatActionId]
+    local map={STRIKE="meadow-unarmed-uppercut",FOCUS_STRIKE="meadow-unarmed-uppercut",MULTI="meadow-unarmed-rush",
+      SWEEP="meadow-unarmed-kick",DASH="meadow-unarmed-elbow",STUN="meadow-unarmed-elbow"}
+    local unarmedId=treeNode and (treeNode.School=="Warrior" or treeNode.School=="Guardian" or treeNode.School=="Shadow") and map[treeNode.Mode]
+    if unarmedId then player:SetAttribute("ApprovedCombatMotion",unarmedId..":"..tostring(approvedSequence)) end
+  end
   -- 허공 공격은 관절 모션만 재생한다. 명중 효과·처치·점수는 만들지 않는다.
   if not combatAction or combatHit==true then
     player:SetAttribute("ApprovedActionFX",approved)
