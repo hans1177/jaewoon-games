@@ -2612,7 +2612,7 @@ export function evaluateDaechungCloudStudioChecks({
 }
 
 
-export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',outDir='',times=[3,8,14,21,28,36,44,52,58]}={}){
+export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',outDir='',times=[2,5,9,14,20,27,35,43,51,59,66]}={}){
   const client=new McpStdioClient({...mcpCommandArgs(mcpCommand),timeoutMs:60000});
   fs.mkdirSync(outDir,{recursive:true});
   const report={frames:[],console:[],errors:[]};
@@ -2635,6 +2635,22 @@ export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',
     const playTool=client.tool('start_stop_play');
     await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,true));
     started=true;
+    await wait(7000);
+    let cx=495,cy=331;
+    try{
+      const lt=client.tool('execute_luau');
+      const code='local p=game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui") local out="NONE" for _,d in ipairs(p:GetDescendants()) do if d:IsA("TextButton") and (d.Text=="모험 시작" or d.Text=="이어하기") and d.Visible then out=string.format("%d,%d,%d,%d",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2,d.AbsoluteSize.X,d.AbsoluteSize.Y) break end end print("BTN:"..out) return out';
+      const lr=await client.call('execute_luau',executeLuauArgs(lt.inputSchema||{},studioId,code,'Client'));
+      const txt=flattenText(lr,[]).join(' ');
+      report.console.push('BTNPROBE '+txt.slice(0,300));
+      const m=txt.match(/(\d+),(\d+),(\d+),(\d+)/);
+      if(m){cx=Number(m[1]);cy=Number(m[2]);}
+    }catch(e){report.errors.push('probe:'+clean(e?.message||e).slice(0,200));}
+    try{
+      const mt=client.tool('user_mouse_input');
+      await client.call('user_mouse_input',mouseClickArgs(mt.inputSchema||{},studioId,cx,cy));
+      report.click={cx,cy};
+    }catch(e){report.errors.push('click:'+clean(e?.message||e).slice(0,200));}
     const t0=Date.now();
     const capTool=client.tool('screen_capture');
     for(const sec of times){
