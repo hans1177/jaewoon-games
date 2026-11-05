@@ -199,7 +199,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 카메라·표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
-local meadowPaintedHudAtlas="rbxassetid://72401341143669" -- [고퀄 원화] 1000x1000 5x5 / 200px 칸 21종 (Roblox 1024 제한 이하), 게임 내 로딩은 게시 후 검증
+local meadowPaintedHudAtlas="rbxassetid://84007761993593" -- [고퀄 원화] 1000x1000 5x5 / 200px 칸 21종 (Roblox 1024 제한 이하), 게임 내 로딩은 게시 후 검증
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
   fist="rbxassetid://127661757924412",
@@ -5091,7 +5091,7 @@ end
 -- [오른쪽 전용 그림 아이콘] 연타·회피·막기·상호작용·질주는 승인된 전용 그림으로 교체한다.
 -- 물약과 가방은 현재 등록된 개별 CC0 이미지를 그대로 사용하고, 서버 액션 바인딩은 유지한다.
 local function applyMeadowRightActionImage(button,role)
-  local paintedCell=({sprint=Vector2.new(200,600),fist=Vector2.new(400,600),dodge=Vector2.new(600,600),jump=Vector2.new(800,600)})[role]
+  local paintedCell=({sprint=Vector2.new(200,600),fist=Vector2.new(400,600),dodge=Vector2.new(600,600),jump=Vector2.new(800,600),guard=Vector2.new(200,800)})[role]
   local atlasX=({sprint=160,fist=40,dodge=120,interact=200,bag=240})[role] -- 막기는 승인된 512px 원본 사용
   local imageId=paintedCell and meadowPaintedHudAtlas or atlasX and "rbxassetid://81665484719308" or meadowRealActionIcons[role]
   if not imageId then return false end
