@@ -426,7 +426,7 @@ test('inventory uses split landscape and scrollable portrait details without cha
     'detail.Parent=inventoryWorkspace',
     'descriptionScroll.Name="SelectedItemDescriptionScroll"',
     'description.AutomaticSize=Enum.AutomaticSize.Y',
-    'local split=width>=500',
+    'local split=width>=420',
     'inventoryScroll.ScrollingEnabled=split',
     'inventoryWorkspace:SetAttribute("SplitLayout",split)',
     'detail.Position=split and UDim2.fromOffset(leftWidth+12,0)',

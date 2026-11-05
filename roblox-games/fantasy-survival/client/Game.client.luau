@@ -2136,7 +2136,7 @@ local inventoryTotalCount=0
 local function layoutInventoryWorkspace()
   local width=inventoryWorkspace.AbsoluteSize.X
   if width<=0 then return end
-  local split=width>=500
+  local split=width>=420
   local leftWidth=split and math.floor(width*.55) or width
   local gridHeight=inventoryShownCount==0 and 74 or math.max(110,gridLayout.AbsoluteContentSize.Y+6)
   inventoryWorkspace:SetAttribute("SplitLayout",split)

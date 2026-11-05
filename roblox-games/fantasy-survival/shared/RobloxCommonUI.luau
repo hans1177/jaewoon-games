@@ -5174,7 +5174,15 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
    if quick then quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-8,1,-164);quick.Size=UDim2.fromOffset(128,56) end
   end
   root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5)
-  if primary and primary.witcherStyle then
+  if primary and primary.sideTabs then
+   -- [메뉴 크기] 화면 전체를 덮지 않고 인기 로블록스 게임처럼 가운데 창으로 둔다.
+   if v.X>v.Y then
+    root.Size=UDim2.fromOffset(math.floor(math.clamp(v.X*.78,math.min(v.X-16,440),860)),
+     math.floor(math.clamp(v.Y*.86,math.min(v.Y-16,260),620)))
+   else
+    root.Size=UDim2.fromOffset(v.X-16,math.floor(math.clamp(v.Y*.78,300,760)))
+   end
+  elseif primary and primary.witcherStyle then
    root.Size=UDim2.fromOffset(math.min(900,v.X-16),math.min(740,v.Y-16))
   else
    root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
