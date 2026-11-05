@@ -3123,6 +3123,10 @@ meadowActionButtons.refreshSkills=function()
   local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
   local human=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
   local available=player:GetAttribute("ProfileReady")==true and human~=nil and human.Health>0 and remaining<=.05
+  local node=Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[selectedSkill.Id]
+  local gauge=node and node.Gauge or selectedSkill.Id=="skill-meadow-oath" and 70 or 0
+  local stamina=tonumber(player:GetAttribute("MeadowStamina")) or 100
+  available=available and stamina>=gauge
   skillTitle.Text=selectedSkill.Label.."  /  "..current.category
   skillTitle.TextColor3=skillColors[current.category]
   local cooldown=selectedSkill.Cooldown
@@ -3133,13 +3137,13 @@ meadowActionButtons.refreshSkills=function()
     if meadowArt.quickIds[slot]==selectedSkill.Id then equipped[#equipped+1]=tostring(slot) end
   end
   local equippedText=#equipped>0 and ("장착 중 · "..table.concat(equipped,", ").."번") or "미장착"
-  skillText.Text=current.description.."\n\n재사용 "..cooldownText..
+  skillText.Text=current.description.."\n\n재사용 "..cooldownText.." · 기력 "..gauge.."/"..math.floor(stamina)..
     "  ·  "..(selLock and ("아직 못 배웠어: 스킬 트리 > "..selLock) or (remaining>.05 and (math.ceil(remaining).."초 남음") or (available and "사용 가능" or "캐릭터 대기")))
     .."\n"..equippedText.." · 하단 1~5번 칸을 선택해 장착·교체"
   skillQuick.Text=selLock and "잠김" or "퀵슬롯 등록"
   skillQuick.BackgroundColor3=selLock and Color3.fromRGB(70,60,60) or Color3.fromRGB(46,86,98)
   available=available and not selLock
-  skillUse.Text=selLock and "잠김" or (available and ("사용  ·  "..selectedSkill.Label) or "사용 대기")
+  skillUse.Text=selLock and "잠김" or (stamina<gauge and "기력 부족" or (available and ("사용  ·  "..selectedSkill.Label) or "사용 대기"))
   skillUse.Active=available;skillUse.AutoButtonColor=available
   skillUse.BackgroundColor3=available and Color3.fromRGB(107,70,45) or Color3.fromRGB(60,55,55)
 end
@@ -3176,7 +3180,7 @@ do
   local function setMode(tree)
     talentPanel.Visible=tree
     skillBar.Visible=not tree;skillGrid.Visible=not tree;skillDetail.Visible=not tree
-    local dz=meadowPages[7]:FindFirstChild("QuickSlotDrop");if dz then dz.Visible=not tree end
+    local dz=meadowPages[7]:FindFirstChild("QuickSlotDrop");if dz then dz.Visible=true end
     meadowLabels[7].Visible=false
     for i,b in ipairs(modeButtons)do
       local on=(i==2)==tree
@@ -10952,6 +10956,25 @@ end)()
     end)
   end
   meadowArt.refreshQuickHud()
+  -- [저장된 3조합 즉시 반영] 서버에서 승인한 5칸 코드만 로컬 아이콘/버튼에 복원한다.
+  local function syncSavedQuick()
+    if player:GetAttribute("ProfileReady")~=true or
+      (tonumber(player:GetAttribute("QuickInit")) or 0)<1 then return end
+    for slot=1,COUNT do
+      local code=tonumber(player:GetAttribute("QuickSlot"..slot)) or 0
+      local id=false
+      if code>=1 and code<=5 then id=meadowArt.quickSpecial[code]
+      elseif code>=1001 and Config.MeadowSkillNodes[code-1000] then
+        id=Config.MeadowSkillNodes[code-1000].Id
+      elseif code>=10 and Config.Actions[code-9] then
+        id=Config.Actions[code-9].Id
+      end
+      meadowArt.quickIds[slot]=id
+    end
+    meadowArt.refreshQuickHud()
+    if meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end
+  end
+  player:GetAttributeChangedSignal("MeadowLoadoutActive"):Connect(syncSavedQuick)
   -- 저장된 배치를 프로필이 준비되면 한 번 불러온다.
   task.spawn(function()
     for _=1,60 do
