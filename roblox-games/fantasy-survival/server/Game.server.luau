@@ -2173,6 +2173,13 @@ end)()
 -- [메인 퀘스트·연구 기록 아이템]
 -- 채집·관찰·실제 몬스터 처치·유적 수문장 처치에만 연결한다.
 -- 수집 기록은 숫자형 저장 필드이며 기존 DataStore/전투 보상 수치를 유지한다.
+local function meadowRegionOf(player)
+  local character=player.Character
+  local root=character and character:FindFirstChild("HumanoidRootPart")
+  if not root then return "meadow" end
+  local x=root.Position.X
+  return x>3300 and "oasis" or x>2100 and "volcano" or x>900 and "worldtree" or "meadow"
+end
 local function recordMeadowQuest(player, eventName)
   if player:GetAttribute("ProfileReady")~=true then return end
   local stage=readNumber(player,"QuestStage",1)
@@ -2214,7 +2221,25 @@ local function recordMeadowQuest(player, eventName)
     if eventName~="WOODLAND" then return end
     progress+=1
   elseif stage==6 then
-    if eventName~="BOSS_KILL" then return end
+    if eventName~="BOSS_KILL" or meadowRegionOf(player)~="meadow" then return end
+    progress+=1
+  elseif stage==7 then
+    if eventName~="FOREST_FLAG" then return end
+    progress+=1
+  elseif stage==8 then
+    if eventName~="BOSS_KILL" or meadowRegionOf(player)~="worldtree" then return end
+    progress+=1
+  elseif stage==9 then
+    if eventName~="NICK_TALK" then return end
+    progress+=1
+  elseif stage==10 then
+    if eventName~="VOLCANO_MARK" then return end
+    progress+=1
+  elseif stage==11 then
+    if eventName~="KILL" or meadowRegionOf(player)~="oasis" then return end
+    progress+=1
+  elseif stage==12 then
+    if eventName~="MINA_NOTE" then return end
     progress+=1
   end
   progress=math.min(quest.Goal,progress)
@@ -4952,4 +4977,157 @@ do
   makePortal(forestCenter+Vector3.new(0,4,170),"초원 마을로 귀환",function(player)
     travel(player,Vector3.new(-110,6,-86))
   end,Color3.fromRGB(255,214,130))
+end
+
+-- [1부 3·4지역 + 7~12장] 화산 협곡(x=2400)과 오아시스 지하(x=3600)는 Terrain과 등록 CC0 나무·유적 메시로만 구성한다.
+-- 새 몬스터 모델 확보 전까지 숲·화산·오아시스 서식지는 등록된 늑대·박쥐 메시를 임시로 쓴다(교체 예정).
+do
+  local forestCenter=Vector3.new(1200,0,0)
+  local volcanoCenter=Vector3.new(2400,0,0)
+  local oasisCenter=Vector3.new(3600,0,0)
+  local function portal(position,label,color,action)
+    local anchor=Instance.new("Attachment")
+    anchor.Name="Portal_"..label;anchor.WorldPosition=position;anchor.Parent=workspace.Terrain
+    local glow=Instance.new("ParticleEmitter")
+    glow.Color=ColorSequence.new(color);glow.LightEmission=1;glow.Rate=26;glow.Lifetime=NumberRange.new(1.4,2.2)
+    glow.Speed=NumberRange.new(1.5,4);glow.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.8),NumberSequenceKeypoint.new(1,0)})
+    glow.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.2),NumberSequenceKeypoint.new(1,1)})
+    glow.EmissionDirection=Enum.NormalId.Top;glow.SpreadAngle=Vector2.new(30,30);glow.Parent=anchor
+    local light=Instance.new("PointLight");light.Color=color;light.Range=22;light.Brightness=2.4;light.Parent=anchor
+    local prompt=Instance.new("ProximityPrompt")
+    prompt.ActionText=label;prompt.ObjectText="마력의 길";prompt.HoldDuration=.6
+    prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+    prompt.Triggered:Connect(function(player) action(player) end)
+  end
+  local function travel(player,target)
+    local character=player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then character:PivotTo(CFrame.new(target)) end
+  end
+  local function say(player,title,text) pcall(function() villageDialogue(player,title,text) end) end
+  local function tint(model,color,amount)
+    for _,surface in ipairs(model:GetDescendants())do
+      if surface:IsA("MeshPart") then surface.Color=surface.Color:Lerp(color,amount) end
+    end
+  end
+  -- 같은 ProximityPrompt를 중복 보상 없이 쓰는 조사 지점(세션 마스크 + 서버 단계 확인).
+  local function clueSite(position,title,stage,eventName,attribute,bit,dialogue)
+    local model=worldAsset("ruin",position,4.2)
+    if not model then return end
+    model.Name="Region_Clue_"..eventName.."_"..bit
+    villagePrompt(model,title,"조사",function(player)
+      if readNumber(player,"QuestStage",1)~=stage then
+        say(player,title,"지금 이 단서는 필요하지 않아.");return
+      end
+      local mask=readNumber(player,attribute,0)
+      local flag=bit32.lshift(1,bit-1)
+      if bit32.band(mask,flag)~=0 then say(player,title,"이미 조사한 흔적이야.");return end
+      player:SetAttribute(attribute,bit32.bor(mask,flag))
+      recordMeadowQuest(player,eventName)
+      say(player,title,dialogue)
+    end)
+  end
+  local function plainSpot(position,label,color,action)
+    local anchor=Instance.new("Attachment")
+    anchor.WorldPosition=position;anchor.Parent=workspace.Terrain
+    local glow=Instance.new("ParticleEmitter")
+    glow.Color=ColorSequence.new(color);glow.LightEmission=1;glow.Rate=18;glow.Lifetime=NumberRange.new(2,3)
+    glow.Speed=NumberRange.new(1,2);glow.Size=NumberSequence.new(.7);glow.Parent=anchor
+    local prompt=Instance.new("ProximityPrompt")
+    prompt.ActionText=label;prompt.ObjectText=label;prompt.HoldDuration=.5
+    prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+    prompt.Triggered:Connect(function(player) action(player) end)
+  end
+  task.spawn(function()
+    task.wait(6)
+    local ok,err=pcall(function()
+      local terrain=workspace.Terrain
+      local random=Random.new(9137)
+      -- 화산 협곡: 현무암 지면, 용암 균열, 바위 첨탑.
+      terrain:FillBlock(CFrame.new(volcanoCenter.X,-4,0),Vector3.new(420,12,420),Enum.Material.Basalt)
+      terrain:SetMaterialColor(Enum.Material.Basalt,Color3.fromRGB(58,50,50))
+      terrain:SetMaterialColor(Enum.Material.CrackedLava,Color3.fromRGB(255,98,36))
+      for _=1,26 do
+        local x=volcanoCenter.X+random:NextNumber(-185,185)
+        local z=volcanoCenter.Z+random:NextNumber(-185,185)
+        if math.abs(x-volcanoCenter.X)<30 and z>120 then continue end
+        terrain:FillBall(Vector3.new(x,-5.2,z),random:NextNumber(6,13),Enum.Material.CrackedLava)
+      end
+      for _=1,18 do
+        local x=volcanoCenter.X+random:NextNumber(-180,180)
+        local z=volcanoCenter.Z+random:NextNumber(-180,180)
+        terrain:FillCylinder(CFrame.new(x,random:NextNumber(8,20),z),random:NextNumber(18,44),random:NextNumber(4,9),Enum.Material.Slate)
+      end
+      -- 오아시스 지하: 모래 지면, 사암 언덕, 중앙 물웅덩이.
+      terrain:FillBlock(CFrame.new(oasisCenter.X,-4,0),Vector3.new(420,12,420),Enum.Material.Sand)
+      terrain:SetMaterialColor(Enum.Material.Sand,Color3.fromRGB(206,178,118))
+      for _=1,16 do
+        local x=oasisCenter.X+random:NextNumber(-190,190)
+        local z=oasisCenter.Z+random:NextNumber(-190,190)
+        if (Vector2.new(x-oasisCenter.X,z-oasisCenter.Z)).Magnitude<60 then continue end
+        terrain:FillBall(Vector3.new(x,-6,z),random:NextNumber(14,28),Enum.Material.Sandstone)
+      end
+      terrain:FillCylinder(CFrame.new(oasisCenter.X,-1.6,oasisCenter.Z),5,38,Enum.Material.Water)
+      -- 식생: 같은 CC0 나무를 화산은 재가 된 검은 나무, 오아시스는 황록 나무로 낮게 배치한다.
+      local function grove(center,count,minH,maxH,color,amount)
+        for index=1,count do
+          local angle=random:NextNumber(0,math.pi*2)
+          local radius=random:NextNumber(40,180)
+          local tree=worldAsset("tree",center+Vector3.new(math.cos(angle)*radius,3,math.sin(angle)*radius),random:NextNumber(minH,maxH))
+          if tree then tree.Name="RegionTree_"..index;tree:SetAttribute("MeadowScenery",true);tint(tree,color,amount) end
+          if index%6==0 then task.wait() end
+        end
+      end
+      grove(volcanoCenter,14,16,30,Color3.fromRGB(38,34,34),.75)
+      grove(oasisCenter,16,14,26,Color3.fromRGB(176,160,84),.45)
+      -- 조사 지점 / 퀘스트.
+      for index,offset in ipairs({Vector3.new(-70,3,-30),Vector3.new(20,3,-90),Vector3.new(80,3,40)}) do
+        clueSite(forestCenter+offset,"렌스기사단 깃발 흔적",7,"FOREST_FLAG","ForestFlagMask",index,
+          ({"찢어진 깃발. 렌스기사단의 문양 옆에 오래된 다른 기사단의 문장이 겹쳐 있다.","깃발 아래에 이전 기사단원의 이름 없는 검이 박혀 있다. 이름은 누군가 긁어냈다.","마지막 깃발이 숲 안쪽을 가리킨다. 짐승의 울음이 가까워진다."})[index])
+        clueSite(volcanoCenter+offset,"렌스기사단 야영지 표식",10,"VOLCANO_MARK","VolcanoMarkMask",index,
+          ({"식은 모닥불 곁에 렌스 단장의 문장이 새겨진 갑옷 조각이 있다.","군수대장 미나의 보급 표식. 비상 식량이 끝까지 정확히 나뉘어 있다.","불탄 천막 안쪽 벽에 미나의 손글씨 '서쪽 오아시스 아래'가 긁혀 있다."})[index])
+      end
+      plainSpot(forestCenter+Vector3.new(90,4,-60),"닉에게 말을 건다",Color3.fromRGB(255,170,120),function(player)
+        local stage=readNumber(player,"QuestStage",1)
+        if stage==9 then
+          player:SetAttribute("PartyNick",true)
+          recordMeadowQuest(player,"NICK_TALK")
+          say(player,"닉","카인…? 네 목소리다. 내가 뭘 한 거지. 성문 앞에서 봉인이 열리고, 그다음은 기억이 없어. 함께 가자. 내 안의 이놈은 내가 누를게.")
+        elseif stage<9 then say(player,"닉","…으르렁. (저주받은 짐승은 아직 사람의 말을 하지 못한다.)")
+        else say(player,"닉","이제 널 따라갈게, 카인.") end
+      end)
+      plainSpot(oasisCenter+Vector3.new(0,4,170),"기록함 조사",Color3.fromRGB(170,220,255),function(player)
+        local stage=readNumber(player,"QuestStage",1)
+        if stage==12 then
+          recordMeadowQuest(player,"MINA_NOTE")
+          say(player,"미나의 손글씨","'이 숲은 진짜가 아니다. 나는 보급 기록 속에 있다. 미러의 거짓을 찾아.' 글씨는 군수대장 미나의 것이다. 이야기는 2부로 이어진다.")
+        elseif stage<12 then say(player,"기록함","잠겨 있다. 먼저 오아시스 지하의 몬스터를 정리해.")
+        else say(player,"기록함","미나의 손글씨를 이미 확인했어.") end
+      end)
+      -- 서식지(임시 메시): 숲, 화산, 오아시스. 닉 보스는 숲 동쪽의 큰 늑대.
+      local function addSites(center,list)
+        for _,spec in ipairs(list) do
+          table.insert(meadowEncounterSites,{id=spec[1],atom=spec[1]=="wolf" and "HEAD_CANINE" or "WING_LEATHER",
+            tier=spec[2],height=spec[3],position=center+Vector3.new(spec[4],3,spec[5]),alpha=spec[6]})
+        end
+      end
+      addSites(forestCenter,{{"wolf",3,3.4,-110,70},{"wolf",3,3.4,120,90},{"wolf",4,3.4,-60,-130},{"wolf",4,3.4,60,130},
+        {"bat",4,3.3,140,-90},{"bat",4,3.3,-140,-40},{"wolf",5,6.8,150,-60,true}})
+      addSites(volcanoCenter,{{"bat",5,3.4,-120,80},{"bat",5,3.4,110,-100},{"wolf",5,3.6,-60,-120},{"wolf",5,3.6,130,60}})
+      addSites(oasisCenter,{{"bat",6,3.4,-110,60},{"bat",6,3.4,100,-90},{"wolf",6,3.6,-90,-110},{"wolf",6,3.6,120,80},{"bat",6,3.4,0,120}})
+      workspace:SetAttribute("PartRegionsReady",true)
+    end)
+    if not ok then warn("1부 지역 생성 실패: "..tostring(err)) end
+  end)
+  -- 지역 사이 이동(단계 조건은 서버에서 확인).
+  local function gate(position,label,color,needStage,deny,target)
+    portal(position,label,color,function(player)
+      if readNumber(player,"QuestStage",1)<needStage then say(player,"마력의 길",deny);return end
+      if workspace:GetAttribute("PartRegionsReady")~=true then say(player,"마력의 길","이 지역의 마력이 아직 모이는 중이야. 잠시 뒤 다시 시도해.");return end
+      travel(player,target)
+    end)
+  end
+  gate(forestCenter+Vector3.new(170,4,0),"화산 협곡으로 이동",Color3.fromRGB(255,130,70),10,"닉과 함께 숲의 일을 마쳐야 해(메인 9장 이후).",volcanoCenter+Vector3.new(-170,6,0))
+  gate(volcanoCenter+Vector3.new(-175,4,0),"세계수 숲으로 귀환",Color3.fromRGB(120,255,190),1,"",forestCenter+Vector3.new(160,6,0))
+  gate(volcanoCenter+Vector3.new(170,4,0),"오아시스 지하로 이동",Color3.fromRGB(120,210,255),11,"야영지 표식을 모두 조사해야 해(메인 10장 이후).",oasisCenter+Vector3.new(-170,6,0))
+  gate(oasisCenter+Vector3.new(-175,4,0),"화산 협곡으로 귀환",Color3.fromRGB(255,130,70),1,"",volcanoCenter+Vector3.new(160,6,0))
 end

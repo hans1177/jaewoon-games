@@ -2203,7 +2203,7 @@ test('fantasy owner-removed golem stays absent and exterior alpha wolf finishes 
   assert.match(config,/Id="meadow-gatekeeper"/);
   assert.match(config,/Instruction="마을 서쪽 숲의 우두머리 늑대 1마리 처치"/);
   assert.match(server,/if target\.isAlpha then recordMeadowQuest\(player,"BOSS_KILL"\) end/);
-  assert.match(server,/if eventName~="BOSS_KILL" then return end/);
+  assert.match(server,/if eventName~="BOSS_KILL" or meadowRegionOf\(player\)~="meadow" then return end/);
   const wolves=[...sites.matchAll(/\{id="wolf"[^\n]*?position=Vector3\.new\((-?\d+),(-?\d+),(-?\d+)\)/g)];
   assert.equal(wolves.length,9,'all approved exterior wolves including contract wolf');
   for(const [,x,y,z] of wolves){
