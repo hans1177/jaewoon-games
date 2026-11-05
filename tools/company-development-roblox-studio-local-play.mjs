@@ -2612,7 +2612,7 @@ export function evaluateDaechungCloudStudioChecks({
 }
 
 
-export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',outDir='',times=[2,5,9,14,20,27,35,43,51,59,66]}={}){
+export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',outDir='',times=[6,8,10,12,14,16,18,20,22,24,27,30,34,38,42,46,50,54,58,62]}={}){
   const client=new McpStdioClient({...mcpCommandArgs(mcpCommand),timeoutMs:60000});
   fs.mkdirSync(outDir,{recursive:true});
   const report={frames:[],console:[],errors:[]};
@@ -2659,6 +2659,12 @@ export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',
       try{
         const a=fillRequired((()=>{const x={};setStudioId(x,capTool.inputSchema||{},studioId);return x;})(),capTool.inputSchema||{});
         const r=await client.call('screen_capture',a);
+        try{
+          const lt=client.tool('execute_luau');
+          const code='local p=game:GetService("Players").LocalPlayer.PlayerGui local st=nil for _,d in ipairs(p:GetDescendants()) do if d.Name=="Opening24Stage" then st=d break end end local o={} if st then for _,d in ipairs(st:GetDescendants()) do if d:IsA("ImageLabel") and d.Image~="" then table.insert(o,d.Name..":"..string.sub(d.Image,-14)..":"..tostring(d.IsLoaded)..":"..string.format("%.2f",d.ImageTransparency)) end end end print("PROBE "..table.concat(o,"|")) return table.concat(o,"|")';
+          const lr=await client.call('execute_luau',executeLuauArgs(lt.inputSchema||{},studioId,code,'Client'));
+          report.console.push('PROBE t='+sec+' '+flattenText(lr,[]).join(' ').slice(0,500));
+        }catch(e){report.console.push('PROBE t='+sec+' ERR '+clean(e?.message||e).slice(0,100));}
         const imgs=collectImages(r,[],outDir,'intro-t'+String(sec).padStart(2,'0'));
         report.frames.push({sec,files:imgs.map(x=>x.path||'')});
         console.log('OPENING_FRAME='+sec+':'+imgs.length);
@@ -2667,7 +2673,7 @@ export async function captureOpeningFrames({mcpCommand='',expectedStudioName='',
     try{
       const ct=client.tool('get_console_output');const a={};setStudioId(a,ct.inputSchema||{},studioId);
       const c=await client.call('get_console_output',fillRequired(a,ct.inputSchema||{}));
-      report.console=flattenText(c,[]).join('\n').split('\n').slice(-300);
+      report.console=report.console.concat(flattenText(c,[]).join('\n').split('\n').slice(-150));
     }catch(e){report.errors.push('console:'+clean(e?.message||e).slice(0,200));}
   }catch(e){report.errors.push(clean(e?.message||e).slice(0,400));}
   finally{
