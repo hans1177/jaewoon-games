@@ -5328,8 +5328,8 @@ local function layoutMeadowCombatUi()
   -- [시안 참고] 오른쪽 큰 검 / 위쪽 마력·질주 / 좌측 회피 / 아래 점프.
   local positions={
     {150,92,44}, -- 보라색 기술은 오른쪽 HUD에서 숨김(공격·회피·막기·질주만 표시)
-    {94,168,44}, -- 회피: 검 바로 왼쪽
-    {117,113,44}, -- 막기: 검 왼쪽 위(대각)
+    {116,165,44}, -- 회피: 검 바로 왼쪽(검과 간격 7)
+    {134,121,44}, -- 막기: 검 왼쪽 위(대각)
     {40,72,36}, -- 물약은 기존 단축바 5번
   }
   for index,button in ipairs(meadowSkillButtons) do
@@ -5357,12 +5357,12 @@ local function layoutMeadowCombatUi()
       local size=math.max(46,math.floor(44*scale))
       button.Size=UDim2.fromOffset(size,size)
       -- 질주: 검 바로 위. 세 보조 버튼은 검 중심에서 같은 거리의 부채꼴로 배치한다.
-      button.Position=UDim2.fromOffset(math.floor(172*scale-size*.5),math.floor(90*scale-size*.5))
+      button.Position=UDim2.fromOffset(math.floor(179*scale-size*.5),math.floor(102*scale-size*.5))
     end
   end
-  local swordSize=math.max(64,math.floor(76*scale))
+  local swordSize=math.max(60,math.floor(66*scale))
   meadowSkillButtons.primarySword.Size=UDim2.fromOffset(swordSize,swordSize)
-  meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(134*scale),math.floor(130*scale))
+  meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale),math.floor(132*scale))
   local jumpSize=math.max(54,math.floor(54*scale))
   meadowSkillButtons.referenceJump.Visible=false -- [요청] 점프 버튼 제거
   meadowSkillButtons.referenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)

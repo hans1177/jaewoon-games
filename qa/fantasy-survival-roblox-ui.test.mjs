@@ -97,7 +97,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'local hotbarActions={','local function layoutMeadowReferenceHud()',
     'local step=landscape and math.floor(math.clamp(v.X/15,47,55))',
     'meadowReferenceHotbar.Position=UDim2.new(.5,0,1,-99)',
-    'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(134*scale)',
+    'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale)',
     'meadowHealthTrack.Position=UDim2.fromOffset(x,top+16)',
     'meadowEnergy.Position=UDim2.fromOffset(x,top+30)',
     'questTracker.Position=UDim2.fromOffset(questLeft,questTop)',
@@ -145,10 +145,10 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/local height=compact and 100 or 157/);
   assert.match(client,/local width=math.floor\(math.clamp\(v.X\*\(landscape and \.19 or \.42\),132,238\)\)/);
   assert.match(client,/local positions=\{\s+\{150,92,44\}/);
-  assert.match(client,/\{94,168,44\}/);
-  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(172\*scale-size\*\.5\),math.floor\(90\*scale-size\*\.5\)\)/);
-  assert.match(client,/meadowSkillButtons.primarySword.Position=UDim2.fromOffset\(math.floor\(134\*scale\),math.floor\(130\*scale\)\)/);
-  assert.match(client,/local swordSize=math.max\(64,math.floor\(76\*scale\)\)/);
+  assert.match(client,/\{116,165,44\}/);
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(179\*scale-size\*\.5\),math.floor\(102\*scale-size\*\.5\)\)/);
+  assert.match(client,/meadowSkillButtons.primarySword.Position=UDim2.fromOffset\(math.floor\(146\*scale\),math.floor\(132\*scale\)\)/);
+  assert.match(client,/local swordSize=math.max\(60,math.floor\(66\*scale\)\)/);
   assert.match(client,/meadowSkillButtons.referenceJump.Position=UDim2.fromOffset\(math.floor\(30\*scale\),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor\(6\*scale\)\)/);
   // 원화 자체에 포함된 링을 또 그리지 않는다.
   assert.match(client,/if rim then rim.Enabled=false end/);
