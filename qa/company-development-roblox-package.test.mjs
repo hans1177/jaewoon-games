@@ -1906,7 +1906,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(server,/if wing then[\s\S]*?surface\.Material=Enum\.Material\.Glass/);
   assert.match(server,/elseif smoothDetail then[\s\S]*?surface\.Material=Enum\.Material\.SmoothPlastic/);
   assert.match(server,/model:PivotTo\(CFrame.lookAt\(pivot,pivot\+facing\)/);
-  assert.match(client,/local skillActionId=skill\[1\][\s\S]*?button.Activated:Connect\(function\(\)[\s\S]*?activateMeadowAction\(skillActionId\)/);
+  assert.match(client,/local skillActionId=skill\[1\][\s\S]*?button.Activated:Connect\(function\(\)[\s\S]*?or skillActionId\)/);
   assert.match(client,/local meadowMobMotion=combatMotionSource/);
   assert.match(server,/task.defer\(createResourceNodes\)/);
   assert.match(server,/task.delay\(4,function\(\)\s*local wildlife=\{/);

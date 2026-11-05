@@ -78,7 +78,7 @@ test('mobile interaction highlight uses actual server prompt activation range',(
 });
 
 test('touch dock retains authoritative original actions and server request path',()=>{
-  assert.match(client,/button\.Activated:Connect\(function\(\)\s*if gui:GetAttribute\("GameMenuOpen"\)==true then return end\s*local submitted=activateMeadowAction\(skillActionId\)/);
+  assert.match(client,/button\.Activated:Connect\(function\(\)\s*if gui:GetAttribute\("GameMenuOpen"\)==true then return end\s*local submitted=activateMeadowAction\(index==1 and \(meadowActionButtons\.quickSkillId or skillActionId\) or skillActionId\)/);
   assert.match(client,/remote:FireServer\(actionId\)/);
   assert.match(client,/meadowRadar\.Name="MeadowExplorerRadar"/);
   for(const action of ['meadow-unarmed-rush','skill-meadow-dodge-left',
@@ -144,7 +144,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/questTracker.BackgroundColor3=Color3.fromRGB\(19,19,18\)/);
   assert.match(client,/local height=compact and 124 or 157/);
   assert.match(client,/local width=math.floor\(math.clamp\(v.X\*\(landscape and \.30 or \.42\),landscape and 190 or 132,landscape and 262 or 238\)\)/);
-  assert.match(client,/local positions=\{\s+\{150,92,44\}/);
+  assert.match(client,/local positions=\{\s+\{66,165,44\}/);
   assert.match(client,/\{116,165,44\}/);
   assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(179\*scale-size\*\.5\),math.floor\(102\*scale-size\*\.5\)\)/);
   assert.match(client,/meadowSkillButtons.primarySword.Position=UDim2.fromOffset\(math.floor\(146\*scale\),math.floor\(132\*scale\)\)/);

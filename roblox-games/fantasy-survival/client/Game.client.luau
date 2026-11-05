@@ -2355,7 +2355,7 @@ local skillInfo={
 -- [스킬 성장] 숙련도 50마다 1점. 기존 공격·저장 구조를 변경하지 않고 계열당 3단계.
 local talentPanel=Instance.new("Frame")
 talentPanel.Name="WitcherTalents";talentPanel.LayoutOrder=2
-talentPanel.Size=UDim2.new(1,-8,0,334);talentPanel.BackgroundTransparency=1;talentPanel.Parent=meadowPages[7]
+talentPanel.Size=UDim2.new(1,-8,0,446);talentPanel.BackgroundTransparency=1;talentPanel.Parent=meadowPages[7]
 local talentHeader=Instance.new("TextLabel")
 talentHeader.Name="TalentPoints";talentHeader.Size=UDim2.new(1,0,0,30)
 talentHeader.BackgroundTransparency=1;talentHeader.Font=Enum.Font.GothamBold;talentHeader.TextSize=16
@@ -2365,6 +2365,18 @@ local talentGrid=Instance.new("Frame")
 talentGrid.Name="TalentBranches";talentGrid.Position=UDim2.fromOffset(0,34)
 talentGrid.Size=UDim2.new(1,0,0,292);talentGrid.BackgroundTransparency=1;talentGrid.Parent=talentPanel
 -- [스킬 트리] 4갈래 × 3단계. 위에서 아래로 선으로 이어지고, 배운 칸·배울 수 있는 칸·잠긴 칸을 색으로 구분한다.
+local talentPerks=Instance.new("TextLabel")
+talentPerks.Name="TalentPerks";talentPerks.BackgroundTransparency=1;talentPerks.Position=UDim2.fromOffset(0,330)
+talentPerks.Size=UDim2.new(1,0,0,62);talentPerks.TextWrapped=true;talentPerks.Font=Enum.Font.GothamMedium
+talentPerks.TextSize=12;talentPerks.TextColor3=Color3.fromRGB(200,210,203);talentPerks.TextXAlignment=Enum.TextXAlignment.Left
+talentPerks.TextYAlignment=Enum.TextYAlignment.Top;talentPerks.Parent=talentPanel
+talentPerks.Text="3단계 특전  ·  검술: 회전 베기 8마리·12칸  ·  표식: 마력 탄환 사거리 40칸\n방호: 방어 자세 3.6초·완벽 방어 0.36초  ·  기동: 회피 재사용 3초"
+local talentReset=CommonUI.CreatePrimaryButton({name="TalentReset",text="점수 초기화  ·  코인 30",minHeight=44})
+talentReset.Position=UDim2.fromOffset(0,396);talentReset.Size=UDim2.new(1,0,0,44)
+talentReset.BackgroundColor3=Color3.fromRGB(98,52,48);talentReset.Parent=talentPanel
+talentReset.Activated:Connect(function()
+  if player:GetAttribute("ProfileReady")==true then remote:FireServer("meadow:rpg:talent:reset:all") end
+end)
 local talentEffects={
   Martial={"공격 +1","공격 +2","공격 +3"},Signs={"탄환 +2","탄환 +4","탄환 +6"},
   Defense={"피해 -1","피해 -2","피해 -3"},Agility={"회피 +1.5%","회피 +3%","회피 +4.5%"},
@@ -2464,8 +2476,22 @@ local function renderTalents()
       if link then link.BackgroundColor3=level>step and entry.tint or Color3.fromRGB(70,82,78) end
     end
   end
+  -- [새 점수 알림] 쓸 수 있는 점수가 있으면 메뉴의 스킬 탭에 빨간 점을 붙인다.
+  for _,tab in ipairs(player.PlayerGui:GetDescendants())do
+    if tab:IsA("TextButton") and tab.Text=="스킬" and tab.Parent and tab.Parent.Name=="MeadowMenuTabs" then
+      local dot=tab:FindFirstChild("SkillPointDot")
+      if not dot then
+        dot=Instance.new("Frame");dot.Name="SkillPointDot";dot.Size=UDim2.fromOffset(16,16)
+        dot.AnchorPoint=Vector2.new(1,0);dot.Position=UDim2.new(1,-4,0,4);dot.BackgroundColor3=Color3.fromRGB(226,56,48)
+        dot.BorderSizePixel=0;dot.ZIndex=tab.ZIndex+5;dot.Parent=tab
+        local dotCorner=Instance.new("UICorner");dotCorner.CornerRadius=UDim.new(1,0);dotCorner.Parent=dot
+        local dotEdge=Instance.new("UIStroke");dotEdge.Color=Color3.new(1,1,1);dotEdge.Thickness=1.5;dotEdge.Parent=dot
+      end
+      dot.Visible=remaining>0
+    end
+  end
   talentHeader.Text="스킬 트리  ·  남은 기술 점수 "..remaining.."  (숙련 50마다 1점)"
-  talentPanel.Size=UDim2.new(1,-8,0,334)
+  talentPanel.Size=UDim2.new(1,-8,0,446)
 end
 for _,name in ipairs({"CombatProficiency","MeadowTalentMartial","MeadowTalentSigns",
   "MeadowTalentDefense","MeadowTalentAgility","MeadowGearRevision"})do
@@ -2510,8 +2536,12 @@ skillText.TextColor3=parchment;skillText.Font=Enum.Font.GothamMedium;skillText.T
 skillText.TextXAlignment=Enum.TextXAlignment.Left;skillText.TextYAlignment=Enum.TextYAlignment.Top
 skillText.TextWrapped=true;skillText.Parent=skillDetail
 local skillUse=CommonUI.CreatePrimaryButton({name="UseWitcherSkill",text="기술 사용",minHeight=52})
-skillUse.Position=UDim2.fromOffset(12,134);skillUse.Size=UDim2.new(1,-24,0,52)
+skillUse.Position=UDim2.fromOffset(12,134);skillUse.Size=UDim2.new(.5,-16,0,52)
 skillUse.BackgroundColor3=Color3.fromRGB(98,65,45);skillUse.Parent=skillDetail
+-- [퀵슬롯] 선택한 기술을 오른쪽 전투 버튼에 등록한다. 같은 기술을 다시 누르면 해제.
+local skillQuick=CommonUI.CreatePrimaryButton({name="RegisterQuickSkill",text="전투 버튼 등록",minHeight=52})
+skillQuick.Position=UDim2.new(.5,4,0,134);skillQuick.Size=UDim2.new(.5,-16,0,52)
+skillQuick.BackgroundColor3=Color3.fromRGB(46,86,98);skillQuick.Parent=skillDetail
 local skillRows={}
 local selectedSkill=nil
 local skillCategory="전체"
@@ -2576,6 +2606,9 @@ meadowActionButtons.refreshSkills=function()
   local cooldownText=typeof(cooldown)=="number" and (tostring(cooldown).."초") or "기본 공격 판정"
   skillText.Text=current.description.."\n\n재사용 대기시간: "..cooldownText..
     "\n현재: "..(remaining>.05 and (math.ceil(remaining).."초 남음") or (available and "사용 가능" or "캐릭터 대기"))
+  local registered=meadowActionButtons.quickSkillId==selectedSkill.Id
+  skillQuick.Text=registered and "등록 해제" or "전투 버튼 등록"
+  skillQuick.BackgroundColor3=registered and Color3.fromRGB(120,70,52) or Color3.fromRGB(46,86,98)
   skillUse.Text=available and ("사용  ·  "..selectedSkill.Label) or "사용 대기"
   skillUse.Active=available;skillUse.AutoButtonColor=available
   skillUse.BackgroundColor3=available and Color3.fromRGB(107,70,45) or Color3.fromRGB(60,55,55)
@@ -2602,6 +2635,15 @@ for index,button in ipairs(skillButtons)do
   end)
   button.BackgroundColor3=index==1 and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
 end
+skillQuick.Activated:Connect(function()
+  if not selectedSkill or not meadowActionButtons.setQuickSkill then return end
+  local same=meadowActionButtons.quickSkillId==selectedSkill.Id
+  local row=nil
+  for _,entry in ipairs(skillRows)do if entry.action==selectedSkill then row=entry end end
+  local cell=skillInfo[selectedSkill.Id] and skillInfo[selectedSkill.Id][3] or 2
+  meadowActionButtons.setQuickSkill(not same and selectedSkill.Id or nil,cell,selectedSkill.Label,row and row.category)
+  meadowActionButtons.refreshSkills()
+end)
 skillUse.Activated:Connect(function()
   if not selectedSkill or player:GetAttribute("ProfileReady")~=true then return end
   local human=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
@@ -5571,12 +5613,37 @@ for index,skill in ipairs(meleeSkills)do
   cooldownCorner.Parent=cooldown
   meadowSkillButtons[index]=button
   meadowSkillCooldowns[index]=cooldown
+  -- 1번 버튼은 스킬 페이지에서 등록한 퀵슬롯이다.
   local skillActionId=skill[1] -- [오른쪽 터치] 각 버튼의 서버 기술 ID를 자기 입력에 고정한다.
   button.Activated:Connect(function()
     if gui:GetAttribute("GameMenuOpen")==true then return end
-    local submitted=activateMeadowAction(skillActionId)
+    local submitted=activateMeadowAction(index==1 and (meadowActionButtons.quickSkillId or skillActionId) or skillActionId)
     if index==2 and submitted then meadowDodgeAttemptAt=os.clock() end
   end)
+end
+-- [퀵슬롯 등록] 스킬 페이지에서 고른 기술을 1번 전투 버튼에 연결한다. 서버 기술 ID·쿨다운은 그대로 사용한다.
+meadowActionButtons.setQuickSkill=function(id,cell,label,category)
+  meadowActionButtons.quickSkillId=id
+  local quick=meadowSkillButtons[1]
+  if not quick then return end
+  local fist=quick:FindFirstChild("OriginalRightActionIcon")
+  if fist then fist.Visible=false end
+  quick.BackgroundTransparency=0
+  local rim=quick:FindFirstChild("GoldSkillRim")
+  if rim then rim.Enabled=true end
+  local inner=quick:FindFirstChild("PolishedInnerRing")
+  if inner then inner.Visible=true end
+  local icon=quick:FindFirstChild("QuickSkillIcon")
+  if not icon then
+    icon=Instance.new("ImageLabel");icon.Name="QuickSkillIcon";icon.BackgroundTransparency=1
+    icon.AnchorPoint=Vector2.new(.5,.5);icon.Position=UDim2.fromScale(.5,.5);icon.Size=UDim2.fromScale(.66,.66)
+    icon.Image=meadowIconAtlas;icon.ImageRectSize=Vector2.new(64,64);icon.ZIndex=20
+    icon.Active=false;icon.Interactable=false;icon.Parent=quick
+  end
+  icon.ImageRectOffset=Vector2.new((cell or 2)*64,0)
+  icon.Visible=id~=nil
+  quick.BackgroundColor3=Color3.fromRGB(30,31,29)
+  gui:SetAttribute("MeadowQuickRevision",(gui:GetAttribute("MeadowQuickRevision") or 0)+1)
 end
 -- 기본 공격은 기존 화면 터치/키보드로 계속 사용하고 별도 공격 버튼은 제거한다.
 -- [오른쪽 보조 버튼] 기존 회피·질주·채집과 인벤토리 탭을 시안의 4개 원형 버튼에 연결.
@@ -5700,7 +5767,7 @@ local function layoutMeadowCombatUi()
   meadowSkillDock.Position=UDim2.new(1,-math.floor(14*scale),1,-math.floor(offset*(landscape and 1 or scale)))
   -- [시안 참고] 오른쪽 큰 검 / 위쪽 마력·질주 / 좌측 회피 / 아래 점프.
   local positions={
-    {150,92,44}, -- 보라색 기술은 오른쪽 HUD에서 숨김(공격·회피·막기·질주만 표시)
+    {66,165,44}, -- 퀵슬롯: 스킬 페이지에서 등록한 기술(등록 전에는 숨김)
     {116,165,44}, -- 회피: 검 바로 왼쪽(검과 간격 7)
     {134,121,44}, -- 막기: 검 왼쪽 위(대각)
     {40,72,36}, -- 물약은 기존 단축바 5번
@@ -5718,7 +5785,7 @@ local function layoutMeadowCombatUi()
       math.floor(visualY*scale-size*.5))
     -- [시안 오른쪽] 검·기술·회피·질주·점프 5개만 표시.
     -- 숨긴 막기와 회복은 8·5번 단축바에 그대로 연결한다.
-    button.Visible=index==2 or index==3
+    button.Visible=index==2 or index==3 or (index==1 and meadowActionButtons.quickSkillId~=nil)
     local plate=meadowSkillNameplates[index]
     plate.Visible=false -- 원형 전투 아이콘만 유지해 참고 화면과 동일한 밀도로 표시.
     plate.Size=UDim2.fromOffset(0,0)
@@ -5757,6 +5824,7 @@ local function layoutMeadowCombatUi()
   end
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)
+gui:GetAttributeChangedSignal("MeadowQuickRevision"):Connect(layoutMeadowCombatUi)
 do
   local layer=player.PlayerGui:FindFirstChild("MeadowTouchLayer")
   if layer then layer:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi) end
@@ -6520,7 +6588,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   energyLabel.Text=ready and string.format("스테미너 %d / 100",math.floor(stamina+.5)) or "스테미너 불러오는 중"
   for index,button in ipairs(meadowSkillButtons)do
     local skill=meleeSkills[index]
-    local deadline=player:GetAttribute("MeadowReady_"..skill[1])
+    local deadline=player:GetAttribute("MeadowReady_"..(index==1 and meadowActionButtons.quickSkillId or skill[1]))
     local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
     local cost=0 -- 위치 재배치는 기존 기술의 서버 스테미너·쿨다운을 바꾸지 않는다.
     -- [기술 터치] 재사용 대기 중에도 버튼 입력을 막지 않고 서버에서 쿨다운을 검증한다.

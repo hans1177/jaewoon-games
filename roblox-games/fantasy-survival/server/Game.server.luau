@@ -2137,6 +2137,17 @@ local meadowRpg=(function()
         feedback(player,tonic.Name.." 사용")
         return true
       end
+    elseif group=="talent" and verb=="reset" and id=="all" then
+      -- [스킬 초기화] 코인 30개로 4계열 단계를 모두 0으로 되돌려 점수를 다시 나눈다.
+      local invested=0
+      for _,key in pairs(talents)do invested+=math.clamp(readNumber(player,key,0),0,3) end
+      if invested<=0 then feedback(player,"초기화할 스킬이 없어.");return true end
+      if readNumber(player,"Coins",0)<30 then feedback(player,"초기화에는 코인 30개가 필요해.");return true end
+      setNumber(player,"Coins",readNumber(player,"Coins",0)-30)
+      for _,key in pairs(talents)do setNumber(player,key,0) end
+      publishStats(player)
+      feedback(player,"스킬 점수를 모두 돌려받았어.")
+      return true
     elseif group=="talent" and verb=="learn" then
       local key=talents[id]
       if not key then return false end
@@ -3907,6 +3918,9 @@ local meadowSkillSeconds={
 local function meadowSkill(player,id,execute)
   local interval=meadowSkillSeconds[id]
   if not interval then return false end
+  -- [기동 3단계] 회피 재사용 대기 4초 → 3초.
+  if (id=="skill-meadow-dodge-left" or id=="skill-meadow-dodge-right")
+    and readNumber(player,"MeadowTalentAgility",0)>=3 then interval=3 end
   local cooldowns=meadowSkillCooldown[player] or {}
   local now=os.clock()
   -- [회피 공용 쿨다운] 버튼 하나가 좌/우 어느 방향을 선택해도 4초를 공유한다.
@@ -3957,7 +3971,8 @@ local function meadowSweep(player)
     local targets={}
     for _,enemy in ipairs(enemies) do
       if enemy.HP>0 and enemy.model.Parent and
-        (enemy.position-root.Position).Magnitude<=10 and #targets<5 then
+        (enemy.position-root.Position).Magnitude<=(readNumber(player,"MeadowTalentMartial",0)>=3 and 12 or 10)
+        and #targets<(readNumber(player,"MeadowTalentMartial",0)>=3 and 8 or 5) then
         table.insert(targets,enemy)
       end
     end
@@ -3972,7 +3987,7 @@ local function meadowSweep(player)
 end
 local function meadowBolt(player)
   return meadowSkill(player,"skill-meadow-bolt",function(character,_,root)
-    local enemy=nearestEnemy(root,32)
+    local enemy=nearestEnemy(root,readNumber(player,"MeadowTalentSigns",0)>=3 and 40 or 32)
     if not enemy then return false end
     local ray=RaycastParams.new()
     ray.FilterType=Enum.RaycastFilterType.Exclude
@@ -3991,6 +4006,11 @@ local function meadowGuard(player)
     local defense=meadowDefense[player] or {}
     defense.guardUntil=now+2.8
     defense.perfectGuardUntil=now+.28
+    -- [방호 3단계] 방어 자세 3.6초·완벽 방어 0.36초.
+    if readNumber(player,"MeadowTalentDefense",0)>=3 then
+      defense.guardUntil+=.8
+      defense.perfectGuardUntil+=.08
+    end
     meadowDefense[player]=defense
     player:SetAttribute("ApprovedActionTarget",root.Position)
     return true
