@@ -82,7 +82,8 @@ local meadowOil={
     mage="human",rogue="human",roguehooded="human",knight="human",barbarian="human",king="human",adventurer="human",punk="human",farmer="human",
     witch="human",womansoldier="human",womanmedieval="human",knightchar="human",
     skmage="demon",skwarrior="demon",skrogue="demon",skminion="demon",spiritgolem="demon",
-    ghost="demon",ghostskull="demon",wingdemon="demon",dragon="beast"},
+    ghost="demon",ghostskull="demon",wingdemon="demon",dragon="beast",dragonlite="beast",hywirl="demon",
+    birb="beast",cactoro="beast",fish="beast",monkroose="beast",ninja="human"},
   kindClass={wolf="beast",bat="beast",ghost="demon",bee="arachnid"},
   names={beast="야수 오일",arachnid="거미 오일",human="인간형 오일",demon="퇴마 오일"},
   recipes={beast={{"Hide",1},{"Fang",1}},arachnid={{"Fang",1},{"Mushroom",1}},human={{"Ore",1},{"Hide",1}},demon={{"Magma",1},{"Crystal",1}}},
@@ -2950,7 +2951,7 @@ end)
 -- [전투 성향] 모델 종류에 따라 공격 방식을 나눈다. mage: 원거리 마법탄·광역 폭발, rogue: 빠른 찌르기·연속 베기,
 -- 이름 있는 보스(named): 후반 충격파. 서버가 판정·피해를 소유하며 클라이언트는 연출만 한다.
 local mobStyleByModel={mage="mage",skmage="mage",witch="mage",frostfiend="mage",demon="mage",
-  rogue="rogue",roguehooded="rogue",skrogue="rogue",assassin="rogue",wasp="rogue",fox="rogue"}
+  rogue="rogue",roguehooded="rogue",skrogue="rogue",assassin="rogue",wasp="rogue",fox="rogue",ninja="rogue",hywirl="mage"}
 
 -- [신화 합성체] 등록된 CC0 모델 여러 개를 한 몸으로 합쳐 신화 괴물을 만든다(히드라·켄타우로스·아라크네 등).
 -- 새 도형 파츠를 만들지 않고 실제 메시 모델만 겹쳐 붙인다. 각 조각은 몸통 모델 안으로 옮겨 함께 움직인다.
@@ -6745,6 +6746,72 @@ do
     end
   end
   workspace:SetAttribute("SkyMonsterCount",count)
+end
+
+-- [거대 괴수] 뼈가 있는 모델을 크게 키우고 합쳐 만든 지역 대형 보스. 키는 14~22스터드로 플레이어 5배 이상이다.
+do
+  local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
+  local random=Random.new(7719)
+  local village=Config.WorldMap.Village
+  local count=0
+  local function place(zoneId)
+    local x,z=Config.WorldMap.RandomPoint(zoneId,random,200)
+    if x and not (x>village.X0-220 and x<village.X1+220 and z>village.Z0-220 and z<village.Z1+220) then return x,z end
+  end
+  local colossi={
+    {name="화염 거인 수르트",model="skullorc",height=20,hp=10,dmg=3.4,zones={"volcano","citadel"},drops={{"Magma",1,8},{"Crystal",1,7},{"Ore",1,6}}},
+    {name="늪 거인 그렌델",model="toad",height=16,hp=8,dmg=3,zones={"swamp","wetland","deadmarsh"},drops={{"Crystal",1,6},{"Moonbloom",1,5},{"Hide",1,6}}},
+    {name="동굴 트롤 왕",model="chieftain",height=15,hp=8.5,dmg=3.1,zones={"canyon","highland","windcliff"},drops={{"Ore",1,7},{"Hide",1,6},{"Crystal",1,5}}},
+    {name="사막 선인장 거인 사보텐",model="cactoro",height=17,hp=8,dmg=2.9,zones={"desert","oasis"},drops={{"Crystal",1,6},{"Mushroom",1,6},{"Hide",1,5}}},
+    {name="심연 어인 왕 다곤",model="fish",height=14,hp=7.5,dmg=3,zones={"wetland","swamp","deadmarsh"},drops={{"Crystal",1,6},{"Fang",1,5},{"Moonbloom",1,4}}},
+    {name="원숭이닭 키마이라",model="monkroose",height=13,hp=7,dmg=3,zones={"worldtree","meadow","desert"},drops={{"Fang",1,5},{"Hide",1,6},{"Crystal",1,4}}},
+    {name="폭풍 하피 여왕 로크",model="birb",height=12,hp=6.5,dmg=2.8,style="rogue",zones={"canyon","highland","windcliff"},drops={{"Claw",1,5},{"Crystal",1,5},{"Hide",1,5}}},
+    {name="거신병 미라",model="yeti",height=22,hp=11,dmg=3.6,zones={"chaos","citadel"},drops={{"Crystal",1,9},{"Ore",1,7},{"Claw",1,6}}},
+  }
+  for _,col in ipairs(colossi) do
+    for _,zoneId in ipairs(col.zones) do
+      local x,z=place(zoneId)
+      if x then
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=col.model,name="거대 괴수 · "..col.name,tier=math.min(10,tiers[zoneId]+2),height=col.height,
+          hp=col.hp,dmg=col.dmg,alpha=true,bonusBoss=true,named=true,lord=true,zoneTag=zoneId,style=col.style,drops=col.drops,position=Vector3.new(x,3,z)})
+        count+=1
+      end
+    end
+  end
+  -- 닌자 암살단(성채·혼돈·오아시스), 와이번(화산·협곡·고원), 바람 정령(바람 절벽·고원·협곡).
+  for _,zoneId in ipairs({"citadel","chaos","oasis"}) do
+    local x,z=place(zoneId)
+    if x then
+      for k=1,4 do
+        local a=k*math.pi/2
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="ninja",name="그림자 닌자 · "..(k==1 and "수령" or "암살자"),tier=tiers[zoneId],height=k==1 and 6.4 or 5,
+          hp=k==1 and 3 or 1.4,dmg=k==1 and 2.2 or 1.5,alpha=k==1 or nil,zoneTag=zoneId,style="rogue",drops={{"Claw",.7,2},{"Hide",.8,2}},
+          position=Vector3.new(x+math.cos(a)*10,3,z+math.sin(a)*10)})
+        count+=1
+      end
+    end
+  end
+  for _,zoneId in ipairs({"volcano","canyon","highland","chaos"}) do
+    for g=1,2 do
+      local x,z=place(zoneId)
+      if x then
+        table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",model="dragonlite",name="와이번 · "..(g==1 and "송곳니 사냥꾼" or "독침 와이번"),tier=math.min(10,tiers[zoneId]+1),height=8,
+          hp=3.2,dmg=2.2,alpha=true,zoneTag=zoneId,drops={{"Claw",1,4},{"Hide",1,5},{"Crystal",.8,3}},position=Vector3.new(x,3,z)})
+        count+=1
+      end
+    end
+  end
+  for _,zoneId in ipairs({"windcliff","highland","canyon","meadow"}) do
+    local x,z=place(zoneId)
+    if x then
+      for k=1,2 do
+        table.insert(meadowEncounterSites,{id="ghost",atom="GHOST_WAIL",model="hywirl",name="바람 정령 · 하이윌",tier=tiers[zoneId],height=6,hp=1.6,dmg=1.5,style="mage",
+          zoneTag=zoneId,drops={{"Crystal",.7,2},{"Moonbloom",.6,2}},position=Vector3.new(x+k*8,3,z)})
+        count+=1
+      end
+    end
+  end
+  workspace:SetAttribute("ColossusCount",count)
 end
 
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
