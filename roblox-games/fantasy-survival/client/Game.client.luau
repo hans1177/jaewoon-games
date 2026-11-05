@@ -11100,6 +11100,9 @@ end)()
     -- 메뉴가 닫히면 메뉴 단계로 되돌린다.
     if (cond=="skillpage" or cond=="learned" or steps[current][1]=="퀵슬롯 등록") and not menuOpen() then show(6) return end
     if cond=="learned" and not skillPageOpen() then show(7) return end
+    -- 카드 위치: 평소엔 위쪽(퀵슬롯·버튼을 안 가림), 메뉴가 열려 있으면 아래쪽.
+    if menuOpen() then card.AnchorPoint=Vector2.new(.5,1);card.Position=UDim2.new(.5,0,1,-14)
+    else card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,0,84) end
     local pos,dir=s[3]()
     if pos then
       local bob=math.abs(math.sin(os.clock()*5))*14
