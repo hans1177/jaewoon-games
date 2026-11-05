@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-a6m37w",
+      "worker": "vibe2",
+      "taskId": "star-frontier-web-startup-spatial-repair-v1",
+      "gameId": "star-frontier",
+      "files": [
+        "web-games/star-frontier/index.html"
+      ],
+      "baseSha": "13ecf86b492c4bdf3412f1a1a484f5efa2d720da",
+      "runId": "41961600724",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-05T03:41:10.142Z",
+      "expiresAt": "2026-11-05T04:26:10.142Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:star-frontier-web-startup-spatial-repair-v1"
+      ]
+    }
+  ]
 }
