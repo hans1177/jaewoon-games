@@ -97,6 +97,53 @@ if(process.argv.includes('--camp-assets-only')){
  process.exit(0);
 }
 
+// [마력숲 몬스터] Quaternius CC0 애니메이션 몬스터 팩(OpenGameArt)에서 용·슬라임 FBX를 받아 Roblox Model로 등록한다.
+if(process.argv.includes('--monster-assets-only')){
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ const url='https://opengameart.org/sites/default/files/Animated%20Monster%20Pack%20by%20%40Quaternius.zip';
+ const zipSha='acab2bddc5939f9b1b92c930507d73e0fd80037a39631cf2049bb6cfcaec1acd';
+ const targetUniverse='10773436325';
+ const zipResponse=await fetch(url,{headers:{'user-agent':'Mozilla/5.0'}});
+ if(!zipResponse.ok)throw Error('MONSTER_ZIP_DOWNLOAD_FAILED:'+zipResponse.status);
+ const zipBytes=Buffer.from(await zipResponse.arrayBuffer());
+ if(crypto.createHash('sha256').update(zipBytes).digest('hex')!==zipSha)throw Error('MONSTER_ZIP_HASH_MISMATCH');
+ fs.mkdirSync('/tmp/monster-zip',{recursive:true});
+ fs.writeFileSync('/tmp/monster-zip/m.zip',zipBytes);
+ const {execFileSync}=await import('node:child_process');
+ execFileSync('unzip',['-o','-q','/tmp/monster-zip/m.zip','-d','/tmp/monster-zip/out']);
+ registry.monsterPackV1=registry.monsterPackV1||{license:'CC0-1.0',creator:'Quaternius',
+  licenseEvidence:'https://opengameart.org/content/lowpoly-animated-monsters',zipSha256:zipSha,universeId:targetUniverse,assetIds:{}};
+ const pack=registry.monsterPackV1;
+ for(const name of ['Dragon','Slime']){
+  let assetId=String(pack.assetIds[name]||'');
+  if(!/^[1-9]\d*$/.test(assetId)){
+   const bytes=fs.readFileSync('/tmp/monster-zip/out/Animated Monster Pack by @Quaternius/FBX/'+name+'.fbx');
+   const form=new FormData();
+   form.append('request',JSON.stringify({assetType:'Model',displayName:'Mana Forest Monster '+name,
+    description:'Quaternius CC0 '+name+' sha256 '+crypto.createHash('sha256').update(bytes).digest('hex'),creationContext:{creator}}));
+   form.append('fileContent',new Blob([bytes],{type:'model/fbx'}),name+'.fbx');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('MONSTER_OPERATION_INVALID:'+name);
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+    await new Promise(resolve=>setTimeout(resolve,4000));
+    op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+   }
+   assetId=String(op.response?.assetId||'');
+   if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))throw Error('MONSTER_UPLOAD_FAILED:'+name+':'+JSON.stringify(op.error||{}).slice(0,300));
+   pack.assetIds[name]=assetId;
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+  }
+  const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+   method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+   body:JSON.stringify({subjectType:'Universe',subjectId:targetUniverse,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})});
+  if(grant.errors?.length)throw Error('MONSTER_PERMISSION_REJECTED:'+name);
+  console.log('MONSTER_ASSET='+name+':'+assetId);
+ }
+ process.exit(0);
+}
+
 // [마력숲 빨간 찢어진 망토] 이미 등록된 망토 메시 자산에 마력숲 Universe 사용 권한만 부여한다.
 if(process.argv.includes('--cape-grant-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';

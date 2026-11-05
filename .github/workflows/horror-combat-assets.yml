@@ -25,6 +25,10 @@ on:
       - 'assets/roblox/common-materials-v1/sources/**'
   workflow_dispatch:
     inputs:
+      monster_assets_only:
+        description: 마력숲 CC0 몬스터(용·슬라임) 등록
+        type: boolean
+        default: false
       painted_hud_only:
         description: 마력숲 오너 제작 시안 아이콘 16종 기존 경로 등록
         type: boolean
@@ -84,6 +88,7 @@ jobs:
           node-version: '22'
       - name: Import combat model and verified shared PBR sources
         env:
+          MONSTER_ASSETS_ONLY: ${{ inputs.monster_assets_only || false }}
           CAMP_ASSETS_ONLY: ${{ inputs.camp_assets_only || false }}
           CAPE_GRANT_ONLY: ${{ inputs.cape_grant_only || false }}
           PAINTED_HUD_ONLY: ${{ inputs.painted_hud_only || false }}
@@ -97,7 +102,9 @@ jobs:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$CAMP_ASSETS_ONLY" = "true" ]; then
+          if [ "$MONSTER_ASSETS_ONLY" = "true" ]; then
+            node tools/horror-combat-assets.mjs --monster-assets-only
+          elif [ "$CAMP_ASSETS_ONLY" = "true" ]; then
             node tools/horror-combat-assets.mjs --camp-assets-only
           elif [ "$CAPE_GRANT_ONLY" = "true" ]; then
             node tools/horror-combat-assets.mjs --cape-grant-only
