@@ -10,7 +10,8 @@ jobs:
           mkdir -p out && cd out
           curl -fsSL -A "Mozilla/5.0" -o devilswork-forest.zip "https://opengameart.org/sites/default/files/Low_Poly_Forest_Pack_Devilswork.Shop_v02.zip" || echo "DEVILSWORK_FAILED"
           curl -fsSL -A "Mozilla/5.0" -o kenney-mini-forest.zip "https://opengameart.org/sites/default/files/kenney_mini-forest_1.0.zip" || echo "KENNEY_FAILED"
-          for f in *.zip; do echo "== $f"; ls -l "$f"; sha256sum "$f"; unzip -l "$f" | head -60; done
+          curl -fsSL -A "Mozilla/5.0" -o lobisomem-werewolf.zip "https://opengameart.org/sites/default/files/lobisomem.zip" || echo "LOBISOMEM_FAILED"
+          for f in *.zip; do echo "== $f"; ls -l "$f"; sha256sum "$f"; unzip -l "$f" | head -40; done
       - uses: actions/upload-artifact@v4
         with:
           name: cc0-forest-sources
