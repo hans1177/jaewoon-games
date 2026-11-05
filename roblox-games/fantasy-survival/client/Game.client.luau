@@ -11169,21 +11169,21 @@ end)()
   }
   local card=Instance.new("Frame")
   card.Name="MeadowTutorialCard";card.AnchorPoint=Vector2.new(.5,1);card.Position=UDim2.new(.5,0,1,-20)
-  card.Size=UDim2.fromOffset(400,104);card.BackgroundColor3=Color3.fromRGB(10,18,18);card.BackgroundTransparency=1
+  card.Size=UDim2.fromOffset(460,132);card.BackgroundColor3=Color3.fromRGB(10,18,18);card.BackgroundTransparency=1
   card.Visible=false;card.ZIndex=120;card.Active=false;card.Parent=guiRoot
   local ctitle=Instance.new("TextLabel")
-  ctitle.BackgroundTransparency=1;ctitle.Position=UDim2.fromOffset(0,0);ctitle.Size=UDim2.new(1,0,0,20)
-  ctitle.Font=Enum.Font.GothamMedium;ctitle.TextSize=14;ctitle.TextXAlignment=Enum.TextXAlignment.Center
+  ctitle.BackgroundTransparency=1;ctitle.Position=UDim2.fromOffset(0,0);ctitle.Size=UDim2.new(1,0,0,26)
+  ctitle.Font=Enum.Font.GothamMedium;ctitle.TextSize=19;ctitle.TextXAlignment=Enum.TextXAlignment.Center
   ctitle.TextStrokeColor3=Color3.new(0,0,0);ctitle.TextStrokeTransparency=.35
   ctitle.TextColor3=Color3.fromRGB(255,232,160);ctitle.ZIndex=121;ctitle.Parent=card
   local cbody=Instance.new("TextLabel")
-  cbody.BackgroundTransparency=1;cbody.Position=UDim2.fromOffset(0,22);cbody.Size=UDim2.new(1,0,0,52)
-  cbody.Font=Enum.Font.Gotham;cbody.TextSize=14;cbody.TextWrapped=true;cbody.TextXAlignment=Enum.TextXAlignment.Center
+  cbody.BackgroundTransparency=1;cbody.Position=UDim2.fromOffset(0,28);cbody.Size=UDim2.new(1,0,0,66)
+  cbody.Font=Enum.Font.Gotham;cbody.TextSize=17;cbody.TextWrapped=true;cbody.TextXAlignment=Enum.TextXAlignment.Center
   cbody.TextStrokeColor3=Color3.new(0,0,0);cbody.TextStrokeTransparency=.35
   cbody.TextYAlignment=Enum.TextYAlignment.Top;cbody.TextColor3=Color3.fromRGB(236,242,230);cbody.ZIndex=121;cbody.Parent=card
   local nextBtn=Instance.new("TextButton")
-  nextBtn.AnchorPoint=Vector2.new(.5,1);nextBtn.Position=UDim2.new(.5,0,1,-2);nextBtn.Size=UDim2.fromOffset(80,26)
-  nextBtn.BackgroundColor3=Color3.fromRGB(54,112,84);nextBtn.Font=Enum.Font.GothamMedium;nextBtn.TextSize=13
+  nextBtn.AnchorPoint=Vector2.new(.5,1);nextBtn.Position=UDim2.new(.5,0,1,-2);nextBtn.Size=UDim2.fromOffset(96,30)
+  nextBtn.BackgroundColor3=Color3.fromRGB(54,112,84);nextBtn.Font=Enum.Font.GothamMedium;nextBtn.TextSize=16
   nextBtn.TextColor3=Color3.new(1,1,1);nextBtn.ZIndex=122;nextBtn.Parent=card
   Instance.new("UICorner",nextBtn).CornerRadius=UDim.new(0,10)
   -- 큰 포인터(▼▲◀) + 퍼지는 링
