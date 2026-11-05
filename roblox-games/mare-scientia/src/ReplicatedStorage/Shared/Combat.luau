@@ -281,6 +281,27 @@ function Combat.pirate(level: number, rng: () -> number): Fighter
 	}
 end
 
+-- 신화 보스(Bosses.luau 항목)를 전투원으로 바꾼다. 증기선이면 엔진 소리에 자극받아 더 사나워진다.
+function Combat.boss(def: any, playerSteam: boolean): Fighter
+	local rage = if playerSteam then def.steamRage else 1
+	return {
+		name = def.name,
+		hull = def.hull,
+		maxHull = def.hull,
+		crew = def.crew,
+		maxCrew = def.crew,
+		cannons = def.cannons,
+		speed = 8,
+		steam = false,
+		fuel = 0,
+		cannonMult = def.cannonMult * rage,
+		meleeMult = def.meleeMult * rage,
+		pumpReduction = 0,
+		skills = def.skills,
+		level = 10,
+	}
+end
+
 -- 배의 능력치가 사략선 몇 레벨에 해당하는지 환산한다 (포·선원 위주, 선체는 보조).
 function Combat.equivalentLevel(cannons: number, hull: number, crew: number): number
 	local byCannons = (cannons - 3) / 0.9

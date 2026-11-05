@@ -226,6 +226,19 @@ return function(D, S)
 			})
 		end
 
+		view.bosses = {}
+		for _, b in D.Bosses.Bosses do
+			local rec = state.bosses[b.id]
+			table.insert(view.bosses, {
+				id = b.id,
+				name = b.name,
+				summary = b.summary,
+				defeated = if rec then rec.defeated else 0,
+				blocked = S.Boss.blockReason(state, b),
+				ports = b.portIds,
+			})
+		end
+
 		view.lastBattle = state.lastBattle
 		return view
 	end

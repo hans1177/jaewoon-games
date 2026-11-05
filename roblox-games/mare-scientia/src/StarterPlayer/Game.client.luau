@@ -10,6 +10,17 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CommonUI = require(Shared:WaitForChild("Common"):WaitForChild("RobloxCommonUI"))
 local PortData = require(Shared:WaitForChild("Ports"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
+local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
+
+-- 기본 채팅창이 게임 창 위 탭을 가려서 끈다 (이 게임은 채팅이 필요 없다)
+pcall(function()
+	game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Chat, false)
+end)
+pcall(function()
+	local tcs = game:GetService("TextChatService")
+	tcs.ChatWindowConfiguration.Enabled = false
+	tcs.ChatInputBarConfiguration.Enabled = false
+end)
 
 local COLORS = {
 	text = Color3.fromRGB(240, 243, 247),
@@ -166,26 +177,23 @@ coinChip.AnchorPoint = Vector2.new(1, 0)
 coinChip.Position = UDim2.new(1, -8, 0, 4)
 coinChip.Parent = mainInner
 
-local tabBar = Instance.new("ScrollingFrame")
+local tabBar = Instance.new("Frame")
 tabBar.BackgroundTransparency = 1
 tabBar.BorderSizePixel = 0
 tabBar.Position = UDim2.fromOffset(8, 52)
-tabBar.Size = UDim2.new(1, -16, 0, 40)
-tabBar.CanvasSize = UDim2.new()
-tabBar.AutomaticCanvasSize = Enum.AutomaticSize.X
-tabBar.ScrollingDirection = Enum.ScrollingDirection.X
-tabBar.ScrollBarThickness = 0
+tabBar.Size = UDim2.new(1, -16, 0, 80) -- 두 줄 (탭이 10개라 한 줄에 다 안 들어간다)
 tabBar.Parent = mainInner
-local tabLayout = Instance.new("UIListLayout")
-tabLayout.FillDirection = Enum.FillDirection.Horizontal
-tabLayout.Padding = UDim.new(0, 6)
+local tabLayout = Instance.new("UIGridLayout")
+tabLayout.CellSize = UDim2.new(0.2, -5, 0, 36)
+tabLayout.CellPadding = UDim2.fromOffset(5, 6)
+tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
 tabLayout.Parent = tabBar
 
 local content = Instance.new("ScrollingFrame")
 content.BackgroundTransparency = 1
 content.BorderSizePixel = 0
-content.Position = UDim2.fromOffset(8, 98)
-content.Size = UDim2.new(1, -16, 1, -106)
+content.Position = UDim2.fromOffset(8, 138)
+content.Size = UDim2.new(1, -16, 1, -146)
 content.CanvasSize = UDim2.new()
 content.AutomaticCanvasSize = Enum.AutomaticSize.Y
 content.ScrollBarThickness = 4
@@ -222,6 +230,7 @@ local function call(action, payload)
 		return remote:InvokeServer(action, payload or {})
 	end)
 	busy = false
+	if DEBUG_LOG then print("[Game] call", action, ok, type(result) == "table" and result.ok, type(result) == "table" and result.message or result) end
 	if not ok or type(result) ~= "table" then
 		message, messageOk = "서버와 연결하지 못했어요", false
 		render()
@@ -390,7 +399,7 @@ local RARITY_COLOR = {
 }
 local FIELD_NAMES = {
 	Botany = "식물", Zoology = "동물", Mineral = "광물", Relic = "유물", Site = "유적", Astronomy = "천문",
-	Chemistry = "화학", Physics = "물리", Geography = "지리", Philosophy = "철학", Medicine = "의학",
+	Chemistry = "화학", Myth = "신화", Physics = "물리", Geography = "지리", Philosophy = "철학", Medicine = "의학",
 }
 
 local function renderCodex()
@@ -470,6 +479,15 @@ local function renderBattle()
 			{ text = "출격", color = COLORS.red, onClick = function() call("Hunt") end },
 		}, 56)
 	end)
+	add(function() return mkHeader(content, "신화 괴물") end)
+	for _, b in view.bosses do
+		add(function()
+			local sub = string.format("%s\n격파 %d회%s", b.summary, b.defeated, if b.blocked then " · " .. b.blocked else "")
+			return mkRow(content, b.name, sub, {
+				{ text = "도전", color = COLORS.red, enabled = b.blocked == nil, onClick = function() call("ChallengeBoss", { bossId = b.id }) end },
+			}, 76)
+		end)
+	end
 	add(function()
 		return mkLabel(content, string.format("자동스킬 슬롯 %d개 · 위에 있을수록 먼저 발동해요 (현재 %d개 선택)", lo.slots, #equipped), 13, COLORS.muted, false)
 	end)
@@ -621,8 +639,8 @@ function render()
 	end
 
 	tabBar.Visible = true
-	content.Position = UDim2.fromOffset(8, 98)
-	content.Size = UDim2.new(1, -16, 1, -106)
+	content.Position = UDim2.fromOffset(8, 138)
+	content.Size = UDim2.new(1, -16, 1, -146)
 
 	local p, ship = view.player, view.ship
 	headerLabel.Text = string.format("%s · %d년 · %s\n%s  선체 %d/%d  화물 %d/%d  명성 %d",

@@ -35,6 +35,7 @@ return function(D)
 			quests = { active = {}, done = {} },
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
 			scholarsMet = {},
+			bosses = {},
 		}
 	end
 
@@ -208,6 +209,16 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.bosses) == "table" then
+			for id, rec in saved.bosses do
+				if type(id) == "string" and D.Bosses.ById[id] and type(rec) == "table" then
+					s.bosses[id] = {
+						defeated = math.floor(num(rec.defeated, 0, 0, 1e6)),
+						lastDay = math.floor(num(rec.lastDay, -1e6, -1e6, 1e6)),
+					}
+				end
+			end
+		end
 		if type(saved.stats) == "table" then
 			s.stats.battlesWon = math.floor(num(saved.stats.battlesWon, 0, 0, 1e9))
 			s.stats.battlesLost = math.floor(num(saved.stats.battlesLost, 0, 0, 1e9))
@@ -249,6 +260,7 @@ return function(D)
 			quests = state.quests,
 			stats = state.stats,
 			scholarsMet = state.scholarsMet,
+			bosses = state.bosses,
 		}
 	end
 

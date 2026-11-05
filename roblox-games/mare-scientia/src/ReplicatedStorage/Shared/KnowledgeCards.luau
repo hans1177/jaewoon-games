@@ -53,6 +53,8 @@ local Cards: { Card } = {
 	card("phi_cogito", "방법적 회의", "Philosophy", "Rare", "모든 것을 의심하는 데서 출발해 확실한 지식을 찾으려는 데카르트의 방법.", "학자 방문", 40, 90),
 	card("phi_monad", "단자론", "Philosophy", "Epic", "세계가 더 나눌 수 없는 단위로 이루어져 있다고 보는 라이프니츠의 사상.", "학자 방문", 80, 200),
 	card("med_cinchona", "기나나무 껍질", "Medicine", "Rare", "열병 치료에 쓰인 남미 원산 나무껍질.", "항구 약재상", 35, 100),
+	card("myth_kraken", "크라켄", "Myth", "Legendary", "북유럽 뱃사람들이 전하는 거대 촉수 괴물. 섬으로 착각할 만큼 크다고 한다.", "신화 보스 격파", 150, 400),
+	card("myth_sea_serpent", "바다뱀", "Myth", "Legendary", "대서양에서 목격담이 이어지는 길고 거대한 바다 괴물. 실체는 알려지지 않았다.", "신화 보스 격파", 100, 300),
 	card("geo_gulfstream", "멕시코 만류", "Geography", "Rare", "대서양을 따라 북유럽까지 따뜻한 물을 나르는 해류.", "항해 기록", 35, 90),
 }
 

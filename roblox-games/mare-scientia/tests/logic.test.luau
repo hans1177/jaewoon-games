@@ -14,6 +14,7 @@ local D = {
 	Careers = require("./Shared/Careers"),
 	Voyage = require("./Shared/Voyage"),
 	Combat = require("./Shared/Combat"),
+	Bosses = require("./Shared/Bosses"),
 }
 local Registry = require("./Services/Registry")(D)
 local S, handlers = Registry.S, Registry.handlers
@@ -130,6 +131,9 @@ do
 	end
 	-- 모든 카드는 얻을 길이 있어야 한다 (학자, 탐험 지점, 또는 장거리 항해의 해류 기록)
 	obtainable.geo_gulfstream = true
+	for _, b in D.Bosses.Bosses do
+		obtainable[b.cardId] = true
+	end
 	for _, c in D.Cards.Cards do
 		check("card has an acquisition path " .. c.id, obtainable[c.id] == true)
 	end
@@ -685,6 +689,76 @@ do
 	check("long simulation survived", actions == 600)
 	print(string.format("  info: 600 스텝 후 코인 %d, 명성 %d, 일수 %d, 도감 %d장, 전투 %d승 %d패",
 		st.coins, st.fame, st.day, S.State.countDiscovered(st), st.stats.battlesWon, st.stats.battlesLost))
+end
+
+-- 신화 보스 ---------------------------------------------------------
+do
+	for _, b in D.Bosses.Bosses do
+		check("boss card exists " .. b.id, D.Cards.ById[b.cardId] ~= nil)
+		for _, pid in b.portIds do
+			check("boss port exists " .. b.id .. pid, D.Ports.Ports[pid] ~= nil)
+		end
+		for _, sk in b.skills do
+			check("boss skill exists " .. sk, D.Skills.Skills[sk] ~= nil)
+		end
+	end
+
+	local st = newState("england") -- 런던 시작
+	local ok, msg = act(st, "ChallengeBoss", { bossId = "nope" })
+	check("boss unknown rejected", not ok)
+	ok, msg = act(st, "ChallengeBoss", { bossId = "kraken" })
+	check("kraken wrong port rejected", not ok, msg)
+	ok, msg = act(st, "ChallengeBoss", { bossId = "sea_serpent" })
+	check("serpent low level rejected", not ok, msg)
+
+	-- 강한 상태로 도전: 전투 레벨 10, 큰 배
+	st.careers.battle.level = 10
+	st.ship.id = "galleon"
+	local def = S.State.shipDef(st)
+	st.ship.hull, st.ship.crew = def.hull, def.crew
+	local day0 = st.day
+	ok, msg = act(st, "ChallengeBoss", { bossId = "sea_serpent" })
+	check("serpent challenge runs", ok, msg)
+	check("boss advanced days", st.day == day0 + 2)
+	check("boss record saved", st.bosses.sea_serpent ~= nil and st.bosses.sea_serpent.lastDay == st.day)
+	ok, msg = act(st, "ChallengeBoss", { bossId = "sea_serpent" })
+	check("boss cooldown blocks", not ok, msg)
+	check("view lists bosses", #S.View.build(st, ctx).bosses == #D.Bosses.Bosses)
+
+	-- 저장 왕복과 변조 방어
+	local saved = S.State.serialize(st)
+	local back = S.State.sanitize(saved)
+	check("boss roundtrip", back and back.bosses.sea_serpent and back.bosses.sea_serpent.lastDay == st.bosses.sea_serpent.lastDay)
+	saved.bosses = { sea_serpent = { defeated = -5, lastDay = "x" }, fake = {}, [3] = true }
+	back = S.State.sanitize(saved)
+	check("boss tamper sanitized", back and back.bosses.fake == nil and back.bosses.sea_serpent.defeated == 0)
+
+	-- 승률 측정 (참고)
+	local function rate(shipId, bossId)
+		local wins, n = 0, 300
+		for _ = 1, n do
+			local s2 = newState("england")
+			s2.careers.battle.level = 10
+			s2.ship.id = shipId
+			local d = S.State.shipDef(s2)
+			s2.ship.hull, s2.ship.crew = d.hull, d.crew
+			if d.steam then
+				s2.cargo.coal = 30
+			end
+			s2.tech = { steam_hook = true, steam_cannon = true }
+			local r = S.Battle.playerFighter(s2)
+			local foe = D.Combat.boss(D.Bosses.ById[bossId], r.steam)
+			if D.Combat.run(r, foe, rng).winner == "a" then
+				wins += 1
+			end
+		end
+		return wins / n
+	end
+	for _, bossId in { "sea_serpent", "kraken" } do
+		for _, id in { "frigate", "galleon", "paddle_steamer", "ironclad_frigate" } do
+			print(string.format("  info: %s 승률 %s %.0f%%", bossId, id, rate(id, bossId) * 100))
+		end
+	end
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))

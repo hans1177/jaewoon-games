@@ -22,6 +22,7 @@ local D = {
 	Careers = require(Shared:WaitForChild("Careers")),
 	Voyage = require(Shared:WaitForChild("Voyage")),
 	Combat = require(Shared:WaitForChild("Combat")),
+	Bosses = require(Shared:WaitForChild("Bosses")),
 }
 
 local Registry = require(ServicesFolder:WaitForChild("Registry"))(D)
@@ -30,7 +31,7 @@ local handlers = Registry.handlers
 
 local STORE_NAME = "MareScientia_v2"
 local RATE_LIMIT = 0.1
-local AUTOSAVE_INTERVAL = 60
+local AUTOSAVE_INTERVAL = 15 -- DataStore 쓰기 제한(키당 6초에 1회)을 넘지 않도록 변경된 세션만 이 주기로 저장
 local MARKET_INTERVAL = 5
 local START_YEARS = { [1650] = true, [1700] = true, [1750] = true }
 
@@ -96,6 +97,7 @@ local function saveSession(player)
 	if not session or not session.state or not session.canSave or not store then
 		return
 	end
+	session.dirty = false
 	local data = S.State.serialize(session.state)
 	local ok, err = pcall(function()
 		store:SetAsync(keyFor(player), data)
@@ -142,7 +144,7 @@ remote.OnServerInvoke = function(player, action, payload)
 			return { ok = false, message = "잘못된 선택이에요" }
 		end
 		session.state = S.State.new(nationId, year)
-		saveSession(player)
+		session.dirty = true
 		return reply(session.state, true, string.format("%d년, %s에서 항해를 시작합니다!", year, D.Ports.Ports[session.state.portId].name))
 	end
 
@@ -166,7 +168,7 @@ remote.OnServerInvoke = function(player, action, payload)
 		return reply(state, false, "오류가 발생했어요")
 	end
 	if success then
-		saveSession(player) -- 중요한 행동 뒤에는 바로 저장
+		session.dirty = true -- 저장은 자동저장 루프가 모아서 한다 (응답을 막지 않는다)
 	end
 	return reply(state, success, message)
 end
@@ -193,8 +195,10 @@ end)
 task.spawn(function()
 	while true do
 		task.wait(AUTOSAVE_INTERVAL)
-		for player in sessions do
-			saveSession(player)
+		for player, session in sessions do
+			if session.dirty then
+				task.spawn(saveSession, player)
+			end
 		end
 	end
 end)
