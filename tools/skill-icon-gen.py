@@ -2,7 +2,37 @@
 """마력숲 스킬 아이콘 시트(2.5D) 생성기. 5x5 칸 x 200px = 1000x1000.
 칸 순서는 client meadowArt.skillCell 과 같다. 외부 모델/자산 없이 직접 그린 오너 승인 UI 아이콘."""
 import math, sys
+import numpy as np
+from scipy import ndimage
 from PIL import Image, ImageDraw, ImageFilter, ImageChops
+
+def relief(im, height=20.0, soft=8, spec=.85):
+    """알파 경계에서 안쪽으로 볼록하게 솟는 높이맵 → 법선 → 좌상단 조명(난반사+정반사+림).
+    평면 도형을 돌출된 2.5D 금속/에나멜 조각처럼 보이게 한다."""
+    arr = np.asarray(im).astype(np.float32) / 255
+    a = arr[..., 3]
+    inside = a > .5
+    if not inside.any():
+        return im.copy()
+    d = ndimage.distance_transform_edt(inside)
+    h = 1 - np.exp(-d / max(1, soft))          # 가장자리 둥근 베벨
+    # 같은 층 안의 밝기 차이(그라데이션)도 약간 높이로 반영해 결을 살린다.
+    lum = arr[..., :3].mean(axis=2)
+    h = h * height + ndimage.gaussian_filter(lum, 2) * height * .18
+    h = ndimage.gaussian_filter(h, 1.6)
+    gy, gx = np.gradient(h)
+    n = np.dstack([-gx, -gy, np.ones_like(h)])
+    n /= np.linalg.norm(n, axis=2, keepdims=True)
+    L = np.array([-.55, -.62, .56]); L /= np.linalg.norm(L)
+    V = np.array([0, 0, 1.0])
+    H = (L + V); H /= np.linalg.norm(H)
+    diff = np.clip((n * L).sum(2), 0, 1)
+    specv = np.clip((n * H).sum(2), 0, 1) ** 38 * spec
+    rim = (1 - n[..., 2]) ** 2 * .25
+    ao = 1 - np.clip(ndimage.gaussian_filter((~inside).astype(np.float32), 6) * .55, 0, .5) * inside
+    rgb = arr[..., :3] * (.42 + .78 * diff[..., None]) * ao[..., None] + specv[..., None] + rim[..., None] * .35
+    out = np.dstack([np.clip(rgb, 0, 1), a])
+    return Image.fromarray((out * 255).astype(np.uint8), "RGBA")
 
 S = 800  # 칸당 작업 해상도(최종 200으로 줄임)
 U = S / 100.0
@@ -16,6 +46,9 @@ class Cell:
         self.tint = tint
         self.img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
         self.build_medallion()
+        # [2.5D] 메달리온은 base, 그림(도형)은 별도 층에 그려 높이맵 조명을 입힌다.
+        self.base = self.img
+        self.img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
 
     # ---------- 메달리온 ----------
     def build_medallion(self):
@@ -144,8 +177,16 @@ class Cell:
         d.polygon([(x, y - r), (x + r * .25, y - r * .25), (x + r, y), (x + r * .25, y + r * .25),
                    (x, y + r), (x - r * .25, y + r * .25), (x - r, y), (x - r * .25, y - r * .25)], fill=col)
 
-    def out(self):
-        return self.img.resize((200, 200), Image.LANCZOS)
+    def out(self, glyph_only=False):
+        glyph = relief(self.img, height=26.0, soft=10)
+        # 그림자: 오른쪽 아래로 떨어지는 부드러운 그림자(떠 있는 느낌)
+        a = np.asarray(self.img)[..., 3].astype(np.float32) / 255
+        sh = ndimage.gaussian_filter(ndimage.shift(a, (22, 14), order=0), 12) * .62
+        shadow = np.zeros((S, S, 4), np.uint8); shadow[..., 3] = (sh * 255).clip(0, 255).astype(np.uint8)
+        out = Image.new("RGBA", (S, S), (0, 0, 0, 0)) if glyph_only else relief(self.base, height=14.0, soft=6, spec=.55)
+        out.alpha_composite(Image.fromarray(shadow, "RGBA"))
+        out.alpha_composite(glyph)
+        return out.resize((200, 200), Image.LANCZOS)
 
 STEEL = ((235, 242, 250), (120, 140, 165))
 GOLD = ((255, 226, 150), (176, 122, 48))
@@ -214,7 +255,7 @@ def cross_plus(c):
 # ---------- 아이콘 정의 ----------
 TINT = {"war": (196, 96, 80), "mag": (96, 150, 220), "def": (214, 176, 96), "mob": (110, 184, 146), "etc": (190, 180, 170)}
 
-def icon(i):
+def icon(i, glyph_only=False):
     k = {0: "war", 1: "war", 2: "mag", 3: "def", 4: "def", 5: "mob", 6: "mob", 7: "mob", 8: "mag", 9: "mag", 10: "etc",
          11: "war", 12: "war", 13: "war", 14: "war", 15: "war", 16: "mag", 17: "def", 18: "mob"}[i]
     c = Cell(TINT[k])
@@ -277,12 +318,42 @@ def icon(i):
         c.poly([(64, 52), (78, 42), (84, 58), (72, 66)], (110, 90, 80), (60, 44, 40), depth=3)
         c.arc((46, 56), 28, 220, 330, (255, 205, 120, 255), 3)
         c.spark(28, 30, 6)
-    return c.out()
+    return c.out(glyph_only)
+
+# [2.5D 원화 통일] 화면 HUD와 같은 오너 승인 원화 시트(illustrated-icons.png)의 칸을 그대로 재사용한다.
+# (x, y, 좌우반전) — 원화가 없는 스킬(맨손·응수·집중·인사)은 위 생성기에 높이맵 조명을 입혀 쓴다.
+PAINTED = {0: (0, 800, False), 15: (0, 800, False), 1: (0, 800, True),
+           2: (400, 600, False), 16: (400, 600, False),
+           3: (200, 800, False), 17: (200, 800, False),
+           5: (600, 600, True), 6: (600, 600, False),
+           7: (200, 600, False), 18: (200, 600, False), 8: (0, 400, False)}
+
+def painted(i, src):
+    x, y, flip = PAINTED[i]
+    cell = src.crop((x, y, x + 200, y + 200))
+    return cell.transpose(Image.FLIP_LEFT_RIGHT) if flip else cell
 
 def main(path):
+    import os
+    src = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "roblox-games", "fantasy-survival", "illustrated-icons.png")).convert("RGBA")
     sheet = Image.new("RGBA", (1000, 1000), (0, 0, 0, 0))
+    # 원화의 금속 원형 테두리만 빌려 빈 틀을 만든다(안쪽은 원화와 같은 어두운 남색 바닥).
+    frame = src.crop((200, 600, 400, 800)).copy()
+    yy, xx = np.mgrid[0:200, 0:200]
+    dist = np.hypot(xx - 100, yy - 100)
+    inner = dist < 71
+    bg = np.asarray(frame).astype(np.float32)
+    glow = np.clip(1 - np.hypot(xx - 92, yy - 86) / 80, 0, 1)[..., None]
+    base = np.array([14, 16, 22, 255], np.float32) + glow * np.array([22, 30, 44, 0], np.float32)
+    bg[inner] = base[inner]
+    frame = Image.fromarray(bg.clip(0, 255).astype(np.uint8), "RGBA")
     for i in range(19):
-        sheet.alpha_composite(icon(i), ((i % 5) * 200, (i // 5) * 200))
+        if i in PAINTED:
+            art = painted(i, src)
+        else:
+            art = frame.copy()
+            art.alpha_composite(icon(i, glyph_only=True))
+        sheet.alpha_composite(art, ((i % 5) * 200, (i // 5) * 200))
     sheet.save(path, optimize=True)
     print("saved", path)
 
