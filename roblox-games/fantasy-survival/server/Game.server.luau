@@ -5314,11 +5314,11 @@ do
       for _,band in ipairs(owBands) do
         local len=band.x1-band.x0
         local cx=(band.x0+band.x1)/2
-        terrain:FillBlock(CFrame.new(cx,-4,0),Vector3.new(len,12,880),band.material)
+        terrain:FillBlock(CFrame.new(cx,-4,0),Vector3.new(len,12,2500),band.material)
         terrain:FillBlock(CFrame.new(cx,.5,0),Vector3.new(len,3,12),Enum.Material.Cobblestone) -- 큰길
-        for _=1,math.floor(len/38) do
+        for _=1,math.floor(len/12) do
           local x=random:NextNumber(band.x0,band.x1)
-          local z=random:NextNumber(-400,400)
+          local z=random:NextNumber(-1180,1180)
           if math.abs(z)>14 then
             terrain:FillBall(Vector3.new(x,random:NextNumber(-4,2),z),random:NextNumber(9,26),
               band.material==Enum.Material.Sand and Enum.Material.Sandstone or band.material==Enum.Material.Grass and Enum.Material.LeafyGrass or Enum.Material.Rock)
@@ -5327,26 +5327,26 @@ do
         for x=band.x0,band.x1,70 do
           for _,side in ipairs({-1,1}) do
             local radius=random:NextNumber(48,100)
-            terrain:FillBall(Vector3.new(x+random:NextNumber(-20,20),radius*.3,side*(440+radius*.45)),radius,Enum.Material.Rock)
-            terrain:FillBall(Vector3.new(x,radius*.85,side*(440+radius*.45)),radius*.55,Enum.Material.Snow)
+            terrain:FillBall(Vector3.new(x+random:NextNumber(-20,20),radius*.3,side*(1260+radius*.45)),radius,Enum.Material.Rock)
+            terrain:FillBall(Vector3.new(x,radius*.85,side*(1260+radius*.45)),radius*.55,Enum.Material.Snow)
           end
         end
         task.wait()
       end
       terrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(62,66,50))
-      for _=1,22 do
-        terrain:FillBall(Vector3.new(random:NextNumber(4400,5200),-5.6,random:NextNumber(-340,340)),random:NextNumber(10,22),Enum.Material.Water)
+      for _=1,60 do
+        terrain:FillBall(Vector3.new(random:NextNumber(4400,5200),-5.6,random:NextNumber(-1100,1100)),random:NextNumber(10,22),Enum.Material.Water)
       end
-      for _=1,24 do
-        terrain:FillBall(Vector3.new(random:NextNumber(5400,6300),-5.4,random:NextNumber(-340,340)),random:NextNumber(5,12),Enum.Material.CrackedLava)
+      for _=1,60 do
+        terrain:FillBall(Vector3.new(random:NextNumber(5400,6300),-5.4,random:NextNumber(-1100,1100)),random:NextNumber(5,12),Enum.Material.CrackedLava)
       end
       -- 식생: 띠마다 나무를 길 주변에 흩뿌린다(등록 CC0 나무만).
-      local treeBands={{348,2190,26,Color3.fromRGB(70,110,60),.25},{3390,4300,8,Color3.fromRGB(176,160,84),.4},
-        {4300,5300,30,Color3.fromRGB(70,80,58),.55},{5300,6400,16,Color3.fromRGB(34,30,34),.8}}
+      local treeBands={{348,2190,90,Color3.fromRGB(70,110,60),.25},{3390,4300,24,Color3.fromRGB(176,160,84),.4},
+        {4300,5300,70,Color3.fromRGB(70,80,58),.55},{5300,6400,45,Color3.fromRGB(34,30,34),.8}}
       for _,tb in ipairs(treeBands) do
         for index=1,tb[3] do
           local x=random:NextNumber(tb[1],tb[2])
-          local z=random:NextNumber(-380,380)
+          local z=random:NextNumber(-1150,1150)
           if math.abs(z)>20 then
             local tree=worldAsset("tree",Vector3.new(x,3,z),random:NextNumber(14,26))
             if tree then
@@ -5367,11 +5367,11 @@ do
   local random=Random.new(9031)
   local count=0
   for _,band in ipairs(owBands) do
-    local sites=math.floor((band.x1-band.x0)/46)
+    local sites=math.floor((band.x1-band.x0)/14)
     for index=1,sites do
       local spec=band.pool[random:NextInteger(1,#band.pool)]
       local x=band.x0+((index-.5)/sites)*(band.x1-band.x0)+random:NextNumber(-18,18)
-      local z=random:NextNumber(30,380)*(index%2==0 and 1 or -1)
+      local z=random:NextNumber(30,1100)*(index%2==0 and 1 or -1)
       local elite=index%5==0
       local tierGain=math.floor((x-band.x0)/400)
       table.insert(meadowEncounterSites,{id=spec[1],atom=spec[1]=="bat" and "WING_LEATHER" or "HEAD_CANINE",model=spec[2],
@@ -5392,6 +5392,84 @@ do
       hp=boss.hp,dmg=boss.dmg,drops=boss.drops,alpha=true,position=Vector3.new(boss.x,3,boss.z)})
   end
   workspace:SetAttribute("OpenWorldSiteCount",count)
+end
+
+-- [이정표 · 장소 발견] 대륙 곳곳의 이정표를 처음 조사하면 위치가 저장되고 보상을 받는다.
+-- 이정표에서는 이미 발견한 동쪽·서쪽 이정표(마을 포함)로 빠르게 이동한다. 이동 선택은 서버가 거리·발견 여부를 다시 확인한다.
+do
+  local waypoints={
+    {"초원 이정표",520,-300},{"숲 어귀 야영지",1000,500},{"세계수 제단",1300,-700},{"갈림길 주막터",1800,300},
+    {"부서진 감시탑",2100,-800},{"재의 제단",2500,600},{"용암 감시초소",2900,-500},{"옛 광산 입구",3200,800},
+    {"모래 오벨리스크",3700,-650},{"침몰한 사원",4100,500},{"안개 부두",4600,-700},{"늪 마녀의 오두막",4900,700},
+    {"저주받은 성문",5500,-600},{"불꽃 대장간 터",5800,700},{"성채 외곽 초소",6100,-300},{"군주의 옥좌 앞",6300,300},
+  }
+  local villageSpawn=Vector3.new(-110,6,-86)
+  local sessions={}
+  local function discovered(player,index) return bit32.band(readNumber(player,"WaypointMask",0),bit32.lshift(1,index-1))~=0 end
+  local function neighbor(player,index,direction)
+    local i=index+direction
+    while i>=1 and i<=#waypoints do
+      if discovered(player,i) then return i end
+      i+=direction
+    end
+    return nil
+  end
+  local function travelTo(player,position)
+    local character=player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then character:PivotTo(CFrame.new(position+Vector3.new(0,6,6))) end
+  end
+  task.spawn(function()
+    task.wait(2)
+    for index,spec in ipairs(waypoints) do
+      local position=Vector3.new(spec[2],3,spec[3])
+      local anchor=Instance.new("Attachment")
+      anchor.Name="Waypoint_"..index;anchor.WorldPosition=position;anchor.Parent=workspace.Terrain
+      local glow=Instance.new("ParticleEmitter")
+      glow.Color=ColorSequence.new(Color3.fromRGB(150,220,255));glow.LightEmission=1;glow.Rate=14;glow.Lifetime=NumberRange.new(2,3)
+      glow.Speed=NumberRange.new(1,3);glow.Size=NumberSequence.new(.8);glow.EmissionDirection=Enum.NormalId.Top;glow.Parent=anchor
+      local light=Instance.new("PointLight");light.Color=Color3.fromRGB(150,220,255);light.Range=26;light.Brightness=2;light.Parent=anchor
+      local prompt=Instance.new("ProximityPrompt")
+      prompt.ActionText="이정표 조사";prompt.ObjectText=spec[1];prompt.HoldDuration=.5
+      prompt.MaxActivationDistance=14;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+      task.spawn(function()
+        local stone=worldAsset("ruin",position,7)
+        if stone then stone.Name="WaypointStone_"..index;stone:SetAttribute("MeadowScenery",true) end
+      end)
+      prompt.Triggered:Connect(function(player)
+        if player:GetAttribute("ProfileReady")~=true then return end
+        local first=not discovered(player,index)
+        if first then
+          setNumber(player,"WaypointMask",bit32.bor(readNumber(player,"WaypointMask",0),bit32.lshift(1,index-1)))
+          pcall(awardProgress,player,30+index*6,12+index*2)
+        end
+        sessions[player]={index=index,expires=os.clock()+40}
+        local east,west=neighbor(player,index,1),neighbor(player,index,-1)
+        local options={}
+        if east then options[#options+1]={label="동쪽 이정표로 · "..waypoints[east][1],action="wp:east"} end
+        options[#options+1]={label=west and ("서쪽 이정표로 · "..waypoints[west][1]) or "초원 마을로 귀환",action="wp:west"}
+        local count=0
+        for i=1,#waypoints do if discovered(player,i) then count+=1 end end
+        pcall(function() villageDialogue(player,spec[1],(first and "새로운 장소를 발견했다! 경험치와 재화를 얻었다.\n" or "")..
+          "발견한 이정표 "..count.."/"..#waypoints..". 이미 발견한 이정표로 빠르게 이동할 수 있다.",options) end)
+      end)
+    end
+  end)
+  remote.OnServerEvent:Connect(function(player,action)
+    if action~="wp:east" and action~="wp:west" then return end
+    local session=sessions[player]
+    if not session or os.clock()>session.expires then return end
+    sessions[player]=nil
+    local character=player.Character
+    local root=character and character:FindFirstChild("HumanoidRootPart")
+    local from=waypoints[session.index]
+    if not root or (root.Position-Vector3.new(from[2],3,from[3])).Magnitude>40 then return end
+    local target=neighbor(player,session.index,action=="wp:east" and 1 or -1)
+    if target then
+      travelTo(player,Vector3.new(waypoints[target][2],3,waypoints[target][3]))
+    elseif action=="wp:west" then
+      travelTo(player,villageSpawn)
+    end
+  end)
 end
 
 -- [지역 발견] 실제 위치가 지역 안에 들어가면 서버가 발견 비트를 기록한다(1 초원·2 숲·4 화산·8 오아시스).

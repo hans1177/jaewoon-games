@@ -1286,6 +1286,11 @@ local function renderMeadowPages()
     worldLines[#worldLines+1]=string.format("%d. %s  [%s%s]%s",index,region.Name,statusText[region.Status] or "잠김",
       bit and (seen and " · 발견" or " · 미발견") or "",seen and region.Story and ("\n   "..region.Story) or "")
   end
+  do
+    local count=0
+    for i=0,15 do if bit32.band(player:GetAttribute("WaypointMask") or 0,bit32.lshift(1,i))~=0 then count+=1 end end
+    worldLines[#worldLines+1]=string.format("발견한 이정표 %d/16 — 이정표를 조사하면 빠른 이동 거점이 된다.",count)
+  end
   for _,entry in ipairs(Config.Bestiary or {})do
     local kills=player:GetAttribute(entry.Field) or 0
     if kills<=0 then
@@ -1334,7 +1339,7 @@ player:GetAttributeChangedSignal("RunActive"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("QuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestProgress"):Connect(renderMeadowPages)
-for _,name in ipairs({"ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","CampWorldtree","CampVolcano","CampOasis","BountyIndex","BountyPhase","BountyClues","WorldDiscovered","DexKillWolf","DexKillBat","DexKillAlpha"})do
+for _,name in ipairs({"ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","CampWorldtree","CampVolcano","CampOasis","BountyIndex","BountyPhase","BountyClues","WorldDiscovered","WaypointMask","DexKillWolf","DexKillBat","DexKillAlpha"})do
   player:GetAttributeChangedSignal(name):Connect(renderMeadowPages)
 end
 for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채집","scope-coreloop-1-6ebe58f496"},{"장비 강화","scope-coreloop-2-6c927cfa40"}})do
@@ -5478,7 +5483,7 @@ do
     for i,button in ipairs(choices)do
       local option=typeof(payload.options)=="table" and payload.options[i] or nil
       local action=option and option.action
-      local permitted=action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
+      local permitted=action=="wp:east" or action=="wp:west" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
       button.Visible=permitted
       choiceActions[i]=permitted and action or nil
       if permitted then button.Text=tostring(option.label or "선택") end
