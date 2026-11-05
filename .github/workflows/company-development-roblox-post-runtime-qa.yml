@@ -3847,6 +3847,34 @@ jobs:
             Write-Host "ROBLOX_STUDIO_MCP_F9_AWAITING_CLOUD=$env:GAME_ID"
           }
 
+      - name: Publish Studio captures to review branch
+        if: always()
+        continue-on-error: true
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $src = Join-Path $env:RUNNER_TEMP 'studio-captures'
+          if (-not (Test-Path -LiteralPath $src)) { Write-Host 'CAPTURES_NONE'; exit 0 }
+          $dst = Join-Path $env:RUNNER_TEMP 'capture-publish'
+          if (Test-Path -LiteralPath $dst) { Remove-Item -LiteralPath $dst -Recurse -Force }
+          New-Item -ItemType Directory -Path $dst | Out-Null
+          Set-Location $dst
+          git init -q
+          git config user.name 'studio-capture-bot'
+          git config user.email 'studio-capture-bot@users.noreply.github.com'
+          $out = Join-Path $dst "captures/$($env:GAME_ID)"
+          New-Item -ItemType Directory -Path $out -Force | Out-Null
+          Get-ChildItem -LiteralPath $src -Recurse -File | Where-Object { $_.Extension -in '.png','.jpg','.jpeg','.webp' } | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $out ($_.Directory.Name + '-' + $_.Name)) }
+          $rt = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-mcp-runtime.json'
+          if (Test-Path -LiteralPath $rt) { Copy-Item -LiteralPath $rt -Destination $out }
+          git add -A
+          git commit -q -m "studio captures $($env:GAME_ID) run ${{ github.run_id }}"
+          git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/studio-captures-latest
+          Write-Host "CAPTURES_PUBLISHED=$LASTEXITCODE"
+
       - name: Upload Studio captures and runtime report
         if: always()
         uses: actions/upload-artifact@v4
