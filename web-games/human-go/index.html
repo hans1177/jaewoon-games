@@ -3896,7 +3896,7 @@ async function fightOneEnemy(mode, waveIndex=1, waveTotal=1){
 
       tryShrinkOnAttack(e,target,shrinkState);
       const monsterFrozen=await triggerIceSpike(e,target,iceState);
-      const monsterStunned=tryStunOnAttack();
+      let monsterStunned=tryStunOnAttack();
 
       relicHealOnAttack();
 
@@ -4842,6 +4842,7 @@ function handleAutoEventNode(){
 async function nextStep(){
   if(busy) return;
   busy=true;
+  const maxHpBeforeStep=G.maxHp;
   try{
   nextBtn.disabled=true;
   mapHero.classList.add('run');
@@ -4989,12 +4990,19 @@ async function nextStep(){
   if($('bottom')) bottom.style.display='';
   nextBtn.style.display='';
   }catch(err){
-    console.error('게임 진행 오류',err);
+    console.error('게임 진행 오류', {stage:G.stage,step:G.step,job:G.job}, err);
+    if(G.inBattle){
+      if(G.maxHp>maxHpBeforeStep && hasEquippedPet('porcupine')) removePetBattleHpBonus();
+      G.inBattle=false;
+      stopBattleBgm(true);
+    }
     busy=false;
     nextBtn.disabled=false;
+    show('map');
+    hud();
     nextBtn.style.display='';
     if($('bottom')) $('bottom').style.display='';
-    lg('⚠️ 진행 오류가 복구되었습니다. 다시 눌러주세요.');
+    lg('⚠️ 진행 중 문제가 발생했습니다. 같은 구간을 다시 시도해주세요.');
   }
 }
 
