@@ -149,7 +149,9 @@ local playNativeCombatMotion
 local predictedCombatSequence=0
 local predictedCombatUntil=0
 local pendingCombatMotion={}
+local meadowSkillLock=function(id) return nil end -- 아래 meadowArt.skillLock이 채운다.
 local function activateMeadowAction(actionId)
+  if meadowSkillLock(actionId) then return false end
   -- [회피 입력] 기존 회피 버튼 한 개로 모바일 스틱/키보드의 좌우 방향을 선택한다.
   -- 카메라 기준 수평 이동만 읽으며, 중립 입력은 기존 왼쪽 회피를 유지한다.
   if actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right" then
@@ -346,6 +348,21 @@ meadowArt.sfxAt={}
 meadowArt.quickIds={"@weapon","@hp","skill-meadow-heavy","skill-meadow-sweep","skill-meadow-bolt"} -- 하단 퀵슬롯 5칸: 칸마다 무기·채집·약·기술 중 고른다(기본값).
 meadowArt.quickSpecial={"@weapon","@interact","@hp","@sp","@oil"}
 meadowArt.quickSpecialLabel={["@weapon"]="무기 꺼내기",["@interact"]="채집·조작",["@hp"]="체력약",["@sp"]="기력약",["@oil"]="오일 바르기"}
+meadowArt.skillNeed={
+  ["skill-meadow-sweep"]={"Martial",2,"검술"},["skill-meadow-bolt"]={"Signs",1,"표식"},
+  ["skill-meadow-focus"]={"Signs",1,"표식"},["skill-meadow-heal"]={"Signs",2,"표식"},
+  ["skill-meadow-parry"]={"Defense",1,"방호"},
+  ["skill-meadow-dodge-left"]={"Agility",1,"회피"},["skill-meadow-dodge-right"]={"Agility",1,"회피"},
+}
+-- 배우지 않은 기술이면 "표식 1 필요" 같은 글자를, 쓸 수 있으면 nil을 돌려준다.
+function meadowArt.skillLock(id)
+  local need=meadowArt.skillNeed[id]
+  if not need then return nil end
+  local lv=tonumber(game:GetService("Players").LocalPlayer:GetAttribute("MeadowTalent"..need[1])) or 0
+  if lv>=need[2] then return nil end
+  return need[3].." "..need[2].."단계 필요"
+end
+meadowSkillLock=meadowArt.skillLock
 meadowArt.sfx=function(name,volume,pitch)
   local id=meadowArt.sfxFiles[name]
   if not id then return end
@@ -2701,22 +2718,22 @@ local skillColors={
   ["기타"]=Color3.fromRGB(182,171,159),
 }
 local skillInfo={
-  ["skill-meadow-heavy"]={"무예","근거리 강타. 7칸 내 적에게 강화된 단일 공격을 가해.",2},
-  ["skill-meadow-sweep"]={"무예","10칸 안의 적 최대 5마리를 공격하는 회전 베기.",2},
-  ["skill-meadow-bolt"]={"마력","시야가 닿는 32칸 안의 적에게 마력 탄환을 발사해.",7},
-  ["skill-meadow-guard"]={"방어","2.8초 방어 자세. 시작 직후 0.28초는 완벽 방어 구간이야.",3},
-  ["skill-meadow-parry"]={"방어","짧은 0.42초 동안 공격을 정확하게 튕겨내는 타이밍 기술.",3},
-  ["skill-meadow-dodge-left"]={"기동","적을 주시하며 왼쪽으로 빠지는 회피. 스킬 트리 회피 점수만큼 연속 단계(5단은 적 배후 도약).",6},
-  ["skill-meadow-dodge-right"]={"기동","적을 주시하며 오른쪽으로 빠지는 회피. 스킬 트리 회피 점수만큼 연속 단계(5단은 적 배후 도약).",6},
-  ["skill-meadow-sprint"]={"기동","기존 서버 질주로 거리를 빠르게 좁히거나 벌려.",6},
-  ["skill-meadow-heal"]={"마력","기존 서버의 회복 기술. 위험할 때 체력을 회복해.",7},
-  ["skill-meadow-focus"]={"마력","기존 서버 마력 집중 효과를 발동해.",7},
-  ["skill-meadow-oath"]={"무예","각성기. 기사단 연대기 2편 이상 필요. 체력 35% 회복 후 18칸 안 적 최대 12마리에 3배 피해를 준다. 재사용 90초.",2},
-  ["skill-meadow-emote"]={"기타","인사 모션을 재생해. 전투 피해는 발생하지 않아.",5},
-  ["meadow-unarmed-rush"]={"무예","잽과 훅을 연속으로 사용하는 맨손 공격.",2},
-  ["meadow-unarmed-uppercut"]={"무예","적을 향해 크게 올려치는 승룡 어퍼컷.",2},
-  ["meadow-unarmed-kick"]={"무예","회전 발차기를 사용하는 기존 맨손 공격.",2},
-  ["meadow-unarmed-elbow"]={"무예","팔꿈치와 무릎을 이용한 근접 연계 공격.",2},
+  ["skill-meadow-heavy"]={"무예","앞의 적 한 마리를 세게 베어. 가까이서 써.",2},
+  ["skill-meadow-sweep"]={"무예","빙글 돌며 주변 적 최대 5마리를 한 번에 베어.",2},
+  ["skill-meadow-bolt"]={"마력","멀리 있는 적에게 마력 탄환을 쏴. 안전하게 원거리 공격.",7},
+  ["skill-meadow-guard"]={"방어","방패를 들어 막아. 막기 시작 직후엔 피해를 거의 안 받아.",3},
+  ["skill-meadow-parry"]={"방어","타이밍 맞춰 적 공격을 튕겨내. 어렵지만 강해.",3},
+  ["skill-meadow-dodge-left"]={"기동","왼쪽으로 재빨리 피해. 트리에서 찍을수록 연속으로 피할 수 있어.",6},
+  ["skill-meadow-dodge-right"]={"기동","오른쪽으로 재빨리 피해. 트리에서 찍을수록 연속으로 피할 수 있어.",6},
+  ["skill-meadow-sprint"]={"기동","빠르게 달려. 적에게 붙거나 도망칠 때 써.",6},
+  ["skill-meadow-heal"]={"마력","체력을 회복해. 위험할 때 써.",7},
+  ["skill-meadow-focus"]={"마력","잠깐 마력을 모아 강해져.",7},
+  ["skill-meadow-oath"]={"무예","각성기. 체력 회복 + 주변 적 전체에 3배 피해. 재사용 90초.",2},
+  ["skill-meadow-emote"]={"기타","인사 동작. 전투 효과 없음.",5},
+  ["meadow-unarmed-rush"]={"무예","맨손 잽·훅 연타.",2},
+  ["meadow-unarmed-uppercut"]={"무예","크게 올려치는 승룡 어퍼컷.",2},
+  ["meadow-unarmed-kick"]={"무예","회전 발차기.",2},
+  ["meadow-unarmed-elbow"]={"무예","팔꿈치·무릎 연계 공격.",2},
 }
 -- [스킬 성장] 숙련 누적 곡선(첫 30, 이후 +10)으로 점수 획득. 기존 공격·저장 구조는 유지.
 local talentPanel=Instance.new("Frame")
@@ -2814,7 +2831,13 @@ for index,branch in ipairs(Config.MeadowTalentSchools or {})do
     effect.Font=Enum.Font.GothamBold;effect.TextSize=12;effect.Text=talentEffects[branch.Id][step]
     effect.TextColor3=Color3.fromRGB(170,180,174);effect.Parent=column
     node.Activated:Connect(function()
+      local again=talentUi.selected.branchIndex==index and talentUi.selected.step==step
       talentUi.selected.branchIndex=index;talentUi.selected.step=step
+      if again then
+        -- 같은 칸을 한 번 더 누르면 바로 습득(점수가 있고 앞 단계를 배웠을 때).
+        local lv=math.clamp(tonumber(player:GetAttribute("MeadowTalent"..branch.Id)) or 0,0,maxLevel)
+        if lv+1==step then learnTalent(branch) end
+      end
       if meadowActionButtons.refreshTalentDetail then meadowActionButtons.refreshTalentDetail() end
     end)
     nodes[step]={node=node,edge=nodeEdge,icon=icon,effect=effect,badge=badge}
@@ -2908,7 +2931,7 @@ local function renderTalents()
       dot.Visible=remaining>0
     end
   end
-  talentHeader.Text="스킬 트리  ·  남은 기술 점수 "..remaining.."  (점수가 쌓일수록 다음 점수에 숙련이 더 필요)"
+  talentHeader.Text="남은 점수 "..remaining.."  ·  금색 칸을 눌러 고르고 [습득] (칸을 한 번 더 눌러도 돼)"
   talentPanel.Size=UDim2.new(1,-8,0,34+talentGridHeight+90+124+50)
   -- [선택 노드 상세]
   local entry=talentButtons[talentUi.selected.branchIndex]
@@ -2926,7 +2949,7 @@ local function renderTalents()
       or (remaining>0 and "필요 기술 점수 1  ·  보유 "..remaining or string.format("기술 점수 부족  ·  다음 점수까지 숙련 %d",select(3,Config.TalentPointProgress(tonumber(player:GetAttribute("CombatProficiency")) or 0))-select(2,Config.TalentPointProgress(tonumber(player:GetAttribute("CombatProficiency")) or 0))))
     talentUi.detailLearn.Active=learnable;talentUi.detailLearn.AutoButtonColor=learnable
     talentUi.detailLearn.TextTransparency=learnable and 0 or .5
-    talentUi.detailLearn.Text=learned and "습득 완료" or "습득"
+    talentUi.detailLearn.Text=learned and "습득 완료" or (learnable and "습득! 바로 적용" or "습득")
     for index,other in ipairs(talentButtons)do
       for st=1,other.max do
         local selected=index==talentUi.selected.branchIndex and st==step
@@ -2940,10 +2963,10 @@ local function renderTalents()
     end
   end
 end
-meadowActionButtons.refreshTalentDetail=renderTalents
+meadowActionButtons.refreshTalentDetail=function() renderTalents() if meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end end
 for _,name in ipairs({"CombatProficiency","MeadowTalentMartial","MeadowTalentSigns",
   "MeadowTalentDefense","MeadowTalentAgility","MeadowGearRevision"})do
-  player:GetAttributeChangedSignal(name):Connect(renderTalents)
+  player:GetAttributeChangedSignal(name):Connect(function() renderTalents() if meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end end)
 end
 renderTalents()
 layoutTalents()
@@ -2987,7 +3010,7 @@ local skillUse=CommonUI.CreatePrimaryButton({name="UseWitcherSkill",text="기술
 skillUse.Position=UDim2.fromOffset(12,134);skillUse.Size=UDim2.new(1/3,-12,0,52)
 skillUse.BackgroundColor3=Color3.fromRGB(98,65,45);skillUse.Parent=skillDetail
 -- [퀵슬롯] 선택한 기술을 오른쪽 전투 버튼에 등록한다. 같은 기술을 다시 누르면 해제.
-local skillQuick=CommonUI.CreatePrimaryButton({name="RegisterQuickSkill",text="전투 버튼 등록",minHeight=52})
+local skillQuick=CommonUI.CreatePrimaryButton({name="RegisterQuickSkill",text="퀵슬롯 등록",minHeight=52})
 skillQuick.Position=UDim2.new(1/3,2,0,134);skillQuick.Size=UDim2.new(1/3,-8,0,52)
 skillQuick.BackgroundColor3=Color3.fromRGB(46,86,98);skillQuick.Parent=skillDetail
 local skillRows={}
@@ -3038,8 +3061,12 @@ meadowActionButtons.refreshSkills=function()
     local deadline=player:GetAttribute("MeadowReady_"..row.action.Id)
     local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
     row.button.Visible=skillCategory=="전체" or row.category==skillCategory
-    row.state.Text=remaining>.05 and ("대기 "..math.ceil(remaining).."초") or "사용 가능"
-    row.state.TextColor3=remaining>.05 and Color3.fromRGB(172,165,160) or skillColors[row.category]
+    local lockText=meadowArt.skillLock(row.action.Id)
+    row.state.Text=lockText and ("잠김 · "..lockText) or (remaining>.05 and ("대기 "..math.ceil(remaining).."초") or "사용 가능")
+    row.state.TextColor3=lockText and Color3.fromRGB(200,120,110) or (remaining>.05 and Color3.fromRGB(172,165,160) or skillColors[row.category])
+    row.state.TextSize=lockText and 10 or 11
+    local iconImg=row.button:FindFirstChild("SkillIcon")
+    if iconImg then iconImg.ImageTransparency=lockText and .6 or 0 end
     row.outline.Thickness=row.action==selectedSkill and 3 or 1.2
     row.button.BackgroundColor3=row.action==selectedSkill and Color3.fromRGB(68,50,42) or Color3.fromRGB(33,30,32)
     if row.action==selectedSkill then current=row end
@@ -3053,12 +3080,14 @@ meadowActionButtons.refreshSkills=function()
   skillTitle.TextColor3=skillColors[current.category]
   local cooldown=selectedSkill.Cooldown
   local cooldownText=typeof(cooldown)=="number" and (tostring(cooldown).."초") or "기본 공격 판정"
-  skillText.Text=current.description.."\n\n재사용 대기시간: "..cooldownText..
-    "\n현재: "..(remaining>.05 and (math.ceil(remaining).."초 남음") or (available and "사용 가능" or "캐릭터 대기"))
-  local registered=meadowActionButtons.quickSkillId==selectedSkill.Id
-  skillQuick.Text=registered and "등록 해제" or "전투 버튼 등록"
-  skillQuick.BackgroundColor3=registered and Color3.fromRGB(120,70,52) or Color3.fromRGB(46,86,98)
-  skillUse.Text=available and ("사용  ·  "..selectedSkill.Label) or "사용 대기"
+  skillText.Text=current.description.."\n\n재사용 "..cooldownText..
+    "  ·  "..(selLock and ("아직 못 배웠어: 스킬 트리 > "..selLock) or (remaining>.05 and (math.ceil(remaining).."초 남음") or (available and "사용 가능" or "캐릭터 대기")))
+    .."\n퀵슬롯 등록 → 화면 아래 1~5번 칸을 눌러 바로 사용"
+  local selLock=meadowArt.skillLock(selectedSkill.Id)
+  skillQuick.Text=selLock and "잠김" or "퀵슬롯 등록"
+  skillQuick.BackgroundColor3=selLock and Color3.fromRGB(70,60,60) or Color3.fromRGB(46,86,98)
+  available=available and not selLock
+  skillUse.Text=selLock and "잠김" or (available and ("사용  ·  "..selectedSkill.Label) or "사용 대기")
   skillUse.Active=available;skillUse.AutoButtonColor=available
   skillUse.BackgroundColor3=available and Color3.fromRGB(107,70,45) or Color3.fromRGB(60,55,55)
 end
@@ -3263,15 +3292,9 @@ do
   tray.Visible=false -- 퀵슬롯은 메인 화면에서 바로 바꾼다(스킬 창에는 두지 않는다).
 end
 skillQuick.Activated:Connect(function()
-  if not selectedSkill or not meadowActionButtons.setQuickSkill then return end
-  local same=meadowActionButtons.quickSkillId==selectedSkill.Id
-  local row=nil
-  for _,entry in ipairs(skillRows)do if entry.action==selectedSkill then row=entry end end
-  local cell=skillInfo[selectedSkill.Id] and skillInfo[selectedSkill.Id][3] or 2
-  meadowActionButtons.setQuickSkill(not same and selectedSkill.Id or nil,cell,selectedSkill.Label,row and row.category)
-  meadowArt.sfx("ping",.4,1)
-  if meadowActionButtons.refreshDrop then meadowActionButtons.refreshDrop() end
-  meadowActionButtons.refreshSkills()
+  if not selectedSkill then return end
+  -- 고른 기술을 화면 아래 퀵슬롯(1~5번)에 넣는다. 눌러서 바로 쓰는 단축 칸이야.
+  if meadowArt.openSlotChooser then meadowArt.openSlotChooser(selectedSkill.Id,selectedSkill.Label) end
 end)
 skillUse.Activated:Connect(function()
   if not selectedSkill or player:GetAttribute("ProfileReady")~=true then return end
@@ -3279,6 +3302,7 @@ skillUse.Activated:Connect(function()
   if not human or human.Health<=0 then return end
   local deadline=player:GetAttribute("MeadowReady_"..selectedSkill.Id)
   if typeof(deadline)=="number" and deadline>workspace:GetServerTimeNow() then return end
+  if meadowArt.skillLock(selectedSkill.Id) then return end
   if meadowMenu then meadowMenu.close() end
   activateMeadowAction(selectedSkill.Id)
 end)
@@ -10374,6 +10398,8 @@ end)()
       local deadline=player:GetAttribute("MeadowReady_"..id)
       local left=typeof(deadline)=="number" and deadline-workspace:GetServerTimeNow() or 0
       if left>.05 then quickSay("쿨타임 "..math.ceil(left).."초") return end
+      local lock=meadowArt.skillLock(id)
+      if lock then quickSay("아직 못 배웠어 · "..lock) return end
       if activateMeadowAction(id)==false then quickSay("지금은 쓸 수 없어(기력·무기 확인)") end
     end
   end
@@ -10520,22 +10546,48 @@ end)()
       meadowArt.refreshQuickHud()
       picker.Visible=false
     end
-    local function option(order,label,id)
+    local function option(order,label,onTap,locked)
       local b=Instance.new("TextButton")
-      b.LayoutOrder=order;b.Size=UDim2.new(1,-4,0,38);b.BackgroundColor3=Color3.fromRGB(33,50,48);b.BorderSizePixel=0
-      b.Font=Enum.Font.GothamBold;b.TextSize=14;b.TextColor3=Color3.new(1,1,1);b.Text=label;b.ZIndex=92;b.Parent=list
+      b.LayoutOrder=order;b.Size=UDim2.new(1,-4,0,38);b.BackgroundColor3=locked and Color3.fromRGB(40,40,40) or Color3.fromRGB(33,50,48);b.BorderSizePixel=0
+      b.Font=Enum.Font.GothamBold;b.TextSize=14;b.TextColor3=locked and Color3.fromRGB(140,140,140) or Color3.new(1,1,1);b.Text=label;b.ZIndex=92;b.Parent=list
       Instance.new("UICorner",b).CornerRadius=UDim.new(0,8)
-      b.Activated:Connect(function() choose(id) end)
+      b.Activated:Connect(onTap)
     end
-    local order=0
-    for _,id in ipairs(meadowArt.quickSpecial) do order+=1;option(order,meadowArt.quickSpecialLabel[id],id) end
-    for _,action in ipairs(Config.Actions) do
-      if action.Kind=="COMBAT" and action.Label then order+=1;option(order,"기술 · "..action.Label,action.Id) end
+    local function clearList()
+      for _,c in ipairs(list:GetChildren()) do if c:IsA("TextButton") then c:Destroy() end end
     end
-    order+=1;option(order,"비우기",false)
     closeBtn.Activated:Connect(function() picker.Visible=false end)
+    -- 칸을 먼저 골랐을 때: 넣을 것을 고른다. 배우지 못한 기술은 회색으로 잠겨 있다.
     openQuickPicker=function(i)
-      target=i;title.Text=i.."번 칸에 넣을 것";picker.Visible=true
+      target=i;title.Text=i.."번 칸에 넣을 것";clearList()
+      local order=0
+      for _,id in ipairs(meadowArt.quickSpecial) do order+=1;option(order,meadowArt.quickSpecialLabel[id],function() choose(id) end) end
+      for _,action in ipairs(Config.Actions) do
+        if (action.Kind=="COMBAT" or action.Kind=="SKILL") and action.Label and action.Id~="skill-meadow-emote" then
+          order+=1
+          local lock=meadowArt.skillLock(action.Id)
+          option(order,lock and ("잠김 · "..action.Label.." ("..lock..")") or ("기술 · "..action.Label),function()
+            if lock then quickSay("아직 못 배웠어 · "..lock) return end
+            choose(action.Id)
+          end,lock~=nil)
+        end
+      end
+      order+=1;option(order,"비우기",function() choose(false) end)
+      picker.Visible=true
+    end
+    -- 스킬창에서 기술을 먼저 골랐을 때: 몇 번 칸에 넣을지 고른다.
+    meadowArt.openSlotChooser=function(actionId,label)
+      local lock=meadowArt.skillLock(actionId)
+      if lock then quickSay("아직 못 배웠어 · "..lock) return end
+      title.Text=label.." → 몇 번 칸?";clearList()
+      for i=1,COUNT do
+        option(i,i.."번 칸",function()
+          if meadowArt.assignQuick then meadowArt.assignQuick(i,actionId) end
+          meadowArt.refreshQuickHud();picker.Visible=false
+          quickSay(i.."번 칸에 "..label.." 등록")
+        end)
+      end
+      picker.Visible=true
     end
     -- 편집 단추: 켜 두면 칸을 눌러 바로 바꾼다.
     editButton=Instance.new("TextButton")
