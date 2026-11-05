@@ -52,6 +52,51 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
+// [마력숲 기사단 야영지 소품] Kenney CC0 GLB 소품을 내려받아 Roblox Model 자산으로 등록하고 Universe 사용 권한을 부여한다.
+if(process.argv.includes('--camp-assets-only')){
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ const camp=registry.kenneyMiniForestCamp;
+ if(!camp||camp.license!=='CC0-1.0'||camp.universeId!=='10773436325')throw Error('CAMP_PROVENANCE_INVALID');
+ const zipResponse=await fetch(camp.downloadUrl,{headers:{'user-agent':'Mozilla/5.0'}});
+ if(!zipResponse.ok)throw Error('CAMP_ZIP_DOWNLOAD_FAILED:'+zipResponse.status);
+ const zipBytes=Buffer.from(await zipResponse.arrayBuffer());
+ if(crypto.createHash('sha256').update(zipBytes).digest('hex')!==camp.zipSha256)throw Error('CAMP_ZIP_HASH_MISMATCH');
+ fs.mkdirSync('/tmp/camp-zip',{recursive:true});
+ fs.writeFileSync('/tmp/camp-zip/kenney.zip',zipBytes);
+ const {execFileSync}=await import('node:child_process');
+ execFileSync('unzip',['-o','-q','/tmp/camp-zip/kenney.zip','-d','/tmp/camp-zip/out']);
+ camp.assetIds=camp.assetIds||{};
+ for(const [name,relative] of Object.entries(camp.files)){
+  let assetId=String(camp.assetIds[name]||'');
+  if(!/^[1-9]\d*$/.test(assetId)){
+   const bytes=fs.readFileSync('/tmp/camp-zip/out/'+relative);
+   if(bytes.toString('utf8',0,4)!=='glTF')throw Error('CAMP_GLB_INVALID:'+name);
+   const form=new FormData();
+   form.append('request',JSON.stringify({assetType:'Model',displayName:'Mana Forest Camp '+name,
+    description:'Kenney Mini Forest CC0 '+name+' sha256 '+crypto.createHash('sha256').update(bytes).digest('hex'),creationContext:{creator}}));
+   form.append('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),name+'.glb');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('CAMP_OPERATION_INVALID:'+name);
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+    await new Promise(resolve=>setTimeout(resolve,4000));
+    op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+   }
+   assetId=String(op.response?.assetId||'');
+   if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))throw Error('CAMP_UPLOAD_FAILED:'+name);
+   camp.assetIds[name]=assetId;
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+  }
+  const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+   method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+   body:JSON.stringify({subjectType:'Universe',subjectId:camp.universeId,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})});
+  if(grant.errors?.length)throw Error('CAMP_PERMISSION_REJECTED:'+name);
+  console.log('CAMP_ASSET='+name+':'+assetId);
+ }
+ process.exit(0);
+}
+
 // [마력숲 빨간 찢어진 망토] 이미 등록된 망토 메시 자산에 마력숲 Universe 사용 권한만 부여한다.
 if(process.argv.includes('--cape-grant-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
