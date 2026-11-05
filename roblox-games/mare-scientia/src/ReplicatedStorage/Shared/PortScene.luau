@@ -565,9 +565,58 @@ function PortScene.build(info, onFacility)
 	end
 	local hub = folder:FindFirstChild("MillHub")
 	local t0 = os.clock()
+	-- 항해 연출: 출항(부두 -> 먼 바다)과 입항(먼 바다 -> 부두)
+	local SEA_DIST = 420
+	local anim = nil -- { kind = "depart" | "arrive", start = 시각, dur = 초 }
+	if info.arrive then
+		anim = { kind = "arrive", start = os.clock(), dur = 7 }
+	end
+	local function smooth(x)
+		x = math.clamp(x, 0, 1)
+		return x * x * (3 - 2 * x)
+	end
 	local conn = RunService.Heartbeat:Connect(function()
 		local t = os.clock() - t0
 		local shipPose = shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012)
+		if anim then
+			local a = math.clamp((os.clock() - anim.start) / anim.dur, 0, 1)
+			if anim.kind == "depart" then
+				-- 천천히 출발해 점점 빨라진다 (바다 쪽 +X 로 진행)
+				local d = a * a * SEA_DIST
+				shipPose = shipPose * CFrame.new(d, 0, 0) * CFrame.Angles(0, 0, math.sin(t * 1.4) * 0.02)
+			else
+				-- 먼 바다에서 들어와 감속하고, 끝에서 뱃머리를 바다 쪽으로 돌려 정박한다
+				local remain = 1 - smooth(a)
+				local turn = smooth((a - 0.7) / 0.3)
+				local lateral = (1 - turn) * 28
+				shipPose = shipPose * CFrame.new(remain * SEA_DIST, 0, lateral * remain) * CFrame.Angles(0, math.pi * (1 - turn), 0)
+				if a >= 1 then
+					anim = nil
+				end
+			end
+			if anim and not anim.done then
+				-- 항적 파도: 배가 달릴 때 물보라가 따라온다
+				if not ship:FindFirstChild("Wake") then
+					local hull = ship.PrimaryPart or ship:FindFirstChildWhichIsA("BasePart", true)
+					if hull then
+						local att = Instance.new("Attachment")
+						att.Name = "Wake"
+						att.Position = Vector3.new(0, -2, 0)
+						att.Parent = hull
+						local em = Instance.new("ParticleEmitter")
+						em.Name = "WakeFoam"
+						em.Rate = 30
+						em.Lifetime = NumberRange.new(2, 3)
+						em.Speed = NumberRange.new(2, 4)
+						em.SpreadAngle = Vector2.new(60, 10)
+						em.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 2), NumberSequenceKeypoint.new(1, 6) })
+						em.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 1) })
+						em.Color = ColorSequence.new(Color3.fromRGB(235, 245, 255))
+						em.Parent = att
+					end
+				end
+			end
+		end
 		ship:PivotTo(shipPose)
 		for _, wheel in wheels do
 			wheel.model:PivotTo(shipPose * wheel.relative * CFrame.Angles(0, 0, t * 1.65))
@@ -592,7 +641,21 @@ function PortScene.build(info, onFacility)
 		conn:Disconnect()
 	end)
 
-	return { folder = folder, spawn = CFrame.new(-2, 4, 10) * CFrame.Angles(0, math.rad(90), 0) }
+	local controls = {}
+	-- 출항 연출 시작. 배가 부두를 떠난다. 걸리는 시간(초)을 돌려준다.
+	function controls.depart(dur)
+		anim = { kind = "depart", start = os.clock(), dur = dur or 5 }
+		return anim.dur
+	end
+	-- 카메라가 따라갈 선체
+	function controls.hull()
+		return ship.PrimaryPart or ship:FindFirstChildWhichIsA("BasePart", true)
+	end
+	function controls.sailing()
+		return anim ~= nil
+	end
+
+	return { folder = folder, spawn = CFrame.new(-2, 4, 10) * CFrame.Angles(0, math.rad(90), 0), controls = controls }
 end
 
 return PortScene
