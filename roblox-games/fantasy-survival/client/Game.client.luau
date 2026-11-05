@@ -4581,17 +4581,16 @@ do
             local camera=workspace.CurrentCamera
             local k=camera and camera.ViewportSize.X/1280 or 1
             local p,s,rot,tx,ty=cameraFor(scene,lt)
-            bgLayer.Size=UDim2.fromScale(s,s)
-            bgLayer.Position=UDim2.new(.5,tx*k,.5,ty*k)
-            bgLayer.Rotation=rot
-            local cs=1+.035*p
-            chLayer.Size=UDim2.fromScale(cs,cs)
-            chLayer.Position=UDim2.new(.5,(scene.chShift[1]*(p-.5)*2+tx*.6)*k,.5,(scene.chShift[2]*(p-.5)*2+ty*.6)*k)
-            chLayer.Rotation=rot*.8
-            local fs=1+.10*p
-            fgLayer.Size=UDim2.fromScale(fs,fs)
-            fgLayer.Position=UDim2.new(.5,(scene.fgShift[1]*(.5-p)*2*.8+tx*1.4)*k,.5,(scene.fgShift[2]*(.5-p)*2*.8+ty*1.4)*k)
-            fgLayer.Rotation=rot*1.1
+            -- 확대·회전·화면 흔들림 없이, 배경은 고정하고 인물·전경만 옆으로 천천히 움직인다.
+            bgLayer.Size=UDim2.fromScale(1,1)
+            bgLayer.Position=UDim2.fromScale(.5,.5)
+            bgLayer.Rotation=0
+            chLayer.Size=UDim2.fromScale(1,1)
+            chLayer.Position=UDim2.new(.5,scene.chShift[1]*(p-.5)*2*k,.5,0)
+            chLayer.Rotation=0
+            fgLayer.Size=UDim2.fromScale(1,1)
+            fgLayer.Position=UDim2.new(.5,scene.fgShift[1]*(.5-p)*2*k,.5,0)
+            fgLayer.Rotation=0
             local opacity=0
             if t<.6 then opacity=1-smooth(t/.6) end
             if t>total-.8 then opacity=math.max(opacity,1-smooth((total-t)/.8)) end
