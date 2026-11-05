@@ -1,0 +1,533 @@
+<!doctype html>
+<!-- 파일명: web-games/turn-rpg/index.html · 턴제 RPG -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101c24">
+<title>잃어버린 왕국 | 턴제 RPG</title>
+<style>
+/* 화면 */
+:root{color-scheme:dark;--bg:#0b141b;--panel:#172832;--border:#4d655f;--gold:#e7c482;--muted:#b1bfc3;--text:#f3eee3;--good:#86d1ae}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:radial-gradient(ellipse at top,#243e43 0,#101c24 48%,#0b141b 100%);color:var(--text);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+button:disabled{opacity:.48;cursor:not-allowed}
+button:focus-visible{outline:3px solid #fff2a0;outline-offset:2px}
+header{max-width:1220px;margin:auto;padding:16px 16px 10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.logo small{color:var(--gold);letter-spacing:2px;font-size:10px;font-weight:850}
+.logo h1{font-size:26px;letter-spacing:-1px;margin:1px 0 0;font-family:Georgia,"Noto Serif KR",serif}
+.hud{display:flex;flex-wrap:wrap;gap:7px}
+.hud span{background:#08131bbf;border:1px solid #47615d;border-radius:20px;padding:7px 10px;font-size:12px;white-space:nowrap;font-weight:750}
+.hud b{color:var(--gold)}
+.layout{max-width:1220px;margin:0 auto;padding:0 16px 24px;display:grid;grid-template-columns:minmax(0,1.33fr) minmax(330px,.87fr);gap:14px;align-items:start}
+.frame{border:1px solid var(--border);background:linear-gradient(145deg,#1e323b,#122029);border-radius:18px;box-shadow:0 14px 36px #01050988;overflow:hidden}
+.sceneHead{padding:15px 16px 10px;display:flex;justify-content:space-between;align-items:end;gap:8px}
+.kicker{font-size:10px;letter-spacing:2px;color:var(--gold);font-weight:900}
+.sceneHead h2{font-family:Georgia,"Noto Serif KR",serif;font-size:25px;margin:4px 0 0}
+.sceneHead p{margin:3px 0 0;font-size:11px;color:var(--muted)}
+#enemyBadge{font-size:11px;min-width:104px;text-align:right;line-height:1.6;color:#ffd7bb}
+#world{position:relative;height:clamp(275px,38vw,430px);background:linear-gradient(#3b5c60,#14242d)}
+#scene{width:100%;height:100%;display:block}
+#modelStatus{position:absolute;left:10px;bottom:9px;background:#091722d9;border:1px solid #738c82;padding:5px 8px;border-radius:7px;color:#fff;font-size:10px;max-width:85%;pointer-events:none}
+#floatText{position:absolute;top:30%;left:52%;opacity:0;transform:translate(-50%,-50%);font-size:29px;font-weight:1000;color:#ffe6ad;text-shadow:0 3px 8px #000;pointer-events:none;transition:opacity .22s}
+#floatText.show{opacity:1}
+.map{display:flex;gap:7px;overflow-x:auto;padding:10px 11px 12px;scrollbar-width:thin}
+.zone{flex:1 0 107px;min-height:60px;background:#0a1821;border:1px solid #526560;border-radius:10px;color:#d9e4de;padding:7px 8px;text-align:left}
+.zone b{font-size:12px;display:block}
+.zone small{font-size:10px;display:block;margin-top:4px;color:#a7b9b7}
+.zone.active{border-color:#f0c981;background:#3a3b2d;box-shadow:inset 0 0 0 1px #eac67b55}
+.actions{display:flex;gap:8px;padding:0 11px 12px}
+.action{flex:1;min-height:45px;border:1px solid #667f7a;border-radius:11px;background:#2b4b51;color:#f4f4e9;font-size:13px;font-weight:800}
+.action.main{background:linear-gradient(135deg,#d2a65f,#ead39b);border-color:#ebd49c;color:#281e12}
+#battlePanel{border-top:1px solid #536861;padding:12px;background:linear-gradient(#182b30,#102029)}
+#battlePanel[hidden],#outsideActions[hidden]{display:none}
+.battleStats{display:flex;justify-content:space-between;gap:14px;align-items:center;font-size:12px}
+.life{height:10px;border-radius:8px;background:#3f1b21;overflow:hidden;margin-top:6px;border:1px solid #996b62}
+.life i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#bd4d4f,#ef9a72);transition:width .25s}
+#battleLog{font-size:12px;line-height:1.6;margin:10px 0;padding:8px 10px;background:#0a151c;border-radius:9px;color:#dce6df;min-height:52px}
+.combatBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.combatBtns .action{min-width:0;min-height:54px;font-size:11px;padding:6px 2px}
+#gameInfo{padding:10px 12px 13px;border-top:1px solid #364f51;color:#bfc8c3;font-size:11px;line-height:1.5}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px;background:#0f2027;border-bottom:1px solid #50645c}
+.nav button{min-height:43px;border:1px solid #455e5c;background:#20373c;border-radius:9px;color:#cbd9d4;font-size:12px;font-weight:800}
+.nav button.sel{color:#271f12;border-color:#efd394;background:#e8c789}
+.content{padding:15px;min-height:460px;max-height:calc(100dvh - 170px);overflow:auto;scrollbar-color:#6c8a83 #10202a}
+.content h3{font-size:18px;font-family:Georgia,"Noto Serif KR",serif;margin:4px 0 8px}
+.content h4{font-size:14px;color:var(--gold);margin:0 0 6px}
+.note{font-size:12px;color:#b1c1be;line-height:1.65;margin:5px 0 12px}
+.row{background:#0c1921ba;border:1px solid #3c5857;border-radius:12px;padding:11px;margin:9px 0;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.rowtxt{min-width:0;flex:1}
+.row b{font-size:13px}
+.row small{display:block;font-size:11px;color:#aebfbb;line-height:1.5;margin-top:3px}
+.row button,.back{flex:0 0 auto;min-height:37px;min-width:74px;padding:6px 10px;border:1px solid #b49a67;border-radius:9px;background:#3d3d31;color:#ffe6b3;font-size:12px;font-weight:850}
+.row button.ready{background:#d5ad68;color:#241908}
+.row button:disabled{border-color:#5a6665;color:#8f9e9e}
+.tag{font-size:10px;display:inline-block;margin:0 4px 3px 0;padding:2px 6px;border-radius:5px;border:1px solid #79958a;color:#bed9d1;white-space:nowrap}
+.tag.gold{border-color:#9b8052;color:#efc983}
+.progress{height:6px;background:#23343a;border-radius:5px;overflow:hidden;margin-top:7px}
+.progress i{height:100%;display:block;background:#a6cf91}
+.equipment{padding:10px;border:1px solid #435d5a;border-radius:10px;background:#102129;margin:8px 0}
+.equipment b{color:var(--gold)}
+#notice{position:fixed;z-index:70;top:max(14px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:#0c1a21f2;border:1px solid #d2b877;border-radius:10px;padding:10px 14px;max-width:90vw;font-size:12px;pointer-events:none;text-align:center;opacity:0;transition:opacity .25s}
+#notice.on{opacity:1}
+#modal{position:fixed;z-index:80;inset:0;background:#010609d9;display:none;align-items:center;justify-content:center;padding:18px;overflow-y:auto}
+#modal.open{display:flex}
+.dialog{max-width:440px;width:100%;padding:22px;border:2px solid #e2c187;border-radius:18px;background:linear-gradient(145deg,#203b3d,#0c1821);box-shadow:0 16px 70px #000}
+.dialog h2{font-size:23px;color:#ffe2ac;margin:0 0 13px;font-family:Georgia,"Noto Serif KR",serif}
+.dialog p{color:#d9e2db;font-size:13px;line-height:1.9;white-space:pre-line}
+.dialog button{width:100%;min-height:48px;border-radius:10px;background:#e9c57f;border:0;color:#31220d;font-weight:900}
+footer{max-width:1220px;padding:0 16px 25px;margin:auto;color:#9baead;font-size:10px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.content{max-height:none;min-height:240px}header{padding:12px 12px 9px}.layout{padding:0 10px 18px;gap:10px}#world{height:300px}.logo h1{font-size:22px}}
+@media(max-width:480px){.logo h1{font-size:21px}.hud span{padding:5px 7px;font-size:10px}.sceneHead{padding:11px 12px 9px}.sceneHead h2{font-size:21px}#world{height:255px}.zone{flex-basis:95px;min-height:55px}.zone b{font-size:11px}.zone small{font-size:9px}.action{font-size:12px;min-height:43px}.content{padding:11px}.combatBtns .action{min-height:52px;font-size:10px}#gameInfo{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo"><small>THE LOST KINGDOM · TURN BASED RPG</small><h1>잃어버린 왕국</h1></div>
+ <div class="hud"><span>레벨 <b id="level">1</b></span><span>체력 <b id="hp">108/108</b></span><span>마력 <b id="mp">29/29</b></span><span>골드 <b id="gold">80</b></span></div>
+</header>
+<main class="layout">
+ <section class="frame" aria-label="3D 사냥터">
+  <div class="sceneHead"><div><div class="kicker" id="zoneCount">사냥터 01 / 05</div><h2 id="zoneTitle">푸른숲 초입</h2><p id="zoneSub">숲속에서 전투와 모험이 시작돼.</p></div><div id="enemyBadge" aria-live="polite"></div></div>
+  <div id="world"><canvas id="scene" aria-label="3D 사냥터 풍경"></canvas><div id="modelStatus" role="status">3D 에셋 로딩 중…</div><div id="floatText" aria-live="polite"></div></div>
+  <nav class="map" id="map" aria-label="사냥터 선택"></nav>
+  <div id="outsideActions" class="actions"><button class="action main" data-action="hunt">몬스터 사냥</button><button class="action" data-action="explore">지역 탐험</button><button class="action" data-action="rest">야영·회복</button></div>
+  <div id="battlePanel" hidden>
+   <div class="battleStats"><strong id="battleName">적</strong><span id="battleHealth">0/0</span></div><div class="life"><i id="enemyHealthBar"></i></div>
+   <div id="battleLog" aria-live="polite">전투 준비</div>
+   <div class="combatBtns">
+    <button class="action main" data-fight="attack">일반 공격</button>
+    <button class="action" data-fight="skill">강타 · 마력 9</button>
+    <button class="action" data-fight="guard">방어</button>
+    <button class="action" data-fight="potion">물약 사용</button>
+   </div>
+   <div style="margin-top:7px"><button class="action" style="width:100%;min-height:34px" data-fight="flee" id="fleeBtn">전투에서 도망치기</button></div>
+  </div>
+  <div id="gameInfo">사냥으로 경험치와 골드를 얻어. NPC에게 퀘스트를 받고, 탐험으로 단서를 찾아. 진행도는 자동 저장돼.</div>
+ </section>
+ <aside class="frame" aria-label="모험 메뉴">
+  <nav class="nav" id="tabs"><button data-tab="npc" class="sel">NPC</button><button data-tab="quest">퀘스트</button><button data-tab="bag">장비</button><button data-tab="shop">상점</button></nav>
+  <div class="content" id="content" aria-live="polite"></div>
+ </aside>
+</main>
+<footer>3D 원본: Quaternius / Kenney · CC0 · 기존 공용 에셋 재사용 · 자동 저장은 현재 브라우저에만 적용돼.</footer>
+<div id="notice" role="status"></div>
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="dialog"><h2 id="modalTitle"></h2><p id="modalText"></p><button id="modalClose">계속하기</button></div></div>
+<script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
+<script type="module">
+// 파일명: web-games/turn-rpg/index.html
+// 임포트: 저장소에 포함된 Three.js와 GLTFLoader / CC0 공용 모델
+import * as THREE from "three";
+import {GLTFLoader} from "../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js";
+
+// 데이터
+const SAVE_KEY="turn-rpg-v1";
+const $=id=>document.getElementById(id);
+const ZONES=[
+ {name:"푸른숲 초입",sub:"햇살이 스며드는 숲. 슬라임이 길을 막아.",enemy:"slime",level:1,ground:0x355844,sky:0x284b4d,decor:["tree","tree-high","tree","tree-crooked","rock-small"]},
+ {name:"붉은 협곡",sub:"붉은 바위 너머에서 오크들이 진을 쳤어.",enemy:"orc",level:2,ground:0x6e4c38,sky:0x765040,decor:["rock-large","rock-wide","rock-small","rock-large","wall-broken"]},
+ {name:"잊힌 유적",sub:"무너진 돌기둥과 마력의 흔적이 남았어.",enemy:"golem",level:4,ground:0x575d56,sky:0x515d63,decor:["pillar-stone","wall-broken","rock-large","wall-arch","pillar-stone"]},
+ {name:"달그림자 늪",sub:"안개 속에 떠도는 망령과 오래된 등불.",enemy:"ghost",level:6,ground:0x2b4b49,sky:0x233945,decor:["tree-crooked","lantern","tree-crooked","rock-small","lantern"]},
+ {name:"검은 왕좌",sub:"마지막 봉인이 있는 곳. 왕국의 운명을 결정해.",enemy:"boss",level:8,ground:0x383742,sky:0x211f3b,decor:["wall-arch","pillar-stone","wall-broken","pillar-stone","rock-large"]}
+];
+const ENEMIES={
+ slime:{name:"숲 슬라임",model:"slime",hp:42,atk:8,def:1,xp:19,gold:16,height:2.1},
+ orc:{name:"협곡 오크",model:"orc",hp:95,atk:16,def:4,xp:39,gold:32,height:2.9},
+ golem:{name:"유적 골렘",model:"golem",hp:156,atk:23,def:8,xp:67,gold:55,height:3.2},
+ ghost:{name:"늪의 망령",model:"ghost",hp:207,atk:30,def:9,xp:98,gold:76,height:3.1},
+ boss:{name:"타락한 왕좌의 수호자",model:"winged",hp:630,atk:39,def:13,xp:320,gold:450,height:4.2}
+};
+const WEAPONS=[
+ {id:"w0",name:"낡은 검",atk:5,price:0,level:1},{id:"w1",name:"철검",atk:10,price:85,level:2},
+ {id:"w2",name:"긴 창",atk:17,price:175,level:3},{id:"w3",name:"사냥꾼 활",atk:24,price:310,level:4},
+ {id:"w4",name:"전투 망치",atk:32,price:480,level:5},{id:"w5",name:"룬 검",atk:42,price:750,level:7},
+ {id:"w6",name:"왕의 검",atk:57,price:1120,level:8}
+];
+const ARMORS=[
+ {id:"a0",name:"천옷",def:2,price:0,level:1},{id:"a1",name:"가죽 갑옷",def:5,price:65,level:2},
+ {id:"a2",name:"강화 가죽갑옷",def:8,price:125,level:3},{id:"a3",name:"사슬 갑옷",def:12,price:230,level:4},
+ {id:"a4",name:"철 갑옷",def:17,price:370,level:5},{id:"a5",name:"강철 갑옷",def:23,price:570,level:6},
+ {id:"a6",name:"수호자 갑옷",def:29,price:820,level:7},{id:"a7",name:"영웅의 갑옷",def:37,price:1220,level:8}
+];
+const ACCESSORIES=[
+ {id:"r0",name:"새싹 반지",atk:2,def:1,price:100,level:1},
+ {id:"r1",name:"바람 부적",atk:5,def:2,price:255,level:3},
+ {id:"r2",name:"힘의 목걸이",atk:9,def:3,price:520,level:5},
+ {id:"r3",name:"달빛 수호석",atk:11,def:7,price:980,level:7}
+];
+const ALL_ITEMS=WEAPONS.concat(ARMORS,ACCESSORIES);
+const NPCS=[
+ {id:"elder",zone:0,name:"촌장 바렌",role:"아이를 잃어버린 촌장",text:"아들이 협곡 근처에서 사라졌네. 숲의 몬스터들까지 마을을 위협하고 있어.",quests:["c1","s1"]},
+ {id:"herbalist",zone:0,name:"약초사 리아",role:"숲의 약초를 연구하는 사람",text:"숲의 풀잎을 두 번 살펴봐. 오래된 치료법의 실마리가 있대.",quests:["a1"]},
+ {id:"guard",zone:0,name:"경비병 도안",role:"숲길 경비병",text:"강해지고 싶다면 장비를 챙기고 몬스터와 싸워 봐.",quests:[]},
+ {id:"captain",zone:1,name:"경비대장 카르",role:"협곡 방어대장",text:"협곡의 오크들이 길목을 봉쇄했어. 쫓아내 주겠어?",quests:["c2"]},
+ {id:"scout",zone:1,name:"탐사자 키르",role:"비석 기록 연구가",text:"붉은 협곡 곳곳에 오래된 비석이 흩어져 있어.",quests:["a2"]},
+ {id:"courier",zone:1,name:"전령 아린",role:"지친 편지 배달부",text:"유적에 있는 티아에게 이 편지를 전해 주고 답을 알려 줘.",quests:["s2"]},
+ {id:"son",zone:1,name:"마일",role:"촌장의 잃어버린 아들",text:"숲으로 돌아갈게요! 아버지께 제가 무사하다고 전해 주세요.",quests:[]},
+ {id:"mason",zone:2,name:"석공 루모",role:"유적 수호병 조사관",text:"골렘들이 유적을 무너뜨리고 있어. 두 마리만 물리쳐 줘.",quests:["c3"]},
+ {id:"librarian",zone:2,name:"사서 오렐",role:"봉인의 기록을 읽는 학자",text:"유적의 지도와 늪에 잠든 제단에 왕국의 비밀이 기록돼 있어.",quests:["a3","s3"]},
+ {id:"tia",zone:2,name:"기록관 티아",role:"유적에 남은 기록관",text:"전령의 소식이 있다면 여기서 받아 줄게.",quests:[]},
+ {id:"keeper",zone:3,name:"등불지기 네라",role:"늪길을 밝히는 등불지기",text:"꺼진 등불 두 곳을 찾아줘. 어둠이 더 짙어지기 전에.",quests:["a4"]},
+ {id:"watcher",zone:3,name:"감시자 에드",role:"검은 왕좌의 봉인 감시자",text:"왕좌의 수호자를 쓰러뜨리면 이 긴 저주가 끝날 거야.",quests:["s4"]},
+ {id:"fisher",zone:3,name:"늪지기 하온",role:"늪의 생존자",text:"안개 속 망령은 강해. 회복할 물약을 준비하는 게 좋아.",quests:[]}
+];
+const QUESTS=[
+ {id:"c1",type:"전투",name:"숲길의 위협",npc:"elder",description:"숲 슬라임 3마리 처치",mode:"kill",zone:0,need:3,gold:100,xp:55},
+ {id:"c2",type:"전투",name:"오크 소탕",npc:"captain",description:"협곡 오크 3마리 처치",mode:"kill",zone:1,need:3,gold:200,xp:110},
+ {id:"c3",type:"전투",name:"움직이는 돌기둥",npc:"mason",description:"유적 골렘 2마리 처치",mode:"kill",zone:2,need:2,gold:290,xp:170},
+ {id:"a1",type:"모험",name:"숲의 약초 채집",npc:"herbalist",description:"푸른숲 두 곳 조사",mode:"explore",zone:0,need:2,gold:75,xp:45},
+ {id:"a2",type:"모험",name:"붉은 비석의 기록",npc:"scout",description:"붉은 협곡 두 곳 조사",mode:"explore",zone:1,need:2,gold:135,xp:80},
+ {id:"a3",type:"모험",name:"유적의 지도 조각",npc:"librarian",description:"잊힌 유적 두 곳 조사",mode:"explore",zone:2,need:2,gold:190,xp:110},
+ {id:"a4",type:"모험",name:"꺼진 늪의 등불",npc:"keeper",description:"달그림자 늪 두 곳 조사",mode:"explore",zone:3,need:2,gold:250,xp:140},
+ {id:"s1",type:"스토리",name:"잃어버린 아들",npc:"elder",description:"협곡에서 마일을 찾고 촌장에게 돌아오기",mode:"story",gold:180,xp:95},
+ {id:"s2",type:"스토리",name:"도착하지 않은 편지",npc:"courier",description:"유적의 티아에게 편지를 전하고 아린에게 돌아오기",mode:"story",gold:230,xp:135},
+ {id:"s3",type:"스토리",name:"봉인된 목소리",npc:"librarian",description:"늪의 제단을 조사하고 오렐에게 돌아오기",mode:"story",gold:290,xp:180},
+ {id:"s4",type:"스토리",name:"검은 왕좌의 비밀",npc:"watcher",description:"5번째 사냥터 보스를 쓰러뜨리고 에드에게 돌아오기",mode:"story",gold:600,xp:300}
+];
+
+// 저장 / 능력치
+function newGame(){return {version:1,level:1,xp:0,gold:80,hp:108,mp:29,area:0,owned:["w0","a0"],equip:{weapon:"w0",armor:"a0",accessory:null},potions:3,quest:{},progress:{},flags:{},kills:{},bossBeaten:false};}
+function readGame(){
+ try{
+  const raw=JSON.parse(localStorage.getItem(SAVE_KEY));
+  if(!raw||raw.version!==1||!Number.isInteger(raw.level)||raw.level<1||raw.level>99)return newGame();
+  const s=Object.assign(newGame(),raw);
+  s.owned=Array.isArray(raw.owned)?raw.owned.filter(id=>ALL_ITEMS.some(i=>i.id===id)):["w0","a0"];
+  for(const id of ["w0","a0"])if(!s.owned.includes(id))s.owned.push(id);
+  s.equip=Object.assign({weapon:"w0",armor:"a0",accessory:null},raw.equip||{});
+  for(const [slot,base] of [["weapon","w0"],["armor","a0"],["accessory",null]])if(s.equip[slot]!==null&&!s.owned.includes(s.equip[slot]))s.equip[slot]=base;
+  s.quest=raw.quest&&typeof raw.quest==="object"?raw.quest:{};
+  s.progress=raw.progress&&typeof raw.progress==="object"?raw.progress:{};
+  s.flags=raw.flags&&typeof raw.flags==="object"?raw.flags:{};
+  s.kills=raw.kills&&typeof raw.kills==="object"?raw.kills:{};
+  s.area=Number.isInteger(raw.area)&&raw.area>=0&&raw.area<5?raw.area:0;
+  s.gold=Math.max(0,Number(raw.gold)||0);s.xp=Math.max(0,Number(raw.xp)||0);s.potions=Math.max(0,Math.min(99,Number(raw.potions)||0));
+  return s;
+ }catch(e){return newGame();}
+}
+let state=readGame(),battle=null,tab="npc",focusNpc=null,noticeTimer=0,floatTimer=0;
+const item=id=>ALL_ITEMS.find(i=>i.id===id);
+function ability(){
+ const w=item(state.equip.weapon)||WEAPONS[0],a=item(state.equip.armor)||ARMORS[0],r=item(state.equip.accessory)||{};
+ return {atk:12+state.level*3+w.atk+(r.atk||0),def:2+state.level+a.def+(r.def||0),maxHp:95+state.level*13,maxMp:25+state.level*4};
+}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){notify("저장 공간이 부족해. 진행도가 저장되지 않았어.");}}
+function notify(msg){$('notice').textContent=msg;$('notice').classList.add("on");clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').classList.remove("on"),2400);}
+function popNumber(value){$('floatText').textContent=value;$('floatText').classList.add("show");clearTimeout(floatTimer);floatTimer=setTimeout(()=>$('floatText').classList.remove("show"),650);}
+function showModal(title,description){$('modalTitle').textContent=title;$('modalText').textContent=description;$('modal').classList.add("open");}
+$('modalClose').addEventListener("click",()=>$('modal').classList.remove("open"));
+function xpLimit(){return 36+state.level*26;}
+function giveXp(amount){
+ state.xp+=amount;
+ let ups=0;
+ while(state.level<99&&state.xp>=xpLimit()){
+  state.xp-=xpLimit();state.level++;ups++;
+  state.hp=ability().maxHp;state.mp=ability().maxMp;
+ }
+ if(ups)notify("레벨 상승! 현재 레벨 "+state.level+" · 체력과 마력 회복");
+}
+function questActive(id){return state.quest[id]==="active";}
+function ready(q){
+ if(!questActive(q.id))return false;
+ if(q.mode==="story")return !!state.flags[q.id];
+ return (Number(state.progress[q.id])||0)>=q.need;
+}
+function getProgress(q){
+ if(q.mode==="story")return state.flags[q.id]?"목표 달성 · 보고 가능":"단서를 찾아야 해";
+ return Math.min(q.need,Number(state.progress[q.id])||0)+"/"+q.need;
+}
+function questButton(q){
+ const status=state.quest[q.id];
+ if(status==="done")return '<button disabled>완료</button>';
+ if(status==="active")return ready(q)?'<button class="ready" data-quest="'+q.id+'">보상받기</button>':'<button disabled>진행 중</button>';
+ return '<button data-quest="'+q.id+'">퀘스트 받기</button>';
+}
+function questCard(q,actions){
+ const status=state.quest[q.id],pct=q.mode==="story"?(state.flags[q.id]?100:0):Math.min(100,(Number(state.progress[q.id])||0)/q.need*100);
+ return '<div class="row"><div class="rowtxt"><span class="tag">'+q.type+'</span><span class="tag gold">'+(status==="done"?"완료":status==="active"?"진행 중":"시작 가능")+'</span><br><b>'+q.name+'</b><small>'+q.description+'</small><small>'+getProgress(q)+' · 보상 '+q.gold+'G / 경험치 '+q.xp+'</small><div class="progress"><i style="width:'+pct+'%"></i></div></div>'+(actions?questButton(q):"")+'</div>';
+}
+function changeQuest(id){
+ const q=QUESTS.find(v=>v.id===id),npc=NPCS.find(n=>n.id===q?.npc);
+ if(!q||!npc||npc.zone!==state.area||battle)return;
+ if(!state.quest[id]){state.quest[id]="active";notify("퀘스트 시작: "+q.name);}
+ else if(ready(q)){state.quest[id]="done";state.gold+=q.gold;giveXp(q.xp);notify("퀘스트 완료: "+q.name+" · "+q.gold+"G");if(id==="s4")showModal("왕국에 다시 빛이", "왕좌의 수호자를 쓰러뜨리고 긴 저주를 끝냈어.\n남은 사냥터에서도 계속 모험할 수 있어.");}
+ persist();render();
+}
+function explore(){
+ if(battle||state.area===4){notify("이곳은 탐험 대신 보스 전투만 가능해.");return;}
+ const area=state.area,found=[];
+ for(const q of QUESTS)if(q.mode==="explore"&&q.zone===area&&questActive(q.id)){
+  state.progress[q.id]=Math.min(q.need,(Number(state.progress[q.id])||0)+1);
+  found.push(q.name+" "+getProgress(q));
+ }
+ if(area===1&&questActive("s1")&&!state.flags.s1){state.flags.s1=true;found.push("잃어버린 아들 마일을 찾았어! 촌장에게 돌아가.");}
+ if(area===3&&questActive("s3")&&!state.flags.s3){state.flags.s3=true;found.push("봉인된 제단의 목소리를 확인했어! 오렐에게 보고해.");}
+ notify(found.length?found[0]:"주변을 조사했어. 새로운 단서는 없었어.");
+ if(found.length>1)showModal("탐험에서 찾은 단서",found.join("\n"));
+ persist();render();
+}
+function talk(id){
+ const n=NPCS.find(v=>v.id===id);
+ if(!n||n.zone!==state.area||battle)return;
+ if(n.id==="son"&&!state.flags.s1)return;
+ focusNpc=id;
+ if(n.id==="tia"&&questActive("s2")&&!state.flags.s2){state.flags.s2=true;showModal("편지를 전했어","기록관 티아가 편지를 받았어.\n이제 붉은 협곡의 전령 아린에게 돌아가.");persist();}
+ render();
+}
+function npcCard(n){
+ const nquests=QUESTS.filter(q=>n.quests.includes(q.id));
+ const readyCount=nquests.filter(ready).length;
+ return '<div class="row"><div class="rowtxt"><b>'+n.name+'</b><small>'+n.role+'</small><small>'+nquests.length?(nquests.map(q=>state.quest[q.id]==="done"?"완료":q.name).join(" · ")):"대화할 수 있어"+'</small></div><button class="'+(readyCount?"ready":"")+'" data-npc="'+n.id+'">대화</button></div>';
+}
+function renderNpc(){
+ const visible=NPCS.filter(n=>n.zone===state.area&&(n.id!=="son"||state.flags.s1));
+ if(state.area===4){return '<h3>검은 왕좌</h3><p class="note">이곳에는 사람이 없어. 사냥 버튼을 눌러 보스와 맞서.</p>';}
+ const current=visible.find(n=>n.id===focusNpc);
+ if(current){
+  const qs=QUESTS.filter(q=>current.quests.includes(q.id));
+  return '<button class="back" data-back="1">← 주민 목록</button><h3>'+current.name+'</h3><p class="note">'+current.text+'</p>'+
+   (qs.length?qs.map(q=>questCard(q,true)).join(""):'<p class="note">현재 받을 퀘스트는 없어.</p>');
+ }
+ return '<h3>사냥터 주민</h3><p class="note">주민에게 말을 걸면 퀘스트를 받을 수 있어. 일부 주민은 이야기를 들려줘.</p>'+visible.map(n=>npcCardFixed(n)).join("");
+}
+function npcCardFixed(n){
+ const qs=QUESTS.filter(q=>n.quests.includes(q.id));
+ const active=qs.filter(q=>state.quest[q.id]!=="done");
+ const badge=active.some(ready)?"보상 가능":active.length?"퀘스트 "+active.length+"개":"대화";
+ return '<div class="row"><div class="rowtxt"><b>'+n.name+'</b><small>'+n.role+'</small><span class="tag gold">'+badge+'</span></div><button data-npc="'+n.id+'">대화</button></div>';
+}
+function renderQuests(){
+ const done=QUESTS.filter(q=>state.quest[q.id]==="done").length;
+ return '<h3>모험 일지</h3><p class="note">전투 3개 · 모험 4개 · 스토리 4개 · 완료 '+done+'/11<br>퀘스트는 해당 주민에게 수락하고 완료 보고해야 해.</p>'+
+ ["전투","모험","스토리"].map(type=>'<h4>'+type+' 퀘스트</h4>'+QUESTS.filter(q=>q.type===type).map(q=>questCard(q,false)).join("")).join("");
+}
+function renderBag(){
+ const a=ability();
+ const slot=(kind,label,base)=>'<div class="equipment"><b>'+label+'</b><div class="note">'+(item(state.equip[kind])?.name||base)+'</div></div>';
+ return '<h3>장비와 능력치</h3><p class="note">공격력 '+a.atk+' · 방어력 '+a.def+' · 경험치 '+state.xp+'/'+xpLimit()+'<br>물약 '+state.potions+'개 · 획득 장비 '+state.owned.length+'/19종</p>'+
+ slot("weapon","무기","없음")+slot("armor","방어구","없음")+slot("accessory","악세서리","없음")+
+ '<h4>보유 장비</h4>'+ALL_ITEMS.filter(it=>state.owned.includes(it.id)).map(it=>itemCard(it)).join("");
+}
+function itemSlot(it){return it.id[0]==="w"?"weapon":it.id[0]==="a"?"armor":"accessory";}
+function itemCard(it){
+ const slot=itemSlot(it),owned=state.owned.includes(it.id),wearing=state.equip[slot]===it.id;
+ const bonus=(it.atk?"공격 +"+it.atk+" ":"")+(it.def?"방어 +"+it.def:"");
+ const disabled=state.level<it.level;
+ let btn=wearing?'<button disabled>장착 중</button>':owned?'<button data-equip="'+it.id+'">장착</button>':disabled?'<button disabled>레벨 부족</button>':state.gold<it.price?'<button disabled>골드 부족</button>':'<button data-buy="'+it.id+'">'+it.price+'G 구매</button>';
+ return '<div class="row"><div class="rowtxt"><b>'+it.name+'</b><small>레벨 '+it.level+' · '+bonus+'</small></div>'+btn+'</div>';
+}
+function renderShop(){
+ return '<h3>장비 상점</h3><p class="note">무기 7종 · 방어구 8종 · 악세서리 4종<br>구매한 장비는 영구 소유하고 언제든 바꿀 수 있어.</p>'+
+ '<div class="row"><div class="rowtxt"><b>회복 물약</b><small>전투 중 체력 55 회복 · 25G</small></div><button data-potion="1" '+(state.gold<25?"disabled":"")+'>25G 구매</button></div>'+
+ '<h4>무기 7종</h4>'+WEAPONS.map(itemCard).join("")+'<h4>방어구 8종</h4>'+ARMORS.map(itemCard).join("")+
+ '<h4>악세서리 4종</h4>'+ACCESSORIES.map(itemCard).join("");
+}
+function renderPanel(){
+ document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("sel",b.dataset.tab===tab));
+ $('content').innerHTML=tab==="npc"?renderNpc():tab==="quest"?renderQuests():tab==="bag"?renderBag():renderShop();
+}
+function buy(id){
+ const it=item(id);
+ if(!it||battle||state.owned.includes(id)||state.level<it.level||state.gold<it.price)return;
+ state.gold-=it.price;state.owned.push(id);
+ state.equip[itemSlot(it)]=id;
+ state.hp=Math.min(state.hp,ability().maxHp);
+ persist();render();notify(it.name+" 구매 및 장착!");
+}
+function equip(id){
+ const it=item(id);
+ if(!it||battle||!state.owned.includes(id))return;
+ state.equip[itemSlot(it)]=id;persist();render();notify(it.name+" 장착");
+}
+function rest(){
+ if(battle)return;
+ const a=ability(),fee=state.area===0?0:18;
+ if(state.gold<fee){notify("야영 비용 "+fee+"G가 부족해.");return;}
+ if(state.hp>=a.maxHp&&state.mp>=a.maxMp){notify("이미 충분히 회복했어.");return;}
+ state.gold-=fee;state.hp=a.maxHp;state.mp=a.maxMp;persist();render();notify(fee?"야영 후 완전히 회복했어. -18G":"숲 야영지에서 무료로 회복했어.");
+}
+
+// 전투
+function startBattle(){
+ if(battle)return;
+ const id=ZONES[state.area].enemy,e=ENEMIES[id];
+ battle={id,hp:e.hp,maxHp:e.hp,turn:0,guard:false,busy:false,log:e.name+"이(가) 나타났어. 행동을 선택해."};
+ $('battlePanel').hidden=false;$('outsideActions').hidden=true;
+ focusNpc=null;render();rebuildStage();
+}
+function enemyTurn(b){
+ if(battle!==b)return;
+ const e=ENEMIES[b.id],a=ability();
+ let dmg=Math.max(1,e.atk+Math.floor(Math.random()*7)-3-a.def);
+ if(b.id==="boss"&&b.turn%3===0)dmg=Math.round(dmg*1.6);
+ if(b.guard)dmg=Math.max(1,Math.floor(dmg*.42));
+ state.hp=Math.max(0,state.hp-dmg);b.guard=false;
+ b.log=e.name+"의 반격! 체력 -"+dmg+(b.id==="boss"&&b.turn%3===0?" · 파멸의 일격":"");
+ popNumber("-"+dmg+" HP");
+ if(state.hp===0){
+  const lost=Math.floor(state.gold*.12);state.gold=Math.max(0,state.gold-lost);state.hp=Math.ceil(ability().maxHp*.55);state.mp=Math.ceil(ability().maxMp*.6);
+  battle=null;showModal("전투 패배",e.name+"에게 패배했어.\n야영지에서 회복했어. 골드 "+lost+"G를 잃었지만 퀘스트와 장비는 유지돼.");
+  rebuildStage();
+ }else b.busy=false;
+ persist();render();
+}
+function winBattle(b){
+ const e=ENEMIES[b.id];
+ battle=null;state.gold+=e.gold;state.kills[b.id]=(Number(state.kills[b.id])||0)+1;
+ for(const q of QUESTS)if(q.mode==="kill"&&q.zone===state.area&&questActive(q.id))state.progress[q.id]=Math.min(q.need,(Number(state.progress[q.id])||0)+1);
+ if(b.id==="boss"){state.bossBeaten=true;state.flags.s4=true;}
+ giveXp(e.xp);state.mp=Math.min(ability().maxMp,state.mp+4);persist();render();rebuildStage();
+ showModal(b.id==="boss"?"검은 왕좌 정복!":"몬스터 처치",e.name+"을(를) 쓰러뜨렸어.\n+"+e.xp+" 경험치 · +"+e.gold+"G"+(b.id==="boss"?"\n달그림자 늪의 감시자 에드에게 돌아가.":""));
+}
+function fight(action){
+ const b=battle;if(!b||b.busy)return;
+ const e=ENEMIES[b.id],a=ability();
+ if(action==="flee"){
+  if(b.id==="boss"){notify("보스 전투에서는 도망칠 수 없어.");return;}
+  if(Math.random()<.8){battle=null;rebuildStage();render();notify("무사히 도망쳤어.");return;}
+  b.log="도망치기에 실패했어!";
+ }else if(action==="potion"){
+  if(state.potions<=0){notify("물약이 없어. 상점에서 구매해.");return;}
+  if(state.hp>=a.maxHp){notify("체력이 이미 최대야.");return;}
+  state.potions--;let heal=Math.min(55,a.maxHp-state.hp);state.hp+=heal;b.log="회복 물약 사용! 체력 +"+heal;
+ }else if(action==="guard"){
+  b.guard=true;state.mp=Math.min(a.maxMp,state.mp+5);b.log="방어 태세! 다음 반격 피해를 크게 줄이고 마력 +5";
+ }else{
+  if(action==="skill"&&state.mp<9){notify("마력이 9 필요해.");return;}
+  if(action==="skill")state.mp-=9;
+  const crit=Math.random()<.13;
+  const base=Math.max(1,a.atk-e.def+Math.floor(Math.random()*7)-3);
+  const dealt=Math.max(1,Math.round(base*(action==="skill"?1.9:1)*(crit?1.55:1)));
+  b.hp=Math.max(0,b.hp-dealt);
+  b.log=(action==="skill"?"강타! ":"일반 공격! ")+dealt+" 피해"+(crit?" · 치명타!":"");
+  popNumber("-"+dealt);
+  if(heroAnchor)heroStrike=1;
+  if(b.hp===0){winBattle(b);return;}
+ }
+ b.turn++;b.busy=true;persist();render();setTimeout(()=>enemyTurn(b),460);
+}
+
+// 메인 화면
+function render(){
+ const a=ability(),zone=ZONES[state.area];
+ state.hp=Math.max(0,Math.min(a.maxHp,state.hp));state.mp=Math.max(0,Math.min(a.maxMp,state.mp));
+ $('level').textContent=state.level;
+ $('hp').textContent=state.hp+"/"+a.maxHp;
+ $('mp').textContent=state.mp+"/"+a.maxMp;
+ $('gold').textContent=Math.floor(state.gold).toLocaleString("ko-KR");
+ $('zoneCount').textContent="사냥터 "+String(state.area+1).padStart(2,"0")+" / 05";
+ $('zoneTitle').textContent=zone.name;
+ $('zoneSub').textContent=zone.sub;
+ $('map').innerHTML=ZONES.map((z,i)=>{
+  const locked=state.level<z.level;
+  return '<button class="zone '+(i===state.area?"active":"")+'" data-zone="'+i+'" '+(battle||locked?"disabled":"")+'><b>'+(i+1)+'. '+z.name+'</b><small>'+(locked?"레벨 "+z.level+" 필요":i===4&&state.bossBeaten?"보스 처치 완료":i===state.area?"탐험 중":"이동 가능")+'</small></button>';
+ }).join("");
+ $('battlePanel').hidden=!battle;$('outsideActions').hidden=!!battle;
+ $('enemyBadge').textContent=battle?"전투 중 · "+ENEMIES[battle.id].name:state.area===4&&state.bossBeaten?"왕좌의 수호자 격파":"위험도: "+(state.area+1)+"/5";
+ if(battle){
+  $('battleName').textContent=ENEMIES[battle.id].name;
+  $('battleHealth').textContent=battle.hp+" / "+battle.maxHp;
+  $('enemyHealthBar').style.width=Math.max(0,100*battle.hp/battle.maxHp)+"%";
+  $('battleLog').textContent=battle.log;
+  document.querySelectorAll("[data-fight]").forEach(btn=>{btn.disabled=battle.busy||(btn.dataset.fight==="skill"&&state.mp<9)||(btn.dataset.fight==="potion"&&state.potions<1)||(btn.dataset.fight==="flee"&&battle.id==="boss");});
+  document.querySelector('[data-fight="potion"]').textContent="물약 ("+state.potions+")";
+ }
+ renderPanel();
+}
+document.addEventListener("click",event=>{
+ const b=event.target.closest("button");if(!b)return;
+ if(b.dataset.zone!==undefined){const i=Number(b.dataset.zone);if(!battle&&ZONES[i]&&state.level>=ZONES[i].level){state.area=i;focusNpc=null;persist();render();rebuildStage();}return;}
+ if(b.dataset.action){if(b.dataset.action==="hunt")startBattle();else if(b.dataset.action==="explore")explore();else rest();return;}
+ if(b.dataset.fight){fight(b.dataset.fight);return;}
+ if(b.dataset.tab){tab=b.dataset.tab;focusNpc=null;renderPanel();return;}
+ if(b.dataset.npc){talk(b.dataset.npc);return;}
+ if(b.dataset.back){focusNpc=null;renderPanel();return;}
+ if(b.dataset.quest){changeQuest(b.dataset.quest);return;}
+ if(b.dataset.buy){buy(b.dataset.buy);return;}
+ if(b.dataset.equip){equip(b.dataset.equip);return;}
+ if(b.dataset.potion){if(state.gold>=25&&!battle){state.gold-=25;state.potions++;persist();render();notify("물약을 구매했어.");}}
+});
+
+// 3D: 기존 CC0 GLB만 사용. 원형 파츠로 몬스터/NPC/장식을 대체하지 않음.
+let renderer,scene3,camera3,stageGroup,heroAnchor,enemyAnchor,heroStrike=0,loaded=false;
+const assets={},loader=new GLTFLoader();
+const names=["warrior","cleric","slime","orc","golem","ghost","winged","tree","tree-high","tree-crooked","rock-small","rock-large","rock-wide","wall-broken","wall-arch","pillar-stone","lantern"];
+const sceneCanvas=$("scene");
+function init3D(){
+ try{
+  renderer=new THREE.WebGLRenderer({canvas:sceneCanvas,antialias:true,alpha:false,powerPreference:"low-power"});
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.8));
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.35;
+  scene3=new THREE.Scene();
+  camera3=new THREE.PerspectiveCamera(42,1,.1,100);
+  camera3.position.set(0,7.2,13.6);camera3.lookAt(0,1,0);
+  scene3.add(new THREE.HemisphereLight(0xc9e7ff,0x594e37,2.1));
+  const sun=new THREE.DirectionalLight(0xffebc9,2.5);sun.position.set(-3,11,9);scene3.add(sun);
+  stageGroup=new THREE.Group();scene3.add(stageGroup);
+  resize3D();window.addEventListener("resize",resize3D);
+  const ro=new ResizeObserver(resize3D);ro.observe($("world"));
+  load3D();
+  requestAnimationFrame(frame3D);
+ }catch(err){$('modelStatus').textContent="3D 시작 실패: 브라우저 그래픽 지원 확인 필요";}
+}
+function resize3D(){
+ if(!renderer||!camera3)return;
+ const w=$("world").clientWidth,h=$("world").clientHeight;
+ if(w<10||h<10)return;
+ renderer.setSize(w,h,false);camera3.aspect=w/h;camera3.fov=w<430?47:42;camera3.updateProjectionMatrix();
+}
+async function load3D(){
+ const results=await Promise.allSettled(names.map(name=>new Promise((resolve,reject)=>{
+  loader.load("../../assets/shared/party/"+name+".glb",gltf=>{assets[name]=gltf.scene;resolve();},undefined,reject);
+ })));
+ loaded=true;
+ const errors=results.filter(r=>r.status==="rejected").length;
+ $('modelStatus').textContent=errors?errors+"개 3D 모델 로드 실패 · 네트워크 확인":"CC0 3D 원본 모델 적용";
+ rebuildStage();
+ if(!errors)setTimeout(()=>{$('modelStatus').style.display="none";},2800);
+}
+function placeModel(name,height,x,z,rotation){
+ const template=assets[name];if(!template)return null;
+ const sceneCopy=template.clone(true);
+ const initialBox=new THREE.Box3().setFromObject(sceneCopy),size=new THREE.Vector3();initialBox.getSize(size);
+ const scale=height/Math.max(.01,size.y);sceneCopy.scale.setScalar(scale);
+ const finalBox=new THREE.Box3().setFromObject(sceneCopy);
+ sceneCopy.position.set(-(finalBox.min.x+finalBox.max.x)/2,-finalBox.min.y,-(finalBox.min.z+finalBox.max.z)/2);
+ const anchor=new THREE.Group();anchor.position.set(x,0,z);anchor.rotation.y=rotation||0;anchor.add(sceneCopy);stageGroup.add(anchor);
+ return anchor;
+}
+function rebuildStage(){
+ if(!loaded||!stageGroup)return;
+ while(stageGroup.children.length)stageGroup.remove(stageGroup.children[0]);
+ const area=ZONES[state.area];
+ scene3.background=new THREE.Color(area.sky);scene3.fog=new THREE.Fog(area.sky,13,39);
+ const ground=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshStandardMaterial({color:area.ground,roughness:1}));
+ ground.rotation.x=-Math.PI/2;ground.position.y=-.03;stageGroup.add(ground);
+ const spots=[[-6,-2.9],[-4.5,-7.6],[5.3,-4.4],[6.2,1.9],[.2,-8.0]];
+ area.decor.forEach((name,i)=>placeModel(name,name.includes("tree")?4.6:name.includes("wall")?2.9:name.includes("pillar")?3.6:name==="lantern"?2.6:2.0,spots[i][0],spots[i][1],i*.75));
+ heroAnchor=placeModel("warrior",2.8,-2.3,.2,.6);
+ enemyAnchor=placeModel(ENEMIES[area.enemy].model,ENEMIES[area.enemy].height,2.4,-.2,-.5);
+ if(!battle&&state.area!==4)placeModel("cleric",2.5,-.1,-4.5,.2);
+}
+function frame3D(time){
+ requestAnimationFrame(frame3D);
+ if(!renderer||!scene3)return;
+ const t=time*.001;
+ if(heroAnchor){
+  heroStrike=Math.max(0,heroStrike-.04);
+  heroAnchor.position.y=.02*Math.sin(t*2.4);
+  heroAnchor.position.x=-2.3+Math.sin(heroStrike*Math.PI)*.8;
+ }
+ if(enemyAnchor){enemyAnchor.position.y=.055*Math.sin(t*1.6);enemyAnchor.rotation.y=-.5+.13*Math.sin(t*.85);}
+ renderer.render(scene3,camera3);
+}
+render();
+persist();
+init3D();
+</script>
+</body>
+</html>

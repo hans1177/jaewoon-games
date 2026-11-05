@@ -9223,6 +9223,80 @@
           }
         }
       }
+    },
+    {
+      "id": "turn-rpg",
+      "name": "잃어버린 왕국",
+      "description": "사냥터 4곳과 보스 사냥터, NPC 퀘스트 11개, 장비 19종이 있는 3D 턴제 RPG",
+      "genre": [
+        "RPG",
+        "턴제",
+        "모험"
+      ],
+      "image": "assets/pwa-icon-512.png",
+      "webPath": "web-games/turn-rpg",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
+      "homepageCategory": "development-confirmed",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+      "ownerWebEntryFile": "web-games/turn-rpg/index.html",
+      "productionTarget": "WEB",
+      "selectedPlatform": "WEB",
+      "homepageStage": "웹 개발 중 · 게시 후 검증 대기",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 42,
+        "authority": "OWNER_DIRECT_GAME_BUILD",
+        "identity": {
+          "gameId": "turn-rpg",
+          "name": "잃어버린 왕국",
+          "description": "사냥터 4곳과 보스 사냥터, NPC 퀘스트 11개, 장비 19종이 있는 3D 턴제 RPG",
+          "genres": [
+            "RPG",
+            "턴제",
+            "모험"
+          ],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_GAME_BUILD",
+          "target": "WEB",
+          "selectedPlatform": "WEB",
+          "stage": "웹 개발 중 · 게시 후 검증 대기"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/turn-rpg",
+            "archive": true,
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "web-games/turn-rpg/"
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "stage": "웹 개발 중 · 게시 후 검증 대기"
+        }
+      }
     }
   ],
   "runtimeAuthority": "company-runtime",
