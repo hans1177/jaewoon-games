@@ -5567,13 +5567,13 @@ end
 for _,node in ipairs(Config.MeadowSkillNodes or {}) do
   if node.Kind=="ACTIVE" then meadowSkillSeconds[node.Id]=node.Cooldown end
 end
-local function meadowTreeAction(player,index)
+local function meadowTreeAction(player,index,charged)
   local node=Config.MeadowSkillNodes[index]
   if not node or node.Kind~="ACTIVE" then return false end
   local rank=meadowRpg.nodeRank(player,index)
-  if rank<1 then return false end
+  if rank<1 or (charged and (node.Id~="mf-magic-1-1" or rank<2)) then return false end
   local discount=node.School=="Magic" and 3*meadowRpg.passiveLevel(player,"M_ACCURATE") or 0
-  local cost=math.max(0,node.Gauge-discount)
+  local cost=math.max(0,node.Gauge+(charged and 10 or 0)-discount)
   if readNumber(player,"MeadowStamina",100)<cost then return false end
   local choice=rank==3 and meadowRpg.nodeChoice(player,index) or "A"
   local mode=node.Mode
@@ -5586,7 +5586,7 @@ local function meadowTreeAction(player,index)
     local target=nearestEnemy(root,range)
     local base=16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8
     local power=math.floor(base*(node.Advanced and 2.1 or .9)*(1+.13*(rank-1))*
-      (rank==3 and choice=="A" and 1.2 or 1))
+      (rank==3 and choice=="A" and 1.2 or 1)*(charged and 1.55 or 1))
     local radius=12+(rank==3 and choice=="B" and 4 or 0)
     if mode=="RESONATE" then radius+=3*meadowRpg.passiveLevel(player,"M_SPREAD") end
     local function strike(enemy,scale)
@@ -5784,7 +5784,7 @@ local handlers={
 for _,node in ipairs(Config.MeadowSkillNodes or {}) do
   if node.Kind=="ACTIVE" then
     local index=node.Index
-    handlers[node.Id]=function(player) return meadowTreeAction(player,index) end
+    handlers[node.Id]=function(player,charged) return meadowTreeAction(player,index,charged) end
   end
 end
 
@@ -6044,19 +6044,21 @@ remote.OnServerEvent:Connect(function(player, actionId)
   end
   -- [마을 계약] 동일한 게임 RemoteEvent로 받되 NPC 서버 대화 세션·거리·단계를 다시 검증한다.
   if string.sub(actionId,1,8)=="village:" then villageChoose(player,actionId);return end
-  local handler = handlers[actionId]
+  local chargedBolt=actionId=="mf-magic-1-1:charge"
+  local combatActionId=chargedBolt and "mf-magic-1-1" or actionId
+  local handler = handlers[combatActionId]
   if typeof(handler) ~= "function" then return end
   local now = os.clock()
   local previous = lastAction[player] or 0
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
-  local actionAccepted,combatHit=handler(player)
+  local actionAccepted,combatHit=handler(player,chargedBolt)
   -- [서버 권한] Actual accepted actions only. Existing R15 unarmed
   -- ApprovedCombatMotion and confirmed MEADOW_IMPACT remain untouched.
   if actionAccepted~=true then return end
   local approvedSequence=readNumber(player,"ActionSequence",0)+1
   setNumber(player,"ActionSequence",approvedSequence)
-  local approved=actionId..":"..tostring(approvedSequence)
+  local approved=combatActionId..":"..tostring(approvedSequence)
   local character=player.Character
   local root=character and character:FindFirstChild("HumanoidRootPart")
   local targetPos=player:GetAttribute("ApprovedActionTarget")
@@ -6064,7 +6066,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   player:SetAttribute("ApprovedActionMotion",approved)
   local combatAction=false
   for _,action in ipairs(Config.Actions) do
-    if action.Id==actionId and action.Kind=="COMBAT" then
+    if action.Id==combatActionId and action.Kind=="COMBAT" then
       combatAction=true
       player:SetAttribute("ApprovedCombatMotion",approved)
       break
@@ -6073,7 +6075,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   -- 허공 공격은 관절 모션만 재생한다. 명중 효과·처치·점수는 만들지 않는다.
   if not combatAction or combatHit==true then
     player:SetAttribute("ApprovedActionFX",approved)
-    remote:FireAllClients("MEADOW_ACTION_FX",player.UserId,actionId,approvedSequence,targetPos)
+    remote:FireAllClients("MEADOW_ACTION_FX",player.UserId,combatActionId,approvedSequence,targetPos)
   end
 end)
 local function saveSurvivalProgress(player)
