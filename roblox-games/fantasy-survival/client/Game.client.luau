@@ -3790,26 +3790,57 @@ do
   })
   shade.Rotation=90
   shade.Parent=backdrop
+  -- [상용 게임식 타이틀 연출] 위·아래 어두운 비네팅 + 하단 안내 문구. 중앙 월드가 또렷이 보이게 한다.
+  for _,edge in ipairs({{"VignetteTop",0,.34,0},{"VignetteBottom",.66,.34,1}}) do
+    local v=Instance.new("Frame")
+    v.Name=edge[1];v.Position=UDim2.fromScale(0,edge[2]);v.Size=UDim2.fromScale(1,edge[3])
+    v.BackgroundColor3=Color3.fromRGB(4,9,8);v.BorderSizePixel=0;v.Active=false;v.ZIndex=0;v.Parent=backdrop
+    local g=Instance.new("UIGradient")
+    g.Rotation=90
+    g.Transparency=NumberSequence.new(edge[4]==0 and {NumberSequenceKeypoint.new(0,.05),NumberSequenceKeypoint.new(1,1)}
+      or {NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(1,.05)})
+    g.Parent=v
+  end
   local function panel(name,width,height)
     local frame=Instance.new("Frame")
     frame.Name=name
     frame.AnchorPoint=Vector2.new(.5,.5)
     frame.Position=UDim2.fromScale(.5,.5)
     frame.Size=UDim2.new(.9,0,0,height)
-    frame.BackgroundColor3=Color3.fromRGB(22,34,28)
-    frame.BackgroundTransparency=.10
+    frame.BackgroundColor3=Color3.fromRGB(15,26,23)
+    frame.BackgroundTransparency=.08
     frame.BorderSizePixel=0
+    frame.ZIndex=2
     frame.Parent=backdrop
     local sizeLimit=Instance.new("UISizeConstraint")
     sizeLimit.MaxSize=Vector2.new(width,height)
     sizeLimit.Parent=frame
     local corner=Instance.new("UICorner")
-    corner.CornerRadius=UDim.new(0,15)
+    corner.CornerRadius=UDim.new(0,18)
     corner.Parent=frame
     local stroke=Instance.new("UIStroke")
-    stroke.Color=Color3.fromRGB(192,157,98)
-    stroke.Thickness=2
+    stroke.Color=Color3.fromRGB(226,188,112)
+    stroke.Thickness=3
     stroke.Parent=frame
+    local strokeGrad=Instance.new("UIGradient")
+    strokeGrad.Color=ColorSequence.new({
+      ColorSequenceKeypoint.new(0,Color3.fromRGB(255,232,160)),
+      ColorSequenceKeypoint.new(.5,Color3.fromRGB(170,126,60)),
+      ColorSequenceKeypoint.new(1,Color3.fromRGB(255,226,150)),
+    })
+    strokeGrad.Rotation=90
+    strokeGrad.Parent=stroke
+    local fill=Instance.new("UIGradient")
+    fill.Color=ColorSequence.new(Color3.fromRGB(30,48,42),Color3.fromRGB(10,18,16))
+    fill.Rotation=90
+    fill.Parent=frame
+    -- 안쪽 금빛 가는 테두리(상용 게임 패널의 이중 프레임)
+    local inner=Instance.new("Frame")
+    inner.Name="InnerFrame"
+    inner.AnchorPoint=Vector2.new(.5,.5);inner.Position=UDim2.fromScale(.5,.5)
+    inner.Size=UDim2.new(1,-14,1,-14);inner.BackgroundTransparency=1;inner.ZIndex=2;inner.Active=false;inner.Parent=frame
+    local innerCorner=Instance.new("UICorner");innerCorner.CornerRadius=UDim.new(0,13);innerCorner.Parent=inner
+    local innerStroke=Instance.new("UIStroke");innerStroke.Color=Color3.fromRGB(226,188,112);innerStroke.Thickness=1;innerStroke.Transparency=.55;innerStroke.Parent=inner
     return frame
   end
   local function label(parent,name,value,y,height,size,color)
@@ -3821,31 +3852,58 @@ do
     t.Text=value
     t.Font=Enum.Font.GothamBold
     t.TextSize=size
-    t.TextColor3=color or Color3.fromRGB(247,226,176)
+    t.TextColor3=color or Color3.fromRGB(255,232,170)
     t.TextWrapped=true
+    t.TextStrokeColor3=Color3.fromRGB(10,14,12)
+    t.TextStrokeTransparency=.35
+    t.ZIndex=3
     t.Parent=parent
     return t
   end
   local function button(parent,name,value,y)
+    local primary=name=="Continue" or name=="Confirm"
     local b=Instance.new("TextButton")
     b.Name=name
-    b.Position=UDim2.new(0,22,0,y)
-    b.Size=UDim2.new(1,-44,0,42)
-    b.BackgroundColor3=Color3.fromRGB(85,66,44)
-    b.TextColor3=Color3.fromRGB(255,246,216)
-    b.Font=Enum.Font.GothamBold
-    b.TextSize=17
+    b.Position=UDim2.new(0,24,0,y)
+    b.Size=UDim2.new(1,-48,0,44)
+    b.BackgroundColor3=primary and Color3.fromRGB(236,196,106) or Color3.fromRGB(40,62,52)
+    b.TextColor3=primary and Color3.fromRGB(52,32,8) or Color3.fromRGB(255,244,214)
+    b.Font=Enum.Font.GothamBlack
+    b.TextSize=primary and 19 or 16
     b.Text=value
     b.AutoButtonColor=true
+    b.ZIndex=4
     b.Parent=parent
     local corner=Instance.new("UICorner")
-    corner.CornerRadius=UDim.new(0,9)
+    corner.CornerRadius=UDim.new(0,12)
     corner.Parent=b
+    local edge=Instance.new("UIStroke")
+    edge.Color=primary and Color3.fromRGB(255,240,190) or Color3.fromRGB(190,156,92)
+    edge.Thickness=primary and 2.5 or 1.5
+    edge.Parent=b
+    local shine=Instance.new("UIGradient")
+    shine.Color=primary and ColorSequence.new(Color3.fromRGB(255,224,140),Color3.fromRGB(190,138,60))
+      or ColorSequence.new(Color3.fromRGB(62,92,76),Color3.fromRGB(28,44,38))
+    shine.Rotation=90
+    shine.Parent=b
     return b
   end
   local titlePanel=panel("MeadowTitle",390,306)
-  label(titlePanel,"GameName","마 력 숲",21,54,35)
-  label(titlePanel,"GameSubtitle","안개가 걷히면, 또 다른 이야기가 시작된다",76,31,13,Color3.fromRGB(211,221,196))
+  local gameName=label(titlePanel,"GameName","마 력 숲",14,60,44,Color3.new(1,1,1))
+  gameName.TextStrokeTransparency=0
+  gameName.TextStrokeColor3=Color3.fromRGB(70,40,8)
+  local logoGrad=Instance.new("UIGradient")
+  logoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,246,200)),
+    ColorSequenceKeypoint.new(.55,Color3.fromRGB(246,198,98)),ColorSequenceKeypoint.new(1,Color3.fromRGB(176,118,40))})
+  logoGrad.Rotation=90
+  logoGrad.Parent=gameName
+  local logoLine=Instance.new("Frame")
+  logoLine.Name="LogoDivider";logoLine.AnchorPoint=Vector2.new(.5,0);logoLine.Position=UDim2.new(.5,0,0,74)
+  logoLine.Size=UDim2.new(.6,0,0,2);logoLine.BorderSizePixel=0;logoLine.BackgroundColor3=Color3.fromRGB(226,188,112);logoLine.ZIndex=3;logoLine.Parent=titlePanel
+  local lineGrad=Instance.new("UIGradient")
+  lineGrad.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.5,0),NumberSequenceKeypoint.new(1,1)})
+  lineGrad.Parent=logoLine
+  label(titlePanel,"GameSubtitle","안개가 걷히면, 또 다른 이야기가 시작된다",80,28,13,Color3.fromRGB(214,226,204))
   local continueButton=button(titlePanel,"Continue","이어하기",116)
   local newButton=button(titlePanel,"NewGame","새 게임",168)
   local settingButton=button(titlePanel,"Settings","설정 · 프롤로그 보기",220)
