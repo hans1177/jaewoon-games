@@ -96,6 +96,147 @@
  {
   "type": "luau",
   "ctx": "Server",
+  "code": "game.Players:GetPlayers()[1]:SetAttribute(\"QAGuardVariant\",1) return \"v1\""
+ },
+ {
+  "type": "wait",
+  "ms": 300
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "game.Players:GetPlayers()[1]:SetAttribute(\"QAAction\",\"skill-meadow-guard|210\") return \"fired skill-meadow-guard\""
+ },
+ {
+  "type": "wait",
+  "ms": 550
+ },
+ {
+  "type": "capture",
+  "name": "skill-meadow-guard-a"
+ },
+ {
+  "type": "wait",
+  "ms": 150
+ },
+ {
+  "type": "capture",
+  "name": "skill-meadow-guard-b"
+ },
+ {
+  "type": "wait",
+  "ms": 500
+ },
+ {
+  "type": "capture",
+  "name": "skill-meadow-guard-c"
+ },
+ {
+  "type": "wait",
+  "ms": 1200
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "return \"variant 1 done\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "game.Players:GetPlayers()[1]:SetAttribute(\"QAGuardVariant\",2) return \"v2\""
+ },
+ {
+  "type": "wait",
+  "ms": 300
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "game.Players:GetPlayers()[1]:SetAttribute(\"QAAction\",\"skill-meadow-guard|220\") return \"fired skill-meadow-guard\""
+ },
+ {
+  "type": "wait",
+  "ms": 550
+ },
+ {
+  "type": "capture",
+  "name": "skill-meadow-guard-a"
+ },
+ {
+  "type": "wait",
+  "ms": 150
+ },
+ {
+  "type": "capture",
+  "name": "skill-meadow-guard-b"
+ },
+ {
+  "type": "wait",
+  "ms": 500
+ },
+ {
+  "type": "capture",
+  "name": "skill-meadow-guard-c"
+ },
+ {
+  "type": "wait",
+  "ms": 1200
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "return \"variant 2 done\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "game.Players:GetPlayers()[1]:SetAttribute(\"QAGuardVariant\",3) return \"v3\""
+ },
+ {
+  "type": "wait",
+  "ms": 300
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "game.Players:GetPlayers()[1]:SetAttribute(\"QAAction\",\"skill-meadow-guard|230\") return \"fired skill-meadow-guard\""
+ },
+ {
+  "type": "wait",
+  "ms": 550
+ },
+ {
+  "type": "capture",
+  "name": "skill-meadow-guard-a"
+ },
+ {
+  "type": "wait",
+  "ms": 150
+ },
+ {
+  "type": "capture",
+  "name": "skill-meadow-guard-b"
+ },
+ {
+  "type": "wait",
+  "ms": 500
+ },
+ {
+  "type": "capture",
+  "name": "skill-meadow-guard-c"
+ },
+ {
+  "type": "wait",
+  "ms": 1200
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "return \"variant 3 done\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
   "code": "game.Players:GetPlayers()[1]:SetAttribute(\"QAAction\",\"skill-meadow-guard|0\") return \"fired skill-meadow-guard\""
  },
  {
@@ -703,6 +844,6 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local o={} for _,m in ipairs(game:GetService(\"LogService\"):GetLogHistory()) do if m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning then table.insert(o,m.message:sub(1,220)) end end local n=#o local out={} for i=math.max(1,n-40),n do table.insert(out,o[i]) end return n..\" issues\\n\"+\"\".join([]) if false else n..\" issues\\n\"..table.concat(out,\"\\n\")"
+  "code": "local o={} for _,m in ipairs(game:GetService(\"LogService\"):GetLogHistory()) do if m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning then table.insert(o,string.sub(m.message,1,220)) end end local n=#o local out={} for i=math.max(1,n-40),n do table.insert(out,o[i]) end return n..\" issues\\n\"..table.concat(out,\"\\n\")"
  }
 ]

@@ -8479,6 +8479,21 @@ local skillMotionMapping={
   Root="FlipRoot",RootJoint="Spine",["Left Shoulder"]="UpperArmL",["Right Shoulder"]="UpperArmR",
   ["Left Hip"]="ThighL",["Right Hip"]="ThighR",
 }
+-- 관절별 {X,Y,Z} 라디안. brace(0~1)만큼 섞인다.
+local meadowGuardArmedPoses={
+  [1]={FlipRoot={0,.55,0},Spine={-.10,.45,0},Chest={0,.18,0},Head={.05,-.55,0},
+    UpperArmR={-1.5,.1,.22},ForearmR={-.4,0,0},HandR={-.1,0,0},
+    UpperArmL={-.6,-.1,-1.05},ForearmL={-1.9,0,0},HandL={0,0,0},
+    ThighR={-.5,0,.12},ShinR={.7,0,0},FootR={-.15,0,0},ThighL={.38,0,-.12},ShinL={.3,0,0},FootL={0,0,0}},
+  [2]={FlipRoot={0,.15,0},Spine={-.08,.1,0},Chest={-.12,0,0},Head={.12,0,0},
+    UpperArmR={-2.6,0,.3},ForearmR={-.7,0,0},HandR={-.3,0,0},
+    UpperArmL={-2.2,0,-.25},ForearmL={-1.0,0,0},HandL={0,0,0},
+    ThighR={-.18,0,.1},ShinR={.3,0,0},FootR={-.08,0,0},ThighL={.1,0,-.1},ShinL={.2,0,0},FootL={0,0,0}},
+  [3]={FlipRoot={0,.35,0},Spine={-.2,.3,0},Chest={-.06,0,0},Head={.1,-.3,0},
+    UpperArmR={-1.35,.55,.1},ForearmR={-1.35,0,0},HandR={0,0,0},
+    UpperArmL={-1.2,-.45,-.1},ForearmL={-1.45,0,0},HandL={0,0,0},
+    ThighR={-.3,0,.1},ShinR={.5,0,0},FootR={-.1,0,0},ThighL={.25,0,-.1},ShinL={.4,0,0},FootL={0,0,0}},
+}
 local skillMotionStates={
   INTERACT_USE="INTERACT",GATHER_SWING="INTERACT",CRAFT_LOOP="INTERACT",
   HEAVY_ATTACK_1="ATTACK",CAST_BURST="ATTACK",PARRY_PERFECT="ATTACK",
@@ -8665,7 +8680,16 @@ RunService.PreSimulation:Connect(function(dt)
     local elapsed=os.clock()-meadowGuardContactAt
     local hit=math.sin(math.pi*math.clamp(elapsed/(meadowGuardContactPerfect and .25 or .19),0,1))
     local breath=math.sin((os.clock()-skillMotionStart)*3.4)*.014*brace
-    if isGuard then
+    if isGuard and skillMotionCharacter:FindFirstChildOfClass("Tool") then
+      -- [검 든 막기] 검을 든 손 모양에 맞춘 세 가지 자세. 1=옆으로 선 중단 막기, 2=머리 위 지붕 막기, 3=두 손 수평 막기.
+      local variant=math.clamp(math.floor(tonumber(player:GetAttribute("QAGuardVariant")) or 1),1,3)
+      local pose=meadowGuardArmedPoses[variant]
+      local recoil=.16*hit
+      for joint,v in pairs(pose) do
+        skillMotionTargets[joint]=CFrame.Angles(v[1]*brace+((joint=="UpperArmR" or joint=="UpperArmL") and recoil or 0),v[2]*brace,v[3]*brace)
+      end
+      skillMotionTargets.Spine=CFrame.new(0,-.05*brace+.04*hit+breath,0)*(skillMotionTargets.Spine or CFrame.identity)
+    elseif isGuard then
       -- [강한 읽힘] 준비→전면 가드→서버 적중 반동→자세 복귀. 대미지/이동은 건드리지 않는다.
       local lift=math.sin(math.pi*math.clamp(phase/.055,0,1))
       skillMotionTargets.FlipRoot=CFrame.Angles(0,.13*brace-.07*hit,.04*brace)
