@@ -5788,7 +5788,7 @@ local function meadowUltimate(player)
       end
     end
     local list
-    local alt=(tonumber(player:GetAttribute("MeadowUltChoice")) or 1)==2
+    local alt=readNumber(player,"MeadowUltChoice",1)==2
     local function guardFor(seconds)
       local defense=meadowDefense[player] or {}
       defense.guardUntil=math.max(defense.guardUntil or 0,os.clock()+seconds)
@@ -6341,7 +6341,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   end
   -- [마을 계약] 동일한 게임 RemoteEvent로 받되 NPC 서버 대화 세션·거리·단계를 다시 검증한다.
   if actionId=="ult:set:1" or actionId=="ult:set:2" then
-    player:SetAttribute("MeadowUltChoice",tonumber(actionId:sub(-1)));return
+    setNumber(player,"MeadowUltChoice",tonumber(actionId:sub(-1)));return
   end
   if string.sub(actionId,1,8)=="village:" then villageChoose(player,actionId);return end
   local chargedBolt=actionId=="mf-magic-1-1:charge"
