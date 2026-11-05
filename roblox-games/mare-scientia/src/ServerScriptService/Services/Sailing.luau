@@ -10,7 +10,7 @@ return function(D, S)
 		local to = D.Ports.Ports[toPortId]
 		local def = S.State.shipDef(state)
 		local nation = D.Ports.Nations[state.nationId]
-		local dist = D.Voyage.distanceKm(from.lat, from.lon, to.lat, to.lon)
+		local dist = D.SeaRoutes.lengthKm(from.id, to.id, D.Ports.Ports)
 		local coal = if def.steam then (state.cargo.coal or 0) else 0
 		return D.Voyage.plan(def.speed * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coal, state.ship.crew, dist, 1.0)
 	end
@@ -32,7 +32,7 @@ return function(D, S)
 		local from = D.Ports.Ports[state.portId]
 		local nation = D.Ports.Nations[state.nationId]
 		local wind = D.Voyage.windMult(ctx.rng)
-		local dist = D.Voyage.distanceKm(from.lat, from.lon, to.lat, to.lon)
+		local dist = D.SeaRoutes.lengthKm(from.id, to.id, D.Ports.Ports)
 		local coalAvailable = if def.steam then (state.cargo.coal or 0) else 0
 		local plan = D.Voyage.plan(def.speed * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coalAvailable, state.ship.crew, dist, wind)
 		local event = D.Voyage.rollEvent(ctx.rng, plan.days)

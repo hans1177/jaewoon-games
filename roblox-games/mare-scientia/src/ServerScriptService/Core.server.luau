@@ -24,6 +24,8 @@ local D = {
 	Combat = require(Shared:WaitForChild("Combat")),
 	Bosses = require(Shared:WaitForChild("Bosses")),
 	Specialties = require(Shared:WaitForChild("Specialties")),
+	Harbor = require(Shared:WaitForChild("Harbor")),
+	SeaRoutes = require(Shared:WaitForChild("SeaRoutes")),
 }
 
 local Registry = require(ServicesFolder:WaitForChild("Registry"))(D)

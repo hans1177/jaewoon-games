@@ -40,6 +40,7 @@ return function(D)
 			specLevels = {},
 			companions = {},
 			affinity = {},
+			harbor = {},
 		}
 	end
 
@@ -246,6 +247,13 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.harbor) == "table" then
+			for id, v in saved.harbor do
+				if type(id) == "string" and D.Ports.Ports[id] then
+					s.harbor[id] = math.floor(num(v, 0, 0, 1e9))
+				end
+			end
+		end
 		if type(saved.bosses) == "table" then
 			for id, rec in saved.bosses do
 				if type(id) == "string" and D.Bosses.ById[id] and type(rec) == "table" then
@@ -302,6 +310,7 @@ return function(D)
 			specLevels = state.specLevels,
 			companions = state.companions,
 			affinity = state.affinity,
+			harbor = state.harbor,
 		}
 	end
 

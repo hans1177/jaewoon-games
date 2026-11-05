@@ -112,7 +112,7 @@ return function(D, S)
 		end
 
 		-- 조선소
-		view.shipyard = { available = port.shipyard, ships = {}, supplyCost = S.Shipyard.SUPPLY_COST, hireCost = S.Shipyard.HIRE_COST, repairCost = S.Shipyard.REPAIR_COST }
+		view.shipyard = { available = port.shipyard, ships = {}, supplyCost = math.max(1, math.floor(S.Shipyard.SUPPLY_COST * S.Harbor.costMult(state))), hireCost = math.max(1, math.floor(S.Shipyard.HIRE_COST * S.Harbor.costMult(state))), repairCost = math.max(1, math.floor(S.Shipyard.REPAIR_COST * S.Harbor.costMult(state))) }
 		for _, shipId in D.Ships.Order do
 			local s = D.Ships.Ships[shipId]
 			local locked = nil
@@ -275,6 +275,29 @@ return function(D, S)
 				blocked = S.Boss.blockReason(state, b),
 				ports = b.portIds,
 			})
+		end
+
+		do
+			local inv = S.Harbor.invested(state)
+			local lv = S.Harbor.level(state)
+			view.harbor = {
+				level = lv,
+				name = D.Harbor.NAMES[lv],
+				invested = inv,
+				nextAt = D.Harbor.THRESHOLDS[lv + 1],
+				sellBonus = D.Harbor.SELL_BONUS[lv],
+				discount = D.Harbor.COST_DISCOUNT[lv],
+				options = D.Harbor.OPTIONS,
+				rumorCost = D.Harbor.RUMOR_COST,
+				produces = {},
+				demands = {},
+			}
+			for _, id in port.produces do
+				table.insert(view.harbor.produces, D.Ports.Goods[id].name)
+			end
+			for _, id in port.demands do
+				table.insert(view.harbor.demands, D.Ports.Goods[id].name)
+			end
 		end
 
 		view.lastBattle = state.lastBattle

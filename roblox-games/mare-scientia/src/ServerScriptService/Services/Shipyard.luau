@@ -45,6 +45,10 @@ return function(D, S)
 		return true, string.format("%s 인수 (-%d)", def.name, net)
 	end
 
+	local function cost(state, base)
+		return math.max(1, math.floor(base * S.Harbor.costMult(state)))
+	end
+
 	function handlers.Repair(state)
 		if not currentPort(state).shipyard then
 			return false, "이 항구에는 조선소가 없어요"
@@ -54,38 +58,38 @@ return function(D, S)
 		if missing <= 0 then
 			return false, "수리할 곳이 없어요"
 		end
-		local points = math.min(missing, math.floor(state.coins / REPAIR_COST))
+		local points = math.min(missing, math.floor(state.coins / cost(state, REPAIR_COST)))
 		if points <= 0 then
 			return false, "코인이 부족해요"
 		end
-		state.coins -= points * REPAIR_COST
+		state.coins -= points * cost(state, REPAIR_COST)
 		state.ship.hull += points
-		return true, string.format("선체 +%d 수리 (-%d)", points, points * REPAIR_COST)
+		return true, string.format("선체 +%d 수리 (-%d)", points, points * cost(state, REPAIR_COST))
 	end
 
 	function handlers.HireCrew(state, p)
 		local def = S.State.shipDef(state)
 		local want = math.floor(tonumber(p.amount) or 0)
 		local room = def.crew - state.ship.crew
-		local n = math.min(want, room, math.floor(state.coins / HIRE_COST))
+		local n = math.min(want, room, math.floor(state.coins / cost(state, HIRE_COST)))
 		if n <= 0 then
 			return false, if room <= 0 then "선원이 가득 찼어요" else "코인이 부족해요"
 		end
-		state.coins -= n * HIRE_COST
+		state.coins -= n * cost(state, HIRE_COST)
 		state.ship.crew += n
-		return true, string.format("선원 %d명 고용 (-%d)", n, n * HIRE_COST)
+		return true, string.format("선원 %d명 고용 (-%d)", n, n * cost(state, HIRE_COST))
 	end
 
 	function handlers.BuySupplies(state, p)
 		local want = math.floor(tonumber(p.amount) or 0)
 		local room = S.State.maxSupplies() - state.ship.supplies
-		local n = math.min(want, room, math.floor(state.coins / SUPPLY_COST))
+		local n = math.min(want, room, math.floor(state.coins / cost(state, SUPPLY_COST)))
 		if n <= 0 then
 			return false, if room <= 0 then "보급품 창고가 가득 찼어요" else "코인이 부족해요"
 		end
-		state.coins -= n * SUPPLY_COST
+		state.coins -= n * cost(state, SUPPLY_COST)
 		state.ship.supplies += n
-		return true, string.format("보급품 %d개 구매 (-%d)", n, n * SUPPLY_COST)
+		return true, string.format("보급품 %d개 구매 (-%d)", n, n * cost(state, SUPPLY_COST))
 	end
 
 	return {

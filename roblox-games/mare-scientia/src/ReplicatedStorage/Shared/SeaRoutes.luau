@@ -196,22 +196,39 @@ local SeaRoutes: { [string]: { { number } } } = {
 
 local M = {}
 
--- 두 항구 사이 경로를 출발→도착 순서로 돌려준다 (없으면 직선).
+-- 두 항구 사이 경로를 출발→도착 순서로 돌려준다 (양 끝은 항구 좌표, 없으면 직선).
 function M.path(fromId: string, toId: string, ports: any): { { number } }
 	local key = if fromId < toId then fromId .. ">" .. toId else toId .. ">" .. fromId
 	local r = SeaRoutes[key]
-	if not r then
-		local a, b = ports[fromId], ports[toId]
-		return { { a.lat, a.lon }, { b.lat, b.lon } }
+	local a, b = ports[fromId], ports[toId]
+	local out = { { a.lat, a.lon } }
+	if r then
+		if fromId < toId then
+			for _, p in r do
+				table.insert(out, p)
+			end
+		else
+			for i = #r, 1, -1 do
+				table.insert(out, r[i])
+			end
+		end
 	end
-	if fromId < toId then
-		return r
+	table.insert(out, { b.lat, b.lon })
+	return out
+end
+
+-- 바닷길 길이(km). 경유점 사이 대권거리의 합에 약간의 우회(5%)를 더한다.
+function M.lengthKm(fromId: string, toId: string, ports: any): number
+	local path = M.path(fromId, toId, ports)
+	local total = 0
+	for i = 1, #path - 1 do
+		local a, b = path[i], path[i + 1]
+		local p1, p2 = math.rad(a[1]), math.rad(b[1])
+		local dp, dl = math.rad(b[1] - a[1]), math.rad(b[2] - a[2])
+		local h = math.sin(dp / 2) ^ 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ^ 2
+		total += 2 * 6371 * math.asin(math.min(1, math.sqrt(h)))
 	end
-	local rev = {}
-	for i = #r, 1, -1 do
-		table.insert(rev, r[i])
-	end
-	return rev
+	return total * 1.05
 end
 
 return M

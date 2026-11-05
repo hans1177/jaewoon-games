@@ -16,6 +16,7 @@ local D = {
 	Combat = require("./Shared/Combat"),
 	Bosses = require("./Shared/Bosses"),
 	Specialties = require("./Shared/Specialties"),
+	Harbor = require("./Shared/Harbor"),
 	SeaRoutes = require("./Shared/SeaRoutes"),
 }
 local Registry = require("./Services/Registry")(D)
@@ -1106,6 +1107,40 @@ do
 	act(s2, "TurnIn", { questId = "cq_boyle" })
 	ok = act(s2, "Claim", { questId = "cq_boyle" })
 	check("deliver companion quest works", ok and s2.discovered.che_air_pump == true)
+end
+
+-- 항구 투자와 주점 소문
+do
+	local st = newState("england")
+	st.coins = 10000
+	local ok = act(st, "Invest", { amount = 123 })
+	check("invest bad amount rejected", not ok)
+	local fame0 = st.fame
+	ok = act(st, "Invest", { amount = 1000 })
+	check("invest works", ok and st.coins == 9000 and st.harbor[st.portId] == 1000 and st.fame == fame0 + 10)
+	check("harbor level 2 at 1000", S.Harbor.level(st) == 2)
+	check("harbor sell bonus", S.Harbor.sellBonus(st) == 0.01)
+	local v = S.View.build(st, ctx)
+	check("view harbor", v.harbor.level == 2 and v.harbor.invested == 1000 and v.harbor.nextAt == 2000)
+	check("view discounted supply cost", v.shipyard.supplyCost == math.floor(S.Shipyard.SUPPLY_COST * 0.95) or v.shipyard.supplyCost == math.max(1, math.floor(S.Shipyard.SUPPLY_COST * 0.95)))
+	for _ = 1, 3 do
+		act(st, "Invest", { amount = 3000 })
+	end
+	check("harbor level 4", S.Harbor.level(st) == 4)
+	local other = newState("england")
+	check("other port unaffected", S.Harbor.level(other) == 1)
+	st.coins = 10
+	ok = act(st, "Invest", { amount = 300 })
+	check("invest without coins rejected", not ok)
+	ok = act(st, "Rumor", {})
+	check("rumor without coins rejected", not ok)
+	st.coins = 100
+	local ok2, msg2 = act(st, "Rumor", {})
+	check("rumor works and costs", ok2 and st.coins == 60 and string.find(msg2, "·") ~= nil, msg2)
+	local back = S.State.sanitize(S.State.serialize(st))
+	check("harbor survives save", back.harbor[st.portId] == st.harbor[st.portId])
+	local evil = S.State.sanitize({ nationId = "england", startYear = 1700, harbor = { nowhere = 5, london = -9, dublin = 77 } })
+	check("harbor sanitized", evil.harbor.nowhere == nil and evil.harbor.london == 0 and evil.harbor.dublin == 77)
 end
 
 -- 바닷길: 모든 항구 쌍에 경로가 있고 양 끝이 항구 근처이며 방향이 뒤집힌다

@@ -19,7 +19,7 @@ return function(D, S)
 
 	local function sellRateFor(state)
 		local nation = D.Ports.Nations[state.nationId]
-		return T.sellRate(D.Careers.sellBonus(state.careers.trade.level) + nation.sellBonus + S.Perk.sellBonus(state))
+		return T.sellRate(D.Careers.sellBonus(state.careers.trade.level) + nation.sellBonus + S.Perk.sellBonus(state) + S.Harbor.sellBonus(state))
 	end
 
 	function handlers.Buy(state, p, ctx)

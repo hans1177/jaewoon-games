@@ -40,6 +40,7 @@ local AMOUNTS = { 1, 5, 10 }
 local TABS = {
 	{ id = "status", name = "상태" },
 	{ id = "trade", name = "교역" },
+	{ id = "harbor", name = "항구" },
 	{ id = "map", name = "지도" },
 	{ id = "route", name = "항해" },
 	{ id = "yard", name = "조선소" },
@@ -184,7 +185,7 @@ local tabBar = Instance.new("Frame")
 tabBar.BackgroundTransparency = 1
 tabBar.BorderSizePixel = 0
 tabBar.Position = UDim2.fromOffset(8, 52)
-tabBar.Size = UDim2.new(1, -16, 0, 80) -- 두 줄 (탭이 10개라 한 줄에 다 안 들어간다)
+tabBar.Size = UDim2.new(1, -16, 0, 124) -- 세 줄 (탭이 많아 한 줄에 다 안 들어간다)
 tabBar.Parent = mainInner
 local tabLayout = Instance.new("UIGridLayout")
 tabLayout.CellSize = UDim2.new(0.2, -5, 0, 36)
@@ -195,8 +196,8 @@ tabLayout.Parent = tabBar
 local content = Instance.new("ScrollingFrame")
 content.BackgroundTransparency = 1
 content.BorderSizePixel = 0
-content.Position = UDim2.fromOffset(8, 138)
-content.Size = UDim2.new(1, -16, 1, -146)
+content.Position = UDim2.fromOffset(8, 182)
+content.Size = UDim2.new(1, -16, 1, -190)
 content.CanvasSize = UDim2.new()
 content.AutomaticCanvasSize = Enum.AutomaticSize.Y
 content.ScrollBarThickness = 4
@@ -271,7 +272,22 @@ local function mkBox(parent, pos, size, color, alpha)
 	return f
 end
 
-local function playVoyage(fromName, toName, days, steam)
+local MAP_RATIO = (Geo.cols * 0.66) / Geo.rows
+local function geoX(lon) return (lon - Geo.lonMin) / (Geo.lonMax - Geo.lonMin) end
+local function geoY(lat) return (Geo.latMax - lat) / (Geo.latMax - Geo.latMin) end
+
+local function drawLand(frame)
+	for _, st in Geo.landStrips do
+		local land = Instance.new("Frame")
+		land.Position = UDim2.fromScale(st[2] / Geo.cols, st[1] / Geo.rows)
+		land.Size = UDim2.fromScale((st[3] - st[2]) / Geo.cols, 1 / Geo.rows + 0.002)
+		land.BackgroundColor3 = Color3.fromRGB(122, 140, 96)
+		land.BorderSizePixel = 0
+		land.Parent = frame
+	end
+end
+
+local function playVoyage(fromName, toName, days, steam, path)
 	local overlay = Instance.new("TextButton") -- 누르면 건너뛰기
 	overlay.Name = "VoyageScene"
 	overlay.Size = UDim2.fromScale(1, 1)
@@ -283,7 +299,7 @@ local function playVoyage(fromName, toName, days, steam)
 	overlay.Parent = gui
 
 	-- 하늘 위쪽, 바다 아래쪽
-	local sea = mkBox(overlay, UDim2.fromScale(0, 0.5), UDim2.fromScale(1, 0.5), Color3.fromRGB(34, 96, 150))
+	mkBox(overlay, UDim2.fromScale(0, 0.5), UDim2.fromScale(1, 0.5), Color3.fromRGB(34, 96, 150))
 	mkBox(overlay, UDim2.fromScale(0, 0.5), UDim2.new(1, 0, 0, 2), Color3.fromRGB(220, 240, 255), 0.3)
 	mkBox(overlay, UDim2.fromScale(0.78, 0.12), UDim2.fromOffset(46, 46), Color3.fromRGB(255, 236, 170)).Parent = overlay -- 해
 	local sun = overlay:GetChildren()[#overlay:GetChildren()]
@@ -352,6 +368,29 @@ local function playVoyage(fromName, toName, days, steam)
 		table.insert(gulls, { f = g, l = l, r = r, y = 0.1 + 0.07 * i, phase = i * 1.3, speed = 0.09 + 0.03 * (i % 3), x0 = (i * 0.23) % 1 })
 	end
 
+	-- 오른쪽 위 작은 지도: 바닷길을 따라 배 표시가 움직인다
+	local inset = mkBox(overlay, UDim2.new(1, -10, 0, 46), UDim2.fromOffset(190, 190 / MAP_RATIO), Color3.fromRGB(38, 82, 120))
+	inset.AnchorPoint = Vector2.new(1, 0)
+	inset.ClipsDescendants = true
+	inset.ZIndex = 52
+	drawLand(inset)
+	local cum, total = { 0 }, 0
+	for i = 1, #path - 1 do
+		total += math.hypot((path[i + 1][1] - path[i][1]), (path[i + 1][2] - path[i][2]) * 0.66)
+		cum[i + 1] = total
+		for kk = 0, 6 do
+			local f = kk / 6
+			local dp = mkBox(inset, UDim2.fromScale(geoX(path[i][2] + (path[i + 1][2] - path[i][2]) * f), geoY(path[i][1] + (path[i + 1][1] - path[i][1]) * f)), UDim2.fromOffset(2, 2), Color3.fromRGB(255, 226, 120))
+			dp.AnchorPoint = Vector2.new(0.5, 0.5)
+		end
+	end
+	local marker = mkBox(inset, UDim2.fromScale(geoX(path[1][2]), geoY(path[1][1])), UDim2.fromOffset(9, 9), COLORS.red)
+	marker.AnchorPoint = Vector2.new(0.5, 0.5)
+	marker.ZIndex = 53
+	local mc = Instance.new("UICorner")
+	mc.CornerRadius = UDim.new(1, 0)
+	mc.Parent = marker
+
 	-- 안내 글자와 진행 막대
 	local title = Instance.new("TextLabel")
 	title.BackgroundTransparency = 1
@@ -394,6 +433,20 @@ local function playVoyage(fromName, toName, days, steam)
 		t += dt
 		local k = math.clamp(t / DURATION, 0, 1)
 		bar.Size = UDim2.fromScale(k, 1)
+		do -- 지도 위 배 위치: 누적 길이로 구간을 찾는다
+			local target = k * total
+			for i = 1, #path - 1 do
+				if target <= cum[i + 1] or i == #path - 1 then
+					local seg = cum[i + 1] - cum[i]
+					local f = if seg > 0 then math.clamp((target - cum[i]) / seg, 0, 1) else 1
+					marker.Position = UDim2.fromScale(
+						geoX(path[i][2] + (path[i + 1][2] - path[i][2]) * f),
+						geoY(path[i][1] + (path[i + 1][1] - path[i][1]) * f)
+					)
+					break
+				end
+			end
+		end
 		dayLabel.Text = string.format("%d / %d일째", math.max(1, math.ceil(k * days)), days)
 		ship.Position = UDim2.new(0.5, 0, 0.56 + math.sin(t * 2.2) * 0.008, 0)
 		ship.Rotation = math.sin(t * 1.7) * 3
@@ -422,6 +475,7 @@ end
 
 local function sail(portId)
 	local from = view.player.portName
+	local fromId = view.player.portId
 	local days, steam = 1, view.ship.steam
 	for _, r in view.routes do
 		if r.id == portId then
@@ -430,7 +484,7 @@ local function sail(portId)
 	end
 	local result = call("Sail", { portId = portId })
 	if result and result.ok then
-		playVoyage(from, view.player.portName, days, steam)
+		playVoyage(from, view.player.portName, days, steam, SeaRoutes.path(fromId, portId, PortData.Ports))
 	end
 end
 
@@ -446,6 +500,32 @@ local function add(builder)
 	local obj = builder()
 	obj.LayoutOrder = nextOrder()
 	return obj
+end
+
+local function renderHarbor()
+	local h = view.harbor
+	add(function() return mkHeader(content, view.player.portName .. " · " .. h.name .. " (" .. h.level .. "단계)") end)
+	add(function()
+		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 13, COLORS.muted, false)
+	end)
+	add(function()
+		local nextText = if h.nextAt then string.format("다음 단계까지 %d 더 투자", h.nextAt - h.invested) else "최고 단계예요"
+		return mkLabel(content, string.format("누적 투자 %d · %s\n혜택: 이 항구에서 팔 때 +%d%%, 수리·고용·보급 비용 -%d%%", h.invested, nextText, math.floor(h.sellBonus * 100 + 0.5), math.floor(h.discount * 100 + 0.5)), 13, COLORS.text, false)
+	end)
+	add(function() return mkHeader(content, "교역소 투자") end)
+	for _, amt in h.options do
+		add(function()
+			return mkRow(content, string.format("%d 코인 투자", amt), string.format("명성 +%d", math.floor(amt / 100)), {
+				{ text = "투자", color = COLORS.gold, onClick = function() call("Invest", { amount = amt }) end },
+			}, 52)
+		end)
+	end
+	add(function() return mkHeader(content, "주점") end)
+	add(function()
+		return mkRow(content, "소문 듣기", string.format("술값 %d · 지금 여기서 사서 다른 항구에 팔면 남는 상품", h.rumorCost), {
+			{ text = "듣기", color = COLORS.blue, onClick = function() call("Rumor", {}) end },
+		}, 56)
+	end)
 end
 
 local function renderStatus()
@@ -779,15 +859,7 @@ local function renderMap()
 		local ratio = Instance.new("UIAspectRatio")
 		ratio.AspectRatio = (Geo.cols * cosLat) / Geo.rows
 		ratio.Parent = frame
-		for _, st in Geo.landStrips do
-			local r, c0, c1 = st[1], st[2], st[3]
-			local land = Instance.new("Frame")
-			land.Position = UDim2.fromScale(c0 / Geo.cols, r / Geo.rows)
-			land.Size = UDim2.fromScale((c1 - c0) / Geo.cols, 1 / Geo.rows + 0.002)
-			land.BackgroundColor3 = Color3.fromRGB(122, 140, 96)
-			land.BorderSizePixel = 0
-			land.Parent = frame
-		end
+		drawLand(frame)
 		-- 해역 이름
 		for _, sea in SEA_NAMES do
 			local lb = Instance.new("TextLabel")
@@ -867,7 +939,7 @@ local function renderMap()
 end
 
 local RENDERERS = {
-	map = renderMap, status = renderStatus, trade = renderTrade, route = renderRoute, yard = renderYard, explore = renderExplore,
+	map = renderMap, harbor = renderHarbor, status = renderStatus, trade = renderTrade, route = renderRoute, yard = renderYard, explore = renderExplore,
 	codex = renderCodex, tech = renderTech, quest = renderQuest, battle = renderBattle,
 }
 
@@ -959,8 +1031,8 @@ function render()
 	end
 
 	tabBar.Visible = true
-	content.Position = UDim2.fromOffset(8, 138)
-	content.Size = UDim2.new(1, -16, 1, -146)
+	content.Position = UDim2.fromOffset(8, 182)
+	content.Size = UDim2.new(1, -16, 1, -190)
 
 	local p, ship = view.player, view.ship
 	headerLabel.Text = string.format("%s · %d년 · %s\n%s  선체 %d/%d  화물 %d/%d  명성 %d",
