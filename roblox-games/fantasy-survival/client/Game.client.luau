@@ -9694,7 +9694,7 @@ end)
   legend.BackgroundTransparency=1;legend.Position=UDim2.fromOffset(16,32);legend.Size=UDim2.new(1,-32,0,18)
   legend.Font=Enum.Font.Gotham;legend.TextSize=12;legend.TextXAlignment=Enum.TextXAlignment.Left
   legend.TextColor3=Color3.fromRGB(190,208,196);legend.ZIndex=62;legend.Parent=panel
-  legend.Text="▲●⌂✦✪⌂ 발견한 장소   ● 내 위치   ◆ 발견한 이정표(누르면 빠른 이동)   ◇ 미발견   ★ 메인 목표   ▣ 초원 마을   북쪽이 위"
+  legend.Text="✪ 랜드마크(누르면 설명)  ? 미발견  ⌂ 마을  ▲●✦ 발견 장소  ! 퀘스트  ◆ 이정표(빠른 이동)  ◇ 미발견  ★ 메인 목표  ● 내 위치"
   local close=Instance.new("TextButton")
   close.Text="X";close.Font=Enum.Font.GothamBold;close.TextSize=20;close.TextColor3=Color3.fromRGB(255,244,214)
   close.BackgroundColor3=Color3.fromRGB(70,38,38);close.Position=UDim2.new(1,-48,0,6);close.Size=UDim2.fromOffset(38,32)
@@ -9825,24 +9825,54 @@ end)
     mark.TextColor3=Color3.fromRGB(255,236,170);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=field
     poiMarkers[index]=mark
   end
+  -- 지도 하단 안내줄: 랜드마크·마을을 누르면 설명이 뜬다.
+  local info=Instance.new("TextLabel")
+  info.AnchorPoint=Vector2.new(.5,1);info.Position=UDim2.new(.5,0,1,-6);info.Size=UDim2.new(.94,0,0,44)
+  info.BackgroundColor3=Color3.fromRGB(32,24,16);info.BackgroundTransparency=.12;info.TextWrapped=true
+  info.Font=Enum.Font.GothamMedium;info.TextSize=12;info.TextColor3=Color3.fromRGB(255,240,205)
+  info.TextXAlignment=Enum.TextXAlignment.Left;info.Visible=false;info.ZIndex=75;info.Parent=field
+  Instance.new("UICorner",info).CornerRadius=UDim.new(0,8)
+  local infoPad=Instance.new("UIPadding");infoPad.PaddingLeft=UDim.new(0,10);infoPad.PaddingRight=UDim.new(0,10);infoPad.Parent=info
+  local function showInfo(text) info.Text=text;info.Visible=true end
+  info.Active=true
+  local function pin(mark,textFn)
+    mark.Activated:Connect(function() showInfo(textFn()) end)
+  end
+  local function zoneSeen(zoneId)
+    local discovered=player:GetAttribute("WorldDiscovered") or 1
+    for _,zone in ipairs(world.Zones) do if zone.Id==zoneId then return bit32.band(discovered,zone.Bit)~=0 end end
+    return false
+  end
   local lmMarks={}
   for index,lm in ipairs(world.Landmarks or {}) do
-    local mark=Instance.new("TextLabel")
+    local mark=Instance.new("TextButton")
     mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(lm.X),fz(lm.Z))
-    mark.Size=UDim2.fromOffset(16,16);mark.Font=Enum.Font.GothamBlack;mark.TextSize=15;mark.Text="✪"
+    mark.Size=UDim2.fromOffset(22,22);mark.Font=Enum.Font.GothamBlack;mark.TextSize=18;mark.Text="✪"
     mark.TextColor3=Color3.fromRGB(255,170,80);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=field
-    lmMarks[index]=mark
+    local name=Instance.new("TextLabel")
+    name.BackgroundTransparency=1;name.Position=UDim2.new(.5,-55,1,-4);name.Size=UDim2.fromOffset(110,12)
+    name.Font=Enum.Font.GothamBold;name.TextSize=9;name.TextColor3=Color3.fromRGB(255,222,160);name.TextStrokeTransparency=.1
+    name.Text="";name.ZIndex=66;name.Parent=mark
+    pin(mark,function()
+      local lmMask=player:GetAttribute("LandmarkMask") or 0
+      if bit32.band(lmMask,bit32.lshift(1,index-1))~=0 then return "✪ "..lm.Name.."\n"..lm.Lore end
+      return "? 아직 가 보지 못한 곳. 이 지역 어딘가에 거대한 무언가가 있다는 소문이 돈다."
+    end)
+    lmMarks[index]={mark=mark,name=name}
   end
   local townMarks={}
   for index,town in ipairs(world.Towns or {}) do
-    local mark=Instance.new("TextLabel")
+    local mark=Instance.new("TextButton")
     mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(town.X),fz(town.Z))
-    mark.Size=UDim2.fromOffset(18,18);mark.Font=Enum.Font.GothamBlack;mark.TextSize=17;mark.Text="⌂"
+    mark.Size=UDim2.fromOffset(22,22);mark.Font=Enum.Font.GothamBlack;mark.TextSize=18;mark.Text="⌂"
     mark.TextColor3=Color3.fromRGB(255,214,140);mark.TextStrokeTransparency=0;mark.ZIndex=66;mark.Visible=false;mark.Parent=field
     local name=Instance.new("TextLabel")
-    name.BackgroundTransparency=1;name.Position=UDim2.new(.5,-40,1,-3);name.Size=UDim2.fromOffset(80,13)
+    name.BackgroundTransparency=1;name.Position=UDim2.new(.5,-40,1,-4);name.Size=UDim2.fromOffset(80,13)
     name.Font=Enum.Font.GothamBold;name.TextSize=10;name.TextColor3=Color3.fromRGB(255,240,205);name.TextStrokeTransparency=.2
     name.Text=town.Name;name.ZIndex=67;name.Parent=mark
+    pin(mark,function()
+      return "⌂ "..town.Name.." ("..town.Hold..")\n여관 "..town.Inn.." · 상인 "..town.Merchant.." · 정보통 "..town.Scout
+    end)
     townMarks[index]=mark
   end
   local dot=Instance.new("TextLabel")
@@ -9905,16 +9935,16 @@ end)
       mark.Visible=bit32.band(index<=30 and found1 or found2,flag)~=0
     end
     for index,mark in ipairs(townMarks) do
-      local town=world.Towns[index]
-      local bit=0
-      for _,zone in ipairs(world.Zones) do if zone.Id==town.Zone then bit=zone.Bit end end
-      mark.Visible=bit32.band(discovered,bit)~=0
+      mark.Visible=zoneSeen(world.Towns[index].Zone)
     end
     local lmMask=player:GetAttribute("LandmarkMask") or 0
-    for index,mark in ipairs(lmMarks) do
+    for index,entry in ipairs(lmMarks) do
       local lm=world.Landmarks[index]
       local seen=bit32.band(lmMask,bit32.lshift(1,index-1))~=0
-      mark.Visible=seen
+      entry.mark.Visible=seen or zoneSeen(lm.Zone)
+      entry.mark.Text=seen and "✪" or "?"
+      entry.mark.TextColor3=seen and Color3.fromRGB(255,170,80) or Color3.fromRGB(190,190,190)
+      entry.name.Text=seen and lm.Name or ""
     end
     dot.Position=UDim2.fromScale(math.clamp(fx(x),.01,.99),math.clamp(fz(z),.01,.99))
   end
