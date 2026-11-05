@@ -151,6 +151,13 @@ if(process.argv.includes('--monster-assets-only')){
   mage:['Mage','KayKit Adventurers/Mage','characters'],rogue:['Rogue','KayKit Adventurers/Rogue','characters'],
   roguehooded:['Rogue_Hooded','KayKit Adventurers/Rogue_Hooded','characters'],knight:['Knight','KayKit Adventurers/Knight','characters'],
   barbarian:['Barbarian','KayKit Adventurers/Barbarian','characters'],
+  skmage:['Skeleton_Mage','KayKit Skeletons/Skeleton_Mage','/tmp/kks/addons/kaykit_character_pack_skeletons/Characters/gltf'],
+  skminion:['Skeleton_Minion','KayKit Skeletons/Skeleton_Minion','/tmp/kks/addons/kaykit_character_pack_skeletons/Characters/gltf'],
+  skrogue:['Skeleton_Rogue','KayKit Skeletons/Skeleton_Rogue','/tmp/kks/addons/kaykit_character_pack_skeletons/Characters/gltf'],
+  skwarrior:['Skeleton_Warrior','KayKit Skeletons/Skeleton_Warrior','/tmp/kks/addons/kaykit_character_pack_skeletons/Characters/gltf'],
+  fox:['Fox','Quaternius Ultimate Animated Animals/Fox','/tmp/ani/glTF'],stag:['Stag','Quaternius Ultimate Animated Animals/Stag','/tmp/ani/glTF'],
+  deer:['Deer','Quaternius Ultimate Animated Animals/Deer','/tmp/ani/glTF'],bull:['Bull','Quaternius Ultimate Animated Animals/Bull','/tmp/ani/glTF'],
+  horse:['Horse','Quaternius Ultimate Animated Animals/Horse','/tmp/ani/glTF'],
  };
  const {execFileSync}=await import('node:child_process');
  fs.rmSync('/tmp/nj-mmo',{recursive:true,force:true});
@@ -162,17 +169,34 @@ if(process.argv.includes('--monster-assets-only')){
   licenseEvidence:'https://quaternius.com/packs/ultimatemonsters.html',mirror:'https://github.com/tech-leads-club/nj-mmo/tree/'+revision+'/client/public/models/monsters',
   mirrorLicenseFile:'client/public/models/monsters/LICENSE.txt',universeId:targetUniverse,assetIds:{},sources:{}};
  const pack=registry.monsterPackV2;
+fs.rmSync('/tmp/kks',{recursive:true,force:true});fs.rmSync('/tmp/ani',{recursive:true,force:true});
+ execFileSync('git',['clone','--depth','1','-q','https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0.git','/tmp/kks']);
+ execFileSync('git',['clone','--depth','1','-q','https://github.com/Tekh-ops/Ultimate-Animated-Animals-July-2021.git','/tmp/ani']);
+ if(!/Creative Commons Zero, CC0/.test(fs.readFileSync('/tmp/kks/LICENSE.txt','utf8')))throw Error('SKELETON_LICENSE_EVIDENCE_MISSING');
+ if(!/CC0|Creative Commons Zero|public domain/i.test(fs.readFileSync('/tmp/ani/License.txt','utf8')))throw Error('ANIMAL_LICENSE_EVIDENCE_MISSING');
+ const toGlb=(gltfPath)=>{
+  const doc=JSON.parse(fs.readFileSync(gltfPath,'utf8'));
+  const m=/^data:[^;]*;base64,(.*)$/.exec(doc.buffers[0].uri||'');if(!m||doc.buffers.length!==1)throw Error('GLTF_BUFFER_UNSUPPORTED');
+  const bin=Buffer.from(m[1],'base64');delete doc.buffers[0].uri;doc.buffers[0].byteLength=bin.length;
+  for(const img of doc.images||[])if((img.uri||'').startsWith('data:'))throw Error('GLTF_IMAGE_UNSUPPORTED');
+  const pad=(b,c)=>Buffer.concat([b,Buffer.alloc((4-b.length%4)%4,c)]);
+  const json=pad(Buffer.from(JSON.stringify(doc)),0x20),binp=pad(bin,0);
+  const head=Buffer.alloc(12);head.write('glTF',0);head.writeUInt32LE(2,4);head.writeUInt32LE(12+8+json.length+8+binp.length,8);
+  const ch=(len,type)=>{const h=Buffer.alloc(8);h.writeUInt32LE(len,0);h.write(type,4,'latin1');return h;};
+  return Buffer.concat([head,ch(json.length,'JSON'),json,ch(binp.length,'BIN\0'),binp]);
+ };
  const humanLicense=fs.readFileSync('/tmp/nj-mmo/client/public/models/characters/LICENSE.txt','utf8');
  if(!/Creative Commons Zero, CC0/.test(humanLicense))throw Error('HUMAN_LICENSE_EVIDENCE_MISSING');
  for(const [key,[file,origin,dir]] of Object.entries(files)){
   let assetId=String(pack.assetIds[key]||'');
   if(!/^[1-9]\d*$/.test(assetId)){
-   const bytes=fs.readFileSync('/tmp/nj-mmo/client/public/models/'+(dir||'monsters')+'/'+file+'.glb');
+   const root=dir&&dir.startsWith('/')?dir:'/tmp/nj-mmo/client/public/models/'+(dir||'monsters');
+   const bytes=fs.existsSync(root+'/'+file+'.glb')?fs.readFileSync(root+'/'+file+'.glb'):toGlb(root+'/'+file+'.gltf');
    if(bytes.toString('utf8',0,4)!=='glTF')throw Error('MONSTER_GLB_INVALID:'+key);
    const sha=crypto.createHash('sha256').update(bytes).digest('hex');
    const form=new FormData();
    form.append('request',JSON.stringify({assetType:'Model',displayName:'Mana Forest Monster '+key,
-    description:(dir?'KayKit':'Quaternius')+' CC0 '+origin+' sha256 '+sha,creationContext:{creator}}));
+    description:(/KayKit/.test(origin)?'KayKit':'Quaternius')+' CC0 '+origin+' sha256 '+sha,creationContext:{creator}}));
    form.append('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),key+'.glb');
    let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key0},body:form});
    if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('MONSTER_OPERATION_INVALID:'+key);
