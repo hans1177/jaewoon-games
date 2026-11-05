@@ -2721,7 +2721,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           const out=await luau(st.ctx||'Client',st.code);
           report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000)});
         }else if(st.type==='click_text'){
-          const code='local p=game:GetService("Players").LocalPlayer.PlayerGui local out="NONE" for _,d in ipairs(p:GetDescendants()) do if d:IsA("TextButton") and d.Text==\''+String(st.text).replace(/'/g,"")+'\' and d.Visible then out=string.format("%d,%d",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) break end end print("BTN:"..out) return out';
+          const code='local p=game:GetService("Players").LocalPlayer.PlayerGui local out="NONE" local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA("TextButton") and d.Text==\''+String(st.text).replace(/'/g,"")+'\' and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format("%d,%d",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end print("BTN:"..out) return out';
           const out=await luau('Client',code);
           const m=out.match(/(\d+),(\d+)/);
           if(m){const mt=client.tool('user_mouse_input');await client.call('user_mouse_input',mouseClickArgs(mt.inputSchema||{},studioId,Number(m[1]),Number(m[2])));report.log.push({step:n,click:st.text,at:m[0]});}
