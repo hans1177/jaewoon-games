@@ -5252,3 +5252,120 @@ do
     end
   end)
 end
+
+-- [기사단 야영지] 지역마다 CC0 천막·깃발·울타리·돌 화덕으로 야영지를 세우고, 단계 업그레이드와 휴식을 제공한다.
+-- 단계는 플레이어별로 저장되고(건축 숙련 +2), 소품은 모두에게 같은 모습으로 보인다.
+do
+  local camps={
+    worldtree={field="CampWorldtree",center=Vector3.new(1250,0,150),name="세계수 숲 야영지"},
+    volcano={field="CampVolcano",center=Vector3.new(2260,0,40),name="화산 협곡 야영지"},
+    oasis={field="CampOasis",center=Vector3.new(3460,0,-60),name="오아시스 야영지"},
+  }
+  local restReady={}
+  local function say(player,title,text,options) pcall(function() villageDialogue(player,title,text,options) end) end
+  local function place(name,position,height,yaw)
+    local id=Config.CampAssets and Config.CampAssets[name]
+    if typeof(id)~="number" then return nil end
+    local ok,result=pcall(function()
+      local model=AssetService:LoadAssetAsync(id)
+      for _,part in ipairs(model:GetDescendants()) do
+        if part:IsA("LuaSourceContainer") or part:IsA("Tool") then part:Destroy()
+        elseif part:IsA("BasePart") then part.Anchored=true;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false end
+      end
+      local _,size=model:GetBoundingBox()
+      if size.Y<=.01 then model:Destroy();return nil end
+      model:ScaleTo(model:GetScale()*height/size.Y)
+      model:PivotTo(CFrame.new(position)*CFrame.Angles(0,math.rad(yaw or 0),0))
+      local params=RaycastParams.new()
+      params.FilterType=Enum.RaycastFilterType.Include;params.FilterDescendantsInstances={workspace.Terrain}
+      local hit=workspace:Raycast(position+Vector3.new(0,60,0),Vector3.new(0,-140,0),params)
+      local cf,box=model:GetBoundingBox()
+      local groundY=hit and hit.Position.Y or 2
+      model:PivotTo(model:GetPivot()+Vector3.new(0,groundY+.1-(cf.Position.Y-box.Y/2),0))
+      model.Name="Camp_"..name
+      model.Parent=gameWorld
+      return model
+    end)
+    if not ok then warn("야영지 소품 로딩 실패: "..name..": "..tostring(result)) return nil end
+    return result
+  end
+  local function levelOf(player,camp) return math.clamp(readNumber(player,camp.field,0),0,3) end
+  local function openCamp(player,regionId)
+    local camp=camps[regionId]
+    local level=levelOf(player,camp)
+    local upgrade=Config.CampUpgrades[level+1]
+    local lines={camp.name.."  ·  단계 "..level.."/3"}
+    local options={}
+    if level>=1 then
+      lines[#lines+1]="모닥불이 타고 있다. 쉬면 체력과 기력이 회복돼."
+      options[#options+1]={label="휴식하기",action="camp:rest"}
+    end
+    if upgrade then
+      lines[#lines+1]="다음: "..upgrade.Name.." · 나무 "..upgrade.Wood.." 돌 "..upgrade.Stone..(upgrade.Coins>0 and (" 소지금 "..upgrade.Coins) or "").."\n"..upgrade.Desc
+      options[#options+1]={label=upgrade.Name,action="camp:upgrade"}
+    else lines[#lines+1]="야영지를 모두 복구했어." end
+    say(player,camp.name,table.concat(lines,"\n"),options)
+  end
+  remote.OnServerEvent:Connect(function(player,action)
+    if action~="camp:upgrade" and action~="camp:rest" then return end
+    if player:GetAttribute("ProfileReady")~=true then return end
+    local regionId=meadowRegionOf(player)
+    local camp=camps[regionId]
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not camp or not root or (root.Position-camp.center).Magnitude>40 then return end
+    local level=levelOf(player,camp)
+    if action=="camp:upgrade" then
+      local upgrade=Config.CampUpgrades[level+1]
+      if not upgrade then return end
+      for _,field in ipairs({"Wood","Stone","Coins"}) do
+        if readNumber(player,field,0)<(upgrade[field] or 0) then say(player,camp.name,"재료 또는 소지금이 부족해.");return end
+      end
+      for _,field in ipairs({"Wood","Stone","Coins"}) do
+        local cost=upgrade[field] or 0
+        if cost>0 then setNumber(player,field,readNumber(player,field,0)-cost) end
+      end
+      setNumber(player,camp.field,level+1)
+      setNumber(player,"BuildingProficiency",readNumber(player,"BuildingProficiency",0)+2)
+      say(player,camp.name,upgrade.Name.." 완료. 건축 숙련 +2")
+    elseif level>=1 then
+      local now=os.clock()
+      if now<(restReady[player] or 0) then say(player,camp.name,"조금 더 지난 뒤에 쉴 수 있어.");return end
+      restReady[player]=now+20
+      local humanoid=player.Character:FindFirstChildOfClass("Humanoid")
+      if humanoid and humanoid.Health>0 then humanoid.Health=humanoid.MaxHealth end
+      player:SetAttribute("MeadowStamina",100)
+      local note="체력과 기력이 회복됐다."
+      if level>=2 and now>=(player:GetAttribute("CampSupplyAt") or 0) then
+        player:SetAttribute("CampSupplyAt",now+300)
+        setNumber(player,"MeadowPotionHealth",readNumber(player,"MeadowPotionHealth",0)+1)
+        note=note.." 회복약 +1"
+        if level>=3 then setNumber(player,"MeadowPotionStamina",readNumber(player,"MeadowPotionStamina",0)+1);note=note.." · 기력 영약 +1" end
+      end
+      say(player,camp.name,note)
+    end
+  end)
+  task.spawn(function()
+    task.wait(9)
+    for regionId,camp in pairs(camps) do
+      local c=camp.center
+      place("tent",c+Vector3.new(-8,0,-6),6.5,20)
+      place("flag",c+Vector3.new(6,0,-8),9,0)
+      place("stones",c,1.3,0)
+      place("platform",c+Vector3.new(10,0,6),.7,0)
+      for index,offset in ipairs({Vector3.new(-14,0,8),Vector3.new(14,0,-2),Vector3.new(0,0,16),Vector3.new(-16,0,-14)}) do
+        place("fence",c+offset,3,index*45)
+      end
+      place("plant",c+Vector3.new(-12,0,18),2.2,0)
+      local anchor=Instance.new("Attachment");anchor.WorldPosition=c+Vector3.new(0,2,0);anchor.Parent=workspace.Terrain
+      local fire=Instance.new("ParticleEmitter")
+      fire.Color=ColorSequence.new(Color3.fromRGB(255,150,60),Color3.fromRGB(255,60,20));fire.LightEmission=1;fire.Rate=30
+      fire.Lifetime=NumberRange.new(.6,1.2);fire.Speed=NumberRange.new(2,4);fire.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,1.2),NumberSequenceKeypoint.new(1,0)})
+      fire.EmissionDirection=Enum.NormalId.Top;fire.Parent=anchor
+      local light=Instance.new("PointLight");light.Color=Color3.fromRGB(255,170,90);light.Range=30;light.Brightness=2;light.Parent=anchor
+      local prompt=Instance.new("ProximityPrompt")
+      prompt.ActionText="야영지";prompt.ObjectText=camp.name;prompt.HoldDuration=.4
+      prompt.MaxActivationDistance=14;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+      prompt.Triggered:Connect(function(player) openCamp(player,regionId) end)
+    end
+  end)
+end

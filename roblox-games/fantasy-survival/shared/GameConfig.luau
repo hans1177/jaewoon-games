@@ -229,6 +229,13 @@ local Config = {
      Choices={{Label="보급 상자를 열어 필요한 만큼만 가져간다",Outcome="미나의 방식 그대로 공정하게 나눴다.",Coins=34,Stone=8},
        {Label="상자를 모두 가져간다",Outcome="큰 이득을 얻었다.",Coins=56,Stone=0}}},
   },
+  -- [기사단 야영지] Kenney CC0 소품(레지스트리 kenneyMiniForestCamp)의 Roblox Model 자산 ID. 업그레이드 비용·효과는 서버가 계산한다.
+  CampAssets = {tent=138107993064718,flag=130533309973210,fence=114116639095318,platform=122683229132564,plant=97901069313770,rocks=139122219687710,stones=137109771506109,ladder=119331611772063,target=138101094037840,bow=124501344249201,treeHigh=96566876504132,dirt=103949521884200},
+  CampUpgrades = {
+    {Name="모닥불 복구",Wood=10,Stone=5,Coins=0,Desc="휴식으로 체력과 기력을 회복할 수 있어."},
+    {Name="제작대 설치",Wood=20,Stone=15,Coins=30,Desc="휴식할 때 숲의 회복약을 얻을 수 있어(5분에 1개)."},
+    {Name="숙소 건설",Wood=40,Stone=30,Coins=80,Desc="휴식할 때 기력 영약도 얻는다(5분에 1개)."},
+  },
   -- [초원 마을 의뢰] 주민 진술 1개 · 현장 단서 1개 · 실전 전투 1회.
   -- 기존 저장 키·선택별 보상은 유지하고, 이전 조사 기록 비트는 마이그레이션 호환한다.
   VillageContracts = {
@@ -366,6 +373,7 @@ local Config = {
     VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0,
     -- [이어하기] 이전 프로필에 없는 필드는 0으로 마이그레이션. 서버 검증된 위치만 복원한다.
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
+    CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
     DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
