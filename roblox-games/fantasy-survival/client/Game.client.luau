@@ -9664,8 +9664,12 @@ end)
   local world=Config.WorldMap
   local bounds=world.Bounds
   local width,height=bounds.X1-bounds.X0,bounds.Z1-bounds.Z0
-  local function fx(x) return (x-bounds.X0)/width end
   local mapImage=world.MapImage
+  local function fx(x)
+    local t=(x-bounds.X0)/width
+    if mapImage and mapImage.Left then return mapImage.Left+mapImage.SpanX*t end
+    return t
+  end
   local function fz(z)
     local t=(z-bounds.Z0)/height
     if mapImage then return mapImage.Top+mapImage.Span*t end
