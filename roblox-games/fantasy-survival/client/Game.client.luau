@@ -11030,6 +11030,7 @@ end)()
     tutorialStep=player:GetAttribute("TutorialStep") or 0
     paintGuide()
     while gui.Enabled~=true do task.wait(.5) end -- 오프닝 영상이 끝난 뒤에 시작한다.
+    tutorialStep=player:GetAttribute("TutorialStep") or tutorialStep
     if tutorialStep<50 and not started then
       started=true
       task.wait(2.5)
@@ -11037,5 +11038,14 @@ end)()
     else
       gui:SetAttribute("TutorialOverviewDone",true)
     end
+  end)
+end)()
+
+-- [QA 훅] Studio 점검에서 서버가 QAAction 속성("기술ID|번호")을 바꾸면 내 캐릭터가 그 기술을 쓴다. 내 정상 기술 경로만 호출한다.
+;(function()
+  player:GetAttributeChangedSignal("QAAction"):Connect(function()
+    local v=tostring(player:GetAttribute("QAAction") or "")
+    local id=v:match("^([^|]+)")
+    if id then pcall(activateMeadowAction,id) end
   end)
 end)()
