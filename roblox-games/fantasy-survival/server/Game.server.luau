@@ -7130,7 +7130,7 @@ do
             if stage==0 and unlocked(player,line) then
               setNumber(player,line.Field,1)
               local first=line.Steps[1]
-              say(player,"새 연계 퀘스트 · "..line.Name,line.Intro.."\n\n첫 목표: "..first.Title.."\n"..first.Text.."\n(세계 탭과 지도(M)에서 목표를 확인할 수 있다.)")
+              if readNumber(player,"TutorialStep",0)>=99 then say(player,"새 연계 퀘스트 · "..line.Name,line.Intro.."\n\n첫 목표: "..first.Title.."\n"..first.Text.."\n(세계 탭과 지도(M)에서 목표를 확인할 수 있다.)") end
             elseif stage>=1 and stage<=#line.Steps then
               local step=line.Steps[stage]
               if step.Type=="choice" then

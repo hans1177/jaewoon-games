@@ -10918,11 +10918,11 @@ end)()
   end)
   -- ===== 왼쪽 버튼(길 안내 · 도움말) =====
   local chips=Instance.new("Frame")
-  chips.Name="MeadowHelpChips";chips.AnchorPoint=Vector2.new(1,1);chips.Position=UDim2.new(.5,-190,1,-8)
-  chips.Size=UDim2.fromOffset(86,92);chips.BackgroundTransparency=1;chips.ZIndex=28;chips.Parent=guiRoot
+  chips.Name="MeadowHelpChips";chips.AnchorPoint=Vector2.new(1,1);chips.Position=UDim2.new(.5,-190,1,-16)
+  chips.Size=UDim2.fromOffset(86,80);chips.BackgroundTransparency=1;chips.ZIndex=28;chips.Parent=guiRoot
   local function chip(order,text)
     local b=Instance.new("TextButton")
-    b.LayoutOrder=order;b.Size=UDim2.fromOffset(86,42);b.BackgroundColor3=Color3.fromRGB(18,30,30);b.BackgroundTransparency=.2
+    b.LayoutOrder=order;b.Size=UDim2.fromOffset(86,36);b.BackgroundColor3=Color3.fromRGB(18,30,30);b.BackgroundTransparency=.2
     b.BorderSizePixel=0;b.Font=Enum.Font.GothamBold;b.TextSize=13;b.TextColor3=Color3.fromRGB(255,240,197);b.Text=text;b.ZIndex=29;b.Parent=chips
     Instance.new("UICorner",b).CornerRadius=UDim.new(0,10)
     local st=Instance.new("UIStroke");st.Color=Color3.fromRGB(218,189,126);st.Thickness=1.5;st.Transparency=.2;st.Parent=b
