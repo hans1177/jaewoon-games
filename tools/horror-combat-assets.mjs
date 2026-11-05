@@ -52,42 +52,73 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
-// [마력숲 21종 원화] 이미 등록된 오너 지정 이미지의 현재 Universe 사용 권한만 검증·부여한다.
-// 이전 16칸 PNG와 권한은 건드리지 않으며 새 원화의 원본 업로드/런타임 검증을 지어내지 않는다.
+// [마력숲 21종 신규 고퀄 원화 / 등록] 기존 로블록스 이미지 자산 경로를 사용한다.
+// [보존] 현재 게임이 사용하는 21종 원화 ID와 UI/세이브는 바꾸지 않고, 새 원화만 등록한다.
 if(process.argv.includes('--illustrated-hud-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
- const clientPath='roblox-games/fantasy-survival/client/Game.client.luau';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
- const art=registry.illustratedHudIcons;
+ const art=registry.illustratedHudIconsV2;
+ const imagePath='roblox-games/fantasy-survival/illustrated-icons.png';
+ const expected='168493bbfdc771fe1bcee9ee6c0462d0e12b824c8eeb5617b9159d51c49c6f2a';
  if(registry.gameId!=='fantasy-survival'||!art
-   ||art.assetId!=='112814533400088'||art.universeId!=='10773436325'
-   ||art.sourceEvidenceSha256!=='1348c0364650dadbef6c15ee5983b1285013979ae142b139df4813cec5367263'
-   ||art.width!==2172||art.height!==724||art.iconCount!==21)
-   throw Error('FOREST_21_ICON_OWNER_SOURCE_METADATA_INVALID');
- const client=fs.readFileSync(clientPath,'utf8');
- if(!client.includes('local meadowPaintedHudAtlas="rbxassetid://'+art.assetId+'"'))
-   throw Error('FOREST_21_ICON_SOURCE_BINDING_MISMATCH');
- if(art.universeUseGrantVerified===true&&art.authorizedUniverseIds?.includes(art.universeId)){
-   console.log('FOREST_21_ICON_UNIVERSE_GRANT_ALREADY_VERIFIED='+art.assetId);
+   ||art.source!=='OWNER_REQUESTED_GENERATED_21_ICON_ART'||art.license!=='OWNER_CREATED_UI'
+   ||art.path!==imagePath||art.universeId!=='10773436325'
+   ||art.sha256!==expected||art.width!==2172||art.height!==724||art.iconCount!==21)
+   throw Error('FOREST_21_ICON_V2_PROVENANCE_INVALID');
+ const bytes=fs.readFileSync(imagePath);
+ const sourceSha=crypto.createHash('sha256').update(bytes).digest('hex');
+ if(sourceSha!==expected||bytes.length!==2114676
+   ||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+   ||bytes.readUInt32BE(16)!==2172||bytes.readUInt32BE(20)!==724)
+   throw Error('FOREST_21_ICON_V2_SOURCE_HASH_OR_PNG_INVALID');
+ let assetId=String(art.assetId||'');
+ if(!/^[1-9]\d*$/.test(assetId)||art.importedSourceHash!==sourceSha){
+   const form=new FormData();
+   form.append('request',JSON.stringify({
+     assetType:'Image',displayName:'Mana Forest HD Fantasy HUD 21 Icons',
+     description:'Owner-requested original fantasy UI atlas 21 icons sha256 '+sourceSha,
+     creationContext:{creator}
+   }));
+   form.append('fileContent',new Blob([bytes],{type:'image/png'}),'illustrated-icons.png');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{
+     method:'POST',headers:{'x-api-key':key},body:form
+   });
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))
+     throw Error('FOREST_21_ICON_V2_OPERATION_INVALID');
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+     await new Promise(resolve=>setTimeout(resolve,4000));
+     op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+   }
+   assetId=String(op.response?.assetId||'');
+   if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))
+     throw Error('FOREST_21_ICON_V2_UPLOAD_FAILED');
+   // [중간 복구] 권한 승인에서 실패해도 이미 발급된 실제 자산 ID는 기록한다.
+   art.assetId=assetId;
+   art.importedSourceHash=sourceSha;
+   art.importVerified=false;
+   art.universeUseGrantVerified=false;
+   art.runtimeVerified=false;
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+   console.log('FOREST_21_ICON_V2_ASSET_UPLOADED='+assetId);
+ }
+ if(art.importVerified===true&&art.universeUseGrantVerified===true
+   &&art.authorizedUniverseIds?.includes(art.universeId)){
+   console.log('FOREST_21_ICON_V2_ALREADY_REGISTERED='+assetId);
    process.exit(0);
  }
- const thumb=await request('https://thumbnails.roblox.com/v1/assets?assetIds='+art.assetId
-   +'&size=420x420&format=Png&isCircular=false');
- if(thumb.data?.[0]?.targetId!==Number(art.assetId)
-   ||thumb.data?.[0]?.state!=='Completed'||!thumb.data?.[0]?.imageUrl)
-   throw Error('FOREST_21_ICON_ASSET_NOT_RESOLVED');
  const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
    method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
    body:JSON.stringify({subjectType:'Universe',subjectId:art.universeId,action:'Use',
-     requests:[{assetId:Number(art.assetId),grantToDependencies:true}]})
+     requests:[{assetId:Number(assetId),grantToDependencies:true}]})
  });
- if(grant.errors?.length)throw Error('FOREST_21_ICON_UNIVERSE_PERMISSION_REJECTED');
+ if(grant.errors?.length)throw Error('FOREST_21_ICON_V2_UNIVERSE_PERMISSION_REJECTED');
+ art.importVerified=true;
  art.universeUseGrantVerified=true;
  art.authorizedUniverseIds=[art.universeId];
  art.runtimeVerified=false;
- art.importVerified=false; // 업로드 원본과 Roblox 이미지 내용의 동일성은 별도 실증 필요.
  fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
- console.log('FOREST_21_ICON_UNIVERSE_GRANT_VERIFIED='+art.assetId);
+ console.log('FOREST_21_ICON_V2_REGISTERED='+assetId+':SHA256='+sourceSha);
  process.exit(0);
 }
 

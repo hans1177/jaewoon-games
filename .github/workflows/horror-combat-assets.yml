@@ -9,6 +9,7 @@ on:
       - 'roblox-games/fantasy-survival/icons.png'
       - 'roblox-games/fantasy-survival/right-icons.png'
       - 'roblox-games/fantasy-survival/painted-icons.png'
+      - 'roblox-games/fantasy-survival/illustrated-icons.png'
       - 'roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json'
       - 'roblox-games/fantasy-survival/action-icons/**'
       - 'assets/roblox/common-ui-v1/icons.png'
@@ -27,7 +28,7 @@ on:
         type: boolean
         default: false
       illustrated_hud_only:
-        description: 마력숲 21종 시안 원화의 기존 Universe 이미지 사용 권한 확인
+        description: 마력숲 신규 제작 원화 21종 PNG 등록과 Universe 이미지 사용 권한 승인
         type: boolean
         default: false
       magic_ui_only:
