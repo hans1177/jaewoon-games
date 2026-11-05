@@ -7407,7 +7407,14 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     button.TextTransparency=button.Active and 0 or .3
     if info[1]=="skill-meadow-sprint" then
       local caption=button:FindFirstChild("UtilityCaption")
-      if caption then caption.Text=meadowSprintAuto and "질주 ON" or "질주 OFF" end
+      if caption then
+        caption.Visible=true
+        caption.Text=meadowSprintAuto and "자동질주 ON" or "자동질주 OFF"
+        caption.TextColor3=meadowSprintAuto and Color3.fromRGB(150,255,170) or Color3.fromRGB(255,170,160)
+        caption.Position=UDim2.fromScale(.5,1.18);caption.Size=UDim2.new(1.5,0,0,15);caption.ZIndex=40
+      end
+      local ring=button:FindFirstChildOfClass("UIStroke")
+      if ring then ring.Color=meadowSprintAuto and Color3.fromRGB(110,255,150) or Color3.fromRGB(150,150,150);ring.Thickness=meadowSprintAuto and 4 or 2 end
       if meadowSprintAuto and ready and remains<=.05 then
         local character=player.Character
         local human=character and character:FindFirstChildOfClass("Humanoid")
@@ -10851,7 +10858,7 @@ end)()
   local steps={
     {"이동하기","왼쪽 아래 조이스틱을 밀어 걸어 봐. 달리려면 더 세게 밀어.",{.1,.84},0,"move"},
     {"카메라 돌리기","화면 오른쪽 빈 곳을 손가락으로 끌면 시야가 돌아가.",{.62,.45},0,nil},
-    {"전투 버튼","오른쪽 큰 칼 버튼은 공격이야. 옆 버튼은 방어·회피·질주. 적이 번쩍이면 막거나 피해!",{.88,.62},-90,nil},
+    {"전투 버튼","오른쪽 큰 칼 버튼은 공격이야. 질주 버튼은 눌러서 자동질주 ON/OFF(아래 글자로 표시). 적이 번쩍이면 막거나 피해!",{.88,.62},-90,nil},
     {"퀵슬롯","아래 1~5번 칸을 눌러 무기·약·기술을 바로 써. '편집'을 누르고 칸을 누르면 바꿀 수 있어.",{.5,.88},180,nil},
     {"퀘스트와 길 안내","왼쪽 퀘스트창이 지금 할 일이야. 노란 ◆ 마커를 따라가면 목표가 나와. 가까워지면 사라져.",{.2,.42},-90,nil},
     {"메뉴","오른쪽 위 아이콘: 가방·대장간·마을·도감·기사단·설정. 기술 배우기는 가방 메뉴의 '스킬'에서 해.",{.82,.1},0,nil},
@@ -10902,15 +10909,17 @@ end)()
     ctitle.Text=string.format("튜토리얼 %d/%d · %s",i,#steps,s[1])
     cbody.Text=s[2]
     pageLabel.Text=""
-    nextBtn.Text=i==#steps and "시작!" or "다음"
+    nextBtn.Text=i==#steps and "시작!" or (i==1 and "걸어 봐!" or "다음")
+    nextBtn.Active=i~=1;nextBtn.AutoButtonColor=i~=1
+    nextBtn.BackgroundColor3=i==1 and Color3.fromRGB(70,76,74) or Color3.fromRGB(54,112,84)
     pointer.Position=UDim2.fromScale(s[3][1],s[3][2]);pointer.Rotation=s[4]
     pointer.Visible=true;card.Visible=true
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     moveStart=root and root.Position or nil
     if i>1 then pref("tut",i) end
   end
-  nextBtn.Activated:Connect(function() meadowArt.sfx("click",.4,1);show(current+1) end)
-  skipBtn.Activated:Connect(function() meadowArt.sfx("click",.4,1);finish() end)
+  nextBtn.Activated:Connect(function() if current==1 then return end meadowArt.sfx("click",.4,1);show(current+1) end)
+  skipBtn.Visible=false -- 튜토리얼은 반드시 끝까지 본다(건너뛰기 없음). 다시 보기는 도움말 버튼.
   helpChip.Activated:Connect(function() meadowArt.sfx("click",.4,1);show(1) end)
   RunService.Heartbeat:Connect(function()
     if not card.Visible then return end
