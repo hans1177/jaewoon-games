@@ -4542,9 +4542,45 @@ task.spawn(function()
     end
   end
 end)
-local function applyMeadowDamage(player,target,damage)
+-- [상태이상] 출혈·독·화염은 지속 피해, 빙결은 짧은 정지. 서로 다른 상태가 겹칠수록 받는 피해가 늘어나는 연계 보너스가 있다.
+local STATUS_NAMES={bleed="출혈",poison="독",burn="화염",frost="빙결"}
+local applyMeadowDamageRef
+local function applyStatus(player,target,kind,seconds)
+  if not target or target.HP<=0 or not target.model.Parent then return end
+  local now=os.clock()
+  target.status=target.status or {}
+  if kind=="frost" then
+    if target.isBoss or now<(target.frostCooldown or 0) then return end
+    target.frostCooldown=now+6
+    target.stunUntil=math.max(target.stunUntil or 0,now+.9)
+    target.status.frost=now+.9
+    target.model:SetAttribute("MeadowStatus",STATUS_NAMES.frost)
+    return
+  end
+  local already=(target.status[kind] or 0)>now
+  target.status[kind]=now+seconds
+  target.model:SetAttribute("MeadowStatus",STATUS_NAMES[kind])
+  if already then return end
+  task.spawn(function()
+    while target.HP>0 and target.model.Parent and (target.status[kind] or 0)>os.clock() do
+      task.wait(1)
+      if target.HP<=0 or not target.model.Parent then break end
+      local base=16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8
+      local tick=math.max(1,math.floor(base*(kind=="burn" and .32 or kind=="poison" and .22 or .26)))
+      applyMeadowDamageRef(player,target,tick,true)
+    end
+    if target.model.Parent then target.model:SetAttribute("MeadowStatus",nil) end
+  end)
+end
+local function statusCount(target)
+  local n=0
+  local now=os.clock()
+  if target.status then for _,until_ in pairs(target.status) do if until_>now then n+=1 end end end
+  return n
+end
+local function applyMeadowDamage(player,target,damage,isDot)
   if not target or target.HP<=0 or not target.model.Parent then return false end
-  addAdrenaline(player,3)
+  if not isDot then addAdrenaline(player,3) end
   player:SetAttribute("MeadowCombatUntil",workspace:GetServerTimeNow()+8)
   if (meadowFocusUntil[player] or 0)>os.clock() then damage=math.floor(damage*1.25) end
   do
@@ -4631,6 +4667,21 @@ local function applyMeadowDamage(player,target,damage)
     if state.currentSchool==nil then state.lastWeaponAttackAt=now end
   end
   state.lastTarget=target;state.lastHitAt=now
+  -- [상태이상 연계] 서로 다른 상태 1개당 +8%(최대 3개). 지속 피해 틱은 연계·부여를 하지 않는다.
+  if not isDot then
+    local stacks=math.min(3,statusCount(target))
+    if stacks>0 then damage=math.floor(damage*(1+.08*stacks)) end
+    local weaponItemNow=meadowRpg.equippedWeapon(player)
+    local cls=weaponItemNow and Config.GearWeaponClass[weaponItemNow.Id]
+    local school=state.currentSchool
+    local kind=(school=="Shadow" and "bleed") or (school=="Hunter" and "poison") or (school=="Magic" and "frost")
+      or (school==nil and ((cls=="Dagger" and "bleed") or (cls=="Bow" and "poison") or (cls=="Staff" and "frost"))) or nil
+    if kind and math.random()<.3 then applyStatus(player,target,kind,6) end
+    -- [각인] 장착한 룬이 명중마다 25% 확률로 해당 상태를 건다.
+    local rune=readNumber(player,"MeadowRune",0)
+    local runeKind=({"burn","poison","frost","bleed"})[rune]
+    if runeKind and math.random()<.25 then applyStatus(player,target,runeKind,runeKind=="burn" and 5 or 6) end
+  end
   -- [장비 공격력] 기존 무기 강화·숙련도·기술 배율은 그대로 두고 새 장비 보너스만 가산.
   local gearAttack=meadowRpg.stats(player)
   damage=damage+gearAttack
@@ -4757,6 +4808,7 @@ local function applyMeadowDamage(player,target,damage)
   broadcastSurvivalState(player)
   return true
 end
+applyMeadowDamageRef=applyMeadowDamage
 
 local function attackEnemy(player)
   local character=player.Character
@@ -5842,6 +5894,7 @@ local function meadowUltimate(player)
         setNumber(player,"Health",math.floor(humanoid.Health))
       end
     end
+    remote:FireAllClients("MEADOW_ULT_FX",{position=root.Position,class=cls,alt=alt,userId=player.UserId})
     task.delay(1.5,function() ultimateRunning[player]=nil end)
     return true
   end)
@@ -6346,6 +6399,23 @@ remote.OnServerEvent:Connect(function(player, actionId)
     return
   end
   -- [마을 계약] 동일한 게임 RemoteEvent로 받되 NPC 서버 대화 세션·거리·단계를 다시 검증한다.
+  local function runeNote(member,text)
+    member:SetAttribute("MeadowGearMessage",text)
+    member:SetAttribute("MeadowGearRevision",(member:GetAttribute("MeadowGearRevision") or 0)+1)
+  end
+  if actionId:match("^rune:set:%d$") then
+    local pick=tonumber(actionId:sub(-1))
+    if pick==0 then setNumber(player,"MeadowRune",0);runeNote(player,"각인을 지웠어.");return end
+    local rune=Config.Runes[pick]
+    if not rune or readNumber(player,"MeadowRune",0)==pick then return end
+    if readNumber(player,rune.Material,0)<rune.Amount or readNumber(player,"Coins",0)<rune.Coins then
+      runeNote(player,rune.Name.." 각인: "..rune.Material.." "..rune.Amount.."개 + 코인 "..rune.Coins.." 필요해.");return
+    end
+    setNumber(player,rune.Material,readNumber(player,rune.Material,0)-rune.Amount)
+    setNumber(player,"Coins",readNumber(player,"Coins",0)-rune.Coins)
+    setNumber(player,"MeadowRune",pick)
+    runeNote(player,rune.Name.." 각인을 새겼어. "..rune.Desc);return
+  end
   if actionId=="ult:set:1" or actionId=="ult:set:2" then
     setNumber(player,"MeadowUltChoice",tonumber(actionId:sub(-1)));return
   end

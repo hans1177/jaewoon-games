@@ -424,7 +424,7 @@ local Config = {
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
     ResearchRecords = 0, ExplorationGroves = 0, RuinsDiscovered = 0, DawnTraceFound = 0, NightTraceFound = 0, CompanionQuestStage = 1, CompanionQuestProgress = 0,
     -- 구형 저장은 존재하지 않는 숫자 필드를 기본값으로 읽어 이관한다.
-    MeadowUltChoice = 1, NarinStory = 0, VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0,
+    MeadowUltChoice = 1, MeadowRune = 0, NarinStory = 0, VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0,
     -- [이어하기] 이전 프로필에 없는 필드는 0으로 마이그레이션. 서버 검증된 위치만 복원한다.
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
@@ -1544,6 +1544,13 @@ Config.MeadowSkillSchools[2].Weapon="검·도끼·망치 + 방패"
 Config.MeadowSkillSchools[3].Weapon="활"
 Config.MeadowSkillSchools[4].Weapon="단검"
 Config.MeadowSkillSchools[5].Weapon="지팡이"
+-- [각인] 무기에 룬을 새기면 명중마다 25% 확률로 상태이상을 건다. 재료는 몬스터·채집 재료만 쓴다.
+Config.Runes={
+  {Name="화염",Status="burn",Material="Magma",Amount=2,Coins=120,Desc="명중 시 25% 화염 지속 피해"},
+  {Name="독",Status="poison",Material="Ectoplasm",Amount=2,Coins=100,Desc="명중 시 25% 독 지속 피해"},
+  {Name="서리",Status="frost",Material="Crystal",Amount=2,Coins=110,Desc="명중 시 25% 빙결(짧은 정지, 보스 제외)"},
+  {Name="출혈",Status="bleed",Material="Claw",Amount=2,Coins=90,Desc="명중 시 25% 출혈 지속 피해"},
+}
 Config.MeadowSkillNodeById = {}
 for _,node in ipairs(Config.MeadowSkillNodes) do
   Config.MeadowSkillNodeById[node.Id]=node

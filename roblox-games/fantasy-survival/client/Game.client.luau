@@ -3267,6 +3267,42 @@ do
   if dz then dz.LayoutOrder=1;dz.Visible=true end
   meadowPages[7].CanvasPosition=Vector2.new(0,0)
 end
+-- [각인] 무기 룬 선택 줄. 서버가 재료·코인을 검증하고 적용한다.
+do
+  local runeBox=Instance.new("Frame")
+  runeBox.Name="RuneRow";runeBox.LayoutOrder=7;runeBox.Size=UDim2.new(1,-8,0,104)
+  runeBox.BackgroundColor3=Color3.fromRGB(24,49,45);runeBox.BorderSizePixel=0;runeBox.Parent=meadowPages[7]
+  Instance.new("UICorner",runeBox).CornerRadius=UDim.new(0,12)
+  local runeTitle=Instance.new("TextLabel")
+  runeTitle.BackgroundTransparency=1;runeTitle.Position=UDim2.fromOffset(10,4);runeTitle.Size=UDim2.new(1,-20,0,22)
+  runeTitle.Font=Enum.Font.GothamBold;runeTitle.TextSize=12;runeTitle.TextXAlignment=Enum.TextXAlignment.Left
+  runeTitle.TextColor3=gold;runeTitle.Parent=runeBox
+  local runeButtons={}
+  local names={"해제"}
+  for i,rune in ipairs(Config.Runes or {}) do names[i+1]=rune.Name end
+  for i,label in ipairs(names) do
+    local pick=i-1
+    local b=CommonUI.CreatePrimaryButton({name="Rune"..pick,text=label,minHeight=44})
+    b.Position=UDim2.new((i-1)/#names,2,0,30);b.Size=UDim2.new(1/#names,-4,0,44);b.Parent=runeBox
+    b.Activated:Connect(function() remote:FireServer("rune:set:"..pick) end)
+    runeButtons[i]=b
+  end
+  local runeDesc=Instance.new("TextLabel")
+  runeDesc.BackgroundTransparency=1;runeDesc.Position=UDim2.fromOffset(10,78);runeDesc.Size=UDim2.new(1,-20,0,22)
+  runeDesc.Font=Enum.Font.GothamMedium;runeDesc.TextSize=11;runeDesc.TextXAlignment=Enum.TextXAlignment.Left
+  runeDesc.TextColor3=parchment;runeDesc.Parent=runeBox
+  local function refreshRune()
+    local current=tonumber(player:GetAttribute("MeadowRune")) or 0
+    local rune=Config.Runes and Config.Runes[current]
+    runeTitle.Text="무기 각인 · 현재 "..(rune and rune.Name or "없음")
+    runeDesc.Text=rune and rune.Desc or "재료+코인으로 새기면 명중마다 상태이상이 걸려. 상태이상이 겹치면 추가 피해."
+    for i,btn in ipairs(runeButtons) do
+      btn.BackgroundColor3=(i-1)==current and Color3.fromRGB(54,112,84) or Color3.fromRGB(46,60,66)
+    end
+  end
+  player:GetAttributeChangedSignal("MeadowRune"):Connect(refreshRune)
+  refreshRune()
+end
 -- [모션 미리보기] 메뉴를 닫고 내 캐릭터가 선택한 기술 모션을 서버 소비 없이 재생한 뒤 스킬창으로 돌아온다.
 do
   local preview=CommonUI.CreatePrimaryButton({name="PreviewSkillMotion",text="모션 미리보기",minHeight=52})
@@ -10231,6 +10267,47 @@ remote.OnClientEvent:Connect(function(kind,payload)
     task.delay(.14,function() beam:Destroy();a0:Destroy();a1:Destroy() end)
   end)
 end)
+-- [궁극기 연출] 입자·빛만 쓴다(모델/Part 형상 없음). 무기 클래스마다 색과 퍼짐이 다르다.
+do
+  local ultColors={Greatsword=Color3.fromRGB(255,170,70),Hammer=Color3.fromRGB(255,200,90),Axe=Color3.fromRGB(240,90,70),
+    Dagger=Color3.fromRGB(170,110,235),Bow=Color3.fromRGB(110,230,150),Staff=Color3.fromRGB(100,170,255),Sword=Color3.fromRGB(255,235,170)}
+  remote.OnClientEvent:Connect(function(kind,payload)
+    if kind~="MEADOW_ULT_FX" or typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end
+    local color=ultColors[payload.class] or ultColors.Sword
+    local holder=Instance.new("Part")
+    holder.Name="MeadowUltFx";holder.Anchored=true;holder.CanCollide=false;holder.CanQuery=false;holder.CanTouch=false
+    holder.Transparency=1;holder.Size=Vector3.one;holder.Position=payload.position+Vector3.new(0,1,0);holder.Parent=workspace
+    local burst=Instance.new("ParticleEmitter")
+    burst.Color=ColorSequence.new(color);burst.LightEmission=1;burst.Rate=0
+    burst.Lifetime=NumberRange.new(.5,.9)
+    burst.Speed=NumberRange.new(payload.alt and 34 or 24,payload.alt and 52 or 38)
+    burst.SpreadAngle=Vector2.new(180,180)
+    burst.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,1.4),NumberSequenceKeypoint.new(1,0)})
+    burst.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(1,1)})
+    burst.Parent=holder
+    burst:Emit(70)
+    local light=Instance.new("PointLight");light.Color=color;light.Range=26;light.Brightness=5;light.Parent=holder
+    game:GetService("TweenService"):Create(light,TweenInfo.new(.8),{Brightness=0}):Play()
+    game:GetService("Debris"):AddItem(holder,1.4)
+  end)
+  -- 아드레날린 100%: 내 캐릭터가 금빛으로 빛난다(로컬 표시 전용).
+  local function refreshAdrenalineGlow()
+    local character=player.Character
+    if not character then return end
+    local glow=character:FindFirstChild("MeadowAdrenalineGlow")
+    local full=(tonumber(player:GetAttribute("MeadowAdrenaline")) or 0)>=100
+    if full and not glow then
+      glow=Instance.new("Highlight");glow.Name="MeadowAdrenalineGlow"
+      glow.FillColor=Color3.fromRGB(255,200,80);glow.FillTransparency=.78
+      glow.OutlineColor=Color3.fromRGB(255,230,150);glow.OutlineTransparency=.2
+      glow.DepthMode=Enum.HighlightDepthMode.Occluded;glow.Parent=character
+    elseif not full and glow then
+      glow:Destroy()
+    end
+  end
+  player:GetAttributeChangedSignal("MeadowAdrenaline"):Connect(refreshAdrenalineGlow)
+  player.CharacterAdded:Connect(function() task.wait(1);refreshAdrenalineGlow() end)
+end
 remote.OnClientEvent:Connect(function(kind,payload)
   if typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end
   if kind=="MEADOW_MOB_ATTACK" then mobVfx(payload.pattern,payload.position,"IMPACT",payload.facing)
