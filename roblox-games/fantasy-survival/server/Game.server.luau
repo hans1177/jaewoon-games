@@ -156,10 +156,10 @@ local meadowPalette={
   ground=Color3.fromRGB(119,100,83),rock=Color3.fromRGB(104,106,100),
   bark=Color3.fromRGB(84,72,60),leaves=Color3.fromRGB(75,100,76),
   -- [몹 고유색] 전부 회색·흰색으로 보이던 단색을 종별 자연색으로 바꾼다.
-  wolf=Color3.fromRGB(96,86,78),boar=Color3.fromRGB(98,66,46),
-  deer=Color3.fromRGB(150,98,60),rabbit=Color3.fromRGB(206,184,148),
-  bee=Color3.fromRGB(236,184,58),bat=Color3.fromRGB(74,62,96),
-  golem=Color3.fromRGB(104,126,98),
+  wolf=Color3.fromRGB(132,118,104),boar=Color3.fromRGB(122,82,58),
+  deer=Color3.fromRGB(178,116,68),rabbit=Color3.fromRGB(214,196,160),
+  bee=Color3.fromRGB(236,184,58),bat=Color3.fromRGB(96,80,128),
+  golem=Color3.fromRGB(112,138,104),
   ghost=Color3.fromRGB(131,210,226),bandit=Color3.fromRGB(111,76,67),
 }
 local meadowTerrain = workspace.Terrain
@@ -498,16 +498,16 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
               end
               local order=game:GetService("HttpService"):JSONDecode(clone:GetAttribute("DeerRankJson") or "{}")
               local rank=order[surface.Name] or 1
-              surface.Color=rank==1 and Color3.fromRGB(150,98,60)
-                or rank==2 and Color3.fromRGB(206,170,124)
-                or rank==3 and Color3.fromRGB(104,66,42)
-                or rank==4 and Color3.fromRGB(176,146,102)
+              surface.Color=rank==1 and Color3.fromRGB(178,116,68)
+                or rank==2 and Color3.fromRGB(228,192,142)
+                or rank==3 and Color3.fromRGB(124,78,48)
+                or rank==4 and Color3.fromRGB(198,166,118)
                 or rank==5 and Color3.fromRGB(52,42,36)
                 or Color3.fromRGB(24,20,20)
-              surface.Material=Enum.Material.Fabric
+              surface.Material=Enum.Material.SmoothPlastic
             else
               surface.Color=animalTint
-              surface.Material=Enum.Material.Fabric
+              surface.Material=Enum.Material.SmoothPlastic
             end
           end
           surface.Reflectance=0
@@ -3274,12 +3274,12 @@ local function spawnEnemy(site, siteIndex)
         surface.MaterialVariant=""
         -- [재질] 털 달린 몹은 Fabric(보풀 질감), 골렘은 Slate(거친 돌), 벌은 매끈한 광택으로 표현한다.
         local furry=partId=="wolf" or partId=="bat" or partId=="boar" or partId=="rabbit"
-        surface.Material=furry and Enum.Material.Fabric
+        surface.Material=furry and Enum.Material.SmoothPlastic
           or (isBoss or partId=="golem") and Enum.Material.Slate
           or partId=="bee" and Enum.Material.SmoothPlastic
           or Enum.Material.Plastic
         -- 단지 지역 단계가 높을수록 털이 어두워지게 한다(같은 늑대라도 단계별로 구분).
-        local shade=1-math.clamp((site.tier or 1)-1,0,3)*.07
+        local shade=1-math.clamp((site.tier or 1)-1,0,3)*.06
         surface.Color=Color3.new(bodyTint.R*shade,bodyTint.G*shade,bodyTint.B*shade)
       end
       if partId=="ghost" then
