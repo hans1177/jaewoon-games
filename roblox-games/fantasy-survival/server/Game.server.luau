@@ -157,8 +157,8 @@ local meadowPalette={
   bark=Color3.fromRGB(84,72,60),leaves=Color3.fromRGB(75,100,76),
   -- [몹 고유색] 전부 회색·흰색으로 보이던 단색을 종별 자연색으로 바꾼다.
   wolf=Color3.fromRGB(92,74,60),boar=Color3.fromRGB(122,82,58),
-  deer=Color3.fromRGB(178,116,68),rabbit=Color3.fromRGB(214,196,160),
-  bee=Color3.fromRGB(236,184,58),bat=Color3.fromRGB(96,80,128),
+  deer=Color3.fromRGB(178,116,68),rabbit=Color3.fromRGB(158,124,90),
+  bee=Color3.fromRGB(236,184,58),bat=Color3.fromRGB(74,62,60),
   golem=Color3.fromRGB(112,138,104),
   ghost=Color3.fromRGB(131,210,226),bandit=Color3.fromRGB(111,76,67),
 }
@@ -504,6 +504,13 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
                 or rank==4 and Color3.fromRGB(198,166,118)
                 or rank==5 and Color3.fromRGB(52,42,36)
                 or Color3.fromRGB(24,20,20)
+              surface.Material=Enum.Material.SmoothPlastic
+            elseif id=="rabbit" then
+              -- [토끼 부위별 색] 몸통은 갈색, 다리는 더 진한 갈색, 작은 조각(꼬리·귀 끝)은 흰색.
+              local piece=surface.Name:lower()
+              surface.Color=piece:find("leg",1,true) and Color3.fromRGB(118,90,64)
+                or piece=="body" and Color3.fromRGB(166,130,94)
+                or Color3.fromRGB(240,234,220)
               surface.Material=Enum.Material.SmoothPlastic
             else
               surface.Color=animalTint
@@ -3265,6 +3272,11 @@ local function spawnEnemy(site, siteIndex)
         surface.Color=Color3.fromRGB(190,228,235)
       elseif smoothDetail then
         surface.Material=Enum.Material.SmoothPlastic
+        -- [박쥐 눈] 어둠 속에서 붉게 빛나는 눈.
+        if partId=="bat" and partName:find("eye",1,true) then
+          surface.Material=Enum.Material.Neon
+          surface.Color=Color3.fromRGB(255,72,52)
+        end
       else
         -- 구형 Pebble 돌무늬/체크 무늬는 원본 메시의 본체에서 제거한다.
         -- 원본 모델 템플릿은 유지하므로 기존 에셋을 파괴하거나 덮어쓰지 않는다.
@@ -3942,6 +3954,9 @@ local function updateEnemyAI(dt,now)
       -- [사슴 도약] 도망칠 땐 갤럽에 맞춰 위로 뛰어오르며 달린다(표시용 이동, 판정 없음).
       if animalMode=="RUN" then
         desired+=Vector3.new(0,math.abs(math.sin(now*7.5))*1.1,0)
+      elseif animal.model:GetAttribute("MeadowWildlife")=="rabbit" and animalMode=="WALK" then
+        -- [토끼 깡총] 걸을 때도 통통 튀며 이동한다(표시용).
+        desired+=Vector3.new(0,math.abs(math.sin(now*6.2+animal.phase))*.55,0)
       end
       local previous=animal.position or animal.origin
       local movement=Vector3.new(desired.X-previous.X,0,desired.Z-previous.Z)
