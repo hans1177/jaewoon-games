@@ -8804,7 +8804,7 @@ local function bindOriginalMob(model)
   end
   if species~="wolf" and species~="bee" and species~="golem"
     and species~="deer" and species~="boar" and species~="rabbit"
-    and species~="bat" then return end
+    and species~="bat" and species~="ghost" then return end
   -- [적 표시] 실제 서버 적 모델만 표시하고 벽 뒤·먼 거리의 화면 혼잡을 줄인다.
   if model:GetAttribute("Species") and not model:FindFirstChild("MeadowEnemyLabel") then
     local host=model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart",true)

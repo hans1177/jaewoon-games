@@ -81,7 +81,8 @@ local meadowOil={
     fox="beast",husky="beast",bull="beast",horse="beast",stag="beast",deer="beast",donkey="beast",snake="beast",snakeangry="beast",rat="beast",wasp="arachnid",
     mage="human",rogue="human",roguehooded="human",knight="human",barbarian="human",king="human",adventurer="human",punk="human",farmer="human",
     witch="human",womansoldier="human",womanmedieval="human",knightchar="human",
-    skmage="demon",skwarrior="demon",skrogue="demon",skminion="demon",spiritgolem="demon"},
+    skmage="demon",skwarrior="demon",skrogue="demon",skminion="demon",spiritgolem="demon",
+    ghost="demon",ghostskull="demon",wingdemon="demon",dragon="beast",mushroomking="beast"},
   kindClass={wolf="beast",bat="beast",ghost="demon",bee="arachnid"},
   names={beast="야수 오일",arachnid="거미 오일",human="인간형 오일",demon="퇴마 오일"},
   recipes={beast={{"Hide",1},{"Fang",1}},arachnid={{"Fang",1},{"Mushroom",1}},human={{"Ore",1},{"Hide",1}},demon={{"Magma",1},{"Crystal",1}}},
@@ -3270,6 +3271,16 @@ local function spawnEnemy(site, siteIndex)
         surface.Transparency=math.max(surface.Transparency,.38)
       end
       surface.Reflectance=0
+    end
+  end
+  if partId=="ghost" and site.model then
+    -- 유령 변종도 반투명 영혼 빛으로 표시한다. 메시와 뼈는 그대로 둔다.
+    for _,surface in ipairs(model:GetDescendants()) do
+      if surface:IsA("MeshPart") then
+        surface.Material=Enum.Material.Neon
+        surface.Color=site.model=="ghostskull" and Color3.fromRGB(190,235,205) or Color3.fromRGB(137,212,237)
+        surface.Transparency=math.max(surface.Transparency,.38)
+      end
     end
   end
   model:SetAttribute("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP")
@@ -6646,6 +6657,77 @@ do
     end
   end
   workspace:SetAttribute("VariantMonsterCount",count)
+end
+
+-- [용 · 유령 · 날개 악마 · 버섯왕] 뼈가 있는 CC0 몬스터를 비행·영혼·보스 역할로 배치한다.
+-- 용과 날개 악마는 박쥐 AI(공중 선회·급강하), 유령은 유령 AI(떠다니며 덮침)를 쓴다.
+do
+  local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
+  local random=Random.new(6603)
+  local village=Config.WorldMap.Village
+  local count=0
+  local function place(zoneId,margin)
+    local x,z=Config.WorldMap.RandomPoint(zoneId,random,margin or 120)
+    if x and not (x>village.X0-180 and x<village.X1+180 and z>village.Z0-180 and z<village.Z1+180) then return x,z end
+  end
+  -- 용: 지역마다 다른 이름의 이름 있는 보스.
+  local dragons={volcano="화염룡 이그니스",chaos="심연룡 나크라스",highland="서리 비룡 프로스트윙",desert="모래 비룡 사하르",citadel="흑룡 발레리온",
+    canyon="붉은 협곡룡 라가르",deadmarsh="역병룡 모르브",swamp="독안개 비룡 베놈"}
+  for zoneId,name in pairs(dragons) do
+    local x,z=place(zoneId,160)
+    if x then
+      table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",model="dragon",name="용 · "..name,tier=math.min(10,tiers[zoneId]+2),height=13,hp=9,dmg=3,
+        alpha=true,bonusBoss=true,named=true,lord=true,zoneTag=zoneId,drops={{"Crystal",1,8},{"Claw",1,6},{"Magma",.8,4},{"Hide",1,5}},position=Vector3.new(x,3,z)})
+      count+=1
+    end
+  end
+  -- 용기사: 용 등에 해골 전사를 태운 합성 보스.
+  for _,zoneId in ipairs({"volcano","citadel","chaos"}) do
+    local x,z=place(zoneId,180)
+    if x then
+      table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",model="dragon",name="용 · 해골 용기사",tier=math.min(10,tiers[zoneId]+2),height=11,hp=8,dmg=3,
+        alpha=true,bonusBoss=true,named=true,zoneTag=zoneId,compose={{model="skwarrior",height=5,up=.75,fwd=-.05}},
+        drops={{"Crystal",1,7},{"Claw",1,5},{"Magma",.8,3}},position=Vector3.new(x,3,z)})
+      count+=1
+    end
+  end
+  -- 유령 떼: 영혼 계열 몬스터(퇴마 오일에 약하다).
+  local ghostNames={ghost={"떠도는 원혼","길 잃은 기사단원","저주받은 순례자"},ghostskull={"해골 망령","웃는 해골 영혼","죽은 사제의 그림자"}}
+  for _,zoneId in ipairs({"deadmarsh","swamp","chaos","worldtree","citadel","oasis","wetland","canyon"}) do
+    for g=1,3 do
+      local x,z=place(zoneId,100)
+      if x then
+        local model=g==2 and "ghostskull" or "ghost"
+        for k=1,3 do
+          local a=k*math.pi*2/3
+          table.insert(meadowEncounterSites,{id="ghost",atom="GHOST_WAIL",model=model,name="유령 · "..ghostNames[model][(g+k)%3+1],tier=tiers[zoneId],height=5.4,hp=1.3,dmg=1.3,
+            zoneTag=zoneId,drops={{"Moonbloom",.6,2},{"Crystal",.4,1}},position=Vector3.new(x+math.cos(a)*9,3,z+math.sin(a)*9)})
+          count+=1
+        end
+      end
+    end
+  end
+  -- 날개 악마: 하늘에서 급강하하는 정예.
+  for _,zoneId in ipairs({"volcano","chaos","citadel","deadmarsh","canyon"}) do
+    for g=1,2 do
+      local x,z=place(zoneId,120)
+      if x then
+        table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",model="wingdemon",name="날개 악마 · "..(g==1 and "불꽃 임프 대장" or "심연 급강하자"),tier=math.min(10,tiers[zoneId]+1),
+          height=8,hp=3,dmg=2.1,alpha=true,zoneTag=zoneId,style="mage",drops={{"Magma",.8,3},{"Crystal",1,3},{"Claw",.7,2}},position=Vector3.new(x,3,z)})
+        count+=1
+      end
+    end
+  end
+  -- 버섯왕: 숲과 습지의 포자 군주.
+  for _,zoneId in ipairs({"worldtree","wetland","swamp","meadow"}) do
+    local x,z=place(zoneId,140)
+    if x then
+      table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="mushroomking",name="포자 군주 · 버섯왕 마이코스",tier=math.min(10,tiers[zoneId]+1),height=8,hp=5,dmg=2.2,
+        alpha=true,bonusBoss=true,named=true,lord=true,style="mage",zoneTag=zoneId,drops={{"Mushroom",1,6},{"Moonbloom",1,4},{"Crystal",1,4}},position=Vector3.new(x,3,z)})
+      count+=1
+    end
+  end
+  workspace:SetAttribute("SkyMonsterCount",count)
 end
 
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
