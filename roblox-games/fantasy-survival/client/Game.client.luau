@@ -3137,7 +3137,7 @@ meadowActionButtons.refreshSkills=function()
   for _,row in ipairs(skillRows)do
     local deadline=player:GetAttribute("MeadowReady_"..row.action.Id)
     local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
-    row.button.Visible=(skillCategory=="전체" or row.category==skillCategory) and not (Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[row.action.Id])
+    row.button.Visible=(skillCategory=="전체" or row.category==skillCategory) and not (Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[row.action.Id]) and not string.find(row.action.Id,"meadow-unarmed-",1,true)
     local lockText=meadowArt.skillLock(row.action.Id)
     local equippedSlot=nil
     for slot=1,5 do if meadowArt.quickIds[slot]==row.action.Id then equippedSlot=slot;break end end
