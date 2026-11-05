@@ -5008,6 +5008,37 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
      task.delay(.08,function() tabDragMoved=false end)
     end
    end)
+   -- [위·아래 화살표] 스와이프가 안 되는 기기에서도 탭을 넘길 수 있게 한다(글꼴 의존 없는 도형 화살표).
+   local function makeArrow(name,direction)
+    local arrow=Instance.new("TextButton")
+    arrow.Name=name;arrow.Text="";arrow.AutoButtonColor=true
+    arrow.BackgroundColor3=Color3.fromRGB(18,40,38);arrow.BackgroundTransparency=.08
+    arrow.BorderSizePixel=0;arrow.ZIndex=48;arrow.Visible=false;arrow.Parent=root
+    local arrowCorner=Instance.new("UICorner");arrowCorner.CornerRadius=UDim.new(0,10);arrowCorner.Parent=arrow
+    local arrowStroke=Instance.new("UIStroke");arrowStroke.Color=Color3.fromRGB(218,189,126);arrowStroke.Thickness=1.5;arrowStroke.Parent=arrow
+    local chevron=Instance.new("Frame");chevron.BackgroundTransparency=1;chevron.AnchorPoint=Vector2.new(.5,.5)
+    chevron.Size=UDim2.fromOffset(14,14);chevron.Position=UDim2.new(.5,0,.5,direction*3)
+    chevron.Rotation=direction<0 and 45 or 225;chevron.ZIndex=49;chevron.Parent=arrow
+    for _,bar in ipairs({{UDim2.fromOffset(14,3),UDim2.fromOffset(0,0)},{UDim2.fromOffset(3,14),UDim2.fromOffset(0,0)}})do
+     local line=Instance.new("Frame");line.BackgroundColor3=Color3.fromRGB(255,232,160);line.BorderSizePixel=0
+     line.Size=bar[1];line.Position=bar[2];line.ZIndex=49;line.Parent=chevron
+    end
+    arrow.Activated:Connect(function()
+     scrollTabs(tabs.CanvasPosition.Y+direction*76)
+    end)
+    return arrow
+   end
+   local upArrow=makeArrow("MeadowTabUp",-1)
+   local downArrow=makeArrow("MeadowTabDown",1)
+   local function refreshArrows()
+    local maxScroll=math.max(0,tabs.AbsoluteCanvasSize.Y-tabs.AbsoluteSize.Y)
+    upArrow.Visible=opened and maxScroll>2 and tabs.CanvasPosition.Y>2
+    downArrow.Visible=opened and maxScroll>2 and tabs.CanvasPosition.Y<maxScroll-2
+   end
+   tabs:GetPropertyChangedSignal("CanvasPosition"):Connect(refreshArrows)
+   tabs:GetPropertyChangedSignal("AbsoluteCanvasSize"):Connect(refreshArrows)
+   tabs:GetPropertyChangedSignal("AbsoluteSize"):Connect(refreshArrows)
+   root:GetPropertyChangedSignal("Visible"):Connect(refreshArrows)
   end
   local heading=Instance.new("TextLabel");heading.Name="MeadowMenuHeading"
   heading.Position=UDim2.fromOffset(20,10);heading.Size=UDim2.new(1,-116,0,32)
@@ -5170,6 +5201,10 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   list.Position=UDim2.fromOffset(bodyLeft,bodyTop);list.Size=UDim2.new(1,-bodyLeft-14,1,-bodyTop-12)
   if sideTabs then
    tabs.Position=UDim2.fromOffset(10,bodyTop);tabs.Size=UDim2.new(0,86,1,-bodyTop-12)
+   local upArrow=root:FindFirstChild("MeadowTabUp")
+   if upArrow then upArrow.AnchorPoint=Vector2.new(0,0);upArrow.Position=UDim2.fromOffset(10,bodyTop);upArrow.Size=UDim2.fromOffset(86,28) end
+   local downArrow=root:FindFirstChild("MeadowTabDown")
+   if downArrow then downArrow.AnchorPoint=Vector2.new(0,1);downArrow.Position=UDim2.new(0,10,1,-12);downArrow.Size=UDim2.fromOffset(86,28) end
    local subtitle=root:FindFirstChild("MeadowMenuSubtitle")
    if subtitle then subtitle.Visible=true;subtitle.Position=UDim2.fromOffset(22,38);subtitle.Size=UDim2.new(1,-90,0,18) end
    local heading=root:FindFirstChild("MeadowMenuHeading")
