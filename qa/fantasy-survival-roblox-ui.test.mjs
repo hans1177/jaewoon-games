@@ -97,7 +97,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'local hotbarActions={','local function layoutMeadowReferenceHud()',
     'local step=landscape and math.floor(math.clamp(v.X/20.8,31,39))',
     'meadowReferenceHotbar.Position=UDim2.new(landscape and .44 or .5,0',
-    'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(135*scale)',
+    'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale)',
     'meadowHealthTrack.Position=UDim2.fromOffset(x,top+16)',
     'meadowEnergy.Position=UDim2.fromOffset(x,top+30)',
     'questTracker.Position=UDim2.fromOffset(v.X-width-8,top)',
@@ -134,6 +134,37 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/if role=="jump" then\s+icon\.Visible=false/);
   assert.match(client,/rbxassetid:\/\/71333073665947/);
   assert.match(client,/rbxassetid:\/\/81665484719308/);
+  // [오너 시안 실좌표] 좌측 상태창은 제외하고 실제 오른쪽 UI와 하단 10칸만 대조한다.
+  assert.match(client,/meadowReferenceMenu.Size=UDim2.fromOffset\(menuWidth,step\+17\)/);
+  assert.match(client,/button.Size=UDim2.fromOffset\(step-3,step-3\)/);
+  assert.match(client,/icon.Size=UDim2.fromScale\(1,1\)/);
+  assert.match(client,/slot.BackgroundTransparency=1/);
+  assert.match(client,/stroke.Transparency=1/);
+  assert.match(client,/meadowReferenceHotbar.Position=UDim2.new\(landscape and \.44 or \.5,0,1,landscape and -13 or -99\)/);
+  assert.match(client,/questTracker.BackgroundColor3=Color3.fromRGB\(19,19,18\)/);
+  assert.match(client,/local height=compact and 100 or 157/);
+  assert.match(client,/local width=math.floor\(math.clamp\(v.X\*\(landscape and \.19 or \.42\),132,238\)\)/);
+  assert.match(client,/local positions=\{\s+\{156,111,38\}/);
+  assert.match(client,/\{121,139,39\}/);
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(179\*scale\),math.floor\(78\*scale\)\)/);
+  assert.match(client,/meadowSkillButtons.primarySword.Position=UDim2.fromOffset\(math.floor\(146\*scale\),math.floor\(132\*scale\)\)/);
+  assert.match(client,/local swordSize=math.max\(60,math.floor\(66\*scale\)\)/);
+  assert.match(client,/meadowSkillButtons.referenceJump.Position=UDim2.fromOffset\(math.floor\(92\*scale\),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor\(17\*scale\)\)/);
+  // 원화 자체에 포함된 링을 또 그리지 않는다.
+  assert.match(client,/if rim then rim.Enabled=false end/);
+  assert.match(client,/if inner then inner.Visible=false end/);
+  const screenWidth=709,screenHeight=446;
+  const menuStep=Math.floor(Math.max(31,Math.min(39,screenWidth/20.8)));
+  const menuX=screenWidth-menuStep*6-4;
+  const cell=Math.floor(Math.max(30,Math.min(40,screenWidth/21)));
+  const barWidth=(cell+2)*10-2;
+  const barX=screenWidth*.44-barWidth/2;
+  const questTop=4+menuStep+24;
+  const questWidth=Math.floor(Math.max(132,Math.min(238,screenWidth*.19)));
+  assert.ok(menuX>=495&&menuX<=510,'reference top icons are shifted');
+  assert.ok(Math.abs(barX-138)<6&&barWidth>=342&&barWidth<=355,'reference hotbar width/x mismatch');
+  assert.ok(questTop>=60&&questTop<=68&&questWidth<=140,'reference right quest panel shifted');
+
   const sheet={width:2172,height:724};
   const cropRows=[
     ...[13,251,487,727,963,1199].map(x=>[x,8,225,220]),
@@ -166,7 +197,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'remote:FireServer("meadow:rpg:tonic:use:energy_tonic")',
     'trackerTitle.Text=quest and ("❖ [메인] "..quest.Name)',
     'button.Visible=index==1 or index==2',
-    'meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(76*scale)',
+    'meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(92*scale)',
   ])assert.ok(client.includes(marker),'painted reference HUD lost: '+marker);
   for(const [w,h] of [[1536,709],[852,393],[720,400],[640,360],[390,844],[360,640]]){
     const landscape=w>h;
