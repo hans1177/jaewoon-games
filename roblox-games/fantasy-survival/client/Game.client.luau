@@ -3243,7 +3243,7 @@ questTracker.Name="MeadowQuestHelperButton"
 questTracker.Text=""
 -- [참고 이미지 검은 의뢰판] 실시간 메인/서브 기록을 작은 체크리스트로 표현한다.
 questTracker.BackgroundColor3=Color3.fromRGB(12,15,19)
-questTracker.BackgroundTransparency=.62
+questTracker.BackgroundTransparency=.74
 local questRim=questTracker:FindFirstChildOfClass("UIStroke")
 if questRim then
   questRim.Color=Color3.fromRGB(130,112,76)
@@ -3332,7 +3332,7 @@ local function layoutMeadowJournal()
   local height=compact and 156 or 186 -- [가독성] 글씨 확대 · 반투명
   -- [가로 화면] 오른쪽 전투 버튼과 겹치지 않도록 퀘스트창은 왼쪽 체력바 아래에 둔다.
   local questLeft=landscape and 10 or v.X-width-8
-  local questTop=landscape and math.max(0,92-math.floor(gui.AbsolutePosition.Y)) or top -- 화면 기준 체력바 바로 아래(상단 안전영역 보정)
+  local questTop=landscape and math.max(0,72-math.floor(gui.AbsolutePosition.Y)) or top -- 화면 기준 체력바 바로 아래(상단 안전영역 보정)
   questTracker.Position=UDim2.fromOffset(questLeft,questTop)
   questTracker.Size=UDim2.fromOffset(width,height)
   trackerTitle.Position=UDim2.fromOffset(compact and 24 or 8,compact and 4 or 6)
