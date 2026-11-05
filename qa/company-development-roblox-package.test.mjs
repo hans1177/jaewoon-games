@@ -1946,8 +1946,8 @@ test('마력숲 버섯 몬스터는 출현하지 않고 실제 박쥐 원본 뼈
   assert.doesNotMatch(sites,/id="skeleton"/,'removed skeleton spawn sites must not return');
   assert.doesNotMatch(server,/skeleton="초원 해골"|SKELETON_CLEAVE|SKELETON_THRUST/);
   assert.doesNotMatch(client,/species~="skeleton"|SKELETON_CLEAVE|SKELETON_THRUST/);
-  assert.equal((sites.match(/id="bat"/g)||[]).length,5,'four corner habitats plus original contract bat');
-  assert.equal((sites.match(/id="wolf"/g)||[]).length,9,'eight original exterior wolves and a contract wolf');
+  assert.equal((sites.match(/id="bat"/g)||[]).length,9,'four corner habitats, original contract bat and four mid-meadow nests');
+  assert.equal((sites.match(/id="wolf"/g)||[]).length,30,'nine original wolves plus 21 mid-meadow pack wolves');
   assert.match(sites,/id="bat"[^\n]*questIndex=2/,'contract bat must remain outside village');
   assert.match(sites,/id="wolf"[^\n]*questIndex=3/,'contract wolf must remain outside village');
   assert.equal((sites.match(/alpha=true/g)||[]).length,1,'exactly one approved alpha wolf boss');
@@ -2206,7 +2206,7 @@ test('fantasy owner-removed golem stays absent and exterior alpha wolf finishes 
   assert.match(server,/if target\.isAlpha then recordMeadowQuest\(player,"BOSS_KILL"\) end/);
   assert.match(server,/if eventName~="BOSS_KILL" or meadowRegionOf\(player\)~="meadow" then return end/);
   const wolves=[...sites.matchAll(/\{id="wolf"[^\n]*?position=Vector3\.new\((-?\d+),(-?\d+),(-?\d+)\)/g)];
-  assert.equal(wolves.length,9,'all approved exterior wolves including contract wolf');
+  assert.equal(wolves.length,30,'all approved exterior wolves including mid-meadow packs and contract wolf');
   for(const [,x,y,z] of wolves){
     assert.equal(+x>=-280&&+x<=280&&+z>=-351&&+z<=-42,false,'wolf inside village');
   }

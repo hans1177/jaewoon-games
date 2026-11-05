@@ -71,7 +71,7 @@ local WaveState = "OPEN_WORLD"
 local worldClock = 0
 local attackCooldown = {}
 local comboChain = {}
-local MAX_ENEMIES = 22
+local MAX_ENEMIES = 30
 local nextEncounterCheck = 0
 -- [지역 서식지] 마을 내부의 늑대를 외곽 숲으로 이동하고 골렘 출현 지점을 제거한다.
 -- 기존 종별 체력·공격력·드랍·보상·저장 구조를 보존한다.
@@ -97,6 +97,32 @@ local meadowEncounterSites = {
   -- 기존 의뢰 번호와 처치 판정 비트는 보존하고, 실제 CC0 박쥐·늑대로 마을 밖에서 대체한다.
   {id="bat",atom="WING_LEATHER",tier=2,height=3.15,position=Vector3.new(300,3,-212),questIndex=2},
   {id="wolf",atom="HEAD_CANINE",tier=3,height=3.15,position=Vector3.new(-299,3,-233),questIndex=3},
+  -- [초원 중간 지대 확장] 마을 남문에서 깊은 초원까지 거리에 따라 1~4단계 늑대 무리·박쥐 둥지를 배치해 동선과 퀘스트 난이도를 맞춘다.
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-95,3,95)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-83,3,103)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(88,3,100)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(100,3,92)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(0,3,125)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(-215,3,175)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(-203,3,184)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(212,3,178)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(200,3,187)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(0,3,195)},
+  {id="bat",atom="WING_LEATHER",tier=2,height=3.15,position=Vector3.new(-60,3,205)},
+  {id="bat",atom="WING_LEATHER",tier=2,height=3.15,position=Vector3.new(82,3,218)},
+  {id="wolf",atom="HEAD_CANINE",tier=3,height=3.15,position=Vector3.new(-125,3,262)},
+  {id="wolf",atom="HEAD_CANINE",tier=3,height=3.15,position=Vector3.new(-113,3,270)},
+  {id="wolf",atom="HEAD_CANINE",tier=3,height=3.15,position=Vector3.new(122,3,266)},
+  {id="wolf",atom="HEAD_CANINE",tier=3,height=3.15,position=Vector3.new(110,3,274)},
+  {id="wolf",atom="HEAD_CANINE",tier=4,height=3.6,position=Vector3.new(0,3,305)},
+  {id="bat",atom="WING_LEATHER",tier=3,height=3.15,position=Vector3.new(-232,3,243)},
+  {id="bat",atom="WING_LEATHER",tier=3,height=3.15,position=Vector3.new(231,3,238)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(-312,3,40)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(-300,3,52)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(312,3,44)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(300,3,56)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(-306,3,125)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(306,3,128)},
 }
 -- [마을 안전 경계] 16채의 주거·농가·성문 주변을 포함하는 서버 소유 X/Z 구역.
 -- 늑대만 제한하며 기존 원혼·도적 의뢰 전투는 그대로 허용한다.
