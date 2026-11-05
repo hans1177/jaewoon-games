@@ -1,0 +1,528 @@
+--!nonstrict
+-- 항구 3D 장면 (클라이언트 전용, 보기용). 도형(Part)으로 항구 마을·부두·배·갈매기를 만든다.
+-- 항구마다 지역 양식(북유럽 / 지중해)과 시설(교역소, 조선소, 은행, 길드, 왕궁, 항만청)이 달라진다.
+-- 판정에는 쓰이지 않는다. 시설 앞의 ProximityPrompt를 누르면 onFacility(탭 id)가 불린다.
+
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local PortScene = {}
+
+local MED = { lisbon = true, seville = true, marseille = true, genoa = true, venice = true, livorno = true, naples = true }
+
+local STYLE = {
+	north = {
+		walls = { Color3.fromRGB(150, 74, 56), Color3.fromRGB(196, 170, 130), Color3.fromRGB(120, 90, 70), Color3.fromRGB(220, 210, 190), Color3.fromRGB(170, 110, 80) },
+		roofs = { Color3.fromRGB(60, 52, 50), Color3.fromRGB(110, 50, 40), Color3.fromRGB(70, 70, 80) },
+		roofPitch = 1.0,
+		ground = Color3.fromRGB(96, 128, 72),
+		street = Color3.fromRGB(120, 116, 110),
+	},
+	med = {
+		walls = { Color3.fromRGB(240, 232, 214), Color3.fromRGB(226, 196, 140), Color3.fromRGB(214, 150, 100), Color3.fromRGB(246, 240, 230), Color3.fromRGB(200, 170, 120) },
+		roofs = { Color3.fromRGB(184, 92, 60), Color3.fromRGB(170, 80, 54), Color3.fromRGB(196, 110, 70) },
+		roofPitch = 0.45,
+		ground = Color3.fromRGB(176, 160, 110),
+		street = Color3.fromRGB(196, 186, 160),
+	},
+}
+
+local SHIP_LOOK = {
+	caravel = { scale = 1.0, masts = 2, hull = Color3.fromRGB(110, 70, 40) },
+	fluyt = { scale = 1.15, masts = 3, hull = Color3.fromRGB(96, 66, 44) },
+	frigate = { scale = 1.3, masts = 3, hull = Color3.fromRGB(60, 50, 44), stripe = Color3.fromRGB(224, 170, 69) },
+	galleon = { scale = 1.5, masts = 3, hull = Color3.fromRGB(120, 60, 36), stripe = Color3.fromRGB(200, 40, 40), castle = true },
+	paddle_steamer = { scale = 1.3, masts = 1, hull = Color3.fromRGB(40, 40, 46), funnel = true, paddle = true },
+	ironclad_frigate = { scale = 1.5, masts = 2, hull = Color3.fromRGB(90, 96, 104), funnel = true, metal = true },
+}
+
+-- 같은 항구는 늘 같은 마을이 되도록 항구 id로 난수를 만든다
+local function seeded(id)
+	local h = 0
+	for i = 1, #id do
+		h = (h * 31 + string.byte(id, i)) % 2147483647
+	end
+	return Random.new(h)
+end
+
+local function part(parent, size, cf, color, material, shape)
+	local p = Instance.new("Part")
+	p.Anchored = true
+	p.CanCollide = true
+	p.Size = size
+	p.CFrame = cf
+	p.Color = color
+	p.Material = material or Enum.Material.SmoothPlastic
+	p.TopSurface = Enum.SurfaceType.Smooth
+	p.BottomSurface = Enum.SurfaceType.Smooth
+	if shape then
+		p.Shape = shape
+	end
+	p.Parent = parent
+	return p
+end
+
+local function wedge(parent, size, cf, color, material)
+	local w = Instance.new("WedgePart")
+	w.Anchored = true
+	w.Size = size
+	w.CFrame = cf
+	w.Color = color
+	w.Material = material or Enum.Material.SmoothPlastic
+	w.TopSurface = Enum.SurfaceType.Smooth
+	w.BottomSurface = Enum.SurfaceType.Smooth
+	w.Parent = parent
+	return w
+end
+
+-- 박공 지붕: 용마루가 X축을 따라간다. (w = X 길이, d = Z 깊이, h = 높이)
+local function gableRoof(parent, center, w, d, h, color)
+	wedge(parent, Vector3.new(w, h, d / 2), CFrame.new(center + Vector3.new(0, h / 2, -d / 4)), color)
+	wedge(parent, Vector3.new(w, h, d / 2), CFrame.new(center + Vector3.new(0, h / 2, d / 4)) * CFrame.Angles(0, math.pi, 0), color)
+end
+
+local function sign(parent, adornee, text, color, height)
+	local bb = Instance.new("BillboardGui")
+	bb.Adornee = adornee
+	bb.Size = UDim2.fromOffset(160, 36)
+	bb.StudsOffset = Vector3.new(0, height or 4, 0)
+	bb.AlwaysOnTop = false
+	bb.MaxDistance = 160
+	local l = Instance.new("TextLabel")
+	l.Size = UDim2.fromScale(1, 1)
+	l.BackgroundColor3 = color or Color3.fromRGB(30, 34, 44)
+	l.BackgroundTransparency = 0.15
+	l.TextColor3 = Color3.new(1, 1, 1)
+	l.Font = Enum.Font.GothamBold
+	l.TextScaled = true
+	l.Text = text
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 8)
+	c.Parent = l
+	local pad = Instance.new("UIPadding")
+	pad.PaddingLeft, pad.PaddingRight, pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 6), UDim.new(0, 6), UDim.new(0, 4), UDim.new(0, 4)
+	pad.Parent = l
+	l.Parent = bb
+	bb.Parent = parent
+	return bb
+end
+
+local function prompt(parent, at, objectText, actionText, tab, onFacility)
+	local anchor = part(parent, Vector3.new(2, 2, 2), CFrame.new(at), Color3.new(1, 1, 1))
+	anchor.Transparency = 1
+	anchor.CanCollide = false
+	local pp = Instance.new("ProximityPrompt")
+	pp.ObjectText = objectText
+	pp.ActionText = actionText
+	pp.HoldDuration = 0
+	pp.MaxActivationDistance = 12
+	pp.RequiresLineOfSight = false
+	pp.Parent = anchor
+	pp.Triggered:Connect(function()
+		onFacility(tab)
+	end)
+	return anchor
+end
+
+-- 공식 Studio Importer로 수입한 실제 GLB/OBJ/FBX 모델 우선 사용
+-- 원본: roblox-games/mare-scientia/assets/, 수입본: ReplicatedStorage/MareAssets
+local SHIP_MESH = {
+	caravel = "ship-small", fluyt = "ship-medium",
+	frigate = "ship-pirate-medium", galleon = "ship-large",
+	paddle_steamer = "ship-pirate-small", ironclad_frigate = "ship-pirate-medium",
+}
+
+local function importedModel(parent, kind, asset, bottomPosition, desiredSize, solid, tint)
+	local library = ReplicatedStorage:FindFirstChild("MareAssets")
+	local group = library and library:FindFirstChild(kind)
+	local template = group and group:FindFirstChild(asset)
+	if not template or not template:IsA("Model") then return nil end
+	local m = template:Clone()
+	local hasParts = false
+	for _, p in m:GetDescendants() do
+		if p:IsA("BasePart") then
+			hasParts = true
+			p.Anchored = true
+			p.CanCollide = solid == true
+			p.CanTouch = false
+			if tint and p:IsA("MeshPart") then p.Color = tint end
+		end
+	end
+	if not hasParts then m:Destroy(); return nil end
+	local ok, err = pcall(function()
+		m.Parent = parent
+		local _, ext = m:GetBoundingBox()
+		local axis = if kind == "People" then ext.Y else math.max(ext.X, ext.Z)
+		if axis < 0.01 then error("빈 모델") end
+		local scale = desiredSize / axis
+		if scale < 0.01 or scale > 100 then error("비정상적인 모델 배율") end
+		m:ScaleTo(scale)
+		if kind ~= "People" then
+			local _, size = m:GetBoundingBox()
+			if size.Z > size.X then m:PivotTo(CFrame.Angles(0, math.pi / 2, 0) * m:GetPivot()) end
+		end
+		local center, size = m:GetBoundingBox()
+		local bottom = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
+		m:PivotTo(CFrame.new(bottomPosition - bottom) * m:GetPivot())
+	end)
+	if not ok then
+		warn("[MareScientia] 모델 수입본 배치 오류", kind, asset, err)
+		m:Destroy()
+		return nil
+	end
+	return m
+end
+
+-- 주민 NPC (실제 FBX 모델 우선)
+local function villager(parent, pos, facing, coat, rng)
+	local roles = { "Pirate_Male", "Pirate_Female", "Worker_Male", "Worker_Female", "Casual_Male", "Casual_Female", "OldClassy_Male", "OldClassy_Female" }
+	local character = importedModel(parent, "People", roles[rng:NextInteger(1, #roles)], pos, 5.6, false)
+	if character then
+		character.Name = "Villager"
+		character:PivotTo(character:GetPivot() * CFrame.Angles(0, facing, 0))
+		return character
+	end
+	local m = Instance.new("Model")
+	m.Name = "Villager"
+	local skin = ({ Color3.fromRGB(234, 196, 160), Color3.fromRGB(200, 150, 110), Color3.fromRGB(160, 110, 80) })[rng:NextInteger(1, 3)]
+	local base = CFrame.new(pos) * CFrame.Angles(0, facing, 0)
+	part(m, Vector3.new(1.6, 2, 1), base * CFrame.new(0, 1, 0), Color3.fromRGB(50, 44, 40))
+	part(m, Vector3.new(2, 2.2, 1.2), base * CFrame.new(0, 3.1, 0), coat)
+	part(m, Vector3.new(1.3, 1.3, 1.3), base * CFrame.new(0, 4.9, 0), skin, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+	part(m, Vector3.new(1.6, 0.4, 1.6), base * CFrame.new(0, 5.6, 0), Color3.fromRGB(40, 32, 30))
+	m.Parent = parent
+	return m
+end
+
+local function house(parent, pos, w, d, floors, style, rng)
+	local mesh = importedModel(parent, "Town", "house", pos, math.max(w, d), true)
+	if mesh then
+		mesh.Name = "HarborHouse"
+		return mesh:FindFirstChildWhichIsA("BasePart", true)
+	end
+	local wall = style.walls[rng:NextInteger(1, #style.walls)]
+	local roof = style.roofs[rng:NextInteger(1, #style.roofs)]
+	local h = floors * 6
+	local body = part(parent, Vector3.new(w, h, d), CFrame.new(pos + Vector3.new(0, h / 2, 0)), wall, Enum.Material.Brick)
+	if style == STYLE.med then
+		body.Material = Enum.Material.Concrete
+	end
+	gableRoof(parent, pos + Vector3.new(0, h, 0), w + 1, d + 1, d * 0.5 * style.roofPitch, roof)
+	-- 창문과 문
+	for f = 1, floors do
+		for i = -1, 1, 2 do
+			part(parent, Vector3.new(1.4, 1.8, 0.2), CFrame.new(pos + Vector3.new(i * w / 4, (f - 1) * 6 + 3.6, -d / 2 - 0.1)), Color3.fromRGB(60, 80, 100), Enum.Material.Glass)
+		end
+	end
+	part(parent, Vector3.new(1.8, 3.2, 0.2), CFrame.new(pos + Vector3.new(0, 1.6, -d / 2 - 0.1)), Color3.fromRGB(80, 50, 30), Enum.Material.Wood)
+	return body
+end
+
+-- 배 모델 (부두 옆에 정박). 배 종류마다 크기·돛대·굴뚝이 다르다.
+local function buildShip(parent, shipId, at)
+	local look = SHIP_LOOK[shipId] or SHIP_LOOK.caravel
+	local s = look.scale
+	local bottom = Vector3.new(at.X, at.Y - 2 * s, at.Z)
+	local shipMesh = importedModel(parent, "Ships", shipId, bottom, 26 * s, false, look.metal and look.hull or nil)
+		or importedModel(parent, "Naval", SHIP_MESH[shipId] or "ship-small", bottom, 26 * s, false, look.metal and look.hull or nil)
+	if shipMesh then
+		shipMesh.Name = "Ship"
+		if look.funnel then
+			-- 증기선 두 종류는 수입된 굴뚝과 연기로 범선과 구분한다.
+			local stack = importedModel(parent, "Town", "chimney", at + Vector3.new(-5 * s, 3 * s, 0), 4 * s, false, look.metal and look.hull or nil)
+			local part = if stack then stack:FindFirstChildWhichIsA("BasePart", true) else shipMesh:FindFirstChildWhichIsA("BasePart", true)
+			if part then
+				local smoke = Instance.new("Smoke")
+				smoke.Color = Color3.fromRGB(90, 88, 84)
+				smoke.Size = 4 * s
+				smoke.Opacity = 0.24
+				smoke.RiseVelocity = 5
+				smoke.Parent = part
+			end
+		end
+		return shipMesh
+	end
+	-- 미수입 환경에서는 기존 외형과 플레이 기능을 보존한다.
+	local m = Instance.new("Model")
+	m.Name = "Ship"
+	local L, W, H = 26 * s, 8 * s, 4 * s
+	local base = CFrame.new(at)
+	local mat = if look.metal then Enum.Material.DiamondPlate else Enum.Material.WoodPlanks
+	local hull = part(m, Vector3.new(L, H, W), base * CFrame.new(0, 0, 0), look.hull, mat)
+	m.PrimaryPart = hull
+	-- 뱃머리(+X)와 고물
+	wedge(m, Vector3.new(W, H, 6 * s), base * CFrame.new(L / 2 + 3 * s, 0, 0) * CFrame.Angles(0, -math.pi / 2, 0), look.hull, mat)
+	part(m, Vector3.new(L, 0.4, W - 0.6), base * CFrame.new(0, H / 2 + 0.2, 0), Color3.fromRGB(176, 140, 96), Enum.Material.WoodPlanks)
+	if look.stripe then
+		part(m, Vector3.new(L + 0.2, 0.5, W + 0.2), base * CFrame.new(0, H / 4, 0), look.stripe)
+	end
+	if look.castle then
+		part(m, Vector3.new(6 * s, 3 * s, W), base * CFrame.new(-L / 2 + 3 * s, H / 2 + 1.5 * s, 0), look.hull, mat)
+	end
+	-- 대포 구멍
+	for i = 1, 4 do
+		for side = -1, 1, 2 do
+			part(m, Vector3.new(1, 0.8, 0.2), base * CFrame.new(-L / 2 + i * L / 5, 0.3, side * (W / 2 + 0.05)), Color3.fromRGB(20, 20, 20))
+		end
+	end
+	-- 돛대와 돛
+	local mastH = 22 * s
+	for i = 1, look.masts do
+		local x = if look.masts == 1 then 0 else (-L / 2 + 4 * s) + (i - 1) * (L - 8 * s) / (look.masts - 1)
+		part(m, Vector3.new(mastH, 0.9, 0.9), base * CFrame.new(x, H / 2 + mastH / 2, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(70, 46, 30), Enum.Material.Wood, Enum.PartType.Cylinder)
+		if not look.funnel or i > 1 or look.masts > 1 then
+			for k = 0, 1 do
+				local sw = (W + 6 * s) * (1 - k * 0.2)
+				part(m, Vector3.new(0.3, 6 * s, sw), base * CFrame.new(x + 0.5, H / 2 + 6 * s + k * 7 * s, 0), Color3.fromRGB(240, 234, 216), Enum.Material.Fabric)
+				part(m, Vector3.new(0.6, 0.6, sw + 1), base * CFrame.new(x + 0.4, H / 2 + 9.2 * s + k * 7 * s, 0), Color3.fromRGB(70, 46, 30), Enum.Material.Wood)
+			end
+		end
+		if i == 1 then
+			part(m, Vector3.new(0.2, 1.4, 2.4), base * CFrame.new(x, H / 2 + mastH + 0.6, 1.2), Color3.fromRGB(200, 40, 40), Enum.Material.Fabric)
+		end
+	end
+	if look.funnel then
+		part(m, Vector3.new(7 * s, 2.4 * s, 2.4 * s), base * CFrame.new(L * 0.1, H / 2 + 3.5 * s, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(30, 30, 34), Enum.Material.Metal, Enum.PartType.Cylinder)
+		part(m, Vector3.new(0.6, 2.5 * s, 2.5 * s), base * CFrame.new(L * 0.1, H / 2 + 7 * s, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 40, 40), Enum.Material.Metal, Enum.PartType.Cylinder)
+	end
+	if look.paddle then
+		for side = -1, 1, 2 do
+			part(m, Vector3.new(2, 9 * s, 9 * s), base * CFrame.new(0, 0.5, side * (W / 2 + 1)) * CFrame.Angles(0, math.pi / 2, 0), Color3.fromRGB(150, 40, 40), Enum.Material.Wood, Enum.PartType.Cylinder)
+		end
+	end
+	for _, p in m:GetDescendants() do
+		if p:IsA("BasePart") then
+			p.CanCollide = false
+		end
+	end
+	m.Parent = parent
+	return m
+end
+
+-- 장면 만들기. info: { portId, portName, shipId, hasShipyard, facilities = { "bank", ... }, storyCount }
+-- 돌려주는 값: { folder, spawn = 캐릭터를 둘 위치, stop = 애니메이션 정지 함수 }
+function PortScene.build(info, onFacility)
+	local old = workspace:FindFirstChild("PortScene")
+	if old then
+		old:Destroy()
+	end
+	local folder = Instance.new("Folder")
+	folder.Name = "PortScene"
+	local style = if MED[info.portId] then STYLE.med else STYLE.north
+	local rng = seeded(info.portId)
+	local fac = {}
+	for _, k in info.facilities or {} do
+		fac[k] = true
+	end
+
+	local plate = workspace:FindFirstChild("Baseplate")
+	if plate then
+		plate.Color = style.ground
+		plate.Material = Enum.Material.Grass
+	end
+
+	-- 바다(동쪽, x > 20)와 부두
+	local water = part(folder, Vector3.new(240, 1, 512), CFrame.new(140, 0.3, 0), Color3.fromRGB(40, 100, 150), Enum.Material.Glass)
+	water.Transparency = 0.15
+	water.Reflectance = 0.1
+	water.CanCollide = false
+	part(folder, Vector3.new(8, 2, 300), CFrame.new(18, 0, 0), Color3.fromRGB(130, 126, 120), Enum.Material.Cobblestone)
+	local dock = part(folder, Vector3.new(60, 0.8, 10), CFrame.new(50, 1.6, 0), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
+	if importedModel(folder, "Naval", "structure-platform-dock", Vector3.new(50, 1.6, 0), 60, false) then
+		-- 실제 메쉬를 보여주면서 기존 부두의 안전한 보행 판정은 유지.
+		dock.Transparency = 1
+	end
+	for x = 24, 78, 9 do
+		for side = -1, 1, 2 do
+			part(folder, Vector3.new(1.2, 6, 1.2), CFrame.new(x, -1, side * 4.6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood, Enum.PartType.Cylinder).CFrame = CFrame.new(x, -1, side * 4.6) * CFrame.Angles(0, 0, math.pi / 2)
+		end
+	end
+	-- 화물(상자, 통)
+	for i = 1, 8 do
+		local x = rng:NextNumber(24, 74)
+		local z = rng:NextNumber(-3.5, 3.5)
+		if rng:NextNumber() < 0.5 then
+			part(folder, Vector3.new(2.2, 2.2, 2.2), CFrame.new(x, 3.1, z) * CFrame.Angles(0, rng:NextNumber(0, 1), 0), Color3.fromRGB(160, 120, 70), Enum.Material.WoodPlanks)
+		else
+			part(folder, Vector3.new(2.4, 1.8, 1.8), CFrame.new(x, 3.2, z) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(120, 76, 44), Enum.Material.Wood, Enum.PartType.Cylinder)
+		end
+	end
+	-- 등대 (부두 끝)
+	local lh = part(folder, Vector3.new(18, 6, 6), CFrame.new(84, 9, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(236, 232, 224), Enum.Material.Concrete, Enum.PartType.Cylinder)
+	part(folder, Vector3.new(10, 8, 10), CFrame.new(84, -1, 0), Color3.fromRGB(130, 126, 120), Enum.Material.Slate)
+	part(folder, Vector3.new(3, 5, 5), CFrame.new(84, 19.5, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(255, 230, 140), Enum.Material.Neon, Enum.PartType.Cylinder)
+	part(folder, Vector3.new(6.5, 1, 6.5), CFrame.new(84, 22.5, 0), Color3.fromRGB(180, 40, 40))
+	_ = lh
+
+	-- 항구 이름 간판 (부두 입구)
+	local gate = part(folder, Vector3.new(1, 10, 1), CFrame.new(22, 5, -6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
+	part(folder, Vector3.new(1, 10, 1), CFrame.new(22, 5, 6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
+	part(folder, Vector3.new(1.2, 1.2, 13), CFrame.new(22, 10, 0), Color3.fromRGB(90, 64, 40), Enum.Material.Wood)
+	sign(folder, gate, info.portName, Color3.fromRGB(150, 110, 40), 7)
+	prompt(folder, Vector3.new(60, 4, 0), "부두", "출항 준비 (지도)", "map", onFacility)
+
+	-- 내 배
+	local ship = buildShip(folder, info.shipId, Vector3.new(50, 1.2, 16))
+
+	-- 광장
+	part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), style.street, Enum.Material.Cobblestone)
+	part(folder, Vector3.new(130, 0.25, 10), CFrame.new(-80, 0.13, 0), style.street, Enum.Material.Cobblestone)
+	-- 광장 분수도 CC0 수입 메쉬 우선
+	if not importedModel(folder, "Town", "fountain-round", Vector3.new(-8, 0, 0), 8, false) then
+		part(folder, Vector3.new(2, 8, 8), CFrame.new(-8, 1, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
+		part(folder, Vector3.new(2.2, 6.5, 6.5), CFrame.new(-8, 1.2, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(80, 150, 200), Enum.Material.Glass, Enum.PartType.Cylinder)
+	end
+
+	-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }
+	local facilities = {
+		{ name = "교역소", tab = "trade", pos = Vector3.new(-10, 0, 28), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), always = true },
+		{ name = "주점", tab = "harbor", pos = Vector3.new(-10, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 76, 44), always = true },
+		{ name = "항만청", tab = "harbor", pos = Vector3.new(6, 0, 46), w = 12, d = 10, floors = 2, color = Color3.fromRGB(90, 110, 140), key = "harbormaster" },
+		{ name = "은행", tab = "harbor", pos = Vector3.new(-34, 0, 28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(220, 214, 200), key = "bank" },
+		{ name = "상인 길드", tab = "harbor", pos = Vector3.new(-34, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(150, 120, 90), key = "guild" },
+		{ name = "학자의 서재", tab = "explore", pos = Vector3.new(-58, 0, 28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), always = true },
+		{ name = "도서관 (도감)", tab = "codex", pos = Vector3.new(-58, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(100, 120, 110), always = true },
+	}
+	for _, f in facilities do
+		if f.always or (f.key and fac[f.key]) then
+			local body = house(folder, f.pos, f.w, f.d, f.floors, style, rng)
+			body.Color = f.color
+			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
+			local doorZ = if f.pos.Z > 0 then f.pos.Z - f.d / 2 - 2 else f.pos.Z + f.d / 2 + 2
+			sign(folder, body, f.name, nil, f.floors * 3 + 6)
+			prompt(folder, Vector3.new(f.pos.X, 3, doorZ), f.name, "들어가기", f.tab, onFacility)
+			villager(folder, Vector3.new(f.pos.X + 3, 0, doorZ), if f.pos.Z > 0 then 0 else math.pi, Color3.fromRGB(rng:NextInteger(60, 160), rng:NextInteger(50, 120), rng:NextInteger(40, 110)), rng)
+		end
+	end
+
+	-- 조선소: 남쪽 물가의 경사 선대와 짓고 있는 배의 뼈대
+	if info.hasShipyard then
+		part(folder, Vector3.new(30, 1, 14), CFrame.new(24, 0.6, -48) * CFrame.Angles(0, 0, math.rad(-6)), Color3.fromRGB(140, 104, 66), Enum.Material.WoodPlanks)
+		for i = 0, 6 do
+			part(folder, Vector3.new(0.8, 8, 0.8), CFrame.new(14 + i * 3, 4.5, -48) * CFrame.Angles(math.rad(90), 0, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
+		end
+		part(folder, Vector3.new(22, 1, 1), CFrame.new(23, 1.6, -48), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
+		local shed = house(folder, Vector3.new(0, 0, -50), 14, 12, 2, style, rng)
+		shed.Color = Color3.fromRGB(110, 90, 70)
+		sign(folder, shed, "조선소", Color3.fromRGB(90, 60, 30), 12)
+		prompt(folder, Vector3.new(8, 3, -50), "조선소", "들어가기", "yard", onFacility)
+	end
+
+	-- 왕궁: 큰길 끝
+	if fac.palace then
+		local px = -150
+		local body = part(folder, Vector3.new(30, 18, 50), CFrame.new(px, 9, 0), Color3.fromRGB(236, 228, 210), Enum.Material.Marble)
+		part(folder, Vector3.new(32, 1.5, 52), CFrame.new(px, 18.7, 0), Color3.fromRGB(200, 170, 110), Enum.Material.Marble)
+		for z = -20, 20, 8 do
+			part(folder, Vector3.new(16, 2, 2), CFrame.new(px + 16, 8, z) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(246, 242, 232), Enum.Material.Marble, Enum.PartType.Cylinder)
+		end
+		part(folder, Vector3.new(14, 14, 14), CFrame.new(px, 22, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 140, 170), Enum.Material.Metal, Enum.PartType.Ball)
+		part(folder, Vector3.new(0.4, 6, 4), CFrame.new(px, 33, 2), Color3.fromRGB(180, 30, 40), Enum.Material.Fabric)
+		sign(folder, body, "왕궁", Color3.fromRGB(150, 110, 40), 16)
+		prompt(folder, Vector3.new(px + 20, 3, 0), "왕궁", "알현하기", "harbor", onFacility)
+	end
+
+	-- 성당 종탑
+	do
+		local cx, cz = -84, 40
+		part(folder, Vector3.new(8, 30, 8), CFrame.new(cx, 15, cz), if style == STYLE.med then Color3.fromRGB(230, 214, 180) else Color3.fromRGB(140, 130, 120), Enum.Material.Brick)
+		wedge(folder, Vector3.new(8, 10, 4), CFrame.new(cx, 35, cz - 2), Color3.fromRGB(60, 80, 70))
+		wedge(folder, Vector3.new(8, 10, 4), CFrame.new(cx, 35, cz + 2) * CFrame.Angles(0, math.pi, 0), Color3.fromRGB(60, 80, 70))
+		part(folder, Vector3.new(16, 14, 24), CFrame.new(cx - 12, 7, cz), if style == STYLE.med then Color3.fromRGB(236, 224, 196) else Color3.fromRGB(150, 140, 128), Enum.Material.Brick)
+	end
+
+	-- 암스테르담·안트베르펀·함부르크에는 풍차
+	if info.portId == "amsterdam" or info.portId == "antwerp" or info.portId == "hamburg" then
+		local mx, mz = -100, -60
+		part(folder, Vector3.new(14, 10, 10), CFrame.new(mx, 7, mz) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(110, 80, 60), Enum.Material.WoodPlanks, Enum.PartType.Cylinder)
+		local hub = part(folder, Vector3.new(1, 1, 1), CFrame.new(mx + 5.5, 12, mz), Color3.fromRGB(60, 40, 30))
+		hub.Name = "MillHub"
+		for k = 0, 3 do
+			local blade = part(folder, Vector3.new(0.4, 12, 2.2), CFrame.new(mx + 5.8, 12, mz) * CFrame.Angles(math.rad(k * 90), 0, 0) * CFrame.new(0, 6, 0), Color3.fromRGB(230, 220, 200), Enum.Material.Fabric)
+			blade.Name = "MillBlade"
+		end
+	end
+
+	-- 주택가: 큰길 양옆과 뒤쪽 블록
+	for row = 0, 3 do
+		for col = 0, 6 do
+			local x = -30 - col * 16
+			local z = (if row < 2 then 1 else -1) * (48 + (row % 2) * 18)
+			if rng:NextNumber() < 0.85 then
+				local w = if info.portId == "amsterdam" then rng:NextNumber(6, 8) else rng:NextNumber(9, 13)
+				house(folder, Vector3.new(x + rng:NextNumber(-2, 2), 0, z), w, rng:NextNumber(8, 11), rng:NextInteger(1, 3), style, rng)
+			end
+		end
+	end
+
+	-- 광장의 이야기 NPC
+	if (info.storyCount or 0) > 0 then
+		local n = villager(folder, Vector3.new(2, 0, -8), math.pi / 2, Color3.fromRGB(150, 40, 60), rng)
+		sign(folder, n:GetChildren()[2], "! 이야기", Color3.fromRGB(180, 120, 30), 4)
+		prompt(folder, Vector3.new(2, 3, -8), "수상한 손님", "이야기 듣기", "harbor", onFacility)
+	end
+	-- 광장을 오가는 주민
+	for _ = 1, 5 do
+		villager(folder, Vector3.new(rng:NextNumber(-20, 8), 0, rng:NextNumber(-14, 14)), rng:NextNumber(0, math.pi * 2), Color3.fromRGB(rng:NextInteger(60, 200), rng:NextInteger(60, 160), rng:NextInteger(40, 140)), rng)
+	end
+	-- 가로등
+	for x = -40, 10, 25 do
+		for side = -1, 1, 2 do
+			part(folder, Vector3.new(0.5, 7, 0.5), CFrame.new(x, 3.5, side * 7), Color3.fromRGB(40, 40, 44), Enum.Material.Metal)
+			part(folder, Vector3.new(1, 1, 1), CFrame.new(x, 7.2, side * 7), Color3.fromRGB(255, 220, 140), Enum.Material.Neon)
+		end
+	end
+
+	-- 갈매기 (항구 위를 맴돈다)
+	local gulls = {}
+	for i = 1, 6 do
+		local g = Instance.new("Model")
+		local body = part(g, Vector3.new(1.4, 0.5, 0.5), CFrame.new(), Color3.new(1, 1, 1))
+		local l = part(g, Vector3.new(0.6, 0.15, 2), CFrame.new(), Color3.fromRGB(235, 235, 240))
+		local r = part(g, Vector3.new(0.6, 0.15, 2), CFrame.new(), Color3.fromRGB(235, 235, 240))
+		for _, p in { body, l, r } do
+			p.CanCollide = false
+		end
+		g.Parent = folder
+		table.insert(gulls, { body = body, l = l, r = r, radius = rng:NextNumber(14, 34), height = rng:NextNumber(18, 30), speed = rng:NextNumber(0.25, 0.5), phase = i * 1.1, cx = rng:NextNumber(30, 70), cz = rng:NextNumber(-20, 20) })
+	end
+
+	folder.Parent = workspace
+
+	-- 움직임: 배 흔들림, 갈매기, 풍차
+	local shipBase = ship:GetPivot()
+	local mill = {}
+	for _, p in folder:GetChildren() do
+		if p.Name == "MillBlade" then
+			table.insert(mill, { part = p, base = p.CFrame })
+		end
+	end
+	local hub = folder:FindFirstChild("MillHub")
+	local t0 = os.clock()
+	local conn = RunService.Heartbeat:Connect(function()
+		local t = os.clock() - t0
+		ship:PivotTo(shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012))
+		for _, g in gulls do
+			local a = t * g.speed + g.phase
+			local pos = Vector3.new(g.cx + math.cos(a) * g.radius, g.height + math.sin(t * 0.8 + g.phase) * 2, g.cz + math.sin(a) * g.radius)
+			local cf = CFrame.lookAt(pos, pos + Vector3.new(-math.sin(a), 0, math.cos(a))) * CFrame.Angles(0, math.pi / 2, 0)
+			local flap = math.sin(t * 8 + g.phase) * 0.6
+			g.body.CFrame = cf
+			g.l.CFrame = cf * CFrame.new(0, 0, -1) * CFrame.Angles(flap, 0, 0) * CFrame.new(0, 0, -0.6)
+			g.r.CFrame = cf * CFrame.new(0, 0, 1) * CFrame.Angles(-flap, 0, 0) * CFrame.new(0, 0, 0.6)
+		end
+		if hub then
+			for _, b in mill do
+				local center = hub.Position
+				b.part.CFrame = CFrame.new(center) * CFrame.Angles(t * 0.8, 0, 0) * (CFrame.new(center):Inverse() * b.base)
+			end
+		end
+	end)
+	folder.Destroying:Connect(function()
+		conn:Disconnect()
+	end)
+
+	return { folder = folder, spawn = CFrame.new(-2, 4, 10) * CFrame.Angles(0, math.rad(90), 0) }
+end
+
+return PortScene
