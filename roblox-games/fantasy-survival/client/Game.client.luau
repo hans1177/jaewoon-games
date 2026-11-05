@@ -3740,8 +3740,8 @@ do
     }
     local total=0
     for _,scene in ipairs(scenes) do total+=scene.seconds end
-    -- [2.5D 페인팅 오프닝] 단일 이미지 통째 패닝을 제거하고 비중복 3개 시차 레이어로 사용한다.
-    -- 전경 캐릭터 컷은 별도이며 플레이어 실제 모델과 이중으로 나타나지 않는다.
+    -- [2.5D 신규 연출] 원본 투명 인물의 대규모 카메라형 이동과 실제 월드의 깊이를 합성한다.
+    -- 같은 장면 JPG는 인물 자산 다운로드가 명확히 실패했을 때만 대체 배경으로 사용한다.
     backdrop.BackgroundTransparency=.08
     introPanel.BackgroundTransparency=.12
     introTint.BackgroundTransparency=.86
@@ -3946,49 +3946,68 @@ do
           activeStoryRevealTween:Play()
         end
         if useWorldActor then
-          -- [인물 애니메이션] 전진·추락·위압적인 접근·배신의 동작을 씬별로 분리한다.
-          -- 별도 레이어에서 숨쉬기·고개 기울임을 반복해 큰 카메라 이동과 충돌시키지 않는다.
+          -- [2.5D 실제 화면 이동] 인물 분리 원화의 독립 무대에서 장면마다 서로 다른 큰 동작을 수행한다.
+          -- 원본 한 장을 잘라 팔/몸을 가짜로 조립하지 않고, 원화 전체를 하나의 인물로 유지한다.
           local isFall=scene.cinema=="rift"
           local isCharge=scene.cinema=="charge" or scene.cinema=="reach"
           local isThreat=scene.cinema=="crown" or scene.cinema=="betrayal"
-          local fromScale=isFall and 1.17 or isThreat and .90 or 1.02
-          local toScale=isFall and .76 or isCharge and 1.17 or isThreat and 1.15 or 1.075
-          actorMotionFrame.Position=UDim2.fromScale(.5+direction*.07,isFall and .34 or .52)
+          local isStill=scene.cinema=="freeze" or scene.cinema=="erasure"
+          local fromScale=isFall and 1.31 or isCharge and .79 or isThreat and .83 or .94
+          local toScale=isFall and .67 or isCharge and 1.34 or isThreat and 1.29
+            or isStill and 1.035 or 1.16
+          local fromX=.5+direction*(isCharge and .185 or isThreat and .085 or .12)
+          local toX=.5-direction*(isCharge and .165 or isStill and .026 or .085)
+          local fromY=isFall and .14 or isCharge and .58 or isThreat and .55 or .54
+          local toY=isFall and .86 or isCharge and .46 or isThreat and .47 or .49
+          actorMotionFrame.Position=UDim2.fromScale(fromX,fromY)
           actorMotionFrame.Size=UDim2.fromScale(fromScale,fromScale)
-          actorMotionFrame.Rotation=scene.cinema=="omen" and -direction*1.8 or 0
+          actorMotionFrame.Rotation=isFall and -direction*9 or isCharge and direction*4
+            or scene.cinema=="omen" and -direction*3 or 0
           activeActorGestureTween=TweenService:Create(actorMotionFrame,
             TweenInfo.new(artDuration,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{
-              Position=UDim2.fromScale(.5-direction*(isCharge and .10 or .045),
-                isFall and .76 or scene.cinema=="betrayal" and .47 or .49),
+              Position=UDim2.fromScale(toX,toY),
               Size=UDim2.fromScale(toScale,toScale),
-              Rotation=scene.cinema=="omen" and direction*2.4
-                or scene.cinema=="betrayal" and -direction*1.3 or direction*.6,
+              Rotation=isFall and direction*11 or isCharge and -direction*4.5
+                or scene.cinema=="betrayal" and -direction*5
+                or scene.cinema=="omen" and direction*3.5 or direction*1.3,
             })
           activeActorEraseTween=TweenService:Create(storyForeground,
-            TweenInfo.new(.7,Enum.EasingStyle.Sine),{ImageTransparency=.015})
+            TweenInfo.new(.55,Enum.EasingStyle.Sine),{ImageTransparency=.015})
           activeArtImpactTween=TweenService:Create(storyForeground,
-            TweenInfo.new(reducedEffects and 2.4 or (1.12+index*.11),
+            TweenInfo.new(reducedEffects and 2.4 or (1.02+index*.10),
               Enum.EasingStyle.Sine,Enum.EasingDirection.InOut,-1,true),{
-                Position=UDim2.fromScale(.5,.5-(reducedEffects and .002 or .009)),
-                Rotation=direction*(reducedEffects and .12 or .42),
+                Position=UDim2.fromScale(.5,.5-(reducedEffects and .002 or .015)),
+                Rotation=direction*(reducedEffects and .12 or .72),
             })
           activeActorGestureTween:Play()
           activeActorEraseTween:Play()
           activeArtImpactTween:Play()
-          -- [원화 로딩 복구] 인물 asset 권한/다운로드 실패 때 빈 화면 대신 동일 장면의 완성 그림.
+          -- [로딩 병목 교정] 2.3초 동안 미로딩인 것을 실패로 오판해
+          -- 새 인물 연출을 예전 JPG 정지 화면으로 교체하던 동작을 제거한다.
+          -- 실제 다운로드 Failure만 예전 그림으로 복구하며, Loading/TimedOut은 기다린다.
           if artworkAvailable then
             local expectedIndex=index
             task.delay(math.min(2.3,scene.seconds*.52),function()
               if not entranceOpen or token~=runToken or currentStoryScene~=expectedIndex then return end
-              if not storyForeground.IsLoaded then
+              if storyForeground.IsLoaded then return end
+              local ok,status=pcall(function()
+                return ContentProvider:GetAssetFetchStatus(foregroundId)
+              end)
+              if ok and status==Enum.AssetFetchStatus.Failure then
                 if activeActorGestureTween then activeActorGestureTween:Cancel() end
                 if activeArtImpactTween then activeArtImpactTween:Cancel() end
                 actorMotionFrame.Visible=false
+                storyForeground.Visible=false
                 storyArtwork.Visible=true
                 storyArtwork.ImageTransparency=.04
-                storyArtwork.Position=UDim2.fromScale(.5,.5)
-                storyArtwork.Size=UDim2.fromScale(1.10,1.10)
-                warn("[마력숲 오프닝] 인물 원화 불러오기 실패: 장면 "..expectedIndex)
+                storyArtwork.Position=UDim2.fromScale(.48,.5)
+                storyArtwork.Size=UDim2.fromScale(1.13,1.13)
+                activeDepthTween=TweenService:Create(storyArtwork,
+                  TweenInfo.new(math.max(.6,scene.seconds-2.3),Enum.EasingStyle.Sine),{
+                    Position=UDim2.fromScale(.52,.49),Size=UDim2.fromScale(1.2,1.2),
+                  })
+                activeDepthTween:Play()
+                warn("[마력숲 오프닝] 인물 원화 실제 다운로드 실패: 장면 "..expectedIndex)
               end
             end)
           end
