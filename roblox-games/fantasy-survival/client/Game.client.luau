@@ -10970,10 +10970,10 @@ end)()
   local infoLabel=Instance.new("TextLabel")
   infoLabel.AnchorPoint=Vector2.new(.5,0);infoLabel.Position=UDim2.fromOffset(95,98)
   infoLabel.BackgroundColor3=Color3.fromRGB(12,22,22);infoLabel.BackgroundTransparency=.2
-  infoLabel.Size=UDim2.fromOffset(186,44);infoLabel.Font=Enum.Font.GothamBold;infoLabel.TextSize=15;infoLabel.TextWrapped=true
-  infoLabel.TextColor3=Color3.fromRGB(255,244,205);infoLabel.ZIndex=27;infoLabel.Parent=marker
+  infoLabel.Size=UDim2.fromOffset(150,38);infoLabel.Font=Enum.Font.GothamMedium;infoLabel.TextSize=13;infoLabel.TextWrapped=true
+  infoLabel.TextColor3=Color3.fromRGB(255,244,205);infoLabel.TextStrokeTransparency=1;infoLabel.ZIndex=27;infoLabel.Parent=marker
   Instance.new("UICorner",infoLabel).CornerRadius=UDim.new(0,10)
-  local infoStroke=Instance.new("UIStroke");infoStroke.Color=Color3.fromRGB(255,214,70);infoStroke.Thickness=2;infoStroke.Parent=infoLabel
+  local infoStroke=Instance.new("UIStroke");infoStroke.Color=Color3.fromRGB(255,214,70);infoStroke.Thickness=1;infoStroke.Parent=infoLabel
   local beam=Instance.new("Part")
   beam.Name="MeadowGuideBeam";beam.Anchored=true;beam.CanCollide=false;beam.CanQuery=false;beam.CanTouch=false
   beam.CastShadow=false;beam.Material=Enum.Material.Neon;beam.Color=Color3.fromRGB(255,214,70);beam.Transparency=.6
@@ -11022,11 +11022,11 @@ end)()
   end)
   -- ===== 길 안내 버튼: 지도 바로 아래 =====
   local guideChip=Instance.new("TextButton")
-  guideChip.Name="MeadowGuideChip";guideChip.AnchorPoint=Vector2.new(.5,0);guideChip.Size=UDim2.fromOffset(112,34)
-  guideChip.BackgroundColor3=Color3.fromRGB(34,72,52);guideChip.BackgroundTransparency=.1;guideChip.BorderSizePixel=0
-  guideChip.Font=Enum.Font.GothamBold;guideChip.TextSize=14;guideChip.TextColor3=Color3.fromRGB(255,240,197);guideChip.ZIndex=29;guideChip.Parent=guiRoot
-  Instance.new("UICorner",guideChip).CornerRadius=UDim.new(0,10)
-  local guideChipStroke=Instance.new("UIStroke");guideChipStroke.Color=Color3.fromRGB(218,189,126);guideChipStroke.Thickness=1.5;guideChipStroke.Parent=guideChip
+  guideChip.Name="MeadowGuideChip";guideChip.AnchorPoint=Vector2.new(.5,0);guideChip.Size=UDim2.fromOffset(96,22)
+  guideChip.BackgroundColor3=Color3.fromRGB(34,72,52);guideChip.BackgroundTransparency=.25;guideChip.BorderSizePixel=0
+  guideChip.Font=Enum.Font.GothamMedium;guideChip.TextSize=12;guideChip.TextStrokeTransparency=1;guideChip.TextColor3=Color3.fromRGB(255,240,197);guideChip.ZIndex=29;guideChip.Parent=guiRoot
+  Instance.new("UICorner",guideChip).CornerRadius=UDim.new(0,8)
+  local guideChipStroke=Instance.new("UIStroke");guideChipStroke.Color=Color3.fromRGB(218,189,126);guideChipStroke.Thickness=1;guideChipStroke.Parent=guideChip
   local function paintGuide()
     guideChip.Text=guideOff and "길 안내 OFF" or "◆ 길 안내 ON"
     guideChip.BackgroundColor3=guideOff and Color3.fromRGB(60,40,40) or Color3.fromRGB(34,72,52)
@@ -11041,7 +11041,7 @@ end)()
     guideChip.Visible=show and true or false
     if show then
       local o=guiRoot.AbsolutePosition
-      guideChip.Position=UDim2.fromOffset(radar.AbsolutePosition.X+radar.AbsoluteSize.X/2-o.X,radar.AbsolutePosition.Y+radar.AbsoluteSize.Y+4-o.Y)
+      guideChip.Position=UDim2.fromOffset(radar.AbsolutePosition.X+radar.AbsoluteSize.X/2-o.X,radar.AbsolutePosition.Y+6-o.Y)
     end
   end)
   -- ===== 튜토리얼: 조작 → 메뉴 → 스킬창 → 기술 1개 배우기 (실제로 할 때까지 안 끝난다) =====
@@ -11090,21 +11090,21 @@ end)()
   }
   local card=Instance.new("Frame")
   card.Name="MeadowTutorialCard";card.AnchorPoint=Vector2.new(.5,1);card.Position=UDim2.new(.5,0,1,-20)
-  card.Size=UDim2.fromOffset(400,132);card.BackgroundColor3=Color3.fromRGB(16,28,28);card.BackgroundTransparency=.04
-  card.Visible=false;card.ZIndex=120;card.Parent=guiRoot
-  Instance.new("UICorner",card).CornerRadius=UDim.new(0,14)
-  local cs=Instance.new("UIStroke");cs.Color=Color3.fromRGB(218,189,126);cs.Thickness=2;cs.Parent=card
+  card.Size=UDim2.fromOffset(340,92);card.BackgroundColor3=Color3.fromRGB(10,18,18);card.BackgroundTransparency=1
+  card.Visible=false;card.ZIndex=120;card.Active=false;card.Parent=guiRoot
   local ctitle=Instance.new("TextLabel")
-  ctitle.BackgroundTransparency=1;ctitle.Position=UDim2.fromOffset(14,8);ctitle.Size=UDim2.new(1,-28,0,24)
-  ctitle.Font=Enum.Font.GothamBlack;ctitle.TextSize=17;ctitle.TextXAlignment=Enum.TextXAlignment.Left
+  ctitle.BackgroundTransparency=1;ctitle.Position=UDim2.fromOffset(0,0);ctitle.Size=UDim2.new(1,0,0,20)
+  ctitle.Font=Enum.Font.GothamMedium;ctitle.TextSize=14;ctitle.TextXAlignment=Enum.TextXAlignment.Center
+  ctitle.TextStrokeColor3=Color3.new(0,0,0);ctitle.TextStrokeTransparency=.35
   ctitle.TextColor3=Color3.fromRGB(255,232,160);ctitle.ZIndex=121;ctitle.Parent=card
   local cbody=Instance.new("TextLabel")
-  cbody.BackgroundTransparency=1;cbody.Position=UDim2.fromOffset(14,34);cbody.Size=UDim2.new(1,-28,0,56)
-  cbody.Font=Enum.Font.GothamMedium;cbody.TextSize=14;cbody.TextWrapped=true;cbody.TextXAlignment=Enum.TextXAlignment.Left
+  cbody.BackgroundTransparency=1;cbody.Position=UDim2.fromOffset(0,22);cbody.Size=UDim2.new(1,0,0,44)
+  cbody.Font=Enum.Font.Gotham;cbody.TextSize=13;cbody.TextWrapped=true;cbody.TextXAlignment=Enum.TextXAlignment.Center
+  cbody.TextStrokeColor3=Color3.new(0,0,0);cbody.TextStrokeTransparency=.35
   cbody.TextYAlignment=Enum.TextYAlignment.Top;cbody.TextColor3=Color3.fromRGB(236,242,230);cbody.ZIndex=121;cbody.Parent=card
   local nextBtn=Instance.new("TextButton")
-  nextBtn.AnchorPoint=Vector2.new(1,1);nextBtn.Position=UDim2.new(1,-12,1,-8);nextBtn.Size=UDim2.fromOffset(96,32)
-  nextBtn.BackgroundColor3=Color3.fromRGB(54,112,84);nextBtn.Font=Enum.Font.GothamBold;nextBtn.TextSize=15
+  nextBtn.AnchorPoint=Vector2.new(.5,1);nextBtn.Position=UDim2.new(.5,0,1,0);nextBtn.Size=UDim2.fromOffset(80,26)
+  nextBtn.BackgroundColor3=Color3.fromRGB(54,112,84);nextBtn.Font=Enum.Font.GothamMedium;nextBtn.TextSize=13
   nextBtn.TextColor3=Color3.new(1,1,1);nextBtn.ZIndex=122;nextBtn.Parent=card
   Instance.new("UICorner",nextBtn).CornerRadius=UDim.new(0,10)
   -- 큰 포인터(▼▲◀) + 퍼지는 링
@@ -11159,8 +11159,13 @@ end)()
     if (cond=="skillpage" or cond=="learned" or steps[current][1]=="퀵슬롯 등록") and not menuOpen() then show(6) return end
     if cond=="learned" and not skillPageOpen() then show(7) return end
     -- 카드 위치: 평소엔 위쪽(퀵슬롯·버튼을 안 가림), 메뉴가 열려 있으면 아래쪽.
-    if menuOpen() then card.AnchorPoint=Vector2.new(.5,1);card.Position=UDim2.new(.5,0,1,-14)
-    else card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,0,84) end
+    local radar=player.PlayerGui:FindFirstChild("MeadowExplorerRadar",true)
+    if menuOpen() then
+      card.AnchorPoint=Vector2.new(.5,1);card.Position=UDim2.new(.5,0,1,-14);card.BackgroundTransparency=.3
+    else
+      local y=radar and (radar.AbsolutePosition.Y+radar.AbsoluteSize.Y-guiRoot.AbsolutePosition.Y+6) or 84
+      card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,0,y);card.BackgroundTransparency=1
+    end
     local pos,dir=s[3]()
     if pos then
       local bob=math.abs(math.sin(os.clock()*5))*14
