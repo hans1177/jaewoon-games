@@ -229,13 +229,20 @@ do
   local views={}
   local gearKeys={wanderer_blade="item_sword",hunter_blade="item_sword",runic_blade="item_sword_golden",forest_blade="item_sword_golden",
     dew_dagger="item_dagger",thorn_axe="item_axe_small",magma_greatsword="item_sword_big"}
+  local armorKeys={travel_armor="item_armor_leather",hunter_armor="item_armor_leather",moss_robe="item_armor_leather",frost_leather="item_armor_leather",
+    guardian_armor="item_armor_metal",magma_plate="item_armor_black",worldtree_mail="item_armor_golden",
+    moon_amulet="item_necklace1",fang_necklace="item_necklace1",herb_bracelet="item_ring2"}
+  local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1"}
   function meadowArt.itemKeyFor(item)
     if not item then return nil end
     if item.gear then
       if gearKeys[item.gear.Id] then return gearKeys[item.gear.Id] end
+      if armorKeys[item.gear.Id] then return armorKeys[item.gear.Id] end
+      if item.gear.Slot=="Hands" then return "item_glove" end
       if item.gear.Category=="장신구" then return "item_ring1" end
       return nil
     end
+    if type(item.key)=="string" and matKeys[item.key] then return matKeys[item.key] end
     if item.tonic then return item.tonic.Id=="energy_tonic" and "item_potion3_filled" or "item_potion1_filled" end
     if item.key=="Crystal" then return "item_crystal1" end
     if item.key=="Coins" then return "item_coin" end
@@ -276,6 +283,10 @@ do
     if not camera then camera=Instance.new("Camera");camera.Parent=view;view.CurrentCamera=camera end
     camera.FieldOfView=35;camera.CFrame=CFrame.new(Vector3.new(0,radius*.35,radius*2.1),Vector3.new(0,0,0))
     entry.model=model;view.Visible=true;entry.icon.Visible=false
+  end
+  function meadowArt.refresh3D(view)
+    local entry=views[view]
+    if entry and not entry.model and entry.key then fill(view,entry) end
   end
   local tick=0
   RunSvc.Heartbeat:Connect(function(dt)
@@ -10219,6 +10230,66 @@ end)()
       end
     end)
   end)
+end)()
+
+-- [획득 알림 3D] 재료를 얻으면 화면 오른쪽 가운데에 해당 아이템이 3D로 돌며 "+수량 이름"이 잠깐 뜬다.
+;(function()
+  local list=Instance.new("Frame")
+  list.Name="MeadowLootToasts";list.AnchorPoint=Vector2.new(1,.5);list.Position=UDim2.new(1,-10,.42,0)
+  list.Size=UDim2.fromOffset(170,240);list.BackgroundTransparency=1;list.ZIndex=40;list.Parent=gui
+  local layout=Instance.new("UIListLayout")
+  layout.SortOrder=Enum.SortOrder.LayoutOrder;layout.VerticalAlignment=Enum.VerticalAlignment.Bottom;layout.HorizontalAlignment=Enum.HorizontalAlignment.Right
+  layout.Padding=UDim.new(0,4);layout.Parent=list
+  local names={Wood="나무",Stone="돌",Coins="재화"}
+  local fields={"Wood","Stone"}
+  for _,mat in ipairs(Config.Materials or {}) do names[mat.Field]=mat.Name;table.insert(fields,mat.Field) end
+  local keys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1"}
+  local order=0
+  local last={}
+  local function toast(field,amount)
+    order+=1
+    local row=Instance.new("Frame")
+    row.LayoutOrder=order;row.Size=UDim2.fromOffset(160,48);row.BackgroundColor3=Color3.fromRGB(14,20,22);row.BackgroundTransparency=.45
+    row.BorderSizePixel=0;row.ZIndex=41;row.Parent=list
+    Instance.new("UICorner",row).CornerRadius=UDim.new(0,10)
+    local icon=Instance.new("ImageLabel")
+    icon.BackgroundTransparency=1;icon.Size=UDim2.fromOffset(44,44);icon.Position=UDim2.fromOffset(2,2);icon.ZIndex=42;icon.Parent=row
+    local text=Instance.new("TextLabel")
+    text.BackgroundTransparency=1;text.Position=UDim2.fromOffset(50,0);text.Size=UDim2.new(1,-54,1,0)
+    text.Font=Enum.Font.GothamBold;text.TextSize=14;text.TextXAlignment=Enum.TextXAlignment.Left;text.TextWrapped=true
+    text.TextColor3=Color3.fromRGB(255,244,214);text.TextStrokeTransparency=.3;text.ZIndex=43
+    text.Text="+"..amount.."  "..(names[field] or field);text.Parent=row
+    local key=keys[field]
+    if key then
+      local view=meadowArt.new3D(icon)
+      meadowArt.set3D(view,key)
+      meadowArt.refresh3D(view)
+    end
+    task.delay(2.6,function()
+      if not row.Parent then return end
+      local tween=game:GetService("TweenService"):Create(row,TweenInfo.new(.4),{BackgroundTransparency=1})
+      tween:Play();text.TextTransparency=.6
+      task.delay(.4,function() if row.Parent then row:Destroy() end end)
+    end)
+  end
+  local armed=false
+  task.spawn(function()
+    for _=1,60 do
+      if player:GetAttribute("ProfileReady")==true then break end
+      task.wait(.5)
+    end
+    task.wait(1.5)
+    for _,field in ipairs(fields) do last[field]=tonumber(player:GetAttribute(field)) or 0 end
+    armed=true
+  end)
+  for _,field in ipairs(fields) do
+    player:GetAttributeChangedSignal(field):Connect(function()
+      local now=tonumber(player:GetAttribute(field)) or 0
+      local before=last[field] or now
+      last[field]=now
+      if armed and now>before then toast(field,now-before) end
+    end)
+  end
 end)()
 
 -- [하단 퀵슬롯] 5칸. 칸마다 무기·채집·체력약·기력약·오일·기술 중 골라 등록한다(보관함 메뉴의 퀵슬롯 칸).
