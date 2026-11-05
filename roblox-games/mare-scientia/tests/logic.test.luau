@@ -16,6 +16,9 @@ local D = {
 	Combat = require("./Shared/Combat"),
 	Bosses = require("./Shared/Bosses"),
 	Specialties = require("./Shared/Specialties"),
+	Fields = require("./Shared/Fields"),
+	Collection = require("./Shared/Collection"),
+	CardArt = require("./Shared/CardArt"),
 	Facilities = require("./Shared/Facilities"),
 	Story = require("./Shared/Story"),
 	Harbor = require("./Shared/Harbor"),
@@ -1328,6 +1331,54 @@ do
 	local enemy = { hull = 1e9, crew = 1e9, cannons = 50, cannonMult = 50, meleeMult = 50, skills = {}, level = 1 }
 	check("view refit", S.View.build(lose, ctx).refit.cannons[1].id == "basic" and S.View.build(lose, ctx).harbormaster.insured == true)
 	_ = enemy
+end
+
+-- 도감 분류 설명과 완성 보상
+do
+	for _, c in D.Cards.Cards do
+		if not D.Fields.ById[c.field] then
+			check("card field has description " .. c.id .. "/" .. c.field, false)
+		end
+	end
+	for _, f in D.Fields.Fields do
+		check("field detail long enough " .. f.id, #f.detail > 60 and #f.tip > 10 and #f.summary > 5)
+		local n = 0
+		for _, c in D.Cards.Cards do
+			if c.field == f.id then
+				n += 1
+			end
+		end
+		check("field has enough cards " .. f.id, n >= 3, n)
+	end
+	local st = newState("england")
+	local v = S.View.build(st, ctx)
+	check("codex view fields", #v.codex.fields == #D.Fields.Fields and #v.codex.overall == #D.Collection.OVERALL_TIERS)
+	check("claim needs progress", not act(st, "ClaimCollection", { scope = "Botany", tier = 1 }))
+	check("claim bad scope", not act(st, "ClaimCollection", { scope = "Nope", tier = 1 }) and not act(st, "ClaimCollection", { scope = "Botany", tier = 99 }))
+	-- 식물 카드를 전부 발견
+	local total = 0
+	for _, c in D.Cards.Cards do
+		if c.field == "Botany" then
+			st.discovered[c.id] = true
+			total += 1
+		end
+	end
+	local coins0, fame0 = st.coins, st.fame
+	check("claim botany 25%", act(st, "ClaimCollection", { scope = "Botany", tier = 1 }) and st.coins == coins0 + D.Collection.FIELD_TIERS[1].coins and st.fame == fame0 + D.Collection.FIELD_TIERS[1].fame)
+	check("claim only once", not act(st, "ClaimCollection", { scope = "Botany", tier = 1 }))
+	check("claim botany 100%", act(st, "ClaimCollection", { scope = "Botany", tier = 4 }))
+	check("other field not claimable", not act(st, "ClaimCollection", { scope = "Zoology", tier = 1 }))
+	-- 전체 진행도
+	for _, c in D.Cards.Cards do
+		st.discovered[c.id] = true
+	end
+	check("overall 100% claim", act(st, "ClaimCollection", { scope = "all", tier = 5 }))
+	check("rank title", S.Codex.rankTitle(st) == "세계 백과의 완성자")
+	check("view rank", S.View.build(st, ctx).codex.rank == "세계 백과의 완성자")
+	local back = S.State.sanitize(S.State.serialize(st))
+	check("collection survives save", back.collected["Botany:1"] == true and back.collected["ALL:5"] == true)
+	local evil = S.State.sanitize({ nationId = "england", startYear = 1700, collected = { ["Botany:1"] = true, ["bad key"] = true, ["x:1"] = "yes" } })
+	check("collection sanitized", evil.collected["Botany:1"] == true and evil.collected["bad key"] == nil and evil.collected["x:1"] == nil)
 end
 
 -- 바닷길: 모든 항구 쌍에 경로가 있고 양 끝이 항구 근처이며 방향이 뒤집힌다

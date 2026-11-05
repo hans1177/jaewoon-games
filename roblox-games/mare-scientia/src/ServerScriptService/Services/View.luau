@@ -198,9 +198,10 @@ return function(D, S)
 		end
 
 		-- 도감
-		view.codex = { total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {} }
+		view.codex = { total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {} }
 		for _, c in D.Cards.Cards do
 			local found = state.discovered[c.id] == true
+			local art = D.CardArt.Art[c.id]
 			table.insert(view.codex.cards, {
 				id = c.id,
 				field = c.field,
@@ -208,7 +209,28 @@ return function(D, S)
 				found = found,
 				name = if found then c.name else "???",
 				description = if found then c.description else "발견 방법: " .. c.source,
+				source = c.source,
+				fame = c.reward.fame,
+				coins = c.reward.coins,
+				image = if found and art then art.image else nil,
+				credit = if found and art then art.credit else nil,
 			})
+		end
+		do
+			local fieldSums, overall = S.Codex.summary(state)
+			local byId = {}
+			for _, f in fieldSums do
+				byId[f.id] = f
+			end
+			for _, def in D.Fields.Fields do
+				local f = byId[def.id]
+				table.insert(view.codex.fields, {
+					id = def.id, name = def.name, color = def.color, summary = def.summary, detail = def.detail, tip = def.tip,
+					total = f.total, found = f.found, tiers = f.tiers,
+				})
+			end
+			view.codex.overall = overall
+			view.codex.rank = S.Codex.rankTitle(state)
 		end
 
 		-- 연구

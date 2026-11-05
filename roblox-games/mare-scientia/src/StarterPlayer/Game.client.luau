@@ -1058,30 +1058,276 @@ end
 local RARITY_COLOR = {
 	Common = COLORS.muted, Uncommon = COLORS.green, Rare = COLORS.blue, Epic = Color3.fromRGB(170, 110, 210), Legendary = COLORS.gold,
 }
-local FIELD_NAMES = {
-	Botany = "식물", Zoology = "동물", Mineral = "광물", Relic = "유물", Site = "유적", Astronomy = "천문",
-	Chemistry = "화학", Myth = "신화", Physics = "물리", Geography = "지리", Philosophy = "철학", Medicine = "의학",
-}
+local RARITY_NAMES = { Common = "일반", Uncommon = "고급", Rare = "희귀", Epic = "영웅", Legendary = "전설" }
+local codexField = nil -- nil이면 분야 목록, 값이 있으면 그 분야의 카드 화면
 
-local function renderCodex()
-	add(function()
-		return mkLabel(content, string.format("세계 백과 %d / %d", view.codex.found, view.codex.total), 15, COLORS.gold, true)
+local function fieldColor(f)
+	return Color3.fromRGB(f.color[1], f.color[2], f.color[3])
+end
+
+local function findField(id)
+	for _, f in view.codex.fields do
+		if f.id == id then
+			return f
+		end
+	end
+	return nil
+end
+
+-- 카드 그림: 이미지가 있으면 이미지, 없으면 분야 색의 임시 일러스트
+local function paintCardArt(parent, card, fieldDef)
+	parent.ClipsDescendants = true
+	if card.found and card.image then
+		local img = Instance.new("ImageLabel")
+		img.Size = UDim2.fromScale(1, 1)
+		img.BackgroundTransparency = 1
+		img.Image = card.image
+		img.ScaleType = Enum.ScaleType.Crop
+		img.Parent = parent
+		return
+	end
+	local base = if card.found then fieldColor(fieldDef) else Color3.fromRGB(46, 52, 64)
+	parent.BackgroundColor3 = base
+	local shade = Instance.new("UIGradient")
+	shade.Color = ColorSequence.new(base:Lerp(Color3.new(1, 1, 1), 0.25), base:Lerp(Color3.new(0, 0, 0), 0.45))
+	shade.Rotation = 90
+	shade.Parent = parent
+	local mark = Instance.new("TextLabel")
+	mark.BackgroundTransparency = 1
+	mark.Size = UDim2.fromScale(1, 1)
+	mark.Font = Enum.Font.GothamBold
+	mark.TextScaled = true
+	mark.TextTransparency = 0.35
+	mark.TextColor3 = Color3.new(1, 1, 1)
+	mark.Text = if card.found then string.sub(fieldDef.name, 1, 3) else "?"
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop, pad.PaddingBottom = UDim.new(0.2, 0), UDim.new(0.2, 0)
+	pad.Parent = mark
+	mark.Parent = parent
+end
+
+local function showCardDetail(card)
+	local fieldDef = findField(card.field)
+	local overlay = Instance.new("TextButton")
+	overlay.Size = UDim2.fromScale(1, 1)
+	overlay.BackgroundColor3 = Color3.new(0, 0, 0)
+	overlay.BackgroundTransparency = 0.45
+	overlay.Text = ""
+	overlay.AutoButtonColor = false
+	overlay.ZIndex = 40
+	overlay.Parent = gui
+	local box = Instance.new("Frame")
+	box.AnchorPoint = Vector2.new(0.5, 0.5)
+	box.Position = UDim2.fromScale(0.5, 0.5)
+	box.Size = UDim2.new(0.9, 0, 0, 440)
+	box.BackgroundColor3 = COLORS.row
+	box.ZIndex = 41
+	corner(box, 14)
+	box.Parent = overlay
+	local stroke = Instance.new("UIStroke")
+	stroke.Thickness = 3
+	stroke.Color = if card.found then (RARITY_COLOR[card.rarity] or COLORS.muted) else COLORS.grey
+	stroke.Parent = box
+	local art = Instance.new("Frame")
+	art.Position = UDim2.fromOffset(10, 10)
+	art.Size = UDim2.new(1, -20, 0, 150)
+	art.BackgroundColor3 = COLORS.grey
+	art.ZIndex = 42
+	corner(art, 10)
+	art.Parent = box
+	paintCardArt(art, card, fieldDef)
+	for _, d in art:GetDescendants() do
+		if d:IsA("GuiObject") then
+			d.ZIndex = 43
+		end
+	end
+	local body = Instance.new("ScrollingFrame")
+	body.BackgroundTransparency = 1
+	body.BorderSizePixel = 0
+	body.Position = UDim2.fromOffset(10, 168)
+	body.Size = UDim2.new(1, -20, 1, -218)
+	body.CanvasSize = UDim2.new()
+	body.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	body.ScrollBarThickness = 3
+	body.ZIndex = 42
+	body.Parent = box
+	local lay = Instance.new("UIListLayout")
+	lay.Padding = UDim.new(0, 4)
+	lay.Parent = body
+	local rarity = RARITY_NAMES[card.rarity] or card.rarity
+	local title = mkLabel(body, string.format("%s  [%s · %s]", card.name, fieldDef.name, rarity), 17, if card.found then (RARITY_COLOR[card.rarity] or COLORS.text) else COLORS.muted, true)
+	mkLabel(body, card.description, 14, COLORS.text, false)
+	if card.found then
+		mkLabel(body, string.format("발견 방법: %s\n도감 등록 보상: %d코인 · 명성 +%d", card.source, card.coins, card.fame), 12, COLORS.muted, false)
+		if card.credit then
+			mkLabel(body, "그림 출처: " .. card.credit, 11, COLORS.muted, false)
+		end
+	else
+		mkLabel(body, "아직 발견하지 못한 카드예요. 분야 설명의 '모으는 방법'을 참고하세요.", 12, COLORS.muted, false)
+	end
+	for _, d in body:GetDescendants() do
+		if d:IsA("GuiObject") then
+			d.ZIndex = 43
+		end
+	end
+	title.ZIndex = 43
+	local close = mkButton(box, "닫기", COLORS.gold, UDim2.new(1, -20, 0, 36), function()
+		overlay:Destroy()
+	end, true)
+	close.AnchorPoint = Vector2.new(0.5, 1)
+	close.Position = UDim2.new(0.5, 0, 1, -8)
+	close.ZIndex = 43
+	overlay.Activated:Connect(function()
+		overlay:Destroy()
 	end)
-	for _, c in view.codex.cards do
+end
+
+local function tierRows(list: { any }, scope: string, labelFmt: string)
+	for _, t in list do
 		add(function()
-			local row = mkRow(content, string.format("[%s] %s · %s", FIELD_NAMES[c.field] or c.field, c.name, c.rarity), c.description, nil, 68)
-			if not c.found then
-				row.BackgroundTransparency = 0.4
-			else
-				local bar = Instance.new("Frame")
-				bar.Size = UDim2.new(0, 4, 1, -12)
-				bar.Position = UDim2.fromOffset(0, 6)
-				bar.BackgroundColor3 = RARITY_COLOR[c.rarity] or COLORS.muted
-				bar.BorderSizePixel = 0
-				bar.Parent = row
+			local sub = string.format("%d개 이상 · +%d코인 · 명성 +%d", t.need, t.coins, t.fame)
+			if t.title then
+				sub ..= " · 칭호 '" .. t.title .. "'"
 			end
+			return mkRow(content, string.format(labelFmt, t.pct), sub, {
+				{
+					text = if t.claimed then "받음" else "받기",
+					color = if t.claimed then COLORS.grey else COLORS.gold,
+					enabled = t.claimable,
+					onClick = function() call("ClaimCollection", { scope = scope, tier = t.tier }) end,
+				},
+			}, 52)
+		end)
+	end
+end
+
+local function renderCodexOverview()
+	local cx = view.codex
+	add(function()
+		return mkLabel(content, string.format("세계 백과 %d / %d (%d%%)%s", cx.found, cx.total, math.floor(cx.found * 100 / math.max(1, cx.total)), if cx.rank then ("  ·  " .. cx.rank) else ""), 16, COLORS.gold, true)
+	end)
+	add(function()
+		return mkLabel(content, "분야를 눌러 카드를 모아 보세요. 분야마다 25·50·75·100%를 채울 때 보상이 있어요.", 12, COLORS.muted, false)
+	end)
+	for _, f in cx.fields do
+		add(function()
+			local claimable = 0
+			for _, t in f.tiers do
+				if t.claimable then
+					claimable += 1
+				end
+			end
+			local row = mkRow(content, string.format("%s  %d / %d%s", f.name, f.found, f.total, if claimable > 0 then "  ★보상" else ""), f.summary, {
+				{ text = "열기", color = fieldColor(f), onClick = function() codexField = f.id; render() end },
+			}, 64)
+			local stripe = Instance.new("Frame")
+			stripe.Size = UDim2.new(0, 4, 1, -12)
+			stripe.Position = UDim2.fromOffset(0, 6)
+			stripe.BackgroundColor3 = fieldColor(f)
+			stripe.BorderSizePixel = 0
+			stripe.Parent = row
+			local barBack = Instance.new("Frame")
+			barBack.AnchorPoint = Vector2.new(0, 1)
+			barBack.Position = UDim2.new(0, 8, 1, -3)
+			barBack.Size = UDim2.new(1, -90, 0, 4)
+			barBack.BackgroundColor3 = COLORS.grey
+			barBack.BorderSizePixel = 0
+			barBack.Parent = row
+			local bar = Instance.new("Frame")
+			bar.Size = UDim2.fromScale(f.found / math.max(1, f.total), 1)
+			bar.BackgroundColor3 = fieldColor(f)
+			bar.BorderSizePixel = 0
+			bar.Parent = barBack
 			return row
 		end)
+	end
+	add(function() return mkHeader(content, "전체 도감 보상") end)
+	tierRows(cx.overall, "all", "전체 %d%% 달성")
+end
+
+local function renderCodexField()
+	local f = findField(codexField)
+	if not f then
+		codexField = nil
+		renderCodexOverview()
+		return
+	end
+	add(function()
+		return mkRow(content, "← 분야 목록", "", { { text = "뒤로", color = COLORS.grey, onClick = function() codexField = nil; render() end } }, 44)
+	end)
+	add(function()
+		return mkLabel(content, string.format("%s  %d / %d", tostring(f.name), f.found, f.total), 17, fieldColor(f), true)
+	end)
+	add(function() return mkLabel(content, f.detail, 13, COLORS.text, false) end)
+	add(function() return mkLabel(content, "모으는 방법: " .. f.tip, 12, COLORS.gold, false) end)
+	add(function() return mkHeader(content, "완성 보상") end)
+	tierRows(f.tiers, f.id, f.name .. " %d%% 달성")
+	add(function() return mkHeader(content, "카드") end)
+	add(function()
+		local grid = Instance.new("Frame")
+		grid.BackgroundTransparency = 1
+		grid.Size = UDim2.new(1, -6, 0, 0)
+		grid.AutomaticSize = Enum.AutomaticSize.Y
+		local g = Instance.new("UIGridLayout")
+		g.CellSize = UDim2.new(0.333, -6, 0, 132)
+		g.CellPadding = UDim2.fromOffset(6, 6)
+		g.SortOrder = Enum.SortOrder.LayoutOrder
+		g.Parent = grid
+		local n = 0
+		for _, c in view.codex.cards do
+			if c.field == f.id then
+				n += 1
+				local tile = Instance.new("TextButton")
+				tile.LayoutOrder = n
+				tile.AutoButtonColor = false
+				tile.Text = ""
+				tile.BackgroundColor3 = COLORS.row
+				corner(tile, 8)
+				tile.Parent = grid
+				local st = Instance.new("UIStroke")
+				st.Thickness = 2
+				st.Color = if c.found then (RARITY_COLOR[c.rarity] or COLORS.muted) else COLORS.grey
+				st.Parent = tile
+				local art = Instance.new("Frame")
+				art.Position = UDim2.fromOffset(4, 4)
+				art.Size = UDim2.new(1, -8, 0, 78)
+				art.BackgroundColor3 = COLORS.grey
+				corner(art, 6)
+				art.Parent = tile
+				paintCardArt(art, c, f)
+				local nm = Instance.new("TextLabel")
+				nm.BackgroundTransparency = 1
+				nm.Position = UDim2.fromOffset(4, 84)
+				nm.Size = UDim2.new(1, -8, 0, 28)
+				nm.Font = Enum.Font.GothamBold
+				nm.TextSize = 12
+				nm.TextWrapped = true
+				nm.TextColor3 = if c.found then COLORS.text else COLORS.muted
+				nm.Text = c.name
+				nm.Parent = tile
+				local rr = Instance.new("TextLabel")
+				rr.BackgroundTransparency = 1
+				rr.Position = UDim2.new(0, 4, 1, -18)
+				rr.Size = UDim2.new(1, -8, 0, 14)
+				rr.Font = Enum.Font.Gotham
+				rr.TextSize = 10
+				rr.TextColor3 = if c.found then (RARITY_COLOR[c.rarity] or COLORS.muted) else COLORS.grey
+				rr.Text = if c.found then (RARITY_NAMES[c.rarity] or c.rarity) else "미발견"
+				rr.Parent = tile
+				tile.Activated:Connect(function()
+					showCardDetail(c)
+				end)
+			end
+		end
+		return grid
+	end)
+end
+
+local function renderCodex()
+	if codexField then
+		renderCodexField()
+	else
+		renderCodexOverview()
 	end
 end
 

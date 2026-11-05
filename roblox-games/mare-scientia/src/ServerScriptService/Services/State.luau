@@ -47,6 +47,7 @@ return function(D)
 			contract = nil,
 			title = 0,
 			story = {},
+			collected = {},
 		}
 	end
 
@@ -277,6 +278,13 @@ return function(D)
 				deadline = math.floor(num(c.deadline, 0, 0, 1e9)),
 			}
 		end
+		if type(saved.collected) == "table" then
+			for key, v in saved.collected do
+				if type(key) == "string" and v == true and key:match("^[%w]+:%d+$") then
+					s.collected[key] = true
+				end
+			end
+		end
 		if type(saved.story) == "table" then
 			for id, choice in saved.story do
 				local e = type(id) == "string" and D.Story.ById[id]
@@ -355,6 +363,7 @@ return function(D)
 			license = state.license,
 			insured = state.insured,
 			story = state.story,
+			collected = state.collected,
 		}
 	end
 
