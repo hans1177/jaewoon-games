@@ -1422,11 +1422,18 @@ end)
 -- [아이콘 HUD / 지역 스코프] 기존 21종 이미지와 서버 동작을 그대로 두고 Luau 200 레지스터 제한만 해결한다.
 do
 -- [시안 상단 여섯 메뉴] 기존 메뉴 페이지를 그대로 호출하고 아이콘·위치만 교체한다.
+-- [안전영역 밖 터치층] 기본 상단 메뉴 여백·오른쪽 안전영역 때문에 버튼이 잘리지 않게 별도 ScreenGui를 쓴다.
+local meadowTouchLayer=Instance.new("ScreenGui")
+meadowTouchLayer.Name="MeadowTouchLayer"
+meadowTouchLayer.ResetOnSpawn=false
+meadowTouchLayer.ScreenInsets=Enum.ScreenInsets.DeviceSafeInsets
+meadowTouchLayer.DisplayOrder=gui.DisplayOrder+2
+meadowTouchLayer.Parent=gui.Parent
 local meadowReferenceMenu=Instance.new("Frame")
 meadowReferenceMenu.Name="MeadowReferenceTopMenu"
 meadowReferenceMenu.BackgroundTransparency=1
 meadowReferenceMenu.ZIndex=26
-meadowReferenceMenu.Parent=gui
+meadowReferenceMenu.Parent=meadowTouchLayer
 local referenceMenuItems={
   {"가방",2,6},{"제작",2,11},{"건설",2,12},
   {"도감",3,13},{"연구일지",3,14},{"설정",4,15},
@@ -1583,7 +1590,7 @@ for _,attribute in ipairs({"MeadowPotionHealth","MeadowPotionStamina"}) do
 end
 refreshReferenceHotbar()
 local function layoutMeadowReferenceHud()
-  local v=gui.AbsoluteSize
+  local v=meadowTouchLayer.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   -- [시안 기준 709x446] 상단 6개는 오른쪽 끝에서 34px 간격, 10칸 단축바는 화면 폭 49%로 정렬.
   local landscape=v.X>v.Y
@@ -1592,7 +1599,8 @@ local function layoutMeadowReferenceHud()
     or math.floor(math.clamp((v.X-18)/6,47,52))
   local menuWidth=step*6
   meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+17)
-  meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-4,0,landscape and 2 or 70)
+  -- [최상단] 기본 메뉴 여백 위, 화면 맨 위 오른쪽에 붙인다.
+  meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-6,0,2)
   for index,button in ipairs(meadowReferenceMenu:GetChildren())do
     if button:IsA("TextButton") then
       button.Size=UDim2.fromOffset(step-3,step-3)
@@ -1601,7 +1609,11 @@ local function layoutMeadowReferenceHud()
       if caption then caption.Size=UDim2.fromOffset(step+12,13) end
     end
   end
-  local columns=v.X<(landscape and 760 or 560) and 5 or 10
+  -- [오른쪽 큰 버튼 영역 보호] 가로 화면에서 10칸이 들어가지 않으면 5칸 두 줄로 접는다.
+  local dockScale=math.clamp((v.Y-20)/370,.76,1.12)*1.3
+  local dockReserve=landscape and math.floor(226*dockScale)+8 or 0
+  local tenWide=(landscape and math.floor(math.clamp(v.X/17,44,52)) or 44)*10+18
+  local columns=(landscape and (v.X-150-dockReserve<tenWide) or (not landscape and v.X<560)) and 5 or 10
   local slotSize=landscape and math.floor(math.clamp(v.X/17,44,52))
     or math.floor(math.clamp((v.X-24)/columns-2,44,48))
   local gap=2
@@ -1610,7 +1622,7 @@ local function layoutMeadowReferenceHud()
   if landscape then
     -- 왼쪽 이동 조이스틱(약 150)과 오른쪽 전투 버튼 영역(약 150) 사이에 단축바를 둔다.
     local minCenter=150+barWidth/2
-    local maxCenter=math.max(minCenter,v.X-150-barWidth/2)
+    local maxCenter=math.max(minCenter,v.X-dockReserve-barWidth/2)
     meadowReferenceHotbar.Position=UDim2.new(0,math.floor(math.clamp(v.X*.46,minCenter,maxCenter)),1,-13)
   else
     meadowReferenceHotbar.Position=UDim2.new(.5,0,1,-99)
@@ -1621,6 +1633,7 @@ local function layoutMeadowReferenceHud()
   end
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowReferenceHud)
+meadowTouchLayer:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowReferenceHud)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   local visible=gui:GetAttribute("GameMenuOpen")~=true
   meadowReferenceMenu.Visible=visible
@@ -4979,7 +4992,7 @@ meadowSkillDock.Name="MeadowR15SkillDock"
 meadowSkillDock.BackgroundTransparency=1
 meadowSkillDock.ZIndex=35 -- [오른쪽 버튼] 일반 HUD 위에 실동작 터치 버튼을 배치.
 meadowSkillDock.AnchorPoint=Vector2.new(1,1)
-meadowSkillDock.Parent=gui
+meadowSkillDock.Parent=player.PlayerGui:FindFirstChild("MeadowTouchLayer") or gui
 -- 외부 CC0 등록 아틀라스의 실제 의미가 맞는 아이콘만 매칭한다.
 local meleeSkills={
   {"meadow-unarmed-rush","연타",Color3.fromRGB(125,105,218),nil,"fist"},
@@ -5300,17 +5313,19 @@ end)
 end -- [기존 버튼 테이블] 아이콘 객체 생성 지역변수는 이 블록에서 정리.
 -- [오른쪽 터치 UI] 기존 전투·회피·방어·회복은 버튼 객체와 실제 원격 명령을 유지한다.
 local function layoutMeadowCombatUi()
-  local v=gui.AbsoluteSize
+  local touchLayer=player.PlayerGui:FindFirstChild("MeadowTouchLayer")
+  local v=(touchLayer or gui).AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local landscape=v.X>v.Y
-  local scale=landscape and math.clamp((v.Y-20)/370,.76,1.12) or math.clamp(v.X/390,.76,1)
-  local offset=landscape and 12 or 104 -- [세로화면] Roblox 이동 조이스틱·기본 하단 공간.
+  -- [모바일 큰 버튼] 이전보다 약 1.3배, 버튼 사이 간격을 넓히고 가장자리 여유를 둔다.
+  local scale=(landscape and math.clamp((v.Y-20)/370,.76,1.12)*1.3 or math.clamp(v.X/390,.76,1)*1.1)
+  local offset=landscape and 14 or 104 -- [세로화면] Roblox 이동 조이스틱·기본 하단 공간.
   meadowSkillDock.Size=UDim2.fromOffset(math.floor(212*scale),math.floor(216*scale))
-  meadowSkillDock.Position=UDim2.new(1,-math.floor(8*scale),1,-math.floor(offset*scale))
+  meadowSkillDock.Position=UDim2.new(1,-math.floor(14*scale),1,-math.floor(offset*(landscape and 1 or scale)))
   -- [시안 참고] 오른쪽 큰 검 / 위쪽 마력·질주 / 좌측 회피 / 아래 점프.
   local positions={
-    {156,111,38}, -- [시안] 보라색 기술: 검 왼쪽 위
-    {121,139,39}, -- [시안] 회피: 기술 아래 왼쪽
+    {150,92,38}, -- [시안] 보라색 기술: 검 위쪽
+    {100,138,39}, -- [시안] 회피: 검 왼쪽
     {170,75,39}, -- 막기는 기존 단축바 8번
     {40,72,36}, -- 물약은 기존 단축바 5번
   }
@@ -5338,7 +5353,7 @@ local function layoutMeadowCombatUi()
     if index==2 then
       local size=math.max(46,math.floor(35*scale))
       button.Size=UDim2.fromOffset(size,size)
-      button.Position=UDim2.fromOffset(math.floor(166*scale),math.floor(60*scale))
+      button.Position=UDim2.fromOffset(math.floor(168*scale),math.floor(30*scale))
     end
   end
   local swordSize=math.max(60,math.floor(66*scale))
@@ -5346,7 +5361,7 @@ local function layoutMeadowCombatUi()
   meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale),math.floor(132*scale))
   local jumpSize=math.max(46,math.floor(46*scale))
   meadowSkillButtons.referenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)
-  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(92*scale),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor(8*scale))
+  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(52*scale),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor(6*scale))
   -- [기존 점프 이중 터치 방지] 공식 모바일 JumpButton만 숨기고 실제 점프 기능은 위 버튼에 연결.
   if UserInputService.TouchEnabled then
     local touchGui=player.PlayerGui:FindFirstChild("TouchGui")
@@ -5364,6 +5379,10 @@ local function layoutMeadowCombatUi()
   end
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)
+do
+  local layer=player.PlayerGui:FindFirstChild("MeadowTouchLayer")
+  if layer then layer:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi) end
+end
 -- 기본 모바일 JumpButton은 늦게 생기거나 리스폰 시 재생성되므로 해당 버튼만 숨긴다.
 player.PlayerGui.DescendantAdded:Connect(function(descendant)
   if UserInputService.TouchEnabled and descendant.Name=="JumpButton" and descendant:IsA("GuiButton") then
@@ -5529,14 +5548,14 @@ end)
 -- 체력바와 같은 전체 화면 좌표계를 사용해 Roblox 기본 상단 UI 여백으로 인한 아래 밀림을 없앤다.
 local meadowRadar=Instance.new("Frame")
 meadowRadar.Name="MeadowExplorerRadar"
-meadowRadar:SetAttribute("ReferenceRadarVisible",false) -- [시안] 지도는 옵션에서 표시
+meadowRadar:SetAttribute("ReferenceRadarVisible",true) -- [상단 중앙 가로 지도] 기본 표시, 옵션에서 숨김
 meadowRadar.AnchorPoint=Vector2.new(1,0)
 meadowRadar.Size=UDim2.fromOffset(128,151)
 meadowRadar.BackgroundColor3=Color3.fromRGB(13,30,28)
 meadowRadar.BackgroundTransparency=1
 meadowRadar.BorderSizePixel=0
 meadowRadar.ZIndex=8
-meadowRadar.Parent=meadowVitalsGui
+meadowRadar.Parent=player.PlayerGui:FindFirstChild("MeadowTouchLayer") or meadowVitalsGui
 local radarCorner=Instance.new("UICorner")
 radarCorner.CornerRadius=UDim.new(0,13)
 radarCorner.Parent=meadowRadar
@@ -5572,7 +5591,7 @@ radarField.ClipsDescendants=true
 radarField.ZIndex=9
 radarField.Parent=meadowRadar
 local radarFieldCorner=Instance.new("UICorner")
-radarFieldCorner.CornerRadius=UDim.new(1,0)
+radarFieldCorner.CornerRadius=UDim.new(0,10) -- 원형 대신 가로로 긴 사각 지도
 radarFieldCorner.Parent=radarField
 local radarTint=Instance.new("UIGradient")
 radarTint.Color=ColorSequence.new(Color3.fromRGB(41,83,58),Color3.fromRGB(15,43,40))
@@ -6004,34 +6023,23 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   end
 end)
 local function layoutMeadowRadar()
-  local v=gui.AbsoluteSize
+  local layer=meadowRadar.Parent
+  local v=layer and layer:IsA("ScreenGui") and layer.AbsoluteSize or gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
-  local compactLandscape=v.X>v.Y and v.Y<450
-  local small=v.X<480
-  -- [미니맵 정렬] 추정 좌표 대신 회피 버튼과 체력바의 실제 화면 좌표로 맞춘다.
-  -- ScreenGui 안전영역이 다른 두 HUD를 연결할 때는 부모의 실제 좌표만 빼서 보정한다.
-  local mapDiameter=compactLandscape and (v.Y<350 and 80 or 88) or small and 96 or math.floor(math.clamp(v.Y*.17,98,124))
-  local dodgeButton=meadowSkillButtons[2]
-  local dodgeSize=dodgeButton.AbsoluteSize
-  if dodgeSize.X<=0 or dodgeSize.Y<=0 then return end
-  local radarOrigin=meadowVitalsGui.AbsolutePosition
-  local dodgeCenter=dodgeButton.AbsolutePosition.X+dodgeSize.X*.5
-  local healthTop=meadowHealthTrack.AbsolutePosition.Y
-  local mapWidth=mapDiameter+14
-  meadowRadar.Size=UDim2.fromOffset(mapWidth,mapDiameter+40)
+  -- [상단 중앙 가로 지도] 화면 맨 위 가운데. 가로가 길고 세로는 낮게 둔다(좌우 메뉴·체력바와 겹치지 않음).
+  local mapWidth=math.floor(math.clamp(v.X*.30,170,320))
+  local mapHeight=math.floor(math.clamp(mapWidth*.27,46,84))
+  meadowRadar.Size=UDim2.fromOffset(mapWidth,mapHeight+20)
   meadowRadar.AnchorPoint=Vector2.new(.5,0)
-  meadowRadar.Position=UDim2.fromOffset(
-    math.floor(dodgeCenter-radarOrigin.X+.5),
-    math.floor(healthTop-radarOrigin.Y+.5)
-  )
+  meadowRadar.Position=UDim2.new(.5,0,0,2)
   radarField.AnchorPoint=Vector2.new(.5,0)
   radarField.Position=UDim2.new(.5,0,0,1)
-  radarField.Size=UDim2.fromOffset(mapDiameter,mapDiameter)
-  radarTitle.Position=UDim2.fromOffset(3,mapDiameter+7)
-  radarTitle.Size=UDim2.new(1,-6,0,18)
+  radarField.Size=UDim2.fromOffset(mapWidth,mapHeight)
+  radarTitle.Position=UDim2.fromOffset(0,mapHeight+4)
+  radarTitle.Size=UDim2.new(.5,-2,0,16)
   radarTitle.TextSize=10
-  radarCoordinates.Position=UDim2.fromOffset(3,mapDiameter+25)
-  radarCoordinates.Size=UDim2.new(1,-6,0,13)
+  radarCoordinates.Position=UDim2.new(.5,2,0,mapHeight+4)
+  radarCoordinates.Size=UDim2.new(.5,-2,0,16)
   radarCoordinates.TextSize=9
   meadowRadar.Visible=meadowRadar:GetAttribute("ReferenceRadarVisible")==true and gui:GetAttribute("GameMenuOpen")~=true
 end
@@ -6046,7 +6054,7 @@ alignMeadowRadar=layoutMeadowRadar
 -- [기존 미니맵 기능 보존] 참고 화면에는 숨기고, 옵션에서 언제든 복구할 수 있다.
 do
 local mapToggle=CommonUI.CreatePrimaryButton({
-  name="MeadowRadarToggle",text="미니맵 표시",minHeight=48
+  name="MeadowRadarToggle",text="미니맵 숨기기",minHeight=48
 })
 mapToggle.LayoutOrder=10
 mapToggle.Size=UDim2.new(1,-8,0,48)
