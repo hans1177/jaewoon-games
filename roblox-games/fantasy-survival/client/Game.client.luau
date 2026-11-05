@@ -1183,6 +1183,13 @@ local function renderMeadowPages()
       +(bit32.band(villageMask,8)~=0 and 1 or 0)
       +(bit32.band(villageMask,64)~=0 and 1 or 0)
   end
+  local bountyIndex=player:GetAttribute("BountyIndex") or 1
+  local bountyPhase=player:GetAttribute("BountyPhase") or 0
+  local bounty=Config.Bounties and Config.Bounties[bountyIndex]
+  local bountyText=not bounty and "모든 현상금 완료"
+    or bountyPhase==0 and string.format("%s · 새 계약 가능 (%s 의뢰판)",bounty.Name,bounty.Region=="worldtree" and "세계수 숲" or bounty.Region=="volcano" and "화산 협곡" or "오아시스 지하")
+    or bountyPhase==1 and string.format("%s\n단서 2곳 조사 후 %s 처치",bounty.Name,bounty.EnemyName)
+    or string.format("%s\n처치 완료 · 의뢰판에서 보상 선택",bounty.Name)
   local mainText=quest and string.format("%s\n%s  (%d/%d)",quest.Name,quest.Instruction,
     player:GetAttribute("QuestProgress") or 0,quest.Goal) or "완료 · 기사단 연대기 수집을 마쳤어."
   local villageText=village and string.format("%s · %s\n%s",village.Name,village.Issuer,
@@ -1194,6 +1201,7 @@ local function renderMeadowPages()
       or string.format("메인 의뢰 %d단계에 해금",companion.UnlockMainStage)) or "동료 의뢰 모두 완료"
   meadowLabels[5].Text="진행 중인 의뢰\n\n【메인 퀘스트】\n"..mainText..
     "\n\n【서브 · 마을】\n"..villageText..
+    "\n\n【현상금】\n"..bountyText..
     "\n\n【서브 · 동료】\n"..companionText..
     "\n\n【다음 행동 안내】\n"..suggestion..
     string.format("\n\n다음 강화 재료: 나무 %d · 돌 %d",cost,cost)..
@@ -1253,7 +1261,7 @@ player:GetAttributeChangedSignal("RunActive"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("QuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestProgress"):Connect(renderMeadowPages)
-for _,name in ipairs({"ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","WorldDiscovered","DexKillWolf","DexKillBat","DexKillAlpha"})do
+for _,name in ipairs({"ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","BountyIndex","BountyPhase","BountyClues","WorldDiscovered","DexKillWolf","DexKillBat","DexKillAlpha"})do
   player:GetAttributeChangedSignal(name):Connect(renderMeadowPages)
 end
 for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채집","scope-coreloop-1-6ebe58f496"},{"장비 강화","scope-coreloop-2-6c927cfa40"}})do
@@ -5114,7 +5122,7 @@ do
     for i,button in ipairs(choices)do
       local option=typeof(payload.options)=="table" and payload.options[i] or nil
       local action=option and option.action
-      local permitted=action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2"
+      local permitted=action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
       button.Visible=permitted
       choiceActions[i]=permitted and action or nil
       if permitted then button.Text=tostring(option.label or "선택") end

@@ -3182,7 +3182,7 @@ local function spawnEnemy(site, siteIndex)
   end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,isAlpha=isAlpha,kind=partId,questIndex=site.questIndex,
+    isBoss=isBoss,isAlpha=isAlpha,kind=partId,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
     banditIdle=banditIdle,banditWalk=banditWalk,
     damage=isAlpha and 13 or ((isBoss and 20 or 6)+math.floor(site.tier/2)),
     speed=isAlpha and 8.4 or (isBoss and 4.8 or 7.5),position=location,spawnPosition=location,siteIndex=siteIndex,
@@ -3319,6 +3319,16 @@ local function applyMeadowDamage(player,target,damage)
         if bit32.band(mask,required)==required then setNumber(player,"VillageContractPhase",2) end
         villageDialogue(player,"전투 완료 · "..contract.Name,
           contract.EnemyName.." 처치 성공. 남은 조사 후 촌장에게 돌아가 결말을 선택해.")
+      end
+    end
+    -- [현상금] 단서 2곳을 모두 조사한 뒤 처치해야 의뢰가 완료로 인정된다.
+    if target.bountyIndex and readNumber(player,"BountyIndex",1)==target.bountyIndex
+      and readNumber(player,"BountyPhase",0)==1 then
+      if readNumber(player,"BountyClues",0)>=3 then
+        setNumber(player,"BountyPhase",2)
+        pcall(function() villageDialogue(player,"현상금 완료","목표를 처치했어. 의뢰판으로 돌아가 보상 방식을 선택해.") end)
+      else
+        pcall(function() villageDialogue(player,"현상금","단서 2곳을 먼저 조사해야 이 처치가 의뢰로 인정돼.") end)
       end
     end
     setNumber(player,"EnemyHealth",0)
@@ -5153,3 +5163,92 @@ task.spawn(function()
     end
   end
 end)
+
+-- [현상금 게시판] 숲·화산·오아시스 입구에 의뢰판을 두고, 단서 2곳과 정예 몬스터 1마리로 진행한다.
+do
+  local centers={worldtree=Vector3.new(1200,0,0),volcano=Vector3.new(2400,0,0),oasis=Vector3.new(3600,0,0)}
+  local boardOffsets={worldtree=Vector3.new(-18,4,150),volcano=Vector3.new(-18,4,-160),oasis=Vector3.new(-18,4,-160)}
+  local function say(player,title,text,options) pcall(function() villageDialogue(player,title,text,options) end) end
+  local function spot(position,label,color,action)
+    local anchor=Instance.new("Attachment")
+    anchor.WorldPosition=position;anchor.Parent=workspace.Terrain
+    local glow=Instance.new("ParticleEmitter")
+    glow.Color=ColorSequence.new(color);glow.LightEmission=1;glow.Rate=16;glow.Lifetime=NumberRange.new(2,3)
+    glow.Speed=NumberRange.new(1,2);glow.Size=NumberSequence.new(.7);glow.Parent=anchor
+    local prompt=Instance.new("ProximityPrompt")
+    prompt.ActionText=label;prompt.ObjectText="현상금";prompt.HoldDuration=.45
+    prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+    prompt.Triggered:Connect(function(player) action(player,anchor.WorldPosition) end)
+  end
+  local boardSessions={}
+  local function current(player)
+    local index=math.clamp(readNumber(player,"BountyIndex",1),1,#Config.Bounties+1)
+    return index,Config.Bounties[index]
+  end
+  local function board(player,region)
+    local index,bounty=current(player)
+    if not bounty then say(player,"현상금 게시판","모든 현상금을 완료했어. 다음 이야기에서 새 계약이 올라올 거야.");return end
+    if bounty.Region~=region then
+      say(player,"현상금 게시판",bounty.Region=="worldtree" and "다음 현상금은 세계수 숲에서 받아." or bounty.Region=="volcano" and "다음 현상금은 화산 협곡에서 받아." or "다음 현상금은 오아시스 지하에서 받아.")
+      return
+    end
+    local phase=readNumber(player,"BountyPhase",0)
+    boardSessions[player]=os.clock()+40
+    if phase==0 then
+      say(player,"현상금 · "..bounty.Name,bounty.Summary.."\n\n단서 2곳 조사 후 "..bounty.EnemyName.." 처치.",{{label="계약 수락",action="bounty:accept"}})
+    elseif phase==1 then
+      local found=(bit32.band(readNumber(player,"BountyClues",0),1)~=0 and 1 or 0)+(bit32.band(readNumber(player,"BountyClues",0),2)~=0 and 1 or 0)
+      say(player,"진행 중 · "..bounty.Name,"단서 "..found.."/2 · "..bounty.EnemyName.." 처치.")
+    else
+      say(player,"결산 · "..bounty.Name,bounty.Summary.."\n\n목표를 처치했다. 보상 방식을 선택해.",{
+        {label=bounty.Choices[1].Label,action="bounty:resolve:1"},{label=bounty.Choices[2].Label,action="bounty:resolve:2"}})
+    end
+  end
+  for region,offset in pairs(boardOffsets) do
+    local position=centers[region]+offset
+    task.defer(function()
+      spot(position,"현상금 게시판",Color3.fromRGB(255,214,130),function(player) board(player,region) end)
+    end)
+  end
+  for index,bounty in ipairs(Config.Bounties) do
+    local center=centers[bounty.Region]
+    for clueIndex,offset in ipairs(bounty.ClueOffsets) do
+      spot(center+Vector3.new(offset[1],4,offset[2]),"단서 조사",Color3.fromRGB(170,220,255),function(player)
+        if readNumber(player,"BountyIndex",1)~=index or readNumber(player,"BountyPhase",0)~=1 then
+          say(player,"단서","지금 진행 중인 현상금의 단서가 아니야.");return
+        end
+        local flag=bit32.lshift(1,clueIndex-1)
+        local mask=readNumber(player,"BountyClues",0)
+        if bit32.band(mask,flag)==0 then setNumber(player,"BountyClues",bit32.bor(mask,flag)) end
+        say(player,"단서 "..clueIndex.."/2",bounty.Clues[clueIndex])
+      end)
+    end
+    table.insert(meadowEncounterSites,{id=bounty.Enemy,atom=bounty.Enemy=="wolf" and "HEAD_CANINE" or "WING_LEATHER",
+      tier=7,height=bounty.Height,position=center+Vector3.new(bounty.EnemyOffset[1],3,bounty.EnemyOffset[2]),bountyIndex=index})
+  end
+  -- 선택지 응답은 기존 마을 대화 액션 경로를 재사용하지 않고 별도 RemoteEvent 문자열로 받는다.
+  remote.OnServerEvent:Connect(function(player,action)
+    if typeof(action)~="string" or (action~="bounty:accept" and action~="bounty:resolve:1" and action~="bounty:resolve:2") then return end
+    if os.clock()>(boardSessions[player] or 0) then return end
+    local index,bounty=current(player)
+    if not bounty then return end
+    local phase=readNumber(player,"BountyPhase",0)
+    if action=="bounty:accept" and phase==0 then
+      setNumber(player,"BountyPhase",1);setNumber(player,"BountyClues",0);boardSessions[player]=nil
+      say(player,"계약 수락 · "..bounty.Name,"단서 2곳을 조사한 뒤 "..bounty.EnemyName.."을 처치해.")
+    elseif phase==2 and (action=="bounty:resolve:1" or action=="bounty:resolve:2") then
+      local selected=action=="bounty:resolve:1" and 1 or 2
+      local choice=bounty.Choices[selected]
+      local previous=readNumber(player,"BountyOutcomes",0)
+      local shift=(index-1)*2
+      if bit32.band(bit32.rshift(previous,shift),3)~=0 then return end
+      setNumber(player,"BountyOutcomes",bit32.bor(previous,bit32.lshift(selected,shift)))
+      setNumber(player,"BountyIndex",index+1);setNumber(player,"BountyPhase",0);setNumber(player,"BountyClues",0)
+      setNumber(player,"Coins",readNumber(player,"Coins",0)+(choice.Coins or 0))
+      if (choice.Wood or 0)>0 then setNumber(player,"Wood",readNumber(player,"Wood",0)+choice.Wood) end
+      if (choice.Stone or 0)>0 then setNumber(player,"Stone",readNumber(player,"Stone",0)+choice.Stone) end
+      boardSessions[player]=nil
+      say(player,"현상금 완료 · "..bounty.Name,choice.Outcome.."\n보상: 소지금 +"..(choice.Coins or 0))
+    end
+  end)
+end

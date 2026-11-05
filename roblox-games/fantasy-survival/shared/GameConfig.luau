@@ -195,6 +195,40 @@ local Config = {
     {Id="alpha",Name="우두머리 늑대",Field="DexKillAlpha",Habitat="초원 서쪽 · 세계수 숲(저주받은 늑대인간)",
      Lore={"무리를 이끄는 거대한 늑대. 연타 공격은 막기 타이밍으로 끊는다.","일정 체력 이하에서는 더 자주 달려든다. 회피 연속 단계로 거리를 벌려라.","숲 안쪽의 큰 늑대는 보병대장 닉이 저주로 변한 모습이다. 쓰러뜨려 저주를 눌러야 한다."}},
   },
+  -- [현상금 게시판 · 위쳐식 몬스터 계약] 단서 2곳을 조사한 뒤 정예 몬스터를 처치하고 보상 방식을 선택한다.
+  -- Offset은 지역 중심 기준 좌표. Enemy는 임시 메시(늑대/박쥐)이며 새 몬스터 확보 시 교체한다.
+  Bounties = {
+    {Id="moss-fang",Region="worldtree",Name="01 · 이끼 송곳니",Enemy="wolf",EnemyName="이끼 송곳니",EnemyOffset={-120,-100},Height=5.2,
+     Summary="숲에서 사냥꾼 셋이 돌아오지 않았다. 흔적을 따라 사냥꾼들을 덮친 정예 늑대를 쓰러뜨려라.",
+     ClueOffsets={{-60,60},{-95,-30}},Clues={"부러진 활과 늑대 발톱 자국. 사냥꾼은 도망치지 못했다.","나무에 새겨진 표식. 사냥꾼 중 한 명은 이전 기사단 출신이었다."},
+     Choices={{Label="유품을 가족에게 전한다",Outcome="사냥꾼의 가족이 눈물로 감사했다.",Coins=20,Wood=6},
+       {Label="증거를 마을 경비대에 넘긴다",Outcome="경비대가 포상금을 지급했다.",Coins=34,Wood=0}}},
+    {Id="whisper-roots",Region="worldtree",Name="02 · 속삭이는 뿌리",Enemy="bat",EnemyName="뿌리 박쥐",EnemyOffset={110,110},Height=4.4,
+     Summary="세계수 뿌리 근처에서 이름을 부르는 속삭임이 들린다. 속삭임의 근원인 박쥐를 처치하라.",
+     ClueOffsets={{70,-20},{40,90}},Clues={"뿌리 틈에서 누군가의 이름이 낮게 속삭인다. 지워진 기사단원의 이름이다.","박쥐 둥지에서 낡은 기사단 문장이 나왔다."},
+     Choices={{Label="속삭이는 이름을 기록한다",Outcome="지워진 이름이 연대기에 남았다.",Coins=18,Wood=8},
+       {Label="뿌리를 태워 속삭임을 끊는다",Outcome="속삭임은 멎었지만 이름은 영영 사라졌다.",Coins=36,Wood=0}}},
+    {Id="ash-swarm",Region="volcano",Name="03 · 재의 박쥐 떼",Enemy="bat",EnemyName="재의 박쥐",EnemyOffset={-100,100},Height=4.6,
+     Summary="화산 협곡 야영지 터를 박쥐 떼가 점령했다. 우두머리 박쥐를 처치해 길을 열어라.",
+     ClueOffsets={{-50,-70},{60,70}},Clues={"재 속에 파묻힌 단원의 장갑. 기사단 보급품이 약탈됐다.","검게 탄 둥지. 박쥐는 용암의 열기에 이끌렸다."},
+     Choices={{Label="보급품을 회수해 야영지에 돌려둔다",Outcome="야영지 터에 쓸 만한 물자가 남았다.",Coins=24,Stone=8},
+       {Label="우두머리의 날개를 전리품으로 챙긴다",Outcome="좋은 값에 팔렸다.",Coins=44,Stone=0}}},
+    {Id="red-beast",Region="volcano",Name="04 · 붉은 짐승",Enemy="wolf",EnemyName="붉은 짐승",EnemyOffset={110,-80},Height=5.6,
+     Summary="용암 옆에서 불타는 늑대가 순례자를 습격한다. 위험한 짐승을 처치하라.",
+     ClueOffsets={{30,-110},{-80,50}},Clues={"불에 그을린 순례자의 지팡이. 짐승은 용암 근처에서만 움직인다.","늑대의 털에서 마력의 재가 떨어진다. 미러의 술식이 닿은 흔적이다."},
+     Choices={{Label="순례자를 안전한 길로 인도한다",Outcome="순례자가 감사의 약초를 건넸다.",Coins=28,Stone=6},
+       {Label="짐승의 심장석을 채취한다",Outcome="뜨거운 심장석이 제작 재료가 됐다.",Coins=46,Stone=0}}},
+    {Id="sand-wail",Region="oasis",Name="05 · 모래의 곡소리",Enemy="bat",EnemyName="모래 박쥐",EnemyOffset={-110,-90},Height=4.8,
+     Summary="오아시스 지하에서 밤마다 곡소리가 난다. 곡소리의 근원을 추적해 처치하라.",
+     ClueOffsets={{-60,80},{70,-40}},Clues={"물가에 신발 한 켤레. 이름이 지워진 채 놓여 있다.","모래에 남은 날개 자국이 지하 굴로 이어진다."},
+     Choices={{Label="신발의 주인을 위해 물가에 묻는다",Outcome="곡소리가 한결 잦아들었다.",Coins=30,Stone=6},
+       {Label="신발을 증거로 챙긴다",Outcome="모래서약 기사단의 마지막 증거가 됐다.",Coins=50,Stone=0}}},
+    {Id="deep-hunter",Region="oasis",Name="06 · 깊은 곳의 사냥꾼",Enemy="wolf",EnemyName="모래 사냥꾼",EnemyOffset={120,100},Height=5.8,
+     Summary="오아시스 깊은 곳을 지키는 거대한 짐승이 보급대를 막고 있다. 쓰러뜨려 길을 열어라.",
+     ClueOffsets={{0,-100},{-30,40}},Clues={"짓밟힌 천막과 보급 상자. 미나의 보급 표식이 남아 있다.","짐승의 목에 낡은 기사단 목걸이가 걸려 있다."},
+     Choices={{Label="보급 상자를 열어 필요한 만큼만 가져간다",Outcome="미나의 방식 그대로 공정하게 나눴다.",Coins=34,Stone=8},
+       {Label="상자를 모두 가져간다",Outcome="큰 이득을 얻었다.",Coins=56,Stone=0}}},
+  },
   -- [초원 마을 의뢰] 주민 진술 1개 · 현장 단서 1개 · 실전 전투 1회.
   -- 기존 저장 키·선택별 보상은 유지하고, 이전 조사 기록 비트는 마이그레이션 호환한다.
   VillageContracts = {
@@ -332,6 +366,7 @@ local Config = {
     VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0,
     -- [이어하기] 이전 프로필에 없는 필드는 0으로 마이그레이션. 서버 검증된 위치만 복원한다.
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
+    BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
     DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
