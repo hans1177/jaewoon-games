@@ -2482,14 +2482,14 @@ talentReset.Activated:Connect(function()
   if player:GetAttribute("ProfileReady")==true then remote:FireServer("meadow:rpg:talent:reset:all") end
 end)
 local talentEffects={
-  Martial={"공격 +1","공격 +2","공격 +3"},Signs={"탄환 +2","탄환 +4","탄환 +6"},
+  Martial={"1연타","2연타","3연타","4연타","5연타"},Signs={"탄환 +2","탄환 +4","탄환 +6"},
   Defense={"피해 -1","피해 -2","피해 -3"},Agility={"1단 회피","2단 연속","3단 연속","4단 연속","5단 배후"},
 }
 local talentIcons={Martial=2,Signs=7,Defense=3,Agility=6}
 -- [상용 게임식 스킬 상세] 단계별 이름과 설명. 실제 수치는 서버의 기존 재능 계산이 결정한다.
 local talentUi={}
 talentUi.details={
-  Martial={{"날카로운 칼날","모든 검 공격 피해 +1. 검술의 기본기를 익힌다."},{"단련된 팔","공격 피해 +2. 연타의 마지막 타격이 안정된다."},{"회전 베기 극의","공격 피해 +3. 회전 베기가 최대 8마리·12칸까지 닿는다."}},
+  Martial={{"날카로운 칼날","피해 +1. 연타는 1단 단순 베기에 머문다."},{"2연타","피해 +2. 오른베기 뒤 왼베기가 이어진다."},{"3연타","피해 +3. 찌르기까지 이어지고 마지막 타가 강해진다."},{"4연타","피해 +4. 궤적이 길어지고 피해 배율이 커진다."},{"기사의 5연타","피해 +5. 5타째는 주변 적까지 베는 화려한 마무리."}},
   Signs={{"마력 집중","마력 탄환 피해 +2. 마력 흐름을 손끝에 모은다."},{"마력 증폭","탄환 피해 +4. 탄환이 더 단단하게 날아간다."},{"관통 사거리","탄환 피해 +6. 사거리가 40칸까지 늘어난다."}},
   Defense={{"단단한 자세","받는 피해 -1. 방어 자세가 안정된다."},{"완벽 방어 연장","받는 피해 -2. 완벽 방어 구간이 조금 길어진다."},{"철벽 방어","받는 피해 -3. 방어 자세 유지 시간이 길어지고 방패 빛이 오래간다."}},
   Agility={{"가벼운 발","1단 회피. 측면으로 빠진다."},{"연속 회피","2단 연속. 반대편으로 이어서 회피한다."},{"교차 회피","3단 연속. 전방 대각으로 파고든다."},{"위빙","4단 연속. 후방 대각으로 흘려 보낸다."},{"배후 도약","5단. 적의 등 뒤로 도약한다. 마지막 단계는 재사용 대기가 길다."}},
@@ -2821,6 +2821,36 @@ for index,button in ipairs(skillButtons)do
     meadowActionButtons.refreshSkills()
   end)
   button.BackgroundColor3=index==1 and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
+end
+-- [스킬창 2분할] 맨 위 큰 토글로 "전투 기술(사용·등록)"과 "스킬 트리(투자)"를 나눠 긴 스크롤을 없앤다.
+do
+  local modeBar=Instance.new("Frame")
+  modeBar.Name="SkillModeBar";modeBar.LayoutOrder=0;modeBar.BackgroundTransparency=1
+  modeBar.Size=UDim2.new(1,-8,0,40);modeBar.Parent=meadowPages[7]
+  local modeLayout=Instance.new("UIListLayout")
+  modeLayout.FillDirection=Enum.FillDirection.Horizontal;modeLayout.Padding=UDim.new(0,8);modeLayout.Parent=modeBar
+  local modeButtons={}
+  local function setMode(tree)
+    talentPanel.Visible=tree
+    skillBar.Visible=not tree;skillGrid.Visible=not tree;skillDetail.Visible=not tree
+    meadowLabels[7].Visible=false
+    for i,b in ipairs(modeButtons)do
+      local on=(i==2)==tree
+      b.BackgroundColor3=on and Color3.fromRGB(54,112,84) or Color3.fromRGB(24,49,45)
+      b.TextColor3=on and Color3.fromRGB(255,240,197) or Color3.fromRGB(191,215,198)
+    end
+    meadowPages[7].CanvasPosition=Vector2.new(0,0)
+  end
+  for i,label in ipairs({"전투 기술  ·  사용 / 등록","스킬 트리  ·  점수 투자"})do
+    local b=Instance.new("TextButton")
+    b.Name="SkillMode"..i;b.Size=UDim2.new(.5,-4,1,0);b.Text=label;b.AutoButtonColor=true
+    b.Font=Enum.Font.GothamBold;b.TextSize=14;b.BorderSizePixel=0;b.Parent=modeBar
+    local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,10);c.Parent=b
+    local e=Instance.new("UIStroke");e.Color=gold;e.Transparency=.35;e.Parent=b
+    b.Activated:Connect(function() setMode(i==2) end)
+    modeButtons[i]=b
+  end
+  setMode(false)
 end
 skillQuick.Activated:Connect(function()
   if not selectedSkill or not meadowActionButtons.setQuickSkill then return end
@@ -5569,6 +5599,24 @@ local function activateMeadowWorldTap(point)
   if now-lastMeadowWorldTap<.13 then return end
   lastMeadowWorldTap=now
   if activateNearbyMeadowInteraction(point) then return end
+  -- [탭 조준] 화면에서 적을 직접 누르면 그 적을 향해 몸을 돌린 뒤 공격한다.
+  pcall(function()
+    local camera=workspace.CurrentCamera
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not camera or not root then return end
+    local ray=camera:ViewportPointToRay(point.X,point.Y)
+    local params=RaycastParams.new();params.FilterDescendantsInstances={player.Character}
+    params.FilterType=Enum.RaycastFilterType.Exclude
+    local hit=workspace:Raycast(ray.Origin,ray.Direction*120,params)
+    local model=hit and hit.Instance:FindFirstAncestorOfClass("Model")
+    if model and model:GetAttribute("EnemyHealth") then
+      local pivot=model:GetPivot().Position
+      if (pivot-root.Position).Magnitude<=28 then
+        local flat=Vector3.new(pivot.X,root.Position.Y,pivot.Z)
+        root.CFrame=CFrame.lookAt(root.Position,flat)
+      end
+    end
+  end)
   if primaryCombatAction and activateMeadowAction(primaryCombatAction.Id) then
     meadowAttackAttemptAt=os.clock()
   end
