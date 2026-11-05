@@ -708,20 +708,21 @@ end
 Config.WorldMap = {
   Bounds = {X0 = -2400, X1 = 6400, Z0 = -2400, Z1 = 2400},
   Village = {X0 = -352, X1 = 352, Z0 = -352, Z1 = 352},
+  -- 지역(홀드)은 사각형이 아니라 '중심점 + 가중 거리 + 잡음'으로 나뉜다. ZoneAt(x,z)가 서버·클라이언트 공통 판정이다.
   Zones = {
-    {Id="windcliff", Name="바람 절벽", Bit=64,   X0=-2400,X1=-352, Z0=-1250,Z1=1250, Color={118,150,96}},
-    {Id="meadow",    Name="초원 평야", Bit=1,    X0=-352, X1=950,  Z0=-1250,Z1=1250, Color={78,140,82}},
-    {Id="worldtree", Name="세계수 숲", Bit=2,    X0=950,  X1=2190, Z0=-1250,Z1=1250, Color={40,110,98}},
-    {Id="volcano",   Name="재의 황야", Bit=4,    X0=2190, X1=3390, Z0=-1250,Z1=1250, Color={130,56,42}},
-    {Id="oasis",     Name="모래 폐허", Bit=8,    X0=3390, X1=4300, Z0=-1250,Z1=1250, Color={190,160,98}},
-    {Id="swamp",     Name="안개 늪지", Bit=16,   X0=4300, X1=5300, Z0=-1250,Z1=1250, Color={70,92,66}},
-    {Id="citadel",   Name="불타는 성채", Bit=32, X0=5300, X1=6400, Z0=-1250,Z1=1250, Color={96,40,40}},
-    {Id="highland",  Name="북부 고원", Bit=128,  X0=-2400,X1=400,  Z0=-2400,Z1=-1250, Color={128,128,120}},
-    {Id="canyon",    Name="고대 협곡", Bit=256,  X0=400,  X1=3000, Z0=-2400,Z1=-1250, Color={150,102,70}},
-    {Id="chaos",     Name="혼돈의 대지", Bit=512, X0=3000, X1=6400, Z0=-2400,Z1=-1250, Color={82,46,70}},
-    {Id="wetland",   Name="남부 습원", Bit=1024, X0=-2400,X1=1500, Z0=1250, Z1=2400, Color={74,112,84}},
-    {Id="desert",    Name="황금 사막", Bit=2048, X0=1500, X1=4300, Z0=1250, Z1=2400, Color={214,184,118}},
-    {Id="deadmarsh", Name="죽음의 늪", Bit=4096, X0=4300, X1=6400, Z0=1250, Z1=2400, Color={58,70,52}},
+    {Id="meadow",    Name="초원 평야",   Bit=1,    Seed={0,0},       W=.72, Color={78,140,82}},
+    {Id="windcliff", Name="바람 절벽",   Bit=64,   Seed={-1700,100}, W=1,   Color={118,150,96}},
+    {Id="worldtree", Name="세계수 숲",   Bit=2,    Seed={1200,0},    W=1,   Color={40,110,98}},
+    {Id="volcano",   Name="재의 황야",   Bit=4,    Seed={2400,0},    W=1,   Color={130,56,42}},
+    {Id="oasis",     Name="모래 폐허",   Bit=8,    Seed={3600,0},    W=1,   Color={190,160,98}},
+    {Id="swamp",     Name="안개 늪지",   Bit=16,   Seed={4800,0},    W=1,   Color={70,92,66}},
+    {Id="citadel",   Name="불타는 성채", Bit=32,   Seed={5850,0},    W=1,   Color={96,40,40}},
+    {Id="highland",  Name="북부 고원",   Bit=128,  Seed={-900,-1700},W=1,   Color={128,128,120}},
+    {Id="canyon",    Name="고대 협곡",   Bit=256,  Seed={1500,-1700},W=1,   Color={150,102,70}},
+    {Id="chaos",     Name="혼돈의 대지", Bit=512,  Seed={4300,-1700},W=1,   Color={82,46,70}},
+    {Id="wetland",   Name="남부 습원",   Bit=1024, Seed={-700,1750}, W=1,   Color={74,112,84}},
+    {Id="desert",    Name="황금 사막",   Bit=2048, Seed={2800,1750}, W=1,   Color={214,184,118}},
+    {Id="deadmarsh", Name="죽음의 늪",   Bit=4096, Seed={5200,1750}, W=1,   Color={58,70,52}},
   },
   Waypoints = {
     {"초원 이정표",520,-300},{"숲 어귀 야영지",1000,500},{"세계수 제단",1300,-700},{"갈림길 주막터",1800,300},
@@ -733,6 +734,53 @@ Config.WorldMap = {
   },
 }
 
+
+-- [지역 판정] 가중 거리 + 완만한 잡음으로 경계가 구불구불한 홀드를 만든다. 마을 사각형과 옛 섬 세 곳은 항상 자기 지역.
+do
+  local W = Config.WorldMap
+  local b = W.Bounds
+  local islands = {worldtree = 1200, volcano = 2400, oasis = 3600}
+  function W.ZoneAt(x, z)
+    if x < b.X0 or x >= b.X1 or z < b.Z0 or z >= b.Z1 then return nil end
+    local v = W.Village
+    if x >= v.X0 and x < v.X1 and z >= v.Z0 and z < v.Z1 then return "meadow" end
+    for id, cx in pairs(islands) do
+      if math.abs(x - cx) <= 215 and math.abs(z) <= 215 then return id end
+    end
+    local best, bestId = math.huge, "meadow"
+    for index, zone in ipairs(W.Zones) do
+      local dx, dz = x - zone.Seed[1], z - zone.Seed[2]
+      local score = math.sqrt(dx * dx + dz * dz) * zone.W + math.noise(x / 520, z / 520, index * 3.7) * 330
+      if score < best then best, bestId = score, zone.Id end
+    end
+    return bestId
+  end
+  function W.RandomPoint(zoneId, random, margin)
+    margin = margin or 60
+    for _ = 1, 120 do
+      local x = random:NextNumber(b.X0 + margin, b.X1 - margin)
+      local z = random:NextNumber(b.Z0 + margin, b.Z1 - margin)
+      if W.ZoneAt(x, z) == zoneId then return x, z end
+    end
+    return nil
+  end
+  W.Cell = 100
+  W.Cols = (b.X1 - b.X0) // W.Cell
+  W.Rows = (b.Z1 - b.Z0) // W.Cell
+  local indexOf = {}
+  for index, zone in ipairs(W.Zones) do indexOf[zone.Id] = index; zone.Area = 0 end
+  W.Grid = {}
+  for row = 1, W.Rows do
+    local line = table.create(W.Cols)
+    for col = 1, W.Cols do
+      local id = W.ZoneAt(b.X0 + (col - .5) * W.Cell, b.Z0 + (row - .5) * W.Cell)
+      local index = indexOf[id] or 1
+      line[col] = index
+      W.Zones[index].Area += W.Cell * W.Cell
+    end
+    W.Grid[row] = line
+  end
+end
 
 -- [탐험 지점] 스카이림식 자동 발견: 가까이 가면 이름이 뜨고 지도에 기록된다. 좌표는 고정 시드로 서버·클라이언트가 같게 만든다.
 do
@@ -746,12 +794,11 @@ do
   local pois = {}
   local village = Config.WorldMap.Village
   for _, zone in ipairs(Config.WorldMap.Zones) do
-    local count = math.max(3, math.floor((zone.X1 - zone.X0) * (zone.Z1 - zone.Z0) / 1100000))
+    local count = math.max(3, math.floor(zone.Area / 1100000))
     for _ = 1, count do
       if #pois >= 60 then break end
-      local x = random:NextNumber(zone.X0 + 60, zone.X1 - 60)
-      local z = random:NextNumber(zone.Z0 + 60, zone.Z1 - 60)
-      if not (x > village.X0 - 80 and x < village.X1 + 80 and z > village.Z0 - 80 and z < village.Z1 + 80) then
+      local x, z = Config.WorldMap.RandomPoint(zone.Id, random, 80)
+      if x and not (x > village.X0 - 80 and x < village.X1 + 80 and z > village.Z0 - 80 and z < village.Z1 + 80) then
         local kind = kinds[random:NextInteger(1, #kinds)]
         table.insert(pois, {Name = kind.Names[random:NextInteger(1, #kind.Names)], Kind = kind.Id, Icon = kind.Icon,
           X = math.floor(x), Z = math.floor(z), Zone = zone.Id})

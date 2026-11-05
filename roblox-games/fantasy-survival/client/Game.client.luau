@@ -9603,21 +9603,45 @@ end)
   field.Size=UDim2.new(1,-20,1,-62);field.BackgroundColor3=Color3.fromRGB(14,16,14);field.ZIndex=62;field.ClipsDescendants=true;field.Parent=panel
   local ratio=Instance.new("UIAspectRatioConstraint");ratio.AspectRatio=width/height;ratio.AspectType=Enum.AspectType.ScaleWithParentSize
   ratio.DominantAxis=Enum.DominantAxis.Width;ratio.Parent=field
+  -- 지역 칸(100스터드)을 처음 열 때 나눠서 만든다. 색은 지역색, 미발견 지역은 어둡게.
   local tiles={}
+  local cellFrames={}
   for index,zone in ipairs(world.Zones) do
-    local tile=Instance.new("Frame")
-    tile.Position=UDim2.fromScale(fx(zone.X0),fz(zone.Z0))
-    tile.Size=UDim2.fromScale((zone.X1-zone.X0)/width,(zone.Z1-zone.Z0)/height)
-    tile.BackgroundColor3=Color3.fromRGB(zone.Color[1],zone.Color[2],zone.Color[3]);tile.BorderSizePixel=0;tile.ZIndex=63;tile.Parent=field
-    local edge=Instance.new("UIStroke");edge.Color=Color3.fromRGB(20,20,16);edge.Thickness=1.4;edge.Parent=tile
-    local fade=Instance.new("UIGradient");fade.Rotation=90
-    fade.Color=ColorSequence.new(Color3.fromRGB(255,255,255),Color3.fromRGB(150,150,150));fade.Parent=tile
-    local name=Instance.new("TextLabel")
-    name.BackgroundTransparency=1;name.Size=UDim2.fromScale(1,1);name.TextWrapped=true
-    name.Font=Enum.Font.GothamBold;name.TextScaled=true;name.TextColor3=Color3.fromRGB(255,250,232);name.TextStrokeTransparency=.35
-    name.ZIndex=64;name.Parent=tile
-    local cap=Instance.new("UITextSizeConstraint");cap.MaxTextSize=15;cap.MinTextSize=7;cap.Parent=name
-    tiles[index]={tile=tile,name=name}
+    local label=Instance.new("TextLabel")
+    label.BackgroundTransparency=1;label.AnchorPoint=Vector2.new(.5,.5);label.Size=UDim2.fromScale(.14,.06)
+    label.Font=Enum.Font.GothamBold;label.TextScaled=true;label.TextColor3=Color3.fromRGB(255,250,232);label.TextStrokeTransparency=.2
+    label.ZIndex=64;label.Parent=field
+    local cap=Instance.new("UITextSizeConstraint");cap.MaxTextSize=16;cap.MinTextSize=7;cap.Parent=label
+    tiles[index]={name=label,seen=nil}
+    cellFrames[index]={}
+  end
+  local built=false
+  local function buildCells()
+    if built then return end
+    built=true
+    task.spawn(function()
+      local sumX,sumZ,count={},{},{}
+      for row=1,world.Rows do
+        for col=1,world.Cols do
+          local index=world.Grid[row][col]
+          local frame=Instance.new("Frame")
+          frame.BorderSizePixel=0
+          frame.Position=UDim2.fromScale((col-1)/world.Cols,(row-1)/world.Rows)
+          frame.Size=UDim2.fromScale(1/world.Cols+.0006,1/world.Rows+.0006)
+          local zone=world.Zones[index]
+          frame.BackgroundColor3=Color3.fromRGB(zone.Color[1],zone.Color[2],zone.Color[3])
+          frame.ZIndex=63;frame.Parent=field
+          table.insert(cellFrames[index],frame)
+          sumX[index]=(sumX[index] or 0)+col;sumZ[index]=(sumZ[index] or 0)+row;count[index]=(count[index] or 0)+1
+        end
+        if row%3==0 then task.wait() end
+      end
+      for index,tile in ipairs(tiles) do
+        local n=count[index] or 1
+        tile.name.Position=UDim2.fromScale((sumX[index] or 1)/n/world.Cols,(sumZ[index] or 1)/n/world.Rows)
+        tile.seen=nil
+      end
+    end)
   end
   -- 마을 표시.
   local village=world.Village
@@ -9685,10 +9709,13 @@ end)
     for index,zone in ipairs(world.Zones) do
       local seen=bit32.band(discovered,zone.Bit)~=0
       tiles[index].name.Text=seen and zone.Name or "???"
-      tiles[index].tile.BackgroundTransparency=seen and 0 or .5
+      if tiles[index].seen~=seen then
+        tiles[index].seen=seen
+        for _,frame in ipairs(cellFrames[index]) do frame.BackgroundTransparency=seen and 0 or .55 end
+      end
       if zone.Id==target then
         goal.Visible=true
-        goal.Position=UDim2.fromScale(fx((zone.X0+zone.X1)/2),fz((zone.Z0+zone.Z1)/2)-.04)
+        goal.Position=UDim2.new(tiles[index].name.Position.X.Scale,0,tiles[index].name.Position.Y.Scale-.04,0)
       end
     end
     for index,marker in ipairs(markers) do
@@ -9720,7 +9747,7 @@ end)
   end)
   local function setOpen(value)
     overlay.Visible=value
-    if value then refresh() end
+    if value then buildCells();refresh() end
   end
   close.Activated:Connect(function() setOpen(false) end)
   overlay.Activated:Connect(function() setOpen(false) end)

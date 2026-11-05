@@ -2223,11 +2223,7 @@ local function meadowRegionOf(player)
   local character=player.Character
   local root=character and character:FindFirstChild("HumanoidRootPart")
   if not root then return "meadow" end
-  local x,z=root.Position.X,root.Position.Z
-  for _,zone in ipairs(Config.WorldMap.Zones) do
-    if x>=zone.X0 and x<zone.X1 and z>=zone.Z0 and z<zone.Z1 then return zone.Id end
-  end
-  return x>3300 and "oasis" or x>2100 and "volcano" or x>900 and "worldtree" or "meadow"
+  return Config.WorldMap.ZoneAt(root.Position.X,root.Position.Z) or "meadow"
 end
 local function recordMeadowQuest(player, eventName)
   if player:GetAttribute("ProfileReady")~=true then return end
@@ -5349,6 +5345,7 @@ do
     deadmarsh={{"wolf","tribal","죽음의 주술전사",4.6,2,{{"Moonbloom",.5},{"Ore",.3}}},{"wolf","demon","늪의 악마",5.4,2.3,{{"Magma",.5},{"Crystal",.4}}},{"ghost","spider","죽은 늪 거미",3.4,1.6,{{"Ectoplasm",.7},{"Fang",.3}}}},
   }
   local village=world.Village
+  local bounds=world.Bounds
   -- 사각형에서 마을 구역을 뺀 나머지를 최대 4조각으로 칠한다.
   local function paint(terrain,x0,x1,z0,z1,material,top)
     local function block(a0,a1,b0,b1)
@@ -5367,35 +5364,79 @@ do
       local terrain=workspace.Terrain
       local random=Random.new(4417)
       terrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(62,66,50))
+      local zoneById={}
+      for _,zone in ipairs(world.Zones) do zoneById[zone.Id]=zone end
+      -- 1) 바닥: 100스터드 칸마다 지역 재질. 칸 안의 마을 사각형은 paint()가 제외한다.
+      local cell=world.Cell
+      local painted=0
+      for row=1,world.Rows do
+        for col=1,world.Cols do
+          local zone=world.Zones[world.Grid[row][col]]
+          local x0=bounds.X0+(col-1)*cell
+          local z0=bounds.Z0+(row-1)*cell
+          paint(terrain,x0,x0+cell,z0,z0+cell,mats[zone.Id],false)
+          painted+=1
+          if painted%120==0 then task.wait() end
+        end
+      end
+      -- 2) 언덕·연못·용암 웅덩이.
       for _,zone in ipairs(world.Zones) do
-        paint(terrain,zone.X0,zone.X1,zone.Z0,zone.Z1,mats[zone.Id],false)
-        local area=(zone.X1-zone.X0)*(zone.Z1-zone.Z0)
-        for _=1,math.floor(area/25000) do
-          local x=random:NextNumber(zone.X0,zone.X1)
-          local z=random:NextNumber(zone.Z0,zone.Z1)
-          if not (x>village.X0-30 and x<village.X1+30 and z>village.Z0-30 and z<village.Z1+30) then
+        for _=1,math.floor(zone.Area/25000) do
+          local x,z=world.RandomPoint(zone.Id,random,40)
+          if x and not (x>village.X0-30 and x<village.X1+30 and z>village.Z0-30 and z<village.Z1+30) then
             local hill=mats[zone.Id]==Enum.Material.Sand and Enum.Material.Sandstone or mats[zone.Id]==Enum.Material.Grass and Enum.Material.LeafyGrass or Enum.Material.Rock
             terrain:FillBall(Vector3.new(x,random:NextNumber(-4,2),z),random:NextNumber(10,34),hill)
           end
         end
-        if zone.Id=="swamp" or zone.Id=="wetland" or zone.Id=="deadmarsh" then
-          for _=1,math.floor(area/60000) do
-            terrain:FillBall(Vector3.new(random:NextNumber(zone.X0+20,zone.X1-20),-5.6,random:NextNumber(zone.Z0+20,zone.Z1-20)),random:NextNumber(10,24),Enum.Material.Water)
-          end
-        end
-        if zone.Id=="citadel" or zone.Id=="chaos" then
-          for _=1,math.floor(area/60000) do
-            terrain:FillBall(Vector3.new(random:NextNumber(zone.X0+20,zone.X1-20),-5.4,random:NextNumber(zone.Z0+20,zone.Z1-20)),random:NextNumber(5,12),Enum.Material.CrackedLava)
+        local wet=zone.Id=="swamp" or zone.Id=="wetland" or zone.Id=="deadmarsh"
+        local fire=zone.Id=="citadel" or zone.Id=="chaos"
+        if wet or fire then
+          for _=1,math.floor(zone.Area/60000) do
+            local x,z=world.RandomPoint(zone.Id,random,40)
+            if x then
+              if wet then terrain:FillBall(Vector3.new(x,-5.6,z),random:NextNumber(10,24),Enum.Material.Water)
+              else terrain:FillBall(Vector3.new(x,-5.4,z),random:NextNumber(5,12),Enum.Material.CrackedLava) end
+            end
           end
         end
         task.wait()
       end
-      -- 큰길: 동서 대로(z=0)와 남북 대로(x=0, x=3000).
+      -- 3) 큰길(동서 z=0, 남북 x=0·x=3000).
       local b=world.Bounds
       paint(terrain,b.X0,b.X1,-6,6,Enum.Material.Cobblestone,true)
       paint(terrain,-6,6,b.Z0,b.Z1,Enum.Material.Cobblestone,true)
       paint(terrain,2994,3006,b.Z0,b.Z1,Enum.Material.Cobblestone,true)
-      -- 대륙 외곽 산맥.
+      local function nearRoad(x,z) return math.abs(z)<45 or math.abs(x)<45 or math.abs(x-3000)<45 end
+      -- 4) 홀드 경계 산맥: 이웃 칸과 지역이 다른 곳에 능선. 큰길 부근과 무작위 일부는 비워 고갯길을 만든다.
+      for row=1,world.Rows-1 do
+        for col=1,world.Cols-1 do
+          local here=world.Grid[row][col]
+          local x=bounds.X0+(col-.5)*cell
+          local z=bounds.Z0+(row-.5)*cell
+          local edge=here~=world.Grid[row][col+1] or here~=world.Grid[row+1][col]
+          if edge and not nearRoad(x,z) and random:NextNumber()<.62
+            and not (x>village.X0-60 and x<village.X1+60 and z>village.Z0-60 and z<village.Z1+60) then
+            local radius=random:NextNumber(26,54)
+            terrain:FillBall(Vector3.new(x+random:NextNumber(-20,20),radius*.35,z+random:NextNumber(-20,20)),radius,Enum.Material.Rock)
+            if z<-900 or radius>46 then terrain:FillBall(Vector3.new(x,radius*.9,z),radius*.5,Enum.Material.Snow) end
+          end
+        end
+        if row%4==0 then task.wait() end
+      end
+      -- 5) 강 세 줄: 큰길과 만나는 곳은 얕은 여울(물을 파지 않음).
+      for _,river in ipairs({{-1100,420,-1,1},{1800,380,-1,1},{4050,360,-1,1}}) do
+        for z=b.Z0+40,b.Z1-40,40 do
+          if math.abs(z)>36 then
+            local x=river[1]+river[2]*.28*math.sin(z/river[2]*2.4)
+            local zoneId=world.ZoneAt(x,z)
+            if zoneId and not (x>village.X0-30 and x<village.X1+30 and z>village.Z0-30 and z<village.Z1+30) then
+              terrain:FillBlock(CFrame.new(x,-1.2,z),Vector3.new(20,5,48),Enum.Material.Water)
+            end
+          end
+        end
+        task.wait()
+      end
+      -- 6) 대륙 외곽 산맥.
       for x=b.X0,b.X1,70 do
         for _,z in ipairs({b.Z0,b.Z1}) do
           local radius=random:NextNumber(50,110)
@@ -5412,22 +5453,23 @@ do
           terrain:FillBall(Vector3.new(x+side*radius*.45,radius*.85,z),radius*.55,Enum.Material.Snow)
         end
       end
-      -- 식생: 지역별 나무 밀도(등록 CC0 나무만).
+      -- 7) 식생.
       local treeDensity={windcliff=26,meadow=26,worldtree=60,volcano=20,oasis=6,swamp=40,citadel=18,highland=30,canyon=14,chaos=16,wetland=50,desert=5,deadmarsh=36}
       local treeTint={windcliff=Color3.fromRGB(96,120,70),meadow=Color3.fromRGB(70,110,60),worldtree=Color3.fromRGB(50,100,70),volcano=Color3.fromRGB(38,34,34),
         oasis=Color3.fromRGB(176,160,84),swamp=Color3.fromRGB(70,80,58),citadel=Color3.fromRGB(34,30,34),highland=Color3.fromRGB(86,96,80),canyon=Color3.fromRGB(120,90,60),
         chaos=Color3.fromRGB(60,40,56),wetland=Color3.fromRGB(64,100,72),desert=Color3.fromRGB(176,160,84),deadmarsh=Color3.fromRGB(50,60,46)}
       for _,zone in ipairs(world.Zones) do
         for index=1,treeDensity[zone.Id] or 10 do
-          local x=random:NextNumber(zone.X0+10,zone.X1-10)
-          local z=random:NextNumber(zone.Z0+10,zone.Z1-10)
-          local nearVillage=x>village.X0-20 and x<village.X1+20 and z>village.Z0-20 and z<village.Z1+20
-          if not nearVillage and math.abs(z)>20 and math.abs(x)>20 and math.abs(x-3000)>20 then
-            local tree=worldAsset("tree",Vector3.new(x,3,z),random:NextNumber(14,26))
-            if tree then
-              tree.Name="OpenWorldTree_"..zone.Id.."_"..index;tree:SetAttribute("MeadowScenery",true)
-              for _,surface in ipairs(tree:GetDescendants()) do
-                if surface:IsA("MeshPart") then surface.Color=surface.Color:Lerp(treeTint[zone.Id],.5) end
+          local x,z=world.RandomPoint(zone.Id,random,40)
+          if x then
+            local nearVillage=x>village.X0-20 and x<village.X1+20 and z>village.Z0-20 and z<village.Z1+20
+            if not nearVillage and not nearRoad(x,z) then
+              local tree=worldAsset("tree",Vector3.new(x,3,z),random:NextNumber(14,26))
+              if tree then
+                tree.Name="OpenWorldTree_"..zone.Id.."_"..index;tree:SetAttribute("MeadowScenery",true)
+                for _,surface in ipairs(tree:GetDescendants()) do
+                  if surface:IsA("MeshPart") then surface.Color=surface.Color:Lerp(treeTint[zone.Id],.5) end
+                end
               end
             end
           end
@@ -5443,15 +5485,14 @@ do
   local count=0
   for _,zone in ipairs(world.Zones) do
     local pool=pools[zone.Id]
-    local sites=math.floor((zone.X1-zone.X0)*(zone.Z1-zone.Z0)/65000)
+    local sites=math.floor(zone.Area/65000)
     for index=1,sites do
       local spec=pool[random:NextInteger(1,#pool)]
-      local x=random:NextNumber(zone.X0+30,zone.X1-30)
-      local z=random:NextNumber(zone.Z0+30,zone.Z1-30)
-      local inVillage=x>village.X0-60 and x<village.X1+60 and z>village.Z0-60 and z<village.Z1+60
+      local x,z=world.RandomPoint(zone.Id,random,30)
+      local inVillage=x==nil or (x>village.X0-60 and x<village.X1+60 and z>village.Z0-60 and z<village.Z1+60)
       if not inVillage then
         local elite=index%5==0
-        local tierGain=math.floor((math.abs(x-zone.X0))/500)
+        local tierGain=math.floor(math.sqrt((x-zone.Seed[1])^2+(z-zone.Seed[2])^2)/700)
         table.insert(meadowEncounterSites,{id=spec[1],atom=spec[1]=="bat" and "WING_LEATHER" or "HEAD_CANINE",model=spec[2],
           name=spec[3] and (elite and "정예 "..spec[3] or spec[3]) or nil,
           tier=math.min(10,zoneTier[zone.Id]+tierGain+(elite and 1 or 0)),height=spec[4]*(elite and 1.25 or 1),
@@ -6179,9 +6220,8 @@ do
   local count=0
   for _,zone in ipairs(Config.WorldMap.Zones) do
     for i=1,3 do
-      local x=random:NextNumber(zone.X0+80,zone.X1-80)
-      local z=random:NextNumber(zone.Z0+80,zone.Z1-80)
-      if not (x>village.X0-100 and x<village.X1+100 and z>village.Z0-100 and z<village.Z1+100) then
+      local x,z=Config.WorldMap.RandomPoint(zone.Id,random,80)
+      if x and not (x>village.X0-100 and x<village.X1+100 and z>village.Z0-100 and z<village.Z1+100) then
         table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=models[zone.Id][i],name="명명 보스 · "..names[zone.Id][i],
           tier=math.min(10,tiers[zone.Id]+1),height=7.5,hp=3.4+i*.5,dmg=1.8+i*.15,alpha=true,bonusBoss=true,zoneTag=zone.Id,named=true,
           drops={{"Crystal",1,2+i},{"Claw",.7,2},{"Hide",.9,3},{"Ore",.6,2}},position=Vector3.new(x,3,z)})
