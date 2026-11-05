@@ -944,7 +944,7 @@ Config.CompanionBanter = {
 -- [동료 12명] 전원 영입 가능. 성격 수치(B 대담 · C 신중 · G 탐욕 · K 온정 · L 충성, 0~10), 세계관, 서로의 호불호가 AI 행동·대사·협동을 정한다.
 -- Arch: tank 방패 / melee 근접 / ranged 원거리 / healer 치유 / rogue 척후 / mage 술사 / bard 음유.
 Config.Companions = {
-  {Id="nick", Name="닉", Role="늑대인간 보병대장", Arch="melee", B=8, C=3, G=2, K=5, L=9, Model="mon_beastman", Height=5, Dmg=14, Interval=1.6, Range=10,
+  {Id="nick", Name="닉", Role="늑대인간 보병대장", Arch="melee", B=8, C=3, G=2, K=5, L=9, Model="mon_yeti", Height=5.6, Dmg=14, Interval=1.6, Range=10,
    Worldview="버려진 이들을 버리지 않는다. 이름이 사람을 사람으로 남긴다.", Likes={"rowen","sera"}, Dislikes={"mina"}, Where="메인에서 숲의 일을 마치면 합류"},
   {Id="sera", Name="세라", Role="방패 기사", Arch="tank", B=6, C=8, G=2, K=7, L=10, Skin={190,150,120}, Shirt={60,90,150}, Dmg=9, Interval=1.8, Range=10,
    Worldview="방패는 뒤에 선 사람을 위해 있다. 명령보다 맹세가 무겁다.", Likes={"nick","ifa","cassian"}, Dislikes={"har"}, Where="마을 우물 속삭임 (초원 평야)"},

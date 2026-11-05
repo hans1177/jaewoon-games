@@ -82,7 +82,7 @@ local meadowOil={
     mage="human",rogue="human",roguehooded="human",knight="human",barbarian="human",king="human",adventurer="human",punk="human",farmer="human",
     witch="human",womansoldier="human",womanmedieval="human",knightchar="human",
     skmage="demon",skwarrior="demon",skrogue="demon",skminion="demon",spiritgolem="demon",
-    ghost="demon",ghostskull="demon",wingdemon="demon",dragon="beast",mushroomking="beast"},
+    ghost="demon",ghostskull="demon",wingdemon="demon",dragon="beast"},
   kindClass={wolf="beast",bat="beast",ghost="demon",bee="arachnid"},
   names={beast="야수 오일",arachnid="거미 오일",human="인간형 오일",demon="퇴마 오일"},
   recipes={beast={{"Hide",1},{"Fang",1}},arachnid={{"Fang",1},{"Mushroom",1}},human={{"Ore",1},{"Hide",1}},demon={{"Magma",1},{"Crystal",1}}},
@@ -6250,6 +6250,32 @@ do
         model.Name="Companion_"..c.Id
         local humanoid=model:FindFirstChildOfClass("Humanoid")
         if humanoid then humanoid.DisplayName=c.Name;humanoid.WalkSpeed=19;humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.Viewer end
+        -- R15 동료도 공식 대기/걷기 동작을 Animator로 재생해 미끄러지듯 움직이지 않게 한다.
+        if humanoid then
+          local animator=humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator")
+          animator.Parent=humanoid
+          local tracks={}
+          for name,asset in pairs({idle=507766388,walk=507777826,run=507767714}) do
+            local anim=Instance.new("Animation");anim.AnimationId="rbxassetid://"..asset
+            local loaded,track=pcall(function() return animator:LoadAnimation(anim) end)
+            if loaded and track then track.Looped=true;track.Priority=Enum.AnimationPriority.Movement;tracks[name]=track end
+            anim:Destroy()
+          end
+          if tracks.idle then tracks.idle:Play(.2) end
+          humanoid.Running:Connect(function(speed)
+            local moving=speed>1.2
+            local gait=speed>12 and tracks.run or tracks.walk
+            for _,key in ipairs({"walk","run"}) do
+              local t=tracks[key]
+              if t and t.IsPlaying and (not moving or t~=gait) then t:Stop(.15) end
+            end
+            if moving and gait and not gait.IsPlaying then gait:Play(.15) end
+            if tracks.idle then
+              if moving and tracks.idle.IsPlaying then tracks.idle:Stop(.15)
+              elseif not moving and not tracks.idle.IsPlaying then tracks.idle:Play(.2) end
+            end
+          end)
+        end
         model:PivotTo(CFrame.new(pos+Vector3.new(0,3,0)))
         model.Parent=workspace
         local hrp=model:FindFirstChild("HumanoidRootPart")
@@ -6659,7 +6685,7 @@ do
   workspace:SetAttribute("VariantMonsterCount",count)
 end
 
--- [용 · 유령 · 날개 악마 · 버섯왕] 뼈가 있는 CC0 몬스터를 비행·영혼·보스 역할로 배치한다.
+-- [용 · 유령 · 날개 악마] 뼈가 있는 CC0 몬스터를 비행·영혼·보스 역할로 배치한다.
 -- 용과 날개 악마는 박쥐 AI(공중 선회·급강하), 유령은 유령 AI(떠다니며 덮침)를 쓴다.
 do
   local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
@@ -6716,15 +6742,6 @@ do
           height=8,hp=3,dmg=2.1,alpha=true,zoneTag=zoneId,style="mage",drops={{"Magma",.8,3},{"Crystal",1,3},{"Claw",.7,2}},position=Vector3.new(x,3,z)})
         count+=1
       end
-    end
-  end
-  -- 버섯왕: 숲과 습지의 포자 군주.
-  for _,zoneId in ipairs({"worldtree","wetland","swamp","meadow"}) do
-    local x,z=place(zoneId,140)
-    if x then
-      table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="mushroomking",name="포자 군주 · 버섯왕 마이코스",tier=math.min(10,tiers[zoneId]+1),height=8,hp=5,dmg=2.2,
-        alpha=true,bonusBoss=true,named=true,lord=true,style="mage",zoneTag=zoneId,drops={{"Mushroom",1,6},{"Moonbloom",1,4},{"Crystal",1,4}},position=Vector3.new(x,3,z)})
-      count+=1
     end
   end
   workspace:SetAttribute("SkyMonsterCount",count)
