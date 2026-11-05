@@ -3348,7 +3348,7 @@ local function spawnEnemy(site, siteIndex)
   end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,style=site.style or mobStyleByModel[site.model or ''],oilClass=oilClass,poiGuard=site.poiGuard,bonusBoss=site.bonusBoss,zoneTag=site.zoneTag,named=site.named,lord=site.lord,contractNo=site.contractIndex,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
+    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,style=site.style or mobStyleByModel[site.model or ''],oilClass=oilClass,poiGuard=site.poiGuard,bonusBoss=site.bonusBoss,zoneTag=site.zoneTag,named=site.named,lord=site.lord,questBoss=site.questBoss,contractNo=site.contractIndex,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
     banditIdle=banditIdle,banditWalk=banditWalk,
     damage=isAlpha and math.floor(13*(site.dmg or 1)) or math.floor(((isBoss and 20 or 6)+math.floor(site.tier/2))*(site.dmg or 1)),
     speed=isAlpha and 8.4 or (isBoss and 4.8 or 7.5),position=location,spawnPosition=location,siteIndex=siteIndex,
@@ -6925,6 +6925,19 @@ do
   end
 end
 
+-- [저주받은 3인] 미나(마녀) · 닉(늑대인간) · 렌스(영혼을 판 악마 영주). 쓰러뜨리면 저주가 풀린다.
+do
+  for _,c in ipairs({
+    {"mina","저주받은 마녀 미나","witch",7,5000,-300,"mage","swamp",3.2,1.6},
+    {"nick","저주받은 늑대인간 닉","yeti",8,-1500,-1700,nil,"highland",3.6,1.8},
+    {"lens","영혼을 판 악마 영주 렌스","wingdemon",9,4800,-1800,nil,"chaos",5,2.2},
+  }) do
+    table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=c[3],name=c[2],tier=c[4],height=c[3]=="wingdemon" and 9 or 6,
+      hp=c[9],dmg=c[10],alpha=true,bonusBoss=true,named=true,lord=true,questBoss=c[1],style=c[7],zoneTag=c[8],
+      drops={{"Crystal",1,3},{"Moonbloom",1,2}},position=Vector3.new(c[5],3,c[6])})
+  end
+end
+
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
 -- 도달/재료 판정은 2초마다, 처치 판정은 몬스터 처치 시점에 확인한다. 거울 정원은 메인 줄 완료(HiddenOpen)로 열린다.
 do
@@ -6987,6 +7000,7 @@ do
       if stage>=1 and step and step.Type=="kill" then
         local match=(step.Zone==nil or target.zoneTag==step.Zone)
           and (not step.Named or target.named==true) and (not step.Lord or target.lord==true)
+          and (step.Boss==nil or target.questBoss==step.Boss)
           and (step.Contract==nil or target.contractNo==step.Contract)
         if match then
           local progress=readNumber(player,line.Field.."P",0)+1

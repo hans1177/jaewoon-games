@@ -9934,7 +9934,7 @@ end)
     if processed or UserInputService:GetFocusedTextBox() then return end
     if input.KeyCode==Enum.KeyCode.M then setOpen(not overlay.Visible) end
   end)
-  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage","PoiFound1","PoiFound2","LandmarkMask","QLWind","QLHunt","QLBog","QLRoot","QLTrack1","QLTrack2","QLTrack3","QLMirror","QLMina","QLNick","QLSera","QLGarden","QLSeraJ","QLRowenJ","QLDoranJ","QLIfaJ","QLHarJ","QLRiaJ","QLMorganJ","QLBarenJ","QLTiboJ","QLCassianJ","CompanionOwned","CompanionActive"}) do
+  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage","PoiFound1","PoiFound2","LandmarkMask","QLWind","QLHunt","QLBog","QLRoot","QLTrack1","QLTrack2","QLTrack3","QLLordMeadow","QLLordVolcano","QLLordOasis","QLLordSwamp","QLLordCitadel","QLLordCanyon","QLLordChaos","QLLordDesert","QLLordDeadmarsh","QLPRowen","QLPDoran","QLPIfa","QLPHar","QLPRia","QLPMorgan","QLPBaren","QLPTibo","QLPCassian","QLMirror","QLMina","QLNick","QLSera","QLGarden","QLSeraJ","QLRowenJ","QLDoranJ","QLIfaJ","QLHarJ","QLRiaJ","QLMorganJ","QLBarenJ","QLTiboJ","QLCassianJ","CompanionOwned","CompanionActive"}) do
     player:GetAttributeChangedSignal(name):Connect(refresh)
   end
 end)()
