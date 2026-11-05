@@ -161046,11 +161046,169 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a9c89938bf5cbe9827e4ea1e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11938",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8e731cd5ba6d3309ac07c2a375eb4f19c15b72cb",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11938,
+        "baseBranch": "main",
+        "headBranch": "feature/fantasy-opening-24-v8",
+        "baseSha": "8e731cd5ba6d3309ac07c2a375eb4f19c15b72cb",
+        "headSha": "e0fc83d0aaf117133dd1c45ca043e0b62a21cf04",
+        "mergeCommitSha": "94c992d569ab33603a8eaac99cf53f61737abdea",
+        "mergedAt": "2026-11-05T08:35:43Z",
+        "authorLogin": "hans1177",
+        "titleHash": "cc1b5ef064340c2e70b1888ec2882ed0fde1f9471f77f17a80b44776f9fca6bc",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feature/fantasy-opening-24-v8",
+        "candidateSha": "e0fc83d0aaf117133dd1c45ca043e0b62a21cf04"
+      },
+      "changeStats": {
+        "changedFileCount": 42,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 104,
+        "deletedLineCount": 104,
+        "changedFiles": [
+          "roblox-games/fantasy-survival/opening24/files.json",
+          "roblox-games/fantasy-survival/opening24/s01_ch.png",
+          "roblox-games/fantasy-survival/opening24/s01_fg.png",
+          "roblox-games/fantasy-survival/opening24/s02_ch.png",
+          "roblox-games/fantasy-survival/opening24/s04_bg.jpg",
+          "roblox-games/fantasy-survival/opening24/s04_ch.png",
+          "roblox-games/fantasy-survival/opening24/s04_fg.png",
+          "roblox-games/fantasy-survival/opening24/s05_ch.png",
+          "roblox-games/fantasy-survival/opening24/s05_fg.png",
+          "roblox-games/fantasy-survival/opening24/s06_ch.png",
+          "roblox-games/fantasy-survival/opening24/s07_ch.png",
+          "roblox-games/fantasy-survival/opening24/s07_fg.png",
+          "roblox-games/fantasy-survival/opening24/s08_ch.png",
+          "roblox-games/fantasy-survival/opening24/s08_fg.png",
+          "roblox-games/fantasy-survival/opening24/s09_ch.png",
+          "roblox-games/fantasy-survival/opening24/s09_fg.png",
+          "roblox-games/fantasy-survival/opening24/s10_ch.png",
+          "roblox-games/fantasy-survival/opening24/s10_fg.png",
+          "roblox-games/fantasy-survival/opening24/s11_ch.png",
+          "roblox-games/fantasy-survival/opening24/s11_fg.png",
+          "roblox-games/fantasy-survival/opening24/s12_ch.png",
+          "roblox-games/fantasy-survival/opening24/s12_fg.png",
+          "roblox-games/fantasy-survival/opening24/s13_ch.png",
+          "roblox-games/fantasy-survival/opening24/s13_fg.png",
+          "roblox-games/fantasy-survival/opening24/s14_ch.png",
+          "roblox-games/fantasy-survival/opening24/s14_fg.png",
+          "roblox-games/fantasy-survival/opening24/s15_ch.png",
+          "roblox-games/fantasy-survival/opening24/s16_ch.png",
+          "roblox-games/fantasy-survival/opening24/s16_fg.png",
+          "roblox-games/fantasy-survival/opening24/s17_ch.png",
+          "roblox-games/fantasy-survival/opening24/s17_fg.png",
+          "roblox-games/fantasy-survival/opening24/s18_ch.png",
+          "roblox-games/fantasy-survival/opening24/s19_ch.png",
+          "roblox-games/fantasy-survival/opening24/s19_fg.png",
+          "roblox-games/fantasy-survival/opening24/s20_ch.png",
+          "roblox-games/fantasy-survival/opening24/s21_ch.png",
+          "roblox-games/fantasy-survival/opening24/s21_fg.png",
+          "roblox-games/fantasy-survival/opening24/s22_ch.png",
+          "roblox-games/fantasy-survival/opening24/s22_fg.png",
+          "roblox-games/fantasy-survival/opening24/s23_ch.png",
+          "roblox-games/fantasy-survival/opening24/s23_fg.png",
+          "roblox-games/fantasy-survival/shared/Opening24.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/fantasy-survival/opening24/files.json",
+          "roblox-games/fantasy-survival/shared/Opening24.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11938",
+        "merge-commit:94c992d569ab33603a8eaac99cf53f61737abdea",
+        "base-main:8e731cd5ba6d3309ac07c2a375eb4f19c15b72cb"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1284
+    "total": 1285
   }
 }
