@@ -12,6 +12,7 @@ local PortData = require(Shared:WaitForChild("Ports"))
 local Geo = require(Shared:WaitForChild("Geo"))
 local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
 local PortScene = require(Shared:WaitForChild("PortScene"))
+local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
@@ -529,7 +530,28 @@ local function sail(portId)
 			end
 		end)
 		main.Visible = true
-		local ok, err = pcall(playVoyage, from, view.player.portName, days, steam, SeaRoutes.path(fromId, portId, PortData.Ports))
+		-- 3D 바다 항해. 실패하면 예전 2D 연출로 대신한다.
+		local ok, err = pcall(VoyageScene.play, {
+			shipId = view.ship.id,
+			steam = steam,
+			days = days,
+			path = SeaRoutes.path(fromId, portId, PortData.Ports),
+			fromName = from,
+			toName = view.player.portName,
+			makeShip = PortScene.makeShip,
+		})
+		if not ok then
+			warn("[Game] 3D 항해 오류, 2D로 대체:", err)
+			local cam = workspace.CurrentCamera
+			cam.CameraType = Enum.CameraType.Custom
+			for _, n in { "VoyageHud" } do
+				local g = player.PlayerGui:FindFirstChild(n)
+				if g then g:Destroy() end
+			end
+			local vf = workspace:FindFirstChild("VoyageScene")
+			if vf then vf:Destroy() end
+			ok, err = pcall(playVoyage, from, view.player.portName, days, steam, SeaRoutes.path(fromId, portId, PortData.Ports))
+		end
 		if not ok then
 			warn("[Game] voyage scene error:", err)
 			for _, g in player.PlayerGui:GetChildren() do

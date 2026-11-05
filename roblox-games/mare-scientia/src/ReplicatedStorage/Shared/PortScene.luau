@@ -658,4 +658,7 @@ function PortScene.build(info, onFacility)
 	return { folder = folder, spawn = CFrame.new(-2, 4, 10) * CFrame.Angles(0, math.rad(90), 0), controls = controls }
 end
 
+-- 항해 장면(VoyageScene)에서 같은 배 모델을 쓰기 위해 내보낸다
+PortScene.makeShip = buildShip
+
 return PortScene
