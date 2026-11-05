@@ -1293,6 +1293,22 @@ local function renderMeadowPages()
     worldLines[#worldLines+1]=string.format("발견한 이정표 %d/24 — 이정표를 조사하면 빠른 이동 거점이 된다.",count)
   end
   do
+    worldLines[#worldLines+1]="— 연계 퀘스트 —"
+    for _,line in ipairs(Config.QuestLines or {})do
+      local stage=player:GetAttribute(line.Field) or 0
+      local step=line.Steps[stage]
+      if stage>#line.Steps then
+        worldLines[#worldLines+1]="✔ "..line.Name.." (완료)"
+      elseif stage>=1 and step then
+        local progress=player:GetAttribute(line.Field.."P") or 0
+        worldLines[#worldLines+1]=string.format("▶ %s  [%d/%d]\n   목표: %s%s\n   %s",line.Name,stage,#line.Steps,step.Title,
+          step.Count and step.Count>1 and string.format(" (%d/%d)",progress,step.Count) or "",step.Text)
+      elseif line.Kind~="Hidden" then
+        worldLines[#worldLines+1]="· ??? ("..line.Name:match("%](.*)$").." — 조건을 만족하면 시작)"
+      end
+    end
+  end
+  do
     local chapterMask=player:GetAttribute("ChapterMask") or 0
     worldLines[#worldLines+1]="— 기사단 기록 (장소를 발견하면 조각이 모인다) —"
     for ci,chapter in ipairs(Config.WorldMap.Chapters)do
@@ -9618,6 +9634,14 @@ end)
   dot.BackgroundTransparency=1;dot.AnchorPoint=Vector2.new(.5,.5);dot.Size=UDim2.fromOffset(22,22)
   dot.Font=Enum.Font.GothamBlack;dot.TextSize=22;dot.Text="●";dot.TextColor3=Color3.fromRGB(255,222,92)
   dot.TextStrokeTransparency=0;dot.ZIndex=70;dot.Parent=field
+  local questMarks={}
+  for index,line in ipairs(Config.QuestLines or {})do
+    local mark=Instance.new("TextLabel")
+    mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Size=UDim2.fromOffset(22,22)
+    mark.Font=Enum.Font.GothamBlack;mark.TextSize=22;mark.Text="!";mark.TextColor3=Color3.fromRGB(255,214,60)
+    mark.TextStrokeTransparency=0;mark.ZIndex=69;mark.Visible=false;mark.Parent=field
+    questMarks[index]=mark
+  end
   local goal=Instance.new("TextLabel")
   goal.BackgroundTransparency=1;goal.AnchorPoint=Vector2.new(.5,.5);goal.Size=UDim2.fromOffset(22,22)
   goal.Font=Enum.Font.GothamBlack;goal.TextSize=22;goal.Text="★";goal.TextColor3=Color3.fromRGB(255,120,90)
@@ -9649,6 +9673,14 @@ end)
       marker.button.TextColor3=found and Color3.fromRGB(130,230,255) or Color3.fromRGB(170,170,170)
       marker.label.Text=found and world.Waypoints[index][1] or ""
     end
+    for index,line in ipairs(Config.QuestLines or {})do
+      local stage=player:GetAttribute(line.Field) or 0
+      local step=line.Steps[stage]
+      local mark=questMarks[index]
+      if stage>=1 and step and step.X then
+        mark.Visible=true;mark.Position=UDim2.fromScale(fx(step.X),fz(step.Z))
+      else mark.Visible=false end
+    end
     local found1,found2=player:GetAttribute("PoiFound1") or 0,player:GetAttribute("PoiFound2") or 0
     for index,mark in ipairs(poiMarkers) do
       local flag=bit32.lshift(1,(index-1)%30)
@@ -9676,7 +9708,7 @@ end)
     if processed or UserInputService:GetFocusedTextBox() then return end
     if input.KeyCode==Enum.KeyCode.M then setOpen(not overlay.Visible) end
   end)
-  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage","PoiFound1","PoiFound2"}) do
+  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage","PoiFound1","PoiFound2","QLMirror","QLMina","QLNick","QLSera","QLGarden"}) do
     player:GetAttributeChangedSignal(name):Connect(refresh)
   end
 end)()

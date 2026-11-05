@@ -3275,7 +3275,7 @@ local function spawnEnemy(site, siteIndex)
   end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,oilClass=oilClass,poiGuard=site.poiGuard,bonusBoss=site.bonusBoss,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
+    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,oilClass=oilClass,poiGuard=site.poiGuard,bonusBoss=site.bonusBoss,zoneTag=site.zoneTag,named=site.named,lord=site.lord,contractNo=site.contractIndex,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
     banditIdle=banditIdle,banditWalk=banditWalk,
     damage=isAlpha and math.floor(13*(site.dmg or 1)) or math.floor(((isBoss and 20 or 6)+math.floor(site.tier/2))*(site.dmg or 1)),
     speed=isAlpha and 8.4 or (isBoss and 4.8 or 7.5),position=location,spawnPosition=location,siteIndex=siteIndex,
@@ -3420,6 +3420,7 @@ local function applyMeadowDamage(player,target,damage)
       drop("Crystal",(kind=="ghost" or kind=="bat") and .3 or .08,target.isBoss and 4 or 1)
       drop("Magma",target.isBoss and 1 or 0.03,target.isBoss and 3 or 1)
       for _,entry in ipairs(target.siteDrops or {}) do drop(entry[1],entry[2],entry[3]) end
+      if meadowOil.questKill then pcall(meadowOil.questKill,player,target) end
       if target.contractIndex then
         local flag=bit32.lshift(1,target.contractIndex-1)
         if bit32.band(readNumber(player,"ContractAccepted",0),flag)~=0 then
@@ -5473,8 +5474,9 @@ do
     {x=5300,z=1950,model="spiritgolem",name="죽음의 늪 수호자 · 망령 골렘",height=9,hp=5,dmg=2.3,tier=9,drops={{"Crystal",1,4},{"Ectoplasm",1,3}}},
     {x=-1800,z=0,model="orc",name="바람 절벽의 대장 · 오크 군단장",height=7,hp=3.6,dmg=1.8,tier=4,drops={{"Ore",1,4},{"Hide",1,3}}},
   }) do
+    local lordZone=({["북부 고원의 왕 · 거대 설인"]="highland",["혼돈의 지배자 · 심연 군주"]="chaos",["바람 절벽의 대장 · 오크 군단장"]="windcliff"})[boss.name]
     table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=boss.model,name=boss.name,tier=boss.tier,height=boss.height,
-      hp=boss.hp,dmg=boss.dmg,drops=boss.drops,alpha=true,position=Vector3.new(boss.x,3,boss.z)})
+      hp=boss.hp,dmg=boss.dmg,drops=boss.drops,alpha=true,zoneTag=lordZone,lord=lordZone~=nil,position=Vector3.new(boss.x,3,boss.z)})
   end
   workspace:SetAttribute("OpenWorldSiteCount",count)
 end
@@ -6167,13 +6169,156 @@ do
       local z=random:NextNumber(zone.Z0+80,zone.Z1-80)
       if not (x>village.X0-100 and x<village.X1+100 and z>village.Z0-100 and z<village.Z1+100) then
         table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=models[zone.Id][i],name="명명 보스 · "..names[zone.Id][i],
-          tier=math.min(10,tiers[zone.Id]+1),height=7.5,hp=3.4+i*.5,dmg=1.8+i*.15,alpha=true,bonusBoss=true,
+          tier=math.min(10,tiers[zone.Id]+1),height=7.5,hp=3.4+i*.5,dmg=1.8+i*.15,alpha=true,bonusBoss=true,zoneTag=zone.Id,named=true,
           drops={{"Crystal",1,2+i},{"Claw",.7,2},{"Hide",.9,3},{"Ore",.6,2}},position=Vector3.new(x,3,z)})
         count+=1
       end
     end
   end
   workspace:SetAttribute("NamedBossCount",count)
+end
+
+-- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
+-- 도달/재료 판정은 2초마다, 처치 판정은 몬스터 처치 시점에 확인한다. 거울 정원은 메인 줄 완료(HiddenOpen)로 열린다.
+do
+  local lines=Config.QuestLines
+  local gardenCenter=Vector3.new(-3500,0,0)
+  local fortGate=Vector3.new(-1800,3,-800) -- 이정표 24 옆 숨겨진 문
+  local function say(player,title,text) pcall(function() villageDialogue(player,title,text) end) end
+  local function stageOf(player,line) return readNumber(player,line.Field,0) end
+  local function unlocked(player,line)
+    local need=line.Need or {}
+    if need.Chapter and bit32.band(readNumber(player,"ChapterMask",0),bit32.lshift(1,need.Chapter-1))==0 then return false end
+    if need.Companion then
+      for index,c in ipairs({"nick","sera","rowen","doran","ifa"}) do
+        if c==need.Companion and bit32.band(readNumber(player,"CompanionOwned",0),bit32.lshift(1,index-1))==0 then return false end
+      end
+    end
+    if need.Field and readNumber(player,need.Field,0)<1 then return false end
+    return true
+  end
+  local function complete(player,line)
+    local reward=line.Reward or {}
+    setNumber(player,line.Field,#line.Steps+1)
+    pcall(awardProgress,player,reward.Xp or 0,reward.Coins or 0)
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Hide","Ore","Magma"}) do
+      if reward[field] then setNumber(player,field,readNumber(player,field,0)+reward[field]) end
+    end
+    if reward.Relic then setNumber(player,"RelicMask",bit32.bor(readNumber(player,"RelicMask",0),bit32.lshift(1,reward.Relic-1))) end
+    if reward.OpenHidden then setNumber(player,"HiddenOpen",1) end
+    local suffix=reward.OpenHidden and "\n\n숨겨진 지역이 열렸다! 서쪽 옛 요새 근처 '숨겨진 문'으로 가라." or ""
+    say(player,line.Name.." 완료","연계 퀘스트를 마쳤다! 보상: 재화 "..tostring(reward.Coins or 0)..", 경험치 "..tostring(reward.Xp or 0)..suffix)
+  end
+  local function advance(player,line,step,stage)
+    setNumber(player,line.Field.."P",0)
+    local nextStep=line.Steps[stage+1]
+    if nextStep then
+      setNumber(player,line.Field,stage+1)
+      say(player,line.Name,step.Done.."\n\n다음 목표: "..nextStep.Title.."\n"..nextStep.Text)
+    else
+      say(player,line.Name,step.Done)
+      complete(player,line)
+    end
+  end
+  -- 처치 판정.
+  meadowOil.questKill=function(player,target)
+    for _,line in ipairs(lines) do
+      local stage=stageOf(player,line)
+      local step=line.Steps[stage]
+      if stage>=1 and step and step.Type=="kill" then
+        local match=(step.Zone==nil or target.zoneTag==step.Zone)
+          and (not step.Named or target.named==true) and (not step.Lord or target.lord==true)
+          and (step.Contract==nil or target.contractNo==step.Contract)
+        if match then
+          local progress=readNumber(player,line.Field.."P",0)+1
+          if progress>=step.Count then advance(player,line,step,stage)
+          else
+            setNumber(player,line.Field.."P",progress)
+            player:SetAttribute("MeadowGearMessage",step.Title.." "..progress.."/"..step.Count)
+            player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+          end
+        end
+      end
+    end
+  end
+  task.spawn(function()
+    while true do
+      task.wait(2)
+      for _,player in ipairs(Players:GetPlayers()) do
+        local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if root and player:GetAttribute("ProfileReady")==true then
+          for _,line in ipairs(lines) do
+            local stage=stageOf(player,line)
+            if stage==0 and unlocked(player,line) then
+              setNumber(player,line.Field,1)
+              local first=line.Steps[1]
+              say(player,"새 연계 퀘스트 · "..line.Name,line.Intro.."\n\n첫 목표: "..first.Title.."\n"..first.Text.."\n(세계 탭과 지도(M)에서 목표를 확인할 수 있다.)")
+            elseif stage>=1 and stage<=#line.Steps then
+              local step=line.Steps[stage]
+              if step.Type=="reach" then
+                local dx,dz=root.Position.X-step.X,root.Position.Z-step.Z
+                if dx*dx+dz*dz<=step.R*step.R then advance(player,line,step,stage) end
+              elseif step.Type=="loot" then
+                if readNumber(player,step.Field,0)>=step.Count then advance(player,line,step,stage) end
+              end
+            end
+          end
+        end
+      end
+    end
+  end)
+  -- 숨겨진 문 / 거울 정원.
+  task.spawn(function()
+    task.wait(3)
+    local terrain=workspace.Terrain
+    terrain:FillBlock(CFrame.new(gardenCenter.X,-4,0),Vector3.new(520,12,520),Enum.Material.Marble)
+    terrain:SetMaterialColor(Enum.Material.Marble,Color3.fromRGB(196,206,220))
+    terrain:FillCylinder(CFrame.new(gardenCenter.X,-1.4,0),5,70,Enum.Material.Water)
+    for i=1,10 do
+      local angle=i/10*math.pi*2
+      terrain:FillCylinder(CFrame.new(gardenCenter.X+math.cos(angle)*190,16,math.sin(angle)*190),36,9,Enum.Material.Glass)
+    end
+    local gate=Instance.new("Attachment");gate.WorldPosition=fortGate;gate.Parent=terrain
+    local glow=Instance.new("ParticleEmitter");glow.Color=ColorSequence.new(Color3.fromRGB(190,220,255));glow.LightEmission=1;glow.Rate=26
+    glow.Lifetime=NumberRange.new(2,3);glow.Speed=NumberRange.new(1,3);glow.Size=NumberSequence.new(1);glow.Parent=gate
+    local prompt=Instance.new("ProximityPrompt");prompt.ActionText="숨겨진 문";prompt.ObjectText="거울 정원";prompt.HoldDuration=.7
+    prompt.MaxActivationDistance=14;prompt.RequiresLineOfSight=false;prompt.Parent=gate
+    prompt.Triggered:Connect(function(player)
+      if readNumber(player,"HiddenOpen",0)<1 then
+        say(player,"벽","낡은 석벽이다. 아무 일도 일어나지 않는다. (메인 연계 퀘스트 '미러의 탑'을 마치면 열린다.)");return
+      end
+      local character=player.Character
+      if character and character:FindFirstChild("HumanoidRootPart") then character:PivotTo(CFrame.new(Vector3.new(gardenCenter.X,5,230))) end
+    end)
+    local exit=Instance.new("Attachment");exit.WorldPosition=Vector3.new(gardenCenter.X,4,246);exit.Parent=terrain
+    local exitPrompt=Instance.new("ProximityPrompt");exitPrompt.ActionText="정원을 떠나기";exitPrompt.ObjectText="거울 정원";exitPrompt.HoldDuration=.6
+    exitPrompt.MaxActivationDistance=12;exitPrompt.RequiresLineOfSight=false;exitPrompt.Parent=exit
+    exitPrompt.Triggered:Connect(function(player)
+      local character=player.Character
+      if character and character:FindFirstChild("HumanoidRootPart") then character:PivotTo(CFrame.new(fortGate+Vector3.new(10,5,10))) end
+    end)
+    local chest=Instance.new("Attachment");chest.WorldPosition=Vector3.new(gardenCenter.X,4,-170);chest.Parent=terrain
+    local cg=Instance.new("ParticleEmitter");cg.Color=ColorSequence.new(Color3.fromRGB(255,240,170));cg.LightEmission=1;cg.Rate=18;cg.Lifetime=NumberRange.new(2,3);cg.Size=NumberSequence.new(.9);cg.Parent=chest
+    local open=Instance.new("ProximityPrompt");open.ActionText="렌스의 유품 열기";open.ObjectText="거울 정원";open.HoldDuration=.9
+    open.MaxActivationDistance=12;open.RequiresLineOfSight=false;open.Parent=chest
+    open.Triggered:Connect(function(player)
+      for _,enemy in ipairs(enemies) do
+        if enemy.zoneTag=="garden" and enemy.HP>0 and enemy.model.Parent then say(player,"렌스의 유품","정원의 수호자가 아직 남아 있다.");return end
+      end
+      if bit32.band(readNumber(player,"RelicMask",0),bit32.lshift(1,9))~=0 then say(player,"렌스의 유품","이미 가져간 유품이다.");return end
+      setNumber(player,"RelicMask",bit32.bor(readNumber(player,"RelicMask",0),bit32.lshift(1,9)))
+      pcall(awardProgress,player,800,600)
+      say(player,"렌스의 유품","거울 정원의 관을 얻었다. 모든 공격 피해가 영구히 5% 오른다.")
+    end)
+  end)
+  local random=Random.new(7001)
+  for i=1,3 do
+    table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=i==2 and "skullorc" or "orc",name="거울 기사 "..i,tier=10,height=6.5,hp=4,dmg=2.2,
+      alpha=true,bonusBoss=true,zoneTag="garden",named=true,drops={{"Crystal",1,3},{"Ore",.8,3}},
+      position=Vector3.new(gardenCenter.X+random:NextNumber(-90,90),3,random:NextNumber(-60,80))})
+  end
+  table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="chieftain",name="거울의 단장 · 렌스의 잔영",tier=10,height=11,hp=7,dmg=2.8,
+    alpha=true,bonusBoss=true,zoneTag="garden",lord=true,drops={{"Crystal",1,6},{"Magma",1,4},{"Claw",1,4}},position=Vector3.new(gardenCenter.X,3,-120)})
 end
 
 -- [지역 발견] 실제 위치가 지역 안에 들어가면 서버가 발견 비트를 기록한다(1 초원·2 숲·4 화산·8 오아시스).

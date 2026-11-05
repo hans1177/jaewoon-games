@@ -395,7 +395,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -781,8 +781,57 @@ do
   -- 유물: 던전 보스 상자에서 하나씩 얻는다. 보유 수만큼 모든 공격 피해 +5%.
   Config.WorldMap.Relics = {
     "해적왕의 나침반","뿌리 지킴이의 씨앗","용암 심장","모래 여왕의 눈물","독개구리 왕관","혼돈의 파편",
-    "지하묘지 수문장의 인장","고블린 왕의 이빨","심연 제단의 불씨",
+    "지하묘지 수문장의 인장","고블린 왕의 이빨","심연 제단의 불씨","거울 정원의 관",
   }
 
+
+
+-- [연계 퀘스트] 메인 1줄 + 서브 3줄 + 숨겨진 지역 1줄. 단계마다 목표(도달·처치·재료)와 이야기 조각이 이어진다.
+-- Need: 시작 조건 {Chapter=기록 장 번호 | Companion=동료 id | Field=저장 수치}. 단계 Type: reach(좌표) / kill(Zone+Named|Lord|Contract) / loot(Field,Count).
+Config.QuestLines = {
+  {Id="mirror", Name="[메인] 미러의 탑을 찾아서", Kind="Main", Field="QLMirror", Need={Chapter=2},
+   Intro="기록 조각이 한 방향을 가리킨다. 북쪽 고원 너머, 사라진 단원들이 갇힌 '미러의 탑'.",
+   Steps={
+    {Type="reach", X=-1200, Z=-1800, R=70, Title="북부 감시탑에 오르다", Text="북부 감시탑 꼭대기에 카인의 이름이 적힌 쪽지가 있다.", Done="쪽지: '탑은 고원의 수문장이 쥔 열쇠로만 열린다.'"},
+    {Type="kill", Zone="highland", Named=true, Count=1, Title="고원의 수문장을 쓰러뜨려라", Text="북부 고원의 명명 보스를 처치해 열쇠 조각을 얻어라.", Done="열쇠 조각에 거울 문양이 새겨져 있다. 혼돈의 균열을 가리킨다."},
+    {Type="reach", X=4500, Z=-1800, R=80, Title="혼돈의 균열에 도착", Text="혼돈의 대지 한복판 균열로 가라.", Done="균열 속에서 거울에 비친 단원들의 그림자가 손짓한다."},
+    {Type="kill", Zone="chaos", Lord=true, Count=1, Title="혼돈의 지배자를 쓰러뜨려라", Text="균열을 지배하는 심연 군주를 쓰러뜨려라.", Done="군주가 쥐고 있던 마지막 열쇠가 부서지며 길이 열린다."},
+    {Type="reach", X=6300, Z=300, R=70, Title="옥좌 앞의 마지막 문", Text="불타는 성채 군주의 옥좌 앞으로 가라.", Done="옥좌 뒤 벽이 갈라진다. 서쪽 옛 요새에 숨겨진 문이 열렸다. 거울 정원이 부르고 있다."},
+   },
+   Reward={Coins=900, Xp=700, Crystal=5, OpenHidden=true}},
+  {Id="mina", Name="[서브] 미나의 사라진 장부", Kind="Sub", Field="QLMina", Need={Chapter=3},
+   Intro="보급 장부의 숫자는 전쟁 내내 같았다. 미나 군수대장은 마지막 장부를 사막에 숨겼다.",
+   Steps={
+    {Type="reach", X=3700, Z=-650, R=70, Title="모래 오벨리스크", Text="오벨리스크 아래에 미나의 표식이 있다.", Done="오벨리스크 밑에서 암호문. 풀려면 수정 3개가 필요하다."},
+    {Type="loot", Field="Crystal", Count=3, Title="수정 3개를 모아라", Text="암호를 푸는 데 마력 수정이 쓰인다.", Done="수정에 비친 글자: '장부는 가라앉은 사원에 있다.'"},
+    {Type="reach", X=4100, Z=500, R=70, Title="침몰한 사원", Text="침몰한 사원 안쪽으로 가라.", Done="사원 바닥에 장부 상자가 있다. 그러나 지키는 자가 있다."},
+    {Type="kill", Zone="desert", Named=true, Count=1, Title="장부의 수호자를 쓰러뜨려라", Text="황금 사막의 명명 보스가 장부를 노린다.", Done="장부를 펼치자 같은 숫자 아래 미나의 한 줄: '진짜 보급품은 숲으로 갔다.'"},
+   },
+   Reward={Coins=520, Xp=420, Moonbloom=3}},
+  {Id="nick", Name="[서브] 닉의 마지막 초소", Kind="Sub", Field="QLNick", Need={Companion="nick"},
+   Intro="닉이 꿈속에서 같은 요새를 본다. 저주가 시작된 곳이다.",
+   Steps={
+    {Type="reach", X=-1800, Z=-800, R=70, Title="서쪽 옛 요새", Text="닉과 함께 서쪽 옛 요새로 가라.", Done="닉이 벽에 손을 댄다. '여기서 내가 마지막으로 사람이었어.'"},
+    {Type="kill", Contract=24, Count=1, Title="저주받은 기사를 쓰러뜨려라", Text="요새를 떠도는 저주받은 기사(계약 표적)를 처치하라.", Done="기사의 목걸이는 닉의 것과 같았다. 저주가 약해진다."},
+    {Type="reach", X=1000, Z=500, R=70, Title="숲 어귀로 돌아가기", Text="숲 어귀 야영지에서 닉의 이야기를 마쳐라.", Done="닉: '이제 이름을 기억해. 고마워, 카인.'"},
+   },
+   Reward={Coins=420, Xp=360, Claw=4}},
+  {Id="sera", Name="[서브] 세라의 부러진 방패", Kind="Sub", Field="QLSera", Need={Companion="sera"},
+   Intro="세라의 방패에 금이 갔다. 방패를 지켜 준 등대의 옛 주인을 찾아야 한다.",
+   Steps={
+    {Type="reach", X=-1700, Z=300, R=70, Title="바람 절벽 등대", Text="세라와 함께 바람 절벽 등대로 가라.", Done="등대지기의 일기: '방패를 든 아이가 도적 떼를 막았다.'"},
+    {Type="kill", Zone="windcliff", Lord=true, Count=1, Title="절벽의 대장을 쓰러뜨려라", Text="등대를 점령한 오크 군단장을 처치하라.", Done="군단장의 허리에 세라의 방패 조각이 매달려 있었다."},
+    {Type="reach", X=520, Z=-300, R=70, Title="초원 이정표로 돌아가기", Text="초원 이정표에서 방패를 수리하라.", Done="세라: '이제 다시 앞에 설 수 있어.'"},
+   },
+   Reward={Coins=420, Xp=360, Hide=4}},
+  {Id="garden", Name="[히든] 거울 정원의 기사단장", Kind="Hidden", Field="QLGarden", Need={Field="HiddenOpen"},
+   Intro="숨겨진 문 너머, 렌스기사단의 마지막 기록이 잠든 정원이다.",
+   Steps={
+    {Type="reach", X=-3500, Z=230, R=70, Title="거울 정원에 들어서다", Text="서쪽 옛 요새의 숨겨진 문으로 거울 정원에 들어가라.", Done="정원 한가운데 비어 있는 투구들. 거울 기사들이 깨어난다."},
+    {Type="kill", Zone="garden", Named=true, Count=3, Title="거울 기사 3명을 쓰러뜨려라", Text="단장의 그림자를 지키는 거울 기사들.", Done="기사들이 무너지며 단장의 목소리가 들린다. '왔는가, 카인.'"},
+    {Type="kill", Zone="garden", Lord=true, Count=1, Title="거울의 단장 렌스를 마주하라", Text="렌스 단장의 잔영과 마지막으로 싸워라.", Done="렌스: '숲이 된 것은 우리의 선택이었다. 이제 너의 선택이다.'"},
+   },
+   Reward={Coins=1500, Xp=1200, Relic=10, Crystal=8}},
+}
 
 return table.freeze(Config)
