@@ -1274,7 +1274,7 @@ local function renderMeadowPages()
   -- [세계 탭] 지역 4개(1부)와 파티 4인 구성을 한곳에 표시한다. 구현 전 지역·영입은 잠금으로 보여 준다.
   local worldLines={"세계 · 1부 지역 4곳 (엔딩 없이 진행)"}
   local dexLines={"몬스터 도감 (처치할수록 기록이 열려)"}
-  local partyLines={"파티 (최대 4인)\n1. 나 (플레이어)"}
+  local partyLines={"파티: 멀티 최대 4인 · 각자 동료 최대 2명 동행 (솔로 가능)\n동료는 마을 동쪽 언덕의 안식처에서 만나 고용한다.\n1. 나 (플레이어)"}
   local mystLines={"마력숲의 수수께끼 (진행하면 하나씩 풀려)"}
   local storyLines={"1부 메인 이야기 (07~12장)"}
   local statusText={Open="탐험 가능",Planned="준비 중",Reserved="2부 이후"}
@@ -5522,7 +5522,7 @@ do
     for i,button in ipairs(choices)do
       local option=typeof(payload.options)=="table" and payload.options[i] or nil
       local action=option and option.action
-      local permitted=action=="wp:east" or action=="wp:west" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
+      local permitted=action=="wp:east" or action=="wp:west" or action=="co:toggle" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
       button.Visible=permitted
       choiceActions[i]=permitted and action or nil
       if permitted then button.Text=tostring(option.label or "선택") end

@@ -3275,7 +3275,7 @@ local function spawnEnemy(site, siteIndex)
   end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,oilClass=oilClass,poiGuard=site.poiGuard,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
+    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,oilClass=oilClass,poiGuard=site.poiGuard,bonusBoss=site.bonusBoss,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
     banditIdle=banditIdle,banditWalk=banditWalk,
     damage=isAlpha and math.floor(13*(site.dmg or 1)) or math.floor(((isBoss and 20 or 6)+math.floor(site.tier/2))*(site.dmg or 1)),
     speed=isAlpha and 8.4 or (isBoss and 4.8 or 7.5),position=location,spawnPosition=location,siteIndex=siteIndex,
@@ -3467,7 +3467,7 @@ local function applyMeadowDamage(player,target,damage)
       setNumber(player,"Bosses",readNumber(player,"Bosses",0)+1)
       -- [골렘 삭제 후 연구 퀘스트] 마을 밖 우두머리 늑대 처치로 6단계를 이어간다.
       -- 기존 QuestStage/QuestProgress/보상 수치는 유지한다.
-      if target.isAlpha then recordMeadowQuest(player,"BOSS_KILL") end
+      if target.isAlpha and not target.bonusBoss then recordMeadowQuest(player,"BOSS_KILL") end
     end
     if Config.CompetitiveRequired then
       setNumber(player,"RoundScore",readNumber(player,"RoundScore",0)+((target.isBoss or target.isAlpha) and 5 or 1))
@@ -5920,6 +5920,260 @@ do
       end)
     end
   end
+end
+
+-- [안식처 · 동료] 마을 동쪽 언덕의 집. 동료 5명이 이곳에서 살고, 고용(또는 닉은 무료)해서 최대 2명까지 데리고 다닌다.
+-- 동료는 쓰러지지 않는 '핵심 인물'이며 전투는 주인(플레이어)의 공격 판정으로 처리되어 보상·도감이 그대로 오른다.
+-- 파티 규모: 멀티플레이 최대 4인 + 각자 동료 2명. 솔로도 동료 2명과 함께 모든 지역을 돌 수 있다.
+do
+  local homePos=Vector3.new(262,3,205)
+  local companions={
+    {id="nick",name="닉",role="늑대인간 보병대장",fee=0,unlock=function(p) return p:GetAttribute("PartyNick")==true end,note="메인에서 숲의 일을 마쳐야 합류한다.",
+      model="mon_beastman",height=5,dmg=14,interval=1.6,range=10},
+    {id="sera",name="세라",role="방패 기사",fee=150,unlock=function(p) return readNumber(p,"QuestStage",1)>=3 end,note="메인 3장 이후 고용 가능.",
+      skin=Color3.fromRGB(190,150,120),shirt=Color3.fromRGB(60,90,150),dmg=9,interval=1.8,range=10,shield=true},
+    {id="rowen",name="로웬",role="추적 궁수",fee=250,unlock=function(p) return readNumber(p,"QuestStage",1)>=7 end,note="메인 7장 이후 고용 가능.",
+      skin=Color3.fromRGB(200,160,130),shirt=Color3.fromRGB(70,120,70),dmg=13,interval=2,range=46},
+    {id="doran",name="도란",role="대장장이 기사",fee=350,unlock=function(p) return readNumber(p,"QuestStage",1)>=10 end,note="메인 10장 이후 고용 가능.",
+      skin=Color3.fromRGB(170,125,100),shirt=Color3.fromRGB(150,70,50),dmg=19,interval=2.4,range=9},
+    {id="ifa",name="이프",role="치유사",fee=400,unlock=function(p) return readNumber(p,"QuestStage",1)>=11 end,note="메인 11장 이후 고용 가능.",
+      skin=Color3.fromRGB(205,170,140),shirt=Color3.fromRGB(210,200,150),dmg=0,interval=9,range=0,heal=true},
+  }
+  local byId={}
+  for index,c in ipairs(companions) do c.index=index;byId[c.id]=c end
+  local followers={}
+  local sessions={}
+  local MAX_ACTIVE=2
+  local function activeCount(mask) local n=0 for i=1,#companions do if bit32.band(mask,bit32.lshift(1,i-1))~=0 then n+=1 end end return n end
+  local function say(player,title,text,options) pcall(function() villageDialogue(player,title,text,options) end) end
+
+  -- 집(건물 + 침대 + 화덕) 과 마을 쪽 서식 동료.
+  task.spawn(function()
+    task.wait(3)
+    local house=worldAsset("villageHouseD",homePos+Vector3.new(0,0,26),16)
+    if house then house.Name="Homestead_House";house:SetAttribute("MeadowScenery",true) end
+    local anchor=Instance.new("Attachment");anchor.Name="Homestead_Hearth";anchor.WorldPosition=homePos+Vector3.new(0,.5,0);anchor.Parent=workspace.Terrain
+    local fire=Instance.new("ParticleEmitter");fire.Color=ColorSequence.new(Color3.fromRGB(255,150,60));fire.LightEmission=1;fire.Rate=24
+    fire.Lifetime=NumberRange.new(.6,1.1);fire.Speed=NumberRange.new(2,4);fire.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,1.1),NumberSequenceKeypoint.new(1,0)})
+    fire.EmissionDirection=Enum.NormalId.Top;fire.Parent=anchor
+    local light=Instance.new("PointLight");light.Color=Color3.fromRGB(255,170,90);light.Range=34;light.Brightness=2.6;light.Parent=anchor
+    local rest=Instance.new("ProximityPrompt");rest.ActionText="화덕 곁에서 쉬기";rest.ObjectText="안식처";rest.HoldDuration=.8
+    rest.MaxActivationDistance=12;rest.RequiresLineOfSight=false;rest.Parent=anchor
+    rest.Triggered:Connect(function(player)
+      local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+      if humanoid and humanoid.Health>0 then
+        humanoid.Health=humanoid.MaxHealth
+        player:SetAttribute("MeadowStamina",100)
+        say(player,"안식처","화덕 곁에서 푹 쉬었다. 체력과 기력이 모두 찼다. 동료들이 곁에서 이야기를 건다.")
+      end
+    end)
+    for index,c in ipairs(companions) do
+      local spot=homePos+Vector3.new(-14+index*7,0,-10)
+      local stand=Instance.new("Attachment");stand.Name="Homestead_"..c.id;stand.WorldPosition=spot+Vector3.new(0,3,0);stand.Parent=workspace.Terrain
+      local mark=Instance.new("ParticleEmitter");mark.Color=ColorSequence.new(Color3.fromRGB(255,236,170));mark.LightEmission=1;mark.Rate=6
+      mark.Lifetime=NumberRange.new(2,3);mark.Size=NumberSequence.new(.5);mark.EmissionDirection=Enum.NormalId.Top;mark.Parent=stand
+      local npc=nil
+      local okLoad=pcall(function()
+        if c.model then
+          npc=worldAsset(c.model,spot,c.height)
+        else
+          local desc=Instance.new("HumanoidDescription")
+          desc.HeadColor=c.skin;desc.LeftArmColor=c.skin;desc.RightArmColor=c.skin;desc.TorsoColor=c.shirt
+          desc.LeftLegColor=Color3.fromRGB(60,56,52);desc.RightLegColor=Color3.fromRGB(60,56,52)
+          npc=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
+          desc:Destroy()
+          npc:PivotTo(CFrame.new(spot+Vector3.new(0,3.2,0)))
+          for _,part in ipairs(npc:GetDescendants()) do if part:IsA("BasePart") then part.Anchored=true end end
+          npc.Parent=workspace
+        end
+      end)
+      if okLoad and npc then npc.Name="Homestead_NPC_"..c.id end
+      local prompt=Instance.new("ProximityPrompt");prompt.ActionText="대화";prompt.ObjectText=c.name.." · "..c.role;prompt.HoldDuration=.4
+      prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=stand
+      prompt.Triggered:Connect(function(player)
+        if player:GetAttribute("ProfileReady")~=true then return end
+        sessions[player]={id=c.id,expires=os.clock()+40}
+        local owned=bit32.band(readNumber(player,"CompanionOwned",0),bit32.lshift(1,c.index-1))~=0
+        local active=bit32.band(readNumber(player,"CompanionActive",0),bit32.lshift(1,c.index-1))~=0
+        local title=c.name.." · "..c.role
+        if not owned and not c.unlock(player) then say(player,title,c.note);return end
+        if not owned then
+          say(player,title,"함께 갈까? 동행은 최대 "..MAX_ACTIVE.."명까지야.",{{label=c.fee>0 and ("고용하고 동행 ("..c.fee.." 재화)") or "동행하기",action="co:toggle"}})
+        elseif active then say(player,title,"지금 함께 다니는 중이야. 집에서 쉬게 할까?",{{label="집에서 쉬게 하기",action="co:toggle"}})
+        else say(player,title,"언제든 따라갈게.",{{label="동행하기",action="co:toggle"}}) end
+      end)
+    end
+  end)
+
+  remote.OnServerEvent:Connect(function(player,action)
+    if action~="co:toggle" then return end
+    local session=sessions[player]
+    if not session or os.clock()>session.expires then return end
+    sessions[player]=nil
+    local c=byId[session.id]
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not c or not root or (root.Position-homePos).Magnitude>80 then return end
+    local flag=bit32.lshift(1,c.index-1)
+    local ownedMask=readNumber(player,"CompanionOwned",0)
+    local activeMask=readNumber(player,"CompanionActive",0)
+    if bit32.band(ownedMask,flag)==0 then
+      if not c.unlock(player) then return end
+      if c.fee>0 then
+        if readNumber(player,"Coins",0)<c.fee then say(player,c.name,"고용비 "..c.fee.." 재화가 부족해.");return end
+        setNumber(player,"Coins",readNumber(player,"Coins",0)-c.fee)
+      end
+      ownedMask=bit32.bor(ownedMask,flag)
+      setNumber(player,"CompanionOwned",ownedMask)
+    end
+    if bit32.band(activeMask,flag)~=0 then
+      setNumber(player,"CompanionActive",bit32.band(activeMask,bit32.bnot(flag)))
+      say(player,c.name,"집에서 기다릴게.")
+    else
+      if activeCount(activeMask)>=MAX_ACTIVE then say(player,c.name,"동행은 최대 "..MAX_ACTIVE.."명이야. 다른 동료를 먼저 쉬게 해 줘.");return end
+      setNumber(player,"CompanionActive",bit32.bor(activeMask,flag))
+      say(player,c.name,"좋아, 같이 가자.")
+    end
+  end)
+
+  local function spawnFollower(player,c)
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not root then return nil end
+    local pos=root.Position+Vector3.new(c.index%2==0 and 5 or -5,0,5)
+    local model
+    local ok=pcall(function()
+      if c.model then
+        model=worldAsset(c.model,pos,c.height)
+      else
+        local desc=Instance.new("HumanoidDescription")
+        desc.HeadColor=c.skin;desc.LeftArmColor=c.skin;desc.RightArmColor=c.skin;desc.TorsoColor=c.shirt
+        desc.LeftLegColor=Color3.fromRGB(60,56,52);desc.RightLegColor=Color3.fromRGB(60,56,52)
+        model=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
+        desc:Destroy()
+        model.Name="Companion_"..c.id
+        local humanoid=model:FindFirstChildOfClass("Humanoid")
+        if humanoid then humanoid.DisplayName=c.name;humanoid.WalkSpeed=19;humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.Viewer end
+        model:PivotTo(CFrame.new(pos+Vector3.new(0,3,0)))
+        model.Parent=workspace
+        local hrp=model:FindFirstChild("HumanoidRootPart")
+        if hrp then pcall(function() hrp:SetNetworkOwner(nil) end) end
+      end
+    end)
+    if not ok or not model then return nil end
+    model:SetAttribute("CompanionOf",player.UserId)
+    return {model=model,c=c,nextAct=os.clock()+2}
+  end
+
+  task.spawn(function()
+    while true do
+      task.wait(.25)
+      for _,player in ipairs(Players:GetPlayers()) do
+        local list=followers[player]
+        if not list then list={};followers[player]=list end
+        local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        local mask=player:GetAttribute("ProfileReady")==true and readNumber(player,"CompanionActive",0) or 0
+        for _,c in ipairs(companions) do
+          local flag=bit32.lshift(1,c.index-1)
+          local entry=list[c.id]
+          if bit32.band(mask,flag)~=0 and root and humanoid and humanoid.Health>0 then
+            if not entry or not entry.model.Parent then
+              if not (entry and entry.loading) then
+                list[c.id]={loading=true}
+                task.spawn(function() list[c.id]=spawnFollower(player,c) end)
+              end
+            elseif not entry.loading then
+              local model=entry.model
+              local pivot=model:GetPivot().Position
+              local goal=root.Position+Vector3.new(c.index%2==0 and 5 or -5,0,6)
+              local distance=(pivot-goal).Magnitude
+              local hum=model:FindFirstChildOfClass("Humanoid")
+              if distance>70 then
+                model:PivotTo(CFrame.new(goal+Vector3.new(0,3,0)))
+              elseif hum then
+                if distance>4 then hum:MoveTo(goal) end
+              else
+                -- 메시 동료(닉): 서버 피벗으로 따라간다.
+                if distance>4 then
+                  local step=(goal-pivot).Unit*math.min(distance,19*.25)
+                  local next=Vector3.new(pivot.X+step.X,root.Position.Y,pivot.Z+step.Z)
+                  model:PivotTo(CFrame.lookAt(next,next+Vector3.new(step.X,0,step.Z)))
+                end
+              end
+              if os.clock()>=entry.nextAct then
+                entry.nextAct=os.clock()+c.interval
+                if c.heal then
+                  if humanoid.Health<humanoid.MaxHealth*.7 then humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.2) end
+                else
+                  if c.shield and not player.Character:FindFirstChildOfClass("ForceField") then
+                    entry.shieldAt=entry.shieldAt or 0
+                    if os.clock()>entry.shieldAt and #enemies>0 then
+                      entry.shieldAt=os.clock()+14
+                      local ff=Instance.new("ForceField");ff.Visible=false;ff.Parent=player.Character
+                      task.delay(3,function() if ff.Parent then ff:Destroy() end end)
+                    end
+                  end
+                  local best,bestDistance=nil,c.range+4
+                  for _,enemy in ipairs(enemies) do
+                    if enemy.HP>0 and enemy.model.Parent then
+                      local d=(enemy.position-pivot).Magnitude
+                      if d<bestDistance and (enemy.position-root.Position).Magnitude<60 then best,bestDistance=enemy,d end
+                    end
+                  end
+                  if best then
+                    pcall(applyMeadowDamage,player,best,c.dmg+math.floor(best.maxHP*.015))
+                  end
+                end
+              end
+            end
+          elseif entry then
+            if entry.model and entry.model.Parent then entry.model:Destroy() end
+            list[c.id]=nil
+          end
+        end
+      end
+    end
+  end)
+  Players.PlayerRemoving:Connect(function(player)
+    for _,entry in pairs(followers[player] or {}) do
+      if entry.model and entry.model.Parent then entry.model:Destroy() end
+    end
+    followers[player]=nil
+  end)
+end
+
+-- [지역 명명 보스] 지역마다 3명의 이름 있는 보스. 메인 퀘스트의 보스 처치 판정에는 포함되지 않는다.
+do
+  local names={
+    windcliff={"절벽의 사냥왕","해풍 도적단장","폭풍의 주술사"},meadow={"들판의 붉은 우두머리","초원 약탈단 두목","달빛 아래의 사냥꾼"},
+    worldtree={"뿌리 밑의 방랑자","이끼 낀 거인","오래된 숲의 저주"},volcano={"화염의 집행관","재의 군주","용암 파수꾼"},
+    oasis={"모래무덤의 지배자","사막의 그림자","오벨리스크 수호자"},swamp={"안개의 마녀 사냥꾼","늪의 식인왕","독안개 군주"},
+    citadel={"성채 근위대장","불의 형리","몰락한 기사단장"},highland={"고원의 서리왕","바위 파괴자","늑대인간 무리장"},
+    canyon={"협곡의 해골왕","붉은 칼날","협곡 독수리 사냥꾼"},chaos={"균열의 마수","혼돈의 대장","심연의 문지기"},
+    wetland={"늪지의 대두꺼비","습원 고블린 대왕","안개 속의 포식자"},desert={"모래 폭군","황금 전갈의 주인","신기루 사냥꾼"},
+    deadmarsh={"죽은 늪의 성자","썩은 숲의 왕","망령 사제"},
+  }
+  local models={windcliff={"goblin","tribal","orc"},meadow={"wolf","goblinscout","beastman"},worldtree={"beastman","spider","chieftain"},
+    volcano={"skullorc","demon","orc"},oasis={"raptor","assassin","bladespider"},swamp={"tribal","toad","goblin"},
+    citadel={"orc","demon","skullorc"},highland={"yeti","beastman","orc"},canyon={"skullorc","assassin","raptor"},
+    chaos={"demon","frostfiend","skullorc"},wetland={"toad","goblin","spider"},desert={"raptor","fangspider","assassin"},
+    deadmarsh={"tribal","demon","spider"}}
+  local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
+  local random=Random.new(5521)
+  local village=Config.WorldMap.Village
+  local count=0
+  for _,zone in ipairs(Config.WorldMap.Zones) do
+    for i=1,3 do
+      local x=random:NextNumber(zone.X0+80,zone.X1-80)
+      local z=random:NextNumber(zone.Z0+80,zone.Z1-80)
+      if not (x>village.X0-100 and x<village.X1+100 and z>village.Z0-100 and z<village.Z1+100) then
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=models[zone.Id][i],name="명명 보스 · "..names[zone.Id][i],
+          tier=math.min(10,tiers[zone.Id]+1),height=7.5,hp=3.4+i*.5,dmg=1.8+i*.15,alpha=true,bonusBoss=true,
+          drops={{"Crystal",1,2+i},{"Claw",.7,2},{"Hide",.9,3},{"Ore",.6,2}},position=Vector3.new(x,3,z)})
+        count+=1
+      end
+    end
+  end
+  workspace:SetAttribute("NamedBossCount",count)
 end
 
 -- [지역 발견] 실제 위치가 지역 안에 들어가면 서버가 발견 비트를 기록한다(1 초원·2 숲·4 화산·8 오아시스).
