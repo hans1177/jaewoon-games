@@ -1497,7 +1497,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.ok(!config.includes('Enemy="ghost"')&&!config.includes('Enemy="bandit"'));
   assert.match(config,/Name="02 · 밤의 우물"/);
   assert.match(config,/Name="03 · 보급 수레 습격 조사"/);
-  assert.doesNotMatch(server,/\{id="ghost",atom=/);
+  assert.doesNotMatch(server,/\{id="ghost",atom="GHOST_WAIL",tier=/); // 변종 유령(model=ghost/ghostskull)은 허용
   assert.doesNotMatch(server,/\{id="bandit",atom=/);
   assert.match(server,/position=Vector3\.new\(300,3,-212\),questIndex=2/);
   assert.match(server,/position=Vector3\.new\(-299,3,-233\),questIndex=3/);
