@@ -2916,7 +2916,7 @@ local meadowRpg=(function()
   local tonics=Config.MeadowConsumables or {}
   local slots={Weapon="MeadowEquipWeapon",Chest="MeadowEquipChest",
     Hands="MeadowEquipHands",Legs="MeadowEquipLegs",Feet="MeadowEquipFeet",
-    Accessory="MeadowEquipAccessory"}
+    Accessory="MeadowEquipAccessory",Shield="MeadowEquipShield"}
   local talents={Martial="MeadowTalentMartial",Signs="MeadowTalentSigns",
     Defense="MeadowTalentDefense",Agility="MeadowTalentAgility"}
   local talentMax={Agility=5,Martial=5} -- 회피·검술은 5단, 나머지 계열은 3단.
@@ -2982,8 +2982,11 @@ local meadowRpg=(function()
   end
   local function stats(player)
     local attack,defense=0,0
+    local weapon=equipped(player,"Weapon")
+    local class=weapon and Config.GearWeaponClass[weapon.Id]
+    local shieldAllowed=class=="Sword" or class=="Axe" or class=="Dagger" or class=="Hammer"
     for slot in pairs(slots)do
-      local item=equipped(player,slot)
+      local item=(slot~="Shield" or shieldAllowed) and equipped(player,slot) or nil
       if item then
         attack+=item.Attack or 0
         defense+=item.Defense or 0
@@ -3055,6 +3058,13 @@ local meadowRpg=(function()
       local ownedGear=hasGear(player,index)
       if verb=="craft" then
         if ownedGear then feedback(player,"이미 보유한 장비야.");return true end
+        -- [대장간 제작] 신규 무기·방패는 모루 근처에서만 실물 제련·제작한다.
+        if item.ForgeOnly then
+          local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+          if not root or (root.Position-Vector3.new(-98,3,-193)).Magnitude>100 then
+            feedback(player,"마을 대장간의 모루 가까이에서 제작해야 해.");return true
+          end
+        end
         if readNumber(player,"CombatProficiency",0)<(item.Need or 0) then feedback(player,"전투 숙련 "..tostring(item.Need).."이 필요해.");return true end
         if not charge(player,item) then feedback(player,"재료 또는 소지금이 부족해.");return true end
         grantGear(player,index)
@@ -3065,6 +3075,18 @@ local meadowRpg=(function()
         if not ownedGear then feedback(player,"먼저 장비를 제작해.");return true end
         local key=slots[item.Slot]
         if not key then return false end
+        if item.Slot=="Shield" then
+          local mainWeapon=equipped(player,"Weapon")
+          local class=mainWeapon and Config.GearWeaponClass[mainWeapon.Id]
+          if class~="Sword" and class~="Axe" and class~="Dagger" and class~="Hammer" then
+            feedback(player,"방패는 한손검·도끼·단검·망치와 함께 장착할 수 있어.");return true
+          end
+        elseif item.Slot=="Weapon" then
+          local class=Config.GearWeaponClass[item.Id]
+          if class~="Sword" and class~="Axe" and class~="Dagger" and class~="Hammer" then
+            setNumber(player,"MeadowEquipShield",0)
+          end
+        end
         setNumber(player,key,index)
         publishStats(player)
         feedback(player,item.Name.." 장착 완료")
@@ -3201,6 +3223,7 @@ local meadowRpg=(function()
     return false
   end
   return {transact=transact,stats=stats,publishStats=publishStats,equippedWeapon=function(player) return equipped(player,"Weapon") end,
+    equippedShield=function(player) return equipped(player,"Shield") end,
     nodeRank=nodeRank,nodeChoice=nodeChoice,passiveLevel=passiveLevel,validQuickCode=validQuickCode}
 end)()
 
@@ -3213,12 +3236,16 @@ local function refreshBowVisual(player)
   local oldShield=character:FindFirstChild("MeadowShieldVisual")
   if oldShield then oldShield:Destroy() end
   local weapon=meadowRpg.equippedWeapon(player)
-  -- [방패 외형] 한손 무기(검·도끼)+수호 '방패 자세'(노드 19) 습득 시 왼팔에 CC0 방패(Cethiel)를 붙인다.
-  if weapon and not weapon.Bow and weapon.Id then
+  -- [실물 방패] 승인 CC0 4종을 개별 연결한다. 종전 방어 스킬 방패 표시도 유지한다.
+  local shield=meadowRpg.equippedShield(player)
+  if weapon and weapon.Id then
     local cls=Config.GearWeaponClass[weapon.Id]
+    local handAllowed=cls=="Sword" or cls=="Axe" or cls=="Dagger" or cls=="Hammer"
+    local basicGuard=(cls=="Sword" or cls=="Axe") and (meadowRpg.nodeRank(player,19) or 0)>0
     local arm=character:FindFirstChild("LeftLowerArm") or character:FindFirstChild("Left Arm")
-    if (cls=="Sword" or cls=="Axe") and arm and (meadowRpg.nodeRank(player,19) or 0)>0 then
-      local sm=worldAsset("vxShieldA",Vector3.new(0,-900,0),2.4)
+    if handAllowed and arm and (shield or basicGuard) then
+      local modelKey=shield and shield.ModelKey or "vxShieldA"
+      local sm=worldAsset(modelKey,Vector3.new(0,-900,0),2.4)
       local sp=sm and sm:FindFirstChildWhichIsA("MeshPart",true)
       if sp then
         local sv=sp:Clone();sm:Destroy()
@@ -3229,6 +3256,27 @@ local function refreshBowVisual(player)
         sw.C0=CFrame.new(-.55,0,-.1)*CFrame.Angles(0,math.rad(-90),0)
         sw.Parent=sv
       elseif sm then sm:Destroy() end
+    end
+  end
+  -- [실물 제련 무기] 신규 제작 무기만 원본 등록 3D 메시를 오른손에 연결한다.
+  -- 임의 파츠·가짜 검은 생성하지 않고 기존 스타터 장검 Tool 동작은 유지한다.
+  local previous=character:FindFirstChild("MeadowForgedWeaponVisual")
+  if previous then previous:Destroy() end
+  if weapon and weapon.ModelKey and not weapon.Bow then
+    local hand=character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
+    if hand then
+      local model=worldAsset(weapon.ModelKey,Vector3.new(0,-900,0),3.5)
+      local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
+      if mesh then
+        local visual=mesh:Clone();model:Destroy()
+        visual.Name="MeadowForgedWeaponVisual"
+        visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
+        visual.Parent=character
+        local joint=Instance.new("Weld")
+        joint.Part0=hand;joint.Part1=visual
+        joint.C0=CFrame.new(0,-.45,-.15)*CFrame.Angles(0,math.rad(90),math.rad(-90))
+        joint.Parent=visual
+      elseif model then model:Destroy() end
     end
   end
   if not weapon or not weapon.Bow then return end
@@ -3252,6 +3300,7 @@ end
 local function watchBowVisual(player)
   player:GetAttributeChangedSignal("MeadowEquipWeapon"):Connect(function() refreshBowVisual(player) end)
   player:GetAttributeChangedSignal("MeadowGearOwned2"):Connect(function() refreshBowVisual(player) end)
+  player:GetAttributeChangedSignal("MeadowEquipShield"):Connect(function() refreshBowVisual(player) end)
   player:GetAttributeChangedSignal("MeadowSkillBits3"):Connect(function() refreshBowVisual(player) end)
   player.CharacterAdded:Connect(function() task.wait(1.5);refreshBowVisual(player) end)
 end
