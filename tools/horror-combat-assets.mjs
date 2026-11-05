@@ -52,6 +52,24 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
+// [마력숲 빨간 찢어진 망토] 이미 등록된 망토 메시 자산에 마력숲 Universe 사용 권한만 부여한다.
+if(process.argv.includes('--cape-grant-only')){
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ const cape=registry.capePrefab;
+ const targetUniverse='10773436325';
+ if(!cape||!/^[1-9]\d*$/.test(String(cape.assetId||'')))throw Error('CAPE_ASSET_ID_MISSING');
+ const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+  method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+  body:JSON.stringify({subjectType:'Universe',subjectId:targetUniverse,action:'Use',
+   requests:[{assetId:Number(cape.assetId),grantToDependencies:true}]})});
+ if(grant.errors?.length)throw Error('CAPE_UNIVERSE_PERMISSION_REJECTED:'+JSON.stringify(grant.errors).slice(0,300));
+ cape.universeUseGrantVerified=true;cape.authorizedUniverseIds=[targetUniverse];cape.universeId=targetUniverse;
+ fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+ console.log('CAPE_UNIVERSE_GRANTED='+cape.assetId);
+ process.exit(0);
+}
+
 // [마력숲 스킬·장비 아이콘 시트] 오너 승인 신규 원화 2장을 기존 이미지 업로드·Universe 권한 경로로 등록한다.
 if(process.argv.includes('--gear-icons-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';

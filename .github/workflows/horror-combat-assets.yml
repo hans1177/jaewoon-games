@@ -49,6 +49,10 @@ on:
         description: 공용 CC0 이펙트 이미지만 등록
         type: boolean
         default: false
+      cape_grant_only:
+        description: 마력숲 빨간 망토 Universe 사용 권한 부여
+        type: boolean
+        default: false
       forest_deer_only:
         description: 마력숲 새 CC0 암사슴 원본 다운로드·등록
         type: boolean
@@ -76,6 +80,7 @@ jobs:
           node-version: '22'
       - name: Import combat model and verified shared PBR sources
         env:
+          CAPE_GRANT_ONLY: ${{ inputs.cape_grant_only || false }}
           PAINTED_HUD_ONLY: ${{ inputs.painted_hud_only || false }}
           ILLUSTRATED_HUD_ONLY: ${{ inputs.illustrated_hud_only || false }}
           MAGIC_UI_ONLY: ${{ inputs.magic_ui_only || false }}
@@ -87,7 +92,9 @@ jobs:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/skill-icons.png roblox-games/fantasy-survival/item-icons.png | grep -q .; then
+          if [ "$CAPE_GRANT_ONLY" = "true" ]; then
+            node tools/horror-combat-assets.mjs --cape-grant-only
+          elif git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/skill-icons.png roblox-games/fantasy-survival/item-icons.png | grep -q .; then
             node tools/horror-combat-assets.mjs --gear-icons-only
           elif [ "$ILLUSTRATED_HUD_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json | grep -q .; then
             node tools/horror-combat-assets.mjs --illustrated-hud-only
