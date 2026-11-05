@@ -1619,6 +1619,29 @@ local function createMeadowVillage()
       {"villageFence",242,-291,4.8,-.17,"FARMLAND"},
       {"item_pouch",250,-322,2.7,.13,"FARMLAND"},
       {"villageCart",247,-276,5.6,.3,"FARMLAND"},
+      -- [여관 앞마당] 술잔·닭다리·책 한 권이 놓인 손님 자리, 입구 등불, 짐수레.
+      {"item_chalice",76,-92,1.65,.4,"MARKET"},{"item_chickenleg",72,-100,1.7,-.3,"MARKET"},
+      {"item_book1_closed",69,-90,1.6,.6,"MARKET"},{"item_chalice",73,-107,1.65,-.5,"MARKET"},
+      {"villageLantern",80,-84,4.6,0,"MARKET"},{"villageLantern",79,-116,4.6,0,"MARKET"},
+      {"villageCart",114,-82,5.6,.2,"MARKET"},{"item_backpack",120,-90,3.0,-.4,"MARKET"},
+      -- [마을 회관] 공고 두루마리와 열쇠, 양옆 등불.
+      {"villageLantern",83,-149,4.6,0,"MARKET"},{"villageLantern",83,-174,4.6,0,"MARKET"},
+      {"item_scroll",84,-158,1.8,.3,"MARKET"},{"item_key1",83,-165,1.5,-.2,"MARKET"},
+      -- [대장간] 만들다 만 검, 철 갑옷, 금괴, 화로 곁 횃불.
+      {"item_sword",-112,-184,2.6,.9,"CRAFT"},{"item_armor_metal",-84,-205,3.2,-.3,"CRAFT"},
+      {"item_gold_ingots",-120,-196,1.8,.5,"CRAFT"},{"item_torch",-86,-178,2.4,0,"CRAFT"},
+      {"item_dagger",-109,-206,1.8,-.7,"CRAFT"},
+      -- [약초상] 약병 선반 느낌의 병들과 광물, 약초 책.
+      {"item_potion2_filled",-100,-124,1.8,.2,"HERBALISTS"},{"item_potion3_filled",-82,-124,1.8,-.3,"HERBALISTS"},
+      {"item_potion4_filled",-96,-146,1.8,.5,"HERBALISTS"},{"item_mineral",-104,-143,2.2,.1,"HERBALISTS"},
+      {"item_book1_closed",-83,-146,1.6,.4,"HERBALISTS"},
+      -- [농가·마구간] 장작더미, 짐수레, 울타리, 곡식 자루.
+      {"item_woodlog",166,-262,3.0,.4,"FARMLAND"},{"item_woodlog",168,-286,3.2,.7,"FARMLAND"},
+      {"villageCart",200,-258,5.6,.2,"FARMLAND"},{"villageFence",208,-264,4.8,.1,"FARMLAND"},
+      {"item_pouch",196,-290,2.6,-.3,"FARMLAND"},
+      -- [곡물 창고] 곡식 자루와 수레, 장작.
+      {"item_pouch",-168,-256,2.6,.2,"FARMLAND"},{"villageCart",-196,-254,5.6,-.2,"FARMLAND"},
+      {"item_woodlog",-166,-284,3.2,.3,"FARMLAND"},{"item_pouch",-196,-284,2.6,.6,"FARMLAND"},
       -- [동서 숲길] 등록된 실제 랜턴에만 밤빛을 더한다.
       {"villageLantern",-243,-234,4.3,0,"GATE"},
       {"villageLantern",241,-229,4.3,0,"GATE"},
