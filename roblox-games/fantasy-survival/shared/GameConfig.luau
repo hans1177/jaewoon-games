@@ -886,7 +886,7 @@ for _, line in ipairs({
   {Id="sera-join", Name="[동료] 우물 아래의 방패", Kind="Companion", Field="QLSeraJ", Need={Zone="meadow"},
    Intro="마을 우물 밑 봉인석에서 '나는 방패였다'는 속삭임이 들린다. 청월 기사단의 마지막 이름이다.",
    Steps={
-    {Type="reach", X=0, Z=-111, R=40, Title="우물 곁에 서기", Text="마을 광장의 우물로 가서 속삭임을 들어라.", Done="봉인석이 흔들린다. 파편을 지키던 존재가 초원에 흩어졌다."},
+    {Type="reach", X=0, Z=-111, R=14, Title="우물 곁에 서기", Text="마을 광장의 우물로 가서 속삭임을 들어라.", Done="봉인석이 흔들린다. 파편을 지키던 존재가 초원에 흩어졌다."},
     {Type="kill", Zone="meadow", Named=true, Count=1, Title="봉인 파편의 수호자", Text="초원의 명명 보스를 쓰러뜨려 봉인 파편을 회수하라.", Done="파편을 쥐자 우물 속 목소리가 또렷해진다. 우물로 돌아가라."},
     {Type="choice", X=0, Z=-111, R=30, Title="봉인의 선택", Text="우물 앞에서 봉인을 풀지 정하라.", Prompt="봉인석 속의 목소리: '나는 청월 기사단의 방패 세라. 단장은 방패를 놓지 못해 괴물이 되었다. 나를 깨우겠는가?'",
      Choices={
