@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-11-05T14:12:44.438Z",
+  "updatedAt": "2026-11-05T17:24:23.289Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -12119,8 +12119,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-05T14:12:44.410Z",
-      "occurrenceCount": 70
+      "updatedAt": "2026-11-05T17:24:23.275Z",
+      "occurrenceCount": 71
     },
     {
       "id": "bug-265b5406b2bdecc5e87f",
@@ -12343,8 +12343,32 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-04T12:50:06.072Z",
-      "updatedAt": "2026-11-05T14:12:44.410Z",
-      "occurrenceCount": 34
+      "updatedAt": "2026-11-05T17:24:23.275Z",
+      "occurrenceCount": 35
+    },
+    {
+      "id": "bug-bd2de65d9102cd52935c",
+      "gameId": "human-go",
+      "surface": "WEB",
+      "phase": "POST_PUBLICATION_PLAYTEST",
+      "severity": "HIGH",
+      "category": "UNKNOWN",
+      "signature": "page.waitForFunction: Timeout 25000ms exceeded.",
+      "reproduction": "RERUN_EXISTING_PUBLISHED_WEB_BROWSER_SMOKE_ON_THE_SAME_GAME_SOURCE",
+      "responsibleFiles": [
+        "web-games/human-go/index.html"
+      ],
+      "evidence": [
+        "web-browser-playtest-run:42070691939",
+        "web-browser-playtest-source:fbc965dee7b6aba77f7053911795977d1d0329a7",
+        "web-browser-playtest-tree:c833e3d307754f0f2d6e54fe5ccc36c3ade8a9ef"
+      ],
+      "exactFailedStage": "WEB_POST_PUBLICATION_PLAYTEST",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "status": "OPEN",
+      "createdAt": "2026-11-05T17:24:23.275Z",
+      "updatedAt": "2026-11-05T17:24:23.275Z",
+      "occurrenceCount": 1
     }
   ],
   "webPlaytestObservations": [
@@ -12473,6 +12497,25 @@
       },
       "runId": "42038046707",
       "observedAt": "2026-11-05T14:12:44.410Z"
+    },
+    {
+      "gameId": "human-go",
+      "runtimePassed": false,
+      "failureSignature": "page.waitForFunction: Timeout 25000ms exceeded.",
+      "target": "web",
+      "sourceRoot": "web-games/human-go",
+      "sourceTreeSha": "c833e3d307754f0f2d6e54fe5ccc36c3ade8a9ef",
+      "sourceRevision": "fbc965dee7b6aba77f7053911795977d1d0329a7",
+      "runtimeObserved": true,
+      "failureStage": "WEB_POST_PUBLICATION_PLAYTEST",
+      "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
+      "sharedSourceTrees": {
+        "assets": "befc6923736d79f3c54250fefbe87f8c3ea20b28",
+        "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
+        "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
+      },
+      "runId": "42070691939",
+      "observedAt": "2026-11-05T17:24:23.275Z"
     }
   ]
 }
