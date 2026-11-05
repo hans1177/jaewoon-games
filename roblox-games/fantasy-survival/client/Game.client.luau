@@ -9085,3 +9085,141 @@ task.delay(5,function()
 end)
 
 
+
+-- [전체 지도] 미니맵을 누르거나 M 키를 누르면 1부 지역 4곳과 현재 위치·목표·현상금을 보여준다.
+-- 지역 발견 여부는 서버가 기록한 WorldDiscovered 비트만 사용하고, 위치는 실제 캐릭터 좌표다.
+;(function()
+  local RunService=game:GetService("RunService")
+  local UserInputService=game:GetService("UserInputService")
+  local playerGui=player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui")
+  local radar=nil
+  for _=1,60 do
+    radar=playerGui:FindFirstChild("MeadowExplorerRadar",true)
+    if radar then break end
+    task.wait(.5)
+  end
+  if not radar then return end
+  local layer=radar.Parent
+  local regions={
+    {id="meadow",name="초원 마을 (튜토리얼)",bit=1,center=0,half=348,color=Color3.fromRGB(70,130,78)},
+    {id="worldtree",name="세계수 숲",bit=2,center=1200,half=210,color=Color3.fromRGB(40,110,98)},
+    {id="volcano",name="화산 협곡",bit=4,center=2400,half=210,color=Color3.fromRGB(130,56,42)},
+    {id="oasis",name="오아시스 지하",bit=8,center=3600,half=210,color=Color3.fromRGB(190,160,98)},
+  }
+  local gate={worldtree="메인 6장",volcano="메인 9장",oasis="메인 10장"}
+  local overlay=Instance.new("TextButton")
+  overlay.Name="MeadowFullMap";overlay.Text="";overlay.AutoButtonColor=false
+  overlay.Size=UDim2.fromScale(1,1);overlay.BackgroundColor3=Color3.fromRGB(4,10,10)
+  overlay.BackgroundTransparency=.35;overlay.ZIndex=60;overlay.Visible=false;overlay.Parent=layer
+  local panel=Instance.new("Frame")
+  panel.AnchorPoint=Vector2.new(.5,.5);panel.Position=UDim2.fromScale(.5,.5)
+  panel.Size=UDim2.new(.94,0,.82,0);panel.BackgroundColor3=Color3.fromRGB(18,32,30)
+  panel.ZIndex=61;panel.Parent=overlay
+  local constraint=Instance.new("UISizeConstraint");constraint.MaxSize=Vector2.new(820,470);constraint.Parent=panel
+  Instance.new("UICorner",panel).CornerRadius=UDim.new(0,14)
+  local border=Instance.new("UIStroke");border.Color=Color3.fromRGB(218,189,126);border.Thickness=2.5;border.Parent=panel
+  local title=Instance.new("TextLabel")
+  title.BackgroundTransparency=1;title.Position=UDim2.fromOffset(16,8);title.Size=UDim2.new(1,-70,0,30)
+  title.Font=Enum.Font.GothamBlack;title.TextSize=20;title.TextXAlignment=Enum.TextXAlignment.Left
+  title.TextColor3=Color3.fromRGB(255,244,214);title.Text="전체 지도 · 1부";title.ZIndex=62;title.Parent=panel
+  local legend=Instance.new("TextLabel")
+  legend.BackgroundTransparency=1;legend.Position=UDim2.fromOffset(16,38);legend.Size=UDim2.new(1,-32,0,20)
+  legend.Font=Enum.Font.Gotham;legend.TextSize=12;legend.TextXAlignment=Enum.TextXAlignment.Left
+  legend.TextColor3=Color3.fromRGB(190,208,196);legend.Text="● 내 위치   ★ 메인 목표   ◆ 현상금 게시판   ⛺ 거점   ▶ 마력의 길";legend.ZIndex=62;legend.Parent=panel
+  local close=Instance.new("TextButton")
+  close.Text="✕";close.Font=Enum.Font.GothamBold;close.TextSize=20;close.TextColor3=Color3.fromRGB(255,244,214)
+  close.BackgroundColor3=Color3.fromRGB(70,38,38);close.Position=UDim2.new(1,-48,0,8);close.Size=UDim2.fromOffset(38,34)
+  close.ZIndex=63;close.Parent=panel;Instance.new("UICorner",close).CornerRadius=UDim.new(0,9)
+  local strip=Instance.new("Frame")
+  strip.BackgroundTransparency=1;strip.Position=UDim2.fromOffset(12,70);strip.Size=UDim2.new(1,-24,1,-82);strip.ZIndex=62;strip.Parent=panel
+  local layout=Instance.new("UIListLayout")
+  layout.FillDirection=Enum.FillDirection.Horizontal;layout.Padding=UDim.new(0,10);layout.SortOrder=Enum.SortOrder.LayoutOrder
+  layout.HorizontalAlignment=Enum.HorizontalAlignment.Center;layout.Parent=strip
+  local tiles={}
+  for index,region in ipairs(regions) do
+    local tile=Instance.new("Frame")
+    tile.LayoutOrder=index;tile.Size=UDim2.new(.25,-8,1,0);tile.BackgroundColor3=region.color;tile.ZIndex=62;tile.Parent=strip
+    Instance.new("UICorner",tile).CornerRadius=UDim.new(0,10)
+    local edge=Instance.new("UIStroke");edge.Color=Color3.fromRGB(230,206,150);edge.Thickness=1.6;edge.Parent=tile
+    local fade=Instance.new("UIGradient");fade.Rotation=90
+    fade.Color=ColorSequence.new(Color3.fromRGB(255,255,255),Color3.fromRGB(70,70,70));fade.Parent=tile
+    local name=Instance.new("TextLabel")
+    name.BackgroundTransparency=1;name.Position=UDim2.fromOffset(6,6);name.Size=UDim2.new(1,-12,0,34);name.TextWrapped=true
+    name.Font=Enum.Font.GothamBold;name.TextSize=13;name.TextColor3=Color3.fromRGB(255,250,232);name.ZIndex=63;name.Parent=tile
+    local info=Instance.new("TextLabel")
+    info.BackgroundTransparency=1;info.Position=UDim2.new(0,6,1,-62);info.Size=UDim2.new(1,-12,0,56);info.TextWrapped=true
+    info.TextYAlignment=Enum.TextYAlignment.Bottom;info.Font=Enum.Font.Gotham;info.TextSize=11
+    info.TextColor3=Color3.fromRGB(240,240,230);info.ZIndex=63;info.Parent=tile
+    local field=Instance.new("Frame")
+    field.BackgroundColor3=Color3.fromRGB(10,18,16);field.BackgroundTransparency=.55
+    field.Position=UDim2.fromOffset(8,46);field.Size=UDim2.new(1,-16,1,-116);field.ZIndex=63;field.ClipsDescendants=true;field.Parent=tile
+    Instance.new("UICorner",field).CornerRadius=UDim.new(0,8)
+    local dot=Instance.new("TextLabel")
+    dot.BackgroundTransparency=1;dot.Size=UDim2.fromOffset(18,18);dot.AnchorPoint=Vector2.new(.5,.5)
+    dot.Font=Enum.Font.GothamBold;dot.TextSize=18;dot.Text="●";dot.TextColor3=Color3.fromRGB(255,222,92)
+    dot.ZIndex=66;dot.Visible=false;dot.Parent=field
+    local badges=Instance.new("TextLabel")
+    badges.BackgroundTransparency=1;badges.Position=UDim2.fromOffset(4,2);badges.Size=UDim2.new(1,-8,0,18)
+    badges.Font=Enum.Font.GothamBold;badges.TextSize=13;badges.TextXAlignment=Enum.TextXAlignment.Left
+    badges.TextColor3=Color3.fromRGB(255,232,150);badges.ZIndex=65;badges.Parent=field
+    tiles[index]={tile=tile,name=name,info=info,dot=dot,badges=badges,field=field,edge=edge}
+  end
+  local function questRegion(stage)
+    return stage<=6 and "meadow" or stage<=9 and "worldtree" or stage==10 and "volcano" or stage<=12 and "oasis" or nil
+  end
+  local function refresh()
+    if not overlay.Visible then return end
+    local discovered=player:GetAttribute("WorldDiscovered") or 1
+    local stage=player:GetAttribute("QuestStage") or 1
+    local target=questRegion(stage)
+    local bountyIndex=player:GetAttribute("BountyIndex") or 1
+    local bounty=Config.Bounties and Config.Bounties[bountyIndex]
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    local x=root and root.Position.X or 0
+    local z=root and root.Position.Z or 0
+    for index,region in ipairs(regions) do
+      local entry=tiles[index]
+      local seen=bit32.band(discovered,region.bit)~=0
+      entry.name.Text=seen and region.name or "???"
+      entry.tile.BackgroundTransparency=seen and 0 or .55
+      local here=x>=region.center-region.half-20 and x<=region.center+region.half+20
+      local badge=""
+      if target==region.id then badge=badge.."★ " end
+      if bounty and bounty.Region==region.id and region.id~="meadow" then badge=badge.."◆ " end
+      if region.id~="meadow" and seen then badge=badge.."▶ " end
+      entry.badges.Text=badge
+      local lock=gate[region.id]
+      entry.info.Text=seen and (here and "현재 지역" or "발견한 지역") or (lock and ("미발견 · "..lock.." 이후 이동") or "미발견")
+      entry.dot.Visible=here
+      if here then
+        entry.dot.Position=UDim2.fromScale(math.clamp(.5+(x-region.center)/(region.half*2),.04,.96),math.clamp(.5+(z/(region.half*2)),.06,.94))
+      end
+      entry.edge.Color=here and Color3.fromRGB(255,222,92) or Color3.fromRGB(230,206,150)
+      entry.edge.Thickness=here and 3 or 1.6
+    end
+  end
+  local acc=0
+  RunService.Heartbeat:Connect(function(dt)
+    if not overlay.Visible then return end
+    acc+=dt
+    if acc>=.25 then acc=0;refresh() end
+  end)
+  local function setOpen(value)
+    overlay.Visible=value
+    if value then refresh() end
+  end
+  close.Activated:Connect(function() setOpen(false) end)
+  overlay.Activated:Connect(function() setOpen(false) end)
+  -- 미니맵 위에 투명 버튼을 얹어 누르면 전체 지도를 연다.
+  local tap=Instance.new("TextButton")
+  tap.Name="MeadowFullMapOpen";tap.Text="";tap.BackgroundTransparency=1
+  tap.Size=UDim2.fromScale(1,1);tap.ZIndex=30;tap.Parent=radar
+  tap.Activated:Connect(function() setOpen(true) end)
+  UserInputService.InputBegan:Connect(function(input,processed)
+    if processed or UserInputService:GetFocusedTextBox() then return end
+    if input.KeyCode==Enum.KeyCode.M then setOpen(not overlay.Visible) end
+  end)
+  for _,name in ipairs({"WorldDiscovered","QuestStage","BountyIndex"}) do
+    player:GetAttributeChangedSignal(name):Connect(refresh)
+  end
+end)()
