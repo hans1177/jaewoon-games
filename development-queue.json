@@ -2671,7 +2671,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-05T00:13:59.383Z",
+      "updatedAt": "2026-11-05T00:15:08.726Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4024,12 +4024,14 @@
         "artifactIdentity": "sha256:f70d8e3e57649ffb8e4ab2a648512eb43c8744f57dd9fb847247758843d9ce41",
         "artifactRunId": 41937279046,
         "candidateVersionNumber": 175,
-        "status": "QUEUED_FOR_STUDIO",
+        "status": "INTERRUPTED_RETRY_QUEUED",
         "queuedAt": "2026-11-05T00:06:15.860Z",
-        "interruptionRetryCount": 0,
+        "interruptionRetryCount": 1,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true
+        "companyRuntimeAuthoritative": true,
+        "lastInterruptedAt": "2026-11-05T00:15:08.726Z",
+        "lastInterruptedWorkflowRunId": 41938588731
       },
       "robloxFirstFrameGroundingEvidence": {
         "observed": true,
@@ -4571,7 +4573,7 @@
       "updatedAt": "2026-11-05T00:13:59.383Z"
     }
   ],
-  "updatedAt": "2026-11-05T00:13:59.383Z",
+  "updatedAt": "2026-11-05T00:15:08.726Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
