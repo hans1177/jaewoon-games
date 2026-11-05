@@ -11,6 +11,7 @@ local CommonUI = require(Shared:WaitForChild("Common"):WaitForChild("RobloxCommo
 local PortData = require(Shared:WaitForChild("Ports"))
 local Geo = require(Shared:WaitForChild("Geo"))
 local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
+local PortScene = require(Shared:WaitForChild("PortScene"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
@@ -53,6 +54,7 @@ local TABS = {
 
 local view = nil -- 서버가 보낸 최신 스냅샷
 local currentTab = "status"
+local syncScene
 local amountIndex = 1
 local message = ""
 local messageOk = true
@@ -1662,6 +1664,38 @@ local function renderTabs()
 	fold.LayoutOrder = #TABS + 1
 end
 
+-- 3D 항구 장면: 항구나 배가 바뀔 때만 다시 만든다
+local sceneKey = nil
+syncScene = function()
+	local p, ship = view.player, view.ship
+	local key = p.portId .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0)
+	if key == sceneKey then
+		return
+	end
+	sceneKey = key
+	local ok, res = pcall(PortScene.build, {
+		portId = p.portId,
+		portName = p.portName,
+		shipId = ship.id,
+		hasShipyard = p.hasShipyard,
+		facilities = view.facilities,
+		storyCount = #(view.story or {}),
+	}, function(tab)
+		currentTab = tab
+		main.Visible = true
+		menuToggle.Visible = false
+		render()
+	end)
+	if not ok then
+		warn("[Game] 항구 장면 오류", res)
+		return
+	end
+	local char = player.Character
+	if char and char:FindFirstChild("HumanoidRootPart") then
+		char:PivotTo(res.spawn)
+	end
+end
+
 function render()
 	order = 0
 	clearContent()
@@ -1687,6 +1721,7 @@ function render()
 		p.nation, p.year, p.portName, ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity, p.fame)
 	coinValue.Text = tostring(p.coins)
 	renderTabs()
+	syncScene()
 
 	if message ~= "" then
 		add(function() return mkLabel(content, message, 13, if messageOk then COLORS.gold else COLORS.red, true) end)
