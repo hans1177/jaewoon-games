@@ -6379,6 +6379,56 @@ do
   workspace:SetAttribute("LordFortCount",forts)
 end
 
+-- [지역 야생 무리 · 길목 순찰] 지역마다 고유 몬스터 무리를 곳곳에 두고, 큰길에는 도적 순찰대를 둔다. 모델은 등록된 mon_*만 쓴다.
+do
+  local pools={windcliff={"goblin","goblinscout","tribal"},meadow={"wolf","goblinscout","keltir"},worldtree={"spider","beastman","fangspider"},
+    volcano={"skullorc","demon","orc"},oasis={"raptor","bladespider","assassin"},swamp={"toad","tribal","spider"},
+    citadel={"orc","skullorc","demon"},highland={"yeti","wolf","beastman"},canyon={"skullorc","raptor","orc"},
+    chaos={"demon","frostfiend","spiritgolem"},wetland={"toad","goblin","keltir"},desert={"raptor","fangspider","assassin"},
+    deadmarsh={"tribal","spiritgolem","spider"}}
+  local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
+  local labels={goblin="고블린",goblinscout="고블린 척후병",tribal="부족 전사",wolf="들늑대",keltir="켈티르",spider="거미",beastman="야수인간",fangspider="독니 거미",
+    skullorc="해골 오크",demon="악마",orc="오크",raptor="랩터",bladespider="칼날거미",assassin="암살자",toad="독두꺼비",yeti="설인",frostfiend="서리 마귀",
+    spiritgolem="영혼 골렘",chieftain="족장"}
+  local random=Random.new(8123)
+  local village=Config.WorldMap.Village
+  local function outsideVillage(x,z) return not (x>village.X0-120 and x<village.X1+120 and z>village.Z0-120 and z<village.Z1+120) end
+  local packs=0
+  for _,zone in ipairs(Config.WorldMap.Zones) do
+    local pool=pools[zone.Id]
+    for g=1,6 do
+      local x,z=Config.WorldMap.RandomPoint(zone.Id,random,100)
+      if pool and x and outsideVillage(x,z) then
+        local model=pool[(g-1)%#pool+1]
+        local size=2+g%2
+        for k=1,size do
+          local a=k*math.pi*2/size
+          table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=model,name=labels[model] or "몬스터",tier=tiers[zone.Id],
+            height=4+tiers[zone.Id]*.12,hp=1.2,dmg=1,zoneTag=zone.Id,
+            drops={{"Hide",.6,2},{"Fang",.4,1}},position=Vector3.new(x+math.cos(a)*10,3,z+math.sin(a)*10)})
+          packs+=1
+        end
+      end
+    end
+  end
+  -- 큰길 순찰: 동서 큰길(z=0)과 남북 큰길(x=0, x=3000) 위 도적 순찰대.
+  local patrol={}
+  for x=-2000,6200,700 do table.insert(patrol,{x,(random:NextInteger(0,1)==0 and 1 or -1)*random:NextInteger(14,26)}) end
+  for z=-2000,2000,800 do table.insert(patrol,{random:NextInteger(14,24),z});table.insert(patrol,{3000+random:NextInteger(14,24),z}) end
+  for _,spot in ipairs(patrol) do
+    local zoneId=Config.WorldMap.ZoneAt(spot[1],spot[2])
+    if outsideVillage(spot[1],spot[2]) then
+      for k=1,2 do
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=k==1 and "assassin" or "tribal",name=k==1 and "길목 도적" or "도적 궁수",
+          tier=tiers[zoneId] or 3,height=5.2,hp=1.4,dmg=1.2,zoneTag=zoneId,drops={{"Hide",.6,2},{"Ore",.4,1}},
+          position=Vector3.new(spot[1]+k*8,3,spot[2]+k*6)})
+        packs+=1
+      end
+    end
+  end
+  workspace:SetAttribute("WildPackCount",packs)
+end
+
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
 -- 도달/재료 판정은 2초마다, 처치 판정은 몬스터 처치 시점에 확인한다. 거울 정원은 메인 줄 완료(HiddenOpen)로 열린다.
 do
