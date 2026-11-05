@@ -1459,7 +1459,7 @@ for index,info in ipairs(referenceMenuItems) do
   icon.ZIndex=28
   icon.Parent=button
   -- [메뉴 아이콘] 원화가 로드되지 않을 때만 이미 등록한 16칸 원본으로 복구.
-  task.delay(5,function()
+  task.delay(25,function()
     if not icon.Parent or icon.IsLoaded then return end
     icon.ImageRectSize=Vector2.new(40,40)
     icon.ImageRectOffset=Vector2.new(info[3]*40,0)
@@ -1531,7 +1531,7 @@ for index=1,10 do
   icon.Position=UDim2.fromScale(0,0)
   icon.ZIndex=26
   icon.Parent=slot
-  task.delay(5,function()
+  task.delay(25,function()
     if not icon.Parent or icon.IsLoaded then return end
     icon.ImageRectSize=Vector2.new(40,40)
     icon.ImageRectOffset=Vector2.new((index-1)*40,0)
@@ -5121,7 +5121,7 @@ local function applyMeadowRightActionImage(button,role)
     if rim then rim.Enabled=false end
     local inner=button:FindFirstChild("PolishedInnerRing")
     if inner then inner.Visible=false end
-    task.delay(5,function()
+    task.delay(25,function()
       if not icon.Parent or icon.IsLoaded then return end
       if role=="jump" then
         icon.Visible=false
@@ -5289,7 +5289,7 @@ local swordRim=meadowPrimarySword:FindFirstChild("GoldSkillRim")
 if swordRim then swordRim.Enabled=false end
 local swordInner=meadowPrimarySword:FindFirstChild("PolishedInnerRing")
 if swordInner then swordInner.Visible=false end
-task.delay(5,function()
+task.delay(25,function()
   if not swordIcon.Parent or swordIcon.IsLoaded then return end
   swordIcon.ImageRectOffset=Vector2.zero
   swordIcon.ImageRectSize=Vector2.new(40,40)
@@ -5363,9 +5363,9 @@ local function layoutMeadowCombatUi()
   local swordSize=math.max(60,math.floor(66*scale))
   meadowSkillButtons.primarySword.Size=UDim2.fromOffset(swordSize,swordSize)
   meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale),math.floor(132*scale))
-  local jumpSize=math.max(46,math.floor(46*scale))
+  local jumpSize=math.max(54,math.floor(54*scale))
   meadowSkillButtons.referenceJump.Size=UDim2.fromOffset(jumpSize,jumpSize)
-  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(38*scale),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor(6*scale))
+  meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(30*scale),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor(6*scale))
   -- [기존 점프 이중 터치 방지] 공식 모바일 JumpButton만 숨기고 실제 점프 기능은 위 버튼에 연결.
   if UserInputService.TouchEnabled then
     local touchGui=player.PlayerGui:FindFirstChild("TouchGui")

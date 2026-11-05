@@ -149,7 +149,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(152\*scale\),math.floor\(50\*scale\)\)/);
   assert.match(client,/meadowSkillButtons.primarySword.Position=UDim2.fromOffset\(math.floor\(146\*scale\),math.floor\(132\*scale\)\)/);
   assert.match(client,/local swordSize=math.max\(60,math.floor\(66\*scale\)\)/);
-  assert.match(client,/meadowSkillButtons.referenceJump.Position=UDim2.fromOffset\(math.floor\(38\*scale\),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor\(6\*scale\)\)/);
+  assert.match(client,/meadowSkillButtons.referenceJump.Position=UDim2.fromOffset\(math.floor\(30\*scale\),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor\(6\*scale\)\)/);
   // 원화 자체에 포함된 링을 또 그리지 않는다.
   assert.match(client,/if rim then rim.Enabled=false end/);
   assert.match(client,/if inner then inner.Visible=false end/);
@@ -159,7 +159,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/local slotSize=landscape and math.floor\(math.clamp\(v.X\/17,44,52\)\)\s+or math.floor\(math.clamp\(\(v.X-24\)\/columns-2,44,48\)\)/);
   assert.match(client,/local columns=\(landscape and \(v.X-150-dockReserve<tenWide\) or \(not landscape and v.X<560\)\) and 5 or 10/);
   assert.match(client,/local size=math.max\(46,math.floor\(row\[3\]\*scale\)\)/);
-  assert.match(client,/local jumpSize=math.max\(46,math.floor\(46\*scale\)\)/);
+  assert.match(client,/local jumpSize=math.max\(54,math.floor\(54\*scale\)\)/);
   assert.match(client,/local size=math.max\(46,math.floor\(40\*scale\)\)/);
 
   const sheet={width:1000,height:1000};
@@ -201,7 +201,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'remote:FireServer("meadow:rpg:tonic:use:energy_tonic")',
     'trackerTitle.Text=quest and ("❖ [메인] "..quest.Name)',
     'button.Visible=index==2 or index==3',
-    'meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(38*scale)',
+    'meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(30*scale)',
   ])assert.ok(client.includes(marker),'painted reference HUD lost: '+marker);
   for(const [w,h] of [[1920,1080],[1536,709],[1280,720],[926,428],[852,393],[844,390],[720,400],[640,360],[430,932],[390,844],[360,640]]){
     const landscape=w>h;
