@@ -2942,6 +2942,61 @@ task.defer(function()
   if sceneryCount==0 then warn("마력숲 초원 나무 로딩 0개: 등록 CC0 자산 및 Place 사용 권한 확인 필요") end
 end)
 
+-- [신화 합성체] 등록된 CC0 모델 여러 개를 한 몸으로 합쳐 신화 괴물을 만든다(히드라·켄타우로스·아라크네 등).
+-- 새 도형 파츠를 만들지 않고 실제 메시 모델만 겹쳐 붙인다. 각 조각은 몸통 모델 안으로 옮겨 함께 움직인다.
+-- spec: model(mon_ 키), height(스터드), up/fwd/side(몸통 경계상자 대비 비율, 중심 기준), yaw/pitch(도), 본체 앞이 -Z라고 가정한다.
+local function attachMythicParts(model,specs)
+  local folder=Instance.new("Folder");folder.Name="MythicParts";folder.Parent=model
+  for _,spec in ipairs(specs) do
+    local id=NativeCreatureAssets["mon_"..spec.model]
+    if typeof(id)=="number" then
+      local ok,extra=pcall(function()
+        local template=nativeCreatureTemplates[id]
+        if not template then
+          template=AssetService:LoadAssetAsync(id)
+          if not template:IsA("Model") or not template:FindFirstChildWhichIsA("MeshPart",true) then template:Destroy();error("MYTHIC_MESH_REQUIRED") end
+          for _,item in ipairs(template:GetDescendants()) do
+            if item:IsA("LuaSourceContainer") or item:IsA("RemoteEvent") or item:IsA("RemoteFunction") or item:IsA("Tool") then item:Destroy()
+            elseif item:IsA("BasePart") then item.Anchored=true;item.CanCollide=false;item.CanTouch=false;item.CanQuery=false end
+          end
+          template.Parent=nil
+          nativeCreatureTemplates[id]=template
+        end
+        return template:Clone()
+      end)
+      if ok and extra and extra:IsA("Model") then
+        local minY,maxY=math.huge,-math.huge
+        for _,mesh in ipairs(extra:GetDescendants()) do
+          if mesh:IsA("MeshPart") and mesh.Transparency<.98 then
+            local cf=mesh.CFrame
+            local halfY=(math.abs(cf.RightVector.Y)*mesh.Size.X+math.abs(cf.UpVector.Y)*mesh.Size.Y+math.abs(cf.LookVector.Y)*mesh.Size.Z)*.5
+            minY=math.min(minY,cf.Position.Y-halfY);maxY=math.max(maxY,cf.Position.Y+halfY)
+          end
+        end
+        if maxY-minY>.01 and maxY~=-math.huge then
+          extra:ScaleTo(extra:GetScale()*spec.height/(maxY-minY))
+          local cf,size=model:GetBoundingBox()
+          local center=cf*CFrame.new((spec.side or 0)*size.X,(spec.up or .5)*size.Y,(spec.fwd or 0)*size.Z)
+          extra:PivotTo(center*CFrame.Angles(math.rad(spec.pitch or 0),math.rad(spec.yaw or 0),0))
+          -- 조각의 바닥 중심을 목표 지점에 맞춘다.
+          local bMin=math.huge
+          for _,mesh in ipairs(extra:GetDescendants()) do
+            if mesh:IsA("MeshPart") and mesh.Transparency<.98 then
+              local c=mesh.CFrame
+              local halfY=(math.abs(c.RightVector.Y)*mesh.Size.X+math.abs(c.UpVector.Y)*mesh.Size.Y+math.abs(c.LookVector.Y)*mesh.Size.Z)*.5
+              bMin=math.min(bMin,c.Position.Y-halfY)
+            end
+          end
+          if bMin~=math.huge and (spec.pitch or 0)==0 then extra:PivotTo(extra:GetPivot()+Vector3.new(0,center.Position.Y-bMin,0)) end
+          local piece=Instance.new("Folder");piece.Name="Part_"..spec.model;piece.Parent=folder
+          for _,child in ipairs(extra:GetChildren()) do child.Parent=piece end
+          extra:Destroy()
+        else extra:Destroy() end
+      end
+    end
+  end
+end
+
 -- [지역 몬스터] 서식지의 위치와 위험도를 서버가 소유한다.
 local function spawnEnemy(site, siteIndex)
   if #enemies >= MAX_ENEMIES then return false end
@@ -3161,6 +3216,7 @@ local function spawnEnemy(site, siteIndex)
       end
     end
   end
+  if site.compose then pcall(attachMythicParts,model,site.compose) end
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
   local hitPoints = isAlpha and 220 or ((isBoss and 310 or 45) + site.tier*(isBoss and 60 or 13))
@@ -6344,13 +6400,13 @@ end
 -- 모델은 등록된 인간형 mon_*(오크·해골오크·부족전사·암살자·야수인간·고블린·족장·악마)만 사용한다.
 do
   local lords={
-    windcliff={"해풍 요새의 영주 바르간","goblin","orc"},meadow={"붉은 깃발 대장 로크","goblinscout","beastman"},
+    windcliff={"해풍 요새의 영주 바르간","king","knight"},meadow={"붉은 깃발 대장 로크","knightchar","rogue"},
     worldtree={"숲의 파수 영주 엘더우드","beastman","chieftain"},volcano={"홍염 기사단 잔당 카일","skullorc","orc"},
-    oasis={"사막 상단의 지배자 자파르","assassin","raptor"},swamp={"늪 마녀단의 수장 모르가나","tribal","goblin"},
-    citadel={"몰락한 성주 아이젠","orc","skullorc"},highland={"고원 족장 보르가","chieftain","yeti"},
-    canyon={"협곡 군벌 라자크","skullorc","assassin"},chaos={"혼돈 사도 벨리알","demon","skullorc"},
-    wetland={"습원 도적왕 그림","goblin","toad"},desert={"모래 칼날 단장 아마르","assassin","beastman"},
-    deadmarsh={"죽은 늪의 사제왕 말라크","tribal","demon"}}
+    oasis={"사막 상단의 지배자 자파르","king","adventurer"},swamp={"늪 마녀단의 수장 모르가나","witch","farmer"},
+    citadel={"몰락한 성주 아이젠","knight","skwarrior"},highland={"고원 족장 보르가","chieftain","yeti"},
+    canyon={"협곡 군벌 라자크","barbarian","roguehooded"},chaos={"혼돈 사도 벨리알","mage","skmage"},
+    wetland={"습원 도적왕 그림","king","rogue"},desert={"모래 칼날 단장 아마르","adventurer","roguehooded"},
+    deadmarsh={"죽은 늪의 사제왕 말라크","skmage","skwarrior"}}
   local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
   local random=Random.new(7001)
   local village=Config.WorldMap.Village
@@ -6381,15 +6437,15 @@ end
 
 -- [지역 야생 무리 · 길목 순찰] 지역마다 고유 몬스터 무리를 곳곳에 두고, 큰길에는 도적 순찰대를 둔다. 모델은 등록된 mon_*만 쓴다.
 do
-  local pools={windcliff={"goblin","goblinscout","tribal"},meadow={"wolf","goblinscout","keltir"},worldtree={"spider","beastman","fangspider"},
-    volcano={"skullorc","demon","orc"},oasis={"raptor","bladespider","assassin"},swamp={"toad","tribal","spider"},
-    citadel={"orc","skullorc","demon"},highland={"yeti","wolf","beastman"},canyon={"skullorc","raptor","orc"},
-    chaos={"demon","frostfiend","spiritgolem"},wetland={"toad","goblin","keltir"},desert={"raptor","fangspider","assassin"},
-    deadmarsh={"tribal","spiritgolem","spider"}}
+  local pools={windcliff={"goblin","goblinscout","tribal"},meadow={"wolf","fox","husky","keltir"},worldtree={"spider","wasp","fox","beastman","fangspider"},
+    volcano={"skullorc","demon","orc"},oasis={"raptor","bladespider","assassin"},swamp={"toad","snake","wasp","spider"},
+    citadel={"orc","skullorc","demon"},highland={"yeti","wolf","bull","husky"},canyon={"skullorc","raptor","orc"},
+    chaos={"demon","frostfiend","spiritgolem"},wetland={"toad","snake","rat","keltir"},desert={"snakeangry","fangspider","raptor","wasp"},
+    deadmarsh={"skminion","skwarrior","spiritgolem","rat"}}
   local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
   local labels={goblin="고블린",goblinscout="고블린 척후병",tribal="부족 전사",wolf="들늑대",keltir="켈티르",spider="거미",beastman="야수인간",fangspider="독니 거미",
     skullorc="해골 오크",demon="악마",orc="오크",raptor="랩터",bladespider="칼날거미",assassin="암살자",toad="독두꺼비",yeti="설인",frostfiend="서리 마귀",
-    spiritgolem="영혼 골렘",chieftain="족장"}
+    spiritgolem="영혼 골렘",chieftain="족장",fox="붉은 여우",husky="들개",bull="성난 황소",snake="독사",snakeangry="사막 코브라",wasp="거대 말벌",rat="역병 쥐",skminion="해골 졸개",skwarrior="해골 전사"}
   local random=Random.new(8123)
   local village=Config.WorldMap.Village
   local function outsideVillage(x,z) return not (x>village.X0-120 and x<village.X1+120 and z>village.Z0-120 and z<village.Z1+120) end
@@ -6435,23 +6491,26 @@ end
 do
   -- 구성원: {모델, 이름, 높이, hp배수, dmg배수, 드랍}
   local factions={
-    bandit={"도적단",{{"assassin","칼잡이 도적",5.2,1.2,1.3,{{"Hide",.7,2},{"Ore",.5,1}}},{"tribal","도끼 도적",5.4,1.5,1.2,{{"Hide",.7,2}}},{"goblin","소매치기",4.2,.9,.9,{{"Ore",.6,2}}}},
-      {"chieftain","도적 두목",8,4,1.9,{{"Crystal",1,3},{"Ore",1,3}}}},
-    cult={"이단 교단",{{"tribal","이단 신도",5.2,1.1,1.1,{{"Moonbloom",.5,1}}},{"beastman","피의 의식 사제",5.6,1.4,1.5,{{"Crystal",.6,2}}},{"orc","교단 집행자",6.2,2,1.5,{{"Hide",.7,2}}}},
-      {"demon","대사제",9,4.5,2,{{"Crystal",1,5},{"Moonbloom",1,3}}}},
-    fanatic={"미친 광신도",{{"skullorc","광란의 광신도",5.8,.8,2.2,{{"Claw",.6,2}}},{"beastman","순교자",5.2,.7,2.6,{{"Fang",.6,2}}},{"orc","자학 수도사",6,1.8,1.6,{{"Hide",.7,2}}}},
-      {"skullorc","광신의 예언자",9,3.8,2.4,{{"Crystal",1,4},{"Claw",1,3}}}},
-    deserter={"탈영 기사단",{{"orc","탈영 기사",6.2,2.2,1.4,{{"Ore",.8,2}}},{"assassin","낙오 정찰병",5.2,1,1.2,{{"Hide",.7,2}}},{"goblin","종자",4.5,.9,.9,{{"Ore",.5,1}}}},
-      {"orc","탈영 기사단장",8.6,4,1.8,{{"Ore",1,5},{"Crystal",1,2}}}},
-    slaver={"노예상단",{{"tribal","채찍 감독관",5.4,1.3,1.4,{{"Hide",.7,2}}},{"orc","용병 호위",6.2,2,1.3,{{"Ore",.6,2}}},{"goblin","짐꾼",4.2,.8,.8,{{"Hide",.5,1}}}},
-      {"chieftain","노예상 우두머리",8.5,3.8,1.8,{{"Crystal",1,3},{"Hide",1,4}}}},
-    warlock={"흑마술 결사",{{"tribal","암흑 주술사",5.4,1,1.7,{{"Moonbloom",.6,2}}},{"demon","소환된 하수인",6.5,1.8,1.5,{{"Claw",.6,2}}},{"assassin","그림자 암살자",5.2,1,1.8,{{"Fang",.6,1}}}},
-      {"demon","결사의 흑마법사",9.2,4.2,2.2,{{"Crystal",1,6},{"Moonbloom",1,3}}}},
+    bandit={"도적단",{{"rogue","칼잡이 도적",4.8,1.2,1.3,{{"Hide",.7,2},{"Ore",.5,1}}},{"roguehooded","후드 도적",4.8,1.5,1.2,{{"Hide",.7,2}}},{"goblin","소매치기",4.2,.9,.9,{{"Ore",.6,2}}}},
+      {"king","도적 두목",7,4,1.9,{{"Crystal",1,3},{"Ore",1,3}}}},
+    cult={"이단 교단",{{"farmer","이단 신도",4.8,1.1,1.1,{{"Moonbloom",.5,1}}},{"mage","피의 의식 사제",5,1.4,1.5,{{"Crystal",.6,2}}},{"orc","교단 집행자",6.2,2,1.5,{{"Hide",.7,2}}}},
+      {"witch","대사제",6.5,4.5,2,{{"Crystal",1,5},{"Moonbloom",1,3}}}},
+    fanatic={"미친 광신도",{{"punk","광란의 광신도",4.8,.8,2.2,{{"Claw",.6,2}}},{"barbarian","순교자",5,.7,2.6,{{"Fang",.6,2}}},{"orc","자학 수도사",6,1.8,1.6,{{"Hide",.7,2}}}},
+      {"barbarian","광신의 예언자",7.5,3.8,2.4,{{"Crystal",1,4},{"Claw",1,3}}}},
+    deserter={"탈영 기사단",{{"knight","탈영 기사",5,2.2,1.4,{{"Ore",.8,2}}},{"womansoldier","낙오 정찰병",4.6,1,1.2,{{"Hide",.7,2}}},{"knightchar","종자",4.4,.9,.9,{{"Ore",.5,1}}}},
+      {"knight","탈영 기사단장",7.5,4,1.8,{{"Ore",1,5},{"Crystal",1,2}}}},
+    slaver={"노예상단",{{"adventurer","채찍 감독관",4.8,1.3,1.4,{{"Hide",.7,2}}},{"orc","용병 호위",6.2,2,1.3,{{"Ore",.6,2}}},{"farmer","짐꾼",4.4,.8,.8,{{"Hide",.5,1}}}},
+      {"king","노예상 우두머리",7.5,3.8,1.8,{{"Crystal",1,3},{"Hide",1,4}}}},
+    undead={"무덤 군단",{{"skwarrior","해골 전사",4.8,1.6,1.4,{{"Claw",.6,2}}},{"skrogue","해골 도적",4.6,1,1.5,{{"Fang",.6,1}}},{"skminion","해골 졸개",4.2,.8,1,{{"Ore",.5,1}}}},
+      {"skmage","해골 주술왕",7,4,2,{{"Crystal",1,5},{"Claw",1,3}}}},
+    warlock={"흑마술 결사",{{"skmage","암흑 주술사",4.8,1,1.7,{{"Moonbloom",.6,2}}},{"demon","소환된 하수인",6.5,1.8,1.5,{{"Claw",.6,2}}},{"skrogue","그림자 암살자",4.6,1,1.8,{{"Fang",.6,1}}}},
+      {"mage","결사의 흑마법사",7,4.2,2.2,{{"Crystal",1,6},{"Moonbloom",1,3}}}},
   }
   local byZone={windcliff={"bandit","slaver","deserter"},meadow={"bandit","deserter","cult"},worldtree={"cult","fanatic","bandit"},
     volcano={"fanatic","warlock","deserter"},oasis={"bandit","slaver","cult"},swamp={"cult","warlock","slaver"},
     citadel={"deserter","warlock","fanatic"},highland={"bandit","deserter","slaver"},canyon={"bandit","fanatic","slaver"},
-    chaos={"warlock","fanatic","cult"},wetland={"slaver","bandit","cult"},desert={"bandit","slaver","fanatic"},deadmarsh={"warlock","cult","fanatic"}}
+    chaos={"warlock","fanatic","cult"},wetland={"slaver","bandit","cult"},desert={"bandit","slaver","fanatic"},deadmarsh={"undead","warlock","cult"}}
+  byZone.chaos[#byZone.chaos+1]="undead";byZone.citadel[#byZone.citadel+1]="undead";byZone.volcano[#byZone.volcano+1]="undead";byZone.oasis[#byZone.oasis+1]="undead"
   local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
   local random=Random.new(9137)
   local village=Config.WorldMap.Village
@@ -6478,6 +6537,51 @@ do
     end
   end
   workspace:SetAttribute("FactionCampCount",camps)
+end
+
+-- [신화 괴물] 등록된 CC0 모델을 합쳐 만든 이름 있는 신화 보스. 지역마다 어울리는 괴물이 자리를 잡고 있다.
+do
+  local forms={
+    hydra={name="다두 히드라",model="toad",height=6.5,hp=7,dmg=2.8,compose={
+      {model="snakeangry",height=9,up=.55,fwd=-.1,side=-.3,pitch=-75},{model="snakeangry",height=10,up=.6,fwd=-.2,side=-.1,pitch=-80},
+      {model="snakeangry",height=10,up=.6,fwd=-.2,side=.1,pitch=-80},{model="snakeangry",height=9,up=.55,fwd=-.1,side=.3,pitch=-75},
+      {model="snakeangry",height=8,up=.5,fwd=.1,side=0,pitch=-70}},drops={{"Crystal",1,6},{"Fang",1,4},{"Moonbloom",1,3}}},
+    centaur={name="켄타우로스 궁수",model="horse",height=5.5,hp=4,dmg=2.2,compose={{model="barbarian",height=4.6,up=.3,fwd=-.22}},
+      drops={{"Hide",1,4},{"Crystal",.8,3}}},
+    deathrider={name="죽음의 기사",model="horse",height=5.5,hp=5,dmg=2.6,compose={{model="skwarrior",height=4.8,up=.3,fwd=-.2}},
+      drops={{"Claw",1,4},{"Crystal",1,4}}},
+    arachne={name="거미 여왕 아라크네",model="spider",height=5,hp=6,dmg=2.5,compose={{model="witch",height=5.4,up=.35,fwd=-.18}},
+      drops={{"Fang",1,5},{"Crystal",1,5},{"Moonbloom",.8,3}}},
+    echidna={name="뱀 어머니 에키드나",model="snakeangry",height=4,hp=6,dmg=2.5,compose={{model="witch",height=6,up=.7,fwd=-.3}},
+      drops={{"Crystal",1,5},{"Fang",1,4}}},
+    cerberus={name="지옥견 케르베로스",model="husky",height=5.5,hp=6.5,dmg=2.7,compose={
+      {model="husky",height=5,up=.45,fwd=-.18,side=-.3,yaw=12},{model="husky",height=5,up=.45,fwd=-.18,side=.3,yaw=-12}},
+      drops={{"Claw",1,5},{"Magma",1,3},{"Crystal",1,4}}},
+    medusa={name="석화의 메두사",model="witch",height=6.2,hp=5,dmg=2.6,compose={
+      {model="snakeangry",height=2.6,up=.98,fwd=0,side=-.14,pitch=-60},{model="snakeangry",height=2.8,up=1,fwd=0,side=0,pitch=-80},
+      {model="snakeangry",height=2.6,up=.98,fwd=0,side=.14,pitch=-60}},drops={{"Crystal",1,5},{"Moonbloom",1,4}}},
+    frostgiant={name="서리 거인 왕",model="king",height=19,hp=9,dmg=3.2,compose={},drops={{"Crystal",1,8},{"Ore",1,5},{"Hide",1,5}}},
+  }
+  local placement={hydra={"wetland","swamp","deadmarsh"},centaur={"meadow","highland","canyon","worldtree","windcliff"},
+    deathrider={"deadmarsh","citadel","chaos","volcano"},arachne={"worldtree","swamp","chaos"},echidna={"oasis","desert","canyon"},
+    cerberus={"volcano","chaos","citadel","deadmarsh"},medusa={"oasis","desert","wetland"},frostgiant={"highland","chaos"}}
+  local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
+  local random=Random.new(9901)
+  local village=Config.WorldMap.Village
+  local count=0
+  for key,zones in pairs(placement) do
+    local form=forms[key]
+    for _,zoneId in ipairs(zones) do
+      local x,z=Config.WorldMap.RandomPoint(zoneId,random,140)
+      if x and not (x>village.X0-200 and x<village.X1+200 and z>village.Z0-200 and z<village.Z1+200) then
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=form.model,name="신화 · "..form.name,tier=math.min(10,tiers[zoneId]+1),
+          height=form.height,hp=form.hp,dmg=form.dmg,alpha=true,bonusBoss=true,zoneTag=zoneId,named=true,
+          compose=#form.compose>0 and form.compose or nil,drops=form.drops,position=Vector3.new(x,3,z)})
+        count+=1
+      end
+    end
+  end
+  workspace:SetAttribute("MythicBossCount",count)
 end
 
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
