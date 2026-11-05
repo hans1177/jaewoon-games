@@ -155,10 +155,11 @@ local meadowPalette={
   grass=Color3.fromRGB(108,120,91),leafyGrass=Color3.fromRGB(83,107,79),
   ground=Color3.fromRGB(119,100,83),rock=Color3.fromRGB(104,106,100),
   bark=Color3.fromRGB(84,72,60),leaves=Color3.fromRGB(75,100,76),
-  wolf=Color3.fromRGB(144,136,121),boar=Color3.fromRGB(126,101,83),
-  deer=Color3.fromRGB(157,125,102),rabbit=Color3.fromRGB(181,176,157),
-  bee=Color3.fromRGB(217,177,106),bat=Color3.fromRGB(125,129,138),
-  golem=Color3.fromRGB(129,138,126),
+  -- [몹 고유색] 전부 회색·흰색으로 보이던 단색을 종별 자연색으로 바꾼다.
+  wolf=Color3.fromRGB(92,74,60),boar=Color3.fromRGB(122,82,58),
+  deer=Color3.fromRGB(178,116,68),rabbit=Color3.fromRGB(214,196,160),
+  bee=Color3.fromRGB(236,184,58),bat=Color3.fromRGB(96,80,128),
+  golem=Color3.fromRGB(112,138,104),
   ghost=Color3.fromRGB(131,210,226),bandit=Color3.fromRGB(111,76,67),
 }
 local meadowTerrain = workspace.Terrain
@@ -478,26 +479,35 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
               if appearance then appearance:Destroy() end
               if surface.TextureID~="" then surface.TextureID="" end
               surface.MaterialVariant=""
-              local piece=surface.Name:lower()
-              if piece:find("hoof",1,true) or piece:find("eye_black",1,true)
-                or piece:find("eye black",1,true) then
-                surface.Color=Color3.fromRGB(57,46,39)
-              elseif piece:find("eye_white",1,true) or piece:find("eye white",1,true) then
-                surface.Color=Color3.fromRGB(231,222,204)
-              elseif piece:find("antler",1,true) or piece:find("horn",1,true) then
-                surface.Color=Color3.fromRGB(169,143,104)
-              elseif piece:find("light",1,true) or piece:find("belly",1,true)
-                or piece:find("chest",1,true) then
-                surface.Color=Color3.fromRGB(201,173,135)
-              elseif piece:find("dark",1,true) then
-                surface.Color=Color3.fromRGB(112,69,45)
-              else
-                surface.Color=animalTint
+              -- [사슴 부위별 색] 원본 7조각의 크기 순서로 몸통(적갈색)·배/가슴(연한 크림)·진한 갈색,
+              -- 작은 조각은 뿔(황갈색)·발굽/눈(짙은 갈색·검정)으로 나눈다.
+              local ranks=clone:GetAttribute("DeerPartRanks")
+              if not ranks then
+                local list={}
+                for _,part in ipairs(clone:GetDescendants()) do
+                  if part:IsA("MeshPart") then
+                    table.insert(list,{part=part,volume=part.Size.X*part.Size.Y*part.Size.Z+part.Size.Magnitude*.01})
+                  end
+                end
+                table.sort(list,function(a,b) return a.volume>b.volume end)
+                local order={}
+                for index,row in ipairs(list) do order[row.part.Name]=index end
+                clone:SetAttribute("DeerPartRanks",true)
+                clone:SetAttribute("DeerRankJson",game:GetService("HttpService"):JSONEncode(order))
+                ranks=true
               end
+              local order=game:GetService("HttpService"):JSONDecode(clone:GetAttribute("DeerRankJson") or "{}")
+              local rank=order[surface.Name] or 1
+              surface.Color=rank==1 and Color3.fromRGB(178,116,68)
+                or rank==2 and Color3.fromRGB(228,192,142)
+                or rank==3 and Color3.fromRGB(124,78,48)
+                or rank==4 and Color3.fromRGB(198,166,118)
+                or rank==5 and Color3.fromRGB(52,42,36)
+                or Color3.fromRGB(24,20,20)
               surface.Material=Enum.Material.SmoothPlastic
             else
               surface.Color=animalTint
-              surface.Material=Enum.Material.Plastic
+              surface.Material=Enum.Material.SmoothPlastic
             end
           end
           surface.Reflectance=0
@@ -3239,7 +3249,7 @@ local function spawnEnemy(site, siteIndex)
   -- 기존 Pebble/바둑판 원본 몸통 텍스처를 제거하되, 원본 메시·뼈·사지·물리 및 종별 색상은 보존.
   -- 원본 템플릿은 수정하지 않고 스폰 복제본만 바꾼다. 새 장식 파츠를 만들지 않는다.
   -- 별도 미세 돌기 PBR 노멀맵은 Roblox에 업로드·권한 확인된 승인 자산이 있어야 실제 적용 가능.
-  local bodyTint=isBoss and meadowPalette.golem or isAlpha and Color3.fromRGB(78,87,94)
+  local bodyTint=isBoss and meadowPalette.golem or isAlpha and Color3.fromRGB(54,60,74)
     or meadowPalette[partId] or meadowPalette.wolf
   for _,surface in ipairs(model:GetDescendants()) do
     if surface:IsA("MeshPart") and not site.model then
@@ -3262,8 +3272,15 @@ local function spawnEnemy(site, siteIndex)
         if appearance then appearance:Destroy() end
         if surface.TextureID~="" then surface.TextureID="" end
         surface.MaterialVariant=""
-        surface.Material=Enum.Material.Plastic
-        surface.Color=surface.Color:Lerp(bodyTint,.78)
+        -- [재질] 털 달린 몹은 Fabric(보풀 질감), 골렘은 Slate(거친 돌), 벌은 매끈한 광택으로 표현한다.
+        local furry=partId=="wolf" or partId=="bat" or partId=="boar" or partId=="rabbit"
+        surface.Material=furry and Enum.Material.SmoothPlastic
+          or (isBoss or partId=="golem") and Enum.Material.Slate
+          or partId=="bee" and Enum.Material.SmoothPlastic
+          or Enum.Material.Plastic
+        -- 단지 지역 단계가 높을수록 털이 어두워지게 한다(같은 늑대라도 단계별로 구분).
+        local shade=1-math.clamp((site.tier or 1)-1,0,3)*.06
+        surface.Color=Color3.new(bodyTint.R*shade,bodyTint.G*shade,bodyTint.B*shade)
       end
       if partId=="ghost" then
         -- 등록된 원본 해골 메시를 반투명 원혼으로 연출한다. 별도 형상은 만들지 않는다.
@@ -3889,7 +3906,8 @@ local function updateEnemyAI(dt,now)
           local offset=Vector3.new(desired.X-root.Position.X,0,desired.Z-root.Position.Z)
           if offset.Magnitude>1 and offset.Magnitude<closest then
             closest=offset.Magnitude
-            escape=offset.Unit*math.min(9,(14-closest)*.85)
+            local deerFlee=animal.model:GetAttribute("MeadowWildlife")=="deer"
+            escape=offset.Unit*math.min(deerFlee and 18 or 9,(14-closest)*(deerFlee and 1.7 or .85))
           end
         end
       end
@@ -3921,6 +3939,10 @@ local function updateEnemyAI(dt,now)
         animal.nextGroundSample=now+.5
       end
       desired+=Vector3.new(0,animal.groundDelta or 0,0)
+      -- [사슴 도약] 도망칠 땐 갤럽에 맞춰 위로 뛰어오르며 달린다(표시용 이동, 판정 없음).
+      if animalMode=="RUN" then
+        desired+=Vector3.new(0,math.abs(math.sin(now*7.5))*1.1,0)
+      end
       local previous=animal.position or animal.origin
       local movement=Vector3.new(desired.X-previous.X,0,desired.Z-previous.Z)
       if movement.Magnitude>.025 then animal.visualFacing=movement.Unit end

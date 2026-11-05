@@ -9163,6 +9163,30 @@ local function bindOriginalMob(model)
     end
    end
   end
+  -- [관절 축 보정] FBX/GLB 뼈마다 로컬 X축 방향이 달라서(늑대 뒷다리는 몸 앞뒤 방향) 같은 각도를 넣으면
+  -- 다리가 좌우로 휘둘린다. 모든 포즈는 '몸 기준(오른쪽=X, 위=Y, 뒤=Z)'으로 만들고
+  -- 각 뼈의 처음 방향으로 바꿔서 넣는다. 4족(늑대·사슴)만 적용한다.
+  local axisFix=nil
+  if (species=="wolf" or species=="deer") and available.FLHip and available.FRHip
+    and available.BLHip and available.BRHip
+    and joints.FLHip:IsA("Bone") and joints.FRHip:IsA("Bone")
+    and joints.BLHip:IsA("Bone") and joints.BRHip:IsA("Bone") then
+    local front=(joints.FLHip.WorldPosition+joints.FRHip.WorldPosition)*.5
+    local back=(joints.BLHip.WorldPosition+joints.BRHip.WorldPosition)*.5
+    local forward=Vector3.new(front.X-back.X,0,front.Z-back.Z)
+    if forward.Magnitude>.05 then
+      forward=forward.Unit
+      local upAxis=Vector3.yAxis
+      local canon=CFrame.fromMatrix(Vector3.zero,forward:Cross(upAxis),upAxis,-forward)
+      axisFix={}
+      for name,joint in pairs(joints) do
+        if joint:IsA("Bone") then
+          local rest=(joint.WorldCFrame*joint.Transform:Inverse()).Rotation
+          axisFix[name]={pre=rest:Inverse()*canon,post=canon:Inverse()*rest}
+        end
+      end
+    end
+  end
   local count=0
   for _ in pairs(joints) do count+=1 end
   local bodyPlan=(species=="bee" or species=="bat") and "FLYER" or
@@ -9237,7 +9261,7 @@ local function bindOriginalMob(model)
   local controller=actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{
     followAnimator=true,response=26,
   }) or nil
-  local row={controller=controller,nativeTracks=nativeTracks,available=available,plan=bodyPlan,
+  local row={controller=controller,nativeTracks=nativeTracks,available=available,plan=bodyPlan,axisFix=axisFix,
     species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock(),
     lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0,renderAccumulator=0,
     lastHeading=model:GetPivot().LookVector,turnLean=0,
@@ -9399,7 +9423,8 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         or math.clamp((os.clock()-row.motionStartedAt)/duration,0,1)
       if footTravel and mode~="IDLE" then
         -- 걷기/달리기 모두 실제 전진 거리당 한 걸음: 앞뒤 대각 발의 접지와 일치.
-        local stride=mode=="RUN" and 5.5 or 3.9
+        local stride=mode=="RUN" and (row.species=="deer" and 4.2 or 5.5)
+          or (row.species=="deer" and 2.7 or 3.9)
         phase=(row.travel%stride)/stride
       end
       if not repeating and serverAge then phase=math.clamp(serverAge/duration,0,1) end
@@ -9565,8 +9590,11 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             local running=mode=="RUN"
             local wolf=row.species=="wolf"
             local heavy=row.species=="boar"
-            local pace=math.clamp(row.groundSpeed/(running and 7 or 3),.35,1)
-            local amplitude=(running and (wolf and .61 or .52) or heavy and .30 or .36)*pace
+            local deer=row.species=="deer"
+            -- 사슴은 느리게 걸어도 다리가 보이도록 최소 보폭을 키우고, 달릴 땐 크게 뛴다.
+            local pace=math.clamp(row.groundSpeed/(running and 7 or 3),deer and .7 or .35,1)
+            local amplitude=(running and (wolf and .61 or deer and .95 or .52)
+              or deer and .62 or heavy and .30 or .36)*pace
             local stance=running and (wolf and .34 or .43) or heavy and .67 or .61
             local cycle=phase*math.pi*2
             for _,foot in ipairs(quadrupedFootPhases) do
@@ -9724,7 +9752,17 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         for joint,pose in pairs(row.poses) do
           row.renderedPoses[joint]=pose
         end
-        row.controller.Step(row.poses,poseDt)
+        local fixes=row.axisFix
+        if fixes then
+          local converted={}
+          for joint,pose in pairs(row.poses) do
+            local fix=fixes[joint]
+            converted[joint]=(fix and typeof(pose)=="CFrame") and (fix.pre*pose.Rotation*fix.post) or pose
+          end
+          row.controller.Step(converted,poseDt)
+        else
+          row.controller.Step(row.poses,poseDt)
+        end
       end
     end
   end
