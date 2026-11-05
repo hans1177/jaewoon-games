@@ -162020,11 +162020,136 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_8cff1862e97c08215baab529",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11965",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "e5981843f3ca9e70c031ef878862e7142e0ff141",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11965,
+        "baseBranch": "main",
+        "headBranch": "art-flashback",
+        "baseSha": "e5981843f3ca9e70c031ef878862e7142e0ff141",
+        "headSha": "1b581c1b675cc066e4966f3a34bbfde1ce4d6f7a",
+        "mergeCommitSha": "2677ac4d96c14ba48f2bd36d5795518022a61951",
+        "mergedAt": "2026-11-05T12:28:37Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8fb350b883e6bcb3d711bdffdbfc40f7de2a93a722fa1fcee5e9585367500677",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "art-flashback",
+        "candidateSha": "1b581c1b675cc066e4966f3a34bbfde1ce4d6f7a"
+      },
+      "changeStats": {
+        "changedFileCount": 12,
+        "codingRelevantFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/fantasy-survival/opening-art/dl01_hand.jpg",
+          "roblox-games/fantasy-survival/opening-art/dl02_command.jpg",
+          "roblox-games/fantasy-survival/opening-art/dl03_legion.jpg",
+          "roblox-games/fantasy-survival/opening-art/fb01_training.jpg",
+          "roblox-games/fantasy-survival/opening-art/fb02_handshake.jpg",
+          "roblox-games/fantasy-survival/opening-art/fb03_night_toast.jpg",
+          "roblox-games/fantasy-survival/opening-art/fb04_flag_march.jpg",
+          "roblox-games/fantasy-survival/opening-art/fb05_alex_sewing.jpg",
+          "roblox-games/fantasy-survival/opening-art/fb06_campfire_meal.jpg",
+          "roblox-games/fantasy-survival/opening-art/fb07_bread.jpg",
+          "roblox-games/fantasy-survival/opening-art/fb08_stairs_sunset.jpg",
+          "roblox-games/fantasy-survival/opening-art/fb09_mage_sewing.jpg"
+        ],
+        "codingRelevantFiles": [],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11965",
+        "merge-commit:2677ac4d96c14ba48f2bd36d5795518022a61951",
+        "base-main:e5981843f3ca9e70c031ef878862e7142e0ff141"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1292
+    "total": 1293
   }
 }
