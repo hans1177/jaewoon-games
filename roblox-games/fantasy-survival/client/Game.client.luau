@@ -207,7 +207,7 @@ local meadowArt={skillSheet="rbxassetid://129030506278489",gearSheet="rbxassetid
   rarityName={Common="일반",Uncommon="고급",Rare="희귀",Epic="영웅",Legendary="전설"},
   skillCell={["skill-meadow-heavy"]=0,["skill-meadow-sweep"]=1,["skill-meadow-bolt"]=2,["skill-meadow-guard"]=3,["skill-meadow-parry"]=4,
     ["skill-meadow-dodge-left"]=5,["skill-meadow-dodge-right"]=6,["skill-meadow-sprint"]=7,["skill-meadow-heal"]=8,["skill-meadow-focus"]=9,
-    ["skill-meadow-emote"]=10,["skill-meadow-oath"]=15,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
+    ["skill-meadow-emote"]=10,["skill-meadow-oath"]=15,["skill-meadow-ultimate"]=15,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
     Martial=15,Signs=16,Defense=17,Agility=18},
   slotEmpty={Weapon=36,Chest=37,Hands=38,Legs=39,Feet=40,Accessory=41}}
 -- [90노드 아이콘] 기존 정식 스킬 아이콘 시트를 재사용한다.
@@ -2107,6 +2107,16 @@ energyLabel.BackgroundTransparency=1;energyLabel.Text="스테미너 100 / 100"
 energyLabel.TextColor3=Color3.fromRGB(248,253,255)
 energyLabel.TextSize=12;energyLabel.Font=Enum.Font.GothamBold
 energyLabel.ZIndex=11;energyLabel.Parent=meadowEnergy
+-- [아드레날린 바] 궁극기 게이지. 서버 MeadowAdrenaline 값을 표시만 한다.
+meadowArt.adrBar=Instance.new("Frame")
+meadowArt.adrBar.Name="MeadowAdrenaline";meadowArt.adrBar.BackgroundColor3=Color3.fromRGB(30,22,16)
+meadowArt.adrBar.BorderSizePixel=0;meadowArt.adrBar.ZIndex=9;meadowArt.adrBar.Parent=meadowVitalsGui
+Instance.new("UICorner",meadowArt.adrBar).CornerRadius=UDim.new(1,0)
+meadowArt.adrFill=Instance.new("Frame")
+meadowArt.adrFill.Name="AdrenalineFill";meadowArt.adrFill.Size=UDim2.fromScale(0,1)
+meadowArt.adrFill.BackgroundColor3=Color3.fromRGB(224,128,52);meadowArt.adrFill.BorderSizePixel=0
+meadowArt.adrFill.ZIndex=10;meadowArt.adrFill.Parent=meadowArt.adrBar
+Instance.new("UICorner",meadowArt.adrFill).CornerRadius=UDim.new(1,0)
 -- [상단 EXP] 기존 전투 숙련도 50단위 진행 상태를 표현만 하며 신규 저장값은 만들지 않는다.
 local meadowExperience=Instance.new("Frame")
 meadowExperience.Name="MeadowExperience"
@@ -2176,6 +2186,14 @@ local function layoutMeadowEnergy()
   meadowEnergy.AnchorPoint=Vector2.new(0,0)
   meadowEnergy.Size=UDim2.fromOffset(width,11)
   meadowEnergy.Position=UDim2.fromOffset(x,top+30)
+  if meadowArt.adrBar then
+    meadowArt.adrBar.Size=UDim2.fromOffset(width,6)
+    meadowArt.adrBar.Position=UDim2.fromOffset(x,top+54)
+    local adr=math.clamp(tonumber(player:GetAttribute("MeadowAdrenaline")) or 0,0,100)
+    meadowArt.adrFill.Size=UDim2.fromScale(adr/100,1)
+    meadowArt.adrFill.BackgroundColor3=adr>=100 and Color3.fromRGB(255,214,92) or Color3.fromRGB(224,128,52)
+    meadowArt.adrBar.Visible=gui:GetAttribute("GameMenuOpen")~=true
+  end
   local stamina=math.clamp(tonumber(player:GetAttribute("MeadowStamina")) or 0,0,100)
   energyFill.Size=UDim2.fromScale(stamina/100,1)
   energyLabel.Text=string.format("%d / 100",stamina)
@@ -2195,7 +2213,7 @@ local function layoutMeadowEnergy()
   meadowExperience.Visible=visible
 end
 meadowVitalsGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowEnergy)
-for _,attribute in ipairs({"Level","MeadowStamina","CombatProficiency"}) do
+for _,attribute in ipairs({"Level","MeadowStamina","CombatProficiency","MeadowAdrenaline"}) do
   player:GetAttributeChangedSignal(attribute):Connect(layoutMeadowEnergy)
 end
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(layoutMeadowEnergy)
@@ -2773,6 +2791,7 @@ local skillInfo={
   ["skill-meadow-heal"]={"마력","체력을 회복해. 위험할 때 써.",7},
   ["skill-meadow-focus"]={"마력","잠깐 마력을 모아 강해져.",7},
   ["skill-meadow-oath"]={"수호","각성기. 체력 회복 + 주변 적 전체에 3배 피해. 재사용 90초.",2},
+  ["skill-meadow-ultimate"]={"전사","궁극기. 아드레날린 100%일 때 발동. 무기마다 효과가 달라(대검 기절 강타, 도끼 이중 회전, 단검 연속 암습, 활 폭우, 지팡이 폭발, 검·방패 연속 베기·철벽). 때리거나 맞으면 차.",15},
   ["skill-meadow-emote"]={"기타","인사 동작. 전투 효과 없음.",5},
   ["meadow-unarmed-rush"]={"전사","맨손 잽·훅 연타.",2},
   ["meadow-unarmed-uppercut"]={"전사","크게 올려치는 승룡 어퍼컷.",2},
