@@ -1394,7 +1394,7 @@ if witcherTabs then
     if button:IsA("TextButton") then
       button.TextColor3=meadowParchment
       button.Font=Enum.Font.GothamBold
-      button.TextSize=11;button.TextWrapped=false;button.TextTruncate=Enum.TextTruncate.AtEnd
+      button.TextSize=13;button.TextWrapped=false;button.TextTruncate=Enum.TextTruncate.AtEnd
       button.TextYAlignment=Enum.TextYAlignment.Bottom
       local index=button:GetAttribute("FilterIndex")
       if typeof(index)=="number" and index>1 then
@@ -1405,7 +1405,7 @@ if witcherTabs then
           icon.Image=meadowIconAtlas;icon.ImageRectOffset=Vector2.new(atlasCell*64,0)
           icon.ImageRectSize=Vector2.new(64,64)
           -- [세로 탭] 큰 아이콘을 위에, 짧은 이름을 아래에 둔다.
-          icon.Size=UDim2.fromOffset(28,28);icon.Position=UDim2.new(.5,-14,0,5)
+          icon.Size=UDim2.fromOffset(38,38);icon.Position=UDim2.new(.5,-19,0,4)
           icon.ImageColor3=Color3.fromRGB(224,238,209)
           icon.ZIndex=46;icon.Parent=button
         end

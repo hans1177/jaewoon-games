@@ -4889,6 +4889,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  local tabs=nil
  local selectedPage=0
  local tabButtons={}
+ local tabDragMoved=false -- [세로 탭 스와이프] 끌어서 스크롤한 직후의 탭 선택 방지
  -- [마력숲] 기존 페이지 인덱스는 보존하고 화면 탭만 재배열한다.
  local tabOrder=primary and primary.tabOrder
  local function tabPage(tabIndex)
@@ -4957,7 +4958,56 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
     tabLayout.HorizontalAlignment=Enum.HorizontalAlignment.Center
     tabLayout.Padding=UDim.new(0,6)
    end
-   for _,tabButton in ipairs(tabButtons)do tabButton.Size=UDim2.fromOffset(68,58) end
+   for _,tabButton in ipairs(tabButtons)do tabButton.Size=UDim2.fromOffset(80,68) end
+   -- [직접 스와이프] 기본 스크롤이 버튼 위 드래그에서 안 먹는 문제를 피하려고 입력을 직접 처리한다.
+   tabs.ScrollingEnabled=false
+   local inputService=game:GetService("UserInputService")
+   local playerGui=game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+   local dragInput,dragStartY,dragStartCanvas=nil,0,0
+   local function overTabs(position)
+    for _,object in ipairs(playerGui:GetGuiObjectsAtPosition(position.X,position.Y))do
+     if object==tabs or object:IsDescendantOf(tabs) then return true end
+    end
+    return false
+   end
+   local function scrollTabs(canvasY)
+    local maxScroll=math.max(0,tabs.AbsoluteCanvasSize.Y-tabs.AbsoluteSize.Y)
+    tabs.CanvasPosition=Vector2.new(0,math.clamp(canvasY,0,maxScroll))
+   end
+   inputService.InputBegan:Connect(function(input)
+    if not opened then return end
+    local kind=input.UserInputType
+    if kind~=Enum.UserInputType.Touch and kind~=Enum.UserInputType.MouseButton1 then return end
+    if overTabs(input.Position) then
+     dragInput=input;dragStartY=kind==Enum.UserInputType.Touch and input.Position.Y or inputService:GetMouseLocation().Y
+     dragStartCanvas=tabs.CanvasPosition.Y;tabDragMoved=false
+    end
+   end)
+   inputService.InputChanged:Connect(function(input)
+    if not opened then return end
+    if input.UserInputType==Enum.UserInputType.MouseWheel then
+     if overTabs(inputService:GetMouseLocation()) then scrollTabs(tabs.CanvasPosition.Y-input.Position.Z*60) end
+     return
+    end
+    if not dragInput then return end
+    local y=nil
+    if dragInput.UserInputType==Enum.UserInputType.Touch then
+     if input==dragInput then y=input.Position.Y end
+    elseif input.UserInputType==Enum.UserInputType.MouseMovement then
+     y=inputService:GetMouseLocation().Y
+    end
+    if y then
+     local delta=y-dragStartY
+     if math.abs(delta)>8 then tabDragMoved=true end
+     scrollTabs(dragStartCanvas-delta)
+    end
+   end)
+   inputService.InputEnded:Connect(function(input)
+    if dragInput and (input==dragInput or input.UserInputType==Enum.UserInputType.MouseButton1) then
+     dragInput=nil
+     task.delay(.08,function() tabDragMoved=false end)
+    end
+   end)
   end
   local heading=Instance.new("TextLabel");heading.Name="MeadowMenuHeading"
   heading.Position=UDim2.fromOffset(20,10);heading.Size=UDim2.new(1,-116,0,32)
@@ -4985,7 +5035,10 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
     icon.Position=UDim2.fromOffset(7,11);icon.ZIndex=46;icon.Parent=button
     button.Text="     "..button.Text
    end
-   button.Activated:Connect(function()selectPage(tabPage(i-1))end)
+   button.Activated:Connect(function()
+    if tabDragMoved then return end
+    selectPage(tabPage(i-1))
+   end)
   end
   selectPage(0)
  end
@@ -5097,8 +5150,8 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   close.Position=UDim2.new(1,-10,0,9);close.Size=UDim2.fromOffset(76,48)
   if primary and primary.sideTabs then
    -- [빨간 X 닫기] 유명 로블록스 게임처럼 오른쪽 위 모서리에 걸친 큰 둥근 닫기 버튼.
-   close.Position=UDim2.new(1,-6,0,6);close.Size=UDim2.fromOffset(46,46)
-   close.Text="✕";close.TextSize=22;close.Font=Enum.Font.GothamBlack
+   close.Position=UDim2.new(1,-6,0,6);close.Size=UDim2.fromOffset(54,54)
+   close.Text="X";close.TextSize=28;close.Font=Enum.Font.GothamBlack
    close.BackgroundColor3=Color3.fromRGB(226,62,66);close.TextColor3=Color3.fromRGB(255,255,255)
    local closeCorner=close:FindFirstChildOfClass("UICorner")
    if closeCorner then closeCorner.CornerRadius=UDim.new(0,12) end
@@ -5113,10 +5166,10 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   local bodyTop=tabs and (primary and primary.witcherStyle and (shortMenu and 109 or 132) or 122) or 68
   local sideTabs=tabs and primary and primary.sideTabs==true
   local bodyLeft=14
-  if sideTabs then bodyTop=64;bodyLeft=92 end
+  if sideTabs then bodyTop=64;bodyLeft=106 end
   list.Position=UDim2.fromOffset(bodyLeft,bodyTop);list.Size=UDim2.new(1,-bodyLeft-14,1,-bodyTop-12)
   if sideTabs then
-   tabs.Position=UDim2.fromOffset(10,bodyTop);tabs.Size=UDim2.new(0,74,1,-bodyTop-12)
+   tabs.Position=UDim2.fromOffset(10,bodyTop);tabs.Size=UDim2.new(0,86,1,-bodyTop-12)
    local subtitle=root:FindFirstChild("MeadowMenuSubtitle")
    if subtitle then subtitle.Visible=true;subtitle.Position=UDim2.fromOffset(22,38);subtitle.Size=UDim2.new(1,-90,0,18) end
    local heading=root:FindFirstChild("MeadowMenuHeading")
