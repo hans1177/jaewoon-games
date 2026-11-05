@@ -136,6 +136,51 @@ if(process.argv.includes('--world-map-only')){
 
 // [마력숲 몬스터] Quaternius Ultimate Monsters(CC0)에서 어둡고 위협적인 13종을 Roblox Model로 등록한다.
 // 원본 팩의 GLB를 CC0로 표기해 재배포한 공개 저장소(LICENSE.txt에 팩·파일 대응 명시)에서 내려받고 해시를 기록한다.
+// [마력숲 3D 아이템] Quaternius Ultimate RPG Pack(CC0) 개별 GLB를 Roblox Model로 올린다. 퀵슬롯·가방에서 회전 3D로 보여 준다.
+if(process.argv.includes('--item-assets-only')){
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ const targetUniverse='10773436325';
+ const names=['Sword','Sword_Golden','Sword_big','Dagger','Axe_small','Bow_Wooden','Hammer_Double','Potion1_Filled','Potion2_Filled','Potion3_Filled','Potion4_Filled','Potion5_Filled','Pouch','Backpack','Chalice','Book1_Closed','Crystal1','Key1','Ring1','Coin'];
+ const {execFileSync}=await import('node:child_process');
+ fs.rmSync('/tmp/qsi',{recursive:true,force:true});
+ execFileSync('git',['clone','--depth','1','--filter=blob:none','--sparse','-q','https://github.com/trebeljahr/quaternius-showcase.git','/tmp/qsi']);
+ execFileSync('git',['-C','/tmp/qsi','sparse-checkout','set','public/glb/rpg_items_pack']);
+ if(!/`rpg_items_pack`[^\n]*CC0-1\.0/.test(fs.readFileSync('/tmp/qsi/LICENSES.md','utf8')))throw Error('RPG_ITEMS_LICENSE_EVIDENCE_MISSING');
+ registry.itemPackV1=registry.itemPackV1||{license:'CC0-1.0',author:'Quaternius',licenseEvidence:'https://quaternius.com/packs/ultimaterpg.html',assetIds:{},sources:{}};
+ const pack=registry.itemPackV1;
+ for(const name of names){
+  const key='item_'+name.toLowerCase();
+  let assetId=String(pack.assetIds[key]||'');
+  if(!/^[1-9]\d*$/.test(assetId)){
+   const bytes=fs.readFileSync('/tmp/qsi/public/glb/rpg_items_pack/'+name+'.glb');
+   if(bytes.toString('utf8',0,4)!=='glTF')throw Error('ITEM_GLB_INVALID:'+name);
+   const sha=crypto.createHash('sha256').update(bytes).digest('hex');
+   const form=new FormData();
+   form.append('request',JSON.stringify({assetType:'Model',displayName:'Mana Forest Item '+name,
+    description:'Quaternius CC0 Ultimate RPG Pack '+name+' sha256 '+sha,creationContext:{creator}}));
+   form.append('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),key+'.glb');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key0},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('ITEM_OPERATION_INVALID:'+name);
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+    await new Promise(resolve=>setTimeout(resolve,4000));
+    op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key0}});
+   }
+   assetId=String(op.response?.assetId||'');
+   if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))throw Error('ITEM_UPLOAD_FAILED:'+name+':'+JSON.stringify(op.error||{}).slice(0,300));
+   pack.assetIds[key]=assetId;pack.sources[key]={file:name+'.glb',origin:'Quaternius Ultimate RPG Pack/'+name,sha256:sha};
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+  }
+  const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+   method:'PATCH',headers:{'x-api-key':key0,'content-type':'application/json'},
+   body:JSON.stringify({subjectType:'Universe',subjectId:targetUniverse,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})});
+  if(grant.errors?.length)throw Error('ITEM_PERMISSION_REJECTED:'+name);
+  console.log('ITEM_ASSET='+key+':'+assetId);
+ }
+ process.exit(0);
+}
+
 if(process.argv.includes('--monster-assets-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
