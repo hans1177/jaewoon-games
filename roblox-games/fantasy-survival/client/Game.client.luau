@@ -3646,15 +3646,16 @@ do
     tutorialMessage.Size=UDim2.new(1,-28,0,portrait and 65 or 55)
   end
   local function refreshTutorial()
+    if not tutorialForced and (player:GetAttribute("TutorialStep") or 0)>=99 then tutorialDone=true end
     local active=player:GetAttribute("ProfileReady")==true
-      and (tutorialForced or player:GetAttribute("MeadowProfileHadSave")~=true)
+      and gui:GetAttribute("TutorialOverviewDone")==true
       and not tutorialDone and gui.Enabled==true and gui:GetAttribute("GameMenuOpen")~=true
     tutorialCard.Visible=active
     meadowTutorialStep=active and tutorialStep or 0
     local current=steps[tutorialStep]
     tutorialTitle.Text="초보 모험 안내  "..math.min(tutorialStep,5).."/5 · "..current[1]
     tutorialMessage.Text=current[2]
-    tutorialSkip.Visible=tutorialStep<=5
+    tutorialSkip.Visible=false -- 튜토리얼은 반드시 끝까지 진행한다.
     local questStroke=meadowQuestGuideButton and meadowQuestGuideButton:FindFirstChildOfClass("UIStroke")
     if questStroke then
       questStroke.Thickness=active and tutorialStep==2 and 3 or 1.2
@@ -3681,6 +3682,7 @@ do
       task.delay(3,function()
         if tutorialToken~=completedToken then return end
         tutorialDone=true
+        pcall(function() remote:FireServer("ui:pref:tut:99") end)
         refreshTutorial()
       end)
     end
@@ -3735,6 +3737,8 @@ do
   gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutTutorial)
   gui:GetPropertyChangedSignal("Enabled"):Connect(refreshTutorial)
   gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(refreshTutorial)
+  gui:GetAttributeChangedSignal("TutorialOverviewDone"):Connect(refreshTutorial)
+  player:GetAttributeChangedSignal("TutorialStep"):Connect(refreshTutorial)
   player:GetAttributeChangedSignal("ProfileReady"):Connect(refreshTutorial)
   player:GetAttributeChangedSignal("MeadowProfileHadSave"):Connect(refreshTutorial)
   game:GetService("RunService").Heartbeat:Connect(function(dt)
@@ -10941,9 +10945,13 @@ end)()
   pointer.TextColor3=Color3.fromRGB(255,214,70);pointer.TextStrokeTransparency=0;pointer.Visible=false;pointer.ZIndex=85;pointer.Parent=guiRoot
   local current=0
   local moveStart=nil
+  local replay=false
   local function finish()
     current=0;card.Visible=false;pointer.Visible=false
-    tutorialStep=99;pref("tut",99)
+    if tutorialStep<50 then tutorialStep=50;pref("tut",50) end
+    gui:SetAttribute("TutorialOverviewDone",true)
+    -- 화면 안내가 끝나면 실제 조작 연습(이동·공격·회피·상호작용)이 이어진다.
+    if replay and meadowTutorialRestart then replay=false;meadowTutorialRestart() end
   end
   local function show(i)
     if i>#steps then finish() return end
@@ -10963,7 +10971,7 @@ end)()
   end
   nextBtn.Activated:Connect(function() if current==1 then return end meadowArt.sfx("click",.4,1);show(current+1) end)
   skipBtn.Visible=false -- 튜토리얼은 반드시 끝까지 본다(건너뛰기 없음). 다시 보기는 도움말 버튼.
-  helpChip.Activated:Connect(function() meadowArt.sfx("click",.4,1);show(1) end)
+  helpChip.Activated:Connect(function() meadowArt.sfx("click",.4,1);replay=true;show(1) end)
   RunService.Heartbeat:Connect(function()
     if not card.Visible then return end
     pointer.Position=UDim2.new(pointer.Position.X.Scale,0,pointer.Position.Y.Scale,math.sin(os.clock()*5)*5)
@@ -10979,10 +10987,13 @@ end)()
     guideOff=(player:GetAttribute("GuideOff") or 0)==1
     tutorialStep=player:GetAttribute("TutorialStep") or 0
     paintGuide()
-    if tutorialStep<99 and not started then
+    while gui.Enabled~=true do task.wait(.5) end -- 오프닝 영상이 끝난 뒤에 시작한다.
+    if tutorialStep<50 and not started then
       started=true
       task.wait(2.5)
       show(math.clamp(tutorialStep>=1 and tutorialStep or 1,1,#steps))
+    else
+      gui:SetAttribute("TutorialOverviewDone",true)
     end
   end)
 end)()

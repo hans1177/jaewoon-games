@@ -9,7 +9,7 @@
  },
  {
   "type": "wait",
-  "ms": 14000
+  "ms": 5000
  },
  {
   "type": "click_text",
@@ -20,23 +20,71 @@
   "ms": 5000
  },
  {
+  "type": "click_text",
+  "text": "건너뛰기"
+ },
+ {
+  "type": "wait",
+  "ms": 5000
+ },
+ {
+  "type": "click_text",
+  "text": "건너뛰기"
+ },
+ {
+  "type": "wait",
+  "ms": 5000
+ },
+ {
+  "type": "click_text",
+  "text": "건너뛰기"
+ },
+ {
+  "type": "wait",
+  "ms": 5000
+ },
+ {
+  "type": "click_text",
+  "text": "건너뛰기"
+ },
+ {
+  "type": "wait",
+  "ms": 5000
+ },
+ {
+  "type": "click_text",
+  "text": "건너뛰기"
+ },
+ {
+  "type": "wait",
+  "ms": 5000
+ },
+ {
+  "type": "click_text",
+  "text": "건너뛰기"
+ },
+ {
+  "type": "wait",
+  "ms": 7000
+ },
+ {
   "type": "luau",
   "ctx": "Client",
-  "code": "local p=game.Players.LocalPlayer local o={} for _,k in ipairs({\"TutorialStep\",\"GuideOff\",\"ProfileReady\",\"QuickInit\"}) do table.insert(o,k..\"=\"..tostring(p:GetAttribute(k))) end local c=p.Character table.insert(o,\"cape=\"..tostring(c and c:GetAttribute(\"OpeningCapeState\"))..\" reason=\"..tostring(c and c:GetAttribute(\"OpeningCapeReason\"))) table.insert(o,\"capeModel=\"..tostring(c and c:FindFirstChild(\"MeadowWornCrimsonCape\")~=nil)) return table.concat(o,\" \")"
+  "code": "local p=game.Players.LocalPlayer local g=p.PlayerGui:FindFirstChildWhichIsA(\"ScreenGui\") local o={} for _,k in ipairs({\"TutorialStep\",\"GuideOff\",\"ProfileReady\"}) do table.insert(o,k..\"=\"..tostring(p:GetAttribute(k))) end local c=p.Character table.insert(o,\"cape=\"..tostring(c and c:GetAttribute(\"OpeningCapeState\"))) for _,sg in ipairs(p.PlayerGui:GetChildren()) do if sg:IsA(\"ScreenGui\") then table.insert(o,sg.Name..\" enabled=\"..tostring(sg.Enabled)..\" overview=\"..tostring(sg:GetAttribute(\"TutorialOverviewDone\"))) end end return table.concat(o,\" \")"
  },
  {
   "type": "capture",
-  "name": "00-start"
+  "name": "10-after-intro"
  },
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local p=game.Players.LocalPlayer.PlayerGui local o={} for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local t=d:IsA(\"TextButton\") and d.Text or \"\" table.insert(o,string.format(\"%s|%s|%s|%d,%d|%dx%d\",d.ClassName,d.Name,t,d.AbsolutePosition.X,d.AbsolutePosition.Y,d.AbsoluteSize.X,d.AbsoluteSize.Y)) end end return table.concat(o,\"\\n\")"
+  "code": "local p=game.Players.LocalPlayer.PlayerGui local o={} for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 and d.AbsolutePosition.Y<2000 then local t=d:IsA(\"TextButton\") and d.Text or \"\" local par=d.Parent and d.Parent.Name or \"\" table.insert(o,string.format(\"%s|%s|%s|par=%s|%d,%d|%dx%d\",d.ClassName,d.Name,t,par,d.AbsolutePosition.X,d.AbsolutePosition.Y,d.AbsoluteSize.X,d.AbsoluteSize.Y)) end end return table.concat(o,\"\\n\")"
  },
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "game.Players.LocalPlayer.Character:PivotTo(game.Players.LocalPlayer.Character:GetPivot()+Vector3.new(20,0,0)) return \"moved\""
+  "code": "local c=game.Players.LocalPlayer.Character c:PivotTo(c:GetPivot()+Vector3.new(20,0,0)) return \"moved\""
  },
  {
   "type": "wait",
@@ -44,7 +92,7 @@
  },
  {
   "type": "capture",
-  "name": "01-tut-step2"
+  "name": "11-tut-2"
  },
  {
   "type": "click_text",
@@ -52,11 +100,11 @@
  },
  {
   "type": "wait",
-  "ms": 700
+  "ms": 800
  },
  {
   "type": "capture",
-  "name": "02-tut-2"
+  "name": "12-tut-2"
  },
  {
   "type": "click_text",
@@ -64,11 +112,11 @@
  },
  {
   "type": "wait",
-  "ms": 700
+  "ms": 800
  },
  {
   "type": "capture",
-  "name": "02-tut-3"
+  "name": "12-tut-3"
  },
  {
   "type": "click_text",
@@ -76,11 +124,11 @@
  },
  {
   "type": "wait",
-  "ms": 700
+  "ms": 800
  },
  {
   "type": "capture",
-  "name": "02-tut-4"
+  "name": "12-tut-4"
  },
  {
   "type": "click_text",
@@ -88,11 +136,11 @@
  },
  {
   "type": "wait",
-  "ms": 700
+  "ms": 800
  },
  {
   "type": "capture",
-  "name": "02-tut-5"
+  "name": "12-tut-5"
  },
  {
   "type": "click_text",
@@ -100,11 +148,11 @@
  },
  {
   "type": "wait",
-  "ms": 700
+  "ms": 800
  },
  {
   "type": "capture",
-  "name": "02-tut-6"
+  "name": "12-tut-6"
  },
  {
   "type": "click_text",
@@ -112,11 +160,11 @@
  },
  {
   "type": "wait",
-  "ms": 700
+  "ms": 800
  },
  {
   "type": "capture",
-  "name": "02-tut-7"
+  "name": "12-tut-7"
  },
  {
   "type": "wait",
@@ -124,6 +172,6 @@
  },
  {
   "type": "capture",
-  "name": "03-hud"
+  "name": "13-practice"
  }
 ]
