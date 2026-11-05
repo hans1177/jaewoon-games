@@ -3642,7 +3642,7 @@ do
     if v.X<=0 or v.Y<=0 then return end
     local portrait=v.X<v.Y
     tutorialCard.Size=UDim2.fromOffset(math.min(386,math.max(260,v.X-24)),portrait and 106 or 96)
-    tutorialCard.Position=UDim2.new(.5,0,1,portrait and -168 or -18)
+    tutorialCard.Position=UDim2.new(.5,0,1,portrait and -168 or -80) -- 퀵슬롯 위로 올려 가리지 않게
     tutorialMessage.Size=UDim2.new(1,-28,0,portrait and 65 or 55)
   end
   local function refreshTutorial()
@@ -10688,8 +10688,12 @@ end)()
     end
     closeBtn.Activated:Connect(function() picker.Visible=false end)
     -- 칸을 먼저 골랐을 때: 넣을 것을 고른다. 배우지 못한 기술은 회색으로 잠겨 있다.
+    local fromBar=false
+    gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
+      if fromBar and gui:GetAttribute("GameMenuOpen")==true then picker.Visible=false end
+    end)
     openQuickPicker=function(i)
-      target=i;title.Text=i.."번 칸에 넣을 것";clearList()
+      fromBar=true;target=i;title.Text=i.."번 칸에 넣을 것";clearList()
       local order=0
       for _,id in ipairs(meadowArt.quickSpecial) do order+=1;option(order,meadowArt.quickSpecialLabel[id],function() choose(id) end) end
       for _,action in ipairs(Config.Actions) do
@@ -10709,7 +10713,7 @@ end)()
     meadowArt.openSlotChooser=function(actionId,label)
       local lock=meadowArt.skillLock(actionId)
       if lock then quickSay("아직 못 배웠어 · "..lock) return end
-      title.Text=label.." → 몇 번 칸?";clearList()
+      fromBar=false;title.Text=label.." → 몇 번 칸?";clearList()
       for i=1,COUNT do
         option(i,i.."번 칸",function()
           if meadowArt.assignQuick then meadowArt.assignQuick(i,actionId) end
