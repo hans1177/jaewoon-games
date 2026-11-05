@@ -60,6 +60,16 @@ return function(D, S)
 			})
 		end
 
+		-- 시장 소식 (모든 항구의 진행 중인 사건)
+		view.news = {}
+		for _, e in ctx.market:activeEvents() do
+			local pt, gd = D.Ports.Ports[e.portId], D.Ports.Goods[e.goodId]
+			if pt and gd then
+				table.insert(view.news, pt.name .. ": " .. (tostring(e.text):gsub("%%s", gd.name)))
+			end
+		end
+		table.sort(view.news)
+
 		-- 시장
 		local rate = S.Trade.sellRateFor(state)
 		view.sellRate = rate
@@ -67,6 +77,7 @@ return function(D, S)
 		for _, goodId in sortedKeys(D.Ports.Goods) do
 			local good = D.Ports.Goods[goodId]
 			local mult = ctx.market:get(port.id, goodId)
+			local ev = ctx.market:eventMult(port.id, goodId)
 			local tag = ""
 			if table.find(port.produces, goodId) then
 				tag = "특산"
@@ -77,8 +88,9 @@ return function(D, S)
 				id = goodId,
 				name = good.name,
 				tag = tag,
-				buy = D.TradeMath.getPrice(port.id, goodId, mult),
-				sell = D.TradeMath.sellPrice(port.id, goodId, mult, rate),
+				buy = D.TradeMath.getPrice(port.id, goodId, mult, ev),
+				sell = D.TradeMath.sellPrice(port.id, goodId, mult, rate, ev),
+				trend = if ev > 1.01 then "up" elseif ev < 0.99 then "down" else nil,
 				owned = state.cargo[goodId] or 0,
 			})
 		end
@@ -223,6 +235,22 @@ return function(D, S)
 				summary = s.summary,
 				steamOnly = s.steamOnly,
 				locked = if s.techReq and not state.tech[s.techReq] then D.Tech.Tech[s.techReq].name else nil,
+			})
+		end
+
+		view.specialties = { current = state.specialty, changeFee = D.Specialties.CHANGE_FEE, list = {} }
+		for _, sp in D.Specialties.Specialties do
+			table.insert(view.specialties.list, { id = sp.id, name = sp.name, summary = sp.summary })
+		end
+		view.companions = { max = D.Specialties.MAX_COMPANIONS, list = {} }
+		for _, c in D.Specialties.Companions do
+			table.insert(view.companions.list, {
+				id = c.id,
+				name = c.name,
+				summary = c.summary,
+				fee = c.fee,
+				joined = table.find(state.companions, c.id) ~= nil,
+				blocked = S.Perk.recruitBlock(state, c),
 			})
 		end
 

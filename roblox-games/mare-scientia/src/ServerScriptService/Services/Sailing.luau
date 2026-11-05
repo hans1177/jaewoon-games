@@ -12,7 +12,7 @@ return function(D, S)
 		local nation = D.Ports.Nations[state.nationId]
 		local dist = D.Voyage.distanceKm(from.lat, from.lon, to.lat, to.lon)
 		local coal = if def.steam then (state.cargo.coal or 0) else 0
-		return D.Voyage.plan(def.speed * nation.speedMult, def.steam, def.fuelPerDay, coal, state.ship.crew, dist, 1.0)
+		return D.Voyage.plan(def.speed * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coal, state.ship.crew, dist, 1.0)
 	end
 
 	function handlers.Sail(state, p, ctx)
@@ -34,7 +34,7 @@ return function(D, S)
 		local wind = D.Voyage.windMult(ctx.rng)
 		local dist = D.Voyage.distanceKm(from.lat, from.lon, to.lat, to.lon)
 		local coalAvailable = if def.steam then (state.cargo.coal or 0) else 0
-		local plan = D.Voyage.plan(def.speed * nation.speedMult, def.steam, def.fuelPerDay, coalAvailable, state.ship.crew, dist, wind)
+		local plan = D.Voyage.plan(def.speed * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coalAvailable, state.ship.crew, dist, wind)
 		local event = D.Voyage.rollEvent(ctx.rng, plan.days)
 
 		local msgs = {}

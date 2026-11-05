@@ -15,6 +15,7 @@ local D = {
 	Voyage = require("./Shared/Voyage"),
 	Combat = require("./Shared/Combat"),
 	Bosses = require("./Shared/Bosses"),
+	Specialties = require("./Shared/Specialties"),
 }
 local Registry = require("./Services/Registry")(D)
 local S, handlers = Registry.S, Registry.handlers
@@ -631,7 +632,7 @@ do
 	local v = S.View.build(st, ctx)
 	check("view has player", v.player.portName == "런던" and v.player.year == 1700)
 	check("view goods", #v.goods == 16)
-	check("view routes", #v.routes == 11)
+	check("view routes", #v.routes == (function() local n = 0 for _ in D.Ports.Ports do n += 1 end return n - 1 end)())
 	check("view codex", v.codex.total == #D.Cards.Cards and v.codex.found == 0)
 	check("view hides unfound names", v.codex.cards[1].name == "???")
 	check("view tech", #v.tech == 6)
@@ -758,6 +759,152 @@ do
 		for _, id in { "frigate", "galleon", "paddle_steamer", "ironclad_frigate" } do
 			print(string.format("  info: %s 승률 %s %.0f%%", bossId, id, rate(id, bossId) * 100))
 		end
+	end
+end
+
+-- 전문 분야와 동료 ---------------------------------------------------
+do
+	for _, c in D.Specialties.Companions do
+		check("companion scholar exists " .. c.id, (function()
+			for _, sc in D.Scholars.Scholars do
+				if sc.id == c.scholarId then
+					return true
+				end
+			end
+			return false
+		end)())
+	end
+
+	local st = newState("england")
+	local ok, msg = act(st, "SetSpecialty", { specialtyId = "nope" })
+	check("bad specialty rejected", not ok)
+	local coins0 = st.coins
+	ok = act(st, "SetSpecialty", { specialtyId = "botanist" })
+	check("first specialty free", ok and st.coins == coins0 and st.specialty == "botanist")
+	ok = act(st, "SetSpecialty", { specialtyId = "botanist" })
+	check("same specialty rejected", not ok)
+	ok = act(st, "SetSpecialty", { specialtyId = "cartographer" })
+	check("change specialty costs", ok and st.coins == coins0 - D.Specialties.CHANGE_FEE)
+	st.coins = 0
+	ok = act(st, "SetSpecialty", { specialtyId = "collector" })
+	check("change without coins rejected", not ok and st.specialty == "cartographer")
+
+	-- 항해 속도 보너스: 지도제작자 -> 일수가 줄거나 같다
+	local base = newState("england")
+	local planBase = S.Sailing.preview(base, "lisbon")
+	local carto = newState("england")
+	carto.specialty = "cartographer"
+	local planCarto = S.Sailing.preview(carto, "lisbon")
+	check("cartographer faster", planCarto.days <= planBase.days)
+
+	-- 동료 영입 조건
+	local c = newState("england")
+	c.coins = 5000
+	ok, msg = act(c, "Recruit", { companionId = "c_halley" })
+	check("recruit needs scholar met", not ok, msg)
+	c.scholarsMet.halley = true
+	ok, msg = act(c, "Recruit", { companionId = "c_halley" })
+	check("recruit needs fame", not ok, msg)
+	c.fame = 500
+	ok, msg = act(c, "Recruit", { companionId = "c_halley" })
+	check("recruit works", ok and #c.companions == 1 and c.coins == 5000 - 500, msg)
+	ok = act(c, "Recruit", { companionId = "c_halley" })
+	check("recruit twice rejected", not ok)
+	c.scholarsMet.merian, c.scholarsMet.boyle = true, true
+	act(c, "Recruit", { companionId = "c_merian" })
+	ok = act(c, "Recruit", { companionId = "c_boyle" })
+	check("companion max enforced", not ok and #c.companions == D.Specialties.MAX_COMPANIONS)
+	check("view companions listed", #S.View.build(c, ctx).companions.list == #D.Specialties.Companions)
+	check("perk speed with companion", S.Perk.speedMult(c) > 1)
+	ok = act(c, "Dismiss", { companionId = "c_halley" })
+	check("dismiss works", ok and #c.companions == 1)
+	ok = act(c, "Dismiss", { companionId = "c_halley" })
+	check("dismiss unknown rejected", not ok)
+
+	-- 발견 보너스 (전문 분야 + 동료)
+	local d = newState("england")
+	d.specialty = "botanist"
+	check("botanist bonus", S.Perk.discoverBonus(d, "Botany") > 0 and S.Perk.discoverBonus(d, "Physics") == 0)
+	local coll = newState("england")
+	coll.specialty = "collector"
+	check("collector coin mult", S.Perk.coinMult(coll, "Site") > 1 and S.Perk.coinMult(coll, "Botany") == 1)
+
+	-- 저장 왕복과 변조 방어
+	local saved = S.State.serialize(c)
+	local back = S.State.sanitize(saved)
+	check("companions roundtrip", back and back.companions[1] == c.companions[1])
+	saved.companions = { "c_merian", "c_merian", "ghost", "c_boyle", "c_linnaeus" }
+	saved.specialty = "hacker"
+	back = S.State.sanitize(saved)
+	check("companions sanitized", back and #back.companions == 2 and back.companions[1] == "c_merian" and back.companions[2] == "c_boyle")
+	check("bad specialty dropped", back and back.specialty == nil)
+
+	-- 발견 확률이 실제로 오르는지 (식물학자가 식물 카드 탐험에서 더 자주 발견)
+	local function hits(spec)
+		local n = 0
+		for i = 1, 400 do
+			local s2 = newState("england")
+			s2.specialty = spec
+			s2.ship.supplies = 99
+			local ok2 = act(s2, "Explore", { siteId = "amsterdam_gardens" })
+			if not ok2 then
+				s2.portId = "amsterdam"
+				act(s2, "Explore", { siteId = "amsterdam_gardens" })
+			end
+			if S.State.countDiscovered(s2) > 0 then
+				n += 1
+			end
+		end
+		return n
+	end
+	local plain, botan = hits(nil), hits("botanist")
+	check("botanist finds more", botan > plain, string.format("%d vs %d", botan, plain))
+	print(string.format("  info: 정원 탐험 발견 횟수 일반 %d / 식물학자 %d (400회)", plain, botan))
+end
+
+-- 시장 사건 ---------------------------------------------------------
+do
+	local portIds, goodIds = { "london", "amsterdam" }, { "wool", "wine", "spice" }
+	local m = S.MarketClass.new()
+	check("no events at start", #m:activeEvents() == 0 and m:eventMult("london", "wool") == 1)
+	for i = 1, 60 do
+		m:tickEvents(rng, portIds, goodIds)
+		assert(#m:activeEvents() <= m.MAX_EVENTS, "too many events")
+	end
+	check("events respect cap", #m:activeEvents() <= m.MAX_EVENTS)
+	-- 사건 하나를 직접 넣어 가격 반영을 확인
+	local m2 = S.MarketClass.new()
+	table.insert(m2.events, { portId = "london", goodId = "wine", mult = 1.4, text = "%s", ticks = 2 })
+	local c2 = { rng = rng, market = m2 }
+	local st = newState("england")
+	st.coins = 100000
+	local base = D.TradeMath.getPrice("london", "wine", 1, 1)
+	local before = st.coins
+	local ok = handlers.Buy(st, { goodId = "wine", amount = 1 }, c2)
+	check("event raises buy price", ok and before - st.coins == D.TradeMath.getPrice("london", "wine", 1, 1.4) and before - st.coins > base)
+	local v = S.View.build(st, c2)
+	local wine
+	for _, g in v.goods do
+		if g.id == "wine" then
+			wine = g
+		end
+	end
+	check("view marks trend up", wine and wine.trend == "up")
+	check("view news lists event", #v.news == 1)
+	m2:tickEvents(function() return 0.99 end, portIds, goodIds)
+	m2:tickEvents(function() return 0.99 end, portIds, goodIds)
+	check("event expires", m2:eventMult("london", "wine") == 1)
+	-- 같은 항구에서 사고 바로 팔아 이득을 볼 수 없다 (사건 중에도)
+	for _, ev in { 0.7, 1.4 } do
+		local m3 = S.MarketClass.new()
+		table.insert(m3.events, { portId = "london", goodId = "wool", mult = ev, text = "%s", ticks = 5 })
+		local c3 = { rng = rng, market = m3 }
+		local s3 = newState("england")
+		s3.coins = 100000
+		local coins0 = s3.coins
+		handlers.Buy(s3, { goodId = "wool", amount = 10 }, c3)
+		handlers.Sell(s3, { goodId = "wool", amount = 10 }, c3)
+		check("no same-port arbitrage with event " .. ev, s3.coins < coins0)
 	end
 end
 

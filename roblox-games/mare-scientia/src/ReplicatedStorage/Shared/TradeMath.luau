@@ -39,8 +39,8 @@ function TradeMath.getPrice(portId: string, goodId: string, stockMult: number?, 
 	return math.max(1, math.floor(good.basePrice * mult * stock * event + 0.5))
 end
 
-function TradeMath.sellPrice(portId: string, goodId: string, stockMult: number?, rate: number): number
-	return math.max(1, math.floor(TradeMath.getPrice(portId, goodId, stockMult) * rate))
+function TradeMath.sellPrice(portId: string, goodId: string, stockMult: number?, rate: number, eventMult: number?): number
+	return math.max(1, math.floor(TradeMath.getPrice(portId, goodId, stockMult, eventMult) * rate))
 end
 
 -- 사면 재고 계수가 오른다 (가격 상승), 팔면 내린다.

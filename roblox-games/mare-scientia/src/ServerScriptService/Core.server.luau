@@ -23,6 +23,7 @@ local D = {
 	Voyage = require(Shared:WaitForChild("Voyage")),
 	Combat = require(Shared:WaitForChild("Combat")),
 	Bosses = require(Shared:WaitForChild("Bosses")),
+	Specialties = require(Shared:WaitForChild("Specialties")),
 }
 
 local Registry = require(ServicesFolder:WaitForChild("Registry"))(D)
@@ -208,5 +209,22 @@ task.spawn(function()
 	while true do
 		task.wait(MARKET_INTERVAL)
 		market:recover(MARKET_INTERVAL)
+	end
+end)
+
+-- 시장 사건 (풍년·흉작 등): 1분마다 갱신
+task.spawn(function()
+	local portIds, goodIds = {}, {}
+	for id in D.Ports.Ports do
+		table.insert(portIds, id)
+	end
+	for id in D.Ports.Goods do
+		table.insert(goodIds, id)
+	end
+	table.sort(portIds)
+	table.sort(goodIds)
+	while true do
+		task.wait(60)
+		market:tickEvents(ctx.rng, portIds, goodIds)
 	end
 end)

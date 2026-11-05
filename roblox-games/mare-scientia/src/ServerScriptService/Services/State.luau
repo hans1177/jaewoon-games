@@ -36,6 +36,8 @@ return function(D)
 			stats = { battlesWon = 0, battlesLost = 0, visited = { [nation.startPort] = true }, explored = 0 },
 			scholarsMet = {},
 			bosses = {},
+			specialty = nil,
+			companions = {},
 		}
 	end
 
@@ -209,6 +211,21 @@ return function(D)
 				end
 			end
 		end
+		if type(saved.specialty) == "string" and D.Specialties.SpecialtyById[saved.specialty] then
+			s.specialty = saved.specialty
+		end
+		if type(saved.companions) == "table" then
+			for _, id in saved.companions do
+				if
+					type(id) == "string"
+					and D.Specialties.CompanionById[id]
+					and not table.find(s.companions, id)
+					and #s.companions < D.Specialties.MAX_COMPANIONS
+				then
+					table.insert(s.companions, id)
+				end
+			end
+		end
 		if type(saved.bosses) == "table" then
 			for id, rec in saved.bosses do
 				if type(id) == "string" and D.Bosses.ById[id] and type(rec) == "table" then
@@ -261,6 +278,8 @@ return function(D)
 			stats = state.stats,
 			scholarsMet = state.scholarsMet,
 			bosses = state.bosses,
+			specialty = state.specialty,
+			companions = state.companions,
 		}
 	end
 

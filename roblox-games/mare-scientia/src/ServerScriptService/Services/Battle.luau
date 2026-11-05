@@ -25,7 +25,7 @@ return function(D, S)
 			speed = def.speed,
 			steam = def.steam,
 			fuel = if def.steam then (state.cargo.coal or 0) else 0,
-			cannonMult = 1 + S.State.techSum(state, "cannonMult") + 0.02 * (battleLv - 1),
+			cannonMult = 1 + S.State.techSum(state, "cannonMult") + S.Perk.cannonBonus(state) + 0.02 * (battleLv - 1),
 			meleeMult = 1 + 0.03 * (battleLv - 1),
 			pumpReduction = S.State.techSum(state, "pumpReduction"),
 			skills = skills,

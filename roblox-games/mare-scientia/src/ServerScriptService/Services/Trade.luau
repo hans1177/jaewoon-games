@@ -19,7 +19,7 @@ return function(D, S)
 
 	local function sellRateFor(state)
 		local nation = D.Ports.Nations[state.nationId]
-		return T.sellRate(D.Careers.sellBonus(state.careers.trade.level) + nation.sellBonus)
+		return T.sellRate(D.Careers.sellBonus(state.careers.trade.level) + nation.sellBonus + S.Perk.sellBonus(state))
 	end
 
 	function handlers.Buy(state, p, ctx)
@@ -31,9 +31,10 @@ return function(D, S)
 			return false, "화물칸이 부족해요"
 		end
 		local mult = ctx.market:get(state.portId, goodId)
+		local ev = ctx.market:eventMult(state.portId, goodId)
 		local total = 0
 		for _ = 1, amount do
-			total += T.getPrice(state.portId, goodId, mult)
+			total += T.getPrice(state.portId, goodId, mult, ev)
 			mult = T.nextStockMult(mult, 1, true)
 		end
 		if total > state.coins then
@@ -59,9 +60,10 @@ return function(D, S)
 		end
 		local rate = sellRateFor(state)
 		local mult = ctx.market:get(state.portId, goodId)
+		local ev = ctx.market:eventMult(state.portId, goodId)
 		local revenue = 0
 		for _ = 1, amount do
-			revenue += T.sellPrice(state.portId, goodId, mult, rate)
+			revenue += T.sellPrice(state.portId, goodId, mult, rate, ev)
 			mult = T.nextStockMult(mult, 1, false)
 		end
 		local profit = revenue - (state.basis[goodId] or 0) * amount

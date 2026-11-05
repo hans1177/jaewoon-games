@@ -94,6 +94,18 @@ local Ports: { [string]: Port } = {
 		id = "bordeaux", name = "보르도", country = "france", lat = 44.84, lon = -0.58,
 		produces = { "wine", "salt" }, demands = { "wool", "timber", "coal" }, shipyard = false,
 	},
+	stockholm = {
+		id = "stockholm", name = "스톡홀름", country = "sweden", lat = 59.33, lon = 18.07,
+		produces = { "iron", "fur" }, demands = { "wine", "sugar", "cloth" }, shipyard = false,
+	},
+	gdansk = {
+		id = "gdansk", name = "그단스크", country = "poland", lat = 54.35, lon = 18.65,
+		produces = { "amber", "timber", "beer" }, demands = { "wine", "cloth", "spice" }, shipyard = false,
+	},
+	seville = {
+		id = "seville", name = "세비야", country = "spain", lat = 37.39, lon = -5.98,
+		produces = { "wine", "sugar" }, demands = { "wool", "fur", "iron" }, shipyard = false,
+	},
 	lisbon = {
 		id = "lisbon", name = "리스본", country = "portugal", lat = 38.72, lon = -9.14,
 		produces = { "salt", "sugar", "spice" }, demands = { "fur", "timber", "iron", "beer" }, shipyard = true,

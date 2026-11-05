@@ -7,6 +7,7 @@ return function(D)
 	S.State = require(script.Parent.State)(D)
 	S.MarketClass = require(script.Parent.Market)(D)
 	S.Trade = require(script.Parent.Trade)(D, S)
+	S.Perk = require(script.Parent.Perk)(D, S)
 	S.Shipyard = require(script.Parent.Shipyard)(D, S)
 	S.Battle = require(script.Parent.Battle)(D, S)
 	S.Boss = require(script.Parent.Boss)(D, S)
@@ -17,7 +18,7 @@ return function(D)
 	S.View = require(script.Parent.View)(D, S)
 
 	local handlers = {}
-	for _, name in { "Trade", "Shipyard", "Battle", "Boss", "Sailing", "Discovery", "Research", "Quest" } do
+	for _, name in { "Trade", "Perk", "Shipyard", "Battle", "Boss", "Sailing", "Discovery", "Research", "Quest" } do
 		for action, fn in S[name].handlers do
 			assert(handlers[action] == nil, "duplicate action: " .. action)
 			handlers[action] = fn

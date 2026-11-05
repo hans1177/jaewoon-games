@@ -16,6 +16,7 @@ local D = {
 	Voyage = require("./Shared/Voyage"),
 	Combat = require("./Shared/Combat"),
 	Bosses = require("./Shared/Bosses"),
+	Specialties = require("./Shared/Specialties"),
 }
 local Registry = require("./Services/Registry")(D)
 local S = Registry.S

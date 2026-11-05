@@ -282,6 +282,34 @@ local function renderStatus()
 			return mkRow(content, string.format("%s Lv.%d", c.name, c.level), string.format("경험치 %d / %d", c.xp, c.nextXp), nil, 48)
 		end)
 	end
+	add(function() return mkHeader(content, "시작 가이드") end)
+	add(function()
+		return mkLabel(content, "1) 교역: 특산(싸게)을 사서 수요(비싸게) 항구에 팔아요. ▲▼는 시장 사건으로 값이 움직이는 품목이에요.\n2) 항해: 항구를 옮기면 날짜가 지나고 보급품이 줄어요. 증기선은 석탄을 태워요.\n3) 탐험·도감: 항구 근처에서 카드를 발견하면 명성과 코인을 얻고, 학자를 만나 지식을 전수받아요.\n4) 연구: 증기 지식을 모으면 증기선과 증기 스킬이 열려요.\n5) 전투: 사략선 사냥으로 경험을 쌓고, 레벨이 오르면 신화 괴물에 도전해요.", 12, COLORS.muted, false)
+	end)
+	add(function() return mkHeader(content, "전문 분야") end)
+	for _, sp in view.specialties.list do
+		add(function()
+			local mine = view.specialties.current == sp.id
+			local sub = sp.summary
+			if view.specialties.current and not mine then
+				sub ..= string.format(" · 변경 %d코인", view.specialties.changeFee)
+			end
+			return mkRow(content, sp.name .. (if mine then "  ✔" else ""), sub, {
+				{ text = if mine then "선택됨" else "선택", color = if mine then COLORS.gold else COLORS.blue, enabled = not mine,
+					onClick = function() call("SetSpecialty", { specialtyId = sp.id }) end },
+			}, 56)
+		end)
+	end
+	add(function() return mkHeader(content, string.format("동료 (최대 %d명)", view.companions.max)) end)
+	for _, c in view.companions.list do
+		add(function()
+			local sub = string.format("%s\n영입 %d코인%s", c.summary, c.fee, if c.blocked and not c.joined then " · " .. c.blocked else "")
+			local btn = if c.joined
+				then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
+				else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }
+			return mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, { btn }, 76)
+		end)
+	end
 	add(function() return mkHeader(content, "기록") end)
 	add(function()
 		return mkRow(content, string.format("%s · %d년 (항해 %d일째)", p.nation, p.year, p.day),
@@ -290,6 +318,9 @@ local function renderStatus()
 end
 
 local function renderTrade()
+	if view.news and #view.news > 0 then
+		add(function() return mkLabel(content, "시장 소식\n" .. table.concat(view.news, "\n"), 12, COLORS.gold, false) end)
+	end
 	add(function()
 		local frame = Instance.new("Frame")
 		frame.BackgroundTransparency = 1
@@ -312,7 +343,7 @@ local function renderTrade()
 	for _, g in view.goods do
 		add(function()
 			local tag = if g.tag ~= "" then (" [" .. g.tag .. "]") else ""
-			return mkRow(content, g.name .. tag, string.format("사기 %d · 팔기 %d · 보유 %d", g.buy, g.sell, g.owned), {
+			return mkRow(content, g.name .. tag .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), string.format("사기 %d · 팔기 %d · 보유 %d", g.buy, g.sell, g.owned), {
 				{ text = "구매", color = COLORS.blue, onClick = function() call("Buy", { goodId = g.id, amount = amount() }) end },
 				{ text = "판매", color = COLORS.green, onClick = function() call("Sell", { goodId = g.id, amount = amount() }) end, enabled = g.owned > 0 },
 			}, 56)

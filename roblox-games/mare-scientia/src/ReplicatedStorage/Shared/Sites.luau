@@ -24,6 +24,12 @@ local Sites: { Site } = {
 	{ id = "runestone_field", name = "룬석 들판", portId = "gothenburg", minLevel = 2, days = 2, pool = { "relic_runestone" } },
 	{ id = "bergen_cliffs", name = "베르겐 해안 절벽", portId = "bergen", minLevel = 2, days = 1, pool = { "zoo_puffin", "zoo_reindeer" } },
 	{ id = "boyne_valley", name = "보인 계곡", portId = "dublin", minLevel = 3, days = 3, pool = { "site_newgrange" } },
+	{ id = "stockholm_woods", name = "스톡홀름 군도 숲", portId = "stockholm", minLevel = 1, days = 1, pool = { "zoo_elk", "ast_aurora" } },
+	{ id = "falun_mine", name = "팔룬 광산", portId = "stockholm", minLevel = 3, days = 3, pool = { "min_falun_copper" } },
+	{ id = "giants_causeway", name = "북동 해안 바위길", portId = "dublin", minLevel = 4, days = 3, pool = { "site_giants_causeway" } },
+	{ id = "orkney_village", name = "오크니 신석기 마을", portId = "edinburgh", minLevel = 4, days = 3, pool = { "site_skara_brae" } },
+	{ id = "viking_harbor", name = "옛 바이킹 항구", portId = "bergen", minLevel = 2, days = 1, pool = { "relic_viking_ship", "ast_aurora" } },
+	{ id = "seville_groves", name = "과달키비르 강변 숲", portId = "seville", minLevel = 1, days = 1, pool = { "bot_cork_oak", "geo_canary_current" } },
 	{ id = "lisbon_apothecary", name = "리스본 약재상", portId = "lisbon", minLevel = 2, days = 1, pool = { "med_cinchona" } },
 	{ id = "hamburg_docks", name = "함부르크 항구 도서관", portId = "hamburg", minLevel = 2, days = 1, pool = { "phy_pendulum" } },
 }

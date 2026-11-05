@@ -13,9 +13,10 @@ return function(D, S)
 			return false
 		end
 		state.discovered[cardId] = true
-		state.coins += card.reward.coins
+		local coins = math.floor(card.reward.coins * S.Perk.coinMult(state, card.field))
+		state.coins += coins
 		state.fame += card.reward.fame
-		table.insert(msgs, string.format("도감 등록: %s [%s] (+%d코인, 명성 +%d)", card.name, card.rarity, card.reward.coins, card.reward.fame))
+		table.insert(msgs, string.format("도감 등록: %s [%s] (+%d코인, 명성 +%d)", card.name, card.rarity, coins, card.reward.fame))
 		S.State.gainXp(state, "adventure", RARITY_XP[card.rarity] or 15, msgs)
 		return true
 	end
@@ -61,9 +62,10 @@ return function(D, S)
 		state.stats.explored += 1
 
 		local msgs = { string.format("%s 탐험 (%d일)", site.name, site.days) }
-		local chance = 0.55 + D.Careers.discoverBonus(lv)
+		local cardId = remaining[1 + math.floor(ctx.rng() * #remaining) % #remaining]
+		local field = D.Cards.ById[cardId].field
+		local chance = math.min(0.95, 0.55 + D.Careers.discoverBonus(lv) + S.Perk.discoverBonus(state, field))
 		if ctx.rng() < chance then
-			local cardId = remaining[1 + math.floor(ctx.rng() * #remaining) % #remaining]
 			grantCard(state, cardId, msgs)
 		else
 			table.insert(msgs, "이번에는 아무것도 찾지 못했다")
