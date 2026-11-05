@@ -6430,6 +6430,56 @@ do
   workspace:SetAttribute("WildPackCount",packs)
 end
 
+-- [인간형 세력] 도적단 · 이단 교단 · 광신도 · 탈영 기사 · 노예상 · 흑마술 결사. 세력마다 이름·체력·공격 성향·전리품이 달라
+-- 같은 모델이어도 다른 몬스터처럼 느껴진다. 모델은 등록된 인간형 mon_*만 쓴다.
+do
+  -- 구성원: {모델, 이름, 높이, hp배수, dmg배수, 드랍}
+  local factions={
+    bandit={"도적단",{{"assassin","칼잡이 도적",5.2,1.2,1.3,{{"Hide",.7,2},{"Ore",.5,1}}},{"tribal","도끼 도적",5.4,1.5,1.2,{{"Hide",.7,2}}},{"goblin","소매치기",4.2,.9,.9,{{"Ore",.6,2}}}},
+      {"chieftain","도적 두목",8,4,1.9,{{"Crystal",1,3},{"Ore",1,3}}}},
+    cult={"이단 교단",{{"tribal","이단 신도",5.2,1.1,1.1,{{"Moonbloom",.5,1}}},{"beastman","피의 의식 사제",5.6,1.4,1.5,{{"Crystal",.6,2}}},{"orc","교단 집행자",6.2,2,1.5,{{"Hide",.7,2}}}},
+      {"demon","대사제",9,4.5,2,{{"Crystal",1,5},{"Moonbloom",1,3}}}},
+    fanatic={"미친 광신도",{{"skullorc","광란의 광신도",5.8,.8,2.2,{{"Claw",.6,2}}},{"beastman","순교자",5.2,.7,2.6,{{"Fang",.6,2}}},{"orc","자학 수도사",6,1.8,1.6,{{"Hide",.7,2}}}},
+      {"skullorc","광신의 예언자",9,3.8,2.4,{{"Crystal",1,4},{"Claw",1,3}}}},
+    deserter={"탈영 기사단",{{"orc","탈영 기사",6.2,2.2,1.4,{{"Ore",.8,2}}},{"assassin","낙오 정찰병",5.2,1,1.2,{{"Hide",.7,2}}},{"goblin","종자",4.5,.9,.9,{{"Ore",.5,1}}}},
+      {"orc","탈영 기사단장",8.6,4,1.8,{{"Ore",1,5},{"Crystal",1,2}}}},
+    slaver={"노예상단",{{"tribal","채찍 감독관",5.4,1.3,1.4,{{"Hide",.7,2}}},{"orc","용병 호위",6.2,2,1.3,{{"Ore",.6,2}}},{"goblin","짐꾼",4.2,.8,.8,{{"Hide",.5,1}}}},
+      {"chieftain","노예상 우두머리",8.5,3.8,1.8,{{"Crystal",1,3},{"Hide",1,4}}}},
+    warlock={"흑마술 결사",{{"tribal","암흑 주술사",5.4,1,1.7,{{"Moonbloom",.6,2}}},{"demon","소환된 하수인",6.5,1.8,1.5,{{"Claw",.6,2}}},{"assassin","그림자 암살자",5.2,1,1.8,{{"Fang",.6,1}}}},
+      {"demon","결사의 흑마법사",9.2,4.2,2.2,{{"Crystal",1,6},{"Moonbloom",1,3}}}},
+  }
+  local byZone={windcliff={"bandit","slaver","deserter"},meadow={"bandit","deserter","cult"},worldtree={"cult","fanatic","bandit"},
+    volcano={"fanatic","warlock","deserter"},oasis={"bandit","slaver","cult"},swamp={"cult","warlock","slaver"},
+    citadel={"deserter","warlock","fanatic"},highland={"bandit","deserter","slaver"},canyon={"bandit","fanatic","slaver"},
+    chaos={"warlock","fanatic","cult"},wetland={"slaver","bandit","cult"},desert={"bandit","slaver","fanatic"},deadmarsh={"warlock","cult","fanatic"}}
+  local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
+  local random=Random.new(9137)
+  local village=Config.WorldMap.Village
+  local camps=0
+  for _,zone in ipairs(Config.WorldMap.Zones) do
+    for _,key in ipairs(byZone[zone.Id] or {}) do
+      for n=1,2 do
+        local x,z=Config.WorldMap.RandomPoint(zone.Id,random,120)
+        if x and not (x>village.X0-150 and x<village.X1+150 and z>village.Z0-150 and z<village.Z1+150) then
+          local faction=factions[key]
+          local tier=tiers[zone.Id]
+          for k=1,4 do
+            local m=faction[2][(k-1)%#faction[2]+1]
+            local a=k*math.pi/2
+            table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=m[1],name=faction[1].." · "..m[2],tier=tier,height=m[3],hp=m[4],dmg=m[5],
+              zoneTag=zone.Id,drops=m[6],position=Vector3.new(x+math.cos(a)*12,3,z+math.sin(a)*12)})
+          end
+          local boss=faction[3]
+          table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=boss[1],name=faction[1].." · "..boss[2],tier=math.min(10,tier+1),height=boss[3],
+            hp=boss[4],dmg=boss[5],alpha=true,bonusBoss=true,zoneTag=zone.Id,named=true,drops=boss[6],position=Vector3.new(x,3,z)})
+          camps+=1
+        end
+      end
+    end
+  end
+  workspace:SetAttribute("FactionCampCount",camps)
+end
+
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
 -- 도달/재료 판정은 2초마다, 처치 판정은 몬스터 처치 시점에 확인한다. 거울 정원은 메인 줄 완료(HiddenOpen)로 열린다.
 do
