@@ -5003,7 +5003,8 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
     local shieldW=meadowRpg.equippedWeapon(player)
     local shieldCls=shieldW and shieldW.Id and Config.GearWeaponClass[shieldW.Id]
     local shielded=(shieldCls=="Sword" or shieldCls=="Axe") and meadowRpg.nodeRank(player,19)>0
-    damage=math.ceil(damage*(shielded and .4 or .5))
+    damage=math.ceil(damage*.5)
+    if shielded then damage=math.max(1,math.ceil(damage*.8)) end
     if now-(defense.lastBlockContactFXAt or -100) >=.12 then
       defense.lastBlockContactFXAt=now
       meadowDefense[player]=defense
