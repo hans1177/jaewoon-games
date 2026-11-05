@@ -95,8 +95,8 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'ReferenceCharacterName','ReferenceHotbar','ReferenceMenu',
     'local referenceMenuItems=', 'local referenceHotbarSlots={}',
     'local hotbarActions={','local function layoutMeadowReferenceHud()',
-    'local step=landscape and math.floor(math.clamp(v.X/20.8,31,39))',
-    'meadowReferenceHotbar.Position=UDim2.new(landscape and .44 or .5,0',
+    'local step=landscape and math.floor(math.clamp(v.X/15,47,55))',
+    'meadowReferenceHotbar.Position=UDim2.new(.5,0,1,-99)',
     'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale)',
     'meadowHealthTrack.Position=UDim2.fromOffset(x,top+16)',
     'meadowEnergy.Position=UDim2.fromOffset(x,top+30)',
@@ -139,30 +139,28 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/icon.Size=UDim2.fromScale\(1,1\)/);
   assert.match(client,/slot.BackgroundTransparency=1/);
   assert.match(client,/stroke.Transparency=1/);
-  assert.match(client,/meadowReferenceHotbar.Position=UDim2.new\(landscape and \.44 or \.5,0,1,landscape and -13 or -99\)/);
+  assert.match(client,/meadowReferenceHotbar.Position=UDim2.new\(0,math.floor\(math.clamp\(v.X\*\.46,minCenter,maxCenter\)\),1,-13\)/);
+  assert.match(client,/meadowReferenceHotbar.Position=UDim2.new\(\.5,0,1,-99\)/);
   assert.match(client,/questTracker.BackgroundColor3=Color3.fromRGB\(19,19,18\)/);
   assert.match(client,/local height=compact and 100 or 157/);
   assert.match(client,/local width=math.floor\(math.clamp\(v.X\*\(landscape and \.19 or \.42\),132,238\)\)/);
   assert.match(client,/local positions=\{\s+\{156,111,38\}/);
   assert.match(client,/\{121,139,39\}/);
-  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(179\*scale\),math.floor\(78\*scale\)\)/);
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(166\*scale\),math.floor\(60\*scale\)\)/);
   assert.match(client,/meadowSkillButtons.primarySword.Position=UDim2.fromOffset\(math.floor\(146\*scale\),math.floor\(132\*scale\)\)/);
   assert.match(client,/local swordSize=math.max\(60,math.floor\(66\*scale\)\)/);
-  assert.match(client,/meadowSkillButtons.referenceJump.Position=UDim2.fromOffset\(math.floor\(92\*scale\),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor\(17\*scale\)\)/);
+  assert.match(client,/meadowSkillButtons.referenceJump.Position=UDim2.fromOffset\(math.floor\(92\*scale\),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor\(8\*scale\)\)/);
   // 원화 자체에 포함된 링을 또 그리지 않는다.
   assert.match(client,/if rim then rim.Enabled=false end/);
   assert.match(client,/if inner then inner.Visible=false end/);
-  const screenWidth=709,screenHeight=446;
-  const menuStep=Math.floor(Math.max(31,Math.min(39,screenWidth/20.8)));
-  const menuX=screenWidth-menuStep*6-4;
-  const cell=Math.floor(Math.max(30,Math.min(40,screenWidth/21)));
-  const barWidth=(cell+2)*10-2;
-  const barX=screenWidth*.44-barWidth/2;
-  const questTop=4+menuStep+24;
-  const questWidth=Math.floor(Math.max(132,Math.min(238,screenWidth*.19)));
-  assert.ok(menuX>=495&&menuX<=510,'reference top icons are shifted');
-  assert.ok(Math.abs(barX-138)<6&&barWidth>=342&&barWidth<=355,'reference hotbar width/x mismatch');
-  assert.ok(questTop>=60&&questTop<=68&&questWidth<=140,'reference right quest panel shifted');
+  // [모바일 터치] 엔진 품질검사(짧은 변 36 미만 불합격, 44 미만 아쉬움)를 모든 화면에서 만족한다.
+  assert.match(client,/local step=landscape and math.floor\(math.clamp\(v.X\/15,47,55\)\)\s+or math.floor\(math.clamp\(\(v.X-18\)\/6,47,52\)\)/);
+  assert.match(client,/local menuStep=landscape and math.floor\(math.clamp\(v.X\/15,47,55\)\)\s+or math.floor\(math.clamp\(\(v.X-18\)\/6,47,52\)\)/);
+  assert.match(client,/local slotSize=landscape and math.floor\(math.clamp\(v.X\/17,44,52\)\)\s+or math.floor\(math.clamp\(\(v.X-24\)\/columns-2,44,48\)\)/);
+  assert.match(client,/local columns=v.X<\(landscape and 760 or 560\) and 5 or 10/);
+  assert.match(client,/local size=math.max\(46,math.floor\(row\[3\]\*scale\)\)/);
+  assert.match(client,/local jumpSize=math.max\(46,math.floor\(46\*scale\)\)/);
+  assert.match(client,/local size=math.max\(46,math.floor\(35\*scale\)\)/);
 
   const sheet={width:1000,height:1000};
   const cropRows=[
@@ -205,22 +203,36 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'button.Visible=index==1 or index==2',
     'meadowSkillButtons.referenceJump.Position=UDim2.fromOffset(math.floor(92*scale)',
   ])assert.ok(client.includes(marker),'painted reference HUD lost: '+marker);
-  for(const [w,h] of [[1536,709],[852,393],[720,400],[640,360],[390,844],[360,640]]){
+  for(const [w,h] of [[1920,1080],[1536,709],[1280,720],[926,428],[852,393],[844,390],[720,400],[640,360],[430,932],[390,844],[360,640]]){
     const landscape=w>h;
-    const step=landscape?Math.floor(Math.max(31,Math.min(39,w/20.8)))
-      :Math.floor(Math.max(33,Math.min(40,w/9.8)));
+    const step=landscape?Math.floor(Math.max(47,Math.min(55,w/15)))
+      :Math.floor(Math.max(47,Math.min(52,(w-18)/6)));
     const width=step*6;
+    assert.ok(step-3>=44,'top menu button below touch size '+w+'x'+h);
     assert.ok(w-width-9>0,'top menu clipped '+w+'x'+h);
-    const slot=landscape?Math.floor(Math.max(30,Math.min(40,w/21)))
-      :Math.floor(Math.max(26,Math.min(34,w/11.5)));
-    assert.ok((slot+2)*10-2<=w,'hotbar clipped '+w+'x'+h);
+    const columns=w<(landscape?760:560)?5:10;
+    const slot=landscape?Math.floor(Math.max(44,Math.min(52,w/17)))
+      :Math.floor(Math.max(44,Math.min(48,(w-24)/columns-2)));
+    assert.ok(slot>=44,'hotbar slot below touch size '+w+'x'+h);
+    assert.ok((slot+2)*columns-2<=w,'hotbar clipped '+w+'x'+h);
+    if(landscape){
+      const barWidth=(slot+2)*columns-2;
+      const minCenter=150+barWidth/2,maxCenter=Math.max(minCenter,w-150-barWidth/2);
+      const center=Math.floor(Math.max(minCenter,Math.min(maxCenter,w*.46)));
+      assert.ok(center-barWidth/2>=150,'hotbar overlaps move joystick '+w+'x'+h);
+    }
     const scale=landscape?Math.max(.76,Math.min(1.12,(h-20)/370))
       :Math.max(.76,Math.min(1,w/390));
+    for(const base of [38,39,35,46])
+      assert.ok(Math.max(46,Math.floor(base*scale))>=44,'combat button below touch size '+w+'x'+h);
     const rightWidth=Math.floor(212*scale);
     const rightBottom=Math.floor((landscape?12:104)*scale);
     assert.ok(rightWidth<w,'combat dock too wide '+w+'x'+h);
     assert.ok(rightBottom+Math.floor(216*scale)<h,
       'combat touch dock clipped '+w+'x'+h);
+    // 오른쪽 의뢰판은 여섯 메뉴 아이콘 바로 아래에서 시작한다.
+    const questTop=(landscape?4:70)+step+(landscape?24:14);
+    assert.ok(questTop>=step+18,'quest panel overlaps top menu '+w+'x'+h);
   }
 });
 
