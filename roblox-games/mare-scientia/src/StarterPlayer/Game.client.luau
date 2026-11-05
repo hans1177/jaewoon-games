@@ -529,8 +529,7 @@ local function sail(portId)
 				cam.CameraSubject = hum
 			end
 		end)
-		main.Visible = true
-		-- 3D 바다 항해. 실패하면 예전 2D 연출로 대신한다.
+		-- 3D 바다 항해 (끝날 때까지 메뉴는 숨겨 둔다). 실패하면 예전 2D 연출로 대신한다.
 		local ok, err = pcall(VoyageScene.play, {
 			shipId = view.ship.id,
 			steam = steam,
@@ -564,6 +563,8 @@ local function sail(portId)
 		-- 2) 도착한 항구의 3D 장면: 배가 먼 바다에서 들어와 정박
 		arriveNext = true
 	end
+	main.Visible = true
+	menuToggle.Visible = false
 	sceneHold = false
 	sceneKey = nil
 	syncScene()
