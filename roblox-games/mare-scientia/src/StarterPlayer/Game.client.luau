@@ -9,6 +9,7 @@ local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CommonUI = require(Shared:WaitForChild("Common"):WaitForChild("RobloxCommonUI"))
 local PortData = require(Shared:WaitForChild("Ports"))
+local Geo = require(Shared:WaitForChild("Geo"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
@@ -38,6 +39,7 @@ local AMOUNTS = { 1, 5, 10 }
 local TABS = {
 	{ id = "status", name = "상태" },
 	{ id = "trade", name = "교역" },
+	{ id = "map", name = "지도" },
 	{ id = "route", name = "항해" },
 	{ id = "yard", name = "조선소" },
 	{ id = "explore", name = "탐험" },
@@ -577,8 +579,83 @@ local function renderBattle()
 	end
 end
 
+local selectedPort = nil
+
+-- 실제 위도·경도 위에 항구를 찍은 세계지도 (Natural Earth 해안선)
+local function renderMap()
+	local cosLat = 0.66 -- 유럽 위도에서 가로를 줄여 비율을 맞춘다
+	local function mapX(lon) return (lon - Geo.lonMin) / (Geo.lonMax - Geo.lonMin) end
+	local function mapY(lat) return (Geo.latMax - lat) / (Geo.latMax - Geo.latMin) end
+	add(function()
+		local frame = Instance.new("Frame")
+		frame.Size = UDim2.new(1, 0, 0, 300)
+		frame.BackgroundColor3 = Color3.fromRGB(38, 82, 120)
+		frame.BorderSizePixel = 0
+		frame.ClipsDescendants = true
+		local ratio = Instance.new("UIAspectRatio")
+		ratio.AspectRatio = (Geo.cols * cosLat) / Geo.rows
+		ratio.Parent = frame
+		for _, st in Geo.landStrips do
+			local r, c0, c1 = st[1], st[2], st[3]
+			local land = Instance.new("Frame")
+			land.Position = UDim2.fromScale((c0) / Geo.cols, (r - 1) / Geo.rows)
+			land.Size = UDim2.fromScale((c1 - c0) / Geo.cols, 1 / Geo.rows + 0.002)
+			land.BackgroundColor3 = Color3.fromRGB(122, 140, 96)
+			land.BorderSizePixel = 0
+			land.Parent = frame
+		end
+		local routeDays = {}
+		for _, rt in view.routes do
+			routeDays[rt.id] = rt
+		end
+		for id, pt in PortData.Ports do
+			local isHere = (id == view.player.portId)
+			local dot = Instance.new("TextButton")
+			dot.AnchorPoint = Vector2.new(0.5, 0.5)
+			dot.Position = UDim2.fromScale(mapX(pt.lon), mapY(pt.lat))
+			dot.Size = UDim2.fromOffset(if isHere then 18 else 14, if isHere then 18 else 14)
+			dot.Text = ""
+			dot.BackgroundColor3 = if isHere then COLORS.gold elseif id == selectedPort then COLORS.blue else COLORS.red
+			dot.BorderSizePixel = 1
+			dot.Parent = frame
+			local corner = Instance.new("UICorner")
+			corner.CornerRadius = UDim.new(1, 0)
+			corner.Parent = dot
+			local tag = Instance.new("TextLabel")
+			tag.BackgroundTransparency = 1
+			tag.Position = UDim2.fromOffset(12, -8)
+			tag.Size = UDim2.fromOffset(60, 14)
+			tag.Text = pt.name
+			tag.Font = Enum.Font.GothamBold
+			tag.TextSize = 10
+			tag.TextColor3 = Color3.new(1, 1, 1)
+			tag.TextXAlignment = Enum.TextXAlignment.Left
+			tag.Parent = dot
+			dot.Activated:Connect(function()
+				selectedPort = id
+				render()
+			end)
+		end
+		return frame
+	end)
+	add(function()
+		return mkLabel(content, "금색=현재 항구 · 빨강=항구 · 항구를 누르면 항로 정보가 나와요", 12, COLORS.muted, false)
+	end)
+	if selectedPort and selectedPort ~= view.player.portId then
+		for _, r in view.routes do
+			if r.id == selectedPort then
+				add(function()
+					return mkRow(content, r.name, string.format("%d일 · %d km · 보급품 %d%s", r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else ""), {
+						{ text = "출항", color = COLORS.blue, onClick = function() selectedPort = nil; call("Sail", { portId = r.id }) end },
+					}, 56)
+				end)
+			end
+		end
+	end
+end
+
 local RENDERERS = {
-	status = renderStatus, trade = renderTrade, route = renderRoute, yard = renderYard, explore = renderExplore,
+	map = renderMap, status = renderStatus, trade = renderTrade, route = renderRoute, yard = renderYard, explore = renderExplore,
 	codex = renderCodex, tech = renderTech, quest = renderQuest, battle = renderBattle,
 }
 
