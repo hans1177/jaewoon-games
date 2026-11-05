@@ -16,6 +16,7 @@ local D = {
 	Combat = require("./Shared/Combat"),
 	Bosses = require("./Shared/Bosses"),
 	Specialties = require("./Shared/Specialties"),
+	SeaRoutes = require("./Shared/SeaRoutes"),
 }
 local Registry = require("./Services/Registry")(D)
 local S, handlers = Registry.S, Registry.handlers
@@ -1105,6 +1106,32 @@ do
 	act(s2, "TurnIn", { questId = "cq_boyle" })
 	ok = act(s2, "Claim", { questId = "cq_boyle" })
 	check("deliver companion quest works", ok and s2.discovered.che_air_pump == true)
+end
+
+-- 바닷길: 모든 항구 쌍에 경로가 있고 양 끝이 항구 근처이며 방향이 뒤집힌다
+do
+	local ids = {}
+	for id in D.Ports.Ports do
+		table.insert(ids, id)
+	end
+	local okAll, okEnds = true, true
+	for _, a in ids do
+		for _, b in ids do
+			if a ~= b then
+				local path = D.SeaRoutes.path(a, b, D.Ports.Ports)
+				local first, last = path[1], path[#path]
+				local pa, pb = D.Ports.Ports[a], D.Ports.Ports[b]
+				if #path < 2 then
+					okAll = false
+				end
+				if math.abs(first[1] - pa.lat) > 1.2 or math.abs(first[2] - pa.lon) > 1.2 or math.abs(last[1] - pb.lat) > 1.2 or math.abs(last[2] - pb.lon) > 1.2 then
+					okEnds = false
+				end
+			end
+		end
+	end
+	check("sea routes exist for all port pairs", okAll)
+	check("sea routes start/end near ports", okEnds)
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))

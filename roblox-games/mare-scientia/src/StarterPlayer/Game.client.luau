@@ -10,6 +10,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CommonUI = require(Shared:WaitForChild("Common"):WaitForChild("RobloxCommonUI"))
 local PortData = require(Shared:WaitForChild("Ports"))
 local Geo = require(Shared:WaitForChild("Geo"))
+local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
@@ -758,6 +759,11 @@ local function renderBattle()
 end
 
 local selectedPort = nil
+local SEA_NAMES = {
+	{ "북해", 56.2, 3.2 }, { "대서양", 47.5, -9 }, { "지중해", 38.6, 4 }, { "발트해", 57.3, 19.5 },
+	{ "영국해협", 50.0, -2.0 }, { "비스케이만", 45.0, -5.2 }, { "티레니아해", 40.0, 11.8 }, { "아드리아해", 43.0, 15.6 },
+	{ "아일랜드해", 53.9, -4.9 }, { "노르웨이해", 61.6, 1 }, { "이오니아해", 37.8, 18.5 }, { "리구리아해", 43.4, 8.3 },
+}
 
 -- 실제 위도·경도 위에 항구를 찍은 세계지도 (Natural Earth 해안선)
 local function renderMap()
@@ -776,15 +782,43 @@ local function renderMap()
 		for _, st in Geo.landStrips do
 			local r, c0, c1 = st[1], st[2], st[3]
 			local land = Instance.new("Frame")
-			land.Position = UDim2.fromScale((c0) / Geo.cols, (r - 1) / Geo.rows)
+			land.Position = UDim2.fromScale(c0 / Geo.cols, r / Geo.rows)
 			land.Size = UDim2.fromScale((c1 - c0) / Geo.cols, 1 / Geo.rows + 0.002)
 			land.BackgroundColor3 = Color3.fromRGB(122, 140, 96)
 			land.BorderSizePixel = 0
 			land.Parent = frame
 		end
-		local routeDays = {}
-		for _, rt in view.routes do
-			routeDays[rt.id] = rt
+		-- 해역 이름
+		for _, sea in SEA_NAMES do
+			local lb = Instance.new("TextLabel")
+			lb.AnchorPoint = Vector2.new(0.5, 0.5)
+			lb.Position = UDim2.fromScale(mapX(sea[3]), mapY(sea[2]))
+			lb.Size = UDim2.fromOffset(70, 14)
+			lb.BackgroundTransparency = 1
+			lb.Text = sea[1]
+			lb.Font = Enum.Font.GothamMedium
+			lb.TextSize = 11
+			lb.TextColor3 = Color3.fromRGB(160, 205, 240)
+			lb.TextTransparency = 0.15
+			lb.Parent = frame
+		end
+		-- 선택한 항구까지의 항로선 (실제 해안선을 피한 바닷길)
+		if selectedPort and selectedPort ~= view.player.portId then
+			local path = SeaRoutes.path(view.player.portId, selectedPort, PortData.Ports)
+			for i = 1, #path - 1 do
+				local a, b = path[i], path[i + 1]
+				local steps = math.max(1, math.floor(math.hypot(b[1] - a[1], b[2] - a[2]) / 0.35))
+				for k = 0, steps do
+					local t = k / steps
+					local dotm = Instance.new("Frame")
+					dotm.AnchorPoint = Vector2.new(0.5, 0.5)
+					dotm.Position = UDim2.fromScale(mapX(a[2] + (b[2] - a[2]) * t), mapY(a[1] + (b[1] - a[1]) * t))
+					dotm.Size = UDim2.fromOffset(4, 4)
+					dotm.BackgroundColor3 = Color3.fromRGB(255, 226, 120)
+					dotm.BorderSizePixel = 0
+					dotm.Parent = frame
+				end
+			end
 		end
 		for id, pt in PortData.Ports do
 			local isHere = (id == view.player.portId)
