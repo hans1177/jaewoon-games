@@ -210,6 +210,10 @@ local meadowArt={skillSheet="rbxassetid://129030506278489",gearSheet="rbxassetid
     ["skill-meadow-emote"]=10,["skill-meadow-oath"]=15,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
     Martial=15,Signs=16,Defense=17,Agility=18},
   slotEmpty={Weapon=36,Chest=37,Hands=38,Legs=39,Feet=40,Accessory=41}}
+-- [90노드 아이콘] 기존 정식 스킬 아이콘 시트를 재사용한다.
+for _,node in ipairs(Config.MeadowSkillNodes or {}) do
+  if node.Kind=="ACTIVE" then meadowArt.skillCell[node.Id]=node.IconCell end
+end
 function meadowArt.skill(icon,key)
   local cell=meadowArt.skillCell[key]
   if meadowArt.skillSheet=="" or cell==nil then return false end
@@ -356,6 +360,13 @@ meadowArt.skillNeed={
 }
 -- 배우지 않은 기술이면 "표식 1 필요" 같은 글자를, 쓸 수 있으면 nil을 돌려준다.
 function meadowArt.skillLock(id)
+  local node=Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[id]
+  if node then
+    local bits=math.floor(tonumber(game:GetService("Players").LocalPlayer:GetAttribute("MeadowSkillBits"..math.ceil(node.Index/10))) or 0)
+    local rank=bit32.band(bit32.extract(bits,((node.Index-1)%10)*3,3),3)
+    if rank>=1 then return nil end
+    return "스킬 트리에서 "..node.Name.." 습득 필요"
+  end
   local need=meadowArt.skillNeed[id]
   if not need then return nil end
   local lv=tonumber(game:GetService("Players").LocalPlayer:GetAttribute("MeadowTalent"..need[1])) or 0
@@ -2727,30 +2738,38 @@ meadowLabels[7].LayoutOrder=1
 meadowLabels[7].Text="마력숲 전투 기술  ·  실제 사용 가능 기술\n기술 카드 선택 → 설명 확인 → 사용"
 meadowLabels[7].TextColor3=parchment
 meadowLabels[7].Font=Enum.Font.GothamBold
-local skillCategories={"전체","무예","마력","방어","기동","기타"}
+local skillCategories={"전체","전사","수호","사냥","그림자","마력"}
 local skillColors={
+  ["전사"]=Color3.fromRGB(194,83,76),["수호"]=Color3.fromRGB(213,175,92),
+  ["사냥"]=Color3.fromRGB(125,178,115),["그림자"]=Color3.fromRGB(168,128,190),
   ["무예"]=Color3.fromRGB(194,83,76),["마력"]=Color3.fromRGB(91,161,216),
   ["방어"]=Color3.fromRGB(213,175,92),["기동"]=Color3.fromRGB(110,182,144),
   ["기타"]=Color3.fromRGB(182,171,159),
 }
 local skillInfo={
-  ["skill-meadow-heavy"]={"무예","앞의 적 한 마리를 세게 베어. 가까이서 써.",2},
-  ["skill-meadow-sweep"]={"무예","빙글 돌며 주변 적 최대 5마리를 한 번에 베어.",2},
+  ["skill-meadow-heavy"]={"전사","앞의 적 한 마리를 세게 베어. 가까이서 써.",2},
+  ["skill-meadow-sweep"]={"전사","빙글 돌며 주변 적 최대 5마리를 한 번에 베어.",2},
   ["skill-meadow-bolt"]={"마력","멀리 있는 적에게 마력 탄환을 쏴. 안전하게 원거리 공격.",7},
-  ["skill-meadow-guard"]={"방어","방패를 들어 막아. 막기 시작 직후엔 피해를 거의 안 받아.",3},
-  ["skill-meadow-parry"]={"방어","타이밍 맞춰 적 공격을 튕겨내. 어렵지만 강해.",3},
-  ["skill-meadow-dodge-left"]={"기동","왼쪽으로 재빨리 피해. 트리에서 찍을수록 연속으로 피할 수 있어.",6},
-  ["skill-meadow-dodge-right"]={"기동","오른쪽으로 재빨리 피해. 트리에서 찍을수록 연속으로 피할 수 있어.",6},
-  ["skill-meadow-sprint"]={"기동","빠르게 달려. 적에게 붙거나 도망칠 때 써.",6},
+  ["skill-meadow-guard"]={"수호","방패를 들어 막아. 막기 시작 직후엔 피해를 거의 안 받아.",3},
+  ["skill-meadow-parry"]={"수호","타이밍 맞춰 적 공격을 튕겨내. 어렵지만 강해.",3},
+  ["skill-meadow-dodge-left"]={"그림자","왼쪽으로 재빨리 피해. 트리에서 찍을수록 연속으로 피할 수 있어.",6},
+  ["skill-meadow-dodge-right"]={"그림자","오른쪽으로 재빨리 피해. 트리에서 찍을수록 연속으로 피할 수 있어.",6},
+  ["skill-meadow-sprint"]={"그림자","빠르게 달려. 적에게 붙거나 도망칠 때 써.",6},
   ["skill-meadow-heal"]={"마력","체력을 회복해. 위험할 때 써.",7},
   ["skill-meadow-focus"]={"마력","잠깐 마력을 모아 강해져.",7},
-  ["skill-meadow-oath"]={"무예","각성기. 체력 회복 + 주변 적 전체에 3배 피해. 재사용 90초.",2},
+  ["skill-meadow-oath"]={"수호","각성기. 체력 회복 + 주변 적 전체에 3배 피해. 재사용 90초.",2},
   ["skill-meadow-emote"]={"기타","인사 동작. 전투 효과 없음.",5},
-  ["meadow-unarmed-rush"]={"무예","맨손 잽·훅 연타.",2},
-  ["meadow-unarmed-uppercut"]={"무예","크게 올려치는 승룡 어퍼컷.",2},
-  ["meadow-unarmed-kick"]={"무예","회전 발차기.",2},
-  ["meadow-unarmed-elbow"]={"무예","팔꿈치·무릎 연계 공격.",2},
+  ["meadow-unarmed-rush"]={"전사","맨손 잽·훅 연타.",2},
+  ["meadow-unarmed-uppercut"]={"전사","크게 올려치는 승룡 어퍼컷.",2},
+  ["meadow-unarmed-kick"]={"전사","회전 발차기.",2},
+  ["meadow-unarmed-elbow"]={"전사","팔꿈치·무릎 연계 공격.",2},
 }
+-- [90노드 스킬 카드] 기존 Config.Actions와 같은 실제 서버 발동 ID를 사용한다.
+for _,node in ipairs(Config.MeadowSkillNodes or {}) do
+  if node.Kind=="ACTIVE" then
+    skillInfo[node.Id]={node.SchoolName,node.Description,node.IconCell}
+  end
+end
 -- [스킬 성장] 숙련 누적 곡선(첫 30, 이후 +10)으로 점수 획득. 기존 공격·저장 구조는 유지.
 local talentPanel=Instance.new("Frame")
 talentPanel.Name="WitcherTalents";talentPanel.LayoutOrder=2
@@ -3226,6 +3245,8 @@ do
   local function quickCode(id)
     if not id then return 0 end
     for k,v in ipairs(meadowArt.quickSpecial) do if v==id then return k end end
+    local tree=Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[id]
+    if tree and tree.Kind=="ACTIVE" then return 1000+tree.Index end
     for k,action in ipairs(Config.Actions) do if action.Id==id then return 9+k end end
     return 0
   end
@@ -10936,6 +10957,7 @@ end)()
         local code=tonumber(player:GetAttribute("QuickSlot"..i)) or 0
         local id=false
         if code>=1 and code<=5 then id=meadowArt.quickSpecial[code]
+        elseif code>=1001 and Config.MeadowSkillNodes[code-1000] then id=Config.MeadowSkillNodes[code-1000].Id
         elseif code>=10 and Config.Actions[code-9] then id=Config.Actions[code-9].Id end
         meadowArt.quickIds[i]=id
       end
