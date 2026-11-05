@@ -221,6 +221,78 @@ function meadowArt.gear(icon,cell)
   icon.ImageRectOffset=Vector2.new((cell%8)*128,math.floor(cell/8)*128);icon.ImageRectSize=Vector2.new(128,128)
   return true
 end
+-- [3D 아이템 보기] 서버가 ReplicatedStorage.MeadowItemModels에 올려 둔 CC0 아이템 메시를 뷰포트에서 천천히 돌린다.
+-- 모델이 아직 없거나 키가 없으면 기존 평면 아이콘을 그대로 쓴다.
+do
+  local RS=game:GetService("ReplicatedStorage")
+  local RunSvc=game:GetService("RunService")
+  local views={}
+  local gearKeys={wanderer_blade="item_sword",hunter_blade="item_sword",runic_blade="item_sword_golden",forest_blade="item_sword_golden",
+    dew_dagger="item_dagger",thorn_axe="item_axe_small",magma_greatsword="item_sword_big"}
+  function meadowArt.itemKeyFor(item)
+    if not item then return nil end
+    if item.gear then
+      if gearKeys[item.gear.Id] then return gearKeys[item.gear.Id] end
+      if item.gear.Category=="장신구" then return "item_ring1" end
+      return nil
+    end
+    if item.tonic then return item.tonic.Id=="energy_tonic" and "item_potion3_filled" or "item_potion1_filled" end
+    if item.key=="Crystal" then return "item_crystal1" end
+    if item.key=="Coins" then return "item_coin" end
+    if item.key=="ResearchRecords" then return "item_book1_closed" end
+    return nil
+  end
+  function meadowArt.new3D(icon)
+    local view=Instance.new("ViewportFrame")
+    view.Name="Item3D";view.BackgroundTransparency=1;view.BorderSizePixel=0
+    view.AnchorPoint=icon.AnchorPoint;view.Size=icon.Size;view.Position=icon.Position;view.ZIndex=icon.ZIndex+1
+    view.Ambient=Color3.fromRGB(190,190,200);view.LightColor=Color3.fromRGB(255,244,220);view.Visible=false
+    view.Parent=icon.Parent
+    views[view]={icon=icon,key=nil,model=nil,angle=math.random()*6}
+    return view
+  end
+  function meadowArt.set3D(view,key)
+    local entry=views[view]
+    if not entry then return end
+    if entry.key~=key then
+      entry.key=key
+      if entry.model then entry.model:Destroy();entry.model=nil end
+      view.Visible=false;entry.icon.Visible=true
+    end
+  end
+  function meadowArt.has3D(view)
+    local entry=views[view]
+    return entry~=nil and entry.model~=nil
+  end
+  local function fill(view,entry)
+    local folder=RS:FindFirstChild("MeadowItemModels")
+    local template=folder and entry.key and folder:FindFirstChild(entry.key)
+    if not template then return end
+    local model=template:Clone();model.Parent=view
+    local cf,size=model:GetBoundingBox()
+    model:PivotTo(CFrame.new(-cf.Position)*model:GetPivot())
+    local radius=math.max(size.X,size.Y,size.Z)
+    local camera=view.CurrentCamera
+    if not camera then camera=Instance.new("Camera");camera.Parent=view;view.CurrentCamera=camera end
+    camera.FieldOfView=35;camera.CFrame=CFrame.new(Vector3.new(0,radius*.35,radius*2.1),Vector3.new(0,0,0))
+    entry.model=model;view.Visible=true;entry.icon.Visible=false
+  end
+  local tick=0
+  RunSvc.Heartbeat:Connect(function(dt)
+    tick+=dt
+    local poll=tick>.5
+    if poll then tick=0 end
+    for view,entry in pairs(views) do
+      if not view.Parent then views[view]=nil
+      elseif entry.model then
+        if view.Visible then
+          entry.angle+=dt*1.1
+          entry.model:PivotTo(CFrame.Angles(math.rad(-18),entry.angle,math.rad(12)))
+        end
+      elseif poll and entry.key and view.Parent.Visible~=false then fill(view,entry) end
+    end
+  end)
+end
 local meadowPaintedHudAtlas="rbxassetid://84007761993593" -- [고퀄 원화] 1000x1000 5x5 / 200px 칸 21종 (Roblox 1024 제한 이하), 게임 내 로딩은 게시 후 검증
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
@@ -2323,11 +2395,13 @@ local function itemValue(item)
   if item.key=="ResearchRecords" then return tostring(math.min(owned(item),#(Config.StoryRecords or {}))).."/"..tostring(#(Config.StoryRecords or {})) end
   return tostring(math.floor(owned(item)))
 end
+local detailPreview3D=nil
 local function redrawSelection()
   local item=itemRows[selectedKey]
   if not item then
     title.Text="선택된 아이템 없음";description.Text="해당 분류에 맞는 아이템이 없어."
     detailPreview.Visible=false
+    if detailPreview3D then meadowArt.set3D(detailPreview3D,nil);detailPreview3D.Visible=false end
     equip.Visible=false;secondary.Visible=false
     return
   end
@@ -2336,6 +2410,10 @@ local function redrawSelection()
   detailPreview.Image=meadowIconAtlas;detailPreview.ImageRectSize=Vector2.new(64,64)
   detailPreview.ImageRectOffset=Vector2.new(item.icon*64,0)
   meadowArt.gear(detailPreview,item.art)
+  if not detailPreview3D then detailPreview3D=meadowArt.new3D(detailPreview) end
+  meadowArt.set3D(detailPreview3D,meadowArt.itemKeyFor(item))
+  detailPreview.Visible=not meadowArt.has3D(detailPreview3D)
+  detailPreview3D.Visible=not detailPreview.Visible
   local recipe=item.gear or item.tonic
   local cost=""
   if recipe then
@@ -2402,6 +2480,10 @@ local function makeCard(item)
   meadowArt.gear(icon,item.art)
   icon.Size=UDim2.fromOffset(50,50);icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.new(.5,0,0,3);icon.Parent=card
+  do
+    local key3d=meadowArt.itemKeyFor(item)
+    if key3d then meadowArt.set3D(meadowArt.new3D(icon),key3d) end
+  end
   local name=Instance.new("TextLabel")
   name.Name="ItemName";name.Position=UDim2.new(0,3,0,53);name.Size=UDim2.new(1,-6,0,20)
   name.BackgroundTransparency=1;name.Font=Enum.Font.GothamBold;name.TextSize=12;name.TextColor3=Color3.fromRGB(255,255,255);name.ZIndex=45
