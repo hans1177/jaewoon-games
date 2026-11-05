@@ -1184,7 +1184,7 @@ local function renderMeadowPages()
       +(bit32.band(villageMask,64)~=0 and 1 or 0)
   end
   local mainText=quest and string.format("%s\n%s  (%d/%d)",quest.Name,quest.Instruction,
-    player:GetAttribute("QuestProgress") or 0,quest.Goal) or "완료 · 기록 조각 수집을 마쳤어."
+    player:GetAttribute("QuestProgress") or 0,quest.Goal) or "완료 · 연대기 수집을 마쳤어."
   local villageText=village and string.format("%s · %s\n%s",village.Name,village.Issuer,
     villagePhase==0 and "촌장에게 의뢰 수락" or villagePhase==2 and "촌장에게 조사 결과 보고"
     or string.format("진행 중 · 단서 %d/3 · %s",villageProgress,village.EnemyName)) or "마을 의뢰 모두 완료"
@@ -1546,7 +1546,7 @@ meadowReferenceMenu.ZIndex=26
 meadowReferenceMenu.Parent=meadowTouchLayer
 local referenceMenuItems={
   {"가방",2,6},{"제작",2,11},{"건설",2,12},
-  {"도감",3,13},{"기록 조각",3,14},{"설정",4,15},
+  {"도감",3,13},{"연대기",3,14},{"설정",4,15},
 }
 for index,info in ipairs(referenceMenuItems) do
   local button=Instance.new("TextButton")
@@ -2030,7 +2030,7 @@ local categories={"전체","보유","무기","갑옷","장신구","소모품","�
 local data={
   {key="Wood",name="나무",category="재료",icon=4,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 기존 무기 강화에 사용돼."},
   {key="Stone",name="돌",category="재료",icon=4,color=Color3.fromRGB(169,191,200),description="바위에서 채집한 돌. 기존 무기 강화에 사용돼."},
-  {key="ResearchRecords",name="기록 조각",category="기록",icon=5,color=Color3.fromRGB(221,183,111),description="메인 의뢰에서 발견한 기사단 기록. 획득한 내용은 저널에 보관돼."},
+  {key="ResearchRecords",name="연대기",category="기록",icon=5,color=Color3.fromRGB(221,183,111),description="메인 의뢰에서 발견한 기사단 기록. 획득한 내용은 저널에 보관돼."},
   {key="Coins",name="소지금",category="재화",icon=4,color=Color3.fromRGB(226,191,92),description="서버에 기록된 현재 소지금."},
 }
 -- [장비 도감] 모든 제작법을 현재 가방에 표시하고 소유/장착은 서버 속성만 신뢰한다.
@@ -2816,7 +2816,7 @@ local function renderMeadowJournal()
   for index,record in ipairs(Config.StoryRecords) do
     local has=owned>=index
     storyRows[index].Text=has and ("【소장 아이템】 "..record.Title.."\n"..record.Text)
-      or ("【미획득 기록 조각】 "..record.Title.."\n메인 퀘스트를 진행해 원본을 해금")
+      or ("【미획득 연대기】 "..record.Title.."\n메인 퀘스트를 진행해 원본을 해금")
     storyRows[index].TextColor3=has and Color3.fromRGB(245,244,208) or Color3.fromRGB(161,180,164)
   end
 end
@@ -2963,7 +2963,7 @@ remote.OnClientEvent:Connect(function(kind,payload)
   end
   if kind~="MEADOW_QUEST_UPDATE" or typeof(payload)~="table" then return end
   meadowSurvivalHint.Text="메인 완료: "..tostring(payload.completed or "")
-    ..(payload.record and ("  ·  기록 조각 "..payload.record.." 획득!") or "")
+    ..(payload.record and ("  ·  연대기 "..payload.record.." 획득!") or "")
   meadowSurvivalHint.Visible=true
   meadowSurvivalHintToken+=1
   local token=meadowSurvivalHintToken
@@ -5366,7 +5366,7 @@ do
     detail.Position=UDim2.fromOffset(16,44);detail.Size=UDim2.new(1,-32,0,52)
     detail.Font=Enum.Font.GothamMedium;detail.TextSize=13;detail.TextWrapped=true
     detail.TextColor3=Color3.fromRGB(231,243,226)
-    detail.Text=bossScene and "초원의 수문장이 깨어났다." or (Config.StoryRecords and Config.StoryRecords[1].Text or "초원의 단서를 따라 연구 기록을 모아 봐.")
+    detail.Text=bossScene and "초원의 수문장이 깨어났다." or (Config.StoryRecords and Config.StoryRecords[1].Text or "초원의 단서를 따라 연대기를 모아 봐.")
     detail.ZIndex=56;detail.Parent=intro
     local skip=Instance.new("TextButton");skip.BackgroundTransparency=1
     skip.AnchorPoint=Vector2.new(1,1);skip.Position=UDim2.fromScale(1,1);skip.Size=UDim2.fromOffset(144,44)

@@ -107,7 +107,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'mapToggle.Activated:Connect(function()'
   ])assert.ok(client.includes(marker),'missing reference HUD: '+marker);
   for(const page of ['{"가방",2,6}','{"제작",2,11}','{"건설",2,12}',
-    '{"도감",3,13}','{"기록 조각",3,14}','{"설정",4,15}']){
+    '{"도감",3,13}','{"연대기",3,14}','{"설정",4,15}']){
     assert.ok(client.includes(page),'top menu icon/page missing: '+page);
   }
   assert.match(client,/for index=1,10 do[\s\S]*?referenceHotbarSlots\[index\]=slot/);

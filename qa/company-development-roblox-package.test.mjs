@@ -1807,7 +1807,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('characterShortcut.Activated:Connect(function()meadowMenu.open(1)end)'), 'character shortcut opens original character page');
   assert.ok(client.includes('hideMenuButton=true'), 'redundant left menu stays hidden');
   assert.ok(client.includes('pages=meadowPages'), 'inventory page remains inside original menu');
-  for(const [key,name] of [['Wood','나무'],['Stone','돌'],['ResearchRecords','기록 조각'],['Coins','소지금']]){
+  for(const [key,name] of [['Wood','나무'],['Stone','돌'],['ResearchRecords','연대기'],['Coins','소지금']]){
     assert.ok(client.includes('{key="'+key+'",name="'+name+'"'),'real resource shown: '+key);
   }
   assert.ok(client.includes('for index,gear in ipairs(Config.MeadowEquipment or {})'));

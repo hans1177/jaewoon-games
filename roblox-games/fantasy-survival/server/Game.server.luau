@@ -545,7 +545,7 @@ end
 local function villageBoardDialogue(player,sourcePosition)
   local index,contract=villageCurrentContract(player)
   if not contract then
-    villageDialogue(player,"초원 마을 · 의뢰 완료","세 의뢰의 진상을 모두 기록했어. 메인 연구 일지는 그대로 이어져.")
+    villageDialogue(player,"초원 마을 · 의뢰 완료","세 의뢰의 진상을 모두 기록했어. 렌스기사단의 연대기는 그대로 이어져.")
     return
   end
   local phase=readNumber(player,"VillageContractPhase",0)
@@ -2228,7 +2228,7 @@ local function recordMeadowQuest(player, eventName)
     setNumber(player,"QuestProgress",0)
     remote:FireClient(player,"MEADOW_QUEST_UPDATE",{
       completed=quest.Name,
-      nextQuest=Config.MainQuests[stage+1] and Config.MainQuests[stage+1].Name or "초원 연구 기록 완료",
+      nextQuest=Config.MainQuests[stage+1] and Config.MainQuests[stage+1].Name or "초원 연대기 완료",
       record=recordIndex,
     })
   else
@@ -2352,7 +2352,7 @@ local function inspectMeadowSurvival(player,model,subject)
     if typeof(index)=="number" and index>=1 and index<=3 then
       local mask=math.clamp(readNumber(player,"RuinsDiscovered",0),0,7)
       setNumber(player,"RuinsDiscovered",bit32.bor(mask,bit32.lshift(1,index-1)))
-      clue="오래된 유적 발견 · 연구 일지에 석벽의 흔적과 위치를 기록했어."
+      clue="오래된 유적 발견 · 연대기에 석벽의 흔적과 위치를 기록했어."
     end
   end
   if subject=="WOODLAND" then
@@ -2365,10 +2365,10 @@ local function inspectMeadowSurvival(player,model,subject)
     if period=="DAWN" then
       setNumber(player,"DawnTraceFound",1)
       recordMeadowQuest(player,"DAWN_TRACE")
-      clue="새벽 연구 흔적 발견 · 낮은 안개 사이로 남은 마력의 흐름을 기록했어.  "..clue
+      clue="새벽 마력 흔적 발견 · 낮은 안개 사이로 남은 마력의 흐름을 기록했어.  "..clue
     elseif period=="NIGHT" then
       setNumber(player,"NightTraceFound",1)
-      clue="밤의 숲 연구 기록 · 푸른 마력이 모이는 숲 가장자리를 확인했어.  "..clue
+      clue="밤의 숲 마력 기록 · 푸른 마력이 모이는 숲 가장자리를 확인했어.  "..clue
     end
   end
   player:SetAttribute("MeadowSurvivalHint",clue)
