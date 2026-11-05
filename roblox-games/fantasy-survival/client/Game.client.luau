@@ -222,7 +222,7 @@ function meadowArt.gear(icon,cell)
   return true
 end
 local meadowPaintedHudAtlas="rbxassetid://84007761993593" -- [고퀄 원화] 1000x1000 5x5 / 200px 칸 21종 (Roblox 1024 제한 이하), 게임 내 로딩은 게시 후 검증
--- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
+-- [오른쪽 아이콘] 외부 액션 5종 / 기존 물약·가방 2종
 local meadowRealActionIcons={
   fist="rbxassetid://127661757924412",
   dodge="rbxassetid://121029196724745",
