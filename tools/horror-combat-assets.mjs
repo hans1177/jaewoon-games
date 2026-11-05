@@ -155,9 +155,30 @@ if(process.argv.includes('--monster-assets-only')){
   skminion:['Skeleton_Minion','KayKit Skeletons/Skeleton_Minion','/tmp/kks/addons/kaykit_character_pack_skeletons/Characters/gltf'],
   skrogue:['Skeleton_Rogue','KayKit Skeletons/Skeleton_Rogue','/tmp/kks/addons/kaykit_character_pack_skeletons/Characters/gltf'],
   skwarrior:['Skeleton_Warrior','KayKit Skeletons/Skeleton_Warrior','/tmp/kks/addons/kaykit_character_pack_skeletons/Characters/gltf'],
-  fox:['Fox','Quaternius Ultimate Animated Animals/Fox','/tmp/ani/glTF'],stag:['Stag','Quaternius Ultimate Animated Animals/Stag','/tmp/ani/glTF'],
-  deer:['Deer','Quaternius Ultimate Animated Animals/Deer','/tmp/ani/glTF'],bull:['Bull','Quaternius Ultimate Animated Animals/Bull','/tmp/ani/glTF'],
-  horse:['Horse','Quaternius Ultimate Animated Animals/Horse','/tmp/ani/glTF'],
+  trex:['Trex','Quaternius Animated Dinosaur Pack','/tmp/qs/public/glb/dinosaurs_pack'],
+  triceratops:['Triceratops','Quaternius Animated Dinosaur Pack','/tmp/qs/public/glb/dinosaurs_pack'],
+  stegosaurus:['Stegosaurus','Quaternius Animated Dinosaur Pack','/tmp/qs/public/glb/dinosaurs_pack'],
+  parasaur:['Parasaurolophus','Quaternius Animated Dinosaur Pack','/tmp/qs/public/glb/dinosaurs_pack'],
+  apatosaur:['Apatosaurus','Quaternius Animated Dinosaur Pack','/tmp/qs/public/glb/dinosaurs_pack'],
+  snake:['Snake','Quaternius Easy Enemy Pack','/tmp/qs/public/glb/easy_enemies_pack'],
+  snakeangry:['Snake_angry','Quaternius Easy Enemy Pack','/tmp/qs/public/glb/easy_enemies_pack'],
+  wasp:['Wasp','Quaternius Easy Enemy Pack','/tmp/qs/public/glb/easy_enemies_pack'],
+  rat:['Rat','Quaternius Easy Enemy Pack','/tmp/qs/public/glb/easy_enemies_pack'],
+  king:['King','Quaternius Ultimate Modular Men Pack','/tmp/qs/public/glb/modular_men'],
+  adventurer:['Adventurer','Quaternius Ultimate Modular Men Pack','/tmp/qs/public/glb/modular_men'],
+  punk:['Punk','Quaternius Ultimate Modular Men Pack','/tmp/qs/public/glb/modular_men'],
+  farmer:['Farmer','Quaternius Ultimate Modular Men Pack','/tmp/qs/public/glb/modular_men'],
+  witch:['Witch','Quaternius Ultimate Modular Women Pack','/tmp/qs/public/glb/modular_women'],
+  womansoldier:['Soldier','Quaternius Ultimate Modular Women Pack','/tmp/qs/public/glb/modular_women'],
+  womanmedieval:['Medieval','Quaternius Ultimate Modular Women Pack','/tmp/qs/public/glb/modular_women'],
+  knightchar:['KnightCharacter','Quaternius Animated Knight Pack','/tmp/qs/public/glb/single_knight_pack'],
+  fox:['Fox','Quaternius Ultimate Animated Animal Pack','/tmp/qs/public/glb/animals_pack'],
+  stag:['Stag','Quaternius Ultimate Animated Animal Pack','/tmp/qs/public/glb/animals_pack'],
+  deer:['Deer','Quaternius Ultimate Animated Animal Pack','/tmp/qs/public/glb/animals_pack'],
+  bull:['Bull','Quaternius Ultimate Animated Animal Pack','/tmp/qs/public/glb/animals_pack'],
+  horse:['Horse','Quaternius Ultimate Animated Animal Pack','/tmp/qs/public/glb/animals_pack'],
+  husky:['Husky','Quaternius Ultimate Animated Animal Pack','/tmp/qs/public/glb/animals_pack'],
+  donkey:['Donkey','Quaternius Ultimate Animated Animal Pack','/tmp/qs/public/glb/animals_pack'],
  };
  const {execFileSync}=await import('node:child_process');
  fs.rmSync('/tmp/nj-mmo',{recursive:true,force:true});
@@ -169,11 +190,15 @@ if(process.argv.includes('--monster-assets-only')){
   licenseEvidence:'https://quaternius.com/packs/ultimatemonsters.html',mirror:'https://github.com/tech-leads-club/nj-mmo/tree/'+revision+'/client/public/models/monsters',
   mirrorLicenseFile:'client/public/models/monsters/LICENSE.txt',universeId:targetUniverse,assetIds:{},sources:{}};
  const pack=registry.monsterPackV2;
-fs.rmSync('/tmp/kks',{recursive:true,force:true});fs.rmSync('/tmp/ani',{recursive:true,force:true});
+fs.rmSync('/tmp/kks',{recursive:true,force:true});
  execFileSync('git',['clone','--depth','1','-q','https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0.git','/tmp/kks']);
- execFileSync('git',['clone','--depth','1','-q','https://github.com/Tekh-ops/Ultimate-Animated-Animals-July-2021.git','/tmp/ani']);
+ fs.rmSync('/tmp/qs',{recursive:true,force:true});
+ execFileSync('git',['clone','--depth','1','--filter=blob:none','--sparse','-q','https://github.com/trebeljahr/quaternius-showcase.git','/tmp/qs']);
+ execFileSync('git',['-C','/tmp/qs','sparse-checkout','set','public/glb/dinosaurs_pack','public/glb/easy_enemies_pack','public/glb/modular_men','public/glb/modular_women','public/glb/single_knight_pack','public/glb/animals_pack']);
+ const qsLicense=fs.readFileSync('/tmp/qs/LICENSES.md','utf8');
+ for(const pk of ['dinosaurs_pack','easy_enemies_pack','modular_men_pack','modular_women_pack','single_knight_pack','animals_pack'])
+  if(!new RegExp('`'+pk+'`[^\\n]*CC0-1\\.0').test(qsLicense))throw Error('QS_LICENSE_EVIDENCE_MISSING:'+pk);
  if(!/Creative Commons Zero, CC0/.test(fs.readFileSync('/tmp/kks/LICENSE.txt','utf8')))throw Error('SKELETON_LICENSE_EVIDENCE_MISSING');
- if(!/CC0|Creative Commons Zero|public domain/i.test(fs.readFileSync('/tmp/ani/License.txt','utf8')))throw Error('ANIMAL_LICENSE_EVIDENCE_MISSING');
  const toGlb=(gltfPath)=>{
   const doc=JSON.parse(fs.readFileSync(gltfPath,'utf8'));
   const m=/^data:[^;]*;base64,(.*)$/.exec(doc.buffers[0].uri||'');if(!m||doc.buffers.length!==1)throw Error('GLTF_BUFFER_UNSUPPORTED');
