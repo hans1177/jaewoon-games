@@ -1335,9 +1335,26 @@ local function renderMeadowPages()
   end
   partyLines[#partyLines+1]=string.format("기사단 야영지  숲 %d/3 · 화산 %d/3 · 오아시스 %d/3  (입구 근처 모닥불에서 복구)",
     player:GetAttribute("CampWorldtree") or 0,player:GetAttribute("CampVolcano") or 0,player:GetAttribute("CampOasis") or 0)
-  for index,member in ipairs(Config.PartyMembers or {})do
-    partyLines[#partyLines+1]=string.format("%d. %s · %s  [%s]\n   %s",index+1,member.Name,member.Role,
-      member.Source=="Main" and "메인 동료 · 준비 중" or "서브 동료 · 준비 중",member.Story)
+  do
+    local owned,active,bond=player:GetAttribute("CompanionOwned") or 0,player:GetAttribute("CompanionActive") or 0,player:GetAttribute("CompanionBond") or 0
+    local byId={}
+    for _,c in ipairs(Config.Companions or {})do byId[c.Id]=c end
+    local ownedCount=0
+    for i=1,#(Config.Companions or {})do if bit32.band(owned,bit32.lshift(1,i-1))~=0 then ownedCount+=1 end end
+    partyLines[#partyLines+1]=string.format("동료 %d/%d명 모집 · 동행 최대 2명 (둘의 상성이 협동기 또는 불화를 만든다)",ownedCount,#(Config.Companions or {}))
+    for i,c in ipairs(Config.Companions or {})do
+      local flag=bit32.lshift(1,i-1)
+      if bit32.band(owned,flag)~=0 then
+        local likes,dislikes={},{}
+        for _,id in ipairs(c.Likes)do likes[#likes+1]=byId[id] and byId[id].Name or id end
+        for _,id in ipairs(c.Dislikes)do dislikes[#dislikes+1]=byId[id] and byId[id].Name or id end
+        partyLines[#partyLines+1]=string.format("%s %s · %s%s  [%s]\n   \"%s\"\n   대담%d 신중%d 탐욕%d 온정%d 충성%d · 호감: %s / 반감: %s",
+          bit32.band(active,flag)~=0 and "▶" or "·",c.Name,c.Role,bit32.band(bond,flag)~=0 and " ♥" or "",c.Arch,c.Worldview,c.B,c.C,c.G,c.K,c.L,
+          #likes>0 and table.concat(likes,",") or "-",#dislikes>0 and table.concat(dislikes,",") or "-")
+      else
+        partyLines[#partyLines+1]=string.format("· ??? (%s)",c.Where)
+      end
+    end
   end
   local questStageNow=player:GetAttribute("QuestStage") or 1
   for _,mystery in ipairs(Config.Mysteries or {})do
