@@ -8475,7 +8475,7 @@
       ],
       "image": "assets/card-rpg-v2.webp",
       "webPath": "/web-games/human-go/",
-      "hasWebArchive": false,
+      "hasWebArchive": true,
       "featured": false,
       "selectedPlatform": "ROBLOX",
       "homepageWebPlayable": false,
@@ -8559,9 +8559,9 @@
         "sources": {
           "web": {
             "path": "/web-games/human-go/",
-            "archive": false,
+            "archive": true,
             "playable": false,
-            "state": "ENTRY_MISSING_OR_INVALID",
+            "state": "UNITY_WEB_VERIFICATION_REQUIRED",
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -8628,7 +8628,7 @@
         }
       },
       "catalogOrder": 39,
-      "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
+      "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -9699,22 +9699,6 @@
       "webPublishedSourceTreeSha": "bd1cd06ff49b156e284f3d5946e8f9d368819175",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
-    },
-    {
-      "id": "card-grid-duel",
-      "name": "card-grid-duel",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
-      "lifecycleState": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "robloxProjectPath": "roblox-games/card-grid-duel",
-      "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
-      "sourceIntake": {
-        "kind": "EXISTING_ROJO_PROJECT",
-        "designVerified": false,
-        "runtimeVerified": false,
-        "externalReleaseApproved": false
-      }
     }
   ],
   "runtimeAuthority": "company-runtime",
