@@ -9,82 +9,111 @@
  },
  {
   "type": "wait",
-  "ms": 5000
+  "ms": 6000
  },
  {
-  "type": "click_text",
-  "text": "건너뛰기"
- },
- {
-  "type": "wait",
-  "ms": 5000
- },
- {
-  "type": "click_text",
-  "text": "건너뛰기"
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if not hit then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") and string.find(c.Text,\"건너뛰기\") then hit=true end end end if hit then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end end return \"NONE\"",
+  "label": "skip"
  },
  {
   "type": "wait",
-  "ms": 5000
+  "ms": 6000
  },
  {
-  "type": "click_text",
-  "text": "건너뛰기"
- },
- {
-  "type": "wait",
-  "ms": 5000
- },
- {
-  "type": "click_text",
-  "text": "건너뛰기"
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if not hit then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") and string.find(c.Text,\"건너뛰기\") then hit=true end end end if hit then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end end return \"NONE\"",
+  "label": "skip"
  },
  {
   "type": "wait",
-  "ms": 5000
+  "ms": 6000
  },
  {
-  "type": "click_text",
-  "text": "건너뛰기"
- },
- {
-  "type": "wait",
-  "ms": 5000
- },
- {
-  "type": "click_text",
-  "text": "건너뛰기"
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if not hit then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") and string.find(c.Text,\"건너뛰기\") then hit=true end end end if hit then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end end return \"NONE\"",
+  "label": "skip"
  },
  {
   "type": "wait",
-  "ms": 5000
+  "ms": 6000
  },
  {
-  "type": "click_text",
-  "text": "건너뛰기"
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if not hit then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") and string.find(c.Text,\"건너뛰기\") then hit=true end end end if hit then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end end return \"NONE\"",
+  "label": "skip"
  },
  {
   "type": "wait",
-  "ms": 7000
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if not hit then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") and string.find(c.Text,\"건너뛰기\") then hit=true end end end if hit then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if not hit then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") and string.find(c.Text,\"건너뛰기\") then hit=true end end end if hit then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if not hit then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") and string.find(c.Text,\"건너뛰기\") then hit=true end end end if hit then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if not hit then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") and string.find(c.Text,\"건너뛰기\") then hit=true end end end if hit then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if not hit then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") and string.find(c.Text,\"건너뛰기\") then hit=true end end end if hit then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
  },
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local p=game.Players.LocalPlayer local g=p.PlayerGui:FindFirstChildWhichIsA(\"ScreenGui\") local o={} for _,k in ipairs({\"TutorialStep\",\"GuideOff\",\"ProfileReady\"}) do table.insert(o,k..\"=\"..tostring(p:GetAttribute(k))) end local c=p.Character table.insert(o,\"cape=\"..tostring(c and c:GetAttribute(\"OpeningCapeState\"))) for _,sg in ipairs(p.PlayerGui:GetChildren()) do if sg:IsA(\"ScreenGui\") then table.insert(o,sg.Name..\" enabled=\"..tostring(sg.Enabled)..\" overview=\"..tostring(sg:GetAttribute(\"TutorialOverviewDone\"))) end end return table.concat(o,\" \")"
+  "code": "local p=game.Players.LocalPlayer local o={} for _,k in ipairs({\"TutorialStep\",\"GuideOff\",\"ProfileReady\",\"QuickSlot1\",\"QuickSlot2\",\"MeadowStamina\"}) do table.insert(o,k..\"=\"..tostring(p:GetAttribute(k))) end local c=p.Character table.insert(o,\"cape=\"..tostring(c and c:GetAttribute(\"OpeningCapeState\"))..\" \"..tostring(c and c:GetAttribute(\"OpeningCapeReason\"))) for _,sg in ipairs(p.PlayerGui:GetChildren()) do if sg:IsA(\"ScreenGui\") and sg.Name:find(\"Meadow\") or sg.Name==\"Game\" then table.insert(o,sg.Name..\" en=\"..tostring(sg.Enabled)..\" ovw=\"..tostring(sg:GetAttribute(\"TutorialOverviewDone\"))) end end return table.concat(o,\" | \")"
  },
  {
   "type": "capture",
-  "name": "10-after-intro"
+  "name": "20-hud"
  },
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local p=game.Players.LocalPlayer.PlayerGui local o={} for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 and d.AbsolutePosition.Y<2000 then local t=d:IsA(\"TextButton\") and d.Text or \"\" local par=d.Parent and d.Parent.Name or \"\" table.insert(o,string.format(\"%s|%s|%s|par=%s|%d,%d|%dx%d\",d.ClassName,d.Name,t,par,d.AbsolutePosition.X,d.AbsolutePosition.Y,d.AbsoluteSize.X,d.AbsoluteSize.Y)) end end return table.concat(o,\"\\n\")"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local c=game.Players.LocalPlayer.Character c:PivotTo(c:GetPivot()+Vector3.new(20,0,0)) return \"moved\""
+  "code": "local c=game.Players.LocalPlayer.Character c:PivotTo(c:GetPivot()+Vector3.new(22,0,0)) return \"moved\""
  },
  {
   "type": "wait",
@@ -92,7 +121,7 @@
  },
  {
   "type": "capture",
-  "name": "11-tut-2"
+  "name": "21-ovw-2"
  },
  {
   "type": "click_text",
@@ -100,11 +129,11 @@
  },
  {
   "type": "wait",
-  "ms": 800
+  "ms": 900
  },
  {
   "type": "capture",
-  "name": "12-tut-2"
+  "name": "21-ovw-3"
  },
  {
   "type": "click_text",
@@ -112,11 +141,11 @@
  },
  {
   "type": "wait",
-  "ms": 800
+  "ms": 900
  },
  {
   "type": "capture",
-  "name": "12-tut-3"
+  "name": "21-ovw-4"
  },
  {
   "type": "click_text",
@@ -124,11 +153,11 @@
  },
  {
   "type": "wait",
-  "ms": 800
+  "ms": 900
  },
  {
   "type": "capture",
-  "name": "12-tut-4"
+  "name": "21-ovw-5"
  },
  {
   "type": "click_text",
@@ -136,11 +165,11 @@
  },
  {
   "type": "wait",
-  "ms": 800
+  "ms": 900
  },
  {
   "type": "capture",
-  "name": "12-tut-5"
+  "name": "21-ovw-6"
  },
  {
   "type": "click_text",
@@ -148,11 +177,11 @@
  },
  {
   "type": "wait",
-  "ms": 800
+  "ms": 900
  },
  {
   "type": "capture",
-  "name": "12-tut-6"
+  "name": "21-ovw-7"
  },
  {
   "type": "click_text",
@@ -160,11 +189,11 @@
  },
  {
   "type": "wait",
-  "ms": 800
+  "ms": 900
  },
  {
   "type": "capture",
-  "name": "12-tut-7"
+  "name": "21-ovw-8"
  },
  {
   "type": "wait",
@@ -172,6 +201,442 @@
  },
  {
   "type": "capture",
-  "name": "13-practice"
+  "name": "22-practice1"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer local o={} for _,k in ipairs({\"TutorialStep\",\"GuideOff\",\"ProfileReady\",\"QuickSlot1\",\"QuickSlot2\",\"MeadowStamina\"}) do table.insert(o,k..\"=\"..tostring(p:GetAttribute(k))) end local c=p.Character table.insert(o,\"cape=\"..tostring(c and c:GetAttribute(\"OpeningCapeState\"))..\" \"..tostring(c and c:GetAttribute(\"OpeningCapeReason\"))) for _,sg in ipairs(p.PlayerGui:GetChildren()) do if sg:IsA(\"ScreenGui\") and sg.Name:find(\"Meadow\") or sg.Name==\"Game\" then table.insert(o,sg.Name..\" en=\"..tostring(sg.Enabled)..\" ovw=\"..tostring(sg:GetAttribute(\"TutorialOverviewDone\"))) end end return table.concat(o,\" | \")"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c:PivotTo(c:GetPivot()+Vector3.new(-20,0,0)) local h=c:FindFirstChildOfClass(\"Humanoid\") h:Move(Vector3.new(1,0,0)) task.wait(1) return \"moved\""
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "23-practice2"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui local o={} for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 and (d.Name:find(\"R15Skill\") or d.Name:find(\"MeadowUtility\") or d.Name:find(\"QuickSlot\") or d.Name:find(\"QuickEdit\") or d.Name:find(\"Reference\") or d.Name:find(\"Quest\")) then table.insert(o,string.format(\"%s|%d,%d|%dx%d\",d.Name,d.AbsolutePosition.X,d.AbsolutePosition.Y,d.AbsoluteSize.X,d.AbsoluteSize.Y)) end end return table.concat(o,\"\\n\")"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"R15Skill2\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "R15Skill2"
+ },
+ {
+  "type": "capture",
+  "name": "30-R15Skill2-a"
+ },
+ {
+  "type": "wait",
+  "ms": 250
+ },
+ {
+  "type": "capture",
+  "name": "30-R15Skill2-b"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local h=game.Players.LocalPlayer.Character:FindFirstChildOfClass(\"Humanoid\") local a=h:FindFirstChildOfClass(\"Animator\") local o={} if a then for _,t in ipairs(a:GetPlayingAnimationTracks()) do table.insert(o,t.Name..\":\"..string.format(\"%.2f\",t.TimePosition)) end end return \"tracks=\"..table.concat(o,\",\")"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"R15Skill3\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "R15Skill3"
+ },
+ {
+  "type": "capture",
+  "name": "30-R15Skill3-a"
+ },
+ {
+  "type": "wait",
+  "ms": 250
+ },
+ {
+  "type": "capture",
+  "name": "30-R15Skill3-b"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local h=game.Players.LocalPlayer.Character:FindFirstChildOfClass(\"Humanoid\") local a=h:FindFirstChildOfClass(\"Animator\") local o={} if a then for _,t in ipairs(a:GetPlayingAnimationTracks()) do table.insert(o,t.Name..\":\"..string.format(\"%.2f\",t.TimePosition)) end end return \"tracks=\"..table.concat(o,\",\")"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"R15Skill1\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "R15Skill1"
+ },
+ {
+  "type": "capture",
+  "name": "30-R15Skill1-a"
+ },
+ {
+  "type": "wait",
+  "ms": 250
+ },
+ {
+  "type": "capture",
+  "name": "30-R15Skill1-b"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local h=game.Players.LocalPlayer.Character:FindFirstChildOfClass(\"Humanoid\") local a=h:FindFirstChildOfClass(\"Animator\") local o={} if a then for _,t in ipairs(a:GetPlayingAnimationTracks()) do table.insert(o,t.Name..\":\"..string.format(\"%.2f\",t.TimePosition)) end end return \"tracks=\"..table.concat(o,\",\")"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"MeadowUtility2\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "sprint"
+ },
+ {
+  "type": "wait",
+  "ms": 600
+ },
+ {
+  "type": "capture",
+  "name": "31-sprint-on"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"MeadowUtility2\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "sprint-off"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "31-sprint-off"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"QuickSlot1\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "qs1"
+ },
+ {
+  "type": "wait",
+  "ms": 500
+ },
+ {
+  "type": "capture",
+  "name": "32-qs1"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"QuickEdit\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "edit"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "32-edit"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"QuickSlot3\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "qs3"
+ },
+ {
+  "type": "wait",
+  "ms": 600
+ },
+ {
+  "type": "capture",
+  "name": "32-picker"
+ },
+ {
+  "type": "click_text",
+  "text": "X"
+ },
+ {
+  "type": "wait",
+  "ms": 300
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"QuickEdit\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "edit-off"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"ReferenceMenu1\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "menu1"
+ },
+ {
+  "type": "wait",
+  "ms": 1200
+ },
+ {
+  "type": "capture",
+  "name": "40-menu1"
+ },
+ {
+  "type": "click_text",
+  "text": "X"
+ },
+ {
+  "type": "wait",
+  "ms": 600
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"ReferenceMenu2\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "menu2"
+ },
+ {
+  "type": "wait",
+  "ms": 1200
+ },
+ {
+  "type": "capture",
+  "name": "40-menu2"
+ },
+ {
+  "type": "click_text",
+  "text": "X"
+ },
+ {
+  "type": "wait",
+  "ms": 600
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"ReferenceMenu3\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "menu3"
+ },
+ {
+  "type": "wait",
+  "ms": 1200
+ },
+ {
+  "type": "capture",
+  "name": "40-menu3"
+ },
+ {
+  "type": "click_text",
+  "text": "X"
+ },
+ {
+  "type": "wait",
+  "ms": 600
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"ReferenceMenu4\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "menu4"
+ },
+ {
+  "type": "wait",
+  "ms": 1200
+ },
+ {
+  "type": "capture",
+  "name": "40-menu4"
+ },
+ {
+  "type": "click_text",
+  "text": "X"
+ },
+ {
+  "type": "wait",
+  "ms": 600
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"ReferenceMenu5\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "menu5"
+ },
+ {
+  "type": "wait",
+  "ms": 1200
+ },
+ {
+  "type": "capture",
+  "name": "40-menu5"
+ },
+ {
+  "type": "click_text",
+  "text": "X"
+ },
+ {
+  "type": "wait",
+  "ms": 600
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"ReferenceMenu6\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "menu6"
+ },
+ {
+  "type": "wait",
+  "ms": 1200
+ },
+ {
+  "type": "capture",
+  "name": "40-menu6"
+ },
+ {
+  "type": "click_text",
+  "text": "X"
+ },
+ {
+  "type": "wait",
+  "ms": 600
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Name==\"ReferenceMenu1\" and d.Visible and d.AbsoluteSize.X>0 then return string.format(\"%d,%d\",d.AbsolutePosition.X+d.AbsoluteSize.X/2,d.AbsolutePosition.Y+d.AbsoluteSize.Y/2) end end return \"NONE\"",
+  "label": "menu1"
+ },
+ {
+  "type": "wait",
+  "ms": 1000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local o={} for _,d in ipairs(game.Players.LocalPlayer.PlayerGui:GetDescendants()) do if d.Name==\"MeadowMenuTabs\" then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextButton\") then table.insert(o,c.Text) end end end end return table.concat(o,\",\")"
+ },
+ {
+  "type": "click_text",
+  "text": "캐릭터"
+ },
+ {
+  "type": "wait",
+  "ms": 900
+ },
+ {
+  "type": "capture",
+  "name": "41-tab-캐릭터"
+ },
+ {
+  "type": "click_text",
+  "text": "인벤토리"
+ },
+ {
+  "type": "wait",
+  "ms": 900
+ },
+ {
+  "type": "capture",
+  "name": "41-tab-인벤토리"
+ },
+ {
+  "type": "click_text",
+  "text": "스킬"
+ },
+ {
+  "type": "wait",
+  "ms": 900
+ },
+ {
+  "type": "capture",
+  "name": "41-tab-스킬"
+ },
+ {
+  "type": "click_text",
+  "text": "퀘스트"
+ },
+ {
+  "type": "wait",
+  "ms": 900
+ },
+ {
+  "type": "capture",
+  "name": "41-tab-퀘스트"
+ },
+ {
+  "type": "click_text",
+  "text": "스킬"
+ },
+ {
+  "type": "wait",
+  "ms": 500
+ },
+ {
+  "type": "click_text",
+  "text": "스킬 트리  ·  점수 투자"
+ },
+ {
+  "type": "wait",
+  "ms": 800
+ },
+ {
+  "type": "capture",
+  "name": "42-tree"
+ },
+ {
+  "type": "click_text",
+  "text": "전투 기술  ·  사용 / 등록"
+ },
+ {
+  "type": "wait",
+  "ms": 800
+ },
+ {
+  "type": "capture",
+  "name": "42-skills"
+ },
+ {
+  "type": "click_text",
+  "text": "퀵슬롯 등록"
+ },
+ {
+  "type": "wait",
+  "ms": 800
+ },
+ {
+  "type": "capture",
+  "name": "42-slotchooser"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local o={} for _,m in ipairs(game:GetService(\"LogService\"):GetLogHistory()) do if m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning then table.insert(o,m.message:sub(1,200)) end end local n=#o local out={} for i=math.max(1,n-40),n do table.insert(out,o[i]) end return n..\" issues\\n\"..table.concat(out,\"\\n\")"
+ },
+ {
+  "type": "click_text",
+  "text": "X"
  }
 ]
