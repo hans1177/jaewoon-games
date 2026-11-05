@@ -6340,6 +6340,45 @@ do
   workspace:SetAttribute("NamedBossCount",count)
 end
 
+-- [인간형 영주 · 약탈단 요새] 지역마다 인간형 영주 1명이 부하 4명과 함께 요새를 차지한다. 영주를 잡으면 요새 보물(고급 재료)이 떨어진다.
+-- 모델은 등록된 인간형 mon_*(오크·해골오크·부족전사·암살자·야수인간·고블린·족장·악마)만 사용한다.
+do
+  local lords={
+    windcliff={"해풍 요새의 영주 바르간","goblin","orc"},meadow={"붉은 깃발 대장 로크","goblinscout","beastman"},
+    worldtree={"숲의 파수 영주 엘더우드","beastman","chieftain"},volcano={"홍염 기사단 잔당 카일","skullorc","orc"},
+    oasis={"사막 상단의 지배자 자파르","assassin","raptor"},swamp={"늪 마녀단의 수장 모르가나","tribal","goblin"},
+    citadel={"몰락한 성주 아이젠","orc","skullorc"},highland={"고원 족장 보르가","chieftain","yeti"},
+    canyon={"협곡 군벌 라자크","skullorc","assassin"},chaos={"혼돈 사도 벨리알","demon","skullorc"},
+    wetland={"습원 도적왕 그림","goblin","toad"},desert={"모래 칼날 단장 아마르","assassin","beastman"},
+    deadmarsh={"죽은 늪의 사제왕 말라크","tribal","demon"}}
+  local tiers={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
+  local random=Random.new(7001)
+  local village=Config.WorldMap.Village
+  local forts=0
+  for _,zone in ipairs(Config.WorldMap.Zones) do
+    local info=lords[zone.Id]
+    local x,z=Config.WorldMap.RandomPoint(zone.Id,random,160)
+    if info and x and not (x>village.X0-200 and x<village.X1+200 and z>village.Z0-200 and z<village.Z1+200) then
+      local center=Vector3.new(x,3,z)
+      table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=info[2],name="영주 · "..info[1],
+        tier=math.min(10,tiers[zone.Id]+1),height=9,hp=5.5,dmg=2.4,alpha=true,bonusBoss=true,zoneTag=zone.Id,named=true,lord=true,
+        drops={{"Crystal",1,5},{"Claw",1,3},{"Ore",1,4},{"Hide",1,4}},position=center})
+      for k=1,4 do
+        local a=k*math.pi/2+.4
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=info[3],name="약탈단원 · "..info[1]:match("^(%S+)"),
+          tier=tiers[zone.Id],height=5.2,hp=1.6,dmg=1.2,zoneTag=zone.Id,
+          drops={{"Hide",.7,2},{"Ore",.4,1}},position=center+Vector3.new(math.cos(a)*18,0,math.sin(a)*18)})
+      end
+      local anchor=Instance.new("Attachment");anchor.Name="LordFort_"..zone.Id;anchor.WorldPosition=center+Vector3.new(0,4,0);anchor.Parent=workspace.Terrain
+      local smoke=Instance.new("ParticleEmitter");smoke.Color=ColorSequence.new(Color3.fromRGB(120,100,90));smoke.Rate=6
+      smoke.Lifetime=NumberRange.new(5,7);smoke.Speed=NumberRange.new(8,12);smoke.EmissionDirection=Enum.NormalId.Top
+      smoke.Size=NumberSequence.new(5);smoke.Transparency=NumberSequence.new(.5,1);smoke.Parent=anchor
+      forts+=1
+    end
+  end
+  workspace:SetAttribute("LordFortCount",forts)
+end
+
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
 -- 도달/재료 판정은 2초마다, 처치 판정은 몬스터 처치 시점에 확인한다. 거울 정원은 메인 줄 완료(HiddenOpen)로 열린다.
 do
