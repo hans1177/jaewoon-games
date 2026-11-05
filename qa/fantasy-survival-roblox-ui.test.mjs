@@ -427,7 +427,7 @@ test('inventory uses split landscape and scrollable portrait details without cha
     'inventoryWorkspace:SetAttribute("SplitLayout",split)',
     'detail.Position=split and UDim2.fromOffset(leftWidth+12,0)',
     'inventoryShownCount=visibleCount',
-    'local categories={"전체","보유","무기","갑옷","장신구","소모품","재료","기록","재화"}',
+    'local categories={"전체","보유","무기","방패","갑옷","장신구","소모품","재료","기록","재화"}',
     '(category=="보유" and owned(item)>0)',
     'local underline=tab:FindFirstChild("SelectedUnderline")',
     'inventoryEmpty.Visible=visibleCount==0',
