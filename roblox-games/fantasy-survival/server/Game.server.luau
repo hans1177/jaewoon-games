@@ -72,6 +72,16 @@ local worldClock = 0
 local attackCooldown = {}
 local comboChain = {}
 local MAX_ENEMIES = 30
+-- [위쳐식 몬스터 분류·오일] 분류별 오일(8번 퀵슬롯)을 바르면 15회 타격이 해당 분류에 1.5배 피해.
+local meadowOil={
+  classOf={beastman="beast",wolf="beast",raptor="beast",toad="beast",chieftain="beast",yeti="beast",keltir="beast",
+    spider="arachnid",fangspider="arachnid",bladespider="arachnid",
+    orc="human",skullorc="human",goblin="human",goblinscout="human",tribal="human",assassin="human",
+    demon="demon",frostfiend="demon"},
+  kindClass={wolf="beast",bat="beast",ghost="demon",bee="arachnid"},
+  names={beast="야수 오일",arachnid="거미 오일",human="인간형 오일",demon="퇴마 오일"},
+  recipes={beast={{"Hide",1},{"Fang",1}},arachnid={{"Fang",1},{"Mushroom",1}},human={{"Ore",1},{"Hide",1}},demon={{"Magma",1},{"Crystal",1}}},
+}
 local nextEncounterCheck = 0
 -- [지역 서식지] 마을 내부의 늑대를 외곽 숲으로 이동하고 골렘 출현 지점을 제거한다.
 -- 기존 종별 체력·공격력·드랍·보상·저장 구조를 보존한다.
@@ -3201,6 +3211,8 @@ local function spawnEnemy(site, siteIndex)
   model:SetAttribute("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP")
   model:SetAttribute("Species",partId)
   if site.model then model:SetAttribute("Variant",site.model) end
+  local oilClass=meadowOil.classOf[site.model or ""] or (not site.model and meadowOil.kindClass[partId]) or nil
+  if oilClass then model:SetAttribute("Weakness",meadowOil.names[oilClass]) end
   local firstAttack={wolf="WOLF_BITE",bee="BEE_SWEEP",bat="BAT_DIVE",
     ghost="GHOST_WAIL",bandit="BANDIT_SLASH"}
   model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or firstAttack[partId])
@@ -3260,7 +3272,7 @@ local function spawnEnemy(site, siteIndex)
   end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
+    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,oilClass=oilClass,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
     banditIdle=banditIdle,banditWalk=banditWalk,
     damage=isAlpha and math.floor(13*(site.dmg or 1)) or math.floor(((isBoss and 20 or 6)+math.floor(site.tier/2))*(site.dmg or 1)),
     speed=isAlpha and 8.4 or (isBoss and 4.8 or 7.5),position=location,spawnPosition=location,siteIndex=siteIndex,
@@ -3338,6 +3350,14 @@ end
 local function applyMeadowDamage(player,target,damage)
   if not target or target.HP<=0 or not target.model.Parent then return false end
   if (meadowFocusUntil[player] or 0)>os.clock() then damage=math.floor(damage*1.25) end
+  if target.oilClass and player:GetAttribute("MeadowOilClass")==target.oilClass then
+    local charges=player:GetAttribute("MeadowOilCharges") or 0
+    if charges>0 then
+      damage=math.floor(damage*1.5)
+      player:SetAttribute("MeadowOilCharges",charges-1)
+      if charges-1<=0 then player:SetAttribute("MeadowOilClass",nil) end
+    end
+  end
   -- [장비 공격력] 기존 무기 강화·숙련도·기술 배율은 그대로 두고 새 장비 보너스만 가산.
   local gearAttack=meadowRpg.stats(player)
   damage=damage+gearAttack
@@ -3391,6 +3411,14 @@ local function applyMeadowDamage(player,target,damage)
       drop("Crystal",(kind=="ghost" or kind=="bat") and .3 or .08,target.isBoss and 4 or 1)
       drop("Magma",target.isBoss and 1 or 0.03,target.isBoss and 3 or 1)
       for _,entry in ipairs(target.siteDrops or {}) do drop(entry[1],entry[2],entry[3]) end
+      if target.contractIndex then
+        local flag=bit32.lshift(1,target.contractIndex-1)
+        if bit32.band(readNumber(player,"ContractAccepted",0),flag)~=0 then
+          setNumber(player,"ContractDone",bit32.bor(readNumber(player,"ContractDone",0),flag))
+          player:SetAttribute("MeadowGearMessage","계약 표적 처치! 게시판에서 보상을 받아라.")
+          player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+        end
+      end
     end
     -- [사냥 숙련도] 실제 서버에서 처치가 확정된 늑대·박쥐만 기록한다.
     -- 살아 있는 사슴·토끼 관찰은 사냥으로 인정하지 않으며 도감·드랍 변경 없음.
@@ -5394,6 +5422,44 @@ do
   workspace:SetAttribute("OpenWorldSiteCount",count)
 end
 
+-- [오일 바르기] 가장 가까운 몬스터의 분류에 맞는 오일을 재료로 즉석 제작해 바른다.
+do
+  local lastOil={}
+  remote.OnServerEvent:Connect(function(player,action)
+    if action~="oil:auto" or player:GetAttribute("ProfileReady")~=true then return end
+    if os.clock()-(lastOil[player] or 0)<1 then return end
+    lastOil[player]=os.clock()
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    local nearest,best=nil,80
+    for _,enemy in ipairs(enemies) do
+      if enemy.HP>0 and enemy.model.Parent and enemy.oilClass then
+        local distance=(enemy.position-root.Position).Magnitude
+        if distance<best then nearest,best=enemy,distance end
+      end
+    end
+    local function say(text)
+      player:SetAttribute("MeadowGearMessage",text)
+      player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+    end
+    if not nearest then say("오일을 바를 몬스터가 주변에 없어.");return end
+    local class=nearest.oilClass
+    if player:GetAttribute("MeadowOilClass")==class and (player:GetAttribute("MeadowOilCharges") or 0)>0 then
+      say(meadowOil.names[class].."가 이미 발라져 있어.");return
+    end
+    for _,need in ipairs(meadowOil.recipes[class]) do
+      if readNumber(player,need[1],0)<need[2] then
+        local mat=Config.MaterialByField[need[1]]
+        say(meadowOil.names[class].." 재료 부족: "..(mat and mat.Name or need[1]));return
+      end
+    end
+    for _,need in ipairs(meadowOil.recipes[class]) do setNumber(player,need[1],readNumber(player,need[1],0)-need[2]) end
+    player:SetAttribute("MeadowOilClass",class)
+    player:SetAttribute("MeadowOilCharges",15)
+    say(meadowOil.names[class].." 적용 · 15회 타격에 1.5배 피해")
+  end)
+end
+
 -- [이정표 · 장소 발견] 대륙 곳곳의 이정표를 처음 조사하면 위치가 저장되고 보상을 받는다.
 -- 이정표에서는 이미 발견한 동쪽·서쪽 이정표(마을 포함)로 빠르게 이동한다. 이동 선택은 서버가 거리·발견 여부를 다시 확인한다.
 do
@@ -5470,6 +5536,151 @@ do
       travelTo(player,villageSpawn)
     end
   end)
+end
+
+-- [위쳐식 계약 · 지하 던전] 이정표마다 계약 게시판이 있고, 지정된 강화 몬스터를 처치해 보상을 받는다.
+-- 일부 이정표에는 던전 입구가 있어 대륙 동쪽 밖의 지하 방(전용 몬스터·보스·보물상자)으로 들어간다.
+do
+  local contracts={
+    [2]={"beastman","저주받은 사냥꾼",5.6},[3]={"spider","세계수 거미 여왕",4.6},[4]={"wolf","회색 우두머리",4.6},
+    [5]={"goblin","탑의 약탈 대장",4.2},[6]={"skullorc","재의 제단 사제",5.4},[7]={"raptor","용암 사냥꾼",5},
+    [8]={"orc","광산의 광인",5},[9]={"assassin","오벨리스크의 그림자",4.8},[10]={"bladespider","사원의 수호 거미",4.6},
+    [11]={"toad","안개 두꺼비 왕",4},[12]={"tribal","마녀의 하수인",5},[13]={"demon","성문의 악마",6},
+    [14]={"orc","대장간의 불꽃 오크",5.6},[15]={"skullorc","초소 지휘관",5.6},[16]={"demon","옥좌의 집행자",6.6},
+  }
+  local anchors={ -- 이정표 좌표(위 이정표 목록과 동일)
+    {520,-300},{1000,500},{1300,-700},{1800,300},{2100,-800},{2500,600},{2900,-500},{3200,800},
+    {3700,-650},{4100,500},{4600,-700},{4900,700},{5500,-600},{5800,700},{6100,-300},{6300,300},
+  }
+  local sessions={}
+  local function bit(index) return bit32.lshift(1,index-1) end
+  local function say(player,title,text,options) pcall(function() villageDialogue(player,title,text,options) end) end
+  for index,spec in pairs(contracts) do
+    local base=Vector3.new(anchors[index][1],3,anchors[index][2])
+    table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=spec[1],name="계약 · "..spec[2],
+      tier=math.min(10,2+math.floor(index*.6)),height=spec[3],hp=3.5,dmg=1.7,alpha=false,contractIndex=index,
+      drops={{"Crystal",.8,2},{"Claw",.5,1},{"Hide",.6,2}},position=base+Vector3.new(34,0,26)})
+    task.spawn(function()
+      task.wait(3)
+      local anchor=Instance.new("Attachment")
+      anchor.Name="ContractBoard_"..index;anchor.WorldPosition=base+Vector3.new(-9,0,9);anchor.Parent=workspace.Terrain
+      local prompt=Instance.new("ProximityPrompt")
+      prompt.ActionText="계약 게시판";prompt.ObjectText=spec[2];prompt.HoldDuration=.4
+      prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+      prompt.Triggered:Connect(function(player)
+        if player:GetAttribute("ProfileReady")~=true then return end
+        sessions[player]={index=index,expires=os.clock()+40}
+        local accepted=bit32.band(readNumber(player,"ContractAccepted",0),bit(index))~=0
+        local done=bit32.band(readNumber(player,"ContractDone",0),bit(index))~=0
+        local claimed=bit32.band(readNumber(player,"ContractClaimed",0),bit(index))~=0
+        local title="계약 · "..spec[2]
+        if claimed then say(player,title,"이미 해결한 계약이다. 게시판에는 새 이름이 올라오지 않았다.")
+        elseif done then say(player,title,spec[2].."을(를) 처치했다. 보상을 받아라.",{{label="보상 수령",action="ct:claim"}})
+        elseif accepted then say(player,title,"이정표 동북쪽 근처에서 "..spec[2].."이(가) 배회한다. 오일(8번)을 바르고 사냥하라.")
+        else say(player,title,"이정표 근처의 강화 몬스터 "..spec[2].." 처치 의뢰. 보상: 재화·경험치·수정.",{{label="계약 수락",action="ct:accept"}}) end
+      end)
+    end)
+  end
+  remote.OnServerEvent:Connect(function(player,action)
+    if action~="ct:accept" and action~="ct:claim" then return end
+    local session=sessions[player]
+    if not session or os.clock()>session.expires then return end
+    sessions[player]=nil
+    local index=session.index
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not root or (root.Position-Vector3.new(anchors[index][1],3,anchors[index][2])).Magnitude>60 then return end
+    if action=="ct:accept" then
+      setNumber(player,"ContractAccepted",bit32.bor(readNumber(player,"ContractAccepted",0),bit(index)))
+      say(player,"계약 수락","계약을 수락했다. 표적을 찾아 처치하라.")
+    elseif bit32.band(readNumber(player,"ContractDone",0),bit(index))~=0
+      and bit32.band(readNumber(player,"ContractClaimed",0),bit(index))==0 then
+      setNumber(player,"ContractClaimed",bit32.bor(readNumber(player,"ContractClaimed",0),bit(index)))
+      pcall(awardProgress,player,60+index*14,40+index*18)
+      setNumber(player,"Crystal",readNumber(player,"Crystal",0)+1+math.floor(index/5))
+      say(player,"계약 완료","보상을 받았다. 수정과 재화를 챙겼다.")
+    end
+  end)
+  workspace:SetAttribute("ContractKillHook",true)
+end
+
+-- [지하 던전] 대륙 동쪽 밖(x≈8000)에 닫힌 지하 방 3개. 입구 이정표: 4 갈림길 주막터 · 8 옛 광산 입구 · 12 늪 마녀의 오두막.
+do
+  local dungeons={
+    {name="잊힌 지하묘지",entry=4,cx=8000,boss={"spiritgolem","묘지의 수문장 · 석상 골렘",8,4.5},
+      mobs={"spider","fangspider","bladespider","spider","fangspider"},tier=5},
+    {name="고블린 소굴",entry=8,cx=8400,boss={"orc","소굴의 왕 · 거대 오크",7,4},
+      mobs={"goblin","goblinscout","goblin","tribal","goblinscout"},tier=6},
+    {name="심연의 제단",entry=12,cx=8800,boss={"demon","제단의 군주 · 심연 악마",8,5},
+      mobs={"demon","skullorc","assassin","demon","skullorc"},tier=8},
+  }
+  local anchors={{1800,300},{3200,800},{4900,700}}
+  local drops={spider={{"Fang",.6},{"Ectoplasm",.3}},fangspider={{"Fang",.6}},bladespider={{"Fang",.5},{"Claw",.4}},
+    goblin={{"Ore",.4},{"Mushroom",.3}},goblinscout={{"Hide",.4}},tribal={{"Moonbloom",.4},{"Ore",.3}},
+    demon={{"Magma",.6},{"Crystal",.4}},skullorc={{"Ore",.6},{"Magma",.3}},assassin={{"Claw",.6},{"Crystal",.3}}}
+  local travelBack={}
+  task.spawn(function()
+    task.wait(2)
+    local terrain=workspace.Terrain
+    for index,d in ipairs(dungeons) do
+      terrain:FillBlock(CFrame.new(d.cx,20,0),Vector3.new(190,64,190),Enum.Material.Slate)
+      terrain:FillBlock(CFrame.new(d.cx,24,0),Vector3.new(170,44,170),Enum.Material.Air)
+      for _,spot in ipairs({{-60,-60},{60,-60},{-60,60},{60,60},{0,0}}) do
+        terrain:FillCylinder(CFrame.new(d.cx+spot[1],22,spot[2]),44,10,Enum.Material.Basalt)
+        local lamp=Instance.new("Attachment");lamp.WorldPosition=Vector3.new(d.cx+spot[1],12,spot[2]+7);lamp.Parent=terrain
+        local light=Instance.new("PointLight");light.Color=Color3.fromRGB(255,170,90);light.Range=48;light.Brightness=2.2;light.Parent=lamp
+      end
+    end
+  end)
+  for index,d in ipairs(dungeons) do
+    local entry=Vector3.new(anchors[index][1]-14,3,anchors[index][2]-14)
+    local inside=Vector3.new(d.cx,5,66)
+    local enterAnchor=Instance.new("Attachment");enterAnchor.WorldPosition=entry;enterAnchor.Parent=workspace.Terrain
+    local glow=Instance.new("ParticleEmitter");glow.Color=ColorSequence.new(Color3.fromRGB(255,120,80));glow.LightEmission=1;glow.Rate=22
+    glow.Lifetime=NumberRange.new(1.5,2.5);glow.Speed=NumberRange.new(1,3);glow.Size=NumberSequence.new(.9);glow.Parent=enterAnchor
+    local enter=Instance.new("ProximityPrompt");enter.ActionText="던전 입장";enter.ObjectText=d.name.." (권장 단계 "..d.tier..")"
+    enter.HoldDuration=.6;enter.MaxActivationDistance=12;enter.RequiresLineOfSight=false;enter.Parent=enterAnchor
+    enter.Triggered:Connect(function(player)
+      local character=player.Character
+      if character and character:FindFirstChild("HumanoidRootPart") then character:PivotTo(CFrame.new(inside)) end
+    end)
+    local exitAnchor=Instance.new("Attachment");exitAnchor.WorldPosition=Vector3.new(d.cx,4,74);exitAnchor.Parent=workspace.Terrain
+    local exit=Instance.new("ProximityPrompt");exit.ActionText="던전 탈출";exit.ObjectText=d.name;exit.HoldDuration=.6
+    exit.MaxActivationDistance=12;exit.RequiresLineOfSight=false;exit.Parent=exitAnchor
+    exit.Triggered:Connect(function(player)
+      local character=player.Character
+      if character and character:FindFirstChild("HumanoidRootPart") then character:PivotTo(CFrame.new(entry+Vector3.new(0,4,0))) end
+    end)
+    local random=Random.new(1200+index)
+    for i,model in ipairs(d.mobs) do
+      for pack=1,2 do
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=model,tier=d.tier,height=model:find("spider") and 3.6 or 4.4,
+          hp=1.8,dmg=1.3,drops=drops[model],dungeon=index,
+          position=Vector3.new(d.cx+random:NextNumber(-65,65),3,random:NextNumber(-65,30))})
+      end
+    end
+    table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=d.boss[1],name=d.boss[2],tier=d.tier+2,height=d.boss[3],
+      hp=d.boss[4],dmg=2,alpha=true,dungeon=index,drops={{"Crystal",1,3},{"Magma",.6,2},{"Ore",1,3}},position=Vector3.new(d.cx,3,-50)})
+    local chest=Instance.new("Attachment");chest.WorldPosition=Vector3.new(d.cx,4,-72);chest.Parent=workspace.Terrain
+    local chestGlow=Instance.new("ParticleEmitter");chestGlow.Color=ColorSequence.new(Color3.fromRGB(255,226,120));chestGlow.LightEmission=1
+    chestGlow.Rate=16;chestGlow.Lifetime=NumberRange.new(2,3);chestGlow.Size=NumberSequence.new(.8);chestGlow.Parent=chest
+    local open=Instance.new("ProximityPrompt");open.ActionText="보물 상자 열기";open.ObjectText=d.name;open.HoldDuration=.8
+    open.MaxActivationDistance=12;open.RequiresLineOfSight=false;open.Parent=chest
+    open.Triggered:Connect(function(player)
+      local function say(text) pcall(function() villageDialogue(player,d.name,text) end) end
+      for _,enemy in ipairs(enemies) do
+        if enemy.dungeon==index and enemy.HP>0 and enemy.model.Parent then say("아직 몬스터가 남아 있다. 모두 처치해야 상자가 열린다.");return end
+      end
+      local mask=readNumber(player,"DungeonCleared",0)
+      local flag=bit32.lshift(1,index-1)
+      if bit32.band(mask,flag)~=0 then say("이미 비워 둔 상자다.");return end
+      setNumber(player,"DungeonCleared",bit32.bor(mask,flag))
+      setNumber(player,"Crystal",readNumber(player,"Crystal",0)+3+index)
+      setNumber(player,"Magma",readNumber(player,"Magma",0)+2+index)
+      setNumber(player,"Ore",readNumber(player,"Ore",0)+4+index)
+      pcall(awardProgress,player,150+index*80,120+index*60)
+      say("던전을 정복했다! 수정·마그마·광석과 큰 보상을 얻었다.")
+    end)
+  end
 end
 
 -- [지역 발견] 실제 위치가 지역 안에 들어가면 서버가 발견 비트를 기록한다(1 초원·2 숲·4 화산·8 오아시스).

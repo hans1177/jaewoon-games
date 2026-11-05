@@ -5483,7 +5483,7 @@ do
     for i,button in ipairs(choices)do
       local option=typeof(payload.options)=="table" and payload.options[i] or nil
       local action=option and option.action
-      local permitted=action=="wp:east" or action=="wp:west" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
+      local permitted=action=="wp:east" or action=="wp:west" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
       button.Visible=permitted
       choiceActions[i]=permitted and action or nil
       if permitted then button.Text=tostring(option.label or "선택") end
@@ -9647,7 +9647,7 @@ end)()
 
 -- [하단 퀵슬롯] 기존 10칸 시안 단축바를 숨기고 한 줄로 통합: 1 무기 · 2 채집/상호작용 · 3 체력약 · 4 기력약 · 5~7 등록 기술.
 ;(function()
-  local COUNT=7
+  local COUNT=8
   local bar=Instance.new("Frame")
   bar.Name="MeadowQuickBar";bar.AnchorPoint=Vector2.new(.5,1);bar.Position=UDim2.new(.5,0,1,-8)
   bar.Size=UDim2.fromOffset(COUNT*52+(COUNT-1)*4,52);bar.BackgroundTransparency=1;bar.ZIndex=30;bar.Parent=gui
@@ -9684,6 +9684,7 @@ end)()
     elseif i==2 then activateMeadowAction("scope-coreloop-1-6ebe58f496")
     elseif i==3 then remote:FireServer("meadow:rpg:tonic:use:herbal_tonic")
     elseif i==4 then remote:FireServer("meadow:rpg:tonic:use:energy_tonic")
+    elseif i==8 then remote:FireServer("oil:auto")
     else
       local id=meadowArt.quickIds[i]
       if id then activateMeadowAction(id) end
@@ -9723,7 +9724,8 @@ end)()
     slots[2].icon.Image=meadowRealActionIcons.interact;slots[2].icon.ImageRectSize=Vector2.zero;slots[2].icon.ImageRectOffset=Vector2.zero
     meadowArt.gear(slots[3].icon,32)
     meadowArt.gear(slots[4].icon,33)
-    for i=5,COUNT do
+    meadowArt.gear(slots[8].icon,33);slots[8].icon.ImageColor3=Color3.fromRGB(255,190,70)
+    for i=5,7 do
       local id=meadowArt.quickIds[i]
       slots[i].icon.Visible=id~=nil
       if id then meadowArt.skill(slots[i].icon,id) end
@@ -9745,7 +9747,9 @@ end)()
     local sp=math.floor(tonumber(player:GetAttribute("MeadowPotionStamina")) or 0)
     slots[3].count.Text=hp>0 and tostring(hp) or "";slots[3].icon.ImageTransparency=hp>0 and 0 or .6
     slots[4].count.Text=sp>0 and tostring(sp) or "";slots[4].icon.ImageTransparency=sp>0 and 0 or .6
-    for i=5,COUNT do
+    local oilCharges=math.floor(tonumber(player:GetAttribute("MeadowOilCharges")) or 0)
+    slots[8].count.Text=oilCharges>0 and tostring(oilCharges) or "";slots[8].icon.ImageTransparency=oilCharges>0 and 0 or .45
+    for i=5,7 do
       local id=meadowArt.quickIds[i]
       local deadline=id and player:GetAttribute("MeadowReady_"..id)
       local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
@@ -9755,7 +9759,7 @@ end)()
   end)
   UserInputService.InputBegan:Connect(function(input,processed)
     if processed or UserInputService:GetFocusedTextBox() then return end
-    local keys={Enum.KeyCode.One,Enum.KeyCode.Two,Enum.KeyCode.Three,Enum.KeyCode.Four,Enum.KeyCode.Five,Enum.KeyCode.Six,Enum.KeyCode.Seven}
+    local keys={Enum.KeyCode.One,Enum.KeyCode.Two,Enum.KeyCode.Three,Enum.KeyCode.Four,Enum.KeyCode.Five,Enum.KeyCode.Six,Enum.KeyCode.Seven,Enum.KeyCode.Eight}
     for i,code in ipairs(keys)do if input.KeyCode==code then press(i) end end
   end)
   task.spawn(function()
