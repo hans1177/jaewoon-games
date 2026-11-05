@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "ocean-voyage-build-up-g1-70628d571bf5",
-  "directiveFingerprint": "70628d571bf5ffe155858faced10ad030ff078c97b4fde86dce6ebd418cde62b",
+  "directiveId": "ocean-voyage-build-up-g1-f7cea1847e8b",
+  "directiveFingerprint": "f7cea1847e8b18c1f1ae83530733b3c525e087fcb787c43b3fcd888aa5c4939a",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "ocean-voyage",
@@ -14,7 +14,7 @@
   "designContextMode": "SOURCE_SAFE_NO_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/ocean-voyage",
-  "sourceTreeFingerprint": "bdbecc66a886a2ae7f459099484c404643877f9ecdaf2f2d6df13e9197ea54ec",
+  "sourceTreeFingerprint": "e20b034b5c4d9080e17b01ab9c569920604233e48ad97525ec99e6d682afc268",
   "designFingerprint": "051319b3b7735535d12022f458462285ca62734802fe247f279dff93ff6bcfb6",
   "designSourceBuildUp": {
     "version": 1,
@@ -119,7 +119,7 @@
         "atUnboundedGrowthRule": "",
         "standardGrammarVersion": null,
         "delveAtEvidence": [],
-        "sourceTreeFingerprint": "bdbecc66a886a2ae7f459099484c404643877f9ecdaf2f2d6df13e9197ea54ec",
+        "sourceTreeFingerprint": "e20b034b5c4d9080e17b01ab9c569920604233e48ad97525ec99e6d682afc268",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -135,16 +135,26 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "ocean-voyage",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "051319b3b7735535d12022f458462285ca62734802fe247f279dff93ff6bcfb6",
-    "sourceTreeFingerprint": "bdbecc66a886a2ae7f459099484c404643877f9ecdaf2f2d6df13e9197ea54ec",
+    "sourceTreeFingerprint": "e20b034b5c4d9080e17b01ab9c569920604233e48ad97525ec99e6d682afc268",
     "multiplayerMode": null,
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/ocean-voyage",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/ocean-voyage",
@@ -194,14 +204,46 @@
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [],
           "missingWrittenOutputKeys": [],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/ocean-voyage/engine.mjs"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/ocean-voyage/assets/countries.mjs",
+          "web-games/ocean-voyage/assets/world.mjs",
+          "web-games/ocean-voyage/engine.mjs"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "collectDividend",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "supportPort",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "formAlliance",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "giveGift",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "premiumInformation",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "DESIGN_REPAIR_REQUIRED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -222,14 +264,46 @@
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [],
           "missingWrittenOutputKeys": [],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/ocean-voyage/engine.mjs"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/ocean-voyage/assets/countries.mjs",
+          "web-games/ocean-voyage/assets/world.mjs",
+          "web-games/ocean-voyage/engine.mjs"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "collectDividend",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "supportPort",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "formAlliance",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "giveGift",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "premiumInformation",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "DESIGN_REPAIR_REQUIRED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -250,14 +324,46 @@
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [],
           "missingWrittenOutputKeys": [],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/ocean-voyage/engine.mjs"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/ocean-voyage/assets/countries.mjs",
+          "web-games/ocean-voyage/assets/world.mjs",
+          "web-games/ocean-voyage/engine.mjs"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "collectDividend",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "supportPort",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "formAlliance",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "giveGift",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "premiumInformation",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "DESIGN_REPAIR_REQUIRED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -278,14 +384,46 @@
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [],
           "missingWrittenOutputKeys": [],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/ocean-voyage/engine.mjs"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/ocean-voyage/assets/countries.mjs",
+          "web-games/ocean-voyage/assets/world.mjs",
+          "web-games/ocean-voyage/engine.mjs"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "collectDividend",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "supportPort",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "formAlliance",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "giveGift",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "premiumInformation",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "DESIGN_REPAIR_REQUIRED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -306,14 +444,46 @@
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [],
           "missingWrittenOutputKeys": [],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/ocean-voyage/engine.mjs"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/ocean-voyage/assets/countries.mjs",
+          "web-games/ocean-voyage/assets/world.mjs",
+          "web-games/ocean-voyage/engine.mjs"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "collectDividend",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "supportPort",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "formAlliance",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "giveGift",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/ocean-voyage/engine.mjs",
+            "symbol": "premiumInformation",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "DESIGN_REPAIR_REQUIRED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -328,11 +498,21 @@
       "staticSourceMappingIsNotRuntimeParity": true
     },
     "creativeCBinding": null,
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/ocean-voyage/main.mjs",
+      "web-games/ocean-voyage/engine.mjs",
+      "web-games/ocean-voyage/ocean3d.mjs",
+      "web-games/ocean-voyage/index.html",
+      "web-games/ocean-voyage/assets/countries.mjs",
+      "web-games/ocean-voyage/assets/world.mjs"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/ocean-voyage/main.mjs",
+      "web-games/ocean-voyage/engine.mjs",
+      "web-games/ocean-voyage/ocean3d.mjs"
+    ],
     "gapReasons": [
       "DESIGN_MAIN_A_B_c_AT_INCOMPLETE",
-      "PLATFORM_SOURCE_NOT_SELECTED",
       "DESIGN_ROLE_NOT_AUTHORED:MAIN",
       "DESIGN_ROLE_NOT_AUTHORED:A",
       "DESIGN_ROLE_NOT_AUTHORED:B",
@@ -350,10 +530,21 @@
     "changesDevelopmentAdmission": false,
     "saveBalanceAndExistingMultiplayerMeaningPreserved": true
   },
+  "creativeCGenreImplementation": {
+    "requiredDesignGenreCount": 2,
+    "designedGenreCount": 0,
+    "requiredVerifiedRuntimeGenreCount": 1,
+    "verifiedGenreCount": 0,
+    "satisfied": false,
+    "verifiedGenres": [],
+    "pendingGenres": [],
+    "evidenceState": "NOT_VERIFIED",
+    "gameReleaseProven": false
+  },
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "bdbecc66a886a2ae7f459099484c404643877f9ecdaf2f2d6df13e9197ea54ec",
+    "sourceTreeFingerprint": "e20b034b5c4d9080e17b01ab9c569920604233e48ad97525ec99e6d682afc268",
     "mode": "SOURCE_SAFE_NO_DESIGN_CONTENT_EXPANSION",
     "authoredItemCount": 0,
     "authoredCounts": {},
@@ -455,70 +646,73 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=31",
-      "GAME_FEEL_SPARSE",
-      "VFX_IMPLEMENTATION_SPARSE",
+      "CURRENT_SOURCE_FILES=56",
       "AUDIO_STATE_TRANSITION_SPARSE",
-      "UI_MENU_FLOW_SPARSE"
+      "UI_MENU_FLOW_SPARSE",
+      "SETTINGS_ACCESSIBILITY_SPARSE"
     ],
     "signals": {
-      "combat": 25,
-      "progression": 76,
-      "ai": 25,
-      "save": 46,
-      "multiplayer": 0,
-      "animation": 10,
-      "motionStates": 104,
-      "gameFeel": 0,
-      "vfx": 0,
-      "camera": 9,
-      "audio": 32,
+      "combat": 309,
+      "progression": 425,
+      "ai": 172,
+      "save": 120,
+      "multiplayer": 6,
+      "animation": 12,
+      "motionStates": 706,
+      "gameFeel": 11,
+      "vfx": 18,
+      "camera": 53,
+      "audio": 69,
       "audioDynamics": 0,
-      "ui": 115,
-      "uiFlow": 54,
-      "entryFlow": 0,
+      "ui": 379,
+      "uiFlow": 155,
+      "entryFlow": 3,
       "loadingFlow": 0,
-      "input": 5,
-      "map": 79,
-      "landmark": 3,
-      "interaction": 21,
-      "inventory": 6,
-      "equipment": 11,
-      "settings": 1,
-      "feedback": 40,
-      "session": 4,
-      "content": 114,
-      "choice": 16,
-      "connection": 1,
-      "performance": 17,
-      "lighting": 16,
-      "primitive": 1,
+      "input": 15,
+      "map": 555,
+      "landmark": 6,
+      "interaction": 81,
+      "inventory": 37,
+      "equipment": 33,
+      "settings": 0,
+      "feedback": 141,
+      "session": 11,
+      "content": 822,
+      "choice": 102,
+      "connection": 3,
+      "performance": 21,
+      "lighting": 51,
+      "primitive": 7,
       "todo": 0,
-      "errorRecovery": 7
+      "errorRecovery": 18
     },
     "topFiles": [
       {
         "file": "web-games/ocean-voyage/main.mjs",
-        "score": 89
+        "score": 489
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "score": 56
-      },
-      {
-        "file": "web-games/ocean-voyage/index.html",
-        "score": 41
+        "score": 341
       },
       {
         "file": "web-games/ocean-voyage/ocean3d.mjs",
-        "score": 35
+        "score": 186
+      },
+      {
+        "file": "web-games/ocean-voyage/index.html",
+        "score": 78
       },
       {
         "file": "web-games/ocean-voyage/assets/cc0/manifest.json",
-        "score": 27
+        "score": 55
       },
       {
         "file": "web-games/ocean-voyage/assets/cannon.glb",
+        "score": 0
+      },
+      {
+        "file": "web-games/ocean-voyage/assets/captains.webp",
         "score": 0
       },
       {
@@ -530,406 +724,402 @@
         "score": 0
       },
       {
-        "file": "web-games/ocean-voyage/assets/cc0/map/castle.png",
+        "file": "web-games/ocean-voyage/assets/cc0/items/generic-0018.png",
         "score": 0
       },
       {
-        "file": "web-games/ocean-voyage/assets/cc0/map/compass.png",
+        "file": "web-games/ocean-voyage/assets/cc0/items/generic-0032.png",
         "score": 0
       },
       {
-        "file": "web-games/ocean-voyage/assets/cc0/map/dock.png",
-        "score": 0
-      },
-      {
-        "file": "web-games/ocean-voyage/assets/cc0/map/lighthouse.png",
+        "file": "web-games/ocean-voyage/assets/cc0/items/generic-0038.png",
         "score": 0
       }
     ],
     "sourceAnchors": [
       {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 124,
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 886,
         "kind": "FUNCTION",
-        "symbol": "inventory",
-        "context": "function inventory(){",
+        "symbol": "collectDividend",
+        "context": "export function collectDividend(state){const p=canDock(state);if(!p)return fail(state,'투자한 항구에서 배당을 받아.');const v=portStatus(state,p.id);if(!v.invested)return fail(state,'먼저 항구에 투자",
+        "score": 450
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 887,
+        "kind": "FUNCTION",
+        "symbol": "supportPort",
+        "context": "export function supportPort(state){const p=canDock(state);if(!p||!portHasFacility(p.id,'palace'))return fail(state,'총독부가 있는 항구에서 방어를 지원해.');if(state.coins<200||state.supplies.ammo<",
+        "score": 450
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 888,
+        "kind": "FUNCTION",
+        "symbol": "formAlliance",
+        "context": "export function formAlliance(state){const p=canDock(state);if(!p||!portHasFacility(p.id,'palace'))return fail(state,'왕궁·총독부가 있는 항구에서 동맹을 협의해.');const owner=portStatus(state,p.id).o",
+        "score": 394
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 1010,
+        "kind": "FUNCTION",
+        "symbol": "giveGift",
+        "context": "export function giveGift(state,id,giftId){const gift=GIFTS.find(g=>g.id===giftId);if(!gift||!contactAvailable(state,id)||!canDock(state))return fail(state,'항구에서 선물을 구해 전달해.');const",
+        "score": 362
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 1011,
+        "kind": "FUNCTION",
+        "symbol": "premiumInformation",
+        "context": "export function premiumInformation(state,id){if(!contactAvailable(state,id))return fail(state,'인물을 직접 만나 정보를 들어.');const rel=relationStatus(state,id);if(rel.trust<35)return fail(st",
+        "score": 362
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 885,
+        "kind": "FUNCTION",
+        "symbol": "investPort",
+        "context": "export function investPort(state,amount){const p=canDock(state);if(!p||![100,500,1000].includes(amount))return fail(state,'정박한 항구에서 투자 금액을 선택해.');if(state.coins<amount)return fail(",
+        "score": 330
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 889,
+        "kind": "FUNCTION",
+        "symbol": "callAlliance",
+        "context": "export function callAlliance(state){if(!state.alliance)return fail(state,'왕궁에서 먼저 동맹을 맺어.');if(state.day-state.allianceSupportDay<5)return fail(state,'동맹 지원은 5일마다 요청할 수 있어.');const",
+        "score": 314
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 997,
+        "kind": "FUNCTION",
+        "symbol": "buyShipEquipment",
+        "context": "export function buyShipEquipment(state,slot,id){const item=(slot==='sail'?SAIL_EQUIPMENT:slot==='figurehead'?FIGUREHEADS:[]).find(g=>g.id===id),p=canDock(state);if(!item||!p||!port",
+        "score": 306
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 998,
+        "kind": "FUNCTION",
+        "symbol": "refineShip",
+        "context": "export function refineShip(state,id){const item=SPECIAL_DOCKS.find(g=>g.id===id),p=canDock(state);if(!item||p?.id!==item.port||!portHasFacility(p.id,'fleet'))return fail(state,'해당 ",
+        "score": 306
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 1009,
+        "kind": "FUNCTION",
+        "symbol": "talkContact",
+        "context": "export function talkContact(state,id){if(!contactAvailable(state,id))return fail(state,'이 인물이 있는 선술집이나 승선 동료 창에서 대화해.');const rel=relationStatus(state,id);if(rel.lastTalk===state.d",
+        "score": 306
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 1012,
+        "kind": "FUNCTION",
+        "symbol": "expressBond",
+        "context": "export function expressBond(state,id){if(!contactAvailable(state,id))return fail(state,'직접 만나 마음을 전해.');const rel=relationStatus(state,id);if(rel.bond)return fail(state,'이미 서로 마음을 ",
+        "score": 306
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 944,
+        "kind": "FUNCTION",
+        "symbol": "landEnemyTurn",
+        "context": "export function landEnemyTurn(state){const battle=state.landBattle;if(!battle||battle.phase!=='enemy')return fail(state,'적의 행동 차례가 아니야.');const s=copy(state),b=s.landBattle;while(b",
+        "score": 290
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 945,
+        "kind": "FUNCTION",
+        "symbol": "finishLandBattle",
+        "context": "export function finishLandBattle(state){if(!state.landBattle||!['won','lost','retreated'].includes(state.landBattle.phase))return fail(state,'전투를 마치거나 퇴각해.');const s=copy(state);s.",
+        "score": 282
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 1008,
+        "kind": "FUNCTION",
+        "symbol": "contactAvailable",
+        "context": "function contactAvailable(s,id){return s.crewRoster.includes(id)||TAVERN_HOSTS.some(h=>h.id===id&&canDock(s)?.id===h.port);}",
+        "score": 242
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 1013,
+        "kind": "FUNCTION",
+        "symbol": "benchCompanion",
+        "context": "export function benchCompanion(state,id){if(!canDock(state)||id===state.captainId||!state.crewRoster.includes(id)||state.landBattle)return fail(state,'항구에서 선장 외 동료를 여관 대기로 바꿀 수 있어.",
+        "score": 218
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 787,
+        "kind": "FUNCTION",
+        "symbol": "takeTreasureClue",
+        "context": "export function takeTreasureClue(state,id){const t=TREASURES.find(t=>t.id===id);if(!t||!canDock(state))return fail(state,'선술집에서 소문을 들어.');if(state.treasureClues.includes(id))return",
+        "score": 202
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 788,
+        "kind": "FUNCTION",
+        "symbol": "searchTreasure",
+        "context": "export function searchTreasure(state,id){const t=TREASURES.find(t=>t.id===id);if(!t||!state.treasureClues.includes(id))return fail(state,'먼저 보물의 해도 단서가 필요해.');if(state.treasures.in",
+        "score": 194
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 789,
+        "kind": "FUNCTION",
+        "symbol": "rumorsAt",
+        "context": "export function rumorsAt(s){const p=canDock(s);if(!p)return ['소문은 항구 선술집에서 들을 수 있어.'];const g=GOODS[(PORTS.indexOf(p)+Math.floor(s.day/3))%GOODS.length],best=PORTS.reduce((a,b)=>pr",
+        "score": 194
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 926,
+        "kind": "FUNCTION",
+        "symbol": "landLog",
+        "context": "function landLog(b,text){b.log.push(text);b.log=b.log.slice(-8);}",
+        "score": 194
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 1007,
+        "kind": "FUNCTION",
+        "symbol": "relationStatus",
+        "context": "export function relationStatus(s,id){return {trust:0,lastTalk:-1,lastGift:-1,lastInfo:-1,bond:false,...s.tavernRelations[id]};}",
+        "score": 178
+      },
+      {
+        "file": "web-games/ocean-voyage/engine.mjs",
+        "line": 732,
+        "kind": "FUNCTION",
+        "symbol": "officeProgress",
+        "context": "export function officeProgress(s,q){return q.type==='ports'?s.discovered.filter(id=>!['alexandria','zanzibar','goa','nagasaki'].includes(id)).length:q.type==='report'?s.reported.le",
         "score": 162
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 115,
+        "line": 733,
         "kind": "FUNCTION",
-        "symbol": "buyUpgrade",
-        "context": "export function buyUpgrade(state,kind){",
-        "score": 82
+        "symbol": "officeContract",
+        "context": "export function officeContract(state,id){",
+        "score": 154
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 142,
+        "line": 805,
         "kind": "FUNCTION",
-        "symbol": "takeContract",
-        "context": "export function takeContract(state,pid){",
-        "score": 82
+        "symbol": "useConsumable",
+        "context": "export function useConsumable(state,id){",
+        "score": 146
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 150,
+        "line": 924,
         "kind": "FUNCTION",
-        "symbol": "fulfillContracts",
-        "context": "export function fulfillContracts(state){",
+        "symbol": "createLandBattle",
+        "context": "function createLandBattle(s,site){const index=SITES.indexOf(site),enemy=LAND_ENEMIES[index],ids=[s.captainId,...s.crewRoster.filter(id=>id!==s.captainId)].slice(0,4);return {siteId",
+        "score": 146
+      },
+      {
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 626,
+        "kind": "FUNCTION",
+        "symbol": "weatherOverlay",
+        "context": "function weatherOverlay(){const weather=state.climate?.kind,phase=(state.elapsed||0)/16;if(phase>.72||phase<.12){ctx.fillStyle=phase>.72?'#081a4b45':'#d8a25a20';ctx.fillRect(0,0,w,",
+        "score": 90
+      },
+      {
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 628,
+        "kind": "FUNCTION",
+        "symbol": "minimap",
+        "context": "function minimap(){",
+        "score": 90
+      },
+      {
+        "file": "web-games/ocean-voyage/main.mjs",
+        "line": 11,
+        "kind": "FUNCTION",
+        "symbol": "mobileSailing",
+        "context": "const mobileSailing=()=>window.matchMedia?.('(pointer:coarse)')?.matches&&window.innerWidth<900;",
         "score": 82
       },
       {
         "file": "web-games/ocean-voyage/main.mjs",
-        "line": 139,
+        "line": 7,
         "kind": "FUNCTION",
-        "symbol": "apply",
-        "context": "function apply(result){",
-        "score": 82
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 38,
-        "kind": "FUNCTION",
-        "symbol": "recruitCompanion",
-        "context": "export function recruitCompanion(state,id){",
+        "symbol": "$",
+        "context": "const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');",
         "score": 74
       },
       {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 97,
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 154,
         "kind": "FUNCTION",
-        "symbol": "trade",
-        "context": "export function trade(state,portId,goodId,amount,mode){",
+        "symbol": "refine",
+        "context": "const refine=m=>{if(!m)return m;const mat=m.clone();if('roughness' in mat)mat.roughness=.87;if('metalness' in mat)mat.metalness=.025;",
         "score": 74
       },
       {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 68,
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 403,
         "kind": "FUNCTION",
-        "symbol": "fleet",
-        "context": "function fleet(){",
+        "symbol": "navalSea",
+        "context": "function navalSea(){",
         "score": 74
       },
       {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 82,
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 593,
         "kind": "FUNCTION",
-        "symbol": "quests",
-        "context": "function quests(){",
+        "symbol": "drawImpact",
+        "context": "function drawImpact(){const fx=state.combatFx,rawAge=(performance.now()-fxStarted)/1000;if(!fx||rawAge>1.4)return;let age=rawAge;const seaFx=fx.type==='cannon';let at;",
         "score": 74
       },
       {
         "file": "web-games/ocean-voyage/main.mjs",
-        "line": 91,
+        "line": 12,
         "kind": "FUNCTION",
-        "symbol": "journal",
-        "context": "function journal(){",
-        "score": 74
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 203,
-        "kind": "FUNCTION",
-        "symbol": "cancelDestination",
-        "context": "export function cancelDestination(state){const s=copy(state);s.destination=null;s.route=[];return s;}",
+        "symbol": "clearMotionSample",
+        "context": "function clearMotionSample(){stuckFor=0;travelSample={x:state.ship.x,z:state.ship.z};}",
         "score": 66
       },
       {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 204,
+        "file": "web-games/ocean-voyage/main.mjs",
+        "line": 22,
         "kind": "FUNCTION",
-        "symbol": "wrap",
-        "context": "const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));",
+        "symbol": "syncSails",
+        "context": "function syncSails(){const control=$('sailToggle');if(!control)return;control.textContent=sailCruise?'■ 멈춤':'▶ 항해';control.setAttribute('aria-pressed',String(sailCruise));}",
         "score": 66
       },
       {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 205,
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 131,
         "kind": "FUNCTION",
-        "symbol": "stepSea",
-        "context": "export function stepSea(state,input={},seconds=.05){",
+        "symbol": "vessel",
+        "context": "function vessel(id,type,enemy){",
         "score": 66
       },
       {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 256,
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 580,
         "kind": "FUNCTION",
-        "symbol": "fireCannons",
-        "context": "export function fireCannons(state){",
-        "score": 58
-      },
-      {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 18,
-        "kind": "FUNCTION",
-        "symbol": "save",
-        "context": "function save(){",
-        "score": 58
-      },
-      {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 44,
-        "kind": "FUNCTION",
-        "symbol": "travelCard",
-        "context": "function travelCard(p){",
-        "score": 58
+        "symbol": "pixelPerson",
+        "context": "function pixelPerson(x,y,id,enemy=false,dead=false){",
+        "score": 66
       },
       {
         "file": "web-games/ocean-voyage/ocean3d.mjs",
         "line": 63,
         "kind": "FUNCTION",
-        "symbol": "load",
-        "context": "const load=async()=>{",
+        "symbol": "createOceanView",
+        "context": "export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding=()=>{},onPort=()=>{},onMerchant=()=>{},onMap=()=>{}}={}){",
         "score": 58
       },
       {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 198,
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 130,
         "kind": "FUNCTION",
-        "symbol": "setDestination",
-        "context": "export function setDestination(state,id){",
-        "score": 50
+        "symbol": "template",
+        "context": "async function template(file){if(!templates.has(file))templates.set(file,loader.loadAsync('./assets/'+file+'.glb').then(g=>g.scene));return templates.get(file);}",
+        "score": 58
       },
       {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 27,
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 567,
         "kind": "FUNCTION",
-        "symbol": "summary",
-        "context": "function summary(){",
-        "score": 50
+        "symbol": "interior",
+        "context": "function interior(){",
+        "score": 58
       },
       {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 37,
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 579,
         "kind": "FUNCTION",
-        "symbol": "gotoPanel",
-        "context": "function gotoPanel(name){",
-        "score": 50
+        "symbol": "unitPoint",
+        "context": "function unitPoint(side,index){const b=state.landBattle,base=Math.max(170,h*.30),gap=Math.min(78,h*.12);if(side==='enemy')return {x:w*.76,y:base+index*gap};return b?.party.length>2",
+        "score": 58
       },
       {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 61,
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 583,
         "kind": "FUNCTION",
-        "symbol": "market",
-        "context": "function market(){",
-        "score": 50
+        "symbol": "animal",
+        "context": "function animal(x,y,kind,dead){ctx.save();if(dead)ctx.globalAlpha=.3;const boar=kind==='boar',color=boar?'#78564a':'#9caaa1';rect(x-19,y-20,35,15,color);rect(x+12,y-27,15,18,color)",
+        "score": 58
       },
       {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 106,
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 543,
         "kind": "FUNCTION",
-        "symbol": "portScene",
-        "context": "function portScene(){",
-        "score": 50
-      },
-      {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 117,
-        "kind": "FUNCTION",
-        "symbol": "companions",
-        "context": "function companions(){",
+        "symbol": "building",
+        "context": "function building(x,y,bw,bh,label,color){rect(x-3,y+bh-2,bw+6,6,'#493d2f');rect(x,y,bw,bh,'#d0b78b');rect(x-5,y-12,bw+10,14,color);rect(x+2,y-19,bw-4,9,color);rect(x+7,y+10,13,13,'",
         "score": 50
       },
       {
         "file": "web-games/ocean-voyage/ocean3d.mjs",
-        "line": 16,
+        "line": 596,
         "kind": "FUNCTION",
-        "symbol": "getModel",
-        "context": "function getModel(name){",
+        "symbol": "x",
+        "context": "const x=v=>w/2+(v-state.ship.x)*zoom,z=v=>h/2+(v-state.ship.z)*zoom;",
         "score": 50
       },
       {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 64,
-        "kind": "FUNCTION",
-        "symbol": "loadGame",
-        "context": "export const loadGame=(storage)=>{try{return restoreGame(storage.getItem(SAVE_KEY));}catch{return newGame();}};",
-        "score": 42
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 65,
-        "kind": "FUNCTION",
-        "symbol": "restoreGame",
-        "context": "export function restoreGame(raw){",
-        "score": 42
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 88,
-        "kind": "FUNCTION",
-        "symbol": "canDock",
-        "context": "export function canDock(s){const p=nearestPort(s);return p.d<=PORT_RADIUS?p.port:null;}",
-        "score": 42
-      },
-      {
         "file": "web-games/ocean-voyage/main.mjs",
-        "line": 49,
-        "kind": "FUNCTION",
-        "symbol": "chart",
-        "context": "function chart(){",
-        "score": 42
-      },
-      {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 100,
-        "kind": "FUNCTION",
-        "symbol": "portrait",
-        "context": "const portrait=c=>{",
-        "score": 42
-      },
-      {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 133,
-        "kind": "FUNCTION",
-        "symbol": "renderPanel",
-        "context": "function renderPanel(){",
-        "score": 42
-      },
-      {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 211,
-        "kind": "FUNCTION",
-        "symbol": "run",
-        "context": "function run(now){",
-        "score": 42
-      },
-      {
-        "file": "web-games/ocean-voyage/ocean3d.mjs",
         "line": 13,
         "kind": "FUNCTION",
-        "symbol": "clamp",
-        "context": "const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));",
-        "score": 42
-      },
-      {
-        "file": "web-games/ocean-voyage/ocean3d.mjs",
-        "line": 28,
-        "kind": "FUNCTION",
-        "symbol": "instance",
-        "context": "function instance(model,scale=1){",
-        "score": 42
-      },
-      {
-        "file": "web-games/ocean-voyage/ocean3d.mjs",
-        "line": 126,
-        "kind": "FUNCTION",
-        "symbol": "resize",
-        "context": "function resize(){",
-        "score": 42
-      },
-      {
-        "file": "web-games/ocean-voyage/ocean3d.mjs",
-        "line": 132,
-        "kind": "FUNCTION",
-        "symbol": "animate",
-        "context": "function animate(){",
+        "symbol": "showMotion",
+        "context": "function showMotion(){",
         "score": 42
       },
       {
         "file": "web-games/ocean-voyage/main.mjs",
         "line": 23,
-        "kind": "METHOD",
-        "symbol": "onReady",
-        "context": "onReady(){ready=true;view.loading.classList.add('hide');scene.setState(state);note('범선 준비 완료. 런던 항구에서 동료를 만나고 플리머스로 항해하자.');},",
-        "score": 40
-      },
-      {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 24,
-        "kind": "METHOD",
-        "symbol": "onError",
-        "context": "onError(msg){view.loading.querySelector('p').textContent=msg;note(msg);}",
-        "score": 40
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 51,
-        "kind": "FUNCTION",
-        "symbol": "copy",
-        "context": "const copy=s=>structuredClone(s);",
-        "score": 34
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 52,
-        "kind": "FUNCTION",
-        "symbol": "newGame",
-        "context": "export function newGame(){",
-        "score": 34
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 83,
-        "kind": "FUNCTION",
-        "symbol": "cargoWeight",
-        "context": "export const cargoWeight=s=>GOODS.reduce((n,g)=>n+(s.cargo[g.id]||0)*g.weight,0);",
-        "score": 34
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 84,
-        "kind": "FUNCTION",
-        "symbol": "portById",
-        "context": "export const portById=id=>PORTS.find(p=>p.id===id);",
-        "score": 34
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 85,
-        "kind": "FUNCTION",
-        "symbol": "nearestPort",
-        "context": "export function nearestPort(s){",
-        "score": 34
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 89,
-        "kind": "FUNCTION",
-        "symbol": "priceAt",
-        "context": "export function priceAt(portId,goodId,day=1,mode='buy'){",
-        "score": 34
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 134,
-        "kind": "FUNCTION",
-        "symbol": "note",
-        "context": "function note(s,text){s.log.push('['+s.day+'일] '+text);if(s.log.length>25)s.log.shift();}",
-        "score": 34
-      },
-      {
-        "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 162,
-        "kind": "FUNCTION",
-        "symbol": "navigationRoute",
-        "context": "export function navigationRoute(from,to){",
-        "score": 34
-      },
-      {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 6,
-        "kind": "FUNCTION",
-        "symbol": "$",
-        "context": "const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');",
-        "score": 34
-      },
-      {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 10,
         "kind": "FUNCTION",
         "symbol": "escapeHtml",
         "context": "const escapeHtml=s=>String(s).replace(/[&<>\"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[ch]));",
-        "score": 34
+        "score": 42
       },
       {
-        "file": "web-games/ocean-voyage/main.mjs",
-        "line": 50,
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 471,
+        "kind": "FUNCTION",
+        "symbol": "sea",
+        "context": "function sea(){",
+        "score": 42
+      },
+      {
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 484,
         "kind": "FUNCTION",
         "symbol": "x",
-        "context": "const x=v=>((v+210)/420*330+10).toFixed(1);",
-        "score": 34
+        "context": "const x=v=>w/2+(v-cx)*zoom,z=v=>h/2+(v-cz)*zoom;",
+        "score": 42
+      },
+      {
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 544,
+        "kind": "FUNCTION",
+        "symbol": "town",
+        "context": "function town(){",
+        "score": 42
+      },
+      {
+        "file": "web-games/ocean-voyage/ocean3d.mjs",
+        "line": 584,
+        "kind": "FUNCTION",
+        "symbol": "landScene",
+        "context": "function landScene(){",
+        "score": 42
       }
     ]
   },
@@ -938,12 +1128,15 @@
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
+    "sourceRevision": "a4615a2d1f326b5897fd630d896d0ba0b570a343",
+    "playtestFinding": "",
+    "responsibleSource": "",
     "studioQualityFailure": null,
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": false,
-    "runtimePassed": false,
+    "runtimeObserved": true,
+    "runtimePassed": true,
     "independentQaPassed": false,
     "regressionPassed": false
   },
@@ -1199,8 +1392,8 @@
     },
     {
       "domain": "GAME_FEEL",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SPAWN_ENCOUNTER_DIRECTOR",
@@ -1284,8 +1477,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CAMERA",
@@ -1299,8 +1492,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ENVIRONMENTAL_MOTION",
@@ -1763,8 +1956,8 @@
     },
     {
       "domain": "GAME_FEEL",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 푸른 항로 · 대양의 제국에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1916,8 +2109,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1943,8 +2136,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -2003,34 +2196,110 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "GAME_FEEL",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "AUDIO_VISUAL_TIMING",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
   ],
   "primaryFocus": "PRESENTATION",
   "thisLoopPrimaryGoal": "푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-  "primaryGoalReason": "검증된/최소 디자인이 아직 없어 PRESENTATION만 기존 실제 소스에서 안전하게 개선한다. 새 게임 규칙·진행·밸런스 의미는 만들지 않으며 책임 소스 web-games/ocean-voyage/engine.mjs::buyUpgrade, web-games/ocean-voyage/engine.mjs::takeContract, web-games/ocean-voyage/engine.mjs::fulfillContracts, web-games/ocean-voyage/engine.mjs::recruitCompanion, web-games/ocean-voyage/engine.mjs::trade, web-games/ocean-voyage/engine.mjs::cancelDestination, web-games/ocean-voyage/engine.mjs::wrap, web-games/ocean-voyage/engine.mjs::stepSea의 전후 품질 차이만 검증한다.",
+  "primaryGoalReason": "검증된/최소 디자인이 아직 없어 PRESENTATION만 기존 실제 소스에서 안전하게 개선한다. 새 게임 규칙·진행·밸런스 의미는 만들지 않으며 책임 소스 web-games/ocean-voyage/engine.mjs::collectDividend, web-games/ocean-voyage/engine.mjs::supportPort, web-games/ocean-voyage/engine.mjs::formAlliance, web-games/ocean-voyage/engine.mjs::giveGift, web-games/ocean-voyage/engine.mjs::premiumInformation, web-games/ocean-voyage/engine.mjs::investPort, web-games/ocean-voyage/engine.mjs::callAlliance, web-games/ocean-voyage/engine.mjs::buyShipEquipment의 전후 품질 차이만 검증한다.",
   "gameplayImplementationDirectives": [
     "현재 소스에 이미 존재하는 행동·상태·화면 연결만 읽고 수정한다. 새 핵심 규칙·밸런스·경제·퀘스트·진행 의미를 추측해 만들지 않는다.",
     "wrapper나 우회 경로를 추가하지 말고 이번 안전 품질축의 기존 책임 함수/렌더/UI/상태 복구 경로를 직접 수정한다.",
-    "변경 전후를 실제 브라우저/관련 QA에서 비교하고 기존 저장·진행·전투·권한 의미가 그대로인지 확인한다."
+    "변경 전후를 실제 브라우저/관련 QA에서 비교하고 기존 저장·진행·전투·권한 의미가 그대로인지 확인한다.",
+    "모든 승인 게임 빌드업은 한 세대 최소 5개의 실제 플레이 가치 개선을 목표로 한다. 입력→상태 변화→화면/모션/사운드 피드백을 기존 책임 소스에서 연결하고 각 항목의 동일 빌드 검증 증거를 남긴다. 5번의 소스 수정이나 에셋 교체를 실제 플레이 통과로 계산하지 않는다. 실패·설계 누락은 기존 원인 수리 우선이며 F0~F9와 저장·밸런스·권한은 유지한다."
   ],
+  "playableImprovementContract": {
+    "version": 1,
+    "scope": "ALL_ACTIVE_APPROVED_GAME_BUILD_UP",
+    "minimumPerGeneration": 5,
+    "floorBoundary": "EXISTING_F0_F9_SEQUENCE_UNCHANGED",
+    "targets": [
+      {
+        "id": "FIRST_ACTION",
+        "anchor": "푸른 항로 · 대양의 제국",
+        "intent": "첫 플레이에서 기존 핵심 행동을 발견하고 실제로 수행할 수 있게 개선",
+        "gameId": "ocean-voyage",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "web-games/ocean-voyage/assets/countries.mjs",
+          "web-games/ocean-voyage/assets/world.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "CORE_STATE_RESPONSE",
+        "anchor": "푸른 항로 · 대양의 제국",
+        "intent": "기존 핵심 행동의 입력→상태 변화 연결 및 즉시 피드백 개선",
+        "gameId": "ocean-voyage",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "web-games/ocean-voyage/assets/countries.mjs",
+          "web-games/ocean-voyage/assets/world.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "PLAYER_CHOICE",
+        "anchor": "푸른 항로 · 대양의 제국",
+        "intent": "기존 플레이어 선택과 그 결과의 가독성 및 다음 행동 연결 개선",
+        "gameId": "ocean-voyage",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "web-games/ocean-voyage/assets/countries.mjs",
+          "web-games/ocean-voyage/assets/world.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "PRESENTATION_BINDING",
+        "anchor": "푸른 항로 · 대양의 제국",
+        "intent": "실제 행동 상태에 연결된 캐릭터·카메라·모션·VFX·UI/소리 반응 개선",
+        "gameId": "ocean-voyage",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "web-games/ocean-voyage/assets/countries.mjs",
+          "web-games/ocean-voyage/assets/world.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "SESSION_RETRY",
+        "anchor": "푸른 항로 · 대양의 제국",
+        "intent": "실패·재도전·재접속 시 기존 플레이 진행과 상태 복구 경험 개선",
+        "gameId": "ocean-voyage",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "web-games/ocean-voyage/assets/countries.mjs",
+          "web-games/ocean-voyage/assets/world.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      }
+    ],
+    "candidateTargetsAreNotFiveVerifiedImprovements": true,
+    "distinctActualPlayerValueRequired": true,
+    "sourceEditsAreNotRuntimeProof": true,
+    "approvedExistingGameOnly": true,
+    "repairFailedCausalFoundationFirst": true,
+    "missingRuntimeEvidenceRemainsUnverified": true,
+    "noShadowPipeline": true
+  },
   "progressionContentWorldDirectives": [
     "검증된 또는 최소 디자인이 생기기 전에는 새 목표·보상·해금·지역·퀘스트·경제·게임 규칙을 추가하지 않는다.",
     "기존 콘텐츠의 가독성·입력·표현·안정성만 개선하고 게임 의미를 확장하지 않는다."
@@ -2065,8 +2334,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 1424354,
-        "largestFileBytes": 317090,
+        "sourceBytes": 2792387,
+        "largestFileBytes": 400352,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -2220,12 +2489,13 @@
     ],
     "designlessSafeMode": true
   },
+  "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "bdbecc66a886a2ae7f459099484c404643877f9ecdaf2f2d6df13e9197ea54ec",
+    "sourceFingerprint": "e20b034b5c4d9080e17b01ab9c569920604233e48ad97525ec99e6d682afc268",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -2245,7 +2515,7 @@
     "version": 1,
     "gameId": "ocean-voyage",
     "platform": "WEB",
-    "sourceTreeFingerprint": "bdbecc66a886a2ae7f459099484c404643877f9ecdaf2f2d6df13e9197ea54ec",
+    "sourceTreeFingerprint": "e20b034b5c4d9080e17b01ab9c569920604233e48ad97525ec99e6d682afc268",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -2285,8 +2555,7 @@
         "id": "INVENTORY",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/ocean-voyage/main.mjs",
-          "web-games/ocean-voyage/index.html"
+          "web-games/ocean-voyage/main.mjs"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -2312,8 +2581,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "web-games/ocean-voyage/main.mjs",
-          "web-games/ocean-voyage/index.html",
           "web-games/ocean-voyage/ocean3d.mjs",
+          "web-games/ocean-voyage/index.html",
           "web-games/ocean-voyage/assets/cc0/manifest.json"
         ],
         "requiredByDesign": true,
@@ -2371,7 +2640,9 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "web-games/ocean-voyage/main.mjs",
-          "web-games/ocean-voyage/engine.mjs"
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs",
+          "web-games/ocean-voyage/index.html"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -2381,8 +2652,11 @@
       },
       {
         "id": "INTERACTION",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/engine.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -2391,8 +2665,12 @@
       },
       {
         "id": "SHOP",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -2401,8 +2679,10 @@
       },
       {
         "id": "SAVE",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/ocean-voyage/ocean3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -2411,8 +2691,12 @@
       },
       {
         "id": "COMBAT",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -2438,6 +2722,7 @@
         "responsibleFiles": [
           "web-games/ocean-voyage/main.mjs",
           "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs",
           "web-games/ocean-voyage/index.html"
         ],
         "requiredByDesign": false,
@@ -2450,7 +2735,9 @@
         "id": "QUEST_DIALOGUE",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/ocean-voyage/main.mjs"
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -2470,8 +2757,12 @@
       },
       {
         "id": "ECONOMY",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -2492,6 +2783,7 @@
         "id": "FARMING",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
+          "web-games/ocean-voyage/ocean3d.mjs",
           "web-games/ocean-voyage/assets/cc0/manifest.json"
         ],
         "requiredByDesign": false,
@@ -2504,7 +2796,9 @@
         "id": "WEATHER",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/ocean-voyage/engine.mjs"
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -2514,8 +2808,12 @@
       },
       {
         "id": "PHYSICS",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -2526,7 +2824,9 @@
         "id": "CAMERA",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/ocean-voyage/ocean3d.mjs"
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs",
+          "web-games/ocean-voyage/index.html"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -2550,8 +2850,10 @@
       },
       {
         "id": "SKILL_VFX",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/ocean-voyage/index.html"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -2560,8 +2862,10 @@
       },
       {
         "id": "NETWORK",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/ocean-voyage/main.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -2576,8 +2880,7 @@
         "web-games/ocean-voyage/ocean3d.mjs"
       ],
       "INVENTORY": [
-        "web-games/ocean-voyage/main.mjs",
-        "web-games/ocean-voyage/index.html"
+        "web-games/ocean-voyage/main.mjs"
       ],
       "EQUIPMENT": [
         "web-games/ocean-voyage/main.mjs",
@@ -2585,8 +2888,8 @@
       ],
       "UI": [
         "web-games/ocean-voyage/main.mjs",
-        "web-games/ocean-voyage/index.html",
         "web-games/ocean-voyage/ocean3d.mjs",
+        "web-games/ocean-voyage/index.html",
         "web-games/ocean-voyage/assets/cc0/manifest.json"
       ],
       "WORLD": [
@@ -2599,47 +2902,86 @@
       "MOTION": [],
       "ACTION": [
         "web-games/ocean-voyage/main.mjs",
-        "web-games/ocean-voyage/engine.mjs"
+        "web-games/ocean-voyage/engine.mjs",
+        "web-games/ocean-voyage/ocean3d.mjs",
+        "web-games/ocean-voyage/index.html"
       ],
       "NPC_AI": [
         "web-games/ocean-voyage/main.mjs",
         "web-games/ocean-voyage/engine.mjs",
+        "web-games/ocean-voyage/ocean3d.mjs",
         "web-games/ocean-voyage/index.html"
       ],
       "QUEST_DIALOGUE": [
-        "web-games/ocean-voyage/main.mjs"
+        "web-games/ocean-voyage/main.mjs",
+        "web-games/ocean-voyage/engine.mjs",
+        "web-games/ocean-voyage/index.html"
       ],
       "CRAFTING": [],
-      "ECONOMY": [],
+      "ECONOMY": [
+        "web-games/ocean-voyage/main.mjs",
+        "web-games/ocean-voyage/engine.mjs",
+        "web-games/ocean-voyage/ocean3d.mjs"
+      ],
       "PROGRESSION": [],
       "FARMING": [
+        "web-games/ocean-voyage/ocean3d.mjs",
         "web-games/ocean-voyage/assets/cc0/manifest.json"
       ],
       "WEATHER": [
-        "web-games/ocean-voyage/engine.mjs"
-      ],
-      "PHYSICS": [],
-      "CAMERA": [
+        "web-games/ocean-voyage/main.mjs",
+        "web-games/ocean-voyage/engine.mjs",
         "web-games/ocean-voyage/ocean3d.mjs"
+      ],
+      "PHYSICS": [
+        "web-games/ocean-voyage/main.mjs",
+        "web-games/ocean-voyage/engine.mjs",
+        "web-games/ocean-voyage/ocean3d.mjs"
+      ],
+      "CAMERA": [
+        "web-games/ocean-voyage/main.mjs",
+        "web-games/ocean-voyage/ocean3d.mjs",
+        "web-games/ocean-voyage/index.html"
       ],
       "AUDIO": [
         "web-games/ocean-voyage/main.mjs",
         "web-games/ocean-voyage/index.html",
         "web-games/ocean-voyage/assets/cc0/manifest.json"
       ],
-      "SKILL_VFX": [],
-      "NETWORK": [],
-      "INTERACTION": [],
+      "SKILL_VFX": [
+        "web-games/ocean-voyage/index.html"
+      ],
+      "NETWORK": [
+        "web-games/ocean-voyage/main.mjs"
+      ],
+      "INTERACTION": [
+        "web-games/ocean-voyage/main.mjs",
+        "web-games/ocean-voyage/engine.mjs"
+      ],
       "REWARD": [
         "web-games/ocean-voyage/main.mjs",
         "web-games/ocean-voyage/engine.mjs"
       ],
-      "SAVE": [],
-      "COMBAT": [],
-      "SHOP": []
+      "SAVE": [
+        "web-games/ocean-voyage/ocean3d.mjs"
+      ],
+      "COMBAT": [
+        "web-games/ocean-voyage/main.mjs",
+        "web-games/ocean-voyage/engine.mjs",
+        "web-games/ocean-voyage/ocean3d.mjs"
+      ],
+      "SHOP": [
+        "web-games/ocean-voyage/main.mjs",
+        "web-games/ocean-voyage/engine.mjs",
+        "web-games/ocean-voyage/ocean3d.mjs"
+      ]
     },
     "uiModeSelection": {
-      "combat": [],
+      "combat": [
+        "HEALTH_STATUS",
+        "SKILL_AND_DODGE_FROM_EXISTING_BINDINGS",
+        "DANGER_FEEDBACK"
+      ],
       "lobby": [],
       "inventory": [
         "OWNED_ITEM_LIST",
@@ -2670,7 +3012,10 @@
       "biomeNativeSceneBindingVerified": false,
       "housingPlacementPersistenceVerified": false,
       "entryFiles": [],
-      "interactionFiles": [],
+      "interactionFiles": [
+        "web-games/ocean-voyage/main.mjs",
+        "web-games/ocean-voyage/engine.mjs"
+      ],
       "edges": [],
       "requiredChecks": [
         "SPAWN_TO_EXISTING_DESTINATIONS",
@@ -2698,8 +3043,7 @@
           "id": "STORE",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "web-games/ocean-voyage/main.mjs",
-            "web-games/ocean-voyage/index.html"
+            "web-games/ocean-voyage/main.mjs"
           ],
           "passed": false
         },
@@ -2723,16 +3067,18 @@
         },
         {
           "id": "SAVE",
-          "state": "MISSING_SOURCE_EVIDENCE",
-          "responsibleFiles": [],
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "web-games/ocean-voyage/ocean3d.mjs"
+          ],
           "passed": false
         },
         {
           "id": "RECONNECT_RESTORE",
-          "state": "MISSING_SOURCE_EVIDENCE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "web-games/ocean-voyage/main.mjs",
-            "web-games/ocean-voyage/index.html"
+            "web-games/ocean-voyage/ocean3d.mjs",
+            "web-games/ocean-voyage/main.mjs"
           ],
           "passed": false
         }
@@ -2755,6 +3101,7 @@
         "responsibleFiles": [
           "web-games/ocean-voyage/main.mjs",
           "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs",
           "web-games/ocean-voyage/index.html"
         ],
         "checks": [
@@ -2775,10 +3122,10 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "missingRoles": [],
         "responsibleFiles": [
+          "web-games/ocean-voyage/ocean3d.mjs",
           "web-games/ocean-voyage/assets/cc0/manifest.json",
           "web-games/ocean-voyage/main.mjs",
-          "web-games/ocean-voyage/engine.mjs",
-          "web-games/ocean-voyage/ocean3d.mjs"
+          "web-games/ocean-voyage/engine.mjs"
         ],
         "checks": [
           "APPROVED_CROP_REGION_AND_SEASON",
@@ -2787,8 +3134,200 @@
         "gameSourceMutationPerformed": false,
         "passed": false,
         "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX_AUDIO",
+        "roles": [
+          "SKILL_VFX",
+          "ACTION",
+          "AUDIO"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "web-games/ocean-voyage/index.html",
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs",
+          "web-games/ocean-voyage/assets/cc0/manifest.json"
+        ],
+        "checks": [
+          "SKILL_ACTUAL_EVENT_TO_EFFECT",
+          "AUDIO_STATE_AND_CLEANUP",
+          "MOBILE_EFFECT_BUDGET"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
       }
     ],
+    "actorMotion": {
+      "version": 2,
+      "trigger": "CREATION_AND_EVERY_BUILD_UP",
+      "gameId": "ocean-voyage",
+      "platform": "WEB",
+      "nextGameSpecificMotionWorkUnit": {
+        "generation": 1,
+        "actorClass": "BOSS",
+        "sourceOwnerFile": "web-games/ocean-voyage/engine.mjs",
+        "qualityAxis": "NATIVE_RIG_BINDING",
+        "featureId": "NATIVE_RIG_BINDING",
+        "evidenceCount": 0,
+        "previousVerifiedScore": null,
+        "bodyPlan": "UNCONFIRMED",
+        "bodyPlanVerifiedFromSource": false,
+        "nativeAuthoringApi": "RobloxCommonMotion.CreateProceduralActorSequence",
+        "proceduralPoseApi": "RobloxCommonMotion.SampleProceduralActorMotion",
+        "sourceVerifiedMotionVariantPlan": {
+          "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
+          "variants": [],
+          "gameId": "ocean-voyage",
+          "actorClass": "BOSS",
+          "featureId": "NATIVE_RIG_BINDING",
+          "requiresSameActorNativeRuntime": true,
+          "noProductionPromotionWithoutQA": true,
+          "noGameplayAuthority": true
+        },
+        "verifiedTransferGames": 0,
+        "decision": "SOURCE_GROUNDED_UNVERIFIED_EXPLORATION",
+        "intent": "REAL_NATIVE_ACTOR_ANIMATION_IMPLEMENTATION",
+        "noUnknownBoneCreation": true,
+        "approvedExistingRigAndClipRequired": true,
+        "preserveGameplayAndSave": true,
+        "sourceOnlyEvidence": true,
+        "runtimeVerified": false
+      },
+      "detectedActorClasses": [
+        {
+          "actorClass": "PLAYER",
+          "sourceOwnerFiles": [
+            "web-games/ocean-voyage/main.mjs",
+            "web-games/ocean-voyage/engine.mjs",
+            "web-games/ocean-voyage/ocean3d.mjs",
+            "web-games/ocean-voyage/index.html"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "START_WALK_RUN_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "NPC",
+          "sourceOwnerFiles": [
+            "web-games/ocean-voyage/main.mjs",
+            "web-games/ocean-voyage/engine.mjs",
+            "web-games/ocean-voyage/ocean3d.mjs",
+            "web-games/ocean-voyage/index.html"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "LOOK_GESTURE",
+            "START",
+            "WALK_TURN_STOP",
+            "INTERACT",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "ENEMY",
+          "sourceOwnerFiles": [
+            "web-games/ocean-voyage/main.mjs",
+            "web-games/ocean-voyage/engine.mjs",
+            "web-games/ocean-voyage/ocean3d.mjs"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "START_WALK_RUN_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "BOSS",
+          "sourceOwnerFiles": [
+            "web-games/ocean-voyage/engine.mjs"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "APPROACH_TURN",
+            "ANTICIPATION_IMPACT_FOLLOW_THROUGH_RECOVERY",
+            "DIRECTIONAL_HIT_DEATH",
+            "APPROVED_SIGNATURE_ACTION"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "CREATURE",
+          "sourceOwnerFiles": [
+            "web-games/ocean-voyage/engine.mjs",
+            "web-games/ocean-voyage/ocean3d.mjs"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "BODY_PLAN_IDLE",
+            "GAIT_START_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "COMPANION",
+          "sourceOwnerFiles": [
+            "web-games/ocean-voyage/main.mjs",
+            "web-games/ocean-voyage/engine.mjs",
+            "web-games/ocean-voyage/ocean3d.mjs",
+            "web-games/ocean-voyage/index.html"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "START_WALK_RUN_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        }
+      ],
+      "approvedSourceOrder": [
+        "VERIFIED_SAME_GAME_CLIP",
+        "VERIFIED_COMPATIBLE_COMPANY_CLIP",
+        "LICENSE_VERIFIED_REPOSITORY_CLIP",
+        "LICENSE_VERIFIED_EXTERNAL_CLIP",
+        "COMPATIBLE_RETARGET_AND_CLEANUP",
+        "AUTHORIZED_NATIVE_AUTHORING_FOR_REAL_GAP"
+      ],
+      "mandatoryPolish": [
+        "ACTUAL_COMPATIBLE_RIG_AND_ANIMATOR",
+        "CROSSFADE_POSE_VELOCITY_MATCH",
+        "LOCOMOTION_SPEED_SYNC_AND_WEIGHT_SHIFT",
+        "FOOT_CONTACT_IK_WHEN_APPLICABLE",
+        "UPPER_LOWER_BODY_LAYERING",
+        "SECONDARY_ACTING_PER_BODY_PLAN",
+        "ANTICIPATION_SINGLE_AUTHORIZED_IMPACT_FOLLOW_THROUGH_RECOVERY",
+        "DIRECTIONAL_HIT_AND_DEATH_WHEN_APPLICABLE",
+        "CAMERA_VFX_AUDIO_EVENT_SYNC",
+        "MOBILE_LOD_AND_POOLING",
+        "BEFORE_AFTER_EXACT_ACTOR_NATIVE_PLAY_QA"
+      ],
+      "applicableApprovedActorsOnly": true,
+      "allDiscoveredActorsReviewedEachCycle": true,
+      "actorCountLimit": null,
+      "noInventedActorOrPrimitiveFallback": true,
+      "noUnapprovedCombatForNoncombatActor": true,
+      "preserveExistingDamageTimingHitboxCooldownSpeedSaveProgressionEconomyNetworkAuthority": true,
+      "sourceOnlyEvidence": true,
+      "runtimeVerified": false
+    },
     "sharedAssetSelection": {
       "registry": "company-asset-library.json",
       "archives": "assets/asset-manifest.json#sharedOriginalArchives",
@@ -2815,6 +3354,8 @@
     "passed": false
   },
   "visualBuildUpDirective": {
+    "nativeOptimization": null,
+    "primitiveReplacement": null,
     "artDirection": {
       "identity": "푸른 항로 · 대양의 제국",
       "visualPurpose": "푸른 항로 · 대양의 제국의 플레이 판단과 푸른 항로 · 대양의 제국가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
@@ -2832,8 +3373,8 @@
       "MATERIAL_SURFACE": "나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.",
       "PALETTE": "위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.",
       "LIGHTING": "핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.",
-      "ANIMATION": "주요 액션을 ANTICIPATION→ACCELERATION→IMPACT→RECOVERY로 구성하고 idle/walk/run/attack/hit/death 전환을 실제 상태에 연결한다.",
-      "SECONDARY_MOTION": "무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.",
+      "ANIMATION": "플레이어·NPC·몬스터·동물·보스·동료·탈것의 호환 리그·검증된 실제 모션을 우선 연결한다. 포즈/속도 매칭 크로스페이드, 발 접지·무게 이동, 상태 전환을 역할별로 적용하고 기존 공격은 ANTICIPATION→ACCELERATION→승인된 IMPACT→FOLLOW_THROUGH→RECOVERY로 연결한다. 게임 판정은 유지한다.",
+      "SECONDARY_MOTION": "플레이어·NPC의 시선/몸짓, 동물·몹의 꼬리/날개/체중, 보스의 무기/후속동작, 가동 건축물 등 실제 해당 부위에 관성·지연·복귀를 연결하되 판정·충돌 권한은 유지한다. 정지 모델 전체 이동만으로 모션 합격을 주장하지 않는다.",
       "VFX": "일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.",
       "CAMERA": "기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.",
       "UI_HUD": "푸른 항로 · 대양의 제국의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
@@ -2869,11 +3410,17 @@
     "gameId": "ocean-voyage",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "bdbecc66a886a2ae7f459099484c404643877f9ecdaf2f2d6df13e9197ea54ec",
+    "sourceTreeFingerprint": "e20b034b5c4d9080e17b01ab9c569920604233e48ad97525ec99e6d682afc268",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
     "thumbnailTransportIsNotRenderedQuality": true,
+    "validationMode": "REMOTE_AUTOMATED_EXISTING_F0_F9_AND_INDEPENDENT_QA",
+    "localManualInspectionRequired": false,
+    "neverTreatSourceOrThumbnailAsRuntimePass": true,
+    "exactCandidateBindingRequired": true,
+    "postPublishVersionMatchRequired": false,
+    "negativeAndRecoveryScenariosRequired": true,
     "applicabilityRule": "CHECK_EXISTING_OR_APPROVED_SURFACE; NOT_APPLICABLE_REQUIRES_DESIGN_AND_SOURCE_REASON; NEVER_ADD_UNAPPROVED_GAMEPLAY",
     "cases": [
       {
@@ -2886,7 +3433,16 @@
         "failureCriteria": "글자 잘림·겹침·safe area 침범·체력/목표 가림·초점 소실·색만으로 상태 구분",
         "responsibility": "레이아웃·텍스트·아이콘·정보 우선순위",
         "retest": "같은 해상도/상태 전후 화면과 핵심 정보 식별",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "MOBILE_VIEWPORT_SAFE_AREA",
+          "TEXT_OVERFLOW_AND_HUD_OCCLUSION",
+          "RESIZE_AND_ORIENTATION"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "UI_INTERACTION",
@@ -2898,7 +3454,16 @@
         "failureCriteria": "장식 버튼·중복 실행·닫기 터치의 뒤쪽 공격 전달·선택 초기화·표시와 실제 장착 불일치",
         "responsibility": "입력 소비·모달·선택 상태·서버 응답 연결",
         "retest": "터치/마우스별 한 번의 입력에 한 번의 결과와 상태 유지",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "TOUCH_EVENT_TO_ONE_SERVER_OR_UI_ACTION",
+          "SCROLL_MODAL_FOCUS",
+          "CLOSE_REOPEN_SELECTION"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "CHARACTER_RENDER",
@@ -2910,7 +3475,16 @@
         "failureCriteria": "누락 메시/텍스처·기본 부품 대체·장비 관통/부유·리그 찢어짐·발 미끄러짐·지면 관통",
         "responsibility": "기존 모델 바인딩·리그·장착 접점·접지",
         "retest": "같은 캐릭터/장비/카메라의 실제 렌더와 원본 해시/업로드 ID 연결",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "REGISTERED_ASSET_AND_ORIGINAL_HASH",
+          "MESH_RIG_ATTACHMENT",
+          "MOVEMENT_GROUND_CONTACT"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "MONSTER_READABILITY",
@@ -2918,11 +3492,20 @@
         "impact": "GRAPHICS",
         "applicability": "INSPECT_EXISTING_OR_APPROVED_SURFACE",
         "applicabilityReason": null,
-        "scene": "기존 적 종류를 같은 조명에서 접근→추적→공격 전조→피격→사망 순으로 관찰",
+        "scene": "실제 일반 적·몬스터·동물·보스 종류별로 같은 조명에서 대기→이동→추적→전조→피격→사망(해당 시) 순으로 관찰",
         "failureCriteria": "색만 다른 복제·역할 식별 불가·공격 전조 안 보임·배경에 묻힘·죽은 적이 움직이거나 남음",
         "responsibility": "적 모델·상태 표현·전조·사망 정리",
         "retest": "기존 종류별 역할과 위험 전조가 구별되는 화면/행동 기록",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "DISTINCT_ENEMY_CREATURE_BOSS_BODY_PLAN_AND_TELEGRAPH",
+          "ACTOR_SPECIFIC_ATTACK_HIT_DEATH_STATE_SEQUENCE",
+          "DESPAWN_CLEANUP"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "MOTION_TRANSITIONS",
@@ -2930,11 +3513,20 @@
         "impact": "GRAPHICS",
         "applicability": "INSPECT_EXISTING_OR_APPROVED_SURFACE",
         "applicabilityReason": null,
-        "scene": "idle→start→walk/run→turn→stop→jump/land→attack→hit/death, 행동 중 취소·재시작",
+        "scene": "실제 플레이어·NPC·몬스터·동물·보스·동료·탈것별 idle→start→walk/run→turn→stop→jump/land→attack→hit/death(해당할 때), 행동 중 취소·재시작",
         "failureCriteria": "T포즈·정지 모델·전환 튐·루프 끊김·중복 트랙·사망 뒤 idle·전체 CFrame 이동만으로 모션 주장",
         "responsibility": "Animator·관절·블렌딩·상태 전환·트랙 수명",
         "retest": "같은 입력 순서의 연속 프레임/동작 기록과 실제 상태 일치",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "TIME_ORDERED_IDLE_MOVE_TURN_JUMP_PER_ACTOR",
+          "ACTOR_SPECIFIC_JOINT_ACTIVITY_POSE_BLEND_FOOT_CONTACT",
+          "NPC_CREATURE_BOSS_HIT_DEATH_NO_STALE_TRACK"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "ACTION_IMPACT",
@@ -2946,7 +3538,16 @@
         "failureCriteria": "판정보다 먼저 데미지 표현·허공 타격 피드백·VFX/음향 지연·쿨다운 표시 불일치·연속 입력 고착",
         "responsibility": "기존 서버 판정과 클라이언트 모션/VFX/음향 사건 연결",
         "retest": "authoritative impact 시점과 시각/음향 타임라인 비교; 데미지·쿨다운·히트 의미 보존",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "AUTHORITATIVE_HIT_EVENT_ORDER",
+          "MISS_CANCEL_COOLDOWN_REPLAY",
+          "VFX_AUDIO_DAMAGE_ALIGNMENT"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "CAMERA_COMPOSITION",
@@ -2958,7 +3559,16 @@
         "failureCriteria": "카메라 벽 관통·캐릭터/적/목표 가림·과도한 흔들림·줌 튐·모바일 화면 이탈",
         "responsibility": "카메라 충돌·추적·FOV·오클루전·화면 구성",
         "retest": "같은 동선에서 플레이어·위험·다음 목표를 지속적으로 식별",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "WALL_AND_CORNER_OCCLUSION",
+          "TARGET_AND_PLAYER_READABILITY",
+          "MOBILE_CAMERA_INPUT"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "WORLD_BACKGROUND",
@@ -2970,7 +3580,16 @@
         "failureCriteria": "빈 평면·무의미한 반복 소품·전경/중경/배경 혼동·랜드마크 부재·동선과 장식 충돌",
         "responsibility": "기존 맵 배치·지형·랜드마크·조명·배경 밀도",
         "retest": "같은 경로의 전후 장면에서 지역 역할과 목적지 식별; 새 지역은 승인 설계에만 연결",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "SPAWN_TO_OBJECTIVE_WORLD_ROUTE",
+          "LANDMARK_AND_TERRAIN_BINDING",
+          "LIGHTING_AND_REGION_STATE"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "GRAPHICS_INTEGRITY",
@@ -2982,7 +3601,16 @@
         "failureCriteria": "미로드 자산·검은/투명 모델·핑크/누락 재질·UV 깨짐·z-fighting·깜빡임·LOD 갑작스런 소실",
         "responsibility": "메시/텍스처/재질 ID·로드 실패 복구·LOD",
         "retest": "실제 화면과 로드/바인딩 오류를 함께 확인; 썸네일 파일 정상은 렌더 합격 아님",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "EXACT_MODEL_TEXTURE_LOAD",
+          "VISIBLE_RENDERED_DELTA",
+          "LOD_AND_RELOAD_RECOVERY"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "NAVIGATION_BLOCKERS",
@@ -2994,7 +3622,16 @@
         "failureCriteria": "끼임·보이지 않는 벽·낙사·부유 스폰·막힌 문·도달 불가능한 목표·안전 복귀 실패",
         "responsibility": "충돌·접지·경로 연결·문/포탈·복귀",
         "retest": "동일 경로의 실제 입력→도착→목표 상태, 모든 실패 지점 재통과",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "SPAWN_GROUND_CONTACT",
+          "PORTAL_DOOR_ROUTE_REACHABILITY",
+          "RESPAWN_SAFE_RECOVERY"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "PROGRESSION_BLOCKERS",
@@ -3006,7 +3643,16 @@
         "failureCriteria": "다음 행동 없음·퀘스트 완료 불가·보상 중복/누락·상태 불일치·다음 지역으로 진행 불가",
         "responsibility": "기존 목표·퀘스트·보상·진행 상태 책임 시스템",
         "retest": "성공/실패/재시도 분기의 상태 전후 및 다음 행동 연결; 승인 없는 경제/밸런스 변경 금지",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "CORE_LOOP_ACTION_TO_REWARD",
+          "UNLOCK_NEXT_OBJECTIVE",
+          "RETRY_IDEMPOTENT_REWARDS"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "RECOVERY_SAVE",
@@ -3018,7 +3664,16 @@
         "failureCriteria": "세이브 초기화·아이템 소실/복제·옛 UI 상태·영구 로딩·오류 숨김·복구 버튼 무효",
         "responsibility": "기존 저장 키·세션 수명·오류 처리·재접속",
         "retest": "같은 저장 의미와 권한으로 복구; 기존 데이터/보상 보존",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "SAVE_EXIT_REJOIN_RESTORE",
+          "OLD_SAVE_COMPATIBILITY",
+          "NO_DUPLICATION_OR_LOSS"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "MULTIPLAYER_CONSISTENCY",
@@ -3030,7 +3685,16 @@
         "failureCriteria": "클라이언트마다 외형/목표/피격 불일치·중복 보상·방장 이탈 무한대기·권한 이동",
         "responsibility": "서버 권한·동기화·참가/이탈·장비/모션 복제",
         "retest": "두 참가자의 실제 상태/장면과 서버 결과 비교; 로컬 모의 결과를 멀티 PASS로 쓰지 않음",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "EXACT_SOURCE_F7_SERVER_AUTHORITY_CONTRACT",
+          "REPLICATION_AND_RECONNECT_SOURCE_QA",
+          "NO_UNVERIFIED_MULTI_CLIENT_PASS"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "MOBILE_PERFORMANCE",
@@ -3042,7 +3706,16 @@
         "failureCriteria": "입력 지연·프레임 급락·메모리/객체 누수·HUD 가림·발열 비용·무제한 효과",
         "responsibility": "실제 병목 update·객체/효과 수명·로드·네트워크",
         "retest": "같은 기기/장면의 전후 측정과 회귀; 예산 없으면 임의 수치 PASS 대신 미검증",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "INPUT_LATENCY_AND_FRAME_BUDGET",
+          "PARTICLE_OBJECT_LIFETIME",
+          "MEMORY_AND_MOBILE_VIEWPORT"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "LOBBY_SPACES",
@@ -3054,26 +3727,38 @@
         "failureCriteria": "기능 없는 장식·구역 겹침·목적 불명·접지 불량·포탈 가림·연습이 저장/재화/판정 변경",
         "responsibility": "기존 허브 배치·상호작용·메뉴·안전 연습",
         "retest": "있는 기능은 연결/보존하고 없는 기능은 승인 설계 또는 오너 요청 범위 확인; 로비 없는 게임에 강제 추가 금지",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "EXISTING_LOBBY_ENTRY_AND_EXIT",
+          "SPAWN_INTERACTION_ROUTE",
+          "NO_GAMEPLAY_OR_SAVE_SIDE_EFFECT"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       }
     ],
     "responsibleSourceCandidates": [
+      "web-games/ocean-voyage/assets/countries.mjs",
+      "web-games/ocean-voyage/assets/world.mjs",
       "web-games/ocean-voyage/engine.mjs",
       "web-games/ocean-voyage/index.html",
       "web-games/ocean-voyage/main.mjs",
       "web-games/ocean-voyage/ocean3d.mjs",
       "web-games/ocean-voyage/assets/cc0/manifest.json",
       "web-games/ocean-voyage/assets/cannon.glb",
+      "web-games/ocean-voyage/assets/captains.webp",
       "web-games/ocean-voyage/assets/cc0/controls/joystick_circle_nub_a.png",
       "web-games/ocean-voyage/assets/cc0/controls/joystick_circle_pad_a.png",
-      "web-games/ocean-voyage/assets/cc0/map/castle.png",
-      "web-games/ocean-voyage/assets/cc0/map/compass.png",
-      "web-games/ocean-voyage/assets/cc0/map/dock.png",
-      "web-games/ocean-voyage/assets/cc0/map/lighthouse.png"
+      "web-games/ocean-voyage/assets/cc0/items/generic-0018.png",
+      "web-games/ocean-voyage/assets/cc0/items/generic-0032.png",
+      "web-games/ocean-voyage/assets/cc0/items/generic-0038.png"
     ],
     "requiredEvidenceFields": [
       "gameId",
       "sourceRevision",
+      "sourceTreeFingerprint",
       "artifactIdentity",
       "placeOrSceneId",
       "candidateVersion",
@@ -3083,12 +3768,18 @@
       "inputSequence",
       "observedStateBeforeAfter",
       "captureReferenceAndSha256",
-      "finding",
+      "remoteRunId",
+      "runtimeOrQaStage",
+      "failureSignature",
       "responsibleSource",
+      "negativeCaseResult",
+      "finding",
       "retestResult"
     ],
     "evidenceRules": [
       "현재 정확한 후보의 실제 플레이 장면만 사용한다. 대표 장면은 시작/로비, 핵심 행동, 위험/다중 적, 인벤/팝업, 지역 경계와 모바일이다. 해당 없는 장면은 설계/소스 이유를 기록한다.",
+      "로컬 수동 검수는 요구하지 않는다. 기존 원격 CI/F0~F9/독립 QA/Open Cloud에서 같은 sourceRevision·artifactIdentity·candidateVersion에 결속된 증거만 사용한다. 로컬 결과나 다른 버전의 증거를 합격으로 대체하지 않는다.",
+      "각 장면의 remoteAssertions를 기존 검사에서 실제 실행·측정한 뒤 실패/재시도/복구 분기까지 확인한다. F7 멀티는 중앙정책대로 정확한 소스 계약을 검사하며 실측한 다중 접속으로 허위 표시하지 않는다.",
       "같은 카메라·입력·해상도·게임 상태의 전후 이미지와 상태 결과를 비교한다. 모션은 정지 이미지 한 장 대신 연속 프레임/시간 정보가 필요하다.",
       "파일 존재·크기·PNG 서명·썸네일·자산 업로드·소스 마커·테스트 개수·반복 횟수는 시각 품질 합격을 증명하지 않는다.",
       "중앙 정책에서 허용한 관찰 도구만 사용한다. 정확한 화면 관찰 수단이 없으면 시각 품질은 UNVERIFIED로 남기고 증거 수집 책임으로 반환한다. 증거 부재를 관찰된 그래픽 오류로 꾸미지 않는다.",
@@ -3109,7 +3800,7 @@
       },
       {
         "track": "COMBAT_AND_PRIMARY_ACTION_FEEL",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "UI_HUD_AND_MENU",
@@ -3125,7 +3816,7 @@
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "WORLD_VISUAL_COHESION",
@@ -3133,7 +3824,7 @@
       },
       {
         "track": "MOBILE_TOUCH_AND_ACCESSIBILITY",
-        "status": "PRESENT"
+        "status": "WEAK_OR_MISSING"
       },
       {
         "track": "PERFORMANCE_AND_RUNTIME_STABILITY",
@@ -3152,9 +3843,8 @@
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
     "weakestTracks": [
-      "COMBAT_AND_PRIMARY_ACTION_FEEL",
       "AUDIO_MUSIC_AND_FEEDBACK",
-      "VFX_CAMERA_AND_IMPACT_SYNC"
+      "MOBILE_TOUCH_AND_ACCESSIBILITY"
     ],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
@@ -3224,123 +3914,123 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 115,
+        "line": 886,
         "kind": "FUNCTION",
-        "symbol": "buyUpgrade",
-        "currentBehavior": "export function buyUpgrade(state,kind){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 buyUpgrade의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "symbol": "collectDividend",
+        "currentBehavior": "export function collectDividend(state){const p=canDock(state);if(!p)return fail(state,'투자한 항구에서 배당을 받아.');const v=portStatus(state,p.id);if(!v.invested)return fail(state,'먼저 항구에 투자",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 collectDividend의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 142,
+        "line": 887,
         "kind": "FUNCTION",
-        "symbol": "takeContract",
-        "currentBehavior": "export function takeContract(state,pid){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 takeContract의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "symbol": "supportPort",
+        "currentBehavior": "export function supportPort(state){const p=canDock(state);if(!p||!portHasFacility(p.id,'palace'))return fail(state,'총독부가 있는 항구에서 방어를 지원해.');if(state.coins<200||state.supplies.ammo<",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 supportPort의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 150,
+        "line": 888,
         "kind": "FUNCTION",
-        "symbol": "fulfillContracts",
-        "currentBehavior": "export function fulfillContracts(state){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 fulfillContracts의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "symbol": "formAlliance",
+        "currentBehavior": "export function formAlliance(state){const p=canDock(state);if(!p||!portHasFacility(p.id,'palace'))return fail(state,'왕궁·총독부가 있는 항구에서 동맹을 협의해.');const owner=portStatus(state,p.id).o",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 formAlliance의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 38,
+        "line": 1010,
         "kind": "FUNCTION",
-        "symbol": "recruitCompanion",
-        "currentBehavior": "export function recruitCompanion(state,id){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 recruitCompanion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "symbol": "giveGift",
+        "currentBehavior": "export function giveGift(state,id,giftId){const gift=GIFTS.find(g=>g.id===giftId);if(!gift||!contactAvailable(state,id)||!canDock(state))return fail(state,'항구에서 선물을 구해 전달해.');const",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 giveGift의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 97,
+        "line": 1011,
         "kind": "FUNCTION",
-        "symbol": "trade",
-        "currentBehavior": "export function trade(state,portId,goodId,amount,mode){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 trade의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "symbol": "premiumInformation",
+        "currentBehavior": "export function premiumInformation(state,id){if(!contactAvailable(state,id))return fail(state,'인물을 직접 만나 정보를 들어.');const rel=relationStatus(state,id);if(rel.trust<35)return fail(st",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 premiumInformation의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 203,
+        "line": 885,
         "kind": "FUNCTION",
-        "symbol": "cancelDestination",
-        "currentBehavior": "export function cancelDestination(state){const s=copy(state);s.destination=null;s.route=[];return s;}",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 cancelDestination의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "symbol": "investPort",
+        "currentBehavior": "export function investPort(state,amount){const p=canDock(state);if(!p||![100,500,1000].includes(amount))return fail(state,'정박한 항구에서 투자 금액을 선택해.');if(state.coins<amount)return fail(",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 investPort의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 204,
+        "line": 889,
         "kind": "FUNCTION",
-        "symbol": "wrap",
-        "currentBehavior": "const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 wrap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "symbol": "callAlliance",
+        "currentBehavior": "export function callAlliance(state){if(!state.alliance)return fail(state,'왕궁에서 먼저 동맹을 맺어.');if(state.day-state.allianceSupportDay<5)return fail(state,'동맹 지원은 5일마다 요청할 수 있어.');const",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 callAlliance의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 205,
+        "line": 997,
         "kind": "FUNCTION",
-        "symbol": "stepSea",
-        "currentBehavior": "export function stepSea(state,input={},seconds=.05){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 stepSea의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "symbol": "buyShipEquipment",
+        "currentBehavior": "export function buyShipEquipment(state,slot,id){const item=(slot==='sail'?SAIL_EQUIPMENT:slot==='figurehead'?FIGUREHEADS:[]).find(g=>g.id===id),p=canDock(state);if(!item||!p||!port",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 buyShipEquipment의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "symbol": "buyUpgrade",
+        "symbol": "collectDividend",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "symbol": "takeContract",
+        "symbol": "supportPort",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "symbol": "fulfillContracts",
+        "symbol": "formAlliance",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "symbol": "recruitCompanion",
+        "symbol": "giveGift",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "symbol": "trade",
+        "symbol": "premiumInformation",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "symbol": "cancelDestination",
+        "symbol": "investPort",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "symbol": "wrap",
+        "symbol": "callAlliance",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "symbol": "stepSea",
+        "symbol": "buyShipEquipment",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -3416,114 +4106,412 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "web-games/ocean-voyage/assets/countries.mjs",
+      "web-games/ocean-voyage/assets/world.mjs",
       "web-games/ocean-voyage/engine.mjs",
       "web-games/ocean-voyage/index.html",
       "web-games/ocean-voyage/main.mjs",
       "web-games/ocean-voyage/ocean3d.mjs",
       "web-games/ocean-voyage/assets/cc0/manifest.json",
       "web-games/ocean-voyage/assets/cannon.glb",
+      "web-games/ocean-voyage/assets/captains.webp",
       "web-games/ocean-voyage/assets/cc0/controls/joystick_circle_nub_a.png",
       "web-games/ocean-voyage/assets/cc0/controls/joystick_circle_pad_a.png",
-      "web-games/ocean-voyage/assets/cc0/map/castle.png",
-      "web-games/ocean-voyage/assets/cc0/map/compass.png",
-      "web-games/ocean-voyage/assets/cc0/map/dock.png",
-      "web-games/ocean-voyage/assets/cc0/map/lighthouse.png"
+      "web-games/ocean-voyage/assets/cc0/items/generic-0018.png",
+      "web-games/ocean-voyage/assets/cc0/items/generic-0032.png",
+      "web-games/ocean-voyage/assets/cc0/items/generic-0038.png"
     ],
     "sourceAnchors": [
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 115,
+        "line": 886,
         "kind": "FUNCTION",
-        "symbol": "buyUpgrade",
-        "context": "export function buyUpgrade(state,kind){",
-        "score": 82,
-        "currentBehavior": "export function buyUpgrade(state,kind){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 buyUpgrade의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::buyUpgrade이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "collectDividend",
+        "context": "export function collectDividend(state){const p=canDock(state);if(!p)return fail(state,'투자한 항구에서 배당을 받아.');const v=portStatus(state,p.id);if(!v.invested)return fail(state,'먼저 항구에 투자",
+        "score": 450,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "canDock",
+            "fail",
+            "portStatus",
+            "success"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "s",
+            "copy",
+            "p",
+            "v",
+            "prosperity",
+            "id"
+          ],
+          "stateWrites": [
+            "s",
+            "p",
+            "v"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "AI",
+            "ECONOMY",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "export function collectDividend(state){const p=canDock(state);if(!p)return fail(state,'투자한 항구에서 배당을 받아.');const v=portStatus(state,p.id);if(!v.invested)return fail(state,'먼저 항구에 투자",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 collectDividend의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::collectDividend이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 142,
+        "line": 887,
         "kind": "FUNCTION",
-        "symbol": "takeContract",
-        "context": "export function takeContract(state,pid){",
-        "score": 82,
-        "currentBehavior": "export function takeContract(state,pid){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 takeContract의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::takeContract이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "supportPort",
+        "context": "export function supportPort(state){const p=canDock(state);if(!p||!portHasFacility(p.id,'palace'))return fail(state,'총독부가 있는 항구에서 방어를 지원해.');if(state.coins<200||state.supplies.ammo<",
+        "score": 450,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "canDock",
+            "fail",
+            "portStatus",
+            "success"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "portHasFacility",
+            "s",
+            "copy",
+            "p",
+            "v",
+            "id"
+          ],
+          "stateWrites": [
+            "s",
+            "p",
+            "v"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "AI",
+            "ECONOMY",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "export function supportPort(state){const p=canDock(state);if(!p||!portHasFacility(p.id,'palace'))return fail(state,'총독부가 있는 항구에서 방어를 지원해.');if(state.coins<200||state.supplies.ammo<",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 supportPort의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::supportPort이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 150,
+        "line": 888,
         "kind": "FUNCTION",
-        "symbol": "fulfillContracts",
-        "context": "export function fulfillContracts(state){",
-        "score": 82,
-        "currentBehavior": "export function fulfillContracts(state){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 fulfillContracts의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::fulfillContracts이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "formAlliance",
+        "context": "export function formAlliance(state){const p=canDock(state);if(!p||!portHasFacility(p.id,'palace'))return fail(state,'왕궁·총독부가 있는 항구에서 동맹을 협의해.');const owner=portStatus(state,p.id).o",
+        "score": 394,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "canDock",
+            "fail",
+            "portStatus",
+            "success"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "portHasFacility",
+            "s",
+            "copy",
+            "p",
+            "owner",
+            "id"
+          ],
+          "stateWrites": [
+            "s",
+            "p",
+            "owner"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "AI",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "export function formAlliance(state){const p=canDock(state);if(!p||!portHasFacility(p.id,'palace'))return fail(state,'왕궁·총독부가 있는 항구에서 동맹을 협의해.');const owner=portStatus(state,p.id).o",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 formAlliance의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::formAlliance이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 38,
+        "line": 1010,
         "kind": "FUNCTION",
-        "symbol": "recruitCompanion",
-        "context": "export function recruitCompanion(state,id){",
-        "score": 74,
-        "currentBehavior": "export function recruitCompanion(state,id){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 recruitCompanion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::recruitCompanion이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "giveGift",
+        "context": "export function giveGift(state,id,giftId){const gift=GIFTS.find(g=>g.id===giftId);if(!gift||!contactAvailable(state,id)||!canDock(state))return fail(state,'항구에서 선물을 구해 전달해.');const",
+        "score": 362,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "contactAvailable",
+            "canDock",
+            "fail",
+            "relationStatus",
+            "success"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "s",
+            "copy",
+            "cost",
+            "g",
+            "h",
+            "id",
+            "TAVERN_HOSTS",
+            "GIFTS",
+            "rel",
+            "gift",
+            "preference"
+          ],
+          "stateWrites": [
+            "s",
+            "rel",
+            "gift",
+            "preference"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "AI",
+            "ECONOMY",
+            "GOAL_STATE",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "export function giveGift(state,id,giftId){const gift=GIFTS.find(g=>g.id===giftId);if(!gift||!contactAvailable(state,id)||!canDock(state))return fail(state,'항구에서 선물을 구해 전달해.');const",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 giveGift의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::giveGift이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 97,
+        "line": 1011,
         "kind": "FUNCTION",
-        "symbol": "trade",
-        "context": "export function trade(state,portId,goodId,amount,mode){",
-        "score": 74,
-        "currentBehavior": "export function trade(state,portId,goodId,amount,mode){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 trade의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::trade이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "premiumInformation",
+        "context": "export function premiumInformation(state,id){if(!contactAvailable(state,id))return fail(state,'인물을 직접 만나 정보를 들어.');const rel=relationStatus(state,id);if(rel.trust<35)return fail(st",
+        "score": 362,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "contactAvailable",
+            "fail",
+            "relationStatus",
+            "success"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "length",
+            "t",
+            "s",
+            "copy",
+            "portById",
+            "port",
+            "push",
+            "clue",
+            "h",
+            "TREASURES",
+            "id",
+            "SPECIAL_DOCKS",
+            "TAVERN_HOSTS",
+            "rel",
+            "treasure",
+            "dock"
+          ],
+          "stateWrites": [
+            "s",
+            "rel",
+            "treasure",
+            "dock"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "AI",
+            "PROGRESSION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "export function premiumInformation(state,id){if(!contactAvailable(state,id))return fail(state,'인물을 직접 만나 정보를 들어.');const rel=relationStatus(state,id);if(rel.trust<35)return fail(st",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 premiumInformation의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::premiumInformation이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 203,
+        "line": 885,
         "kind": "FUNCTION",
-        "symbol": "cancelDestination",
-        "context": "export function cancelDestination(state){const s=copy(state);s.destination=null;s.route=[];return s;}",
-        "score": 66,
-        "currentBehavior": "export function cancelDestination(state){const s=copy(state);s.destination=null;s.route=[];return s;}",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 cancelDestination의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::cancelDestination이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "investPort",
+        "context": "export function investPort(state,amount){const p=canDock(state);if(!p||![100,500,1000].includes(amount))return fail(state,'정박한 항구에서 투자 금액을 선택해.');if(state.coins<amount)return fail(",
+        "score": 330,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "canDock",
+            "fail",
+            "portStatus",
+            "success"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "s",
+            "copy",
+            "p",
+            "v",
+            "prosperity",
+            "owner",
+            "id"
+          ],
+          "stateWrites": [
+            "s",
+            "p",
+            "v",
+            "prosperity"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "AI",
+            "ECONOMY",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "export function investPort(state,amount){const p=canDock(state);if(!p||![100,500,1000].includes(amount))return fail(state,'정박한 항구에서 투자 금액을 선택해.');if(state.coins<amount)return fail(",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 investPort의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::investPort이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 204,
+        "line": 889,
         "kind": "FUNCTION",
-        "symbol": "wrap",
-        "context": "const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));",
-        "score": 66,
-        "currentBehavior": "const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 wrap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::wrap이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "callAlliance",
+        "context": "export function callAlliance(state){if(!state.alliance)return fail(state,'왕궁에서 먼저 동맹을 맺어.');if(state.day-state.allianceSupportDay<5)return fail(state,'동맹 지원은 5일마다 요청할 수 있어.');const",
+        "score": 314,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "fail",
+            "success"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "length",
+            "t",
+            "s",
+            "dist",
+            "copy",
+            "ship",
+            "enemy",
+            "e",
+            "id",
+            "targets"
+          ],
+          "stateWrites": [
+            "s",
+            "enemy",
+            "targets"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "INTERACTION",
+            "COMBAT",
+            "AI",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "export function callAlliance(state){if(!state.alliance)return fail(state,'왕궁에서 먼저 동맹을 맺어.');if(state.day-state.allianceSupportDay<5)return fail(state,'동맹 지원은 5일마다 요청할 수 있어.');const",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 callAlliance의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::callAlliance이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/ocean-voyage/engine.mjs",
-        "line": 205,
+        "line": 997,
         "kind": "FUNCTION",
-        "symbol": "stepSea",
-        "context": "export function stepSea(state,input={},seconds=.05){",
-        "score": 66,
-        "currentBehavior": "export function stepSea(state,input={},seconds=.05){",
-        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 stepSea의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::stepSea이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "buyShipEquipment",
+        "context": "export function buyShipEquipment(state,slot,id){const item=(slot==='sail'?SAIL_EQUIPMENT:slot==='figurehead'?FIGUREHEADS:[]).find(g=>g.id===id),p=canDock(state);if(!item||!p||!port",
+        "score": 306,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "canDock",
+            "fail",
+            "success"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "portHasFacility",
+            "s",
+            "copy",
+            "portById",
+            "p",
+            "cost",
+            "port",
+            "g",
+            "item",
+            "ship",
+            "id",
+            "SAIL_EQUIPMENT",
+            "FIGUREHEADS"
+          ],
+          "stateWrites": [
+            "s",
+            "p",
+            "item",
+            "ship"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "ECONOMY",
+            "PRESENTATION",
+            "PLACEMENT",
+            "AI",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "export function buyShipEquipment(state,slot,id){const item=(slot==='sail'?SAIL_EQUIPMENT:slot==='figurehead'?FIGUREHEADS:[]).find(g=>g.id===id),p=canDock(state);if(!item||!p||!port",
+        "intendedBehavior": "PRESENTATION primary goal \"푸른 항로 · 대양의 제국의 푸른 항로 · 대양의 제국와 핵심 루프가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 buyShipEquipment의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"푸른 항로 · 대양의 제국에서 푸른 항로 · 대양의 제국의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/ocean-voyage/engine.mjs::buyShipEquipment이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/ocean-voyage/engine.mjs에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -3537,18 +4525,16 @@
     "categories": [
       "GRAPHICS",
       "MAP",
-      "UI",
-      "GAMEPLAY"
+      "UI"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA"
     ],
     "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED"
     ],
     "securityRelevant": false,
     "openCloudWorldChecks": []
@@ -3559,18 +4545,20 @@
     "gameId": "ocean-voyage",
     "platform": "WEB",
     "plannedFiles": [
+      "web-games/ocean-voyage/assets/countries.mjs",
+      "web-games/ocean-voyage/assets/world.mjs",
       "web-games/ocean-voyage/engine.mjs",
       "web-games/ocean-voyage/index.html",
       "web-games/ocean-voyage/main.mjs",
       "web-games/ocean-voyage/ocean3d.mjs",
       "web-games/ocean-voyage/assets/cc0/manifest.json",
       "web-games/ocean-voyage/assets/cannon.glb",
+      "web-games/ocean-voyage/assets/captains.webp",
       "web-games/ocean-voyage/assets/cc0/controls/joystick_circle_nub_a.png",
       "web-games/ocean-voyage/assets/cc0/controls/joystick_circle_pad_a.png",
-      "web-games/ocean-voyage/assets/cc0/map/castle.png",
-      "web-games/ocean-voyage/assets/cc0/map/compass.png",
-      "web-games/ocean-voyage/assets/cc0/map/dock.png",
-      "web-games/ocean-voyage/assets/cc0/map/lighthouse.png"
+      "web-games/ocean-voyage/assets/cc0/items/generic-0018.png",
+      "web-games/ocean-voyage/assets/cc0/items/generic-0032.png",
+      "web-games/ocean-voyage/assets/cc0/items/generic-0038.png"
     ],
     "impact": {
       "version": 1,
@@ -3578,18 +4566,16 @@
       "categories": [
         "GRAPHICS",
         "MAP",
-        "UI",
-        "GAMEPLAY"
+        "UI"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
-        "GAMEPLAY_STATE_DELTA_QA",
         "VISUAL_BINDING_QA"
       ],
       "conditionalQa": [
-        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+        "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED"
       ],
       "securityRelevant": false,
       "openCloudWorldChecks": []
@@ -3606,11 +4592,10 @@
       "CHANGED_RESPONSIBILITY_STATIC_QA",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA"
     ],
     "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED"
     ],
     "openCloudWorldChecks": [],
     "sourceMutationPerformed": false,
@@ -3625,9 +4610,9 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "bdbecc66a886a2ae7f459099484c404643877f9ecdaf2f2d6df13e9197ea54ec",
-      "runtimeObserved": false,
-      "runtimePassed": false,
+      "sourceTreeFingerprint": "e20b034b5c4d9080e17b01ab9c569920604233e48ad97525ec99e6d682afc268",
+      "runtimeObserved": true,
+      "runtimePassed": true,
       "failureStage": null,
       "failureSignature": null
     },
@@ -3652,6 +4637,9 @@
     "EXISTING_PLAYER_FACING_MOTION_UI_INVENTORY_AUDIO_VFX_CAMERA_QUALITY_REVIEWED_WHEN_APPLICABLE",
     "OWNER_DISABLED_AUDIO_CATEGORIES_PRESERVED",
     "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
+    "PER_ACTOR_MOTION_NATIVE_PLAYBACK_AND_EXACT_REMOTE_QA_REQUIRED_WHEN_APPLICABLE",
+    "FIVE_DISTINCT_PLAYABLE_IMPROVEMENTS_WITH_EXACT_GAME_RUNTIME_PROOF_WHEN_STAGE_REQUIRES",
+    "FIVE_SOURCE_DELTA_ITEMS_ALONE_CANNOT_PASS_ACTUAL_PLAY",
     "PLAYER_FACING_APPLICABLE_SCENARIOS_REVIEW_REQUIRED",
     "THUMBNAIL_TRANSPORT_CANNOT_CLOSE_VISUAL_QUALITY",
     "MISSING_EXACT_RENDER_EVIDENCE_REMAINS_UNVERIFIED"
@@ -3773,5 +4761,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T11:24:39.185Z"
+  "generatedAt": "2026-11-05T10:23:14.410Z"
 }
