@@ -2214,7 +2214,7 @@ local function meadowRegionOf(player)
   local root=character and character:FindFirstChild("HumanoidRootPart")
   if not root then return "meadow" end
   local x=root.Position.X
-  return x>3300 and "oasis" or x>2100 and "volcano" or x>900 and "worldtree" or "meadow"
+  return x>5300 and "citadel" or x>4300 and "swamp" or x>3300 and "oasis" or x>2100 and "volcano" or x>900 and "worldtree" or "meadow"
 end
 local function recordMeadowQuest(player, eventName)
   if player:GetAttribute("ProfileReady")~=true then return end
@@ -2944,6 +2944,10 @@ local function spawnEnemy(site, siteIndex)
   local partId=site.id
   local modelId=partId=="ghost" and NativeCreatureAssets.skeleton
     or (table.find(studioCreatureAtoms,site.atom) and NativeCreatureAssets[partId] or nil)
+  -- [변종] site.model이 있으면 업로드된 Quaternius CC0 변종 모델을 쓰고 행동은 partId 종을 따른다.
+  if site.model and typeof(NativeCreatureAssets["mon_"..site.model])=="number" then
+    modelId=NativeCreatureAssets["mon_"..site.model]
+  end
   local nativeScale=site.height
   if not nativeScale or (partId~="bandit" and (typeof(modelId)~="number" or modelId<1)) then
     warn("마력숲 승인 생물 자산 선택 누락: "..partId)
@@ -3130,7 +3134,7 @@ local function spawnEnemy(site, siteIndex)
   local meshOffset=groundHit.Position.Y+.12-bottom
   model:PivotTo(model:GetPivot()+Vector3.new(0,meshOffset,0))
   -- [늑대 실제 전방] 확인된 원본 사지 Bone으로 제작 메시의 앞축을 정렬한다.
-  if partId=="wolf" then
+  if partId=="wolf" and not site.model then
     local front,rear={},{}
     for _,bone in ipairs(model:GetDescendants()) do
       if bone:IsA("Bone") then
@@ -3151,9 +3155,10 @@ local function spawnEnemy(site, siteIndex)
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
   local hitPoints = isAlpha and 220 or ((isBoss and 310 or 45) + site.tier*(isBoss and 60 or 13))
+  if site.hp then hitPoints=math.floor(hitPoints*site.hp) end
   local meadowNames={wolf=isAlpha and "우두머리 늑대" or "초원 늑대",
     bat="황혼 박쥐",ghost="우물 원혼",bandit="수레 습격 도적"}
-  model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
+  model.Name=isBoss and "초원 수문장 · 돌 골렘" or site.name or (meadowNames[partId] or partId)
   -- [몬스터 공통 재질] 늑대·박쥐·골렘에 기존 토이 플라스틱을 적용한다.
   -- 기존 Pebble/바둑판 원본 몸통 텍스처를 제거하되, 원본 메시·뼈·사지·물리 및 종별 색상은 보존.
   -- 원본 템플릿은 수정하지 않고 스폰 복제본만 바꾼다. 새 장식 파츠를 만들지 않는다.
@@ -3161,7 +3166,7 @@ local function spawnEnemy(site, siteIndex)
   local bodyTint=isBoss and meadowPalette.golem or isAlpha and Color3.fromRGB(78,87,94)
     or meadowPalette[partId] or meadowPalette.wolf
   for _,surface in ipairs(model:GetDescendants()) do
-    if surface:IsA("MeshPart") then
+    if surface:IsA("MeshPart") and not site.model then
       local partName=surface.Name:lower()
       local wing=(partId=="bee" or partId=="bat") and partName:find("wing",1,true)
       local smoothDetail=wing or partName:find("eye",1,true)
@@ -3195,6 +3200,7 @@ local function spawnEnemy(site, siteIndex)
   end
   model:SetAttribute("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP")
   model:SetAttribute("Species",partId)
+  if site.model then model:SetAttribute("Variant",site.model) end
   local firstAttack={wolf="WOLF_BITE",bee="BEE_SWEEP",bat="BAT_DIVE",
     ghost="GHOST_WAIL",bandit="BANDIT_SLASH"}
   model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or firstAttack[partId])
@@ -3254,9 +3260,9 @@ local function spawnEnemy(site, siteIndex)
   end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,isAlpha=isAlpha,kind=partId,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
+    isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
     banditIdle=banditIdle,banditWalk=banditWalk,
-    damage=isAlpha and 13 or ((isBoss and 20 or 6)+math.floor(site.tier/2)),
+    damage=isAlpha and math.floor(13*(site.dmg or 1)) or math.floor(((isBoss and 20 or 6)+math.floor(site.tier/2))*(site.dmg or 1)),
     speed=isAlpha and 8.4 or (isBoss and 4.8 or 7.5),position=location,spawnPosition=location,siteIndex=siteIndex,
     visibleGroundOffset=meshOffset,spawnGroundY=groundHit.Position.Y,
     terrainGroundOffset=0,nextGroundSample=0,
@@ -3376,6 +3382,7 @@ local function applyMeadowDamage(player,target,damage)
         if math.random()<chance then setNumber(player,field,readNumber(player,field,0)+(amount or 1)) end
       end
       local kind=target.kind
+      if target.variant then kind="variant" end -- 변종은 siteDrops만 쓴다.
       drop("Hide",kind=="wolf" and .8 or kind=="bandit" and .5 or .15,target.isAlpha and 3 or 1)
       drop("Fang",kind=="wolf" and .35 or .05,target.isAlpha and 2 or 1)
       drop("BatWing",kind=="bat" and .7 or 0)
@@ -3383,11 +3390,12 @@ local function applyMeadowDamage(player,target,damage)
       drop("Ectoplasm",kind=="ghost" and .6 or 0)
       drop("Crystal",(kind=="ghost" or kind=="bat") and .3 or .08,target.isBoss and 4 or 1)
       drop("Magma",target.isBoss and 1 or 0.03,target.isBoss and 3 or 1)
+      for _,entry in ipairs(target.siteDrops or {}) do drop(entry[1],entry[2],entry[3]) end
     end
     -- [사냥 숙련도] 실제 서버에서 처치가 확정된 늑대·박쥐만 기록한다.
     -- 살아 있는 사슴·토끼 관찰은 사냥으로 인정하지 않으며 도감·드랍 변경 없음.
     -- [몬스터 도감] 서버가 확정한 처치만 기록한다.
-    if target.kind=="wolf" then setNumber(player,"DexKillWolf",readNumber(player,"DexKillWolf",0)+1) end
+    if target.kind=="wolf" and not target.variant then setNumber(player,"DexKillWolf",readNumber(player,"DexKillWolf",0)+1) end
     if target.kind=="bat" then setNumber(player,"DexKillBat",readNumber(player,"DexKillBat",0)+1) end
     if target.isAlpha then setNumber(player,"DexKillAlpha",readNumber(player,"DexKillAlpha",0)+1) end
     if target.kind=="wolf" or target.kind=="bat" then
@@ -5274,9 +5282,121 @@ do
   gate(oasisCenter+Vector3.new(-175,4,0),"화산 협곡으로 귀환",Color3.fromRGB(255,130,70),1,"",volcanoCenter+Vector3.new(160,6,0))
 end
 
+-- [오픈월드 연결] 마을(x≈0)에서 동쪽으로 끊김 없이 이어지는 대륙. 섬이던 숲·화산·오아시스를 걸어서 잇고
+-- 안개 늪지(x≈4800)와 불타는 성채(x≈6000)를 더한다. 지역은 지형·길·산맥·변종 몬스터 서식지로 구분한다.
+do
+  local owBands={
+    {name="초원 변두리",x0=348,x1=950,material=Enum.Material.Grass,tier=1,
+      pool={{"wolf",nil,nil,3.4,1},{"wolf","goblinscout","초원 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"bat",nil,nil,3.3,1}}},
+    {name="세계수 외곽",x0=950,x1=2190,material=Enum.Material.LeafyGrass,tier=3,
+      pool={{"wolf","beastman","저주받은 웨어울프",5.4,1.5,{{"Claw",.6},{"Hide",.7},{"Fang",.3}}},{"wolf","wolf","숲 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3}}},
+        {"wolf","spider","숲 거미",3,1.1,{{"Fang",.5},{"Mushroom",.3}}},{"bat",nil,nil,3.4,1}}},
+    {name="재의 황야",x0=2190,x1=3390,material=Enum.Material.Basalt,tier=5,
+      pool={{"wolf","orc","화산 오크",4.6,1.7,{{"Ore",.5},{"Hide",.6}}},{"wolf","skullorc","해골 가면 오크",4.8,1.9,{{"Ore",.5},{"Magma",.3},{"Claw",.3}}},
+        {"wolf","demon","잿불 악마",5.2,2,{{"Magma",.5},{"Crystal",.3},{"Claw",.4}}},{"wolf","raptor","화산 랩터",4.4,1.5,{{"Hide",.6},{"Fang",.4},{"Claw",.4}}}}},
+    {name="모래 폐허",x0=3390,x1=4300,material=Enum.Material.Sand,tier=6,
+      pool={{"wolf","fangspider","사막 독거미",3.4,1.5,{{"Fang",.6},{"Ectoplasm",.2}}},{"wolf","bladespider","칼날 거미",3.8,1.7,{{"Fang",.5},{"Claw",.4}}},
+        {"wolf","assassin","모래 암살자",4.2,1.6,{{"Claw",.5},{"Moonbloom",.2}}},{"wolf","raptor","사막 랩터",4.4,1.6,{{"Hide",.6},{"Claw",.4}}},{"bat",nil,nil,3.4,1}}},
+    {name="안개 늪지",x0=4300,x1=5300,material=Enum.Material.Mud,tier=7,
+      pool={{"wolf","goblin","늪 고블린",3.2,1.3,{{"Ore",.3},{"Mushroom",.4}}},{"wolf","goblinscout","늪 척후병",3,1.2,{{"Hide",.4},{"Mushroom",.3}}},
+        {"wolf","toad","독두꺼비",3,1.6,{{"Mushroom",.7},{"Hide",.3}}},{"wolf","tribal","늪 주술전사",4.4,1.8,{{"Moonbloom",.4},{"Ore",.3}}},
+        {"ghost","spider","늪 원혼 거미",3.4,1.5,{{"Ectoplasm",.6},{"Fang",.3}}}}},
+    {name="불타는 성채",x0=5300,x1=6400,material=Enum.Material.Slate,tier=9,
+      pool={{"wolf","demon","성채 악마",5.4,2.3,{{"Magma",.6},{"Crystal",.4},{"Claw",.4}}},{"wolf","skullorc","성채 해골 오크",5,2.2,{{"Ore",.6},{"Magma",.3}}},
+        {"wolf","orc","성채 오크 병사",4.8,2,{{"Ore",.6},{"Hide",.5}}},{"wolf","assassin","그림자 암살자",4.4,1.9,{{"Claw",.6},{"Crystal",.3}}}}},
+  }
+  -- 지형: 지역 띠마다 바닥 재질, 길, 북·남 산맥.
+  task.spawn(function()
+    task.wait(1)
+    local ok,err=pcall(function()
+      local terrain=workspace.Terrain
+      local random=Random.new(4417)
+      for _,band in ipairs(owBands) do
+        local len=band.x1-band.x0
+        local cx=(band.x0+band.x1)/2
+        terrain:FillBlock(CFrame.new(cx,-4,0),Vector3.new(len,12,880),band.material)
+        terrain:FillBlock(CFrame.new(cx,.5,0),Vector3.new(len,3,12),Enum.Material.Cobblestone) -- 큰길
+        for _=1,math.floor(len/38) do
+          local x=random:NextNumber(band.x0,band.x1)
+          local z=random:NextNumber(-400,400)
+          if math.abs(z)>14 then
+            terrain:FillBall(Vector3.new(x,random:NextNumber(-4,2),z),random:NextNumber(9,26),
+              band.material==Enum.Material.Sand and Enum.Material.Sandstone or band.material==Enum.Material.Grass and Enum.Material.LeafyGrass or Enum.Material.Rock)
+          end
+        end
+        for x=band.x0,band.x1,70 do
+          for _,side in ipairs({-1,1}) do
+            local radius=random:NextNumber(48,100)
+            terrain:FillBall(Vector3.new(x+random:NextNumber(-20,20),radius*.3,side*(440+radius*.45)),radius,Enum.Material.Rock)
+            terrain:FillBall(Vector3.new(x,radius*.85,side*(440+radius*.45)),radius*.55,Enum.Material.Snow)
+          end
+        end
+        task.wait()
+      end
+      terrain:SetMaterialColor(Enum.Material.Mud,Color3.fromRGB(62,66,50))
+      for _=1,22 do
+        terrain:FillBall(Vector3.new(random:NextNumber(4400,5200),-5.6,random:NextNumber(-340,340)),random:NextNumber(10,22),Enum.Material.Water)
+      end
+      for _=1,24 do
+        terrain:FillBall(Vector3.new(random:NextNumber(5400,6300),-5.4,random:NextNumber(-340,340)),random:NextNumber(5,12),Enum.Material.CrackedLava)
+      end
+      -- 식생: 띠마다 나무를 길 주변에 흩뿌린다(등록 CC0 나무만).
+      local treeBands={{348,2190,26,Color3.fromRGB(70,110,60),.25},{3390,4300,8,Color3.fromRGB(176,160,84),.4},
+        {4300,5300,30,Color3.fromRGB(70,80,58),.55},{5300,6400,16,Color3.fromRGB(34,30,34),.8}}
+      for _,tb in ipairs(treeBands) do
+        for index=1,tb[3] do
+          local x=random:NextNumber(tb[1],tb[2])
+          local z=random:NextNumber(-380,380)
+          if math.abs(z)>20 then
+            local tree=worldAsset("tree",Vector3.new(x,3,z),random:NextNumber(14,26))
+            if tree then
+              tree.Name="OpenWorldTree_"..index;tree:SetAttribute("MeadowScenery",true)
+              for _,surface in ipairs(tree:GetDescendants()) do
+                if surface:IsA("MeshPart") then surface.Color=surface.Color:Lerp(tb[4],tb[5]) end
+              end
+            end
+          end
+          if index%5==0 then task.wait() end
+        end
+      end
+      workspace:SetAttribute("OpenWorldReady",true)
+    end)
+    if not ok then warn("오픈월드 생성 실패: "..tostring(err)) end
+  end)
+  -- 서식지: 띠별 변종 풀에서 길 양옆으로 배치한다. 5번째마다 정예(체력·피해 상향, 큰 몸집).
+  local random=Random.new(9031)
+  local count=0
+  for _,band in ipairs(owBands) do
+    local sites=math.floor((band.x1-band.x0)/46)
+    for index=1,sites do
+      local spec=band.pool[random:NextInteger(1,#band.pool)]
+      local x=band.x0+((index-.5)/sites)*(band.x1-band.x0)+random:NextNumber(-18,18)
+      local z=random:NextNumber(30,380)*(index%2==0 and 1 or -1)
+      local elite=index%5==0
+      local tierGain=math.floor((x-band.x0)/400)
+      table.insert(meadowEncounterSites,{id=spec[1],atom=spec[1]=="bat" and "WING_LEATHER" or "HEAD_CANINE",model=spec[2],
+        name=spec[3] and (elite and "정예 "..spec[3] or spec[3]) or nil,
+        tier=math.min(10,band.tier+tierGain+(elite and 1 or 0)),height=spec[4]*(elite and 1.25 or 1),
+        hp=spec[2] and spec[5]*(elite and 1.8 or 1) or nil,dmg=spec[2] and (spec[5]*.8)*(elite and 1.4 or 1) or nil,
+        drops=spec[6],position=Vector3.new(x,3,z)})
+      count+=1
+    end
+  end
+  -- 거점 보스: 성채 군주(웨어울프 족장)와 늪 수호자(정령 골렘)와 화산 가운데 악마 군주.
+  for _,boss in ipairs({
+    {x=5900,z=0,model="chieftain",name="성채의 군주 · 늑대인간 족장",height=9,hp=5,dmg=2.4,tier=10,drops={{"Crystal",1,4},{"Claw",1,3},{"Magma",.8,2}}},
+    {x=4800,z=60,model="spiritgolem",name="늪의 수호자 · 안개 골렘",height=9,hp=4.5,dmg=2.2,tier=8,drops={{"Crystal",1,3},{"Ore",1,3},{"Ectoplasm",.8,2}}},
+    {x=2800,z=-40,model="demon",name="잿불의 군주 · 심연 악마",height=8,hp=4.2,dmg=2.2,tier=6,drops={{"Magma",1,3},{"Crystal",.8,2},{"Claw",.8,2}}},
+  }) do
+    table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=boss.model,name=boss.name,tier=boss.tier,height=boss.height,
+      hp=boss.hp,dmg=boss.dmg,drops=boss.drops,alpha=true,position=Vector3.new(boss.x,3,boss.z)})
+  end
+  workspace:SetAttribute("OpenWorldSiteCount",count)
+end
+
 -- [지역 발견] 실제 위치가 지역 안에 들어가면 서버가 발견 비트를 기록한다(1 초원·2 숲·4 화산·8 오아시스).
 task.spawn(function()
-  local bits={meadow=1,worldtree=2,volcano=4,oasis=8}
+  local bits={meadow=1,worldtree=2,volcano=4,oasis=8,swamp=16,citadel=32}
   while true do
     task.wait(3)
     for _,player in ipairs(Players:GetPlayers()) do

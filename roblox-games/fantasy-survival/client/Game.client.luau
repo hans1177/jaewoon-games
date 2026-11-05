@@ -1279,7 +1279,7 @@ local function renderMeadowPages()
   local storyLines={"1부 메인 이야기 (07~12장)"}
   local statusText={Open="탐험 가능",Planned="준비 중",Reserved="2부 이후"}
   local discovered=player:GetAttribute("WorldDiscovered") or 1
-  local regionBits={meadow=1,worldtree=2,volcano=4,oasis=8}
+  local regionBits={meadow=1,worldtree=2,volcano=4,oasis=8,swamp=16,citadel=32}
   for index,region in ipairs(Config.Regions or {})do
     local bit=regionBits[region.Id]
     local seen=bit==nil or bit32.band(discovered,bit)~=0
@@ -9473,8 +9473,10 @@ end)
     {id="worldtree",name="세계수 숲",bit=2,center=1200,half=210,color=Color3.fromRGB(40,110,98)},
     {id="volcano",name="화산 협곡",bit=4,center=2400,half=210,color=Color3.fromRGB(130,56,42)},
     {id="oasis",name="오아시스 지하",bit=8,center=3600,half=210,color=Color3.fromRGB(190,160,98)},
+    {id="swamp",name="안개 늪지",bit=16,center=4800,half=500,color=Color3.fromRGB(70,92,66)},
+    {id="citadel",name="불타는 성채",bit=32,center=5850,half=550,color=Color3.fromRGB(96,40,40)},
   }
-  local gate={worldtree="메인 6장",volcano="메인 9장",oasis="메인 10장"}
+  local gate={worldtree="메인 6장",volcano="메인 9장",oasis="메인 10장",swamp="자유 탐험",citadel="자유 탐험"}
   local overlay=Instance.new("TextButton")
   overlay.Name="MeadowFullMap";overlay.Text="";overlay.AutoButtonColor=false
   overlay.Size=UDim2.fromScale(1,1);overlay.BackgroundColor3=Color3.fromRGB(4,10,10)
@@ -9506,7 +9508,7 @@ end)
   local tiles={}
   for index,region in ipairs(regions) do
     local tile=Instance.new("Frame")
-    tile.LayoutOrder=index;tile.Size=UDim2.new(.25,-8,1,0);tile.BackgroundColor3=region.color;tile.ZIndex=62;tile.Parent=strip
+    tile.LayoutOrder=index;tile.Size=UDim2.new(1/#regions,-8,1,0);tile.BackgroundColor3=region.color;tile.ZIndex=62;tile.Parent=strip
     Instance.new("UICorner",tile).CornerRadius=UDim.new(0,10)
     local edge=Instance.new("UIStroke");edge.Color=Color3.fromRGB(230,206,150);edge.Thickness=1.6;edge.Parent=tile
     local fade=Instance.new("UIGradient");fade.Rotation=90

@@ -1505,7 +1505,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(config,/EnemyName="우두머리 늑대"/);
   assert.match(server,/alpha=true/);
   assert.match(server,/isAlpha and 220/);
-  assert.match(server,/isAlpha and 13/);
+  assert.match(server,/isAlpha and math\.floor\(13/);
   assert.match(server,/isAlpha and 8\.4/);
   assert.match(server,/if target\.isAlpha then recordMeadowQuest\(player,"BOSS_KILL"\) end/);
   assert.match(server,/target\.questIndex/);
@@ -1571,7 +1571,7 @@ test('fantasy original monsters keep server combat authority while true bones dr
   assert.match(server,/enemy\.visualPosition=previous:Lerp\(enemy\.position,alpha\)/);
   assert.match(server,/if enemyVisualElapsed>=1\/30 then/);
   assert.match(server,/if enemyUpdateElapsed>=\.12 then/);
-  assert.match(server,/damage=isAlpha and 13 or \(\(isBoss and 20 or 6\)\+math\.floor\(site\.tier\/2\)\)/);
+  assert.match(server,/damage=isAlpha and math\.floor\(13\*\(site\.dmg or 1\)\) or math\.floor\(\(\(isBoss and 20 or 6\)\+math\.floor\(site\.tier\/2\)\)\*\(site\.dmg or 1\)\)/);
   assert.match(server,/speed=isAlpha and 8\.4 or \(isBoss and 4\.8 or 7\.5\)/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2);
   for(const source of [client,server]){

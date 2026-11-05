@@ -138,6 +138,8 @@ local Config = {
     {Id="worldtree",Name="세계수 숲",Part=1,Status="Planned",UnlockMainStage=7,Story="백송 기사단의 숲. 이름이 지워진 깃발들과 저주에 변한 짐승의 울음. 닉이 가장 먼저 괴물이 된 곳이다."},
     {Id="volcano",Name="불꽃 화산 협곡",Part=1,Status="Planned",UnlockMainStage=10,Story="홍염 기사단의 협곡. 혼자 울리는 모루와 용암 속에 갇힌 대장장이. 렌스와 미나의 표식이 이곳까지 이어진다."},
     {Id="oasis",Name="오아시스 지하",Part=1,Status="Planned",UnlockMainStage=11,Story="모래서약 기사단의 오아시스. 물에 비친 얼굴이 이름을 묻는다. 미나의 장부에서 전쟁의 진실이 드러난다."},
+    {Id="swamp",Name="안개 늪지",Part=1,Status="Open",Story="걸어서 이어진 대륙 동쪽의 늪. 고블린 무리와 독두꺼비, 늪 원혼 거미가 길을 막고, 안개 골렘이 늪의 중심을 지킨다."},
+    {Id="citadel",Name="불타는 성채",Part=1,Status="Open",Story="대륙 끝의 불타는 성채. 악마와 해골 오크 병사가 지키고, 늑대인간 족장이 성채 군주로 군림한다. 희귀 재료의 최고 산지."},
     {Id="mist-swamp",Name="안개 늪",Part=2,Status="Reserved"},
     {Id="frost-plateau",Name="서리 고원",Part=2,Status="Reserved"},
     {Id="sunken-capital",Name="잠긴 왕도",Part=2,Status="Reserved"},
