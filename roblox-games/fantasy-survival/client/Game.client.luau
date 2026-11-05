@@ -5599,7 +5599,7 @@ local radarFieldCorner=Instance.new("UICorner")
 radarFieldCorner.CornerRadius=UDim.new(0,10) -- 원형 대신 가로로 긴 사각 지도
 radarFieldCorner.Parent=radarField
 local radarTint=Instance.new("UIGradient")
-radarTint.Color=ColorSequence.new(Color3.fromRGB(41,83,58),Color3.fromRGB(15,43,40))
+radarTint.Color=ColorSequence.new(Color3.fromRGB(64,120,74),Color3.fromRGB(24,64,52)) -- 초원 느낌의 밝은 녹색 바탕
 radarTint.Rotation=110
 radarTint.Parent=radarField
 local radarFieldStroke=Instance.new("UIStroke")
@@ -5612,8 +5612,8 @@ local radarTrails={}
 for route=1,36 do
   local segment=Instance.new("Frame")
   segment.Name="RealTrail"..route;segment.AnchorPoint=Vector2.new(.5,.5)
-  segment.BorderSizePixel=0;segment.BackgroundColor3=Color3.fromRGB(239,211,142)
-  segment.BackgroundTransparency=.06;segment.ZIndex=10;segment.Parent=radarField
+  segment.BorderSizePixel=0;segment.BackgroundColor3=Color3.fromRGB(214,184,120)
+  segment.BackgroundTransparency=.25;segment.ZIndex=10;segment.Parent=radarField
   radarTrails[route]=segment
 end
 local radarRuinMarkers={}
@@ -5625,6 +5625,22 @@ for index=1,3 do
   marker.TextColor3=Color3.fromRGB(255,196,133);marker.TextSize=15
   marker.ZIndex=11;marker.Visible=false;marker.Parent=radarField
   radarRuinMarkers[index]=marker
+end
+-- [지도 그리기] 실제 월드의 나무 위치를 작은 숲 점으로 그려 지형 느낌을 준다(새 자산 없음).
+local radarTerrain={dots={},trees={},scannedAt=-99}
+for index=1,72 do
+  local dot=Instance.new("Frame")
+  dot.Name="TerrainTree"..index
+  dot.AnchorPoint=Vector2.new(.5,.5)
+  dot.Size=UDim2.fromOffset(7,7)
+  dot.BackgroundColor3=Color3.fromRGB(52,132,70)
+  dot.BorderSizePixel=0
+  dot.ZIndex=9
+  dot.Visible=false
+  local dotCorner=Instance.new("UICorner");dotCorner.CornerRadius=UDim.new(1,0);dotCorner.Parent=dot
+  local dotStroke=Instance.new("UIStroke");dotStroke.Color=Color3.fromRGB(20,66,40);dotStroke.Thickness=1;dotStroke.Parent=dot
+  dot.Parent=radarField
+  radarTerrain.dots[index]=dot
 end
 -- [초원 전체 탐험 지도] 서버의 오솔길과 외곽 길 36개를 동일 좌표로 표시한다.
 -- 기존 8개 마을/숲 길 + 누락된 4개 숲 분기 + 네 모서리 연결 24개.
@@ -5674,7 +5690,7 @@ for index=1,3 do
   vertical.Size=UDim2.new(0,1,1,0)
   vertical.Position=UDim2.fromScale(index/4,0)
   vertical.BackgroundColor3=Color3.fromRGB(146,192,137)
-  vertical.BackgroundTransparency=.83
+  vertical.BackgroundTransparency=.93
   vertical.BorderSizePixel=0
   vertical.ZIndex=9
   vertical.Parent=radarField
@@ -5683,7 +5699,7 @@ for index=1,3 do
   horizontal.Size=UDim2.new(1,0,0,1)
   horizontal.Position=UDim2.fromScale(0,index/4)
   horizontal.BackgroundColor3=Color3.fromRGB(146,192,137)
-  horizontal.BackgroundTransparency=.83
+  horizontal.BackgroundTransparency=.93
   horizontal.BorderSizePixel=0
   horizontal.ZIndex=9
   horizontal.Parent=radarField
@@ -5888,6 +5904,35 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   local mapSize=radarField.AbsoluteSize
   local radarSpan=270 -- 플레이어 주위 실제 135스터드 반경
   local radarHalf=radarSpan*.5
+  -- 실제 나무 위치(20초마다 다시 찾음)를 반경 안에서만 점으로 표시한다.
+  if world and os.clock()-radarTerrain.scannedAt>20 then
+    radarTerrain.scannedAt=os.clock()
+    local found={}
+    for _,child in ipairs(world:GetDescendants()) do
+      if child:IsA("Model") then
+        local childName=child.Name
+        if childName:find("Woodland_",1,true) or childName:find("BoundaryTree_",1,true)
+          or childName:find("InteriorTree_",1,true) then
+          local okPivot,pivot=pcall(function() return child:GetPivot() end)
+          if okPivot then found[#found+1]=pivot.Position end
+        end
+      end
+    end
+    radarTerrain.trees=found
+  end
+  local treeShown=0
+  for _,treePosition in ipairs(radarTerrain.trees) do
+    local tdx=treePosition.X-mainRoot.Position.X
+    local tdz=treePosition.Z-mainRoot.Position.Z
+    if math.abs(tdx)<radarHalf and math.abs(tdz)<radarHalf then
+      treeShown+=1
+      local dot=radarTerrain.dots[treeShown]
+      if not dot then break end
+      dot.Visible=true
+      dot.Position=UDim2.fromScale(.5+tdx/radarSpan,.5+tdz/radarSpan)
+    end
+  end
+  for index=treeShown+1,#radarTerrain.dots do radarTerrain.dots[index].Visible=false end
   local villageDx=0-mainRoot.Position.X
   local villageDz=-111-mainRoot.Position.Z
   radarVillage.Visible=world~=nil and (world:GetAttribute("MeadowVillageNPCCount") or 0)>0
@@ -5936,7 +5981,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
       local dx=(x2-x1)*mapSize.X
       local dy=(y2-y1)*mapSize.Y
       frame.Position=UDim2.fromScale((x1+x2)*.5,(y1+y2)*.5)
-      frame.Size=UDim2.fromOffset(math.max(1,math.sqrt(dx*dx+dy*dy)),2)
+      frame.Size=UDim2.fromOffset(math.max(1,math.sqrt(dx*dx+dy*dy)),3)
       frame.Rotation=math.deg(math.atan2(dy,dx))
     end
   end
