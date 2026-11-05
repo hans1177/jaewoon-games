@@ -152,7 +152,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	local ok, err = pcall(function()
 		m.Parent = parent
 		local _, ext = m:GetBoundingBox()
-		local axis = if kind == "People" then ext.Y else math.max(ext.X, ext.Z)
+		local axis = if kind == "People" or asset == "chimney" then ext.Y else math.max(ext.X, ext.Z)
 		if axis < 0.01 then error("빈 모델") end
 		local scale = desiredSize / axis
 		if scale < 0.01 or scale > 100 then error("비정상적인 모델 배율") end
@@ -223,30 +223,78 @@ local function buildShip(parent, shipId, at)
 	local look = SHIP_LOOK[shipId] or SHIP_LOOK.caravel
 	local s = look.scale
 	local bottom = Vector3.new(at.X, at.Y - 2 * s, at.Z)
-	local shipMesh = importedModel(parent, "Ships", shipId, bottom, 26 * s, false, look.metal and look.hull or nil)
-		or importedModel(parent, "Naval", SHIP_MESH[shipId] or "ship-small", bottom, 26 * s, false, look.metal and look.hull or nil)
+	-- 선박 ID별 완제품 Mesh가 있으면 그것을 우선한다. 없으면 원본 선체와 실제 Mesh 소품을 조합한다.
+	local dedicated = importedModel(parent, "Ships", shipId, bottom, 26 * s, false, look.metal and look.hull or nil)
+	local shipMesh = dedicated or importedModel(parent, "Naval", SHIP_MESH[shipId] or "ship-small", bottom, 26 * s, false, look.metal and look.hull or nil)
 	if shipMesh then
 		shipMesh.Name = "Ship"
-		if look.funnel then
-			-- 증기선 두 종류는 수입된 굴뚝과 연기로 범선과 구분한다.
-			local stack = importedModel(shipMesh, "Town", "chimney", at + Vector3.new(-5 * s, 3 * s, 0), 4 * s, false, look.metal and look.hull or nil)
-			local part = if stack then stack:FindFirstChildWhichIsA("BasePart", true) else shipMesh:FindFirstChildWhichIsA("BasePart", true)
-			if part then
-				local smoke = Instance.new("Smoke")
-				smoke.Color = Color3.fromRGB(90, 88, 84)
-				smoke.Size = 4 * s
-				smoke.Opacity = 0.24
-				smoke.RiseVelocity = 5
-				smoke.Parent = part
-			end
-		end
-		-- 전투형 선박은 실제 대포 메쉬를 선체 양옆에 배치한다.
-		if shipId == "frigate" or shipId == "galleon" or shipId == "ironclad_frigate" then
-			for side = -1, 1, 2 do
-				for i = -1, 1 do
-					importedModel(shipMesh, "Naval", "cannon",
-						at + Vector3.new(i * 7 * s, 2 * s, side * 4.6 * s), 3.3 * s, false)
+		if not dedicated then
+			-- 대포, 선루, 굴뚝, 장갑판 모두 실제 수입한 3D Mesh 모델을 조합한다.
+			if shipId == "frigate" or shipId == "galleon" or shipId == "ironclad_frigate" then
+				for side = -1, 1, 2 do
+					for i = -1, 1 do
+						importedModel(shipMesh, "Naval", "cannon", at + Vector3.new(i * 7 * s, 2 * s, side * 4.6 * s), 3.3 * s, false)
+					end
 				end
+			end
+			if look.funnel then
+				local funnelPositions = if look.metal then { -5, 4 } else { -2 }
+				for _, x in funnelPositions do
+					local position = at + Vector3.new(x * s, 2.8 * s, 0)
+					local chimney = importedModel(shipMesh, "Town", "chimney", position, (if look.metal then 6 else 8) * s, false, look.hull)
+					local emitterPart = chimney and chimney:FindFirstChildWhichIsA("BasePart", true)
+					if emitterPart then
+						local smoke = Instance.new("Smoke")
+						smoke.Name = "EngineSmoke"
+						smoke.Color = Color3.fromRGB(88, 86, 83)
+						smoke.Size = (if look.metal then 3.5 else 4.5) * s
+						smoke.Opacity = 0.27
+						smoke.RiseVelocity = 5
+						smoke.Parent = emitterPart
+					end
+				end
+			end
+			if shipId == "paddle_steamer" then
+				-- 외륜 증기선: 별도 조타실 + 좌우 두 외륜.
+				-- 링은 Kenney 분수 Mesh를 세워 회전시키고, 목재 날개는 난간 Mesh를 방사상으로 재배열한다.
+				importedModel(shipMesh, "Town", "wall-window-shutters", at + Vector3.new(-7 * s, 3 * s, 0), 8 * s, false, Color3.fromRGB(178, 151, 116))
+				for side = -1, 1, 2 do
+					local center = at + Vector3.new(1.5 * s, 1.1 * s, side * 5.3 * s)
+					local wheel = Instance.new("Model")
+					wheel.Name = if side == -1 then "PaddleWheelPort" else "PaddleWheelStarboard"
+					wheel.Parent = shipMesh
+					local rim = importedModel(wheel, "Town", "fountain-round", center, 8 * s, false, Color3.fromRGB(140, 92, 55))
+					if rim then
+						local rimCenter = rim:GetBoundingBox()
+						rim:PivotTo(CFrame.new(center) * CFrame.Angles(math.pi / 2, 0, 0) * CFrame.new(-rimCenter.Position) * rim:GetPivot())
+					end
+					local paddleCount = 8
+					for i = 0, paddleCount - 1 do
+						local blade = importedModel(wheel, "Town", "fence", center, 5.5 * s, false, Color3.fromRGB(125, 74, 42))
+						if blade then
+							local bladeCenter = blade:GetBoundingBox()
+							local angle = i * (math.pi * 2 / paddleCount)
+							blade:PivotTo(CFrame.new(center) * CFrame.Angles(0, 0, angle) * CFrame.new(3.2 * s, 0, 0)
+								* CFrame.Angles(0, 0, math.pi / 2) * CFrame.new(-bladeCenter.Position) * blade:GetPivot())
+						end
+					end
+					if #wheel:GetChildren() > 0 then
+						wheel.WorldPivot = CFrame.new(center)
+					else
+						wheel:Destroy()
+					end
+				end
+			elseif shipId == "ironclad_frigate" then
+				-- 철갑 증기 프리깃: 실제 석재 벽 Mesh를 철색 장갑판으로 변형해 선측에 배치한다.
+				-- 복제 Mesh만 사용하므로 대포 위력·선체 체력·속도·저장 데이터는 바꾸지 않는다.
+				local armor = Color3.fromRGB(91, 103, 112)
+				for side = -1, 1, 2 do
+					for i = -1, 1 do
+						importedModel(shipMesh, "Town", "wall",
+							at + Vector3.new(i * 9 * s, -0.8 * s, side * 5.1 * s), 10.2 * s, false, armor)
+					end
+				end
+				importedModel(shipMesh, "Town", "wall-window-shutters", at + Vector3.new(-9 * s, 3.7 * s, 0), 8 * s, false, armor)
 			end
 		end
 		return shipMesh
@@ -501,6 +549,14 @@ function PortScene.build(info, onFacility)
 
 	-- 움직임: 배 흔들림, 갈매기, 풍차
 	local shipBase = ship:GetPivot()
+	-- 선체의 잔물결 움직임과 외륜 회전을 독립적으로 합성한다.
+	local wheels = {}
+	for _, name in { "PaddleWheelPort", "PaddleWheelStarboard" } do
+		local wheel = ship:FindFirstChild(name)
+		if wheel and wheel:IsA("Model") then
+			table.insert(wheels, { model = wheel, relative = shipBase:ToObjectSpace(wheel:GetPivot()) })
+		end
+	end
 	local mill = {}
 	for _, p in folder:GetChildren() do
 		if p.Name == "MillBlade" then
@@ -511,7 +567,11 @@ function PortScene.build(info, onFacility)
 	local t0 = os.clock()
 	local conn = RunService.Heartbeat:Connect(function()
 		local t = os.clock() - t0
-		ship:PivotTo(shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012))
+		local shipPose = shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012)
+		ship:PivotTo(shipPose)
+		for _, wheel in wheels do
+			wheel.model:PivotTo(shipPose * wheel.relative * CFrame.Angles(0, 0, t * 1.65))
+		end
 		for _, g in gulls do
 			local a = t * g.speed + g.phase
 			local pos = Vector3.new(g.cx + math.cos(a) * g.radius, g.height + math.sin(t * 0.8 + g.phase) * 2, g.cz + math.sin(a) * g.radius)
