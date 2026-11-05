@@ -5634,7 +5634,7 @@ local function meadowTreeAction(player,index)
             guard(member,duration)
             if meadowRpg.passiveLevel(player,"M_SHIELD_REFUND")>0 then
               task.delay(duration+.05,function()
-                if member.Parent==Players and (meadowDefense[member] or {}).guardUntil<=os.clock()+.1
+                if member.Parent==Players and ((meadowDefense[member] or {}).guardUntil or 0)<=os.clock()+.1
                   and player.Parent==Players then
                   player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)
                     +3*meadowRpg.passiveLevel(player,"M_SHIELD_REFUND")))
@@ -5730,7 +5730,9 @@ local function meadowTreeAction(player,index)
       return strike(target,1.15)
     else
       local hit=strike(target,mode=="SNIPE" and 1.7 or 1)
-      if not hit and mode=="BACKSTAB" and meadowRpg.passiveLevel(player,"S_ESCAPE")>0 then
+      if not hit and mode=="BACKSTAB" and meadowRpg.passiveLevel(player,"S_ESCAPE")>0
+        and now>=(state.nextEscapeAt or 0) then
+        state.nextEscapeAt=now+8
         local defense=meadowDefense[player] or {}
         defense.dodgeUntil=math.max(defense.dodgeUntil or 0,now+.15*meadowRpg.passiveLevel(player,"S_ESCAPE"))
         meadowDefense[player]=defense
