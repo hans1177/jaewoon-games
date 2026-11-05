@@ -395,7 +395,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -830,8 +830,7 @@ do
     "해적왕의 나침반","뿌리 지킴이의 씨앗","용암 심장","모래 여왕의 눈물","독개구리 왕관","혼돈의 파편",
     "지하묘지 수문장의 인장","고블린 왕의 이빨","심연 제단의 불씨","거울 정원의 관",
   }
-
-
+end
 
 -- [연계 퀘스트] 메인 1줄 + 서브 3줄 + 숨겨진 지역 1줄. 단계마다 목표(도달·처치·재료)와 이야기 조각이 이어진다.
 -- Need: 시작 조건 {Chapter=기록 장 번호 | Companion=동료 id | Field=저장 수치}. 단계 Type: reach(좌표) / kill(Zone+Named|Lord|Contract) / loot(Field,Count).
@@ -854,7 +853,7 @@ Config.QuestLines = {
     {Type="reach", X=4100, Z=500, R=70, Title="침몰한 사원", Text="침몰한 사원 안쪽으로 가라.", Done="사원 바닥에 장부 상자가 있다. 그러나 지키는 자가 있다."},
     {Type="kill", Zone="desert", Named=true, Count=1, Title="장부의 수호자를 쓰러뜨려라", Text="황금 사막의 명명 보스가 장부를 노린다.", Done="장부를 펼치자 같은 숫자 아래 미나의 한 줄: '진짜 보급품은 숲으로 갔다.'"},
    },
-   Reward={Coins=520, Xp=420, Moonbloom=3}},
+   Reward={Coins=520, Xp=420, Moonbloom=3, Join="mina"}},
   {Id="nick", Name="[서브] 닉의 마지막 초소", Kind="Sub", Field="QLNick", Need={Companion="nick"},
    Intro="닉이 꿈속에서 같은 요새를 본다. 저주가 시작된 곳이다.",
    Steps={
@@ -891,8 +890,8 @@ for _, line in ipairs({
     {Type="kill", Zone="meadow", Named=true, Count=1, Title="봉인 파편의 수호자", Text="초원의 명명 보스를 쓰러뜨려 봉인 파편을 회수하라.", Done="파편을 쥐자 우물 속 목소리가 또렷해진다. 우물로 돌아가라."},
     {Type="choice", X=0, Z=-111, R=30, Title="봉인의 선택", Text="우물 앞에서 봉인을 풀지 정하라.", Prompt="봉인석 속의 목소리: '나는 청월 기사단의 방패 세라. 단장은 방패를 놓지 못해 괴물이 되었다. 나를 깨우겠는가?'",
      Choices={
-      {Label="봉인을 풀어 세라를 깨운다", Done="세라가 방패를 들고 걸어 나온다. '다시 앞에 서겠다. 이름을 불러 줘서 고마워.'", Join="sera", Coins=200},
-      {Label="우물을 다시 봉인한다", Done="봉인이 굳는다. 우물은 안전해졌지만 속삭임은 끝내 사라졌다. 세라는 합류하지 않는다.", Coins=450, Moonbloom=3}}},
+      {Label="봉인을 풀어 세라를 깨운다", Done="세라가 방패를 들고 걸어 나온다. '다시 앞에 서겠다. 이름을 불러 줘서 고마워.'", Join="sera", Bond=true, Coins=200},
+      {Label="봉인을 풀되 임무로만 청한다", Done="세라가 방패를 들고 나오지만 거리를 둔다. '임무라면 따르겠다. 마음은 천천히 열겠어.'", Join="sera", Coins=450, Moonbloom=3}}},
    },
    Reward={Coins=150, Xp=240}},
   {Id="rowen-join", Name="[동료] 마지막 화살", Kind="Companion", Field="QLRowenJ", Need={Stage=7},
@@ -903,8 +902,8 @@ for _, line in ipairs({
     {Type="kill", Zone="worldtree", Named=true, Count=1, Title="화살 시험의 표적", Text="숲의 명명 보스가 마지막 화살 시험의 표적이다.", Done="숲 위쪽에서 활시위 소리. 누군가 지켜보고 있다."},
     {Type="choice", X=1300, Z=-700, R=60, Title="로웬과의 약속", Text="제단으로 돌아가 로웬을 마주하라.", Prompt="로웬: '장부를 가진 자는 지워졌다. 너는 같은 길을 걸을 건가, 아니면 장부를 태울 건가?'",
      Choices={
-      {Label="장부를 함께 지킨다", Done="로웬이 활을 내린다. '그럼 네 길에 화살이 되겠다.' 닉의 저주를 알아본 것도 그녀다.", Join="rowen", Coins=200},
-      {Label="장부를 태워 위험을 끊는다", Done="장부가 재가 된다. 로웬은 말없이 숲으로 사라진다. 대신 숲의 길이 조금 더 안전해졌다.", Coins=450, Hide=3}}},
+      {Label="장부를 함께 지킨다", Done="로웬이 활을 내린다. '그럼 네 길에 화살이 되겠다.' 닉의 저주를 알아본 것도 그녀다.", Join="rowen", Bond=true, Coins=200},
+      {Label="장부를 태워 위험을 끊는다", Done="장부가 재가 된다. 로웬은 한참 말이 없다가 활을 든다. '…그래도 네가 옳을 수 있겠지. 따라가겠다.'", Join="rowen", Coins=450, Hide=3}}},
    },
    Reward={Coins=200, Xp=320}},
   {Id="doran-join", Name="[동료] 식지 않는 모루", Kind="Companion", Field="QLDoranJ", Need={Stage=10},
@@ -915,8 +914,8 @@ for _, line in ipairs({
     {Type="kill", Zone="volcano", Named=true, Count=1, Title="화염이 된 단원", Text="화염 골렘이 된 동료 단원을 쓰러뜨려라.", Done="단원의 불길이 꺼진다. 도란이 모루 곁에서 일어선다."},
     {Type="choice", X=2500, Z=600, R=60, Title="도란의 모루", Text="재의 제단에서 도란과 마주하라.", Prompt="도란: '이 모루는 병기를 만들라는 명령을 거부한 대가다. 나는 다시 망치를 들어도 되나?'",
      Choices={
-      {Label="함께 가자고 청한다", Done="도란이 모루를 어깨에 멘다. '그렇다면 네 칼날부터 벼리자.'", Join="doran", Coins=200},
-      {Label="모루를 용암에 돌려보낸다", Done="모루가 용암 속으로 가라앉는다. 도란은 단원들 곁에 남기로 한다. 마그마가 크게 남았다.", Coins=450, Magma=4}}},
+      {Label="함께 가자고 청한다", Done="도란이 모루를 어깨에 멘다. '그렇다면 네 칼날부터 벼리자.'", Join="doran", Bond=true, Coins=200},
+      {Label="모루를 용암에 돌려보내고 청한다", Done="모루가 용암 속으로 가라앉는다. 도란은 망치 하나만 쥐고 따라나선다. 마그마가 크게 남았다.", Join="doran", Coins=450, Magma=4}}},
    },
    Reward={Coins=260, Xp=400}},
   {Id="ifa-join", Name="[동료] 물에 비친 이름", Kind="Companion", Field="QLIfaJ", Need={Stage=11},
@@ -926,8 +925,8 @@ for _, line in ipairs({
     {Type="kill", Zone="oasis", Named=true, Count=1, Title="이름을 잃은 단원", Text="모래 폐허의 명명 보스를 쓰러뜨려 단원들을 쉬게 하라.", Done="괴물이 사라진 자리에 이프의 목소리가 남는다. 물가로 돌아가라."},
     {Type="choice", X=4100, Z=500, R=60, Title="이프의 이름", Text="사원 물가에서 이프를 불러라.", Prompt="이프: '내 이름이... 이프, 맞나요? 그 이름을 불러 주면 나는 다시 사람으로 돌아갈 수 있어요.'",
      Choices={
-      {Label="이프의 이름을 불러 준다", Done="물 위의 얼굴이 웃는다. 이프가 물에서 걸어 나온다. '이제 누군가를 고칠 수 있겠어요.'", Join="ifa", Coins=200},
-      {Label="이름을 불러 주지 않는다", Done="얼굴이 물 아래로 가라앉는다. 오아시스는 고요해졌고, 사원에서 귀한 재료를 얻었다.", Coins=450, Crystal=4}}},
+      {Label="이프의 이름을 불러 준다", Done="물 위의 얼굴이 웃는다. 이프가 물에서 걸어 나온다. '이제 누군가를 고칠 수 있겠어요.'", Join="ifa", Bond=true, Coins=200},
+      {Label="이름 대신 약속만 건넨다", Done="얼굴이 잠시 흔들리다 물에서 걸어 나온다. '이름은 천천히 찾을게요. 그동안 곁에 있을게요.'", Join="ifa", Coins=450, Crystal=4}}},
    },
    Reward={Coins=300, Xp=460}},
 }) do table.insert(Config.QuestLines, line) end
@@ -940,5 +939,64 @@ Config.CompanionBanter = {
   doran = {ruin="돌 이음새가 훌륭하군. 만든 사람 손이 좋았어.", cave="광석 냄새가 나는데? 좋은 철이 있겠어.", camp="이 천막 말뚝은 내가 벼린 거 같은데…", shrine="이런 돌에는 무기를 벼릴 수 없지. 마음이 먼저 닳을 테니."},
   ifa = {ruin="여기서 많은 이들이 아팠을 거예요. 잠깐 기도할게요.", cave="공기가 습해요. 다치면 바로 말해요.", camp="누가 아픈 몸으로 떠났나 봐요. 약초 냄새가 남아 있어요.", shrine="물이 맑아요. 마음도 맑아지는 것 같아요."},
 }
+
+
+-- [동료 12명] 전원 영입 가능. 성격 수치(B 대담 · C 신중 · G 탐욕 · K 온정 · L 충성, 0~10), 세계관, 서로의 호불호가 AI 행동·대사·협동을 정한다.
+-- Arch: tank 방패 / melee 근접 / ranged 원거리 / healer 치유 / rogue 척후 / mage 술사 / bard 음유.
+Config.Companions = {
+  {Id="nick", Name="닉", Role="늑대인간 보병대장", Arch="melee", B=8, C=3, G=2, K=5, L=9, Model="mon_beastman", Height=5, Dmg=14, Interval=1.6, Range=10,
+   Worldview="버려진 이들을 버리지 않는다. 이름이 사람을 사람으로 남긴다.", Likes={"rowen","sera"}, Dislikes={"mina"}, Where="메인에서 숲의 일을 마치면 합류"},
+  {Id="sera", Name="세라", Role="방패 기사", Arch="tank", B=6, C=8, G=2, K=7, L=10, Skin={190,150,120}, Shirt={60,90,150}, Dmg=9, Interval=1.8, Range=10,
+   Worldview="방패는 뒤에 선 사람을 위해 있다. 명령보다 맹세가 무겁다.", Likes={"nick","ifa","cassian"}, Dislikes={"har"}, Where="마을 우물 속삭임 (메인 3장 이후)"},
+  {Id="rowen", Name="로웬", Role="추적 궁수", Arch="ranged", B=4, C=7, G=3, K=5, L=6, Skin={200,160,130}, Shirt={70,120,70}, Dmg=13, Interval=2, Range=46,
+   Worldview="숲은 거짓말하지 않는다. 거짓말은 언제나 사람이 한다.", Likes={"nick","baren"}, Dislikes={"cassian"}, Where="세계수 숲의 화살 (메인 7장 이후)"},
+  {Id="doran", Name="도란", Role="대장장이 기사", Arch="melee", B=7, C=4, G=6, K=4, L=7, Skin={170,125,100}, Shirt={150,70,50}, Dmg=19, Interval=2.4, Range=9,
+   Worldview="쇠는 정직하다. 문제는 그걸 쥔 손이다.", Likes={"har","mina"}, Dislikes={"tibo"}, Where="재의 제단의 모루 (메인 10장 이후)"},
+  {Id="ifa", Name="이프", Role="치유사", Arch="healer", B=2, C=9, G=1, K=10, L=8, Skin={205,170,140}, Shirt={210,200,150}, Dmg=0, Interval=9, Range=0,
+   Worldview="이름을 불러 주면 사람은 돌아온다. 아픈 이를 두고 가지 않는다.", Likes={"sera","tibo"}, Dislikes={"morgan"}, Where="침몰한 사원의 물가 (메인 11장 이후)"},
+  {Id="mina", Name="미나", Role="군수대장", Arch="rogue", B=3, C=6, G=10, K=3, L=5, Skin={198,160,135}, Shirt={120,100,60}, Dmg=11, Interval=1.7, Range=12,
+   Worldview="숫자는 거짓말하지 않는다. 장부 밖의 진실에도 값이 있다.", Likes={"doran"}, Dislikes={"nick","ifa"}, Where="서브 퀘스트 '미나의 사라진 장부' 완료"},
+  {Id="har", Name="하르", Role="오크 용병", Arch="melee", B=10, C=1, G=7, K=2, L=4, Skin={110,140,90}, Shirt={90,60,50}, Dmg=21, Interval=2.2, Range=9,
+   Worldview="강한 놈이 이긴다. 이유는 이긴 다음에 지어 붙이면 된다.", Likes={"doran"}, Dislikes={"sera","ifa","ria"}, Where="바람 절벽 등대의 용병 (자유 탐험)"},
+  {Id="ria", Name="리아", Role="고블린 정찰병", Arch="rogue", B=3, C=10, G=6, K=5, L=6, Skin={130,160,100}, Shirt={80,90,70}, Dmg=12, Interval=1.5, Range=14,
+   Worldview="먼저 보고, 먼저 도망치고, 마지막에 웃는 쪽이 이긴다.", Likes={"tibo"}, Dislikes={"har"}, Where="남부 습원 부두의 정찰병 (자유 탐험)"},
+  {Id="morgan", Name="모르간", Role="늪 마녀", Arch="mage", B=5, C=5, G=4, K=3, L=5, Skin={190,175,185}, Shirt={70,40,90}, Dmg=15, Interval=2.6, Range=40,
+   Worldview="마력은 빚이다. 갚지 않으면 이자가 몸을 먹는다.", Likes={"baren"}, Dislikes={"ifa"}, Where="안개 늪지의 오두막 (자유 탐험)"},
+  {Id="baren", Name="바렌", Role="설인 사냥꾼", Arch="melee", B=6, C=6, G=2, K=6, L=8, Skin={180,150,130}, Shirt={90,100,110}, Dmg=16, Interval=2, Range=10,
+   Worldview="말은 짧게, 발자국은 길게. 약속은 돌에 새긴다.", Likes={"rowen","morgan"}, Dislikes={"tibo"}, Where="북부 감시탑의 사냥꾼 (자유 탐험)"},
+  {Id="tibo", Name="티보", Role="떠돌이 음유시인", Arch="bard", B=2, C=6, G=5, K=8, L=5, Skin={215,180,150}, Shirt={170,70,110}, Dmg=0, Interval=14, Range=0,
+   Worldview="이야기가 남으면 사람은 죽지 않는다. 죽음도 노래가 되면 견딜 만하다.", Likes={"ifa","ria"}, Dislikes={"doran","baren"}, Where="초원 이정표의 길손 (메인 2장 이후)"},
+  {Id="cassian", Name="카시안", Role="몰락한 성채 기사", Arch="tank", B=8, C=4, G=3, K=4, L=9, Skin={175,140,115}, Shirt={80,30,30}, Dmg=15, Interval=2, Range=10,
+   Worldview="명예는 갑옷이 아니라 선택이다. 늦은 선택도 선택이다.", Likes={"sera"}, Dislikes={"har","rowen"}, Where="저주받은 성문의 기사 (자유 탐험)"},
+}
+-- 모집 퀘스트(전원 합류, 선택은 유대의 깊이만 바꾼다: 1=가까운 유대 +15% 피해, 2=거리를 둔 합류 +보상).
+do
+  local function recruit(id, name, zone, stage, wpX, wpZ, intro, reachTitle, reachText, killText, done, promptText, c1, c2)
+    return {Id = id .. "-join", Name = "[동료] " .. name, Kind = "Companion", Field = "QL" .. id:sub(1, 1):upper() .. id:sub(2) .. "J",
+      Need = {Stage = stage}, Intro = intro,
+      Steps = {
+        {Type = "reach", X = wpX, Z = wpZ, R = 80, Title = reachTitle, Text = reachText, Done = "그곳에서 낯선 기척이 느껴진다. 근처의 위협을 먼저 정리하라."},
+        {Type = "kill", Zone = zone, Named = true, Count = 1, Title = "길목의 위협", Text = killText, Done = done},
+        {Type = "choice", X = wpX, Z = wpZ, R = 80, Title = name .. "와(과)의 만남", Text = "만났던 자리로 돌아가라.", Prompt = promptText,
+         Choices = {{Label = c1[1], Done = c1[2], Join = id, Bond = true, Coins = 120}, {Label = c2[1], Done = c2[2], Join = id, Coins = 380}}},
+      },
+      Reward = {Coins = 160, Xp = 260}}
+  end
+  Config.RecruitLines = {
+    recruit("har", "바람 절벽의 용병", "windcliff", 1, -1700, 300, "바람 절벽 등대 근처에서 큰 오크 용병이 일을 구한다는 소문이 돈다.", "등대의 용병", "바람 절벽 등대로 가라.", "등대를 노리는 절벽의 명명 보스를 처치하라.", "용병이 도끼를 어깨에 얹는다.",
+      "하르: '같이 싸우자는 거냐? 보수는 이긴 다음에 말해.'", {"등을 맡길 동료로 청한다", "하르: '말은 짧게 하지. 마음에 들어.'"}, {"보수를 주고 고용한다", "하르: '돈이 맞으면 어디든 간다. 나쁘지 않아.'"}),
+    recruit("ria", "습원 부두의 정찰병", "wetland", 1, -600, 1900, "남부 습원 부두에서 작은 정찰병이 길 잃은 일행을 안내하고 있다.", "부두의 정찰병", "남부 습원 부두로 가라.", "부두를 위협하는 습원의 명명 보스를 처치하라.", "정찰병이 풀숲에서 고개를 내민다.",
+      "리아: '큰 놈을 쓰러뜨렸네? 그럼 같이 가 줄게. 단, 위험하면 난 먼저 뛴다.'", {"믿고 함께 가자고 한다", "리아: '믿는다고? 흠… 도망칠 때 신호는 줄게.'"}, {"길 안내 값을 쳐 준다", "리아: '거래는 깔끔한 게 좋아.'"}),
+    recruit("morgan", "안개 늪의 마녀", "swamp", 4, 4900, 700, "안개 늪지 깊은 곳 오두막에서 마녀가 '빚을 갚을 사람'을 찾는다.", "마녀의 오두막", "안개 늪지의 마녀 오두막으로 가라.", "마녀의 오두막을 노리는 늪의 명명 보스를 처치하라.", "마녀가 안개 속에서 모습을 드러낸다.",
+      "모르간: '네 마력에도 이자가 붙어 있구나. 갚는 법을 알려 줄까?'", {"마력의 빚을 함께 갚자고 한다", "모르간: '흥미롭네. 오래 걸리겠지만 같이 가지.'"}, {"이자를 대가로 내건다", "모르간: '거래는 거래. 이자는 나중에 받겠어.'"}),
+    recruit("baren", "북부 고원의 사냥꾼", "highland", 1, -1200, -1800, "북부 감시탑 아래에서 설인을 쫓는 사냥꾼의 발자국이 끝없이 이어진다.", "감시탑의 사냥꾼", "북부 감시탑으로 가라.", "고원의 명명 보스를 처치하고 사냥꾼의 길을 열어라.", "발자국의 주인이 바위 뒤에서 나온다.",
+      "바렌: '…(고개를 끄덕인다) 발자국이 같은 방향이군.'", {"나란히 걷자고 한다", "바렌: '…좋다. 약속은 돌에 새기지.'"}, {"길 값을 내민다", "바렌: '…받아 두지. 걸음은 맞추겠다.'"}),
+    recruit("tibo", "초원의 길손", "meadow", 2, 520, -300, "초원 이정표 곁에서 비파를 든 길손이 새 노래의 소재를 찾는다.", "이정표의 길손", "초원 이정표로 가라.", "길손을 위협하는 초원의 명명 보스를 처치하라.", "비파 소리가 다시 울린다.",
+      "티보: '당신 이야기를 노래로 남기고 싶어요. 같이 가도 될까요?'", {"함께 노래가 될 이야기를 만들자고 한다", "티보: '좋아요! 첫 소절은 벌써 떠올랐어요.'"}, {"공연 값으로 동행을 청한다", "티보: '후원자라니, 영광이네요. 최고의 노래를 드릴게요.'"}),
+    recruit("cassian", "성문의 몰락 기사", "citadel", 6, 5500, -600, "저주받은 성문 앞에서 갑옷 기사가 지키지 못한 문을 지키고 있다.", "성문의 기사", "저주받은 성문으로 가라.", "성문을 짓밟는 성채의 명명 보스를 처치하라.", "투구 아래 눈이 마주친다.",
+      "카시안: '늦었지만 이제라도 선택하겠다. 네 곁에서 싸워도 되나?'", {"맹세를 나누자고 청한다", "카시안: '맹세는 가볍지 않다. 받아들이겠다.'"}, {"임무로서 동행을 청한다", "카시안: '임무라면 따르겠다. 명예는 지킨다.'"}),
+  }
+  for _, line in ipairs(Config.RecruitLines) do table.insert(Config.QuestLines, line) end
+end
 
 return table.freeze(Config)

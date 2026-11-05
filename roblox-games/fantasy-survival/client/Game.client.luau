@@ -8290,11 +8290,13 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   skillMotionDuration=isGuard and 2.8 or isParry and .42 or isDodge and 1.06
     or math.clamp(tonumber(meta.duration) or .7,.25,1.4)
   skillMotionDeadline=skillMotionStart+skillMotionDuration+(isGuard and 0 or .12)
+  meadowArt.motionDeadline=skillMotionDeadline
   -- [5단 회피] 서버가 알려 준 단계별로 모션 길이를 줄인다. 1~4단 .5초, 5단 배후 도약 .85초.
   if isDodge then
     local motionStage=math.clamp(tonumber(character:GetAttribute("MeadowDodgeStage")) or 1,1,5)
     skillMotionDuration=motionStage>=5 and .85 or .5
     skillMotionDeadline=skillMotionStart+skillMotionDuration+.12
+    meadowArt.motionDeadline=skillMotionDeadline
     dodgePoseUntil=skillMotionStart+(motionStage>=5 and .7 or .46)+.12
   end
   character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
@@ -9759,7 +9761,7 @@ end)
     if processed or UserInputService:GetFocusedTextBox() then return end
     if input.KeyCode==Enum.KeyCode.M then setOpen(not overlay.Visible) end
   end)
-  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage","PoiFound1","PoiFound2","QLMirror","QLMina","QLNick","QLSera","QLGarden","QLSeraJ","QLRowenJ","QLDoranJ","QLIfaJ"}) do
+  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage","PoiFound1","PoiFound2","QLMirror","QLMina","QLNick","QLSera","QLGarden","QLSeraJ","QLRowenJ","QLDoranJ","QLIfaJ","QLHarJ","QLRiaJ","QLMorganJ","QLBarenJ","QLTiboJ","QLCassianJ","CompanionOwned","CompanionActive"}) do
     player:GetAttributeChangedSignal(name):Connect(refresh)
   end
 end)()
@@ -9776,7 +9778,7 @@ end)()
   end
   RunService.PreSimulation:Connect(function(dt)
     local character=player.Character
-    local busy=activeCombatCombo~=nil or os.clock()<skillMotionDeadline
+    local busy=activeCombatCombo~=nil or os.clock()<(meadowArt.motionDeadline or 0)
     local want=(not busy) and swordEquipped(character)
     weight+=((want and 1 or 0)-weight)*math.min(1,dt*9)
     if weight<.02 or not character then return end

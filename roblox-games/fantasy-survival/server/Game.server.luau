@@ -5864,17 +5864,8 @@ do
                   end
                 end
                 do
-                  local activeMask=readNumber(player,"CompanionActive",0)
-                  for ci,cid in ipairs({"nick","sera","rowen","doran","ifa"}) do
-                    if bit32.band(activeMask,bit32.lshift(1,ci-1))~=0 then
-                      local lineText=Config.CompanionBanter[cid] and Config.CompanionBanter[cid][poi.Kind]
-                      if lineText then
-                        local names={nick="닉",sera="세라",rowen="로웬",doran="도란",ifa="이프"}
-                        text=text.."\n\n"..names[cid]..": \""..lineText.."\""
-                        break
-                      end
-                    end
-                  end
+                  local banter=meadowOil.poiBanter and meadowOil.poiBanter(player,poi.Kind)
+                  if banter then text=text.."\n\n"..banter end
                 end
                 pcall(function() villageDialogue(player,"장소 발견 · "..poi.Name,text) end)
               end
@@ -5978,36 +5969,77 @@ do
   end
 end
 
--- [안식처 · 동료] 마을 동쪽 언덕의 집. 동료 5명이 이곳에서 살고, 고용(또는 닉은 무료)해서 최대 2명까지 데리고 다닌다.
--- 동료는 쓰러지지 않는 '핵심 인물'이며 전투는 주인(플레이어)의 공격 판정으로 처리되어 보상·도감이 그대로 오른다.
--- 동료는 고용하지 않고 각자의 사연 퀘스트(연계 퀘스트 엔진)의 선택으로 합류한다.
--- 파티 규모: 멀티플레이 최대 4인 + 각자 동료 2명. 솔로도 동료 2명과 함께 모든 지역을 돌 수 있다.
+-- [안식처 · 동료 12명] 마을 동쪽 언덕의 집. 동료는 각자의 사연 퀘스트로 모두 합류시킬 수 있고, 한 번에 최대 2명이 동행한다.
+-- 성격 수치(대담·신중·탐욕·온정·충성)가 행동을 바꾸고, 두 동료의 호불호(상성)가 협동기 또는 불화를 만든다.
+-- 동료는 쓰러지지 않는 핵심 인물이며 피해는 주인의 공격 판정으로 처리되어 보상·도감이 그대로 오른다.
+-- 파티: 멀티플레이 최대 4인, 각자 동료 2명.
 do
   local homePos=Vector3.new(262,3,205)
-  local companions={
-    {id="nick",name="닉",role="늑대인간 보병대장",fee=0,unlock=function(p) return p:GetAttribute("PartyNick")==true end,note="메인에서 숲의 일을 마쳐야 합류한다.",
-      model="mon_beastman",height=5,dmg=14,interval=1.6,range=10},
-    {id="sera",name="세라",role="방패 기사",fee=0,unlock=function() return false end,note="아직 만나지 못한 인물이다. 마을 우물에서 들리는 속삭임을 따라가라. (동료 퀘스트 '우물 아래의 방패')",
-      skin=Color3.fromRGB(190,150,120),shirt=Color3.fromRGB(60,90,150),dmg=9,interval=1.8,range=10,shield=true},
-    {id="rowen",name="로웬",role="추적 궁수",fee=0,unlock=function() return false end,note="아직 만나지 못한 인물이다. 세계수 숲에 박힌 화살을 따라가라. (동료 퀘스트 '마지막 화살')",
-      skin=Color3.fromRGB(200,160,130),shirt=Color3.fromRGB(70,120,70),dmg=13,interval=2,range=46},
-    {id="doran",name="도란",role="대장장이 기사",fee=0,unlock=function() return false end,note="아직 만나지 못한 인물이다. 재의 황야에서 쇠 두드리는 소리를 따라가라. (동료 퀘스트 '식지 않는 모루')",
-      skin=Color3.fromRGB(170,125,100),shirt=Color3.fromRGB(150,70,50),dmg=19,interval=2.4,range=9},
-    {id="ifa",name="이프",role="치유사",fee=0,unlock=function() return false end,note="아직 만나지 못한 인물이다. 오아시스 물가에서 이름을 묻는 목소리를 찾아라. (동료 퀘스트 '물에 비친 이름')",
-      skin=Color3.fromRGB(205,170,140),shirt=Color3.fromRGB(210,200,150),dmg=0,interval=9,range=0,heal=true},
-  }
+  local roster=Config.Companions
   local byId={}
-  for index,c in ipairs(companions) do c.index=index;byId[c.id]=c end
+  for index,c in ipairs(roster) do c.Index=index;byId[c.Id]=c end
   local followers={}
   local sessions={}
   local MAX_ACTIVE=2
-  local function activeCount(mask) local n=0 for i=1,#companions do if bit32.band(mask,bit32.lshift(1,i-1))~=0 then n+=1 end end return n end
+  local lastBanter={}
   local function say(player,title,text,options) pcall(function() villageDialogue(player,title,text,options) end) end
+  local function toast(player,text)
+    player:SetAttribute("MeadowGearMessage",text)
+    player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+  end
+  local function activeCount(mask) local n=0 for i=1,#roster do if bit32.band(mask,bit32.lshift(1,i-1))~=0 then n+=1 end end return n end
+  local function has(list,id) for _,v in ipairs(list) do if v==id then return true end end return false end
+  -- 상성: +1 호감 · -1 반감 · 0 보통(한쪽이라도 싫어하면 반감).
+  local function relation(a,b)
+    if has(a.Dislikes,b.Id) or has(b.Dislikes,a.Id) then return -1 end
+    if has(a.Likes,b.Id) or has(b.Likes,a.Id) then return 1 end
+    return 0
+  end
+  meadowOil.joinCompanion=function(player,id,bond)
+    local c=byId[id]
+    if not c then return end
+    setNumber(player,"CompanionOwned",bit32.bor(readNumber(player,"CompanionOwned",0),bit32.lshift(1,c.Index-1)))
+    if bond then setNumber(player,"CompanionBond",bit32.bor(readNumber(player,"CompanionBond",0),bit32.lshift(1,c.Index-1))) end
+  end
+  meadowOil.companionIndex=function(id) return byId[id] and byId[id].Index or nil end
+  -- 성격 기반 대사 생성.
+  local function line(c,kind,other)
+    local opts
+    if kind=="engage" then
+      opts=c.B>=8 and {"내가 먼저 간다!","피 냄새가 난다. 가자!"} or c.C>=8 and {"서두르지 마. 길목부터 살펴.","한 번에 하나씩, 침착하게."} or {"적이다. 준비해.","온다. 자리 잡아."}
+    elseif kind=="danger" then
+      opts=c.K>=8 and {"물러서! 내가 막을게!","다치면 안 돼, 숨 돌려!"} or c.L>=8 and {"버텨, 곁에 있어.","한 발도 물러서지 않겠다."} or c.G>=8 and {"죽으면 계산이 안 맞아. 물러서.","이득이 없잖아, 빠져!"} or {"위험해. 정신 차려!"}
+    elseif kind=="good" and other then
+      opts={other.Name.."와(과) 함께라 편하군.",other.Name..", 호흡이 잘 맞아.",other.Name.."가(이) 있어 든든해."}
+    elseif kind=="bad" and other then
+      opts={other.Name..", 네 방식은 내 취향이 아니야.",other.Name.."와(과) 같이 있으면 손발이 어긋나.",other.Name..", 제발 내 앞길 막지 마."}
+    else
+      opts={c.Worldview}
+    end
+    return c.Name..": \""..opts[math.random(#opts)].."\""
+  end
+  meadowOil.poiBanter=function(player,kind)
+    local mask=readNumber(player,"CompanionActive",0)
+    for _,c in ipairs(roster) do
+      if bit32.band(mask,bit32.lshift(1,c.Index-1))~=0 then
+        local fixed=Config.CompanionBanter[c.Id] and Config.CompanionBanter[c.Id][kind]
+        if fixed then return c.Name..": \""..fixed.."\"" end
+        local generic={
+          ruin=c.C>=7 and "오래된 곳이야. 함정부터 살피자." or "이런 폐허, 보물이 있을 법한데?",
+          cave=c.C>=7 and "입구가 좁아. 뒤를 조심해." or "어두울수록 재밌지!",
+          camp=c.G>=7 and "남은 물건이 있나 보자." or "누가 급히 떠난 흔적이야.",
+          shrine=c.K>=7 and "조용하고 맑은 곳이야. 잠깐 쉬어 가자." or "마력이 느껴져. 만지지 마.",
+        }
+        return c.Name..": \""..(generic[kind] or c.Worldview).."\""
+      end
+    end
+    return nil
+  end
 
-  -- 집(건물 + 침대 + 화덕) 과 마을 쪽 서식 동료.
+  -- 집·화덕 + 동료 서식 자리(12명).
   task.spawn(function()
     task.wait(3)
-    local house=worldAsset("villageHouseD",homePos+Vector3.new(0,0,26),16)
+    local house=worldAsset("villageHouseD",homePos+Vector3.new(0,0,30),16)
     if house then house.Name="Homestead_House";house:SetAttribute("MeadowScenery",true) end
     local anchor=Instance.new("Attachment");anchor.Name="Homestead_Hearth";anchor.WorldPosition=homePos+Vector3.new(0,.5,0);anchor.Parent=workspace.Terrain
     local fire=Instance.new("ParticleEmitter");fire.Color=ColorSequence.new(Color3.fromRGB(255,150,60));fire.LightEmission=1;fire.Rate=24
@@ -6021,43 +6053,59 @@ do
       if humanoid and humanoid.Health>0 then
         humanoid.Health=humanoid.MaxHealth
         player:SetAttribute("MeadowStamina",100)
-        say(player,"안식처","화덕 곁에서 푹 쉬었다. 체력과 기력이 모두 찼다. 동료들이 곁에서 이야기를 건다.")
+        local mask=readNumber(player,"CompanionOwned",0)
+        local lineText="화덕 곁에서 푹 쉬었다. 체력과 기력이 모두 찼다."
+        local pick=nil
+        for _,c in ipairs(roster) do
+          if bit32.band(mask,bit32.lshift(1,c.Index-1))~=0 and math.random()<.5 then pick=c end
+        end
+        if pick then lineText=lineText.."\n\n"..pick.Name..": \""..pick.Worldview.."\"" end
+        say(player,"안식처",lineText)
       end
     end)
-    for index,c in ipairs(companions) do
-      local spot=homePos+Vector3.new(-14+index*7,0,-10)
-      local stand=Instance.new("Attachment");stand.Name="Homestead_"..c.id;stand.WorldPosition=spot+Vector3.new(0,3,0);stand.Parent=workspace.Terrain
+    for index,c in ipairs(roster) do
+      local col=(index-1)%6
+      local row=math.floor((index-1)/6)
+      local spot=homePos+Vector3.new(-30+col*12,0,-14-row*12)
+      local stand=Instance.new("Attachment");stand.Name="Homestead_"..c.Id;stand.WorldPosition=spot+Vector3.new(0,3,0);stand.Parent=workspace.Terrain
       local mark=Instance.new("ParticleEmitter");mark.Color=ColorSequence.new(Color3.fromRGB(255,236,170));mark.LightEmission=1;mark.Rate=6
       mark.Lifetime=NumberRange.new(2,3);mark.Size=NumberSequence.new(.5);mark.EmissionDirection=Enum.NormalId.Top;mark.Parent=stand
-      local npc=nil
-      local okLoad=pcall(function()
-        if c.model then
-          npc=worldAsset(c.model,spot,c.height)
+      pcall(function()
+        local npc
+        if c.Model then npc=worldAsset(c.Model,spot,c.Height)
         else
           local desc=Instance.new("HumanoidDescription")
-          desc.HeadColor=c.skin;desc.LeftArmColor=c.skin;desc.RightArmColor=c.skin;desc.TorsoColor=c.shirt
+          local skin=Color3.fromRGB(c.Skin[1],c.Skin[2],c.Skin[3])
+          desc.HeadColor=skin;desc.LeftArmColor=skin;desc.RightArmColor=skin;desc.TorsoColor=Color3.fromRGB(c.Shirt[1],c.Shirt[2],c.Shirt[3])
           desc.LeftLegColor=Color3.fromRGB(60,56,52);desc.RightLegColor=Color3.fromRGB(60,56,52)
           npc=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
           desc:Destroy()
           npc:PivotTo(CFrame.new(spot+Vector3.new(0,3.2,0)))
           for _,part in ipairs(npc:GetDescendants()) do if part:IsA("BasePart") then part.Anchored=true end end
           npc.Parent=workspace
+          local hum=npc:FindFirstChildOfClass("Humanoid")
+          if hum then hum.DisplayName=c.Name end
         end
+        if npc then npc.Name="Homestead_NPC_"..c.Id end
       end)
-      if okLoad and npc then npc.Name="Homestead_NPC_"..c.id end
-      local prompt=Instance.new("ProximityPrompt");prompt.ActionText="대화";prompt.ObjectText=c.name.." · "..c.role;prompt.HoldDuration=.4
+      local prompt=Instance.new("ProximityPrompt");prompt.ActionText="대화";prompt.ObjectText=c.Name.." · "..c.Role;prompt.HoldDuration=.4
       prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=stand
       prompt.Triggered:Connect(function(player)
         if player:GetAttribute("ProfileReady")~=true then return end
-        sessions[player]={id=c.id,expires=os.clock()+40}
-        local owned=bit32.band(readNumber(player,"CompanionOwned",0),bit32.lshift(1,c.index-1))~=0
-        local active=bit32.band(readNumber(player,"CompanionActive",0),bit32.lshift(1,c.index-1))~=0
-        local title=c.name.." · "..c.role
-        if not owned and not c.unlock(player) then say(player,title,c.note);return end
+        sessions[player]={id=c.Id,expires=os.clock()+40}
+        local owned=bit32.band(readNumber(player,"CompanionOwned",0),bit32.lshift(1,c.Index-1))~=0
+        local active=bit32.band(readNumber(player,"CompanionActive",0),bit32.lshift(1,c.Index-1))~=0
+        local title=c.Name.." · "..c.Role
         if not owned then
-          say(player,title,"함께 갈까? 동행은 최대 "..MAX_ACTIVE.."명까지야.",{{label="동행하기",action="co:toggle"}})
-        elseif active then say(player,title,"지금 함께 다니는 중이야. 집에서 쉬게 할까?",{{label="집에서 쉬게 하기",action="co:toggle"}})
-        else say(player,title,"언제든 따라갈게.",{{label="동행하기",action="co:toggle"}}) end
+          say(player,title,"아직 만나지 못한 인물이다.\n만날 곳: "..c.Where.."\n\"".. c.Worldview .."\"");return
+        end
+        local bond=bit32.band(readNumber(player,"CompanionBond",0),bit32.lshift(1,c.Index-1))~=0
+        local likes,dislikes={},{}
+        for _,id in ipairs(c.Likes) do likes[#likes+1]=byId[id] and byId[id].Name or id end
+        for _,id in ipairs(c.Dislikes) do dislikes[#dislikes+1]=byId[id] and byId[id].Name or id end
+        local profile=string.format("\"%s\"\n\n대담 %d · 신중 %d · 탐욕 %d · 온정 %d · 충성 %d\n유대: %s\n좋아함: %s / 꺼림: %s",
+          c.Worldview,c.B,c.C,c.G,c.K,c.L,bond and "가깝다" or "거리를 둔다",table.concat(likes,", "),table.concat(dislikes,", "))
+        say(player,title,profile,{{label=active and "집에서 쉬게 하기" or "동행하기",action="co:toggle"}})
       end)
     end
   end)
@@ -6070,45 +6118,44 @@ do
     local c=byId[session.id]
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     if not c or not root or (root.Position-homePos).Magnitude>80 then return end
-    local flag=bit32.lshift(1,c.index-1)
-    local ownedMask=readNumber(player,"CompanionOwned",0)
+    local flag=bit32.lshift(1,c.Index-1)
+    if bit32.band(readNumber(player,"CompanionOwned",0),flag)==0 then return end
     local activeMask=readNumber(player,"CompanionActive",0)
-    if bit32.band(ownedMask,flag)==0 then
-      if not c.unlock(player) then return end
-      if c.fee>0 then
-        if readNumber(player,"Coins",0)<c.fee then say(player,c.name,"고용비 "..c.fee.." 재화가 부족해.");return end
-        setNumber(player,"Coins",readNumber(player,"Coins",0)-c.fee)
-      end
-      ownedMask=bit32.bor(ownedMask,flag)
-      setNumber(player,"CompanionOwned",ownedMask)
-    end
     if bit32.band(activeMask,flag)~=0 then
       setNumber(player,"CompanionActive",bit32.band(activeMask,bit32.bnot(flag)))
-      say(player,c.name,"집에서 기다릴게.")
+      say(player,c.Name,"집에서 기다릴게.")
     else
-      if activeCount(activeMask)>=MAX_ACTIVE then say(player,c.name,"동행은 최대 "..MAX_ACTIVE.."명이야. 다른 동료를 먼저 쉬게 해 줘.");return end
+      if activeCount(activeMask)>=MAX_ACTIVE then say(player,c.Name,"동행은 최대 "..MAX_ACTIVE.."명이야. 다른 동료를 먼저 쉬게 해 줘.");return end
+      -- 상성 예고.
+      local note=""
+      for _,other in ipairs(roster) do
+        if bit32.band(activeMask,bit32.lshift(1,other.Index-1))~=0 then
+          local r=relation(c,other)
+          note=r>0 and ("\n"..other.Name.."와(과) 호흡이 좋다. 협동기가 강해진다.") or r<0 and ("\n"..other.Name.."와(과) 사이가 나쁘다. 불화가 생길 수 있다.") or "\n"..other.Name.."와(과) 보통 사이다."
+        end
+      end
       setNumber(player,"CompanionActive",bit32.bor(activeMask,flag))
-      say(player,c.name,"좋아, 같이 가자.")
+      say(player,c.Name,"좋아, 같이 가자."..note)
     end
   end)
 
   local function spawnFollower(player,c)
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     if not root then return nil end
-    local pos=root.Position+Vector3.new(c.index%2==0 and 5 or -5,0,5)
+    local pos=root.Position+Vector3.new(c.Index%2==0 and 5 or -5,0,5)
     local model
     local ok=pcall(function()
-      if c.model then
-        model=worldAsset(c.model,pos,c.height)
+      if c.Model then model=worldAsset(c.Model,pos,c.Height)
       else
         local desc=Instance.new("HumanoidDescription")
-        desc.HeadColor=c.skin;desc.LeftArmColor=c.skin;desc.RightArmColor=c.skin;desc.TorsoColor=c.shirt
+        local skin=Color3.fromRGB(c.Skin[1],c.Skin[2],c.Skin[3])
+        desc.HeadColor=skin;desc.LeftArmColor=skin;desc.RightArmColor=skin;desc.TorsoColor=Color3.fromRGB(c.Shirt[1],c.Shirt[2],c.Shirt[3])
         desc.LeftLegColor=Color3.fromRGB(60,56,52);desc.RightLegColor=Color3.fromRGB(60,56,52)
         model=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
         desc:Destroy()
-        model.Name="Companion_"..c.id
+        model.Name="Companion_"..c.Id
         local humanoid=model:FindFirstChildOfClass("Humanoid")
-        if humanoid then humanoid.DisplayName=c.name;humanoid.WalkSpeed=19;humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.Viewer end
+        if humanoid then humanoid.DisplayName=c.Name;humanoid.WalkSpeed=19;humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.Viewer end
         model:PivotTo(CFrame.new(pos+Vector3.new(0,3,0)))
         model.Parent=workspace
         local hrp=model:FindFirstChild("HumanoidRootPart")
@@ -6117,10 +6164,11 @@ do
     end)
     if not ok or not model then return nil end
     model:SetAttribute("CompanionOf",player.UserId)
-    return {model=model,c=c,nextAct=os.clock()+2}
+    return {model=model,c=c,nextAct=os.clock()+2,nextScav=os.clock()+40,nextKind=os.clock()+18}
   end
 
   task.spawn(function()
+    local nextCombo={}
     while true do
       task.wait(.25)
       for _,player in ipairs(Players:GetPlayers()) do
@@ -6128,48 +6176,53 @@ do
         if not list then list={};followers[player]=list end
         local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
         local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-        local mask=player:GetAttribute("ProfileReady")==true and readNumber(player,"CompanionActive",0) or 0
-        for _,c in ipairs(companions) do
-          local flag=bit32.lshift(1,c.index-1)
-          local entry=list[c.id]
+        local ready=player:GetAttribute("ProfileReady")==true
+        local mask=ready and readNumber(player,"CompanionActive",0) or 0
+        local bondMask=ready and readNumber(player,"CompanionBond",0) or 0
+        local present={}
+        for _,c in ipairs(roster) do
+          local flag=bit32.lshift(1,c.Index-1)
+          local entry=list[c.Id]
           if bit32.band(mask,flag)~=0 and root and humanoid and humanoid.Health>0 then
             if not entry or not entry.model.Parent then
               if not (entry and entry.loading) then
-                list[c.id]={loading=true}
-                task.spawn(function() list[c.id]=spawnFollower(player,c) end)
+                list[c.Id]={loading=true}
+                task.spawn(function() list[c.Id]=spawnFollower(player,c) end)
               end
             elseif not entry.loading then
+              present[#present+1]=entry
               local model=entry.model
               local pivot=model:GetPivot().Position
-              local goal=root.Position+Vector3.new(c.index%2==0 and 5 or -5,0,6)
+              -- 신중한 동료는 한 발 뒤, 대담한 동료는 앞쪽에 선다.
+              local lead=(c.B-c.C)*.7
+              local goal=root.Position+root.CFrame.LookVector*lead+Vector3.new(c.Index%2==0 and 5 or -5,0,0)
               local distance=(pivot-goal).Magnitude
               local hum=model:FindFirstChildOfClass("Humanoid")
               if distance>70 then
                 model:PivotTo(CFrame.new(goal+Vector3.new(0,3,0)))
               elseif hum then
                 if distance>4 then hum:MoveTo(goal) end
-              else
-                -- 메시 동료(닉): 서버 피벗으로 따라간다.
-                if distance>4 then
-                  local step=(goal-pivot).Unit*math.min(distance,19*.25)
-                  local next=Vector3.new(pivot.X+step.X,root.Position.Y,pivot.Z+step.Z)
-                  model:PivotTo(CFrame.lookAt(next,next+Vector3.new(step.X,0,step.Z)))
-                end
+              elseif distance>4 then
+                local step=(goal-pivot).Unit*math.min(distance,19*.25)
+                local nextPos=Vector3.new(pivot.X+step.X,root.Position.Y,pivot.Z+step.Z)
+                model:PivotTo(CFrame.lookAt(nextPos,nextPos+Vector3.new(step.X,0,step.Z)))
+              end
+              -- 위험 대사.
+              if humanoid.Health<humanoid.MaxHealth*.35 and os.clock()-(lastBanter[player] or 0)>18 then
+                lastBanter[player]=os.clock();toast(player,line(c,"danger"))
               end
               if os.clock()>=entry.nextAct then
-                entry.nextAct=os.clock()+c.interval
-                if c.heal then
-                  if humanoid.Health<humanoid.MaxHealth*.7 then humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.2) end
-                else
-                  if c.shield and not player.Character:FindFirstChildOfClass("ForceField") then
-                    entry.shieldAt=entry.shieldAt or 0
-                    if os.clock()>entry.shieldAt and #enemies>0 then
-                      entry.shieldAt=os.clock()+14
-                      local ff=Instance.new("ForceField");ff.Visible=false;ff.Parent=player.Character
-                      task.delay(3,function() if ff.Parent then ff:Destroy() end end)
-                    end
+                entry.nextAct=os.clock()+c.Interval*(1-c.B/40)
+                local bondBoost=bit32.band(bondMask,flag)~=0 and 1.15 or 1
+                if c.Arch=="healer" then
+                  if humanoid.Health<humanoid.MaxHealth*.7 then humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.2*bondBoost) end
+                elseif c.Arch=="bard" then
+                  if #enemies>0 and (meadowFocusUntil[player] or 0)<os.clock() then
+                    meadowFocusUntil[player]=os.clock()+10
+                    toast(player,c.Name..": \"♪ 용기의 노래 ♪\" (10초간 공격 피해 증가)")
                   end
-                  local best,bestDistance=nil,c.range+4
+                else
+                  local best,bestDistance=nil,c.Range*(1+c.B/30)+4
                   for _,enemy in ipairs(enemies) do
                     if enemy.HP>0 and enemy.model.Parent then
                       local d=(enemy.position-pivot).Magnitude
@@ -6177,14 +6230,68 @@ do
                     end
                   end
                   if best then
-                    pcall(applyMeadowDamage,player,best,c.dmg+math.floor(best.maxHP*.015))
+                    if os.clock()-(lastBanter[player] or 0)>25 then lastBanter[player]=os.clock();toast(player,line(c,"engage")) end
+                    entry.target=best
+                    pcall(applyMeadowDamage,player,best,math.floor((c.Dmg+best.maxHP*.015)*bondBoost))
                   end
                 end
+              end
+              -- 온정: 가끔 소량 회복 · 탐욕: 길에서 재화를 주워 온다.
+              if c.K>=7 and os.clock()>=entry.nextKind then
+                entry.nextKind=os.clock()+18
+                if humanoid.Health<humanoid.MaxHealth*.9 then humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.04) end
+              end
+              if c.G>=7 and os.clock()>=entry.nextScav then
+                entry.nextScav=os.clock()+40
+                local coins=math.random(2,5)
+                setNumber(player,"Coins",readNumber(player,"Coins",0)+coins)
+                toast(player,c.Name..": \"길가에 이런 게 떨어져 있더군.\" (+"..coins.." 재화)")
               end
             end
           elseif entry then
             if entry.model and entry.model.Parent then entry.model:Destroy() end
-            list[c.id]=nil
+            list[c.Id]=nil
+          end
+        end
+        -- 협동기 / 불화: 동행 2명의 상성과 병과로 결정.
+        if #present==2 and root and humanoid then
+          local a,b=present[1].c,present[2].c
+          local rel=relation(a,b)
+          local ta,tb=present[1].target,present[2].target
+          local target=ta and ta.HP>0 and ta or tb
+          if target and target.HP>0 and os.clock()>=(nextCombo[player] or 0) then
+            nextCombo[player]=os.clock()+14
+            local archs={[a.Arch]=true,[b.Arch]=true}
+            if rel<0 and math.random()<.5 then
+              toast(player,line(a,"bad",b))
+              present[1].nextAct+=2;present[2].nextAct+=2 -- 불화: 공격이 잠시 늦어진다.
+            else
+              local power=rel>0 and 1.35 or 1
+              local label
+              if archs.tank then
+                local ff=Instance.new("ForceField");ff.Visible=false;ff.Parent=player.Character
+                task.delay(4*power,function() if ff.Parent then ff:Destroy() end end);label="방패 엄호"
+              elseif archs.healer then
+                humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.25*power);label="치유의 가호"
+              elseif archs.bard then
+                meadowFocusUntil[player]=os.clock()+12*power;label="합주"
+              elseif archs.mage then
+                for _,enemy in ipairs(enemies) do
+                  if enemy.HP>0 and enemy.model.Parent and (enemy.position-target.position).Magnitude<16 then
+                    pcall(applyMeadowDamage,player,enemy,math.floor(24*power))
+                  end
+                end
+                label="마력 폭발"
+              elseif archs.ranged and (archs.melee or archs.rogue) then
+                pcall(applyMeadowDamage,player,target,math.floor(34*power));label="엇갈린 일격"
+              elseif archs.rogue then
+                pcall(applyMeadowDamage,player,target,math.floor(30*power));label="급소 일격"
+              else
+                pcall(applyMeadowDamage,player,target,math.floor(26*power));label="합동 공격"
+              end
+              if rel>0 then toast(player,line(a,"good",b).."  [협동: "..label.."]")
+              else toast(player,a.Name.."×"..b.Name.." ["..label.."]") end
+            end
           end
         end
       end
@@ -6195,6 +6302,7 @@ do
       if entry.model and entry.model.Parent then entry.model:Destroy() end
     end
     followers[player]=nil
+    lastBanter[player]=nil
   end)
 end
 
@@ -6245,9 +6353,8 @@ do
     local need=line.Need or {}
     if need.Chapter and bit32.band(readNumber(player,"ChapterMask",0),bit32.lshift(1,need.Chapter-1))==0 then return false end
     if need.Companion then
-      for index,c in ipairs({"nick","sera","rowen","doran","ifa"}) do
-        if c==need.Companion and bit32.band(readNumber(player,"CompanionOwned",0),bit32.lshift(1,index-1))==0 then return false end
-      end
+      local index=meadowOil.companionIndex and meadowOil.companionIndex(need.Companion)
+      if not index or bit32.band(readNumber(player,"CompanionOwned",0),bit32.lshift(1,index-1))==0 then return false end
     end
     if need.Field and readNumber(player,need.Field,0)<1 then return false end
     if need.Stage and readNumber(player,"QuestStage",1)<need.Stage then return false end
@@ -6262,6 +6369,7 @@ do
     end
     if reward.Relic then setNumber(player,"RelicMask",bit32.bor(readNumber(player,"RelicMask",0),bit32.lshift(1,reward.Relic-1))) end
     if reward.OpenHidden then setNumber(player,"HiddenOpen",1) end
+    if reward.Join and meadowOil.joinCompanion then meadowOil.joinCompanion(player,reward.Join,true) end
     local suffix=reward.OpenHidden and "\n\n숨겨진 지역이 열렸다! 서쪽 옛 요새 근처 '숨겨진 문'으로 가라." or ""
     say(player,line.Name.." 완료","연계 퀘스트를 마쳤다! 보상: 재화 "..tostring(reward.Coins or 0)..", 경험치 "..tostring(reward.Xp or 0)..suffix)
   end
@@ -6341,11 +6449,7 @@ do
     choiceSession[player]=nil
     local choice=step.Choices[action=="ql:1" and 1 or 2]
     setNumber(player,line.Field.."C",action=="ql:1" and 1 or 2)
-    if choice.Join then
-      for index,id in ipairs({"nick","sera","rowen","doran","ifa"}) do
-        if id==choice.Join then setNumber(player,"CompanionOwned",bit32.bor(readNumber(player,"CompanionOwned",0),bit32.lshift(1,index-1))) end
-      end
-    end
+    if choice.Join and meadowOil.joinCompanion then meadowOil.joinCompanion(player,choice.Join,choice.Bond) end
     for _,field in ipairs({"Crystal","Moonbloom","Claw","Hide","Ore","Magma"}) do
       if choice[field] then setNumber(player,field,readNumber(player,field,0)+choice[field]) end
     end
