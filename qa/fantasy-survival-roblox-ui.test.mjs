@@ -289,14 +289,10 @@ test('deer and wolf keep real source bones and documented Animator motion priori
 test('five-stage dodge stays inside existing server-authorized skill',()=>{
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   assert.match(client,/\[5단 회피 스킬\]/);
-  assert.match(client,/local first=math\.sin/);
-  assert.match(client,/local second=math\.sin/);
-  assert.match(client,/local third=math\.sin/);
-  assert.match(client,/local fourth=math\.sin/);
-  assert.match(client,/local flip=math\.clamp/);
-  assert.match(client,/ipairs\(\{\.05,\.23,\.44,\.65,\.96\}\)/);
+  assert.match(client,/local first,second,third,fourth=0,0,0,0/);
+  assert.match(client,/ipairs\(pulses\)/);
   assert.match(client,/\[중세 검술 하이 가드\]/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.72\*brace-\.16\*lift\+\.23\*hit/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.12\*brace-\.12\*lift\+\.22\*hit/);
   assert.match(client,/skillMotionTargets\.FlipRoot=CFrame\.new\(0,\.20\*second/);
   assert.match(client,/MeadowGuardContactFlash/);
   assert.doesNotMatch(client,/ipairs\(\{\.11,\.30,\.66\}\)/);
@@ -306,8 +302,8 @@ test('five-stage dodge stays inside existing server-authorized skill',()=>{
   assert.match(client,/\[늑대 영화식 포식 액션\]/);
   // Preserved actual server dodge: 7-stud side move, 0.48s invulnerability, 4s cooldown.
   assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
-  assert.match(server,/local wall=workspace:Raycast\(start,side\*7,ray\)/);
-  assert.match(server,/defense\.dodgeUntil=now\+\.48/);
+  assert.match(server,/local wall=workspace:Raycast\(start,moveDir\*moveDist,ray\)/);
+  assert.match(server,/defense\.dodgeUntil=now\+\(behind and \.7 or \.48\)/);
   assert.match(server,/if distance<2 then return false end/);
   assert.match(server,/floor\.Material==Enum\.Material\.Water/);
   assert.match(server,/defense\.guardUntil=now\+2\.8/);
@@ -708,8 +704,8 @@ test('guard and perfect parry reuse R15 high guard with server-confirmed cinemat
   assert.match(client,/-- \[중세 검술 하이 가드\]/);
   assert.match(client,/local meadowGuardContactAt=-100/);
   assert.match(client,/os\.clock\(\)-meadowGuardContactAt/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.72\*brace/);
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.96\*brace/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.12\*brace/);
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.12\*brace/);
   assert.match(client,/skillMotionTargets\.ShinL=CFrame\.identity/);
   assert.match(client,/-- \[완벽 막기\] 세키로식 짧은 전방 쳐내기 동작/);
   assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.75\*brace/);

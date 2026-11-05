@@ -2037,13 +2037,9 @@ test('fantasy owner-approved five-stage dodge retains native joints and server a
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   assert.match(client,/if os.clock\(\)<dodgePoseUntil then return false end/);
   assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and 1\.06/);
-  assert.match(client,/dodgePoseUntil=skillMotionStart\+\.46\+\.12/);
+  assert.match(client,/dodgePoseUntil=skillMotionStart\+\(motionStage>=5 and \.7 or \.46\)\+\.12/);
   // [5단 회피] 현재 승인된 슬립·페인트·크로스·위빙·덤블링 단계와 루트 관절을 검증한다.
-  assert.match(client,/local first=math\.sin\(math\.pi\*math\.clamp\(phase\/\.23,0,1\)\)/);
-  assert.match(client,/local second=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.17\)\/\.24,0,1\)\)/);
-  assert.match(client,/local third=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.37\)\/\.24,0,1\)\)/);
-  assert.match(client,/local fourth=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.57\)\/\.23,0,1\)\)/);
-  assert.match(client,/local flip=math\.clamp\(\(phase-\.79\)\/\.18,0,1\)/);
+  assert.match(client,/local first,second,third,fourth=0,0,0,0/);
   assert.match(client,/local flipping=math\.sin\(math\.pi\*flip\)/);
   assert.match(client,/CFrame\.Angles\(-2\*math\.pi\*flip/);
   assert.match(client,/skillMotionTargets\.FlipRoot=CFrame\.new/);
@@ -2054,8 +2050,8 @@ test('fantasy owner-approved five-stage dodge retains native joints and server a
   assert.match(client,/stick>\.2 then actionId="skill-meadow-dodge-right"/);
   assert.match(client,/stick<-\.2 then actionId="skill-meadow-dodge-left"/);
   const dodge=server.slice(server.indexOf('local function meadowDodge('),server.indexOf('local function meadowSprint('));
-  for(const pattern of [/workspace:Raycast\(start,side\*7,ray\)/,/if distance<2 then return false end/,
-    /defense\.dodgeUntil=now\+\.48/,/humanoid\.AutoRotate=false/,/humanoid\.AutoRotate=oldAutoRotate/]){
+  for(const pattern of [/workspace:Raycast\(start,moveDir\*moveDist,ray\)/,/if distance<2 then return false end/,
+    /defense\.dodgeUntil=now\+\(behind and \.7 or \.48\)/,/humanoid\.AutoRotate=false/,/humanoid\.AutoRotate=oldAutoRotate/]){
     assert.match(dodge,pattern,'server combat and movement authority must be preserved');
   }
   assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
@@ -2096,10 +2092,10 @@ test('fantasy upright high guard and dodge preserve cooldown, defense and native
   assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and 1\.06/);
   assert.match(client,/if isGuard then[\s\S]*?local lift=math\.sin/);
   // [하이 가드] 서서 오른팔을 높이, 왼팔은 가슴 앞에 두며 타격 때만 상체가 반발한다.
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.96\*brace-\.18\*lift\+\.12\*hit/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.72\*brace-\.16\*lift\+\.23\*hit/);
-  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-1\.08\*brace\+\.19\*hit/);
-  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.42\*brace\+\.31\*hit/);
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.12\*brace-\.12\*lift\+\.22\*hit/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.12\*brace-\.12\*lift\+\.22\*hit/);
+  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-1\.68\*brace\+\.30\*hit/);
+  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.68\*brace\+\.30\*hit/);
   assert.match(client,/local elapsed=os\.clock\(\)-meadowGuardContactAt/);
   // [정확한 타격 시각화] 가짜 3중 링을 없애고 서버가 확인한 실제 피격만 화려하게 표시한다.
   assert.doesNotMatch(client,/ipairs\(\{\.11,\.30,\.66\}\)/);
@@ -2118,7 +2114,8 @@ test('fantasy upright high guard and dodge preserve cooldown, defense and native
   assert.match(server,/defense\.guardUntil=now\+2\.8/);
   assert.match(server,/defense\.perfectGuardUntil=now\+\.28/);
   assert.match(server,/defense\.parryUntil=now\+\.42/);
-  assert.equal((server.match(/defense\.dodgeUntil=now\+\.48/g)||[]).length,2);
+  assert.equal((server.match(/defense\.dodgeUntil=now\+\(behind and \.7 or \.48\)/g)||[]).length,1);
+  assert.equal((server.match(/defense\.dodgeUntil=now\+\.48/g)||[]).length,1);
   assert.match(config,/Id = "skill-meadow-guard"[\s\S]*?Cooldown = 9/);
   assert.match(config,/Id = "skill-meadow-dodge-left"[\s\S]*?Cooldown = 4/);
   assert.match(motion,/function RobloxCommonMotion\.BindJointPose/);

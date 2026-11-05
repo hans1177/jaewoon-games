@@ -3908,6 +3908,9 @@ RunService.Heartbeat:Connect(function(dt)
   end
 end)
 
+-- [5단 회피] 1.8초 안에 이어 누르면 슬립→페인트→크로스→위빙→배후 도약 순서로 진행한다.
+-- 단계 사이 재사용은 .55초, 5단까지 쓰거나 연결이 끊기면 기존 회피 재사용 시간으로 새 연쇄를 막는다.
+local meadowDodgeChain=setmetatable({},{__mode="k"})
 local meadowSkillSeconds={
   ["skill-meadow-heavy"]=5,["skill-meadow-sweep"]=9,["skill-meadow-bolt"]=7,
   ["skill-meadow-guard"]=9,["skill-meadow-parry"]=7,
@@ -3932,14 +3935,52 @@ local function meadowSkill(player,id,execute)
   if isDodge then
     nextReady=math.max(nextReady,cooldowns[dodgeLeft] or 0,cooldowns[dodgeRight] or 0)
   end
+  local chain=isDodge and meadowDodgeChain[player] or nil
+  local pendingStage=1
+  if isDodge then
+    if chain and now<chain.window and chain.stage<5 then
+      nextReady=chain.shortReady;pendingStage=chain.stage+1
+    elseif chain then
+      nextReady=chain.nextChainAt
+    else
+      nextReady=0
+    end
+  end
   if now<nextReady then return false end
   local character,humanoid,root=liveMeadowCharacter(player)
   if not character then return false end
   player:SetAttribute("ApprovedActionTarget",root.Position)
+  if isDodge then
+    chain=chain or {stage=0,window=0,shortReady=0,nextChainAt=0}
+    chain.pending=pendingStage
+    meadowDodgeChain[player]=chain
+  end
   local accepted=execute(character,humanoid,root,now)
   if accepted~=true then return false end
   local nextCooldown=now+interval
   local readyAt=workspace:GetServerTimeNow()+interval
+  if isDodge then
+    chain.stage=pendingStage
+    if pendingStage==1 or pendingStage>=5 then chain.nextChainAt=now+interval end
+    if pendingStage>=5 then
+      chain.window=0
+      readyAt=workspace:GetServerTimeNow()+interval
+    else
+      chain.window=now+1.8;chain.shortReady=now+.55
+      readyAt=workspace:GetServerTimeNow()+.55
+      local token=pendingStage
+      task.delay(1.85,function()
+        local latest=meadowDodgeChain[player]
+        if latest and latest.stage==token and os.clock()>=latest.window and os.clock()<latest.nextChainAt then
+          local readyLater=workspace:GetServerTimeNow()+(latest.nextChainAt-os.clock())
+          player:SetAttribute("MeadowReady_skill-meadow-dodge-left",readyLater)
+          player:SetAttribute("MeadowReady_skill-meadow-dodge-right",readyLater)
+        end
+      end)
+    end
+    player:SetAttribute("MeadowDodgeStage",pendingStage)
+    player:SetAttribute("MeadowDodgeWindow",pendingStage>=5 and 0 or workspace:GetServerTimeNow()+1.8)
+  end
   cooldowns[id]=nextCooldown
   if isDodge then
     cooldowns[dodgeLeft]=nextCooldown
@@ -4052,19 +4093,38 @@ local function meadowDodge(player,sign,id)
     if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1)
     else facing=facing.Unit end
     local side=Vector3.new(-facing.Z,0,facing.X)*sign
+    -- [5단 이동] 1 슬립(측면) · 2 페인트(반대 측면) · 3 크로스(앞 대각) · 4 위빙(뒤 대각) · 5 적 배후 도약.
+    local chainState=meadowDodgeChain[player]
+    local stage=chainState and chainState.pending or 1
+    character:SetAttribute("MeadowDodgeStage",stage)
+    local moveDir,moveDist,moveTime,hopBase=side,7,.26,.28
+    local behind=false
+    if stage==2 then moveDir=-side
+    elseif stage==3 then moveDir=(side*.8+facing*.6).Unit;moveDist=6
+    elseif stage==4 then moveDir=(-side*.8-facing*.6).Unit;moveDist=6
+    elseif stage>=5 then
+      if target then
+        local toTarget=Vector3.new(target.position.X-root.Position.X,0,target.position.Z-root.Position.Z)
+        if toTarget.Magnitude>.5 then
+          moveDir=toTarget.Unit;moveDist=math.min(24,toTarget.Magnitude+5)
+          moveTime=.42;hopBase=3;behind=true
+        end
+      end
+      if not behind then moveDist=9 end
+    end
     local ray=RaycastParams.new()
     ray.FilterType=Enum.RaycastFilterType.Exclude
-    ray.FilterDescendantsInstances={character}
+    ray.FilterDescendantsInstances=behind and {character,target.model} or {character}
     local start=root.Position+Vector3.new(0,1.5,0)
     ray.RespectCanCollide=true
-    local wall=workspace:Raycast(start,side*7,ray)
-    local distance=wall and math.max(0,wall.Distance-2) or 7
+    local wall=workspace:Raycast(start,moveDir*moveDist,ray)
+    local distance=wall and math.max(0,wall.Distance-2) or moveDist
     if distance<2 then return false end
     -- [회피 안전] 낭떠러지·물·급경사에 착지하지 않는다. 최대 7스터드 범위는 유지.
     local floorRay=RaycastParams.new()
     floorRay.FilterType=Enum.RaycastFilterType.Include
     floorRay.FilterDescendantsInstances={meadowTerrain}
-    local landing=root.Position+side*distance
+    local landing=root.Position+moveDir*distance
     local floor=workspace:Raycast(landing+Vector3.new(0,8,0),
       Vector3.new(0,-18,0),floorRay)
     local terrainGround=root.Position.Y-root.Size.Y*.5
@@ -4073,15 +4133,15 @@ local function meadowDodge(player,sign,id)
     -- [서버 승인 회피] 7스터드 거리·.48초 무적·4초 재사용을 유지하고 옆 점프 이동만 .26초로 한다.
     local dodgeOrigin=character:GetPivot()
     local dodgeFacing=CFrame.lookAt(dodgeOrigin.Position,dodgeOrigin.Position+facing)
-    local dodgeOffset=side*distance
+    local dodgeOffset=moveDir*distance
     -- [실제 측면 도약] 낮은 천장·높은 장애물이 있으면 점프 높이만 제거한다.
     -- 기존 측면 안전 검사, 7스터드 거리와 서버 무적 판정은 변경하지 않는다.
     local overhead=workspace:Raycast(start,Vector3.new(0,.9,0),ray)
-    local elevatedWall=workspace:Raycast(start+Vector3.new(0,.62,0),side*distance,ray)
+    local elevatedWall=workspace:Raycast(start+Vector3.new(0,.62,0),moveDir*distance,ray)
     -- [지면 밀착 회피] 무적·이동 거리·쿨다운은 그대로 두고 시각적 도약 높이만 낮춘다.
-    local hopHeight=(not overhead and not elevatedWall) and .28 or 0
+    local hopHeight=(not overhead and not elevatedWall) and hopBase or 0
     local defense=meadowDefense[player] or {}
-    defense.dodgeUntil=now+.48
+    defense.dodgeUntil=now+(behind and .7 or .48)
     meadowDefense[player]=defense
     player:SetAttribute("ApprovedActionTarget",root.Position)
     local oldAutoRotate=humanoid.AutoRotate
@@ -4090,13 +4150,19 @@ local function meadowDodge(player,sign,id)
       local movementStarted=os.clock()
       while character.Parent and player.Character==character
         and root:IsDescendantOf(character) and humanoid.Health>0 do
-        local t=math.clamp((os.clock()-movementStarted)/.26,0,1)
+        local t=math.clamp((os.clock()-movementStarted)/moveTime,0,1)
         -- [회피: 15도 숙인 빠른 측면 도약] 출발 시 순간적인 몸통 방향 점프를 막는다.
         -- 처음 약 .06초만 적을 향해 회전하고 이후 적을 보는 방향을 고정한다.
         local eased=.5-.5*math.cos(math.pi*t)
         local turn=math.clamp(t/.24,0,1)
         turn=turn*turn*(3-2*turn)
         local gaze=dodgeOrigin:Lerp(dodgeFacing,turn)
+        if behind then
+          -- [배후 도약] 적을 지나친 뒤 몸을 돌려 적의 등 뒤에서 다시 마주 본다.
+          local back=CFrame.lookAt(dodgeOrigin.Position,dodgeOrigin.Position-facing)
+          local spin=math.clamp((t-.5)/.4,0,1)
+          gaze=gaze:Lerp(back,spin*spin*(3-2*spin))
+        end
         local hop=hopHeight*math.sin(math.pi*t)
         character:PivotTo(gaze+dodgeOffset*eased+Vector3.new(0,hop,0))
         if t>=1 then break end

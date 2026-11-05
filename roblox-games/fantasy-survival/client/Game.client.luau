@@ -6626,6 +6626,22 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     cooldown.Visible=remaining>.05
     cooldown.Text=remaining>0 and string.format("%.1f",remaining) or ""
     button.BackgroundColor3=remaining>.05 and Color3.fromRGB(24,28,34) or Color3.fromRGB(30,31,29)
+    if index==2 then
+      -- [5단 회피 표시] 이어 누를 수 있는 동안 현재 단계를 버튼 모서리에 보여 준다.
+      local tag=button:FindFirstChild("DodgeStageTag")
+      if not tag then
+        tag=Instance.new("TextLabel");tag.Name="DodgeStageTag";tag.AnchorPoint=Vector2.new(.5,1)
+        tag.Position=UDim2.fromScale(.5,0);tag.Size=UDim2.fromOffset(46,20);tag.BackgroundColor3=Color3.fromRGB(246,179,73)
+        tag.BorderSizePixel=0;tag.Font=Enum.Font.GothamBlack;tag.TextSize=13;tag.TextColor3=Color3.fromRGB(30,22,12)
+        tag.ZIndex=30;tag.Visible=false;tag.Active=false;tag.Interactable=false;tag.Parent=button
+        local tagCorner=Instance.new("UICorner");tagCorner.CornerRadius=UDim.new(1,0);tagCorner.Parent=tag
+      end
+      local stage=tonumber(player:GetAttribute("MeadowDodgeStage")) or 0
+      local window=tonumber(player:GetAttribute("MeadowDodgeWindow")) or 0
+      local live=stage>0 and stage<5 and now<window
+      tag.Visible=live
+      if live then tag.Text=stage.."/5  연속" end
+    end
   end
   for index,button in ipairs(meadowUtilityButtons)do
     local info=meadowUtilityActions[index]
@@ -6952,6 +6968,28 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
   local confirmedParry=actionId=="skill-meadow-parry" and overrideVfx=="PARRY_CONFIRMED"
   if confirmedBlock or confirmedParry then
     local perfect=confirmedParry
+    -- [직접 만든 타격 반응] 공용 에셋이 없어도 방패 광휘가 번쩍이고 불꽃이 튄다.
+    do
+      local hitAnchor=Instance.new("Attachment")
+      hitAnchor.Name="MeadowGuardHitAnchor";hitAnchor.Position=Vector3.new(0,1.4,-2.8);hitAnchor.Parent=rootPart
+      local flash=Instance.new("ParticleEmitter")
+      flash.Texture="rbxasset://textures/particles/smoke_main.dds";flash.Rate=0;flash.Lifetime=NumberRange.new(.3)
+      flash.Speed=NumberRange.new(0,0);flash.LightEmission=1
+      flash.Color=ColorSequence.new(perfect and Color3.fromRGB(255,226,150) or Color3.fromRGB(200,235,255))
+      flash.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,3),NumberSequenceKeypoint.new(1,10)})
+      flash.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.1),NumberSequenceKeypoint.new(1,1)})
+      flash.Parent=hitAnchor;flash:Emit(1)
+      local emitter=Instance.new("ParticleEmitter")
+      emitter.Texture="rbxasset://textures/particles/sparkles_main.dds"
+      emitter.Rate=0;emitter.Lifetime=NumberRange.new(.25,.5);emitter.Speed=NumberRange.new(14,26)
+      emitter.SpreadAngle=Vector2.new(70,70);emitter.LightEmission=1;emitter.Drag=3
+      emitter.Color=ColorSequence.new(perfect and Color3.fromRGB(255,214,120) or Color3.fromRGB(190,230,255))
+      emitter.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.8),NumberSequenceKeypoint.new(1,0)})
+      emitter.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(1,1)})
+      emitter.Parent=hitAnchor
+      emitter:Emit(reducedEffects and 10 or (perfect and 34 or 24))
+      debris:AddItem(hitAnchor,.9)
+    end
     if meadowCommonVFX and type(meadowCommonVFX.Create)=="function"
       and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
       local ok,err=pcall(meadowCommonVFX.Create,perfect and "PARRY_PERFECT_FLASH" or "BLOCK_IMPACT",{
@@ -7036,6 +7074,40 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
       end
     end
     if not parrying then
+      -- [방어막] 공용 효과 에셋이 없어도 보이도록 Roblox 기본 입자로 푸른 방패 광휘와 불씨를 만든다.
+      local life=(tonumber(player:GetAttribute("MeadowTalentDefense")) or 0)>=3 and 3.6 or 2.8
+      local oldShield=rootPart:FindFirstChild("MeadowGuardShieldAnchor")
+      if oldShield then oldShield:Destroy() end
+      local shieldAnchor=Instance.new("Attachment")
+      shieldAnchor.Name="MeadowGuardShieldAnchor";shieldAnchor.Position=Vector3.new(0,.5,-2.9);shieldAnchor.Parent=rootPart
+      local glow=Instance.new("ParticleEmitter")
+      glow.Name="GuardShieldGlow";glow.Texture="rbxasset://textures/particles/smoke_main.dds"
+      glow.Rate=0;glow.Lifetime=NumberRange.new(life);glow.Speed=NumberRange.new(0,0);glow.LockedToPart=true
+      glow.LightEmission=1;glow.Color=ColorSequence.new(Color3.fromRGB(110,185,255))
+      glow.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,1.5),NumberSequenceKeypoint.new(.08,7),
+        NumberSequenceKeypoint.new(1,6.2)})
+      glow.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.08,.45),
+        NumberSequenceKeypoint.new(.9,.6),NumberSequenceKeypoint.new(1,1)})
+      glow.Parent=shieldAnchor
+      glow:Emit(1)
+      local embers=Instance.new("ParticleEmitter")
+      embers.Name="GuardShieldEmbers";embers.Texture="rbxasset://textures/particles/sparkles_main.dds"
+      embers.Rate=reducedEffects and 6 or 22;embers.Lifetime=NumberRange.new(.5,.9);embers.Speed=NumberRange.new(1,3)
+      embers.SpreadAngle=Vector2.new(180,180);embers.LightEmission=1;embers.LockedToPart=true
+      embers.Color=ColorSequence.new(Color3.fromRGB(190,230,255))
+      embers.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.7),NumberSequenceKeypoint.new(1,0)})
+      embers.Parent=shieldAnchor
+      -- 시작 순간 한 번 크게 번쩍이는 충격 링.
+      local startBurst=Instance.new("ParticleEmitter")
+      startBurst.Name="GuardStartBurst";startBurst.Texture="rbxasset://textures/particles/smoke_main.dds"
+      startBurst.Rate=0;startBurst.Lifetime=NumberRange.new(.35);startBurst.Speed=NumberRange.new(0,0)
+      startBurst.LightEmission=1;startBurst.Color=ColorSequence.new(Color3.fromRGB(230,245,255))
+      startBurst.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,2),NumberSequenceKeypoint.new(1,12)})
+      startBurst.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.2),NumberSequenceKeypoint.new(1,1)})
+      startBurst.Parent=shieldAnchor
+      startBurst:Emit(1)
+      task.delay(life,function() embers.Enabled=false;embers.Rate=0 end)
+      debris:AddItem(shieldAnchor,life+1)
       -- [유지 태세] 지속시간 2.8초에 맞춘 약한 호박색 윤곽만 남긴다.
       local aura=Instance.new("Highlight")
       aura.Name="MeadowGuardStanceAura"
@@ -7126,7 +7198,10 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
     -- [회피 5단] 슬립/페인트/스텝/위빙/덤블링에 기존 공용 파동을 단계별로 연동.
     if meadowCommonVFX and type(meadowCommonVFX.Create)=="function"
       and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
-      for index,delaySec in ipairs({.05,.23,.44,.65,.96}) do
+      local dodgeStage=math.clamp(tonumber(character:GetAttribute("MeadowDodgeStage")) or 1,1,5)
+      local pulses=dodgeStage>=5 and {{.02,5},{.44,5}} or {{.04,dodgeStage},{.2,dodgeStage}}
+      for _,pulse in ipairs(pulses) do
+        local index,delaySec=pulse[2],pulse[1]
         task.delay(delaySec,function()
           if not rootPart.Parent or not character.Parent then return end
           local color=index==5 and Color3.fromRGB(255,222,155)
@@ -7662,7 +7737,13 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   skillMotionDuration=isGuard and 2.8 or isParry and .42 or isDodge and 1.06
     or math.clamp(tonumber(meta.duration) or .7,.25,1.4)
   skillMotionDeadline=skillMotionStart+skillMotionDuration+(isGuard and 0 or .12)
-  if isDodge then dodgePoseUntil=skillMotionStart+.46+.12 end
+  -- [5단 회피] 서버가 알려 준 단계별로 모션 길이를 줄인다. 1~4단 .5초, 5단 배후 도약 .85초.
+  if isDodge then
+    local motionStage=math.clamp(tonumber(character:GetAttribute("MeadowDodgeStage")) or 1,1,5)
+    skillMotionDuration=motionStage>=5 and .85 or .5
+    skillMotionDeadline=skillMotionStart+skillMotionDuration+.12
+    dodgePoseUntil=skillMotionStart+(motionStage>=5 and .7 or .46)+.12
+  end
   character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
   character:SetAttribute("NativeSkillActionId",id)
 end)
@@ -7688,11 +7769,19 @@ RunService.PreSimulation:Connect(function(dt)
     local leadLeft=sign<0
     -- [5단 회피 스킬] 1 전신 슬립 → 2 역방향 페인트 → 3 크로스 도약 → 4 급강하 위빙 → 5 공중 덤블링 착지.
     -- [전투 권한] 실제 R15/R6 관절만 움직인다. 7스터드 이동·무적·쿨타임은 서버 원본 그대로.
-    local first=math.sin(math.pi*math.clamp(phase/.23,0,1))
-    local second=math.sin(math.pi*math.clamp((phase-.17)/.24,0,1))
-    local third=math.sin(math.pi*math.clamp((phase-.37)/.24,0,1))
-    local fourth=math.sin(math.pi*math.clamp((phase-.57)/.23,0,1))
-    local flip=math.clamp((phase-.79)/.18,0,1)
+    -- 단계별로 한 동작만 크게 보여 준다. 5단은 웅크림 → 공중 회전 → 착지.
+    local bump=math.sin(math.pi*phase)
+    local skillMotionStage=math.clamp(tonumber(skillMotionCharacter:GetAttribute("MeadowDodgeStage")) or 1,1,5)
+    local first,second,third,fourth=0,0,0,0
+    local flip=0
+    if skillMotionStage==1 then first=bump
+    elseif skillMotionStage==2 then second=bump
+    elseif skillMotionStage==3 then third=bump
+    elseif skillMotionStage==4 then fourth=bump
+    else
+      first=math.sin(math.pi*math.clamp(phase/.22,0,1))
+      flip=math.clamp((phase-.14)/.7,0,1)
+    end
     local flipping=math.sin(math.pi*flip)
     local finish=math.clamp((phase-.95)/.05,0,1)
     finish=finish*finish*(3-2*finish)
@@ -7753,23 +7842,22 @@ RunService.PreSimulation:Connect(function(dt)
         *CFrame.Angles(-.11*brace+.13*hit,.21*brace-.14*hit,-.055*brace)
       skillMotionTargets.Chest=CFrame.Angles(-.09*brace+.08*hit,.08*brace,.04*brace)
       skillMotionTargets.Head=CFrame.Angles(.12*brace-.13*hit,-.06*brace,0)
-      -- [우측] 적 공격을 받아내는 주방어 팔. 타격 시 어깨가 뒤로 밀리고 즉시 복원된다.
-      skillMotionTargets.UpperArmR=CFrame.Angles(-1.72*brace-.16*lift+.23*hit,
-        .36*brace,.44*brace)
-      skillMotionTargets.ForearmR=CFrame.Angles(-1.42*brace+.31*hit,.10*brace,.12*brace)
-      skillMotionTargets.HandR=CFrame.Angles(.20*brace-.16*hit,0,.08*brace)
-      -- [좌측] 반대쪽 가슴/턱을 가리는 보조 가드. X자 팔 꼬임을 만들지 않는다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-.96*brace-.18*lift+.12*hit,
-        -.26*brace,-.38*brace)
-      skillMotionTargets.ForearmL=CFrame.Angles(-1.08*brace+.19*hit,-.10*brace,-.16*brace)
-      skillMotionTargets.HandL=CFrame.Angles(.14*brace,0,-.09*brace)
-      -- [하체] 실제 다리로 중심을 지지하며 원점 이동·쪼그림·공중 회전 없음.
-      skillMotionTargets.ThighL=CFrame.Angles(-.035*brace,0,-.065*brace)
-      skillMotionTargets.ThighR=CFrame.Angles(.035*brace,0,.065*brace)
-      skillMotionTargets.ShinL=CFrame.identity
-      skillMotionTargets.ShinR=CFrame.identity
-      skillMotionTargets.FootL=CFrame.Angles(0,0,-.035*brace)
-      skillMotionTargets.FootR=CFrame.Angles(0,0,.035*brace)
+      -- [양팔 하이 가드] 두 팔을 얼굴·가슴 앞에 대칭으로 세워 막는다. 타격 시 어깨가 밀렸다 복원된다.
+      skillMotionTargets.UpperArmR=CFrame.Angles(-1.12*brace-.12*lift+.22*hit,
+        .30*brace,.42*brace)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.68*brace+.30*hit,.12*brace,.10*brace)
+      skillMotionTargets.HandR=CFrame.Angles(.14*brace-.14*hit,0,.08*brace)
+      skillMotionTargets.UpperArmL=CFrame.Angles(-1.12*brace-.12*lift+.22*hit,
+        -.30*brace,-.42*brace)
+      skillMotionTargets.ForearmL=CFrame.Angles(-1.68*brace+.30*hit,-.12*brace,-.10*brace)
+      skillMotionTargets.HandL=CFrame.Angles(.14*brace-.14*hit,0,-.08*brace)
+      -- [하체] 무릎을 살짝 굽혀 낮게 버티는 자세. 위치 이동·공중 회전 없음.
+      skillMotionTargets.ThighL=CFrame.Angles(-.20*brace-.05*hit,0,-.10*brace)
+      skillMotionTargets.ThighR=CFrame.Angles(.14*brace,0,.10*brace)
+      skillMotionTargets.ShinL=CFrame.Angles(.34*brace+.08*hit,0,0)
+      skillMotionTargets.ShinR=CFrame.Angles(.24*brace,0,0)
+      skillMotionTargets.FootL=CFrame.Angles(-.14*brace,0,-.035*brace)
+      skillMotionTargets.FootR=CFrame.Angles(-.10*brace,0,.035*brace)
     else
       -- [완벽 막기] 세키로식 짧은 전방 쳐내기 동작. 성공 여부는 서버만 결정한다.
       local snap=math.sin(math.pi*math.clamp((phase-.09)/.67,0,1))
