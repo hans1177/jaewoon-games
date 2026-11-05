@@ -2282,9 +2282,8 @@ local function gatherResource(player, node)
   local function bonus(field,chance,amount)
     if math.random()<chance+luck then setNumber(player,field,readNumber(player,field,0)+(amount or 1)) end
   end
-  if node.kind=="WOOD" then bonus("Fiber",.4);bonus("Herb",.12)
+  if node.kind=="WOOD" then bonus("Herb",.15)
   elseif node.kind=="STONE" then bonus("Ore",.35);bonus("Crystal",.05)
-  elseif node.kind=="HERB" then bonus("Fiber",.5)
   elseif node.kind=="ORE" then bonus("Stone",.6);bonus("Crystal",.12) end
   awardProgress(player, 3, 1)
   -- [채집 숙련도] 기존 재화·전투 경험치·자원 2개 보상은 그대로 둔다.
@@ -3335,15 +3334,13 @@ local function applyMeadowDamage(player,target,damage)
     for i=#enemies,1,-1 do if enemies[i]==target then table.remove(enemies,i);break end end
     awardProgress(player,target.isBoss and 75 or target.isAlpha and 35 or 12,
       target.isBoss and 45 or target.isAlpha and 18 or 5)
-    -- [몬스터 잡템] 처치한 몬스터가 가죽·송곳니·마력 결정을 떨군다. 제작·강화·물약에 쓴다.
+    -- [몬스터 잡템] 처치한 몬스터가 가죽·마력 결정을 떨군다. 제작·강화·물약에 쓴다.
     do
       local function drop(field,chance,amount)
         if math.random()<chance then setNumber(player,field,readNumber(player,field,0)+(amount or 1)) end
       end
       drop("Hide",target.kind=="wolf" and .8 or target.kind=="bandit" and .5 or .25,target.isAlpha and 3 or 1)
-      drop("Fang",target.kind=="wolf" and .35 or .1,target.isAlpha and 2 or 1)
       drop("Crystal",(target.kind=="ghost" or target.kind=="bat") and .35 or .12,target.isBoss and 4 or 1)
-      drop("Fiber",target.kind=="bee" and .6 or .1)
     end
     -- [사냥 숙련도] 실제 서버에서 처치가 확정된 늑대·박쥐만 기록한다.
     -- 살아 있는 사슴·토끼 관찰은 사냥으로 인정하지 않으며 도감·드랍 변경 없음.

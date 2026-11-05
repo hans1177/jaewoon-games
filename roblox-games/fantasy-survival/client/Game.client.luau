@@ -2140,11 +2140,9 @@ local categories={"전체","보유","무기","갑옷","장신구","소모품","�
 local data={
   {key="Wood",name="나무",category="재료",icon=4,art=34,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 장비 제작, 무기 강화, 건설에 사용돼."},
   {key="Herb",name="약초",category="재료",icon=4,color=Color3.fromRGB(122,200,120),description=Config.Materials[1].Desc},
-  {key="Fiber",name="질긴 섬유",category="재료",icon=4,color=Color3.fromRGB(196,184,120),description=Config.Materials[2].Desc},
-  {key="Ore",name="광석",category="재료",icon=4,color=Color3.fromRGB(150,160,190),description=Config.Materials[3].Desc},
-  {key="Hide",name="가죽",category="재료",icon=4,color=Color3.fromRGB(176,120,80),description=Config.Materials[4].Desc},
-  {key="Fang",name="송곳니",category="재료",icon=4,color=Color3.fromRGB(235,228,210),description=Config.Materials[5].Desc},
-  {key="Crystal",name="마력 결정",category="재료",icon=4,color=Color3.fromRGB(140,150,240),description=Config.Materials[6].Desc},
+  {key="Ore",name="광석",category="재료",icon=4,color=Color3.fromRGB(150,160,190),description=Config.Materials[2].Desc},
+  {key="Hide",name="가죽",category="재료",icon=4,color=Color3.fromRGB(176,120,80),description=Config.Materials[3].Desc},
+  {key="Crystal",name="마력 결정",category="재료",icon=4,color=Color3.fromRGB(140,150,240),description=Config.Materials[4].Desc},
   {key="Stone",name="돌",category="재료",icon=4,art=35,color=Color3.fromRGB(169,191,200),description="바위에서 채집한 돌. 장비 제작, 무기 강화, 건설에 사용돼."},
   {key="ResearchRecords",name="기사단 연대기",category="기록",icon=5,color=Color3.fromRGB(221,183,111),description="메인 의뢰에서 발견한 기사단 기록. 획득한 내용은 저널에 보관돼."},
   {key="Coins",name="소지금",category="재화",icon=4,color=Color3.fromRGB(226,191,92),description="서버에 기록된 현재 소지금."},
@@ -2286,7 +2284,7 @@ local function redrawSelection()
   local cost=""
   if recipe then
     local parts={}
-    local names={Wood="나무",Stone="돌",Hide="가죽",Fiber="섬유",Ore="광석",Herb="약초",Crystal="결정",Fang="송곳니",Coins="재화"}
+    local names={Wood="나무",Stone="돌",Hide="가죽",Ore="광석",Herb="약초",Crystal="결정",Coins="재화"}
     for _,field in ipairs(Config.CostFields)do
       local need=recipe[field] or 0
       if need>0 then
@@ -2517,7 +2515,7 @@ if player.Character then
   player.Character.ChildAdded:Connect(renderInventory)
   player.Character.ChildRemoved:Connect(renderInventory)
 end
-for _,name in ipairs({"Wood","Stone","Herb","Fiber","Ore","Hide","Fang","Crystal","Coins","ResearchRecords","ProfileReady","MeadowGearOwned",
+for _,name in ipairs({"Wood","Stone","Herb","Ore","Hide","Crystal","Coins","ResearchRecords","ProfileReady","MeadowGearOwned",
   "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
   "MeadowEquipAccessory","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)
