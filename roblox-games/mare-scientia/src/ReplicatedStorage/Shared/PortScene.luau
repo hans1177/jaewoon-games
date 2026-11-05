@@ -229,7 +229,7 @@ local function buildShip(parent, shipId, at)
 		shipMesh.Name = "Ship"
 		if look.funnel then
 			-- 증기선 두 종류는 수입된 굴뚝과 연기로 범선과 구분한다.
-			local stack = importedModel(parent, "Town", "chimney", at + Vector3.new(-5 * s, 3 * s, 0), 4 * s, false, look.metal and look.hull or nil)
+			local stack = importedModel(shipMesh, "Town", "chimney", at + Vector3.new(-5 * s, 3 * s, 0), 4 * s, false, look.metal and look.hull or nil)
 			local part = if stack then stack:FindFirstChildWhichIsA("BasePart", true) else shipMesh:FindFirstChildWhichIsA("BasePart", true)
 			if part then
 				local smoke = Instance.new("Smoke")
@@ -238,6 +238,15 @@ local function buildShip(parent, shipId, at)
 				smoke.Opacity = 0.24
 				smoke.RiseVelocity = 5
 				smoke.Parent = part
+			end
+		end
+		-- 전투형 선박은 실제 대포 메쉬를 선체 양옆에 배치한다.
+		if shipId == "frigate" or shipId == "galleon" or shipId == "ironclad_frigate" then
+			for side = -1, 1, 2 do
+				for i = -1, 1 do
+					importedModel(shipMesh, "Naval", "cannon",
+						at + Vector3.new(i * 7 * s, 2 * s, side * 4.6 * s), 3.3 * s, false)
+				end
 			end
 		end
 		return shipMesh
@@ -458,7 +467,8 @@ function PortScene.build(info, onFacility)
 	-- 광장의 이야기 NPC
 	if (info.storyCount or 0) > 0 then
 		local n = villager(folder, Vector3.new(2, 0, -8), math.pi / 2, Color3.fromRGB(150, 40, 60), rng)
-		sign(folder, n:GetChildren()[2], "! 이야기", Color3.fromRGB(180, 120, 30), 4)
+		local npcPart = n:FindFirstChildWhichIsA("BasePart", true)
+		if npcPart then sign(folder, npcPart, "! 이야기", Color3.fromRGB(180, 120, 30), 4) end
 		prompt(folder, Vector3.new(2, 3, -8), "수상한 손님", "이야기 듣기", "harbor", onFacility)
 	end
 	-- 광장을 오가는 주민
