@@ -6814,6 +6814,117 @@ do
   workspace:SetAttribute("ColossusCount",count)
 end
 
+-- [홀드 마을] 4개 거점 마을. 집 4채 · 우물 · 가로등을 등록 CC0 모델로 세우고 R15 주민 3명(여관·상인·정보통)을 둔다.
+-- 여관: 체력 회복. 상인: 남는 재료 판매. 정보통: 그 지역 미스터리 퀘스트의 현재 단서를 알려 준다.
+do
+  local houseKeys={"villageHouseA","villageHouseB","villageHouseC","villageHouseD"}
+  local roles={
+    {key="Inn",action="쉬기",look={skin={224,172,105},shirt={158,96,70}}},
+    {key="Merchant",action="거래하기",look={skin={198,134,86},shirt={72,110,148}}},
+    {key="Scout",action="이야기하기",look={skin={233,190,150},shirt={92,130,84}}},
+  }
+  local sellRates={Hide=6,Fang=8,Claw=12,Mushroom=4}
+  local function lineFor(town)
+    local fieldByTown={windcliff="wind",highland="hunt",wetland="bog",worldtree="root"}
+    for _,line in ipairs(Config.QuestLines) do if line.Id==fieldByTown[town.Id] then return line end end
+  end
+  for index,town in ipairs(Config.WorldMap.Towns) do
+    task.spawn(function()
+      task.wait(6+index*.6)
+      local center=Vector3.new(town.X,3,town.Z)
+      for i,key in ipairs(houseKeys) do
+        local angle=i/4*math.pi*2+.4
+        local house=worldAsset(key,center+Vector3.new(math.cos(angle)*38,0,math.sin(angle)*38),11)
+        if house then house.Name="TownHouse_"..town.Id.."_"..i;house:SetAttribute("MeadowScenery",true) end
+      end
+      local well=worldAsset("villageWell",center,5)
+      if well then well.Name="TownWell_"..town.Id;well:SetAttribute("MeadowScenery",true) end
+      for i=1,4 do
+        local angle=i/4*math.pi*2+math.pi/4
+        local lamp=worldAsset("villageLantern",center+Vector3.new(math.cos(angle)*16,0,math.sin(angle)*16),6)
+        if lamp then lamp:SetAttribute("MeadowScenery",true) end
+      end
+      for r,role in ipairs(roles) do
+        local angle=r/3*math.pi*2
+        local position=center+Vector3.new(math.cos(angle)*10,3,math.sin(angle)*10)
+        local ok,npc=pcall(function()
+          local desc=Instance.new("HumanoidDescription")
+          local skin=Color3.fromRGB(role.look.skin[1],role.look.skin[2],role.look.skin[3])
+          desc.HeadColor=skin;desc.LeftArmColor=skin;desc.RightArmColor=skin
+          desc.TorsoColor=Color3.fromRGB(role.look.shirt[1],role.look.shirt[2],role.look.shirt[3])
+          desc.LeftLegColor=Color3.fromRGB(70,62,56);desc.RightLegColor=Color3.fromRGB(70,62,56)
+          local model=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
+          desc:Destroy()
+          return model
+        end)
+        if ok and npc then
+          npc.Name="TownNpc_"..town.Id.."_"..role.key
+          local humanoid=npc:FindFirstChildOfClass("Humanoid")
+          if humanoid then humanoid.DisplayName=town[role.key];humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.Viewer end
+          local root=npc:FindFirstChild("HumanoidRootPart")
+          local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Include;ray.FilterDescendantsInstances={meadowTerrain}
+          local hit=workspace:Raycast(position+Vector3.new(0,90,0),Vector3.new(0,-180,0),ray)
+          npc:PivotTo(CFrame.lookAt((hit and hit.Position or position)+Vector3.new(0,3.2,0),Vector3.new(center.X,hit and hit.Position.Y+3.2 or 6,center.Z)))
+          if root then
+            root.Anchored=true
+            npc.Parent=gameWorld
+            local animator=humanoid and (humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator"))
+            if animator then
+              animator.Parent=humanoid
+              local anim=Instance.new("Animation");anim.AnimationId="rbxassetid://507766388"
+              local loaded,track=pcall(function() return animator:LoadAnimation(anim) end)
+              if loaded and track then track.Looped=true;track:Play() end
+              anim:Destroy()
+            end
+            local prompt=Instance.new("ProximityPrompt");prompt.ActionText=role.action;prompt.ObjectText=town[role.key];prompt.HoldDuration=.4
+            prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=root
+            prompt.Triggered:Connect(function(player)
+              if player:GetAttribute("ProfileReady")~=true then return end
+              if role.key=="Inn" then
+                local character=player.Character
+                local human=character and character:FindFirstChildOfClass("Humanoid")
+                if human then human.Health=human.MaxHealth end
+                player:SetAttribute("MeadowStamina",100)
+                pcall(function() villageDialogue(player,town[role.key],"어서 와요. 따뜻한 수프 한 그릇이면 기운이 돌아올 거예요. ("..town.Name.."에서 체력과 기력이 회복됐다)") end)
+              elseif role.key=="Merchant" then
+                local total,parts=0,{}
+                for material,rate in pairs(sellRates) do
+                  local have=readNumber(player,material,0)
+                  local extra=have-2
+                  if extra>0 then
+                    setNumber(player,material,2)
+                    total+=extra*rate
+                    table.insert(parts,material.." "..extra)
+                  end
+                end
+                if total>0 then
+                  setNumber(player,"Coins",readNumber(player,"Coins",0)+total)
+                  pcall(function() villageDialogue(player,town[role.key],"좋은 물건이군! 남는 재료("..table.concat(parts,", ")..")를 사서 재화 "..total.."을 건넸다. (재료 2개씩은 남겨 두었다)") end)
+                else
+                  pcall(function() villageDialogue(player,town[role.key],"가죽·송곳니·발톱·버섯을 3개 이상 가져오면 사 주지. 퀘스트용으로 2개는 남겨 두는 게 좋아.") end)
+                end
+              else
+                local line=lineFor(town)
+                local text=town.Hold.."의 소문이다.\n"
+                if line then
+                  local stage=readNumber(player,line.Field,0)
+                  if stage==0 then text=text.."아직 이 지역에 대해 아는 게 적다. 지역을 더 둘러보면 이야기를 듣게 될 거다."
+                  elseif stage>#line.Steps then text=text.."'"..line.Name.."' 사건은 끝났다. 그 선택이 마을에 어떤 바람을 일으킬지는 지켜봐야지."
+                  else
+                    local step=line.Steps[stage]
+                    text=text.."지금 쫓는 일: "..line.Name.."\n▶ "..step.Title.."\n"..step.Text
+                  end
+                end
+                pcall(function() villageDialogue(player,town[role.key],text) end)
+              end
+            end)
+          else npc:Destroy() end
+        end
+      end
+    end)
+  end
+end
+
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
 -- 도달/재료 판정은 2초마다, 처치 판정은 몬스터 처치 시점에 확인한다. 거울 정원은 메인 줄 완료(HiddenOpen)로 열린다.
 do
@@ -6831,6 +6942,11 @@ do
       if not index or bit32.band(readNumber(player,"CompanionOwned",0),bit32.lshift(1,index-1))==0 then return false end
     end
     if need.Field and readNumber(player,need.Field,0)<1 then return false end
+    if need.Done then
+      for _,other in ipairs(lines) do
+        if other.Id==need.Done and readNumber(player,other.Field,0)<=#other.Steps then return false end
+      end
+    end
     if need.Stage and readNumber(player,"QuestStage",1)<need.Stage then return false end
     if need.Zone then
       local bit=nil
@@ -6928,6 +7044,7 @@ do
     choiceSession[player]=nil
     local choice=step.Choices[action=="ql:1" and 1 or 2]
     setNumber(player,line.Field.."C",action=="ql:1" and 1 or 2)
+    if choice.Flag then setNumber(player,"TrackFlags",bit32.bor(readNumber(player,"TrackFlags",0),choice.Flag)) end
     if choice.Join and meadowOil.joinCompanion then meadowOil.joinCompanion(player,choice.Join,choice.Bond) end
     for _,field in ipairs({"Crystal","Moonbloom","Claw","Hide","Ore","Magma"}) do
       if choice[field] then setNumber(player,field,readNumber(player,field,0)+choice[field]) end

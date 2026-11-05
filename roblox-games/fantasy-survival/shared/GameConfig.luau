@@ -395,7 +395,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, TrackFlags = 0, QLWind = 0, QLWindP = 0, QLWindC = 0, QLHunt = 0, QLHuntP = 0, QLHuntC = 0, QLBog = 0, QLBogP = 0, QLBogC = 0, QLRoot = 0, QLRootP = 0, QLRootC = 0, QLTrack1 = 0, QLTrack1P = 0, QLTrack1C = 0, QLTrack2 = 0, QLTrack2P = 0, QLTrack2C = 0, QLTrack3 = 0, QLTrack3P = 0, QLTrack3C = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -1031,5 +1031,120 @@ Config.WorldMap.Landmarks = {
   {Id="shrineDead", Zone="deadmarsh", Name="죽은 늪의 사당", X=5600, Z=1900, Statue="tribal", Height=38, Shape="pool", Light={110,160,255},
    Lore="푸른 불이 떠다니는 늪 사당. 사당 석상은 주술사의 모습이며, 불빛은 이름을 잃은 단원들이라고 한다."},
 }
+
+
+-- [홀드 마을 4곳] 초원에서 가까운 4개 지역의 거점 마을. 여관(휴식) · 상인(재료 판매) · 정보통(퀘스트 단서) NPC가 있다.
+do
+  local random = Random.new(3141)
+  local defs = {
+    {Id="windcliff", Zone="windcliff", Name="해풍촌", Hold="바람 절벽", Inn="소금 주막 주인 마르타", Merchant="소금 상인 베른", Scout="등대 경비 오르간"},
+    {Id="highland", Zone="highland", Name="서리목 초소", Hold="북부 고원", Inn="사냥꾼 주막 주인 헬가", Merchant="모피 상인 토르", Scout="늙은 사냥꾼 올라프"},
+    {Id="wetland", Zone="wetland", Name="이끼마루", Hold="남부 습원", Inn="약초집 주인 리나", Merchant="약초 상인 파블로", Scout="늪 길잡이 미르"},
+    {Id="worldtree", Zone="worldtree", Name="뿌리쉼터", Hold="세계수 숲", Inn="뿌리 여관 주인 에이라", Merchant="수액 상인 로엔", Scout="숲지기 이든"},
+  }
+  Config.WorldMap.Towns = {}
+  for _, d in ipairs(defs) do
+    local x, z = Config.WorldMap.RandomPoint(d.Zone, random, 320)
+    d.X, d.Z = x or 0, z or 0
+    table.insert(Config.WorldMap.Towns, d)
+  end
+end
+
+-- [스카이림식 연계 퀘스트] 홀드 미스터리 4편 + 렌스기사단 3인 추적(메인) 3부작. 선택과 모순된 행동이 이야기를 비튼다.
+do
+  local towns = {}
+  for _, t in ipairs(Config.WorldMap.Towns) do towns[t.Id] = t end
+  local function lm(id) for _, l in ipairs(Config.WorldMap.Landmarks) do if l.Id == id then return l end end end
+  local lighthouse, throne, rootaltar, toadMon = lm("lighthouse"), lm("throne"), lm("rootaltar"), lm("toadMonument")
+  local misttower, rift = lm("mistTower"), lm("rift")
+  for _, line in ipairs({
+    -- 홀드 미스터리 ---------------------------------------------------------
+    {Id="wind", Name="[미스터리] 등대지기는 왜 죽었나", Kind="Sub", Field="QLWind", Need={Zone="windcliff"},
+     Intro="해풍촌 사람들은 등대지기가 도적에게 죽었다고 말한다. 그런데 소금 주막의 마르타는 그날 등대에 불이 켜져 있었다고 한다.",
+     Steps={
+      {Type="reach", X=towns.windcliff.X, Z=towns.windcliff.Z, R=60, Title="해풍촌 주막에서 소문 듣기", Text="해풍촌의 소금 주막에서 정보통과 이야기하라.", Done="마르타: '도적이라면 소금 상자부터 털었겠지. 시신 곁에 소금이 그대로였어.'"},
+      {Type="reach", X=lighthouse.X, Z=lighthouse.Z, R=70, Title="등대 꼭대기 조사", Text="해풍 절벽의 파수 석상 곁 등대를 조사하라.", Done="등대 장부에 마지막 줄: '배가 오지 않는다. 신호를 보내는 자가 있다.' 글씨가 둘이다."},
+      {Type="kill", Zone="windcliff", Lord=true, Count=1, Title="해풍 요새의 영주를 추궁하라", Text="영주가 등대에 가짜 신호를 보내게 했다. 영주를 쓰러뜨려 서약서를 얻어라.", Done="영주의 서약서에 마을 촌장의 인장이 찍혀 있다. 도적이 아니라 촌장이 뒤에 있었다."},
+      {Type="choice", X=towns.windcliff.X, Z=towns.windcliff.Z, R=60, Title="촌장의 인장", Text="해풍촌에서 촌장과 마주하라.", Prompt="촌장: '등대지기는 난파선에서 훔친 물건을 알아챘다. 마을이 굶는데 나더러 어쩌라고.' 서약서는 네 손에 있다.",
+       Choices={
+        {Label="진실을 마을에 밝힌다", Done="촌장은 무너지고 마을은 갈라졌다. 마르타가 등대에 다시 불을 켠다. '이게 옳은 일이라고 믿자.'", Coins=300, Moonbloom=2},
+        {Label="서약서를 대가로 거래한다", Done="촌장이 소금 상자와 재화를 건넨다. 등대 불은 다시 켜졌지만 마르타는 너와 눈을 마주치지 않는다.", Coins=700, Hide=3}}},
+     },
+     Reward={Coins=260, Xp=380}},
+    {Id="hunt", Name="[미스터리] 사라진 사냥꾼의 모자", Kind="Sub", Field="QLHunt", Need={Zone="highland"},
+     Intro="서리목 초소의 사냥꾼 일곱 명이 돌아오지 않았다. 늙은 올라프는 모자 하나가 왕좌 바위에 걸려 있다고 말한다.",
+     Steps={
+      {Type="reach", X=towns.highland.X, Z=towns.highland.Z, R=60, Title="서리목 초소의 올라프", Text="서리목 초소에서 정보통을 만나라.", Done="올라프: '발자국이 왕좌로 올라가고 내려온 자국이 없다. 그런데 모두 신발끈을 풀고 갔다.'"},
+      {Type="reach", X=throne.X, Z=throne.Z, R=70, Title="설인의 왕좌", Text="고원 설인의 왕좌 바위를 조사하라.", Done="바위 틈에 사냥꾼 일곱 개의 모자. 모자마다 작은 글씨가 있다. '내가 먼저 올랐다.'"},
+      {Type="kill", Zone="highland", Named=true, Count=1, Title="무리장을 쓰러뜨려라", Text="늑대인간 무리장이 사냥꾼의 이름을 삼켰다.", Done="쓰러진 늑대인간의 목에 올라프의 아들이 쓰던 호루라기가 걸려 있다."},
+      {Type="choice", X=towns.highland.X, Z=towns.highland.Z, R=60, Title="올라프의 질문", Text="초소로 돌아가 올라프와 마주하라.", Prompt="올라프: '내 아들이 그 괴물이었나? 이름을 가진 채 변한 거라면 나는 알아야겠다.'",
+       Choices={
+        {Label="사실대로 말한다", Done="올라프가 호루라기를 쥐고 오래 앉아 있다. '고맙네. 이제 일곱 명의 모자를 묻어줄 수 있겠어.'", Coins=300, Hide=3},
+        {Label="아들은 영웅으로 죽었다고 말한다", Done="올라프가 웃는다. 거짓말인 줄 알면서 받아들이는 웃음이다. 그는 모피 한 짐을 건넨다.", Coins=500, Hide=5}}},
+     },
+     Reward={Coins=280, Xp=420}},
+    {Id="bog", Name="[미스터리] 독이 든 약초밭", Kind="Sub", Field="QLBog", Need={Zone="wetland"},
+     Intro="이끼마루의 약초가 한 밤에 모두 검게 썩었다. 약초집 주인 리나는 누군가 뿌리에 마력을 부었다고 말한다.",
+     Steps={
+      {Type="reach", X=towns.wetland.X, Z=towns.wetland.Z, R=60, Title="이끼마루 약초집", Text="이끼마루에서 리나를 만나라.", Done="리나: '독이 아니라 소금이야. 먼 해풍촌 소금이 이끼마루 우물에 부어졌어.'"},
+      {Type="reach", X=toadMon.X, Z=toadMon.Z, R=70, Title="습원 대두꺼비 기념비", Text="기념비 아래 약수를 조사하라.", Done="약수 바닥에서 소금 상자 조각과 도적단 문장. 누군가 일부러 흘려둔 흔적이다."},
+      {Type="loot", Field="Moonbloom", Count=3, Title="달꽃 3송이를 구하라", Text="썩지 않은 달꽃으로 약초밭 해독제를 만들어야 한다.", Done="달꽃으로 만든 해독제로 남은 약초가 살아난다. 상자 속 문장은 도적왕 그림의 것이다."},
+      {Type="choice", X=towns.wetland.X, Z=towns.wetland.Z, R=60, Title="도적왕 그림의 거래", Text="이끼마루로 돌아가라.", Prompt="그림이 직접 찾아왔다. '내가 한 짓이 아니라 누가 내 이름을 팔았다. 증명할 사람은 너뿐이다.' 리나는 그를 잡으라고 한다.",
+       Choices={
+        {Label="그림을 잡아 마을에 넘긴다", Done="그림이 끌려가며 소리친다. '진짜 범인은 해풍촌에 있다!' 아무도 듣지 않는다.", Coins=350, Moonbloom=3},
+        {Label="그림의 말을 믿고 놓아준다", Done="그림이 사라지며 지도를 한 장 두고 간다. 해풍촌 소금 창고 위치다. 리나는 침묵한다.", Coins=450, Crystal=3}}},
+     },
+     Reward={Coins=260, Xp=380}},
+    {Id="root", Name="[미스터리] 속삭이는 뿌리", Kind="Sub", Field="QLRoot", Need={Zone="worldtree"},
+     Intro="뿌리쉼터 여관 주인 에이라는 밤마다 뿌리 밑에서 자기 이름을 부르는 소리를 듣는다. 이름을 잃은 주민이 늘고 있다.",
+     Steps={
+      {Type="reach", X=towns.worldtree.X, Z=towns.worldtree.Z, R=60, Title="뿌리쉼터 여관", Text="뿌리쉼터에서 에이라의 이야기를 들어라.", Done="에이라: '내가 누구였는지 적어 둔 쪽지가 베개 밑에 있었어. 내 글씨인데 내가 쓴 기억이 없어.'"},
+      {Type="reach", X=rootaltar.X, Z=rootaltar.Z, R=70, Title="세계수 뿌리 제단", Text="뿌리 제단의 낙서를 조사하라.", Done="낙서 '숲은 진짜가 아니다'. 그 아래 작은 글씨: '이 글을 쓴 사람은 카인.' 필체는 네 것이다."},
+      {Type="kill", Zone="worldtree", Lord=true, Count=1, Title="숲의 파수 영주를 쓰러뜨려라", Text="영주가 뿌리 제단에 쓰인 글씨를 지우고 있다.", Done="영주의 일지: '카인이 오기 전에 모두 지워라. 렌스의 명령이다.' 렌스가 너를 막고 있었다."},
+      {Type="choice", X=towns.worldtree.X, Z=towns.worldtree.Z, R=60, Title="에이라의 쪽지", Text="뿌리쉼터로 돌아가 에이라와 마주하라.", Prompt="에이라: '이 쪽지를 읽으면 내 이름이 사라질지도 몰라. 그래도 알고 싶어. 이름이 뭔지 말해 줄래?'",
+       Choices={
+        {Label="이름을 알려 준다", Done="에이라는 눈을 감고 이름을 되뇐다. 나무 껍질이 조금 풀린다. '이게 나였구나.' 뿌리의 속삭임이 잦아든다.", Coins=300, Moonbloom=3},
+        {Label="이름을 숨기고 쪽지를 태운다", Done="쪽지가 재가 된다. 에이라는 아무것도 기억하지 못한 채 웃는다. 숲은 조금 더 조용해졌지만 무언가 빚이 쌓였다.", Coins=550, Crystal=2}}},
+     },
+     Reward={Coins=280, Xp=400}},
+    -- 렌스기사단 3인 추적 (메인, 3부작) ----------------------------------
+    {Id="track1", Name="[메인] 사라진 세 사람 ① 미나의 장부", Kind="Main", Field="QLTrack1", Need={Zone="windcliff"},
+     Intro="렌스, 미나, 닉. 세 사람은 같은 날 사라졌다. 바람 절벽 등대 벽에는 세 이름이 새겨져 있는데 카인의 이름은 지워졌다.",
+     Steps={
+      {Type="reach", X=lighthouse.X, Z=lighthouse.Z, R=70, Title="등대 벽의 세 이름", Text="바람 절벽 등대에서 단서를 찾아라.", Done="벽의 세 이름 옆 날짜가 모두 같다. 하지만 미나의 이름만 두 번 새겨져 있다."},
+      {Type="kill", Zone="windcliff", Named=true, Count=1, Title="편지를 쥔 자를 쓰러뜨려라", Text="바람 절벽의 명명 보스가 미나의 필체 편지를 지니고 있다.", Done="편지: '보급은 계속 보낸다. 빅브라더께 충성을.' 미나의 필체다. 하지만 그녀는 군수대장이었다."},
+      {Type="choice", X=lighthouse.X, Z=lighthouse.Z, R=70, Title="미나의 편지", Text="편지를 어떻게 할지 정하라.", Prompt="편지는 미나가 적에게 보급을 팔았다는 증거로 읽힌다. 하지만 같은 장부에서 그녀는 굶는 마을에 보급품을 몰래 돌렸다. 모순이다.",
+       Choices={
+        {Label="미나를 믿는다 (편지는 위장이라 본다)", Done="편지를 접어 품에 넣는다. 미나를 믿기로 한다. 첫 번째 흔적을 따라 고원으로 길이 열린다.", Flag=1, Coins=300, Hide=2},
+        {Label="미나를 의심한다 (편지를 증거로 둔다)", Done="편지를 증거로 쥔다. 미나가 정말 배신했다면 고원의 닉이 알고 있을 것이다.", Flag=2, Coins=300, Ore=2}}},
+     },
+     Reward={Coins=240, Xp=360}},
+    {Id="track2", Name="[메인] 사라진 세 사람 ② 닉의 저주", Kind="Main", Field="QLTrack2", Need={Done="track1"},
+     Intro="미나의 흔적은 고원으로 이어진다. 북부 고원 설인 왕좌 근처에서 사람 발자국과 늑대 발자국이 같은 자리에서 겹친다.",
+     Steps={
+      {Type="reach", X=throne.X, Z=throne.Z, R=70, Title="고원 왕좌의 발자국", Text="고원 설인 왕좌에서 닉의 흔적을 찾아라.", Done="발자국이 사람에서 늑대로 바뀐다. 중간에 멈춘 자국은 없다. 닉은 스스로 변하기를 선택했다."},
+      {Type="reach", X=-1800, Z=-800, R=70, Title="서쪽 옛 요새", Text="닉이 마지막으로 사람이었던 서쪽 옛 요새로 가라.", Done="벽에 닉의 필체: '저주를 받은 게 아니라 내가 가져갔다. 단원들이 대신 변하지 않게.' 모순된 행동의 이유가 드러난다."},
+      {Type="kill", Zone="highland", Named=true, Count=1, Title="변하다 만 단원들", Text="고원의 명명 보스는 닉 대신 변해야 했던 단원이다. 쓰러뜨려 쉬게 하라.", Done="쓰러진 단원이 마지막으로 말한다. '닉 대장은 우릴 버린 게 아니야. 미나가 문을 잠갔어.'"},
+      {Type="choice", X=-1800, Z=-800, R=70, Title="미나의 열쇠", Text="요새에서 닉의 마지막 쪽지를 마주하라.", Prompt="쪽지: '미나가 문을 잠근 건 배신이 아니라 보호였을지도 모른다. 하지만 확신은 없다. 너는 누구를 믿을 건가?'",
+       Choices={
+        {Label="닉의 말을 믿고 미나를 쫓는다", Done="닉의 쪽지를 품에 넣는다. 미나의 마지막 흔적은 사막으로 이어진다. 닉의 저주가 한결 가벼워졌다.", Flag=4, Coins=350, Claw=3},
+        {Label="미나가 단원을 버렸다고 결론짓는다", Done="미나가 문을 잠근 이유를 묻지 않기로 한다. 분노가 길을 좁힌다. 하지만 렌스의 흔적이 더 급하다.", Flag=8, Coins=350, Ore=3}}},
+     },
+     Reward={Coins=280, Xp=420}},
+    {Id="track3", Name="[메인] 사라진 세 사람 ③ 렌스의 선택", Kind="Main", Field="QLTrack3", Need={Done="track2"},
+     Intro="렌스는 숲의 뿌리 제단에서 마지막으로 목격됐다. 그곳의 낙서와 안개 마녀의 탑, 심연의 균열이 하나의 길로 이어진다.",
+     Steps={
+      {Type="reach", X=rootaltar.X, Z=rootaltar.Z, R=70, Title="뿌리 제단의 서약문", Text="세계수 뿌리 제단의 서약문을 읽어라.", Done="서약문 세 개의 서명. 렌스, 미나, 그리고 카인. 카인의 서명은 네가 쓴 것이다. 기억은 없다."},
+      {Type="reach", X=misttower.X, Z=misttower.Z, R=70, Title="안개 마녀의 탑", Text="늪 한가운데 안개 마녀의 탑으로 가라.", Done="모르가나: '숲은 가짜다. 렌스는 숲의 문지기를 자청했고 미러는 그를 이용했다. 하지만 그가 문을 닫은 건 너를 지키려는 거였을 수도 있다.'"},
+      {Type="kill", Zone="swamp", Lord=true, Count=1, Title="늪 마녀단의 수장을 쓰러뜨려라", Text="수장이 렌스의 마지막 전언을 쥐고 있다.", Done="전언: '카인, 나는 너를 속였다. 너를 속여야만 네가 숲을 나갈 수 있었다. 균열에서 기다린다.'"},
+      {Type="reach", X=rift.X, Z=rift.Z, R=80, Title="심연의 균열", Text="균열에서 렌스를 마주하라.", Done="균열 속 거대한 손이 문을 밀고 있다. 렌스의 그림자가 그 손을 붙들고 있다."},
+      {Type="choice", X=rift.X, Z=rift.Z, R=80, Title="렌스의 선택", Text="렌스의 그림자와 마주하라.", Prompt="렌스: '문을 열면 모두가 나간다. 단, 숲에 갇힌 단원들의 이름이 지워진다. 닫으면 나는 영원히 문지기로 남는다. 이건 모순이야, 카인. 하지만 네가 결정해.'",
+       Choices={
+        {Label="문을 닫고 렌스를 숲의 문지기로 남긴다", Done="렌스가 웃는다. '그럴 줄 알았다.' 문이 닫히고 균열이 잠잠해진다. 미러는 아직 이 사실을 모른다. 이름들은 지켜졌지만 렌스는 숲에 남았다.", Flag=16, Coins=800, Crystal=4},
+        {Label="문을 열고 이름이 지워지는 위험을 감수한다", Done="문이 열린다. 단원들의 이름이 하나씩 흐려진다. 렌스가 외친다. '너는 틀렸다, 하지만 용감했다.' 미러의 탑이 눈을 뜬다.", Flag=32, Coins=800, Magma=3}}},
+     },
+     Reward={Coins=520, Xp=700, Relic=9}},
+  }) do table.insert(Config.QuestLines, line) end
+end
 
 return table.freeze(Config)

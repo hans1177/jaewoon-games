@@ -9690,7 +9690,7 @@ end)
   legend.BackgroundTransparency=1;legend.Position=UDim2.fromOffset(16,32);legend.Size=UDim2.new(1,-32,0,18)
   legend.Font=Enum.Font.Gotham;legend.TextSize=12;legend.TextXAlignment=Enum.TextXAlignment.Left
   legend.TextColor3=Color3.fromRGB(190,208,196);legend.ZIndex=62;legend.Parent=panel
-  legend.Text="▲●⌂✦✪ 발견한 장소   ● 내 위치   ◆ 발견한 이정표(누르면 빠른 이동)   ◇ 미발견   ★ 메인 목표   ▣ 초원 마을   북쪽이 위"
+  legend.Text="▲●⌂✦✪⌂ 발견한 장소   ● 내 위치   ◆ 발견한 이정표(누르면 빠른 이동)   ◇ 미발견   ★ 메인 목표   ▣ 초원 마을   북쪽이 위"
   local close=Instance.new("TextButton")
   close.Text="X";close.Font=Enum.Font.GothamBold;close.TextSize=20;close.TextColor3=Color3.fromRGB(255,244,214)
   close.BackgroundColor3=Color3.fromRGB(70,38,38);close.Position=UDim2.new(1,-48,0,6);close.Size=UDim2.fromOffset(38,32)
@@ -9829,6 +9829,18 @@ end)
     mark.TextColor3=Color3.fromRGB(255,170,80);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=field
     lmMarks[index]=mark
   end
+  local townMarks={}
+  for index,town in ipairs(world.Towns or {}) do
+    local mark=Instance.new("TextLabel")
+    mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(town.X),fz(town.Z))
+    mark.Size=UDim2.fromOffset(18,18);mark.Font=Enum.Font.GothamBlack;mark.TextSize=17;mark.Text="⌂"
+    mark.TextColor3=Color3.fromRGB(255,214,140);mark.TextStrokeTransparency=0;mark.ZIndex=66;mark.Visible=false;mark.Parent=field
+    local name=Instance.new("TextLabel")
+    name.BackgroundTransparency=1;name.Position=UDim2.new(.5,-40,1,-3);name.Size=UDim2.fromOffset(80,13)
+    name.Font=Enum.Font.GothamBold;name.TextSize=10;name.TextColor3=Color3.fromRGB(255,240,205);name.TextStrokeTransparency=.2
+    name.Text=town.Name;name.ZIndex=67;name.Parent=mark
+    townMarks[index]=mark
+  end
   local dot=Instance.new("TextLabel")
   dot.BackgroundTransparency=1;dot.AnchorPoint=Vector2.new(.5,.5);dot.Size=UDim2.fromOffset(22,22)
   dot.Font=Enum.Font.GothamBlack;dot.TextSize=22;dot.Text="●";dot.TextColor3=Color3.fromRGB(255,222,92)
@@ -9888,6 +9900,12 @@ end)
       local flag=bit32.lshift(1,(index-1)%30)
       mark.Visible=bit32.band(index<=30 and found1 or found2,flag)~=0
     end
+    for index,mark in ipairs(townMarks) do
+      local town=world.Towns[index]
+      local bit=0
+      for _,zone in ipairs(world.Zones) do if zone.Id==town.Zone then bit=zone.Bit end end
+      mark.Visible=bit32.band(discovered,bit)~=0
+    end
     local lmMask=player:GetAttribute("LandmarkMask") or 0
     for index,mark in ipairs(lmMarks) do
       local lm=world.Landmarks[index]
@@ -9916,7 +9934,7 @@ end)
     if processed or UserInputService:GetFocusedTextBox() then return end
     if input.KeyCode==Enum.KeyCode.M then setOpen(not overlay.Visible) end
   end)
-  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage","PoiFound1","PoiFound2","LandmarkMask","QLMirror","QLMina","QLNick","QLSera","QLGarden","QLSeraJ","QLRowenJ","QLDoranJ","QLIfaJ","QLHarJ","QLRiaJ","QLMorganJ","QLBarenJ","QLTiboJ","QLCassianJ","CompanionOwned","CompanionActive"}) do
+  for _,name in ipairs({"WorldDiscovered","WaypointMask","QuestStage","PoiFound1","PoiFound2","LandmarkMask","QLWind","QLHunt","QLBog","QLRoot","QLTrack1","QLTrack2","QLTrack3","QLMirror","QLMina","QLNick","QLSera","QLGarden","QLSeraJ","QLRowenJ","QLDoranJ","QLIfaJ","QLHarJ","QLRiaJ","QLMorganJ","QLBarenJ","QLTiboJ","QLCassianJ","CompanionOwned","CompanionActive"}) do
     player:GetAttributeChangedSignal(name):Connect(refresh)
   end
 end)()
