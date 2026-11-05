@@ -395,7 +395,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -832,6 +832,66 @@ Config.QuestLines = {
     {Type="kill", Zone="garden", Lord=true, Count=1, Title="거울의 단장 렌스를 마주하라", Text="렌스 단장의 잔영과 마지막으로 싸워라.", Done="렌스: '숲이 된 것은 우리의 선택이었다. 이제 너의 선택이다.'"},
    },
    Reward={Coins=1500, Xp=1200, Relic=10, Crystal=8}},
+}
+
+
+-- [동료 합류 이야기] 동료는 돈으로 고용하지 않는다. 각자의 사연 퀘스트 끝에서 내리는 선택으로 합류(또는 다른 결말)한다.
+for _, line in ipairs({
+  {Id="sera-join", Name="[동료] 우물 아래의 방패", Kind="Companion", Field="QLSeraJ", Need={Stage=3},
+   Intro="마을 우물 밑 봉인석에서 '나는 방패였다'는 속삭임이 들린다. 청월 기사단의 마지막 이름이다.",
+   Steps={
+    {Type="reach", X=0, Z=-111, R=40, Title="우물 곁에 서기", Text="마을 광장의 우물로 가서 속삭임을 들어라.", Done="봉인석이 흔들린다. 파편을 지키던 존재가 초원에 흩어졌다."},
+    {Type="kill", Zone="meadow", Named=true, Count=1, Title="봉인 파편의 수호자", Text="초원의 명명 보스를 쓰러뜨려 봉인 파편을 회수하라.", Done="파편을 쥐자 우물 속 목소리가 또렷해진다. 우물로 돌아가라."},
+    {Type="choice", X=0, Z=-111, R=30, Title="봉인의 선택", Text="우물 앞에서 봉인을 풀지 정하라.", Prompt="봉인석 속의 목소리: '나는 청월 기사단의 방패 세라. 단장은 방패를 놓지 못해 괴물이 되었다. 나를 깨우겠는가?'",
+     Choices={
+      {Label="봉인을 풀어 세라를 깨운다", Done="세라가 방패를 들고 걸어 나온다. '다시 앞에 서겠다. 이름을 불러 줘서 고마워.'", Join="sera", Coins=200},
+      {Label="우물을 다시 봉인한다", Done="봉인이 굳는다. 우물은 안전해졌지만 속삭임은 끝내 사라졌다. 세라는 합류하지 않는다.", Coins=450, Moonbloom=3}}},
+   },
+   Reward={Coins=150, Xp=240}},
+  {Id="rowen-join", Name="[동료] 마지막 화살", Kind="Companion", Field="QLRowenJ", Need={Stage=7},
+   Intro="세계수 숲 곳곳에 같은 방향을 가리키는 화살이 박혀 있다. 백송 기사단 궁수의 표식이다.",
+   Steps={
+    {Type="reach", X=1000, Z=500, R=70, Title="숲 어귀의 첫 화살", Text="숲 어귀 야영지에서 첫 화살을 찾아라.", Done="화살촉에 '제단으로'라고 새겨져 있다."},
+    {Type="reach", X=1300, Z=-700, R=70, Title="세계수 제단", Text="세계수 제단의 두 번째 화살을 확인하라.", Done="제단 위 장부 조각. 백송 기사단은 전쟁 비용을 숨긴 장부를 발견해 지워졌다."},
+    {Type="kill", Zone="worldtree", Named=true, Count=1, Title="화살 시험의 표적", Text="숲의 명명 보스가 마지막 화살 시험의 표적이다.", Done="숲 위쪽에서 활시위 소리. 누군가 지켜보고 있다."},
+    {Type="choice", X=1300, Z=-700, R=60, Title="로웬과의 약속", Text="제단으로 돌아가 로웬을 마주하라.", Prompt="로웬: '장부를 가진 자는 지워졌다. 너는 같은 길을 걸을 건가, 아니면 장부를 태울 건가?'",
+     Choices={
+      {Label="장부를 함께 지킨다", Done="로웬이 활을 내린다. '그럼 네 길에 화살이 되겠다.' 닉의 저주를 알아본 것도 그녀다.", Join="rowen", Coins=200},
+      {Label="장부를 태워 위험을 끊는다", Done="장부가 재가 된다. 로웬은 말없이 숲으로 사라진다. 대신 숲의 길이 조금 더 안전해졌다.", Coins=450, Hide=3}}},
+   },
+   Reward={Coins=200, Xp=320}},
+  {Id="doran-join", Name="[동료] 식지 않는 모루", Kind="Companion", Field="QLDoranJ", Need={Stage=10},
+   Intro="식은 용암 속에서 쇠 두드리는 소리가 난다. 홍염 기사단의 대장장이는 모루를 놓지 않았다.",
+   Steps={
+    {Type="reach", X=2500, Z=600, R=70, Title="재의 제단", Text="재의 제단에서 쇠 소리를 따라가라.", Done="용암 속 모루가 붉게 달아올라 있다."},
+    {Type="loot", Field="Magma", Count=2, Title="용암 조각 2개", Text="모루를 식히려면 마그마 조각 2개가 필요하다.", Done="모루가 식자 불에 탄 무기들이 드러난다. 화염 골렘이 된 단원들이 깨어난다."},
+    {Type="kill", Zone="volcano", Named=true, Count=1, Title="화염이 된 단원", Text="화염 골렘이 된 동료 단원을 쓰러뜨려라.", Done="단원의 불길이 꺼진다. 도란이 모루 곁에서 일어선다."},
+    {Type="choice", X=2500, Z=600, R=60, Title="도란의 모루", Text="재의 제단에서 도란과 마주하라.", Prompt="도란: '이 모루는 병기를 만들라는 명령을 거부한 대가다. 나는 다시 망치를 들어도 되나?'",
+     Choices={
+      {Label="함께 가자고 청한다", Done="도란이 모루를 어깨에 멘다. '그렇다면 네 칼날부터 벼리자.'", Join="doran", Coins=200},
+      {Label="모루를 용암에 돌려보낸다", Done="모루가 용암 속으로 가라앉는다. 도란은 단원들 곁에 남기로 한다. 마그마가 크게 남았다.", Coins=450, Magma=4}}},
+   },
+   Reward={Coins=260, Xp=400}},
+  {Id="ifa-join", Name="[동료] 물에 비친 이름", Kind="Companion", Field="QLIfaJ", Need={Stage=11},
+   Intro="오아시스 물에 비친 얼굴이 '자기 이름이 뭐였지?'라고 묻는다. 모래서약 기사단의 치유사 이프다.",
+   Steps={
+    {Type="reach", X=4100, Z=500, R=70, Title="침몰한 사원", Text="침몰한 사원의 물가로 가라.", Done="물 위에 얼굴이 떠오른다. 대답하지 못한 단원은 모래 속 괴물이 됐다."},
+    {Type="kill", Zone="oasis", Named=true, Count=1, Title="이름을 잃은 단원", Text="모래 폐허의 명명 보스를 쓰러뜨려 단원들을 쉬게 하라.", Done="괴물이 사라진 자리에 이프의 목소리가 남는다. 물가로 돌아가라."},
+    {Type="choice", X=4100, Z=500, R=60, Title="이프의 이름", Text="사원 물가에서 이프를 불러라.", Prompt="이프: '내 이름이... 이프, 맞나요? 그 이름을 불러 주면 나는 다시 사람으로 돌아갈 수 있어요.'",
+     Choices={
+      {Label="이프의 이름을 불러 준다", Done="물 위의 얼굴이 웃는다. 이프가 물에서 걸어 나온다. '이제 누군가를 고칠 수 있겠어요.'", Join="ifa", Coins=200},
+      {Label="이름을 불러 주지 않는다", Done="얼굴이 물 아래로 가라앉는다. 오아시스는 고요해졌고, 사원에서 귀한 재료를 얻었다.", Coins=450, Crystal=4}}},
+   },
+   Reward={Coins=300, Xp=460}},
+}) do table.insert(Config.QuestLines, line) end
+
+-- 동료 동행 중 장소를 발견하면 하는 말(종류별).
+Config.CompanionBanter = {
+  nick = {ruin="…으르렁. 이 냄새, 기사단의 것이야. 오래됐어.", cave="동굴 안은 피 냄새가 짙어. 조심해, 카인.", camp="누가 급히 떠났어. 발자국이 둘이야.", shrine="이 샘, 어딘가 낯익은데… 기억이 안 나."},
+  sera = {ruin="무너진 방패 문양이 있어. 청월 기사단도 이런 곳을 지켰어.", cave="어두운 곳에선 내가 앞장설게.", camp="누군가 남긴 모닥불이야. 아직 온기가 있어.", shrine="이런 곳은 마음이 가라앉아. 조용히 지나가자."},
+  rowen = {ruin="화살 자국이 있네. 누군가 여기서 지키다 쓰러졌어.", cave="입구가 좁아. 뒤는 내가 맡을게.", camp="사냥꾼의 쉼터야. 바람이 이쪽으로 불어.", shrine="이 별빛 아래선 활이 더 잘 맞을 것 같아."},
+  doran = {ruin="돌 이음새가 훌륭하군. 만든 사람 손이 좋았어.", cave="광석 냄새가 나는데? 좋은 철이 있겠어.", camp="이 천막 말뚝은 내가 벼린 거 같은데…", shrine="이런 돌에는 무기를 벼릴 수 없지. 마음이 먼저 닳을 테니."},
+  ifa = {ruin="여기서 많은 이들이 아팠을 거예요. 잠깐 기도할게요.", cave="공기가 습해요. 다치면 바로 말해요.", camp="누가 아픈 몸으로 떠났나 봐요. 약초 냄새가 남아 있어요.", shrine="물이 맑아요. 마음도 맑아지는 것 같아요."},
 }
 
 return table.freeze(Config)

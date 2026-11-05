@@ -5822,6 +5822,19 @@ do
                     text=text.."\n\n— 기록 해금: "..chapter.Title.." —\n"..chapter.Text.."\n(보상 "..chapter.Coins.." 재화)"
                   end
                 end
+                do
+                  local activeMask=readNumber(player,"CompanionActive",0)
+                  for ci,cid in ipairs({"nick","sera","rowen","doran","ifa"}) do
+                    if bit32.band(activeMask,bit32.lshift(1,ci-1))~=0 then
+                      local lineText=Config.CompanionBanter[cid] and Config.CompanionBanter[cid][poi.Kind]
+                      if lineText then
+                        local names={nick="닉",sera="세라",rowen="로웬",doran="도란",ifa="이프"}
+                        text=text.."\n\n"..names[cid]..": \""..lineText.."\""
+                        break
+                      end
+                    end
+                  end
+                end
                 pcall(function() villageDialogue(player,"장소 발견 · "..poi.Name,text) end)
               end
             end
@@ -5926,19 +5939,20 @@ end
 
 -- [안식처 · 동료] 마을 동쪽 언덕의 집. 동료 5명이 이곳에서 살고, 고용(또는 닉은 무료)해서 최대 2명까지 데리고 다닌다.
 -- 동료는 쓰러지지 않는 '핵심 인물'이며 전투는 주인(플레이어)의 공격 판정으로 처리되어 보상·도감이 그대로 오른다.
+-- 동료는 고용하지 않고 각자의 사연 퀘스트(연계 퀘스트 엔진)의 선택으로 합류한다.
 -- 파티 규모: 멀티플레이 최대 4인 + 각자 동료 2명. 솔로도 동료 2명과 함께 모든 지역을 돌 수 있다.
 do
   local homePos=Vector3.new(262,3,205)
   local companions={
     {id="nick",name="닉",role="늑대인간 보병대장",fee=0,unlock=function(p) return p:GetAttribute("PartyNick")==true end,note="메인에서 숲의 일을 마쳐야 합류한다.",
       model="mon_beastman",height=5,dmg=14,interval=1.6,range=10},
-    {id="sera",name="세라",role="방패 기사",fee=150,unlock=function(p) return readNumber(p,"QuestStage",1)>=3 end,note="메인 3장 이후 고용 가능.",
+    {id="sera",name="세라",role="방패 기사",fee=0,unlock=function() return false end,note="아직 만나지 못한 인물이다. 마을 우물에서 들리는 속삭임을 따라가라. (동료 퀘스트 '우물 아래의 방패')",
       skin=Color3.fromRGB(190,150,120),shirt=Color3.fromRGB(60,90,150),dmg=9,interval=1.8,range=10,shield=true},
-    {id="rowen",name="로웬",role="추적 궁수",fee=250,unlock=function(p) return readNumber(p,"QuestStage",1)>=7 end,note="메인 7장 이후 고용 가능.",
+    {id="rowen",name="로웬",role="추적 궁수",fee=0,unlock=function() return false end,note="아직 만나지 못한 인물이다. 세계수 숲에 박힌 화살을 따라가라. (동료 퀘스트 '마지막 화살')",
       skin=Color3.fromRGB(200,160,130),shirt=Color3.fromRGB(70,120,70),dmg=13,interval=2,range=46},
-    {id="doran",name="도란",role="대장장이 기사",fee=350,unlock=function(p) return readNumber(p,"QuestStage",1)>=10 end,note="메인 10장 이후 고용 가능.",
+    {id="doran",name="도란",role="대장장이 기사",fee=0,unlock=function() return false end,note="아직 만나지 못한 인물이다. 재의 황야에서 쇠 두드리는 소리를 따라가라. (동료 퀘스트 '식지 않는 모루')",
       skin=Color3.fromRGB(170,125,100),shirt=Color3.fromRGB(150,70,50),dmg=19,interval=2.4,range=9},
-    {id="ifa",name="이프",role="치유사",fee=400,unlock=function(p) return readNumber(p,"QuestStage",1)>=11 end,note="메인 11장 이후 고용 가능.",
+    {id="ifa",name="이프",role="치유사",fee=0,unlock=function() return false end,note="아직 만나지 못한 인물이다. 오아시스 물가에서 이름을 묻는 목소리를 찾아라. (동료 퀘스트 '물에 비친 이름')",
       skin=Color3.fromRGB(205,170,140),shirt=Color3.fromRGB(210,200,150),dmg=0,interval=9,range=0,heal=true},
   }
   local byId={}
@@ -6000,7 +6014,7 @@ do
         local title=c.name.." · "..c.role
         if not owned and not c.unlock(player) then say(player,title,c.note);return end
         if not owned then
-          say(player,title,"함께 갈까? 동행은 최대 "..MAX_ACTIVE.."명까지야.",{{label=c.fee>0 and ("고용하고 동행 ("..c.fee.." 재화)") or "동행하기",action="co:toggle"}})
+          say(player,title,"함께 갈까? 동행은 최대 "..MAX_ACTIVE.."명까지야.",{{label="동행하기",action="co:toggle"}})
         elseif active then say(player,title,"지금 함께 다니는 중이야. 집에서 쉬게 할까?",{{label="집에서 쉬게 하기",action="co:toggle"}})
         else say(player,title,"언제든 따라갈게.",{{label="동행하기",action="co:toggle"}}) end
       end)
@@ -6184,6 +6198,7 @@ do
   local lines=Config.QuestLines
   local gardenCenter=Vector3.new(-3500,0,0)
   local fortGate=Vector3.new(-1800,3,-800) -- 이정표 24 옆 숨겨진 문
+  local choiceSession={}
   local function say(player,title,text) pcall(function() villageDialogue(player,title,text) end) end
   local function stageOf(player,line) return readNumber(player,line.Field,0) end
   local function unlocked(player,line)
@@ -6195,6 +6210,7 @@ do
       end
     end
     if need.Field and readNumber(player,need.Field,0)<1 then return false end
+    if need.Stage and readNumber(player,"QuestStage",1)<need.Stage then return false end
     return true
   end
   local function complete(player,line)
@@ -6255,7 +6271,14 @@ do
               say(player,"새 연계 퀘스트 · "..line.Name,line.Intro.."\n\n첫 목표: "..first.Title.."\n"..first.Text.."\n(세계 탭과 지도(M)에서 목표를 확인할 수 있다.)")
             elseif stage>=1 and stage<=#line.Steps then
               local step=line.Steps[stage]
-              if step.Type=="reach" then
+              if step.Type=="choice" then
+                local dx,dz=root.Position.X-step.X,root.Position.Z-step.Z
+                if dx*dx+dz*dz<=step.R*step.R and os.clock()>(choiceSession[player] and choiceSession[player].nextAsk or 0) then
+                  choiceSession[player]={line=line,expires=os.clock()+60,nextAsk=os.clock()+25}
+                  pcall(function() villageDialogue(player,step.Title,step.Prompt,{
+                    {label=step.Choices[1].Label,action="ql:1"},{label=step.Choices[2].Label,action="ql:2"}}) end)
+                end
+              elseif step.Type=="reach" then
                 local dx,dz=root.Position.X-step.X,root.Position.Z-step.Z
                 if dx*dx+dz*dz<=step.R*step.R then advance(player,line,step,stage) end
               elseif step.Type=="loot" then
@@ -6266,6 +6289,29 @@ do
         end
       end
     end
+  end)
+  remote.OnServerEvent:Connect(function(player,action)
+    if action~="ql:1" and action~="ql:2" then return end
+    local session=choiceSession[player]
+    if not session or os.clock()>session.expires then return end
+    local line=session.line
+    local stage=stageOf(player,line)
+    local step=line.Steps[stage]
+    if not step or step.Type~="choice" then return end
+    choiceSession[player]=nil
+    local choice=step.Choices[action=="ql:1" and 1 or 2]
+    setNumber(player,line.Field.."C",action=="ql:1" and 1 or 2)
+    if choice.Join then
+      for index,id in ipairs({"nick","sera","rowen","doran","ifa"}) do
+        if id==choice.Join then setNumber(player,"CompanionOwned",bit32.bor(readNumber(player,"CompanionOwned",0),bit32.lshift(1,index-1))) end
+      end
+    end
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Hide","Ore","Magma"}) do
+      if choice[field] then setNumber(player,field,readNumber(player,field,0)+choice[field]) end
+    end
+    if choice.Coins then setNumber(player,"Coins",readNumber(player,"Coins",0)+choice.Coins) end
+    say(player,line.Name,choice.Done)
+    complete(player,line)
   end)
   -- 숨겨진 문 / 거울 정원.
   task.spawn(function()
