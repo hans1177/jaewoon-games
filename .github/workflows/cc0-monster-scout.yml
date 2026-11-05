@@ -1,0 +1,17 @@
+name: CC0 Monster Scout
+on:
+  workflow_dispatch:
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scout CC0 monster model sources
+        run: |
+          mkdir -p out && cd out
+          curl -fsSL -A "Mozilla/5.0" -o goblin.zip "https://opengameart.org/sites/default/files/goblin.zip" && (ls -l goblin.zip; sha256sum goblin.zip; unzip -l goblin.zip) || echo "GOBLIN_FAILED"
+          for r in yerdaulet-damir/liminal tech-leads-club/nj-mmo; do
+            echo "=== $r"
+            git clone --depth 1 -q "https://github.com/$r.git" "repo-$(basename $r)" 2>&1 | tail -1
+            (cd "repo-$(basename $r)" && find . -type f \( -iname '*.glb' -o -iname '*.gltf' -o -iname '*.fbx' \) -not -path './.git/*' -printf '%s %p\n' | sort -k2 | head -150)
+            (cd "repo-$(basename $r)" && find . -iname '*license*' -o -iname 'ASSETS*' -o -iname 'CREDITS*' | head -5)
+          done
