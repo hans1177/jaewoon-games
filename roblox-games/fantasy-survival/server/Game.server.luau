@@ -597,6 +597,7 @@ local function villageCurrentContract(player)
   local index=math.clamp(readNumber(player,"VillageContractIndex",1),1,#Config.VillageContracts+1)
   return index,Config.VillageContracts[index]
 end
+local smithSessions={}
 local function villageDialogue(player,title,message,options)
   remote:FireClient(player,"MEADOW_VILLAGE_DIALOG",{
     title=title,message=message,options=options or {},
@@ -2807,7 +2808,22 @@ local function createMeadowVillage()
   for _,spec in ipairs(villagers) do
     local npc=villageNativeNpc(spec)
     if npc then
-      local callback=spec.role=="AMBIENT" and function(player)
+      local callback=spec.id=="Smith" and function(player)
+          local row=ambientLines.Smith
+          local n=((ambientTalk[player] or {}).Smith or 0)%#row[2]+1
+          ambientTalk[player]=ambientTalk[player] or {}
+          ambientTalk[player].Smith=n
+          local xp=readNumber(player,"SmithXp",0)
+          local level=Config.SmithLevel(xp)
+          local nextNeed=Config.SmithThresholds[level+1]
+          smithSessions[player]=os.clock()+60
+          local options={
+            {label="대장 훈련 ("..(40*level).." 코인)",action="smith:train"},
+            {label="대장 기술·작업대 안내",action="smith:info"},
+          }
+          villageDialogue(player,row[1],row[2][n].."\n\n대장 Lv"..level.." · 경험치 "..xp..(nextNeed and ("/"..nextNeed) or " (최고)"),options)
+        end
+        or spec.role=="AMBIENT" and function(player)
           local row=ambientLines[spec.id]
           local n=((ambientTalk[player] or {})[spec.id] or 0)%#row[2]+1
           ambientTalk[player]=ambientTalk[player] or {}
@@ -2904,6 +2920,25 @@ local function awardProgress(player, experience, coinReward)
   setNumber(player,"Progress",readNumber(player,"Progress",0)+experience)
 end
 -- 이전 레벨 전투력을 보존하면서 숙련도 점수에 따라 연속 성장한다.
+-- [대장 기술] 제련·무두질·제작·단련 경험치와 작업대 거리 검사.
+local smithTrained={}
+local function smithLevelOf(player) return Config.SmithLevel(readNumber(player,"SmithXp",0)) end
+local function addSmithXp(player,amount)
+  local before=smithLevelOf(player)
+  setNumber(player,"SmithXp",readNumber(player,"SmithXp",0)+amount)
+  local after=smithLevelOf(player)
+  if after>before then
+    player:SetAttribute("MeadowGearMessage","대장 Lv"..after.." 달성!")
+    player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+  end
+end
+local function nearStation(player,stationId)
+  local station=Config.SmithStations[stationId]
+  local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+  if not station or not root then return false end
+  local dx,dz=root.Position.X-station.X,root.Position.Z-station.Z
+  return dx*dx+dz*dz<=station.Radius*station.Radius
+end
 local function meadowProficiencyPower(player)
   local points=math.max(0,readNumber(player,"CombatProficiency",0))
   return 2.2*(1+math.max(0,(math.sqrt(961+24*points)-31)/12))
@@ -3002,7 +3037,7 @@ local meadowRpg=(function()
   end
   local function charge(player,item)
     -- [스카이림식 대장 기술] 제작 숙련 단계마다 주괴·가죽 요구량이 1개씩 줄어든다(최소 1개).
-    local rank=Config.SmithingRank(readNumber(player,"CraftingProficiency",0))
+    local rank=Config.SmithingRank(readNumber(player,"SmithXp",0))
     local function need(field)
       local base=item[field] or 0
       if base>0 and (field=="Ingot" or field=="Leather") then return math.max(1,base-rank) end
@@ -3028,20 +3063,29 @@ local meadowRpg=(function()
     local gear=gearById[id]
     local tonic=tonicById[id]
     if group=="loot" and verb=="refine" then
-      -- [제련·무두질] 대장간 화로/가죽 걸이 근처(마을 중심 90 이내)에서만 가공한다.
+      -- [제련·무두질] 제련로(광석·강철)·무두질 틀(가죽) 반경 안에서만 가공한다.
       local mat=Config.MaterialByField[id]
       local rule=mat and mat.Refine
       if not rule then return false end
-      local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-      if not root or Vector3.new(root.Position.X,0,root.Position.Z-(-150)).Magnitude>260 then
-        feedback(player,"마을 대장간 근처에서만 "..rule.Verb.."할 수 있어.");return true
+      if not nearStation(player,rule.Station or "Smelter") then
+        feedback(player,"마을 대장간의 "..Config.SmithStations[rule.Station or "Smelter"].Name.." 가까이에서 "..rule.Verb.."할 수 있어.");return true
       end
+      local level=smithLevelOf(player)
+      if rule.Level and level<rule.Level then feedback(player,"대장 Lv"..rule.Level.."부터 가능해. (지금 Lv"..level..")");return true end
+      local need=rule.Need
+      if id=="Steel" and level>=5 then need=2 end
       local have=readNumber(player,rule.From,0)
-      if have<rule.Need then feedback(player,Config.MaterialByField[rule.From].Name.." "..rule.Need.."개가 필요해.");return true end
-      setNumber(player,rule.From,have-rule.Need)
-      setNumber(player,id,readNumber(player,id,0)+1)
+      if have<need then feedback(player,Config.MaterialByField[rule.From].Name.." "..need.."개가 필요해.");return true end
+      setNumber(player,rule.From,have-need)
+      local gain=1
+      if level>=3 and math.random()<.15 then gain=2 end
+      setNumber(player,id,readNumber(player,id,0)+gain)
       setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)
-      feedback(player,mat.Name.." 1개 완성  ("..rule.Note..")")
+      addSmithXp(player,id=="Steel" and 6 or 3)
+      if meadowOil.questEvent then
+        meadowOil.questEvent(player,id=="Ingot" and "SMELT" or id=="Leather" and "TAN" or "SMELT_STEEL")
+      end
+      feedback(player,mat.Name.." "..gain.."개 완성  ("..rule.Note..")"..(gain>1 and "  · 풍부한 제련!" or ""))
       return true
     end
     if group=="loot" and verb=="sell" then
@@ -3061,7 +3105,7 @@ local meadowRpg=(function()
         -- [대장간 제작] 신규 무기·방패는 모루 근처에서만 실물 제련·제작한다.
         if item.ForgeOnly then
           local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-          if not root or (root.Position-Vector3.new(-98,3,-193)).Magnitude>100 then
+          if not root or not nearStation(player,"Anvil") then
             feedback(player,"마을 대장간의 모루 가까이에서 제작해야 해.");return true
           end
         end
@@ -3069,7 +3113,20 @@ local meadowRpg=(function()
         if not charge(player,item) then feedback(player,"재료 또는 소지금이 부족해.");return true end
         grantGear(player,index)
         setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)
-        feedback(player,item.Name.." 제작 완료")
+        local refund=false
+        if item.ForgeOnly then
+          addSmithXp(player,({Common=6,Uncommon=10,Rare=16,Epic=26,Legendary=40})[item.Rarity] or 8)
+          if smithLevelOf(player)>=8 and (item.Ingot or 0)>0 and math.random()<.2 then
+            setNumber(player,"Ingot",readNumber(player,"Ingot",0)+1);refund=true
+          end
+          if meadowOil.questEvent then
+            meadowOil.questEvent(player,"CRAFT")
+            if item.Slot=="Shield" then meadowOil.questEvent(player,"CRAFT_SHIELD") end
+            if item.Rarity=="Rare" or item.Rarity=="Epic" or item.Rarity=="Legendary" then meadowOil.questEvent(player,"CRAFT_RARE") end
+            if item.WeaponFamily=="Bow" then meadowOil.questEvent(player,"CRAFT_BOW") end
+          end
+        end
+        feedback(player,item.Name.." 제작 완료"..(refund and "  · 재료 환급! 주괴 1개" or ""))
         return true
       elseif verb=="equip" then
         if not ownedGear then feedback(player,"먼저 장비를 제작해.");return true end
@@ -4890,12 +4947,19 @@ end
 local function upgradeEquipment(player)
   local tier=readNumber(player,"WeaponTier",0)
   if tier>=10 then return false end
+  if not nearStation(player,"Grindstone") then
+    player:SetAttribute("MeadowGearMessage","마을 대장간의 숫돌 가까이에서 단련할 수 있어.")
+    player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+    return false
+  end
   -- [스카이림식 단련] 주괴(+3·6·9강마다 무두질 가죽)로 무기를 갈고 다듬는다. 제작 숙련이 높을수록 재료가 줄어든다.
-  local ingotCost,leatherCost=Config.TemperCost(tier,readNumber(player,"CraftingProficiency",0))
+  local ingotCost,leatherCost=Config.TemperCost(tier,readNumber(player,"SmithXp",0))
   if readNumber(player,"Ingot",0)<ingotCost or readNumber(player,"Leather",0)<leatherCost then return false end
   setNumber(player,"Ingot",readNumber(player,"Ingot",0)-ingotCost)
   if leatherCost>0 then setNumber(player,"Leather",readNumber(player,"Leather",0)-leatherCost) end
   setNumber(player,"WeaponTier",tier+1)
+  addSmithXp(player,4+tier)
+  if meadowOil.questEvent then meadowOil.questEvent(player,"TEMPER") end
   -- [제작 숙련도] 실제 자원을 소모한 기존 장비 강화 성공만 기록한다.
   setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)
   player:SetAttribute("LastApprovedScope","resource-to-equipment-upgrade")
@@ -6402,6 +6466,27 @@ remote.OnServerEvent:Connect(function(player, actionId)
   local function runeNote(member,text)
     member:SetAttribute("MeadowGearMessage",text)
     member:SetAttribute("MeadowGearRevision",(member:GetAttribute("MeadowGearRevision") or 0)+1)
+  end
+  if actionId=="smith:train" or actionId=="smith:info" then
+    if os.clock()>(smithSessions[player] or 0) then return end
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not root or (root.Position-Vector3.new(-80,root.Position.Y,-190)).Magnitude>30 then return end
+    if actionId=="smith:info" then
+      local lines={"【작업대】 제련로(광석→주괴, 주괴→강철) · 무두질 틀(가죽) · 모루(무기·방패 제작) · 숫돌(무기 단련). 각 작업대 가까이에서만 돼."}
+      for _,perk in ipairs(Config.SmithPerks) do lines[#lines+1]="Lv"..perk.Level.." "..perk.Name..": "..perk.Desc end
+      villageDialogue(player,"대장장이 브란",table.concat(lines,"\n"))
+      return
+    end
+    local level=smithLevelOf(player)
+    local cost=40*level
+    if level>=5 then villageDialogue(player,"대장장이 브란","여기서 가르칠 수 있는 건 Lv5까지야. 그다음은 직접 두드려서 익혀.");return end
+    if smithTrained[player]==level then villageDialogue(player,"대장장이 브란","방금 가르쳐 줬잖아. 한 번 더 두드려 보고 와.");return end
+    if readNumber(player,"Coins",0)<cost then villageDialogue(player,"대장장이 브란","훈련비 "..cost.." 코인이 필요해.");return end
+    setNumber(player,"Coins",readNumber(player,"Coins",0)-cost)
+    smithTrained[player]=level
+    addSmithXp(player,math.max(10,math.floor((Config.SmithThresholds[level+1]-readNumber(player,"SmithXp",0))*.5)))
+    villageDialogue(player,"대장장이 브란","좋아, 손목 쓰는 법을 알려 줬어. 이제 대장 Lv"..smithLevelOf(player).."이야.")
+    return
   end
   if actionId:match("^rune:set:%d$") then
     local pick=tonumber(actionId:sub(-1))
@@ -8635,6 +8720,34 @@ do
   end
 end
 
+-- [대장간 작업대] 제련로·무두질 틀·모루·숫돌을 등록된 CC0 소품으로 세우고, 눌러 보면 쓰임새를 알려 준다.
+task.spawn(function()
+  task.wait(9)
+  for stationId,station in pairs(Config.SmithStations) do
+    local rp=RaycastParams.new()
+    rp.FilterType=Enum.RaycastFilterType.Include
+    rp.FilterDescendantsInstances={meadowTerrain}
+    local hit=workspace:Raycast(Vector3.new(station.X,80,station.Z),Vector3.new(0,-160,0),rp)
+    local y=hit and hit.Position.Y or 3
+    local model=worldAsset(station.Model,Vector3.new(station.X,y+1,station.Z),station.Height)
+    if model then
+      model.Name="Meadow_Smith_"..stationId
+      model:SetAttribute("MeadowVillageScenery",true)
+      for _,mesh in ipairs(model:GetDescendants()) do
+        if mesh:IsA("MeshPart") then mesh.CanCollide=false;mesh.CanQuery=true;mesh.CanTouch=false end
+      end
+      villagePrompt(model,station.Name,station.Action.." 안내",function(player)
+        local level=smithLevelOf(player)
+        villageDialogue(player,"대장간 · "..station.Name,
+          (stationId=="Smelter" and "광석 2개 → 철 주괴 1개. 대장 Lv4부터 철 주괴 3개 → 강철 주괴 1개도 가능해."
+            or stationId=="Tanner" and "늑대 가죽 2장 → 무두질 가죽 1개."
+            or stationId=="Anvil" and "무기와 방패를 제작해. 영웅·전설 장비는 강철 주괴가 필요해."
+            or "무기를 단련(강화)해. 주괴가 들고, +3강마다 무두질 가죽이 들어.")..
+          "\n\n내 대장 Lv"..level.." · 가방(인벤토리)에서 해당 작업을 누르면 이 근처에서만 적용돼.")
+      end)
+    end
+  end
+end)
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
 -- 도달/재료 판정은 2초마다, 처치 판정은 몬스터 처치 시점에 확인한다. 거울 정원은 메인 줄 완료(HiddenOpen)로 열린다.
 do
@@ -8669,7 +8782,7 @@ do
     local reward=line.Reward or {}
     setNumber(player,line.Field,#line.Steps+1)
     pcall(awardProgress,player,reward.Xp or 0,reward.Coins or 0)
-    for _,field in ipairs({"Crystal","Moonbloom","Claw","Hide","Ore","Magma"}) do
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
       if reward[field] then setNumber(player,field,readNumber(player,field,0)+reward[field]) end
     end
     if reward.Relic then setNumber(player,"RelicMask",bit32.bor(readNumber(player,"RelicMask",0),bit32.lshift(1,reward.Relic-1))) end
@@ -8707,6 +8820,22 @@ do
             player:SetAttribute("MeadowGearMessage",step.Title.." "..progress.."/"..step.Count)
             player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
           end
+        end
+      end
+    end
+  end
+  -- 행동 이벤트(제련·무두질·제작·단련 등) 판정: Type="event" 단계가 같은 Event를 요구할 때 진행한다.
+  meadowOil.questEvent=function(player,event)
+    for _,line in ipairs(lines) do
+      local stage=stageOf(player,line)
+      local step=line.Steps[stage]
+      if stage>=1 and step and step.Type=="event" and step.Event==event then
+        local progress=readNumber(player,line.Field.."P",0)+1
+        if progress>=step.Count then advance(player,line,step,stage)
+        else
+          setNumber(player,line.Field.."P",progress)
+          player:SetAttribute("MeadowGearMessage",step.Title.." "..progress.."/"..step.Count)
+          player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
         end
       end
     end
@@ -8757,7 +8886,7 @@ do
     setNumber(player,line.Field.."C",action=="ql:1" and 1 or 2)
     if choice.Flag then setNumber(player,"TrackFlags",bit32.bor(readNumber(player,"TrackFlags",0),choice.Flag)) end
     if choice.Join and meadowOil.joinCompanion then meadowOil.joinCompanion(player,choice.Join,choice.Bond) end
-    for _,field in ipairs({"Crystal","Moonbloom","Claw","Hide","Ore","Magma"}) do
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
       if choice[field] then setNumber(player,field,readNumber(player,field,0)+choice[field]) end
     end
     if choice.Coins then setNumber(player,"Coins",readNumber(player,"Coins",0)+choice.Coins) end

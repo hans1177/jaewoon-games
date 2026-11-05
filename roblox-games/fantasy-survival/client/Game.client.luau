@@ -248,7 +248,7 @@ do
     end
     return item and item.gear and tints[item.gear.Id] or nil
   end
-  local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Leather="item_bone"}
+  local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Steel="item_gold_ingots",Leather="item_bone"}
   function meadowArt.itemKeyFor(item)
     if not item then return nil end
     if item.gear then
@@ -783,7 +783,7 @@ end)
 -- [전투 HUD] 실제 휴머노이드 최대 체력을 기준으로 표시한다.
 local meadowHealthTrack,meadowHealthControl=CommonUI.CreateHealthBar({name="MeadowHealth",text="체력",textSize=11})
 meadowHealthTrack.Parent=root
-local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","Ingot","Leather","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
+local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","SmithXp","Steel","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","Ingot","Leather","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
   status.Text="" -- [필요 없는 작은 글씨 제거] 월드/몬스터 수는 기본 화면에 표시하지 않는다.
   local character=player.Character
@@ -1367,7 +1367,7 @@ local function renderMeadowPages()
     or save=="SESSION_ONLY" and "이번 접속은 임시 플레이야. 진행이 저장되지 않으니 재접속 후 상태를 확인해."
     or save=="SAVE_FAILED" and "저장에 실패했어. 기존 저장은 보호 중이야."
     or player:GetAttribute("RunActive")~=true and "생존 시작을 눌러 초원 전투를 시작해."
-    or tier<10 and (player:GetAttribute("Ingot") or 0)>=(Config.TemperCost(tier,player:GetAttribute("CraftingProficiency") or 0))
+    or tier<10 and (player:GetAttribute("Ingot") or 0)>=(Config.TemperCost(tier,player:GetAttribute("SmithXp") or 0))
       and "단련 재료가 준비됐어. 아래 장비 강화를 누르면 서버가 비용을 확인해."
     or "광석을 캐서 마을 화로에서 주괴로 제련해. 전투 중에는 공격 예고에 맞춰 막으면 연타를 끊을 수 있어."
   -- [의뢰 도우미] 메인 > 마을 서브 > 동료 서브 순서. 모든 수치는 서버의 기존 저장 속성만 읽는다.
@@ -1407,7 +1407,7 @@ local function renderMeadowPages()
     "\n\n【현상금】\n"..bountyText..
     "\n\n【서브 · 동료】\n"..companionText..
     "\n\n【다음 행동 안내】\n"..suggestion..
-    string.format("\n\n다음 단련 재료: 철 주괴 %d · 무두질 가죽 %d",Config.TemperCost(player:GetAttribute("WeaponTier") or 0,player:GetAttribute("CraftingProficiency") or 0))..
+    string.format("\n\n다음 단련 재료: 철 주괴 %d · 무두질 가죽 %d",Config.TemperCost(player:GetAttribute("WeaponTier") or 0,player:GetAttribute("SmithXp") or 0))..
     "\n\n【처음 조작】\n왼쪽 조이스틱/WASD: 이동\n왼쪽 퀘스트 도우미: 의뢰 확인\n빈 화면 터치/클릭: 기본 공격\n오른쪽 회피·막기: 적의 공격 대응\n상호작용: 주민 대화·단서·채집"
 
   local companionLines={"동료 통신 · 선택 의뢰","메인 퀘스트와 독립적으로 진행돼."}
@@ -1512,7 +1512,7 @@ local function renderMeadowPages()
     table.concat(mystLines,"\n"),table.concat(storyLines,"\n")}
   local howTo=string.match(meadowLabels[5].Text,"【처음 조작】.*") or ""
   sec[3].texts={
-    "【메인 퀘스트】\n"..mainText.."\n\n【다음 행동 안내】\n"..suggestion..string.format("\n\n다음 단련 재료: 철 주괴 %d · 무두질 가죽 %d",Config.TemperCost(player:GetAttribute("WeaponTier") or 0,player:GetAttribute("CraftingProficiency") or 0)),
+    "【메인 퀘스트】\n"..mainText.."\n\n【다음 행동 안내】\n"..suggestion..string.format("\n\n다음 단련 재료: 철 주괴 %d · 무두질 가죽 %d",Config.TemperCost(player:GetAttribute("WeaponTier") or 0,player:GetAttribute("SmithXp") or 0)),
     "【서브 · 마을】\n"..villageText.."\n\n"..table.concat(companionLines,"\n\n"),
     "【현상금 게시판】\n"..bountyText,
     howTo.."\n\n"..journalBase,
@@ -2513,7 +2513,7 @@ local function redrawSelection()
     for _,field in ipairs(Config.CostFields)do
       local need=recipe[field] or 0
       if need>0 and (field=="Ingot" or field=="Leather") then
-        need=math.max(1,need-Config.SmithingRank(player:GetAttribute("CraftingProficiency") or 0))
+        need=math.max(1,need-Config.SmithingRank(player:GetAttribute("SmithXp") or 0))
       end
       if need>0 then
         local have=math.floor(tonumber(player:GetAttribute(field)) or 0)
@@ -2522,7 +2522,7 @@ local function redrawSelection()
     end
     cost="제작 재료: "..table.concat(parts," · ")
     if item.gear and item.gear.ForgeOnly then
-      cost="대장간 모루에서 제작 · 대장 숙련 "..tostring(Config.SmithingRank(player:GetAttribute("CraftingProficiency") or 0)).."/3\n"..cost
+      cost="대장간 모루에서 제작 · 대장 Lv"..tostring(Config.SmithLevel(player:GetAttribute("SmithXp") or 0)).." (요구량 -"..tostring(Config.SmithingRank(player:GetAttribute("SmithXp") or 0))..")\n"..cost
     end
   end
   local classKey=item.gear and Config.GearWeaponClass and Config.GearWeaponClass[item.gear.Id]
@@ -2770,7 +2770,7 @@ if player.Character then
   player.Character.ChildAdded:Connect(renderInventory)
   player.Character.ChildRemoved:Connect(renderInventory)
 end
-for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Ingot","Leather","Coins","ResearchRecords","ProfileReady","MeadowGearOwned","MeadowGearOwned2",
+for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Ingot","Steel","SmithXp","Leather","Coins","ResearchRecords","ProfileReady","MeadowGearOwned","MeadowGearOwned2",
   "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
   "MeadowEquipAccessory","MeadowEquipShield","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)
@@ -10860,7 +10860,7 @@ end)()
   local names={Wood="나무",Stone="돌",Coins="재화"}
   local fields={"Wood","Stone"}
   for _,mat in ipairs(Config.Materials or {}) do names[mat.Field]=mat.Name;table.insert(fields,mat.Field) end
-  local keys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Leather="item_bone"}
+  local keys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Steel="item_gold_ingots",Leather="item_bone"}
   local order=0
   local last={}
   local function toast(field,amount)

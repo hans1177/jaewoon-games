@@ -413,7 +413,7 @@ local Config = {
     BuildingProficiency = 0, HuntingProficiency = 0, AlchemyProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     RedLeaf = 0, Moonbloom = 0, Mushroom = 0, Ore = 0, Crystal = 0, Magma = 0,
-    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0,
+    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0, Steel = 0, SmithXp = 0, QLSmith = 0, QLSmithP = 0, QLSmith2 = 0, QLSmith2P = 0, QLSmith3 = 0, QLSmith3P = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
     MeadowGearOwned=2705,MeadowGearOwned2=0,
@@ -713,8 +713,9 @@ Config.Materials={
   {Field="Fang",Name="날카로운 송곳니",Kind="부위",Value=7,Color={235,228,210},Desc="늑대와 우두머리가 떨어뜨려. 희귀 이상 무기 제작에 쓰여."},
   {Field="BatWing",Name="박쥐 날개",Kind="부위",Value=4,Color={120,100,150},Desc="박쥐가 떨어뜨려. 신발 제작에 쓰여."},
   {Field="Claw",Name="늑대 발톱",Kind="부위",Value=3,Color={205,195,175},Desc="늑대가 떨어뜨려. 장갑 제작에 쓰여."},
-  {Field="Ingot",Name="철 주괴",Kind="가공",Value=14,Color={190,196,206},Desc="화로에서 광석 2개를 녹여 만들어. 무기·갑옷 제작의 핵심 재료야.",Refine={From="Ore",Need=2,Verb="제련",Note="광석 2 → 주괴 1"}},
-  {Field="Leather",Name="무두질 가죽",Kind="가공",Value=10,Color={150,98,60},Desc="가죽 걸이에서 늑대 가죽 2장을 가공해 만들어. 갑옷·장화·장갑에 쓰여.",Refine={From="Hide",Need=2,Verb="무두질",Note="가죽 2 → 무두질 가죽 1"}},
+  {Field="Ingot",Name="철 주괴",Kind="가공",Value=14,Color={190,196,206},Desc="화로에서 광석 2개를 녹여 만들어. 무기·갑옷 제작의 핵심 재료야.",Refine={From="Ore",Need=2,Verb="제련",Note="광석 2 → 주괴 1",Station="Smelter"}},
+  {Field="Steel",Name="강철 주괴",Kind="가공",Value=44,Color={146,168,196},Desc="제련로에서 철 주괴 3개를 담금질해 만들어. 대장 Lv4부터 가능하고, 희귀 이상 무기·방패의 재료야.",Refine={From="Ingot",Need=3,Verb="강철 제련",Note="주괴 3 → 강철 주괴 1 (대장 Lv4)",Level=4,Station="Smelter"}},
+  {Field="Leather",Name="무두질 가죽",Kind="가공",Value=10,Color={150,98,60},Desc="가죽 걸이에서 늑대 가죽 2장을 가공해 만들어. 갑옷·장화·장갑에 쓰여.",Refine={From="Hide",Need=2,Verb="무두질",Note="가죽 2 → 무두질 가죽 1",Station="Tanner"}},
   {Field="Ectoplasm",Name="원혼의 잔재",Kind="부위",Value=8,Color={150,230,220},Desc="원혼이 남기는 차가운 잔재. 전설 장신구 제작에 쓰여."},
 }
 Config.MaterialByField={}
@@ -894,6 +895,38 @@ Config.QuestLines = {
     {Type="reach", X=6300, Z=300, R=70, Title="옥좌 앞의 마지막 문", Text="불타는 성채 군주의 옥좌 앞으로 가라.", Done="옥좌 뒤 벽이 갈라진다. 서쪽 옛 요새에 숨겨진 문이 열렸다. 거울 정원이 부르고 있다."},
    },
    Reward={Coins=900, Xp=700, Crystal=5, OpenHidden=true}},
+  -- [초원 대장장이 연속 의뢰] 스카이림식 작업대(제련로·무두질 틀·모루·숫돌)를 직접 써 보며 배운다.
+  {Id="smith", Name="[서브] 브란의 첫 모루", Kind="Sub", Field="QLSmith", Need={Stage=2},
+   Intro="대장장이 브란이 일손이 달려 불평을 한다. 철광석을 캐 와서 제련부터 단련까지 배워 보지 않겠느냐고 한다.",
+   Steps={
+    {Type="reach", X=-80, Z=-190, R=22, Title="대장장이 브란을 만나라", Text="마을 대장간의 브란에게 가라.", Done="브란: '광석, 주괴, 가죽, 무기. 이 순서야. 먼저 광석 4개부터 캐 와.'"},
+    {Type="loot", Field="Ore", Count=4, Title="철광석 4개를 모아라", Text="광산이나 바위 지대에서 광석을 캐라.", Done="브란: '좋은 광석이군. 제련로에서 주괴로 녹여 봐.'"},
+    {Type="event", Event="SMELT", Count=2, Title="제련로에서 주괴 2개 제련", Text="가방에서 광석을 고르고 '제련'을 눌러라. 제련로 가까이에서만 돼.", Done="브란: '불을 잘 다루는군. 이번엔 가죽이야.'"},
+    {Type="event", Event="TAN", Count=1, Title="무두질 틀에서 가죽 무두질", Text="늑대 가죽 2장을 무두질 틀에서 가공하라.", Done="브란: '질긴 가죽이야. 이제 모루로 가자.'"},
+    {Type="event", Event="CRAFT", Count=1, Title="모루에서 첫 무기 제작", Text="가방 장비 탭에서 무기를 골라 모루 근처에서 제작하라.", Done="브란: '내 눈엔 아직 어설프지만, 쓸 만해. 숫돌에 갈아 봐.'"},
+    {Type="event", Event="TEMPER", Count=1, Title="숫돌에서 무기 단련", Text="숫돌 가까이에서 무기를 단련(강화)하라.", Done="브란: '날이 살았어. 이제 시험해 봐. 늑대 두 마리다.'"},
+    {Type="kill", Count=2, Title="새 무기로 몬스터 2마리 처치", Text="직접 만든 무기로 마을 밖 몬스터를 처치하라.", Done="브란: '잘 휘두르네. 마지막 부탁이 있어.'"},
+    {Type="choice", X=-80, Z=-190, R=22, Title="브란의 사례", Prompt="브란: '도와줘서 고맙다. 사례로 무엇을 줄까?'",
+     Choices={{Label="강철 주괴 1개 (단단한 재료)", Done="브란이 아껴 둔 강철 주괴를 건넨다. '좋은 물건에 써.'", Steel=1, Coins=100},
+              {Label="코인 400 (당장 쓸 돈)", Done="브란이 주머니를 털어 코인을 준다. '다음에 또 부탁해.'", Coins=400}}}
+   },
+   Reward={Coins=300, Xp=260, Ingot=3, Leather=2}},
+  {Id="smith2", Name="[서브] 숯불과 강철", Kind="Sub", Field="QLSmith2", Need={Done="smith"},
+   Intro="브란이 강철을 다룰 줄 알아야 진짜 대장장이라고 한다. 철 주괴를 모아 강철 제련에 도전하라.",
+   Steps={
+    {Type="loot", Field="Ingot", Count=6, Title="철 주괴 6개를 모아라", Text="강철 제련에 철 주괴 3개가 든다. 여유 있게 6개를 모아라. (대장 Lv4 필요)", Done="브란: '충분하군. 제련로에서 강철로 담금질해.'"},
+    {Type="event", Event="SMELT_STEEL", Count=1, Title="강철 주괴 제련", Text="제련로에서 철 주괴를 '강철 제련'하라. 대장 Lv4부터 가능해.", Done="브란: '빛깔이 다르지? 이걸로 한 단계 위 무기를 만들어 봐.'"},
+    {Type="event", Event="CRAFT_RARE", Count=1, Title="희귀 이상 무기 제작", Text="모루에서 희귀 등급 이상 무기나 방패를 제작하라.", Done="브란: '명장의 손이야. 이건 약속한 보답이다.'"}
+   },
+   Reward={Coins=700, Xp=500, Steel=2, Crystal=2}},
+  {Id="smith3", Name="[서브] 경비병 아린의 방패", Kind="Sub", Field="QLSmith3", Need={Done="smith"},
+   Intro="경비병 아린의 방패가 갈라졌다. 브란이 새 방패를 만들어 전해 달라고 부탁한다.",
+   Steps={
+    {Type="event", Event="CRAFT_SHIELD", Count=1, Title="방패 제작", Text="모루에서 방패를 하나 제작하라.", Done="브란: '튼튼하군. 아린에게 전해 줘.'"},
+    {Type="reach", X=-2, Z=-188, R=20, Title="경비병 아린에게 방패 전달", Text="마을 남쪽 중심로의 경비병 아린에게 가라.", Done="아린: '묵직한데 손에 감긴다. 마을을 지킬 때 쓸게.'"},
+    {Type="event", Event="CRAFT_BOW", Count=1, Title="사냥꾼의 활 제작", Text="추적자 라온이 활을 주문했다. 모루에서 활을 하나 제작하라.", Done="라온: '시위가 맑게 울어. 고마워, 대장장이.'"}
+   },
+   Reward={Coins=520, Xp=380, Leather=3, Moonbloom=1}},
   {Id="mina", Name="[서브] 미나의 사라진 장부", Kind="Sub", Field="QLMina", Need={Chapter=3},
    Intro="보급 장부의 숫자는 전쟁 내내 같았다. 미나 군수대장은 마지막 장부를 사막에 숨겼다.",
    Steps={
@@ -1488,14 +1521,44 @@ Config.MeadowSkillNodes = {
   {Id="mf-magic-3-5",Index=89,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=5,Name="치유의 물결",Kind="ACTIVE",Mode="HEAL_AOE",Description="근처 아군과 함께 체력을 회복해.",Advanced=false,Gauge=26,Cooldown=13,Range=34,IconCell=9},
   {Id="mf-magic-3-6",Index=90,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=6,Name="생명의 공명",Kind="ACTIVE",Mode="RALLY",Description="기력을 크게 소모해 주변 아군을 회복·보호해.",Advanced=true,Gauge=70,Cooldown=38,Range=34,IconCell=9},
 }
--- [스카이림식 대장 기술] 제작 숙련이 쌓일수록 강화·제작 재료가 줄어든다(40마다 1단, 최대 3단).
-Config.SmithingRank=function(craftingProficiency)
-  return math.clamp(math.floor((tonumber(craftingProficiency) or 0)/40),0,3)
+-- [스카이림식 대장 기술] 제련·무두질·제작·단련을 할 때마다 대장 경험치(SmithXp)가 쌓이고 대장 레벨(1~10)이 오른다.
+-- 레벨 4·7·10에서 주괴·가죽 요구량이 1개씩 줄고(최대 3단), Lv3 제련 추가 산출, Lv5 강철 제련 비용 절감, Lv8 제작 환급 퍽이 열린다.
+Config.SmithThresholds={0,20,60,120,200,300,430,600,800,1050}
+Config.SmithLevel=function(xp)
+  xp=tonumber(xp) or 0
+  local level=1
+  for i,need in ipairs(Config.SmithThresholds) do if xp>=need then level=i end end
+  return level
 end
--- 무기 단련(강화): 주괴(+3·6·9강마다 무두질 가죽). 나무·돌·날광석은 쓰지 않는다.
-Config.TemperCost=function(tier,craftingProficiency)
-  local rank=Config.SmithingRank(craftingProficiency)
+Config.SmithingRank=function(smithXp)
+  return math.clamp(math.floor((Config.SmithLevel(smithXp)-1)/3),0,3)
+end
+Config.SmithPerks={
+  {Level=3,Name="풍부한 제련",Desc="제련 시 15% 확률로 1개 더 나와."},
+  {Level=4,Name="철의 손길",Desc="주괴·가죽 요구량 -1, 강철 제련 가능."},
+  {Level=5,Name="효율 담금질",Desc="강철 제련에 철 주괴가 3개 대신 2개."},
+  {Level=7,Name="숙련 대장장이",Desc="주괴·가죽 요구량 -2."},
+  {Level=8,Name="재료 환급",Desc="무기 제작 시 20% 확률로 주괴 1개를 돌려받아."},
+  {Level=10,Name="대장장이의 명인",Desc="주괴·가죽 요구량 -3."},
+}
+-- 제련·제작 작업대(마을 대장간 일대). 각 작업은 해당 작업대 반경 안에서만 가능하다.
+Config.SmithStations={
+  Smelter={Name="제련로",X=-90,Z=-186,Radius=14,Model="vxCampfirePit",Height=3.2,Action="광석 제련"},
+  Tanner={Name="무두질 틀",X=-114,Z=-178,Radius=14,Model="vxPoles",Height=4.2,Action="가죽 무두질"},
+  Anvil={Name="모루",X=-98,Z=-196,Radius=14,Model="vxWorkbenchAnvil",Height=3.0,Action="무기 제작"},
+  Grindstone={Name="숫돌",X=-107,Z=-189,Radius=14,Model="vxWorkbenchGrind",Height=3.2,Action="무기 단련"},
+}
+-- 무기 단련(강화): 주괴(+3·6·9강마다 무두질 가죽).
+Config.TemperCost=function(tier,smithXp)
+  local rank=Config.SmithingRank(smithXp)
   return math.max(1,1+math.floor(tier*.8)-rank),math.floor(tier/3)
+end
+-- 희귀 이상 단조 무기는 강철 주괴가 필요하다(영웅 2, 전설 4).
+for _,item in ipairs(Config.MeadowEquipment or {}) do
+  if item.ForgeOnly then
+    if item.Rarity=="Epic" then item.Steel=(item.Steel or 0)+2
+    elseif item.Rarity=="Legendary" then item.Steel=(item.Steel or 0)+4 end
+  end
 end
 -- [오디세이식 무기 계열] 계열마다 어울리는 스킬 계열이 있고, 맞는 무기를 들면 해당 계열 스킬이 강해진다.
 Config.WeaponClasses={
