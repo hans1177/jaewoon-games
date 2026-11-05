@@ -46,31 +46,99 @@ road=(176,128,72,200)
 d.line([(gx(X0),gz(0)),(gx(X1),gz(0))],fill=road,width=3*S//2+1)
 d.line([(gx(0),gz(Z0)),(gx(0),gz(Z1))],fill=road,width=3*S//2+1)
 d.line([(gx(3000),gz(Z0)),(gx(3000),gz(Z1))],fill=road,width=3*S//2+1)
-# 경계 산맥(▲)
-bd=np.zeros((mh,mw),bool)
-bd[:,1:]|=zid[:,1:]!=zid[:,:-1]; bd[1:,:]|=zid[1:,:]!=zid[:-1,:]
-ys,xs=np.nonzero(bd)
-rng=np.random.default_rng(9); placed=[]
-order=rng.permutation(len(ys))
-cell={}
-for i in order:
-    x,y=xs[i],ys[i]; key=(x//(9*S),y//(9*S))
-    if key in cell: continue
-    cell[key]=1
-    px,py=L+x,T+y
-    if abs(gz(0)-py)<5*S or abs(gx(0)-px)<5*S or abs(gx(3000)-px)<5*S: continue
-    h=rng.uniform(7,11)*S; w=h*.9
-    d.polygon([(px-w,py+h*.5),(px,py-h),(px+w,py+h*.5)],fill=(92,78,66,235))
-    d.polygon([(px-w,py+h*.5),(px,py-h),(px-w*.1,py+h*.5)],fill=(168,152,132,235))
-    d.polygon([(px-w*.25,py-h*.55),(px,py-h),(px+w*.25,py-h*.55)],fill=(228,224,214,235))
-# 강
-def river(base,amp):
-    P=[]
-    for z in np.arange(Z0+40,Z1-40,40):
-        P.append((gx(base+amp*.28*np.sin(z/amp*2.4)),gz(z)))
-    d.line(P,fill=(52,100,150,255),width=5*S//2+2,joint='curve')
-    d.line(P,fill=(116,176,228,255),width=3*S//2+1,joint='curve')
-for b,a in [(-1100,420),(1800,380),(4050,360)]: river(b,a)
+# ---- 강: 산기슭에서 바다까지, 굽이치고 지류가 합류하며 하류로 갈수록 넓어진다
+from scipy.interpolate import splprep, splev
+rr=np.random.default_rng(3)
+def spline(pts,n=900):
+    P=np.array([(gx(x),gz(z)) for x,z in pts],float)
+    tck,_=splprep([P[:,0],P[:,1]],s=0,k=min(3,len(P)-1)); u=np.linspace(0,1,n)
+    x,y=splev(u,tck); x=np.array(x); y=np.array(y)
+    dx,dy=np.gradient(x),np.gradient(y); ln=np.hypot(dx,dy)+1e-6
+    nx,ny=-dy/ln,dx/ln
+    ph=rr.random()*6
+    off=(np.sin(u*np.pi*9+ph)*6+np.sin(u*np.pi*23+ph*2)*2.2)*S*(0.35+u*.9)
+    return x+nx*off,y+ny*off
+def draw_river(x,y,w0,w1):
+    n=len(x)
+    for i in range(n):
+        u=i/(n-1); w=(w0+(w1-w0)*u**.8)*S
+        r=w/2+1.6*S
+        d.ellipse([x[i]-r,y[i]-r,x[i]+r,y[i]+r],fill=(56,84,112,255))
+    for i in range(n):
+        u=i/(n-1); w=(w0+(w1-w0)*u**.8)*S
+        r=w/2
+        d.ellipse([x[i]-r,y[i]-r,x[i]+r,y[i]+r],fill=(110,168,214,255))
+        r2=r*.45
+        d.ellipse([x[i]-r2-.5*S,y[i]-r2-.5*S,x[i]+r2-.5*S,y[i]+r2-.5*S],fill=(150,198,232,255))
+rivers=[
+ ([(-1300,-1750),(-1250,-1300),(-900,-950),(-1050,-450),(-650,-150),(-450,350),(-800,900),(-600,1500),(-900,2400)],1.6,7.5),
+ ([(-2150,-250),(-1700,-100),(-1250,-300),(-1050,-450)],1.2,3.2),
+ ([(1500,-1450),(1250,-1000),(1500,-500),(1100,-100),(1350,500),(1250,1000),(1600,1600),(1700,2400)],1.6,8),
+ ([(2150,-700),(1850,-350),(1500,-500)],1.2,3.4),
+ ([(4600,-1850),(4350,-1400),(4650,-900),(4400,-400),(4800,100),(4950,700),(4700,1300),(5200,1900),(5250,2400)],1.6,8),
+ ([(6050,-800),(5650,-500),(5250,-700),(4650,-900)],1.2,3.4),
+ ([(3800,1250),(4300,1500),(4750,1250)],1.1,2.6),
+]
+for pts,w0,w1 in rivers:
+    x,y=spline(pts); draw_river(x,y,w0,w1)
+for (lx_,lz_,rx,rz) in [(3650,330,170,95),(4950,760,150,80),(-700,1500,160,85)]:
+    d.ellipse([gx(lx_)-rx/8800*PW,gz(lz_)-rz/4800*PH,gx(lx_)+rx/8800*PW,gz(lz_)+rz/4800*PH],fill=(112,170,214,255),outline=(56,84,112,255),width=S)
+def tree(px,py,sz,c):
+    d.ellipse([px-sz*.9,py+sz*.5,px+sz*.9,py+sz*.9],fill=(0,0,0,40))
+    d.polygon([(px-sz*.7,py+sz*.55),(px,py-sz*1.1),(px+sz*.7,py+sz*.55)],fill=c+(255,))
+    d.polygon([(px,py-sz*1.1),(px+sz*.7,py+sz*.55),(px,py+sz*.55)],fill=(max(c[0]-26,0),max(c[1]-26,0),max(c[2]-20,0),255))
+zi_name={}
+for l in open('/tmp/luau/map.txt'):
+    if l.startswith('zone '):
+        p=l.split(); zi_name[p[2]]=int(p[1])
+def scatter(zname,count,sz,c,seed):
+    r=np.random.default_rng(seed); k=zi_name[zname]
+    for _ in range(count):
+        x=int(r.integers(8,mw-8)); y=int(r.integers(8,mh-8))
+        if zid[y,x]==k: tree(L+x,T+y,sz*S*r.uniform(.8,1.3),tuple(int(v) for v in (np.array(c)*r.uniform(.85,1.15))))
+scatter("worldtree",1500,3.6,(34,94,66),31)
+scatter("meadow",220,3.2,(56,126,64),32)
+scatter("wetland",420,3.2,(52,104,70),33)
+scatter("windcliff",160,3.0,(78,126,72),34)
+scatter("swamp",380,3.2,(40,64,50),35)
+scatter("deadmarsh",300,3.0,(40,52,44),36)
+peaks=[]
+def range_(pts,wid,dens,hmin,hmax,seed):
+    r=np.random.default_rng(seed)
+    P=np.array([(gx(x),gz(z)) for x,z in pts],float)
+    seg=np.hypot(*np.diff(P,axis=0).T); tot=seg.sum(); cs=np.cumsum(seg)
+    n=int(tot/(dens*S))
+    for i in range(n):
+        t=r.random()*tot; k=min(np.searchsorted(cs,t),len(seg)-1)
+        f=(t-(cs[k]-seg[k]))/seg[k]
+        px=P[k,0]+(P[k+1,0]-P[k,0])*f; py=P[k,1]+(P[k+1,1]-P[k,1])*f
+        o=r.normal(0,wid/8800*PW*.45)
+        ang=np.arctan2(*(P[k+1]-P[k])[::-1])+np.pi/2
+        px+=np.cos(ang)*o; py+=np.sin(ang)*o*.8
+        cen=1-min(1,abs(o)/(wid/8800*PW))
+        h=(hmin+(hmax-hmin)*(0.35+0.65*cen)*r.uniform(.6,1))*S
+        peaks.append((py,px,h,r.uniform(.8,1.2)))
+range_([(-2250,-2250),(-1500,-2100),(-600,-2150),(400,-2200),(1300,-2150)],280,5.5,12,30,41)
+range_([(-2300,-1400),(-2150,-350),(-2250,700)],230,6,10,26,42)
+range_([(1000,-1550),(1700,-1400),(2400,-1550),(3000,-1450)],220,5.5,11,26,43)
+range_([(3900,-2250),(4700,-2100),(5600,-2250),(6300,-1950)],280,5.5,12,30,44)
+range_([(6100,-1100),(6280,-300),(6150,600),(6300,1300)],220,6,10,25,45)
+range_([(-1200,1350),(-300,1450),(700,1350)],190,6.5,9,20,46)
+range_([(2000,1300),(3000,1350),(3900,1300)],190,6.5,9,20,47)
+range_([(2150,-120),(2400,-170),(2650,-90)],200,4.5,16,36,48)
+peaks.sort()
+for py,px,h,k in peaks:
+    w=h*.95*k
+    d.ellipse([px-w*1.1,py-h*.12,px+w*1.3,py+h*.22],fill=(40,30,20,70))
+    lean=w*0.12*(1 if int(px)%2 else -1)
+    top=(px+lean,py-h)
+    d.polygon([(px-w,py),top,(px+w*.15,py)],fill=(184,168,146,255))
+    d.polygon([top,(px+w,py),(px+w*.15,py)],fill=(92,78,66,255))
+    d.polygon([(px-w*.45,py-h*.55),top,(px+w*.05,py-h*.5)],fill=(214,206,190,255))
+    d.line([top,(px+w*.15,py)],fill=(60,48,40,255),width=max(1,S//2))
+    d.line([(px+w*.3,py-h*.5),(px+w*.55,py-h*.2)],fill=(70,58,48,255),width=max(1,S//2))
+vx,vy=gx(2400),gz(-60)
+d.ellipse([vx-9*S,vy-34*S,vx+9*S,vy-28*S],fill=(214,96,40,255),outline=(70,40,30,255))
 # 테두리
 for inset,w,c in [(0,3,(70,50,34)),(7*S,1,(120,92,60))]:
     d.rectangle([L-inset-4*S,T-inset-4*S,R+inset+4*S,B+inset+4*S],outline=c+(255,),width=w*S//2+1)
@@ -85,7 +153,7 @@ lx,ly=L,B+22*S
 d.rectangle([lx,ly,lx+150*S,ly+46*S],fill=(238,222,184,255),outline=(70,50,34,255),width=S)
 d.text((lx+8*S,ly+3*S),"범례",font=F(0,10),fill=(60,40,26,255))
 d.line([(lx+10*S,ly+22*S),(lx+34*S,ly+22*S)],fill=road,width=3*S//2+1); d.text((lx+40*S,ly+16*S),"큰길",font=F(0,9,False),fill=(60,40,26,255))
-d.line([(lx+10*S,ly+36*S),(lx+34*S,ly+36*S)],fill=(116,176,228,255),width=3*S//2+1); d.text((lx+40*S,ly+30*S),"강 / 산맥은 ▲",font=F(0,9,False),fill=(60,40,26,255))
+d.line([(lx+10*S,ly+36*S),(lx+34*S,ly+36*S)],fill=(116,176,228,255),width=3*S//2+1); d.text((lx+40*S,ly+30*S),"강 / 산맥",font=F(0,9,False),fill=(60,40,26,255))
 # 축척
 sx=R-280*S; sy=B+36*S
 km=1000/(X1-X0)*PW
@@ -100,4 +168,4 @@ d.ellipse([cx-r*1.15,cy-r*1.15,cx+r*1.15,cy+r*1.15],outline=(60,40,26,255),width
 for lab,ox,oy in (("북",-5,-r/S-14),("남",-5,r/S+2),("서",-r/S-14,-6),("동",r/S+4,-6)):
     d.text((cx+ox*S,cy+oy*S),lab,font=F(0,9),fill=(60,40,26,255))
 out=im.filter(ImageFilter.UnsharpMask(1.5,50,2)).resize((1024,680),Image.LANCZOS)
-out.save('/tmp/claude-0/map/world-map3.png'); print(out.size, L/S/1024,(R-L)/S/1024,T/S/680,PH/S/680)
+out.save('/tmp/claude-0/map/world-map4.png'); print(out.size, L/S/1024,(R-L)/S/1024,T/S/680,PH/S/680)
