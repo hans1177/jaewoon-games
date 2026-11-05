@@ -9847,9 +9847,11 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             local deer=row.species=="deer"
             -- 사슴은 느리게 걸어도 다리가 보이도록 최소 보폭을 키우고, 달릴 땐 크게 뛴다.
             local pace=math.clamp(row.groundSpeed/(running and 7 or 3),deer and .7 or .35,1)
-            local amplitude=(running and (wolf and .61 or deer and .95 or .52)
-              or deer and .62 or heavy and .30 or .36)*pace
-            local stance=running and (wolf and .34 or .43) or heavy and .67 or .61
+            -- [동작 보정] 달릴 때 발이 계속 공중에 떠 접지가 안 보이고 무릎이 과하게 접혀 보였다.
+            -- 진폭·공중 구간·무릎 접힘을 줄이고 지지 구간을 늘려 발이 땅을 딛는 것처럼 보이게 한다.
+            local amplitude=(running and (wolf and .56 or deer and .70 or .52)
+              or deer and .50 or heavy and .30 or .36)*pace
+            local stance=running and (wolf and .42 or deer and .54 or .43) or deer and .66 or heavy and .67 or .61
             local cycle=phase*math.pi*2
             for _,foot in ipairs(quadrupedFootPhases) do
               local key=foot[1]
@@ -9878,9 +9880,9 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
                 local lift=math.sin(math.pi*p)
                 local ease=p*p*(3-2*p)
                 hip=-amplitude*(1-2*ease)
-                knee=lift*(running and (wolf and (front and .68 or .79) or .68)
-                  or heavy and .38 or .48)
-                ankle=-lift*(running and (wolf and .28 or .22) or .15)
+                knee=lift*(running and (wolf and (front and .58 or .70) or deer and .42 or .68)
+                  or deer and .30 or heavy and .38 or .48)
+                ankle=-lift*(running and (wolf and .24 or deer and .16 or .22) or deer and .10 or .15)
               end
               if not front then hip*=heavy and .83 or wolf and .97 or .92 end
               if row.available[key.."Hip"] then
