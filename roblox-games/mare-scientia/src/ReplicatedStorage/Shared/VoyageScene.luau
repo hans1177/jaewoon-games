@@ -81,13 +81,19 @@ local function yawOf(dir)
 	return math.atan2(-dir.Z, dir.X)
 end
 
--- info: { shipId, steam, days, path, fromName, toName, makeShip }
+-- info: { shipId, steam, days, path, fromName, toName, makeShip, event = { kind, won } }
 function VoyageScene.play(info)
 	local player = Players.LocalPlayer
 	local camera = workspace.CurrentCamera
 	local duration = math.clamp(8 + info.days * 0.9, 10, 24)
 	local pts, cum, total = worldPath(info.path, duration * SPEED * (if info.steam then 1.25 else 1))
 	local speedNow = total / duration
+	local ev = info.event or { kind = "none" }
+	if ev.kind == "tailwind" then
+		speedNow *= 1.25
+	elseif ev.kind == "calm" then
+		speedNow *= 0.8
+	end
 
 	local folder = Instance.new("Folder")
 	folder.Name = "VoyageScene"
@@ -249,6 +255,56 @@ function VoyageScene.play(info)
 		table.insert(gulls, { model = g, body = body, l = l, r = r, radius = rng:NextNumber(18, 38), height = rng:NextNumber(14, 26), speed = rng:NextNumber(0.5, 0.9), phase = i * 1.3 })
 	end
 
+	-- 사건 연출 ------------------------------------------------------------
+	local EVENT_AT = 0.42 -- 항해의 이 지점에서 사건이 시작된다
+	local EVENT_LEN = 0.26
+	local rain = nil
+	local enemy = nil
+	local barrel = nil
+	if ev.kind == "storm" then
+		-- 비: 배 위쪽에서 따라다니는 파티클 판
+		local sky = part(folder, Vector3.new(160, 1, 160), CFrame.new(ORIGIN + Vector3.new(0, 90, 0)), Color3.new(0, 0, 0))
+		sky.Transparency = 1
+		local em = Instance.new("ParticleEmitter")
+		em.Rate = 0
+		em.Lifetime = NumberRange.new(0.8, 1.1)
+		em.Speed = NumberRange.new(110, 140)
+		em.EmissionDirection = Enum.NormalId.Bottom
+		em.SpreadAngle = Vector2.new(6, 6)
+		em.Size = NumberSequence.new(0.35)
+		em.Transparency = NumberSequence.new(0.35)
+		em.Color = ColorSequence.new(Color3.fromRGB(190, 205, 225))
+		em.Parent = sky
+		rain = { part = sky, emitter = em }
+	elseif ev.kind == "pirates" then
+		enemy = info.makeShip(folder, "frigate", ORIGIN + Vector3.new(0, 1.2, 0))
+		enemy.Name = "PirateShip"
+		-- 검은 돛 느낌: 선체 색을 어둡게
+		for _, d in enemy:GetDescendants() do
+			if d:IsA("MeshPart") then
+				d.Color = d.Color:Lerp(Color3.new(0.05, 0.05, 0.06), 0.55)
+			end
+		end
+		enemy:PivotTo(enemy:GetPivot() + Vector3.new(0, -500, 0)) -- 아직 숨김
+	elseif ev.kind == "drift" then
+		barrel = part(folder, Vector3.new(3, 2.6, 3), CFrame.new(ORIGIN), Color3.fromRGB(120, 76, 44), Enum.Material.Wood, Enum.PartType.Cylinder)
+	end
+	local enemyBase = enemy and enemy:GetPivot()
+	local enemyRot = enemyBase and (CFrame.new(-enemyBase.Position) * enemyBase)
+	local flashes = {}
+	local function cannonFlash(at)
+		local f = part(folder, Vector3.new(4, 4, 4), CFrame.new(at), Color3.fromRGB(255, 200, 90), Enum.Material.Neon, Enum.PartType.Ball)
+		f.Transparency = 0.1
+		local pl = Instance.new("PointLight")
+		pl.Brightness = 6
+		pl.Range = 40
+		pl.Color = Color3.fromRGB(255, 190, 90)
+		pl.Parent = f
+		table.insert(flashes, { part = f, born = os.clock() })
+	end
+	local nextShot = 0
+	local lightning = 0
+
 	-- 카메라
 	camera.CameraType = Enum.CameraType.Scriptable
 	camera.FieldOfView = 62
@@ -311,6 +367,75 @@ function VoyageScene.play(info)
 				g.body.CFrame = cf
 				g.l.CFrame = cf * CFrame.new(0, 0, -1) * CFrame.Angles(flap, 0, 0) * CFrame.new(0, 0, -0.6)
 				g.r.CFrame = cf * CFrame.new(0, 0, 1) * CFrame.Angles(-flap, 0, 0) * CFrame.new(0, 0, 0.6)
+			end
+		end
+
+		-- 사건
+		local ek = (k - EVENT_AT) / EVENT_LEN
+		local active = ek > 0 and ek < 1
+		local intensity = if active then math.sin(ek * math.pi) else 0
+		local right = Vector3.new(math.sin(yaw), 0, math.cos(yaw)) -- 뱃머리 기준 오른쪽(+Z 쪽)
+		if rain then
+			rain.emitter.Rate = intensity * 900
+			rain.part.CFrame = CFrame.new(pos + Vector3.new(0, 90, 0))
+			Lighting.FogEnd = 2600 - intensity * 1700
+			Lighting.FogColor = Color3.fromRGB(176, 205, 232):Lerp(Color3.fromRGB(70, 80, 95), intensity)
+			Lighting.ClockTime = 8 + k * 6 - intensity * 3
+			sea.Color = Color3.fromRGB(28, 88, 140):Lerp(Color3.fromRGB(20, 44, 66), intensity)
+			if intensity > 0.3 and t > lightning then
+				lightning = t + rng:NextNumber(1.2, 3)
+				task.spawn(function()
+					Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+					task.wait(0.07)
+					Lighting.Ambient = saved.ambient
+				end)
+			end
+			-- 큰 파도에 배가 크게 흔들린다
+			local rock = intensity
+			ship:PivotTo(ship:GetPivot() * CFrame.Angles(math.sin(t * 2.1) * 0.09 * rock, 0, math.sin(t * 1.7) * 0.12 * rock))
+		end
+		if enemy then
+			if active then
+				-- 적선이 오른쪽 뒤에서 접근해 나란히 달린다
+				local gap = 120 - 85 * math.min(1, ek * 2.2)
+				local epos = pos + right * gap - Vector3.new(math.cos(yaw), 0, -math.sin(yaw)) * (40 * (1 - math.min(1, ek * 2)))
+				local epose = CFrame.new(epos.X, 1.2 + math.sin(t * 1.2) * 0.4, epos.Z) * CFrame.Angles(0, yaw + math.rad(8) * (1 - intensity), 0) * enemyRot
+				enemy:PivotTo(epose)
+				if ek > 0.35 and t > nextShot then
+					nextShot = t + rng:NextNumber(0.25, 0.6)
+					local fromEnemy = rng:NextNumber() < 0.5
+					local at = if fromEnemy then epos - right * 6 + Vector3.new(0, 4, rng:NextNumber(-8, 8)) else pos + right * 6 + Vector3.new(0, 4, rng:NextNumber(-8, 8))
+					cannonFlash(at)
+				end
+				if ev.won == false and ek > 0.8 then
+					-- 패배: 적이 가까이에 남는다
+				end
+			else
+				-- 사건이 끝나면 승리는 적선이 가라앉고, 패배는 곁을 지나쳐 멀어진다
+				if k >= EVENT_AT + EVENT_LEN then
+					local sink = math.clamp((k - EVENT_AT - EVENT_LEN) / 0.12, 0, 1)
+					local epos = pos + right * 35 - Vector3.new(math.cos(yaw), 0, -math.sin(yaw)) * (if ev.won then 20 else 20 + sink * 300)
+					local drop = if ev.won then sink * 18 else 0
+					enemy:PivotTo(CFrame.new(epos.X, 1.2 - drop, epos.Z) * CFrame.Angles(if ev.won then sink * 0.6 else 0, yaw, 0) * enemyRot)
+				else
+					enemy:PivotTo(CFrame.new(pos.X, -500, pos.Z) * enemyRot)
+				end
+			end
+		end
+		if barrel then
+			-- 표류물: 진행 방향 앞에서 다가왔다 뒤로 지나간다
+			local front = (EVENT_AT + EVENT_LEN / 2 - k) * total * 0.5
+			local bp = pos + Vector3.new(math.cos(yaw), 0, -math.sin(yaw)) * front + right * 14
+			barrel.CFrame = CFrame.new(bp.X, 0.3 + math.sin(t * 2) * 0.25, bp.Z) * CFrame.Angles(t * 0.4, t * 0.2, math.pi / 2)
+		end
+		for i = #flashes, 1, -1 do
+			local f = flashes[i]
+			local age = os.clock() - f.born
+			if age > 0.18 then
+				f.part:Destroy()
+				table.remove(flashes, i)
+			else
+				f.part.Transparency = 0.1 + age * 5
 			end
 		end
 

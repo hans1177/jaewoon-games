@@ -88,6 +88,9 @@ return function(D, S)
 			S.Battle.encounter(state, ctx, msgs)
 		end
 
+		-- 연출용 기록(저장 안 함): 3D 항해 장면이 사건을 그린다
+		state.voyageEvent = { kind = event.kind, won = event.kind == "pirates" and state.lastBattle ~= nil and state.lastBattle.winner == "a" or nil }
+
 		-- 장거리 항해 기록에서 해류를 발견할 수 있다
 		if days >= 10 and ctx.rng() < 0.35 then
 			S.Discovery.grantCard(state, "geo_gulfstream", msgs)

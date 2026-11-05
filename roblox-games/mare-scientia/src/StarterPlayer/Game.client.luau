@@ -539,6 +539,7 @@ local function sail(portId)
 			fromName = from,
 			toName = view.player.portName,
 			makeShip = PortScene.makeShip,
+			event = view.voyageEvent,
 		})
 		if not ok then
 			warn("[Game] 3D 항해 오류, 2D로 대체:", err)

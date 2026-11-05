@@ -404,6 +404,7 @@ return function(D, S)
 		end
 
 		view.lastBattle = state.lastBattle
+		view.voyageEvent = state.voyageEvent
 		return view
 	end
 
