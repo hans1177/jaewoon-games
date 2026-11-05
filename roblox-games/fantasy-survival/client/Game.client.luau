@@ -1209,8 +1209,25 @@ local function renderMeadowPages()
   -- [세계 탭] 지역 4개(1부)와 파티 4인 구성을 한곳에 표시한다. 구현 전 지역·영입은 잠금으로 보여 준다.
   local worldLines={"세계 · 1부 지역 4곳 (엔딩 없이 진행)"}
   local statusText={Open="탐험 가능",Planned="준비 중",Reserved="2부 이후"}
+  local discovered=player:GetAttribute("WorldDiscovered") or 1
+  local regionBits={meadow=1,worldtree=2,volcano=4,oasis=8}
   for index,region in ipairs(Config.Regions or {})do
-    worldLines[#worldLines+1]=string.format("%d. %s  [%s]%s",index,region.Name,statusText[region.Status] or "잠김",region.Story and ("\n   "..region.Story) or "")
+    local bit=regionBits[region.Id]
+    local seen=bit==nil or bit32.band(discovered,bit)~=0
+    worldLines[#worldLines+1]=string.format("%d. %s  [%s%s]%s",index,region.Name,statusText[region.Status] or "잠김",
+      bit and (seen and " · 발견" or " · 미발견") or "",seen and region.Story and ("\n   "..region.Story) or "")
+  end
+  worldLines[#worldLines+1]="\n몬스터 도감 (처치할수록 기록이 열려)"
+  for _,entry in ipairs(Config.Bestiary or {})do
+    local kills=player:GetAttribute(entry.Field) or 0
+    if kills<=0 then
+      worldLines[#worldLines+1]="· ???  (아직 만나지 못함)"
+    else
+      worldLines[#worldLines+1]=string.format("· %s  처치 %d  /  서식지: %s",entry.Name,kills,entry.Habitat)
+      for tier,need in ipairs({1,5,15})do
+        worldLines[#worldLines+1]="   "..(kills>=need and entry.Lore[tier] or string.format("   (처치 %d회에 열림)",need))
+      end
+    end
   end
   worldLines[#worldLines+1]="\n파티 (최대 4인)\n1. 나 (플레이어)"
   for index,member in ipairs(Config.PartyMembers or {})do
@@ -1236,7 +1253,7 @@ player:GetAttributeChangedSignal("RunActive"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("QuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestProgress"):Connect(renderMeadowPages)
-for _,name in ipairs({"ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered"})do
+for _,name in ipairs({"ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","WorldDiscovered","DexKillWolf","DexKillBat","DexKillAlpha"})do
   player:GetAttributeChangedSignal(name):Connect(renderMeadowPages)
 end
 for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채집","scope-coreloop-1-6ebe58f496"},{"장비 강화","scope-coreloop-2-6c927cfa40"}})do

@@ -3300,6 +3300,10 @@ local function applyMeadowDamage(player,target,damage)
       target.isBoss and 45 or target.isAlpha and 18 or 5)
     -- [사냥 숙련도] 실제 서버에서 처치가 확정된 늑대·박쥐만 기록한다.
     -- 살아 있는 사슴·토끼 관찰은 사냥으로 인정하지 않으며 도감·드랍 변경 없음.
+    -- [몬스터 도감] 서버가 확정한 처치만 기록한다.
+    if target.kind=="wolf" then setNumber(player,"DexKillWolf",readNumber(player,"DexKillWolf",0)+1) end
+    if target.kind=="bat" then setNumber(player,"DexKillBat",readNumber(player,"DexKillBat",0)+1) end
+    if target.isAlpha then setNumber(player,"DexKillAlpha",readNumber(player,"DexKillAlpha",0)+1) end
     if target.kind=="wolf" or target.kind=="bat" then
       setNumber(player,"HuntingProficiency",readNumber(player,"HuntingProficiency",0)+1)
     end
@@ -5131,3 +5135,21 @@ do
   gate(volcanoCenter+Vector3.new(170,4,0),"오아시스 지하로 이동",Color3.fromRGB(120,210,255),11,"야영지 표식을 모두 조사해야 해(메인 10장 이후).",oasisCenter+Vector3.new(-170,6,0))
   gate(oasisCenter+Vector3.new(-175,4,0),"화산 협곡으로 귀환",Color3.fromRGB(255,130,70),1,"",volcanoCenter+Vector3.new(160,6,0))
 end
+
+-- [지역 발견] 실제 위치가 지역 안에 들어가면 서버가 발견 비트를 기록한다(1 초원·2 숲·4 화산·8 오아시스).
+task.spawn(function()
+  local bits={meadow=1,worldtree=2,volcano=4,oasis=8}
+  while true do
+    task.wait(3)
+    for _,player in ipairs(Players:GetPlayers()) do
+      if player:GetAttribute("ProfileReady")==true then
+        local bit=bits[meadowRegionOf(player)]
+        local mask=readNumber(player,"WorldDiscovered",1)
+        if bit and bit32.band(mask,bit)==0 then
+          setNumber(player,"WorldDiscovered",bit32.bor(mask,bit))
+          pcall(function() villageDialogue(player,"새로운 지역 발견","지도에 새 지역이 기록됐어. 세계 탭에서 확인해.") end)
+        end
+      end
+    end
+  end
+end)

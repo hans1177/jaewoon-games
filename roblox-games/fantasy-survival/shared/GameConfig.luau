@@ -186,6 +186,15 @@ local Config = {
      Chronicle="모래서약 기사단은 가장 최근에 봉인됐고 이름을 지우는 미러의 술식이 시작된 사례다.",
      Choice="합류하면 회복 스킬 연계. 이름을 돌려주면 이프가 미나의 단서에 대해 힌트를 준다."},
   },
+  -- [몬스터 도감 · 위쳐식] 처치 횟수(Field)에 따라 1회·5회·15회에 항목이 열린다. 새 몬스터 모델이 들어오면 항목을 추가한다.
+  Bestiary = {
+    {Id="wolf",Name="늑대",Field="DexKillWolf",Habitat="초원 · 세계수 숲 · 화산 · 오아시스",
+     Lore={"무리 지어 사냥하는 야생 늑대. 가까이 오면 물려고 달려든다.","공격 직전 몸을 낮춘다. 그 순간 막기나 회피로 연타를 끊을 수 있다.","봉인된 숲에서는 저주에 물든 개체가 늘어난다. 사람이었던 흔적이 목걸이에 남아 있다."}},
+    {Id="bat",Name="황혼 박쥐",Field="DexKillBat",Habitat="초원 가장자리 · 화산 · 오아시스",
+     Lore={"밤에 활동하는 박쥐. 빠르게 스치며 물고 간다.","정면으로 달려들 때 짧은 예고음이 난다. 옆으로 회피하면 쉽게 피한다.","미러의 마력이 퍼진 곳에서만 보라빛으로 변한다. 이 숲이 거짓이라는 첫 단서다."}},
+    {Id="alpha",Name="우두머리 늑대",Field="DexKillAlpha",Habitat="초원 서쪽 · 세계수 숲(저주받은 늑대인간)",
+     Lore={"무리를 이끄는 거대한 늑대. 연타 공격은 막기 타이밍으로 끊는다.","일정 체력 이하에서는 더 자주 달려든다. 회피 연속 단계로 거리를 벌려라.","숲 안쪽의 큰 늑대는 보병대장 닉이 저주로 변한 모습이다. 쓰러뜨려 저주를 눌러야 한다."}},
+  },
   -- [초원 마을 의뢰] 주민 진술 1개 · 현장 단서 1개 · 실전 전투 1회.
   -- 기존 저장 키·선택별 보상은 유지하고, 이전 조사 기록 비트는 마이그레이션 호환한다.
   VillageContracts = {
@@ -322,6 +331,8 @@ local Config = {
     -- 구형 저장은 존재하지 않는 숫자 필드를 기본값으로 읽어 이관한다.
     VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0,
     -- [이어하기] 이전 프로필에 없는 필드는 0으로 마이그레이션. 서버 검증된 위치만 복원한다.
+    -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
