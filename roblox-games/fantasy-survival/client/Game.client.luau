@@ -5327,6 +5327,10 @@ do
           and "서버 프로필 준비 실패 · 다시 시작해" or "서버 연결 지연 · 다시 시도해"
         return
       end
+      -- [신규 유저 오프닝] 저장이 없는 "모험 시작"도 첫 입장이므로 오프닝을 재생한다.
+      if not isFresh and player:GetAttribute("MeadowProfileHadSave")~=true then
+        isFresh=true
+      end
       setProgress(0,0,"저장 데이터 확인")
       local resumeDeadline=os.clock()+26
       while entranceOpen and token==runToken
