@@ -2802,7 +2802,7 @@ local skillInfo={
   ["skill-meadow-heal"]={"마력","체력을 회복해. 위험할 때 써.",7},
   ["skill-meadow-focus"]={"마력","잠깐 마력을 모아 강해져.",7},
   ["skill-meadow-oath"]={"수호","각성기. 체력 회복 + 주변 적 전체에 3배 피해. 재사용 90초.",2},
-  ["skill-meadow-ultimate"]={"전사","궁극기. 아드레날린 100%일 때 발동. 무기마다 효과가 달라(대검 기절 강타, 도끼 이중 회전, 단검 연속 암습, 활 폭우, 지팡이 폭발, 검·방패 연속 베기·철벽). 때리거나 맞으면 차.",15},
+  ["skill-meadow-ultimate"]={"전사","궁극기. 아드레날린 100%일 때 발동, 무기마다 A/B 변형 선택. 대검 지면 강타/회전 휩쓸기 · 도끼 이중 회전/도약 내려찍기 · 단검 연속 암습/그림자 폭발 · 활 폭우/관통 사격 · 지팡이 폭발/치유의 빛 · 검 5연속/반격 일섬.",15},
   ["skill-meadow-emote"]={"기타","인사 동작. 전투 효과 없음.",5},
   ["meadow-unarmed-rush"]={"전사","맨손 잽·훅 연타.",2},
   ["meadow-unarmed-uppercut"]={"전사","크게 올려치는 승룡 어퍼컷.",2},
@@ -3126,6 +3126,15 @@ skillUse.BackgroundColor3=Color3.fromRGB(98,65,45);skillUse.Parent=skillDetail
 local skillQuick=CommonUI.CreatePrimaryButton({name="RegisterQuickSkill",text="퀵슬롯 등록",minHeight=52})
 skillQuick.Position=UDim2.new(1/3,2,0,134);skillQuick.Size=UDim2.new(1/3,-8,0,52)
 skillQuick.BackgroundColor3=Color3.fromRGB(46,86,98);skillQuick.Parent=skillDetail
+local ultToggle=CommonUI.CreatePrimaryButton({name="UltimateVariant",text="변형 A",minHeight=30})
+ultToggle.Position=UDim2.new(1,-112,0,7);ultToggle.Size=UDim2.fromOffset(100,30)
+ultToggle.BackgroundColor3=Color3.fromRGB(110,78,40);ultToggle.Visible=false;ultToggle.Parent=skillDetail
+ultToggle.Activated:Connect(function()
+  local nextChoice=(tonumber(player:GetAttribute("MeadowUltChoice")) or 1)==1 and 2 or 1
+  player:SetAttribute("MeadowUltChoice",nextChoice) -- 표시용 즉시 반영, 서버가 같은 값으로 확정
+  remote:FireServer("ult:set:"..nextChoice)
+  if meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end
+end)
 local skillRows={}
 local selectedSkill=nil
 local skillCategory="전체"
@@ -3209,6 +3218,9 @@ meadowActionButtons.refreshSkills=function()
   skillText.Text=current.description.."\n\n재사용 "..cooldownText.." · 기력 "..gauge.."/"..math.floor(stamina)..
     "  ·  "..(selLock and ("아직 못 배웠어: 스킬 트리 > "..selLock) or (remaining>.05 and (math.ceil(remaining).."초 남음") or (available and "사용 가능" or "캐릭터 대기")))
     .."\n"..equippedText.." · 하단 1~5번 칸을 선택해 장착·교체"
+  local isUlt=selectedSkill.Id=="skill-meadow-ultimate"
+  ultToggle.Visible=isUlt
+  if isUlt then ultToggle.Text="변형 "..(((tonumber(player:GetAttribute("MeadowUltChoice")) or 1)==2) and "B" or "A").." (누르면 전환)" end
   skillQuick.Text=selLock and "잠김" or "퀵슬롯 등록"
   skillQuick.BackgroundColor3=selLock and Color3.fromRGB(70,60,60) or Color3.fromRGB(46,86,98)
   available=available and not selLock

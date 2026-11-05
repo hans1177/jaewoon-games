@@ -5788,21 +5788,50 @@ local function meadowUltimate(player)
       end
     end
     local list
-    if cls=="Greatsword" then list=inRange(16,12);hitAll(list,1.6);stun(list,1.5)
-    elseif cls=="Axe" then list=inRange(14,12);hitAll(list,1.1);task.delay(.5,function() hitAll(inRange(14,12),1.1) end)
+    local alt=(tonumber(player:GetAttribute("MeadowUltChoice")) or 1)==2
+    local function guardFor(seconds)
+      local defense=meadowDefense[player] or {}
+      defense.guardUntil=math.max(defense.guardUntil or 0,os.clock()+seconds)
+      meadowDefense[player]=defense
+    end
+    local function sequence(target,count,gap,scale)
+      if not target then return end
+      for i=0,count-1 do task.delay(i*gap,function() if target.HP>0 then applyMeadowDamage(player,target,math.floor(base*scale)) end end) end
+    end
+    if cls=="Greatsword" then
+      if alt then list=inRange(22,12);hitAll(list,.9);task.delay(.5,function() hitAll(inRange(22,12),.9) end) -- B 회전 휩쓸기
+      else list=inRange(16,12);hitAll(list,1.6);stun(list,1.5) end -- A 지면 강타
+    elseif cls=="Axe" then
+      if alt then -- B 도약 내려찍기
+        local target=nearestEnemy(root,20)
+        if target then applyMeadowDamage(player,target,math.floor(base*3.2)) hitAll(inRange(8,8),.6) end
+      else list=inRange(14,12);hitAll(list,1.1);task.delay(.5,function() hitAll(inRange(14,12),1.1) end) end -- A 이중 회전
     elseif cls=="Dagger" then
-      local target=nearestEnemy(root,16)
-      if target then for i=0,5 do task.delay(i*.18,function() if target.HP>0 then applyMeadowDamage(player,target,math.floor(base*.5)) end end) end end
-    elseif cls=="Bow" then list=inRange(34,6);hitAll(list,1.3)
-    elseif cls=="Staff" then list=inRange(22,12);hitAll(list,1.5)
+      if alt then -- B 그림자 폭발: 3초 회피 + 주변 일제 타격
+        local defense=meadowDefense[player] or {}
+        defense.dodgeUntil=os.clock()+3;meadowDefense[player]=defense
+        list=inRange(10,12);hitAll(list,1.5)
+      else sequence(nearestEnemy(root,16),6,.18,.5) end -- A 6연속 암습
+    elseif cls=="Bow" then
+      if alt then -- B 관통 사격: 한 표적 강타 + 주변 파편
+        local target=nearestEnemy(root,40)
+        if target then applyMeadowDamage(player,target,math.floor(base*4.5)) end
+      else list=inRange(34,6);hitAll(list,1.3) end -- A 폭우
+    elseif cls=="Staff" then
+      if alt then -- B 치유의 빛: 체력 40% 회복 + 약한 피해
+        humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.4)
+        setNumber(player,"Health",math.floor(humanoid.Health))
+        list=inRange(22,12);hitAll(list,.6)
+      else list=inRange(22,12);hitAll(list,1.5) end -- A 마력 폭발
     else
-      local target=nearestEnemy(root,18)
-      if target then for i=0,4 do task.delay(i*.2,function() if target.HP>0 then applyMeadowDamage(player,target,math.floor(base*.6)) end end) end end
+      if alt then -- B 반격 일섬: 강한 단일 일격 + 방어
+        local target=nearestEnemy(root,18)
+        if target then applyMeadowDamage(player,target,math.floor(base*3.5)) end
+        guardFor(4)
+      else sequence(nearestEnemy(root,18),5,.2,.6) end -- A 5연속 베기
       -- 방패(한손+방패 자세)면 철벽 반격: 잠시 방어 상태 + 체력 15% 회복.
       if meadowRpg.nodeRank(player,19)>0 then
-        local defense=meadowDefense[player] or {}
-        defense.guardUntil=math.max(defense.guardUntil or 0,os.clock()+4)
-        meadowDefense[player]=defense
+        guardFor(4)
         humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.15)
         setNumber(player,"Health",math.floor(humanoid.Health))
       end
@@ -6311,6 +6340,9 @@ remote.OnServerEvent:Connect(function(player, actionId)
     return
   end
   -- [마을 계약] 동일한 게임 RemoteEvent로 받되 NPC 서버 대화 세션·거리·단계를 다시 검증한다.
+  if actionId=="ult:set:1" or actionId=="ult:set:2" then
+    player:SetAttribute("MeadowUltChoice",tonumber(actionId:sub(-1)));return
+  end
   if string.sub(actionId,1,8)=="village:" then villageChoose(player,actionId);return end
   local chargedBolt=actionId=="mf-magic-1-1:charge"
   local combatActionId=chargedBolt and "mf-magic-1-1" or actionId
