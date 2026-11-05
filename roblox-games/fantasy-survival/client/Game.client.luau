@@ -3109,7 +3109,8 @@ meadowActionButtons.refreshSkills=function()
     local lockText=meadowArt.skillLock(row.action.Id)
     local equippedSlot=nil
     for slot=1,5 do if meadowArt.quickIds[slot]==row.action.Id then equippedSlot=slot;break end end
-    row.state.Text=lockText and ("잠김 · "..lockText) or (remaining>.05 and ("대기 "..math.ceil(remaining).."초") or (equippedSlot and (equippedSlot.."번 장착 중") or "사용 가능"))
+    row.state.Text=lockText and ("잠김 · "..lockText) or (remaining>.05 and ("대기 "..math.ceil(remaining).."초") or "사용 가능")
+    if not lockText and remaining<=.05 and equippedSlot then row.state.Text=equippedSlot.."번 장착 중" end
     row.state.TextColor3=lockText and Color3.fromRGB(200,120,110) or (remaining>.05 and Color3.fromRGB(172,165,160) or skillColors[row.category])
     row.state.TextSize=lockText and 10 or 11
     local iconImg=row.button:FindFirstChild("SkillIcon")
