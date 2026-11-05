@@ -248,7 +248,9 @@ meadowArt.sfxFiles={
   hurt="rbxasset://sounds/collide.wav",whoosh="rbxasset://sounds/action_jump.mp3",
 }
 meadowArt.sfxAt={}
-meadowArt.quickIds={false,false,false,false,"skill-meadow-heavy","skill-meadow-sweep","skill-meadow-bolt"} -- 하단 퀵슬롯 1=무기 2=채집 3=체력약 4=기력약 5~7=기술
+meadowArt.quickIds={"@weapon","@hp","skill-meadow-heavy","skill-meadow-sweep","skill-meadow-bolt"} -- 하단 퀵슬롯 5칸: 칸마다 무기·채집·약·기술 중 고른다(기본값).
+meadowArt.quickSpecial={"@weapon","@interact","@hp","@sp","@oil"}
+meadowArt.quickSpecialLabel={["@weapon"]="무기 꺼내기",["@interact"]="채집·조작",["@hp"]="체력약",["@sp"]="기력약",["@oil"]="오일 바르기"}
 meadowArt.sfx=function(name,volume,pitch)
   local id=meadowArt.sfxFiles[name]
   if not id then return end
@@ -3048,7 +3050,7 @@ do
   local head=Instance.new("TextLabel")
   head.BackgroundTransparency=1;head.Position=UDim2.fromOffset(10,4);head.Size=UDim2.new(1,-20,0,20)
   head.Font=Enum.Font.GothamBold;head.TextSize=12;head.TextXAlignment=Enum.TextXAlignment.Left
-  head.TextColor3=Color3.fromRGB(230,240,222);head.Text="하단 퀵슬롯 5~7번  ·  카드를 끌어 놓거나, 카드 선택 후 칸을 눌러 등록";head.Parent=tray
+  head.TextColor3=Color3.fromRGB(230,240,222);head.Text="하단 퀵슬롯 1~5번  ·  기술 카드를 끌어 놓거나 선택 후 칸을 누르면 등록, 선택 없이 누르면 무기·채집·약 순환";head.Parent=tray
   local boxes={}
   local function actionLabel(id)
     for _,action in ipairs(Config.Actions)do if action.Id==id then return action.Label end end
@@ -3056,10 +3058,12 @@ do
   end
   local function refreshDrop()
     for i,box in ipairs(boxes)do
-      local id=meadowArt.quickIds[i+4]
-      box.label.Text=(i+4)..". "..(id and actionLabel(id) or "비어 있음")
-      box.icon.Visible=id~=nil
-      if id then meadowArt.skill(box.icon,id) end
+      local id=meadowArt.quickIds[i]
+      local name=id and (meadowArt.quickSpecialLabel[id] or actionLabel(id)) or "비어 있음"
+      box.label.Text=i..". "..name
+      box.icon.Visible=id~=nil and id~=false
+      box.icon.ImageColor3=Color3.new(1,1,1)
+      if id and meadowArt.setQuickIcon then meadowArt.setQuickIcon(box.icon,id) end
     end
   end
   local function assign(slot,id)
@@ -3068,10 +3072,10 @@ do
     if meadowArt.refreshQuickHud then meadowArt.refreshQuickHud() end
     meadowArt.sfx("ping",.5,1.1)
   end
-  for i=1,3 do
+  for i=1,5 do
     local box=Instance.new("TextButton")
     box.Name="QuickBox"..i;box.Text="";box.AutoButtonColor=true
-    box.Position=UDim2.new((i-1)/3,4,0,28);box.Size=UDim2.new(1/3,-8,0,62)
+    box.Position=UDim2.new((i-1)/5,3,0,28);box.Size=UDim2.new(1/5,-6,0,62)
     box.BackgroundColor3=Color3.fromRGB(33,50,48);box.BorderSizePixel=0;box.Parent=tray
     local bc=Instance.new("UICorner");bc.CornerRadius=UDim.new(0,10);bc.Parent=box
     local be=Instance.new("UIStroke");be.Color=Color3.fromRGB(90,120,106);be.Parent=box
@@ -3080,11 +3084,19 @@ do
     icon.Position=UDim2.new(.5,0,0,3);icon.Parent=box
     local label=Instance.new("TextLabel")
     label.BackgroundTransparency=1;label.Position=UDim2.new(0,2,1,-20);label.Size=UDim2.new(1,-4,0,18)
-    label.Font=Enum.Font.GothamBold;label.TextSize=11;label.TextColor3=Color3.new(1,1,1);label.TextTruncate=Enum.TextTruncate.AtEnd
+    label.Font=Enum.Font.GothamBold;label.TextSize=10;label.TextColor3=Color3.new(1,1,1);label.TextTruncate=Enum.TextTruncate.AtEnd
     label.Parent=box
     boxes[i]={box=box,icon=icon,label=label,edge=be}
     box.Activated:Connect(function()
-      if selectedSkill then assign(i+4,selectedSkill.Id) end
+      if selectedSkill then assign(i,selectedSkill.Id)
+      else
+        -- 선택한 기술이 없으면 무기 → 채집 → 체력약 → 기력약 → 오일 → 비움 순으로 돌린다.
+        local list=meadowArt.quickSpecial
+        local cur=meadowArt.quickIds[i]
+        local nextId=list[1]
+        for k,v in ipairs(list) do if v==cur then nextId=list[k+1] or false end end
+        assign(i,nextId)
+      end
     end)
   end
   refreshDrop()
@@ -3130,10 +3142,11 @@ do
     for _,entry in ipairs(boxes)do entry.edge.Thickness=1 end
     if current.moved then
       local slot=boxAt(Vector2.new(input.Position.X,input.Position.Y))
-      if slot then assign(slot+4,current.row.action.Id) end
+      if slot then assign(slot,current.row.action.Id) end
     end
   end)
   meadowActionButtons.refreshDrop=refreshDrop
+  meadowArt.refreshQuickTray=refreshDrop
 end
 skillQuick.Activated:Connect(function()
   if not selectedSkill or not meadowActionButtons.setQuickSkill then return end
@@ -10119,9 +10132,9 @@ end)()
   end)
 end)()
 
--- [하단 퀵슬롯] 기존 10칸 시안 단축바를 숨기고 한 줄로 통합: 1 무기 · 2 채집/상호작용 · 3 체력약 · 4 기력약 · 5~7 등록 기술.
+-- [하단 퀵슬롯] 5칸. 칸마다 무기·채집·체력약·기력약·오일·기술 중 골라 등록한다(보관함 메뉴의 퀵슬롯 칸).
 ;(function()
-  local COUNT=8
+  local COUNT=5
   local bar=Instance.new("Frame")
   bar.Name="MeadowQuickBar";bar.AnchorPoint=Vector2.new(.5,1);bar.Position=UDim2.new(.5,0,1,-8)
   bar.Size=UDim2.fromOffset(COUNT*52+(COUNT-1)*4,52);bar.BackgroundTransparency=1;bar.ZIndex=30;bar.Parent=gui
@@ -10154,15 +10167,13 @@ end)()
   end
   local function press(i)
     if gui:GetAttribute("GameMenuOpen")==true or player:GetAttribute("ProfileReady")~=true then return end
-    if i==1 then toggleWeapon()
-    elseif i==2 then activateMeadowAction("scope-coreloop-1-6ebe58f496")
-    elseif i==3 then remote:FireServer("meadow:rpg:tonic:use:herbal_tonic")
-    elseif i==4 then remote:FireServer("meadow:rpg:tonic:use:energy_tonic")
-    elseif i==8 then remote:FireServer("oil:auto")
-    else
-      local id=meadowArt.quickIds[i]
-      if id then activateMeadowAction(id) end
-    end
+    local id=meadowArt.quickIds[i]
+    if id=="@weapon" then toggleWeapon()
+    elseif id=="@interact" then activateMeadowAction("scope-coreloop-1-6ebe58f496")
+    elseif id=="@hp" then remote:FireServer("meadow:rpg:tonic:use:herbal_tonic")
+    elseif id=="@sp" then remote:FireServer("meadow:rpg:tonic:use:energy_tonic")
+    elseif id=="@oil" then remote:FireServer("oil:auto")
+    elseif id then activateMeadowAction(id) end
   end
   for i=1,COUNT do
     local slot=Instance.new("TextButton")
@@ -10193,17 +10204,22 @@ end)()
     slot.Activated:Connect(function() press(i) end)
     slots[i]={slot=slot,icon=icon,shade=shade,timer=timer,edge=e,count=count}
   end
+  function meadowArt.setQuickIcon(icon,id)
+    icon.ImageColor3=Color3.new(1,1,1)
+    if id=="@weapon" then meadowArt.gear(icon,0)
+    elseif id=="@interact" then icon.Image=meadowRealActionIcons.interact;icon.ImageRectSize=Vector2.zero;icon.ImageRectOffset=Vector2.zero
+    elseif id=="@hp" then meadowArt.gear(icon,32)
+    elseif id=="@sp" then meadowArt.gear(icon,33)
+    elseif id=="@oil" then meadowArt.gear(icon,33);icon.ImageColor3=Color3.fromRGB(255,190,70)
+    elseif id then meadowArt.skill(icon,id) end
+  end
   meadowArt.refreshQuickHud=function()
-    meadowArt.gear(slots[1].icon,0)
-    slots[2].icon.Image=meadowRealActionIcons.interact;slots[2].icon.ImageRectSize=Vector2.zero;slots[2].icon.ImageRectOffset=Vector2.zero
-    meadowArt.gear(slots[3].icon,32)
-    meadowArt.gear(slots[4].icon,33)
-    meadowArt.gear(slots[8].icon,33);slots[8].icon.ImageColor3=Color3.fromRGB(255,190,70)
-    for i=5,7 do
+    for i=1,COUNT do
       local id=meadowArt.quickIds[i]
-      slots[i].icon.Visible=id~=nil
-      if id then meadowArt.skill(slots[i].icon,id) end
+      slots[i].icon.Visible=id~=nil and id~=false
+      if id then meadowArt.setQuickIcon(slots[i].icon,id) end
     end
+    if meadowArt.refreshQuickTray then meadowArt.refreshQuickTray() end
   end
   meadowArt.refreshQuickHud()
   local elapsed=0
@@ -10216,24 +10232,34 @@ end)()
     bar.Visible=gui:GetAttribute("GameMenuOpen")~=true
     local now=workspace:GetServerTimeNow()
     local armed=player.Character and player.Character:FindFirstChildOfClass("Tool")~=nil
-    slots[1].edge.Color=armed and Color3.fromRGB(120,255,170) or Color3.fromRGB(218,189,126)
     local hp=math.floor(tonumber(player:GetAttribute("MeadowPotionHealth")) or 0)
     local sp=math.floor(tonumber(player:GetAttribute("MeadowPotionStamina")) or 0)
-    slots[3].count.Text=hp>0 and tostring(hp) or "";slots[3].icon.ImageTransparency=hp>0 and 0 or .6
-    slots[4].count.Text=sp>0 and tostring(sp) or "";slots[4].icon.ImageTransparency=sp>0 and 0 or .6
     local oilCharges=math.floor(tonumber(player:GetAttribute("MeadowOilCharges")) or 0)
-    slots[8].count.Text=oilCharges>0 and tostring(oilCharges) or "";slots[8].icon.ImageTransparency=oilCharges>0 and 0 or .45
-    for i=5,7 do
+    for i=1,COUNT do
       local id=meadowArt.quickIds[i]
-      local deadline=id and player:GetAttribute("MeadowReady_"..id)
-      local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
-      slots[i].shade.Visible=remaining>.05
-      slots[i].timer.Text=remaining>.05 and tostring(math.ceil(remaining)) or ""
+      local slotUi=slots[i]
+      slotUi.edge.Color=Color3.fromRGB(218,189,126)
+      slotUi.count.Text="";slotUi.icon.ImageTransparency=0
+      slotUi.shade.Visible=false;slotUi.timer.Text=""
+      if id=="@weapon" then
+        slotUi.edge.Color=armed and Color3.fromRGB(120,255,170) or Color3.fromRGB(218,189,126)
+      elseif id=="@hp" then
+        slotUi.count.Text=hp>0 and tostring(hp) or "";slotUi.icon.ImageTransparency=hp>0 and 0 or .6
+      elseif id=="@sp" then
+        slotUi.count.Text=sp>0 and tostring(sp) or "";slotUi.icon.ImageTransparency=sp>0 and 0 or .6
+      elseif id=="@oil" then
+        slotUi.count.Text=oilCharges>0 and tostring(oilCharges) or "";slotUi.icon.ImageTransparency=oilCharges>0 and 0 or .45
+      elseif id and id~="@interact" then
+        local deadline=player:GetAttribute("MeadowReady_"..id)
+        local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
+        slotUi.shade.Visible=remaining>.05
+        slotUi.timer.Text=remaining>.05 and tostring(math.ceil(remaining)) or ""
+      end
     end
   end)
   UserInputService.InputBegan:Connect(function(input,processed)
     if processed or UserInputService:GetFocusedTextBox() then return end
-    local keys={Enum.KeyCode.One,Enum.KeyCode.Two,Enum.KeyCode.Three,Enum.KeyCode.Four,Enum.KeyCode.Five,Enum.KeyCode.Six,Enum.KeyCode.Seven,Enum.KeyCode.Eight}
+    local keys={Enum.KeyCode.One,Enum.KeyCode.Two,Enum.KeyCode.Three,Enum.KeyCode.Four,Enum.KeyCode.Five}
     for i,code in ipairs(keys)do if input.KeyCode==code then press(i) end end
   end)
   task.spawn(function()
