@@ -155,10 +155,11 @@ local meadowPalette={
   grass=Color3.fromRGB(108,120,91),leafyGrass=Color3.fromRGB(83,107,79),
   ground=Color3.fromRGB(119,100,83),rock=Color3.fromRGB(104,106,100),
   bark=Color3.fromRGB(84,72,60),leaves=Color3.fromRGB(75,100,76),
-  wolf=Color3.fromRGB(144,136,121),boar=Color3.fromRGB(126,101,83),
-  deer=Color3.fromRGB(157,125,102),rabbit=Color3.fromRGB(181,176,157),
-  bee=Color3.fromRGB(217,177,106),bat=Color3.fromRGB(125,129,138),
-  golem=Color3.fromRGB(129,138,126),
+  -- [몹 고유색] 전부 회색·흰색으로 보이던 단색을 종별 자연색으로 바꾼다.
+  wolf=Color3.fromRGB(96,86,78),boar=Color3.fromRGB(98,66,46),
+  deer=Color3.fromRGB(150,98,60),rabbit=Color3.fromRGB(206,184,148),
+  bee=Color3.fromRGB(236,184,58),bat=Color3.fromRGB(74,62,96),
+  golem=Color3.fromRGB(104,126,98),
   ghost=Color3.fromRGB(131,210,226),bandit=Color3.fromRGB(111,76,67),
 }
 local meadowTerrain = workspace.Terrain
@@ -478,26 +479,35 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
               if appearance then appearance:Destroy() end
               if surface.TextureID~="" then surface.TextureID="" end
               surface.MaterialVariant=""
-              local piece=surface.Name:lower()
-              if piece:find("hoof",1,true) or piece:find("eye_black",1,true)
-                or piece:find("eye black",1,true) then
-                surface.Color=Color3.fromRGB(57,46,39)
-              elseif piece:find("eye_white",1,true) or piece:find("eye white",1,true) then
-                surface.Color=Color3.fromRGB(231,222,204)
-              elseif piece:find("antler",1,true) or piece:find("horn",1,true) then
-                surface.Color=Color3.fromRGB(169,143,104)
-              elseif piece:find("light",1,true) or piece:find("belly",1,true)
-                or piece:find("chest",1,true) then
-                surface.Color=Color3.fromRGB(201,173,135)
-              elseif piece:find("dark",1,true) then
-                surface.Color=Color3.fromRGB(112,69,45)
-              else
-                surface.Color=animalTint
+              -- [사슴 부위별 색] 원본 7조각의 크기 순서로 몸통(적갈색)·배/가슴(연한 크림)·진한 갈색,
+              -- 작은 조각은 뿔(황갈색)·발굽/눈(짙은 갈색·검정)으로 나눈다.
+              local ranks=clone:GetAttribute("DeerPartRanks")
+              if not ranks then
+                local list={}
+                for _,part in ipairs(clone:GetDescendants()) do
+                  if part:IsA("MeshPart") then
+                    table.insert(list,{part=part,volume=part.Size.X*part.Size.Y*part.Size.Z+part.Size.Magnitude*.01})
+                  end
+                end
+                table.sort(list,function(a,b) return a.volume>b.volume end)
+                local order={}
+                for index,row in ipairs(list) do order[row.part.Name]=index end
+                clone:SetAttribute("DeerPartRanks",true)
+                clone:SetAttribute("DeerRankJson",game:GetService("HttpService"):JSONEncode(order))
+                ranks=true
               end
-              surface.Material=Enum.Material.SmoothPlastic
+              local order=game:GetService("HttpService"):JSONDecode(clone:GetAttribute("DeerRankJson") or "{}")
+              local rank=order[surface.Name] or 1
+              surface.Color=rank==1 and Color3.fromRGB(150,98,60)
+                or rank==2 and Color3.fromRGB(206,170,124)
+                or rank==3 and Color3.fromRGB(104,66,42)
+                or rank==4 and Color3.fromRGB(176,146,102)
+                or rank==5 and Color3.fromRGB(52,42,36)
+                or Color3.fromRGB(24,20,20)
+              surface.Material=Enum.Material.Fabric
             else
               surface.Color=animalTint
-              surface.Material=Enum.Material.Plastic
+              surface.Material=Enum.Material.Fabric
             end
           end
           surface.Reflectance=0
@@ -3262,8 +3272,15 @@ local function spawnEnemy(site, siteIndex)
         if appearance then appearance:Destroy() end
         if surface.TextureID~="" then surface.TextureID="" end
         surface.MaterialVariant=""
-        surface.Material=Enum.Material.Plastic
-        surface.Color=surface.Color:Lerp(bodyTint,.78)
+        -- [재질] 털 달린 몹은 Fabric(보풀 질감), 골렘은 Slate(거친 돌), 벌은 매끈한 광택으로 표현한다.
+        local furry=partId=="wolf" or partId=="bat" or partId=="boar" or partId=="rabbit"
+        surface.Material=furry and Enum.Material.Fabric
+          or (isBoss or partId=="golem") and Enum.Material.Slate
+          or partId=="bee" and Enum.Material.SmoothPlastic
+          or Enum.Material.Plastic
+        -- 단지 지역 단계가 높을수록 털이 어두워지게 한다(같은 늑대라도 단계별로 구분).
+        local shade=1-math.clamp((site.tier or 1)-1,0,3)*.07
+        surface.Color=Color3.new(bodyTint.R*shade,bodyTint.G*shade,bodyTint.B*shade)
       end
       if partId=="ghost" then
         -- 등록된 원본 해골 메시를 반투명 원혼으로 연출한다. 별도 형상은 만들지 않는다.
