@@ -3027,8 +3027,11 @@ local meadowRpg=(function()
         defense+=item.Defense or 0
       end
     end
+    local pieces=0
+    for _,slot in ipairs({"Chest","Hands","Legs","Feet"}) do if equipped(player,slot) then pieces+=1 end end
+    local armorBonus=math.floor(math.clamp(readNumber(player,"ArmorTier",0),0,10)*pieces/2)
     return attack+math.clamp(readNumber(player,"MeadowTalentMartial",0),0,5),
-      defense+math.clamp(readNumber(player,"MeadowTalentDefense",0),0,3)
+      defense+armorBonus+math.clamp(readNumber(player,"MeadowTalentDefense",0),0,3)
   end
   local function publishStats(player)
     local attack,defense=stats(player)
@@ -3097,6 +3100,25 @@ local meadowRpg=(function()
       feedback(player,mat.Name.." 1개 판매  +"..mat.Value.." 재화")
       return true
     end
+    if group=="gear" and gear and verb=="temper" then
+      local item,index=gear.entry,gear.index
+      if not (item.Slot=="Chest" or item.Slot=="Hands" or item.Slot=="Legs" or item.Slot=="Feet") or not hasGear(player,index) then return true end
+      if not nearStation(player,"Anvil") then feedback(player,"마을 대장간의 모루 가까이에서 갑옷을 단련할 수 있어.");return true end
+      local tier=readNumber(player,"ArmorTier",0)
+      if tier>=10 then feedback(player,"갑옷 단련은 최대 10단계야.");return true end
+      local ingotCost,leatherCost=Config.ArmorTemperCost(tier,readNumber(player,"SmithXp",0))
+      if readNumber(player,"Ingot",0)<ingotCost or readNumber(player,"Leather",0)<leatherCost then
+        feedback(player,"갑옷 단련 재료: 철 주괴 "..ingotCost.." · 무두질 가죽 "..leatherCost);return true
+      end
+      setNumber(player,"Ingot",readNumber(player,"Ingot",0)-ingotCost)
+      setNumber(player,"Leather",readNumber(player,"Leather",0)-leatherCost)
+      setNumber(player,"ArmorTier",tier+1)
+      addSmithXp(player,4+tier)
+      publishStats(player)
+      if meadowOil.questEvent then meadowOil.questEvent(player,"TEMPER_ARMOR") end
+      feedback(player,"갑옷 단련 +"..(tier+1).."  (착용 방어구 방어력 상승)")
+      return true
+    end
     if group=="gear" and gear then
       local item,index=gear.entry,gear.index
       local ownedGear=hasGear(player,index)
@@ -3124,6 +3146,7 @@ local meadowRpg=(function()
             if item.Slot=="Shield" then meadowOil.questEvent(player,"CRAFT_SHIELD") end
             if item.Rarity=="Rare" or item.Rarity=="Epic" or item.Rarity=="Legendary" then meadowOil.questEvent(player,"CRAFT_RARE") end
             if item.WeaponFamily=="Bow" then meadowOil.questEvent(player,"CRAFT_BOW") end
+            if item.Slot=="Chest" or item.Slot=="Hands" or item.Slot=="Legs" or item.Slot=="Feet" then meadowOil.questEvent(player,"CRAFT_ARMOR") end
           end
         end
         feedback(player,item.Name.." 제작 완료"..(refund and "  · 재료 환급! 주괴 1개" or ""))

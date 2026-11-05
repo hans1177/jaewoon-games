@@ -783,7 +783,7 @@ end)
 -- [전투 HUD] 실제 휴머노이드 최대 체력을 기준으로 표시한다.
 local meadowHealthTrack,meadowHealthControl=CommonUI.CreateHealthBar({name="MeadowHealth",text="체력",textSize=11})
 meadowHealthTrack.Parent=root
-local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","SmithXp","Steel","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","Ingot","Leather","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
+local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","SmithXp","Steel","ArmorTier","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","Ingot","Leather","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
   status.Text="" -- [필요 없는 작은 글씨 제거] 월드/몬스터 수는 기본 화면에 표시하지 않는다.
   local character=player.Character
@@ -2538,8 +2538,16 @@ local function redrawSelection()
   for _,mat in ipairs(Config.Materials)do
     if mat.Refine and mat.Refine.From==(item.mat and item.mat.Field) then refineSource=mat end
   end
-  secondary.Text=item.tonic and "소모품 조합" or (refineSource and refineSource.Refine.Verb.."  ("..refineSource.Refine.Note..")" or "소모품 조합")
-  secondary.Visible=item.tonic~=nil or refineSource~=nil
+  local isArmor=item.gear~=nil and (item.gear.Slot=="Chest" or item.gear.Slot=="Hands" or item.gear.Slot=="Legs" or item.gear.Slot=="Feet")
+    and owned(item)>0
+  local armorTier=tonumber(player:GetAttribute("ArmorTier")) or 0
+  if isArmor then
+    local ingot,leather=Config.ArmorTemperCost(armorTier,player:GetAttribute("SmithXp") or 0)
+    secondary.Text=armorTier>=10 and "갑옷 단련 최대" or string.format("갑옷 단련 +%d → +%d  (주괴 %d · 가죽 %d)",armorTier,armorTier+1,ingot,leather)
+  else
+    secondary.Text=item.tonic and "소모품 조합" or (refineSource and refineSource.Refine.Verb.."  ("..refineSource.Refine.Note..")" or "소모품 조합")
+  end
+  secondary.Visible=item.tonic~=nil or refineSource~=nil or isArmor
   equip.Size=secondary.Visible and UDim2.new(.5,-16,0,48) or UDim2.new(1,-24,0,48)
   for key,card in pairs(itemCards)do
     local selected=key==selectedKey
@@ -2742,7 +2750,9 @@ equip.Activated:Connect(function()
 end)
 secondary.Activated:Connect(function()
   local item=itemRows[selectedKey]
-  if item and item.tonic and player:GetAttribute("ProfileReady")==true then
+  if item and item.gear and player:GetAttribute("ProfileReady")==true then
+    remote:FireServer("meadow:rpg:gear:temper:"..item.gear.Id)
+  elseif item and item.tonic and player:GetAttribute("ProfileReady")==true then
     remote:FireServer("meadow:rpg:tonic:craft:"..item.tonic.Id)
   elseif item and item.mat and player:GetAttribute("ProfileReady")==true then
     for _,mat in ipairs(Config.Materials)do

@@ -413,7 +413,7 @@ local Config = {
     BuildingProficiency = 0, HuntingProficiency = 0, AlchemyProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     RedLeaf = 0, Moonbloom = 0, Mushroom = 0, Ore = 0, Crystal = 0, Magma = 0,
-    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0, Steel = 0, SmithXp = 0, QLSmith = 0, QLSmithP = 0, QLSmith2 = 0, QLSmith2P = 0, QLSmith3 = 0, QLSmith3P = 0,
+    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0, Steel = 0, ArmorTier = 0, SmithXp = 0, QLSmith = 0, QLSmithP = 0, QLSmith2 = 0, QLSmith2P = 0, QLSmith3 = 0, QLSmith3P = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
     MeadowGearOwned=2705,MeadowGearOwned2=0,
@@ -1552,6 +1552,20 @@ Config.SmithStations={
 Config.TemperCost=function(tier,smithXp)
   local rank=Config.SmithingRank(smithXp)
   return math.max(1,1+math.floor(tier*.8)-rank),math.floor(tier/3)
+end
+-- 갑옷·장갑·각반·장화도 대장간 모루에서 만든다(고급 이상). 희귀 1·영웅 2·전설 3 강철 주괴가 든다.
+for _,item in ipairs(Config.MeadowEquipment or {}) do
+  if (item.Slot=="Chest" or item.Slot=="Hands" or item.Slot=="Legs" or item.Slot=="Feet")
+    and item.Rarity~="Common" and not item.Starter then
+    item.ForgeOnly=true
+    local steel=({Rare=1,Epic=2,Legendary=3})[item.Rarity]
+    if steel then item.Steel=(item.Steel or 0)+steel end
+  end
+end
+-- 갑옷 단련: 한 단계마다 착용 중인 방어구 방어력이 오른다(최대 10단계).
+Config.ArmorTemperCost=function(tier,smithXp)
+  local ingot,leather=Config.TemperCost(tier,smithXp)
+  return ingot,leather+1
 end
 -- 희귀 이상 단조 무기는 강철 주괴가 필요하다(영웅 2, 전설 4).
 for _,item in ipairs(Config.MeadowEquipment or {}) do
