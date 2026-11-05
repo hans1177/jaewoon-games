@@ -316,14 +316,49 @@ test('candidate release dispatch cannot claim review or release itself',()=>{
 });
 
 
-test('candidate release selects the manifest bound to the submitted branch',()=>{
+test('candidate release selects only an exact branch manifest and never borrows an unrelated game task',()=>{
   assert.match(releaseWorkflow,/matching_manifests=\(\)/);
   assert.match(releaseWorkflow,/manifest_branch=.*m\.branch/);
   assert.match(releaseWorkflow,/\[ "\$manifest_branch" = "\$SUBMITTED_CANDIDATE_BRANCH" \]/);
   assert.match(releaseWorkflow,/VIBE2_CANDIDATE_MANIFEST_MATCH=/);
   assert.match(releaseWorkflow,/candidate-manifest-not-unique-for-branch/);
-  assert.match(releaseWorkflow,/VIBE2_CANDIDATE_MANIFEST_LEGACY_SINGLE=/);
+  assert.doesNotMatch(releaseWorkflow,/VIBE2_CANDIDATE_MANIFEST_LEGACY_SINGLE=/);
   assert.doesNotMatch(releaseWorkflow,/reason=manifest-count-invalid/);
+
+  // [후보 신원 회귀] 실제 inspect bash 조각을 실행해 잘못된 단일 manifest를 차단한다.
+  const start=releaseWorkflow.indexOf('          mapfile -t manifests < <(find .vibe2/candidates');
+  const end=releaseWorkflow.indexOf('          git show origin/main:game-catalog.json',start);
+  assert.ok(start>=0&&end>start,'manifest selector must execute before catalog and task attribution');
+  const selector=releaseWorkflow.slice(start,end).replace(/^ {10}/gm,'');
+  const target='vibe2/candidate/fantasy-intro-safe-20261103';
+  const runSelector=branches=>{
+    const folder=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-candidate-identity-'));
+    try{
+      const output=path.join(folder,'result.txt');
+      fs.writeFileSync(output,'');
+      for(const [index,branch] of branches.entries()){
+        const dir=path.join(folder,'.vibe2/candidates','sample-'+index);
+        fs.mkdirSync(dir,{recursive:true});
+        fs.writeFileSync(path.join(dir,'manifest.json'),JSON.stringify({branch,taskId:'another-game-task'}));
+      }
+      const stdout=execFileSync('bash',['-euo','pipefail','-c',selector],{
+        cwd:folder,encoding:'utf8',
+        env:{...process.env,SUBMITTED_CANDIDATE_BRANCH:target,GITHUB_OUTPUT:output}
+      });
+      return {stdout,output:fs.readFileSync(output,'utf8')};
+    }finally{fs.rmSync(folder,{recursive:true,force:true});}
+  };
+  for(const branches of [[],['vibe2/candidate/unrelated'],['vibe2/candidate/unrelated-a','vibe2/candidate/unrelated-b'],[target,target]]){
+    const result=runSelector(branches);
+    assert.match(result.output,/decision=reject\n/);
+    assert.match(result.output,/reason=candidate-manifest-not-unique-for-branch/);
+    assert.doesNotMatch(result.stdout,/VIBE2_CANDIDATE_MANIFEST_MATCH=/);
+  }
+  for(const branches of [[target],['vibe2/candidate/unrelated',target]]){
+    const result=runSelector(branches);
+    assert.match(result.stdout,/VIBE2_CANDIDATE_MANIFEST_MATCH=/);
+    assert.doesNotMatch(result.output,/decision=reject/);
+  }
 });
 
 
