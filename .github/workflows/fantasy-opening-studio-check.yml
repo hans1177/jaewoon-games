@@ -71,7 +71,7 @@ jobs:
           $cmd = Get-Command ffmpeg.exe -ErrorAction SilentlyContinue
           if ($cmd) { $ffmpeg = $cmd.Source }
           if (-not $ffmpeg) {
-            $dirs = @('C:\ffmpeg','D:\ffmpeg','E:\ffmpeg',(Join-Path $env:USERPROFILE 'Downloads'),(Join-Path $env:USERPROFILE 'Desktop'),(Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet'),'C:\ProgramData\chocolatey\bin')
+            $dirs = @('E:\jaewoon-games\tools\ffmpeg','C:\ffmpeg','D:\ffmpeg','E:\ffmpeg',(Join-Path $env:USERPROFILE 'Downloads'),(Join-Path $env:USERPROFILE 'Desktop'),(Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet'),'C:\ProgramData\chocolatey\bin')
             foreach ($d in $dirs) {
               if (Test-Path $d) {
                 $f = Get-ChildItem $d -Recurse -Depth 4 -Filter ffmpeg.exe -ErrorAction SilentlyContinue | Select-Object -First 1
