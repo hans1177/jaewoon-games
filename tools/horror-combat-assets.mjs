@@ -148,6 +148,9 @@ if(process.argv.includes('--monster-assets-only')){
   spiritgolem:['StoneGolem','Ultimate Monsters Flying/Goleling'],raptor:['ElderWolf','Ultimate Monsters Big/Dino'],
   spider:['GiantSpider','Ultimate Monsters Flying/Squidle'],fangspider:['GiantFangSpider','Ultimate Monsters Flying/Armabee'],bladespider:['GiantBladeSpider','Ultimate Monsters Flying/Armabee'],chieftain:['WerewolfChieftain','Ultimate Monsters Blob/MushroomKing'],wolf:['Wolf','Ultimate Monsters Big/Wolf'],toad:['GiantToad','Ultimate Monsters Big/Frog'],keltir:['BeardedKeltir','Ultimate Monsters Big/Deer'],goblin:['Goblin','Ultimate Monsters Blob/Orc'],
   goblinscout:['GoblinScout','Ultimate Monsters Blob/Ninja'],
+  mage:['Mage','KayKit Adventurers/Mage','characters'],rogue:['Rogue','KayKit Adventurers/Rogue','characters'],
+  roguehooded:['Rogue_Hooded','KayKit Adventurers/Rogue_Hooded','characters'],knight:['Knight','KayKit Adventurers/Knight','characters'],
+  barbarian:['Barbarian','KayKit Adventurers/Barbarian','characters'],
  };
  const {execFileSync}=await import('node:child_process');
  fs.rmSync('/tmp/nj-mmo',{recursive:true,force:true});
@@ -159,15 +162,17 @@ if(process.argv.includes('--monster-assets-only')){
   licenseEvidence:'https://quaternius.com/packs/ultimatemonsters.html',mirror:'https://github.com/tech-leads-club/nj-mmo/tree/'+revision+'/client/public/models/monsters',
   mirrorLicenseFile:'client/public/models/monsters/LICENSE.txt',universeId:targetUniverse,assetIds:{},sources:{}};
  const pack=registry.monsterPackV2;
- for(const [key,[file,origin]] of Object.entries(files)){
+ const humanLicense=fs.readFileSync('/tmp/nj-mmo/client/public/models/characters/LICENSE.txt','utf8');
+ if(!/Creative Commons Zero, CC0/.test(humanLicense))throw Error('HUMAN_LICENSE_EVIDENCE_MISSING');
+ for(const [key,[file,origin,dir]] of Object.entries(files)){
   let assetId=String(pack.assetIds[key]||'');
   if(!/^[1-9]\d*$/.test(assetId)){
-   const bytes=fs.readFileSync('/tmp/nj-mmo/client/public/models/monsters/'+file+'.glb');
+   const bytes=fs.readFileSync('/tmp/nj-mmo/client/public/models/'+(dir||'monsters')+'/'+file+'.glb');
    if(bytes.toString('utf8',0,4)!=='glTF')throw Error('MONSTER_GLB_INVALID:'+key);
    const sha=crypto.createHash('sha256').update(bytes).digest('hex');
    const form=new FormData();
    form.append('request',JSON.stringify({assetType:'Model',displayName:'Mana Forest Monster '+key,
-    description:'Quaternius CC0 '+origin+' sha256 '+sha,creationContext:{creator}}));
+    description:(dir?'KayKit':'Quaternius')+' CC0 '+origin+' sha256 '+sha,creationContext:{creator}}));
    form.append('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),key+'.glb');
    let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key0},body:form});
    if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('MONSTER_OPERATION_INVALID:'+key);
