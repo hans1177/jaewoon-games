@@ -25,6 +25,10 @@ on:
       - 'assets/roblox/common-materials-v1/sources/**'
   workflow_dispatch:
     inputs:
+      world_map_only:
+        description: 'Upload generated world relief map only'
+        type: boolean
+        default: false
       monster_assets_only:
         description: 마력숲 CC0 몬스터(용) 등록
         type: boolean
@@ -88,6 +92,7 @@ jobs:
           node-version: '22'
       - name: Import combat model and verified shared PBR sources
         env:
+          WORLD_MAP_ONLY: ${{ inputs.world_map_only || false }}
           MONSTER_ASSETS_ONLY: ${{ inputs.monster_assets_only || false }}
           CAMP_ASSETS_ONLY: ${{ inputs.camp_assets_only || false }}
           CAPE_GRANT_ONLY: ${{ inputs.cape_grant_only || false }}
@@ -102,7 +107,9 @@ jobs:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$MONSTER_ASSETS_ONLY" = "true" ]; then
+          if [ "$WORLD_MAP_ONLY" = "true" ]; then
+            node tools/horror-combat-assets.mjs --world-map-only
+          elif [ "$MONSTER_ASSETS_ONLY" = "true" ]; then
             node tools/horror-combat-assets.mjs --monster-assets-only
           elif [ "$CAMP_ASSETS_ONLY" = "true" ]; then
             node tools/horror-combat-assets.mjs --camp-assets-only

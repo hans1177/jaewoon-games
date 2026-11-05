@@ -98,6 +98,42 @@ if(process.argv.includes('--camp-assets-only')){
  process.exit(0);
 }
 
+// [마력숲 입체 전체 지도] 대륙 지형을 기울여 그린 지도 이미지를 Roblox Image로 올린다(원작 이미지, 외부 저작물 없음).
+if(process.argv.includes('--world-map-only')){
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ const imagePath='roblox-games/fantasy-survival/world-map.png';
+ const bytes=fs.readFileSync(imagePath);
+ if(!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))throw Error('WORLD_MAP_PNG_INVALID');
+ const sha=crypto.createHash('sha256').update(bytes).digest('hex');
+ registry.worldMapV1=registry.worldMapV1||{license:'OWNER_CREATED_UI',source:'GENERATED_FROM_GAME_REGION_DATA',path:imagePath,universeId:'10773436325'};
+ const art=registry.worldMapV1;
+ let assetId=String(art.assetId||'');
+ if(!/^[1-9]\d*$/.test(assetId)||art.importedSourceHash!==sha){
+  const form=new FormData();
+  form.append('request',JSON.stringify({assetType:'Image',displayName:'Mana Forest Continent Relief Map',
+   description:'Original generated relief map of the game continent sha256 '+sha,creationContext:{creator}}));
+  form.append('fileContent',new Blob([bytes],{type:'image/png'}),'world-map.png');
+  let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+  if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('WORLD_MAP_OPERATION_INVALID');
+  const operationPath=op.path,deadline=Date.now()+240000;
+  while(!op.done&&Date.now()<deadline){
+   await new Promise(resolve=>setTimeout(resolve,4000));
+   op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+  }
+  assetId=String(op.response?.assetId||'');
+  if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))throw Error('WORLD_MAP_UPLOAD_FAILED');
+  art.assetId=assetId;art.importedSourceHash=sha;
+  fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+ }
+ const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+  method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+  body:JSON.stringify({subjectType:'Universe',subjectId:art.universeId,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})});
+ if(grant.errors?.length)throw Error('WORLD_MAP_PERMISSION_REJECTED');
+ console.log('WORLD_MAP_ASSET='+assetId);
+ process.exit(0);
+}
+
 // [마력숲 몬스터] Quaternius Ultimate Monsters(CC0)에서 어둡고 위협적인 13종을 Roblox Model로 등록한다.
 // 원본 팩의 GLB를 CC0로 표기해 재배포한 공개 저장소(LICENSE.txt에 팩·파일 대응 명시)에서 내려받고 해시를 기록한다.
 if(process.argv.includes('--monster-assets-only')){
