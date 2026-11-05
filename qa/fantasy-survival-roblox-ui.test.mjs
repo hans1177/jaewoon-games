@@ -145,8 +145,8 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/local height=compact and 156 or 186/);
   assert.match(client,/local width=math.floor\(math.clamp\(v.X\*\(landscape and \.32 or \.46\),landscape and 210 or 150,landscape and 300 or 270\)\)/);
   assert.match(client,/local positions=\{\s+\{66,165,44\}/);
-  assert.match(client,/\{116,165,44\}/);
-  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(179\*scale-size\*\.5\),math.floor\(102\*scale-size\*\.5\)\)/);
+  assert.match(client,/\{110,165,54\}/);
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(182\*scale-size\*\.5\),math.floor\(94\*scale-size\*\.5\)\)/);
   assert.match(client,/meadowSkillButtons.primarySword.Position=UDim2.fromOffset\(math.floor\(146\*scale\),math.floor\(132\*scale\)\)/);
   assert.match(client,/local swordSize=math.max\(60,math.floor\(66\*scale\)\)/);
   assert.match(client,/meadowSkillButtons.referenceJump.Position=UDim2.fromOffset\(math.floor\(30\*scale\),meadowSkillDock.Size.Y.Offset-jumpSize-math.floor\(6\*scale\)\)/);
@@ -160,7 +160,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/local columns=5 -- \[요청\] 단축바는 1~5번 5칸만 표시/);
   assert.match(client,/local size=math.max\(46,math.floor\(row\[3\]\*scale\)\)/);
   assert.match(client,/local jumpSize=math.max\(54,math.floor\(54\*scale\)\)/);
-  assert.match(client,/local size=math.max\(46,math.floor\(44\*scale\)\)/);
+  assert.match(client,/local size=math.max\(42,math.floor\(36\*scale\)\)/);
 
   const sheet={width:1000,height:1000};
   const cropRows=[

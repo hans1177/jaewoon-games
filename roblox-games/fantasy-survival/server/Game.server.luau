@@ -1470,6 +1470,14 @@ local function createMeadowVillage()
       -- 촌장·우물·의뢰판·주요 흙길의 충돌/접근 지점은 비워 둔다.
       {"villageLantern",-22,-69,4.5,.1},{"villageLantern",27,-86,4.5,-.1},
       {"villageLantern",-27,-205,4.8,.2},{"villageLantern",27,-280,4.8,-.2},
+      -- [스카이림식 마을길 디테일] 중앙 길 양옆에 등불을 간격 맞춰 더 세우고 외곽 수레를 추가한다.
+      -- 모두 기존 등록 CC0 랜턴·수레만 재사용한다. 지면을 못 찾는 자리는 자동으로 건너뛴다.
+      {"villageLantern",-24,-126,4.8,.05},{"villageLantern",25,-136,4.8,-.05},
+      {"villageLantern",-25,-168,4.8,.1},{"villageLantern",26,-176,4.8,-.1},
+      {"villageLantern",-24,-224,4.8,.05},{"villageLantern",25,-236,4.8,-.05},
+      {"villageLantern",-26,-252,4.8,.1},{"villageLantern",26,-262,4.8,-.1},
+      {"villageCart",-112,-302,5.6,.2},{"villageCart",114,-312,5.8,-.25},
+      {"villageCart",-96,-76,5.6,-.18},{"villageCart",101,-72,5.8,.22},
       {"villageCart",-135,-285,5.5,.32},{"villageCart",147,-291,5.8,-.27},
       {"villageFence",-153,-77,4.8,.22},{"villageFence",-159,-94,4.8,.14},
       {"villageFence",167,-84,4.8,-.27},{"villageFence",173,-106,4.8,-.12},
@@ -1492,6 +1500,11 @@ local function createMeadowVillage()
         {"villagePillar",-32,-237,5.0,.1},{"villagePillar",32,-239,5.0,-.1},
         {"villageTallTree",-250,-125,15,.22},{"villageTallTree",258,-226,16,-.28},
         {"villageCrookedTree",-246,-300,12,.13},{"villageCrookedTree",240,-73,14,-.15},
+        -- 마을을 감싸는 외곽 숲 가장자리(키 큰 나무 + 휘어진 나무를 번갈아)
+        {"villageTallTree",-217,-86,15,.3},{"villageCrookedTree",226,-96,13,-.2},
+        {"villageTallTree",-206,-256,16,-.1},{"villageCrookedTree",216,-266,13,.25},
+        {"villageTallTree",-124,-334,15,.2},{"villageCrookedTree",132,-338,14,-.3},
+        {"villageCrookedTree",-206,-52,13,.1},{"villageTallTree",205,-48,16,-.2},
       }) do
         furnishings[#furnishings+1]=extra
       end
