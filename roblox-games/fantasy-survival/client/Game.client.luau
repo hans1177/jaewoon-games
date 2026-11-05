@@ -3752,6 +3752,263 @@ do
     local token=runToken
     introAmbienceBefore=meadowAmbienceGroup.Volume
     introEffectsBefore=meadowEffectsGroup.Volume
+    -- [24컷 2.5D 오프닝] 오너 제작 원화 24컷(배경·인물·전경 3층)을 60초 동안 시차로 움직인다.
+    -- 로블록스 이미지 ID 72개가 모두 등록된 경우에만 사용하고, 아니면 아래 기존 12장면 오프닝을 그대로 쓴다.
+    do
+      local openingOk,openingModule=pcall(function() return require(Shared:WaitForChild("Opening24",3)) end)
+      local openingScenes=openingOk and type(openingModule)=="table" and openingModule.Resolve() or nil
+      if openingScenes then
+        local RunService=game:GetService("RunService")
+        local ContentProvider=game:GetService("ContentProvider")
+        local stage=Instance.new("Frame")
+        stage.Name="Opening24Stage"
+        stage.Size=UDim2.fromScale(1,1)
+        stage.BackgroundColor3=Color3.new(0,0,0)
+        stage.BorderSizePixel=0
+        stage.ClipsDescendants=true
+        stage.ZIndex=20
+        stage.Parent=introPanel
+        local function imageLayer(name,z)
+          local image=Instance.new("ImageLabel")
+          image.Name=name
+          image.AnchorPoint=Vector2.new(.5,.5)
+          image.Position=UDim2.fromScale(.5,.5)
+          image.Size=UDim2.fromScale(1,1)
+          image.BackgroundTransparency=1
+          image.BorderSizePixel=0
+          image.ScaleType=Enum.ScaleType.Crop
+          image.ZIndex=z
+          image.Parent=stage
+          return image
+        end
+        local bgLayer,chLayer,fgLayer=imageLayer("Background",21),imageLayer("Character",22),imageLayer("Foreground",23)
+        local function solidFrame(name,z,color)
+          local f=Instance.new("Frame")
+          f.Name=name
+          f.BorderSizePixel=0
+          f.BackgroundColor3=color
+          f.ZIndex=z
+          f.Parent=stage
+          return f
+        end
+        local topBar=solidFrame("LetterboxTop",27,Color3.new(0,0,0))
+        topBar.Size=UDim2.fromScale(1,.06)
+        local bottomBar=solidFrame("LetterboxBottom",27,Color3.new(0,0,0))
+        bottomBar.AnchorPoint=Vector2.new(0,1)
+        bottomBar.Position=UDim2.fromScale(0,1)
+        bottomBar.Size=UDim2.fromScale(1,.06)
+        local curtain=solidFrame("Curtain",28,Color3.new(0,0,0))
+        curtain.Size=UDim2.fromScale(1,1)
+        curtain.BackgroundTransparency=0
+        local flash=solidFrame("Flash",29,Color3.fromRGB(255,225,225))
+        flash.Size=UDim2.fromScale(1,1)
+        flash.BackgroundTransparency=1
+        local fog=solidFrame("Mist",25,Color3.fromRGB(215,232,226))
+        fog.Size=UDim2.fromScale(1,1)
+        fog.BackgroundTransparency=.86
+        fog.Visible=false
+        local fogGradient=Instance.new("UIGradient")
+        fogGradient.Transparency=NumberSequence.new({
+          NumberSequenceKeypoint.new(0,.9),NumberSequenceKeypoint.new(.35,.25),
+          NumberSequenceKeypoint.new(.65,.7),NumberSequenceKeypoint.new(1,.9),
+        })
+        fogGradient.Parent=fog
+        local function textLayer(name,z,size)
+          local label=Instance.new("TextLabel")
+          label.Name=name
+          label.BackgroundTransparency=1
+          label.Font=Enum.Font.GothamBold
+          label.TextScaled=true
+          label.Text=""
+          label.TextTransparency=1
+          label.TextStrokeColor3=Color3.new(0,0,0)
+          label.TextStrokeTransparency=1
+          label.ZIndex=z
+          label.Parent=stage
+          local limit=Instance.new("UITextSizeConstraint")
+          limit.MaxTextSize=size
+          limit.MinTextSize=14
+          limit.Parent=label
+          return label
+        end
+        local subtitle=textLayer("Subtitle",26,34)
+        subtitle.AnchorPoint=Vector2.new(.5,1)
+        subtitle.Position=UDim2.fromScale(.5,.92)
+        subtitle.Size=UDim2.fromScale(.9,.09)
+        subtitle.TextColor3=Color3.new(1,1,1)
+        local title=textLayer("OpeningTitle",26,110)
+        title.AnchorPoint=Vector2.new(.5,.5)
+        title.Position=UDim2.fromScale(.72,.55)
+        title.Size=UDim2.fromScale(.4,.22)
+        title.Text="마력숲"
+        title.TextColor3=Color3.fromRGB(240,220,160)
+        local sparks={}
+        local sparkRandom=Random.new(2411)
+        for i=1,(reducedEffects and 18 or 36) do
+          local dot=Instance.new("Frame")
+          dot.Name="Spark"
+          dot.BorderSizePixel=0
+          dot.BackgroundTransparency=1
+          dot.ZIndex=24
+          dot.Visible=false
+          dot.Parent=stage
+          local round=Instance.new("UICorner")
+          round.CornerRadius=UDim.new(1,0)
+          round.Parent=dot
+          sparks[i]={
+            frame=dot,x=sparkRandom:NextNumber(),y=sparkRandom:NextNumber(),
+            vx=sparkRandom:NextNumber(-25,25)/1280,vy=-sparkRandom:NextNumber(40,130)/720,
+            size=sparkRandom:NextNumber(2,5),phase=sparkRandom:NextNumber(0,6.28),
+            pick=i%3,streak=sparkRandom:NextNumber(14,46),
+          }
+        end
+        -- 기존 12장면용 겹침 장치는 숨겨 두 오프닝이 한 화면에 섞이지 않게 한다.
+        storyVision.Visible=false
+        storyPaintStage.Visible=false
+        actorMotionFrame.Visible=false
+        storyFarHaze.Visible=false
+        cinematicShadow.Visible=false
+        cinematicMist.Visible=false
+        cinematicLight.Visible=false
+        for _,spark in ipairs(cinematicParticles) do spark.Visible=false end
+        storyCurtain.BackgroundTransparency=1
+        introPanel.BackgroundTransparency=0
+        local finished=false
+        local connection=nil
+        local function finishOpening24()
+          if finished then return end
+          finished=true
+          if connection then connection:Disconnect();connection=nil end
+          if stage.Parent then stage:Destroy() end
+          if token==runToken then closeArrival(true) end
+        end
+        skipButton.Activated:Once(finishOpening24)
+        local function smooth(p)
+          p=math.clamp(p,0,1)
+          return p*p*(3-2*p)
+        end
+        local function cameraFor(scene,lt)
+          local p=smooth(lt/scene.seconds)
+          local a,b=scene.bgScale[1],scene.bgScale[2]
+          local kind=scene.camera
+          local s=a+(b-a)*p
+          local rot,tx,ty=0,0,0
+          if kind=="push" then s+=.03*p
+          elseif kind=="zoom" then s=a+(b-a+.10)*p
+          elseif kind=="zoomout" or kind=="pullback" then s=(b+.07)-(b+.07-a)*p
+          elseif kind=="orbit" then s+=.04;rot=-1.5+3*p
+          elseif kind=="spin" then s+=.09;rot=5*p
+          elseif kind=="pan" then s+=.04;tx=-26+52*p
+          elseif kind=="tilt" then s+=.04;ty=-16+32*p
+          elseif kind=="rise" then s+=.04;ty=18-36*p
+          elseif kind=="shake" then
+            s+=.04
+            local amp=9*math.max(.25,1-lt/scene.seconds)
+            tx=amp*math.sin(lt*61)*math.cos(lt*23)
+            ty=amp*math.sin(lt*47+1)
+          end
+          return p,s,rot,tx,ty
+        end
+        local function updateSparks(fx,t,k)
+          local show=fx=="embers" or fx=="magic" or fx=="rift"
+          for _,spark in ipairs(sparks) do
+            spark.frame.Visible=show
+            if show then
+              local vx,vy=spark.vx,spark.vy
+              if fx=="magic" then vy=spark.vy*.35+.02
+              elseif fx=="rift" then vx=0;vy=spark.vy*4.2 end
+              local sway=fx=="rift" and 0 or .011*math.sin(t*1.5+spark.phase)
+              spark.frame.Position=UDim2.fromScale((spark.x+vx*t+sway)%1,(spark.y+vy*t)%1)
+              local twinkle=.6+.4*math.sin(t*6+spark.phase)
+              if fx=="rift" then
+                spark.frame.Size=UDim2.fromOffset(math.max(1,2*k),spark.streak*k)
+                spark.frame.BackgroundColor3=spark.pick==0 and Color3.new(1,1,1) or Color3.fromRGB(170,190,255)
+                spark.frame.BackgroundTransparency=.3
+              else
+                local dotSize=math.max(2,spark.size*k*1.6)
+                spark.frame.Size=UDim2.fromOffset(dotSize,dotSize)
+                if fx=="embers" then spark.frame.BackgroundColor3=Color3.fromRGB(255,190,100)
+                elseif spark.pick==0 then spark.frame.BackgroundColor3=Color3.fromRGB(200,130,255)
+                elseif spark.pick==1 then spark.frame.BackgroundColor3=Color3.fromRGB(255,110,150)
+                else spark.frame.BackgroundColor3=Color3.fromRGB(150,170,255) end
+                spark.frame.BackgroundTransparency=1-.9*twinkle
+              end
+            end
+          end
+        end
+        task.spawn(function()
+          local imageIds={}
+          for _,scene in ipairs(openingScenes) do
+            imageIds[#imageIds+1]=scene.bg
+            imageIds[#imageIds+1]=scene.ch
+            imageIds[#imageIds+1]=scene.fg
+          end
+          pcall(function() ContentProvider:PreloadAsync(imageIds) end)
+          if finished or not entranceOpen or token~=runToken then return end
+          local total=0
+          local starts={}
+          for i,scene in ipairs(openingScenes) do starts[i]=total;total+=scene.seconds end
+          storyProgress.Size=UDim2.fromScale(0,1)
+          TweenService:Create(storyProgress,TweenInfo.new(total,Enum.EasingStyle.Linear),{
+            Size=UDim2.fromScale(1,1),
+          }):Play()
+          local startClock=os.clock()
+          local current=0
+          connection=RunService.RenderStepped:Connect(function()
+            if finished then return end
+            if not entranceOpen or token~=runToken then finishOpening24();return end
+            local t=os.clock()-startClock
+            if t>=total then finishOpening24();return end
+            local index=math.max(current,1)
+            while index<#openingScenes and t>=starts[index]+openingScenes[index].seconds do index+=1 end
+            local scene=openingScenes[index]
+            if index~=current then
+              current=index
+              currentStoryScene=index
+              bgLayer.Image=scene.bg
+              chLayer.Image=scene.ch
+              fgLayer.Image=scene.fg
+              subtitle.Text=scene.line
+            end
+            local lt=t-starts[index]
+            local camera=workspace.CurrentCamera
+            local k=camera and camera.ViewportSize.X/1280 or 1
+            local p,s,rot,tx,ty=cameraFor(scene,lt)
+            bgLayer.Size=UDim2.fromScale(s,s)
+            bgLayer.Position=UDim2.new(.5,tx*k,.5,ty*k)
+            bgLayer.Rotation=rot
+            local cs=1+.035*p
+            chLayer.Size=UDim2.fromScale(cs,cs)
+            chLayer.Position=UDim2.new(.5,(scene.chShift[1]*(p-.5)*2+tx*.6)*k,.5,(scene.chShift[2]*(p-.5)*2+ty*.6)*k)
+            chLayer.Rotation=rot*.8
+            local fs=1+.10*p
+            fgLayer.Size=UDim2.fromScale(fs,fs)
+            fgLayer.Position=UDim2.new(.5,(scene.fgShift[1]*(.5-p)*2*.8+tx*1.4)*k,.5,(scene.fgShift[2]*(.5-p)*2*.8+ty*1.4)*k)
+            fgLayer.Rotation=rot*1.1
+            local opacity=0
+            if t<.6 then opacity=1-smooth(t/.6) end
+            if t>total-.8 then opacity=math.max(opacity,1-smooth((total-t)/.8)) end
+            if scene.camera=="fade" then opacity=math.max(opacity,.75*smooth((p-.55)/.45)) end
+            opacity=math.max(opacity,.55*(1-math.clamp(lt/.12,0,1)),.55*math.clamp((lt-(scene.seconds-.12))/.12,0,1))
+            curtain.BackgroundTransparency=1-opacity
+            flash.BackgroundTransparency=(scene.id==11 and lt<.2) and (1-(1-lt/.2)*.65) or 1
+            local subtitleAlpha=0
+            if scene.line~="" and lt>.15 then
+              subtitleAlpha=math.clamp(math.min(lt/.2,(scene.seconds-.1-lt)/.2),0,1)
+            end
+            subtitle.TextTransparency=1-subtitleAlpha
+            subtitle.TextStrokeTransparency=1-subtitleAlpha
+            local titleAlpha=(index==#openingScenes and lt>1.8) and smooth((lt-1.8)/1) or 0
+            title.TextTransparency=1-titleAlpha
+            title.TextStrokeTransparency=1-titleAlpha
+            fog.Visible=scene.fx=="mist"
+            if fog.Visible then fogGradient.Offset=Vector2.new(math.sin(t*.4)*.3,0) end
+            updateSparks(scene.fx,t,k)
+          end)
+        end)
+        return
+      end
+    end
     -- [카메라 장면] 서버에 이미 있는 마을 경비·촌장·추적자·계약판·본인 R15을 촬영.
     -- 위치 오프셋만 카메라에 적용하고 NPC/플레이어의 실제 CFrame은 절대로 변경하지 않는다.
     local scenes={
