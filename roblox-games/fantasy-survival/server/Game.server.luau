@@ -5723,6 +5723,16 @@ do
       end
       return
     end
+    if typeof(action)=="string" and action:match("^quick:set:%d:%d+$") then
+      local slotIndex,value=action:match("^quick:set:(%d):(%d+)$")
+      slotIndex,value=tonumber(slotIndex),tonumber(value)
+      local valid=slotIndex>=1 and slotIndex<=5 and (value==0 or (value>=1 and value<=5) or (value>=10 and Config.Actions[value-9]~=nil))
+      if valid then
+        setNumber(player,"QuickInit",1)
+        setNumber(player,"QuickSlot"..slotIndex,value)
+      end
+      return
+    end
     if typeof(action)=="string" and (action:match("^wp:lm:%d+$") or action:match("^wp:town:%d+$")) then
       local kind=action:match("^wp:(%a+):")
       local index=tonumber(action:match("%d+$"))

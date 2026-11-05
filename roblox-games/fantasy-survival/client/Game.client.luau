@@ -3066,8 +3066,15 @@ do
       if id and meadowArt.setQuickIcon then meadowArt.setQuickIcon(box.icon,id) end
     end
   end
+  local function quickCode(id)
+    if not id then return 0 end
+    for k,v in ipairs(meadowArt.quickSpecial) do if v==id then return k end end
+    for k,action in ipairs(Config.Actions) do if action.Id==id then return 9+k end end
+    return 0
+  end
   local function assign(slot,id)
     meadowArt.quickIds[slot]=id
+    remote:FireServer("quick:set:"..slot..":"..quickCode(id))
     refreshDrop()
     if meadowArt.refreshQuickHud then meadowArt.refreshQuickHud() end
     meadowArt.sfx("ping",.5,1.1)
@@ -10222,6 +10229,23 @@ end)()
     if meadowArt.refreshQuickTray then meadowArt.refreshQuickTray() end
   end
   meadowArt.refreshQuickHud()
+  -- 저장된 배치를 프로필이 준비되면 한 번 불러온다.
+  task.spawn(function()
+    for _=1,60 do
+      if player:GetAttribute("ProfileReady")==true then break end
+      task.wait(.5)
+    end
+    if (tonumber(player:GetAttribute("QuickInit")) or 0)>=1 then
+      for i=1,COUNT do
+        local code=tonumber(player:GetAttribute("QuickSlot"..i)) or 0
+        local id=false
+        if code>=1 and code<=5 then id=meadowArt.quickSpecial[code]
+        elseif code>=10 and Config.Actions[code-9] then id=Config.Actions[code-9].Id end
+        meadowArt.quickIds[i]=id
+      end
+      meadowArt.refreshQuickHud()
+    end
+  end)
   local elapsed=0
   RunService.Heartbeat:Connect(function(dt)
     elapsed+=dt

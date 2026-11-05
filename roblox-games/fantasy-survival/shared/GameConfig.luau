@@ -1330,6 +1330,9 @@ do
   }
   for _, line in ipairs(lines) do table.insert(Config.QuestLines, line) end
   for _, line in ipairs(personal) do table.insert(Config.QuestLines, line) end
+  -- [하단 퀵슬롯 저장] QuickInit=0이면 기본 배치. 칸 값: 0=비움, 1~5=무기·채집·체력약·기력약·오일, 10+n=Config.Actions[n].
+  Config.InitialState.QuickInit = 0
+  for slotIndex = 1, 5 do Config.InitialState["QuickSlot" .. slotIndex] = 0 end
   -- 새 줄의 단계 · 진행 · 선택 저장 필드를 InitialState에 등록한다.
   for _, line in ipairs(Config.QuestLines) do
     for _, suffix in ipairs({"", "P", "C"}) do
