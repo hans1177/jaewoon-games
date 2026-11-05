@@ -2089,6 +2089,7 @@ local meadowRpg=(function()
       local owned=math.max(0,readNumber(player,"MeadowGearOwned",0))
       if verb=="craft" then
         if bit32.band(owned,bit)~=0 then feedback(player,"이미 보유한 장비야.");return true end
+        if readNumber(player,"CombatProficiency",0)<(item.Need or 0) then feedback(player,"전투 숙련 "..tostring(item.Need).."이 필요해.");return true end
         if not charge(player,item) then feedback(player,"재료 또는 소지금이 부족해.");return true end
         setNumber(player,"MeadowGearOwned",bit32.bor(owned,bit))
         setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)

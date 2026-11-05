@@ -10,6 +10,8 @@ on:
       - 'roblox-games/fantasy-survival/right-icons.png'
       - 'roblox-games/fantasy-survival/painted-icons.png'
       - 'roblox-games/fantasy-survival/illustrated-icons.png'
+      - 'roblox-games/fantasy-survival/skill-icons.png'
+      - 'roblox-games/fantasy-survival/item-icons.png'
       - 'roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json'
       - 'roblox-games/fantasy-survival/action-icons/**'
       - 'assets/roblox/common-ui-v1/icons.png'
@@ -85,7 +87,9 @@ jobs:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$ILLUSTRATED_HUD_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json | grep -q .; then
+          if git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/skill-icons.png roblox-games/fantasy-survival/item-icons.png | grep -q .; then
+            node tools/horror-combat-assets.mjs --gear-icons-only
+          elif [ "$ILLUSTRATED_HUD_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json | grep -q .; then
             node tools/horror-combat-assets.mjs --illustrated-hud-only
           elif [ "$PAINTED_HUD_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/painted-icons.png | grep -q .; then
             node tools/horror-combat-assets.mjs --painted-hud-only

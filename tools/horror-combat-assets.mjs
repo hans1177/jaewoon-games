@@ -52,6 +52,51 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
+// [마력숲 스킬·장비 아이콘 시트] 오너 승인 신규 원화 2장을 기존 이미지 업로드·Universe 권한 경로로 등록한다.
+if(process.argv.includes('--gear-icons-only')){
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ for(const keyName of ['skillIconSheetV1','gearIconSheetV1']){
+  const art=registry[keyName];
+  if(registry.gameId!=='fantasy-survival'||!art||art.license!=='OWNER_CREATED_UI'||art.universeId!=='10773436325')
+   throw Error('GEAR_ICON_PROVENANCE_INVALID:'+keyName);
+  const bytes=fs.readFileSync(art.path);
+  const sourceSha=crypto.createHash('sha256').update(bytes).digest('hex');
+  if(sourceSha!==art.sha256||bytes.length!==art.bytes||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+   ||bytes.readUInt32BE(16)!==art.width||bytes.readUInt32BE(20)!==art.height)
+   throw Error('GEAR_ICON_SOURCE_INVALID:'+keyName);
+  let assetId=String(art.assetId||'');
+  if(!/^[1-9]\d*$/.test(assetId)||art.importedSourceHash!==sourceSha){
+   const form=new FormData();
+   form.append('request',JSON.stringify({assetType:'Image',displayName:art.displayName,
+    description:'Owner-approved original fantasy icon sheet sha256 '+sourceSha,creationContext:{creator}}));
+   form.append('fileContent',new Blob([bytes],{type:'image/png'}),art.path.split('/').pop());
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('GEAR_ICON_OPERATION_INVALID:'+keyName);
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+    await new Promise(resolve=>setTimeout(resolve,4000));
+    op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+   }
+   assetId=String(op.response?.assetId||'');
+   if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))throw Error('GEAR_ICON_UPLOAD_FAILED:'+keyName);
+   art.assetId=assetId;art.importedSourceHash=sourceSha;art.importVerified=false;art.universeUseGrantVerified=false;
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+   console.log('GEAR_ICON_ASSET_UPLOADED='+keyName+':'+assetId);
+  }
+  if(art.universeUseGrantVerified!==true){
+   const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+    method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+    body:JSON.stringify({subjectType:'Universe',subjectId:art.universeId,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})});
+   if(grant.errors?.length)throw Error('GEAR_ICON_UNIVERSE_PERMISSION_REJECTED:'+keyName);
+   art.importVerified=true;art.universeUseGrantVerified=true;art.authorizedUniverseIds=[art.universeId];
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+   console.log('GEAR_ICON_REGISTERED='+keyName+':'+assetId);
+  }
+ }
+ process.exit(0);
+}
+
 // [마력숲 21종 신규 고퀄 원화 / 등록] 기존 로블록스 이미지 자산 경로를 사용한다.
 // [보존] 현재 게임이 사용하는 21종 원화 ID와 UI/세이브는 바꾸지 않고, 새 원화만 등록한다.
 if(process.argv.includes('--illustrated-hud-only')){

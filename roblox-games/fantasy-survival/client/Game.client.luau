@@ -199,6 +199,28 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 카메라·표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
+-- [스킬·장비 신규 원화] 스킬 아이콘 5x5(200px) / 장비 아이콘 8x8(128px). 자산 ID가 비어 있으면 기존 아틀라스를 그대로 쓴다.
+local meadowArt={skillSheet="",gearSheet="",
+  rarityColor={Common=Color3.fromRGB(176,176,170),Uncommon=Color3.fromRGB(96,196,112),Rare=Color3.fromRGB(84,150,230),Epic=Color3.fromRGB(170,100,226),Legendary=Color3.fromRGB(244,182,58)},
+  rarityName={Common="일반",Uncommon="고급",Rare="희귀",Epic="영웅",Legendary="전설"},
+  skillCell={["skill-meadow-heavy"]=0,["skill-meadow-sweep"]=1,["skill-meadow-bolt"]=2,["skill-meadow-guard"]=3,["skill-meadow-parry"]=4,
+    ["skill-meadow-dodge-left"]=5,["skill-meadow-dodge-right"]=6,["skill-meadow-sprint"]=7,["skill-meadow-heal"]=8,["skill-meadow-focus"]=9,
+    ["skill-meadow-emote"]=10,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
+    Martial=15,Signs=16,Defense=17,Agility=18},
+  slotEmpty={Weapon=36,Chest=37,Hands=38,Legs=39,Feet=40,Accessory=41}}
+function meadowArt.skill(icon,key)
+  local cell=meadowArt.skillCell[key]
+  if meadowArt.skillSheet=="" or cell==nil then return false end
+  icon.Image=meadowArt.skillSheet
+  icon.ImageRectOffset=Vector2.new((cell%5)*200,math.floor(cell/5)*200);icon.ImageRectSize=Vector2.new(200,200)
+  return true
+end
+function meadowArt.gear(icon,cell)
+  if meadowArt.gearSheet=="" or cell==nil then return false end
+  icon.Image=meadowArt.gearSheet
+  icon.ImageRectOffset=Vector2.new((cell%8)*128,math.floor(cell/8)*128);icon.ImageRectSize=Vector2.new(128,128)
+  return true
+end
 local meadowPaintedHudAtlas="rbxassetid://84007761993593" -- [고퀄 원화] 1000x1000 5x5 / 200px 칸 21종 (Roblox 1024 제한 이하), 게임 내 로딩은 게시 후 검증
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
@@ -1086,6 +1108,9 @@ return function(character,humanoid,tool,force)
     if heroSlot then
       local have=not string.find(label.Text,"비어 있음",1,true)
       heroSlot.icon.ImageTransparency=have and 0 or .6
+      local slotKey=({"Weapon","Hands","Chest","Legs","Feet","Accessory"})[order]
+      local equippedIndex=player:GetAttribute("MeadowEquip"..slotKey)
+      meadowArt.gear(heroSlot.icon,have and typeof(equippedIndex)=="number" and equippedIndex-1 or meadowArt.slotEmpty[slotKey])
       heroSlot.edge.Color=have and meadowGold or Color3.fromRGB(88,120,104)
       heroSlot.name.Text=have and (string.gsub(label.Text," · .*$","")) or heroSlot.default
     end
@@ -1997,12 +2022,12 @@ local data={
 -- [장비 도감] 모든 제작법을 현재 가방에 표시하고 소유/장착은 서버 속성만 신뢰한다.
 for index,gear in ipairs(Config.MeadowEquipment or {})do
   data[#data+1]={key="rpg-gear:"..gear.Id,name=gear.Name,category=gear.Category,icon=gear.Icon or 3,
-    color=gear.Attack>0 and Color3.fromRGB(218,145,111) or Color3.fromRGB(167,197,222),
+    color=meadowArt.rarityColor[gear.Rarity or "Common"] or Color3.fromRGB(176,176,170),art=index-1,
     description=gear.Desc,gear=gear,index=index}
 end
 for _,tonic in ipairs(Config.MeadowConsumables or {})do
   data[#data+1]={key="rpg-tonic:"..tonic.Id,name=tonic.Name,category="소모품",icon=tonic.Icon or 7,
-    color=Color3.fromRGB(136,207,150),description=tonic.Desc,tonic=tonic}
+    color=Color3.fromRGB(136,207,150),art=(tonic.Art or 33)-1,description=tonic.Desc,tonic=tonic}
 end
 local backpack=player:FindFirstChildOfClass("Backpack") or player:FindFirstChild("Backpack")
 local filterBar,filterButtons=CommonUI.CreateFilterBar({name="WitcherItemCategories",filters=categories,selectedIndex=1})
@@ -2124,10 +2149,13 @@ local function redrawSelection()
   end
   title.Text=item.name.."  /  "..item.category
   detailPreview.Visible=true
+  detailPreview.Image=meadowIconAtlas;detailPreview.ImageRectSize=Vector2.new(64,64)
   detailPreview.ImageRectOffset=Vector2.new(item.icon*64,0)
+  meadowArt.gear(detailPreview,item.art)
   local recipe=item.gear or item.tonic
   local cost=recipe and string.format("제작: 나무 %d · 돌 %d · 재화 %d",recipe.Wood or 0,recipe.Stone or 0,recipe.Coins or 0) or ""
-  local stats=item.gear and string.format("공격 +%d  ·  방어 +%d\n",item.gear.Attack or 0,item.gear.Defense or 0) or ""
+  local stats=item.gear and string.format("%s 등급  ·  공격 +%d  ·  방어 +%d\n%s",meadowArt.rarityName[item.gear.Rarity or "Common"] or "일반",item.gear.Attack or 0,item.gear.Defense or 0,
+    (item.gear.Need or 0)>0 and string.format("필요 전투 숙련 %d\n",item.gear.Need) or "") or ""
   local feedback=player:GetAttribute("MeadowGearMessage")
   description.Text="소지 / 상태   "..itemValue(item).."\n"..stats..(cost~="" and cost.."\n" or "")..
     item.description..(recipe and typeof(feedback)=="string" and ("\n"..feedback) or "")
@@ -2171,6 +2199,7 @@ local function makeCard(item)
   local icon=Instance.new("ImageLabel")
   icon.Name="ExistingAssetIcon";icon.BackgroundTransparency=1;icon.Image=meadowIconAtlas;icon.ZIndex=45
   icon.ImageRectOffset=Vector2.new(item.icon*64,0);icon.ImageRectSize=Vector2.new(64,64)
+  meadowArt.gear(icon,item.art)
   icon.Size=UDim2.fromOffset(50,50);icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.new(.5,0,0,3);icon.Parent=card
   local name=Instance.new("TextLabel")
@@ -2456,6 +2485,7 @@ for index,branch in ipairs(Config.MeadowTalentSchools or {})do
     icon.Name="NodeIcon";icon.BackgroundTransparency=1;icon.Position=UDim2.fromOffset(7,7);icon.Size=UDim2.fromOffset(nodeSize-14,nodeSize-14)
     icon.Image=meadowIconAtlas;icon.ImageRectOffset=Vector2.new((talentIcons[branch.Id] or 2)*64,0)
     icon.ImageRectSize=Vector2.new(64,64);icon.Parent=node
+    meadowArt.skill(icon,branch.Id)
     local badge=Instance.new("TextLabel")
     badge.Name="NodeStep";badge.AnchorPoint=Vector2.new(1,1);badge.Position=UDim2.new(1,4,1,4);badge.Size=UDim2.fromOffset(20,20)
     badge.BackgroundColor3=Color3.fromRGB(20,24,24);badge.BorderSizePixel=0;badge.Text=tostring(step)
@@ -2600,6 +2630,7 @@ for _,action in ipairs(Config.Actions)do
     symbol.Size=UDim2.fromOffset(42,42);symbol.BackgroundTransparency=1
     symbol.Image=meadowIconAtlas;symbol.ImageRectOffset=Vector2.new(info[3]*64,0)
     symbol.ImageRectSize=Vector2.new(64,64);symbol.Parent=card
+    meadowArt.skill(symbol,action.Id)
     local name=Instance.new("TextLabel")
     name.Name="SkillName";name.Position=UDim2.new(0,3,0,49)
     name.Size=UDim2.new(1,-6,0,40);name.BackgroundTransparency=1

@@ -906,7 +906,15 @@
     "width": 1000,
     "height": 1000,
     "iconCount": 21,
-    "extraCells": {"guardShield": {"x": 200, "y": 800, "w": 200, "h": 200, "source": "OWNER_APPROVED_PROCEDURAL_PAINTED_GUARD_SHIELD_20261105"}},
+    "extraCells": {
+      "guardShield": {
+        "x": 200,
+        "y": 800,
+        "w": 200,
+        "h": 200,
+        "source": "OWNER_APPROVED_PROCEDURAL_PAINTED_GUARD_SHIELD_20261105"
+      }
+    },
     "universeId": "10773436325",
     "assetId": "84007761993593",
     "importedSourceHash": "f5623dfc37370918fdd72cfae691cca1ffe1ffd50c8408f24f27f63521e5690e",
@@ -1074,5 +1082,41 @@
       "jump",
       "sword"
     ]
+  },
+  "skillIconSheetV1": {
+    "version": 1,
+    "source": "OWNER_APPROVED_PROCEDURAL_PAINTED_ICON_ART",
+    "license": "OWNER_CREATED_UI",
+    "authorization": "2026-11-05 owner approved new skill-card and item icon art without further approval",
+    "path": "roblox-games/fantasy-survival/skill-icons.png",
+    "sha256": "6a60b92d4c1c80af2201d99374ccefac5b9bb7e172553130d72b351614dfdefa",
+    "bytes": 614334,
+    "width": 1000,
+    "height": 1000,
+    "iconCount": 19,
+    "displayName": "Mana Forest Skill Icons",
+    "universeId": "10773436325",
+    "assetId": "",
+    "importVerified": false,
+    "universeUseGrantVerified": false,
+    "runtimeVerified": false
+  },
+  "gearIconSheetV1": {
+    "version": 1,
+    "source": "OWNER_APPROVED_PROCEDURAL_PAINTED_ICON_ART",
+    "license": "OWNER_CREATED_UI",
+    "authorization": "2026-11-05 owner approved new skill-card and item icon art without further approval",
+    "path": "roblox-games/fantasy-survival/item-icons.png",
+    "sha256": "dfa3defea977c216f4363fc3551af1d9c08f7126646f5f73e2663596184c0e05",
+    "bytes": 522227,
+    "width": 1024,
+    "height": 1024,
+    "iconCount": 42,
+    "displayName": "Mana Forest Item Icons",
+    "universeId": "10773436325",
+    "assetId": "",
+    "importVerified": false,
+    "universeUseGrantVerified": false,
+    "runtimeVerified": false
   }
 }
