@@ -65,6 +65,41 @@ try{
    }
   }finally{await identityPage.close();}
  }
+ // 휴먼 GO: 기존 공개판에서 모바일 첫 전투·보상·진행을 실제 클릭으로 확인한다.
+ if(liveBase){
+  const human=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  activeGameId='human-go';
+  const errors=[];
+  human.on('pageerror',error=>errors.push(error.message));
+  human.on('console',message=>{
+   if(message.type()==='error' && message.text().includes('게임 진행 오류')) errors.push(message.text());
+  });
+  try{
+   const response=await human.goto(liveBase+'web-games/human-go/',{waitUntil:'domcontentloaded',timeout:25000});
+   assert.equal(response?.status(),200,'HUMAN_GO_PUBLIC_GAME_NOT_FOUND');
+   await human.locator('#introSkipBtn').click({timeout:7000});
+   await human.locator('.classCard[data-class="warrior"]').click({timeout:7000});
+   await human.locator('#classSelect').waitFor({state:'hidden',timeout:7000});
+   await human.locator('#startBtn').click({timeout:7000});
+   await human.locator('#nextBtn').click({timeout:7000});
+   await human.waitForFunction(()=>document.getElementById('reward')?.classList.contains('on')
+    || document.getElementById('gameover')?.classList.contains('on'),null,{timeout:25000});
+   assert.equal(await human.locator('#gameover').evaluate(el=>el.classList.contains('on')),false,'HUMAN_GO_FIRST_FIGHT_DEFEAT');
+   await human.locator('#rewardList .choice').first().click({timeout:7000});
+   const progress=await human.evaluate(()=>({
+    stage:G.stage,step:G.step,map:document.getElementById('map')?.classList.contains('on'),
+    button:document.getElementById('nextBtn')?.textContent?.trim()
+   }));
+   assert.equal(progress.stage,1,'HUMAN_GO_FIRST_STAGE_CHANGED');
+   assert.equal(progress.step,1,'HUMAN_GO_PROGRESS_STUCK');
+   assert.equal(progress.map,true,'HUMAN_GO_MAP_NOT_VISIBLE');
+   assert.equal(progress.button,'다음 구간','HUMAN_GO_RETRY_ERROR_VISIBLE');
+   assert.deepEqual(errors,[],'HUMAN_GO_RUNTIME_ERRORS');
+   observedGames.add('human-go');
+   console.log('HUMAN_GO_MOBILE_FIRST_FIGHT_REWARD_NEXT_STAGE=PASS');
+   activeGameId=null;
+  }finally{await human.close();}
+ }
  // 공개 홈페이지는 게임/즐겨찾기만 표시한다. 관리자 삭제 버튼은 등록 기기의 서버 검증 후 노출된다.
  if(liveBase){
   activeGameId='homepage';
