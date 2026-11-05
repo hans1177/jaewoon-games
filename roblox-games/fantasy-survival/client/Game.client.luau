@@ -242,12 +242,17 @@ do
   local tints={moss_robe=Color3.fromRGB(125,185,115),frost_leather=Color3.fromRGB(150,195,240),magma_plate=Color3.fromRGB(255,120,75),
     worldtree_mail=Color3.fromRGB(150,240,170),hunter_armor=Color3.fromRGB(190,200,170),guardian_armor=Color3.fromRGB(190,210,255)}
   function meadowArt.itemTintFor(item)
+    if item and item.gear and item.gear.Tint then
+      local rgb=item.gear.Tint
+      return Color3.fromRGB(rgb[1],rgb[2],rgb[3])
+    end
     return item and item.gear and tints[item.gear.Id] or nil
   end
   local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Leather="item_bone"}
   function meadowArt.itemKeyFor(item)
     if not item then return nil end
     if item.gear then
+      if item.gear.ModelKey then return item.gear.ModelKey end
       if gearKeys[item.gear.Id] then return gearKeys[item.gear.Id] end
       if armorKeys[item.gear.Id] then return armorKeys[item.gear.Id] end
       if item.gear.Slot=="Hands" then return "item_glove" end
@@ -1520,7 +1525,7 @@ local function renderMeadowPages()
 end
 for _,name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(renderMeadowPages) end
 for _,key in ipairs({"MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs",
-  "MeadowEquipFeet","MeadowEquipAccessory","MeadowGearAttack","MeadowGearDefense"})do
+  "MeadowEquipFeet","MeadowEquipAccessory","MeadowEquipShield","MeadowGearAttack","MeadowGearDefense"})do
   player:GetAttributeChangedSignal(key):Connect(renderMeadowPages)
 end
 player:GetAttributeChangedSignal("MeadowGearRevision"):Connect(renderMeadowPages)
@@ -2348,7 +2353,7 @@ local parchment=meadowParchment
 local gold=meadowGold
 local stone=Color3.fromRGB(20,43,43)
 local muted=Color3.fromRGB(163,192,175)
-local categories={"전체","보유","무기","갑옷","장신구","소모품","재료","기록","재화"}
+local categories={"전체","보유","무기","방패","갑옷","장신구","소모품","재료","기록","재화"}
 local data={
   {key="Wood",name="나무",category="재료",icon=4,art=34,color=Color3.fromRGB(194,146,83),description="초원에서 채집한 나무. 장비 제작, 무기 강화, 건설에 사용돼."},
   {key="Stone",name="돌",category="재료",icon=4,art=35,color=Color3.fromRGB(169,191,200),description="바위에서 채집한 돌. 장비 제작, 무기 강화, 건설에 사용돼."},
@@ -2363,7 +2368,7 @@ end
 -- [장비 도감] 모든 제작법을 현재 가방에 표시하고 소유/장착은 서버 속성만 신뢰한다.
 for index,gear in ipairs(Config.MeadowEquipment or {})do
   data[#data+1]={key="rpg-gear:"..gear.Id,name=gear.Name,category=gear.Category,icon=gear.Icon or 3,
-    color=meadowArt.rarityColor[gear.Rarity or "Common"] or Color3.fromRGB(176,176,170),art=index-1,
+    color=meadowArt.rarityColor[gear.Rarity or "Common"] or Color3.fromRGB(176,176,170),art=(gear.Art or index)-1,
     description=gear.Desc,gear=gear,index=index}
 end
 for _,tonic in ipairs(Config.MeadowConsumables or {})do
@@ -2507,12 +2512,18 @@ local function redrawSelection()
     for _,mat in ipairs(Config.Materials)do names[mat.Field]=mat.Name end
     for _,field in ipairs(Config.CostFields)do
       local need=recipe[field] or 0
+      if need>0 and (field=="Ingot" or field=="Leather") then
+        need=math.max(1,need-Config.SmithingRank(player:GetAttribute("CraftingProficiency") or 0))
+      end
       if need>0 then
         local have=math.floor(tonumber(player:GetAttribute(field)) or 0)
         parts[#parts+1]=string.format("%s %d/%d%s",names[field],have,need,have>=need and "" or " ✗")
       end
     end
     cost="제작 재료: "..table.concat(parts," · ")
+    if item.gear and item.gear.ForgeOnly then
+      cost="대장간 모루에서 제작 · 대장 숙련 "..tostring(Config.SmithingRank(player:GetAttribute("CraftingProficiency") or 0)).."/3\n"..cost
+    end
   end
   local classKey=item.gear and Config.GearWeaponClass and Config.GearWeaponClass[item.gear.Id]
   local classInfo=classKey and Config.WeaponClasses[classKey]
@@ -2542,7 +2553,7 @@ local function redrawSelection()
     if item.gear then
       local has=owned(item)>0
       local worn=player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index
-      equip.Text=not has and "장비 제작" or worn and "장착 해제" or "장착"
+      equip.Text=not has and (item.gear.ForgeOnly and "대장간 제작" or "장비 제작") or worn and "장착 해제" or "장착"
       equip.Active=player:GetAttribute("ProfileReady")==true
     elseif item.tonic then
       equip.Text="물약 사용"
@@ -2761,7 +2772,7 @@ if player.Character then
 end
 for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Ingot","Leather","Coins","ResearchRecords","ProfileReady","MeadowGearOwned","MeadowGearOwned2",
   "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
-  "MeadowEquipAccessory","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
+  "MeadowEquipAccessory","MeadowEquipShield","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)
 end
 renderInventory()
