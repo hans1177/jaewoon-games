@@ -5096,7 +5096,7 @@ do
       -- 조사 지점 / 퀘스트.
       for index,offset in ipairs({Vector3.new(-70,3,-30),Vector3.new(20,3,-90),Vector3.new(80,3,40)}) do
         clueSite(forestCenter+offset,"렌스기사단 깃발 흔적",7,"FOREST_FLAG","ForestFlagMask",index,
-          ({"찢어진 깃발. 렌스기사단의 문양 옆에 오래된 다른 기사단의 문장이 겹쳐 있다.","깃발 아래에 이전 기사단원의 이름 없는 검이 박혀 있다. 이름은 누군가 긁어냈다.","마지막 깃발이 숲 안쪽을 가리킨다. 짐승의 울음이 가까워진다."})[index])
+          ({"찢어진 깃발. 기사단의 문장은 남았는데 이름만 정확히 도려내져 있다. 숲은 이름을 먹는다.","깃발 아래에 이전 기사단원의 이름 없는 검이 박혀 있다. 이름은 누군가 긁어냈다.","마지막 깃발이 숲 안쪽을 가리킨다. 짐승의 울음이 가까워진다."})[index])
         clueSite(volcanoCenter+offset,"렌스기사단 야영지 표식",10,"VOLCANO_MARK","VolcanoMarkMask",index,
           ({"식은 모닥불 곁에 렌스 단장의 문장이 새겨진 갑옷 조각이 있다.","군수대장 미나의 보급 표식. 비상 식량이 끝까지 정확히 나뉘어 있다.","불탄 천막 안쪽 벽에 미나의 손글씨 '서쪽 오아시스 아래'가 긁혀 있다."})[index])
       end
@@ -5105,7 +5105,7 @@ do
         if stage==9 then
           player:SetAttribute("PartyNick",true)
           recordMeadowQuest(player,"NICK_TALK")
-          say(player,"닉","카인…? 네 목소리다. 내가 뭘 한 거지. 성문 앞에서 봉인이 열리고, 그다음은 기억이 없어. 함께 가자. 내 안의 이놈은 내가 누를게.")
+          say(player,"닉","카인…? 네가 내 이름을 불렀지. 배고프고, 버려진 것 같았어. 그 두려움이 이 몸이 됐어. 이름을 계속 불러 줘. 그러면 내 안의 이놈을 누를 수 있어.")
         elseif stage<9 then say(player,"닉","…으르렁. (저주받은 짐승은 아직 사람의 말을 하지 못한다.)")
         else say(player,"닉","이제 널 따라갈게, 카인.") end
       end)
@@ -5113,7 +5113,7 @@ do
         local stage=readNumber(player,"QuestStage",1)
         if stage==12 then
           recordMeadowQuest(player,"MINA_NOTE")
-          say(player,"미나의 손글씨","'이 숲은 진짜가 아니다. 나는 보급 기록 속에 있다. 미러의 거짓을 찾아.' 글씨는 군수대장 미나의 것이다. 이야기는 2부로 이어진다.")
+          say(player,"미나의 손글씨","장부 어디에도 보급품이 줄어든 흔적이 없다. 전쟁은 끝낼 생각이 없었다. 마지막 줄: '숲은 진짜가 아니다. 미러의 탑은 하늘의 균열 너머.' 미나의 글씨다. 이야기는 2부로 이어진다.")
         elseif stage<12 then say(player,"기록함","잠겨 있다. 먼저 오아시스 지하의 몬스터를 정리해.")
         else say(player,"기록함","미나의 손글씨를 이미 확인했어.") end
       end)

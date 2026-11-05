@@ -1244,6 +1244,11 @@ local function renderMeadowPages()
     worldLines[#worldLines+1]=string.format("%d. %s · %s  [%s]\n   %s",index+1,member.Name,member.Role,
       member.Source=="Main" and "메인 동료 · 준비 중" or "서브 동료 · 준비 중",member.Story)
   end
+  worldLines[#worldLines+1]="\n마력숲의 수수께끼 (진행하면 하나씩 풀려)"
+  local questStageNow=player:GetAttribute("QuestStage") or 1
+  for _,mystery in ipairs(Config.Mysteries or {})do
+    worldLines[#worldLines+1]=questStageNow>=mystery.Stage and ("· "..mystery.Text) or "· ???"
+  end
   worldLines[#worldLines+1]="\n1부 메인 이야기 (07~12장)"
   for _,beat in ipairs(Config.MainStoryPart1 or {})do worldLines[#worldLines+1]=beat.Name.."\n   "..beat.Text end
   meadowLabels[6].Text=table.concat(worldLines,"\n").."\n\n"..table.concat(companionLines,"\n\n")
