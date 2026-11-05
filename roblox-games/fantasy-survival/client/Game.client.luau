@@ -2486,6 +2486,15 @@ local talentEffects={
   Defense={"피해 -1","피해 -2","피해 -3"},Agility={"1단 회피","2단 연속","3단 연속","4단 연속","5단 배후"},
 }
 local talentIcons={Martial=2,Signs=7,Defense=3,Agility=6}
+-- [상용 게임식 스킬 상세] 단계별 이름과 설명. 실제 수치는 서버의 기존 재능 계산이 결정한다.
+local talentUi={}
+talentUi.details={
+  Martial={{"날카로운 칼날","모든 검 공격 피해 +1. 검술의 기본기를 익힌다."},{"단련된 팔","공격 피해 +2. 연타의 마지막 타격이 안정된다."},{"회전 베기 극의","공격 피해 +3. 회전 베기가 최대 8마리·12칸까지 닿는다."}},
+  Signs={{"마력 집중","마력 탄환 피해 +2. 마력 흐름을 손끝에 모은다."},{"마력 증폭","탄환 피해 +4. 탄환이 더 단단하게 날아간다."},{"관통 사거리","탄환 피해 +6. 사거리가 40칸까지 늘어난다."}},
+  Defense={{"단단한 자세","받는 피해 -1. 방어 자세가 안정된다."},{"완벽 방어 연장","받는 피해 -2. 완벽 방어 구간이 조금 길어진다."},{"철벽 방어","받는 피해 -3. 방어 자세 유지 시간이 길어지고 방패 빛이 오래간다."}},
+  Agility={{"가벼운 발","1단 회피. 측면으로 빠진다."},{"연속 회피","2단 연속. 반대편으로 이어서 회피한다."},{"교차 회피","3단 연속. 전방 대각으로 파고든다."},{"위빙","4단 연속. 후방 대각으로 흘려 보낸다."},{"배후 도약","5단. 적의 등 뒤로 도약한다. 마지막 단계는 재사용 대기가 길다."}},
+}
+talentUi.selected={branchIndex=1,step=1}
 local talentButtons={}
 local talentColumns={}
 local columnHeights={}
@@ -2542,7 +2551,10 @@ for index,branch in ipairs(Config.MeadowTalentSchools or {})do
     effect.Position=UDim2.new(.5,0,0,top+nodeSize+2);effect.Size=UDim2.new(1,-6,0,16)
     effect.Font=Enum.Font.GothamBold;effect.TextSize=12;effect.Text=talentEffects[branch.Id][step]
     effect.TextColor3=Color3.fromRGB(170,180,174);effect.Parent=column
-    node.Activated:Connect(function() learnTalent(branch) end)
+    node.Activated:Connect(function()
+      talentUi.selected.branchIndex=index;talentUi.selected.step=step
+      if meadowActionButtons.refreshTalentDetail then meadowActionButtons.refreshTalentDetail() end
+    end)
     nodes[step]={node=node,edge=nodeEdge,icon=icon,effect=effect,badge=badge}
   end
   talentColumns[#talentColumns+1]=column
@@ -2551,8 +2563,37 @@ end
 local talentGridHeight=0
 for _,height in pairs(columnHeights)do talentGridHeight=math.max(talentGridHeight,height) end
 talentGrid.Size=UDim2.new(1,0,0,talentGridHeight)
-talentPerks.Position=UDim2.fromOffset(0,34+talentGridHeight+6)
-talentReset.Position=UDim2.fromOffset(0,34+talentGridHeight+90)
+talentUi.talentDetail=Instance.new("Frame")
+talentUi.talentDetail.Name="TalentDetail";talentUi.talentDetail.Position=UDim2.fromOffset(0,34+talentGridHeight+8);talentUi.talentDetail.Size=UDim2.new(1,0,0,118)
+talentUi.talentDetail.BackgroundColor3=Color3.fromRGB(20,36,34);talentUi.talentDetail.BorderSizePixel=0;talentUi.talentDetail.Parent=talentPanel
+do
+  local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,12);c.Parent=talentUi.talentDetail
+  local e=Instance.new("UIStroke");e.Color=Color3.fromRGB(218,189,126);e.Thickness=1.6;e.Transparency=.3;e.Parent=talentUi.talentDetail
+end
+talentUi.detailIcon=Instance.new("ImageLabel")
+talentUi.detailIcon.Name="DetailIcon";talentUi.detailIcon.BackgroundTransparency=1;talentUi.detailIcon.Position=UDim2.fromOffset(10,10);talentUi.detailIcon.Size=UDim2.fromOffset(64,64)
+talentUi.detailIcon.Image=meadowIconAtlas;talentUi.detailIcon.ImageRectSize=Vector2.new(64,64);talentUi.detailIcon.Parent=talentUi.talentDetail
+talentUi.detailName=Instance.new("TextLabel")
+talentUi.detailName.BackgroundTransparency=1;talentUi.detailName.Position=UDim2.fromOffset(84,8);talentUi.detailName.Size=UDim2.new(1,-94,0,24)
+talentUi.detailName.Font=Enum.Font.GothamBlack;talentUi.detailName.TextSize=16;talentUi.detailName.TextXAlignment=Enum.TextXAlignment.Left
+talentUi.detailName.TextColor3=Color3.fromRGB(255,244,214);talentUi.detailName.Parent=talentUi.talentDetail
+talentUi.detailText=Instance.new("TextLabel")
+talentUi.detailText.BackgroundTransparency=1;talentUi.detailText.Position=UDim2.fromOffset(84,32);talentUi.detailText.Size=UDim2.new(1,-94,0,44)
+talentUi.detailText.Font=Enum.Font.GothamMedium;talentUi.detailText.TextSize=12;talentUi.detailText.TextWrapped=true
+talentUi.detailText.TextXAlignment=Enum.TextXAlignment.Left;talentUi.detailText.TextYAlignment=Enum.TextYAlignment.Top
+talentUi.detailText.TextColor3=Color3.fromRGB(206,218,210);talentUi.detailText.Parent=talentUi.talentDetail
+talentUi.detailCost=Instance.new("TextLabel")
+talentUi.detailCost.BackgroundTransparency=1;talentUi.detailCost.Position=UDim2.fromOffset(10,80);talentUi.detailCost.Size=UDim2.new(.5,-14,0,30)
+talentUi.detailCost.Font=Enum.Font.GothamBold;talentUi.detailCost.TextSize=12;talentUi.detailCost.TextWrapped=true
+talentUi.detailCost.TextXAlignment=Enum.TextXAlignment.Left;talentUi.detailCost.TextColor3=Color3.fromRGB(226,200,130);talentUi.detailCost.Parent=talentUi.talentDetail
+talentUi.detailLearn=CommonUI.CreatePrimaryButton({name="TalentLearn",text="습득",minHeight=34})
+talentUi.detailLearn.Position=UDim2.new(.5,0,0,80);talentUi.detailLearn.Size=UDim2.new(.5,-10,0,32);talentUi.detailLearn.Parent=talentUi.talentDetail
+talentUi.detailLearn.Activated:Connect(function()
+  local entry=talentButtons[talentUi.selected.branchIndex]
+  if entry then learnTalent(entry.branch) end
+end)
+talentPerks.Position=UDim2.fromOffset(0,34+talentGridHeight+8+124)
+talentReset.Position=UDim2.fromOffset(0,34+talentGridHeight+90+124)
 local function layoutTalents()
   local w=talentGrid.AbsoluteSize.X
   if w<=0 then return end
@@ -2606,8 +2647,38 @@ local function renderTalents()
     end
   end
   talentHeader.Text="스킬 트리  ·  남은 기술 점수 "..remaining.."  (점수가 쌓일수록 다음 점수에 숙련이 더 필요)"
-  talentPanel.Size=UDim2.new(1,-8,0,34+talentGridHeight+90+50)
+  talentPanel.Size=UDim2.new(1,-8,0,34+talentGridHeight+90+124+50)
+  -- [선택 노드 상세]
+  local entry=talentButtons[talentUi.selected.branchIndex]
+  if entry then
+    local step=math.clamp(talentUi.selected.step,1,entry.max)
+    local info=talentUi.details[entry.branch.Id] and talentUi.details[entry.branch.Id][step]
+    talentUi.detailName.Text=string.format("%s  ·  %s  (%d/%d)",entry.branch.Name,info and info[1] or "",step,entry.max)
+    talentUi.detailText.Text=info and info[2] or ""
+    local level=levels[entry]
+    talentUi.detailIcon.ImageRectOffset=Vector2.new((talentIcons[entry.branch.Id] or 2)*64,0)
+    meadowArt.skill(talentUi.detailIcon,entry.branch.Id)
+    local learned=level>=step
+    local learnable=level+1==step and remaining>0
+    talentUi.detailCost.Text=learned and "습득 완료" or (level+1<step and string.format("먼저 %d단계를 습득해야 해",level+1))
+      or (remaining>0 and "필요 기술 점수 1  ·  보유 "..remaining or string.format("기술 점수 부족  ·  다음 점수까지 숙련 %d",select(3,Config.TalentPointProgress(tonumber(player:GetAttribute("CombatProficiency")) or 0))-select(2,Config.TalentPointProgress(tonumber(player:GetAttribute("CombatProficiency")) or 0))))
+    talentUi.detailLearn.Active=learnable;talentUi.detailLearn.AutoButtonColor=learnable
+    talentUi.detailLearn.TextTransparency=learnable and 0 or .5
+    talentUi.detailLearn.Text=learned and "습득 완료" or "습득"
+    for index,other in ipairs(talentButtons)do
+      for st=1,other.max do
+        local selected=index==talentUi.selected.branchIndex and st==step
+        local ring=other.nodes[st].node:FindFirstChild("SelectRing")
+        if selected and not ring then
+          ring=Instance.new("UIStroke");ring.Name="SelectRing";ring.Color=Color3.new(1,1,1);ring.Thickness=2
+          ring.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;ring.Parent=other.nodes[st].node
+        end
+        if ring then ring.Enabled=selected end
+      end
+    end
+  end
 end
+meadowActionButtons.refreshTalentDetail=renderTalents
 for _,name in ipairs({"CombatProficiency","MeadowTalentMartial","MeadowTalentSigns",
   "MeadowTalentDefense","MeadowTalentAgility","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderTalents)
