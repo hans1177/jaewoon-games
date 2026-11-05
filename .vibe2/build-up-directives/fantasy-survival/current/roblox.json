@@ -10622,11 +10622,44 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "d9900ef4cfff22357d575ddc9505b71b63be92d5",
+      "artifactIdentity": "sha256:763e05e18faabbf721e8e8c158ec74a1e04cf878fd1ac2e542d7e275a99e304d",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 41967945529,
+      "testedAt": "2026-11-05T04:37:19.303Z",
+      "repairSurfaces": [
+        "MOBILE_UI",
+        "ROBLOX_OBSERVED_INTERACTION"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":6,\"undersizedTouchButtons\":0,\"suboptimalTouchButtons\":3,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":1,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0.8965763172922679}"
+        },
+        {
+          "id": "observed-action-a5a1724f10caafbfaa3d",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-a5a1724f10caafbfaa3d\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-R15Skill2\",\"targetIdentity\":\"MeadowTouchLayer.MeadowR15SkillDock.R15Skill2\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-5f391f74a05998aef298",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-5f391f74a05998aef298\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-R15Skill3\",\"targetIdentity\":\"MeadowTouchLayer.MeadowR15SkillDock.R15Skill3\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
+        }
+      ]
+    },
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -18198,9 +18231,9 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure requires source repair before another observation",
+      "runtimeObserved": true
     },
     "baseline": {
       "sourceTreeFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
@@ -18218,8 +18251,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial PRESENTATION build-up has no previous generation effect to compare"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
