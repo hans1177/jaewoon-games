@@ -1002,6 +1002,7 @@ end
 
 -- [지역 랜드마크] 멀리서도 보이는 거대 구조물(석상·첨탑·분화구·빛기둥). 처음 조사하면 경험치와 이야기를 얻고 지도에 ✪로 기록된다.
 -- Stat: 석상 모델 키 / 높이. Shape: 지형 장식 종류.
+Config.WorldMap.MapImage = {Asset=115852784277911, W=1024, H=441, Top=0.2038, Span=0.7582}
 Config.WorldMap.Landmarks = {
   {Id="beacon", Zone="meadow", Name="봉화 언덕의 불탑", X=650, Z=-520, Statue=nil, Shape="spire", Light={255,190,90},
    Lore="렌스기사단이 길 잃은 이를 부르려 세운 봉화탑. 마지막 불은 20년째 꺼지지 않았다. 누가 기름을 대는지는 아무도 모른다."},
