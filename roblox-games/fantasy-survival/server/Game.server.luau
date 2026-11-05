@@ -5723,6 +5723,28 @@ do
       end
       return
     end
+    if typeof(action)=="string" and (action:match("^wp:lm:%d+$") or action:match("^wp:town:%d+$")) then
+      local kind=action:match("^wp:(%a+):")
+      local index=tonumber(action:match("%d+$"))
+      local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+      if humanoid and humanoid.Health>0 and os.clock()-(lastMapTravel[player] or 0)>4 then
+        local target
+        if kind=="lm" then
+          local lm=Config.WorldMap.Landmarks[index]
+          if lm and bit32.band(readNumber(player,"LandmarkMask",0),bit32.lshift(1,index-1))~=0 then target=Vector3.new(lm.X+70,3,lm.Z+70) end
+        else
+          local town=Config.WorldMap.Towns[index]
+          if town then
+            local discovered=readNumber(player,"WorldDiscovered",1)
+            for _,zone in ipairs(Config.WorldMap.Zones) do
+              if zone.Id==town.Zone and bit32.band(discovered,zone.Bit)~=0 then target=Vector3.new(town.X,3,town.Z) end
+            end
+          end
+        end
+        if target then lastMapTravel[player]=os.clock();travelTo(player,target) end
+      end
+      return
+    end
     if action~="wp:east" and action~="wp:west" then return end
     local session=sessions[player]
     if not session or os.clock()>session.expires then return end
@@ -6481,6 +6503,8 @@ do
     local x,z=Config.WorldMap.RandomPoint(zone.Id,random,160)
     if info and x and not (x>village.X0-200 and x<village.X1+200 and z>village.Z0-200 and z<village.Z1+200) then
       local center=Vector3.new(x,3,z)
+      workspace:SetAttribute("LordSeat_"..zone.Id,Vector3.new(x,0,z))
+      workspace:SetAttribute("LordName_"..zone.Id,info[1])
       table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=info[2],name="영주 · "..info[1],
         tier=math.min(10,tiers[zone.Id]+1),height=9,hp=5.5,dmg=2.4,alpha=true,bonusBoss=true,zoneTag=zone.Id,named=true,lord=true,
         drops={{"Crystal",1,5},{"Claw",1,3},{"Ore",1,4},{"Hide",1,4}},position=center})

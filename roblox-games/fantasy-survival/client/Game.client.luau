@@ -9694,7 +9694,7 @@ end)
   legend.BackgroundTransparency=1;legend.Position=UDim2.fromOffset(16,32);legend.Size=UDim2.new(1,-32,0,18)
   legend.Font=Enum.Font.Gotham;legend.TextSize=12;legend.TextXAlignment=Enum.TextXAlignment.Left
   legend.TextColor3=Color3.fromRGB(190,208,196);legend.ZIndex=62;legend.Parent=panel
-  legend.Text="✪ 랜드마크(누르면 설명)  ? 미발견  ⌂ 마을  ▲●✦ 발견 장소  ! 퀘스트  ◆ 이정표(빠른 이동)  ◇ 미발견  ★ 메인 목표  ● 내 위치"
+  legend.Text="✪ 랜드마크·⌂ 마을(눌러서 설명·이동)  ✖ 영주 거점  ❖ 저주받은 자  ? 미발견  ▲●✦ 발견 장소  ! 퀘스트  ◆ 이정표(빠른 이동)  ◇ 미발견  ★ 메인 목표  ● 내 위치"
   local close=Instance.new("TextButton")
   close.Text="X";close.Font=Enum.Font.GothamBold;close.TextSize=20;close.TextColor3=Color3.fromRGB(255,244,214)
   close.BackgroundColor3=Color3.fromRGB(70,38,38);close.Position=UDim2.new(1,-48,0,6);close.Size=UDim2.fromOffset(38,32)
@@ -9833,7 +9833,18 @@ end)
   info.TextXAlignment=Enum.TextXAlignment.Left;info.Visible=false;info.ZIndex=75;info.Parent=field
   Instance.new("UICorner",info).CornerRadius=UDim.new(0,8)
   local infoPad=Instance.new("UIPadding");infoPad.PaddingLeft=UDim.new(0,10);infoPad.PaddingRight=UDim.new(0,10);infoPad.Parent=info
-  local function showInfo(text) info.Text=text;info.Visible=true end
+  local goBtn=Instance.new("TextButton")
+  goBtn.AnchorPoint=Vector2.new(1,.5);goBtn.Position=UDim2.new(1,-6,.5,0);goBtn.Size=UDim2.fromOffset(64,30)
+  goBtn.BackgroundColor3=Color3.fromRGB(60,120,150);goBtn.Font=Enum.Font.GothamBold;goBtn.TextSize=13
+  goBtn.TextColor3=Color3.fromRGB(255,255,255);goBtn.Text="이동";goBtn.Visible=false;goBtn.ZIndex=76;goBtn.Parent=info
+  Instance.new("UICorner",goBtn).CornerRadius=UDim.new(0,8)
+  local goAction=nil
+  goBtn.Activated:Connect(function()
+    if goAction then remote:FireServer(goAction);overlay.Visible=false end
+  end)
+  local function showInfo(text,action)
+    info.Text=text;info.Visible=true;goAction=action;goBtn.Visible=action~=nil
+  end
   info.Active=true
   local function pin(mark,textFn)
     mark.Activated:Connect(function() showInfo(textFn()) end)
@@ -9853,10 +9864,10 @@ end)
     name.BackgroundTransparency=1;name.Position=UDim2.new(.5,-55,1,-4);name.Size=UDim2.fromOffset(110,12)
     name.Font=Enum.Font.GothamBold;name.TextSize=9;name.TextColor3=Color3.fromRGB(255,222,160);name.TextStrokeTransparency=.1
     name.Text="";name.ZIndex=66;name.Parent=mark
-    pin(mark,function()
+    mark.Activated:Connect(function()
       local lmMask=player:GetAttribute("LandmarkMask") or 0
-      if bit32.band(lmMask,bit32.lshift(1,index-1))~=0 then return "✪ "..lm.Name.."\n"..lm.Lore end
-      return "? 아직 가 보지 못한 곳. 이 지역 어딘가에 거대한 무언가가 있다는 소문이 돈다."
+      if bit32.band(lmMask,bit32.lshift(1,index-1))~=0 then showInfo("✪ "..lm.Name.."\n"..lm.Lore,"wp:lm:"..index)
+      else showInfo("? 아직 가 보지 못한 곳. 이 지역 어딘가에 거대한 무언가가 있다는 소문이 돈다.") end
     end)
     lmMarks[index]={mark=mark,name=name}
   end
@@ -9870,10 +9881,37 @@ end)
     name.BackgroundTransparency=1;name.Position=UDim2.new(.5,-40,1,-4);name.Size=UDim2.fromOffset(80,13)
     name.Font=Enum.Font.GothamBold;name.TextSize=10;name.TextColor3=Color3.fromRGB(255,240,205);name.TextStrokeTransparency=.2
     name.Text=town.Name;name.ZIndex=67;name.Parent=mark
-    pin(mark,function()
-      return "⌂ "..town.Name.." ("..town.Hold..")\n여관 "..town.Inn.." · 상인 "..town.Merchant.." · 정보통 "..town.Scout
+    mark.Activated:Connect(function()
+      showInfo("⌂ "..town.Name.." ("..town.Hold..")\n여관 "..town.Inn.." · 상인 "..town.Merchant.." · 정보통 "..town.Scout,"wp:town:"..index)
     end)
     townMarks[index]=mark
+  end
+  -- 영주 거점(발견한 지역): 누르면 영주 이름과 사연 퀘스트 안내.
+  local lordMarks={}
+  for _,zone in ipairs(world.Zones) do
+    local mark=Instance.new("TextButton")
+    mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5)
+    mark.Size=UDim2.fromOffset(20,20);mark.Font=Enum.Font.GothamBlack;mark.TextSize=16;mark.Text="✖"
+    mark.TextColor3=Color3.fromRGB(235,90,80);mark.TextStrokeTransparency=0;mark.ZIndex=65;mark.Visible=false;mark.Parent=field
+    mark.Activated:Connect(function()
+      local who=workspace:GetAttribute("LordName_"..zone.Id)
+      showInfo("✖ "..zone.Name.." 영주 거점"..(who and ("\n"..who.." · 쓰러뜨리면 지역의 비밀이 풀린다.") or ""))
+    end)
+    lordMarks[zone.Id]={mark=mark,zone=zone}
+  end
+  -- 저주받은 3인: 추적 퀘스트가 그 보스 단계일 때만 표시.
+  local cursedMarks={}
+  for index,c in ipairs(world.Cursed or {}) do
+    local mark=Instance.new("TextButton")
+    mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(c.X),fz(c.Z))
+    mark.Size=UDim2.fromOffset(24,24);mark.Font=Enum.Font.GothamBlack;mark.TextSize=20;mark.Text="❖"
+    mark.TextColor3=Color3.fromRGB(200,90,255);mark.TextStrokeTransparency=0;mark.ZIndex=69;mark.Visible=false;mark.Parent=field
+    local name=Instance.new("TextLabel")
+    name.BackgroundTransparency=1;name.Position=UDim2.new(.5,-60,1,-4);name.Size=UDim2.fromOffset(120,12)
+    name.Font=Enum.Font.GothamBold;name.TextSize=9;name.TextColor3=Color3.fromRGB(230,190,255);name.TextStrokeTransparency=.1
+    name.Text=c.Name;name.ZIndex=70;name.Parent=mark
+    mark.Activated:Connect(function() showInfo("❖ "..c.Name.."\n저주를 깨뜨려야 본모습으로 돌아온다. 추적 퀘스트가 이 단계에서 이곳을 가리킨다.") end)
+    cursedMarks[index]=mark
   end
   local dot=Instance.new("TextLabel")
   dot.BackgroundTransparency=1;dot.AnchorPoint=Vector2.new(.5,.5);dot.Size=UDim2.fromOffset(22,22)
@@ -9945,6 +9983,23 @@ end)
       entry.mark.Text=seen and "✪" or "?"
       entry.mark.TextColor3=seen and Color3.fromRGB(255,170,80) or Color3.fromRGB(190,190,190)
       entry.name.Text=seen and lm.Name or ""
+    end
+    for zoneId,entry in pairs(lordMarks) do
+      local seat=workspace:GetAttribute("LordSeat_"..zoneId)
+      if seat and zoneSeen(zoneId) then
+        entry.mark.Visible=true;entry.mark.Position=UDim2.fromScale(fx(seat.X),fz(seat.Z))
+      else entry.mark.Visible=false end
+    end
+    for index,c in ipairs(world.Cursed or {}) do
+      local stage=player:GetAttribute(c.Field) or 0
+      local show=false
+      for _,line in ipairs(Config.QuestLines or {}) do
+        if line.Field==c.Field then
+          local step=line.Steps[stage]
+          show=stage>=1 and step~=nil and step.Type=="kill" and step.Boss==c.Id
+        end
+      end
+      cursedMarks[index].Visible=show
     end
     dot.Position=UDim2.fromScale(math.clamp(fx(x),.01,.99),math.clamp(fz(z),.01,.99))
   end
