@@ -4337,6 +4337,8 @@ end
 -- All original game rewards, contact confirmation and DataStore data are
 -- preserved in one authoritative combat outcome path.
 local meadowSkillCooldown={}
+-- [지속 스킬 전투 상태] 세션 한정 약한 키. 기존 저장/보상/몬스터 체력을 변경하지 않는다.
+local meadowTreeCombat=setmetatable({},{__mode="k"})
 local meadowFocusUntil={}
 local meadowDefense={}
 local function liveMeadowCharacter(player)
@@ -4364,6 +4366,76 @@ local function applyMeadowDamage(player,target,damage)
       if charges-1<=0 then player:SetAttribute("MeadowOilClass",nil) end
     end
   end
+  -- [지속 효과] 배운 노드에 한해서만 명중·거리·장비·주문 연계가 발동한다.
+  local now=os.clock()
+  local state=meadowTreeCombat[player] or {}
+  meadowTreeCombat[player]=state
+  local passive=meadowRpg.passiveLevel
+  local sameTarget=state.lastTarget==target and now-(state.lastHitAt or -100)<1.8
+  if sameTarget and passive(player,"W_GAUGE")>0 then
+    player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)+2*passive(player,"W_GAUGE")))
+  end
+  if now-(state.lastHeavyAt or -100)<2 and passive(player,"W_TIMING")>0 then
+    damage=math.floor(damage*(1+.045*passive(player,"W_TIMING")))
+  end
+  if readNumber(player,"MeadowComboStage",0)>=2 and passive(player,"W_COMBO")>0 then
+    damage=math.floor(damage*(1+.035*passive(player,"W_COMBO")))
+  end
+  local weapon=readNumber(player,"MeadowEquipWeapon",0)
+  if state.lastWeapon~=nil and weapon~=state.lastWeapon and passive(player,"W_SWITCH")>0 then
+    damage=math.floor(damage*(1+.07*passive(player,"W_SWITCH")))
+  end
+  state.lastWeapon=weapon
+  if (player:GetAttribute("MeadowParryConfirmed") or 0)>workspace:GetServerTimeNow()-2
+    and passive(player,"G_PARRY")>0 then
+    damage=math.floor(damage*(1+.09*passive(player,"G_PARRY")))
+  end
+  if state.currentSchool=="Hunter" then
+    local character=player.Character
+    local root=character and character:FindFirstChild("HumanoidRootPart")
+    local distance=root and (target.position-root.Position).Magnitude or 0
+    if passive(player,"H_RANGE")>0 then
+      damage=math.floor(damage*(1+(distance>18 and .07 or .03)*passive(player,"H_RANGE")))
+    end
+    if root and root.AssemblyLinearVelocity.Magnitude>7 and passive(player,"H_MOVE")>0 then
+      damage=math.floor(damage*(1+.06*passive(player,"H_MOVE")))
+    end
+    if target.meadowMarkOwner==player.UserId and (target.meadowMarkUntil or 0)>now then
+      if passive(player,"H_TRACK")>0 then damage=math.floor(damage*(1+.065*passive(player,"H_TRACK"))) end
+      if sameTarget and passive(player,"H_WEAK")>0 then
+        damage=math.floor(damage*(1+.075*passive(player,"H_WEAK")))
+      end
+    end
+    if (target.stunUntil or 0)>now and passive(player,"H_TRAP")>0 then
+      damage=math.floor(damage*(1+.055*passive(player,"H_TRAP")))
+    end
+  elseif state.currentSchool=="Shadow" then
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    local facing=target.visualFacing
+    local behind=root and facing and (root.Position-target.position).Magnitude>1
+      and (root.Position-target.position).Unit:Dot(facing)<-.4
+    if behind and passive(player,"S_BACK")>0 then
+      damage=math.floor(damage*(1+.09*passive(player,"S_BACK")))
+    end
+    local defend=meadowDefense[player] or {}
+    if (defend.dodgeUntil or 0)>now and passive(player,"S_DODGE")>0 then
+      damage=math.floor(damage*(1+.08*passive(player,"S_DODGE")))
+    end
+    if (target.stunUntil or 0)>now and passive(player,"S_CONFUSE")>0 then
+      damage=math.floor(damage*(1+.06*passive(player,"S_CONFUSE")))
+    end
+  elseif state.currentSchool=="Magic" then
+    if state.lastSpell and state.lastSpell~=state.currentSkill
+      and now-(state.lastSpellAt or -100)<3 and passive(player,"M_CHAIN")>0 then
+      damage=math.floor(damage*(1+.065*passive(player,"M_CHAIN")))
+    end
+    if now-(state.lastWeaponAttackAt or -100)<2.5 and passive(player,"M_WEAVE")>0 then
+      damage=math.floor(damage*(1+.07*passive(player,"M_WEAVE")))
+    end
+  else
+    if state.currentSchool==nil then state.lastWeaponAttackAt=now end
+  end
+  state.lastTarget=target;state.lastHitAt=now
   -- [장비 공격력] 기존 무기 강화·숙련도·기술 배율은 그대로 두고 새 장비 보너스만 가산.
   local gearAttack=meadowRpg.stats(player)
   damage=damage+gearAttack
@@ -4386,6 +4458,11 @@ local function applyMeadowDamage(player,target,damage)
   setNumber(player,"Score",readNumber(player,"Score",0)+damage)
   player:SetAttribute("LastApprovedScope","combat-impact")
   if target.HP<=0 then
+    local bonus=meadowRpg.passiveLevel(player,"W_CHASE")*4
+    if target.meadowMarkOwner==player.UserId and (target.meadowMarkUntil or 0)>now then
+      bonus+=meadowRpg.passiveLevel(player,"S_MARK_KILL")*6
+    end
+    if bonus>0 then player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)+bonus)) end
     target.model:SetAttribute("NativeMobMotion","DEATH")
     target.model:SetAttribute("AttackState","DEATH")
     remote:FireAllClients("MEADOW_MOB_DEATH",{
@@ -4711,6 +4788,10 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
       setEnemyAttackState(attacker,"STUNNED")
     end
     recordMeadowQuest(player,"PARRY")
+    local refunded=meadowRpg.passiveLevel(player,"G_REFUND")*6
+    if refunded>0 then
+      player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)+refunded))
+    end
     player:SetAttribute("MeadowParryConfirmed",workspace:GetServerTimeNow())
     remote:FireClient(player,"MEADOW_REACTION","PARRY")
     return
@@ -4786,6 +4867,30 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
       meadowDefense[player]=defense
       remote:FireClient(player,"MEADOW_REACTION","BLOCK")
     end
+  end
+  -- [지속 방호] 정면 막기·포위 대응·일회성 위기 보호.
+  local guardRank=meadowRpg.passiveLevel(player,"G_FRONT")
+  if (defense.guardUntil or 0)>now and guardRank>0 then
+    damage=math.max(1,math.floor(damage*(1-.065*guardRank)))
+  end
+  if (defense.guardUntil or 0)>now and meadowRpg.passiveLevel(player,"G_STAGGER")>0 then
+    damage=math.max(1,math.floor(damage*(1-.03*meadowRpg.passiveLevel(player,"G_STAGGER"))))
+  end
+  local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+  if root and meadowRpg.passiveLevel(player,"W_POISE")>0 then
+    local nearby=0
+    for _,enemy in ipairs(enemies) do
+      if enemy.HP>0 and (enemy.position-root.Position).Magnitude<12 then nearby+=1 end
+      if nearby>=3 then break end
+    end
+    if nearby>=3 then damage=math.max(1,math.floor(damage*(1-.05*meadowRpg.passiveLevel(player,"W_POISE")))) end
+  end
+  local crisis=meadowRpg.passiveLevel(player,"G_CRISIS")
+  local state=meadowTreeCombat[player] or {}
+  if crisis>0 and humanoid.Health<=humanoid.MaxHealth*.35 and now>=(state.nextCrisisAt or 0) then
+    state.nextCrisisAt=now+45
+    meadowTreeCombat[player]=state
+    damage=math.max(1,math.floor(damage*(1-.22-.07*crisis)))
   end
   -- [갑옷 피해 경감] 완벽 방어·회피 판정 이후 실제 착용 장비와 방호 숙련만 적용.
   local _,armor=meadowRpg.stats(player)
