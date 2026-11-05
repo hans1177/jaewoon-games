@@ -12,6 +12,7 @@ const file=fs.readFileSync(source);
 if(file.toString('utf8',0,4)!=='glTF'||file.readUInt32LE(4)!==2)throw Error('INVALID_COMBAT_GLB');
 const hash=crypto.createHash('sha256').update(file).digest('hex');
 const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
+const key0=key;
 const rawCookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
 if(!key)throw Error('ROBLOX_OPEN_CLOUD_API_KEY_MISSING');
 const cookie=rawCookie.includes('.ROBLOSECURITY=')?rawCookie:(rawCookie?'.ROBLOSECURITY='+rawCookie+';':'');
@@ -97,49 +98,58 @@ if(process.argv.includes('--camp-assets-only')){
  process.exit(0);
 }
 
-// [마력숲 몬스터] Quaternius CC0 애니메이션 몬스터 팩(OpenGameArt)에서 용 FBX를 받아 Roblox Model로 등록한다.
+// [마력숲 몬스터] Quaternius Ultimate Monsters(CC0)에서 어둡고 위협적인 13종을 Roblox Model로 등록한다.
+// 원본 팩의 GLB를 CC0로 표기해 재배포한 공개 저장소(LICENSE.txt에 팩·파일 대응 명시)에서 내려받고 해시를 기록한다.
 if(process.argv.includes('--monster-assets-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
- const url='https://opengameart.org/sites/default/files/Animated%20Monster%20Pack%20by%20%40Quaternius.zip';
- const zipSha='acab2bddc5939f9b1b92c930507d73e0fd80037a39631cf2049bb6cfcaec1acd';
  const targetUniverse='10773436325';
- const zipResponse=await fetch(url,{headers:{'user-agent':'Mozilla/5.0'}});
- if(!zipResponse.ok)throw Error('MONSTER_ZIP_DOWNLOAD_FAILED:'+zipResponse.status);
- const zipBytes=Buffer.from(await zipResponse.arrayBuffer());
- if(crypto.createHash('sha256').update(zipBytes).digest('hex')!==zipSha)throw Error('MONSTER_ZIP_HASH_MISMATCH');
- fs.mkdirSync('/tmp/monster-zip',{recursive:true});
- fs.writeFileSync('/tmp/monster-zip/m.zip',zipBytes);
+ const files={
+  demon:['OrcLieutenant','Ultimate Monsters Big/Demon'],frostfiend:['OrcCaptain','Ultimate Monsters Big/BlueDemon'],
+  orc:['Orc','Ultimate Monsters Big/Orc'],skullorc:['OrcWarrior','Ultimate Monsters Big/Orc_Skull'],
+  tribal:['OrcSoldier','Ultimate Monsters Big/Tribal'],assassin:['OrcArcher','Ultimate Monsters Big/Ninja'],
+  yeti:['WerewolfHunter','Ultimate Monsters Big/Yeti'],beastman:['Werewolf','Ultimate Monsters Blob/Yeti'],
+  spiritgolem:['StoneGolem','Ultimate Monsters Flying/Goleling'],raptor:['ElderWolf','Ultimate Monsters Big/Dino'],
+  spider:['GiantSpider','Ultimate Monsters Flying/Squidle'],fangspider:['GiantFangSpider','Ultimate Monsters Flying/Armabee'],bladespider:['GiantBladeSpider','Ultimate Monsters Flying/Armabee'],chieftain:['WerewolfChieftain','Ultimate Monsters Blob/MushroomKing'],wolf:['Wolf','Ultimate Monsters Big/Wolf'],toad:['GiantToad','Ultimate Monsters Big/Frog'],keltir:['BeardedKeltir','Ultimate Monsters Big/Deer'],goblin:['Goblin','Ultimate Monsters Blob/Orc'],
+  goblinscout:['GoblinScout','Ultimate Monsters Blob/Ninja'],
+ };
  const {execFileSync}=await import('node:child_process');
- execFileSync('unzip',['-o','-q','/tmp/monster-zip/m.zip','-d','/tmp/monster-zip/out']);
- registry.monsterPackV1=registry.monsterPackV1||{license:'CC0-1.0',creator:'Quaternius',
-  licenseEvidence:'https://opengameart.org/content/lowpoly-animated-monsters',zipSha256:zipSha,universeId:targetUniverse,assetIds:{}};
- const pack=registry.monsterPackV1;
- for(const name of ['Dragon']){
-  let assetId=String(pack.assetIds[name]||'');
+ fs.rmSync('/tmp/nj-mmo',{recursive:true,force:true});
+ execFileSync('git',['clone','--depth','1','-q','https://github.com/tech-leads-club/nj-mmo.git','/tmp/nj-mmo']);
+ const revision=execFileSync('git',['-C','/tmp/nj-mmo','rev-parse','HEAD']).toString().trim();
+ const licenseText=fs.readFileSync('/tmp/nj-mmo/client/public/models/monsters/LICENSE.txt','utf8');
+ if(!/Monster models imported from Quaternius packs \(CC0\)/.test(licenseText))throw Error('MONSTER_LICENSE_EVIDENCE_MISSING');
+ registry.monsterPackV2=registry.monsterPackV2||{license:'CC0-1.0',creator:'Quaternius',
+  licenseEvidence:'https://quaternius.com/packs/ultimatemonsters.html',mirror:'https://github.com/tech-leads-club/nj-mmo/tree/'+revision+'/client/public/models/monsters',
+  mirrorLicenseFile:'client/public/models/monsters/LICENSE.txt',universeId:targetUniverse,assetIds:{},sources:{}};
+ const pack=registry.monsterPackV2;
+ for(const [key,[file,origin]] of Object.entries(files)){
+  let assetId=String(pack.assetIds[key]||'');
   if(!/^[1-9]\d*$/.test(assetId)){
-   const bytes=fs.readFileSync('/tmp/monster-zip/out/Animated Monster Pack by @Quaternius/FBX/'+name+'.fbx');
+   const bytes=fs.readFileSync('/tmp/nj-mmo/client/public/models/monsters/'+file+'.glb');
+   if(bytes.toString('utf8',0,4)!=='glTF')throw Error('MONSTER_GLB_INVALID:'+key);
+   const sha=crypto.createHash('sha256').update(bytes).digest('hex');
    const form=new FormData();
-   form.append('request',JSON.stringify({assetType:'Model',displayName:'Mana Forest Monster '+name,
-    description:'Quaternius CC0 '+name+' sha256 '+crypto.createHash('sha256').update(bytes).digest('hex'),creationContext:{creator}}));
-   form.append('fileContent',new Blob([bytes],{type:'model/fbx'}),name+'.fbx');
-   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
-   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('MONSTER_OPERATION_INVALID:'+name);
+   form.append('request',JSON.stringify({assetType:'Model',displayName:'Mana Forest Monster '+key,
+    description:'Quaternius CC0 '+origin+' sha256 '+sha,creationContext:{creator}}));
+   form.append('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),key+'.glb');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key0},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('MONSTER_OPERATION_INVALID:'+key);
    const operationPath=op.path,deadline=Date.now()+240000;
    while(!op.done&&Date.now()<deadline){
     await new Promise(resolve=>setTimeout(resolve,4000));
-    op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+    op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key0}});
    }
    assetId=String(op.response?.assetId||'');
-   if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))throw Error('MONSTER_UPLOAD_FAILED:'+name+':'+JSON.stringify(op.error||{}).slice(0,300));
-   pack.assetIds[name]=assetId;
+   if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))throw Error('MONSTER_UPLOAD_FAILED:'+key+':'+JSON.stringify(op.error||{}).slice(0,300));
+   pack.assetIds[key]=assetId;pack.sources[key]={file:file+'.glb',origin,sha256:sha};
    fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
   }
   const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
-   method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+   method:'PATCH',headers:{'x-api-key':key0,'content-type':'application/json'},
    body:JSON.stringify({subjectType:'Universe',subjectId:targetUniverse,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})});
-  if(grant.errors?.length)throw Error('MONSTER_PERMISSION_REJECTED:'+name);
-  console.log('MONSTER_ASSET='+name+':'+assetId);
+  if(grant.errors?.length)throw Error('MONSTER_PERMISSION_REJECTED:'+key);
+  console.log('MONSTER_ASSET='+key+':'+assetId);
  }
  process.exit(0);
 }
