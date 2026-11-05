@@ -143,4 +143,5 @@ return {
  item_staff=78185257363571,
  item_boots=80950977293578,
  item_pants=127216069013090,
+ item_armor_metal2=100747417070392,
 }

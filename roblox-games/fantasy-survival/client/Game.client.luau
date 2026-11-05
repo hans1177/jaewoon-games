@@ -229,9 +229,15 @@ do
   local views={}
   local gearKeys={wanderer_blade="item_sword",hunter_blade="item_sword",runic_blade="item_sword_golden",forest_blade="item_sword_golden",
     dew_dagger="item_dagger",thorn_axe="item_axe_small",magma_greatsword="item_sword_big"}
-  local armorKeys={travel_armor="item_armor_leather",hunter_armor="item_armor_leather",moss_robe="item_armor_leather",frost_leather="item_armor_leather",
-    guardian_armor="item_armor_metal",magma_plate="item_armor_black",worldtree_mail="item_armor_golden",
+  local armorKeys={travel_armor="item_armor_leather",hunter_armor="item_armor_metal2",moss_robe="item_armor_leather",frost_leather="item_armor_leather",
+    guardian_armor="item_armor_metal",magma_plate="item_armor_metal",worldtree_mail="item_armor_golden",
     moon_amulet="item_necklace1",fang_necklace="item_necklace1",herb_bracelet="item_ring2"}
+  -- 같은 갑옷 모델도 색조를 입혀 종류를 구분한다(재질 색 곱하기).
+  local tints={moss_robe=Color3.fromRGB(125,185,115),frost_leather=Color3.fromRGB(150,195,240),magma_plate=Color3.fromRGB(255,120,75),
+    worldtree_mail=Color3.fromRGB(150,240,170),hunter_armor=Color3.fromRGB(190,200,170),guardian_armor=Color3.fromRGB(190,210,255)}
+  function meadowArt.itemTintFor(item)
+    return item and item.gear and tints[item.gear.Id] or nil
+  end
   local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1"}
   function meadowArt.itemKeyFor(item)
     if not item then return nil end
@@ -255,17 +261,17 @@ do
   function meadowArt.new3D(icon)
     local view=Instance.new("ViewportFrame")
     view.Name="Item3D";view.BackgroundTransparency=1;view.BorderSizePixel=0
-    view.AnchorPoint=icon.AnchorPoint;view.Size=icon.Size;view.Position=icon.Position;view.ZIndex=icon.ZIndex+1
+    view.AnchorPoint=icon.AnchorPoint;view.Size=icon.Size;view.Position=icon.Position;view.ZIndex=icon.ZIndex+1;view.Interactable=false
     view.Ambient=Color3.fromRGB(190,190,200);view.LightColor=Color3.fromRGB(255,244,220);view.Visible=false
     view.Parent=icon.Parent
     views[view]={icon=icon,key=nil,model=nil,angle=math.random()*6}
     return view
   end
-  function meadowArt.set3D(view,key)
+  function meadowArt.set3D(view,key,tint)
     local entry=views[view]
     if not entry then return end
-    if entry.key~=key then
-      entry.key=key
+    if entry.key~=key or entry.tint~=tint then
+      entry.key=key;entry.tint=tint
       if entry.model then entry.model:Destroy();entry.model=nil end
       view.Visible=false;entry.icon.Visible=true
     end
@@ -285,6 +291,9 @@ do
     local camera=view.CurrentCamera
     if not camera then camera=Instance.new("Camera");camera.Parent=view;view.CurrentCamera=camera end
     camera.FieldOfView=35;camera.CFrame=CFrame.new(Vector3.new(0,radius*.35,radius*2.1),Vector3.new(0,0,0))
+    if entry.tint then
+      for _,part in ipairs(model:GetDescendants()) do if part:IsA("MeshPart") then part.Color=entry.tint end end
+    end
     entry.model=model;view.Visible=true;entry.icon.Visible=false
   end
   function meadowArt.refresh3D(view)
@@ -2425,7 +2434,7 @@ local function redrawSelection()
   detailPreview.ImageRectOffset=Vector2.new(item.icon*64,0)
   meadowArt.gear(detailPreview,item.art)
   if not detailPreview3D then detailPreview3D=meadowArt.new3D(detailPreview) end
-  meadowArt.set3D(detailPreview3D,meadowArt.itemKeyFor(item))
+  meadowArt.set3D(detailPreview3D,meadowArt.itemKeyFor(item),meadowArt.itemTintFor(item))
   detailPreview.Visible=not meadowArt.has3D(detailPreview3D)
   detailPreview3D.Visible=not detailPreview.Visible
   local recipe=item.gear or item.tonic
@@ -2496,7 +2505,7 @@ local function makeCard(item)
   icon.Position=UDim2.new(.5,0,0,3);icon.Parent=card
   do
     local key3d=meadowArt.itemKeyFor(item)
-    if key3d then meadowArt.set3D(meadowArt.new3D(icon),key3d) end
+    if key3d then meadowArt.set3D(meadowArt.new3D(icon),key3d,meadowArt.itemTintFor(item)) end
   end
   local name=Instance.new("TextLabel")
   name.Name="ItemName";name.Position=UDim2.new(0,3,0,53);name.Size=UDim2.new(1,-6,0,20)
@@ -10328,15 +10337,43 @@ end)()
       if tool then human:EquipTool(tool);meadowArt.sfx("unsheath",.5,1) end
     end
   end
+  -- 눌렀는데 아무 일도 없으면 이유를 잠깐 보여 준다.
+  local quickMsg=Instance.new("TextLabel")
+  quickMsg.Name="MeadowQuickMessage";quickMsg.AnchorPoint=Vector2.new(.5,1);quickMsg.Position=UDim2.new(.5,0,1,-66)
+  quickMsg.Size=UDim2.fromOffset(260,24);quickMsg.BackgroundColor3=Color3.fromRGB(14,20,22);quickMsg.BackgroundTransparency=.3
+  quickMsg.Font=Enum.Font.GothamBold;quickMsg.TextSize=14;quickMsg.TextColor3=Color3.fromRGB(255,236,180);quickMsg.Text=""
+  quickMsg.Visible=false;quickMsg.ZIndex=60;quickMsg.Parent=gui
+  Instance.new("UICorner",quickMsg).CornerRadius=UDim.new(0,8)
+  local quickMsgToken=0
+  local function quickSay(text)
+    quickMsgToken+=1;local token=quickMsgToken
+    quickMsg.Text=text;quickMsg.Visible=true
+    task.delay(1.6,function() if token==quickMsgToken then quickMsg.Visible=false end end)
+  end
   local function press(i)
-    if gui:GetAttribute("GameMenuOpen")==true or player:GetAttribute("ProfileReady")~=true then return end
+    if gui:GetAttribute("GameMenuOpen")==true then quickSay("메뉴를 닫아야 쓸 수 있어") return end
+    if player:GetAttribute("ProfileReady")~=true then quickSay("저장 정보를 불러오는 중이야") return end
     local id=meadowArt.quickIds[i]
-    if id=="@weapon" then toggleWeapon()
+    if not id then quickSay("빈 칸이야 · 가방 > 퀵슬롯에서 등록") return end
+    if id=="@weapon" then
+      if not (player.Character and player.Character:FindFirstChildOfClass("Tool")) and not findSword() then quickSay("꺼낼 무기가 없어") return end
+      toggleWeapon()
     elseif id=="@interact" then activateMeadowAction("scope-coreloop-1-6ebe58f496")
-    elseif id=="@hp" then remote:FireServer("meadow:rpg:tonic:use:herbal_tonic")
-    elseif id=="@sp" then remote:FireServer("meadow:rpg:tonic:use:energy_tonic")
-    elseif id=="@oil" then remote:FireServer("oil:auto")
-    elseif id then activateMeadowAction(id) end
+    elseif id=="@hp" then
+      if (tonumber(player:GetAttribute("MeadowPotionHealth")) or 0)<=0 then quickSay("체력약이 없어") return end
+      remote:FireServer("meadow:rpg:tonic:use:herbal_tonic")
+    elseif id=="@sp" then
+      if (tonumber(player:GetAttribute("MeadowPotionStamina")) or 0)<=0 then quickSay("기력약이 없어") return end
+      remote:FireServer("meadow:rpg:tonic:use:energy_tonic")
+    elseif id=="@oil" then
+      if (tonumber(player:GetAttribute("MeadowOilCharges")) or 0)<=0 then quickSay("오일이 없어") return end
+      remote:FireServer("oil:auto")
+    else
+      local deadline=player:GetAttribute("MeadowReady_"..id)
+      local left=typeof(deadline)=="number" and deadline-workspace:GetServerTimeNow() or 0
+      if left>.05 then quickSay("쿨타임 "..math.ceil(left).."초") return end
+      if activateMeadowAction(id)==false then quickSay("지금은 쓸 수 없어(기력·무기 확인)") end
+    end
   end
   for i=1,COUNT do
     local slot=Instance.new("TextButton")
@@ -10384,7 +10421,7 @@ end)()
     if view then view:Destroy();spinners[view]=nil end
     view=Instance.new("ViewportFrame")
     view.Name="Item3D";view:SetAttribute("ItemKey",key);view.BackgroundTransparency=1;view.BorderSizePixel=0
-    view.Size=UDim2.fromScale(1,1);view.ZIndex=31;view.Ambient=Color3.fromRGB(190,190,200);view.LightColor=Color3.fromRGB(255,244,220)
+    view.Size=UDim2.fromScale(1,1);view.ZIndex=31;view.Interactable=false;view.Ambient=Color3.fromRGB(190,190,200);view.LightColor=Color3.fromRGB(255,244,220)
     view.Parent=holder
     local model=template:Clone();model.Parent=view
     local cframe,size=model:GetBoundingBox()
