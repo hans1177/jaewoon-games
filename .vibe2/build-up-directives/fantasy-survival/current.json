@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g1-fd22c8ac5235",
-  "directiveFingerprint": "fd22c8ac5235e0c17a77d276efd18db8c7e70b5c84b157d9d63a99506463f777",
+  "directiveId": "fantasy-survival-build-up-g1-d5bbb2b2b937",
+  "directiveFingerprint": "d5bbb2b2b937dcf854f2cb630a4f77713ce31d3d02ffe3b923418fe57c49ed81",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "fantasy-survival",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
+  "sourceTreeFingerprint": "8a47755604a62db3e48ff9416255f457134eab5ea14c1bc02db042fcf90d4f92",
   "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
   "designSourceBuildUp": {
     "version": 1,
@@ -346,7 +346,7 @@
           "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
           "VFX_AUDIO_CAMERA_POLISH_MOBILE"
         ],
-        "sourceTreeFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
+        "sourceTreeFingerprint": "8a47755604a62db3e48ff9416255f457134eab5ea14c1bc02db042fcf90d4f92",
         "rule": "MAIN_A_NAMED_GAME_SYSTEM_B_EXISTING_GAME_SYSTEMS; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -493,7 +493,7 @@
       "nextAction": "OPTIONAL_COMPATIBILITY_COMPARISON_ONLY_ROBLOX_LUAU_REMAINS_ORIGINAL"
     },
     "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
-    "sourceTreeFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
+    "sourceTreeFingerprint": "8a47755604a62db3e48ff9416255f457134eab5ea14c1bc02db042fcf90d4f92",
     "multiplayerMode": "HYBRID",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -581,7 +581,8 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
+            "roblox-games/fantasy-survival/shared/GameConfig.luau",
+            "roblox-games/fantasy-survival/shared/Opening24.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -589,7 +590,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
+          "roblox-games/fantasy-survival/shared/Opening24.luau"
         ],
         "inspectedSymbols": [
           {
@@ -689,7 +690,8 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
+            "roblox-games/fantasy-survival/shared/GameConfig.luau",
+            "roblox-games/fantasy-survival/shared/Opening24.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -697,7 +699,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
+          "roblox-games/fantasy-survival/shared/Opening24.luau"
         ],
         "inspectedSymbols": [
           {
@@ -791,7 +793,8 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
+            "roblox-games/fantasy-survival/shared/GameConfig.luau",
+            "roblox-games/fantasy-survival/shared/Opening24.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -799,7 +802,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
+          "roblox-games/fantasy-survival/shared/Opening24.luau"
         ],
         "inspectedSymbols": [
           {
@@ -892,7 +895,8 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
+            "roblox-games/fantasy-survival/shared/GameConfig.luau",
+            "roblox-games/fantasy-survival/shared/Opening24.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -900,7 +904,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
+          "roblox-games/fantasy-survival/shared/Opening24.luau"
         ],
         "inspectedSymbols": [
           {
@@ -1039,17 +1043,21 @@
     },
     "observedGameCodeFiles": [
       "roblox-games/fantasy-survival/client/Game.client.luau",
-      "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
-      "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau"
+      "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
+      "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau"
     ],
     "executableCodeCandidateFiles": [
       "roblox-games/fantasy-survival/client/Game.client.luau",
-      "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
+      "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau"
     ],
@@ -1095,7 +1103,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
+    "sourceTreeFingerprint": "8a47755604a62db3e48ff9416255f457134eab5ea14c1bc02db042fcf90d4f92",
     "mode": "PRESERVATION_PRESENTATION_MILESTONES_ONLY",
     "authoredItemCount": 48,
     "authoredCounts": {
@@ -10102,64 +10110,68 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=20",
+      "CURRENT_SOURCE_FILES=100",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH"
     ],
     "signals": {
-      "combat": 1153,
-      "progression": 1088,
-      "ai": 295,
-      "save": 354,
-      "multiplayer": 59,
-      "animation": 468,
-      "motionStates": 1761,
-      "gameFeel": 190,
-      "vfx": 364,
-      "camera": 299,
-      "audio": 50,
+      "combat": 1268,
+      "progression": 1196,
+      "ai": 337,
+      "save": 367,
+      "multiplayer": 60,
+      "animation": 499,
+      "motionStates": 1960,
+      "gameFeel": 197,
+      "vfx": 449,
+      "camera": 339,
+      "audio": 79,
       "audioDynamics": 32,
-      "ui": 1600,
-      "uiFlow": 1578,
+      "ui": 1806,
+      "uiFlow": 1729,
       "entryFlow": 14,
-      "loadingFlow": 3,
-      "input": 243,
-      "map": 1421,
-      "landmark": 50,
-      "interaction": 665,
-      "inventory": 489,
-      "equipment": 207,
-      "settings": 66,
-      "feedback": 193,
-      "session": 90,
-      "content": 2044,
-      "choice": 1824,
+      "loadingFlow": 4,
+      "input": 301,
+      "map": 1726,
+      "landmark": 72,
+      "interaction": 812,
+      "inventory": 603,
+      "equipment": 226,
+      "settings": 70,
+      "feedback": 200,
+      "session": 108,
+      "content": 2375,
+      "choice": 1916,
       "connection": 9,
-      "performance": 119,
-      "lighting": 233,
+      "performance": 138,
+      "lighting": 261,
       "primitive": 60,
       "todo": 0,
-      "errorRecovery": 134
+      "errorRecovery": 159
     },
     "topFiles": [
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "score": 2737
-      },
-      {
-        "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "score": 1588
+        "score": 3239
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "score": 1559
+        "score": 1998
+      },
+      {
+        "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
+        "score": 1604
       },
       {
         "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
-        "score": 358
+        "score": 430
       },
       {
         "file": "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-        "score": 70
+        "score": 82
+      },
+      {
+        "file": "roblox-games/fantasy-survival/shared/Opening24.luau",
+        "score": 26
       },
       {
         "file": "roblox-games/fantasy-survival/default.project.json",
@@ -10178,22 +10190,18 @@
         "score": 3
       },
       {
+        "file": "roblox-games/fantasy-survival/opening24/files.json",
+        "score": 2
+      },
+      {
         "file": "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
         "score": 1
-      },
-      {
-        "file": "roblox-games/fantasy-survival/action-icons/dodge.png",
-        "score": 0
-      },
-      {
-        "file": "roblox-games/fantasy-survival/action-icons/fist.png",
-        "score": 0
       }
     ],
     "sourceAnchors": [
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3374,
+        "line": 3543,
         "kind": "FUNCTION",
         "symbol": "setEnemyAttackState",
         "context": "local function setEnemyAttackState(enemy, state)",
@@ -10209,7 +10217,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 2040,
+        "line": 2068,
         "kind": "FUNCTION",
         "symbol": "equipped",
         "context": "local function equipped(player,slot)",
@@ -10257,7 +10265,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 1326,
+        "line": 1545,
         "kind": "FUNCTION",
         "symbol": "refreshMeadowCameraOption",
         "context": "local function refreshMeadowCameraOption()",
@@ -10265,7 +10273,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 1985,
+        "line": 2267,
         "kind": "FUNCTION",
         "symbol": "itemValue",
         "context": "local function itemValue(item)",
@@ -10273,7 +10281,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 6078,
+        "line": 7183,
         "kind": "FUNCTION",
         "symbol": "updateMeadowQuestDirection",
         "context": "local function updateMeadowQuestDirection()",
@@ -10281,7 +10289,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 608,
+        "line": 635,
         "kind": "FUNCTION",
         "symbol": "villageChoose",
         "context": "local function villageChoose(player,actionId)",
@@ -10305,23 +10313,23 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 1010,
-        "kind": "FUNCTION",
-        "symbol": "equippedName",
-        "context": "local function equippedName(slot)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 4611,
+        "line": 5560,
         "kind": "FUNCTION",
         "symbol": "bindForestClimate",
         "context": "local function bindForestClimate(model)",
         "score": 90
       },
       {
+        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+        "line": 6248,
+        "kind": "FUNCTION",
+        "symbol": "layoutMeadowCombatUi",
+        "context": "local function layoutMeadowCombatUi()",
+        "score": 90
+      },
+      {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 2015,
+        "line": 2042,
         "kind": "FUNCTION",
         "symbol": "awardProgress",
         "context": "local function awardProgress(player, experience, coinReward)",
@@ -10329,7 +10337,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3471,
+        "line": 3640,
         "kind": "FUNCTION",
         "symbol": "chooseMeadowMobSkill",
         "context": "local function chooseMeadowMobSkill(enemy)",
@@ -10369,7 +10377,15 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 3666,
+        "line": 1151,
+        "kind": "FUNCTION",
+        "symbol": "equippedName",
+        "context": "local function equippedName(slot)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+        "line": 4310,
         "kind": "FUNCTION",
         "symbol": "showArrivalCamera",
         "context": "local function showArrivalCamera()",
@@ -10377,7 +10393,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 2060,
+        "line": 2088,
         "kind": "FUNCTION",
         "symbol": "publishStats",
         "context": "local function publishStats(player)",
@@ -10385,10 +10401,18 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3221,
+        "line": 3338,
         "kind": "FUNCTION",
         "symbol": "applyMeadowDamage",
         "context": "local function applyMeadowDamage(player,target,damage)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "line": 687,
+        "kind": "FUNCTION",
+        "symbol": "add",
+        "context": "local function add(field,n) if n>0 then item[field]=(item[field] or 0)+n end end",
         "score": 82
       },
       {
@@ -10408,8 +10432,16 @@
         "score": 82
       },
       {
+        "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
+        "line": 4969,
+        "kind": "FUNCTION",
+        "symbol": "overTabs",
+        "context": "local function overTabs(position)",
+        "score": 82
+      },
+      {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 881,
+        "line": 1019,
         "kind": "FUNCTION",
         "symbol": "layoutEquipment",
         "context": "local function layoutEquipment()",
@@ -10417,7 +10449,15 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 2465,
+        "line": 2940,
+        "kind": "FUNCTION",
+        "symbol": "setMode",
+        "context": "local function setMode(tree)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+        "line": 3127,
         "kind": "FUNCTION",
         "symbol": "renderMeadowJournal",
         "context": "local function renderMeadowJournal()",
@@ -10425,7 +10465,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 2962,
+        "line": 3639,
         "kind": "FUNCTION",
         "symbol": "refreshArrivalOptions",
         "context": "local function refreshArrivalOptions()",
@@ -10433,7 +10473,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 4787,
+        "line": 5734,
         "kind": "FUNCTION",
         "symbol": "showIntro",
         "context": "local function showIntro(boss)",
@@ -10441,7 +10481,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 6690,
+        "line": 7877,
         "kind": "FUNCTION",
         "symbol": "finishNativeCombatMotion",
         "context": "local function finishNativeCombatMotion()",
@@ -10449,7 +10489,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 7515,
+        "line": 8721,
         "kind": "FUNCTION",
         "symbol": "updateEnemyLabel",
         "context": "local function updateEnemyLabel()",
@@ -10465,7 +10505,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 646,
+        "line": 673,
         "kind": "FUNCTION",
         "symbol": "villagePrompt",
         "context": "local function villagePrompt(model,objectName,actionName,callback)",
@@ -10473,7 +10513,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 2048,
+        "line": 2076,
         "kind": "FUNCTION",
         "symbol": "stats",
         "context": "local function stats(player)",
@@ -10481,10 +10521,42 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 2286,
+        "line": 2397,
         "kind": "FUNCTION",
         "symbol": "inspectMeadowSurvival",
         "context": "local function inspectMeadowSurvival(player,model,subject)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 4189,
+        "kind": "FUNCTION",
+        "symbol": "meadowBolt",
+        "context": "local function meadowBolt(player)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 5514,
+        "kind": "FUNCTION",
+        "symbol": "board",
+        "context": "local function board(player,region)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 5618,
+        "kind": "FUNCTION",
+        "symbol": "levelOf",
+        "context": "local function levelOf(player,camp) return math.clamp(readNumber(player,camp.field,0),0,3) end",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 5619,
+        "kind": "FUNCTION",
+        "symbol": "openCamp",
+        "context": "local function openCamp(player,regionId)",
         "score": 74
       },
       {
@@ -10512,68 +10584,28 @@
         "score": 74
       },
       {
-        "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "line": 3840,
+        "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "line": 359,
         "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 74
+        "symbol": "TalentPointProgress",
+        "context": "TalentPointProgress = function(mastery)",
+        "score": 34
       },
       {
-        "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "line": 3870,
+        "file": "roblox-games/fantasy-survival/shared/Opening24.luau",
+        "line": 31,
         "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 74
+        "symbol": "validId",
+        "context": "local function validId(value)",
+        "score": 34
       },
       {
-        "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "line": 3952,
+        "file": "roblox-games/fantasy-survival/shared/Opening24.luau",
+        "line": 34,
         "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 3684,
-        "kind": "FUNCTION",
-        "symbol": "updateTitleStatus",
-        "context": "local function updateTitleStatus()",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 4776,
-        "kind": "FUNCTION",
-        "symbol": "closeIntro",
-        "context": "local function closeIntro()",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 4856,
-        "kind": "FUNCTION",
-        "symbol": "activateNearbyMeadowInteraction",
-        "context": "local function activateNearbyMeadowInteraction(screenPosition)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 6170,
-        "kind": "FUNCTION",
-        "symbol": "updateMeadowPromptHighlight",
-        "context": "local function updateMeadowPromptHighlight()",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 7485,
-        "kind": "FUNCTION",
-        "symbol": "bindOriginalMob",
-        "context": "local function bindOriginalMob(model)",
-        "score": 66
+        "symbol": "Module.Resolve",
+        "context": "function Module.Resolve()",
+        "score": 34
       },
       {
         "file": "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
@@ -10614,6 +10646,14 @@
         "symbol": "resolvePreset",
         "context": "local function resolvePreset(atomId, variant)",
         "score": 26
+      },
+      {
+        "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "line": 137,
+        "kind": "STATE",
+        "symbol": "STATE:Open",
+        "context": "{Id=\"meadow\",Name=\"초원 마을 (튜토리얼)\",Part=1,Status=\"Open\",Tutorial=true,Story=\"조작과 전투를 익히는 튜토리얼 지역. 카인이 눈을 뜬 곳. 정체성을 잊은 마을 사람들과 늑대 우두머리의 위협.\"},",
+        "score": 18
       }
     ]
   },
@@ -10622,44 +10662,13 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "d9900ef4cfff22357d575ddc9505b71b63be92d5",
-      "artifactIdentity": "sha256:763e05e18faabbf721e8e8c158ec74a1e04cf878fd1ac2e542d7e275a99e304d",
-      "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 41967945529,
-      "testedAt": "2026-11-05T04:37:19.303Z",
-      "repairSurfaces": [
-        "MOBILE_UI",
-        "ROBLOX_OBSERVED_INTERACTION"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "adaptive-ui-commercial-quality",
-          "repairSurface": "MOBILE_UI",
-          "priority": "HIGH",
-          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
-          "observed": "{\"offscreenButtons\":6,\"undersizedTouchButtons\":0,\"suboptimalTouchButtons\":3,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":1,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0.8965763172922679}"
-        },
-        {
-          "id": "observed-action-a5a1724f10caafbfaa3d",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-a5a1724f10caafbfaa3d\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-R15Skill2\",\"targetIdentity\":\"MeadowTouchLayer.MeadowR15SkillDock.R15Skill2\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
-        },
-        {
-          "id": "observed-action-5f391f74a05998aef298",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-5f391f74a05998aef298\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-R15Skill3\",\"targetIdentity\":\"MeadowTouchLayer.MeadowR15SkillDock.R15Skill3\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
-        }
-      ]
-    },
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
-    "runtimeObserved": true,
+    "studioQualityFailure": null,
+    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+    "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+    "blockers": [
+      "roblox-build-package-revalidation-pending"
+    ],
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -11121,7 +11130,7 @@
     {
       "domain": "GOALS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 마력숲 생존기와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11220,7 +11229,7 @@
     {
       "domain": "WORLD_DENSITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "넓은 공간이 비지 않게 탐색 거리마다 기능성 소품·상호작용·조우·자원·환경 이야기 중 게임에 맞는 요소를 배치하고 반복 복제 밀도를 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11229,7 +11238,7 @@
     {
       "domain": "WORLD_NAVIGATION",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "지도/미니맵/방향 표식/랜드마크/목표 추적 중 게임에 맞는 수단으로 현재 위치·목적지·잠금 경로를 읽게 하며 모바일에서도 길을 잃는 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11238,7 +11247,7 @@
     {
       "domain": "LANDMARKS",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "주요 랜드마크는 거리에서도 실루엣과 기능이 구별되고 탐색·방향 판단·목표 기억에 쓰이도록 배치하며 단순 장식물로 끝내지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11247,7 +11256,7 @@
     {
       "domain": "TRAVERSAL",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "이동은 속도만이 아니라 지형·장애물·경로 선택·위험 회피와 연결하고 모바일 입력에서 의도한 방향/행동이 안정적으로 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11256,7 +11265,7 @@
     {
       "domain": "INTERACTION_DISCOVERABILITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "줍기·열기·대화·제작·장착·구매·사용 가능한 대상은 접근 전후에 형태/프롬프트/상태 피드백으로 구별되고 상호작용 실패 이유도 즉시 보이게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11382,7 +11391,7 @@
     {
       "domain": "INPUT",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "핵심 행동마다 터치 우선 입력과 키보드/패드 대체 입력을 동일 게임 상태에 연결하고 중복 입력·길게 누름·드래그·취소 경계를 명확히 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11391,7 +11400,7 @@
     {
       "domain": "MOBILE_UX",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "작은 화면에서 핵심 행동 버튼을 크게, 설정·도움말을 접어서 배치하고 HUD·위험 경고가 손가락에 가리지 않게 한다. safe area·스크롤·가로/세로를 검수하고 팝업 닫기 터치가 뒤쪽 이동·공격으로 전달되지 않게 입력을 소비한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11400,7 +11409,7 @@
     {
       "domain": "ACCESSIBILITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "색만으로 상태를 구분하지 않고 형태/아이콘/텍스트/모션을 함께 쓰며, 중요한 피드백은 크기·대비·지속시간을 확보해 정보 누락을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11409,7 +11418,7 @@
     {
       "domain": "SETTINGS_ACCESSIBILITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11427,7 +11436,7 @@
     {
       "domain": "CONVENIENCE",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "반복 조작을 줄일 수 있는 빠른 사용/장착, 제작 가능 표시, 부족 재료 표시, 목표 추적, 비교 정보 등 현재 게임에 맞는 편의 기능을 추가하되 플레이 선택 자체를 자동화하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11436,7 +11445,7 @@
     {
       "domain": "UI_DESIGN_SYSTEM",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "HUD와 메뉴가 공통 타이포·패널·아이콘·간격·상태 색/형태 규칙을 공유하고 게임 세계의 아트 언어와 연결되며 기능마다 제각각인 임시 UI를 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11463,7 +11472,7 @@
     {
       "domain": "TUTORIAL_ONBOARDING",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "마력숲 생존기의 첫 입력·결과·목표를 필요한 순간 한 줄과 실습으로 안내한다. 같은 실패 반복 시 목표 확인→관련 위치→행동 예시의 선택형 힌트를 단계적으로 제공하되 정답 자동 처리·난이도 변경은 금지한다. 설명 닫기는 학습 완료가 아니며 건너뛰기·도움말 다시 열기를 제공한다. 재접속은 초기 설명 대신 현재 목표를 보여준다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11553,7 +11562,7 @@
     {
       "domain": "WEAPONS_AND_EQUIPMENT",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "무기/장비 외형이 실제 기능·사거리·무게감·공격 궤적·장착 상태와 맞고 플레이어 손/몸에 자연스럽게 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11562,7 +11571,7 @@
     {
       "domain": "BUILDINGS_AND_PROPS",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "건물·상호작용 오브젝트·장식물은 기능과 상태가 형태/배치/재질로 구별되고 플레이 동선과 충돌하지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11598,7 +11607,7 @@
     {
       "domain": "PALETTE",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "팔레트는 지역/진영/위험/보상/상호작용 상태를 구분하면서 전체 게임 정체성을 유지하고 단순 색상 교체만으로 개선 완료를 주장하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11607,7 +11616,7 @@
     {
       "domain": "LIGHTING",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "조명은 시간/분위기뿐 아니라 플레이 동선, 적 전조, 상호작용 대상, 랜드마크 가독성을 지원하고 캐릭터 실루엣을 배경에서 분리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11616,7 +11625,7 @@
     {
       "domain": "ANIMATION",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "주요 캐릭터/적 행동을 idle→locomotion→anticipation→impact→recovery→hit/death 상태와 실제 게임 이벤트에 연결하고 정지 모델 판정을 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11625,7 +11634,7 @@
     {
       "domain": "SECONDARY_MOTION",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "장비·의상·머리·꼬리·식생·기계 등 적합한 요소에 지연/관성/반동을 추가해 무게감과 생동감을 주되 판정/권한은 바꾸지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11634,7 +11643,7 @@
     {
       "domain": "VFX",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11643,7 +11652,7 @@
     {
       "domain": "CAMERA",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "기본 시야·FOV·추적을 모바일 가독성에 맞추고 강한 타격/대시/보스/탐색 포인트에 짧고 단계적인 카메라 반응을 적용해 멀미와 과도한 흔들림을 피한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11661,7 +11670,7 @@
     {
       "domain": "AUDIO_VISUAL_TIMING",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11670,7 +11679,7 @@
     {
       "domain": "ENVIRONMENTAL_MOTION",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "세계에 맞는 바람/식생/물/빛/먼지/기계 등 미세 환경 움직임을 추가해 정적인 무대를 피하되 플레이 정보와 성능을 방해하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -11740,9 +11749,9 @@
       "reason": "placeholder or primitive-heavy implementation remains"
     }
   ],
-  "primaryFocus": "PRESENTATION",
-  "thisLoopPrimaryGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"마력숲 생존기\", 현재 책임 소스는 roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState, roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode, roblox-games/fantasy-survival/server/Game.server.luau::equipped, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync, roblox-games/fantasy-survival/client/Game.client.luau::cycleMeadowCameraMode, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryFocus": "USABILITY",
+  "thisLoopPrimaryGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"마력숲 생존기\", 현재 책임 소스는 roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState, roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode, roblox-games/fantasy-survival/server/Game.server.luau::equipped, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync, roblox-games/fantasy-survival/client/Game.client.luau::cycleMeadowCameraMode, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState, roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode, roblox-games/fantasy-survival/server/Game.server.luau::equipped, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync, roblox-games/fantasy-survival/client/Game.client.luau::cycleMeadowCameraMode, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "마력숲 생존기를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -11890,8 +11899,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 5309208,
-        "largestFileBytes": 625443,
+        "sourceBytes": 35869982,
+        "largestFileBytes": 2114676,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -11924,7 +11933,7 @@
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
     "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -11982,23 +11991,23 @@
       },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 34,
+        "score": 26,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
       },
       {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": 24,
         "gapDomains": []
       },
       {
-        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
         "score": 16,
         "gapDomains": []
       },
       {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 16,
         "gapDomains": []
       },
@@ -12089,13 +12098,13 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "fantasy-survival",
     "sourceRoot": "roblox-games/fantasy-survival",
-    "sourceTreeFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
+    "sourceTreeFingerprint": "8a47755604a62db3e48ff9416255f457134eab5ea14c1bc02db042fcf90d4f92",
     "sourceRevision": null,
     "scan": {
       "complete": true,
       "reason": null,
-      "sourceCount": 12,
-      "assetCount": 10,
+      "sourceCount": 16,
+      "assetCount": 86,
       "assetReferences": 3,
       "missingReferences": 0
     },
@@ -12123,9 +12132,39 @@
         "runtimeVerified": false
       },
       {
+        "path": "roblox-games/fantasy-survival/illustrated-icons-source-2172x724.png",
+        "bytes": 2114676,
+        "sha256": "sha256:168493bbfdc771fe1bcee9ee6c0462d0e12b824c8eeb5617b9159d51c49c6f2a",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/illustrated-icons.png",
+        "bytes": 1366728,
+        "sha256": "sha256:f5623dfc37370918fdd72cfae691cca1ffe1ffd50c8408f24f27f63521e5690e",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
         "path": "roblox-games/fantasy-survival/intro.jpg",
         "bytes": 575598,
         "sha256": "sha256:a535d55a0a6c2af4ce9fb2bfdb339fb1e3919f530af5d3cc51f0861a7c717eda",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/item-icons.png",
+        "bytes": 522227,
+        "sha256": "sha256:dfa3defea977c216f4363fc3551af1d9c08f7126646f5f73e2663596184c0e05",
         "familyCandidate": "ICONS_IMAGES",
         "integrity": "HEADER_VALID",
         "rightsVerified": false,
@@ -12146,6 +12185,16 @@
         "path": "roblox-games/fantasy-survival/right-icons.png",
         "bytes": 3462,
         "sha256": "sha256:5a5964fdaeaacb8991cd946c5f88d2ab8d226c7c11f59538ea6eb7a637377306",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/skill-icons.png",
+        "bytes": 614334,
+        "sha256": "sha256:6a60b92d4c1c80af2201d99374ccefac5b9bb7e172553130d72b351614dfdefa",
         "familyCandidate": "ICONS_IMAGES",
         "integrity": "HEADER_VALID",
         "rightsVerified": false,
@@ -12208,6 +12257,726 @@
         "sha256": "sha256:ee819dcd25a4fd3fa5ead8733a48ca256a2b61be8839cad2198798cba6f5c8d7",
         "familyCandidate": "BUILDINGS_PROPS",
         "integrity": "NOT_DECODED",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s01_bg.jpg",
+        "bytes": 208536,
+        "sha256": "sha256:b67422044d32b15262862137332098a024e726e800f4492f4a00734f29adaca4",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s01_ch.png",
+        "bytes": 693918,
+        "sha256": "sha256:bfa4154e038bf0f92654cb22dc6717739d3948c1a1462c2128a6a642c6f0c435",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s01_fg.png",
+        "bytes": 334764,
+        "sha256": "sha256:b6bc6e3886a85a950264954851e6692bb33d1e41d9f1b8a0a83517458c73d985",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s02_bg.jpg",
+        "bytes": 128766,
+        "sha256": "sha256:ad924ded0321cb3140ee3c9e857b0126d820651fa6ddace8cc3ce1017e0912ec",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s02_ch.png",
+        "bytes": 722494,
+        "sha256": "sha256:5ada613d75eb1af4fb02b9974556d90232c616623f19de9f12b4f3b87afc1be2",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s02_fg.png",
+        "bytes": 24911,
+        "sha256": "sha256:844ca8559087fda7f9e74c27f5b82e79e4497928487dbf6bf50c0a1c6a202f1b",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s03_bg.jpg",
+        "bytes": 282724,
+        "sha256": "sha256:6869f90af6567a67574bba784a90764fa61cb5e61299b8b6b6c15642cad114c7",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s03_ch.png",
+        "bytes": 35147,
+        "sha256": "sha256:9336ca75852691bcc6b897c5b377c0294d98580e4490de4a9f9938bfcf3e9a3a",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s03_fg.png",
+        "bytes": 24911,
+        "sha256": "sha256:844ca8559087fda7f9e74c27f5b82e79e4497928487dbf6bf50c0a1c6a202f1b",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s04_bg.jpg",
+        "bytes": 206276,
+        "sha256": "sha256:8c4268b93078798b24c88dba1d8ad6867072e4af828b17f19db1165418687d1d",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s04_ch.png",
+        "bytes": 515934,
+        "sha256": "sha256:02f54277949834164bcfc6035110e2aaa494e507f83980c0eb3e07cd5b8d9a79",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s04_fg.png",
+        "bytes": 354439,
+        "sha256": "sha256:4bff1f95b3dfecbfce9de36eb98a901739340e60a4c72f3a9b85ba95a163223a",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s05_bg.jpg",
+        "bytes": 89076,
+        "sha256": "sha256:addef7a13d86af76889d064162864d99648be0fae91d1867166d091b03bd5a73",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s05_ch.png",
+        "bytes": 731898,
+        "sha256": "sha256:d372753d6d9fb4eb6e33d7f41be9c03d692da5ef91b5e2a8e4a97dea8a0c59ab",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s05_fg.png",
+        "bytes": 464522,
+        "sha256": "sha256:b2ac739cdf0e47b629c9dfd41f5dcb935226adfea39d1e21fbb2e65c7a4d44c9",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s06_bg.jpg",
+        "bytes": 89076,
+        "sha256": "sha256:addef7a13d86af76889d064162864d99648be0fae91d1867166d091b03bd5a73",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s06_ch.png",
+        "bytes": 944645,
+        "sha256": "sha256:e40ad28ad6b22e713c431a1e6c8bce7a5f7296e2b990eb3aaa538243e903af99",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s06_fg.png",
+        "bytes": 24911,
+        "sha256": "sha256:844ca8559087fda7f9e74c27f5b82e79e4497928487dbf6bf50c0a1c6a202f1b",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s07_bg.jpg",
+        "bytes": 258267,
+        "sha256": "sha256:07cfded0f2e89e2a1c5312b65027850a5d201b6b69b3d8f6b7a5162201689a1f",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s07_ch.png",
+        "bytes": 628086,
+        "sha256": "sha256:738f1e081a086b473d5135463838330e70c570e3c4702f014d178089d27ebe99",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s07_fg.png",
+        "bytes": 354439,
+        "sha256": "sha256:4bff1f95b3dfecbfce9de36eb98a901739340e60a4c72f3a9b85ba95a163223a",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s08_bg.jpg",
+        "bytes": 206276,
+        "sha256": "sha256:8c4268b93078798b24c88dba1d8ad6867072e4af828b17f19db1165418687d1d",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s08_ch.png",
+        "bytes": 738050,
+        "sha256": "sha256:b978e28af447169b17b33321a6fc9e7fe04cb7c205bf02afdf4ef1621287dc49",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s08_fg.png",
+        "bytes": 354439,
+        "sha256": "sha256:4bff1f95b3dfecbfce9de36eb98a901739340e60a4c72f3a9b85ba95a163223a",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s09_bg.jpg",
+        "bytes": 123271,
+        "sha256": "sha256:3dd2a4d7c5c683d744debc9a820f2c4715f3e3fea01820cc2fb099db7f04d242",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s09_ch.png",
+        "bytes": 741759,
+        "sha256": "sha256:a1b29f19cd285a728fad9ed5db1c7186e8a202521fbcd8949445fe2ff4d72780",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s09_fg.png",
+        "bytes": 172256,
+        "sha256": "sha256:19687d0f7567794baebba3e9caef484dd7d886fa1050260e2e63847f65c75429",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s10_bg.jpg",
+        "bytes": 122138,
+        "sha256": "sha256:3e33941d94901932927b3333a2be8af074ebf4d1dc0ef1c5fa59b5b238c79b85",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s10_ch.png",
+        "bytes": 741759,
+        "sha256": "sha256:a1b29f19cd285a728fad9ed5db1c7186e8a202521fbcd8949445fe2ff4d72780",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s10_fg.png",
+        "bytes": 221595,
+        "sha256": "sha256:c334a361b705774acbb2f97e25a6b8a2c3521a4985c5b7898f4e3a629fb380c5",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s11_bg.jpg",
+        "bytes": 97023,
+        "sha256": "sha256:284d3cae3e7c25be68e6aebcf3bf1624d33e6818a5b46c8b5811574f09928851",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s11_ch.png",
+        "bytes": 1114253,
+        "sha256": "sha256:b3b5c595e55db1a2b7d1b17920ac579647cd0161c59ea66c0e8d45048d04ef5a",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s11_fg.png",
+        "bytes": 367562,
+        "sha256": "sha256:4bbd9fac25b19342a2a2bc91b8086c2aa5809d796dbf12b773f53cfa056bda2b",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s12_bg.jpg",
+        "bytes": 249420,
+        "sha256": "sha256:01f1868a2aae0c36746c78fdc85a399b0b05c45307320e52fadf48e2a6be5fab",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s12_ch.png",
+        "bytes": 642893,
+        "sha256": "sha256:913271e5a3181ba2aff8e758c881b59b291d904e37046e1ddef7758ddb809bd6",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s12_fg.png",
+        "bytes": 201084,
+        "sha256": "sha256:1082d99bef9a98a1a268ff35aa62dd07fc089cd7b042af783945b7ab1bcbea08",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s13_bg.jpg",
+        "bytes": 63721,
+        "sha256": "sha256:f4a6fd6d8af10fc8748d84d79d6ede71de34597dbfb346d26f8a8cc1e6462f22",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s13_ch.png",
+        "bytes": 1172219,
+        "sha256": "sha256:261c38f672bf87772885fb202296942e558cbc5b55fa6e32e95581b5b431cb3f",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s13_fg.png",
+        "bytes": 442316,
+        "sha256": "sha256:12f423a6f6bce820de25385f9880b5e7cb513c3d3b7992815024ca14ef4c4c76",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s14_bg.jpg",
+        "bytes": 146729,
+        "sha256": "sha256:0be8ae20a49ae982e20af03bbf5afe3a4204bcb608959f0c8562b59a8917c962",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s14_ch.png",
+        "bytes": 762258,
+        "sha256": "sha256:80655b7746ade5956ba2c3f5cf6827831af4681ad42124354ec9e8c5eb578b30",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s14_fg.png",
+        "bytes": 268208,
+        "sha256": "sha256:cac733d708d0512d90a73e7a469e1139a02321840dde3160440ecc3cd4f7f4ef",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s15_bg.jpg",
+        "bytes": 167084,
+        "sha256": "sha256:6b4b9186ccd36b7f9f7a48f04955afa5bc25e7f4640babf837b034e6cabc1e5a",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s15_ch.png",
+        "bytes": 934821,
+        "sha256": "sha256:bca5c0b137cf1d36dff18929cc13232712e0ba32de2d33e4176b1e11cca6ca3d",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s15_fg.png",
+        "bytes": 24911,
+        "sha256": "sha256:844ca8559087fda7f9e74c27f5b82e79e4497928487dbf6bf50c0a1c6a202f1b",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s16_bg.jpg",
+        "bytes": 126283,
+        "sha256": "sha256:4fd67d31e45b8b361abeeda106d1fb766761e32afd793b42965088dcfaa1cdf1",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s16_ch.png",
+        "bytes": 878976,
+        "sha256": "sha256:dcef0db6d09f785b0b8d745f2ca15a3c7f852e04a06e5397754f482c33f0ca24",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s16_fg.png",
+        "bytes": 191839,
+        "sha256": "sha256:33e5043d9215e2d15edb2a4d1c690c79a616049f7f132399de9c65273e7624e0",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s17_bg.jpg",
+        "bytes": 118705,
+        "sha256": "sha256:0ef44bddfeb4509d91ff24e91ce0b0f668a4ec6790c7da0319c006cd3f098d84",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s17_ch.png",
+        "bytes": 789195,
+        "sha256": "sha256:a03fc720c1d7977fec1335cbd1f0e3e5df71986dfe0cd445f1f605491b1ff1c7",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s17_fg.png",
+        "bytes": 305787,
+        "sha256": "sha256:12a8796fcd48d490e38dcf4c624dac6b7577fd90b1c23769705442eae76007fd",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s18_bg.jpg",
+        "bytes": 276885,
+        "sha256": "sha256:b87be52515b5e6ff14e5dfe8309f1b6f1536e73431bb3bbffb4fa7d4c162b046",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s18_ch.png",
+        "bytes": 98235,
+        "sha256": "sha256:9dc2a25aa93cb6bbf71589e0ae42166195d4c1fe23eccbfe3786192f8e730220",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s18_fg.png",
+        "bytes": 24911,
+        "sha256": "sha256:844ca8559087fda7f9e74c27f5b82e79e4497928487dbf6bf50c0a1c6a202f1b",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s19_bg.jpg",
+        "bytes": 219530,
+        "sha256": "sha256:0493cf3d9b9bd248738a3feafb7f525dada5e42686c6d1d2c4e73c65539891e5",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s19_ch.png",
+        "bytes": 838512,
+        "sha256": "sha256:d4dcdf3f2904ed15c933027f3051c41cbfcdfe4c26032cb107d7d7b2a1dbcdf2",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s19_fg.png",
+        "bytes": 257240,
+        "sha256": "sha256:341a39527f107769c51bf783338f0aef52b6aabad68a76a8e540fd7284cd54c9",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s20_bg.jpg",
+        "bytes": 256360,
+        "sha256": "sha256:d04b54c3b919ab226cbe30468db48f9bcb934944bbd3d06875ee47d16c1a660c",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s20_ch.png",
+        "bytes": 228538,
+        "sha256": "sha256:08a034ab00ad7afdc0440bb685a7f1fb854f3be8ed960fc88f2fa34caea3eabf",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s20_fg.png",
+        "bytes": 24911,
+        "sha256": "sha256:844ca8559087fda7f9e74c27f5b82e79e4497928487dbf6bf50c0a1c6a202f1b",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s21_bg.jpg",
+        "bytes": 287543,
+        "sha256": "sha256:dc96da2afbddbce0e8dc962a1966f295450ef6238b799894ace5885d1bc219d3",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s21_ch.png",
+        "bytes": 716209,
+        "sha256": "sha256:e77e8d0d5ee8e2b9953ec920faaa3f043f65c37dd00627133f7c9b383b819a9c",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s21_fg.png",
+        "bytes": 207445,
+        "sha256": "sha256:b4ce3ad0b1247b7b30a959bd9eb6dd21a2c98e4b95b2986e4762c8658dc969b4",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s22_bg.jpg",
+        "bytes": 287543,
+        "sha256": "sha256:dc96da2afbddbce0e8dc962a1966f295450ef6238b799894ace5885d1bc219d3",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s22_ch.png",
+        "bytes": 525562,
+        "sha256": "sha256:0f6618cbed76791dcddb8d5486cc95a3a7c8844b90c2263a88af35b26035165f",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s22_fg.png",
+        "bytes": 492162,
+        "sha256": "sha256:d320ca6c794c13fd0916451d5efd85a941f128555cf675c7a4e01b5b2c39763c",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s23_bg.jpg",
+        "bytes": 163341,
+        "sha256": "sha256:ba2db55ab34949d7d9fbed0a63aa067188b3de97796f8259cf852f9459a4e1d8",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s23_ch.png",
+        "bytes": 636786,
+        "sha256": "sha256:d471b98211520af922a20d7eed1adab5f0a1b391ce4e7d84219f03bf5f2b3a7c",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s23_fg.png",
+        "bytes": 359244,
+        "sha256": "sha256:1383fd069dd894e3af15df26b67308acdb7a302d6deb0f1138703ae5a0e85ee7",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s24_bg.jpg",
+        "bytes": 158018,
+        "sha256": "sha256:4af83918498e95e4cfabde069b6a525bbf543006d4b9aeefbca575c4fbfff98e",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s24_ch.png",
+        "bytes": 33647,
+        "sha256": "sha256:fd651af60499edfde2b78358637cc7d83dd7f2604e9652271729e5202f896095",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/opening24/s24_fg.png",
+        "bytes": 24911,
+        "sha256": "sha256:844ca8559087fda7f9e74c27f5b82e79e4497928487dbf6bf50c0a1c6a202f1b",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
         "rightsVerified": false,
         "visualVerified": false,
         "runtimeVerified": false
@@ -15441,7 +16210,7 @@
           "roblox-games/fantasy-survival/icons.png"
         ],
         "sourceSignalOnly": true,
-        "assetCount": 9,
+        "assetCount": 85,
         "sourceState": "CANDIDATE_NOT_VERIFIED",
         "issues": [],
         "improvement": "Improve contrast and semantic identity of owned icons.",
@@ -15454,7 +16223,9 @@
         "id": "ITEMS_LOOT",
         "kind": "asset",
         "priority": "P2",
-        "sourceFiles": [],
+        "sourceFiles": [
+          "roblox-games/fantasy-survival/item-icons.png"
+        ],
         "sourceSignalOnly": true,
         "assetCount": 0,
         "sourceState": "CANDIDATE_NOT_VERIFIED",
@@ -15929,7 +16700,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
+    "sourceFingerprint": "8a47755604a62db3e48ff9416255f457134eab5ea14c1bc02db042fcf90d4f92",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -15949,7 +16720,7 @@
     "version": 1,
     "gameId": "fantasy-survival",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
+    "sourceTreeFingerprint": "8a47755604a62db3e48ff9416255f457134eab5ea14c1bc02db042fcf90d4f92",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -16016,8 +16787,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/server/Game.server.luau"
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -16030,8 +16801,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
@@ -16046,8 +16817,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "requiredByDesign": false,
@@ -16099,8 +16870,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
@@ -16115,8 +16886,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
@@ -16143,8 +16914,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "requiredByDesign": false,
@@ -16158,8 +16929,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
@@ -16175,8 +16946,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "requiredByDesign": false,
@@ -16190,8 +16961,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
@@ -16206,8 +16977,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "requiredByDesign": true,
@@ -16234,8 +17005,8 @@
         "id": "ECONOMY",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "requiredByDesign": false,
@@ -16248,8 +17019,8 @@
         "id": "PROGRESSION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "requiredByDesign": true,
@@ -16262,6 +17033,7 @@
         "id": "FARMING",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
         ],
         "requiredByDesign": false,
@@ -16275,8 +17047,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/server/Game.server.luau"
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -16305,7 +17077,8 @@
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/shared/Opening24.luau"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -16383,20 +17156,20 @@
       ],
       "EQUIPMENT": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
+        "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
       ],
       "UI": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "WORLD": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "BIOME": [
@@ -16412,22 +17185,22 @@
       ],
       "ACTION": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "NPC_AI": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "QUEST_DIALOGUE": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "CRAFTING": [
@@ -16436,22 +17209,23 @@
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "ECONOMY": [
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "PROGRESSION": [
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "FARMING": [
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
       ],
       "WEATHER": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
+        "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
       ],
       "PHYSICS": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
@@ -16462,7 +17236,8 @@
       "CAMERA": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/shared/Opening24.luau"
       ],
       "AUDIO": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
@@ -16483,27 +17258,27 @@
       ],
       "INTERACTION": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "REWARD": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "SAVE": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "COMBAT": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
         "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
@@ -16543,8 +17318,8 @@
       "nodesDiscoveredFromExactRuntime": false,
       "sourceFiles": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "biomeSourceFiles": [
@@ -16561,8 +17336,8 @@
       ],
       "interactionFiles": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
@@ -16598,8 +17373,8 @@
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
             "roblox-games/fantasy-survival/client/Game.client.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
           ],
@@ -16621,8 +17396,8 @@
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
             "roblox-games/fantasy-survival/client/Game.client.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-            "roblox-games/fantasy-survival/server/Game.server.luau"
+            "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
           ],
           "passed": false
         },
@@ -16631,8 +17406,8 @@
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
             "roblox-games/fantasy-survival/client/Game.client.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
           ],
@@ -16643,8 +17418,8 @@
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
             "roblox-games/fantasy-survival/client/Game.client.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau"
           ],
           "passed": false
@@ -16654,8 +17429,8 @@
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
             "roblox-games/fantasy-survival/client/Game.client.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
           ],
@@ -16680,8 +17455,8 @@
         "missingRoles": [],
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "checks": [
@@ -16754,8 +17529,8 @@
         "missingRoles": [],
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
@@ -16778,8 +17553,8 @@
         "missingRoles": [],
         "responsibleFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
@@ -16828,8 +17603,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "missingRoles": [],
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
@@ -16909,8 +17684,8 @@
           "actorClass": "PLAYER",
           "sourceOwnerFiles": [
             "roblox-games/fantasy-survival/client/Game.client.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
             "roblox-games/fantasy-survival/default.project.json",
@@ -16929,8 +17704,8 @@
           "actorClass": "NPC",
           "sourceOwnerFiles": [
             "roblox-games/fantasy-survival/client/Game.client.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
           ],
@@ -16967,8 +17742,8 @@
           "actorClass": "BOSS",
           "sourceOwnerFiles": [
             "roblox-games/fantasy-survival/client/Game.client.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
@@ -16985,8 +17760,8 @@
           "actorClass": "CREATURE",
           "sourceOwnerFiles": [
             "roblox-games/fantasy-survival/client/Game.client.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
             "roblox-games/fantasy-survival/default.project.json",
@@ -17006,8 +17781,8 @@
           "actorClass": "COMPANION",
           "sourceOwnerFiles": [
             "roblox-games/fantasy-survival/client/Game.client.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
@@ -17131,7 +17906,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
+      "sourceTreeFingerprint": "8a47755604a62db3e48ff9416255f457134eab5ea14c1bc02db042fcf90d4f92",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -17155,7 +17930,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
+      "sourceTreeFingerprint": "8a47755604a62db3e48ff9416255f457134eab5ea14c1bc02db042fcf90d4f92",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -17221,14 +17996,14 @@
       "BEFORE_AFTER_COMPARISON_REQUIRED",
       "SAME_SCENE_RUNTIME_REOBSERVATION_REQUIRED"
     ],
-    "focus": "PRESENTATION"
+    "focus": "USABILITY"
   },
   "playerFacingInspectionContract": {
     "version": 1,
     "gameId": "fantasy-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
+    "sourceTreeFingerprint": "8a47755604a62db3e48ff9416255f457134eab5ea14c1bc02db042fcf90d4f92",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -17564,12 +18339,13 @@
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/shared/Opening24.luau",
+      "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
       "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
       "roblox-games/fantasy-survival/default.project.json",
       "roblox-games/fantasy-survival/native-assets.json",
-      "roblox-games/fantasy-survival/action-icons/dodge.png",
-      "roblox-games/fantasy-survival/action-icons/fist.png"
+      "roblox-games/fantasy-survival/opening24/files.json"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -17607,7 +18383,7 @@
     "version": 1,
     "status": "ACTIVE_EXECUTABLE_BUILD_UP_CONTRACT",
     "platform": "ROBLOX",
-    "focus": "PRESENTATION",
+    "focus": "USABILITY",
     "attention": "EXTRA",
     "tracks": [
       {
@@ -17778,14 +18554,14 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
-    "ROBLOX": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN = A + B + C + D + @의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN = A + B + C + D + @·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 메인·보조 장르의 인과이며 D는 출처를 가진 구체 창작, @는 D와 연결된 연구·실험·다음 선택이다. 이전 C 소재 2개는 구형 설계 호환에서만 검증하며 소문자 c도 기존 원본에 있을 때만 보존한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 대상은 Roblox와 일반 WEB이며 Roblox 원본 언어는 Luau다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "FORTNITE_UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
-    "UNITY_APP": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "UNREAL": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
+    "WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
+    "ROBLOX": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN = A + B + C + D + @의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN = A + B + C + D + @·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 메인·보조 장르의 인과이며 D는 출처를 가진 구체 창작, @는 D와 연결된 연구·실험·다음 선택이다. 이전 C 소재 2개는 구형 설계 호환에서만 검증하며 소문자 c도 기존 원본에 있을 때만 보존한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 대상은 Roblox와 일반 WEB이며 Roblox 원본 언어는 Luau다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "FORTNITE_UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UNITY_WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
+    "UNITY_APP": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNREAL": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
   "robloxNativeExecution": {
     "version": 1,
@@ -17797,22 +18573,23 @@
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/shared/Opening24.luau",
+      "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
       "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
       "roblox-games/fantasy-survival/default.project.json",
       "roblox-games/fantasy-survival/native-assets.json",
-      "roblox-games/fantasy-survival/action-icons/dodge.png",
-      "roblox-games/fantasy-survival/action-icons/fist.png"
+      "roblox-games/fantasy-survival/opening24/files.json"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3374,
+        "line": 3543,
         "kind": "FUNCTION",
         "symbol": "setEnemyAttackState",
         "currentBehavior": "local function setEnemyAttackState(enemy, state)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 setEnemyAttackState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 setEnemyAttackState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
@@ -17820,17 +18597,17 @@
         "kind": "FUNCTION",
         "symbol": "applyMeadowCameraMode",
         "currentBehavior": "local function applyMeadowCameraMode()",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 applyMeadowCameraMode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 applyMeadowCameraMode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 2040,
+        "line": 2068,
         "kind": "FUNCTION",
         "symbol": "equipped",
         "currentBehavior": "local function equipped(player,slot)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 equipped의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equipped의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -17838,8 +18615,8 @@
         "kind": "FUNCTION",
         "symbol": "sync",
         "currentBehavior": "local function sync(state)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
@@ -17847,8 +18624,8 @@
         "kind": "FUNCTION",
         "symbol": "cycleMeadowCameraMode",
         "currentBehavior": "local function cycleMeadowCameraMode()",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 cycleMeadowCameraMode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 cycleMeadowCameraMode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -17856,8 +18633,8 @@
         "kind": "FUNCTION",
         "symbol": "sync",
         "currentBehavior": "local function sync(state)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -17865,8 +18642,8 @@
         "kind": "FUNCTION",
         "symbol": "sync",
         "currentBehavior": "local function sync(state)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -17874,8 +18651,8 @@
         "kind": "FUNCTION",
         "symbol": "sync",
         "currentBehavior": "local function sync(state)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
@@ -17928,7 +18705,7 @@
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
-    "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
+    "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "observableAcceptanceScenario": "input/touch -> local handler -> RemoteEvent/RemoteFunction when required -> server validation -> authoritative state change -> client feedback",
     "sourceInspectionChecklist": [
       "SERVER_AUTHORITY",
@@ -18005,25 +18782,26 @@
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/shared/Opening24.luau",
+      "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
       "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
       "roblox-games/fantasy-survival/default.project.json",
       "roblox-games/fantasy-survival/native-assets.json",
-      "roblox-games/fantasy-survival/action-icons/dodge.png",
-      "roblox-games/fantasy-survival/action-icons/fist.png"
+      "roblox-games/fantasy-survival/opening24/files.json"
     ],
     "sourceAnchors": [
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3374,
+        "line": 3543,
         "kind": "FUNCTION",
         "symbol": "setEnemyAttackState",
         "context": "local function setEnemyAttackState(enemy, state)",
         "score": 154,
         "currentBehavior": "local function setEnemyAttackState(enemy, state)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 setEnemyAttackState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 setEnemyAttackState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
@@ -18033,21 +18811,21 @@
         "context": "local function applyMeadowCameraMode()",
         "score": 138,
         "currentBehavior": "local function applyMeadowCameraMode()",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 applyMeadowCameraMode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 applyMeadowCameraMode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 2040,
+        "line": 2068,
         "kind": "FUNCTION",
         "symbol": "equipped",
         "context": "local function equipped(player,slot)",
         "score": 138,
         "currentBehavior": "local function equipped(player,slot)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 equipped의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equipped의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::equipped이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -18057,9 +18835,9 @@
         "context": "local function sync(state)",
         "score": 122,
         "currentBehavior": "local function sync(state)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
@@ -18069,9 +18847,9 @@
         "context": "local function cycleMeadowCameraMode()",
         "score": 114,
         "currentBehavior": "local function cycleMeadowCameraMode()",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 cycleMeadowCameraMode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 cycleMeadowCameraMode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/fantasy-survival/client/Game.client.luau::cycleMeadowCameraMode이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -18081,9 +18859,9 @@
         "context": "local function sync(state)",
         "score": 106,
         "currentBehavior": "local function sync(state)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -18093,9 +18871,9 @@
         "context": "local function sync(state)",
         "score": 106,
         "currentBehavior": "local function sync(state)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -18105,9 +18883,9 @@
         "context": "local function sync(state)",
         "score": 106,
         "currentBehavior": "local function sync(state)",
-        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -18157,12 +18935,13 @@
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/shared/Opening24.luau",
+      "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
       "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
       "roblox-games/fantasy-survival/default.project.json",
       "roblox-games/fantasy-survival/native-assets.json",
-      "roblox-games/fantasy-survival/action-icons/dodge.png",
-      "roblox-games/fantasy-survival/action-icons/fist.png"
+      "roblox-games/fantasy-survival/opening24/files.json"
     ],
     "impact": {
       "version": 1,
@@ -18229,18 +19008,18 @@
     "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
   },
   "effectivenessMeasurement": {
-    "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
+    "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ad3b766a54690da2e1dd98efbefda8a0021b3d1f21d6dc22e023d5b2779c0f84",
+      "sourceTreeFingerprint": "8a47755604a62db3e48ff9416255f457134eab5ea14c1bc02db042fcf90d4f92",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -18251,8 +19030,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial USABILITY build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -18292,7 +19071,7 @@
   ],
   "nextEscalationCandidates": [
     "DEEPEN_CORE_FUN_DECISION_DENSITY",
-    "CONNECT_VISUAL_LANGUAGE_TO_GAMEPLAY_TELEGRAPH_AND_WORLD_IDENTITY",
+    "RAISE_VISUAL_ACTING_MOTION_AND_ENVIRONMENT_COHERENCE",
     "CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST",
     "OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED"
   ],
@@ -18358,5 +19137,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-04T18:58:36.773Z"
+  "generatedAt": "2026-11-05T07:55:56.376Z"
 }
