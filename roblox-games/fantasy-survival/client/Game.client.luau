@@ -248,6 +248,7 @@ meadowArt.sfxFiles={
   hurt="rbxasset://sounds/collide.wav",whoosh="rbxasset://sounds/action_jump.mp3",
 }
 meadowArt.sfxAt={}
+meadowArt.quickIds={false,"skill-meadow-heavy","skill-meadow-sweep","skill-meadow-bolt","skill-meadow-heal"} -- 하단 퀵슬롯 1=무기, 2~5=기술
 meadowArt.sfx=function(name,volume,pitch)
   local id=meadowArt.sfxFiles[name]
   if not id then return end
@@ -2961,22 +2962,54 @@ do
     end)
   end)
 end
--- [끌어서 등록] 기술 카드를 아래 "전투 버튼 슬롯"에 끌어 놓으면 오른쪽 전투 버튼에 등록된다.
+-- [하단 퀵슬롯 등록] 2~5번 칸에 기술을 끌어 놓거나, 카드 선택 후 칸을 눌러 등록한다.
 do
-  local drop=Instance.new("Frame")
-  drop.Name="QuickSlotDrop";drop.LayoutOrder=6;drop.Size=UDim2.new(1,-8,0,52)
-  drop.BackgroundColor3=Color3.fromRGB(24,49,45);drop.BorderSizePixel=0;drop.Parent=meadowPages[7]
-  local dc=Instance.new("UICorner");dc.CornerRadius=UDim.new(0,12);dc.Parent=drop
-  local ds=Instance.new("UIStroke");ds.Color=gold;ds.Thickness=2;ds.Transparency=.3;ds.Parent=drop
-  local dropLabel=Instance.new("TextLabel")
-  dropLabel.BackgroundTransparency=1;dropLabel.Size=UDim2.fromScale(1,1);dropLabel.TextWrapped=true
-  dropLabel.Font=Enum.Font.GothamBold;dropLabel.TextSize=13;dropLabel.TextColor3=Color3.fromRGB(230,240,222)
-  dropLabel.Parent=drop
+  local tray=Instance.new("Frame")
+  tray.Name="QuickSlotDrop";tray.LayoutOrder=6;tray.Size=UDim2.new(1,-8,0,96)
+  tray.BackgroundColor3=Color3.fromRGB(24,49,45);tray.BorderSizePixel=0;tray.Parent=meadowPages[7]
+  local tc=Instance.new("UICorner");tc.CornerRadius=UDim.new(0,12);tc.Parent=tray
+  local ts=Instance.new("UIStroke");ts.Color=gold;ts.Thickness=2;ts.Transparency=.3;ts.Parent=tray
+  local head=Instance.new("TextLabel")
+  head.BackgroundTransparency=1;head.Position=UDim2.fromOffset(10,4);head.Size=UDim2.new(1,-20,0,20)
+  head.Font=Enum.Font.GothamBold;head.TextSize=12;head.TextXAlignment=Enum.TextXAlignment.Left
+  head.TextColor3=Color3.fromRGB(230,240,222);head.Text="하단 퀵슬롯 2~5번  ·  카드를 끌어 놓거나, 카드 선택 후 칸을 눌러 등록";head.Parent=tray
+  local boxes={}
+  local function actionLabel(id)
+    for _,action in ipairs(Config.Actions)do if action.Id==id then return action.Label end end
+    return "비어 있음"
+  end
   local function refreshDrop()
-    local id=meadowActionButtons.quickSkillId
-    local name=id and "등록됨"
-    if id then for _,action in ipairs(Config.Actions)do if action.Id==id then name=action.Label end end end
-    dropLabel.Text="⬇ 기술 카드를 여기로 끌어 놓으면 전투 버튼 등록\n현재 슬롯: "..(id and name or "비어 있음")
+    for i,box in ipairs(boxes)do
+      local id=meadowArt.quickIds[i+1]
+      box.label.Text=(i+1)..". "..(id and actionLabel(id) or "비어 있음")
+      box.icon.Visible=id~=nil
+      if id then meadowArt.skill(box.icon,id) end
+    end
+  end
+  local function assign(slot,id)
+    meadowArt.quickIds[slot]=id
+    refreshDrop()
+    if meadowArt.refreshQuickHud then meadowArt.refreshQuickHud() end
+    meadowArt.sfx("ping",.5,1.1)
+  end
+  for i=1,4 do
+    local box=Instance.new("TextButton")
+    box.Name="QuickBox"..i;box.Text="";box.AutoButtonColor=true
+    box.Position=UDim2.new((i-1)/4,4,0,28);box.Size=UDim2.new(.25,-8,0,62)
+    box.BackgroundColor3=Color3.fromRGB(33,50,48);box.BorderSizePixel=0;box.Parent=tray
+    local bc=Instance.new("UICorner");bc.CornerRadius=UDim.new(0,10);bc.Parent=box
+    local be=Instance.new("UIStroke");be.Color=Color3.fromRGB(90,120,106);be.Parent=box
+    local icon=Instance.new("ImageLabel")
+    icon.BackgroundTransparency=1;icon.Size=UDim2.fromOffset(36,36);icon.AnchorPoint=Vector2.new(.5,0)
+    icon.Position=UDim2.new(.5,0,0,3);icon.Parent=box
+    local label=Instance.new("TextLabel")
+    label.BackgroundTransparency=1;label.Position=UDim2.new(0,2,1,-20);label.Size=UDim2.new(1,-4,0,18)
+    label.Font=Enum.Font.GothamBold;label.TextSize=11;label.TextColor3=Color3.new(1,1,1);label.TextTruncate=Enum.TextTruncate.AtEnd
+    label.Parent=box
+    boxes[i]={box=box,icon=icon,label=label,edge=be}
+    box.Activated:Connect(function()
+      if selectedSkill then assign(i+1,selectedSkill.Id) end
+    end)
   end
   refreshDrop()
   local ghost=Instance.new("TextLabel")
@@ -2985,9 +3018,12 @@ do
   ghost.Font=Enum.Font.GothamBlack;ghost.TextSize=14;ghost.Visible=false;ghost.ZIndex=200;ghost.Parent=gui
   local gc=Instance.new("UICorner");gc.CornerRadius=UDim.new(0,10);gc.Parent=ghost
   local drag=nil
-  local function overDrop(pos)
-    local a,sz=drop.AbsolutePosition,drop.AbsoluteSize
-    return pos.X>=a.X and pos.X<=a.X+sz.X and pos.Y>=a.Y-6 and pos.Y<=a.Y+sz.Y+6
+  local function boxAt(pos)
+    for i,entry in ipairs(boxes)do
+      local a,sz=entry.box.AbsolutePosition,entry.box.AbsoluteSize
+      if pos.X>=a.X and pos.X<=a.X+sz.X and pos.Y>=a.Y-8 and pos.Y<=a.Y+sz.Y+8 then return i end
+    end
+    return nil
   end
   for _,row in ipairs(skillRows)do
     row.button.InputBegan:Connect(function(input)
@@ -3005,7 +3041,8 @@ do
     end
     if drag.moved then
       ghost.Position=UDim2.fromOffset(pos.X,pos.Y)
-      ds.Thickness=overDrop(pos) and 4 or 2
+      local over=boxAt(pos)
+      for i,entry in ipairs(boxes)do entry.edge.Thickness=i==over and 4 or 1 end
     end
   end)
   UserInputService.InputEnded:Connect(function(input)
@@ -3013,13 +3050,11 @@ do
     local kind=input.UserInputType
     if kind~=Enum.UserInputType.Touch and kind~=Enum.UserInputType.MouseButton1 then return end
     local current=drag;drag=nil
-    ghost.Visible=false;ds.Thickness=2
-    if current.moved and overDrop(Vector2.new(input.Position.X,input.Position.Y)) then
-      local id=current.row.action.Id
-      local cell=skillInfo[id] and skillInfo[id][3] or 2
-      meadowActionButtons.setQuickSkill(id,cell,current.row.action.Label,current.row.category)
-      meadowArt.sfx("ping",.5,1.1)
-      refreshDrop();meadowActionButtons.refreshSkills()
+    ghost.Visible=false
+    for _,entry in ipairs(boxes)do entry.edge.Thickness=1 end
+    if current.moved then
+      local slot=boxAt(Vector2.new(input.Position.X,input.Position.Y))
+      if slot then assign(slot+1,current.row.action.Id) end
     end
   end)
   meadowActionButtons.refreshDrop=refreshDrop
@@ -9561,5 +9596,106 @@ end)()
         elbow.Transform=elbow.Transform*CFrame.Angles(math.rad(-48)*weight,0,0)
       end
     end)
+  end)
+end)()
+
+-- [하단 퀵슬롯] Roblox 기본 도구 단축바를 끄고 1=무기 들기/넣기, 2~5=등록한 기술 버튼으로 교체한다.
+;(function()
+  local bar=Instance.new("Frame")
+  bar.Name="MeadowQuickBar";bar.AnchorPoint=Vector2.new(.5,1);bar.Position=UDim2.new(.5,0,1,-8)
+  bar.Size=UDim2.fromOffset(5*58+4*6,58);bar.BackgroundTransparency=1;bar.ZIndex=22;bar.Parent=gui
+  local layout=Instance.new("UIListLayout")
+  layout.FillDirection=Enum.FillDirection.Horizontal;layout.Padding=UDim.new(0,6);layout.Parent=bar
+  local slots={}
+  local function findSword()
+    local backpack=player:FindFirstChildOfClass("Backpack")
+    if not backpack then return nil end
+    local first=nil
+    for _,tool in ipairs(backpack:GetChildren())do
+      if tool:IsA("Tool") then
+        first=first or tool
+        local profile=tool:GetAttribute("WeaponMotionProfile") or tool.Name
+        if profile=="장검" or profile=="철검" or profile=="SWORD" or profile=="LONGSWORD" then return tool end
+      end
+    end
+    return first
+  end
+  local function toggleWeapon()
+    local character=player.Character
+    local human=character and character:FindFirstChildOfClass("Humanoid")
+    if not human or human.Health<=0 then return end
+    if character:FindFirstChildOfClass("Tool") then
+      human:UnequipTools();meadowArt.sfx("click",.4,.9)
+    else
+      local tool=findSword()
+      if tool then human:EquipTool(tool);meadowArt.sfx("unsheath",.5,1) end
+    end
+  end
+  local function press(i)
+    if gui:GetAttribute("GameMenuOpen")==true or player:GetAttribute("ProfileReady")~=true then return end
+    if i==1 then toggleWeapon();return end
+    local id=meadowArt.quickIds[i]
+    if id then activateMeadowAction(id) end
+  end
+  for i=1,5 do
+    local slot=Instance.new("TextButton")
+    slot.Name="QuickSlot"..i;slot.Text="";slot.AutoButtonColor=true;slot.Size=UDim2.fromOffset(58,58)
+    slot.BackgroundColor3=Color3.fromRGB(18,30,30);slot.BackgroundTransparency=.25;slot.BorderSizePixel=0;slot.LayoutOrder=i
+    slot.ZIndex=22;slot.Parent=bar
+    local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,12);c.Parent=slot
+    local e=Instance.new("UIStroke");e.Color=Color3.fromRGB(218,189,126);e.Thickness=2;e.Transparency=.2;e.Parent=slot
+    local icon=Instance.new("ImageLabel")
+    icon.BackgroundTransparency=1;icon.Size=UDim2.fromOffset(44,44);icon.AnchorPoint=Vector2.new(.5,.5)
+    icon.Position=UDim2.fromScale(.5,.5);icon.ZIndex=23;icon.Parent=slot
+    local key=Instance.new("TextLabel")
+    key.BackgroundTransparency=1;key.Position=UDim2.fromOffset(5,2);key.Size=UDim2.fromOffset(14,14)
+    key.Font=Enum.Font.GothamBlack;key.TextSize=12;key.Text=tostring(i);key.TextColor3=Color3.fromRGB(255,240,197)
+    key.TextStrokeTransparency=.3;key.ZIndex=25;key.Parent=slot
+    local shade=Instance.new("Frame")
+    shade.BackgroundColor3=Color3.new(0,0,0);shade.BackgroundTransparency=.45;shade.BorderSizePixel=0
+    shade.Size=UDim2.fromScale(1,1);shade.Visible=false;shade.ZIndex=26;shade.Parent=slot
+    local sc=Instance.new("UICorner");sc.CornerRadius=UDim.new(0,12);sc.Parent=shade
+    local timer=Instance.new("TextLabel")
+    timer.BackgroundTransparency=1;timer.Size=UDim2.fromScale(1,1);timer.Font=Enum.Font.GothamBlack;timer.TextSize=18
+    timer.TextColor3=Color3.new(1,1,1);timer.Text="";timer.ZIndex=27;timer.Parent=slot
+    slot.Activated:Connect(function() press(i) end)
+    slots[i]={slot=slot,icon=icon,shade=shade,timer=timer,edge=e}
+  end
+  meadowArt.refreshQuickHud=function()
+    meadowArt.gear(slots[1].icon,0)
+    for i=2,5 do
+      local id=meadowArt.quickIds[i]
+      slots[i].icon.Visible=id~=nil
+      if id then meadowArt.skill(slots[i].icon,id) end
+    end
+  end
+  meadowArt.refreshQuickHud()
+  local elapsed=0
+  RunService.Heartbeat:Connect(function(dt)
+    elapsed+=dt
+    if elapsed<.1 then return end
+    elapsed=0
+    bar.Visible=gui:GetAttribute("GameMenuOpen")~=true
+    local now=workspace:GetServerTimeNow()
+    local armed=player.Character and player.Character:FindFirstChildOfClass("Tool")~=nil
+    slots[1].edge.Color=armed and Color3.fromRGB(120,255,170) or Color3.fromRGB(218,189,126)
+    for i=2,5 do
+      local id=meadowArt.quickIds[i]
+      local deadline=id and player:GetAttribute("MeadowReady_"..id)
+      local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
+      slots[i].shade.Visible=remaining>.05
+      slots[i].timer.Text=remaining>.05 and tostring(math.ceil(remaining)) or ""
+    end
+  end)
+  UserInputService.InputBegan:Connect(function(input,processed)
+    if processed or UserInputService:GetFocusedTextBox() then return end
+    local keys={Enum.KeyCode.One,Enum.KeyCode.Two,Enum.KeyCode.Three,Enum.KeyCode.Four,Enum.KeyCode.Five}
+    for i,code in ipairs(keys)do if input.KeyCode==code then press(i) end end
+  end)
+  task.spawn(function()
+    for _=1,10 do
+      pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Backpack,false) end)
+      task.wait(1)
+    end
   end)
 end)()
