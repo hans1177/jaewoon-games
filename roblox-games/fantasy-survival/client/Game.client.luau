@@ -10952,6 +10952,30 @@ end)()
     end
     return fromLines(false)
   end
+  -- ===== 화살표 모양 만들기: 줄기 + 마름모 머리, 어두운 외곽선(이미지 없이 UI로 그린다). 기본 방향=아래 ▼ =====
+  local function makeArrow(parent,px,name,baseZ)
+    local a=Instance.new("Frame")
+    a.Name=name;a.AnchorPoint=Vector2.new(.5,.5);a.Size=UDim2.fromOffset(px,px);a.BackgroundTransparency=1;a.Parent=parent
+    local parts={}
+    local function box(w,h,x,y,rot,z)
+      local f=Instance.new("Frame")
+      f.AnchorPoint=Vector2.new(.5,.5);f.Size=UDim2.fromOffset(w*px,h*px);f.Position=UDim2.fromOffset(x*px,y*px)
+      f.Rotation=rot;f.BackgroundColor3=Color3.fromRGB(255,214,70);f.BorderSizePixel=0;f.ZIndex=(baseZ or 0)+z;f.Parent=a
+      Instance.new("UICorner",f).CornerRadius=UDim.new(0,math.max(2,px*.06))
+      local st=Instance.new("UIStroke");st.Color=Color3.fromRGB(70,38,6);st.Thickness=math.max(2,px*.05);st.Parent=f
+      table.insert(parts,f)
+    end
+    box(.26,.5,.5,.26,0,1)
+    box(.52,.52,.5,.62,45,2)
+    -- 줄기 아래쪽 이음매를 머리 색으로 덮는다.
+    box(.2,.34,.5,.3,0,3)
+    for _,f in ipairs(parts) do
+      local st=f:FindFirstChildOfClass("UIStroke")
+      if f.ZIndex==(baseZ or 0)+3 then st.Enabled=false end
+    end
+    a:SetAttribute("Parts",#parts)
+    return a,function(color) for _,f in ipairs(parts) do f.BackgroundColor3=color end end
+  end
   -- ===== 화면 마커(크고 움직이는 목표 표시) =====
   -- 외부 게임(젤다·원신·WoW 퀘스트 화살표) 방식: 큰 핀이 위아래로 튀고, 파동 링이 퍼지고, 먼 목표는 하늘로 빛기둥이 솟는다.
   local marker=Instance.new("Frame")
@@ -10962,11 +10986,8 @@ end)()
   pulse.BackgroundTransparency=1;pulse.ZIndex=25;pulse.Parent=marker
   Instance.new("UICorner",pulse).CornerRadius=UDim.new(1,0)
   local pulseStroke=Instance.new("UIStroke");pulseStroke.Color=Color3.fromRGB(255,214,70);pulseStroke.Thickness=4;pulseStroke.Parent=pulse
-  local pin=Instance.new("TextLabel")
-  pin.AnchorPoint=Vector2.new(.5,.5);pin.Position=UDim2.fromOffset(95,56);pin.Size=UDim2.fromOffset(72,72)
-  pin.BackgroundTransparency=1;pin.Font=Enum.Font.GothamBlack;pin.TextSize=64;pin.Text="▼"
-  pin.TextColor3=Color3.fromRGB(255,214,70);pin.TextStrokeColor3=Color3.fromRGB(60,30,0);pin.TextStrokeTransparency=0
-  pin.ZIndex=27;pin.Parent=marker
+  local pin,pinColor=makeArrow(marker,70,"MarkerArrow",27)
+  pin.Position=UDim2.fromOffset(95,56)
   local infoLabel=Instance.new("TextLabel")
   infoLabel.AnchorPoint=Vector2.new(.5,0);infoLabel.Position=UDim2.fromOffset(95,98)
   infoLabel.BackgroundColor3=Color3.fromRGB(12,22,22);infoLabel.BackgroundTransparency=.2
@@ -11016,7 +11037,7 @@ end)()
     pulseStroke.Transparency=t
     pulse.Visible=inside
     local near=dist<45
-    pin.TextColor3=near and Color3.fromRGB(120,255,150) or Color3.fromRGB(255,214,70)
+    pinColor(near and Color3.fromRGB(120,255,150) or Color3.fromRGB(255,214,70))
     infoLabel.Text=string.format("%s\n%dm",tlabel or "목표",math.floor(dist))
     marker.Visible=true
   end)
@@ -11076,12 +11097,12 @@ end)()
   local steps={
     {"이동하기","왼쪽 아래 조이스틱을 밀어 걸어 봐.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.1,guiRoot.AbsoluteSize.Y*.8),"up" end,"move"},
     {"카메라 돌리기","화면 오른쪽 빈 곳을 끌면 시야가 돌아가.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.62,guiRoot.AbsoluteSize.Y*.45),"down" end,nil},
-    {"전투 버튼","오른쪽 큰 칼 = 공격. 방패 = 막기. 소용돌이 = 회피. 질주는 누르면 자동질주 ON/OFF.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.9,guiRoot.AbsoluteSize.Y*.72),"left" end,nil},
+    {"전투 버튼","큰 칼 = 공격 · 방패 = 막기 · 소용돌이 = 회피 · 질주 = 자동질주 ON/OFF",function() return Vector2.new(guiRoot.AbsoluteSize.X*.9,guiRoot.AbsoluteSize.Y*.72),"left" end,nil},
     {"퀵슬롯","아래 1~5칸을 누르면 바로 써. '편집'을 눌러 칸을 바꿀 수 있어.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.88),"down" end,nil},
-    {"퀘스트와 길 안내","왼쪽 퀘스트창이 지금 할 일이야. 큰 노란 ▼ 표시를 따라가. 지도 아래 '길 안내'로 켜고 꺼.",function() local c=guideChip.Visible and center(guideChip) or Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.28);return c,"up" end,nil},
+    {"퀘스트와 길 안내","왼쪽 퀘스트창이 할 일이야. 노란 화살표를 따라가. 지도 위 '길 안내'로 끄고 켜.",function() local c=guideChip.Visible and center(guideChip) or Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.28);return c,"up" end,nil},
     {"메뉴 열기","오른쪽 위 '가방'을 눌러 메뉴를 열어 봐.",function() local l=findText("TextLabel","가방");return l and (center(l)+Vector2.new(0,-26)) or Vector2.new(guiRoot.AbsoluteSize.X*.62,40),"up" end,"menu"},
     {"스킬 탭","메뉴 아래쪽 탭에서 '스킬'을 눌러.",function() local t=findText("TextButton","스킬");return t and center(t) or nil,"down" end,"skillpage"},
-    {"기술 배우기","금색 칸(무술 1단계)을 눌러 고르고 '습득!' 버튼을 눌러. 첫 기술 점수는 선물이야! 검 기술은 '무술'이야.",function()
+    {"기술 배우기","금색 칸(무술)을 눌러 고르고 '습득!'을 눌러. 첫 점수는 선물이야!",function()
       local branch=player.PlayerGui:FindFirstChild("TalentBranch_Martial",true)
       local n=branch and branch:FindFirstChild("TalentNode1")
       local learn=findText("TextButton","습득! 바로 적용")
@@ -11093,7 +11114,7 @@ end)()
   }
   local card=Instance.new("Frame")
   card.Name="MeadowTutorialCard";card.AnchorPoint=Vector2.new(.5,1);card.Position=UDim2.new(.5,0,1,-20)
-  card.Size=UDim2.fromOffset(340,92);card.BackgroundColor3=Color3.fromRGB(10,18,18);card.BackgroundTransparency=1
+  card.Size=UDim2.fromOffset(400,104);card.BackgroundColor3=Color3.fromRGB(10,18,18);card.BackgroundTransparency=1
   card.Visible=false;card.ZIndex=120;card.Active=false;card.Parent=guiRoot
   local ctitle=Instance.new("TextLabel")
   ctitle.BackgroundTransparency=1;ctitle.Position=UDim2.fromOffset(0,0);ctitle.Size=UDim2.new(1,0,0,20)
@@ -11101,21 +11122,18 @@ end)()
   ctitle.TextStrokeColor3=Color3.new(0,0,0);ctitle.TextStrokeTransparency=.35
   ctitle.TextColor3=Color3.fromRGB(255,232,160);ctitle.ZIndex=121;ctitle.Parent=card
   local cbody=Instance.new("TextLabel")
-  cbody.BackgroundTransparency=1;cbody.Position=UDim2.fromOffset(0,22);cbody.Size=UDim2.new(1,0,0,44)
+  cbody.BackgroundTransparency=1;cbody.Position=UDim2.fromOffset(0,22);cbody.Size=UDim2.new(1,0,0,52)
   cbody.Font=Enum.Font.Gotham;cbody.TextSize=13;cbody.TextWrapped=true;cbody.TextXAlignment=Enum.TextXAlignment.Center
   cbody.TextStrokeColor3=Color3.new(0,0,0);cbody.TextStrokeTransparency=.35
   cbody.TextYAlignment=Enum.TextYAlignment.Top;cbody.TextColor3=Color3.fromRGB(236,242,230);cbody.ZIndex=121;cbody.Parent=card
   local nextBtn=Instance.new("TextButton")
-  nextBtn.AnchorPoint=Vector2.new(.5,1);nextBtn.Position=UDim2.new(.5,0,1,0);nextBtn.Size=UDim2.fromOffset(80,26)
+  nextBtn.AnchorPoint=Vector2.new(.5,1);nextBtn.Position=UDim2.new(.5,0,1,-2);nextBtn.Size=UDim2.fromOffset(80,26)
   nextBtn.BackgroundColor3=Color3.fromRGB(54,112,84);nextBtn.Font=Enum.Font.GothamMedium;nextBtn.TextSize=13
   nextBtn.TextColor3=Color3.new(1,1,1);nextBtn.ZIndex=122;nextBtn.Parent=card
   Instance.new("UICorner",nextBtn).CornerRadius=UDim.new(0,10)
   -- 큰 포인터(▼▲◀) + 퍼지는 링
-  local pointer=Instance.new("TextLabel")
-  pointer.Name="TutorialPointer";pointer.AnchorPoint=Vector2.new(.5,.5);pointer.Size=UDim2.fromOffset(64,64)
-  pointer.BackgroundTransparency=1;pointer.Font=Enum.Font.GothamBlack;pointer.TextSize=58
-  pointer.TextColor3=Color3.fromRGB(255,214,70);pointer.TextStrokeColor3=Color3.fromRGB(60,30,0);pointer.TextStrokeTransparency=0
-  pointer.Visible=false;pointer.ZIndex=130;pointer.Parent=guiRoot
+  local pointer=makeArrow(guiRoot,64,"TutorialPointer",130)
+  pointer.Visible=false
   local ring=Instance.new("Frame")
   ring.AnchorPoint=Vector2.new(.5,.5);ring.BackgroundTransparency=1;ring.Visible=false;ring.ZIndex=129;ring.Parent=guiRoot
   Instance.new("UICorner",ring).CornerRadius=UDim.new(1,0)
@@ -11174,7 +11192,7 @@ end)()
       local bob=math.abs(math.sin(os.clock()*5))*14
       local off=dir=="up" and Vector2.new(0,56+bob) or dir=="down" and Vector2.new(0,-56-bob)
         or dir=="left" and Vector2.new(56+bob,0) or Vector2.new(-56-bob,0)
-      pointer.Text=dir=="up" and "▲" or dir=="down" and "▼" or dir=="left" and "◀" or "▶"
+      pointer.Rotation=dir=="up" and 180 or dir=="down" and 0 or dir=="left" and 90 or -90
       local o=guiRoot.AbsolutePosition
       pointer.Position=UDim2.fromOffset(pos.X+off.X-o.X,pos.Y+off.Y-o.Y)
       local t=(os.clock()*1.2)%1
