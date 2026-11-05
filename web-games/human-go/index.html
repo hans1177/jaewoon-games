@@ -1521,7 +1521,7 @@ function getNodeData(){
       {icon:'💀',label:'2-2 엘리트 해골',kind:'eliteSkeleton'},
       {icon:'❓',label:'2-3 ???',kind:'randomEvent'},
       {icon:'👺',label:'2-4 고블린',kind:'goblin'},
-      {icon:'👑',label:'2-5 랜덤 이벤트',kind:'slimeLord'},
+      {icon:'👑',label:'2-5 랜덤 이벤트',kind:'randomEvent'},
       {icon:'❓',label:'2-6 ???',kind:'randomEvent'},
       {icon:'💎',label:'2-7 축복',kind:'bless'},
       {icon:'👑',label:'2-8 슬라임 군주',kind:'slimeLord'}
@@ -1531,7 +1531,7 @@ function getNodeData(){
     return [
       {icon:'🕷️',label:'3-1 초거대 왕거미',kind:'giantSpider'},
       {icon:'💀',label:'3-2 해골군주',kind:'skeletonLord'},
-      {icon:'👺',label:'3-3 랜덤 이벤트',kind:'eliteGoblin'},
+      {icon:'👺',label:'3-3 랜덤 이벤트',kind:'randomEvent'},
       {icon:'✨',label:'3-4 선택의 장소',kind:'stage3Choice'},
       {icon:'🕷️',label:'3-5 초거대 왕거미',kind:'giantSpider'},
       {icon:'❓',label:'3-6 ???',kind:'randomEvent'},
@@ -1596,11 +1596,9 @@ function hud(){
   if($('gachaPanel')) $('gachaPanel').style.display = G.stageClearCount>=1 ? 'block' : 'none';
   if($('equippedSwordText')) equippedSwordText.textContent=G.equippedSword ? G.equippedSword.name+' (공격 +'+G.equippedSword.value+')' : '없음';
   if($('equippedArmorText')) equippedArmorText.textContent=G.equippedArmor ? G.equippedArmor.name+' (체력 +'+G.equippedArmor.value+')' : '없음';
-  const onAutoEventNode =
-    (G.stage===1 && (G.step===2 || G.step===5)) ||
-    (G.stage===2 && (G.step===2 || G.step===5)) ||
-    (G.stage===3 && (G.step===3 || G.step===5)) ||
-    (G.stage===4 && (G.step===2 || G.step===5 || G.step===8));
+  // 실제 노드 종류를 기준으로 자동 이벤트와 선택지의 진행 버튼을 제어한다.
+  const nodeKind=getNodeData()[G.step]?.kind;
+  const onAutoEventNode=nodeKind==='randomEvent' || nodeKind==='stage3Choice';
 
   if(onAutoEventNode){
     if($('bottom')) $('bottom').style.display='none';
@@ -4479,6 +4477,7 @@ function giveEventBossRandomSkill(){
 }
 
 function runRandomEvent(){
+  if(getNodeData()[G.step]?.kind!=='randomEvent' || eventOverlayEl.classList.contains('on')) return;
   if($('bottom')) $('bottom').style.display='none';
   nextBtn.style.display='none';
 
@@ -4764,6 +4763,7 @@ function stage3Choice(){
 }
 
 async function runStage3ChoiceAuto(){
+  if(getNodeData()[G.step]?.kind!=='stage3Choice' || eventOverlayEl.classList.contains('on')) return;
   if($('bottom')) $('bottom').style.display='none';
   nextBtn.style.display='none';
 
@@ -4812,25 +4812,28 @@ function fullHealEvent(){
 
 
 function handleAutoEventNode(){
-  const isAutoRandom =
-    (G.stage===1 && (G.step===2 || G.step===5)) ||
-    (G.stage===2 && (G.step===2 || G.step===4 || G.step===5)) ||
-    (G.stage===3 && (G.step===2 || G.step===5)) ||
-    (G.stage===4 && (G.step===2 || G.step===5 || G.step===8));
+  const nodeKind=getNodeData()[G.step]?.kind;
 
-  const isStage3Choice = G.stage===3 && G.step===3;
-
-  if(isAutoRandom){
+  if(nodeKind==='randomEvent'){
     if($('bottom')) $('bottom').style.display='none';
     nextBtn.style.display='none';
-    setTimeout(()=>runRandomEvent(),280);
+    setTimeout(()=>{
+      // 이전 구간의 예약 동작은 새 이벤트를 중복 실행하지 않는다.
+      if(!busy && getNodeData()[G.step]?.kind==='randomEvent' && !eventOverlayEl.classList.contains('on')){
+        runRandomEvent();
+      }
+    },280);
     return true;
   }
 
-  if(isStage3Choice){
+  if(nodeKind==='stage3Choice'){
     if($('bottom')) $('bottom').style.display='none';
     nextBtn.style.display='none';
-    setTimeout(()=>runStage3ChoiceAuto(),280);
+    setTimeout(()=>{
+      if(!busy && getNodeData()[G.step]?.kind==='stage3Choice' && !eventOverlayEl.classList.contains('on')){
+        runStage3ChoiceAuto();
+      }
+    },280);
     return true;
   }
 
@@ -4842,6 +4845,7 @@ function handleAutoEventNode(){
 async function nextStep(){
   if(busy) return;
   busy=true;
+  nextBtn.textContent='다음 구간';
   const maxHpBeforeStep=G.maxHp;
   try{
   nextBtn.disabled=true;
@@ -5002,6 +5006,7 @@ async function nextStep(){
     hud();
     nextBtn.style.display='';
     if($('bottom')) $('bottom').style.display='';
+    nextBtn.textContent='다시 시도';
     lg('⚠️ 진행 중 문제가 발생했습니다. 같은 구간을 다시 시도해주세요.');
   }
 }
