@@ -833,7 +833,7 @@ do
 end
 
 -- [연계 퀘스트] 메인 1줄 + 서브 3줄 + 숨겨진 지역 1줄. 단계마다 목표(도달·처치·재료)와 이야기 조각이 이어진다.
--- Need: 시작 조건 {Chapter=기록 장 번호 | Companion=동료 id | Field=저장 수치}. 단계 Type: reach(좌표) / kill(Zone+Named|Lord|Contract) / loot(Field,Count).
+-- Need: 시작 조건(어디서든 자유롭게) {Zone=지역 발견 | Chapter=기록 장 번호 | Companion=동료 id | Field=저장 수치}. 단계 Type: reach(좌표) / kill(Zone+Named|Lord|Contract) / loot(Field,Count).
 Config.QuestLines = {
   {Id="mirror", Name="[메인] 미러의 탑을 찾아서", Kind="Main", Field="QLMirror", Need={Chapter=2},
    Intro="기록 조각이 한 방향을 가리킨다. 북쪽 고원 너머, 사라진 단원들이 갇힌 '미러의 탑'.",
@@ -883,7 +883,7 @@ Config.QuestLines = {
 
 -- [동료 합류 이야기] 동료는 돈으로 고용하지 않는다. 각자의 사연 퀘스트 끝에서 내리는 선택으로 합류(또는 다른 결말)한다.
 for _, line in ipairs({
-  {Id="sera-join", Name="[동료] 우물 아래의 방패", Kind="Companion", Field="QLSeraJ", Need={Stage=3},
+  {Id="sera-join", Name="[동료] 우물 아래의 방패", Kind="Companion", Field="QLSeraJ", Need={Zone="meadow"},
    Intro="마을 우물 밑 봉인석에서 '나는 방패였다'는 속삭임이 들린다. 청월 기사단의 마지막 이름이다.",
    Steps={
     {Type="reach", X=0, Z=-111, R=40, Title="우물 곁에 서기", Text="마을 광장의 우물로 가서 속삭임을 들어라.", Done="봉인석이 흔들린다. 파편을 지키던 존재가 초원에 흩어졌다."},
@@ -894,7 +894,7 @@ for _, line in ipairs({
       {Label="봉인을 풀되 임무로만 청한다", Done="세라가 방패를 들고 나오지만 거리를 둔다. '임무라면 따르겠다. 마음은 천천히 열겠어.'", Join="sera", Coins=450, Moonbloom=3}}},
    },
    Reward={Coins=150, Xp=240}},
-  {Id="rowen-join", Name="[동료] 마지막 화살", Kind="Companion", Field="QLRowenJ", Need={Stage=7},
+  {Id="rowen-join", Name="[동료] 마지막 화살", Kind="Companion", Field="QLRowenJ", Need={Zone="worldtree"},
    Intro="세계수 숲 곳곳에 같은 방향을 가리키는 화살이 박혀 있다. 백송 기사단 궁수의 표식이다.",
    Steps={
     {Type="reach", X=1000, Z=500, R=70, Title="숲 어귀의 첫 화살", Text="숲 어귀 야영지에서 첫 화살을 찾아라.", Done="화살촉에 '제단으로'라고 새겨져 있다."},
@@ -906,7 +906,7 @@ for _, line in ipairs({
       {Label="장부를 태워 위험을 끊는다", Done="장부가 재가 된다. 로웬은 한참 말이 없다가 활을 든다. '…그래도 네가 옳을 수 있겠지. 따라가겠다.'", Join="rowen", Coins=450, Hide=3}}},
    },
    Reward={Coins=200, Xp=320}},
-  {Id="doran-join", Name="[동료] 식지 않는 모루", Kind="Companion", Field="QLDoranJ", Need={Stage=10},
+  {Id="doran-join", Name="[동료] 식지 않는 모루", Kind="Companion", Field="QLDoranJ", Need={Zone="volcano"},
    Intro="식은 용암 속에서 쇠 두드리는 소리가 난다. 홍염 기사단의 대장장이는 모루를 놓지 않았다.",
    Steps={
     {Type="reach", X=2500, Z=600, R=70, Title="재의 제단", Text="재의 제단에서 쇠 소리를 따라가라.", Done="용암 속 모루가 붉게 달아올라 있다."},
@@ -918,7 +918,7 @@ for _, line in ipairs({
       {Label="모루를 용암에 돌려보내고 청한다", Done="모루가 용암 속으로 가라앉는다. 도란은 망치 하나만 쥐고 따라나선다. 마그마가 크게 남았다.", Join="doran", Coins=450, Magma=4}}},
    },
    Reward={Coins=260, Xp=400}},
-  {Id="ifa-join", Name="[동료] 물에 비친 이름", Kind="Companion", Field="QLIfaJ", Need={Stage=11},
+  {Id="ifa-join", Name="[동료] 물에 비친 이름", Kind="Companion", Field="QLIfaJ", Need={Zone="oasis"},
    Intro="오아시스 물에 비친 얼굴이 '자기 이름이 뭐였지?'라고 묻는다. 모래서약 기사단의 치유사 이프다.",
    Steps={
     {Type="reach", X=4100, Z=500, R=70, Title="침몰한 사원", Text="침몰한 사원의 물가로 가라.", Done="물 위에 얼굴이 떠오른다. 대답하지 못한 단원은 모래 속 괴물이 됐다."},
@@ -947,13 +947,13 @@ Config.Companions = {
   {Id="nick", Name="닉", Role="늑대인간 보병대장", Arch="melee", B=8, C=3, G=2, K=5, L=9, Model="mon_beastman", Height=5, Dmg=14, Interval=1.6, Range=10,
    Worldview="버려진 이들을 버리지 않는다. 이름이 사람을 사람으로 남긴다.", Likes={"rowen","sera"}, Dislikes={"mina"}, Where="메인에서 숲의 일을 마치면 합류"},
   {Id="sera", Name="세라", Role="방패 기사", Arch="tank", B=6, C=8, G=2, K=7, L=10, Skin={190,150,120}, Shirt={60,90,150}, Dmg=9, Interval=1.8, Range=10,
-   Worldview="방패는 뒤에 선 사람을 위해 있다. 명령보다 맹세가 무겁다.", Likes={"nick","ifa","cassian"}, Dislikes={"har"}, Where="마을 우물 속삭임 (메인 3장 이후)"},
+   Worldview="방패는 뒤에 선 사람을 위해 있다. 명령보다 맹세가 무겁다.", Likes={"nick","ifa","cassian"}, Dislikes={"har"}, Where="마을 우물 속삭임 (초원 평야)"},
   {Id="rowen", Name="로웬", Role="추적 궁수", Arch="ranged", B=4, C=7, G=3, K=5, L=6, Skin={200,160,130}, Shirt={70,120,70}, Dmg=13, Interval=2, Range=46,
-   Worldview="숲은 거짓말하지 않는다. 거짓말은 언제나 사람이 한다.", Likes={"nick","baren"}, Dislikes={"cassian"}, Where="세계수 숲의 화살 (메인 7장 이후)"},
+   Worldview="숲은 거짓말하지 않는다. 거짓말은 언제나 사람이 한다.", Likes={"nick","baren"}, Dislikes={"cassian"}, Where="세계수 숲의 화살"},
   {Id="doran", Name="도란", Role="대장장이 기사", Arch="melee", B=7, C=4, G=6, K=4, L=7, Skin={170,125,100}, Shirt={150,70,50}, Dmg=19, Interval=2.4, Range=9,
-   Worldview="쇠는 정직하다. 문제는 그걸 쥔 손이다.", Likes={"har","mina"}, Dislikes={"tibo"}, Where="재의 제단의 모루 (메인 10장 이후)"},
+   Worldview="쇠는 정직하다. 문제는 그걸 쥔 손이다.", Likes={"har","mina"}, Dislikes={"tibo"}, Where="재의 황야의 모루"},
   {Id="ifa", Name="이프", Role="치유사", Arch="healer", B=2, C=9, G=1, K=10, L=8, Skin={205,170,140}, Shirt={210,200,150}, Dmg=0, Interval=9, Range=0,
-   Worldview="이름을 불러 주면 사람은 돌아온다. 아픈 이를 두고 가지 않는다.", Likes={"sera","tibo"}, Dislikes={"morgan"}, Where="침몰한 사원의 물가 (메인 11장 이후)"},
+   Worldview="이름을 불러 주면 사람은 돌아온다. 아픈 이를 두고 가지 않는다.", Likes={"sera","tibo"}, Dislikes={"morgan"}, Where="모래 폐허의 물가"},
   {Id="mina", Name="미나", Role="군수대장", Arch="rogue", B=3, C=6, G=10, K=3, L=5, Skin={198,160,135}, Shirt={120,100,60}, Dmg=11, Interval=1.7, Range=12,
    Worldview="숫자는 거짓말하지 않는다. 장부 밖의 진실에도 값이 있다.", Likes={"doran"}, Dislikes={"nick","ifa"}, Where="서브 퀘스트 '미나의 사라진 장부' 완료"},
   {Id="har", Name="하르", Role="오크 용병", Arch="melee", B=10, C=1, G=7, K=2, L=4, Skin={110,140,90}, Shirt={90,60,50}, Dmg=21, Interval=2.2, Range=9,
@@ -965,7 +965,7 @@ Config.Companions = {
   {Id="baren", Name="바렌", Role="설인 사냥꾼", Arch="melee", B=6, C=6, G=2, K=6, L=8, Skin={180,150,130}, Shirt={90,100,110}, Dmg=16, Interval=2, Range=10,
    Worldview="말은 짧게, 발자국은 길게. 약속은 돌에 새긴다.", Likes={"rowen","morgan"}, Dislikes={"tibo"}, Where="북부 감시탑의 사냥꾼 (자유 탐험)"},
   {Id="tibo", Name="티보", Role="떠돌이 음유시인", Arch="bard", B=2, C=6, G=5, K=8, L=5, Skin={215,180,150}, Shirt={170,70,110}, Dmg=0, Interval=14, Range=0,
-   Worldview="이야기가 남으면 사람은 죽지 않는다. 죽음도 노래가 되면 견딜 만하다.", Likes={"ifa","ria"}, Dislikes={"doran","baren"}, Where="초원 이정표의 길손 (메인 2장 이후)"},
+   Worldview="이야기가 남으면 사람은 죽지 않는다. 죽음도 노래가 되면 견딜 만하다.", Likes={"ifa","ria"}, Dislikes={"doran","baren"}, Where="초원 이정표의 길손"},
   {Id="cassian", Name="카시안", Role="몰락한 성채 기사", Arch="tank", B=8, C=4, G=3, K=4, L=9, Skin={175,140,115}, Shirt={80,30,30}, Dmg=15, Interval=2, Range=10,
    Worldview="명예는 갑옷이 아니라 선택이다. 늦은 선택도 선택이다.", Likes={"sera"}, Dislikes={"har","rowen"}, Where="저주받은 성문의 기사 (자유 탐험)"},
 }
@@ -973,7 +973,7 @@ Config.Companions = {
 do
   local function recruit(id, name, zone, stage, wpX, wpZ, intro, reachTitle, reachText, killText, done, promptText, c1, c2)
     return {Id = id .. "-join", Name = "[동료] " .. name, Kind = "Companion", Field = "QL" .. id:sub(1, 1):upper() .. id:sub(2) .. "J",
-      Need = {Stage = stage}, Intro = intro,
+      Need = {Zone = zone}, Intro = intro,
       Steps = {
         {Type = "reach", X = wpX, Z = wpZ, R = 80, Title = reachTitle, Text = reachText, Done = "그곳에서 낯선 기척이 느껴진다. 근처의 위협을 먼저 정리하라."},
         {Type = "kill", Zone = zone, Named = true, Count = 1, Title = "길목의 위협", Text = killText, Done = done},

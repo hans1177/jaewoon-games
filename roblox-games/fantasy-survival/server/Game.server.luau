@@ -6358,6 +6358,11 @@ do
     end
     if need.Field and readNumber(player,need.Field,0)<1 then return false end
     if need.Stage and readNumber(player,"QuestStage",1)<need.Stage then return false end
+    if need.Zone then
+      local bit=nil
+      for _,zone in ipairs(Config.WorldMap.Zones) do if zone.Id==need.Zone then bit=zone.Bit end end
+      if not bit or bit32.band(readNumber(player,"WorldDiscovered",1),bit)==0 then return false end
+    end
     return true
   end
   local function complete(player,line)

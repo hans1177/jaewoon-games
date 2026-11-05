@@ -9655,6 +9655,44 @@ end)
         end
         if row%3==0 then task.wait() end
       end
+      -- 큰길 · 강 · 경계 산맥(전체 지도 장식, 실제 지형과 같은 공식).
+      local function bar(x0,z0,x1,z1,color,thick,order)
+        local ax,az,bx,bz=fx(x0),fz(z0),fx(x1),fz(z1)
+        local f=Instance.new("Frame");f.BorderSizePixel=0;f.BackgroundColor3=color;f.ZIndex=order
+        f.AnchorPoint=Vector2.new(.5,.5);f.Position=UDim2.fromScale((ax+bx)/2,(az+bz)/2)
+        local aw,ah=field.AbsoluteSize.X,field.AbsoluteSize.Y
+        local dx,dy=(bx-ax)*aw,(bz-az)*ah
+        f.Size=UDim2.fromOffset(math.sqrt(dx*dx+dy*dy)+1,thick);f.Rotation=math.deg(math.atan2(dy,dx));f.Parent=field
+      end
+      bar(bounds.X0,0,bounds.X1,0,Color3.fromRGB(214,180,130),3,65)
+      bar(0,bounds.Z0,0,bounds.Z1,Color3.fromRGB(214,180,130),3,65)
+      bar(3000,bounds.Z0,3000,bounds.Z1,Color3.fromRGB(214,180,130),3,65)
+      for _,river in ipairs({{-1100,420},{1800,380},{4050,360}})do
+        local px,pz=nil,nil
+        for z=bounds.Z0+40,bounds.Z1-40,80 do
+          local x=river[1]+river[2]*.28*math.sin(z/river[2]*2.4)
+          if px then bar(px,pz,x,z,Color3.fromRGB(110,170,225),3,66) end
+          px,pz=x,z
+        end
+        task.wait()
+      end
+      for row=1,world.Rows-1 do
+        for col=1,world.Cols-1 do
+          local here=world.Grid[row][col]
+          if here~=world.Grid[row][col+1] or here~=world.Grid[row+1][col] then
+            local x=bounds.X0+(col-.5)*world.Cell
+            local z=bounds.Z0+(row-.5)*world.Cell
+            local nearRoad=math.abs(z)<90 or math.abs(x)<90 or math.abs(x-3000)<90
+            if not nearRoad and (row*7+col*13)%10<6 then
+              local mark=Instance.new("TextLabel")
+              mark.BackgroundTransparency=1;mark.AnchorPoint=Vector2.new(.5,.5);mark.Position=UDim2.fromScale(fx(x),fz(z))
+              mark.Size=UDim2.fromOffset(10,10);mark.Font=Enum.Font.GothamBold;mark.TextSize=10;mark.Text="▲"
+              mark.TextColor3=Color3.fromRGB(96,84,74);mark.ZIndex=65;mark.Parent=field
+            end
+          end
+        end
+        if row%6==0 then task.wait() end
+      end
       for index,tile in ipairs(tiles) do
         local n=count[index] or 1
         tile.name.Position=UDim2.fromScale((sumX[index] or 1)/n/world.Cols,(sumZ[index] or 1)/n/world.Rows)
