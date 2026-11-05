@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-11-05T18:42:03.468Z",
+  "updatedAt": "2026-11-05T22:19:32.447Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -12119,8 +12119,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-05T18:42:03.453Z",
-      "occurrenceCount": 75
+      "updatedAt": "2026-11-05T22:19:32.432Z",
+      "occurrenceCount": 76
     },
     {
       "id": "bug-265b5406b2bdecc5e87f",
@@ -12343,8 +12343,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-04T12:50:06.072Z",
-      "updatedAt": "2026-11-05T18:42:03.453Z",
-      "occurrenceCount": 39
+      "updatedAt": "2026-11-05T22:19:32.432Z",
+      "occurrenceCount": 40
     },
     {
       "id": "bug-bd2de65d9102cd52935c",
@@ -12367,14 +12367,16 @@
         "web-browser-playtest-run:42080642511",
         "web-browser-playtest-source:ce581908c9ad61474772c1bfdf2cd27c02c0f3b2",
         "web-browser-playtest-run:42083967189",
-        "web-browser-playtest-source:e100e3a21cebb853a53a56a1001f075be7773c46"
+        "web-browser-playtest-source:e100e3a21cebb853a53a56a1001f075be7773c46",
+        "web-browser-playtest-run:42114779529",
+        "web-browser-playtest-source:bc710a30d693d9368ba76afedb50695718bb2e16"
       ],
       "exactFailedStage": "WEB_POST_PUBLICATION_PLAYTEST",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
       "status": "OPEN",
       "createdAt": "2026-11-05T17:24:23.275Z",
-      "updatedAt": "2026-11-05T18:42:03.453Z",
-      "occurrenceCount": 4
+      "updatedAt": "2026-11-05T22:19:32.432Z",
+      "occurrenceCount": 5
     }
   ],
   "webPlaytestObservations": [
@@ -12511,7 +12513,7 @@
       "target": "web",
       "sourceRoot": "web-games/human-go",
       "sourceTreeSha": "c833e3d307754f0f2d6e54fe5ccc36c3ade8a9ef",
-      "sourceRevision": "e100e3a21cebb853a53a56a1001f075be7773c46",
+      "sourceRevision": "bc710a30d693d9368ba76afedb50695718bb2e16",
       "runtimeObserved": true,
       "failureStage": "WEB_POST_PUBLICATION_PLAYTEST",
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12520,8 +12522,8 @@
         "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "42083967189",
-      "observedAt": "2026-11-05T18:42:03.453Z"
+      "runId": "42114779529",
+      "observedAt": "2026-11-05T22:19:32.432Z"
     }
   ]
 }
