@@ -412,7 +412,7 @@ test('character sheet shows actual avatar, live vital gauges and separate seven 
     'value.Text=tostring(math.floor(player:GetAttribute(entry.Key) or 0))',
   ])assert.ok(client.includes(key),key);
   assert.match(client,/local columns=width>=650 and 3 or width>=280 and 2 or 1/);
-  assert.match(client,/local narrow=width<540/);
+  assert.match(client,/local narrow=width<440/);
   assert.match(client,/equippedWeapon.Text=equippedName\("Weapon"\)/);
   assert.match(client,/equippedAccessory.Text=equippedName\("Accessory"\)/);
 });
@@ -426,7 +426,7 @@ test('inventory uses split landscape and scrollable portrait details without cha
     'detail.Parent=inventoryWorkspace',
     'descriptionScroll.Name="SelectedItemDescriptionScroll"',
     'description.AutomaticSize=Enum.AutomaticSize.Y',
-    'local split=width>=620',
+    'local split=width>=500',
     'inventoryScroll.ScrollingEnabled=split',
     'inventoryWorkspace:SetAttribute("SplitLayout",split)',
     'detail.Position=split and UDim2.fromOffset(leftWidth+12,0)',

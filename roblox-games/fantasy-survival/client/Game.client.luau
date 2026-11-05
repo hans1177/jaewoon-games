@@ -849,22 +849,22 @@ heroStaminaText.TextColor3=Color3.fromRGB(255,246,231);heroStaminaText.ZIndex=45
 local function layoutNativeAvatar()
   local width=characterHero.AbsoluteSize.X
   if width<=0 then return end
-  local narrow=width<540
-  characterHero.Size=UDim2.new(1,-8,0,narrow and 427 or 278)
-  local avatarSize=narrow and math.min(230,width-24) or 245
-  characterPortrait.Size=UDim2.fromOffset(avatarSize,narrow and 252 or 256)
+  local narrow=width<440
+  characterHero.Size=UDim2.new(1,-8,0,narrow and 427 or 214)
+  local avatarSize=narrow and math.min(230,width-24) or 150
+  characterPortrait.Size=UDim2.fromOffset(avatarSize,narrow and 252 or 192)
   characterPortrait.Position=narrow
     and UDim2.new(.5,-avatarSize/2,0,10) or UDim2.fromOffset(12,11)
   characterViewport.Size=characterPortrait.Size
   characterViewport.Position=characterPortrait.Position
-  local right=narrow and 14 or 273
-  characterHeroName.Position=UDim2.fromOffset(right,narrow and 270 or 19)
-  characterHeroName.Size=narrow and UDim2.new(1,-28,0,32) or UDim2.new(1,-290,0,32)
-  characterHeroSummary.Position=UDim2.fromOffset(right,narrow and 308 or 65)
-  characterHeroSummary.Size=narrow and UDim2.new(1,-28,0,46) or UDim2.new(1,-290,0,78)
-  heroHealth.Position=UDim2.fromOffset(right,narrow and 362 or 167)
-  heroHealth.Size=narrow and UDim2.new(1,-28,0,23) or UDim2.new(1,-291,0,24)
-  heroStamina.Position=UDim2.fromOffset(right,narrow and 393 or 207)
+  local right=narrow and 14 or 180
+  characterHeroName.Position=UDim2.fromOffset(right,narrow and 270 or 12)
+  characterHeroName.Size=narrow and UDim2.new(1,-28,0,32) or UDim2.new(1,-196,0,30)
+  characterHeroSummary.Position=UDim2.fromOffset(right,narrow and 308 or 46)
+  characterHeroSummary.Size=narrow and UDim2.new(1,-28,0,46) or UDim2.new(1,-196,0,60)
+  heroHealth.Position=UDim2.fromOffset(right,narrow and 362 or 118)
+  heroHealth.Size=narrow and UDim2.new(1,-28,0,23) or UDim2.new(1,-197,0,28)
+  heroStamina.Position=UDim2.fromOffset(right,narrow and 393 or 154)
   heroStamina.Size=heroHealth.Size
 end
 characterHero:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutNativeAvatar)
@@ -1051,6 +1051,7 @@ local function renderMeadowPages()
     or "빨간 망토 장착 확인 중"
   meadowLabels[1].Text="※ 요리·건축·연금술은 실제 제작 기능이 연결된 경우에만 성장해.\n"..capeText
   meadowLabels[2].Text="소지품  /  저장 "..tostring(player:GetAttribute("SaveStatus") or "불러오는 중")
+  meadowLabels[2].Visible=false -- [가방 공간] 저장 상태 줄은 화면을 차지하지 않게 숨긴다(오류는 HUD 상태로 표시).
   meadowLabels[3].Text=string.format("초원 탐험 저널\n\n현재 지역 몬스터  %d\n\n%s\n\n관찰 기록은 이번 접속 중 발견한 단서야.",
     player:GetAttribute("AliveEnemies") or 0,
     #meadowJournal>0 and table.concat(meadowJournal,"\n\n") or "주변 동물과 숲의 조사 지점을 살펴봐. 발견한 단서가 여기에 기록돼.")
@@ -1938,10 +1939,11 @@ for _,tonic in ipairs(Config.MeadowConsumables or {})do
 end
 local backpack=player:FindFirstChildOfClass("Backpack") or player:FindFirstChild("Backpack")
 local filterBar,filterButtons=CommonUI.CreateFilterBar({name="WitcherItemCategories",filters=categories,selectedIndex=1})
-filterBar.LayoutOrder=2;filterBar.Size=UDim2.new(1,-8,0,48);filterBar.Parent=meadowPages[2]
+filterBar.LayoutOrder=2;filterBar.Size=UDim2.new(1,-8,0,40);filterBar.Parent=meadowPages[2]
+for _,filterButton in ipairs(filterButtons)do filterButton.Size=UDim2.fromOffset(filterButton.Size.X.Offset,36) end
 -- [인벤토리 검색] 이미 서버에 등록된 항목만 필터링하며 장비/소모품 기능은 그대로 사용한다.
 local inventorySearch=CommonUI.CreateSearchField({
-  name="MeadowInventorySearch",size=UDim2.new(1,-8,0,48)
+  name="MeadowInventorySearch",size=UDim2.new(1,-8,0,40)
 })
 inventorySearch.PlaceholderText="아이템 이름 검색"
 inventorySearch.LayoutOrder=3;inventorySearch.BackgroundColor3=Color3.fromRGB(25,53,49)
@@ -2092,17 +2094,22 @@ end
 local function makeCard(item)
   local card=Instance.new("TextButton")
   card.Name="OwnedItemSlot";card.Text="";card.AutoButtonColor=true;card.ZIndex=44
-  card.BackgroundColor3=Color3.fromRGB(27,54,48);card.BorderSizePixel=0;card.Parent=inventoryGrid
-  local rounded=Instance.new("UICorner");rounded.CornerRadius=UDim.new(0,10);rounded.Parent=card
-  local outline=Instance.new("UIStroke");outline.Color=Color3.fromRGB(78,123,102);outline.Transparency=.14;outline.Parent=card
+  -- [등급색 카드] 인기 로블록스 게임처럼 아이템 색을 바탕과 굵은 테두리에 쓴다.
+  card.BackgroundColor3=item.color:Lerp(Color3.new(0,0,0),.7);card.BorderSizePixel=0;card.Parent=inventoryGrid
+  local rounded=Instance.new("UICorner");rounded.CornerRadius=UDim.new(0,12);rounded.Parent=card
+  local cardShine=Instance.new("UIGradient")
+  cardShine.Color=ColorSequence.new(item.color:Lerp(Color3.new(1,1,1),.08),Color3.fromRGB(12,22,26))
+  cardShine.Rotation=90;cardShine.Transparency=NumberSequence.new(.35,.05);cardShine.Parent=card
+  local outline=Instance.new("UIStroke");outline.Color=item.color;outline.Thickness=2;outline.Transparency=.1;outline.Parent=card
   local icon=Instance.new("ImageLabel")
   icon.Name="ExistingAssetIcon";icon.BackgroundTransparency=1;icon.Image=meadowIconAtlas;icon.ZIndex=45
   icon.ImageRectOffset=Vector2.new(item.icon*64,0);icon.ImageRectSize=Vector2.new(64,64)
-  icon.Size=UDim2.fromOffset(44,44);icon.AnchorPoint=Vector2.new(.5,0)
-  icon.Position=UDim2.new(.5,0,0,4);icon.Parent=card
+  icon.Size=UDim2.fromOffset(50,50);icon.AnchorPoint=Vector2.new(.5,0)
+  icon.Position=UDim2.new(.5,0,0,3);icon.Parent=card
   local name=Instance.new("TextLabel")
   name.Name="ItemName";name.Position=UDim2.new(0,3,0,53);name.Size=UDim2.new(1,-6,0,20)
-  name.BackgroundTransparency=1;name.Font=Enum.Font.GothamBold;name.TextSize=12;name.TextColor3=parchment;name.ZIndex=45
+  name.BackgroundTransparency=1;name.Font=Enum.Font.GothamBold;name.TextSize=12;name.TextColor3=Color3.fromRGB(255,255,255);name.ZIndex=45
+  name.TextStrokeColor3=Color3.fromRGB(0,0,0);name.TextStrokeTransparency=.35
   name.TextXAlignment=Enum.TextXAlignment.Center;name.TextTruncate=Enum.TextTruncate.AtEnd;name.Parent=card
   local value=Instance.new("TextLabel")
   value.Name="OwnedCount";value.Position=UDim2.new(0,3,0,74);value.Size=UDim2.new(1,-6,0,24)
@@ -2129,7 +2136,7 @@ local inventoryTotalCount=0
 local function layoutInventoryWorkspace()
   local width=inventoryWorkspace.AbsoluteSize.X
   if width<=0 then return end
-  local split=width>=620
+  local split=width>=500
   local leftWidth=split and math.floor(width*.55) or width
   local gridHeight=inventoryShownCount==0 and 74 or math.max(110,gridLayout.AbsoluteContentSize.Y+6)
   inventoryWorkspace:SetAttribute("SplitLayout",split)
@@ -5893,7 +5900,7 @@ for index=1,72 do
   local dot=Instance.new("Frame")
   dot.Name="TerrainTree"..index
   dot.AnchorPoint=Vector2.new(.5,.5)
-  dot.Size=UDim2.fromOffset(7,7)
+  dot.Size=UDim2.fromOffset(5,5)
   dot.BackgroundColor3=Color3.fromRGB(52,132,70)
   dot.BorderSizePixel=0
   dot.ZIndex=9
