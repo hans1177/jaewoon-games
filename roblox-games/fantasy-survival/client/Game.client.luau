@@ -4820,30 +4820,76 @@ do
           p=math.clamp(p,0,1)
           return p*p*(3-2*p)
         end
+        -- [카메라] 장면별 감속과 정지를 사용하고 충격은 중요한 순간에만 부여한다.
         local function cameraFor(scene,lt)
-          local p=smooth(lt/scene.seconds)
-          local a,b=scene.bgScale[1],scene.bgScale[2]
+          local u=math.clamp(lt/scene.seconds,0,1)
+          local p=smooth(u)
+          local dir=scene.chShift[1]>=0 and 1 or -1
           local kind=scene.camera
-          local s=a+(b-a)*p
-          local rot,tx,ty=0,0,0
-          if kind=="push" then s+=.03*p
-          elseif kind=="zoom" then s=a+(b-a+.10)*p
-          elseif kind=="zoomout" or kind=="pullback" then s=(b+.07)-(b+.07-a)*p
-          elseif kind=="orbit" then s+=.04;rot=-1.5+3*p
-          elseif kind=="spin" then s+=.09;rot=5*p
-          elseif kind=="pan" then s+=.04;tx=-26+52*p
-          elseif kind=="tilt" then s+=.04;ty=-16+32*p
-          elseif kind=="rise" then s+=.04;ty=18-36*p
+          local scale,rotation,tx,ty=1.022,0,0,0
+          if kind=="push" then
+            scale=1.018+.038*p
+            tx=dir*(-5+10*p)
+            ty=4-8*p
+          elseif kind=="pan" then
+            scale=1.041
+            tx=dir*(14-28*p)
+            ty=3-6*p
+          elseif kind=="tilt" then
+            scale=1.026+.015*p
+            rotation=dir*(-.35+.7*p)
+            ty=-6+12*p
+          elseif kind=="orbit" then
+            scale=1.038+.012*p
+            rotation=dir*(-.55+1.1*p)
+            tx=dir*(-7+14*p)
+          elseif kind=="cut" then
+            -- 배신의 정적 뒤 인물에게 천천히 접근한다.
+            local reveal=smooth(math.clamp((u-.18)/.82,0,1))
+            scale=1.024+.035*reveal
+            tx=dir*5*reveal
+          elseif kind=="zoom" then
+            scale=1.027+.058*p
+            ty=5-10*p
+          elseif kind=="zoomout" then
+            scale=1.074-.052*p
+            ty=-8+16*p
+          elseif kind=="rise" then
+            scale=1.035+.007*p
+            ty=12-19*p
+          elseif kind=="pullback" then
+            scale=1.061-.041*p
+            ty=-4+7*p
+          elseif kind=="spin" then
+            -- 추락은 과한 회전보다 방향 전환과 속도로 표현한다.
+            scale=1.043+.025*p
+            rotation=-1.15+2.3*p
+            ty=-11+22*p
+          elseif kind=="fade" then
+            scale=1.023+.017*p
+            tx=dir*(-3+6*p)
+          elseif kind=="particles" then
+            scale=1.019+.020*p
+            tx=dir*(3-6*p)
           elseif kind=="shake" then
-            s+=.04
-            local amp=9*math.max(.25,1-lt/scene.seconds)
-            tx=amp*math.sin(lt*61)*math.cos(lt*23)
-            ty=amp*math.sin(lt*47+1)
+            scale=1.026+.014*p
+            tx=dir*(3-6*p)
           end
-          return p,s,rot,tx,ty
+          if kind=="shake" or kind=="spin" then
+            local after=lt-.13
+            if after>0 and after<.32 then
+              local envelope=math.sin(math.pi*after/.32)*(1-smooth(after/.32))
+              local impact=(kind=="spin" and 4.5 or 3.5)*envelope
+              tx+=impact*math.sin(after*54)
+              ty+=impact*.7*math.sin(after*43+.6)
+            end
+          end
+          return p,scale,rotation,tx,ty
         end
-        local function updateSparks(fx,t,k)
+        local function updateSparks(fx,t,k,localTime,duration)
           local show=fx=="embers" or fx=="magic" or fx=="rift"
+          -- [입자] 컷 시작과 끝에서 자연스럽게 나타나고 사라진다.
+          local softness=smooth(math.clamp(localTime/.35,0,1))*smooth(math.clamp((duration-localTime)/.35,0,1))
           for _,spark in ipairs(sparks) do
             spark.frame.Visible=show
             if show then
@@ -4856,7 +4902,7 @@ do
               if fx=="rift" then
                 spark.frame.Size=UDim2.fromOffset(math.max(1,2*k),spark.streak*k)
                 spark.frame.BackgroundColor3=spark.pick==0 and Color3.new(1,1,1) or Color3.fromRGB(170,190,255)
-                spark.frame.BackgroundTransparency=.3
+                spark.frame.BackgroundTransparency=1-.7*softness
               else
                 local dotSize=math.max(2,spark.size*k*1.6)
                 spark.frame.Size=UDim2.fromOffset(dotSize,dotSize)
@@ -4864,7 +4910,7 @@ do
                 elseif spark.pick==0 then spark.frame.BackgroundColor3=Color3.fromRGB(200,130,255)
                 elseif spark.pick==1 then spark.frame.BackgroundColor3=Color3.fromRGB(255,110,150)
                 else spark.frame.BackgroundColor3=Color3.fromRGB(150,170,255) end
-                spark.frame.BackgroundTransparency=1-.9*twinkle
+                spark.frame.BackgroundTransparency=1-.9*twinkle*softness
               end
             end
           end
@@ -4954,9 +5000,9 @@ do
               if current>0 then
                 local previousScene=openingScenes[current]
                 ghostBg.Image=previousScene.bg;ghostCh.Image=previousScene.ch;ghostFg.Image=previousScene.fg
-                ghostBg.Size=bgLayer.Size;ghostBg.Position=bgLayer.Position
-                ghostCh.Size=chLayer.Size;ghostCh.Position=chLayer.Position
-                ghostFg.Size=fgLayer.Size;ghostFg.Position=fgLayer.Position
+                ghostBg.Size=bgLayer.Size;ghostBg.Position=bgLayer.Position;ghostBg.Rotation=bgLayer.Rotation
+                ghostCh.Size=chLayer.Size;ghostCh.Position=chLayer.Position;ghostCh.Rotation=chLayer.Rotation
+                ghostFg.Size=fgLayer.Size;ghostFg.Position=fgLayer.Position;ghostFg.Rotation=fgLayer.Rotation
               end
               current=index
               currentStoryScene=index
@@ -4969,42 +5015,44 @@ do
             local lt=t-starts[index]
             local camera=workspace.CurrentCamera
             local k=camera and camera.ViewportSize.X/1280 or 1
-            local p,s,rot,tx,ty=cameraFor(scene,lt)
-            -- 확대·회전 없이 연출한다: 위아래 검은 띠가 가리는 범위 안에서 배경을 세로로 살짝 밀고,
-            -- 인물은 숨 쉬듯 움직이며 전경은 반대로 흐르는 3겹 시차. 충격 컷은 짧게 흔든다.
-            local dirY=(scene.id%2==0) and 1 or -1
-            local dirX=(scene.id%3==0) and -1 or 1
-            local shakeX,shakeY=0,0
-            if scene.camera=="shake" or scene.camera=="spin" then
-              local amp=9*math.max(0,1-lt/1.1)
-              shakeX=amp*math.sin(lt*61)*math.cos(lt*23)
-              shakeY=amp*math.sin(lt*47+1)
-            end
-            -- [3겹 시차] 배경은 가장자리가 비지 않게 7% 크게 깔고(고정 배율, 확대 연출 아님) 천천히 흐른다.
-            -- 인물은 배경과 반대로 더 크게, 전경은 가장 크게 움직여 깊이를 만든다.
-            local pe=smooth(math.clamp(lt/scene.seconds,0,1))
-            local drift=(pe-.5)*2
-            bgLayer.Size=UDim2.fromScale(1.07,1.07)
-            bgLayer.Position=UDim2.new(.5,(drift*30*dirX*k+shakeX*.6),.5,(drift*20*dirY*k+shakeY*.6))
-            bgLayer.Rotation=0
-            chLayer.Size=UDim2.fromScale(1,1)
-            chLayer.Position=UDim2.new(.5,(-drift*dirX*34*k+scene.chShift[1]*(p-.5)*k+shakeX*1.4),.5,(5*math.sin(t*1.7+scene.id)*k+shakeY*1.4))
-            chLayer.Rotation=0
-            fgLayer.Size=UDim2.fromScale(1,1)
-            fgLayer.Position=UDim2.new(.5,(drift*dirX*(scene.fgShift[1]>0 and 62 or 0)*k+shakeX*2),.5,(-7*math.sin(t*1.1+scene.id*.7)*k+shakeY*2))
-            fgLayer.Rotation=0
+            local p,scale,rot,tx,ty=cameraFor(scene,lt)
+            -- [레이어] 세 층이 같은 카메라를 따르되 깊이에 따른 작은 오프셋만 적용한다.
+            -- 인물 호흡은 컷 시작·끝에 0으로 돌아와 장면 전환에서 튀지 않는다.
+            local travel=(p-.5)*2
+            local breathe=math.sin(math.pi*math.clamp(lt/scene.seconds,0,1))
+            local chDrift=scene.chShift[1]*.46*travel
+            local fgDrift=scene.fgShift[1]*.26*travel*(scene.chShift[1]>=0 and -1 or 1)
+            bgLayer.Size=UDim2.fromScale(scale+.034,scale+.034)
+            bgLayer.Position=UDim2.new(.5,tx*.62*k,.5,ty*.62*k)
+            bgLayer.Rotation=rot*.6
+            chLayer.Size=UDim2.fromScale(scale+.008,scale+.008)
+            chLayer.Position=UDim2.new(.5,(tx+chDrift)*k,.5,(ty+1.35*breathe*math.sin(lt*1.7+scene.id*.3))*k)
+            chLayer.Rotation=rot*.85
+            fgLayer.Size=UDim2.fromScale(scale+.018,scale+.018)
+            fgLayer.Position=UDim2.new(.5,(tx*1.24+fgDrift)*k,.5,(ty*1.24+1.75*breathe*math.sin(lt*.9+scene.id*.45))*k)
+            fgLayer.Rotation=rot
             -- 직전 컷 크로스 디졸브(0.5초). 충격 컷(하드 컷)은 디졸브 없이 번쩍임으로 넘어간다.
-            local dissolveIn=({[11]=true,[19]=true,[21]=true,[4]=true,[9]=true})[scene.id]
-            local fade=(dissolveIn or index==1) and 1 or smooth(math.clamp(lt/.5,0,1))
+            local hardCut=({[4]=true,[7]=true,[9]=true,[11]=true,[13]=true,[19]=true,[21]=true})[scene.id]
+            local dissolveTime=scene.fx=="mist" and .65 or .43
+            local fade=(hardCut or index==1) and 1 or smooth(math.clamp(lt/dissolveTime,0,1))
             ghostBg.ImageTransparency=fade;ghostCh.ImageTransparency=fade;ghostFg.ImageTransparency=fade
-            local barOpen=1
+            -- [화면비] 영화 띠는 모바일 자막 영역 바깥에 유지한다.
+            local barOpen=smooth(math.clamp(t/.65,0,1))*smooth(math.clamp((total-t)/.7,0,1))
+            local barHeight=(scene.fx=="mist" and .018 or .032)*barOpen
+            topBar.Size=UDim2.fromScale(1,barHeight)
+            bottomBar.Size=UDim2.fromScale(1,barHeight)
             local opacity=0
             if t<.6 then opacity=1-smooth(t/.6) end
             if t>total-.8 then opacity=math.max(opacity,1-smooth((total-t)/.8)) end
-            if scene.camera=="fade" then opacity=math.max(opacity,.75*smooth((p-.55)/.45)) end
+            if scene.camera=="fade" then
+              opacity=math.max(opacity,.22*math.sin(math.pi*math.clamp((p-.52)/.48,0,1)))
+            end
             curtain.BackgroundTransparency=1-opacity
-            local flashPower=({[9]=.35,[11]=.7,[14]=.45,[19]=.85,[21]=.5})[scene.id]
-            flash.BackgroundTransparency=(flashPower and lt<.28) and (1-(1-lt/.28)*flashPower) or 1
+            -- [충격] 전장·배신·균열 순간의 짧은 광량 변화.
+            local flashPower=({[4]=.35,[7]=.2,[9]=.25,[11]=.5,[13]=.26,[19]=.64,[21]=.18})[scene.id]
+            local flashDuration=scene.id==19 and .24 or .18
+            local flashPulse=(flashPower and lt<flashDuration) and flashPower*(1-smooth(lt/flashDuration)) or 0
+            flash.BackgroundTransparency=1-flashPulse
             local subtitleAlpha=0
             if scene.line~="" and lt>.15 then
               subtitleAlpha=math.clamp(math.min(lt/.2,(scene.seconds-.1-lt)/.2),0,1)
@@ -5032,8 +5080,8 @@ do
             fog.BackgroundColor3=grade[1]
             local flicker=scene.fx=="embers" and .05*math.sin(t*9)*math.sin(t*3.1+1) or .025*math.sin(t*2.3)
             fog.BackgroundTransparency=math.clamp(grade[2]+flicker,.7,.98)
-            fogGradient.Offset=Vector2.new(math.sin(t*.4+scene.id)*.35,0)
-            updateSparks(scene.fx,t,k)
+            fogGradient.Offset=Vector2.new(math.sin(t*.26)*.13,0)
+            updateSparks(scene.fx,t,k,lt,scene.seconds)
           end)
         end)
         return
