@@ -376,10 +376,60 @@ if(process.argv.includes('--cape-grant-only')){
 }
 
 // [마력숲 스킬·장비 아이콘 시트] 오너 승인 신규 원화 2장을 기존 이미지 업로드·Universe 권한 경로로 등록한다.
+if(process.argv.includes('--village-extra-only')){
+ // [마을 추가 모델] Kenney Fantasy Town Kit(CC0) GLB를 Model 자산으로 올리고 이 게임 유니버스에 사용 권한을 준다.
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ // V1: Fantasy Town Kit, V2: Survival/Food/Nature/Fantasy Town Kit 추가분(모두 Kenney CC0).
+ const kenneyEvidence=new Set(['https://kenney.nl/assets/fantasy-town-kit','https://kenney.nl/assets/survival-kit',
+  'https://kenney.nl/assets/food-kit','https://kenney.nl/assets/nature-kit','https://opengameart.org/content/cethiels-weapons-3d']);
+ for(const groupName of ['villageExtraV1','villageExtraV2']){
+ const group=registry[groupName];
+ if(!group)continue;
+ if(registry.gameId!=='fantasy-survival'||group.license!=='CC0-1.0'||group.universeId!=='10773436325')
+  throw Error('VILLAGE_EXTRA_PROVENANCE_INVALID:'+groupName);
+ for(const [name,art] of Object.entries(group.models)){
+  if(art.license!=='CC0-1.0'||!kenneyEvidence.has(art.licenseEvidence))throw Error('VILLAGE_EXTRA_LICENSE_INVALID:'+name);
+  const bytes=fs.readFileSync(art.path);
+  const sourceSha=crypto.createHash('sha256').update(bytes).digest('hex');
+  if(sourceSha!==art.sha256||bytes.length!==art.bytes||bytes.subarray(0,4).toString()!=='glTF')throw Error('VILLAGE_EXTRA_SOURCE_INVALID:'+name);
+  let assetId=String(art.assetId||'');
+  if(!/^[1-9]\d*$/.test(assetId)||art.importedSourceHash!==sourceSha){
+   const form=new FormData();
+   form.append('request',JSON.stringify({assetType:'Model',displayName:'Mana Forest Village '+name,
+    description:'Kenney CC0 model sha256 '+sourceSha,creationContext:{creator}}));
+   form.append('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),art.path.split('/').pop());
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('VILLAGE_EXTRA_OPERATION_INVALID:'+name);
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+    await new Promise(resolve=>setTimeout(resolve,4000));
+    op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+   }
+   assetId=String(op.response?.assetId||'');
+   if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId)){console.log('VILLAGE_EXTRA_FAILED='+name+':'+JSON.stringify(op.error||'timeout').slice(0,200));continue;}
+   art.assetId=assetId;art.importedSourceHash=sourceSha;art.universeUseGrantVerified=false;
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+   console.log('VILLAGE_EXTRA_UPLOADED='+name+':'+assetId);
+  }
+  if(art.universeUseGrantVerified!==true){
+   const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+    method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+    body:JSON.stringify({subjectType:'Universe',subjectId:group.universeId,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})});
+   if(grant.errors?.length)throw Error('VILLAGE_EXTRA_PERMISSION_REJECTED:'+name);
+   art.universeUseGrantVerified=true;
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+   console.log('VILLAGE_EXTRA_REGISTERED='+name+':'+assetId);
+  }
+ }
+ }
+ process.exit(0);
+}
+
 if(process.argv.includes('--gear-icons-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
- for(const keyName of ['skillIconSheetV1','gearIconSheetV1']){
+ for(const keyName of ['skillIconSheetV1','gearIconSheetV1','guideIconSheetV1']){
   const art=registry[keyName];
   if(registry.gameId!=='fantasy-survival'||!art||art.license!=='OWNER_CREATED_UI'||art.universeId!=='10773436325')
    throw Error('GEAR_ICON_PROVENANCE_INVALID:'+keyName);

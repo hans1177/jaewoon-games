@@ -12,6 +12,9 @@ on:
       - 'roblox-games/fantasy-survival/illustrated-icons.png'
       - 'roblox-games/fantasy-survival/skill-icons.png'
       - 'roblox-games/fantasy-survival/item-icons.png'
+      - 'roblox-games/fantasy-survival/guide-icons.png'
+      - 'roblox-games/fantasy-survival/assets/village-extra/*.glb'
+      - 'roblox-games/fantasy-survival/assets/village-extra2/*.glb'
       - 'roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json'
       - 'roblox-games/fantasy-survival/action-icons/**'
       - 'assets/roblox/common-ui-v1/icons.png'
@@ -25,6 +28,10 @@ on:
       - 'assets/roblox/common-materials-v1/sources/**'
   workflow_dispatch:
     inputs:
+      village_extra_only:
+        description: 마력숲 마을 CC0 모델(village-extra/extra2) 미등록분만 업로드
+        type: boolean
+        default: false
       world_map_only:
         description: 'Upload generated world relief map only'
         type: boolean
@@ -129,7 +136,9 @@ jobs:
             node tools/horror-combat-assets.mjs --cape-check-only
           elif [ "$CAPE_GRANT_ONLY" = "true" ]; then
             node tools/horror-combat-assets.mjs --cape-grant-only
-          elif git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/skill-icons.png roblox-games/fantasy-survival/item-icons.png | grep -q .; then
+          elif [ "${{ inputs.village_extra_only }}" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/assets/village-extra roblox-games/fantasy-survival/assets/village-extra2 | grep -q .; then
+            node tools/horror-combat-assets.mjs --village-extra-only
+          elif git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/skill-icons.png roblox-games/fantasy-survival/item-icons.png roblox-games/fantasy-survival/guide-icons.png | grep -q .; then
             node tools/horror-combat-assets.mjs --gear-icons-only
           elif [ "$ILLUSTRATED_HUD_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json | grep -q .; then
             node tools/horror-combat-assets.mjs --illustrated-hud-only

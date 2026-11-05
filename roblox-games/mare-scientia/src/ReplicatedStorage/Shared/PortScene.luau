@@ -4,6 +4,7 @@
 -- 판정에는 쓰이지 않는다. 시설 앞의 ProximityPrompt를 누르면 onFacility(탭 id)가 불린다.
 
 local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local PortScene = {}
 
@@ -123,8 +124,64 @@ local function prompt(parent, at, objectText, actionText, tab, onFacility)
 	return anchor
 end
 
--- 사람 모양 NPC (머리·몸·다리)
+-- 공식 Studio Importer로 수입한 실제 GLB/OBJ/FBX 모델 우선 사용
+-- 원본: roblox-games/mare-scientia/assets/, 수입본: ReplicatedStorage/MareAssets
+local SHIP_MESH = {
+	caravel = "ship-small", fluyt = "ship-medium",
+	frigate = "ship-pirate-medium", galleon = "ship-large",
+	paddle_steamer = "ship-pirate-small", ironclad_frigate = "ship-pirate-medium",
+}
+
+local function importedModel(parent, kind, asset, bottomPosition, desiredSize, solid, tint)
+	local library = ReplicatedStorage:FindFirstChild("MareAssets")
+	local group = library and library:FindFirstChild(kind)
+	local template = group and group:FindFirstChild(asset)
+	if not template or not template:IsA("Model") then return nil end
+	local m = template:Clone()
+	local hasParts = false
+	for _, p in m:GetDescendants() do
+		if p:IsA("BasePart") then
+			hasParts = true
+			p.Anchored = true
+			p.CanCollide = solid == true
+			p.CanTouch = false
+			if tint and p:IsA("MeshPart") then p.Color = tint end
+		end
+	end
+	if not hasParts then m:Destroy(); return nil end
+	local ok, err = pcall(function()
+		m.Parent = parent
+		local _, ext = m:GetBoundingBox()
+		local axis = if kind == "People" or asset == "chimney" then ext.Y else math.max(ext.X, ext.Z)
+		if axis < 0.01 then error("빈 모델") end
+		local scale = desiredSize / axis
+		if scale < 0.01 or scale > 100 then error("비정상적인 모델 배율") end
+		m:ScaleTo(scale)
+		if kind ~= "People" then
+			local _, size = m:GetBoundingBox()
+			if size.Z > size.X then m:PivotTo(CFrame.Angles(0, math.pi / 2, 0) * m:GetPivot()) end
+		end
+		local center, size = m:GetBoundingBox()
+		local bottom = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
+		m:PivotTo(CFrame.new(bottomPosition - bottom) * m:GetPivot())
+	end)
+	if not ok then
+		warn("[MareScientia] 모델 수입본 배치 오류", kind, asset, err)
+		m:Destroy()
+		return nil
+	end
+	return m
+end
+
+-- 주민 NPC (실제 FBX 모델 우선)
 local function villager(parent, pos, facing, coat, rng)
+	local roles = { "Pirate_Male", "Pirate_Female", "Worker_Male", "Worker_Female", "Casual_Male", "Casual_Female", "OldClassy_Male", "OldClassy_Female" }
+	local character = importedModel(parent, "People", roles[rng:NextInteger(1, #roles)], pos, 5.6, false)
+	if character then
+		character.Name = "Villager"
+		character:PivotTo(character:GetPivot() * CFrame.Angles(0, facing, 0))
+		return character
+	end
 	local m = Instance.new("Model")
 	m.Name = "Villager"
 	local skin = ({ Color3.fromRGB(234, 196, 160), Color3.fromRGB(200, 150, 110), Color3.fromRGB(160, 110, 80) })[rng:NextInteger(1, 3)]
@@ -138,12 +195,17 @@ local function villager(parent, pos, facing, coat, rng)
 end
 
 local function house(parent, pos, w, d, floors, style, rng)
+	local mesh = importedModel(parent, "Town", "house", pos, math.max(w, d), true)
+	if mesh then
+		mesh.Name = "HarborHouse"
+		return mesh:FindFirstChildWhichIsA("BasePart", true)
+	end
 	local wall = style.walls[rng:NextInteger(1, #style.walls)]
 	local roof = style.roofs[rng:NextInteger(1, #style.roofs)]
 	local h = floors * 6
 	local body = part(parent, Vector3.new(w, h, d), CFrame.new(pos + Vector3.new(0, h / 2, 0)), wall, Enum.Material.Brick)
 	if style == STYLE.med then
-		body.Material = Enum.Material.Plaster
+		body.Material = Enum.Material.Concrete
 	end
 	gableRoof(parent, pos + Vector3.new(0, h, 0), w + 1, d + 1, d * 0.5 * style.roofPitch, roof)
 	-- 창문과 문
@@ -160,6 +222,84 @@ end
 local function buildShip(parent, shipId, at)
 	local look = SHIP_LOOK[shipId] or SHIP_LOOK.caravel
 	local s = look.scale
+	local bottom = Vector3.new(at.X, at.Y - 2 * s, at.Z)
+	-- 선박 ID별 완제품 Mesh가 있으면 그것을 우선한다. 없으면 원본 선체와 실제 Mesh 소품을 조합한다.
+	local dedicated = importedModel(parent, "Ships", shipId, bottom, 26 * s, false, look.metal and look.hull or nil)
+	local shipMesh = dedicated or importedModel(parent, "Naval", SHIP_MESH[shipId] or "ship-small", bottom, 26 * s, false, look.metal and look.hull or nil)
+	if shipMesh then
+		shipMesh.Name = "Ship"
+		if not dedicated then
+			-- 대포, 선루, 굴뚝, 장갑판 모두 실제 수입한 3D Mesh 모델을 조합한다.
+			if shipId == "frigate" or shipId == "galleon" or shipId == "ironclad_frigate" then
+				for side = -1, 1, 2 do
+					for i = -1, 1 do
+						importedModel(shipMesh, "Naval", "cannon", at + Vector3.new(i * 7 * s, 2 * s, side * 4.6 * s), 3.3 * s, false)
+					end
+				end
+			end
+			if look.funnel then
+				local funnelPositions = if look.metal then { -5, 4 } else { -2 }
+				for _, x in funnelPositions do
+					local position = at + Vector3.new(x * s, 2.8 * s, 0)
+					local chimney = importedModel(shipMesh, "Town", "chimney", position, (if look.metal then 6 else 8) * s, false, look.hull)
+					local emitterPart = chimney and chimney:FindFirstChildWhichIsA("BasePart", true)
+					if emitterPart then
+						local smoke = Instance.new("Smoke")
+						smoke.Name = "EngineSmoke"
+						smoke.Color = Color3.fromRGB(88, 86, 83)
+						smoke.Size = (if look.metal then 3.5 else 4.5) * s
+						smoke.Opacity = 0.27
+						smoke.RiseVelocity = 5
+						smoke.Parent = emitterPart
+					end
+				end
+			end
+			if shipId == "paddle_steamer" then
+				-- 외륜 증기선: 별도 조타실 + 좌우 두 외륜.
+				-- 링은 Kenney 분수 Mesh를 세워 회전시키고, 목재 날개는 난간 Mesh를 방사상으로 재배열한다.
+				importedModel(shipMesh, "Town", "wall-window-shutters", at + Vector3.new(-7 * s, 3 * s, 0), 8 * s, false, Color3.fromRGB(178, 151, 116))
+				for side = -1, 1, 2 do
+					local center = at + Vector3.new(1.5 * s, 1.1 * s, side * 5.3 * s)
+					local wheel = Instance.new("Model")
+					wheel.Name = if side == -1 then "PaddleWheelPort" else "PaddleWheelStarboard"
+					wheel.Parent = shipMesh
+					local rim = importedModel(wheel, "Town", "fountain-round", center, 8 * s, false, Color3.fromRGB(140, 92, 55))
+					if rim then
+						local rimCenter = rim:GetBoundingBox()
+						rim:PivotTo(CFrame.new(center) * CFrame.Angles(math.pi / 2, 0, 0) * CFrame.new(-rimCenter.Position) * rim:GetPivot())
+					end
+					local paddleCount = 8
+					for i = 0, paddleCount - 1 do
+						local blade = importedModel(wheel, "Town", "fence", center, 5.5 * s, false, Color3.fromRGB(125, 74, 42))
+						if blade then
+							local bladeCenter = blade:GetBoundingBox()
+							local angle = i * (math.pi * 2 / paddleCount)
+							blade:PivotTo(CFrame.new(center) * CFrame.Angles(0, 0, angle) * CFrame.new(3.2 * s, 0, 0)
+								* CFrame.Angles(0, 0, math.pi / 2) * CFrame.new(-bladeCenter.Position) * blade:GetPivot())
+						end
+					end
+					if #wheel:GetChildren() > 0 then
+						wheel.WorldPivot = CFrame.new(center)
+					else
+						wheel:Destroy()
+					end
+				end
+			elseif shipId == "ironclad_frigate" then
+				-- 철갑 증기 프리깃: 실제 석재 벽 Mesh를 철색 장갑판으로 변형해 선측에 배치한다.
+				-- 복제 Mesh만 사용하므로 대포 위력·선체 체력·속도·저장 데이터는 바꾸지 않는다.
+				local armor = Color3.fromRGB(91, 103, 112)
+				for side = -1, 1, 2 do
+					for i = -1, 1 do
+						importedModel(shipMesh, "Town", "wall",
+							at + Vector3.new(i * 9 * s, -0.8 * s, side * 5.1 * s), 10.2 * s, false, armor)
+					end
+				end
+				importedModel(shipMesh, "Town", "wall-window-shutters", at + Vector3.new(-9 * s, 3.7 * s, 0), 8 * s, false, armor)
+			end
+		end
+		return shipMesh
+	end
+	-- 미수입 환경에서는 기존 외형과 플레이 기능을 보존한다.
 	local m = Instance.new("Model")
 	m.Name = "Ship"
 	local L, W, H = 26 * s, 8 * s, 4 * s
@@ -244,7 +384,11 @@ function PortScene.build(info, onFacility)
 	water.Reflectance = 0.1
 	water.CanCollide = false
 	part(folder, Vector3.new(8, 2, 300), CFrame.new(18, 0, 0), Color3.fromRGB(130, 126, 120), Enum.Material.Cobblestone)
-	part(folder, Vector3.new(60, 0.8, 10), CFrame.new(50, 1.6, 0), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
+	local dock = part(folder, Vector3.new(60, 0.8, 10), CFrame.new(50, 1.6, 0), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
+	if importedModel(folder, "Naval", "structure-platform-dock", Vector3.new(50, 1.6, 0), 60, false) then
+		-- 실제 메쉬를 보여주면서 기존 부두의 안전한 보행 판정은 유지.
+		dock.Transparency = 1
+	end
 	for x = 24, 78, 9 do
 		for side = -1, 1, 2 do
 			part(folder, Vector3.new(1.2, 6, 1.2), CFrame.new(x, -1, side * 4.6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood, Enum.PartType.Cylinder).CFrame = CFrame.new(x, -1, side * 4.6) * CFrame.Angles(0, 0, math.pi / 2)
@@ -261,7 +405,7 @@ function PortScene.build(info, onFacility)
 		end
 	end
 	-- 등대 (부두 끝)
-	local lh = part(folder, Vector3.new(18, 6, 6), CFrame.new(84, 9, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(236, 232, 224), Enum.Material.Plaster, Enum.PartType.Cylinder)
+	local lh = part(folder, Vector3.new(18, 6, 6), CFrame.new(84, 9, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(236, 232, 224), Enum.Material.Concrete, Enum.PartType.Cylinder)
 	part(folder, Vector3.new(10, 8, 10), CFrame.new(84, -1, 0), Color3.fromRGB(130, 126, 120), Enum.Material.Slate)
 	part(folder, Vector3.new(3, 5, 5), CFrame.new(84, 19.5, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(255, 230, 140), Enum.Material.Neon, Enum.PartType.Cylinder)
 	part(folder, Vector3.new(6.5, 1, 6.5), CFrame.new(84, 22.5, 0), Color3.fromRGB(180, 40, 40))
@@ -280,9 +424,11 @@ function PortScene.build(info, onFacility)
 	-- 광장
 	part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), style.street, Enum.Material.Cobblestone)
 	part(folder, Vector3.new(130, 0.25, 10), CFrame.new(-80, 0.13, 0), style.street, Enum.Material.Cobblestone)
-	-- 분수
-	part(folder, Vector3.new(2, 8, 8), CFrame.new(-8, 1, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
-	part(folder, Vector3.new(2.2, 6.5, 6.5), CFrame.new(-8, 1.2, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(80, 150, 200), Enum.Material.Glass, Enum.PartType.Cylinder)
+	-- 광장 분수도 CC0 수입 메쉬 우선
+	if not importedModel(folder, "Town", "fountain-round", Vector3.new(-8, 0, 0), 8, false) then
+		part(folder, Vector3.new(2, 8, 8), CFrame.new(-8, 1, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
+		part(folder, Vector3.new(2.2, 6.5, 6.5), CFrame.new(-8, 1.2, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(80, 150, 200), Enum.Material.Glass, Enum.PartType.Cylinder)
+	end
 
 	-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }
 	local facilities = {
@@ -369,7 +515,8 @@ function PortScene.build(info, onFacility)
 	-- 광장의 이야기 NPC
 	if (info.storyCount or 0) > 0 then
 		local n = villager(folder, Vector3.new(2, 0, -8), math.pi / 2, Color3.fromRGB(150, 40, 60), rng)
-		sign(folder, n:GetChildren()[2], "! 이야기", Color3.fromRGB(180, 120, 30), 4)
+		local npcPart = n:FindFirstChildWhichIsA("BasePart", true)
+		if npcPart then sign(folder, npcPart, "! 이야기", Color3.fromRGB(180, 120, 30), 4) end
 		prompt(folder, Vector3.new(2, 3, -8), "수상한 손님", "이야기 듣기", "harbor", onFacility)
 	end
 	-- 광장을 오가는 주민
@@ -402,6 +549,14 @@ function PortScene.build(info, onFacility)
 
 	-- 움직임: 배 흔들림, 갈매기, 풍차
 	local shipBase = ship:GetPivot()
+	-- 선체의 잔물결 움직임과 외륜 회전을 독립적으로 합성한다.
+	local wheels = {}
+	for _, name in { "PaddleWheelPort", "PaddleWheelStarboard" } do
+		local wheel = ship:FindFirstChild(name)
+		if wheel and wheel:IsA("Model") then
+			table.insert(wheels, { model = wheel, relative = shipBase:ToObjectSpace(wheel:GetPivot()) })
+		end
+	end
 	local mill = {}
 	for _, p in folder:GetChildren() do
 		if p.Name == "MillBlade" then
@@ -410,9 +565,62 @@ function PortScene.build(info, onFacility)
 	end
 	local hub = folder:FindFirstChild("MillHub")
 	local t0 = os.clock()
+	-- 항해 연출: 출항(부두 -> 먼 바다)과 입항(먼 바다 -> 부두)
+	local SEA_DIST = 420
+	local anim = nil -- { kind = "depart" | "arrive", start = 시각, dur = 초 }
+	if info.arrive then
+		anim = { kind = "arrive", start = os.clock(), dur = 7 }
+	end
+	local function smooth(x)
+		x = math.clamp(x, 0, 1)
+		return x * x * (3 - 2 * x)
+	end
 	local conn = RunService.Heartbeat:Connect(function()
 		local t = os.clock() - t0
-		ship:PivotTo(shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012))
+		local shipPose = shipBase * CFrame.new(0, math.sin(t * 1.2) * 0.35, 0) * CFrame.Angles(math.sin(t * 0.9) * 0.025, 0, math.sin(t * 0.7) * 0.012)
+		if anim then
+			local a = math.clamp((os.clock() - anim.start) / anim.dur, 0, 1)
+			if anim.kind == "depart" then
+				-- 천천히 출발해 점점 빨라진다 (바다 쪽 +X 로 진행)
+				local d = a * a * SEA_DIST
+				shipPose = shipPose * CFrame.new(d, 0, 0) * CFrame.Angles(0, 0, math.sin(t * 1.4) * 0.02)
+			else
+				-- 먼 바다에서 들어와 감속하고, 끝에서 뱃머리를 바다 쪽으로 돌려 정박한다
+				local remain = 1 - smooth(a)
+				local turn = smooth((a - 0.7) / 0.3)
+				local lateral = (1 - turn) * 28
+				shipPose = shipPose * CFrame.new(remain * SEA_DIST, 0, lateral * remain) * CFrame.Angles(0, math.pi * (1 - turn), 0)
+				if a >= 1 then
+					anim = nil
+				end
+			end
+			if anim and not anim.done then
+				-- 항적 파도: 배가 달릴 때 물보라가 따라온다
+				if not ship:FindFirstChild("Wake") then
+					local hull = ship.PrimaryPart or ship:FindFirstChildWhichIsA("BasePart", true)
+					if hull then
+						local att = Instance.new("Attachment")
+						att.Name = "Wake"
+						att.Position = Vector3.new(0, -2, 0)
+						att.Parent = hull
+						local em = Instance.new("ParticleEmitter")
+						em.Name = "WakeFoam"
+						em.Rate = 30
+						em.Lifetime = NumberRange.new(2, 3)
+						em.Speed = NumberRange.new(2, 4)
+						em.SpreadAngle = Vector2.new(60, 10)
+						em.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 2), NumberSequenceKeypoint.new(1, 6) })
+						em.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 1) })
+						em.Color = ColorSequence.new(Color3.fromRGB(235, 245, 255))
+						em.Parent = att
+					end
+				end
+			end
+		end
+		ship:PivotTo(shipPose)
+		for _, wheel in wheels do
+			wheel.model:PivotTo(shipPose * wheel.relative * CFrame.Angles(0, 0, t * 1.65))
+		end
 		for _, g in gulls do
 			local a = t * g.speed + g.phase
 			local pos = Vector3.new(g.cx + math.cos(a) * g.radius, g.height + math.sin(t * 0.8 + g.phase) * 2, g.cz + math.sin(a) * g.radius)
@@ -425,8 +633,6 @@ function PortScene.build(info, onFacility)
 		if hub then
 			for _, b in mill do
 				local center = hub.Position
-				local rel = center:Inverse() -- 사용하지 않음 (가독성용)
-				_ = rel
 				b.part.CFrame = CFrame.new(center) * CFrame.Angles(t * 0.8, 0, 0) * (CFrame.new(center):Inverse() * b.base)
 			end
 		end
@@ -435,7 +641,21 @@ function PortScene.build(info, onFacility)
 		conn:Disconnect()
 	end)
 
-	return { folder = folder, spawn = CFrame.new(-2, 4, 10) * CFrame.Angles(0, math.rad(90), 0) }
+	local controls = {}
+	-- 출항 연출 시작. 배가 부두를 떠난다. 걸리는 시간(초)을 돌려준다.
+	function controls.depart(dur)
+		anim = { kind = "depart", start = os.clock(), dur = dur or 5 }
+		return anim.dur
+	end
+	-- 카메라가 따라갈 선체
+	function controls.hull()
+		return ship.PrimaryPart or ship:FindFirstChildWhichIsA("BasePart", true)
+	end
+	function controls.sailing()
+		return anim ~= nil
+	end
+
+	return { folder = folder, spawn = CFrame.new(-2, 4, 10) * CFrame.Angles(0, math.rad(90), 0), controls = controls }
 end
 
 return PortScene

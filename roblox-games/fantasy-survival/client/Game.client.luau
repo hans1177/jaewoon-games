@@ -202,7 +202,7 @@ pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiTyp
 -- [마력숲 옵션] 접속 중 카메라·표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
 -- [스킬·장비 신규 원화] 스킬 아이콘 5x5(200px) / 장비 아이콘 8x8(128px). 자산 ID가 비어 있으면 기존 아틀라스를 그대로 쓴다.
-local meadowArt={skillSheet="rbxassetid://139358648856986",gearSheet="rbxassetid://129911424873839",
+local meadowArt={skillSheet="rbxassetid://129030506278489",gearSheet="rbxassetid://129911424873839",
   rarityColor={Common=Color3.fromRGB(176,176,170),Uncommon=Color3.fromRGB(96,196,112),Rare=Color3.fromRGB(84,150,230),Epic=Color3.fromRGB(170,100,226),Legendary=Color3.fromRGB(244,182,58)},
   rarityName={Common="일반",Uncommon="고급",Rare="희귀",Epic="영웅",Legendary="전설"},
   skillCell={["skill-meadow-heavy"]=0,["skill-meadow-sweep"]=1,["skill-meadow-bolt"]=2,["skill-meadow-guard"]=3,["skill-meadow-parry"]=4,
@@ -210,6 +210,10 @@ local meadowArt={skillSheet="rbxassetid://139358648856986",gearSheet="rbxassetid
     ["skill-meadow-emote"]=10,["skill-meadow-oath"]=15,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
     Martial=15,Signs=16,Defense=17,Agility=18},
   slotEmpty={Weapon=36,Chest=37,Hands=38,Legs=39,Feet=40,Accessory=41}}
+-- [90노드 아이콘] 기존 정식 스킬 아이콘 시트를 재사용한다.
+for _,node in ipairs(Config.MeadowSkillNodes or {}) do
+  if node.Kind=="ACTIVE" then meadowArt.skillCell[node.Id]=node.IconCell end
+end
 function meadowArt.skill(icon,key)
   local cell=meadowArt.skillCell[key]
   if meadowArt.skillSheet=="" or cell==nil then return false end
@@ -230,7 +234,7 @@ do
   local RunSvc=game:GetService("RunService")
   local views={}
   local gearKeys={wanderer_blade="item_sword",hunter_blade="item_sword",runic_blade="item_sword_golden",forest_blade="item_sword_golden",
-    dew_dagger="item_dagger",thorn_axe="item_axe_small",magma_greatsword="item_sword_big"}
+    dew_dagger="item_dagger",thorn_axe="item_axe_small",hunter_bow="item_bow_wooden",wind_bow="item_bow_wooden",worldtree_bow="item_bow_wooden",magma_greatsword="item_sword_big"}
   local armorKeys={travel_armor="item_armor_leather",hunter_armor="item_armor_metal2",moss_robe="item_armor_leather",frost_leather="item_armor_leather",
     guardian_armor="item_armor_metal",magma_plate="item_armor_metal",worldtree_mail="item_armor_golden",
     moon_amulet="item_necklace1",fang_necklace="item_necklace1",herb_bracelet="item_ring2"}
@@ -240,7 +244,7 @@ do
   function meadowArt.itemTintFor(item)
     return item and item.gear and tints[item.gear.Id] or nil
   end
-  local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1"}
+  local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Leather="item_bone"}
   function meadowArt.itemKeyFor(item)
     if not item then return nil end
     if item.gear then
@@ -356,6 +360,13 @@ meadowArt.skillNeed={
 }
 -- 배우지 않은 기술이면 "표식 1 필요" 같은 글자를, 쓸 수 있으면 nil을 돌려준다.
 function meadowArt.skillLock(id)
+  local node=Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[id]
+  if node then
+    local bits=math.floor(tonumber(game:GetService("Players").LocalPlayer:GetAttribute("MeadowSkillBits"..math.ceil(node.Index/10))) or 0)
+    local rank=bit32.band(bit32.extract(bits,((node.Index-1)%10)*3,3),3)
+    if rank>=1 then return nil end
+    return "스킬 트리에서 "..node.Name.." 습득 필요"
+  end
   local need=meadowArt.skillNeed[id]
   if not need then return nil end
   local lv=tonumber(game:GetService("Players").LocalPlayer:GetAttribute("MeadowTalent"..need[1])) or 0
@@ -767,7 +778,7 @@ end)
 -- [전투 HUD] 실제 휴머노이드 최대 체력을 기준으로 표시한다.
 local meadowHealthTrack,meadowHealthControl=CommonUI.CreateHealthBar({name="MeadowHealth",text="체력",textSize=11})
 meadowHealthTrack.Parent=root
-local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
+local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","Ingot","Leather","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
   status.Text="" -- [필요 없는 작은 글씨 제거] 월드/몬스터 수는 기본 화면에 표시하지 않는다.
   local character=player.Character
@@ -1351,9 +1362,9 @@ local function renderMeadowPages()
     or save=="SESSION_ONLY" and "이번 접속은 임시 플레이야. 진행이 저장되지 않으니 재접속 후 상태를 확인해."
     or save=="SAVE_FAILED" and "저장에 실패했어. 기존 저장은 보호 중이야."
     or player:GetAttribute("RunActive")~=true and "생존 시작을 눌러 초원 전투를 시작해."
-    or tier<10 and (player:GetAttribute("Wood") or 0)>=cost and (player:GetAttribute("Stone") or 0)>=cost
-      and "강화 재료가 준비됐어. 아래 장비 강화를 누르면 서버가 비용을 확인해."
-    or "나무와 돌 가까이에서 채집해. 전투 중에는 공격 예고에 맞춰 막으면 연타를 끊을 수 있어."
+    or tier<10 and (player:GetAttribute("Ingot") or 0)>=(Config.TemperCost(tier,player:GetAttribute("CraftingProficiency") or 0))
+      and "단련 재료가 준비됐어. 아래 장비 강화를 누르면 서버가 비용을 확인해."
+    or "광석을 캐서 마을 화로에서 주괴로 제련해. 전투 중에는 공격 예고에 맞춰 막으면 연타를 끊을 수 있어."
   -- [의뢰 도우미] 메인 > 마을 서브 > 동료 서브 순서. 모든 수치는 서버의 기존 저장 속성만 읽는다.
   local companionStage=player:GetAttribute("CompanionQuestStage") or 1
   local companion=Config.CompanionRequests and Config.CompanionRequests[companionStage]
@@ -1391,7 +1402,7 @@ local function renderMeadowPages()
     "\n\n【현상금】\n"..bountyText..
     "\n\n【서브 · 동료】\n"..companionText..
     "\n\n【다음 행동 안내】\n"..suggestion..
-    string.format("\n\n다음 강화 재료: 나무 %d · 돌 %d · 광석 %d",cost,cost,1+math.floor(((player:GetAttribute("WeaponTier") or 0))/2))..
+    string.format("\n\n다음 단련 재료: 철 주괴 %d · 무두질 가죽 %d",Config.TemperCost(player:GetAttribute("WeaponTier") or 0,player:GetAttribute("CraftingProficiency") or 0))..
     "\n\n【처음 조작】\n왼쪽 조이스틱/WASD: 이동\n왼쪽 퀘스트 도우미: 의뢰 확인\n빈 화면 터치/클릭: 기본 공격\n오른쪽 회피·막기: 적의 공격 대응\n상호작용: 주민 대화·단서·채집"
 
   local companionLines={"동료 통신 · 선택 의뢰","메인 퀘스트와 독립적으로 진행돼."}
@@ -1496,7 +1507,7 @@ local function renderMeadowPages()
     table.concat(mystLines,"\n"),table.concat(storyLines,"\n")}
   local howTo=string.match(meadowLabels[5].Text,"【처음 조작】.*") or ""
   sec[3].texts={
-    "【메인 퀘스트】\n"..mainText.."\n\n【다음 행동 안내】\n"..suggestion..string.format("\n\n다음 강화 재료: 나무 %d · 돌 %d · 광석 %d",cost,cost,1+math.floor(((player:GetAttribute("WeaponTier") or 0))/2)),
+    "【메인 퀘스트】\n"..mainText.."\n\n【다음 행동 안내】\n"..suggestion..string.format("\n\n다음 단련 재료: 철 주괴 %d · 무두질 가죽 %d",Config.TemperCost(player:GetAttribute("WeaponTier") or 0,player:GetAttribute("CraftingProficiency") or 0)),
     "【서브 · 마을】\n"..villageText.."\n\n"..table.concat(companionLines,"\n\n"),
     "【현상금 게시판】\n"..bountyText,
     howTo.."\n\n"..journalBase,
@@ -2432,8 +2443,8 @@ local selectedKey="Wood"
 local category="전체"
 local function owned(item)
   if item.gear then
-    local mask=math.max(0,tonumber(player:GetAttribute("MeadowGearOwned")) or 0)
-    return bit32.band(mask,bit32.lshift(1,item.index-1))~=0 and 1 or 0
+    local mask=math.max(0,tonumber(player:GetAttribute(item.index>32 and "MeadowGearOwned2" or "MeadowGearOwned")) or 0)
+    return bit32.band(mask,bit32.lshift(1,(item.index-1)%32))~=0 and 1 or 0
   end
   if item.tonic then
     local key=item.tonic.Id=="herbal_tonic" and "MeadowPotionHealth" or "MeadowPotionStamina"
@@ -2485,12 +2496,21 @@ local function redrawSelection()
     end
     cost="제작 재료: "..table.concat(parts," · ")
   end
-  local stats=item.gear and string.format("%s 등급  ·  공격 +%d  ·  방어 +%d\n%s",meadowArt.rarityName[item.gear.Rarity or "Common"] or "일반",item.gear.Attack or 0,item.gear.Defense or 0,
+  local classKey=item.gear and Config.GearWeaponClass and Config.GearWeaponClass[item.gear.Id]
+  local classInfo=classKey and Config.WeaponClasses[classKey]
+  local stats=item.gear and string.format("%s 등급  ·  공격 +%d  ·  방어 +%d\n%s%s",meadowArt.rarityName[item.gear.Rarity or "Common"] or "일반",item.gear.Attack or 0,item.gear.Defense or 0,
+    classInfo and ("무기 계열 "..classInfo.Name.."  ·  어울리는 스킬 강화\n") or "",
     (item.gear.Need or 0)>0 and string.format("필요 전투 숙련 %d\n",item.gear.Need) or "") or ""
   local feedback=player:GetAttribute("MeadowGearMessage")
   description.Text="소지 / 상태   "..itemValue(item).."\n"..stats..(cost~="" and cost.."\n" or "")..
     item.description..(recipe and typeof(feedback)=="string" and ("\n"..feedback) or "")
-  secondary.Visible=item.tonic~=nil
+  -- 광석·가죽 같은 날것은 '제련/무두질' 버튼이 같이 보이고, 가공품은 판매만 한다.
+  local refineSource=nil
+  for _,mat in ipairs(Config.Materials)do
+    if mat.Refine and mat.Refine.From==(item.mat and item.mat.Field) then refineSource=mat end
+  end
+  secondary.Text=item.tonic and "소모품 조합" or (refineSource and refineSource.Refine.Verb.."  ("..refineSource.Refine.Note..")" or "소모품 조합")
+  secondary.Visible=item.tonic~=nil or refineSource~=nil
   equip.Size=secondary.Visible and UDim2.new(.5,-16,0,48) or UDim2.new(1,-24,0,48)
   for key,card in pairs(itemCards)do
     local selected=key==selectedKey
@@ -2695,6 +2715,12 @@ secondary.Activated:Connect(function()
   local item=itemRows[selectedKey]
   if item and item.tonic and player:GetAttribute("ProfileReady")==true then
     remote:FireServer("meadow:rpg:tonic:craft:"..item.tonic.Id)
+  elseif item and item.mat and player:GetAttribute("ProfileReady")==true then
+    for _,mat in ipairs(Config.Materials)do
+      if mat.Refine and mat.Refine.From==item.mat.Field then
+        remote:FireServer("meadow:rpg:loot:refine:"..mat.Field)
+      end
+    end
   end
 end)
 local function watchBackpack(bag)
@@ -2715,7 +2741,7 @@ if player.Character then
   player.Character.ChildAdded:Connect(renderInventory)
   player.Character.ChildRemoved:Connect(renderInventory)
 end
-for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Coins","ResearchRecords","ProfileReady","MeadowGearOwned",
+for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Ingot","Leather","Coins","ResearchRecords","ProfileReady","MeadowGearOwned","MeadowGearOwned2",
   "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
   "MeadowEquipAccessory","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)
@@ -2727,265 +2753,283 @@ meadowLabels[7].LayoutOrder=1
 meadowLabels[7].Text="마력숲 전투 기술  ·  실제 사용 가능 기술\n기술 카드 선택 → 설명 확인 → 사용"
 meadowLabels[7].TextColor3=parchment
 meadowLabels[7].Font=Enum.Font.GothamBold
-local skillCategories={"전체","무예","마력","방어","기동","기타"}
+local skillCategories={"전체","전사","수호","사냥","그림자","마력"}
 local skillColors={
+  ["전사"]=Color3.fromRGB(194,83,76),["수호"]=Color3.fromRGB(213,175,92),
+  ["사냥"]=Color3.fromRGB(125,178,115),["그림자"]=Color3.fromRGB(168,128,190),
   ["무예"]=Color3.fromRGB(194,83,76),["마력"]=Color3.fromRGB(91,161,216),
   ["방어"]=Color3.fromRGB(213,175,92),["기동"]=Color3.fromRGB(110,182,144),
   ["기타"]=Color3.fromRGB(182,171,159),
 }
 local skillInfo={
-  ["skill-meadow-heavy"]={"무예","앞의 적 한 마리를 세게 베어. 가까이서 써.",2},
-  ["skill-meadow-sweep"]={"무예","빙글 돌며 주변 적 최대 5마리를 한 번에 베어.",2},
+  ["skill-meadow-heavy"]={"전사","앞의 적 한 마리를 세게 베어. 가까이서 써.",2},
+  ["skill-meadow-sweep"]={"전사","빙글 돌며 주변 적 최대 5마리를 한 번에 베어.",2},
   ["skill-meadow-bolt"]={"마력","멀리 있는 적에게 마력 탄환을 쏴. 안전하게 원거리 공격.",7},
-  ["skill-meadow-guard"]={"방어","방패를 들어 막아. 막기 시작 직후엔 피해를 거의 안 받아.",3},
-  ["skill-meadow-parry"]={"방어","타이밍 맞춰 적 공격을 튕겨내. 어렵지만 강해.",3},
-  ["skill-meadow-dodge-left"]={"기동","왼쪽으로 재빨리 피해. 트리에서 찍을수록 연속으로 피할 수 있어.",6},
-  ["skill-meadow-dodge-right"]={"기동","오른쪽으로 재빨리 피해. 트리에서 찍을수록 연속으로 피할 수 있어.",6},
-  ["skill-meadow-sprint"]={"기동","빠르게 달려. 적에게 붙거나 도망칠 때 써.",6},
+  ["skill-meadow-guard"]={"수호","방패를 들어 막아. 막기 시작 직후엔 피해를 거의 안 받아.",3},
+  ["skill-meadow-parry"]={"수호","타이밍 맞춰 적 공격을 튕겨내. 어렵지만 강해.",3},
+  ["skill-meadow-dodge-left"]={"그림자","왼쪽으로 재빨리 피해. 트리에서 찍을수록 연속으로 피할 수 있어.",6},
+  ["skill-meadow-dodge-right"]={"그림자","오른쪽으로 재빨리 피해. 트리에서 찍을수록 연속으로 피할 수 있어.",6},
+  ["skill-meadow-sprint"]={"그림자","빠르게 달려. 적에게 붙거나 도망칠 때 써.",6},
   ["skill-meadow-heal"]={"마력","체력을 회복해. 위험할 때 써.",7},
   ["skill-meadow-focus"]={"마력","잠깐 마력을 모아 강해져.",7},
-  ["skill-meadow-oath"]={"무예","각성기. 체력 회복 + 주변 적 전체에 3배 피해. 재사용 90초.",2},
+  ["skill-meadow-oath"]={"수호","각성기. 체력 회복 + 주변 적 전체에 3배 피해. 재사용 90초.",2},
   ["skill-meadow-emote"]={"기타","인사 동작. 전투 효과 없음.",5},
-  ["meadow-unarmed-rush"]={"무예","맨손 잽·훅 연타.",2},
-  ["meadow-unarmed-uppercut"]={"무예","크게 올려치는 승룡 어퍼컷.",2},
-  ["meadow-unarmed-kick"]={"무예","회전 발차기.",2},
-  ["meadow-unarmed-elbow"]={"무예","팔꿈치·무릎 연계 공격.",2},
+  ["meadow-unarmed-rush"]={"전사","맨손 잽·훅 연타.",2},
+  ["meadow-unarmed-uppercut"]={"전사","크게 올려치는 승룡 어퍼컷.",2},
+  ["meadow-unarmed-kick"]={"전사","회전 발차기.",2},
+  ["meadow-unarmed-elbow"]={"전사","팔꿈치·무릎 연계 공격.",2},
 }
--- [스킬 성장] 숙련 누적 곡선(첫 30, 이후 +10)으로 점수 획득. 기존 공격·저장 구조는 유지.
+-- [90노드 스킬 카드] 기존 Config.Actions와 같은 실제 서버 발동 ID를 사용한다.
+for _,node in ipairs(Config.MeadowSkillNodes or {}) do
+  if node.Kind=="ACTIVE" then
+    skillInfo[node.Id]={node.SchoolName,node.Description,node.IconCell}
+  end
+end
+
+-- [90노드 스킬창] 5계열 탭 / 3갈래 분기 / 3단계 강화·최종 A/B 선택.
+-- 사용형 60개는 기존 Config.Actions/서버 액션 ID로, 지속형 30개는 슬롯 없이 습득한다.
 local talentPanel=Instance.new("Frame")
 talentPanel.Name="WitcherTalents";talentPanel.LayoutOrder=2
-talentPanel.Size=UDim2.new(1,-8,0,446);talentPanel.BackgroundTransparency=1;talentPanel.Parent=meadowPages[7]
-local talentHeader=Instance.new("TextLabel")
-talentHeader.Name="TalentPoints";talentHeader.Size=UDim2.new(1,0,0,30)
-talentHeader.BackgroundTransparency=1;talentHeader.Font=Enum.Font.GothamBold;talentHeader.TextSize=16
-talentHeader.TextColor3=gold;talentHeader.TextXAlignment=Enum.TextXAlignment.Left
-talentHeader.Parent=talentPanel
-local talentGrid=Instance.new("Frame")
-talentGrid.Name="TalentBranches";talentGrid.Position=UDim2.fromOffset(0,34)
-talentGrid.Size=UDim2.new(1,0,0,292);talentGrid.BackgroundTransparency=1;talentGrid.Parent=talentPanel
--- [스킬 트리] 4갈래 × 3단계. 위에서 아래로 선으로 이어지고, 배운 칸·배울 수 있는 칸·잠긴 칸을 색으로 구분한다.
-local talentPerks=Instance.new("TextLabel")
-talentPerks.Name="TalentPerks";talentPerks.BackgroundTransparency=1;talentPerks.Position=UDim2.fromOffset(0,330)
-talentPerks.Size=UDim2.new(1,0,0,80);talentPerks.TextWrapped=true;talentPerks.Font=Enum.Font.GothamMedium
-talentPerks.TextSize=12;talentPerks.TextColor3=Color3.fromRGB(200,210,203);talentPerks.TextXAlignment=Enum.TextXAlignment.Left
-talentPerks.TextYAlignment=Enum.TextYAlignment.Top;talentPerks.Parent=talentPanel
-talentPerks.Text="3단계 특전  ·  검술: 회전 베기 8마리·12칸  ·  표식: 마력 탄환 사거리 40칸  ·  방호: 방어 자세 3.6초·완벽 방어 0.36초\n회피: 찍은 점수 = 연속 단계(1.8초 안에 이어 누르기). 5단은 적 배후 도약, 5점이면 재사용 3초"
-local talentReset=CommonUI.CreatePrimaryButton({name="TalentReset",text="점수 초기화  ·  코인 30",minHeight=44})
-talentReset.Position=UDim2.fromOffset(0,396);talentReset.Size=UDim2.new(1,0,0,44)
-talentReset.BackgroundColor3=Color3.fromRGB(98,52,48);talentReset.Parent=talentPanel
-talentReset.Activated:Connect(function()
-  if player:GetAttribute("ProfileReady")==true then remote:FireServer("meadow:rpg:talent:reset:all") end
-end)
-local talentEffects={
-  Martial={"1연타","2연타","3연타","4연타","5연타"},Signs={"탄환 +2","탄환 +4","탄환 +6"},
-  Defense={"피해 -1","피해 -2","피해 -3"},Agility={"1단 회피","2단 연속","3단 연속","4단 연속","5단 배후"},
-}
-local talentIcons={Martial=2,Signs=7,Defense=3,Agility=6}
--- [상용 게임식 스킬 상세] 단계별 이름과 설명. 실제 수치는 서버의 기존 재능 계산이 결정한다.
-local talentUi={}
-talentUi.details={
-  Martial={{"날카로운 칼날","피해 +1. 연타는 1단 단순 베기에 머문다."},{"2연타","피해 +2. 오른베기 뒤 왼베기가 이어진다."},{"3연타","피해 +3. 찌르기까지 이어지고 마지막 타가 강해진다."},{"4연타","피해 +4. 궤적이 길어지고 피해 배율이 커진다."},{"기사의 5연타","피해 +5. 5타째는 주변 적까지 베는 화려한 마무리."}},
-  Signs={{"마력 집중","마력 탄환 피해 +2. 마력 흐름을 손끝에 모은다."},{"마력 증폭","탄환 피해 +4. 탄환이 더 단단하게 날아간다."},{"관통 사거리","탄환 피해 +6. 사거리가 40칸까지 늘어난다."}},
-  Defense={{"단단한 자세","받는 피해 -1. 방어 자세가 안정된다."},{"완벽 방어 연장","받는 피해 -2. 완벽 방어 구간이 조금 길어진다."},{"철벽 방어","받는 피해 -3. 방어 자세 유지 시간이 길어지고 방패 빛이 오래간다."}},
-  Agility={{"가벼운 발","1단 회피. 측면으로 빠진다."},{"연속 회피","2단 연속. 반대편으로 이어서 회피한다."},{"교차 회피","3단 연속. 전방 대각으로 파고든다."},{"위빙","4단 연속. 후방 대각으로 흘려 보낸다."},{"배후 도약","5단. 적의 등 뒤로 도약한다. 마지막 단계는 재사용 대기가 길다."}},
-}
-talentUi.selected={branchIndex=1,step=1}
-local talentButtons={}
+talentPanel.Size=UDim2.new(1,-8,0,1160);talentPanel.BackgroundTransparency=1;talentPanel.Parent=meadowPages[7]
+local selectedSchool=1
+local selectedNode=Config.MeadowSkillNodes[1]
+local talentRows={}
 local talentColumns={}
-local columnHeights={}
-local function learnTalent(branch)
-  if player:GetAttribute("ProfileReady")==true then
-    remote:FireServer("meadow:rpg:talent:learn:"..branch.Id)
-  end
+local schoolButtons={}
+local legacyButtons={}
+local loadoutRows={}
+local renderTree
+local function rankOf(node)
+  if not node then return 0,"A" end
+  local bits=math.floor(tonumber(player:GetAttribute("MeadowSkillBits"..math.ceil(node.Index/10))) or 0)
+  local packed=bit32.extract(bits,((node.Index-1)%10)*3,3)
+  return bit32.band(packed,3),bit32.band(packed,4)~=0 and "B" or "A"
 end
-for index,branch in ipairs(Config.MeadowTalentSchools or {})do
-  local tint=skillColors[branch.Category] or gold
-  local column=Instance.new("Frame")
-  column.Name="TalentBranch_"..branch.Id;column.LayoutOrder=index
-  column.BackgroundColor3=Color3.fromRGB(27,40,38);column.BorderSizePixel=0;column.Parent=talentGrid
-  local columnCorner=Instance.new("UICorner");columnCorner.CornerRadius=UDim.new(0,12);columnCorner.Parent=column
-  local columnEdge=Instance.new("UIStroke");columnEdge.Color=tint;columnEdge.Thickness=2;columnEdge.Transparency=.35;columnEdge.Parent=column
-  local title=Instance.new("TextLabel")
-  title.Name="BranchTitle";title.BackgroundColor3=tint;title.BorderSizePixel=0
-  title.Size=UDim2.new(1,0,0,30);title.Font=Enum.Font.GothamBlack;title.TextSize=14
-  title.TextColor3=Color3.new(1,1,1);title.Parent=column
-  local titleCorner=Instance.new("UICorner");titleCorner.CornerRadius=UDim.new(0,12);titleCorner.Parent=title
-  local titleInk=Instance.new("UIStroke");titleInk.Color=Color3.new(0,0,0);titleInk.Thickness=1
-  titleInk.Transparency=.35;titleInk.ApplyStrokeMode=Enum.ApplyStrokeMode.Contextual;titleInk.Parent=title
-  local nodes={}
-  local maxLevel=branch.Max or 3
-  local nodeSize=maxLevel>3 and 44 or 50
-  local spacing=maxLevel>3 and 76 or 84
-  columnHeights[index]=40+(maxLevel-1)*spacing+nodeSize+24
-  for step=1,maxLevel do
-    local top=40+(step-1)*spacing
-    if step<maxLevel then
-      local link=Instance.new("Frame")
-      link.Name="Link"..step;link.AnchorPoint=Vector2.new(.5,0);link.Position=UDim2.new(.5,0,0,top+nodeSize+18)
-      link.Size=UDim2.fromOffset(4,spacing-nodeSize-18);link.BorderSizePixel=0;link.BackgroundColor3=Color3.fromRGB(70,82,78);link.Parent=column
-      nodes[step+10]=link
+local schoolTab=Instance.new("Frame")
+schoolTab.Name="MeadowSkillSchools";schoolTab.Size=UDim2.new(1,0,0,44)
+schoolTab.BackgroundTransparency=1;schoolTab.Parent=talentPanel
+for index,school in ipairs(Config.MeadowSkillSchools or {}) do
+  local button=Instance.new("TextButton")
+  button.Name="School_"..school.Id;button.Position=UDim2.new((index-1)/5,2,0,0)
+  button.Size=UDim2.new(1/5,-4,1,0);button.Text=school.Name..(school.Weapon and ('\n'..school.Weapon) or '')
+  button.BackgroundColor3=Color3.fromRGB(23,44,40);button.BorderSizePixel=0
+  button.TextColor3=parchment;button.Font=Enum.Font.GothamBold;button.TextSize=12;button.TextWrapped=true;button.Parent=schoolTab
+  local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,7);corner.Parent=button
+  button.Activated:Connect(function()
+    selectedSchool=index
+    selectedNode=Config.MeadowSkillNodes[(index-1)*18+1]
+    if renderTree then renderTree() end
+  end)
+  schoolButtons[index]=button
+end
+local talentHeader=Instance.new("TextLabel")
+talentHeader.Name="TalentPoints";talentHeader.Position=UDim2.fromOffset(5,50)
+talentHeader.Size=UDim2.new(1,-10,0,34);talentHeader.BackgroundTransparency=1
+talentHeader.TextXAlignment=Enum.TextXAlignment.Left;talentHeader.TextWrapped=true
+talentHeader.Font=Enum.Font.GothamBold;talentHeader.TextSize=13
+talentHeader.TextColor3=gold;talentHeader.Parent=talentPanel
+for school=1,5 do
+  talentColumns[school]={}
+  for lane=1,3 do
+    local column=Instance.new("Frame")
+    column.Name="TalentBranch_"..school.."_"..lane
+    column.Position=UDim2.new((lane-1)/3,2,0,90)
+    column.Size=UDim2.new(1/3,-4,0,500)
+    column.BorderSizePixel=0;column.BackgroundColor3=Color3.fromRGB(23,39,37)
+    column.Visible=school==1;column.Parent=talentPanel
+    local rounded=Instance.new("UICorner");rounded.CornerRadius=UDim.new(0,9);rounded.Parent=column
+    talentColumns[school][lane]=column
+    local example=Config.MeadowSkillNodes[(school-1)*18+(lane-1)*6+1]
+    local title=Instance.new("TextLabel")
+    title.Name="BranchTitle";title.Size=UDim2.new(1,0,0,36);title.BackgroundTransparency=1
+    title.Font=Enum.Font.GothamBold;title.TextSize=13;title.TextWrapped=true
+    title.TextColor3=skillColors[example.SchoolName] or gold;title.Text=example.Branch;title.Parent=column
+    for step=1,6 do
+      local node=Config.MeadowSkillNodes[(school-1)*18+(lane-1)*6+step]
+      local button=Instance.new("TextButton")
+      button.Name="TalentNode_"..node.Index;button.Position=UDim2.new(0,4,0,40+(step-1)*75)
+      button.Size=UDim2.new(1,-8,0,68);button.BorderSizePixel=0
+      button.BackgroundColor3=Color3.fromRGB(42,51,49);button.Text=""
+      button.Parent=column
+      local bc=Instance.new("UICorner");bc.CornerRadius=UDim.new(0,8);bc.Parent=button
+      local edge=Instance.new("UIStroke");edge.Thickness=1.5;edge.Color=Color3.fromRGB(81,99,91);edge.Parent=button
+      local icon=Instance.new("ImageLabel")
+      icon.Name="NodeIcon";icon.BackgroundTransparency=1;icon.Position=UDim2.new(.5,-17,0,2)
+      icon.Size=UDim2.fromOffset(34,34)
+      icon.Image=meadowArt.skillSheet;icon.ImageRectSize=Vector2.new(64,64)
+      icon.ImageRectOffset=Vector2.new(node.IconCell*64,0);icon.Parent=button
+      local label=Instance.new("TextLabel")
+      label.BackgroundTransparency=1;label.Position=UDim2.fromOffset(3,36);label.Size=UDim2.new(1,-6,0,30)
+      label.Font=Enum.Font.GothamBold;label.TextSize=10;label.TextWrapped=true
+      label.TextColor3=parchment;label.Text=node.Name;label.Parent=button
+      button.Activated:Connect(function()
+        selectedNode=node
+        if renderTree then renderTree() end
+      end)
+      talentRows[node.Index]={node=node,button=button,edge=edge,icon=icon,label=label}
     end
-    local node=Instance.new("TextButton")
-    node.Name="TalentNode"..step;node.AnchorPoint=Vector2.new(.5,0);node.Position=UDim2.new(.5,0,0,top)
-    node.Size=UDim2.fromOffset(nodeSize,nodeSize);node.Text="";node.AutoButtonColor=false
-    node.BackgroundColor3=Color3.fromRGB(40,46,46);node.BorderSizePixel=0;node.Parent=column
-    local nodeCorner=Instance.new("UICorner");nodeCorner.CornerRadius=UDim.new(0,12);nodeCorner.Parent=node
-    local nodeEdge=Instance.new("UIStroke");nodeEdge.Thickness=2;nodeEdge.Color=Color3.fromRGB(86,96,92);nodeEdge.Parent=node
-    local icon=Instance.new("ImageLabel")
-    icon.Name="NodeIcon";icon.BackgroundTransparency=1;icon.Position=UDim2.fromOffset(7,7);icon.Size=UDim2.fromOffset(nodeSize-14,nodeSize-14)
-    icon.Image=meadowIconAtlas;icon.ImageRectOffset=Vector2.new((talentIcons[branch.Id] or 2)*64,0)
-    icon.ImageRectSize=Vector2.new(64,64);icon.Parent=node
-    meadowArt.skill(icon,branch.Id)
-    local badge=Instance.new("TextLabel")
-    badge.Name="NodeStep";badge.AnchorPoint=Vector2.new(1,1);badge.Position=UDim2.new(1,4,1,4);badge.Size=UDim2.fromOffset(20,20)
-    badge.BackgroundColor3=Color3.fromRGB(20,24,24);badge.BorderSizePixel=0;badge.Text=tostring(step)
-    badge.Font=Enum.Font.GothamBlack;badge.TextSize=12;badge.TextColor3=Color3.new(1,1,1);badge.Parent=node
-    local badgeCorner=Instance.new("UICorner");badgeCorner.CornerRadius=UDim.new(1,0);badgeCorner.Parent=badge
-    local effect=Instance.new("TextLabel")
-    effect.Name="NodeEffect";effect.BackgroundTransparency=1;effect.AnchorPoint=Vector2.new(.5,0)
-    effect.Position=UDim2.new(.5,0,0,top+nodeSize+2);effect.Size=UDim2.new(1,-6,0,16)
-    effect.Font=Enum.Font.GothamBold;effect.TextSize=12;effect.Text=talentEffects[branch.Id][step]
-    effect.TextColor3=Color3.fromRGB(170,180,174);effect.Parent=column
-    node.Activated:Connect(function()
-      local again=talentUi.selected.branchIndex==index and talentUi.selected.step==step
-      talentUi.selected.branchIndex=index;talentUi.selected.step=step
-      if again then
-        -- 같은 칸을 한 번 더 누르면 바로 습득(점수가 있고 앞 단계를 배웠을 때).
-        local lv=math.clamp(tonumber(player:GetAttribute("MeadowTalent"..branch.Id)) or 0,0,maxLevel)
-        if lv+1==step then learnTalent(branch) end
-      end
-      if meadowActionButtons.refreshTalentDetail then meadowActionButtons.refreshTalentDetail() end
-    end)
-    nodes[step]={node=node,edge=nodeEdge,icon=icon,effect=effect,badge=badge}
   end
-  talentColumns[#talentColumns+1]=column
-  talentButtons[#talentButtons+1]={button=column,branch=branch,title=title,nodes=nodes,tint=tint,max=maxLevel}
 end
-local talentGridHeight=0
-for _,height in pairs(columnHeights)do talentGridHeight=math.max(talentGridHeight,height) end
-talentGrid.Size=UDim2.new(1,0,0,talentGridHeight)
-talentUi.talentDetail=Instance.new("Frame")
-talentUi.talentDetail.Name="TalentDetail";talentUi.talentDetail.Position=UDim2.fromOffset(0,34+talentGridHeight+8);talentUi.talentDetail.Size=UDim2.new(1,0,0,118)
-talentUi.talentDetail.BackgroundColor3=Color3.fromRGB(20,36,34);talentUi.talentDetail.BorderSizePixel=0;talentUi.talentDetail.Parent=talentPanel
-do
-  local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,12);c.Parent=talentUi.talentDetail
-  local e=Instance.new("UIStroke");e.Color=Color3.fromRGB(218,189,126);e.Thickness=1.6;e.Transparency=.3;e.Parent=talentUi.talentDetail
+local detail=Instance.new("Frame")
+detail.Name="SkillNodeDetail";detail.Position=UDim2.fromOffset(0,604)
+detail.Size=UDim2.new(1,0,0,160);detail.BackgroundColor3=Color3.fromRGB(19,35,33)
+detail.BorderSizePixel=0;detail.Parent=talentPanel
+local dc=Instance.new("UICorner");dc.CornerRadius=UDim.new(0,10);dc.Parent=detail
+local detailTitle=Instance.new("TextLabel")
+detailTitle.BackgroundTransparency=1;detailTitle.Position=UDim2.fromOffset(10,5)
+detailTitle.Size=UDim2.new(1,-20,0,24);detailTitle.TextXAlignment=Enum.TextXAlignment.Left
+detailTitle.Font=Enum.Font.GothamBold;detailTitle.TextSize=16;detailTitle.TextColor3=gold;detailTitle.Parent=detail
+local detailText=Instance.new("TextLabel")
+detailText.BackgroundTransparency=1;detailText.Position=UDim2.fromOffset(10,31)
+detailText.Size=UDim2.new(1,-20,0,77);detailText.TextWrapped=true
+detailText.Font=Enum.Font.GothamMedium;detailText.TextSize=12
+detailText.TextColor3=parchment;detailText.TextXAlignment=Enum.TextXAlignment.Left
+detailText.TextYAlignment=Enum.TextYAlignment.Top;detailText.Parent=detail
+local learnA=CommonUI.CreatePrimaryButton({name="SkillNodeLearnA",text="습득",minHeight=42})
+learnA.Position=UDim2.new(0,8,0,111);learnA.Size=UDim2.new(.5,-12,0,42)
+learnA.Parent=detail
+local learnB=CommonUI.CreatePrimaryButton({name="SkillNodeLearnB",text="B 분기",minHeight=42})
+learnB.Position=UDim2.new(.5,4,0,111);learnB.Size=UDim2.new(.5,-12,0,42)
+learnB.Parent=detail
+local function buyNode(choice)
+  if player:GetAttribute("ProfileReady")~=true or not selectedNode then return end
+  local rank=rankOf(selectedNode)
+  if rank>=3 then return end
+  remote:FireServer("meadow:rpg:tree:learn:"..selectedNode.Index..(rank==2 and choice or ""))
 end
-talentUi.detailIcon=Instance.new("ImageLabel")
-talentUi.detailIcon.Name="DetailIcon";talentUi.detailIcon.BackgroundTransparency=1;talentUi.detailIcon.Position=UDim2.fromOffset(10,10);talentUi.detailIcon.Size=UDim2.fromOffset(64,64)
-talentUi.detailIcon.Image=meadowIconAtlas;talentUi.detailIcon.ImageRectSize=Vector2.new(64,64);talentUi.detailIcon.Parent=talentUi.talentDetail
-talentUi.detailName=Instance.new("TextLabel")
-talentUi.detailName.BackgroundTransparency=1;talentUi.detailName.Position=UDim2.fromOffset(84,8);talentUi.detailName.Size=UDim2.new(1,-94,0,24)
-talentUi.detailName.Font=Enum.Font.GothamBlack;talentUi.detailName.TextSize=16;talentUi.detailName.TextXAlignment=Enum.TextXAlignment.Left
-talentUi.detailName.TextColor3=Color3.fromRGB(255,244,214);talentUi.detailName.Parent=talentUi.talentDetail
-talentUi.detailText=Instance.new("TextLabel")
-talentUi.detailText.BackgroundTransparency=1;talentUi.detailText.Position=UDim2.fromOffset(84,32);talentUi.detailText.Size=UDim2.new(1,-94,0,44)
-talentUi.detailText.Font=Enum.Font.GothamMedium;talentUi.detailText.TextSize=12;talentUi.detailText.TextWrapped=true
-talentUi.detailText.TextXAlignment=Enum.TextXAlignment.Left;talentUi.detailText.TextYAlignment=Enum.TextYAlignment.Top
-talentUi.detailText.TextColor3=Color3.fromRGB(206,218,210);talentUi.detailText.Parent=talentUi.talentDetail
-talentUi.detailCost=Instance.new("TextLabel")
-talentUi.detailCost.BackgroundTransparency=1;talentUi.detailCost.Position=UDim2.fromOffset(10,80);talentUi.detailCost.Size=UDim2.new(.5,-14,0,30)
-talentUi.detailCost.Font=Enum.Font.GothamBold;talentUi.detailCost.TextSize=12;talentUi.detailCost.TextWrapped=true
-talentUi.detailCost.TextXAlignment=Enum.TextXAlignment.Left;talentUi.detailCost.TextColor3=Color3.fromRGB(226,200,130);talentUi.detailCost.Parent=talentUi.talentDetail
-talentUi.detailLearn=CommonUI.CreatePrimaryButton({name="TalentLearn",text="습득",minHeight=34})
-talentUi.detailLearn.Position=UDim2.new(.5,0,0,80);talentUi.detailLearn.Size=UDim2.new(.5,-10,0,32);talentUi.detailLearn.Parent=talentUi.talentDetail
-talentUi.detailLearn.Activated:Connect(function()
-  local entry=talentButtons[talentUi.selected.branchIndex]
-  if entry then learnTalent(entry.branch) end
+learnA.Activated:Connect(function() buyNode("A") end)
+learnB.Activated:Connect(function() buyNode("B") end)
+
+local presetTitle=Instance.new("TextLabel")
+presetTitle.BackgroundTransparency=1;presetTitle.Position=UDim2.fromOffset(5,775)
+presetTitle.Size=UDim2.new(1,-10,0,22);presetTitle.Font=Enum.Font.GothamBold
+presetTitle.TextSize=13;presetTitle.TextXAlignment=Enum.TextXAlignment.Left
+presetTitle.TextColor3=gold;presetTitle.Text="장착 조합 3개 · 전투 밖에서 저장/전환";presetTitle.Parent=talentPanel
+for preset,name in ipairs({"탐험용","보스용","협동용"}) do
+  local label=Instance.new("TextLabel")
+  label.Name="MeadowPreset"..preset;label.BackgroundTransparency=1
+  label.Position=UDim2.new(0,5,0,800+(preset-1)*45)
+  label.Size=UDim2.new(.4,-8,0,38);label.Font=Enum.Font.GothamBold;label.TextSize=12
+  label.TextColor3=parchment;label.TextXAlignment=Enum.TextXAlignment.Left;label.Parent=talentPanel
+  local save=CommonUI.CreatePrimaryButton({name="SavePreset"..preset,text="저장",minHeight=38})
+  save.Position=UDim2.new(.4,0,0,800+(preset-1)*45);save.Size=UDim2.new(.27,-4,0,38);save.Parent=talentPanel
+  local load=CommonUI.CreatePrimaryButton({name="LoadPreset"..preset,text="전환",minHeight=38})
+  load.Position=UDim2.new(.68,0,0,800+(preset-1)*45);load.Size=UDim2.new(.31,-4,0,38);load.Parent=talentPanel
+  save.Activated:Connect(function() remote:FireServer("meadow:rpg:loadout:save:"..preset) end)
+  load.Activated:Connect(function() remote:FireServer("meadow:rpg:loadout:activate:"..preset) end)
+  loadoutRows[preset]={name=name,label=label,load=load}
+end
+
+local legacyTitle=Instance.new("TextLabel")
+legacyTitle.BackgroundTransparency=1;legacyTitle.Position=UDim2.fromOffset(5,943)
+legacyTitle.Size=UDim2.new(1,-10,0,25);legacyTitle.Font=Enum.Font.GothamBold
+legacyTitle.TextSize=13;legacyTitle.TextXAlignment=Enum.TextXAlignment.Left
+legacyTitle.TextColor3=gold;legacyTitle.Parent=talentPanel
+for i,school in ipairs(Config.MeadowTalentSchools or {}) do
+  local button=CommonUI.CreatePrimaryButton({name="LegacySkill_"..school.Id,text=school.Name,minHeight=44})
+  button.Position=UDim2.new((i-1)/4,2,0,970);button.Size=UDim2.new(.25,-4,0,44)
+  button.Parent=talentPanel;legacyButtons[i]={button=button,school=school}
+  button.Activated:Connect(function() remote:FireServer("meadow:rpg:talent:learn:"..school.Id) end)
+end
+local resetButton=CommonUI.CreatePrimaryButton({name="TalentReset",text="스킬 점수 초기화 · 30코인",minHeight=42})
+resetButton.Position=UDim2.fromOffset(3,1021);resetButton.Size=UDim2.new(1,-6,0,42)
+resetButton.BackgroundColor3=Color3.fromRGB(98,52,48);resetButton.Parent=talentPanel
+local resetConfirm=Instance.new("Frame")
+resetConfirm.Name="MeadowResetConfirm";resetConfirm.Position=UDim2.fromOffset(0,1069)
+resetConfirm.Size=UDim2.new(1,0,0,85);resetConfirm.BackgroundColor3=Color3.fromRGB(50,35,33)
+resetConfirm.Visible=false;resetConfirm.Parent=talentPanel
+local confirmLabel=Instance.new("TextLabel")
+confirmLabel.BackgroundTransparency=1;confirmLabel.Size=UDim2.new(1,0,0,38)
+confirmLabel.Font=Enum.Font.GothamBold;confirmLabel.TextSize=12;confirmLabel.TextWrapped=true
+confirmLabel.TextColor3=parchment;confirmLabel.Text="정말 90노드 점수를 초기화할까? 기존 4재능과 저장은 유지돼."
+confirmLabel.Parent=resetConfirm
+local yes=CommonUI.CreatePrimaryButton({name="ConfirmTalentReset",text="초기화 실행",minHeight=40})
+yes.Position=UDim2.new(0,4,0,42);yes.Size=UDim2.new(.5,-8,0,39);yes.Parent=resetConfirm
+local no=CommonUI.CreatePrimaryButton({name="CancelTalentReset",text="취소",minHeight=40})
+no.Position=UDim2.new(.5,4,0,42);no.Size=UDim2.new(.5,-8,0,39);no.Parent=resetConfirm
+resetButton.Activated:Connect(function() resetConfirm.Visible=true end)
+no.Activated:Connect(function() resetConfirm.Visible=false end)
+yes.Activated:Connect(function()
+  resetConfirm.Visible=false
+  if player:GetAttribute("ProfileReady")==true then remote:FireServer("meadow:rpg:tree:reset:all") end
 end)
-talentPerks.Position=UDim2.fromOffset(0,34+talentGridHeight+8+124)
-talentReset.Position=UDim2.fromOffset(0,34+talentGridHeight+90+124)
-local function layoutTalents()
-  local w=talentGrid.AbsoluteSize.X
-  if w<=0 then return end
-  local gap=6
-  local width=math.floor((w-gap*3)/4)
-  for index,column in ipairs(talentColumns)do
-    column.Position=UDim2.fromOffset((index-1)*(width+gap),0)
-    column.Size=UDim2.fromOffset(width,columnHeights[index] or 292)
+renderTree=function()
+  local mastery=tonumber(player:GetAttribute("CombatProficiency")) or 0
+  local points=Config.MeadowSkillPointProgress(mastery)
+  local invested=0
+  for _,node in ipairs(Config.MeadowSkillNodes or {}) do invested+=rankOf(node) end
+  local available=math.max(0,points-invested)
+  talentHeader.Text="90개 중 습득 "..invested.."단계 · 남은 점수 "..available..
+    " · 지속 효과는 장착칸을 차지하지 않아"
+  for i,button in ipairs(schoolButtons) do
+    button.BackgroundColor3=i==selectedSchool and Color3.fromRGB(54,112,84) or Color3.fromRGB(23,44,40)
+  end
+  for school,columns in ipairs(talentColumns) do
+    for _,column in ipairs(columns) do column.Visible=school==selectedSchool end
+  end
+  for _,entry in ipairs(talentRows) do
+    local node=entry.node
+    local rank=rankOf(node)
+    local prior=node.Step==1 or rankOf(Config.MeadowSkillNodes[node.Index-1])>=1
+    local ready=rank<3 and prior and available>0
+    local selected=selectedNode and selectedNode.Index==node.Index
+    entry.button.BackgroundColor3=rank>0 and Color3.fromRGB(54,94,74) or Color3.fromRGB(42,51,49)
+    entry.edge.Color=selected and Color3.new(1,1,1) or ready and gold or Color3.fromRGB(81,99,91)
+    entry.edge.Thickness=selected and 3 or ready and 2 or 1
+    entry.icon.ImageTransparency=rank>0 and 0 or ready and .12 or .65
+    entry.label.Text=node.Name.."  "..rank.."/3"
+    entry.label.TextColor3=rank>0 and Color3.fromRGB(235,248,221) or parchment
+  end
+  if selectedNode then
+    local node=selectedNode
+    local rank,choice=rankOf(node)
+    local prior=node.Step==1 or rankOf(Config.MeadowSkillNodes[node.Index-1])>=1
+    local ready=rank<3 and prior and available>0
+    local tier=node.Advanced and "고급 · 기력 "..node.Gauge or node.Kind=="PASSIVE" and "지속 효과 · 자동 적용" or "일반 · 기력 "..node.Gauge
+    detailTitle.Text=node.Name.."  "..rank.."/3  ·  "..tier
+    local branchText=node.Mode=="BOLT" and "A 관통 / B 분열" or
+      node.Mode=="HEAL" and "A 즉시 회복 / B 지속 회복" or
+      node.Kind=="PASSIVE" and "A 효과 강화 / B 조건 확장" or
+      "A 집중 강화 / B 범위·지원 강화"
+    detailText.Text=node.Description.."\n현재 단계 "..rank.." / 다음 단계 "..math.min(3,rank+1)..
+      " · "..(prior and "선행 조건 만족" or "같은 분기의 앞 노드 필요")..
+      "\n최종 강화: "..branchText..(rank==3 and " · 선택 "..choice or "")
+    learnA.Visible=true;learnB.Visible=rank==2
+    learnA.Size=rank==2 and UDim2.new(.5,-12,0,42) or UDim2.new(1,-16,0,42)
+    learnA.Text=rank==3 and "최고 단계" or ready and (rank==2 and "A 분기 습득" or "다음 단계 습득") or "잠김 / 점수 부족"
+    learnB.Text="B 분기 습득"
+    learnA.Active=ready;learnB.Active=ready
+    learnA.AutoButtonColor=ready;learnB.AutoButtonColor=ready
+  end
+  local legacyEarned=Config.TalentPointProgress(mastery)
+  local legacySpent=0
+  for _,entry in ipairs(legacyButtons) do
+    local lv=tonumber(player:GetAttribute("MeadowTalent"..entry.school.Id)) or 0
+    local maxLv=entry.school.Max or 3
+    legacySpent+=lv
+    entry.button.Text=entry.school.Name.." "..lv.."/"..maxLv
+  end
+  legacyTitle.Text="기존 4재능 보존 · 남은 점수 "..math.max(0,legacyEarned-legacySpent)
+  for preset,entry in ipairs(loadoutRows) do
+    local saved=tonumber(player:GetAttribute("MeadowLoadoutSaved"..preset)) or 0
+    local active=tonumber(player:GetAttribute("MeadowLoadoutActive")) or 1
+    entry.label.Text=entry.name..(saved==1 and " · 저장됨" or " · 비어 있음")
+    entry.load.Text=active==preset and "사용 중" or "전환"
   end
 end
-talentGrid:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutTalents)
-local function renderTalents()
-  local spent=0
-  local levels={}
-  for _,entry in ipairs(talentButtons)do
-    levels[entry]=math.clamp(tonumber(player:GetAttribute("MeadowTalent"..entry.branch.Id)) or 0,0,entry.max)
-    spent+=levels[entry]
-  end
-  local points=Config.TalentPointProgress(tonumber(player:GetAttribute("CombatProficiency")) or 0)
-  local remaining=math.max(0,points-spent)
-  for _,entry in ipairs(talentButtons)do
-    local level=levels[entry]
-    entry.title.Text=entry.branch.Name.."  "..level.."/"..entry.max
-    for step=1,entry.max do
-      local node=entry.nodes[step]
-      local learned=level>=step
-      local learnable=level+1==step and remaining>0
-      node.node.BackgroundColor3=learned and entry.tint or Color3.fromRGB(40,46,46)
-      node.edge.Color=learned and Color3.fromRGB(255,236,190) or (learnable and gold or Color3.fromRGB(86,96,92))
-      node.edge.Thickness=learnable and 4 or 2
-      node.icon.ImageTransparency=(learned or learnable) and 0 or .62
-      node.effect.TextColor3=learned and Color3.fromRGB(255,240,197) or (learnable and gold or Color3.fromRGB(130,140,134))
-      node.badge.BackgroundColor3=learned and Color3.fromRGB(20,24,24) or (learnable and gold or Color3.fromRGB(46,52,52))
-      node.badge.TextColor3=learnable and Color3.fromRGB(30,24,14) or Color3.new(1,1,1)
-      local link=entry.nodes[step+10]
-      if link then link.BackgroundColor3=level>step and entry.tint or Color3.fromRGB(70,82,78) end
-    end
-  end
-  -- [새 점수 알림] 쓸 수 있는 점수가 있으면 메뉴의 스킬 탭에 빨간 점을 붙인다.
-  for _,tab in ipairs(player.PlayerGui:GetDescendants())do
-    if tab:IsA("TextButton") and tab.Text=="스킬" and tab.Parent and tab.Parent.Name=="MeadowMenuTabs" then
-      local dot=tab:FindFirstChild("SkillPointDot")
-      if not dot then
-        dot=Instance.new("Frame");dot.Name="SkillPointDot";dot.Size=UDim2.fromOffset(16,16)
-        dot.AnchorPoint=Vector2.new(1,0);dot.Position=UDim2.new(1,-4,0,4);dot.BackgroundColor3=Color3.fromRGB(226,56,48)
-        dot.BorderSizePixel=0;dot.ZIndex=tab.ZIndex+5;dot.Parent=tab
-        local dotCorner=Instance.new("UICorner");dotCorner.CornerRadius=UDim.new(1,0);dotCorner.Parent=dot
-        local dotEdge=Instance.new("UIStroke");dotEdge.Color=Color3.new(1,1,1);dotEdge.Thickness=1.5;dotEdge.Parent=dot
-      end
-      dot.Visible=remaining>0
-    end
-  end
-  talentHeader.Text="남은 점수 "..remaining.."  ·  금색 칸을 눌러 고르고 [습득] (칸을 한 번 더 눌러도 돼)"
-  talentPanel.Size=UDim2.new(1,-8,0,34+talentGridHeight+90+124+50)
-  -- [선택 노드 상세]
-  local entry=talentButtons[talentUi.selected.branchIndex]
-  if entry then
-    local step=math.clamp(talentUi.selected.step,1,entry.max)
-    local info=talentUi.details[entry.branch.Id] and talentUi.details[entry.branch.Id][step]
-    talentUi.detailName.Text=string.format("%s  ·  %s  (%d/%d)",entry.branch.Name,info and info[1] or "",step,entry.max)
-    talentUi.detailText.Text=info and info[2] or ""
-    local level=levels[entry]
-    talentUi.detailIcon.ImageRectOffset=Vector2.new((talentIcons[entry.branch.Id] or 2)*64,0)
-    meadowArt.skill(talentUi.detailIcon,entry.branch.Id)
-    local learned=level>=step
-    local learnable=level+1==step and remaining>0
-    talentUi.detailCost.Text=learned and "습득 완료" or (level+1<step and string.format("먼저 %d단계를 습득해야 해",level+1))
-      or (remaining>0 and "필요 기술 점수 1  ·  보유 "..remaining or string.format("기술 점수 부족  ·  다음 점수까지 숙련 %d",select(3,Config.TalentPointProgress(tonumber(player:GetAttribute("CombatProficiency")) or 0))-select(2,Config.TalentPointProgress(tonumber(player:GetAttribute("CombatProficiency")) or 0))))
-    talentUi.detailLearn.Active=learnable;talentUi.detailLearn.AutoButtonColor=learnable
-    talentUi.detailLearn.TextTransparency=learnable and 0 or .5
-    talentUi.detailLearn.Text=learned and "습득 완료" or (learnable and "습득! 바로 적용" or "습득")
-    for index,other in ipairs(talentButtons)do
-      for st=1,other.max do
-        local selected=index==talentUi.selected.branchIndex and st==step
-        local ring=other.nodes[st].node:FindFirstChild("SelectRing")
-        if selected and not ring then
-          ring=Instance.new("UIStroke");ring.Name="SelectRing";ring.Color=Color3.new(1,1,1);ring.Thickness=2
-          ring.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;ring.Parent=other.nodes[st].node
-        end
-        if ring then ring.Enabled=selected end
-      end
-    end
-  end
+meadowActionButtons.refreshTalentDetail=function()
+  renderTree()
+  if meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end
 end
-meadowActionButtons.refreshTalentDetail=function() renderTalents() if meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end end
-for _,name in ipairs({"CombatProficiency","MeadowTalentMartial","MeadowTalentSigns",
-  "MeadowTalentDefense","MeadowTalentAgility","MeadowGearRevision"})do
-  player:GetAttributeChangedSignal(name):Connect(function() renderTalents() if meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end end)
+for _,name in ipairs({"CombatProficiency","MeadowGearRevision",
+  "MeadowTalentMartial","MeadowTalentSigns","MeadowTalentDefense","MeadowTalentAgility",
+  "MeadowLoadoutActive","MeadowLoadoutSaved1","MeadowLoadoutSaved2","MeadowLoadoutSaved3"}) do
+  player:GetAttributeChangedSignal(name):Connect(meadowActionButtons.refreshTalentDetail)
 end
-renderTalents()
-layoutTalents()
+for index=1,9 do
+  player:GetAttributeChangedSignal("MeadowSkillBits"..index):Connect(meadowActionButtons.refreshTalentDetail)
+end
+renderTree()
 local skillBar,skillButtons=CommonUI.CreateFilterBar({name="WitcherSkillCategories",filters=skillCategories,selectedIndex=1})
 skillBar.LayoutOrder=3;skillBar.Size=UDim2.new(1,-8,0,48);skillBar.Parent=meadowPages[7]
 local skillGrid=Instance.new("Frame")
@@ -3025,7 +3069,7 @@ skillText.TextWrapped=true;skillText.Parent=skillDetail
 local skillUse=CommonUI.CreatePrimaryButton({name="UseWitcherSkill",text="기술 사용",minHeight=52})
 skillUse.Position=UDim2.fromOffset(12,134);skillUse.Size=UDim2.new(1/3,-12,0,52)
 skillUse.BackgroundColor3=Color3.fromRGB(98,65,45);skillUse.Parent=skillDetail
--- [퀵슬롯] 선택한 기술을 오른쪽 전투 버튼에 등록한다. 같은 기술을 다시 누르면 해제.
+-- [스킬 장착] 선택한 기술을 화면 하단 다섯 칸에 등록·교체한다.
 local skillQuick=CommonUI.CreatePrimaryButton({name="RegisterQuickSkill",text="퀵슬롯 등록",minHeight=52})
 skillQuick.Position=UDim2.new(1/3,2,0,134);skillQuick.Size=UDim2.new(1/3,-8,0,52)
 skillQuick.BackgroundColor3=Color3.fromRGB(46,86,98);skillQuick.Parent=skillDetail
@@ -3078,7 +3122,10 @@ meadowActionButtons.refreshSkills=function()
     local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
     row.button.Visible=skillCategory=="전체" or row.category==skillCategory
     local lockText=meadowArt.skillLock(row.action.Id)
+    local equippedSlot=nil
+    for slot=1,5 do if meadowArt.quickIds[slot]==row.action.Id then equippedSlot=slot;break end end
     row.state.Text=lockText and ("잠김 · "..lockText) or (remaining>.05 and ("대기 "..math.ceil(remaining).."초") or "사용 가능")
+    if not lockText and remaining<=.05 and equippedSlot then row.state.Text=equippedSlot.."번 장착 중" end
     row.state.TextColor3=lockText and Color3.fromRGB(200,120,110) or (remaining>.05 and Color3.fromRGB(172,165,160) or skillColors[row.category])
     row.state.TextSize=lockText and 10 or 11
     local iconImg=row.button:FindFirstChild("SkillIcon")
@@ -3092,18 +3139,27 @@ meadowActionButtons.refreshSkills=function()
   local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
   local human=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
   local available=player:GetAttribute("ProfileReady")==true and human~=nil and human.Health>0 and remaining<=.05
+  local node=Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[selectedSkill.Id]
+  local gauge=node and node.Gauge or selectedSkill.Id=="skill-meadow-oath" and 70 or 0
+  local stamina=tonumber(player:GetAttribute("MeadowStamina")) or 100
+  available=available and stamina>=gauge
   skillTitle.Text=selectedSkill.Label.."  /  "..current.category
   skillTitle.TextColor3=skillColors[current.category]
   local cooldown=selectedSkill.Cooldown
   local cooldownText=typeof(cooldown)=="number" and (tostring(cooldown).."초") or "기본 공격 판정"
-  skillText.Text=current.description.."\n\n재사용 "..cooldownText..
-    "  ·  "..(selLock and ("아직 못 배웠어: 스킬 트리 > "..selLock) or (remaining>.05 and (math.ceil(remaining).."초 남음") or (available and "사용 가능" or "캐릭터 대기")))
-    .."\n퀵슬롯 등록 → 화면 아래 1~5번 칸을 눌러 바로 사용"
   local selLock=meadowArt.skillLock(selectedSkill.Id)
+  local equipped={}
+  for slot=1,5 do
+    if meadowArt.quickIds[slot]==selectedSkill.Id then equipped[#equipped+1]=tostring(slot) end
+  end
+  local equippedText=#equipped>0 and ("장착 중 · "..table.concat(equipped,", ").."번") or "미장착"
+  skillText.Text=current.description.."\n\n재사용 "..cooldownText.." · 기력 "..gauge.."/"..math.floor(stamina)..
+    "  ·  "..(selLock and ("아직 못 배웠어: 스킬 트리 > "..selLock) or (remaining>.05 and (math.ceil(remaining).."초 남음") or (available and "사용 가능" or "캐릭터 대기")))
+    .."\n"..equippedText.." · 하단 1~5번 칸을 선택해 장착·교체"
   skillQuick.Text=selLock and "잠김" or "퀵슬롯 등록"
   skillQuick.BackgroundColor3=selLock and Color3.fromRGB(70,60,60) or Color3.fromRGB(46,86,98)
   available=available and not selLock
-  skillUse.Text=selLock and "잠김" or (available and ("사용  ·  "..selectedSkill.Label) or "사용 대기")
+  skillUse.Text=selLock and "잠김" or (stamina<gauge and "기력 부족" or (available and ("사용  ·  "..selectedSkill.Label) or "사용 대기"))
   skillUse.Active=available;skillUse.AutoButtonColor=available
   skillUse.BackgroundColor3=available and Color3.fromRGB(107,70,45) or Color3.fromRGB(60,55,55)
 end
@@ -3140,7 +3196,7 @@ do
   local function setMode(tree)
     talentPanel.Visible=tree
     skillBar.Visible=not tree;skillGrid.Visible=not tree;skillDetail.Visible=not tree
-    local dz=meadowPages[7]:FindFirstChild("QuickSlotDrop");if dz then dz.Visible=not tree end
+    local dz=meadowPages[7]:FindFirstChild("QuickSlotDrop");if dz then dz.Visible=true end
     meadowLabels[7].Visible=false
     for i,b in ipairs(modeButtons)do
       local on=(i==2)==tree
@@ -3190,7 +3246,7 @@ do
     end)
   end)
 end
--- [하단 퀵슬롯 등록] 2~5번 칸에 기술을 끌어 놓거나, 카드 선택 후 칸을 눌러 등록한다.
+-- [스킬창 장착칸] 하단 다섯 칸과 같은 저장 값을 사용한다.
 do
   local tray=Instance.new("Frame")
   tray.Name="QuickSlotDrop";tray.LayoutOrder=6;tray.Size=UDim2.new(1,-8,0,96)
@@ -3198,9 +3254,9 @@ do
   local tc=Instance.new("UICorner");tc.CornerRadius=UDim.new(0,12);tc.Parent=tray
   local ts=Instance.new("UIStroke");ts.Color=gold;ts.Thickness=2;ts.Transparency=.3;ts.Parent=tray
   local head=Instance.new("TextLabel")
-  head.BackgroundTransparency=1;head.Position=UDim2.fromOffset(10,4);head.Size=UDim2.new(1,-20,0,20)
+  head.BackgroundTransparency=1;head.Position=UDim2.fromOffset(10,4);head.Size=UDim2.new(1,-20,0,24)
   head.Font=Enum.Font.GothamBold;head.TextSize=12;head.TextXAlignment=Enum.TextXAlignment.Left
-  head.TextColor3=Color3.fromRGB(230,240,222);head.Text="하단 퀵슬롯 1~5번  ·  기술 카드를 끌어 놓거나 선택 후 칸을 누르면 등록, 선택 없이 누르면 무기·채집·약 순환";head.Parent=tray
+  head.TextColor3=Color3.fromRGB(230,240,222);head.TextSize=11;head.TextWrapped=true;head.Text="하단 퀵슬롯 5칸 · 기술 선택 → 장착할 칸 선택";head.Parent=tray
   local boxes={}
   local function actionLabel(id)
     for _,action in ipairs(Config.Actions)do if action.Id==id then return action.Label end end
@@ -3219,13 +3275,18 @@ do
   local function quickCode(id)
     if not id then return 0 end
     for k,v in ipairs(meadowArt.quickSpecial) do if v==id then return k end end
+    local tree=Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[id]
+    if tree and tree.Kind=="ACTIVE" then return 1000+tree.Index end
     for k,action in ipairs(Config.Actions) do if action.Id==id then return 9+k end end
     return 0
   end
   local function assign(slot,id)
+    if slot<1 or slot>5 then return end
+    if id and meadowArt.skillLock(id) then return end
     meadowArt.quickIds[slot]=id
     remote:FireServer("quick:set:"..slot..":"..quickCode(id))
     refreshDrop()
+    if meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end
     if meadowArt.refreshQuickHud then meadowArt.refreshQuickHud() end
     meadowArt.sfx("ping",.5,1.1)
   end
@@ -3305,7 +3366,7 @@ do
   meadowActionButtons.refreshDrop=refreshDrop
   meadowArt.refreshQuickTray=refreshDrop
   meadowArt.assignQuick=assign
-  tray.Visible=false -- 퀵슬롯은 메인 화면에서 바로 바꾼다(스킬 창에는 두지 않는다).
+  tray.Visible=true -- 기본 전투 기술 탭에서 장착칸을 바로 보여 준다.
 end
 skillQuick.Activated:Connect(function()
   if not selectedSkill then return end
@@ -3497,13 +3558,15 @@ local function layoutMeadowJournal()
   local top=(landscape and 4 or 70)+menuStep+(landscape and 24 or 14)
   local width=math.floor(math.clamp(v.X*(landscape and .32 or .46),landscape and 210 or 150,landscape and 300 or 270))
   local height=compact and 156 or 186 -- [가독성] 글씨 확대 · 반투명
+  local folded=meadowArt.questFolded==true
+  if folded then height=32 end
   -- [가로 화면] 오른쪽 전투 버튼과 겹치지 않도록 퀘스트창은 왼쪽 체력바 아래에 둔다.
   local questLeft=landscape and 10 or v.X-width-8
   local questTop=landscape and math.max(0,72-math.floor(gui.AbsolutePosition.Y)) or top -- 화면 기준 체력바 바로 아래(상단 안전영역 보정)
   questTracker.Position=UDim2.fromOffset(questLeft,questTop)
   questTracker.Size=UDim2.fromOffset(width,height)
   trackerTitle.Position=UDim2.fromOffset(compact and 24 or 8,compact and 4 or 6)
-  trackerTitle.Size=UDim2.new(1,compact and -28 or -14,0,compact and 22 or 20)
+  trackerTitle.Size=UDim2.new(1,(compact and -28 or -14)-30,0,compact and 22 or 20)
   trackerTitle.TextSize=compact and 17 or 17
   trackerDetail.Position=UDim2.fromOffset(compact and 8 or 10,compact and 30 or 28)
   trackerDetail.Size=UDim2.new(1,compact and -14 or -18,0,compact and 40 or 46)
@@ -3516,7 +3579,10 @@ local function layoutMeadowJournal()
   trackerCompanion.TextSize=compact and 13 or 13
   trackerNavigation.Position=UDim2.fromOffset(9,compact and 150 or 168)
   trackerNavigation.Size=UDim2.new(1,-17,0,14)
-  trackerNavigation.Visible=not compact
+  trackerNavigation.Visible=not compact and not folded
+  trackerDetail.Visible=not folded;trackerVillage.Visible=not folded;trackerCompanion.Visible=not folded
+  local foldBtn=questTracker:FindFirstChild("QuestFoldButton")
+  if foldBtn then foldBtn.Text=folded and "펼치기" or "접기" end
   local questIcon=questTracker:FindFirstChild("CC0QuestIcon")
   if questIcon then
     questIcon.Size=UDim2.fromOffset(compact and 18 or 22,compact and 18 or 22)
@@ -3533,6 +3599,19 @@ gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   characterShortcut.Visible=false
 end)
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
+do
+  -- [퀘스트창 접기/펼치기] 오른쪽 위 작은 버튼. 접으면 제목 한 줄만 남는다.
+  local fold=Instance.new("TextButton")
+  fold.Name="QuestFoldButton";fold.AnchorPoint=Vector2.new(1,0);fold.Position=UDim2.new(1,-4,0,3)
+  fold.Size=UDim2.fromOffset(56,24);fold.BackgroundColor3=Color3.fromRGB(34,46,42);fold.BackgroundTransparency=.1
+  fold.BorderSizePixel=0;fold.Font=Enum.Font.GothamMedium;fold.TextSize=13;fold.TextColor3=Color3.fromRGB(240,232,200)
+  fold.Text="접기";fold.ZIndex=questTracker.ZIndex+6;fold.Parent=questTracker
+  Instance.new("UICorner",fold).CornerRadius=UDim.new(0,8)
+  fold.Activated:Connect(function()
+    meadowArt.questFolded=not (meadowArt.questFolded==true)
+    layoutMeadowJournal()
+  end)
+end
 layoutMeadowJournal()
 for _,name in ipairs({"QuestStage","QuestProgress","QuestWood","QuestStone","ResearchRecords","Wood","Stone","Coins","WeaponTier",
   "VillageContractIndex","VillageContractPhase","VillageContractEvidence","VillageContractOutcomes",
@@ -3551,6 +3630,40 @@ remote.OnClientEvent:Connect(function(kind,payload)
     return
   end
   if kind~="MEADOW_QUEST_UPDATE" or typeof(payload)~="table" then return end
+  -- [스카이림·오딧세이식 퀘스트 완료 연출] 화면 중앙 위에 큰 문구가 서서히 떠올랐다 사라진다.
+  do
+    local TweenService=game:GetService("TweenService")
+    local banner=gui:FindFirstChild("MeadowQuestCompleteBanner")
+    if banner then banner:Destroy() end
+    banner=Instance.new("Frame")
+    banner.Name="MeadowQuestCompleteBanner"
+    banner.AnchorPoint=Vector2.new(.5,0);banner.Position=UDim2.new(.5,0,.16,0)
+    banner.Size=UDim2.fromOffset(460,120);banner.BackgroundTransparency=1;banner.Active=false;banner.ZIndex=60
+    banner.Parent=gui
+    local function line(text,y,height,size,font,color)
+      local label=Instance.new("TextLabel")
+      label.BackgroundTransparency=1;label.Position=UDim2.fromOffset(0,y);label.Size=UDim2.new(1,0,0,height)
+      label.Font=font;label.TextSize=size;label.TextColor3=color;label.Text=text;label.TextTransparency=1
+      label.TextStrokeTransparency=1;label.ZIndex=61;label.TextWrapped=true;label.Parent=banner
+      return label
+    end
+    local gold=Color3.fromRGB(236,212,150)
+    local labels={
+      line("퀘스트 완료",0,40,30,Enum.Font.GothamMedium,gold),
+      line(tostring(payload.completed or ""),44,26,19,Enum.Font.Gotham,Color3.fromRGB(240,240,232)),
+      line(payload.record and ("기사단 연대기 "..payload.record.." 획득") or "",72,22,15,Enum.Font.Gotham,Color3.fromRGB(190,214,204)),
+      line(payload.nextQuest and ("다음  ·  "..tostring(payload.nextQuest)) or "",96,22,15,Enum.Font.Gotham,Color3.fromRGB(176,196,184)),
+    }
+    for _,label in ipairs(labels) do
+      TweenService:Create(label,TweenInfo.new(.9,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+    end
+    task.delay(4.2,function()
+      for _,label in ipairs(labels) do
+        if label.Parent then TweenService:Create(label,TweenInfo.new(1.2),{TextTransparency=1}):Play() end
+      end
+      task.delay(1.3,function() if banner.Parent then banner:Destroy() end end)
+    end)
+  end
   meadowSurvivalHint.Text="메인 완료: "..tostring(payload.completed or "")
     ..(payload.record and ("  ·  기사단 연대기 "..payload.record.." 획득!") or "")
   meadowSurvivalHint.Visible=true
@@ -3880,6 +3993,7 @@ do
     local edge=Instance.new("UIStroke")
     edge.Color=primary and Color3.fromRGB(255,240,190) or Color3.fromRGB(190,156,92)
     edge.Thickness=primary and 2.5 or 1.5
+    edge.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
     edge.Parent=b
     local shine=Instance.new("UIGradient")
     shine.Color=primary and ColorSequence.new(Color3.fromRGB(255,224,140),Color3.fromRGB(190,138,60))
@@ -4800,11 +4914,13 @@ do
         local finished=false
         local connection=nil
         local openingScore=nil
+        local openingScoreEq=nil
         local function finishOpening24()
           if finished then return end
           finished=true
           if connection then connection:Disconnect();connection=nil end
           if openingScore then
+            openingScoreEq=nil
             -- 건너뛰기·종료 때 음악은 갑자기 끊지 않고 0.6초 동안 줄이며 끈다.
             local score=openingScore;openingScore=nil
             pcall(function()
@@ -4820,30 +4936,61 @@ do
           p=math.clamp(p,0,1)
           return p*p*(3-2*p)
         end
+        -- [카메라] 장면별 감속과 정지를 사용하고 충격은 중요한 순간에만 부여한다.
+        -- [카메라 연출] 24컷 각각의 감정에 맞는 구도·정적·시선 이동. 공통 등속 흔들기 금지.
         local function cameraFor(scene,lt)
-          local p=smooth(lt/scene.seconds)
-          local a,b=scene.bgScale[1],scene.bgScale[2]
-          local kind=scene.camera
-          local s=a+(b-a)*p
-          local rot,tx,ty=0,0,0
-          if kind=="push" then s+=.03*p
-          elseif kind=="zoom" then s=a+(b-a+.10)*p
-          elseif kind=="zoomout" or kind=="pullback" then s=(b+.07)-(b+.07-a)*p
-          elseif kind=="orbit" then s+=.04;rot=-1.5+3*p
-          elseif kind=="spin" then s+=.09;rot=5*p
-          elseif kind=="pan" then s+=.04;tx=-26+52*p
-          elseif kind=="tilt" then s+=.04;ty=-16+32*p
-          elseif kind=="rise" then s+=.04;ty=18-36*p
-          elseif kind=="shake" then
-            s+=.04
-            local amp=9*math.max(.25,1-lt/scene.seconds)
-            tx=amp*math.sin(lt*61)*math.cos(lt*23)
-            ty=amp*math.sin(lt*47+1)
+          local u=math.clamp(lt/scene.seconds,0,1)
+          local p=smooth(u)
+          local id=scene.id
+          local scale,rotation,tx,ty=1.025,0,0,0
+          if id==1 then scale=1.012+.037*p;tx=-8+16*p;ty=4-8*p
+          elseif id==2 then scale=1.038;tx=16-31*smooth(math.clamp(u/.78,0,1));rotation=-.25+.5*p
+          elseif id==3 then scale=1.015+.045*p;ty=7-12*p
+          elseif id==4 then scale=1.050+.008*p;tx=-3+6*p
+          elseif id==5 then scale=1.021+.043*p;tx=7-11*p;ty=3-6*p
+          elseif id==6 then scale=1.030+.010*p;tx=-5+7*p
+          elseif id==7 then scale=1.024+.040*p;tx=5-9*p
+          elseif id==8 then scale=1.047;tx=-17+33*smooth(math.clamp(u/.75,0,1))
+          elseif id==9 then scale=1.021+.047*p;rotation=-.40+.8*p;ty=6-9*p
+          elseif id==10 then scale=1.029+.026*p;tx=6-11*p
+          elseif id==11 then
+            -- 배신: 짧게 화면을 고정한 후 급격히 인물에게 접근한다.
+            local reveal=smooth(math.clamp((u-.21)/.55,0,1))
+            scale=1.022+.059*reveal
+            tx=-4+8*reveal
+          elseif id==12 then scale=1.044+.011*p;ty=4-6*p
+          elseif id==13 then scale=1.049+.015*p;tx=3-6*p
+          elseif id==14 then scale=1.035+.029*p;ty=-4+7*p
+          elseif id==15 then
+            -- 렌스의 목소리만 남는 빈 전장, 금지된 인물 원화는 사용하지 않는다.
+            scale=1.015+.012*p
+          elseif id==16 then scale=1.025+.053*p;ty=8-12*p
+          elseif id==17 then scale=1.060-.026*p;tx=-8+12*p
+          elseif id==18 then scale=1.011+.024*p;ty=6-11*p
+          elseif id==19 then scale=1.023+.061*smooth(math.clamp(u/.68,0,1));rotation=-.65+1.3*p;ty=-5+11*p
+          elseif id==20 then scale=1.095-.070*p;ty=-13+22*p
+          elseif id==21 then scale=1.046-.020*p;ty=11-14*p
+          elseif id==22 then scale=1.030+.015*p;tx=-7+11*p
+          elseif id==23 then scale=1.022+.021*p;ty=5-8*p
+          elseif id==24 then scale=1.054-.034*p;tx=4-7*p
           end
-          return p,s,rot,tx,ty
+          -- [충돌] 한 번의 감쇠 진동. 컷 전체 흔들기와 임의 회전은 제거한다.
+          local impactAt=(id==4 and .09) or (id==7 and .18) or (id==13 and .16) or (id==19 and .08)
+          if impactAt then
+            local d=lt-impactAt
+            local duration=(id==19 and .34 or .27)
+            if d>0 and d<duration then
+              local amount=(id==19 and 4.4 or 2.8)*math.sin(math.pi*d/duration)*(1-smooth(d/duration))
+              tx+=amount*math.sin(d*55)
+              ty+=amount*.65*math.sin(d*46+.5)
+            end
+          end
+          return p,scale,rotation,tx,ty
         end
-        local function updateSparks(fx,t,k)
+        local function updateSparks(fx,t,k,localTime,duration)
           local show=fx=="embers" or fx=="magic" or fx=="rift"
+          -- [입자] 컷 시작과 끝에서 자연스럽게 나타나고 사라진다.
+          local softness=smooth(math.clamp(localTime/.35,0,1))*smooth(math.clamp((duration-localTime)/.35,0,1))
           for _,spark in ipairs(sparks) do
             spark.frame.Visible=show
             if show then
@@ -4856,7 +5003,7 @@ do
               if fx=="rift" then
                 spark.frame.Size=UDim2.fromOffset(math.max(1,2*k),spark.streak*k)
                 spark.frame.BackgroundColor3=spark.pick==0 and Color3.new(1,1,1) or Color3.fromRGB(170,190,255)
-                spark.frame.BackgroundTransparency=.3
+                spark.frame.BackgroundTransparency=1-.7*softness
               else
                 local dotSize=math.max(2,spark.size*k*1.6)
                 spark.frame.Size=UDim2.fromOffset(dotSize,dotSize)
@@ -4864,7 +5011,7 @@ do
                 elseif spark.pick==0 then spark.frame.BackgroundColor3=Color3.fromRGB(200,130,255)
                 elseif spark.pick==1 then spark.frame.BackgroundColor3=Color3.fromRGB(255,110,150)
                 else spark.frame.BackgroundColor3=Color3.fromRGB(150,170,255) end
-                spark.frame.BackgroundTransparency=1-.9*twinkle
+                spark.frame.BackgroundTransparency=1-.9*twinkle*softness
               end
             end
           end
@@ -4873,7 +5020,7 @@ do
           local imageIds={}
           for _,scene in ipairs(openingScenes) do
             imageIds[#imageIds+1]=scene.bg
-            imageIds[#imageIds+1]=scene.ch
+            if scene.ch~="" then imageIds[#imageIds+1]=scene.ch end
             imageIds[#imageIds+1]=scene.fg
           end
           local preloaded=false
@@ -4884,8 +5031,17 @@ do
             local score=Instance.new("Sound")
             score.Name="MeadowOpeningScore"
             score.SoundId=scoreId
-            score.Volume=.8
+            score.Volume=.24
             score.Looped=false
+            -- [초반 음악] 기존 등록곡을 낮은 현·저음 중심으로 재편곡한 전주처럼 들리게 시작한다.
+            -- 전쟁이 시작되는 4~10초에 고·중음과 박력을 점진적으로 회복한다.
+            local eq=Instance.new("EqualizerSoundEffect")
+            eq.Name="PrologueWarPrelude"
+            eq.LowGain=4
+            eq.MidGain=-22
+            eq.HighGain=-40
+            eq.Parent=score
+            openingScoreEq=eq
             if meadowEffectsGroup then score.SoundGroup=meadowEffectsGroup end
             score.Parent=game:GetService("SoundService")
             openingScore=score
@@ -4916,7 +5072,7 @@ do
               local a=k*3
               if scene then
                 prefetch[a+1].Image=scene.bg
-                prefetch[a+2].Image=scene.ch
+                prefetch[a+2].Image=scene.ch or ""
                 prefetch[a+3].Image=scene.fg
               end
             end
@@ -4947,64 +5103,89 @@ do
             if not entranceOpen or token~=runToken then finishOpening24();return end
             local t=os.clock()-startClock
             if t>=total then finishOpening24();return end
+            -- [음악 동기화] 조용한 저음 전주 → 돌격 상승 → 배신·희생의 정적 → 균열 재상승.
+            if openingScore then
+              local rise=smooth(math.clamp((t-3.2)/7,0,1))
+              if openingScoreEq then
+                openingScoreEq.LowGain=4*(1-rise)
+                openingScoreEq.MidGain=-22*(1-rise)
+                openingScoreEq.HighGain=-40*(1-rise)
+              end
+              local quiet=1
+              if t>=24.4 and t<25.35 then
+                quiet=.44+.56*smooth(math.clamp((t-24.4)/.95,0,1))
+              elseif t>=33.6 and t<35.1 then
+                quiet=.32+.68*smooth(math.clamp((t-33.6)/1.5,0,1))
+              end
+              openingScore.Volume=(.24+.56*rise)*quiet
+            end
             local index=math.max(current,1)
             while index<#openingScenes and t>=starts[index]+openingScenes[index].seconds do index+=1 end
             local scene=openingScenes[index]
             if index~=current then
               if current>0 then
                 local previousScene=openingScenes[current]
-                ghostBg.Image=previousScene.bg;ghostCh.Image=previousScene.ch;ghostFg.Image=previousScene.fg
-                ghostBg.Size=bgLayer.Size;ghostBg.Position=bgLayer.Position
-                ghostCh.Size=chLayer.Size;ghostCh.Position=chLayer.Position
-                ghostFg.Size=fgLayer.Size;ghostFg.Position=fgLayer.Position
+                ghostBg.Image=previousScene.bg;ghostCh.Image=previousScene.ch or "";ghostFg.Image=previousScene.fg
+                ghostBg.Size=bgLayer.Size;ghostBg.Position=bgLayer.Position;ghostBg.Rotation=bgLayer.Rotation
+                ghostCh.Size=chLayer.Size;ghostCh.Position=chLayer.Position;ghostCh.Rotation=chLayer.Rotation
+                ghostFg.Size=fgLayer.Size;ghostFg.Position=fgLayer.Position;ghostFg.Rotation=fgLayer.Rotation
               end
               current=index
               currentStoryScene=index
               warm(index+1)
               bgLayer.Image=scene.bg
-              chLayer.Image=scene.ch
+              chLayer.Image=scene.ch or ""
               fgLayer.Image=scene.fg
               subtitle.Text=scene.line
             end
             local lt=t-starts[index]
             local camera=workspace.CurrentCamera
             local k=camera and camera.ViewportSize.X/1280 or 1
-            local p,s,rot,tx,ty=cameraFor(scene,lt)
-            -- 확대·회전 없이 연출한다: 위아래 검은 띠가 가리는 범위 안에서 배경을 세로로 살짝 밀고,
-            -- 인물은 숨 쉬듯 움직이며 전경은 반대로 흐르는 3겹 시차. 충격 컷은 짧게 흔든다.
-            local dirY=(scene.id%2==0) and 1 or -1
-            local dirX=(scene.id%3==0) and -1 or 1
-            local shakeX,shakeY=0,0
-            if scene.camera=="shake" or scene.camera=="spin" then
-              local amp=9*math.max(0,1-lt/1.1)
-              shakeX=amp*math.sin(lt*61)*math.cos(lt*23)
-              shakeY=amp*math.sin(lt*47+1)
-            end
-            -- [3겹 시차] 배경은 가장자리가 비지 않게 7% 크게 깔고(고정 배율, 확대 연출 아님) 천천히 흐른다.
-            -- 인물은 배경과 반대로 더 크게, 전경은 가장 크게 움직여 깊이를 만든다.
-            local pe=smooth(math.clamp(lt/scene.seconds,0,1))
-            local drift=(pe-.5)*2
-            bgLayer.Size=UDim2.fromScale(1.07,1.07)
-            bgLayer.Position=UDim2.new(.5,(drift*30*dirX*k+shakeX*.6),.5,(drift*20*dirY*k+shakeY*.6))
-            bgLayer.Rotation=0
-            chLayer.Size=UDim2.fromScale(1,1)
-            chLayer.Position=UDim2.new(.5,(-drift*dirX*34*k+scene.chShift[1]*(p-.5)*k+shakeX*1.4),.5,(5*math.sin(t*1.7+scene.id)*k+shakeY*1.4))
-            chLayer.Rotation=0
-            fgLayer.Size=UDim2.fromScale(1,1)
-            fgLayer.Position=UDim2.new(.5,(drift*dirX*(scene.fgShift[1]>0 and 62 or 0)*k+shakeX*2),.5,(-7*math.sin(t*1.1+scene.id*.7)*k+shakeY*2))
-            fgLayer.Rotation=0
+            local p,scale,rot,tx,ty=cameraFor(scene,lt)
+            -- [원화 합성] 중간 9~18컷은 배경·인물·전경을 하나의 화판처럼 묶어 정렬을 고정한다.
+            -- 먼 전장·안개 숲만 제한된 시차를 허용한다. 따로 튀는 크기·회전·호흡은 금지.
+            local locked=scene.id>=9 and scene.id<=18
+            local depth=locked and 0 or (scene.fx=="mist" and .20 or .36)
+            local travel=(p-.5)*2
+            local offsetX=tx*k
+            local offsetY=ty*k
+            local plateScale=scale+.018
+            local farShift=scene.chShift[1]*.28*travel*depth*k
+            local nearShift=scene.fgShift[1]*.22*travel*depth*k
+            bgLayer.Size=UDim2.fromScale(plateScale,plateScale)
+            chLayer.Size=UDim2.fromScale(plateScale,plateScale)
+            fgLayer.Size=UDim2.fromScale(plateScale,plateScale)
+            bgLayer.Position=UDim2.new(.5,offsetX,.5,offsetY)
+            chLayer.Position=UDim2.new(.5,offsetX+farShift,.5,offsetY)
+            fgLayer.Position=UDim2.new(.5,offsetX+nearShift,.5,offsetY)
+            bgLayer.Rotation=rot
+            chLayer.Rotation=rot
+            fgLayer.Rotation=rot
             -- 직전 컷 크로스 디졸브(0.5초). 충격 컷(하드 컷)은 디졸브 없이 번쩍임으로 넘어간다.
-            local dissolveIn=({[11]=true,[19]=true,[21]=true,[4]=true,[9]=true})[scene.id]
-            local fade=(dissolveIn or index==1) and 1 or smooth(math.clamp(lt/.5,0,1))
+            local hardCut=scene.id==4 or scene.id==7 or scene.id==11 or scene.id==13 or scene.id==15 or scene.id==19 or scene.id==21
+            local dissolveTime=scene.fx=="mist" and .75 or (scene.fx=="embers" and .32 or .48)
+            local fade=(hardCut or index==1) and 1 or smooth(math.clamp(lt/dissolveTime,0,1))
             ghostBg.ImageTransparency=fade;ghostCh.ImageTransparency=fade;ghostFg.ImageTransparency=fade
-            local barOpen=1
+            -- [화면비] 영화 띠는 모바일 자막 영역 바깥에 유지한다.
+            local barOpen=smooth(math.clamp(t/.65,0,1))*smooth(math.clamp((total-t)/.7,0,1))
+            local barHeight=(scene.fx=="mist" and .018 or .032)*barOpen
+            topBar.Size=UDim2.fromScale(1,barHeight)
+            bottomBar.Size=UDim2.fromScale(1,barHeight)
             local opacity=0
             if t<.6 then opacity=1-smooth(t/.6) end
             if t>total-.8 then opacity=math.max(opacity,1-smooth((total-t)/.8)) end
-            if scene.camera=="fade" then opacity=math.max(opacity,.75*smooth((p-.55)/.45)) end
+            if scene.camera=="fade" then
+              opacity=math.max(opacity,.12*math.sin(math.pi*math.clamp((p-.52)/.48,0,1)))
+            elseif scene.id==15 then
+              -- [무언의 전장] 인물을 지운 장면에 짧은 검은 정적을 둔다.
+              opacity=math.max(opacity,.43*(1-smooth(math.clamp(lt/.38,0,1))))
+            end
             curtain.BackgroundTransparency=1-opacity
-            local flashPower=({[9]=.35,[11]=.7,[14]=.45,[19]=.85,[21]=.5})[scene.id]
-            flash.BackgroundTransparency=(flashPower and lt<.28) and (1-(1-lt/.28)*flashPower) or 1
+            -- [충격] 전장·배신·균열 순간의 짧은 광량 변화.
+            local flashPower=({[4]=.35,[7]=.2,[9]=.25,[11]=.5,[13]=.26,[19]=.64,[21]=.18})[scene.id]
+            local flashDuration=scene.id==19 and .24 or .18
+            local flashPulse=(flashPower and lt<flashDuration) and flashPower*(1-smooth(lt/flashDuration)) or 0
+            flash.BackgroundTransparency=1-flashPulse
             local subtitleAlpha=0
             if scene.line~="" and lt>.15 then
               subtitleAlpha=math.clamp(math.min(lt/.2,(scene.seconds-.1-lt)/.2),0,1)
@@ -5032,8 +5213,8 @@ do
             fog.BackgroundColor3=grade[1]
             local flicker=scene.fx=="embers" and .05*math.sin(t*9)*math.sin(t*3.1+1) or .025*math.sin(t*2.3)
             fog.BackgroundTransparency=math.clamp(grade[2]+flicker,.7,.98)
-            fogGradient.Offset=Vector2.new(math.sin(t*.4+scene.id)*.35,0)
-            updateSparks(scene.fx,t,k)
+            fogGradient.Offset=Vector2.new(math.sin(t*.26)*.13,0)
+            updateSparks(scene.fx,t,k,lt,scene.seconds)
           end)
         end)
         return
@@ -6218,14 +6399,16 @@ local function activateNearbyMeadowInteraction(screenPosition)
       or prompt.Name=="GatherPrompt") and prompt.Enabled
       and host and host:IsA("BasePart") and prompt:IsDescendantOf(workspace) then
       local distance=(host.Position-rootPart.Position).Magnitude
-      if distance<=prompt.MaxActivationDistance and distance<16 then
+      if distance<=prompt.MaxActivationDistance+(prompt.Name=="GatherPrompt" and 3 or 0) and distance<18 then
         local score=distance
         if screenPosition then
           if not camera then continue end
           local projected,visible=camera:WorldToViewportPoint(host.Position)
           if not visible or projected.Z<=0 then continue end
           local offset=(Vector2.new(projected.X,projected.Y)-screenPosition).Magnitude
-          if offset>65 then continue end
+          -- 나무·바위는 크고 중심점이 몸통 안쪽이라 화면에서 대충 눌러도 되게 허용 범위를 넓힌다.
+          local tolerance=prompt.Name=="GatherPrompt" and 190 or 65
+          if offset>tolerance then continue end
           score=offset+distance*.5
         end
         if score<bestDistance then target,bestDistance=prompt,score end
@@ -6664,8 +6847,8 @@ local function layoutMeadowCombatUi()
   -- [시안 참고] 오른쪽 큰 검 / 위쪽 마력·질주 / 좌측 회피 / 아래 점프.
   local positions={
     {66,165,44}, -- 퀵슬롯: 스킬 페이지에서 등록한 기술(등록 전에는 숨김)
-    {116,165,44}, -- 회피: 검 바로 왼쪽(검과 간격 7)
-    {134,121,44}, -- 막기: 검 왼쪽 위(대각)
+    {110,165,54}, -- 회피: 검 바로 왼쪽(크게)
+    {126,108,54}, -- 막기: 검 왼쪽 위(크게)
     {40,72,36}, -- 물약은 기존 단축바 5번
   }
   for index,button in ipairs(meadowSkillButtons) do
@@ -6690,10 +6873,10 @@ local function layoutMeadowCombatUi()
     -- 보조 채집·가방은 하단 단축창에서도 접근할 수 있어 화면 오른쪽 중복 표시만 정리.
     button.Visible=index==2
     if index==2 then
-      local size=math.max(46,math.floor(44*scale))
+      local size=math.max(42,math.floor(36*scale))
       button.Size=UDim2.fromOffset(size,size)
       -- 질주: 검 바로 위. 세 보조 버튼은 검 중심에서 같은 거리의 부채꼴로 배치한다.
-      button.Position=UDim2.fromOffset(math.floor(179*scale-size*.5),math.floor(102*scale-size*.5))
+      button.Position=UDim2.fromOffset(math.floor(182*scale-size*.5),math.floor(94*scale-size*.5))
     end
   end
   local swordSize=math.max(60,math.floor(66*scale))
@@ -7420,8 +7603,8 @@ local function layoutMeadowRadar()
     or math.floor(math.clamp((v.X-18)/6,47,52))
   local freeLeft=landscape and math.floor(v.X*.29) or 8
   local freeRight=landscape and (v.X-menuStep*6-6-10) or (v.X-8)
-  local mapWidth=math.floor(math.clamp(freeRight-freeLeft,150,330))
-  local mapHeight=math.floor(math.clamp(mapWidth*.27,46,84))
+  local mapWidth=math.floor(math.clamp((freeRight-freeLeft)*.72,140,236))
+  local mapHeight=math.floor(math.clamp(mapWidth*.25,38,60))
   meadowRadar.Size=UDim2.fromOffset(mapWidth,mapHeight+20)
   meadowRadar.AnchorPoint=Vector2.new(.5,0)
   meadowRadar.Position=UDim2.fromOffset(math.floor((freeLeft+freeRight)*.5),landscape and 2 or menuStep+22)
@@ -9761,9 +9944,11 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             local deer=row.species=="deer"
             -- 사슴은 느리게 걸어도 다리가 보이도록 최소 보폭을 키우고, 달릴 땐 크게 뛴다.
             local pace=math.clamp(row.groundSpeed/(running and 7 or 3),deer and .7 or .35,1)
-            local amplitude=(running and (wolf and .61 or deer and .95 or .52)
-              or deer and .62 or heavy and .30 or .36)*pace
-            local stance=running and (wolf and .34 or .43) or heavy and .67 or .61
+            -- [동작 보정] 달릴 때 발이 계속 공중에 떠 접지가 안 보이고 무릎이 과하게 접혀 보였다.
+            -- 진폭·공중 구간·무릎 접힘을 줄이고 지지 구간을 늘려 발이 땅을 딛는 것처럼 보이게 한다.
+            local amplitude=(running and (wolf and .56 or deer and .70 or .52)
+              or deer and .50 or heavy and .30 or .36)*pace
+            local stance=running and (wolf and .42 or deer and .54 or .43) or deer and .66 or heavy and .67 or .61
             local cycle=phase*math.pi*2
             for _,foot in ipairs(quadrupedFootPhases) do
               local key=foot[1]
@@ -9792,9 +9977,9 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
                 local lift=math.sin(math.pi*p)
                 local ease=p*p*(3-2*p)
                 hip=-amplitude*(1-2*ease)
-                knee=lift*(running and (wolf and (front and .68 or .79) or .68)
-                  or heavy and .38 or .48)
-                ankle=-lift*(running and (wolf and .28 or .22) or .15)
+                knee=lift*(running and (wolf and (front and .58 or .70) or deer and .42 or .68)
+                  or deer and .30 or heavy and .38 or .48)
+                ankle=-lift*(running and (wolf and .24 or deer and .16 or .22) or deer and .10 or .15)
               end
               if not front then hip*=heavy and .83 or wolf and .97 or .92 end
               if row.available[key.."Hip"] then
@@ -9940,6 +10125,32 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
       end
     end
   end
+end)
+-- [활 사격 연출] 화살 모델 없이 빛줄기(Beam)와 명중 섬광만 쓴다. 실제 피해는 서버가 계산한 값이다.
+remote.OnClientEvent:Connect(function(kind,payload)
+  if kind~="MEADOW_BOW_SHOT" or typeof(payload)~="table"
+    or typeof(payload.from)~="Vector3" or typeof(payload.to)~="Vector3" then return end
+  local TweenService=game:GetService("TweenService")
+  local terrain=workspace.Terrain
+  local a0=Instance.new("Attachment");a0.WorldPosition=payload.from;a0.Parent=terrain
+  local a1=Instance.new("Attachment");a1.WorldPosition=payload.from;a1.Parent=terrain
+  local beam=Instance.new("Beam")
+  beam.Attachment0=a0;beam.Attachment1=a1
+  beam.FaceCamera=true;beam.LightEmission=1;beam.Width0=.16;beam.Width1=.03
+  beam.Color=ColorSequence.new(payload.weak and Color3.fromRGB(255,214,110) or Color3.fromRGB(235,244,255))
+  beam.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.1),NumberSequenceKeypoint.new(1,.55)})
+  beam.Parent=terrain
+  local flight=math.clamp((payload.to-payload.from).Magnitude/160,.08,.3)
+  local tween=TweenService:Create(a1,TweenInfo.new(flight,Enum.EasingStyle.Linear),{WorldPosition=payload.to})
+  tween:Play()
+  tween.Completed:Once(function()
+    local fade=TweenService:Create(a0,TweenInfo.new(.12),{WorldPosition=payload.to})
+    fade:Play()
+    if payload.weak then
+      local flash=Instance.new("PointLight");flash.Color=Color3.fromRGB(255,214,110);flash.Range=10;flash.Brightness=3;flash.Parent=a1
+    end
+    task.delay(.14,function() beam:Destroy();a0:Destroy();a1:Destroy() end)
+  end)
 end)
 remote.OnClientEvent:Connect(function(kind,payload)
   if typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end
@@ -10493,7 +10704,7 @@ end)()
   local names={Wood="나무",Stone="돌",Coins="재화"}
   local fields={"Wood","Stone"}
   for _,mat in ipairs(Config.Materials or {}) do names[mat.Field]=mat.Name;table.insert(fields,mat.Field) end
-  local keys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1"}
+  local keys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Leather="item_bone"}
   local order=0
   local last={}
   local function toast(field,amount)
@@ -10821,6 +11032,25 @@ end)()
     end)
   end
   meadowArt.refreshQuickHud()
+  -- [저장된 3조합 즉시 반영] 서버에서 승인한 5칸 코드만 로컬 아이콘/버튼에 복원한다.
+  local function syncSavedQuick()
+    if player:GetAttribute("ProfileReady")~=true or
+      (tonumber(player:GetAttribute("QuickInit")) or 0)<1 then return end
+    for slot=1,COUNT do
+      local code=tonumber(player:GetAttribute("QuickSlot"..slot)) or 0
+      local id=false
+      if code>=1 and code<=5 then id=meadowArt.quickSpecial[code]
+      elseif code>=1001 and Config.MeadowSkillNodes[code-1000] then
+        id=Config.MeadowSkillNodes[code-1000].Id
+      elseif code>=10 and Config.Actions[code-9] then
+        id=Config.Actions[code-9].Id
+      end
+      meadowArt.quickIds[slot]=id
+    end
+    meadowArt.refreshQuickHud()
+    if meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end
+  end
+  player:GetAttributeChangedSignal("MeadowLoadoutActive"):Connect(syncSavedQuick)
   -- 저장된 배치를 프로필이 준비되면 한 번 불러온다.
   task.spawn(function()
     for _=1,60 do
@@ -10836,6 +11066,7 @@ end)()
         local code=tonumber(player:GetAttribute("QuickSlot"..i)) or 0
         local id=false
         if code>=1 and code<=5 then id=meadowArt.quickSpecial[code]
+        elseif code>=1001 and Config.MeadowSkillNodes[code-1000] then id=Config.MeadowSkillNodes[code-1000].Id
         elseif code>=10 and Config.Actions[code-9] then id=Config.Actions[code-9].Id end
         meadowArt.quickIds[i]=id
       end
@@ -10940,6 +11171,12 @@ end)()
       local phase=player:GetAttribute("VillageContractPhase") or 0
       local mask=player:GetAttribute("VillageContractEvidence") or 0
       if phase==1 then
+        -- 1) 주민 진술(약초상·추적자·경비병) → 2) 현장 단서 → 3) 전투 순서로 안내한다.
+        local witnessAt={[1]={-68,-122},[2]={69,-129},[3]={-2,-188}}
+        local w=village.Witness
+        if w and witnessAt[w] and bit32.band(mask,bit32.lshift(1,w-1))==0 then
+          return witnessAt[w][1],witnessAt[w][2],(village.WitnessName or "주민").." (진술 듣기)"
+        end
         if bit32.band(mask,8)==0 and village.Sites and village.Sites[1] then
           return village.Sites[1][1],village.Sites[1][2],"단서 조사: "..village.Name
         end
@@ -10952,6 +11189,15 @@ end)()
     end
     return fromLines(false)
   end
+  -- ===== 아이콘: 오너 제작 길 안내 시트(guide-icons.png) — 왼쪽 퀘스트 마커, 오른쪽 안내 화살표(기본 방향=아래) =====
+  local GUIDE_SHEET="rbxassetid://109238389541686"
+  local function makeArrow(parent,px,name,baseZ,kind)
+    local a=Instance.new("ImageLabel")
+    a.Name=name;a.AnchorPoint=Vector2.new(.5,.5);a.Size=UDim2.fromOffset(px,px);a.BackgroundTransparency=1
+    a.Image=GUIDE_SHEET;a.ImageRectSize=Vector2.new(256,256);a.ImageRectOffset=Vector2.new(kind=="pin" and 0 or 256,0)
+    a.ScaleType=Enum.ScaleType.Fit;a.ZIndex=(baseZ or 0)+1;a.Parent=parent
+    return a,function(color) a.ImageColor3=color end
+  end
   -- ===== 화면 마커(크고 움직이는 목표 표시) =====
   -- 외부 게임(젤다·원신·WoW 퀘스트 화살표) 방식: 큰 핀이 위아래로 튀고, 파동 링이 퍼지고, 먼 목표는 하늘로 빛기둥이 솟는다.
   local marker=Instance.new("Frame")
@@ -10962,18 +11208,15 @@ end)()
   pulse.BackgroundTransparency=1;pulse.ZIndex=25;pulse.Parent=marker
   Instance.new("UICorner",pulse).CornerRadius=UDim.new(1,0)
   local pulseStroke=Instance.new("UIStroke");pulseStroke.Color=Color3.fromRGB(255,214,70);pulseStroke.Thickness=4;pulseStroke.Parent=pulse
-  local pin=Instance.new("TextLabel")
-  pin.AnchorPoint=Vector2.new(.5,.5);pin.Position=UDim2.fromOffset(95,56);pin.Size=UDim2.fromOffset(72,72)
-  pin.BackgroundTransparency=1;pin.Font=Enum.Font.GothamBlack;pin.TextSize=64;pin.Text="▼"
-  pin.TextColor3=Color3.fromRGB(255,214,70);pin.TextStrokeColor3=Color3.fromRGB(60,30,0);pin.TextStrokeTransparency=0
-  pin.ZIndex=27;pin.Parent=marker
+  local pin,pinColor=makeArrow(marker,66,"MarkerArrow",27,"pin")
+  pin.Position=UDim2.fromOffset(95,56)
   local infoLabel=Instance.new("TextLabel")
   infoLabel.AnchorPoint=Vector2.new(.5,0);infoLabel.Position=UDim2.fromOffset(95,98)
   infoLabel.BackgroundColor3=Color3.fromRGB(12,22,22);infoLabel.BackgroundTransparency=.2
-  infoLabel.Size=UDim2.fromOffset(186,44);infoLabel.Font=Enum.Font.GothamBold;infoLabel.TextSize=15;infoLabel.TextWrapped=true
-  infoLabel.TextColor3=Color3.fromRGB(255,244,205);infoLabel.ZIndex=27;infoLabel.Parent=marker
+  infoLabel.Size=UDim2.fromOffset(150,38);infoLabel.Font=Enum.Font.GothamMedium;infoLabel.TextSize=13;infoLabel.TextWrapped=true
+  infoLabel.TextColor3=Color3.fromRGB(255,244,205);infoLabel.TextStrokeTransparency=1;infoLabel.ZIndex=27;infoLabel.Parent=marker
   Instance.new("UICorner",infoLabel).CornerRadius=UDim.new(0,10)
-  local infoStroke=Instance.new("UIStroke");infoStroke.Color=Color3.fromRGB(255,214,70);infoStroke.Thickness=2;infoStroke.Parent=infoLabel
+  local infoStroke=Instance.new("UIStroke");infoStroke.Color=Color3.fromRGB(255,214,70);infoStroke.Thickness=1;infoStroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;infoStroke.Parent=infoLabel
   local beam=Instance.new("Part")
   beam.Name="MeadowGuideBeam";beam.Anchored=true;beam.CanCollide=false;beam.CanQuery=false;beam.CanTouch=false
   beam.CastShadow=false;beam.Material=Enum.Material.Neon;beam.Color=Color3.fromRGB(255,214,70);beam.Transparency=.6
@@ -11016,33 +11259,37 @@ end)()
     pulseStroke.Transparency=t
     pulse.Visible=inside
     local near=dist<45
-    pin.TextColor3=near and Color3.fromRGB(120,255,150) or Color3.fromRGB(255,214,70)
+    pinColor(near and Color3.fromRGB(190,255,200) or Color3.new(1,1,1))
     infoLabel.Text=string.format("%s\n%dm",tlabel or "목표",math.floor(dist))
     marker.Visible=true
   end)
   -- ===== 길 안내 버튼: 지도 바로 아래 =====
   local guideChip=Instance.new("TextButton")
-  guideChip.Name="MeadowGuideChip";guideChip.AnchorPoint=Vector2.new(.5,0);guideChip.Size=UDim2.fromOffset(112,34)
-  guideChip.BackgroundColor3=Color3.fromRGB(34,72,52);guideChip.BackgroundTransparency=.1;guideChip.BorderSizePixel=0
-  guideChip.Font=Enum.Font.GothamBold;guideChip.TextSize=14;guideChip.TextColor3=Color3.fromRGB(255,240,197);guideChip.ZIndex=29;guideChip.Parent=guiRoot
-  Instance.new("UICorner",guideChip).CornerRadius=UDim.new(0,10)
-  local guideChipStroke=Instance.new("UIStroke");guideChipStroke.Color=Color3.fromRGB(218,189,126);guideChipStroke.Thickness=1.5;guideChipStroke.Parent=guideChip
+  guideChip.Name="MeadowGuideChip";guideChip.AnchorPoint=Vector2.new(.5,0);guideChip.Size=UDim2.new(0,24,1,-20)
+  guideChip.BackgroundColor3=Color3.fromRGB(13,30,28);guideChip.BackgroundTransparency=.1;guideChip.BorderSizePixel=0
+  guideChip.Font=Enum.Font.Gotham;guideChip.TextSize=11;guideChip.TextStrokeTransparency=1;guideChip.TextColor3=Color3.fromRGB(255,240,197);guideChip.ZIndex=29;guideChip.Parent=guiRoot
+  Instance.new("UICorner",guideChip).CornerRadius=UDim.new(0,9)
+  local guideChipStroke=Instance.new("UIStroke");guideChipStroke.Color=Color3.fromRGB(220,176,91);guideChipStroke.Thickness=1.5;guideChipStroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;guideChipStroke.Parent=guideChip
   local function paintGuide()
-    guideChip.Text=guideOff and "길 안내 OFF" or "◆ 길 안내 ON"
-    guideChip.BackgroundColor3=guideOff and Color3.fromRGB(60,40,40) or Color3.fromRGB(34,72,52)
+    guideChip.Text=guideOff and "◇\n길\n안\n내" or "◆\n길\n안\n내"
+    guideChip.TextColor3=guideOff and Color3.fromRGB(150,150,140) or Color3.fromRGB(140,235,160)
+    guideChip.BackgroundColor3=guideOff and Color3.fromRGB(30,28,28) or Color3.fromRGB(13,30,28)
   end
   guideChip.Activated:Connect(function()
     guideOff=not guideOff;paintGuide();pref("guide",guideOff and 1 or 0)
     meadowArt.sfx("click",.4,1)
   end)
-  RunService.RenderStepped:Connect(function()
-    local radar=guiRoot:FindFirstChild("MeadowExplorerRadar",true) or player.PlayerGui:FindFirstChild("MeadowExplorerRadar",true)
-    local show=radar and radar.Visible and gui:GetAttribute("GameMenuOpen")~=true
-    guideChip.Visible=show and true or false
-    if show then
-      local o=guiRoot.AbsolutePosition
-      guideChip.Position=UDim2.fromOffset(radar.AbsolutePosition.X+radar.AbsoluteSize.X/2-o.X,radar.AbsolutePosition.Y+radar.AbsoluteSize.Y+4-o.Y)
-    end
+  -- 지도 프레임 안(맨 위 중앙)에 붙인다. 지도가 숨겨지면 같이 숨겨진다.
+  task.spawn(function()
+    local radar
+    repeat
+      radar=player.PlayerGui:FindFirstChild("MeadowExplorerRadar",true)
+      if not radar then task.wait(.5) end
+    until radar
+    guideChip.AnchorPoint=Vector2.new(1,0)
+    guideChip.Position=UDim2.new(0,-4,0,0)
+    guideChip.ZIndex=30
+    guideChip.Parent=radar
   end)
   -- ===== 튜토리얼: 조작 → 메뉴 → 스킬창 → 기술 1개 배우기 (실제로 할 때까지 안 끝난다) =====
   local function findText(cls,text)
@@ -11073,12 +11320,13 @@ end)()
   local steps={
     {"이동하기","왼쪽 아래 조이스틱을 밀어 걸어 봐.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.1,guiRoot.AbsoluteSize.Y*.8),"up" end,"move"},
     {"카메라 돌리기","화면 오른쪽 빈 곳을 끌면 시야가 돌아가.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.62,guiRoot.AbsoluteSize.Y*.45),"down" end,nil},
-    {"전투 버튼","오른쪽 큰 칼 = 공격. 방패 = 막기. 소용돌이 = 회피. 질주는 누르면 자동질주 ON/OFF.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.9,guiRoot.AbsoluteSize.Y*.72),"left" end,nil},
+    {"전투 버튼","큰 칼 = 공격 · 방패 = 막기 · 소용돌이 = 회피 · 질주 = 자동질주 ON/OFF",function() return Vector2.new(guiRoot.AbsoluteSize.X*.9,guiRoot.AbsoluteSize.Y*.72),"left" end,nil},
     {"퀵슬롯","아래 1~5칸을 누르면 바로 써. '편집'을 눌러 칸을 바꿀 수 있어.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.88),"down" end,nil},
-    {"퀘스트와 길 안내","왼쪽 퀘스트창이 지금 할 일이야. 큰 노란 ▼ 표시를 따라가. 지도 아래 '길 안내'로 켜고 꺼.",function() local c=guideChip.Visible and center(guideChip) or Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.28);return c,"up" end,nil},
+    {"퀘스트와 길 안내","왼쪽 퀘스트창이 지금 할 일이야. 노란 보석 표시를 따라가면 돼.",function() local c=guideChip.Visible and center(guideChip) or Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.28);return c,"up" end,nil},
+    {"길 안내 켜고 끄기","지도 왼쪽 '길 안내' 버튼을 눌러 봐. 끄면 표시가 사라지고, 다시 누르면 켜져.",function() local c=guideChip.Visible and center(guideChip) or nil;return c,"up" end,"guide"},
     {"메뉴 열기","오른쪽 위 '가방'을 눌러 메뉴를 열어 봐.",function() local l=findText("TextLabel","가방");return l and (center(l)+Vector2.new(0,-26)) or Vector2.new(guiRoot.AbsoluteSize.X*.62,40),"up" end,"menu"},
     {"스킬 탭","메뉴 아래쪽 탭에서 '스킬'을 눌러.",function() local t=findText("TextButton","스킬");return t and center(t) or nil,"down" end,"skillpage"},
-    {"기술 배우기","금색 칸(무술 1단계)을 눌러 고르고 '습득!' 버튼을 눌러. 첫 기술 점수는 선물이야! 검 기술은 '무술'이야.",function()
+    {"기술 배우기","금색 칸(무술)을 눌러 고르고 '습득!'을 눌러. 첫 점수는 선물이야!",function()
       local branch=player.PlayerGui:FindFirstChild("TalentBranch_Martial",true)
       local n=branch and branch:FindFirstChild("TalentNode1")
       local learn=findText("TextButton","습득! 바로 적용")
@@ -11090,36 +11338,35 @@ end)()
   }
   local card=Instance.new("Frame")
   card.Name="MeadowTutorialCard";card.AnchorPoint=Vector2.new(.5,1);card.Position=UDim2.new(.5,0,1,-20)
-  card.Size=UDim2.fromOffset(400,132);card.BackgroundColor3=Color3.fromRGB(16,28,28);card.BackgroundTransparency=.04
-  card.Visible=false;card.ZIndex=120;card.Parent=guiRoot
-  Instance.new("UICorner",card).CornerRadius=UDim.new(0,14)
-  local cs=Instance.new("UIStroke");cs.Color=Color3.fromRGB(218,189,126);cs.Thickness=2;cs.Parent=card
+  card.Size=UDim2.fromOffset(460,132);card.BackgroundColor3=Color3.fromRGB(10,18,18);card.BackgroundTransparency=1
+  card.Visible=false;card.ZIndex=120;card.Active=false;card.Parent=guiRoot
   local ctitle=Instance.new("TextLabel")
-  ctitle.BackgroundTransparency=1;ctitle.Position=UDim2.fromOffset(14,8);ctitle.Size=UDim2.new(1,-28,0,24)
-  ctitle.Font=Enum.Font.GothamBlack;ctitle.TextSize=17;ctitle.TextXAlignment=Enum.TextXAlignment.Left
+  ctitle.BackgroundTransparency=1;ctitle.Position=UDim2.fromOffset(0,0);ctitle.Size=UDim2.new(1,0,0,26)
+  ctitle.Font=Enum.Font.GothamMedium;ctitle.TextSize=19;ctitle.TextXAlignment=Enum.TextXAlignment.Center
+  ctitle.TextStrokeColor3=Color3.new(0,0,0);ctitle.TextStrokeTransparency=.35
   ctitle.TextColor3=Color3.fromRGB(255,232,160);ctitle.ZIndex=121;ctitle.Parent=card
   local cbody=Instance.new("TextLabel")
-  cbody.BackgroundTransparency=1;cbody.Position=UDim2.fromOffset(14,34);cbody.Size=UDim2.new(1,-28,0,56)
-  cbody.Font=Enum.Font.GothamMedium;cbody.TextSize=14;cbody.TextWrapped=true;cbody.TextXAlignment=Enum.TextXAlignment.Left
+  cbody.BackgroundTransparency=1;cbody.Position=UDim2.fromOffset(0,28);cbody.Size=UDim2.new(1,0,0,66)
+  cbody.Font=Enum.Font.Gotham;cbody.TextSize=17;cbody.TextWrapped=true;cbody.TextXAlignment=Enum.TextXAlignment.Center
+  cbody.TextStrokeColor3=Color3.new(0,0,0);cbody.TextStrokeTransparency=.35
   cbody.TextYAlignment=Enum.TextYAlignment.Top;cbody.TextColor3=Color3.fromRGB(236,242,230);cbody.ZIndex=121;cbody.Parent=card
   local nextBtn=Instance.new("TextButton")
-  nextBtn.AnchorPoint=Vector2.new(1,1);nextBtn.Position=UDim2.new(1,-12,1,-8);nextBtn.Size=UDim2.fromOffset(96,32)
-  nextBtn.BackgroundColor3=Color3.fromRGB(54,112,84);nextBtn.Font=Enum.Font.GothamBold;nextBtn.TextSize=15
+  nextBtn.AnchorPoint=Vector2.new(.5,1);nextBtn.Position=UDim2.new(.5,0,1,-2);nextBtn.Size=UDim2.fromOffset(96,30)
+  nextBtn.BackgroundColor3=Color3.fromRGB(54,112,84);nextBtn.Font=Enum.Font.GothamMedium;nextBtn.TextSize=16
   nextBtn.TextColor3=Color3.new(1,1,1);nextBtn.ZIndex=122;nextBtn.Parent=card
   Instance.new("UICorner",nextBtn).CornerRadius=UDim.new(0,10)
   -- 큰 포인터(▼▲◀) + 퍼지는 링
-  local pointer=Instance.new("TextLabel")
-  pointer.Name="TutorialPointer";pointer.AnchorPoint=Vector2.new(.5,.5);pointer.Size=UDim2.fromOffset(64,64)
-  pointer.BackgroundTransparency=1;pointer.Font=Enum.Font.GothamBlack;pointer.TextSize=58
-  pointer.TextColor3=Color3.fromRGB(255,214,70);pointer.TextStrokeColor3=Color3.fromRGB(60,30,0);pointer.TextStrokeTransparency=0
-  pointer.Visible=false;pointer.ZIndex=130;pointer.Parent=guiRoot
+  local pointer=makeArrow(guiRoot,70,"TutorialPointer",130,"chevron")
+  pointer.Visible=false
   local ring=Instance.new("Frame")
   ring.AnchorPoint=Vector2.new(.5,.5);ring.BackgroundTransparency=1;ring.Visible=false;ring.ZIndex=129;ring.Parent=guiRoot
   Instance.new("UICorner",ring).CornerRadius=UDim.new(1,0)
   local ringStroke=Instance.new("UIStroke");ringStroke.Color=Color3.fromRGB(255,214,70);ringStroke.Thickness=4;ringStroke.Parent=ring
+  local function idx(title) for i,st in ipairs(steps) do if st[1]==title then return i end end return 1 end
   local current=0
   local moveStart=nil
   local granted=false
+  local guideAtShow=false
   local function finish()
     current=0;card.Visible=false;pointer.Visible=false;ring.Visible=false
     tutorialStep=99;pref("tut",99)
@@ -11138,6 +11385,7 @@ end)()
     card.Visible=true
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     moveStart=root and root.Position or nil
+    guideAtShow=guideOff
     if s[4]=="menu" and not granted then granted=true;pref("grant",1) end
     if i<50 then pref("tut",math.min(i,49)) end
   end
@@ -11152,21 +11400,29 @@ end)()
     if cond=="move" then
       local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
       if root and moveStart and (root.Position-moveStart).Magnitude>10 then show(current+1) return end
+    elseif cond=="guide" and guideOff~=guideAtShow then
+      -- 눌러 본 뒤에는 다시 켜 둔다.
+      guideOff=false;paintGuide();pref("guide",0);show(current+1) return
     elseif cond=="menu" and menuOpen() then show(current+1) return
     elseif cond=="skillpage" and skillPageOpen() then show(current+1) return
     elseif cond=="learned" and anyTalent() then show(current+1) return end
     -- 메뉴가 닫히면 메뉴 단계로 되돌린다.
-    if (cond=="skillpage" or cond=="learned" or steps[current][1]=="퀵슬롯 등록") and not menuOpen() then show(6) return end
-    if cond=="learned" and not skillPageOpen() then show(7) return end
+    if (cond=="skillpage" or cond=="learned" or steps[current][1]=="퀵슬롯 등록") and not menuOpen() then show(idx("메뉴 열기")) return end
+    if cond=="learned" and not skillPageOpen() then show(idx("스킬 탭")) return end
     -- 카드 위치: 평소엔 위쪽(퀵슬롯·버튼을 안 가림), 메뉴가 열려 있으면 아래쪽.
-    if menuOpen() then card.AnchorPoint=Vector2.new(.5,1);card.Position=UDim2.new(.5,0,1,-14)
-    else card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,0,84) end
+    local radar=player.PlayerGui:FindFirstChild("MeadowExplorerRadar",true)
+    if menuOpen() then
+      card.AnchorPoint=Vector2.new(.5,1);card.Position=UDim2.new(.5,0,1,-14);card.BackgroundTransparency=.3
+    else
+      local y=radar and (radar.AbsolutePosition.Y+radar.AbsoluteSize.Y-guiRoot.AbsolutePosition.Y+6) or 84
+      card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,0,y);card.BackgroundTransparency=1
+    end
     local pos,dir=s[3]()
     if pos then
       local bob=math.abs(math.sin(os.clock()*5))*14
       local off=dir=="up" and Vector2.new(0,56+bob) or dir=="down" and Vector2.new(0,-56-bob)
         or dir=="left" and Vector2.new(56+bob,0) or Vector2.new(-56-bob,0)
-      pointer.Text=dir=="up" and "▲" or dir=="down" and "▼" or dir=="left" and "◀" or "▶"
+      pointer.Rotation=dir=="up" and 180 or dir=="down" and 0 or dir=="left" and 90 or -90
       local o=guiRoot.AbsolutePosition
       pointer.Position=UDim2.fromOffset(pos.X+off.X-o.X,pos.Y+off.Y-o.Y)
       local t=(os.clock()*1.2)%1
@@ -11188,7 +11444,7 @@ end)()
     if tutorialStep<99 and not started then
       started=true
       task.wait(2.5)
-      if menuOpen() then show(6) else show(1) end
+      if menuOpen() then show(idx("메뉴 열기")) else show(1) end
     else
       gui:SetAttribute("TutorialOverviewDone",true)
     end

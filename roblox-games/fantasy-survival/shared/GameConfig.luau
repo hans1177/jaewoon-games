@@ -349,6 +349,10 @@ local Config = {
     {Id="fang_necklace",Rarity="Uncommon",Need=70,Name="송곳니 목걸이",Slot="Accessory",Category="장신구",Attack=3,Defense=0,Icon=2,Wood=12,Stone=12,Coins=45,Desc="사냥한 늑대의 송곳니 목걸이."},
     {Id="worldtree_ring",Rarity="Epic",Need=320,Name="세계수 반지",Slot="Accessory",Category="장신구",Attack=4,Defense=4,Icon=2,Wood=30,Stone=30,Coins=170,Desc="세계수 가지로 만든 반지."},
     {Id="abyss_eye",Rarity="Legendary",Need=900,Name="심연의 눈",Slot="Accessory",Category="장신구",Attack=8,Defense=8,Icon=2,Wood=60,Stone=60,Coins=400,Desc="심연을 들여다보는 전설의 눈."},
+    -- [활 · 오디세이식 원거리 계열] 등록된 CC0 활 모델(item_bow_wooden) 사용. 33번째부터는 MeadowGearOwned2 비트에 저장한다.
+    {Id="hunter_bow",Rarity="Uncommon",Name="사냥꾼 활",Slot="Weapon",Category="무기",Attack=4,Defense=0,Icon=2,Bow=true,Coins=30,Desc="가죽과 철로 보강한 사냥용 활. 멀리서 노려 쏘고, 거리에 따라 치명타가 터져."},
+    {Id="wind_bow",Rarity="Rare",Need=60,Name="바람결 활",Slot="Weapon",Category="무기",Attack=9,Defense=0,Icon=2,Bow=true,Coins=90,Desc="가볍고 빠른 장궁. 연사 속도가 빠르고 사거리가 길어."},
+    {Id="worldtree_bow",Rarity="Epic",Need=220,Name="세계수 장궁",Slot="Weapon",Category="무기",Attack=15,Defense=0,Icon=2,Bow=true,Coins=170,Desc="세계수 가지로 만든 장궁. 급소를 꿰뚫으면 큰 피해를 줘."},
   },
   -- [회복 소모품] 한 번 제작하면 1개 소지, 사용 시 서버에서 1개 소비.
   MeadowConsumables = {
@@ -379,10 +383,10 @@ local Config = {
     BuildingProficiency = 0, HuntingProficiency = 0, AlchemyProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     RedLeaf = 0, Moonbloom = 0, Mushroom = 0, Ore = 0, Crystal = 0, Magma = 0,
-    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0,
+    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
-    MeadowGearOwned=2705,
+    MeadowGearOwned=2705,MeadowGearOwned2=0,
     MeadowEquipWeapon=1,MeadowEquipChest=5,MeadowEquipHands=8,
     MeadowEquipLegs=10,MeadowEquipFeet=12,MeadowEquipAccessory=0,
     MeadowPotionHealth=0,MeadowPotionStamina=0,
@@ -390,7 +394,7 @@ local Config = {
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
     ResearchRecords = 0, ExplorationGroves = 0, RuinsDiscovered = 0, DawnTraceFound = 0, NightTraceFound = 0, CompanionQuestStage = 1, CompanionQuestProgress = 0,
     -- 구형 저장은 존재하지 않는 숫자 필드를 기본값으로 읽어 이관한다.
-    VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0,
+    NarinStory = 0, VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0,
     -- [이어하기] 이전 프로필에 없는 필드는 0으로 마이그레이션. 서버 검증된 위치만 복원한다.
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
@@ -678,6 +682,8 @@ Config.Materials={
   {Field="Fang",Name="날카로운 송곳니",Kind="부위",Value=7,Color={235,228,210},Desc="늑대와 우두머리가 떨어뜨려. 희귀 이상 무기 제작에 쓰여."},
   {Field="BatWing",Name="박쥐 날개",Kind="부위",Value=4,Color={120,100,150},Desc="박쥐가 떨어뜨려. 신발 제작에 쓰여."},
   {Field="Claw",Name="늑대 발톱",Kind="부위",Value=3,Color={205,195,175},Desc="늑대가 떨어뜨려. 장갑 제작에 쓰여."},
+  {Field="Ingot",Name="철 주괴",Kind="가공",Value=14,Color={190,196,206},Desc="화로에서 광석 2개를 녹여 만들어. 무기·갑옷 제작의 핵심 재료야.",Refine={From="Ore",Need=2,Verb="제련",Note="광석 2 → 주괴 1"}},
+  {Field="Leather",Name="무두질 가죽",Kind="가공",Value=10,Color={150,98,60},Desc="가죽 걸이에서 늑대 가죽 2장을 가공해 만들어. 갑옷·장화·장갑에 쓰여.",Refine={From="Hide",Need=2,Verb="무두질",Note="가죽 2 → 무두질 가죽 1"}},
   {Field="Ectoplasm",Name="원혼의 잔재",Kind="부위",Value=8,Color={150,230,220},Desc="원혼이 남기는 차가운 잔재. 전설 장신구 제작에 쓰여."},
 }
 Config.MaterialByField={}
@@ -692,12 +698,23 @@ for _,item in ipairs(Config.MeadowEquipment) do
   local t=({Uncommon=1,Rare=2,Epic=3,Legendary=4})[item.Rarity or "Common"]
   if t and not item.Starter then
     local function add(field,n) if n>0 then item[field]=(item[field] or 0)+n end end
-    if item.Slot=="Weapon" then add("Ore",2*t);add("Fang",t-1)
+    if item.Slot=="Weapon" then add("Ore",2*t);add("Fang",t-1);if item.Bow then add("Hide",2*t) end
     elseif item.Slot=="Chest" then add("Hide",2*t);add("Magma",t-2)
     elseif item.Slot=="Hands" then add("Hide",t);add("Claw",t)
     elseif item.Slot=="Legs" then add("Hide",t);add("Ore",t)
     elseif item.Slot=="Feet" then add("Hide",t);add("BatWing",t)
     else add("Moonbloom",t);add("Crystal",t-1);add("Ectoplasm",t-3) end
+  end
+  -- [위쳐·스카이림식 제작] 장비 제작은 나무·돌을 쓰지 않는다. 사냥한 몬스터 부위(가죽·송곳니·발톱·날개),
+  -- 광맥의 광석·화산석, 약초·결정으로만 만든다. 나무·돌은 시설 건설과 무기 강화에만 남긴다.
+  if not item.Starter then
+    item.Wood=nil
+    item.Stone=nil
+    -- [스카이림식 가공] 날것(광석·가죽)이 아니라 제련·무두질한 재료(주괴·가죽)로 만든다. 2:1 환산.
+    if (item.Ore or 0)>0 then item.Ingot=math.ceil(item.Ore/2);item.Ore=nil end
+    if (item.Hide or 0)>0 then item.Leather=math.ceil(item.Hide/2);item.Hide=nil end
+    -- 고급 이상 장비는 철광석 한두 개를 기본으로 더해 대장간 제작의 느낌을 준다.
+    if t and item.Slot~="Accessory" and (item.Ingot or 0)==0 then item.Ingot=math.max(1,math.ceil(t/2)) end
   end
 end
 for _,tonic in ipairs(Config.MeadowConsumables) do
@@ -1342,6 +1359,153 @@ do
       if Config.InitialState[line.Field .. suffix] == nil then Config.InitialState[line.Field .. suffix] = 0 end
     end
   end
+end
+
+
+-- [마력숲 90노드] 5계열×3분기×6노드. 60사용형(그중 고급 15), 지속효과 30.
+Config.MeadowSkillSchools = {{Id="Warrior",Name="전사"},{Id="Guardian",Name="수호"},{Id="Hunter",Name="사냥"},{Id="Shadow",Name="그림자"},{Id="Magic",Name="마력"}}
+Config.MeadowSkillNodes = {
+  {Id="mf-warrior-1-1",Index=1,School="Warrior",SchoolName="전사",Branch="돌파",Lane=1,Step=1,Name="돌진 베기",Kind="ACTIVE",Mode="DASH",Description="전진 공격. 가까운 적에게 피해를 주고 재배치한다.",Advanced=false,Gauge=12,Cooldown=6,Range=10,IconCell=0},
+  {Id="mf-warrior-1-2",Index=2,School="Warrior",SchoolName="전사",Branch="돌파",Lane=1,Step=2,Name="돌파의 기세",Kind="PASSIVE",Mode="W_GAUGE",Description="연속 명중하면 기력을 축적한다.",Advanced=false,Gauge=0,Cooldown=0,Range=10,IconCell=0},
+  {Id="mf-warrior-1-3",Index=3,School="Warrior",SchoolName="전사",Branch="돌파",Lane=1,Step=3,Name="균열 강타",Kind="ACTIVE",Mode="STUN",Description="적의 공격 예고를 끊는 강타.",Advanced=false,Gauge=19,Cooldown=9,Range=10,IconCell=0},
+  {Id="mf-warrior-1-4",Index=4,School="Warrior",SchoolName="전사",Branch="돌파",Lane=1,Step=4,Name="강공격 박자",Kind="PASSIVE",Mode="W_TIMING",Description="강타 뒤 정확한 연계 타격의 보상이 커진다.",Advanced=false,Gauge=0,Cooldown=0,Range=10,IconCell=0},
+  {Id="mf-warrior-1-5",Index=5,School="Warrior",SchoolName="전사",Branch="돌파",Lane=1,Step=5,Name="전진 휩쓸기",Kind="ACTIVE",Mode="SWEEP",Description="근처 여러 적에게 근접 범위 공격.",Advanced=false,Gauge=26,Cooldown=13,Range=10,IconCell=0},
+  {Id="mf-warrior-1-6",Index=6,School="Warrior",SchoolName="전사",Branch="돌파",Lane=1,Step=6,Name="전장의 격노",Kind="ACTIVE",Mode="FURY",Description="큰 기력을 사용해 잠시 무기 연계 공격력을 강화.",Advanced=true,Gauge=70,Cooldown=38,Range=10,IconCell=0},
+  {Id="mf-warrior-2-1",Index=7,School="Warrior",SchoolName="전사",Branch="연속 공격",Lane=2,Step=1,Name="초승달 베기",Kind="ACTIVE",Mode="STRIKE",Description="집중하는 한 적에게 강한 단일 타격.",Advanced=false,Gauge=12,Cooldown=6,Range=10,IconCell=1},
+  {Id="mf-warrior-2-2",Index=8,School="Warrior",SchoolName="전사",Branch="연속 공격",Lane=2,Step=2,Name="연속 명중",Kind="PASSIVE",Mode="W_COMBO",Description="연타가 이어질수록 다음 피해가 강해진다.",Advanced=false,Gauge=0,Cooldown=0,Range=10,IconCell=1},
+  {Id="mf-warrior-2-3",Index=9,School="Warrior",SchoolName="전사",Branch="연속 공격",Lane=2,Step=3,Name="쌍검 연타",Kind="ACTIVE",Mode="MULTI",Description="한 표적에게 빠른 연속 타격.",Advanced=false,Gauge=19,Cooldown=9,Range=10,IconCell=1},
+  {Id="mf-warrior-2-4",Index=10,School="Warrior",SchoolName="전사",Branch="연속 공격",Lane=2,Step=4,Name="처치 추격",Kind="PASSIVE",Mode="W_CHASE",Description="적 처치 후 추격에 쓸 기력이 회복된다.",Advanced=false,Gauge=0,Cooldown=0,Range=10,IconCell=1},
+  {Id="mf-warrior-2-5",Index=11,School="Warrior",SchoolName="전사",Branch="연속 공격",Lane=2,Step=5,Name="회전 베기 강화",Kind="ACTIVE",Mode="SWEEP",Description="근처 여러 적에게 근접 범위 공격.",Advanced=false,Gauge=26,Cooldown=13,Range=10,IconCell=1},
+  {Id="mf-warrior-2-6",Index=12,School="Warrior",SchoolName="전사",Branch="연속 공격",Lane=2,Step=6,Name="연속 일격",Kind="ACTIVE",Mode="FOCUS_STRIKE",Description="큰 기력을 사용해 한 적에게 집중 연타.",Advanced=true,Gauge=70,Cooldown=38,Range=10,IconCell=1},
+  {Id="mf-warrior-3-1",Index=13,School="Warrior",SchoolName="전사",Branch="무기 숙련",Lane=3,Step=1,Name="무기 교차",Kind="ACTIVE",Mode="STRIKE",Description="집중하는 한 적에게 강한 단일 타격.",Advanced=false,Gauge=12,Cooldown=6,Range=10,IconCell=2},
+  {Id="mf-warrior-3-2",Index=14,School="Warrior",SchoolName="전사",Branch="무기 숙련",Lane=3,Step=2,Name="무기 전환 호흡",Kind="PASSIVE",Mode="W_SWITCH",Description="무기 교체 후 첫 공격이 강해진다.",Advanced=false,Gauge=0,Cooldown=0,Range=10,IconCell=2},
+  {Id="mf-warrior-3-3",Index=15,School="Warrior",SchoolName="전사",Branch="무기 숙련",Lane=3,Step=3,Name="저격 찌르기",Kind="ACTIVE",Mode="STRIKE",Description="집중하는 한 적에게 강한 단일 타격.",Advanced=false,Gauge=19,Cooldown=9,Range=10,IconCell=2},
+  {Id="mf-warrior-3-4",Index=16,School="Warrior",SchoolName="전사",Branch="무기 숙련",Lane=3,Step=4,Name="포위 대응",Kind="PASSIVE",Mode="W_POISE",Description="다수에게 포위되었을 때 받는 피해에 저항한다.",Advanced=false,Gauge=0,Cooldown=0,Range=10,IconCell=2},
+  {Id="mf-warrior-3-5",Index=17,School="Warrior",SchoolName="전사",Branch="무기 숙련",Lane=3,Step=5,Name="결전 타격",Kind="ACTIVE",Mode="STUN",Description="적의 공격 예고를 끊는 강타.",Advanced=false,Gauge=26,Cooldown=13,Range=10,IconCell=2},
+  {Id="mf-warrior-3-6",Index=18,School="Warrior",SchoolName="전사",Branch="무기 숙련",Lane=3,Step=6,Name="무기 해방",Kind="ACTIVE",Mode="FURY",Description="큰 기력을 사용해 잠시 무기 연계 공격력을 강화.",Advanced=true,Gauge=70,Cooldown=38,Range=10,IconCell=2},
+  {Id="mf-guardian-1-1",Index=19,School="Guardian",SchoolName="수호",Branch="방패 반격",Lane=1,Step=1,Name="방패 자세",Kind="ACTIVE",Mode="GUARD",Description="짧은 방어 자세로 들어오는 피해를 줄여.",Advanced=false,Gauge=12,Cooldown=6,Range=13,IconCell=3},
+  {Id="mf-guardian-1-2",Index=20,School="Guardian",SchoolName="수호",Branch="방패 반격",Lane=1,Step=2,Name="정밀 반격",Kind="PASSIVE",Mode="G_PARRY",Description="정밀 방어 직후 다음 반격이 강해진다.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=3},
+  {Id="mf-guardian-1-3",Index=21,School="Guardian",SchoolName="수호",Branch="방패 반격",Lane=1,Step=3,Name="방패 강타",Kind="ACTIVE",Mode="STUN",Description="적의 공격 예고를 끊는 강타.",Advanced=false,Gauge=19,Cooldown=9,Range=13,IconCell=3},
+  {Id="mf-guardian-1-4",Index=22,School="Guardian",SchoolName="수호",Branch="방패 반격",Lane=1,Step=4,Name="정면 방호",Kind="PASSIVE",Mode="G_FRONT",Description="정면에서 막는 공격의 피해를 더 줄인다.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=3},
+  {Id="mf-guardian-1-5",Index=23,School="Guardian",SchoolName="수호",Branch="방패 반격",Lane=1,Step=5,Name="완벽 반사",Kind="ACTIVE",Mode="PARRY",Description="정확한 타이밍에 적의 공격을 끊는 반격 준비.",Advanced=false,Gauge=26,Cooldown=13,Range=13,IconCell=3},
+  {Id="mf-guardian-1-6",Index=24,School="Guardian",SchoolName="수호",Branch="방패 반격",Lane=1,Step=6,Name="불굴",Kind="ACTIVE",Mode="LAST_STAND",Description="치명적 순간을 버틸 강한 방어와 회복.",Advanced=true,Gauge=70,Cooldown=38,Range=13,IconCell=3},
+  {Id="mf-guardian-2-1",Index=25,School="Guardian",SchoolName="수호",Branch="아군 보호",Lane=2,Step=1,Name="보호 결계",Kind="ACTIVE",Mode="SHIELD",Description="자신과 가까운 아군에게 피해 경감 보호를 걸어.",Advanced=false,Gauge=12,Cooldown=6,Range=13,IconCell=4},
+  {Id="mf-guardian-2-2",Index=26,School="Guardian",SchoolName="수호",Branch="아군 보호",Lane=2,Step=2,Name="보호의 기세",Kind="PASSIVE",Mode="G_ALLY",Description="가까운 아군을 보호하면 기력을 얻는다.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=4},
+  {Id="mf-guardian-2-3",Index=27,School="Guardian",SchoolName="수호",Branch="아군 보호",Lane=2,Step=3,Name="구원 돌진",Kind="ACTIVE",Mode="DASH",Description="전진 공격. 가까운 적에게 피해를 주고 재배치한다.",Advanced=false,Gauge=19,Cooldown=9,Range=13,IconCell=4},
+  {Id="mf-guardian-2-4",Index=28,School="Guardian",SchoolName="수호",Branch="아군 보호",Lane=2,Step=4,Name="견고한 전열",Kind="PASSIVE",Mode="G_STAGGER",Description="방어 자세 중 밀려남을 억제한다.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=4},
+  {Id="mf-guardian-2-5",Index=29,School="Guardian",SchoolName="수호",Branch="아군 보호",Lane=2,Step=5,Name="연대 치유",Kind="ACTIVE",Mode="HEAL_AOE",Description="근처 아군과 함께 체력을 회복해.",Advanced=false,Gauge=26,Cooldown=13,Range=13,IconCell=4},
+  {Id="mf-guardian-2-6",Index=30,School="Guardian",SchoolName="수호",Branch="아군 보호",Lane=2,Step=6,Name="기사단의 맹세 강화",Kind="ACTIVE",Mode="OATH",Description="기력을 크게 써서 주변 아군과 전선을 유지해.",Advanced=true,Gauge=70,Cooldown=38,Range=13,IconCell=4},
+  {Id="mf-guardian-3-1",Index=31,School="Guardian",SchoolName="수호",Branch="생존",Lane=3,Step=1,Name="강철 호흡",Kind="ACTIVE",Mode="HEAL",Description="체력이 닳은 대상을 빠르게 회복해.",Advanced=false,Gauge=12,Cooldown=6,Range=13,IconCell=5},
+  {Id="mf-guardian-3-2",Index=32,School="Guardian",SchoolName="수호",Branch="생존",Lane=3,Step=2,Name="위기의 보호",Kind="PASSIVE",Mode="G_CRISIS",Description="체력 위기 때 일회성 보호가 발동한다.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=5},
+  {Id="mf-guardian-3-3",Index=33,School="Guardian",SchoolName="수호",Branch="생존",Lane=3,Step=3,Name="견고한 의지",Kind="ACTIVE",Mode="GUARD",Description="짧은 방어 자세로 들어오는 피해를 줄여.",Advanced=false,Gauge=19,Cooldown=9,Range=13,IconCell=5},
+  {Id="mf-guardian-3-4",Index=34,School="Guardian",SchoolName="수호",Branch="생존",Lane=3,Step=4,Name="반격 보급",Kind="PASSIVE",Mode="G_REFUND",Description="정밀 반격 성공 시 기력을 회수한다.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=5},
+  {Id="mf-guardian-3-5",Index=35,School="Guardian",SchoolName="수호",Branch="생존",Lane=3,Step=5,Name="방어 폭풍",Kind="ACTIVE",Mode="SWEEP",Description="근처 여러 적에게 근접 범위 공격.",Advanced=false,Gauge=26,Cooldown=13,Range=13,IconCell=5},
+  {Id="mf-guardian-3-6",Index=36,School="Guardian",SchoolName="수호",Branch="생존",Lane=3,Step=6,Name="철벽",Kind="ACTIVE",Mode="BULWARK",Description="기력을 크게 소모해 강한 방패 보호 상태가 돼.",Advanced=true,Gauge=70,Cooldown=38,Range=13,IconCell=5},
+  {Id="mf-hunter-1-1",Index=37,School="Hunter",SchoolName="사냥",Branch="정밀 사격",Lane=1,Step=1,Name="약점 표식",Kind="ACTIVE",Mode="MARK",Description="대상에게 일정 시간 약점 표식을 새겨.",Advanced=false,Gauge=12,Cooldown=6,Range=42,IconCell=1},
+  {Id="mf-hunter-1-2",Index=38,School="Hunter",SchoolName="사냥",Branch="정밀 사격",Lane=1,Step=2,Name="약점 연속",Kind="PASSIVE",Mode="H_WEAK",Description="약점을 연속으로 공격하면 추가 피해.",Advanced=false,Gauge=0,Cooldown=0,Range=42,IconCell=1},
+  {Id="mf-hunter-1-3",Index=39,School="Hunter",SchoolName="사냥",Branch="정밀 사격",Lane=1,Step=3,Name="정밀 사격",Kind="ACTIVE",Mode="SHOT",Description="거리를 유지하며 한 적에게 정밀 사격.",Advanced=false,Gauge=19,Cooldown=9,Range=42,IconCell=1},
+  {Id="mf-hunter-1-4",Index=40,School="Hunter",SchoolName="사냥",Branch="정밀 사격",Lane=1,Step=4,Name="거리 감각",Kind="PASSIVE",Mode="H_RANGE",Description="거리별 정밀 사격 피해 특성이 바뀐다.",Advanced=false,Gauge=0,Cooldown=0,Range=42,IconCell=1},
+  {Id="mf-hunter-1-5",Index=41,School="Hunter",SchoolName="사냥",Branch="정밀 사격",Lane=1,Step=5,Name="관통 사격",Kind="ACTIVE",Mode="PIERCE",Description="한 줄의 여러 적에게 관통 피해.",Advanced=false,Gauge=26,Cooldown=13,Range=42,IconCell=1},
+  {Id="mf-hunter-1-6",Index=42,School="Hunter",SchoolName="사냥",Branch="정밀 사격",Lane=1,Step=6,Name="필살 사격",Kind="ACTIVE",Mode="SNIPE",Description="기력을 크게 써서 원거리 약점을 집중 공격.",Advanced=true,Gauge=70,Cooldown=38,Range=42,IconCell=1},
+  {Id="mf-hunter-2-1",Index=43,School="Hunter",SchoolName="사냥",Branch="다중 공격",Lane=2,Step=1,Name="부채 사격",Kind="ACTIVE",Mode="FAN",Description="전방 다수에게 넓게 퍼지는 사격.",Advanced=false,Gauge=12,Cooldown=6,Range=42,IconCell=2},
+  {Id="mf-hunter-2-2",Index=44,School="Hunter",SchoolName="사냥",Branch="다중 공격",Lane=2,Step=2,Name="기동 조준",Kind="PASSIVE",Mode="H_MOVE",Description="이동 직후 첫 사격이 강해진다.",Advanced=false,Gauge=0,Cooldown=0,Range=42,IconCell=2},
+  {Id="mf-hunter-2-3",Index=45,School="Hunter",SchoolName="사냥",Branch="다중 공격",Lane=2,Step=3,Name="분열 화살",Kind="ACTIVE",Mode="SPLIT",Description="한 적 주변으로 갈라지는 다중 사격.",Advanced=false,Gauge=19,Cooldown=9,Range=42,IconCell=2},
+  {Id="mf-hunter-2-4",Index=46,School="Hunter",SchoolName="사냥",Branch="다중 공격",Lane=2,Step=4,Name="관통의 기세",Kind="PASSIVE",Mode="H_PIERCE",Description="관통 공격으로 다수를 맞히면 기력이 회복된다.",Advanced=false,Gauge=0,Cooldown=0,Range=42,IconCell=2},
+  {Id="mf-hunter-2-5",Index=47,School="Hunter",SchoolName="사냥",Branch="다중 공격",Lane=2,Step=5,Name="연쇄 화살",Kind="ACTIVE",Mode="CHAIN",Description="표적에서 가까운 적으로 연속 공격.",Advanced=false,Gauge=26,Cooldown=13,Range=42,IconCell=2},
+  {Id="mf-hunter-2-6",Index=48,School="Hunter",SchoolName="사냥",Branch="다중 공격",Lane=2,Step=6,Name="화살 폭풍",Kind="ACTIVE",Mode="RAIN",Description="기력을 크게 써서 다수 표적을 연속 타격.",Advanced=true,Gauge=70,Cooldown=38,Range=42,IconCell=2},
+  {Id="mf-hunter-3-1",Index=49,School="Hunter",SchoolName="사냥",Branch="추적",Lane=3,Step=1,Name="추적 덫",Kind="ACTIVE",Mode="TRAP",Description="가까운 적의 이동과 공격을 잠깐 묶어.",Advanced=false,Gauge=12,Cooldown=6,Range=42,IconCell=3},
+  {Id="mf-hunter-3-2",Index=50,School="Hunter",SchoolName="사냥",Branch="추적",Lane=3,Step=2,Name="사냥 표식",Kind="PASSIVE",Mode="H_TRACK",Description="표식 적에 대한 추적 사격이 강화된다.",Advanced=false,Gauge=0,Cooldown=0,Range=42,IconCell=3},
+  {Id="mf-hunter-3-3",Index=51,School="Hunter",SchoolName="사냥",Branch="추적",Lane=3,Step=3,Name="끈끈이 화살",Kind="ACTIVE",Mode="ROOT",Description="지정한 적을 묶어 공격 준비를 중단해.",Advanced=false,Gauge=19,Cooldown=9,Range=42,IconCell=3},
+  {Id="mf-hunter-3-4",Index=52,School="Hunter",SchoolName="사냥",Branch="추적",Lane=3,Step=4,Name="덫 연계",Kind="PASSIVE",Mode="H_TRAP",Description="덫에 걸린 적에게 사격을 연계하면 추가 피해.",Advanced=false,Gauge=0,Cooldown=0,Range=42,IconCell=3},
+  {Id="mf-hunter-3-5",Index=53,School="Hunter",SchoolName="사냥",Branch="추적",Lane=3,Step=5,Name="사냥꾼 낙인",Kind="ACTIVE",Mode="MARK",Description="대상에게 일정 시간 약점 표식을 새겨.",Advanced=false,Gauge=26,Cooldown=13,Range=42,IconCell=3},
+  {Id="mf-hunter-3-6",Index=54,School="Hunter",SchoolName="사냥",Branch="추적",Lane=3,Step=6,Name="맹수 추적",Kind="ACTIVE",Mode="HUNT",Description="기력을 크게 써서 표식된 표적을 추격.",Advanced=true,Gauge=70,Cooldown=38,Range=42,IconCell=3},
+  {Id="mf-shadow-1-1",Index=55,School="Shadow",SchoolName="그림자",Branch="기습",Lane=1,Step=1,Name="기습 일격",Kind="ACTIVE",Mode="BACKSTAB",Description="표적 배후를 노리는 근접 강공격.",Advanced=false,Gauge=12,Cooldown=6,Range=13,IconCell=6},
+  {Id="mf-shadow-1-2",Index=56,School="Shadow",SchoolName="그림자",Branch="기습",Lane=1,Step=2,Name="배후의 칼날",Kind="PASSIVE",Mode="S_BACK",Description="배후에서 맞힌 공격이 강해진다.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=6},
+  {Id="mf-shadow-1-3",Index=57,School="Shadow",SchoolName="그림자",Branch="기습",Lane=1,Step=3,Name="은신 걸음",Kind="ACTIVE",Mode="VANISH",Description="적의 공격에서 벗어나기 위한 회피 은신.",Advanced=false,Gauge=19,Cooldown=9,Range=13,IconCell=6},
+  {Id="mf-shadow-1-4",Index=58,School="Shadow",SchoolName="그림자",Branch="기습",Lane=1,Step=4,Name="발각 경계",Kind="PASSIVE",Mode="S_DETECT",Description="발각 직전 재배치할 수 있는 기력을 되찾는다.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=6},
+  {Id="mf-shadow-1-5",Index=59,School="Shadow",SchoolName="그림자",Branch="기습",Lane=1,Step=5,Name="암습 연계",Kind="ACTIVE",Mode="BACKSTAB",Description="표적 배후를 노리는 근접 강공격.",Advanced=false,Gauge=26,Cooldown=13,Range=13,IconCell=6},
+  {Id="mf-shadow-1-6",Index=60,School="Shadow",SchoolName="그림자",Branch="기습",Lane=1,Step=6,Name="그림자 처형",Kind="ACTIVE",Mode="EXECUTE",Description="기력을 크게 써서 약해진 표적을 마무리.",Advanced=true,Gauge=70,Cooldown=38,Range=13,IconCell=6},
+  {Id="mf-shadow-2-1",Index=61,School="Shadow",SchoolName="그림자",Branch="교란",Lane=2,Step=1,Name="연막 투척",Kind="ACTIVE",Mode="SMOKE",Description="주변 적을 교란해 공격을 잠깐 중단시켜.",Advanced=false,Gauge=12,Cooldown=6,Range=13,IconCell=7},
+  {Id="mf-shadow-2-2",Index=62,School="Shadow",SchoolName="그림자",Branch="교란",Lane=2,Step=2,Name="회피 연계",Kind="PASSIVE",Mode="S_DODGE",Description="회피 직후의 기습 공격이 강해진다.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=7},
+  {Id="mf-shadow-2-3",Index=63,School="Shadow",SchoolName="그림자",Branch="교란",Lane=2,Step=3,Name="속임수 타격",Kind="ACTIVE",Mode="STUN",Description="적의 공격 예고를 끊는 강타.",Advanced=false,Gauge=19,Cooldown=9,Range=13,IconCell=7},
+  {Id="mf-shadow-2-4",Index=64,School="Shadow",SchoolName="그림자",Branch="교란",Lane=2,Step=4,Name="혼란의 칼날",Kind="PASSIVE",Mode="S_CONFUSE",Description="교란 상태의 적에게 추가 피해.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=7},
+  {Id="mf-shadow-2-5",Index=65,School="Shadow",SchoolName="그림자",Branch="교란",Lane=2,Step=5,Name="침묵의 칼날",Kind="ACTIVE",Mode="MARK",Description="대상에게 일정 시간 약점 표식을 새겨.",Advanced=false,Gauge=26,Cooldown=13,Range=13,IconCell=7},
+  {Id="mf-shadow-2-6",Index=66,School="Shadow",SchoolName="그림자",Branch="교란",Lane=2,Step=6,Name="어둠 장막",Kind="ACTIVE",Mode="SMOKE_ADV",Description="많은 기력을 사용해 주변 적을 넓게 교란해.",Advanced=true,Gauge=70,Cooldown=38,Range=13,IconCell=7},
+  {Id="mf-shadow-3-1",Index=67,School="Shadow",SchoolName="그림자",Branch="추격",Lane=3,Step=1,Name="그림자 이동",Kind="ACTIVE",Mode="BLINK",Description="짧게 이동해 기습 위치를 바꿔.",Advanced=false,Gauge=12,Cooldown=6,Range=13,IconCell=8},
+  {Id="mf-shadow-3-2",Index=68,School="Shadow",SchoolName="그림자",Branch="추격",Lane=3,Step=2,Name="표식 사냥",Kind="PASSIVE",Mode="S_MARK_KILL",Description="표식한 적을 처치하면 기력이 회복된다.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=8},
+  {Id="mf-shadow-3-3",Index=69,School="Shadow",SchoolName="그림자",Branch="추격",Lane=3,Step=3,Name="그림자 갈고리",Kind="ACTIVE",Mode="DASH",Description="전진 공격. 가까운 적에게 피해를 주고 재배치한다.",Advanced=false,Gauge=19,Cooldown=9,Range=13,IconCell=8},
+  {Id="mf-shadow-3-4",Index=70,School="Shadow",SchoolName="그림자",Branch="추격",Lane=3,Step=4,Name="긴급 탈출",Kind="PASSIVE",Mode="S_ESCAPE",Description="기습 실패 시 짧은 탈출 보호를 얻는다.",Advanced=false,Gauge=0,Cooldown=0,Range=13,IconCell=8},
+  {Id="mf-shadow-3-5",Index=71,School="Shadow",SchoolName="그림자",Branch="추격",Lane=3,Step=5,Name="연쇄 추격",Kind="ACTIVE",Mode="CHAIN",Description="표적에서 가까운 적으로 연속 공격.",Advanced=false,Gauge=26,Cooldown=13,Range=13,IconCell=8},
+  {Id="mf-shadow-3-6",Index=72,School="Shadow",SchoolName="그림자",Branch="추격",Lane=3,Step=6,Name="밤의 추격",Kind="ACTIVE",Mode="NIGHT",Description="기력을 크게 써서 여러 적에게 연달아 기습.",Advanced=true,Gauge=70,Cooldown=38,Range=13,IconCell=8},
+  {Id="mf-magic-1-1",Index=73,School="Magic",SchoolName="마력",Branch="파괴",Lane=1,Step=1,Name="마력탄 연성",Kind="ACTIVE",Mode="BOLT",Description="단일 마력탄을 발사해. 마지막 단계에서 관통/분열 선택.",Advanced=false,Gauge=12,Cooldown=6,Range=34,IconCell=7},
+  {Id="mf-magic-1-2",Index=74,School="Magic",SchoolName="마력",Branch="파괴",Lane=1,Step=2,Name="주문 교차",Kind="PASSIVE",Mode="M_CHAIN",Description="서로 다른 마법을 이어 쓰면 다음 주문이 강해진다.",Advanced=false,Gauge=0,Cooldown=0,Range=34,IconCell=7},
+  {Id="mf-magic-1-3",Index=75,School="Magic",SchoolName="마력",Branch="파괴",Lane=1,Step=3,Name="폭발탄",Kind="ACTIVE",Mode="BURST",Description="한 적과 주변의 적에게 폭발 마법.",Advanced=false,Gauge=19,Cooldown=9,Range=34,IconCell=7},
+  {Id="mf-magic-1-4",Index=76,School="Magic",SchoolName="마력",Branch="파괴",Lane=1,Step=4,Name="폭발 전염",Kind="PASSIVE",Mode="M_SPREAD",Description="표식 폭발 시 가까운 적에게 효과가 전파된다.",Advanced=false,Gauge=0,Cooldown=0,Range=34,IconCell=7},
+  {Id="mf-magic-1-5",Index=77,School="Magic",SchoolName="마력",Branch="파괴",Lane=1,Step=5,Name="마력 파동",Kind="ACTIVE",Mode="SWEEP",Description="근처 여러 적에게 근접 범위 공격.",Advanced=false,Gauge=26,Cooldown=13,Range=34,IconCell=7},
+  {Id="mf-magic-1-6",Index=78,School="Magic",SchoolName="마력",Branch="파괴",Lane=1,Step=6,Name="마력 폭주",Kind="ACTIVE",Mode="OVERLOAD",Description="기력을 크게 사용해 잠시 마력 주문의 공격력을 강화.",Advanced=true,Gauge=70,Cooldown=38,Range=34,IconCell=7},
+  {Id="mf-magic-2-1",Index=79,School="Magic",SchoolName="마력",Branch="제어",Lane=2,Step=1,Name="속박 룬",Kind="ACTIVE",Mode="ROOT",Description="지정한 적을 묶어 공격 준비를 중단해.",Advanced=false,Gauge=12,Cooldown=6,Range=34,IconCell=8},
+  {Id="mf-magic-2-2",Index=80,School="Magic",SchoolName="마력",Branch="제어",Lane=2,Step=2,Name="정확한 시전",Kind="PASSIVE",Mode="M_ACCURATE",Description="정확한 주문 시전으로 기력 소모를 절약한다.",Advanced=false,Gauge=0,Cooldown=0,Range=34,IconCell=8},
+  {Id="mf-magic-2-3",Index=81,School="Magic",SchoolName="마력",Branch="제어",Lane=2,Step=3,Name="서리 장벽",Kind="ACTIVE",Mode="GUARD",Description="짧은 방어 자세로 들어오는 피해를 줄여.",Advanced=false,Gauge=19,Cooldown=9,Range=34,IconCell=8},
+  {Id="mf-magic-2-4",Index=82,School="Magic",SchoolName="마력",Branch="제어",Lane=2,Step=4,Name="검과 주문",Kind="PASSIVE",Mode="M_WEAVE",Description="무기 공격과 주문을 교차하면 공격이 강화된다.",Advanced=false,Gauge=0,Cooldown=0,Range=34,IconCell=8},
+  {Id="mf-magic-2-5",Index=83,School="Magic",SchoolName="마력",Branch="제어",Lane=2,Step=5,Name="공명 표식",Kind="ACTIVE",Mode="MARK",Description="대상에게 일정 시간 약점 표식을 새겨.",Advanced=false,Gauge=26,Cooldown=13,Range=34,IconCell=8},
+  {Id="mf-magic-2-6",Index=84,School="Magic",SchoolName="마력",Branch="제어",Lane=2,Step=6,Name="공명 붕괴",Kind="ACTIVE",Mode="RESONATE",Description="표식한 적을 기점으로 폭발을 일으켜.",Advanced=true,Gauge=70,Cooldown=38,Range=34,IconCell=8},
+  {Id="mf-magic-3-1",Index=85,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=1,Name="응급 회복",Kind="ACTIVE",Mode="HEAL",Description="체력이 닳은 대상을 빠르게 회복해.",Advanced=false,Gauge=12,Cooldown=6,Range=34,IconCell=9},
+  {Id="mf-magic-3-2",Index=86,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=2,Name="보호막 회수",Kind="PASSIVE",Mode="M_SHIELD_REFUND",Description="보호막이 소진되면 기력을 일부 회수한다.",Advanced=false,Gauge=0,Cooldown=0,Range=34,IconCell=9},
+  {Id="mf-magic-3-3",Index=87,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=3,Name="생명 보호막",Kind="ACTIVE",Mode="SHIELD",Description="자신과 가까운 아군에게 피해 경감 보호를 걸어.",Advanced=false,Gauge=19,Cooldown=9,Range=34,IconCell=9},
+  {Id="mf-magic-3-4",Index=88,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=4,Name="초과 치유",Kind="PASSIVE",Mode="M_OVERHEAL",Description="초과 회복량을 짧은 보호 효과로 바꾼다.",Advanced=false,Gauge=0,Cooldown=0,Range=34,IconCell=9},
+  {Id="mf-magic-3-5",Index=89,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=5,Name="치유의 물결",Kind="ACTIVE",Mode="HEAL_AOE",Description="근처 아군과 함께 체력을 회복해.",Advanced=false,Gauge=26,Cooldown=13,Range=34,IconCell=9},
+  {Id="mf-magic-3-6",Index=90,School="Magic",SchoolName="마력",Branch="회복",Lane=3,Step=6,Name="생명의 공명",Kind="ACTIVE",Mode="RALLY",Description="기력을 크게 소모해 주변 아군을 회복·보호해.",Advanced=true,Gauge=70,Cooldown=38,Range=34,IconCell=9},
+}
+-- [스카이림식 대장 기술] 제작 숙련이 쌓일수록 강화·제작 재료가 줄어든다(40마다 1단, 최대 3단).
+Config.SmithingRank=function(craftingProficiency)
+  return math.clamp(math.floor((tonumber(craftingProficiency) or 0)/40),0,3)
+end
+-- 무기 단련(강화): 주괴(+3·6·9강마다 무두질 가죽). 나무·돌·날광석은 쓰지 않는다.
+Config.TemperCost=function(tier,craftingProficiency)
+  local rank=Config.SmithingRank(craftingProficiency)
+  return math.max(1,1+math.floor(tier*.8)-rank),math.floor(tier/3)
+end
+-- [오디세이식 무기 계열] 계열마다 어울리는 스킬 계열이 있고, 맞는 무기를 들면 해당 계열 스킬이 강해진다.
+Config.WeaponClasses={
+  Sword={Name="검",Schools={Warrior=1.25,Guardian=1.15}},
+  Greatsword={Name="대검",Schools={Warrior=1.35,Guardian=1.1}},
+  Axe={Name="도끼",Schools={Warrior=1.3,Guardian=1.2}},
+  Dagger={Name="단검",Schools={Shadow=1.35}},
+  Bow={Name="활",Schools={Hunter=1.35},RangeBonus={Hunter=14}},
+  Staff={Name="지팡이",Schools={Magic=1.3}},
+}
+Config.GearWeaponClass={wanderer_blade="Sword",hunter_blade="Sword",runic_blade="Sword",forest_blade="Sword",
+  dew_dagger="Dagger",thorn_axe="Axe",worldtree_staff="Staff",magma_greatsword="Greatsword",
+  hunter_bow="Bow",wind_bow="Bow",worldtree_bow="Bow"}
+Config.MeadowSkillSchools[1].Weapon="검·대검·도끼"
+Config.MeadowSkillSchools[2].Weapon="검·도끼 + 방패"
+Config.MeadowSkillSchools[3].Weapon="활"
+Config.MeadowSkillSchools[4].Weapon="단검"
+Config.MeadowSkillSchools[5].Weapon="지팡이"
+Config.MeadowSkillNodeById = {}
+for _,node in ipairs(Config.MeadowSkillNodes) do
+  Config.MeadowSkillNodeById[node.Id]=node
+  if node.Kind=="ACTIVE" then
+    local motion=({Warrior="HEAVY_ATTACK_1",Guardian="BLOCK_HOLD",Hunter="CAST_BURST",Shadow="DODGE_LEFT",Magic="CAST_BURST"})[node.School]
+    local vfx=({Warrior="CRITICAL_BURST",Guardian="BLOCK_IMPACT",Hunter="IMPACT_FLASH",Shadow="DODGE_EVASION_PULSE",Magic="HEAL_PULSE"})[node.School]
+    table.insert(Config.Actions,{Id=node.Id,Label=node.Name,Kind="SKILL",Order=100+node.Index,
+      MotionAtom=motion,SkillAtom="IMPACT_SMALL",VfxAtom=vfx,Cooldown=node.Cooldown,
+      LearningPattern="roblox-native-action"})
+  end
+end
+-- 기존 재능 14점과 저장 필드는 보존하고 새 노드 점수는 숙련도 기반으로 계산한다.
+Config.MeadowSkillPointProgress=function(mastery)
+  local m=math.max(0,tonumber(mastery) or 0)
+  local points=math.clamp(math.floor((-25+math.sqrt(625+20*m))/10),0,270)
+  local cost=5*points*points+25*points
+  return points,math.max(0,m-cost),points>=270 and 0 or 30+10*points
+end
+-- [기존 DataStore] 10노드 × 3비트로 압축. 2비트 단계 + 1비트 최종 선택.
+for i=1,9 do Config.InitialState["MeadowSkillBits"..i]=0 end
+Config.InitialState.MeadowLoadoutActive=1
+for preset=1,3 do
+  Config.InitialState["MeadowLoadoutSaved"..preset]=0
+  for slot=1,5 do Config.InitialState["MeadowLoadout"..preset.."Slot"..slot]=0 end
 end
 
 return table.freeze(Config)

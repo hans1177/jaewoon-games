@@ -47,3 +47,9 @@
 - [ ] 시작 시 항구 마을·부두·내 배·갈매기가 보임 (PortScene.luau)
 - [ ] 시설 앞 ProximityPrompt → 해당 탭 열림
 - [ ] 항구 이동/배 교체 시 장면이 바뀜
+
+## 메쉬 자산 적용 확인
+- [ ] Naval 선박 5종·부두, Town 집·굴뚝·분수, People 주민 MeshPart 수입
+- [ ] ReplicatedStorage/MareAssets에 이름별 등록, 6종 전환 및 배치 확인
+- [ ] 실제 부두·마을·주민·배가 로블록스 Play에서 표시되는지 확인
+- [ ] 증기선 굴뚝·연기, 이동·시설 사용, 모바일 화면 및 저장 확인

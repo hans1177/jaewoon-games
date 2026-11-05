@@ -65,6 +65,26 @@ jobs:
           $proc = Start-Process -FilePath $studio -ArgumentList @($env:OPENING_PLACE) -PassThru
           $out = Join-Path $env:RUNNER_TEMP 'opening-frames'
           Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory $out -Force | Out-Null
+          # [화면 녹화] ffmpeg가 있으면 화면 전체를 mp4로 녹화한다(없으면 건너뜀). 중간에 끊겨도 재생되도록 fragmented mp4.
+          $ffmpeg = $null
+          $cmd = Get-Command ffmpeg.exe -ErrorAction SilentlyContinue
+          if ($cmd) { $ffmpeg = $cmd.Source }
+          if (-not $ffmpeg) {
+            $dirs = @('E:\jaewoon-games\tools\ffmpeg','C:\ffmpeg','D:\ffmpeg','E:\ffmpeg',(Join-Path $env:USERPROFILE 'Downloads'),(Join-Path $env:USERPROFILE 'Desktop'),(Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet'),'C:\ProgramData\chocolatey\bin')
+            foreach ($d in $dirs) {
+              if (Test-Path $d) {
+                $f = Get-ChildItem $d -Recurse -Depth 4 -Filter ffmpeg.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+                if ($f) { $ffmpeg = $f.FullName; break }
+              }
+            }
+          }
+          $rec = $null
+          if ($ffmpeg) {
+            Write-Host "FFMPEG=$ffmpeg"
+            $video = Join-Path $out 'run.mp4'
+            $rec = Start-Process -FilePath $ffmpeg -ArgumentList @('-y','-f','gdigrab','-framerate','10','-i','desktop','-vf','scale=1280:-2','-c:v','libx264','-preset','veryfast','-crf','30','-pix_fmt','yuv420p','-movflags','frag_keyframe+empty_moov','-t','420',$video) -PassThru -WindowStyle Hidden
+          } else { Write-Host 'FFMPEG_NOT_FOUND (녹화 생략)' }
           try {
             if ('${{ inputs.script }}' -ne '') {
               & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=main/${{ inputs.script }}" "--mcp-command=$mcp" '--studio-name=openingcheck' "--out-dir=$out"
@@ -73,6 +93,7 @@ jobs:
             }
             Write-Host "NODE_EXIT=$LASTEXITCODE"
           } finally {
+            if ($rec -and -not $rec.HasExited) { Stop-Process -Id $rec.Id -Force -ErrorAction SilentlyContinue }
             Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
           }
           if (-not (Test-Path $out)) { Write-Host 'NO_OUTPUT'; exit 0 }

@@ -44,3 +44,28 @@ Luau CLI는 https://github.com/luau-lang/luau/releases 에서 받는다.
 - [docs/CATALOG.md](docs/CATALOG.md): 게임 콘텐츠 카탈로그 (자동 생성)
 - [docs/ROADMAP.md](docs/ROADMAP.md): 현재 상태와 다음 작업
 - [docs/REUSE.md](docs/REUSE.md): 마력숲에서 가져온 코드
+
+## 3D 원본 확보 및 6종 선박 모델 연결
+
+`assets/`에 원본 3D 모델 67개(선박·부두·건물·NPC)와 MTL 재질 파일 22개를 복사·보존했다.
+실행할 때는 Roblox Studio의 **가져오기**로 GLB/OBJ/FBX를 MeshPart 모델로 수입하고,
+`ReplicatedStorage/MareAssets` 폴더 아래에 넣어야 한다. GitHub에만 있는 모델은 자동 로드되지 않는다.
+
+| 항구 모델 수입 폴더 | 모델명 | 게임에서 사용 |
+|---|---|---|
+| Naval | ship-small | 캐러벨 |
+| Naval | ship-medium | 플루트선 |
+| Naval | ship-pirate-medium | 프리깃/철갑 증기 프리깃 선체 |
+| Naval | ship-large | 갈레온 |
+| Naval | ship-pirate-small | 외륜 증기선 기본 선체 |
+| Naval | structure-platform-dock | 실제 부두 |
+| Town | house, chimney, fountain-round | 마을, 증기선 굴뚝, 분수 |
+| People | Pirate_Male, Pirate_Female, Worker_Male, Worker_Female, Casual_Male, Casual_Female, OldClassy_Male, OldClassy_Female | 선원·상인·주민 |
+
+6종 완전 별도 모델을 수입한 경우 `MareAssets/Ships/<선박ID>` (caravel, fluyt, frigate, galleon, paddle_steamer, ironclad_frigate)로 넣으면 해당 모델을 우선 사용한다.
+현재 보유 선체는 5종이므로 증기선 두 모델은 다른 원본 선체 + 굴뚝·연기·재질로 구분한다.
+**전용 외륜·철갑 선체가 최종 완성된 것으로 취급하지 않는다.**
+모델 미수입 상태에서는 기존 도형 임시 그래픽이 유지되어 게임 진입을 막지 않는다.
+출처·CC0 근거는 `assets/SOURCES.md` 참고.
+
+아직 Roblox Studio 모델 수입/Play/모바일 검증 및 로블록스 게시를 확인하지 못했다.

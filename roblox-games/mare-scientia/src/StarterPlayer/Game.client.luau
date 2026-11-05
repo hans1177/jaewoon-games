@@ -55,6 +55,10 @@ local TABS = {
 local view = nil -- 서버가 보낸 최신 스냅샷
 local currentTab = "status"
 local syncScene
+local sceneKey = nil
+local sceneCtl = nil -- 현재 3D 장면의 제어(출항 연출 등)
+local sceneHold = false -- 항해 중에는 장면을 바꾸지 않는다
+local arriveNext = false -- 다음 장면은 입항 연출로 시작
 local amountIndex = 1
 local message = ""
 local messageOk = true
@@ -503,8 +507,28 @@ local function sail(portId)
 			days = r.days
 		end
 	end
+	sceneHold = true
 	local result = call("Sail", { portId = portId })
 	if result and result.ok then
+		-- 1) 3D 항구에서 배가 실제로 부두를 떠나는 장면 (카메라가 배를 따라간다)
+		pcall(function()
+			if not sceneCtl then
+				return
+			end
+			local dur = sceneCtl.depart(5)
+			local cam = workspace.CurrentCamera
+			local hull = sceneCtl.hull()
+			local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+			main.Visible = false
+			if cam and hull then
+				cam.CameraSubject = hull
+			end
+			task.wait(dur)
+			if cam and hum then
+				cam.CameraSubject = hum
+			end
+		end)
+		main.Visible = true
 		local ok, err = pcall(playVoyage, from, view.player.portName, days, steam, SeaRoutes.path(fromId, portId, PortData.Ports))
 		if not ok then
 			warn("[Game] voyage scene error:", err)
@@ -514,7 +538,12 @@ local function sail(portId)
 				end
 			end
 		end
+		-- 2) 도착한 항구의 3D 장면: 배가 먼 바다에서 들어와 정박
+		arriveNext = true
 	end
+	sceneHold = false
+	sceneKey = nil
+	syncScene()
 end
 
 -- 이야기 장면: 코드로 그린 일러스트 + 대화 + 선택지 ----------------------------------------
@@ -1665,14 +1694,15 @@ local function renderTabs()
 end
 
 -- 3D 항구 장면: 항구나 배가 바뀔 때만 다시 만든다
-local sceneKey = nil
 syncScene = function()
+	if sceneHold then
+		return
+	end
 	local p, ship = view.player, view.ship
 	local key = p.portId .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0)
 	if key == sceneKey then
 		return
 	end
-	sceneKey = key
 	local ok, res = pcall(PortScene.build, {
 		portId = p.portId,
 		portName = p.portName,
@@ -1680,6 +1710,7 @@ syncScene = function()
 		hasShipyard = p.hasShipyard,
 		facilities = view.facilities,
 		storyCount = #(view.story or {}),
+		arrive = arriveNext,
 	}, function(tab)
 		currentTab = tab
 		main.Visible = true
@@ -1690,6 +1721,9 @@ syncScene = function()
 		warn("[Game] 항구 장면 오류", res)
 		return
 	end
+	sceneKey = key
+	sceneCtl = res.controls
+	arriveNext = false
 	local char = player.Character
 	if char and char:FindFirstChild("HumanoidRootPart") then
 		char:PivotTo(res.spawn)

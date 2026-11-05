@@ -104,7 +104,7 @@ players_scripts = (
 
 body = (
     service("Workspace", baseplate + spawn)
-    + service("ReplicatedStorage", shared)
+    + service("ReplicatedStorage", shared + folder_item("MareAssets", "".join(folder_item(n, "") for n in ("Ships", "Naval", "Town", "People"))))
     + service("ServerScriptService", server)
     + service("StarterPlayer", players_scripts)
 )

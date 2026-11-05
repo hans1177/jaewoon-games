@@ -564,7 +564,7 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
     -- [완성형 집·모듈·소품 중심] AssetService 모델 래퍼의 피벗은 화면 메시의 가운데가 아닐 수 있다.
     -- 마을 모델은 실제 배치 중심으로 WorldPivot을 맞춰 지붕·울타리·카트의 회전 시 이탈을 막는다.
     -- 동물 리그·본·전투·채집 모델의 기존 회전축은 변경하지 않는다.
-    if id:sub(1,7)=="village" then
+    if id:sub(1,7)=="village" or id:sub(1,2)=="vx" then
       clone.PrimaryPart=nil
       clone.WorldPivot=CFrame.new(location.X,
         ground.Position.Y+.15+(heightAboveGround or 0)+(targetHeight or 5)*.5,location.Z)
@@ -603,6 +603,28 @@ local function villageDialogue(player,title,message,options)
   })
 end
 local function villageBoardDialogue(player,sourcePosition)
+  -- [스토리 연결 · 오딧세이식 대화 선택] 초원 메인 퀘스트(05 연대기)를 마치면 촌장 나린이 기사단 이야기를 꺼낸다.
+  local story=readNumber(player,"NarinStory",0)
+  if readNumber(player,"QuestStage",1)>=6 then
+    villageSessions[player]={position=sourcePosition or villageCenter,expires=os.clock()+60}
+    if story==0 then
+      villageDialogue(player,"촌장 나린 · 지워진 기사단",
+        "…그 문양. 네가 가져온 연대기에 새겨진 렌스기사단의 문장이구나.\n\n나도 이 마을에서 눈을 뜬 날 이전은 기억나지 않아. "..
+        "다만 서쪽 숲으로 들어간 기사들의 이름만은 낡은 의뢰판 뒷면에 새겨져 있었지. 렌스, 카인, 미나, 닉.\n\n"..
+        "네가 카인이라면… 나는 오래전부터 너를 기다렸는지도 몰라.",{
+        {label="그 의뢰판을 보여 줘 (진실을 묻는다)",action="village:story:1"},
+        {label="이 마을이 무엇을 숨기는지 말해 (의심한다)",action="village:story:2"},
+        {label="지금은 마을 일이 먼저야 (미룬다)",action="village:story:3"},
+      })
+      return
+    elseif story==1 then
+      villageDialogue(player,"촌장 나린","의뢰판 뒷면의 이름들은 네 동료의 것이야. 서쪽 숲의 우두머리 늑대를 넘어야 세계수로 길이 열려. 그곳에서 닉을 찾아.")
+      return
+    elseif story==2 then
+      villageDialogue(player,"촌장 나린","의심하는 건 당연해. 그래도 숲이 사람의 이름을 먹는다는 건 사실이야. 서쪽 길목의 우두머리부터 쓰러뜨려야 해.")
+      return
+    end
+  end
   local index,contract=villageCurrentContract(player)
   if not contract then
     villageDialogue(player,"초원 마을 · 의뢰 완료","세 의뢰의 진상을 모두 기록했어. 기사단 연대기는 그대로 이어져.")
@@ -670,6 +692,23 @@ local function villageChoose(player,actionId)
   local session=villageSessions[player]
   if not session or os.clock()>session.expires
     or not villageNear(player,session.position,16) then return end
+  local storyPick=actionId:match("^village:story:([123])$")
+  if storyPick and readNumber(player,"NarinStory",0)==0 and readNumber(player,"QuestStage",1)>=6 then
+    local pick=tonumber(storyPick)
+    setNumber(player,"NarinStory",pick)
+    villageInteractionCooldown[player]=os.clock()
+    villageSessions[player]=nil
+    if pick==3 then
+      setNumber(player,"NarinStory",0) -- 미루면 다시 말을 걸 수 있다.
+      villageDialogue(player,"촌장 나린","그래, 서두를 일은 아니야. 준비가 되면 다시 와.")
+      return
+    end
+    setNumber(player,"Coins",readNumber(player,"Coins",0)+(pick==1 and 40 or 25))
+    villageDialogue(player,"촌장 나린",pick==1
+      and "의뢰판 뒷면에 네 이름이 있었어. 길은 서쪽 숲 우두머리 너머로 이어져. (재화 +40 · 스토리: 진실을 택했어)"
+      or "…좋아, 의심은 살아남는 자의 몫이야. 숲의 이름 도둑을 막아 줘. (재화 +25 · 스토리: 의심을 택했어)")
+    return
+  end
   local index,contract=villageCurrentContract(player)
   if not contract then return end
   local phase=readNumber(player,"VillageContractPhase",0)
@@ -862,28 +901,40 @@ local function createMeadowVillage()
     task.wait()
   end
   gameWorld:SetAttribute("MeadowVillageFlatGroundReady",true)
-  -- [위쳐풍 숲마을] 직선 격자 대신 실제 Terrain 흙길·우물 둘레길·농가 샛길.
-  -- 의뢰판(0,-101)·우물(0,-146)·촌장/NPC·기존 퀘스트 지점을 옮기지 않는다.
+  -- [마을 구역 / 퀘스트 동선] 광장(촌장/게시판)에서 서쪽 약초, 동쪽 추적,
+  -- 우물/경비 초소, 양쪽 사냥 출구, 남부 생활·농경 구역으로 실제 Terrain 흙길을 잇는다.
+  -- 몬스터·단서·NPC·저장 좌표는 그대로 두고 기존 모델 주택의 문 앞으로 샛길을 낸다.
   local villageRoadRoutes={
-    {width=5.6,points={{0,-53},{5,-78},{-4,-99},{-9,-118},{-19,-139},{-19,-160},{-3,-186},{8,-217},{-4,-251},{6,-285},{-2,-333}}},
-    -- [돌우물] 중심의 실제 원본 우물과 접근 공간은 비워 둔다.
-    {width=3.6,points={{-11,-126},{-19,-134},{-21,-147},{-18,-160},{-5,-170},{12,-167},{20,-153},{19,-138},{11,-128}}},
-    {width=4.7,points={{-6,-102},{-35,-112},{-62,-120},{-79,-108}}},
-    {width=4.2,points={{4,-103},{35,-108},{68,-124},{89,-107}}},
-    {width=4.3,points={{-20,-160},{-55,-168},{-82,-171},{-99,-181}}},
-    {width=4.5,points={{18,-162},{56,-158},{85,-163},{100,-179}}},
-    {width=4.2,points={{-5,-211},{-40,-214},{-75,-228},{-88,-249}}},
-    {width=4.4,points={{8,-216},{45,-225},{77,-228},{90,-246}}},
-    {width=4.3,points={{-5,-280},{-46,-289},{-80,-306},{-107,-335}}},
-    {width=4.2,points={{6,-289},{49,-306},{82,-318},{78,-338}}},
-    -- [외곽 생활권] 나무꾼집·농가·작업장으로 이어지는 자연스러운 수레길.
-    {width=4.2,points={{-64,-119},{-126,-127},{-151,-106},{-178,-103},{-208,-108}}},
-    {width=4.1,points={{70,-124},{129,-129},{158,-146},{180,-141},{228,-145}}},
-    {width=4.5,points={{-81,-191},{-135,-204},{-161,-231},{-158,-274},{-190,-289},{-208,-336},{-250,-341}}},
-    {width=4.2,points={{85,-193},{135,-207},{159,-230},{168,-268},{169,-307},{185,-345},{261,-347}}},
-    -- [숲 탐험길] 안전한 마을 동·서문을 기존 외곽 숲길에 연결.
-    {width=4.5,points={{-165,-206},{-207,-198},{-245,-200},{-288,-209}}},
-    {width=4.5,points={{163,-206},{207,-200},{245,-199},{288,-211}}},
+    -- [첫 진입] 북쪽 진입로 → 게시판 → 돌우물 → 수정문 → 남부 정착지
+    {width=6.1,points={{0,-53},{3,-79},{-3,-101},{-7,-128},{-9,-146},{-4,-169},{0,-187},{3,-220},{-2,-252},{2,-287},{-2,-333}}},
+    {width=3.7,points={{-11,-126},{-20,-137},{-21,-150},{-17,-161},{-5,-169},{13,-164},{20,-152},{18,-139},{10,-128}}},
+    -- [의뢰 1] 의뢰판 → 약초상 미라 → 찢긴 약초 꾸러미
+    {width=5.1,points={{-5,-105},{-34,-116},{-42,-128},{-68,-122},{-78,-131}}},
+    -- [의뢰 3] 의뢰판 → 추적자 라온 → 보급 수레 조사
+    {width=5.1,points={{4,-104},{34,-115},{69,-129},{72,-163},{57,-207},{28,-214},{5,-219}}},
+    -- [의뢰 2] 우물의 봉인석 → 경비병 아린
+    {width=4.6,points={{-9,-146},{-18,-159},{-24,-174},{-2,-188}}},
+    -- [중앙 마을] 여관·시장, 회관, 공방으로 이어지는 골목
+    {width=4.4,points={{35,-115},{54,-106},{78,-100}}},
+    {width=4.4,points={{69,-129},{79,-146},{86,-161}}},
+    {width=4.4,points={{-18,-159},{-50,-176},{-73,-184},{-87,-191}}},
+    -- [서문 / 의뢰 1] 약초상 → 서쪽 숲 → 우두머리 늑대
+    {width=5.1,points={{-68,-122},{-107,-153},{-139,-178},{-149,-213},{-191,-221},{-239,-217},{-282,-211},{-317,-194}}},
+    -- [서문 / 의뢰 3] 수레 현장 이후 남부 골목을 통해 서쪽 초원 늑대
+    {width=4.8,points={{3,-219},{-38,-219},{-81,-223},{-120,-234},{-168,-235},{-215,-234},{-261,-232},{-300,-233}}},
+    -- [동문 / 의뢰 2] 경비 초소 → 동쪽 숲 → 황혼 박쥐
+    {width=5.1,points={{1,-189},{37,-202},{58,-208},{73,-174},{110,-203},{160,-217},{209,-214},{250,-210},{300,-212}}},
+    -- [직업 마을] 약초집·벌목집·목수집, 여관·빵집·숲지기집
+    {width=4.1,points={{-78,-131},{-119,-123},{-151,-113},{-167,-109}}},
+    {width=4.1,points={{-107,-153},{-137,-170},{-160,-190}}},
+    {width=4.1,points={{78,-100},{116,-105},{149,-112},{164,-113}}},
+    {width=4.1,points={{110,-203},{140,-192},{164,-182}}},
+    -- [주거 지구] 대로와 가까운 집 문까지만 샛길 연결
+    {width=4.0,points={{-38,-219},{-64,-243},{-79,-252}}},
+    {width=4.0,points={{28,-214},{56,-235},{75,-247}}},
+    -- [남부 농경 지구] 창고·마구간·과수원과 동서 출입
+    {width=4.5,points={{-2,-280},{-46,-288},{-76,-298},{-93,-308},{-147,-289},{-170,-271},{-208,-311}}},
+    {width=4.5,points={{2,-280},{48,-288},{77,-298},{92,-310},{145,-291},{168,-274},{207,-313}}},
   }
   local villageRoadSegments=0
   for routeIndex,route in ipairs(villageRoadRoutes) do
@@ -902,6 +953,14 @@ local function createMeadowVillage()
         -- [보이는 흙길] 옛 도로가 잔디에 묻히지 않게 지면 위로 0.35만 올린다.
         -- 실제 Terrain만 사용하며 모바일 보행과 NPC 의뢰 위치를 가리지 않는다.
         meadowTerrain:FillBall(Vector3.new(x,2.06-radius+.35,z),radius,Enum.Material.Ground)
+        -- [마을 돌길] 주 출입로·여관·회관 앞에만 닳은 자갈길을 자연스럽게 드러낸다.
+        if (routeIndex==1 and z>-183 and step%4==0)
+          or (routeIndex==6 and step%5==0)
+          or (routeIndex==7 and step%5==0) then
+          local stoneRadius=1.55+((routeIndex+segment+step)%3)*.19
+          meadowTerrain:FillBall(Vector3.new(x,2.06-stoneRadius+.48,z),
+            stoneRadius,Enum.Material.Cobblestone)
+        end
         if step%9==0 then task.wait() end
       end
       villageRoadSegments+=1
@@ -909,7 +968,8 @@ local function createMeadowVillage()
   end
   gameWorld:SetAttribute("MeadowVillageRoadRoutes",#villageRoadRoutes)
   gameWorld:SetAttribute("MeadowVillageRoadSegments",villageRoadSegments)
-  gameWorld:SetAttribute("MeadowVillageLayoutStyle","RUSTIC_WINDING_FOREST_VILLAGE")
+  gameWorld:SetAttribute("MeadowVillageLayoutStyle","WITCHER_SKYRIM_QUEST_DISTRICTS_V2")
+  gameWorld:SetAttribute("MeadowVillageDistricts","CIVIC,HERBALISTS,MARKET,CRAFT,RESIDENTIAL,FARMLAND,FOREST_EDGE")
   -- [마을 광장 바닥] 초원과 동떨어진 흰색 Cobblestone 직사각형 덮개는 두지 않는다.
   -- 기존 Grass 지면과 Ground 골목을 그대로 연결해 의뢰판·주민·우물 위치를 보존한다.
   -- [실제 건물] 기둥/벽/지붕/문은 저장소 Kenney 원본 3D GLB 등록본만 사용한다.
@@ -943,56 +1003,58 @@ local function createMeadowVillage()
       villageWholeHouseReady=false;break
     end
   end
-  -- [중세 숲마을 건축] 위처 3의 비대칭 농촌 배치만 참고하고 실제 CC0 모듈 외형은 유지한다.
-  -- 기존 6동을 보존하되 생활·상업·농경·외곽 구역에 배치하고 서로 다른 실루엣을 만든다.
+  -- [위쳐·스카이림식 구역] 기존 16채를 북쪽 여관/시장, 서쪽 약초·공방, 동쪽 회관,
+  -- 남쪽 주민·농가, 외곽 숲지기 생활권으로 묶는다. 실제 CC0 완성형·모듈만 사용한다.
   local villageArchitectureScale=2.35
   local villageBuildings=0
   local villageProps=0
   local villageWellReady=false
   -- [마을 생활감] 검증된 원본 CC0 랜턴에만 빛과 불씨를 연결한다. 장식 파츠 신규 제작 없음.
   local villageLanternLights={}
+  local villageWindowLightCount=0
   local expectedVillageBuildings=16
   if nativeVillageReady then
     -- [집 유형] 짧은 초가, 긴 농가/공방, 이층 여관/회관. 문 방향은 광장·골목을 향하게 한다.
     -- 원래 등장한 건물 이름을 유지해서 기존 컨텐츠 참조에 영향이 없게 한다.
     local houses={
-      {x=-95,z=-84,angle=.17,name="Village_HealerHouse",label="약초상 · 의원",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,chimney=true,wing=-1,wingZ=2.7,
+      {x=-91,z=-133,angle=.17,name="Village_HealerHouse",label="약초상 · 의원",district="HERBALISTS",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,chimney=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(125,107,88),roof=Color3.fromRGB(134,113,82)},
-      {x=116,z=-100,angle=math.pi-.21,name="Village_Guesthouse",label="마을 여관",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseA",masonry=true,chimney=true,archway=true,balcony=true,
+      {x=92,z=-99,angle=math.pi-.21,name="Village_Guesthouse",label="마을 여관",district="MARKET",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseA",masonry=true,chimney=true,archway=true,balcony=true,
        timber=Color3.fromRGB(151,117,88),roof=Color3.fromRGB(123,91,72)},
-      {x=-121,z=-167,angle=.21,name="Village_Workshop",label="대장간 · 공방",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=5.4,
+      {x=-98,z=-193,angle=.21,name="Village_Workshop",label="대장간 · 공방",district="CRAFT",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(106,94,83),roof=Color3.fromRGB(116,105,88)},
-      {x=129,z=-154,angle=math.pi+.14,name="Village_WardenHall",label="마을 회관",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseB",masonry=true,chimney=true,archway=true,balcony=true,wing=-1,wingZ=5.4,
+      {x=99,z=-161,angle=math.pi+.14,name="Village_WardenHall",label="마을 회관",district="CIVIC",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,prefab="villageHouseB",masonry=true,chimney=true,archway=true,balcony=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(146,119,91),roof=Color3.fromRGB(121,92,77)},
-      {x=-108,z=-235,angle=-.18,name="Village_ResidentHouseWest",label="서쪽 주민집",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
+      {x=-89,z=-256,angle=-.18,name="Village_ResidentHouseWest",label="서쪽 주민집",district="RESIDENTIAL",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
        timber=Color3.fromRGB(153,132,107),roof=Color3.fromRGB(139,112,82)},
-      {x=107,z=-222,angle=math.pi+.23,name="Village_ResidentHouseEast",label="동쪽 주민집",scale=.96,length=2,storeys=1,roofPitch=1.09,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
+      {x=89,z=-250,angle=math.pi+.23,name="Village_ResidentHouseEast",label="동쪽 주민집",district="RESIDENTIAL",scale=.96,length=2,storeys=1,roofPitch=1.09,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(116,102,87),roof=Color3.fromRGB(123,118,95)},
-      {x=-197,z=-80,angle=-.14,name="Village_WoodcutterHome",label="벌목꾼의 집",scale=.86,length=2,storeys=1,roofPitch=.96,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=2.7,
+      {x=-178,z=-109,angle=-.14,name="Village_WoodcutterHome",label="벌목꾼의 집",district="FOREST_EDGE",scale=.86,length=2,storeys=1,roofPitch=.96,doorZ=2.7,sideWindow=false,porch=0,lantern=false,chimney=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(119,103,80),roof=Color3.fromRGB(131,108,80)},
-      {x=205,z=-112,angle=math.pi-.33,name="Village_WoodsmanHome",label="숲지기 오두막",scale=.91,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,leanTo=true,
+      {x=178,z=-112,angle=math.pi-.33,name="Village_WoodsmanHome",label="숲지기 오두막",district="FOREST_EDGE",scale=.91,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,leanTo=true,
        timber=Color3.fromRGB(111,108,91),roof=Color3.fromRGB(122,110,80)},
-      {x=-208,z=-170,angle=.24,name="Village_CarpenterHome",label="목수 작업집",scale=.94,length=3,storeys=1,roofPitch=.91,doorZ=0,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=-5.4,
+      {x=-179,z=-191,angle=.24,name="Village_CarpenterHome",label="목수 작업집",district="CRAFT",scale=.94,length=3,storeys=1,roofPitch=.91,doorZ=0,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,wing=-1,wingZ=-5.4,
        timber=Color3.fromRGB(134,109,88),roof=Color3.fromRGB(138,111,83)},
-      {x=203,z=-176,angle=math.pi-.25,name="Village_BakerHome",label="빵 굽는 집",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,leanTo=true,
+      {x=178,z=-180,angle=math.pi-.25,name="Village_BakerHome",label="빵 굽는 집",district="MARKET",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,masonry=true,chimney=true,leanTo=true,
        timber=Color3.fromRGB(162,126,96),roof=Color3.fromRGB(142,102,80)},
-      {x=-190,z=-258,angle=-.11,name="Village_Granary",label="곡물 창고",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,prefab="villageHouseC",masonry=true,flatRoof=true,leanTo=true,
+      {x=-182,z=-270,angle=-.11,name="Village_Granary",label="곡물 창고",district="FARMLAND",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,prefab="villageHouseC",masonry=true,flatRoof=true,leanTo=true,
        timber=Color3.fromRGB(129,107,81),roof=Color3.fromRGB(147,118,88)},
-      {x=196,z=-259,angle=math.pi+.19,name="Village_Farmstead",label="농가 · 마구간",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,prefab="villageHouseD",masonry=true,flatRoof=true,wing=-1,wingZ=5.4,
+      {x=182,z=-274,angle=math.pi+.19,name="Village_Farmstead",label="농가 · 마구간",district="FARMLAND",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,prefab="villageHouseD",masonry=true,flatRoof=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(117,98,75),roof=Color3.fromRGB(133,110,87)},
-      {x=-109,z=-301,angle=.23,name="Village_SouthCottageWest",label="남쪽 농가",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
+      {x=-104,z=-312,angle=.23,name="Village_SouthCottageWest",label="남쪽 농가",district="RESIDENTIAL",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,chimney=true,wing=-1,wingZ=-2.7,
        timber=Color3.fromRGB(148,126,102),roof=Color3.fromRGB(137,110,83)},
-      {x=115,z=-321,angle=math.pi-.19,name="Village_SouthCottageEast",label="길가 주민집",scale=.92,length=2,storeys=1,roofPitch=1.02,doorZ=2.7,sideWindow=false,porch=1,lantern=false,flatRoof=true,leanTo=true,
+      {x=105,z=-312,angle=math.pi-.19,name="Village_SouthCottageEast",label="길가 주민집",district="RESIDENTIAL",scale=.92,length=2,storeys=1,roofPitch=1.02,doorZ=2.7,sideWindow=false,porch=1,lantern=false,flatRoof=true,leanTo=true,
        timber=Color3.fromRGB(112,98,82),roof=Color3.fromRGB(127,101,78)},
-      {x=-233,z=-314,angle=-.11,name="Village_OrchardHome",label="과수원 농가",scale=.84,length=2,storeys=1,roofPitch=.87,doorZ=2.7,sideWindow=true,porch=0,lantern=false,chimney=true,leanTo=true,
+      {x=-229,z=-323,angle=-.11,name="Village_OrchardHome",label="과수원 농가",district="FARMLAND",scale=.84,length=2,storeys=1,roofPitch=.87,doorZ=2.7,sideWindow=true,porch=0,lantern=false,chimney=true,leanTo=true,
        timber=Color3.fromRGB(133,121,98),roof=Color3.fromRGB(139,120,83)},
-      {x=222,z=-325,angle=math.pi+.29,name="Village_EastFarmhouse",label="동쪽 농가",scale=.94,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
+      {x=226,z=-324,angle=math.pi+.29,name="Village_EastFarmhouse",label="동쪽 농가",district="FARMLAND",scale=.94,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,flatRoof=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(123,102,87),roof=Color3.fromRGB(125,115,91)},
     }
     for houseIndex,house in ipairs(houses) do
       -- [서로 다른 완성형 건물] 기존 여관·회관·창고·농가를 각각 별개 중세 모델로 구성.
       -- 등록·로드 실패 시 해당 건물은 기존 조립형으로 남기고 저장 및 의뢰 좌표를 보존한다.
       local hasOriginalHouse=false
+      local houseWindowLit=false
       if house.prefab and villageWholeHouseReady then
         -- [완성형 CC0 집] 링크가 끊긴 원본 재질 때문에 거대 회색 집이 되지 않도록
         -- 실제 원본 MeshPart만 집의 지붕/목재/회벽 팔레트로 마감한다.
@@ -1032,7 +1094,7 @@ local function createMeadowVillage()
           houseModel:SetAttribute("MeadowVillageScenery",true)
           houseModel:SetAttribute("VillageBuilding",house.name)
           houseModel:SetAttribute("VillageRoofSilhouette","COMPLETE_CC0_"..house.prefab)
-          houseModel:SetAttribute("VillageDistrict",houseIndex<=4 and "CENTRAL" or "FARMLAND")
+          houseModel:SetAttribute("VillageDistrict",house.district)
           houseModel:PivotTo(houseModel:GetPivot()*CFrame.Angles(0,house.angle,0))
           local fullBox,fullSize=houseModel:GetBoundingBox()
           local plaster=house.timber:Lerp(Color3.fromRGB(220,201,170),.78)
@@ -1073,6 +1135,27 @@ local function createMeadowVillage()
               mesh.CanCollide=true
             end
           end
+          -- [밤의 여관·회관] 원본 집의 실제 창문 메시만 빛나게 한다.
+          if house.lantern then
+            for _,window in ipairs(houseModel:GetDescendants()) do
+              if window:IsA("MeshPart") then
+                local label=window.Name:lower()
+                if label:find("window",1,true) or label:find("glass",1,true) then
+                  local light=Instance.new("PointLight")
+                  light.Name="MeadowVillageWindowGlow"
+                  light.Color=Color3.fromRGB(255,193,124)
+                  light.Brightness=0
+                  light.Range=10
+                  light.Shadows=false
+                  light.Parent=window
+                  villageLanternLights[#villageLanternLights+1]=light
+                  villageWindowLightCount+=1
+                  houseWindowLit=true
+                  break
+                end
+              end
+            end
+          end
           local signMesh=houseModel:FindFirstChildWhichIsA("MeshPart",true)
           if signMesh then
             local sign=Instance.new("BillboardGui")
@@ -1082,7 +1165,8 @@ local function createMeadowVillage()
             -- [간판 위치] 작은 건물에서는 원래 10.5스터드 고정 오프셋이 공중에 뜬다.
             sign.StudsOffsetWorldSpace=Vector3.new(0,
               math.max(2,fullBox.Position.Y+fullSize.Y*.5-signMesh.Position.Y+1.5),0)
-            sign.MaxDistance=72
+            sign.MaxDistance=(house.district=="MARKET" or house.district=="CIVIC"
+              or house.district=="HERBALISTS" or house.district=="CRAFT") and 50 or 29
             sign.Parent=signMesh
             local caption=Instance.new("TextLabel")
             caption.Size=UDim2.fromScale(1,1)
@@ -1217,7 +1301,7 @@ local function createMeadowVillage()
           model.Name=house.name.."_"..partIndex
           model:SetAttribute("MeadowVillageScenery",true)
           model:SetAttribute("VillageBuilding",house.name)
-          model:SetAttribute("VillageDistrict",houseIndex<=4 and "CENTRAL" or houseIndex<=10 and "RESIDENTIAL" or "FARMLAND")
+          model:SetAttribute("VillageDistrict",house.district)
           model:SetAttribute("VillageRoofSilhouette",roofSilhouette)
           model:PivotTo(model:GetPivot()*CFrame.Angles(0,rot+(piece.angle or 0),0))
           -- [대장간·농가 굴뚝 연기] 등록된 실제 CC0 굴뚝 메시 꼭대기에만 매우 작은 연무를 만든다.
@@ -1273,6 +1357,22 @@ local function createMeadowVillage()
               end
             end
           end
+          -- [밤의 주거지] 기존 CC0 벽창에만 창문 불빛을 한 집당 하나 켠다.
+          if piece.asset=="villageWindow" and house.lantern and not houseWindowLit then
+            local host=model:FindFirstChildWhichIsA("MeshPart",true)
+            if host then
+              local light=Instance.new("PointLight")
+              light.Name="MeadowVillageWindowGlow"
+              light.Color=Color3.fromRGB(255,193,124)
+              light.Brightness=0
+              light.Range=10
+              light.Shadows=false
+              light.Parent=host
+              villageLanternLights[#villageLanternLights+1]=light
+              villageWindowLightCount+=1
+              houseWindowLit=true
+            end
+          end
           if piece.asset=="villageDoor" and not piece.secondary then
             local front=model:FindFirstChildWhichIsA("MeshPart",true)
             if front then
@@ -1281,7 +1381,8 @@ local function createMeadowVillage()
               sign.Adornee=front
               sign.Size=UDim2.fromOffset(158,28)
               sign.StudsOffsetWorldSpace=Vector3.new(0,7.8,0)
-              sign.MaxDistance=72
+              sign.MaxDistance=(house.district=="MARKET" or house.district=="CIVIC"
+              or house.district=="HERBALISTS" or house.district=="CRAFT") and 50 or 29
               sign.Parent=front
               local caption=Instance.new("TextLabel")
               caption.Size=UDim2.fromScale(1,1)
@@ -1327,7 +1428,7 @@ local function createMeadowVillage()
     end
     -- [마을 숲 바닥·실물 수목] 평평한 검은 초원을 뒤덮던 단색 지면을
     -- 기존 Roblox Terrain 잔디/낙엽의 낮은 얼룩과 승인된 CC0 굽은 나무로 채운다.
-    -- 건물 16채, 우물/게시판, 네 NPC, 굽은 길 16개와 상호작용 반경은 비운다.
+    -- 건물 16채, 우물/게시판, 네 NPC, 굽은 길 19개와 상호작용 반경은 비운다.
     local villageGroundPatches=0
     local villageInteriorTrees=0
     for index=1,540 do
@@ -1397,7 +1498,7 @@ local function createMeadowVillage()
     -- [시장·생활 마당] 식탁처럼 보이던 가판대를 늘리지 않고 두 장터만 유지한다.
     -- 기존 CC0 카트·울타리·등불을 농가와 골목에 비대칭 분산 배치한다.
     local furnishings={
-      {"villageStall",-38,-142,3.15,.21},{"villageStall",37,-173,3.4,-.28},
+      {"villageStall",-42,-151,3.15,.21},{"villageStall",43,-151,3.4,-.28},
       {"villageCart",-65,-187,6,.34},{"villageCart",62,-253,5.6,-.31},
       {"villageCart",-165,-234,6.1,.15},{"villageCart",176,-148,6.1,-.5},
       {"villageLantern",-17,-102,5,0},{"villageLantern",19,-113,5,0},
@@ -1408,6 +1509,14 @@ local function createMeadowVillage()
       -- 촌장·우물·의뢰판·주요 흙길의 충돌/접근 지점은 비워 둔다.
       {"villageLantern",-22,-69,4.5,.1},{"villageLantern",27,-86,4.5,-.1},
       {"villageLantern",-27,-205,4.8,.2},{"villageLantern",27,-280,4.8,-.2},
+      -- [스카이림식 마을길 디테일] 중앙 길 양옆에 등불을 간격 맞춰 더 세우고 외곽 수레를 추가한다.
+      -- 모두 기존 등록 CC0 랜턴·수레만 재사용한다. 지면을 못 찾는 자리는 자동으로 건너뛴다.
+      {"villageLantern",-24,-126,4.8,.05},{"villageLantern",25,-136,4.8,-.05},
+      {"villageLantern",-25,-168,4.8,.1},{"villageLantern",26,-176,4.8,-.1},
+      {"villageLantern",-24,-224,4.8,.05},{"villageLantern",25,-236,4.8,-.05},
+      {"villageLantern",-26,-252,4.8,.1},{"villageLantern",26,-262,4.8,-.1},
+      {"villageCart",-112,-302,5.6,.2},{"villageCart",114,-312,5.8,-.25},
+      {"villageCart",-96,-76,5.6,-.18},{"villageCart",101,-72,5.8,.22},
       {"villageCart",-135,-285,5.5,.32},{"villageCart",147,-291,5.8,-.27},
       {"villageFence",-153,-77,4.8,.22},{"villageFence",-159,-94,4.8,.14},
       {"villageFence",167,-84,4.8,-.27},{"villageFence",173,-106,4.8,-.12},
@@ -1424,12 +1533,17 @@ local function createMeadowVillage()
     -- 모델의 게임별 사용권한이 미확정일 때는 기존 10종 소품만 유지한다.
     if villageDetailReady then
       for _,extra in ipairs({
-        {"villageArch",-34,-111,5.4,.25},{"villageArch",37,-239,5.5,-.24},
+        {"villageArch",-251,-218,11.2,math.pi*.5,"서문 · 늑대 숲"},{"villageArch",251,-210,11.2,math.pi*.5,"동문 · 황혼 박쥐"},
         {"villageRuinWall",-263,-181,6.2,.1},{"villageRuinWall",249,-302,5.6,-.2},
         {"villagePillar",-31,-151,5.0,0},{"villagePillar",30,-153,5.0,0},
         {"villagePillar",-32,-237,5.0,.1},{"villagePillar",32,-239,5.0,-.1},
         {"villageTallTree",-250,-125,15,.22},{"villageTallTree",258,-226,16,-.28},
         {"villageCrookedTree",-246,-300,12,.13},{"villageCrookedTree",240,-73,14,-.15},
+        -- 마을을 감싸는 외곽 숲 가장자리(키 큰 나무 + 휘어진 나무를 번갈아)
+        {"villageTallTree",-217,-86,15,.3},{"villageCrookedTree",226,-96,13,-.2},
+        {"villageTallTree",-206,-256,16,-.1},{"villageCrookedTree",216,-266,13,.25},
+        {"villageTallTree",-124,-334,15,.2},{"villageCrookedTree",132,-338,14,-.3},
+        {"villageCrookedTree",-206,-52,13,.1},{"villageTallTree",205,-48,16,-.2},
       }) do
         furnishings[#furnishings+1]=extra
       end
@@ -1441,6 +1555,30 @@ local function createMeadowVillage()
         model.Name="Meadow_Village_"..row[1].."_"..index
         model:SetAttribute("MeadowVillageScenery",true)
         model:PivotTo(model:GetPivot()*CFrame.Angles(0,row[5],0))
+        -- [길잡이] 실제 등록된 석조 아치에만 동서문 표시를 달아 외곽 전투 동선을 명확히 한다.
+        if row[6] then
+          model:SetAttribute("VillageGate",row[6])
+          local gateMesh=model:FindFirstChildWhichIsA("MeshPart",true)
+          if gateMesh then
+            local sign=Instance.new("BillboardGui")
+            sign.Name="MeadowVillageGateSign"
+            sign.Adornee=gateMesh
+            sign.Size=UDim2.fromOffset(186,32)
+            sign.StudsOffsetWorldSpace=Vector3.new(0,propHeight*.6,0)
+            sign.MaxDistance=95
+            sign.AlwaysOnTop=false
+            sign.Parent=gateMesh
+            local caption=Instance.new("TextLabel")
+            caption.Size=UDim2.fromScale(1,1)
+            caption.BackgroundTransparency=1
+            caption.Font=Enum.Font.GothamBold
+            caption.TextSize=16
+            caption.TextStrokeTransparency=.28
+            caption.TextColor3=Color3.fromRGB(247,219,168)
+            caption.Text=row[6]
+            caption.Parent=sign
+          end
+        end
         if row[1]=="villageFence" or row[1]=="villageCart" then
           for _,mesh in ipairs(model:GetDescendants()) do
             if mesh:IsA("MeshPart") then
@@ -1475,6 +1613,622 @@ local function createMeadowVillage()
       end
       if index%4==0 then task.wait(.03) end
     end
+    -- [위쳐·스카이림식 생활 공간] 실제 등록된 CC0 모델만 구역별로 재사용한다.
+    -- 장식은 퀘스트·길·충돌·경제의 소유권을 갖지 않는다.
+    local villageLivedInScenes={
+      -- [약초상 뒷마당] 약초 꾸러미·약병·울타리.
+      {"villageFence",-120,-116,4.4,.14,"HERBALISTS"},
+      {"villageFence",-121,-143,4.4,.05,"HERBALISTS"},
+      {"item_potion1_filled",-128,-131,1.8,.32,"HERBALISTS"},
+      {"item_pouch",-126,-149,2.4,-.24,"HERBALISTS"},
+      {"villageCart",-135,-136,5.5,.27,"HERBALISTS"},
+      -- [여관·장터] 짐수레·천막·보따리.
+      {"villageStall",54,-76,5.1,.23,"MARKET"},
+      {"item_chalice",50,-87,1.65,.12,"MARKET"},
+      {"item_backpack",143,-131,3.0,-.35,"MARKET"},
+      {"item_pouch",136,-132,2.4,.27,"MARKET"},
+      {"villageCart",152,-137,6.1,-.3,"MARKET"},
+      {"item_chickenleg",159,-155,1.7,.28,"MARKET"},
+      -- [대장간·목수] 작업용 망치·벌목 도끼·석재와 장작.
+      {"item_hammer_double",-130,-202,2.4,-.18,"CRAFT"},
+      {"item_rock_1",-141,-195,3.3,.19,"CRAFT"},
+      {"item_woodlog",-135,-209,3.4,.38,"CRAFT"},
+      {"villageCart",-148,-211,5.8,-.25,"CRAFT"},
+      {"item_axe_small",-215,-183,2.2,.28,"CRAFT"},
+      {"item_woodlog",-221,-199,3.6,-.14,"CRAFT"},
+      {"item_woodlog",-216,-212,3.0,.36,"CRAFT"},
+      -- [숲 가장자리] 벌목꾼·숲지기의 작업 흔적.
+      {"item_woodlog",-215,-121,4.1,.32,"FOREST_EDGE"},
+      {"item_axe_small",-210,-131,2.5,-.18,"FOREST_EDGE"},
+      {"villageCart",-222,-136,5.8,.43,"FOREST_EDGE"},
+      {"item_bow_wooden",216,-130,2.5,.18,"FOREST_EDGE"},
+      {"villageFence",227,-143,5.0,-.18,"FOREST_EDGE"},
+      -- [주거지] 땔감·보따리·가벼운 뒷마당.
+      {"villageFence",-126,-260,4.6,.12,"RESIDENTIAL"},
+      {"item_woodlog",-129,-276,2.9,-.29,"RESIDENTIAL"},
+      {"item_pouch",128,-256,2.0,.34,"RESIDENTIAL"},
+      {"villageCart",139,-265,5.2,-.21,"RESIDENTIAL"},
+      {"villageFence",143,-282,4.4,-.12,"RESIDENTIAL"},
+      -- [농가·창고] 곡물 수송로를 따라 수레·울타리.
+      {"villageFence",-237,-266,4.7,.12,"FARMLAND"},
+      {"villageFence",-239,-284,4.7,.08,"FARMLAND"},
+      {"villageCart",-228,-284,5.7,-.16,"FARMLAND"},
+      {"item_pouch",-213,-298,2.6,.19,"FARMLAND"},
+      {"item_woodlog",221,-291,3.2,-.19,"FARMLAND"},
+      {"villageFence",242,-291,4.8,-.17,"FARMLAND"},
+      {"item_pouch",250,-322,2.7,.13,"FARMLAND"},
+      {"villageCart",247,-276,5.6,.3,"FARMLAND"},
+      -- [여관 앞마당] 술잔·닭다리·책 한 권이 놓인 손님 자리, 입구 등불, 짐수레.
+      {"item_chalice",76,-92,1.65,.4,"MARKET"},{"item_chickenleg",72,-100,1.7,-.3,"MARKET"},
+      {"item_book1_closed",69,-90,1.6,.6,"MARKET"},{"item_chalice",73,-107,1.65,-.5,"MARKET"},
+      {"villageLantern",80,-84,4.6,0,"MARKET"},{"villageLantern",79,-116,4.6,0,"MARKET"},
+      {"villageCart",114,-82,5.6,.2,"MARKET"},{"item_backpack",120,-90,3.0,-.4,"MARKET"},
+      -- [마을 회관] 공고 두루마리와 열쇠, 양옆 등불.
+      {"villageLantern",83,-149,4.6,0,"MARKET"},{"villageLantern",83,-174,4.6,0,"MARKET"},
+      {"item_scroll",84,-158,1.8,.3,"MARKET"},{"item_key1",83,-165,1.5,-.2,"MARKET"},
+      -- [대장간] 만들다 만 검, 철 갑옷, 금괴, 화로 곁 횃불.
+      {"item_sword",-112,-184,2.6,.9,"CRAFT"},{"item_armor_metal",-84,-205,3.2,-.3,"CRAFT"},
+      {"item_gold_ingots",-120,-196,1.8,.5,"CRAFT"},{"item_torch",-86,-178,2.4,0,"CRAFT"},
+      {"item_dagger",-109,-206,1.8,-.7,"CRAFT"},
+      -- [약초상] 약병 선반 느낌의 병들과 광물, 약초 책.
+      {"item_potion2_filled",-100,-124,1.8,.2,"HERBALISTS"},{"item_potion3_filled",-82,-124,1.8,-.3,"HERBALISTS"},
+      {"item_potion4_filled",-96,-146,1.8,.5,"HERBALISTS"},{"item_mineral",-104,-143,2.2,.1,"HERBALISTS"},
+      {"item_book1_closed",-83,-146,1.6,.4,"HERBALISTS"},
+      -- [농가·마구간] 장작더미, 짐수레, 울타리, 곡식 자루.
+      {"item_woodlog",166,-262,3.0,.4,"FARMLAND"},{"item_woodlog",168,-286,3.2,.7,"FARMLAND"},
+      {"villageCart",200,-258,5.6,.2,"FARMLAND"},{"villageFence",208,-264,4.8,.1,"FARMLAND"},
+      {"item_pouch",196,-290,2.6,-.3,"FARMLAND"},
+      -- [곡물 창고] 곡식 자루와 수레, 장작.
+      {"item_pouch",-168,-256,2.6,.2,"FARMLAND"},{"villageCart",-196,-254,5.6,-.2,"FARMLAND"},
+      {"item_woodlog",-166,-284,3.2,.3,"FARMLAND"},{"item_pouch",-196,-284,2.6,.6,"FARMLAND"},
+      -- [동서 숲길] 등록된 실제 랜턴에만 밤빛을 더한다.
+      {"villageLantern",-243,-234,4.3,0,"GATE"},
+      {"villageLantern",241,-229,4.3,0,"GATE"},
+    }
+    local livedInCount=0
+    for index,row in ipairs(villageLivedInScenes) do
+      local position=Vector2.new(row[2],row[3])
+      local protected=false
+      for _,node in ipairs({
+        {0,-101,19},{0,-146,19},{-68,-122,15},{69,-129,15},
+        {-2,-188,15},{-41,-128,13},{-24,-174,13},{57,-207,13},
+      }) do
+        if (position-Vector2.new(node[1],node[2])).Magnitude<node[3] then
+          protected=true
+          break
+        end
+      end
+      if not protected then
+        local item=worldAsset(row[1],Vector3.new(row[2],3,row[3]),row[4])
+        if item then
+          item.Name="Meadow_Village_LivedIn_"..row[6].."_"..index
+          item:SetAttribute("MeadowVillageScenery",true)
+          item:SetAttribute("VillageDistrict",row[6])
+          item:SetAttribute("VillageDressingSource","REGISTERED_CC0_NATIVE_ASSET")
+          -- 수입 모델의 피벗이 떠 있어도 보이는 메시 중심으로만 회전한다.
+          local box=item:GetBoundingBox()
+          item:PivotTo(CFrame.new(box.Position)*CFrame.Angles(0,row[5],0)
+            *CFrame.new(-box.Position)*item:GetPivot())
+          for _,mesh in ipairs(item:GetDescendants()) do
+            if mesh:IsA("MeshPart") then
+              mesh.CanCollide=false
+              mesh.CanQuery=false
+              mesh.CanTouch=false
+              if row[1]=="villageFence" or row[1]=="villageCart" then
+                mesh.Material=Enum.Material.Wood
+                mesh.Color=row[6]=="FARMLAND" and Color3.fromRGB(121,104,78)
+                  or row[6]=="CRAFT" and Color3.fromRGB(102,83,69)
+                  or Color3.fromRGB(130,104,80)
+              end
+            end
+          end
+          if row[1]=="villageLantern" then
+            local host=item:FindFirstChildWhichIsA("MeshPart",true)
+            if host then
+              local light=Instance.new("PointLight")
+              light.Name="MeadowVillageLanternGlow"
+              light.Color=Color3.fromRGB(255,179,111)
+              light.Brightness=0
+              light.Range=13
+              light.Shadows=false
+              light.Parent=host
+              villageLanternLights[#villageLanternLights+1]=light
+            end
+          end
+          livedInCount+=1
+        end
+      end
+      if index%5==0 then task.wait(.03) end
+    end
+    gameWorld:SetAttribute("MeadowVillageLivedInDetailCount",livedInCount)
+    gameWorld:SetAttribute("MeadowVillageWindowLightCount",villageWindowLightCount)
+    -- [마을 3D 디테일 V2] Kenney CC0(Town/Survival/Food/Nature) 실물 모델만 사용한다. 파츠 조립 없음.
+    -- 좌표는 도로·건물·퀘스트 보호 지점·기존 소품과 겹치지 않도록 미리 검증한 값이다.
+    -- {키, x, z, 높이, 회전, 구역, 지면 위 높이(상자·통 위 음식)}
+    do
+    local villageDetailV2={
+      {"vxBucket",-109.3,-137.2,1.79,0.36,"HERBALISTS",0},
+      {"vxBarrelOpen",-107.6,-133.8,3.2,2.72,"HERBALISTS",0},
+      {"villageHedge",-82.5,-114.7,1.55,4.01,"HERBALISTS",0},
+      {"villageHedge",-104.9,-118.6,1.55,0.39,"HERBALISTS",0},
+      {"vxPotStew",-85.2,-153.2,0.61,1.53,"HERBALISTS",0},
+      {"vxCabbage",-76.0,-148.0,0.9,1.81,"HERBALISTS",0},
+      {"vxFoodPumpkin",-89.2,-153.1,1.2,5.5,"HERBALISTS",0},
+      {"vxBox",-72.7,-139.6,2.35,4.17,"HERBALISTS",0},
+      {"vxApple",-72.5,-139.5,0.45,6.24,"HERBALISTS",2.3},
+      {"vxPie",-72.3,-139.9,0.26,2.42,"HERBALISTS",2.3},
+      {"villageStallRed",92.3,-76.3,7.69,0.13,"MARKET",0},
+      {"villageStallGreen",111.4,-116.5,7.69,-3.01,"MARKET",0},
+      {"villageBannerRed",83.3,-121.1,5.21,1.04,"MARKET",0},
+      {"villageStallBench",97.0,-125.1,1.43,-3.01,"MARKET",0},
+      {"villageStallStool",75.6,-86.9,1.43,3.99,"MARKET",0},
+      {"vxBarrel",112.8,-99.0,3.2,0.64,"MARKET",0},
+      {"vxBarrel",115.5,-95.0,3.2,6.15,"MARKET",0},
+      {"vxBarrelOpen",104.8,-76.7,3.2,3.35,"MARKET",0},
+      {"vxBox",96.0,-120.8,2.35,1.4,"MARKET",0},
+      {"vxFoodPumpkin",96.3,-120.5,1.2,4.65,"MARKET",2.3},
+      {"vxFoodCarrot",95.8,-120.8,1.0,2.23,"MARKET",2.3},
+      {"vxBoxOpen",111.4,-95.4,2.91,1.76,"MARKET",0},
+      {"vxCheese",111.4,-95.4,0.37,1.22,"MARKET",2.51},
+      {"vxBoxOpen",74.4,-112.7,2.91,5.08,"MARKET",0},
+      {"vxPie",74.4,-112.7,0.26,6.21,"MARKET",2.51},
+      {"vxBarrel",92.0,-122.4,3.2,1.12,"MARKET",0},
+      {"vxMug",92.3,-122.4,0.46,4.96,"MARKET",3.15},
+      {"vxMug",91.6,-122.2,0.46,2.09,"MARKET",3.15},
+      {"vxWorkbenchAnvil",-90.4,-216.1,3.2,2.49,"CRAFT",0},
+      {"vxWorkbench",-117.6,-179.0,2.73,4.55,"CRAFT",0},
+      {"vxWorkbenchGrind",-91.6,-210.2,2.63,5.19,"CRAFT",0},
+      {"vxResourcePlanks",-76.1,-195.7,0.85,2.2,"CRAFT",0},
+      {"vxResourceWood",-115.4,-198.5,0.56,0.09,"CRAFT",0},
+      {"vxResourceStone",-119.6,-183.5,1.03,5.19,"CRAFT",0},
+      {"vxBoxLarge",-93.4,-174.4,2.35,1.84,"CRAFT",0},
+      {"vxBarrel",-96.7,-171.5,3.2,1.63,"CRAFT",0},
+      {"vxToolPickaxe",-118.8,-187.4,2.26,5.68,"CRAFT",0},
+      {"vxToolShovel",-75.0,-192.4,2.73,1.08,"CRAFT",0},
+      {"vxPlanks",-101.8,-170.5,0.37,3.19,"CRAFT",0},
+      {"vxPoles",-105.4,-215.4,6.2,5.92,"CRAFT",0},
+      {"villageBannerRed",97.4,-135.1,5.21,1.04,"CIVIC",0},
+      {"villageBannerGreen",125.6,-170.9,5.21,-0.35,"CIVIC",0},
+      {"vxChest",113.4,-144.2,2.44,2.78,"CIVIC",0},
+      {"vxSignpost",105.1,-189.2,4.32,0.66,"CIVIC",0},
+      {"villageHedgeLarge",114.4,-138.5,3.72,4.15,"CIVIC",0},
+      {"villageHedge",110.1,-180.5,1.55,2.71,"CIVIC",0},
+      {"villagePillarWood",107.0,-138.5,6.2,4.54,"CIVIC",0},
+      {"villageHedge",-98.1,-239.8,1.55,3.22,"RESIDENTIAL",0},
+      {"vxBucket",-69.9,-247.8,1.79,4.95,"RESIDENTIAL",0},
+      {"vxBarrel",-90.5,-241.0,3.2,4.89,"RESIDENTIAL",0},
+      {"vxResourceWood",-107.0,-246.5,0.56,5.15,"RESIDENTIAL",0},
+      {"villageStallBench",-73.0,-264.9,1.43,-2.75,"RESIDENTIAL",0},
+      {"villageWheel",-102.6,-249.1,2.98,5.9,"RESIDENTIAL",0},
+      {"vxFoodPumpkin",-102.1,-270.7,1.2,0.53,"RESIDENTIAL",0},
+      {"vxBox",-79.6,-267.9,2.35,5.42,"RESIDENTIAL",0},
+      {"vxLoafRound",-79.8,-267.9,0.49,5.82,"RESIDENTIAL",2.3},
+      {"vxApple",-79.8,-268.3,0.45,3.31,"RESIDENTIAL",2.3},
+      {"villageHedge",90.2,-233.0,1.55,1.01,"RESIDENTIAL",0},
+      {"vxBucket",105.8,-244.5,1.79,1.96,"RESIDENTIAL",0},
+      {"vxBarrel",81.7,-229.8,3.2,1.82,"RESIDENTIAL",0},
+      {"vxResourceWood",79.6,-236.5,0.56,1.57,"RESIDENTIAL",0},
+      {"villageStallBench",110.1,-248.0,1.43,-2.87,"RESIDENTIAL",0},
+      {"villageWheel",72.3,-255.5,2.98,2.98,"RESIDENTIAL",0},
+      {"vxFoodPumpkin",104.6,-256.8,1.2,5.15,"RESIDENTIAL",0},
+      {"vxBox",71.1,-241.9,2.35,5.24,"RESIDENTIAL",0},
+      {"vxFoodFish",70.9,-242.2,0.54,1.44,"RESIDENTIAL",2.3},
+      {"vxLoafBaguette",70.8,-241.5,0.42,4.58,"RESIDENTIAL",2.3},
+      {"vxTreeLog",-164.9,-93.2,2.63,6.17,"FOREST_EDGE",0},
+      {"vxTreeLog",-170.4,-121.6,2.63,3.93,"FOREST_EDGE",0},
+      {"vxResourceWood",-165.5,-120.8,0.56,0.35,"FOREST_EDGE",0},
+      {"vxToolAxe",-186.6,-123.6,2.44,3.18,"FOREST_EDGE",0},
+      {"vxCampfirePit",-160.1,-112.3,1.03,4.35,"FOREST_EDGE",0},
+      {"vxTent",-162.9,-104.6,4.61,1.69,"FOREST_EDGE",0},
+      {"vxBedrollPacked",-187.8,-90.9,0.85,2.03,"FOREST_EDGE",0},
+      {"vxRockA",-174.8,-93.6,3.67,2.11,"FOREST_EDGE",0},
+      {"vxTreeLog",192.9,-103.3,2.63,4.12,"FOREST_EDGE",0},
+      {"vxTreeLog",178.2,-91.6,2.63,0.57,"FOREST_EDGE",0},
+      {"vxResourceWood",184.7,-127.0,0.56,3.69,"FOREST_EDGE",0},
+      {"vxToolAxe",164.3,-101.3,2.44,3.96,"FOREST_EDGE",0},
+      {"vxCampfirePit",196.6,-101.1,1.03,5.36,"FOREST_EDGE",0},
+      {"vxTent",189.9,-94.5,4.61,4.93,"FOREST_EDGE",0},
+      {"vxBedrollPacked",161.3,-123.6,0.85,4.53,"FOREST_EDGE",0},
+      {"vxRockA",160.7,-111.4,3.67,3.89,"FOREST_EDGE",0},
+      {"vxWorkbenchAnvil",-165.9,-174.1,3.2,4.49,"CRAFT",0},
+      {"vxWorkbench",-197.7,-192.5,2.73,4.4,"CRAFT",0},
+      {"vxWorkbenchGrind",-201.0,-191.8,2.63,4.73,"CRAFT",0},
+      {"vxResourcePlanks",-198.4,-199.9,0.85,0.1,"CRAFT",0},
+      {"vxResourceWood",-187.3,-210.6,0.56,4.47,"CRAFT",0},
+      {"vxResourceStone",-159.6,-196.5,1.03,0.53,"CRAFT",0},
+      {"vxBoxLarge",-159.5,-185.8,2.35,6.03,"CRAFT",0},
+      {"vxBarrel",-192.5,-177.7,3.2,0.32,"CRAFT",0},
+      {"vxToolPickaxe",-178.4,-173.3,2.26,2.87,"CRAFT",0},
+      {"vxToolShovel",-159.0,-181.6,2.73,5.64,"CRAFT",0},
+      {"vxPlanks",-162.7,-180.4,0.37,4.69,"CRAFT",0},
+      {"vxPoles",-169.0,-205.4,6.2,4.75,"CRAFT",0},
+      {"villageStallRed",157.8,-174.9,7.69,0.8,"MARKET",0},
+      {"villageStallGreen",196.8,-170.1,7.69,-0.06,"MARKET",0},
+      {"villageBannerRed",163.8,-190.3,5.21,1.5,"MARKET",0},
+      {"villageStallBench",193.9,-182.8,1.43,-0.06,"MARKET",0},
+      {"villageStallStool",173.6,-196.7,1.43,2.93,"MARKET",0},
+      {"vxBarrel",180.3,-201.7,3.2,3.45,"MARKET",0},
+      {"vxBarrel",199.8,-180.7,3.2,2.43,"MARKET",0},
+      {"vxBarrelOpen",177.7,-197.1,3.2,2.26,"MARKET",0},
+      {"vxBox",165.7,-166.0,2.35,5.5,"MARKET",0},
+      {"vxFoodFish",165.3,-165.6,0.54,4.28,"MARKET",2.3},
+      {"vxApple",165.6,-165.8,0.45,2.61,"MARKET",2.3},
+      {"vxBoxOpen",193.5,-186.2,2.91,0.07,"MARKET",0},
+      {"vxPie",193.5,-186.2,0.26,1.82,"MARKET",2.51},
+      {"vxBoxOpen",173.2,-159.1,2.91,1.57,"MARKET",0},
+      {"vxCheese",173.2,-159.1,0.37,2.74,"MARKET",2.51},
+      {"vxBarrel",182.0,-197.8,3.2,0.18,"MARKET",0},
+      {"vxMug",182.3,-197.8,0.46,4.79,"MARKET",3.15},
+      {"vxMug",181.6,-197.6,0.46,2.51,"MARKET",3.15},
+      {"villageCartHigh",-176.7,-252.5,5.33,5.86,"FARMLAND",0},
+      {"vxBoxLarge",-200.8,-258.2,2.35,0.87,"FARMLAND",0},
+      {"vxBarrel",-185.9,-250.8,3.2,4.64,"FARMLAND",0},
+      {"vxBucket",-191.1,-286.2,1.79,4.04,"FARMLAND",0},
+      {"vxToolHoe",-163.0,-260.3,2.26,5.1,"FARMLAND",0},
+      {"villageWheel",-201.9,-276.5,2.98,2.09,"FARMLAND",0},
+      {"villageFenceGate",-190.6,-251.5,2.36,-3.12,"FARMLAND",0},
+      {"vxFoodPumpkin",-175.0,-287.8,1.2,0.13,"FARMLAND",0},
+      {"vxFoodPumpkin",-184.9,-247.0,1.2,3.13,"FARMLAND",0},
+      {"villageHedge",-200.1,-279.1,1.55,4.31,"FARMLAND",0},
+      {"vxBox",-205.0,-274.3,2.35,5.33,"FARMLAND",0},
+      {"vxBread",-204.6,-274.4,0.07,4.06,"FARMLAND",2.3},
+      {"vxCheese",-205.1,-274.5,0.37,5.12,"FARMLAND",2.3},
+      {"villageCartHigh",199.9,-277.6,5.33,2.67,"FARMLAND",0},
+      {"vxBoxLarge",184.0,-297.0,2.35,6.08,"FARMLAND",0},
+      {"vxBarrel",203.7,-284.2,3.2,3.32,"FARMLAND",0},
+      {"vxBucket",161.9,-269.9,1.79,4.92,"FARMLAND",0},
+      {"vxToolHoe",185.0,-255.8,2.26,6.11,"FARMLAND",0},
+      {"villageWheel",196.2,-285.0,2.98,4.88,"FARMLAND",0},
+      {"villageFenceGate",166.0,-281.4,2.36,2.51,"FARMLAND",0},
+      {"vxFoodPumpkin",176.7,-297.6,1.2,3.94,"FARMLAND",0},
+      {"vxFoodPumpkin",183.6,-292.0,1.2,1.89,"FARMLAND",0},
+      {"villageHedge",183.0,-252.9,1.55,3.44,"FARMLAND",0},
+      {"vxBox",201.9,-270.3,2.35,4.08,"FARMLAND",0},
+      {"vxApple",201.6,-269.9,0.45,4.07,"FARMLAND",2.3},
+      {"vxFoodPumpkin",201.5,-270.6,1.2,2.67,"FARMLAND",2.3},
+      {"villageHedge",-110.5,-330.5,1.55,2.28,"RESIDENTIAL",0},
+      {"vxBucket",-109.3,-292.3,1.79,0.42,"RESIDENTIAL",0},
+      {"vxBarrel",-120.4,-311.6,3.2,4.81,"RESIDENTIAL",0},
+      {"vxResourceWood",-97.8,-295.1,0.56,1.67,"RESIDENTIAL",0},
+      {"villageStallBench",-91.9,-322.1,1.43,3.06,"RESIDENTIAL",0},
+      {"villageWheel",-118.6,-322.1,2.98,4.46,"RESIDENTIAL",0},
+      {"vxFoodPumpkin",-92.2,-301.8,1.2,1.04,"RESIDENTIAL",0},
+      {"vxBox",-121.8,-314.8,2.35,1.96,"RESIDENTIAL",0},
+      {"vxPie",-121.5,-314.3,0.26,2.78,"RESIDENTIAL",2.3},
+      {"vxFoodFish",-122.2,-315.2,0.54,0.51,"RESIDENTIAL",2.3},
+      {"villageHedge",97.5,-292.6,1.55,0.55,"RESIDENTIAL",0},
+      {"vxBucket",100.3,-328.2,1.79,3.4,"RESIDENTIAL",0},
+      {"vxBarrel",93.3,-324.7,3.2,3.93,"RESIDENTIAL",0},
+      {"vxResourceWood",120.3,-316.6,0.56,4.69,"RESIDENTIAL",0},
+      {"villageStallBench",97.0,-332.1,1.43,2.92,"RESIDENTIAL",0},
+      {"villageWheel",87.8,-323.8,2.98,5.95,"RESIDENTIAL",0},
+      {"vxFoodPumpkin",110.3,-332.9,1.2,5.12,"RESIDENTIAL",0},
+      {"vxBox",126.6,-310.8,2.35,1.91,"RESIDENTIAL",0},
+      {"vxPie",126.7,-311.0,0.26,2.01,"RESIDENTIAL",2.3},
+      {"vxCabbage",126.5,-310.5,0.9,0.5,"RESIDENTIAL",2.3},
+      {"villageCartHigh",-211.9,-319.3,5.33,2.05,"FARMLAND",0},
+      {"vxBoxLarge",-247.5,-322.8,2.35,2.81,"FARMLAND",0},
+      {"vxBarrel",-242.3,-335.5,3.2,4.7,"FARMLAND",0},
+      {"vxBucket",-218.6,-337.9,1.79,0.76,"FARMLAND",0},
+      {"vxToolHoe",-230.2,-338.4,2.26,1.55,"FARMLAND",0},
+      {"villageWheel",-215.8,-334.8,2.98,2.05,"FARMLAND",0},
+      {"villageFenceGate",-222.5,-339.9,2.36,-2.48,"FARMLAND",0},
+      {"vxFoodPumpkin",-217.7,-312.5,1.2,6.11,"FARMLAND",0},
+      {"vxFoodPumpkin",-246.1,-332.9,1.2,2.34,"FARMLAND",0},
+      {"villageHedge",-238.0,-335.6,1.55,0.07,"FARMLAND",0},
+      {"vxBox",-237.5,-306.8,2.35,1.16,"FARMLAND",0},
+      {"vxCheese",-237.8,-306.5,0.37,3.44,"FARMLAND",2.3},
+      {"vxBread",-238.0,-307.2,0.07,2.48,"FARMLAND",2.3},
+      {"villageCartHigh",206.8,-330.3,5.33,0.57,"FARMLAND",0},
+      {"vxBoxLarge",236.6,-306.4,2.35,2.57,"FARMLAND",0},
+      {"vxBarrel",222.3,-306.4,3.2,5.99,"FARMLAND",0},
+      {"vxBucket",218.5,-305.8,1.79,2.24,"FARMLAND",0},
+      {"vxToolHoe",244.4,-324.4,2.26,1.24,"FARMLAND",0},
+      {"villageWheel",223.6,-341.2,2.98,0.04,"FARMLAND",0},
+      {"villageFenceGate",234.0,-340.9,2.36,2.36,"FARMLAND",0},
+      {"vxFoodPumpkin",234.4,-310.3,1.2,3.47,"FARMLAND",0},
+      {"vxFoodPumpkin",212.1,-341.0,1.2,0.56,"FARMLAND",0},
+      {"villageHedge",212.7,-336.8,1.55,3.17,"FARMLAND",0},
+      {"vxBox",233.5,-345.0,2.35,1.24,"FARMLAND",0},
+      {"vxCabbage",234.0,-345.0,0.9,0.34,"FARMLAND",2.3},
+      {"vxApple",234.0,-345.1,0.45,5.68,"FARMLAND",2.3},
+      {"vxSignpost",12.0,-63.6,4.32,1.46,"GATE",0},
+      {"vxSignpost",-12.9,-206.7,4.32,-0.0,"GATE",0},
+      {"vxSignpost",8.7,-292.6,4.32,2.26,"GATE",0},
+      {"vxSignpost",-155.7,-201.9,4.32,-1.29,"GATE",0},
+      {"vxSignpost",143.8,-201.9,4.32,0.27,"GATE",0},
+      {"SOIL",-201.3,-301.2,0.1,0,"FARMLAND",0},
+      {"SOIL",-201.3,-298.4,0.1,0,"FARMLAND",0},
+      {"SOIL",-201.3,-295.6,0.1,0,"FARMLAND",0},
+      {"SOIL",-197.0,-301.2,0.1,0,"FARMLAND",0},
+      {"SOIL",-197.0,-298.4,0.1,0,"FARMLAND",0},
+      {"SOIL",-197.0,-295.6,0.1,0,"FARMLAND",0},
+      {"SOIL",-192.7,-301.2,0.1,0,"FARMLAND",0},
+      {"SOIL",-192.7,-298.4,0.1,0,"FARMLAND",0},
+      {"SOIL",-192.7,-295.6,0.1,0,"FARMLAND",0},
+      {"SOIL",-188.4,-301.2,0.1,0,"FARMLAND",0},
+      {"SOIL",-188.4,-298.4,0.1,0,"FARMLAND",0},
+      {"SOIL",-188.4,-295.6,0.1,0,"FARMLAND",0},
+      {"vxFoodPumpkin",-202.2,-301.2,1.3,0.02,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-200.4,-301.2,1.3,6.19,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-202.2,-298.4,1.3,2.92,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-200.4,-298.4,1.3,2.81,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-202.2,-295.6,1.3,3.88,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-200.4,-295.6,1.3,5.14,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-197.9,-301.2,1.3,5.25,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-196.1,-301.2,1.3,5.09,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-197.9,-298.4,1.3,2.51,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-196.1,-298.4,1.3,0.42,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-197.9,-295.6,1.3,2.25,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-196.1,-295.6,1.3,2.29,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-193.6,-301.2,1.3,5.04,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-191.8,-301.2,1.3,3.17,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-193.6,-298.4,1.3,4.13,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-191.8,-298.4,1.3,0.26,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-193.6,-295.6,1.3,0.82,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-191.8,-295.6,1.3,5.79,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-189.3,-301.2,1.3,1.97,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-187.5,-301.2,1.3,4.52,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-189.3,-298.4,1.3,0.5,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-187.5,-298.4,1.3,4.72,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-189.3,-295.6,1.3,5.62,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-187.5,-295.6,1.3,4.1,"FARMLAND",0.05},
+      {"SOIL",-143.2,-329.5,0.1,0,"FARMLAND",0},
+      {"SOIL",-143.2,-326.7,0.1,0,"FARMLAND",0},
+      {"SOIL",-143.2,-323.9,0.1,0,"FARMLAND",0},
+      {"SOIL",-138.9,-329.5,0.1,0,"FARMLAND",0},
+      {"SOIL",-138.9,-326.7,0.1,0,"FARMLAND",0},
+      {"SOIL",-138.9,-323.9,0.1,0,"FARMLAND",0},
+      {"SOIL",-134.6,-329.5,0.1,0,"FARMLAND",0},
+      {"SOIL",-134.6,-326.7,0.1,0,"FARMLAND",0},
+      {"SOIL",-134.6,-323.9,0.1,0,"FARMLAND",0},
+      {"SOIL",-130.3,-329.5,0.1,0,"FARMLAND",0},
+      {"SOIL",-130.3,-326.7,0.1,0,"FARMLAND",0},
+      {"SOIL",-130.3,-323.9,0.1,0,"FARMLAND",0},
+      {"vxFoodPumpkin",-144.1,-329.5,1.3,6.26,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-142.3,-329.5,1.3,4.6,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-144.1,-326.7,1.3,5.12,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-142.3,-326.7,1.3,1.22,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-144.1,-323.9,1.3,6.17,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-142.3,-323.9,1.3,3.09,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-139.8,-329.5,1.3,6.01,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-138.0,-329.5,1.3,5.75,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-139.8,-326.7,1.3,1.04,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-138.0,-326.7,1.3,4.95,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-139.8,-323.9,1.3,5.84,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-138.0,-323.9,1.3,0.41,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-135.5,-329.5,1.3,2.2,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-133.7,-329.5,1.3,4.75,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-135.5,-326.7,1.3,1.0,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-133.7,-326.7,1.3,5.63,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-135.5,-323.9,1.3,1.73,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-133.7,-323.9,1.3,5.12,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-131.2,-329.5,1.3,0.9,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-129.4,-329.5,1.3,3.15,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-131.2,-326.7,1.3,5.78,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-129.4,-326.7,1.3,1.31,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-131.2,-323.9,1.3,1.65,"FARMLAND",0.05},
+      {"vxFoodPumpkin",-129.4,-323.9,1.3,3.18,"FARMLAND",0.05},
+      {"SOIL",195.7,-309.3,0.1,0,"FARMLAND",0},
+      {"SOIL",195.7,-306.5,0.1,0,"FARMLAND",0},
+      {"SOIL",195.7,-303.7,0.1,0,"FARMLAND",0},
+      {"SOIL",200.0,-309.3,0.1,0,"FARMLAND",0},
+      {"SOIL",200.0,-306.5,0.1,0,"FARMLAND",0},
+      {"SOIL",200.0,-303.7,0.1,0,"FARMLAND",0},
+      {"SOIL",204.3,-309.3,0.1,0,"FARMLAND",0},
+      {"SOIL",204.3,-306.5,0.1,0,"FARMLAND",0},
+      {"SOIL",204.3,-303.7,0.1,0,"FARMLAND",0},
+      {"SOIL",208.6,-309.3,0.1,0,"FARMLAND",0},
+      {"SOIL",208.6,-306.5,0.1,0,"FARMLAND",0},
+      {"SOIL",208.6,-303.7,0.1,0,"FARMLAND",0},
+      {"vxCabbage",194.8,-309.3,1.1,2.53,"FARMLAND",0.05},
+      {"vxCabbage",196.6,-309.3,1.1,4.0,"FARMLAND",0.05},
+      {"vxCabbage",194.8,-306.5,1.1,1.75,"FARMLAND",0.05},
+      {"vxCabbage",196.6,-306.5,1.1,2.06,"FARMLAND",0.05},
+      {"vxCabbage",194.8,-303.7,1.1,2.37,"FARMLAND",0.05},
+      {"vxCabbage",196.6,-303.7,1.1,4.97,"FARMLAND",0.05},
+      {"vxCabbage",199.1,-309.3,1.1,1.66,"FARMLAND",0.05},
+      {"vxCabbage",200.9,-309.3,1.1,4.82,"FARMLAND",0.05},
+      {"vxCabbage",199.1,-306.5,1.1,0.31,"FARMLAND",0.05},
+      {"vxCabbage",200.9,-306.5,1.1,5.39,"FARMLAND",0.05},
+      {"vxCabbage",199.1,-303.7,1.1,6.07,"FARMLAND",0.05},
+      {"vxCabbage",200.9,-303.7,1.1,2.85,"FARMLAND",0.05},
+      {"vxCabbage",203.4,-309.3,1.1,3.27,"FARMLAND",0.05},
+      {"vxCabbage",205.2,-309.3,1.1,4.33,"FARMLAND",0.05},
+      {"vxCabbage",203.4,-306.5,1.1,5.63,"FARMLAND",0.05},
+      {"vxCabbage",205.2,-306.5,1.1,1.58,"FARMLAND",0.05},
+      {"vxCabbage",203.4,-303.7,1.1,3.36,"FARMLAND",0.05},
+      {"vxCabbage",205.2,-303.7,1.1,5.38,"FARMLAND",0.05},
+      {"vxCabbage",207.7,-309.3,1.1,4.63,"FARMLAND",0.05},
+      {"vxCabbage",209.5,-309.3,1.1,2.33,"FARMLAND",0.05},
+      {"vxCabbage",207.7,-306.5,1.1,2.36,"FARMLAND",0.05},
+      {"vxCabbage",209.5,-306.5,1.1,2.32,"FARMLAND",0.05},
+      {"vxCabbage",207.7,-303.7,1.1,0.92,"FARMLAND",0.05},
+      {"vxCabbage",209.5,-303.7,1.1,2.08,"FARMLAND",0.05},
+      {"SOIL",140.0,-330.4,0.1,0,"FARMLAND",0},
+      {"SOIL",140.0,-327.6,0.1,0,"FARMLAND",0},
+      {"SOIL",140.0,-324.8,0.1,0,"FARMLAND",0},
+      {"SOIL",144.3,-330.4,0.1,0,"FARMLAND",0},
+      {"SOIL",144.3,-327.6,0.1,0,"FARMLAND",0},
+      {"SOIL",144.3,-324.8,0.1,0,"FARMLAND",0},
+      {"SOIL",148.6,-330.4,0.1,0,"FARMLAND",0},
+      {"SOIL",148.6,-327.6,0.1,0,"FARMLAND",0},
+      {"SOIL",148.6,-324.8,0.1,0,"FARMLAND",0},
+      {"SOIL",152.9,-330.4,0.1,0,"FARMLAND",0},
+      {"SOIL",152.9,-327.6,0.1,0,"FARMLAND",0},
+      {"SOIL",152.9,-324.8,0.1,0,"FARMLAND",0},
+      {"vxFoodPumpkin",139.1,-330.4,1.3,1.86,"FARMLAND",0.05},
+      {"vxFoodPumpkin",140.9,-330.4,1.3,3.24,"FARMLAND",0.05},
+      {"vxFoodPumpkin",139.1,-327.6,1.3,1.95,"FARMLAND",0.05},
+      {"vxFoodPumpkin",140.9,-327.6,1.3,6.07,"FARMLAND",0.05},
+      {"vxFoodPumpkin",139.1,-324.8,1.3,5.47,"FARMLAND",0.05},
+      {"vxFoodPumpkin",140.9,-324.8,1.3,5.83,"FARMLAND",0.05},
+      {"vxFoodPumpkin",143.4,-330.4,1.3,5.63,"FARMLAND",0.05},
+      {"vxFoodPumpkin",145.2,-330.4,1.3,4.6,"FARMLAND",0.05},
+      {"vxFoodPumpkin",143.4,-327.6,1.3,4.69,"FARMLAND",0.05},
+      {"vxFoodPumpkin",145.2,-327.6,1.3,1.39,"FARMLAND",0.05},
+      {"vxFoodPumpkin",143.4,-324.8,1.3,1.83,"FARMLAND",0.05},
+      {"vxFoodPumpkin",145.2,-324.8,1.3,3.93,"FARMLAND",0.05},
+      {"vxFoodPumpkin",147.7,-330.4,1.3,2.62,"FARMLAND",0.05},
+      {"vxFoodPumpkin",149.5,-330.4,1.3,2.29,"FARMLAND",0.05},
+      {"vxFoodPumpkin",147.7,-327.6,1.3,0.3,"FARMLAND",0.05},
+      {"vxFoodPumpkin",149.5,-327.6,1.3,3.07,"FARMLAND",0.05},
+      {"vxFoodPumpkin",147.7,-324.8,1.3,3.85,"FARMLAND",0.05},
+      {"vxFoodPumpkin",149.5,-324.8,1.3,0.29,"FARMLAND",0.05},
+      {"vxFoodPumpkin",152.0,-330.4,1.3,0.34,"FARMLAND",0.05},
+      {"vxFoodPumpkin",153.8,-330.4,1.3,3.56,"FARMLAND",0.05},
+      {"vxFoodPumpkin",152.0,-327.6,1.3,1.91,"FARMLAND",0.05},
+      {"vxFoodPumpkin",153.8,-327.6,1.3,3.28,"FARMLAND",0.05},
+      {"vxFoodPumpkin",152.0,-324.8,1.3,3.35,"FARMLAND",0.05},
+      {"vxFoodPumpkin",153.8,-324.8,1.3,2.6,"FARMLAND",0.05},
+      {"SOIL",-249.8,-257.3,0.1,0,"FARMLAND",0},
+      {"SOIL",-249.8,-254.5,0.1,0,"FARMLAND",0},
+      {"SOIL",-249.8,-251.7,0.1,0,"FARMLAND",0},
+      {"SOIL",-245.5,-257.3,0.1,0,"FARMLAND",0},
+      {"SOIL",-245.5,-254.5,0.1,0,"FARMLAND",0},
+      {"SOIL",-245.5,-251.7,0.1,0,"FARMLAND",0},
+      {"SOIL",-241.2,-257.3,0.1,0,"FARMLAND",0},
+      {"SOIL",-241.2,-254.5,0.1,0,"FARMLAND",0},
+      {"SOIL",-241.2,-251.7,0.1,0,"FARMLAND",0},
+      {"SOIL",-236.9,-257.3,0.1,0,"FARMLAND",0},
+      {"SOIL",-236.9,-254.5,0.1,0,"FARMLAND",0},
+      {"SOIL",-236.9,-251.7,0.1,0,"FARMLAND",0},
+      {"vxFoodCarrot",-250.7,-257.3,1.4,3.92,"FARMLAND",0.05},
+      {"vxFoodCarrot",-248.9,-257.3,1.4,2.98,"FARMLAND",0.05},
+      {"vxFoodCarrot",-250.7,-254.5,1.4,0.85,"FARMLAND",0.05},
+      {"vxFoodCarrot",-248.9,-254.5,1.4,5.88,"FARMLAND",0.05},
+      {"vxFoodCarrot",-250.7,-251.7,1.4,1.53,"FARMLAND",0.05},
+      {"vxFoodCarrot",-248.9,-251.7,1.4,0.94,"FARMLAND",0.05},
+      {"vxFoodCarrot",-246.4,-257.3,1.4,0.6,"FARMLAND",0.05},
+      {"vxFoodCarrot",-244.6,-257.3,1.4,4.01,"FARMLAND",0.05},
+      {"vxFoodCarrot",-246.4,-254.5,1.4,5.47,"FARMLAND",0.05},
+      {"vxFoodCarrot",-244.6,-254.5,1.4,4.91,"FARMLAND",0.05},
+      {"vxFoodCarrot",-246.4,-251.7,1.4,2.52,"FARMLAND",0.05},
+      {"vxFoodCarrot",-244.6,-251.7,1.4,1.66,"FARMLAND",0.05},
+      {"vxFoodCarrot",-242.1,-257.3,1.4,0.07,"FARMLAND",0.05},
+      {"vxFoodCarrot",-240.3,-257.3,1.4,4.05,"FARMLAND",0.05},
+      {"vxFoodCarrot",-242.1,-254.5,1.4,3.53,"FARMLAND",0.05},
+      {"vxFoodCarrot",-240.3,-254.5,1.4,2.2,"FARMLAND",0.05},
+      {"vxFoodCarrot",-242.1,-251.7,1.4,4.05,"FARMLAND",0.05},
+      {"vxFoodCarrot",-240.3,-251.7,1.4,2.79,"FARMLAND",0.05},
+      {"vxFoodCarrot",-237.8,-257.3,1.4,5.89,"FARMLAND",0.05},
+      {"vxFoodCarrot",-236.0,-257.3,1.4,4.61,"FARMLAND",0.05},
+      {"vxFoodCarrot",-237.8,-254.5,1.4,1.56,"FARMLAND",0.05},
+      {"vxFoodCarrot",-236.0,-254.5,1.4,5.67,"FARMLAND",0.05},
+      {"vxFoodCarrot",-237.8,-251.7,1.4,0.28,"FARMLAND",0.05},
+      {"vxFoodCarrot",-236.0,-251.7,1.4,3.34,"FARMLAND",0.05},
+      {"SOIL",237.7,-255.2,0.1,0,"FARMLAND",0},
+      {"SOIL",237.7,-252.4,0.1,0,"FARMLAND",0},
+      {"SOIL",237.7,-249.6,0.1,0,"FARMLAND",0},
+      {"SOIL",242.0,-255.2,0.1,0,"FARMLAND",0},
+      {"SOIL",242.0,-252.4,0.1,0,"FARMLAND",0},
+      {"SOIL",242.0,-249.6,0.1,0,"FARMLAND",0},
+      {"SOIL",246.3,-255.2,0.1,0,"FARMLAND",0},
+      {"SOIL",246.3,-252.4,0.1,0,"FARMLAND",0},
+      {"SOIL",246.3,-249.6,0.1,0,"FARMLAND",0},
+      {"SOIL",250.6,-255.2,0.1,0,"FARMLAND",0},
+      {"SOIL",250.6,-252.4,0.1,0,"FARMLAND",0},
+      {"SOIL",250.6,-249.6,0.1,0,"FARMLAND",0},
+      {"vxFoodPumpkin",236.8,-255.2,1.3,5.73,"FARMLAND",0.05},
+      {"vxFoodPumpkin",238.6,-255.2,1.3,0.66,"FARMLAND",0.05},
+      {"vxFoodPumpkin",236.8,-252.4,1.3,3.85,"FARMLAND",0.05},
+      {"vxFoodPumpkin",238.6,-252.4,1.3,4.12,"FARMLAND",0.05},
+      {"vxFoodPumpkin",236.8,-249.6,1.3,1.24,"FARMLAND",0.05},
+      {"vxFoodPumpkin",238.6,-249.6,1.3,2.59,"FARMLAND",0.05},
+      {"vxFoodPumpkin",241.1,-255.2,1.3,3.25,"FARMLAND",0.05},
+      {"vxFoodPumpkin",242.9,-255.2,1.3,4.04,"FARMLAND",0.05},
+      {"vxFoodPumpkin",241.1,-252.4,1.3,4.07,"FARMLAND",0.05},
+      {"vxFoodPumpkin",242.9,-252.4,1.3,2.61,"FARMLAND",0.05},
+      {"vxFoodPumpkin",241.1,-249.6,1.3,3.85,"FARMLAND",0.05},
+      {"vxFoodPumpkin",242.9,-249.6,1.3,3.19,"FARMLAND",0.05},
+      {"vxFoodPumpkin",245.4,-255.2,1.3,0.4,"FARMLAND",0.05},
+      {"vxFoodPumpkin",247.2,-255.2,1.3,3.93,"FARMLAND",0.05},
+      {"vxFoodPumpkin",245.4,-252.4,1.3,6.24,"FARMLAND",0.05},
+      {"vxFoodPumpkin",247.2,-252.4,1.3,4.55,"FARMLAND",0.05},
+      {"vxFoodPumpkin",245.4,-249.6,1.3,3.0,"FARMLAND",0.05},
+      {"vxFoodPumpkin",247.2,-249.6,1.3,3.38,"FARMLAND",0.05},
+      {"vxFoodPumpkin",249.7,-255.2,1.3,2.36,"FARMLAND",0.05},
+      {"vxFoodPumpkin",251.5,-255.2,1.3,2.74,"FARMLAND",0.05},
+      {"vxFoodPumpkin",249.7,-252.4,1.3,5.73,"FARMLAND",0.05},
+      {"vxFoodPumpkin",251.5,-252.4,1.3,0.51,"FARMLAND",0.05},
+      {"vxFoodPumpkin",249.7,-249.6,1.3,4.12,"FARMLAND",0.05},
+      {"vxFoodPumpkin",251.5,-249.6,1.3,1.1,"FARMLAND",0.05},
+      {"villageWindmill",-256.1,-139.5,23.32,5.79,"FARMLAND",0},
+      {"vxRockB",-252.1,-104.5,3.95,2.97,"OUTSKIRTS",0},
+      {"vxTreeHigh",-256.9,-111.6,20.79,1.93,"OUTSKIRTS",0},
+      {"vxRockLarge",253.4,-120.7,5.22,0.21,"OUTSKIRTS",0},
+      {"vxTreeHigh",267.0,-110.5,20.79,2.17,"OUTSKIRTS",0},
+      {"vxRockLarge",-258.1,-330.3,5.22,0.87,"OUTSKIRTS",0},
+      {"vxTreeHigh",-262.4,-342.6,20.79,0.41,"OUTSKIRTS",0},
+      {"vxRockB",258.1,-337.0,3.95,6.0,"OUTSKIRTS",0},
+      {"vxTreeHigh",267.9,-344.3,20.79,4.47,"OUTSKIRTS",0},
+      {"vxRockWide",-118.4,-58.7,4.59,0.7,"OUTSKIRTS",0},
+      {"vxTreeHigh",-105.7,-64.7,20.79,4.74,"OUTSKIRTS",0},
+      {"vxRockLarge",132.9,-63.6,5.22,1.81,"OUTSKIRTS",0},
+      {"vxTreeHigh",139.4,-47.7,20.79,4.06,"OUTSKIRTS",0},
+      {"vxRockWide",-201.8,-56.2,4.59,0.13,"OUTSKIRTS",0},
+      {"villageTreeHighRound",-194.1,-62.8,19.25,4.77,"OUTSKIRTS",0},
+      {"vxRockWide",197.2,-339.6,4.59,4.68,"OUTSKIRTS",0},
+      {"villageTreeHighRound",196.8,-353.9,19.25,3.61,"OUTSKIRTS",0},
+      {"vxFountainRoundDetail",38.6,-74.1,2.64,3.29,"MARKET",0},
+    }
+    task.spawn(function()
+      local count=0
+      for index,row in ipairs(villageDetailV2) do
+        if row[1]=="SOIL" then
+          -- [밭 이랑] 파츠 없이 Terrain 흙으로 갈아 놓은 밭 한 칸(4×2.4)을 만든다.
+          meadowTerrain:FillBlock(CFrame.new(row[2],2.0,row[3]),Vector3.new(4,1.2,2.2),Enum.Material.Ground)
+          continue
+        end
+        local item=worldAsset(row[1],Vector3.new(row[2],3,row[3]),row[4],row[7]>0 and row[7] or nil)
+        if item then
+          item.Name="Meadow_Village_Detail_"..row[6].."_"..index
+          item:SetAttribute("MeadowVillageScenery",true)
+          item:SetAttribute("VillageDistrict",row[6])
+          item:SetAttribute("VillageDressingSource","REGISTERED_CC0_NATIVE_ASSET")
+          local box=item:GetBoundingBox()
+          item:PivotTo(CFrame.new(box.Position)*CFrame.Angles(0,row[5],0)
+            *CFrame.new(-box.Position)*item:GetPivot())
+          -- 큰 구조물(풍차·노점·수레·바위·나무)만 충돌, 작은 소품은 통과.
+          local solid=row[4]>=4.5 and not row[1]:find("Crop",1,true)
+          for _,mesh in ipairs(item:GetDescendants()) do
+            if mesh:IsA("MeshPart") then
+              mesh.CanCollide=solid
+              mesh.CanQuery=false
+              mesh.CanTouch=false
+              mesh.CastShadow=row[4]>=1
+            end
+          end
+          if row[1]=="vxCampfirePit" then
+            local host=item:FindFirstChildWhichIsA("MeshPart",true)
+            if host then
+              local light=Instance.new("PointLight")
+              light.Name="MeadowVillageLanternGlow"
+              light.Color=Color3.fromRGB(255,150,80)
+              light.Brightness=0
+              light.Range=14
+              light.Shadows=false
+              light.Parent=host
+              villageLanternLights[#villageLanternLights+1]=light
+            end
+          end
+          count+=1
+        end
+        if index%6==0 then task.wait(.03) end
+      end
+      gameWorld:SetAttribute("MeadowVillageDetailV2Count",count)
+    end)
+    end
+    -- [농가 밭] 조립형 직사각 밭 대신 낮은 Terrain 흙얼룩으로 경작 흔적을 남긴다.
+    for _,patch in ipairs({
+      {-218,-305,2.8},{-224,-309,3.3},{-236,-307,2.5},
+      {-198,-322,2.9},{-185,-331,2.5},
+      {201,-302,2.7},{213,-306,3.1},{219,-311,2.6},
+      {191,-334,2.6},{241,-336,2.4},
+    }) do
+      meadowTerrain:FillBall(Vector3.new(patch[1],2.06-patch[3]+.38,patch[2]),
+        patch[3],Enum.Material.Ground)
+    end
     -- [저녁 마을] 밤에는 밝아지고 낮에는 잔잔하게 남는 등불. 원본 MeshPart/PointLight만 갱신.
     -- 폰에서도 1.3초 간격으로 20여 개 조명만 바꾸며 전투·저장 데이터와 무관하다.
     gameWorld:SetAttribute("MeadowVillageLivingLights",#villageLanternLights)
@@ -1485,8 +2239,13 @@ local function createMeadowVillage()
         for index,glow in ipairs(villageLanternLights) do
           if glow.Parent then
             local flicker=math.sin(now*1.7+index*2.2)*.12
-            glow.Brightness=(night and 1.42 or .43)+flicker
-            glow.Range=night and 18 or 11
+            if glow.Name=="MeadowVillageWindowGlow" then
+              glow.Brightness=night and (.62+flicker*.3) or 0
+              glow.Range=night and 12 or 0
+            else
+              glow.Brightness=(night and 1.42 or .43)+flicker
+              glow.Range=night and 18 or 11
+            end
           end
         end
         task.wait(1.3)
@@ -1986,11 +2745,76 @@ local function createMeadowVillage()
       skin=Color3.fromRGB(201,157,126),cloth=Color3.fromRGB(95,103,123),pants=Color3.fromRGB(62,70,81),
       patrolOffsets={Vector3.new(6,0,-15),Vector3.new(-8,0,6),Vector3.zero}},
   }
+  -- [마을 사람들] 퀘스트와 무관한 생활 NPC. 말을 걸 때마다 다른 대사가 돌아가며 나오고
+  -- 렌스기사단·카인 이야기와 마을 사건의 소문을 흘린다. 보상·진행도·저장에는 영향이 없다.
+  local ambientLines={
+    Innkeeper={"여관주인 돌라",{
+      "어서 와. 오늘 밤 묵을 거면 방이 있어. 요즘은 손님이 통 없지만.",
+      "저 기사단 깃발을 알아보는 손님이 가끔 와. 다들 말없이 한참 보다 가더라.",
+      "밤마다 우물 쪽에서 박쥐 소리가 들린다던데, 경비병 아린이 잘 알 거야."}},
+    Smith={"대장장이 브란",{
+      "검이 무뎌졌으면 가져와. 기억은 못 벼려도 칼날은 벼릴 수 있지.",
+      "숲 늑대 털이 대장간 앞까지 날려 와. 서쪽 길은 조심해.",
+      "렌스기사단 문장이 새겨진 칼자루를 여러 번 고쳤어. 누구 것인지는 기억이 안 나."}},
+    Farmer={"농부 하르",{
+      "올해는 곡식 자루가 자꾸 사라져. 수레가 습격당한 뒤로는 더 그래.",
+      "동쪽 숲에서 밤마다 날개 소리가 나. 가축이 겁먹었어.",
+      "촌장 나린은 우리 모두에게 일을 나눠 줘. 기억을 잃어도 하루는 계속되니까."}},
+    Baker={"제빵사 펠",{
+      "갓 구운 빵이야. 배고프면 마을 광장 근처에서 약초도 구할 수 있어.",
+      "길 잃은 사람들이 이 마을로 흘러와. 너처럼 이름밖에 기억 못 하는 사람도 있지.",
+      "약초상 미라가 열병 걸린 아이 얘기를 했어. 그 약초가 사라졌다더라."}},
+    Child={"아이 토리",{
+      "깃발 있는 아저씨 알아! 아니, 그냥 낡은 깃발이야.",
+      "촌장님이 그러는데 숲에는 이름 없는 기사들이 아직 있대.",
+      "우물 근처에서 이상한 불빛 봤어. 비밀이야!"}},
+    Keeper={"창고지기 마르",{
+      "곡물 창고는 내가 지켜. 도적단 표식이 수레 근처에 떨어져 있었어.",
+      "서쪽 초원 늑대가 길목을 막고 있어. 보급이 끊긴 지 며칠째야.",
+      "렌스, 닉, 미나... 그 이름들, 어디서 들어본 것 같은데."}},
+  }
+  local ambientSpecs={
+    {id="Innkeeper",name="여관주인 돌라",role="AMBIENT",location=Vector3.new(70,5,-110),
+      skin=Color3.fromRGB(214,171,138),cloth=Color3.fromRGB(139,84,62),pants=Color3.fromRGB(74,60,52),
+      patrolOffsets={Vector3.new(-6,0,3),Vector3.new(5,0,-4),Vector3.zero}},
+    {id="Smith",name="대장장이 브란",role="AMBIENT",location=Vector3.new(-80,5,-190),
+      skin=Color3.fromRGB(186,142,112),cloth=Color3.fromRGB(78,78,86),pants=Color3.fromRGB(60,56,52),
+      patrolOffsets={Vector3.new(5,0,6),Vector3.new(-4,0,-5),Vector3.zero}},
+    {id="Farmer",name="농부 하르",role="AMBIENT",location=Vector3.new(160,5,-276),
+      skin=Color3.fromRGB(205,160,126),cloth=Color3.fromRGB(150,126,84),pants=Color3.fromRGB(88,72,56),
+      patrolOffsets={Vector3.new(8,0,-6),Vector3.new(-6,0,5),Vector3.zero}},
+    {id="Baker",name="제빵사 펠",role="AMBIENT",location=Vector3.new(160,5,-186),
+      skin=Color3.fromRGB(224,182,150),cloth=Color3.fromRGB(226,214,190),pants=Color3.fromRGB(96,80,66),
+      patrolOffsets={Vector3.new(-5,0,5),Vector3.new(6,0,-3),Vector3.zero}},
+    {id="Child",name="아이 토리",role="AMBIENT",location=Vector3.new(12,5,-140),
+      skin=Color3.fromRGB(226,184,152),cloth=Color3.fromRGB(88,128,160),pants=Color3.fromRGB(90,80,70),
+      patrolOffsets={Vector3.new(10,0,8),Vector3.new(-10,0,4),Vector3.new(0,0,-9),Vector3.zero}},
+    {id="Keeper",name="창고지기 마르",role="AMBIENT",location=Vector3.new(-165,5,-262),
+      skin=Color3.fromRGB(196,152,120),cloth=Color3.fromRGB(104,96,72),pants=Color3.fromRGB(70,64,56),
+      patrolOffsets={Vector3.new(6,0,5),Vector3.new(-5,0,-4),Vector3.zero}},
+  }
+  local ambientTalk={}
+  for _,spec in ipairs(ambientSpecs) do
+    -- 지형 높이에 맞춰 발을 땅에 붙인다(앵커 NPC가 떠 있거나 묻히지 않게).
+    local rp=RaycastParams.new()
+    rp.FilterType=Enum.RaycastFilterType.Include
+    rp.FilterDescendantsInstances={meadowTerrain}
+    local hit=workspace:Raycast(Vector3.new(spec.location.X,80,spec.location.Z),Vector3.new(0,-160,0),rp)
+    if hit then spec.location=Vector3.new(spec.location.X,hit.Position.Y+3.1,spec.location.Z) end
+    villagers[#villagers+1]=spec
+  end
   local readyCount=0
   for _,spec in ipairs(villagers) do
     local npc=villageNativeNpc(spec)
     if npc then
-      local callback=spec.role=="ELDER" and villageBoardDialogue
+      local callback=spec.role=="AMBIENT" and function(player)
+          local row=ambientLines[spec.id]
+          local n=((ambientTalk[player] or {})[spec.id] or 0)%#row[2]+1
+          ambientTalk[player]=ambientTalk[player] or {}
+          ambientTalk[player][spec.id]=n
+          villageDialogue(player,row[1],row[2][n])
+        end
+        or spec.role=="ELDER" and villageBoardDialogue
         or spec.role=="HERBALIST" and function(player) villageInvestigate(player,1,spec.name) end
         or spec.role=="TRACKER" and function(player) villageInvestigate(player,2,spec.name) end
         or function(player) villageInvestigate(player,3,spec.name) end
@@ -2003,7 +2827,13 @@ local function createMeadowVillage()
   for contractIndex,contract in ipairs(Config.VillageContracts) do
     for sceneIndex,site in ipairs(contract.Sites) do
       local scenePosition=Vector3.new(site[1],3,site[2])
-      local model=worldAsset("ruin",scenePosition,3.8)
+      -- [현장별 실물 단서] 약초 꾸러미=원본 가죽 주머니, 우물 봉인석=원본 석벽,
+      -- 수레 습격=원본 나무 수레. 등록/로딩 실패 시 기존 승인된 유적 메시로만 복구한다.
+      local clueAsset=contractIndex==1 and "item_pouch"
+        or contractIndex==2 and (villageDetailReady and "villageRuinWall" or "ruin")
+        or "villageCart"
+      local model=worldAsset(clueAsset,scenePosition,contractIndex==3 and 5.2 or 3.8)
+      if not model then model=worldAsset("ruin",scenePosition,3.8) end
       if model then
         model.Name="Meadow_Village_Evidence_"..contractIndex.."_"..sceneIndex
         model:SetAttribute("VillageContractIndex",contractIndex)
@@ -2032,13 +2862,8 @@ local function createMeadowVillage()
           caption.Parent=marker
         end
       end
-      -- 실제 숲 외곽까지 이어지는 다져진 길을 Terrain에만 조성한다.
-      for step=1,9 do
-        local t=step/9
-        local x=scenePosition.X*t
-        local z=-146+(scenePosition.Z+146)*t
-        meadowTerrain:FillBall(Vector3.new(x,-1.5,z),3.2,Enum.Material.Ground)
-      end
+      -- 조사 지점까지의 보행길은 위 villageRoadRoutes와 연결한다.
+      -- 우물에서 단서까지 무조건 직선으로 긋던 중복 길은 생성하지 않는다.
       task.wait(.08)
     end
   end
@@ -2095,15 +2920,64 @@ local meadowRpg=(function()
   local talents={Martial="MeadowTalentMartial",Signs="MeadowTalentSigns",
     Defense="MeadowTalentDefense",Agility="MeadowTalentAgility"}
   local talentMax={Agility=5,Martial=5} -- 회피·검술은 5단, 나머지 계열은 3단.
+  -- [90노드 보관] 기존 숫자 세이브에 10개×3비트로 기록. 슬롯/기존 재능은 바꾸지 않는다.
+  local nodes=Config.MeadowSkillNodes or {}
+  local passiveIndex={}
+  for _,node in ipairs(nodes) do if node.Kind=="PASSIVE" then passiveIndex[node.Mode]=node.Index end end
+  local function nodeValue(player,index)
+    if typeof(index)~="number" or index~=math.floor(index) or index<1 or index>#nodes then return 0 end
+    local field="MeadowSkillBits"..math.ceil(index/10)
+    return bit32.extract(math.floor(readNumber(player,field,0)),((index-1)%10)*3,3)
+  end
+  local function nodeRank(player,index)
+    return bit32.band(nodeValue(player,index),3)
+  end
+  local function nodeChoice(player,index)
+    return bit32.band(nodeValue(player,index),4)~=0 and "B" or "A"
+  end
+  local function passiveLevel(player,mode)
+    local index=passiveIndex[mode]
+    return index and nodeRank(player,index) or 0
+  end
+  local function spentNodes(player)
+    local spent=0
+    for index=1,#nodes do spent+=nodeRank(player,index) end
+    return spent
+  end
+  local function setNode(player,index,rank,choice)
+    local field="MeadowSkillBits"..math.ceil(index/10)
+    local packed=math.floor(readNumber(player,field,0))
+    local value=math.clamp(rank,0,3)+(choice=="B" and rank==3 and 4 or 0)
+    setNumber(player,field,bit32.replace(packed,value,((index-1)%10)*3,3))
+  end
+  local function validQuickCode(player,code)
+    if code==0 or (code>=1 and code<=5) then return true end
+    if code>=1001 and code<=1000+#nodes then
+      local index=code-1000
+      return nodes[index] and nodes[index].Kind=="ACTIVE" and nodeRank(player,index)>0 or false
+    end
+    return code>=10 and code<=1000 and Config.Actions[code-9]~=nil
+      and Config.MeadowSkillNodeById[Config.Actions[code-9].Id]==nil
+  end
+
   local gearById,tonicById={},{}
   for index,item in ipairs(items)do gearById[item.Id]={entry=item,index=index} end
   for _,item in ipairs(tonics)do tonicById[item.Id]=item end
+  -- 장비 33번째부터는 두 번째 비트마스크(MeadowGearOwned2)에 저장한다.
+  local function hasGear(player,index)
+    local field=index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
+    local mask=math.max(0,readNumber(player,field,0))
+    return bit32.band(mask,bit32.lshift(1,(index-1)%32))~=0
+  end
+  local function grantGear(player,index)
+    local field=index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
+    setNumber(player,field,bit32.bor(math.max(0,readNumber(player,field,0)),bit32.lshift(1,(index-1)%32)))
+  end
   local function equipped(player,slot)
     local index=readNumber(player,slots[slot],0)
     local item=items[index]
     if not item or item.Slot~=slot then return nil end
-    local owned=math.max(0,readNumber(player,"MeadowGearOwned",0))
-    if bit32.band(owned,bit32.lshift(1,index-1))==0 then return nil end
+    if not hasGear(player,index) then return nil end
     return item
   end
   local function stats(player)
@@ -2124,11 +2998,18 @@ local meadowRpg=(function()
     player:SetAttribute("MeadowGearDefense",defense)
   end
   local function charge(player,item)
-    for _,field in ipairs(Config.CostFields)do
-      if readNumber(player,field,0)<(item[field] or 0) then return false end
+    -- [스카이림식 대장 기술] 제작 숙련 단계마다 주괴·가죽 요구량이 1개씩 줄어든다(최소 1개).
+    local rank=Config.SmithingRank(readNumber(player,"CraftingProficiency",0))
+    local function need(field)
+      local base=item[field] or 0
+      if base>0 and (field=="Ingot" or field=="Leather") then return math.max(1,base-rank) end
+      return base
     end
     for _,field in ipairs(Config.CostFields)do
-      local cost=item[field] or 0
+      if readNumber(player,field,0)<need(field) then return false end
+    end
+    for _,field in ipairs(Config.CostFields)do
+      local cost=need(field)
       if cost>0 then setNumber(player,field,readNumber(player,field,0)-cost) end
     end
     return true
@@ -2143,6 +3024,23 @@ local meadowRpg=(function()
     if not group or not verb or not id then return false end
     local gear=gearById[id]
     local tonic=tonicById[id]
+    if group=="loot" and verb=="refine" then
+      -- [제련·무두질] 대장간 화로/가죽 걸이 근처(마을 중심 90 이내)에서만 가공한다.
+      local mat=Config.MaterialByField[id]
+      local rule=mat and mat.Refine
+      if not rule then return false end
+      local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+      if not root or Vector3.new(root.Position.X,0,root.Position.Z-(-150)).Magnitude>260 then
+        feedback(player,"마을 대장간 근처에서만 "..rule.Verb.."할 수 있어.");return true
+      end
+      local have=readNumber(player,rule.From,0)
+      if have<rule.Need then feedback(player,Config.MaterialByField[rule.From].Name.." "..rule.Need.."개가 필요해.");return true end
+      setNumber(player,rule.From,have-rule.Need)
+      setNumber(player,id,readNumber(player,id,0)+1)
+      setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)
+      feedback(player,mat.Name.." 1개 완성  ("..rule.Note..")")
+      return true
+    end
     if group=="loot" and verb=="sell" then
       local mat=Config.MaterialByField[id]
       if not mat then return false end
@@ -2154,18 +3052,17 @@ local meadowRpg=(function()
     end
     if group=="gear" and gear then
       local item,index=gear.entry,gear.index
-      local bit=bit32.lshift(1,index-1)
-      local owned=math.max(0,readNumber(player,"MeadowGearOwned",0))
+      local ownedGear=hasGear(player,index)
       if verb=="craft" then
-        if bit32.band(owned,bit)~=0 then feedback(player,"이미 보유한 장비야.");return true end
+        if ownedGear then feedback(player,"이미 보유한 장비야.");return true end
         if readNumber(player,"CombatProficiency",0)<(item.Need or 0) then feedback(player,"전투 숙련 "..tostring(item.Need).."이 필요해.");return true end
         if not charge(player,item) then feedback(player,"재료 또는 소지금이 부족해.");return true end
-        setNumber(player,"MeadowGearOwned",bit32.bor(owned,bit))
+        grantGear(player,index)
         setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)
         feedback(player,item.Name.." 제작 완료")
         return true
       elseif verb=="equip" then
-        if bit32.band(owned,bit)==0 then feedback(player,"먼저 장비를 제작해.");return true end
+        if not ownedGear then feedback(player,"먼저 장비를 제작해.");return true end
         local key=slots[item.Slot]
         if not key then return false end
         setNumber(player,key,index)
@@ -2208,6 +3105,73 @@ local meadowRpg=(function()
         feedback(player,tonic.Name.." 사용")
         return true
       end
+
+    elseif group=="tree" then
+      if verb=="learn" then
+        local number,choice=id:match("^(%d+)([AB]?)$")
+        local index=tonumber(number)
+        local node=index and nodes[index]
+        if not node then return false end
+        local rank=nodeRank(player,index)
+        if rank>=3 then feedback(player,"이미 최고 3단계야.");return true end
+        local available=Config.MeadowSkillPointProgress(readNumber(player,"CombatProficiency",0))
+        if spentNodes(player)>=available then feedback(player,"남은 스킬 점수가 없어.");return true end
+        if node.Step>1 and nodeRank(player,index-1)<1 then
+          feedback(player,"같은 분기의 앞 노드를 먼저 배워야 해.");return true
+        end
+        if rank==2 and choice=="" then
+          feedback(player,"최종 강화 A 또는 B를 골라야 해.");return true
+        end
+        setNode(player,index,rank+1,choice)
+        feedback(player,node.Name.." "..(rank+1).."/3 습득")
+        return true
+      elseif verb=="reset" and id=="all" then
+        if spentNodes(player)<1 then feedback(player,"초기화할 스킬이 없어.");return true end
+        if readNumber(player,"Coins",0)<30 then feedback(player,"초기화 비용 코인 30개가 부족해.");return true end
+        setNumber(player,"Coins",readNumber(player,"Coins",0)-30)
+        for index=1,9 do setNumber(player,"MeadowSkillBits"..index,0) end
+        -- 새 기술이 잠겼다면 저장된 퀵칸에서만 비운다. 기존 기술과 재능은 보존한다.
+        for slot=1,5 do
+          local key="QuickSlot"..slot
+          if readNumber(player,key,0)>=1001 then setNumber(player,key,0) end
+        end
+        feedback(player,"90노드 점수를 되돌렸어. 기존 재능은 유지됐어.")
+        return true
+      end
+    elseif group=="loadout" then
+      local preset=tonumber(id)
+      if not preset or preset~=math.floor(preset) or preset<1 or preset>3 then return false end
+      if workspace:GetServerTimeNow()<(player:GetAttribute("MeadowCombatUntil") or 0) then
+        feedback(player,"전투가 끝난 뒤 조합을 변경할 수 있어.");return true
+      end
+      if verb=="save" then
+        -- 아직 퀵슬롯을 편집하지 않은 계정은 기존 기본 배치를 저장한다.
+        local defaults={1,3,0,0,0}
+        for i,action in ipairs(Config.Actions)do
+          if action.Id=="skill-meadow-heavy" then defaults[3]=9+i end
+          if action.Id=="skill-meadow-sweep" then defaults[4]=9+i end
+          if action.Id=="skill-meadow-bolt" then defaults[5]=9+i end
+        end
+        for slot=1,5 do
+          local value=readNumber(player,"QuickInit",0)>=1 and readNumber(player,"QuickSlot"..slot,0) or defaults[slot]
+          setNumber(player,"MeadowLoadout"..preset.."Slot"..slot,validQuickCode(player,value) and value or 0)
+        end
+        setNumber(player,"MeadowLoadoutSaved"..preset,1)
+        feedback(player,({"탐험","보스","협동"})[preset].." 조합 저장")
+        return true
+      elseif verb=="activate" then
+        if readNumber(player,"MeadowLoadoutSaved"..preset,0)~=1 then
+          feedback(player,"먼저 해당 조합을 저장해야 해.");return true
+        end
+        for slot=1,5 do
+          local code=readNumber(player,"MeadowLoadout"..preset.."Slot"..slot,0)
+          setNumber(player,"QuickSlot"..slot,validQuickCode(player,code) and code or 0)
+        end
+        setNumber(player,"QuickInit",1)
+        setNumber(player,"MeadowLoadoutActive",preset)
+        feedback(player,({"탐험","보스","협동"})[preset].." 조합 적용")
+        return true
+      end
     elseif group=="talent" and verb=="reset" and id=="all" then
       -- [스킬 초기화] 코인 30개로 4계열 단계를 모두 0으로 되돌려 점수를 다시 나눈다.
       local invested=0
@@ -2236,8 +3200,63 @@ local meadowRpg=(function()
     end
     return false
   end
-  return {transact=transact,stats=stats,publishStats=publishStats}
+  return {transact=transact,stats=stats,publishStats=publishStats,equippedWeapon=function(player) return equipped(player,"Weapon") end,
+    nodeRank=nodeRank,nodeChoice=nodeChoice,passiveLevel=passiveLevel,validQuickCode=validQuickCode}
 end)()
+
+-- [활 장착 외형] 등록된 CC0 활 메시(item_bow_wooden)를 왼손에 용접한다. 장검 도구는 집어넣는다.
+local function refreshBowVisual(player)
+  local character=player.Character
+  if not character then return end
+  local old=character:FindFirstChild("MeadowBowVisual")
+  if old then old:Destroy() end
+  local oldShield=character:FindFirstChild("MeadowShieldVisual")
+  if oldShield then oldShield:Destroy() end
+  local weapon=meadowRpg.equippedWeapon(player)
+  -- [방패 외형] 한손 무기(검·도끼)+수호 '방패 자세'(노드 19) 습득 시 왼팔에 CC0 방패(Cethiel)를 붙인다.
+  if weapon and not weapon.Bow and weapon.Id then
+    local cls=Config.GearWeaponClass[weapon.Id]
+    local arm=character:FindFirstChild("LeftLowerArm") or character:FindFirstChild("Left Arm")
+    if (cls=="Sword" or cls=="Axe") and arm and (meadowRpg.nodeRank(player,19) or 0)>0 then
+      local sm=worldAsset("vxShieldA",Vector3.new(0,-900,0),2.4)
+      local sp=sm and sm:FindFirstChildWhichIsA("MeshPart",true)
+      if sp then
+        local sv=sp:Clone();sm:Destroy()
+        sv.Name="MeadowShieldVisual"
+        sv.Anchored=false;sv.CanCollide=false;sv.CanTouch=false;sv.CanQuery=false;sv.Massless=true
+        sv.Parent=character
+        local sw=Instance.new("Weld");sw.Part0=arm;sw.Part1=sv
+        sw.C0=CFrame.new(-.55,0,-.1)*CFrame.Angles(0,math.rad(-90),0)
+        sw.Parent=sv
+      elseif sm then sm:Destroy() end
+    end
+  end
+  if not weapon or not weapon.Bow then return end
+  local human=character:FindFirstChildOfClass("Humanoid")
+  if human then human:UnequipTools() end
+  local hand=character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm")
+  if not hand then return end
+  local model=worldAsset("item_bow_wooden",Vector3.new(0,-900,0),3.4)
+  local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
+  if not mesh then if model then model:Destroy() end return end
+  local visual=mesh:Clone()
+  model:Destroy()
+  visual.Name="MeadowBowVisual"
+  visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
+  visual.Parent=character
+  local weld=Instance.new("Weld")
+  weld.Part0=hand;weld.Part1=visual
+  weld.C0=CFrame.new(0,-.35,-.15)*CFrame.Angles(0,math.rad(90),math.rad(-90))
+  weld.Parent=visual
+end
+local function watchBowVisual(player)
+  player:GetAttributeChangedSignal("MeadowEquipWeapon"):Connect(function() refreshBowVisual(player) end)
+  player:GetAttributeChangedSignal("MeadowGearOwned2"):Connect(function() refreshBowVisual(player) end)
+  player:GetAttributeChangedSignal("MeadowSkillBits3"):Connect(function() refreshBowVisual(player) end)
+  player.CharacterAdded:Connect(function() task.wait(1.5);refreshBowVisual(player) end)
+end
+for _,existing in ipairs(Players:GetPlayers()) do watchBowVisual(existing) end
+Players.PlayerAdded:Connect(watchBowVisual)
 
 -- [메인 퀘스트·연구 기록 아이템]
 -- 채집·관찰·실제 몬스터 처치·유적 수문장 처치에만 연결한다.
@@ -2397,8 +3416,8 @@ local function createResourceNodes()
         prompt.Name="GatherPrompt"
         prompt.ActionText=spec.kind=="STONE" and "돌 채집" or spec.kind=="ORE" and "광석 채굴" or spec.kind=="HERB" and "약초 채집" or "채집"
         prompt.ObjectText=spec.kind=="STONE" and "바위" or spec.kind=="ORE" and "광맥" or "약초 덤불"
-        prompt.MaxActivationDistance=12
-        prompt.HoldDuration=.55
+        prompt.MaxActivationDistance=14
+        prompt.HoldDuration=.3
         prompt.RequiresLineOfSight=false
         prompt.Parent=anchor
         prompt.Triggered:Connect(function(player) gatherResource(player,node) end)
@@ -2408,8 +3427,8 @@ local function createResourceNodes()
         prompt.Name="GatherPrompt"
         prompt.ActionText="나무 채집"
         prompt.ObjectText="초원 나무"
-        prompt.MaxActivationDistance=12
-        prompt.HoldDuration=.55
+        prompt.MaxActivationDistance=14
+        prompt.HoldDuration=.3
         prompt.RequiresLineOfSight=false
         prompt.Parent=mesh
         prompt.Triggered:Connect(function(player) gatherResource(player,node) end)
@@ -3443,6 +4462,8 @@ end
 -- All original game rewards, contact confirmation and DataStore data are
 -- preserved in one authoritative combat outcome path.
 local meadowSkillCooldown={}
+-- [지속 스킬 전투 상태] 세션 한정 약한 키. 기존 저장/보상/몬스터 체력을 변경하지 않는다.
+local meadowTreeCombat=setmetatable({},{__mode="k"})
 local meadowFocusUntil={}
 local meadowDefense={}
 local function liveMeadowCharacter(player)
@@ -3454,6 +4475,7 @@ local function liveMeadowCharacter(player)
 end
 local function applyMeadowDamage(player,target,damage)
   if not target or target.HP<=0 or not target.model.Parent then return false end
+  player:SetAttribute("MeadowCombatUntil",workspace:GetServerTimeNow()+8)
   if (meadowFocusUntil[player] or 0)>os.clock() then damage=math.floor(damage*1.25) end
   do
     local relics=readNumber(player,"RelicMask",0)
@@ -3469,6 +4491,76 @@ local function applyMeadowDamage(player,target,damage)
       if charges-1<=0 then player:SetAttribute("MeadowOilClass",nil) end
     end
   end
+  -- [지속 효과] 배운 노드에 한해서만 명중·거리·장비·주문 연계가 발동한다.
+  local now=os.clock()
+  local state=meadowTreeCombat[player] or {}
+  meadowTreeCombat[player]=state
+  local passive=meadowRpg.passiveLevel
+  local sameTarget=state.lastTarget==target and now-(state.lastHitAt or -100)<1.8
+  if sameTarget and passive(player,"W_GAUGE")>0 then
+    player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)+2*passive(player,"W_GAUGE")))
+  end
+  if now-(state.lastHeavyAt or -100)<2 and passive(player,"W_TIMING")>0 then
+    damage=math.floor(damage*(1+.045*passive(player,"W_TIMING")))
+  end
+  if readNumber(player,"MeadowComboStage",0)>=2 and passive(player,"W_COMBO")>0 then
+    damage=math.floor(damage*(1+.035*passive(player,"W_COMBO")))
+  end
+  local weapon=readNumber(player,"MeadowEquipWeapon",0)
+  if state.lastWeapon~=nil and weapon~=state.lastWeapon and passive(player,"W_SWITCH")>0 then
+    damage=math.floor(damage*(1+.07*passive(player,"W_SWITCH")))
+  end
+  state.lastWeapon=weapon
+  if (player:GetAttribute("MeadowParryConfirmed") or 0)>workspace:GetServerTimeNow()-2
+    and passive(player,"G_PARRY")>0 then
+    damage=math.floor(damage*(1+.09*passive(player,"G_PARRY")))
+  end
+  if state.currentSchool=="Hunter" then
+    local character=player.Character
+    local root=character and character:FindFirstChild("HumanoidRootPart")
+    local distance=root and (target.position-root.Position).Magnitude or 0
+    if passive(player,"H_RANGE")>0 then
+      damage=math.floor(damage*(1+(distance>18 and .07 or .03)*passive(player,"H_RANGE")))
+    end
+    if root and root.AssemblyLinearVelocity.Magnitude>7 and passive(player,"H_MOVE")>0 then
+      damage=math.floor(damage*(1+.06*passive(player,"H_MOVE")))
+    end
+    if target.meadowMarkOwner==player.UserId and (target.meadowMarkUntil or 0)>now then
+      if passive(player,"H_TRACK")>0 then damage=math.floor(damage*(1+.065*passive(player,"H_TRACK"))) end
+      if sameTarget and passive(player,"H_WEAK")>0 then
+        damage=math.floor(damage*(1+.075*passive(player,"H_WEAK")))
+      end
+    end
+    if (target.stunUntil or 0)>now and passive(player,"H_TRAP")>0 then
+      damage=math.floor(damage*(1+.055*passive(player,"H_TRAP")))
+    end
+  elseif state.currentSchool=="Shadow" then
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    local facing=target.visualFacing
+    local behind=root and facing and (root.Position-target.position).Magnitude>1
+      and (root.Position-target.position).Unit:Dot(facing)<-.4
+    if behind and passive(player,"S_BACK")>0 then
+      damage=math.floor(damage*(1+.09*passive(player,"S_BACK")))
+    end
+    local defend=meadowDefense[player] or {}
+    if (defend.dodgeUntil or 0)>now and passive(player,"S_DODGE")>0 then
+      damage=math.floor(damage*(1+.08*passive(player,"S_DODGE")))
+    end
+    if (target.stunUntil or 0)>now and passive(player,"S_CONFUSE")>0 then
+      damage=math.floor(damage*(1+.06*passive(player,"S_CONFUSE")))
+    end
+  elseif state.currentSchool=="Magic" then
+    if state.lastSpell and state.lastSpell~=state.currentSkill
+      and now-(state.lastSpellAt or -100)<3 and passive(player,"M_CHAIN")>0 then
+      damage=math.floor(damage*(1+.065*passive(player,"M_CHAIN")))
+    end
+    if now-(state.lastWeaponAttackAt or -100)<2.5 and passive(player,"M_WEAVE")>0 then
+      damage=math.floor(damage*(1+.07*passive(player,"M_WEAVE")))
+    end
+  else
+    if state.currentSchool==nil then state.lastWeaponAttackAt=now end
+  end
+  state.lastTarget=target;state.lastHitAt=now
   -- [장비 공격력] 기존 무기 강화·숙련도·기술 배율은 그대로 두고 새 장비 보너스만 가산.
   local gearAttack=meadowRpg.stats(player)
   damage=damage+gearAttack
@@ -3491,6 +4583,11 @@ local function applyMeadowDamage(player,target,damage)
   setNumber(player,"Score",readNumber(player,"Score",0)+damage)
   player:SetAttribute("LastApprovedScope","combat-impact")
   if target.HP<=0 then
+    local bonus=meadowRpg.passiveLevel(player,"W_CHASE")*4
+    if target.meadowMarkOwner==player.UserId and (target.meadowMarkUntil or 0)>now then
+      bonus+=meadowRpg.passiveLevel(player,"S_MARK_KILL")*6
+    end
+    if bonus>0 then player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)+bonus)) end
     target.model:SetAttribute("NativeMobMotion","DEATH")
     target.model:SetAttribute("AttackState","DEATH")
     remote:FireAllClients("MEADOW_MOB_DEATH",{
@@ -3516,6 +4613,10 @@ local function applyMeadowDamage(player,target,damage)
       if target.variant then kind="variant" end -- 변종은 siteDrops만 쓴다.
       drop("Hide",kind=="wolf" and .8 or kind=="bandit" and .5 or .15,target.isAlpha and 3 or 1)
       drop("Fang",kind=="wolf" and .35 or .05,target.isAlpha and 2 or 1)
+      -- [스카이림식 가죽 손질] 사냥 숙련이 오를수록 짐승에게서 가죽을 한 장 더 벗겨낸다(최대 50%).
+      if (kind=="wolf" or kind=="bandit") and math.random()<math.min(.5,readNumber(player,"HuntingProficiency",0)*.01) then
+        setNumber(player,"Hide",readNumber(player,"Hide",0)+1)
+      end
       drop("BatWing",kind=="bat" and .7 or 0)
       drop("Claw",kind=="wolf" and .6 or 0,target.isAlpha and 2 or 1)
       drop("Ectoplasm",kind=="ghost" and .6 or 0)
@@ -3595,7 +4696,11 @@ local function attackEnemy(player)
   local now=os.clock()
   if now<(attackCooldown[player] or 0) then return false end
   attackCooldown[player]=now+.42
-  local target=nearestEnemy(rootPart,25)
+  -- [활] 활을 장착하면 사거리 45의 원거리 사격: 연사는 느리지만 거리에 비례해 치명타(최대 +90%)가 터진다.
+  local weapon=meadowRpg.equippedWeapon(player)
+  local isBow=weapon and weapon.Bow==true
+  if isBow then attackCooldown[player]=now+(weapon.Id=="wind_bow" and .5 or .66) end
+  local target=nearestEnemy(rootPart,isBow and 45 or 25)
   -- 유효한 공격 입력은 허공에서도 동작한다. 명중·피해·보상은 분리한다.
   if not target then
     player:SetAttribute("ApprovedActionTarget",rootPart.Position)
@@ -3614,6 +4719,14 @@ local function attackEnemy(player)
   player:SetAttribute("MeadowComboStage",stage)
   player:SetAttribute("MeadowComboMax",cap)
   local mult=({1,1.1,1.25,1.45,2.1})[stage]
+  if isBow then
+    local distance=(target.position-rootPart.Position).Magnitude
+    local crit=math.clamp((distance-8)/37,0,1)*.9 -- 멀수록 급소 명중
+    local marksman=math.min(.45,readNumber(player,"HuntingProficiency",0)*.008)
+    local shot=math.floor(damage*1.15*(1+crit)*(1+marksman))
+    remote:FireAllClients("MEADOW_BOW_SHOT",{from=rootPart.Position+Vector3.new(0,1.6,0),to=target.position+Vector3.new(0,1.6,0),weak=crit>.55})
+    return applyMeadowDamage(player,target,shot),true
+  end
   local hit=applyMeadowDamage(player,target,math.floor(damage*mult))
   if stage>=5 then
     for _,other in ipairs(enemies) do
@@ -3655,14 +4768,11 @@ end
 local function upgradeEquipment(player)
   local tier=readNumber(player,"WeaponTier",0)
   if tier>=10 then return false end
-  local wood=readNumber(player,"Wood",0)
-  local stone=readNumber(player,"Stone",0)
-  local cost=2+tier
-  local oreCost=1+math.floor(tier/2)
-  if wood<cost or stone<cost or readNumber(player,"Ore",0)<oreCost then return false end
-  setNumber(player,"Ore",readNumber(player,"Ore",0)-oreCost)
-  setNumber(player,"Wood",wood-cost)
-  setNumber(player,"Stone",stone-cost)
+  -- [스카이림식 단련] 주괴(+3·6·9강마다 무두질 가죽)로 무기를 갈고 다듬는다. 제작 숙련이 높을수록 재료가 줄어든다.
+  local ingotCost,leatherCost=Config.TemperCost(tier,readNumber(player,"CraftingProficiency",0))
+  if readNumber(player,"Ingot",0)<ingotCost or readNumber(player,"Leather",0)<leatherCost then return false end
+  setNumber(player,"Ingot",readNumber(player,"Ingot",0)-ingotCost)
+  if leatherCost>0 then setNumber(player,"Leather",readNumber(player,"Leather",0)-leatherCost) end
   setNumber(player,"WeaponTier",tier+1)
   -- [제작 숙련도] 실제 자원을 소모한 기존 장비 강화 성공만 기록한다.
   setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)
@@ -3799,6 +4909,7 @@ local function chooseMeadowMobSkill(enemy)
 end
 local function applyMeadowMobHit(player,humanoid,damage,attacker)
   if player:GetAttribute("ProfileReady")~=true or humanoid.Health<=0 then return end
+  player:SetAttribute("MeadowCombatUntil",workspace:GetServerTimeNow()+8)
   local defense=meadowDefense[player] or {}
   local now=os.clock()
   if (defense.dodgeUntil or 0)>now then return end
@@ -3815,6 +4926,10 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
       setEnemyAttackState(attacker,"STUNNED")
     end
     recordMeadowQuest(player,"PARRY")
+    local refunded=meadowRpg.passiveLevel(player,"G_REFUND")*6
+    if refunded>0 then
+      player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)+refunded))
+    end
     player:SetAttribute("MeadowParryConfirmed",workspace:GetServerTimeNow())
     remote:FireClient(player,"MEADOW_REACTION","PARRY")
     return
@@ -3884,12 +4999,41 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   if (defense.guardUntil or 0)>now then
     -- [서버 확인된 막기] 기존 50% 경감 판정은 그대로 두고 실제 접촉 때만 시각 신호를 보낸다.
     -- 연타를 맞아도 사운드·입자가 폭증하지 않게 0.12초 간격으로 1회만 알린다.
+    -- [방패 장비] 한손 무기(검·도끼)+방패 자세 습득 시 막기 경감 50%→60%(방패 외형과 같은 조건).
+    local shieldW=meadowRpg.equippedWeapon(player)
+    local shieldCls=shieldW and shieldW.Id and Config.GearWeaponClass[shieldW.Id]
+    local shielded=(shieldCls=="Sword" or shieldCls=="Axe") and meadowRpg.nodeRank(player,19)>0
     damage=math.ceil(damage*.5)
+    if shielded then damage=math.max(1,math.ceil(damage*.8)) end
     if now-(defense.lastBlockContactFXAt or -100) >=.12 then
       defense.lastBlockContactFXAt=now
       meadowDefense[player]=defense
       remote:FireClient(player,"MEADOW_REACTION","BLOCK")
     end
+  end
+  -- [지속 방호] 정면 막기·포위 대응·일회성 위기 보호.
+  local guardRank=meadowRpg.passiveLevel(player,"G_FRONT")
+  if (defense.guardUntil or 0)>now and guardRank>0 then
+    damage=math.max(1,math.floor(damage*(1-.065*guardRank)))
+  end
+  if (defense.guardUntil or 0)>now and meadowRpg.passiveLevel(player,"G_STAGGER")>0 then
+    damage=math.max(1,math.floor(damage*(1-.03*meadowRpg.passiveLevel(player,"G_STAGGER"))))
+  end
+  local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+  if root and meadowRpg.passiveLevel(player,"W_POISE")>0 then
+    local nearby=0
+    for _,enemy in ipairs(enemies) do
+      if enemy.HP>0 and (enemy.position-root.Position).Magnitude<12 then nearby+=1 end
+      if nearby>=3 then break end
+    end
+    if nearby>=3 then damage=math.max(1,math.floor(damage*(1-.05*meadowRpg.passiveLevel(player,"W_POISE")))) end
+  end
+  local crisis=meadowRpg.passiveLevel(player,"G_CRISIS")
+  local state=meadowTreeCombat[player] or {}
+  if crisis>0 and humanoid.Health<=humanoid.MaxHealth*.35 and now>=(state.nextCrisisAt or 0) then
+    state.nextCrisisAt=now+45
+    meadowTreeCombat[player]=state
+    damage=math.max(1,math.floor(damage*(1-.22-.07*crisis)))
   end
   -- [갑옷 피해 경감] 완벽 방어·회피 판정 이후 실제 착용 장비와 방호 숙련만 적용.
   local _,armor=meadowRpg.stats(player)
@@ -4528,8 +5672,8 @@ local function meadowHeal(player)
 end
 -- [각성기 · 기사단의 맹세] 기사단 연대기를 2편 이상 모으면 해금. 체력 35% 회복 + 18칸 안 적 최대 12마리에 3배 피해.
 local function meadowOath(player)
-  if readNumber(player,"ResearchRecords",0)<2 then return false end
-  return meadowSkill(player,"skill-meadow-oath",function(_,humanoid,root)
+  if readNumber(player,"ResearchRecords",0)<2 or readNumber(player,"MeadowStamina",100)<70 then return false end
+  local activated=meadowSkill(player,"skill-meadow-oath",function(_,humanoid,root)
     humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.35)
     setNumber(player,"Health",math.floor(humanoid.Health))
     local damage=math.floor((16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8)*3)
@@ -4544,6 +5688,8 @@ local function meadowOath(player)
     player:SetAttribute("ApprovedActionTarget",root.Position)
     return true
   end)
+  if activated then player:SetAttribute("MeadowStamina",math.max(0,readNumber(player,"MeadowStamina",0)-70)) end
+  return activated
 end
 local function meadowFocus(player)
   return meadowSkill(player,"skill-meadow-focus",function(_,_,root,now)
@@ -4557,6 +5703,200 @@ local function meadowEmote(player)
     player:SetAttribute("ApprovedActionTarget",root.Position)
     return true
   end)
+end
+
+
+-- [90노드 실제 발동] 기존 서버 피해·방어·쿨다운 처리 안에서만 실행한다.
+for _,node in ipairs(Config.MeadowSkillNodes or {}) do
+  if node.Kind=="ACTIVE" then meadowSkillSeconds[node.Id]=node.Cooldown end
+end
+local function meadowTreeAction(player,index,charged)
+  local node=Config.MeadowSkillNodes[index]
+  if not node or node.Kind~="ACTIVE" then return false end
+  local rank=meadowRpg.nodeRank(player,index)
+  if rank<1 or (charged and (node.Id~="mf-magic-1-1" or rank<2)) then return false end
+  local discount=node.School=="Magic" and 3*meadowRpg.passiveLevel(player,"M_ACCURATE") or 0
+  local cost=math.max(0,node.Gauge+(charged and 10 or 0)-discount)
+  if readNumber(player,"MeadowStamina",100)<cost then return false end
+  local choice=rank==3 and meadowRpg.nodeChoice(player,index) or "A"
+  local mode=node.Mode
+  local state=meadowTreeCombat[player] or {}
+  meadowTreeCombat[player]=state
+  state.currentSchool=node.School
+  state.currentSkill=node.Id
+  local success=meadowSkill(player,node.Id,function(character,humanoid,root,now)
+    local weaponItem=meadowRpg.equippedWeapon(player)
+    local weaponClass=Config.WeaponClasses[(weaponItem and Config.GearWeaponClass[weaponItem.Id]) or "Sword"]
+    local affinity=weaponClass and weaponClass.Schools[node.School] or .9 -- 계열에 안 맞는 무기는 약간 약하다.
+    local range=node.Range+(rank==3 and choice=="B" and 5 or 0)+((weaponClass and weaponClass.RangeBonus and weaponClass.RangeBonus[node.School]) or 0)
+    local target=nearestEnemy(root,range)
+    local base=(16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8)*affinity
+    local power=math.floor(base*(node.Advanced and 2.1 or .9)*(1+.13*(rank-1))*
+      (rank==3 and choice=="A" and 1.2 or 1)*(charged and 1.55 or 1))
+    local radius=12+(rank==3 and choice=="B" and 4 or 0)
+    if mode=="RESONATE" then radius+=3*meadowRpg.passiveLevel(player,"M_SPREAD") end
+    local function strike(enemy,scale)
+      if not enemy or enemy.HP<=0 or not enemy.model.Parent
+        or (enemy.position-root.Position).Magnitude>range+2 then return false end
+      player:SetAttribute("ApprovedActionTarget",enemy.position)
+      return applyMeadowDamage(player,enemy,math.floor(power*(scale or 1)))
+    end
+    local function crowd(center,count,scale)
+      local hits=0
+      for _,enemy in ipairs(enemies) do
+        if hits<count and enemy.HP>0 and enemy.model.Parent
+          and (enemy.position-center).Magnitude<=radius and strike(enemy,scale) then hits+=1 end
+      end
+      if hits>1 and node.School=="Hunter" and meadowRpg.passiveLevel(player,"H_PIERCE")>0 then
+        player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)
+          +hits*meadowRpg.passiveLevel(player,"H_PIERCE")*2))
+      end
+      return hits>0
+    end
+    local function guard(member,seconds)
+      local defense=meadowDefense[member] or {}
+      defense.guardUntil=math.max(defense.guardUntil or 0,now+seconds)
+      meadowDefense[member]=defense
+    end
+    if mode=="HEAL" or mode=="HEAL_AOE" or mode=="RALLY" or mode=="OATH" or mode=="SHIELD" then
+      local affected=false
+      for _,member in ipairs(Players:GetPlayers()) do
+        local char=member.Character
+        local hr=char and char:FindFirstChild("HumanoidRootPart")
+        local h=char and char:FindFirstChildOfClass("Humanoid")
+        if hr and h and h.Health>0 and
+          (hr.Position-root.Position).Magnitude<=(mode=="HEAL" and .5 or 18) then
+          if mode~="SHIELD" then
+            local healing=(node.Advanced and 36 or 25)+rank*3
+            local overflow=math.max(0,h.Health+healing-h.MaxHealth)
+            h.Health=math.min(h.MaxHealth,h.Health+healing)
+            if member==player then setNumber(player,"Health",math.floor(h.Health)) end
+            if overflow>0 and meadowRpg.passiveLevel(player,"M_OVERHEAL")>0 then
+              guard(member,1.6+.6*meadowRpg.passiveLevel(player,"M_OVERHEAL"))
+            end
+          end
+          if mode=="SHIELD" or mode=="OATH" or mode=="RALLY" then
+            local duration=mode=="SHIELD" and 3 or 6
+            guard(member,duration)
+            if meadowRpg.passiveLevel(player,"M_SHIELD_REFUND")>0 then
+              task.delay(duration+.05,function()
+                if member.Parent==Players and ((meadowDefense[member] or {}).guardUntil or 0)<=os.clock()+.1
+                  and player.Parent==Players then
+                  player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)
+                    +3*meadowRpg.passiveLevel(player,"M_SHIELD_REFUND")))
+                end
+              end)
+            end
+            if member~=player and meadowRpg.passiveLevel(player,"G_ALLY")>0 then
+              player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)
+                +2*meadowRpg.passiveLevel(player,"G_ALLY")))
+            end
+          end
+          affected=true
+        end
+      end
+      if mode=="HEAL" and choice=="B" and rank==3 and affected then
+        for i=1,2 do task.delay(i*1.5,function()
+          if humanoid.Parent and humanoid.Health>0 then humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+10) end
+        end) end
+      end
+      return affected
+    elseif mode=="GUARD" or mode=="BULWARK" or mode=="LAST_STAND" or mode=="PARRY" then
+      guard(player,mode=="BULWARK" and 8 or mode=="LAST_STAND" and 6 or 3)
+      if mode=="PARRY" then
+        local defense=meadowDefense[player]
+        defense.parryUntil=now+.45
+      end
+      if mode=="LAST_STAND" then humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+humanoid.MaxHealth*.3) end
+      return true
+    elseif mode=="FURY" or mode=="OVERLOAD" then
+      meadowFocusUntil[player]=now+7
+      return true
+    elseif mode=="VANISH" or mode=="BLINK" then
+      local defense=meadowDefense[player] or {}
+      if mode=="VANISH" and meadowRpg.passiveLevel(player,"S_DETECT")>0 then
+        player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",0)
+          +2*meadowRpg.passiveLevel(player,"S_DETECT")))
+      end
+      defense.dodgeUntil=now+.85;meadowDefense[player]=defense
+      if mode=="BLINK" then
+        local forward=root.CFrame.LookVector
+        local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude
+        ray.FilterDescendantsInstances={character};ray.RespectCanCollide=true
+        if not workspace:Raycast(root.Position+Vector3.new(0,1,0),forward*6,ray) then
+          local pos=root.Position+forward*6
+          local floorRay=RaycastParams.new();floorRay.FilterType=Enum.RaycastFilterType.Include
+          floorRay.FilterDescendantsInstances={meadowTerrain}
+          local floor=workspace:Raycast(pos+Vector3.new(0,8,0),Vector3.new(0,-18,0),floorRay)
+          if floor and floor.Material~=Enum.Material.Water and floor.Normal.Y>=.65 then character:PivotTo(character:GetPivot()+forward*6) end
+        end
+      end
+      return true
+    elseif mode=="MARK" then
+      if not target or target.HP<=0 then return false end
+      target.meadowMarkOwner=player.UserId;target.meadowMarkUntil=now+8
+      target.model:SetAttribute("MeadowMarkedUntil",workspace:GetServerTimeNow()+8)
+      return true
+    elseif mode=="ROOT" or mode=="TRAP" or mode=="SMOKE" or mode=="SMOKE_ADV" or mode=="STUN" then
+      local candidates={}
+      if mode=="SMOKE" or mode=="SMOKE_ADV" then
+        for _,enemy in ipairs(enemies) do
+          if enemy.HP>0 and (enemy.position-root.Position).Magnitude<=radius
+            and #candidates<(mode=="SMOKE_ADV" and 8 or 3) then table.insert(candidates,enemy) end
+        end
+      elseif target then candidates[1]=target end
+      if #candidates==0 then return false end
+      for _,enemy in ipairs(candidates) do
+        cancelEnemyWindup(enemy)
+        local duration=enemy.isBoss and .55 or (mode=="TRAP" and 2.4 or 1.4)
+        enemy.stunUntil=math.max(enemy.stunUntil or 0,now+duration)
+        enemy.model:SetAttribute("NativeMobStunnedUntil",workspace:GetServerTimeNow()+duration)
+        setEnemyAttackState(enemy,"STUNNED")
+        if mode=="STUN" then strike(enemy,1.05) end
+      end
+      return true
+    elseif mode=="RESONATE" then
+      if not target or target.meadowMarkOwner~=player.UserId or
+        (target.meadowMarkUntil or 0)<now then return false end
+      target.meadowMarkUntil=0
+      return crowd(target.position,8,1.2)
+    elseif mode=="EXECUTE" then
+      return target and target.HP<=target.maxHP*.38 and strike(target,2) or false
+    elseif mode=="SWEEP" or mode=="FAN" or mode=="RAIN" or mode=="SPLIT" or mode=="BURST" or mode=="NIGHT" or mode=="HUNT" then
+      return crowd((mode=="SWEEP" or mode=="FAN") and root.Position or
+        (target and target.position or root.Position),node.Advanced and 9 or 4,.85)
+    elseif mode=="PIERCE" or mode=="CHAIN" or mode=="BOLT" and choice=="B" and rank==3 then
+      return target and crowd(target.position,4,.9) or false
+    elseif mode=="FOCUS_STRIKE" then
+      if not target then return false end
+      local hit=false
+      for i=1,3 do if target.HP>0 and strike(target,.65) then hit=true end end
+      return hit
+    elseif mode=="DASH" then
+      return strike(target,1.15)
+    else
+      local hit=strike(target,mode=="SNIPE" and 1.7 or 1)
+      if not hit and mode=="BACKSTAB" and meadowRpg.passiveLevel(player,"S_ESCAPE")>0
+        and now>=(state.nextEscapeAt or 0) then
+        state.nextEscapeAt=now+8
+        local defense=meadowDefense[player] or {}
+        defense.dodgeUntil=math.max(defense.dodgeUntil or 0,now+.15*meadowRpg.passiveLevel(player,"S_ESCAPE"))
+        meadowDefense[player]=defense
+      end
+      return hit
+    end
+  end)
+  state.currentSchool=nil
+  state.currentSkill=nil
+  if success then
+    if node.School=="Magic" then
+      state.lastSpell=node.Id
+      state.lastSpellAt=os.clock()
+    end
+    if mode=="STUN" then state.lastHeavyAt=os.clock() end
+    player:SetAttribute("MeadowStamina",math.max(0,readNumber(player,"MeadowStamina",0)-cost))
+  end
+  return success
 end
 
 local handlers={
@@ -4587,6 +5927,12 @@ local handlers={
   ["skill-meadow-oath"]=meadowOath,
   ["skill-meadow-emote"]=meadowEmote,
 }
+for _,node in ipairs(Config.MeadowSkillNodes or {}) do
+  if node.Kind=="ACTIVE" then
+    local index=node.Index
+    handlers[node.Id]=function(player,charged) return meadowTreeAction(player,index,charged) end
+  end
+end
 
 local function bindSurvivalHealth(player)
   local function bindCharacter(character)
@@ -4844,19 +6190,21 @@ remote.OnServerEvent:Connect(function(player, actionId)
   end
   -- [마을 계약] 동일한 게임 RemoteEvent로 받되 NPC 서버 대화 세션·거리·단계를 다시 검증한다.
   if string.sub(actionId,1,8)=="village:" then villageChoose(player,actionId);return end
-  local handler = handlers[actionId]
+  local chargedBolt=actionId=="mf-magic-1-1:charge"
+  local combatActionId=chargedBolt and "mf-magic-1-1" or actionId
+  local handler = handlers[combatActionId]
   if typeof(handler) ~= "function" then return end
   local now = os.clock()
   local previous = lastAction[player] or 0
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
-  local actionAccepted,combatHit=handler(player)
+  local actionAccepted,combatHit=handler(player,chargedBolt)
   -- [서버 권한] Actual accepted actions only. Existing R15 unarmed
   -- ApprovedCombatMotion and confirmed MEADOW_IMPACT remain untouched.
   if actionAccepted~=true then return end
   local approvedSequence=readNumber(player,"ActionSequence",0)+1
   setNumber(player,"ActionSequence",approvedSequence)
-  local approved=actionId..":"..tostring(approvedSequence)
+  local approved=combatActionId..":"..tostring(approvedSequence)
   local character=player.Character
   local root=character and character:FindFirstChild("HumanoidRootPart")
   local targetPos=player:GetAttribute("ApprovedActionTarget")
@@ -4864,7 +6212,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   player:SetAttribute("ApprovedActionMotion",approved)
   local combatAction=false
   for _,action in ipairs(Config.Actions) do
-    if action.Id==actionId and action.Kind=="COMBAT" then
+    if action.Id==combatActionId and action.Kind=="COMBAT" then
       combatAction=true
       player:SetAttribute("ApprovedCombatMotion",approved)
       break
@@ -4873,7 +6221,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   -- 허공 공격은 관절 모션만 재생한다. 명중 효과·처치·점수는 만들지 않는다.
   if not combatAction or combatHit==true then
     player:SetAttribute("ApprovedActionFX",approved)
-    remote:FireAllClients("MEADOW_ACTION_FX",player.UserId,actionId,approvedSequence,targetPos)
+    remote:FireAllClients("MEADOW_ACTION_FX",player.UserId,combatActionId,approvedSequence,targetPos)
   end
 end)
 local function saveSurvivalProgress(player)
@@ -5782,7 +7130,8 @@ do
     if typeof(action)=="string" and action:match("^quick:set:%d:%d+$") then
       local slotIndex,value=action:match("^quick:set:(%d):(%d+)$")
       slotIndex,value=tonumber(slotIndex),tonumber(value)
-      local valid=slotIndex>=1 and slotIndex<=5 and (value==0 or (value>=1 and value<=5) or (value>=10 and Config.Actions[value-9]~=nil))
+      local valid=slotIndex>=1 and slotIndex<=5 and meadowRpg.validQuickCode(player,value)
+        and player:GetAttribute("ProfileReady")==true
       if valid then
         setNumber(player,"QuickInit",1)
         setNumber(player,"QuickSlot"..slotIndex,value)
