@@ -207,3 +207,21 @@ NPC 모델 22개는 모두 LFS 포인터가 아닌 원본 바이너리 Git 객�
 | `cargo/resource-stone.glb` | `roblox-games/fantasy-survival/assets/village-extra2/survival-resource-stone.glb` | `76e2e7412a5ccc726852dd74705c4070dbb8bce6768674a474bdde66e56f28aa` | https://kenney.nl/assets/survival-kit · CC0-1.0 |
 
 상태 구분: 저장소 바이너리 확보 및 원본 라이선스 확인은 로블록스 서버 실물 로딩·게시 성공을 의미하지 않는다. 게임 경제의 상품 수·가격·밸런스·저장 구조는 변경하지 않았다.
+
+
+## 2026-11-06 2차 긴급 교역물품 8종 (원본 바이너리 직접 다운로드)
+
+Kenney Food Kit 2.0 · CC0-1.0, 공식 원본 및 라이선스: https://kenney.nl/assets/food-kit. 바이너리 미러: https://github.com/Hidencod/tge-assets, 소스 리비전 `ea2f2aa1ca8da0898330c97df8a5489976b051d0`. 원본과 저장소 Git Blob SHA 완전 일치. 무역 관련 모델 확보 단계이며 Roblox 게임 경제의 상품 목록은 변경하지 않는다.
+
+| 신규 파일 | 원본 SHA |
+|---|---|
+| `cargo/bag.glb` | `6aa5459a0135a51aeb771b814985b68516b67559` |
+| `cargo/bag-flat.glb` | `d12f4823498076ba9f58dba8ec8484ed3f428e39` |
+| `cargo/banana.glb` | `86df90926907e9645b7bca4e3b4d9c04a7baede1` |
+| `cargo/beet.glb` | `6ce4cb7366466f04e6734a48223cb01b668527cb` |
+| `cargo/bottle-oil.glb` | `09ca2ea87c231a59a4f659213e1d45da89433c1b` |
+| `cargo/coconut.glb` | `eb6e810cc029f80cff28d985076e41106be33736` |
+| `cargo/cup-coffee.glb` | `37cff52a462ec1c843ba8abe0ac45e0e7905af50` |
+| `cargo/cup-tea.glb` | `6a2009a2092053ecc445f6fac0f4df1a1cf856ee` |
+
+로블록스 모델 업로드와 게임 내 외형·텍스처 검증은 별도로 필요하다.
