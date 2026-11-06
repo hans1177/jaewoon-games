@@ -22,7 +22,7 @@ h1{font-size:22px;margin:0}
 .actions button{width:100%;min-height:50px;border:0;border-radius:10px;padding:0 14px;font-weight:900;color:#fff;background:#4169e1}
 .boardWrap{display:flex;justify-content:center;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 .boardWrap.wide{justify-content:flex-start;justify-content:safe center}
-.board.wide{width:640px;min-width:640px;flex-shrink:0}
+.board.wide{width:900px;min-width:900px;flex-shrink:0}
 .board{width:min(94vw,560px);aspect-ratio:1;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:6px;background:#26324a;border-radius:14px}
 .cell{position:relative;border:0;border-radius:10px;background:#34415d;color:#fff;overflow:hidden;min-width:0}
 .cell.homeBlue{background:#2c4b62}.cell.homeRed{background:#5c343e}
@@ -42,7 +42,7 @@ h1{font-size:22px;margin:0}
 .portrait.hammerArt,.card .art.hammerArt{background-size:400% 400%;background-position:66.6667% 66.6667%;background-repeat:no-repeat}
 .portrait img.newArt,.card .art img.newArt,.tileArt img{width:400%;height:400%;max-width:none}
 .portrait img.newAllyArt,.card .art img.newAllyArt{width:200%;height:200%;max-width:none}
-@media(max-width:520px){.board.wide{width:600px;min-width:600px}}
+
 .tileArt{position:absolute;inset:7%;z-index:0;border-radius:8px;overflow:hidden;pointer-events:none;opacity:.92}.unit{z-index:1}
 .unit b{font-size:11px}.unit small{font-size:9px;color:#e7eeff}
 .hp{position:absolute;left:5px;right:5px;bottom:4px;height:5px;background:#311;border-radius:99px;overflow:hidden}
@@ -1031,7 +1031,7 @@ function startStage(next){
   else if(next===2)msg('2스테이지 시작 · 기본 골드 250 · 적 8마리 / 아군 12마리');
   else if(next===3)msg('3스테이지 시작 · 해골궁수/해골법사 제외 · 강화 고블린/골렘/멧돼지 등장');
   else if(next===4){state.specialTiles=createStageFourTiles();msg('4스테이지 시작 · 7×5 맵 · 특수 발판 5개 · 방패 고블린/돌격 오크/독전갈/유적 수호자')}
-  else if(next===5)msg('5스테이지 시작 · 가로 10×세로 5 맵 · 특수 발판 없음 · 2/4/5/7/8턴 적 증원');
+  else if(next===5)msg('5스테이지 시작 · 가로 10×세로 5 · 좌우로 밀어 이동 · 2/4/5/7/8턴 적 증원');
   state.version++;
   saveProgress();
   render()
