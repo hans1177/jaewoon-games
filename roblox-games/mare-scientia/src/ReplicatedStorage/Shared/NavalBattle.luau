@@ -210,11 +210,22 @@ function NavalBattle.play(opts)
 
 	local finished = false
 	local conns = {}
+	-- 모바일: 기본 이동 스틱/점프 버튼이 조종 버튼을 가리므로 해전 중에는 끈다
+	local controls = nil
+	pcall(function()
+		controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")):GetControls()
+		controls:Disable()
+	end)
 	local function finish()
 		if finished then
 			return
 		end
 		finished = true
+		if controls then
+			pcall(function()
+				controls:Enable()
+			end)
+		end
 		for _, c in conns do
 			c:Disconnect()
 		end
@@ -247,9 +258,9 @@ function NavalBattle.play(opts)
 		return b
 	end
 	local steerDir, throttle = 0, 1
-	local leftBtn = mkBtn("◀", UDim2.new(0, 24, 1, -24), UDim2.fromOffset(84, 70))
-	local rightBtn = mkBtn("▶", UDim2.new(0, 120, 1, -24), UDim2.fromOffset(84, 70))
-	local speedBtn = mkBtn("가속", UDim2.new(1, -150, 1, -24), UDim2.fromOffset(100, 56), Vector2.new(1, 1))
+	local leftBtn = mkBtn("◀", UDim2.new(0, 24, 1, -24), UDim2.fromOffset(100, 84))
+	local rightBtn = mkBtn("▶", UDim2.new(0, 136, 1, -24), UDim2.fromOffset(100, 84))
+	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(120, 70), Vector2.new(1, 1))
 	speedBtn.TextSize = 18
 	local skip = mkBtn("건너뛰기", UDim2.new(0.5, 0, 0, 62), UDim2.fromOffset(96, 30), Vector2.new(0.5, 0))
 	skip.TextSize = 14
