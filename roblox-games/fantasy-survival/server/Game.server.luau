@@ -5303,47 +5303,25 @@ end)
 -- [상태이상] 출혈·독·화염은 지속 피해, 빙결은 짧은 정지. 서로 다른 상태가 겹칠수록 받는 피해가 늘어나는 연계 보너스가 있다.
 local STATUS_NAMES={bleed="출혈",poison="독",burn="화염",frost="빙결"}
 local applyMeadowDamageRef
+-- 장비 효과·상태이상 규칙은 공용 모듈(RobloxCommonCombatStatus)이 계산하고, 장비 목록·피해 적용은 이 서버가 맡는다.
+local CombatStatus=require(Shared:WaitForChild("RobloxCommonCombatStatus"))
 meadowOil.gearFx=function(player)
-  local sum={}
+  local ids={}
   for _,slot in ipairs({"Weapon","Shield","Chest","Hands","Legs","Feet","Accessory","Cape"}) do
     local item=meadowRpg.equippedSlot(player,slot)
-    local fx=item and Config.GearEffects[item.Id]
-    if fx then for k,v in pairs(fx) do sum[k]=(sum[k] or 0)+v end end
+    if item then ids[#ids+1]=item.Id end
   end
-  return sum
+  return CombatStatus.SumEffects(Config.GearEffects,ids)
 end
-local function applyStatus(player,target,kind,seconds)
-  if not target or target.HP<=0 or not target.model.Parent then return end
-  local now=os.clock()
-  target.status=target.status or {}
-  if kind=="frost" then
-    if target.isBoss or now<(target.frostCooldown or 0) then return end
-    target.frostCooldown=now+6
-    target.stunUntil=math.max(target.stunUntil or 0,now+.9)
-    target.status.frost=now+.9
-    target.model:SetAttribute("MeadowStatus",STATUS_NAMES.frost)
-    return
-  end
-  local already=(target.status[kind] or 0)>now
-  target.status[kind]=now+seconds
-  target.model:SetAttribute("MeadowStatus",STATUS_NAMES[kind])
-  if already then return end
-  task.spawn(function()
-    while target.HP>0 and target.model.Parent and (target.status[kind] or 0)>os.clock() do
-      task.wait(1)
-      if target.HP<=0 or not target.model.Parent then break end
-      local base=16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8
-      local tick=math.max(1,math.floor(base*(kind=="burn" and .32 or kind=="poison" and .22 or .26)))
-      applyMeadowDamageRef(player,target,tick,true)
-    end
-    if target.model.Parent then target.model:SetAttribute("MeadowStatus",nil) end
-  end)
+local function applyStatus(player,target,kind)
+  CombatStatus.ApplyStatus(target,kind,{
+    now=os.clock(),spawn=task.spawn,wait=task.wait,names=STATUS_NAMES,
+    tickBase=function() return 16+meadowProficiencyPower(player)+readNumber(player,"WeaponTier",0)*8 end,
+    dealTick=function(victim,tick) applyMeadowDamageRef(player,victim,tick,true) end,
+  })
 end
 local function statusCount(target)
-  local n=0
-  local now=os.clock()
-  if target.status then for _,until_ in pairs(target.status) do if until_>now then n+=1 end end end
-  return n
+  return CombatStatus.CountActive(target,os.clock())
 end
 local function applyMeadowDamage(player,target,damage,isDot)
   if not target or target.HP<=0 or not target.model.Parent then return false end
@@ -5461,25 +5439,21 @@ local function applyMeadowDamage(player,target,damage,isDot)
   local critHit=false
   if not isDot then
     gfx=meadowOil.gearFx(player)
-    if (gfx.crit or 0)>0 and math.random()<math.min(.4,gfx.crit) then damage=math.floor(damage*1.5);critHit=true end
+    if CombatStatus.RollCrit(gfx) then damage=math.floor(damage*CombatStatus.CAPS.critMultiplier);critHit=true end
   end
   player:SetAttribute("ApprovedActionTarget",target.position)
   target.HP=math.max(0,target.HP-damage)
   target.model:SetAttribute("EnemyHealth",target.HP)
-  if gfx and target.HP>0 then
-    for _,kind in ipairs({"burn","poison","frost","bleed"}) do
-      if (gfx[kind] or 0)>0 and math.random()<math.min(.6,gfx[kind]) then
-        applyStatus(player,target,kind,kind=="burn" and 5 or 6)
-      end
-    end
-    if (gfx.stun or 0)>0 and not target.isBoss and (target.stunUntil or 0)<=now and math.random()<math.min(.25,gfx.stun) then
-      target.stunUntil=now+.8
-    end
+  local hitFx=gfx and CombatStatus.RollHitEffects(gfx,{
+    targetDead=target.HP<=0,isBoss=target.isBoss,stunReady=(target.stunUntil or 0)<=now})
+  if hitFx then
+    for _,kind in ipairs(hitFx.statuses) do applyStatus(player,target,kind) end
+    if hitFx.stun then target.stunUntil=now+CombatStatus.CAPS.stunSeconds end
   end
-  if gfx and (gfx.leech or 0)>0 then
+  if hitFx and hitFx.leechRatio>0 then
     local _,hum=liveMeadowCharacter(player)
     if hum then
-      hum.Health=math.min(hum.MaxHealth,hum.Health+math.max(1,math.floor(damage*math.min(.15,gfx.leech))))
+      hum.Health=math.min(hum.MaxHealth,hum.Health+math.max(1,math.floor(damage*hitFx.leechRatio)))
       setNumber(player,"Health",math.max(0,math.floor(hum.Health)))
     end
   end
