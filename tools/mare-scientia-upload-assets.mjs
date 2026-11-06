@@ -65,7 +65,12 @@ try { registry = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')); } catch {}
 const failures = [];
 for (const item of plan) {
   const id = item.kind + '/' + item.name;
-  if (registry.assets[id]?.assetId) { console.log('SKIP_ALREADY_REGISTERED', id); continue; }
+  if (registry.assets[id]?.assetId) {
+    // 이미 발급된 ID는 다시 업로드하지 않고 실제 파일 형식/경로만 갱신한다.
+    registry.assets[id].source = item.file;
+    console.log('SKIP_ALREADY_REGISTERED', id);
+    continue;
+  }
   try {
     const binary = await fs.readFile(item.file);
     if (binary.length > 20 * 1024 * 1024) throw new Error('FILE_TOO_LARGE');

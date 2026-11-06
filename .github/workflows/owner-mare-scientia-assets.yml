@@ -1,8 +1,16 @@
-# Mare Scientia CC0 3D 모델(선박·부두·소품·마을·주민)을 Roblox에 등록하고, 끝나면 게시를 이어서 실행한다. 수동 실행 전용.
+# 파일명: .github/workflows/owner-mare-scientia-assets.yml
+# Mare Scientia: 신규 CC0 모델을 기존 Open Cloud 등록 통로로 등록한다.
+# main 자산 변경 또는 수동 실행 시 동작하며 게임 게시 기본값은 꺼져 있다.
 name: Owner Mare Scientia Register Assets
 run-name: Owner Mare Scientia assets · ${{ github.sha }}
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/owner-mare-scientia-assets.yml'
+      - 'roblox-games/mare-scientia/assets/**'
+      - 'tools/mare-scientia-upload-assets.mjs'
   workflow_dispatch:
     inputs:
       universe_id:
