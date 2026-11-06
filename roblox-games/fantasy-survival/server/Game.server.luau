@@ -3328,7 +3328,7 @@ local function refreshBowVisual(player)
     local arm=character:FindFirstChild("LeftLowerArm") or character:FindFirstChild("Left Arm")
     if handAllowed and arm and (shield or basicGuard) then
       local modelKey=shield and shield.ModelKey or "vxShieldA"
-      local sm=worldAsset(modelKey,Vector3.new(0,-900,0),2.4)
+      local sm=worldAsset(modelKey,(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),2.4)
       local sp=sm and sm:FindFirstChildWhichIsA("MeshPart",true)
       if sp then
         local sv=sp:Clone();sm:Destroy()
@@ -3348,7 +3348,7 @@ local function refreshBowVisual(player)
   if weapon and weapon.ModelKey and not weapon.Bow then
     local hand=character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
     if hand then
-      local model=worldAsset(weapon.ModelKey,Vector3.new(0,-900,0),3.5)
+      local model=worldAsset(weapon.ModelKey,(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),3.5)
       local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
       if mesh then
         local visual=mesh:Clone();model:Destroy()
@@ -3367,7 +3367,7 @@ local function refreshBowVisual(player)
   if human then human:UnequipTools() end
   local hand=character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm")
   if not hand then return end
-  local model=worldAsset("item_bow_wooden",Vector3.new(0,-900,0),3.4)
+  local model=worldAsset("item_bow_wooden",(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),3.4)
   local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
   if not mesh then if model then model:Destroy() end return end
   local visual=mesh:Clone()
@@ -3391,7 +3391,7 @@ local function refreshArmorVisual(player)
   if not chest then warn("ARMORVIS no chest equipped") return end
   local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
   if not torso then warn("ARMORVIS no torso") return end
-  local model=worldAsset(armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather",Vector3.new(0,-900,0),2.5)
+  local model=worldAsset(armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather",(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),2.5)
   local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
   if not mesh then warn("ARMORVIS no mesh model="..tostring(model)) if model then model:Destroy() end return end
   warn("ARMORVIS ok "..tostring(chest.Id))
