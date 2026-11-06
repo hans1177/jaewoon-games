@@ -394,9 +394,12 @@ meadowArt.sfx=function(name,volume,pitch)
 end
 local root = Instance.new("Frame")
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
+-- [표현 초기화] 날씨에서 재사용하는 객체만 외부 범위에 유지한다.
+local verifiedLearningLighting, verifiedLearningColorGrade
+do
 local verifiedLearningPlayers = game:GetService("Players")
 local verifiedLearningTweenService = game:GetService("TweenService")
-local verifiedLearningLighting = game:GetService("Lighting")
+verifiedLearningLighting = game:GetService("Lighting")
 local verifiedLearningPlayer = verifiedLearningPlayers.LocalPlayer
 local verifiedLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
@@ -419,7 +422,7 @@ verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMood", verifiedLearni
 verifiedLearningRoot:SetAttribute("VerifiedLearningGameSpecificMappingCount", #(verifiedLearningContext.GameSpecificSemanticMappings or {}))
 
 -- Game-specific color and atmosphere response, authored locally in Roblox.
-local verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
+verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
 if not verifiedLearningColorGrade then
   verifiedLearningColorGrade = Instance.new("ColorCorrectionEffect")
   verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
@@ -587,6 +590,7 @@ verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(fu
   playVerifiedLearningActionFeedback(verifiedLearningLastControl, true)
   verifiedLearningLastControl = nil
 end)
+end
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
 
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
@@ -4059,14 +4063,17 @@ do
   backdrop.BorderSizePixel=0
   backdrop.Active=true
   backdrop.Parent=arrivalGui
-  local shade=Instance.new("UIGradient")
-  shade.Color=ColorSequence.new({
-    ColorSequenceKeypoint.new(0,Color3.fromRGB(17,32,28)),
-    ColorSequenceKeypoint.new(.5,Color3.fromRGB(65,77,64)),
-    ColorSequenceKeypoint.new(1,Color3.fromRGB(12,24,22)),
-  })
-  shade.Rotation=90
-  shade.Parent=backdrop
+  -- [시작 화면 생성] 장식 변수는 생성 구간에서만 유지해 Luau 지역변수 한도를 지킨다.
+  do
+    local shade=Instance.new("UIGradient")
+    shade.Color=ColorSequence.new({
+      ColorSequenceKeypoint.new(0,Color3.fromRGB(17,32,28)),
+      ColorSequenceKeypoint.new(.5,Color3.fromRGB(65,77,64)),
+      ColorSequenceKeypoint.new(1,Color3.fromRGB(12,24,22)),
+    })
+    shade.Rotation=90
+    shade.Parent=backdrop
+  end
   -- [상용 게임식 타이틀 연출] 위·아래 어두운 비네팅 + 하단 안내 문구. 중앙 월드가 또렷이 보이게 한다.
   for _,edge in ipairs({{"VignetteTop",0,.34,0},{"VignetteBottom",.66,.34,1}}) do
     local v=Instance.new("Frame")
@@ -4167,20 +4174,23 @@ do
     return b
   end
   local titlePanel=panel("MeadowTitle",390,306)
-  local gameName=label(titlePanel,"GameName","마 력 숲",14,60,44,Color3.new(1,1,1))
-  gameName.TextStrokeTransparency=0
-  gameName.TextStrokeColor3=Color3.fromRGB(70,40,8)
-  local logoGrad=Instance.new("UIGradient")
-  logoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,246,200)),
-    ColorSequenceKeypoint.new(.55,Color3.fromRGB(246,198,98)),ColorSequenceKeypoint.new(1,Color3.fromRGB(176,118,40))})
-  logoGrad.Rotation=90
-  logoGrad.Parent=gameName
-  local logoLine=Instance.new("Frame")
-  logoLine.Name="LogoDivider";logoLine.AnchorPoint=Vector2.new(.5,0);logoLine.Position=UDim2.new(.5,0,0,74)
-  logoLine.Size=UDim2.new(.6,0,0,2);logoLine.BorderSizePixel=0;logoLine.BackgroundColor3=Color3.fromRGB(226,188,112);logoLine.ZIndex=3;logoLine.Parent=titlePanel
-  local lineGrad=Instance.new("UIGradient")
-  lineGrad.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.5,0),NumberSequenceKeypoint.new(1,1)})
-  lineGrad.Parent=logoLine
+  -- [시작 화면 생성] 장식 변수는 생성 구간에서만 유지해 Luau 지역변수 한도를 지킨다.
+  do
+    local gameName=label(titlePanel,"GameName","마 력 숲",14,60,44,Color3.new(1,1,1))
+    gameName.TextStrokeTransparency=0
+    gameName.TextStrokeColor3=Color3.fromRGB(70,40,8)
+    local logoGrad=Instance.new("UIGradient")
+    logoGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,246,200)),
+      ColorSequenceKeypoint.new(.55,Color3.fromRGB(246,198,98)),ColorSequenceKeypoint.new(1,Color3.fromRGB(176,118,40))})
+    logoGrad.Rotation=90
+    logoGrad.Parent=gameName
+    local logoLine=Instance.new("Frame")
+    logoLine.Name="LogoDivider";logoLine.AnchorPoint=Vector2.new(.5,0);logoLine.Position=UDim2.new(.5,0,0,74)
+    logoLine.Size=UDim2.new(.6,0,0,2);logoLine.BorderSizePixel=0;logoLine.BackgroundColor3=Color3.fromRGB(226,188,112);logoLine.ZIndex=3;logoLine.Parent=titlePanel
+    local lineGrad=Instance.new("UIGradient")
+    lineGrad.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.5,0),NumberSequenceKeypoint.new(1,1)})
+    lineGrad.Parent=logoLine
+  end
   label(titlePanel,"GameSubtitle","안개가 걷히면, 또 다른 이야기가 시작된다",80,28,13,Color3.fromRGB(214,226,204))
   local continueButton=button(titlePanel,"Continue","이어하기",116)
   local newButton=button(titlePanel,"NewGame","새 게임",168)
@@ -4246,18 +4256,24 @@ do
   progressTrack.BackgroundColor3=Color3.fromRGB(60,70,57)
   progressTrack.BorderSizePixel=0
   progressTrack.Parent=loadPanel
-  local progressCorner=Instance.new("UICorner")
-  progressCorner.CornerRadius=UDim.new(0,5)
-  progressCorner.Parent=progressTrack
+  -- [시작 화면 생성] 장식 변수는 생성 구간에서만 유지해 Luau 지역변수 한도를 지킨다.
+  do
+    local progressCorner=Instance.new("UICorner")
+    progressCorner.CornerRadius=UDim.new(0,5)
+    progressCorner.Parent=progressTrack
+  end
   local progressFill=Instance.new("Frame")
   progressFill.Name="VerifiedProgress"
   progressFill.Size=UDim2.fromScale(0,1)
   progressFill.BackgroundColor3=Color3.fromRGB(166,196,117)
   progressFill.BorderSizePixel=0
   progressFill.Parent=progressTrack
-  local fillCorner=Instance.new("UICorner")
-  fillCorner.CornerRadius=UDim.new(0,5)
-  fillCorner.Parent=progressFill
+  -- [시작 화면 생성] 장식 변수는 생성 구간에서만 유지해 Luau 지역변수 한도를 지킨다.
+  do
+    local fillCorner=Instance.new("UICorner")
+    fillCorner.CornerRadius=UDim.new(0,5)
+    fillCorner.Parent=progressFill
+  end
 
 
   -- [2.5D 오프닝 / 메인] 실물 월드와 완성 그림을 분리해 중복 인물 노출을 막는다.
@@ -4532,8 +4548,11 @@ do
   regionIntro.TextStrokeColor3=Color3.fromRGB(4,5,10)
   regionIntro.TextStrokeTransparency=.12
   regionIntro.ZIndex=14
-  local titleSize=Instance.new("UITextSizeConstraint")
-  titleSize.MinTextSize=21;titleSize.MaxTextSize=39;titleSize.Parent=regionIntro
+  -- [시작 화면 생성] 장식 변수는 생성 구간에서만 유지해 Luau 지역변수 한도를 지킨다.
+  do
+    local titleSize=Instance.new("UITextSizeConstraint")
+    titleSize.MinTextSize=21;titleSize.MaxTextSize=39;titleSize.Parent=regionIntro
+  end
   -- [하단 대사] 화자·설명 표식 없이 최대 두 줄만 표시한다.
   local introDialogue=label(introPanel,"DialogueLine","",0,90,20,Color3.fromRGB(255,242,211))
   introDialogue.AnchorPoint=Vector2.new(.5,0)
@@ -4547,8 +4566,11 @@ do
   introDialogue.TextStrokeColor3=Color3.fromRGB(2,5,10)
   introDialogue.TextStrokeTransparency=.2
   introDialogue.ZIndex=14
-  local dialogueSize=Instance.new("UITextSizeConstraint")
-  dialogueSize.MinTextSize=15;dialogueSize.MaxTextSize=23;dialogueSize.Parent=introDialogue
+  -- [시작 화면 생성] 장식 변수는 생성 구간에서만 유지해 Luau 지역변수 한도를 지킨다.
+  do
+    local dialogueSize=Instance.new("UITextSizeConstraint")
+    dialogueSize.MinTextSize=15;dialogueSize.MaxTextSize=23;dialogueSize.Parent=introDialogue
+  end
   -- [모바일 자막] 화면 비율이 바뀌어도 제목·대사 두 곳만 유지하고 인물의 중앙을 비운다.
   local function layoutIntroCaptions()
     local size=introPanel.AbsoluteSize
@@ -7245,6 +7267,8 @@ gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
 end)
 -- [미니맵] 실제 플레이어 좌표와 발견한 숲 지점만 표시한다.
 -- 체력바와 같은 전체 화면 좌표계를 사용해 Roblox 기본 상단 UI 여백으로 인한 아래 밀림을 없앤다.
+-- [미니맵 범위] 생성·갱신 콜백이 지도 객체를 보유하고 이후 시스템에는 변수를 남기지 않는다.
+do
 local meadowRadar=Instance.new("Frame")
 meadowRadar.Name="MeadowExplorerRadar"
 meadowRadar:SetAttribute("ReferenceRadarVisible",true) -- [상단 중앙 가로 지도] 기본 표시, 옵션에서 숨김
@@ -7827,6 +7851,7 @@ mapToggle.Activated:Connect(function()
 end)
 end
 layoutMeadowRadar()
+end
 do
 -- [전투 UI 상태] 서버가 제공한 실제 쿨다운만 표시한다. 임의 쿨다운은 없다.
 local skillDisplayElapsed=0
