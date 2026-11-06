@@ -3331,7 +3331,7 @@ local meadowRpg=(function()
 end)()
 
 -- [활 장착 외형] 등록된 CC0 활 메시(item_bow_wooden)를 왼손에 용접한다. 장검 도구는 집어넣는다.
-local function refreshBowVisual(player)
+local function refreshBowVisualCore(player)
   local character=player.Character
   if not character then return end
   local old=character:FindFirstChild("MeadowBowVisual")
@@ -3400,6 +3400,45 @@ local function refreshBowVisual(player)
   weld.C0=CFrame.new(0,-.35,-.15)*CFrame.Angles(0,math.rad(90),math.rad(-90))
   weld.Parent=visual
 end
+-- [무기 중복 방지] 제작·장착한 무기의 실물 메시가 손에 붙어 있으면 기본 도구(장검)의 외형은 숨긴다(도구는 그대로 유지).
+local function syncToolVisual(player)
+  local character=player.Character
+  if not character then return end
+  local weapon=meadowRpg.equippedWeapon(player)
+  local hide=weapon~=nil and (weapon.Bow==true or weapon.ModelKey~=nil)
+    and (character:FindFirstChild("MeadowForgedWeaponVisual") or character:FindFirstChild("MeadowBowVisual")) ~= nil
+  local backpack=player:FindFirstChildOfClass("Backpack")
+  for _,holder in ipairs({character,backpack}) do
+    if holder then
+      for _,tool in ipairs(holder:GetChildren()) do
+        if tool:IsA("Tool") then
+          for _,d in ipairs(tool:GetDescendants()) do
+            if d:IsA("BasePart") then
+              if hide then
+                if d:GetAttribute("MeadowOrigT")==nil then d:SetAttribute("MeadowOrigT",d.Transparency) end
+                d.Transparency=1
+              elseif d:GetAttribute("MeadowOrigT")~=nil then
+                d.Transparency=d:GetAttribute("MeadowOrigT");d:SetAttribute("MeadowOrigT",nil)
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
+local function refreshBowVisual(player)
+  refreshBowVisualCore(player)
+  syncToolVisual(player)
+end
+local toolSyncHooked={}
+Players.PlayerAdded:Connect(function(player)
+  player.CharacterAdded:Connect(function(character)
+    character.ChildAdded:Connect(function(child)
+      if child:IsA("Tool") then task.defer(syncToolVisual,player) end
+    end)
+  end)
+end)
 -- [갑옷 외형] 착용 중인 흉갑을 등록된 CC0 갑옷 메시로 상체에 붙인다. 등급별로 가죽/금속/흑철/황금 모델을 쓴다.
 local armorModelByRarity={Common="item_armor_leather",Uncommon="item_armor_leather",Rare="item_armor_metal",Epic="item_armor_black",Legendary="item_armor_golden"}
 local function refreshArmorVisual(player)
