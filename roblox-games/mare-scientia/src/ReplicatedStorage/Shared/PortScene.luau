@@ -189,6 +189,7 @@ local KEEPER_ROLE = {
 }
 local function villager(parent, pos, facing, coat, rng, role)
 	-- 직업 NPC(시설 담당·이야기 손님)는 등록된 KayKit CC0 모델을 쓰고, 없으면 아래 코드 모양을 쓴다
+	role = role or ({ "Knight", "Barbarian", "Mage", "Rogue", "Rogue_Hooded" })[rng:NextInteger(1, 5)]
 	if role then
 		local figure = importedModel(parent, "People", "KayKit_" .. role, pos, 5.8, false)
 		if figure then
@@ -613,11 +614,11 @@ function PortScene.build(info, onFacility)
 	-- 하늘·빛: 늦은 오후의 따뜻한 바다 분위기
 	do
 		local Lighting = game:GetService("Lighting")
-		Lighting.ClockTime = 16.2
-		Lighting.Brightness = 2.4
+		Lighting.ClockTime = 13.5
+		Lighting.Brightness = 2.6
 		Lighting.Ambient = Color3.fromRGB(96, 98, 110)
 		Lighting.OutdoorAmbient = Color3.fromRGB(122, 124, 138)
-		Lighting.ColorShift_Top = Color3.fromRGB(255, 224, 170)
+		Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
 		Lighting.GlobalShadows = true
 		local atmos = Lighting:FindFirstChild("MareAtmosphere")
 		if not atmos then
@@ -627,7 +628,7 @@ function PortScene.build(info, onFacility)
 		end
 		atmos.Density = 0.28
 		atmos.Offset = 0.2
-		atmos.Color = Color3.fromRGB(214, 200, 184)
+		atmos.Color = Color3.fromRGB(199, 214, 235)
 		atmos.Decay = Color3.fromRGB(120, 140, 170)
 		atmos.Glare = 0.35
 		atmos.Haze = 1.4
@@ -636,7 +637,7 @@ function PortScene.build(info, onFacility)
 			cc.Name = "MareGrade"
 			cc.Saturation = 0.12
 			cc.Contrast = 0.08
-			cc.TintColor = Color3.fromRGB(255, 246, 232)
+			cc.TintColor = Color3.fromRGB(255, 255, 255)
 			cc.Parent = Lighting
 			local bloom = Instance.new("BloomEffect")
 			bloom.Name = "MareBloom"
