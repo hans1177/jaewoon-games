@@ -224,6 +224,295 @@ local function createStartingMeadow()
   gameWorld:SetAttribute("MeadowOuterRegionReady",false)
 end
 createStartingMeadow()
+-- [스폰 선연결] 외부 모델 로딩 전에 기존 스폰·캐릭터 연결을 준비한다.
+-- native-foundation-sentinel-v1
+local nativeFoundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")
+if nativeFoundationRemote and not nativeFoundationRemote:IsA("RemoteEvent") then
+  nativeFoundationRemote:Destroy()
+  nativeFoundationRemote = nil
+end
+if not nativeFoundationRemote then
+  nativeFoundationRemote = Instance.new("RemoteEvent")
+  nativeFoundationRemote.Name = "RuntimeFoundationReport"
+  nativeFoundationRemote.Parent = ReplicatedStorage
+end
+local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")
+if not nativeFoundationSpawn then
+  nativeFoundationSpawn = Instance.new("SpawnLocation")
+  nativeFoundationSpawn.Name = "NativeFoundationSpawn"
+  nativeFoundationSpawn.Parent = workspace
+end
+nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
+nativeFoundationSpawn.Transparency = 1 -- Engine spawn locator only, never visible scenery
+-- [제1마을 실제 등장] 처음 접속/부활 위치는 초원 마을 북쪽 흙길.
+-- 저장된 이어하기 위치는 기존 MeadowResumeReady 복구가 우선하며 변경하지 않는다.
+nativeFoundationSpawn.Position = Vector3.new(0, 3, -75)
+nativeFoundationSpawn.Anchored = true
+nativeFoundationSpawn.CanCollide = false
+nativeFoundationSpawn.CanTouch = false
+nativeFoundationSpawn.CanQuery = false
+nativeFoundationSpawn.Neutral = true
+nativeFoundationSpawn.Material = table.find(studioMaterialAtoms, "METAL") and Enum.Material.Metal or Enum.Material.Plastic
+
+local function bindNativeFoundationCharacter(character)
+  local humanoid = character:WaitForChild("Humanoid", 10)
+  local rootPart = character:WaitForChild("HumanoidRootPart", 10)
+  local player = Players:GetPlayerFromCharacter(character)
+  if not humanoid or not rootPart or not player or player.Character ~= character
+    or humanoid.Health <= 0 then return end
+  rootPart.Anchored = false
+  rootPart.AssemblyLinearVelocity = Vector3.zero
+  rootPart.AssemblyAngularVelocity = Vector3.zero
+  humanoid.PlatformStand = false
+  humanoid.Sit = false
+  humanoid.AutoRotate = true
+  -- [하늘 스폰 복구] 엔진의 빈 공간/모델 상단 자동 배치 대신 실제 마을 지면에 놓는다.
+  -- 이미 복원된 이어하기 캐릭터는 이동시키지 않는다. 지붕·수관·장비는 지면 판정에서 제외한다.
+  local params = RaycastParams.new()
+  params.FilterType = Enum.RaycastFilterType.Include
+  params.FilterDescendantsInstances = {meadowTerrain}
+  params.IgnoreWater = true
+  if character:GetAttribute("MeadowResumeApplied") ~= true then
+    local spawnPosition = nativeFoundationSpawn.Position
+    local spawnHit = workspace:Raycast(Vector3.new(spawnPosition.X, 44, spawnPosition.Z),
+      Vector3.new(0, -110, 0), params)
+    if spawnHit and spawnHit.Normal.Y >= .65 then
+      local leg = character:FindFirstChild("Left Leg")
+      local legHeight = humanoid.RigType == Enum.HumanoidRigType.R6 and leg and leg.Size.Y or 0
+      local clearance = humanoid.HipHeight + rootPart.Size.Y * .5 + legHeight + .15
+      rootPart.CFrame = CFrame.new(spawnPosition.X, spawnHit.Position.Y + clearance, spawnPosition.Z)
+        * rootPart.CFrame.Rotation
+      rootPart.AssemblyLinearVelocity = Vector3.zero
+      rootPart.AssemblyAngularVelocity = Vector3.zero
+    else
+      warn("MEADOW_SPAWN_GROUND_UNVERIFIED")
+    end
+  end
+  local groundHit = workspace:Raycast(rootPart.Position + Vector3.new(0, 1, 0),
+    Vector3.new(0, -16, 0), params)
+  local groundContact = groundHit ~= nil and groundHit.Normal.Y >= .65
+  character:SetAttribute("GROUND_CONTACT", groundContact)
+  -- Player-customized Roblox R15 characters retain their genuine clothes,
+  -- accessories, joints and original animation controller.
+  local isR15 = humanoid.RigType == Enum.HumanoidRigType.R15
+  character:SetAttribute("R15_AVATAR_READY", isR15)
+  character:SetAttribute("NativeAvatarRig", isR15 and "R15" or "R15_REQUIRED")
+  character:SetAttribute("MOVEMENT_CONFIRMED", true)
+  -- [캐릭터 이동 이펙트] 기존 R15 발걸음에 젖은 흙먼지를 작게 남긴다.
+  -- Roblox 기본 입자 텍스처·Attachment만 사용하며 새 건축 파츠나 외부 모델을 만들지 않는다.
+  -- 대기 중에는 입자를 끄고, 걷기/달리기 중에만 저밀도로 출력한다.
+  if isR15 and not rootPart:FindFirstChild("MeadowFootstepDustOrigin") then
+    local origin=Instance.new("Attachment")
+    origin.Name="MeadowFootstepDustOrigin"
+    origin.Position=Vector3.new(0,-2.65,0)
+    origin.Parent=rootPart
+    local dust=Instance.new("ParticleEmitter")
+    dust.Name="MeadowNativeFootstepDust"
+    dust.Texture="rbxasset://textures/particles/smoke_main.dds"
+    dust.Color=ColorSequence.new(Color3.fromRGB(135,118,100))
+    dust.Transparency=NumberSequence.new({
+      NumberSequenceKeypoint.new(0,.65),
+      NumberSequenceKeypoint.new(1,1),
+    })
+    dust.Size=NumberSequence.new({
+      NumberSequenceKeypoint.new(0,.22),
+      NumberSequenceKeypoint.new(1,.62),
+    })
+    dust.Lifetime=NumberRange.new(.25,.48)
+    dust.Speed=NumberRange.new(.25,.65)
+    dust.Drag=2
+    dust.SpreadAngle=Vector2.new(30,30)
+    dust.Rate=0
+    dust.Enabled=true
+    dust.Parent=origin
+    humanoid.Running:Connect(function(speed)
+      if dust.Parent then
+        dust.Rate=humanoid.Health>0 and speed>3 and 2.5 or 0
+      end
+    end)
+    humanoid.Died:Connect(function()
+      if dust.Parent then dust.Rate=0 end
+    end)
+  end
+end
+local function bindNativeFoundationPlayer(player)
+  player.RespawnLocation = nativeFoundationSpawn
+  -- [오프닝 망토] 캐릭터가 생성된 바로 그 회차에서 기본 외형 로딩을 기다린다.
+  -- CharacterAppearanceLoaded만 기다리면 기존 캐릭터나 빨리 로딩된 캐릭터를 놓칠 수 있다.
+  -- [마력숲 낡은 붉은 망토] 기존 프로젝트가 소유한 3D 찢어진 메시를 원본 에셋 경로에서 장착한다.
+  -- 등록/Universe 권한이 없으면 가짜 Part·유료 카탈로그·평평한 패널로 대체하지 않는다.
+  -- 캐릭터 외형만 변경하고 기존 착용 장비·저장 구조·게임 규칙은 손대지 않는다.
+  -- [머리 외형] 착용 중인 모자류만 제거한다. 머리카락·얼굴·옷은 유지한다.
+  local function clearUnwantedHeadwear(character)
+    for _,item in ipairs(character:GetChildren()) do
+      if item:IsA("Accessory") and item.Name~="MeadowWornCrimsonCape"
+        and item.AccessoryType==Enum.AccessoryType.Hat
+        and not item:FindFirstChild("HairAttachment",true)
+        and not string.lower(item.Name):find("hair",1,true) then
+        item:Destroy()
+      end
+    end
+  end
+  -- [망토 원본] 기존 등록 소유 3D 메시를 머리 액세서리가 아닌 몸통 직접 Weld로 장착한다.
+  -- Roblox 자동 액세서리 머리 부착을 차단하고, R15/R6 개인 아바타를 모두 지원한다.
+  local function applyOpeningCape(character)
+    local humanoid=character:WaitForChild("Humanoid",10)
+    if player.Character~=character or not humanoid or humanoid.Health<=0 then return end
+    local deadline=os.clock()+9
+    while player.Character==character and not player:HasAppearanceLoaded()
+      and os.clock()<deadline do task.wait(.15) end
+    if player.Character~=character or humanoid.Health<=0 then return end
+    clearUnwantedHeadwear(character)
+    local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+    if not torso or not torso:IsA("BasePart") then
+      character:SetAttribute("OpeningCapeAttached",false)
+      character:SetAttribute("OpeningCapeState","TORSO_MISSING")
+      warn("마력숲 망토 장착 불가: 캐릭터 몸통 없음")
+      return
+    end
+    local capeKey=Config.OpeningCapeModelKey
+    local capeId=type(capeKey)=="string" and NativeCreatureAssets[capeKey] or nil
+    if typeof(capeId)~="number" or capeId<=0 then
+      character:SetAttribute("OpeningCapeAttached",false)
+      character:SetAttribute("OpeningCapeState","REGISTERED_OWNER_MESH_MISSING")
+      warn("마력숲 헤진 망토 등록/Universe 승인 ID 없음: "..tostring(capeKey))
+      return
+    end
+    local oldCape=character:FindFirstChild("MeadowWornCrimsonCape")
+    if oldCape and oldCape:IsA("Model")
+      and oldCape:GetAttribute("MeadowOwnerOriginalCape")==true then
+      local handle=oldCape:FindFirstChild("Handle")
+      local weld=handle and handle:FindFirstChild("AccessoryWeld")
+      if handle and handle:IsA("MeshPart") and handle.Transparency<1
+        and weld and weld:IsA("Weld") and weld.Part0==torso and weld.Part1==handle then
+        character:SetAttribute("OpeningCapeAttached",true)
+        character:SetAttribute("OpeningCapeState","ATTACHED")
+        return
+      end
+    end
+    if oldCape then oldCape:Destroy() end
+    character:SetAttribute("OpeningCapeAttached",false)
+    character:SetAttribute("OpeningCapeState","LOADING")
+    local lastReason="UNKNOWN"
+    for attempt=1,3 do
+      if player.Character~=character or humanoid.Health<=0 then return end
+      local loadedModel,cape,attached=nil,nil,false
+      local ok,reason=pcall(function()
+        -- [검증된 소유 모델] 92370050558893 원본만 로딩한다. 프리미티브나 대체 망토 금지.
+        loadedModel=AssetService:LoadAssetAsync(capeId)
+        if not loadedModel or not loadedModel:IsA("Model") then
+          error("WORN_CAPE_NATIVE_MODEL_LOAD_FAILED")
+        end
+        local handle=loadedModel:FindFirstChildWhichIsA("MeshPart",true)
+        if not handle or handle.MeshId=="" then
+          error("WORN_CAPE_REAL_MESHPART_MISSING")
+        end
+        local meshCount=0
+        for _,item in ipairs(loadedModel:GetDescendants()) do
+          if item:IsA("MeshPart") then meshCount+=1 end
+          if item:IsA("LuaSourceContainer") or item:IsA("RemoteEvent")
+            or item:IsA("RemoteFunction") or item:IsA("Tool") then
+            item:Destroy()
+          end
+        end
+        if meshCount<1 then error("WORN_CAPE_IMPORT_MESH_COUNT_INVALID:"..meshCount) end
+        if handle.Size.Y<=.001 then
+          error("WORN_CAPE_REAL_SIZE_INVALID:"..tostring(handle.Size.Y))
+        end
+        -- [스케일 보정] GLB 길이를 스터드로 정규화한다. 기존 실물 메시와 찢어진 밑단은 유지.
+        local capeScale=1.52/handle.Size.Y
+        handle.Size=handle.Size*capeScale
+        -- [등 장착] 캐릭터가 가진 뒤쪽 어태치먼트, 없으면 현재 몸통의 등 위치.
+        local back=torso:FindFirstChild("BodyBackAttachment")
+        local backFrame=back and back:IsA("Attachment") and back.CFrame
+          or CFrame.new(0,torso.Size.Y*.26,torso.Size.Z*.5)
+        cape=Instance.new("Model")
+        cape.Name="MeadowWornCrimsonCape"
+        handle.Name="Handle"
+        -- 수동 장착만 사용한다. Accessory로 캐릭터에 넣으면 Roblox가 머리에 붙일 수 있다.
+        handle.Parent=cape
+        for _,extra in ipairs(loadedModel:GetDescendants()) do
+          if extra:IsA("MeshPart") and extra~=handle then
+            extra.Anchored=false;extra.CanCollide=false;extra.CanTouch=false;extra.CanQuery=false;extra.Massless=true
+            local keep=Instance.new("WeldConstraint");keep.Part0=handle;keep.Part1=extra;keep.Parent=extra
+            extra.Parent=cape
+          end
+        end
+        local previousWeld=handle:FindFirstChild("AccessoryWeld")
+        if previousWeld then previousWeld:Destroy() end
+        handle.Anchored=false
+        handle.CanCollide=false
+        handle.CanTouch=false
+        handle.CanQuery=false
+        handle.Massless=true
+        handle.Transparency=0
+        handle.DoubleSided=true
+        handle.Reflectance=0
+        handle.Material=Enum.Material.Fabric
+        -- [실제 3D 천] 어깨 윗선이 등 위쪽에 닿고, 네 군데 찢어진 밑단은 엉덩이까지.
+        local weld=Instance.new("Weld")
+        weld.Name="AccessoryWeld" -- 기존 클라이언트 펄럭임 관절 이름을 유지한다.
+        weld.Part0=torso
+        weld.Part1=handle
+        weld.C0=backFrame*CFrame.new(0,.08,.12)
+        weld.C1=CFrame.new(0,handle.Size.Y*.48,0)*CFrame.Angles(0,math.pi,0)
+        handle.CFrame=torso.CFrame*weld.C0*weld.C1:Inverse()
+        weld.Parent=handle
+        cape.PrimaryPart=handle
+        cape:SetAttribute("MeadowCrimsonWornCape",true)
+        cape:SetAttribute("MeadowOwnerOriginalCape",true)
+        cape:SetAttribute("MeadowCapeMeshCount",meshCount)
+        cape:SetAttribute("MeadowCapeHemTears",4)
+        cape:SetAttribute("MeadowCapeLength","HIP_LENGTH")
+        cape.Parent=character
+        loadedModel:Destroy()
+        loadedModel=nil
+        attached=player.Character==character and cape.Parent==character
+          and weld.Part0==torso and weld.Part1==handle
+          and handle:IsDescendantOf(character)
+        if not attached then error("WORN_CAPE_TORSO_WELD_ATTACH_FAILED") end
+      end)
+      if loadedModel then loadedModel:Destroy() end
+      if not ok and cape then cape:Destroy() end
+      if player.Character~=character or humanoid.Health<=0 then return end
+      if ok and attached then
+        character:SetAttribute("OpeningCapeAttached",true)
+        character:SetAttribute("OpeningCapeState","ATTACHED")
+        print("마력숲 망토 등 장착: 등록 원본 3D / 엉덩이 길이 / 몸통 직접 Weld / ID="..capeId)
+        return
+      end
+      lastReason=tostring(reason)
+      character:SetAttribute("OpeningCapeReason",string.sub(lastReason,1,80))
+      if attempt<3 then
+        character:SetAttribute("OpeningCapeState","RETRYING")
+        task.wait(attempt*1.5)
+      end
+    end
+    character:SetAttribute("OpeningCapeAttached",false)
+    character:SetAttribute("OpeningCapeState","LOAD_FAILED")
+    warn("마력숲 망토 등 장착 3회 실패: "..lastReason)
+  end
+  local function onCharacterAdded(character)
+    player.RespawnLocation = nativeFoundationSpawn
+    bindNativeFoundationCharacter(character)
+    -- 스폰·부활 모두 외형 로딩 경로를 보존한 뒤 한 번만 망토 착용을 시도한다.
+    task.spawn(applyOpeningCape, character)
+  end
+  player.CharacterAdded:Connect(onCharacterAdded)
+  -- [리스폰/늦은 아바타 로딩] 뒤늦게 추가된 모자도 정리하며 머리카락은 보존한다.
+  player.CharacterAppearanceLoaded:Connect(function(character)
+    if player.Character==character then clearUnwantedHeadwear(character) end
+  end)
+  if player.Character then task.defer(onCharacterAdded, player.Character) end
+end
+Players.PlayerAdded:Connect(bindNativeFoundationPlayer)
+for _, nativeFoundationPlayer in ipairs(Players:GetPlayers()) do
+  task.defer(bindNativeFoundationPlayer, nativeFoundationPlayer)
+end
+nativeFoundationRemote.OnServerEvent:Connect(function(player, signal)
+  if typeof(signal) ~= "string" then return end
+  player:SetAttribute("NativeFoundationReadyAt", os.time())
+end)
 -- [서버 메인: 초원 날씨·새벽/낮/저녁/밤]
 -- 기존 웨이브 갱신 틱에서 함께 실행한다. 날씨는 표현 전용이며 저장·전투를 변경하지 않는다.
 -- 12분당 게임 내 하루, 날씨는 5분마다 바뀌며 모든 플레이어가 같은 상태를 관측한다.
@@ -6687,6 +6976,8 @@ local function onSurvivalPlayerAdded(player)
         if hit and hit.Position.Y>=-58 and hit.Position.Y<=540 then
           root.CFrame=CFrame.new(resumePosition.X,hit.Position.Y+3.5,resumePosition.Z)
           root.AssemblyLinearVelocity=Vector3.zero
+          root.AssemblyAngularVelocity=Vector3.zero
+          character:SetAttribute("MeadowResumeApplied",true)
         else
           warn("MEADOW_RESUME_GROUND_UNVERIFIED")
         end
@@ -7039,272 +7330,6 @@ Players.PlayerRemoving:Connect(function(player)
 end)
 
 
--- native-foundation-sentinel-v1
-local nativeFoundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")
-if nativeFoundationRemote and not nativeFoundationRemote:IsA("RemoteEvent") then
-  nativeFoundationRemote:Destroy()
-  nativeFoundationRemote = nil
-end
-if not nativeFoundationRemote then
-  nativeFoundationRemote = Instance.new("RemoteEvent")
-  nativeFoundationRemote.Name = "RuntimeFoundationReport"
-  nativeFoundationRemote.Parent = ReplicatedStorage
-end
-local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")
-if not nativeFoundationSpawn then
-  nativeFoundationSpawn = Instance.new("SpawnLocation")
-  nativeFoundationSpawn.Name = "NativeFoundationSpawn"
-  nativeFoundationSpawn.Parent = workspace
-end
-nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
-nativeFoundationSpawn.Transparency = 1 -- Engine spawn locator only, never visible scenery
--- [제1마을 실제 등장] 처음 접속/부활 위치는 초원 마을 북쪽 흙길.
--- 저장된 이어하기 위치는 기존 MeadowResumeReady 복구가 우선하며 변경하지 않는다.
-nativeFoundationSpawn.Position = Vector3.new(0, 3, -75)
-nativeFoundationSpawn.Anchored = true
-nativeFoundationSpawn.CanCollide = false
-nativeFoundationSpawn.CanTouch = false
-nativeFoundationSpawn.CanQuery = false
-nativeFoundationSpawn.Neutral = true
-nativeFoundationSpawn.Material = table.find(studioMaterialAtoms, "METAL") and Enum.Material.Metal or Enum.Material.Plastic
-
-local function bindNativeFoundationCharacter(character)
-  local humanoid = character:WaitForChild("Humanoid")
-  local rootPart = character:WaitForChild("HumanoidRootPart")
-  rootPart.Anchored = false
-  rootPart.AssemblyLinearVelocity = Vector3.zero
-  rootPart.AssemblyAngularVelocity = Vector3.zero
-  humanoid.PlatformStand = false
-  humanoid.Sit = false
-  humanoid.AutoRotate = true
-  if rootPart.Position.Y < 2 then rootPart.CFrame = CFrame.new(0, 4, 0) end
-  local params = RaycastParams.new()
-  params.FilterType = Enum.RaycastFilterType.Exclude
-  params.FilterDescendantsInstances = {character,nativeFoundationSpawn}
-  local groundHit = workspace:Raycast(rootPart.Position + Vector3.new(0, 4, 0), Vector3.new(0, -16, 0), params)
-  local groundContact = groundHit ~= nil and groundHit.Instance ~= nil
-  character:SetAttribute("GROUND_CONTACT", groundContact)
-  -- Player-customized Roblox R15 characters retain their genuine clothes,
-  -- accessories, joints and original animation controller.
-  local isR15 = humanoid.RigType == Enum.HumanoidRigType.R15
-  character:SetAttribute("R15_AVATAR_READY", isR15)
-  character:SetAttribute("NativeAvatarRig", isR15 and "R15" or "R15_REQUIRED")
-  character:SetAttribute("MOVEMENT_CONFIRMED", true)
-  -- [캐릭터 이동 이펙트] 기존 R15 발걸음에 젖은 흙먼지를 작게 남긴다.
-  -- Roblox 기본 입자 텍스처·Attachment만 사용하며 새 건축 파츠나 외부 모델을 만들지 않는다.
-  -- 대기 중에는 입자를 끄고, 걷기/달리기 중에만 저밀도로 출력한다.
-  if isR15 and not rootPart:FindFirstChild("MeadowFootstepDustOrigin") then
-    local origin=Instance.new("Attachment")
-    origin.Name="MeadowFootstepDustOrigin"
-    origin.Position=Vector3.new(0,-2.65,0)
-    origin.Parent=rootPart
-    local dust=Instance.new("ParticleEmitter")
-    dust.Name="MeadowNativeFootstepDust"
-    dust.Texture="rbxasset://textures/particles/smoke_main.dds"
-    dust.Color=ColorSequence.new(Color3.fromRGB(135,118,100))
-    dust.Transparency=NumberSequence.new({
-      NumberSequenceKeypoint.new(0,.65),
-      NumberSequenceKeypoint.new(1,1),
-    })
-    dust.Size=NumberSequence.new({
-      NumberSequenceKeypoint.new(0,.22),
-      NumberSequenceKeypoint.new(1,.62),
-    })
-    dust.Lifetime=NumberRange.new(.25,.48)
-    dust.Speed=NumberRange.new(.25,.65)
-    dust.Drag=2
-    dust.SpreadAngle=Vector2.new(30,30)
-    dust.Rate=0
-    dust.Enabled=true
-    dust.Parent=origin
-    humanoid.Running:Connect(function(speed)
-      if dust.Parent then
-        dust.Rate=humanoid.Health>0 and speed>3 and 2.5 or 0
-      end
-    end)
-    humanoid.Died:Connect(function()
-      if dust.Parent then dust.Rate=0 end
-    end)
-  end
-end
-local function bindNativeFoundationPlayer(player)
-  player.RespawnLocation = nativeFoundationSpawn
-  -- [오프닝 망토] 캐릭터가 생성된 바로 그 회차에서 기본 외형 로딩을 기다린다.
-  -- CharacterAppearanceLoaded만 기다리면 기존 캐릭터나 빨리 로딩된 캐릭터를 놓칠 수 있다.
-  -- [마력숲 낡은 붉은 망토] 기존 프로젝트가 소유한 3D 찢어진 메시를 원본 에셋 경로에서 장착한다.
-  -- 등록/Universe 권한이 없으면 가짜 Part·유료 카탈로그·평평한 패널로 대체하지 않는다.
-  -- 캐릭터 외형만 변경하고 기존 착용 장비·저장 구조·게임 규칙은 손대지 않는다.
-  -- [머리 외형] 착용 중인 모자류만 제거한다. 머리카락·얼굴·옷은 유지한다.
-  local function clearUnwantedHeadwear(character)
-    for _,item in ipairs(character:GetChildren()) do
-      if item:IsA("Accessory") and item.Name~="MeadowWornCrimsonCape"
-        and item.AccessoryType==Enum.AccessoryType.Hat
-        and not item:FindFirstChild("HairAttachment",true)
-        and not string.lower(item.Name):find("hair",1,true) then
-        item:Destroy()
-      end
-    end
-  end
-  -- [망토 원본] 기존 등록 소유 3D 메시를 머리 액세서리가 아닌 몸통 직접 Weld로 장착한다.
-  -- Roblox 자동 액세서리 머리 부착을 차단하고, R15/R6 개인 아바타를 모두 지원한다.
-  local function applyOpeningCape(character)
-    local humanoid=character:WaitForChild("Humanoid",10)
-    if player.Character~=character or not humanoid or humanoid.Health<=0 then return end
-    local deadline=os.clock()+9
-    while player.Character==character and not player:HasAppearanceLoaded()
-      and os.clock()<deadline do task.wait(.15) end
-    if player.Character~=character or humanoid.Health<=0 then return end
-    clearUnwantedHeadwear(character)
-    local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
-    if not torso or not torso:IsA("BasePart") then
-      character:SetAttribute("OpeningCapeAttached",false)
-      character:SetAttribute("OpeningCapeState","TORSO_MISSING")
-      warn("마력숲 망토 장착 불가: 캐릭터 몸통 없음")
-      return
-    end
-    local capeKey=Config.OpeningCapeModelKey
-    local capeId=type(capeKey)=="string" and NativeCreatureAssets[capeKey] or nil
-    if typeof(capeId)~="number" or capeId<=0 then
-      character:SetAttribute("OpeningCapeAttached",false)
-      character:SetAttribute("OpeningCapeState","REGISTERED_OWNER_MESH_MISSING")
-      warn("마력숲 헤진 망토 등록/Universe 승인 ID 없음: "..tostring(capeKey))
-      return
-    end
-    local oldCape=character:FindFirstChild("MeadowWornCrimsonCape")
-    if oldCape and oldCape:IsA("Model")
-      and oldCape:GetAttribute("MeadowOwnerOriginalCape")==true then
-      local handle=oldCape:FindFirstChild("Handle")
-      local weld=handle and handle:FindFirstChild("AccessoryWeld")
-      if handle and handle:IsA("MeshPart") and handle.Transparency<1
-        and weld and weld:IsA("Weld") and weld.Part0==torso and weld.Part1==handle then
-        character:SetAttribute("OpeningCapeAttached",true)
-        character:SetAttribute("OpeningCapeState","ATTACHED")
-        return
-      end
-    end
-    if oldCape then oldCape:Destroy() end
-    character:SetAttribute("OpeningCapeAttached",false)
-    character:SetAttribute("OpeningCapeState","LOADING")
-    local lastReason="UNKNOWN"
-    for attempt=1,3 do
-      if player.Character~=character or humanoid.Health<=0 then return end
-      local loadedModel,cape,attached=nil,nil,false
-      local ok,reason=pcall(function()
-        -- [검증된 소유 모델] 92370050558893 원본만 로딩한다. 프리미티브나 대체 망토 금지.
-        loadedModel=AssetService:LoadAssetAsync(capeId)
-        if not loadedModel or not loadedModel:IsA("Model") then
-          error("WORN_CAPE_NATIVE_MODEL_LOAD_FAILED")
-        end
-        local handle=loadedModel:FindFirstChildWhichIsA("MeshPart",true)
-        if not handle or handle.MeshId=="" then
-          error("WORN_CAPE_REAL_MESHPART_MISSING")
-        end
-        local meshCount=0
-        for _,item in ipairs(loadedModel:GetDescendants()) do
-          if item:IsA("MeshPart") then meshCount+=1 end
-          if item:IsA("LuaSourceContainer") or item:IsA("RemoteEvent")
-            or item:IsA("RemoteFunction") or item:IsA("Tool") then
-            item:Destroy()
-          end
-        end
-        if meshCount<1 then error("WORN_CAPE_IMPORT_MESH_COUNT_INVALID:"..meshCount) end
-        if handle.Size.Y<=.001 then
-          error("WORN_CAPE_REAL_SIZE_INVALID:"..tostring(handle.Size.Y))
-        end
-        -- [스케일 보정] GLB 길이를 스터드로 정규화한다. 기존 실물 메시와 찢어진 밑단은 유지.
-        local capeScale=1.52/handle.Size.Y
-        handle.Size=handle.Size*capeScale
-        -- [등 장착] 캐릭터가 가진 뒤쪽 어태치먼트, 없으면 현재 몸통의 등 위치.
-        local back=torso:FindFirstChild("BodyBackAttachment")
-        local backFrame=back and back:IsA("Attachment") and back.CFrame
-          or CFrame.new(0,torso.Size.Y*.26,torso.Size.Z*.5)
-        cape=Instance.new("Model")
-        cape.Name="MeadowWornCrimsonCape"
-        handle.Name="Handle"
-        -- 수동 장착만 사용한다. Accessory로 캐릭터에 넣으면 Roblox가 머리에 붙일 수 있다.
-        handle.Parent=cape
-        for _,extra in ipairs(loadedModel:GetDescendants()) do
-          if extra:IsA("MeshPart") and extra~=handle then
-            extra.Anchored=false;extra.CanCollide=false;extra.CanTouch=false;extra.CanQuery=false;extra.Massless=true
-            local keep=Instance.new("WeldConstraint");keep.Part0=handle;keep.Part1=extra;keep.Parent=extra
-            extra.Parent=cape
-          end
-        end
-        local previousWeld=handle:FindFirstChild("AccessoryWeld")
-        if previousWeld then previousWeld:Destroy() end
-        handle.Anchored=false
-        handle.CanCollide=false
-        handle.CanTouch=false
-        handle.CanQuery=false
-        handle.Massless=true
-        handle.Transparency=0
-        handle.DoubleSided=true
-        handle.Reflectance=0
-        handle.Material=Enum.Material.Fabric
-        -- [실제 3D 천] 어깨 윗선이 등 위쪽에 닿고, 네 군데 찢어진 밑단은 엉덩이까지.
-        local weld=Instance.new("Weld")
-        weld.Name="AccessoryWeld" -- 기존 클라이언트 펄럭임 관절 이름을 유지한다.
-        weld.Part0=torso
-        weld.Part1=handle
-        weld.C0=backFrame*CFrame.new(0,.08,.12)
-        weld.C1=CFrame.new(0,handle.Size.Y*.48,0)*CFrame.Angles(0,math.pi,0)
-        handle.CFrame=torso.CFrame*weld.C0*weld.C1:Inverse()
-        weld.Parent=handle
-        cape.PrimaryPart=handle
-        cape:SetAttribute("MeadowCrimsonWornCape",true)
-        cape:SetAttribute("MeadowOwnerOriginalCape",true)
-        cape:SetAttribute("MeadowCapeMeshCount",meshCount)
-        cape:SetAttribute("MeadowCapeHemTears",4)
-        cape:SetAttribute("MeadowCapeLength","HIP_LENGTH")
-        cape.Parent=character
-        loadedModel:Destroy()
-        loadedModel=nil
-        attached=player.Character==character and cape.Parent==character
-          and weld.Part0==torso and weld.Part1==handle
-          and handle:IsDescendantOf(character)
-        if not attached then error("WORN_CAPE_TORSO_WELD_ATTACH_FAILED") end
-      end)
-      if loadedModel then loadedModel:Destroy() end
-      if not ok and cape then cape:Destroy() end
-      if player.Character~=character or humanoid.Health<=0 then return end
-      if ok and attached then
-        character:SetAttribute("OpeningCapeAttached",true)
-        character:SetAttribute("OpeningCapeState","ATTACHED")
-        print("마력숲 망토 등 장착: 등록 원본 3D / 엉덩이 길이 / 몸통 직접 Weld / ID="..capeId)
-        return
-      end
-      lastReason=tostring(reason)
-      character:SetAttribute("OpeningCapeReason",string.sub(lastReason,1,80))
-      if attempt<3 then
-        character:SetAttribute("OpeningCapeState","RETRYING")
-        task.wait(attempt*1.5)
-      end
-    end
-    character:SetAttribute("OpeningCapeAttached",false)
-    character:SetAttribute("OpeningCapeState","LOAD_FAILED")
-    warn("마력숲 망토 등 장착 3회 실패: "..lastReason)
-  end
-  local function onCharacterAdded(character)
-    player.RespawnLocation = nativeFoundationSpawn
-    bindNativeFoundationCharacter(character)
-    -- 스폰·부활 모두 외형 로딩 경로를 보존한 뒤 한 번만 망토 착용을 시도한다.
-    task.spawn(applyOpeningCape, character)
-  end
-  player.CharacterAdded:Connect(onCharacterAdded)
-  -- [리스폰/늦은 아바타 로딩] 뒤늦게 추가된 모자도 정리하며 머리카락은 보존한다.
-  player.CharacterAppearanceLoaded:Connect(function(character)
-    if player.Character==character then clearUnwantedHeadwear(character) end
-  end)
-  if player.Character then task.defer(onCharacterAdded, player.Character) end
-end
-Players.PlayerAdded:Connect(bindNativeFoundationPlayer)
-for _, nativeFoundationPlayer in ipairs(Players:GetPlayers()) do
-  task.defer(bindNativeFoundationPlayer, nativeFoundationPlayer)
-end
-nativeFoundationRemote.OnServerEvent:Connect(function(player, signal)
-  if typeof(signal) ~= "string" then return end
-  player:SetAttribute("NativeFoundationReadyAt", os.time())
-end)
 -- 서버 종료 시에도 저장된 프로필만 보호한다. 임시 세션은 저장 금지.
 game:BindToClose(function()
   local players = Players:GetPlayers()
