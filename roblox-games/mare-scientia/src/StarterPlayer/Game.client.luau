@@ -219,8 +219,8 @@ sizeLimit.Parent = main
 
 local headerLabel = Instance.new("TextLabel")
 headerLabel.BackgroundTransparency = 1
-headerLabel.Position = UDim2.fromOffset(8, 4)
-headerLabel.Size = UDim2.new(1, -150, 0, 44)
+headerLabel.Position = UDim2.fromOffset(66, 4)
+headerLabel.Size = UDim2.new(1, -216, 0, 44)
 headerLabel.TextXAlignment = Enum.TextXAlignment.Left
 headerLabel.TextYAlignment = Enum.TextYAlignment.Top
 headerLabel.TextWrapped = true
@@ -229,6 +229,60 @@ headerLabel.Font = Enum.Font.GothamBold
 headerLabel.TextColor3 = COLORS.text
 headerLabel.Text = "불러오는 중..."
 headerLabel.Parent = mainInner
+
+-- 시설 주인 초상화 (대항해시대 온라인의 NPC 얼굴 창처럼)
+local portraitFrame = Instance.new("ViewportFrame")
+portraitFrame.Position = UDim2.fromOffset(8, 2)
+portraitFrame.Size = UDim2.fromOffset(52, 52)
+portraitFrame.BackgroundColor3 = Color3.fromRGB(40, 56, 80)
+portraitFrame.Ambient = Color3.fromRGB(190, 190, 200)
+portraitFrame.LightColor = Color3.fromRGB(255, 244, 220)
+portraitFrame.Parent = mainInner
+do
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 8)
+	c.Parent = portraitFrame
+	local st = Instance.new("UIStroke")
+	st.Color = Color3.fromRGB(214, 170, 82)
+	st.Thickness = 2
+	st.Parent = portraitFrame
+end
+local portraitCam = Instance.new("Camera")
+portraitCam.FieldOfView = 30
+portraitCam.Parent = portraitFrame
+portraitFrame.CurrentCamera = portraitCam
+local portraitKey = nil
+local PORTRAIT_ROLE = {
+	["교역소"] = "Rogue", ["항만청"] = "Knight", ["조선소"] = "Barbarian",
+	["주점"] = "Barbarian", ["학자의 서재"] = "Mage", ["선장실"] = "Rogue_Hooded",
+}
+local function setPortrait(groupName)
+	if portraitKey == groupName then
+		return
+	end
+	portraitKey = groupName
+	for _, c in portraitFrame:GetChildren() do
+		if c:IsA("Model") then
+			c:Destroy()
+		end
+	end
+	local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
+	local people = lib and lib:FindFirstChild("People")
+	local tpl = people and people:FindFirstChild("KayKit_" .. (PORTRAIT_ROLE[groupName] or "Knight"))
+	if not tpl then
+		return
+	end
+	local m = tpl:Clone()
+	for _, d in m:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.Anchored = true
+		end
+	end
+	m.Parent = portraitFrame
+	local cf, size = m:GetBoundingBox()
+	local head = cf.Position + Vector3.new(0, size.Y * 0.32, 0)
+	portraitCam.CFrame = CFrame.lookAt(head + Vector3.new(0, 0.2, size.Y * 1.2), head)
+end
 
 local coinChip, _, coinValue = CommonUI.CreateCurrencyChip({ name = "Coins", size = UDim2.fromOffset(132, 34), text = "0" })
 coinChip.AnchorPoint = Vector2.new(1, 0)
@@ -2020,6 +2074,7 @@ function render()
 
 	local p, ship = view.player, view.ship
 	local grp = groupOf(currentTab)
+	setPortrait(grp.name)
 	headerLabel.Text = string.format("%s · %s\n%s %s  선체 %d/%d  화물 %d/%d",
 		grp.name, grp.keeper, p.portName, ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity)
 	coinValue.Text = tostring(p.coins)
