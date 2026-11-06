@@ -1,0 +1,116 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local n={} local lib=RS:FindFirstChild(\"MareAssets\") if lib then for _,k in ipairs(lib:GetChildren()) do n[#n+1]=k.Name..\":\"..#k:GetChildren() end end return \"ready=\"..tostring(RS:GetAttribute(\"MareAssetsReady\"))..\" \"..table.concat(n,\",\")"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end local RS=game:GetService(\"ReplicatedStorage\") local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId=\"lisbon\",portName=\"Lisbon\",shipId=\"galleon\",hasShipyard=true,facilities={\"bank\",\"guild\",\"harbormaster\",\"palace\"},storyCount=1,companions={{id=\"c_halley\",name=\"Halley\"},{id=\"c_merian\",name=\"Merian\"}}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end return \"build ok=\"..tostring(ok)..\" \"..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 8000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=60 cam.CFrame=CFrame.lookAt(Vector3.new(-90,330,1),Vector3.new(-90,0,0),Vector3.new(0,1,0)) return \"ok\""
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "01_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=65 cam.CFrame=CFrame.lookAt(Vector3.new(25,28,0),Vector3.new(-40,4,0),Vector3.new(0,1,0)) return \"ok\""
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "02_plaza"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=70 cam.CFrame=CFrame.lookAt(Vector3.new(-55,7,0),Vector3.new(-150,9,0),Vector3.new(0,1,0)) return \"ok\""
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "03_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=65 cam.CFrame=CFrame.lookAt(Vector3.new(28,16,-34),Vector3.new(62,2,8),Vector3.new(0,1,0)) return \"ok\""
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "04_dock"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=65 cam.CFrame=CFrame.lookAt(Vector3.new(45,95,95),Vector3.new(-80,0,-10),Vector3.new(0,1,0)) return \"ok\""
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "05_aerial"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=70 cam.CFrame=CFrame.lookAt(Vector3.new(-70,9,87),Vector3.new(-150,9,87),Vector3.new(0,1,0)) return \"ok\""
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "06_backstreet"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=70 cam.CFrame=CFrame.lookAt(Vector3.new(-185,45,0),Vector3.new(-100,0,0),Vector3.new(0,1,0)) return \"ok\""
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "07_wall"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"PortScene\") if not f then return \"NO PortScene\" end local parts,models,houses,meshes=0,0,0,0 for _,d in ipairs(f:GetDescendants()) do if d:IsA(\"BasePart\") then parts+=1 end if d:IsA(\"MeshPart\") then meshes+=1 end if d:IsA(\"Model\") then models+=1 if d.Name==\"HarborHouse\" then houses+=1 end end end return string.format(\"parts=%d meshparts=%d models=%d houses=%d\",parts,meshes,models,houses)"
+ }
+]

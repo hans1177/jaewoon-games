@@ -1,53 +1,85 @@
-# Mare Scientia 전용: 오너 컴퓨터(self-hosted runner, 라벨 studio)에서 Roblox Studio로 장소를 열어 화면·오류 로그를 모은다.
-# 외부 PR에서는 실행하지 않는다. 오너 컴퓨터에서 저장소 코드가 실행되므로 이 파일 외의 워크플로는 이 러너를 쓰지 않는다.
-name: Devloop Studio Probe (Mare Scientia)
+# Mare Scientia: 오너 PC의 로그인된 Roblox Studio(기존 러너 라벨 roblox-studio-authenticated)로 마을을 직접 띄워 화면을 캡처한다.
+# 기존 Studio MCP 도구(tools/company-development-roblox-studio-local-play.mjs, studio-script 모드)를 그대로 쓴다.
+# 결과 사진·리포트는 브랜치 mare-studio-frames 에 올라간다 (다음 Claude 실행이 읽는다).
+name: Devloop Studio Capture (Mare Scientia)
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '23 3,15 * * *'
+    inputs:
+      script:
+        description: Studio script JSON path in repo
+        required: false
+        default: roblox-games/mare-scientia/tools/devloop/studio-scripts/mare-town.json
+        type: string
 permissions:
   contents: write
 concurrency:
-  group: devloop-studio
+  group: roblox-studio-shared-host
   cancel-in-progress: false
+  queue: max
 jobs:
-  probe:
-    if: github.repository == 'hans1177/jaewoon-games' && github.event_name != 'pull_request'
-    runs-on: [self-hosted, windows, studio]
-    timeout-minutes: 20
-    defaults:
-      run:
-        shell: pwsh
-        working-directory: roblox-games/mare-scientia
+  capture:
+    if: github.repository == 'hans1177/jaewoon-games'
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
-          persist-credentials: true
-      - name: Build place with pinned Rojo
-        run: |
-          New-Item -ItemType Directory -Force -Path out | Out-Null
-          Invoke-WebRequest -Uri https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip -OutFile out\rojo.zip
-          Expand-Archive -Force out\rojo.zip out\rojo
-          .\out\rojo\rojo.exe build default.project.json -o out\MareScientia.rbxlx
-      - name: Open in Studio, screenshot, collect logs
-        run: .\tools\devloop\studio_probe.ps1 -Place out\MareScientia.rbxlx -WaitSeconds 90
-      - name: Upload evidence
-        uses: actions/upload-artifact@v4
-        if: always()
+          path: main
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
         with:
-          name: studio-evidence
-          path: |
-            roblox-games/mare-scientia/out/screen.png
-            roblox-games/mare-scientia/out/studio-errors.txt
-            roblox-games/mare-scientia/out/summary.json
-      - name: Commit evidence (for the next Claude run)
+          node-version: '22'
+      - name: Build Mare Scientia place with pinned Rojo
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
-          New-Item -ItemType Directory -Force -Path docs\devloop\studio | Out-Null
-          Copy-Item out\screen.png docs\devloop\studio\latest.png -Force -ErrorAction SilentlyContinue
-          Copy-Item out\studio-errors.txt docs\devloop\studio\latest-errors.txt -Force -ErrorAction SilentlyContinue
-          Copy-Item out\summary.json docs\devloop\studio\latest-summary.json -Force -ErrorAction SilentlyContinue
-          git config user.name "devloop-bot"
-          git config user.email "devloop-bot@users.noreply.github.com"
-          git add docs/devloop/studio
-          git diff --cached --quiet
-          if ($LASTEXITCODE -ne 0) { git commit -m "devloop: studio evidence"; git pull -q --rebase; git push }
+          $ErrorActionPreference = 'Stop'
+          $rojoZip = Join-Path $env:RUNNER_TEMP 'rojo.zip'
+          $rojoDir = Join-Path $env:RUNNER_TEMP 'rojo-bin'
+          Remove-Item -Recurse -Force $rojoDir -ErrorAction SilentlyContinue
+          & curl.exe -fL --retry 3 -o $rojoZip 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip'
+          $h = (Get-FileHash $rojoZip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($h -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949') { throw "rojo hash $h" }
+          Expand-Archive $rojoZip -DestinationPath $rojoDir -Force
+          $rojo = (Get-ChildItem $rojoDir -Recurse -Filter rojo.exe | Select-Object -First 1).FullName
+          $place = Join-Path $env:RUNNER_TEMP 'marecheck.rbxl'
+          Remove-Item $place -ErrorAction SilentlyContinue
+          & $rojo build 'main/roblox-games/mare-scientia/default.project.json' -o $place
+          if ($LASTEXITCODE -ne 0) { throw 'rojo build failed' }
+          "MARE_PLACE=$place" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Launch Studio, run script, capture frames
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (@(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue).Count) { Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 5 }
+          $roots = @((Join-Path $env:LOCALAPPDATA 'Roblox\Versions'), (Join-Path ${env:ProgramFiles(x86)} 'Roblox\Versions'))
+          $studio = $roots | Where-Object { Test-Path $_ } | ForEach-Object { Get-ChildItem $_ -Recurse -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue } | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          $mcp = Join-Path (Split-Path $studio -Parent) 'StudioMCP.exe'
+          if (-not (Test-Path $mcp)) { $mcp = Join-Path $env:LOCALAPPDATA 'Roblox\mcp.bat' }
+          if (-not (Test-Path $mcp)) { throw 'StudioMCP not found' }
+          Write-Host "STUDIO=$studio MCP=$mcp"
+          $proc = Start-Process -FilePath $studio -ArgumentList @($env:MARE_PLACE) -PassThru
+          $out = Join-Path $env:RUNNER_TEMP 'mare-frames'
+          Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory $out -Force | Out-Null
+          try {
+            & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=main/${{ inputs.script }}" "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+            Write-Host "NODE_EXIT=$LASTEXITCODE"
+          } finally {
+            Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+          }
+          if (-not (Test-Path $out)) { Write-Host 'NO_OUTPUT'; exit 0 }
+          $dst = Join-Path $env:RUNNER_TEMP 'mare-publish'
+          Remove-Item -Recurse -Force $dst -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory $dst | Out-Null
+          Copy-Item "$out\*" $dst -Recurse
+          Set-Location $dst
+          git init -q
+          git config user.name 'mare-capture-bot'
+          git config user.email 'mare-capture-bot@users.noreply.github.com'
+          git add -A
+          git commit -q -m "mare studio frames run ${{ github.run_id }}"
+          git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/mare-studio-frames
+          Write-Host "PUBLISHED=$LASTEXITCODE"

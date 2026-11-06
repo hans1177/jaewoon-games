@@ -29,7 +29,7 @@
 6. 동료 R15 NPC 대화·호감도 연출.
 
 ## 알려진 한계
-- (준비됨) `docs/devloop/RUNNER_SETUP.md` 대로 오너가 러너를 설치하면 `docs/devloop/studio/latest.png`·`latest-errors.txt` 가 생긴다. 있으면 한 바퀴 시작 때 먼저 읽고(Read로 PNG 확인) 화면 문제부터 고친다.
+- 화면 확인: 오너 PC의 로그인된 Studio 러너(기존 라벨 roblox-studio-authenticated)가 `devloop-studio.yml`(Actions에서 Run workflow, gh api dispatch 가능)로 마을을 띄워 캡처한다. 결과는 브랜치 `mare-studio-frames`(PNG 7장 + report.json). `git fetch origin mare-studio-frames` 후 PNG를 Read로 열어 눈으로 확인하고 고친다. 캡처 스크립트: `tools/devloop/studio-scripts/mare-town.json`.
 - 이 환경에서는 게임 화면을 볼 수 없다. 화면 확인은 오너의 스크린샷 또는 텔레메트리에 의존한다.
 - 텔레메트리는 `ROBLOX_OPEN_CLOUD_API_KEY`에 DataStore 읽기 권한이 있어야 문서에 채워진다.
 - F0~F9(`company-development-roblox-*`) 파이프라인은 Mare Scientia를 받지 않는다(워크플로에 이 게임 경로 없음). 이 게임은 `owner-mare-scientia-direct-publish.yml`로만 배포된다.
