@@ -6282,9 +6282,24 @@ RunService.Heartbeat:Connect(function(dt)
     enemyVisualElapsed=0
     local alpha=1-math.exp(-visualStep*18)
     local now=os.clock()
+    -- [성능] 어떤 플레이어에게서도 260스터드(스트리밍 반경 밖) 넘게 먼 몹·동물은 시각 보간·뼈 애니메이션을 건너뛴다.
+    -- AI·판정 위치(position)는 그대로 갱신되므로 가까워지면 곧바로 따라잡는다.
+    local focus={}
+    for _,member in ipairs(Players:GetPlayers()) do
+      local root=member.Character and member.Character:FindFirstChild("HumanoidRootPart")
+      if root then focus[#focus+1]=root.Position end
+    end
+    local function nearPlayer(pos)
+      if #focus==0 then return true end
+      for _,f in ipairs(focus) do
+        local dx,dz=pos.X-f.X,pos.Z-f.Z
+        if dx*dx+dz*dz<=67600 then return true end
+      end
+      return false
+    end
     -- [야생동물 렌더] 기존 AI 속도는 그대로, 원본 메시만 30Hz 보간한다.
     for _,animal in ipairs(meadowWildlife) do
-      if animal.model.Parent and animal.position then
+      if animal.model.Parent and animal.position and nearPlayer(animal.position) then
         animal.visualPosition=(animal.visualPosition or animal.origin):Lerp(animal.position,alpha)
         local facing=animal.visualFacing or Vector3.new(0,0,-1)
         local smooth=(animal.visualFacingSmooth or facing):Lerp(facing,alpha)
@@ -6302,7 +6317,7 @@ RunService.Heartbeat:Connect(function(dt)
       end
     end
     for _,enemy in ipairs(enemies) do
-      if enemy.HP>0 and enemy.model.Parent then
+      if enemy.HP>0 and enemy.model.Parent and nearPlayer(enemy.position) then
         local previous=enemy.visualPosition or enemy.position
         enemy.visualPosition=previous:Lerp(enemy.position,alpha)
         if enemy.kind=="wolf" then

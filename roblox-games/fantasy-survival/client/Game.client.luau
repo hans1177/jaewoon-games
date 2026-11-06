@@ -10765,8 +10765,16 @@ meadowMobWorld.ChildRemoved:Connect(function(model)
   meadowMobControllers[model]=nil
 end)
 game:GetService("RunService").PreSimulation:Connect(function(dt)
+  -- [성능] 멀리(140스터드 초과) 있는 몹은 화면에 거의 안 보이므로 관절·클립 갱신을 건너뛴다.
+  local lodRoot=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+  local lodPos=lodRoot and lodRoot.Position
   for model,row in pairs(meadowMobControllers) do
-    if model.Parent and (row.controller or row.nativeTracks) then
+    local farAway=false
+    if lodPos and model.Parent then
+      local d=model:GetPivot().Position-lodPos
+      farAway=d.X*d.X+d.Z*d.Z>19600
+    end
+    if model.Parent and not farAway and (row.controller or row.nativeTracks) then
       local requested=model:GetAttribute("NativeMobMotion")
       -- 상태값을 먼저 보존하고, 서버 상태가 없을 때만 종별 기본 모션을 사용한다.
       local mode=nativeMobMotionMap[requested]
@@ -12619,6 +12627,7 @@ end)()
   nextBtn.Activated:Connect(function() meadowArt.sfx("click",.4,1);show(current+1) end)
   meadowTutorialRestart=function() granted=true;show(1) end
   local arrows={up="▲",down="▼",left="◀",right="▶"}
+  local tutorialRadar,tutorialPos,tutorialDir,tutorialPosAt,tutorialPosStep
   RunService.RenderStepped:Connect(function()
     if current==0 then return end
     local s=steps[current]
@@ -12637,7 +12646,11 @@ end)()
     if (cond=="skillpage" or cond=="learned") and not menuOpen() then show(idx("메뉴 열기")) return end
     if cond=="learned" and not skillPageOpen() then show(idx("스킬 탭")) return end
     -- 카드 위치: 평소엔 위쪽(퀵슬롯·버튼을 안 가림), 메뉴가 열려 있으면 아래쪽.
-    local radar=player.PlayerGui:FindFirstChild("MeadowExplorerRadar",true)
+    -- [성능] 매 프레임 PlayerGui 전체를 뒤지지 않도록 레이더는 한 번 찾아 캐시한다.
+    if not (tutorialRadar and tutorialRadar.Parent) then
+      tutorialRadar=player.PlayerGui:FindFirstChild("MeadowExplorerRadar",true)
+    end
+    local radar=tutorialRadar
     if menuOpen() then
       -- 메뉴창(스킬 칸)을 가리지 않도록 화면 맨 위에 작게 붙인다.
       card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,0,2);card.BackgroundTransparency=.25
@@ -12652,7 +12665,13 @@ end)()
       ctitle.TextSize=19;ctitle.Size=UDim2.new(1,0,0,26)
       cbody.TextSize=17;cbody.Position=UDim2.fromOffset(0,28);cbody.Size=UDim2.new(1,0,0,66)
     end
-    local pos,dir=s[3]()
+    -- [성능] 목표 좌표 탐색(GUI 전체 검색 포함)은 0.1초마다만 하고 그 사이엔 결과를 재사용한다.
+    local nowT=os.clock()
+    if not tutorialPosAt or nowT-tutorialPosAt>=.1 or tutorialPosStep~=current then
+      tutorialPosAt=nowT;tutorialPosStep=current
+      tutorialPos,tutorialDir=s[3]()
+    end
+    local pos,dir=tutorialPos,tutorialDir
     if pos then
       -- 화살표 끝이 목표 좌표에 닿도록 반 크기(35)만큼 띄우고, 통통 튈 때만 최대 10px 떨어진다.
       local bob=math.abs(math.sin(os.clock()*5))*10
