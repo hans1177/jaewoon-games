@@ -325,15 +325,14 @@ function FieldScene.start(opts)
 			def = biome.mobs[rng:NextInteger(1, math.max(1, #biome.mobs - 1))]
 		end
 		local pos = ORIGIN + scatter(36)
-		local model = placeModel(folder, "People", "KayKit_" .. def[2], pos, if isBoss then 7.6 else 5.6, false)
-		local root
-		if model then
-			model.Name = "FieldEnemy"
-			root = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart", true)
-		else
-			root = part(folder, Vector3.new(3, 5, 3), CFrame.new(pos + Vector3.new(0, 2.5, 0)), Color3.fromRGB(150, 50, 50), Enum.Material.SmoothPlastic)
-			model = root
+		local model = Pose.createR15(folder, pos, 0, nil, rng, def[2], if isBoss then 7.6 else 5.6)
+		if not model then
+			warn("[MareScientia] R15 적 모델 생성 불가", def[1])
+			continue
 		end
+		model.Name = "FieldEnemy"
+		local root = model:FindFirstChild("HumanoidRootPart")
+		if not root then model:Destroy(); continue end
 		local bb = Instance.new("BillboardGui")
 		bb.Adornee = root
 		bb.Size = UDim2.fromOffset(120, 34)
@@ -438,6 +437,7 @@ function FieldScene.start(opts)
 					return
 				end
 			end
+			Pose.walkR15(e.model, now * e.speed * 2.4, dist < 38 and dist > 3.2)
 		end
 	end))
 
