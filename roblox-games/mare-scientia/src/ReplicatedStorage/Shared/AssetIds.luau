@@ -1,7 +1,12 @@
 -- 자동 생성: tools/mare-scientia-upload-assets.mjs (직접 고치지 말 것)
 return {
 	["Cargo/apple"] = 74443956114618,
+	["Cargo/bag"] = 102220560150686,
+	["Cargo/bag-flat"] = 130228800211506,
+	["Cargo/banana"] = 123497140033170,
 	["Cargo/barrel-open"] = 128418610204298,
+	["Cargo/beet"] = 101329935231649,
+	["Cargo/bottle-oil"] = 85080223245400,
 	["Cargo/box-open"] = 87827042395984,
 	["Cargo/bread"] = 130978196695207,
 	["Cargo/bucket"] = 71500240720922,
@@ -9,7 +14,10 @@ return {
 	["Cargo/carrot"] = 113708312691729,
 	["Cargo/cheese"] = 96053722599037,
 	["Cargo/chest"] = 122152271722482,
+	["Cargo/coconut"] = 76436373013815,
 	["Cargo/corn"] = 78463939808717,
+	["Cargo/cup-coffee"] = 96189280479229,
+	["Cargo/cup-tea"] = 124123646413021,
 	["Cargo/egg"] = 99700477414037,
 	["Cargo/fish"] = 92823260634714,
 	["Cargo/fish-large"] = 94937020849336,
