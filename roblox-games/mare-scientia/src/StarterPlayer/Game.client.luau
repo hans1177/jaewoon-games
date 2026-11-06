@@ -270,6 +270,7 @@ local function setPortrait(groupName)
 	local people = lib and lib:FindFirstChild("People")
 	local tpl = people and people:FindFirstChild("KayKit_" .. (PORTRAIT_ROLE[groupName] or "Knight"))
 	if not tpl then
+		portraitKey = nil -- 모델이 아직 없으면 다음 갱신에서 다시 시도한다
 		return
 	end
 	local m = tpl:Clone()
