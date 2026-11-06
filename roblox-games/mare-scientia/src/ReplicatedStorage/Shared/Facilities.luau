@@ -3,9 +3,9 @@
 -- bank: 예금/대출, guild: 길드 계약(운송 의뢰), palace: 알현과 작위.
 
 local Facilities = {
-	bank = { "london", "amsterdam", "genoa", "venice", "hamburg", "seville" },
-	guild = { "london", "amsterdam", "antwerp", "hamburg", "venice", "lisbon", "bergen", "marseille", "gdansk" },
-	harbormaster = { "london", "amsterdam", "venice", "lisbon", "seville", "copenhagen", "bergen", "marseille", "hamburg", "stockholm" },
+	bank = { "lubeck", "cadiz", "london", "amsterdam", "genoa", "venice", "hamburg", "seville" },
+	guild = { "rotterdam", "glasgow", "lubeck", "porto", "london", "amsterdam", "antwerp", "hamburg", "venice", "lisbon", "bergen", "marseille", "gdansk" },
+	harbormaster = { "plymouth", "rotterdam", "lubeck", "oslo", "cadiz", "porto", "london", "amsterdam", "venice", "lisbon", "seville", "copenhagen", "bergen", "marseille", "hamburg", "stockholm" },
 	palace = { "london", "amsterdam", "copenhagen", "stockholm", "venice", "lisbon", "seville", "naples" },
 }
 

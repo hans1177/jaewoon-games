@@ -138,6 +138,42 @@ local Ports: { [string]: Port } = {
 		id = "lisbon", name = "리스본", country = "portugal", lat = 38.72, lon = -9.14,
 		produces = { "salt", "sugar", "spice", "porcelain", "tobacco" }, demands = { "fur", "timber", "iron", "beer", "linen" }, shipyard = true,
 	},
+	rotterdam = {
+		id = "rotterdam", name = "로테르담", country = "netherlands", lat = 51.92, lon = 4.48,
+		produces = { "cheese", "linen", "beer" }, demands = { "wool", "iron", "timber", "whale_oil" }, shipyard = true,
+	},
+	plymouth = {
+		id = "plymouth", name = "플리머스", country = "england", lat = 50.37, lon = -4.14,
+		produces = { "tin", "fish", "salt" }, demands = { "wine", "sugar", "tobacco", "timber" }, shipyard = true,
+	},
+	hull = {
+		id = "hull", name = "헐", country = "england", lat = 53.74, lon = -0.33,
+		produces = { "wool", "coal", "whale_oil" }, demands = { "timber", "iron", "wine", "linen" }, shipyard = false,
+	},
+	glasgow = {
+		id = "glasgow", name = "글래스고", country = "scotland", lat = 55.86, lon = -4.25,
+		produces = { "linen", "coal", "iron" }, demands = { "tobacco", "sugar", "wine", "tea" }, shipyard = true,
+	},
+	lubeck = {
+		id = "lubeck", name = "뤼베크", country = "germany", lat = 53.87, lon = 10.69,
+		produces = { "salt", "beer", "timber" }, demands = { "fish", "whale_oil", "wine", "fur" }, shipyard = false,
+	},
+	oslo = {
+		id = "oslo", name = "오슬로", country = "norway", lat = 59.91, lon = 10.75,
+		produces = { "timber", "fish", "iron" }, demands = { "salt", "cloth", "glass", "coffee" }, shipyard = false,
+	},
+	la_rochelle = {
+		id = "la_rochelle", name = "라로셸", country = "france", lat = 46.16, lon = -1.15,
+		produces = { "salt", "wine", "olive_oil" }, demands = { "fish", "timber", "wool", "coal" }, shipyard = false,
+	},
+	porto = {
+		id = "porto", name = "포르투", country = "portugal", lat = 41.15, lon = -8.61,
+		produces = { "wine", "olive_oil", "salt" }, demands = { "fish", "wool", "timber", "linen" }, shipyard = false,
+	},
+	cadiz = {
+		id = "cadiz", name = "카디스", country = "spain", lat = 36.53, lon = -6.29,
+		produces = { "salt", "wine", "tobacco", "sugar" }, demands = { "fur", "timber", "cloth", "coal" }, shipyard = true,
+	},
 }
 
 local Nations: { [string]: Nation } = {

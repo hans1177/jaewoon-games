@@ -10,7 +10,7 @@ local Pose = require(script.Parent:WaitForChild("Pose"))
 
 local PortScene = {}
 
-local MED = { lisbon = true, seville = true, marseille = true, genoa = true, venice = true, livorno = true, naples = true }
+local MED = { cadiz = true, porto = true, lisbon = true, seville = true, marseille = true, genoa = true, venice = true, livorno = true, naples = true }
 
 local STYLE = {
 	north = {
@@ -27,6 +27,29 @@ local STYLE = {
 		ground = Color3.fromRGB(176, 160, 110),
 		street = Color3.fromRGB(196, 186, 160),
 	},
+}
+
+-- 지역별 마을 색: 네덜란드/한자는 붉은 벽돌, 북유럽은 색칠한 목조, 영국은 회색 돌과 갈색 벽돌
+local function variant(base, walls, roofs, ground, street, pitch)
+	return {
+		walls = walls, roofs = roofs or base.roofs, roofPitch = pitch or base.roofPitch,
+		ground = ground or base.ground, street = street or base.street,
+	}
+end
+local C = Color3.fromRGB
+STYLE.brick = variant(STYLE.north,
+	{ C(160, 70, 52), C(176, 84, 60), C(142, 62, 48), C(196, 150, 110), C(224, 214, 196) },
+	{ C(70, 56, 52), C(52, 48, 50) }, nil, C(130, 112, 100), 1.25)
+STYLE.nordic = variant(STYLE.north,
+	{ C(168, 52, 44), C(226, 184, 70), C(236, 232, 222), C(70, 110, 140), C(190, 100, 60) },
+	{ C(56, 50, 48), C(96, 52, 44) }, C(86, 120, 78), C(128, 124, 118), 1.15)
+STYLE.stone = variant(STYLE.north,
+	{ C(150, 148, 140), C(176, 168, 150), C(128, 120, 108), C(200, 192, 176), C(150, 110, 84) },
+	{ C(78, 80, 88), C(60, 62, 70) }, C(92, 124, 76), C(118, 116, 112), 0.9)
+local REGION = {
+	amsterdam = "brick", rotterdam = "brick", antwerp = "brick", hamburg = "brick", lubeck = "brick", gdansk = "brick",
+	bergen = "nordic", oslo = "nordic", stockholm = "nordic", gothenburg = "nordic", copenhagen = "nordic",
+	london = "stone", edinburgh = "stone", glasgow = "stone", dublin = "stone", plymouth = "stone", hull = "stone",
 }
 
 local SHIP_LOOK = {
@@ -426,7 +449,7 @@ function PortScene.build(info, onFacility)
 	end
 	local folder = Instance.new("Folder")
 	folder.Name = "PortScene"
-	local style = if MED[info.portId] then STYLE.med else STYLE.north
+	local style = if MED[info.portId] then STYLE.med else (STYLE[REGION[info.portId] or "north"] or STYLE.north)
 	local rng = seeded(info.portId)
 	local fac = {}
 	for _, k in info.facilities or {} do

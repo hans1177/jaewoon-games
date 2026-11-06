@@ -275,6 +275,22 @@ local Sites: { Site } = {
 	{ id = "gothenburg_eider", name = "서해안 섬", portId = "gothenburg", minLevel = 2, days = 1, pool = { "zoo_eider", "zoo_puffin" } },
 	{ id = "london_tin", name = "콘월 주석 광산", portId = "london", minLevel = 2, days = 2, pool = { "min_tin_ore", "relic_astrolabe" } },
 	{ id = "bergen_ice_edge", name = "북극 얼음 가장자리", portId = "bergen", minLevel = 5, days = 3, pool = { "zoo_narwhal", "geo_fjord" } },
+	{ id = "plymouth_sound", name = "플리머스 만", portId = "plymouth", minLevel = 1, days = 1, pool = { "zoo_mackerel", "geo_white_cliffs", "zoo_gannet" } },
+	{ id = "plymouth_tin", name = "데번 주석 광산", portId = "plymouth", minLevel = 2, days = 2, pool = { "min_tin_ore", "relic_pewter_plate" } },
+	{ id = "rotterdam_dike", name = "마스 강 제방", portId = "rotterdam", minLevel = 1, days = 1, pool = { "bot_tulip", "geo_tidal_flat", "zoo_oyster" } },
+	{ id = "hull_whalers", name = "헐 포경선 부두", portId = "hull", minLevel = 2, days = 1, pool = { "zoo_seal", "zoo_orca" } },
+	{ id = "glasgow_clyde", name = "클라이드 강 조선소", portId = "glasgow", minLevel = 2, days = 1, pool = { "min_granite", "geo_estuary" } },
+	{ id = "glasgow_highlands", name = "하이랜드 고원", portId = "glasgow", minLevel = 3, days = 2, pool = { "bot_heather", "zoo_sea_eagle", "relic_ogham_stone" } },
+	{ id = "lubeck_hansa_hall", name = "한자 회관", portId = "lubeck", minLevel = 2, days = 1, pool = { "relic_hansa_seal", "site_hamburg_speicher" } },
+	{ id = "lubeck_baltic_coast", name = "발트 해안", portId = "lubeck", minLevel = 1, days = 1, pool = { "min_amber_raw", "zoo_herring", "geo_tidal_flat" } },
+	{ id = "oslo_fjord", name = "오슬로 피오르", portId = "oslo", minLevel = 2, days = 1, pool = { "geo_fjord", "bot_birch", "zoo_eider" } },
+	{ id = "oslo_viking_ships", name = "바이킹 배 무덤", portId = "oslo", minLevel = 3, days = 2, pool = { "relic_viking_helm", "relic_rune_stone" } },
+	{ id = "la_rochelle_towers", name = "라로셸 쌍탑 항구", portId = "la_rochelle", minLevel = 1, days = 1, pool = { "zoo_oyster", "min_chalk" } },
+	{ id = "la_rochelle_salt", name = "대서양 염전", portId = "la_rochelle", minLevel = 1, days = 1, pool = { "geo_tidal_flat", "zoo_lobster" } },
+	{ id = "porto_douro", name = "두루 강 포도밭", portId = "porto", minLevel = 1, days = 1, pool = { "geo_estuary", "zoo_gannet" } },
+	{ id = "porto_ribeira", name = "히베이라 부두", portId = "porto", minLevel = 2, days = 1, pool = { "relic_astrolabe", "relic_pewter_plate" } },
+	{ id = "cadiz_bay", name = "카디스 만", portId = "cadiz", minLevel = 1, days = 1, pool = { "zoo_lobster", "geo_tidal_flat" } },
+	{ id = "cadiz_treasure_fleet", name = "보물 함대 부두", portId = "cadiz", minLevel = 3, days = 2, pool = { "relic_astrolabe", "relic_amber_room" } },
 }
 
 return {
