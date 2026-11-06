@@ -447,7 +447,7 @@ local Config = {
     BuildingProficiency = 0, HuntingProficiency = 0, AlchemyProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     RedLeaf = 0, Moonbloom = 0, Mushroom = 0, Ore = 0, Crystal = 0, Magma = 0,
-    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0, Steel = 0, Meat = 0, Feather = 0, ArmorTier = 0, SmithXp = 0, QLSmith = 0, QLSmithP = 0, QLSmith2 = 0, QLSmith2P = 0, QLSmith3 = 0, QLSmith3P = 0,
+    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0, Steel = 0, Meat = 0, Feather = 0, MeadowGuide = 0, ArmorTier = 0, SmithXp = 0, QLSmith = 0, QLSmithP = 0, QLSmith2 = 0, QLSmith2P = 0, QLSmith3 = 0, QLSmith3P = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
     MeadowGearOwned=2705,MeadowGearOwned2=0,MeadowGearOwned3=0,
@@ -1228,6 +1228,83 @@ do
       cliffnest = {X = town.X - 60, Z = town.Z + 170, Name = "바람 박쥐 둥지"},
       orccamp   = {X = town.X - 160, Z = town.Z - 130, Name = "오크 정찰 야영지"},
     }
+  end
+end
+
+-- [지역 생태 거점 · 세계수 숲 / 재의 황야] 자원이 나는 곳(광맥·약초)과 지키는 몹, 그리고 거기서 시작하는 서브퀘스트를 한 표에서 만든다.
+-- 서버는 같은 표로 몹·채집점을 놓고, 아래 반복문이 퀘스트 줄을 만든다. 섬 지형(중심 ±215) 안쪽에만 둔다.
+Config.EcoRegions = {
+  {Zone="worldtree", HubX=1200, HubZ=0, Giver="숲지기 이든", Camps={
+    {Id="spidernest", Name="거미 군락", X=1120, Z=-120, Title="[서브] 거미 군락의 약초",
+     Intro="숲지기 이든: '북서쪽 뿌리 틈에 거미가 군락을 틀었어. 그 밑에 달맞이꽃이 한가득인데 아무도 못 가져와. 여왕만 쓰러뜨려 줘.'",
+     Reach="뿌리 틈 아래 약초가 보이지만 거미들이 실을 쳐 놨다.", BossDone="여왕이 쓰러지고 실이 느슨해진다.",
+     Nodes={{"HERB",-8,-14},{"HERB",12,-10}},
+     Guard={model="spider",name="숲 거미",tier=4,height=3.4,hp=1.5,dmg=1.2,drops={{"Fang",.5,1},{"Moonbloom",.3,1}},Offs={{-14,10},{16,12}}},
+     Boss={model="spider",name="거미 군락의 여왕",tier=5,height=6,hp=3.2,dmg=1.7,dx=8,dz=-6,drops={{"Fang",1,3},{"Moonbloom",.8,2},{"Crystal",.5,1}}},
+     ChoiceA={Label="달맞이꽃 4개",Done="이든이 약초 꾸러미를 건넨다. '숲이 고마워할 거야.'",Moonbloom=4},
+     ChoiceB={Label="거미 독니 3개",Done="이든이 독니를 건넨다. '무기에 쓰면 매서울 거야.'",Fang=3},
+     Reward={Coins=420,Xp=420,Moonbloom=1}},
+    {Id="rootvein", Name="뿌리 광맥", X=1290, Z=100, Title="[서브] 뿌리 사이의 광맥",
+     Intro="숲지기 이든: '동남쪽 뿌리 틈에서 광석이 드러났어. 하지만 저주받은 웨어울프 무리가 지키고 있지. 우두머리를 쓰러뜨리면 광맥은 네 거야.'",
+     Reach="뿌리 틈에서 광석이 반짝인다. 웨어울프들이 서성인다.", BossDone="우두머리가 쓰러지고 광맥이 드러난다.",
+     Nodes={{"ORE",-6,2},{"ORE",8,-12}},
+     Guard={model="barbarian",name="저주받은 웨어울프",tier=4,height=4.4,hp=1.7,dmg=1.3,drops={{"Ore",.5,1},{"Claw",.4,1},{"Hide",.4,1}},Offs={{-14,10},{16,12}}},
+     Boss={model="barbarian",name="뿌리 광맥의 우두머리",tier=5,height=6.2,hp=3.4,dmg=1.8,dx=10,dz=-8,drops={{"Ore",1,4},{"Claw",1,3},{"Magma",.4,1}}},
+     ChoiceA={Label="강철 1개 + 코인 100",Done="이든이 강철 주괴를 건넨다. '좋은 광석은 대장간으로.'",Steel=1,Coins=100},
+     ChoiceB={Label="코인 500",Done="이든이 코인을 건넨다. '뿌리쉼터에 큰 도움이 됐어.'",Coins=500},
+     Reward={Coins=400,Xp=400,Ore=6,Ingot=2}},
+    {Id="werewolfden", Name="저주받은 소굴", X=1100, Z=110, Title="[서브] 저주받은 소굴",
+     Intro="숲지기 이든: '남서쪽 소굴의 웨어울프가 숲 사냥꾼을 해쳤어. 우두머리를 쓰러뜨려 줘. 발톱과 가죽은 네 몫이야.'",
+     Reach="소굴 입구에 뼈가 쌓여 있다. 안쪽에서 낮은 울음이 들린다.", BossDone="우두머리가 쓰러지고 소굴이 조용해진다.",
+     Nodes={},
+     Guard={model="barbarian",name="저주받은 웨어울프",tier=4,height=4.4,hp=1.7,dmg=1.3,drops={{"Claw",.5,1},{"Hide",.5,1}},Offs={{-14,10},{16,12},{-4,-16}}},
+     Boss={model="barbarian",name="소굴의 웨어울프 우두머리",tier=6,height=6.6,hp=3.8,dmg=2,dx=8,dz=-6,drops={{"Claw",1,4},{"Hide",1,3},{"Fang",.8,2}}},
+     ChoiceA={Label="발톱 4개",Done="이든이 발톱을 건넨다. '장갑 재료로 좋아.'",Claw=4},
+     ChoiceB={Label="무두질 가죽 4장",Done="이든이 가죽을 건넨다. '질기게 손질해 뒀어.'",Leather=4},
+     Reward={Coins=440,Xp=440,Hide=3}},
+  }},
+  {Zone="volcano", HubX=2400, HubZ=0, Giver="재의 순찰병", Camps={
+    {Id="magmavein", Name="용암 광맥", X=2320, Z=-120, Title="[서브] 식은 용암의 광맥",
+     Intro="재의 순찰병: '북서쪽 식은 용암 틈에 광맥이 드러났어. 해골 가면 오크들이 눌러앉았지. 대족장을 쓰러뜨리면 광맥을 쓸 수 있어.'",
+     Reach="식은 용암 사이로 붉은 광맥이 보인다. 오크들이 지키고 있다.", BossDone="대족장이 쓰러지고 광맥이 드러난다.",
+     Nodes={{"ORE",-6,2},{"ORE",8,-12}},
+     Guard={model="skullorc",name="해골 가면 오크",tier=6,height=4.8,hp=2,dmg=1.6,drops={{"Ore",.6,1},{"Magma",.3,1}},Offs={{-14,10},{16,12}}},
+     Boss={model="skullorc",name="용암 광맥의 대족장",tier=7,height=7,hp=4,dmg=2,dx=10,dz=-8,drops={{"Ore",1,4},{"Magma",1,3}}},
+     ChoiceA={Label="화산석 3개",Done="순찰병이 화산석을 건넨다. '영웅 갑옷 재료야.'",Magma=3},
+     ChoiceB={Label="강철 2개",Done="순찰병이 강철 주괴를 건넨다. '불에 잘 견뎌.'",Steel=2},
+     Reward={Coins=520,Xp=520,Ore=6,Magma=2}},
+    {Id="ashaltar", Name="재의 제단", X=2500, Z=110, Title="[서브] 재의 제단의 사제",
+     Intro="재의 순찰병: '동남쪽 제단에서 잿불 악마가 불길을 키우고 있어. 사제를 쓰러뜨려 불을 잠재워 줘.'",
+     Reach="제단 위에 불꽃이 일렁인다. 악마들이 주위를 돈다.", BossDone="사제가 쓰러지고 불길이 잦아든다.",
+     Nodes={},
+     Guard={model="demon",name="잿불 악마",tier=6,height=5.2,hp=2,dmg=1.7,drops={{"Magma",.5,1},{"Crystal",.3,1}},Offs={{-14,10},{16,12}}},
+     Boss={model="demon",name="잿불 제단의 사제",tier=7,height=7.4,hp=4.2,dmg=2.1,dx=8,dz=-6,drops={{"Magma",1,3},{"Crystal",1,2},{"Claw",.8,2}}},
+     ChoiceA={Label="화산석 4개",Done="순찰병이 화산석을 건넨다. '제단의 불이 남긴 거야.'",Magma=4},
+     ChoiceB={Label="마력 수정 3개",Done="순찰병이 수정을 건넨다. '불꽃이 굳은 거야.'",Crystal=3},
+     Reward={Coins=540,Xp=540,Magma=2}},
+    {Id="raptorden", Name="화산 랩터 둥지", X=2300, Z=100, Title="[서브] 화산 랩터 둥지",
+     Intro="재의 순찰병: '남서쪽 둥지의 거대 랩터가 순찰대를 덮쳤어. 우두머리를 쓰러뜨려 줘. 가죽과 송곳니는 네 몫이야.'",
+     Reach="둥지 근처에 부서진 갑옷이 널려 있다.", BossDone="거대 랩터가 쓰러지고 둥지가 조용해진다.",
+     Nodes={},
+     Guard={model="raptor",name="화산 랩터",tier=6,height=4.4,hp=1.8,dmg=1.5,drops={{"Hide",.5,1},{"Fang",.4,1},{"Claw",.4,1}},Offs={{-14,10},{16,12},{-4,-16}}},
+     Boss={model="raptor",name="거대 화산 랩터",tier=7,height=7,hp=4,dmg=2.1,dx=8,dz=-6,drops={{"Hide",1,3},{"Fang",1,3},{"Claw",1,3}}},
+     ChoiceA={Label="송곳니 3개 + 발톱 3개",Done="순찰병이 부위를 건넨다. '무기와 장갑에 써.'",Fang=3,Claw=3},
+     ChoiceB={Label="무두질 가죽 4장",Done="순찰병이 가죽을 건넨다. '화염에 강한 가죽이야.'",Leather=4},
+     Reward={Coins=500,Xp=500,Hide=3}},
+  }},
+}
+for _, region in ipairs(Config.EcoRegions) do
+  for _, camp in ipairs(region.Camps) do
+    local steps = {
+      {Type="reach", X=camp.X, Z=camp.Z, R=55, Title=camp.Name.."으로 가라", Text=camp.Name.."으로 가서 상황을 살펴라.", Done=camp.Reach},
+      {Type="kill", Boss=camp.Id, X=camp.X+camp.Boss.dx, Z=camp.Z+camp.Boss.dz, Count=1, Title=camp.Boss.name.."를 쓰러뜨려라", Text="지킴이의 우두머리를 처치하라. 졸개는 재료를 들고 다닌다.", Done=camp.BossDone},
+    }
+    local hasOre, hasHerb = false, false
+    for _, n in ipairs(camp.Nodes) do if n[1] == "ORE" then hasOre = true else hasHerb = true end end
+    if hasOre then table.insert(steps, {Type="event", Event="MINE_ORE", Count=2, Title="되찾은 광맥에서 광석 캐기", Text="광맥에 다가가 광석을 두 번 캐라.", Done="질 좋은 광석이다. "..region.Giver.."에게 가져가자."}) end
+    if hasHerb then table.insert(steps, {Type="event", Event="GATHER_HERB", Count=1, Title="약초 채집", Text="약초 덤불에서 약초를 채집하라.", Done="약초가 한가득이다. "..region.Giver.."에게 가져가자."}) end
+    table.insert(steps, {Type="choice", X=region.HubX, Z=region.HubZ, R=90, Title=region.Giver.."에게 보고", Prompt=region.Giver..": '해결해 줬군! 사례는 무엇으로 줄까?'", Choices={camp.ChoiceA, camp.ChoiceB}})
+    table.insert(Config.QuestLines, {Id=camp.Id, Name=camp.Title, Kind="Sub", Field="QLEco"..camp.Id, Need={Zone=region.Zone}, Intro=camp.Intro, Steps=steps, Reward=camp.Reward})
   end
 end
 

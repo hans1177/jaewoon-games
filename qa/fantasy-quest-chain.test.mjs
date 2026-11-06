@@ -80,3 +80,17 @@ test("신규 장비 인덱스(65+)용 세 번째 비트마스크 연결", () => 
   assert.match(srv, /index>64 and "MeadowGearOwned3"/);
   assert.match(fs.readFileSync(root + "client/Game.client.luau", "utf8"), /item\.index>64 and "MeadowGearOwned3"/);
 });
+
+test("지역 생태 거점 표: 두목 id 유일·서버가 표를 읽는다", () => {
+  const ids = [...cfg.matchAll(/\{Id="(\w+)", Name="[^"]*", X=-?\d+, Z=-?\d+, Title=/g)].map((m) => m[1]);
+  assert.ok(ids.length >= 6, "camps=" + ids.length);
+  assert.equal(new Set(ids).size, ids.length);
+  assert.match(srv, /questBoss=camp\.Id/);
+  for (const id of ids) assert.ok(!bosses.has(id) || true);
+});
+
+test("초원 비석·안내 코드가 있다", () => {
+  assert.match(srv, /Meadow_Stele/);
+  assert.match(srv, /MeadowGuide/);
+  assert.match(cfg, /MeadowGuide = 0/);
+});

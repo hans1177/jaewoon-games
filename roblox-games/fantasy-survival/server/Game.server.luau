@@ -8875,6 +8875,86 @@ for _,site in ipairs(meadowEncounterSites) do
     site.tier=d<200 and 1 or d<300 and 2 or d<380 and 3 or 4
   end
 end
+-- [세계수 숲 · 재의 황야 생태 거점] Config.EcoRegions 표대로 지킴이 몹을 놓고, 지형이 만들어진 뒤 채집점을 놓는다.
+do
+  local nodeSpecs={}
+  for _,region in ipairs(Config.EcoRegions or {}) do
+    for _,camp in ipairs(region.Camps) do
+      local function at(dx,dz) return Vector3.new(camp.X+dx,3,camp.Z+dz) end
+      local g,b=camp.Guard,camp.Boss
+      for _,off in ipairs(g.Offs) do
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=g.model,name=g.name,tier=g.tier,height=g.height,hp=g.hp,dmg=g.dmg,drops=g.drops,position=at(off[1],off[2])})
+      end
+      table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=b.model,name=b.name,tier=b.tier,height=b.height,hp=b.hp,dmg=b.dmg,
+        alpha=true,named=true,questBoss=camp.Id,drops=b.drops,position=at(b.dx,b.dz)})
+      for _,n in ipairs(camp.Nodes) do nodeSpecs[#nodeSpecs+1]={n[1],camp.X+n[2],camp.Z+n[3]} end
+    end
+  end
+  task.spawn(function()
+    while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(2) end
+    local params=RaycastParams.new()
+    params.FilterType=Enum.RaycastFilterType.Include
+    params.FilterDescendantsInstances={workspace.Terrain}
+    for _,spec in ipairs(nodeSpecs) do
+      local hit=workspace:Raycast(Vector3.new(spec[2],400,spec[3]),Vector3.new(0,-800,0),params)
+      if hit then
+        local position=hit.Position
+        local node={position=position,kind=spec[1],readyAt=0}
+        table.insert(resourceNodes,node)
+        local terrain=workspace.Terrain
+        pcall(function()
+          if spec[1]=="ORE" then terrain:FillBall(position+Vector3.new(0,1.2,0),3,Enum.Material.Slate)
+            terrain:FillBall(position+Vector3.new(1.6,2.4,0),1.6,Enum.Material.CrackedLava)
+          else terrain:FillBall(position+Vector3.new(0,.6,0),3,Enum.Material.LeafyGrass) end
+        end)
+        local anchor=Instance.new("Attachment")
+        anchor.Name="MeadowGatherAnchor";anchor.WorldPosition=position+Vector3.new(0,3,0);anchor.Parent=terrain
+        local prompt=Instance.new("ProximityPrompt")
+        prompt.Name="GatherPrompt"
+        prompt.ActionText=spec[1]=="ORE" and "광석 채굴" or "약초 채집"
+        prompt.ObjectText=spec[1]=="ORE" and "광맥" or "약초 덤불"
+        prompt.MaxActivationDistance=14;prompt.HoldDuration=.3;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+        prompt.Triggered:Connect(function(player) gatherResource(player,node) end)
+      else
+        warn("ECO_NODE_GROUND_UNVERIFIED "..spec[1].." "..tostring(spec[2]).." "..tostring(spec[3]))
+      end
+    end
+  end)
+end
+-- [초원 비석 3개] 촌장 나린의 '옛 비석' 퀘스트 지점에 등록된 CC0 석주 모델을 세운다. 읽으면 짧은 비문이 나온다.
+task.spawn(function()
+  task.wait(12)
+  local rp=RaycastParams.new()
+  rp.FilterType=Enum.RaycastFilterType.Include
+  rp.FilterDescendantsInstances={meadowTerrain}
+  for _,stele in ipairs({
+    {0,-270,"렌스 기사단, 청월의 길 시작점. 이끼가 비문을 덮었다."},
+    {-270,40,"늑대를 길들인 자가 있어 이 소굴을 지켰다."},
+    {270,40,"광맥과 동굴을 잇는 길, 기사단의 보급로."},
+  }) do
+    local hit=workspace:Raycast(Vector3.new(stele[1],80,stele[2]),Vector3.new(0,-160,0),rp)
+    if hit then
+      local ok,model=pcall(worldAsset,"villagePillar",Vector3.new(stele[1],hit.Position.Y+1,stele[2]),7)
+      if ok and model then
+        model.Name="Meadow_Stele"
+        local mesh=model:FindFirstChildWhichIsA("MeshPart",true)
+        if mesh then
+          local prompt=Instance.new("ProximityPrompt")
+          prompt.ActionText="비문 읽기";prompt.ObjectText="옛 비석";prompt.MaxActivationDistance=12;prompt.HoldDuration=.3
+          prompt.RequiresLineOfSight=false;prompt.Parent=mesh
+          prompt.Triggered:Connect(function(player)
+            player:SetAttribute("MeadowGearMessage","비문: "..stele[3])
+            player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+          end)
+        end
+      else
+        warn("STELE_ASSET_FAILED "..tostring(model))
+      end
+    else
+      warn("STELE_GROUND_UNVERIFIED "..stele[1].." "..stele[2])
+    end
+  end
+end)
 -- [바람 절벽 생태 거점] 자원이 나는 곳에 지킴이를 둔다(서브퀘 cliffmine/cliffnest/orccamp와 연결).
 do
   local camps=Config.WorldMap.EcoCamps
@@ -9126,6 +9206,11 @@ do
       for _,player in ipairs(Players:GetPlayers()) do
         local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
         if root and player:GetAttribute("ProfileReady")==true then
+          -- [초원 서브퀘스트 안내] 2장 이후 한 번만, 촌장이 열린 의뢰를 알려 준다.
+          if readNumber(player,"MeadowGuide",0)==0 and readNumber(player,"QuestStage",1)>=3 and readNumber(player,"TutorialStep",0)>=99 then
+            setNumber(player,"MeadowGuide",1)
+            say(player,"촌장 나린의 안내","초원에 도울 일이 늘었다.\n\n· 대장장이 브란 — 광석·가죽 작업과 동쪽 폐광\n· 서쪽 늑대 소굴 — 가죽과 고기\n· 동남쪽 박쥐 동굴 — 약초와 수정\n· 초원 세 곳의 옛 비석 순찰\n\n지도(M)에서 목표를 확인해라. 두목 한 마리만 쓰러뜨리면 된다.")
+          end
           for _,line in ipairs(lines) do
             local stage=stageOf(player,line)
             if stage==0 and unlocked(player,line) then
