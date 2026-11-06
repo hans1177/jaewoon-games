@@ -10460,10 +10460,12 @@ local function bindOriginalMob(model)
   if model:GetAttribute("Species") and not model:FindFirstChild("MeadowEnemyLabel") then
     local host=model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart",true)
     if host then
-      local _,bounds=model:GetBoundingBox()
+      local boxCf,bounds=model:GetBoundingBox()
       local plate=Instance.new("BillboardGui");plate.Name="MeadowEnemyLabel"
+      -- 이름표·체력바는 몸 중심이 아니라 모델 맨 위(머리 위)에 띄운다.
+      local topOffset=math.max(bounds.Y*.65+1,(boxCf.Position.Y+bounds.Y*.5)-host.Position.Y+1.6)
       plate.Adornee=host;plate.AlwaysOnTop=false;plate.MaxDistance=55
-      plate.Size=UDim2.fromOffset(154,44);plate.StudsOffsetWorldSpace=Vector3.new(0,bounds.Y*.65+1,0)
+      plate.Size=UDim2.fromOffset(154,44);plate.StudsOffsetWorldSpace=Vector3.new(0,topOffset,0)
       plate.Parent=model
       local name=Instance.new("TextLabel");name.Name="EnemyIdentity";name.BackgroundTransparency=1
       name.Size=UDim2.new(1,0,0,24);name.Font=Enum.Font.GothamBold;name.TextSize=13
@@ -12639,9 +12641,10 @@ end)()
     if menuOpen() then
       -- 메뉴창(스킬 칸)을 가리지 않도록 화면 맨 위에 작게 붙인다.
       card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,0,2);card.BackgroundTransparency=.25
-      card.Size=UDim2.fromOffset(460,nextBtn.Visible and 92 or 62)
-      ctitle.TextSize=15;ctitle.Size=UDim2.new(1,0,0,20)
-      cbody.TextSize=13;cbody.Position=UDim2.fromOffset(0,20);cbody.Size=UDim2.new(1,0,0,38)
+      -- 창 제목줄(탐험 / 스킬)과 왼쪽 로블록스 버튼을 가리지 않게 폭·높이를 줄인다.
+      card.Size=UDim2.fromOffset(380,nextBtn.Visible and 74 or 46)
+      ctitle.TextSize=13;ctitle.Size=UDim2.new(1,0,0,16)
+      cbody.TextSize=12;cbody.Position=UDim2.fromOffset(0,17);cbody.Size=UDim2.new(1,0,0,28)
     else
       local y=radar and (radar.AbsolutePosition.Y+radar.AbsoluteSize.Y-guiRoot.AbsolutePosition.Y+6) or 84
       card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,0,y);card.BackgroundTransparency=1
