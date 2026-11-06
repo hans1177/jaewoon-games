@@ -9692,9 +9692,75 @@ do
           if after>level then msg=msg.."\n채굴 Lv"..after.." 달성!" end
           if not pick then msg=msg.."\n(곡괭이가 없어 수확이 적다. 마을 광부에게 구하자)" end
           toast(player,msg)
-          if material=="Ore" and meadowOil.questEvent then pcall(meadowOil.questEvent,player,"MINE_ORE") end
+          local eventName=({Ore="MINE_ORE",Crystal="MINE_CRYSTAL",Magma="MINE_MAGMA",Ectoplasm="MINE_SOUL",Ingot="MINE_DEEP"})[material]
+          if eventName and meadowOil.questEvent then pcall(meadowOil.questEvent,player,eventName) end
         end)
       else warn("MINING_VEIN_GROUND_UNVERIFIED "..index) end
+    end
+  end)
+end
+
+-- [별똥별 이벤트] 8~12분마다 임의의 지역(초원 제외)에 별똥별이 떨어진다. 하늘로 치솟는 빛줄기를 따라가 조각을 주우면 희귀 재료를 얻는다.
+-- 한 번에 최대 5명, 플레이어마다 한 번. 6분 뒤 사라진다. 지역 이름은 알림으로 모두에게 알린다.
+do
+  local W=Config.WorldMap
+  local random=Random.new(os.time())
+  local function toastAll(text)
+    for _,player in ipairs(Players:GetPlayers()) do
+      player:SetAttribute("MeadowGearMessage",text)
+      player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+    end
+  end
+  task.spawn(function()
+    while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(5) end
+    task.wait(180)
+    local rp=RaycastParams.new();rp.FilterType=Enum.RaycastFilterType.Include;rp.FilterDescendantsInstances={workspace.Terrain}
+    while true do
+      local zone=W.Zones[random:NextInteger(1,#W.Zones)]
+      local x,z
+      if zone.Id~="meadow" then x,z=W.RandomPoint(zone.Id,random,200) end
+      local hit=x and workspace:Raycast(Vector3.new(x,400,z),Vector3.new(0,-800,0),rp)
+      if hit and #Players:GetPlayers()>0 then
+        local anchor=Instance.new("Attachment");anchor.Name="MeteorFall";anchor.WorldPosition=hit.Position+Vector3.new(0,2,0);anchor.Parent=workspace.Terrain
+        workspace:SetAttribute("MeteorSeat",Vector3.new(x,0,z))
+        local beam=Instance.new("ParticleEmitter");beam.Color=ColorSequence.new(Color3.fromRGB(190,150,255));beam.LightEmission=1;beam.Rate=60
+        beam.Lifetime=NumberRange.new(6,9);beam.Speed=NumberRange.new(30,44);beam.EmissionDirection=Enum.NormalId.Top
+        beam.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,6),NumberSequenceKeypoint.new(1,0)});beam.Parent=anchor
+        local light=Instance.new("PointLight");light.Color=Color3.fromRGB(190,150,255);light.Range=40;light.Brightness=3;light.Parent=anchor
+        local rock
+        task.spawn(function()
+          rock=worldAsset("item_mineral",hit.Position,4)
+          if rock then rock.Name="MeteorRock";rock:SetAttribute("MeadowScenery",true) end
+        end)
+        local claims,count={},0
+        local prompt=Instance.new("ProximityPrompt");prompt.ActionText="별똥별 조각 줍기";prompt.ObjectText=zone.Name.." 별똥별";prompt.HoldDuration=1
+        prompt.MaxActivationDistance=14;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+        prompt.Triggered:Connect(function(player)
+          if player:GetAttribute("ProfileReady")~=true then return end
+          if claims[player] then
+            player:SetAttribute("MeadowGearMessage","이미 조각을 주웠다.")
+            player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+            return
+          end
+          if count>=5 then return end
+          claims[player]=true;count+=1
+          setNumber(player,"Crystal",readNumber(player,"Crystal",0)+5)
+          setNumber(player,"Ectoplasm",readNumber(player,"Ectoplasm",0)+2)
+          setNumber(player,"Steel",readNumber(player,"Steel",0)+1)
+          setNumber(player,"Coins",readNumber(player,"Coins",0)+300)
+          pcall(awardProgress,player,120,0)
+          player:SetAttribute("MeadowGearMessage","별똥별 조각! 마력 결정 +5 · 원혼의 잔재 +2 · 강철 주괴 +1 · 코인 +300")
+          player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+          if count>=5 then prompt.Enabled=false;beam.Enabled=false end
+        end)
+        toastAll("별똥별이 "..zone.Name.." 어딘가에 떨어졌다! 하늘로 치솟는 보랏빛 빛줄기를 찾아라. (6분)")
+        task.delay(360,function()
+          anchor:Destroy()
+          if rock then rock:Destroy() end
+          workspace:SetAttribute("MeteorSeat",nil)
+        end)
+      end
+      task.wait(random:NextInteger(480,720))
     end
   end)
 end
@@ -10511,7 +10577,7 @@ do
     local reward=line.Reward or {}
     setNumber(player,line.Field,#line.Steps+1)
     pcall(awardProgress,player,reward.Xp or 0,reward.Coins or 0)
-    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Feather","Ectoplasm","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Feather","Ectoplasm","Hide","Ore","Magma","Ingot","Leather","Steel","MiningProficiency"}) do
       if reward[field] then setNumber(player,field,readNumber(player,field,0)+reward[field]) end
     end
     if reward.Relic then setNumber(player,"RelicMask",bit32.bor(readNumber(player,"RelicMask",0),bit32.lshift(1,reward.Relic-1))) end
@@ -10620,7 +10686,7 @@ do
     setNumber(player,line.Field.."C",action=="ql:1" and 1 or 2)
     if choice.Flag then setNumber(player,"TrackFlags",bit32.bor(readNumber(player,"TrackFlags",0),choice.Flag)) end
     if choice.Join and meadowOil.joinCompanion then meadowOil.joinCompanion(player,choice.Join,choice.Bond) end
-    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Feather","Ectoplasm","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Feather","Ectoplasm","Hide","Ore","Magma","Ingot","Leather","Steel","MiningProficiency"}) do
       if choice[field] then setNumber(player,field,readNumber(player,field,0)+choice[field]) end
     end
     if choice.Coins then setNumber(player,"Coins",readNumber(player,"Coins",0)+choice.Coins) end
