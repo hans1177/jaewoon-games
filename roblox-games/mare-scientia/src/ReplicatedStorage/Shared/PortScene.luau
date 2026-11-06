@@ -1071,6 +1071,67 @@ function PortScene.build(info, onFacility)
 		importedModel(folder, "Town", "gate_double_right", Vector3.new(-46, 0, 5.5), 6, false)
 	end
 
+	-- 동료: R15 NPC로 플레이어 뒤를 따라다닌다 (보기용, 효과는 서버의 동료 시스템)
+	local followers = {}
+	do
+		local looks = {
+			c_merian = { "Rogue", Color3.fromRGB(176, 96, 120) }, c_halley = { "Knight", Color3.fromRGB(60, 80, 140) },
+			c_leeuwenhoek = { "Mage", Color3.fromRGB(110, 90, 70) }, c_linnaeus = { "Rogue_Hooded", Color3.fromRGB(70, 120, 84) },
+			c_boyle = { "Mage", Color3.fromRGB(130, 70, 70) }, c_papin = { "Barbarian", Color3.fromRGB(96, 100, 110) },
+		}
+		for i, c in info.companions or {} do
+			local look = looks[c.id] or { "Rogue", Color3.fromRGB(120, 100, 80) }
+			local v = villager(folder, Vector3.new(-6 - i * 3, 0, 8 + i * 2), math.pi / 2, look[2], rng, look[1])
+			if v then
+				v.Name = "Companion_" .. c.id
+				local tag = v:FindFirstChild("Head") or v:FindFirstChildWhichIsA("BasePart", true)
+				if tag then sign(folder, tag, c.name, Color3.fromRGB(40, 90, 150), 4) end
+				local at = v:GetPivot().Position
+				table.insert(followers, { model = v, index = i, pos = Vector3.new(at.X, 0, at.Z), baseY = at.Y, phase = i * 1.7 })
+			end
+		end
+	end
+	local followConn
+	if #followers > 0 then
+		local Players = game:GetService("Players")
+		local last = os.clock()
+		followConn = RunService.Heartbeat:Connect(function()
+			local now = os.clock()
+			local dt = math.min(now - last, 0.1)
+			last = now
+			local char = Players.LocalPlayer and Players.LocalPlayer.Character
+			local root = char and char:FindFirstChild("HumanoidRootPart")
+			if not root then return end
+			local look = Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z)
+			if look.Magnitude < 0.01 then look = Vector3.new(1, 0, 0) end
+			look = look.Unit
+			local right = Vector3.new(-look.Z, 0, look.X)
+			for _, f in followers do
+				if f.model.Parent then
+					local side = if f.index % 2 == 0 then 1 else -1
+					local target = root.Position - look * (4 + f.index * 1.6) + right * side * (2.6 + (f.index - 1) * 0.6)
+					target = Vector3.new(target.X, 0, target.Z)
+					local delta = target - f.pos
+					local dist = delta.Magnitude
+					if dist > 60 then
+						f.pos = target
+					elseif dist > 0.8 then
+						f.pos += delta.Unit * math.min(dist, (6 + dist * 1.5) * dt)
+					end
+					local moving = dist > 1.2
+					local faceDir = if moving then delta.Unit else look
+					local bob = if moving then math.abs(math.sin(now * 7 + f.phase)) * 0.12 else 0
+					local at = f.pos + Vector3.new(0, f.baseY + bob, 0)
+					f.model:PivotTo(CFrame.lookAt(at, at + faceDir))
+					Pose.walkR15(f.model, now * 9 + f.phase, moving)
+				end
+			end
+		end)
+		folder.Destroying:Connect(function()
+			followConn:Disconnect()
+		end)
+	end
+
 	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {})
 
 	-- 갈매기 (항구 위를 맴돈다)

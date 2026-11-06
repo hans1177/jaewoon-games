@@ -2304,7 +2304,17 @@ syncScene = function()
 		return
 	end
 	local p, ship = view.player, view.ship
-	local key = p.portId .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0)
+	local crew = {}
+	for _, c in (view.companions and view.companions.list) or {} do
+		if c.joined then
+			table.insert(crew, { id = c.id, name = c.name })
+		end
+	end
+	local crewIds = {}
+	for _, c in crew do
+		table.insert(crewIds, c.id)
+	end
+	local key = p.portId .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",")
 	if key == sceneKey then
 		return
 	end
@@ -2315,6 +2325,7 @@ syncScene = function()
 		hasShipyard = p.hasShipyard,
 		facilities = view.facilities,
 		storyCount = #(view.story or {}),
+		companions = crew,
 		arrive = arriveNext,
 	}, function(tab)
 		currentTab = tab
