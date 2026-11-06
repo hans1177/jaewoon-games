@@ -13,6 +13,7 @@ local Geo = require(Shared:WaitForChild("Geo"))
 local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
 local PortScene = require(Shared:WaitForChild("PortScene"))
 local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
+local FieldScene = require(Shared:WaitForChild("FieldScene"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
@@ -82,6 +83,7 @@ local openTab
 local applyView
 local overview = true -- 항구 전경(고정 시점) / 걷기 전환
 local sceneSpawn = nil
+local inField = false -- 필드 탐험 장면 중에는 항구 전경 카메라를 멈춘다
 local assetWaitStarted = false
 local sceneKey = nil
 local sceneCtl = nil -- 현재 3D 장면의 제어(출항 연출 등)
@@ -1414,6 +1416,32 @@ local function renderYard()
 	end
 end
 
+local function startField(s)
+	if inField then
+		return
+	end
+	inField = true
+	main.Visible = false
+	FieldScene.start({
+		name = s.name,
+		nodes = math.clamp(s.days, 1, 3),
+		danger = s.minLevel,
+		seed = #s.id * 31 + s.days,
+		onFinish = function(result)
+			inField = false
+			applyView()
+			main.Visible = true
+			if result == "clear" then
+				call("Explore", { siteId = s.id })
+			else
+				message = if result == "defeat" then "산적에게 쫓겨 탐험을 접었어요" else "탐험을 중단하고 항구로 돌아왔어요"
+				messageOk = false
+				render()
+			end
+		end,
+	})
+end
+
 local function renderExplore()
 	add(function() return mkHeader(content, "탐험 지점") end)
 	if #view.sites == 0 then
@@ -1423,7 +1451,7 @@ local function renderExplore()
 		add(function()
 			local sub = if s.left == 0 then "모두 조사했어요" else string.format("발견 가능 %d · %d일 · 모험 Lv.%d 이상", s.left, s.days, s.minLevel)
 			return mkRow(content, s.name, sub, {
-				{ text = "탐험", color = COLORS.green, onClick = function() call("Explore", { siteId = s.id }) end, enabled = s.unlocked and s.left > 0 },
+				{ text = "탐험", color = COLORS.green, onClick = function() startField(s) end, enabled = s.unlocked and s.left > 0 },
 			}, 54)
 		end)
 	end
@@ -2101,7 +2129,7 @@ do
 	end
 	game:GetService("RunService").RenderStepped:Connect(function()
 		local camera = workspace.CurrentCamera
-		if overview and not sceneHold and camera.CameraType == Enum.CameraType.Scriptable then
+		if overview and not inField and not sceneHold and camera.CameraType == Enum.CameraType.Scriptable then
 			local t = os.clock()
 			camera.CFrame = camBase * CFrame.new(math.sin(t * 0.25) * 5, math.sin(t * 0.4) * 0.7, 0)
 		end
