@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-3yb6im",
+      "worker": "vibe2",
+      "taskId": "cat-step-web-startup-spatial-repair-v7",
+      "gameId": "cat-step",
+      "files": [
+        "web-games/cat-step/index.html"
+      ],
+      "baseSha": "94a818e56739b07663f7b7f21639286aa2c170ac",
+      "runId": "42164653685",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-06T05:09:09.566Z",
+      "expiresAt": "2026-11-06T05:54:09.566Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cat-step-web-startup-spatial-repair-v7"
+      ]
+    }
+  ]
 }
