@@ -8968,7 +8968,10 @@ do
                 pcall(function() villageDialogue(player,town[role.key],"어서 와요. 따뜻한 수프 한 그릇이면 기운이 돌아올 거예요. ("..town.Name.."에서 체력과 기력이 회복됐다)") end)
               elseif role.key=="Merchant" then
                 local total,parts=0,{}
-                for material,rate in pairs(sellRates) do
+                local rates={}
+                for k,v in pairs(sellRates) do rates[k]=v end
+                for k,v in pairs(town.Buy or {}) do rates[k]=v end -- 지역 특산 재료는 더 비싸게 쳐 준다.
+                for material,rate in pairs(rates) do
                   local have=readNumber(player,material,0)
                   local extra=have-2
                   if extra>0 then
@@ -8993,6 +8996,16 @@ do
                   else
                     local step=line.Steps[stage]
                     text=text.."지금 쫓는 일: "..line.Name.."\n▶ "..step.Title.."\n"..step.Text
+                  end
+                end
+                if not line then
+                  -- 미스터리 연계가 없는 마을은 이 지역 생태 의뢰와 전설 소문을 알려 준다.
+                  for _,region in ipairs(Config.EcoRegions or {}) do
+                    if region.Zone==town.Zone then
+                      local names={}
+                      for _,camp in ipairs(region.Camps) do names[#names+1]="· "..camp.Title end
+                      text=text.."이 일대에서 사람들이 곤란해하는 일이다.\n"..table.concat(names,"\n").."\n지역 구석 어딘가엔 홀로 사는 전설의 괴물이 있다는 소문도 돈다. 이정표를 따라 걸어 보게."
+                    end
                   end
                 end
                 pcall(function() villageDialogue(player,town[role.key],text) end)

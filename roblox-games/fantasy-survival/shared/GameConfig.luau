@@ -1227,10 +1227,20 @@ do
     {Id="highland", Zone="highland", Name="서리목 초소", Hold="북부 고원", Inn="사냥꾼 주막 주인 헬가", Merchant="모피 상인 토르", Scout="늙은 사냥꾼 올라프"},
     {Id="wetland", Zone="wetland", Name="이끼마루", Hold="남부 습원", Inn="약초집 주인 리나", Merchant="약초 상인 파블로", Scout="늪 길잡이 미르"},
     {Id="worldtree", Zone="worldtree", Name="뿌리쉼터", Hold="세계수 숲", Inn="뿌리 여관 주인 에이라", Merchant="수액 상인 로엔", Scout="숲지기 이든"},
+    -- [나머지 8개 홀드 마을] 지역 허브(생태 퀘스트 보고 지점) 바로 곁에 둔다. 퀘스트 의뢰인이 그 마을의 정보통이다.
+    {Id="volcano", Zone="volcano", Name="재숯 보루촌", Hold="재의 황야", Inn="화덕 주막 주인 카라", Merchant="화산석 상인 바르크", Scout="재의 순찰병", X=2400, Z=60, Buy={Magma=14,Claw=12}},
+    {Id="oasis", Zone="oasis", Name="오아시스 시장", Hold="모래 폐허", Inn="오아시스 객주 잔느", Merchant="향료 상인 사이드", Scout="오아시스 상인 하미드", X=3600, Z=60, Buy={Crystal=20,Hide=8}},
+    {Id="swamp", Zone="swamp", Name="안개 부두촌", Hold="안개 늪지", Inn="부두 선술집 주인 모나", Merchant="독초 상인 쿠로", Scout="안개 부두 뱃사공", X=4800, Z=60, Buy={Moonbloom=18,Mushroom=8}},
+    {Id="citadel", Zone="citadel", Name="외곽 진지", Hold="불타는 성채", Inn="야전 취사병 보르", Merchant="무기 상인 데란", Scout="성채 외곽 척후병", X=5700, Z=60, Buy={Ore=10,Magma=14}},
+    {Id="canyon", Zone="canyon", Name="순례자 쉼터", Hold="고대 협곡", Inn="쉼터 주인 아이샤", Merchant="광석 상인 투란", Scout="협곡 순례자", X=1500, Z=-1640, Buy={Ore=10,Fang=10}},
+    {Id="chaos", Zone="chaos", Name="균열 감시소", Hold="혼돈의 대지", Inn="감시소 취사병 렌", Merchant="유물 상인 오르페", Scout="균열 감시병", X=4300, Z=-1640, Buy={Crystal=24,Ectoplasm=16}},
+    {Id="desert", Zone="desert", Name="황금 시장", Hold="황금 사막", Inn="낙타 여관 주인 라일라", Merchant="황금 상인 자이드", Scout="사막 길잡이 하산", X=2800, Z=1810, Buy={Hide=8,Feather=16}},
+    {Id="deadmarsh", Zone="deadmarsh", Name="등불 사당촌", Hold="죽음의 늪", Inn="등불지기 노파 베나", Merchant="뼈 상인 코르", Scout="죽음의 늪 사당지기", X=5200, Z=1810, Buy={Ectoplasm=16,Fang=10}},
   }
   Config.WorldMap.Towns = {}
   for _, d in ipairs(defs) do
-    local x, z = Config.WorldMap.RandomPoint(d.Zone, random, 320)
+    local x, z = d.X, d.Z
+    if not x then x, z = Config.WorldMap.RandomPoint(d.Zone, random, 320) end
     d.X, d.Z = x or 0, z or 0
     table.insert(Config.WorldMap.Towns, d)
   end
