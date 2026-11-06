@@ -348,9 +348,9 @@ local Config = {
   -- [장비·아이템] 위쳐식 장비 슬롯·제작법. 실제 능력치는 서버에서만 계산한다.
   -- 기존 몬스터 보상과 무기 강화 수치는 유지하며 이 카탈로그는 새 선택 보너스만 제공한다.
   MeadowEquipment = {
-    {Id="wanderer_blade",Rarity="Common",Name="방랑자의 검",Slot="Weapon",Category="무기",Attack=0,Defense=0,Icon=2,Starter=true,Desc="기본 검. 기존 전투 공격력은 그대로 유지돼."},
-    {Id="hunter_blade",Rarity="Uncommon",Name="사냥꾼 장검",Slot="Weapon",Category="무기",Attack=4,Defense=0,Icon=2,Wood=8,Stone=5,Coins=20,Desc="숲의 사냥꾼이 사용하는 단련 장검."},
-    {Id="runic_blade",Rarity="Rare",Need=60,Name="룬 장검",Slot="Weapon",Category="무기",Attack=9,Defense=0,Icon=2,Wood=16,Stone=12,Coins=75,Desc="마력 문양이 새겨진 고급 검."},
+    {Id="wanderer_blade",Rarity="Common",Name="방랑자의 검",Slot="Weapon",ModelKey="item_sword",Category="무기",Attack=0,Defense=0,Icon=2,Starter=true,Desc="기본 검. 기존 전투 공격력은 그대로 유지돼."},
+    {Id="hunter_blade",Rarity="Uncommon",Name="사냥꾼 장검",Slot="Weapon",ModelKey="item_sword",Category="무기",Attack=4,Defense=0,Icon=2,Wood=8,Stone=5,Coins=20,Desc="숲의 사냥꾼이 사용하는 단련 장검."},
+    {Id="runic_blade",Rarity="Rare",Need=60,Name="룬 장검",Slot="Weapon",ModelKey="item_sword_golden",Category="무기",Attack=9,Defense=0,Icon=2,Wood=16,Stone=12,Coins=75,Desc="마력 문양이 새겨진 고급 검."},
     {Id="forest_blade",Rarity="Epic",Need=200,Name="숲 수호자의 검",Slot="Weapon",ModelKey="item_sword",Category="무기",Attack=15,Defense=0,Icon=2,Wood=30,Stone=24,Coins=150,Desc="숙련된 수호자를 위한 주 무기."},
     {Id="travel_armor",Rarity="Common",Name="여행자 조끼",Slot="Chest",Category="갑옷",Attack=0,Defense=0,Icon=3,Starter=true,Desc="기본 방어구."},
     {Id="hunter_armor",Rarity="Uncommon",Name="사냥꾼 갑옷",Slot="Chest",Category="갑옷",Attack=0,Defense=3,Icon=3,Wood=9,Stone=6,Coins=15,Desc="가죽을 겹쳐 방어력을 높인 갑옷."},
@@ -381,9 +381,9 @@ local Config = {
     {Id="worldtree_ring",Rarity="Epic",Need=320,Name="세계수 반지",Slot="Accessory",Category="장신구",Attack=4,Defense=4,Icon=2,Wood=30,Stone=30,Coins=170,Desc="세계수 가지로 만든 반지."},
     {Id="abyss_eye",Rarity="Legendary",Need=900,Name="심연의 눈",Slot="Accessory",Category="장신구",Attack=8,Defense=8,Icon=2,Wood=60,Stone=60,Coins=400,Desc="심연을 들여다보는 전설의 눈."},
     -- [활 · 오디세이식 원거리 계열] 등록된 CC0 활 모델(item_bow_wooden) 사용. 33번째부터는 MeadowGearOwned2 비트에 저장한다.
-    {Id="hunter_bow",Rarity="Uncommon",Name="사냥꾼 활",Slot="Weapon",Category="무기",Attack=4,Defense=0,Icon=2,Bow=true,Coins=30,Desc="가죽과 철로 보강한 사냥용 활. 멀리서 노려 쏘고, 거리에 따라 치명타가 터져."},
-    {Id="wind_bow",Rarity="Rare",Need=60,Name="바람결 활",Slot="Weapon",Category="무기",Attack=9,Defense=0,Icon=2,Bow=true,Coins=90,Desc="가볍고 빠른 장궁. 연사 속도가 빠르고 사거리가 길어."},
-    {Id="worldtree_bow",Rarity="Epic",Need=220,Name="세계수 장궁",Slot="Weapon",Category="무기",Attack=15,Defense=0,Icon=2,Bow=true,Coins=170,Desc="세계수 가지로 만든 장궁. 급소를 꿰뚫으면 큰 피해를 줘."},
+    {Id="hunter_bow",Rarity="Uncommon",Name="사냥꾼 활",Slot="Weapon",ModelKey="item_bow_wooden",Category="무기",Attack=4,Defense=0,Icon=2,Bow=true,Coins=30,Desc="가죽과 철로 보강한 사냥용 활. 멀리서 노려 쏘고, 거리에 따라 치명타가 터져."},
+    {Id="wind_bow",Rarity="Rare",Need=60,Name="바람결 활",Slot="Weapon",ModelKey="item_bow_wooden",Category="무기",Attack=9,Defense=0,Icon=2,Bow=true,Coins=90,Desc="가볍고 빠른 장궁. 연사 속도가 빠르고 사거리가 길어."},
+    {Id="worldtree_bow",Rarity="Epic",Need=220,Name="세계수 장궁",Slot="Weapon",ModelKey="item_bow_wooden",Category="무기",Attack=15,Defense=0,Icon=2,Bow=true,Coins=170,Desc="세계수 가지로 만든 장궁. 급소를 꿰뚫으면 큰 피해를 줘."},
     -- [실물 3D 무기 확장] CC0 승인 모델, 기존 35개 장비 인덱스·아이템 저장 비트 유지.
     {Id="iron_arming_sword",Rarity="Uncommon",Need=0,Name="철제 무장검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="item_sword",ForgeOnly=true,Tint={180,195,175},Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="마력숲 대장간에서 제련·제작 가능한 철제 무장검."},
     {Id="veteran_longsword",Rarity="Rare",Need=60,Name="베테랑 장검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="item_sword",ForgeOnly=true,Tint={170,200,225},Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Crystal=1,Desc="마력숲 대장간에서 제련·제작 가능한 베테랑 장검."},
@@ -2536,11 +2536,11 @@ Config.GearLook = {
   magma_plate={model="item_armor_black",tint={196,72,42},glow={255,110,50}},
   worldtree_mail={model="item_armor_golden",tint={150,205,95},glow={160,255,140}},
   fafnir_scale_mail={model="item_armor_metal2",tint={232,112,82},glow={255,140,80}},
-  hunter_gloves={tint={140,108,70}}, guardian_gauntlet={tint={168,182,205},fit=1.15}, arcane_gloves={tint={150,100,232},glow={190,140,255}},
+  travel_gloves={tint={155,118,85}}, hunter_gloves={tint={140,108,70}}, guardian_gauntlet={tint={168,182,205},fit=1.15}, arcane_gloves={tint={150,100,232},glow={190,140,255}},
   wind_feather_gloves={tint={170,215,240}}, hydra_hide_gloves={tint={110,230,140},glow={110,255,160}},
-  guardian_pants={tint={150,162,188}}, hunter_greaves={tint={122,96,62}}, rune_greaves={tint={92,122,205},glow={120,160,255}},
+  travel_pants={tint={117,109,96}}, guardian_pants={tint={150,162,188}}, hunter_greaves={tint={122,96,62}}, rune_greaves={tint={92,122,205},glow={120,160,255}},
   behemoth_greaves={tint={235,200,110},glow={255,210,120}},
-  guardian_boots={tint={150,162,188}}, hunter_boots={tint={116,90,60}}, wind_boots={tint={150,232,232},glow={170,255,245}},
+  travel_boots={tint={136,110,83}}, guardian_boots={tint={150,162,188}}, hunter_boots={tint={116,90,60}}, wind_boots={tint={150,232,232},glow={170,255,245}},
   wyvern_boots={tint={240,215,120},glow={255,225,130}},
   moon_amulet={acc={model="item_necklace1",part="UpperTorso",off={0,.5,-.58},height=.9},tint={190,210,255},glow={190,210,255}},
   fang_necklace={acc={model="item_necklace1",part="UpperTorso",off={0,.5,-.58},height=.9},tint={235,225,200}},
