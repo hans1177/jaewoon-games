@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-12frxng",
+      "worker": "vibe2",
+      "taskId": "gem-survivor-studio-evolution-roblox-usability-v13",
+      "gameId": "gem-survivor",
+      "files": [
+        "roblox-games/gem-survivor/client/Game.client.luau",
+        "roblox-games/gem-survivor/shared/GameConfig.luau",
+        "roblox-games/gem-survivor/server/Game.server.luau",
+        "roblox-games/gem-survivor/client/MaterialPresentation.client.luau",
+        "roblox-games/gem-survivor/shared/RobloxCommonUI.luau",
+        "roblox-games/gem-survivor/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "8d4d8bb636d680ac470839de9021dbeaa5b7b8b7",
+      "runId": "42223613732",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-06T13:32:28.221Z",
+      "expiresAt": "2026-11-06T14:17:28.221Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:gem-survivor-studio-evolution-roblox-usability-v13"
+      ]
+    }
+  ]
 }
