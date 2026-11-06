@@ -195,7 +195,7 @@ function NavalBattle.play(opts)
 	subtitle.Size = UDim2.new(0.7, 0, 0, 40)
 	subtitle.TextWrapped = true
 
-	local hint = label(gui, "스틱을 좌우로 밀어 배를 돌리고, 위로 밀면 가속합니다. 적선에 옆면을 대면 대포가 자동으로 나갑니다.", 14, Color3.fromRGB(255, 226, 170))
+	local hint = label(gui, "가까이 가면 대포가 자동으로 나가고, 배가 맞닿으면 백병전! 스틱을 놓으면 옆면을 자동으로 맞춰 줍니다.", 14, Color3.fromRGB(255, 226, 170))
 	hint.AnchorPoint = Vector2.new(0.5, 0)
 	hint.Position = UDim2.new(0.5, 0, 0, 98)
 	hint.Size = UDim2.new(0.8, 0, 0, 36)
@@ -478,6 +478,18 @@ function NavalBattle.play(opts)
 		if phase == "duel" or phase == "board" then
 			-- 우리 배: 방향키로 돌리고 가속 설정만큼 앞으로
 			me.theta += steerDir * 0.9 * dt
+			-- 조종 보조: 스틱을 놓고 있으면 적선에 옆면(포 방향)을 자동으로 맞춘다
+			if steerDir == 0 and phase == "duel" then
+				local dv = foe.pos - me.pos
+				if dv.Magnitude < 110 then
+					local ang = math.atan2(dv.Z, dv.X)
+					local a1, a2 = ang + math.pi / 2, ang - math.pi / 2
+					local function gap(t)
+						return math.abs((t - me.theta + math.pi) % (math.pi * 2) - math.pi)
+					end
+					steerToward(me, if gap(a1) < gap(a2) then a1 else a2, dt, 0.45)
+				end
+			end
 			me.speed = 11 * (stickThrottle or throttle)
 			me.pos += forward(me.theta) * me.speed * dt
 
@@ -535,7 +547,8 @@ function NavalBattle.play(opts)
 						end)
 					end
 				end
-				if foeDone >= #meQueue and meDone >= #foeQueue then
+				-- 두 배가 맞닿으면 바로 접현 (백병전)
+				if d < 24 or (foeDone >= #meQueue and meDone >= #foeQueue) then
 					phase = "board"
 					boardStart = now
 					hint.Text = ""
