@@ -3384,16 +3384,17 @@ end
 local armorModelByRarity={Common="item_armor_leather",Uncommon="item_armor_leather",Rare="item_armor_metal",Epic="item_armor_black",Legendary="item_armor_golden"}
 local function refreshArmorVisual(player)
   local character=player.Character
-  if not character then return end
+  if not character then warn("ARMORVIS no character") return end
   local old=character:FindFirstChild("MeadowArmorVisual")
   if old then old:Destroy() end
   local chest=meadowRpg.equippedChest and meadowRpg.equippedChest(player)
-  if not chest then return end
+  if not chest then warn("ARMORVIS no chest equipped") return end
   local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
-  if not torso then return end
+  if not torso then warn("ARMORVIS no torso") return end
   local model=worldAsset(armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather",Vector3.new(0,-900,0),2.5)
   local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
-  if not mesh then if model then model:Destroy() end return end
+  if not mesh then warn("ARMORVIS no mesh model="..tostring(model)) if model then model:Destroy() end return end
+  warn("ARMORVIS ok "..tostring(chest.Id))
   local visual=mesh:Clone()
   model:Destroy()
   visual.Name="MeadowArmorVisual"
