@@ -241,3 +241,21 @@ Kenney Food Kit CC0 (https://kenney.nl/assets/food-kit) 신규 원본 모델, �
 | `cargo/orange.glb` | `98c6e4b44e020b4e715fefad54c575e81f02c143` |
 | `cargo/pineapple.glb` | `f9ce8b314b4e3d37376db7697653493883d28350` |
 | `cargo/strawberry.glb` | `1320622041f4c0854ff160126a70d02429084e72` |
+
+
+## 2026-11-06 4차 교역 해산물·향신료·식량 8종
+
+Kenney Food Kit · CC0-1.0 공식 허용: https://kenney.nl/assets/food-kit. 원본 저장소: https://github.com/Hidencod/tge-assets, 고정 리비전 `ea2f2aa1ca8da0898330c97df8a5489976b051d0`. 아래의 Git Blob SHA로 원본과 저장소 바이너리 동일성을 확인했다. 소금통·후추 분쇄기는 교역소 연출용 소품이며 대량 화물 그 자체는 아니다.
+
+| 신규 파일 | 원본 SHA |
+|---|---|
+| `cargo/mussel.glb` | `290e382f21a861c1d6195a234e73baed37f71b47` |
+| `cargo/mussel-open.glb` | `09702eb91de443ead61eee17333b0056a700d481` |
+| `cargo/pepper-mill.glb` | `31055728a7f25a9aa34a7763daaf25cd35f97ab0` |
+| `cargo/shaker-salt.glb` | `5279d993aa46427c8a229f17ea05ffb8a580b566` |
+| `cargo/radish.glb` | `26bdc90a0c71f868f77c145e2133ff58742df3a6` |
+| `cargo/tomato.glb` | `47068b912f517c7aa67cdcfa4c25362134b56fc4` |
+| `cargo/meat-ribs.glb` | `0189c968be79815c38f5f361ccbd59e278ec8acc` |
+| `cargo/sausage.glb` | `1ab2174d07093b9657b7681b76a60a6c4e4c7c4f` |
+
+미검증: Roblox 실물 모델 업로드/권한/배치/텍스처/모바일 런타임/배포.
