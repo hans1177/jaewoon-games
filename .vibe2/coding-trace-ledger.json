@@ -696279,7 +696279,7 @@
         "roadmapVersion": null,
         "baseMainSha": "621da4b41e6190f3e3ac8fefd7430948ec921ade",
         "variant": "primary",
-        "goal": "[WEB_REPAIR] [STARTABILITY_AND_TRUE_3D] 게임: 골목 군단 대전\n현재 Web 게임을 실제 브라우저에서 바로 시작 가능한 상태로 수리하고, 최종 게임플레이를 깊이 있는 3D 메시·실제 WebGL 렌더·3D 카메라와 상호작용으로 구현한다.\n확인된 실패: REAL_3D_GAMEPLAY_IMPLEMENTATION_REQUIRED\n빈 화면·검증 단계 버튼·scope 테스트 컨트롤·시작 버튼 무반응을 실제 게임 시작으로 인정하지 않는다. 첫 실제 입력이 플레이어/월드/전투/진행 상태를 바꾸게 연결한다.\n평면 2D 단독 월드, 이모지 그리드, 카드형 검증 화면은 prototype 외 최종 표현으로 금지한다. 장르에 맞춰 실제 3D 월드 메시·원근 카메라·깊이 버퍼·WebGL 삼각형 렌더와 공간 상호작용을 구현한다. CSS 원근 효과·등각·parallax·2.5D는 최종 통과 금지한다. UI 오버레이만 2D를 유지할 수 있다.\n기존 게임 규칙·세이브·밸런스·진행·경제·판정 의미는 보존하고 책임 소스를 직접 수정한다. 공용 템플릿이 게임 정체성을 평준화하면 게임 전용 구현으로 분리한다. 회사/홈페이지 정책 파일은 수정하지 않는다."
+        "goal": "[WEB_REPAIR] [STARTABILITY_AND_TRUE_3D] 게임: 골목 군단 대전\n현재 Web 게임을 실제 브라우저에서 바로 시작 가능한 상태로 수리하고, 최종 게임플레이를 깊이 있는 3D 메시·실제 WebGL 렌더·3D 카메라와 상호작용으로 구현한다.\n확인된 실패: REAL_3D_GAMEPLAY_IMPLEMENTATION_REQUIRED\n빈 화면·검증 단계 버튼·scope 테스트 컨트롤·시작 버튼 무반응을 실제 게임 시작으로 인정하지 않는다. 첫 실제 입력이 플레이어/월드/전투/진행 상태를 바꾸게 연결한다.\n평면 2D 단독 월드, 이모지 그리드, 카드형 검증 화면은 prototype 외 최종 표현으로 금지한다. 장르에 맞춰 실제 3D 월드 메시·원근 카메라·깊이 버퍼·WebGL 삼각형 렌더와 공간 상호작용을 구현한다. CSS 원근 효과·등각·parallax·2.5D는 최종 통과 금지한다. UI 오버레이만 2D를 유지할 수 있다.\n기존 게임 규칙·세이브·밸런스·진행·경제·판정 의미는 보존하고 책임 소스를 직접 수정한다. 공용 템플릿이 게임 정체성을 평준화하면 게임 전용 구현으로 분리한다. 회사/홈페이지 정책 파일은 수정하지 않는다.\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nid=line-defense-build-up-g1-204bfe9b649b; generation=1; depth=1; stage="
       },
       "decision": {
         "engineRevision": null,
@@ -698653,8 +698653,8 @@
     }
   ],
   "stats": {
-    "added": 30,
-    "refreshed": 0,
+    "added": 0,
+    "refreshed": 30,
     "total": 5000,
     "verified": 0,
     "failures": 4936
