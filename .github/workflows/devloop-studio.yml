@@ -1,14 +1,19 @@
-# Mare Scientia: 오너 PC의 로그인된 Roblox Studio(기존 러너 라벨 roblox-studio-authenticated)로 마을을 직접 띄워 화면을 캡처한다.
+# 공통(게임 id 입력): 오너 PC의 로그인된 Roblox Studio(기존 러너 라벨 roblox-studio-authenticated)로 마을을 직접 띄워 화면을 캡처한다.
 # 기존 Studio MCP 도구(tools/company-development-roblox-studio-local-play.mjs, studio-script 모드)를 그대로 쓴다.
-# 결과 사진·리포트는 브랜치 mare-studio-frames 에 올라간다 (다음 Claude 실행이 읽는다).
-name: Devloop Studio Capture (Mare Scientia)
+# 결과 사진·리포트는 브랜치 <game>-studio-frames (예: mare-scientia-studio-frames)에 올라간다 (다음 Claude 실행이 읽는다).
+name: Devloop Studio Capture
 on:
   workflow_dispatch:
     inputs:
-      script:
-        description: Studio script JSON path in repo
+      game:
+        description: 게임 폴더 이름 (roblox-games/<game>)
         required: false
-        default: roblox-games/mare-scientia/tools/devloop/studio-scripts/mare-town.json
+        default: mare-scientia
+        type: string
+      script:
+        description: Studio script JSON path in repo (비우면 게임의 tools/devloop/studio-scripts/default.json, 없으면 opening-capture)
+        required: false
+        default: ''
         type: string
 permissions:
   contents: write
@@ -29,7 +34,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Build Mare Scientia place with pinned Rojo
+      - name: Validate inputs
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+        env:
+          GAME_IN: ${{ inputs.game }}
+          SCRIPT_IN: ${{ inputs.script }}
+        run: |
+          $g = $env:GAME_IN
+          if ($g -notmatch '^[a-z0-9-]+$') { throw "bad game id" }
+          if (-not (Test-Path "main/roblox-games/$g/default.project.json")) { throw "no project for $g" }
+          $sc = $env:SCRIPT_IN
+          if ($sc -eq '') {
+            $d = "roblox-games/$g/tools/devloop/studio-scripts/default.json"
+            if (Test-Path "main/$d") { $sc = $d } elseif ($g -eq 'mare-scientia') { $sc = "roblox-games/mare-scientia/tools/devloop/studio-scripts/mare-town.json" } else { $sc = '' }
+          }
+          if ($sc -ne '' -and $sc -notmatch '^roblox-games/[a-z0-9-]+/[A-Za-z0-9_./-]+\.json$') { throw "bad script path" }
+          "CAP_GAME=$g" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "CAP_SCRIPT=$sc" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Build place with pinned Rojo
         shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
@@ -43,7 +65,7 @@ jobs:
           $rojo = (Get-ChildItem $rojoDir -Recurse -Filter rojo.exe | Select-Object -First 1).FullName
           $place = Join-Path $env:RUNNER_TEMP 'marecheck.rbxl'
           Remove-Item $place -ErrorAction SilentlyContinue
-          & $rojo build 'main/roblox-games/mare-scientia/default.project.json' -o $place
+          & $rojo build "main/roblox-games/$($env:CAP_GAME)/default.project.json" -o $place
           if ($LASTEXITCODE -ne 0) { throw 'rojo build failed' }
           "MARE_PLACE=$place" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Launch Studio, run script, capture frames
@@ -65,7 +87,11 @@ jobs:
           Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
           New-Item -ItemType Directory $out -Force | Out-Null
           try {
-            & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=main/${{ inputs.script }}" "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+            if ($env:CAP_SCRIPT -ne '') {
+              & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=main/$($env:CAP_SCRIPT)" "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+            } else {
+              & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=opening-capture "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+            }
             Write-Host "NODE_EXIT=$LASTEXITCODE"
           } finally {
             Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
@@ -80,6 +106,6 @@ jobs:
           git config user.name 'mare-capture-bot'
           git config user.email 'mare-capture-bot@users.noreply.github.com'
           git add -A
-          git commit -q -m "mare studio frames run ${{ github.run_id }}"
-          git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/mare-studio-frames
+          git commit -q -m "studio frames $($env:CAP_GAME) run ${{ github.run_id }}"
+          git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/$($env:CAP_GAME)-studio-frames
           Write-Host "PUBLISHED=$LASTEXITCODE"

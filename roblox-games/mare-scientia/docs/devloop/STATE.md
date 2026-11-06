@@ -22,7 +22,7 @@
 
 ## 그래픽 구현력 도구 (이미 있음)
 - `docs/devloop/asset-sizes.json`: 등록 에셋 388종의 실제 크기(X,Y,Z 스터드, importedModel 배율 전 원본). 예: Town/house 5.9×5.6×6.5, Town/wall·wall-door·wall-window-shutters·balcony-wall 은 두께 0.1의 1×1 벽 패널, Town/roof-gable 1.1×0.6×1.1, Town/chimney 0.2×1×0.3, Naval/tower-complete-large 3.6×10.2×3.6. 배치·배율은 이 표로 계산한다(추측 금지). 새 에셋이 등록되면 `studio-scripts/asset-sizes.json`을 `devloop-studio.yml`(script 입력)로 돌려 갱신한다.
-- 사진 확인 루프: `devloop-studio.yml` → 브랜치 `mare-studio-frames`.
+- 사진 확인 루프: `devloop-studio.yml` → 브랜치 `mare-scientia-studio-frames`.
 
 ## 그래픽 품질 우선순위 (건축·오브젝트·배경)
 1. **모듈식 건물 빌더** (`Shared/Buildings.luau` 새로 만들기): 벽 패널·문·창·발코니·지붕·굴뚝 조각을 조합해 폭·깊이·층수·지붕 종류가 다른 집을 생성(같은 모양 상자 집 금지). 항구 style별 색·재질 변주, 문이 길을 향하도록 방향 지정. PortScene의 house()가 이것을 쓰게 한다.
@@ -48,7 +48,7 @@
 - 문제4: 캡처 카메라 7곳 중 여러 장이 비슷한 위치로 찍힘 → `ShotCF` 적용 확인 필요(카메라 스크립트가 덮어쓰는지 점검, 예: Game.client의 카메라 루프).
 
 ## 알려진 한계
-- 화면 확인: 오너 PC의 로그인된 Studio 러너(기존 라벨 roblox-studio-authenticated)가 `devloop-studio.yml`(Actions에서 Run workflow, gh api dispatch 가능)로 마을을 띄워 캡처한다. 결과는 브랜치 `mare-studio-frames`(PNG 7장 + report.json). `git fetch origin mare-studio-frames` 후 PNG를 Read로 열어 눈으로 확인하고 고친다. 캡처 스크립트: `tools/devloop/studio-scripts/mare-town.json`.
+- 화면 확인: 오너 PC의 로그인된 Studio 러너(기존 라벨 roblox-studio-authenticated)가 `devloop-studio.yml`(Actions에서 Run workflow, gh api dispatch 가능)로 마을을 띄워 캡처한다. 결과는 브랜치 `mare-scientia-studio-frames`(PNG 7장 + report.json). `git fetch origin mare-scientia-studio-frames` 후 PNG를 Read로 열어 눈으로 확인하고 고친다. 캡처 스크립트: `tools/devloop/studio-scripts/mare-town.json`.
 - 화면은 `devloop-studio.yml` 캡처로 볼 수 있다(오너 PC가 켜져 있어야 함). 캡처는 Studio 편집기 안 재생이라 실제 서버 데이터는 없다.
 - 텔레메트리는 `ROBLOX_OPEN_CLOUD_API_KEY`에 DataStore 읽기 권한이 있어야 문서에 채워진다.
 - F0~F9(`company-development-roblox-*`) 파이프라인은 Mare Scientia를 받지 않는다(워크플로에 이 게임 경로 없음). 이 게임은 `owner-mare-scientia-direct-publish.yml`로만 배포된다.
