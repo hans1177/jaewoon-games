@@ -90,15 +90,22 @@ for (const item of plan) {
   try {
     let binary = await fs.readFile(item.file);
     if (binary.length > 20 * 1024 * 1024) throw new Error('FILE_TOO_LARGE');
-    // Nature Kit 일부 GLB의 KHR_materials_unlit은 Roblox 수입기에서 파싱 실패한다.
-    // 원본 GLB를 유지하고 전송본의 머티리얼 선언만 PBR로 정규화한다. 메시·텍스처·좌표는 변경하지 않는다.
+    let uploadExt = item.ext;
+    // UniGLTF 1.27 모델은 Roblox GLB 해석기에서 실패한다. 원본 메시/재질/좌표는 보존한 채
+    // 표준 glTF 2.0 인라인 데이터로 전송하고 호환되지 않는 인덱스 표현만 정규화한다.
     if (item.ext === '.glb' && binary.subarray(0, 4).toString('ascii') === 'glTF') {
       const jsonSize = binary.readUInt32LE(12);
-      if (binary.readUInt32LE(16) !== 0x4e4f534a || 20 + jsonSize > binary.length) throw new Error('INVALID_GLB_JSON_CHUNK');
-      const gltf = JSON.parse(binary.subarray(20, 20 + jsonSize).toString('utf8'));
-      if (gltf.extensionsUsed?.includes('KHR_materials_unlit')) {
-        gltf.extensionsUsed = gltf.extensionsUsed.filter(x => x !== 'KHR_materials_unlit');
-        if (gltf.extensionsRequired) gltf.extensionsRequired = gltf.extensionsRequired.filter(x => x !== 'KHR_materials_unlit');
+      const binHeaderOffset = 20 + jsonSize;
+      if (binary.readUInt32LE(16) !== 0x4e4f534a || binHeaderOffset + 8 > binary.length) throw new Error('INVALID_GLB_JSON_CHUNK');
+      const gltf = JSON.parse(binary.subarray(20, binHeaderOffset).toString('utf8'));
+      if (String(gltf.asset?.generator || '').startsWith('UniGLTF-')) {
+        const binLength = binary.readUInt32LE(binHeaderOffset);
+        if (binary.readUInt32LE(binHeaderOffset + 4) !== 0x004e4942 || binHeaderOffset + 8 + binLength > binary.length)
+          throw new Error('INVALID_GLB_BINARY_CHUNK');
+        let data = Buffer.from(binary.subarray(binHeaderOffset + 8, binHeaderOffset + 8 + binLength));
+        if (!Array.isArray(gltf.buffers) || gltf.buffers.length !== 1) throw new Error('INVALID_GLB_BUFFER_COUNT');
+        gltf.extensionsUsed = (gltf.extensionsUsed || []).filter(name => name !== 'KHR_materials_unlit');
+        if (gltf.extensionsRequired) gltf.extensionsRequired = gltf.extensionsRequired.filter(name => name !== 'KHR_materials_unlit');
         for (const material of gltf.materials || []) {
           if (material.extensions?.KHR_materials_unlit) delete material.extensions.KHR_materials_unlit;
           if (material.extensions && !Object.keys(material.extensions).length) delete material.extensions;
@@ -107,14 +114,36 @@ for (const item of plan) {
             material.pbrMetallicRoughness.roughnessFactor = 1;
           }
         }
-        let json = Buffer.from(JSON.stringify(gltf));
-        const padded = Buffer.alloc(Math.ceil(json.length / 4) * 4, 0x20);
-        json.copy(padded);
-        const prefix = Buffer.from(binary.subarray(0, 20));
-        prefix.writeUInt32LE(20 + padded.length + (binary.length - (20 + jsonSize)), 8);
-        prefix.writeUInt32LE(padded.length, 12);
-        binary = Buffer.concat([prefix, padded, binary.subarray(20 + jsonSize)]);
-        console.log('NORMALIZED_GLTF_UNLIT', id);
+        const indices = new Set();
+        for (const mesh of gltf.meshes || []) for (const primitive of mesh.primitives || []) {
+          if (Number.isInteger(primitive.indices)) indices.add(primitive.indices);
+        }
+        for (const index of indices) {
+          const accessor = gltf.accessors[index];
+          if (!accessor || accessor.componentType !== 5125 || accessor.type !== 'SCALAR') continue;
+          const view = gltf.bufferViews[accessor.bufferView];
+          if (!view || view.buffer !== 0 || view.byteStride) throw new Error('UNSUPPORTED_INDEX_LAYOUT');
+          const from = (view.byteOffset || 0) + (accessor.byteOffset || 0);
+          if (from + accessor.count * 4 > data.length) throw new Error('INVALID_INDEX_RANGE');
+          let max = 0;
+          for (let i = 0; i < accessor.count; i++) max = Math.max(max, data.readUInt32LE(from + i * 4));
+          if (max > 65535) continue;
+          const shortIndices = Buffer.alloc(accessor.count * 2);
+          for (let i = 0; i < accessor.count; i++) shortIndices.writeUInt16LE(data.readUInt32LE(from + i * 4), i * 2);
+          const alignedSize = Math.ceil(data.length / 4) * 4;
+          if (alignedSize !== data.length) data = Buffer.concat([data, Buffer.alloc(alignedSize - data.length)]);
+          const targetView = gltf.bufferViews.length;
+          gltf.bufferViews.push({buffer: 0, byteOffset: data.length, byteLength: shortIndices.length, target: 34963});
+          data = Buffer.concat([data, shortIndices]);
+          accessor.bufferView = targetView;
+          accessor.byteOffset = 0;
+          accessor.componentType = 5123;
+        }
+        gltf.buffers[0].byteLength = data.length;
+        gltf.buffers[0].uri = 'data:application/octet-stream;base64,' + data.toString('base64');
+        binary = Buffer.from(JSON.stringify(gltf), 'utf8');
+        uploadExt = '.gltf';
+        console.log('NORMALIZED_STANDARD_GLTF', id, binary.length);
       }
     }
     const form = new FormData();
@@ -125,7 +154,7 @@ for (const item of plan) {
         : 'CC0 model for Mare Scientia (' + item.kind + '); see assets/SOURCES.md',
       creationContext: {creator: {userId: Number(creatorId)}},
     }));
-    form.set('fileContent', new Blob([binary], {type: item.ext === '.png' ? 'image/png' : item.ext === '.glb' ? 'model/gltf-binary' : 'model/fbx'}), path.basename(item.file));
+    form.set('fileContent', new Blob([binary], {type: uploadExt === '.png' ? 'image/png' : uploadExt === '.gltf' ? 'model/gltf+json' : uploadExt === '.glb' ? 'model/gltf-binary' : 'model/fbx'}), path.basename(item.file, item.ext) + uploadExt);
     const initial = await request('https://apis.roblox.com/assets/v1/assets', {method: 'POST', body: form});
     if (!/^operations\/[A-Za-z0-9_\-/]+$/.test(String(initial.path))) throw new Error('NO_UPLOAD_OPERATION');
     let assetId = null;
