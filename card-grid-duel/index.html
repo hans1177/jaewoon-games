@@ -1,0 +1,898 @@
+<!doctype html>
+<!-- 파일명: card-grid-duel/index.html -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0d1422">
+<title>카드 워즈</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#0d1422;color:#eef3ff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+button,input{font:inherit}
+button{touch-action:manipulation}
+.wrap{width:min(760px,100%);margin:auto;padding:10px 10px 90px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+h1{font-size:22px;margin:0}
+.badge{font-size:12px;padding:6px 9px;border-radius:999px;background:#1f2b43;color:#b9c9ec}
+.panel{background:#151f31;border:1px solid #283653;border-radius:14px;padding:10px}
+#notice{min-height:34px;display:flex;align-items:center;justify-content:center;text-align:center;color:#ffd978;font-weight:800;font-size:13px;margin-bottom:8px}
+.login{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.login input{width:100%;min-height:46px;border:1px solid #334563;background:#0e1727;color:#fff;border-radius:10px;padding:0 12px;font-size:16px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.actions button,.primary{min-height:46px;border:0;border-radius:10px;padding:0 14px;font-weight:900;color:#fff;background:#31496d}
+.actions .primary{background:#4169e1}
+.actions .danger{background:#8b3a44}
+.boardWrap{display:flex;justify-content:center}
+.board{width:min(94vw,560px);aspect-ratio:1;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:6px;background:#26324a;border-radius:14px}
+.cell{position:relative;border:0;border-radius:10px;background:#34415d;color:#fff;overflow:hidden;min-width:0}
+.cell.homeBlue{background:#2c4b62}.cell.homeRed{background:#5c343e}
+.cell.sel{outline:3px solid #ffd86b}
+.unit{position:absolute;inset:4px;border-radius:9px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:3px}
+.unit.blue{background:linear-gradient(#3568b7,#264b88)}
+.unit.red{background:linear-gradient(#a74851,#753038)}
+.portrait{display:block;width:44px;height:44px;border-radius:7px;overflow:hidden;background:#24324a;box-shadow:0 1px 4px #0008}
+.portrait img,.card .art img{display:block;width:400%;height:200%;max-width:none;pointer-events:none}
+.portrait img.newArt,.card .art img.newArt,.tileArt img{width:400%;height:400%;max-width:none}
+.portrait img.newAllyArt,.card .art img.newAllyArt{width:200%;height:200%;max-width:none}
+.tileArt{position:absolute;inset:7%;z-index:0;border-radius:8px;overflow:hidden;pointer-events:none;opacity:.92}.unit{z-index:1}
+.unit b{font-size:11px}.unit small{font-size:9px;color:#e7eeff}
+.hp{position:absolute;left:5px;right:5px;bottom:4px;height:5px;background:#311;border-radius:99px;overflow:hidden}
+.hp i{display:block;height:100%;background:#4bdd72}
+.statusRow{display:flex;justify-content:space-between;gap:8px;margin:9px 0;font-size:12px;color:#b7c6e4}
+.hand{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:4px 0 8px}
+.card{min-width:0;min-height:154px;border:2px solid #334563;border-radius:12px;background:#202d45;color:#fff;padding:7px;text-align:left}
+.card.sel{border-color:#ffd86b;background:#3a382e}
+.card:disabled{opacity:.42}
+.card .art{width:100%;aspect-ratio:1/1;border-radius:8px;background:#1a2438;overflow:hidden;margin-bottom:6px;border:1px solid #425574}
+.card b{font-size:13px}.card p{font-size:10px;line-height:1.35;margin:4px 0 0;color:#c5d1e9}.cost{color:#ffd978;font-weight:1000}
+.bottom{position:fixed;left:0;right:0;bottom:0;background:#0d1422e8;backdrop-filter:blur(8px);border-top:1px solid #283653;padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));display:flex;gap:8px;justify-content:center}
+.bottom button{width:min(46%,260px);min-height:52px;border:0;border-radius:12px;font-weight:1000}
+#endTurn{background:#4169e1;color:#fff}#cancel{background:#2b3549;color:#fff}
+#authBox{margin-bottom:10px}
+.hidden{display:none!important}
+#restScreen{text-align:center;padding:18px}
+#restScreen h2{margin:0 0 8px;font-size:24px}
+#restScreen .keys{font-size:18px;color:#ffd978;font-weight:1000;margin:10px 0}
+#restScreen .restActions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+#restScreen .restActions button{min-height:48px;border:0;border-radius:11px;padding:0 16px;font-weight:1000;color:#fff;background:#4169e1}
+#restScreen .restActions .draw{background:#8b691e}
+#drawResult{min-height:42px;margin:10px 0;color:#d8e4ff;font-weight:800}
+#unlockedList{font-size:12px;color:#b7c6e4;line-height:1.5}
+#diamondLine{font-size:15px;color:#78d7ff;font-weight:1000;margin:7px 0}
+#upgradeBox{margin-top:12px;padding:10px;border:1px solid #344563;border-radius:12px;background:#101a2b}
+#upgradeBox select{width:100%;min-height:44px;border:1px solid #3a4b69;border-radius:9px;background:#0d1626;color:#fff;padding:0 10px;font-size:16px}
+#upgradeBox button{width:100%;margin-top:7px;min-height:46px;border:0;border-radius:9px;background:#6f56c9;color:#fff;font-weight:1000}
+#upgradeInfo{margin-top:7px;font-size:11px;color:#c7d3e9;line-height:1.5}
+#walletBar{margin:0 0 8px;display:flex;align-items:center;flex-wrap:wrap;gap:5px;font-size:13px;font-weight:850;color:#c7d3e9}
+#resetDiamonds{margin-left:auto;min-height:44px;border:1px solid #805963;border-radius:9px;padding:0 12px;background:#482932;color:#ffe1e8;font-size:12px;font-weight:900;cursor:pointer}
+#walletDiamonds{color:#78d7ff;font-size:16px;font-weight:1000}
+@media(max-width:520px){
+  .wrap{padding-left:7px;padding-right:7px}.board{gap:3px;padding:4px}.unit{inset:2px}.portrait{width:38px;height:38px}.unit b{font-size:9px}.unit small{font-size:8px}.login{grid-template-columns:1fr}
+  .hand{grid-template-columns:repeat(2,minmax(0,1fr))}.card{min-height:136px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1>카드 워즈</h1><span class="badge">5×5 · 턴제 · 1대1</span></div>
+  <div id="notice" class="panel">연습전 또는 온라인 1대1을 선택해.</div>
+
+  <div id="walletBar" class="panel">보유 다이아 <span id="walletDiamonds">0</span>개 <button type="button" id="resetDiamonds">다이아 초기화</button></div>
+
+  <div id="authBox" class="panel">
+    <div class="login">
+      <input id="email" type="email" autocomplete="email" placeholder="이메일">
+      <input id="password" type="password" autocomplete="current-password" placeholder="비밀번호">
+    </div>
+    <div class="actions">
+      <button id="loginBtn" class="primary">로그인</button>
+      <button id="signupBtn">가입</button>
+      <button id="practiceBtn">연습전 바로 시작</button>
+      <button id="matchBtn" class="primary hidden">온라인 빠른 매칭</button>
+      <button id="logoutBtn" class="danger hidden">로그아웃</button>
+    </div>
+  </div>
+
+  <div id="restScreen" class="panel hidden">
+    <h2>스테이지 클리어</h2>
+    <div id="restText">잠시 쉬어가.</div>
+    <div class="keys">열쇠 <span id="keyCount">0</span>개</div>
+    <div id="diamondLine">다이아 <span id="diamondCount">0</span>개</div>
+    <div id="drawResult"></div>
+    <div id="unlockedList">추가 아군: 없음</div>
+    <div id="upgradeBox" class="hidden">
+      <select id="upgradeSelect"></select>
+      <button id="upgradeAlly">아군 업그레이드</button>
+      <div id="upgradeInfo"></div>
+    </div>
+    <div class="restActions">
+      <button id="drawAlly" class="draw">열쇠 1개로 아군 뽑기</button>
+      <button id="nextStage">2스테이지 시작</button>
+    </div>
+  </div>
+
+  <div id="battlePanel" class="panel">
+    <div class="statusRow">
+      <span id="players">파랑 VS 빨강</span>
+      <b id="turn">대기</b>
+    </div>
+    <div class="boardWrap"><div id="board" class="board"></div></div>
+    <div class="statusRow">
+      <span id="deckInfo">골드 -</span>
+      <span id="modeInfo">대기</span>
+    </div>
+    <div id="hand" class="hand"></div>
+  </div>
+</div>
+
+<div class="bottom">
+  <button id="cancel">선택 취소</button>
+  <button id="endTurn">턴 종료</button>
+</div>
+
+<script type="module">
+import { JaewoonMultiplayerClient } from '/jaewoon-games/multiplayer/multiplayer-client.js';
+
+const GAME_ID='card-grid-duel', BASE_ROWS=5, BASE_COLS=5, START_GOLD=200;
+const STAGES={
+  1:{blueMax:10,redMax:6,enemyScale:1,redPool:['GOBLIN','SKELETON_ARCHER','SKELETON_MAGE','ORC']},
+  2:{blueMax:12,redMax:8,enemyScale:1.5,redPool:['SKELETON_SOLDIER','SKELETON_ARCHER','SKELETON_MAGE','ORC','SLIME']},
+  3:{blueMax:12,redMax:8,enemyScale:1.35,redPool:['ENHANCED_GOBLIN','GOLEM','BOAR','SKELETON_SOLDIER','ORC','SLIME']},
+  4:{blueMax:12,redMax:8,enemyScale:1,redPool:['SHIELD_GOBLIN','CHARGE_ORC','POISON_SCORPION','RUIN_GUARDIAN']}
+};
+const GACHA_POOL=['LANCER','CROSSBOW','HAMMER'];
+// 다이아: 기존 저장 키를 유지해 이전 잔액을 그대로 사용한다.
+const DIAMOND_KEY='card-grid-duel-diamonds-v1';
+function diamondWallet(){return Math.max(0,Number(localStorage.getItem(DIAMOND_KEY)||0))}
+function setDiamondWallet(v){localStorage.setItem(DIAMOND_KEY,String(Math.max(0,Math.floor(v))))}
+function renderWallet(){
+  const wallet=document.querySelector('#walletDiamonds');
+  if(wallet)wallet.textContent=String(diamondWallet());
+}
+function awardDiamonds(n){
+  const next=diamondWallet()+Math.max(0,Math.floor(n));
+  setDiamondWallet(next);
+  if(state)state.diamonds=next;
+  renderWallet();
+  return next;
+}
+// 다이아만 초기화하며 기존 저장 키와 전투·보상·아군 정보는 유지한다.
+function resetDiamonds(){
+  if(diamondWallet()===0)return msg('다이아가 이미 0개야.');
+  if(!window.confirm('저장된 다이아를 모두 0개로 초기화할까? 다른 진행 데이터는 유지돼.'))return;
+  setDiamondWallet(0);
+  if(state)state.diamonds=0;
+  render();
+  msg('다이아를 0개로 초기화했어.');
+}
+const UNIT_SPRITE='data:image/webp;base64,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';
+const NEW_ART_SPRITE='data:image/webp;base64,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';
+const NEW_ALLY_SPRITE='data:image/webp;base64,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';
+const NEW_ALLY_POS={CROSSBOW:[0,0],GLADIATOR:[1,0],LIGHTNING_MAGE:[0,1],SHIELD_KNIGHT:[1,1]};
+function newAllyArtStyle(id){
+  const p=NEW_ALLY_POS[id];
+  if(!p)return '';
+  return 'transform:translate(-'+(p[0]*50)+'%,-'+(p[1]*50)+'%);';
+}
+const NEW_ART_POS={
+  SLIME:[0,0],SMALL_SLIME:[1,0],BOAR:[2,0],CHARGE_ORC:[3,0],
+  SHIELD_GOBLIN:[0,1],POISON_SCORPION:[1,1],GOLEM:[2,1],ENHANCED_GOBLIN:[3,1],
+  SKELETON_SOLDIER:[0,2],RUIN_GUARDIAN:[1,2],HAMMER:[2,2],LANCER:[3,2],
+  SPIKE:[0,3],HEAL:[1,3],JUMP:[2,3],CRACK:[3,3]
+};
+function newArtStyle(id){
+  const p=NEW_ART_POS[id];
+  if(!p)return '';
+  return 'transform:translate(-'+(p[0]*25)+'%,-'+(p[1]*25)+'%);';
+}
+const SPRITE_POS={
+  SWORDSMAN:[0,0],ARCHER:[1,0],MAGE:[2,0],GUARDIAN:[3,0],
+  GOBLIN:[0,1],SKELETON_ARCHER:[1,1],SKELETON_MAGE:[2,1],ORC:[3,1]
+};
+function spriteImgStyle(id){
+  const p=SPRITE_POS[id];
+  if(!p)return '';
+  return 'transform:translate(-'+(p[0]*25)+'%,-'+(p[1]*50)+'%);';
+}
+const CARDS={
+  BLUE:{
+    SWORDSMAN:{name:'검사',icon:'⚔️',hp:100,atk:30,range:1,cost:50,reward:30,desc:'기본 근접'},
+    ARCHER:{name:'궁수',icon:'🏹',hp:70,atk:25,range:2,cost:50,reward:30,desc:'최대 2칸 원거리 공격'},
+    MAGE:{name:'마법사',icon:'🔮',hp:60,atk:35,range:2,cost:70,reward:40,splash:15,desc:'주변 15 피해'},
+    GUARDIAN:{name:'방패병',icon:'🛡️',hp:150,atk:18,range:1,cost:60,reward:50,reduce:.3,desc:'피해 30% 감소'},
+    LANCER:{name:'창병',icon:'🔱',hp:130,atk:45,range:1,cost:60,reward:60,desc:'높은 체력의 근접 창병'},
+    CROSSBOW:{name:'쇠뇌병',icon:'🎯',hp:60,atk:55,range:2,cost:70,reward:55,desc:'궁수보다 체력 10↓ 공격력 30↑ · 2칸'},
+    HAMMER:{name:'망치병',icon:'🔨',hp:170,atk:80,range:1,cost:60,reward:50,charge:true,desc:'공격 전 1턴 충전 필요 · 피해 80'}
+  },
+  RED:{
+    GOBLIN:{name:'고블린',icon:'👺',hp:80,atk:25,range:1,cost:0,reward:30,desc:'처치 보상 30골드'},
+    SKELETON_ARCHER:{name:'해골 궁수',icon:'☠️🏹',hp:65,atk:23,range:2,cost:50,reward:40,desc:'처치 보상 40골드'},
+    SKELETON_MAGE:{name:'해골 법사',icon:'💀🔮',hp:75,atk:30,range:2,cost:70,reward:50,freeze:.3,desc:'처치 보상 50골드 · 30% 봉인'},
+    ORC:{name:'오크',icon:'👹',hp:140,atk:32,range:1,cost:0,reward:60,desc:'처치 보상 60골드'},
+    SKELETON_SOLDIER:{name:'해골 병사',icon:'💀⚔️',hp:80,atk:20,range:1,cost:0,reward:30,desc:'2스테이지 근접 적'},
+    SLIME:{name:'슬라임',icon:'🟢',hp:70,atk:25,range:1,cost:0,reward:35,split:true,desc:'죽으면 작은 슬라임 2마리로 분열'},
+    SMALL_SLIME:{name:'작은 슬라임',icon:'🟩',hp:20,atk:5,range:1,cost:0,reward:10,desc:'슬라임 분열체'},
+    ENHANCED_GOBLIN:{name:'강화 고블린',icon:'👺',hp:80,atk:30,range:1,cost:0,reward:35,desc:'3스테이지 강화 고블린'},
+    GOLEM:{name:'골렘',icon:'🗿',hp:180,atk:45,range:1,cost:0,reward:70,rockThrow:true,desc:'공격 시 40% 확률로 최저 체력 아군에게 돌 50 피해'},
+    BOAR:{name:'멧돼지',icon:'🐗',hp:100,atk:35,range:1,cost:0,reward:50,chargeAttack:true,desc:'공격 시 65% 확률로 최고 체력 아군에게 박치기'},
+    SHIELD_GOBLIN:{name:'방패 고블린',icon:'🛡️👺',hp:120,atk:30,range:1,cost:0,reward:55,reduce:.4,desc:'받는 피해 40% 감소'},
+    CHARGE_ORC:{name:'돌격 오크',icon:'👹💨',hp:150,atk:45,range:1,cost:0,reward:70,turnCharge:true,desc:'적 턴 시작 시 40% 확률로 벽까지 돌진 · 충돌 55 피해 + 1턴 공격 불가'},
+    POISON_SCORPION:{name:'독전갈',icon:'🦂',hp:90,atk:35,range:1,cost:0,reward:55,desc:'4스테이지 독전갈'},
+    RUIN_GUARDIAN:{name:'유적 수호자',icon:'🗿',hp:190,atk:40,range:1,cost:0,reward:80,guardianPulse:true,desc:'3번째 적 턴마다 주변 아군에게 25 피해'}
+  }
+};
+const BASE_BLUE_IDS=['SWORDSMAN','ARCHER','MAGE','GUARDIAN'];
+const IDS={BLUE:Object.keys(CARDS.BLUE),RED:Object.keys(CARDS.RED)};
+const $=s=>document.querySelector(s), notice=$('#notice'),board=$('#board'),hand=$('#hand'),turnEl=$('#turn'),playersEl=$('#players'),deckInfo=$('#deckInfo'),modeInfo=$('#modeInfo');
+const client=new JaewoonMultiplayerClient();
+let state=null,side='BLUE',selectedUnit=null,selectedCard='',mode='idle',aiThinking=false,networkIds=new Set(),myNetworkId='',leaderId='',initializedRoom=false;
+
+function msg(t){notice.textContent=t}
+function other(s){return s==='BLUE'?'RED':'BLUE'}
+function boardRows(){return state?.stage===4?7:BASE_ROWS}
+function boardCols(){return BASE_COLS}
+function homeRow(s){return s==='BLUE'?boardRows():1}
+function moveDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
+function attackDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
+function newState(){
+  state={
+    version:3,
+    stage:1,
+    phase:'BATTLE',
+    turn:1,
+    current:'BLUE',
+    summonUsed:false,
+    winner:'',
+    keys:0,
+    diamonds:diamondWallet(),
+    stageTookDamage:false,
+    unlocked:[],
+    upgrades:{},
+    gold:{BLUE:START_GOLD,RED:0},
+    summons:{BLUE:0,RED:0},
+    units:[]
+  };
+  return state
+}
+function card(s,id){return CARDS[s][id]}
+function upgradeLevel(id){return Math.max(0,Math.min(3,Number(state?.upgrades?.[id]||0)))}
+function upgradeCost(id){return [60,100,150][upgradeLevel(id)]||0}
+function scaledStat(id,key){
+  const base=card('BLUE',id)?.[key]||0;
+  return Math.round(base*Math.pow(1.25,upgradeLevel(id)))
+}
+function enemyStageScale(){return Number(stageConfig().enemyScale||1)}
+function enemyStat(id,key){return Math.round((card('RED',id)?.[key]||0)*enemyStageScale())}
+function unitMaxHp(u){return u.side==='BLUE'?scaledStat(u.card,'hp'):enemyStat(u.card,'hp')}
+function unitAtk(u){return u.side==='BLUE'?scaledStat(u.card,'atk'):enemyStat(u.card,'atk')}
+function at(r,c){return state?.units.find(u=>u.r===r&&u.c===c)}
+function byId(id){return state?.units.find(u=>u.id===id)}
+function canAct(){return state&&!state.winner&&state.phase==='BATTLE'&&state.current===side}
+function snapshot(){return JSON.parse(JSON.stringify(state))}
+function setState(next){state=JSON.parse(JSON.stringify(next));selectedUnit=null;selectedCard='';render()}
+function livingCount(s){return state.units.filter(u=>u.side===s).length}
+function stageConfig(){return STAGES[state?.stage||1]||STAGES[1]}
+function maxSummons(s){const cfg=stageConfig();return s==='BLUE'?cfg.blueMax:cfg.redMax}
+function bluePool(){return [...BASE_BLUE_IDS,...(state?.unlocked||[])]}
+function redPool(){return stageConfig().redPool}
+function minCost(s){
+  if(s==='RED')return 0;
+  const pool=bluePool();
+  return Math.min(...pool.map(id=>card('BLUE',id).cost))
+}
+function canSummonMore(s){
+  if(state.summons[s]>=maxSummons(s))return false;
+  if(s==='RED')return true;
+  return state.gold.BLUE>=minCost('BLUE')
+}
+function applyDamage(target,amount,attackerSide){
+  if(target.hp<=0)return false;
+  const d=card(target.side,target.card);
+  const hit=Math.max(1,Math.round(amount*(1-(d.reduce||0))));
+  const before=target.hp;
+  target.hp-=hit;
+  if(target.side==='BLUE'&&hit>0)state.stageTookDamage=true;
+  if(before>0&&target.hp<=0){
+    if(attackerSide==='BLUE'){
+      state.gold.BLUE+=d.reward||30;
+    }
+    if(d.split)target.splitPending=true;
+    return true
+  }
+  return false
+}
+function isInside(r,c){return r>=1&&r<=boardRows()&&c>=1&&c<=boardCols()}
+function splitSecondSpot(dead){
+  const dirs=[
+    {r:dead.r,c:dead.c-1},
+    {r:dead.r+1,c:dead.c},
+    {r:dead.r-1,c:dead.c},
+    {r:dead.r,c:dead.c+1},
+    {r:dead.r+1,c:dead.c-1},
+    {r:dead.r+1,c:dead.c+1},
+    {r:dead.r-1,c:dead.c-1},
+    {r:dead.r-1,c:dead.c+1}
+  ];
+  for(const p of dirs)if(isInside(p.r,p.c)&&!at(p.r,p.c))return p;
+
+  for(const p of dirs){
+    if(!isInside(p.r,p.c))continue;
+    const blocker=at(p.r,p.c);
+    if(blocker&&blocker.side==='BLUE'){
+      const dr=Math.sign(blocker.r-dead.r),dc=Math.sign(blocker.c-dead.c);
+      const behind={r:blocker.r+dr,c:blocker.c+dc};
+      if(isInside(behind.r,behind.c)&&!at(behind.r,behind.c))return behind
+    }
+  }
+
+  for(let r=1;r<=boardRows();r++)for(let c=1;c<=boardCols();c++)if(!at(r,c))return {r,c};
+  return null
+}
+function spawnSmallSlime(r,c){
+  if(!isInside(r,c)||at(r,c))return false;
+  const d=card('RED','SMALL_SLIME');
+  state.units.push({id:crypto.randomUUID(),side:'RED',card:'SMALL_SLIME',hp:enemyStat('SMALL_SLIME','hp'),r,c,moved:false,attacked:false,freeze:0,frozenNow:false,hammerReady:false});
+  return true
+}
+function removeDeadAndSplit(){
+  const deadSlimes=state.units.filter(u=>u.hp<=0&&u.splitPending);
+  state.units=state.units.filter(u=>u.hp>0);
+  for(const dead of deadSlimes){
+    spawnSmallSlime(dead.r,dead.c);
+    const second=splitSecondSpot(dead);
+    if(second)spawnSmallSlime(second.r,second.c)
+  }
+}
+function exhausted(s){
+  if(livingCount(s)!==0)return false;
+  if(s==='RED')return state.summons.RED>=maxSummons('RED');
+  return state.summons.BLUE>=maxSummons('BLUE')||!canSummonMore('BLUE');
+}
+function enterRest(rewardText){
+  state.phase='REST';
+  state.current='BLUE';
+  selectedUnit=null;
+  selectedCard='';
+  msg(rewardText)
+}
+function stageClearRewards(stageNo){
+  const base={1:50,2:200,3:250}[stageNo]||0;
+  if(base)awardDiamonds(base);
+  let bonus=0;
+  if(!state.stageTookDamage){
+    bonus=100;
+    awardDiamonds(bonus);
+  }
+  return {base,bonus}
+}
+function clearStageOne(){
+  state.keys+=2;
+  const r=stageClearRewards(1);
+  enterRest('1스테이지 클리어 · 열쇠 2개 + 다이아 '+r.base+'개'+(r.bonus?' + 무피해 '+r.bonus+'개':''))
+}
+function clearStageTwo(){
+  state.keys+=1;
+  const r=stageClearRewards(2);
+  enterRest('2스테이지 클리어 · 열쇠 1개 + 다이아 '+r.base+'개'+(r.bonus?' + 무피해 '+r.bonus+'개':''))
+}
+function clearStageThree(){
+  state.keys+=3;
+  const r=stageClearRewards(3);
+  enterRest('3스테이지 클리어 · 열쇠 3개 + 다이아 '+r.base+'개'+(r.bonus?' + 무피해 '+r.bonus+'개':''))
+}
+function checkWin(){
+  if(!state||state.phase!=='BATTLE'||state.winner)return;
+  if(exhausted('BLUE')){state.winner='RED';return}
+  if(exhausted('RED')){
+    if(state.stage===1){clearStageOne();return}
+    if(state.stage===2){clearStageTwo();return}
+    if(state.stage===3){clearStageThree();return}
+    if(state.stage===4){state.winner='BLUE';msg('4스테이지 클리어');return}
+    state.winner='BLUE'
+  }
+}
+function resolveHammerHits(s){
+  const hammers=[...state.units].filter(u=>u.side===s&&u.card==='HAMMER'&&u.hammerTarget);
+  for(const hammer of hammers){
+    const target=byId(hammer.hammerTarget);
+    hammer.hammerTarget='';
+    if(!target||target.hp<=0)continue;
+    applyDamage(target,scaledStat('HAMMER','atk'),s);
+    removeDeadAndSplit();
+    checkWin();
+    if(state.winner||state.phase!=='BATTLE')break
+  }
+}
+function resolveStageFourEnemyTurn(){
+  if(state.stage!==4)return;
+  state.enemyTurns=(state.enemyTurns||0)+1;
+  for(const orc of [...state.units].filter(u=>u.side==='RED'&&u.card==='CHARGE_ORC'&&u.hp>0)){
+    if(Math.random()>=0.40)continue;
+    let r=orc.r;
+    while(r<boardRows()){
+      const nextR=r+1,target=at(nextR,orc.c);
+      if(target){
+        if(target.side==='BLUE'){
+          applyDamage(target,55,'RED');
+          target.attackLock=Math.max(target.attackLock||0,1);
+        }
+        break
+      }
+      r=nextR;
+    }
+    orc.r=r;
+    removeDeadAndSplit();
+    checkWin();
+    if(state.winner||state.phase!=='BATTLE')return
+  }
+  if(state.enemyTurns%3===0){
+    for(const guard of [...state.units].filter(u=>u.side==='RED'&&u.card==='RUIN_GUARDIAN'&&u.hp>0)){
+      for(const target of [...state.units].filter(u=>u.side==='BLUE'&&u.hp>0&&Math.abs(u.r-guard.r)+Math.abs(u.c-guard.c)<=1))applyDamage(target,25,'RED');
+      removeDeadAndSplit();
+      checkWin();
+      if(state.winner||state.phase!=='BATTLE')return
+    }
+  }
+}
+function startTurn(s){
+  state.current=s;
+  state.turn++;
+  state.summonUsed=false;
+  resolveHammerHits(s);
+  if(state.winner||state.phase!=='BATTLE')return;
+  if(s==='RED')resolveStageFourEnemyTurn();
+  if(state.winner||state.phase!=='BATTLE')return;
+  for(const u of state.units.filter(x=>x.side===s)){
+    u.moved=false;
+    u.attacked=false;
+    u.frozenNow=(u.freeze||0)>0;
+    if(u.frozenNow)u.freeze--;
+    u.attackLockedNow=(u.attackLock||0)>0;
+    if(u.attackLockedNow)u.attackLock--
+  }
+}
+function processAction(actor,p){
+  if(!state||state.winner||actor!==state.current)return false;
+
+  if(p.type==='summon'){
+    if(state.summonUsed)return false;
+    if(state.summons[actor]>=maxSummons(actor))return false;
+    const id=String(p.card||'');
+    const d=card(actor,id);
+    if(!d||p.r!==homeRow(actor)||at(p.r,p.c))return false;
+    if(actor==='BLUE'){
+      if(!bluePool().includes(id)||state.gold.BLUE<d.cost)return false;
+      state.gold.BLUE-=d.cost;
+    }else{
+      if(!redPool().includes(id))return false;
+    }
+    state.summons[actor]++;
+    state.units.push({
+      id:crypto.randomUUID(),
+      side:actor,
+      card:id,
+      hp:actor==='BLUE'?scaledStat(id,'hp'):enemyStat(id,'hp'),
+      r:p.r,
+      c:p.c,
+      moved:false,
+      attacked:false,
+      freeze:0,
+      frozenNow:false,
+      hammerTarget:''
+    });
+    applyTile(state.units[state.units.length-1]);
+    state.summonUsed=true;
+  }else if(p.type==='move'){
+    const u=byId(p.unit);
+    if(!u||u.side!==actor||u.moved||u.frozenNow||at(p.r,p.c)||moveDist(u,{r:p.r,c:p.c})!==1)return false;
+    u.r=p.r;u.c=p.c;u.moved=true;
+    applyTile(u);
+  }else if(p.type==='attack'){
+    const a=byId(p.unit),t=byId(p.target);
+    if(!a||!t||a.side!==actor||t.side===actor||a.attacked||a.frozenNow||a.attackLockedNow)return false;
+
+    const d=card(actor,a.card);
+    if(attackDist(a,t)>d.range)return false;
+    if(d.charge){
+      a.hammerTarget=t.id;
+      a.attacked=true;
+      msg('망치병이 '+card(t.side,t.card).name+'을 목표로 지정했어. 다음 자기 턴에 '+scaledStat('HAMMER','atk')+' 피해');
+      state.version++;
+      return true
+    }
+
+    if(actor==='RED'&&d.chargeAttack&&Math.random()<0.65){
+      const targets=state.units.filter(u=>u.side==='BLUE'&&u.hp>0).sort((a,b)=>b.hp-a.hp);
+      const victim=targets[0];
+      if(victim){
+        const oldR=victim.r,oldC=victim.c;
+        const dr=Math.sign(victim.r-a.r),dc=Math.sign(victim.c-a.c);
+        const push={r:victim.r+dr,c:victim.c+dc};
+        applyDamage(victim,unitAtk(a),'RED');
+        if(victim.hp>0){
+          if(!isInside(push.r,push.c)){
+            victim.hp=0;
+          }else if(!at(push.r,push.c)){
+            victim.r=push.r;victim.c=push.c;
+          }
+        }
+        removeDeadAndSplit();
+        if(!at(oldR,oldC)){a.r=oldR;a.c=oldC}
+        a.attacked=true;
+        checkWin();
+        state.version++;
+        return true
+      }
+    }
+
+    const tr=t.r,tc=t.c,tid=t.id;
+    applyDamage(t,actor==='BLUE'?scaledStat(a.card,'atk'):unitAtk(a),actor);
+
+    if(actor==='RED'&&d.rockThrow&&Math.random()<0.40){
+      const low=state.units.filter(u=>u.side==='BLUE'&&u.hp>0).sort((a,b)=>a.hp-b.hp)[0];
+      if(low)applyDamage(low,50,'RED')
+    }
+
+    if(d.splash){
+      for(const u of [...state.units]){
+        if(u.side!==actor&&u.id!==tid&&Math.abs(u.r-tr)+Math.abs(u.c-tc)<=1){
+          applyDamage(u,d.splash,actor)
+        }
+      }
+    }
+
+    const alive=byId(tid);
+    if(alive&&alive.hp>0&&d.freeze&&Math.random()<d.freeze)alive.freeze=Math.max(alive.freeze||0,1);
+    a.attacked=true;
+    removeDeadAndSplit();
+    checkWin();
+  }else if(p.type==='end'){
+    startTurn(other(actor));
+    checkWin();
+  }else return false;
+
+  state.version++;
+  return true
+}
+function broadcast(){if(mode==='online'&&client.isRoomConnected()&&state)client.sendState({gameId:GAME_ID,canonical:true,state:snapshot()})}
+function act(payload){
+  if(!canAct()){msg('지금은 상대 턴이야.');return}
+  if(mode==='online'&&myNetworkId!==leaderId){client.sendEvent({gameId:GAME_ID,kind:'action',actor:side,payload});return}
+  if(processAction(side,payload)){
+    broadcast();
+    render();
+    if(mode==='practice'&&state.current==='RED')setTimeout(aiTurn,420)
+  }else{
+    msg('그 행동은 지금 할 수 없어.')
+  }
+}
+function portraitHtml(id,d){
+  if(NEW_ALLY_POS[id])return '<span class="portrait"><img class="newAllyArt" src="'+NEW_ALLY_SPRITE+'" alt="'+d.name+'" style="'+newAllyArtStyle(id)+'"></span>';
+  if(NEW_ART_POS[id])return '<span class="portrait"><img class="newArt" src="'+NEW_ART_SPRITE+'" alt="'+d.name+'" style="'+newArtStyle(id)+'"></span>';
+  const fallbackId=id==='CROSSBOW'?'ARCHER':id;
+  return SPRITE_POS[fallbackId]
+    ? '<span class="portrait"><img src="'+UNIT_SPRITE+'" alt="'+d.name+'" style="'+spriteImgStyle(fallbackId)+'"></span>'
+    : '<span class="portrait" style="display:flex;align-items:center;justify-content:center;font-size:24px">'+d.icon+'</span>'
+}
+function artHtml(id,d){
+  if(NEW_ALLY_POS[id])return '<div class="art"><img class="newAllyArt" src="'+NEW_ALLY_SPRITE+'" alt="'+d.name+'" style="'+newAllyArtStyle(id)+'"></div>';
+  if(NEW_ART_POS[id])return '<div class="art"><img class="newArt" src="'+NEW_ART_SPRITE+'" alt="'+d.name+'" style="'+newArtStyle(id)+'"></div>';
+  const fallbackId=id==='CROSSBOW'?'ARCHER':id;
+  return SPRITE_POS[fallbackId]
+    ? '<div class="art"><img src="'+UNIT_SPRITE+'" alt="'+d.name+'" style="'+spriteImgStyle(fallbackId)+'"></div>'
+    : '<div class="art" style="display:flex;align-items:center;justify-content:center;font-size:38px">'+d.icon+'</div>'
+}
+function tileHtml(type){
+  return NEW_ART_POS[type]?'<span class="tileArt"><img src="'+NEW_ART_SPRITE+'" alt="" style="'+newArtStyle(type)+'"></span>':''
+}
+function unitText(u){
+  const d=card(u.side,u.card);
+  const charge=u.card==='HAMMER'?(u.hammerTarget?' · 공격예약':' · 대상지정 필요'):'';
+  const lock=u.attackLockedNow?' · 공격불가':'';
+  const maxHp=unitMaxHp(u),atk=unitAtk(u);
+  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+maxHp+' · 공'+atk+' 사'+d.range+charge+(u.frozenNow?' · 봉인':'')+lock+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/maxHp*100)+'%"></i></span></div>'
+}
+function createStageFourTiles(){
+  const cells=[];
+  for(let r=1;r<=7;r++)for(let c=1;c<=5;c++)cells.push({r,c});
+  for(let i=cells.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cells[i],cells[j]]=[cells[j],cells[i]]}
+  const types=['SPIKE','HEAL','JUMP','CRACK'];
+  return cells.slice(0,5).map((p,i)=>({...p,type:types[i%types.length]}))
+}
+function tileAt(r,c){return state?.stage===4?(state.specialTiles||[]).find(t=>t.r===r&&t.c===c):null}
+function applyTile(u){
+  const t=tileAt(u.r,u.c);if(!t)return;
+  if(t.type==='SPIKE'){applyDamage(u,20,u.side==='BLUE'?'RED':'BLUE');removeDeadAndSplit();checkWin()}
+  else if(t.type==='HEAL'&&u.side==='BLUE')u.hp=Math.min(unitMaxHp(u),u.hp+30);
+  else if(t.type==='JUMP'){
+    const dir=u.side==='BLUE'?-1:1,dest={r:u.r+dir*2,c:u.c};
+    if(isInside(dest.r,dest.c)&&!at(dest.r,dest.c)){u.r=dest.r;u.c=dest.c}
+  }else if(t.type==='CRACK')state.specialTiles=state.specialTiles.filter(x=>x!==t)
+}
+function render(){
+  renderWallet();
+  board.innerHTML='';
+  const rows=boardRows(),cols=boardCols();
+  board.style.gridTemplateColumns='repeat('+cols+',1fr)';
+  board.style.gridTemplateRows='repeat('+rows+',1fr)';
+  board.style.aspectRatio=cols+'/'+rows;
+  for(let r=1;r<=rows;r++)for(let c=1;c<=cols;c++){
+    const b=document.createElement('button');
+    b.className='cell '+(r===1?'homeRed ':'')+(r===homeRow('BLUE')?'homeBlue ':'');
+    const u=state?at(r,c):null,tile=state?tileAt(r,c):null;
+    if(tile){b.dataset.tile=tile.type;b.title=({SPIKE:'가시 발판',HEAL:'회복 발판',JUMP:'점프 발판',CRACK:'균열 발판'})[tile.type]||'특수 발판';b.style.boxShadow='inset 0 0 0 3px '+({SPIKE:'#d9534f',HEAL:'#47b96b',JUMP:'#5b8cff',CRACK:'#b57cff'})[tile.type];b.insertAdjacentHTML('beforeend',tileHtml(tile.type))}
+    if(u){b.insertAdjacentHTML('beforeend',unitText(u));if(u.id===selectedUnit)b.classList.add('sel')}
+    b.addEventListener('click',()=>cellTap(r,c,u));
+    board.appendChild(b)
+  }
+
+  hand.innerHTML='';
+  if(state){
+    const pool=side==='BLUE'?bluePool():redPool();
+    for(const id of pool){
+      const d=card(side,id),b=document.createElement('button');
+      const blocked=state.phase!=='BATTLE'||state.summonUsed||state.summons[side]>=maxSummons(side)||(side==='BLUE'&&state.gold.BLUE<d.cost);
+      b.className='card'+(id===selectedCard?' sel':'');
+      b.disabled=blocked;
+      const shownHp=side==='BLUE'?scaledStat(id,'hp'):enemyStat(id,'hp');
+      const shownAtk=side==='BLUE'?scaledStat(id,'atk'):enemyStat(id,'atk');
+      const lv=side==='BLUE'?upgradeLevel(id):0;
+      b.innerHTML=artHtml(id,d)+'<b>'+d.name+(lv?' +'+lv:'')+'</b><p>HP '+shownHp+' · 공격 '+shownAtk+' · 사거리 '+d.range+'<br><span class="cost">'+(side==='BLUE'?d.cost+'골드':'적 유닛')+'</span> · '+d.desc+'</p>';
+      b.onclick=()=>{
+        if(!canAct())return msg('지금은 상대 턴이야.');
+        if(state.phase!=='BATTLE')return msg('지금은 쉬는 시간야.');
+        if(state.summonUsed)return msg('이번 턴에는 이미 소환했어.');
+        if(state.summons[side]>=maxSummons(side))return msg('소환 가능 수를 모두 사용했어.');
+        if(side==='BLUE'&&state.gold.BLUE<d.cost)return msg('골드가 부족해.');
+        selectedCard=id;selectedUnit=null;
+        msg(d.name+' 선택 · 자기 진영 첫 줄 빈칸을 눌러');
+        render()
+      };
+      hand.appendChild(b)
+    }
+  }
+
+  if(!state){
+    turnEl.textContent='대기';
+    deckInfo.textContent='골드 -';
+    $('#restScreen').classList.add('hidden');
+    $('#battlePanel').classList.remove('hidden');
+    return
+  }
+
+  const resting=state.phase==='REST';
+  $('#restScreen').classList.toggle('hidden',!resting);
+  $('#battlePanel').classList.toggle('hidden',resting);
+  $('.bottom').classList.toggle('hidden',resting);
+
+  if(resting){
+    $('#keyCount').textContent=state.keys||0;
+    $('#diamondCount').textContent=diamondWallet();
+    $('#restText').textContent=state.stage+'스테이지 완료 · 다음 전투 전에 정비할 수 있어.';
+    $('#unlockedList').textContent='추가 아군: '+((state.unlocked||[]).map(id=>card('BLUE',id).name).join(', ')||'없음');
+    $('#drawAlly').disabled=(state.keys||0)<=0;
+    const upgradeOpen=state.stage>=2;
+    $('#upgradeBox').classList.toggle('hidden',!upgradeOpen);
+    if(upgradeOpen){
+      const select=$('#upgradeSelect');
+      const prev=select.value;
+      select.innerHTML='';
+      for(const id of bluePool()){
+        const opt=document.createElement('option');
+        opt.value=id;
+        opt.textContent=card('BLUE',id).name+' +'+upgradeLevel(id);
+        select.appendChild(opt)
+      }
+      if([...select.options].some(o=>o.value===prev))select.value=prev;
+      updateUpgradeInfo()
+    }
+    $('#nextStage').textContent=(state.stage+1)+'스테이지 시작';
+    return
+  }
+
+  turnEl.textContent=state.winner?(state.winner===side?'승리':'패배'):'스테이지 '+state.stage+' · '+(state.current===side?'내 턴':'상대 턴')+' · '+state.turn;
+  deckInfo.textContent='골드 '+state.gold.BLUE+' · 내 소환 '+state.summons[side]+'/'+maxSummons(side)+' · 상대 소환 '+state.summons[other(side)]+'/'+maxSummons(other(side));
+  modeInfo.textContent=mode==='practice'?'연습전':mode==='online'?'온라인 1대1':'대기';
+
+  if(state.winner)msg(state.winner===side?'승리!':'패배')
+}
+function cellTap(r,c,u){
+  if(!canAct())return msg('지금은 상대 턴이야.');
+
+  if(selectedCard){
+    if(r!==homeRow(side)||u)return msg('자기 진영 첫 줄의 빈칸을 눌러.');
+    const id=selectedCard;
+    selectedCard='';
+    act({type:'summon',card:id,r,c});
+    return
+  }
+
+  if(u&&u.side===side){
+    selectedUnit=u.id;
+    msg(card(side,u.card).name+' 선택');
+    return render()
+  }
+
+  if(!selectedUnit)return msg('먼저 내 유닛이나 소환할 종류를 선택해.');
+  if(u)act({type:'attack',unit:selectedUnit,target:u.id});
+  else act({type:'move',unit:selectedUnit,r,c})
+}
+function affordableCards(s){
+  if(state.summons[s]>=maxSummons(s))return [];
+  if(s==='RED')return redPool();
+  return bluePool().filter(id=>card('BLUE',id).cost<=state.gold.BLUE)
+}
+function aiTurn(){
+  if(mode!=='practice'||!state||state.current!=='RED'||state.winner||aiThinking)return;
+  aiThinking=true;
+
+  const free=[];
+  for(let c=1;c<=boardCols();c++)if(!at(1,c))free.push(c);
+  const options=affordableCards('RED');
+
+  if(!state.summonUsed&&free.length&&options.length){
+    const id=options[Math.floor(Math.random()*options.length)];
+    processAction('RED',{type:'summon',card:id,r:1,c:free[Math.floor(Math.random()*free.length)]})
+  }
+
+  for(const u of [...state.units.filter(x=>x.side==='RED')]){
+    if(u.frozenNow)continue;
+
+    const d=card('RED',u.card);
+    const targets=state.units.filter(x=>x.side==='BLUE').sort((a,b)=>attackDist(u,a)-attackDist(u,b));
+
+    if(targets[0]&&attackDist(u,targets[0])<=d.range){
+      processAction('RED',{type:'attack',unit:u.id,target:targets[0].id})
+    }else if(targets[0]&&!u.moved){
+      const t=targets[0];
+      const moves=[[u.r+1,u.c],[u.r-1,u.c],[u.r,u.c+1],[u.r,u.c-1]]
+        .map(([r,c])=>({r,c}))
+        .filter(p=>isInside(p.r,p.c)&&!at(p.r,p.c))
+        .sort((a,b)=>moveDist(a,t)-moveDist(b,t));
+      if(moves[0])processAction('RED',{type:'move',unit:u.id,...moves[0]})
+    }
+  }
+
+  if(!state.winner&&state.phase==='BATTLE')processAction('RED',{type:'end'});
+  aiThinking=false;
+  render();
+  broadcast()
+}
+
+$('#resetDiamonds').onclick=resetDiamonds;
+$('#practiceBtn').onclick=()=>{
+  mode='practice';side='BLUE';newState();
+  playersEl.textContent='나 VS 연습 AI';
+  msg('연습전 시작 · 200골드 · 파랑 선공');
+  render()
+};
+$('#endTurn').onclick=()=>act({type:'end'});
+$('#cancel').onclick=()=>{selectedUnit=null;selectedCard='';msg('선택 취소');render()};
+
+function updateUpgradeInfo(){
+  if(!state||state.phase!=='REST'||state.stage<2)return;
+  const id=$('#upgradeSelect').value;
+  const lv=upgradeLevel(id);
+  const cost=upgradeCost(id);
+  $('#upgradeInfo').textContent=lv>=3
+    ? card('BLUE',id).name+' · 최대 3강 완료'
+    : card('BLUE',id).name+' · '+lv+'강 → '+(lv+1)+'강 · 비용 '+cost+'다이아 · 체력/공격 1.25배';
+  $('#upgradeAlly').disabled=lv>=3||diamondWallet()<cost
+}
+$('#upgradeSelect').onchange=updateUpgradeInfo;
+$('#upgradeAlly').onclick=()=>{
+  if(!state||state.phase!=='REST'||state.stage<2||side!=='BLUE')return;
+  const id=$('#upgradeSelect').value;
+  const lv=upgradeLevel(id);
+  if(lv>=3)return msg('이미 최대 3강이야.');
+  const cost=upgradeCost(id);
+  const diamonds=diamondWallet();
+  if(diamonds<cost)return msg('다이아가 부족해.');
+  const nextDiamonds=diamonds-cost;
+  setDiamondWallet(nextDiamonds);
+  state.diamonds=nextDiamonds;
+  state.upgrades[id]=lv+1;
+  msg(card('BLUE',id).name+' '+(lv+1)+'강 완료');
+  state.version++;
+  broadcast();
+  render()
+};
+
+$('#drawAlly').onclick=()=>{
+  if(!state||state.phase!=='REST'||state.keys<=0)return;
+  if(side!=='BLUE')return msg('파랑 팀의 휴식 선택을 기다리는 중');
+  const id=GACHA_POOL[Math.floor(Math.random()*GACHA_POOL.length)];
+  state.keys--;
+  const duplicate=state.unlocked.includes(id);
+  if(!duplicate)state.unlocked.push(id);
+  $('#drawResult').textContent=(duplicate?'중복! ':'새 아군! ')+card('BLUE',id).name;
+  state.version++;
+  broadcast();
+  render()
+};
+$('#nextStage').onclick=()=>{
+  if(!state||state.phase!=='REST')return;
+  if(side!=='BLUE')return msg('파랑 팀의 다음 스테이지 시작을 기다리는 중');
+  const next=state.stage+1;
+  state.stage=next;
+  state.phase='BATTLE';
+  state.turn=1;
+  state.current='BLUE';
+  state.summonUsed=false;
+  state.winner='';
+  state.stageTookDamage=false;
+  if(next===2||next===3||next===4)state.gold.BLUE=250;
+  state.gold.RED=0;
+  state.summons={BLUE:0,RED:0};
+  state.units=[];
+  state.enemyTurns=0;
+  selectedUnit=null;
+  selectedCard='';
+  $('#drawResult').textContent='';
+  if(next===2)msg('2스테이지 시작 · 기본 골드 250 · 적 8마리 / 아군 12마리');
+  else if(next===3)msg('3스테이지 시작 · 해골궁수/해골법사 제외 · 강화 고블린/골렘/멧돼지 등장');
+  else if(next===4){state.specialTiles=createStageFourTiles();msg('4스테이지 시작 · 7×5 맵 · 특수 발판 5개 · 방패 고블린/돌격 오크/독전갈/유적 수호자')}
+  state.version++;
+  broadcast();
+  render()
+};
+
+function setAuth(on){
+  $('#matchBtn').classList.toggle('hidden',!on);
+  $('#logoutBtn').classList.toggle('hidden',!on);
+  $('#loginBtn').classList.toggle('hidden',on);
+  $('#signupBtn').classList.toggle('hidden',on)
+}
+$('#loginBtn').onclick=async()=>{
+  msg('로그인 중...');
+  const r=await client.login($('#email').value,$('#password').value);
+  if(r.ok){setAuth(true);msg('로그인 완료 · 온라인 매칭 가능')}
+  else msg('로그인 실패')
+};
+$('#signupBtn').onclick=async()=>{
+  const email=$('#email').value,pw=$('#password').value,nick=(email.split('@')[0]||'player').slice(0,18);
+  msg('가입 중...');
+  const r=await client.signup(email,pw,nick);
+  if(r.ok){setAuth(true);msg('가입 완료 · 온라인 매칭 가능')}
+  else msg('가입 실패')
+};
+$('#logoutBtn').onclick=()=>{client.logout();setAuth(false);mode='idle';state=null;render();msg('로그아웃됨')};
+$('#matchBtn').onclick=async()=>{msg('상대 찾는 중...');const r=await client.matchPvpForGame(GAME_ID,true);if(!r.ok)msg('매칭 요청 실패')};
+
+function rememberId(id){
+  if(id)networkIds.add(String(id));
+  const all=[...networkIds].sort();
+  leaderId=all[0]||'';
+
+  if(myNetworkId&&all.length>=2){
+    side=myNetworkId===leaderId?'BLUE':'RED';
+    playersEl.textContent=(side==='BLUE'?'파랑':'빨강')+' 팀 · 온라인 1대1';
+
+    if(myNetworkId===leaderId&&!initializedRoom){
+      initializedRoom=true;
+      state=newState();
+      broadcast();
+      render();
+      msg('온라인 대전 시작 · 각 진영 200골드')
+    }
+  }
+}
+client.on('authenticated',e=>{myNetworkId=String(e.detail?.id||e.detail?.user_id||e.detail?.sub||client.currentUser?.id||'');rememberId(myNetworkId)});
+client.on('websocket_connected',()=>{mode='online';initializedRoom=false;networkIds.clear();rememberId(myNetworkId);client.sendEvent({gameId:GAME_ID,kind:'hello',userId:myNetworkId,nickname:client.currentUser?.nickname||'player'});msg('방 연결됨 · 상대 대기 중')});
+client.on('player_joined',e=>{for(const p of e.detail?.players||[])rememberId(p.userId||p.id);rememberId(e.detail?.userId);client.sendEvent({gameId:GAME_ID,kind:'hello',userId:myNetworkId})});
+client.on('message_received',e=>{
+  const m=e.detail||{};
+  if(m.type==='event'&&m.gameId===GAME_ID&&m.kind==='hello'){rememberId(m.userId);return}
+  if(m.type==='event'&&m.gameId===GAME_ID&&m.kind==='action'&&myNetworkId===leaderId&&state){
+    if(processAction(m.actor,m.payload)){broadcast();render()}
+    return
+  }
+  const incoming=m.type==='state'?m.state:null;
+  if(incoming?.gameId===GAME_ID&&incoming.canonical&&incoming.state)setState(incoming.state)
+});
+render();
+</script>
+</body>
+</html>
