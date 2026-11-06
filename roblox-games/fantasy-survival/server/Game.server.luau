@@ -897,13 +897,19 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
               end
               local order=game:GetService("HttpService"):JSONDecode(clone:GetAttribute("DeerRankJson") or "{}")
               local rank=order[surface.Name] or 1
-              surface.Color=rank==1 and Color3.fromRGB(178,116,68)
-                or rank==2 and Color3.fromRGB(228,192,142)
-                or rank==3 and Color3.fromRGB(124,78,48)
-                or rank==4 and Color3.fromRGB(198,166,118)
-                or rank==5 and Color3.fromRGB(52,42,36)
+              -- [실사 재질] 털은 Fabric, 뿔은 Wood, 발굽은 Slate, 코·눈은 매끈한 SmoothPlastic. 개체마다 ±5% 명도 차이.
+              local jitter=1+((math.sin(location.X*12.9898+location.Z*78.233)*43758.5453)%1-.5)*.1
+              local base=rank==1 and Color3.fromRGB(139,106,68)
+                or rank==2 and Color3.fromRGB(216,201,168)
+                or rank==3 and Color3.fromRGB(110,80,52)
+                or rank==4 and Color3.fromRGB(120,100,78)
+                or rank==5 and Color3.fromRGB(46,40,36)
                 or Color3.fromRGB(24,20,20)
-              surface.Material=Enum.Material.SmoothPlastic
+              surface.Color=Color3.new(math.clamp(base.R*jitter,0,1),math.clamp(base.G*jitter,0,1),math.clamp(base.B*jitter,0,1))
+              surface.Material=rank<=3 and Enum.Material.Fabric
+                or rank==4 and Enum.Material.Wood
+                or rank==5 and Enum.Material.Slate
+                or Enum.Material.SmoothPlastic
             elseif id=="rabbit" then
               -- [토끼 부위별 색] 몸통은 갈색, 다리는 더 진한 갈색, 작은 조각(꼬리·귀 끝)은 흰색.
               local piece=surface.Name:lower()
@@ -5047,6 +5053,16 @@ local function spawnEnemy(site, siteIndex)
         surface.Color=Color3.fromRGB(190,228,235)
       elseif smoothDetail then
         surface.Material=Enum.Material.SmoothPlastic
+        -- [늑대 실사 디테일] 눈은 작은 황금빛, 코는 거의 검정, 송곳니·발톱은 뼈색.
+        if partId=="wolf" then
+          if partName:find("eye",1,true) then
+            surface.Material=Enum.Material.Neon;surface.Color=Color3.fromRGB(217,164,65)
+          elseif partName:find("pupil",1,true) then
+            surface.Color=Color3.fromRGB(14,12,10)
+          elseif partName:find("tooth",1,true) or partName:find("teeth",1,true) or partName:find("claw",1,true) then
+            surface.Color=Color3.fromRGB(232,224,204)
+          end
+        end
         -- [박쥐 눈] 어둠 속에서 붉게 빛나는 눈.
         if partId=="bat" and partName:find("eye",1,true) then
           surface.Material=Enum.Material.Neon
@@ -5061,13 +5077,34 @@ local function spawnEnemy(site, siteIndex)
         surface.MaterialVariant=""
         -- [재질] 털 달린 몹은 Fabric(보풀 질감), 골렘은 Slate(거친 돌), 벌은 매끈한 광택으로 표현한다.
         local furry=partId=="wolf" or partId=="bat" or partId=="boar" or partId=="rabbit"
-        surface.Material=furry and Enum.Material.SmoothPlastic
+        surface.Material=furry and Enum.Material.Fabric
           or (isBoss or partId=="golem") and Enum.Material.Slate
           or partId=="bee" and Enum.Material.SmoothPlastic
           or Enum.Material.Plastic
         -- 단지 지역 단계가 높을수록 털이 어두워지게 한다(같은 늑대라도 단계별로 구분).
         local shade=1-math.clamp((site.tier or 1)-1,0,3)*.06
-        surface.Color=Color3.new(bodyTint.R*shade,bodyTint.G*shade,bodyTint.B*shade)
+        -- [실사 재질] 개체마다 ±5% 명도 차이. 늑대는 큰 조각(몸통)·그다음 조각(배·턱)·나머지(사지·귀) 순으로 톤을 나눈다.
+        local jitter=1+((math.sin(location.X*12.9898+location.Z*78.233)*43758.5453)%1-.5)*.1
+        shade*=jitter
+        local tone=bodyTint
+        if partId=="wolf" and not isAlpha then
+          local order=model:GetAttribute("WolfRankJson")
+          if not order then
+            local list={}
+            for _,part in ipairs(model:GetDescendants()) do
+              if part:IsA("MeshPart") then table.insert(list,{name=part.Name,v=part.Size.X*part.Size.Y*part.Size.Z}) end
+            end
+            table.sort(list,function(a,b) return a.v>b.v end)
+            local ranks={}
+            for index,row in ipairs(list) do ranks[row.name]=index end
+            order=game:GetService("HttpService"):JSONEncode(ranks)
+            model:SetAttribute("WolfRankJson",order)
+          end
+          local rank=game:GetService("HttpService"):JSONDecode(order)[surface.Name] or 1
+          tone=rank==2 and bodyTint:Lerp(Color3.fromRGB(140,135,126),.7)
+            or rank>=4 and bodyTint:Lerp(Color3.fromRGB(40,38,36),.35) or bodyTint
+        end
+        surface.Color=Color3.new(math.clamp(tone.R*shade,0,1),math.clamp(tone.G*shade,0,1),math.clamp(tone.B*shade,0,1))
       end
       if partId=="ghost" then
         -- 등록된 원본 해골 메시를 반투명 원혼으로 연출한다. 별도 형상은 만들지 않는다.
