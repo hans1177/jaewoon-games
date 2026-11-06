@@ -70,6 +70,28 @@
         "StreamingEnabled": true,
         "StreamingMinRadius": 64,
         "StreamingTargetRadius": 256
+      },
+      "NativeFoundationSpawn": {
+        "$className": "SpawnLocation",
+        "$properties": {
+          "Anchored": true,
+          "CanCollide": false,
+          "CanTouch": false,
+          "CanQuery": false,
+          "Transparency": 1,
+          "Neutral": true,
+          "Enabled": true,
+          "Size": [
+            8,
+            1,
+            8
+          ],
+          "Position": [
+            0,
+            3,
+            -75
+          ]
+        }
       }
     }
   }
