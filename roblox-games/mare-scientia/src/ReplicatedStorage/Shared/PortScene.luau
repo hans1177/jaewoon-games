@@ -273,6 +273,12 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	local mesh = importedModel(parent, "Town", "house", pos, math.max(w, d), true, tintColor)
 	if mesh then
 		mesh.Name = "HarborHouse"
+		-- 집마다 같은 실루엣이 되지 않게, 위치로 정한 일부 집 용마루에 승인된 굴뚝(Town/chimney)을 얹는다
+		local size = math.max(w, d)
+		if math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0 then
+			local chim = importedModel(parent, "Town", "chimney", pos + Vector3.new(0, size * 0.7, 0), size * 0.4, false, Color3.fromRGB(122, 98, 84))
+			if chim then chim.Name = "HarborChimney" end
+		end
 		return mesh:FindFirstChildWhichIsA("BasePart", true)
 	end
 	local wall = style.walls[rng:NextInteger(1, #style.walls)]
