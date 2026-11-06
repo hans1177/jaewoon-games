@@ -425,9 +425,8 @@ if not verifiedLearningColorGrade then
   verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
   verifiedLearningColorGrade.Parent = verifiedLearningLighting
 end
--- [다크 판타지 숲] 원본 색을 살리되 서버 날씨 보정과 동일한 방향으로 채도를 줄인다.
-verifiedLearningColorGrade.Saturation = -0.06
-verifiedLearningColorGrade.Contrast = 0.045
+verifiedLearningColorGrade.Saturation = 0
+verifiedLearningColorGrade.Contrast = 0
 verifiedLearningColorGrade.Brightness = 0
 verifiedLearningColorGrade:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
@@ -438,9 +437,9 @@ if not verifiedLearningBloom then
   verifiedLearningBloom.Name = "VerifiedLearningBloom"
   verifiedLearningBloom.Parent = verifiedLearningLighting
 end
-verifiedLearningBloom.Intensity = 0.12
-verifiedLearningBloom.Size = 16
-verifiedLearningBloom.Threshold = 1.3
+verifiedLearningBloom.Intensity = 0.22
+verifiedLearningBloom.Size = 18
+verifiedLearningBloom.Threshold = 1.1
 local verifiedLearningAtmosphere = verifiedLearningLighting:FindFirstChild("VerifiedLearningAtmosphere")
 if not verifiedLearningAtmosphere then
   verifiedLearningAtmosphere = Instance.new("Atmosphere")
