@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1arfnrl",
+      "worker": "vibe2",
+      "taskId": "seed-roblox-survival-horror-es-doors-studio-evolution-roblox-usability-v6",
+      "gameId": "seed-roblox-survival-horror-es-doors",
+      "files": [
+        "roblox-games/seed-roblox-survival-horror-es-doors/client/Game.client.luau",
+        "roblox-games/seed-roblox-survival-horror-es-doors/shared/GameConfig.luau",
+        "roblox-games/seed-roblox-survival-horror-es-doors/server/Game.server.luau",
+        "roblox-games/seed-roblox-survival-horror-es-doors/client/MaterialPresentation.client.luau",
+        "roblox-games/seed-roblox-survival-horror-es-doors/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-roblox-survival-horror-es-doors/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "a4bbfb49092ac39f178a188117cfa33e7df4e068",
+      "runId": "42159910572",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-06T04:41:31.269Z",
+      "expiresAt": "2026-11-06T05:26:31.269Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-roblox-survival-horror-es-doors-studio-evolution-roblox-usability-v6"
+      ]
+    }
+  ]
 }
