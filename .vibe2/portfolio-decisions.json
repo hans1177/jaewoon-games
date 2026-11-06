@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-11-06T19:52:25.958Z",
+  "generatedAt": "2026-11-06T20:42:24.245Z",
   "decisions": [
     {
       "gameId": "amusement-tycoon",
@@ -765,7 +765,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 2,
+          "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 256
@@ -1069,66 +1069,6 @@
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 256
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "card-grid-duel",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 1,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 0
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "mare-scientia",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 1,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 0
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
