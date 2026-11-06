@@ -112,6 +112,8 @@ local function parseLog(log)
 end
 
 -- opts: { shipId, enemyName, log, winner, reason, isBoss, onDone }
+-- 직접 조종하는 해전: 왼쪽·오른쪽으로 배를 돌리고 가속하면, 사정거리 안에서 대포가 자동으로 나간다.
+-- 맞는 순서와 피해량은 서버가 계산한 전투 기록을 따르므로 결과는 서버 판정과 같다.
 function NavalBattle.play(opts)
 	local player = Players.LocalPlayer
 	local old = workspace:FindFirstChild("BattleScene")
@@ -122,24 +124,32 @@ function NavalBattle.play(opts)
 	folder.Name = "BattleScene"
 	folder.Parent = workspace
 
-	-- 바다
-	local sea = part(folder, Vector3.new(900, 2, 900), CFrame.new(ORIGIN + Vector3.new(0, -1, 0)), Color3.fromRGB(34, 112, 156), Enum.Material.Glass)
+	local sea = part(folder, Vector3.new(1200, 2, 1200), CFrame.new(ORIGIN + Vector3.new(0, -1, 0)), Color3.fromRGB(34, 112, 156), Enum.Material.Glass)
 	sea.Transparency = 0.15
 	sea.Reflectance = 0.08
 
-	local playerAt = ORIGIN + Vector3.new(-34, 0, 0)
-	local enemyAt = ORIGIN + Vector3.new(34, 0, 0)
-	local me = placeShip(folder, PLAYER_SHIP[opts.shipId] or "ship-medium", playerAt, 40, 0, nil)
-	local foe = placeShip(folder, if opts.isBoss then "ship-pirate-large" else "ship-pirate-medium", enemyAt, if opts.isBoss then 54 else 40, math.pi, nil)
-	local mePivot, foePivot = me:GetPivot(), foe:GetPivot()
+	-- 배들: 위치, 방향(θ), 속도를 우리가 직접 움직인다
+	local function newShip(asset, length, pos, theta, tint)
+		local m = placeShip(folder, asset, ORIGIN + pos, length, 0, tint)
+		local base = m:GetPivot()
+		local rot = base - base.Position
+		return { model = m, pos = pos, theta = theta, speed = 0, rot = rot, y = base.Position.Y - ORIGIN.Y, length = length }
+	end
+	local me = newShip(PLAYER_SHIP[opts.shipId] or "ship-medium", 40, Vector3.new(-45, 0, 30), 0)
+	local foe = newShip(if opts.isBoss then "ship-pirate-large" else "ship-pirate-medium", if opts.isBoss then 54 else 40, Vector3.new(45, 0, -30), math.pi)
+	-- 해적 호위선: 연출용 (싸움 결과에는 영향 없음)
+	local escorts = {}
+	local escortCount = if opts.isBoss then 0 else 2
+	for i = 1, escortCount do
+		local e = newShip("ship-pirate-small", 28, Vector3.new(80 + i * 40, 0, -70 + i * 80), math.pi + (i - 1.5) * 0.4)
+		e.speed = 5
+		table.insert(escorts, e)
+	end
 
-	local camBase = CFrame.lookAt(ORIGIN + Vector3.new(0, 24, 86), ORIGIN + Vector3.new(0, 7, 0))
 	local cam = workspace.CurrentCamera
 	cam.CameraType = Enum.CameraType.Scriptable
-	cam.FieldOfView = 56
-	cam.CFrame = camBase
+	cam.FieldOfView = 62
 
-	-- 화면 UI
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "BattleGui"
 	gui.ResetOnSpawn = false
@@ -177,13 +187,19 @@ function NavalBattle.play(opts)
 		return fill
 	end
 	local meFill = bar("L", "우리 배")
-	local foeFill = bar("R", opts.enemyName or "적선")
+	local foeFill = bar("R", opts.enemyName or "해적선")
 
 	local subtitle = label(gui, "", 16)
 	subtitle.AnchorPoint = Vector2.new(0.5, 1)
-	subtitle.Position = UDim2.new(0.5, 0, 1, -24)
-	subtitle.Size = UDim2.new(0.8, 0, 0, 40)
+	subtitle.Position = UDim2.new(0.5, 0, 1, -76)
+	subtitle.Size = UDim2.new(0.7, 0, 0, 40)
 	subtitle.TextWrapped = true
+
+	local hint = label(gui, "◀ ▶ 로 배를 돌려 적선에 옆면을 대세요. 사정거리에 들어가면 대포가 자동으로 나갑니다.", 14, Color3.fromRGB(255, 226, 170))
+	hint.AnchorPoint = Vector2.new(0.5, 0)
+	hint.Position = UDim2.new(0.5, 0, 0, 98)
+	hint.Size = UDim2.new(0.8, 0, 0, 36)
+	hint.TextWrapped = true
 
 	local banner = label(gui, "", 44)
 	banner.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -209,37 +225,88 @@ function NavalBattle.play(opts)
 		end
 	end
 
-	local skip = Instance.new("TextButton")
-	skip.Text = "건너뛰기"
-	skip.AnchorPoint = Vector2.new(0.5, 0)
-	skip.Position = UDim2.new(0.5, 0, 0, 62)
-	skip.Size = UDim2.fromOffset(96, 32)
-	skip.BackgroundColor3 = Color3.fromRGB(70, 84, 104)
-	skip.TextColor3 = Color3.new(1, 1, 1)
-	skip.Font = Enum.Font.GothamBold
-	skip.TextSize = 14
-	skip.BorderSizePixel = 0
-	skip.Parent = gui
-	do
+	local function mkBtn(text, pos, size, anchor)
+		local b = Instance.new("TextButton")
+		b.Text = text
+		b.AnchorPoint = anchor or Vector2.new(0, 1)
+		b.Position = pos
+		b.Size = size
+		b.BackgroundColor3 = Color3.fromRGB(28, 46, 70)
+		b.TextColor3 = Color3.fromRGB(250, 236, 200)
+		b.Font = Enum.Font.GothamBold
+		b.TextSize = 26
+		b.BorderSizePixel = 0
+		b.Parent = gui
 		local c = Instance.new("UICorner")
-		c.CornerRadius = UDim.new(0, 10)
-		c.Parent = skip
+		c.CornerRadius = UDim.new(0, 14)
+		c.Parent = b
 		local st = Instance.new("UIStroke")
 		st.Color = Color3.fromRGB(214, 170, 82)
-		st.Parent = skip
+		st.Thickness = 2
+		st.Parent = b
+		return b
 	end
+	local steerDir, throttle = 0, 1
+	local leftBtn = mkBtn("◀", UDim2.new(0, 24, 1, -24), UDim2.fromOffset(84, 70))
+	local rightBtn = mkBtn("▶", UDim2.new(0, 120, 1, -24), UDim2.fromOffset(84, 70))
+	local speedBtn = mkBtn("가속", UDim2.new(1, -150, 1, -24), UDim2.fromOffset(100, 56), Vector2.new(1, 1))
+	speedBtn.TextSize = 18
+	local skip = mkBtn("건너뛰기", UDim2.new(0.5, 0, 0, 62), UDim2.fromOffset(96, 30), Vector2.new(0.5, 0))
+	skip.TextSize = 14
 	skip.Activated:Connect(finish)
+	local function hold(btn, dir)
+		btn.InputBegan:Connect(function(i)
+			if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+				steerDir = dir
+			end
+		end)
+		btn.InputEnded:Connect(function(i)
+			if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+				if steerDir == dir then
+					steerDir = 0
+				end
+			end
+		end)
+	end
+	hold(leftBtn, 1)
+	hold(rightBtn, -1)
+	speedBtn.Activated:Connect(function()
+		throttle = if throttle >= 1 then 0.45 elseif throttle > 0.4 then 0 else 1
+		speedBtn.Text = if throttle >= 1 then "가속" elseif throttle > 0.4 then "순항" else "정지"
+	end)
+	-- 키보드(PC): A/D 또는 방향키
+	local UIS = game:GetService("UserInputService")
+	table.insert(conns, UIS.InputBegan:Connect(function(i, gp)
+		if gp then
+			return
+		end
+		if i.KeyCode == Enum.KeyCode.A or i.KeyCode == Enum.KeyCode.Left then
+			steerDir = 1
+		elseif i.KeyCode == Enum.KeyCode.D or i.KeyCode == Enum.KeyCode.Right then
+			steerDir = -1
+		end
+	end))
+	table.insert(conns, UIS.InputEnded:Connect(function(i)
+		if i.KeyCode == Enum.KeyCode.A or i.KeyCode == Enum.KeyCode.Left or i.KeyCode == Enum.KeyCode.D or i.KeyCode == Enum.KeyCode.Right then
+			steerDir = 0
+		end
+	end))
 
-	-- 사건 목록과 체력 곡선
+	-- 전투 기록: 서로 순서대로 맞는 포격 큐와 마무리 백병전 큐
 	local events = parseLog(opts.log or {})
+	local meQueue, foeQueue, meleeQueue = {}, {}, {}
 	local dmgToMe, dmgToFoe = 0, 0
 	for _, e in events do
 		if e.kind == "fire" then
 			if e.player then
+				table.insert(meQueue, e)
 				dmgToFoe += e.hull
 			else
+				table.insert(foeQueue, e)
 				dmgToMe += e.hull
 			end
+		elseif e.kind == "melee" then
+			table.insert(meleeQueue, e)
 		end
 	end
 	local meEnd, foeEnd = 1, 1
@@ -253,143 +320,248 @@ function NavalBattle.play(opts)
 		meEnd, foeEnd = 0.45, 0.45
 	end
 	local meHp, foeHp = 1, 1
-	local meDmgSoFar, foeDmgSoFar = 0, 0
+	local meDone, foeDone = 0, 0 -- 소비한 포격 수
 
-	-- 대포 한 발: 포물선으로 날아가 명중하면 불꽃
-	local function shoot(fromPlayer, delay)
-		task.delay(delay, function()
-			if finished then
-				return
-			end
-			local from = (if fromPlayer then playerAt else enemyAt) + Vector3.new(0, 7, 0)
-			local to = (if fromPlayer then enemyAt else playerAt) + Vector3.new((math.random() - 0.5) * 14, 6 + math.random() * 3, (math.random() - 0.5) * 5)
-			local flash = part(folder, Vector3.new(3, 3, 3), CFrame.new(from), Color3.fromRGB(255, 200, 90), Enum.Material.Neon, Enum.PartType.Ball)
-			task.delay(0.15, function()
-				flash:Destroy()
-			end)
-			local ball = part(folder, Vector3.new(1.4, 1.4, 1.4), CFrame.new(from), Color3.fromRGB(30, 30, 34), Enum.Material.Metal, Enum.PartType.Ball)
-			local t0 = os.clock()
-			local dur = 0.75
-			local conn
-			conn = RunService.Heartbeat:Connect(function()
-				local u = math.clamp((os.clock() - t0) / dur, 0, 1)
-				local pos = from:Lerp(to, u) + Vector3.new(0, math.sin(u * math.pi) * 14, 0)
-				ball.CFrame = CFrame.new(pos)
-				if u >= 1 then
-					conn:Disconnect()
-					ball:Destroy()
-					if finished then
+	local function applyHit(toPlayer, e)
+		if toPlayer then
+			meDone += 1
+			meHp = math.clamp(1 - (1 - meEnd) * (meDone / math.max(1, #foeQueue)), meEnd, 1)
+		else
+			foeDone += 1
+			foeHp = math.clamp(1 - (1 - foeEnd) * (foeDone / math.max(1, #meQueue)), foeEnd, 1)
+		end
+		subtitle.Text = e.text
+	end
+
+	local shake = 0
+	-- 대포 한 발
+	local function shoot(fromPos, toPos, fx)
+		local from = ORIGIN + fromPos + Vector3.new(0, 8, 0)
+		local to = ORIGIN + toPos + Vector3.new((math.random() - 0.5) * 10, 6 + math.random() * 3, (math.random() - 0.5) * 6)
+		local flash = part(folder, Vector3.new(3, 3, 3), CFrame.new(from), Color3.fromRGB(255, 200, 90), Enum.Material.Neon, Enum.PartType.Ball)
+		task.delay(0.15, function()
+			flash:Destroy()
+		end)
+		local ball = part(folder, Vector3.new(1.5, 1.5, 1.5), CFrame.new(from), Color3.fromRGB(30, 30, 34), Enum.Material.Metal, Enum.PartType.Ball)
+		local t0 = os.clock()
+		local dur = 0.8
+		local conn
+		conn = RunService.Heartbeat:Connect(function()
+			local u = math.clamp((os.clock() - t0) / dur, 0, 1)
+			ball.CFrame = CFrame.new(from:Lerp(to, u) + Vector3.new(0, math.sin(u * math.pi) * 14, 0))
+			if u >= 1 then
+				conn:Disconnect()
+				ball:Destroy()
+				if finished then
+					return
+				end
+				local boom = part(folder, Vector3.new(2, 2, 2), CFrame.new(to), Color3.fromRGB(255, 150, 60), Enum.Material.Neon, Enum.PartType.Ball)
+				local smoke = part(folder, Vector3.new(2, 2, 2), CFrame.new(to + Vector3.new(0, 1, 0)), Color3.fromRGB(90, 90, 96), Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+				smoke.Transparency = 0.3
+				local s0 = os.clock()
+				local c2
+				c2 = RunService.Heartbeat:Connect(function()
+					local k = (os.clock() - s0) / 1.0
+					if k >= 1 or finished then
+						c2:Disconnect()
+						boom:Destroy()
+						smoke:Destroy()
 						return
 					end
-					local boom = part(folder, Vector3.new(2, 2, 2), CFrame.new(to), Color3.fromRGB(255, 150, 60), Enum.Material.Neon, Enum.PartType.Ball)
-					local smoke = part(folder, Vector3.new(2, 2, 2), CFrame.new(to + Vector3.new(0, 1, 0)), Color3.fromRGB(90, 90, 96), Enum.Material.SmoothPlastic, Enum.PartType.Ball)
-					smoke.Transparency = 0.3
-					local s0 = os.clock()
-					local c2
-					c2 = RunService.Heartbeat:Connect(function()
-						local k = (os.clock() - s0) / 1.0
-						if k >= 1 or finished then
-							c2:Disconnect()
-							boom:Destroy()
-							smoke:Destroy()
-							return
-						end
-						boom.Size = Vector3.new(1, 1, 1) * (2 + k * 8)
-						boom.Transparency = k
-						smoke.Size = Vector3.new(1, 1, 1) * (3 + k * 10)
-						smoke.Position = to + Vector3.new(0, 1 + k * 6, 0)
-						smoke.Transparency = 0.3 + k * 0.7
-					end)
+					boom.Size = Vector3.new(1, 1, 1) * (2 + k * 8)
+					boom.Transparency = k
+					smoke.Size = Vector3.new(1, 1, 1) * (3 + k * 10)
+					smoke.Position = to + Vector3.new(0, 1 + k * 6, 0)
+					smoke.Transparency = 0.3 + k * 0.7
+				end)
+				if fx then
+					fx()
 				end
-			end)
-			table.insert(conns, conn)
+			end
 		end)
 	end
 
-	-- 가라앉는 배, 흔들리는 배, 카메라 흔들림
+	local function forward(theta)
+		return Vector3.new(math.cos(theta), 0, math.sin(theta))
+	end
+	local function poseShip(sh, t, extra)
+		local bob = CFrame.new(0, math.sin(t * 1.3 + sh.length) * 0.5, 0) * CFrame.Angles(0, 0, math.sin(t * 0.9 + sh.length) * 0.03)
+		local cf = CFrame.new(ORIGIN + Vector3.new(sh.pos.X, sh.y, sh.pos.Z)) * CFrame.Angles(0, -sh.theta, 0) * bob * sh.rot
+		if extra then
+			cf = extra * cf
+		end
+		sh.model:PivotTo(cf)
+	end
+
+	local function steerToward(sh, targetTheta, dt, rate)
+		local diff = (targetTheta - sh.theta + math.pi) % (math.pi * 2) - math.pi
+		sh.theta += math.clamp(diff, -rate * dt, rate * dt)
+	end
+
 	local sinkStart = nil
 	local loser = if opts.winner == "a" then "foe" elseif opts.winner == "b" then "me" else nil
-	local shake = 0
-	table.insert(conns, RunService.Heartbeat:Connect(function()
-		local t = os.clock()
-		local bobMe = CFrame.new(0, math.sin(t * 1.3) * 0.5, 0) * CFrame.Angles(0, 0, math.sin(t * 0.9) * 0.03)
-		local bobFoe = CFrame.new(0, math.sin(t * 1.1 + 1) * 0.5, 0) * CFrame.Angles(0, 0, math.sin(t * 0.8 + 2) * 0.03)
-		local meCf, foeCf = bobMe * mePivot, bobFoe * foePivot
-		if sinkStart then
-			local k = math.clamp((t - sinkStart) / 3.2, 0, 1)
-			local sink = CFrame.new(0, -k * 12, 0) * CFrame.Angles(0, 0, (if loser == "me" then -1 else 1) * k * 0.5)
-			if loser == "me" then
-				meCf = sink * meCf
-			elseif loser == "foe" then
-				foeCf = sink * foeCf
-			end
-		end
-		me:PivotTo(meCf)
-		foe:PivotTo(foeCf)
-		shake = math.max(0, shake - 0.05)
-		cam.CFrame = camBase * CFrame.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0) * CFrame.new(math.sin(t * 0.3) * 3, 0, 0)
-		meFill.Size = UDim2.fromScale(meHp, 1)
-		foeFill.Size = UDim2.fromScale(foeHp, 1)
-	end))
+	local phase = "duel" -- duel → board → end
+	local nextMeFire, nextFoeFire = os.clock() + 2.2, os.clock() + 3.4
+	local boardStart = nil
+	local endAt = nil
+	local melIdx = 0
+	local lastT = os.clock()
+	local escortFire = os.clock() + 3
 
-	-- 시간표를 돌린다
-	task.spawn(function()
-		task.wait(0.8)
-		local step = if #events > 12 then 0.7 else 0.95
-		for i, e in events do
-			if finished then
-				return
-			end
-			subtitle.Text = e.text
-			if e.kind == "fire" then
-				local volley = math.clamp(math.floor(e.hull / 8) + 1, 1, 4)
-				for k = 0, volley - 1 do
-					shoot(e.player, k * 0.12)
-				end
-				task.delay(0.8, function()
-					if finished then
-						return
-					end
-					shake = 1.2
-					if e.player then
-						foeDmgSoFar += e.hull
-						foeHp = math.clamp(1 - (1 - foeEnd) * (foeDmgSoFar / math.max(1, dmgToFoe)), foeEnd, 1)
-					else
-						meDmgSoFar += e.hull
-						meHp = math.clamp(1 - (1 - meEnd) * (meDmgSoFar / math.max(1, dmgToMe)), meEnd, 1)
-					end
-				end)
-			elseif e.kind == "board" then
-				-- 두 배가 가까워진다
-				playerAt = playerAt + Vector3.new(8, 0, 0)
-				enemyAt = enemyAt - Vector3.new(8, 0, 0)
-				mePivot = mePivot + Vector3.new(8, 0, 0)
-				foePivot = foePivot - Vector3.new(8, 0, 0)
-				shake = 0.8
-			elseif e.kind == "melee" then
-				shake = 0.6
-				if e.player then
-					foeHp = math.max(foeEnd, foeHp - 0.04)
-				else
-					meHp = math.max(meEnd, meHp - 0.04)
-				end
-			end
-			task.wait(step)
-		end
+	table.insert(conns, RunService.Heartbeat:Connect(function()
 		if finished then
 			return
 		end
-		meHp, foeHp = meEnd, foeEnd
-		if loser then
-			sinkStart = os.clock()
+		local now = os.clock()
+		local dt = math.min(now - lastT, 0.1)
+		lastT = now
+
+		if phase == "duel" or phase == "board" then
+			-- 우리 배: 방향키로 돌리고 가속 설정만큼 앞으로
+			me.theta += steerDir * 0.9 * dt
+			me.speed = 11 * throttle
+			me.pos += forward(me.theta) * me.speed * dt
+
+			-- 적선: 우리 배와 거리를 유지하며 옆면을 대려고 맴돈다
+			local toMe = me.pos - foe.pos
+			local dist = toMe.Magnitude
+			local bearing = math.atan2(toMe.Z, toMe.X)
+			local want = bearing + (if dist > 55 then 0.15 elseif dist < 32 then -1.9 else 1.45)
+			steerToward(foe, want, dt, 0.7)
+			foe.speed = if dist > 55 then 10 else 6.5
+			foe.pos += forward(foe.theta) * foe.speed * dt
+			if phase == "board" then
+				-- 접현: 서로 가까이 붙는다
+				foe.pos = foe.pos:Lerp(me.pos + Vector3.new(0, 0, -16), dt * 0.8)
+			end
+			-- 경계 밖으로 나가지 않게 가운데로 되돌린다
+			for _, sh in { me, foe } do
+				if sh.pos.Magnitude > 260 then
+					steerToward(sh, math.atan2(-sh.pos.Z, -sh.pos.X), dt, 1.5)
+				end
+			end
+
+			if phase == "duel" then
+				local d = (foe.pos - me.pos).Magnitude
+				-- 자동 포격: 사정거리 안이면 쿨타임마다 한 발씩 기록을 소비한다
+				if d < 95 and now >= nextMeFire and meDone + 0 < #meQueue and foeDone + meDone >= 0 then
+					nextMeFire = now + 2.1
+					local idx = #meQueue - (#meQueue - (meDone - (0)) ) -- 순서대로
+					local e = meQueue[math.min(foeDone, #meQueue) + 0 > 0 and (foeDone + 0 == 0 and 1 or foeDone) or 1]
+					e = meQueue[math.min(#meQueue, (foeDone + 1))]
+					local volley = math.clamp(math.floor((e and e.hull or 8) / 8) + 1, 1, 4)
+					for k = 0, volley - 1 do
+						task.delay(k * 0.12, function()
+							if not finished then
+								shoot(me.pos, foe.pos, if k == volley - 1 then function()
+									shake = 1.2
+									applyHit(false, e)
+								end else nil)
+							end
+						end)
+					end
+				end
+				if d < 95 and now >= nextFoeFire and meDone < #foeQueue then
+					nextFoeFire = now + 2.6
+					local e = foeQueue[math.min(#foeQueue, meDone + 1)]
+					local volley = math.clamp(math.floor((e and e.hull or 8) / 8) + 1, 1, 4)
+					for k = 0, volley - 1 do
+						task.delay(k * 0.12, function()
+							if not finished then
+								shoot(foe.pos, me.pos, if k == volley - 1 then function()
+									shake = 1.6
+									applyHit(true, e)
+								end else nil)
+							end
+						end)
+					end
+				end
+				if foeDone >= #meQueue and meDone >= #foeQueue then
+					phase = "board"
+					boardStart = now
+					hint.Text = ""
+					subtitle.Text = "두 배가 접현했다! 백병전!"
+				end
+			else
+				-- 백병전: 남은 기록을 차례로 보여 준다
+				if now - boardStart > 1.2 + melIdx * 0.9 and melIdx < #meleeQueue then
+					melIdx += 1
+					local e = meleeQueue[melIdx]
+					shake = 0.7
+					subtitle.Text = e.text
+					if e.player then
+						foeHp = math.max(foeEnd, foeHp - 0.05)
+					else
+						meHp = math.max(meEnd, meHp - 0.05)
+					end
+				end
+				if melIdx >= #meleeQueue and now - boardStart > 2.5 + #meleeQueue * 0.9 then
+					phase = "end"
+					endAt = now
+					meHp, foeHp = meEnd, foeEnd
+					if loser then
+						sinkStart = now
+					end
+					banner.Text = if opts.winner == "a" then "승리!" elseif opts.winner == "b" then "패배..." else "물러났다"
+					banner.TextColor3 = if opts.winner == "a" then Color3.fromRGB(255, 214, 120) elseif opts.winner == "b" then Color3.fromRGB(230, 110, 100) else Color3.fromRGB(220, 220, 230)
+					banner.TextTransparency = 0
+					banner.TextStrokeTransparency = 0.3
+					subtitle.Text = ""
+				end
+			end
+		elseif phase == "end" then
+			if now - endAt > 3.4 then
+				finish()
+				return
+			end
 		end
-		banner.Text = if opts.winner == "a" then "승리!" elseif opts.winner == "b" then "패배..." else "물러났다"
-		banner.TextColor3 = if opts.winner == "a" then Color3.fromRGB(255, 214, 120) elseif opts.winner == "b" then Color3.fromRGB(230, 110, 100) else Color3.fromRGB(220, 220, 230)
-		banner.TextTransparency = 0
-		banner.TextStrokeTransparency = 0.3
-		subtitle.Text = ""
-		task.wait(3.2)
-		finish()
+
+		-- 호위선: 적 주변을 돌며 가끔 대포를 쏜다 (연출)
+		for i, e in escorts do
+			local center = foe.pos + Vector3.new(math.cos(now * 0.2 + i * 2.4) * 80, 0, math.sin(now * 0.2 + i * 2.4) * 80)
+			steerToward(e, math.atan2(center.Z - e.pos.Z, center.X - e.pos.X), dt, 0.5)
+			e.pos += forward(e.theta) * 6 * dt
+		end
+		if now >= escortFire and #escorts > 0 and phase == "duel" then
+			escortFire = now + 4.5
+			local e = escorts[math.random(1, #escorts)]
+			if (e.pos - me.pos).Magnitude < 150 then
+				shoot(e.pos, me.pos + Vector3.new((math.random() - 0.5) * 60, 0, (math.random() - 0.5) * 60), nil)
+			end
+		end
+
+		-- 배 그리기 (침몰 연출 포함)
+		local meExtra, foeExtra
+		if sinkStart then
+			local k = math.clamp((now - sinkStart) / 3.2, 0, 1)
+			local sink = CFrame.new(0, -k * 12, 0) * CFrame.Angles(0, 0, (if loser == "me" then -1 else 1) * k * 0.5)
+			if loser == "me" then
+				meExtra = sink
+			else
+				foeExtra = sink
+			end
+		end
+		poseShip(me, now, meExtra)
+		poseShip(foe, now, foeExtra)
+		for _, e in escorts do
+			poseShip(e, now, nil)
+		end
+		meFill.Size = UDim2.fromScale(meHp, 1)
+		foeFill.Size = UDim2.fromScale(foeHp, 1)
+
+		-- 카메라: 우리 배 뒤쪽 위에서 따라간다
+		shake = math.max(0, shake - 0.05)
+		local f = forward(me.theta)
+		local focus = ORIGIN + me.pos + (foe.pos - me.pos) * 0.35
+		local camPos = ORIGIN + me.pos - f * 52 + Vector3.new(0, 30, 0)
+		cam.CFrame = CFrame.lookAt(camPos + Vector3.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0), focus + Vector3.new(0, 4, 0))
+	end))
+
+	-- 일정 시간 안에 끝나지 않으면 자동으로 마무리한다
+	task.delay(75, function()
+		if not finished then
+			finish()
+		end
 	end)
 
 	return { finish = finish }
