@@ -8492,6 +8492,82 @@ do
   local coreColor={["skill-meadow-heavy"]=Color3.fromRGB(255,150,80),["skill-meadow-sweep"]=Color3.fromRGB(255,200,110),
     ["skill-meadow-bolt"]=Color3.fromRGB(130,200,255),["skill-meadow-focus"]=Color3.fromRGB(180,150,255),
     ["skill-meadow-ultimate"]=Color3.fromRGB(255,230,150),["skill-meadow-sprint"]=Color3.fromRGB(255,235,170)}
+  -- ───── 막기 전용 연출: 기력 방패·룬 링·타격 파문 ─────
+  local shields={}
+  meadowArt.guardPulse={}
+  meadowArt.guardShield=function(character,root,life)
+    if reducedEffects and false then return end
+    local old=shields[character]
+    if old then old.stop=true end
+    local blue=Color3.fromRGB(110,185,255)
+    local state={stop=false}
+    shields[character]=state
+    local disc=anchorPart(root.CFrame,Vector3.new(.3,7.4,6),blue,Enum.PartType.Cylinder,1)
+    disc.Material=Enum.Material.ForceField
+    local rune=anchorPart(root.CFrame,Vector3.new(.15,10,10),blue,Enum.PartType.Cylinder,1)
+    local rune2=anchorPart(root.CFrame,Vector3.new(.15,6.4,6.4),Color3.fromRGB(210,235,255),Enum.PartType.Cylinder,1)
+    local lightPart=anchorPart(root.CFrame,Vector3.new(.2,.2,.2),blue,nil,1)
+    local pl=Instance.new("PointLight");pl.Color=blue;pl.Range=14;pl.Brightness=0;pl.Parent=lightPart
+    local began=os.clock()
+    local conn
+    conn=RS.Heartbeat:Connect(function()
+      local now=os.clock()
+      local age=now-began
+      if state.stop or age>life or not root.Parent or not character.Parent then
+        conn:Disconnect()
+        for _,p in ipairs({disc,rune,rune2,lightPart}) do p:Destroy() end
+        if shields[character]==state then shields[character]=nil end
+        return
+      end
+      local fadeIn=math.clamp(age/.1,0,1)
+      local fadeOut=math.clamp((life-age)/.35,0,1)
+      local a=fadeIn*fadeOut
+      local pulseAt=meadowArt.guardPulse[character] or -10
+      local perfect=meadowArt.guardPerfect and meadowArt.guardPerfect[character]
+      local pulse=math.clamp(1-(now-pulseAt)/.26,0,1)
+      local col=(perfect and Color3.fromRGB(255,226,140) or blue):Lerp(white,pulse*.7)
+      local cf=root.CFrame
+      local sway=math.sin(age*3.2)*.06
+      disc.CFrame=cf*CFrame.new(0,.8+sway,-3.1-pulse*.5)*CFrame.Angles(0,math.pi/2,0)
+      disc.Size=Vector3.new(.3+pulse*.7,7.4+pulse*1.2,6+pulse*1)
+      disc.Color=col
+      disc.Transparency=1-a*(.55+pulse*.4)
+      local floor=cf.Position-Vector3.new(0,2.9,0)
+      rune.CFrame=CFrame.new(floor)*CFrame.Angles(0,age*1.6,math.pi/2)
+      rune2.CFrame=CFrame.new(floor+Vector3.new(0,.05,0))*CFrame.Angles(0,-age*2.4,math.pi/2)
+      rune.Color=col;rune2.Color=col
+      rune.Transparency=1-a*.55;rune2.Transparency=1-a*.4
+      lightPart.CFrame=cf*CFrame.new(0,.8,-3)
+      pl.Brightness=a*(1.2+pulse*3);pl.Color=col
+    end)
+    -- 시작 순간 룬 링이 펼쳐지며 방패가 솟는다.
+    ring(root.Position-Vector3.new(0,2.5,0),blue,2,10,.35)
+    burst(root.Position+root.CFrame.LookVector*3+Vector3.new(0,.8,0),Color3.fromRGB(210,235,255),14,6,16,.8,.5,180)
+  end
+  meadowArt.guardHit=function(character,root,perfect)
+    meadowArt.guardPerfect=meadowArt.guardPerfect or {}
+    meadowArt.guardPerfect[character]=perfect
+    meadowArt.guardPulse[character]=os.clock()
+    local look=root.CFrame.LookVector
+    local right=root.CFrame.RightVector
+    local hitPos=root.Position+look*3.3+Vector3.new(0,.8,0)
+    local col=perfect and Color3.fromRGB(255,226,140) or Color3.fromRGB(150,210,255)
+    -- 방패 면을 따라 퍼지는 파문
+    local ripple=anchorPart(CFrame.new(hitPos)*CFrame.fromMatrix(Vector3.zero,right,Vector3.yAxis,-look)*CFrame.Angles(0,math.pi/2,0),
+      Vector3.new(.2,1.2,1.2),col,Enum.PartType.Cylinder,.1)
+    fade(ripple,{Size=Vector3.new(.2,perfect and 11 or 7.5,perfect and 11 or 7.5),Transparency=1},perfect and .4 or .3)
+    burst(hitPos,white,perfect and 30 or 18,12,perfect and 34 or 24,.8,.45,70)
+    burst(hitPos,col,perfect and 22 or 12,6,16,1.2,.5,160)
+    -- 방패에 막힌 충격이 발밑 흙먼지로 밀려난다
+    burst(root.Position-Vector3.new(0,2.6,0)-look*1.5,Color3.fromRGB(190,170,140),10,5,14,2,.7,100,"rbxasset://textures/particles/smoke_main.dds")
+    ring(root.Position-Vector3.new(0,2.7,0),col,3,perfect and 16 or 9,.3,.25)
+    light(hitPos,col,perfect and 5 or 3,perfect and 22 or 14,.25)
+    if perfect then
+      streak(hitPos+right*4+Vector3.new(0,3,0),hitPos-right*4-Vector3.new(0,3,0),white,.5,.22)
+      streak(hitPos-right*4+Vector3.new(0,3,0),hitPos+right*4-Vector3.new(0,3,0),col,.5,.22)
+      orb(hitPos,col,1,6,.35)
+    end
+  end
   meadowArt.lastSkill={color=Color3.fromRGB(128,250,201),at=-100}
 
   -- actionId: 승인된 스킬 ID 또는 'odyssey-kick'/'odyssey-rush'. root: 시전자 루트, pos: 목표 위치.
@@ -8595,6 +8671,8 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
   local confirmedParry=actionId=="skill-meadow-parry" and overrideVfx=="PARRY_CONFIRMED"
   if confirmedBlock or confirmedParry then
     local perfect=confirmedParry
+    if meadowArt.guardHit then pcall(meadowArt.guardHit,character,rootPart,perfect) end
+    meadowArt.guardSide=math.random()<.5 and -1 or 1
     -- [직접 만든 타격 반응] 공용 에셋이 없어도 방패 광휘가 번쩍이고 불꽃이 튄다.
     do
       local hitAnchor=Instance.new("Attachment")
@@ -8716,7 +8794,7 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
       glow.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.08,.45),
         NumberSequenceKeypoint.new(.9,.6),NumberSequenceKeypoint.new(1,1)})
       glow.Parent=shieldAnchor
-      glow:Emit(1)
+      if meadowArt.guardShield then pcall(meadowArt.guardShield,character,rootPart,life) end
       local embers=Instance.new("ParticleEmitter")
       embers.Name="GuardShieldEmbers";embers.Texture="rbxasset://textures/particles/sparkles_main.dds"
       embers.Rate=reducedEffects and 6 or 22;embers.Lifetime=NumberRange.new(.5,.9);embers.Speed=NumberRange.new(1,3)
@@ -8732,7 +8810,6 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
       startBurst.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,2),NumberSequenceKeypoint.new(1,12)})
       startBurst.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.2),NumberSequenceKeypoint.new(1,1)})
       startBurst.Parent=shieldAnchor
-      startBurst:Emit(1)
       task.delay(life,function() embers.Enabled=false;embers.Rate=0 end)
       debris:AddItem(shieldAnchor,life+1)
       -- [유지 태세] 지속시간 2.8초에 맞춘 약한 호박색 윤곽만 남긴다.
@@ -9270,6 +9347,45 @@ do
     out.FlipRoot=CFrame.new(0,tmp[15],0)*CFrame.Angles(0,math.rad(tmp[13]),0)*base*CFrame.Angles(math.rad(tmp[14]),0,0)
     out.Root=nil
   end
+  -- ───── 막기 자세: 무기군별 가드 + 피격 반동 ─────
+  local GUARD={
+    fist={22,-6,14,-108,-100,-24,18,40,48,-.08,-138,-142},
+    h1={-26,-8,-14,-84,-102,-20,16,38,44,-.08,-125,-92},
+    h2={-18,-6,-8,-112,-112,-26,20,50,54,-.1,-78,-78},
+    blunt={0,-4,0,-150,-142,-18,14,42,46,-.08,-60,-92},
+    dagger={10,-24,12,-86,-84,-30,14,72,76,-.26,-145,-150},
+    bow={32,-2,16,-96,-62,-14,16,38,44,-.06,-18,-112},
+    staff={-12,-4,-10,-92,-90,-18,14,34,40,-.06,-82,-82},
+  }
+  local gtmp={}
+  -- brace 0~1(자세 전환), hit 0~1(방금 막은 충격), side ±1(충격 방향), t 초(호흡)
+  motion.guard=function(family,brace,hit,side,t,out)
+    local G=GUARD[family] or GUARD.h1
+    for i=1,12 do gtmp[i]=R0[i]+(G[i]-R0[i])*brace end
+    local breath=math.sin(t*3.4)*brace
+    gtmp[2]+=1.4*breath+17*hit
+    gtmp[10]+=.012*breath-.09*hit
+    gtmp[8]+=18*hit;gtmp[9]+=14*hit
+    gtmp[4]+=12*hit;gtmp[5]+=12*hit
+    gtmp[11]+=10*hit;gtmp[12]+=10*hit
+    gtmp[1]+=side*11*hit;gtmp[3]+=side*9*hit
+    gtmp[13]=0;gtmp[14]=7*hit;gtmp[15]=0
+    local shot=martialShot(gtmp)
+    for joint,cf in pairs(shot) do out[joint]=cf end
+    out.FlipRoot=CFrame.new(0,0,-.04*hit)*(out.Root or CFrame.identity)*CFrame.Angles(math.rad(gtmp[14]),0,0)
+    out.Root=nil
+  end
+  -- 완벽 막기: 가드 → 걷어내는 쳐올림 → 반격 자세
+  B.parry={dur=.6,keys={K(0,unpack(R0)),
+    K(.1,-10,-8,-8,-90,-100,-20,16,40,44,-.08,-120,-100),
+    Kc(.2,-46,-14,-52,-70,-140,-30,22,50,30,.02,-70,-20,-40,0,0),
+    K(.34,-40,-24,-44,-60,-120,-34,24,52,26,-.04,-60,-24,-40,0,0),
+    K(.6,0,6,0,-45,-45,-8,12,10,18,0,-80,-80,0,0,0)}}
+  F.parry={dur=.6,keys={K(0,unpack(R0)),
+    K(.1,20,-8,14,-108,-100,-24,18,40,48,-.08,-138,-142),
+    Kc(.2,-50,-10,-60,-60,-150,-34,22,52,26,.04,-100,-14,-60,0,0),
+    K(.36,-44,-20,-52,-54,-130,-36,24,54,24,-.02,-96,-22,-60,0,0),
+    K(.6,0,6,0,-45,-45,-8,12,10,18,0,-80,-80,0,0,0)}}
   meadowArt.motion=motion
 end
 -- [연타 5단계] 같은 연타 버튼을 연속 입력할 때마다 1→2→3→4→5→1단.
@@ -9537,6 +9653,7 @@ local skillMotionState=nil
 local skillMotionStart=0
 local skillMotionDuration=0
 local skillAuthored=nil
+local skillGuardFamily="h1"
 local skillMotionJoints={}
 local skillMotionAvailable={}
 local skillMotionTargets={}
@@ -9661,7 +9778,8 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
     dodgePoseUntil=skillMotionStart+(motionStage>=5 and .7 or .46)+.12
   end
   skillAuthored=nil
-  if not (isDodge or isGuard or isParry) and meadowArt.motion then
+  skillGuardFamily=meadowArt.motion and meadowArt.motion.family() or "h1"
+  if not (isDodge or isGuard) and meadowArt.motion then
     local track,style,family=meadowArt.motion.track(id)
     if track then
       skillAuthored=track
@@ -9750,7 +9868,15 @@ RunService.PreSimulation:Connect(function(dt)
     skillMotionTargets.ForearmR=CFrame.Angles(-.51*first-.41*second-1.46*flipping,0,0)
     skillMotionTargets.HandL=CFrame.Angles(-.20*flipping,0,0)
     skillMotionTargets.HandR=CFrame.Angles(-.20*flipping,0,0)
-  elseif isGuard or isParry then
+  elseif isGuard then
+    -- [무기별 막기] 빠르게 자세를 잡고, 호흡하며 버티고, 막을 때마다 몸이 밀렸다 돌아온다.
+    local elapsed=os.clock()-skillMotionStart
+    local rise=math.clamp(elapsed/.09,0,1);rise=rise*rise*(3-2*rise)
+    local release=math.clamp((skillMotionDuration-elapsed)/.16,0,1);release=release*release*(3-2*release)
+    local sinceHit=os.clock()-meadowGuardContactAt
+    local hit=math.sin(math.pi*math.clamp(sinceHit/(meadowGuardContactPerfect and .3 or .24),0,1))
+    meadowArt.motion.guard(skillGuardFamily,rise*release,hit,meadowArt.guardSide or 1,elapsed,skillMotionTargets)
+  elseif isParry and not skillAuthored then
     -- [중세 검술 하이 가드] 몸을 숙이는 X자 막기를 없애고 서서 정면을 방호한다.
     -- 오른 전완은 얼굴 앞 세로, 왼 전완은 가슴 앞 사선. 발은 지면에 유지한다.
     local rise=math.clamp(phase/(isParry and .17 or .045),0,1)
