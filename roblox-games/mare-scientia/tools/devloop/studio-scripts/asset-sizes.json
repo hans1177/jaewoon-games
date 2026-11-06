@@ -1,0 +1,46 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local lib=RS:FindFirstChild(\"MareAssets\") local k=lib and lib:FindFirstChild(\"Town\") if not k then return \"NONE\" end local o={} for _,m in ipairs(k:GetChildren()) do if m:IsA(\"Model\") then local ok,cf,sz=pcall(function() return m:GetBoundingBox() end) if ok then o[#o+1]=string.format(\"%s=%.1f,%.1f,%.1f\",m.Name,sz.X,sz.Y,sz.Z) end end end return \"Town|\"..table.concat(o,\";\")"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local lib=RS:FindFirstChild(\"MareAssets\") local k=lib and lib:FindFirstChild(\"Naval\") if not k then return \"NONE\" end local o={} for _,m in ipairs(k:GetChildren()) do if m:IsA(\"Model\") then local ok,cf,sz=pcall(function() return m:GetBoundingBox() end) if ok then o[#o+1]=string.format(\"%s=%.1f,%.1f,%.1f\",m.Name,sz.X,sz.Y,sz.Z) end end end return \"Naval|\"..table.concat(o,\";\")"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local lib=RS:FindFirstChild(\"MareAssets\") local k=lib and lib:FindFirstChild(\"Castle\") if not k then return \"NONE\" end local o={} for _,m in ipairs(k:GetChildren()) do if m:IsA(\"Model\") then local ok,cf,sz=pcall(function() return m:GetBoundingBox() end) if ok then o[#o+1]=string.format(\"%s=%.1f,%.1f,%.1f\",m.Name,sz.X,sz.Y,sz.Z) end end end return \"Castle|\"..table.concat(o,\";\")"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local lib=RS:FindFirstChild(\"MareAssets\") local k=lib and lib:FindFirstChild(\"Terrain\") if not k then return \"NONE\" end local o={} for _,m in ipairs(k:GetChildren()) do if m:IsA(\"Model\") then local ok,cf,sz=pcall(function() return m:GetBoundingBox() end) if ok then o[#o+1]=string.format(\"%s=%.1f,%.1f,%.1f\",m.Name,sz.X,sz.Y,sz.Z) end end end return \"Terrain|\"..table.concat(o,\";\")"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local lib=RS:FindFirstChild(\"MareAssets\") local k=lib and lib:FindFirstChild(\"Interior\") if not k then return \"NONE\" end local o={} for _,m in ipairs(k:GetChildren()) do if m:IsA(\"Model\") then local ok,cf,sz=pcall(function() return m:GetBoundingBox() end) if ok then o[#o+1]=string.format(\"%s=%.1f,%.1f,%.1f\",m.Name,sz.X,sz.Y,sz.Z) end end end return \"Interior|\"..table.concat(o,\";\")"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local lib=RS:FindFirstChild(\"MareAssets\") local k=lib and lib:FindFirstChild(\"Relics\") if not k then return \"NONE\" end local o={} for _,m in ipairs(k:GetChildren()) do if m:IsA(\"Model\") then local ok,cf,sz=pcall(function() return m:GetBoundingBox() end) if ok then o[#o+1]=string.format(\"%s=%.1f,%.1f,%.1f\",m.Name,sz.X,sz.Y,sz.Z) end end end return \"Relics|\"..table.concat(o,\";\")"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local lib=RS:FindFirstChild(\"MareAssets\") local k=lib and lib:FindFirstChild(\"Cargo\") if not k then return \"NONE\" end local o={} for _,m in ipairs(k:GetChildren()) do if m:IsA(\"Model\") then local ok,cf,sz=pcall(function() return m:GetBoundingBox() end) if ok then o[#o+1]=string.format(\"%s=%.1f,%.1f,%.1f\",m.Name,sz.X,sz.Y,sz.Z) end end end return \"Cargo|\"..table.concat(o,\";\")"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local lib=RS:FindFirstChild(\"MareAssets\") local k=lib and lib:FindFirstChild(\"People\") if not k then return \"NONE\" end local o={} for _,m in ipairs(k:GetChildren()) do if m:IsA(\"Model\") then local ok,cf,sz=pcall(function() return m:GetBoundingBox() end) if ok then o[#o+1]=string.format(\"%s=%.1f,%.1f,%.1f\",m.Name,sz.X,sz.Y,sz.Z) end end end return \"People|\"..table.concat(o,\";\")"
+ }
+]
