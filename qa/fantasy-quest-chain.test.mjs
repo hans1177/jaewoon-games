@@ -106,7 +106,7 @@ test("랜드마크 축복: 설정·서버 처리·클라이언트 허용 패턴�
 
 test("배경 오브젝트: 서버가 쓰는 모델 키가 모두 등록된 에셋 ID를 가진다", () => {
   const ids = fs.readFileSync(root + "shared/VisualAssetIds.luau", "utf8");
-  const block = srv.slice(srv.indexOf("local scatter={"), srv.indexOf("local function blocked"));
+  const block = srv.slice(srv.indexOf("local scatter={"), srv.indexOf("local function blocked")) + srv.slice(srv.indexOf("Camp_Signpost_") - 300, srv.indexOf("Camp_Signpost_") + 100);
   const keys = new Set([...block.matchAll(/"(vx\w+)"/g)].map((m) => m[1]));
   assert.ok(keys.size >= 8, "keys=" + keys.size);
   for (const k of keys) assert.match(ids, new RegExp(`\\b${k}=\\d{6,}`), `${k} 에셋 ID 없음`);

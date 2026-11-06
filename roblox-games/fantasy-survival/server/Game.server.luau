@@ -6687,6 +6687,20 @@ remote.OnServerEvent:Connect(function(player, actionId)
         if fb and fb.untilT<=os.clock() then foodBuff[player]=nil;player:SetAttribute("MeadowFoodName",nil) end
       end)
     end
+    -- [요리 연출] 화덕 위에 완성된 요리 모델(등록된 CC0 음식)을 잠깐 띄운다.
+    task.spawn(function()
+      local dishModel=({[1]="vxMeatCooked",[2]="vxBowlSoup",[3]="vxOnion",[4]="vxPie",[5]="vxGlassWine"})[dish.Id]
+      local spot=Vector3.new(station.X,6,station.Z)
+      local shown=dishModel and worldAsset(dishModel,spot,1.6,3)
+      if shown then
+        shown.Name="Meadow_CookedDish";shown:SetAttribute("MeadowScenery",true)
+        if dish.Id==5 then
+          local side=worldAsset("vxFoodCorn",spot+Vector3.new(2.2,0,0),1.4,3)
+          if side then task.delay(5,function() if side.Parent then side:Destroy() end end) end
+        end
+        task.delay(5,function() if shown.Parent then shown:Destroy() end end)
+      end
+    end)
     villageDialogue(player,"식당 화덕",dish.Name.."을(를) 맛있게 먹었어!\n"..dish.Desc.."\n요리 숙련 "..(skill+1))
     return
   end
@@ -9062,6 +9076,22 @@ task.spawn(function()
     deadmarsh={{"vxCastlePillar",12,4},{"vxCastleWall",9,3},{"vxTreeLog",3.5,4}},
     meadow={{"vxTreeLog",3.5,4},{"vxCampfirePit",2.5,3},{"vxRockLarge",12,2}},
   }
+  -- 아직 쓰지 않던 등록 소품도 어울리는 지역에 놓는다(석조 계단·바위 지붕·노점·울타리).
+  local extra={
+    windcliff={{"vxStall",4,2},{"villageFenceBroken",2.5,2},{"vxOverhang",9,2}},
+    worldtree={{"vxHedgeGate",4,2}},
+    oasis={{"vxStairsStone",3,3}},
+    citadel={{"vxStairsStone",3,4},{"vxOverhang",10,2}},
+    canyon={{"vxStairsStone",3,3},{"vxOverhang",10,3}},
+    highland={{"vxOverhang",10,2}},
+    wetland={{"villageFenceBroken",2.5,3}},
+    desert={{"vxStairsStone",3,3}},
+    deadmarsh={{"vxStairsStone",3,3},{"villageFenceBroken",2.5,2}},
+  }
+  for zoneId,list in pairs(extra) do
+    scatter[zoneId]=scatter[zoneId] or {}
+    for _,entry in ipairs(list) do table.insert(scatter[zoneId],entry) end
+  end
   local function blocked(x,z)
     if x>village.X0-30 and x<village.X1+30 and z>village.Z0-30 and z<village.Z1+30 then return true end
     for _,wp in ipairs(world.Waypoints) do if (x-wp[2])^2+(z-wp[3])^2<90*90 then return true end end
@@ -9090,6 +9120,17 @@ task.spawn(function()
         task.wait()
       end
     end
+  end
+  -- [야영지 표지판] 서브퀘스트 거점마다 등록된 표지판을 세워 위치를 눈에 띄게 한다.
+  local signs={{215,-140},{-250,60},{255,235}}
+  for _,region in ipairs(Config.EcoRegions or {}) do
+    for _,camp in ipairs(region.Camps) do signs[#signs+1]={camp.X,camp.Z} end
+  end
+  for _,camp in pairs(world.EcoCamps or {}) do signs[#signs+1]={camp.X,camp.Z} end
+  for index,spot in ipairs(signs) do
+    local sign=worldAsset("vxSignpostSingle",Vector3.new(spot[1]-12,3,spot[2]-12),4)
+    if sign then sign.Name="Camp_Signpost_"..index;sign:SetAttribute("MeadowScenery",true);placed+=1 end
+    task.wait()
   end
   workspace:SetAttribute("SceneryPlaced",placed)
 end)
