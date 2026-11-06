@@ -182,7 +182,15 @@ end
 -- 주민 NPC: 다리·몸통·팔·머리·얼굴·모자를 나눠 만든 사람 모양
 local SKINS = { Color3.fromRGB(242, 205, 170), Color3.fromRGB(214, 165, 125), Color3.fromRGB(176, 125, 90), Color3.fromRGB(128, 88, 62) }
 local HAIRS = { Color3.fromRGB(40, 28, 20), Color3.fromRGB(96, 62, 34), Color3.fromRGB(176, 130, 66), Color3.fromRGB(150, 150, 150), Color3.fromRGB(20, 18, 18) }
+local PEOPLE_ROLES = { "Pirate_Male", "Pirate_Female", "Worker_Male", "Worker_Female", "Casual_Male", "Casual_Female", "OldClassy_Male", "OldClassy_Female" }
 local function villager(parent, pos, facing, coat, rng)
+	-- 등록된 CC0 주민 모델이 있으면 그것을 쓰고, 없으면 아래 코드 모양을 쓴다
+	local character = importedModel(parent, "People", PEOPLE_ROLES[rng:NextInteger(1, #PEOPLE_ROLES)], pos, 5.6, false)
+	if character then
+		character.Name = "Villager"
+		character:PivotTo(character:GetPivot() * CFrame.Angles(0, facing, 0))
+		return character
+	end
 	local m = Instance.new("Model")
 	m.Name = "Villager"
 	local skin = SKINS[rng:NextInteger(1, #SKINS)]

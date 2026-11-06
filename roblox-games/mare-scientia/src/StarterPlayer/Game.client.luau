@@ -57,6 +57,7 @@ local view = nil -- 서버가 보낸 최신 스냅샷
 local currentTab = "status"
 local syncScene
 local openTab
+local assetWaitStarted = false
 local sceneKey = nil
 local sceneCtl = nil -- 현재 3D 장면의 제어(출항 연출 등)
 local sceneHold = false -- 항해 중에는 장면을 바꾸지 않는다
@@ -1865,6 +1866,24 @@ end
 -- 3D 항구 장면: 항구나 배가 바뀔 때만 다시 만든다
 syncScene = function()
 	if sceneHold then
+		return
+	end
+	-- 서버가 CC0 모델을 불러오는 동안(최대 약 25초) 기다렸다가 장면을 만든다
+	local RS = game:GetService("ReplicatedStorage")
+	if not RS:GetAttribute("MareAssetsReady") then
+		if not assetWaitStarted then
+			assetWaitStarted = true
+			task.spawn(function()
+				local t0 = os.clock()
+				while not RS:GetAttribute("MareAssetsReady") and os.clock() - t0 < 30 do
+					task.wait(0.3)
+				end
+				sceneKey = nil
+				if view then
+					syncScene()
+				end
+			end)
+		end
 		return
 	end
 	local p, ship = view.player, view.ship

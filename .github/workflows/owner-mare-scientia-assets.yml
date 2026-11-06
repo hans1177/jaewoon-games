@@ -1,0 +1,58 @@
+# Mare Scientia CC0 3D 모델(선박·부두·소품·마을·주민)을 Roblox에 등록하고, 끝나면 게시를 이어서 실행한다. 수동 실행 전용.
+name: Owner Mare Scientia Register Assets
+run-name: Owner Mare Scientia assets · ${{ github.sha }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      universe_id:
+        description: 'Universe ID (사용 권한을 줄 체험)'
+        type: string
+        required: false
+        default: '10774821253'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: owner-mare-scientia-assets
+  cancel-in-progress: false
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Upload CC0 models to Roblox and write AssetIds
+        env:
+          MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+          ROBLOX_CREATOR_USER_ID: ${{ vars.ROBLOX_CREATOR_USER_ID }}
+        run: node tools/mare-scientia-upload-assets.mjs
+
+      - name: Commit registered asset IDs
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add roblox-games/mare-scientia/assets-registered.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau
+          if git diff --cached --quiet; then echo 'NO_ASSET_CHANGES'; exit 0; fi
+          git commit -m 'Mare Scientia: Roblox 등록 자산 ID 갱신'
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Publish the place with the new asset IDs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run owner-mare-scientia-direct-publish.yml --ref main -f universe_id="${{ inputs.universe_id }}"
