@@ -98,6 +98,27 @@ try{
    observedGames.add('human-go');
    console.log('HUMAN_GO_MOBILE_FIRST_FIGHT_REWARD_NEXT_STAGE=PASS');
    activeGameId=null;
+  }catch(error){
+   // 실제 모바일 Chromium에서 멈춘 순간의 화면·진행 상태와 콘솔 오류를 증거로 남긴다.
+   const screen=await human.evaluate(()=>{
+    const has=id=>document.getElementById(id)?.classList.contains('on')===true;
+    const visible=id=>{const el=document.getElementById(id);return !!el&&getComputedStyle(el).display!=='none'};
+    return {
+     started:document.body.classList.contains('gameStarted'),
+     introOff:document.getElementById('intro')?.classList.contains('off'),
+     classSelect:has('classSelect'),home:has('home'),map:has('map'),battle:has('battle'),
+     reward:has('reward'),gameover:has('gameover'),event:has('event'),
+     nextVisible:visible('nextBtn'),nextDisabled:document.getElementById('nextBtn')?.disabled,
+     nextText:document.getElementById('nextBtn')?.textContent?.trim(),
+     stage:typeof G==='undefined'?null:G.stage,step:typeof G==='undefined'?null:G.step,
+     hp:typeof G==='undefined'?null:G.hp,maxHp:typeof G==='undefined'?null:G.maxHp,
+     job:typeof G==='undefined'?null:G.job,inBattle:typeof G==='undefined'?null:G.inBattle,
+     battleLog:document.getElementById('battleLog')?.textContent?.slice(-600),
+     rewardButtons:document.querySelectorAll('#rewardList .choice').length
+    };
+   }).catch(e=>({inspectionError:e.message}));
+   console.error('HUMAN_GO_MOBILE_PLAY_DIAGNOSTIC='+JSON.stringify({failure:error.message,screen,errors}));
+   throw error;
   }finally{await human.close();}
  }
  // 공개 홈페이지는 게임/즐겨찾기만 표시한다. 관리자 삭제 버튼은 등록 기기의 서버 검증 후 노출된다.
