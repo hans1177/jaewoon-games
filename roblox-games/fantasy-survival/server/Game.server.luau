@@ -7414,6 +7414,7 @@ do
   -- 서식지: 면적에 비례해 지역별 변종 풀에서 배치. 5번째마다 정예(체력·피해 상향, 큰 몸집).
   local random=Random.new(9031)
   local count=0
+  local placedSites={}
   for _,zone in ipairs(world.Zones) do
     local pool=pools[zone.Id]
     local sites=math.floor(zone.Area/65000)
@@ -7421,6 +7422,24 @@ do
       local spec=pool[random:NextInteger(1,#pool)]
       local x,z=world.RandomPoint(zone.Id,random,30)
       local inVillage=x==nil or (x>village.X0-60 and x<village.X1+60 and z>village.Z0-60 and z<village.Z1+60)
+      -- [배치 보정] 이정표(야영지) 반경 70 안과 이미 놓인 서식지 38 이내는 피해 다시 뽑는다(최대 6번).
+      if not inVillage then
+        for _=1,6 do
+          local blocked=false
+          for _,wp in ipairs(world.Waypoints) do
+            if (x-wp[2])^2+(z-wp[3])^2<70*70 then blocked=true;break end
+          end
+          if not blocked then
+            for _,placed in ipairs(placedSites) do
+              if (x-placed.X)^2+(z-placed.Z)^2<38*38 then blocked=true;break end
+            end
+          end
+          if not blocked then break end
+          local nx,nz=world.RandomPoint(zone.Id,random,30)
+          if nx==nil then break end
+          x,z=nx,nz
+        end
+      end
       if not inVillage then
         local elite=index%5==0
         local tierGain=math.floor(math.sqrt((x-zone.Seed[1])^2+(z-zone.Seed[2])^2)/700)
@@ -7429,7 +7448,17 @@ do
           tier=math.min(10,zoneTier[zone.Id]+tierGain+(elite and 1 or 0)),height=spec[4]*(elite and 1.25 or 1),
           hp=spec[2] and spec[5]*(elite and 1.8 or 1) or nil,dmg=spec[2] and (spec[5]*.8)*(elite and 1.4 or 1) or nil,
           drops=spec[6],position=Vector3.new(x,3,z)})
+        placedSites[#placedSites+1]={X=x,Z=z}
         count+=1
+        -- [무리] 정예가 아닌 늑대형 서식지의 3분의 1은 가까이에 동료 1마리가 함께 있다(무리 사냥 느낌).
+        if not elite and spec[1]=="wolf" and index%3==0 then
+          local angle=random:NextNumber(0,math.pi*2)
+          table.insert(meadowEncounterSites,{id=spec[1],atom="HEAD_CANINE",model=spec[2],
+            name=spec[3],tier=math.min(10,zoneTier[zone.Id]+tierGain),height=spec[4],
+            hp=spec[2] and spec[5] or nil,dmg=spec[2] and spec[5]*.8 or nil,
+            drops=spec[6],position=Vector3.new(x+math.cos(angle)*11,3,z+math.sin(angle)*11)})
+          count+=1
+        end
       end
     end
   end

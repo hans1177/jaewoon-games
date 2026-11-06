@@ -10200,6 +10200,46 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
                   +(front and .08 or .19)*strike,0,0)
               end
             end
+          elseif mode=="IDLE" then
+            -- [대기 숨쉬기] 4족 몹이 가만히 있어도 호흡·꼬리·귀 쪽 머리 움직임이 있어 얼어붙어 보이지 않는다. 사슴은 가끔 풀을 뜯듯 머리를 숙인다.
+            local t=os.clock()+(row.idleSeed or 0)
+            row.idleSeed=row.idleSeed or (math.random()*20)
+            local breath=math.sin(t*1.7)
+            local deer=row.species=="deer"
+            local graze=deer and math.max(0,math.sin(t*.35))^3 or 0
+            if row.available.Chest then row.poses.Chest=CFrame.Angles(.016*breath,0,0) end
+            if row.available.Spine then row.poses.Spine=CFrame.Angles(-.010*breath,0,0) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(.05*graze*4+math.sin(t*.6)*.018,math.sin(t*.43)*.07,0) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(.10*graze*4+math.sin(t*.8)*.02,math.sin(t*.43+.6)*.10,0) end
+            if row.available.Tail then row.poses.Tail=CFrame.Angles(0,math.sin(t*(deer and 2.4 or 1.3))*(deer and .16 or .12),0) end
+          elseif mode=="HIT" then
+            -- [피격 반응] 맞는 순간 몸이 뒤로 젖혀지고 머리가 들리며 네 다리가 버틴다.
+            local flinch=math.sin(math.pi*math.clamp(phase,0,1))
+            if row.available.Chest then row.poses.Chest=CFrame.Angles(.30*flinch,0,.06*flinch) end
+            if row.available.Spine then row.poses.Spine=CFrame.Angles(.20*flinch,0,-.05*flinch) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(-.34*flinch,.10*flinch,0) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(-.42*flinch,.14*flinch,0) end
+            if row.available.Tail then row.poses.Tail=CFrame.Angles(-.30*flinch,0,0) end
+            for _,key in ipairs({"FL","FR","BL","BR"}) do
+              local front=key:sub(1,1)=="F"
+              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles((front and .26 or -.20)*flinch,0,0) end
+              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.16*flinch,0,0) end
+            end
+          elseif mode=="DEATH" then
+            -- [쓰러짐] 다리가 접히고 몸통이 옆으로 기울며 머리가 떨어진다. 끝 자세를 유지한다.
+            local ease=math.clamp(phase,0,1)
+            ease=ease*ease*(3-2*ease)
+            if row.available.Chest then row.poses.Chest=CFrame.Angles(.12*ease,0,.95*ease) end
+            if row.available.Spine then row.poses.Spine=CFrame.Angles(.06*ease,0,.40*ease) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(.30*ease,0,.22*ease) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(.34*ease,0,.18*ease) end
+            if row.available.Tail then row.poses.Tail=CFrame.Angles(.25*ease,0,0) end
+            for _,key in ipairs({"FL","FR","BL","BR"}) do
+              local front=key:sub(1,1)=="F"
+              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles((front and -.55 or .55)*ease,0,0) end
+              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.85*ease,0,0) end
+              if row.available[key.."Ankle"] then row.poses[key.."Ankle"]=CFrame.Angles(-.30*ease,0,0) end
+            end
           end
         end
         -- [수문장 액션] 실제 원본 팔·다리만 큰 예비 동작과 충격 뒤 복귀에 연결한다.
