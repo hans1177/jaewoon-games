@@ -325,3 +325,42 @@ KayKit Resource Bits 1.0, 제작자 Kay Lousberg. CC0-1.0, 상업 이용·수정
 | `icons/quest.png` | `delapouite/scroll-quill.svg` | `7712bda49c0244aa4304355f48c7ecdbc042f245` | `667e088e15f20f8aea319ca5720480cc572e73dfcd380e112817f12cc6f8ff25` |
 | `icons/battle.png` | `lorc/crossed-sabres.svg` | `e5250e622ce85de087d54997ba488a8b5f7b4008` | `482381e2617bb6b4cd706677bc9afd0fec44461723c8ebee979eccde47ad4ee8` |
 | `icons/status.png` | `delapouite/pirate-hat.svg` | `236c2b4772507c1376034510027fa6200c1a6e9d` | `269bc97cb9ee247d6927835bb8e5bd8799ca85da978fc24ea720a5bebfe3bfdf` |
+
+## 2026-11-06 추가 확보: 3D 교역품·항구·마을 소품 26개
+
+- 목적: 교역품 디테일, 항구의 화물 장식, 탐험 및 생산지 환경 모델 추가.
+- 제작 및 권리: Kenney / Creative Commons CC0-1.0. 상업 이용 및 수정 가능. 원본 공식 페이지: https://kenney.nl/assets/food-kit, https://kenney.nl/assets/furniture-kit, https://kenney.nl/assets/nature-kit, https://kenney.nl/assets/pirate-kit.
+- 바이너리 경로: https://github.com/Hidencod/tge-assets/tree/main/packs. 메쉬와 재질은 원본 자체 완성 GLB이며 임의 도형 생성물이 아님.
+- 검증: 아래 26개 각각의 GitHub 원본 blob SHA와 대상 저장소 새 blob SHA가 일치하고 GLB 매직 헤더 확인됨. 기존 마리 에센시아 자산 및 저장소 전체의 동일 SHA 파일은 제외함.
+- 적용 상태: **GitHub 원본 확보 완료. Roblox asset ID 발급, Universe 사용 권한, Studio/런타임 표시 및 게임 게시 여부는 별도 검증 필요**. `tools/mare-scientia-upload-assets.mjs`의 기존 자산 등록 경로가 스캔함.
+
+| 저장소 경로 (assets/ 기준) | 원본 팩 | 원본 Git blob SHA | 바이트 |
+|---|---|---|---:|
+| `cargo/barrel.glb` | `food-kit` | `936bb5a946f4ac4693ef3c833a15e134205851a6` | 37544 |
+| `cargo/bowl.glb` | `food-kit` | `28377e1ceff70380a07f42d097690e313a0fd3ea` | 17080 |
+| `cargo/chocolate.glb` | `food-kit` | `a40f0690707b51407d105d7d06f232f5db03236a` | 23396 |
+| `cargo/cheese-cut.glb` | `food-kit` | `bd63dbca1440c238cfdabf231475a2f092fba5d1` | 24192 |
+| `cargo/croissant.glb` | `food-kit` | `228048f2bc0f1e1f9b966a945294f1051136f174` | 25100 |
+| `cargo/fish-bones.glb` | `food-kit` | `efdbeda1ad4aedc3f48caf173f0cb006c992c1e1` | 44808 |
+| `cargo/glass.glb` | `food-kit` | `0a4f2f1844b0d0e95b3145f59b5a35ef2f5f505b` | 14956 |
+| `cargo/mortar.glb` | `food-kit` | `a99fe6638ed57b35ca1ae42520942b53f0e6a8b1` | 20948 |
+| `cargo/plate-dinner.glb` | `food-kit` | `36c3757f3d04fae7120718854c5d1b62c8cbc2d9` | 38644 |
+| `cargo/shaker-pepper.glb` | `food-kit` | `4d287a015ad22e63bb516a6a3673efd0e8f89fe9` | 20044 |
+| `cargo/turkey.glb` | `food-kit` | `6341e793faf4bd371189028e94b9e5b9367e9fda` | 47864 |
+| `cargo/coconut-half.glb` | `food-kit` | `d55c25f04f3ecec3c80e6d533140c72b26c0fa21` | 19056 |
+| `cargo/lemon-half.glb` | `food-kit` | `be6290019a74734605ba4a32c94ab0dfcca889d5` | 21024 |
+| `interior/tablecrosscloth.glb` | `furniture-kit` | `e55c74e4176ce0129619ee7dd984c58bf4024d1e` | 13852 |
+| `interior/rugrounded.glb` | `furniture-kit` | `4827425a7448104a65b9109f8c2fffa53af8c72c` | 10876 |
+| `interior/coatrack.glb` | `furniture-kit` | `3cddd8beed819c9553749ccd75a2475b1ca1f7d4` | 9948 |
+| `terrain/crop-carrot.glb` | `nature-kit` | `045d5758f5c7ba263a1fb804b324c4429fe73362` | 12664 |
+| `terrain/crop-melon.glb` | `nature-kit` | `225d5cf61c626d0bf6343034fc8b457f0787c5d7` | 13328 |
+| `terrain/crop-turnip.glb` | `nature-kit` | `ac03d00ea292037d3e2024cb7229e6fd8c88927e` | 14308 |
+| `terrain/crops-cornstagec.glb` | `nature-kit` | `3cc31d597809d0ff3b5a6a24d27fb3c52d44c862` | 11960 |
+| `terrain/crops-wheatstagea.glb` | `nature-kit` | `7c710d2363c1b1804b5b77fe92e9320dedd39654` | 56228 |
+| `terrain/campfire-logs.glb` | `nature-kit` | `bd23b59c1b662eb8e1f8675758fc507e5d7b109d` | 9284 |
+| `naval/flag-pirate-high.glb` | `pirate-kit` | `75c2215a7c0fc1554ede772d9129846bf40456a2` | 25312 |
+| `naval/grass-plant.glb` | `pirate-kit` | `a095edfb5bf6ff4df197f44d3ab2f055f45ac223` | 24492 |
+| `naval/palm-bend.glb` | `pirate-kit` | `e4bba77d41664206bb32bcb353b38f6672426dd1` | 46624 |
+| `naval/tower-roof.glb` | `pirate-kit` | `76be3cb9bd4083512d6168d92ff65d67c89dae44` | 21868 |
+
+해당 모델의 실제 개별 로블록스 등록 및 권한이 확인되기 전에는 제작 완료/게시 완료로 간주하지 않는다.
