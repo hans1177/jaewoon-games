@@ -52,7 +52,7 @@ if (!creatorId) {
 
 // kind(MareAssets 하위 폴더) / 모델 이름 / 원본 파일. OBJ는 Open Cloud가 받지 않아 제외한다.
 const plan = [];
-for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People']]) {
+for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     const ext = path.extname(f).toLowerCase();
     if (ext !== '.glb' && ext !== '.fbx') continue;
@@ -104,4 +104,7 @@ await fs.writeFile(JSON_OUT, JSON.stringify(registry, null, 2) + '\n');
 const lines = Object.entries(registry.assets).sort().map(([k, v]) => `\t["${k}"] = ${v.assetId},`);
 await fs.writeFile(LUAU_OUT, '-- 자동 생성: tools/mare-scientia-upload-assets.mjs (직접 고치지 말 것)\nreturn {\n' + lines.join('\n') + (lines.length ? '\n' : '') + '}\n');
 console.log('REGISTERED_COUNT=' + Object.keys(registry.assets).length + ' FAILED_COUNT=' + failures.length);
-if (!Object.keys(registry.assets).length) process.exit(1);
+if (!Object.keys(registry.assets).length || failures.length) {
+  console.error('REGISTRATION_INCOMPLETE', failures.length, failures.slice(0, 12).join(' | '));
+  process.exitCode = 1;
+}

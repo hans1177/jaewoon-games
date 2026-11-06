@@ -444,7 +444,7 @@ function PortScene.build(info, onFacility)
 	water.CanCollide = false
 	part(folder, Vector3.new(8, 2, 300), CFrame.new(18, 0, 0), Color3.fromRGB(130, 126, 120), Enum.Material.Cobblestone)
 	local dock = part(folder, Vector3.new(60, 0.8, 10), CFrame.new(50, 1.6, 0), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
-	if false and importedModel(folder, "Naval", "structure-platform-dock", Vector3.new(50, 1.6, 0), 60, false) then
+	if importedModel(folder, "Naval", "structure-platform-dock", Vector3.new(50, 1.6, 0), 60, false) then
 		-- 실제 메쉬를 보여주면서 기존 부두의 안전한 보행 판정은 유지.
 		dock.Transparency = 1
 	end
@@ -710,11 +710,23 @@ function PortScene.build(info, onFacility)
 		end
 		importedModel(folder, "Naval", "cannon", Vector3.new(40, 2, -3.6), 3.4, false)
 		importedModel(folder, "Naval", "cannon", Vector3.new(58, 2, 3.6), 3.4, false)
+		-- 하역 도르래·화물·소형 선박은 실물 모델만 표시하고 기존 보행·교역 판정은 유지한다.
+		importedModel(folder, "Naval", "pulley-crate", Vector3.new(66, 2, 3.5), 4.2, false)
+		importedModel(folder, "Naval", "pulley", Vector3.new(74, 2, -3.5), 4.8, false)
+		importedModel(folder, "Naval", "cargo-pile-a", Vector3.new(28, 2, -3.2), 3.6, false)
+		importedModel(folder, "Naval", "cargo-pile-b", Vector3.new(70, 2, 3.1), 3.8, false)
+		importedModel(folder, "Naval", "buoy", Vector3.new(105, 0.8, -25), 2.5, false)
+		importedModel(folder, "Naval", "buoy-flag", Vector3.new(112, 0.8, 25), 2.5, false)
+		importedModel(folder, "Naval", "boat-sail-a", Vector3.new(112, 0.8, 48), 14, false)
+		importedModel(folder, "Naval", "boat-fishing-small", Vector3.new(116, 0.8, -48), 10, false)
 	end
 	-- 광장: 시장 가판대, 우물, 수레, 벤치
 	do
-		for _, spot in { Vector3.new(-18, 0, -13), Vector3.new(-18, 0, 13), Vector3.new(2, 0, 14) } do
-			importedModel(folder, "Town", "stall", spot, 6.5, false)
+		for i, spot in { Vector3.new(-18, 0, -13), Vector3.new(-18, 0, 13), Vector3.new(2, 0, 14) } do
+			local marketStyle = if i % 2 == 0 then "stall-red" else "stall-green"
+			if not importedModel(folder, "Town", marketStyle, spot, 6.5, false) then
+				importedModel(folder, "Town", "stall", spot, 6.5, false)
+			end
 		end
 		importedModel(folder, "Town", "village-well", Vector3.new(-30, 0, 15), 5.5, true)
 		importedModel(folder, "Town", "cart", Vector3.new(-24, 0, 19), 5.5, false)
