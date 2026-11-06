@@ -11,7 +11,7 @@ local PortData = require(script.Parent:WaitForChild("Ports"))
 
 local PortScene = {}
 
-local MED = { malaga = true, gibraltar = true, cartagena = true, trieste = true, messina = true, corfu = true, palma = true, cagliari = true, ajaccio = true, toulon = true, syracuse = true, ancona = true, split = true, thessaloniki = true, candia = true, rhodes = true, famagusta = true, smyrna = true, las_palmas = true, funchal = true, ponta_delgada = true, barcelona = true, valencia = true, palermo = true, valletta = true, ragusa = true, athens = true, cadiz = true, porto = true, lisbon = true, seville = true, marseille = true, genoa = true, venice = true, livorno = true, naples = true }
+local MED = { cape_town = true, malaga = true, gibraltar = true, cartagena = true, trieste = true, messina = true, corfu = true, palma = true, cagliari = true, ajaccio = true, toulon = true, syracuse = true, ancona = true, split = true, thessaloniki = true, candia = true, rhodes = true, famagusta = true, smyrna = true, las_palmas = true, funchal = true, ponta_delgada = true, barcelona = true, valencia = true, palermo = true, valletta = true, ragusa = true, athens = true, cadiz = true, porto = true, lisbon = true, seville = true, marseille = true, genoa = true, venice = true, livorno = true, naples = true }
 
 local STYLE = {
 	north = {
@@ -50,7 +50,13 @@ STYLE.stone = variant(STYLE.north,
 STYLE.desert = variant(STYLE.med,
 	{ C(226, 204, 160), C(214, 186, 140), C(238, 222, 190), C(200, 170, 124), C(244, 236, 214) },
 	{ C(210, 180, 130), C(196, 164, 116) }, C(204, 184, 132), C(206, 190, 150), 0.12)
+STYLE.tropic = variant(STYLE.med,
+	{ C(184, 140, 96), C(160, 110, 74), C(204, 164, 112), C(140, 96, 64), C(226, 196, 150) },
+	{ C(150, 120, 70), C(130, 100, 60) }, C(112, 150, 70), C(176, 150, 112), 0.55)
 local REGION = {
+	praia = "tropic", saint_louis = "tropic", dakar = "tropic", bissau = "tropic", freetown = "tropic", elmina = "tropic", ouidah = "tropic",
+	lagos = "tropic", calabar = "tropic", sao_tome = "tropic", luanda = "tropic", benguela = "tropic", st_helena = "tropic",
+	casablanca = "desert", safi = "desert", agadir = "desert", cape_town = "med",
 	beirut = "desert", damietta = "desert", bone = "desert",
 	acre = "desert", oran = "desert", benghazi = "desert",
 	riga = "brick", tallinn = "brick", koenigsberg = "brick", visby = "stone", helsinki = "nordic", st_petersburg = "stone",
@@ -745,9 +751,15 @@ function PortScene.build(info, onFacility)
 		importedModel(folder, "Town", "bench_B", Vector3.new(-8, 0, -9), 4.5, false)
 		for _, x in { -52, -74, -96, -118, -138 } do
 			for side = -1, 1, 2 do
+				-- 사막·열대·지중해 마을에는 소나무 대신 야자나무
+				local warm = style ~= STYLE.north and style ~= STYLE.brick and style ~= STYLE.nordic and style ~= STYLE.stone
 				local pick = ({ "tree", "tree-high", "tree-crooked", "tree_large", "tree_tiny" })[rng:NextInteger(1, 5)]
-				local kind = if pick == "tree_large" or pick == "tree_tiny" then "Town" else "Town"
-				importedModel(folder, kind, pick, Vector3.new(x + rng:NextNumber(-3, 3), 0, side * rng:NextNumber(10, 13)), rng:NextNumber(6, 9), false)
+				local at = Vector3.new(x + rng:NextNumber(-3, 3), 0, side * rng:NextNumber(10, 13))
+				if warm then
+					importedModel(folder, "Naval", "palm-detailed-straight", at, rng:NextNumber(5.5, 8), false)
+				else
+					importedModel(folder, "Town", pick, at, rng:NextNumber(6, 9), false)
+				end
 			end
 		end
 		for _, z in { -44, 44 } do
