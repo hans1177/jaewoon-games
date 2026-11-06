@@ -1,0 +1,164 @@
+[
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "click_text",
+  "text": "모험 시작"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if hit then return string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if hit then return string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if hit then return string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if hit then return string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if hit then return string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local o={} for _,d in ipairs(game.Players.LocalPlayer.PlayerGui:GetDescendants()) do if d.Name==\"MeadowTutorialCard\" and d.Visible then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") then table.insert(o,c.Text) end end end if d.Name==\"MeadowGuideChip\" then table.insert(o,\"chip=\"..d.Text..\" vis=\"..tostring(d.Visible)..\" pos=\"..math.floor(d.AbsolutePosition.X)..\",\"..math.floor(d.AbsolutePosition.Y)) end if d.Name==\"MeadowGuideMarker\" then table.insert(o,\"marker vis=\"..tostring(d.Visible)) end end return table.concat(o,\" | \")"
+ },
+ {
+  "type": "capture",
+  "name": "t1"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local c=game.Players:GetPlayers()[1].Character c:PivotTo(c:GetPivot()+Vector3.new(0,0,-14)) return \"moved\""
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local o={} for _,d in ipairs(game.Players.LocalPlayer.PlayerGui:GetDescendants()) do if d.Name==\"MeadowTutorialCard\" and d.Visible then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") then table.insert(o,c.Text) end end end if d.Name==\"MeadowGuideChip\" then table.insert(o,\"chip=\"..d.Text..\" vis=\"..tostring(d.Visible)..\" pos=\"..math.floor(d.AbsolutePosition.X)..\",\"..math.floor(d.AbsolutePosition.Y)) end if d.Name==\"MeadowGuideMarker\" then table.insert(o,\"marker vis=\"..tostring(d.Visible)) end end return table.concat(o,\" | \")"
+ },
+ {
+  "type": "capture",
+  "name": "t2"
+ },
+ {
+  "type": "click_text",
+  "text": "다음"
+ },
+ {
+  "type": "wait",
+  "ms": 900
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local o={} for _,d in ipairs(game.Players.LocalPlayer.PlayerGui:GetDescendants()) do if d.Name==\"MeadowTutorialCard\" and d.Visible then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") then table.insert(o,c.Text) end end end if d.Name==\"MeadowGuideChip\" then table.insert(o,\"chip=\"..d.Text..\" vis=\"..tostring(d.Visible)..\" pos=\"..math.floor(d.AbsolutePosition.X)..\",\"..math.floor(d.AbsolutePosition.Y)) end if d.Name==\"MeadowGuideMarker\" then table.insert(o,\"marker vis=\"..tostring(d.Visible)) end end return table.concat(o,\" | \")"
+ },
+ {
+  "type": "capture",
+  "name": "t3"
+ },
+ {
+  "type": "click_text",
+  "text": "다음"
+ },
+ {
+  "type": "wait",
+  "ms": 900
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local o={} for _,d in ipairs(game.Players.LocalPlayer.PlayerGui:GetDescendants()) do if d.Name==\"MeadowTutorialCard\" and d.Visible then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") then table.insert(o,c.Text) end end end if d.Name==\"MeadowGuideChip\" then table.insert(o,\"chip=\"..d.Text..\" vis=\"..tostring(d.Visible)..\" pos=\"..math.floor(d.AbsolutePosition.X)..\",\"..math.floor(d.AbsolutePosition.Y)) end if d.Name==\"MeadowGuideMarker\" then table.insert(o,\"marker vis=\"..tostring(d.Visible)) end end return table.concat(o,\" | \")"
+ },
+ {
+  "type": "capture",
+  "name": "t4"
+ },
+ {
+  "type": "click_text",
+  "text": "다음"
+ },
+ {
+  "type": "wait",
+  "ms": 900
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local o={} for _,d in ipairs(game.Players.LocalPlayer.PlayerGui:GetDescendants()) do if d.Name==\"MeadowTutorialCard\" and d.Visible then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") then table.insert(o,c.Text) end end end if d.Name==\"MeadowGuideChip\" then table.insert(o,\"chip=\"..d.Text..\" vis=\"..tostring(d.Visible)..\" pos=\"..math.floor(d.AbsolutePosition.X)..\",\"..math.floor(d.AbsolutePosition.Y)) end if d.Name==\"MeadowGuideMarker\" then table.insert(o,\"marker vis=\"..tostring(d.Visible)) end end return table.concat(o,\" | \")"
+ },
+ {
+  "type": "capture",
+  "name": "t5"
+ },
+ {
+  "type": "click_text",
+  "text": "다음"
+ },
+ {
+  "type": "wait",
+  "ms": 900
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local o={} for _,d in ipairs(game.Players.LocalPlayer.PlayerGui:GetDescendants()) do if d.Name==\"MeadowTutorialCard\" and d.Visible then for _,c in ipairs(d:GetChildren()) do if c:IsA(\"TextLabel\") then table.insert(o,c.Text) end end end if d.Name==\"MeadowGuideChip\" then table.insert(o,\"chip=\"..d.Text..\" vis=\"..tostring(d.Visible)..\" pos=\"..math.floor(d.AbsolutePosition.X)..\",\"..math.floor(d.AbsolutePosition.Y)) end if d.Name==\"MeadowGuideMarker\" then table.insert(o,\"marker vis=\"..tostring(d.Visible)) end end return table.concat(o,\" | \")"
+ },
+ {
+  "type": "capture",
+  "name": "t6"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local o={} for _,m in ipairs(game:GetService(\"LogService\"):GetLogHistory()) do if m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning then table.insert(o,string.sub(m.message,1,220)) end end local n=#o local out={} for i=math.max(1,n-40),n do table.insert(out,o[i]) end return n..\" issues\\n\"..table.concat(out,\"\\n\")"
+ }
+]

@@ -1,0 +1,111 @@
+name: Fantasy Opening Studio Check
+
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: Studio script JSON path in repo (empty = opening capture)
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: roblox-studio-shared-host
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  capture:
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: main
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build place with pinned Rojo
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $rojoZip = Join-Path $env:RUNNER_TEMP 'rojo.zip'
+          $rojoDir = Join-Path $env:RUNNER_TEMP 'rojo-bin'
+          Remove-Item -Recurse -Force $rojoDir -ErrorAction SilentlyContinue
+          & curl.exe -fL --retry 3 -o $rojoZip 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip'
+          $h = (Get-FileHash $rojoZip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($h -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949') { throw "rojo hash $h" }
+          Expand-Archive $rojoZip -DestinationPath $rojoDir -Force
+          $rojo = (Get-ChildItem $rojoDir -Recurse -Filter rojo.exe | Select-Object -First 1).FullName
+          $place = Join-Path $env:RUNNER_TEMP 'openingcheck.rbxl'
+          Remove-Item $place -ErrorAction SilentlyContinue
+          & $rojo build 'main/roblox-games/fantasy-survival/default.project.json' -o $place
+          if ($LASTEXITCODE -ne 0) { throw 'rojo build failed' }
+          "OPENING_PLACE=$place" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Launch Studio and capture opening frames
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (@(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue).Count) { Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 5 }
+          $roots = @((Join-Path $env:LOCALAPPDATA 'Roblox\Versions'), (Join-Path ${env:ProgramFiles(x86)} 'Roblox\Versions'))
+          $studio = $roots | Where-Object { Test-Path $_ } | ForEach-Object { Get-ChildItem $_ -Recurse -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue } | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          $mcp = Join-Path (Split-Path $studio -Parent) 'StudioMCP.exe'
+          if (-not (Test-Path $mcp)) { $mcp = Join-Path $env:LOCALAPPDATA 'Roblox\mcp.bat' }
+          if (-not (Test-Path $mcp)) { throw 'StudioMCP not found' }
+          Write-Host "STUDIO=$studio MCP=$mcp"
+          $proc = Start-Process -FilePath $studio -ArgumentList @($env:OPENING_PLACE) -PassThru
+          $out = Join-Path $env:RUNNER_TEMP 'opening-frames'
+          Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory $out -Force | Out-Null
+          # [화면 녹화] ffmpeg가 있으면 화면 전체를 mp4로 녹화한다(없으면 건너뜀). 중간에 끊겨도 재생되도록 fragmented mp4.
+          $ffmpeg = $null
+          $cmd = Get-Command ffmpeg.exe -ErrorAction SilentlyContinue
+          if ($cmd) { $ffmpeg = $cmd.Source }
+          if (-not $ffmpeg) {
+            $dirs = @('E:\jaewoon-games\tools\ffmpeg','C:\ffmpeg','D:\ffmpeg','E:\ffmpeg',(Join-Path $env:USERPROFILE 'Downloads'),(Join-Path $env:USERPROFILE 'Desktop'),(Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet'),'C:\ProgramData\chocolatey\bin')
+            foreach ($d in $dirs) {
+              if (Test-Path $d) {
+                $f = Get-ChildItem $d -Recurse -Depth 4 -Filter ffmpeg.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+                if ($f) { $ffmpeg = $f.FullName; break }
+              }
+            }
+          }
+          $rec = $null
+          if ($ffmpeg) {
+            Write-Host "FFMPEG=$ffmpeg"
+            $video = Join-Path $out 'run.mp4'
+            $rec = Start-Process -FilePath $ffmpeg -ArgumentList @('-y','-f','gdigrab','-framerate','10','-i','desktop','-vf','scale=1280:-2','-c:v','libx264','-preset','veryfast','-crf','30','-pix_fmt','yuv420p','-movflags','frag_keyframe+empty_moov','-t','420',$video) -PassThru -WindowStyle Hidden
+          } else { Write-Host 'FFMPEG_NOT_FOUND (녹화 생략)' }
+          try {
+            if ('${{ inputs.script }}' -ne '') {
+              & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=main/${{ inputs.script }}" "--mcp-command=$mcp" '--studio-name=openingcheck' "--out-dir=$out"
+            } else {
+              & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=opening-capture "--mcp-command=$mcp" '--studio-name=openingcheck' "--out-dir=$out"
+            }
+            Write-Host "NODE_EXIT=$LASTEXITCODE"
+          } finally {
+            if ($rec -and -not $rec.HasExited) { Stop-Process -Id $rec.Id -Force -ErrorAction SilentlyContinue }
+            Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+          }
+          if (-not (Test-Path $out)) { Write-Host 'NO_OUTPUT'; exit 0 }
+          $dst = Join-Path $env:RUNNER_TEMP 'opening-publish'
+          Remove-Item -Recurse -Force $dst -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory $dst | Out-Null
+          Copy-Item "$out\*" $dst -Recurse
+          Set-Location $dst
+          git init -q
+          git config user.name 'opening-check-bot'
+          git config user.email 'opening-check-bot@users.noreply.github.com'
+          git add -A
+          git commit -q -m "opening studio frames run ${{ github.run_id }}"
+          git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/${{ inputs.script != '' && 'studio-script-out' || 'opening-studio-frames' }}
+          Write-Host "PUBLISHED=$LASTEXITCODE"

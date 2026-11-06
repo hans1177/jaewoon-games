@@ -1,0 +1,118 @@
+{
+  "version": 3,
+  "gameId": "revengate",
+  "packageId": "org.revengate.revengate",
+  "sourceType": "EXTERNAL_OPEN_SOURCE_BLACK_BOX_RUNTIME_EVIDENCE",
+  "authority": "PRACTICE_ONLY_MIXED_EVIDENCE",
+  "observedThrough": "2026-09-17",
+  "runtimePromotionAllowed": true,
+  "gameplayBehaviorPromotionAllowed": true,
+  "partialObservableDistillationAllowed": true,
+  "codeExtractionAllowed": false,
+  "binaryRedistributionAllowed": false,
+  "positiveTrainingSample": true,
+  "verifiedRuntimePass": true,
+  "stablePlaytestVerified": true,
+  "stablePlaytestBoundary": "CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY",
+  "gameEntryObserved": true,
+  "gameEntryEvidenceAuthority": "CORRELATED_GITHUB_ACTIONS_BLACK_BOX_EVIDENCE",
+  "gameEntryObservationRecordedAt": "2026-09-17",
+  "verifiedObservedStages": [
+    "APP_LAUNCH",
+    "GAME_ENTRY",
+    "INPUT_EXERCISE",
+    "VISUAL_STATE_CHANGE",
+    "PROCESS_SURVIVAL",
+    "NO_FATAL_CRASH_OR_ANR"
+  ],
+  "sourceEvidence": {
+    "privateRepository": "hans1177/jaewoon-ai-company",
+    "workflowPath": ".github/workflows/vibe2-open-source-apk-blackbox.yml",
+    "latestCompletedRun": 35151034842,
+    "latestRunNumber": 59,
+    "latestArtifactId": 10468189371,
+    "latestArtifactDigest": "sha256:7ac6cb9aa7bdcfdee1af6df5e409005da42ac597903f8acca8aa0bfc44cb93d9",
+    "latestResult": "PASS",
+    "latestFailure": null,
+    "runtimeType": "REDROID_NATIVE_ARM64_DIRECT_EXEC",
+    "hostArch": "aarch64",
+    "guestAndroid": "14",
+    "guestAbi": "arm64-v8a",
+    "redroidImage": "redroid/redroid:14.0.0_64only-latest",
+    "apkSha256": "fd5a43c36acb95b7264ee4bc178f575c9c5cedcf9864fc999c13406fa15bebac",
+    "apkSource": "F_DROID_VERIFIED_BUILD"
+  },
+  "verifiedObservedFacts": [
+    {
+      "id": "narrative-onboarding-to-live-dungeon",
+      "evidenceAuthority": "RUN_59_ARTIFACT",
+      "fact": "After the Android fullscreen notice was dismissed with a normal tap, the visible New Game flow opened the narrative screen titled The Audition, visible Next controls advanced the flow, and the captured run reached a live dungeon map with the player marker, Health: 50, Inventory and action controls visible.",
+      "boundary": "This proves actual gameplay entry only for the captured validation window and does not infer hidden quest, combat, loot or progression rules."
+    },
+    {
+      "id": "gameplay-input-caused-player-movement",
+      "evidenceAuthority": "RUN_59_ARTIFACT",
+      "fact": "In the live dungeon, the captured gameplay input changed the player marker position to the right between the before and after frames while remaining on the same gameplay map.",
+      "boundary": "Only the directly visible movement response is promoted; movement cost, pathfinding, turn timing and collision rules are not inferred."
+    },
+    {
+      "id": "runtime-survived-observed-flow",
+      "evidenceAuthority": "RUN_59_ARTIFACT",
+      "fact": "The package remained alive and foreground after onboarding and gameplay input, and the captured log window contained no FATAL EXCEPTION, SIGABRT, SIGSEGV or ANR marker for the target package.",
+      "boundary": "This establishes stability only for the captured black-box validation window."
+    }
+  ],
+  "distilledPositiveRuntimePatterns": [
+    {
+      "id": "narrative-onboarding-is-not-game-entry",
+      "scope": "rpg-onboarding-qa",
+      "evidence": [59],
+      "lesson": "A story or dialogue sequence after New Game is still a pre-game state; live gameplay entry should be recorded only once the interactive world and player state are visible.",
+      "reuseRule": "For Roblox RPG QA, keep narrative onboarding and first controllable world entry as separate milestones."
+    },
+    {
+      "id": "persistent-core-state-around-world-view",
+      "scope": "rpg-mobile-ux",
+      "evidence": [59],
+      "lesson": "The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.",
+      "reuseRule": "For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design."
+    },
+    {
+      "id": "movement-needs-immediate-visible-response",
+      "scope": "rpg-input-feedback",
+      "evidence": [59],
+      "lesson": "A bounded gameplay input produced an immediate visible player-position change in the same world view.",
+      "reuseRule": "For mobile Roblox RPG movement, bind successful input to prompt and unambiguous world-state feedback, then validate it with semantic before and after frames."
+    }
+  ],
+  "distilledFailurePatterns": [
+    {
+      "id": "visible-onboarding-control-must-be-hit-before-judging-entry",
+      "scope": "black-box-input-automation",
+      "evidence": [58, 59],
+      "lesson": "Run 58 reached the narrative onboarding screen but missed the visible Next control, so lack of game entry there was an automation-targeting failure rather than evidence that gameplay could not be entered. Run 59 corrected only that visible-control targeting and reached live gameplay.",
+      "reuseRule": "When a clearly visible onboarding control is the only observed blocker, allow one minimal coordinate correction before abandoning the target; do not lower the game-entry criterion."
+    }
+  ],
+  "routeDecisions": {
+    "fdroidArm64Redroid": "VERIFIED_WORKING_ANDROID14_NATIVE_ARM64_RUN59",
+    "sourceOrAssetExtraction": "NOT_USED_FOR_THIS_BLACK_BOX_FLOW",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "learningUse": {
+    "allowed": [
+      "narrative onboarding versus actual game-entry separation",
+      "persistent essential RPG state around the core world view",
+      "immediate visible movement feedback",
+      "semantic before-and-after gameplay input validation",
+      "foreground process and crash correlation",
+      "portable RPG UX and QA lessons for later Roblox-specific implementation"
+    ],
+    "stillForbidden": [
+      "treating Android evidence as Roblox runtime evidence",
+      "inferring hidden quest, combat, loot, economy, movement-cost, pathfinding or progression formulas",
+      "copying Revengate artwork, UI trade dress, names, narrative text, map content or implementation details into a Roblox game",
+      "claims about long-run stability, balance or progression outside the captured validation window"
+    ]
+  }
+}

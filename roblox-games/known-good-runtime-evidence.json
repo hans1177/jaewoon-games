@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "evidenceType": "HISTORICAL_RUNTIME_OBSERVATION",
+  "recordedAt": "2026-09-15",
+  "records": [
+    {
+      "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+      "gameName": "Vector Clash",
+      "sourceRevision": "1ce32ac40c5d3fcecee11979c5ba531b12e99c49",
+      "artifactIdentity": "sha256:97d89f3dcd07ef9433f96f7c7f5178ec0a9979105051d79a9447da4e7fe71691",
+      "artifactRunId": 34738148167,
+      "runtimeEvidence": {
+        "checkedAt": "2026-09-13T20:09:00.0432372Z",
+        "runtimeHarnessVersion": "8",
+        "runtimePassed": true,
+        "actualStudioRuntime": true,
+        "serverClientBoundaryPassed": true,
+        "playerCharacterPassed": true,
+        "datastoreRejoinPassed": true,
+        "failure": null,
+        "authority": "roblox-actual-studio-runtime-evidence"
+      },
+      "postRuntimeQaEvidence": {
+        "checkedAt": "2026-09-13T20:29:09.7561009Z",
+        "exactRevision": true,
+        "actualStudioRuntime": true,
+        "phoneDeviceSimulationPassed": true,
+        "mobileTouchInteractionPassed": true,
+        "mobileControlUiPassed": true,
+        "independentQaPassed": true,
+        "regressionPassed": true,
+        "independentOutputSha256": "3546ce582b9f13e113b7d65a1623f7d7e8520aa0910754eee31f4448ec423a12",
+        "regressionOutputSha256": "f015ef0c8eb63ad53641e4c12fb9936e209b756e3d7063175d1357ba071c31af",
+        "failure": null,
+        "authority": "roblox-real-studio-post-runtime-qa"
+      },
+      "multiplayerQaEvidence": {
+        "checkedAt": "2026-09-15T04:17:20.7520183Z",
+        "exactRevision": true,
+        "actualStudioRuntime": true,
+        "multiplayerMode": "COMPETITIVE",
+        "multiplayerClients": 2,
+        "distinctPlayersPassed": true,
+        "serverAuthoritativeRoundtripPassed": true,
+        "peerVisibilityPassed": true,
+        "multiplayerQaPassed": true,
+        "outputSha256": "6f0ff64be78bdd9620141f75f10f07873adeb8fbe1b84646350e85656c75cb55",
+        "failure": null,
+        "authority": "roblox-real-studio-multiplayer-qa"
+      },
+      "publicationTarget": {
+        "universeId": "10766519079",
+        "placeId": "120787429678729",
+        "observedFrom": "authenticated Roblox Studio output",
+        "observedAt": "2026-09-15"
+      },
+      "releaseClaim": false
+    },
+    {
+      "gameId": "seed-roblox-survival-horror-es-doors",
+      "gameName": "Last Lantern",
+      "sourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+      "artifactIdentity": "sha256:db36cbe655261718e105e90b87533121727a13016e25fcaf547c2535b4b74633",
+      "artifactRunId": 34741421968,
+      "runtimeEvidence": {
+        "checkedAt": "2026-09-13T20:11:22.4865280Z",
+        "runtimeHarnessVersion": "8",
+        "runtimePassed": true,
+        "actualStudioRuntime": true,
+        "serverClientBoundaryPassed": true,
+        "playerCharacterPassed": true,
+        "datastoreRejoinPassed": true,
+        "failure": null,
+        "authority": "roblox-actual-studio-runtime-evidence"
+      },
+      "postRuntimeQaEvidence": {
+        "checkedAt": "2026-09-13T20:32:52.3586662Z",
+        "exactRevision": true,
+        "actualStudioRuntime": true,
+        "phoneDeviceSimulationPassed": true,
+        "mobileTouchInteractionPassed": true,
+        "mobileControlUiPassed": true,
+        "independentQaPassed": true,
+        "regressionPassed": true,
+        "independentOutputSha256": "3546ce582b9f13e113b7d65a1623f7d7e8520aa0910754eee31f4448ec423a12",
+        "regressionOutputSha256": "f015ef0c8eb63ad53641e4c12fb9936e209b756e3d7063175d1357ba071c31af",
+        "failure": null,
+        "authority": "roblox-real-studio-post-runtime-qa"
+      },
+      "lastSuccessfulStage": "REGRESSION",
+      "releaseClaim": false
+    }
+  ]
+}

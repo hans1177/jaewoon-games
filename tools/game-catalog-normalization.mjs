@@ -1,0 +1,792 @@
+// 파일명: tools/game-catalog-normalization.mjs
+import { pathToFileURL } from 'node:url';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {
+  homepageCategoryForProductionClass,
+  normalizeProductionClass,
+  PRODUCTION_CLASSES
+} from './production-classification.mjs';
+
+export const CATALOG_CANONICAL_SCHEMA_VERSION=1;
+const ROADMAP_PATH=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
+const clean=value=>String(value??'').trim();
+const bool=value=>value===true;
+const list=value=>[...new Set((Array.isArray(value)?value:[]).map(clean).filter(Boolean))];
+const numericRank=(table,key,fallback=999)=>Number.isFinite(Number(table?.[key]))?Number(table[key]):fallback;
+const LEGACY_DEVELOPMENT_FREEZE_FIELDS=Object.freeze(['newFeatureExpansionFrozen']);
+
+const platformLabel=platform=>platform==='WEB'?'웹':platform==='ROBLOX'?'Roblox':platform==='UNITY'?'Unity Android':platform==='FORTNITE_UEFN'?'Fortnite UEFN':'';
+function autoClassificationPolicy(){
+  try{
+    const roadmap=ROADMAP_PATH?JSON.parse(fs.readFileSync(ROADMAP_PATH,'utf8')):{};
+    return roadmap?.catalogNormalization?.autoClassification||{};
+  }catch{
+    return{};
+  }
+}
+function webSourcePresent(game={}){
+  return Boolean(clean(game.webPath)||game.hasWebArchive===true||game.homepageWebPlayable===true);
+}
+function webSourceText(game={}){
+  const raw=clean(game.webPath).replace(/^\/+|\/+$/g,'');
+  if(!raw||!fs.existsSync(raw))return '';
+  const files=[];
+  try{
+    const stat=fs.statSync(raw);
+    if(stat.isFile())files.push(raw);
+    else if(stat.isDirectory()){
+      const preferred=['index.html','index.js','game.js','main.js','script.js','app.js','config.json','game.json'];
+      for(const name of preferred){
+        const file=raw+'/'+name;
+        if(fs.existsSync(file))files.push(file);
+      }
+      if(files.length<8){
+        for(const entry of fs.readdirSync(raw,{withFileTypes:true})){
+          if(files.length>=8)break;
+          if(!entry.isFile()||!/[.](?:html?|m?js|json)$/i.test(entry.name))continue;
+          const file=raw+'/'+entry.name;
+          if(!files.includes(file))files.push(file);
+        }
+      }
+    }
+  }catch{return '';}
+  let text='';
+  for(const file of files.slice(0,8)){
+    try{text+='\n'+fs.readFileSync(file,'utf8').slice(0,24000);}catch{}
+    if(text.length>=96000)break;
+  }
+  return text.slice(0,96000);
+}
+function classificationText(game={}){
+  const runtime=game.homepageInfo&&typeof game.homepageInfo==='object'?game.homepageInfo:{};
+  return [
+    game.id,game.name,game.description,game.productionTarget,game.homepageStage,game.homepageRecentWork,
+    ...(Array.isArray(game.genre)?game.genre:[]),
+    ...(Array.isArray(runtime.genre)?runtime.genre:[]),
+    webSourceText(game)
+  ].map(clean).filter(Boolean).join(' ').toLowerCase();
+}
+function addGenres(out,...values){for(const value of values){const v=clean(value);if(v&&!out.includes(v))out.push(v);}}
+
+export function inferHomepageGenres(game={}){
+  const policy=autoClassificationPolicy();
+  const max=Math.max(1,Math.min(8,Number(policy?.genre?.maximumLabels)||4));
+  const text=classificationText(game);
+  const out=[];
+  if(/(tower.?defen|tower defense|타워.?디펜|라인.?디펜|defense|디펜스)/i.test(text))addGenres(out,'디펜스','전략');
+  if(/(rpg|role.?play|dungeon|던전|quest|퀘스트|레벨업|boss|보스)/i.test(text))addGenres(out,'RPG');
+  if(/(survival|생존|horde|웨이브|wave|roguelite|로그라이트|roguelike|로그라이크)/i.test(text))addGenres(out,'생존','액션');
+  if(/(fps|tps|shooter|shooting|gun|총기|사격|슈팅)/i.test(text))addGenres(out,'슈팅');
+  if(/(racing|race|레이싱|경주|driving|운전)/i.test(text))addGenres(out,'레이싱');
+  if(/(football|soccer|basketball|baseball|sport|축구|농구|야구|스포츠)/i.test(text))addGenres(out,'스포츠');
+  if(/(tycoon|타이쿤|management|경영|shop|restaurant|restaurant|놀이공원|theme.?park)/i.test(text))addGenres(out,'경영','시뮬레이션');
+  if(/(sandbox|샌드박스|world.?build|building|건설|건축)/i.test(text))addGenres(out,'샌드박스');
+  if(/(farm|farming|농장|cozy|힐링|생활)/i.test(text))addGenres(out,'생활');
+  if(/(fish|fishing|낚시)/i.test(text))addGenres(out,'낚시');
+  if(/(puzzle|퍼즐|match.?3|매치|merge|머지|block.?puzzle|grid.?puzzle)/i.test(text))addGenres(out,'퍼즐');
+  if(/(rhythm|리듬|music.?game|음악.?게임|piano|피아노)/i.test(text))addGenres(out,'리듬','음악');
+  if(/(board|card|chess|보드|카드|체스)/i.test(text))addGenres(out,'보드','전략');
+  if(/(strategy|strategic|전략|tactical|전술)/i.test(text))addGenres(out,'전략');
+  if(/(collect|collection|수집|pet|펫|동료|도감)/i.test(text))addGenres(out,'수집');
+  if(/(adventure|explor|모험|탐험)/i.test(text))addGenres(out,'모험');
+  if(/(platformer|platform game|obby|오비|플랫포머|runner|러너)/i.test(text))addGenres(out,'플랫폼');
+  if(/(social|소셜|party|파티|multiplayer|멀티플레이|co-?op|협동)/i.test(text))addGenres(out,'소셜');
+  if(/(idle|방치|afk)/i.test(text))addGenres(out,'방치형');
+  if(/(combat|fight|battle|전투|격투|action|액션)/i.test(text))addGenres(out,'액션');
+  if(/(casual|캐주얼|minigame|미니게임)/i.test(text))addGenres(out,'캐주얼');
+  const fallback=list(policy?.genre?.fallback).length?list(policy.genre.fallback):['기타'];
+  return (out.length?out:fallback).slice(0,max);
+}
+
+export function inferHomepagePlatform(game={}){
+  if(game.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT')return 'WEB';
+  const explicit=selectedPlatformOf(game);
+  if(explicit)return explicit;
+  if(clean(game.uefnProjectPath||game.fortniteProjectPath))return 'FORTNITE_UEFN';
+  const robloxTarget=game.robloxPublicationTarget&&typeof game.robloxPublicationTarget==='object'?game.robloxPublicationTarget:{};
+  if(clean(game.robloxProjectPath)||clean(robloxTarget.placeId)||clean(robloxTarget.universeId))return 'ROBLOX';
+  if(clean(game.unityProjectPath))return 'UNITY';
+  const text=classificationText(game);
+  if(/(fortnite|uefn|\bverse\b|battle.?royale|배틀.?로얄|fortnite.?island)/i.test(text))return 'FORTNITE_UEFN';
+  if(/(roblox|obby|오비|tycoon|타이쿤|role.?play|롤플레이|hangout|소셜|party|파티|pet|펫|sandbox|샌드박스|minigame|미니게임)/i.test(text))return 'ROBLOX';
+  if(/(unity|android|mobile|모바일|3d|rpg|던전|survival|생존|fps|tps|shooter|슈팅|racing|레이싱|sport|스포츠|simulation|시뮬|management|경영|fishing|낚시|puzzle|퍼즐|rhythm|리듬)/i.test(text))return 'UNITY';
+  const policy=autoClassificationPolicy();
+  return normalizePlatform(policy?.platform?.centralDefault)||'ROBLOX';
+}
+
+export function applyHomepageAutoClassification(game={}){
+  const policy=autoClassificationPolicy();
+  if(policy?.enabled!==true||!webSourcePresent(game))return game;
+  const runtime=game.homepageInfo&&typeof game.homepageInfo==='object'?game.homepageInfo:{};
+  game.homepageInfo=runtime;
+
+  // 실제 HTML/JS 소스의 웹 플랫폼 정체성이 타이쿤/RPG 장르 추정보다 우선한다.
+  let platform=game.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT'?'WEB':selectedPlatformOf(game);
+  if(game.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT'){
+    game.selectedPlatform='WEB';
+    runtime.platform='WEB';
+    runtime.platformLabel='웹';
+  }
+  if(!platform){
+    platform=inferHomepagePlatform(game);
+    if(platform)game.selectedPlatform=platform;
+  }else if(!normalizePlatform(game.selectedPlatform)){
+    game.selectedPlatform=platform;
+  }
+  if(platform&&!normalizePlatform(runtime.platform))runtime.platform=platform;
+  if(platform&&!clean(runtime.platformLabel))runtime.platformLabel=platformLabel(platform);
+
+  let genres=list(game.genre);
+  const runtimeGenres=list(runtime.genre);
+  if(!genres.length&&runtimeGenres.length)genres=runtimeGenres;
+  if(!genres.length)genres=inferHomepageGenres(game);
+  if(!list(game.genre).length)game.genre=genres;
+  if(!runtimeGenres.length)runtime.genre=genres;
+  if(!clean(runtime.genreLabel))runtime.genreLabel=genres.join(' · ');
+  return game;
+}
+
+function normalizationPolicy(){
+  try{
+    const roadmap=ROADMAP_PATH?JSON.parse(fs.readFileSync(ROADMAP_PATH,'utf8')):{};
+    return roadmap?.catalogNormalization||{};
+  }catch{
+    return{};
+  }
+}
+
+export function webTreeFingerprint(filesystem,root){
+  const files=[];
+  const walk=(dir,relative='')=>{
+    for(const entry of filesystem.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){
+      const full=dir+'/'+entry.name;
+      const rel=relative?relative+'/'+entry.name:entry.name;
+      if(entry.isDirectory())walk(full,rel);
+      else if(entry.isFile())files.push({full,rel});
+    }
+  };
+  walk(root);
+  const hash=crypto.createHash('sha256');
+  for(const file of files){
+    hash.update(file.rel);hash.update('\0');
+    hash.update(filesystem.readFileSync(file.full));hash.update('\0');
+  }
+  return hash.digest('hex');
+}
+function ownerWebTitle(filesystem,indexFile,fallback){
+  try{
+    const html=filesystem.readFileSync(indexFile,'utf8');
+    const title=html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.replace(/\s+/g,' ').trim();
+    return title||fallback;
+  }catch{return fallback;}
+}
+// Plain HTML/JS games enter the existing design pipeline even before runtime QA.
+// An entry page alone is never proof of playability or native 3D.
+export function inspectGeneralWebGameSource({filesystem=fs,dir='',entryFile='index.html'}={}){
+  let html='';
+  try{html=filesystem.readFileSync(dir+'/'+entryFile,'utf8');}catch{return{recognized:false,reasons:['ENTRY_MISSING']};}
+  const files=[...html.matchAll(/<script\b[^>]*src=["']([^"']+)["']/gi)]
+    .map(m=>m[1].split(/[?#]/)[0]).filter(file=>/^(?:\.\/)?[a-z0-9_./-]+\.m?js$/i.test(file)&&!file.includes('..')&&!file.startsWith('/'))
+    .slice(0,12);
+  let source=html.slice(0,192000);
+  for(const file of files){try{source+='\n'+filesystem.readFileSync(dir+'/'+file.replace(/^\.\//,''),'utf8').slice(0,128000);}catch{}}
+  const runtime=/(?:requestAnimationFrame|setInterval|setTimeout)\s*\(/.test(source);
+  const input=/(?:addEventListener\s*\(\s*['"`](?:key|pointer|touch|mouse|click)|\.on(?:click|keydown|pointerdown|touchstart)\s*=|<button\b|<input\b)/i.test(source);
+  const world=/(?:<canvas\b|\.getContext\s*\(|createElement\s*\(\s*['"`]canvas|class(?:room)?|학교|교실|수업|player|character|enemy|monster|health|score|inventory|shop|quest|money|coins|gameState|gameLoop|draw|render)/i.test(source);
+  const state=/(?:\b(?:let|const|var)\s+\w+\s*=|\bfunction\s+\w+\s*\(|=>\s*\{|\bclass\s+\w+)/.test(source);
+  const meaningfulLogic=/(?:\b(?:update|render|tick|loop|draw|spawn|attack|move|advance|nextDay|nextLesson|startClass|buy|earn|saveGame|loadGame)\s*\(|(?:classroom|player|score|money|coins|level|students|studentsState|health|gameState)\s*(?:\.|\[|[+\-*/]?=))/i.test(source);
+  return {recognized:runtime&&input&&world&&state&&meaningfulLogic,
+    engine:'HTML_CSS_JAVASCRIPT',signals:{runtime,input,world,state,meaningfulLogic}};
+}
+
+export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootDir='',unityProjectRoot='unity-games'}={}){
+  if(!Array.isArray(catalog.games))throw new Error('catalog.games must be an array');
+  const policy=normalizationPolicy()?.ownerWebAutoIngest||{};
+  if(policy.enabled!==true)return{catalog,added:[],updated:[],disabled:[],ignored:[]};
+  const canonicalRoot=clean(policy.root||'web-games').replace(/^\/+|\/+$/g,'');
+  const diskRoot=clean(rootDir||canonicalRoot).replace(/\/+$/g,'');
+  const entryFile=clean(policy.requiredEntryFile)||'index.html';
+  const minBytes=Math.max(1,Number(policy.minimumEntryBytes)||512);
+  const removed=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean));
+  const ownerStopped=new Set(list(catalog?.ownerStoppedGameIds));
+  const rejectedWeb=new Set((catalog?.permanentRemovalPolicy?.rejectedWebTestEntries||[]).map(clean));
+  const quality=policy.webExposureQuality||{};
+  const excluded=new Set(list(quality.excludeFromGameCatalog));
+  const discovered=policy.discoverCanonicalEntriesEverySync===true&&filesystem.existsSync?.(diskRoot)
+    ?filesystem.readdirSync(diskRoot,{withFileTypes:true}).filter(entry=>entry.isDirectory()).map(entry=>entry.name):[];
+  const ids=list([...gameIds,...discovered,...catalog.games.filter(game=>game.webPath||game.hasWebArchive).map(game=>game.id)]);
+  const byId=new Map(catalog.games.map(game=>[clean(game?.id),game]).filter(([id])=>id));
+  const added=[],updated=[],disabled=[],ignored=[];
+  for(const rawId of ids){
+    const id=clean(rawId);
+    if(!/^[a-z0-9][a-z0-9-]*$/i.test(id)||removed.has(id)){ignored.push(id);continue;}
+    const dir=diskRoot+'/'+id;
+    const indexFile=dir+'/'+entryFile;
+    const existing=byId.get(id)||null;
+    // 오너가 개발중지한 원본은 감지·재등록·검증·재배포 대상으로 재진입하지 않는다.
+    if(ownerStopped.has(id)||existing?.ownerDevelopmentStopped===true
+      ||['OWNER_STOPPED','STOPPED'].includes(clean(existing?.lifecycleState||existing?.lifecycle?.state).toUpperCase())){
+      if(existing){existing.ownerDevelopmentStopped=true;existing.lifecycleState='OWNER_STOPPED';disabled.push(id);}
+      else ignored.push(id);
+      continue;
+    }
+    if(rejectedWeb.has(id)){
+      if(existing){existing.homepageWebPlayable=false;existing.hasWebArchive=false;existing.ownerWebSourceState='PERMANENTLY_REMOVED_REJECTED_TEST';disabled.push(id);}
+      else ignored.push(id);
+      continue;
+    }
+    let sourceState='CURRENT_OWNER_BASELINE';
+    let valid=false;
+    try{valid=filesystem.existsSync(indexFile)&&filesystem.statSync(indexFile).isFile()&&filesystem.statSync(indexFile).size>=minBytes;}catch{valid=false;}
+    if(valid&&quality.enabled===true){
+      const html=filesystem.readFileSync(indexFile,'utf8');
+      const title=html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim();
+      const scripts=[...html.matchAll(/<script\b[^>]*src=["']([^"']+)["']/gi)].map(match=>match[1].split(/[?#]/)[0]);
+      // Multiple unrelated genre modes behind the same fixed click controls are a validation shell, not real game play.
+      const clickOnlyGenreShell=/\bconst\s+scopes\s*=\s*Array\.isArray\(C\.validationScopes\)/.test(html)
+        &&(html.match(/\bfunction\s+render(?:Survival|Defense|Puzzle|Realm|Idle|Story)\s*\(/g)||[]).length>=3;
+      if(excluded.has(id)){valid=false;sourceState='NON_GAME_SURFACE';}
+      else if(clickOnlyGenreShell||list(quality.withdrawnEntryTitles).includes(title)||scripts.some(src=>list(quality.withdrawnRuntimeScripts).includes(src))||list(quality.withdrawnImplementationMarkers).some(marker=>html.includes(marker))||quality.withdrawnEntrySha256?.[id]===crypto.createHash('sha256').update(html.trim()).digest('hex')){valid=false;sourceState='WITHDRAWN_SIMPLE_PROTOTYPE';}
+    }
+    // 기존 HTML은 게임 데이터와 저장 호환성을 위해 그대로 보존한다.
+    // 플레이 등록은 기존 공식 Unity WebGL 빌드·실제 브라우저 3회·3D/모바일/저장 QA로만 한다.
+    const archivePresent=valid;
+    let verifiedRoot='',verifiedHref='';
+    const project=''+unityProjectRoot.replace(/\/+$/,'')+'/'+id;
+    const scriptsRoot=project+'/Assets/Scripts';
+    let nativeCsharp=false;
+    try{
+      const settings=filesystem.statSync(project+'/ProjectSettings/ProjectVersion.txt');
+      const stack=[scriptsRoot];
+      while(settings.isFile()&&stack.length>0&&!nativeCsharp){
+        const root=stack.pop();
+        for(const item of filesystem.readdirSync(root,{withFileTypes:true})){
+          if(item.isDirectory())stack.push(root+'/'+item.name);
+          else if(item.isFile()&&item.name.endsWith('.cs')){nativeCsharp=true;break;}
+        }
+      }
+    }catch{}
+    if(nativeCsharp){
+      for(const candidate of [dir+'/unity',dir]){
+        try{
+          const htmlFile=candidate+'/'+entryFile;
+          if(!filesystem.existsSync(htmlFile)||filesystem.statSync(htmlFile).size<minBytes)continue;
+          const html=filesystem.readFileSync(htmlFile,'utf8');
+          if(!/createUnityInstance\s*\(/.test(html)||!/\.loader\.js/.test(html))continue;
+          const manifest=JSON.parse(filesystem.readFileSync(candidate+'/unity-web-deploy-manifest.json','utf8'));
+          const build=JSON.parse(filesystem.readFileSync(candidate+'/unity-web-build.json','utf8'));
+          const readiness=JSON.parse(filesystem.readFileSync(candidate+'/upper-platform-development-readiness.json','utf8'));
+          const qa=['unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json']
+            .map(file=>JSON.parse(filesystem.readFileSync(candidate+'/'+file,'utf8')));
+          const hash64=/^[a-f0-9]{64}$/,hash40=/^[a-f0-9]{40}$/;
+          if(manifest.engine!=='UNITY_WEB'||manifest.gameId!==id||manifest.bundleComplete!==true
+             ||manifest.homepageVerified!==true||manifest.requiredDimension!=='3D'
+             ||manifest.canonicalSourceRoot!=='unity-games/'+id
+             ||!hash64.test(manifest.unitySourceTreeSha256||'')
+             ||!hash64.test(manifest.buildTreeSha256||'')
+             ||!hash40.test(manifest.sourceCommit||''))continue;
+          const groups=manifest.requiredGroups||{};
+          if(!['loader','data','framework','wasm'].every(key=>
+            Array.isArray(groups[key])&&groups[key].length>0
+            &&groups[key].every(ref=>{
+              if(typeof ref!=='string'||!/^Build\/[a-zA-Z0-9_.-]+$/.test(ref))return false;
+              try{return filesystem.statSync(candidate+'/'+ref).isFile()&&filesystem.statSync(candidate+'/'+ref).size>0;}catch{return false;}
+            })))continue;
+          if(build.engine!=='UNITY_WEB'||build.gameId!==id||build.canonicalSourceRoot!=='unity-games/'+id
+             ||build.bootSmoke!=='PASS'||build.actualBrowserPlay!=='PASS'
+             ||build.independentQa!=='PASS'||build.regression!=='PASS'||build.upperPlatformGateCandidate!==true
+             ||build.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
+             ||build.buildTreeSha256!==manifest.buildTreeSha256||build.sourceCommit!==manifest.sourceCommit)continue;
+          if(readiness.gameId!==id||readiness.state!=='UPPER_PLATFORM_DEVELOPMENT_READY'||readiness.pass!==true
+             ||readiness.sourceCommit!==manifest.sourceCommit
+             ||readiness.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
+             ||readiness.buildTreeSha256!==manifest.buildTreeSha256
+             ||readiness.criteria?.graphics?.native3dVerified!==true
+             ||readiness.criteria?.qa?.pass!==true||readiness.criteria?.qa?.multiplayerPass!==true)continue;
+          if(!qa.every(e=>e?.engine==='UNITY_WEB'&&e.gameId===id&&e.pass===true
+             &&e.playableBrowserTest===true&&e.boot?.pass===true&&e.input?.pass===true
+             &&e.gameplay?.pass===true&&e.coreFun?.pass===true&&e.saveRestore?.pass===true
+             &&e.mobile?.pass===true&&e.mobile?.actualBrowserTouchDispatched===true
+             &&e.mobile?.realGameTouchHandlerObserved===true&&e.performance?.pass===true
+             &&e.noCriticalRuntimeError===true&&e.spatialGameplay?.pass===true
+             &&e.spatialGameplay?.requiredDimension==='3D'
+             &&e.spatialGameplay?.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'
+             &&e.spatialGameplay?.perspectiveCamera===true&&e.spatialGameplay?.depthPass===true
+             &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
+             &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
+             &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
+             &&e.visualQa?.nativeUnityMesh?.pass===true
+             &&e.visualQa.nativeUnityMesh.measurementState==='UNITY_RUNTIME_MESH_INSPECTION'))continue;
+          verifiedRoot=candidate;
+          verifiedHref='/'+canonicalRoot+'/'+id+(candidate===dir?'/':'/unity/');
+          break;
+        }catch{}
+      }
+    }
+    // Source admission and playable publication are separate, so quick 2D games
+    // automatically enter design → native WebGL 3D F0-F9 without Unity.
+    const generalWeb=archivePresent&&!verifiedRoot
+      ?inspectGeneralWebGameSource({filesystem,dir,entryFile}):{recognized:false};
+    if(generalWeb.recognized){
+      const revision=webTreeFingerprint(filesystem,dir);
+      const entry=canonicalRoot+'/'+id+'/'+entryFile;
+      if(existing){
+        const prior=clean(existing.ownerWebSourceRevision);
+        existing.webPath=canonicalRoot+'/'+id;
+        existing.hasWebArchive=true;
+        // 기존 3D 확인 소스가 동일하면 홈페이지 플레이 버전은 계속 유지한다.
+        const verifiedUnchanged=prior===revision
+          &&existing.ownerWebSourceState==='WEB_F9_RUNTIME_VERIFIED'
+          &&existing.homepageWebPlayable===true;
+        existing.homepageWebPlayable=verifiedUnchanged;
+        existing.ownerWebSourceState=verifiedUnchanged?'WEB_F9_RUNTIME_VERIFIED':'WEB_SOURCE_DEVELOPMENT_PENDING_QA';
+        existing.ownerDirectWebUpload=true;
+        existing.ownerWebIntakeEngine='HTML_CSS_JAVASCRIPT';
+        existing.web3dRedevelopmentRequired=true;
+        existing.ownerWebSourceRevision=revision;
+        existing.ownerWebEntryFile=entry;
+        if(prior!==revision)existing.webDevelopmentResetRequired=true;
+        if(!verifiedUnchanged&&existing.homepageDisplayMode==='WEB_PUBLISHED')existing.homepageDisplayMode='';
+        updated.push(id);
+      }else{
+        catalog.games.push({
+          id,name:ownerWebTitle(filesystem,indexFile,id),description:'일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중',
+          genre:[],image:'',webPath:canonicalRoot+'/'+id,hasWebArchive:true,homepageWebPlayable:false,
+          homepageOfficialCard:false,homepageTestCandidate:false,homepageDisplayMode:'',
+          homepageStage:'웹게임 등록 · 3D 설계 및 F0~F9 개발 대기',
+          lifecycleState:'ACTIVE',productionClass:'DESIGN_ONLY',productionClassSource:'GENERAL_WEB_SOURCE_INTAKE',
+          homepageCategory:'design-only',ownerDirectWebUpload:true,
+          ownerWebSourceState:'WEB_SOURCE_DEVELOPMENT_PENDING_QA',ownerWebIntakeEngine:'HTML_CSS_JAVASCRIPT',
+          web3dRedevelopmentRequired:true,ownerWebSourceRevision:revision,ownerWebEntryFile:entry,
+          webDevelopmentResetRequired:true
+        });
+        byId.set(id,catalog.games[catalog.games.length-1]);added.push(id);
+      }
+      continue;
+    }
+    valid=Boolean(verifiedRoot);
+    if(valid)sourceState='UNITY_WEB_VERIFIED';
+    else if(sourceState==='CURRENT_OWNER_BASELINE')
+      sourceState=archivePresent?'UNITY_WEB_VERIFICATION_REQUIRED':'ENTRY_MISSING_OR_INVALID';
+    if(!valid){
+      if(existing){
+        existing.homepageWebPlayable=false;
+        existing.hasWebArchive=archivePresent;
+        existing.ownerWebSourceState=sourceState;
+        if(existing.homepageDisplayMode==='WEB_PUBLISHED')existing.homepageDisplayMode='';
+        if(existing.canonical?.sources?.web){existing.canonical.sources.web.playable=false;existing.canonical.sources.web.archive=archivePresent;existing.canonical.sources.web.state=sourceState;}
+        disabled.push(id);
+      }else ignored.push(id);
+      continue;
+    }
+    const canonicalPath=verifiedHref;
+    const fingerprint=webTreeFingerprint(filesystem,verifiedRoot);
+    if(existing){
+      const prior=clean(existing.ownerWebSourceRevision);
+      existing.webPath=canonicalPath;
+      existing.hasWebArchive=true;
+      existing.homepageWebPlayable=true;
+      existing.homepageDisplayMode='WEB_PUBLISHED';
+      existing.ownerDirectWebUpload=true;
+      existing.ownerWebSourceState='UNITY_WEB_VERIFIED';
+      existing.ownerWebSourceRevision=fingerprint;
+      existing.ownerWebEntryFile=verifiedHref.slice(1)+entryFile;
+      if(prior!==fingerprint)existing.webDevelopmentResetRequired=true;
+      updated.push(id);
+      continue;
+    }
+    const game={
+      id,
+      name:ownerWebTitle(filesystem,indexFile,id),
+      description:'사용자 직접 업로드 웹게임',
+      genre:[],
+      image:'',
+      webPath:canonicalPath,
+      hasWebArchive:true,
+      homepageWebPlayable:true,
+      homepageOfficialCard:false,
+      homepageTestCandidate:false,
+      homepageDisplayMode:'WEB_PUBLISHED',
+      lifecycleState:'ACTIVE',
+      productionClass:'DESIGN_ONLY',
+      productionClassSource:'OWNER_WEB_DIRECT_UPLOAD',
+      homepageCategory:'design-only',
+      ownerDirectWebUpload:true,
+      ownerWebSourceState:'UNITY_WEB_VERIFIED',
+      ownerWebSourceRevision:fingerprint,
+      ownerWebEntryFile:verifiedHref.slice(1)+entryFile,
+      webDevelopmentResetRequired:false
+    };
+    catalog.games.push(game);byId.set(id,game);added.push(id);
+  }
+  return{catalog,added,updated,disabled,ignored};
+}
+
+export function normalizePlatform(value){
+  const raw=clean(value).toUpperCase().replace(/[\s-]+/g,'_');
+  if(raw==='ROBLOX')return 'ROBLOX';
+  if(['WEB','GENERAL_WEB','HTML_JS_WEBGL'].includes(raw))return 'WEB';
+  if(['UNITY','UNITY_ANDROID','ANDROID_MOBILE'].includes(raw))return 'UNITY';
+  if(['FORTNITE','FORTNITE_UEFN','UEFN'].includes(raw))return 'FORTNITE_UEFN';
+  return '';
+}
+function normalizedProductionClass(value){
+  return normalizeProductionClass(value)||PRODUCTION_CLASSES.DESIGN_ONLY;
+}
+function lifecycleStateOf(game={}){
+  if(game.ownerDevelopmentStopped===true)return 'OWNER_STOPPED';
+  const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();
+  return ['ACTIVE','REBUILD','PAUSED','RETIRED','REMOVED','OWNER_STOPPED','STOPPED'].includes(raw)?raw:'ACTIVE';
+}
+function selectedPlatformOf(game={}){
+  const runtime=game.homepageInfo&&typeof game.homepageInfo==='object'?game.homepageInfo:{};
+  for(const value of [runtime.platform,game.selectedPlatform,game.targetPlatform,game.preferredPlatform,game.productionTarget]){
+    const platform=normalizePlatform(value);
+    if(platform)return platform;
+  }
+  return '';
+}
+function historicalDisplayMode(game={}){
+  const explicit=clean(game.homepageDisplayMode).toUpperCase();
+  if(explicit)return explicit;
+  const legacy=clean(game.homepageCategory).toLowerCase();
+  const target=game.robloxPublicationTarget&&typeof game.robloxPublicationTarget==='object'?game.robloxPublicationTarget:{};
+  const evidence=game.robloxReleaseEvidence&&typeof game.robloxReleaseEvidence==='object'?game.robloxReleaseEvidence:{};
+  if(legacy==='historical-deployed'||(target.historical===true&&target.verified===true&&evidence.historicalPublicationTargetVerified===true)){
+    return 'ROBLOX_HISTORICAL_DEPLOYMENT';
+  }
+  return '';
+}
+
+export function compareCatalogGames(a={},b={},policy=normalizationPolicy()){
+  const ordering=policy?.ordering||{};
+  const lifecycleRank=ordering.lifecycleRank||{ACTIVE:0,REBUILD:1,PAUSED:2,RETIRED:3,REMOVED:4};
+  const classRank=ordering.productionClassRank||{RELEASE_CONFIRMED:0,DEVELOPMENT_CONFIRMED:1,DESIGN_ONLY:2};
+  const featuredRank=ordering.featuredRank||{'true':0,'false':1};
+  const platformRank=ordering.platformRank||{ROBLOX:0,UNITY:1,FORTNITE_UEFN:2,UNSELECTED:3};
+  const aClass=normalizedProductionClass(a?.canonical?.production?.class||a.productionClass);
+  const bClass=normalizedProductionClass(b?.canonical?.production?.class||b.productionClass);
+  const aLifecycle=clean(a?.canonical?.lifecycle?.state||lifecycleStateOf(a)).toUpperCase();
+  const bLifecycle=clean(b?.canonical?.lifecycle?.state||lifecycleStateOf(b)).toUpperCase();
+  const aFeatured=a?.canonical?.homepage?.featured===true||a.featured===true;
+  const bFeatured=b?.canonical?.homepage?.featured===true||b.featured===true;
+  const aPlatform=normalizePlatform(a?.canonical?.production?.selectedPlatform||selectedPlatformOf(a))||'UNSELECTED';
+  const bPlatform=normalizePlatform(b?.canonical?.production?.selectedPlatform||selectedPlatformOf(b))||'UNSELECTED';
+  const aId=clean(a?.canonical?.identity?.gameId||a.id||a.gameId);
+  const bId=clean(b?.canonical?.identity?.gameId||b.id||b.gameId);
+  return numericRank(lifecycleRank,aLifecycle)-numericRank(lifecycleRank,bLifecycle)
+    ||numericRank(classRank,aClass)-numericRank(classRank,bClass)
+    ||numericRank(featuredRank,String(aFeatured))-numericRank(featuredRank,String(bFeatured))
+    ||numericRank(platformRank,aPlatform)-numericRank(platformRank,bPlatform)
+    ||aId.localeCompare(bId,'en');
+}
+
+export function canonicalizeGameRecord(game={}){
+  const runtime=game.homepageInfo&&typeof game.homepageInfo==='object'?game.homepageInfo:{};
+  const selectedPlatform=selectedPlatformOf(game);
+  const robloxTarget=game.robloxPublicationTarget&&typeof game.robloxPublicationTarget==='object'?game.robloxPublicationTarget:{};
+  const robloxEvidence=game.robloxReleaseEvidence&&typeof game.robloxReleaseEvidence==='object'?game.robloxReleaseEvidence:{};
+  const webPath=clean(game.webPath);
+  const productionClass=normalizedProductionClass(runtime.productionClass||game.productionClass);
+  const lifecycleState=lifecycleStateOf(game);
+  const genres=list(game.genre);
+  const displayMode=historicalDisplayMode(game);
+  return {
+    schemaVersion:CATALOG_CANONICAL_SCHEMA_VERSION,
+    catalogOrder:Number(game.catalogOrder)||null,
+    authority:'company-runtime',
+    identity:{
+      gameId:clean(game.id||game.gameId),
+      name:clean(game.name),
+      description:clean(game.description),
+      genres,
+      image:clean(game.marketingThumbnail)||clean(game.image)||'assets/pwa-icon-512.png',
+      aliases:list(game.aliases)
+    },
+    marketing:{
+      thumbnail:clean(game.marketingThumbnail)||clean(game.image)||'assets/pwa-icon-512.png',
+      source:'CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET',
+      homepageMedia:game.homepageMedia||null,
+      robloxThumbnail:game.robloxThumbnail||null,
+      robloxTitleArtwork:game.robloxTitleArtwork||null
+    },
+    lifecycle:{
+      state:lifecycleState,
+      reason:clean(game.lifecycleReason),
+      ownerExistingGame:bool(game.ownerExistingGame)
+    },
+    production:{
+      class:productionClass,
+      classSource:clean(game.productionClassSource),
+      target:clean(game.productionTarget),
+      handling:clean(game.developmentHandling),
+      selectedPlatform,
+      stage:clean(game.homepageStage)
+    },
+    sources:{
+      web:{
+        path:webPath,
+        archive:bool(game.hasWebArchive),
+        playable:bool(game.homepageWebPlayable),
+        state:clean(game.ownerWebSourceState),
+        purpose:clean(game.webPurpose)
+      },
+      unity:{
+        projectPath:clean(game.unityProjectPath)
+      },
+      roblox:{
+        projectPath:clean(game.robloxProjectPath)
+      }
+    },
+    publication:{
+      web:{
+        route:clean(game.webPublishedRoute),
+        sourceTreeSha:clean(game.webPublishedSourceTreeSha)
+      },
+      roblox:{
+        universeId:clean(robloxTarget.universeId),
+        placeId:clean(robloxTarget.placeId),
+        verified:bool(robloxTarget.verified),
+        historical:bool(robloxTarget.historical),
+        currentReleaseClaim:bool(robloxTarget.currentReleaseClaim),
+        displayName:clean(robloxTarget.displayName),
+        observedFrom:clean(robloxTarget.observedFrom),
+        observedAt:clean(robloxTarget.observedAt),
+        published:bool(robloxEvidence.published),
+        historicalPublicationTargetVerified:bool(robloxEvidence.historicalPublicationTargetVerified),
+        actualStudioRuntime:bool(robloxEvidence.actualStudioRuntime),
+        postRuntimeIndependentQa:bool(robloxEvidence.postRuntimeIndependentQa),
+        regression:bool(robloxEvidence.regression),
+        multiplayerQa:bool(robloxEvidence.multiplayerQa),
+        sourceRevision:clean(robloxEvidence.sourceRevision),
+        artifactIdentity:clean(robloxEvidence.artifactIdentity)
+      }
+    },
+    homepage:{
+      featured:bool(game.featured),
+      category:homepageCategoryForProductionClass(productionClass)||'design-only',
+      displayMode,
+      artbookPath:clean(game.homepageArtbookPath),
+      stage:clean(game.homepageStage),
+      recentWork:clean(game.homepageRecentWork),
+      runtime:{
+        authority:clean(runtime.authority)||'company-runtime',
+        developmentActive:runtime.developmentActive===true,
+        platform:selectedPlatform,
+        platformLabel:clean(runtime.platformLabel),
+        score:runtime.score??null,
+        scoreLabel:clean(runtime.scoreLabel)||'점수 미평가',
+        scoreCurrent:bool(runtime.scoreCurrent),
+        scoreSource:clean(runtime.scoreSource)||'SERVER_RUNTIME',
+        validationSchemaVersion:Number(runtime.validationSchemaVersion)||null,
+        genre:list(runtime.genre).length?list(runtime.genre):genres,
+        genreLabel:clean(runtime.genreLabel)||genres.join(' · '),
+        subgenre:clean(runtime.subgenre),
+        playMode:clean(runtime.playMode),
+        playModeLabel:clean(runtime.playModeLabel)||'플레이 방식 미평가',
+        latestWork:clean(runtime.latestWork||game.homepageRecentWork)||'개발 작업 정보 없음',
+        updatedAt:runtime.updatedAt||null,
+        status:clean(runtime.status||game.lifecycleState)||'ACTIVE',
+        productionClass
+      }
+    }
+  };
+}
+
+// 홈페이지 검증: 실제 웹 플레이 영상과 같은 게임·버전의 프레임만 슬라이드에 표시한다.
+export function validatedHomepageMedia(id,entry,{filesystem=fs,root='.'}={}){
+  if(!/^[a-z0-9][a-z0-9-]*$/.test(id)||entry?.gameId!==id||!clean(entry.titleEn)||!clean(entry.titleKo))return null;
+  const validFile=(row,expected,maxBytes,jpeg=false)=>{
+    if(!row||row.src!==expected||!/^[a-f0-9]{64}$/.test(String(row.sha256||'')))return false;
+    try{
+      const bytes=filesystem.readFileSync(root+'/'+row.src);
+      if(!bytes.length||bytes.length>maxBytes||bytes.length!==row.bytes)return false;
+      if(jpeg&&(bytes.length<4||bytes[0]!==0xff||bytes[1]!==0xd8||bytes[bytes.length-2]!==0xff||bytes[bytes.length-1]!==0xd9))return false;
+      return crypto.createHash('sha256').update(bytes).digest('hex')===row.sha256;
+    }catch{return false;}
+  };
+  if(!validFile(entry.cover,'assets/homepage-covers/'+id+'.webp',143360)
+    ||!validFile(entry.small,'assets/homepage-covers/'+id+'-480.webp',49152))return null;
+  const result={gameId:id,titleEn:clean(entry.titleEn),titleKo:clean(entry.titleKo),
+    cover:entry.cover,small:entry.small,kind:'MARKETING_ARTWORK',style:entry.style,typography:clean(entry.typography)};
+  const v=entry.video;
+  if(!v||v.gameId!==id||!['WEB','UNITY_WEB','UNITY'].includes(v.platform)
+    ||!/^[a-f0-9]{40}$/.test(v.sourceRevision||'')
+    ||!/^[a-f0-9]{64}$/.test(v.artifactIdentity||'')
+    ||!Number.isFinite(Date.parse(v.capturedAt))
+    ||v.runtimeVerification?.pass!==true||v.runtimeVerification?.inputEvents<=0
+    ||v.runtimeVerification?.visualChangeObserved!==true
+    ||!validFile(v,'assets/homepage-media/'+id+'.mp4',3145728))return result;
+  let current=false;
+  try{
+    current=['WEB','UNITY_WEB'].includes(v.platform)
+      &&webTreeFingerprint(filesystem,root+'/web-games/'+id)===v.artifactIdentity;
+  }catch{}
+  if(!current||!Array.isArray(v.dependencies)||!v.dependencies.length
+    ||!v.dependencies.every(dep=>{
+      if(!/^(web-games|assets)\/[a-zA-Z0-9_./-]+$/.test(dep.path||'')
+        ||dep.path.split('/').includes('..'))return false;
+      try{return crypto.createHash('sha256').update(filesystem.readFileSync(root+'/'+dep.path)).digest('hex')===dep.sha256;}catch{return false;}
+    }))return result;
+  result.video=v;
+  // 1920×1080 사진은 검증된 촬영 영상에서 추출한 JPG만 허용한다.
+  const screenshots=Array.isArray(entry.screenshots)?entry.screenshots:[];
+  if(screenshots.length>=1&&screenshots.length<=3&&screenshots.every((frame,index)=>
+    frame?.gameId===id&&frame.platform===v.platform
+    &&frame.artifactIdentity===v.artifactIdentity&&frame.sourceRevision===v.sourceRevision
+    &&frame.capturedAt===v.capturedAt&&frame.source==='ACTUAL_GAMEPLAY_VIDEO_FRAME'
+    &&frame.width===1920&&frame.height===1080
+    &&Number.isFinite(frame.second)&&frame.second>=0&&frame.second<=v.seconds
+    &&validFile(frame,'assets/homepage-media/'+id+'-'+(index+1)+'.jpg',1048576,true)
+  ))result.screenshots=screenshots;
+  return result;
+}
+
+export function normalizeCatalog(catalog={}){
+  if(!Array.isArray(catalog.games))throw new Error('catalog.games must be an array');
+  const policy=normalizationPolicy();
+  // 게임 중지=영구 제거. 플랫폼 OWNER_HOLD나 개별 작업 실패는 이 대상이 아니다.
+  const removal=catalog.permanentRemovalPolicy||{};
+  const removed=new Set(list(removal.ids));
+  const ownerStopped=new Set(list(catalog.ownerStoppedGameIds));
+  for(const game of catalog.games){
+    const id=clean(game.id||game.gameId);
+    if(ownerStopped.has(id)||game.ownerDevelopmentStopped===true||['OWNER_STOPPED'].includes(clean(game.lifecycleState||game.lifecycle?.state).toUpperCase())){
+      if(id)ownerStopped.add(id);
+      game.ownerDevelopmentStopped=true;
+      game.lifecycleState='OWNER_STOPPED';
+    }
+  }
+  catalog.ownerStoppedGameIds=[...ownerStopped].sort();
+  if(removal.ownerGameStopMeansPermanentRemoval===true){
+    const stopped=new Set(['PAUSED','STOPPED','RETIRED','REMOVED']);
+    for(const game of catalog.games){
+      if(game.ownerDevelopmentStopped!==true&&stopped.has(clean(game.lifecycleState||game.lifecycle?.state).toUpperCase())){
+        const id=clean(game.id||game.gameId);
+        if(/^[a-z0-9][a-z0-9-]*$/.test(id))removed.add(id);
+      }
+    }
+    removal.ids=[...removed];
+    removal.reentryAllowed=false;
+    removal.automaticRecoveryAllowed=false;
+    removal.automaticMaintenanceAllowed=false;
+  }
+  catalog.games=catalog.games.filter(game=>!removed.has(clean(game.id||game.gameId)));
+  // 이전 명시적 영구삭제와 새 오너 개발중지는 별개다. 중지는 소스·저장 보존 격리.
+  catalog.ownerStoppedGameIds=catalog.ownerStoppedGameIds.filter(id=>!removed.has(id));
+  catalog.webExposurePolicy=policy.ownerWebAutoIngest?.webExposureQuality||{};
+  const ids=new Set();
+  let covers={};
+  try{covers=JSON.parse(fs.readFileSync('assets/homepage-covers/manifest.json','utf8')).games||{};}catch{}
+  for(const game of catalog.games){
+    for(const field of LEGACY_DEVELOPMENT_FREEZE_FIELDS)delete game[field];
+    applyHomepageAutoClassification(game);
+    const id=clean(game.id||game.gameId);
+    if(!id)throw new Error('catalog game id missing');
+    if(ids.has(id))throw new Error('duplicate catalog game id: '+id);
+    ids.add(id);
+    // 홈페이지: 실제 원본 프로젝트가 존재하면 누락된 플랫폼 소스 경로만 복원한다.
+    // 단순 HTML 시제품은 여전히 비공개 처리하고, 원본 소스만으로 플레이/출시를 주장하지 않는다.
+    if(!clean(game.robloxProjectPath)){
+      const root='roblox-games/'+id;
+      if(fs.existsSync(root+'/default.project.json')
+        &&fs.existsSync(root+'/server/Game.server.luau')
+        &&fs.existsSync(root+'/client/Game.client.luau'))
+        game.robloxProjectPath=root;
+    }
+    if(!clean(game.unityProjectPath)){
+      const root='unity-games/'+id;
+      if(fs.existsSync(root+'/ProjectSettings/ProjectVersion.txt')
+        &&fs.existsSync(root+'/Assets/Scripts'))
+        game.unityProjectPath=root;
+    }
+    const media=validatedHomepageMedia(id,covers[id]);
+    if(media)game.homepageMedia=media;
+    else delete game.homepageMedia;
+    game.productionClass=normalizedProductionClass(game.productionClass);
+    const legacyHistorical=clean(game.homepageCategory).toLowerCase()==='historical-deployed';
+    game.homepageCategory=homepageCategoryForProductionClass(game.productionClass)||'design-only';
+    if(legacyHistorical&&!clean(game.homepageDisplayMode))game.homepageDisplayMode='ROBLOX_HISTORICAL_DEPLOYMENT';
+    game.canonical=canonicalizeGameRecord(game);
+  }
+  catalog.games.sort((a,b)=>compareCatalogGames(a,b,policy));
+  catalog.games.forEach((game,index)=>{
+    const order=index+1;
+    game.catalogOrder=order;
+    game.canonical=canonicalizeGameRecord({...game,catalogOrder:order});
+    game.canonical.catalogOrder=order;
+  });
+  catalog.catalogSchemaVersion=2;
+  catalog.normalization={
+    version:2,
+    sourceOfTruth:policy?.sourceOfTruth||ROADMAP_PATH||null,
+    canonicalRecordPath:'games[].canonical',
+    legacyFlatFields:'COMPATIBILITY_MIRROR',
+    canonicalFirst:true,
+    homepageReadsCanonicalFirst:true,
+    companyStatusSyncRegeneratesCanonical:true,
+    duplicateGameIdsForbidden:true,
+    publicationIdentityMustStayBoundToGameId:true,
+    ordering:policy?.ordering?.mode||'CANONICAL_STABLE',
+    orderField:policy?.ordering?.outputField||'catalogOrder',
+    orderContiguous:true,
+    automaticFeatureExpansionFreezeForbidden:true
+  };
+  catalog.runtimeCounts={
+    ...(catalog.runtimeCounts||{}),
+    canonicalGames:catalog.games.length,
+    normalizedGames:catalog.games.filter(game=>game.canonical?.schemaVersion===CATALOG_CANONICAL_SCHEMA_VERSION).length
+  };
+  return catalog;
+}
+
+export function validateNormalizedCatalog(catalog={}){
+  const policy=normalizationPolicy();
+  const errors=[];
+  if(catalog.catalogSchemaVersion!==2)errors.push('CATALOG_SCHEMA_VERSION');
+  if(catalog.normalization?.canonicalRecordPath!=='games[].canonical')errors.push('NORMALIZATION_POLICY');
+  if(catalog.normalization?.ordering!==(policy?.ordering?.mode||'CANONICAL_STABLE'))errors.push('ORDERING_POLICY');
+  if(catalog.normalization?.orderField!==(policy?.ordering?.outputField||'catalogOrder'))errors.push('ORDER_FIELD_POLICY');
+  const ids=new Set(),robloxPlaces=new Map(),robloxUniverses=new Map();
+  const expected=[...(Array.isArray(catalog.games)?catalog.games:[])].sort((a,b)=>compareCatalogGames(a,b,policy)).map(game=>clean(game.id));
+  for(let index=0;index<(Array.isArray(catalog.games)?catalog.games:[]).length;index+=1){
+    const game=catalog.games[index];
+    const id=clean(game.id),canonical=game.canonical;
+    for(const field of LEGACY_DEVELOPMENT_FREEZE_FIELDS)if(Object.hasOwn(game,field))errors.push('LEGACY_DEVELOPMENT_FREEZE_FORBIDDEN:'+id+':'+field);
+    if(!id||!canonical||canonical.schemaVersion!==CATALOG_CANONICAL_SCHEMA_VERSION){errors.push('CANONICAL_MISSING:'+id);continue;}
+    if(canonical.identity?.gameId!==id)errors.push('IDENTITY_MISMATCH:'+id);
+    if(ids.has(id))errors.push('DUPLICATE_GAME_ID:'+id);ids.add(id);
+    const cls=normalizedProductionClass(game.productionClass);
+    if(canonical.production?.class!==cls)errors.push('PRODUCTION_MIRROR_MISMATCH:'+id);
+    if(game.homepageCategory!==(homepageCategoryForProductionClass(cls)||'design-only'))errors.push('HOMEPAGE_CATEGORY_MISMATCH:'+id);
+    if(canonical.homepage?.category!==game.homepageCategory)errors.push('CANONICAL_HOMEPAGE_CATEGORY_MISMATCH:'+id);
+    if(Number(game.catalogOrder)!==index+1||Number(canonical.catalogOrder)!==index+1)errors.push('CATALOG_ORDER_NOT_CONTIGUOUS:'+id);
+    if(expected[index]!==id)errors.push('CATALOG_SORT_MISMATCH:'+id);
+    const pub=canonical.publication?.roblox||{};
+    if(pub.verified&&pub.placeId){
+      const old=robloxPlaces.get(pub.placeId);if(old&&old!==id)errors.push('DUPLICATE_ROBLOX_PLACE:'+pub.placeId);else robloxPlaces.set(pub.placeId,id);
+    }
+    if(pub.verified&&pub.universeId){
+      const old=robloxUniverses.get(pub.universeId);if(old&&old!==id)errors.push('DUPLICATE_ROBLOX_UNIVERSE:'+pub.universeId);else robloxUniverses.set(pub.universeId,id);
+    }
+  }
+  return {pass:errors.length===0,errors,gameCount:Array.isArray(catalog.games)?catalog.games.length:0};
+}
+
+function main(){
+  const file=process.argv.find(x=>x.startsWith('--file='))?.slice(7)||'game-catalog.json';
+  const check=process.argv.includes('--check');
+  const catalog=JSON.parse(fs.readFileSync(file,'utf8'));
+  if(!check)normalizeCatalog(catalog);
+  const validation=validateNormalizedCatalog(catalog);
+  if(!validation.pass)throw new Error(validation.errors.join(','));
+  if(!check)fs.writeFileSync(file,JSON.stringify(catalog,null,2)+'\n');
+  console.log('GAME_CATALOG_NORMALIZATION=PASS');
+  console.log('GAME_CATALOG_NORMALIZED='+validation.gameCount);
+  console.log('GAME_CATALOG_ORDER=CANONICAL_STABLE');
+}
+if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
+  try{main();}catch(error){console.error(error.stack||error.message);process.exitCode=1;}
+}
+

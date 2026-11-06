@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "gameId": "star-frontier",
+  "name": "별길 개척자",
+  "nameEnglish": "Star Frontier",
+  "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
+  "referenceUse": {
+    "qualitativeReference": "Starscape",
+    "learnedCoreFun": [
+      "space exploration with meaningful distance",
+      "resource mining that feeds ship growth",
+      "risk escalation through hostile space"
+    ],
+    "copyingForbidden": [
+      "external source code",
+      "external assets",
+      "specific map layout",
+      "specific faction lore",
+      "specific economy tables"
+    ]
+  },
+  "distinctIdentity": "푸른 개척 정거장에서 출발해 성역별 운석과 해적 위협을 돌파하고, 짧은 모바일 세션에서도 채굴-귀환-강화-워프가 완결되는 네온 우주 개척 게임.",
+  "coreLoop": [
+    "우주선을 직접 움직여 주변 운석과 위험 요소를 찾는다.",
+    "운석을 채굴하거나 해적 드론을 격파해 광석과 크레딧을 얻는다.",
+    "정거장으로 돌아와 광석을 판매하고 선체와 레이저를 강화한다.",
+    "워프 게이트를 지나 더 위험하고 보상이 큰 성역으로 이동한다."
+  ],
+  "mvpSystems": {
+    "sectors": 3,
+    "station": true,
+    "asteroidMining": true,
+    "cargo": true,
+    "shipUpgrades": true,
+    "laserUpgrades": true,
+    "enemyDrones": true,
+    "warpNetwork": true,
+    "persistentProgress": true,
+    "sharedWorldMultiplayer": true
+  },
+  "mobileUx": {
+    "touchFirst": true,
+    "movement": "화면 좌측 6방향 이동 패드",
+    "actions": "화면 우측 채굴, 레이저, 부스트, 판매, 수리, 업그레이드",
+    "camera": "우주선 뒤를 따라가는 스크립트 카메라"
+  },
+  "authority": {
+    "movement": "SERVER_VALIDATED",
+    "mining": "SERVER",
+    "combat": "SERVER",
+    "economy": "SERVER",
+    "save": "DATASTORE_SERVER_ONLY"
+  },
+  "balanceBaseline": {
+    "baseCargo": 30,
+    "oreSellPrice": 6,
+    "baseHull": 120,
+    "baseLaserDamage": 24,
+    "baseShipSpeed": 92
+  },
+  "releaseBoundary": "실제 Roblox 런타임, 모바일, 저장 재접속, 멀티플레이, 회귀 검증 전에는 출시 PASS를 주장하지 않는다."
+}

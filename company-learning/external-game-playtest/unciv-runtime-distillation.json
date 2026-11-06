@@ -1,0 +1,101 @@
+{
+  "version": 3,
+  "gameId": "unciv",
+  "packageId": "com.unciv.app",
+  "sourceType": "EXTERNAL_OPEN_SOURCE_BLACK_BOX_RUNTIME_EVIDENCE",
+  "authority": "PRACTICE_ONLY_MIXED_EVIDENCE",
+  "observedThrough": "2026-09-16",
+  "runtimePromotionAllowed": false,
+  "gameplayBehaviorPromotionAllowed": false,
+  "partialObservableDistillationAllowed": true,
+  "codeExtractionAllowed": false,
+  "binaryRedistributionAllowed": false,
+  "positiveTrainingSample": false,
+  "verifiedRuntimePass": false,
+  "stablePlaytestVerified": false,
+  "stablePlaytestBoundary": "CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY",
+  "gameEntryObserved": false,
+  "gameEntryEvidenceAuthority": "VISUAL_REVIEW_REJECTED_GAME_ENTRY",
+  "gameEntryObservationRecordedAt": "2026-09-16",
+  "verifiedObservedStages": [
+    "APP_LAUNCH",
+    "INPUT_EXERCISE",
+    "VISUAL_STATE_CHANGE",
+    "PROCESS_SURVIVAL",
+    "NO_FATAL_CRASH_OR_ANR"
+  ],
+  "sourceEvidence": {
+    "privateRepository": "hans1177/jaewoon-ai-company",
+    "workflowPath": ".github/workflows/vibe2-open-source-apk-blackbox.yml",
+    "latestCompletedRun": 35109831419,
+    "latestRunNumber": 10,
+    "latestArtifactId": 10451912521,
+    "latestArtifactDigest": "sha256:07eeccecd6e5f11f7e31d3a90e8a00c060b39f4055d5cbb1a5e48ce639176388",
+    "latestResult": "PARTIAL",
+    "latestFailure": "GAME_ENTRY_REJECTED_TUTORIAL_MOVE_GUIDE_REMAINED_VISIBLE_ON_MAP_BEFORE_AND_AFTER_INPUT",
+    "runtimeType": "REDROID_NATIVE_ARM64_DIRECT_EXEC",
+    "hostArch": "aarch64",
+    "guestAndroid": "14",
+    "guestAbi": "arm64-v8a",
+    "redroidImage": "redroid/redroid:14.0.0_64only-latest",
+    "apkSha256": "3edcee0d7709c455e1a5c7d2070f36ab5b50cbe7d80b36d459614550c2871f67",
+    "apkSource": "OFFICIAL_GITHUB_RELEASE"
+  },
+  "verifiedObservedFacts": [
+    {
+      "id": "tutorial-overlay-still-blocks-clean-game-entry",
+      "evidenceAuthority": "RUN_10_ARTIFACT_VISUAL_REVIEW",
+      "fact": "The actual turn-based map, units and turn UI were visible, but the Move a unit tutorial guide remained over the play surface in the candidate game-entry and input captures.",
+      "boundary": "Because the tutorial overlay was still present, GAME_ENTRY is not promoted for this run even though the underlying map rendered."
+    },
+    {
+      "id": "input-changed-map-under-tutorial-overlay",
+      "evidenceAuthority": "RUN_10_ARTIFACT_VISUAL_REVIEW",
+      "fact": "A bounded pan changed the visible map framing and a tap produced movement-target feedback while the tutorial guide remained visible.",
+      "boundary": "This proves input response only. It does not satisfy the unobstructed GAME_ENTRY gate."
+    },
+    {
+      "id": "runtime-survived-observed-input",
+      "evidenceAuthority": "RUN_10_ARTIFACT",
+      "fact": "The Unciv package remained alive after the observed interactions with no captured FATAL EXCEPTION, native SIGABRT/SIGSEGV or ANR marker in the validation window.",
+      "boundary": "This proves process survival and captured-window crash absence only."
+    }
+  ],
+  "distilledPositiveRuntimePatterns": [],
+  "distilledPartialRuntimePatterns": [
+    {
+      "id": "rendered-map-is-not-clean-game-entry-while-tutorial-overlay-remains",
+      "scope": "runtime-evidence",
+      "lesson": "A rendered strategy map underneath an instructional overlay is still an onboarding state when the evidence rule requires an unobstructed playable screen.",
+      "reuseRule": "For Roblox mobile verification, require the actual controllable play surface without blocking onboarding overlays before promoting GAME_ENTRY."
+    }
+  ],
+  "distilledFailurePatterns": [
+    {
+      "id": "tutorial-task-must-be-completed-or-dismissed-before-promotion",
+      "scope": "black-box-input-automation",
+      "evidence": [9, 10],
+      "lesson": "The Move a unit tutorial guide persisted through map pan and tap probes, so the earlier positive promotion was too early.",
+      "reuseRule": "Complete or dismiss the observed tutorial task, recapture a clean play screen, then verify input-caused state change before promotion."
+    }
+  ],
+  "routeDecisions": {
+    "githubHostedArm64Redroid": "RUNTIME_HEALTHY_GAME_ENTRY_NOT_YET_VERIFIED_RUN10",
+    "sourceOrAssetExtraction": "NOT_USED_FOR_THIS_BLACK_BOX_FLOW",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "learningUse": {
+    "allowed": [
+      "onboarding versus unobstructed playable-state separation",
+      "partial input-response observation while promotion remains blocked",
+      "foreground/process/crash correlation",
+      "automation failure classification"
+    ],
+    "stillForbidden": [
+      "promoting this Unciv run as a positive training sample",
+      "treating Android evidence as Roblox runtime evidence",
+      "inferring hidden AI, economy, combat or scoring rules",
+      "copying game artwork, UI trade dress, names or implementation details into a Roblox game"
+    ]
+  }
+}

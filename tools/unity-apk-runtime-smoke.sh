@@ -1,0 +1,455 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+apk="${1:-}"
+out_dir="${2:-qa-artifacts/unity-runtime-smoke}"
+[[ -n "$apk" && -s "$apk" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_SMOKE_INPUT_MISSING] APK missing or empty: $apk" >&2; exit 2; }
+mkdir -p "$out_dir"
+
+adb start-server >/dev/null 2>&1 || true
+if ! timeout 150 adb wait-for-device; then
+  echo '[JAEWOON_BUILD_ERROR:ANDROID_ADB_DEVICE_TIMEOUT] adb did not discover the Android runtime within 150 seconds.' >&2
+  adb devices -l >&2 || true
+  cat /tmp/jaewoon-redroid.log >&2 2>/dev/null || true
+  cat /tmp/jaewoon-emulator.log >&2 2>/dev/null || true
+  exit 3
+fi
+if ! timeout 150 bash -c 'until [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" == "1" ]]; do sleep 3; done'; then
+  echo '[JAEWOON_BUILD_ERROR:ANDROID_RUNTIME_BOOT_TIMEOUT] Android runtime did not finish booting within 150 seconds.' >&2
+  adb devices -l >&2 || true
+  cat /tmp/jaewoon-redroid.log >&2 2>/dev/null || true
+  cat /tmp/jaewoon-emulator.log >&2 2>/dev/null || true
+  exit 3
+fi
+
+sdk_root="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+aapt_bin=''
+if [[ -n "$sdk_root" && -d "$sdk_root/build-tools" ]]; then
+  aapt_bin="$(find "$sdk_root/build-tools" -type f -name aapt 2>/dev/null | sort -V | tail -n 1 || true)"
+fi
+if [[ -z "$aapt_bin" ]]; then
+  aapt_bin="$(command -v aapt 2>/dev/null || true)"
+fi
+[[ -n "$aapt_bin" && -x "$aapt_bin" ]] || { echo '[JAEWOON_BUILD_ERROR:AAPT_MISSING] aapt not found in Android SDK or PATH.' >&2; exit 4; }
+package="$($aapt_bin dump badging "$apk" | sed -n "s/package: name='\([^']*\)'.*/\1/p" | head -n 1)"
+[[ -n "$package" ]] || { echo '[JAEWOON_BUILD_ERROR:APK_PACKAGE_UNRESOLVED] Could not resolve APK package id.' >&2; exit 5; }
+launch_activity="$($aapt_bin dump badging "$apk" | sed -n "s/launchable-activity: name='\([^']*\)'.*/\1/p" | head -n 1)"
+[[ -n "$launch_activity" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_LAUNCH_ACTIVITY_UNRESOLVED] No launcher activity found for $package" >&2; exit 6; }
+launch_component="${package}/${launch_activity}"
+seed_technical=false
+if [[ "$package" == com.jaewoongames.seed* ]]; then seed_technical=true; fi
+
+device_api="$(adb shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+device_abis="$(adb shell getprop ro.product.cpu.abilist 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+printf '%s\n' "$device_api" > "$out_dir/device-api.txt"
+printf '%s\n' "$device_abis" > "$out_dir/device-abis.txt"
+"$aapt_bin" dump badging "$apk" > "$out_dir/apk-badging.txt" || true
+printf '%s\n' "$launch_component" > "$out_dir/launch-component.txt"
+
+runtime_abi_compatible=true
+if unzip -Z1 "$apk" 2>/dev/null | grep -q '^lib/arm64-v8a/'; then
+  if ! grep -q 'arm64-v8a' <<<"$device_abis"; then
+    runtime_abi_compatible=false
+  fi
+fi
+if [[ "$runtime_abi_compatible" != "true" ]]; then
+  echo "[JAEWOON_BUILD_ERROR:ANDROID_RUNTIME_ABI_MISMATCH] APK requires arm64-v8a but runtime abilist=$device_abis" >&2
+  exit 19
+fi
+
+adb uninstall "$package" >/dev/null 2>&1 || true
+set +e
+adb install -t "$apk" > "$out_dir/install.log" 2>&1
+install_status=$?
+set -e
+if [[ "$install_status" -ne 0 ]]; then
+  cat "$out_dir/install.log" >&2
+  echo "[JAEWOON_BUILD_ERROR:APK_FRESH_INSTALL_FAILED] adb install failed for $package with status=$install_status" >&2
+  exit 7
+fi
+if ! grep -q 'Success' "$out_dir/install.log"; then
+  cat "$out_dir/install.log" >&2
+  echo "[JAEWOON_BUILD_ERROR:APK_INSTALL_NO_SUCCESS] Android package manager did not report Success for $package" >&2
+  exit 8
+fi
+
+adb shell pm path "$package" > "$out_dir/package-path.txt" 2>&1 || { echo "[JAEWOON_BUILD_ERROR:APK_PACKAGE_NOT_REGISTERED] $package is not registered after install" >&2; exit 9; }
+
+# Launch the exact APK activity directly. Android monkey can abort on unrelated system-app ANRs
+# before injecting any event, which produces false "process exited" failures for the game.
+# Android의 첫 immersive/fullscreen 안내가 게임 화면과 입력을 가리지 않게 한다.
+# 지원하지 않는 런타임에서는 실패해도 실제 앱 검증을 계속한다.
+adb shell settings put secure immersive_mode_confirmations confirmed >/dev/null 2>&1 || true
+adb logcat -c || true
+set +e
+timeout 20 adb shell am start -W -n "$launch_component" > "$out_dir/launch.log" 2>&1
+launch_status=$?
+set -e
+launch_command_pass=false
+if [[ "$launch_status" -eq 0 ]] && grep -Eq '^Status:[[:space:]]+ok\r?$' "$out_dir/launch.log"; then
+  launch_command_pass=true
+fi
+
+boot_observed=false
+action_observed=false
+save_observed=false
+metric_observed=false
+runtime_ready_timeout=false
+gameplay_input_delivered=false
+process_observed_after_launch=false
+process_exited_before_runtime_ready=false
+launch_process_missing=false
+
+# 모든 Unity APK에서 exact activity launch 뒤 실제 앱 process를 관찰한다.
+# seed 전용 기술 로그가 없는 일반 게임도 이 증거를 가져야 F1을 검증할 수 있다.
+if [[ "$launch_command_pass" == "true" ]]; then
+  for attempt in $(seq 1 12); do
+    current_pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+    if [[ -n "$current_pid" ]]; then
+      process_observed_after_launch=true
+      break
+    fi
+    sleep 1
+  done
+  if [[ "$process_observed_after_launch" != "true" ]]; then
+    launch_process_missing=true
+  fi
+fi
+
+if [[ "$seed_technical" == "true" && "$launch_command_pass" == "true" && "$launch_process_missing" != "true" ]]; then
+  for attempt in $(seq 1 20); do
+    current_pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+    if [[ -z "$current_pid" && "$process_observed_after_launch" == "true" ]]; then
+      process_exited_before_runtime_ready=true
+      break
+    fi
+
+    snapshot="$(adb logcat -d 2>/dev/null || true)"
+    if grep -q 'JAEWOON_TECH_BOOT' <<<"$snapshot"; then
+      boot_observed=true
+      break
+    fi
+    sleep 2
+  done
+  if [[ "$boot_observed" != "true" ]]; then
+    runtime_ready_timeout=true
+  fi
+elif [[ "$seed_technical" == "true" ]]; then
+  runtime_ready_timeout=true
+else
+  sleep 5
+fi
+
+size="$(adb shell wm size 2>/dev/null | tr -d '\r' | tail -n 1 || true)"
+if [[ "$size" =~ ([0-9]+)x([0-9]+) ]]; then
+  screen_w="${BASH_REMATCH[1]}"
+  screen_h="${BASH_REMATCH[2]}"
+else
+  screen_w=1080
+  screen_h=1920
+fi
+center_x=$((screen_w / 2))
+primary_y=$((screen_h * 68 / 100))
+secondary_y=$((screen_h * 84 / 100))
+
+# 일부 Android 런타임은 secure 설정과 별개로 최초 fullscreen 확인창을 띄운다.
+# UI 트리에서 시스템 확인창이 실제 관찰된 경우에만 그 버튼 위치를 눌러 게임 입력과 분리한다.
+adb shell uiautomator dump /sdcard/jaewoon-window.xml >/dev/null 2>&1 || true
+fullscreen_ui="$(adb shell cat /sdcard/jaewoon-window.xml 2>/dev/null | tr -d '\r' || true)"
+if grep -Eq 'Viewing full screen|Got it' <<<"$fullscreen_ui"; then
+  adb shell input tap $((screen_w * 85 / 100)) $((screen_h * 20 / 100)) || true
+  sleep 2
+fi
+
+# One exact Android runtime session supplies the Unity F1-F8 black-box evidence.
+# Capture the frame immediately before gameplay input so later floors can reuse
+# the same session instead of launching a verifier per floor.
+adb exec-out screencap -p > "$out_dir/screen-before-input.png" 2>/dev/null || true
+
+if [[ "$boot_observed" == "true" || "$seed_technical" != "true" ]]; then
+  gameplay_input_delivered=true
+  adb shell input tap "$center_x" "$primary_y" || true
+  sleep 1
+  adb shell input tap "$center_x" "$secondary_y" || true
+  adb shell input swipe "$center_x" $((screen_h * 78 / 100)) "$center_x" $((screen_h * 38 / 100)) 350 || true
+  adb shell input tap "$center_x" "$primary_y" || true
+  sleep 1
+  adb shell input tap "$center_x" "$secondary_y" || true
+fi
+
+adb exec-out screencap -p > "$out_dir/screen-after-input.png" 2>/dev/null || true
+
+if [[ "$seed_technical" == "true" && "$gameplay_input_delivered" == "true" ]]; then
+  for _ in $(seq 1 15); do
+    current_pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+    if [[ -z "$current_pid" ]]; then
+      process_exited_before_runtime_ready=true
+      break
+    fi
+    snapshot="$(adb logcat -d 2>/dev/null || true)"
+    grep -q 'JAEWOON_TECH_BOOT' <<<"$snapshot" && boot_observed=true || true
+    grep -q 'JAEWOON_TECH_ACTION' <<<"$snapshot" && action_observed=true || true
+    grep -q 'JAEWOON_TECH_SAVE' <<<"$snapshot" && save_observed=true || true
+    grep -q 'JAEWOON_TECH_METRIC' <<<"$snapshot" && metric_observed=true || true
+    if [[ "$boot_observed" == "true" && "$action_observed" == "true" && "$save_observed" == "true" && "$metric_observed" == "true" ]]; then
+      break
+    fi
+    sleep 2
+  done
+else
+  [[ "$seed_technical" == "true" ]] || sleep 3
+fi
+
+pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+if [[ -n "$pid" ]]; then
+  process_observed_after_launch=true
+  launch_process_missing=false
+fi
+adb shell dumpsys activity activities > "$out_dir/activity.txt" 2>&1 || true
+foreground_observed=false
+if grep -Eq "mResumedActivity.*${package}|topResumedActivity.*${package}|ResumedActivity.*${package}" "$out_dir/activity.txt"; then
+  foreground_observed=true
+fi
+adb shell dumpsys package "$package" > "$out_dir/package.txt" 2>&1 || true
+adb shell dumpsys gfxinfo "$package" > "$out_dir/gfxinfo.txt" 2>&1 || true
+adb shell dumpsys SurfaceFlinger --list > "$out_dir/surfaceflinger-layers.txt" 2>&1 || true
+# Android 16 --list may expose RequestedLayerState wrappers. Prefer the real Unity BLAST
+# SurfaceView and strip wrapper metadata before asking SurfaceFlinger for frame timestamps.
+surface_layer="$(grep -F "$package" "$out_dir/surfaceflinger-layers.txt" | grep -m1 'SurfaceView.*(BLAST)' | sed -E 's/^RequestedLayerState\{(.*) parentId=.*/\1/' || true)"
+if [[ -z "$surface_layer" ]]; then
+  surface_layer="$(grep -F "$package" "$out_dir/surfaceflinger-layers.txt" | grep 'SurfaceView' | grep -v 'Background for ' | head -n 1 | sed -E 's/^RequestedLayerState\{(.*) parentId=.*/\1/' || true)"
+fi
+if [[ -z "$surface_layer" ]]; then
+  surface_layer="$(grep -F "$package" "$out_dir/surfaceflinger-layers.txt" | head -n 1 | sed -E 's/^RequestedLayerState\{(.*) parentId=.*/\1/' || true)"
+fi
+printf '%s\n' "$surface_layer" > "$out_dir/surfaceflinger-layer.txt"
+if [[ -n "$surface_layer" ]]; then
+  # adb concatenates arguments into a remote shell command; host quoting alone
+  # loses spaces and executes the BLAST parentheses as shell syntax on Android.
+  surface_layer_quoted="$(python3 -c 'import shlex,sys; print(shlex.quote(sys.argv[1]))' "$surface_layer")"
+  adb shell "dumpsys SurfaceFlinger --latency $surface_layer_quoted" > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
+else
+  adb shell dumpsys SurfaceFlinger --latency > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
+fi
+adb shell dumpsys meminfo "$package" > "$out_dir/meminfo.txt" 2>&1 || true
+adb logcat -d > "$out_dir/logcat.txt" 2>&1 || true
+if [[ -s "$out_dir/screen-after-input.png" ]]; then
+  cp "$out_dir/screen-after-input.png" "$out_dir/screenshot.png"
+else
+  adb exec-out screencap -p > "$out_dir/screenshot.png" 2>/dev/null || true
+fi
+
+read -r rendered_frames janky_frames total_pss_kb < <(python3 - "$out_dir/gfxinfo.txt" "$out_dir/surfaceflinger-latency.txt" "$out_dir/meminfo.txt" <<'PY'
+import pathlib,re,sys
+gfx=pathlib.Path(sys.argv[1]).read_text(encoding='utf-8',errors='replace')
+surface=pathlib.Path(sys.argv[2]).read_text(encoding='utf-8',errors='replace')
+mem=pathlib.Path(sys.argv[3]).read_text(encoding='utf-8',errors='replace')
+def number(pattern,text,flags=0):
+    match=re.search(pattern,text,flags)
+    return int(match.group(1).replace(',','')) if match else 0
+frames=number(r'Total frames rendered:\s*([0-9,]+)',gfx,re.I)
+janky=number(r'Janky frames:\s*([0-9,]+)',gfx,re.I)
+surface_frames=sum(1 for line in surface.splitlines() if re.fullmatch(r'\s*\d+\s+\d+\s+\d+\s*',line) and any(int(x)>0 for x in line.split()))
+frames=max(frames,surface_frames)
+pss=number(r'TOTAL PSS:\s*([0-9,]+)',mem,re.I) or number(r'^\s*TOTAL\s+([0-9,]+)',mem,re.M)
+print(frames,janky,pss)
+PY
+)
+platform_metrics_pass=false
+if [[ "$rendered_frames" =~ ^[0-9]+$ && "$rendered_frames" -gt 0 && "$total_pss_kb" =~ ^[0-9]+$ && "$total_pss_kb" -gt 0 ]]; then
+  platform_metrics_pass=true
+fi
+
+fatal=0
+set +e
+python3 tools/unity-package-fatal-logcat.py "$out_dir/logcat.txt" "$package" > "$out_dir/package-fatal-scan.txt" 2>&1
+fatal_scan_status=$?
+set -e
+if [[ "$fatal_scan_status" -eq 1 ]]; then
+  fatal=1
+elif [[ "$fatal_scan_status" -ne 0 ]]; then
+  cat "$out_dir/package-fatal-scan.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:PACKAGE_FATAL_SCAN_FAILED] unable to classify logcat for $package" >&2
+  exit 20
+fi
+echo "UNITY_PACKAGE_FATAL=$([[ "$fatal" -eq 1 ]]&&echo true||echo false)"
+echo "UNITY_SYSTEM_CRASHES_DO_NOT_FAIL_GAME=YES"
+runtime_pass=false
+if [[ "$launch_command_pass" == "true" && -n "$pid" && "$fatal" -eq 0 ]]; then runtime_pass=true; fi
+seed_signals_pass=true
+if [[ "$seed_technical" == "true" ]]; then
+  seed_signals_pass=false
+  if [[ "$boot_observed" == "true" && "$action_observed" == "true" && "$save_observed" == "true" && "$metric_observed" == "true" ]]; then
+    seed_signals_pass=true
+  fi
+fi
+
+update_pass=false
+if [[ "$runtime_pass" == "true" && "$seed_signals_pass" == "true" ]]; then
+  set +e
+  adb install -r -t "$apk" > "$out_dir/update-install.log" 2>&1
+  update_status=$?
+  set -e
+  if [[ "$update_status" -eq 0 ]] && grep -q 'Success' "$out_dir/update-install.log"; then
+    update_pass=true
+  fi
+fi
+
+python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_command_pass" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" "$runtime_ready_timeout" "$gameplay_input_delivered" "$launch_activity" "$launch_component" "$process_observed_after_launch" "$process_exited_before_runtime_ready" "$launch_process_missing" "$runtime_abi_compatible" "$device_api" "$device_abis" "$rendered_frames" "$janky_frames" "$total_pss_kb" "$platform_metrics_pass" "$foreground_observed" <<'PY'
+import hashlib,json,sys,datetime,pathlib
+(out,apk,package,pid,runtime_pass,fatal,update_pass,launch_command_pass,
+ seed_technical,boot_observed,action_observed,save_observed,metric_observed,
+ runtime_ready_timeout,gameplay_input_delivered,launch_activity,launch_component,
+ process_observed_after_launch,process_exited_before_runtime_ready,launch_process_missing,
+ runtime_abi_compatible,device_api,device_abis,rendered_frames,janky_frames,total_pss_kb,
+ platform_metrics_pass,foreground_observed)=sys.argv[1:]
+flag=lambda value:value.lower()=='true'
+seed_ok=(not flag(seed_technical)) or all(map(flag,[boot_observed,action_observed,save_observed,metric_observed]))
+frames=int(rendered_frames); janky=int(janky_frames); pss_kb=int(total_pss_kb)
+evidence_dir=pathlib.Path(out).parent
+before_screen=evidence_dir/'screen-before-input.png'
+after_screen=evidence_dir/'screen-after-input.png'
+def screen_info(file):
+    if not file.exists() or file.stat().st_size <= 0:
+        return (0,None)
+    payload=file.read_bytes()
+    return (len(payload),hashlib.sha256(payload).hexdigest())
+before_bytes,before_sha=screen_info(before_screen)
+after_bytes,after_sha=screen_info(after_screen)
+visual_delta=bool(before_sha and after_sha and before_sha!=after_sha)
+runtime_alive=flag(runtime_pass) and bool(pid.strip()) and fatal!='1'
+f1=runtime_alive and flag(launch_command_pass) and flag(process_observed_after_launch)
+f2=f1 and flag(foreground_observed) and frames>0 and before_bytes>0
+interaction_observed=flag(action_observed) if flag(seed_technical) else (flag(gameplay_input_delivered) and visual_delta)
+f3=f2 and interaction_observed
+f4=f3 and flag(gameplay_input_delivered) and bool(pid.strip())
+f5=f4 and after_bytes>0
+f6=f5 and flag(update_pass) and ((not flag(seed_technical)) or flag(save_observed))
+f8=f6 and interaction_observed
+foundation_pass=all([f1,f2,f3,f4,f5,f6,f8])
+floor=lambda passed,authority,signals:{'state':'PASS' if passed else 'FAIL','authority':authority,'signals':signals}
+foundation_floors={
+  'F1':floor(f1,'EXACT_ANDROID_BLACK_BOX_SESSION',['EXACT_ACTIVITY_LAUNCH','PROCESS_ALIVE','NO_FATAL_RUNTIME_ERROR']),
+  'F2':floor(f2,'EXACT_ANDROID_BLACK_BOX_SESSION',['FOREGROUND_ACTIVITY','RENDERED_FRAME','PRE_INPUT_SCREEN_CAPTURE']),
+  'F3':floor(f3,'EXACT_ANDROID_BLACK_BOX_SESSION',['PLAYABLE_SUBJECT_OR_INTERACTION_EQUIVALENT','INPUT_RESPONSE_OBSERVED']),
+  'F4':floor(f4,'EXACT_ANDROID_BLACK_BOX_SESSION',['CONTROLLED_INPUT_DELIVERED','VISIBLE_RUNTIME_STATE_DELTA','PROCESS_ALIVE_AFTER_INPUT']),
+  'F5':floor(f5,'EXACT_ANDROID_BLACK_BOX_SESSION',['TOUCH_INPUT_PATH','VISIBLE_INPUT_RESPONSE','POST_INPUT_SCREEN_CAPTURE']),
+  'F6':floor(f6,'EXACT_ANDROID_BLACK_BOX_SESSION',['UPDATE_INSTALL','SAVE_SIGNAL_WHEN_REQUIRED','RUNTIME_ERROR_BOUNDARY']),
+  'F7':{'state':'DEFER_TO_MULTIPLAYER_APPLICABILITY','authority':'DESIGN_AND_MULTIPLAYER_QA_EVIDENCE','signals':[]},
+  'F8':floor(f8,'EXACT_ANDROID_BLACK_BOX_SESSION',['GAMEPLAY_INTERACTION_RESPONSE','CORE_ACTION_OR_VISIBLE_STATE_TRANSITION'])
+}
+data={
+  'version':6,
+  'target':'unity-android',
+  'testMethod':'Android black-box APK smoke on an architecture-compatible runtime: fresh install + exact launcher activity + runtime-ready gate + gameplay input + update',
+  'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+  'apk':apk,
+  'package':package,
+  'launchActivity':launch_activity,
+  'launchComponent':launch_component,
+  'deviceApi':device_api,
+  'deviceAbis':device_abis,
+  'runtimeAbiCompatible':flag(runtime_abi_compatible),
+  'freshInstallPassed':True,
+  'launcherCommandPassed':flag(launch_command_pass),
+  'runtimeSmokePassed':flag(runtime_pass),
+  'updateInstallPassed':flag(update_pass),
+  'qaPassEligibleRuntimeEvidence':flag(runtime_pass) and flag(update_pass) and seed_ok and flag(runtime_abi_compatible) and flag(platform_metrics_pass),
+  'processObservedAfterLaunch':flag(process_observed_after_launch),
+  'processAliveAfterInput':bool(pid.strip()),
+  'processExitedBeforeRuntimeReady':flag(process_exited_before_runtime_ready),
+  'launchProcessMissing':flag(launch_process_missing),
+  'fatalRuntimeErrorDetected':fatal=='1',
+  'runtimeReadyTimeout':flag(runtime_ready_timeout),
+  'gameplayInputDelivered':flag(gameplay_input_delivered),
+  'developmentSeedRuntime':{
+    'required':flag(seed_technical),
+    'bootObserved':flag(boot_observed),
+    'actionObserved':flag(action_observed),
+    'saveObserved':flag(save_observed),
+    'metricObserved':flag(metric_observed),
+    'pass':seed_ok,
+  },
+  'blackBoxFoundation':{
+    'version':1,
+    'mode':'ONE_EXACT_RUNTIME_SESSION_F1_THROUGH_F8',
+    'singleRuntimeSession':True,
+    'runtimeReplayForF9Required':False,
+    'foregroundActivityObserved':flag(foreground_observed),
+    'preInputScreenBytes':before_bytes,
+    'postInputScreenBytes':after_bytes,
+    'preInputScreenSha256':before_sha,
+    'postInputScreenSha256':after_sha,
+    'visualDeltaObserved':visual_delta,
+    'interactionObserved':interaction_observed,
+    'foundationPass':foundation_pass,
+    'floors':foundation_floors,
+  },
+  'androidPerformance':{
+    'provider':'ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO',
+    'graphicsFrameStatsObserved':frames>0,
+    'totalFramesRendered':frames,
+    'jankyFrames':janky,
+    'jankyFrameRatePct':round((janky/frames)*100,2) if frames else None,
+    'memoryTotalPssKb':pss_kb,
+    'memoryTotalPssBytes':pss_kb*1024,
+    'sampleCount':int(frames>0)+int(pss_kb>0),
+    'pass':flag(platform_metrics_pass),
+  },
+  'playTestEvidence':[
+    f'architecture-compatible Android runtime={flag(runtime_abi_compatible)} deviceAbis={device_abis}',
+    f'fresh APK install passed package={package}',
+    f'exact launcher activity={launch_component}',
+    f'launcher command passed={flag(launch_command_pass)}',
+    f'process observed after launch={flag(process_observed_after_launch)}',
+    f'process exited before runtime ready={flag(process_exited_before_runtime_ready)}',
+    f'launch process missing={flag(launch_process_missing)}',
+    f'runtime-ready timeout={flag(runtime_ready_timeout)}',
+    f'gameplay input delivered={flag(gameplay_input_delivered)}',
+    f'development seed runtime signals pass={seed_ok}',
+    f'Android graphics frames observed={frames} janky={janky}',
+    f'Android process memory TOTAL PSS KB={pss_kb}',
+    f'process alive after runtime gate/input={bool(pid.strip())}',
+    f'fatal runtime error detected={fatal=="1"}',
+    f'same-signed APK update install passed={flag(update_pass)}',
+    'activity/package/logcat/screenshot evidence captured even on runtime failure'
+  ],
+  'artifacts':{
+    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','packageFatalScan':'package-fatal-scan.txt','screenshot':'screenshot.png','screenBeforeInput':'screen-before-input.png','screenAfterInput':'screen-after-input.png','activity':'activity.txt','packageDump':'package.txt','gfxInfo':'gfxinfo.txt','surfaceFlingerLatency':'surfaceflinger-latency.txt','surfaceFlingerLayers':'surfaceflinger-layers.txt','surfaceFlingerLayer':'surfaceflinger-layer.txt','memInfo':'meminfo.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
+  }
+}
+pathlib.Path(out).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+PY
+
+cat "$out_dir/evidence.json"
+foundation_pass="$(python3 -c 'import json,sys; print(str(bool(json.load(open(sys.argv[1],encoding="utf-8")).get("blackBoxFoundation",{}).get("foundationPass"))).lower())' "$out_dir/evidence.json")"
+echo "UNITY_FOUNDATION_F1_F8_SINGLE_RUNTIME=${foundation_pass^^}"
+echo 'UNITY_F9_RUNTIME_REPLAY=NO'
+[[ "$foundation_pass" == "true" ]] || { echo "[JAEWOON_BUILD_ERROR:UNITY_FOUNDATION_F1_F8_FAILED] one exact runtime session did not satisfy all required Unity black-box foundation floors" >&2; exit 22; }
+[[ "$launch_command_pass" == "true" ]] || { cat "$out_dir/launch.log" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_LAUNCH_COMMAND_FAILED] exact activity launch failed for $launch_component status=$launch_status" >&2; exit 10; }
+if [[ "$launch_process_missing" == "true" ]]; then
+  tail -n 250 "$out_dir/logcat.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:APK_LAUNCH_PROCESS_MISSING] $package never created a process after exact activity launch" >&2
+  exit 17
+fi
+if [[ "$process_exited_before_runtime_ready" == "true" ]]; then
+  tail -n 250 "$out_dir/logcat.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:APK_PROCESS_EXITED_BEFORE_RUNTIME_READY] $package exited before required runtime evidence completed" >&2
+  exit 18
+fi
+[[ -n "$pid" ]] || { tail -n 250 "$out_dir/logcat.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_PROCESS_EXITED] $package is not alive after launch/runtime gate" >&2; exit 11; }
+[[ "$fatal" -eq 0 ]] || { tail -n 250 "$out_dir/logcat.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_FATAL_RUNTIME_ERROR] fatal runtime error detected for $package" >&2; exit 12; }
+[[ "$runtime_pass" == "true" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_RUNTIME_SMOKE_FAILED] Unity APK runtime smoke failed for $package" >&2; exit 13; }
+[[ "$platform_metrics_pass" == "true" ]] || { cat "$out_dir/gfxinfo.txt" >&2 || true; cat "$out_dir/meminfo.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:ANDROID_PLATFORM_METRICS_MISSING] rendered_frames=$rendered_frames total_pss_kb=$total_pss_kb package=$package" >&2; exit 21; }
+if [[ "$seed_technical" == "true" && "$runtime_ready_timeout" == "true" ]]; then
+  grep -E 'JAEWOON_TECH_(BOOT|ACTION|SAVE|METRIC)' "$out_dir/logcat.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:DEVELOPMENT_SEED_BOOT_TIMEOUT] no JAEWOON_TECH_BOOT observed; gameplay input withheld package=$package" >&2
+  exit 16
+fi
+if [[ "$seed_technical" == "true" && "$seed_signals_pass" != "true" ]]; then
+  grep -E 'JAEWOON_TECH_(BOOT|ACTION|SAVE|METRIC)' "$out_dir/logcat.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:DEVELOPMENT_SEED_RUNTIME_SIGNALS_MISSING] boot=$boot_observed action=$action_observed save=$save_observed metric=$metric_observed package=$package" >&2
+  exit 15
+fi
+[[ "$update_pass" == "true" ]] || { cat "$out_dir/update-install.log" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_UPDATE_INSTALL_FAILED] Same APK could not update installed package $package" >&2; exit 14; }
+echo "UNITY_APK_RUNTIME_SMOKE=PASS package=$package pid=$pid fresh_install=true update_install=true seed_signals=$seed_signals_pass runtime_abi_compatible=$runtime_abi_compatible rendered_frames=$rendered_frames total_pss_kb=$total_pss_kb"

@@ -1,0 +1,118 @@
+{
+  "version": 3,
+  "gameId": "luanti",
+  "packageId": "net.minetest.minetest",
+  "sourceType": "EXTERNAL_OPEN_SOURCE_BLACK_BOX_RUNTIME_EVIDENCE",
+  "authority": "PRACTICE_ONLY_MIXED_EVIDENCE",
+  "observedThrough": "2026-09-16",
+  "runtimePromotionAllowed": true,
+  "gameplayBehaviorPromotionAllowed": true,
+  "partialObservableDistillationAllowed": true,
+  "codeExtractionAllowed": false,
+  "binaryRedistributionAllowed": false,
+  "positiveTrainingSample": true,
+  "verifiedRuntimePass": true,
+  "stablePlaytestVerified": true,
+  "stablePlaytestBoundary": "CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY",
+  "gameEntryObserved": true,
+  "gameEntryEvidenceAuthority": "CORRELATED_GITHUB_ACTIONS_BLACK_BOX_EVIDENCE",
+  "gameEntryObservationRecordedAt": "2026-09-16",
+  "verifiedObservedStages": [
+    "APP_LAUNCH",
+    "GAME_ENTRY",
+    "INPUT_EXERCISE",
+    "VISUAL_STATE_CHANGE",
+    "PROCESS_SURVIVAL",
+    "NO_FATAL_CRASH_OR_ANR"
+  ],
+  "sourceEvidence": {
+    "privateRepository": "hans1177/jaewoon-ai-company",
+    "workflowPath": ".github/workflows/vibe2-open-source-apk-blackbox.yml",
+    "latestCompletedRun": 35109831419,
+    "latestRunNumber": 10,
+    "latestArtifactId": 10451882958,
+    "latestArtifactDigest": "sha256:523b6eb0021a1685087e8eab7ce29100ffb33d025f91c411f829c4042093ce4c",
+    "latestResult": "PASS",
+    "latestFailure": null,
+    "runtimeType": "REDROID_NATIVE_ARM64_DIRECT_EXEC",
+    "hostArch": "aarch64",
+    "guestAndroid": "14",
+    "guestAbi": "arm64-v8a",
+    "redroidImage": "redroid/redroid:14.0.0_64only-latest",
+    "apkSha256": "58d4b9090ca2c837625eafc5c62668224cf1051b35b943f994cad8d7705d1292",
+    "apkSource": "OFFICIAL_GITHUB_RELEASE"
+  },
+  "verifiedObservedFacts": [
+    {
+      "id": "actual-game-entry-correlated",
+      "evidenceAuthority": "RUN_10_ARTIFACT",
+      "fact": "The captured run installed an available game package, created and selected the Vibe2Study world, then entered the actual first-person 3D world with the mobile HUD visible.",
+      "boundary": "World creation and selection are preserved as setup stages; gameplay entry is claimed only from the captured 3D world view."
+    },
+    {
+      "id": "input-caused-visible-state-change",
+      "evidenceAuthority": "RUN_10_ARTIFACT",
+      "fact": "A bounded horizontal look swipe on the live first-person play surface changed the captured camera view from a close tree-and-forest framing to a different view exposing the coastline and surrounding trees.",
+      "boundary": "Only the directly captured touch-to-camera response is promoted; world-generation algorithms, physics, interaction internals and hidden game rules are not inferred."
+    },
+    {
+      "id": "runtime-survived-observed-input",
+      "evidenceAuthority": "RUN_10_ARTIFACT",
+      "fact": "The net.minetest.minetest package remained alive and foreground in GameActivity after world entry and the look swipe with no captured FATAL EXCEPTION, SIGABRT, SIGSEGV or ANR marker.",
+      "boundary": "This proves the captured validation window and does not claim indefinite long-run stability."
+    }
+  ],
+  "distilledPositiveRuntimePatterns": [
+    {
+      "id": "content-setup-is-separate-from-3d-game-entry",
+      "scope": "sandbox-onboarding-observation",
+      "evidence": [10],
+      "lesson": "Installing content, creating a world and selecting that world are meaningful setup milestones but are not equivalent to actual sandbox gameplay entry.",
+      "reuseRule": "For Roblox flows with lobbies, loadouts or world selection, preserve setup milestones separately and require the real controllable 3D play state before claiming gameplay entry."
+    },
+    {
+      "id": "touch-look-produces-immediate-spatial-feedback",
+      "scope": "mobile-3d-controls",
+      "evidence": [10],
+      "lesson": "A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.",
+      "reuseRule": "For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances."
+    },
+    {
+      "id": "world-entry-needs-load-window-before-input-proof",
+      "scope": "mobile-runtime-evidence",
+      "evidence": [10],
+      "lesson": "The world launch needed a bounded loading window before first-person gameplay could be visually verified and exercised.",
+      "reuseRule": "Do not inject or judge gameplay input before the target Roblox play state is visibly ready; bind input evidence to the post-load playable frame."
+    }
+  ],
+  "distilledFailurePatterns": [
+    {
+      "id": "nearby-menu-actions-require-visual-coordinate-correction",
+      "scope": "black-box-input-automation",
+      "evidence": [8, 9],
+      "lesson": "Earlier bounded probes hit neighboring menu actions such as content-page or new-world controls even though the application runtime was healthy.",
+      "reuseRule": "When adjacent mobile controls are close together, classify a mis-tap as an automation-coordinate failure, correct it from the captured frame, and rerun the responsible stage without lowering the game-entry gate."
+    }
+  ],
+  "routeDecisions": {
+    "githubHostedArm64Redroid": "VERIFIED_WORKING_ANDROID14_NATIVE_ARM64_RUN10",
+    "sourceOrAssetExtraction": "NOT_USED_FOR_THIS_BLACK_BOX_FLOW",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "learningUse": {
+    "allowed": [
+      "setup versus actual 3D-play boundary separation",
+      "mobile first-person look-input evidence",
+      "load-readiness before input validation",
+      "foreground/process/crash correlation",
+      "automation coordinate-failure classification",
+      "portable mobile 3D-control lessons that may inform later Roblox-specific implementation and verification"
+    ],
+    "stillForbidden": [
+      "treating Android evidence as Roblox runtime evidence",
+      "inferring or copying world-generation, physics or hidden interaction algorithms",
+      "copying bundled game artwork, UI trade dress, world content or implementation details into a Roblox game",
+      "claims about long-run sandbox progression, balance or performance not measured by the captured validation window"
+    ]
+  }
+}

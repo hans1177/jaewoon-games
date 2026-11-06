@@ -1,0 +1,458 @@
+# 파일명: .github/workflows/party-rpg-mobile-test.yml
+# 대상: 기존 순수 웹 파티 RPG · 실제 모바일 시작/이벤트씬/저장 브라우저 스모크
+name: Party RPG mobile browser smoke test
+on:
+  push:
+    paths:
+      - 'web-games/party-rpg/**'
+      - '.github/workflows/party-rpg-mobile-test.yml'
+  workflow_dispatch:
+jobs:
+  android-emulation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Verify Party RPG startup, event scenes and save on mobile
+        run: |
+          ln -s "$PWD" /tmp/jaewoon-games
+          (cd /tmp && python3 -m http.server 8765 > /tmp/party-rpg-http.log 2>&1) &
+          node --input-type=module <<'JS'
+          import { chromium, devices } from 'playwright';
+          const browser = await chromium.launch({
+            headless:true,
+            args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader']
+          });
+          try {
+            const context = await browser.newContext({
+              ...devices['Pixel 7'],
+              baseURL:'http://127.0.0.1:8765'
+            });
+            const page = await context.newPage();
+            // 기존 버튼은 여정 메뉴 안으로 이동했다. 실제 메뉴를 열어 같은 기능을 누른다.
+            async function utilityClick(selector){
+              if(!(await page.locator(selector).isVisible()))await page.locator('#fieldMenu > summary').click();
+              await page.locator(selector).click();
+            }
+            const errors = [];
+            page.on('pageerror',error=>errors.push(error.message));
+            page.on('response',response=>{
+              if(response.status()>=400 && response.url().includes('/web-games/party-rpg/')){
+                errors.push(response.status()+' '+response.url());
+              }
+            });
+            await page.goto('/jaewoon-games/web-games/party-rpg/',{waitUntil:'domcontentloaded'});
+            await page.waitForFunction(()=>typeof window.partyRpgVibeState==='function',null,{timeout:25000});
+            const ready=await page.evaluate(()=>window.partyRpgVibeState().view.ready);
+            if(!ready)throw new Error('PARTY_RPG_THREE_RENDERER_NOT_READY');
+            await page.locator('#startBtn').click();
+            await page.locator('#confirmHero').click();
+            await page.locator('#introSkip').click();
+            // 실제 필드 전신 원화 적재와 분절 메시를 검사한다. 초상화 검사가 아니다.
+            await page.waitForFunction(()=>{
+              const v=window.partyRpgVibeState().view,a=v.actors.get('player');
+              return v.actorBounds.length===12&&v.actorArt?.image?.width>=1024&&a?.pixel?.isMesh&&a.pixel.geometry.attributes.position.count>100;
+            },null,{timeout:45000});
+            await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
+            console.log('PARTY_RPG_FIELD_FULL_BODY_ART_AND_RIG=PASS');
+            // 작은 세로 화면부터 가로 화면까지 실제 버튼 사각형과 메뉴 접근성을 검증한다.
+            for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,height:390}]){
+              await page.setViewportSize(viewport);
+              const layout=await page.evaluate(()=>{
+                const rect=id=>{const r=document.getElementById(id).getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom};};
+                const ids=['hud','travelLine','nextQuest','joystick','actions','commandBar','partyCards'];
+                const boxes=Object.fromEntries(ids.map(id=>[id,rect(id)]));
+                const controls=['attackBtn','skillBtn','interactBtn','pauseBtn','tacticsBtn'].map(id=>({id,...rect(id)}));
+                return{width:innerWidth,height:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,boxes,controls};
+              });
+              if(layout.overflow)throw new Error('PARTY_UI_HORIZONTAL_OVERFLOW '+JSON.stringify(layout));
+              for(const [id,r] of Object.entries(layout.boxes))if(r.x<-.5||r.y<-.5||r.right>layout.width+.5||r.bottom>layout.height+.5)
+                throw new Error('PARTY_UI_CLIPPED '+id+' '+JSON.stringify({viewport,r}));
+              for(const r of layout.controls)if(r.w<43.5||r.h<43.5)throw new Error('PARTY_UI_TOUCH_TOO_SMALL '+JSON.stringify(r));
+              const ids=['joystick','actions','commandBar','partyCards'];
+              for(let a=0;a<ids.length;a++)for(let b=a+1;b<ids.length;b++){
+                const x=layout.boxes[ids[a]],y=layout.boxes[ids[b]];
+                if(Math.min(x.right,y.right)-Math.max(x.x,y.x)>1&&Math.min(x.bottom,y.bottom)-Math.max(x.y,y.y)>1)
+                  throw new Error('PARTY_UI_CONTROLS_OVERLAP '+ids[a]+' '+ids[b]+' '+JSON.stringify(layout));
+              }
+              await page.locator('#fieldMenu > summary').click();
+              await page.locator('#bagBtn').waitFor({state:'visible'});
+              await page.locator('#fieldMenu > summary').click();
+            }
+            await page.setViewportSize({width:393,height:851});
+            await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
+            console.log('PARTY_RPG_MOBILE_LAYOUT_320_390_LANDSCAPE=PASS');
+
+            // 실제 렌더러에서 정오 → 밤 햇빛 변화, 지역 비 입자, 시계 저장을 검사.
+            await page.evaluate(()=>{
+              const game=window.partyRpgVibeState();
+              game.state.environment.minutes=720;game.state.environment.running=false;
+            });
+            await page.waitForTimeout(500);
+            const midday=await page.evaluate(()=>window.partyRpgVibeState().view.sun.intensity);
+            await page.evaluate(()=>{window.partyRpgVibeState().state.environment.minutes=60;});
+            await page.waitForFunction(threshold=>window.partyRpgVibeState().view.sun.intensity<threshold,midday*.63,{timeout:20000});
+            const night=await page.evaluate(()=>{
+              const g=window.partyRpgVibeState();
+              return {sun:g.view.sun.intensity,phase:g.gameEnvironment().phase,readout:document.getElementById('timeOfDay').textContent};
+            });
+            if(!(night.sun<midday*.63)||night.phase!=='night'||!night.readout.includes('밤'))
+              throw new Error('DAY_NIGHT_LIGHTING_NOT_DYNAMIC '+JSON.stringify({midday,night}));
+            await page.evaluate(()=>{
+              const g=window.partyRpgVibeState(),env=g.state.environment;env.minutes=720;
+              for(let d=1;d<=120;d++){env.day=d;if(g.gameEnvironment().weather==='rain')break;}
+            });
+            await page.waitForFunction(()=>window.partyRpgVibeState().view.climateParticles?.kind==='rain',null,{timeout:12000});
+            const precipitation=await page.evaluate(()=>{
+              const g=window.partyRpgVibeState();
+              return {weather:g.gameEnvironment().weather,particles:g.view.climateParticles?.count,time:g.state.environment.minutes};
+            });
+            if(precipitation.weather!=='rain'||precipitation.particles<25)
+              throw new Error('MOBILE_RAIN_PARTICLES_MISSING '+JSON.stringify(precipitation));
+            console.log('PARTY_RPG_DYNAMIC_DAY_NIGHT_WEATHER=PASS');
+            // 첫 시작 시 한 명만 소개되고 영입은 반드시 서브퀘·이벤트를 거친다.
+            await utilityClick('#rosterBtn');
+            const visibleCount=await page.locator('.rosterRow').count();
+            if(visibleCount!==1)throw new Error('RECRUIT_DISCOVERY_NOT_STAGED '+visibleCount);
+            await page.locator('#recruitCompanion').click();
+            await page.locator('#modal[data-mode="event"] #eventSkip').click();
+            const started=await page.evaluate(()=>window.partyRpgVibeState().state.story.recruits.ai0?.step);
+            if(started!=='search')throw new Error('RECRUIT_SIDE_QUEST_NOT_STARTED '+started);
+            await page.locator('#modalClose').click();
+            await page.evaluate(()=>{
+              const game=window.partyRpgVibeState();
+              game.p.x=860;game.p.y=575;
+            });
+            await page.locator('#prompt.on').waitFor({timeout:12000});
+            await page.locator('#prompt').click();
+            await page.locator('#modal[data-mode="event"] #eventSkip').click();
+            const questReady=await page.evaluate(()=>window.partyRpgVibeState().state.story.recruits.ai0?.step);
+            if(questReady!=='ready')throw new Error('RECRUIT_CLUE_NOT_FOUND '+questReady);
+            await page.locator('#recruitCompanion').click();
+            await page.locator('#modal[data-mode="event"] #eventSkip').click();
+            const team=await page.evaluate(()=>{
+              const a=window.partyRpgVibeState().state;
+              return {joined:a.ai.find(v=>v.id==='ai0')?.party,stage:a.story.recruits.ai0?.step};
+            });
+            if(!team.joined||team.stage!=='joined')throw new Error('RECRUIT_EVENT_DID_NOT_JOIN '+JSON.stringify(team));
+            // 동료의 말투는 캐릭터별로 고정, 질문별 답변은 실제 모바일 터치로 구별한다.
+            if(!(await page.locator('.companionDetail').getByText('성격 · 말투').count()))
+              throw new Error('COMPANION_PERSONALITY_PROFILE_NOT_DISPLAYED');
+            await page.locator('#talkCompanion').click();
+            if(await page.locator('#modal[data-mode="event"] #eventSkip').count())
+              await page.locator('#modal[data-mode="event"] #eventSkip').click();
+            if((await page.locator('[data-personality-topic]').count())!==4)
+              throw new Error('COMPANION_DIALOGUE_TOPICS_MISSING');
+            await page.locator('[data-personality-topic="truth"]').click();
+            const truthLine=await page.locator('.dialogueText blockquote').first().textContent();
+            await page.locator('[data-personality-topic="guard"]').click();
+            const guardLine=await page.locator('.dialogueText blockquote').first().textContent();
+            await page.locator('[data-personality-topic="past"]').click();
+            const pastLine=await page.locator('.dialogueText blockquote').first().textContent();
+            if(!truthLine||!guardLine||!pastLine||truthLine===guardLine||truthLine===pastLine||guardLine===pastLine)
+              throw new Error('CHARACTER_DISTINCT_TOPIC_DIALOGUES_NOT_RENDERED '+JSON.stringify({truthLine,guardLine,pastLine}));
+            await page.locator('#dialogueReturn').click();
+            await page.locator('#modalClose').click();
+            // 파티 공용 소모품, 동료별 장비, 실제 소유권 전달을 모바일 탭으로 검증한다.
+            await utilityClick('#bagBtn');
+            if(!(await page.locator('[data-bag-person="ai0"]').count()))throw new Error('PARTY_INVENTORY_MEMBER_TAB_MISSING');
+            await page.locator('#inventorySupplyShop').click();
+            await page.locator('[data-supply-buy="bandage"]').click();
+            await page.locator('#supplyBack').click();
+            await page.locator('[data-bag-person="ai0"]').click();
+            await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state;
+              const unit=s.ai.find(a=>a.id==='ai0');unit.hp=Math.max(1,unit.maxHp-45);
+            });
+            const hpBeforeSupply=await page.evaluate(()=>window.partyRpgVibeState().state.ai.find(a=>a.id==='ai0').hp);
+            await page.locator('[data-use="bandage"]').click();
+            const supplyCheck=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state,unit=s.ai.find(a=>a.id==='ai0');
+              return {hp:unit.hp,supplies:s.supplies.bandage,saved:JSON.parse(localStorage.getItem('party-rpg-v1')).supplies?.bandage};
+            });
+            if(supplyCheck.hp<=hpBeforeSupply||supplyCheck.supplies!==0||supplyCheck.saved!==0)
+              throw new Error('PARTY_SUPPLY_NOT_CONSUMED_SAVED '+JSON.stringify(supplyCheck));
+            await page.evaluate(()=>{window.partyRpgVibeState().state.player.gold+=500;});
+            await page.locator('[data-shop="weapon"]').click();
+            await page.locator('[data-buy="iron"]').click();
+            await page.locator('#backToBag').click();
+            const gearCheck=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state,a=s.ai.find(x=>x.id==='ai0');
+              return {weapon:a.weapon,owns:a.ownedWeapons.includes('iron'),ownerWeapon:s.player.weapon};
+            });
+            if(gearCheck.weapon!=='iron'||!gearCheck.owns||gearCheck.ownerWeapon==='iron')
+              throw new Error('COMPANION_GEAR_NOT_OWNED '+JSON.stringify(gearCheck));
+            await page.evaluate(()=>{
+              const a=window.partyRpgVibeState().state.ai.find(x=>x.id==='ai0');
+              if(!a.drops.includes('goblin_blade'))a.drops.push('goblin_blade');
+            });
+            await page.locator('[data-bag-person="ai0"]').click();
+            await page.locator('[data-transfer="goblin_blade"]').click();
+            await page.locator('[data-receiver="player"]').click();
+            const transferCheck=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state,a=s.ai.find(x=>x.id==='ai0');
+              const saved=JSON.parse(localStorage.getItem('party-rpg-v1'));
+              return {from:a.drops.includes('goblin_blade'),to:s.player.drops.includes('goblin_blade'),
+                savedTo:saved.player.drops.includes('goblin_blade'),savedFrom:saved.ai.find(x=>x.id==='ai0').drops.includes('goblin_blade')};
+            });
+            if(transferCheck.from||!transferCheck.to||!transferCheck.savedTo||transferCheck.savedFrom)
+              throw new Error('DUNGEON_EQUIPMENT_TRANSFER_DUPLICATED '+JSON.stringify(transferCheck));
+            await page.locator('#modalClose').click();
+            console.log('PARTY_RPG_INVENTORY_CONSUMABLE_COMPANION_EQUIPMENT_TRANSFER=PASS');
+            // 고밀도 전신 원화와 분절 메시를 검증하고 자동 기술의 기존 상시 사용 규칙을 보존한다.
+            await page.waitForFunction(()=>!!window.partyRpgVibeState().view.actors.get('player')?.pixel,null,{timeout:12000});
+            const pixelStatus=await page.evaluate(()=>{
+              const game=window.partyRpgVibeState(),actor=game.view.actors.get('player');
+              const button=document.getElementById('autoBtn');
+              return {sprite:!!actor?.pixel?.isMesh,shared:actor?.pixel?.material?.map===game.view.actorArt,width:actor?.pixel?.material?.map?.image?.width,
+                height:actor?.pixel?.material?.map?.image?.height,autoDisabled:button.disabled,
+                autoPressed:button.getAttribute('aria-pressed'),modelHidden:actor?.model?.visible===false};
+            });
+            if(!pixelStatus.sprite||!pixelStatus.shared||pixelStatus.width<1024||pixelStatus.height<768
+              ||!pixelStatus.autoDisabled||pixelStatus.autoPressed!=='true'||!pixelStatus.modelHidden)
+              throw new Error('PIXEL_CHARACTERS_OR_ALWAYS_AUTO_SKILLS_MISSING '+JSON.stringify(pixelStatus));
+            const effectCheck=await page.evaluate(()=>{
+              const g=window.partyRpgVibeState(),view=g.view,before=view.effects.length;
+              view.playSkillEffect('wizard_nova',g.p.x,g.p.y,g.p.x+15,g.p.y+10);
+              return {before,after:view.effects.length,kind:view.effects.at(-1)?.area,group:view.effects.at(-1)?.group.children.length};
+            });
+            if(effectCheck.after!==effectCheck.before+1||effectCheck.group<4)
+              throw new Error('SKILL_FX_NOT_RENDERING '+JSON.stringify(effectCheck));
+            // 사용자 지정 스킬북: 직업별 학습, 개별 자동 사용, 최우선 지정이 저장되도록 검증.
+            await page.evaluate(()=>{
+              const state=window.partyRpgVibeState().state;
+              state.player.level=20;state.player.gold=8000;state.player.masteries.axe=24;
+            });
+            await utilityClick('#bagBtn');
+            await page.locator('#inventorySkillBook').click();
+            await page.locator('[data-learn="fighter_wall"]').click();
+            await page.locator('[data-learn="fighter_cleave"]').click();
+            await page.locator('[data-toggle-skill="fighter_wall"]').click();
+            await page.locator('[data-priority="fighter_cleave"]').click();
+            const configured=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state.player,
+                saved=JSON.parse(localStorage.getItem('party-rpg-v1')).player;
+              return {first:s.skillOrder[0],on:s.skillSelection.fighter_wall,learned:s.learnedSkills.fighter_cleave,
+                stored:!!saved.learnedSkills.fighter_cleave,savedOff:saved.skillSelection.fighter_wall===false,
+                savedPriority:saved.skillOrder[0]};
+            });
+            if(configured.first!=='fighter_cleave'||configured.on!==false||!configured.learned
+              ||!configured.stored||!configured.savedOff||configured.savedPriority!=='fighter_cleave')
+              throw new Error('INDIVIDUAL_SKILL_BOOK_PREFERENCES_NOT_SAVED '+JSON.stringify(configured));
+            await page.locator('#bookBack').click();
+            await page.locator('[data-shop="accessory"]').first().click();
+            await page.locator('[data-buy="ring_guard"]').click();
+            await page.locator('#backToBag').click();
+            await page.locator('[data-shop="weapon"]').click();
+            await page.locator('[data-buy="veteran_axe"]').click();
+            await page.locator('#backToBag').click();
+            const equipStatus=await page.evaluate(()=>{
+              const player=window.partyRpgVibeState().state.player;
+              return {ring:player.ring,weapon:player.weapon,mastery:player.masteries.axe};
+            });
+            if(equipStatus.ring!=='ring_guard'||equipStatus.weapon!=='veteran_axe'||equipStatus.mastery<24)
+              throw new Error('CLASS_EQUIPMENT_AND_MASTERY_RESTRICTIONS_FAILED '+JSON.stringify(equipStatus));
+            // 각성의 시련: 레벨 해금, 캐릭터별 진행, 분기 선택, 전용 스킬 습득 및 2차 잠금.
+            await page.locator('#inventoryAwakening').click();
+            if(!(await page.locator('#awakeningStart').isEnabled()))throw new Error('AWAKENING_LEVEL_10_GATE_NOT_OPEN');
+            if(!(await page.getByText('미구현',{exact:false}).count()))throw new Error('SECOND_ADVANCEMENT_PLACEHOLDER_MISSING');
+            await page.locator('#awakeningStart').click();
+            const initialTrial=await page.evaluate(()=>window.partyRpgVibeState().state.player.awakenings.fighter);
+            if(initialTrial.phase!=='trial'||initialTrial.kills!==0)throw new Error('AWAKENING_TRIAL_NOT_STARTED '+JSON.stringify(initialTrial));
+            // 퀘스트 처치 연결은 기존 killEnemy 책임 함수에 있으며, 여기서는 완료 후 전직 UI를 검증한다.
+            await page.evaluate(()=>{
+              const q=window.partyRpgVibeState().state.player.awakenings.fighter;
+              q.kills=3;q.phase='ready';
+            });
+            await page.locator('#awakeningBack').click();
+            await page.locator('#openAwakening').click();
+            await page.locator('[data-awaken="fighter_guardian"]').click();
+            const choice=await page.evaluate(()=>{
+              const state=window.partyRpgVibeState().state,saved=JSON.parse(localStorage.getItem('party-rpg-v1'));
+              const user=state.player;
+              return {phase:user.awakenings.fighter.phase,branch:user.awakenings.fighter.branch,
+                skill:user.learnedSkills.fighter_guardian_awakening,
+                savedBranch:saved.player.awakenings.fighter.branch,
+                other:saved.ai.find(x=>x.id==='ai0')?.awakenings?.fighter?.branch};
+            });
+            if(choice.phase!=='awakened'||choice.branch!=='fighter_guardian'||!choice.skill
+              ||choice.savedBranch!=='fighter_guardian'||choice.other)
+              throw new Error('FIRST_ADVANCEMENT_CHOICE_AND_SAVE_INVALID '+JSON.stringify(choice));
+            if(!(await page.locator('[data-awaken="fighter_berserker"]').isDisabled()))
+              throw new Error('MULTIPLE_FIRST_ADVANCEMENT_BRANCHES_ALLOWED');
+            await page.locator('#awakeningBack').click();
+            if(await page.locator('[data-learn="fighter_berserker_master"]').count())
+              throw new Error('WRONG_ADVANCEMENT_SKILL_BOOK_EXPOSED');
+            await page.locator('[data-learn="fighter_guardian_master"]').click();
+            const newSkill=await page.evaluate(()=>{
+              const state=window.partyRpgVibeState().state;
+              return state.player.learnedSkills.fighter_guardian_master
+                && JSON.parse(localStorage.getItem('party-rpg-v1')).player.learnedSkills.fighter_guardian_master;
+            });
+            if(!newSkill)throw new Error('ADVANCED_SKILL_BOOK_LEARNING_NOT_PERSISTED');
+            await page.locator('#bookBack').click();
+            console.log('PARTY_RPG_FIRST_ADVANCEMENT_BRANCH_SKILL_BOOK_SAVE_AND_LOCKED_SECOND=PASS');
+            await page.locator('#modalClose').click();
+            console.log('PARTY_RPG_PIXEL_MOTION_SKILL_FX_CLASS_EQUIPMENT_AND_SKILL_BOOK=PASS');
+            // 실제 모바일 크기에서 지역 안내가 맵을 가리지 않아야 한다.
+            const hud=await page.evaluate(()=>{
+              const r=document.querySelector('#zone').getBoundingClientRect();
+              const s=window.partyRpgVibeState();
+              return {zoneWidth:r.width,zoneHeight:r.height,viewport:innerWidth,worldWidth:s.worldW};
+            });
+            if(hud.zoneWidth>150||hud.zoneHeight>90)throw new Error('OVERSIZED_TOWN_HUD '+JSON.stringify(hud));
+            if(hud.worldWidth!==2000)throw new Error('FIELD_NOT_EXPANDED '+JSON.stringify(hud));
+            await utilityClick('#systemBtn');
+            await page.locator('#systemQuality').click();
+            const lowMode=await page.evaluate(()=>window.partyRpgVibeState().state.environment.quality);
+            if(lowMode!=='low')throw new Error('QUALITY_SETTING_NOT_WORKING '+lowMode);
+            await page.locator('#systemWeatherFx').click();
+            const weatherOff=await page.evaluate(()=>window.partyRpgVibeState().state.environment.effects);
+            if(weatherOff!==false)throw new Error('WEATHER_TOGGLE_NOT_WORKING');
+            await page.locator('#systemWeatherFx').click();
+            await page.locator('#systemClock').click();
+            const resumed=await page.evaluate(()=>window.partyRpgVibeState().state.environment.running);
+            if(resumed!==true)throw new Error('CLOCK_TOGGLE_NOT_WORKING');
+            await page.locator('#systemSave').click();
+            const savedFromMenu=await page.evaluate(()=>!!localStorage.getItem('party-rpg-v1'));
+            if(!savedFromMenu)throw new Error('SYSTEM_SAVE_FAILED');
+            const savedClock=await page.evaluate(()=>JSON.parse(localStorage.getItem('party-rpg-v1')||'{}').environment);
+            if(savedClock?.quality!=='low'||savedClock?.effects!==true||!Number.isFinite(savedClock?.minutes))
+              throw new Error('WEATHER_CLOCK_SAVE_INCOMPLETE '+JSON.stringify(savedClock));
+            await page.locator('#systemMap').click();
+            await page.locator('#mapCanvas').waitFor({timeout:10000});
+            const mapWidth=await page.locator('#mapCanvas').evaluate(el=>el.getBoundingClientRect().width);
+            if(mapWidth<250||mapWidth>hud.viewport)throw new Error('MOBILE_MAP_SIZE_INVALID '+mapWidth);
+            await page.locator('#mapCanvas').click({position:{x:mapWidth*.72,y:130}});
+            await utilityClick('#systemBtn');
+            await page.locator('#systemHome').click();
+            if(!(await page.locator('#startBtn').isVisible()))throw new Error('SYSTEM_HOME_DID_NOT_SHOW_TITLE');
+            await page.locator('#startBtn').click();
+            if(await page.locator('#start').isVisible())throw new Error('SYSTEM_RESUME_FAILED');
+            await page.evaluate(()=>{
+              const s=window.partyRpgVibeState();
+              s.p.x=844;s.p.y=487;
+            });
+            await page.waitForTimeout(500);
+            await page.locator('#interactBtn').click();
+            await page.locator('#modal[data-mode="event"] #eventNext').waitFor({timeout:10000});
+            await page.locator('#eventNext').click();
+            await page.locator('#eventSkip').click();
+            await page.locator('#councilJournal').waitFor({timeout:10000});
+            await page.locator('#councilJournal').click();
+            await page.locator('#eventArchiveBtn').click();
+            await page.locator('[data-replay="council"]').click();
+            await page.locator('#eventSkip').click();
+            await page.locator('#archiveBack').waitFor({timeout:10000});
+            const persisted=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state;
+              const saved=JSON.parse(localStorage.getItem('party-rpg-v1')||'null');
+              return !!s.story.scenes.council&&!!saved?.story?.scenes?.council;
+            });
+            if(!persisted)throw new Error('PARTY_RPG_SCENE_SAVE_NOT_PERSISTED');
+            // 새 제국 지구는 2막 완료 후에만 열리며 살인 사건 조사가 교전으로 이어진다.
+            await page.locator('#archiveBack').click();
+            await page.locator('#modalClose').click();
+            await page.evaluate(()=>{
+              const game=window.partyRpgVibeState(),st=game.state.story;
+              st.choices.ending='release';
+              for(let i=1;i<=6;i++)st.act2.completed[i]=true;
+              game.p.x=700;game.p.y=520;
+            });
+            await utilityClick('#systemBtn');
+            await page.locator('#systemTravel').click();
+            const ancient=page.locator('[data-zone="7"]');
+            if(await ancient.isDisabled())throw new Error('IMPERIAL_REGION_DID_NOT_UNLOCK');
+            await ancient.click();
+            await utilityClick('#mapBtn');
+            if(!(await page.locator('.mapMarker.imperial').count()))throw new Error('IMPERIAL_CASE_MAP_MISSING');
+            await page.locator('#mapBack').click();
+            await page.evaluate(()=>{
+              const game=window.partyRpgVibeState();
+              // 사건 UI 검사는 무작위 필드 조우의 자동 정지와 분리한다.
+              game.state.tactics.autoPause=false;
+              game.enemies.forEach(e=>{e.x=1850;e.y=1140;});
+              if(game.tacticalPaused)document.getElementById('pauseBtn').click();
+              game.p.x=1190;game.p.y=610;
+            });
+            await page.locator('#prompt.on').waitFor({timeout:15000});
+            await page.locator('#interactBtn').click();
+            await page.locator('[data-imperial-choice="1"]').click();
+            await page.locator('#modal[data-mode="event"] #eventSkip').click();
+            const investigation=await page.evaluate(()=>{
+              const game=window.partyRpgVibeState();
+              return {zone:game.state.zone,record:game.state.story.imperialCases.arena_murder,
+                      foes:game.enemies.filter(e=>!e.dead&&e.storyTag==='imperial:arena_murder').length};
+            });
+            if(investigation.zone!==7||investigation.record?.path!=='1'||!Number.isInteger(investigation.record?.investigation?.roll)||investigation.foes<2)
+              throw new Error('IMPERIAL_INVESTIGATION_DID_NOT_START '+JSON.stringify(investigation));
+            console.log('PARTY_RPG_ANCIENT_EMPIRE_REGION_AND_MURDER_CASE=PASS');
+            // 야외 탐험 기록은 실제 필드에서 다가가 조사해야 하며 보상이 중복되지 않는다.
+            await utilityClick('#systemBtn');
+            await page.locator('#systemTravel').click();
+            await page.locator('[data-zone="1"]').click();
+            await page.evaluate(()=>{
+              const game=window.partyRpgVibeState();
+              game.p.x=500;game.p.y=980;
+              game.enemies.forEach(e=>{e.x=1850;e.y=1140;});
+            });
+            await page.locator('#prompt.on').waitFor({timeout:10000});
+            const explorerGold=await page.evaluate(()=>window.partyRpgVibeState().state.player.gold);
+            await page.locator('#prompt').click();
+            await page.locator('#modalTitle').filter({hasText:'숨겨진 기록'}).waitFor();
+            const found=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state;
+              return {done:!!s.exploration.discovered.relic_1_1,gold:s.player.gold};
+            });
+            if(!found.done||found.gold<=explorerGold)throw new Error('FIELD_LANDMARK_REWARD_MISSING '+JSON.stringify(found));
+            await page.locator('#modalClose').click();
+            await utilityClick('#journalBtn');
+            await page.getByText('빗물에 잠긴 군번표').first().waitFor();
+            await page.locator('#modalClose').click();
+            console.log('PARTY_RPG_EXPLORATION_NOTE_REWARD_AND_JOURNAL=PASS');
+            // 야영은 안전한 필드에서만 가능하며 비용을 내고 체력/시계가 저장된다.
+            await page.evaluate(()=>{
+              const g=window.partyRpgVibeState();
+              g.state.player.hp=Math.floor(g.state.player.maxHp*.35);
+              g.enemies.forEach(e=>{e.x=1850;e.y=1140;});
+            });
+            await utilityClick('#systemBtn');
+            await page.locator('#systemCamp').click();
+            const campButton=page.locator('#campRest');
+            if(await campButton.isDisabled())throw new Error('SAFE_CAMP_WRONGLY_BLOCKED');
+            const beforeCamp=await page.evaluate(()=>{
+              const g=window.partyRpgVibeState();
+              return {gold:g.state.player.gold,hp:g.state.player.hp,minutes:g.state.environment.minutes,day:g.state.environment.day};
+            });
+            await campButton.click();
+            const afterCamp=await page.evaluate(()=>{
+              const g=window.partyRpgVibeState();
+              const saved=JSON.parse(localStorage.getItem('party-rpg-v1')||'{}');
+              return {gold:g.state.player.gold,hp:g.state.player.hp,minutes:g.state.environment.minutes,
+                camps:Object.keys(saved.exploration?.camps||{}).length,found:!!saved.exploration?.discovered?.relic_1_1};
+            });
+            if(!(afterCamp.gold<beforeCamp.gold&&afterCamp.hp>beforeCamp.hp&&afterCamp.camps>0&&afterCamp.found))
+              throw new Error('CAMP_HEAL_SAVE_OR_COST_FAILED '+JSON.stringify({beforeCamp,afterCamp}));
+            await utilityClick('#systemBtn');
+            await page.locator('#systemCamp').click();
+            if(!(await page.locator('#campRest').isDisabled()))throw new Error('DUPLICATE_DAILY_CAMP_ALLOWED');
+            await page.locator('#modalClose').click();
+            console.log('PARTY_RPG_CAMP_HEAL_ONCE_DAILY_AND_SAVE=PASS');
+            await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
+            if(errors.length)throw new Error('PARTY_RPG_BROWSER_ERRORS: '+errors.join(' | '));
+            console.log('PARTY_RPG_MOBILE_EVENT_RECRUIT_AND_SAVE=PASS');
+            await context.close();
+          } finally {
+            await browser.close();
+          }
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: party-rpg-mobile-screenshot
+          path: party-rpg-mobile.png

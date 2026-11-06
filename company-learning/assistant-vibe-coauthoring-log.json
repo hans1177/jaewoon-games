@@ -1,0 +1,1184 @@
+{
+  "version": 6,
+  "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
+  "status": "ACTIVE",
+  "recordedAt": "2026-10-12",
+  "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
+  "policy": {
+    "everyAssistantCoauthoringActionMustBeRecorded": true,
+    "requiredActionTypes": [
+      "SOURCE_REVIEW",
+      "DESIGN_TO_SOURCE_GAP_ANALYSIS",
+      "SOURCE_CHANGE",
+      "PIPELINE_BOTTLENECK_REPAIR",
+      "QA_OR_REGRESSION_RESULT",
+      "SUPERVISOR_PASS_REVISE_DROP",
+      "RELEASE_OR_PROMOTION_DECISION"
+    ],
+    "minimumFields": [
+      "id",
+      "date",
+      "gameId",
+      "actionType",
+      "problem",
+      "decision",
+      "change",
+      "evidence",
+      "learningState"
+    ],
+    "rawTraceAuthority": "PROVENANCE_ONLY",
+    "rawTraceMayAutoPromote": false,
+    "verifiedPositivePromotion": "EXISTING_SUPERVISION_REVIEW_TO_VIBE_EXPERIENCE_MEMORY_ONLY",
+    "verifiedNegativePromotion": "EXISTING_SUPERVISION_REVIEW_TO_VIBE_EXPERIENCE_MEMORY_ONLY",
+    "experienceStore": ".vibe2/experience.json",
+    "canonicalTrainingPipeline": "company-learning/canonical-learning-pipeline.json",
+    "positiveLearningRequiresVerifiedPass": true,
+    "negativeLearningRequiresVerifiedFailureCause": true,
+    "candidateGenerationAloneIsNotLearning": true,
+    "qaGateWeakeningForbidden": true,
+    "authorityExpansionForbidden": true,
+    "protectedGameplayMutationRequiresOwnerAuthorization": true,
+    "documentationSelfReferenceRule": "TRACE_MAINTENANCE_AND_POLICY_SYNC_MAY_BE_SUMMARIZED_ONCE_PER_WORK_SESSION_TO_AVOID_INFINITE_SELF_LOGGING"
+  },
+  "reusableFields": {
+    "reusablePatterns": "Patterns verified safe and useful for future same-game/same-engine retrieval.",
+    "avoidPatterns": "Patterns verified harmful, fake, no-op, corrupting, or regression-prone.",
+    "qa": "Exact QA, regression, fan-in, runtime, or source-backed checks.",
+    "evidence": "Commit SHA, PR, run ID, candidate identity, file path, or verified source finding.",
+    "learningState": [
+      "TRACE_ONLY",
+      "VERIFIED_NEGATIVE_READY_FOR_EXPERIENCE",
+      "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE",
+      "PROMOTED_TO_EXPERIENCE"
+    ]
+  },
+  "records": [
+    {
+      "id": "assistant_source_generation_recovery_20260920",
+      "date": "2026-09-20",
+      "gameId": "MULTI_GAME_WEB",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "SOURCE_CANDIDATE_GENERATION was the dominant bottleneck; prior baseline candidate success rate was 25 percent with repeated TIMEOUT and EDIT_MATCH failures.",
+      "decision": "Preserve responsibility-selected first attempt, use causal worker-owned replace-only recovery after TIMEOUT/EDIT_MATCH, remove duplicate reserve full regression, and verify on a clean parallel wave.",
+      "change": "Source generation recovery path, telemetry, reserve QA policy, and regression alignment were repaired without lowering QA or full-Web size gates.",
+      "evidence": [
+        "run:35476177742",
+        "observed-success-rate:80-percent",
+        "parallel-peak:20",
+        "cache-hit-rate:100-percent",
+        "source-generation-final-failures:MALFORMED_OUTPUT:4",
+        "fan-in:PASS",
+        "regression:PASS",
+        "commit:8de42ed22bead6feae8ffee915968b2264d15fd7",
+        "commit:cd1274152c27d5e858cbfbc674322ae73217b378"
+      ],
+      "reusablePatterns": [
+        "KEEP_FIRST_ATTEMPT_TARGET_SELECTION_CAUSAL",
+        "ESCALATE_TIMEOUT_OR_EDIT_MATCH_TO_WORKER_PINNED_REPLACE_ONLY",
+        "DO_NOT_DUPLICATE_FULL_REGRESSION_BEFORE_RESERVE",
+        "MEASURE_EFFECTIVENESS_ON_CLEAN_PARALLEL_WAVE"
+      ],
+      "avoidPatterns": [
+        "FORCING_UNRELATED_GENERIC_ANCHOR_ON_FIRST_ATTEMPT",
+        "USING_STALE_RUNS_TO_CLAIM_NEW_CODE_EFFECTIVENESS",
+        "DUPLICATE_EXPENSIVE_REGRESSION_BEFORE_WORKER_RESERVE"
+      ],
+      "qa": [
+        "Vibe2 Core QA run 35476535607 PASS",
+        "fan-in regression PASS in run 35476177742"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE"
+    },
+    {
+      "id": "assistant_focused_first_edit_early_stop_20260920",
+      "date": "2026-09-20",
+      "gameId": "MULTI_GAME_WEB",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Most passing focused Web repair candidates still spent the full 240 second first-generation window before causal recovery, causing long package cycles.",
+      "decision": "Keep the timeout budget and model-owned target choice, but end streaming as soon as the first complete exact edit object is available.",
+      "change": "Added focused first-complete-edit early stop, telemetry, regression coverage, and placeholder rejection.",
+      "evidence": [
+        "source-commit:9e07112fb9a49bad49328981a00a01d8eaddf845",
+        "test-commit:179d4de63a0759c864db39d3099c20ecbae2ae80",
+        "telemetry-commit:72e35fb9ff24d4e91f7bd1a72e813d22f932a7e1",
+        "test-alignment-commit:a066a13071bbefbc195edcde6e2b39c834330ddd",
+        "placeholder-guard-commit:e2f44a6d9340e9626f35e4a1de55b9cce180f8e1",
+        "qa-run:35476535607:PASS"
+      ],
+      "reusablePatterns": [
+        "EARLY_STOP_ONLY_AFTER_COMPLETE_PARSEABLE_EDIT",
+        "PRESERVE_MODEL_TARGET_SELECTION_ON_FIRST_ATTEMPT",
+        "REJECT_PLACEHOLDER_REPLACEMENT_SOURCE"
+      ],
+      "avoidPatterns": [
+        "SHORTENING_TIMEOUT_WITHOUT_MEASUREMENT",
+        "TREATING_PARTIAL_OR_PLACEHOLDER_TEXT_AS_SOURCE"
+      ],
+      "qa": [
+        "focused first-edit regression coverage",
+        "placeholder rejection regression coverage",
+        "Vibe2 Core QA PASS"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE"
+    },
+    {
+      "id": "assistant_bug_defense_supervisor_revise_20260920",
+      "date": "2026-09-20",
+      "gameId": "bug-defense",
+      "actionType": "SUPERVISOR_PASS_REVISE_DROP",
+      "problem": "The generated candidate source was identical to main and remained a validation harness rather than a playable insect defense game.",
+      "decision": "REVISE",
+      "change": "Rejected automatic promotion and requeued the same game under supervised Vibe coauthoring.",
+      "evidence": [
+        "candidate:b90fe9c4045635244c320698b90ba869af72b947",
+        "main-source-blob:9716ae95462eb60c1706bfce059a70f0d08531f0",
+        "candidate-source-blob:9716ae95462eb60c1706bfce059a70f0d08531f0",
+        "experience-id:supervised_bug-defense_35476177742_revise",
+        "roadmap-commit:eb853f4f8e5301165958c378559eae2fa524551e"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "VALIDATION_HARNESS_AS_GAMEPLAY",
+        "UNCHANGED_SOURCE_CANDIDATE_PROMOTION",
+        "BUTTON_ONLY_SCOPE_COVERAGE",
+        "NO_SPATIAL_ENEMY_LOOP",
+        "NO_REACHABLE_WIN_OR_LOSS",
+        "DUPLICATE_EVENT_HANDLER_IMPLEMENTATION"
+      ],
+      "qa": [
+        "source blob identity comparison",
+        "design-to-source gap review"
+      ],
+      "learningState": "PROMOTED_TO_EXPERIENCE"
+    },
+    {
+      "id": "assistant_bug_defense_playable_candidate_v1_20260920",
+      "date": "2026-09-20",
+      "gameId": "bug-defense",
+      "actionType": "SOURCE_CHANGE",
+      "problem": "Approved strict design required real wave preview, spatial placement, habitat adaptation, ecological counters, economy/evolution, enemy movement, status effects, win/loss, retry, persistence, and mobile one-hand play; main source had none of these as real gameplay.",
+      "decision": "Continue isolated supervised repair; runtime PASS is not yet verified.",
+      "change": "Candidate advanced through exact runtime-driven repairs: approved route analysis now exposes spatial route input, runtime randomness was removed for deterministic replay, and hidden retry UI was disabled outside terminal state so the canonical validator can continue the real gameplay loop. A separate validator fix correctly classifies bug-defense as tower defense instead of requiring fake avatar movement.",
+      "evidence": [
+        "branch:assistant/supervised-bug-defense-v1",
+        "draft-pr:1743",
+        "candidate-commit:098135434c96e6396b7f20be52763789cc6b3531",
+        "candidate-prior-commit:0755547e740bd22e91f080682ebfa8b5d1c428cd",
+        "validator-fix-branch:assistant/bug-defense-validator-fix-v1",
+        "validator-fix-pr:1758",
+        "validator-fix-commit:b56efabce27f9dd0c2e0e089ab1f89317b0b2c48",
+        "runtime-v1:35478451968:FAIL",
+        "runtime-v1-blocker:BUG_DEFENSE_AVATAR_MOVEMENT_MISCLASSIFICATION_AND_SCOPE_SPATIAL_INPUT",
+        "runtime-v2:35478752746:FAIL",
+        "runtime-v2-primary-blocker:COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED",
+        "runtime-v2-preplatform:PASS",
+        "runtime-v2-save-restore:PASS",
+        "runtime-v3:35479492190:IN_PROGRESS",
+        "roadmap-sync-commit:eeacff66134acdd8efcb654af6f3d64b55ed2e50"
+      ],
+      "reusablePatterns": [
+        "ISOLATED_SUPERVISED_BRANCH_BEFORE_MAIN_PROMOTION",
+        "DESIGN_TRACEABILITY_TO_REAL_RUNTIME_MECHANICS",
+        "FIX_VALIDATOR_RESPONSIBILITY_IN_VALIDATOR_NOT_WITH_FAKE_GAMEPLAY",
+        "USE_RUNTIME_BLOCKERS_TO_DRIVE_DIRECT_RESPONSIBLE_FUNCTION_REPAIR"
+      ],
+      "avoidPatterns": [
+        "DIRECT_MAIN_PROMOTION_BEFORE_RUNTIME_QA",
+        "CLAIMING_PLAYABILITY_FROM_STATIC_SOURCE_CHECKS_ONLY",
+        "ADDING_FAKE_AVATAR_MOVEMENT_TO_SATISFY_MISCLASSIFIED_TOWER_DEFENSE_VALIDATION",
+        "TREATING_GENERAL_CI_GREEN_AS_SUPERVISOR_PASS"
+      ],
+      "qa": [
+        "Vibe QA latest candidate PASS: run 35478799283",
+        "Vibe3 Engine Contract latest candidate PASS: run 35478799222",
+        "Security Immune System latest candidate PASS: run 35478799169",
+        "Integrated Regression latest candidate PASS: run 35478799263",
+        "Company Evolution QA latest candidate FAIL: run 35478799287",
+        "Canonical runtime v1 FAIL: run 35478451968",
+        "Canonical runtime v2 FAIL with only COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED remaining: run 35478752746",
+        "Canonical runtime v3 IN_PROGRESS: run 35479492190",
+        "Supervisor final decision PENDING"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_coauthoring_trace_contract_20260920",
+      "date": "2026-09-20",
+      "gameId": "SYSTEM",
+      "actionType": "RELEASE_OR_PROMOTION_DECISION",
+      "problem": "Assistant-led coauthoring work could be lost as ephemeral chat context unless every review, source change, QA result, and decision is persisted in a learnable evidence contract.",
+      "decision": "Require a same-session coauthoring trace for every assistant action category and bind verified outcomes to the existing Vibe Experience Memory and canonical training pipeline only.",
+      "change": "Added the assistant coauthoring trace store, central roadmap contract, and Vibe learning motor binding. Raw trace is provenance only; verified PASS/REVISE/DROP is required before reusable learning.",
+      "evidence": [
+        "trace-store-commit:9f59d01e09ed9ad8e67aec5cb0565b679e0605ec",
+        "roadmap-v161-commit:251cb67ee064ab8fd9a1d4b6813e4e5801e0af44",
+        "learning-motor-v4-commit:519315bf9ea0321212e8d7b4917df8127d0e50cd"
+      ],
+      "reusablePatterns": [
+        "DOCUMENT_ASSISTANT_ACTIONS_IN_SAME_WORK_SESSION",
+        "PROMOTE_ONLY_VERIFIED_SUPERVISION_OUTCOMES",
+        "REUSE_EXISTING_EXPERIENCE_AND_CANONICAL_TRAINING_PIPELINE"
+      ],
+      "avoidPatterns": [
+        "EPHEMERAL_CHAT_ONLY_LEARNING",
+        "RAW_TRACE_DIRECT_RETRIEVAL",
+        "SHADOW_LEARNING_PIPELINE",
+        "UNVERIFIED_ACTION_AS_POSITIVE_MASTERY"
+      ],
+      "qa": [
+        "policy paths and promotion gates are explicit",
+        "raw trace authority remains provenance-only"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE"
+    },
+    {
+      "id": "assistant_central_vibe_document_sync_20260926",
+      "date": "2026-09-26",
+      "gameId": "SYSTEM",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "The non-authoritative AI execution guide and next-session handoff had drifted from the current central Vibe policy: legacy WEB_FIRST semantics remained, the handoff referenced stale main/workflow context, and the canonical four-document shared-context order was not explicit in the guide.",
+      "decision": "Keep platform-release-roadmap.json as the only policy authority. Synchronize the non-authoritative guide, its QA contract, and the durable handoff to the current roadmap/log/architecture/security context without adding execution authority or changing gameplay/release gates.",
+      "change": "Bound the guide to roadmap -> log map -> architecture map -> security load order; redefined legacy webFirst as a deprecated compatibility alias for the Unity Web development floor; bound UPPER_PLATFORM_DEVELOPMENT_READY to concurrent Roblox and Unity development; refreshed the handoff snapshot and current bottleneck context.",
+      "evidence": [
+        "roadmap:v414:1ac083288aa5839fbb769d17bd1cd2abbdd4b4f9",
+        "log-map:v89:58b8cadb3b22d9c35e7cc52ac3c537ee4fd6a267",
+        "architecture:v223:fa9dc1cba8b09dc318e0b457dc69cf4c33546961",
+        "security:v59:03ff2774f8f6e231864935cc547124baad7b42de",
+        "directive-sync-commit:56d93004ad48712600faefbdfcc88d5195a75ead",
+        "directive-qa-commit:30b31877ce6078bbea764d6a567c3d96923f7e33",
+        "handoff-sync-commit:35bf11f6a9bb1d574190e3a5f218ecaa5b98c2cd"
+      ],
+      "reusablePatterns": [
+        "ROADMAP_FIRST_FAIL_CLOSED",
+        "KEEP_NON_AUTHORITATIVE_GUIDES_AS_REFERENCES_NOT_POLICY",
+        "CANONICAL_FOUR_DOCUMENT_LOAD_ORDER_BEFORE_AND_AFTER_WORK",
+        "PRESERVE_COMPATIBILITY_KEYS_WHILE_REBINDING_THEIR_MEANING_TO_CURRENT_CANONICAL_POLICY",
+        "REFRESH_HANDOFF_LIVE_CONTEXT_INSTEAD_OF_TREATING_OLD_WORKFLOW_SNAPSHOTS_AS_CURRENT"
+      ],
+      "avoidPatterns": [
+        "LEGACY_WEB_FIRST_AS_INDEPENDENT_WEB_GAME_POLICY",
+        "STALE_HANDOFF_HEAD_AS_CURRENT_STATE",
+        "MANUAL_POLICY_SEMANTIC_DUPLICATION_IN_NON_AUTHORITATIVE_DOCS",
+        "RUNTIME_STATE_CREATING_POLICY"
+      ],
+      "qa": [
+        "all modified JSON documents reparsed successfully from main",
+        "directive requiredReads first four exactly match architecture.sharedContextLoadOrder",
+        "directive sharedContext load order exactly matches architecture.sharedContextLoadOrder",
+        "directive QA now asserts Unity Web floor and concurrent Roblox/Unity upper-platform semantics"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_roblox_stale_reconcile_asset_binding_repair_20260926",
+      "date": "2026-09-26",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Roblox Studio MCP itself had recent verified successful connections, but current Roblox development was blocked earlier. A 16-game source reconciliation detected ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED, then main advanced before persistence and every reconciliation result was discarded by full-main-SHA stale comparison, yielding zero source targets and preventing asset rebind from reaching later Studio MCP runtime.",
+      "decision": "Preserve official Studio MCP and all native QA/release gates. Repair only the existing Roblox source reconciliation path: requeue stale reconciliation and bind freshness to the exact per-game Roblox source-tree identity so unrelated main commits do not invalidate valid game-source work.",
+      "change": "Added stale reconciliation redispatch, exact game_id preservation on redispatch, per-game sourceTreeSha in reconciliation evidence, pre-worker live source-tree verification, and persistence comparison against origin/main:<game-source-path> with full-main-SHA fallback only when no source-tree identity exists.",
+      "evidence": [
+        "live-run:36237552295:ROBLOX_SOURCE_RECONCILIATION_FAIL=16",
+        "live-run:36237552295:ROBLOX_SOURCE_TARGET_COUNT=0",
+        "live-run:36237552295:ROBLOX_SOURCE_RECONCILIATION_STALE_IGNORED_16",
+        "company-runtime:cozy-island:official-studio-mcp-connected=PASS",
+        "company-runtime:horror-escape-room:official-studio-mcp-connected=PASS_RUNTIME_ERROR_DOWNSTREAM",
+        "commit:01cd59d0ef40efc730016701bcb38377b90a9159",
+        "commit:410c7599b1bf657027eddbf12a7574644b35bbf7",
+        "commit:add3b8bb522a5981997938e7f28f5c176202178a",
+        "commit:bcdbaab42312d6f92504b13911f74a46bc248174",
+        "commit:c8c299aeb5442c8a2ff546a34a178ae773d5843d",
+        "qa:Company Evolution QA:36237983849:PASS",
+        "qa:Vibe3 Engine Contract:36237983894:PASS",
+        "qa:Vibe QA:36237983884:PASS",
+        "live-verification:ROBLOX_RUNTIME_QUEUED_RUN_36238035097"
+      ],
+      "reusablePatterns": [
+        "USE_EXACT_GAME_SOURCE_TREE_IDENTITY_FOR_SOURCE_FRESHNESS",
+        "UNRELATED_MAIN_COMMIT_MUST_NOT_INVALIDATE_UNCHANGED_GAME_SOURCE",
+        "REQUEUE_EXACT_STAGE_WHEN_GAME_SOURCE_TREE_ACTUALLY_CHANGES",
+        "PRESERVE_EXACT_GAME_ID_ON_RECOVERY_REDISPATCH",
+        "DISTINGUISH_STUDIO_MCP_INFRASTRUCTURE_FROM_PRE_MCP_SOURCE_PIPELINE_BLOCKERS"
+      ],
+      "avoidPatterns": [
+        "FULL_MAIN_SHA_AS_GAME_SOURCE_STALE_SIGNAL",
+        "SILENT_STALE_RESULT_DROP_WITHOUT_REDISPATCH",
+        "MISCLASSIFYING_PRE_MCP_SOURCE_BLOCKER_AS_MCP_FAILURE",
+        "WEAKENING_STUDIO_MCP_OR_NATIVE_RUNTIME_GATES_TO_HIDE_PIPELINE_DELAY"
+      ],
+      "qa": [
+        "company-development-roblox-runtime stale redispatch regression PASS",
+        "source-tree reconciliation regression PASS",
+        "Company Evolution QA PASS",
+        "Vibe3 Engine Contract PASS",
+        "Vibe QA PASS"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE",
+      "liveState": "CODE_AND_QA_VERIFIED_LIVE_ROBLOX_RUNTIME_PENDING"
+    },
+    {
+      "id": "assistant_roblox_stale_candidate_asset_rebind_unblock_20260926",
+      "date": "2026-09-26",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "actionType": "PIPELINE_CAUSAL_REPAIR",
+      "problem": "Sixteen DEVELOPMENT_CONFIRMED Roblox games had current Studio asset-binding refresh debt, but older source candidate branch pointers from earlier runs were still marked ready. The source planner checked candidateReady before current repair debt and skipped every game, producing ROBLOX_SOURCE_TARGET_COUNT=0 despite sixteen reconciliation failures.",
+      "rootCause": "STALE_SOURCE_CANDIDATE_STATE_OUTRANKED_NEWER_CAUSAL_SOURCE_REPAIR",
+      "repair": [
+        "Moved current reconciliation and repair-debt classification ahead of candidateReady suppression.",
+        "Added repairSupersedesCandidate so Studio asset rebind or known source repair debt bypasses stale candidate state.",
+        "Cleared sixteen demonstrably stale runtime candidate pointers whose candidateReadyAt preceded the newer asset-binding failure timestamp.",
+        "Removed dedicated QA-only runtime/source-reconcile test files from full Roblox Runtime push triggers while preserving their Vibe3/Vibe QA coverage."
+      ],
+      "evidence": [
+        "company-runtime:development-queue:16 stale candidates cleared at runtime commit 58784d24ef3cc17849fec13d69cd1c00b37ed5a6",
+        "main:fix b688c86bf0da7f2540038c8bb7bbce9d83db9c62",
+        "main:test 1e2e3149e1544b270a21ab9f4d16c4dc0ad3549b",
+        "main:trigger isolation 38a6d49f929b88daded29ebfcacfd68a95bfdfe1",
+        "main:trigger test 0c96a2dd883f4d9d833375dbcb84fa4f954f84d4",
+        "live:QA-only commit 0c96a2dd created Company Evolution QA and Vibe3 Engine Contract but no Roblox Runtime run"
+      ],
+      "reusablePatterns": [
+        "NEWER_CAUSAL_REPAIR_DEBT_SUPERSEDES_OLDER_PENDING_SOURCE_CANDIDATE",
+        "CANDIDATE_POINTER_FRESHNESS_MUST_BE_COMPARED_TO_NEWER_FAILURE_EVIDENCE",
+        "DEDICATED_QA_ONLY_CHANGES_SHOULD_NOT_LAUNCH_HEAVY_RUNTIME_WHEN_COVERED_BY_SEPARATE_QA"
+      ],
+      "avoidPatterns": [
+        "CANDIDATE_READY_EARLY_CONTINUE_BEFORE_CURRENT_REPAIR_CLASSIFICATION",
+        "STALE_CANDIDATE_POINTER_BLOCKS_REBIND",
+        "QA_ONLY_EDIT_SPAWNS_FULL_NATIVE_RUNTIME"
+      ],
+      "liveState": "CODE_AND_RUNTIME_STATE_REPAIRED; EXISTING_GITHUB_ACTIONS_QUEUE_DRAIN_PENDING; NO_MCP_GATE_WEAKENING"
+    },
+    {
+      "id": "assistant_homepage_qa_self_cycle_false_positive_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_ORCHESTRATION",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Company Evolution QA stopped because five tests confused the central DEVELOPMENT_CONFIRMED self-cycle with forbidden child workflow API dispatch. A second central gate found 48 changeRecord entries over the limit of 43. Concurrent amusement-tycoon source work also added a broad Roblox batch wake despite the existing exact changed-game source-sync path. 최신 PR 검증에서는 Vibe2 reserve가 현재 ubuntu-latest 계약을 쓰는데 QA가 폐기된 ubuntu-24.04-arm 값을 고정해 단독 실패했다. PR 검증 도중 최신 main 홈페이지가 현재 metricPlayable/metricDevelopment ID를 쓰지만 QA가 폐기된 releasedCount/developmentCount를 요구하는 합성 병합 실패도 확인됐다. 이어 Vibe2 전체 묶음에서 같은 최근 압력 제어 변경을 예전 즉시 콜백·ARM·run-scoped refill 계약으로 검사하던 controller QA 3건이 추가 확인됐다. 다음 합성 검증에서는 fan-in runner의 남은 ARM assertion 1건과 Chrome DevTools 포트 10초 기동 타임아웃이 각각 실패했다. 최종 검증 중 main 커밋 32456dc가 text-source worker의 모델 복원을 source lock 뒤로 이동했는데 이 PR이 같은 controller QA 파일의 옛 순서를 유지해 합성본에서 1건 실패했다. 이후 main의 즉시 F9 다음-cycle 변경이 foundation QA보다 먼저 들어가 Vibe3가 잠시 실패했으나 main 후속 4e17d6f가 해당 assertion을 정렬했다. 같은 시점 64d9812는 압력 중 단일 작업 즉시 콜백을 false로 중앙 런타임에 확정했다. 마지막 Vibe2 검증은 새 순서 assertion은 통과했지만 같은 테스트 아래의 폐기된 pre-lock 타이밍 표식과 정책 필드 중복 검사가 1건 남아 실패했다. 최신 main v501은 중앙 native planner를 game/batch 키로 coalescing했지만 기존 central-pipeline QA가 이전 main-push/run-id 키를 계속 요구해 로컬 전체 영향 검사 1건을 막았다.",
+      "rootCause": "OVERBROAD_QA_GUARDS_PLUS_UNBOUNDED_UNREFERENCED_POLICY_HISTORY_PLUS_DUPLICATE_ROBLOX_SOURCE_WAKE_PLUS_STALE_VIBE2_RUNNER_ASSERTION_PLUS_STALE_HOMEPAGE_METRIC_ID_ASSERTION_PLUS_STALE_VIBE2_CONTROLLER_PRESSURE_ASSERTIONS_PLUS_STALE_FANIN_RUNNER_ASSERTION_AND_TIGHT_BROWSER_STARTUP_TIMEOUT_PLUS_CONCURRENT_POST_LOCK_MODEL_RESTORE_TEST_DRIFT_PLUS_CONCURRENT_F9_IMPLEMENTATION_TEST_COMMIT_GAP_PLUS_DUPLICATE_OBSOLETE_PRE_LOCK_TIMING_ASSERTION_PLUS_STALE_CENTRAL_BATCH_CONCURRENCY_ASSERTION",
+      "decision": "Keep the intentional central self-cycle, forbid only the four direct child workflow identities, archive only unreferenced execution-history records, preserve owner-exclusive horror scope, and route Roblox source changes only through the existing exact changed-game synchronizer.",
+      "change": "Updated five existing QA responsibility tests, removed the duplicate roblox-games broad trigger from the batch runtime, aligned the amusement direct-buildup test to exact source sync, and reduced central changeRecord to its enforced budget without changing gameplay balance, saves, release state, or horror-escape-room files. 이어 Vibe2 reserve QA를 현재 repository_dispatch fan-in/neuron callback ubuntu-latest 계약과 일치시켰다. 최신 main 렌더러와 fallback HTML을 대조해 홈페이지 카운터 QA도 현재 metricPlayable/metricDevelopment 계약으로 갱신했다. controller QA도 현재 압력 시 불변 worker artifact 유지·cohort fan-in 재사용, stateless same-lane refill coalescing, callback용 ubuntu-latest 계약으로 정렬했다. fan-in QA를 실제 ubuntu-latest 계약으로 맞추고, 브라우저 스모크의 최초 DevTools 기동 허용 시간을 20초로 늘리며 Chrome exit/stderr를 실패 원인에 포함시켰다. 최신 main의 order→exploration→budget→lock→model restore→candidate 순서를 controller QA에 병합하고, lock 획득 없는 text-source worker의 모델 복원을 막는 조건과 타이밍 표식을 검사했다. main의 F9 후속 테스트 수리를 재사용하고, controller QA의 압력 플래그를 최신 중앙 런타임(false; 압력 0일 때만 즉시)과 맞췄다. 폐기된 pre-lock 타이밍·중복 정책 필드 assertion을 제거하고, 실제 restore와 prepare 단계가 text-source lock 획득 뒤에만 실행되는 정확한 조건을 유지했다. 마지막 rebase에서는 v501의 game-or-batch concurrency 계약을 central-pipeline QA에 반영하고 새 v501 changeRecord를 보존하면서 참조 없는 fan-in 과거 기록 1개를 추가 보관해 43개 예산을 유지했다.",
+      "evidence": [
+        "initial-main:a64347b74a3757dbe41d6e85c1fbb310a40e58cb",
+        "rebased-main:601abba37796177dbb54ab9d44806489b112e052",
+        "failure-run:36735498688",
+        "failure-job:109956151857",
+        "pr:4192:superseded-by-latest-main-rebuild",
+        "pr-homepage-run:36738299801:PASS",
+        "pr-evolution-run:36738300042:PASS",
+        "pr-game-seed-run:36738299769:FAIL_CENTRAL_CHANGE_RECORD_BUDGET_48_OVER_43",
+        "merge-preview-vibe3-run:36739316170:FAIL_DUPLICATE_ROBLOX_GAMES_BATCH_TRIGGER",
+        "roadmap-retention:43-of-43",
+        "roadmap-owner-scope:ownerExclusiveDirectDevelopment20260930-preserved",
+        "latest-pr:4197",
+        "latest-pr-head-before-vibe2-fix:d7caed0b0fdffe3d7ab65dc06075cc7b44585b5b",
+        "latest-pr-evolution-run:36740479696:PASS",
+        "latest-pr-game-seed-run:36740479880:PASS",
+        "latest-pr-vibe2-run:36740479850:FAIL_STALE_UBUNTU_24_04_ARM_ASSERTION",
+        "latest-pr-vibe2-failure-job:109973253578",
+        "vibe2-qa-fix:71bc711866db17f2b8f697a3158393caa9216317",
+        "latest-pr-evolution-drift-run:36741616733:FAIL_STALE_RELEASED_COUNT_ASSERTION",
+        "latest-pr-evolution-drift-job:109977171356",
+        "homepage-metric-qa-fix:df0c3676340c7f9376126d16e2d42010d11cfbe5",
+        "latest-pr-homepage-run:36741969123:PASS",
+        "latest-pr-evolution-run:36741969008:PASS",
+        "latest-pr-game-seed-run:36741969106:PASS",
+        "latest-pr-vibe3-run:36741969130:PASS",
+        "latest-pr-security-run:36741969057:PASS",
+        "latest-pr-records-run:36741969059:PASS",
+        "latest-pr-main-write-guard-run:36741968998:PASS",
+        "latest-pr-central-policy-run:36742445746:PASS",
+        "latest-pr-vibe2-run:36742445473:FAIL_THREE_STALE_CONTROLLER_PRESSURE_ASSERTIONS",
+        "latest-pr-vibe2-failure-job:109980559736",
+        "vibe2-controller-qa-fix:bea6a8017d503de7bbcefe3a67f79d91079c9553",
+        "latest-pr-vibe2-run:36743627027:FAIL_STALE_FANIN_RUNNER_ASSERTION_AND_CHROME_DEVTOOLS_PORT_TIMEOUT",
+        "latest-pr-vibe2-core-job:109984766242",
+        "latest-pr-vibe2-browser-job:109984766754",
+        "vibe2-fanin-qa-fix:ebec7cc7a283133a23507989901255a605f3b225",
+        "browser-smoke-hardening:28b79de1067c0186ac7b67321f7c485483766c49",
+        "concurrent-main-source-lock-fix:cf7fb46b999f102301a71874c722132c593b4b2e",
+        "concurrent-main-order-test:32456dc9dca5f8b51e8ffcae0c750e48a8d76302",
+        "latest-pr-vibe2-run:36744866862:FAIL_ONE_STALE_PRE_LOCK_MODEL_ORDER_ASSERTION",
+        "latest-pr-vibe2-core-job:109988709826",
+        "latest-pr-vibe2-browser-job:109988709459:PASS",
+        "vibe2-post-lock-order-qa-fix:9135a10b6ee7edf9e0a6dc07b9bfdd920b3b5308",
+        "latest-pr-vibe3-run:36745724540:FAIL_DURING_MAIN_F9_IMPLEMENTATION_TEST_COMMIT_GAP",
+        "latest-pr-vibe3-job:109991313461",
+        "main-f9-next-cycle-source:0bebf35cd3198cc69f97a6eee544917a02dac8f6",
+        "main-f9-foundation-qa-sync:4e17d6fe12b37b9e7690e6e3dbb970b7e7f55fd6",
+        "main-vibe2-central-runner-sync:64d9812666206dc035aab0726cceb177b62a4b24",
+        "controller-pressure-flag-sync:47a401aec051570cbd7a29858b6837c4aafd072f",
+        "latest-pr-vibe2-run:36746406132:FAIL_ONE_DUPLICATE_OBSOLETE_PRE_LOCK_TIMING_ASSERTION",
+        "latest-pr-vibe2-core-job:109994167729",
+        "latest-pr-vibe2-browser-job:109994167710:PASS",
+        "latest-pr-vibe2-practice-job:109994167275:PASS",
+        "vibe2-obsolete-timing-assertion-fix:4744369d411aaa97a49023cdd80c5d215242962f",
+        "final-rebase-main:553ccd56ac90ac9fbb4b13bc2bfe9524ebce71ad",
+        "local-v501-batch-concurrency-qa-drift:company-central-pipeline-only.test.mjs:137",
+        "roadmap-retention-after-v501:43-of-43"
+      ],
+      "reusablePatterns": [
+        "ASSERT_FORBIDDEN_CHILD_IDENTITIES_NOT_BROAD_PREFIXES",
+        "KEEP_SELF_CYCLE_SEPARATE_FROM_CHILD_DISPATCH_POLICY",
+        "ROUTE_SOURCE_CHANGE_THROUGH_EXACT_GAME_SYNCHRONIZER",
+        "ARCHIVE_ONLY_UNREFERENCED_HISTORY_WHILE_PRESERVING_CURRENT_OWNER_RULES",
+        "USE_POST_CHANGE_ACTION_RUN_AS_AUTHORITATIVE_VERIFICATION",
+        "HOMEPAGE_ASSERTIONS_MUST_TRACK_IDS_USED_BY_CURRENT_RUNTIME_RENDERER",
+        "PRESSURE_CALLBACK_QA_MUST_ASSERT_IMMUTABLE_ARTIFACT_COHORT_CONSUMPTION_UNDER_PRESSURE",
+        "BROWSER_STARTUP_SMOKE_FAILURES_MUST_REPORT_PROCESS_EXIT_AND_STDERR",
+        "CONCURRENT_MAIN_WORKFLOW_ORDER_CHANGES_MUST_BE_MERGED_INTO_OVERLAPPING_PR_TEST_FILES",
+        "IMPLEMENTATION_AND_COMPANION_TEST_COMMITS_MUST_BE_OBSERVED_AS_ONE_CAUSAL_CHANGESET"
+      ],
+      "avoidPatterns": [
+        "OVERBROAD_WORKFLOW_NAME_REGEX",
+        "DUPLICATE_BROAD_BATCH_WAKE_FOR_GAME_SOURCE_CHANGES",
+        "UNBOUNDED_CHANGE_RECORD_GROWTH",
+        "CLAIMING_RUNTIME_PASS_FROM_STATIC_VALIDATION",
+        "STALE_RUNNER_LABEL_ASSERTION_AFTER_EXECUTION_POOL_POLICY_CHANGE",
+        "ASSERTING_REMOVED_HOMEPAGE_METRIC_IDS_AFTER_LAYOUT_RESTORE",
+        "DUPLICATED_VIBE2_POLICY_ASSERTIONS_DRIFTING_ACROSS_TEST_FILES",
+        "TEN_SECOND_DEVTOOLS_STARTUP_BUDGET_WITHOUT_CHROME_DIAGNOSTICS",
+        "OVERWRITING_NEW_MAIN_ORDER_CONTRACT_WITH_OLD_BRANCH_TEST_SEQUENCE"
+      ],
+      "qa": [
+        "local catalog normalization and homepage publication-order: PASS",
+        "local affected combined regression: 139/139 PASS",
+        "local central policy contract: 63/63 PASS",
+        "PR head f7e966d Homepage, Security, Evolution, GAME_SEED, records governance, main write guard: PASS",
+        "PR head f7e966d Vibe2 browser startup smoke and practice fault cards runtime: PASS",
+        "PR head f7e966d Vibe2 core: FAIL only at duplicate obsolete pre-lock timing assertion after new ordering checks passed",
+        "local final central-pipeline regression: 31/31 PASS",
+        "local final affected combined regression: 355/355 PASS",
+        "local browser smoke: NOT_RUN because Chrome is unavailable in this workspace; use post-change Actions browser job as authority",
+        "PR rebased head: full required checks pending",
+        "Studio actual execution: NOT_RUN; no release or F9 completion claim"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "SUPERSEDED_BY_OWNER_ROLLBACK_17D907B4D_AND_FOLLOWUP_QA_RECONCILIATION; NO_STUDIO_RUNTIME_PASS_CLAIM"
+    },
+    {
+      "id": "assistant_owner_rollback_qa_reconciliation_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_ORCHESTRATION",
+      "actionType": "LATEST_MAIN_CAUSAL_RECONCILIATION",
+      "problem": "Latest main commit 17d907b4d explicitly restored the owner-selected Roblox broad source wake, pre-lock Vibe2 model preparation, unpressured single-task immediate callback metadata, and v500 released-only publication policy. The rollback intentionally superseded earlier assistant source assumptions but left current source and QA projections out of sync: the selected local impact set had 12 failures, and live Vibe2 run 36749349495 stopped its reserve preflight solely because queue-control QA still required the removed ARM runner contract.",
+      "rootCause": "OWNER_ROLLBACK_PRESERVED_SOURCE_AUTHORITY_BUT_LEFT_STALE_QA_PROJECTIONS_AND_UNBOUNDED_UNREFERENCED_CHANGE_HISTORY",
+      "decision": "Preserve the latest owner rollback and v500 release classification exactly. Repair only tests and unreferenced history that block the current implementation; do not restore superseded exact-source-wake, post-lock-model, pressure-callback metadata, or batch-serialization behavior.",
+      "change": "Rebased PR 4197 on 17d907b4d, restored QA expectations for broad Roblox wake, run-scoped batch parallelism, pre-lock model preparation, and immediate callback when pressure clears; retained exact current ubuntu-latest callback runner and pressure-coalesced artifact behavior checks. Narrowed forbidden child-dispatch regexes without blocking the central self-cycle, synchronized current homepage metric IDs, hardened browser-startup diagnostics, and archived six unreferenced historical changeRecord entries while preserving ownerExclusiveDirectDevelopment20260930. No horror-escape-room game code, asset, candidate, deployment, or dedicated task file changed.",
+      "evidence": [
+        "latest-main:17d907b4dddfc3f99f38153c4ba307cab7302e7a",
+        "owner-rollback:rollback-remove-assistant-non-homepage-changes",
+        "live-failure-run:36749349495",
+        "live-failure-job:110003647110",
+        "live-failure:qa/vibe2-queue-control.test.mjs:1667:stale-ubuntu-24.04-arm-assertion",
+        "roadmap-version:500",
+        "roadmap-retention:42-of-43",
+        "roadmap-owner-scope:ownerExclusiveDirectDevelopment20260930-preserved",
+        "pull-request:4197"
+      ],
+      "reusablePatterns": [
+        "OWNER_ROLLBACK_OVERRIDES_EARLIER_ASSISTANT_SOURCE_ASSUMPTIONS",
+        "REBASE_THEN_REPRODUCE_AGAINST_EXACT_LATEST_MAIN",
+        "ASSERT_OBSERVED_WORKFLOW_BEHAVIOR_WITHOUT_REINTRODUCING_ROLLED_BACK_SOURCE",
+        "LIVE_ACTION_FAILURE_TAKES_PRIORITY_OVER_SYNTHETIC_BRANCH_HISTORY"
+      ],
+      "avoidPatterns": [
+        "FORCE_REINTRODUCING_SUPERSEDED_ASSISTANT_SOURCE_CHANGES",
+        "TREATING_PRE_ROLLBACK_ACTIONS_AS_POST_ROLLBACK_EVIDENCE",
+        "CLAIMING_BROWSER_OR_STUDIO_RUNTIME_PASS_FROM_LOCAL_STATIC_TESTS"
+      ],
+      "qa": [
+        "latest-main baseline selected impact set: 374/386 PASS, 12 FAIL",
+        "rebased repaired selected impact set: 386/386 PASS",
+        "local JSON parse and diff scope: PASS",
+        "local browser smoke: NOT_RUN because Chrome is unavailable in this workspace",
+        "post-change GitHub Actions and browser job: PENDING",
+        "Studio actual execution: NOT_RUN; no release or F9 completion claim"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "LATEST_OWNER_ROLLBACK_PRESERVED; PR_4197_MERGED_AT_CE52C5B611B1E1FE7281E56275B322AEFF99A535; ALL_EIGHT_PR_WORKFLOWS_PASS; NO_STUDIO_RUNTIME_PASS_CLAIM"
+    },
+    {
+      "id": "assistant_growth_marketing_reusable_permission_repair_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_GROWTH_MARKETING",
+      "actionType": "CONTROL_PLANE_STARTUP_REPAIR",
+      "problem": "Company Growth Marketing Runtime failed before creating any job on merged main ce52c5b6. The same startup_failure was present on the reusable-worker introduction commit 580833739, so retrying the run could not repair it. PR verification then exposed two independent Owner All Games Design Reset failures: the workflow first omitted the staged entry module's relative company-game-seed-contract.mjs dependency, and the repaired run then spent its full 10-minute job budget fetching every branch and tag before reaching validation. After the permission repair reached main, Growth Marketing created its plan job for the first time but inherited the same unbounded all-ref checkout pattern already proven to exhaust the sibling reset job budget. The bounded checkout then exposed a concurrent-writer failure: another job advanced vibe2-unreal-core between fetch and push, while all three retries pushed the same stale detached commit without refreshing or regenerating from the new queue head. The successful concurrency-safe plan also revealed that an old queued horror-escape-room marketing task was still selected even though the current owner-exclusive policy forbids Vibe queue ownership for that game.",
+      "rootCause": "REUSABLE_WORKFLOW_PERMISSION_ESCALATION_REJECTED_AT_WORKFLOW_START_PLUS_INCOMPLETE_STAGED_ESM_DEPENDENCY_SET_PLUS_REPEATED_UNBOUNDED_FULL_REPOSITORY_CHECKOUT_PLUS_STALE_PUSH_RETRY_WITHOUT_QUEUE_REGENERATION_PLUS_OWNER_EXCLUSIVE_GAME_NOT_FILTERED_AT_SYSTEM_AI_RESERVATION",
+      "decision": "Keep the existing reusable System-AI worker, grant the caller exactly the write scopes already required by the called workflow, bound each control-plane checkout to only the refs consumed by that job, and enforce the central owner-exclusive game list at both planning and reservation boundaries.",
+      "change": "Added pull-requests: write to the existing growth-marketing caller permissions and added a regression that compares all three requested reusable-worker scopes with the caller before Actions dispatch. Added the existing game-seed contract module to the reset workflow trigger and staged /tmp module set, with an import-order regression. Replaced the reset job's all-ref checkout with a depth-one main checkout and explicit depth-one main/company-runtime refspec refresh inside its retry loop. Applied the same bounded pattern to Growth Marketing: depth-one main checkout plus explicit depth-one company-runtime/vibe2-unreal-core refspec fetch. Reworked each marketing persist retry to force-refresh the latest control ref, reload the latest shared queue, regenerate the plan, create a fresh commit, and only then push. Added central ownerExclusiveDevelopment.gameIds exclusion to marketing planning, target selection, and both targeted and normal System-AI reservation without modifying the protected game's task or files. No queue shape, marketing rules, game source, release state, or horror-escape-room artifact changed.",
+      "evidence": [
+        "merged-main:ce52c5b611b1e1fe7281e56275b322aeff99a535",
+        "failure-run:36752422424:startup_failure:no-jobs",
+        "historical-first-failure-run:35557264006:startup_failure",
+        "reusable-introduction:580833739731fb30ebe5a15a46b6194ea3caee55",
+        "caller:.github/workflows/company-growth-marketing-runtime.yml",
+        "callee:.github/workflows/company-system-ai-workers.yml",
+        "design-reset-failure-run:36753514738",
+        "design-reset-failure-job:110017834879",
+        "design-reset-failure:ERR_MODULE_NOT_FOUND:file:///tmp/company-game-seed-contract.mjs",
+        "design-reset-timeout-run:36754979774",
+        "design-reset-timeout-job:110022802421",
+        "design-reset-timeout:actions/checkout@v4-full-ref-fetch-cancelled-at-10m",
+        "merged-main:43a9a74bba18757e25b5433fbfabbb0f753f5782",
+        "growth-marketing-post-permission-run:36757046281",
+        "growth-marketing-plan-job:110029826188:created-and-blocked-in-identical-full-ref-checkout",
+        "bounded-growth-marketing-run:36757725022",
+        "bounded-growth-marketing-job:110034239035",
+        "bounded-growth-marketing-failure:remote-control-head-advanced-and-three-identical-stale-pushes-rejected",
+        "concurrency-safe-marketing-run:36759259828",
+        "concurrency-safe-marketing-plan-job:110037311619:PASS",
+        "owner-exclusive-selection-leak:marketing-horror-escape-room-pre-release-v1",
+        "owner-exclusive-filter-main-run:36760019152:planner-and-reservation-boundary-pass-target-list-still-unfiltered",
+        "owner-exclusive-selector-main-run:36760737418:PASS",
+        "owner-exclusive-selector-plan-job:110042325187:PASS:horror-escape-room-absent",
+        "next-rotation:line-defense:VIBE_INTERNAL_PLAY:ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
+        "next-rotation-common-cohort:10-games-same-studio-mcp-scenario-contract-failure"
+      ],
+      "reusablePatterns": [
+        "REUSABLE_CALLER_MUST_GRANT_EVERY_PERMISSION_REQUESTED_BY_CALLEE",
+        "STARTUP_FAILURE_WITH_ZERO_JOBS_IS_A_WORKFLOW_GRAPH_OR_PERMISSION_FAILURE_NOT_A_RUNNER_RETRY",
+        "STAGED_ESM_EXECUTABLE_MUST_COPY_EVERY_RELATIVE_IMPORT_BEFORE_SWITCHING_BRANCHES",
+        "CONTROL_PLANE_CHECKOUT_MUST_FETCH_ONLY_REFS_USED_BY_THE_JOB",
+        "CONCURRENT_QUEUE_PUSH_RETRY_MUST_REFRESH_REGENERATE_AND_RECOMMIT",
+        "OWNER_EXCLUSIVE_GAME_FILTER_MUST_APPLY_AT_PLANNING_AND_RESERVATION"
+      ],
+      "avoidPatterns": [
+        "RERUNNING_ZERO_JOB_STARTUP_FAILURE_WITHOUT_CHANGING_THE_WORKFLOW_GRAPH",
+        "ADDING_A_DUPLICATE_DIRECT_DISPATCH_AROUND_THE_EXISTING_REUSABLE_WORKER",
+        "COPYING_ONLY_THE_ENTRY_MODULE_TO_TMP_WHILE_LEAVING_RELATIVE_IMPORTS_BEHIND",
+        "FETCHING_ALL_BRANCHES_AND_TAGS_INSIDE_A_TEN_MINUTE_CONTROL_PLANE_JOB",
+        "RETRYING_THE_SAME_STALE_DETACHED_COMMIT_AFTER_A_NON_FAST_FORWARD_REJECTION",
+        "SELECTING_PREEXISTING_OWNER_EXCLUSIVE_TASKS_FROM_A_SHARED_QUEUE"
+      ],
+      "qa": [
+        "local focused System-AI and design reset regression: 28/28 PASS including selector assertions",
+        "local staged reset ESM import: PASS",
+        "merged main Owner All Games Design Reset run 36757045661: PASS",
+        "bounded checkout reached generation and persist in run 36757725022: PASS until concurrent push rejection",
+        "concurrency-safe Growth Marketing run 36759259828 plan/persist/select: PASS",
+        "owner-exclusive planning and reservation post-change main execution: PASS",
+        "owner-exclusive target selection main run 36760737418: PASS; 23 independent game tasks retained and horror-escape-room absent",
+        "Studio actual execution: NOT_APPLICABLE_AND_NOT_RUN"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "CONTROL_PLANE_REPAIRS_MERGED_THROUGH_D33C58AB; DESIGN_RESET_AND_GROWTH_MARKETING_ACTUAL_ACTION_PASS; OWNER_EXCLUSIVE_GAME_NOT_PLANNED_SELECTED_OR_RESERVED; NEXT_ROTATION_LINE_DEFENSE_STUDIO_MCP_COMMON_FAILURE_COHORT; NO_STUDIO_RUNTIME_PASS_CLAIM"
+    },
+    {
+      "id": "assistant_development_coordinator_fanout_repair_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_DEVELOPMENT_COORDINATOR",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "On exact main 41ad13ba, 44 of the 100 most recent GitHub Actions runs were the same unscoped Company DEVELOPMENT_CONFIRMED Runtime. Thirty-three were cancelled and eleven remained queued, pending, or running. Each unscoped dispatch used github.run_id as its concurrency key, so every caller and every successful self-cycle could start another full multi-game matrix instead of sharing the already-active coordinator. The duplicated matrices consumed runner capacity and cancelled or delayed the 13-game Roblox Studio MCP failure cohort before a stable post-change scenario could be observed.",
+      "rootCause": "UNSCOPED_DEVELOPMENT_COORDINATOR_USED_A_UNIQUE_RUN_ID_AND_HAD_NO_ACTIVE_BATCH_ADMISSION_GATE",
+      "decision": "Coalesce only duplicate whole-portfolio workflow_dispatch coordinators at a small serialized admission job. Preserve exact-game dispatch, main source-change validation, per-game matrix parallelism, fail-fast false isolation, and the continuous next-cycle reopen.",
+      "change": "Added a run identity and coordinator-gate to the existing central workflow. The gate scans three pages of actual workflow runs, admits the oldest active legacy or new batch, and marks later unscoped batches deduped before checkout or matrix fan-out. Exact-game and push runs bypass the batch gate. Downstream matrices now require a successful native plan, so a deduped coordinator cannot accidentally evaluate empty outputs as work. Updated the existing isolation regression without changing game code, balance, saves, queue records, release state, or horror-escape-room files and tasks.",
+      "evidence": [
+        "baseline-main:41ad13ba5329ebc2ac6f26a15729bc083fa0f878",
+        "recent-actions-window:100",
+        "duplicate-development-coordinators:44",
+        "cancelled-development-coordinators:33",
+        "active-development-coordinators:11",
+        "example-active-run:36764780916",
+        "example-queued-run:36764376790",
+        "example-cancelled-run:36763444179",
+        "affected-studio-cohort:13-games:ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
+        "owner-exclusive-scope:horror-escape-room-query-only",
+        "pull-request:4208",
+        "pr-checks:company-evolution-security-main-write-central-policy:4-of-4-pass",
+        "merged-main:f6d7f7992d2246d8cc275e5c74831b669ade21bd",
+        "post-change-source-run:36766419731:coordinator-gate-pass",
+        "post-change-deduped-batch-run:36766459380",
+        "post-change-deduped-batch-job:110061764233:DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH",
+        "post-change-oldest-active-run:36764780916",
+        "post-change-deduped-downstream:native-plan-roblox-unity-web-self-cycle-all-skipped"
+      ],
+      "reusablePatterns": [
+        "COALESCE_ONLY_DUPLICATE_WHOLE_PORTFOLIO_COORDINATORS",
+        "KEEP_EXACT_GAME_LANES_PARALLEL_AND_INDEPENDENT",
+        "SCAN_CURRENT_ACTION_STATE_BEFORE_REOPENING_EXPENSIVE_FANOUT",
+        "DEDUPED_PARENT_MUST_NOT_EVALUATE_EMPTY_MATRIX_OUTPUTS_AS_WORK"
+      ],
+      "avoidPatterns": [
+        "UNIQUE_RUN_ID_AS_THE_ONLY_UNSCOPED_BATCH_CONCURRENCY_KEY",
+        "GLOBAL_SERIALIZATION_OF_INDEPENDENT_GAME_LANES",
+        "RETRYING_STUDIO_FAILURES_WHILE_DUPLICATE_PARENTS_CANCEL_THEM",
+        "CLAIMING_STUDIO_PASS_FROM_COORDINATOR_OR_STATIC_TESTS"
+      ],
+      "qa": [
+        "local coordinator isolation and central pipeline regression: 33/33 PASS",
+        "local synthetic active-run selection: oldest batch selected and exact-game title ignored",
+        "local git diff whitespace validation: PASS",
+        "PR #4208 required Actions: 4/4 PASS",
+        "main source-change coordinator gate: PASS",
+        "main unscoped duplicate coordinator gate: PASS; duplicate batch and every downstream fan-out skipped before checkout and matrix execution",
+        "Studio actual execution: NOT_RUN; no Studio, F9, or release completion claim"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "MERGED_AT_F6D7F799; POST_CHANGE_SOURCE_GATE_PASS; POST_CHANGE_UNSCOPED_DUPLICATE_ACTUALLY_DEDUPED_BEFORE_ALL_FANOUT; NEXT_ROTATION_LINE_DEFENSE_AND_12_SIBLING_STUDIO_SCENARIO_FAILURES_AFTER_LEGACY_BACKLOG_DRAIN; NO_STUDIO_RUNTIME_PASS_CLAIM"
+    },
+    {
+      "id": "assistant_unity_exact_game_fanout_repair_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_UNITY_RUNTIME",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "After the coordinator repair, three exact-main DEVELOPMENT cycles each produced 25 failed Unity staged-validation jobs. The exact village-dungeons reusable call was not Unity-eligible, so requestedRows was empty and the planner incorrectly fell through to representative-canary or whole-batch selection. That one exact-game lane then duplicated other games already running in their own lanes and included the owner-exclusive horror-escape-room in Unity validation. The repeated runs were 36766419731, 36767607384, and 36768561888.",
+      "rootCause": "EXACT_GAME_REQUEST_WITH_ZERO_ELIGIBLE_ROWS_FELL_THROUGH_TO_BATCH_SELECTION_PLUS_OWNER_EXCLUSIVE_SCOPE_MISSING_FROM_UNITY_PLANNER_AND_PUBLICATION_RETRY",
+      "decision": "Treat the presence of an exact requested id as authoritative even when it resolves to zero eligible rows: select zero work and report the unavailable id instead of falling back. Derive owner-exclusive exclusions from the active canonical roadmap for both normal Unity planning and publication retry, while preserving independent eligible games and all gameplay values.",
+      "change": "Changed the existing Unity planner selection conditions from requestedRows.length to requestedIds.length, added an explicit requested-unavailable diagnostic, filtered active owner-exclusive game ids before exact or batch matrix construction, and rejected owner-exclusive publication retry before artifact download or persistence. Extended the existing Unity responsibility tests; no game source, asset, balance, save schema, queue record, candidate, or publication artifact changed.",
+      "evidence": [
+        "baseline-main:2a664306a90a5cdf4fc1286ff414014eaeb76b4b",
+        "repeated-failure-runs:36766419731,36767607384,36768561888",
+        "failed-unity-staged-jobs-per-run:25",
+        "exact-parent-lane:village-dungeons",
+        "exact-request-unity-eligible:false",
+        "owner-exclusive-leak-job:110073000023:Unity-staged-validation-horror-escape-room",
+        "line-defense-example-failure-job:110072808060",
+        "queue-authority:company-runtime@0a908481f8e84afed4fe0764c6ba4333ca5bc92b",
+        "vibe2-authority:vibe2-unreal-core@afd85f419221102944b8c35fe1c7796d1dd5d94b",
+        "pull-request:4210",
+        "merged-main:3c5bd8164916c273dd22117b9026abdffb14ab2d",
+        "post-change-unity-batch-run:36772548003",
+        "post-change-unity-prepare-job:110082301354:PASS",
+        "post-change-owner-exclusive-log:UNITY_OWNER_EXCLUSIVE_GAME_EXCLUDED=horror-escape-room",
+        "post-change-target-selected:12-of-12:no-horror-escape-room:no-village-dungeons",
+        "post-change-staged-result:12-of-12-source-generation-failed-before-build"
+      ],
+      "reusablePatterns": [
+        "EXACT_REQUEST_PRESENCE_NOT_MATCH_COUNT_CONTROLS_BATCH_FALLBACK",
+        "ZERO_ELIGIBLE_EXACT_GAME_MEANS_ZERO_WORK_NOT_WHOLE_PORTFOLIO",
+        "OWNER_EXCLUSIVE_SCOPE_FILTERS_PLANNING_AND_PUBLICATION_RETRY",
+        "EACH_REUSABLE_EXACT_GAME_CALL_MAY_ONLY_VALIDATE_ITS_OWN_GAME"
+      ],
+      "avoidPatterns": [
+        "FALLING_BACK_TO_BATCH_WHEN_AN_EXACT_REQUEST_IS_INELIGIBLE",
+        "DUPLICATING_SIBLING_GAME_VALIDATION_INSIDE_ONE_EXACT_LANE",
+        "RUNNING_OWNER_EXCLUSIVE_GAME_VALIDATION_OR_PUBLICATION_FROM_SHARED_UNITY_AUTOMATION",
+        "CLAIMING_UNITY_OR_STUDIO_PASS_FROM_STATIC_REGRESSION"
+      ],
+      "qa": [
+        "local Unity plus central coordinator responsibility regression: 73/73 PASS",
+        "local JSON parse and git diff whitespace validation: PASS",
+        "PR #4210 required GitHub Actions: 4/4 PASS",
+        "post-change main Unity planner actual execution: PASS; owner-exclusive horror-escape-room excluded and 12 eligible independent games selected",
+        "exact unavailable village-dungeons post-change workflow dispatch: NOT_YET_OBSERVED; zero-row behavior is covered by responsibility regression only",
+        "Unity staged APK/runtime actual execution: 12/12 source generation FAIL before build; no APK or runtime PASS claim",
+        "Roblox Studio actual execution: NOT_RUN; no F9 or release completion claim"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "MERGED_AT_3C5BD816; POST_CHANGE_BATCH_OWNER_EXCLUSIVE_FILTER_ACTUALLY_PASS; EXACT_UNAVAILABLE_DYNAMIC_DISPATCH_NOT_YET_OBSERVED; TWELVE_ELIGIBLE_UNITY_LANES_FAILED_AT_COMMON_SOURCE_GENERATION; SUPERSEDED_BY_ASSISTANT_UNITY_PORTABLE_PRINCIPLE_MAPPING_REPAIR_20261001"
+    },
+    {
+      "id": "assistant_unity_portable_principle_mapping_repair_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_UNITY_RUNTIME",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "The post-#4210 main Unity batch correctly excluded owner-exclusive horror-escape-room and selected 12 eligible independent games, but all 12 failed before build in the same source generation step. The first current verified playbook principle described portable touch-look spatial feedback; the relevance classifier admitted it, while the concrete Unity behavior mapper had no matching phrase and aborted every generator lane. The always-run checkpoint then attempted git rev-parse with an empty source revision, replacing the causal generator failure with a second path-not-in-index error and omitting the game-local queue checkpoint.",
+      "rootCause": "PORTABLE_TOUCH_LOOK_PRINCIPLE_ADMITTED_WITHOUT_CONCRETE_UNITY_BEHAVIOR_MAPPING_PLUS_CHECKPOINT_ASSUMED_SOURCE_REVISION_AFTER_SOURCE_STAGE_FAILURE",
+      "decision": "Map the portable immediate spatial and camera-orientation feedback observation to the existing IMMEDIATE_VISIBLE_FEEDBACK behavior without copying platform-specific implementation or changing gameplay. Preserve F0 failure evidence when source generation fails by making source-tree binding conditional on an exact committed project.",
+      "change": "Extended the existing Unity principle mapper with immediate-spatial, camera-orientation-change, and before/after-scene-framing phrases; added an executable regression using the exact failing principle; guarded checkpoint source-tree resolution so an early source failure persists null exact binding and F0 failure instead of crashing. No game rule, health, attack, wave, reward, drop, progression, save shape, protected game source, asset, candidate, task, or deployment changed.",
+      "evidence": [
+        "post-change-run:36772548003",
+        "post-change-selected-games:12",
+        "common-failure-stage:Change-detection-and-exact-source-reuse",
+        "example-failure-job:110082490817:amusement-tycoon",
+        "failure:UNITY_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED:touch-look-produces-immediate-spatial-feedback",
+        "secondary-failure:path-unity-games/amusement-tycoon-exists-on-disk-but-not-in-index",
+        "real-current-playbook:7-external-black-box-records:13-portable-game-development-principles",
+        "pull-request:4212",
+        "pr-required-actions:4-of-4-pass",
+        "merged-main:5445b8440d6eb01b4375cd4c3b53798ddd7177e0"
+      ],
+      "reusablePatterns": [
+        "EVERY_ADMITTED_GAME_DEVELOPMENT_PRINCIPLE_NEEDS_A_CONCRETE_TARGET_BEHAVIOR_MAPPING",
+        "PORTABLE_OBSERVATION_MAY_MAP_TO_TARGET_BEHAVIOR_WITHOUT_COPYING_SOURCE_PLATFORM_IMPLEMENTATION",
+        "ALWAYS_RUN_CHECKPOINT_MUST_PRESERVE_EARLY_STAGE_FAILURE_WITHOUT_REQUIRING_LATER_STAGE_OUTPUTS"
+      ],
+      "avoidPatterns": [
+        "ACCEPTING_A_RELEVANT_PRINCIPLE_THEN_ABORTING_BECAUSE_ITS_CURRENT_WORDING_IS_UNMAPPED",
+        "COPYING_ROBLOX_SPECIFIC_IMPLEMENTATION_INTO_UNITY",
+        "MASKING_CAUSAL_SOURCE_FAILURE_WITH_A_SECONDARY_EMPTY_REVISION_GIT_ERROR",
+        "CLAIMING_UNITY_APK_OR_RUNTIME_PASS_FROM_GENERATOR_REGRESSION"
+      ],
+      "qa": [
+        "local Unity plus central coordinator responsibility regression: 74/74 PASS",
+        "exact failing touch-look principle executable regression: PASS",
+        "current verified playbook with 7 records and 13 portable principles generator reproduction: PASS",
+        "PR #4212 required GitHub Actions: 4/4 PASS",
+        "post-merge main source generation and Unity APK/runtime actual execution: NOT_YET_OBSERVED",
+        "Roblox Studio actual execution: NOT_RUN; no F9 or release completion claim"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "MERGED_AT_5445B844; PR_REQUIRED_ACTIONS_PASS; POST_MERGE_UNITY_SOURCE_GENERATION_NOT_YET_OBSERVED; NEXT_ROTATION_POST_CHANGE_UNITY_SOURCE_GENERATION_THEN_LINE_DEFENSE_ROBLOX_STUDIO_SCENARIO"
+    },
+    {
+      "id": "assistant_vibe_source_prompt_budget_repair_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_VIBE_SOURCE_GENERATION",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "The exact post-#4212 line-defense Unity Web source worker job 110084737578 passed verified-learning prompt coverage but sent 187,980 bytes into a 16,384-token local-model context. It then repeated three 240-second timeouts, produced zero changed files, and left the downstream result job 110084737455 at source-candidate-generation-failed before any Unity build or runtime validation. The final artifact reported STUDIO_QUALITY_DELTA_REQUIRED only because no candidate survived generation; the older Roblox Studio scenario failure therefore could not yet be revalidated against new source.",
+      "rootCause": "STALE_MACHINE_GENERATED_LEARNING_REMAINED_IN_MULTILINE_GOAL_BESIDE_THE_COMPLETE_VERIFIED_CONTRACT_PLUS_UNBOUNDED_REPEATED_BUILD_UP_DIRECTIVE_FIELDS_AND_FIXED_16K_CONTEXT_SELECTION",
+      "decision": "Keep the verified external learning contract byte-for-byte complete and preserve all source-quality validators, while removing only oversized stale machine-generated learning already represented by that contract. Compact repeated build-up prose and sibling anchors in the existing Studio retry flow, then choose the model context window from actual prompt bytes and output budget instead of retrying the same oversized request.",
+      "change": "Updated tools/vibe2-source-worker.mjs so oversized stale learning guidance is structurally deduplicated only when the goal is at least 64 KB, verified external learning remains unchanged, compact Studio/full-Web retry directives keep at most three owned anchors and bounded repeated fields, and local-model requests select 16K, 24K, or 32K context from prompt size. Added exact regression coverage in qa/vibe2-source-worker.test.mjs. No game source, asset, balance, health, attack, wave, reward, drop rate, progression, save key/schema, queue task, candidate, publication, or horror-escape-room scope changed.",
+      "evidence": [
+        "baseline-main:168eef5d9e0cb900f3bdb62696284005bfb9747b",
+        "source-run:36772756208",
+        "line-defense-base-source-job:110084737578",
+        "line-defense-base-source-artifact:11124614736",
+        "line-defense-result-job:110084737455",
+        "line-defense-result-artifact:11125153193",
+        "actual-generation-budget:promptBytes=187980:maxPredict=3072:contextWindow=16384:timeoutMs=240000",
+        "actual-attempts:3:each-timeout:changed-files=0",
+        "actual-downstream-blocker:source-candidate-generation-failed",
+        "exact-queue-task-reproduction-without-external-learning:studio-initial-prompt=47722-to-30695-bytes",
+        "pull-request:4214",
+        "source-commit:f60f0ff9ff9b51c489288695f19851484583d85e",
+        "merged-main:a2066d43f2a671a306858f5d1a448eec30d6f6ff",
+        "owner-exclusive-scope:horror-escape-room-query-only"
+      ],
+      "reusablePatterns": [
+        "DEDUPLICATE_MACHINE_GENERATED_GUIDANCE_BEFORE_MODEL_CALL_WHILE_PRESERVING_CANONICAL_VERIFIED_CONTRACT",
+        "BOUND_REPEATED_DIRECTIVE_PROSE_AND_SIBLING_ANCHORS_INSIDE_THE_EXISTING_RETRY_FLOW",
+        "SELECT_LOCAL_MODEL_CONTEXT_FROM_ACTUAL_PROMPT_AND_OUTPUT_BUDGET",
+        "SEPARATE_SOURCE_GENERATION_SUCCESS_FROM_ENGINE_BUILD_AND_RUNTIME_PASS"
+      ],
+      "avoidPatterns": [
+        "RETRYING_THE_SAME_PROMPT_LARGER_THAN_THE_MODEL_CONTEXT_FOR_THREE_FULL_TIMEOUTS",
+        "TRUNCATING_OR_DROPPING_VERIFIED_EXTERNAL_LEARNING_TO_FIT_CONTEXT",
+        "WEAKENING_STUDIO_QUALITY_OR_GAME_SPECIFIC_ACCEPTANCE_GATES_TO_FORCE_A_CANDIDATE",
+        "CLAIMING_UNITY_OR_ROBLOX_STUDIO_PASS_BEFORE_A_POST_MERGE_SOURCE_CANDIDATE_EXISTS"
+      ],
+      "qa": [
+        "local source worker and adjacent learning/exploration/release regressions: 274 PASS, 18 environment-dependent SKIP, 0 FAIL",
+        "verified-learning byte-preservation and stale-duplicate removal regression: PASS",
+        "oversized Studio directive compaction and adaptive 24K context regression: PASS",
+        "git diff whitespace validation: PASS",
+        "PR #4214 required GitHub Actions: Company Evolution QA PASS; Company Central Policy Contract QA PASS; Vibe2 Core QA test, Development Web browser startup smoke, and Practice fault cards runtime PASS",
+        "Unity build/APK/runtime actual execution after merge: NOT_YET_OBSERVED",
+        "Roblox Studio actual execution after merge: NOT_RUN; no F9 or release completion claim"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "MERGED_AT_A2066D43; SOURCE_PROMPT_OVERSIZE_CAUSE_REPAIRED; POST_MERGE_EXACT_SOURCE_GENERATION_NOT_YET_OBSERVED; LINE_DEFENSE_STUDIO_REVALIDATION_BLOCKED_UNTIL_A_NEW_SOURCE_CANDIDATE_EXISTS; NEXT_ROTATION_POST_MERGE_UNITY_SOURCE_ARTIFACT_THEN_OLDEST_NON_OWNER_GAME_STUDIO_SCENARIO"
+    },
+    {
+      "id": "assistant_vibe_work_lock_api_limit_fallback_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_SHARED_WORK_LOCK",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "After the prompt-budget repair, two Vibe2 Continuous Core runs reserved independent work across line-defense and many other active games but every observed source worker stopped before source generation at Acquire shared Work Lock before source write. The remote state read succeeded, the lock branch contained no active conflicts, and the subsequent Contents API PUT failed with HTTP 403. A Unity independent QA artifact download at the same time reported API rate limit exceeded for installation, confirming an infrastructure quota failure rather than a game-file conflict.",
+      "rootCause": "BURST_WORKERS_DEPENDED_EXCLUSIVELY_ON_GITHUB_CONTENTS_API_FOR_SHARED_LOCK_STATE_WRITES_AND_TREATED_403_OR_429_QUOTA_RESPONSES_AS_FATAL",
+      "decision": "Preserve the existing shared lock state, blob-SHA compare-and-swap contract, file overlap rules, leases, and retry loop. When Contents API reads or writes are rate limited, use the same dedicated vibe2-work-locks Git branch as a second transport: verify the observed blob, build a commit with Git plumbing, and update the branch only through force-with-lease so stale writers re-enter the existing retry path.",
+      "change": "Updated tools/vibe2-remote-work-lock.mjs with a Git CAS transport used only for 403/429 fallback and retained the existing Contents API path for normal operation. Added mocked read/write throttling tests and a real local bare-repository integration that fetches the lock branch, validates the blob, commits the updated state, force-with-lease pushes, and reads the exact task back. No game source, asset, balance, save data, queue state, candidate, deployment, or owner-exclusive horror-escape-room scope changed.",
+      "evidence": [
+        "failure-runs:36781175676,36776169423",
+        "example-line-defense-worker-job:110117291440",
+        "example-failure:work-lock-state-update-failed-http-403",
+        "affected-worker-count-observed:27-plus-29-across-two-runs",
+        "unity-rate-limit-corroboration-run:36781976771",
+        "unity-rate-limit-corroboration-job:110114195920",
+        "lock-branch-head-before-repair:b1ff7de4ef3fdcae95939ffd02703da1027d4803",
+        "lock-branch-last-update:2026-09-30T21:20:32Z",
+        "lock-branch-active-locks:0",
+        "pull-request:4216",
+        "source-commit:1fc29be6ef99b10fd546f98c5b898aa5245a2870",
+        "merged-main:79e3bae1081eed4676258b2ce979a4d509384d6b",
+        "owner-exclusive-scope:horror-escape-room-query-only",
+        "post-merge-run:36785970167",
+        "post-merge-workers-lock-acquired:28/28",
+        "post-merge-lock-transport-observed:contents-api",
+        "git-cas-fallback-actual-activation:not-observed-api-recovered"
+      ],
+      "reusablePatterns": [
+        "KEEP_LOCK_SEMANTICS_CONSTANT_WHILE_SWITCHING_RATE_LIMITED_TRANSPORT",
+        "VERIFY_OBSERVED_BLOB_BEFORE_GIT_FORCE_WITH_LEASE_CAS",
+        "RETURN_LEASE_RACES_TO_THE_EXISTING_STATE_REEVALUATION_LOOP",
+        "CORRELATE_CROSS_WORKFLOW_403_WITH_EXPLICIT_RATE_LIMIT_EVIDENCE_BEFORE_CHANGING_LOCK_LOGIC"
+      ],
+      "avoidPatterns": [
+        "TREATING_RATE_LIMITED_LOCK_STATE_WRITES_AS_GAME_FILE_CONFLICTS",
+        "BYPASSING_THE_SHARED_LOCK_AND_ALLOWING_UNCOORDINATED_SOURCE_WRITES",
+        "REPLACING_THE_EXISTING_LOCK_STATE_WITH_A_SECOND_PARALLEL_LOCK_STRUCTURE",
+        "CLAIMING_SOURCE_STUDIO_OR_F9_PASS_BEFORE_A_POST_MERGE_WORKER_COMPLETES"
+      ],
+      "qa": [
+        "local Work Lock, controller, and Roblox co-development affected regressions: 92/92 PASS",
+        "local bare Git CAS integration: PASS",
+        "node syntax and git diff whitespace validation: PASS",
+        "PR #4216 Vibe Shared Work Lock QA: PASS",
+        "PR #4216 Vibe2 Core QA test, Development Web browser startup smoke, and Practice fault cards runtime: PASS",
+        "Roblox Studio actual execution: NOT_RUN; no F9 or release completion claim",
+        "post-merge run 36785970167: 28/28 workers acquired the shared Work Lock; normal Contents API transport was observed and Git CAS fallback activation was not required"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "MERGED_AT_79E3BAE1; POST_MERGE_RUN_36785970167_LOCK_ACQUIRE_28_OF_28; CONTENTS_API_RECOVERED_SO_GIT_CAS_FALLBACK_NOT_ACTUALLY_TRIGGERED; SOURCE_GENERATION_RESUMED; LINE_DEFENSE_STUDIO_REACHED_SOURCE_GENERATION_BUT_REMAINED_TIMEOUT_BLOCKED"
+    },
+    {
+      "id": "assistant_vibe_initial_json_prompt_bounded_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_SOURCE_GENERATION",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "After the shared Work Lock repair reopened source generation, completed Web and Unity workers repeatedly spent their entire first local-model request on oversized prompts. cozy-island Unity used 137506 bytes and timed out at 240 seconds, ant-simulator Web used 89853 bytes and timed out at 240 seconds before recovering to a passing candidate, and cozy-island Web used 218797 bytes and timed out at 240 seconds before later NO_OP failures. The prior bounded prompt repair covered oversized Roblox rebuilds and retry paths but not ordinary first-attempt JSON source candidates.",
+      "rootCause": "ORDINARY_JSON_SOURCE_CANDIDATES_SENT_FULL_READ_ONLY_AND_DUPLICATE_CONTEXT_ON_THE_FIRST_REQUEST_AND_ONLY_COMPACTED_AFTER_A_240_SECOND_TIMEOUT",
+      "decision": "Reuse the existing source-worker prompt builder in an explicit first-attempt bounded mode whenever an ordinary JSON prompt exceeds 64 KB. Preserve exact writable FILE blocks, allowed paths, verified external learning, build-up directives, protected gameplay and save constraints, and all candidate validation. Remove only duplicate planning and read-only context. Keep dedicated Roblox rebuild, Studio package, graphics package, atomic pair, and full-Web paths unchanged.",
+      "change": "Updated tools/vibe2-source-worker.mjs and qa/vibe2-source-worker.test.mjs. A 91151-byte ordinary JSON input now starts at 16087 bytes with verified learning and the exact writable anchor intact. No game source, asset, gameplay value, save structure, queue, candidate, deployment, or owner-exclusive horror-escape-room scope changed.",
+      "evidence": [
+        "post-lock-repair-source-run:36785970167",
+        "cozy-island-unity-job:110127864223:first-prompt=137506:timeout=240000",
+        "ant-simulator-web-job:110127864239:first-prompt=89853:timeout=240000:worker-result=PASS-after-bounded-retry",
+        "cozy-island-web-job:110127864226:first-prompt=218797:timeout=240000:worker-result=FAIL-NO_OP",
+        "pull-request:4219",
+        "pull-request-head:4add1866b0db403bcf52c394c57777401675bcbd",
+        "merged-main:fa985b00a3e9003c5238f99915e643a11956b268",
+        "regression-input-bytes:91151",
+        "regression-first-request-bytes:16087",
+        "owner-exclusive-scope:horror-escape-room-not-touched"
+      ],
+      "reusablePatterns": [
+        "COMPACT_OVERSIZED_JSON_CONTEXT_BEFORE_THE_FIRST_MODEL_CALL",
+        "PRESERVE_VERIFIED_LEARNING_AND_EXACT_WRITABLE_ANCHORS_DURING_COMPACTION",
+        "KEEP_FIRST_ATTEMPT_AND_RECOVERY_SEMANTICS_DISTINCT",
+        "VERIFY_NEW_PROMPT_BUDGET_AGAINST_POST_MERGE_ACTIONS_LOGS"
+      ],
+      "avoidPatterns": [
+        "SPENDING_A_FULL_240_SECOND_ATTEMPT_BEFORE_APPLYING_KNOWN_SAFE_CONTEXT_COMPACTION",
+        "TRUNCATING_VERIFIED_EXTERNAL_LEARNING_TO_REDUCE_PROMPT_SIZE",
+        "REPLACING_EXACT_WRITABLE_SOURCE_WITH_GUESSED_ANCHORS",
+        "CLAIMING_STUDIO_OR_F9_PASS_FROM_STATIC_SOURCE_WORKER_QA"
+      ],
+      "qa": [
+        "local source-worker regression: 219 PASS, 8 Luau-compiler-dependent SKIP, 0 FAIL",
+        "local exploration-worker regression: 25 PASS",
+        "local architecture-related regression: 100 PASS; one canonical-document test not run because its required company-learning file was absent from the isolated worktree",
+        "node syntax and git diff whitespace validation: PASS",
+        "PR #4219 Company Evolution QA: PASS",
+        "PR #4219 Company Central Policy Contract QA: PASS",
+        "PR #4219 Vibe2 Core QA test, Development Web browser startup smoke, and Practice fault cards runtime: PASS",
+        "post-merge exact #4219 source worker execution: NOT_YET_OBSERVED",
+        "Roblox Studio, Unity build, mobile runtime, and F9 actual execution: NOT_RUN"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "MERGED_AT_FA985B00; ORDINARY_JSON_OVER_64KB_STARTS_WITH_BOUNDED_WRITABLE_CONTEXT; POST_MERGE_EXACT_EFFECT_NOT_YET_OBSERVED; LINE_DEFENSE_STUDIO_JOB_110127864340_REMAINS_TIMEOUT_BLOCKED_AT_51566_THEN_42704_BYTES_AND_IS_OUTSIDE_THIS_ORDINARY_PATH; NEXT_ROTATION_LINE_DEFENSE_STANDARD_CANDIDATE_AND_STUDIO_SPECIALIZED_PROMPT_BUDGET_THEN_ACTUAL_STUDIO_F9"
+    },
+    {
+      "id": "assistant_vibe_runtime_visual_closed_loop_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_VIBE",
+      "actionType": "VIBE_GRAPHICS_CAPABILITY_REFINEMENT",
+      "problem": "기존 그래픽 제작 구조는 자산·모션·환경 계획과 런타임 품질 게이트를 보유했지만 캐릭터 정체성/환경 디테일 내부 모듈의 총괄 결속과 실제 런타임 결함의 다음 source-worker 수정 입력 연결이 불완전했다.",
+      "decision": "새 그래픽 파이프라인이나 큐를 만들지 않고 기존 GRAPHICS_PRODUCTION 루트 안에서 character identity, environment detail, runtime before/after audit, declared interface/scene-object coverage를 결속하고 실패 결과를 affected visual responsibility만 수정하는 폐쇄루프로 전달한다.",
+      "change": [
+        "기존 GRAPHICS_PRODUCTION 안에 character identity/environment detail/runtime visual repair를 결속",
+        "사용 가능 자산을 same-game → native-ready company → repository → acquired external 후보로 먼저 적용",
+        "적용된 저퀄 자산은 SILHOUETTE/PROPORTION/ANATOMY/STRUCTURE/FACE_HANDS_FEET/MATERIAL/RIG/SOCKET/MOTION/LOD/UI_STATE 등 품질 축으로 분해",
+        "강한 품질 축은 유지하고 실패한 축만 derived variant로 재제작",
+        "호환 자산은 전체 대체뿐 아니라 파츠·리그·재질·소켓·모션·native variant 기증자로 재조립",
+        "캐릭터·몬스터·건물·환경·무기·소품·UI를 GAME_CAMERA/MID_RANGE/CLOSEUP/CONTACT 거리별 디테일로 제작",
+        "맵은 blockout → 구조 → 기능 디테일 → 재질/사용흔적 → ambient motion → native variant → 기존 월드 적용 순서",
+        "검사 → 수정범위 → authoring → 기존 책임 시스템 적용 → 같은 런타임 뷰 재검사를 한 작업 체인으로 연결",
+        "source worker에서 검사/수정계획만 제출하고 멈추는 것을 금지하고 authoring capability가 있으면 제작·적용까지 진행",
+        "랜덤 소품·텍스처 노이즈·과도한 폴리곤을 디테일로 계산하지 않고 기능/구조/접촉/날씨/손상 원인을 가진 디테일만 허용"
+      ],
+      "preserved": [
+        "EXISTING_GRAPHICS_PRODUCTION_ROOT",
+        "EXISTING_VIBE2_VIBE3_IMPLEMENTATION_OWNERSHIP",
+        "GAMEPLAY_VALUES",
+        "SAVE_MEANING",
+        "MULTIPLAYER_AUTHORITY",
+        "HIT_TIMING",
+        "CURRENT_OWNER_EXCLUSIVE_SCOPE",
+        "CENTRAL_POLICY_AUTHORITY"
+      ],
+      "centralDocumentationImpact": {
+        "policySemanticsChanged": false,
+        "architectureTopologyChanged": false,
+        "loggingContractChanged": false,
+        "securityAuthorityChanged": false,
+        "schedulerChanged": false,
+        "newPipelineCreated": false
+      },
+      "verification": [
+        "runtime interface / scene object gap 회귀 PASS observed in Vibe QA before unrelated horror suite failure",
+        "Vibe Integrated Regression PASS on prior head",
+        "Company Evolution QA PASS on prior head",
+        "apply-first asset reuse regression added",
+        "precision production chain regression added",
+        "low-quality axis rescue and donor recomposition regression added",
+        "latest CI pending",
+        "actual Roblox/Unity rendered asset production not claimed from source-only tests"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "APPLY_FIRST_AND_PRECISION_AUTHORING_IMPLEMENTED_ON_PR_BRANCH; LATEST_CI_PENDING; RUNTIME_REOBSERVATION_REQUIRED_BEFORE_QUALITY_CLOSURE"
+    },
+    {
+      "id": "assistant_roblox_mobile_asset_integration_20261012",
+      "date": "2026-10-12",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "PR7620/7630 shared eight files; cozy landscape popup overlapped action dock; registry139 invalidated RPG managed asset fingerprints. Current runtime queue also reports source binding, package, old shared-preflight and real design implementation failures.",
+      "decision": "Preserve existing Vibe2/Vibe3 and F0-F9 flow, gameplay/server/save/balance authority and held Unity/Web development; repair proven source causes and retain unverified runtime states.",
+      "change": "Integrated main7620 into7630; repaired actual cozy layout; completed asset file roles and reusable scope from existing registry sync; updated only canonical RPG asset identity fields. Added two source-verified advisory lessons through the existing external-AI distillation store and tested System AI retrieval in PR7663.",
+      "evidence": [
+        "pull-request:7630",
+        "source-revision:758c1fdaf3b58e512bd868d2e1bc2623aad7cfa8",
+        "merged-main-7620:77395ea67394d73d1e0675ba934bcaf187d8508f",
+        "pull-request:7663",
+        "learning-source-revision:6c4625fd8b2e08e7e5068b6522da758fad07e95a",
+        "qa:qa/cozy-rpg-release-hardening.test.mjs:7-viewports-mocked-Luau-only",
+        "qa:Roblox-related-regression:123-pass",
+        "qa:distillation-and-actual-context-retrieval:36-pass",
+        "artifact:sha256:c24b281f363f3747f6fb4008abbe69495ccbecdafe303bfd6b0e1130bdd4ef54:local-Rojo-only",
+        "runtime-state:company-runtime:7b755dcbcad",
+        "actions-run:38179250793:source-plan-queued"
+      ],
+      "reusablePatterns": [
+        "TEST_EXISTING_LAYOUT_FUNCTION_ACROSS_INPUT_VIEWPORT_MENU_STATES",
+        "DERIVE_BINDING_FINGERPRINTS_FROM_CANONICAL_PLAN",
+        "REVIEW_BINDER_DIFF_TO_PRESERVE_INTENTIONALLY_REMOVED_CLIENT_EFFECTS",
+        "CONNECT_SOURCE_VERIFIED_REPAIRS_TO_EXISTING_ADVISORY_RETRIEVAL"
+      ],
+      "avoidPatterns": [
+        "STAMPING_RUNTIME_PASS_FROM_STATIC_QA",
+        "REPAIRING_DESIGN_IMPLEMENTATION_BY_ONLY_CHANGING_GENRE_LABELS",
+        "RESUMING_HELD_UNITY_DEVELOPMENT_TO_CLEAR_UNRELATED_REGRESSIONS",
+        "CLAIMING_WEIGHT_TRAINING_FROM_KNOWLEDGE_STORE_UPDATE"
+      ],
+      "qa": [
+        "Roblox related regressions 123/123 PASS",
+        "Vibe distillation/retrieval regressions 36/36 PASS",
+        "RPG exact-revision Rojo package PASS; engine NOT_RUN",
+        "main-relative source security findings0",
+        "CI queued/pending; main7630 integration NOT_COMPLETE",
+        "Roblox actual mobile touch/capture/PBR display/F9/release NOT_VERIFIED"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "PR7630_SOURCE_REPAIR_AND_PR7663_STATIC_ADVISORY_KNOWLEDGE_PENDING_REQUIRED_CI;NO_TRAINING_SAMPLE_OR_WEIGHT_PROMOTION"
+    },
+    {
+      "id": "assistant_vibe_automatic_trace_ingress_20261012",
+      "date": "2026-10-12",
+      "gameId": "cross-game",
+      "engine": "cross-engine",
+      "domains": [
+        "ORCHESTRATION",
+        "DEBUGGING"
+      ],
+      "model": "GPT_ASSISTANT_EXACT_MODEL_UNRECORDED",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "GPT coauthoring records were persisted but were not read by the existing Vibe 24H learning feed.",
+      "decision": "Read every registered assistant action through the existing feed, retain unverified actions for review, and pass only source-verified records through the existing distillation validator.",
+      "change": "PR7665 added assistant trace input and existing-runner change trigger, per-action provenance hashes, unchanged-record deduplication and explicit verification dispositions. Missing or malformed supplied trace input fails rather than silently claiming a complete capture.",
+      "evidence": [
+        "source:https://github.com/hans1177/jaewoon-games/commit/7efe095afd571c24cb84e588381b92c78be0ab50",
+        "qa:qa/company-system-ai-learning.test.mjs#assistant actions enter the existing learning feed automatically",
+        "qa:qa/vibe2-external-ai-distillation.test.mjs",
+        "local-cli:assistant-actions-captured=19:verification-required=19:promoted=0",
+        "remote-run:38181270504:pending"
+      ],
+      "reusablePatterns": [
+        "Connect persisted assistant action records to the existing learning feed and existing scheduler rather than adding a parallel learning pipeline.",
+        "Classify every registered action with its content hash and verification disposition; self-reported success and learningState alone must not create verified knowledge.",
+        "Require traceable independent source or runtime evidence before distillation, preserve failed and unverified actions as review candidates, and keep native runtime and weight promotion separate."
+      ],
+      "avoidPatterns": [
+        "Do not claim that repository trace ingestion monitors all ChatGPT conversations or unrecorded tool calls.",
+        "Do not promote static code checks into gameplay, touch, engine, release or model-weight success."
+      ],
+      "qa": [
+        "existing learning/feed regression37 PASS",
+        "combined latest-main knowledge retrieval regression38 PASS",
+        "existing canonical learning pipeline contract PASS",
+        "source security findings0",
+        "native runtime NOT_RUN",
+        "remote24H execution result NOT_YET_VERIFIED"
+      ],
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "scope": "STATIC_CODE_CONTRACT_ONLY",
+        "evidence": [
+          "source:https://github.com/hans1177/jaewoon-games/commit/7efe095afd571c24cb84e588381b92c78be0ab50",
+          "qa:qa/company-system-ai-learning.test.mjs#assistant actions enter the existing learning feed automatically",
+          "qa:qa/vibe2-external-ai-distillation.test.mjs"
+        ]
+      },
+      "learningState": "TRACE_ONLY",
+      "liveState": "SOURCE_VERIFIED_ADVISORY_CANDIDATE;REMOTE_INGESTION_PENDING;NO_NATIVE_RUNTIME_OR_WEIGHT_CREDIT"
+    },
+    {
+      "id": "assistant_vibe_core_qa_supersession_repair_20261012",
+      "date": "2026-10-12",
+      "gameId": "cross-game",
+      "engine": "cross-engine",
+      "domains": [
+        "ORCHESTRATION",
+        "DEBUGGING"
+      ],
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Same-PR Core QA did not cancel obsolete heads. PR7663 old-head run38180450504 remained queued while the latest run38181335509 was pending behind it.",
+      "decision": "Coalesce only superseded QA of the same PR ref. Preserve other PRs, feature branches, manual runs, game workers and all acceptance gates.",
+      "change": "PR7668 extended the existing Core QA cancellation condition to pull_request events. Integrated latest main into PR7663 without dropping automatic-ingress or knowledge-retrieval tests.",
+      "evidence": [
+        "source:https://github.com/hans1177/jaewoon-games/commit/b2a8562ebf7be2d8d40198ab5e909c7014ea4c65",
+        "qa:qa/company-system-ai-learning.test.mjs#Core QA coalesces obsolete revisions of the same PR",
+        "actions-run:38180450504:completed-cancelled",
+        "actions-run:38181335509:completed-cancelled",
+        "actions-run:38182096877:latest-head-queued"
+      ],
+      "reusablePatterns": [
+        "When exact-head QA cannot qualify a newer PR revision, cancel only superseded runs in the same PR concurrency group so current verification can enter the runner queue.",
+        "Test the actual workflow cancellation expression for PR/main pushes versus manual/feature runs and verify that distinct PR refs resolve to distinct groups.",
+        "After rebasing a learning PR, preserve both source-verification and retrieval regressions; keep exact-head QA success mandatory for knowledge promotion."
+      ],
+      "avoidPatterns": [
+        "Do not cancel unrelated game production or manual runs to free a QA queue.",
+        "Do not call queued tests successful or treat stale-head QA success as latest-head evidence."
+      ],
+      "qa": [
+        "causal cancellation expression failed before the fix for pull_request",
+        "related source regressions38 PASS",
+        "combined latest main regressions39 PASS",
+        "actual superseded Core QA runs2 cancelled after latest PR update",
+        "latest Core QA queued; QA success NOT_YET_OBSERVED"
+      ],
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "scope": "QA_SCHEDULING_ONLY_NOT_GAMEPLAY_OR_MODEL_WEIGHTS",
+        "evidence": [
+          "source:https://github.com/hans1177/jaewoon-games/commit/b2a8562ebf7be2d8d40198ab5e909c7014ea4c65",
+          "qa:qa/company-system-ai-learning.test.mjs#Core QA coalesces obsolete revisions of the same PR",
+          "actions-run:38180450504:completed-cancelled",
+          "actions-run:38181335509:completed-cancelled"
+        ]
+      },
+      "learningState": "TRACE_ONLY",
+      "liveState": "SOURCE_AND_SCHEDULING_VERIFIED_ADVISORY_CANDIDATE;LATEST_QA_AND_RUNTIME_PENDING"
+    },
+    {
+      "id": "assistant_roblox_gameplay_sourcebind_reconciliation_20261012",
+      "date": "2026-10-12",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "engine": "ROBLOX",
+      "domains": [
+        "GAMEPLAY_PRODUCT_READINESS",
+        "SOURCE_BIND",
+        "F0",
+        "PACKAGE",
+        "QA"
+      ],
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "The scanner truncated code after native-foundation-sentinel-v1, hiding real gameplay; delayed same-revision package and F0 results could overwrite a newer TARGET_PLATFORM_SOURCE_BIND source repair state.",
+      "decision": "Exclude only a structurally recognized managed foundation block, count gameplay on both sides, and retain current source repair against delayed checkpoint persistence. Preserve already integrated PR7620/7630 behavior and all non-source-repair lanes.",
+      "change": "Applied scoped gameplay scanner and F0/package persistence fixes with regression tests from PR7574 onto latest main; no F0-F9 reorder, new wrapper/shadow pipeline, gameplay balance, or save format edits.",
+      "evidence": [
+        "pull-request:7574",
+        "merged-pull-request:7620",
+        "merged-pull-request:7630",
+        "source-main:ee48f544036a9446b4771158ef7f8d3a15894e10",
+        "source:tools/company-development-roblox-gameplay-product-readiness.mjs",
+        "source:.github/workflows/company-development-roblox-runtime.yml",
+        "qa:in-memory-real-simple-rpg-fixture-5-assertions:PASS_WITH_STUBBED_IMPORTS",
+        "actions-run:38185935927:Vibe-QA-success:3fc65fb8b6a096c10803d5e3eaceba57ba6c985c",
+        "qa:managed-foundation-midblock-and-generic-skeleton-regression:PASS:38185935927",
+        "qa:late-package-and-F0-source-repair-preservation-regression:PASS:38185935927",
+        "source:github-merge-f83da5f45a55d01deae21626a47094ec6c9bc1d9",
+        "main-merge:f83da5f45a55d01deae21626a47094ec6c9bc1d9"
+      ],
+      "reusablePatterns": [
+        "STRIP_ONLY_STRUCTURALLY_BOUND_MANAGED_CODE_BEFORE_SCORING_GAMEPLAY",
+        "TEST_REAL_GAMEPLAY_BEFORE_AND_AFTER_FOUNDATION_WITH_GENERIC_SKELETON_REJECTION",
+        "FENCE_LATE_SAME_SOURCE_F0_AND_PACKAGE_STATE_PERSISTENCE_BY_ACTIVE_SOURCE_REPAIR_STAGE",
+        "CONNECT_VERIFIED_REPAIR_TO_EXISTING_CANONICAL_VIBE_RETRIEVAL_AND_LEARNING_ONLY"
+      ],
+      "avoidPatterns": [
+        "TRUNCATE_EVERYTHING_AFTER_SENTINEL",
+        "CREDIT_FOUNDATION_SCAFFOLD_AS_GAMEPLAY",
+        "ALLOW_STALE_SAME_REVISION_RESULTS_TO_ERASE_NEW_SOURCE_BIND_FAILURE",
+        "PROMOTE_STATIC_QA_TO_NATIVE_RUNTIME_OR_TRAINED_MODEL_PASS"
+      ],
+      "qa": [
+        "exact-head GitHub Vibe QA run38185935927 completed success with both gameplay and package source-preservation regression cases executed",
+        "remote main-write guard, central policy, Vibe3 Engine, and Security Immune scan completed success; security findings 0",
+        "F0/package state-preservation scripts and actual Roblox source boundary locally reproduced; standalone Studio and native live QA NOT_RUN",
+        "Roblox native gameplay, independent runtime QA, F9 release, and model weights NOT_VERIFIED"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "MERGED_MAIN_STATIC_REMOTE_QA_VERIFIED;EXISTING_VIBE_DISTILLATION_ADVISORY_CANDIDATE;NO_ROBLOX_RUNTIME_OR_WEIGHT_PROMOTION",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "independent-qa",
+        "scope": "GITHUB_REMOTE_STATIC_SOURCE_AND_WORKFLOW_REGRESSION_ONLY",
+        "evidence": [
+          "actions-run:38185935927:Vibe-QA-success:3fc65fb8b6a096c10803d5e3eaceba57ba6c985c",
+          "qa:managed-foundation-midblock-and-generic-skeleton-regression:PASS:38185935927",
+          "qa:late-package-and-F0-source-repair-preservation-regression:PASS:38185935927",
+          "source:github-merge-f83da5f45a55d01deae21626a47094ec6c9bc1d9"
+        ]
+      }
+    },
+    {
+      "id": "assistant_insect_grounding_cc0_local_vibe_handoff_20261023",
+      "date": "2026-10-23",
+      "gameId": "insect-survival",
+      "engine": "WEB",
+      "domains": [
+        "CC0_ORIGINAL_VISUALS",
+        "3D_GROUND_CONTACT",
+        "NATIVE_ANIMATION",
+        "WEBGL2_BROWSER_QA",
+        "MOBILE_TOUCH",
+        "LOCAL_VIBE_DEVELOPMENT",
+        "CANONICAL_LEARNING"
+      ],
+      "actionType": "QA_OR_REGRESSION_RESULT",
+      "problem": "Actual CC0 floor meshes were enlarged beyond the tile pitch, while the animated KayKit skinned actor dipped below the corrected floor. The original generic Chrome smoke gave false-positive 3D readiness without proving contact; local-to-Vibe transfer requires traceable and gated release provenance.",
+      "decision": "Preserve CC0 originals and source clips. Derive tile placement from real OBJ bounds, correct animated presentation Y after the native mixer, require real WebGL2 frame and ground bounds, exercise mobile-emulated native touch input. Integrate only with existing owner-authorized local Web flow and canonical Vibe evidence-to-learning chain.",
+      "change": "PR #9262 adds grounded CC0 tiles, WebGL context-loss 2D recovery, real Chromium 3D/mobile emulation and touch-dodge QA, plus guarded owner-side local main fast-forward sync and existing-Vibe development method trace. No direct main write, model-weight promotion, independent learning pipeline or release bypass. Existing GitHub owner task ingress now compiles development-first source-scoped instructions; independent QA and release controls unchanged.",
+      "evidence": [
+        "pull-request:9262",
+        "runtime-failure:GitHub-Actions-run:39805398612:browser-job:119917871342:heroBottom:-0.22109330116405834",
+        "runtime-repair:GitHub-Actions-run:39806585691:browser-job:119923282158:PASS:heroBottom:0.035",
+        "mobile-emulation:GitHub-Actions-run:39809488346:browser-job:119932032921:PASS:393x852:DPR2.5:touch-dodge-serial:0-to-1",
+        "source:web-games/insect-survival/world3d.mjs",
+        "source:qa/insect-survival-grounding.test.mjs",
+        "source:tools/vibe2-local-web-develop.mjs",
+        "qa:qa/vibe2-local-web-develop.test.mjs",
+        "policy:company-learning/canonical-learning-pipeline.json",
+        "source:tools/pwa-command-vibe2-task.mjs",
+        "qa:qa/pwa-command-vibe2-task.test.mjs"
+      ],
+      "reusablePatterns": [
+        "CC0_FLOOR_TILE_PITCH_FROM_REAL_MODEL_BOUNDS_NOT_ARBITRARY_VISUAL_SCALE",
+        "GROUNDED_NATIVE_SKINNED_RIG_BOUNDS_CHECK_AFTER_ORIGINAL_ANIMATION_MIXER",
+        "THREE_JS_FRAME_AND_WEBGL2_BUFFER_REQUIRED_NOT_HTML_BOOT_ONLY",
+        "MOBILE_TOUCH_DISPATCH_REQUIRES_AUTHORITATIVE_MOTION_STATE_CHANGE_AND_CONTACT_PROOF",
+        "LOCAL_GIT_MAIN_FAST_FORWARD_ONLY_WITH_CLEAN_WORKTREE_AND_EXACT_MERGE_SHA",
+        "LINK_VERIFIED_TECHNIQUES_TO_EXISTING_VIBE_RETRIEVAL_ONLY_AFTER_SUPERVISION",
+        "GITHUB_OWNER_IDEA_FOCUSES_EXISTING_GAME_SOURCE_QA_NOT_MANAGEMENT"
+      ],
+      "avoidPatterns": [
+        "UPSCALE_CC0_FLOOR_TILE_BEYOND_GRID_PITCH_AND_ACCEPT_INTERSECTING_GROUND",
+        "MARK_3D_PASS_WHEN_ONLY_2D_FALLBACK_OR_HTML_BOOT_RUNS",
+        "CLAIM_PHYSICAL_ANDROID_QA_FROM_HEADLESS_CHROMIUM_EMULATION",
+        "FORCE_PULL_OR_OVERWRITE_UNSAVED_LOCAL_GAME_CODE",
+        "PROMOTE_CANDIDATE_TRACE_DIRECTLY_TO_TRAINING_OR_MAIN",
+        "CREATE_SHADOW_SYNC_LEARNING_OR_RELEASE_PIPELINE",
+        "LET_OWNER_GAME_IDEA_EXPAND_TO_UNRELATED_HOMEPAGE_AND_GENERAL_ORCHESTRATION"
+      ],
+      "qa": [
+        "exact-head-browser:1bfa9db798fc9f9d55252e73c5970e39869cc30d:WebGL2-3D-contact-PASS",
+        "exact-head-browser:ad0bbc1ad675cabe9b3535c83a1a504906ae9fd7:Chromium-mobile-emulation-touch-PASS",
+        "qa:local-main-sync-guard:NEW_CANDIDATE_NOT_REMOTE_VERIFIED",
+        "qa:physical-mobile-FPS-thermal-gameplay:NOT_RUN",
+        "qa:full-current-head-security-and-release:NOT_VERIFIED",
+        "qa:existing-PWA-owner-directive-source-focus-simulation:PASS",
+        "qa:remote-current-head-Core-QA-for-development-first:NOT_VERIFIED"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "DRAFT_PR_CANDIDATE_PARTIAL_3D_MOBILE_BROWSER_QA_VERIFIED;LOCAL_SYNC_UNTESTED_ON_OWNER_MACHINE;NO_MAIN_MERGE_OR_MODEL_PROMOTION"
+    }
+  ]
+}

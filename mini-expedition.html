@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>미니 원정대</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#17251b;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+#hud{position:fixed;left:10px;right:10px;top:max(10px,env(safe-area-inset-top));display:flex;gap:8px;pointer-events:none}
+.box{background:#132018dd;border:1px solid #ffffff22;border-radius:12px;padding:8px 10px;box-shadow:0 6px 18px #0005;font-size:12px;font-weight:800}
+#stats{flex:1}.row{display:flex;justify-content:space-between;gap:10px;margin:2px 0}
+#zone{max-width:145px;text-align:right}
+#tip{position:fixed;left:50%;top:82px;transform:translateX(-50%);padding:7px 11px;border-radius:999px;background:#101b14dd;font-size:11px;font-weight:900;white-space:nowrap;pointer-events:none}
+#controls{position:fixed;inset:0;pointer-events:none}
+#stick{position:absolute;left:18px;bottom:max(22px,env(safe-area-inset-bottom));width:120px;height:120px;border-radius:50%;background:#fff2;border:2px solid #fff3;pointer-events:auto;touch-action:none}
+#nub{position:absolute;left:37px;top:37px;width:42px;height:42px;border-radius:50%;background:#fff9}
+.actions{position:absolute;right:14px;bottom:max(18px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,72px);gap:8px;pointer-events:auto}
+button{height:58px;border:0;border-radius:17px;background:#eef7ee;color:#152317;font-weight:1000;font-size:12px;box-shadow:0 5px 14px #0006}
+button:active{transform:scale(.96)}
+#recall{background:#ffe18a}#swap{background:#bfe1ff}#use{background:#ffc1a9}#upgrade{background:#c7f3ba}
+#panel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(360px,88vw);padding:18px;border-radius:18px;background:#101a14f2;border:1px solid #fff3;display:none;z-index:5;text-align:center}
+#panel h2{margin:0 0 8px;font-size:24px}#panel p{font-size:13px;line-height:1.55;color:#dbe7dc}#panel button{width:100%;margin-top:8px}
+@media(min-width:800px){#stick{width:140px;height:140px}#nub{left:45px;top:45px}.actions{grid-template-columns:repeat(2,84px)}button{height:64px}}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="hud">
+  <div class="box" id="stats"></div>
+  <div class="box" id="zone"></div>
+</div>
+<div id="tip">자원을 모아 기지를 강화하고 지역 보스를 쓰러뜨려</div>
+<div id="controls">
+  <div id="stick"><div id="nub"></div></div>
+  <div class="actions">
+    <button id="use">공격/채집</button>
+    <button id="recall">집결</button>
+    <button id="swap">대원 변경</button>
+    <button id="upgrade">기지 강화</button>
+  </div>
+</div>
+<div id="panel"><h2 id="panelTitle"></h2><p id="panelText"></p><button id="panelBtn">계속</button></div>
+<script>
+'use strict';
+
+// ===== 게임 설정 =====
+const TYPES=[
+  {name:'불꽃',color:'#ff6b58',atk:8,skill:'공격 강함'},
+  {name:'물결',color:'#55b9ff',atk:5,skill:'물 지형 통과'},
+  {name:'번개',color:'#ffe66b',atk:5,skill:'전기 수정 활성화'},
+  {name:'바위',color:'#9da7ad',atk:6,skill:'단단한 광석 파괴'}
+];
+const ZONES=[
+  {name:'이끼 정원',bg:'#456f45',boss:'덤불딱정벌레',bossHp:260},
+  {name:'비의 웅덩이',bg:'#3d6d78',boss:'진흙두꺼비',bossHp:420},
+  {name:'수정 협곡',bg:'#655879',boss:'수정거미',bossHp:620}
+];
+
+// ===== 캔버스 =====
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+let W=0,H=0,dpr=1;
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',resize);resize();
+
+// ===== 상태 =====
+const state={zone:0,wood:0,stone:0,energy:0,base:1,selected:0,bossKills:0};
+const player={x:0,y:0,r:15,hp:100,maxHp:100,speed:175,dirX:1,dirY:0};
+let companions=[],nodes=[],enemies=[],boss=null,particles=[],last=performance.now();
+function world(){return {w:Math.max(1200,W*2),h:Math.max(900,H*1.8)}}
+function resetZone(){
+  const m=world();player.x=m.w/2;player.y=m.h/2;player.hp=player.maxHp;
+  nodes=[];enemies=[];boss=null;companions=[];
+  for(let i=0;i<8+state.base*2;i++) companions.push({x:player.x+Math.cos(i)*30,y:player.y+Math.sin(i)*30,type:i%Math.min(4,1+state.base),hp:40});
+  for(let i=0;i<34;i++){
+    const kind=Math.random()<.55?'wood':'stone';
+    nodes.push({x:70+Math.random()*(m.w-140),y:70+Math.random()*(m.h-140),kind,hp:kind==='wood'?22:30,r:kind==='wood'?18:15});
+  }
+  for(let i=0;i<8+state.zone*3;i++) spawnEnemy();
+  updateHud();
+}
+function spawnEnemy(){
+  const m=world();enemies.push({x:60+Math.random()*(m.w-120),y:60+Math.random()*(m.h-120),r:17,hp:40+state.zone*18,max:40+state.zone*18,atk:7+state.zone*3,cd:0});
+}
+
+// ===== 입력 =====
+const input={x:0,y:0};
+const stick=document.getElementById('stick'),nub=document.getElementById('nub');
+let stickId=null;
+function stickMove(clientX,clientY){
+  const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  let dx=clientX-cx,dy=clientY-cy;const len=Math.hypot(dx,dy),max=r.width*.34;
+  if(len>max){dx=dx/len*max;dy=dy/len*max}
+  input.x=dx/max;input.y=dy/max;nub.style.transform='translate('+dx+'px,'+dy+'px)';
+}
+stick.addEventListener('pointerdown',e=>{stickId=e.pointerId;stick.setPointerCapture(e.pointerId);stickMove(e.clientX,e.clientY)});
+stick.addEventListener('pointermove',e=>{if(e.pointerId===stickId)stickMove(e.clientX,e.clientY)});
+function stickEnd(e){if(e.pointerId!==stickId)return;stickId=null;input.x=input.y=0;nub.style.transform='translate(0,0)'}
+stick.addEventListener('pointerup',stickEnd);stick.addEventListener('pointercancel',stickEnd);
+const keys={};
+addEventListener('keydown',e=>keys[e.key.toLowerCase()]=true);addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+
+// ===== 상호작용 =====
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function puff(x,y,color,n=6){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-.5)*110,vy:(Math.random()-.5)*110,t:.45,color})}
+function commandAttack(){
+  let target=null,best=115;
+  for(const e of [...enemies,...(boss?[boss]:[])]){const d=dist(player,e);if(d<best){best=d;target=e}}
+  if(target){
+    let dmg=0;for(const c of companions){if(dist(c,target)<145)dmg+=TYPES[c.type].atk}
+    dmg=Math.max(5,dmg);target.hp-=dmg;puff(target.x,target.y,'#fff2a8',10);
+    return;
+  }
+  let node=null;best=95;
+  for(const n of nodes){const d=dist(player,n);if(d<best){best=d;node=n}}
+  if(node){
+    let power=8;
+    if(node.kind==='stone'&&state.selected===3)power=18;
+    node.hp-=power;puff(node.x,node.y,node.kind==='wood'?'#c79a63':'#c8cdd2',6);
+    if(node.hp<=0){if(node.kind==='wood')state.wood+=3;else state.stone+=2;nodes.splice(nodes.indexOf(node),1);updateHud()}
+  }
+}
+function recall(){companions.forEach((c,i)=>{c.x=player.x+Math.cos(i)*24;c.y=player.y+Math.sin(i)*24});}
+function swap(){state.selected=(state.selected+1)%Math.min(4,1+state.base);updateHud()}
+function upgrade(){
+  const cost=state.base*8;
+  if(dist(player,{x:world().w/2,y:world().h/2})>120){tip('기지 중앙에서 강화할 수 있어');return}
+  if(state.wood<cost||state.stone<Math.ceil(cost*.7)){tip('자원이 부족해');return}
+  if(state.base>=4){tip('기지는 최대 단계야');return}
+  state.wood-=cost;state.stone-=Math.ceil(cost*.7);state.base++;player.maxHp+=15;player.hp=player.maxHp;
+  const t=state.base-1;for(let i=0;i<3;i++)companions.push({x:player.x+20*i,y:player.y+25,type:t,hp:40});
+  tip(TYPES[t].name+' 대원이 합류했어');updateHud()
+}
+document.getElementById('use').onclick=commandAttack;
+document.getElementById('recall').onclick=recall;
+document.getElementById('swap').onclick=swap;
+document.getElementById('upgrade').onclick=upgrade;
+function tip(s){const el=document.getElementById('tip');el.textContent=s;clearTimeout(tip.t);tip.t=setTimeout(()=>el.textContent='자원을 모아 기지를 강화하고 지역 보스를 쓰러뜨려',2200)}
+
+// ===== 게임 로직 =====
+function summonBoss(){
+  if(boss||state.wood+state.stone<20+state.zone*12)return;
+  const m=world();boss={x:m.w*.82,y:m.h*.28,r:34,hp:ZONES[state.zone].bossHp,max:ZONES[state.zone].bossHp,atk:15+state.zone*6,cd:0};
+  tip(ZONES[state.zone].boss+' 출현!');
+}
+function nextZone(){
+  state.bossKills++;
+  if(state.zone>=ZONES.length-1){showPanel('원정 성공','세 지역의 보스를 모두 쓰러뜨렸어. 기지 단계 '+state.base+', 생존 대원 '+companions.length+'명으로 원정을 완료했어.',()=>{state.zone=0;state.wood=0;state.stone=0;state.base=1;state.bossKills=0;resetZone()});return}
+  state.zone++;showPanel('새 지역 해금',ZONES[state.zone].name+'으로 이동해. 더 강한 적과 새로운 지형이 등장해.',resetZone)
+}
+function showPanel(title,text,fn){const p=document.getElementById('panel');document.getElementById('panelTitle').textContent=title;document.getElementById('panelText').textContent=text;p.style.display='block';document.getElementById('panelBtn').onclick=()=>{p.style.display='none';fn&&fn()}}
+function update(dt){
+  let mx=input.x+(keys['d']?1:0)-(keys['a']?1:0),my=input.y+(keys['s']?1:0)-(keys['w']?1:0);
+  const ml=Math.hypot(mx,my);if(ml>1){mx/=ml;my/=ml}
+  if(Math.hypot(mx,my)>.1){player.dirX=mx;player.dirY=my}
+  const m=world();player.x=Math.max(20,Math.min(m.w-20,player.x+mx*player.speed*dt));player.y=Math.max(20,Math.min(m.h-20,player.y+my*player.speed*dt));
+  companions.forEach((c,i)=>{
+    const ring=38+Math.floor(i/8)*20,ang=i*.9;
+    const tx=player.x+Math.cos(ang)*ring,ty=player.y+Math.sin(ang)*ring;
+    c.x+=(tx-c.x)*Math.min(1,dt*5.5);c.y+=(ty-c.y)*Math.min(1,dt*5.5);
+  });
+  for(const e of [...enemies,...(boss?[boss]:[])]){
+    e.cd=Math.max(0,e.cd-dt);const d=dist(e,player);
+    if(d<260){const sp=e===boss?70:55;e.x+=(player.x-e.x)/Math.max(1,d)*sp*dt;e.y+=(player.y-e.y)/Math.max(1,d)*sp*dt}
+    if(d<e.r+player.r+5&&e.cd<=0){player.hp-=e.atk;e.cd=1;puff(player.x,player.y,'#ff7777',8);if(player.hp<=0){player.hp=player.maxHp;player.x=m.w/2;player.y=m.h/2;state.wood=Math.floor(state.wood*.7);state.stone=Math.floor(state.stone*.7);recall();tip('쓰러졌어. 일부 자원을 잃고 기지에서 부활했어')}}
+  }
+  enemies=enemies.filter(e=>{if(e.hp>0)return true;state.energy++;puff(e.x,e.y,'#a7ff98',10);return false});
+  if(boss&&boss.hp<=0){puff(boss.x,boss.y,'#fff0a8',30);boss=null;nextZone()}
+  if(enemies.length<4+state.zone)spawnEnemy();
+  summonBoss();
+  particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.t-=dt});particles=particles.filter(p=>p.t>0);
+  updateHud();
+}
+function updateHud(){
+  const t=TYPES[state.selected];
+  document.getElementById('stats').innerHTML='<div class="row"><span>체력</span><b>'+Math.max(0,Math.ceil(player.hp))+'/'+player.maxHp+'</b></div><div class="row"><span>나무 '+state.wood+' · 돌 '+state.stone+'</span><span>기지 Lv.'+state.base+'</span></div><div class="row"><span>대원 '+companions.length+'명</span><span>선택: '+t.name+'</span></div>';
+  const z=ZONES[state.zone];document.getElementById('zone').innerHTML='<b>'+z.name+'</b><br>'+(boss?z.boss+' '+Math.max(0,Math.ceil(boss.hp))+'/'+boss.max:'보스 탐색 중')+'<br>격파 '+state.bossKills+'/3';
+}
+
+// ===== 렌더링 =====
+function circle(x,y,r,color){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill()}
+function render(){
+  const m=world(),camX=Math.max(0,Math.min(m.w-W,player.x-W/2)),camY=Math.max(0,Math.min(m.h-H,player.y-H/2));
+  ctx.fillStyle=ZONES[state.zone].bg;ctx.fillRect(0,0,W,H);
+  ctx.save();ctx.translate(-camX,-camY);
+  ctx.fillStyle='#ffffff0b';for(let x=0;x<m.w;x+=90)for(let y=0;y<m.h;y+=90)circle(x,y,2,'#fff2');
+  // 기지
+  circle(m.w/2,m.h/2,54,'#d7c28a');circle(m.w/2,m.h/2,36,'#765c3c');ctx.fillStyle='#fff';ctx.font='900 12px system-ui';ctx.textAlign='center';ctx.fillText('기지 Lv.'+state.base,m.w/2,m.h/2+4);
+  nodes.forEach(n=>{if(n.kind==='wood'){ctx.fillStyle='#5f3f2c';ctx.fillRect(n.x-5,n.y,n.r*.5,n.r*1.3);circle(n.x,n.y-6,n.r,'#4fa05a')}else{circle(n.x,n.y,n.r,'#9ba5aa');circle(n.x-4,n.y-4,n.r*.45,'#cbd2d5')}});
+  enemies.forEach(e=>{circle(e.x,e.y,e.r,'#632f36');circle(e.x-6,e.y-4,3,'#ffd37c');circle(e.x+6,e.y-4,3,'#ffd37c');ctx.fillStyle='#311';ctx.fillRect(e.x-18,e.y-e.r-10,36,4);ctx.fillStyle='#8eff83';ctx.fillRect(e.x-18,e.y-e.r-10,36*(e.hp/e.max),4)});
+  if(boss){circle(boss.x,boss.y,boss.r,'#311d35');circle(boss.x-12,boss.y-7,5,'#ffdf65');circle(boss.x+12,boss.y-7,5,'#ffdf65');ctx.fillStyle='#190e1b';ctx.fillRect(boss.x-40,boss.y-boss.r-14,80,7);ctx.fillStyle='#ff795e';ctx.fillRect(boss.x-40,boss.y-boss.r-14,80*(boss.hp/boss.max),7)}
+  companions.forEach((c,i)=>{circle(c.x,c.y,8,TYPES[c.type].color);if(c.type===state.selected){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(c.x,c.y,11,0,Math.PI*2);ctx.stroke()}});
+  circle(player.x,player.y,player.r,'#f5f1da');circle(player.x+player.dirX*8,player.y+player.dirY*8,4,'#26352a');
+  particles.forEach(p=>circle(p.x,p.y,3,p.color));
+  ctx.restore();
+}
+function frame(now){const dt=Math.min(.033,(now-last)/1000);last=now;update(dt);render();requestAnimationFrame(frame)}
+resetZone();requestAnimationFrame(frame);
+</script>
+</body>
+</html>

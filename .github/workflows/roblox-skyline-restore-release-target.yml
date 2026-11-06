@@ -1,0 +1,130 @@
+name: One-shot Restore Skyline Release Gate And Fresh Target
+
+on:
+  push:
+    paths:
+      - '.github/workflows/roblox-skyline-restore-release-target.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout canonical runtime branch
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 0
+
+      - name: Restore proven Skyline gate and bind recovered target only
+        shell: bash
+        env:
+          GAME_ID: seed-roblox-obby-party-minigam-tower-of-hell
+          GOOD_RUNTIME_REF: 6cff64848141f355469b897dc637be865e9e2ccc
+          SOURCE_REVISION: 117a87320e67c690c1c8b3972598d331cf366c56
+          ARTIFACT_IDENTITY: sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc
+          ARTIFACT_RUN_ID: '35110903876'
+          UNIVERSE_ID: '10766723635'
+          PLACE_ID: '129342889720619'
+          RECOVERY_RUN_ID: '35147821179'
+          RECOVERY_JOB_ID: '104968263007'
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin company-runtime
+            git reset --hard origin/company-runtime
+            git show "$GOOD_RUNTIME_REF:development-queue.json" > /tmp/skyline-good-queue.json
+
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const gameId=process.env.GAME_ID;
+          const sourceRevision=process.env.SOURCE_REVISION;
+          const artifactIdentity=process.env.ARTIFACT_IDENTITY;
+          const artifactRunId=Number(process.env.ARTIFACT_RUN_ID);
+          const universeId=process.env.UNIVERSE_ID;
+          const placeId=process.env.PLACE_ID;
+          const current=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const good=JSON.parse(fs.readFileSync('/tmp/skyline-good-queue.json','utf8'));
+          const row=(current.items||[]).find(x=>x.gameId===gameId);
+          const proven=(good.items||[]).find(x=>x.gameId===gameId);
+          if(!row||!proven) throw new Error('SKYLINE_ROW_MISSING');
+
+          const assertFixed=(x,label)=>{
+            if(x.robloxSourceCommit!==sourceRevision) throw new Error(`${label}_SOURCE_REVISION_MISMATCH`);
+            if(x.robloxBuildArtifactIdentity!==artifactIdentity) throw new Error(`${label}_ARTIFACT_MISMATCH`);
+            if(Number(x.robloxRuntimeEvidence?.artifactRunId)!==artifactRunId) throw new Error(`${label}_ARTIFACT_RUN_MISMATCH`);
+          };
+          assertFixed(row,'CURRENT');
+          assertFixed(proven,'PROVEN');
+          if(proven.robloxMultiplayerQaPassed!==true || proven.robloxMultiplayerQaEvidence?.multiplayerQaPassed!==true)
+            throw new Error('PROVEN_MULTIPLAYER_NOT_PASS');
+          if(proven.robloxFinalReviewPassed!==true || proven.robloxFailureStage!=='RELEASE_PROMOTION' || proven.robloxFailureSignature!=='ROBLOX_RELEASE_PROMOTION_PENDING')
+            throw new Error('PROVEN_RELEASE_GATE_NOT_PASS');
+          if(proven.robloxIndependentQaPassed!==true || proven.robloxRegressionPassed!==true)
+            throw new Error('PROVEN_QA_GATE_NOT_PASS');
+
+          // Restore only fields corrupted by the failed publication-target observation.
+          row.robloxMultiplayerQaEvidence=structuredClone(proven.robloxMultiplayerQaEvidence);
+          row.robloxMultiplayerQaPassed=true;
+          row.robloxMultiplayerQaPassedAt=proven.robloxMultiplayerQaPassedAt;
+          row.robloxFinalReviewPassed=true;
+          row.robloxFinalReviewPassedAt=proven.robloxFinalReviewPassedAt ?? null;
+          row.robloxFinalReviewCheckedAt=proven.robloxFinalReviewCheckedAt;
+          row.robloxFailureStage='RELEASE_PROMOTION';
+          row.robloxFailureSignature='ROBLOX_RELEASE_PROMOTION_PENDING';
+          row.robloxLastSuccessfulStage=proven.robloxLastSuccessfulStage;
+          row.robloxReleaseClaim=false;
+          row.routingBlockers=(Array.isArray(row.routingBlockers)?row.routingBlockers:[])
+            .filter(x=>x!=='roblox-multiplayer-qa-failed' && x!=='two-client-multiplayer-qa-failed');
+          if(!row.routingBlockers.includes('roblox-release-promotion-pending')) row.routingBlockers.push('roblox-release-promotion-pending');
+
+          const now=new Date().toISOString();
+          row.robloxPublicationTarget={
+            version:1,
+            gameId,
+            universeId,
+            placeId,
+            verified:true,
+            verifiedAt:now,
+            lastVerifiedAt:now,
+            source:'authenticated-studio-log-recovery',
+            displayName:'Skyline Rush',
+            recoveryRunId:Number(process.env.RECOVERY_RUN_ID),
+            recoveryJobId:Number(process.env.RECOVERY_JOB_ID),
+            evidence:'Studio PublishSuccessful + name-bound telemetry IDs'
+          };
+
+          // Final fail-closed assertions before writing.
+          if(row.robloxSourceCommit!==sourceRevision || row.robloxBuildArtifactIdentity!==artifactIdentity || Number(row.robloxRuntimeEvidence?.artifactRunId)!==artifactRunId)
+            throw new Error('FINAL_FIXED_ARTIFACT_BIND_FAILED');
+          if(row.robloxPublicationTarget.universeId!==universeId || row.robloxPublicationTarget.placeId!==placeId || row.robloxPublicationTarget.verified!==true)
+            throw new Error('FINAL_PUBLICATION_TARGET_BIND_FAILED');
+          if(row.robloxMultiplayerQaPassed!==true || row.robloxFinalReviewPassed!==true || row.robloxFailureStage!=='RELEASE_PROMOTION')
+            throw new Error('FINAL_RELEASE_GATE_FAILED');
+
+          fs.writeFileSync('development-queue.json',JSON.stringify(current,null,2)+'\n');
+          console.log('ROBLOX_SKYLINE_RUNTIME_RESTORE=PASS');
+          console.log(`ROBLOX_SKYLINE_UNIVERSE_ID=${universeId}`);
+          console.log(`ROBLOX_SKYLINE_PLACE_ID=${placeId}`);
+          console.log('ROBLOX_SKYLINE_MULTIPLAYER_QA=PASS');
+          console.log('ROBLOX_SKYLINE_FINAL_REVIEW=PASS');
+          console.log('ROBLOX_SKYLINE_RELEASE_GATE=RELEASE_PROMOTION_PENDING');
+          console.log('ROBLOX_RELEASE_CLAIM=NO');
+          NODE
+
+            git add development-queue.json
+            git commit -m 'runtime: restore Skyline verified release target [skip ci]'
+            if git push origin HEAD:company-runtime; then
+              echo 'ROBLOX_SKYLINE_RUNTIME_PUSH=PASS'
+              exit 0
+            fi
+            echo "ROBLOX_SKYLINE_RUNTIME_PUSH_RETRY=$attempt"
+            sleep 2
+          done
+          echo 'ROBLOX_SKYLINE_RUNTIME_PUSH=FAIL' >&2
+          exit 1

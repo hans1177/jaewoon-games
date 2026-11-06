@@ -1,0 +1,674 @@
+// 파일명: qa/vibe2-central-work-contract.test.mjs
+// 역할: 최신 중앙 roadmap 작업계약, 권한 경계, exact failure routing, stale fail-closed를 검증한다.
+
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+import {
+  CANONICAL_VIBE_POLICY_PATH,
+  loadCentralPolicySnapshot,
+  loadCentralPolicySnapshotFromGitRef,
+  compileVibeCentralWorkContract,
+  assertCompiledWorkContractFresh
+} from '../tools/vibe2-central-work-contract.mjs';
+import { runVibe2SourceWorker, assertOwnerDevelopmentAvailable } from '../tools/vibe2-source-worker.mjs';
+
+function tempRoot(){return fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-central-contract-'));}
+function git(cwd,...args){return execFileSync('git',['-C',cwd,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();}
+
+function writePolicy(root,version=196,overrides={}){
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  fs.mkdirSync(path.dirname(file),{recursive:true});
+  const document={
+    version,
+    status:'OWNER_DIRECT_LOCKED',
+    policySource:CANONICAL_VIBE_POLICY_PATH,
+    ownerCanonicalRules:{"version":5,"authority":"OWNER_DIRECTIVE_TEST","constitutionalAuthority":"HIGHEST_VIBE_INTERNAL_WORKER_CONTRACT_AUTHORITY","rule1Handling":"RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES","constitutionalBinding":{"version":1,"authority":"OWNER_DIRECTIVE_TEST","mode":"DYNAMIC_CANONICAL_RULE_AUTO_BIND","automaticContractBinding":true,"appliesToAllCurrentAndFutureRegisteredVibeWorkers":true,"appliesToAllInternalAiDepartmentsAndAutonomousSubsystems":true,"workerMayNotOptOut":true,"childContractMayNotOverride":true,"runtimeMayNotSilentlyAmend":true,"onlyOwnerDirectiveMayCreateAmendDisableOrRemoveCanonicalRule":true,"ruleDiscoveryKeyPattern":"rule<N>","ruleIdentityPattern":"RULE_<N>_*","orderResolution":"IMPLEMENTATION_ORDER_FIRST_THEN_NUMERIC_AUTO_APPEND","futureCanonicalRulesAutoBindWithoutWorkerCodeChange":true,"executionFingerprintMustIncludeEveryEnabledCanonicalRule":true,"sharedContextMustCompileEveryEnabledCanonicalRule":true,"centralWorkContractMustEmbedEveryEnabledCanonicalRule":true,"workerInstructionMustExposeOrderedCanonicalRules":true,"beforeWorkValidationRequired":true,"afterWorkValidationRequired":false,"staleConstitutionMayNotStartWork":true,"staleConstitutionMayNotCompleteWork":true,"missingOrInvalidBindingAction":"FAIL_CLOSED_BLOCK_WORK_AND_REQUEUE_EXACT_FAILURE_STAGE","constitutionChangeInvalidatesActiveWorkerExecutionFingerprint":true,"subordinatePolicyCannotWeakenCanonicalRule":true,"executableEnforcer":"tools/company-constitution-enforcer.mjs","enforcerRequiredAtPolicyQa":true,"enforcerRequiredAt24hPlanner":true,"enforcerRequiredBeforeWorkerSourceWrite":true,"enforcerRequiredAfterWorkerExecution":false,"global24hStopOnConstitutionFailureForbidden":true,"constitutionViolationAction":"QUARANTINE_OR_REQUEUE_AFFECTED_SCOPE_RECOVER_REPLAN_CONTINUE_GLOBAL_24H","declarativeRuleEnforcementRequired":true,"ruleEnforcementSchemaVersion":1,"futureRuleWithoutMachineEnforcementAction":"FAIL_CLOSED_UNTIL_DECLARATIVE_ASSERTIONS_ARE_DEFINED","hardcodedRuleNumberBranchesForbidden":true,"genericRuleIterationRequired":true,"repositoryAssertions":[{"code":"TEST","operator":"FILE_EXISTS","expected":"package.json"}]},"rule1":{"id":"RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT","label":"제1규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"CONTINUE","machineEnforcement":{"schemaVersion":1,"assertions":[{"code":"ENABLED","operator":"EQ","path":"enabled","expected":true}]}},"rule2":{"id":"RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION","label":"제2규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"SECURE_AND_VERIFY","machineEnforcement":{"schemaVersion":1,"assertions":[{"code":"ENABLED","operator":"EQ","path":"enabled","expected":true}]}},"rule3":{"id":"RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE","label":"제3규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"LEARN","machineEnforcement":{"schemaVersion":1,"assertions":[{"code":"ENABLED","operator":"EQ","path":"enabled","expected":true}]}},"rule4":{"id":"RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION","label":"제4규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"EVOLVE","machineEnforcement":{"schemaVersion":1,"assertions":[{"code":"ENABLED","operator":"EQ","path":"enabled","expected":true}]}},"implementationOrder":["RULE_1","RULE_2","RULE_3","RULE_4"],"orderedImplementationRequired":true},
+    centralDocumentation:{
+      sourceOfTruth:CANONICAL_VIBE_POLICY_PATH+'#centralDocumentation',
+      canonicalSet:{
+        policy:CANONICAL_VIBE_POLICY_PATH,
+        logMap:'company-learning/company-log-map.json',
+        architectureMap:'company-learning/company-architecture-map.json',
+        securityPolicy:'company-learning/security-immune-system.json'
+      },
+      readOrder:[
+        CANONICAL_VIBE_POLICY_PATH,
+        'company-learning/company-log-map.json',
+        'company-learning/company-architecture-map.json',
+        'company-learning/security-immune-system.json'
+      ],
+      rules:{documentIsCode:true,centralPolicyOnlyCreatesPolicy:true},
+      synchronization:{
+        beforeWorkLoadAndValidateCanonicalSet:true,
+        afterWorkReloadAndValidateCanonicalSet:false,
+        singleCanonicalSetLoadAndValidationPerExactWorkUnit:true,
+        vibeWorkerPreflightRequired:true,
+        currentMainPolicyShaBindingRequired:true,
+        documentHashesBoundToExecutionEvidence:true
+      },
+      machineProjectionSynchronization:{
+        centralPolicyIsOnlyMutablePolicySource:true,
+        architectureProjectionGeneratedAtRuntime:true,
+        workContractGeneratedFromSameProjection:true,
+        sharedContextGeneratedFromSameProjection:true
+      }
+    },
+    developmentLifecycleMachine:{
+      sharedWorkerContext:{
+        requiredForAllWorkers:true,
+        centralPolicy:CANONICAL_VIBE_POLICY_PATH,
+        logMap:'company-learning/company-log-map.json',
+        architectureMap:'company-learning/company-architecture-map.json',
+        securityPolicy:'company-learning/security-immune-system.json',
+        validator:'tools/company-shared-context.mjs',
+        qa:'qa/company-four-docs-fingerprint.test.mjs',
+        loadOrder:[
+          CANONICAL_VIBE_POLICY_PATH,
+          'company-learning/company-log-map.json',
+          'company-learning/company-architecture-map.json',
+          'company-learning/security-immune-system.json'
+        ],
+        bindSha256ToExecutionEvidence:true,
+        requiredLogMarkers:[
+          'WORKER_CONTEXT_POLICY_SHA256',
+          'WORKER_CONTEXT_LOG_MAP_SHA256',
+          'WORKER_CONTEXT_ARCHITECTURE_SHA256',
+          'WORKER_CONTEXT_SECURITY_POLICY_SHA256'
+        ],
+        centralDocumentationContract:CANONICAL_VIBE_POLICY_PATH+'#centralDocumentation',
+        codeChangeRequiresCentralDocumentationImpactReview:true,
+        documentationChangeRequiresImplementationImpactReview:true,
+        postCentralDocumentWriteSharedContextResyncRequired:true,
+        beforeWorkRequired:true,
+        afterWorkRequired:false,
+        singlePreWorkValidationPerExactWorkUnit:true,
+        repeatedFullValidationWithinExactWorkUnitForbidden:true,
+        completionUsesInitialValidatedContextEvidence:true,
+        staleContextMayNotStartWork:true,
+        staleContextMayNotCompleteWork:true,
+        syncMode:'ROADMAP_FIRST_FAIL_CLOSED',
+        mismatchAction:'BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE'
+      },
+      primaryAiOrchestration:{
+        internalVibeAiCollaboration:{
+          scope:'ALL_VIBE_INTERNAL_AI_AUTONOMOUS_WORKERS_NEURAL_DIAGNOSIS_CRITIC_ROOT_CAUSE_RECOVERY_PLANNER_IMPLEMENTATION_QA_RELEASE_SECURITY_AND_LEARNING_SYSTEMS',
+          collaborationMode:'PRIMARY_AI_NON_BLOCKING_COPILOT_OVERLAY',
+          autonomous24hExecutionContinuesWithoutPrimaryAi:true,
+          primaryAiPresenceIsRuntimeGate:false,
+          appliesToExistingAndFutureRegisteredInternalAi:true,
+          directMainWriteGrantedByCollaboration:false,
+          policyMutationAuthorityGrantedByCollaboration:false,
+          selfAcceptanceGrantedByCollaboration:false,
+          capabilityGrowthRoleLock:{
+            primaryAiRoleAfterCapabilityGrowth:'NON_BLOCKING_ASSISTANT_AND_COLLABORATOR',
+            capabilityMayIncrease:true,
+            authorityMayAutoIncrease:false,
+            primaryAiMayBecomeRuntimeOwner:false,
+            primaryAiMayReplaceDeterministicQa:false,
+            primaryAiMayReplaceVibeImplementationOwnership:false
+          }
+        }
+      }
+    },
+    assistantRoadmapOrchestration:{
+      version:1,
+      sourceOfTruth:CANONICAL_VIBE_POLICY_PATH,
+      blockerOnly:false,
+      operatingModel:{dedupeRequired:true},
+      assistantRole:{
+        mayCreateExecutionWorker:false,
+        mayMutateWaveQueue:false,
+        mayReorderWave:false,
+        mayMutateLocksOrPolicy:false,
+        mayAutoPromoteLearningOrTuning:false,
+        mayExpandNeuralAuthority:false
+      },
+      executionBoundary:{
+        executionAuthority:'EXISTING_WAVE_SCHEDULER_ONLY',
+        neuralExecutionAuthority:false,
+        workerCreationAuthority:false,
+        queueMutationAuthority:false,
+        waveReorderAuthority:false,
+        lockPolicyMutationAuthority:false,
+        automaticLearningTuningPromotionAuthority:false
+      },
+      implementationState:{nextGate:'OPERATE_FROM_CENTRAL_ROADMAP_ACTIONABLE_NEXT_GATE_WITH_DURABLE_GITHUB_HANDOFF'}
+    }
+  };
+  Object.assign(document,overrides);
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+}
+
+test('current central roadmap compiles a complete Vibe work request without authority expansion',()=>{
+  const root=tempRoot();
+  writePolicy(root);
+  const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(snapshot.valid,true);
+  assert.match(snapshot.executionFingerprint,/^[a-f0-9]{64}$/);
+  const contract=compileVibeCentralWorkContract({
+    snapshot,
+    task:{
+      id:'repair-1',
+      gameId:'bug-defense',
+      target:'web',
+      blocker:'COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED',
+      lastOutcome:'FAIL',
+      evidence:['web-stage:VIBE_WEB_REPAIR','last-passed-stage:SAVE_RESTORE','runtime-failure:TERMINAL_NOT_REACHED']
+    },
+    plan:{target:'web',qa:['runtime-cycle']},
+    route:{route:'text-source-worker'},
+    responsibleFiles:['web-games/bug-defense/index.html'],
+    supervisionContract:{required:true,approved:false,protectedSemantics:['SAVE_KEY_AND_SAVE_MEANING'],hardReject:['VALIDATION_ONLY_PATCH']},
+    mainSha:'abc123'
+  });
+  assert.equal(contract.required,true);
+  assert.equal(contract.validAtCompile,true);
+  assert.equal(contract.policy.executionFingerprint,snapshot.executionFingerprint);
+  assert.equal(contract.documentSynchronization.bindSha256ToExecutionEvidence,true);
+  assert.deepEqual(contract.documentSynchronization.readOrder,[
+    CANONICAL_VIBE_POLICY_PATH,
+    'company-learning/company-log-map.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/security-immune-system.json'
+  ]);
+  assert.ok(contract.documentSynchronization.requiredLogMarkers.includes('WORKER_CONTEXT_SECURITY_POLICY_SHA256'));
+  assert.equal(contract.constitution.automaticContractBinding,true);
+  assert.equal(contract.constitution.appliesToAllCurrentAndFutureRegisteredVibeWorkers,true);
+  assert.deepEqual(contract.constitution.orderedRuleIds,['RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT','RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION','RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE','RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION']);
+  assert.equal(contract.constitution.rules.length,4);
+  assert.match(contract.architectureProjection.fingerprint,/^[a-f0-9]{64}$/);
+  assert.equal(contract.architectureProjection.sourceOfTruth,CANONICAL_VIBE_POLICY_PATH);
+  assert.equal(contract.workRequest.workKey,'repair-1');
+  assert.equal(contract.workRequest.roadmapVersion,196);
+  assert.equal(contract.workRequest.mainSha,'abc123');
+  assert.deepEqual(contract.workRequest.scope,['web-games/bug-defense/index.html']);
+  assert.ok(contract.workRequest.dedupeKey);
+  assert.equal(contract.workLock.requiredBeforeSourceWrite,true);
+  assert.equal(contract.workLock.stateBranch,'vibe2-work-locks');
+  assert.equal(contract.workLock.statePath,'.vibe2/work-locks.json');
+  assert.equal(contract.workLock.worker,'vibe2');
+  assert.equal(contract.workLock.taskId,'repair-1');
+  assert.equal(contract.workLock.baseSha,'abc123');
+  assert.deepEqual(contract.workLock.files,['web-games/bug-defense/index.html']);
+  assert.equal(contract.workLock.releaseRule,'RELEASE_AFTER_FAN_IN_QA_OR_ABORT');
+  assert.equal(contract.workRequest.authorityBoundary.executionAuthority,'EXISTING_WAVE_SCHEDULER_ONLY');
+  assert.equal(contract.workRequest.authorityBoundary.workerCreationAuthority,false);
+  assert.equal(contract.workRequest.authorityBoundary.queueMutationAuthority,false);
+  assert.equal(contract.failureRoute.failureStage,'VIBE_WEB_REPAIR');
+  assert.equal(contract.failureRoute.lastPassedStage,'SAVE_RESTORE');
+  assert.equal(contract.failureRoute.restartFromBeginning,false);
+  assert.ok(contract.invariants.protectedSemantics.includes('SAVE_KEY_AND_SAVE_MEANING'));
+  assert.ok(contract.invariants.forbiddenChanges.includes('VALIDATION_ONLY_PATCH'));
+  assert.equal(contract.learning.reusableLearningAllowed,false);
+  assert.equal(contract.promotion.automaticMainPromotionAllowed,false);
+  assert.equal(contract.authorityExpanded,false);
+});
+
+test('declared generated asset outputs join the existing Work Lock and writable scope',()=>{
+  const root=tempRoot();
+  writePolicy(root);
+  const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const contract=compileVibeCentralWorkContract({
+    snapshot,
+    task:{id:'asset-lock-1',gameId:'demo',target:'roblox',assetProductionLane:true},
+    plan:{target:'roblox',qa:['runtime']},
+    assetProduction:{nativeAuthoringExecution:{dcc:{executionRecipes:[{
+      id:'boss-v1',
+      outputs:['assets/roblox/demo/native/boss/boss.glb','assets/roblox/demo/native/boss/preview.png','assets/roblox/demo/native/boss/evidence.json'],
+      evidenceJson:'assets/roblox/demo/native/boss/evidence.json',
+      preview:'assets/roblox/demo/native/boss/preview.png'
+    }]}}},
+    route:{route:'text-source-worker'},
+    responsibleFiles:['roblox-games/demo/client/Game.client.luau'],
+    mainSha:'abc123'
+  });
+  assert.deepEqual(contract.workLock.sourceFiles,['roblox-games/demo/client/Game.client.luau']);
+  assert.deepEqual(contract.workLock.generatedAssetFiles,[
+    'assets/roblox/demo/native/boss/boss.glb',
+    'assets/roblox/demo/native/boss/preview.png',
+    'assets/roblox/demo/native/boss/evidence.json'
+  ]);
+  assert.deepEqual(contract.workLock.files,[
+    'roblox-games/demo/client/Game.client.luau',
+    'assets/roblox/demo/native/boss/boss.glb',
+    'assets/roblox/demo/native/boss/preview.png',
+    'assets/roblox/demo/native/boss/evidence.json'
+  ]);
+  assert.deepEqual(contract.writableScope.exactCandidateFiles,contract.workLock.files);
+  assert.equal(contract.writableScope.generatedAssetScopeDerivedOnlyFromDeclaredRecipes,true);
+});
+
+test('independent game workers do not lock shared read-only DCC output files',()=>{
+  const root=tempRoot();
+  writePolicy(root);
+  const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const sharedAssets={
+    nativeAuthoringExecution:{dcc:{executionRecipes:[{
+      id:'shared-spider',
+      outputs:['assets/roblox/world-ghosts/native/spider/spider.glb','assets/roblox/world-ghosts/native/spider/spider.png'],
+      evidenceJson:'assets/roblox/world-ghosts/native/spider/evidence.json'
+    }]}}
+  };
+  const compile=(gameId,assetProductionLane=false,evidence=[])=>compileVibeCentralWorkContract({
+    snapshot,
+    task:{id:gameId+'-implementation',gameId,target:'unity',assetProductionLane,evidence},
+    plan:{target:'unity',qa:['runtime']},
+    assetProduction:sharedAssets,
+    route:{route:'text-source-worker'},
+    responsibleFiles:['unity-games/'+gameId+'/Assets/Scripts/UnityWebFloorGame.cs'],
+    mainSha:'abc123'
+  });
+  const first=compile('amusement-tycoon');
+  const second=compile('bug-defense');
+  assert.deepEqual(first.workLock.files,['unity-games/amusement-tycoon/Assets/Scripts/UnityWebFloorGame.cs']);
+  assert.deepEqual(second.workLock.files,['unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs']);
+  assert.deepEqual(first.workLock.generatedAssetFiles,[]);
+  assert.deepEqual(second.workLock.generatedAssetFiles,[]);
+  assert.equal(first.workLock.requiredBeforeSourceWrite,true);
+  assert.deepEqual(first.writableScope.exactCandidateFiles,first.workLock.files);
+  const authoring=compile('bug-defense',true);
+  assert.ok(authoring.workLock.files.includes('assets/roblox/world-ghosts/native/spider/spider.glb'));
+  assert.ok(authoring.workLock.files.includes('assets/roblox/world-ghosts/native/spider/evidence.json'));
+  const evidenceAuthoring=compile('bug-defense',false,['asset-production-parallel:v1']);
+  assert.deepEqual(evidenceAuthoring.workLock.generatedAssetFiles,authoring.workLock.generatedAssetFiles);
+});
+
+test('Vibe candidate evidence binds all four canonical document hashes',()=>{
+  const workflow=fs.readFileSync(path.resolve(process.cwd(),'.github/workflows/vibe2-continuous-core.yml'),'utf8');
+  const logMap=JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'company-learning/company-log-map.json'),'utf8'));
+  assert.match(workflow,/shared-context-policy:/);
+  assert.match(workflow,/shared-context-log-map:/);
+  assert.match(workflow,/shared-context-architecture:/);
+  assert.match(workflow,/shared-context-security:/);
+  assert.match(workflow,/Compile central shared context once for worker cohort/);
+  const workerSyncStart=workflow.indexOf('- name: Synchronize worker with Vibe before work');
+  const workerSyncEnd=workflow.indexOf('\n      - name:',workerSyncStart+1);
+  assert.ok(workerSyncStart>=0&&workerSyncEnd>workerSyncStart);
+  const workerSync=workflow.slice(workerSyncStart,workerSyncEnd);
+  assert.match(workerSync,/sha256sum/);
+  assert.match(workerSync,/WORKER_CONTEXT_MODE=FOUR_DOCUMENT_INTEGRITY_ONLY/);
+  assert.match(workerSync,/company-shared-context\.mjs/);
+  assert.match(workerSync,/sha256sum "\$contract_root\/company-learning\/platform-release-roadmap\.json"/);
+  for(const name of ['POLICY','LOG_MAP','ARCHITECTURE','SECURITY_POLICY'])
+    assert.match(workflow,new RegExp('WORKER_CONTEXT_EXPECTED_'+name+'_SHA256'));
+  assert.match(workflow,/sourceWriteAuthorized:false/);
+  assert.match(workflow,/policyAuthorityVerified:false/);
+  assert.doesNotMatch(workflow,/OWNER_REMOVED:company-learning\/platform-release-roadmap/);
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
+});
+
+test('verified learning memory is validated once per cohort and workers reuse one immutable artifact',()=>{
+  const workflow=fs.readFileSync(path.resolve(process.cwd(),'.github/workflows/vibe2-continuous-core.yml'),'utf8');
+  const reserveStart=workflow.indexOf('\n  reserve:\n');
+  const workerStart=workflow.indexOf('\n  worker:\n');
+  const fanInStart=workflow.indexOf('\n  fan_in:\n');
+  assert.ok(reserveStart>=0&&workerStart>reserveStart&&fanInStart>workerStart);
+  const reserve=workflow.slice(reserveStart,workerStart);
+  const worker=workflow.slice(workerStart,fanInStart);
+  assert.match(reserve,/Prepare verified learning memory once for worker cohort/);
+  assert.match(reserve,/git fetch --depth=1 --no-tags origin vibe2-learning-runtime --quiet/);
+  assert.match(reserve,/VIBE2_VERIFIED_LEARNING_MEMORY_VALIDATION=COHORT_ONCE/);
+  assert.match(reserve,/Upload verified learning memory for worker cohort/);
+  assert.match(worker,/Download cohort verified learning memory/);
+  assert.match(worker,/VIBE2_VERIFIED_LEARNING_MEMORY_MODE=COHORT_ARTIFACT_SHA_ONLY/);
+  assert.match(worker,/sha256sum/);
+  assert.doesNotMatch(worker,/ref: vibe2-learning-runtime/);
+  assert.doesNotMatch(worker,/VERIFIED_PLAYBOOK_SOURCE_REQUIRED/);
+});
+
+test('central roadmap snapshot rejects execution authority expansion',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  document.assistantRoadmapOrchestration.executionBoundary.workerCreationAuthority=true;
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(snapshot.valid,false);
+  assert.ok(snapshot.errors.includes('WORKER_CREATION_AUTHORITY'));
+});
+
+test('central documentation semantics participate in the Vibe execution fingerprint',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(before.valid,true);
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  const next=[
+    CANONICAL_VIBE_POLICY_PATH,
+    'company-learning/company-architecture-map.json',
+    'company-learning/company-log-map.json',
+    'company-learning/security-immune-system.json'
+  ];
+  document.centralDocumentation.readOrder=next;
+  document.developmentLifecycleMachine.sharedWorkerContext.loadOrder=next;
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.valid,true);
+  assert.notEqual(after.executionFingerprint,before.executionFingerprint);
+});
+
+test('central roadmap fingerprint is fail-closed when policy changes during work',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const contract=compileVibeCentralWorkContract({
+    snapshot,
+    task:{id:'task',gameId:'demo',target:'web'},
+    plan:{target:'web'},
+    route:{route:'text-source-worker'},
+    responsibleFiles:['web-games/demo/index.html'],
+    mainSha:'abc123'
+  });
+  assert.equal(assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_WORK'}).status,'PASS');
+  writePolicy(root,197);
+  const versionOnly=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.notEqual(versionOnly.fingerprint,snapshot.fingerprint);
+  assert.equal(versionOnly.executionFingerprint,snapshot.executionFingerprint);
+  assert.equal(assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}).status,'PASS');
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const changed=JSON.parse(fs.readFileSync(file,'utf8'));
+  changed.developmentLifecycleMachine.sharedWorkerContext.mismatchAction='BLOCK_AND_REQUEUE_RELEVANT_EXECUTION_POLICY_CHANGE';
+  fs.writeFileSync(file,JSON.stringify(changed,null,2)+'\n','utf8');
+  assert.throws(
+    ()=>assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}),
+    /CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/
+  );
+});
+
+test('live git-ref loader accepts central policy snapshots larger than one MiB',()=>{
+  const base=tempRoot();
+  const origin=path.join(base,'origin.git');
+  const seed=path.join(base,'seed');
+  const worker=path.join(base,'worker');
+  fs.mkdirSync(seed,{recursive:true});
+  execFileSync('git',['init','--bare',origin],{stdio:['ignore','pipe','pipe']});
+  git(seed,'init','-b','main');
+  git(seed,'config','user.name','qa');
+  git(seed,'config','user.email','qa@example.invalid');
+  writePolicy(seed,196);
+  const policyFile=path.join(seed,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+  document.largeTelemetryFixture='x'.repeat(1100000);
+  fs.writeFileSync(policyFile,JSON.stringify(document,null,2)+'\n','utf8');
+  assert.ok(fs.statSync(policyFile).size>1024*1024);
+  git(seed,'add','.');
+  git(seed,'commit','-m','large policy');
+  git(seed,'remote','add','origin',origin);
+  git(seed,'push','-u','origin','main');
+  execFileSync('git',['clone','--quiet','--branch','main',origin,worker],{stdio:['ignore','pipe','pipe']});
+  const snapshot=loadCentralPolicySnapshotFromGitRef({repoRoot:worker,required:true,ref:'origin/main',fetchRemote:false});
+  assert.equal(snapshot.valid,true);
+  assert.equal(snapshot.present,true);
+  assert.equal(snapshot.version,196);
+  assert.equal(snapshot.errors.length,0);
+});
+
+test('pinned worker ignores unrelated live roadmap progress but detects execution-policy change',()=>{
+  const base=tempRoot();
+  const origin=path.join(base,'origin.git');
+  const seed=path.join(base,'seed');
+  const worker=path.join(base,'worker');
+  fs.mkdirSync(seed,{recursive:true});
+  execFileSync('git',['init','--bare',origin],{stdio:['ignore','pipe','pipe']});
+  git(seed,'init','-b','main');
+  git(seed,'config','user.name','qa');
+  git(seed,'config','user.email','qa@example.invalid');
+  writePolicy(seed,196);
+  git(seed,'add','.');
+  git(seed,'commit','-m','policy v196');
+  git(seed,'remote','add','origin',origin);
+  git(seed,'push','-u','origin','main');
+  execFileSync('git',['clone','--quiet','--branch','main',origin,worker],{stdio:['ignore','pipe','pipe']});
+
+  const snapshot=loadCentralPolicySnapshot({repoRoot:worker,required:true});
+  const contract=compileVibeCentralWorkContract({
+    snapshot,
+    task:{id:'live-stale',gameId:'demo',target:'web'},
+    plan:{target:'web'},
+    route:{route:'text-source-worker'},
+    responsibleFiles:['web-games/demo/index.html'],
+    mainSha:git(worker,'rev-parse','HEAD'),
+    livePolicyRef:'origin/main'
+  });
+  assert.equal(contract.freshness.liveMainRequired,true);
+  const initialFreshness=assertCompiledWorkContractFresh({cwd:worker,contract,phase:'PRE_SOURCE_GENERATION'});
+  assert.equal(initialFreshness.liveMainVersion,196);
+  assert.equal(initialFreshness.liveMainSource,'REMOTE_HEAD_PINNED_MATCH');
+  assert.equal(initialFreshness.liveMainHeadSha,contract.workRequest.mainSha);
+
+  writePolicy(seed,197);
+  git(seed,'add',CANONICAL_VIBE_POLICY_PATH);
+  git(seed,'commit','-m','policy v197');
+  git(seed,'push','origin','main');
+  assert.equal(loadCentralPolicySnapshot({repoRoot:worker,required:true}).version,196);
+  const versionAdvance=assertCompiledWorkContractFresh({cwd:worker,contract,phase:'PRE_CANDIDATE_WRITE'});
+  assert.equal(versionAdvance.status,'PASS');
+  assert.equal(versionAdvance.liveMainVersion,197);
+
+  const seedPolicy=path.join(seed,CANONICAL_VIBE_POLICY_PATH);
+  const executionChange=JSON.parse(fs.readFileSync(seedPolicy,'utf8'));
+  executionChange.developmentLifecycleMachine.sharedWorkerContext.mismatchAction='BLOCK_AND_REQUEUE_RELEVANT_EXECUTION_POLICY_CHANGE';
+  fs.writeFileSync(seedPolicy,JSON.stringify(executionChange,null,2)+'\n','utf8');
+  git(seed,'add',CANONICAL_VIBE_POLICY_PATH);
+  git(seed,'commit','-m','execution policy change');
+  git(seed,'push','origin','main');
+  assert.throws(
+    ()=>assertCompiledWorkContractFresh({cwd:worker,contract,phase:'PRE_CANDIDATE_WRITE'}),
+    /CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/
+  );
+});
+
+test('source worker rejects stale compiled policy before model generation',async()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const compiledWorkContract=compileVibeCentralWorkContract({
+    snapshot,
+    task:{id:'stale-worker',gameId:'demo',target:'web'},
+    plan:{target:'web'},
+    route:{route:'text-source-worker'},
+    responsibleFiles:['web-games/demo/index.html'],
+    mainSha:'abc123'
+  });
+  fs.mkdirSync(path.join(root,'.vibe2'),{recursive:true});
+  fs.writeFileSync(path.join(root,'.vibe2/work-order.json'),JSON.stringify({
+    run:true,
+    workMode:'source-change-candidate',
+    taskId:'stale-worker',
+    gameId:'demo',
+    target:'web',
+    source:{root:'web-games/demo',responsibleFiles:['web-games/demo/index.html']},
+    workerPolicy:{directMainWrite:false},
+    compiledWorkContract
+  },null,2)+'\n','utf8');
+  const policyFile=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const changed=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+  changed.developmentLifecycleMachine.sharedWorkerContext.mismatchAction='BLOCK_AND_REQUEUE_RELEVANT_EXECUTION_POLICY_CHANGE';
+  fs.writeFileSync(policyFile,JSON.stringify(changed,null,2)+'\n','utf8');
+  await assert.rejects(
+    runVibe2SourceWorker({cwd:root,responseFile:path.join(root,'unused-model-output.json')}),
+    /CENTRAL_POLICY_STALE:PRE_SOURCE_GENERATION/
+  );
+});
+
+
+test('Primary AI collaboration semantics are part of the Vibe execution fingerprint',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  document.developmentLifecycleMachine.primaryAiOrchestration.internalVibeAiCollaboration.appliesToExistingAndFutureRegisteredInternalAi=false;
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.valid,false);
+  assert.ok(after.errors.includes('PRIMARY_AI_INTERNAL_VIBE_COVERAGE'));
+  assert.notEqual(after.executionFingerprint,before.executionFingerprint);
+});
+
+
+test('capability growth role lock participates in Vibe execution fingerprint',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  document.developmentLifecycleMachine.primaryAiOrchestration.internalVibeAiCollaboration.capabilityGrowthRoleLock.authorityMayAutoIncrease=true;
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.valid,false);
+  assert.ok(after.errors.includes('VIBE_CAPABILITY_AUTHORITY_SEPARATION'));
+  assert.notEqual(after.executionFingerprint,before.executionFingerprint);
+});
+
+
+test('new canonical rule automatically changes execution fingerprint and binds into work contract',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  document.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE',machineEnforcement:{schemaVersion:document.ownerCanonicalRules.constitutionalBinding.ruleEnforcementSchemaVersion,assertions:[{code:'RULE_ENABLED',path:'enabled',operator:'EQ',expected:true}]}};
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.valid,true);
+  assert.notEqual(after.executionFingerprint,before.executionFingerprint);
+  const contract=compileVibeCentralWorkContract({snapshot:after,task:{id:'future-rule',gameId:'demo',target:'web'},plan:{target:'web'},route:{route:'text-source-worker'},responsibleFiles:['web-games/demo/index.html'],mainSha:'abc123'});
+  assert.equal(contract.constitution.rules.length,5);
+  assert.equal(contract.constitution.orderedRuleIds.at(-1),'RULE_5_FUTURE_OWNER_CONSTITUTION');
+});
+
+test('active compiled work becomes stale when owner adds a constitutional rule',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const contract=compileVibeCentralWorkContract({snapshot,task:{id:'stale-on-new-law',gameId:'demo',target:'web'},plan:{target:'web'},route:{route:'text-source-worker'},responsibleFiles:['web-games/demo/index.html'],mainSha:'abc123'});
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  document.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE',machineEnforcement:{schemaVersion:document.ownerCanonicalRules.constitutionalBinding.ruleEnforcementSchemaVersion,assertions:[{code:'RULE_ENABLED',path:'enabled',operator:'EQ',expected:true}]}};
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  assert.throws(()=>assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}),/CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/);
+});
+
+
+test('central architecture semantic change automatically invalidates an active work contract',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const contract=compileVibeCentralWorkContract({
+    snapshot:before,
+    task:{id:'architecture-stale',gameId:'cozy-island',target:'roblox'},
+    plan:{target:'roblox'},
+    route:{route:'text-source-worker'},
+    responsibleFiles:['roblox-games/cozy-island/server/Game.server.luau'],
+    mainSha:'abc123'
+  });
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  document.developmentLifecycleMachine.nativeGameFoundationValidationStack={
+    version:1,
+    status:'DESIGN_LOCKED_IMPLEMENTATION_REQUIRED',
+    ownership:{
+      executionOwner:'EXISTING_GAME_TESTER_AND_QA_CAPABILITY',
+      testerTicketState:'vibe2-unreal-core:.vibe2/tester-debug-tickets.json',
+      runtimePlaytestOwner:'developmentLifecycleMachine.internalPlatformPlaytestDevelopment',
+      platformQaOwner:'developmentLifecycleMachine.targetPlatformDevelopment.runtimeIndependentQaRegressionRequired',
+      deterministicVerdictAuthority:'developmentLifecycleMachine.deterministicGateAuthority',
+      newDepartmentCreated:false
+    },
+    departmentReuse:{duplicateFoundationDepartmentForbidden:true},
+    layers:[{id:'F0',alwaysRequired:true},{id:'F1',alwaysRequired:true},{id:'F2',alwaysRequired:true},{id:'F3',alwaysRequired:true},{id:'F4',alwaysRequired:true}],
+    testerQaFlow:['F0','PRIVATE_RUNTIME_CANDIDATE_DEPLOY','F1','F2','F3','F4'],
+    releaseGate:{canonicalSequence:['F0_SOURCE_PREFLIGHT_PASS','PRIVATE_RUNTIME_CANDIDATE_DEPLOY','F1_SERVER_BOOT_PASS','F2_WORLD_FOUNDATION_PASS','F3_CHARACTER_FOUNDATION_PASS','F4_PHYSICS_AND_MOVEMENT_PASS','INTERNAL_PLATFORM_RELEASE']}
+  };
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.valid,true);
+  assert.notEqual(after.executionFingerprint,before.executionFingerprint);
+  assert.throws(()=>assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}),/CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/);
+  const next=compileVibeCentralWorkContract({snapshot:after,task:{id:'architecture-new',gameId:'cozy-island',target:'roblox'},plan:{target:'roblox'},route:{route:'text-source-worker'},responsibleFiles:['roblox-games/cozy-island/server/Game.server.luau'],mainSha:'abc123'});
+  assert.equal(next.architectureProjection.nativeFoundation.version,1);
+  assert.deepEqual(next.architectureProjection.nativeFoundation.requiredFoundationLayers,['F0','F1','F2','F3','F4']);
+});
+
+test('policy metadata version bump alone does not invalidate compiled architecture or work contract',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const contract=compileVibeCentralWorkContract({snapshot:before,task:{id:'version-only',gameId:'demo',target:'web'},plan:{target:'web'},route:{route:'text-source-worker'},responsibleFiles:['web-games/demo/index.html'],mainSha:'abc123'});
+  writePolicy(root,197);
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.executionFingerprint,before.executionFingerprint);
+  assert.equal(assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_WORK'}).status,'PASS');
+});
+
+test('real canonical compilers are imported, never hardcoded to pass or fail', () => {
+  const source=fs.readFileSync(new URL('../tools/vibe2-central-work-contract.mjs',import.meta.url),'utf8');
+  const compiler=fs.readFileSync(new URL('../tools/company-shared-context.mjs',import.meta.url),'utf8');
+  assert.match(source,/import \{compileOwnerCanonicalConstitution,compileCentralArchitectureProjection\}/);
+  assert.doesNotMatch(source,/const compileOwnerCanonicalConstitution = \(\)/);
+  assert.doesNotMatch(source,/const compileCentralArchitectureProjection = \(\)/);
+  assert.match(compiler,/export function compileOwnerCanonicalConstitution/);
+  assert.match(compiler,/export function compileCentralArchitectureProjection/);
+  assert.doesNotMatch(source,/authority:'REMOVED',constitutionalAuthority:'REMOVED'/);
+});
+
+test('optional missing canonical source cannot masquerade as valid snapshot', () => {
+  const root=tempRoot();
+  try {
+    const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:false});
+    assert.equal(snapshot.present,false);
+    assert.equal(snapshot.valid,false);
+    assert.ok(snapshot.errors.includes('CENTRAL_POLICY_MISSING'));
+  } finally {
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('default work contract never invents a valid central policy snapshot', () => {
+  const source=fs.readFileSync(new URL('../tools/vibe2-central-work-contract.mjs',import.meta.url),'utf8');
+  assert.match(source,/snapshot\|\|\{required:false,present:false,valid:false/);
+  assert.doesNotMatch(source,/snapshot\|\|\{required:false,present:false,valid:true/);
+});
+
+test('invalid optional contract cannot bypass freshness validation', () => {
+  const contract=compileVibeCentralWorkContract({});
+  assert.equal(contract.validAtCompile,false);
+  assert.throws(
+    () => assertCompiledWorkContractFresh({contract,phase:'PRE_WORK'}),
+    /CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_WORK/
+  );
+});
+
+test('real production Roblox auto-coding preflight binds central policy and exact writable scope',()=>{
+  // [자동코딩] 큐의 입구에서는 실정책과 쓰기 범위만 직접 검사하고, 전체 모델 회귀는 독립 QA에서 수행한다.
+  const repoRoot=path.resolve(new URL('..',import.meta.url).pathname);
+  const snapshot=loadCentralPolicySnapshot({repoRoot,required:true});
+  assert.equal(snapshot.valid,true,snapshot.errors.join('|'));
+  const responsibleFile='roblox-games/simple-rpg/server/Game.server.luau';
+  const task={id:'owner-policy-bound-autocoding',gameId:'simple-rpg',target:'ROBLOX',department:'development'};
+  const contract=compileVibeCentralWorkContract({
+    snapshot,task,plan:{target:'ROBLOX',qa:['CODE_QA','STATIC_QA']},
+    route:{route:'text-source-worker'},responsibleFiles:[responsibleFile]
+  });
+  assert.equal(contract.required,true);
+  assert.equal(contract.validAtCompile,true);
+  assert.equal(contract.policy.executionFingerprint,snapshot.executionFingerprint);
+  assert.equal(contract.workLock.requiredBeforeSourceWrite,true);
+  assert.deepEqual(contract.workLock.files,[responsibleFile]);
+  assert.doesNotThrow(()=>assertOwnerDevelopmentAvailable({cwd:repoRoot,order:{
+    ...task,source:{root:'roblox-games/simple-rpg'}
+  }}));
+  assert.equal(assertCompiledWorkContractFresh({cwd:repoRoot,contract,phase:'PRE_SOURCE_GENERATION'}).status,'PASS');
+  assert.throws(()=>assertCompiledWorkContractFresh({cwd:repoRoot,contract:{},phase:'PRE_SOURCE_GENERATION'}),
+    /CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION/);
+  const stale={...contract,policy:{...contract.policy,executionFingerprint:'0'.repeat(64)}};
+  assert.throws(()=>assertCompiledWorkContractFresh({cwd:repoRoot,contract:stale,phase:'PRE_SOURCE_GENERATION'}),
+    /CENTRAL_POLICY_STALE:PRE_SOURCE_GENERATION/);
+});

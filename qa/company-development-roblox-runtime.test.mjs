@@ -1,0 +1,1896 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import os from 'node:os';
+import path from 'node:path';
+import {runInNewContext} from 'node:vm';
+import {spawnSync} from 'node:child_process';
+import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,applyRobloxStudioAssetBindingToExistingSource,synchronizeRobloxCommonModules,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
+import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
+import {createRobloxVibe3LearningContext} from '../tools/vibe3-roblox-learning-context.mjs';
+import {buildTransformativeRecombination,recombinationDesignAxes,transformativeRecipeCompatibility} from '../tools/vibe3-transformative-recombination.mjs';
+
+// Keep native config source bound to the actual canonical policy during isolated QA.
+const previousVerifiedPolicySource=process.env.COMPANY_VERIFIED_POLICY_PATH;
+test.before(()=>{process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';});
+test.after(()=>{if(previousVerifiedPolicySource===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicySource;});
+
+const VERIFIED_ROBLOX_LEARNING_REUSE=Object.freeze({
+  id:'external-black-box-runtime-test',
+  project:'verified-runtime-reference',
+  sourceRevision:'test-fixture',
+  distilledApplicationPrinciples:[
+    'id=compact-tactical-state-with-immediate-feedback;scope=gameplay;lesson=compact tactical state with immediate feedback;apply=compact-tactical-state-with-immediate-feedback'
+  ],
+  distilledAvoidancePrinciples:['do not copy raw source or assets'],
+  distilledLearningUseAllowed:['general gameplay feedback principle'],
+  distilledLearningUseForbidden:['raw source, binaries, or asset expression']
+});
+const verifiedRobloxPlaybooks=()=>({
+  taskTypes:{
+    roblox:{authority:'verified-task-playbook',checklist:['server authority','mobile input'],reuse:[VERIFIED_ROBLOX_LEARNING_REUSE]},
+    coding:{authority:'verified-task-playbook',checklist:['bounded source change'],reuse:[]}
+  }
+});
+
+test('learning skips unrelated recipes and internal records without blocking verified gameplay context',()=>{
+  const learning=createRobloxVibe3LearningContext({
+    gameId:'puzzle-target',profile:{genre:'Puzzle',subgenre:'Match puzzle',playMode:'COOP'},playbooks:verifiedRobloxPlaybooks(),
+    recombination:{recipes:[{id:'unrelated',sourceProjects:['one','two'],featureBlend:['aerospace-navigation']}]},
+    distillation:{records:[{id:'unrelated-internal',gameId:'other',engine:'roblox',sourceKind:'internal-roblox-source-runtime',authority:'VERIFIED_INTERNAL_ROBLOX_DISTILLATION',verified:true,retrievalEligible:true,rawCodeStored:false,rawAssetStored:false,rawBinaryStored:false,patterns:['aerospace-navigation'],principles:[]}]}
+  });
+  assert.equal(learning.applied,true);
+  assert.equal(learning.recipeId,null);
+  assert.deepEqual(learning.distilledSourceIds,[]);
+  assert.equal(learning.profile.playMode,'COOP');
+  assert.deepEqual(learning.semanticMood,{id:'PRESERVE_AUTHORED_PRESENTATION',saturation:0,contrast:0,brightness:0});
+});
+
+test('learning separates approved rules from visual style and concept instead of artbook keyword overlap',()=>{
+  const designAxes=recombinationDesignAxes({profile:{genre:'Puzzle',subgenre:'Match puzzle'},design:{sourceRevision:'approved-sha',content:{coreLoop:['match board cells'],styleLock:{id:'hand-painted',visualLanguage:['soft edges']},conceptLock:{id:'forest',world:['forest'],mood:['calm']}}}});
+  const source=(genre,style,concept)=>recombinationDesignAxes({profile:{genre},design:{content:{styleLock:{id:style},conceptLock:{id:concept}}}});
+  const recipes=[
+    {id:'wrong-rules',sourceProjects:['a','b'],featureBlend:['touch-input','board-grid'],sourceDesignAxes:[source('Shooter','hand-painted','forest')]},
+    {id:'wrong-style',sourceProjects:['a','c'],featureBlend:['touch-input','board-grid'],sourceDesignAxes:[source('Puzzle','neon','forest')]},
+    {id:'wrong-concept',sourceProjects:['a','d'],featureBlend:['touch-input','board-grid'],sourceDesignAxes:[source('Puzzle','hand-painted','space')]},
+    {id:'matched',sourceProjects:['e','f'],featureBlend:['touch-input','unrelated-economic-system','hand-painted-motion'],sourceDesignAxes:[source('Puzzle','hand-painted','forest')],transformationOperator:'change-core-goal'}
+  ];
+  const learning=createRobloxVibe3LearningContext({gameId:'forest-puzzle',profile:{genre:'Puzzle',playMode:'COOP',designAxes},artbook:{content:{identity:'Shooter neon space reference words are not game rules'}},playbooks:verifiedRobloxPlaybooks(),recombination:{recipes}});
+  assert.equal(learning.recipeId,'matched');
+  assert.deepEqual(learning.featureBlend,['touch-input','hand-painted-motion']);
+  assert.equal(learning.transformationOperator,'adapt-within-approved-design');
+  assert.equal(learning.designAxes.genre.id,'Puzzle');
+  assert.equal(learning.designAxes.style.id,'hand-painted');
+  assert.equal(learning.designAxes.concept.id,'forest');
+  assert.deepEqual(learning.semanticMood,{id:'calm',saturation:0,contrast:0,brightness:0});
+});
+
+test('recombination preserves source classification and rejects conflicting game rules before blending',()=>{
+  const sample=(project,genre,style='painted')=>({sampleId:project,project,taskType:'roblox',sourceRevision:'sha-'+project,qa:{runtime:'PASS',independentQa:'PASS',browserQa:'NOT_APPLICABLE'},tags:['touch-input','menu-feedback'],designAxes:{genre:{id:genre,rules:[]},style:{id:style,visual:[],motion:[]},concept:{id:'forest',world:[],mood:[]}}});
+  const memory=buildTransformativeRecombination({trainingSamples:[sample('puzzle-a','Puzzle'),sample('puzzle-b','Puzzle'),sample('shooter','Shooter')]});
+  assert.equal(memory.recipes.length,1);
+  assert.deepEqual(memory.recipes[0].sourceProjects,['puzzle-a','puzzle-b']);
+  assert.equal(memory.recipes[0].sourceDesignAxes[0].genre.id,'Puzzle');
+  assert.equal(memory.recipes[0].sourceDesignAxes[0].sourceRevision,'sha-puzzle-a');
+  assert.equal(memory.recipes[0].applicationConstraints.preserveBalance,true);
+  assert.equal(memory.recipes[0].countsAsTrainingSample,false);
+  assert.equal(transformativeRecipeCompatibility({featureBlend:['unrelated'],sourceDesignAxes:memory.recipes[0].sourceDesignAxes},{designAxes:memory.materials[0].designAxes}).eligible,false);
+});
+
+const platformProfile=()=>({
+  platform:'ROBLOX',
+  inputModel:'Roblox touch controls with ContextActionService and gamepad fallback',
+  sessionModel:'Roblox private experience session with server-authoritative player lifecycle',
+  multiplayerRuntime:'Roblox server RemoteEvent authority with synchronized participant state',
+  performanceBudget:'Mobile-first Roblox frame, memory, instance and network budget',
+  uiUx:'Roblox ScreenGui touch-first HUD with safe-area friendly controls',
+  saveAndNetwork:'DataStore persistence when required and validated RemoteEvent network boundaries',
+  platformContentAdaptation:'Roblox-native scene, avatar, camera, UI and interaction adaptation',
+  internalReleaseTarget:'Private or restricted Roblox test experience playable by owner',
+  validationEvidence:'Roblox runtime, independent QA and regression evidence on exact source revision'
+});
+const buildProfile=(genre,subgenre=null,playMode='SINGLE')=>{
+  const multiplayerRequired=playMode!=='SINGLE';
+  return {
+    version:1,targetPlatform:'ROBLOX',taxonomy:'ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES',
+    declaredGameCategory:genre,genre,subgenre,playMode,
+    multiplayerRequired,
+    coopImplementationRequired:playMode==='COOP'||playMode==='HYBRID',
+    competitiveImplementationRequired:playMode==='COMPETITIVE'||playMode==='HYBRID',
+    networkingRequired:multiplayerRequired,
+    multiplayerQaRequired:multiplayerRequired,
+    minimumParticipantsForRequiredQa:multiplayerRequired?2:1,
+    displayLabelKo:`${genre} · ${subgenre||''} · ${playMode}`,
+  };
+};
+const baseline={content:{
+  identity:'Pocket Foundry',coreFun:'collect, upgrade, income, unlock',
+  coreLoop:['collect resources','upgrade production','unlock the next area'],
+  mobileUx:'touch controls',progressionDirection:'Persistent progression system',
+  robloxBuildProfile:buildProfile('Simulation','Tycoon','SINGLE'),
+  platformProfiles:{ROBLOX:platformProfile()},
+}};
+const shared=`local Config = {
+  PolicySource = "company-learning/platform-release-roadmap.json",
+  Platform = "ROBLOX",
+  MobileFirst = true,
+  SaveEnabled = true,
+  Genre = "Simulation",
+  Subgenre = "Tycoon",
+  PlayMode = "SINGLE",
+  MultiplayerRequired = false,
+  GameId = "test-game",
+  InitialCoins = 0,
+  UpgradeBaseCost = 10,
+  ProductionBase = 1,
+}
+return table.freeze(Config)
+${'-- config\n'.repeat(30)}`;
+const server=`local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local DataStoreService = game:GetService("DataStoreService")
+local RemoteEvent = Instance.new("RemoteEvent")
+RemoteEvent.Name = "GameAction"
+RemoteEvent.Parent = ReplicatedStorage
+local store = DataStoreService:GetDataStore("test-v1")
+local lastAction = {}
+local function safeNumber(value)
+  if typeof(value) ~= "number" then return nil end
+  return math.clamp(value, 0, 100)
+end
+Players.PlayerAdded:Connect(function(player)
+  local coins = 0
+  local ok, saved = pcall(function() return store:GetAsync("p:" .. player.UserId) end)
+  if ok and typeof(saved) == "number" then coins = math.max(0, saved) end
+  player:SetAttribute("Coins", coins)
+  player:SetAttribute("Level", 1)
+end)
+RemoteEvent.OnServerEvent:Connect(function(player, action, amount)
+  if typeof(action) ~= "string" then return end
+  local now = os.clock()
+  if now - (lastAction[player] or 0) < 0.08 then return end
+  lastAction[player] = now
+  local value = safeNumber(amount or 1) or 1
+  if action == "collect" then
+    player:SetAttribute("Coins", (player:GetAttribute("Coins") or 0) + math.max(1, value))
+  elseif action == "upgrade" then
+    local level = player:GetAttribute("Level") or 1
+    player:SetAttribute("Level", level + 1)
+  end
+end)
+Players.PlayerRemoving:Connect(function(player)
+  local coins = player:GetAttribute("Coins") or 0
+  pcall(function() store:UpdateAsync("p:" .. player.UserId, function() return coins end) end)
+  lastAction[player] = nil
+end)
+${'-- server gameplay\n'.repeat(55)}`;
+const client=`local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local remote = ReplicatedStorage:WaitForChild("GameAction")
+local gui = Instance.new("ScreenGui")
+gui.Name = "GameHud"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+local button = Instance.new("TextButton")
+button.Size = UDim2.fromOffset(180, 56)
+button.Position = UDim2.new(0.5, -90, 1, -80)
+button.Text = UserInputService.TouchEnabled and "수집" or "Collect"
+button.Parent = gui
+local status = Instance.new("TextLabel")
+status.Size = UDim2.fromOffset(240, 44)
+status.Position = UDim2.new(0.5, -120, 0, 24)
+status.Parent = gui
+button.Activated:Connect(function() remote:FireServer("collect", 1) end)
+local function render()
+  status.Text = string.format("Coins %d / Lv %d", player:GetAttribute("Coins") or 0, player:GetAttribute("Level") or 1)
+end
+player:GetAttributeChangedSignal("Coins"):Connect(render)
+player:GetAttributeChangedSignal("Level"):Connect(render)
+render()
+${'-- client ui\n'.repeat(45)}`;
+
+test('persistent Roblox design requires save evidence in generated source',()=>{
+  assert.equal(requiresPersistentSave(baseline),true);
+});
+
+test('Roblox build profile is mandatory and normalized before source generation',()=>{
+  assert.equal(robloxBuildProfileFromBaseline(baseline).genre,'Simulation');
+  assert.equal(robloxBuildProfileFromBaseline(baseline).playMode,'SINGLE');
+  assert.throws(()=>robloxBuildProfileFromBaseline({content:{identity:'missing profile'}}),/ROBLOX_PLATFORM_DESIGN_PROFILE_REQUIRED/);
+});
+
+test('Roblox source generation carries approved style and concept through the build profile',()=>{
+  const locked={...baseline,sourceRevision:'locked-source',content:{...baseline.content,styleLock:{id:'painted',colorGrade:{saturation:-0.1,contrast:0.02,brightness:0}},conceptLock:{id:'quiet-workshop',mood:['quiet']}}};
+  const compiled=compileRobloxSource({gameId:'locked-design',baseline:locked,playbooks:verifiedRobloxPlaybooks()});
+  assert.equal(compiled.profile.designAxes.sourceRevision,'locked-source');
+  assert.equal(compiled.learning.designAxes.style.id,'painted');
+  assert.equal(compiled.learning.designAxes.concept.id,'quiet-workshop');
+  assert.equal(compiled.learning.semanticMood.id,'quiet');
+  assert.equal(compiled.learning.semanticMood.saturation,-0.1);
+  assert.match(compiled.result.clientCode,/verifiedLearningColorGrade\.Saturation = -0\.1/);
+  assert.equal(compiled.profile.playMode,baseline.content.robloxBuildProfile.playMode);
+  const changed=compileRobloxSource({gameId:'locked-design',baseline:{...locked,content:{...locked.content,styleLock:{id:'painted',colorGrade:{saturation:0.1}}}},playbooks:verifiedRobloxPlaybooks()});
+  assert.notEqual(compiled.learning.semanticMappingFingerprint,changed.learning.semanticMappingFingerprint);
+});
+
+test('Roblox bootstrap static gate accepts profile-bound server-authoritative mobile source with save',()=>{
+  const verdict=validateRobloxBootstrap({sharedConfig:shared,serverCode:server,clientCode:client,baseline});
+  assert.equal(verdict.pass,true,verdict.blockers.join(','));
+  assert.equal(verdict.saveRequired,true);
+  assert.equal(verdict.profile.genre,'Simulation');
+});
+
+test('Roblox static multiplayer profile accepts formatting only and rejects incorrect values',()=>{
+  const profile=robloxBuildProfileFromBaseline(baseline);
+  const original=validateRobloxBootstrap({sharedConfig:shared,serverCode:server,clientCode:client,baseline});
+  assert.equal(original.pass,true,original.blockers.join(','));
+  const compact=shared
+    .replace(/\bGenre\s*=\s*/, 'Genre=')
+    .replace(/\bPlayMode\s*=\s*/, 'PlayMode=')
+    .replace(/\bMultiplayerRequired\s*=\s*/, 'MultiplayerRequired=');
+  const valid=validateRobloxBootstrap({sharedConfig:compact,serverCode:server,clientCode:client,baseline});
+  assert.equal(valid.pass,true,valid.blockers.join(','));
+  const invalid=compact.replace(/\bMultiplayerRequired\s*=\s*(true|false)/,
+    'MultiplayerRequired='+(profile.multiplayerRequired?'false':'true'));
+  const denied=validateRobloxBootstrap({sharedConfig:invalid,serverCode:server,clientCode:client,baseline});
+  assert.equal(denied.pass,false);
+  assert.ok(denied.blockers.includes('CONFIG_MULTIPLAYER_PROFILE_REQUIRED'));
+});
+
+test('Roblox bootstrap static gate rejects placeholders and missing server boundary',()=>{
+  const bad=validateRobloxBootstrap({sharedConfig:shared,serverCode:'-- TODO placeholder\n',clientCode:client,baseline});
+  assert.equal(bad.pass,false);
+  assert.ok(bad.blockers.includes('SERVER_PLACEHOLDER_FORBIDDEN'));
+  assert.ok(bad.blockers.includes('SERVER_REMOTE_BOUNDARY_REQUIRED'));
+  const missing=validateRobloxBootstrap({sharedConfig:shared,serverCode:'',clientCode:client,baseline});
+  assert.equal(missing.pass,false);
+  assert.ok(missing.blockers.includes('SERVER_SOURCE_TOO_SMALL'));
+  assert.ok(missing.blockers.includes('SERVER_REMOTE_BOUNDARY_REQUIRED'));
+});
+
+test('Roblox scope classifier includes genre-specific native handler modes',()=>{
+  assert.equal(classifyRobloxScope({path:'puzzle',label:'match merge puzzle'},0),'PUZZLE');
+  assert.equal(classifyRobloxScope({path:'defense',label:'tower defense wave'},0),'DEFENSE');
+  assert.equal(classifyRobloxScope({path:'combat',label:'attack enemy'},0),'COMBAT');
+  assert.equal(classifyRobloxScope({path:'movement',label:'explore and reposition'},0),'MOVEMENT');
+  assert.equal(classifyRobloxScope({path:'progression',label:'upgrade and unlock'},0),'PROGRESSION');
+  assert.equal(classifyRobloxScope({path:'economy',label:'collect resources and income'},0),'ECONOMY');
+  assert.equal(classifyRobloxScope({path:'social',label:'team shared objective'},0),'SOCIAL');
+  assert.equal(classifyRobloxScope({path:'objective',label:'complete quest goal'},0),'OBJECTIVE');
+  assert.equal(classifyRobloxScope({path:'mobileUx',label:'touch controls'},0),'MOBILE');
+});
+
+test('deterministic Roblox compiler binds approved genre and play mode to generated source',()=>{
+  const cases=[
+    ['seed-roblox-simulator-tycoon-test','collect resources, upgrade production, earn income, unlock areas','Simulation','Tycoon','SINGLE','ECONOMY'],
+    ['seed-roblox-battleground-fight-test','fight opponents, use skills and cooldowns, win rounds','Action','Battlegrounds & Fighting','COMPETITIVE','COMBAT'],
+    ['seed-roblox-survival-horror-test','survive threats, find objectives, escape safely','Survival','Escape','SINGLE','SURVIVAL'],
+    ['seed-roblox-obby-party-test','move through checkpoints and complete obby rounds','Obby & platformer','Classic Obby','COOP','MOVEMENT'],
+    ['seed-roblox-story-rpg-test','explore, fight, complete quests and progress the story','RPG','Action RPG','SINGLE','PROGRESSION'],
+    ['seed-puzzle-chromatic-cascade','match colors into chain reactions and solve puzzle boards','Puzzle','Match & Merge','SINGLE','PUZZLE'],
+  ];
+  for(const [gameId,coreFun,genre,subgenre,playMode,requiredKind] of cases){
+    const locked={content:{
+      identity:`${gameId} identity`,coreFun,
+      coreLoop:['explore or collect','perform the main challenge','receive reward and progress'],
+      mobileUx:'touch controls',progressionDirection:'Persistent progression system',
+      robloxBuildProfile:buildProfile(genre,subgenre,playMode),
+      platformProfiles:{ROBLOX:platformProfile()},
+    }};
+    const inventory=deriveApprovedScopeInventory(locked);
+    const compiled=compileRobloxSource({gameId,gameName:'Compiler Test',baseline:locked,artbook:{},playbooks:verifiedRobloxPlaybooks()});
+    assert.equal(compiled.generationMode,'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT');
+    assert.equal(compiled.modelUsed,false);
+    assert.equal(compiled.validation.pass,true,compiled.validation.blockers.join(','));
+    assert.equal(compiled.profile.genre,genre);
+    assert.equal(compiled.profile.playMode,playMode);
+    assert.ok(compiled.actions.length>=inventory.length);
+    assert.ok(compiled.actions.some(action=>action.kind===requiredKind),`${gameId} missing ${requiredKind}`);
+    assert.ok(compiled.result.sharedConfig.includes(`Genre = "${genre}"`));
+    assert.ok(compiled.result.sharedConfig.includes(`PlayMode = "${playMode}"`));
+    assert.ok(compiled.result.serverCode.includes('RemoteEvent'));
+    assert.ok(compiled.result.serverCode.includes('OnServerEvent'));
+    assert.ok(compiled.result.clientCode.includes('UserInputService'));
+    assert.ok(compiled.result.clientCode.includes('Activated'));
+    assert.ok(compiled.result.clientCode.includes('FireServer(action.Id)'));
+    assert.ok(compiled.result.serverCode.includes('DataStoreService'));
+    for(const row of inventory){
+      assert.ok(compiled.result.sharedConfig.includes(row.id));
+      const actionIndex=compiled.actions.findIndex(action=>action.id===row.id);
+      assert.ok(actionIndex>=0);
+      assert.ok(compiled.result.serverCode.includes(`scopeHandler${actionIndex+1}`));
+    }
+    if(playMode!=='SINGLE'){
+      assert.ok(compiled.result.serverCode.includes('Players:GetPlayers()'));
+      assert.ok(compiled.result.serverCode.includes('FireAllClients("MULTIPLAYER_SYNC"'));
+      assert.ok(compiled.result.clientCode.includes('OnClientEvent'));
+    }else{
+      assert.ok(!compiled.result.serverCode.includes('FireAllClients("MULTIPLAYER_SYNC"'));
+    }
+  }
+});
+
+test('co-op and competitive profiles require actual synchronized gameplay source',()=>{
+  const coop={content:{...baseline.content,robloxBuildProfile:buildProfile('Obby & platformer','Classic Obby','COOP')}};
+  const compiledCoop=compileRobloxSource({gameId:'coop',gameName:'Coop',baseline:coop,artbook:{},playbooks:verifiedRobloxPlaybooks()});
+  assert.ok(compiledCoop.result.serverCode.includes('SharedObjective'));
+  assert.ok(compiledCoop.result.serverCode.includes('FireAllClients'));
+  assert.ok(compiledCoop.result.clientCode.includes('OnClientEvent'));
+
+  const competitive={content:{...baseline.content,robloxBuildProfile:buildProfile('Shooter','Deathmatch Shooter','COMPETITIVE')}};
+  const compiledCompetitive=compileRobloxSource({gameId:'pvp',gameName:'PvP',baseline:competitive,artbook:{},playbooks:verifiedRobloxPlaybooks()});
+  assert.ok(compiledCompetitive.result.serverCode.includes('RoundScore'));
+  assert.ok(compiledCompetitive.result.serverCode.includes('FireAllClients'));
+});
+
+test('Rojo project maps shared server and client source roots',()=>{
+  const project=projectJsonForGame('test-game');
+  assert.equal(project.name,'test-game');
+  assert.equal(project.tree.Lighting.$properties.Technology,'Voxel');
+  assert.equal(project.tree.Lighting.$properties.LightingStyle,'Soft');
+  assert.equal(project.tree.Lighting.$properties.PrioritizeLightingQuality,false);
+  assert.equal(project.tree.Lighting.CompatibilityToneMap.$className,'ColorGradingEffect');
+  assert.equal(project.tree.Lighting.CompatibilityToneMap.$properties.TonemapperPreset,'Retro');
+  assert.equal(project.tree.ReplicatedStorage.Shared.$path,'shared');
+  assert.equal(project.tree.ServerScriptService.GameServer.$path,'server');
+  assert.equal(project.tree.StarterPlayer.StarterPlayerScripts.GameClient.$path,'client');
+});
+
+test('all canonical Roblox common modules and company pattern libraries are included in build-up inventory',()=>{
+  const project=projectJsonForGame('test-game');
+  const result=synchronizeRobloxCommonModules({project});
+  assert.ok(result.moduleCount>=14,'canonical modules should be discovered dynamically');
+  assert.equal(result.moduleCount,result.libraryCoverage.runtimeModuleCount);
+  assert.equal(result.libraryCoverage.patternSourcesRuntimeInjected,false);
+  assert.equal(result.libraryCoverage.unverifiedAssetsAutoPromoted,false);
+  assert.match(result.libraryCoverage.sourceFingerprint,/^[0-9a-f]{64}$/);
+  assert.ok(result.libraryCoverage.firstPartyPackCount>=14);
+  assert.ok(result.libraryCoverage.firstPartyPatternSourceCount>0);
+  assert.equal(typeof result.libraryCoverage.verifiedCodePatternCount,'number');
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,'../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonSkillPresentation.$path,'../../assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau');
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonBuilding.$path,'../../assets/roblox/common-building-v1/RobloxCommonBuilding.luau');
+});
+
+test('Rojo project template never guesses the working directory as a game source root',()=>{
+  const project=projectJsonForGame('horror-escape-room');
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,'../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+});
+
+test('game-specific Luau module remains protected when a common library changes',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-common-library-'));
+  try{
+    const root=path.join(tmp,'game');
+    fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+    fs.writeFileSync(path.join(root,'shared','RobloxCommonMotion.luau'),'return {GameSpecific=true}\\n');
+    const project=projectJsonForGame('test-game',root);
+    assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion,undefined);
+    const result=synchronizeRobloxCommonModules({project,gameRoot:root});
+    assert.ok(result.conflicts.some(row=>row.module==='RobloxCommonMotion'));
+    assert.equal(fs.readFileSync(path.join(root,'shared','RobloxCommonMotion.luau'),'utf8'),'return {GameSpecific=true}\\n');
+    assert.ok(result.linked.includes('RobloxCommonBuilding'));
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('only source-location header variants of first-party Roblox modules are equivalent; gameplay edits stay protected',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-common-header-equivalence-'));
+  try{
+    const root=path.join(tmp,'game');
+    fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+    const canonical=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+    const local=canonical.replace('-- 파일명: assets/roblox/common-motion-v1/RobloxCommonMotion.luau',
+      '-- 파일명: shared/RobloxCommonMotion.luau');
+    assert.notEqual(canonical,local);
+    fs.writeFileSync(path.join(root,'shared','RobloxCommonMotion.luau'),local);
+    const originalProject=projectJsonForGame('test-game',root);
+    const exact=synchronizeRobloxCommonModules({project:originalProject,gameRoot:root});
+    assert.ok(exact.local.includes('RobloxCommonMotion'));
+    assert.equal(exact.conflicts.some(row=>row.module==='RobloxCommonMotion'),false);
+    assert.equal(originalProject.tree.ReplicatedStorage.Shared.RobloxCommonMotion,undefined);
+    fs.writeFileSync(path.join(root,'shared','RobloxCommonMotion.luau'),local.replace('duration = 3.2','duration = 999'));
+    const changed=synchronizeRobloxCommonModules({project:originalProject,gameRoot:root});
+    assert.ok(changed.conflicts.some(row=>row.module==='RobloxCommonMotion'
+      &&row.reason==='GAME_LOCAL_MODULE_DIFFERS_FROM_CANONICAL'));
+    assert.equal(originalProject.tree.ReplicatedStorage.Shared.RobloxCommonMotion,undefined);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+// [현재 마력숲] 삭제된 RPG/백수전 게임 대신 실존 서버·클라이언트의 권한 경계를 검사한다.
+test('fantasy survival plays combat motion only through server-approved attributes',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const project=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/default.project.json','utf8'));
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,
+    '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+  for(const signal of [
+    'combatMotionSource.CreateCombatCombo','combatMotionSource.MapCombatPoseToR15',
+    'combatMotionSource.BindJointPose','combatMotionSource.SampleCombatCombo',
+    'GetAttributeChangedSignal("ApprovedCombatMotion")',
+    'playNativeCombatMotion(scope,tonumber(serial),true)'
+  ])assert.ok(client.includes(signal),'missing actual approved motion chain: '+signal);
+  assert.ok(server.includes('player:SetAttribute("ApprovedCombatMotion",approved)'));
+  assert.equal(client.includes('remote:FireServer("CivNativeCombatMotion'),false);
+  assert.equal(server.includes('SetAttribute("Damage"'),false);
+});
+
+test('fantasy survival creatures are spawned by the current server habitat with safe wolf boundary',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  for(const id of ['simple-rpg','baeksu-war'])
+    assert.equal(catalog.games.some(game=>game.id===id),false,'retired games must not be restored: '+id);
+  assert.match(server,/local meadowEncounterSites = \{/);
+  assert.match(server,/local function spawnEnemy\(site, siteIndex\)/);
+  assert.match(server,/site.id=="wolf" and meadowVillageContains\(site.position\)/);
+  assert.match(server,/for index,site in ipairs\(meadowEncounterSites\)/);
+  assert.match(server,/pcall\(spawnEnemy,site,index\)/);
+  assert.match(server,/meadowEncounterSites\[target.siteIndex\]/);
+  assert.doesNotMatch(server,/SetAttribute\("Damage"/);
+});
+
+test('Roblox bootstrap reads the company material library but leaves verification to downstream runtime',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/company-asset-library\.json/);
+  assert.match(bootstrap,/buildRobloxStudioAssetBootstrapPlan/);
+  assert.match(bootstrap,/selectionFingerprint/);
+  assert.match(bootstrap,/VERSION_AND_SELECTION_FINGERPRINT_INCREMENTAL/);
+  assert.match(bootstrap,/fullLibraryReplicationForbidden:true/);
+  assert.match(bootstrap,/changedFamiliesOnlyMayRebind:true/);
+  assert.match(bootstrap,/studioAssetBindingApplied:built\.studioAssets\.applied===true/);
+  assert.match(bootstrap,/studioAssetRuntimeVerified:false/);
+  assert.match(bootstrap,/studioAssetPromotionEligible:false/);
+});
+
+test('Roblox source binding exposes every selected internal asset family to existing game code',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/local studioAssetFamilies = studioAssetConfig\.Families or \{\}/);
+  assert.match(bootstrap,/local function studioAssetFamily\(family\)/);
+  assert.match(bootstrap,/local function hasStudioAssetAtom\(familyOrAtom, atom\)/);
+  assert.match(bootstrap,/Config\.StudioAssets and Config\.StudioAssets\.Families or \{\}/);
+  assert.match(bootstrap,/hasStudioAtom\("UI", "FRAME_PANEL"\)/);
+  assert.doesNotMatch(bootstrap,/writeFileSync\([^\n]*company-asset-library\.json/);
+});
+
+test('Roblox source workflow persists Studio selection handoff for downstream runtime verification',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/studioAssetBindingApplied:bootstrapEvidence\.studioAssetBindingApplied===true/);
+  assert.match(workflow,/studioAssetBinding:bootstrapEvidence\.studioAssetBinding\|\|null/);
+  assert.match(workflow,/robloxStudioAssetBindingApplied:result\.studioAssetBindingApplied===true/);
+  assert.match(workflow,/build_up_asset_fingerprint=.*buildUpAssetSourceUsageFingerprint/);
+  assert.match(workflow,/asset_selection_fingerprint=.*assetSelectionFingerprint/);
+  assert.match(workflow,/asset_library_version=.*assetLibraryVersion/);
+  assert.match(workflow,/--build-up-asset-fingerprint="\$build_up_asset_fingerprint"/);
+  assert.match(workflow,/--asset-selection-fingerprint="\$asset_selection_fingerprint"/);
+  assert.match(workflow,/--asset-library-version="\$asset_library_version"/);
+  assert.match(workflow,/robloxBuildUpAssetSourceUsageFingerprint:result\.buildUpAssetSourceUsageFingerprint/);
+  assert.match(workflow,/robloxBuildAssetSelectionFingerprint:result\.assetSelectionFingerprint/);
+  assert.match(workflow,/robloxStudioAssetRuntimeBindingPassed:false/);
+  assert.match(workflow,/robloxStudioAssetRuntimeBindingEvidence:null/);
+});
+
+test('Roblox source workflow redispatches against fresh main when reconciliation became stale mid-run',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/id: persist_state/);
+  assert.match(workflow,/staleReconciliationCount\+\+/);
+  assert.match(workflow,/ROBLOX_SOURCE_RECONCILIATION_STALE_REQUEUE=/);
+  assert.match(workflow,/stale_reconciliation_count=/);
+  assert.match(workflow,/steps\.persist_state\.outputs\.stale_reconciliation_count != '0'/);
+  assert.match(workflow,/ROBLOX_FRESH_MAIN_RECONCILIATION_REQUIRED=YES/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(workflow,/-f game_id="\$REQUESTED_GAME_ID"/);
+  assert.doesNotMatch(workflow,/ROBLOX_SOURCE_RECONCILIATION_STALE_IGNORED=/);
+});
+
+test('Roblox source workflow keeps compiled candidates pending when Actions cannot create PRs',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/Attempt validated Roblox source promotion through PR[\s\S]*continue-on-error: true/);
+  assert.match(workflow,/const supersedeReason=String\(process\.env\.SUPERSEDE_REASON\|\|''\)\.trim\(\)/);
+  assert.match(workflow,/supersedeReason==='SOURCE_TREE_STALE'\?'source-tree-superseded':'source-plan-contract-superseded'/);
+  assert.ok(workflow.includes("routingBlockers:['roblox-source-promotion-pending']"));
+  assert.ok(workflow.includes("item.robloxSourceCandidateReadyAt"));
+  assert.ok(workflow.includes("item.robloxSourceCandidateBranch"));
+  assert.ok(workflow.includes('ROBLOX_SOURCE_PROMOTION_PENDING_COUNT'));
+});
+
+
+
+test('Roblox package completion routes F0 through private validation and publishes canonical target only after F9',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
+  const f0=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
+  const runtimeQa=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-post-runtime-qa.yml',import.meta.url),'utf8');
+  const f9=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-final-review-revalidation.yml',import.meta.url),'utf8');
+  const publish=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-release-promotion.yml',import.meta.url),'utf8');
+  assert.ok(preflight.includes('workflow_dispatch:'));
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
+  assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'));
+  assert.ok(f0.includes('Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight'));
+  assert.ok(workflow.includes('Route F0-passed artifacts to private runtime validation without Studio'));
+  assert.ok(workflow.includes('publish_stage=validation'));
+  assert.ok(workflow.includes('ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED'));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_REQUIRED_FOR_DEVELOPMENT_CONTINUATION=NO'));
+  assert.ok(workflow.includes('company-development-roblox-release-promotion.yml'));
+  assert.ok(runtimeQa.includes("item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'"));
+  assert.ok(f9.includes('Roblox F9 Final Review'));
+  assert.ok(f9.includes('item.robloxCanonicalPublishPending=serverPublishEligible'));
+  assert.ok(f9.includes("item.currentStep='POST_F9_CONTINUOUS_EVOLUTION'"));
+  assert.ok(f9.includes('publish_stage=final'));
+  assert.ok(publish.includes('ROBLOX_CANONICAL_FINAL_PUBLISH=PASS'));
+  assert.ok(f9.includes('ROBLOX_F9_VIBE_REFILL_DISPATCHED='));
+  assert.ok(f9.includes('ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=YES'));
+  assert.ok(!f0.includes('ROBLOX_FAKE_RUNTIME_PASS=ALLOWED'));
+});
+
+test('new Roblox package identity clears every downstream preflight runtime and QA checkpoint',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  for(const marker of [
+    'robloxBuildPreflightPassedAt:null','robloxBuildPreflightFailedAt:null','robloxBuildPreflightEvidence:null',
+    'robloxFoundationF0Passed:false','robloxFoundationF0PassedAt:null','robloxFoundationF0Evidence:null',
+    'robloxHeadlessFastMvpPassed:false','robloxHeadlessFastMvpEvidence:null',
+    'robloxRuntimeCandidateEvidence:null','robloxRuntimeFoundationPassed:false','robloxRuntimeFoundationEvidence:null',
+    'robloxRuntimePassedAt:null','robloxRuntimeFailedAt:null','robloxRuntimeEvidence:null','robloxRuntimeRetryCount:0',
+    'robloxServerClientBoundaryPassed:false','robloxDatastoreRejoinPassed:false','robloxMobileControlUiPassed:false',
+    'robloxIndependentQaPassedAt:null','robloxRegressionPassedAt:null','robloxFinalReviewPassedAt:null','robloxF9ReleaseRegressionPassed:false','robloxF9ReleaseRegressionEvidence:null','robloxPostRuntimeQaEvidence:null',
+    'robloxInternalReleaseReady:false','robloxInternalReleaseAt:null',
+  ]) assert.ok(workflow.includes(marker),`missing downstream reset: ${marker}`);
+});
+
+test('successful Roblox package flow auto-dispatches shared preflight then F0 without a Studio approval gate',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes('Dispatch Roblox HEADLESS FAST_MVP continuation')||workflow.includes('continuation'));
+  assert.ok(!workflow.includes("github.actor == 'github-actions[bot]'"));
+  assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
+  assert.ok(workflow.includes('ROBLOX_PREFLIGHT_READY_COUNT'));
+  assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
+  assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATION_IDS='));
+  assert.ok(workflow.includes('ROBLOX_GLOBAL_PACKAGE_BARRIER=DISABLED'));
+  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DEDUPED_COUNT='));
+  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_CURRENT_MAIN:'));
+  assert.match(workflow,/String\(run\.head_sha\|\|''\)!==currentSha/);
+  assert.doesNotMatch(workflow,/\$package_pending" == '0'.*ROBLOX_POST_PACKAGE_CONTINUATION/s);
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
+  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
+  assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
+  assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'));
+  assert.ok(!preflight.includes('studio_run_approved:'));
+});
+
+
+test('Roblox bootstrap consumes Vibe3 playbook and transformative learning context',()=>{
+  const playbooks={
+    taskTypes:{
+      roblox:{
+        authority:'verified-task-playbook',
+        checklist:[
+          'bind-roblox-source-and-place',
+          'separate-server-client-authority',
+          'validate-remotes-and-datastore-boundaries',
+          'run-real-roblox-runtime-and-independent-qa'
+        ],
+        reuse:[
+          {
+            id:'external-black-box-block-blast-run-test',project:'block-blast',sourceRevision:'sha256:'+ 'a'.repeat(64),
+            distilledApplicationPrinciples:['id=compact-tactical-state-with-immediate-feedback; scope=gameplay; lesson=compact tactical state with immediate feedback; apply=compact-tactical-state-with-immediate-feedback'],
+            distilledAvoidancePrinciples:['id=avoid-trade-dress; scope=visual; lesson=do not clone distinctive expression; apply=reauthor with Pocket Foundry identity'],
+            distilledLearningUseAllowed:['menu flow','immediate feedback']
+          },
+          {
+            id:'external-black-box-shattered-pixel-dungeon-run-test',project:'shattered-pixel-dungeon',sourceRevision:'sha256:'+ 'b'.repeat(64),
+            distilledApplicationPrinciples:['id=persistent-primary-rpg-navigation; scope=progression; lesson=keep primary progression context visible; apply=persistent-primary-rpg-navigation']
+          }
+        ]
+      },
+      coding:{
+        authority:'verified-task-playbook',
+        checklist:['rank-responsible-source-before-edit','run-syntax-tests-runtime-regression'],
+        reuse:[{
+          id:'external-black-box-idle-fantasy-run-test',project:'idle-fantasy',sourceRevision:'sha256:'+ 'c'.repeat(64),
+          distilledApplicationPrinciples:['id=persistent-core-state-around-world-view; scope=world; lesson=keep core state readable around the world view; apply=persistent-core-state-around-world-view']
+        }]
+      }
+    }
+  };
+  const recombination={
+    recipes:[{
+      id:'recombine-roblox-test',
+      sourceProjects:['block-blast','shattered-pixel-dungeon'],
+      featureBlend:['progression-difficulty','touch-input','session-retry-gameover'],
+      transformationOperator:'change-input-model',
+      internalCreationRequirement:'ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT'
+    }]
+  };
+  const learned=compileRobloxSource({
+    gameId:'roblox-learning-test',
+    gameName:'Learning Test',
+    baseline,
+    artbook:{content:{identity:'Pocket Foundry',coreLoop:['collect','upgrade','unlock']}},
+    playbooks,
+    recombination
+  });
+  assert.equal(learned.learning.applied,true);
+  assert.equal(learned.learning.verifiedExternalLearningFirst,true);
+  assert.equal(learned.learning.verifiedExternalLearningCoveragePct,100);
+  assert.equal(learned.learning.verifiedExternalLearningRetrievedCount,3);
+  assert.equal(learned.learning.verifiedExternalLearningAppliedCount,3);
+  assert.ok(learned.learning.verifiedExternalLearningPrinciples.includes('id=compact-tactical-state-with-immediate-feedback; scope=gameplay; lesson=compact tactical state with immediate feedback; apply=compact-tactical-state-with-immediate-feedback'));
+  assert.ok(learned.learning.verifiedExternalLearningPrinciples.includes('id=persistent-primary-rpg-navigation; scope=progression; lesson=keep primary progression context visible; apply=persistent-primary-rpg-navigation'));
+  assert.ok(learned.learning.verifiedExternalAvoidancePrinciples.includes('id=avoid-trade-dress; scope=visual; lesson=do not clone distinctive expression; apply=reauthor with Pocket Foundry identity'));
+  assert.ok(learned.learning.verifiedExternalLearningUseAllowed.includes('immediate feedback'));
+  assert.deepEqual(learned.learning.verifiedExternalLearningApplyAxes,[
+    'CORE_GAMEPLAY_FEEL',
+    'PLAYER_INPUT_AND_TOUCH',
+    'VISIBLE_ACTION_FEEDBACK',
+    'HUD_AND_CONTEXTUAL_GUIDANCE',
+    'MOBILE_READABILITY_AND_RESPONSE',
+    'WORLD_AND_BACKGROUND_PRESENTATION',
+    'PROGRESSION_RISK_READABILITY',
+    'REWARD_AND_EVENT_PRESENTATION'
+  ]);
+  assert.equal(learned.learning.recipeId,'recombine-roblox-test');
+  assert.equal(learned.generationMode,'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT');
+  assert.ok(learned.actions.some(action=>Boolean(action.learningPattern)));
+  assert.ok(learned.actions.some(action=>learned.learning.verifiedExternalLearningPrinciples.includes(action.learningPattern)));
+  assert.ok(learned.result.sharedConfig.includes('LearningContext = {'));
+  assert.ok(learned.result.sharedConfig.includes('RecipeId = "recombine-roblox-test"'));
+  assert.ok(learned.result.sharedConfig.includes('VerifiedExternalLearningFirst = true'));
+  assert.ok(learned.result.sharedConfig.includes('CoveragePct = 100'));
+  assert.ok(learned.result.sharedConfig.includes('ApplyAxes = {'));
+  assert.ok(learned.result.sharedConfig.includes('GameSpecificSemanticMappings = {'));
+    assert.ok(learned.result.sharedConfig.includes('SemanticMappingVersion = 1'));
+    assert.ok(learned.result.sharedConfig.includes('LearningDispositions = {'));
+  assert.ok(learned.result.serverCode.includes('ActionSequence'));
+  assert.ok(learned.result.serverCode.includes('LastLearningPattern'));
+  assert.ok(learned.result.clientCode.includes('ContextActionService'));
+  assert.ok(learned.result.clientCode.includes('BindAction("VibePrimaryAction"'));
+  assert.equal(learned.validation.learningApplied,true);
+  assert.equal(learned.validation.pass,true,learned.validation.blockers.join(','));
+});
+
+test('Roblox verified external coverage excludes PRACTICE_ONLY black-box advisory records',()=>{
+  const learning=createRobloxVibe3LearningContext({
+    gameId:'verified-learning-separation-test',
+    profile:{genre:'Action',subgenre:'',playMode:'SINGLE'},
+    artbook:{content:{identity:'Verified Learning Separation'}},
+    playbooks:{
+      taskTypes:{
+        roblox:{
+          authority:'verified-task-playbook',
+          checklist:['apply-verified-external-learning'],
+          reuse:[{
+            id:'external-black-box-verified-playbook',
+            project:'verified-reference',
+            distilledApplicationPrinciples:['bind touch input to immediate visible local feedback'],
+            distilledAvoidancePrinciples:['do not clone distinctive commercial UI expression'],
+            distilledLearningUseAllowed:['interaction feedback timing']
+          }]
+        },
+        coding:{authority:'verified-task-playbook',checklist:[],reuse:[]}
+      }
+    },
+    distillation:{
+      records:[{
+        id:'practice-only-black-box-observation',
+        retrievalEligible:true,
+        engine:'roblox',
+        rawCodeStored:false,
+        rawAssetStored:false,
+        rawBinaryStored:false,
+        sourceKind:'external-roblox-runtime-reference',
+        authority:'PRACTICE_ONLY',
+        observationKind:'BLACK_BOX_RUNTIME_ONLY',
+        patterns:['combat','touch'],
+        principles:['clear-feedback']
+      }]
+    }
+  });
+  assert.deepEqual(learning.verifiedExternalLearningIds,['external-black-box-verified-playbook']);
+  assert.equal(learning.verifiedExternalLearningRetrievedCount,1);
+  assert.equal(learning.verifiedExternalLearningAppliedCount,1);
+  assert.equal(learning.verifiedExternalLearningCoveragePct,100);
+  assert.equal(learning.verifiedExternalDistilledContentComplete,true);
+  assert.ok(learning.verifiedExternalLearningPrinciples.includes('bind touch input to immediate visible local feedback'));
+  assert.deepEqual(learning.externalBlackBoxAdvisoryIds,['practice-only-black-box-observation']);
+  assert.equal(learning.externalBlackBoxAdvisoryUsed,true);
+  assert.equal(learning.verifiedExternalLearningIds.includes('practice-only-black-box-observation'),false);
+});
+
+test('Roblox source workflow requires durable Vibe3 learning memory for source generation',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes('VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime'));
+  assert.ok(workflow.includes('company-learning/vibe3-task-playbooks.json'));
+  assert.ok(workflow.includes('company-learning/vibe3-recombination-memory.json'));
+  assert.ok(workflow.includes('--playbooks=/tmp/vibe3-task-playbooks.json'));
+  assert.ok(workflow.includes('--recombination=/tmp/vibe3-recombination-memory.json'));
+  assert.ok(workflow.includes('ROBLOX_VIBE3_LEARNING_MEMORY=READY'));
+  assert.ok(workflow.includes('ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY'));
+  assert.ok(workflow.includes("e.vibe3LearningApplied===true&&e.verifiedExternalLearningFirst===true"));
+  assert.ok(workflow.includes("Number(e.verifiedExternalLearningCoveragePct||0)===100"));
+  assert.ok(workflow.includes("e.verifiedExternalLearningIds.length===Number(e.verifiedExternalLearningAppliedCount||0)"));
+  assert.ok(workflow.includes("String(e.verifiedExternalLearningFingerprint||'').length>0"));
+});
+
+test('Roblox source workflow treats every development-confirmed game as the Roblox side of the automatic pair',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes("platformDevelopmentEligible(item,'ROBLOX')"));
+  assert.ok(workflow.includes("target=`roblox-games/${item.gameId}`")||workflow.includes("const target=`roblox-games/${item.gameId}`"));
+  assert.ok(workflow.includes('ROBLOX_EXECUTION_BATCH_CAPACITY='));
+  assert.ok(workflow.includes('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'));
+  assert.ok(workflow.includes('ROBLOX_RUNNER_PARALLEL_CAPACITY=EXTERNAL_PROVIDER_MANAGED'));
+  assert.doesNotMatch(workflow,/max-parallel:\s*6/);
+});
+
+
+test('Roblox compiler is admitted by native platform design and does not consume Web handoff',()=>{
+  const compiled=compileRobloxSource({gameId:'demo',gameName:'Demo',baseline,artbook:{},playbooks:verifiedRobloxPlaybooks(),webHandoff:{stage:'INVALID_WEB_STAGE'}});
+  assert.equal(compiled.validation.pass,true);
+  assert.equal(compiled.webHandoff,null);
+  assert.ok(compiled.result.sharedConfig.includes('DesignBaseline = {'));
+  assert.ok(compiled.result.sharedConfig.includes('PlatformProfile = {'));
+  assert.ok(compiled.result.sharedConfig.includes('AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY"'));
+});
+
+test('central development orchestrator independently dispatches Roblox while preserving native admission',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
+  const admission=fs.readFileSync(new URL('../tools/company-upper-platform-admission.mjs',import.meta.url),'utf8');
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo/);
+  assert.match(workflow,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
+  assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
+  assert.doesNotMatch(workflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.doesNotMatch(workflow,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
+  assert.doesNotMatch(workflow,/gh workflow run (?:company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
+  assert.match(admission,/upper-platform-development-readiness\.json/);
+  assert.match(admission,/READINESS_SOURCE_STALE/);
+  assert.match(workflow,/grandfatherGameIds/);
+  assert.match(admission,/grandfatherGameIds/);
+  assert.doesNotMatch(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
+});
+
+test('Roblox native executor independently enforces Unity Web upper-platform admission',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const admission=fs.readFileSync(new URL('../tools/company-upper-platform-admission.mjs',import.meta.url),'utf8');
+  assert.match(workflow,/company-upper-platform-admission\.mjs/);
+  assert.match(workflow,/classifyUpperPlatformAdmission/);
+  assert.match(workflow,/grandfatherGameIds/);
+  assert.match(workflow,/admission\.state!=='UPPER_PLATFORM'/);
+  assert.match(workflow,/ROBLOX_NATIVE_ADMISSION_BLOCKED=/);
+  assert.match(admission,/UPPER_PLATFORM_DEVELOPMENT_READY/);
+  assert.match(admission,/READINESS_SOURCE_STALE/);
+});
+
+test('owner-focused concurrent Roblox lane carries exact merged source revision into package without replacing canonical Unity',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/merge_sha="\$\(gh pr view "\$pr_url".*\.mergeCommit\.oid/s);
+  assert.match(workflow,/source_revision=\$merge_sha/);
+  assert.match(workflow,/sourceRevision:\/\^\[0-9a-f\]\{40\}\$\/i/);
+  assert.match(workflow,/ownerFocusRobloxSourceCommit:result\.sourceRevision/);
+  assert.match(workflow,/ownerFocusRobloxSourceBootstrapPassedAt:stamp/);
+  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
+  assert.match(workflow,/ownerFocusRobloxBuildOrPackagePassed===true/);
+  assert.match(workflow,/ownerFocusRobloxBuildSourceRevision===sourceRevision/);
+  assert.match(workflow,/ownerFocusRobloxAssetPipelineState:'BUILD_READY'/);
+  const secondaryPersistAt=workflow.indexOf("const secondaryOwnerFocus=expectedById.get(result.gameId)?.secondaryOwnerFocus===true;");
+  assert.ok(secondaryPersistAt>=0,'secondary package persist branch missing');
+  const secondaryPersistEnd=workflow.indexOf('continue;',secondaryPersistAt);
+  const secondaryPersist=workflow.slice(secondaryPersistAt,secondaryPersistEnd);
+  assert.doesNotMatch(secondaryPersist,/selectedPlatform:'ROBLOX'/);
+  assert.doesNotMatch(secondaryPersist,/targetPlatform:'ROBLOX'/);
+  assert.doesNotMatch(secondaryPersist,/currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'/);
+  assert.doesNotMatch(secondaryPersist,/canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'/);
+});
+
+test('canonical concurrent Roblox source persistence preserves an existing Unity selection',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/const robloxSelectionPatch=item=>/);
+  assert.match(workflow,/const concurrentRoblox=selected!=='ROBLOX'/);
+  assert.match(workflow,/item\.concurrentTargetPlatforms\.some\(value=>String\(value\|\|''\)\.toUpperCase\(\)==='ROBLOX'\)/);
+  assert.match(workflow,/return concurrentRoblox\?\{\}:\{selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX'\}/);
+  assert.ok((workflow.match(/Object\.assign\(item,robloxSelectionPatch\(item\),\{/g)||[]).length>=5);
+});
+
+test('owner-focused Roblox package completion dispatches the existing continuation without canonical Unity mutation',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
+  assert.match(workflow,/ownerFocusRobloxBuildOrPackagePassed===true/);
+  assert.match(workflow,/ownerFocusRobloxBuildPreflightPassed/);
+  assert.match(workflow,/ownerFocusRobloxRuntimePassed/);
+  assert.match(workflow,/company-development-roblox-runtime-continuation\.yml/);
+  assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES/);
+});
+
+
+test('exact game_id runtime dispatch isolates source and package selection',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/workflow_dispatch:[\s\S]*game_id:/);
+  assert.ok((workflow.match(/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/g)||[]).length>=2);
+  assert.ok((workflow.match(/if\(requested&&item\.gameId!==requested\)continue;/g)||[]).length>=2);
+  assert.match(workflow,/ROBLOX_REQUESTED_TECHNICAL_GAME_ID=/);
+});
+
+
+test('stale historical Roblox runtime executions cannot roll source or package state backward',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/currentMainRevision=execFileSync\('git',\['rev-parse','origin\/main'\]/);
+  assert.match(workflow,/ROBLOX_SOURCE_RECONCILIATION_STALE_REQUEUE=/);
+  assert.match(workflow,/ROBLOX_SOURCE_RECONCILIATION_STALE_COUNT=/);
+  assert.match(workflow,/reconciliationRevision!==currentMainRevision/);
+  assert.match(workflow,/ROBLOX_PACKAGE_STALE_RESULT_IGNORED=/);
+  assert.match(workflow,/boundSourceRevision!==resultSourceRevision/);
+});
+
+
+test('Roblox source and package workers avoid full repository history checkout',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+  assert.doesNotMatch(workflow,/git fetch --no-tags origin/);
+  assert.ok((workflow.match(/fetch-depth:\s*1/g)||[]).length>=6);
+  assert.ok((workflow.match(/fetch-tags:\s*false/g)||[]).length>=6);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$\{\{ matrix\.sourceRevision \}\}"/);
+});
+
+
+test('Roblox runtime persist writers refetch and reapply instead of using a cancellable global writer lock',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const execution=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
+  assert.equal(execution.sharedStateWriteCriticalSectionOnly,'COMPANY_RUNTIME_SHARED_JSON_COMMIT_MAY_SERIALIZE_BRIEFLY_FOR_INTEGRITY');
+  assert.equal(execution.sharedStateWriteSerializationMayNotSerializeHeavyCheckoutBuildRuntimeOrQa,true);
+  assert.equal(execution.sourceRootWideLockForbidden,true);
+  assert.equal(execution.responsibleFileConflictSerializationOnly,true);
+  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
+  assert.match(workflow,/ROBLOX_SOURCE_PERSIST_ATTEMPT=/);
+  assert.match(workflow,/ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=/);
+  assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_ATTEMPT=/);
+  assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=/);
+  assert.match(workflow,/while true; do[\s\S]*?ROBLOX_SOURCE_PERSIST_ATTEMPT=/);
+  assert.match(workflow,/while true; do[\s\S]*?ROBLOX_TECHNICAL_PERSIST_ATTEMPT=/);
+  assert.ok((workflow.match(/git fetch --no-tags --depth=1 origin "\$COMPANY_RUNTIME_BRANCH" main/g)||[]).length>=4);
+});
+
+
+test('Roblox runtime checkpoint writers recover dirty Git LFS checkouts without bypassing evidence gates',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const writers=[
+    ['Persist Roblox source-bind state to company runtime','roblox-runtime-persist'],
+    ['Persist successful F0 checkpoint immediately per game','roblox-f0-persist-${safe}'],
+    ['Persist exact Roblox build package evidence','roblox-technical-persist'],
+  ];
+  for(const [step,branch] of writers){
+    const start=workflow.indexOf('      - name: '+step);
+    assert.ok(start>=0,'missing runtime checkpoint writer: '+step);
+    const fragment=workflow.slice(start,start+24000);
+    assert.match(fragment,/git fetch --no-tags --depth=1 origin "\$COMPANY_RUNTIME_BRANCH" main/);
+    assert.ok(fragment.includes('git checkout --force -B "'+branch+'" "origin/$COMPANY_RUNTIME_BRANCH"')
+      ||fragment.includes('git checkout --force -B '+branch+' "origin/$COMPANY_RUNTIME_BRANCH"'),
+      'dirty local checkout must not block runtime checkpoint: '+step);
+  }
+  assert.match(workflow,/ROBLOX_SOURCE_RECONCILIATION_STALE_COUNT=/);
+  assert.match(workflow,/ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=/);
+  assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=/);
+});
+
+test('dedicated Roblox QA-only changes do not launch the full runtime pipeline',()=>{
+  const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const pushBlock=runtime.slice(runtime.indexOf('on:'),runtime.indexOf('workflow_call:'));
+  assert.doesNotMatch(pushBlock,/qa\/company-development-roblox-runtime\.test\.mjs/);
+  assert.doesNotMatch(pushBlock,/qa\/company-development-roblox-source-reconcile\.test\.mjs/);
+  const vibe3=fs.readFileSync(new URL('../.github/workflows/vibe3-engine-contract.yml',import.meta.url),'utf8');
+  const vibeQa=fs.readFileSync(new URL('../.github/workflows/vibe-qa.yml',import.meta.url),'utf8');
+  assert.match(vibe3,/qa\/company-development-roblox-runtime\.test\.mjs/);
+  assert.match(vibeQa,/qa\/company-development-roblox-source-reconcile\.test\.mjs/);
+});
+
+test('Roblox game source pushes route through source drift sync without duplicate runtime ingress',()=>{
+  const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const runtimePush=runtime.slice(runtime.indexOf('on:'),runtime.indexOf('workflow_dispatch:'));
+  assert.doesNotMatch(runtimePush,/roblox-games\/\*\*/);
+  assert.match(runtimePush,/company-roblox-source-drift-sync\.yml/);
+  assert.match(runtimePush,/company-roblox-source-drift-sync\.mjs/);
+  assert.match(runtimePush,/company-roblox-source-drift-sync\.test\.mjs/);
+});
+
+
+
+test('exact Roblox dispatch stays per-game while batch runs and runtime writers avoid global serialization',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const execution=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
+  assert.equal(execution.gameLevelExecution,'PARALLEL_BY_DEFAULT');
+  assert.equal(execution.internalGameConcurrencyCapsForbidden,true);
+  assert.equal(execution.crossGameWorkflowSerializationForbidden,true);
+  assert.equal(execution.exactGameDuplicateWorkflowSerializationAllowed,false);
+  assert.equal(execution.internalSameWorkflowGameMatrixParallelismPreserved,true);
+  const workflowHeader=workflow.slice(0,workflow.indexOf('\njobs:\n'));
+  assert.doesNotMatch(workflowHeader,/\nconcurrency:\n/);
+  assert.doesNotMatch(workflow,/max-parallel:/);
+  for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
+    const header=`  ${job}:\n`;
+    const start=workflow.indexOf(header);
+    assert.ok(start>=0,job+' missing');
+    const tail=workflow.slice(start+header.length);
+    const nextJobMatch=tail.match(/\n  [A-Za-z0-9_-]+:\n/);
+    const end=nextJobMatch?start+header.length+nextJobMatch.index:workflow.length;
+    assert.match(workflow.slice(start,end),/runs-on: ubuntu-24\.04/);
+  }
+  assert.match(workflow,/\n  source-worker:\n[\s\S]*?runs-on: ubuntu-latest/);
+  assert.match(workflow,/\n  technical-worker:\n[\s\S]*?runs-on: ubuntu-latest/);
+  assert.doesNotMatch(workflow,/group: company-runtime-writer/);
+  assert.match(workflow,/ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=/);
+  assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=/);
+});
+
+test('Roblox batch scheduler ignores unrelated main churn and redispatches only when its control contract changed',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/name: Reject superseded batch scheduler/);
+  assert.match(workflow,/if \[ -n "\$REQUESTED_GAME_ID" \]; then/);
+  assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
+  assert.match(workflow,/String\(r\.head_sha\|\|''\)===currentSha/);
+  assert.match(workflow,/ROBLOX_BATCH_FRESHNESS=CURRENT:/);
+  assert.match(workflow,/ROBLOX_SOURCE_PLAN_CONTRACT_PATHS:/);
+  assert.match(workflow,/git diff --quiet "\$GITHUB_SHA" "\$current_main" -- "\$\{contract_paths\[@\]\}"/);
+  assert.match(workflow,/ROBLOX_BATCH_UNRELATED_MAIN_ADVANCE_ACCEPTED=/);
+  assert.match(workflow,/ROBLOX_BATCH_CONTRACT_SUPERSEDED=/);
+  assert.match(workflow,/GH_TOKEN: \$\{\{ github\.token \}\}/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(workflow,/ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=YES:/);
+  assert.doesNotMatch(workflow,/ROBLOX_BATCH_SUPERSEDED=/);
+  assert.match(workflow,/count: \$\{\{ steps\.targets\.outputs\.count \|\| '0' \}\}/);
+  assert.match(workflow,/matrix: \$\{\{ steps\.targets\.outputs\.matrix \|\| '\{"include":\[\]\}' \}\}/);
+  assert.ok((workflow.match(/if: steps\.freshness\.outputs\.run == 'true'/g)||[]).length>=4);
+});
+
+test('Roblox source persistence rejects results when the source-plan control contract changed mid-run',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/name: Bind Roblox source-plan contract fingerprint/);
+  assert.match(workflow,/ROBLOX_SOURCE_PLAN_CONTRACT_PATHS:/);
+  assert.ok((workflow.match(/ROBLOX_SOURCE_PLAN_CONTRACT_PATHS_MISSING/g)||[]).length>=2);
+  assert.match(workflow,/contract_fingerprint: \$\{\{ steps\.contract\.outputs\.fingerprint \|\| '' \}\}/);
+  assert.match(workflow,/SOURCE_PLAN_CONTRACT_FINGERPRINT: \$\{\{ needs\.source-plan\.outputs\.contract_fingerprint \}\}/);
+  for(const required of [
+    '.github/workflows/company-development-roblox-runtime.yml',
+    'tools/company-development-roblox-bootstrap.mjs',
+    'tools/company-development-roblox-source-reconcile.mjs',
+    'tools/company-selected-platform-router.mjs',
+    'tools/company-upper-platform-admission.mjs',
+    'company-asset-library.json',
+    'company-learning/platform-release-roadmap.json',
+  ]) assert.ok(workflow.includes(required));
+  assert.match(workflow,/const sourcePlanContractStale=Boolean\(plannedContractFingerprint&&plannedContractFingerprint!==liveContractFingerprint\)/);
+  assert.match(workflow,/ROBLOX_SOURCE_PLAN_CONTRACT_STALE=/);
+  assert.match(workflow,/for\(const result of sourcePlanContractStale\?\[\]:reconciliation\)/);
+  assert.match(workflow,/for\(const result of sourcePlanContractStale\?\[\]:results\.filter\(result=>result\?\.superseded!==true\)\)/);
+  assert.match(workflow,/ROBLOX_SOURCE_WORKER_SUPERSEDED_COUNT=/);
+  assert.match(workflow,/staleReconciliationCount=Math\.max\(reconciliation\.length,expected\.length,1\)/);
+});
+
+
+test('every current Roblox source-plan contract path wakes a fresh batch immediately',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const pushStart=workflow.indexOf('  push:');
+  const pushEnd=workflow.indexOf('  workflow_call:',pushStart);
+  assert.ok(pushStart>=0&&pushEnd>pushStart);
+  const pushBlock=workflow.slice(pushStart,pushEnd);
+  const contractStart=workflow.indexOf('  ROBLOX_SOURCE_PLAN_CONTRACT_PATHS: >-');
+  const contractEnd=workflow.indexOf('\n\njobs:',contractStart);
+  assert.ok(contractStart>=0&&contractEnd>contractStart);
+  const contractBlock=workflow.slice(contractStart,contractEnd);
+  const requiredPaths=[
+    '.github/workflows/company-development-roblox-runtime.yml',
+    'tools/company-development-roblox-bootstrap.mjs',
+    'tools/company-development-roblox-source-reconcile.mjs',
+    'tools/company-selected-platform-router.mjs',
+    'tools/company-upper-platform-admission.mjs',
+    'company-asset-library.json',
+    'company-learning/platform-release-roadmap.json',
+  ];
+  for(const required of requiredPaths){
+    assert.ok(contractBlock.includes(required),'contract path missing: '+required);
+    assert.ok(pushBlock.includes(`'${required}'`),'push wake missing: '+required);
+  }
+});
+
+test('Roblox source worker bases candidate on current main without leaking workflow diffs and requeues stale contracts',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const workerStart=workflow.indexOf('  source-worker:');
+  const workerEnd=workflow.indexOf('  source-bootstrap:',workerStart);
+  const worker=workflow.slice(workerStart,workerEnd);
+  assert.match(worker,/SOURCE_PLAN_CONTRACT_FINGERPRINT: \$\{\{ needs\.source-plan\.outputs\.contract_fingerprint \}\}/);
+  assert.match(worker,/ROBLOX_SOURCE_PLAN_CONTRACT_STALE_BEFORE_WORKER=/);
+  assert.match(worker,/ROBLOX_SOURCE_PLAN_CONTRACT_CURRENT=/);
+  assert.match(worker,/git checkout -B "\$branch" origin\/main/);
+  assert.doesNotMatch(worker,/git checkout -b "\$branch"/);
+  assert.match(worker,/ROBLOX_SOURCE_BRANCH_BASE=/);
+  assert.match(worker,/if: steps\.generate\.outcome == 'success' && steps\.generate\.outputs\.superseded != 'true'/);
+  assert.match(worker,/supersedeReason==='SOURCE_TREE_STALE'\?'source-tree-superseded':'source-plan-contract-superseded'/);
+  assert.match(worker,/ROBLOX_WORKER_RESULT=\$\{id\}:\$\{superseded\?'SUPERSEDED'/);
+});
+
+
+test('Roblox batch scheduler keeps control work fixed while preserving uncapped per-game matrix parallelism',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const workflowHeader=workflow.slice(0,workflow.indexOf('\njobs:\n'));
+  assert.doesNotMatch(workflowHeader,/\nconcurrency:\n/);
+  assert.match(workflow,/\n  source-plan:\n[\s\S]*?runs-on: ubuntu-24\.04/);
+  assert.doesNotMatch(workflow,/\n  source-plan:\n[\s\S]{0,260}?runs-on: ubuntu-slim/);
+  assert.doesNotMatch(workflow,/max-parallel:/);
+  assert.match(workflow,/const EXECUTION_BATCH_MAX=256;/);
+  assert.equal(roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.matrixBatchMax,256);
+  assert.equal(roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.internalGameConcurrencyCapsForbidden,true);
+});
+
+test('territory-war exact source honors approved competitive multiplayer profile',()=>{
+  const config=fs.readFileSync('roblox-games/territory-war/shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync('roblox-games/territory-war/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/territory-war/client/Game.client.luau','utf8');
+  assert.match(config,/PlayMode = "COMPETITIVE"/);
+  assert.match(config,/MultiplayerRequired = true/);
+  assert.match(config,/CompetitiveRequired = true/);
+  assert.match(config,/MinimumParticipants = 2/);
+  assert.match(server,/Players:GetPlayers\(\)/);
+  assert.match(server,/RoundScore/);
+  assert.match(server,/FireAllClients\("MULTIPLAYER_SYNC"/);
+  assert.match(client,/OnClientEvent/);
+});
+
+
+
+
+test('Roblox fused happy path reuses the exact package through shared preflight F0 and private runtime validation',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  assert.equal(roadmap.developmentSpeedExecution.buildOncePerSourceFingerprint,true);
+  assert.equal(roadmap.developmentSpeedExecution.sameArtifactRequiredAcrossRuntimeIndependentQaAndRegression,true);
+  assert.equal(roadmap.developmentSpeedExecution.successfulStageEvidenceReusableWhenSourceFingerprintStillMatches,true);
+  assert.equal(roadmap.developmentSpeedExecution.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
+  assert.match(workflow,/ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED/);
+  assert.match(workflow,/Run fused shared-model build preflight/);
+  assert.match(workflow,/ROBLOX_F0_BUILD_REUSE=SAME_WORKER_EXACT_PACKAGE/);
+  assert.match(workflow,/--rebuilt-artifact-identity="\$artifact_identity"/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=/);
+  assert.match(workflow,/ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED/);
+  assert.match(workflow,/ROBLOX_STUDIO_REQUIRED_FOR_DEVELOPMENT_CONTINUATION=NO/);
+  assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=2/);
+  assert.match(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED_CAUSAL_REPAIR/);
+});
+
+test('Roblox F0 integrity failure reenters the canonical source worker without weakening gates',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const repair=roadmap.directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair;
+  assert.ok(repair.requiredFlow.includes('MODIFY_EXISTING_RESPONSIBLE_SYSTEM_DIRECTLY'));
+  assert.ok(repair.requiredFlow.includes('RERUN_ORIGINAL_FAILURE_SCENARIO'));
+  assert.equal(repair.repairCompletion.wrapperOverrideOrShadowRepairForbidden,true);
+  assert.equal(repair.repeatedFailureEscalation.noArtificialRetryCap,true);
+  assert.match(workflow,/f0FoundationRepair/);
+  assert.match(workflow,/foundationRepair:f0FoundationRepair/);
+  assert.match(workflow,/--foundation-repair="\$FOUNDATION_REPAIR"/);
+  assert.match(workflow,/ROBLOX_EXISTING_SOURCE_FOUNDATION_REPAIR_EVIDENCE=PASS/);
+  assert.match(workflow,/ROBLOX_F0_SOURCE_REPAIR_DISPATCH=YES/);
+  assert.match(workflow,/F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED/);
+  assert.match(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_FAILED/);
+  assert.match(bootstrap,/native-foundation-sentinel-v1/);
+  assert.match(bootstrap,/RuntimeFoundationReport/);
+  assert.match(bootstrap,/GROUND_CONTACT/);
+  assert.match(bootstrap,/MOVEMENT_CONFIRMED/);
+  assert.match(bootstrap,/foundationRepairApplied:foundationRepair===true/);
+  assert.match(bootstrap,/gameplayAuthorityChanged:false/);
+});
+
+test('new native Roblox games generate guarded merged DataStore saves without any model calls',()=>{
+  const compiled=compileRobloxSource({gameId:'save-safe-demo',gameName:'Save Safe Demo',baseline,artbook:{},playbooks:verifiedRobloxPlaybooks()});
+  const server=compiled.result.serverCode;
+  assert.equal(compiled.modelUsed,false);
+  assert.equal(compiled.validation.pass,true,compiled.validation.blockers.join(','));
+  assert.equal(requiresPersistentSave(baseline),true);
+  assert.match(server,/local verifiedSaveLoad = \{\}/);
+  assert.match(server,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/);
+  assert.match(server,/local function savePlayer\(player\)/);
+  assert.match(server,/if verifiedSaveLoad\[player\] ~= true then return end/);
+  assert.match(server,/if current ~= nil and typeof\(current\) ~= "table" then return nil end/);
+  assert.match(server,/local merged = typeof\(current\) == "table" and table\.clone\(current\) or \{\}/);
+  assert.match(server,/for key, value in pairs\(snapshot\) do merged\[key\] = value end/);
+  assert.match(server,/Players\.PlayerRemoving:Connect\(function\(player\)[\s\S]*verifiedSaveLoad\[player\] = nil/);
+  assert.match(server,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.doesNotMatch(server,/game:BindToClose\(function\(\) end\)/);
+});
+
+test('new Roblox compiler output contains the F0 foundation contract from first source build',()=>{
+  const compiled=compileRobloxSource({gameId:'foundation-demo',gameName:'Foundation Demo',baseline,artbook:{},playbooks:verifiedRobloxPlaybooks()});
+  assert.match(compiled.result.serverCode,/native-foundation-sentinel-v1/);
+  assert.match(compiled.result.serverCode,/RuntimeFoundationReport/);
+  assert.match(compiled.result.serverCode,/SpawnLocation/);
+  assert.match(compiled.result.serverCode,/HumanoidRootPart/);
+  assert.match(compiled.result.serverCode,/GROUND_CONTACT/);
+  assert.match(compiled.result.serverCode,/MOVEMENT_CONFIRMED/);
+  assert.match(compiled.result.serverCode,/local excluded = \{character, foundationSpawn\}/);
+  assert.match(compiled.result.serverCode,/params\.ExcludeInstances = excluded/);
+  assert.match(compiled.result.serverCode,/other\.Character/);
+  assert.match(compiled.result.serverCode,/params\.RespectCanCollide = true/);
+  assert.match(compiled.result.serverCode,/humanoid\.FloorMaterial ~= Enum\.Material\.Air/);
+  assert.match(compiled.result.serverCode,/displacement\.Magnitude > 0\.5/);
+  assert.match(compiled.result.serverCode,/NativeFoundationGroundingVersion/);
+  assert.doesNotMatch(compiled.result.serverCode,/GROUND_CONTACT", groundHit ~= nil/);
+  assert.match(compiled.result.serverCode,/BindToClose/);
+  assert.match(compiled.result.clientCode,/TouchEnabled/);
+  assert.match(compiled.result.clientCode,/CameraSubject/);
+  assert.match(compiled.result.clientCode,/RuntimeFoundationReport/);
+});
+
+
+test('line-defense existing visible Studio binding is accepted during F0 foundation repair',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-line-defense-'));
+  const root=path.join(tmp,'line-defense');
+  try{
+    fs.cpSync('roblox-games/line-defense',root,{recursive:true});
+    // 공용 모듈 전사 동기화 이후 저장소 원본에는 이미 모듈이 연결되어 있다.
+    // F0의 재연결 능력을 검증하려면 복제한 픽스처에서 정확히 한 모듈을 제거해야 한다.
+    const fixtureProjectFile=path.join(root,'default.project.json');
+    const fixtureProject=JSON.parse(fs.readFileSync(fixtureProjectFile,'utf8'));
+    assert.ok(fixtureProject.tree.ReplicatedStorage.Shared.RobloxCommonMotion);
+    delete fixtureProject.tree.ReplicatedStorage.Shared.RobloxCommonMotion;
+    fs.writeFileSync(fixtureProjectFile,JSON.stringify(fixtureProject,null,2)+'\n');
+    const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+    const result=applyRobloxStudioAssetBindingToExistingSource({
+      root,
+      gameId:'line-defense',
+      baseline,
+      assetLibrary,
+      foundationRepair:true,
+      learning:createRobloxVibe3LearningContext({gameId:'line-defense',profile:robloxBuildProfileFromBaseline(baseline),artbook:{},playbooks:verifiedRobloxPlaybooks()}),
+    });
+    const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    const server=fs.readFileSync(path.join(root,'server','Game.server.luau'),'utf8');
+    const project=JSON.parse(fs.readFileSync(path.join(root,'default.project.json'),'utf8'));
+    assert.equal(result.foundationRepairApplied,true);
+    assert.equal(result.gameplayAuthorityChanged,false);
+    assert.match(client,/StudioAssetBindingVersion/);
+    assert.match(client,/StudioAssetAtoms/);
+    assert.match(client,/FRAME_PANEL/);
+    assert.match(server,/native-foundation-sentinel-v1/);
+    assert.match(server,/RuntimeFoundationReport/);
+    assert.match(server,/NativeFoundationGroundingVersion/);
+    assert.match(server,/AssemblyLinearVelocity = Vector3\.zero/);
+    assert.match(server,/humanoid\.RigType == Enum\.HumanoidRigType\.R6/);
+    assert.doesNotMatch(server,/GROUND_CONTACT", groundHit ~= nil/);
+    assert.equal(project.tree.Lighting.$properties.Technology,'Voxel');
+    assert.equal(project.tree.Lighting.$properties.LightingStyle,'Soft');
+    assert.equal(project.tree.Lighting.$properties.PrioritizeLightingQuality,false);
+    assert.equal(project.tree.Lighting.CompatibilityToneMap,undefined);
+    // 공용 모듈 자동 연결로 프로젝트 매핑이 정상 갱신되어야 한다.
+    assert.equal(result.changedFiles.some(file=>file.endsWith('default.project.json')),true);
+    assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,'../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+
+test('existing Roblox source normalization preserves supported lighting, authored ambience, and effects',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-lighting-preserve-'));
+  const root=path.join(tmp,'line-defense');
+  try{
+    fs.cpSync('roblox-games/line-defense',root,{recursive:true});
+    const projectFile=path.join(root,'default.project.json');
+    const project=JSON.parse(fs.readFileSync(projectFile,'utf8'));
+    project.tree.Lighting={
+      $properties:{Technology:'Future',LightingStyle:'Realistic',PrioritizeLightingQuality:true,Brightness:3.4},
+      AuthoredBloom:{$className:'BloomEffect',$properties:{Intensity:0.35}},
+    };
+    fs.writeFileSync(projectFile,JSON.stringify(project,null,2)+'\n');
+    const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+    applyRobloxStudioAssetBindingToExistingSource({
+      root,
+      gameId:'line-defense',
+      baseline,
+      assetLibrary,
+      learning:createRobloxVibe3LearningContext({gameId:'line-defense',profile:robloxBuildProfileFromBaseline(baseline),artbook:{},playbooks:verifiedRobloxPlaybooks()}),
+    });
+    const after=JSON.parse(fs.readFileSync(projectFile,'utf8'));
+    assert.equal(after.tree.Lighting.$properties.Technology,'Future');
+    assert.equal(after.tree.Lighting.$properties.LightingStyle,'Realistic');
+    assert.equal(after.tree.Lighting.$properties.PrioritizeLightingQuality,true);
+    assert.equal(after.tree.Lighting.$properties.Brightness,3.4);
+    assert.equal(after.tree.Lighting.AuthoredBloom.$properties.Intensity,0.35);
+    assert.equal(after.tree.Lighting.CompatibilityToneMap,undefined);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+
+test('known Roblox source repair debt outranks reconciliation pass and canonical-state rewrites',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const repair=roadmap.directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair;
+  assert.equal(repair.priority,'STABILITY_AND_PROGRESS_BEFORE_CREATIVE_EXPANSION');
+  assert.equal(repair.repeatedFailureEscalation.repeatedSameApproachWithoutNewCausalEvidenceForbidden,true);
+  assert.match(workflow,/const bootstrapFailed=secondaryOwnerFocus\?item\.ownerFocusRobloxSourceBootstrapFailedAt:item\.robloxSourceBootstrapFailedAt/);
+  assert.match(workflow,/item\.robloxFoundationF0Passed!==true/);
+  assert.match(workflow,/const currentReconciliationPass=reconciledPass\.has\(item\.gameId\)/);
+  assert.match(workflow,/const resolvedSourceBindDebt=!secondaryOwnerFocus/);
+  assert.match(workflow,/String\(item\.currentStep\|\|''\)\.toUpperCase\(\)==='TARGET_PLATFORM_SOURCE_BIND'/);
+  assert.match(workflow,/String\(item\.robloxFailureStage\|\|''\)\.toUpperCase\(\)==='TARGET_PLATFORM_SOURCE_BIND'/);
+  assert.match(workflow,/const knownSourceRepairDebt=\(Boolean\(bootstrapFailed\)&&!resolvedSourceBindDebt\)\|\|f0FoundationRepair/);
+  assert.match(workflow,/ROBLOX_STALE_SOURCE_BIND_DEBT_RESOLVED_BY_EXACT_RECONCILIATION=/);
+  assert.match(workflow,/const existingSourceLearningRebind=reconciliationRow\?\.failure==='existing-source-verified-external-learning-required'/);
+  assert.match(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND=/);
+  assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_OWNS_VERIFIED_LEARNING_REBIND=/);
+  assert.match(workflow,/if\(existingSourceLearningRebind&&!nativeCreatureRepairPending\)\{[\s\S]*?continue;/);
+  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind\|\|materialRepairPending\|\|nativeCreatureRepairPending;/);
+  assert.match(workflow,/const materialRepairPending=reconciliationRow\?\.sourceRepairPending===true/);
+  assert.match(workflow,/const repairSupersedesCandidate=existingSourceMaintenanceRebind\|\|knownSourceRepairDebt/);
+  assert.match(workflow,/if\(candidateReady&&!repairSupersedesCandidate\)continue/);
+  assert.match(workflow,/ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR=/);
+  assert.ok(workflow.indexOf('const repairSupersedesCandidate=')<workflow.indexOf('if(candidateReady&&!repairSupersedesCandidate)continue'));
+  assert.match(workflow,/reconciledPass\.has\(item\.gameId\)&&!knownSourceRepairDebt/);
+  assert.doesNotMatch(workflow,/f0FoundationRepair=!secondaryOwnerFocus\s*\n\s*&&state==='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'/);
+});
+
+
+test('source reconciliation failure clears older Roblox source candidate pointers atomically',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const failureBlock=workflow.slice(workflow.indexOf('if(result.pass===true){'),workflow.indexOf('reconciliationFail++;')+32);
+  assert.match(failureBlock,/robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null/);
+  assert.match(failureBlock,/robloxFailureStage:'TARGET_PLATFORM_SOURCE_BIND'/);
+});
+
+test('fresh Roblox source worker failure clears stale candidate pointers for canonical and owner-focus lanes',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.ok((workflow.match(/robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null/g)||[]).length>=2);
+  assert.match(workflow,/ownerFocusRobloxSourceCandidateBranch:null,[\s\S]*?ownerFocusRobloxSourceCandidateReadyAt:null/);
+  assert.match(workflow,/ownerFocusRobloxAssetPipelineState:'SOURCE_REPAIR_REQUIRED'/);
+});
+
+
+
+test('F0-passed candidates dispatch exact private validation per game without Studio dependency',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  assert.equal(roadmap.developmentSpeedExecution.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
+  assert.equal(roadmap.developmentSpeedExecution.successfulStepMustNotBeRepeatedWithoutInvalidatingChange,true);
+  assert.match(workflow,/name: Route F0-passed artifacts to private runtime validation without Studio[\s\S]*?if: always\(\)/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=YES:/);
+  assert.match(workflow,/String\(run\.head_sha\|\|''\)!==currentSha/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_CURRENT_MAIN:/);
+  assert.match(workflow,/gh workflow run company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id" -f publish_stage=validation/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_CANDIDATE_COUNT=/);
+  assert.match(workflow,/ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED/);
+  assert.match(workflow,/ROBLOX_CANONICAL_GAME_TARGET_MUTATED=NO/);
+  assert.match(workflow,/ROBLOX_STUDIO_REQUIRED_FOR_DEVELOPMENT_CONTINUATION=NO/);
+});
+
+
+test('private validation routing uses exact F0 evidence even when a concurrent platform moved shared step',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('      - name: Route F0-passed artifacts to private runtime validation without Studio');
+  const end=workflow.indexOf('      - name: Dispatch Roblox HEADLESS FAST_MVP continuation',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/x\.robloxFoundationF0Passed===true/);
+  assert.match(block,/x\.robloxBuildPreflightPassed===true/);
+  assert.match(block,/x\.robloxBuildOrPackagePassed===true/);
+  assert.match(block,/x\.robloxBuildSourceRevision===revision/);
+  assert.match(block,/f0\.sourceRevision===revision/);
+  assert.match(block,/f0\.artifactIdentity===artifact/);
+  assert.match(block,/x\.robloxFailureStage\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.match(block,/ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING/);
+});
+
+
+test('pending F0 dispatch routes through isolated private validation before F9',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/Route F0-passed artifacts to private runtime validation without Studio/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=YES:/);
+  assert.match(workflow,/company-development-roblox-release-promotion\.yml/);
+  assert.match(workflow,/publish_stage=validation/);
+  assert.match(workflow,/ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED/);
+  assert.match(workflow,/ROBLOX_CANONICAL_GAME_TARGET_MUTATED=NO/);
+});
+
+
+test('F0 validation uses only the isolated private target before F9',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const start=workflow.indexOf('      - name: Route F0-passed artifacts to private runtime validation without Studio');
+  const end=workflow.indexOf('      - name: Dispatch Roblox HEADLESS FAST_MVP continuation',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/company-development-roblox-release-promotion\.yml/);
+  assert.match(block,/publish_stage=validation/);
+  assert.match(block,/ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED/);
+  assert.match(block,/ROBLOX_CANONICAL_GAME_TARGET_MUTATED=NO/);
+  assert.doesNotMatch(block,/publish_stage=final/);
+});
+
+test('Roblox continuation dispatch is per-game and does not wait behind one global active continuation',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/roblox-continuation-ready-ids/);
+  assert.match(workflow,/Roblox shared preflight · /);
+  assert.match(workflow,/company-development-roblox-runtime-continuation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_CURRENT_MAIN:/);
+  assert.doesNotMatch(workflow,/&& "\$active_continuations" == '0'/);
+  assert.doesNotMatch(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=SKIP_ACTIVE/);
+});
+
+test('Roblox runtime self-redispatch dedupes queued or running work for the same main SHA without global serialization',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/actions\/workflows\/company-development-roblox-runtime\.yml\/runs\?per_page=100/);
+  assert.match(workflow,/String\(r\.head_sha\|\|''\)===String\(process\.env\.TARGET_SHA\|\|''\)/);
+  assert.match(workflow,/String\(r\.id\)!==String\(process\.env\.CURRENT_RUN_ID\|\|''\)/);
+  assert.match(workflow,/ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=DEDUPED_EXISTING_RUN:/);
+  assert.match(workflow,/ROBLOX_F0_SOURCE_REPAIR_DISPATCH=DEDUPED_EXISTING_RUN:/);
+  assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=DEDUPED_EXISTING_RUN:/);
+  assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n/);
+});
+
+
+test('Roblox runtime collapses duplicate exact-game and batch planners without whole-game workflow locking',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/run-name: Roblox runtime · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_CURRENT_MAIN=/);
+  assert.match(workflow,/const winner=candidates\[0\];/);
+  assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n/);
+});
+
+
+test('source-plan dedupe keeps active same-game ingress on the fixed control runner',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('\n  source-plan:\n');
+  const end=workflow.indexOf('\n  source-worker:\n',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/runs-on:\s*ubuntu-24\.04/);
+  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      queue: single\n      cancel-in-progress: false/);
+  assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
+});
+
+
+
+test('Roblox source-plan winner preserves running work and filters exact game and source revision',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const ingress=workflow.indexOf('CURRENT_SHA="$GITHUB_SHA" node -e "');
+  assert.ok(ingress>=0);
+  const start=workflow.indexOf(' node -e "',ingress)+' node -e "'.length;
+  const end=workflow.indexOf('\n          ")"',start);
+  assert.ok(end>start);
+  const selector=workflow.slice(start,end);
+  const sha='a'.repeat(40);
+  const run=(id,status,game='cozy-island',head=sha)=>({id,status,display_title:'Roblox runtime · '+game,head_sha:head});
+  const winner=(rows,game='cozy-island')=>{
+    let dataCallback=null,endCallback=null,result='';
+    const input={on(event,callback){if(event==='data')dataCallback=callback;else if(event==='end')endCallback=callback;return this;}};
+    runInNewContext(selector,{process:{env:{REQUESTED_GAME_ID:game,CURRENT_SHA:sha},stdin:input,stdout:{write(value){result+=value;}}}});
+    assert.equal(typeof dataCallback,'function');
+    assert.equal(typeof endCallback,'function');
+    dataCallback(JSON.stringify({workflow_runs:rows}));
+    endCallback();
+    return result;
+  };
+  assert.equal(winner([run(10,'in_progress'),run(11,'queued')]),'10');
+  assert.equal(winner([run(10,'queued'),run(11,'in_progress')]),'10');
+  assert.equal(winner([run(10,'queued'),run(11,'queued')]),'10');
+  assert.equal(winner([run(10,'completed'),run(11,'queued')]),'11');
+  assert.equal(winner([run(10,'in_progress','different'),run(11,'queued','cozy-island','b'.repeat(40)),run(12,'queued')]),'12');
+  assert.equal(winner([run(10,'in_progress','different')]),'');
+});
+
+test('Roblox control jobs use fixed 24.04 while heavy workers stay full',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const section=(job,next)=>{
+    const start=workflow.indexOf('\n  '+job+':\n');
+    assert.ok(start>=0,job);
+    const end=next?workflow.indexOf('\n  '+next+':\n',start):workflow.length;
+    return workflow.slice(start,end);
+  };
+  assert.match(section('source-plan','source-worker'),/runs-on:\s*ubuntu-24\.04/);
+  for(const [job,next] of [['source-bootstrap','technical-plan'],['technical-plan','technical-worker'],['technical-persist',null]]){
+    assert.match(section(job,next),/runs-on:\s*ubuntu-24\.04/,job);
+  }
+  assert.match(workflow,/\n  source-worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
+  assert.match(workflow,/\n  technical-worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
+});
+
+
+
+test('pre-F9 private validation stays per-game, parallel, and dedupes active exact work',()=>{
+  const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const planStart=runtime.indexOf('\n  technical-plan:\n');
+  const workerStart=runtime.indexOf('\n  technical-worker:\n',planStart);
+  const plan=runtime.slice(planStart,workerStart);
+  const persistStart=runtime.indexOf('\n  technical-persist:\n');
+  const persist=runtime.slice(persistStart);
+  assert.ok(planStart>=0);
+  assert.ok(workerStart>planStart);
+  assert.match(persist,/group: roblox-private-runtime-dispatch-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
+  assert.match(plan,/Route F0-passed artifacts to private runtime validation without Studio/);
+  assert.doesNotMatch(persist,/Route F0-passed artifacts to private runtime validation without Studio/);
+  assert.match(plan,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DEFERRED_SOURCE_STAGE=/);
+  assert.match(plan,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=YES:/);
+  assert.match(plan,/String\(run\.head_sha\|\|''\)!==currentSha/);
+  assert.match(plan,/CURRENT_MAIN="\$current_main" node/);
+  assert.match(plan,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_CURRENT_MAIN:/);
+  assert.match(plan,/publish_stage=validation/);
+  assert.match(plan,/ROBLOX_STUDIO_REQUIRED_FOR_DEVELOPMENT_CONTINUATION=NO/);
+});
+
+
+test('F0 private validation handoff has no artificial grace delay',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.doesNotMatch(workflow,/batchRecoveryGraceMs/);
+  assert.doesNotMatch(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_GRACE_DEFERRED=/);
+  assert.match(workflow,/Route F0-passed artifacts to private runtime validation without Studio/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_CURRENT_MAIN:/);
+  assert.match(workflow,/ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED/);
+});
+
+test('build revalidation pending waiting state remains eligible for exact Roblox package work',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/buildRevalidationPending=String\(item\.robloxFailureStage\|\|''\)\.toUpperCase\(\)==='TARGET_PLATFORM_BUILD_OR_PACKAGE'/);
+  assert.match(workflow,/String\(item\.robloxFailureSignature\|\|''\)\.toUpperCase\(\)==='ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING'/);
+  assert.match(workflow,/canonicalState==='WAITING_TARGET_PLATFORM_VALIDATION'&&buildRevalidationPending/);
+  assert.match(workflow,/canonicalState==='TARGET_PLATFORM_REPAIR_REQUIRED'/);
+  assert.match(workflow,/if\(!technicalStateEligible\)continue;/);
+});
+
+
+test('exact-game dedupe keeps oldest active work and compares only the same source revision',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/\.sort\(\(a,b\)=>Number\(a\.id\)-Number\(b\.id\)\)/);
+  assert.match(workflow,/const winner=candidates\[0\];/);
+  assert.doesNotMatch(workflow,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
+});
+
+
+test('Roblox BUILD_UP runtime settlement is bound to the exact promoted source tree',()=>{
+  const release=fs.readFileSync(new URL('../.github/workflows/vibe2-candidate-release.yml',import.meta.url),'utf8');
+  const f9=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-final-review-revalidation.yml',import.meta.url),'utf8');
+  assert.match(release,/promoted_source_tree_sha="\$\(git rev-parse "origin\/main:\$SOURCE_ROOT"\)"/);
+  assert.match(release,/roblox-runtime-await-source-tree:\$\{PROMOTED_SOURCE_TREE_SHA\}/);
+  assert.match(release,/ROBLOX_MAIN_PROMOTION_SOURCE_TREE_SHA/);
+  assert.match(f9,/runtime_source_tree_sha="\$\(git -C main rev-parse "\$source_revision:roblox-games\/\$game_id"\)"/);
+  assert.match(f9,/RUNTIME_SOURCE_TREE_SHA="\$runtime_source_tree_sha"/);
+  assert.match(f9,/const exactTreeMarker='roblox-runtime-await-source-tree:'\+sourceTree/);
+  assert.match(f9,/if\(!evidence\.includes\(exactTreeMarker\)\)continue/);
+  assert.match(f9,/roblox-runtime-source-tree:\$\{runtime_source_tree_sha\}/);
+});
+
+// 소스 수리가 끝나기 전 동일 빌드를 스튜디오 대기열에 다시 보내지 않는다.
+
+test('F0 private validation defers same-source quality repair and resumes for repaired exact source',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const start=workflow.indexOf("node - <<'NODE' > /tmp/roblox-private-runtime-release-ids");
+  const script=workflow.slice(workflow.indexOf('\n',start)+1,workflow.indexOf('\n          NODE',start));
+  const item={
+    gameId:'demo',
+    productionClass:'DEVELOPMENT_CONFIRMED',
+    robloxSourceCommit:'new',
+    robloxBuildSourceRevision:'new',
+    robloxBuildArtifactIdentity:'artifact',
+    robloxFoundationF0Passed:true,
+    robloxBuildPreflightPassed:true,
+    robloxBuildOrPackagePassed:true,
+    robloxFoundationF0Evidence:{sourceRevision:'new',artifactIdentity:'artifact',artifactRunId:1},
+    robloxFailureStage:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
+    robloxFailureSignature:'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING',
+  };
+  const run=overrides=>{
+    const sent=[],deferred=[];
+    runInNewContext(script,{require:()=>({readFileSync:()=>JSON.stringify({items:[{...item,...overrides}]})}),process:{env:{REQUESTED_GAME_ID:'demo'}},console:{log:x=>sent.push(x),error:x=>deferred.push(x)}});
+    return{sent,deferred};
+  };
+  const blocked=run({robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:'new'});
+  assert.deepEqual(blocked.sent,[]);
+  assert.equal(blocked.deferred.length,1);
+  assert.deepEqual(run({robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:'old'}).sent,['demo']);
+  assert.deepEqual(run({robloxFoundationF0Passed:false}).sent,[]);
+  assert.deepEqual(run({robloxFailureStage:'VIBE_INTERNAL_PLAY'}).sent,[]);
+  assert.deepEqual(run({robloxRuntimeCandidateEvidence:{published:true,sourceRevision:'new',artifactIdentity:'artifact',versionNumber:1}}).sent,[]);
+});
+
+
+
+test('successful F0 checkpoints persist and dispatch per game before matrix fan-in',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const workerStart=workflow.indexOf('\n  technical-worker:\n');
+  const persistStart=workflow.indexOf('\n  technical-persist:\n',workerStart);
+  assert.ok(workerStart>=0&&persistStart>workerStart);
+  const worker=workflow.slice(workerStart,persistStart);
+  const persist=workflow.slice(persistStart);
+  assert.match(worker,/Persist successful F0 checkpoint immediately per game/);
+  assert.match(worker,/ROBLOX_F0_CHECKPOINT_PERSIST=PASS:/);
+  assert.match(worker,/ROBLOX_F0_PER_GAME_PRIVATE_VALIDATION_DISPATCH=YES:/);
+  assert.match(worker,/company-development-roblox-release-promotion\.yml[\s\S]*publish_stage=validation/);
+  assert.match(persist,/ROBLOX_PACKAGE_ALREADY_PERSISTED_PER_GAME=/);
+  assert.match(workflow,/successfulGamesContinueWithoutWaitingForFailedGameRepair|ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO/);
+});
+
+test('Roblox native motion binding keeps Animator IK foot-contact and mobile frame evidence in real game clients',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  assert.equal(catalog.games.some(row=>row.id==='horror-escape-room'),false,'retired horror game is no longer a source fixture');
+  for(const gameId of ['survival','monster-adventure']){
+    const client=fs.readFileSync(new URL('../roblox-games/'+gameId+'/client/Game.client.luau',import.meta.url),'utf8');
+    assert.match(client,/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 7/);
+    assert.match(client,/Instance\.new\("IKControl"\)/);
+    assert.match(client,/Enum\.IKControlType\.Position/);
+    assert.match(client,/ROBLOX_CHARACTER_MOTION_RUNTIME=START/);
+    assert.match(client,/FOOT_SLIDE_EXCEEDED/);
+    assert.match(client,/MOBILE_FRAME_FLOOR_30_FAILED/);
+    assert.match(client,/footSlideNormalizedMax > 0\.035/);
+    assert.match(client,/verifiedLearningMotionFps >= 50 and 60/);
+    assert.match(client,/state\.hitReactionCount \+= 1/);
+    assert.match(client,/GetMarkerReachedSignal\(markerName\)/);
+  }
+});
+
+test('exact duplicate validation deployment coalesces by game stage and control revision',()=>{
+  const publish=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-release-promotion.yml',import.meta.url),'utf8');
+  const header=publish.slice(0,publish.indexOf('\njobs:\n'));
+  // [중복 차단] 미디어 동기화는 최신 1건으로 합치고 실제 배포는 게임·단계·SHA·F9 주기별 분리한다.
+  assert.ok(header.includes("group: ${{ (github.event_name == 'push' || github.event_name == 'schedule')"));
+  assert.ok(header.includes("'roblox-media-main-latest'"));
+  assert.ok(header.includes("format('roblox-media-capture-{0}', github.event.client_payload.game_id)"));
+  assert.ok(header.includes("format('roblox-publish-exact-{0}-{1}-{2}-{3}', inputs.game_id, inputs.publish_stage, github.sha, inputs.publish_cycle_id)"));
+  assert.match(header,/cancel-in-progress: false/);
+  assert.match(publish,/release-dedupe:/);
+  assert.match(publish,/ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED=/);
+});
+
+test('verified learning refresh debt coalesces to one exact current-main batch sweep',()=>{
+  const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const sweep=fs.readFileSync(new URL('../.github/workflows/company-roblox-verified-learning-sweep.yml',import.meta.url),'utf8');
+  const start=runtime.indexOf('      - name: Dispatch verified learning batch sweep when reconciliation finds refresh debt');
+  const end=runtime.indexOf('      - name: Resolve next Roblox source execution slice',start);
+  assert.ok(start>=0&&end>start);
+  const block=runtime.slice(start,end);
+  assert.match(block,/scope_key="batch-\$scope_hash"/);
+  assert.match(block,/const title='Roblox verified learning sweep · '\+String\(process\.env\.SCOPE_KEY\|\|''\)/);
+  assert.match(block,/gh workflow run company-roblox-verified-learning-sweep\.yml/);
+  assert.match(block,/-f game_ids="\$game_ids"/);
+  assert.match(block,/-f scope_key="\$scope_key"/);
+  assert.doesNotMatch(block,/-f game_id=/);
+  assert.doesNotMatch(block,/while IFS= read -r game_id/);
+  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=1/);
+  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=\$learning_debt/);
+  assert.match(sweep,/run-name: Roblox verified learning sweep · \$\{\{ inputs\.scope_key \|\| inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(sweep,/group: roblox-verified-learning-sweep-\$\{\{ inputs\.scope_key \|\| inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(sweep,/cancel-in-progress: false/);
+  assert.doesNotMatch(sweep,/group: roblox-verified-learning-sweep-[^\n]*github\.sha/);
+  assert.match(sweep,/--game-id="\$GAME_ID"/);
+  assert.match(sweep,/--game-ids="\$GAME_IDS"/);
+});
+
+test('existing asset rebind migrates removed studioUi consumers and remains idempotent',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const start=source.indexOf('function studioAssetDynamicBindingBlock');
+  const end=source.indexOf('\nexport function bindExistingServerStudioMaterial',start);
+  assert.ok(start>=0&&end>start);
+  const familyPrelude='const ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES='+JSON.stringify(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'])+';\n';
+  const bind=runInNewContext(familyPrelude+source.slice(start,end)+'\nbindExistingClientStudioAssets');
+  const original=[
+    'local C=require(script.Parent.GameConfig)',
+    '-- STUDIO_ASSET_BINDING_CLIENT_BEGIN',
+    'local STUDIO_ASSET_BINDING_VERSION = 2',
+    'local studioAssetConfig = C.StudioAssets or {}',
+    'local studioAssetFamilies = studioAssetConfig.Families or {}',
+    'local studioUi = studioAssetFamilies.UI or {}',
+    '-- STUDIO_ASSET_BINDING_CLIENT_END',
+    'local gui=Instance.new("Frame")',
+    'gui:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
+    'gui:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))',
+    'local function existingGameplay() return "preserved" end',
+    ''
+  ].join('\n');
+  const rebound=bind(original);
+  assert.doesNotMatch(rebound,/\bstudioUi\b/);
+  assert.match(rebound,/table\.concat\(studioAssetFamily\("UI"\), ","\)/);
+  assert.match(rebound,/local function existingGameplay\(\) return "preserved" end/);
+  assert.equal(bind(rebound),rebound);
+  const fresh=bind('local C=require(script.Parent.GameConfig)\nlocal gui=Instance.new("Frame")\n');
+  assert.match(fresh,/table\.concat\(studioAssetFamily\("UI"\), ","\)/);
+  assert.doesNotMatch(fresh,/\bstudioUi\b/);
+  const imported=[
+    'local C=require(script.Parent.GameConfig)',
+    'local function attach(template)',
+    '  if not template:IsA("ScreenGui") then return end',
+    '  local imported = template:Clone()',
+    '  imported.Parent = player:WaitForChild("PlayerGui")',
+    'end',''
+  ].join('\n');
+  const importedBound=bind(imported);
+  assert.match(importedBound,/imported:SetAttribute\("StudioAssetBindingVersion"/);
+  assert.match(importedBound,/imported.Parent = player:WaitForChild\("PlayerGui"\)/);
+  assert.doesNotMatch(importedBound,/Instance\.new\(/,'imported art must not acquire synthetic decoration');
+  assert.equal(bind(importedBound),importedBound);
+  assert.throws(()=>bind('local C=require(script.Parent.GameConfig)\nlocal object=template:Clone()\n'),/VISIBLE_TARGET_REQUIRED/);
+  const live=fs.readFileSync(new URL('../roblox-games/fantasy-survival/client/Game.client.luau',import.meta.url),'utf8');
+  assert.match(live,/root:SetAttribute\("StudioAssetAtoms", table\.concat\(studioAssetFamily\("UI"\), ","\)\)/);
+  assert.doesNotMatch(live,/table\.concat\(studioUi\s*,/);
+});
+
+
+test('director drains stale queued Roblox native work when a current-main batch replacement exists',()=>{
+  const director=fs.readFileSync(new URL('../.github/workflows/director-supervisor.yml',import.meta.url),'utf8');
+  assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-roblox-runtime-continuation\.yml',true\)/);
+  assert.match(director,/const currentRobloxBatchReplacementActive=runs\.some/);
+  assert.match(director,/String\(r\.head_sha\|\|''\)===currentMain/);
+  assert.match(director,/String\(r\.display_title\|\|''\)==='Roblox runtime · batch'/);
+  assert.match(director,/String\(r\.display_title\|\|''\)\.startsWith\('Roblox shared preflight · '\)/);
+  assert.match(director,/ROBLOX_STALE_UNSTARTED_NATIVE_WORK_REPLACED_BY_CURRENT_BATCH/);
+  assert.match(director,/queued\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
+  assert.match(director,/DIRECTOR_RUNNER_DRAIN_ACTIVE_PRESERVED=/);
+});
+
+test('Vibe source repair logs exact current blockers without bypassing material or static contract ownership',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('const materialRepairPending=');
+  const end=workflow.indexOf('const existingSourceAssetRebind=',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/reconciliationRow\.blockers\.length===1/);
+  assert.match(block,/ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL/);
+  assert.match(block,/ROBLOX_SOURCE_REPAIR_DEBT_DETAILS=/);
+  assert.match(block,/sourceContractRepairRequired:reconciliationRow\?\.sourceContractRepairRequired===true/);
+  assert.match(block,/blockers:Array\.isArray\(reconciliationRow\?\.blockers\)/);
+  assert.match(block,/ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE=/);
+  assert.match(block,/continue;/);
+});
+
+test('Roblox exact-SHA scheduler keeps oldest active run even when GitHub reports queued during downstream work',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const step=workflow.slice(workflow.indexOf('      - name: Reject superseded batch scheduler'),workflow.indexOf('      - name: Bind Roblox source-plan contract fingerprint'));
+  const start=step.indexOf("const states=new Set(['queued','pending','in_progress','requested']);");
+  const end=step.indexOf("\n            });",start);
+  assert.ok(start>=0&&end>start,'original canonical planner decision must be present');
+  const decide=step.slice(start,end);
+  assert.match(decide,/sort\(\(a,b\)=>Number\(a\.id\)-Number\(b\.id\)\)/);
+  assert.match(decide,/const winner=candidates\[0\];/);
+  const sha='a'.repeat(40),older=39034932991,newer=39035066181;
+  const decideOwner=(status1,status2,{title='Roblox runtime · batch',currentGame='',differentSha=false}={})=>{
+    let selection=null;
+    const j={workflow_runs:[
+      {id:newer,status:status2,display_title:title,head_sha:sha},
+      {id:older,status:status1,display_title:title,head_sha:differentSha?'b'.repeat(40):sha},
+      {id:older-1,status:'completed',display_title:title,head_sha:sha},
+      {id:older-2,status:'queued',display_title:'Roblox runtime · other-game',head_sha:sha},
+    ]};
+    runInNewContext(decide,{j,process:{
+      env:{REQUESTED_GAME_ID:currentGame,CURRENT_SHA:sha},
+      stdout:{write(value){selection=String(value)}}
+    }});
+    return selection;
+  };
+  assert.equal(decideOwner('queued','queued'),String(older));
+  assert.equal(decideOwner('queued','in_progress'),String(older),'the newer job cannot preempt an older queued workflow with live child jobs');
+  assert.equal(decideOwner('in_progress','queued'),String(older));
+  assert.equal(decideOwner('completed','queued'),String(newer));
+  assert.equal(decideOwner('queued','queued',{differentSha:true}),String(newer));
+  assert.equal(decideOwner('queued','queued',{title:'Roblox runtime · island-village',currentGame:'island-village'}),String(older));
+});
+
+
+test('new Roblox game creation connects native styled UI without inventing inventory or gameplay',()=>{
+  const compiled=compileRobloxSource({gameId:'new-visual-build',gameName:'New Game',baseline,playbooks:verifiedRobloxPlaybooks()});
+  assert.equal(compiled.validation.pass,true,compiled.validation.blockers.join(','));
+  const client=compiled.result.clientCode;
+  for(const token of ['rootCorner = Instance.new("UICorner")','rootStroke = Instance.new("UIStroke")',
+    'titleSize = Instance.new("UITextSizeConstraint")','statusCorner = Instance.new("UICorner")',
+    'buttonCorner = Instance.new("UICorner")','buttonStroke = Instance.new("UIStroke")',
+    'buttonTextSize = Instance.new("UITextSizeConstraint")','button.Activated:Connect(function() remote:FireServer(action.Id) end)'])
+    assert.ok(client.includes(token),'new-game client must render native style and preserve existing action: '+token);
+  assert.match(client,/buttonTextSize.MaxTextSize = 22/);
+  assert.match(client,/buttonStroke.Parent = button/);
+  assert.match(client,/rootStroke.Parent = root/);
+  assert.doesNotMatch(client,/Instance\.new\("ImageLabel"\)/,'do not make blank icons without licensed assets');
+  assert.doesNotMatch(client,/Instance\.new\("Inventory"\)/,'do not create gameplay inventory absent from the approved seed');
+  assert.ok(compiled.result.implementationNotes.some(x=>x.includes('new-game Roblox creation renders bounded UICorner')));
+});
+
+
+test('shared Roblox UI renders live inventory icon fallback, equipped badges, search empty state and authority-safe filters',()=>{
+  const ui=fs.readFileSync(new URL('../assets/roblox/common-ui-v1/RobloxCommonUI.luau',import.meta.url),'utf8');
+  const section=name=>{
+    const begin=ui.indexOf('function RobloxCommonUI.'+name+'(');
+    const end=ui.indexOf('\nfunction RobloxCommonUI.',begin+1);
+    assert.ok(begin>=0&&end>begin,'missing shared UI owner: '+name);
+    return ui.slice(begin,end);
+  };
+  const slot=section('CreateInventorySlot');
+  const icon=section('CreateIconButton');
+  const inventory=section('CreateInventoryFullScreen');
+  for(const src of [slot,icon]) {
+    assert.match(src,/FallbackGlyph/);
+    assert.match(src,/GetPropertyChangedSignal\("Image"\)/);
+    assert.doesNotMatch(src,/rbxassetid:\/\//i);
+  }
+  assert.match(slot,/glyph.Visible = icon.Image == ""/);
+  assert.match(icon,/fallback.Visible = absent/);
+  assert.match(icon,/button:SetAttribute\("IconFallbackActive", absent\)/);
+  assert.match(slot,/StateBadge/);
+  assert.match(slot,/RarityRail/);
+  assert.match(slot,/options\.locked == true/);
+  assert.match(slot,/options\.equipped == true/);
+  assert.match(slot,/typeof\(options\.rarityColor\) == "Color3"/);
+  assert.match(inventory,/InventoryEmptyMessage/);
+  assert.match(inventory,/#rows==0 and "보유 아이템이 없어" or "조건에 맞는 아이템이 없어"/);
+  assert.match(inventory,/selectedId = nil/);
+  assert.match(inventory,/GetPropertyChangedSignal\("Text"\):Connect\(refresh\)/);
+  assert.match(inventory,/UpdateInventorySlot\(slot,row,\{theme=theme,selected=/);
+  assert.match(inventory,/detailMeta\.TextColor3/);
+  assert.match(ui,/pcall\(utf8\.offset, label, 2\)/,'Korean glyph uses a real UTF8 codepoint');
+  assert.match(inventory,/BoundVisibleItemCount/);
+  assert.match(inventory,/OwnsInventoryAuthority",false/);
+  assert.match(inventory,/OwnsSaveAuthority",false/);
+  assert.match(inventory,/OwnsRemoteAuthority",false/);
+  assert.doesNotMatch(inventory,/FireServer\(|UpdateAsync\(|SetAsync\(/,'inventory panel must not own game economy, remotes or persistence');
+  const actionMenu=section('AdaptActionMenu');
+  assert.match(actionMenu,/RobloxCommonUI.CreateIconButton\(\{name="GameActionsMenu"/);
+  assert.match(actionMenu,/menu.Activated:Connect\(function\(\)setOpen\(true\)end\)/);
+  assert.match(actionMenu,/gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets/);
+  const generator=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(generator,/assets\/roblox\/common-ui-v1\/RobloxCommonUI\.luau/);
+  assert.match(generator,/clientSource\(\{profile,learning,studioAssets,studioAssetFamilyStatus\}\)/);
+  assert.match(generator,/CommonUI\.CreatePrimaryButton/);
+});
+
+
+test('native item painter in common Roblox inventory remains source-bound and mobile-safe',()=>{
+  const ui=fs.readFileSync(new URL('../assets/roblox/common-ui-v1/RobloxCommonUI.luau',import.meta.url),'utf8');
+  const mat=fs.readFileSync(new URL('../assets/roblox/common-materials-v1/RobloxCommonMaterials.luau',import.meta.url),'utf8');
+  const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const begin=ui.indexOf('function RobloxCommonUI.UpdateInventorySlot(');
+  const end=ui.indexOf('function RobloxCommonUI.CreateTooltip(',begin);
+  assert.ok(begin>=0&&end>begin);
+  const paint=ui.slice(begin,end);
+  for(const needle of ['BoundFromGameState','ItemLocked','ItemEquipped','FallbackGlyph','StateBadge','RarityRail',
+    'INVENTORY_TIER_COLORS','item.quantity or item.count','item.locked == true','item.equipped == true',
+    'pcall(utf8.offset','item.rarityColor','OwnsEquipAuthority", false'])
+    assert.ok(paint.includes(needle),'item painter must consume game-owned state: '+needle);
+  for(const value of ['["희귀"]','["영웅"]','["전설"]','["신화"]'])
+    assert.ok(ui.includes(value),'Korean rarity must have native color: '+value);
+  const inventory=ui.slice(ui.indexOf('function RobloxCommonUI.CreateInventoryFullScreen('),
+    ui.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen('));
+  assert.match(inventory,/UpdateInventorySlot\(slot,row,\{theme=theme,selected=/);
+  assert.match(inventory,/GetPropertyChangedSignal\("Text"\):Connect\(refresh\)/);
+  assert.match(inventory,/selectedRow/);
+  assert.match(inventory,/onSelect/);
+  assert.match(inventory,/OwnsInventoryAuthority",false/);
+  assert.match(inventory,/OwnsRemoteAuthority",false/);
+  assert.doesNotMatch(inventory,/FireServer\(/);
+  const authored=mat.slice(mat.indexOf('function RobloxCommonMaterials.ApplyAuthoredSurface('));
+  assert.match(mat,/TOY_STUDDED = table\.freeze/);
+  assert.match(authored,/SurfaceStudsEnabled/);
+  assert.match(authored,/part\.Shape==Enum\.PartType\.Block and part\.Anchored/);
+  assert.match(authored,/if atom=="TOY_STUDDED" and not studRequested then return false end/);
+  assert.match(authored,/Enum\.SurfaceType\.Studs/);
+  assert.match(authored,/PreviousTopSurfaceName/);
+  assert.match(authored,/ToyStudRuntimeVerified",false/);
+  assert.match(worker,/RobloxCommonUI\.UpdateInventorySlot/);
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/assets\/roblox\/common-ui-v1\/RobloxCommonUI\.luau/);
+  assert.match(bootstrap,/assets\/roblox\/common-materials-v1\/RobloxCommonMaterials\.luau/);
+});
+
+test('existing and generated Roblox games bind confirmed combat to compatible R15 joints without claiming runtime pass',()=>{
+  const generator=fs.readFileSync('tools/company-development-roblox-bootstrap.mjs','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const project=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/default.project.json','utf8'));
+  const canonical=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,'../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+  assert.match(server,/player:SetAttribute\("ActionSequence"/);
+  assert.match(server,/player:SetAttribute\("ApprovedCombatMotion"/);
+  assert.match(generator,/player:SetAttribute\(\\\"ApprovedCombatMotion\\\"/);
+  assert.match(canonical,/function RobloxCommonMotion.CreateCombatCombo\(/);
+  assert.match(canonical,/function RobloxCommonMotion.BindJointPose\(/);
+  for(const source of [generator,client]){
+    for(const call of ['CreateCombatCombo','SampleCombatCombo','MapCombatPoseToR15','BindJointPose']){
+      assert.ok(source.includes('combatMotionSource.'+call),'missing native motion action call: '+call);
+    }
+    assert.ok(source.includes('player:GetAttributeChangedSignal("ApprovedCombatMotion")'),'authoritative atomic action event required');
+    // The original generated template parses an approved local event; this game's
+    // native client parses the replicated server attribute and supports existing R6.
+    if(source===client){
+      assert.ok(source.includes('tostring(player:GetAttribute("ApprovedCombatMotion") or ""):match("^([^:]+):(%d+)$")'),
+        'the client must parse the full server-approved action scope and sequence');
+      assert.ok(source.includes('if not scope or not serial then return end'),
+        'invalid replicated authorization cannot enter combat');
+      assert.ok(source.includes('if not authorizedCombatScopes[approvedScope] then return false end'),
+        'only configured combat actions may animate');
+      assert.ok(source.includes('local r6=humanoid.RigType==Enum.HumanoidRigType.R6'),
+        'supported original R6 should not be lost');
+      assert.ok(source.includes('COMPATIBLE_R15_JOINTS_REQUIRED'),
+        'incompatible skeletons must not animate');
+    }else{
+      assert.ok(source.includes('approved:match("^([^:]+):(%d+)$")'),'action scope and event must bind atomically');
+      assert.ok(source.includes('humanoid.RigType ~= Enum.HumanoidRigType.R15'),'do not bind to incompatible rigs');
+    }
+    assert.ok(source.includes('if action.Kind == "COMBAT"'),'unrelated gameplay action may not play attack');
+    assert.ok(source.includes('MATCHING_WEAPON_MOTION_REQUIRED'),'do not fake arbitrary weapon animations');
+    assert.ok(source.includes('RunService.PreSimulation:Connect'),'render actual joints after built-in animation');
+    assert.ok(source.includes('finishNativeCombatMotion()'),'restore joints after attack or character change');
+    assert.ok(source.includes('SOURCE_POSE_PLAYING_UNVERIFIED'),'native runtime proof must remain outstanding');
+  }
+  assert.match(client,/MOTION = "APPLIED"/);
+  assert.ok(generator.includes('const motionBoundClient=clientSource('),'status must be computed from actual client code');
+  assert.doesNotMatch(client,/CreatePreviewAnimation\(|RegisterKeyframeSequence\(/);
+});
+
+
+test('successful source promotion hands the same game to existing technical planning with no other source targets',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const owner=workflow.slice(workflow.indexOf('  source-bootstrap:'),workflow.indexOf('  technical-plan:'));
+  assert.match(owner,/technical_ready_count:|technical_ready_count=/);
+  assert.match(owner,/JSON.stringify\(\{staleReconciliationCount,currentMainRevision,technicalReadyCount\}/);
+  const preserved=owner.slice(owner.indexOf('ROBLOX_UNCHANGED_SOURCE_DOWNSTREAM_EVIDENCE_PRESERVED='),owner.indexOf('if(result.pass===true)',owner.indexOf('ROBLOX_UNCHANGED_SOURCE_DOWNSTREAM_EVIDENCE_PRESERVED=')));
+  assert.doesNotMatch(preserved,/technicalReadyCount\+\+/,'unchanged completed downstream evidence must not cause another round');
+  const start=owner.indexOf("          redispatch='false'");
+  const end=owner.indexOf('          if [[ "$redispatch" == \'true\' ]]; then',start);
+  assert.ok(start>=0&&end>start);
+  const decide=owner.slice(start,end)+'\nprintf "%s" "$redispatch"';
+  for(const [ready,stale,remaining,expected] of [['1','0','0','true'],['0','0','0','false'],['0','1','0','true'],['0','0','1','true']]){
+    const result=spawnSync('bash',['-c',decide],{env:{...process.env,TECHNICAL_READY_COUNT:ready,STALE_RECONCILIATION_COUNT:stale,remaining},encoding:'utf8'});
+    assert.equal(result.status,0,result.stderr);assert.equal(result.stdout.trim().split('\n').at(-1),expected);
+  }
+});
+
+// [모델 등록 재사용] 실제 워크플로 판정식을 실행해 정상 등록의 무한 재업로드를 막는다.
+test('registered fantasy native assets stop registration repair while missing or mismatched IDs still repair',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const start=workflow.indexOf("const nativeCreatureRepairPending=item.gameId==='fantasy-survival'");
+  const end=workflow.indexOf('const materialRepairPending=',start);
+  assert.ok(start>=0&&end>start,'existing registration owner predicate must be present');
+  const predicate=workflow.slice(start,end)+'\nnativeCreatureRepairPending;';
+  const roles=Object.keys(JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/native-assets.json','utf8')).models);
+  const models=Object.fromEntries(roles.map((role,index)=>[role,{assetId:10001+index}]));
+  const manifest={gameId:'fantasy-survival',ownerApproved:true,license:'CC0-1.0',models};
+  const ids='return {\n'+roles.map(role=>' '+role+' = '+models[role].assetId+',').join('\n')+'\n}';
+  const sourceManifestSha256=crypto.createHash('sha256').update(JSON.stringify(manifest)).digest('hex');
+  const evaluate=(registry={models},source=ids,missing=[])=>runInNewContext(predicate,{
+    item:{gameId:'fantasy-survival'},nativeManifest:manifest,
+    nativeServer:'local FANTASY_NATIVE_CREATURES_VERSION = 1',target:'roblox-games/fantasy-survival',crypto,
+    fs:{
+      existsSync:file=>!missing.some(name=>file.endsWith(name)),
+      readFileSync:file=>file.endsWith('CC0-ASSET-REGISTRY.json')
+        ?JSON.stringify({sourceManifestSha256,...registry})
+        :file.endsWith('/native-assets.json')?JSON.stringify(manifest):source,
+    },
+  });
+  assert.equal(evaluate(),false,'all registered original models must reuse their IDs');
+  assert.equal(evaluate({models},ids.replace(/ = /g,'=\t')),false,'Luau whitespace does not invalidate registration');
+  assert.equal(evaluate({models:{...models,wolf:{assetId:20001}}}),true,'different asset ID requires repair');
+  assert.equal(evaluate({models:Object.fromEntries(Object.entries(models).filter(([role])=>role!=='tree'))}),true,'missing role requires repair');
+  assert.equal(evaluate({models:{...models,wolf:{assetId:'10001'}}}),true,'non-numeric ID remains invalid');
+  assert.equal(evaluate({models},ids.replace('wolf = 10001','wolf = 100010')),true,'numeric prefix cannot pass');
+  assert.equal(evaluate({models},ids.replace('wolf =','otherwolf =')),true,'role suffix cannot pass');
+  assert.equal(evaluate({models},ids,['VisualAssetIds.luau']),true,'missing Luau binding requires repair');
+  assert.equal(evaluate({models},ids,['CC0-ASSET-REGISTRY.json']),true,'missing registry requires repair');
+});
+
+// [원본 표현 연결] 마커가 아닌 선택값·공용 원본 호출·실제 R15/메시 소비를 확인한다.
+test('fantasy original presentation binds selected character environment skills effects and props',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  for(const family of ['CHARACTER','SKILL','VFX'])assert.equal(robloxStudioAssetFamilyBoundInText(client,family),true,family);
+  for(const family of ['ENVIRONMENT','PROP'])assert.equal(robloxStudioAssetFamilyBoundInText(server,family),true,family);
+  assert.equal(robloxStudioAssetFamilyBoundInText(client.replace('hasStudioAssetAtom("CHARACTER","HAND_BARE")','true'),'CHARACTER'),false);
+  // [현재 게임] 여러 행동에 재사용된 동일 atom 선택기를 전부 무효화해야 연결 우회를 정확히 검출한다.
+  for(const [family,moduleName,alias,atom] of [
+    ['SKILL','RobloxCommonSkillPresentation','meadowSkillPresentation','CAST_HAND'],
+    ['VFX','RobloxCommonVFX','meadowCommonVFX','IMPACT_FLASH'],
+  ]){
+    const check=source=>robloxStudioAssetFamilyBoundInText(source,family);
+    const selector='hasStudioAssetAtom("'+family+'","'+atom+'")';
+    assert.equal(check(client.replaceAll(selector,'true')),false,'unselected factory: '+family);
+    assert.equal(check(client.replaceAll(selector,'not '+selector)),false,'negative selection: '+family);
+    assert.equal(check(client.replaceAll(selector,selector+' or true')),false,'selection bypass: '+family);
+    assert.equal(check(client.replaceAll(moduleName,'UntrustedFactory')),false,'unapproved module: '+family);
+    assert.equal(check(client.replace('local actionsById={}',alias+' = function() end\nlocal actionsById={}')),false,'reassigned factory: '+family);
+  }
+});

@@ -1,0 +1,896 @@
+// 파일명: qa/asset-library-sync.test.mjs
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import os from 'node:os';
+import path from 'node:path';
+import {synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
+
+test('asset homepage automatically publishes new entries, preserves selection, excludes retired previews and recovers from outage',async()=>{
+ const elements=new Map(),intervals=[],listeners={},requests=[];
+ const document={documentElement:{dataset:{}},hidden:false,activeElement:null,getElementById:id=>elements.get(id),querySelectorAll:()=>[],addEventListener:(name,fn)=>{listeners[name]=fn;},createElement:tag=>element(tag)};
+ function element(tag='div'){
+  return {tag,children:[],options:[],dataset:{},attributes:{},listeners:{},textContent:'',value:'',hidden:false,disabled:false,scrollTop:0,scrollLeft:0,
+   append(...nodes){this.children.push(...nodes);},replaceChildren(...nodes){this.children=[...nodes];if(tag==='select')this.options=[...nodes];},add(node){this.options.push(node);},
+   setAttribute(name,value){this.attributes[name]=value;},addEventListener(name,fn){this.listeners[name]=fn;},querySelectorAll: function(){return this.children.filter(row=>row.tag==='button');},focus(){document.activeElement=this;}
+  };
+ }
+ const html=fs.readFileSync('asset-library.html','utf8');
+ for(const match of html.matchAll(/<([a-z]+)[^>]*\bid="([^"]+)"/g))elements.set(match[2],element(match[1]));
+ const registry={assets:[
+  {id:'roblox-insect-spider-hd-v1',title:'삭제 요청 거미',category:'CREATURE'},
+  {id:'roblox-insect-spider-hd',title:'삭제 요청 거미',category:'CREATURE'},
+  {id:'roblox-world-ghost-gwisin-bride',title:'삭제 요청 처녀귀신',category:'CREATURE'},
+  {id:'monster-a',title:'시험 몬스터',category:'CREATURE',internalAuditScore:0,path:'/assets/monster.png'},
+  {id:'forest',title:'숲',category:'ENVIRONMENT',path:'/assets/forest.webp'}
+ ]};
+ let offline=false,registryRevision=1,registryBodyReads=0;
+ const context=vm.createContext({document,Option:function(text,value){return {textContent:text,value};},matchMedia:()=>({matches:false}),AbortSignal,Date,Set,Map,console,
+  setInterval:fn=>intervals.push(fn),fetch:async (url,options={})=>{
+   const request={url,method:options.method||'GET',headers:options.headers||{}};requests.push(request);if(offline)throw Error('연결 끊김');
+   if(url.includes('company-asset-library')){
+    const etag='"registry-'+registryRevision+'"';
+    if(request.headers['If-None-Match']===etag)return {ok:false,status:304,headers:{get:name=>String(name).toLowerCase()==='etag'?etag:null},json:async()=>{throw Error('304 body must not be read');}};
+    return {ok:true,status:200,headers:{get:name=>String(name).toLowerCase()==='etag'?etag:null},json:async()=>{registryBodyReads++;return structuredClone(registry);}};
+   }
+   return {ok:true,status:200,headers:{get:()=>null},json:async()=>({schemaVersion:1,sampledBy:'OFFICIAL_LUAU',sourceFingerprint:'test',monsters:[],environments:[],commonMotions:[]})};
+  }});
+ vm.runInContext(fs.readFileSync('assets/asset-library.js','utf8'),context);
+ const settle=async()=>{for(let n=0;n<6;n++)await new Promise(resolve=>setImmediate(resolve));};
+ await settle();
+ const e=id=>elements.get(id);
+ assert.equal(e('assetCount').textContent,'5');assert.equal(e('allCount').textContent,5);assert.equal(e('monsterCount').textContent,1);
+ assert.equal(e('sourcePathCount').textContent,'2');assert.equal(e('productionMarkCount').textContent,'0');
+ assert.equal(e('assetList').children.length,1);assert.equal(e('selectedTitle').textContent,'시험 몬스터');
+ assert.equal(e('assetImage').src,'/assets/monster.png');assert.equal(intervals.length,1);
+ const registryRequests=()=>requests.filter(row=>row.url.includes('company-asset-library'));
+ assert.equal(registryRequests().length,1);assert.equal(registryBodyReads,1);assert.equal(registryRequests()[0].method,'GET');
+ e('assetList').scrollTop=73;e('assetList').children[0].focus();
+ registryRevision=2;
+ registry.assets.push({id:'monster-b',title:'자동 추가 몬스터',category:'CREATURE',path:'https://untrusted.invalid/image.png'});
+ registry.assets.push({id:'ui-a',title:'시험 UI',category:'UI',platform:'ROBLOX',status:'REPO_ASSET',path:'/assets/ui.svg',productionVerified:false,runtimeVerificationState:'PENDING_STUDIO',internalAuditScore:882.2,internalAuditGrade:'COMMERCIAL_READY',consumerGameIds:['game-a']});
+ await intervals[0]();await settle();
+ assert.equal(e('allCount').textContent,7);assert.equal(e('monsterCount').textContent,2);assert.equal(e('assetList').children.length,2);
+ assert.equal(e('selectedTitle').textContent,'시험 몬스터');assert.equal(e('assetList').scrollTop,73);assert.equal(document.activeElement.dataset.id,'monster-a');
+ assert.equal(registryBodyReads,2);assert.equal(registryRequests().at(-1).method,'GET');assert.equal(registryRequests().at(-1).headers['If-None-Match'],'"registry-1"');
+ assert.equal(registryRequests().some(row=>row.method==='HEAD'),false);
+ const registryRequestsBefore304=registryRequests().length;await intervals[0]();await settle();
+ assert.equal(registryRequests().length,registryRequestsBefore304+1);assert.equal(registryBodyReads,2);assert.equal(registryRequests().at(-1).headers['If-None-Match'],'"registry-2"');
+ await e('assetList').children[1].listeners.click();await settle();
+ assert.equal(e('assetImage').hidden,true);assert.equal(e('previewBadge').textContent,'준비 중');
+ e('allTab').listeners.click();await settle();
+ assert.equal(e('assetList').children.length,7);
+ const uiButton=e('assetList').children.find(row=>row.dataset?.id==='ui-a');assert.ok(uiButton);
+ await uiButton.listeners.click();await settle();assert.equal(e('selectedTitle').textContent,'시험 UI');assert.match(e('selectedInfo').textContent,/ID ui-a.*카테고리 UI.*플랫폼 ROBLOX.*상태 REPO_ASSET/);
+ assert.match(e('selectedInfo').textContent,/내부 품질 882\.2 \/ COMMERCIAL_READY/);assert.match(e('selectedInfo').textContent,/productionVerified: 미검증/);assert.doesNotMatch(e('selectedInfo').textContent,/productionVerified: 검증됨/);assert.match(e('selectedInfo').textContent,/runtimeVerificationState: PENDING_STUDIO/);assert.match(e('selectedInfo').textContent,/사용 게임: game-a/);
+ e('assetSearch').value='game-a';e('assetSearch').listeners.input();assert.equal(e('assetList').children.length,1);assert.equal(e('assetList').children[0].dataset.id,'ui-a');e('assetSearch').value='';e('assetSearch').listeners.input();
+ e('environmentTab').listeners.click();await settle();assert.equal(e('selectedTitle').textContent,'숲');
+ e('assetSearch').value='없는 이름';e('assetSearch').listeners.input();assert.match(e('assetList').children[0].textContent,/찾는 자산이 없어/);
+ offline=true;await intervals[0]();await settle();assert.match(e('syncStatus').textContent,/이전 목록/);assert.equal(e('environmentCount').textContent,1);
+ const count=requests.length;document.hidden=true;await intervals[0]();assert.equal(requests.length,count);
+ offline=false;document.hidden=false;listeners.visibilitychange();await settle();assert.match(e('syncStatus').textContent,/자동 동기화 연결됨/);
+ // 실제 등록 경로·게임·플랫폼·검증 상태 검색은 외부 이미지를 읽거나 파일을 이동하지 않는다.
+ e('allTab').listeners.click();await settle();
+ assert.ok(e('folderFilter').options.some(option=>option.value==='assets'));
+ assert.ok(e('folderFilter').options.some(option=>option.value==='외부 경로'));
+ e('folderFilter').value='assets';e('folderFilter').listeners.change();
+ assert.equal(e('assetList').children.length,3);
+ e('platformFilter').value='ROBLOX';e('platformFilter').listeners.change();
+ assert.equal(e('assetList').children.length,1);
+ e('verificationFilter').value='unverified';e('verificationFilter').listeners.change();
+ assert.equal(e('assetList').children[0].dataset.id,'ui-a');
+ e('assetSearch').value='/assets/ui.svg';e('assetSearch').listeners.input();
+ assert.equal(e('assetList').children.length,1);
+ e('folderFilter').value='';e('folderFilter').listeners.change();
+ e('platformFilter').value='';e('platformFilter').listeners.change();
+ e('verificationFilter').value='';e('verificationFilter').listeners.change();
+ e('assetSearch').value='';e('assetSearch').listeners.input();
+ // 같은 실제 경로를 참조하는 두 등록 항목은 삭제 없이 비교 후보로만 표시한다.
+ registryRevision=3;
+ registry.assets.push({id:'ui-b',title:'별도 등록 UI',category:'UI',platform:'ROBLOX',path:'/assets/ui.svg',sourceRevision:'v2'});
+ await intervals[0]();await settle();
+ e('sourceFilter').value='shared';e('sourceFilter').listeners.change();
+ assert.equal(e('assetList').children.length,2);
+ assert.deepEqual(e('assetList').children.map(item=>item.dataset.id).sort(),['ui-a','ui-b']);
+ const second=e('assetList').children.find(item=>item.dataset.id==='ui-b');
+ await second.listeners.click();await settle();
+ assert.match(e('selectedInfo').textContent,/원본 경로: \/assets\/ui.svg/);
+ assert.match(e('selectedInfo').textContent,/동일 경로 등록 2개/);
+ assert.match(e('selectedInfo').textContent,/실제 중복 여부는 별도 확인 필요/);
+ assert.match(e('selectedInfo').textContent,/자산 버전: v2/);
+ e('sourceFilter').value='unique';e('sourceFilter').listeners.change();
+ assert.ok(e('assetList').children.every(item=>!['ui-a','ui-b'].includes(item.dataset.id)));
+ // 계층형 폴더도 원본 경로를 훼손하지 않고 조회한다.
+ registryRevision=4;
+ registry.assets.push({id:'ui-nested',title:'공용 UI 소스',category:'UI',platform:'ROBLOX',path:'/assets/roblox/common-ui-v1/RobloxCommonUI.luau'});
+ await intervals[0]();await settle();
+ e('sourceFilter').value='';e('sourceFilter').listeners.change();
+ assert.ok(e('folderFilter').options.some(option=>option.value==='assets/roblox/common-ui-v1'));
+ e('folderFilter').value='assets/roblox/common-ui-v1';e('folderFilter').listeners.change();
+ assert.equal(e('assetList').children.length,1);
+ assert.equal(e('assetList').children[0].dataset.id,'ui-nested');
+});
+
+
+test('all-assets view follows canonical family order and keeps every original object',()=>{
+  const script=fs.readFileSync('assets/asset-library.js','utf8');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const order=registry.internalAssetStandard.sharedOrganization.familyOrder;
+  assert.deepEqual(order,['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']);
+  assert.match(script,/sort\(\(a,b\)=>\{const families=/);
+  assert.match(script,/rank\(a\)-rank\(b\)/);
+  assert.match(script,/asset\?\.subfamily/);
+  assert.match(script,/a\.id\.localeCompare\(b\.id,'en'\)/);
+  assert.equal(registry.assets.filter(asset=>asset.packId==='roblox-world-ghost-skins-v1'&&asset.skinId).length,0,'removed self-authored ghost skin pack cannot return as production library');
+  assert.ok(registry.assets.every(asset=>asset.gameExclusive===false));
+});
+
+test('asset registry signature is cached across 304 refreshes',()=>{
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ assert.match(script,/registryViewSignature=''/);
+ assert.match(script,/nextRegistry===registry\?registryViewSignature:registrySignature\(nextRegistry\)/);
+ assert.match(script,/registryViewSignature!==nextRegistrySignature/);
+ assert.doesNotMatch(script,/registrySignature\(registry\)!==registrySignature\(nextRegistry\)/);
+});
+
+test('common character assets use the 3D R15 motion viewer instead of image fallback',()=>{
+ const page=fs.readFileSync('asset-library.html','utf8');
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ const viewer=fs.readFileSync('assets/asset-library-viewer.js','utf8');
+ assert.match(page,/공용 캐릭터/);
+ assert.match(script,/else if\(row\.atom\)/);
+ assert.match(script,/activeViewer\.setCommonMotion\(row\.atom\)/);
+ assert.match(script,/previewBadge'\)\.textContent='모션 재생'/);
+ assert.match(viewer,/function setCommonMotion\(atom\)/);
+ assert.match(viewer,/host\.dataset\.kind='common'/);
+ assert.match(viewer,/function applyCommonMotion\(atom,time\)/);
+});
+
+
+test('featured authored movement and action remain source-bound and reuse the canonical 3D viewer',()=>{
+ const page=fs.readFileSync('asset-library.html','utf8');
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ const manifest=JSON.parse(fs.readFileSync('assets/roblox/world-ghosts/native/asset-gallery.json','utf8'));
+ const targets=[
+  {button:'featuredWalk',asset:'ghoul',clip:'walk'},
+  {button:'featuredAttack',asset:'ifrit',clip:'attack'}
+ ];
+ for(const target of targets){
+  assert.match(page,new RegExp('id="'+target.button+'"'));
+  const row=manifest.monsters.find(item=>item.id===target.asset);assert.ok(row);
+  assert.ok(row.clips.includes(target.clip));
+  const source=fs.readFileSync('assets/roblox/world-ghosts/motions/'+target.asset+'/init.luau','utf8');
+  assert.match(source,new RegExp('Motion\\.AuthoredClip = "'+target.clip+'"'));
+  const sample=JSON.parse(fs.readFileSync(row.path.slice(1),'utf8'));
+  assert.equal(sample.sampledBy,'OFFICIAL_LUAU');
+  assert.equal(sample.sourceFingerprint,manifest.sourceFingerprint);
+  const clip=sample.clips.find(item=>item.id===target.clip);assert.ok(clip);
+  assert.equal(clip.frames.length,121);
+ }
+ assert.match(script,/await choose\(row,true\);applyClip\(clipId\);/);
+ assert.match(script,/const environmentPreview=category==='ENVIRONMENT'/);
+ assert.match(script,/activeViewer\.setModel\(data,environmentPreview\)/);
+});
+
+
+test('asset homepage all tab exposes every registry family while preserving retired preview restrictions',()=>{
+ const page=fs.readFileSync('asset-library.html','utf8');
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ assert.match(page,/id="allTab"[^>]*>전체/);
+ assert.match(page,/id="allCount"/);
+ assert.match(script,/if\(kind==='all'\)return registry\.assets\.map/);
+ for(const category of ['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']){
+  assert.match(script,new RegExp(category+":'"));
+ }
+ assert.match(script,/retiredPreview=retiredPreviews\.has\(asset\.id\)/);
+ assert.match(script,/row\.retiredPreview\?'홈 미리보기 제외'/);
+ assert.match(script,/productionVerified: 검증됨/);
+ assert.match(script,/productionVerified: 미검증/);
+ assert.match(script,/runtimeVerificationState:/);
+ assert.match(script,/사용 게임:/);
+ assert.match(script,/internalAuditGrade/);
+});
+
+test('Roblox shared main menu and bottom navigation use touch scrolling with no replacement system',()=>{
+ const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(start,end)=>script.slice(script.indexOf('function RobloxCommonUI.'+start+'(options)'),script.indexOf('function RobloxCommonUI.'+end+'(options)'));
+ const main=section('CreateMainMenu','CreateTopBar');
+ assert.match(main,/ScrollingFrame/);
+ assert.match(main,/AutomaticCanvasSize = Enum\.AutomaticSize\.Y/);
+ assert.match(main,/body:GetPropertyChangedSignal\("AbsoluteSize"\):Connect\(refreshLayout\)/);
+ assert.match(main,/body\.AbsoluteSize\.X < 580/);
+ assert.match(main,/hero\.Size = UDim2\.new\(1, 0, 0, bannerHeight\)/);
+ assert.match(main,/actions\.Size = UDim2\.new\(1, 0, 1, -bannerHeight - 8\)/);
+ assert.match(main,/return root, buttons/);
+ const nav=section('CreateOneHandBottomNav','CreateSetProgressTracker');
+ assert.match(nav,/root\.AnchorPoint = Vector2\.new\(0\.5, 1\)/);
+ assert.match(nav,/root\.Position = options\.position or UDim2\.new\(0\.5, 0, 1, -12\)/);
+ assert.match(nav,/scroller\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
+ assert.match(nav,/scroller\.AutomaticCanvasSize = Enum\.AutomaticSize\.X/);
+ assert.match(nav,/button\.Activated:Connect\(function\(\)/);
+ assert.match(nav,/button:SetAttribute\("MinimumTouchHeight", 48\)/);
+ assert.match(nav,/if type\(options\.onSelect\)=="function" then options\.onSelect\(i, label\) end/);
+ assert.match(nav,/return root, \{inner=scroller, list=scroller, labels=buttons, buttons=buttons\}/);
+ assert.match(nav,/OwnsSystemAuthority", false/);
+ assert.match(nav,/OwnsRemoteAuthority", false/);
+ assert.doesNotMatch(nav,/RunService|RenderStepped|while true/);
+});
+
+test('Roblox inventory menu stacks controls on narrow screens and does not clip slots or filters',()=>{
+ const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(start,end)=>script.slice(script.indexOf('function RobloxCommonUI.'+start+'(options)'),script.indexOf('function RobloxCommonUI.'+end+'(options)'));
+ const filter=section('CreateFilterBar','CreateSortControl');
+ assert.match(filter,/Instance\.new\("ScrollingFrame"\)/);
+ assert.match(filter,/Enum\.ScrollingDirection\.X/);
+ assert.match(filter,/Enum\.AutomaticSize\.X/);
+ assert.match(filter,/utf8\.len/);
+ assert.match(filter,/UDim2\.fromOffset\(width,48\)/);
+ const inventory=section('CreateInventoryFullScreen','CreateEquipmentFullScreen');
+ assert.match(inventory,/CreateInventoryGrid/);
+ assert.match(inventory,/scroll\.ScrollingDirection=Enum\.ScrollingDirection\.Y/);
+ assert.match(inventory,/scroll\.AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+ assert.match(inventory,/body\.AbsoluteSize\.X<560/);
+ assert.match(inventory,/search\.Size=UDim2\.new\(1,0,0,48\)/);
+ assert.match(inventory,/sort\.Position=UDim2\.fromOffset\(0,56\)/);
+ assert.match(inventory,/scroll\.Position=UDim2\.fromOffset\(0,172\)/);
+ assert.match(inventory,/cellLayout\.CellSize=UDim2\.fromOffset\(cell,cell\)/);
+ assert.match(inventory,/cellLayout:GetPropertyChangedSignal\("AbsoluteContentSize"\)/);
+ assert.match(inventory,/root:SetAttribute\("OwnsInventoryAuthority",false\)/);
+ assert.doesNotMatch(inventory,/RemoteEvent|DataStoreService|RunService|RenderStepped/);
+});
+
+test('character state uses a compact stacked scrolling layout without owning level or save authority',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const a=source.indexOf('function RobloxCommonUI.CreateCharacterDetailScreen(options)');
+ const b=source.indexOf('function RobloxCommonUI.CreateMapFullScreen(options)',a);
+ assert.ok(a>=0&&b>a);
+ const body=source.slice(a,b);
+ assert.match(body,/scroll\.Name="CharacterScroll"/);
+ assert.match(body,/scroll\.AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+ assert.match(body,/scroll\.Active=true/);
+ assert.match(body,/body\.AbsoluteSize\.X<560/);
+ assert.match(body,/details\.Position=UDim2\.fromOffset\(0,sheetHeight\+12\)/);
+ assert.match(body,/sheetHeight=math\.max\(330,160\+statCount\*30\)/);
+ assert.match(body,/statCount=#\(state\.stats or \{\}\)/);
+ assert.match(body,/root:SetAttribute\("CharacterStateRevision"/);
+ assert.match(body,/root:SetAttribute\("MobileStackedLayout",compact\)/);
+ assert.match(body,/root:SetAttribute\("TouchScrollable",true\)/);
+ assert.match(body,/OwnsCharacterStats",false/);
+ assert.match(body,/OwnsProgressionAuthority",false/);
+ assert.doesNotMatch(body,/DataStoreService|FireServer|PlayerPrefs|SetAsync|UpdateAsync/);
+});
+
+test('equipment slots stay scrollable and authority-safe on narrow mobile screens',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const begin=source.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)');
+ const end=source.indexOf('function RobloxCommonUI.CreateCharacterDetailScreen(options)',begin);
+ assert.ok(begin>=0&&end>begin);
+ const body=source.slice(begin,end);
+ assert.match(body,/Instance\.new\("ScrollingFrame"\)/);
+ assert.match(body,/scroll\.Name="EquipmentScroll"/);
+ assert.match(body,/scroll\.AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+ assert.match(body,/scroll\.ScrollingDirection=Enum\.ScrollingDirection\.Y/);
+ assert.match(body,/scroll\.Active=true/);
+ assert.match(body,/body\.AbsoluteSize\.X<560/);
+ assert.match(body,/sheet\.Visible=not compact/);
+ assert.match(body,/grid:GetPropertyChangedSignal\("AbsoluteContentSize"\)/);
+ assert.match(body,/slots\.Size=UDim2\.new\(1,-8,0,grid\.AbsoluteContentSize\.Y\+10\)/);
+ assert.match(body,/row\.locked~=true and type\(options\.onEquip\)=="function"/);
+ assert.match(body,/root:SetAttribute\("TouchScrollable",true\)/);
+ assert.match(body,/OwnsEquipAuthority",false/);
+ assert.match(body,/OwnsSaveAuthority",false/);
+ assert.match(body,/scroll=scroll,Sync=sync/);
+ assert.doesNotMatch(body,/DataStoreService|FireServer|SetAsync|UpdateAsync|RenderStepped/);
+});
+
+test('codex screen binds real discovered entries and hides unverified data from mobile labels',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const a=source.indexOf('function RobloxCommonUI.CreateCodexScreen(options)');
+ const b=source.indexOf('function RobloxCommonUI.CreateCollectionProgress(options)',a);
+ assert.ok(a>=0 && b>a);
+ const body=source.slice(a,b);
+ assert.match(body,/sync\(options\.codex or \{\}\)/);
+ assert.match(body,/entries=type\(state\.entries\)=="table"and state\.entries or \{\}/);
+ assert.match(body,/selectedCategory="전체"/);
+ assert.match(body,/row\.unlocked==true and tostring\(row\.name or row\.title or ""\) or "미발견"/);
+ assert.match(body,/selected\.unlocked==true and tostring\(selected\.description or selected\.details or ""\)/);
+ assert.match(body,/root:SetAttribute\("BoundCodexEntryCount",#entries\)/);
+ assert.match(body,/root:SetAttribute\("CodexStateRevision"/);
+ assert.match(body,/body\.AbsoluteSize\.X<560/);
+ assert.match(body,/root:SetAttribute\("MobileStackedLayout",compact\)/);
+ assert.match(body,/root:SetAttribute\("TouchScrollable",true\)/);
+ assert.match(body,/OwnsDiscoveryAuthority",false/);
+ assert.match(body,/OwnsRewardAuthority",false/);
+ assert.match(body,/OwnsSaveAuthority",false/);
+ assert.match(body,/OwnsRemoteAuthority",false/);
+ assert.match(body,/return root,\{nav=categories,categories=categories,entries=list,detail=detail,Sync=sync\}/);
+ assert.doesNotMatch(body,/DataStoreService|FireServer|RemoteEvent|SetAsync|UpdateAsync|new GameSaveData/);
+});
+
+test('quest and crafting menus render only owner-supplied state and never invent quests or recipes',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(first,next)=>source.slice(source.indexOf('function RobloxCommonUI.'+first+'(options)'),
+   source.indexOf('function RobloxCommonUI.'+next+'(options)'));
+ const quests=section('CreateQuestLog','CreateCraftingFullScreen');
+ const craft=section('CreateCraftingFullScreen','CreateShopFullScreen');
+ assert.match(quests,/sync\(options\.quests or \{\}\)/);
+ assert.match(quests,/row\.active==true/);
+ assert.match(quests,/row\.completed==true/);
+ assert.match(quests,/root:SetAttribute\("BoundQuestCount",#shown\)/);
+ assert.match(quests,/card:SetAttribute\("BoundQuestId",tostring\(row\.id or ""\)\)/);
+ assert.match(quests,/current\.canTrack==true and type\(options\.onTrack\)=="function"/);
+ assert.match(quests,/options\.onTrack\(current\.id,current\)/);
+ assert.match(quests,/for i=#shown\+1,#cards do cards\[i\]\.Visible=false end/);
+ assert.doesNotMatch(quests,/title="퀘스트 "\.\.i|description="목표와 진행 상태"/);
+ assert.match(craft,/sync\(options\.recipes or \{\}\)/);
+ assert.match(craft,/search:GetPropertyChangedSignal\("Text"\):Connect/);
+ assert.match(craft,/current\.craftable==true and type\(options\.onCraft\)=="function"/);
+ assert.match(craft,/options\.onCraft\(current\.id,current\)/);
+ assert.match(craft,/root:SetAttribute\("BoundRecipeCount",#shown\)/);
+ assert.match(craft,/row\.ingredientsText or row\.requirements/);
+ assert.doesNotMatch(craft,/title="제작 항목 "\.\.i/);
+ for(const body of [quests,craft]){
+   assert.match(body,/return root,\{/);
+   assert.match(body,/Sync=sync/);
+   assert.match(body,/OwnsSaveAuthority",false/);
+   assert.match(body,/OwnsRemoteAuthority",false/);
+   assert.match(body,/TouchScrollable",true/);
+   assert.doesNotMatch(body,/DataStoreService|FireServer|UpdateAsync|SetAsync|while true/);
+ }
+});
+
+test('party tycoon farm and defense menus synchronize real source values without owning gameplay',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(first,next)=>source.slice(source.indexOf('function RobloxCommonUI.'+first+'(options)'),
+   source.indexOf('function RobloxCommonUI.'+next+'(options)'));
+ const party=section('CreatePartyRoleOverview','CreateRouteRiskPreview');
+ const building=section('CreateBuildCatalogPanel','CreateBuildPieceCard');
+ const farm=section('CreateFarmPlotPanel','CreateAnimalHousingPanel');
+ const wave=section('CreateWaveForecastRibbon','CreateStatusEffectTimeline');
+ assert.match(party,/sync\(options\.party or \{\}\)/);
+ assert.match(party,/state\.members/);
+ assert.match(party,/root:SetAttribute\("BoundPartyMemberCount",#members\)/);
+ assert.match(party,/current\.canSelect==true and type\(options\.onSelect\)=="function"/);
+ assert.match(party,/OwnsPartyAuthority",false/);
+ assert.doesNotMatch(party,/\{"전투 역할","지원 역할","현재 상태","중복\/빈 역할"\}/);
+ assert.match(building,/sync\(options\.buildings or \{\}\)/);
+ assert.match(building,/root:SetAttribute\("BoundBuildingCount",#rows\)/);
+ assert.match(building,/current\.available==true/);
+ assert.match(building,/OwnsPlacementAuthority",false/);
+ assert.doesNotMatch(building,/\{"기초","벽\/문\/창","천장\/지붕"/);
+ assert.match(farm,/sync\(options\.plot or \{\}\)/);
+ assert.match(farm,/root:SetAttribute\("BoundPlotId",tostring\(state\.id or ""\)\)/);
+ assert.match(farm,/state\.canHarvest==true and type\(options\.onHarvest\)=="function"/);
+ assert.match(farm,/OwnsFarmingAuthority",false/);
+ assert.match(wave,/sync\(options\.wave or \{\}\)/);
+ assert.match(wave,/root:SetAttribute\("WaveStateRevision"/);
+ assert.match(wave,/OwnsWaveAuthority",false/);
+ for(const body of [party,building,farm,wave]){
+   assert.match(body,/Sync=sync/);
+   assert.match(body,/OwnsRemoteAuthority",false/);
+   assert.doesNotMatch(body,/DataStoreService|FireServer|UpdateAsync|SetAsync|RunService/);
+ }
+});
+
+test('real inventory search sort and category controls filter owner data without changing inventory authority',()=>{
+ const src=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const a=src.indexOf('function RobloxCommonUI.CreateInventoryFullScreen(options)');
+ const b=src.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)',a);
+ assert.ok(a>=0 && b>a);
+ const inventory=src.slice(a,b);
+ assert.match(inventory,/local rows,shown,filterNames=\{\},\{\},\{\}/);
+ assert.match(inventory,/filterNames\[1\]="전체"/);
+ assert.match(inventory,/local category=tostring\(row\.category or ""\)/);
+ assert.match(inventory,/if not table\.find\(filterNames,currentFilter\)then currentFilter=filterNames\[1\]or"전체"end/);
+ assert.match(inventory,/search:GetPropertyChangedSignal\("Text"\):Connect\(refresh\)/);
+ assert.match(inventory,/sort\.Activated:Connect\(function\(\)/);
+ assert.match(inventory,/sortByName=false;sortByRarity=true/);
+ assert.match(inventory,/sortByRarity=false/);
+ assert.match(inventory,/sortByName=true/);
+ assert.match(inventory,/table\.sort\(shown,function\(left,right\)/);
+ assert.match(inventory,/currentFilter=="전체"or currentFilter==category/);
+ assert.match(inventory,/string\.find\(searchable,query,1,true\)/);
+ assert.match(inventory,/local current=shown\[index\]/);
+ assert.match(inventory,/if not current or current\.id==nil or current\.locked==true then return end/);
+ assert.match(inventory,/selectedId=current\.id/);
+ assert.match(inventory,/root:SetAttribute\("BoundItemCount",#rows\)/);
+ assert.match(inventory,/root:SetAttribute\("BoundVisibleItemCount",#shown\)/);
+ assert.match(inventory,/root:SetAttribute\("InventorySortByName",sortByName\)/);
+ assert.match(inventory,/root:SetAttribute\("CurrentInventoryFilter",currentFilter\)/);
+ assert.match(inventory,/for i=#shown\+1,#slots do slots\[i\]\.Visible=false end/);
+ assert.match(inventory,/root:SetAttribute\("TouchScrollable",true\)/);
+ for(const field of ['OwnsInventoryAuthority','OwnsSaveAuthority','OwnsRemoteAuthority']){
+   assert.match(inventory,new RegExp('root:SetAttribute\\("'+field+'",false\\)'));
+ }
+ assert.doesNotMatch(inventory,/DataStoreService|FireServer|SetAsync|UpdateAsync|RemoteEvent|RunService/);
+});
+
+test('Vibe common character equipment inventory and trading screens sync exact owner state and actions',()=>{
+ const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(a,b)=>script.slice(script.indexOf('function RobloxCommonUI.'+a+'(options)'),script.indexOf('function RobloxCommonUI.'+b+'(options)'));
+ const character=section('CreateCharacterDetailScreen','CreateMapFullScreen');
+ const equipment=section('CreateEquipmentFullScreen','CreateCharacterDetailScreen');
+ const inventory=section('CreateInventoryFullScreen','CreateEquipmentFullScreen');
+ const shop=section('CreateShopFullScreen','CreateConfirmDialog');
+ for(const [kind,body] of [['character',character],['equipment',equipment],['inventory',inventory],['shop',shop]]){
+  assert.match(body,/local function sync\(/,kind);
+  assert.match(body,/Sync=sync/,kind);
+  assert.doesNotMatch(body,/DataStoreService|SetAsync|UpdateAsync|FireServer|OnServerEvent/);
+ }
+ assert.match(character,/state\.name/);
+ assert.match(character,/state\.className/);
+ assert.match(character,/state\.stats/);
+ assert.match(character,/state\.revision/);
+ assert.match(equipment,/row\.equipped==true/);
+ assert.match(equipment,/if row and row\.id and row\.locked~=true and type\(options\.onEquip\)=="function"then/);
+ assert.match(equipment,/options\.onEquip\(row\.id,row\)/);
+ assert.match(inventory,/RobloxCommonUI.UpdateInventorySlot\(slot,row,\{theme=theme,selected=/);
+ const paint=script.slice(script.indexOf("function RobloxCommonUI.UpdateInventorySlot("),script.indexOf("function RobloxCommonUI.CreateTooltip("));
+ assert.match(paint,/slot:SetAttribute\("BoundItemId", tostring\(item\.id or ""\)\)/);
+ assert.match(inventory,/local current=shown\[index\]/);
+ assert.match(inventory,/if not current or current\.id==nil or current\.locked==true then return end/);
+ assert.match(inventory,/if type\(options\.onSelect\)=="function"then options\.onSelect\(current\.id,current\)end/);
+ assert.match(inventory,/for i=#shown\+1,#slots do slots\[i\]\.Visible=false end/);
+ assert.match(inventory,/root:SetAttribute\("BoundItemCount",#rows\)/);
+ assert.match(shop,/if current\.canSell==true and type\(options\.onSell\)=="function"then options\.onSell\(current\.id,current\)/);
+ assert.match(shop,/current\.canBuy==true and type\(options\.onBuy\)=="function"then options\.onBuy\(current\.id,current\)/);
+ assert.match(shop,/item\.price~=nil/);
+ assert.match(shop,/search:GetPropertyChangedSignal\("Text"\):Connect/);
+ assert.match(shop,/list\.AbsoluteSize\.X<430/);
+ assert.match(shop,/root:SetAttribute\("OwnsEconomyAuthority",false\)/);
+ assert.match(shop,/root:SetAttribute\("OwnsSaveAuthority",false\)/);
+ assert.match(shop,/root:SetAttribute\("BoundShopItemCount",#shown\)/);
+ const trade=section('CreateBuySellPanel','CreateBuybackPanel');
+ assert.match(trade,/name=options.name or "BuySellPanel",size=options.size or UDim2.new\(1,-24,1,-24\)/);
+ assert.match(trade,/local function sync\(state\)/);
+ assert.match(trade,/item.sellPrice/);
+ assert.match(trade,/mode=="SELL"/);
+ assert.match(trade,/action\.Activated:Connect\(function\(\)/);
+ assert.match(trade,/options.onBuy\(item.id,item\)/);
+ assert.match(trade,/options.onSell\(item.id,item\)/);
+ assert.match(trade,/root:SetAttribute\("OwnsTradeAuthority",false\)/);
+ assert.match(trade,/root:SetAttribute\("OwnsEconomyAuthority",false\)/);
+ assert.match(trade,/Sync=sync/);
+ assert.doesNotMatch(trade,/DataStoreService|SetAsync|UpdateAsync|FireServer|RemoteEvent/);
+});
+
+test('system-menu drawer is a functional touch-safe synchronized menu, not a static suggestion card',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const begin=source.indexOf('function RobloxCommonUI.CreateMenuSystemSwitcherDrawer(options)');
+ const end=source.indexOf('function RobloxCommonUI.CreateNavigationBreadcrumbBackstack(options)',begin);
+ const body=source.slice(begin,end);
+ assert.ok(begin>=0&&end>begin);
+ assert.match(body,/Instance.new\("ScrollingFrame"\)/);
+ assert.match(body,/scroller\.AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+ assert.match(body,/button\.Activated:Connect\(function\(\)/);
+ assert.match(body,/root:SetAttribute\("BoundSystemCount",#rows\)/);
+ assert.match(body,/root:SetAttribute\("CurrentSystemId",selectedId\)/);
+ assert.match(body,/button:SetAttribute\("MinimumTouchHeight",48\)/);
+ assert.match(body,/options\.onSelect\(id,current\)/);
+ assert.match(body,/if type\(current\)=="table"and current\.enabled==false then return end/);
+ assert.match(body,/return root,\{inner=inner,list=scroller,labels=buttons,buttons=buttons,Sync=sync\}/);
+ for(const role of ['OwnsSystemAuthority','OwnsNavigationAuthority','OwnsSaveAuthority','OwnsRemoteAuthority']){
+   assert.match(body,new RegExp('root:SetAttribute\\("'+role+'",false\\)'));
+ }
+ assert.doesNotMatch(body,/DataStoreService|SetAsync|FireServer|RemoteEvent|RenderStepped|RunService/);
+});
+
+test('common world-object prompts and interaction state cards synchronize actual object identity and lock state',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const start=source.indexOf('function RobloxCommonUI.CreateWorldPropInteractionPrompt(options)');
+ const end=source.indexOf('function RobloxCommonUI.CreateWorldPropActionWheel(options)',start);
+ const prompt=source.slice(start,end);
+ assert.match(prompt,/local function sync\(state\)/);
+ assert.match(prompt,/action\.Text=tostring\(state\.actionText or options\.actionText/);
+ assert.match(prompt,/target\.Text=tostring\(state\.targetText or options\.targetText/);
+ assert.match(prompt,/status\.Text=tostring\(state\.statusText or state\.reason or ""\)/);
+ assert.match(prompt,/root:SetAttribute\("BoundInteractionId",tostring\(state\.id/);
+ assert.match(prompt,/root:SetAttribute\("BoundInteractionKind",tostring\(state\.kind/);
+ assert.match(prompt,/root:SetAttribute\("InteractionAvailable",available\)/);
+ assert.match(prompt,/return root,\{action=action,target=target,status=status,Sync=sync\}/);
+ const stateStart=source.indexOf('function RobloxCommonUI.CreateInteractionStateCard(options)');
+ const stateEnd=source.indexOf('function RobloxCommonUI.CreateSeatInteractionPrompt(options)',stateStart);
+ const card=source.slice(stateStart,stateEnd);
+ assert.match(card,/local function sync\(state\)/);
+ assert.match(card,/state\.requirements or ""/);
+ assert.match(card,/state\.result or ""/);
+ assert.match(card,/root:SetAttribute\("SourceAuthority",tostring\(state\.source/);
+ assert.match(card,/Sync=sync/);
+ for(const body of [prompt,card]){
+   assert.match(body,/OwnsInteractionAuthority",false/);
+   assert.doesNotMatch(body,/FireServer|RemoteEvent|DataStoreService|UpdateAsync|SetAsync|RunService/);
+ }
+});
+
+test('NPC object menus and world action wheel never fabricate available actions and sync game owners',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(first,second)=>source.slice(source.indexOf('function RobloxCommonUI.'+first+'(options)'),
+   source.indexOf('function RobloxCommonUI.'+second+'(options)'));
+ const npc=section('CreateNpcInteractionPrompt','CreateNpcInteractionMenu');
+ const menu=section('CreateNpcInteractionMenu','CreateNpcRelationshipCard');
+ const wheel=section('CreateWorldPropActionWheel','CreateInteractionProgress');
+ assert.match(npc,/local function sync\(state\)/);
+ assert.match(npc,/root:SetAttribute\("InteractionKind",tostring\(state\.kind/);
+ assert.match(npc,/root:SetAttribute\("InteractionAvailable",enabled\)/);
+ assert.match(npc,/return root,key,title,subtitle,sync/);
+ assert.match(menu,/local function sync\(state\)/);
+ assert.match(menu,/sync\(options\.interaction or \{actions=options\.actions or \{\}\}\)/);
+ assert.match(menu,/buttons\[index\]\.Visible=false/);
+ assert.match(menu,/selected\.available==false/);
+ assert.match(menu,/options\.onSelect\(selected\.id,selected\)/);
+ assert.match(menu,/root:SetAttribute\("BoundInteractionActionCount",#rows\)/);
+ assert.match(menu,/return root,inner,list,buttons,sync/);
+ assert.doesNotMatch(menu,/\{id="GIVE_ITEM",/);
+ assert.match(wheel,/actions=\{\}/);
+ assert.match(wheel,/local function sync\(state\)/);
+ assert.match(wheel,/row\.available~=false/);
+ assert.match(wheel,/options\.onSelect\(actionId,current\)/);
+ assert.match(wheel,/root:SetAttribute\("BoundActionCount",#actions\)/);
+ for(const text of [npc,menu,wheel]){
+   assert.match(text,/OwnsInteractionAuthority",false/);
+   assert.doesNotMatch(text,/RemoteEvent|FireServer|SetAsync|DataStoreService|RunService|RenderStepped/);
+ }
+});
+
+test('all per-object factory panels bind observed chest harvest bed light and inspection state instead of placeholder actions',()=>{
+ const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(a,b)=>script.slice(script.indexOf('function RobloxCommonUI.'+a+'(options)'),
+   script.indexOf('function RobloxCommonUI.'+b+'(options)'));
+ const rows=[
+  ['CreateBedInteractionPrompt','CreateHarvestInteractionPrompt',['state.action','state.respawnPoint','state.requirements']],
+  ['CreateHarvestInteractionPrompt','CreateContainerInteractionPrompt',['state.requiredTool','state.progress','state.resourceCategory']],
+  ['CreateContainerInteractionPrompt','CreateLightControlPrompt',['state.status','state.capacity','state.access']],
+  ['CreateLightControlPrompt','CreateReadInspectPanel',['state.status','state.connection','state.requirements']],
+  ['CreateReadInspectPanel','CreateInventorySmartSortPreview',['state.target','state.description','state.related']]
+ ];
+ for(const [name,next,props] of rows){
+   const body=section(name,next);
+   assert.match(body,/local function sync\(state\)/,name);
+   assert.match(body,/Sync=sync/,name);
+   assert.match(body,/BoundInteractionId/,name);
+   assert.match(body,/SourceAuthority/,name);
+   assert.match(body,/OwnsInteractionAuthority",false/,name);
+   assert.doesNotMatch(body,/RemoteEvent|FireServer|DataStoreService|SetAsync|UpdateAsync|while true/,name);
+   for(const prop of props)assert.ok(body.includes(prop),name+': '+prop);
+ }
+ const progress=section('CreateInteractionProgress','CreateInteractionStateCard');
+ assert.match(progress,/controller\.SetRatio\(state\.ratio,state\.text or state\.label\)/);
+ assert.match(progress,/root:SetAttribute\("OwnsInteractionDuration",false\)/);
+ assert.match(progress,/return root,controller,sync/);
+});
+
+
+test('canonical asset library previews actual local skinned GLB and animation clips without claiming native QA',()=>{
+  const page=fs.readFileSync('asset-library.html','utf8');
+  const library=fs.readFileSync('assets/asset-library.js','utf8');
+  const viewer=fs.readFileSync('assets/asset-library-viewer.js','utf8');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.match(page,/type="importmap"/);
+  assert.ok(page.indexOf('type="importmap"')<page.indexOf('src="/assets/asset-library.js"'));
+  assert.match(page,/id="meshControls"/);
+  assert.match(page,/id="meshWireframe"/);
+  assert.match(library,/activeViewer\.setGLB\(/);
+  assert.match(library,/nativeGLB\(row\.asset\?\.path\)/);
+  assert.match(library,/activeViewer\.selectNativeClip\(native\.id\)/);
+  assert.match(viewer,/import \{GLTFLoader\}/);
+  assert.match(viewer,/new THREE\.AnimationMixer\(model\)/);
+  assert.match(viewer,/function disposeNative\(root\)/);
+  assert.match(viewer,/function setWireframe\(value\)/);
+  assert.match(viewer,/new GLTFLoader\(\)\.loadAsync\(uri\)/);
+  assert.match(viewer,/nativeMixer\.update\(dt\*speed\)/);
+  assert.match(viewer,/host\.dataset\.format='glb'/);
+  // [현재 라이브러리] 삭제된 수제 GLB 대신 등록된 실제 CC0 네이티브 원본을 검사한다.
+  const binaries=registry.assets.filter(row=>/^(?:\/)?assets\/(?:roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?|shared\/[a-z0-9/-]+)\.glb$/i.test(String(row.path||'')));
+  assert.ok(binaries.length>=4);
+  for(const record of binaries.slice(0,4)){
+    const bytes=fs.readFileSync(String(record.path).replace(/^\//,''));
+    assert.equal(bytes.subarray(0,4).toString(),'glTF',record.id);
+    assert.equal(bytes.readUInt32LE(8),bytes.length);
+    assert.notEqual(record.productionVerified,true);
+  }
+  assert.match(library,/런타임|검증/);
+});
+
+
+// [외부 로블록스 에셋] 기존 등록 GLB를 그대로 미리보기하고 임의 경로·외부 URL은 차단한다.
+test('acquired Roblox GLBs are previewable through the existing safe native viewer',()=>{
+  const library=fs.readFileSync('assets/asset-library.js','utf8');
+  const viewer=fs.readFileSync('assets/asset-library-viewer.js','utf8');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const manifest=JSON.parse(fs.readFileSync('assets/roblox/actors/manifest.json','utf8'));
+  const start=library.indexOf('const nativeGLB='),end=library.indexOf('let nativeClip=',start);
+  assert.ok(start>=0&&end>start);
+  const nativeGLB=vm.runInNewContext(library.slice(start,end)+'\nnativeGLB');
+  assert.ok(manifest.models.length>0,'at least one acquired native model required');
+  assert.equal(manifest.models.length,manifest.adaptedGlbCount,'registered native previews must match actual converted GLB inventory');
+  assert.ok(manifest.sourceModelCount>=manifest.adaptedGlbCount,'unconverted source originals remain a separately counted acquisition gap');
+  for(const model of manifest.models){
+    const record=registry.assets.find(asset=>asset.id==='external-actor-'+model.id);
+    assert.ok(record,'unregistered acquired actor '+model.id);
+    assert.equal(record.path,model.path);
+    assert.equal(record.masterGlbHash,model.sha256);
+    assert.equal(record.productionVerified,false);
+    assert.equal(record.gameExclusive,false,'acquired actor must remain company-common');
+    assert.equal(nativeGLB(model.path),'/'+model.path);
+    assert.equal(nativeGLB('/'+model.path),'/'+model.path);
+    assert.ok(fs.statSync(model.path).size>100,'empty GLB '+model.path);
+  }
+  assert.equal(nativeGLB('/assets/shared/forest-wolf.glb'),'/assets/shared/forest-wolf.glb');
+  for(const bad of ['https://example.org/test.glb','/assets/roblox/actors/native/../outside.glb',
+    '/assets/roblox/actors/sources/unknown.glb','/assets/roblox/actors/native/test.fbx',
+    '/assets/roblox/actors/native/test/../../test.glb','/assets/shared/../secrets.glb'])
+    assert.equal(nativeGLB(bad),'',bad);
+  assert.ok(viewer.includes('roblox\\/actors\\/native'));
+  assert.match(viewer,/new GLTFLoader\(\)\.loadAsync\(uri\)/);
+  assert.match(viewer,/nativeMixer\.update\(dt\*speed\)/);
+  assert.match(library,/로블록스 실행 미검증/);
+});
+
+test('Roblox external pack gallery separates acquired originals from runtime-verified assets',()=>{
+  const page=fs.readFileSync('asset-library.html','utf8');
+  const library=fs.readFileSync('assets/asset-library.js','utf8');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const sources=registry.externalSources.filter(row=>row.platformTargets?.includes('ROBLOX')&&
+    row.status==='LICENSE_VERIFIED_EXTERNAL_CANDIDATE');
+  const acquired=sources.filter(row=>row.acquisitionState==='ACQUIRED_ORIGINAL_FILES');
+  assert.ok(acquired.length>=6);
+  assert.match(page,/id="externalSourceList"/);
+  assert.match(page,/id="externalSourceCount"/);
+  assert.match(library,/source\.platformTargets\.includes\('ROBLOX'\)/);
+  assert.match(library,/source\.acquisitionState==='ACQUIRED_ORIGINAL_FILES'/);
+  assert.match(library,/source\.productionVerified===true/);
+  assert.ok(acquired.every(row=>row.productionVerified!==true));
+});
+
+test('asset homepage notices native ID and source hash changes without treating unchanged records as new',()=>{
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ const signature=vm.runInNewContext(script.slice(script.indexOf('const registrySignature='),script.indexOf('const biomes='))+'registrySignature;');
+ const original={assets:[{id:'model',path:'/assets/shared/humanoid-traveler.glb',sourceHash:'a'.repeat(64),robloxAssetId:'11'}]};
+ assert.equal(signature(original),signature(JSON.parse(JSON.stringify(original))));
+ assert.notEqual(signature(original),signature({assets:[{...original.assets[0],robloxAssetId:'22'}]}));
+ assert.notEqual(signature(original),signature({assets:[{...original.assets[0],sourceHash:'b'.repeat(64)}]}));
+ assert.match(script,/row\.asset\?\.sourceHash/);
+});
+
+test('mobile asset preview skips extra frames and hidden-tab time instead of advancing the animation',()=>{
+ const source=fs.readFileSync('assets/asset-library-viewer.js','utf8');
+ const start=source.indexOf(' let last=performance.now();'),end=source.indexOf('  if(!paused)',start);
+ const prefix=source.slice(start,end);
+ const document={hidden:false};let loop;
+ const frames=[];
+ vm.runInNewContext(prefix+'frames.push(dt); });',{document,visible:true,performance:{now:()=>0},matchMedia:()=>({matches:true}),renderer:{setAnimationLoop:callback=>{loop=callback;}},frames});
+ for(let time=0;time<1000;time+=16.7)loop(time);
+ assert.ok(frames.length>=28&&frames.length<=30);
+ const before=frames.length;document.hidden=true;loop(2000);assert.equal(frames.length,before);
+ document.hidden=false;loop(2010);assert.equal(frames.length,before);loop(2034);assert.ok(frames.at(-1)<.04);
+ assert.match(source,/uri\+='\?v='\+sourceHash/);
+});
+
+test('complete native-first gallery distinguishes registered assets, material atoms and source catalogs',()=>{
+ const html=fs.readFileSync('asset-library.html','utf8');
+ const code=fs.readFileSync('assets/asset-library.js','utf8');
+ const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+ const ids=['nativeTab','nativeCount','materialCount','sourceReferenceCount','sourcePackList',
+  'catalogPackCount','catalogEntryCount','inspectionMetrics','meshCount','triangleCount','meshMaterialCount','meshClipCount'];
+ for(const id of ids)assert.match(html,new RegExp('id="'+id+'"'));
+ assert.ok(registry.assets.length>0);
+ assert.ok(registry.baseMaterialLibrary.atomCount>0);
+ assert.ok(registry.externalSources.length>0);
+ const native=registry.assets.filter(row=>/^(?:\/)?assets\/(?:shared\/[a-z0-9-]+|roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?)\.glb$/i.test(String(row.path||'')));
+ assert.ok(native.length>0,'actual registered native models exist');
+ const catalogs=registry.assets.filter(row=>Number.isInteger(row.catalogRowCount)&&row.catalogRowCount>0);
+ assert.equal(catalogs.length,0,'removed unlicensed catalog placeholders must not be reintroduced');
+ assert.ok(registry.externalSources.length>0,'current external source catalog remains enumerable');
+ assert.match(code,/kind==='native'/);
+ assert.match(code,/nativeGLB\(asset\.path\)/);
+ assert.match(code,/renderSourceCollections\(registry\)/);
+ assert.match(code,/Promise\.allSettled\(sources\.map/);
+ assert.match(code,/\$\('inspectionMetrics'\)\.hidden=false/);
+ assert.match(code,/measured\.triangles\.toLocaleString/);
+ assert.match(code,/nativeAutoSelected/);
+ assert.match(code,/제작 레시피|공용 모션 제작 레시피/);
+ assert.match(html,/실행 검증은 서로 다른 상태/);
+ assert.ok(registry.assets.some(row=>row.productionVerified===false));
+});
+
+test('canonical library sync persists only real game-source consumer evidence and cleans stale bindings',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'cc0-real-consumers-'));
+ try{
+  const assetPath=path.join(root,'assets','shared','wolf.fbx');
+  const webDir=path.join(root,'web-games','demo');
+  fs.mkdirSync(path.dirname(assetPath),{recursive:true});
+  fs.mkdirSync(webDir,{recursive:true});
+  fs.writeFileSync(assetPath,'verified fixture bytes');
+  const webFile=path.join(webDir,'index.html');
+  fs.writeFileSync(webFile,'<script>const assets={wolf:"../../assets/shared/wolf.fbx"};loader.loadAsync(assets.wolf);</script>');
+  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({
+   games:[{id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]
+  }));
+  const original={version:1,assets:[{
+   id:'wolf',family:'CREATURE',path:'assets/shared/wolf.fbx',license:'CC0-1.0',
+   productionVerified:false,runtimeVerificationState:'PENDING',consumerGameIds:['historical']
+  }],externalSources:[]};
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(original));
+  const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(first.persisted,true,first.persistError||'source-backed registry not persisted');
+  const saved=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  assert.deepEqual(saved.assets[0].sourceBoundConsumerGameIds,['demo']);
+  assert.deepEqual(saved.assets[0].consumerGameIds,['historical'],'declaration retained without fake runtime use');
+  assert.equal(saved.assets[0].sourceConsumerBindings[0].evidenceFiles[0],'web-games/demo/index.html');
+  assert.equal(saved.assets[0].sourceConsumerBindings[0].runtimeVerified,false);
+  assert.equal(saved.assets[0].productionVerified,false);
+  const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(second.changed,false,'identical code evidence must not churn library versions');
+  fs.writeFileSync(webFile,'<script>const unused=1;</script>');
+  const removed=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(removed.persisted,true,removed.persistError||'stale source binding failed to clear');
+  const latest=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  assert.equal(latest.assets[0].sourceBoundConsumerGameIds,undefined);
+  assert.equal(latest.assets[0].sourceConsumerBindings,undefined);
+  assert.deepEqual(latest.assets[0].consumerGameIds,['historical']);
+  assert.ok(removed.sourceConsumerRelations.some(row=>row.classification==='STALE_SOURCE_BINDING'));
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('asset gallery separates source connections, historical declarations, and runtime proof',()=>{
+ const source=fs.readFileSync('assets/asset-library.js','utf8');
+ assert.match(source,/sourceBoundConsumerGameIds/);
+ assert.match(source,/sourceConsumerBindings/);
+ assert.match(source,/실제 연결 근거:/);
+ assert.match(source,/연결만으로 실행검증을 인정하지 않음/);
+ assert.match(source,/실제 연결 미확인/);
+});
+
+test('game scoped consumer refresh preserves evidence for unaffected games',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'cc0-scoped-consumers-'));
+ try{
+  const asset=path.join(root,'assets','shared','wolf.fbx');
+  fs.mkdirSync(path.dirname(asset),{recursive:true});
+  fs.writeFileSync(asset,'canonical native source');
+  for(const id of ['a','b']){
+   const folder=path.join(root,'web-games',id);
+   fs.mkdirSync(folder,{recursive:true});
+   fs.writeFileSync(path.join(folder,'index.html'),
+    '<script>const files={wolf:"../../assets/shared/wolf.fbx"};Promise.all(Object.entries(files).map(([name,url])=>loader.loadAsync(url)))</script>');
+  }
+  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({
+   games:['a','b'].map(id=>({id,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}))
+  }));
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+   version:1,assets:[{id:'wolf',family:'CREATURE',path:'assets/shared/wolf.fbx',license:'CC0',
+    productionVerified:false}],externalSources:[]
+  }));
+  const full=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(full.persisted,true);
+  assert.deepEqual(full.registry.assets[0].sourceBoundConsumerGameIds,['a','b']);
+  fs.writeFileSync(path.join(root,'web-games','a','index.html'),'<script>const unrelated=1</script>');
+  const scoped=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true,consumerGameIds:['a']});
+  assert.equal(scoped.persisted,true);
+  const latest=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  assert.deepEqual(latest.assets[0].sourceBoundConsumerGameIds,['b'],'unaffected game connection retained');
+  assert.deepEqual(latest.assets[0].sourceConsumerBindings.map(x=>x.gameId),['b']);
+  assert.equal(scoped.sourceConsumerRelations.some(row=>row.gameId==='b'
+    &&row.classification==='STALE_SOURCE_BINDING'),false,'unscanned game must not be reported stale');
+  assert.equal(latest.assets[0].productionVerified,false);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('web source consumer recognizes loaded model file tables but rejects mere catalogs',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'cc0-loaded-files-'));
+ try{
+  const model=path.join(root,'assets','shared','wolf.fbx');
+  const gameDir=path.join(root,'web-games','party-rpg');
+  fs.mkdirSync(path.dirname(model),{recursive:true});
+  fs.mkdirSync(gameDir,{recursive:true});
+  fs.writeFileSync(model,'model native bytes');
+  const entry=path.join(gameDir,'index.html');
+  const registry={assets:[{id:'wolf',family:'CREATURE',license:'CC0',
+    path:'assets/shared/wolf.fbx',productionVerified:false}]};
+  const gameCatalog={games:[{id:'party-rpg',lifecycleState:'ACTIVE',
+    productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify(gameCatalog));
+  fs.writeFileSync(entry,
+   '<script>const files={wolf:"../../assets/shared/wolf.fbx"};Promise.all(Object.entries(files).map(([id,url])=>loader.loadAsync(url)))</script>');
+  const used=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false,consumerGameIds:['party-rpg']});
+  assert.deepEqual(used.sourceConsumerRegistry.assets[0].sourceBoundConsumerGameIds,['party-rpg']);
+  assert.equal(used.sourceConsumerBindings[0].evidenceFiles[0],'web-games/party-rpg/index.html');
+  assert.equal(used.sourceConsumerBindings[0].runtimeVerified,false);
+  fs.writeFileSync(entry,'<script>const files={wolf:"../../assets/shared/wolf.fbx"};</script>');
+  const unused=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false,consumerGameIds:['party-rpg']});
+  assert.equal(unused.sourceConsumerBindings.length,0,'unconsumed file table is not an applied asset');
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+// [원본 라이브러리] 로컬 바이너리·출처·LFS 실체를 확인한다. 카탈로그는 런타임 증거가 아니다.
+test('로블록스 CC0 캐릭터 86종과 공용 원본 111개는 실제 바이너리·해시로만 확인한다',async()=>{
+ const {createHash}=await import('node:crypto');
+ const actor=JSON.parse(fs.readFileSync('assets/roblox/actors/manifest.json','utf8'));
+ const common=JSON.parse(fs.readFileSync('assets/asset-manifest.json','utf8'));
+ const index=actor.sourceLibraryIndex;
+ const rows=index.source3dAssets;
+ assert.equal(rows.length,86);
+ assert.deepEqual(index.byCategory,{CHARACTER:48,CREATURE:35,PROP:3});
+ assert.equal(index.archiveOnlyPacks.length,1);
+ assert.equal(index.archiveOnlyPacks[0].individualCharactersIndexed,false);
+ assert.equal(common.sharedOriginalArchives.packs.length,111);
+ assert.equal(common.robloxOriginalAssetLibrary.originalActor3dSources,rows.length);
+ assert.equal(common.robloxOriginalAssetLibrary.sharedDownloadedOriginalArchives,111);
+ assert.equal(index.gameApplied,false);
+ assert.equal(index.runtimeVerified,false);
+ assert.equal(common.robloxOriginalAssetLibrary.runtimeVerified,false);
+ assert.equal(common.robloxOriginalAssetLibrary.unverifiedArchiveImportForbidden,true);
+ const hashFile=async(file,algorithm)=>{
+  const hash=createHash(algorithm);
+  for await(const chunk of fs.createReadStream(file))hash.update(chunk);
+  return hash.digest('hex');
+ };
+ const seen=new Set();
+ for(const row of rows){
+  assert.equal(seen.has(row.sourcePath),false,'DUPLICATE_CC0_ORIGINAL: '+row.sourcePath);
+  seen.add(row.sourcePath);
+  assert.match(row.sourcePath,/^assets\/roblox\/actors\/sources\/[a-z0-9-]+\/.+\.(fbx|glb)$/i);
+  assert.equal(row.license,'CC0-1.0');
+  assert.match(row.licenseEvidenceUrl,/^https:\/\//);
+  assert.ok(row.roles.length>0);
+  assert.equal(row.gameApplied,false);
+  assert.equal(row.gameRuntimeVerified,false);
+  const stat=fs.lstatSync(row.sourcePath);
+  assert.ok(stat.isFile()&&!stat.isSymbolicLink()&&stat.size>256,'CC0_ORIGINAL_NOT_MATERIALIZED: '+row.sourcePath);
+  assert.equal(await hashFile(row.sourcePath,'sha256'),row.sourceSha256,'CC0_ORIGINAL_HASH_DRIFT: '+row.sourcePath);
+  const blob=createHash('sha1').update(Buffer.from('blob '+stat.size+'\0'));
+  for await(const chunk of fs.createReadStream(row.sourcePath))blob.update(chunk);
+  assert.equal(blob.digest('hex'),row.repositoryGitBlobSha,'CC0_GIT_BLOB_DRIFT: '+row.sourcePath);
+ }
+ const archives=new Set();
+ for(const pack of common.sharedOriginalArchives.packs){
+  assert.equal(archives.has(pack.sourcePath),false,'DUPLICATE_CC0_ARCHIVE: '+pack.sourcePath);
+  archives.add(pack.sourcePath);
+  assert.match(pack.sourcePath,/^assets\/external\/simple-rpg\//);
+  const stat=fs.lstatSync(pack.sourcePath);
+  assert.ok(stat.isFile()&&!stat.isSymbolicLink(),'CC0_ARCHIVE_MISSING: '+pack.sourcePath);
+  assert.equal(stat.size,pack.bytes,'CC0_ARCHIVE_SIZE_OR_LFS_POINTER: '+pack.sourcePath);
+  assert.equal(await hashFile(pack.sourcePath,'sha256'),pack.sha256,'CC0_ARCHIVE_HASH_DRIFT: '+pack.sourcePath);
+  assert.equal(pack.sourceOnly,true);
+  assert.equal(pack.gameApplied,false);
+  assert.match(pack.licenseEvidenceUrl,/^https:\/\//);
+ }
+});
+
+
+test('common Roblox UI inspector and toy material detail stays game-state bound',()=>{
+ const ui=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const mats=fs.readFileSync('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau','utf8');
+ const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+ const begin=ui.indexOf('function RobloxCommonUI.CreateInventoryFullScreen(options)');
+ const end=ui.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)',begin);
+ assert.ok(begin>=0&&end>begin);
+ const inv=ui.slice(begin,end);
+ for(const name of ['SelectedItemDetail','SelectedItemName','SelectedItemMeta','SelectedItemDescription','BoundSelectedItemId','InventoryEmptyMessage','BoundVisibleItemCount'])assert.ok(inv.includes(name),name);
+ assert.ok(inv.includes('options.onSelect(current.id,current)'));
+ assert.ok(inv.includes('RobloxCommonUI.UpdateInventorySlot(slot,row,{theme=theme,selected='));
+ for(const name of ['FallbackGlyph','IconSelected','IconLocked'])assert.ok(ui.includes(name),name);
+ for(const name of ['TOY_PLASTIC','TOY_STUDDED','SurfaceStudsEnabled','SurfacePaletteVariant','PreserveAuthoredTint','preservePhysics=true','atomCount = 27'])assert.ok(mats.includes(name),name);
+ assert.ok(worker.includes('RobloxCommonUI.CreateInventoryFullScreen and its returned Sync(items) controller'));
+ assert.ok(worker.includes('SurfaceStudsEnabled=true is only valid on authored anchored block Part.TopSurface'));
+});
+
+
+test('Roblox inventory rarity filtering and native stud reapplication remain presentation-only',()=>{
+ const ui=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const mats=fs.readFileSync('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau','utf8');
+ const inventory=ui.slice(ui.indexOf('function RobloxCommonUI.CreateInventoryFullScreen(options)'),ui.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)'));
+ for(const needle of ['rarityFilter="희귀도: "..rarity','currentFilter=="장착 중"and row.equipped==true',
+   'tostring(row.description or "")','string.find(searchable,query,1,true)',
+   'rarityRank[string.upper','InventorySortByRarity','detailMeta.TextColor3','UpdateInventorySlot(slot,row'])
+  assert.ok(inventory.includes(needle),'shared inventory display contract missing: '+needle);
+ assert.match(inventory,/root:SetAttribute\("OwnsInventoryAuthority",false\)/);
+ assert.match(inventory,/root:SetAttribute\("OwnsSaveAuthority",false\)/);
+ assert.doesNotMatch(inventory,/FireServer\(|UpdateAsync\(|SetAsync\(/);
+ const authored=mats.slice(mats.indexOf('function RobloxCommonMaterials.ApplyAuthoredSurface('));
+ assert.ok(authored.includes('if part.TopSurface~=Enum.SurfaceType.Studs then'));
+ assert.ok(authored.includes('PreviousTopSurfaceName",part.TopSurface.Name'));
+ assert.ok(authored.includes('and part:IsA("Part") and part.Shape==Enum.PartType.Block and part.Anchored'));
+ assert.ok(authored.includes('preservePhysics=true'));
+});

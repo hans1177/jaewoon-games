@@ -1,0 +1,69 @@
+{
+  "name": "deep-diver",
+  "tree": {
+    "$className": "DataModel",
+    "Lighting": {
+      "$properties": {
+        "Technology": "Voxel",
+        "LightingStyle": "Soft",
+        "PrioritizeLightingQuality": false
+      },
+      "CompatibilityToneMap": {
+        "$className": "ColorGradingEffect",
+        "$properties": {
+          "TonemapperPreset": "Retro"
+        }
+      }
+    },
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "shared",
+        "RobloxCommonBuilding": {
+          "$path": "../../assets/roblox/common-building-v1/RobloxCommonBuilding.luau"
+        },
+        "RobloxCommonCharacterGear": {
+          "$path": "../../assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau"
+        },
+        "RobloxCommonCreatureParts": {
+          "$path": "../../assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau"
+        },
+        "RobloxCommonEnvironment": {
+          "$path": "../../assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau"
+        },
+        "RobloxCommonFoliage": {
+          "$path": "../../assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau"
+        },
+        "RobloxCommonItems": {
+          "$path": "../../assets/roblox/common-items-v1/RobloxCommonItems.luau"
+        },
+        "RobloxCommonPresentation": {
+          "$path": "../../assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau"
+        },
+        "RobloxCommonSkillPresentation": {
+          "$path": "../../assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau"
+        },
+        "RobloxCommonTools": {
+          "$path": "../../assets/roblox/common-tools-v1/RobloxCommonTools.luau"
+        },
+        "RobloxCommonIcons": {
+          "$path": "../../assets/roblox/common-ui-v1/RobloxCommonIcons.luau"
+        },
+        "RobloxCommonWorldProps": {
+          "$path": "../../assets/roblox/common-world-props-v1/RobloxCommonWorldProps.luau"
+        }
+      }
+    },
+    "ServerScriptService": {
+      "GameServer": {
+        "$path": "server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "GameClient": {
+          "$path": "client"
+        }
+      }
+    }
+  }
+}

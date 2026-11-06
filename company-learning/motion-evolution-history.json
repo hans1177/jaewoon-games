@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "status": "EVIDENCE_REQUIRED_EMPTY_BASELINE",
+  "authority": "VERIFIED_NATIVE_PLAYBACK_PLUS_INDEPENDENT_QA_ONLY",
+  "scope": "per-game actor motion craftsmanship; no authority over gameplay, security, release or models",
+  "requiredSignals": [
+    "sourceRevision",
+    "candidateRevision",
+    "actualPlatformRuntime",
+    "actualActorObserved",
+    "nativePlaybackObserved",
+    "independentQaPassed",
+    "sameActor",
+    "sameScene",
+    "sameDevice",
+    "sameInput",
+    "sameFrameLimit",
+    "gameplayAuthorityPreserved",
+    "beforeScore",
+    "afterScore",
+    "regressionCount",
+    "nativeReplayId"
+  ],
+  "records": []
+}

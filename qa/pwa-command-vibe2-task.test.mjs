@@ -1,0 +1,339 @@
+// 파일명: qa/pwa-command-vibe2-task.test.mjs
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { ingestPwaTask, buildSyncPayload, validateLocalWebOwnerEvent, buildGithubDevelopmentFocus } from '../tools/pwa-command-vibe2-task.mjs';
+import { buildVibeContinuousWorkOrder } from '../tools/vibe2-continuous-runner.mjs';
+import { parseOwnerStopTask, permanentlyDeleteCatalog, stopCatalog } from '../tools/pwa-owner-stop.mjs';
+
+const UUID='11111111-2222-4333-8444-555555555555';
+function fixture(){
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'pwa-vibe-'));
+  fs.mkdirSync(path.join(root,'web-games','insect-survival'),{recursive:true});
+  fs.writeFileSync(path.join(root,'web-games','insect-survival','index.html'),'<html>web game</html>');
+  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    status:'OWNER_DIRECT_LOCKED',developmentAccess:{WEB:'ALWAYS_ALLOWED'},
+    ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['WEB']},
+    localVibeWebChat:{enabled:true,platform:'WEB'},
+    finalDevelopmentLock:{sequenceLock:{status:'LOCKED'}}
+  }));
+  fs.mkdirSync(path.join(root,'unity-games','daechung-rpg'),{recursive:true});
+  const catalog={games:[
+    {id:'insect-survival',name:'곤충 생존기',webPath:'/web-games/insect-survival/',homepageCategory:'development-confirmed'},
+    {id:'daechung-rpg',name:'대충 RPG',webPath:'/web-games/daechung-rpg/',unityProjectPath:'unity-games/daechung-rpg',homepageCategory:'release-confirmed'}
+  ]};
+  const status={projects:[{gameId:'daechung-rpg',projectPath:'unity-games/daechung-rpg',target:'unity-android'}]};
+  return {root,catalog,status};
+}
+
+test('PWA owner 지시는 Web Vibe2 최우선 작업으로 변환된다',()=>{
+  const f=fixture();
+  const result=ingestPwaTask({task:{id:UUID,game_id:'insect-survival',body:'거미 공격 모션 확인하고 수정해',kind:'directive',priority:'urgent'},queue:{version:3,tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root});
+  const task=result.tasks[0];
+  assert.equal(task.target,'web');
+  assert.equal(task.sourceRoot,'web-games/insect-survival');
+  assert.ok(task.evidence.includes('web-organization-boundary:v1'));
+  assert.equal(task.priority,'owner-immediate');
+  assert.equal(task.ownerDirective,true);
+  assert.equal(task.requiresOwnerDecision,false);
+  assert.match(task.goal,/거미 공격 모션/);
+  assert.ok(task.evidence.includes('owner-auto-deploy-authorization'));
+});
+
+test('유니티 소스는 개발 금지하며 웹 소스만 기존 GitHub 게임 지시에 사용한다',()=>{
+  const f=fixture();
+  assert.throws(()=>ingestPwaTask({task:{id:UUID,game_id:'daechung-rpg',body:'이동 모션 수정',kind:'feedback'},queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root}),/웹게임 소스가 없어 작업을 접수할 수 없음/);
+  fs.mkdirSync(path.join(f.root,'web-games','daechung-rpg'),{recursive:true});
+  fs.writeFileSync(path.join(f.root,'web-games','daechung-rpg','index.html'),'<html>web game</html>');
+  const result=ingestPwaTask({task:{id:UUID,game_id:'daechung-rpg',body:'웹 이동 모션 수정',kind:'feedback'},queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root});
+  assert.equal(result.tasks[0].target,'web');
+  assert.equal(result.tasks[0].releaseState,'release-confirmed');
+  assert.ok(result.tasks[0].evidence.includes('source-root:web-games/daechung-rpg'));
+});
+
+test('Vibe2 작업 상태를 PWA 채팅 상태로 변환한다',()=>{
+  const queue={tasks:[
+    {id:`pwa-${UUID}`,target:'web',status:'running',blocker:'candidate-awaiting-qa-and-deployment'},
+    {id:'pwa-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',target:'web',status:'done'},
+    {id:'other',status:'failed'}
+  ]};
+  const payload=buildSyncPayload(queue);
+  assert.deepEqual(payload.updates.map(x=>x.status),['testing','done']);
+});
+
+
+test('GitHub authenticated owner event accepts only exact existing-web directive', () => {
+  const event = {
+    action:'vibe-local-web-owner-directive',
+    client_payload: {
+      id:UUID,game_id:'insect-survival',platform:'web',
+      kind:'directive',body:'모바일 조작 수정 후 QA 자동 배포',autoDeployAfterVerifiedQa:true
+    }
+  };
+  const auth={actor:'hans1177',repository:'hans1177/jaewoon-games'};
+  const task=validateLocalWebOwnerEvent(event,auth);
+  assert.equal(task.platform,'web');
+  assert.equal(task.source,'LOCAL_VIBE_WEB_CHAT');
+  const f=fixture();
+  const accepted=ingestPwaTask({task,queue:{version:3,tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root});
+  assert.equal(accepted.tasks[0].target,'web');
+  assert.ok(accepted.tasks[0].evidence.includes('owner-auto-deploy-authorization'));
+  assert.ok(accepted.tasks[0].evidence.includes('verified-qa-required'));
+  assert.ok(accepted.tasks[0].evidence.includes('vibe-local-web-owner-directive'));
+  assert.deepEqual(buildSyncPayload(accepted).updates,[],'local web tasks must not pollute PWA device chat state');
+  assert.throws(()=>validateLocalWebOwnerEvent(event,{actor:'outsider',repository:auth.repository}),/LOCAL_OWNER_EVENT_NOT_AUTHORIZED/);
+  assert.throws(()=>validateLocalWebOwnerEvent(event,{actor:auth.actor,repository:'hans1177/other'}),/LOCAL_OWNER_EVENT_NOT_AUTHORIZED/);
+  for(const bad of [{platform:'roblox'},{autoDeployAfterVerifiedQa:false},{body:''},{game_id:'../escape'}]){
+    assert.throws(()=>validateLocalWebOwnerEvent({...event,client_payload:{...event.client_payload,...bad}},auth),/LOCAL_OWNER_EVENT_INVALID/);
+  }
+});
+
+test('explicit web directive is restricted to WEB even when Unity project exists',()=>{
+  const f=fixture();
+  fs.mkdirSync(path.join(f.root,'web-games','daechung-rpg'),{recursive:true});
+  fs.writeFileSync(path.join(f.root,'web-games','daechung-rpg','index.html'),'<html>web game</html>');
+  const result=ingestPwaTask({
+    task:{id:UUID,game_id:'daechung-rpg',body:'웹 HUD 개선',platform:'web'},
+    queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root
+  });
+  assert.equal(result.tasks[0].target,'web');
+  assert.ok(result.tasks[0].evidence.includes('source-root:web-games/daechung-rpg'));
+});
+
+test('owner comment rejects forged identities, edits, malformed commands and platform expansion',()=>{
+  const payload={id:UUID,game_id:'insect-survival',platform:'web',kind:'directive',body:'기존 저장 보존',autoDeployAfterVerifiedQa:true};
+  const event={action:'created',repository:{full_name:'hans1177/jaewoon-games'},sender:{login:'hans1177'},issue:{number:8664},
+    comment:{id:123,author_association:'OWNER',user:{login:'hans1177',type:'User'},body:'/vibe-local-web '+JSON.stringify(payload)}};
+  const context={actor:'hans1177',repository:'hans1177/jaewoon-games'};
+  assert.equal(validateLocalWebOwnerEvent(event,context).body,payload.body);
+  for(const edit of [
+    e=>e.comment.user.login='attacker',e=>e.sender.login='attacker',e=>e.comment.user.type='Bot',
+    e=>e.comment.author_association='COLLABORATOR',e=>e.repository.full_name='other/repo',
+    e=>e.action='edited',e=>e.comment.body='/vibe-local-web {',
+    e=>e.comment.body='/vibe-local-web '+JSON.stringify({...payload,platform:'unity'}),
+    e=>e.comment.body='/vibe-local-web '+JSON.stringify({...payload,body:'x'.repeat(2001)}),
+    e=>e.comment.body='/vibe-local-web '+JSON.stringify({...payload,body:'x\u0000y'})
+  ]){const invalid=structuredClone(event);edit(invalid);assert.throws(()=>validateLocalWebOwnerEvent(invalid,context));}
+  assert.throws(()=>validateLocalWebOwnerEvent(event,{...context,actor:'attacker'}));
+  assert.throws(()=>validateLocalWebOwnerEvent(event,{...context,repository:'other/repo'}));
+});
+
+
+test('direct owner game work preserves parallel pool and upgrades legacy one-slot PWA queues',()=>{
+  const f=fixture();
+  const task={id:UUID,game_id:'insect-survival',body:'몬스터 행동을 개선해',kind:'directive',priority:'urgent'};
+  const prior={id:'existing-worker',gameId:'insect-survival',status:'running'};
+  const queue={version:5,mode:'hierarchical-dag-sharded-work-stealing-queue',maxConcurrentTasks:128,tasks:[prior]};
+  const result=ingestPwaTask({task,queue,catalog:f.catalog,status:f.status,repoRoot:f.root});
+  assert.equal(result.maxConcurrentTasks,128,'do not replace existing parallel capacity with one slot');
+  assert.equal(result.mode,queue.mode);
+  assert.equal(result.ownerDirectivePreemptsAutonomy,true);
+  assert.equal(result.tasks.length,2);
+  assert.deepEqual(result.tasks[0],prior,'do not discard an existing reservation');
+  assert.equal(result.tasks[1].priority,'owner-immediate');
+  const old=ingestPwaTask({task,queue:{...queue,mode:'single-worker-priority-serial-queue',maxConcurrentTasks:1},
+    catalog:f.catalog,status:f.status,repoRoot:f.root});
+  assert.equal(old.maxConcurrentTasks,256,'recover legacy PWA serialization without capping the existing worker pool');
+  assert.equal(old.mode,'hierarchical-dag-sharded-work-stealing-queue');
+  assert.deepEqual(old.tasks[0],prior);
+});
+
+test('GitHub PWA cloud development and local WEB Vibe run independently',()=>{
+  const flow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  const local=flow.slice(flow.indexOf('  bridge:'),flow.indexOf('  github-cloud:'));
+  const cloud=flow.slice(flow.indexOf('  github-cloud:'),flow.indexOf('  web-cloud-onepatch:'));
+  assert.ok(local.includes("github.event.comment.author_association == 'OWNER'"));
+  assert.ok(local.includes('validateLocalWebOwnerEvent'));
+  assert.ok(flow.includes('WEB_VIBE_BRANCH: web-vibe-control'));
+  assert.ok(local.includes('tools/web-vibe-organization.mjs'));
+  assert.ok(local.includes('WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED'));
+  assert.ok(!local.includes('gh workflow run vibe2-continuous-core.yml'));
+  assert.ok(!local.includes('.vibe2/queue.json'));
+  assert.ok(cloud.includes('VIBE2_BRANCH: vibe2-unreal-core'));
+  assert.ok(!cloud.includes('OWNER_WEB_CLOUD_INGEST=AUTHORIZED'));
+  assert.ok(local.includes("github.event_name == 'repository_dispatch'"));
+  assert.ok(cloud.includes("steps.next.outputs.has_work == 'true'"));
+  assert.ok(cloud.includes('pwa-command-vibe2-task.mjs" ingest'));
+  assert.ok(cloud.includes('gh workflow run vibe2-continuous-core.yml'));
+  assert.ok(!cloud.includes('web-vibe-organization.mjs'));
+  assert.ok(cloud.includes("github.event_name != 'repository_dispatch'"));
+  const pages=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+  const published=pages.indexOf('uses: actions/deploy-pages@v4');
+  const live=pages.indexOf('id: director_live_qa');
+  const routeIssue=pages.indexOf('name: Director register issues after live game testing');
+  const postJob=pages.indexOf('  post-publication-3d-smoke:');
+  const browser=pages.indexOf('id: forest_native_3d_live_qa');
+  const browserIssue=pages.indexOf('name: Register post-publication WebGL smoke failure');
+  assert.ok(published>0&&postJob>published&&live>postJob&&routeIssue>live
+    &&browser>routeIssue&&browserIssue>browser,
+    'Pages publication must precede route and independent 3D browser defect reporting');
+  assert.match(pages.slice(postJob,browser),/needs: publish-pages/);
+  assert.match(pages.slice(postJob,browser),/POST_PUBLISH_SMOKE_EXACT_SHA=PASS/);
+  assert.match(pages.slice(browser,browserIssue),/VIBE_SMOKE_LIVE_BASE:/);
+  assert.match(pages.slice(browserIssue),/gh issue create/);
+});
+
+test('GitHub owner ideas use the existing Vibe queue for one-game source-first work',()=>{
+ const focus=buildGithubDevelopmentFocus({gameId:'insect-survival',sourceRoot:'web-games/insect-survival'});
+ assert.match(focus,/GITHUB_DEVELOPMENT_FIRST/);
+ assert.match(focus,/실제 게임 코드 수정/);
+ assert.match(focus,/해당 게임 집중 QA/);
+ assert.match(focus,/불필요|무관한 홈페이지/);
+ assert.match(focus,/F0-F9/);
+ for(const bad of [
+  {gameId:'insect-survival',sourceRoot:'web-games/cozy-island'},
+  {gameId:'../escape',sourceRoot:'web-games/../escape'},
+  {gameId:'insect-survival',sourceRoot:'../../secrets'},
+  {gameId:'insect-survival',sourceRoot:'tools/vibe2-engine'},
+  {gameId:'insect-survival',sourceRoot:'unity-games/insect-survival'}
+ ])assert.throws(()=>buildGithubDevelopmentFocus(bad),/GITHUB_DEVELOPMENT_FOCUS_SOURCE_MISMATCH/);
+ const f=fixture();
+ const result=ingestPwaTask({task:{id:UUID,game_id:'insect-survival',body:'곤충 3D 땅속 침하 수정',
+  platform:'web',kind:'directive'},queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root});
+ const row=result.tasks[0];
+ assert.equal(row.type,'implementation');
+ assert.equal(row.department,'development');
+ assert.equal(row.priority,'owner-immediate');
+ assert.equal(row.ownerDirective,true);
+ assert.deepEqual(row.responsibleFiles,[]);
+ assert.deepEqual(row.dependencies,[]);
+ assert.match(row.goal,/GITHUB_DEVELOPMENT_FIRST/);
+ assert.match(row.goal,/곤충 3D 땅속 침하 수정/);
+ assert.match(row.goal,/web-games\/insect-survival/);
+ assert.match(row.goal,/독립 QA/);
+ assert.ok(row.evidence.includes('verified-qa-required'));
+ assert.ok(result.maxConcurrentTasks>1,'must reuse existing parallel owner queue');
+});
+
+test('웹 조직은 잘못된 원본 경로·빈 게임·정책 오류를 거부한다',()=>{
+  const f=fixture(),task={id:UUID,game_id:'insect-survival',body:'조작 수정',platform:'web'};
+  const ingest=catalog=>ingestPwaTask({task,queue:{tasks:[]},catalog,status:f.status,repoRoot:f.root});
+  const original=f.catalog.games[0];
+  assert.throws(()=>ingest({games:[{...original,webPath:'/roblox-games/insect-survival/'}]}),/WEB_ORG_WEB_SOURCE_MISMATCH/);
+  assert.throws(()=>ingest({games:[{...original,webPath:'/web-games/daechung-rpg/'}]}),/WEB_ORG_WEB_SOURCE_MISMATCH/);
+  assert.throws(()=>ingestPwaTask({task:{...task,platform:'unity'},queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root}),/명시적 플랫폼 요청은 웹만 지원/);
+  fs.unlinkSync(path.join(f.root,'web-games','insect-survival','index.html'));
+  assert.throws(()=>ingest(f.catalog),/웹게임 소스가 없어/);
+  fs.writeFileSync(path.join(f.root,'web-games','insect-survival','index.html'),'<html>web game</html>');
+  const policyPath=path.join(f.root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.ownerActiveDevelopmentScope20261009.activeTargets=['ROBLOX'];
+  fs.writeFileSync(policyPath,JSON.stringify(policy));
+  assert.throws(()=>ingest(f.catalog),/WEB_ORG_CENTRAL_BOUNDARY_NOT_VERIFIED/);
+});
+
+test('PWA 웹 개발은 실제 바이브 작업 주문에서도 로블록스·유니티·타 조직 파일로 전환할 수 없다',()=>{
+  const id='pwa-'+UUID;
+  const source={id,gameId:'insect-survival',status:'running',
+    target:'web',sourceRoot:'web-games/insect-survival',
+    department:'development',type:'implementation',goal:'웹 HUD 조정',responsibleFiles:[],
+    evidence:['web-organization-boundary:v1']};
+  const order=overrides=>buildVibeContinuousWorkOrder({
+    runtime:{continuous:{enabled:true}},
+    queue:{version:3,maxConcurrentTasks:4,tasks:[{...source,...overrides}]},
+    taskId:id,centralPolicySnapshot:{required:false,valid:true}
+  });
+  for(const native of ['roblox','unity','unreal']){
+    const result=order({target:native});
+    assert.equal(result.run,false);
+    assert.equal(result.reason,'WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN');
+  }
+  for(const file of ['roblox-games/insect-survival/init.luau',
+     'unity-games/insect-survival/Assets/Game.cs','assets/roblox/actor.glb']){
+    const result=order({responsibleFiles:[file]});
+    assert.equal(result.run,false);
+    assert.equal(result.reason,'WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN');
+  }
+  assert.equal(order({sourceRoot:'roblox-games/insect-survival'}).reason,
+    'WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN');
+  assert.equal(order({gameId:'cozy-island'}).reason,
+    'WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN');
+});
+
+test('웹 PWA 상태는 로블록스와 유니티 작업 및 대상이 없는 기록을 노출하지 않는다',()=>{
+  const queue={tasks:[
+    {id:'pwa-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',target:'roblox',status:'failed',blocker:'native-private'},
+    {id:'pwa-bbbbbbbb-cccc-4ddd-8eee-ffffffffffff',target:'unity',status:'done'},
+    {id:'pwa-cccccccc-dddd-4eee-8fff-aaaaaaaaaaaa',status:'done'},
+    {id:`pwa-${UUID}`,target:'web',status:'running',blocker:'web-only'},
+    {id:'pwa-dddddddd-eeee-4fff-8aaa-bbbbbbbbbbbb',target:'web',status:'done',evidence:['vibe-local-web-owner-directive']}
+  ]};
+  assert.deepEqual(buildSyncPayload(queue),{action:'sync',updates:[
+    {taskId:UUID,status:'working',blocker:'web-only'}
+  ]});
+});
+
+test('동일 UUID에 타 조직 작업이 있다면 웹 작업 성공으로 처리하지 않는다',()=>{
+  const f=fixture(),task={id:UUID,game_id:'insect-survival',body:'웹 조작 개선',platform:'web'};
+  const queue={version:3,tasks:[{id:`pwa-${UUID}`,gameId:'insect-survival',target:'roblox',sourceRoot:'roblox-games/insect-survival',status:'queued'}]};
+  assert.throws(()=>ingestPwaTask({task,queue,catalog:f.catalog,status:f.status,repoRoot:f.root}),/WEB_ORG_QUEUE_IDENTITY_COLLISION/);
+  const mismatched={...queue,tasks:[{...queue.tasks[0],target:'web',sourceRoot:'web-games/cozy-island'}]};
+  assert.throws(()=>ingestPwaTask({task,queue:mismatched,catalog:f.catalog,status:f.status,repoRoot:f.root}),/WEB_ORG_QUEUE_IDENTITY_COLLISION/);
+});
+
+
+test('authenticated WEB issue comment scopes Github cloud onepatch to game text files',()=>{
+  const payload={action:'vibe-local-web-owner-directive',client_payload:{
+    id:UUID,game_id:'insect-survival',platform:'web',kind:'directive',
+    body:'HUD animation and gameplay',autoDeployAfterVerifiedQa:true
+  }};
+  const context={actor:'hans1177',repository:'hans1177/jaewoon-games'};
+  assert.equal(validateLocalWebOwnerEvent(payload,context).files,'*');
+  assert.equal(validateLocalWebOwnerEvent({...payload,client_payload:{...payload.client_payload,
+    files:'index.html,client/Hud.js,shared/Level.json'}},context).files,'index.html,client/Hud.js,shared/Level.json');
+  for(const files of ['../unsafe.js','client/../../secrets.js','roblox-games/demo/source.luau',
+    'client/Power.lua','../../../etc/passwd','index.html\nGITHUB_OUTPUT=forged','',123]){
+    assert.throws(()=>validateLocalWebOwnerEvent({...payload,client_payload:{...payload.client_payload,files}},context),
+      /LOCAL_OWNER_WEB_FILE_SCOPE_INVALID/);
+  }
+});
+
+
+test('인증된 PWA 게임 삭제 명령은 개발중단과 구별하고 게임 ID를 검증한다',()=>{
+  const original={id:UUID,game_id:'insect-survival',kind:'directive',body:'OWNER_DELETE_GAME:insect-survival'};
+  assert.deepEqual(parseOwnerStopTask({task:original}),{taskId:UUID,gameId:'insect-survival',mode:'delete'});
+  assert.equal(parseOwnerStopTask({task:{...original,body:'OWNER_STOP_GAME:insect-survival'}}).mode,'stop');
+  assert.throws(()=>parseOwnerStopTask({task:{...original,body:'OWNER_DELETE_GAME:daechung-rpg'}}),/IDENTITY_INVALID/);
+  assert.throws(()=>parseOwnerStopTask({task:{...original,kind:'feedback'}}),/IDENTITY_INVALID/);
+});
+
+test('게임 영구삭제는 원본 카탈로그와 자동복구 목록에 흔적을 남기지 않는다',()=>{
+  const input={games:[{id:'insect-survival',name:'곤충 생존기'},{id:'cozy-island',name:'코지 아일랜드'}],
+    ownerStoppedGameIds:['insect-survival'],permanentRemovalPolicy:{ids:[],reentryAllowed:false}};
+  const after=permanentlyDeleteCatalog(input,'insect-survival');
+  assert.deepEqual(after.games.map(g=>g.id),['cozy-island']);
+  assert.ok(after.permanentRemovalPolicy.ids.includes('insect-survival'));
+  assert.equal(after.permanentRemovalPolicy.automaticRecoveryAllowed,false);
+  assert.equal(after.permanentRemovalPolicy.sourceDeletionRequired,true);
+  assert.deepEqual(after.ownerStoppedGameIds,[]);
+  assert.throws(()=>stopCatalog(after,'insect-survival'),/UNKNOWN_GAME/);
+});
+
+test('홈페이지 삭제는 기존 기기 인증을 거쳐 영구삭제를 접수하고 임의의 게임 세이브를 삭제하지 않는다',()=>{
+  const client=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const flow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  assert.match(client,/const body='OWNER_DELETE_GAME:'\+id/);
+  // 공개 방문자에게는 삭제 버튼이 생성되지 않는다. 서버에서 인증된 기기만 활성화된다.
+  assert.match(client,/if\(!ownerDeleteVerified\)return '';/);
+  assert.match(client,/if\(!ownerDeleteVerified\)return;/);
+  assert.match(client,/valid=result\?\.ok===true&&Array\.isArray\(result\.tasks\)/);
+  assert.match(client,/body:JSON\.stringify\(\{action:'list'\}\)/);
+  assert.match(client,/void verifyOwnerDeleteAccess\(\)/);
+
+  const deleteHandler=client.split('async function requestPermanentGameDelete(id)')[1]?.split('let favoriteGameIds=new Set();')[0];
+  assert.ok(deleteHandler,'영구삭제 요청 함수가 존재해야 한다');
+  assert.ok(!['location.href','location.replace','window.location'].some(part=>deleteHandler.includes(part)),'삭제 버튼에서 기기 등록으로 자동 이동 금지');
+  assert.ok(deleteHandler.includes('if(!token)'),'인증 없는 원본 삭제 금지');
+  assert.ok(deleteHandler.indexOf('if(!token)')<deleteHandler.indexOf('if(!window.confirm('),'기존 인증 재사용 후 확인 1회');
+  assert.doesNotMatch(client,/const body='OWNER_STOP_GAME:'\+id/);
+  assert.match(client,/localStorage\.getItem\('jaewoon_command_device_v1'\)/);
+  assert.match(client,/reconcileConfirmedDeletions\(catalog\)/);
+  assert.match(client,/clearOwnedBrowserSaves\(id\)/);
+  assert.match(client,/function gameTitleActions\(id,name\)/);
+  assert.doesNotMatch(client,/data-stop-request=/);
+  assert.match(flow,/PWA_OWNER_GAME_PAGES_DEPLOYMENT=DISPATCHED_NOT_VERIFIED/);
+  assert.match(flow,/OWNER_DELETE_GAME:/);
+});

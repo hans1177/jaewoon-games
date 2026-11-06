@@ -1,0 +1,831 @@
+// 파일명: tools/vibe2-exploration-worker.mjs
+// 역할: 구현 전에 소스 구조·영향 범위·관련 파일·검증 대상을 읽기 전용으로 수집해 재사용 가능한 handoff를 만든다.
+// 원칙: 소스는 절대 수정하지 않고, 책임 파일 바깥은 읽기 전용 영향 분석에만 사용한다.
+
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { pathToFileURL } from 'node:url';
+import { assessExistingWebRepository } from './vibe2-existing-web-assessment.mjs';
+import {createVibeSourceGraph,createVibeImpactPlan} from '../assets/vibe-v3-engine.js';
+import {analyzeVibe4CodeFlow} from './vibe2-v4-code-intelligence.mjs';
+import {buildVibe59AutonomyPlan} from './vibe2-v59-autonomy.mjs';
+import {inspectVibe59RobloxCoding} from './vibe59-roblox-coding.mjs';
+import { diagnoseGame, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
+import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
+import { buildCodingArchitecture } from './company-vibe2-coding-architecture.mjs';
+import { CODING_ANALYSIS_VERSION, inspectSourceFunctions, buildResponsibilityGraph, buildExpertDevelopmentAnalysis, traceFailureResponsibility, summarizeResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
+
+const clean=value=>String(value??'').trim();
+const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
+const unique=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
+const IGNORED_DIRS=new Set(['.git','node_modules','Library','Temp','Logs','Binaries','Intermediate','Saved','DerivedDataCache','.cache']);
+const TARGET_EXTENSIONS=Object.freeze({
+  roblox:new Set(['.luau','.lua','.json']),
+  web:new Set(['.html','.htm','.css','.js','.mjs','.cjs','.json','.svg']),
+  unity:new Set(['.cs','.asmdef','.json','.uxml','.uss','.unity','.prefab','.asset']),
+  unreal:new Set(['.h','.hpp','.cpp','.cc','.cxx','.cs','.ini','.uproject','.uplugin','.json']),
+  godot:new Set(['.gd','.tscn','.tres','.godot','.cfg','.json']),
+  system:new Set(['.js','.mjs','.cjs','.json','.yml','.yaml','.md'])
+});
+const BINARY_EXTENSIONS=new Set(['.rbxl','.rbxlx','.uasset','.umap','.controller','.anim','.avatar','.fbx','.blend','.png','.jpg','.jpeg','.webp','.wav','.mp3','.ogg']);
+const MAX_SCAN_FILES=180;
+const MAX_RELATED_FILES=12;
+const MAX_READ_BYTES=320000;
+
+function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8'));}
+function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
+function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
+function extensions(target){const set=TARGET_EXTENSIONS[clean(target).toLowerCase()];if(!set)throw new Error(`지원하지 않는 exploration target: ${target}`);return set;}
+function sourcePrefix(target){if(target==='roblox')return'roblox-games/';if(target==='web')return'web-games/';if(target==='unity')return'unity-games/';if(target==='unreal')return'unreal-games/';if(target==='godot')return'godot-games/';return'';}
+function assertRoot(root,target,order={}){const normalized=posix(root);if(normalized.startsWith('assets/roblox/world-ghosts/motions/')){const unit=order?.assetProduction?.motionRepairWorkUnit;if(target!=='roblox'||order?.source?.internalAssetMotion!==true||unit?.scope!=='INTERNAL_ASSET_LIBRARY'||unit.objectCount!==1||unit.motionCount!==1||unit.clipId!=='walk'||!/^roblox-world-ghost-[a-z0-9-]+$/.test(unit.objectId)||unit.sourcePath!=='init.luau'||normalized!=='assets/roblox/world-ghosts/motions/'+unit.objectId.slice('roblox-world-ghost-'.length))throw new Error('INTERNAL_MOTION_SOURCE_SCOPE_INVALID');return normalized;}if(target==='system'){if(normalized!=='.')throw new Error(`system exploration root must be repo root: ${root}`);return normalized;}const prefix=sourcePrefix(target);if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 exploration source root: ${root}`);return normalized;}
+function normalizeRelative(value,root){const normalized=posix(value);return normalized.startsWith(`${root}/`)?normalized.slice(root.length+1):normalized;}
+function sourceRootBootstrapAllowed(order,target,root){
+  const evidence=new Set((order?.selectedTask?.evidence||[]).map(clean));
+  const responsible=unique(order?.source?.responsibleFiles||[]).map(v=>normalizeRelative(v,root));
+  if(order?.workerPolicy?.sourceRootBootstrapAllowed!==true||!evidence.has('source-root-bootstrap-required'))return false;
+  if(target==='web'){
+    return responsible.length===1&&responsible[0]==='index.html';
+  }
+  if(target==='unity'){
+    return evidence.has('unity-web-source-root-bootstrap-required')
+      &&responsible.length===2
+      &&responsible.includes('Assets/Scripts/GameCore.cs')
+      &&responsible.includes('Assets/Scripts/RuntimeBootstrap.cs');
+  }
+  return false;
+}
+function sha(text){return crypto.createHash('sha256').update(String(text)).digest('hex');}
+function safeRead(file){try{const stat=fs.statSync(file);if(!stat.isFile()||stat.size>MAX_READ_BYTES)return'';return fs.readFileSync(file,'utf8');}catch{return'';}}
+function listFiles(root,target,ignored=[]){const allowed=extensions(target),ignore=ignored.map(posix).filter(Boolean),rows=[];const walk=current=>{if(rows.length>=MAX_SCAN_FILES)return;for(const entry of fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(rows.length>=MAX_SCAN_FILES)return;if(entry.isDirectory()&&IGNORED_DIRS.has(entry.name))continue;const full=path.join(current,entry.name),relative=posix(path.relative(root,full));if(ignore.some(v=>relative===v||relative.startsWith(`${v}/`)))continue;if(entry.isDirectory())walk(full);else{const ext=path.extname(entry.name).toLowerCase();if(allowed.has(ext)&&!BINARY_EXTENSIONS.has(ext))rows.push({full,relative,ext});}}};walk(root);return rows;}
+function goalTokens(goal=''){return unique(clean(goal).toLowerCase().split(/[^a-z0-9가-힣_]+/).filter(x=>x.length>=3)).slice(0,24);}
+function protectedSignals(text=''){const checks=[['save',/save|세이브|progress|진행/i],['combat-number',/damage|attack|health|hp|reward|drop|데미지|공격|체력|보상|드랍/i],['network',/fetch\(|axios|websocket|http:/i],['storage',/localStorage|PlayerPrefs|SaveGame|DataStore/i]];return checks.filter(([,re])=>re.test(text)).map(([name])=>name);}
+// Bounded static module dependency extraction for Vibe3 impact (not runtime proof).
+// Imports are references only: neither this helper nor the explorer may write target files.
+export function extractVibeSourceImportRefs(source='',target=''){
+  const text=String(source??''),refs=new Set();
+  for(const expression of [
+    /\bfrom\s+['"]([^'"]+)['"]/g,
+    /\bimport\s*['"]([^'"]+)['"]/g,
+    /\b(?:require|import)\s*\(\s*['"]([^'"]+)['"]\s*\)/g
+  ])for(const match of text.matchAll(expression))refs.add(match[1]);
+  if(['roblox','luau','lua'].includes(clean(target).toLowerCase())){
+    // script.Parent.Foo = sibling module; script.Parent.Parent.Foo = parent-directory module.
+    const expression=/\brequire\s*\(\s*script((?:\.Parent)+)((?:\.[A-Za-z_]\w*)+|:WaitForChild\(\s*['"]([A-Za-z_]\w*)['"]\s*\))\s*\)/g;
+    for(const match of text.matchAll(expression)){
+      const parents=(match[1].match(/\.Parent/g)||[]).length;
+      if(parents<1)continue;
+      const modulePath=match[2].startsWith('.')?match[2].slice(1).replaceAll('.','/'):match[3];
+      refs.add((parents===1?'./':'../'.repeat(parents-1))+modulePath);
+    }
+  }
+  return Object.freeze([...refs].filter(Boolean).sort());
+}
+
+function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,responsibleDirs,sourceFunctions=[],target=''}){
+  let score=0;const text=safeRead(row.full);
+  if(responsible.has(row.relative))return{...row,score:10000,text,connections:[]};
+  const lower=row.relative.toLowerCase(),dir=posix(path.dirname(row.relative));
+  if(responsibleDirs.has(dir))score+=35;
+  for(const token of tokens)if(lower.includes(token))score+=5;
+  for(const name of responsibleNames)if(name&&text.includes(name))score+=24;
+  if(/(?:test|spec|qa|playmode|editmode)/i.test(row.relative))score+=8;
+  const callNames=fn=>new Set([...fn.code.matchAll(/\b([A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)*)\s*\(/g)].map(match=>match[1].split(/[.:]/).at(-1)));
+  const sourceCalls=new Set(sourceFunctions.flatMap(fn=>[...callNames(fn)])),sourceNames=new Set(sourceFunctions.map(fn=>fn.name.split(/[.:]/).at(-1))),connections=[];
+  for(const fn of inspectSourceFunctions(text,{language:target})){
+    if(sourceCalls.has(fn.name.split(/[.:]/).at(-1)))connections.push({path:row.relative,symbol:fn.name,direction:'CALLEE'});
+    if([...callNames(fn)].some(name=>sourceNames.has(name)))connections.push({path:row.relative,symbol:fn.name,direction:'CALLER'});
+  }
+  score+=Math.min(4,connections.length)*80;
+  return{...row,score,text,connections};
+}
+function compactFile(row){return{path:row.relative,hash:sha(row.text||safeRead(row.full)).slice(0,16),bytes:Buffer.byteLength(row.text||safeRead(row.full),'utf8')};}
+// Identity of the requested implementation, not only its task ID. Cached read-only
+// exploration must never carry a previous goal, selected task or write scope forward.
+export function explorationOrderFingerprint(order={}){
+  const context=order?.workPackage?.sharedContext||{};
+  return sha(JSON.stringify({
+    taskId:clean(order.taskId),gameId:clean(order.gameId),target:clean(order.target).toLowerCase(),
+    goal:clean(order.goal),originalGoal:clean(order.originalGoal),
+    source:order.source||{},
+    selectedTask:order.selectedTask||{},
+    workerPolicy:order.workerPolicy||{},
+    packageId:clean(order?.workPackage?.id),
+    diagnosticEvidence:context.diagnosticEvidence||[],
+    gameRepair:context.gameRepair||{},
+    studioQualityEvolution:context.studioQualityEvolution||{},
+    responsibilityCalibration:order.responsibilityCalibration||{},
+    regressionHotspotRisk:order.regressionHotspotRisk||{},
+    designIntelligence:order.designIntelligence||{}
+  }));
+}
+function reusableArtifact(cwd,order){
+  const file=clean(process.env.VIBE2_EXPLORATION_FILE);
+  if(!file)return null;
+  const resolved=path.isAbsolute(file)?file:path.resolve(cwd,file);
+  if(!fs.existsSync(resolved))return null;
+  const cached=readJson(resolved);
+  if(cached?.role!=='exploration'||cached?.sourceWrite!==false||!clean(cached?.reuseKey))throw new Error('잘못된 exploration handoff artifact');
+  if(clean(cached.taskId)!==clean(order.taskId))throw new Error('exploration handoff task 불일치');
+  if(!clean(cached.orderFingerprint)||cached.orderFingerprint!==explorationOrderFingerprint(order))return null;
+  const expectedRoot=posix(order?.source?.root);
+  if(posix(cached.sourceRoot)!==expectedRoot)throw new Error('exploration handoff source root 불일치');
+  if(cached.codingAnalysisVersion!==CODING_ANALYSIS_VERSION)return null;
+  // Old snapshots did not hash every dependency/test used by the Vibe3 graph.
+  // They are unsafe to reuse after source or QA changes, even if the owner file is unchanged.
+  if(cached.bootstrap!==true&&(
+    cached.impactAnalysisSchemaVersion!==6
+    ||(clean(order.target).toLowerCase()==='roblox'&&cached.robloxCoding?.authority!=='roblox-luau-static-analysis')
+    ||cached.sourceImpact?.authority!=='advisory-source-impact-only'
+    ||!clean(cached.sourceImpact?.graphDigest)
+    ||!Array.isArray(cached.fileDigests)||cached.fileDigests.length===0
+  ))return null;
+  const currentMain=clean(process.env.VIBE2_BASE_MAIN_SHA);
+  if(currentMain&&clean(cached.baseMainSha)!==currentMain)return null;
+  try{const mode=readJson(path.join(cwd,String(process.env.COMPANY_VERIFIED_POLICY_PATH||'__policy_not_configured__')))?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.verificationScope;if(mode&&cached?.editContract?.gameRepair?.multiplayerLifecycle?.verificationScope!==mode)return null;}catch{}
+  const root=path.resolve(cwd,expectedRoot);
+  if(cached.bootstrap===true&&fs.existsSync(root))return null;
+  if(cached.bootstrap!==true){
+    // A saturated scan omits later paths. Invalidate rather than claim a complete graph.
+    if(cached.impactScanCoverage?.scanLimitReached!==false)return null;
+    const listed=listFiles(root,clean(order.target).toLowerCase(),order?.source?.ignoredPaths||[]);
+    if(listed.length>=MAX_SCAN_FILES)return null;
+    if(!clean(cached.scanPathDigest)
+      ||sha(JSON.stringify(listed.map(row=>row.relative)))!==cached.scanPathDigest
+      ||cached.fileDigests.length!==listed.length)return null;
+  }
+  for(const row of cached.fileDigests||[]){
+    const file=path.resolve(root,row.path);
+    if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||sha(safeRead(file)).slice(0,16)!==row.hash)return null;
+  }
+  return{...cached,reused:true,reusedFrom:posix(path.relative(cwd,resolved))||path.basename(resolved)};
+}
+
+
+function taskGameplaySketch(order={},sourceAnalysis={}){
+  const text=clean([order?.originalGoal,order?.goal,...(order?.selectedTask?.evidence||[])].filter(Boolean).join(' ')).toLowerCase();
+  const has=re=>re.test(text);
+  return{
+    worldModel:{requiresPlayableSpace:Boolean(sourceAnalysis?.capabilities?.collision||sourceAnalysis?.areaIds?.length||has(/world|map|area|zone|region|route|path|placement|배치|맵|지역/))},
+    actors:{playerRequired:true,enemyBehaviorRequired:has(/enemy|boss|combat|attack|ai|적|보스|전투|공격/)},
+    interactionGraph:{required:Boolean(sourceAnalysis?.capabilities?.interactions||has(/interact|npc|dialog|chest|door|pickup|상호작용|npc|상자|문/))},
+    combatModel:{required:has(/combat|attack|damage|weapon|skill|enemy|boss|전투|공격|데미지|무기|스킬|적|보스/),strategicOutcomeDifferenceRequired:has(/strategy|choice|build|loadout|전략|선택|빌드/)},
+    economyModel:{required:Boolean(sourceAnalysis?.capabilities?.economy||has(/gold|coin|currency|shop|buy|sell|cost|reward|골드|코인|상점|구매|판매|비용|보상/))},
+    progressionModel:{required:has(/progress|quest|objective|unlock|level|stage|wave|진행|퀘스트|목표|해금|레벨|스테이지|웨이브/),objectives:[]},
+    placementModel:{required:has(/place|placement|tower|build|deploy|slot|grid|배치|타워|건설/)},
+  };
+}
+function taskFailureEvidence(order={}){
+  const values=[
+    ...(order?.workPackage?.sharedContext?.diagnosticEvidence||[]),
+    order?.selectedTask?.blocker,
+    /(?:FAIL|ERROR|BLOCKED)(?:_|$)/i.test(clean(order?.selectedTask?.lastOutcome))?order.selectedTask.lastOutcome:null,
+    // 런타임 검사 필요·성공·복구 정책 표시는 게임 실패의 관측 증거가 아니다.
+    ...(order?.selectedTask?.evidence||[]).filter(value=>{
+      const evidence=clean(value);
+      if(/:(?:PASS|PASSED|SUCCESS|NONE|NO|FALSE|REQUIRED|FORBIDDEN)$/i.test(evidence))return false;
+      return /(?:^|[-_: ])(?:fail(?:ed|ure)?|error|blocker|invalid|missing|no[-_ ]?op|edit[-_ ]?match|timeout|broken|hard[-_ ]?failure|실패|누락|오류)(?:$|[-_: ])/i.test(evidence);
+    })
+  ];
+  return unique(values).slice(0,16);
+}
+
+function diagnosticReplayIdentity(order={}){
+  const evidence=unique([
+    ...(order?.workPackage?.sharedContext?.diagnosticEvidence||[]),
+    ...(order?.selectedTask?.evidence||[])
+  ]);
+  const typeMarker=evidence.find(value=>clean(value).startsWith('diagnostic:'));
+  const keyMarker=evidence.find(value=>clean(value).startsWith('diagnostic-key:'));
+  const type=typeMarker?clean(typeMarker.slice('diagnostic:'.length)).toUpperCase():'';
+  const key=keyMarker?clean(keyMarker.slice('diagnostic-key:'.length)):'';
+  if(!type||!key)return null;
+  const prefix=type+':';
+  if(!key.toUpperCase().startsWith(prefix))return null;
+  const file=posix(key.slice(prefix.length));
+  if(!file)return null;
+  return{type,file};
+}
+function verifyDiagnosticReplayBaseline({order={},target='',root=''}={}){
+  if(clean(target).toLowerCase()!=='web'||!root)return null;
+  const identity=diagnosticReplayIdentity(order);
+  if(!identity)return null;
+  const report=diagnoseGame(root,{maxIssues:200});
+  const matched=(report.issues||[]).find(row=>clean(row?.type).toUpperCase()===identity.type&&posix(row?.file)===identity.file)||null;
+  const reproduced=Boolean(matched);
+  return{
+    version:2,
+    type:identity.type,
+    file:identity.file,
+    reproduced,
+    line:Number.isInteger(Number(matched?.line))?Number(matched.line):null,
+    needle:clean(matched?.needle)||null,
+    microTask:clean(matched?.microTask)||null,
+    verifiedResponsibleSystem:reproduced?diagnosticResponsibleSystem(identity.type):null,
+    verifier:'AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN',
+    sourceWrite:false,
+    authorityExpanded:false
+  };
+}
+
+function compileCausalReplayPlan({order={},failures=[],testTargets=[],diagnosticReplayBaseline=null}={}){
+  const evidence=unique([
+    ...failures,
+    ...(order?.workPackage?.sharedContext?.diagnosticEvidence||[]),
+    ...(order?.selectedTask?.evidence||[])
+  ]);
+  const prePatchReproduced=evidence.some(value=>/causal-replay-prepatch:(?:FAIL_REPRODUCED|PASS)|reproduction:(?:CONFIRMED|PASS)|prepatch-repro:(?:PASS|CONFIRMED)/i.test(clean(value)))
+    ||order?.workPackage?.sharedContext?.causalReplay?.prePatchReproduced===true;
+  const declaredTargets=unique([
+    ...(testTargets||[]),
+    ...(order?.workPackage?.sharedContext?.causalReplay?.nodeTestTargets||[])
+  ]).filter(value=>/(?:test|spec|qa)/i.test(value)&&/\.(?:mjs|cjs|js)$/i.test(value)).slice(0,8);
+  const required=failures.length>0;
+  const diagnosticReplay=diagnosticReplayBaseline&&diagnosticReplayBaseline.reproduced===true?diagnosticReplayBaseline:null;
+  const diagnosticExecutable=Boolean(required&&diagnosticReplay);
+  const nodeReplayExecutable=required&&prePatchReproduced&&declaredTargets.length>0;
+  const executable=diagnosticExecutable||nodeReplayExecutable;
+  const effectivePrePatchReproduced=diagnosticExecutable||prePatchReproduced;
+  const mode=diagnosticExecutable?'DIAGNOSTIC_RESCAN':nodeReplayExecutable?'NODE_TEST_TARGETS':'PLAN_ONLY';
+  const status=!required?'NOT_REQUIRED'
+    :diagnosticExecutable?'READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN'
+    :nodeReplayExecutable?'READY_FOR_POSTPATCH_REPLAY'
+    :prePatchReproduced?'NO_SUPPORTED_TEST_TARGET':'NO_VERIFIED_PREPATCH_REPRODUCTION';
+  return{
+    version:2,required,prePatchReproduced:effectivePrePatchReproduced,nodeTestTargets:declaredTargets,executable,mode,status,
+    diagnosticType:diagnosticReplay?.type||null,
+    diagnosticFile:diagnosticReplay?.file||null,
+    diagnosticLine:diagnosticReplay?.line??null,
+    diagnosticNeedle:diagnosticReplay?.needle||null,
+    diagnosticMicroTask:diagnosticReplay?.microTask||null,
+    verifiedResponsibleSystem:diagnosticReplay?.verifiedResponsibleSystem||null,
+    diagnosticVerifier:diagnosticReplay?.verifier||null,
+    identicalOrEquivalentInputStateRequired:true,canonicalQaStillRequired:true,sourceWrite:false,authorityExpanded:false
+  };
+}
+function compilePatchRecipe({order={},failures=[],primaryTargets=[],dependentSymbols=[],ownedState=[],requiredFocusedChecks=[],preserveSemantics=[]}={}){
+  const failureFingerprint=clean(order?.unifiedLearning?.failureFingerprint)||null;
+  const verifiedMemory=(order?.unifiedLearning?.failureLocalMemory||[])
+    .filter(row=>row?.verified===true&&row?.reusable===true)
+    .slice(0,5);
+  const reusePatterns=unique(verifiedMemory.flatMap(row=>row?.reusablePatterns||[])).slice(0,12);
+  const avoidPatterns=unique(verifiedMemory.flatMap(row=>[...(row?.avoidPatterns||[]),row?.failureCause])).slice(0,12);
+  const memoryIds=unique(verifiedMemory.map(row=>row?.id)).slice(0,8);
+  const mode=memoryIds.length?'VERIFIED_FAILURE_LOCAL_RECIPE':failures.length?'DETERMINISTIC_CAUSAL_RECIPE':'REQUIREMENT_RECIPE';
+  const steps=unique([
+    failures.length?'CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE':'CONFIRM_REQUIREMENT_AGAINST_CURRENT_SOURCE',
+    primaryTargets.length?'PATCH_PRIMARY_RESPONSIBILITY_FIRST':'IDENTIFY_PRIMARY_RESPONSIBILITY_BEFORE_WRITE',
+    dependentSymbols.length?'PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED':'DO_NOT_EXPAND_TO_UNRELATED_DEPENDENCIES',
+    ownedState.length?'VERIFY_OWNED_STATE_CHANGE':'VERIFY_OBSERVABLE_STATE_OR_RUNTIME_CHANGE',
+    reusePatterns.length?'APPLY_VERIFIED_REUSABLE_PATTERN_WHEN_IT_FITS_CURRENT_SOURCE':'USE_CURRENT_SOURCE_CAUSAL_STRUCTURE',
+    avoidPatterns.length?'AVOID_VERIFIED_FAILURE_PATTERN':'AVOID_UNRELATED_OR_SPECULATIVE_REWRITE',
+    preserveSemantics.length?'VERIFY_PRESERVE_SEMANTICS':'PRESERVE_EXISTING_WORKING_BEHAVIOR',
+    requiredFocusedChecks.length?'RUN_COMPILED_FOCUSED_CHECKS':'RUN_TASK_LOCAL_INCREMENTAL_QA'
+  ]);
+  return{
+    version:1,
+    mode,
+    failureFingerprint,
+    verifiedMemoryIds:memoryIds,
+    verifiedMemoryCount:memoryIds.length,
+    reusePatterns,
+    avoidPatterns,
+    steps,
+    primaryTargets:primaryTargets.slice(0,8),
+    dependentSymbolsOrSystems:dependentSymbols.slice(0,24),
+    ownedState:ownedState.slice(0,24),
+    focusedChecks:requiredFocusedChecks.slice(0,24),
+    protectedSemantics:preserveSemantics.slice(0,32),
+    verifiedMemoryOnly:true,
+    scopeExpansionAllowed:false,
+    qaBypassAllowed:false,
+    authorityExpanded:false
+  };
+}
+
+// Enlarge the actionable *function* set only inside already-reserved source files.
+// Caller/callee matches in other files are read-only until a new reservation.
+function compileReservedHelperEdits({sourceRows=[],responsibleFiles=[],primaryTargets=[]}={}){
+  const allowed=new Set(responsibleFiles.map(posix)),primary=new Set(primaryTargets);
+  const edits=[],seen=new Set();
+  for(const row of sourceRows.slice(0,32)){
+    const file=posix(row?.relative),source=String(row?.text||'');
+    if(!allowed.has(file)||!file||path.isAbsolute(file)||file.split('/').some(part=>!part||part==='.'||part==='..')
+      ||!source||source.length>MAX_READ_BYTES)continue;
+    const language=/\.luau?$/i.test(file)?'luau':/\.cs$/i.test(file)?'csharp':'javascript';
+    const graph=buildResponsibilityGraph({source,language});
+    const nodes=new Map((graph.nodes||[]).map(node=>[node.name,node]));
+    for(const name of primary){
+      const owner=nodes.get(name);
+      if(!owner)continue;
+      for(const dependent of unique([...(owner.calls||[]),...(owner.calledBy||[])])){
+        const node=nodes.get(dependent),key=file+'::'+dependent;
+        if(!node||primary.has(dependent)||seen.has(key))continue;
+        const stateOverlap=unique((owner.stateWrites||[]).filter(state=>
+          (node.stateReads||[]).includes(state)||(node.stateWrites||[]).includes(state)));
+        const direction=(owner.calls||[]).includes(dependent)?'CALLEE':'CALLER';
+        edits.push(Object.freeze({
+          file,symbol:dependent,primary:name,direction,
+          sharedState:stateOverlap.slice(0,12),
+          observedStateWrites:Object.freeze((node.stateWrites||[]).slice(0,16)),
+          observedSaveKeys:Object.freeze((node.storageKeys||[]).slice(0,16)),
+          observedEvents:Object.freeze((node.events||[]).slice(0,16)),
+          observedTimers:Object.freeze({...node.timers}),
+          reason:'STATIC_DIRECT_SAME_FILE_CALL_EDGE',
+          writableWithinExistingReservation:true,
+          preserveSaveBalanceAndAuthorityRequired:true,
+          runtimeVerified:false
+        }));
+        seen.add(key);
+        if(edits.length>=16)break;
+      }
+      if(edits.length>=16)break;
+    }
+    if(edits.length>=16)break;
+  }
+  return Object.freeze({
+    mode:'PRIMARY_PLUS_CAUSALLY_LINKED_RESERVED_HELPERS',
+    allowedResponsibleFiles:Object.freeze([...allowed]),
+    reservedHelperEdits:Object.freeze(edits),
+    maximumAdditionalWritableFiles:0,
+    unreservedImpactFilesReadOnly:true,
+    dependentFileRequiresNewCanonicalReservation:true,
+    codeChangesRequireOriginalFailureReplayAndFocusedQA:true,
+    unrelatedSystemMutationForbidden:true,
+    runtimeVerified:false
+  });
+}
+
+function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsibleFiles=[],protectedScopeSignals=[],testTargets=[],diagnosticReplayBaseline=null,sourceRows=[]}={}){
+  const sourceAnalysis=analyzeExistingGameSource(sourceText);
+  const gameplaySketch=taskGameplaySketch(order,sourceAnalysis);
+  const codingArchitecture=buildCodingArchitecture({
+    gameId:clean(order?.gameId),
+    genre:clean(order?.designIntelligence?.genre||order?.selectedTask?.genre),
+    baseline:{},
+    gameplaySketch,
+    sourceAnalysis,
+    explicitDevelopmentMode:sourceAnalysis.present?'PRESERVE_PATCH':'GREENFIELD'
+  });
+  const failures=taskFailureEvidence(order);
+  const expertDevelopment=buildExpertDevelopmentAnalysis({source:sourceText,sourceAnalysis,gameplaySketch,failures,language:order.target});
+  const graph=expertDevelopment?.responsibilityGraph||{nodes:[],edges:[]};
+  const architectureSnapshot=summarizeResponsibilityArchitecture(graph);
+  const requirementText=clean(order?.originalGoal||order?.selectedTask?.goal||order?.goal);
+  const requirementTrace=requirementText?traceFailureResponsibility({failure:requirementText,responsibilityGraph:graph}):null;
+  const traces=[...(expertDevelopment?.causalDebug?.traces||[]),...(requirementTrace?[requirementTrace]:[])];
+  const primaryTargets=unique(traces.map(row=>row?.primaryTarget)).slice(0,8);
+  const primarySet=new Set(primaryTargets);
+  const reservedHelperEditPlan=compileReservedHelperEdits({sourceRows,responsibleFiles,primaryTargets});
+  const reservedHelperNames=reservedHelperEditPlan.reservedHelperEdits.map(row=>row.symbol);
+  const primaryNodes=(graph.nodes||[]).filter(node=>primarySet.has(node.name));
+  const primarySystems=unique(primaryNodes.flatMap(node=>node.systems||[]));
+  const directDependentSymbols=unique(primaryNodes.flatMap(node=>[...(node.calls||[]),...(node.calledBy||[])])).slice(0,16);
+  const directDependentSet=new Set(directDependentSymbols);
+  const directDependentNodes=(graph.nodes||[]).filter(node=>directDependentSet.has(node.name));
+  const directDependentSystems=unique(directDependentNodes.flatMap(node=>node.systems||[])).slice(0,12);
+  const impactRows=(codingArchitecture?.impactPrediction||[]).filter(row=>primarySystems.includes(row.system));
+  const dependentSystems=unique(impactRows.flatMap(row=>row.likelyAffected||[])).slice(0,12);
+  const allowedSystems=unique([...primarySystems,...directDependentSystems]).slice(0,16);
+  const ownedState=unique(primaryNodes.flatMap(node=>node.stateWrites||[])).slice(0,24);
+  const readState=unique(primaryNodes.flatMap(node=>node.stateReads||[])).slice(0,24);
+  const preserveSemantics=unique([
+    'EXISTING_WORKING_BEHAVIOR',
+    'APPROVED_GAMEPLAY_VALUES',
+    'SAVE_MEANING',
+    ...(sourceAnalysis.storageKeys||[]).map(key=>'SAVE_KEY:'+key),
+    ...(protectedScopeSignals||[]).map(value=>'PROTECTED_SIGNAL:'+value)
+  ]);
+  const hotspotEntries=Array.isArray(order?.regressionHotspotRisk?.entries)?order.regressionHotspotRisk.entries:[];
+  const matchedHotspots=hotspotEntries.filter(row=>
+    (clean(row?.kind).toUpperCase()==='SYMBOL'&&primaryTargets.includes(clean(row?.name)))||
+    (clean(row?.kind).toUpperCase()==='SYSTEM'&&primarySystems.includes(clean(row?.name).toUpperCase()))
+  ).slice(0,8);
+  const hotspotChecks=matchedHotspots.flatMap(row=>[
+    'HOTSPOT_RECHECK:'+clean(row?.kind).toUpperCase()+':'+clean(row?.name),
+    clean(row?.kind).toUpperCase()==='SYSTEM'?'DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED':''
+  ]).filter(Boolean);
+  const studioPhase=clean(
+    order?.selectedTask?.studioQualityEvolution?.phase
+    ||order?.studioQualityEvolution?.phase
+    ||order?.workPackage?.sharedContext?.studioQualityEvolution?.phase
+  ).toUpperCase();
+  const repairRequired=studioPhase?studioPhase==='REPAIR':failures.length>0;
+  const repairFailures=repairRequired?failures:[];
+  const causalReplay=compileCausalReplayPlan({order,failures:repairFailures,testTargets,diagnosticReplayBaseline});
+  const repairShared=order?.workPackage?.sharedContext?.gameRepair&&typeof order.workPackage.sharedContext.gameRepair==='object'?order.workPackage.sharedContext.gameRepair:{};
+  const repairFailureStage=clean(order?.selectedTask?.failureStage||order?.failureStage||repairShared.failureStage)||null;
+  const repairFailureSignature=clean(order?.selectedTask?.failureSignature||order?.selectedTask?.blocker||order?.failureSignature||repairShared.failureSignature)||null;
+  const lastKnownGoodRevision=clean(repairShared.lastKnownGoodRevision||order?.selectedTask?.lastKnownGoodRevision)||null;
+  const firstBrokenRevision=clean(repairShared.firstBrokenRevision||order?.selectedTask?.firstBrokenRevision)||null;
+  const currentRevision=clean(repairShared.currentRevision||process.env.VIBE2_BASE_MAIN_SHA)||null;
+  const repairRepeatCount=Math.max(0,Number(repairShared.repeatCount||order?.selectedTask?.recurrenceCount||0)||0);
+  const repairMode=repairRepeatCount>=3?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR';
+  const saveRequired=(sourceAnalysis.storageKeys||[]).length>0||/(?:localStorage|indexedDB|PlayerPrefs|DataStoreService|save|load|persist|저장|불러오기)/i.test(sourceText);
+  const multiplayerRequired=/(?:RemoteEvent|RemoteFunction|NetworkVariable|Netcode|Photon|Mirror|multiplayer|server.?authorit|client.?server|co-?op|pvp|멀티|협동|동기화)/i.test(sourceText+' '+requirementText);
+  let multiplayerVerificationScope='AUTOMATED_HARNESS';
+  try{multiplayerVerificationScope=readJson(path.join(cwd,String(process.env.COMPANY_VERIFIED_POLICY_PATH||'__policy_not_configured__')))?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.verificationScope||multiplayerVerificationScope;}catch{}
+  const classifiedTargets=unique(testTargets||[]);
+  const gameRepair={
+    version:1,
+    required:repairRequired,
+    failureStage:repairFailureStage,
+    failureSignature:repairFailureSignature,
+    prePatchReproduced:causalReplay.prePatchReproduced===true,
+    responsibleSystem:causalReplay.verifiedResponsibleSystem||primarySystems[0]||null,
+    responsibleFiles:responsibleFiles.slice(0,16),
+    revisions:{lastKnownGoodRevision,firstBrokenRevision,currentRevision,historyAvailable:Boolean(lastKnownGoodRevision||firstBrokenRevision)},
+    originalScenarioReplay:{
+      required:repairRequired,
+      coveredByCausalReplay:causalReplay.executable===true,
+      identicalOrEquivalentInputStateRequired:true,
+      testTargets:causalReplay.nodeTestTargets||[]
+    },
+    invariants:{
+      required:repairRequired,
+      ids:(codingArchitecture?.invariants||[]).map(row=>row.id).filter(Boolean),
+      testTargets:classifiedTargets.filter(value=>/(?:invariant|state|progress|quest|wave|combat|scenario|integration)/i.test(value)).slice(0,8)
+    },
+    saveMigration:{
+      required:repairRequired&&saveRequired,
+      stableKeys:(sourceAnalysis.storageKeys||[]).slice(0,24),
+      testTargets:classifiedTargets.filter(value=>/(?:save|load|migration|persist|storage)/i.test(value)).slice(0,8)
+    },
+    multiplayerLifecycle:{
+      required:repairRequired&&multiplayerRequired,
+      minimumPlayers:2,
+      userAssistanceRequired:false,
+      manualOwnerParticipationMayNotBeRequiredForPass:true,
+      verificationScope:multiplayerVerificationScope,
+      testTargets:classifiedTargets.filter(value=>/(?:multi|network|sync|join|rejoin|server|client|remote)/i.test(value)).slice(0,8),
+      automation:{
+        required:repairRequired&&multiplayerRequired,
+        minimumSyntheticOrRealClients:2,
+        machineDrivenScenarios:[
+          'TWO_CLIENT_JOIN_AND_READY',
+          'SIMULTANEOUS_CORE_ACTION',
+          'SIMULTANEOUS_REWARD_OR_PICKUP_WHEN_APPLICABLE',
+          'ONE_CLIENT_LEAVE',
+          'ONE_CLIENT_REJOIN',
+          'LATE_JOIN_STATE_RECONCILIATION',
+          'AUTHORITATIVE_DAMAGE_REWARD_SAVE_AND_PROGRESS_SYNC',
+          'DUPLICATE_EVENT_AND_RACE_CONDITION_CHECK'
+        ],
+        deterministicHarnessPreferredWhenPlatformRuntimeIsUnavailable:true,
+        actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass:multiplayerVerificationScope!=='STATIC_CODE_CONTRACT',
+        unavailableAutomationAction:'KEEP_MULTIPLAYER_REPAIR_UNVERIFIED_AND_REQUEUE_OR_BLOCK_PROMOTION',
+        userReportedSuccessCannotReplaceMachineEvidence:true
+      }
+    },
+    repeatCount:repairRepeatCount,
+    repairMode,
+    sameApproachWithoutNewCausalEvidenceForbidden:repairRequired&&repairMode==='ROOT_CAUSE_MODE',
+    impactRegressionRequired:true,
+    fullRegressionFanInRequired:true,
+    unchangedSourceRevalidationForbidden:true,
+    directResponsibleSystemRepairRequired:repairRequired,
+    authorityExpanded:false
+  };
+  const helperEdits=reservedHelperEditPlan.reservedHelperEdits;
+  const requiredFocusedChecks=unique([
+    ...(helperEdits.length?['RESERVED_HELPER_CALL_GRAPH_RECHECK']:[]),
+    ...(helperEdits.some(row=>row.observedStateWrites.length)?['RESERVED_HELPER_OWNED_STATE_RECHECK']:[]),
+    ...(helperEdits.some(row=>row.observedSaveKeys.length)?['RESERVED_HELPER_SAVE_KEY_COMPATIBILITY']:[]),
+    ...(helperEdits.some(row=>row.observedEvents.length)?['RESERVED_HELPER_EVENT_BINDING_RECHECK']:[]),
+    ...(helperEdits.some(row=>row.observedTimers.animationFrame||row.observedTimers.interval||row.observedTimers.timeout)?['RESERVED_HELPER_TIMER_LIFECYCLE_RECHECK']:[]),
+    ...impactRows.flatMap(row=>row.requiredChecks||[]),
+    ...(codingArchitecture?.microRuntimeTests||[]).filter(row=>allowedSystems.includes(row.system)).map(row=>'MICRO_'+row.system),
+    ...hotspotChecks,
+    ...(causalReplay.executable?['CAUSAL_REPLAY_POSTPATCH_REQUIRED']:[]),
+    ...(repairRequired?['GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY','GAME_REPAIR_INVARIANT_VALIDATION']:[]),
+    ...(repairRequired&&saveRequired?['GAME_REPAIR_SAVE_LOAD_MIGRATION_VALIDATION']:[]),
+    ...(repairRequired&&multiplayerRequired?['GAME_REPAIR_AUTONOMOUS_MULTI_CLIENT_LIFECYCLE_VALIDATION']:[]),
+    ...(repairRequired&&repairMode==='ROOT_CAUSE_MODE'?['ROOT_CAUSE_COMPARE_LAST_KNOWN_GOOD_FIRST_BROKEN_CURRENT','ROOT_CAUSE_RECLASSIFY_DESIGN_IMPLEMENTATION_MIXED']:[]),
+    ...(testTargets||[]).map(value=>'TEST_TARGET:'+value)
+  ]).slice(0,32);
+  const strategyHint=repairFailures.length&&primaryTargets.length?'CAUSAL_TRACE_FIRST'
+    :primaryTargets.length?'RESPONSIBILITY_FIRST'
+    :sourceAnalysis.present?'PRESERVE_PATCH_RESPONSIBLE_SCOPE'
+    :'ARCHITECTURE_FIRST_GREENFIELD';
+  const rawResponsibilityConfidence=primaryTargets.length&&graph.nodeCount>0?'HIGH':graph.nodeCount>0?'MEDIUM':'LOW';
+  const calibrationRecommendation=clean(order?.responsibilityCalibration?.recommendation).toUpperCase();
+  const confidence=rawResponsibilityConfidence==='HIGH'&&calibrationRecommendation==='DOWNGRADE_HIGH_TO_MEDIUM'?'MEDIUM':rawResponsibilityConfidence;
+  const relevantEdges=(graph.edges||[]).filter(edge=>primarySet.has(edge.from)||primarySet.has(edge.to)||directDependentSymbols.includes(edge.from)||directDependentSymbols.includes(edge.to)).slice(0,40);
+  const allowedDependentSymbolsOrSystems=unique([...reservedHelperNames,...directDependentSymbols,...directDependentSystems]).slice(0,24);
+  const patchRecipe=compilePatchRecipe({order,failures:repairFailures,primaryTargets,dependentSymbols:allowedDependentSymbolsOrSystems,ownedState,requiredFocusedChecks,preserveSemantics});
+  return{
+    version:1,
+    mode:'COMPILED_EDIT_CONTRACT',
+    strategyHint,
+    responsibilityConfidence:confidence,
+    rawResponsibilityConfidence,
+    responsibilityCalibration:{
+      recommendation:calibrationRecommendation||'KEEP_RAW_CONFIDENCE',
+      applied:rawResponsibilityConfidence!==confidence,
+      extraReadOnlyExploration:order?.responsibilityCalibration?.extraReadOnlyExploration===true,
+      writableScopeExpansionAllowed:false,
+      authorityExpanded:false
+    },
+    regressionHotspotRisk:{
+      riskLevel:clean(order?.regressionHotspotRisk?.riskLevel).toUpperCase()||'LOW',
+      matched:matchedHotspots,
+      focusedChecksAdded:hotspotChecks,
+      writableScopeExpansionAllowed:false,
+      authorityExpanded:false
+    },
+    primaryTargets,
+    allowedResponsibleFiles:responsibleFiles,
+    reservedHelperEditPlan,
+    allowedDependentSymbolsOrSystems,
+    primarySystems,
+    dependentSystems,
+    directDependentSystems,
+    readOnlyImpactSystems:dependentSystems,
+    ownedState,
+    readState,
+    preserveSemantics,
+    failureOrRequirementCausalChain:unique(traces.flatMap(row=>row?.causalChain||[])).slice(0,32),
+    requiredObservableResult:requirementText||'IMPLEMENT_WORK_ORDER_WITH_OBSERVABLE_GAMEPLAY_EFFECT',
+    semanticDiffBudget:{
+      allowedSystems,
+      preferredPrimarySymbols:primaryTargets,
+      maxSystemCount:Math.max(1,allowedSystems.length||primarySystems.length||1),
+      readOnlyImpactSystems:dependentSystems,
+      impactPredictionDoesNotGrantWriteAuthority:true,
+      unrelatedSystemMutationForbidden:true,
+      saveKeysMustRemainCompatible:sourceAnalysis.storageKeys||[]
+    },
+    requiredFocusedChecks,
+    causalReplay,
+    gameRepair,
+    patchRecipe,
+    codingArchitecture:{
+      analysisVersion:CODING_ANALYSIS_VERSION,
+      developmentMode:codingArchitecture?.developmentMode||null,
+      stateOwnershipSystems:(codingArchitecture?.stateOwnership||[]).map(row=>row.system),
+      apiNames:(codingArchitecture?.apiContracts||[]).map(row=>row.api),
+      invariantIds:(codingArchitecture?.invariants||[]).map(row=>row.id),
+      impactRule:'PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED'
+    },
+    architectureSnapshot,
+    responsibilityGraph:{
+      version:graph.version,language:graph.language,analysis:graph.analysis,runtimeVerified:false,
+      nodeCount:Number(graph.nodeCount||0),
+      relevantNodes:(graph.nodes||[]).filter(node=>primarySet.has(node.name)||allowedDependentSymbolsOrSystems.includes(node.name)).slice(0,24).map(node=>({
+        name:node.name,systems:node.systems||[],calls:node.calls||[],calledBy:node.calledBy||[],
+        stateReads:node.stateReads||[],stateWrites:node.stateWrites||[],storageKeys:node.storageKeys||[],events:node.events||[]
+      })),
+      relevantEdges
+    },
+    behaviorChains:expertDevelopment?.behaviorChains?.chains||[],
+    seniorReview:{
+      score:expertDevelopment?.seniorCodeReview?.score??null,
+      hardBlockers:expertDevelopment?.seniorCodeReview?.hardBlockers||[],
+      issues:(expertDevelopment?.seniorCodeReview?.issues||[]).slice(0,12)
+    },
+    failureEvidence:failures,
+    writableScopeExpansionAllowed:false,
+    learningAuthorityExpanded:false
+  };
+}
+function compileSystemEditContract({order={},responsibleFiles=[],testTargets=[]}={}){
+  const failures=taskFailureEvidence(order);
+  return{
+    version:1,mode:'SYSTEM_ARCHITECTURE_EDIT_CONTRACT',strategyHint:'STRUCTURAL_CAUSE_FIRST',responsibilityConfidence:'MEDIUM',
+    primaryTargets:responsibleFiles.slice(0,8),allowedResponsibleFiles:responsibleFiles,allowedDependentSymbolsOrSystems:[],
+    primarySystems:['VIBE_SYSTEM_ARCHITECTURE'],dependentSystems:[],ownedState:[],readState:[],
+    preserveSemantics:['CENTRAL_POLICY_AUTHORITY_BOUNDARY','QUALITY_AND_EVIDENCE_GATES','SECURITY_GATES','VERIFIED_LEARNING'],
+    failureOrRequirementCausalChain:failures.slice(0,16),
+    requiredObservableResult:'VERIFIED_STRUCTURAL_IMPROVEMENT_WITHOUT_AUTHORITY_OR_GATE_CHANGE',
+    semanticDiffBudget:{allowedSystems:[],preferredPrimarySymbols:[],maxSystemCount:4,unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]},
+    requiredFocusedChecks:['SAME_FAILURE_RECHECK','RELATED_REGRESSION','SECURITY','BEFORE_AFTER_METRICS',...(testTargets||[]).map(v=>'TEST_TARGET:'+v)].slice(0,24),
+    causalReplay:{version:1,required:failures.length>0,prePatchReproduced:false,nodeTestTargets:(testTargets||[]).slice(0,8),executable:false,mode:'PLAN_ONLY',status:'STRUCTURAL_RECHECK_REQUIRED',identicalOrEquivalentInputStateRequired:true,canonicalQaStillRequired:true,sourceWrite:false,authorityExpanded:false},
+    patchRecipe:{version:1,mode:'SYSTEM_ARCHITECTURE_CAUSAL_RECIPE',failureFingerprint:null,verifiedMemoryIds:[],verifiedMemoryCount:0,reusePatterns:[],avoidPatterns:[],steps:['VERIFY_STRUCTURAL_CAUSE','COMPARE_AT_LEAST_TWO_ALTERNATIVES','PATCH_DIRECT_RESPONSIBILITY','RUN_SAME_FAILURE_RECHECK','COMPARE_BEFORE_AFTER_METRICS'],primaryTargets:responsibleFiles.slice(0,8),dependentSymbolsOrSystems:[],ownedState:[],focusedChecks:['RELATED_REGRESSION','SECURITY'],protectedSemantics:['AUTHORITY_UNCHANGED','GATES_UNCHANGED'],verifiedMemoryOnly:true,scopeExpansionAllowed:false,qaBypassAllowed:false,authorityExpanded:false},
+    codingArchitecture:{developmentMode:'PRESERVE_PATCH',stateOwnershipSystems:['VIBE_SYSTEM_ARCHITECTURE'],apiNames:[],invariantIds:['AUTHORITY_UNCHANGED','GATES_UNCHANGED'],impactRule:'SYSTEM_ARCHITECTURE_CHANGES_REQUIRE_RELATED_AND_FULL_REGRESSION'},
+    architectureSnapshot:{version:1,nodeCount:0,edgeCount:0,maxFunctionBodyBytes:0,maxCallsPerFunction:0,maxCalledByPerFunction:0,maxStateWritesPerFunction:0,maxSystemsPerFunction:0,multiWriterStateCount:0,stateWriterLinkCount:0,multiOwnerStorageKeyCount:0,storageOwnerLinkCount:0,timerFunctionCount:0,eventBindingCount:0,largeFunctionCount:0,broadSystemFunctionCount:0},
+    responsibilityGraph:{nodeCount:0,relevantNodes:[],relevantEdges:[]},behaviorChains:[],seniorReview:{score:null,hardBlockers:[],issues:[]},
+    failureEvidence:failures,writableScopeExpansionAllowed:false,learningAuthorityExpanded:false
+  };
+}
+function bootstrapEditContract(order={},responsibleFiles=[]){
+  return{
+    version:1,mode:'COMPILED_EDIT_CONTRACT',strategyHint:'ARCHITECTURE_FIRST_GREENFIELD',responsibilityConfidence:'LOW',
+    primaryTargets:[],allowedResponsibleFiles:responsibleFiles,allowedDependentSymbolsOrSystems:[],primarySystems:[],dependentSystems:[],
+    ownedState:[],readState:[],preserveSemantics:['APPROVED_GAMEPLAY_VALUES','SAVE_MEANING'],
+    failureOrRequirementCausalChain:['SOURCE_ROOT_MISSING','APPROVED_BOOTSTRAP','IMPLEMENT_COMPLETE_PLAYABLE_BASELINE'],
+    requiredObservableResult:clean(order?.originalGoal||order?.goal)||'IMPLEMENT_COMPLETE_PLAYABLE_BASELINE',
+    semanticDiffBudget:{allowedSystems:[],preferredPrimarySymbols:[],maxSystemCount:0,unrelatedSystemMutationForbidden:false,saveKeysMustRemainCompatible:[]},
+    requiredFocusedChecks:['MOBILE_GAMEPLAY','REAL_INPUT','STATE_CHANGE','RESTART','RUNTIME'],
+    causalReplay:{version:1,required:false,prePatchReproduced:false,nodeTestTargets:[],executable:false,mode:'PLAN_ONLY',status:'NOT_REQUIRED',identicalOrEquivalentInputStateRequired:true,canonicalQaStillRequired:true,sourceWrite:false,authorityExpanded:false},
+    patchRecipe:{version:1,mode:'REQUIREMENT_RECIPE',failureFingerprint:null,verifiedMemoryIds:[],verifiedMemoryCount:0,reusePatterns:[],avoidPatterns:[],steps:['CONFIRM_REQUIREMENT_AGAINST_CURRENT_SOURCE','IMPLEMENT_COMPLETE_PLAYABLE_BASELINE','RUN_TASK_LOCAL_INCREMENTAL_QA'],primaryTargets:[],dependentSymbolsOrSystems:[],ownedState:[],focusedChecks:['MOBILE_GAMEPLAY','REAL_INPUT','STATE_CHANGE','RESTART','RUNTIME'],protectedSemantics:['APPROVED_GAMEPLAY_VALUES','SAVE_MEANING'],verifiedMemoryOnly:true,scopeExpansionAllowed:false,qaBypassAllowed:false,authorityExpanded:false},
+    codingArchitecture:{developmentMode:'GREENFIELD',stateOwnershipSystems:[],apiNames:[],invariantIds:[],impactRule:'ARCHITECTURE_FIRST_THEN_IMPLEMENT'},
+    architectureSnapshot:{version:1,nodeCount:0,edgeCount:0,maxFunctionBodyBytes:0,maxCallsPerFunction:0,maxCalledByPerFunction:0,maxStateWritesPerFunction:0,maxSystemsPerFunction:0,multiWriterStateCount:0,stateWriterLinkCount:0,multiOwnerStorageKeyCount:0,storageOwnerLinkCount:0,timerFunctionCount:0,eventBindingCount:0,largeFunctionCount:0,broadSystemFunctionCount:0},
+    responsibilityGraph:{nodeCount:0,relevantNodes:[],relevantEdges:[]},behaviorChains:[],seniorReview:{score:null,hardBlockers:[],issues:[]},
+    failureEvidence:taskFailureEvidence(order),writableScopeExpansionAllowed:false,learningAuthorityExpanded:false
+  };
+}
+
+export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}={}){
+  if(!order||typeof order!=='object')throw new Error('exploration work order 필요');
+  const cached=reusableArtifact(cwd,order);
+  if(cached){if(outputFile)writeJson(path.resolve(cwd,outputFile),cached);return cached;}
+  const target=clean(order.target).toLowerCase();
+  const rootRelative=assertRoot(order?.source?.root,target,order);
+  const root=path.resolve(cwd,rootRelative);
+  const responsible=unique(order?.source?.responsibleFiles||[]).map(v=>normalizeRelative(v,rootRelative));
+  const bootstrap=sourceRootBootstrapAllowed(order,target,rootRelative);
+  const rootExists=fs.existsSync(root)&&fs.statSync(root).isDirectory();
+  if(!rootExists&&!bootstrap)throw new Error(`exploration source root 없음: ${rootRelative}`);
+  if(!rootExists&&bootstrap){
+    const baseMainSha=clean(process.env.VIBE2_BASE_MAIN_SHA)||null;
+    const diagnosticEvidence=unique(order?.workPackage?.sharedContext?.diagnosticEvidence||[]);
+    const existingWebAssessment={
+      strategy:'FULL_REBUILD',
+      reasons:['source-root-bootstrap-required','approved-development-queue-bootstrap'],
+      evidence:{approvedScopeCoveragePct:100,gameplaySignalCount:0}
+    };
+    const orderFingerprint=explorationOrderFingerprint(order);
+    const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,bootstrap:true,orderFingerprint})).slice(0,24);
+    const handoff={
+      version:1,codingAnalysisVersion:CODING_ANALYSIS_VERSION,role:'exploration',sourceWrite:false,reused:false,bootstrap:true,
+      taskId:clean(order.taskId)||null,packageId:clean(order?.workPackage?.id)||null,target,sourceRoot:rootRelative,baseMainSha,orderFingerprint,
+      responsibleFiles:responsible,impactFiles:responsible,contextFiles:[],relatedFiles:[],testTargets:[],
+      protectedScopeSignals:[],diagnosticEvidence,existingWebAssessment,fileDigests:[],editContract:bootstrapEditContract(order,responsible),reuseKey,generatedAt:new Date().toISOString()
+    };
+    if(outputFile)writeJson(path.resolve(cwd,outputFile),handoff);
+    return handoff;
+  }
+  const responsibleSet=new Set(responsible);
+  const responsibleNames=new Set(responsible.map(v=>path.basename(v)).filter(Boolean));
+  const responsibleDirs=new Set(responsible.map(v=>posix(path.dirname(v))).filter(Boolean));
+  const rows=listFiles(root,target,order?.source?.ignoredPaths||[]);
+  const scanLimitReached=rows.length>=MAX_SCAN_FILES;
+  const responsibilityRows=responsible.map(relative=>{const full=path.join(root,relative),text=safeRead(full);return{relative,full,text,score:10000};}).filter(row=>fs.existsSync(row.full));
+  const sourceFunctions=responsibilityRows.flatMap(row=>inspectSourceFunctions(row.text,{language:target}));
+  const scored=rows.map(row=>scoreRelated(row,{responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,responsibleDirs,sourceFunctions,target})).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
+  const related=scored.filter(row=>!responsibleSet.has(row.relative)&&row.score>0).slice(0,MAX_RELATED_FILES);
+  const contextFiles=unique([...responsible,...related.map(row=>row.relative)]).slice(0,12);
+  const testCandidates=unique(scored.filter(row=>/(?:test|spec|qa|playmode|editmode)/i.test(row.relative)).slice(0,32).map(row=>row.relative));
+  let testTargets=testCandidates.slice(0,8);
+  // Reuse the already scanned files: no extra model, source write, workflow or QA stage.
+  const uniqueGraphRows=new Map();
+  for(const row of [...responsibilityRows,...related,
+    ...scored.filter(row=>testCandidates.includes(row.relative))]){
+    if(!uniqueGraphRows.has(row.relative))uniqueGraphRows.set(row.relative,row);
+  }
+  const graphRows=[...uniqueGraphRows.values()];
+  const testSourceByPath=new Map(scored.filter(row=>testCandidates.includes(row.relative))
+    .map(row=>[row.relative,row.text||safeRead(row.full)]));
+  const ownerSymbols=unique(sourceFunctions.map(fn=>clean(fn.name).split(/[.:]/).at(-1))).slice(0,64);
+  const impactGraph=createVibeSourceGraph({files:graphRows.map(row=>{
+    const code=row.text||safeRead(row.full);
+    const symbols=unique(inspectSourceFunctions(code,{language:target}).slice(0,64)
+      .map(fn=>clean(fn.name).split(/[.:]/).at(-1)));
+    const imports=extractVibeSourceImportRefs(code,target);
+    const calls=ownerSymbols.filter(name=>!responsibleSet.has(row.relative)&&code.includes(name+'('));
+    const tests=testCandidates.filter(file=>file!==row.relative&&
+      ((testSourceByPath.get(file)||'').includes(path.basename(row.relative))
+      ||symbols.some(symbol=>(testSourceByPath.get(file)||'').includes(symbol))));
+    return {path:row.relative,symbols,imports,calls,tests};
+  })});
+  const sourceImpact=createVibeImpactPlan({graph:impactGraph,changedPaths:responsible,maxDepth:3,maxTests:8});
+  const codeFlow=analyzeVibe4CodeFlow({target,responsiblePaths:responsible,
+    files:graphRows.map(row=>({path:row.relative,source:row.text||safeRead(row.full)}))});
+  const robloxCoding=target==='roblox'?inspectVibe59RobloxCoding({
+    files:graphRows.map(row=>({path:row.relative,source:row.text||safeRead(row.full)})),
+    responsiblePaths:responsible}):null;
+  // Prioritize observed graph-reachable regression tests, retaining existing fallback checks.
+  const autonomy59=buildVibe59AutonomyPlan({order,target,sourceImpact,codeFlow});
+  testTargets=unique([...sourceImpact.affectedTests.map(row=>row.path),...testTargets]).slice(0,8);
+  const impactFiles=unique([...responsible,...sourceImpact.impactedSources.map(row=>row.path),
+    ...related.slice(0,8).map(row=>row.relative)]).slice(0,24);
+  const protectedScopeSignals=unique(responsibilityRows.flatMap(row=>protectedSignals(row.text)));
+  const diagnosticEvidence=unique(order?.workPackage?.sharedContext?.diagnosticEvidence||[]);
+  // All bounded scan sources can become relevant after a code edit; hash each input.
+  const fileDigests=scored.map(compactFile);
+  const scanPathDigest=sha(JSON.stringify(rows.map(row=>row.relative)));
+  const baseMainSha=clean(process.env.VIBE2_BASE_MAIN_SHA)||null;
+  const existingWebAssessment=target==='web'?assessExistingWebRepository({cwd,gameId:order.gameId,sourceRoot:rootRelative,order}):null;
+  const sourceText=responsibilityRows.map(row=>row.text).filter(Boolean).join('\n\n');
+  const diagnosticReplayBaseline=verifyDiagnosticReplayBaseline({order,target,root});
+  const editContract=target==='system'
+    ?compileSystemEditContract({order,responsibleFiles:responsible,testTargets})
+    :compileEditContract({cwd,order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets,diagnosticReplayBaseline,sourceRows:responsibilityRows});
+  const orderFingerprint=explorationOrderFingerprint(order);
+  const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,orderFingerprint,fileDigests,diagnosticEvidence,existingWebAssessment,goal:clean(order?.originalGoal||order?.goal),editContract})).slice(0,24);
+  const handoff={
+    version:1,
+    codingAnalysisVersion:CODING_ANALYSIS_VERSION,
+    role:'exploration',
+    sourceWrite:false,
+    reused:false,
+    taskId:clean(order.taskId)||null,
+    packageId:clean(order?.workPackage?.id)||null,
+    target,
+    sourceRoot:rootRelative,
+    baseMainSha,
+    responsibleFiles:responsible,
+    impactFiles,
+    contextFiles,
+    sourceDependencies:related.flatMap(row=>row.connections||[]).slice(0,24),
+    sourceImpact,
+    codeFlow,
+    robloxCoding,
+    autonomy59,
+    impactAnalysisSchemaVersion:6,
+    scanPathDigest,
+    orderFingerprint,
+    impactScanCoverage:{scannedFileCount:graphRows.length,discoveredFileCount:rows.length,
+      testCandidatesConsidered:testCandidates.length,testCandidateLimitReached:testCandidates.length>=32,
+      bounded:true,scanLimitReached,completeRepositoryGraph:false,runtimeVerified:false},
+    relatedFiles:related.map(row=>({path:row.relative,score:row.score})),
+    testTargets,
+    protectedScopeSignals,
+    diagnosticEvidence,
+    existingWebAssessment,
+    fileDigests,
+    editContract,
+    reuseKey,
+    generatedAt:new Date().toISOString()
+  };
+  if(outputFile)writeJson(path.resolve(cwd,outputFile),handoff);
+  return handoff;
+}
+
+export function explorationGuidance(handoff={}){
+  if(!handoff?.reuseKey)return'';
+  return[
+    `[EXPLORATION HANDOFF ${handoff.reuseKey}${handoff.reused?' REUSED':''}]`,
+    `책임 파일=${(handoff.responsibleFiles||[]).join(', ')||'NONE'}`,
+    `읽기 전용 영향 파일=${(handoff.impactFiles||[]).filter(x=>!(handoff.responsibleFiles||[]).includes(x)).join(', ')||'NONE'}`,
+    `검증 후보=${(handoff.testTargets||[]).join(', ')||'NONE'}`,
+    ...(handoff.autonomy59?[
+      `Vibe5.9 명세=${handoff.autonomy59.requirement.explicitSystems.join(',')||'NONE'} · 추천만=${handoff.autonomy59.requirement.suggestedOnly.join(',')||'NONE'} · 검증완료=${handoff.autonomy59.completion.verified.length}/${handoff.autonomy59.completion.required}`,
+      'Vibe5.9 학습·설계·복구 정보는 실행 검증 및 승인되지 않은 코드 변경의 근거가 아니다.'
+    ]:[]),
+    ...(handoff.robloxCoding?[
+      `Vibe5.9 Roblox 책임 경로=${handoff.robloxCoding.files.filter(x=>x.responsible).map(x=>x.path+':'+x.side+':수신 '+x.events.map(e=>e.remote+'.'+e.signal).join('/')+':송신 '+x.calls.map(e=>e.remote+':'+e.method).join('/')+':상태 '+x.stateEffects.map(e=>e.method).join('/')).join(' | ')||'NONE'}`,
+      `Vibe5.9 Roblox 점검 신호=${handoff.robloxCoding.warnings.map(x=>x.path+':'+x.code+'@'+x.line).join(',')||'NONE'}`,
+      'Roblox 정적 분석은 실제 Studio 실행 또는 보안 검증 통과의 증거가 아니다.'
+    ]:[]),
+    ...(handoff.codeFlow?[
+      `Vibe4 코드 상태·이벤트=${handoff.codeFlow.sources.filter(row=>row.responsible)
+        .map(row=>row.path+':writes='+row.stateWrites.slice(0,12).map(x=>x.symbol+'@'+x.line).join('/')+
+          ',events='+row.events.slice(0,8).map(x=>x.event+'->'+x.handler+(x.handlerDeclared?'':'(미확인)')).join('/')).join(' | ')||'NONE'}`,
+      'Vibe4 코드 흐름은 정적 추정이며 실제 런타임 통과나 허용 수정 범위 확대를 뜻하지 않는다.'
+    ]:[]),
+    ...(handoff.sourceImpact?[
+      `Vibe3 읽기 전용 영향=${handoff.sourceImpact.impactedSources.map(row=>row.path).join(', ')||'NONE'}`,
+      `Vibe3 연관 테스트=${handoff.sourceImpact.affectedTests.map(row=>row.path).join(', ')||'NONE'}`,
+      `Vibe3 탐색 범위=${handoff.impactScanCoverage?.scannedFileCount||0}/${handoff.impactScanCoverage?.discoveredFileCount||0} 파일 · 전체 저장소 그래프 아님`,
+      ...(handoff.impactScanCoverage?.scanLimitReached===true?['Vibe3 범위 한계: 파일 스캔 상한 도달 · 영향 분석 불완전 · 자동 캐시 재사용 금지']:[]),
+      '읽기 전용 추천이며 책임 파일 수정 범위나 실제 런타임 통과를 확대하지 않는다.'
+    ]:[]),
+    `보호 신호=${(handoff.protectedScopeSignals||[]).join(', ')||'NONE'}`,
+    ...(handoff.existingWebAssessment?[`[EXISTING WEB STRATEGY] ${handoff.existingWebAssessment.strategy}`,`판단 근거=${(handoff.existingWebAssessment.reasons||[]).join(', ')||'NONE'}`,`설계 scope coverage=${handoff.existingWebAssessment.evidence?.approvedScopeCoveragePct??0}% · gameplay signals=${handoff.existingWebAssessment.evidence?.gameplaySignalCount??0}`,handoff.existingWebAssessment.strategy==='KEEP_AND_CONTINUE'?'기존 구조·세이브·작동 시스템을 보존하고 필요한 개발만 이어간다.':handoff.existingWebAssessment.strategy==='PARTIAL_REPAIR'?'기존 구조를 보존하고 확인된 결함 책임 영역만 수정한다.':handoff.existingWebAssessment.strategy==='MAJOR_REWORK'?'사용 가능한 시스템과 세이브 의미는 보존하고 큰 결함 영역을 재구성한다.':'전체 재구축은 허용되지만 승인 설계·게임 정체성·보존 가능한 세이브 의미는 유지한다.']:[]),
+    ...(handoff.editContract?[
+      '[COMPILED EDIT CONTRACT]',
+      `코딩 전략=${handoff.editContract.strategyHint||'NONE'} · 책임 확신=${handoff.editContract.responsibilityConfidence||'LOW'}`,
+      `주 책임 심볼=${(handoff.editContract.primaryTargets||[]).join(', ')||'NONE'}`,
+      `허용 의존 심볼/시스템=${(handoff.editContract.allowedDependentSymbolsOrSystems||[]).join(', ')||'NONE'}`,
+      `예약된 파일 내 자동 수정 보조 함수=${(handoff.editContract.reservedHelperEditPlan?.reservedHelperEdits||[]).map(row=>row.file+'::'+row.symbol+' <- '+row.primary+'('+row.direction+')').join(' | ')||'NONE'}`,
+      '수정 실행: 기존 예약된 책임 파일의 주 함수와 인과적으로 연결된 보조 함수를 함께 직접 수정하고 원래 실패를 재검증한다. 예약되지 않은 영향 파일은 읽기 전용이며 별도 정식 예약 없이 수정하지 않는다.',
+      `소유 상태=${(handoff.editContract.ownedState||[]).join(', ')||'NONE'}`,
+      `보존 계약=${(handoff.editContract.preserveSemantics||[]).join(' | ')||'NONE'}`,
+      `인과 체인=${(handoff.editContract.failureOrRequirementCausalChain||[]).join(' -> ')||'NONE'}`,
+      `실제 호출·상태 관계=${JSON.stringify(handoff.editContract.responsibilityGraph||{})}`,
+      `관찰 결과=${handoff.editContract.requiredObservableResult||'NONE'}`,
+      `Semantic diff 허용 시스템=${(handoff.editContract.semanticDiffBudget?.allowedSystems||[]).join(', ')||'NONE'}; unrelated mutation=${handoff.editContract.semanticDiffBudget?.unrelatedSystemMutationForbidden===true?'FORBIDDEN':'CONDITIONAL'}`,
+      `필수 집중 검증=${(handoff.editContract.requiredFocusedChecks||[]).join(', ')||'NONE'}`,
+      ...(handoff.editContract.causalReplay?.required===true?[
+        `[CAUSAL REPLAY CONTRACT] mode=${handoff.editContract.causalReplay.mode||'PLAN_ONLY'}; prepatch=${handoff.editContract.causalReplay.prePatchReproduced===true?'REPRODUCED':'NOT_REPRODUCED'}; executable=${handoff.editContract.causalReplay.executable===true?'YES':'NO'}`,
+`[GAME REPAIR CONTRACT] required=${handoff.editContract.gameRepair?.required===true?'YES':'NO'}; mode=${handoff.editContract.gameRepair?.repairMode||'FOCUSED_REPAIR'}; repeat=${Number(handoff.editContract.gameRepair?.repeatCount||0)}; save=${handoff.editContract.gameRepair?.saveMigration?.required===true?'REQUIRED':'N/A'}; multiplayer=${handoff.editContract.gameRepair?.multiplayerLifecycle?.required===true?(handoff.editContract.gameRepair.multiplayerLifecycle.verificationScope||'AUTOMATED_HARNESS'):'N/A'}; owner-help=${handoff.editContract.gameRepair?.multiplayerLifecycle?.userAssistanceRequired===false?'FORBIDDEN_AS_REQUIREMENT':'N/A'}; full-regression=${handoff.editContract.gameRepair?.fullRegressionFanInRequired===true?'REQUIRED':'NO'}`,
+        handoff.editContract.gameRepair?.repairMode==='ROOT_CAUSE_MODE'?'ROOT CAUSE MODE: 같은 실패에 미세패치를 더 쌓지 말고 last-known-good/first-broken/current와 책임 그래프를 비교해 원인 분류 후 기존 책임 시스템을 직접 수정한다.':'',
+        handoff.editContract.gameRepair?.multiplayerLifecycle?.required===true?handoff.editContract.gameRepair.multiplayerLifecycle.verificationScope==='STATIC_CODE_CONTRACT'?'MULTIPLAYER REPAIR: 현재 서버·클라이언트 소스의 권한·송수신·참가자·재접속 정적 계약을 검사하고 PASS_STATIC_CODE_CONTRACT로 완료한다. 실제 2인 실행을 필수로 요구하지 않으며 실제 플레이 완료로 표기하지 않는다.':'MULTIPLAYER REPAIR: 사용자에게 두 번째 클라이언트나 수동 재현을 요구하지 않는다. 자동 2+ 클라이언트/결정론적 하네스로 동시행동·이탈·재접속·늦은 참가·서버 권한 동기화를 검증한다. 플랫폼 런타임이 없으면 PASS로 가장하지 말고 자동 재큐/미검증 상태를 유지한다.':'',
+        ...(handoff.editContract.causalReplay.mode==='DIAGNOSTIC_RESCAN'&&handoff.editContract.causalReplay.executable===true?[
+          `CAUSAL DIAGNOSTIC TARGET=${handoff.editContract.causalReplay.diagnosticType||'UNKNOWN'}:${handoff.editContract.causalReplay.diagnosticFile||'UNKNOWN'}; line=${handoff.editContract.causalReplay.diagnosticLine??'UNKNOWN'}; needle=${handoff.editContract.causalReplay.diagnosticNeedle||'UNKNOWN'}; verified-system=${handoff.editContract.causalReplay.verifiedResponsibleSystem||'UNKNOWN'}`,
+          handoff.editContract.causalReplay.diagnosticMicroTask?`CAUSAL DIAGNOSTIC REPAIR=${handoff.editContract.causalReplay.diagnosticMicroTask}`:'' ,
+          'HARD IMPLEMENTATION POSTCONDITION: the first source edit must directly address the exact diagnostic target above, and the same deterministic postpatch rescan must no longer report that diagnostic. Do not spend the first edit on an unrelated symbol while the exact diagnostic remains.',
+          'This postcondition does not weaken or replace canonical QA; it only constrains the implementation to the independently reproduced failure.'
+        ]:[])
+      ]:[]),
+      ...(handoff.editContract.patchRecipe?[
+        `[PATCH RECIPE] mode=${handoff.editContract.patchRecipe.mode}; failure=${handoff.editContract.patchRecipe.failureFingerprint||'NONE'}; verifiedMemory=${handoff.editContract.patchRecipe.verifiedMemoryCount||0}`,
+        `recipe steps=${(handoff.editContract.patchRecipe.steps||[]).join(' -> ')||'NONE'}`,
+        `verified reuse=${(handoff.editContract.patchRecipe.reusePatterns||[]).join(' | ')||'NONE'}`,
+        `verified avoid=${(handoff.editContract.patchRecipe.avoidPatterns||[]).join(' | ')||'NONE'}`,
+        'Patch recipe는 검증된 기억을 우선 사용하지만 현재 소스와 맞지 않으면 적용하지 않는다. 범위 확대/QA 우회 권한은 없다.'
+      ]:[]),
+      `불변조건=${(handoff.editContract.codingArchitecture?.invariantIds||[]).join(', ')||'NONE'}`,
+      '주 책임 심볼부터 수정하고 의존 심볼은 요구사항 충족에 꼭 필요할 때만 수정한다. 책임 파일/예약 범위 확대는 금지한다.'
+    ]:[]),
+    '영향 파일은 참고용이다. Allowed edit paths 밖 파일은 수정하지 않는다.'
+  ].join('\n');
+}
+
+export function runVibe2ExplorationWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputFile=''}={}){
+  const order=readJson(path.resolve(cwd,workOrderFile));
+  return exploreVibe2WorkOrder({cwd,order,outputFile});
+}
+
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const args=parseArgs();const result=runVibe2ExplorationWorker({workOrderFile:clean(args.order)||'.vibe2/work-order.json',outputFile:clean(args.output)});console.log('VIBE2_EXPLORATION_WORKER=PASS');console.log(`VIBE2_EXPLORATION_REUSE_KEY=${result.reuseKey}`);console.log(`VIBE2_EXPLORATION_REUSED=${result.reused?'YES':'NO'}`);console.log(`VIBE2_EXPLORATION_IMPACT_FILES=${result.impactFiles.join(',')}`);console.log('VIBE2_EXPLORATION_SOURCE_WRITE=NO');}

@@ -1,0 +1,1974 @@
+// 파일명: qa/vibe2-controller-contract.test.mjs
+// 역할: Vibe2 24시간 컨트롤러의 엔진 분기, 계층형 병렬, responsible-file conflict protection, fan-out/fan-in, incremental QA와 설계지능 안전 계약을 검증한다.
+
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import os from 'node:os';
+import path from 'node:path';
+import { spawnSync,execFileSync } from 'node:child_process';
+import {currentSourceTreeSha} from '../tools/company-development-roblox-source-reconcile.mjs';
+import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
+import { classifyVibeExecutionRoute, runVibeContinuousRunner, expandPresentationResponsibleFiles, candidateStrategyRole } from '../tools/vibe2-continuous-runner.mjs';
+import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
+import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
+
+const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
+const coreQaWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-core-qa.yml',import.meta.url),'utf8');
+const candidateReleaseWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-candidate-release.yml',import.meta.url),'utf8');
+const recoveryFastWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-recovery-fast.yml',import.meta.url),'utf8');
+const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
+const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+const companyLogMap=JSON.parse(fs.readFileSync(new URL('../company-learning/company-log-map.json',import.meta.url),'utf8'));
+const companyArchitectureMap=JSON.parse(fs.readFileSync(new URL('../company-learning/company-architecture-map.json',import.meta.url),'utf8'));
+const continuousRunnerSource=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
+
+test('legacy presentation tasks expand to existing native visual responsibility files at execution time',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-presentation-scope-'));
+  try{
+    const gameRoot=path.join(root,'roblox-games','demo');
+    fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+    fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+    fs.mkdirSync(path.join(gameRoot,'shared'),{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'return {}\n');
+    fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'return {}\n');
+    fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return {}\n');
+    const files=expandPresentationResponsibleFiles({
+      repoRoot:root,target:'roblox',
+      task:{
+        target:'roblox',
+        sourceRoot:'roblox-games/demo',
+        responsibleFiles:['roblox-games/demo/client/Game.client.luau'],
+        evidence:['presentation-pass:ASSET_ADAPTATION']
+      }
+    });
+    assert.deepEqual(files,[
+      'roblox-games/demo/client/Game.client.luau',
+      'roblox-games/demo/server/Game.server.luau',
+      'roblox-games/demo/shared/GameConfig.luau'
+    ]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('adaptive graphics replacement worker contract covers UEFN Verse and rejects zero-replacement PASS',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-uefn-presentation-scope-'));
+  try{
+    const gameRoot=path.join(root,'uefn-games','demo','Content','Verse');
+    fs.mkdirSync(gameRoot,{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'Presentation.verse'),'Presentation := class():\n    Apply():void = {}\n');
+    const files=expandPresentationResponsibleFiles({
+      repoRoot:root,target:'fortnite-uefn',
+      task:{
+        target:'fortnite-uefn',
+        sourceRoot:'uefn-games/demo',
+        responsibleFiles:[],
+        evidence:['presentation-pass:ASSET_ADAPTATION']
+      }
+    });
+    assert.ok(files.includes('uefn-games/demo/Content/Verse/Presentation.verse'));
+    assert.match(continuousRunnerSource,/adaptive-graphics-replacement=required/);
+    assert.match(continuousRunnerSource,/maximum-actual=UNLIMITED/);
+    assert.match(continuousRunnerSource,/zero-replacement-pass-forbidden/);
+    assert.match(continuousRunnerSource,/실제 교체 개수/);
+    assert.match(continuousRunnerSource,/재사용\/변형\/재조합/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Unreal C++ routes to text worker but Blueprint/uasset route to editor',()=>{
+  const adapter=createVibeEngineAdapter({target:'unreal',gameSlug:'demo'});
+  assert.equal(classifyVibeExecutionRoute({target:'unreal',task:{type:'implementation',goal:'Hero.cpp 수정',responsibleFiles:['unreal-games/demo/Source/Demo/Hero.cpp']},adapter}).route,'text-source-worker');
+  assert.equal(classifyVibeExecutionRoute({target:'unreal',task:{type:'implementation',goal:'Animation Blueprint Montage 수정',responsibleFiles:[]},adapter}).route,'engine-editor');
+  assert.equal(classifyVibeExecutionRoute({target:'unreal',task:{type:'implementation',goal:'캐릭터 수정',responsibleFiles:['unreal-games/demo/Content/Hero.uasset']},adapter}).reason,'responsible-binary-asset');
+});
+
+test('non-write QA routes to analysis only',()=>{
+  const adapter=createVibeEngineAdapter({target:'unity',gameSlug:'demo'});
+  assert.equal(classifyVibeExecutionRoute({target:'unity',task:{type:'qa',goal:'빌드 오류 조사',responsibleFiles:[]},adapter}).route,'analysis-only');
+});
+
+test('learning Web artifact practice routes to isolated artifact execution instead of production source work',()=>{
+  const adapter=createVibeEngineAdapter({target:'web',gameSlug:'practice-demo'});
+  const route=classifyVibeExecutionRoute({
+    target:'web',
+    task:{type:'research',department:'learning',goal:'[VIBE_LEARNING_PRACTICE] practiceMode=WEB_ARTIFACT',responsibleFiles:[],evidence:['learning-practice-only','learning-web-artifact-practice']},
+    adapter
+  });
+  assert.equal(route.route,'learning-web-artifact');
+  assert.equal(route.repositorySourceWrite,false);
+  assert.equal(route.artifactWrite,true);
+});
+
+test('fan-in controller contract directly verifies design intelligence stages and evidence gating',()=>{
+  assert.deepEqual([...DESIGN_INTELLIGENCE_STAGES],[
+    'STABILITY_TRIAGE','DEFECT_OWNERSHIP','DESIGNER','DESIGN_BLUEPRINT','DESIGN_INTEGRITY','CONTENT_DIVERSITY',
+    'REFERENCE_HOMAGE','NARRATIVE_DIALOGUE','CONSTRAINT_ENGINE','CRITIC','CAUSALITY_GRAPH','PLAYER_MODEL',
+    'COMBAT_ECONOMY_SIMULATOR','IMPLEMENTATION','AUTO_PLAYER','TELEMETRY','DESIGN_REVIEW','EXPERIENCE_MEMORY'
+  ]);
+  const design=buildVibeDesignIntelligence({
+    task:{goal:'기존 코드 내부 개선',type:'implementation',responsibleFiles:['unity-games/demo/Assets/Player.cs']},
+    plan:{target:'unity'},
+    experience:{records:[]}
+  });
+  assert.equal(design.required,true);
+  assert.equal(design.implementationGate.allowed,true);
+  assert.equal(design.stages.find(stage=>stage.name==='AUTO_PLAYER')?.status,'WAITING_EVIDENCE');
+  assert.equal(design.stages.find(stage=>stage.name==='TELEMETRY')?.status,'WAITING_EVIDENCE');
+  assert.equal(design.stages.find(stage=>stage.name==='DESIGN_REVIEW')?.status,'WAITING_EVIDENCE');
+  assert.equal(design.stages.find(stage=>stage.name==='EXPERIENCE_MEMORY')?.status,'WAITING_VERIFIED_REVIEW');
+  assert.equal(design.authorityExpanded,false);
+});
+
+test('runtime enables DAG sharding and work stealing with fixed 128 repeat-development slots',()=>{
+  assert(runtime.version>=14);
+  assert.equal(runtime.continuous.strategy,'atomic-neuron-dag-sharded-work-stealing');
+  assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
+  assert.equal(runtime.continuous.parallelismPolicy,'SHARED_QUEUE_EXTERNAL_BOUNDARY_256_GAME_PRIMARY_REPEAT_DEVELOPMENT_FIXED_128');
+  assert.equal(runtime.continuous.externalMatrixBatchMax,256);
+  assert.equal(runtime.continuous.unityReleaseFocusSlots,null);
+  assert.equal(runtime.continuous.workStealing,true);
+  assert.equal(runtime.continuous.dynamicBackpressure,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.enabled,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.defaultValidationScope,'CHANGED_RESPONSIBILITY_AND_TRANSITIVE_DEPENDENCIES_ONLY');
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.reuseStillValidPassEvidence,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.duplicateValidationForbidden,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.duplicateReviewWithoutRelevantDeltaForbidden,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.wholeRepositoryRegressionDefaultForbidden,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.securityReviewRiskTriggeredOnly,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.nonblockingAuditPreferred,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.administrativeChecksConsumeGamePrimarySlots,false);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.unrelatedChecksMayNotBlockAtomicRefill,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.fullRegressionEscalatesOnlyOnRelevantEvidence,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.publicReleaseAndConfirmedSecurityRiskRemainFailClosed,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.impactScopedWorkflowTriggers,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.unrelatedWorkflowStartupForbidden,true);
+  assert.equal(runtime.continuous.minimumNecessaryProcedure.scopeExpansionRequiresRelevantEvidence,true);
+  assert.deepEqual(runtime.continuous.minimumNecessaryProcedure.impactScopedWorkflowFiles,[
+    '.github/workflows/vibe-qa.yml',
+    '.github/workflows/vibe-regression.yml',
+    '.github/workflows/company-evolution-qa.yml',
+    '.github/workflows/vibe3-engine-contract.yml'
+  ]);
+  assert.equal(runtime.version>=32,true);
+  assert.equal(runtime.continuous.studioQualityLoop.latestVerifiedDesignRequiredForCoreFunAndProgression,true);
+  assert.equal(runtime.continuous.studioQualityLoop.verifiedDesignBaselineGateState,'DESIGN_BASELINE_READY');
+  assert.equal(runtime.continuous.studioQualityLoop.verifiedDesignStrictPassMinimum,80);
+  assert.equal(runtime.continuous.studioQualityLoop.verifiedDesignHardFailuresMax,0);
+  assert.equal(runtime.continuous.studioQualityLoop.unverifiedDesignGameplayMutationForbidden,true);
+  assert.equal(runtime.continuous.studioQualityLoop.runtimeDesignEvidenceAuthority,'company-runtime');
+  assert.equal(runtime.documentation.machineStateVersions.runtime,runtime.version);
+  assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
+  assert.equal(runtime.workManagement.controlStateRecovery.enabled,true);
+  assert.equal(runtime.workManagement.controlStateRecovery.blankOrMissingQueueRecovery,'CANONICAL_EMPTY_V5_THEN_COMPANY_RUNTIME_REPLAN');
+  assert.equal(runtime.workManagement.controlStateRecovery.parallelismContractVersion,4);
+  assert.equal(runtime.workManagement.controlStateRecovery.nonEmptyMalformedJsonFailClosed,true);
+  assert.equal(runtime.adaptiveBackpressure.mode,'GAME_PRIMARY_FIXED_128_RESERVATION_WITH_TELEMETRY_ONLY_SPECULATIVE_PRESSURE_CONTROL');
+  assert.equal(runtime.adaptiveBackpressure.adaptiveControlRole,'TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY_NO_RESERVATION_AUTHORITY');
+  assert.equal(runtime.adaptiveBackpressure.primaryReservationLimit,'FIXED_REPEAT_DEVELOPMENT_128');
+  assert.equal(runtime.adaptiveBackpressure.primaryReservationDownshiftAllowed,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.neuralGatedExecution,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.retryStrategyMutationRequiresVerifiedRootCause,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.successfulResultMutationForbidden,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.verifiedSupervisorReviseRequeue,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.runtimeResultIngress,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.runtimeResultPassIsObserveOnly,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.runtimeResultFailureRequiresVerifiedRootCauseForGatedMutation,true);
+  assert.equal(runtime.continuous.sourceCandidateGeneration.missingEditPathRecovery,'UNIQUE_FIND_MATCH_WITHIN_RESPONSIBLE_FILES');
+  assert.equal(runtime.continuous.sourceCandidateGeneration.deterministicRecoveryBeforeModelRetry,true);
+  assert.equal(runtime.continuous.sourceCandidateGeneration.invalidRelativePathFailureClass,'INVALID_PATH');
+  assert.equal(runtime.continuous.sourceCandidateGeneration.invalidPathBoundedRetry,true);
+  assert.equal(runtime.continuous.sourceCandidateGeneration.ambiguousMissingPathFailClosed,true);
+  assert.equal(runtime.continuous.sourceCandidateGeneration.writableScopeExpansionAllowed,false);
+  assert.equal(runtime.continuous.sourceCandidateGeneration.missingPathRecoveryTelemetry,'codingMethod.missingPathRecoveries');
+  assert.equal(runtime.projectLifecycle.runtimeResultNeuralEventCompilation,true);
+  assert.equal(runtime.projectLifecycle.runtimeResultNeuralEventCompiler,'tools/vibe2-auto-planner.mjs::compileRuntimeNeuralEvent');
+  assert.equal(runtime.projectLifecycle.reserveIngressCompanyRuntimeSyncRequired,true);
+  assert.equal(runtime.projectLifecycle.lifecycleProjectionMonotonic,true);
+  assert.equal(runtime.projectLifecycle.downstreamMachineEvidencePreventsBackwardPhaseProjection,true);
+  assert.equal(runtime.projectLifecycle.missingGenreMayNotRegressStartedNativeWork,true);
+  assert.equal(runtime.projectLifecycle.canonicalNativeExecutionEvidenceField,'executionEvidence');
+  assert.equal(runtime.projectLifecycle.nestedExecutionEvidenceFallbackForPlanner,true);
+  assert.equal(runtime.projectLifecycle.nestedFailureStageAndSignaturePreserved,true);
+  assert.equal(runtime.projectLifecycle.nestedSourceRevisionPreserved,true);
+  assert.ok(runtime.workManagement.nextWorkerDirective.verifiedState.includes('RUNTIME_RESULT_NEURAL_INGRESS_IMPLEMENTED_QA_PASS'));
+  assert.ok(runtime.workManagement.nextWorkerDirective.verifiedState.includes('MINIMUM_NECESSARY_PROCEDURE_POLICY_ACTIVE'));
+  assert.equal(runtime.workManagement.nextWorkerDirective.priorities.some(value=>value.startsWith('P0_')),false);
+  assert.ok(runtime.workManagement.nextWorkerDirective.priorities.some(value=>value.startsWith('P1_CAPTURE_LIVE_VERIFIED_RUNTIME_FAIL_REQUEUE')));
+  assert.ok(runtime.workManagement.nextWorkerDirective.priorities.some(value=>value.startsWith('P2_VERIFIED_THROUGHPUT_OPTIMIZATION')));
+  assert.equal(runtime.continuous.speculativeParallelism.enabled,true);
+  assert.equal(runtime.coordination.sourceRootExclusive,false);
+  assert.equal(runtime.coordination.separateFileLocks,true);
+  assert.equal(runtime.coordination.fanOutFanIn,true);
+  assert.equal(runtime.qaOptimization.incrementalFirst,true);
+  assert.equal(runtime.qaOptimization.contentHashCache,true);
+  assert.equal(runtime.qaOptimization.fullCoreRegressionOnceAtFanIn,true);
+  assert.equal(runtime.safety.existingWebMaintenanceAllowed,true);
+  assert.equal(runtime.safety.newWebGameAutomatic,true);
+  assert.equal(runtime.contracts.core.engineTargets.web.automaticNewGame,true);
+  assert.equal(runtime.contracts.core.engineTargets.web.implementationAuthority,'DEVELOPMENT_CONFIRMED_MACHINE_GATE');
+  assert.equal(runtime.safety.directMainWriteByWorker,false);
+  assert.equal(runtime.assetDecision.learningMayOverrideFixedRules,false);
+  assert.equal(runtime.workManagement.machineContextRequired,true);
+  assert.deepEqual(runtime.workManagement.handoffConsumers,['planner','reserve','worker','fan-in']);
+  assert.equal(runtime.continuous.entryWorkflow,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,128);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,128);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,128);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.fixedRepeatDevelopmentSlots,128);
+  assert.equal(runtime.continuous.executionLanes.GAME_PRIMARY.fixedRepeatDevelopmentSlots,128);
+  assert.equal(runtime.continuous.executionLanes.GAME_PRIMARY.reservationTargetMutationAllowed,false);
+  assert.equal(runtime.adaptiveBackpressure.baselineAdaptiveWave,128);
+  assert.equal(runtime.adaptiveBackpressure.minimumAdaptiveWave,128);
+  assert.equal(runtime.adaptiveBackpressure.externalBatchMax,256);
+});
+
+test('graphics presentation uses atomic neuron task micro-fan-in without expanding authority',()=>{
+  const presentation=roadmap.presentationPipelineImplementation;
+  const assets=roadmap.assetProductionParallelContract;
+  assert.equal(presentation.version>=5,true);
+  assert.equal(presentation.rules.graphicsAtomicNeuronExecutionRequired,true);
+  assert.equal(presentation.rules.graphicsTaskMicroFanInRequired,true);
+  assert.equal(presentation.rules.graphicsGlobalWaveBarrierForbidden,true);
+  assert.equal(presentation.rules.actualRuntimeGraphicsRequiredForPresentationPass,true);
+  assert.equal(presentation.rules.contextMatchedBackgroundAndEnvironmentRequired,true);
+  assert.equal(presentation.rules.placeholderPrimitiveCharacterOrMonsterCompletionForbidden,true);
+  assert.deepEqual(presentation.rules.actionStateMotionCoverageRequired,['IDLE','MOVE','ATTACK','HIT','DEATH']);
+  assert.equal(presentation.rules.markerOnlyOrStaticDescriptionCompletionForbidden,true);
+  assert.equal(presentation.runtimeObservation.validatorSchemaVersion,16);
+  assert.equal(assets.version>=4,true);
+  assert.equal(assets.parallelism.executionAuthority,'EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK');
+  assert.equal(assets.parallelism.graphicsAtomicNeuronMode,'PER_TASK_MICRO_FANIN');
+  assert.equal(assets.parallelism.completionEvent,'vibe2-neuron-complete');
+  assert.equal(assets.parallelism.speculativeVariantsJoinScope,'PER_GRAPHICS_TASK');
+  assert.equal(assets.parallelism.isolatedCandidateBranchesRequired,true);
+  assert.equal(assets.parallelism.globalWaveBarrierForbidden,true);
+  assert.equal(assets.graphicsPassContract.contextMatchedBackgroundRuntimeEvidenceRequired,true);
+  assert.equal(assets.graphicsPassContract.characterMonsterVisualDetailRuntimeEvidenceRequired,true);
+  assert.equal(assets.graphicsPassContract.combatDeathMotionRequiredWhenRuntimeKillObserved,true);
+  assert.equal(assets.graphicsPassContract.markerOnlyPresentationPassForbidden,true);
+  assert.equal(assets.parallelism.realRuntimePresentationHardGatePreserved,true);
+  assert.equal(assets.parallelism.phase2NeuralExecutionAuthorityCreated,false);
+  assert.match(continuousRunnerSource,/mode:'PER_TASK_MICRO_FANIN'/);
+  assert.match(continuousRunnerSource,/maxVariants:3/);
+  assert.match(continuousRunnerSource,/task-micro-fanin=required/);
+  assert.match(continuousRunnerSource,/placeholderPrimitiveCompletionForbidden:true/);
+  assert.match(continuousRunnerSource,/actionStateCoverage:freezeList\(\['IDLE','MOVE','ATTACK','HIT','DEATH'\]\)/);
+});
+
+test('work order exposes source bootstrap only for explicit Web or Unity Web first-stage evidence',()=>{
+  assert.match(continuousRunnerSource,/webSourceRootBootstrapAllowed=plan\.target==='web'/);
+  assert.match(continuousRunnerSource,/unityWebSourceRootBootstrapAllowed=plan\.target==='unity'/);
+  assert.match(continuousRunnerSource,/taskEvidence\.has\('source-root-bootstrap-required'\)/);
+  assert.match(continuousRunnerSource,/taskEvidence\.has\('unity-web-source-root-bootstrap-required'\)/);
+  assert.match(continuousRunnerSource,/SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
+  assert.match(continuousRunnerSource,/UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
+  assert.match(continuousRunnerSource,/responsibleFiles\.length===2/);
+  assert.match(continuousRunnerSource,/GameCore\\\.cs/);
+  assert.match(continuousRunnerSource,/RuntimeBootstrap\\\.cs/);
+  assert.match(continuousRunnerSource,/sourceRootBootstrapAllowed,/);
+});
+
+test('stateless fan-in refills plus asset and recovery reserves avoid full global replan while manual game-primary still plans',()=>{
+  const marker="if [[ \"$VIBE2_EXECUTION_LANE\" == 'asset-development' || \"$VIBE2_EXECUTION_LANE\" == 'recovery-fast' || \"$callback_kind\" == 'fanin' ]]; then";
+  const markerAt=workflow.indexOf(marker);
+  assert.ok(markerAt>=0);
+  const elseAt=workflow.indexOf('\n            else\n',markerAt);
+  const endAt=workflow.indexOf('\n            fi\n',elseAt);
+  assert.ok(elseAt>markerAt&&endAt>elseAt);
+  const laneLocalFastPath=workflow.slice(markerAt,elseAt);
+  const globalPath=workflow.slice(elseAt,endAt);
+  assert.match(laneLocalFastPath,/VIBE2_LANE_LOCAL_RESERVE_GLOBAL_REPLAN=SKIPPED_EXISTING_CANONICAL_QUEUE/);
+  assert.match(laneLocalFastPath,/VIBE2_LANE_LOCAL_RESERVE_QUEUE_AUTHORITY=EXISTING_CANONICAL_VIBE_QUEUE/);
+  assert.match(laneLocalFastPath,/asset-development/);
+  assert.match(laneLocalFastPath,/recovery-fast/);
+  assert.match(laneLocalFastPath,/callback_kind/);
+  assert.match(laneLocalFastPath,/24H planner and game-primary main\/manual entries still own new planning/);
+  assert.doesNotMatch(laneLocalFastPath,/vibe2-auto-planner\.mjs|vibe2-learning-motor\.mjs|vibe2-post-release-focus\.mjs/);
+  assert.match(globalPath,/vibe2-post-release-focus\.mjs/);
+  assert.match(globalPath,/vibe2-auto-planner\.mjs/);
+  assert.match(globalPath,/vibe2-learning-motor\.mjs/);
+  assert.match(workflow,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);
+  assert.match(workflow,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
+});
+
+test('superseded queued worker reservations are not requeued until GitHub confirms the run completed',()=>{
+  const start=workflow.indexOf('          if [ -n "$superseded_queued_reservation_runs" ]; then');
+  const end=workflow.indexOf('          rm -f /tmp/vibe2-early-review-run',start);
+  assert.ok(start>=0&&end>start,'must locate existing superseded reservation recovery block');
+  const candidate=workflow.slice(start,end);
+  assert.doesNotMatch(candidate,/recover-reservation-runs/,'never release a reservation while its worker run can still start');
+  assert.match(candidate,/VIBE2_SUPERSEDED_QUEUED_RESERVATION_REQUEUE=DEFERRED_UNTIL_RUN_COMPLETED/);
+  assert.match(candidate,/gh api --paginate.*\/jobs\?per_page=100/,'probe all matrix workers, not the first 100');
+  assert.match(candidate,/VIBE2_SUPERSEDED_CANCEL_SKIPPED_ACTIVE_OR_UNKNOWN/);
+  assert.match(candidate,/VIBE2_SUPERSEDED_CANCEL_SKIPPED_RESULT_OR_UNKNOWN/);
+  assert.match(candidate,/VIBE2_SUPERSEDED_CANCEL_REQUEST_FAILED/);
+  assert.match(candidate,/gh api --method POST.*\/cancel/);
+  const completed=workflow.indexOf("          if [ -n \"$completed_reservation_runs\" ]; then",start-1700);
+  assert.ok(completed>0&&completed<start,'only the terminal probe can release stale reservations');
+  assert.match(workflow.slice(completed,start),/recover-completed-reservations/);
+  assert.match(workflow.slice(start,end),/latest_run_status/,'recheck run status immediately before cancellation');
+});
+
+test('game-primary BUILD_UP workers have a 60 minute maximum budget with immediate early completion',()=>{
+  assert.equal(runtime.continuous.maxWorkMinutes,22);
+  assert.equal(runtime.continuous.gamePrimaryMaxWorkMinutes,60);
+  assert.equal(runtime.continuous.gamePrimaryMinimumWorkMinutes,0);
+  assert.equal(runtime.continuous.gamePrimaryEarlyCompletionAllowed,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetMode,'MAXIMUM_NOT_MINIMUM');
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetScope,'ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE');
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.modelTimeoutAndRetry,true);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.fixedRepeatDevelopmentSlots,128);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.workLockSemantics,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.incrementalQa,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.canonicalF0ThroughF9,true);
+  const deepPolicy=roadmap.changeRecord.fixedRepeatDevelopment64_20261006;
+  assert.equal(deepPolicy.gamePrimaryMaxWorkMinutes,60);
+  assert.equal(deepPolicy.gamePrimaryMinimumWorkMinutes,0);
+  assert.equal(deepPolicy.gamePrimaryEarlyCompletionAllowed,true);
+  assert.equal(deepPolicy.gamePrimaryWorkBudgetAppliesTo,'ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE');
+  assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.maxWorkMinutes,60);
+  assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.earlyCompletionAllowed,true);
+  // 현재 반복 개발 128 슬롯은 실행 정책과 런타임에서 검증한다. 폐기된 로그/구조 미러는 권한이 아니다.
+  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,128);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.maxActiveWorkers,128);
+  assert(workflow.includes("VIBE2_GAME_PRIMARY_WORK_BUDGET_MINUTES: '60'"));
+  assert(workflow.includes('VIBE2_GAME_PRIMARY_WORK_BUDGET_MODE=MAXIMUM_NOT_MINIMUM'));
+  assert(workflow.includes('VIBE2_GAME_PRIMARY_EARLY_COMPLETION=YES'));
+  assert.match(workflow,/timeout-minutes: \${\{ \(\(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' \|\| \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'game-primary'\) && 60 \|\| 22 \}\}/);
+  assert(continuousRunnerSource.includes("lane === 'game-primary'"));
+  assert(continuousRunnerSource.includes('runtime?.continuous?.gamePrimaryMaxWorkMinutes'));
+  assert.equal((continuousRunnerSource.match(/currentLaneMaxWorkMinutes\(runtime\)/g)||[]).length,2);
+});
+
+test('controller reserves repeat-development batches at the fixed 128-slot target',()=>{
+  assert(workflow.includes('reserve-batch'));
+  assert(workflow.includes('strategy:'));
+  assert.equal(workflow.includes('max-parallel: 30'),false);
+  assert(workflow.includes("VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'"));
+  assert(workflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '128'"));
+  assert(workflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '128'"));
+  assert(workflow.includes("if [ \"$VIBE2_EXECUTION_LANE\" = 'game-primary' ]; then lane_min=\"$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN\"; fi"));
+  assert.equal((workflow.match(/--min="\$lane_min"/g)||[]).length,4);
+  assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
+  assert.equal(runtime.continuous.reserveConcurrency.reserveJobsParallel,true);
+  assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
+  assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_OUT'));
+  assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_IN=PASS'));
+  assert(workflow.includes('for(let i=1;i<variantCount;i++)workers.push'));
+  assert(workflow.includes("variant:\`speculative-\${i}\`"));
+  assert(workflow.includes('--variant="$VARIANT"'));
+  assert(continuousRunnerSource.includes("strategy:'PRIMARY_RESPONSIBILITY_MINIMAL'"));
+  assert(continuousRunnerSource.includes("strategy:'DEPENDENCY_SAFE_COHERENT_PATCH'"));
+  assert(continuousRunnerSource.includes("...(preferred?[{strategy:preferred"));
+  assert(continuousRunnerSource.includes("strategy:'CAUSAL_TRACE_CROSSCHECK'"));
+});
+
+test('24h planner uses latest main contract and tools while control branch stores state only',()=>{
+  assert(safetyNetWorkflow.includes('VIBE2_CONTROL_STATE_JSON=VALID'));
+  assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
+  assert(safetyNetWorkflow.includes('--runtime=/tmp/vibe2-main/vibe2-runtime.json'));
+  assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
+  assert(safetyNetWorkflow.includes('--development-queue=/tmp/vibe2-company-runtime-queue.json'));
+  assert(safetyNetWorkflow.includes("from 'file:///tmp/vibe2-main/assets/vibe-continuous-queue.js'"));
+  assert.equal(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'),false);
+  assert.equal(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs \\'),false);
+});
+
+test('24h planner retries concurrent control-state writes from the latest branch instead of rebasing JSON state',()=>{
+  const start=safetyNetWorkflow.indexOf('- name: Plan from latest main and persist control queue');
+  const end=safetyNetWorkflow.indexOf('- name: Read queue continuation state',start);
+  assert.ok(start>=0&&end>start);
+  const block=safetyNetWorkflow.slice(start,end);
+  assert.match(block,/while true; do/);
+  assert.match(block,/VIBE2_AUTOPLAN_ATTEMPT=\$attempt/);
+  assert.match(block,/VIBE2_AUTOPLAN_OPTIMISTIC_RETRY_POLICY=UNTIL_JOB_TIMEOUT/);
+  assert.match(block,/VIBE2_AUTOPLAN_RETRY_BACKOFF_SECONDS=\$retry_sleep/);
+  assert.match(block,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(block,/git push origin HEAD:vibe2-unreal-core/);
+  assert.match(block,/VIBE2_AUTOPLAN_OPTIMISTIC_RETRY=\$attempt/);
+  assert.doesNotMatch(block,/git pull --rebase origin vibe2-unreal-core/);
+  assert.doesNotMatch(block,/git rebase --abort/);
+});
+
+test('24h planner pins its latest-main source across optimistic queue retries and rejects protected authority drift',()=>{
+  const plan=safetyNetWorkflow.slice(safetyNetWorkflow.indexOf('  plan:'),safetyNetWorkflow.indexOf('  recovery_fast:'));
+  const begin=plan.indexOf('- name: Plan from latest main and persist control queue');
+  const end=plan.indexOf('- name: Propose verified distilled knowledge promotion to main',begin);
+  assert.ok(begin>=0&&end>begin);
+  const block=plan.slice(begin,end);
+  assert.match(plan,/timeout-minutes: 15/);
+  assert.match(block,/plan_main_sha=''/);
+  assert.match(block,/plan_main_sha="\$\(git rev-parse origin\/main\)"/);
+  assert.match(block,/git worktree add --detach \/tmp\/vibe2-main "\$plan_main_sha"/);
+  assert.doesNotMatch(block,/git worktree add --detach \/tmp\/vibe2-main origin\/main/);
+  assert.match(block,/VIBE2_AUTOPLAN_MAIN_SNAPSHOT=PINNED_AT_INGRESS/);
+  assert.match(block,/VIBE2_AUTOPLAN_MAIN_SNAPSHOT=REUSED_ON_CONTROL_RETRY/);
+  assert.match(block,/git diff --quiet "\$plan_main_sha" origin\/main/);
+  for(const protectedFile of [
+    'company-learning/platform-release-roadmap.json',
+    'company-learning/company-log-map.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/security-immune-system.json',
+    'tools/company-constitution-enforcer.mjs',
+    'tools/main-write-guard.mjs',
+    'tools/vibe2-auto-planner.mjs',
+    'tools/vibe2-queue-control.mjs'
+  ])assert.ok(block.includes(protectedFile),'planner must fail closed on protected drift: '+protectedFile);
+  assert.match(block,/VIBE2_AUTOPLAN_PINNED_AUTHORITY_DRIFT=BLOCKED_NEW_MAIN_CYCLE_REQUIRED/);
+  assert.match(block,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(block,/VIBE2_24H_SAME_MAIN_QA_REUSE=VERIFIED_SAME_MAIN_SHA/);
+});
+
+test('controller pins each isolated candidate to the reserve-time main contract and never writes main directly',()=>{
+  assert(workflow.includes('git fetch --depth=1 --no-tags origin main --quiet'));
+  assert(workflow.includes('contract_sha="$(git rev-parse FETCH_HEAD)"'));
+  assert(workflow.includes('contract_sha: ${{ steps.contract.outputs.sha }}'));
+  assert(workflow.includes('ref: ${{ needs.reserve.outputs.contract_sha }}'));
+  assert(workflow.includes('CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}'));
+  assert(workflow.includes('git -C "$contract_root" worktree add -b "$candidate_branch" "$candidate_dir" "$base_sha"'));
+  assert(workflow.includes('export VIBE2_BASE_MAIN_SHA="$base_sha"'));
+  assert(workflow.includes('vibe2/candidate/'));
+  assert(workflow.includes('candidate-awaiting-qa-and-deployment'));
+  assert(!workflow.includes('git worktree add -b "$candidate_branch" "$candidate_dir" origin/main'));
+  assert(!workflow.includes('git push origin HEAD:main'));
+  assert(!workflow.includes('vibe2-queue-control.mjs pass'));
+});
+
+test('candidate publication rebases transport onto latest main only when responsible source is stable',()=>{
+  const releaseWorkflow=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+  assert.doesNotMatch(workflow,/OWNER-FULL-REBUILD-/);
+  assert.doesNotMatch(workflow,/REUSED_EXISTING_CANDIDATE_BRANCH/);
+  assert.doesNotMatch(workflow,/\/git\/refs"/);
+  assert.match(workflow,/git -C "\$contract_root" fetch --depth=1 --no-tags origin main --quiet/);
+  assert.match(workflow,/transport_base_sha="\$\(git -C "\$contract_root" rev-parse FETCH_HEAD\)"/);
+  assert.match(workflow,/candidate_transport_paths=\("\$SOURCE_ROOT" "\$\{generated_asset_files\[@\]\}"\)/);
+  assert.match(workflow,/diff --name-only "\$base_sha" "\$transport_base_sha" -- "\$\{candidate_transport_paths\[@\]\}"/);
+  assert.match(workflow,/for file in "\$\{generated_asset_files\[@\]\}"; do[\s\S]*cp -a "\$candidate_dir\/\$file" "\$transport_dir\/\$file"/);
+  assert.match(workflow,/failure_class=CANDIDATE_SOURCE_DRIFT/);
+  assert.match(workflow,/worktree add --detach "\$transport_dir" "\$transport_base_sha"/);
+  assert.match(workflow,/row\.transportBaseSha=String\(process\.env\.TRANSPORT_BASE_SHA\|\|''\)/);
+  assert.match(workflow,/push origin "HEAD:refs\/heads\/\$candidate_branch"/);
+  assert.match(workflow,/VIBE2_CANDIDATE_TRANSPORT=LATEST_MAIN_SOURCE_STABLE/);
+  assert.match(releaseWorkflow,/transport_base_sha: \$\{\{ steps\.gate\.outputs\.transport_base_sha \}\}/);
+  assert.match(releaseWorkflow,/const transportBase=String\(m\.transportBaseSha\|\|base\)\.trim\(\)/);
+  assert.match(releaseWorkflow,/git diff --name-only "\$transport_base_sha" "\$candidate_sha" -- "\$source_root"/);
+  assert.match(releaseWorkflow,/diff --check "\$transport_base_sha" "\$candidate_sha"/);
+  const publication=runtime.workers.textSource.candidatePublication;
+  assert.equal(publication.localBranchBase,'RESERVE_TIME_PINNED_MAIN_SHA');
+  assert.equal(publication.remoteRefCreation,'DIRECT_BRANCH_PUSH_FROM_LATEST_MAIN_SOURCE_STABLE_TRANSPORT');
+  assert.equal(publication.transportBase,'LATEST_MAIN_SHA_AFTER_RESPONSIBLE_SOURCE_STABILITY_CHECK');
+  assert.equal(publication.sourceDriftAction,'FAIL_CLOSED_REPLAN_EXACT_TASK');
+  assert.equal(publication.sourceDriftFailureClass,'CANDIDATE_SOURCE_DRIFT');
+  assert.equal(publication.candidateIdentityBase,'RESERVE_TIME_PINNED_MAIN_SHA');
+  assert.equal(publication.transportManifestShaRequired,true);
+  assert.equal(publication.commitPushScope,'TASK_APPROVED_SOURCE_AND_CANDIDATE_ARTIFACT_DIFF_ONLY');
+  assert.equal(publication.untouchedBaseWorkflowWriteAuthorityRequired,false);
+  assert.equal(publication.failureClass,'CANDIDATE_BRANCH_PUBLISH');
+  assert.equal(publication.telemetryStage,'CANDIDATE_PUBLICATION');
+  assert.equal(publication.excludedFromSourceGenerationFailureRate,true);
+  assert.equal(publication.remoteRefCleanupOnPushFailure,false);
+});
+
+test('reserve and worker no longer depend on downloaded local AI runtimes',()=>{
+  const reserveStart=workflow.indexOf('\n  reserve:');
+  const workerStart=workflow.indexOf('\n  worker:',reserveStart);
+  const fanInStart=workflow.indexOf('\n  fan_in:',workerStart);
+  assert.ok(reserveStart>=0&&workerStart>reserveStart&&fanInStart>workerStart);
+  const workerPart=workflow.slice(workerStart,fanInStart);
+  assert.doesNotMatch(workflow,/uses:\s*\.\/vibe2-contract\/\.github\/actions\/prepare-ollama/);
+  assert.doesNotMatch(workflow,/ollama pull|ollama serve|ollama\.com\/download/);
+  assert.match(workerPart,/VIBE2_WORKER_PROVIDER=GEMINI_API/);
+  assert.match(workerPart,/VIBE2_LOCAL_AI_ENABLED=NO/);
+});
+test('Vibe worker uses external Gemini without local model startup before obtaining game source lock',()=>{
+  const start=workflow.indexOf('  worker:');
+  const end=workflow.indexOf('  fan_in:',start);
+  const workerPart=workflow.slice(start,end);
+  const sync=workerPart.indexOf('- name: Synchronize worker with Vibe before work');
+  const constitution=workerPart.indexOf('- name: Enforce canonical constitution before source write');
+  const order=workerPart.indexOf('- name: Build reserved task work order');
+  const external=workerPart.indexOf('- name: Declare external-only model routing (no local AI startup)');
+  const exploration=workerPart.indexOf('- name: Build task-local exploration handoff');
+  const lock=workerPart.indexOf('- name: Acquire shared Work Lock before source write');
+  const candidate=workerPart.indexOf('- name: Generate isolated candidate from pinned main contract');
+  assert.ok(sync>=0);
+  assert.ok(constitution>sync);
+  assert.ok(order>constitution);
+  assert.ok(external>order);
+  assert.ok(exploration>external);
+  assert.ok(lock>exploration);
+  assert.ok(candidate>lock);
+  assert.match(workerPart,/WORKER_CONTEXT_MODE=FOUR_DOCUMENT_INTEGRITY_ONLY/);
+  assert.match(workerPart,/verify-worker-sync/);
+  assert.match(workerPart,/VIBE2_WORKER_PREFLIGHT_SYNC=PASS/);
+  assert.match(workerPart,/VIBE2_LOCAL_AI_ENABLED=NO/);
+  assert.match(workerPart,/VIBE2_WORKER_PROVIDER=GEMINI_API/);
+  assert.match(workerPart,/VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO/);
+  assert.doesNotMatch(workerPart,/VIBE2_WORKER_MODEL_CACHE_REQUIRED=YES/);
+  assert.doesNotMatch(workerPart,/uses:.*prepare-ollama/);
+  assert.doesNotMatch(workerPart,/ollama\.com\/install\.sh/);
+  assert.match(workerPart,/GEMINI_API_KEY: \$\{\{ vars\.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets\.GEMINI_API_KEY \|\| '' \}\}/);
+  assert.match(workerPart,/VIBE2_GAME_SOURCE_PROVIDER=GEMINI_API/);
+  assert.match(workerPart,/if: steps\.order\.outputs\.run == 'true' && steps\.order\.outputs\.route == 'text-source-worker' && steps\.work_lock\.outputs\.acquired == 'true'/);
+  assert.equal(runtime.continuous.workLockConflictPolicy.preLockReadOnlyPreparationAllowed,true);
+  assert.equal(runtime.continuous.workLockConflictPolicy.lockMayNotCoverReadOnlyExploration,true);
+});
+
+test('one Vibe2 wave uses the same reserved main contract without a global exploration barrier',()=>{
+  assert(workflow.includes('Checkout pinned main contract'));
+  assert(workflow.includes('--project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json"'));
+  assert(workflow.includes('Build task-local exploration handoff'));
+  assert(workflow.includes('VIBE2_TASK_LOCAL_EXPLORATION=PASS'));
+  assert(workflow.includes('needs: [reserve]'));
+  assert.equal(workflow.includes('needs: [reserve, model_cache, exploration]'),false);
+  assert.equal(workflow.includes('\n  exploration:\n'),false);
+  assert(workflow.includes('Generate isolated candidate from pinned main contract'));
+  assert(workflow.includes('node "$contract_root/tools/vibe2-queue-control.mjs" fan-in'));
+  assert(workflow.includes('VIBE2_RESERVE_PREFLIGHT_STEWARD=PASS'));
+  assert(workflow.includes('VIBE2_RESERVE_STEWARD=PASS'));
+  const reserveStart=workflow.indexOf('- name: Reserve conflict-free DAG batch');
+  const reserveEnd=workflow.indexOf('  worker:',reserveStart);
+  const reserveBlock=workflow.slice(reserveStart,reserveEnd);
+  assert(reserveBlock.indexOf('tools/vibe2-system-steward.mjs') < reserveBlock.indexOf('tools/vibe2-handoff.mjs --check'));
+  assert(reserveBlock.includes('state_paths=('));
+  assert(reserveBlock.includes('.vibe2/queue.json'));
+  assert(reserveBlock.includes('.vibe2/parallelism-control.json'));
+  assert(reserveBlock.includes('.vibe2/learning-motor-state.json'));
+  assert(reserveBlock.includes('git -C "$control_root" add -A -- "${state_paths[@]}"'));
+  assert(reserveBlock.includes('state_paths+=(.vibe2/queue)'));
+  assert(reserveBlock.indexOf('storage-pack') < reserveBlock.indexOf('git -C "$control_root" add -A -- "${state_paths[@]}"'));
+  assert(workflow.includes('(cd "$contract_root" && node --test --test-concurrency=4'));
+  assert(workflow.includes('Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.'));
+  assert.match(continuousRunnerSource,/projectLifecycleFile=''/);
+  assert.match(continuousRunnerSource,/projectLifecycleFile:clean\(args\['project-lifecycle'\]\)/);
+});
+
+test('candidate release gate isolates candidates and requires the affected Web deployment check',()=>{
+  assert(candidateReleaseWorkflow.includes('group: vibe2-release-${{ github.event.inputs.candidate_branch || github.ref_name }}'));
+  assert(candidateReleaseWorkflow.includes('cancel-in-progress: false'));
+  assert(!candidateReleaseWorkflow.includes('group: vibe2-release-serial'));
+  assert(candidateReleaseWorkflow.includes('web-games/publish-manifest.json'));
+  // Per-game F9 tree is the exact playable identity even when unrelated games merge later.
+  // The complete publication manifest must still report a real main SHA.
+  assert(candidateReleaseWorkflow.includes("m.sourceTreeShas?.[gameId]!==treeSha"));
+  assert(candidateReleaseWorkflow.includes("!/^[a-f0-9]{40}$/.test(m.sourceSha)"));
+  assert(candidateReleaseWorkflow.includes("m.routes.includes(route)"));
+  assert(candidateReleaseWorkflow.includes('VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=SUCCESS'));
+  assert(candidateReleaseWorkflow.includes('VIBE2_RELEASE_PAGES_CHECK='));
+  assert(candidateReleaseWorkflow.includes('VIBE2_CANDIDATE_ALREADY_PROMOTED='));
+  assert(candidateReleaseWorkflow.includes('already_promoted: ${{ steps.gate.outputs.already_promoted }}'));
+  const webReleaseStart=candidateReleaseWorkflow.indexOf('- name: Promote approved web source root through reviewed PR');
+  const robloxReleaseStart=candidateReleaseWorkflow.indexOf('  roblox-release:');
+  const webReleaseBlock=candidateReleaseWorkflow.slice(webReleaseStart,robloxReleaseStart);
+  assert(!webReleaseBlock.includes('gh pr checks "$pr_url" --watch --fail-fast'));
+  assert(webReleaseBlock.includes("if [ \"$ALREADY_PROMOTED\" = 'true' ]; then"));
+  assert(webReleaseBlock.includes('VIBE2_WEB_ALREADY_PROMOTED=YES'));
+  assert(webReleaseBlock.includes('git reset --hard origin/vibe2-unreal-core'));
+  assert(!webReleaseBlock.includes('git pull --rebase origin vibe2-unreal-core'));
+  assert.equal(candidateReleaseWorkflow.includes('git pull --rebase origin vibe2-unreal-core'),false);
+  assert.ok((candidateReleaseWorkflow.match(/git reset --hard origin\/vibe2-unreal-core/g)||[]).length>=4);
+});
+
+test('candidate release carries exact source-bound asset promotion candidates into company runtime state',()=>{
+  assert.match(candidateReleaseWorkflow,/asset_promotion_candidates: \$\{\{ steps\.gate\.outputs\.asset_promotion_candidates \}\}/);
+  assert.match(candidateReleaseWorkflow,/m\.runtimePromotionCandidates/);
+  assert.match(candidateReleaseWorkflow,/candidateSourceBindingVerified/);
+  assert.match(candidateReleaseWorkflow,/Persist exact runtime asset binding and promotion plan/);
+  assert.match(candidateReleaseWorkflow,/robloxAssetRuntimePromotionPlan/);
+  assert.match(candidateReleaseWorkflow,/PENDING_EXACT_NATIVE_RUNTIME/);
+  assert.match(candidateReleaseWorkflow,/promotedMainSha/);
+  assert.match(candidateReleaseWorkflow,/promotedSourceTreeSha/);
+  assert.match(candidateReleaseWorkflow,/verifiedCompanyPromotionAuthority:'assets\/vibe-studio-asset-universe\.js'/);
+  assert.match(candidateReleaseWorkflow,/git push origin HEAD:company-runtime/);
+});
+test('controller runs content-hash incremental QA per worker and one parallel full regression at fan-in',()=>{
+  assert(workflow.includes('actions/cache@v4'));
+  assert(workflow.includes('tools/vibe2-incremental-qa.mjs'));
+  assert(workflow.includes('VIBE2_CANDIDATE_MANIFEST='));
+  assert(workflow.includes('candidate_manifest_rel='));
+  assert(workflow.includes('CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}'));
+  assert.equal(workflow.includes('find "$CANDIDATE_DIR/.vibe2/candidates" -mindepth 2 -maxdepth 2 -name manifest.json -print -quit'),false);
+  assert(workflow.includes('incremental-qa-hash:'));
+  assert(workflow.includes('Merge outcomes run regression and package review'));
+  assert(workflow.includes('Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.'));
+  assert(workflow.includes('node --test --test-concurrency=4'));
+  assert.equal(workflow.includes('qa/vibe2-controller-contract.test.mjs'),false);
+  assert(coreQaWorkflow.includes('qa/vibe2-controller-contract.test.mjs'));
+  assert(workflow.includes('qa/vibe2-source-worker.test.mjs'));
+  assert(workflow.includes('qa/vibe2-work-package.test.mjs'));
+  assert(workflow.includes('qa/vibe2-adaptive-backpressure.test.mjs'));
+  assert.equal(runtime.qaOptimization.perWorkerQa,'impact-first-incremental');
+  assert.equal(runtime.qaOptimization.fanInQa,'single-node-test-process');
+  assert.equal(runtime.qaOptimization.fanInTestConcurrency,4);
+});
+
+test('core QA supersedes stale PR revisions but preserves full QA for each main SHA',()=>{
+  const group="vibe2-core-qa-${{ github.event_name == 'pull_request' && github.ref || github.sha }}";
+  assert.ok(coreQaWorkflow.includes('group: '+group));
+  assert.ok(coreQaWorkflow.includes("cancel-in-progress: ${{ github.event_name == 'pull_request' }}"));
+  const regression=runtime.continuous.reserveContractRegressionPreflight;
+  assert.equal(regression.coreQaActiveCompletion.concurrencyGroup,group);
+  assert.equal(regression.coreQaActiveCompletion.mainPushCancelsSupersededInProgress,false);
+  assert.equal(regression.coreQaActiveCompletion.nonMainCancelsInProgress,false);
+  assert.equal(regression.coreQaActiveCompletion.pendingPolicy,'MAIN_EVERY_SHA_NON_MAIN_LATEST_PENDING_SAME_REF');
+  assert.equal(regression.coreQaActiveCompletion.runner,'ubuntu-slim');
+});
+
+test('core QA gives existing native asset regression sufficient time without skipping checks',()=>{
+  const testJob=coreQaWorkflow.slice(coreQaWorkflow.indexOf('\n  test:'),coreQaWorkflow.indexOf('\n  browser',coreQaWorkflow.indexOf('\n  test:')));
+  assert.match(testJob,/runs-on: ubuntu-slim/);
+  assert.match(testJob,/timeout-minutes: 25/);
+  assert.match(testJob,/node --test qa\/vibe2-native-asset-production\.test\.mjs/);
+  assert.match(testJob,/node --test qa\/vibe2-queue-control\.test\.mjs/);
+});
+
+test('core QA isolates Chrome browser smoke from the slim regression runner',()=>{
+  const testAt=coreQaWorkflow.indexOf('\n  test:\n');
+  const browserAt=coreQaWorkflow.indexOf('\n  browser-smoke:\n');
+  assert.ok(testAt>=0&&browserAt>testAt);
+  const testJob=coreQaWorkflow.slice(testAt,browserAt);
+  const browserJob=coreQaWorkflow.slice(browserAt);
+  assert.match(testJob,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(testJob,/node qa\/vibe2-development-web-browser-smoke\.mjs/);
+  assert.doesNotMatch(browserJob,/needs:\s*test/);
+  assert.match(browserJob,/runs-on:\s*ubuntu-24\.04/);
+  assert.match(browserJob,/node qa\/vibe2-development-web-browser-smoke\.mjs/);
+});
+
+test('main push wake ignores QA-only and descriptive document churn while preserving executable game changes',()=>{
+  const pushStart=workflow.indexOf('  push:');
+  const permissionsAt=workflow.indexOf('\npermissions:',pushStart);
+  assert.ok(pushStart>=0 && permissionsAt>pushStart);
+  const pushBlock=workflow.slice(pushStart,permissionsAt);
+  assert.match(pushBlock,/\n\s+paths:\n/);
+  for(const required of [
+    "'vibe2-runtime.json'",
+    "'company-learning/platform-release-roadmap.json'",
+    "'tools/vibe2-*.mjs'",
+    "'roblox-games/**'",
+    "'unity-games/**'",
+    "'web-games/**'"
+  ]) assert.ok(pushBlock.includes(required),required);
+  assert.equal(pushBlock.includes("'qa/**'"),false);
+  assert.equal(pushBlock.includes("'company-learning/company-log-map.json'"),false);
+  assert.equal(pushBlock.includes("'company-learning/company-architecture-map.json'"),false);
+});
+
+test('24H safety-net push ignores QA-only and descriptive document churn',()=>{
+  const pushStart=safetyNetWorkflow.indexOf('  push:');
+  const workflowRunAt=safetyNetWorkflow.indexOf('  workflow_run:',pushStart);
+  assert.ok(pushStart>=0 && workflowRunAt>pushStart);
+  const pushBlock=safetyNetWorkflow.slice(pushStart,workflowRunAt);
+  for(const required of [
+    "'company-learning/platform-release-roadmap.json'",
+    "'vibe2-runtime.json'",
+    "'web-games/**'",
+    "'unity-games/**'",
+    "'roblox-games/**'"
+  ]) assert.ok(pushBlock.includes(required),required);
+  const qaWakePaths=[...pushBlock.matchAll(/- '([^']+)'/g)].map(match=>match[1]).filter(file=>file.startsWith('qa/'));
+  assert.deepEqual(qaWakePaths,['qa/company-web-contract-adapter.test.mjs']);
+  assert.equal(pushBlock.includes("'company-learning/company-log-map.json'"),false);
+  assert.equal(pushBlock.includes("'company-learning/company-architecture-map.json'"),false);
+  assert.equal(pushBlock.includes("'VIBE2.md'"),false);
+  assert.match(safetyNetWorkflow,/cron: '\*\/5 \* \* \* \*'/);
+});
+
+test('game reserve safety net wakes independently of the 24H singleton',()=>{
+  assert.match(workflow,/schedule:\n\s+- cron: '\*\/5 \* \* \* \*'/);
+  assert.match(workflow,/github\.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake'/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/VIBE2_EXECUTION_LANE: \$\{\{ inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary' \}\}/);
+});
+
+test('reserve preflight uses the pinned main contract and blocks broken GAME_PRIMARY contracts before reservation',()=>{
+  const start=workflow.indexOf('- name: Prepare latest main machine contract');
+  const end=workflow.indexOf('- name: Reserve conflict-free DAG batch');
+  assert(start>=0 && end>start);
+  const preflight=workflow.slice(start,end);
+  assert(preflight.includes('git fetch --depth=1 --no-tags origin main --quiet'));
+  assert(preflight.includes('contract_sha="$(git rev-parse FETCH_HEAD)"'));
+  assert(preflight.includes('GIT_LFS_SKIP_SMUDGE=1 git worktree add --detach /tmp/vibe2-main "$contract_sha"'));
+  assert(preflight.includes('VIBE2_MAIN_CONTRACT_SNAPSHOT=PINNED_WORKTREE'));
+  assert(preflight.includes('git -C /tmp/vibe2-main rev-parse HEAD'));
+  assert(preflight.includes('echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"'));
+  assert(preflight.includes('node --check "/tmp/vibe2-main/$file"'));
+  assert(preflight.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
+  assert(preflight.includes('--runtime=/tmp/vibe2-main/vibe2-runtime.json'));
+  assert(preflight.includes('--queue="$control_root/.vibe2/queue.json"'));
+  assert(preflight.includes('--control="$control_root/.vibe2/parallelism-control.json"'));
+  assert(!preflight.includes('node tools/vibe2-handoff.mjs --check'));
+  assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'));
+  assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_ACTIVE_GAME_SOURCE_AND_RESERVATION_REGRESSION'));
+  assert(preflight.includes('node --test --test-concurrency=4'));
+  assert(preflight.includes('contract_regression_passed=true'));
+  assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'));
+  const regression=runtime.continuous.reserveContractRegressionPreflight;
+  assert.equal(regression.enabled,true);
+  assert.equal(regression.exactContractShaRequired,true);
+  assert.equal(regression.reuseSuccessfulCoreQaForExactSha,true);
+  assert.equal(regression.fallback,'LOCAL_SAME_FAN_IN_CORE_REGRESSION');
+  assert.equal(regression.observationFailureAction,'RUN_LOCAL_REGRESSION');
+  assert.equal(regression.blocksReservationOnFailure,true);
+  assert.equal(regression.gameWorkerStartBeforePass,false);
+
+  const recovery=runtime.continuous.fanInRegressionFailureRecovery;
+  assert.equal(recovery.enabled,true);
+  assert.equal(recovery.requeueAffectedTasksFirst,true);
+  assert.equal(recovery.immediateRefillOnlyWhenNewerMainExists,true);
+  assert.equal(recovery.pinnedFailedContractMustDifferFromLatestMain,true);
+  assert.equal(recovery.refillEvent,'vibe2-fanin-refill');
+  assert.equal(recovery.refillExecutionLane,'GAME_PRIMARY');
+  assert.equal(recovery.sameFailedContractRedispatchForbidden,true);
+  assert.equal(recovery.qaBypass,false);
+  assert.match(workflow,/VIBE2_FAN_IN_REGRESSION_LATEST_MAIN=/);
+  assert.match(workflow,/VIBE2_FAN_IN_REGRESSION_REFILL=DISPATCHED_NEWER_MAIN/);
+  assert.match(workflow,/VIBE2_FAN_IN_REGRESSION_REFILL=SKIPPED_NO_NEWER_MAIN/);
+  assert.match(workflow,/fan-in-regression-failed-requeued-newer-main/);
+});
+
+test('neuron callbacks keep every ingress event and reconcile shared queue state optimistically',()=>{
+  assert(!workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(!workflow.includes("format('vibe2-fanin-refill-{0}', github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(workflow.includes("'vibe2-main-push-game-primary-wake'"));
+  assert(workflow.includes("github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == ''"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(workflow.includes('cancel-in-progress: false'));
+  assert(!workflow.includes('vibe2-fanin-refill-singleton'));
+  assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
+  const start=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
+  const end=workflow.indexOf('  model_cache:',start);
+  const reserveBlock=workflow.slice(start,end);
+  assert(!reserveBlock.includes('for state_attempt in 1 2 3 4 5; do'));
+  assert(reserveBlock.includes("echo 'VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED'"));
+  assert(reserveBlock.includes('while [ "$state_persisted" != 1 ]; do'));
+  assert(reserveBlock.includes('VIBE2_CONTROL_OPTIMISTIC_ATTEMPT='));
+  assert(reserveBlock.includes('VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS='));
+  assert(reserveBlock.includes('git -C "$control_root" reset --hard origin/vibe2-unreal-core'));
+  assert(reserveBlock.includes('git -C "$control_root" push origin HEAD:vibe2-unreal-core'));
+  assert(reserveBlock.includes('VIBE2_CONTROL_OPTIMISTIC_RETRY='));
+  assert.equal(reserveBlock.includes('git pull --rebase origin vibe2-unreal-core'),false);
+  assert(workflow.includes('actions/upload-artifact@v4'));
+  assert(workflow.includes('actions/download-artifact@v4'));
+  assert(workflow.includes('node "$contract_root/tools/vibe2-queue-control.mjs" fan-in'));
+  assert(workflow.includes('Acquire shared Work Lock before source write'));
+  assert(workflow.includes('vibe2-remote-work-lock.mjs" acquire'));
+  assert(workflow.includes('Release shared Work Locks after fan-in or abort'));
+  assert(workflow.includes('vibe2-remote-work-lock.mjs" release'));
+});
+
+test('reserve keeps retry budget and restores the expanded queue after durable publication',()=>{
+  const reserve=workflow.slice(workflow.indexOf('\n  reserve:'),workflow.indexOf('\n  model_cache:'));
+  assert.match(reserve,/timeout-minutes: 15/);
+  const commit=reserve.indexOf('git -C "$control_root" commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"');
+  const push=reserve.indexOf('if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then',commit);
+  const persisted=reserve.indexOf('test "$state_persisted" = 1',push);
+  const restored=reserve.indexOf('storage-unpack',persisted);
+  const matrix=reserve.indexOf('worker_matrix=${JSON.stringify',restored);
+  assert.ok(commit>=0&&push>commit&&persisted>push&&restored>persisted&&matrix>restored);
+  assert.doesNotMatch(reserve.slice(commit,push),/storage-unpack/);
+  assert.match(reserve.slice(push,persisted),/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS/);
+});
+
+test('controller allows approved source root but enforces candidate boundary',()=>{
+  assert(workflow.includes('git add "$SOURCE_ROOT" .vibe2/candidates'));
+  assert(workflow.includes('candidate escaped approved boundary'));
+});
+
+test('game-primary stays cohort fan-in while asset callbacks coalesce only under live queue pressure',()=>{
+  const start=workflow.indexOf('- name: Dispatch or coalesce atomic neuron completion');
+  const end=workflow.indexOf('\n  fan_in:',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/if \[ "\$VIBE2_EXECUTION_LANE" = 'game-primary' \]; then/);
+  assert.match(block,/VIBE2_GAME_PRIMARY_CALLBACK_DISPATCH=COALESCED_TO_COHORT_FANIN/);
+  assert.match(block,/if \[ "\$VIBE2_EXECUTION_LANE" = 'asset-development' \]; then/);
+  assert.match(block,/VIBE2_ASSET_ATOMIC_CALLBACK_PRESSURE_GUARD=ENABLED/);
+  assert.doesNotMatch(block,/VIBE2_ASSET_ATOMIC_CALLBACK_PRESSURE_BYPASS=YES/);
+  assert.match(block,/if \[ "\$\{queue_pressure:-0\}" -gt 0 \]; then/);
+  assert.match(block,/VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT/);
+  assert.match(block,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN/);
+  assert.match(block,/event_type:'vibe2-neuron-complete'/);
+  assert.match(block,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS/);
+  assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskImmediateCompletionRequired,false);
+  assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskFullReviewBeforeCohortCompletion,false);
+  assert.equal(runtime.continuous.callbackCoalescing.gamePrimaryAlwaysCohortFanIn,true);
+  assert.equal(runtime.continuous.callbackCoalescing.auxiliaryImmediateDispatchAllowedWhenUnpressured,true);
+  assert.equal(runtime.continuous.callbackCoalescing.immediateDispatchResumesWhenPressureClears,false);
+});
+
+test('complete single-task callbacks reuse full regression and release review without waiting for other workers',()=>{
+  const fanIn=workflow.slice(workflow.indexOf('  fan_in:'));
+  assert.match(fanIn,/needs.reserve.outputs.task_review_required == 'true'/);
+  assert.match(fanIn,/Download completed task result for immediate full review/);
+  assert.match(fanIn,/run-id: \$\{\{ github.event.client_payload.source_run \}\}/);
+  assert.match(fanIn,/name: \$\{\{ github.event.client_payload.artifact_name \}\}/);
+  assert.match(fanIn,/node --test --test-concurrency=4/);
+  assert.match(fanIn,/tools\/vibe2-fan-in-review.mjs/);
+  assert.match(fanIn,/vibe2-candidate-release.yml\/dispatches/);
+  const ready=workflow.slice(workflow.indexOf('                TASK_MICRO_FANIN_COMPLETE)'),workflow.indexOf('                TASK_ALREADY_MICRO_FANIN_COMPLETE)'));
+  assert.match(ready,/expected_variants.*= '1'/);
+  assert.match(ready,/r.outcome==='PASS'/);
+  assert.match(ready,/task_review_required=true/);
+});
+
+test('fan-in reuses reserve or successful exact-commit engine regression and retains all candidate gates',()=>{
+  const fanIn=workflow.slice(workflow.indexOf('  fan_in:'));
+  assert.match(fanIn,/VIBE2_RESERVE_CONTRACT_REGRESSION_PASSED/);
+  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_SOURCE=RESERVE_EXACT_SHA_REGRESSION_REUSE/);
+  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
+  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_SOURCE=LOCAL_FULL_REGRESSION/);
+  assert.match(fanIn,/String\(row.head_sha\|\|''\)===sha/);
+  assert.match(fanIn,/String\(row.conclusion\|\|''\)==='success'/);
+  for(const file of new Set(fanIn.match(/qa\/[\w.-]+\.test\.mjs/g)))assert.ok(coreQaWorkflow.includes(file),file);
+  assert.match(fanIn,/tools\/vibe2-fan-in-review.mjs/);
+});
+
+test('idle learning fixes one worker regardless of game pressure',()=>{
+  const idle=safetyNetWorkflow.slice(safetyNetWorkflow.indexOf('  learning_idle:'),safetyNetWorkflow.indexOf('  game_study:'));
+  assert.match(idle,/lane_max: '1'/);
+  assert.ok(workflow.includes("if: steps.result.outputs.file != '' && env.VIBE2_EXECUTION_LANE != 'learning-idle'"));
+});
+
+test('candidate formatting whitespace does not abort development but conflict markers still fail',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-format-gate-'));
+  const git=(args)=>spawnSync('git',args,{cwd:root,encoding:'utf8'});
+  try{
+    assert.equal(git(['init','-q']).status,0);
+    fs.writeFileSync(path.join(root,'source.luau'),'local function render()\nend\n');
+    assert.equal(git(['add','source.luau']).status,0);
+    fs.writeFileSync(path.join(root,'source.luau'),'local function render() \nend\n');
+    const command=['-c','core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab','diff','--check'];
+    assert.equal(git(command).status,0);
+    fs.writeFileSync(path.join(root,'source.luau'),'<<<<<<< HEAD\nlocal a=1\n=======\nlocal a=2\n>>>>>>> candidate\n');
+    assert.notEqual(git(command).status,0);
+    assert.ok(workflow.includes('git '+command.join(' ')));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('missing generation manifest cannot replace a real generation failure with a prompt-learning failure',()=>{
+  const expression=workflow.match(/const sourcePromptLearningFailed=([^;]+);/)[1];
+  const failed=new Function('sourceGenerationAttempted','candidateOk','sourcePromptLearningRequired','sourcePromptLearningOk',`return ${expression}`);
+  assert.equal(failed(true,false,true,false),false);
+  assert.equal(failed(true,true,true,false),true);
+  assert.equal(failed(true,true,true,true),false);
+  assert.equal(failed(false,false,true,false),false);
+});
+
+test('workers signal atomic completion and task micro-fan-in refills capacity without a cohort barrier',()=>{
+  const reserveStart=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
+  const reserveEnd=workflow.indexOf('  model_cache:',reserveStart);
+  const reserveBlock=workflow.slice(reserveStart,reserveEnd);
+  assert(workflow.includes('repository_dispatch:'));
+  assert(workflow.includes('types: [vibe2-neuron-complete, vibe2-fanin-refill]'));
+  assert(workflow.includes('Dispatch or coalesce atomic neuron completion'));
+  assert(workflow.includes("event_type:'vibe2-neuron-complete'"));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING'));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE'));
+  assert.equal(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS'),false);
+  assert(!workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert.equal(runtime.continuous.executionTopology,'ATOMIC_NEURON_STREAM');
+  assert.equal(runtime.continuous.atomicNeuronStream.fixedWaveBarrier,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.taskMicroFanIn,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.speculativeVariantsJoinPerTask,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.cohortFanInRole,'REGRESSION_RELEASE_AUDIT_PLUS_PRESSURE_COALESCED_RESULT_INGRESS');
+  assert.equal(runtime.continuous.cohortFanInPressureIngressEnabled,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.logicalPerTaskVariantJoinStillRequiredWhenCoalesced,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.workerDirectControlWrite,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.universalActionableDomains,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.neuralGatedExecution,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.protectedAuthoritiesRemainCentral,true);
+  assert.ok(runtime.continuous.atomicNeuronStream.gatedAuthorities.includes('FAILURE_CLASS_RETRY_STRATEGY'));
+  assert.ok(runtime.parallelismTelemetry.metrics.includes('verifiedCandidatesPerMinute'));
+  assert.ok(runtime.parallelismTelemetry.metrics.includes('firstCandidatePassRatePct'));
+  assert.equal(runtime.continuous.refillRef,'vibe2-unreal-core');
+  assert.equal(runtime.continuous.refillMode,'task-micro-fanin-repository-dispatch-with-five-minute-safety-net');
+  assert.equal(runtime.continuous.slotRefillTrigger,'vibe2-neuron-complete');
+  assert.equal(runtime.continuous.perWorkerCompletionSignalEnabled,true);
+  assert.equal(runtime.continuous.perWorkerSlotRefillEnabled,false);
+  assert(workflow.includes('VIBE2_SPECULATIVE_EXPANSION='));
+  assert(workflow.includes('SUPPRESSED_RUNNER_PRESSURE'));
+  assert(workflow.includes('VIBE2_SPECULATIVE_EXPANSION_REASON='));
+  assert(workflow.includes('VIBE2_PRIMARY_TASK_COUNT='));
+  assert(workflow.includes('VIBE2_SPECULATIVE_WORKER_COUNT='));
+  assert(workflow.includes('Dispatch or coalesce atomic neuron completion'));
+  assert(workflow.includes('actions/runs?per_page=100'));
+  assert(workflow.includes("new Set(['queued','pending','requested'])"));
+  assert(workflow.includes("String(row.id||'')!==currentRun"));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=PASS'));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=FAIL_OPEN'));
+  assert(workflow.includes('VIBE2_LIVE_RUNNER_QUEUE_PRESSURE='));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'));
+  assert.equal(workflow.includes('pressureRefillLeaderAssigned'),false);
+  assert.equal(workflow.includes('VIBE2_PRESSURE_REFILL_LEADER'),false);
+  assert.equal(workflow.includes("reason:'runner-pressure-wave-leader-free-slot-refill'"),false);
+  assert(workflow.includes('VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_DEFER_TO_COHORT_FANIN'));
+  assert(workflow.includes('if [ "${queue_pressure:-0}" -gt 0 ]; then'));
+  assert(workflow.includes('pattern: vibe2-result-*'));
+  assert(workflow.includes('merge-multiple: true'));
+  assert.equal(runtime.continuous.perWorkerCompletionSignalPressureAware,true);
+  assert.equal(runtime.continuous.liveRunnerQueuePressureObservation.enabled,true);
+  assert.deepEqual(runtime.continuous.liveRunnerQueuePressureObservation.statuses,['queued','pending','requested']);
+  assert.equal(runtime.continuous.liveRunnerQueuePressureObservation.readOnly,true);
+  assert.equal(runtime.continuous.liveRunnerQueuePressureObservation.failOpenToExistingImmediateDispatch,true);
+  assert.equal(runtime.continuous.callbackCoalescing.enabled,true);
+  assert.equal(runtime.continuous.callbackCoalescing.fallbackConsumer,'EXISTING_COHORT_FAN_IN');
+  assert.equal(runtime.continuous.callbackCoalescing.resultLossForbidden,true);
+  assert.equal(runtime.continuous.callbackCoalescing.workerDirectControlWrite,false);
+  assert.equal(runtime.continuous.callbackCoalescing.capacityRefillMayProceedWhileResultCoalesced,false);
+  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.enabled,false);
+  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.scope,'DISABLED_UNDER_RUNNER_PRESSURE_DEFER_TO_COHORT_FAN_IN');
+  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.maxSignalsPerWave,0);
+  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.resultConsumption,false);
+  assert.equal(runtime.continuous.callbackCoalescing.runnerPressureDispatchThreshold,4);
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.enabled,true);
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.executionLane,'GAME_PRIMARY');
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.reuseSuccessfulCoreQaForExactSha,true);
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.fallback,'LOCAL_SAME_FAN_IN_CORE_REGRESSION');
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.blocksReservationOnFailure,true);
+  assert.equal(runtime.continuous.reserveContractRegressionPreflight.neuronCompletionCallbackExcluded,true);
+  assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'));
+  assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_ACTIVE_GAME_SOURCE_AND_RESERVATION_REGRESSION'));
+  assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'));
+  assert.equal(runtime.continuous.atomicNeuronStream.liveRunnerQueuePressureCoalescing,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingDefersNewWorkflowCreation,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.pressureThreshold,4);
+  const pressurePolicy=roadmap.changeRecord.runnerPressureCallbackCoalescing20260926;
+  assert.equal(pressurePolicy.coalescingMayNotBlockIndependentFreeSlotRefill,false);
+  assert.equal(pressurePolicy.independentFreeSlotRefillResumesBelowPressureThreshold,true);
+  assert.equal(pressurePolicy.pressureCapacityRefill.enabled,false);
+  assert.equal(pressurePolicy.pressureCapacityRefill.maxSignalsPerWave,0);
+  assert.equal(pressurePolicy.pressureCapacityRefill.resultRemainsCohortFanInOwned,true);
+  const bottleneckPolicy=roadmap.changeRecord.runnerBackpressureBottleneckRelief20261001;
+  assert.equal(bottleneckPolicy.queuePressureThreshold,4);
+  assert.equal(bottleneckPolicy.release.nativeReleaseDispatchBatchMax,2);
+  assert.equal(bottleneckPolicy.release.reviewedWinnerRecoveryBatchMax,2);
+  assert.equal(bottleneckPolicy.regression.reserveExactShaPassReusableAtFanIn,true);
+  assert.equal(bottleneckPolicy.coreQa.mainPushCancelsSupersededInProgress,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.cohortFanInConsumesCoalescedResults,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.coalescedCompletionIsNotFailure,true);
+  assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch-fallback');
+  assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
+  assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,false);
+  assert.equal(runtime.continuous.slotRefillResponsibleFileLocksHeldUntilFanIn,true);
+  assert.equal(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ]; then"),false);
+  assert.equal(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ] || [ \"$callback_kind\" = 'neuron' ]; then"),false);
+  assert(reserveBlock.includes('git -C "$control_root" fetch origin company-runtime --quiet'));
+  assert(reserveBlock.includes('VIBE2_RESERVE_RUNTIME_SYNC=PASS:$callback_kind'));
+  assert.equal(reserveBlock.includes('VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS'),false);
+  assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_NO_RUNNABLE_WORK_OR_PENDING_VARIANTS'));
+  assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE'));
+  assert(reserveBlock.indexOf('VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE') < reserveBlock.indexOf("event_type:'vibe2-fanin-refill'"));
+});
+
+test('24H production pre-plan scheduler block stays valid Bash',()=>{
+  const stepName='- name: Dispatch queued GAME_PRIMARY and independent asset work before full planning';
+  const stepStart=safetyNetWorkflow.indexOf(stepName);
+  const stepEnd=safetyNetWorkflow.indexOf('\n      - name:',stepStart+1);
+  assert.ok(stepStart>=0&&stepEnd>stepStart);
+  const step=safetyNetWorkflow.slice(stepStart,stepEnd);
+  const runMarker='        run: |\n';
+  const runAt=step.indexOf(runMarker);
+  assert.ok(runAt>=0);
+  const shell=step.slice(runAt+runMarker.length)
+    .split('\n')
+    .map(line=>line.startsWith('          ')?line.slice(10):line)
+    .join('\n');
+  const parsed=spawnSync('bash',['-n'],{input:shell,encoding:'utf8'});
+  assert.equal(parsed.status,0,parsed.stderr||parsed.stdout);
+});
+
+test('24H safety-net refills free game slots while preserving responsible-file conflict protection',()=>{
+  assert(safetyNetWorkflow.includes('wave_ready: ${{ steps.queue_state.outputs.wave_ready }}'));
+  assert(safetyNetWorkflow.includes('game_refill_ready: ${{ steps.queue_state.outputs.game_refill_ready }}'));
+  assert(safetyNetWorkflow.includes('free_worker_slots: ${{ steps.queue_state.outputs.free_worker_slots }}'));
+  assert(safetyNetWorkflow.includes('active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}'));
+  assert(safetyNetWorkflow.includes('runner_pressure: ${{ steps.queue_state.outputs.runner_pressure }}'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_QUEUE_PRESSURE='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_JOB_QUEUE_PRESSURE='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_JOB_PRESSURE_THRESHOLD='));
+  assert.equal(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY'),false);
+  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=QUEUE_ALLOWED:'));
+  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=BELOW_THRESHOLD:'));
+  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=UNAVAILABLE_FAIL_OPEN'));
+  assert(safetyNetWorkflow.includes('actions/runs?per_page=100'));
+  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRIORITY_LANE=ASSET_DEVELOPMENT'));
+  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED'));
+  const preplanStep=safetyNetWorkflow.slice(safetyNetWorkflow.indexOf('- name: Dispatch queued GAME_PRIMARY and independent asset work before full planning'),safetyNetWorkflow.indexOf('- name: Plan from latest main and persist control queue'));
+  assert(preplanStep.includes('VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED'));
+  assert(preplanStep.includes('VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED'));
+  assert.equal(preplanStep.includes("VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED:$asset_burst'\n            fi\n            exit 0"),false);
+  assert(safetyNetWorkflow.includes('actions/runs/$run_id/jobs?per_page=100'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_LEARNING_IDLE_DEFERRED='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_FREE_GAME_WORKER_SLOTS='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_GAME_REFILL_READY='));
+  assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '128'"));
+  assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '128'"));
+  assert(safetyNetWorkflow.includes("VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD: '4'"));
+  assert(safetyNetWorkflow.includes("VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD: '8'"));
+  assert(safetyNetWorkflow.includes("VIBE2_ASSET_PRIORITY_BURST_MAX: '8'"));
+  assert(safetyNetWorkflow.includes("VIBE2_RELEASE_RECOVERY_BATCH_MAX: '256'"));
+  assert(safetyNetWorkflow.includes('VIBE2_RELEASE_RECOVERY_BATCH_LIMIT='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_THRESHOLD='));
+  assert(safetyNetWorkflow.includes('const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));'));
+  assert(safetyNetWorkflow.includes('const effectiveMax=configuredMax;'));
+  assert(safetyNetWorkflow.includes("echo 'VIBE2_PARALLELISM_POLICY=FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_128'"));
+  assert.equal(safetyNetWorkflow.includes('Math.min(configuredMax,controlTarget)'),false);
+  assert(safetyNetWorkflow.includes('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=FIXED_REPEAT_DEVELOPMENT_128'));
+  assert(safetyNetWorkflow.includes("lane_max: '128'"));
+  assert.equal(safetyNetWorkflow.includes("lane_max: '20'"),false);
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
+  assert.equal(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.game_refill_ready"),false);
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0')"));
+  assert.equal(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.asset_development_refill_ready"),false);
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.learning_idle_queued != '0'"));
+  assert(safetyNetWorkflow.includes("new Set(['queued','pending','requested'])"));
+  assert(safetyNetWorkflow.includes("VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'"));
+  assert(safetyNetWorkflow.includes("VIBE2_LEARNING_ALWAYS_ON: 'true'"));
+  assert(safetyNetWorkflow.includes('needs: [plan, recovery_fast, continuous, asset_development, learning_idle, game_study]'));
+  assert(safetyNetWorkflow.includes('if: ${{ always() }}'));
+  assert(safetyNetWorkflow.includes('name: Dispatch next cycle while external runner queue owns physical backpressure'));
+  assert(safetyNetWorkflow.includes('CONTINUE_REQUIRED: ${{ needs.plan.outputs.continue_required }}'));
+  assert.equal(safetyNetWorkflow.includes('RUNNER_PRESSURE: ${{ needs.plan.outputs.runner_pressure }}'),false);
+  assert.equal(safetyNetWorkflow.includes('VIBE2_24H_REFILL_GLOBAL_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY'),false);
+  assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL=SKIPPED_NO_CONTINUE_REQUIRED'));
+  assert.equal(safetyNetWorkflow.includes('VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE'),false);
+  assert(safetyNetWorkflow.includes('actions/workflows/vibe2-24h-runner.yml/runs?per_page=100'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER:'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL_ACTIVE_SCHEDULER_OBSERVATION=UNAVAILABLE_FAIL_OPEN'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL_RUNNER_PRESSURE_POLICY=EXTERNAL_QUEUE_OWNS_PHYSICAL_BACKPRESSURE'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL=DISPATCHED'));
+  assert(workflow.includes('VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE='));
+  assert(workflow.includes('VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'));
+  assert(!workflow.includes('VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'));
+  assert(!workflow.includes("guard:'ACTIVE_LANE_RESERVATION_PRESENT'"));
+  assert(workflow.includes('vibe2-queue-control.mjs reserve-batch'));
+});
+
+test('reserve probes live hosted jobs in bounded parallel cohorts and never invents capacity from partial API results',()=>{
+  const start=workflow.indexOf("          # Count real in-progress JOBS, not workflow runs.");
+  const end=workflow.indexOf('          echo "VIBE2_RUNNER_PROBE_SCOPE=CURRENT_REPOSITORY_ONLY"',start);
+  assert.ok(start>0&&end>start,'live runner probe block must exist');
+  const probe=workflow.slice(start,end);
+  assert.match(probe,/live_probe_parallelism=6/);
+  assert.match(probe,/live_probe_pids=\(\)/);
+  assert.match(probe,/live_probe_pids\+=\("\$!"\)/);
+  assert.match(probe,/live_probe_pids\[@\]/);
+  assert.match(probe,/wait "\$probe_pid" \|\| live_probe_ok=0/);
+  assert.match(probe,/run_id\.failed/);
+  assert.match(probe,/live_probe_ok=0/);
+  assert.match(probe,/VIBE2_LIVE_JOB_PROBE=INCOMPLETE_CONSERVATIVE_FALLBACK/);
+  assert.match(probe,/rows\.length>=100/,'incomplete workflow pages remain unknown');
+  assert.match(probe,/data\.total_count<=100\?data\.jobs:null/,'incomplete job pages remain unknown');
+  assert.match(probe,/snapshot\.known\?String\(snapshot\.observedJobs\):'UNKNOWN'/);
+  assert.match(probe,/if \[\[ "\$live_job_count" =~ \^\[0-9\]\+\$ \]\]; then/,'only complete integer snapshots can set observed job count');
+  assert.match(probe,/VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS="\$live_job_count"/);
+  assert.match(workflow,/VIBE2_HOSTED_RUNNER_LIMIT: '20'/);
+  assert.match(workflow,/VIBE2_OWNER_RESERVED_SLOTS: '8'/);
+});
+
+test('free-slot refill keeps game-study idle-gated while learning-idle yields first under runner pressure',()=>{
+  assert(safetyNetWorkflow.includes("const waveReady=activeGame===0?'YES':'NO'"));
+  assert(safetyNetWorkflow.includes("const gameRefillReady=freeWorkerSlots>0?'YES':'NO'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.learning_idle_queued != '0'"));
+  assert.equal(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0'"),false);
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.asset_development_queued == '0' && needs.plan.outputs.asset_development_active == '0' && needs.plan.outputs.learning_idle_queued == '0'"));
+});
+
+test('24H cycle preserves continuity with run-scoped scheduler execution',()=>{
+  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-${{ github.run_id }}'));
+  assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton-v9'));
+  assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton\n'));
+  assert(safetyNetWorkflow.includes('cancel-in-progress: false'));
+  const planStart=safetyNetWorkflow.indexOf('  plan:');
+  const recoveryStart=safetyNetWorkflow.indexOf('  recovery_fast:');
+  assert(planStart>=0 && recoveryStart>planStart);
+  const planBlock=safetyNetWorkflow.slice(planStart,recoveryStart);
+  assert(!planBlock.includes('group: vibe2-control-state-vibe2-unreal-core'));
+  assert(planBlock.includes('group: vibe2-24h-plan-control-v1'));
+  assert(planBlock.includes('cancel-in-progress: false'));
+  assert(planBlock.includes('VIBE2_AUTOPLAN_ATTEMPT=$attempt'));
+  assert(planBlock.includes('git reset --hard origin/vibe2-unreal-core'));
+  assert(planBlock.includes('if git push origin HEAD:vibe2-unreal-core; then'));
+  const gameStudyStart=safetyNetWorkflow.indexOf('  game_study:');
+  const refillStart=safetyNetWorkflow.indexOf('  refill:');
+  assert(gameStudyStart>=0 && refillStart>gameStudyStart);
+  assert(safetyNetWorkflow.slice(gameStudyStart,refillStart).includes('needs: [plan, continuous, asset_development, learning_idle]'));
+});
+
+test('continuous core and 24H runner isolate game-primary and learning-idle execution lanes',()=>{
+  assert(workflow.includes('execution_lane:'));
+  assert(workflow.includes("VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}"));
+  assert(workflow.includes('--lane="$VIBE2_EXECUTION_LANE"'));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
+  assert.equal(runtime.continuous.reserveConcurrency.reserveJobsParallel,true);
+  assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
+  assert(workflow.includes('VIBE2_REGRESSION_ROLE=SKIPPED_AUXILIARY_LANE:'));
+  assert(workflow.includes('AUXILIARY_LANE_NO_RELEASE'));
+  assert(workflow.includes("if: env.VIBE2_EXECUTION_LANE == 'game-primary'"));
+  assert(safetyNetWorkflow.includes('game_primary_queued: ${{ steps.queue_state.outputs.game_primary_queued }}'));
+  assert(safetyNetWorkflow.includes('learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}'));
+  assert(safetyNetWorkflow.includes('  learning_idle:'));
+  assert(safetyNetWorkflow.includes('execution_lane: learning-idle'));
+  assert(safetyNetWorkflow.includes("lane_max: '1'"));
+  assert(workflow.includes("'vibe2-learning-single-worker'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.game_primary_queued == '0'"));
+});
+
+test('recovery-fast lane is event-driven and never directly consumes a game worker slot',()=>{
+  assert(recoveryFastWorkflow.includes('name: Vibe2 Recovery Fast'));
+  assert(recoveryFastWorkflow.includes('Vibe2 Continuous Core'));
+  assert(recoveryFastWorkflow.includes('Company System AI Workers'));
+  assert(recoveryFastWorkflow.includes("cron: '*/5 * * * *'"));
+  assert(recoveryFastWorkflow.includes('tools/company-recovery-escalation.mjs'));
+  assert(recoveryFastWorkflow.includes('tools/company-recovery-dispatch.mjs'));
+  assert(recoveryFastWorkflow.includes('--route=all'));
+  assert(recoveryFastWorkflow.includes('VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=GAME_PRIMARY_ATOMIC_REFILL'));
+  assert(recoveryFastWorkflow.includes('"event_type":"vibe2-fanin-refill"'));
+  assert(recoveryFastWorkflow.includes('"execution_lane":"game-primary"'));
+  assert(recoveryFastWorkflow.includes("if: steps.recovery.outputs.vibe_requeued != '0'"));
+  assert(recoveryFastWorkflow.includes('company-system-ai-cycle'));
+  assert(recoveryFastWorkflow.includes('system_ai_recovery_dispatched'));
+  assert(recoveryFastWorkflow.includes("if: steps.recovery.outputs.system_ai_recovery_dispatched != '0'"));
+  assert.equal(recoveryFastWorkflow.includes("if: steps.recovery.outputs.system_ai_queued != '0'"),false);
+  assert.equal(recoveryFastWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'),false);
+  assert.equal(recoveryFastWorkflow.includes('git pull --rebase origin vibe2-unreal-core'),false);
+});
+
+test('fan-in keeps a repository-dispatch fallback and five-minute safety net',()=>{
+  assert(workflow.includes('Event-driven fan-in refill fallback'));
+  assert(workflow.includes("event_type:'vibe2-fanin-refill'"));
+  assert(workflow.includes('VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'));
+  assert(!workflow.includes('gh workflow run vibe2-continuous-core.yml'));
+  assert(!workflow.includes('gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main'));
+  assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
+  assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
+  assert(safetyNetWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'));
+  assert.equal(runtime.continuous.wakeMode,'event-driven-plus-five-minute-safety-net');
+  assert(safetyNetWorkflow.includes("cron: '*/5 * * * *'"));
+  assert.equal(safetyNetWorkflow.includes("cron: '17 * * * *'"),false);
+});
+
+test('worker never mutates shared queue state and only emits an atomic completion event',()=>{
+  const start=workflow.indexOf('  worker:');
+  const end=workflow.indexOf('  fan_in:');
+  assert(start>=0 && end>start);
+  const workerPart=workflow.slice(start,end);
+  assert(!workerPart.includes('vibe2-queue-control.mjs release-slot'));
+  assert(!workerPart.includes('git push origin HEAD:vibe2-unreal-core'));
+  assert(!workerPart.includes('HEAD:refs/heads/vibe2/refill/'));
+  assert(workerPart.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"'));
+  assert(!workerPart.includes("event_type:'vibe2-slot-refill'"));
+  assert(workerPart.includes("event_type:'vibe2-neuron-complete'"));
+  assert(workerPart.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
+});
+
+test('removed local Ollama action cannot be restored as a coding prerequisite',()=>{
+  assert.equal(fs.existsSync(new URL('../.github/actions/prepare-ollama/action.yml',import.meta.url)),false);
+  assert.doesNotMatch(workflow,/uses:\s*\.\/vibe2-contract\/\.github\/actions\/prepare-ollama/);
+  assert.match(workflow,/VIBE2_WORKER_PROVIDER=GEMINI_API/);
+  assert.match(workflow,/VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO/);
+});
+test('fan-in release requires exact candidate manifest identity',()=>{
+  const branch='vibe2/candidate/demo/primary';
+  const baseTask={
+    id:'demo-task',
+    gameId:'demo',
+    target:'web',
+    sourceRoot:'web-games/demo',
+    status:'running',
+    blocker:'candidate-awaiting-qa-and-deployment',
+    evidence:[
+      branch,
+      'role-result:exploration:PASS',
+      'role-result:implementation:PASS',
+      'role-result:test:PASS',
+      'role-result:performance:PASS'
+    ]
+  };
+  const valid={
+    version:7,
+    taskId:'demo-task',
+    outcome:'PASS',
+    candidateBranch:branch,
+    baseMainSha:'abc123',
+    candidateIdentity:{
+      taskId:'demo-task',
+      gameId:'demo',
+      target:'web',
+      sourceRoot:'web-games/demo',
+      baseMainSha:'abc123',
+      manifestPath:'.vibe2/candidates/demo-task/manifest.json'
+    },
+    evidence:[branch]
+  };
+  const pass=finalizeVibe2FanInReview({queue:{tasks:[baseTask]},results:[valid]});
+  assert.equal(pass.pass,true);
+  assert.equal(pass.releaseCandidates.length,1);
+  assert.ok(pass.queue.tasks[0].evidence.includes('candidate-identity:PASS'));
+  assert.equal(pass.codingTraces.length,1);
+  assert.equal(pass.codingTraces[0].verification.fullRegressionPass,true);
+  assert.equal(pass.codingTraces[0].verification.reviewPass,true);
+
+  const stale=structuredClone(valid);
+  stale.candidateIdentity.sourceRoot='web-games/other-game';
+  const blocked=finalizeVibe2FanInReview({queue:{tasks:[baseTask]},results:[stale]});
+  assert.equal(blocked.pass,false);
+  assert.equal(blocked.releaseCandidates.length,0);
+  assert.ok(blocked.reviewed[0].missing.includes('candidate-identity-source-root'));
+  assert.ok(blocked.queue.tasks[0].evidence.includes('role-result:review:BLOCKED'));
+  assert.equal(blocked.codingTraces[0].verification.fullRegressionPass,false);
+  assert.equal(blocked.codingTraces[0].verification.reviewPass,false);
+});
+
+test('supervised Web candidates learn review decisions and stay unreleased until verified PASS approval',()=>{
+  const branch='vibe2/candidate/supervised-demo/primary';
+  const baseTask={
+    id:'supervised-demo-task',gameId:'supervised-demo',target:'web',sourceRoot:'web-games/supervised-demo',
+    status:'running',blocker:'candidate-awaiting-qa-and-deployment',supervisionApproved:false,
+    supervisionContract:{required:true,mode:'ASSISTANT_SUPERVISED_VIBE_COAUTHORING'},
+    evidence:[branch,'role-result:exploration:PASS','role-result:implementation:PASS','role-result:test:PASS','role-result:performance:PASS']
+  };
+  const valid={
+    version:9,taskId:baseTask.id,outcome:'PASS',candidateBranch:branch,baseMainSha:'abc123',
+    candidateIdentity:{taskId:baseTask.id,gameId:baseTask.gameId,target:'web',sourceRoot:baseTask.sourceRoot,baseMainSha:'abc123',manifestPath:'.vibe2/candidates/supervised-demo-task/manifest.json'},
+    evidence:[branch]
+  };
+  const waiting=finalizeVibe2FanInReview({queue:{tasks:[baseTask]},results:[valid]});
+  assert.equal(waiting.pass,true);
+  assert.equal(waiting.releaseCandidates.length,0);
+  assert.equal(waiting.experienceReviews.length,0);
+  assert.equal(waiting.queue.tasks[0].blocker,'candidate-awaiting-supervised-review');
+
+  const reviseTask=structuredClone(baseTask);
+  reviseTask.supervisionReview={
+    verified:true,decision:'REVISE',rationale:'핵심 루프는 동작하지만 모바일 입력 피드백이 약함',
+    avoidPatterns:['검수용 버튼만 추가하고 실제 입력 연결을 끝내지 않는 패턴'],
+    evidence:['supervisor-diff-review:1','mobile-playability-review:1']
+  };
+  const revise=finalizeVibe2FanInReview({queue:{tasks:[reviseTask]},results:[valid]});
+  assert.equal(revise.releaseCandidates.length,0);
+  assert.equal(revise.experienceReviews.length,1);
+  assert.equal(revise.experienceReviews[0].outcome,'FAIL');
+  assert.match(revise.experienceReviews[0].failureCause,/모바일 입력 피드백/);
+
+  const gatedValid=structuredClone(valid);
+  gatedValid.neuralDiagnosis={responsibility:{system:'GAME_INPUT'},inhibitors:[],actionRecommendation:{failureStage:'WEB_REPAIR'}};
+  gatedValid.evidence=[
+    branch,
+    'causal-replay-prepatch-reproduced:YES',
+    'causal-replay-executed:YES',
+    'causal-replay-status:EXECUTED_PASS',
+    'verified-responsible-system:GAME_INPUT'
+  ];
+  const gatedRevise=finalizeVibe2FanInReview({queue:{tasks:[reviseTask]},results:[gatedValid]});
+  assert.equal(gatedRevise.queue.tasks[0].status,'queued');
+  assert.equal(gatedRevise.queue.tasks[0].priority,'high');
+  assert.equal(gatedRevise.queue.tasks[0].blocker,null);
+  assert.equal(gatedRevise.queue.tasks[0].lastOutcome,'RETRY_AFTER_GATED_SUPERVISOR_REVISE');
+  assert.ok(gatedRevise.queue.tasks[0].evidence.includes('neural-gated-supervisor-requeue:HIGH'));
+  assert.equal(gatedRevise.reviewed[0].gatedRequeue,true);
+
+  const approvedTask=structuredClone(baseTask);
+  approvedTask.supervisionApproved=true;
+  approvedTask.supervisionReview={
+    verified:true,decision:'PASS',rationale:'핵심 루프·저장·모바일 입력이 보존되고 실제 플레이 후보가 완성됨',
+    reusablePatterns:['기존 세이브와 핵심 루프를 고정한 뒤 책임 함수만 구현'],
+    evidence:['supervisor-diff-review:2','mobile-playability-review:2']
+  };
+  const approved=finalizeVibe2FanInReview({queue:{tasks:[approvedTask]},results:[valid]});
+  assert.equal(approved.releaseCandidates.length,1);
+  assert.equal(approved.experienceReviews.length,2);
+  const supervisedReview=approved.experienceReviews.find(row=>row.taskType==='supervised-web-coauthoring');
+  const capabilityReview=approved.experienceReviews.find(row=>row.taskType==='coding-capability-distillation');
+  assert.equal(supervisedReview?.outcome,'PASS');
+  assert.ok(supervisedReview?.reusablePatterns.includes('기존 세이브와 핵심 루프를 고정한 뒤 책임 함수만 구현'));
+  assert.equal(capabilityReview?.outcome,'PASS');
+  assert.equal(capabilityReview?.engineQaVerified,true);
+});
+
+test('fan-in blocks release when only durable supervised evidence survives queue normalization',()=>{
+  const branch='vibe2/candidate/supervised-evidence-only/primary';
+  const task={
+    id:'supervised-evidence-only',gameId:'supervised-evidence-only',target:'web',sourceRoot:'web-games/supervised-evidence-only',
+    status:'running',blocker:'candidate-awaiting-qa-and-deployment',supervisionApproved:false,
+    evidence:[
+      'supervised-web-build:required',branch,
+      'role-result:exploration:PASS','role-result:implementation:PASS','role-result:test:PASS','role-result:performance:PASS'
+    ]
+  };
+  const valid={
+    version:9,taskId:task.id,outcome:'PASS',candidateBranch:branch,baseMainSha:'abc123',
+    candidateIdentity:{taskId:task.id,gameId:task.gameId,target:'web',sourceRoot:task.sourceRoot,baseMainSha:'abc123',manifestPath:'.vibe2/candidates/supervised-evidence-only/manifest.json'},
+    evidence:[branch]
+  };
+  const result=finalizeVibe2FanInReview({queue:{tasks:[task]},results:[valid]});
+  assert.equal(result.pass,true);
+  assert.equal(result.releaseCandidates.length,0);
+  assert.equal(result.reviewed[0].releaseBlocked,true);
+  assert.equal(result.reviewed[0].releaseBlocker,'SUPERVISED_APPROVAL_REQUIRED');
+  assert.equal(result.queue.tasks[0].blocker,'candidate-awaiting-supervised-review');
+});
+test('fan-in review persists neural shadow versus wave audit without authority',()=>{
+  const source=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(source,/buildNeuralShadowAudit/);
+  assert.match(source,/neuralShadowAudit/);
+  assert.match(source,/version:7,role:'review'/);
+  assert.match(source,/phase2AuthorityReady:false|buildNeuralShadowAudit/);
+});
+
+test('fan-in review exposes Phase2 readiness only as an explicit review gate',()=>{
+  const source=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(source,/evaluatePhase2Readiness/);
+  assert.match(source,/neuralPhase2Readiness/);
+  const readiness=fs.readFileSync('tools/vibe2-neural-phase2-readiness.mjs','utf8');
+  assert.match(readiness,/phase2AuthorityReady:false/);
+  assert.match(readiness,/executionAuthorityGranted:false/);
+  assert.match(readiness,/automaticPromotionAllowed:false/);
+  assert.match(readiness,/explicitCentralPolicyPromotionRequired:true/);
+});
+
+test('fan-in review transports phase 4 benchmark evidence into the existing experience batch',()=>{
+  const source=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(source,/buildCapabilityBenchmarkReviews/);
+  assert.match(source,/capabilityBenchmarkReviews/);
+  const experience=fs.readFileSync('tools/vibe2-experience-control.mjs','utf8');
+  assert.match(experience,/applyCapabilityBenchmarkReviews/);
+  assert.match(experience,/capabilityBenchmarkReviews/);
+  assert.match(experience,/VIBE2_CAPABILITY_BENCHMARK_APPLIED/);
+});
+
+test('fan-in workflow persists verified supervised review learning before release dispatch',()=>{
+  assert.match(workflow,/vibe2-experience-control\.mjs/);
+  assert.match(workflow,/--batch-review=\/tmp\/vibe2-package-review\.json/);
+  assert.match(workflow,/\.vibe2\/experience\.json/);
+});
+test('fan-in dispatches candidate release without repository-wide runner pressure serialization',()=>{
+  const start=workflow.indexOf('- name: Dispatch reviewed winner candidates to release gate');
+  const end=workflow.indexOf('- name: Dispatch verified system architecture candidates',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/VIBE2_RELEASE_DISPATCH_QUEUE_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY/);
+  assert.doesNotMatch(block,/VIBE2_RELEASE_DISPATCH_QUEUE_THRESHOLD/);
+  assert.match(block,/VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX/);
+  assert.match(block,/VIBE2_NATIVE_RELEASE_DISPATCH=DEFERRED_BATCH_LIMIT/);
+  assert.doesNotMatch(block,/VIBE2_RELEASE_DISPATCH=DEFERRED_TO_24H_RECOVERY_RUNNER_PRESSURE/);
+  assert.match(block,/actions\/workflows\/vibe2-candidate-release\.yml\/dispatches/);
+});
+
+test('worker result exposes exact candidate identity for fan-in review',()=>{
+  const start=workflow.indexOf('- name: Build immutable worker result');
+  const end=workflow.indexOf('- name: Upload worker result for fan-in');
+  const resultStep=workflow.slice(start,end);
+  assert(resultStep.includes('candidateIdentity=effectiveCandidateOk?'));
+  assert(resultStep.includes('const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk'));
+  assert(resultStep.includes("blocker='verified-external-learning-source-prompt-unproven'"));
+  assert(resultStep.includes('taskId:clean(manifest.taskId)'));
+  assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
+  assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
+  assert(resultStep.includes('version:17'));
+  assert(resultStep.includes('workLock'));
+  assert(resultStep.includes('phase4BenchmarkVerification'));
+  assert(resultStep.includes('knowledgeApplication'));
+  assert(resultStep.includes('neuralDiagnosis'));
+});
+
+test('phase 4 passive benchmark reuses existing tournament workers without queue authority expansion',()=>{
+  const runner=fs.readFileSync('tools/vibe2-continuous-runner.mjs','utf8');
+  assert.match(runner,/buildPassiveCapabilityBenchmarkContract/);
+  assert.match(runner,/phase4BenchmarkVerification/);
+  assert.match(runner,/fixedCandidateStrategy/);
+  const capability=fs.readFileSync('tools/vibe2-capability-distillation.mjs','utf8');
+  assert.match(capability,/PHASE4_FIXED_CONTEXT_CONTROLLED_AB/);
+  assert.match(runner,/workerCreationRequired:false|phase4BenchmarkVerification/);
+  const sourceWorker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(sourceWorker,/explorationOrder=order\?\.phase4BenchmarkVerification\?\.active===true/);
+  assert.match(sourceWorker,/goal:clean\(order\.originalGoal\)\|\|clean\(order\.goal\)/);
+  const fanIn=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(fanIn,/buildPairedCapabilityBenchmarkReviews/);
+  assert.match(fanIn,/selectedResultByTaskId/);
+});
+
+test('continuous worker transports causal replay prepatch reproduction evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  assert.match(workflow,/VIBE2_CAUSAL_REPLAY_PREPATCH_REPRODUCED/);
+  assert.match(workflow,/causal_replay_prepatch_reproduced=/);
+  assert.match(workflow,/IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED:/);
+  assert.match(workflow,/causal-replay-prepatch-reproduced:/);
+});
+
+test('continuous worker captures incremental QA failure signature before failed step exits',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const start=workflow.indexOf('- name: Run impact-first incremental QA role');
+  const end=workflow.indexOf('- name: Run read-only performance sanity role',start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/qa_rc=\$\{PIPESTATUS\[0\]\}/);
+  assert.match(block,/VIBE2_INCREMENTAL_QA_FAILURE_SIGNATURE/);
+  assert.match(block,/failure_signature=\$failure_signature/);
+  assert.match(workflow,/IQA_FAILURE_SIGNATURE:/);
+  assert.match(workflow,/incremental-qa-failure-signature:/);
+});
+
+test('worker immutable result preserves causal replay status without treating plan-only as executed',()=>{
+  const start=workflow.indexOf('- name: Run impact-first incremental QA role');
+  const resultStart=workflow.indexOf('- name: Build immutable worker result');
+  const resultEnd=workflow.indexOf('- name: Upload worker result for fan-in');
+  assert(start>=0&&resultStart>start&&resultEnd>resultStart);
+  const qaStep=workflow.slice(start,resultStart);
+  const resultStep=workflow.slice(resultStart,resultEnd);
+  assert(qaStep.includes('VIBE2_CAUSAL_REPLAY_STATUS='));
+  assert(qaStep.includes('VIBE2_CAUSAL_REPLAY_EXECUTED='));
+  assert(qaStep.includes('causal_replay_status=$replay_status'));
+  assert(qaStep.includes('causal_replay_executed=$replay_executed'));
+  assert(resultStep.includes('causal-replay-status:${clean(process.env.IQA_CAUSAL_REPLAY_STATUS)}'));
+  assert(resultStep.includes('causal-replay-executed:${clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)}'));
+  assert(resultStep.includes("causalReplayExecuted:clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED).toUpperCase()==='YES'"));
+});
+test('worker result keeps throughput and actual workload telemetry inputs in the immutable result step',()=>{
+  const start=workflow.indexOf('- name: Build immutable worker result');
+  const end=workflow.indexOf('- name: Upload worker result for fan-in');
+  assert(start>=0 && end>start);
+  const resultStep=workflow.slice(start,end);
+  assert(resultStep.includes('CANDIDATE_MANIFEST:'));
+  for(const key of ['RESERVED_AT:','REQUESTED_MAX:','EFFECTIVE_MAX:','WORKER_STARTED_AT_FILE:','CHECKOUT_MS:','MODEL_PREP_MS:','CANDIDATE_MS:','QA_MS:','CHANGED_FILE_COUNT:','ADDED_LINE_COUNT:','DELETED_LINE_COUNT:','CANDIDATE_FAILURE_CLASS:','CANDIDATE_FAILURE_MESSAGE:','EXPLORATION_FILE:']) {
+    assert(resultStep.includes(key),`missing result telemetry env ${key}`);
+  }
+  assert(workflow.includes('git diff --cached --numstat -- "$SOURCE_ROOT"'));
+  assert(workflow.includes('const taskSummaries=(queue.tasks||[]).map(({id,status,retries,packageId,target,department})=>({id,status,retries,packageId,target,department}))'));
+  assert(workflow.includes('JSON.stringify({version:3,results,tasks:taskSummaries}'));
+  assert(!workflow.includes('JSON.stringify({version:3,results,tasks:queue.tasks||[]}'));
+  // 큐 원본/증거는 기존 저장소에 남기고, 리뷰·처리량 집계에 필요한 필드만 결과 파일에 실어야 한다.
+});
+
+test('candidate failure telemetry survives a failed source worker step',()=>{
+  const start=workflow.indexOf('- name: Generate isolated candidate from pinned main contract');
+  const end=workflow.indexOf('- name: Restore incremental QA content-hash cache');
+  assert(start>=0 && end>start);
+  const candidateStep=workflow.slice(start,end);
+  assert(candidateStep.includes('worker_rc=${PIPESTATUS[0]}'));
+  assert(candidateStep.includes('VIBE2_SOURCE_WORKER_FAILURE_CLASS'));
+  assert(candidateStep.includes('failure_class=$failure_class'));
+  assert(candidateStep.includes('duration_ms=$((candidate_finished-candidate_started))'));
+  const resultStart=workflow.indexOf('- name: Build immutable worker result');
+  const resultEnd=workflow.indexOf('- name: Upload worker result for fan-in');
+  const resultStep=workflow.slice(resultStart,resultEnd);
+  assert(resultStep.includes('source-generation-failure:${candidateFailureClass}'));
+  assert(resultStep.includes('coding-failure-fingerprint:${clean(baseCodingMethod.failureFingerprint)}'));
+  assert(resultStep.includes('coding-patch-recipe:${clean(baseCodingMethod.patchRecipeMode)}'));
+  assert(resultStep.includes('coding-verified-failure-memory-count:${Number(baseCodingMethod.verifiedFailureLocalMemoryCount)}'));
+  assert(resultStep.includes('coding-timeout-partial-recovery:YES'));
+  assert(resultStep.includes("const sourceGenerationAttempted=process.env.ORDER_RUN==='true' && route==='text-source-worker'"));
+  assert(resultStep.includes("candidateFailure=sourceGenerationAttempted&&!effectiveCandidateOk?"));
+  assert(resultStep.includes("candidateFailureClass=sourceGenerationAttempted&&!effectiveCandidateOk"));
+  assert(resultStep.includes("'VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT'"));
+  assert(resultStep.includes("manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)"));
+  assert(resultStep.includes("const baseCodingMethod=manifest?.codingMethod||fallbackCodingMethod"));
+  assert(resultStep.includes("strategy:clean(workOrder.candidateStrategyRole.strategy)"));
+  assert(resultStep.includes("failureFingerprint:clean(workOrder?.unifiedLearning?.failureFingerprint)||null"));
+  assert(resultStep.includes("telemetrySource:manifest?.codingMethod?'CANDIDATE_MANIFEST':'WORK_ORDER_FALLBACK'"));
+});
+test('explicit work-order output path overrides runtime default path',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-output-path-'));
+  const queueFile=path.join(root,'queue.json');
+  const controlFile=path.join(root,'parallelism.json');
+  const experienceFile=path.join(root,'experience.json');
+  const runtimeDefault=path.join(root,'runtime-default.json');
+  const explicitOutput=path.join(root,'explicit-output.json');
+  const runtimeFile=path.join(root,'runtime.json');
+  const fixtureRuntime=structuredClone(runtime);
+
+  fixtureRuntime.continuous={...fixtureRuntime.continuous,enabled:false,entryWorkflow:'.github/workflows/vibe2-24h-runner.yml',workerWorkflow:'.github/workflows/vibe2-continuous-core.yml'};
+  fixtureRuntime.documentation={
+    ...fixtureRuntime.documentation,
+    runtimeState:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json'},
+    generatedHandoffTool:'tools/vibe2-handoff.mjs'
+  };
+  fixtureRuntime.sources={queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',workOrder:runtimeDefault};
+  fixtureRuntime.adaptiveBackpressure={...fixtureRuntime.adaptiveBackpressure,stateFile:'parallelism.json'};
+
+  fs.mkdirSync(path.join(root,'tools'),{recursive:true});
+  fs.mkdirSync(path.join(root,'.github','workflows'),{recursive:true});
+  fs.writeFileSync(path.join(root,'tools','vibe2-handoff.mjs'),'// fixture\n','utf8');
+  fs.writeFileSync(path.join(root,'.github','workflows','vibe2-24h-runner.yml'),'name: fixture\n','utf8');
+  fs.writeFileSync(path.join(root,'.github','workflows','vibe2-continuous-core.yml'),'name: fixture\n','utf8');
+  fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:256,tasks:[]}), 'utf8');
+  fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:256}), 'utf8');
+  fs.writeFileSync(experienceFile,JSON.stringify({version:3,records:[]}), 'utf8');
+  fs.writeFileSync(runtimeFile,JSON.stringify(fixtureRuntime), 'utf8');
+
+  const order=runVibeContinuousRunner({runtimeFile,outputFile:explicitOutput});
+  assert.equal(order.reason,'CONTINUOUS_DISABLED');
+  assert.equal(order.machineHandoff.consistency.ok,true);
+  assert.equal(fs.existsSync(explicitOutput),true);
+  assert.equal(fs.existsSync(runtimeDefault),false);
+});
+
+test('central runtime enables functional work packages and adaptive workload telemetry',()=>{
+  assert.equal(runtime.workPackages.enabled,true);
+  assert.equal(runtime.workPackages.smallTaskAction,'auto-expand-or-defer');
+  assert.equal(runtime.workPackages.automaticExpansionMode,'real-disjoint-candidates-first-explicit-related-scopes-fallback');
+  assert.equal(runtime.workPackages.minRelatedImprovementsPerPackage,3);
+  assert.equal(runtime.workPackages.targetFeaturePackagesPerCycle,2);
+  assert.equal(runtime.workPackages.sameFileParallelWrite,false);
+  assert.equal(runtime.workPackages.sharedPreparation,false);
+  assert.equal(runtime.workPackages.longWorkSlotProtection,true);
+  assert.equal(runtime.workPackages.workloadTelemetry.enabled,true);
+  for(const metric of ['completedFeaturePackageCount','actualChangedFileCount','actualChangedLineCount','historicalReworkRatePct','historicalQaDuplicateRatePct','averagePackageCycleTimeMs']) {
+    assert(runtime.workPackages.workloadTelemetry.metrics.includes(metric),`missing work package metric ${metric}`);
+  }
+  assert.equal(runtime.workPackages.efficiencyAdaptation.lowEfficiencyStreakThreshold,2);
+  assert.equal(runtime.workPackages.efficiencyAdaptation.neverReduceSafetyOrQa,true);
+});
+
+
+test('continuous worker runs Web practice artifacts and returns improvement evidence without production promotion',()=>{
+  assert.match(workflow,/Run isolated learning practice/);
+  assert.match(workflow,/learning-web-artifact/);
+  assert.match(workflow,/Upload ephemeral Web practice artifact/);
+  assert.match(workflow,/practice-artifact-score:/);
+  assert.match(workflow,/practice-artifact-improved:/);
+  assert.match(workflow,/practice-next-signal:/);
+  assert.match(workflow,/practiceArtifact/);
+  assert.match(workflow,/VIBE2_PRACTICE_PRODUCTION_PASS=NO/);
+  assert.match(workflow,/VIBE2_PRACTICE_CANONICAL_CANDIDATE_PERSISTED=NO/);
+});
+
+
+test('continuous core connects existing evidence reasoning into self-generated signal cycles without stopping the lane',()=>{
+  assert.match(workflow,/github\.event\.client_payload\.execution_lane/);
+  assert.match(workflow,/tools\/vibe2-learning-motor\.mjs/);
+  assert.match(workflow,/VIBE2_SELF_SIGNAL_MESH=PASS/);
+  assert.match(workflow,/VIBE2_SELF_SIGNAL_AFTER_FANIN=PASS:/);
+  assert.match(workflow,/--state="\$control_root\/\.vibe2\/learning-motor-state\.json"/);
+  assert.match(workflow,/--queue="\$control_root\/\.vibe2\/queue\.json"/);
+  assert.match(workflow,/\.vibe2\/benchmark-ladder\.json/);
+  assert.match(workflow,/\.vibe2\/idle-practice-queue\.json/);
+  assert.match(workflow,/\.vibe2\/web-roblox-handoffs\.json/);
+  assert.match(workflow,/execution_lane:process\.env\.VIBE2_EXECUTION_LANE/);
+  assert.doesNotMatch(workflow,/if \[ "\$VIBE2_EXECUTION_LANE" = 'game-primary' \] && \[ "\$\{continue_required:-NO\}" = 'YES' \]/);
+  assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.brainLiveness,'NEVER_GLOBAL_STOP; SENSOR_CAUSAL_DIAGNOSIS_RECOVERY_AND_REPLAN_CONTINUE');
+  assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.passMeaning,'VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT');
+});
+
+
+test('every non-neuron reserve ingress syncs current company runtime before planning and reservation',()=>{
+  const steward=workflow.indexOf("echo 'VIBE2_RESERVE_STEWARD=PASS'");
+  const fetchRuntime=workflow.indexOf('git -C "$control_root" fetch origin company-runtime --quiet',steward);
+  const planner=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs',fetchRuntime);
+  const learning=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs',planner);
+  const handoff=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check',learning);
+  const reserve=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch',handoff);
+  assert.ok(steward>=0&&fetchRuntime>steward&&planner>fetchRuntime&&learning>planner&&handoff>learning&&reserve>handoff);
+  const block=workflow.slice(steward,handoff);
+  assert.match(block,/company_runtime_snapshot_sha="\$\(git -C "\$control_root" rev-parse origin\/company-runtime\)"/);
+  assert.match(block,/git -C "\$control_root" show "\$company_runtime_snapshot_sha:development-queue\.json" > \/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=PINNED_FIRST_ATTEMPT/);
+  assert.match(block,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=REUSED_RETRY/);
+  assert.match(block,/--development-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/--company-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/VIBE2_RESERVE_RUNTIME_SYNC=PASS/);
+  assert.doesNotMatch(block,/if \[ "\$callback_kind" = 'fanin' \]; then/);
+});
+
+
+test('worker control checkout is state-only and worker executables come from the pinned main contract',()=>{
+  const workerStart=workflow.indexOf('\n  worker:\n');
+  const checkoutStart=workflow.indexOf('- name: Checkout Vibe2 control line',workerStart);
+  const checkoutEnd=workflow.indexOf('- name: Checkout pinned main contract',checkoutStart);
+  const checkout=workflow.slice(checkoutStart,checkoutEnd);
+  assert.ok(workerStart>=0&&checkoutStart>workerStart&&checkoutEnd>checkoutStart);
+  assert.match(checkout,/fetch-depth: 1/);
+  assert.match(checkout,/sparse-checkout:\s*\|\s*\n\s*\.vibe2/);
+  assert.match(workflow,/VIBE2_CONTROL_CHECKOUT_SCOPE=STATE_ONLY/);
+  assert.match(workflow,/VIBE2_WORKER_EXECUTABLE_CODE_SOURCE=PINNED_MAIN_CONTRACT/);
+  assert.match(workflow,/node "\$contract_root\/tools\/vibe2-learning-practice-worker\.mjs"/);
+  assert.match(workflow,/node "\$contract_root\/tools\/vibe2-practice-distillation\.mjs"/);
+  assert.match(workflow,/node "\$contract_root\/tools\/free-budget-telemetry\.mjs"/);
+});
+
+test('24h scheduler fetches only required shallow refs before planning',()=>{
+  const start=safetyNetWorkflow.indexOf('- name: Checkout Vibe2 control branch');
+  const end=safetyNetWorkflow.indexOf('- uses: actions/setup-node@v4',start);
+  const checkout=safetyNetWorkflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(checkout,/fetch-depth: 2/);
+  assert.doesNotMatch(checkout,/fetch-depth: 0/);
+  assert.match(safetyNetWorkflow,/refs\/heads\/main:refs\/remotes\/origin\/main/);
+  assert.match(safetyNetWorkflow,/refs\/heads\/vibe2-unreal-core:refs\/remotes\/origin\/vibe2-unreal-core/);
+  assert.match(safetyNetWorkflow,/refs\/heads\/company-runtime:refs\/remotes\/origin\/company-runtime/);
+  assert.match(safetyNetWorkflow,/--depth=2 --no-tags --quiet/);
+});
+
+test('continuous planners overlay company-runtime design evidence before autonomous planning',()=>{
+  assert.match(workflow,/git -C "\$control_root" fetch origin company-runtime --quiet/);
+  assert.match(workflow,/for runtime_design_path in design game-seed-state\.json/);
+  assert.match(workflow,/git -C "\$control_root" archive "\$company_runtime_snapshot_sha" "\$runtime_design_path" \| tar -x -C \/tmp\/vibe2-main/);
+  assert.match(workflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
+
+  assert.match(safetyNetWorkflow,/git -C \/tmp\/vibe2-main fetch origin [^\n]*company-runtime[^\n]*--quiet/);
+  assert.match(safetyNetWorkflow,/for runtime_design_path in design game-seed-state\.json/);
+  assert.match(safetyNetWorkflow,/runtime_design_sha="\$\(git -C \/tmp\/vibe2-main rev-parse origin\/company-runtime\)"/);
+  assert.match(safetyNetWorkflow,/git -C \/tmp\/vibe2-main checkout "\$runtime_design_sha" -- "\$runtime_design_path"/);
+  assert.match(safetyNetWorkflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
+});
+
+
+test('distillation ingest preserves active rebuilds and stays off heavy game runners',()=>{
+  const ingest=fs.readFileSync(new URL('../.github/workflows/vibe2-distillation-ingest.yml',import.meta.url),'utf8');
+  assert.match(ingest,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-distillation-ingest-pr\n(?:\s+#.*\n)*\s+cancel-in-progress: false/);
+  assert.match(ingest,/\n  ingest:\n[\s\S]{0,220}?runs-on: ubuntu-slim/);
+  assert.doesNotMatch(ingest,/\n  ingest:\n[\s\S]{0,220}?runs-on: ubuntu-latest/);
+  assert.match(ingest,/actions\/setup-python@v5[\s\S]{0,100}?python-version: '3\.12'/);
+});
+
+test('Vibe2 control-plane and heavy jobs use their selected runner pools',()=>{
+  const coreWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const runnerWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
+  assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
+  assert.match(coreWorkflow,/\n  fan_in:[\s\S]*?runs-on: ubuntu-latest/);
+  assert.match(coreWorkflow,/\n  worker:[\s\S]*?runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && matrix\.target == 'roblox' && 'ubuntu-latest' \|\| \(\(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest'\) \}\}/);
+  assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-24\.04-arm/);
+  assert.match(runnerWorkflow,/\n  refill:[\s\S]{0,220}?runs-on: ubuntu-slim/);
+});
+
+test('recovery-fast control work uses a slim runner and never competes for a game-primary runner',()=>{
+  assert.match(recoveryFastWorkflow,/\n  recover:\n\s+runs-on: ubuntu-slim/);
+  assert.doesNotMatch(recoveryFastWorkflow,/runs-on: ubuntu-latest/);
+  assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.consumesGamePrimarySlot,false);
+  assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.workerFanoutPerTask,1);
+});
+
+test('stateless fan-in refill admission coalesces duplicate pending SHA/lane wakes without cancelling active workers',()=>{
+  assert.match(workflow,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  assert.doesNotMatch(workflow,/vibe2-fanin-refill-singleton/);
+  assert.match(workflow,/VIBE2_EVENT_DRIVEN_REFILL=DEDUPED_ACTIVE_EXACT:/);
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_WAKE_COALESCING');
+  assert.equal(runtime.continuous.atomicNeuronStream.sameLaneFanInRefillSerialization,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
+  assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
+  assert.equal(runtime.continuous.reserveConcurrency.reserveJobsParallel,true);
+  assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.gameWorkerDispatch,'GAME_PRIMARY_ATOMIC_REFILL_EVENT');
+});
+
+
+test('candidate strategy rotation blocks task-local failed repair strategies while preserving the same compiled scope',()=>{
+  const negative=(strategy,{infrastructureFailure=false,run='r1'}={})=>'coding-strategy-negative:'+encodeURIComponent(JSON.stringify({
+    version:1,variant:'primary',strategy,failureFingerprint:'roblox|EDIT_MATCH|TIMEOUT',
+    failureClass:'TIMEOUT',runEvidence:'actions-run:'+run,verifiedBy:'IMMUTABLE_WORKER_RESULT',infrastructureFailure
+  }));
+  const task={id:'asset-repeat',gameId:'asset-repeat',target:'roblox',lastOutcome:'FAIL',evidence:[negative('PRIMARY_RESPONSIBILITY_MINIMAL')]};
+  const primary=candidateStrategyRole('primary',{},task);
+  const speculative1=candidateStrategyRole('speculative-1',{},task);
+  const speculative2=candidateStrategyRole('speculative-2',{},task);
+  assert.equal(primary.strategy,'DEPENDENCY_SAFE_COHERENT_PATCH');
+  assert.equal(speculative1.strategy,'CAUSAL_TRACE_CROSSCHECK');
+  assert.equal(speculative2.strategy,'INVARIANT_PRESERVING_ALTERNATIVE');
+  assert.deepEqual(primary.avoidedFailedStrategies,['PRIMARY_RESPONSIBILITY_MINIMAL']);
+  assert.equal(primary.repeatedFailedStrategyBlocked,true);
+  assert.equal(new Set([primary.strategy,speculative1.strategy,speculative2.strategy]).size,3);
+  const escalated={...task,evidence:[
+    negative('PRIMARY_RESPONSIBILITY_MINIMAL',{run:'r1'}),
+    negative('DEPENDENCY_SAFE_COHERENT_PATCH',{run:'r2'}),
+    negative('CAUSAL_TRACE_CROSSCHECK',{run:'r3'})
+  ]};
+  assert.equal(candidateStrategyRole('primary',{},escalated).strategy,'INVARIANT_PRESERVING_ALTERNATIVE');
+  assert.equal(candidateStrategyRole('speculative-1',{},escalated).strategy,'PATH_VERIFIED_ANCHOR_FIRST');
+  assert.equal(candidateStrategyRole('speculative-2',{},escalated).strategy,'OBSERVABLE_DELTA_FIRST');
+  const infraOnly={...task,evidence:[negative('PRIMARY_RESPONSIBILITY_MINIMAL',{infrastructureFailure:true,run:'infra'})]};
+  assert.equal(candidateStrategyRole('primary',{},infraOnly).strategy,'PRIMARY_RESPONSIBILITY_MINIMAL');
+  assert.deepEqual(candidateStrategyRole('primary',{},infraOnly).avoidedFailedStrategies,[]);
+});
+
+
+test('game and asset-development workers bind verified learning-runtime playbooks and preserve complete knowledge attribution',()=>{
+  assert.ok(workflow.includes('Prepare verified learning memory once for worker cohort'));
+  assert.ok(workflow.includes('Download cohort verified learning memory'));
+  assert.ok(workflow.includes("if: env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development'"));
+  assert.ok(workflow.includes('git fetch --depth=1 --no-tags origin vibe2-learning-runtime --quiet'));
+  assert.ok(workflow.includes('company-learning/vibe3-task-playbooks.json'));
+  assert.ok(workflow.includes('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS'));
+  assert.match(workflow,/name: Prepare verified learning memory once for worker cohort[\s\S]*?VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS/);
+  assert.match(workflow,/name: Verify cohort learning memory SHA[\s\S]*?VIBE2_VERIFIED_LEARNING_MEMORY_MODE=COHORT_ARTIFACT_SHA_ONLY/);
+  assert.ok(workflow.includes("generatedFrom||'')!=='VERIFIED_MEMORY_ONLY'"));
+  assert.ok(workflow.includes('VERIFIED_PLAYBOOK_AUTHORITY_REQUIRED'));
+  assert.ok(workflow.includes('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED'));
+  assert.ok(workflow.includes('--learning-motor-state="$GITHUB_WORKSPACE/.vibe2/learning-motor-state.json"'));
+  assert.ok(workflow.includes('--code-patterns="$GITHUB_WORKSPACE/.vibe2/code-pattern-library.json"'));
+  assert.ok(workflow.includes('--practice-distilled="$GITHUB_WORKSPACE/.vibe2/practice-distilled-knowledge.json"'));
+  assert.ok(workflow.includes('--external-ai-distilled="$GITHUB_WORKSPACE/.vibe2/external-ai-distilled-knowledge.json"'));
+  assert.ok(workflow.includes('--playbooks="$GITHUB_WORKSPACE/vibe2-learning-memory/company-learning/vibe3-task-playbooks.json"'));
+  assert.ok(workflow.includes('JSON.stringify(workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds)'));
+  assert.equal(workflow.includes('exactInjectedKnowledgeIds.slice(0,40)'),false);
+  assert.ok(workflow.includes('applicationCoveragePct:Number(workOrder.knowledgeApplicationContract.applicationCoveragePct||0)'));
+  assert.ok(workflow.includes('allRetrievedKnowledgeApplied:workOrder.knowledgeApplicationContract.allRetrievedKnowledgeApplied===true'));
+  assert.ok(workflow.includes('verifiedExternalLearningFirst:workOrder.knowledgeApplicationContract.verifiedExternalLearningFirst===true'));
+  assert.ok(workflow.includes('verifiedExternalLearningIds:Array.isArray(workOrder.knowledgeApplicationContract.verifiedExternalLearningIds)'));
+  assert.ok(workflow.includes('verifiedExternalLearningCoveragePct:Number(workOrder.knowledgeApplicationContract.verifiedExternalLearningCoveragePct||0)'));
+  assert.ok(workflow.includes('verifiedExternalLearningApplyAxes:Array.isArray(workOrder.knowledgeApplicationContract.verifiedExternalLearningApplyAxes)'));
+  const fanInReview=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  const experienceMemory=fs.readFileSync('assets/vibe-experience-memory.js','utf8');
+  const experienceControl=fs.readFileSync('tools/vibe2-experience-control.mjs','utf8');
+  assert.ok(fanInReview.includes('VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION'));
+  assert.ok(fanInReview.includes('VERIFIED_EXTERNAL_LEARNING_AXIS_MISSING'));
+  assert.ok(experienceMemory.includes('verifiedExternalLearningApplication'));
+  assert.ok(experienceMemory.includes('fullCoverageVerified'));
+  assert.ok(experienceControl.includes('verifiedExternalLearningApplication: review.verifiedExternalLearningApplication || null'));
+  assert.ok(workflow.includes('verified-external-learning-apply-axes:'));
+  assert.ok(workflow.includes('verifiedLearningMemorySha:'));
+  assert.ok(continuousRunnerSource.includes("Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs"));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalLearningFirst:true'));
+  // External sources are opt-in: only actually retrieved verified playbooks trigger mandatory source-proof gates.
+  assert.match(continuousRunnerSource,/mandatoryVerifiedKnowledgeApplication=externalLearningApplicable&&verifiedExternalPlaybookReuse\.length>0/);
+  assert.doesNotMatch(continuousRunnerSource,/mandatoryVerifiedKnowledgeApplication=\['roblox','unity','web'\]\.includes\(plan\.target\)\|\|assetDevelopmentLearning/);
+  assert.ok(continuousRunnerSource.includes('verifiedExternalLearningCoveragePct=verifiedExternalPlaybookReuse.length>0'));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalDistilledContentComplete'));
+  assert.ok(continuousRunnerSource.includes('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED_BEFORE_GAME_OR_ASSET_WORK'));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalLearningApplyAxes'));
+  assert.ok(continuousRunnerSource.includes('allRetrievedPrinciplesHaveExplicitDisposition'));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalLearningDispositions'));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalGameSourcePrincipleCount'));
+  assert.ok(continuousRunnerSource.includes("'verifiedExternalLearningApplyAxes='+knowledgeApplicationContract.verifiedExternalLearningApplyAxes.join(',')"));
+  assert.ok(continuousRunnerSource.includes('VERIFIED_EXTERNAL_BLACK_BOX_LEARNING_REQUIRED_BEFORE_GAME_OR_ASSET_WORK'));
+  assert.ok(continuousRunnerSource.includes('Before authoring, assign every verified external black-box principle an explicit game-source, validation-only, or not-applicable disposition'));
+  assert.ok(workflow.includes("asset-development"));
+  assert.ok(continuousRunnerSource.includes('VERIFIED_COMMERCIAL_BLACK_BOX_DISTILLATION_REQUIRED_FOR_INTERNAL_ASSET_PRODUCTION'));
+  assert.ok(continuousRunnerSource.includes('verified-commercial-distillation-internal-asset-contract'));
+  assert.ok(continuousRunnerSource.includes('VIBE2_COMMERCIAL_BLACK_BOX_INTERNAL_ASSET_DISTILLATION='));
+  assert.ok(continuousRunnerSource.includes('VIBE2_COMMERCIAL_BLACK_BOX_REUSE_COUNT='));
+  assert.ok(continuousRunnerSource.includes('VIBE2_INTERNAL_ASSET_EVOLUTION_MODE='));
+});
+
+
+test('asset candidates enter the same regression review and release gates as game candidates',()=>{
+  const fanin=workflow.slice(workflow.indexOf('  fan_in:'));
+  const sharedCondition=`[[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' ]]`;
+  assert.equal(fanin.split('if '+sharedCondition+'; then').length-1,2);
+  assert.match(fanin,/Dispatch reviewed winner candidates to release gate\n\s+if: env\.VIBE2_EXECUTION_LANE == 'game-primary' \|\| env\.VIBE2_EXECUTION_LANE == 'asset-development'/);
+  assert.ok(workflow.includes('if '+sharedCondition+' && [ "$expected_variants"'));
+});
+
+test('completed worker results batch into early fan-in without per-worker dispatch or partial-task leakage',()=>{
+  const start=workflow.indexOf('      - name: Resume completed candidate review from immutable worker results');
+  // 레거시 model_cache 단계는 제거되었으므로 실제 복구 단계 본문만 분리한다.
+  const block=workflow.slice(start,workflow.indexOf('\n      - name:',start+1));
+  const script=block.match(/node <<'NODE' > \/tmp\/vibe2-stranded-review-runs\.tsv\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-stranded-'));
+  fs.mkdirSync(path.join(root,'.vibe2'));
+  const released={assetProductionLane:false,status:'running',blocker:'slot-released-awaiting-fan-in',reservationRunId:'123',evidence:[]};
+  const partial={...released,blocker:null,reservationRunId:'124'};
+  const reviewed={...released,reservationRunId:'125',evidence:['role-result:review:PASS']};
+  const assetReleased={...released,reservationRunId:'126',assetProductionLane:true};
+  const legacyAsset={...released,reservationRunId:'127',assetProductionLane:true,blocker:'candidate-awaiting-qa-and-deployment'};
+  fs.writeFileSync(path.join(root,'.vibe2/queue.json'),JSON.stringify({tasks:[released,{...released},assetReleased,legacyAsset,partial,reviewed]}));
+  try{
+    const result=spawnSync(process.execPath,['-e',script],{cwd:root,encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary'}});
+    assert.equal(result.status,0,result.stderr);
+    assert.equal(result.stdout.trim(),'123\tEARLY_SLOT');
+    const assetResult=spawnSync(process.execPath,['-e',script],{cwd:root,encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'asset-development'}});
+    assert.equal(assetResult.status,0,assetResult.stderr);
+    assert.equal(assetResult.stdout.trim(),'126\tEARLY_SLOT\n127\tLEGACY_ASSET');
+    assert.match(block,/LEGACY_ASSET:in_progress\|LEGACY_ASSET:completed/);
+    assert.match(block,/VIBE2_COMPLETED_RESULT_REVIEW_RESUME/);
+    assert.match(workflow,/run-id: \$\{\{ needs\.reserve\.outputs\.stranded_review_run \}\}/);
+    assert.match(workflow,/VIBE2_BATCH_EARLY_FAN_IN_ELIGIBLE/);
+    assert.match(workflow,/VIBE2_BATCH_EARLY_FAN_IN_RESULT_COUNT/);
+    assert.match(workflow,/\.filter\(row=>eligible\.has\(String\(row\.taskId\|\|''\)\)\)/);
+    assert.doesNotMatch(block,/vibe2-neuron-complete|repository_dispatch/);
+    assert.equal(runtime.continuous.callbackCoalescing.slotReleasedEarlyFanInBatchReview,true);
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInSourceRunMayBeInProgress,true);
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInFiltersToReleasedTaskIds,true);
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInPerWorkerDispatchRequired,false);
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInConsumer,'CENTRAL_RESERVE_BATCH_FAN_IN');
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInReservationDrainRun,true);
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInDrainRefillAfterReview,true);
+    assert.match(workflow,/VIBE2_BATCH_EARLY_FAN_IN_READY=/);
+    assert.match(workflow,/VIBE2_RESERVE_MODE=BATCH_EARLY_FAN_IN_PARALLEL:/);
+    assert.match(workflow,/VIBE2_RESERVE_CONTINUES_DURING_EARLY_FAN_IN=YES/);
+    const parallelAt=workflow.indexOf('VIBE2_RESERVE_MODE=BATCH_EARLY_FAN_IN_PARALLEL:');
+    const reserveAt=workflow.indexOf('vibe2-queue-control.mjs reserve-batch',parallelAt);
+    assert.ok(parallelAt>=0&&reserveAt>parallelAt);
+    const reserveBlock=workflow.slice(parallelAt,reserveAt);
+    assert.doesNotMatch(reserveBlock,/BATCH_EARLY_FAN_IN_DRAIN/);
+    assert.doesNotMatch(reserveBlock,/matrix:\[\]/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('candidate promotion preserves the conflict-marker gate without rejecting formatting whitespace',()=>{
+  const release=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+  assert.equal(release.split('git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check').length-1,3);
+  assert.ok(release.includes('reject candidate-diff-check-failed'));
+});
+
+
+test('shared queue retry delays spread concurrent writers within bounded windows',()=>{
+  const blocks=[...workflow.matchAll(/retry_window_ms=\$\(\((?:state_attempt|attempt) \* 2000\)\)[\s\S]*?printf -v retry_sleep[^\n]+/g)].map(match=>match[0]);
+  assert.equal(blocks.length,4);
+  for(const block of blocks){
+    const script=`set -euo pipefail
+RANDOM=1234
+for attempt in 1 5 1000; do
+  state_attempt=$attempt
+  for writer in {1..128}; do
+    ${block}
+    printf '%s %s\\n' "$attempt" "$retry_sleep"
+  done
+done`;
+    const result=spawnSync('bash',['-c',script],{encoding:'utf8'});
+    assert.equal(result.status,0,result.stderr);
+    const rows=result.stdout.trim().split('\n').map(line=>line.split(' ').map(Number));
+    assert.equal(rows.length,384);
+    for(const attempt of [1,5,1000]){
+      const delays=rows.filter(row=>row[0]===attempt).map(row=>row[1]);
+      assert(delays.every(value=>Number.isFinite(value)&&value>=(attempt===1?1:5)&&value<=(attempt===1?2:10)));
+      assert(new Set(delays).size>100,'concurrent writers must not share one fixed retry delay');
+    }
+  }
+});
+
+test('fan-in conflict retry has enough runtime to preserve full regression and atomic queue repair',()=>{
+  const fanIn=workflow.slice(workflow.indexOf('\n  fan_in:'));
+  assert.ok(fanIn.startsWith('\n  fan_in:'),'canonical fan-in job missing');
+  const minutes=Number(fanIn.match(/\n    timeout-minutes: (\d+)/)?.[1]||0);
+  assert.ok(minutes>=15,'fan-in ended before an optimistic queue conflict replay could complete');
+  assert.match(fanIn,/cancel-in-progress: false/);
+  assert.match(fanIn,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(fanIn,/VIBE2_FAN_IN_OPTIMISTIC_RETRY/);
+  assert.match(fanIn,/node "\$contract_root\/tools\/vibe2-fan-in-review\.mjs"/);
+  assert.doesNotMatch(fanIn,/git push --force/);
+});
+
+// 실제 워크플로의 중복 판별 코드를 실행하여 오래 실행되는 워커가 새 리필을 막지 않는지 확인한다.
+test('refill admission and completion callbacks merge waiting wakes only',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const title='Vibe2 Continuous Core · vibe2-fanin-refill · game-primary';
+  const blocks=[...workflow.matchAll(/^ +const fs=require\('fs'\);\n(?:(?!^ +NODE$)[\s\S])*?process\.stdout\.write\((older|found)\?'yes':'no'\);/gm)]
+    .map(match=>match[0]).filter(code=>/refill-(?:admission-)?runs\.json/.test(code));
+  assert.equal(blocks.length,4);
+  for(const code of blocks){
+    for(const [status,sha,lane,id,expected] of [
+      ['queued','head',title,1,'yes'],['pending','head',title,1,'yes'],
+      ['in_progress','head',title,1,'yes'],['completed','head',title,1,'no'],
+      ['queued','old',title,1,'no'],['queued','head',title+'-other',1,'no'],
+      ['queued','head',title,2,'no']
+    ]){
+      let output='';
+      const run={id,event:'repository_dispatch',head_branch:'main',head_sha:sha,display_title:lane,status};
+      vm.runInNewContext(code,{
+        require:name=>name==='fs'?{readFileSync:()=>JSON.stringify({workflow_runs:[run]})}:{execFileSync:()=>JSON.stringify({jobs:[{name:'reserve',status:'in_progress'}]})},
+        process:{env:{CURRENT_RUN:'2',CURRENT_MAIN:'head',REFILL_LANE:'game-primary',REFILL_TITLE:title},stdout:{write:value=>{output+=value;}}}
+      });
+      assert.equal(output,expected,status+':'+sha+':'+lane+':'+id);
+      if(expected==='yes')for(const jobs of [[{name:'reserve',status:'completed'},{name:'worker',status:'queued'}],null]){
+        output='';
+        vm.runInNewContext(code,{
+          require:name=>name==='fs'?{readFileSync:()=>JSON.stringify({workflow_runs:[run]})}:{execFileSync:()=>{if(jobs===null)throw Error('probe unavailable');return JSON.stringify({jobs});}},
+          process:{env:{CURRENT_RUN:'2',CURRENT_MAIN:'head',REFILL_LANE:'game-primary',REFILL_TITLE:title},stdout:{write:value=>{output+=value;}}}
+        });
+        assert.equal(output,'no','completed reserve or unavailable telemetry must not suppress refill');
+      }
+    }
+  }
+});
+
+// 실제 저장소에서 상태 브랜치가 움직여도 고정 main 소스의 Git 식별과 내용은 바뀌면 안 된다.
+test('pinned reserve snapshot retains exact Git source identity after control branch advances',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'reserve-source-id-'));
+  const repo=path.join(root,'repo'),snapshot=path.join(root,'snapshot');fs.mkdirSync(repo);
+  const env={...process.env,GIT_AUTHOR_NAME:'test',GIT_AUTHOR_EMAIL:'test@example.invalid',GIT_COMMITTER_NAME:'test',GIT_COMMITTER_EMAIL:'test@example.invalid'};
+  const git=(cwd,args)=>execFileSync('git',args,{cwd,env,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  try{
+    git(repo,['init','-b','main']);fs.mkdirSync(path.join(repo,'roblox-games','demo'),{recursive:true});
+    fs.writeFileSync(path.join(repo,'roblox-games','demo','server.luau'),'original game source');
+    git(repo,['add','.']);git(repo,['commit','-m','pinned main']);
+    const pinned=git(repo,['rev-parse','HEAD']),tree=git(repo,['rev-parse','HEAD:roblox-games/demo']);
+    // 새 reserve 보조 단계가 같은 worktree 문구를 사용해도 정식 계약 단계만 검사한다.
+    const contractStep=workflow.indexOf('      - name: Prepare latest main machine contract');
+    const start=workflow.indexOf('          rm -rf /tmp/vibe2-main',contractStep);
+    const end=workflow.indexOf('          # An old callback contract',start);
+    assert.ok(contractStep>=0&&start>contractStep&&end>start);
+    const script=workflow.slice(start,end).replace(/^ {10}/gm,'').replaceAll('/tmp/vibe2-main',snapshot);
+    const result=spawnSync('bash',['-euo','pipefail','-c',script],{cwd:repo,env:{...env,contract_sha:pinned},encoding:'utf8',timeout:15000});
+    assert.equal(result.status,0,result.stdout+result.stderr);
+    assert.equal(currentSourceTreeSha({repoRoot:snapshot,sourcePath:'roblox-games/demo'}),tree);
+    git(repo,['checkout','-b','runtime-state']);
+    fs.writeFileSync(path.join(repo,'roblox-games','demo','server.luau'),'different control source');
+    git(repo,['commit','-am','advance control']);
+    assert.notEqual(git(repo,['rev-parse','HEAD:roblox-games/demo']),tree);
+    assert.equal(git(snapshot,['rev-parse','HEAD']),pinned);
+    assert.equal(currentSourceTreeSha({repoRoot:snapshot,sourcePath:'roblox-games/demo'}),tree);
+    assert.equal(fs.readFileSync(path.join(snapshot,'roblox-games','demo','server.luau'),'utf8'),'original game source');
+    fs.mkdirSync(path.join(snapshot,'design'));fs.writeFileSync(path.join(snapshot,'design','runtime.json'),'runtime design overlay');
+    assert.equal(currentSourceTreeSha({repoRoot:snapshot,sourcePath:'roblox-games/demo'}),tree);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// 큐 최신 상태 재생과 후보 fan-in은 과거 전체 브랜치 이력을 입력으로 쓰지 않는다.
+test('canonical Vibe reserve and fan-in fetch bounded latest state without changing replay ownership',()=>{
+  for(const file of ['.github/workflows/vibe2-continuous-core.yml','.github/workflows/vibe2-24h-runner.yml']){
+    const workflow=fs.readFileSync(file,'utf8');
+    const fetches=workflow.split('\n').filter(line=>/git(?: -C [^ ]+)? fetch origin (?:main|company-runtime|vibe2-unreal-core) --quiet/.test(line));
+    assert.ok(fetches.length>0);
+    for(const line of fetches){assert.match(line,/--depth=1/);assert.match(line,/--no-tags/);}
+  }
+  const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);
+  assert.match(core,/VIBE2_FAN_IN_OPTIMISTIC_RETRY_UNBOUNDED=YES/);
+  assert.match(core,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(core,/storage-unpack/);assert.match(core,/storage-pack/);
+});
+
+// 예약 저장 충돌: 독립 조직 상태만 병합하며 실제 예약 변경은 기존 재계산으로 돌린다.
+test('reserve replays disjoint state writes but never reuses a reservation after queue changes',t=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const start=workflow.indexOf('            while true; do\n              if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then');
+  const end=workflow.indexOf('            if [ "$state_persisted" = 1 ]; then break; fi',start);
+  assert.ok(start>0&&end>start);
+  const block=workflow.slice(start,end).split('\n').map(line=>line.replace(/^ {12}/,'')).join('\n');
+  for(const remotePath of ['system-ai-queue.json','recovery-queue.json','queue.json']){
+    const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-reserve-replay-'));
+    t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+    const remote=path.join(root,'remote.git'),owner=path.join(root,'owner'),scheduler=path.join(root,'scheduler');
+    const git=(cwd,...args)=>execFileSync('git',['-C',cwd,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+    execFileSync('git',['init','--bare',remote],{stdio:'ignore'});
+    execFileSync('git',['clone',remote,owner],{stdio:'ignore'});
+    for(const dir of [owner]){git(dir,'config','user.name','test');git(dir,'config','user.email','test@example.org');}
+    fs.mkdirSync(path.join(owner,'.vibe2'));
+    for(const file of ['queue.json','system-ai-queue.json','recovery-queue.json'])fs.writeFileSync(path.join(owner,'.vibe2',file),'initial\n');
+    git(owner,'add','.');git(owner,'commit','-m','initial');git(owner,'push','origin','HEAD:refs/heads/vibe2-unreal-core');
+    execFileSync('git',['clone','--branch','vibe2-unreal-core',remote,scheduler],{stdio:'ignore'});
+    git(scheduler,'config','user.name','test');git(scheduler,'config','user.email','test@example.org');
+    fs.writeFileSync(path.join(scheduler,'.vibe2/queue.json'),'reserved\n');
+    git(scheduler,'add','.');git(scheduler,'commit','-m','reservation');
+    fs.writeFileSync(path.join(owner,'.vibe2',remotePath),'other-worker\n');
+    git(owner,'add','.');git(owner,'commit','-m','concurrent worker');git(owner,'push','origin','HEAD:refs/heads/vibe2-unreal-core');
+    const output=execFileSync('bash',['-c','set -eu\ncontrol_root="$1"\nstate_persisted=0\n'+block+'\necho PERSISTED=$state_persisted\n','reserve-test',scheduler],
+      {encoding:'utf8',stdio:['ignore','pipe','pipe']});
+    if(remotePath==='queue.json'){
+      assert.match(output,/REPLAN_RELEVANT_STATE_CHANGED/);
+      assert.match(output,/PERSISTED=0/);
+      assert.equal(git(owner,'show','origin/vibe2-unreal-core:.vibe2/queue.json'),'other-worker');
+    }else{
+      assert.match(output,/REUSED_VALIDATED_RESERVATION/);
+      assert.match(output,/PERSISTED=1/);
+      git(owner,'fetch','origin','vibe2-unreal-core');
+      assert.equal(git(owner,'show','FETCH_HEAD:.vibe2/queue.json'),'reserved');
+      assert.equal(git(owner,'show','FETCH_HEAD:.vibe2/'+remotePath),'other-worker');
+    }
+  }
+});

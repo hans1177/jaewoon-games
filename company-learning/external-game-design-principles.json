@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "meaning": "ARTBOOK_EQUALS_GAME_DESIGN",
+  "updatedAt": "2026-09-11",
+  "sourcePolicy": {
+    "publicSourcesOnly": true,
+    "storeSourceExcerpts": false,
+    "paraphrasePrinciplesOnly": true,
+    "externalPrinciplesAreProposals": true,
+    "userAndGameFactsWin": true,
+    "directWeightTrainingAllowed": false,
+    "promotionNeedsInternalValidation": true
+  },
+  "sources": [
+    {
+      "id": "unity-game-design-iteration",
+      "publisher": "Unity",
+      "title": "Game Design - Unity Learn",
+      "url": "https://learn.unity.com/tutorial/game-design?version=6.3",
+      "accessedAt": "2026-09-11"
+    },
+    {
+      "id": "unity-gdd-player-feedback",
+      "publisher": "Unity",
+      "title": "Create a game design document - Unity Learn",
+      "url": "https://learn.unity.com/tutorial/664b276cedbc2a4d7b2e4f10?version=2022.3",
+      "accessedAt": "2026-09-11"
+    },
+    {
+      "id": "gamedeveloper-playcentric-iteration",
+      "publisher": "Game Developer",
+      "title": "Book Excerpt: Game Design Workshop, 5th Edition",
+      "url": "https://www.gamedeveloper.com/design/book-excerpt-game-design-workshop",
+      "accessedAt": "2026-09-11"
+    },
+    {
+      "id": "gamedeveloper-mda-tools",
+      "publisher": "Game Developer",
+      "title": "Tools of a Game Designer: What I use and What is out There",
+      "url": "https://www.gamedeveloper.com/design/tools-of-a-game-designer-what-i-use-and-what-is-out-there",
+      "accessedAt": "2026-09-11"
+    },
+    {
+      "id": "game-accessibility-basic",
+      "publisher": "Game Accessibility Guidelines",
+      "title": "Basic guidelines",
+      "url": "https://gameaccessibilityguidelines.com/basic/",
+      "accessedAt": "2026-09-11"
+    },
+    {
+      "id": "game-accessibility-full",
+      "publisher": "Game Accessibility Guidelines",
+      "title": "Full list",
+      "url": "https://gameaccessibilityguidelines.com/full-list/",
+      "accessedAt": "2026-09-11"
+    }
+  ],
+  "principles": [
+    {
+      "id": "player-experience-first",
+      "titleKo": "플레이어 경험에서 역산",
+      "principleKo": "먼저 플레이어가 어떤 감정과 판단을 경험해야 하는지 정하고, 그 경험을 만드는 행동과 규칙을 역산한다.",
+      "roles": ["planning", "balance", "qa"],
+      "genres": ["*"],
+      "tags": ["player-experience", "mda", "goal"],
+      "sourceIds": ["gamedeveloper-mda-tools", "gamedeveloper-playcentric-iteration"]
+    },
+    {
+      "id": "core-loop-explicit",
+      "titleKo": "핵심 루프를 한 줄로 고정",
+      "principleKo": "핵심 행동, 피드백, 보상 또는 결과, 다음 선택이 반복되는 구조를 설계 단계에서 명시하고 각 시스템이 이 루프를 강화하는지 확인한다.",
+      "roles": ["planning", "development", "balance"],
+      "genres": ["*"],
+      "tags": ["core-loop", "system", "progression"],
+      "sourceIds": ["unity-game-design-iteration", "gamedeveloper-playcentric-iteration"]
+    },
+    {
+      "id": "prototype-before-scale",
+      "titleKo": "작게 만들고 먼저 검증",
+      "principleKo": "큰 제작에 들어가기 전에 가장 작은 플레이 가능한 형태로 핵심 가설을 검증하고, 맞지 않으면 설계를 먼저 수정한다.",
+      "roles": ["planning", "development", "qa"],
+      "genres": ["*"],
+      "tags": ["prototype", "iteration", "risk"],
+      "sourceIds": ["unity-game-design-iteration", "gamedeveloper-playcentric-iteration"]
+    },
+    {
+      "id": "test-against-experience-goal",
+      "titleKo": "플레이테스트를 설계 목표와 연결",
+      "principleKo": "플레이테스트는 단순 오류 확인이 아니라 설계한 경험과 선택이 실제 플레이에서 발생했는지를 관찰하고 다음 수정 우선순위를 정하는 데 사용한다.",
+      "roles": ["planning", "qa", "balance"],
+      "genres": ["*"],
+      "tags": ["playtest", "feedback", "iteration"],
+      "sourceIds": ["unity-gdd-player-feedback", "gamedeveloper-playcentric-iteration"]
+    },
+    {
+      "id": "meaningful-choice-tradeoff",
+      "titleKo": "선택에 이유와 대가 부여",
+      "principleKo": "장비, 경로, 스킬, 자원 소비 같은 선택은 하나의 정답으로 수렴하지 않도록 서로 다른 이득과 비용을 갖게 설계한다.",
+      "roles": ["planning", "balance", "development"],
+      "genres": ["action-rpg", "survival", "strategy", "turn-based", "tower-defense", "collection", "*"],
+      "tags": ["choice", "tradeoff", "balance"],
+      "sourceIds": ["unity-game-design-iteration"]
+    },
+    {
+      "id": "mobile-input-legibility",
+      "titleKo": "모바일 조작과 가독성을 설계에 포함",
+      "principleKo": "터치 조작은 버튼 크기와 간격, 입력 단순성, 민감도와 중요한 정보의 즉시 가독성을 설계 기준에 포함하고 실제 작은 화면에서 검증한다.",
+      "roles": ["graphics", "development", "qa"],
+      "genres": ["*"],
+      "tags": ["mobile", "controls", "readability", "accessibility"],
+      "sourceIds": ["game-accessibility-basic", "game-accessibility-full"]
+    },
+    {
+      "id": "difficulty-as-tunable-system",
+      "titleKo": "난이도를 조정 가능한 시스템으로 취급",
+      "principleKo": "난이도를 단일 숫자로만 보지 말고 적 속도, 공격 압박, 퍼즐 부담, 보조 기능 등 조정 가능한 요소로 나눠 플레이 경험 목표에 맞춘다.",
+      "roles": ["balance", "qa", "planning"],
+      "genres": ["*"],
+      "tags": ["difficulty", "accessibility", "balance"],
+      "sourceIds": ["game-accessibility-full"]
+    },
+    {
+      "id": "settings-and-progress-remembered",
+      "titleKo": "설정과 진행 의미 보존",
+      "principleKo": "플레이어가 조정한 설정과 중요한 진행 상태는 다시 실행해도 유지되도록 설계하고 저장 의미를 기능 설계의 일부로 검증한다.",
+      "roles": ["development", "qa"],
+      "genres": ["*"],
+      "tags": ["save", "settings", "continuity"],
+      "sourceIds": ["game-accessibility-basic", "game-accessibility-full"]
+    }
+  ]
+}

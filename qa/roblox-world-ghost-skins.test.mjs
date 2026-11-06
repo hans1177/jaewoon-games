@@ -1,0 +1,405 @@
+// 파일명: qa/roblox-world-ghost-skins.test.mjs
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+
+const root='assets/roblox/world-ghosts/';
+const catalog=fs.readFileSync(root+'GhostSkinCatalog.luau','utf8');
+const factory=fs.readFileSync(root+'GhostSkinFactory.luau','utf8');
+const luau=process.env.VIBE2_LUAU_BINARY;
+const native={skip:luau?false:'Official Luau binary not configured; Studio verification remains pending'};
+
+test('authored bride mesh has bounded weighted geometry and six closed-loop/one-shot clips',()=>{
+ const dir=root+'native/mesh/';
+ const evidence=JSON.parse(fs.readFileSync(dir+'evidence.json','utf8'));
+ assert.equal(evidence.assetId,'gwisin-bride');
+ assert.equal(evidence.nativeStudioVerified,false);assert.equal(evidence.productionVerified,false);
+ assert.equal(evidence.sourceSha256,crypto.createHash('sha256').update(fs.readFileSync(root+'build-mesh.py')).digest('hex'));
+ for(const artifact of evidence.artifacts)assert.equal(crypto.createHash('sha256').update(fs.readFileSync(dir+artifact.file)).digest('hex'),artifact.sha256);
+ const bytes=fs.readFileSync(dir+'bride.glb');assert.equal(bytes.readUInt32LE(0),0x46546c67);assert.equal(bytes.readUInt32LE(4),2);assert.equal(bytes.readUInt32LE(8),bytes.length);
+ const size=bytes.readUInt32LE(12);const model=JSON.parse(bytes.subarray(20,20+size).toString());
+ const binary=bytes.subarray(28+size);
+ const components={SCALAR:1,VEC2:2,VEC3:3,VEC4:4,MAT4:16};
+ const read=index=>{
+  const a=model.accessors[index],view=model.bufferViews[a.bufferView];
+  const width=components[a.type],length=a.componentType===5126||a.componentType===5125?4:a.componentType===5123?2:1;
+  const reader=a.componentType===5126?'readFloatLE':a.componentType===5125?'readUInt32LE':a.componentType===5123?'readUInt16LE':'readUInt8';
+  return Array.from({length:a.count},(_,row)=>Array.from({length:width},(_,col)=>binary[reader]((view.byteOffset||0)+(a.byteOffset||0)+row*(view.byteStride||width*length)+col*length)));
+ };
+ assert.equal(model.skins.length,1);assert.ok(model.skins[0].joints.length>=80);
+ assert.ok(model.meshes.length<=16);
+ let triangles=0;
+ for(const mesh of model.meshes)for(const primitive of mesh.primitives){
+  const positions=read(primitive.attributes.POSITION),weights=read(primitive.attributes.WEIGHTS_0),joints=read(primitive.attributes.JOINTS_0),indices=read(primitive.indices);
+  assert.equal(positions.length,weights.length);triangles+=indices.length/3;
+  for(const xyz of positions)for(const n of xyz)assert.ok(Number.isFinite(n)&&Math.abs(n)<10);
+  for(const w of weights){assert.ok(Math.abs(w.reduce((a,b)=>a+b,0)-1)<1e-4);assert.ok(w.every(n=>n>=0&&n<=1));}
+  for(const j of joints)assert.ok(j.every(n=>Number.isInteger(n)&&n<model.skins[0].joints.length));
+  for(const [i] of indices)assert.ok(i<positions.length);
+ }
+ assert.ok(triangles>10000&&triangles<32000);assert.equal(triangles,evidence.triangles);
+ assert.deepEqual(model.animations.map(a=>a.name).sort(),Object.keys(evidence.clips).sort());
+ for(const clip of model.animations){
+  let duration=0;
+  for(const channel of clip.channels){
+   const sampler=clip.samplers[channel.sampler],times=read(sampler.input).flat(),values=read(sampler.output);
+   for(let i=0;i<times.length;i++){assert.ok(Number.isFinite(times[i]));if(i)assert.ok(times[i]>times[i-1]);}
+   for(const row of values)assert.ok(row.every(Number.isFinite));
+   duration=Math.max(duration,times.at(-1));
+   if(['idle','walk','chase'].includes(clip.name))for(let i=0;i<values[0].length;i++)assert.ok(Math.abs(values[0][i]-values.at(-1)[i])<1e-4,clip.name+': loop discontinuity');
+   if(model.nodes[channel.target.node].name==='Root')for(const value of values)for(let i=0;i<value.length;i++)assert.ok(Math.abs(value[i]-values[0][i])<1e-6,'asset must not translate the gameplay root');
+  }
+  assert.ok(Math.abs(duration-evidence.clips[clip.name])<1e-4,clip.name+': wrong duration');
+ }
+});
+
+test('native place and model contain the tested sources; package build never claims Studio success',()=>{
+ const evidence=JSON.parse(fs.readFileSync(root+'native/build-evidence.json','utf8'));
+ const hash=data=>crypto.createHash('sha256').update(data).digest('hex');
+ assert.equal(evidence.nativeStudioVerified,false);
+ assert.equal(evidence.artVerified,false);
+ assert.equal(evidence.gameplayVerified,false);
+ for(const source of evidence.sources)assert.equal(hash(fs.readFileSync(root+source.file)),source.sha256,source.file);
+ for(const artifact of evidence.artifacts){
+  const xml=fs.readFileSync(root+'native/'+artifact.file,'utf8');
+  assert.equal(hash(Buffer.from(xml)),artifact.sha256);
+  assert.match(xml,/<roblox version="4">/);
+  const modules=new Map();
+  for(const match of xml.matchAll(/<Item class="(?:ModuleScript|LocalScript)"[^>]*>\s*<Properties>([\s\S]*?)<\/Properties>/g)){
+   const properties=match[1];const name=properties.match(/<string name="Name">([^<]+)<\/string>/)?.[1];
+   const source=properties.match(/<string name="Source"><!\[CDATA\[([\s\S]*?)\]\]><\/string>/)?.[1];
+   modules.set(name,source);
+  }
+  for(const name of ['GhostSkinCatalog','GhostSkinFactory','GhostSkinMotion','GhostSkinAudit'])assert.equal(modules.get(name),fs.readFileSync(root+name+'.luau','utf8'),artifact.file+':'+name);
+  if(artifact.file.endsWith('.rbxlx')){
+   assert.equal(modules.get('GhostGallery'),fs.readFileSync(root+'Gallery.client.luau','utf8'));
+   assert.equal(modules.size,105);
+  }else assert.equal(modules.size,104);
+  for(const id of fs.readdirSync(root+'motions')){
+   assert.equal(modules.get(id),fs.readFileSync(root+'motions/'+id+'/init.luau','utf8'),artifact.file+':'+id);
+  }
+ }
+});
+
+function run(body){
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ghost-skins-'));
+  try{
+    const file=path.join(dir,'test.luau');
+    fs.writeFileSync(file,`local Catalog=(function()${catalog}\nend)()\nlocal script={Parent={WaitForChild=function()return 'catalog'end}}\nlocal require=function()return Catalog end\n${body}`);
+    const result=spawnSync(luau,[file],{encoding:'utf8',timeout:20000,maxBuffer:12*1024*1024});
+    assert.equal(result.status,0,result.stderr||result.stdout||String(result.error));
+    return result.stdout;
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+}
+
+test('object motion modules bind all 100 identities and preserve other states and gameplay roots',native,()=>{
+ const files=fs.readdirSync(root+'motions').sort();
+ assert.equal(files.length,100);
+ const modules=files.map(file=>'Profiles["'+file+'"]=(function()'+fs.readFileSync(root+'motions/'+file+'/init.luau','utf8')+'\nend)()').join('\n');
+ runMotion(`
+ local Profiles={}\n${modules}
+ local folder={FindFirstChild=function(_,id) if Profiles[id]then return id end end}
+ script.FindFirstChild=function(_,name) if name=="Motions"then return folder end end
+ require=function(id) return Profiles[id] end
+ for _,skin in ipairs(Catalog)do
+  local model=Factory.Describe(skin.id,'mid')
+  assert(Profiles[skin.id].AssetId==skin.id,"wrong object identity")
+  for _,state in ipairs(Motion.States)do for frame=0,32 do
+   local time=frame/16
+   local sample=Motion.Sample(model.form,model.bones,time,state,skin.id)
+   local original=Motion.Sample(model.form,model.bones,time,state)
+   for name,pose in pairs(sample)do
+    assert(model.bones[name],"unknown joint")
+    for axis,value in pairs(pose)do
+     assert(type(value)=="number" and value==value and math.abs(value)<16,"unbounded pose")
+     if name=="Root"then assert(value==0,"gameplay root changed")end
+     if state~="walk" and not (state=="attack" and Profiles[skin.id].AuthoredClip=="attack")then assert(value==original[name][axis],"unselected clip changed")end
+    end
+   end
+  end end
+ end
+ `);
+});
+
+test('100 ghost skin source recipes remain reproducible but retired pack stays outside canonical CC0 asset registry',()=>{
+  const result=spawnSync(process.execPath,[root+'generate-catalog.mjs','--check'],{encoding:'utf8'});
+  assert.equal(result.status,0,result.stderr);
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(registry.assets.some(row=>row.id==='roblox-world-ghost-skins-v1'),false,
+    'removed self-authored ghost pack must not regain production registration');
+  assert.equal(registry.assets.filter(row=>row.packId==='roblox-world-ghost-skins-v1').length,0,
+    'removed unlicensed ghost variants cannot claim CC0 game reuse');
+  assert.ok(policy.ownerCanonicalRules?.rule5,'current owner CC0 authority must exist');
+  assert.match(catalog,/gwisin-bride/,'historical source recipes remain inspectable but not approved for publication');
+  assert.equal(registry.productionPassAuthority,false,'catalog is never a runtime gate');
+});
+
+test('all 300 LOD recipes have bounded geometry and distinct shapes, beyond recolors',native,()=>{
+  const output=run(`
+local Factory=(function()${factory}\nend)()
+local forms={};local ids={};local maximum=0
+assert(#Factory.List()==100)
+for _,row in ipairs(Catalog)do
+ assert(not ids[row.id]);ids[row.id]=true;forms[row.form]=true
+ for _,quality in ipairs({'far','mid','near'})do
+  local data=Factory.Describe(row.id,quality)
+  assert(#data.parts>10 and #data.parts<=180,row.id);maximum=math.max(maximum,#data.parts)
+  local names={}
+  for _,part in ipairs(data.parts)do
+   assert(not names[part.name],row.id..': duplicate part '..part.name);names[part.name]=true
+   assert(data.bones[part.bone] and data.palette[part.color],row.id)
+   for _,n in ipairs(part.size)do assert(n==n and n>0 and n<=30,row.id)end
+   for _,n in ipairs(part.position)do assert(n==n and math.abs(n)<=30,row.id)end
+   for _,n in ipairs(part.rotation)do assert(n==n and math.abs(n)<=720,row.id)end
+   if quality=='mid' then
+    print('SHAPE',row.id,part.shape,table.concat(part.size,','),table.concat(part.position,','),table.concat(part.rotation,','))
+   end
+  end
+ end
+ assert(#Factory.Describe(row.id,'far').parts<=#Factory.Describe(row.id,'mid').parts,row.id)
+ assert(#Factory.Describe(row.id,'mid').parts<=#Factory.Describe(row.id,'near').parts,row.id)
+end
+local count=0;for _ in pairs(forms)do count+=1 end;assert(count==27)
+assert(not pcall(Factory.Describe,'missing'))
+assert(not pcall(Factory.Describe,'gumiho','ultra'))
+print('MAX_PARTS',maximum)
+`);
+  const geometry=new Map();
+  for(const line of output.trim().split('\n')){
+    const [kind,id,...values]=line.split('\t');
+    if(kind!=='SHAPE')continue;
+    if(!geometry.has(id))geometry.set(id,[]);
+    geometry.get(id).push(values.join('|'));
+  }
+  const identities=new Map();
+  for(const [id,parts] of geometry){
+    const signature=parts.sort().join(';');
+    assert.ok(!identities.has(signature),`${id} duplicates geometry of ${identities.get(signature)}`);
+    identities.set(signature,id);
+  }
+  assert.equal(identities.size,100);
+});
+
+test('native construction connects every cosmetic part and gallery paging destroys no game content',native,()=>run(`
+local all={}
+local methods={}
+function methods:SetAttribute(key,value)self.attributes[key]=value end
+function methods:PivotTo(value)self.pivot=value end
+local function frame(x,y,z)
+ local value={x=x or 0,y=y or 0,z=z or 0}
+ function value:ToObjectSpace(other)return frame(other.x-self.x,other.y-self.y,other.z-self.z)end
+ return setmetatable(value,{__mul=function(a,b)return frame(a.x+b.x,a.y+b.y,a.z+b.z)end})
+end
+local CFrame={new=frame,Angles=function()return frame()end}
+local Vector3={new=function(x,y,z)return{x=x,y=y,z=z}end}
+local Color3={fromRGB=function(...)return{...}end}
+local Enum={PartType={Ball='Ball',Cylinder='Cylinder'},Material={Neon='Neon',SmoothPlastic='SmoothPlastic'}}
+local Instance={new=function(class,parent)
+ local object=setmetatable({ClassName=class,attributes={},Parent=parent},{__index=methods})
+ table.insert(all,object);return object
+end}
+local Factory=(function()${factory}\nend)()
+local parent={}
+for _,row in ipairs(Catalog)do
+ all={};local model=Factory.Create(row.id,{parent=parent})
+ assert(model.Parent==parent and model.PrimaryPart.Anchored)
+ assert(model.attributes.ProductionVerified==false and model.attributes.CosmeticSkinOnly)
+ local joints=0;local welded={};local animator=0
+ for _,object in ipairs(all)do
+  assert(object.ClassName~='Script' and object.ClassName~='LocalScript' and object.ClassName~='Humanoid')
+  if object.ClassName=='WeldConstraint' then assert(object.Part0.Parent==model and object.Part1.Parent==model);welded[object.Part1]=true end
+  if object.ClassName=='Motor6D' then joints+=1;assert(object.Part0.Parent==model and object.Part1.Parent==model and object.C0 and object.C1)end
+  if object.ClassName=='Animator' then animator+=1 end
+  if object.ClassName=='Part' or object.ClassName=='WedgePart' then assert(not object.CanCollide and not object.CanTouch and not object.CanQuery and object.Massless)end
+ end
+ local boneCount=0;for _ in pairs(Factory.Describe(row.id).bones)do boneCount+=1 end
+ assert(joints==boneCount-1 and animator==1,row.id)
+ for _,object in ipairs(all)do
+  if (object.ClassName=='Part' or object.ClassName=='WedgePart') and object.Transparency~=1 then assert(welded[object] and not object.Anchored,row.id)end
+ end
+end
+for page=1,13 do
+ all={};local gallery=Factory.CreateGallery(parent,page,'far');local count=0
+ for _,object in ipairs(all)do if object.ClassName=='Model' then assert(object.Parent==gallery);count+=1 end end
+ assert(count==(page==13 and 4 or 8));assert(gallery.Parent==parent)
+end
+assert(not pcall(Factory.CreateGallery,parent,0))
+assert(not pcall(Factory.CreateGallery,parent,14))
+assert(not pcall(Factory.CreateGallery,parent,1.5))
+assert(not Factory.Create('dokkaebi',{anchored=false}).PrimaryPart.Anchored)
+`));
+
+function runMotion(body){return run('local Factory=(function()'+factory+'\nend)()\nlocal Motion=(function()'+fs.readFileSync(root+'GhostSkinMotion.luau','utf8')+'\nend)()\n'+body);}
+test("quadrupeds, spider legs, tail fans and wings have independent moving joints",native,()=>runMotion(`
+local beast=Factory.Describe('kelpie')
+for _,name in ipairs({'FrontLeftLeg','FrontRightLeg','BackLeftLeg','BackRightLeg'})do
+ assert(beast.bones[name] and beast.bones[name].parent=='Torso')
+ local found=false;for _,part in ipairs(beast.parts)do if part.name==name then assert(part.bone==name);found=true end end;assert(found)
+end
+local spider=Factory.Describe('jorogumo')
+for i=1,4 do for _,side in ipairs({'Left','Right'})do
+ local name='Spider'..side..i;assert(spider.bones[name].parent=='Torso')
+ assert(spider.bones[name..'Knee'].parent==name)
+end end
+local fox=Factory.Describe('gumiho')
+for i=1,9 do assert(fox.bones['TailFan'..i].parent=='Tail')end
+local wing=Factory.Describe('tengu')
+assert(wing.bones.LeftWing.parent=='Torso' and wing.bones.RightWing.parent=='Torso')
+local mask=Factory.Describe('jangsanbeom');local visibleEyes=0
+for _,part in ipairs(mask.parts)do if part.name:find('WHITE_MASK_MaskEye',1,true)then visibleEyes+=1 end end
+assert(visibleEyes>=4)
+local plain=Factory.Describe('egg-face')
+for _,part in ipairs(plain.parts)do assert(not part.name:find('MaskEye',1,true))end
+`));
+test("100 skins have finite six-state poses; limbs alternate and motion never moves the root",native,()=>runMotion(`
+for _,row in ipairs(Catalog)do
+ local data=Factory.Describe(row.id)
+ for _,state in ipairs(Motion.States)do for _,time in ipairs({0,.15,.35,.7,1.2,4})do
+  local pose=Motion.Sample(data.form,data.bones,time,state)
+  for name,values in pairs(pose)do
+   assert(data.bones[name]);for _,value in pairs(values)do assert(type(value)=='number' and value==value and math.abs(value)<10)end
+  end
+  for _,value in pairs(pose.Root)do assert(value==0)end
+ end end
+end
+local quadruped=Factory.Describe('kelpie')
+local gait=Motion.Sample(quadruped.form,quadruped.bones,.2,'walk')
+assert(gait.FrontLeftLeg.rx~=0 and gait.FrontLeftLeg.rx==-gait.FrontRightLeg.rx)
+assert(gait.FrontLeftLeg.rx==gait.BackRightLeg.rx)
+local spider=Factory.Describe('jorogumo')
+local crawl=Motion.Sample(spider.form,spider.bones,.2,'walk')
+assert(crawl.SpiderLeft1.ry~=crawl.SpiderLeft2.ry)
+local endAttack=Motion.Sample('TALL',{Torso=true,LeftArm=true},1,'attack')
+assert(math.abs(endAttack.LeftArm.rx)<.0001)
+assert(not pcall(Motion.Sample,'TALL',{},0/0,'walk'))
+assert(not pcall(Motion.Sample,'TALL',{},0,'teleport'))
+`));
+test("motion bindings restore rest transforms and dispose without background loops",native,()=>runMotion(`
+local function frame(n)return setmetatable({n=n or 0},{__mul=function(a,b)return frame(a.n+b.n)end})end
+CFrame={new=function(x,y,z)return frame((x or 0)+(y or 0)+(z or 0))end,Angles=function(x,y,z)return frame(x+y+z)end}
+local joint={Name='FrontLeftLegJoint',Part1={Name='SkinFrontLeftLeg'},C0=frame(4),Parent={}}
+function joint:IsA(name)return name=='Motor6D'end
+local model={Parent={}}
+function model:GetDescendants()return{joint}end
+function model:GetAttribute(name)
+ if name=='BodyForm' then return 'BEAST' end
+ if name=='AssetId' then return 'kelpie' end
+end
+local profile=(function()${fs.readFileSync(root+'motions/kelpie/init.luau','utf8')}\nend)()
+local calls=0;local walk=profile.walk
+profile.walk=function(...)calls=calls+1;return walk(...)end
+script.FindFirstChild=function(_,name)
+ assert(name=='Motions');return{FindFirstChild=function(_,id)assert(id=='kelpie');return id end}
+end
+require=function(id)assert(id=='kelpie');return profile end
+local bound=Motion.Bind(model);local rest=joint.C0
+bound.step(.2,'walk');assert(joint.C0.n~=rest.n);assert(calls==1)
+bound.reset();assert(joint.C0==rest)
+bound.step(.2,'chase');assert(joint.C0~=rest);assert(calls==1)
+bound.destroy();assert(joint.C0==rest)
+bound.step(2,'walk');assert(joint.C0==rest);assert(calls==1)
+`));
+
+test('ten authored experiments change visible joints, close loops, settle attacks and bound adjacent frames',native,()=>{
+ const ids=['ghoul','banshee','dullahan','kelpie','leshy','boitata','ifrit','redcap','mare','poltergeist'];
+ const modules=ids.map(id=>'Profiles["'+id+'"]=(function()'+fs.readFileSync(root+'motions/'+id+'/init.luau','utf8')+'\nend)()').join('\n');
+ const output=runMotion(`
+ local Profiles={}
+ ${modules}
+ local folder={FindFirstChild=function(_,id)if Profiles[id]then return id end end}
+ script.FindFirstChild=function()return folder end
+ require=function(id)return Profiles[id]end
+ for id,profile in pairs(Profiles)do
+  local data=Factory.Describe(id,'mid')
+  local state=profile.AuthoredClip
+  assert(state=='walk' or state=='attack')
+  local first=Motion.Sample(data.form,data.bones,0,state,id)
+  local last=Motion.Sample(data.form,data.bones,profile.Duration,state,id)
+  local driven={};for _,part in ipairs(data.parts)do driven[part.bone]=true end
+  local previous=nil;local changed=0;local peak=0
+  for frame=0,240 do
+   local t=profile.Duration*frame/240
+   local sample=Motion.Sample(data.form,data.bones,t,state,id)
+   local original=Motion.Sample(data.form,data.bones,t,state)
+   for name,values in pairs(sample)do
+    for axis,value in pairs(values)do
+     assert(value==value and math.abs(value)<3,id..': finite bounded pose')
+     assert(name~='Root' or value==0,id..': root authority')
+     if driven[name]then changed=math.max(changed,math.abs(value-original[name][axis]))end
+     if previous then peak=math.max(peak,math.abs(value-previous[name][axis]))end
+     if frame==240 then assert(math.abs(value-first[name][axis])<1e-6,id..': endpoint pop')end
+    end
+   end
+   previous=sample
+  end
+  assert(changed>.08,id..': no visible source improvement')
+  assert(peak<.15,id..': adjacent-frame jump')
+  if state=='attack'then
+   for _,t in ipairs({-1,2,20})do
+    for _,values in pairs(Motion.Sample(data.form,data.bones,t,state,id))do
+     for _,value in pairs(values)do assert(math.abs(value)<1e-6,id..': one-shot did not settle')end
+    end
+   end
+  end
+  print('EXPERIMENT',id,state,changed,peak)
+ end
+ local k=Factory.Describe('kelpie')
+ local p=Motion.Sample(k.form,k.bones,.2,'walk','kelpie')
+ assert(math.abs(p.FrontLeftLeg.rx-p.BackRightLeg.rx)>.03,'quadruped still uses diagonal pair sine')
+ `);
+ assert.equal(output.split('\n').filter(line=>line.startsWith('EXPERIMENT')).length,10);
+ console.log(output.trim());
+});
+
+test('published comparison frames are bound to the native build and actual internal geometry',()=>{
+ const preview=JSON.parse(fs.readFileSync(root+'native/motion-experiments.json','utf8'));
+ const evidence=JSON.parse(fs.readFileSync(root+'native/build-evidence.json','utf8'));
+ assert.equal(preview.sourceFingerprint,evidence.sourceFingerprint);
+ assert.equal(preview.nativeStudioVerified,false);
+ assert.equal(preview.experiments.length,10);
+ assert.equal(preview.experiments.filter(x=>x.clip==='walk').length,6);
+ assert.equal(preview.experiments.filter(x=>x.clip==='attack').length,4);
+ for(const row of preview.experiments){
+  assert.equal(row.frames.length,121);assert.equal(row.before.length,121);
+  assert.ok(row.model.parts.length>10);
+  const rootIndex=row.boneNames.indexOf('Root');assert.ok(rootIndex>=0);
+  for(const frame of row.frames){
+   assert.equal(frame.length,row.boneNames.length);
+   for(const pose of frame)assert.ok(pose.length===6&&pose.every(Number.isFinite));
+   assert.deepEqual(frame[rootIndex],[0,0,0,0,0,0]);
+  }
+ }
+});
+
+test('automatic asset gallery binds every monster and environment to exact source and finite poses',()=>{
+ const gallery=JSON.parse(fs.readFileSync(root+'native/asset-gallery.json','utf8'));
+ const hash=data=>crypto.createHash('sha256').update(data).digest('hex');
+ assert.equal(gallery.sampledBy,'OFFICIAL_LUAU');assert.equal(gallery.nativeStudioVerified,false);assert.equal(gallery.productionVerified,false);
+ for(const row of gallery.sources)assert.equal(hash(fs.readFileSync(row.file)),row.sha256,row.file);
+ assert.equal(hash(JSON.stringify(gallery.sources)),gallery.sourceFingerprint);
+ const catalogIds=[...catalog.matchAll(/\{id="([^"]+)"/g)].map(row=>row[1]).sort();
+ assert.deepEqual(gallery.monsters.map(row=>row.id).sort(),catalogIds);
+ const environment=JSON.parse(fs.readFileSync('assets/roblox/common-environment-v1/catalog.json','utf8'));
+ assert.deepEqual(gallery.environments.map(row=>row.id).sort(),environment.biomes.map(id=>id.toLowerCase()).sort());
+ for(const row of [...gallery.monsters,...gallery.environments]){
+  const bytes=fs.readFileSync(row.path.slice(1));assert.equal(bytes.length,row.bytes);assert.equal(hash(bytes),row.sha256,row.id);
+  const sample=JSON.parse(bytes);assert.equal(sample.id,row.id);assert.equal(sample.sourceFingerprint,gallery.sourceFingerprint);
+  assert.equal(sample.nativeStudioVerified,false);assert.equal(sample.productionVerified,false);assert.ok(sample.model.parts.length>0);
+  for(const part of sample.model.parts)for(const key of ['position','size','rotation'])assert.ok(part[key].length===3&&part[key].every(Number.isFinite));
+  if(!sample.clips)continue;
+  assert.deepEqual(sample.clips.map(clip=>clip.id),['idle','walk','chase','attack','hit','death']);
+  for(const clip of sample.clips){
+   assert.ok(clip.duration>0&&Number.isFinite(clip.duration));assert.equal(clip.frames.length,121);
+   for(const frame of clip.frames){
+    assert.equal(frame.length,sample.boneNames.length);
+    for(const pose of frame)assert.ok(pose.length===6&&pose.every(Number.isFinite));
+    assert.deepEqual(frame[sample.boneNames.indexOf('Root')],[0,0,0,0,0,0]);
+   }
+  }
+ }
+});

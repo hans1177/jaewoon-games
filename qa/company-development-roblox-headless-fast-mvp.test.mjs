@@ -1,0 +1,542 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {spawnSync} from 'node:child_process';
+import {inspectHeadlessSourceTexts} from '../tools/company-development-roblox-headless-fast-mvp.mjs';
+import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
+
+// 실제 워크플로의 저장 코드를 실행해 늦게 끝난 게임/작업이 다른 증거를 덮지 않는지 확인한다.
+test('per-game F0 persistence checks uploaded identity and never demotes a newer exact checkpoint',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const section=workflow.slice(workflow.indexOf("Persist this game's F0 result immediately"));
+  const code=section.match(/node <<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const evidence={gameId:'garden',pass:true,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:200,gameplayProductReadinessRequired:true,gameplayProductReadiness:{pass:true}};
+  const execute=(item,proof=evidence,env={})=>{
+    const writes=new Map(),exit=Symbol('exit');
+    const original={items:[item,{gameId:'other',robloxRuntimePassed:true,currentStep:'F9'}]};
+    const fakeFs={existsSync:()=>proof!==null,readFileSync:file=>JSON.stringify(file==='development-queue.json'?original:proof),writeFileSync:(file,value)=>writes.set(file,String(value))};
+    try{vm.runInNewContext(code,{require:name=>{assert.equal(name,'fs');return fakeFs;},process:{env:{GAME_ID:'garden',SOURCE_REVISION:revision,EXPECTED_ARTIFACT:artifact,EVIDENCE_FILE:'evidence.json',PACKAGE_ARTIFACT_READY:'true',GITHUB_RUN_ID:'200',...env},exit:()=>{throw exit;}},console:{log:()=>{}}});}catch(error){if(error!==exit)throw error;}
+    return writes.has('development-queue.json')?JSON.parse(writes.get('development-queue.json')):original;
+  };
+  const item={gameId:'garden',robloxSourceCommit:revision,robloxBuildArtifactIdentity:artifact};
+  const passed=execute(item);
+  assert.equal(passed.items[0].currentStep,'PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
+  assert.equal(passed.items[0].robloxFoundationF0Passed,true);
+  assert.deepEqual(passed.items[1],{gameId:'other',robloxRuntimePassed:true,currentStep:'F9'});
+  for(const proof of [null,{...evidence,gameId:'other'},{...evidence,artifactIdentity:'wrong'}])assert.equal(execute(item,proof).items[0].robloxFoundationF0Passed,false);
+  assert.equal(execute(item,evidence,{PACKAGE_ARTIFACT_READY:'false'}).items[0].robloxFoundationF0Passed,false);
+  assert.equal(execute(item,{...evidence,gameplayProductReadinessRequired:false}).items[0].robloxFoundationF0Passed,false);
+  assert.equal(execute(item,{...evidence,gameplayProductReadiness:{pass:false}}).items[0].robloxFoundationF0Passed,false);
+  const newer={...item,robloxFoundationF0Passed:true,robloxFoundationF0Evidence:{...evidence,artifactRunId:201},robloxRuntimePassed:true,currentStep:'F9'};
+  assert.deepEqual(execute(newer,null).items[0],newer);
+  const stale={...item,robloxSourceCommit:'c'.repeat(40)};
+  assert.deepEqual(execute(stale).items[0],stale);
+  const productProof={...evidence,pass:false,rebuiltArtifactIdentity:artifact,nativeLanguageCompilePassed:true,
+    f0SourceIntegrityPassed:true,gameplayProductReadinessRequired:true,
+    gameplayProductReadiness:{pass:false,blockers:['MISSING_GAMEPLAY_CAPABILITY:WORLD','CORE_LOOP_STEP_UNIMPLEMENTED:0']}};
+  const failed=execute(item,productProof,{PACKAGE_ARTIFACT_READY:'false'}).items[0];
+  assert.equal(failed.robloxFoundationF0Passed,false);
+  assert.equal(failed.robloxRuntimePassed,false);
+  assert.equal(failed.robloxInternalReleaseReady,false);
+  assert.equal(failed.robloxQualityBuildUpRequired,true);
+  assert.equal(failed.robloxQualityBuildUpEvidence.authority,'roblox-f0-gameplay-product-readiness-failure');
+  assert.equal(failed.robloxQualityBuildUpEvidence.runtimeVerified,false);
+  assert.equal(failed.robloxQualityBuildUpEvidence.workflowRunId,200);
+  assert.deepEqual(failed.robloxQualityBuildUpEvidence.qualityFailureKinds,productProof.gameplayProductReadiness.blockers);
+  assert.deepEqual(failed.robloxFoundationF0Evidence,productProof);
+  for(const patch of [{gameId:'other'},{sourceRevision:'c'.repeat(40)},{artifactIdentity:'wrong'},
+    {rebuiltArtifactIdentity:'wrong'},{artifactRunId:199},{nativeLanguageCompilePassed:false},
+    {f0SourceIntegrityPassed:false},{gameplayProductReadinessRequired:false}]){
+    assert.notEqual(execute(item,{...productProof,...patch}).items[0].robloxQualityBuildUpRequired,true);
+  }
+  assert.deepEqual(execute(newer,productProof).items[0],newer);
+  assert.deepEqual(execute(stale,productProof).items[0],stale);
+  assert.equal(execute(failed,null).items[0].robloxQualityBuildUpRequired,true,'infrastructure failure cannot erase a proven gameplay gap');
+  const repaired=execute(failed,{...evidence,gameplayProductReadinessRequired:true,gameplayProductReadiness:{pass:true}}).items[0];
+  assert.equal(repaired.robloxQualityBuildUpRequired,false);
+  const otherAuthority={...failed,robloxQualityBuildUpEvidence:{...failed.robloxQualityBuildUpEvidence,authority:'roblox-official-studio-mcp-product-quality-failure'}};
+  assert.equal(execute(otherAuthority,{...evidence,gameplayProductReadinessRequired:true,gameplayProductReadiness:{pass:true}}).items[0].robloxQualityBuildUpRequired,true);
+  assert.match(workflow,/if: \$\{\{ success\(\) && steps\.persist\.outcome == 'success' \}\}/);
+});
+
+const config='local Config={PolicySource = "company-learning/platform-release-roadmap.json", Platform = "ROBLOX", MobileFirst = true, SaveEnabled=true, PlayMode="COOP", MultiplayerRequired=true, Actions={ATTACK="ATTACK"}} return Config';
+const server='local Players=game:GetService("Players") local DSS=game:GetService("DataStoreService") local foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1") local r=Instance.new("RemoteEvent") local foundationRemote=Instance.new("RemoteEvent") foundationRemote.Name="RuntimeFoundationReport" local lastRequest={} local foundationSpawn=Instance.new("SpawnLocation") local function root(p) return p.Character and p.Character:FindFirstChild("HumanoidRootPart") end local function load(p) p:SetAttribute("Progress",0) pcall(function() return DSS:GetDataStore("x"):GetAsync("x") end) end local function bind(c) local h=c:WaitForChild("Humanoid") local hrp=c:WaitForChild("HumanoidRootPart") hrp.Anchored=false h.PlatformStand=false local hit=workspace:Raycast(hrp.Position,Vector3.new(0,-10,0)) local check="GROUND_CONTACT" local move="MOVEMENT_CONFIRMED" end Players.PlayerAdded:Connect(function(p) load(p) p.CharacterAdded:Connect(bind) end) Players.PlayerRemoving:Connect(function(p) pcall(function() DSS:GetDataStore("x"):SetAsync("x",{}) end) end) r.OnServerEvent:Connect(function(p,action) if typeof(action)~="string" then return end local now=os.clock() if now-(lastRequest[p]or 0)<.1 then return end lastRequest[p]=now p:SetAttribute("Progress",1) end) foundationRemote.OnServerEvent:Connect(function() end) local participants=Players:GetPlayers() r:FireAllClients("MULTIPLAYER_SYNC",{ParticipantCount=#participants}) game:BindToClose(function() end)';
+const client='local UIS=game:GetService("UserInputService") local touchEnabled=UIS.TouchEnabled local gui=Instance.new("ScreenGui") local foundationRemote=game:GetService("ReplicatedStorage"):WaitForChild("RuntimeFoundationReport") local camera=workspace.CurrentCamera local h=game.Players.LocalPlayer.Character:WaitForChild("Humanoid") if camera.CameraSubject==h then foundationRemote:FireServer("CAMERA_READY") end foundationRemote:FireServer("INPUT_READY") button.Activated:Connect(function() remote:FireServer("ATTACK") end) remote.OnClientEvent:Connect(function(kind,payload) if kind~="MULTIPLAYER_SYNC" or typeof(payload)~="table" then return end local synced=payload.ParticipantCount end)';
+const project='{"tree":{"$className":"DataModel","ServerScriptService":{"GameServer":{"$path":"server"}},"StarterPlayer":{"StarterPlayerScripts":{"GameClient":{"$path":"client"}}}}}';
+
+test('bug-defense and fantasy-survival derive F0 ground contact from the actual raycast result',()=>{
+  for(const gameId of ['bug-defense','fantasy-survival']){
+    const source=fs.readFileSync(`roblox-games/${gameId}/server/Game.server.luau`,'utf8');
+    assert.match(source,/local groundContact\s*=\s*groundHit\s*~=\s*nil\s*and\s*groundHit\.Instance\s*~=\s*nil/);
+    assert.match(source,/SetAttribute\("GROUND_CONTACT",\s*groundContact\)/);
+    assert.doesNotMatch(source,/SetAttribute\("GROUND_CONTACT",\s*groundHit\s*~=\s*nil\)/);
+  }
+});
+
+test('headless FAST_MVP passes complete release checklist without Studio',()=>{
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server,client,project});
+ assert.equal(r.pass,true);
+ assert.equal(r.validationMode,'HEADLESS_SOURCE_PREFLIGHT_F0');
+ assert.equal(r.sourcePreflightPassed,true);
+ assert.equal(r.f0SourceIntegrityPassed,true);
+ assert.equal(r.sourceStartupMarkersPassed,true);
+ for(const field of ['gameStartPassed','serverBootPassed','worldFoundationPassed','characterFoundationPassed','physicsAndMovementPassed','runtimeFoundationPassed','actualRuntimeEvidence','internalReleaseReady'])assert.equal(r[field],false,field);
+});
+
+test('F0 rejects the legacy self-hit raycast that fabricated ground contact',()=>{
+ const result=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,config,server:server+'\ncharacter:SetAttribute("GROUND_CONTACT", groundHit ~= nil)',client,project});
+ assert.equal(result.pass,false);
+ assert.equal(result.f0SourceIntegrityPassed,false);
+ assert.ok(result.blockers.includes('groundContactNotSynthetic'));
+});
+
+test('headless F0 binds exact BUILD_UP asset fingerprint and source selection identity',()=>{
+ const buildUpFingerprint='d'.repeat(64);
+ const selectionFingerprint='e'.repeat(64);
+ const assetConfig=config.replace(' return Config',` Config.StudioAssets={LibraryVersion=109,SelectionFingerprint="${selectionFingerprint}"} return Config`);
+ const pass=inspectHeadlessSourceTexts({
+   gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),
+   artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),
+   artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',
+   buildUpAssetSourceUsageFingerprint:buildUpFingerprint,
+   assetSelectionFingerprint:selectionFingerprint,assetLibraryVersion:109,
+   config:assetConfig,server,client,project
+ });
+ assert.equal(pass.pass,true,pass.blockers.join(','));
+ assert.equal(pass.buildUpAssetSourceUsageFingerprint,buildUpFingerprint);
+ assert.equal(pass.assetSelectionFingerprint,selectionFingerprint);
+ assert.equal(pass.observedAssetSelectionFingerprint,selectionFingerprint);
+ assert.equal(pass.assetLibraryVersion,109);
+ assert.equal(pass.observedAssetLibraryVersion,109);
+
+ const mismatch=inspectHeadlessSourceTexts({
+   gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),
+   artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),
+   artifactRunId:123,nativeLanguageCompilePassed:true,
+   buildUpAssetSourceUsageFingerprint:buildUpFingerprint,
+   assetSelectionFingerprint:'f'.repeat(64),assetLibraryVersion:109,
+   config:assetConfig,server,client,project
+ });
+ assert.equal(mismatch.pass,false);
+ assert.ok(mismatch.blockers.includes('assetSelectionFingerprint'));
+});
+
+test('headless FAST_MVP blocks artifact drift',()=>{
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'c'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server,client,project});
+ assert.equal(r.pass,false);
+ assert.ok(r.blockers.includes('exactArtifact'));
+});
+
+test('headless FAST_MVP blocks missing multiplayer synchronization',()=>{
+ const broken=server.replace('r:FireAllClients("MULTIPLAYER_SYNC",{ParticipantCount=#participants})','');
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server:broken,client,project});
+ assert.equal(r.pass,false);
+ assert.ok(r.blockers.includes('multiplayerSync'));
+});
+
+
+test('headless F0 blocks malformed duplicate local function declarations',()=>{
+ const broken=server+' local function tree(parent,pos,scale)local function tree(parent,pos,scale) end';
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server:broken,client,project});
+ assert.equal(r.pass,false);
+ assert.ok(r.blockers.includes('duplicateDeclarationGuard'));
+ assert.equal(r.gameStartPassed,false);
+});
+
+test('headless F0 blocks sources without native foundation sentinel contract',()=>{
+ const broken=server.replace('native-foundation-sentinel-v1','ordinary-store').replace('GROUND_CONTACT','NO_GROUND_PROBE').replace('MOVEMENT_CONFIRMED','NO_MOVE_PROBE');
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server:broken,client,project});
+ assert.equal(r.pass,false);
+ assert.ok(r.blockers.includes('foundationSentinelContract'));
+});
+
+
+test('F0 blocks when actual Luau compiler evidence is missing even if structural markers pass',()=>{
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:false,config,server,client,project});
+ assert.equal(r.pass,false);
+ assert.equal(r.nativeLanguageCompilePassed,false);
+ assert.ok(r.blockers.includes('nativeLanguageCompilePassed'));
+});
+
+
+test('Roblox F0 persist ignores stale source or artifact results',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+ assert.match(workflow,/ROBLOX_F0_STALE_RESULT_IGNORED/);
+ assert.match(workflow,/currentSourceRevision!==targetSourceRevision\|\|currentArtifactIdentity!==targetArtifactIdentity/);
+});
+
+test('Roblox F0 workflow fetches only exact source and latest runtime snapshot without full history',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+ const plan=workflow.slice(workflow.indexOf('\n  plan:\n'),workflow.indexOf('\n  validate:\n'));
+ const worker=workflow.slice(workflow.indexOf('      - name: Fetch exact source and runtime'),workflow.indexOf('      - name: Install pinned Rojo'));
+ assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+ assert.ok((workflow.match(/fetch-depth:\s*1/g)||[]).length>=2);
+ assert.match(plan,/git fetch --no-tags --depth=1 origin "\+refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH"/);
+ assert.match(plan,/git show "origin\/\$COMPANY_RUNTIME_BRANCH:development-queue\.json"/);
+ assert.doesNotMatch(plan,/git fetch --no-tags origin "\$COMPANY_RUNTIME_BRANCH"/);
+ assert.match(worker,/git fetch --no-tags --depth=1 origin "\+refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH"/);
+ assert.match(worker,/git fetch --no-tags --depth=1 origin "\$\{\{ matrix\.sourceRevision \}\}"/);
+ assert.doesNotMatch(worker,/git fetch --no-tags origin "\$COMPANY_RUNTIME_BRANCH" main/);
+});
+
+// [현재 게임] 퇴역 Cozy 대신 마력숲의 실제 스폰과 서버 게임플레이 권한을 확인한다.
+test('fantasy survival anchors the native spawn before foundation player binding and guards actions',()=>{
+  const source=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const spawn=source.indexOf('nativeFoundationSpawn.Parent = workspace');
+  const bind=source.indexOf('Players.PlayerAdded:Connect(bindNativeFoundationPlayer)');
+  assert.ok(spawn>=0&&bind>spawn,'native spawn must exist before foundation player binding');
+  assert.match(source,/nativeFoundationSpawn\.Anchored = true/);
+  assert.match(source,/nativeFoundationSpawn\.CanCollide = false/);
+  assert.match(source,/nativeFoundationSpawn\.Neutral = true/);
+  assert.match(source,/remote\.OnServerEvent:Connect\(function\(player, actionId\)/);
+  assert.match(source,/player:GetAttribute\("ProfileReady"\) ~= true then return end/);
+});
+
+test('F0 workflow preserves blocker evidence even when validation fails',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.match(workflow,/name: development-roblox-f0-\$\{\{ matrix\.gameId \}\}[\s\S]*if-no-files-found: warn/);
+  const f0Upload=workflow.slice(workflow.lastIndexOf('- uses: actions\/upload-artifact@v4'));
+  assert.match(f0Upload,/if: always\(\)/);
+  const tool=fs.readFileSync('tools/company-development-roblox-headless-fast-mvp.mjs','utf8');
+  assert.match(tool,/ROBLOX_FOUNDATION_F0_BLOCKERS=/);
+});
+
+
+// [증거] 현행 게임의 정합성 검사는 빌드가 있어도 SHA가 다르면 반드시 거절한다.
+test('current fantasy F0 rejects mismatched artifacts while retaining source and native compiler checks',()=>{
+  const root='roblox-games/fantasy-survival';
+  const config=fs.readFileSync(root+'/shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync(root+'/server/Game.server.luau','utf8');
+  const client=fs.readFileSync(root+'/client/Game.client.luau','utf8');
+  const project=fs.readFileSync(root+'/default.project.json','utf8');
+  const r=inspectHeadlessSourceTexts({
+    gameId:'fantasy-survival',sourcePath:root,sourceRevision:'a'.repeat(40),
+    artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'c'.repeat(64),
+    artifactRunId:1,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',
+    config,server,client,project
+  });
+  assert.equal(r.pass,false,'mismatched runtime artifact may never become F0 PASS');
+  assert.equal(r.checks.exactArtifact,false);
+  assert.equal(r.checks.nativeLanguageCompilePassed,true);
+  assert.match(server,/native-foundation-sentinel-v1/);
+  assert.match(client,/RuntimeFoundationReport/);
+});
+
+// [재접속] 기존 서버의 지연 가입과 클라이언트 카메라·입력 준비 신호를 유지한다.
+test('fantasy survival foundation rebinds existing players and handles native readiness only on server',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  assert.match(server,/Players\.PlayerAdded:Connect\(bindNativeFoundationPlayer\)/);
+  assert.match(server,/for _, nativeFoundationPlayer in ipairs\(Players:GetPlayers\(\)\) do/);
+  assert.match(server,/task\.defer\(bindNativeFoundationPlayer, nativeFoundationPlayer\)/);
+  assert.match(server,/nativeFoundationRemote\.OnServerEvent:Connect\(function\(player/);
+  assert.match(client,/local endpoint=nativeFoundationRemote or ReplicatedStorage:WaitForChild\("RuntimeFoundationReport",12\)/);
+  assert.match(client,/endpoint:FireServer\("CAMERA_READY"\)/);
+  assert.match(client,/endpoint:FireServer\(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY"\)/);
+  assert.match(client,/CAMERA_READY/);
+  assert.match(client,/INPUT_READY/);
+});
+
+test('F0 checkout and validation fan out across the full external-capacity matrix without workflow-wide serialization',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
+  assert.doesNotMatch(workflow,/rows\.length>=6/);
+  assert.match(workflow,/rows\.length>=256/);
+  assert.doesNotMatch(workflow,/max-parallel:\s*6/);
+  assert.match(workflow,/ROBLOX_F0_PARALLELISM=EXTERNAL_PROVIDER_CAPACITY_ONLY/);
+  assert.match(workflow,/ROBLOX_F0_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL/);
+  assert.match(header,/run-name: Roblox F0 · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.doesNotMatch(header,/^concurrency:\s*$/m);
+  assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_HANDOFF=DEDUPED_CURRENT_MAIN:/);
+  assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_DISPATCH_COUNT=/);
+  assert.match(workflow,/company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID" -f publish_stage=validation/);
+  assert.match(workflow,/ROBLOX_STUDIO_REQUIRED_FOR_F0_CONTINUATION=NO/);
+  assert.doesNotMatch(workflow,/run_studio=true/);
+  const validateStart=workflow.indexOf('\n  validate:\n');
+  const persistStep=workflow.indexOf("Persist this game's F0 result immediately",validateStart);
+  const handoffStep=workflow.indexOf("Dispatch exact private Roblox validation directly after this game's F0 persist",persistStep);
+  assert.ok(persistStep>validateStart&&handoffStep>persistStep);
+  assert.doesNotMatch(workflow,/\n  persist:\n/);
+});
+
+test('F0 planner uses central Roblox validation mode and does not require a queue-local robloxValidationMode cache',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.ok(workflow.includes("const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));"));
+  assert.ok(workflow.includes("const canonicalRobloxValidationMode=String(roadmap.roblox?.validationMode||'').trim();"));
+  assert.ok(workflow.includes("if(canonicalRobloxValidationMode!=='HEADLESS_FAST_MVP')throw new Error('ROBLOX_F0_CANONICAL_VALIDATION_MODE_INVALID:'+canonicalRobloxValidationMode);"));
+  assert.ok(workflow.includes('ROBLOX_F0_CANONICAL_VALIDATION_MODE='));
+  assert.doesNotMatch(workflow,/item\.robloxValidationMode/);
+});
+
+
+test('F0 accepts approved non-combat action loops without inventing combat markers',()=>{
+ const nonCombatConfig=config.replace('Actions={ATTACK="ATTACK"}','Actions={MOVE="MOVE"}');
+ const nonCombatClient=client.replaceAll('ATTACK','MOVE');
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config:nonCombatConfig,server,client:nonCombatClient,project});
+ assert.equal(r.pass,true,r.blockers.join(','));
+ assert.equal(r.checks.combatOrRound,true);
+});
+
+test('F0 persists each matrix game immediately without cohort fan-in and reapplies on runtime conflicts',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const validateStart=workflow.indexOf('\n  validate:\n');
+  const persistStep=workflow.indexOf("      - name: Persist this game's F0 result immediately",validateStart);
+  const handoffStep=workflow.indexOf("      - name: Dispatch exact private Roblox validation directly after this game's F0 persist",persistStep);
+  assert.ok(validateStart>=0&&persistStep>validateStart&&handoffStep>persistStep);
+  assert.doesNotMatch(workflow,/\n  persist:\n/);
+  assert.doesNotMatch(workflow,/needs:\s*\[plan,\s*validate\]/);
+  const block=workflow.slice(persistStep,handoffStep);
+  assert.match(block,/if: always\(\)/);
+  assert.match(block,/GAME_ID: \$\{\{ matrix\.gameId \}\}/);
+  assert.match(block,/SOURCE_REVISION: \$\{\{ matrix\.sourceRevision \}\}/);
+  assert.match(block,/ROBLOX_F0_PERSIST_OPTIMISTIC_ATTEMPT=/);
+  assert.match(block,/ROBLOX_F0_PERSIST_CONFLICT_RETRY=/);
+  assert.match(block,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(block,/ROBLOX_F0_PER_GAME_PERSIST=PASS:/);
+  assert.doesNotMatch(block,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+});
+
+
+test('F0 planner dedupes duplicate dispatches while validation matrix remains parallel',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const jobsAt=workflow.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  const planStart=workflow.indexOf('\n  plan:\n');
+  const validateStart=workflow.indexOf('\n  validate:\n',planStart);
+  const planBlock=workflow.slice(planStart,validateStart);
+  assert.match(planBlock,/runs-on:\s*ubuntu-slim/);
+  assert.match(planBlock,/concurrency:\n\s+group: roblox-f0-plan-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: true/);
+  assert.match(planBlock,/ROBLOX_F0_PLAN_CONTROL_SHA=/);
+  assert.match(planBlock,/String\(run\.head_sha\|\|''\)===currentSha/);
+  assert.match(planBlock,/ROBLOX_F0_PLAN_ACTIVE_WINNER=/);
+  assert.match(planBlock,/ROBLOX_F0_PLAN_EXACT_DEDUPED=/);
+  assert.match(planBlock,/ROBLOX_F0_PLAN_BATCH_DEDUPED_NEWER=/);
+  assert.match(planBlock,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
+  assert.doesNotMatch(workflow,/max-parallel:\s*[1-9][0-9]*/);
+  assert.doesNotMatch(workflow,/\n  persist:\n/);
+  assert.doesNotMatch(workflow,/pattern:\s*development-roblox-f0-\*/);
+  assert.doesNotMatch(workflow,/merge-multiple:\s*true/);
+  const perGamePersist=workflow.indexOf("Persist this game's F0 result immediately");
+  const perGameHandoff=workflow.indexOf("Dispatch exact private Roblox validation directly after this game's F0 persist");
+  assert.ok(perGamePersist>validateStart&&perGameHandoff>perGamePersist);
+});
+
+
+test('F0 validate coalesces only exact game source and artifact duplicates without serializing unrelated work',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const validateStart=workflow.indexOf('\n  validate:\n');
+  const validateEnd=workflow.indexOf('\n  ',validateStart+4);
+  assert.ok(validateStart>=0);
+  const block=workflow.slice(validateStart,workflow.indexOf('\n    steps:\n',validateStart));
+  assert.match(block,/concurrency:\n\s+group: roblox-f0-validate-\$\{\{ matrix\.gameId \}\}-\$\{\{ matrix\.sourceRevision \}\}-\$\{\{ matrix\.artifactIdentity \}\}/);
+  assert.match(block,/cancel-in-progress:\s*false/);
+  assert.doesNotMatch(block,/max-parallel:/);
+  assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/^concurrency:\s*$/m);
+});
+
+test('F0 hands exact game ids directly to private validation without Studio dependency',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.match(workflow,/name: Dispatch exact private Roblox validation directly after this game's F0 persist/);
+  assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_HANDOFF=DISPATCHED:/);
+  assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_HANDOFF=DEDUPED_CURRENT_MAIN:/);
+  assert.match(workflow,/actions\/workflows\/company-development-roblox-release-promotion\.yml\/runs\?per_page=100/);
+  assert.match(workflow,/company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID" -f publish_stage=validation/);
+  assert.match(workflow,/String\(run\.head_sha\|\|''\)===currentSha/);
+  assert.doesNotMatch(workflow,/run_studio=true/);
+});
+
+test('F0 private validation handoff stays dedicated and noncanonical before F9',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const start=workflow.indexOf("Dispatch exact private Roblox validation directly after this game's F0 persist");
+  assert.ok(start>0);
+  const block=workflow.slice(start);
+  assert.match(block,/ROBLOX_F0_PRIVATE_VALIDATION_TARGET=DEDICATED_NONCANONICAL/);
+  assert.match(block,/ROBLOX_STUDIO_REQUIRED_FOR_F0_CONTINUATION=NO/);
+  assert.doesNotMatch(block,/run_studio=true/);
+  assert.doesNotMatch(block,/publish_stage=final/);
+});
+
+
+
+test('F0 blocks generic scope handlers when an exact survival design baseline is bound',()=>{
+ const baseline={content:{
+   identity:'낮에는 자원을 채집하고 밤에는 몰려오는 적을 막는 액션 생존 게임',
+   coreFun:'자원 관리와 실시간 전투',
+   coreLoop:['낮 시간에 자원을 채집하고 장비를 제작한다','밤에 적 웨이브를 막는다','보상으로 성장과 제작법을 해금한다'],
+   signatureSystems:[{name:'즉석 제작',purpose:'자원으로 장비를 제작한다'}],
+   progressionDirection:'경험치와 제작법 해금을 저장한다.',
+   multiplayerMode:'SINGLE'
+ }};
+ const skeletonServer=server
+   +' local function scopeHandler1(p) p:SetAttribute("Score",1) end'
+   +' local function scopeHandler2(p) p:SetAttribute("EnemyHealth",90) end'
+   +' local function scopeHandler3(p) p:SetAttribute("Wave",2) end';
+ const r=inspectHeadlessSourceTexts({
+   gameId:'survival',sourcePath:'roblox-games/survival',sourceRevision:'a'.repeat(40),
+   artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),
+   artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',
+   config,server:skeletonServer,client,project,baseline
+ });
+ assert.equal(r.gameplayProductReadinessRequired,true);
+ assert.equal(r.pass,false);
+ assert.ok(r.blockers.includes('gameplayProductReadiness'));
+ assert.ok(r.gameplayProductReadiness.blockers.includes('GENERIC_SCOPE_HANDLER_SKELETON'));
+ assert.ok(r.gameplayProductReadiness.blockers.some(x=>x.includes('CRAFTING')));
+ assert.equal(r.version,5);
+});
+
+test('current per-game Roblox and Unity concurrent lane passes build preflight without bypassing source guards',()=>{
+  const revision='a'.repeat(40);
+  const artifact='sha256:'+'b'.repeat(64);
+  const directive={ai:{robloxPreflightModel:'llama3.2:1b',modelPool:['llama3.2:1b']}};
+  const item={
+    gameId:'daechung-rpg',
+    productionClass:'DEVELOPMENT_CONFIRMED',
+    selectedPlatform:'UNITY',
+    targetPlatform:'UNITY',
+    platformExecutionMode:'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT',
+    concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    robloxSourceBootstrapPassedAt:'2026-10-09T00:00:00Z',
+    robloxBuildOrPackagePassed:true,
+    robloxSourceCommit:revision,
+    robloxBuildSourceRevision:revision,
+    robloxBuildArtifactIdentity:artifact,
+  };
+  const actual=inspectRobloxBuildPreflight({item,directive});
+  assert.equal(actual.pass,true,actual.blockers.join(','));
+  assert.equal(actual.concurrentRoblox,true);
+  assert.equal(actual.robloxLaneEligible,true);
+  const historical=inspectRobloxBuildPreflight({item:{...item,platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME'},directive});
+  assert.equal(historical.pass,true,historical.blockers.join(','));
+  const absentTarget=inspectRobloxBuildPreflight({item:{...item,concurrentTargetPlatforms:['UNITY']},directive});
+  assert.ok(absentTarget.blockers.includes('roblox-platform-required'));
+  const unsupported=inspectRobloxBuildPreflight({item:{...item,platformExecutionMode:'UNKNOWN'},directive});
+  assert.ok(unsupported.blockers.includes('roblox-platform-required'));
+  const invalidPackage=inspectRobloxBuildPreflight({item:{...item,robloxBuildArtifactIdentity:'sha256:invalid'},directive});
+  assert.ok(invalidPackage.blockers.includes('artifact-identity-invalid'));
+  const staleSource=inspectRobloxBuildPreflight({item:{...item,robloxBuildSourceRevision:'c'.repeat(40)},directive});
+  assert.ok(staleSource.blockers.includes('source-revision-mismatch'));
+  const missingPackage=inspectRobloxBuildPreflight({item:{...item,robloxBuildOrPackagePassed:false},directive});
+  assert.ok(missingPackage.blockers.includes('build-package-not-passed'));
+});
+
+test('village-dungeons F0 uses bounded actual ground contact rather than a one-frame raycast marker',()=>{
+  const gameId='village-dungeons';
+  const base='roblox-games/'+gameId+'/';
+  const config=fs.readFileSync(base+'shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync(base+'server/Game.server.luau','utf8');
+  const client=fs.readFileSync(base+'client/Game.client.luau','utf8');
+  const project=fs.readFileSync(base+'default.project.json','utf8');
+  const r=inspectHeadlessSourceTexts({
+    gameId,sourcePath:'roblox-games/'+gameId,sourceRevision:'a'.repeat(40),
+    artifactIdentity:'sha256:'+'b'.repeat(64),
+    rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),
+    artifactRunId:12,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',
+    config,server,client,project,
+  });
+  assert.equal(r.pass,true,r.blockers.join(','));
+  assert.match(server,/for attempt = 1, 30 do/);
+  assert.ok(server.includes('groundHit ~= nil and groundHit.Instance ~= nil and humanoid.FloorMaterial ~= Enum.Material.Air'));
+  assert.ok(server.includes('character:SetAttribute("GROUND_CONTACT", groundContact)'));
+  assert.ok(!server.includes('character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)'));
+});
+
+
+/* ── 놀이공원 타이쿤 실제 서버 부팅·월드·지면 증거 ── */
+test('amusement tycoon exact F1-F4 checkpoint writer is real and bounded',()=>{
+ const source=fs.readFileSync('roblox-games/amusement-tycoon/server/Game.server.luau','utf8');
+ const client=fs.readFileSync('roblox-games/amusement-tycoon/client/Game.client.luau','utf8');
+ const config=fs.readFileSync('roblox-games/amusement-tycoon/shared/GameConfig.luau','utf8');
+ // 기존 경제 저장소와 별도의 같은-version 구조화 증거만 저장한다.
+ assert.match(source,/GetDataStore\("amusement-tycoon-development-v1"\)/);
+ assert.match(source,/GetDataStore\("native-foundation-sentinel-v1"\)/);
+ assert.match(source,/foundationStore:UpdateAsync\("latest",\s*function\(previous\)/);
+ assert.match(source,/data\.requirements\s*=\s*\{/);
+ assert.match(source,/saveEnabled\s*=\s*Config\.SaveEnabled == true/);
+ assert.match(source,/tostring\(previous\.placeId or ""\) == tostring\(game\.PlaceId\)/);
+ assert.match(source,/tonumber\(previous\.placeVersion\) == game\.PlaceVersion/);
+ assert.match(source,/return nil -- 이미 같은 후보에서 검증한 단계는 다시 쓰지 않는다/);
+ assert.match(source,/if foundationSeen\[name\] then return true end/);
+ assert.match(config,/GameId = "amusement-tycoon"/);
+ const markers=[
+   'SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY',
+   'CHARACTER_READY','GROUND_CONTACT','MOVEMENT_CONFIRMED'
+ ];
+ for(const marker of markers)assert.ok(source.includes('foundationCheckpoint("'+marker+'"'),'missing proof: '+marker);
+ const ordered=markers.slice(0,6).map(marker=>source.indexOf('foundationCheckpoint("'+marker+'"'));
+ assert.deepEqual([...ordered].sort((a,b)=>a-b),ordered,'F1-F4 evidence producers must follow actual initialization');
+ // 구조물만 만들고 지면 검사를 통과시키지 않는다.
+ assert.match(source,/parkWorld:FindFirstChild\("EntranceCounter"\)/);
+ assert.match(source,/parkWorld:FindFirstChild\("RideBuildPad"\)/);
+ assert.match(source,/parkWorld:FindFirstChild\("StarterPath"\)/);
+ assert.match(source,/if foundationSeen\.WORLD_READY and nativeFoundationSpawn:IsA\("SpawnLocation"\)/);
+ assert.match(source,/spawnSupportParams\.FilterDescendantsInstances = \{nativeFoundationSpawn\}/);
+ assert.match(source,/spawnSupportParams\.RespectCanCollide = true/);
+ assert.match(source,/spawnSupport\.Normal\.Y >= 0\.55/);
+ assert.match(source,/math\.abs\(spawnSupport\.Position\.Y - spawnBottom\) <= 0\.6/);
+ assert.match(source,/humanoid\.FloorMaterial ~= Enum\.Material\.Air/);
+ assert.match(source,/math\.abs\(rootPart\.AssemblyLinearVelocity\.Y\) < 3/);
+ assert.match(source,/if foundationPlayer and foundationSeen\.CHARACTER_READY then/);
+ assert.match(source,/foundationCheckpoint\("GROUND_CONTACT", foundationPlayer, \{groundY = contact\.Position\.Y/);
+ assert.match(source,/speed > 0\.1 and displacement\.Magnitude > 0\.5/);
+ assert.match(source,/if foundationPlayer and foundationSeen\.GROUND_CONTACT then/);
+ assert.match(source,/foundationCheckpoint\("MOVEMENT_CONFIRMED", foundationPlayer, \{displacement = displacement\.Magnitude\}/);
+ assert.match(source,/rootPart\.Anchored = false/);
+ assert.match(source,/humanoid\.PlatformStand = false/);
+ assert.match(source,/if foundationPlayer then\s*foundationCheckpoint\("CHARACTER_READY", foundationPlayer/);
+ assert.match(client,/nativeFoundationRemote:FireServer\("CAMERA_READY"\)/);
+ assert.match(client,/nativeFoundationRemote:FireServer\(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY"\)/);
+ assert.match(source,/store:UpdateAsync\("player:" \.\. player\.UserId/);
+ assert.doesNotMatch(source,/foundationCheckpoint\("GROUND_CONTACT",nil/);
+ assert.doesNotMatch(source,/foundationCheckpoint\("MOVEMENT_CONFIRMED",nil/);
+ assert.doesNotMatch(source,/foundationCheckpoint\("CAMERA_READY"/);
+ assert.doesNotMatch(source,/foundationCheckpoint\("INPUT_READY"/);
+ assert.doesNotMatch(source,/foundationCheckpoint\("CORE_LOOP_READY"/);
+});
+
+
+/* ── 공식 고정 버전 Luau 컴파일: 기존 Vibe3 실행기 사용 ── */
+test('amusement-tycoon Luau source compiles with the pinned native compiler', {
+ skip: !fs.existsSync('/tmp/luau-bin/luau-compile'),
+},()=>{
+ const compiler='/tmp/luau-bin/luau-compile';
+ assert.ok(fs.existsSync(compiler),'official pinned Luau compiler must be installed by existing engine-contract workflow');
+ const file='roblox-games/amusement-tycoon/server/Game.server.luau';
+ const result=spawnSync(compiler,[file],{encoding:'utf8',maxBuffer:4*1024*1024});
+ assert.equal(result.error,undefined,result.error?.message);
+ assert.equal(result.status,0,'Luau compile failed: '+(result.stderr||result.stdout||result.signal||'unknown'));
+});
+
+
+test('every production F0 entry binds a design baseline and missing CLI baseline fails closed',()=>{
+  for(const file of ['company-development-roblox-runtime.yml','company-development-roblox-headless-fast-mvp.yml','vibe2-candidate-release.yml']){
+    const workflow=fs.readFileSync('.github/workflows/'+file,'utf8');
+    const command=workflow.replace(/\\\r?\n\s*/g,' ').split('\n').find(line=>line.includes('node tools/company-development-roblox-headless-fast-mvp.mjs'));
+    assert.ok(command,file+': F0 command missing');
+    assert.match(command,/--baseline=/,file+': design baseline must reach the actual F0 invocation');
+  }
+  const result=spawnSync(process.execPath,['tools/company-development-roblox-headless-fast-mvp.mjs'],{encoding:'utf8'});
+  assert.notEqual(result.status,0);
+  assert.match(result.stderr,/approved design baseline required for F0/);
+});
+
+
+test('F0 planning rechecks legacy evidence and waits for current source gameplay repair',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const code=[...workflow.matchAll(/node <<'NODE'\n([\s\S]*?)\n          NODE/g)].map(match=>match[1].replace(/^          /gm,'')).find(code=>code.includes('ROBLOX_F0_PREFLIGHT_TARGETS='));
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const item={status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',robloxSourceCommit:revision,robloxBuildSourceRevision:revision,robloxBuildArtifactIdentity:artifact,robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true};
+  const queue={items:[
+    {...item,gameId:'legacy',robloxFoundationF0Passed:true,robloxFoundationF0Evidence:{pass:true,sourceRevision:revision,artifactIdentity:artifact}},
+    {...item,gameId:'repair-current',robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision},
+    {...item,gameId:'repair-stale',robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:'c'.repeat(40)},
+    {...item,gameId:'verified',robloxFoundationF0Passed:true,robloxFoundationF0Evidence:{pass:true,sourceRevision:revision,artifactIdentity:artifact,gameplayProductReadinessRequired:true,gameplayProductReadiness:{pass:true}}}
+  ]};
+  let output='';
+  vm.runInNewContext(code,{require:()=>({readFileSync:file=>JSON.stringify(file.includes('development-queue')?queue:{roblox:{validationMode:'HEADLESS_FAST_MVP'}}),appendFileSync:(_,text)=>{output+=text;},existsSync:()=>false}),process:{env:{GITHUB_OUTPUT:'output'}},console:{log:()=>{}}});
+  const matrix=JSON.parse(output.split('\n').find(line=>line.startsWith('matrix=')).slice(7));
+  assert.deepEqual(matrix.include.map(row=>row.gameId),['legacy','repair-stale']);
+});

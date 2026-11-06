@@ -1,0 +1,18 @@
+name: CC0 Monster Fetch
+on:
+  workflow_dispatch:
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download CC0 monster packs and list contents
+        run: |
+          mkdir -p out && cd out
+          curl -fsSL -A "Mozilla/5.0" -o quaternius-animated-monsters.zip "https://opengameart.org/sites/default/files/Animated%20Monster%20Pack%20by%20%40Quaternius.zip" || \
+          curl -fsSL -A "Mozilla/5.0" -o quaternius-animated-monsters.zip "https://opengameart.org/sites/default/files/Animated_Monster_Pack_by_%40Quaternius.zip" || \
+          curl -fsSL -A "Mozilla/5.0" -o quaternius-animated-monsters.zip "https://opengameart.org/sites/default/files/Animated%20Monster%20Pack%20by%20Quaternius.zip" || echo "QUATERNIUS_FAILED"
+          for f in *.zip; do echo "== $f"; ls -l "$f"; sha256sum "$f"; unzip -l "$f" | head -80; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cc0-monster-sources
+          path: out/*.zip

@@ -1,0 +1,125 @@
+{
+  "version": 3,
+  "gameId": "sgtpuzzles",
+  "packageId": "name.boyle.chris.sgtpuzzles",
+  "sourceType": "EXTERNAL_OPEN_SOURCE_BLACK_BOX_RUNTIME_EVIDENCE",
+  "authority": "PRACTICE_ONLY_MIXED_EVIDENCE",
+  "observedThrough": "2026-09-16",
+  "runtimePromotionAllowed": true,
+  "gameplayBehaviorPromotionAllowed": true,
+  "partialObservableDistillationAllowed": true,
+  "codeExtractionAllowed": false,
+  "binaryRedistributionAllowed": false,
+  "positiveTrainingSample": true,
+  "verifiedRuntimePass": true,
+  "stablePlaytestVerified": true,
+  "stablePlaytestBoundary": "CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY",
+  "gameEntryObserved": true,
+  "gameEntryEvidenceAuthority": "CORRELATED_GITHUB_ACTIONS_BLACK_BOX_EVIDENCE",
+  "gameEntryObservationRecordedAt": "2026-09-16",
+  "verifiedObservedStages": [
+    "APP_LAUNCH",
+    "GAME_ENTRY",
+    "INPUT_EXERCISE",
+    "VISUAL_STATE_CHANGE",
+    "PROCESS_SURVIVAL",
+    "NO_FATAL_CRASH_OR_ANR"
+  ],
+  "sourceEvidence": {
+    "privateRepository": "hans1177/jaewoon-ai-company",
+    "workflowPath": ".github/workflows/vibe2-open-source-apk-blackbox.yml",
+    "latestCompletedRun": 35122357430,
+    "latestRunNumber": 29,
+    "latestArtifactId": 10458022324,
+    "latestArtifactDigest": "sha256:340f1dbb0fcb989a036709904018fa94698dbc917417280b52da8666d0b35869",
+    "latestResult": "PASS",
+    "latestFailure": null,
+    "runtimeType": "REDROID_NATIVE_ARM64_DIRECT_EXEC",
+    "hostArch": "aarch64",
+    "guestAndroid": "14",
+    "guestAbi": "arm64-v8a",
+    "redroidImage": "redroid/redroid:14.0.0_64only-latest",
+    "apkSha256": "f37590d8ef6cc4953ac5133b4649b3fa6a58a82ed0d85ecea888acef0b4b478c",
+    "apkSource": "OFFICIAL_GITHUB_RELEASE"
+  },
+  "verifiedObservedFacts": [
+    {
+      "id": "actual-puzzle-game-entry",
+      "evidenceAuthority": "RUN_29_ARTIFACT",
+      "fact": "The captured run entered the actual Keen puzzle board, with the playable cage grid and numeric input controls visible at the same time rather than remaining on the game-selection list.",
+      "boundary": "This is direct black-box game-entry evidence for the captured validation window only."
+    },
+    {
+      "id": "input-caused-cell-value-change",
+      "evidenceAuthority": "RUN_29_ARTIFACT",
+      "fact": "The captured before frame showed the target puzzle cell empty, and the captured after frame showed a visible green 3 in that cell after the exercised touch input sequence.",
+      "boundary": "Only the directly observed input-to-visible-cell-state transition is promoted; puzzle-solving rules, correctness evaluation and hidden algorithms are not inferred."
+    },
+    {
+      "id": "runtime-survived-observed-input",
+      "evidenceAuthority": "RUN_29_ARTIFACT",
+      "fact": "The package remained alive and foreground on the GamePlay activity after the exercised puzzle input, with no captured FATAL EXCEPTION, SIGABRT, SIGSEGV or ANR marker in the validation log window.",
+      "boundary": "This proves the captured validation window and does not claim indefinite long-run stability."
+    }
+  ],
+  "distilledPositiveRuntimePatterns": [
+    {
+      "id": "gameplay-state-must-be-visually-distinct-from-selection-state",
+      "scope": "mobile-runtime-evidence",
+      "evidence": [29],
+      "lesson": "A mobile title or game-selection screen is not equivalent to gameplay entry; the first verified playable state should expose the game-specific interaction surface and controls together.",
+      "reuseRule": "For Roblox mobile verification, define GAME_ENTRY using visible gameplay-specific state rather than process launch or menu completion alone."
+    },
+    {
+      "id": "persistent-contextual-action-controls",
+      "scope": "mobile-interaction-observation",
+      "evidence": [29],
+      "lesson": "The verified puzzle state keeps the numeric action controls visible beside the active play surface so the next valid interaction is immediately available without reopening a separate menu.",
+      "reuseRule": "When appropriate for a Roblox mobile interaction, keep the small set of context-relevant actions directly available near the active gameplay state instead of adding unnecessary navigation layers."
+    },
+    {
+      "id": "immediate-spatially-anchored-input-feedback",
+      "scope": "mobile-feedback-observation",
+      "evidence": [29],
+      "lesson": "The exercised input produces an immediate visible value change in the affected board cell, making the result of the touch easy to associate with the selected target.",
+      "reuseRule": "For Roblox mobile controls, prefer visible feedback at or near the affected gameplay object so the user can confirm that the touch produced the intended state change."
+    },
+    {
+      "id": "before-after-plus-runtime-survival-evidence",
+      "scope": "qa-evidence",
+      "evidence": [29],
+      "lesson": "A mobile input becomes strong black-box evidence when the same gameplay state is captured immediately before and after the input and the target process remains foreground and crash-free.",
+      "reuseRule": "Bind mobile interaction evidence to semantic before/after frames plus process, focus, fatal-crash and ANR checks; never promote screen-hash change alone."
+    }
+  ],
+  "distilledPartialRuntimePatterns": [
+    {
+      "id": "game-list-is-not-game-entry",
+      "scope": "runtime-evidence",
+      "lesson": "Reaching the SGTPuzzles game list proves launch and navigation progress but is not actual puzzle gameplay entry.",
+      "reuseRule": "Keep selection and onboarding milestones separate from the first verified playable-state milestone."
+    }
+  ],
+  "distilledFailurePatterns": [],
+  "routeDecisions": {
+    "githubHostedArm64Redroid": "VERIFIED_WORKING_ANDROID14_NATIVE_ARM64_RUN29",
+    "sourceOrAssetExtraction": "NOT_USED_FOR_THIS_BLACK_BOX_FLOW",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "learningUse": {
+    "allowed": [
+      "mobile gameplay-entry boundary detection",
+      "contextual mobile action availability",
+      "spatially anchored input feedback",
+      "input-to-visible-state evidence binding",
+      "foreground/process/crash correlation",
+      "portable mobile interaction lessons that may inform later Roblox-specific implementation and verification"
+    ],
+    "stillForbidden": [
+      "treating Android evidence as Roblox runtime evidence",
+      "inferring hidden puzzle-solving algorithms or correctness logic from the captured run",
+      "copying SGTPuzzles artwork, UI trade dress, puzzle content, names or implementation details into a Roblox game",
+      "claims about long-run stability or behavior not measured by the captured validation window"
+    ]
+  }
+}

@@ -1,0 +1,2106 @@
+// 파일명: unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs
+// 임포트 · 3D 마력숲 게임 소스
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using UnityEngine;
+
+public sealed class UnityWebFloorGame : MonoBehaviour
+{
+    private const string GameId = "fantasy-survival";
+    private const string SavePrefix = "fantasy_survival_webfloor_";
+    private const string CreativeSaveKey = SavePrefix + "creative_v1";
+    private const string LegacyCreativeSaveKey = SavePrefix + "creative_world_v1";
+    private const string LegacyNormalSaveKey = SavePrefix + "world_v1";
+    private const float HoldSeconds = 0.7f;
+    private const float DoubleTapSeconds = 0.42f;
+
+    // 게임 데이터 · 기존 마력숲 몬스터 / 레시피 원본에서 식별자와 수치를 가져온다.
+    private const string SpeciesText = @"mossboar|이끼멧돼지|neutral|72|9|62
+golem|돌정령|neutral|150|18|42
+goblin|숲 고블린|aggressive|42|7|72
+shadowwolf|그림자늑대|aggressive|95|14|90
+fairy|빛의 요정|harmless|26|0|55
+foreststag|이끼뿔사슴|neutral|105|12|68
+thornhound|가시숲 사냥개|aggressive|128|18|86
+ironspirit|철 정령|aggressive|66.5|9.8|135
+worldtreebear|세계수 곰|aggressive|380|28|70
+sporegiant|독포자 거대버섯|aggressive|340|24|54
+rootsovereign|근원포식자 녹스바르|boss|4500|150|186
+firewolf|화염 늑대|aggressive|150|10|96
+giantburrower|초거대 잠복벌레|aggressive|300|20|68
+sandwalker|오아시스 샌드 워커|neutral|500|44|58
+firegolemneutral|중립 화염 골렘|neutral|555|30|38
+firegolemaggressive|공격적 화염 골렘|aggressive|555|30|42
+firesnake|화염 뱀|aggressive|300|25|105
+ironibex|철갑 산양|neutral|180|18|64
+sapdeer|수액사슴|harmless|120|0|72
+crystalboar|수정 멧돼지|aggressive|350|40|82
+crystalboarjunior|수정 멧돼지 주니어|aggressive|140|16|82
+crystalguardian|수정 수호자|aggressive|500|50|76
+crystalgoblin|수정 고블린|aggressive|120|22|82
+crystalironspirit|수정 철 정령|aggressive|210|31|138
+crystalbear|수정 곰|aggressive|650|46|76
+crystalfiresnake|수정 화염 뱀|aggressive|430|38|112
+crystalibex|수정 산양|aggressive|360|36|80
+shadowwolfleader|그림자 늑대 우두머리|aggressive|250|30|96
+crystalfiregolem|수정 화염골렘|aggressive|560|30|54
+vampirebat|거대 흡혈 박쥐|aggressive|190|35|118
+foresthare|숲토끼|harmless|55|0|86
+worldpheasant|세계수 꿩|harmless|70|0|80
+ironhidehound|철가죽 들개|aggressive|150|17|88
+crystalgoat|수정염소|neutral|135|16|70
+lakecroc|거대 호수 악어|aggressive|777|58|88
+lakebuffalo|호수 물소|neutral|560|42|58
+crystaldeer|수정 사슴|neutral|360|28|82
+lakeheron|호수 왜가리|harmless|95|0|78
+shark|거대 호수 상어|neutral|800|50|104
+giantSquid|대왕오징어|aggressive|1111|66|86
+deepAngler|심해 아귀|aggressive|900|60|72
+lakefish|호수 물고기|harmless|50|0|72
+giantleech|초거대 거머리|aggressive|400|44|74
+gorilla|밀림 고릴라|neutral|1000|50|70
+anaconda|아나콘다|aggressive|800|65|86
+mudwalker|머드 워커|aggressive|750|40|66
+yetileader|예티 우두머리|aggressive|2599|72|68
+yeticub|예티 새끼|aggressive|400|30|82
+polarbear|북극곰|aggressive|1000|50|72
+polarwolf|북극늑대|neutral|650|35|92
+polarfox|북극여우|harmless|100|0|95
+froststalker|서리 추적자|aggressive|220|24|95
+icegolem|빙결 골렘|aggressive|420|36|50
+jungletiger|밀림 호랑이|aggressive|850|55|110
+jungletigerleader|밀림 호랑이 우두머리|aggressive|4500|70|90
+primitiveSpearman|창병 원시인|aggressive|600|30|68
+primitiveArcher|원거리 원시인|aggressive|400|50|64
+jungleGuardian|밀림 수호자|aggressive|1300|70|76
+flowergoblin|꽃 고블린|neutral|222|30|72
+giantbee|거대 꿀벌|neutral|350|40|110
+thornmantis|가시 사마귀|aggressive|600|40|88
+giantspider|거대 거미|aggressive|555|50|76
+giantspiderling|새끼 거대거미|aggressive|100|15|92
+toxicmycelium|맹독 균사체 버섯|aggressive|1800|60|54
+toxicsporeorb|맹독 포자 구슬|aggressive|100|0|0
+swampgolem|늪 골렘|neutral|1888|70|52
+fearbear|공포 곰|aggressive|1800|60|82
+swampPrimitiveSpearman|늪 원시인 창병|aggressive|886|70|68
+swampPrimitiveArcher|늪 원시인 궁수|aggressive|700|80|64
+swampPrimitiveGuard|늪 원시인 보초|aggressive|886|50|0
+swampArrowTower|원시 화살탑|aggressive|1200|60|0
+sandSpirit|모래 정령|aggressive|400|55|78
+giantVenomScorpion|거대 맹독 전갈|aggressive|2222|90|82
+wastelandMummy|황무지 미라|aggressive|1800|88|64";
+    private const string RecipesText = @"bench|제작대|hand|structure|wood:3,stone:2,fiber:2|0
+storage-chest|상자|hand|structure|wood:10|0
+wood-wall|나무벽|hand|structure|wood:3|0
+wood-door|나무문|hand|structure|wood:6,fiber:2|0
+defense-tower|수비탑|hand|structure|ironIngot:4,flowerLeather:3,wood:5|0
+bed|침대|hand|structure|wood:6,fiber:8|0
+garden-plot|텃밭|hand|structure|wood:5|0
+wood-spear|나무창|hand|weapon|wood:6,fiber:3|0
+wood-bow|나무 활|hand|weapon|wood:5,fiber:4|0
+wood-arrow|나무화살|hand|ammo|wood:2,fiber:1|0
+spider-arrow|거미 화살|ironbench|ammo|wood:2,fiber:1,giantSpiderWeb:1|0
+reinforced-bow|강화 활|bench|weapon|wood:6,stone:4,fiber:5|0
+firewolf-arrow|화염늑대 화살|ironbench|ammo|wood:2,fiber:1,fireWolfFang:1|0
+iron-bow|철 활|ironbench|weapon|wood:4,fiber:5,ironIngot:4|0
+iron-arrow|철화살|ironbench|ammo|wood:1,fiber:1,ironIngot:1|0
+shark-arrow|상어 화살|goldbench|ammo|wood:2,fiber:1,sharkSkin:1|0
+gold-bow|황금 활|goldbench|weapon|wood:4,fiber:5,goldIngot:5|0
+yeti-arrow|예티 화살|junglebench|ammo|wood:2,fiber:1,yetiHide:1|0
+jungle-bow|밀림 활|junglebench|weapon|wood:4,fiber:6,monopolyIngot:3,giantSpiderSilk:2|0
+bandage|섬유붕대|hand|consumable|fiber:6|0
+flag|깃발|hand|structure|wood:5,fiber:4|0
+torch|마력 횃불|hand|torch|wood:4,stone:1,fiber:2|0
+stone-sword|돌검|bench|weapon|wood:2,stone:3,fiber:1|0
+stone-axe|돌도끼|bench|tool|wood:2,stone:3,fiber:1|0
+stone-pick|돌곡괭이|bench|tool|wood:2,stone:3,fiber:1|0
+fiber-knife|섬유칼|bench|tool|wood:4,stone:5,fiber:8|0
+rune-shield|룬 방패|bench|armor|wood:8,stone:12,fiber:6|0
+forest-armor|숲 갑옷|bench|armor|wood:5,stone:7,fiber:14|0
+map|지도|bench|map|wood:2,fiber:5|0
+furnace|화로|hand|structure|wood:3,stone:6|0
+blacksmith-anvil|대장장이 모루|hand|structure|ironIngot:6,crystalShard:3|0
+flower-leather|꽃가죽|ironbench|material|giantPetal:3|0
+iron-sword|철 검|ironbench|weapon|wood:1,stone:2,fiber:3,ironIngot:3|0
+iron-axe|철 도끼|ironbench|weapon|wood:1,stone:2,fiber:3,ironIngot:3|0
+iron-pick|철 곡괭이|ironbench|tool|wood:1,fiber:2,ironIngot:3|0
+forest-wooden-sword|숲의 목검|reward|weapon||0
+good-bandage|좋은 붕대|ironbench|consumable|wood:1,fiber:3|0
+gold-greatsword|황금 검|goldbench|weapon|wood:2,fiber:2,goldIngot:6|0
+gold-dagger|금단검|goldbench|weapon|wood:1,fiber:2,goldIngot:3|0
+gold-axe|금 도끼|goldbench|tool|wood:2,fiber:2,goldIngot:4|0
+gold-pick|금 곡괭이|goldbench|tool|wood:2,fiber:2,goldIngot:4,leechSucker:1|0
+wolf-armor|늑대 방어구|ironbench|armor|wolfHide:3,wood:2|0
+walker-greatsword|워커 대검|goldbench|weapon|walkerClaw:4,goldIngot:7,wood:3,fiber:3|0
+sand-armor|모래의 방어구|goldbench|armor|walkerClaw:2,goldIngot:9,flowerLeather:2|0
+bear-spear|곰 창|ironbench|weapon|bearClaw:2,wood:4,fiber:2|0
+bear-armor|곰 방어구|ironbench|armor|bearHide:2,wood:4,walkerClaw:1|0
+spore-seeker|포자 추적구|ironbench|weapon|sporeSac:3,ironIngot:2,fiber:4|0
+boar-spear|이끼엄니 창|bench|weapon|mossTusk:2,wood:4,fiber:2|0
+boar-armor|이끼가죽 방어구|bench|armor|mossTusk:3,wood:3,fiber:4|0
+golem-hammer|돌정령 망치|ironbench|weapon|stoneCore:3,wood:3,ironIngot:2|0
+golem-armor|돌정령 갑옷|ironbench|armor|stoneCore:4,stone:6,ironIngot:2|0
+goblin-dagger|고블린 단검|bench|weapon|goblinCharm:2,wood:2,fiber:2|0
+goblin-armor|고블린 가죽옷|bench|armor|goblinCharm:3,fiber:6,wood:2|0
+wolf-blade|늑대 송곳검|bench|weapon|wolfHide:2,wood:3,stone:2|0
+ironspirit-sword|철정령 검|bench|weapon|ironSpiritCore:3,wood:2,stone:3|0
+ironspirit-armor|철정령 갑옷|bench|armor|ironSpiritCore:4,stone:5,fiber:3|0
+sovereign-cleaver|근원 대검|goldbench|weapon|sovereignCore:2,goldIngot:10,wood:4,fiber:5|0
+sovereign-armor|근원포식자 갑옷|goldbench|armor|sovereignCore:3,goldIngot:12,walkerClaw:2,flowerLeather:2|0
+firewolf-saber|화염늑대 검|ironbench|weapon|fireWolfFang:3,ironIngot:3,wood:2|0
+firewolf-armor|화염늑대 갑옷|ironbench|armor|fireWolfFang:4,ironIngot:3,fiber:4|0
+burrower-lance|잠복벌레 창|ironbench|weapon|burrowerShell:3,wood:4,ironIngot:2|0
+burrower-armor|잠복벌레 갑각|ironbench|armor|burrowerShell:4,ironIngot:3,fiber:3,essence:5|0
+calm-golem-maul|고요한 용암망치|goldbench|weapon|calmMagmaCore:3,goldIngot:7,wood:3|0
+calm-golem-armor|고요한 현무암 갑옷|goldbench|armor|calmMagmaCore:4,goldIngot:8,stone:6,essence:6,flowerLeather:2|0
+rage-golem-axe|격노의 용암도끼|goldbench|weapon|rageMagmaCore:3,goldIngot:8,wood:3|0
+rage-golem-armor|격노의 화산갑옷|goldbench|armor|rageMagmaCore:4,goldIngot:9,fiber:4,essence:6,flowerLeather:2|0
+firesnake-blade|화염뱀 칼|ironbench|weapon|fireSnakeScale:3,ironIngot:3,wood:2|0
+firesnake-armor|화염뱀 비늘갑옷|ironbench|armor|fireSnakeScale:4,ironIngot:3,fiber:4,essence:5|0
+ironibex-spear|철뿔 창|ironbench|weapon|ironHorn:3,wood:4,ironIngot:2|0
+ironibex-armor|철뿔 갑옷|ironbench|armor|ironHorn:4,ironIngot:3,fiber:3|0
+crystal-boar-armor|멧돼지 갑각 갑옷|goldbench|armor|mossTusk:4,hardShell:3,crystalCore:2,flowerLeather:2|0
+crystal-core-greatsword|수정 코어 대검|goldbench|weapon|hardShell:4,crystalCore:3,essence:5,goldIngot:4,wood:3|0
+mantis-scythe|가시 사마귀 낫|ironbench|weapon|mantisBlade:3,ironIngot:3,wood:2|0
+cooking-station|요리대|hand|structure|wood:4,stone:4,ironIngot:4|0
+shadow-wolf-incubator|그림자 늑대 부화기|hand|structure|wood:3,stone:5,ironIngot:4|0
+shadow-wolf-egg|그림자 늑대 알|egg|ingredient||0
+giant-croc-egg|거대 악어 알|egg|ingredient||0
+raw-deer-meat|수액사슴고기|loot|ingredient||0
+raw-bug-meat|초거대 벌레고기|loot|ingredient||0
+carrot|당근|gather|consumable||0
+carrot-seed|당근 씨앗|gather|seed||0
+greens-seed|야채 씨앗|gather|seed||0
+cooked-deer-meat|구운 사슴고기|smelt|consumable||0
+cooked-bug-meat|구운 벌레고기|smelt|consumable||0
+firewolf-cooked-meat|화염늑대 구운고기|loot|consumable||0
+forest-hare-meat|숲토끼고기|loot|ingredient||0
+world-bird-meat|세계수 꿩고기|loot|ingredient||0
+canyon-lizard-meat|협곡도마뱀고기|loot|ingredient||0
+crystal-goat-meat|수정염소고기|loot|ingredient||0
+worldtree-greens|세계수 잎채소|loot|ingredient||0
+meal-hare-roast|숲토끼 통구이|meal|consumable||0
+meal-worldbird-roast|세계수 꿩구이|meal|consumable||0
+meal-canyon-roast|협곡 도마뱀구이|meal|consumable||0
+meal-crystal-roast|수정염소 스테이크|meal|consumable||0
+meal-worldtree-greens|세계수 채소찜|meal|consumable||0
+meal-hare-greens|토끼고기 잎채소 스튜|meal|consumable||0
+meal-worldbird-greens|세계수 꿩 잎쌈|meal|consumable||0
+meal-canyon-greens|협곡 고기 채소볶음|meal|consumable||0
+meal-crystal-greens|수정염소 채소전골|meal|consumable||0
+meal-carrot-carrot|당근 샐러드|meal|consumable||0
+meal-carrot-deer|사슴 고기 볶음|meal|consumable||0
+meal-carrot-bug|벌레고기 당근 볶음|meal|consumable||0
+meal-carrot-firewolf|화염고기 당근구이|meal|consumable||0
+meal-deer-deer|사슴 스테이크 모둠|meal|consumable||0
+meal-deer-bug|사슴·벌레 혼합구이|meal|consumable||0
+meal-deer-firewolf|화염 사슴구이|meal|consumable||0
+meal-bug-bug|벌레고기 대접|meal|consumable||0
+meal-bug-firewolf|화염 벌레구이|meal|consumable||0
+meal-firewolf-firewolf|화염 고기 만찬|meal|consumable||0
+croc-jaw-blade|악어 턱날|goldbench|weapon|crocTooth:5,crocHide:2,goldIngot:7,flowerLeather:3|0
+croc-tooth-spear|악어 이빨창|goldbench|weapon|crocTooth:7,crocHide:1,goldIngot:6,wood:3,flowerLeather:3|0
+croc-armor|악어 껍질갑옷|goldbench|armor|crocHide:8,crocTooth:3,goldIngot:8,flowerLeather:3|0
+diving-suit|잠수복|goldbench|armor|sharkSkin:4,ironIngot:6,fiber:8,flowerLeather:2|0
+deep-diver-armor|심해 잠수갑|goldbench|armor|sharkSkin:6,crocHide:4,goldIngot:5,flowerLeather:4|0
+raw-squid-meat|오징어 생고기|loot|ingredient||0
+cooked-squid-meat|구운 오징어고기|smelt|consumable||0
+raw-fish|생선|loot|ingredient||0
+cooked-fish|구운생선|loot|consumable||0
+raw-crystal-deer-meat|수정 사슴고기|loot|ingredient||0
+cooked-crystal-deer-meat|구운 수정사슴고기|loot|consumable||0
+cooked-hare-meat|구운 숲토끼고기|loot|consumable||0
+cooked-lizard-meat|구운 도마뱀고기|loot|consumable||0
+cooked-greens|구운 야채|loot|consumable||0
+meal-lake-fish-greens|호수 생선 야채찜|meal|consumable||0
+meal-lake-fish-deer|생선 수정사슴 모둠|meal|consumable||0
+meal-lake-fish-fish|거대 호수 생선 만찬|meal|consumable||0
+meal-lake-hare-greens|토끼 야채구이|meal|consumable||0
+meal-lake-lizard-greens|도마뱀 야채볶음|meal|consumable||0
+meal-lake-deer-greens|수정사슴 야채전골|meal|consumable||0
+meal-cooked-greens|구운 야채 한상|meal|consumable||0
+leech-cleaver|거머리 흡혈도|junglebench|weapon|leechSucker:4,monopolyIngot:5,goldIngot:4|0
+gorilla-armor|고릴라 중갑|junglebench|armor|gorillaHide:6,monopolyIngot:8,goldIngot:7|0
+gorilla-guard-armor|고릴라 수호갑|junglebench|armor|gorillaHide:8,monopolyIngot:10,goldIngot:8|0
+anaconda-armor|아나콘다 비늘갑옷|junglebench|armor|anacondaScale:7,monopolyIngot:7,goldIngot:6|0
+mud-blade|머드 워커 도|junglebench|weapon|mudCore:5,monopolyIngot:5,goldIngot:4|0
+mud-spear|머드 워커 창|junglebench|weapon|mudCore:6,monopolyIngot:6,goldIngot:4,wood:3|0
+jungle-guardian-glaive|밀림 수호자의 장창|junglebench|weapon|jungleGuardianCore:1,monopolyIngot:8,goldIngot:6|0
+tiger-twin-blades|호랑이 쌍검|hidden|weapon||0
+tiger-dagger|호랑이 단검|hidden|weapon||0
+toxic-spore-seeker|맹독 포자 추적구|junglebench|weapon|toxicMycelium:4,sporeSac:3,monopolyIngot:8,goldIngot:6|0
+toxic-mycelium-armor|맹독 균사체 갑옷|junglebench|armor|toxicMycelium:7,monopolyIngot:10,flowerLeather:5|0
+swamp-golem-armor|늪 골렘 갑옷|junglebench|armor|swampCore:6,monopolyIngot:8,goldIngot:4|0
+fear-bear-claw|공포 곰 발톱검|junglebench|weapon|fearBearClaw:5,fearBearHide:3,monopolyIngot:7|0
+fear-bear-armor|공포 곰 중갑|junglebench|armor|fearBearHide:7,fearBearClaw:2,monopolyIngot:8|0
+fear-bear-hunter-armor|공포 곰 사냥갑|junglebench|armor|fearBearHide:6,fearBearClaw:4,monopolyIngot:7,flowerLeather:3|0
+monopoly-pick|독점석 곡괭이|junglebench|tool|monopolyIngot:8,goldIngot:4,wood:3|0
+toxic-furnace|독가스 용광로|junglebench|structure|monopolyStone:15,ironIngot:25,goldIngot:17,wood:20|0
+sunstone-bench|태양석 제작대|junglebench|structure|sunstoneOre:8,monopolyIngot:6,goldIngot:4,wood:3|0
+sunstone-pick|태양석 곡괭이|sunstonebench|tool|sunstoneOre:8,monopolyIngot:5,wood:3|0
+sunstone-greatsword|태양석 대검|sunstonebench|weapon|sunstoneIngot:12,monopolyIngot:8,goldIngot:6|480
+sunstone-dagger|태양석 암살 단검|sunstonebench|weapon|sunstoneIngot:10,monopolyIngot:4,goldIngot:4|180
+sunstone-orb|태양석 마법 구슬|sunstonebench|weapon|sunstoneIngot:14,monopolyIngot:6,goldIngot:5|300
+sunstone-scorpion-blade|맹독 전갈검|sunstonebench|weapon|sunstoneOre:10,monopolyIngot:5,goldIngot:4|360
+sand-spirit-staff|모래정령 추적 지팡이|sunstonebench|weapon|sunstoneIngot:9,monopolyIngot:5,goldIngot:4|240
+wasteland-mummy-staff|미라 소환 지팡이|sunstonebench|weapon|sunstoneIngot:11,monopolyIngot:7,goldIngot:5|300
+sunstone-scorpion-heavy|맹독 전갈 중갑|sunstonebench|armor|sunstoneOre:12,monopolyIngot:6,flowerLeather:4|0
+sunstone-scorpion-light|맹독 전갈 경갑|sunstonebench|armor|sunstoneOre:10,monopolyIngot:5,flowerLeather:5|0
+cooked-bird-meat|구운 꿩고기|smelt|consumable||0
+cooked-crystal-goat-meat|구운 수정염소고기|smelt|consumable||0
+yeti-horn-maul|예티 뿔 대검|junglebench|weapon|yetiHorn:2,yetiHide:2,monopolyIngot:8,goldIngot:5|0
+yeti-armor|예티 방어구|junglebench|armor|yetiHide:4,yetiHorn:1,monopolyIngot:10,goldIngot:6|0
+polar-bear-axe|북극곰 발톱도끼|junglebench|weapon|polarBearClaw:4,polarBearHide:2,monopolyIngot:6|0
+polar-bear-spear|북극곰 창|junglebench|weapon|polarBearClaw:3,polarBearHide:3,monopolyIngot:6,wood:3|0
+polar-bear-armor|북극곰 방어구|junglebench|armor|polarBearHide:7,polarBearClaw:3,monopolyIngot:7,flowerLeather:3|0
+polar-wolf-blade|북극늑대 검|junglebench|weapon|polarWolfPelt:5,monopolyIngot:5,goldIngot:3|0
+polar-wolf-armor|북극늑대 방어구|junglebench|armor|polarWolfPelt:7,monopolyIngot:6,flowerLeather:3|0
+polar-wolf-hunter-armor|북극늑대 사냥갑|junglebench|armor|polarWolfPelt:8,monopolyIngot:6,goldIngot:2,flowerLeather:3|0
+spider-fang-blade|거대거미 송곳니검|ironbench|weapon|giantSpiderSilk:4,giantSpiderFang:3,ironIngot:4,flowerLeather:3|0
+spider-silk-spear|거대거미 실창|ironbench|weapon|giantSpiderSilk:5,giantSpiderFang:2,ironIngot:3,flowerLeather:3,wood:2|0
+spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giantSpiderFang:2,ironIngot:4,flowerLeather:3|0";
+
+    private sealed class Species
+    {
+        public string id, name, mood;
+        public float hp, damage, speed;
+    }
+
+    private sealed class Recipe
+    {
+        public string id, name, station, kind, cost;
+        public int power;
+    }
+
+    private sealed class Monster
+    {
+        public int runtimeId;
+        public Species spec;
+        public float hp, nextAttack;
+        public bool creative, attackPlayer, ally;
+        public float slowedUntil;
+        public int allyTargetId = -1;
+        public int opponentId = -1;
+        public GameObject obj;
+        // 그래픽 · 공용 네이티브 외형과 동작은 AI/충돌/체력과 분리한다.
+        public Transform nativePose;
+        public Animation nativeMotion;
+        public readonly List<Transform> limbs = new List<Transform>();
+        public readonly List<Quaternion> restPoses = new List<Quaternion>();
+        public float attackPoseUntil, hitPoseUntil;
+    }
+
+    // 투사체 · 유도 공격은 기존 몬스터 체력과 타겟을 직접 사용한다.
+    private sealed class HomingSpell
+    {
+        public int targetId;
+        public float damage, speed, expiresAt;
+        public bool sandEffect;
+        public GameObject obj;
+    }
+
+    private sealed class SpawnBlock
+    {
+        public int id;
+        public GameObject obj;
+    }
+
+    // 저장 · 기존 3D 저장 구조를 새 크리에이티브 저장 형식으로 안전하게 이관
+    [Serializable] private sealed class LegacyBlock { public float x, z; }
+    [Serializable] private sealed class LegacyMonster { public string id; public float x, z, hp; public int enemyIndex; public bool attackPlayer; }
+    [Serializable] private sealed class LegacyWorld
+    {
+        public float x, z, hp;
+        public int progress, level, resource, actions, wood, stone;
+        // 저장 · 같은 기존 키에서 누락된 필드를 선택적으로 확장한다. 구버전 데이터의 null은 허용.
+        public int fiber;
+        public List<string> crafted;
+        public string equippedWeapon;
+        public List<BuildingRecord> buildings;
+        public LegacyBlock[] blocks;
+        public LegacyMonster[] monsters;
+    }
+
+    [Serializable]
+    private sealed class BlockRecord
+    {
+        public int id;
+        public Vector3 position;
+    }
+
+    [Serializable]
+    private sealed class BuildingRecord
+    {
+        public string recipeId;
+        public Vector3 position;
+    }
+
+    private sealed class BuiltStructure
+    {
+        public string recipeId;
+        public GameObject obj;
+    }
+
+    [Serializable]
+    private sealed class MonsterRecord
+    {
+        public int id, opponentId;
+        public string speciesId;
+        public Vector3 position;
+        public float hp;
+        public bool attackPlayer;
+    }
+
+    [Serializable]
+    private sealed class CreativeRecord
+    {
+        public Vector3 playerPosition;
+        public int nextId;
+        public List<BlockRecord> blocks = new List<BlockRecord>();
+        public List<MonsterRecord> monsters = new List<MonsterRecord>();
+        public List<string> crafted = new List<string>();
+        public string equippedWeapon;
+        public List<BuildingRecord> buildings = new List<BuildingRecord>();
+    }
+
+    private enum ScreenMode { Title, SelectMode, Playing }
+    private enum Panel { None, Options, Bag, Craft, Spawner, Aggro }
+
+    private readonly List<Species> species = new List<Species>();
+    private readonly List<Recipe> recipes = new List<Recipe>();
+    private readonly List<Monster> monsters = new List<Monster>();
+    private readonly List<GameObject> fallenVisuals = new List<GameObject>();
+    private readonly List<HomingSpell> homingSpells = new List<HomingSpell>();
+    private readonly List<SpawnBlock> blocks = new List<SpawnBlock>();
+    private readonly List<string> crafted = new List<string>();
+    private readonly List<BuiltStructure> buildings = new List<BuiltStructure>();
+    private readonly Dictionary<Collider, Monster> monsterColliders = new Dictionary<Collider, Monster>();
+    private readonly Dictionary<Collider, SpawnBlock> blockColliders = new Dictionary<Collider, SpawnBlock>();
+    private readonly Dictionary<string, int> materials = new Dictionary<string, int>();
+    private Camera mainCamera;
+    private Transform player;
+    private GameObject worldRoot;
+    private ScreenMode screenMode = ScreenMode.Title;
+    private Panel panel = Panel.None;
+    private bool creative, placingBlock, musicEnabled = true;
+    private float musicVolume = 1f, currentHp = 100f, attackCooldown, saveClock;
+    private float cameraDistance = 14f, moveSpeed = 5.8f;
+    private int nextId = 1, selectedMonsterId = -1, aggroMonsterId = -1;
+    private int selectedSpeciesIndex, spawnCount = 1, speciesPage, craftPage;
+    private string spawnCountText = "1", equippedWeapon = "", info = "";
+    private Vector2 moveFromButtons, craftScroll, bagScroll;
+    private float lastTapTime, touchStartTime;
+    private int lastTapId = -1, pointerMonsterId = -1, pointerBlockId = -1;
+    private bool holdTriggered, pointerActive;
+    private Vector2 pointerOrigin;
+    private int progress, level = 1, resource = 10, actions;
+
+    // 시각 · 인스턴스마다 재질을 복제하지 않고 같은 공용 3D 지오메트리를 지역별 색감으로 보정한다.
+    private static void TintCompanyMesh(GameObject visual,Color tint)
+    {
+        if(visual==null)return;
+        var block=new MaterialPropertyBlock();
+        block.SetColor("_Color",tint);
+        block.SetColor("_BaseColor",tint);
+        foreach(Renderer renderer in visual.GetComponentsInChildren<Renderer>(true))
+            if(renderer!=null)renderer.SetPropertyBlock(block);
+    }
+
+    // 자산 · 공용 라이브러리 모델을 Unity Resources 네이티브 파생본으로 소비한다.
+    [Serializable] private sealed class LibraryUiTheme
+    {
+        public string panel="#1F242B",raised="#2C333D",inset="#15191E",text="#F0F3F7",primary="#4C78B7",accent="#6CAEE1";
+    }
+    [Serializable] private sealed class LibraryMotion
+    {
+        public float idleSeconds=3.2f, walkSeconds=1f, runSeconds=.60f, attackSeconds=.46f,
+            heavySeconds=.88f, gatherSeconds=.74f, craftSeconds=1.25f, hitSeconds=.52f, deathSeconds=1.65f;
+    }
+    private readonly Dictionary<string,GameObject> nativeAssetCache = new Dictionary<string,GameObject>();
+    private readonly HashSet<string> missingNativeAssets = new HashSet<string>();
+    private LibraryUiTheme uiTheme = new LibraryUiTheme();
+    private LibraryMotion motionProfile = new LibraryMotion();
+    private Transform playerWeaponGrip;
+    private GameObject playerWeaponVisual;
+    private Animation playerNativeMotion;
+    private string displayedWeaponId = "";
+    private float playerActionStart,playerActionUntil,playerActionDuration;
+    private int playerActionKind;
+    private Texture2D uiPanelTexture,uiButtonTexture,uiButtonActiveTexture,uiInsetTexture;
+    // 스킬 연출 전용 공용 재질은 전투 판정·네트워크·저장 상태와 무관하다.
+    private Material combatFxMaterial;
+
+    // 메인 · 초기화
+    private void Awake()
+    {
+        Application.targetFrameRate = 60;
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        ReadGameData();
+        LoadCompanyPresentation();
+        LoadNormalCounters();
+        cameraDistance = Mathf.Clamp(PlayerPrefs.GetFloat(SavePrefix + "camera_distance", 14f), 8f, 24f);
+        moveSpeed = Mathf.Clamp(PlayerPrefs.GetFloat(SavePrefix + "move_speed", 5.8f), 3f, 9f);
+        BuildWorld();
+        // 시작 · 실제 Unity 월드와 카메라/플레이어가 생성된 뒤에만 부팅 완료를 기록한다.
+        // 이 표식은 브라우저의 채집·전투·저장·모바일 QA 통과를 대체하지 않는다.
+        if (worldRoot == null || !worldRoot.activeInHierarchy || player == null ||
+            mainCamera == null || !mainCamera.isActiveAndEnabled || species.Count == 0 || recipes.Count == 0)
+        {
+            Debug.LogError("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId +
+                " status=REPAIR_REQUIRED reason=NATIVE_WORLD_BOOT_INCOMPLETE");
+            throw new InvalidOperationException("MAGIC_FOREST_NATIVE_WORLD_BOOT_INCOMPLETE");
+        }
+        Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=PASS");
+    }
+
+    private static float ParseFloat(string value)
+    {
+        float n;
+        return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out n) ? n : 0f;
+    }
+
+    private void ReadGameData()
+    {
+        foreach (string row in SpeciesText.Split('\n'))
+        {
+            string[] p = row.Trim().Split('|');
+            if (p.Length != 6) continue;
+            species.Add(new Species { id = p[0], name = p[1], mood = p[2], hp = ParseFloat(p[3]), damage = ParseFloat(p[4]), speed = ParseFloat(p[5]) });
+        }
+        foreach (string row in RecipesText.Split('\n'))
+        {
+            string[] p = row.Trim().Split('|');
+            if (p.Length != 6) continue;
+            recipes.Add(new Recipe { id = p[0], name = p[1], station = p[2], kind = p[3], cost = p[4], power = Mathf.RoundToInt(ParseFloat(p[5])) });
+        }
+    }
+
+    private void BuildWorld()
+    {
+        worldRoot = new GameObject("MagicForest_3D_World");
+        mainCamera = Camera.main;
+        if (mainCamera == null)
+        {
+            GameObject cameraObject = new GameObject("Main Camera");
+            mainCamera = cameraObject.AddComponent<Camera>();
+            cameraObject.tag = "MainCamera";
+        }
+        mainCamera.clearFlags = CameraClearFlags.SolidColor;
+        mainCamera.backgroundColor = new Color(0.065f, 0.16f, 0.14f);
+        mainCamera.fieldOfView = 57f;
+        // 환경 · 실제 3D 수목과 지역 실루엣이 구분되도록 기존 월드 조명만 보정한다.
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.Exponential;
+        RenderSettings.fogDensity = .012f;
+        RenderSettings.fogColor = new Color(.15f,.24f,.22f);
+        RenderSettings.ambientLight = new Color(.57f,.65f,.62f);
+
+        if (FindFirstObjectByType<Light>() == null)
+        {
+            GameObject source = new GameObject("Sunlight");
+            Light sunlight = source.AddComponent<Light>();
+            sunlight.type = LightType.Directional;
+            sunlight.intensity = 1.15f;
+            sunlight.color = new Color(.99f,.94f,.79f);
+            source.transform.rotation = Quaternion.Euler(46f, -25f, 0f);
+        }
+
+        // 오토 바이옴 · 기존 5개 지역의 월드 충돌과 좌표는 그대로 둔다.
+        // 승인된 세계지형의 숲·협곡·호숫가·설원·황무지 유형을 실제 Unity 3D 메시로 표현한다.
+        // 고정 시드의 시각용 지형에는 Collider를 추가하지 않아 이동/채집/세이브가 바뀌지 않는다.
+        Color[] regionColors =
+        {
+            new Color(.40f,.35f,.30f), new Color(.22f,.38f,.43f),
+            new Color(.17f,.39f,.22f), new Color(.69f,.76f,.81f),
+            new Color(.55f,.37f,.20f)
+        };
+        string[] biomeNames={"ROCK_CANYON","LAKE_SHORE","MAGIC_FOREST","SNOWFIELD","SAND_WASTELAND"};
+        Shader biomeShader=Shader.Find("Standard")??Shader.Find("Universal Render Pipeline/Lit")
+            ??Shader.Find("Unlit/Color");
+        if(biomeShader==null)throw new InvalidOperationException("MAGIC_FOREST_AUTOBIOME_SHADER_MISSING");
+        for (int i = 0; i < regionColors.Length; i++)
+        {
+            GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            ground.name = "3D_Region_" + i;
+            ground.transform.SetParent(worldRoot.transform);
+            ground.transform.position = new Vector3((i - 2) * 16f, -.45f, 0f);
+            ground.transform.localScale = new Vector3(16f, .9f, 80f);
+            Tint(ground, regionColors[i]);
+            // 기존 땅의 Collider는 유지하고 단조로운 평면 그래픽만 네이티브 메시로 대체한다.
+            ground.GetComponent<Renderer>().enabled=false;
+            const int widthSegments=16, lengthSegments=48;
+            var vertices=new Vector3[(widthSegments+1)*(lengthSegments+1)];
+            var triangles=new int[widthSegments*lengthSegments*6];
+            for(int z=0;z<=lengthSegments;z++)
+            for(int x=0;x<=widthSegments;x++)
+            {
+                float px=x*16f/widthSegments-8f,pz=z*80f/lengthSegments-40f;
+                float noise=Mathf.PerlinNoise((x+i*23f)*.22f,(z+i*31f)*.19f);
+                float detail=Mathf.PerlinNoise((x+i*17f)*.69f,(z+i*11f)*.51f);
+                float elevation=-.035f+noise*.045f+detail*.018f;
+                if(i==0)elevation+=Mathf.Pow(Mathf.Abs(px)/8f,3f)*.095f;
+                if(i==1)elevation-=Mathf.Clamp01((18f-Mathf.Abs(pz-24f))/18f)*.014f;
+                if(i==3)elevation+=Mathf.Abs(px)*.0035f;
+                vertices[z*(widthSegments+1)+x]=new Vector3(px,elevation,pz);
+            }
+            int triangle=0;
+            for(int z=0;z<lengthSegments;z++)
+            for(int x=0;x<widthSegments;x++)
+            {
+                int lower=z*(widthSegments+1)+x,upper=lower+widthSegments+1;
+                triangles[triangle++]=lower;
+                triangles[triangle++]=upper;
+                triangles[triangle++]=lower+1;
+                triangles[triangle++]=lower+1;
+                triangles[triangle++]=upper;
+                triangles[triangle++]=upper+1;
+            }
+            var mesh=new Mesh{name="MagicForest_AutoBiome_"+biomeNames[i]};
+            mesh.vertices=vertices;
+            mesh.triangles=triangles;
+            mesh.RecalculateNormals();
+            GameObject surface=new GameObject("NativeAutoBiome_"+biomeNames[i]);
+            surface.transform.SetParent(worldRoot.transform);
+            surface.transform.position=new Vector3((i-2)*16f,0f,0f);
+            surface.AddComponent<MeshFilter>().sharedMesh=mesh;
+            Material biomeMaterial=new Material(biomeShader);
+            biomeMaterial.color=regionColors[i];
+            surface.AddComponent<MeshRenderer>().sharedMaterial=biomeMaterial;
+            Debug.Log("MAGIC_FOREST_AUTOBIOME_REGION="+biomeNames[i]+" triangles="+triangles.Length/3
+                +" status=SOURCE_BOUND_RUNTIME_QA_REQUIRED");
+            // 지역별 랜드마크는 기존 모델 바인더에서만 생성한다. 실제 전투/충돌 루프에 영향 없음.
+            for(int prop=0;prop<10;prop++)
+            {
+                float azimuth=prop*2.39996f+i*.71f;
+                float distance=9.2f+(prop%4)*2.8f;
+                Vector3 pos=new Vector3((i-2)*16f+Mathf.Cos(azimuth)*Mathf.Min(6f,distance*.36f),
+                    .015f,Mathf.Sin(azimuth)*distance*2.1f);
+                if(Mathf.Abs(pos.x)<3f && Mathf.Abs(pos.z)<6f)continue;
+                string asset=i==0?"MagicForestRock":i==1?"MagicForestVillage_cobblestones":
+                    i==2?(prop%3==0?"MagicForestVillage_tree_large":"MagicForestVillage_tree"):
+                    i==3?(prop%3==0?"MagicForestRock":"MagicForestVillage_tree"):
+                    (prop%3==0?"MagicForestVillage_foliage_A":"MagicForestRock");
+                GameObject scenery=BindCompanyVisual(asset,worldRoot.transform,pos,
+                    Vector3.one*(i==3?.74f:i==0?1.30f:.91f),Quaternion.Euler(0f,prop*61f,0f));
+                if(scenery!=null)TintCompanyMesh(scenery,
+                    i==3?new Color(.78f,.83f,.88f):i==0?new Color(.60f,.52f,.45f):
+                    i==1?new Color(.44f,.59f,.64f):i==4?new Color(.67f,.51f,.34f):
+                    new Color(.37f,.62f,.37f));
+            }
+        }
+        Debug.Log("MAGIC_FOREST_AUTOBIOME=FIVE_NATIVE_3D_REGIONS_SOURCE_BOUND_RUNTIME_QA_REQUIRED");
+        // 그래픽 · 공용 3D OBJ 원본에서 Unity Y축/재질에 맞춰 파생 제작한 실제 메시를 연결한다.
+        // 기존 Tree/Rock 콜라이더와 채집 판정은 그대로 두고, 시각 모델만 교체한다.
+        GameObject treeTrunkSource = Resources.Load<GameObject>("CompanyAssets/MagicForestTrunk");
+        GameObject treeCrownSource = Resources.Load<GameObject>("CompanyAssets/MagicForestCrown");
+        // 메시 임포트의 Read/Write가 꺼져 있어도 3D 지오메트리 검증이 가능해야 한다.
+        // 읽기 제한된 Mesh.triangles 접근은 WebGL 초기화를 예외로 중단할 수 있다.
+        int trunkIndices = 0, crownIndices = 0;
+        bool trunkHasDepth = false, crownHasDepth = false;
+        if (treeTrunkSource != null)
+        {
+            foreach (MeshFilter filter in treeTrunkSource.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (filter == null || filter.sharedMesh == null) continue;
+                Mesh mesh = filter.sharedMesh;
+                for (int submesh = 0; submesh < mesh.subMeshCount; submesh++)
+                    if (mesh.GetTopology(submesh) == MeshTopology.Triangles)
+                        trunkIndices += (int)mesh.GetIndexCount(submesh);
+                Vector3 size = mesh.bounds.size;
+                if (size.x > .1f && size.y > 1f && size.z > .1f) trunkHasDepth = true;
+            }
+        }
+        if (treeCrownSource != null)
+        {
+            foreach (MeshFilter filter in treeCrownSource.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (filter == null || filter.sharedMesh == null) continue;
+                Mesh mesh = filter.sharedMesh;
+                for (int submesh = 0; submesh < mesh.subMeshCount; submesh++)
+                    if (mesh.GetTopology(submesh) == MeshTopology.Triangles)
+                        crownIndices += (int)mesh.GetIndexCount(submesh);
+                Vector3 size = mesh.bounds.size;
+                if (size.x > .1f && size.y > 1f && size.z > .1f) crownHasDepth = true;
+            }
+        }
+        bool treeNativeReady = trunkIndices >= 300 && crownIndices >= 600
+            && trunkHasDepth && crownHasDepth
+            && treeTrunkSource.GetComponentInChildren<Renderer>() != null
+            && treeCrownSource.GetComponentInChildren<Renderer>() != null;
+        int nativeTreeCount = 0;
+        for (int i = 0; i < 85; i++)
+        {
+            float x = (i * 19 % 77) - 38f;
+            float z = (i * 43 % 77) - 38f;
+            if (Mathf.Abs(x) < 4 && Mathf.Abs(z) < 4) continue;
+            GameObject trunk = GameObject.CreatePrimitive(i % 4 == 0 ? PrimitiveType.Cube : PrimitiveType.Cylinder);
+            trunk.name = i % 4 == 0 ? "Rock" : "Tree";
+            trunk.transform.SetParent(worldRoot.transform);
+            trunk.transform.position = new Vector3(x, i % 4 == 0 ? .55f : 1.4f, z);
+            trunk.transform.localScale = i % 4 == 0 ? new Vector3(1.5f, 1f, 1.3f) : new Vector3(.5f, 1.4f, .5f);
+            Tint(trunk, i % 4 == 0 ? new Color(.48f,.51f,.53f) : new Color(.4f,.27f,.16f));
+            if (i % 4 == 0)
+            {
+                // 자원 판정은 원래 Rock 충돌체가 담당하고 네이티브 메시에는 충돌체를 두지 않는다.
+                GameObject nativeRock = BindCompanyVisual("MagicForestRock", trunk.transform,
+                    new Vector3(0f,-.35f,0f),new Vector3(.85f,1.05f,.85f),Quaternion.Euler(0,i*41f,0));
+                if (nativeRock != null) trunk.GetComponent<Renderer>().enabled = false;
+            }
+            if (i % 4 != 0)
+            {
+                GameObject crown = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                crown.name = "LeafCrown";
+                crown.transform.SetParent(trunk.transform, false);
+                crown.transform.localPosition = Vector3.up * .85f;
+                crown.transform.localScale = new Vector3(4.5f, .9f, 4.5f);
+                Tint(crown, new Color(.19f + i % 3 * .05f, .39f, .22f));
+
+                if (treeNativeReady)
+                {
+                    GameObject trunkVisual = Instantiate(treeTrunkSource, worldRoot.transform);
+                    trunkVisual.name = "TreeNativeTrunk_" + i;
+                    trunkVisual.transform.position = new Vector3(x, 0f, z);
+                    trunkVisual.transform.rotation = Quaternion.Euler(0f, i * 37f, 0f);
+                    trunkVisual.transform.localScale = new Vector3(.43f, .72f, .43f);
+
+                    GameObject crownVisual = Instantiate(treeCrownSource, worldRoot.transform);
+                    crownVisual.name = "TreeNativeCrown_" + i;
+                    crownVisual.transform.position = new Vector3(x, 3.65f, z);
+                    crownVisual.transform.rotation = trunkVisual.transform.rotation;
+                    crownVisual.transform.localScale = new Vector3(.70f, .65f, .70f);
+                    foreach (Collider visualCollider in trunkVisual.GetComponentsInChildren<Collider>())
+                        Destroy(visualCollider);
+                    foreach (Collider visualCollider in crownVisual.GetComponentsInChildren<Collider>())
+                        Destroy(visualCollider);
+                    // 채집/상호작용 영역의 물리 콜라이더를 삭제하지 않는다.
+                    trunk.GetComponent<Renderer>().enabled = false;
+                    crown.GetComponent<Renderer>().enabled = false;
+                    // 원래 잎구체의 보이지 않는 충돌체가 실제 나무 채집 Raycast를 막지 않게 한다.
+                    // Tree 몸통의 기존 콜라이더와 자원 판정은 그대로 유지한다.
+                    Collider oldCrownCollider = crown.GetComponent<Collider>();
+                    if (oldCrownCollider != null) Destroy(oldCrownCollider);
+                    nativeTreeCount++;
+                }
+            }
+        }
+        Debug.Log("MAGIC_FOREST_NATIVE_ASSET_BINDING=" + (treeNativeReady ? "SOURCE_BOUND_RUNTIME_QA_REQUIRED" : "ASSET_REPAIR_REQUIRED")
+            + " prefab=CompanyAssets/MagicForestTrunk+MagicForestCrown nativeTreeCount=" + nativeTreeCount);
+        // 환경 · 라이브러리 길 메시에는 콜라이더를 만들지 않고 원래 이동 규칙을 유지한다.
+        for(int i=0;i<5;i++)
+            BindCompanyVisual("MagicForestRoad",worldRoot.transform,
+                new Vector3((i-2)*14f,-.005f,6.5f),new Vector3(1.12f,.44f,1.12f),
+                Quaternion.Euler(0f,(i%2)*180f,0f));
+        // 마을 · 검증된 외부 CC0 모델을 기존 공용 Unity Resources 로더로 직접 배치한다.
+        // 건물/길/울타리는 시각 전용이고 전투 판정·채집·충돌·저장에는 개입하지 않는다.
+        Vector3[] villageLocations={new Vector3(-27f,0f,21f),new Vector3(26f,0f,-23f),new Vector3(21f,0f,29f)};
+        int villageHouses=0,villageDetailCount=0;
+        for(int area=0;area<villageLocations.Length;area++)
+        {
+            Vector3 center=villageLocations[area];
+            Quaternion direction=Quaternion.Euler(0f,area==1?180f:0f,0f);
+            Color wallTint=area==1?new Color(.68f,.64f,.56f):new Color(.83f,.70f,.55f);
+            GameObject house=BindCompanyVisual("MagicForestVillage_house",worldRoot.transform,
+                center+new Vector3(0f,-.23f,0f),Vector3.one*(area==1?.88f:.96f),direction);
+            if(house==null)continue;
+            TintCompanyMesh(house,wallTint);
+            villageHouses++;
+            GameObject door=BindCompanyVisual("MagicForestVillage_house_door",worldRoot.transform,
+                center+direction*new Vector3(0f,-.14f,-2.65f),Vector3.one*.9f,direction);
+            if(door!=null){TintCompanyMesh(door,new Color(.57f,.38f,.26f));villageDetailCount++;}
+            GameObject chimney=BindCompanyVisual("MagicForestVillage_house_chimney",worldRoot.transform,
+                center+direction*new Vector3(1.7f,.7f,1.0f),Vector3.one*.95f,direction);
+            if(chimney!=null){TintCompanyMesh(chimney,new Color(.68f,.66f,.65f));villageDetailCount++;}
+            GameObject gate=BindCompanyVisual("MagicForestVillage_gate_single",worldRoot.transform,
+                center+direction*new Vector3(-3.3f,.05f,-5.0f),Vector3.one*.98f,direction);
+            if(gate!=null){TintCompanyMesh(gate,new Color(.59f,.42f,.27f));villageDetailCount++;}
+            for(int side=-1;side<=1;side+=2)
+            {
+                GameObject fence=BindCompanyVisual("MagicForestVillage_fence_straight",worldRoot.transform,
+                    center+direction*new Vector3(side*4.2f,.02f,-4.2f),new Vector3(2.0f,1.0f,1.15f),direction);
+                if(fence!=null){TintCompanyMesh(fence,new Color(.50f,.38f,.27f));villageDetailCount++;}
+                GameObject corner=BindCompanyVisual("MagicForestVillage_fence_corner",worldRoot.transform,
+                    center+direction*new Vector3(side*5.7f,.02f,-3.2f),Vector3.one*1.1f,direction);
+                if(corner!=null){TintCompanyMesh(corner,new Color(.49f,.36f,.26f));villageDetailCount++;}
+            }
+            GameObject bench=BindCompanyVisual("MagicForestVillage_bench_A",worldRoot.transform,
+                center+direction*new Vector3(3.8f,0f,2.3f),Vector3.one*1.05f,direction);
+            if(bench!=null){TintCompanyMesh(bench,new Color(.56f,.42f,.29f));villageDetailCount++;}
+            GameObject parcel=BindCompanyVisual("MagicForestVillage_package",worldRoot.transform,
+                center+direction*new Vector3(2.4f,0f,-2.0f),Vector3.one*.85f,direction);
+            if(parcel!=null){TintCompanyMesh(parcel,new Color(.78f,.67f,.43f));villageDetailCount++;}
+            GameObject mailbox=BindCompanyVisual("MagicForestVillage_mailbox",worldRoot.transform,
+                center+direction*new Vector3(-3.8f,0f,-2.2f),Vector3.one*1.05f,direction);
+            if(mailbox!=null){TintCompanyMesh(mailbox,new Color(.46f,.49f,.47f));villageDetailCount++;}
+            for(int pathTile=0;pathTile<4;pathTile++)
+            {
+                GameObject cobble=BindCompanyVisual("MagicForestVillage_cobblestones",worldRoot.transform,
+                    center+direction*new Vector3(0f,.02f,-4f-pathTile*1.65f),Vector3.one*1.35f,direction);
+                if(cobble!=null){TintCompanyMesh(cobble,new Color(.66f,.63f,.55f));villageDetailCount++;}
+            }
+            for(int grove=0;grove<4;grove++)
+            {
+                float theta=grove*Mathf.PI*.65f+area*.5f;
+                Vector3 outside=center+new Vector3(Mathf.Cos(theta)*9f,0f,Mathf.Sin(theta)*8.2f);
+                string treeName=grove%2==0?"MagicForestVillage_tree_large":"MagicForestVillage_tree";
+                GameObject nativeTree=BindCompanyVisual(treeName,worldRoot.transform,
+                    outside,Vector3.one*(1.0f+grove*.11f),Quaternion.Euler(0f,area*31f+grove*83f,0f));
+                if(nativeTree!=null){TintCompanyMesh(nativeTree,new Color(.42f,.60f,.43f));villageDetailCount++;}
+                string foliageName=grove%2==0?"MagicForestVillage_foliage_A":"MagicForestVillage_foliage_B";
+                GameObject foliage=BindCompanyVisual(foliageName,worldRoot.transform,
+                    outside+new Vector3(1.2f,0f,-.8f),Vector3.one*1.15f,Quaternion.Euler(0f,grove*43f,0f));
+                if(foliage!=null){TintCompanyMesh(foliage,new Color(.49f,.68f,.44f));villageDetailCount++;}
+            }
+        }
+        Debug.Log("MAGIC_FOREST_WEB_CC0_VILLAGES="+villageHouses+" details="+villageDetailCount
+            +" status="+(villageHouses==villageLocations.Length?"SOURCE_BOUND_RUNTIME_QA_REQUIRED":"REPAIR_REQUIRED"));
+        if(villageHouses!=villageLocations.Length || villageDetailCount<60)
+            throw new InvalidOperationException("MAGIC_FOREST_WEB_CC0_VILLAGE_ASSET_MISSING");
+        // 자원 · 원본 웹의 섬유 노드를 3D 채집 대상으로 연결한다. 기존 나무/돌 보상은 불변.
+        for (int i = 0; i < 36; i++)
+        {
+            float x = (i * 29 % 69) - 34f;
+            float z = (i * 37 % 69) - 34f;
+            if (Mathf.Abs(x) < 5f && Mathf.Abs(z) < 5f) continue;
+            GameObject fiberNode=CreatePart(worldRoot.transform, PrimitiveType.Capsule, "Fiber",
+                new Vector3(x, .42f, z), new Vector3(.48f, .60f, .48f),
+                new Color(.30f, .59f, .34f), true);
+            GameObject nativeHerb=BindCompanyVisual("MagicForestCrown", fiberNode.transform,
+                new Vector3(0,-.26f,0),new Vector3(.17f,.12f,.17f),Quaternion.Euler(0,i*19f,0));
+            if(nativeHerb!=null)fiberNode.GetComponent<Renderer>().enabled=false;
+        }
+        // 캐릭터 · 기존 캡슐/구체 플레이어를 렌더하지 않고 검증된 공용 3D 가디언 리그만 사용한다.
+        // 게임 오브젝트 좌표는 그대로 유지해 저장·충돌·전투·멀티 상태를 변경하지 않는다.
+        GameObject character = new GameObject("Player_3D");
+        character.transform.SetParent(worldRoot.transform);
+        character.transform.position = Vector3.zero;
+        player = character.transform;
+        GameObject nativeActor = BindCompanyVisual("MagicForestGuardian", character.transform,
+            Vector3.zero, Vector3.one * 1.12f, Quaternion.identity);
+        if(nativeActor==null)
+            throw new InvalidOperationException("MAGIC_FOREST_PLAYER_GUARDIAN_MODEL_MISSING");
+        playerNativeMotion = nativeActor.GetComponent<Animation>();
+        SkinnedMeshRenderer skin = nativeActor.GetComponentInChildren<SkinnedMeshRenderer>(true);
+        if(playerNativeMotion==null || skin==null || skin.sharedMesh==null
+            || skin.sharedMesh.vertexCount<100 || skin.bones==null || skin.bones.Length<3)
+            throw new InvalidOperationException("MAGIC_FOREST_PLAYER_GUARDIAN_SKIN_OR_MOTION_INVALID");
+        foreach(Transform bone in nativeActor.GetComponentsInChildren<Transform>(true))
+            if(bone.name=="WeaponGrip"){playerWeaponGrip=bone;break;}
+        if(playerWeaponGrip==null)
+            throw new InvalidOperationException("MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING:WeaponGrip");
+        // 모션 · 빌드에 포함된 동일 가디언 리그의 실제 클립을 실행 인스턴스에 직접 연결한다.
+        // 프리팹의 AnimationState 유실을 이름 표식이나 임시 모션으로 대체하지 않는다.
+        foreach(string action in new[]{"IDLE_BREATH","RUN","ATTACK_LIGHT_SLASH","ATTACK_HEAVY",
+            "HIT_FRONT","GUARDIAN_REVIVE","GUARDIAN_PARRY"})
+        {
+            AnimationClip clip=Resources.Load<AnimationClip>("CompanyAssets/MagicForestGuardian_"+action);
+            if(clip==null || !clip.legacy || clip.empty)
+                throw new InvalidOperationException("MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING:"+action);
+            playerNativeMotion.AddClip(clip,action);
+            if(playerNativeMotion[action]==null)
+                throw new InvalidOperationException("MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_BINDING_FAILED:"+action);
+        }
+        PlayNativeMotion(playerNativeMotion,"IDLE_BREATH");
+        Debug.Log("MAGIC_FOREST_PLAYER_NATIVE_CHARACTER=GUARDIAN_SKINNED_MESH_AND_ACTION_READY_RUNTIME_QA_REQUIRED"
+            +" vertices="+skin.sharedMesh.vertexCount+" joints="+skin.bones.Length);
+        FollowCamera(true);
+    }
+
+    private static GameObject CreatePart(Transform parent, PrimitiveType primitive, string name, Vector3 localPos, Vector3 localScale, Color color, bool keepCollider)
+    {
+        GameObject obj = GameObject.CreatePrimitive(primitive);
+        obj.name = name;
+        obj.transform.SetParent(parent, false);
+        obj.transform.localPosition = localPos;
+        obj.transform.localScale = localScale;
+        Tint(obj, color);
+        // 물리 · CreatePrimitive의 콜라이더 유형을 직접 참조해 WebGL 스트리핑을 방지한다.
+        // 정상 생성된 충돌체는 그대로 두고, 누락된 경우에만 같은 기본 형태로 보완한다.
+        if(keepCollider && obj.GetComponent<Collider>()==null)
+        {
+            if(primitive==PrimitiveType.Cube)obj.AddComponent<BoxCollider>();
+            else if(primitive==PrimitiveType.Sphere)obj.AddComponent<SphereCollider>();
+            else if(primitive==PrimitiveType.Capsule || primitive==PrimitiveType.Cylinder)
+                obj.AddComponent<CapsuleCollider>();
+        }
+        if (!keepCollider) Destroy(obj.GetComponent<Collider>());
+        return obj;
+    }
+
+    private static void Tint(GameObject obj, Color color)
+    {
+        Renderer rr = obj.GetComponent<Renderer>();
+        if (rr != null) rr.material.color = color;
+    }
+
+    // 그래픽 · 기존 GameObject/Collider 생성 함수의 비충돌 시각 자산 경로
+    private GameObject BindCompanyVisual(string assetId,Transform parent,Vector3 position,Vector3 scale,Quaternion rotation)
+    {
+        GameObject source;
+        if(!nativeAssetCache.TryGetValue(assetId,out source))
+        {
+            source=Resources.Load<GameObject>("CompanyAssets/"+assetId);
+            nativeAssetCache[assetId]=source;
+            if(source==null && missingNativeAssets.Add(assetId))
+                Debug.LogWarning("MAGIC_FOREST_NATIVE_ASSET_REPAIR_REQUIRED missing="+assetId);
+        }
+        if(source==null)return null;
+        GameObject model=Instantiate(source,parent,false);
+        model.name="Library_"+assetId;
+        model.transform.localPosition=position;
+        model.transform.localScale=scale;
+        model.transform.localRotation=rotation;
+        foreach(Collider extra in model.GetComponentsInChildren<Collider>(true))
+            Destroy(extra);
+        return model;
+    }
+
+    private void LoadCompanyPresentation()
+    {
+        TextAsset ui=Resources.Load<TextAsset>("CompanyAssets/MagicForestUI");
+        if(ui!=null)
+        {
+            try{uiTheme=JsonUtility.FromJson<LibraryUiTheme>(ui.text)??new LibraryUiTheme();}
+            catch(Exception){Debug.LogWarning("MAGIC_FOREST_UI_SOURCE_REPAIR_REQUIRED");}
+        }
+        else Debug.LogWarning("MAGIC_FOREST_UI_SOURCE_REPAIR_REQUIRED missing=MagicForestUI");
+        TextAsset motion=Resources.Load<TextAsset>("CompanyAssets/MagicForestMotion");
+        if(motion!=null)
+        {
+            try{motionProfile=JsonUtility.FromJson<LibraryMotion>(motion.text)??new LibraryMotion();}
+            catch(Exception){Debug.LogWarning("MAGIC_FOREST_MOTION_SOURCE_REPAIR_REQUIRED");}
+        }
+        else Debug.LogWarning("MAGIC_FOREST_MOTION_SOURCE_REPAIR_REQUIRED missing=MagicForestMotion");
+    }
+
+    private static Color ColorFromLibrary(string html,Color fallback)
+    {
+        Color result;
+        return ColorUtility.TryParseHtmlString(html??"",out result)?result:fallback;
+    }
+
+    private static Texture2D NativeUiTexture(Color color)
+    {
+        Texture2D texture=new Texture2D(2,2,TextureFormat.RGBA32,false);
+        texture.SetPixels(new[]{color,color,color,color});
+        texture.wrapMode=TextureWrapMode.Clamp;
+        texture.filterMode=FilterMode.Bilinear;
+        texture.Apply(false,true);
+        texture.hideFlags=HideFlags.DontSave;
+        return texture;
+    }
+
+    private void ApplyCompanyUiSkin()
+    {
+        if(uiPanelTexture==null)
+        {
+            uiPanelTexture=NativeUiTexture(ColorFromLibrary(uiTheme.panel,new Color(.12f,.15f,.17f)));
+            uiButtonTexture=NativeUiTexture(ColorFromLibrary(uiTheme.primary,new Color(.28f,.45f,.69f)));
+            uiButtonActiveTexture=NativeUiTexture(ColorFromLibrary(uiTheme.raised,new Color(.17f,.21f,.25f)));
+            uiInsetTexture=NativeUiTexture(ColorFromLibrary(uiTheme.inset,new Color(.09f,.10f,.12f)));
+        }
+        GUI.skin.box.normal.background=uiPanelTexture;
+        GUI.skin.box.normal.textColor=ColorFromLibrary(uiTheme.text,Color.white);
+        GUI.skin.button.normal.background=uiButtonTexture;
+        GUI.skin.button.hover.background=uiButtonActiveTexture;
+        GUI.skin.button.active.background=uiButtonActiveTexture;
+        GUI.skin.button.normal.textColor=ColorFromLibrary(uiTheme.text,Color.white);
+        GUI.skin.button.hover.textColor=Color.white;
+        GUI.skin.button.active.textColor=Color.white;
+        GUI.skin.label.normal.textColor=ColorFromLibrary(uiTheme.text,Color.white);
+        GUI.skin.textField.normal.background=uiInsetTexture;
+        GUI.skin.textField.normal.textColor=Color.white;
+    }
+
+    // 모션 · 게임 로직을 변경하지 않고 실제 공용 관절 클립만 재생한다.
+    private static void PlayNativeMotion(Animation motion,string state)
+    {
+        if(motion==null || string.IsNullOrEmpty(state) || motion[state]==null)return;
+        if(motion.IsPlaying(state))return;
+        motion.CrossFade(state,.11f);
+    }
+
+    private void BeginPlayerAction(int kind)
+    {
+        playerActionKind=kind;
+        playerActionStart=Time.time;
+        playerActionDuration=Mathf.Max(.15f,kind==2?motionProfile.gatherSeconds:
+            kind==3?motionProfile.craftSeconds:kind==4?motionProfile.hitSeconds:
+            kind==5?motionProfile.heavySeconds:motionProfile.attackSeconds);
+        playerActionUntil=playerActionStart+playerActionDuration;
+    }
+
+    // 장비 · 단일 장착 무기를 신규 가디언의 실제 WeaponGrip 본에 연결한다.
+    private void SyncPlayerWeaponVisual()
+    {
+        if(displayedWeaponId==equippedWeapon)return;
+        if(playerWeaponVisual!=null)Destroy(playerWeaponVisual);
+        playerWeaponVisual=null;
+        displayedWeaponId=equippedWeapon;
+        if(playerWeaponGrip==null || string.IsNullOrEmpty(equippedWeapon))return;
+        Recipe weapon=recipes.Find(r=>r.id==equippedWeapon && r.kind=="weapon");
+        if(weapon==null)return;
+        bool blade=equippedWeapon.Contains("sword")||equippedWeapon.Contains("dagger")
+            ||equippedWeapon.Contains("blade")||equippedWeapon.Contains("cleaver")
+            ||equippedWeapon.Contains("saber")||equippedWeapon.Contains("greatsword");
+        playerWeaponVisual=BindCompanyVisual(blade?"MagicForestSword":"MagicForestGrip",playerWeaponGrip,
+            new Vector3(0,-.08f,0),Vector3.one * (blade ? 0.24f : 0.33f),Quaternion.identity);
+    }
+
+    // 모션 · 같은 가디언 리그에서 이동/채집/제작/피격/공격을 직접 재생한다.
+    private void AnimatePlayerPresentation(float movement)
+    {
+        if(playerNativeMotion==null)return;
+        SyncPlayerWeaponVisual();
+        string state=Time.time<playerActionUntil
+            ? playerActionKind==2?"GUARDIAN_REVIVE":playerActionKind==3?"GUARDIAN_PARRY":
+                playerActionKind==4?"HIT_FRONT":playerActionKind==5?"ATTACK_HEAVY":"ATTACK_LIGHT_SLASH"
+            : movement>.12f?"RUN":"IDLE_BREATH";
+        PlayNativeMotion(playerNativeMotion,state);
+    }
+
+    private void AnimateMonsterPresentation(Monster monster,bool isMoving)
+    {
+        if(monster.nativeMotion!=null)
+        {
+            string action=monster.hitPoseUntil>Time.time?"HIT_FRONT":
+                monster.attackPoseUntil>Time.time?"ATTACK_A":
+                isMoving?"RUN":"IDLE_BREATH";
+            if(monster.nativeMotion[action]==null)
+                action=action=="ATTACK_A"?"ATTACK_LIGHT_SLASH":"IDLE_BREATH";
+            PlayNativeMotion(monster.nativeMotion,action);
+            return;
+        }
+        float phase=Time.time*(Mathf.PI*2f/Mathf.Max(.3f,motionProfile.walkSeconds));
+        float attack=monster.attackPoseUntil>Time.time?
+            Mathf.Sin(Mathf.PI*Mathf.Clamp01(1f-(monster.attackPoseUntil-Time.time)/Mathf.Max(.15f,motionProfile.attackSeconds))):0f;
+        float hit=monster.hitPoseUntil>Time.time?1f:0f;
+        for(int i=0;i<monster.limbs.Count;i++)
+        {
+            Transform limb=monster.limbs[i];
+            if(limb==null)continue;
+            float walking=isMoving?Mathf.Sin(phase+i*Mathf.PI*.85f)*25f:0f;
+            limb.localRotation=monster.restPoses[i]*Quaternion.Euler(walking-attack*31f+hit*12f,0f,0f);
+        }
+        if(monster.nativePose!=null)
+            monster.nativePose.localRotation=Quaternion.Euler(hit*9f,0f,
+                attack*11f+(isMoving?Mathf.Sin(phase*2f)*2f:0f));
+    }
+
+    private void FollowCamera(bool instant)
+    {
+        Vector3 pos = player.position + new Vector3(0f, cameraDistance, -cameraDistance);
+        mainCamera.transform.position = instant ? pos : Vector3.Lerp(mainCamera.transform.position, pos, Time.deltaTime * 7f);
+        mainCamera.transform.LookAt(player.position + Vector3.up);
+    }
+
+    // 메인 · 플레이 선택과 저장 분리
+    private void EnterMode(bool useCreative)
+    {
+        ClearEntities();
+        creative = useCreative;
+        currentHp = 100f;
+        placingBlock = false;
+        selectedMonsterId = -1;
+        aggroMonsterId = -1;
+        panel = Panel.None;
+        player.position = Vector3.zero;
+        materials.Clear();
+        crafted.Clear();
+        materials["wood"] = 0;
+        materials["stone"] = 0;
+        materials["fiber"] = 0;
+        equippedWeapon = "";
+        displayedWeaponId = "__reset__";
+        playerActionUntil=0f;
+        if (creative)
+        {
+            LoadCreative();
+            info = "가방에서 몬스터 스폰 블록을 설치해.";
+        }
+        else
+        {
+            LoadNormalWorld();
+            for (int i = 0; i < 8; i++)
+                SpawnMonster(species[i % Mathf.Min(8, species.Count)], new Vector3(Mathf.Cos(i*.78f)*13,0f,Mathf.Sin(i*.78f)*13), false);
+            info = "일반 모드 · 전투, 채집, 제작";
+        }
+        screenMode = ScreenMode.Playing;
+        SyncPlayerWeaponVisual();
+        FollowCamera(true);
+    }
+
+    private void ClearEntities()
+    {
+        foreach (Monster m in monsters) if (m.obj != null) Destroy(m.obj);
+        foreach(GameObject corpse in fallenVisuals)if(corpse!=null)Destroy(corpse);
+        fallenVisuals.Clear();
+        foreach (HomingSpell spell in homingSpells) if (spell.obj != null) Destroy(spell.obj);
+        homingSpells.Clear();
+        foreach (BuiltStructure building in buildings) if (building.obj != null) Destroy(building.obj);
+        buildings.Clear();
+        foreach (SpawnBlock b in blocks) if (b.obj != null) Destroy(b.obj);
+        monsters.Clear();
+        blocks.Clear();
+        monsterColliders.Clear();
+        blockColliders.Clear();
+    }
+
+    // 메인 · 기존 몬스터 정보를 3D로 표현
+    // 그래픽 · 기존 몬스터 식별자를 유지하면서 동물·곤충·인형·정령마다 3D 실루엣을 다르게 구성한다.
+    private Monster SpawnMonster(Species spec, Vector3 position, bool isOwned)
+    {
+        if(spec==null || monsters.Count>=150)return null;
+        Monster monster=new Monster{runtimeId=nextId++,spec=spec,hp=Mathf.Max(1,spec.hp),creative=isOwned,attackPlayer=false};
+        GameObject root=new GameObject("Monster_"+spec.id);
+        root.transform.SetParent(worldRoot.transform);
+        root.transform.position=new Vector3(Mathf.Clamp(position.x,-38f,38f),0f,Mathf.Clamp(position.z,-38f,38f));
+        string name=spec.id.ToLowerInvariant();
+        bool spider=name.Contains("spider"),scorpion=name.Contains("scorpion"),insect=spider||scorpion||name.Contains("mantis")||name.Contains("bee");
+        bool serpent=name.Contains("snake")||name.Contains("anaconda")||name.Contains("leech");
+        bool fish=name.Contains("fish")||name.Contains("shark")||name.Contains("squid")||name.Contains("angler");
+        bool bird=name.Contains("bird")||name.Contains("pheasant")||name.Contains("heron");
+        bool fourLeg=name.Contains("wolf")||name.Contains("hound")||name.Contains("fox")||name.Contains("bear")||name.Contains("boar")||name.Contains("stag")||name.Contains("deer")||name.Contains("goat")||name.Contains("ibex")||name.Contains("tiger")||name.Contains("croc")||name.Contains("buffalo")||name.Contains("hare");
+        bool humanoid=name.Contains("goblin")||name.Contains("primitive")||name.Contains("mummy")||name.Contains("gorilla")||name.Contains("yeti");
+        bool spirit=name.Contains("spirit")||name.Contains("golem")||name.Contains("guardian")||name.Contains("sovereign");
+        bool plant=name.Contains("spore")||name.Contains("mushroom")||name.Contains("mycelium");
+        bool flying=name.Contains("bat")||name.Contains("fairy")||bird||name.Contains("bee");
+        uint hash=2166136261u;
+        unchecked{foreach(char ch in name){hash^=ch;hash*=16777619u;}}
+        Color baseColor=Color.HSVToRGB((hash%360u)/360f,.36f,.72f);
+        if(name.Contains("crystal"))baseColor=new Color(.50f,.45f,.83f);
+        else if(name.Contains("fire")||name.Contains("lava"))baseColor=new Color(.83f,.33f,.22f);
+        else if(name.Contains("snow")||name.Contains("frost")||name.Contains("ice")||name.Contains("polar"))baseColor=new Color(.77f,.87f,.96f);
+        else if(name.Contains("swamp")||name.Contains("toxic"))baseColor=new Color(.32f,.57f,.38f);
+        else if(name.Contains("shadow"))baseColor=new Color(.27f,.31f,.43f);
+        else if(name.Contains("sand")||name.Contains("desert")||name.Contains("mummy"))baseColor=new Color(.70f,.52f,.30f);
+        float scale=Mathf.Clamp(Mathf.Sqrt(Mathf.Max(1f,spec.hp))/12f,.65f,2.65f);
+        if(spec.mood=="harmless")scale=Mathf.Min(scale,1.35f);
+        PrimitiveType shape=(humanoid||spirit)?PrimitiveType.Capsule:(plant?PrimitiveType.Cylinder:PrimitiveType.Sphere);
+        if(insect)shape=PrimitiveType.Capsule;
+        GameObject body=CreatePart(root.transform,shape,"Body",new Vector3(0f,scale*.70f,0f),
+            new Vector3(scale*(serpent?1.65f:fish?1.55f:fourLeg?1.3f:.95f),scale*(serpent? .37f:fourLeg? .72f:1.25f),scale*(serpent? .53f:1f)),baseColor,true);
+        Collider hitbox=body.GetComponent<Collider>();
+        if(hitbox!=null)monsterColliders[hitbox]=monster;
+        if(fourLeg || insect)
+        {
+            for(int side=-1;side<=1;side+=2)
+            for(int row=0;row<2;row++)
+            {
+                GameObject leg=CreatePart(root.transform,PrimitiveType.Capsule,"Leg_"+side+"_"+row,
+                    new Vector3(side*scale*.39f,scale*.26f,(row==0?-.30f:.31f)*scale),
+                    new Vector3(scale*.16f,scale*.52f,scale*.16f),baseColor*.78f,false);
+                if(insect)leg.transform.localRotation=Quaternion.Euler(0f,0f,side*27f);
+                monster.limbs.Add(leg.transform);
+                monster.restPoses.Add(leg.transform.localRotation);
+            }
+            if(insect)
+            {
+                CreatePart(root.transform,PrimitiveType.Sphere,"Antennae",new Vector3(0f,scale*1.33f,scale*.20f),
+                    new Vector3(scale*.42f,scale*.18f,scale*.24f),baseColor*1.12f,false);
+                if(scorpion)CreatePart(root.transform,PrimitiveType.Capsule,"Stinger",
+                    new Vector3(0f,scale*1.02f,-scale*.76f),new Vector3(scale*.17f,scale*.85f,scale*.18f),baseColor*.68f,false);
+            }
+        }
+        else if(humanoid)
+        {
+            CreatePart(root.transform,PrimitiveType.Sphere,"Head",new Vector3(0f,scale*1.67f,scale*.06f),
+                Vector3.one*scale*.57f,baseColor*1.12f,false);
+            for(int side=-1;side<=1;side+=2)
+            {
+                GameObject arm=CreatePart(root.transform,PrimitiveType.Capsule,"Arm_"+side,new Vector3(side*scale*.65f,scale*.83f,0f),
+                    new Vector3(scale*.26f,scale*.90f,scale*.28f),baseColor*.78f,false);
+                monster.limbs.Add(arm.transform);
+                monster.restPoses.Add(arm.transform.localRotation);
+            }
+        }
+        else if(spirit || plant)
+        {
+            CreatePart(root.transform,PrimitiveType.Sphere,plant?"SporeCrown":"Core",
+                new Vector3(0f,scale*1.63f,0f),new Vector3(scale*1.30f,scale*.60f,scale*1.05f),
+                plant?new Color(.52f,.31f,.61f):baseColor*1.20f,false);
+        }
+        else if(serpent || fish)
+        {
+            CreatePart(root.transform,PrimitiveType.Capsule,"Tail",new Vector3(0f,scale*.54f,-scale*.84f),
+                new Vector3(scale*.25f,scale*.28f,scale*.83f),baseColor*.73f,false);
+            CreatePart(root.transform,PrimitiveType.Sphere,"Face",new Vector3(0f,scale*.78f,scale*.73f),
+                Vector3.one*scale*.54f,baseColor*1.13f,false);
+        }
+        if(flying)
+        {
+            for(int side=-1;side<=1;side+=2)
+            {
+                GameObject wing=CreatePart(root.transform,PrimitiveType.Cube,"Wing_"+side,
+                    new Vector3(side*scale*.78f,scale*1.01f,0f),new Vector3(scale*1.26f,scale*.10f,scale*.49f),
+                    baseColor*1.17f,false);
+                wing.transform.localRotation=Quaternion.Euler(0f,0f,side*15f);
+            }
+        }
+        if(fourLeg)
+        {
+            CreatePart(root.transform,PrimitiveType.Sphere,"Snout",
+                new Vector3(0f,scale*.93f,scale*.65f),new Vector3(scale*.55f,scale*.34f,scale*.37f),
+                baseColor*1.12f,false);
+        }
+        if(spec.mood=="boss" || name.Contains("leader"))
+        {
+            CreatePart(root.transform,PrimitiveType.Cylinder,"Crown",
+                new Vector3(0f,scale*1.82f,0f),new Vector3(scale*.43f,scale*.15f,scale*.43f),
+                new Color(.89f,.67f,.22f),false);
+        }
+        // 몬스터 · 실제 공용 3D 리그/액션을 AI/히트박스 원본 객체 아래에 적용한다.
+        // 서로 다른 종의 수치/공격/드랍은 변경하지 않는다. 맞는 형태의 자산이 없으면 기존 표현 유지.
+        string actorKey=humanoid?(name.Contains("archer")?"Archer":
+                name.Contains("goblin")?"Rogue":name.Contains("mummy")?"Guardian":"Guardian"):
+            spirit?"Golem":spider?"Spider":serpent?"Serpent":
+            insect?"Beetle":
+            (name.Contains("wolf")||name.Contains("hound")||name.Contains("fox"))?"Wolf":"";
+        if(actorKey!="")
+        {
+            GameObject rigVisual=BindCompanyVisual("MagicForest"+actorKey,root.transform,
+                new Vector3(0f,0f,0f),Vector3.one*scale*(humanoid ? 0.90f:1.0f),
+                Quaternion.Euler(0f,humanoid?0f:180f,0f));
+            if(rigVisual!=null)
+            {
+                monster.nativeMotion=rigVisual.GetComponent<Animation>();
+                if(monster.nativeMotion!=null)
+                {
+                    foreach(Renderer oldRenderer in root.GetComponentsInChildren<Renderer>())
+                        if(!oldRenderer.transform.IsChildOf(rigVisual.transform))oldRenderer.enabled=false;
+                    if(name.Contains("crystal")||name.Contains("fire")||name.Contains("ice")||
+                        name.Contains("frost")||name.Contains("sand")||name.Contains("toxic"))
+                        TintCompanyMesh(rigVisual,baseColor);
+                    PlayNativeMotion(monster.nativeMotion,"IDLE_BREATH");
+                }
+            }
+        }
+        if(monster.nativeMotion==null)
+        {
+            // 해당 종의 전용 스킨드 모델이 준비되기 전에는 기존 직접 파생 메시를 보존.
+            string nativeId=humanoid?"MagicForestTorso":
+                spirit?"MagicForestRock":plant?"MagicForestCrown":
+                (name.Contains("wolf")||name.Contains("hound")||name.Contains("fox"))?"MagicForestCanine":
+                (insect||fourLeg||serpent)?"MagicForestClaw":"";
+            if(nativeId!="")
+            {
+                GameObject nativePart=BindCompanyVisual(nativeId,root.transform,
+                    new Vector3(0,scale*.45f,(fourLeg ? 0.32f:0f)*scale),
+                    Vector3.one*scale*(nativeId=="MagicForestTorso" ? 0.52f:
+                        nativeId=="MagicForestCanine" ? 0.48f:nativeId=="MagicForestClaw" ? 0.32f:.40f),
+                    Quaternion.identity);
+                if(nativePart!=null)
+                {
+                    monster.nativePose=nativePart.transform;
+                    if(humanoid)body.GetComponent<Renderer>().enabled=false;
+                }
+            }
+            if((spec.mood=="boss"||name.Contains("leader"))&&humanoid)
+                BindCompanyVisual("MagicForestCape",root.transform,new Vector3(0,.30f*scale,-.25f*scale),
+                    Vector3.one*scale*.38f,Quaternion.identity);
+        }
+        monster.obj=root;
+        monsters.Add(monster);
+        return monster;
+    }
+
+    private SpawnBlock PlaceBlock(Vector3 at)
+    {
+        if (blocks.Count >= 100) { info = "스폰 블록 최대 100개"; return null; }
+        GameObject root = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        root.name = "MonsterSpawnBlock";
+        root.transform.SetParent(worldRoot.transform);
+        root.transform.position = new Vector3(Mathf.Clamp(at.x,-38,38),.47f,Mathf.Clamp(at.z,-38,38));
+        root.transform.localScale = Vector3.one * .95f;
+        Tint(root,new Color(.43f,.28f,.75f));
+        SpawnBlock b = new SpawnBlock{ id=nextId++, obj=root };
+        blocks.Add(b);
+        blockColliders[root.GetComponent<Collider>()] = b;
+        return b;
+    }
+
+    private void SpawnFromBlock()
+    {
+        if (blocks.Count==0 || selectedSpeciesIndex<0 || selectedSpeciesIndex>=species.Count) return;
+        int count;
+        if(!int.TryParse(spawnCountText,out count) || count<1 || count>30) {info="마릿수는 1~30만 가능";return;}
+        if(monsters.Count+count>150) {info="몬스터는 최대 150마리";return;}
+        Vector3 center = blocks[blocks.Count-1].obj.transform.position;
+        foreach(SpawnBlock b in blocks) if(b.id==selectedBlockId) center=b.obj.transform.position;
+        for(int i=0;i<count;i++)
+        {
+            float angle=i*2.39996f, radius=1.7f+Mathf.Sqrt(i)*.62f;
+            SpawnMonster(species[selectedSpeciesIndex],center+new Vector3(Mathf.Cos(angle)*radius,0,Mathf.Sin(angle)*radius),true);
+        }
+        info=species[selectedSpeciesIndex].name+" "+count+"마리 소환";
+        panel=Panel.None;
+        SaveCreative();
+    }
+
+    private int selectedBlockId=-1;
+    private Monster FindMonster(int id) {return monsters.Find(m=>m.runtimeId==id && m.hp>0);}
+    private void ChooseOpponent(Monster monster)
+    {
+        if (monster==null || !monster.creative) return;
+        if (monster.spec.mood=="harmless"){selectedMonsterId=-1;info="무해한 몬스터는 누구도 공격하지 않아.";return;}
+        Monster first=FindMonster(selectedMonsterId);
+        if(first==null || first==monster){selectedMonsterId=monster.runtimeId;info=monster.spec.name+" 선택 · 다른 몬스터를 두 번 눌러";return;}
+        if(first.spec.mood=="harmless"){selectedMonsterId=-1;return;}
+        first.opponentId=monster.runtimeId;
+        monster.opponentId=first.runtimeId;
+        first.attackPlayer=false;
+        monster.attackPlayer=false;
+        selectedMonsterId=-1;
+        info=first.spec.name+" 대 "+monster.spec.name+" 전투 시작";
+        SaveCreative();
+    }
+
+    // 전투 · 아군 미라는 지정된 적과만 싸우고, 적이 죽으면 즉시 사라진다.
+    private void UpdateMonsters(float dt)
+    {
+        for(int i=monsters.Count-1;i>=0;i--)
+        {
+            Monster m=monsters[i];
+            if(m.ally && FindMonster(m.allyTargetId)==null)m.hp=0f;
+            if(m.hp<=0)
+            {
+                if(m.obj!=null)
+                {
+                    // 충돌체 맵의 죽은 몬스터 참조까지 함께 지운다.
+                    foreach(Collider collider in m.obj.GetComponentsInChildren<Collider>())
+                    {
+                        monsterColliders.Remove(collider);
+                        collider.enabled=false;
+                    }
+                    if(m.ally)Destroy(m.obj);
+                    else
+                    {
+                        fallenVisuals.Add(m.obj);
+                        StartCoroutine(PlayNativeDeathMotion(m.obj));
+                    }
+                }
+                monsters.RemoveAt(i);
+                continue;
+            }
+            if(m.creative && m.spec.mood=="harmless")
+            {
+                m.attackPlayer=false;
+                m.opponentId=-1;
+                AnimateMonsterPresentation(m,false);
+                continue;
+            }
+            Monster opponent=m.ally?FindMonster(m.allyTargetId):(m.creative?FindMonster(m.opponentId):null);
+            if(opponent!=null && opponent.spec.mood=="harmless" && m.creative){m.opponentId=-1;opponent=null;}
+            // 원래 몬스터는 자신과 싸우는 아군 미라를 공격할 수 있다(아군 체력 400).
+            if(!m.creative && !m.ally)
+            {
+                Monster nearbyAlly=null;
+                float nearest=8f;
+                foreach(Monster friend in monsters)
+                {
+                    if(!friend.ally||friend.hp<=0||friend.allyTargetId!=m.runtimeId||friend.obj==null)continue;
+                    float distance=Vector3.Distance(friend.obj.transform.position,m.obj.transform.position);
+                    if(distance<nearest){nearest=distance;nearbyAlly=friend;}
+                }
+                if(nearbyAlly!=null)opponent=nearbyAlly;
+            }
+            Transform target=opponent!=null?opponent.obj.transform:
+                ((!m.creative&&!m.ally&&m.spec.mood=="aggressive") ||
+                 (m.creative&&m.attackPlayer) ? player : null);
+            if(target==null){AnimateMonsterPresentation(m,false);continue;}
+            Vector3 delta=target.position-m.obj.transform.position;
+            delta.y=0f;
+            float distanceToTarget=delta.magnitude;
+            float reach=opponent!=null?1.4f:.95f;
+            bool presentationWalking=false;
+            if(distanceToTarget>reach && distanceToTarget < (m.creative?18f:24f))
+            {
+                presentationWalking=true;
+                float slowFactor=Time.time<m.slowedUntil? .7f:1f;
+                float move=Mathf.Clamp(m.spec.speed/35f,.75f,5f)*slowFactor;
+                m.obj.transform.position+=delta.normalized*move*dt;
+                if(delta.sqrMagnitude>.01f)
+                    m.obj.transform.rotation=Quaternion.Slerp(m.obj.transform.rotation,Quaternion.LookRotation(delta),dt*8f);
+            }
+            else if(distanceToTarget<=reach && Time.time>=m.nextAttack)
+            {
+                m.nextAttack=Time.time+(m.ally?2f:1f);
+                m.attackPoseUntil=Time.time+motionProfile.attackSeconds;
+                if(opponent!=null)HurtMonster(opponent,m.spec.damage);
+                else if(m.spec.damage>0f)
+                {
+                    currentHp=Mathf.Max(0f,currentHp-m.spec.damage);
+                    BeginPlayerAction(4);
+                    if(currentHp<=0f){player.position=Vector3.zero;currentHp=100f;info="쓰러져 시작 위치로 돌아왔어.";}
+                }
+            }
+            AnimateMonsterPresentation(m,presentationWalking);
+        }
+    }
+
+    // 모션 · 사망 몬스터의 충돌/AI는 즉시 제거하고 시각 자산만 짧게 넘어지게 한다.
+    private System.Collections.IEnumerator PlayNativeDeathMotion(GameObject body)
+    {
+        if(body==null)yield break;
+        // 플레이 판정에서는 즉시 제거됐으며 사망 스킨드 모션만 시각적으로 재생한다.
+        Animation native=body.GetComponentInChildren<Animation>();
+        if(native!=null && (native["DEATH"]!=null || native["DEATH_FRONT"]!=null))
+        {
+            string clip=native["DEATH"]!=null?"DEATH":"DEATH_FRONT";
+            float durationNative=Mathf.Clamp(motionProfile.deathSeconds,.45f,2f);
+            native[clip].speed=Mathf.Max(.2f,native[clip].length/durationNative);
+            native.CrossFade(clip,.06f);
+            yield return new WaitForSeconds(durationNative);
+            if(body!=null){fallenVisuals.Remove(body);Destroy(body);}
+            yield break;
+        }
+        float duration=Mathf.Clamp(motionProfile.deathSeconds*.52f,.38f,.85f);
+        float elapsed=0f;
+        Quaternion original=body.transform.rotation;
+        Vector3 originalScale=body.transform.localScale;
+        while(elapsed<duration && body!=null)
+        {
+            elapsed+=Mathf.Min(Time.deltaTime,.05f);
+            float t=Mathf.Clamp01(elapsed/duration);
+            float easing=Mathf.Sin(t*Mathf.PI*.5f);
+            body.transform.rotation=original*Quaternion.Euler(0f,0f,76f*easing);
+            body.transform.localScale=Vector3.Scale(originalScale,new Vector3(1f,1f-t*.22f,1f));
+            yield return null;
+        }
+        if(body!=null)
+        {
+            fallenVisuals.Remove(body);
+            Destroy(body);
+        }
+    }
+
+    // 스킬 · 원래 피해 이벤트만 관찰하여 입자·타격감을 재생한다. 추가 피격/드랍 판정 없음.
+    private Material CombatFxMaterial()
+    {
+        if(combatFxMaterial!=null)return combatFxMaterial;
+        Shader shader=Shader.Find("Particles/Standard Unlit")??Shader.Find("Sprites/Default")
+            ??Shader.Find("Unlit/Color");
+        if(shader==null)return null;
+        combatFxMaterial=new Material(shader){name="MagicForest_CombatPresentation"};
+        return combatFxMaterial;
+    }
+
+    private void SpawnImpactEffect(Vector3 position,Color color,float size)
+    {
+        Material material=CombatFxMaterial();
+        if(material==null || worldRoot==null)return;
+        GameObject effect=new GameObject("MagicForest_NativeHitVFX");
+        effect.transform.SetParent(worldRoot.transform,false);
+        effect.transform.position=position;
+        ParticleSystem particles=effect.AddComponent<ParticleSystem>();
+        var main=particles.main;
+        main.duration=.32f;
+        main.loop=false;
+        main.playOnAwake=false;
+        main.startLifetime=new ParticleSystem.MinMaxCurve(.12f,.27f);
+        main.startSpeed=new ParticleSystem.MinMaxCurve(1.6f*size,3.2f*size);
+        main.startSize=new ParticleSystem.MinMaxCurve(.08f*size,.20f*size);
+        main.startColor=color;
+        main.simulationSpace=ParticleSystemSimulationSpace.World;
+        main.maxParticles=18;
+        main.stopAction=ParticleSystemStopAction.Destroy;
+        var emission=particles.emission;
+        emission.rateOverTime=0f;
+        emission.SetBursts(new[]{new ParticleSystem.Burst(0f,14)});
+        var shape=particles.shape;
+        shape.shapeType=ParticleSystemShapeType.Sphere;
+        shape.radius=.16f*size;
+        ParticleSystemRenderer renderer=effect.GetComponent<ParticleSystemRenderer>();
+        renderer.sharedMaterial=material;
+        particles.Play();
+    }
+
+    // 유도 스킬의 실제 3D 탄체에 잔상/빛을 부여하며 명중 판정은 기존 UpdateHomingSpells만 담당한다.
+    private void StyleHomingProjectile(GameObject projectile,bool sand)
+    {
+        if(projectile==null)return;
+        Color color=sand?new Color(1f,.75f,.32f):new Color(.65f,.43f,1f);
+        Renderer core=projectile.GetComponent<Renderer>();
+        if(core!=null)
+        {
+            core.material.color=color;
+            core.material.EnableKeyword("_EMISSION");
+            core.material.SetColor("_EmissionColor",color*.85f);
+        }
+        Material material=CombatFxMaterial();
+        if(material!=null)
+        {
+            TrailRenderer trail=projectile.AddComponent<TrailRenderer>();
+            trail.sharedMaterial=material;
+            trail.time=.30f;
+            trail.minVertexDistance=.08f;
+            trail.startWidth=sand?.32f:.29f;
+            trail.endWidth=.015f;
+            trail.startColor=color;
+            trail.endColor=new Color(color.r,color.g,color.b,0f);
+        }
+        Light glow=projectile.AddComponent<Light>();
+        glow.type=LightType.Point;
+        glow.color=color;
+        glow.intensity=.9f;
+        glow.range=2.4f;
+        glow.shadows=LightShadows.None;
+    }
+
+    // 전투 · 기존 처치/진행 처리는 유지하고 아군 소환수 처치는 제외한다.
+    private void HurtMonster(Monster target,float damage)
+    {
+        if(target==null||target.hp<=0f)return;
+        target.hp=Mathf.Max(0f,target.hp-Mathf.Max(0f,damage));
+        target.hitPoseUntil=Time.time+motionProfile.hitSeconds;
+        if(target.obj!=null && damage>0f)
+            SpawnImpactEffect(target.obj.transform.position+Vector3.up*.95f,
+                target.hp<=0f?new Color(1f,.75f,.32f):new Color(.96f,.42f,.29f),1f);
+        if(target.hp<=0f)
+        {
+            if(!target.ally)
+            {
+                if(!creative){progress++;actions++;SaveNormalCounters();}
+                info=target.spec.name+" 처치";
+            }
+            else info="아군 미라가 쓰러졌어.";
+        }
+    }
+
+    // 전투 · 모래정령 지팡이와 태양석 구슬은 몬스터 종류 관계없이 가장 가까운 적을 유도 추적한다.
+    private void UpdateHomingSpells(float dt)
+    {
+        for(int i=homingSpells.Count-1;i>=0;i--)
+        {
+            HomingSpell spell=homingSpells[i];
+            Monster target=FindMonster(spell.targetId);
+            if(spell.obj==null || target==null || target.obj==null || Time.time>=spell.expiresAt)
+            {
+                if(spell.obj!=null)Destroy(spell.obj);
+                homingSpells.RemoveAt(i);
+                continue;
+            }
+            Vector3 destination=target.obj.transform.position+Vector3.up*.9f;
+            Vector3 towards=destination-spell.obj.transform.position;
+            float step=spell.speed*dt;
+            if(towards.sqrMagnitude<=step*step || towards.magnitude<=.85f)
+            {
+                HurtMonster(target,spell.damage);
+                SpawnImpactEffect(destination,spell.sandEffect?new Color(.95f,.78f,.36f):
+                    new Color(.75f,.50f,1f),1.5f);
+                if(spell.sandEffect && target.hp>0f && UnityEngine.Random.value<.30f)
+                {
+                    target.slowedUntil=Mathf.Max(target.slowedUntil,Time.time+3f);
+                    info=target.spec.name+" · 모래 폭풍 3초 둔화(30%)";
+                }
+                Destroy(spell.obj);
+                homingSpells.RemoveAt(i);
+            }
+            else
+            {
+                spell.obj.transform.position+=towards.normalized*step;
+                spell.obj.transform.Rotate(0f,350f*dt,0f,Space.World);
+            }
+        }
+    }
+
+    // 메인 · 태양석 무기들은 특정 몬스터에 한정되지 않고 사거리 내 모든 적을 공격한다.
+    private void Attack()
+    {
+        if(screenMode!=ScreenMode.Playing || panel!=Panel.None || Time.time<attackCooldown)return;
+        Recipe weapon=recipes.Find(r=>r.id==equippedWeapon && r.kind=="weapon");
+        string id=weapon!=null?weapon.id:"";
+        bool sand=id=="sand-spirit-staff",mummy=id=="wasteland-mummy-staff",orb=id=="sunstone-orb";
+        float cooldown=sand?1.1f:mummy?1.5f:orb? .9f:
+            id=="sunstone-greatsword"?1.2f:id=="sunstone-dagger"? .35f:
+            id=="sunstone-scorpion-blade"? .85f:.65f;
+        attackCooldown=Time.time+cooldown;
+        BeginPlayerAction(id=="sunstone-greatsword"?5:1);
+        float range=(sand||orb)?22f:id=="sunstone-greatsword"?4.5f:
+            id=="sunstone-dagger"?2.0f:mummy?3.5f:2.8f;
+        Monster target=null;
+        float nearest=range;
+        foreach(Monster m in monsters)
+        {
+            if(m.hp<=0f||m.ally||m.obj==null)continue;
+            float d=Vector3.Distance(player.position,m.obj.transform.position);
+            if(d<nearest){nearest=d;target=m;}
+        }
+        if(target==null){info="공격 범위에 몬스터가 없어.";return;}
+        int damage=weapon!=null?Mathf.Max(5,weapon.power):5;
+        if(sand||orb)
+        {
+            GameObject sphere=GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.name=sand?"SandSpirit_Homing":"Sunstone_Homing";
+            sphere.transform.SetParent(worldRoot.transform);
+            sphere.transform.position=player.position+Vector3.up*1.2f;
+            sphere.transform.localScale=Vector3.one*(sand? .55f:.48f);
+            Tint(sphere,sand?new Color(.89f,.73f,.33f):new Color(.74f,.49f,.98f));
+            Collider collider=sphere.GetComponent<Collider>();
+            if(collider!=null)Destroy(collider);
+            StyleHomingProjectile(sphere,sand);
+            homingSpells.Add(new HomingSpell{targetId=target.runtimeId,
+                damage=damage,speed=sand?18f:21f,expiresAt=Time.time+3.5f,
+                sandEffect=sand,obj=sphere});
+            info=(sand?"모래정령 유도탄":"태양석 유도 구슬")+" 발사 · "+target.spec.name;
+            return;
+        }
+        HurtMonster(target,damage);
+        if(mummy && target.hp>0f && UnityEngine.Random.value<.05f)
+        {
+            // 공격마다 5% · 체력 400, 공격력 70, 공격 간격 2초 · 지정한 적만 추적.
+            Species allyType=new Species{id="friendly-mummy",name="아군 미라",
+                mood="neutral",hp=400f,damage=70f,speed=64f};
+            Vector3 location=player.position+player.right*1.7f;
+            Monster friend=SpawnMonster(allyType,location,false);
+            if(friend!=null)
+            {
+                friend.ally=true;
+                friend.allyTargetId=target.runtimeId;
+                friend.hp=400f;
+                friend.nextAttack=Time.time+2f;
+                info="아군 미라 소환 · "+target.spec.name+" 공격 지원";
+            }
+        }
+    }
+
+    // 메인 · 조작과 터치 길게 누르기
+    private void Update()
+    {
+        if(screenMode!=ScreenMode.Playing)return;
+        float dt=Mathf.Min(Time.deltaTime,.05f);
+        if(panel==Panel.None)
+        {
+            Vector2 keys=new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));
+            Vector2 movement=Vector2.ClampMagnitude(keys+moveFromButtons,1f);
+            Vector3 direct=new Vector3(movement.x,0,movement.y);
+            if(direct.sqrMagnitude>.02f)
+            {
+                player.position+=direct*moveSpeed*dt;
+                player.position=new Vector3(Mathf.Clamp(player.position.x,-38f,38f),0,Mathf.Clamp(player.position.z,-38f,38f));
+                player.rotation=Quaternion.Slerp(player.rotation,Quaternion.LookRotation(direct),dt*9f);
+            }
+            AnimatePlayerPresentation(movement.magnitude);
+            UpdateMonsters(dt);
+            UpdateHomingSpells(dt);
+            ReadWorldPointer();
+            if(Input.GetKeyDown(KeyCode.Space))Attack();
+            if(Input.GetKeyDown(KeyCode.I))panel=Panel.Bag;
+            if(Input.GetKeyDown(KeyCode.C))panel=Panel.Craft;
+        }
+        FollowCamera(false);
+        saveClock+=dt;
+        if(saveClock>12f){saveClock=0;if(creative)SaveCreative();else SaveNormalCounters();}
+    }
+
+    private bool OnHud(Vector2 screenPointer)
+    {
+        float y=Screen.height-screenPointer.y;
+        return y<90f || y>Screen.height*.76f;
+    }
+
+    private void ReadWorldPointer()
+    {
+        if(Input.touchCount>0)
+        {
+            Touch t=Input.GetTouch(0);
+            if(t.phase==TouchPhase.Began)BeginPointer(t.position);
+            else if(t.phase==TouchPhase.Moved||t.phase==TouchPhase.Stationary)MovePointer(t.position);
+            else if(t.phase==TouchPhase.Ended)EndPointer(t.position);
+            else if(t.phase==TouchPhase.Canceled)CancelPointer();
+        }
+        else
+        {
+            Vector2 pos=Input.mousePosition;
+            if(Input.GetMouseButtonDown(0))BeginPointer(pos);
+            if(Input.GetMouseButton(0))MovePointer(pos);
+            if(Input.GetMouseButtonUp(0))EndPointer(pos);
+        }
+    }
+
+    private void BeginPointer(Vector2 pos)
+    {
+        CancelPointer();
+        if(OnHud(pos))return;
+        pointerActive=true;
+        touchStartTime=Time.unscaledTime;
+        pointerOrigin=pos;
+        RaycastHit hit;
+        if(!Physics.Raycast(mainCamera.ScreenPointToRay(pos),out hit,100f))return;
+        Monster m;
+        SpawnBlock b;
+        if(monsterColliders.TryGetValue(hit.collider,out m))pointerMonsterId=m.runtimeId;
+        else if(blockColliders.TryGetValue(hit.collider,out b))pointerBlockId=b.id;
+    }
+
+    private void MovePointer(Vector2 pos)
+    {
+        if(!pointerActive)return;
+        if((pos-pointerOrigin).sqrMagnitude>30f*30f){CancelPointer();return;}
+        if(!holdTriggered && creative && pointerMonsterId>0 && Time.unscaledTime-touchStartTime>=HoldSeconds)
+        {
+            Monster m=FindMonster(pointerMonsterId);
+            holdTriggered=true;
+            if(m!=null && m.creative && m.spec.mood!="harmless"){aggroMonsterId=m.runtimeId;panel=Panel.Aggro;}
+            else info="무해한 몬스터는 공격 설정이 없어.";
+        }
+    }
+
+    private void EndPointer(Vector2 pos)
+    {
+        if(!pointerActive)return;
+        int monsterId=pointerMonsterId,blockId=pointerBlockId;
+        bool consumed=holdTriggered;
+        CancelPointer();
+        if(consumed)return;
+        if(placingBlock && creative)
+        {
+            RaycastHit ground;
+            if(Physics.Raycast(mainCamera.ScreenPointToRay(pos),out ground,120f))
+            {
+                Vector3 point=ground.point;
+                point.y=0;
+                PlaceBlock(point);
+                placingBlock=false;
+                info="스폰 블록 설치 · 두 번 눌러 설정";
+                SaveCreative();
+            }
+            return;
+        }
+        int targetId=monsterId>0?monsterId:-blockId-1000;
+        if(targetId==lastTapId && Time.unscaledTime-lastTapTime<DoubleTapSeconds)
+        {
+            lastTapId=-1;
+            if(blockId>0 && creative){selectedBlockId=blockId;panel=Panel.Spawner;}
+            else if(monsterId>0 && creative)ChooseOpponent(FindMonster(monsterId));
+            return;
+        }
+        lastTapId=targetId;
+        lastTapTime=Time.unscaledTime;
+        if(monsterId>0)info="몬스터를 한 번 더 눌러 선택";
+        if(blockId>0)info="스폰 블록을 한 번 더 눌러";
+    }
+
+    private void CancelPointer()
+    {
+        pointerActive=false;
+        pointerMonsterId=-1;
+        pointerBlockId=-1;
+        holdTriggered=false;
+    }
+
+    // 건축물 · 제작과 일반/크리에이티브 복원은 동일한 실물 생성 함수를 사용한다.
+    private void PlaceStructure(string recipeId, Vector3 location)
+    {
+        GameObject building=GameObject.CreatePrimitive(PrimitiveType.Cube);
+        building.name="Built_"+recipeId;
+        building.transform.SetParent(worldRoot.transform);
+        building.transform.position=location;
+        building.transform.localScale=new Vector3(1.4f,1.3f,1.4f);
+        Tint(building,new Color(.55f,.4f,.27f));
+        string nativeStructure=recipeId.Contains("chest")?"MagicForestChest":
+            recipeId.Contains("door")?"MagicForestDoor":
+            recipeId.Contains("wall")?"MagicForestWall":
+            recipeId.Contains("torch")?"MagicForestLamp":
+            recipeId.Contains("bench")?"MagicForestCrate":
+            recipeId.Contains("tower")?"MagicForestRoof":"MagicForestFoundation";
+        GameObject nativeVisual=BindCompanyVisual(nativeStructure,building.transform,
+            new Vector3(0,-.53f,0),new Vector3(.45f,.45f,.45f),Quaternion.identity);
+        if(nativeVisual!=null)building.GetComponent<Renderer>().enabled=false;
+        buildings.Add(new BuiltStructure { recipeId=recipeId, obj=building });
+    }
+
+    // 메인 · 제작 (크리에이티브에서는 재료를 사용하지 않는다)
+    private void Craft(Recipe recipe)
+    {
+        if(!creative)
+        {
+            if(recipe.station=="sunstonebench" &&
+               !buildings.Exists(b=>b.recipeId=="sunstone-bench" && b.obj!=null && Vector3.Distance(player.position,b.obj.transform.position)<5f))
+            { info="태양석 제작대 가까이에서 제작해야 해.";return; }
+            string[] costs=recipe.cost.Split(',');
+            foreach(string entry in costs)
+            {
+                string[] kv=entry.Split(':');
+                int required,owned;
+                if(kv.Length!=2 || !int.TryParse(kv[1],out required))continue;
+                if(!materials.TryGetValue(kv[0],out owned)||owned<required){info="재료가 부족해.";return;}
+            }
+            foreach(string entry in costs)
+            {
+                string[] kv=entry.Split(':');
+                int required,owned;
+                if(kv.Length!=2 || !int.TryParse(kv[1],out required))continue;
+                if(materials.TryGetValue(kv[0],out owned))materials[kv[0]]=owned-required;
+            }
+        }
+        crafted.Add(recipe.id);
+        if(recipe.kind=="weapon"){equippedWeapon=recipe.id;SyncPlayerWeaponVisual();}
+        BeginPlayerAction(3);
+        if(recipe.kind=="structure")
+            PlaceStructure(recipe.id,player.position+player.forward*2.5f+Vector3.up*.65f);
+        info=recipe.name+" 제작 완료";
+        if(creative)SaveCreative();
+        else SaveNormalCounters();
+    }
+
+    private void Gather()
+    {
+        Vector3 position=player.position;
+        float nearest=3.1f;
+        string material="";
+        foreach(Collider col in Physics.OverlapSphere(position,3.1f))
+        {
+            string n=col.gameObject.name;
+            if(n!="Tree" && n!="Rock" && n!="Fiber")continue;
+            float d=Vector3.Distance(position,col.transform.position);
+            if(d<nearest){nearest=d;material=n=="Tree"?"wood":n=="Rock"?"stone":"fiber";}
+        }
+        if(material==""){info="가까운 나무·돌·섬유가 없어.";return;}
+        if(!materials.ContainsKey(material))materials[material]=0;
+        materials[material]++;
+        BeginPlayerAction(2);
+        info=(material=="wood"?"나무":material=="stone"?"돌":"섬유")+" 1개 채집";
+        // 저장 · 브라우저 재진입 전에 채집 결과를 기존 world_v1 키에 바로 확정한다.
+        if(!creative)SaveNormalCounters();
+    }
+
+    // 저장 · 크리에이티브 데이터는 기존 일반 저장 키에 쓰지 않는다
+    private void LoadNormalCounters()
+    {
+        progress=PlayerPrefs.GetInt(SavePrefix+"progress",0);
+        level=Mathf.Max(1,PlayerPrefs.GetInt(SavePrefix+"level",1));
+        resource=PlayerPrefs.GetInt(SavePrefix+"resource",10);
+        actions=PlayerPrefs.GetInt(SavePrefix+"actions",0);
+    }
+
+    private void LoadNormalWorld()
+    {
+        string raw=PlayerPrefs.GetString(LegacyNormalSaveKey,"");
+        if(raw.Length==0)return;
+        try
+        {
+            LegacyWorld old=JsonUtility.FromJson<LegacyWorld>(raw);
+            if(old==null)return;
+            player.position=new Vector3(Mathf.Clamp(old.x,-38f,38f),0,Mathf.Clamp(old.z,-38f,38f));
+            currentHp=Mathf.Clamp(old.hp,1f,100f);
+            materials["wood"]=Mathf.Max(0,old.wood);
+            materials["stone"]=Mathf.Max(0,old.stone);
+            materials["fiber"]=Mathf.Max(0,old.fiber);
+            if(old.crafted!=null)
+                foreach(string id in old.crafted)
+                    if(recipes.Exists(r=>r.id==id))crafted.Add(id);
+            if(!string.IsNullOrEmpty(old.equippedWeapon)
+                && crafted.Contains(old.equippedWeapon)
+                && recipes.Exists(r=>r.id==old.equippedWeapon && r.kind=="weapon"))
+                equippedWeapon=old.equippedWeapon;
+            if(old.buildings!=null)
+                foreach(BuildingRecord entry in old.buildings)
+                    if(entry!=null && buildings.Count<300 && recipes.Exists(r=>r.id==entry.recipeId && r.kind=="structure"))
+                        PlaceStructure(entry.recipeId,entry.position);
+        }
+        catch(Exception){info="기존 일반 저장 읽기 실패 · 새 게임 진행";}
+    }
+
+    private void SaveNormalCounters()
+    {
+        PlayerPrefs.SetInt(SavePrefix+"progress",progress);
+        PlayerPrefs.SetInt(SavePrefix+"level",level);
+        PlayerPrefs.SetInt(SavePrefix+"resource",resource);
+        PlayerPrefs.SetInt(SavePrefix+"actions",actions);
+        LegacyWorld data=new LegacyWorld
+        {
+            x=player.position.x,z=player.position.z,hp=currentHp,
+            progress=progress,level=level,resource=resource,actions=actions,
+            wood=materials.ContainsKey("wood")?materials["wood"]:0,
+            stone=materials.ContainsKey("stone")?materials["stone"]:0,
+            fiber=materials.ContainsKey("fiber")?materials["fiber"]:0,
+            crafted=new List<string>(crafted),
+            equippedWeapon=equippedWeapon,
+            buildings=new List<BuildingRecord>(),
+            blocks=new LegacyBlock[0],monsters=new LegacyMonster[0]
+        };
+        foreach(BuiltStructure built in buildings)
+            if(built.obj!=null)
+                data.buildings.Add(new BuildingRecord { recipeId=built.recipeId, position=built.obj.transform.position });
+        PlayerPrefs.SetString(LegacyNormalSaveKey,JsonUtility.ToJson(data));
+        PlayerPrefs.Save();
+    }
+
+    private void SaveCreative()
+    {
+        if(!creative)return;
+        CreativeRecord record=new CreativeRecord{playerPosition=player.position,nextId=nextId};
+        foreach(SpawnBlock b in blocks)record.blocks.Add(new BlockRecord{id=b.id,position=b.obj.transform.position});
+        foreach(Monster m in monsters)if(m.creative && m.hp>0)record.monsters.Add(new MonsterRecord{id=m.runtimeId,opponentId=m.opponentId,speciesId=m.spec.id,position=m.obj.transform.position,hp=m.hp,attackPlayer=m.attackPlayer && m.spec.mood!="harmless"});
+        record.crafted.AddRange(crafted);
+        record.equippedWeapon=equippedWeapon;
+        foreach(BuiltStructure building in buildings)if(building.obj!=null)record.buildings.Add(new BuildingRecord { recipeId=building.recipeId, position=building.obj.transform.position });
+        PlayerPrefs.SetString(CreativeSaveKey,JsonUtility.ToJson(record));
+        PlayerPrefs.Save();
+    }
+
+    private void LoadCreative()
+    {
+        string saved=PlayerPrefs.GetString(CreativeSaveKey,"");
+        if(saved.Length==0)
+        {
+            string legacy=PlayerPrefs.GetString(LegacyCreativeSaveKey,"");
+            if(legacy.Length==0)return;
+            try
+            {
+                LegacyWorld old=JsonUtility.FromJson<LegacyWorld>(legacy);
+                if(old==null)return;
+                player.position=new Vector3(Mathf.Clamp(old.x,-38f,38f),0,Mathf.Clamp(old.z,-38f,38f));
+                currentHp=Mathf.Clamp(old.hp,1,100);
+                if(old.blocks!=null)foreach(LegacyBlock b in old.blocks)
+                {
+                    if(blocks.Count>=100)break;
+                    PlaceBlock(new Vector3(b.x,0,b.z));
+                }
+                var converted=new List<Monster>();
+                if(old.monsters!=null)foreach(LegacyMonster previous in old.monsters)
+                {
+                    Species type=species.Find(v=>v.id==previous.id);
+                    if(type==null || converted.Count>=150){converted.Add(null);continue;}
+                    Monster m=SpawnMonster(type,new Vector3(previous.x,0,previous.z),true);
+                    if(m!=null){m.hp=Mathf.Clamp(previous.hp,1,m.spec.hp);m.attackPlayer=previous.attackPlayer && m.spec.mood!="harmless";}
+                    converted.Add(m);
+                }
+                if(old.monsters!=null)for(int i=0;i<Mathf.Min(converted.Count,old.monsters.Length);i++)
+                {
+                    Monster m=converted[i];if(m==null || m.spec.mood=="harmless")continue;
+                    int target=old.monsters[i].enemyIndex;
+                    if(target>=0 && target<converted.Count && converted[target]!=null && converted[target].spec.mood!="harmless" && target!=i)
+                        m.opponentId=converted[target].runtimeId;
+                }
+                SaveCreative();
+            }
+            catch(Exception){info="기존 크리에이티브 저장 읽기 실패";}
+            return;
+        }
+        CreativeRecord record;
+        try{record=JsonUtility.FromJson<CreativeRecord>(saved);}catch(Exception){return;}
+        if(record==null)return;
+        player.position=record.playerPosition;
+        nextId=Mathf.Max(1,record.nextId);
+        if(record.crafted!=null)crafted.AddRange(record.crafted);
+        if(!string.IsNullOrEmpty(record.equippedWeapon) && crafted.Contains(record.equippedWeapon) && recipes.Exists(r=>r.id==record.equippedWeapon && r.kind=="weapon"))equippedWeapon=record.equippedWeapon;
+        if(record.buildings!=null)foreach(BuildingRecord item in record.buildings)
+        {
+            if(buildings.Count>=300)break;
+            if(recipes.Find(x=>x.id==item.recipeId && x.kind=="structure")==null)continue;
+            PlaceStructure(item.recipeId,item.position);
+        }
+        if(record.blocks!=null)foreach(BlockRecord b in record.blocks)
+        {
+            if(blocks.Count>=100)break;
+            SpawnBlock at=PlaceBlock(b.position);
+            if(at!=null)at.id=b.id;
+        }
+        if(record.monsters!=null)foreach(MonsterRecord item in record.monsters)
+        {
+            Species spec=species.Find(x=>x.id==item.speciesId);
+            if(spec==null)continue;
+            Monster m=SpawnMonster(spec,item.position,true);
+            if(m==null)break;
+            m.runtimeId=item.id;
+            m.hp=Mathf.Clamp(item.hp,1,m.spec.hp);
+            m.opponentId=item.opponentId;
+            m.attackPlayer=item.attackPlayer && m.spec.mood!="harmless";
+        }
+        int maxId=nextId;
+        foreach(Monster m in monsters)maxId=Mathf.Max(maxId,m.runtimeId+1);
+        foreach(SpawnBlock b in blocks)maxId=Mathf.Max(maxId,b.id+1);
+        nextId=maxId;
+    }
+
+    // 메모리 · 재사용한 이펙트 재질만 종료 시 정리한다.
+    private void OnDestroy()
+    {
+        if(combatFxMaterial!=null)Destroy(combatFxMaterial);
+    }
+
+    // 저장 · 타이틀/모드 선택 화면에서는 앱 중단·종료로 직전 세션을 다시 쓰지 않는다.
+    private void OnApplicationPause(bool paused)
+    {
+        if(!paused || screenMode!=ScreenMode.Playing)return;
+        if(creative)SaveCreative();
+        else SaveNormalCounters();
+    }
+
+    private void OnApplicationQuit()
+    {
+        if(screenMode!=ScreenMode.Playing)return;
+        if(creative)SaveCreative();
+        else SaveNormalCounters();
+    }
+
+    // 화면 · 모바일 터치 조작과 메뉴
+    private void OnGUI()
+    {
+        float w=Screen.width,h=Screen.height;
+        ApplyCompanyUiSkin();
+        GUI.skin.button.fontSize=Mathf.Clamp(Mathf.RoundToInt(w/29f),12,20);
+        GUI.skin.label.fontSize=Mathf.Clamp(Mathf.RoundToInt(w/31f),12,18);
+        if(screenMode==ScreenMode.Title || screenMode==ScreenMode.SelectMode)
+        {
+            Rect box=new Rect(w*.1f,h*.18f,w*.8f,h*.64f);
+            GUI.Box(box,"마력숲 생존기 3D");
+            float bw=w*.62f,bx=w*.19f,bh=Mathf.Max(48,h*.09f);
+            if(screenMode==ScreenMode.Title)
+            {
+                if(GUI.Button(new Rect(bx,h*.41f,bw,bh),"플레이"))screenMode=ScreenMode.SelectMode;
+                if(GUI.Button(new Rect(bx,h*.54f,bw,bh),"옵션"))panel=Panel.Options;
+            }
+            else
+            {
+                if(GUI.Button(new Rect(bx,h*.34f,bw,bh),"일반 모드"))EnterMode(false);
+                if(GUI.Button(new Rect(bx,h*.47f,bw,bh),"크리에이티브 모드"))EnterMode(true);
+                if(GUI.Button(new Rect(bx,h*.60f,bw,bh),"뒤로"))screenMode=ScreenMode.Title;
+            }
+            if(panel==Panel.Options)DrawPanel(w,h);
+            return;
+        }
+        GUI.Box(new Rect(8,8,w*.57f,74f),(creative?"크리에이티브":"일반")+" · 체력 "+Mathf.CeilToInt(currentHp)+"/100\n"+info);
+        if(GUI.Button(new Rect(w-88,8,80,48),"메뉴"))panel=Panel.Options;
+        if(panel!=Panel.None){DrawPanel(w,h);return;}
+        float sz=Mathf.Max(50f,Mathf.Min(w*.16f,74f));
+        float yy=h-sz-12f;
+        moveFromButtons=Vector2.zero;
+        if(GUI.RepeatButton(new Rect(12,yy-sz,sz,sz),"▲"))moveFromButtons.y+=1;
+        if(GUI.RepeatButton(new Rect(12,yy,sz,sz),"▼"))moveFromButtons.y-=1;
+        if(GUI.RepeatButton(new Rect(12+sz,yy,sz,sz),"▶"))moveFromButtons.x+=1;
+        if(GUI.RepeatButton(new Rect(12+sz*2,yy,sz,sz),"◀"))moveFromButtons.x-=1;
+        if(GUI.Button(new Rect(w-sz-14,yy-sz,sz,sz),"공격"))Attack();
+        if(GUI.Button(new Rect(w-sz*2-19,yy,sz,sz),"가방"))panel=Panel.Bag;
+        if(GUI.Button(new Rect(w-sz-14,yy,sz,sz),"제작")){craftPage=0;panel=Panel.Craft;}
+        // 모바일 · 아래쪽 방향 버튼과 채집 버튼이 겹치지 않도록 채집은 윗줄 중앙에 둔다.
+        if(GUI.Button(new Rect(w*.5f-sz*.5f,yy-sz,sz,sz),"채집"))Gather();
+    }
+
+    private void DrawPanel(float w,float h)
+    {
+        Rect rect=new Rect(w*.05f,h*.1f,w*.9f,h*.78f);
+        GUI.Box(rect, panel==Panel.Options?"옵션":panel==Panel.Bag?"가방":panel==Panel.Craft?"제작":panel==Panel.Spawner?"몬스터 스폰 블록":"몬스터 공격 설정");
+        GUILayout.BeginArea(new Rect(rect.x+14,rect.y+35,rect.width-28,rect.height-45));
+        if(panel==Panel.Options)
+        {
+            if(GUILayout.Button(musicEnabled?"음악 켜짐":"음악 꺼짐",GUILayout.Height(45))){musicEnabled=!musicEnabled;AudioListener.pause=!musicEnabled;}
+            GUILayout.Label("카메라 거리 "+cameraDistance.ToString("0.0"));
+            GUILayout.BeginHorizontal();
+            if(GUILayout.Button("가까이",GUILayout.Height(40)))cameraDistance=Mathf.Max(8f,cameraDistance-1f);
+            if(GUILayout.Button("멀리",GUILayout.Height(40)))cameraDistance=Mathf.Min(24f,cameraDistance+1f);
+            GUILayout.EndHorizontal();
+            GUILayout.Label("이동 속도 "+moveSpeed.ToString("0.0"));
+            GUILayout.BeginHorizontal();
+            if(GUILayout.Button("느리게",GUILayout.Height(40)))moveSpeed=Mathf.Max(3f,moveSpeed-.5f);
+            if(GUILayout.Button("빠르게",GUILayout.Height(40)))moveSpeed=Mathf.Min(9f,moveSpeed+.5f);
+            GUILayout.EndHorizontal();
+            PlayerPrefs.SetFloat(SavePrefix+"camera_distance",cameraDistance);
+            PlayerPrefs.SetFloat(SavePrefix+"move_speed",moveSpeed);
+            GUILayout.Label("음량 "+Mathf.RoundToInt(musicVolume*100)+"%");
+            musicVolume=GUILayout.HorizontalSlider(musicVolume,0f,1f,GUILayout.Height(35));
+            AudioListener.volume=musicVolume;
+            if(GUILayout.Button("타이틀로",GUILayout.Height(48)))
+            {
+                // 옵션은 타이틀에서도 열리므로 실제 게임 중일 때만 현재 모드를 저장한다.
+                if(screenMode==ScreenMode.Playing)
+                {
+                    if(creative)SaveCreative();
+                    else SaveNormalCounters();
+                }
+                panel=Panel.None;
+                screenMode=ScreenMode.Title;
+                GUILayout.EndArea();
+                return;
+            }
+        }
+        else if(panel==Panel.Bag)
+        {
+            // UI · 기존 장비/재료/제작 데이터를 회사 공용 패널·슬롯 스타일로 표시한다.
+            // 표시만 확장하며 장착·소비·보상·저장 규칙은 바꾸지 않는다.
+            Recipe equipped=recipes.Find(r=>r.id==equippedWeapon && r.kind=="weapon");
+            GUILayout.Box("장착 무기   "+(equipped==null?"맨손":equipped.name),GUILayout.Height(44));
+            if(creative)
+            {
+                GUILayout.Box("몬스터 스폰 블록   무제한",GUILayout.Height(38));
+                if(GUILayout.Button("몬스터 스폰 블록 설치",GUILayout.Height(52))){placingBlock=true;panel=Panel.None;info="설치할 땅을 눌러."; }
+            }
+            else
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Box("나무\n"+materials["wood"],GUILayout.MinHeight(58),GUILayout.ExpandWidth(true));
+                GUILayout.Box("돌\n"+materials["stone"],GUILayout.MinHeight(58),GUILayout.ExpandWidth(true));
+                GUILayout.Box("섬유\n"+materials["fiber"],GUILayout.MinHeight(58),GUILayout.ExpandWidth(true));
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.Label("제작한 아이템 "+crafted.Count+"개");
+            bagScroll=GUILayout.BeginScrollView(bagScroll,GUILayout.Height(Mathf.Max(95f,rect.height*.34f)));
+            int lastIndex=Mathf.Max(0,crafted.Count-80);
+            for(int i=crafted.Count-1;i>=lastIndex;i--)
+            {
+                Recipe item=recipes.Find(r=>r.id==crafted[i]);
+                if(item==null)continue;
+                string label=(crafted[i]==equippedWeapon?"[장착] ":"")
+                    +item.name+"   "+item.kind;
+                GUILayout.Box(label,GUILayout.Height(40));
+            }
+            GUILayout.EndScrollView();
+        }
+        else if(panel==Panel.Craft)
+        {
+            GUILayout.Label(creative?"기존 마력숲 제작법 "+recipes.Count+"종 · 재료 무제한":"제작법 · 보유 재료 필요");
+            int pages=Mathf.CeilToInt(recipes.Count/8f);
+            GUILayout.BeginHorizontal();
+            if(GUILayout.Button("이전",GUILayout.Height(45)))craftPage=Mathf.Max(0,craftPage-1);
+            GUILayout.Label((craftPage+1)+" / "+pages,GUILayout.Width(70));
+            if(GUILayout.Button("다음",GUILayout.Height(45)))craftPage=Mathf.Min(pages-1,craftPage+1);
+            GUILayout.EndHorizontal();
+            craftScroll=GUILayout.BeginScrollView(craftScroll);
+            for(int i=craftPage*8;i<Mathf.Min(recipes.Count,craftPage*8+8);i++)
+            {
+                Recipe recipe=recipes[i];
+                string perk=recipe.id=="sand-spirit-staff"?" · 유도/모래 둔화 30%":
+                    recipe.id=="wasteland-mummy-staff"?" · 5% 아군 미라(400/70/2초)":"";
+                if(GUILayout.Button(recipe.name+" · "+recipe.kind+perk+(creative?" · 무료":" · "+recipe.cost),GUILayout.Height(48)))Craft(recipe);
+            }
+            GUILayout.EndScrollView();
+        }
+        else if(panel==Panel.Spawner)
+        {
+            if(species.Count==0){GUILayout.Label("소환 가능한 몬스터가 없어.");}
+            else
+            {
+                GUILayout.Label("몬스터 선택: "+species[selectedSpeciesIndex].name);
+                GUILayout.BeginHorizontal();
+                if(GUILayout.Button("이전 목록",GUILayout.Height(42)))speciesPage=Mathf.Max(0,speciesPage-1);
+                if(GUILayout.Button("다음 목록",GUILayout.Height(42)))speciesPage=Mathf.Min((species.Count-1)/6,speciesPage+1);
+                GUILayout.EndHorizontal();
+                for(int i=speciesPage*6;i<Mathf.Min(species.Count,speciesPage*6+6);i++)
+                {
+                    if(GUILayout.Button(species[i].name+" · "+species[i].mood,GUILayout.Height(40)))selectedSpeciesIndex=i;
+                }
+                GUILayout.Label("마릿수 1~30");
+                spawnCountText=GUILayout.TextField(spawnCountText,4,GUILayout.Height(44));
+                if(GUILayout.Button("소환",GUILayout.Height(52)))SpawnFromBlock();
+            }
+        }
+        else if(panel==Panel.Aggro)
+        {
+            Monster monster=FindMonster(aggroMonsterId);
+            if(monster!=null)
+            {
+                GUILayout.Label(monster.spec.name+" · 현재 "+(monster.attackPlayer?"플레이어 공격":"공격 안 함"));
+                if(monster.spec.mood=="harmless")GUILayout.Label("무해한 몬스터는 공격할 수 없어.");
+                else
+                {
+                    if(GUILayout.Button("플레이어를 공격하지 않음",GUILayout.Height(50))){monster.attackPlayer=false;monster.opponentId=-1;panel=Panel.None;SaveCreative();}
+                    if(GUILayout.Button("플레이어 공격",GUILayout.Height(50))){monster.attackPlayer=true;monster.opponentId=-1;panel=Panel.None;SaveCreative();}
+                }
+            }
+        }
+        if(GUILayout.Button("닫기",GUILayout.Height(46)))panel=Panel.None;
+        GUILayout.EndArea();
+    }
+}

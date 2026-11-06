@@ -1,0 +1,796 @@
+// 파일명: tools/company-development-roblox-runtime-foundation.mjs
+// 역할: 공식 클라우드 API의 정확한 버전·접지·실행 증거를 검증한다.
+
+import fs from 'node:fs';
+import {createHash} from 'node:crypto';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
+
+const clean=v=>String(v??'').trim();
+const baseRequired=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','CORE_LOOP_READY'];
+const foundationCausalOrder=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT'];
+export const ROBLOX_LUAU_EXECUTION_WRITE_SCOPE='universe.place.luau-execution-session:write';
+
+const transientNetworkCodes=new Set(['EAI_AGAIN','ENOTFOUND','ECONNRESET','ETIMEDOUT','ECONNREFUSED','UND_ERR_CONNECT_TIMEOUT','UND_ERR_SOCKET','ABORT_ERR']);
+const transientHttpStatuses=new Set([408,429,500,502,503,504]);
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,Math.max(0,Number(ms)||0)));
+let openCloudEngineCreateAdmissionTail=Promise.resolve();
+let openCloudEngineCreateLastAtMs=0;
+let openCloudEngineCreateBlockedUntilMs=0;
+
+function retryAfterDelayMs(response,nowMs=Date.now()){
+  const raw=clean(response?.headers?.get?.('retry-after'));
+  if(!raw)return 0;
+  const seconds=Number(raw);
+  if(Number.isFinite(seconds)&&seconds>=0)return seconds*1000;
+  const timestamp=Date.parse(raw);
+  return Number.isFinite(timestamp)?Math.max(0,timestamp-nowMs):0;
+}
+async function withOpenCloudEngineCreateAdmission(request,{enabled=true,minimumIntervalMs=12500}={}){
+  if(!enabled)return Object.freeze({response:await request(),deferred:false,retryAfterMs:0,retryNotBefore:null});
+  let release;
+  const previous=openCloudEngineCreateAdmissionTail;
+  openCloudEngineCreateAdmissionTail=new Promise(resolve=>{release=resolve;});
+  await previous;
+  try{
+    const now=Date.now();
+    if(openCloudEngineCreateBlockedUntilMs>now){
+      const retryAfterMs=openCloudEngineCreateBlockedUntilMs-now;
+      const retryNotBefore=new Date(openCloudEngineCreateBlockedUntilMs).toISOString();
+      console.warn('ROBLOX_OPEN_CLOUD_ENGINE_CREATE_CAPACITY_BLOCKED:WAIT_MS='+retryAfterMs+':RETRY_NOT_BEFORE='+retryNotBefore);
+      return Object.freeze({response:null,deferred:true,retryAfterMs,retryNotBefore});
+    }
+    const intervalMs=Math.max(0,Math.min(180000,Number(minimumIntervalMs)||0));
+    const admissionWaitMs=Math.max(0,openCloudEngineCreateLastAtMs+intervalMs-Date.now());
+    if(admissionWaitMs>0){
+      console.warn('ROBLOX_OPEN_CLOUD_ENGINE_CREATE_ADMISSION_WAIT=WAIT_MS='+admissionWaitMs);
+      await sleep(admissionWaitMs);
+    }
+    const response=await request();
+    openCloudEngineCreateLastAtMs=Date.now();
+    if(Number(response?.status||0)===429){
+      const retryAfterMs=Math.max(retryAfterDelayMs(response),60000);
+      openCloudEngineCreateBlockedUntilMs=Math.max(openCloudEngineCreateBlockedUntilMs,Date.now()+retryAfterMs);
+    }
+    return Object.freeze({
+      response,
+      deferred:false,
+      retryAfterMs:Math.max(0,openCloudEngineCreateBlockedUntilMs-Date.now()),
+      retryNotBefore:openCloudEngineCreateBlockedUntilMs>Date.now()?new Date(openCloudEngineCreateBlockedUntilMs).toISOString():null,
+    });
+  }finally{
+    release();
+  }
+}
+function isTransientNetworkError(error){
+  const code=clean(error?.cause?.code||error?.code).toUpperCase();
+  const name=clean(error?.name).toUpperCase();
+  return transientNetworkCodes.has(code)||name==='TIMEOUTERROR'||name==='ABORTERROR';
+}
+function transientHttpDelayMs(response,baseDelayMs,attempt){
+  const retryAfterMs=retryAfterDelayMs(response);
+  const exponentialDelay=Math.min(30000,baseDelayMs*Math.max(1,2**Math.max(0,attempt-1)));
+  return retryAfterMs>0?Math.max(exponentialDelay,retryAfterMs):exponentialDelay;
+}
+async function fetchWithNetworkRetry(fetchImpl,url,init={},options={}){
+  const attempts=Math.max(1,Math.min(6,Number(options.attempts)||4));
+  const delayMs=Math.max(0,Number(options.delayMs)||0);
+  const requestTimeoutMs=Math.max(1000,Math.min(30000,Number(options.requestTimeoutMs)||12000));
+  const maxInRunRetryDelayMs=Math.max(1000,Math.min(30000,Number(options.maxInRunRetryDelayMs)||30000));
+  const label=clean(options.label)||'ROBLOX_OPEN_CLOUD';
+  let lastError=null;
+  for(let attempt=1;attempt<=attempts;attempt++){
+    try{
+      const requestInit=init?.signal?init:{...init,signal:AbortSignal.timeout(requestTimeoutMs)};
+      const response=await fetchImpl(url,requestInit);
+      const status=Number(response?.status||0);
+      if(transientHttpStatuses.has(status)&&attempt<attempts){
+        const waitMs=transientHttpDelayMs(response,delayMs,attempt);
+        if(waitMs>maxInRunRetryDelayMs){
+          console.warn(label+'_HTTP_RETRY_DEFERRED_EXTERNAL_CAPACITY='+attempt+'/'+attempts+':HTTP_'+status+':WAIT_MS='+waitMs);
+          return response;
+        }
+        console.warn(label+'_HTTP_RETRY='+attempt+'/'+attempts+':HTTP_'+status+':WAIT_MS='+waitMs);
+        if(waitMs>0)await sleep(waitMs);
+        continue;
+      }
+      return response;
+    }catch(error){
+      lastError=error;
+      if(!isTransientNetworkError(error)||attempt>=attempts)throw error;
+      console.warn(label+'_NETWORK_RETRY='+attempt+'/'+attempts+':'+clean(error?.cause?.code||error?.code||error?.name||'TRANSIENT'));
+      if(delayMs>0)await sleep(delayMs*attempt);
+    }
+  }
+  throw lastError||new Error(label+'_NETWORK_RETRY_EXHAUSTED');
+}
+
+export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',placeId='',versionNumber=0}={}){
+  const checkpoints=sentinel&&typeof sentinel.checkpoints==='object'&&sentinel.checkpoints?sentinel.checkpoints:{};
+  const requirements=sentinel&&typeof sentinel.requirements==='object'&&sentinel.requirements?sentinel.requirements:{};
+  const saveEnabled=requirements.saveEnabled===true;
+  const multiplayerRequired=requirements.multiplayerRequired===true;
+  const required=[...baseRequired,...(saveEnabled?['SAVE_ROUNDTRIP']:[])];
+  const exactGame=!clean(gameId)||clean(sentinel.gameId)===clean(gameId);
+  const exactPlace=clean(sentinel.placeId)===clean(placeId);
+  const exactVersion=Number(sentinel.placeVersion)===Number(versionNumber)&&Number(versionNumber)>0;
+  const checkpointPass=Object.fromEntries(required.map(name=>{
+    const row=checkpoints[name];
+    const exactRuntimeRow=Boolean(
+      row
+      &&Number(row.at)>0
+      &&(!clean(gameId)||clean(row.gameId)===clean(gameId))
+      &&clean(row.placeId)===clean(placeId)
+      &&Number(row.placeVersion)===Number(versionNumber)
+    );
+    return[name,exactRuntimeRow];
+  }));
+  const checkpointOrderPassed=foundationCausalOrder.every((name,index)=>{
+    const sequence=Number(checkpoints[name]?.sequence);
+    if(!checkpointPass[name]||!Number.isInteger(sequence)||sequence<=0)return false;
+    if(index===0)return true;
+    const previous=Number(checkpoints[foundationCausalOrder[index-1]]?.sequence);
+    return Number.isInteger(previous)&&previous<sequence;
+  });
+  const f1=checkpointPass.SERVER_BOOT&&checkpointPass.MODULE_GRAPH_READY;
+  const f2=checkpointPass.WORLD_READY&&checkpointPass.SPAWN_READY;
+  const f3=checkpointPass.CHARACTER_READY;
+  const f4=checkpointPass.GROUND_CONTACT&&checkpointPass.MOVEMENT_CONFIRMED;
+  const f5=checkpointPass.CAMERA_READY&&checkpointPass.INPUT_READY;
+  const f6=checkpointPass.REMOTE_ROUNDTRIP&&(!saveEnabled||checkpointPass.SAVE_ROUNDTRIP);
+  const f7=!multiplayerRequired;
+  const f8=checkpointPass.CORE_LOOP_READY;
+  const foundation=exactGame&&exactPlace&&exactVersion&&checkpointOrderPassed&&f1&&f2&&f3&&f4;
+  const developmentContinuation=foundation&&f5&&f6&&f8;
+  const acceptance=developmentContinuation;
+  return Object.freeze({
+    version:3,platform:'ROBLOX',gameId:clean(gameId)||clean(sentinel.gameId),placeId:clean(placeId),placeVersion:Number(versionNumber)||0,
+    exactGame,exactPlace,exactVersion,requirements:Object.freeze({saveEnabled,multiplayerRequired}),
+    requiredCheckpoints:Object.freeze(required),checkpointPass:Object.freeze(checkpointPass),checkpointOrderPassed,foundationCausalOrder:Object.freeze([...foundationCausalOrder]),
+    f1ServerBootPassed:f1,f2WorldFoundationPassed:f2,f3CharacterFoundationPassed:f3,f4PhysicsAndMovementPassed:f4,
+    f5InputCameraUiPassed:f5,f6CoreServicesPassed:f6,f7MultiplayerFoundationPassed:f7,f8GameplaySystemsPassed:f8,
+    runtimeFoundationPassed:foundation,developmentContinuationPassed:developmentContinuation,runtimeAcceptancePassed:acceptance,multiplayerPromotionPending:false,actualRuntimeEvidence:true,state:acceptance?'PASS':foundation?'FOUNDATION_PASS_ACCEPTANCE_PENDING':'BLOCKED',
+    blockers:Object.freeze([
+      ...(!exactGame?['exactGame']:[]),...(!exactPlace?['exactPlace']:[]),...(!exactVersion?['exactVersion']:[]),
+      ...(!checkpointOrderPassed?['checkpointOrder']:[]),
+      ...required.filter(name=>!checkpointPass[name]).map(name=>'checkpoint:'+name)
+    ]),
+    authority:'roblox-runtime-foundation-sentinel'
+  });
+}
+export function validateRobloxMultiplayerSourceContract({serverSource='',clientSource=''}={}){
+  const server=String(serverSource||'');
+  const client=String(clientSource||'');
+  const playerRoster=/Players\s*:\s*GetPlayers\s*\(\s*\)/.test(server);
+  const authoritativeBroadcast=/FireAllClients\s*\(\s*["']MULTIPLAYER_SYNC["']/.test(server);
+  const participantCount=/ParticipantCount\s*=/.test(server);
+  const clientReceive=/OnClientEvent\s*:\s*Connect/.test(client)&&/MULTIPLAYER_SYNC/.test(client);
+  const checks=Object.freeze({
+    playerRoster,
+    participantCount,
+    authoritativeBroadcast,
+    clientReceive,
+    twoParticipantCapablePath:playerRoster&&participantCount&&authoritativeBroadcast&&clientReceive,
+  });
+  const passed=checks.twoParticipantCapablePath===true;
+  return Object.freeze({
+    version:1,
+    passed,
+    checks,
+    authority:'roblox-static-two-client-source-contract',
+    runtimeTwoClientExecutionRequired:false,
+  });
+}
+
+export async function fetchRobloxRuntimeFoundationEvidence({
+  universeId='',apiKey='',datastoreName='native-foundation-sentinel-v1',entryKey='latest',
+  fetchImpl=globalThis.fetch,networkRetryAttempts=4,networkRetryDelayMs=500,
+}={}){
+  const universe=clean(universeId),key=clean(apiKey),store=clean(datastoreName),entry=clean(entryKey);
+  if(!/^[1-9][0-9]*$/.test(universe))throw new Error('valid universeId required');
+  if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
+  if(!store||!entry)throw new Error('datastoreName and entryKey required');
+  if(typeof fetchImpl!=='function')throw new Error('fetch implementation required');
+  const url=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/data-stores/${encodeURIComponent(store)}/entries/${encodeURIComponent(entry)}`;
+  const response=await fetchWithNetworkRetry(fetchImpl,url,{headers:{'x-api-key':key}},{
+    attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_FOUNDATION_DATASTORE'
+  });
+  const text=await response.text();
+  if(response.status===401||response.status===403)throw new Error(`ROBLOX_FOUNDATION_DATASTORE_PERMISSION_DENIED:requires universe-datastores.objects:read:HTTP_${response.status}:${text.slice(0,220)}`);
+  if(!response.ok)throw new Error(`ROBLOX_FOUNDATION_DATASTORE_HTTP_${response.status}:${text.slice(0,300)}`);
+  let body;try{body=JSON.parse(text);}catch{throw new Error('ROBLOX_FOUNDATION_DATASTORE_INVALID_JSON');}
+  return body&&typeof body.value==='object'&&body.value!==null?body.value:body;
+}
+
+// [공식 온라인 서버 진단] Open Cloud Luau Task의 HTTP 200과 실제 게임 서버를 구분한다.
+// 게임 버전별 서버 목록은 실제 인스턴스 발견에만 사용하고 Game.server 실행이나 F9 PASS로 승격하지 않는다.
+export async function probeRobloxOpenCloudGameServerObservation({
+  universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,
+  networkRetryAttempts=2,networkRetryDelayMs=500,
+}={}){
+  const universe=clean(universeId),place=clean(placeId),key=clean(apiKey),version=Number(versionNumber);
+  if(!/^[1-9][0-9]*$/.test(universe)||!/^[1-9][0-9]*$/.test(place)
+    ||!Number.isSafeInteger(version)||version<=0)throw new Error('ROBLOX_GAME_SERVER_EXACT_TARGET_REQUIRED');
+  if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
+  if(typeof fetchImpl!=='function')throw new Error('fetch implementation required');
+  const endpoint='https://apis.roblox.com/server-management/v1/universes/'
+    +encodeURIComponent(universe)+'/places/'+encodeURIComponent(place)
+    +'/versions/'+encodeURIComponent(version)+'/game-servers';
+  const response=await fetchWithNetworkRetry(fetchImpl,endpoint,{headers:{'x-api-key':key}},{
+    attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OFFICIAL_LIVE_GAME_SERVER_LIST'
+  });
+  const status=Number(response?.status||0);
+  const observedAt=new Date().toISOString();
+  const base={version:1,universeId:universe,placeId:place,candidateVersionNumber:version,
+    observedAt,status,endpoint,requiredScope:'universe:read',
+    actualGameScriptBootVerified:false,actualPlayerPlayVerified:false,
+    authority:'roblox-official-version-scoped-game-server-observation'};
+  if(status===401||status===403){
+    // [권한 진단] 인증 실패 원인은 공급자 응답에서 검증된 분류만 남긴다.
+    // 전체 오류 본문, 자격 증명, 사용자 식별자는 로그/장기 상태에 저장하지 않는다.
+    let providerError={};
+    try{
+      const raw=await response.text();
+      providerError=JSON.parse(raw.slice(0,4096));
+    }catch{}
+    const firstError=Array.isArray(providerError?.errors)?providerError.errors[0]:null;
+    const providerCode=clean(providerError?.code||providerError?.error?.code||firstError?.code);
+    const errorCode=/^[a-z][a-z0-9_-]{1,63}$/i.test(providerCode)?providerCode:null;
+    const message=clean(
+      providerError?.message||providerError?.error?.message||providerError?.errorMessage||firstError?.message
+    );
+    const accessFailureCategory=
+      /required scope|missing scope|insufficient scope|scope.*(missing|denied|invalid)|not.*scope/i.test(message)
+        ?'SCOPE_NOT_GRANTED'
+      :/ip address|ip restriction|ip allowlist|not allowed from.*ip/i.test(message)
+        ?'IP_RESTRICTION'
+      :/expir|revok|disabled.*key|invalid api key|api key.*invalid/i.test(message)
+        ?'KEY_INACTIVE_OR_INVALID'
+      :/universe|experience|target|resource/i.test(message)&&/permission|authoriz|access|not found|forbidden/i.test(message)
+        ?'TARGET_OR_CREATOR_PERMISSION'
+      :'UNCLASSIFIED_AUTHORIZATION_DENIAL';
+    // [읽기 권한 구분] 원문이 제공되지 않는 403에 한해 같은 인증 키로
+    // universe:read가 요구되는 공식 필터 조회를 1회 교차 확인한다.
+    // 비교 API가 200이면 동일 키의 범위/대상 권한은 있으므로 서버 버전 경로의 별도 거부다.
+    let readScopeCrosscheck=null;
+    if(status===403&&accessFailureCategory==='UNCLASSIFIED_AUTHORIZATION_DENIAL'){
+      const checkEndpoint='https://apis.roblox.com/server-management/v1/universes/'
+        +encodeURIComponent(universe)+'/places/'+encodeURIComponent(place)+'/game-servers:filter-options';
+      try{
+        const check=await fetchWithNetworkRetry(fetchImpl,checkEndpoint,{headers:{'x-api-key':key}},{
+          attempts:1,delayMs:0,label:'ROBLOX_SERVER_READ_SCOPE_CHECK'
+        });
+        const checkStatus=Number(check?.status||0);
+        readScopeCrosscheck=Object.freeze({
+          status:checkStatus,
+          state:checkStatus===200?'SAME_KEY_UNIVERSE_READ_ENDPOINT_AUTHORIZED'
+            :(checkStatus===401||checkStatus===403)?'SAME_KEY_UNIVERSE_READ_ENDPOINT_DENIED'
+            :'SAME_KEY_READ_SCOPE_CHECK_INCONCLUSIVE',
+        });
+      }catch{
+        readScopeCrosscheck=Object.freeze({status:0,state:'SAME_KEY_READ_SCOPE_CHECK_UNAVAILABLE'});
+      }
+    }
+    // [동일 키 검증] 두 공식 universe:read 요청이 403이면 Roblox의 공식 키
+    // 인트로스펙션으로 현재 Actions 비밀 키의 실제 권한/대상만 확인한다.
+    // 키 이름, 키 원문, 생성자 ID, 다른 게임 ID는 상태/로그로 내보내지 않는다.
+    let keyScopeAudit=null;
+    if(readScopeCrosscheck?.status===403){
+      try{
+        const meta=await introspectRobloxApiKey({apiKey:key,fetchImpl});
+        const scopeRows=meta.scopes.filter(row=>
+          row.name==='universe'&&row.operations.includes('read'));
+        const targetMatches=scopeRows.some(row=>
+          row.universeIds.length===0||row.universeIds.includes('*')||row.universeIds.includes(universe));
+        const auditState=meta.expired?'API_KEY_EXPIRED'
+          :!meta.enabled?'API_KEY_DISABLED'
+          :scopeRows.length===0?'UNIVERSE_READ_SCOPE_NOT_IN_ACTIONS_KEY'
+          :!targetMatches?'PRIVATE_UNIVERSE_NOT_ALLOWED_IN_ACTIONS_KEY'
+          :'UNIVERSE_READ_SCOPE_AND_TARGET_PRESENT_BUT_SERVER_DENIED';
+        keyScopeAudit=Object.freeze({state:auditState,
+          keyEnabled:meta.enabled,keyExpired:meta.expired,
+          universeReadGranted:scopeRows.length>0,
+          targetConfigured:targetMatches});
+      }catch{
+        keyScopeAudit=Object.freeze({state:'ACTIONS_KEY_INTROSPECTION_UNAVAILABLE'});
+      }
+    }
+    return Object.freeze({...base,available:false,permissionDenied:true,
+      providerErrorCode:errorCode,accessFailureCategory,readScopeCrosscheck,keyScopeAudit,
+      serverInstanceObserved:false,activeServerCount:null,
+      state:'GAME_SERVER_READ_PERMISSION_UNAVAILABLE'});
+  }
+  if(!response.ok)return Object.freeze({...base,available:false,permissionDenied:false,
+    serverInstanceObserved:false,activeServerCount:null,state:'GAME_SERVER_LIST_HTTP_'+status});
+  let body;try{body=await response.json();}catch{
+    return Object.freeze({...base,available:false,permissionDenied:false,
+      serverInstanceObserved:false,activeServerCount:null,state:'GAME_SERVER_LIST_INVALID_JSON'});
+  }
+  const rows=Array.isArray(body?.gameServers)?body.gameServers
+    :Array.isArray(body?.servers)?body.servers
+    :Array.isArray(body?.data)?body.data
+    :null;
+  if(rows===null)return Object.freeze({...base,available:false,permissionDenied:false,
+    serverInstanceObserved:false,activeServerCount:null,state:'GAME_SERVER_LIST_SCHEMA_UNKNOWN'});
+  // 서버 식별자를 외부 로그/장기 상태에 노출하지 않는다. 공식 버전 경로에서 유효한 작업 ID만 집계한다.
+  const serverCount=rows.filter(row=>row&&typeof row==='object'
+    &&/^[a-f0-9-]{16,64}$/i.test(clean(row.jobId||row.id||row.serverId))).length;
+  return Object.freeze({...base,available:true,permissionDenied:false,
+    serverInstanceObserved:serverCount>0,activeServerCount:serverCount,
+    resultPageComplete:!clean(body?.nextPageToken||body?.nextPageCursor),
+    state:serverCount>0?'EXACT_VERSION_GAME_SERVER_INSTANCE_OBSERVED':'NO_ACTIVE_SERVER_ON_RESULT_PAGE'});
+}
+
+export async function probeRobloxOpenCloudImageEvidence({
+  universeId='',apiKey='',fetchImpl=globalThis.fetch,networkRetryAttempts=4,networkRetryDelayMs=500,
+}={}){
+  const universe=clean(universeId),key=clean(apiKey);
+  if(!/^[1-9][0-9]*$/.test(universe))throw new Error('valid universeId required');
+  if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
+  if(typeof fetchImpl!=='function')throw new Error('fetch implementation required');
+  const url='https://apis.roblox.com/thumbnail-personalization-api/v1/universes/'+encodeURIComponent(universe)+'/thumbnails?maxPageSize=50';
+  const response=await fetchWithNetworkRetry(fetchImpl,url,{headers:{'x-api-key':key}},{
+    attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_IMAGE_CHECK'
+  });
+  const text=await response.text();
+  let body={};
+  try{body=text?JSON.parse(text):{};}catch{throw new Error('ROBLOX_OPEN_CLOUD_IMAGE_CHECK_INVALID_JSON');}
+  const message=clean(body?.message);
+  const requiredScope=message.match(/required scope <([^>]+)>/i)?.[1]||'universe.thumbnail:read';
+  if(response.status===401||response.status===403)return Object.freeze({
+    available:false,permissionDenied:true,status:response.status,requiredScope,
+    imageMetadataAvailable:false,thumbnailCount:0,imageUrls:Object.freeze([]),
+    imageContentChecked:false,imageContentPassed:false,imageVisualQualityVerified:false,
+    runtimeScreenshot:false,exactRuntimeVersionImage:false,state:'UNAVAILABLE_PERMISSION',authority:'roblox-open-cloud-thumbnail-image-sanity',
+  });
+  if(!response.ok)throw new Error('ROBLOX_OPEN_CLOUD_IMAGE_CHECK_HTTP_'+response.status+':'+text.slice(0,300));
+  const arrays=[];
+  const imageUrls=[];
+  const visit=(value,keyName='',depth=0)=>{
+    if(depth>8||value==null)return;
+    if(Array.isArray(value)){
+      if(/thumbnail|image|data|item/i.test(keyName))arrays.push(value);
+      for(const row of value)visit(row,keyName,depth+1);
+      return;
+    }
+    if(typeof value==='object'){
+      for(const [keyName2,row] of Object.entries(value))visit(row,keyName2,depth+1);
+      return;
+    }
+    if(typeof value==='string'&&/^https?:\/\//i.test(value)&&/(image|thumbnail|cdn|rbxcdn)/i.test(keyName+' '+value))imageUrls.push(value);
+  };
+  visit(body);
+  const largestArray=arrays.reduce((best,row)=>row.length>best.length?row:best,[]);
+  const thumbnailCount=largestArray.length;
+  const metadataAvailable=thumbnailCount>0||imageUrls.length>0;
+  // 메인: 개인화 목록에 CDN URL이 없을 때만 같은 universe의 공식 제공 이미지를 조회한다.
+  // 공식 이미지 전송 확인은 현재 후보의 실제 실행·스크린샷·개인화 이미지 동일성 증거가 아니다.
+  let imageLookupAuthority='ROBLOX_THUMBNAIL_PERSONALIZATION_METADATA';
+  let imageLookupFailure=null;
+  let officialGameThumbnailTargetId=null;
+  if(thumbnailCount>0&&imageUrls.length===0){
+    const lookupUrl='https://thumbnails.roblox.com/v1/games/multiget/thumbnails?'
+      +new URLSearchParams({universeIds:universe,size:'768x432',format:'Png',isCircular:'false'}).toString();
+    try{
+      const lookup=await fetchWithNetworkRetry(fetchImpl,lookupUrl,{redirect:'error'},{
+        attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OFFICIAL_GAME_THUMBNAIL_LOOKUP'
+      });
+      if(!lookup.ok)throw new Error('OFFICIAL_GAME_THUMBNAIL_HTTP_'+lookup.status);
+      const lookupBody=await lookup.json();
+      const rows=(Array.isArray(lookupBody?.data)?lookupBody.data:[])
+        .filter(row=>clean(row?.universeId)===universe&&row?.error==null);
+      const entries=rows.flatMap(row=>Array.isArray(row?.thumbnails)?row.thumbnails:[])
+        .filter(row=>row?.state==='Completed'&&/^[1-9][0-9]*$/.test(clean(row?.targetId))
+          &&typeof row?.imageUrl==='string'&&row.imageUrl.startsWith('https://'));
+      if(entries.length){
+        // URL 자체는 아래 공통 허용 도메인·서명·크기 검증을 반드시 거친다.
+        imageUrls.push(...entries.map(row=>row.imageUrl));
+        imageLookupAuthority='ROBLOX_OFFICIAL_UNIVERSE_GAME_THUMBNAIL_CDN';
+        officialGameThumbnailTargetId=clean(entries[0].targetId);
+      }else imageLookupFailure='OFFICIAL_GAME_THUMBNAIL_NOT_COMPLETED';
+    }catch(error){
+      imageLookupFailure=clean(error?.message||error).slice(0,180);
+    }
+  }
+  const urls=[...new Set(imageUrls)];
+  const imageContent=new Array(urls.length);
+  const maxImageBytes=8*1024*1024;
+  const imageWorkerCount=Math.max(1,Math.min(8,urls.length||1));
+  let imageCursor=0;
+  // Only URLs returned by the official API are fetched, without forwarding the API key.
+  // Payload signatures prove transport integrity, never visual quality or a version-bound screenshot.
+  const runImageWorker=async()=>{
+    while(true){
+      const index=imageCursor++;
+      if(index>=urls.length)return;
+      const imageUrl=urls[index];
+      try{
+        const parsed=new URL(imageUrl);
+        if(parsed.protocol!=='https:'||parsed.username||parsed.password||parsed.port
+          ||!(parsed.hostname==='rbxcdn.com'||parsed.hostname.endsWith('.rbxcdn.com')))throw Error('UNTRUSTED_IMAGE_URL');
+        const response=await fetchWithNetworkRetry(fetchImpl,imageUrl,{redirect:'error',signal:AbortSignal.timeout(12000)},{
+          attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_IMAGE_CONTENT'
+        });
+        if(!response.ok)throw Error('IMAGE_HTTP_'+response.status);
+        const contentType=clean(response.headers?.get?.('content-type')).split(';')[0].toLowerCase();
+        if(!['image/png','image/jpeg','image/webp','image/gif'].includes(contentType))throw Error('IMAGE_CONTENT_TYPE_INVALID');
+        if(Number(response.headers?.get?.('content-length')||0)>maxImageBytes)throw Error('IMAGE_TOO_LARGE');
+        const parts=[];let bytes=0;
+        const reader=response.body?.getReader?.();
+        if(!reader)throw Error('IMAGE_STREAM_UNAVAILABLE');
+        try{
+          while(true){
+            const next=await reader.read();if(next.done)break;
+            bytes+=next.value.byteLength;
+            if(bytes>maxImageBytes)throw Error('IMAGE_TOO_LARGE');
+            parts.push(Buffer.from(next.value));
+          }
+        }finally{await reader.cancel().catch(()=>{});reader.releaseLock();}
+        const data=Buffer.concat(parts);
+        const signatureMatched=(contentType==='image/png'&&data.length>=33&&data.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))&&data.toString('ascii',12,16)==='IHDR')
+          ||(contentType==='image/jpeg'&&data.length>4&&data[0]===255&&data[1]===216&&data.at(-2)===255&&data.at(-1)===217)
+          ||(contentType==='image/webp'&&data.length>20&&data.toString('ascii',0,4)==='RIFF'&&data.toString('ascii',8,12)==='WEBP')
+          ||(contentType==='image/gif'&&data.length>13&&/^GIF8[79]a$/.test(data.toString('ascii',0,6)));
+        if(!signatureMatched)throw Error('IMAGE_SIGNATURE_INVALID');
+        imageContent[index]=Object.freeze({imageUrl,contentType,bytes,sha256:createHash('sha256').update(data).digest('hex'),contentSignatureMatched:true});
+      }catch(error){
+        imageContent[index]=Object.freeze({imageUrl,contentSignatureMatched:false,error:clean(error?.message||error)});
+      }
+    }
+  };
+  await Promise.all(Array.from({length:imageWorkerCount},()=>runImageWorker()));
+  const imageContentPassed=imageContent.length>0&&imageContent.every(row=>row.contentSignatureMatched===true);
+  return Object.freeze({
+    available:true,permissionDenied:false,status:response.status,
+    provider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',universeId:universe,observedAt:new Date().toISOString(),endpoint:url,
+    imageMetadataAvailable:metadataAvailable,
+    thumbnailCount,
+    imageUrls:Object.freeze(urls),imageContent:Object.freeze(imageContent),
+    imageLookupAuthority,imageLookupFailure,officialGameThumbnailTargetId,
+    personalizedImageContentMatched:false,
+    imageContentChecked:urls.length>0,imageContentPassed,imageVisualQualityVerified:false,
+    metadataCoverage:'RETURNED_API_PAGE_ONLY',
+    runtimeScreenshot:false,
+    exactRuntimeVersionImage:false,
+    state:imageContentPassed?'PASS_CLOUD_IMAGE_TRANSPORT':metadataAvailable?'IMAGE_CONTENT_UNVERIFIED':'NO_IMAGE_METADATA',
+    authority:'roblox-open-cloud-thumbnail-image-sanity',
+    limitation:'THUMBNAIL_METADATA_IS_VISUAL_SANITY_ONLY_NOT_EXACT_RUNTIME_RENDER_PROOF',
+  });
+}
+
+export async function probeRobloxOpenCloudEngine({
+  universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,expectedStudioAssetBinding=null,expectedCombatActions=[],
+  networkRetryAttempts=4,networkRetryDelayMs=500,createAdmissionIntervalMs=180000,
+}={}){
+  const universe=clean(universeId),place=clean(placeId),version=Number(versionNumber),key=clean(apiKey);
+  if(!/^[1-9][0-9]*$/.test(universe))throw new Error('valid universeId required');
+  if(!/^[1-9][0-9]*$/.test(place))throw new Error('valid placeId required');
+  if(!Number.isInteger(version)||version<=0)throw new Error('valid versionNumber required');
+  if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
+  if(typeof fetchImpl!=='function')throw new Error('fetch implementation required');
+  const expectedStudioAssetAtoms=[...new Set([
+    ...Object.values(expectedStudioAssetBinding?.families||{}).flat(),
+    ...(Array.isArray(expectedStudioAssetBinding?.expectedAtomIds)?expectedStudioAssetBinding.expectedAtomIds:[])
+  ].map(clean).filter(Boolean))].sort();
+  const studioAssetBindingRequired=expectedStudioAssetBinding?.applied===true||expectedStudioAssetBinding?.required===true;
+  const expectedStudioAssetBindingVersion=Math.max(1,Number(expectedStudioAssetBinding?.bindingVersion||1));
+  const expectedStudioAssetSelectionFingerprint=clean(expectedStudioAssetBinding?.selectionFingerprint);
+  const expectedStudioAssetLibraryVersion=Math.max(0,Math.floor(Number(expectedStudioAssetBinding?.libraryVersion)||0));
+  const expectedBuildUpAssetSourceUsageFingerprint=clean(expectedStudioAssetBinding?.buildUpAssetSourceUsageFingerprint);
+  const expectedStudioAssetAtomCsv=expectedStudioAssetAtoms.join(',');
+  const script=[
+    'local Players=game:GetService("Players")',
+    'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
+    'local Lighting=game:GetService("Lighting")',
+    'local studioAssetApplied=false',
+    'local studioAssetBindingVersion=0',
+    'local studioAssetSelectionFingerprint=""',
+    'local studioAssetLibraryVersion=0',
+    'local studioAssetAtoms={}',
+    'local shared=ReplicatedStorage:FindFirstChild("Shared")',
+    'local configModule=shared and shared:FindFirstChild("GameConfig")',
+    ...(expectedCombatActions.length?["local motionIds={\"U:JAB_LEFT\",\"U:UPPERCUT_RIGHT\",\"U:ROUND_KICK_R\",\"U:ELBOW_RIGHT\"}","local motionProof={libraryLoaded=false,actions={}}","local motionModule=shared and shared:FindFirstChild(\"RobloxCommonMotion\")","local motionOk,motionLib=pcall(require,motionModule)","motionProof.libraryLoaded=motionOk and type(motionLib)==\"table\"","if not motionProof.libraryLoaded then motionProof.error=tostring(motionLib) end","for _,motionId in ipairs(motionIds) do"," local row={id=motionId,pass=false}"," if motionProof.libraryLoaded then","  local sampled,problem=pcall(function()","   local combo=motionLib.CreateCombatCombo(\"UNARMED\",{motionId},{speed=1})","   local pose={}; motionLib.SampleCombatCombo(combo,combo.steps[1].contact,pose)","   local mapped=motionLib.MapCombatPoseToR15(pose,{})","   local changed=0; for _,cf in pairs(mapped) do local _,angle=cf:ToAxisAngle();if math.abs(angle)>.05 then changed+=1 end end","   row.changedJointCount=changed;row.pass=changed>=2","  end)","  if not sampled then row.error=tostring(problem) end"," end"," table.insert(motionProof.actions,row)","end","print(\"JAEWOON_OPEN_CLOUD_MOTION_PROBE=\"..game:GetService(\"HttpService\"):JSONEncode(motionProof))"]:[]),
+    'if configModule and configModule:IsA("ModuleScript") then local ok,config=pcall(require,configModule); if ok and type(config)=="table" and type(config.StudioAssets)=="table" then studioAssetApplied=config.StudioAssets.Applied==true; studioAssetBindingVersion=tonumber(config.StudioAssets.BindingVersion) or 0; studioAssetSelectionFingerprint=tostring(config.StudioAssets.SelectionFingerprint or ""); studioAssetLibraryVersion=tonumber(config.StudioAssets.LibraryVersion) or 0; if type(config.StudioAssets.Families)=="table" then for _,family in pairs(config.StudioAssets.Families) do if type(family)=="table" then for _,atom in ipairs(family) do if type(atom)=="string" and atom~="" then table.insert(studioAssetAtoms,atom) end end end end end end end',
+    'table.sort(studioAssetAtoms)',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED="..tostring(studioAssetApplied))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION="..tostring(studioAssetBindingVersion))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_SELECTION_FINGERPRINT="..studioAssetSelectionFingerprint)',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_LIBRARY_VERSION="..tostring(studioAssetLibraryVersion))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS="..table.concat(studioAssetAtoms,","))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_PLACE="..tostring(game.PlaceId))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_VERSION="..tostring(game.PlaceVersion))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true")',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS="..tostring(#Players:GetPlayers()))',
+    'local RunService=game:GetService("RunService")',
+    'local ServerScriptService=game:GetService("ServerScriptService")',
+    'local deployedGameScript=ServerScriptService:FindFirstChild("Game",true)',
+    'print("JAEWOON_OPEN_CLOUD_GAME_SERVER_SCRIPT_PRESENT="..tostring(deployedGameScript~=nil and deployedGameScript:IsA("Script")))',
+    'print("JAEWOON_OPEN_CLOUD_GAME_SERVER_SCRIPT_ENABLED="..tostring(deployedGameScript~=nil and deployedGameScript:IsA("Script") and deployedGameScript.Enabled))',
+    // Official Open Cloud Luau tasks are non-simulating. RunService:Run() requires Plugin security.
+    // Preserve explicit diagnostics, but never attempt to start a real game simulation here.
+    'local simulationRunningBefore=RunService:IsRunning()',
+    'local simulationStartAttempted=false',
+    'local simulationStartSucceeded=false',
+    'local simulationStartError=""',
+    'local simulationRunning=RunService:IsRunning()',
+    'local startupWaitStarted=os.clock()',
+    'local startupWaitDeadline=startupWaitStarted+8',
+    'local function runtimeWorldReady() if workspace:GetAttribute("Foundation_SERVER_BOOT")==true then return true end; for _,item in ipairs(workspace:GetDescendants()) do if item:IsA("SpawnLocation") or item:GetAttribute("SpawnMarkerOnly")==true then return true end end; return false end',
+    'while simulationRunning and not runtimeWorldReady() and os.clock()<startupWaitDeadline do task.wait(0.25) end',
+    'local startupWaitSeconds=os.clock()-startupWaitStarted',
+    'local runtimeWorldReadyObserved=runtimeWorldReady()',
+    'local foundationServerBoot=workspace:GetAttribute("Foundation_SERVER_BOOT")==true',
+    'local descendants=workspace:GetDescendants()',
+    'local scanLimit=#descendants',
+    'local basePartCount=0; local spawnCount=0; local markerSpawnCount=0; local landmarkCount=0; local objectiveCount=0; local spawnPositions={}; local spawnParts={}; local supportExclusions={}; local characters={}; local meshPartCount=0; local minX=math.huge; local minY=math.huge; local minZ=math.huge; local maxX=-math.huge; local maxY=-math.huge; local maxZ=-math.huge',
+    'for _,player in ipairs(Players:GetPlayers()) do if player.Character then table.insert(characters,player.Character); table.insert(supportExclusions,player.Character) end end',
+    'local worldObjectIds={};local worldObjectCount=0;local worldObjectDuplicateIds=0;local resourcePromptCount=0;local resourcePromptEnabledCount=0',
+    'for i=1,scanLimit do local item=descendants[i]; local lower=string.lower(item.Name); local objectId=item:GetAttribute("WorldObjectId"); if type(objectId)=="string" and objectId~="" then worldObjectCount+=1;if worldObjectIds[objectId] then worldObjectDuplicateIds+=1 else worldObjectIds[objectId]=true end end; if item:IsA("ProximityPrompt") and item.Name=="ResourcePrompt" then resourcePromptCount+=1;if item.Enabled then resourcePromptEnabledCount+=1 end end; if item:IsA("BasePart") then local characterPart=false; for _,character in ipairs(characters) do if item:IsDescendantOf(character) then characterPart=true; break end end; if not characterPart then basePartCount+=1; if item:IsA("MeshPart") then meshPartCount+=1 end; local isSpawn=item:IsA("SpawnLocation") or item:GetAttribute("SpawnMarkerOnly")==true; local p=item.Position; local h=item.Size*0.5; if not isSpawn and item.CanCollide then minX=math.min(minX,p.X-h.X); minY=math.min(minY,p.Y-h.Y); minZ=math.min(minZ,p.Z-h.Z); maxX=math.max(maxX,p.X+h.X); maxY=math.max(maxY,p.Y+h.Y); maxZ=math.max(maxZ,p.Z+h.Z) end; if isSpawn then spawnCount+=1; if not item:IsA("SpawnLocation") then markerSpawnCount+=1 end; table.insert(spawnPositions,p); table.insert(spawnParts,item); table.insert(supportExclusions,item) end end end; if string.find(lower,"landmark",1,true) or string.find(lower,"hub",1,true) then landmarkCount+=1 end; if string.find(lower,"objective",1,true) or string.find(lower,"goal",1,true) or string.find(lower,"quest",1,true) then objectiveCount+=1 end end',
+    'local finiteWorldBounds=basePartCount>0 and minX<math.huge and maxX>-math.huge',
+    'local spawnOutsideBounds=0; if finiteWorldBounds then for _,p in ipairs(spawnPositions) do if p.X<minX or p.X>maxX or p.Y<minY or p.Y>maxY or p.Z<minZ or p.Z>maxZ then spawnOutsideBounds+=1 end end end',
+    'local spawnInBounds=finiteWorldBounds and spawnCount>0 and spawnOutsideBounds==0',
+    'local spawnParams=RaycastParams.new(); spawnParams.ExcludeInstances=supportExclusions; spawnParams.RespectCanCollide=true; spawnParams.IgnoreWater=true',
+    'local unsupportedSpawns=0; local floatingSpawns=0; local maximumSpawnGroundGap=0',
+    'for _,spawn in ipairs(spawnParts) do spawnParams.CollisionGroup=spawn.CollisionGroup; local hit=workspace:Raycast(spawn.Position+Vector3.new(0,2,0),Vector3.new(0,-66,0),spawnParams); if not hit or hit.Normal.Y<0.55 then unsupportedSpawns+=1 else local gap=spawn.Position.Y-spawn.Size.Y*0.5-hit.Position.Y; maximumSpawnGroundGap=math.max(maximumSpawnGroundGap,gap); if gap>1 then floatingSpawns+=1 elseif gap < -1 then unsupportedSpawns+=1 end end end',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_SPAWN_GROUNDING_OBSERVED="..tostring(spawnCount>0))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_MARKER_SPAWNS="..tostring(markerSpawnCount))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_UNSUPPORTED_SPAWNS="..tostring(unsupportedSpawns))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_FLOATING_SPAWNS="..tostring(floatingSpawns))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_MAX_SPAWN_GROUND_GAP="..tostring(maximumSpawnGroundGap))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_MESH_PARTS="..tostring(meshPartCount))',
+    'local boundsX=finiteWorldBounds and (maxX-minX) or 0; local boundsY=finiteWorldBounds and (maxY-minY) or 0; local boundsZ=finiteWorldBounds and (maxZ-minZ) or 0',
+    'local terrainPresent=workspace:FindFirstChildOfClass("Terrain")~=nil',
+    'local atmospherePresent=Lighting:FindFirstChildOfClass("Atmosphere")~=nil',
+    'local streamingEnabled=workspace.StreamingEnabled==true',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING_BEFORE="..tostring(simulationRunningBefore))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ATTEMPTED="..tostring(simulationStartAttempted))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_SUCCEEDED="..tostring(simulationStartSucceeded))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ERROR="..simulationStartError)',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING="..tostring(simulationRunning))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_RUNTIME_READY="..tostring(runtimeWorldReadyObserved))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_STARTUP_WAIT_SECONDS="..string.format("%.2f",startupWaitSeconds))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT="..tostring(foundationServerBoot))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS="..tostring(basePartCount))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_SPAWNS="..tostring(spawnCount))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_SPAWNS_IN_BOUNDS="..tostring(spawnInBounds))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_FINITE="..tostring(finiteWorldBounds))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE="..string.format("%.2f,%.2f,%.2f",boundsX,boundsY,boundsZ))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_LANDMARKS="..tostring(landmarkCount))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_OBJECTIVES="..tostring(objectiveCount))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_TERRAIN_PRESENT="..tostring(terrainPresent))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_LIGHTING_ATMOSPHERE="..tostring(atmospherePresent))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_STREAMING_ENABLED="..tostring(streamingEnabled))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_SCAN_CAPPED="..tostring(#descendants>scanLimit))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_OBJECT_IDS="..tostring(worldObjectCount))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_DUPLICATE_IDS="..tostring(worldObjectDuplicateIds))',
+    'print("JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS="..tostring(resourcePromptCount))',
+    'print("JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS_ENABLED="..tostring(resourcePromptEnabledCount))',
+    // Five read-only Cloud scenario observations; no client simulation or save mutation.
+    'local cloudServerScenarios={{"EXACT_VERSION",tostring(game.PlaceId)=="' + place + '" and tonumber(game.PlaceVersion)==' + version + '},{"SERVER_SCRIPT",deployedGameScript~=nil and deployedGameScript:IsA("Script") and deployedGameScript.Enabled},{"WORLD_GEOMETRY",finiteWorldBounds and basePartCount>0},{"SPAWN_SUPPORT",spawnCount>0 and unsupportedSpawns==0 and floatingSpawns==0},{"INTERACTION_BINDINGS",worldObjectDuplicateIds==0 and resourcePromptEnabledCount<=resourcePromptCount}}',
+    'for i,scenario in ipairs(cloudServerScenarios) do print("JAEWOON_OPEN_CLOUD_SERVER_SCENARIO_"..tostring(i).."="..scenario[1].."|"..tostring(scenario[2])) end',
+  ].join('\n');
+  const base=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/places/${encodeURIComponent(place)}/versions/${version}`;
+  const decode=async(response,label)=>{
+    const text=await response.text();
+    let body={};try{body=text?JSON.parse(text):{};}catch{throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_${label}_INVALID_JSON`);}
+    return{body,text};
+  };
+  const createAdmission=await withOpenCloudEngineCreateAdmission(()=>fetchWithNetworkRetry(fetchImpl,`${base}/luau-execution-session-tasks`,{
+    method:'POST',
+    headers:{'content-type':'application/json','x-api-key':key},
+    body:JSON.stringify({script,timeout:'20s'}),
+  },{attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_ENGINE_CREATE'}),{
+    enabled:fetchImpl===globalThis.fetch,
+    minimumIntervalMs:createAdmissionIntervalMs,
+  });
+  if(createAdmission.deferred===true){
+    return Object.freeze({
+      available:false,permissionDenied:false,persistentFailure:true,externalCapacityDeferred:true,status:429,
+      engineExecuted:false,exactPlace:false,exactVersion:false,state:'EXTERNAL_CAPACITY_DEFERRED',failureStage:'CREATE',
+      retryAfterSeconds:Math.max(1,Math.ceil(Number(createAdmission.retryAfterMs||0)/1000)),
+      retryNotBefore:createAdmission.retryNotBefore,
+      error:'ROBLOX_OPEN_CLOUD_ENGINE_CREATE_DEFERRED_EXTERNAL_CAPACITY',
+    });
+  }
+  const created=createAdmission.response;
+  const createdDecoded=await decode(created,'CREATE');
+  const createdErrorMessage=clean(createdDecoded.body?.message);
+  const createdRequiredScope=createdErrorMessage.match(/required scope <([^>]+)>/i)?.[1]||ROBLOX_LUAU_EXECUTION_WRITE_SCOPE;
+  if(created.status===401||created.status===403)return Object.freeze({available:false,permissionDenied:true,status:created.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'CREATE',requiredScope:createdRequiredScope,errorCode:clean(createdDecoded.body?.code)||null,errorMessage:createdErrorMessage||null});
+  if(created.status===429){
+    const retryAfterMs=Math.max(retryAfterDelayMs(created),Number(createAdmission.retryAfterMs||0),60000);
+    const retryNotBefore=createAdmission.retryNotBefore||new Date(Date.now()+retryAfterMs).toISOString();
+    return Object.freeze({
+      available:false,permissionDenied:false,persistentFailure:true,externalCapacityDeferred:true,status:429,
+      engineExecuted:false,exactPlace:false,exactVersion:false,state:'EXTERNAL_CAPACITY_DEFERRED',failureStage:'CREATE',
+      retryAfterSeconds:Math.max(1,Math.ceil(retryAfterMs/1000)),
+      retryNotBefore,
+      errorCode:clean(createdDecoded.body?.code)||'RESOURCE_EXHAUSTED',
+      errorMessage:createdErrorMessage||null,
+      error:`ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:${createdDecoded.text.slice(0,300)}`,
+    });
+  }
+  if(!created.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_${created.status}:${createdDecoded.text.slice(0,300)}`);
+  const rawPath=clean(createdDecoded.body?.path).replace(/^\/+/, '').replace(/^cloud\/v2\//,'');
+  if(!rawPath)throw new Error('ROBLOX_OPEN_CLOUD_ENGINE_TASK_PATH_MISSING');
+  const taskUrl=`https://apis.roblox.com/cloud/v2/${rawPath}`;
+  let task=createdDecoded.body;
+  const polls=Math.max(1,Math.min(120,Number(maxPolls)||30));
+  const delay=Math.max(0,Number(pollIntervalMs)||0);
+  for(let i=0;i<polls&&!['COMPLETE','FAILED'].includes(clean(task?.state).toUpperCase());i++){
+    if(delay>0)await new Promise(resolve=>setTimeout(resolve,delay));
+    const response=await fetchWithNetworkRetry(fetchImpl,taskUrl,{headers:{'x-api-key':key}},{
+      attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_ENGINE_TASK'
+    });
+    const decoded=await decode(response,'TASK');
+    const taskErrorMessage=clean(decoded.body?.message);
+    const taskRequiredScope=taskErrorMessage.match(/required scope <([^>]+)>/i)?.[1]||ROBLOX_LUAU_EXECUTION_WRITE_SCOPE;
+    if(response.status===401||response.status===403)return Object.freeze({available:false,permissionDenied:true,status:response.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'TASK_POLL',requiredScope:taskRequiredScope,errorCode:clean(decoded.body?.code)||null,errorMessage:taskErrorMessage||null});
+    if(!response.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_TASK_HTTP_${response.status}:${decoded.text.slice(0,300)}`);
+    task=decoded.body;
+  }
+  const state=clean(task?.state).toUpperCase()||'UNKNOWN';
+  if(state!=='COMPLETE'&&state!=='FAILED')return Object.freeze({available:true,permissionDenied:false,status:200,engineExecuted:false,exactPlace:false,exactVersion:false,state,error:task?.error?.message||null,taskPath:rawPath});
+  const logsResponse=await fetchWithNetworkRetry(fetchImpl,`${taskUrl}/logs?view=STRUCTURED&maxPageSize=100`,{headers:{'x-api-key':key}},{
+    attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_ENGINE_LOGS'
+  });
+  const logsDecoded=await decode(logsResponse,'LOGS');
+  const logsErrorMessage=clean(logsDecoded.body?.message);
+  const logsRequiredScope=logsErrorMessage.match(/required scope <([^>]+)>/i)?.[1]||ROBLOX_LUAU_EXECUTION_WRITE_SCOPE;
+  if(logsResponse.status===401||logsResponse.status===403)return Object.freeze({available:false,permissionDenied:true,status:logsResponse.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'LOGS',requiredScope:logsRequiredScope,errorCode:clean(logsDecoded.body?.code)||null,errorMessage:logsErrorMessage||null,taskPath:rawPath});
+  if(!logsResponse.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_LOGS_HTTP_${logsResponse.status}:${logsDecoded.text.slice(0,300)}`);
+  const rows=Array.isArray(logsDecoded.body?.luauExecutionSessionTaskLogs)?logsDecoded.body.luauExecutionSessionTaskLogs:[];
+  const messages=[];
+  for(const row of rows){
+    for(const message of Array.isArray(row?.structuredMessages)?row.structuredMessages:[])if(clean(message?.message))messages.push(clean(message.message));
+    for(const message of Array.isArray(row?.messages)?row.messages:[])if(clean(message))messages.push(clean(message));
+  }
+  const joined=messages.join('\n');
+  if(state==='FAILED')return Object.freeze({
+    available:true,permissionDenied:false,status:200,engineExecuted:false,exactPlace:false,exactVersion:false,
+    state,taskPath:rawPath,error:clean(task?.error?.message)||joined.slice(0,2000)||'LUAU_TASK_FAILED_WITHOUT_LOGS',
+  });
+  const exactPlace=clean(joined.match(/^JAEWOON_OPEN_CLOUD_ENGINE_PLACE=([0-9]+)$/m)?.[1])===place;
+  const exactVersion=Number(joined.match(/^JAEWOON_OPEN_CLOUD_ENGINE_VERSION=([0-9]+)$/m)?.[1]||0)===version;
+  const simulationRunningBefore=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING_BEFORE=true');
+  const simulationStartAttempted=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ATTEMPTED=true');
+  const simulationStartSucceeded=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_SUCCEEDED=true');
+  const simulationStartError=clean(joined.match(/^JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ERROR=(.*)$/m)?.[1]||'');
+  const simulationRunning=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=true');
+  // Prior Open Cloud task permission failures are diagnostic; they do not prove game-source failure.
+  const simulationStartCapabilityDenied=simulationStartAttempted&&!simulationStartSucceeded&&!simulationRunning
+    &&/lacking capability Plugin/i.test(simulationStartError);
+  const legacyFoundationServerBootMarkerObserved=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true');
+  const serverContextExecuted=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true');
+  const gameServerScriptPresent=joined.includes('JAEWOON_OPEN_CLOUD_GAME_SERVER_SCRIPT_PRESENT=true');
+  const gameServerScriptEnabled=joined.includes('JAEWOON_OPEN_CLOUD_GAME_SERVER_SCRIPT_ENABLED=true');
+  // Open Cloud Luau Execution evaluates the exact place in server context without starting gameplay scripts.
+  // Only an actually running simulation with a game-produced boot marker can prove a server-script boot.
+  const exactLuauTaskObserved=serverContextExecuted&&exactPlace&&exactVersion;
+  const serverBootObserved=exactLuauTaskObserved&&simulationRunning&&legacyFoundationServerBootMarkerObserved;
+  // Absent, duplicated or misnamed logs never count as cloud evidence.
+  const scenarioNames=['EXACT_VERSION','SERVER_SCRIPT','WORLD_GEOMETRY','SPAWN_SUPPORT','INTERACTION_BINDINGS'];
+  const scenarioRows=scenarioNames.map((name,index)=>{
+    const matches=[...joined.matchAll(new RegExp('^JAEWOON_OPEN_CLOUD_SERVER_SCENARIO_'+(index+1)+'=([^|\\n]+)\\|(true|false)$','gm'))];
+    const observed=matches.length===1&&matches[0][1]===name;
+    return Object.freeze({number:index+1,name,observed,passed:observed&&matches[0][2]==='true'});
+  });
+  const cloudServerScenarioEvidence=Object.freeze({
+    provider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',
+    taskPath:rawPath,placeId:place,placeVersion:version,
+    scenarioCount:5,observedCount:scenarioRows.filter(row=>row.observed).length,
+    passedCount:scenarioRows.filter(row=>row.passed).length,
+    allChecksPassed:exactLuauTaskObserved&&scenarioRows.every(row=>row.passed),
+    scenarios:Object.freeze(scenarioRows),
+    executionScope:'NON_SIMULATING_READ_ONLY_SERVER_STRUCTURE',
+    actualPlayerPlayVerified:false,combatBehaviorVerified:false,
+    clientInputVerified:false,clientRenderingVerified:false,
+    saveRoundtripVerified:false,
+  });
+  const serverBootEvidence=Object.freeze({
+    observed:serverBootObserved,
+    provider:'ROBLOX_OPEN_CLOUD_LUAU_EXECUTION',
+    taskState:state,
+    exactPlace,
+    exactVersion,
+    exactLuauTaskObserved,
+    scriptExecuted:serverContextExecuted,
+    gameServerScriptPresent,
+    gameServerScriptEnabled,
+    headlessServerExecution:true,
+    livePlayerSimulationClaimed:false,
+    simulationStartSupported:false,
+    simulationRunningBefore,
+    simulationStartAttempted,
+    simulationStartSucceeded,
+    simulationStartError:simulationStartError||null,
+    simulationStartCapabilityDenied,
+    simulationRunningAfter:simulationRunning,
+    legacyFoundationServerBootMarkerObserved,
+    authority:'roblox-open-cloud-luau-execution-session-task',
+  });
+  const studioAssetApplied=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true');
+  const studioAssetBindingVersion=Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=(\d+)/)?.[1]||0);
+  const observedStudioAssetSelectionFingerprint=clean(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_SELECTION_FINGERPRINT=([^\n]*)/)?.[1]||'');
+  const observedStudioAssetLibraryVersion=Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_LIBRARY_VERSION=(\d+)/)?.[1]||0);
+  const observedStudioAssetAtomCsv=clean(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=([^\n]*)/)?.[1]||'');
+  const observedStudioAssetAtoms=[...new Set(observedStudioAssetAtomCsv.split(',').map(clean).filter(Boolean))].sort();
+  const observedAtomSet=new Set(observedStudioAssetAtoms);
+  const atomMatch=expectedStudioAssetAtoms.length>0&&expectedStudioAssetAtoms.length===observedStudioAssetAtoms.length&&expectedStudioAssetAtoms.every(atom=>observedAtomSet.has(atom));
+  const fingerprintMatch=!expectedStudioAssetSelectionFingerprint||observedStudioAssetSelectionFingerprint===expectedStudioAssetSelectionFingerprint;
+  const libraryVersionMatch=expectedStudioAssetLibraryVersion<=0||observedStudioAssetLibraryVersion===expectedStudioAssetLibraryVersion;
+  const studioAssetSelectionMatched=!studioAssetBindingRequired||(atomMatch&&studioAssetApplied&&studioAssetBindingVersion===expectedStudioAssetBindingVersion&&fingerprintMatch&&libraryVersionMatch);
+  const boundsMatch=joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE=([0-9.+-]+),([0-9.+-]+),([0-9.+-]+)/);
+  const worldEvidence=Object.freeze({
+    observed:/^JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=\d+$/m.test(joined),
+    runtimeWorldReady:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_RUNTIME_READY=true'),
+    startupWaitSeconds:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_STARTUP_WAIT_SECONDS=([0-9.]+)/)?.[1]||0),
+    basePartCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=(\d+)/)?.[1]||0),
+    spawnCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_SPAWNS=(\d+)/)?.[1]||0),
+    spawnsInBounds:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SPAWNS_IN_BOUNDS=true'),
+    markerSpawnCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_MARKER_SPAWNS=(\d+)/)?.[1]||0),
+    spawnGroundingObserved:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SPAWN_GROUNDING_OBSERVED=true')
+      &&Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_SPAWNS=(\d+)/)?.[1]||0)>0
+      &&/^JAEWOON_OPEN_CLOUD_WORLD_UNSUPPORTED_SPAWNS=\d+$/m.test(joined)
+      &&/^JAEWOON_OPEN_CLOUD_WORLD_FLOATING_SPAWNS=\d+$/m.test(joined),
+    unsupportedSpawns:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_UNSUPPORTED_SPAWNS=(\d+)/)?.[1]||0),
+    floatingSpawns:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_FLOATING_SPAWNS=(\d+)/)?.[1]||0),
+    maximumSpawnGroundGap:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_MAX_SPAWN_GROUND_GAP=([0-9.]+)/)?.[1]||0),
+    meshPartCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_MESH_PARTS=(\d+)/)?.[1]||0),
+    graphicsEvidenceScope:'ENGINE_SCENE_STRUCTURE_NOT_RENDERED_SCREENSHOT',
+    finiteWorldBounds:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_FINITE=true'),
+    boundsSize:Object.freeze({
+      x:Number(boundsMatch?.[1]||0),y:Number(boundsMatch?.[2]||0),z:Number(boundsMatch?.[3]||0)
+    }),
+    landmarkCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_LANDMARKS=(\d+)/)?.[1]||0),
+    objectiveCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_OBJECTIVES=(\d+)/)?.[1]||0),
+    terrainPresent:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_TERRAIN_PRESENT=true'),
+    lightingAtmospherePresent:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_LIGHTING_ATMOSPHERE=true'),
+    streamingEnabled:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_STREAMING_ENABLED=true'),
+    scanCapped:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SCAN_CAPPED=true'),
+    worldGeometryPresent:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=(\d+)/)?.[1]||0)>0,
+    // 공식 Open Cloud 서버 실행으로 확인되는 구조 증거만 기록한다. 채집/드롭·터치는 별도 실제 게임 검증 대상이다.
+    worldObjectBinding:Object.freeze({
+      observed:/^JAEWOON_OPEN_CLOUD_WORLD_OBJECT_IDS=\d+$/m.test(joined),
+      stableIdCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_OBJECT_IDS=(\d+)/)?.[1]||0),
+      duplicateStableIdCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_DUPLICATE_IDS=(\d+)/)?.[1]||0),
+      resourcePromptCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS=(\d+)/)?.[1]||0),
+      enabledResourcePromptCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS_ENABLED=(\d+)/)?.[1]||0),
+      gameplayInteractionVerified:false,
+      authority:'OPEN_CLOUD_WORLD_STRUCTURE_ONLY'
+    }),
+    sameLuauExecutionSession:true
+  });
+  return Object.freeze({
+    ...(expectedCombatActions.length?{motionProbe:(()=>{try{return JSON.parse(joined.match(/^JAEWOON_OPEN_CLOUD_MOTION_PROBE=(.*)$/m)?.[1]||'null');}catch{return null;}})()}:{}),
+    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunningBefore,simulationStartAttempted,simulationStartSucceeded,simulationStartError:simulationStartError||null,simulationStartCapabilityDenied,simulationRunning,serverBootObserved,serverContextExecuted,exactLuauTaskObserved,serverBootEvidence,legacyFoundationServerBootMarkerObserved,worldEvidence,
+    playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
+    studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,expectedStudioAssetBindingVersion,
+    expectedStudioAssetSelectionFingerprint:expectedStudioAssetSelectionFingerprint||null,
+    observedStudioAssetSelectionFingerprint:observedStudioAssetSelectionFingerprint||null,
+    expectedStudioAssetLibraryVersion:expectedStudioAssetLibraryVersion||null,
+    observedStudioAssetLibraryVersion:observedStudioAssetLibraryVersion||null,
+    expectedBuildUpAssetSourceUsageFingerprint:expectedBuildUpAssetSourceUsageFingerprint||null,
+    expectedStudioAssetAtoms:Object.freeze(expectedStudioAssetAtoms),observedStudioAssetAtoms:Object.freeze(observedStudioAssetAtoms),
+    expectedStudioAssetAtomCsv,observedStudioAssetAtomCsv,studioAssetAtomMatch:atomMatch,studioAssetFingerprintMatch:fingerprintMatch,studioAssetLibraryVersionMatch:libraryVersionMatch,studioAssetSelectionMatched,
+    state,taskPath:rawPath,messages:Object.freeze(messages.slice(0,50)),cloudServerScenarioEvidence,
+  });
+}
+
+function args(argv){const out={};for(let i=0;i<argv.length;i++){const x=argv[i];if(!x.startsWith('--'))continue;const [k,v]=x.slice(2).split('=',2);out[k]=v??argv[++i];}return out;}
+async function main(){
+  const a=args(process.argv.slice(2));
+  let sentinel;
+  if(a['sentinel-file'])sentinel=JSON.parse(fs.readFileSync(a['sentinel-file'],'utf8'));
+  else sentinel=await fetchRobloxRuntimeFoundationEvidence({universeId:a['universe-id'],apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY});
+  const result=validateRobloxRuntimeFoundationEvidence({sentinel,gameId:a['game-id'],placeId:a['place-id'],versionNumber:Number(a['version-number'])});
+  if(!a.output)throw new Error('output required');
+  fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');
+  console.log('ROBLOX_RUNTIME_FOUNDATION='+(result.runtimeFoundationPassed?'PASS':'BLOCKED')+':'+result.gameId);
+  console.log('ROBLOX_RUNTIME_ACCEPTANCE='+(result.runtimeAcceptancePassed?'PASS':'BLOCKED')+':'+result.gameId);
+  if(!result.runtimeAcceptancePassed)process.exitCode=2;
+}
+const isMain=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);
+if(isMain){main().catch(error=>{console.error(error.stack||error);process.exitCode=1;});}
+

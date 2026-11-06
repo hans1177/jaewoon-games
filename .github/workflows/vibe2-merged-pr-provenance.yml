@@ -1,0 +1,138 @@
+name: Vibe2 Merged PR Provenance
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+permissions:
+  contents: write
+
+concurrency:
+  # Keep each merged PR pending independently; reconcile races against the latest control ledger.
+  group: vibe2-merged-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Fetch trusted source and exact control ledgers without full blobs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          git init -q source
+          git -C source remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          git -C source sparse-checkout set --no-cone \
+            .github/workflows/vibe2-merged-pr-provenance.yml \
+            assets/vibe-experience-memory.js \
+            qa/vibe2-merged-pr-provenance.test.mjs \
+            tools/vibe2-capability-distillation.mjs \
+            tools/vibe2-merged-pr-provenance.mjs
+          git -C source fetch --no-tags --depth=1 --filter=blob:none origin \
+            +refs/heads/main:refs/remotes/origin/main
+          git -C source checkout --detach origin/main
+
+          git init -q control
+          git -C control remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          git -C control sparse-checkout set --no-cone \
+            .vibe2/merged-pr-provenance-ledger.json \
+            .vibe2/coding-trace-ledger.json
+          git -C control fetch --no-tags --depth=1 --filter=blob:none origin \
+            +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core
+          git -C control checkout --detach origin/vibe2-unreal-core
+          test -f source/tools/vibe2-merged-pr-provenance.mjs
+          test -f control/.vibe2/merged-pr-provenance-ledger.json
+          test -f control/.vibe2/coding-trace-ledger.json
+          test ! -e control/.vibe2/queue.json
+      - name: Fetch event base and merged commit for exact provenance diff
+        working-directory: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$PR_BASE_SHA" =~ ^[a-fA-F0-9]{40}$ ]]
+          [[ "$PR_MERGE_SHA" =~ ^[a-fA-F0-9]{40}$ ]]
+          git fetch --no-tags --depth=1 --filter=blob:none origin "$PR_BASE_SHA" "$PR_MERGE_SHA" --quiet
+          git cat-file -e "$PR_BASE_SHA^{commit}"
+          git cat-file -e "$PR_MERGE_SHA^{commit}"
+
+      - name: Validate provenance collector
+        working-directory: source
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-capability-distillation.mjs
+          node --check tools/vibe2-merged-pr-provenance.mjs
+          node --test qa/vibe2-merged-pr-provenance.test.mjs
+
+      - name: Record and migrate merged PR provenance
+        id: ingest
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node source/tools/vibe2-merged-pr-provenance.mjs \
+            --event="$GITHUB_EVENT_PATH" \
+            --repo-root="$GITHUB_WORKSPACE/source" \
+            --ledger="$GITHUB_WORKSPACE/control/.vibe2/merged-pr-provenance-ledger.json" \
+            --legacy-ledger="$GITHUB_WORKSPACE/control/.vibe2/coding-trace-ledger.json" | tee /tmp/vibe2-merged-pr-provenance.log
+          trace_id="$(sed -n 's/^VIBE2_MERGED_PR_TRACE_ID=//p' /tmp/vibe2-merged-pr-provenance.log | tail -n1)"
+          echo "trace_id=$trace_id" >> "$GITHUB_OUTPUT"
+
+      - name: Persist provenance retention files only
+        shell: bash
+        working-directory: control
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- .vibe2/merged-pr-provenance-ledger.json .vibe2/coding-trace-ledger.json)" ]; then
+            echo 'VIBE2_MERGED_PR_LEDGER_WRITE=NO_CHANGE'
+            exit 0
+          fi
+
+          git config user.name 'jaewoon-vibe2-provenance'
+          git config user.email 'vibe2-provenance@users.noreply.github.com'
+
+          # Per-PR pending slots avoid dropped merger events. Re-run the trusted reducer
+          # on the latest control branch after a competing ledger write, never rebase
+          # a stale whole-file JSON update over another merged PR's provenance.
+          pushed=0
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if [ -z "$(git status --porcelain -- .vibe2/merged-pr-provenance-ledger.json .vibe2/coding-trace-ledger.json)" ]; then
+              echo 'VIBE2_MERGED_PR_LEDGER_WRITE=ALREADY_CURRENT'
+              pushed=1
+              break
+            fi
+            git add -- .vibe2/merged-pr-provenance-ledger.json .vibe2/coding-trace-ledger.json
+            git commit -m "vibe2: record merged PR provenance [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              break
+            fi
+            echo "VIBE2_MERGED_PR_PUSH_RACE_REPLAY=$attempt"
+            git fetch origin vibe2-unreal-core --quiet --filter=blob:none
+            git reset --hard origin/vibe2-unreal-core
+            node "$GITHUB_WORKSPACE/source/tools/vibe2-merged-pr-provenance.mjs" \
+              --event="$GITHUB_EVENT_PATH" \
+              --repo-root="$GITHUB_WORKSPACE/source" \
+              --ledger="$GITHUB_WORKSPACE/control/.vibe2/merged-pr-provenance-ledger.json" \
+              --legacy-ledger="$GITHUB_WORKSPACE/control/.vibe2/coding-trace-ledger.json" | tee /tmp/vibe2-merged-pr-replay.log
+            sleep "$((attempt * 2))"
+          done
+          test "$pushed" = 1
+          echo 'VIBE2_MERGED_PR_LEDGER_WRITE=PASS'
+          echo 'VIBE2_QUEUE_MUTATION=NO'
+          echo 'VIBE2_WAVE_REORDER=NO'
+          echo 'VIBE2_LOCK_POLICY_MUTATION=NO'
+          echo 'VIBE2_AUTOMATIC_PROMOTION=NO'
+          echo 'VIBE2_AUTHORITY_EXPANSION=NO'

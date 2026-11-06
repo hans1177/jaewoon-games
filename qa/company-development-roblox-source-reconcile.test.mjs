@@ -1,0 +1,1557 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {runInNewContext} from 'node:vm';
+import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline,validateRobloxBootstrap,robloxStudioAssetDetectionSourceFromRoot,robloxStudioAssetFamilyStatusFromSource,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from '../tools/company-development-roblox-bootstrap.mjs';
+import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,robloxPackageAssetRepairContext,hasCurrentRobloxPackageAssetRepair,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
+import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
+import {robloxDesignProfileFromBaseline} from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
+
+const gameId='seed-roblox-simulator-tycoon-i-adopt-me';
+
+// The production Roblox compiler embeds the verified central policy source
+// into Config.luau. Bind real current-main policy for isolated fixture compilation.
+const previousVerifiedPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+test.before(()=>{
+  assert.equal(fs.existsSync('company-learning/platform-release-roadmap.json'),true);
+  process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
+});
+test.after(()=>{
+  if(previousVerifiedPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicyPath;
+});
+
+test('common library compile selector discovers the actual native libraries',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe3-engine-contract.yml','utf8');
+  const step=workflow.split('      - name: Compile common Roblox libraries before game binding')[1].split('      - name: ')[0];
+  const selection=step.split('\n').find(line=>line.includes('mapfile -t libraries')).trim();
+  const files=execFileSync('bash',['-c',selection+'\nprintf "%s\\n" "${libraries[@]}"'],{encoding:'utf8'}).trim().split('\n');
+  assert.ok(files.includes('assets/roblox/common-ui-v1/RobloxCommonUI.luau'));
+  assert.ok(files.includes('assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau'));
+  assert.ok(files.length>2);
+  assert.ok(files.every(file=>fs.existsSync(file)&&file.endsWith('.luau')));
+});
+
+// 검수 범위: 단일 게임은 무관한 설계·과거 소스·학습 상태를 방문하지 않는다.
+test('requested source reconciliation isolates one game while batch keeps all games',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-requested-reconcile-'));
+  try{
+    const queue={items:[{...staleItem(),gameId:'daechung-rpg'},{...staleItem(),gameId:'other-game'}]};
+    const before=JSON.stringify(queue);
+    const visited=[];
+    const run=requestedGameId=>evaluateExistingRobloxSources({queue,repoRoot:tmp,sourceRevision:'b'.repeat(40),requestedGameId,
+      loadBaseline:item=>{visited.push(item.gameId);return baseline;}});
+    const requested=run('daechung-rpg');
+    assert.deepEqual(visited,['daechung-rpg']);
+    assert.deepEqual(requested.map(row=>row.gameId),['daechung-rpg']);
+    visited.length=0;
+    assert.deepEqual(run('').map(row=>row.gameId),['daechung-rpg','other-game']);
+    assert.deepEqual(visited,['daechung-rpg','other-game']);
+    visited.length=0;
+    assert.deepEqual(run('missing-game'),[]);
+    assert.deepEqual(visited,[]);
+    assert.throws(()=>run('../other-game'),/ROBLOX_REQUESTED_GAME_ID_INVALID/);
+    assert.equal(JSON.stringify(queue),before);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('requested workflow fetches only its bound revision and forwards the same CLI scope',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const fetchStep=workflow.split('      - name: Fetch current company runtime and verified Vibe learning')[1].split('      - name: ')[0];
+  const code=fetchStep.match(/node - <<'NODE' > \/tmp\/roblox-bound-source-revisions\n([\s\S]*?)\n          NODE/)[1];
+  const items=[{gameId:'daechung-rpg',robloxSourceCommit:'a'.repeat(40)},{gameId:'other-game',robloxSourceCommit:'b'.repeat(40)}];
+  const invoke=requested=>{const revisions=[];runInNewContext(code,{require:()=>({readFileSync:()=>JSON.stringify({items})}),process:{env:{REQUESTED_GAME_ID:requested}},console:{log:value=>revisions.push(value)}});return revisions;};
+  assert.deepEqual(invoke('daechung-rpg'),['a'.repeat(40)]);
+  assert.deepEqual(invoke(''),['a'.repeat(40),'b'.repeat(40)]);
+  const reconcileStep=workflow.split('      - name: Revalidate exact-main Roblox source already merged')[1].split('      - name: ')[0];
+  assert.match(reconcileStep,/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/);
+  assert.match(reconcileStep,/--game-id="\$REQUESTED_GAME_ID"/);
+});
+
+test('release handoff skips obsolete intent before historical fetch and preserves active evidence checks',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-roblox-release-handoff.yml','utf8');
+  const step=workflow.split('      - name: Resolve exact owner release intent')[1].split('      - name: ')[0];
+  const code=step.match(/node --input-type=module <<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace("import fs from 'node:fs';",'');
+  const request={id:'request',gameId:'demo',status:'requested',authority:'owner-release-directive',target:'roblox',requestedReleaseState:'release-confirmed',candidateBranch:'vibe2/candidate/OWNER-ROBLOX-OBBY-test',sourceRevision:'a'.repeat(40),candidateSha:'b'.repeat(40),qaRunId:1};
+  const invoke=(catalog,patch={})=>{
+    let output='';const stopped=Symbol('stopped');
+    try{runInNewContext(code,{
+      fs:{readFileSync:file=>JSON.stringify(file==='intent.json'?{version:1,request:{...request,...patch}}:catalog),appendFileSync:(_,value)=>{output+=value;}},
+      process:{env:{INTENT_FILE:'intent.json',GITHUB_OUTPUT:'output'},exit:()=>{throw stopped;}},console:{log(){}}
+    });}catch(error){if(error!==stopped)throw error;}
+    return output;
+  };
+  const active={games:[{id:'demo',lifecycleState:'ACTIVE'}]};
+  assert.match(invoke(active),/eligible=true/);
+  assert.match(invoke({games:[{id:'demo',lifecycleState:'REBUILD'}]}),/eligible=true/);
+  assert.match(invoke({...active,permanentRemovalPolicy:{ids:['demo']}}),/eligible=false/);
+  assert.match(invoke({games:[{id:'demo',lifecycleState:'ARCHIVED'}]}),/eligible=false/);
+  assert.match(invoke({games:[]}),/eligible=false/);
+  assert.match(invoke(active,{status:'cancelled'}),/eligible=false/);
+  assert.throws(()=>invoke(active,{candidateSha:'invalid'}),/ROBLOX_RELEASE_INTENT_EVIDENCE_INVALID/);
+  for(const name of ['Verify exact R5 source and candidate identity','Download authoritative candidate context from Studio QA run','Verify authoritative Roblox Studio QA evidence','Persist verified Vibe2 source handoff to canonical company runtime','Dispatch existing canonical Roblox runtime and release chain']){
+    const body=workflow.split('      - name: '+name)[1].split('      - name: ')[0];
+    assert.match(body,/if: steps\.intent\.outputs\.eligible == 'true'/);
+  }
+  const source=workflow.split('      - name: Verify exact R5 source and candidate identity')[1].split('      - name: ')[0];
+  assert.match(source,/--unshallow/);
+  assert.match(source,/git merge-base --is-ancestor/);
+  const runtimeDispatch=workflow.split('      - name: Dispatch existing canonical Roblox runtime and release chain')[1];
+  const exactCommand='gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"';
+  const commands=runtimeDispatch.split(String.fromCharCode(10)).map(line=>line.trim()).filter(line=>line.startsWith('gh workflow run company-development-roblox-runtime.yml'));
+  assert.deepEqual(commands,[exactCommand]);
+});
+const baseline={content:{identity:'Pocket Foundry',coreFun:'collect resources, upgrade production, earn income, unlock areas',coreLoop:['collect resources','upgrade production','unlock the next area'],mobileUx:'touch controls',progressionDirection:'Persistent progression system',platformProfiles:{ROBLOX:{platform:'ROBLOX',inputModel:'Roblox touch input and gamepad fallback',sessionModel:'Roblox private server session lifecycle',multiplayerRuntime:'Roblox server authoritative RemoteEvent synchronization',performanceBudget:'Mobile Roblox performance budget for frame memory network instances',uiUx:'Roblox ScreenGui touch-first interaction layout',saveAndNetwork:'DataStore and validated remote network boundaries',platformContentAdaptation:'Roblox native avatar camera scene and UI adaptation',internalReleaseTarget:'Private restricted Roblox owner playtest experience',validationEvidence:'Exact Roblox runtime independent QA regression evidence'}}}};
+const companyAssetLibrary=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
+const verifiedExternalRow={
+  id:'external-black-box-fixture-run-1',
+  project:'fixture-black-box',
+  sourceRevision:'sha256:fixture',
+  distilledApplicationPrinciples:['id=fixture-feedback; scope=mobile-feedback; lesson=visible response follows input; apply=keep immediate visible feedback'],
+  distilledAvoidancePrinciples:['id=fixture-copy; scope=expression; lesson=do not copy proprietary expression; apply=preserve original expression'],
+  distilledLearningUseAllowed:['interaction feedback'],
+  distilledLearningUseForbidden:['source-code or asset copying']
+};
+const verifiedTask=()=>({authority:'verified-task-playbook',checklist:['apply verified black-box learning'],verifiedExternalBlackBoxReuseCount:1,verifiedExternalBlackBoxCoveragePct:100,reuse:[verifiedExternalRow]});
+const verifiedPlaybooks={policy:{verifiedExternalBlackBoxAllTaskTypesRequired:true,verifiedExternalBlackBoxTruncationForbidden:true},taskTypes:{roblox:verifiedTask(),coding:verifiedTask(),graphics:verifiedTask(),general:verifiedTask(),qa:verifiedTask(),bugfix:verifiedTask(),planning:verifiedTask(),unity:verifiedTask()}};
+const verifiedLearning=createRobloxVibe3LearningContext({gameId,profile:robloxDesignProfileFromBaseline(baseline),playbooks:verifiedPlaybooks});
+const designProfileLearning=createRobloxVibe3LearningContext({gameId,profile:robloxBuildProfileFromBaseline(baseline),playbooks:verifiedPlaybooks});
+
+
+function writeLegacyStudioUnboundTree(root){
+  fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+  fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  fs.writeFileSync(path.join(root,'default.project.json'),JSON.stringify(projectJsonForGame(gameId),null,2)+'\n');
+  fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),`local Config = {
+  PolicySource = "company-learning/platform-release-roadmap.json",
+  Platform = "ROBLOX",
+  MobileFirst = true,
+  GameId = "${gameId}",
+  GameName = "Pocket Foundry",
+  Genre = "Simulation",
+  PlayMode = "SINGLE",
+  MultiplayerRequired = false,
+  RemoteName = "GameAction",
+  RateLimitSeconds = 0.1,
+}
+return table.freeze(Config)
+`);
+  fs.writeFileSync(path.join(root,'server','Game.server.luau'),'-- existing authoritative gameplay server source\n');
+  fs.writeFileSync(path.join(root,'client','Game.client.luau'),`local Players=game:GetService("Players")
+local RS=game:GetService("ReplicatedStorage")
+local p=Players.LocalPlayer
+local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local gui=Instance.new("ScreenGui")
+gui.Parent=p:WaitForChild("PlayerGui")
+local root=Instance.new("Frame")
+root.BackgroundColor3=Color3.fromRGB(30,40,50)
+root.Parent=gui
+`);
+}
+
+function writeCompiledTree(root){
+  const compiled=compileRobloxSource({gameId,gameName:'Pocket Foundry',baseline,artbook:{},playbooks:verifiedPlaybooks,assetLibrary:companyAssetLibrary});
+  fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+  fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  fs.writeFileSync(path.join(root,'default.project.json'),JSON.stringify(projectJsonForGame(gameId),null,2)+'\n');
+  fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),compiled.result.sharedConfig);
+  fs.writeFileSync(path.join(root,'server','Game.server.luau'),compiled.result.serverCode);
+  fs.writeFileSync(path.join(root,'client','Game.client.luau'),compiled.result.clientCode);
+}
+
+function staleItem(){
+  return {
+    gameId,
+    productionClass:'DEVELOPMENT_CONFIRMED',
+    selectedPlatform:'ROBLOX',
+    targetPlatform:'ROBLOX',
+    status:'ACTIVE',
+    minimumDesignContract:{pass:true,source:`design/${gameId}/2026-09-12/design-revised.json`},
+    platformDesignProfiles:{
+      ROBLOX:{source:`design/${gameId}/2026-09-12/design-revised.json`,jsonPointer:'/content/platformProfiles/ROBLOX'},
+      UNITY:{source:`design/${gameId}/2026-09-12/design-revised.json`,jsonPointer:'/content/platformProfiles/UNITY'}
+    },
+    concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+    canonicalState:'PENDING_DUAL_NATIVE_SOURCE_BIND',
+    designBaselineSource:`design/${gameId}/2026-09-12/design-revised.json`,
+  };
+}
+
+function verifiedHandoffItem(sourceTreeSha='a'.repeat(40)){
+  return {
+    ...staleItem(),
+    robloxVibe2VerifiedHandoff:{
+      verified:true,
+      gameId,
+      sourceRevision:'b'.repeat(40),
+      candidateSha:'c'.repeat(40),
+      sourceTreeSha,
+      qaRunId:35070803443,
+    },
+  };
+}
+
+function initGitRepo(tmp){
+  execFileSync('git',['init'],{cwd:tmp,stdio:'ignore'});
+  execFileSync('git',['config','user.email','test@example.com'],{cwd:tmp});
+  execFileSync('git',['config','user.name','test'],{cwd:tmp});
+  execFileSync('git',['add','.'],{cwd:tmp});
+  execFileSync('git',['commit','-m','fixture'],{cwd:tmp,stdio:'ignore'});
+}
+
+test('minimum-design Roblox SOURCE_BIND items are eligible for source reconciliation',()=>{
+  assert.equal(eligibleForRobloxSourceReconciliation(staleItem()),true);
+  assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'}),false);
+  assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),minimumDesignContract:{pass:false}}),false);
+  assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),platformDesignProfiles:{ROBLOX:staleItem().platformDesignProfiles.ROBLOX}}),true,'Unity remains owner-held and cannot be required for Roblox SOURCE_BIND');
+});
+
+
+test('asset reconciliation reads exact field names and never mistakes native learning version for asset version',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-asset-version-field-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:designProfileLearning});
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const config=fs.readFileSync(configFile,'utf8');
+    // These valid identifiers can precede StudioAssets in game-owned configs.
+    fs.writeFileSync(configFile,'local NativeBindingVersion = 6\nlocal FallbackLibraryVersion = 1\n'+config);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
+    const inspect=()=>evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks,loadBaseline:()=>baseline});
+    assert.deepEqual(inspect(),[]);
+    for(const value of [
+      config.replace(/\bBindingVersion\s*=\s*2/,'BindingVersion = 1'),
+      config.replace(/\bBindingVersion\s*=\s*2/,'MissingAssetVersion = 2'),
+      config.replace(/\bLibraryVersion\s*=\s*\d+/,'LibraryVersion = 1'),
+    ]){
+      fs.writeFileSync(configFile,'local NativeBindingVersion = 2\n'+value);
+      assert.equal(inspect()[0]?.failure,'existing-source-studio-asset-binding-required');
+    }
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('bound Roblox games re-enter reconciliation only when their own source tree changed',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-source-drift-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    initGitRepo(tmp);
+    const boundRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={
+      ...staleItem(),
+      currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      robloxSourceCommit:boundRevision,
+      robloxInternalReleaseReady:true,
+      robloxRuntimePassed:true,
+    };
+    assert.equal(eligibleForRobloxSourceReconciliation(item),true);
+    const unchanged=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:boundRevision,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(unchanged.length,0);
+
+    fs.appendFileSync(path.join(root,'server','Game.server.luau'),'\n-- exact main source drift\n');
+    execFileSync('git',['add','.'],{cwd:tmp});
+    execFileSync('git',['commit','-m','change game source'],{cwd:tmp,stdio:'ignore'});
+    const currentRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const changed=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:currentRevision,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(changed.length,1);
+    assert.equal(changed[0].pass,true,changed[0].blockers.join(','));
+    assert.equal(changed[0].sourceDrift,true);
+    assert.equal(changed[0].sourceRevision,currentRevision);
+    assert.equal(changed[0].sourceTreeSha,execFileSync('git',['rev-parse',`HEAD:roblox-games/${gameId}`],{cwd:tmp,encoding:'utf8'}).trim());
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+
+test('metadata-only Roblox bootstrap changes do not invalidate exact build evidence',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-source-metadata-only-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    initGitRepo(tmp);
+    const boundRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={
+      ...staleItem(),
+      currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      robloxSourceCommit:boundRevision,
+      robloxInternalReleaseReady:true,
+      robloxRuntimePassed:true,
+    };
+    fs.writeFileSync(path.join(root,'roblox-source-bootstrap.json'),JSON.stringify({version:2,learning:'metadata-only'})+'\n');
+    execFileSync('git',['add',path.join('roblox-games',gameId,'roblox-source-bootstrap.json')],{cwd:tmp});
+    execFileSync('git',['commit','-m','metadata only'],{cwd:tmp,stdio:'ignore'});
+    const currentRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:currentRevision,
+      loadBaseline:()=>baseline,
+    });
+    assert.deepEqual(rows,[]);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+
+test('SOURCE_BIND debt revalidates unchanged exact Roblox source even when only unrelated repository files changed',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-source-bind-unchanged-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    initGitRepo(tmp);
+    const boundRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+
+    fs.writeFileSync(path.join(tmp,'homepage-only.txt'),'unrelated change\n');
+    execFileSync('git',['add','homepage-only.txt'],{cwd:tmp});
+    execFileSync('git',['commit','-m','unrelated repository change'],{cwd:tmp,stdio:'ignore'});
+    const currentRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+
+    const item={
+      ...staleItem(),
+      robloxSourceCommit:boundRevision,
+      robloxBuildOrPackagePassed:true,
+      robloxBuildSourceRevision:boundRevision,
+      robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+      robloxBuildPreflightPassed:true,
+      robloxFoundationF0Passed:true,
+    };
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:currentRevision,
+      loadBaseline:()=>baseline,
+    });
+
+    assert.equal(rows.length,1,'SOURCE_BIND debt must be revalidated even when the exact game path did not change');
+    assert.equal(rows[0].pass,true,rows[0].blockers.join(','));
+    assert.equal(rows[0].sourceDrift,false);
+    assert.equal(rows[0].preserveDownstreamEvidence,true);
+    assert.equal(rows[0].sourceBindDebtResolved,true);
+    assert.equal(rows[0].sourceRevision,boundRevision);
+    assert.match(rows[0].sourceTreeSha,/^[0-9a-f]{40}$/);
+    assert.notEqual(boundRevision,currentRevision);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('Roblox runtime source rebind atomically invalidates stale downstream evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/Revalidate exact-main Roblox source already merged/);
+  assert.match(workflow,/fetch-depth: 1/);
+  assert.match(workflow,/roblox-bound-source-revisions/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$revision"/);
+  assert.match(workflow,/mkdir -p \/tmp\/roblox-homepage-sync\/tools \/tmp\/roblox-homepage-sync\/company-learning/);
+  assert.match(workflow,/origin\/main:tools\/company-homepage-platform-exposure-sync\.mjs/);
+  assert.match(workflow,/origin\/main:tools\/company-shared-context\.mjs/);
+  assert.match(workflow,/origin\/main:company-learning\/platform-release-roadmap\.json/);
+  assert.match(workflow,/node \/tmp\/roblox-homepage-sync\/tools\/company-homepage-platform-exposure-sync\.mjs/);
+  assert.doesNotMatch(workflow,/git checkout origin\/main -- tools\/company-homepage-platform-exposure-sync\.mjs/);
+  assert.doesNotMatch(workflow,/homepage-platform-exposure\.json homepage-platform-exposure\.json/);
+  for(const pattern of [
+    /robloxBuildOrPackagePassed:false/,
+    /robloxBuildArtifactIdentity:null/,
+    /robloxFoundationF0Passed:false/,
+    /robloxRuntimeCandidateEvidence:null/,
+    /robloxRuntimeFoundationEvidence:null/,
+    /robloxRuntimePassed:false/,
+    /robloxIndependentQaPassed:false/,
+    /robloxRegressionPassed:false/,
+    /robloxFinalReviewPassed:false/,
+    /robloxF9ReleaseRegressionPassed:false/,
+    /robloxInternalReleaseReady:false/,
+    /robloxInternalReleaseEvidence:null/,
+    /robloxReleaseEvidence:null/,
+  ]) assert.match(workflow,pattern);
+});
+
+test('verified Vibe2 Studio handoff remains readable but does not replace minimum-design admission',()=>{
+  const item=verifiedHandoffItem();
+  assert.equal(hasVerifiedVibe2SourceHandoff(item),true);
+  assert.equal(eligibleForRobloxSourceReconciliation(item),true);
+  assert.equal(eligibleForRobloxSourceReconciliation({...item,currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'}),false);
+  assert.equal(hasVerifiedVibe2SourceHandoff({...item,robloxVibe2VerifiedHandoff:{...item.robloxVibe2VerifiedHandoff,qaRunId:0}}),false);
+});
+
+test('exact existing Roblox source tree passes static reconciliation with persistent save evidence',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-reconcile-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const verdict=validateExistingRobloxSourceTree({root,baseline});
+    assert.equal(verdict.pass,true,verdict.blockers.join(','));
+    assert.equal(verdict.saveRequired,true);
+    const results=evaluateExistingRobloxSources({
+      queue:{items:[staleItem()]},
+      repoRoot:tmp,
+      sourceRevision:'exact-main-sha',
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(results.length,1);
+    assert.equal(results[0].pass,true,results[0].blockers.join(','));
+    assert.equal(results[0].sourceRevision,'exact-main-sha');
+    assert.equal(results[0].sourcePath,`roblox-games/${gameId}`);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('verified Vibe2 handoff accepts only the exact pinned Roblox source tree without reapplying legacy bootstrap validation',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-vibe2-handoff-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    fs.writeFileSync(path.join(root,'server','Game.server.luau'),'-- Vibe2 Studio-verified custom server source\n');
+    initGitRepo(tmp);
+    const sourcePath=`roblox-games/${gameId}`;
+    const sourceTreeSha=execFileSync('git',['rev-parse',`HEAD:${sourcePath}`],{cwd:tmp,encoding:'utf8'}).trim();
+    const item=verifiedHandoffItem(sourceTreeSha);
+    const pass=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:'verified-main-sha',
+      loadBaseline:()=>{throw new Error('legacy validator must not run for exact verified handoff');},
+    });
+    assert.equal(pass.length,1);
+    assert.equal(pass[0].pass,true,pass[0].blockers.join(','));
+    assert.equal(pass[0].authority,'verified-vibe2-source-handoff');
+
+    fs.appendFileSync(path.join(root,'server','Game.server.luau'),'\n-- source drift\n');
+    execFileSync('git',['add','.'],{cwd:tmp});
+    execFileSync('git',['commit','-m','drift'],{cwd:tmp,stdio:'ignore'});
+    const fail=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:'drifted-main-sha',loadBaseline:()=>baseline});
+    assert.equal(fail.length,1);
+    assert.equal(fail[0].pass,false);
+    assert.equal(fail[0].failure,'verified-vibe2-source-handoff-mismatch');
+    assert.ok(fail[0].blockers.includes('VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH'));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('existing source reconciliation refuses malformed source instead of advancing it',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-reconcile-bad-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    fs.writeFileSync(path.join(root,'server','Game.server.luau'),'-- TODO placeholder\n');
+    const results=evaluateExistingRobloxSources({
+      queue:{items:[staleItem()]},
+      repoRoot:tmp,
+      sourceRevision:'exact-main-sha',
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(results.length,1);
+    assert.equal(results[0].pass,false);
+    assert.equal(results[0].failure,'existing-source-static-revalidation-failed');
+    assert.ok(results[0].blockers.includes('SERVER_PLACEHOLDER_FORBIDDEN'));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+
+test('current Roblox Studio asset binding version does not re-enter refresh forever',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-current-binding-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    assert.equal(applied.studioAssets.bindingVersion,2);
+    assert.match(applied.studioAssets.buildUpAssetSourceUsageFingerprint,/^[0-9a-f]{64}$/i);
+    assert.equal(applied.studioAssets.buildUpAssetSourceUsageLibraryVersion,companyAssetLibrary.version);
+    const reboundConfig=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
+    assert.match(reboundConfig,/SourceUsageFingerprint\s*=\s*"[0-9a-f]{64}"/i);
+    assert.match(reboundConfig,new RegExp('SourceUsageLibraryVersion\\s*=\\s*'+companyAssetLibrary.version));
+    const reboundClient=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    assert.match(reboundClient,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
+    assert.match(reboundClient,/STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/);
+    for(const family of ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES){
+      assert.match(reboundClient,new RegExp('\\b'+family+'\\s*='));
+      assert.match(reboundClient,new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']'));
+    }
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[staleItem()]},
+      repoRoot:tmp,
+      sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].failure,null,rows[0].blockers.join(','));
+    assert.equal(rows[0].pass,true,rows[0].blockers.join(','));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('existing Roblox source re-enters rebind when asset source usage lineage is missing',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-source-usage-lineage-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const stale=fs.readFileSync(configFile,'utf8')
+      .replace(/^\s*SourceUsageFingerprint\s*=.*\n/m,'')
+      .replace(/^\s*SourceUsageLibraryVersion\s*=.*\n/m,'');
+    fs.writeFileSync(configFile,stale);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[staleItem()]},
+      repoRoot:tmp,
+      sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
+    assert.equal(rows[0].studioAssetBindingRefreshReason,'SOURCE_USAGE_LINEAGE_MISMATCH');
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('existing Roblox source re-enters rebind when client asset binding is still v1',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-client-v1-detect-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const client=fs.readFileSync(clientFile,'utf8').replace(/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/,'STUDIO_ASSET_BINDING_VERSION = 1');
+    fs.writeFileSync(clientFile,client);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[staleItem()]},
+      repoRoot:tmp,
+      sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
+    assert.equal(rows[0].studioAssetBindingRefreshRequired,true);
+    assert.ok(rows[0].blockers.includes('ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED'));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('existing Roblox asset rebind records family status from the full canonical Luau source scope',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-family-full-source-scope-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    fs.writeFileSync(path.join(root,'shared','CreatureSystem.luau'),`local enemy = Instance.new("Model")
+enemy.Name = "Enemy"
+return enemy
+`);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    const statusBlock=client.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+    const expected=robloxStudioAssetFamilyStatusFromSource({sourceText:robloxStudioAssetDetectionSourceFromRoot(root)});
+    for(const family of ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES){
+      const current=(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]||'').toUpperCase();
+      assert.equal(current,expected[family],family+' family status must use the canonical full-source detector scope');
+    }
+    assert.equal(expected.CREATURE,'APPLIED');
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('existing Roblox source automatically enters rebind when company library binding is missing even without source drift',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-rebind-detect-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={
+      ...staleItem(),
+      currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      robloxSourceCommit:revision,
+    };
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
+    assert.equal(rows[0].studioAssetBindingRefreshRequired,true);
+    assert.equal(rows[0].studioAssetLibraryVersion,companyAssetLibrary.version);
+    assert.match(rows[0].sourceTreeSha,/^[0-9a-f]{40}$/);
+    assert.ok(rows[0].blockers.includes('ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED'));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('existing Roblox client Studio asset binding v1 is upgraded in place to v2',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-client-v1-upgrade-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const v2=fs.readFileSync(clientFile,'utf8');
+    fs.writeFileSync(clientFile,v2.replace(/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/,'STUDIO_ASSET_BINDING_VERSION = 1'));
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const upgraded=fs.readFileSync(clientFile,'utf8');
+    assert.match(upgraded,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
+    assert.doesNotMatch(upgraded,/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('existing Roblox library rebind preserves gameplay server and updates only config plus client presentation binding',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-rebind-apply-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    const serverFile=path.join(root,'server','Game.server.luau');
+    const serverBefore=fs.readFileSync(serverFile,'utf8');
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    assert.equal(applied.existingSourcePreserved,true);
+    assert.equal(applied.gameplayAuthorityChanged,false);
+    assert.equal(applied.serverSourceChanged,false);
+    assert.equal(fs.readFileSync(serverFile,'utf8'),serverBefore);
+    const config=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
+    const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    assert.match(config,/STUDIO_ASSET_BINDING_BEGIN/);
+    assert.match(config,/StudioAssets\s*=\s*\{/);
+    assert.match(config,new RegExp('LibraryVersion\\s*=\\s*'+companyAssetLibrary.version));
+    assert.match(client,/STUDIO_ASSET_BINDING_CLIENT_BEGIN/);
+    assert.match(client,/C\.StudioAssets/);
+    assert.match(client,/StudioAssetFramePanel/);
+    assert.match(client,/StudioAssetAtoms/);
+    assert.match(client,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
+    assert.match(client,/STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/);
+    for(const family of ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES){
+      assert.match(client,new RegExp('\\b'+family+'\\s*='));
+    }
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const configAgain=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
+    const clientAgain=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    assert.equal((configAgain.match(/STUDIO_ASSET_BINDING_BEGIN/g)||[]).length,1);
+    assert.equal((clientAgain.match(/STUDIO_ASSET_BINDING_CLIENT_BEGIN/g)||[]).length,1);
+    assert.equal((clientAgain.match(/StudioAssetFramePanel/g)||[]).length,1);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('Roblox runtime persistence uses game source-tree identity instead of unrelated main SHA churn',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/reconciliationSourceTreeSha:String\(reconciliationRow\?\.sourceTreeSha\|\|\(nativeCreatureRepairPending/);
+  assert.match(workflow,/RECONCILIATION_SOURCE_TREE_SHA:/);
+  assert.match(workflow,/ROBLOX_SOURCE_TREE_STALE_BEFORE_WORKER=/);
+  assert.match(workflow,/git rev-parse "origin\/main:\$TARGET_SOURCE"/);
+  assert.match(workflow,/origin\/main:\$\{result\.sourcePath\}/);
+  assert.match(workflow,/sourceIdentityStale=reconciliationTreeSha/);
+  assert.match(workflow,/ROBLOX_SOURCE_RECONCILIATION_UNRELATED_MAIN_ADVANCE_ACCEPTED=/);
+});
+
+test('Roblox runtime workflow watches library changes and routes existing sources through the same source PR lane',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/company-asset-library\.json/);
+  assert.match(workflow,/company-development-roblox-source-reconcile\.mjs/);
+  assert.match(workflow,/existingSourceAssetRebind/);
+  assert.match(workflow,/existing-source-studio-asset-binding-required/);
+  assert.match(workflow,/ROBLOX_EXISTING_SOURCE_ASSET_REBIND_EVIDENCE=PASS/);
+});
+
+
+test('verified external black-box contract is complete and fingerprinted for Roblox native development',()=>{
+  const contract=verifiedExternalBlackBoxPlaybookContract(verifiedPlaybooks,{required:true,requiredTaskTypes:['roblox','coding']});
+  assert.deepEqual(contract.ids,['external-black-box-fixture-run-1']);
+  assert.equal(contract.coveragePct,100);
+  assert.equal(contract.appliedCount,1);
+  assert.ok(contract.fingerprint);
+  assert.equal(verifiedLearning.applied,true);
+  assert.equal(verifiedLearning.verifiedExternalLearningCoveragePct,100);
+  assert.equal(verifiedLearning.verifiedExternalLearningFingerprint,contract.fingerprint);
+});
+
+test('existing Roblox source is re-queued when current verified APK learning is missing',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-refresh-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
+    const rows=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks,loadBaseline:()=>baseline});
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].failure,'existing-source-verified-external-learning-required');
+    assert.equal(rows[0].verifiedExternalLearningRefreshRequired,true);
+    assert.ok(rows[0].blockers.includes('ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED'));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('existing Roblox source rebind applies all verified APK learning without changing gameplay server authority',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-rebind-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const serverFile=path.join(root,'server','Game.server.luau');
+    const serverBefore=fs.readFileSync(serverFile,'utf8');
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:designProfileLearning});
+    assert.equal(applied.verifiedExternalLearningApplied,true);
+    assert.equal(applied.gameplayAuthorityChanged,false);
+    assert.equal(fs.readFileSync(serverFile,'utf8'),serverBefore);
+    const config=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
+    const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    assert.match(config,/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/);
+    assert.match(config,/ContentComplete\s*=\s*true/);
+    assert.match(config,/external-black-box-fixture-run-1/);
+    assert.match(client,/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/);
+    assert.match(client,/VerifiedExternalLearningContentComplete/);
+    assert.match(client,/VerifiedExternalLearningPrincipleCount/);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
+    const rows=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks,loadBaseline:()=>baseline});
+    assert.equal(rows.length,0);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('legacy native config is routed to source repair instead of an impossible learning sweep',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-legacy-config-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    fs.renameSync(path.join(root,'shared','GameConfig.luau'),path.join(root,'shared','Config.luau'));
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'TARGET_PLATFORM_SOURCE_BIND',robloxSourceCommit:revision};
+    const [row]=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks,loadBaseline:()=>baseline});
+    assert.equal(row.failure,'existing-source-static-revalidation-failed');
+    assert.equal(row.sourceContractRepairRequired,true);
+    assert.deepEqual(row.blockers,['SOURCE_CONFIG_MISSING']);
+    assert.equal(row.sourceContractRepairEvidence.staticContract.pass,false);
+    assert.equal(fs.existsSync(path.join(root,'shared','Config.luau')),true);
+    assert.equal(fs.existsSync(path.join(root,'shared','GameConfig.luau')),false);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('source reconciliation accepts a more specific source subgenre only when design subgenre is unspecified',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-source-subgenre-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    const baseProfile={
+      version:2,targetPlatform:'ROBLOX',taxonomy:'DIRECT_NATIVE_DESIGN_PROFILE',
+      genre:'Simulation',subgenre:null,playMode:'SINGLE',
+      multiplayerRequired:false,coopImplementationRequired:false,competitiveImplementationRequired:false,
+      networkingRequired:false,multiplayerQaRequired:false,minimumParticipantsForRequiredQa:1,displayLabelKo:'Simulation'
+    };
+    const sourceProfile={...baseProfile,subgenre:'Tycoon',displayLabelKo:'Simulation · Tycoon'};
+    const baselineWithoutSubgenre={...baseline,content:{...baseline.content,robloxBuildProfile:baseProfile}};
+    const sourceBaseline={...baseline,content:{...baseline.content,robloxBuildProfile:sourceProfile}};
+    const compiled=compileRobloxSource({
+      gameId,gameName:'Pocket Foundry',baseline:sourceBaseline,artbook:{},
+      playbooks:verifiedPlaybooks,assetLibrary:companyAssetLibrary
+    });
+    fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+    fs.mkdirSync(path.join(root,'server'),{recursive:true});
+    fs.mkdirSync(path.join(root,'client'),{recursive:true});
+    fs.writeFileSync(path.join(root,'default.project.json'),JSON.stringify(projectJsonForGame(gameId),null,2)+'\n');
+    fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),compiled.result.sharedConfig);
+    fs.writeFileSync(path.join(root,'server','Game.server.luau'),compiled.result.serverCode);
+    fs.writeFileSync(path.join(root,'client','Game.client.luau'),compiled.result.clientCode);
+    const sourceLearning=createRobloxVibe3LearningContext({gameId,profile:sourceProfile,playbooks:verifiedPlaybooks});
+    applyVerifiedExternalLearningToExistingRobloxSource({root,learning:sourceLearning});
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
+    const inspect=loadBaseline=>evaluateExistingRobloxSources({
+      queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks,loadBaseline
+    });
+    assert.deepEqual(inspect(()=>baselineWithoutSubgenre),[]);
+
+    const explicitDifferentSubgenre={
+      ...baselineWithoutSubgenre,
+      content:{...baselineWithoutSubgenre.content,robloxBuildProfile:{...baseProfile,subgenre:'Life sim',displayLabelKo:'Simulation · Life sim'}}
+    };
+    assert.equal(inspect(()=>explicitDifferentSubgenre)[0]?.failure,'existing-source-verified-external-learning-required');
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('source reconciliation accepts a compatible newer client without a no-change refresh loop',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-compatible-client-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:designProfileLearning});
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const originalConfig=fs.readFileSync(configFile,'utf8');
+    const originalClient=fs.readFileSync(clientFile,'utf8');
+    const current=Number(originalConfig.match(/NativeBindingVersion\s*=\s*(\d+)/)[1]);
+    const newer=originalClient.replace(/(VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*)\d+/,'$1'+(current+1));
+    fs.writeFileSync(clientFile,newer);
+    const nativeBlock=/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END\n/;
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:designProfileLearning});
+    assert.equal(fs.readFileSync(clientFile,'utf8').match(nativeBlock)?.[0],newer.match(nativeBlock)?.[0]);
+    applyVerifiedExternalLearningToExistingRobloxSource({root,learning:designProfileLearning});
+    assert.equal(fs.readFileSync(clientFile,'utf8').match(nativeBlock)?.[0],newer.match(nativeBlock)?.[0]);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
+    const inspect=()=>evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks,loadBaseline:()=>baseline});
+    assert.deepEqual(inspect(),[]);
+    assert.equal(fs.readFileSync(clientFile,'utf8'),newer);
+    const rejected=()=>assert.equal(inspect()[0]?.failure,'existing-source-verified-external-learning-required');
+    fs.writeFileSync(configFile,originalConfig.replace(/MemoryFingerprint\s*=\s*"[^"]*"/g,'MemoryFingerprint = "stale"'));
+    rejected();
+    fs.writeFileSync(configFile,originalConfig);
+    fs.writeFileSync(clientFile,newer.replaceAll('VerifiedExternalLearningGameplayState','MissingGameplayBinding'));
+    rejected();
+    fs.writeFileSync(clientFile,newer);
+    fs.writeFileSync(configFile,originalConfig.replace(/(NativeBindingVersion\s*=\s*)\d+/g,(_,prefix)=>prefix+(current+2)));
+    rejected();
+    fs.writeFileSync(configFile,originalConfig.replace(/(NativeBindingVersion\s*=\s*)\d+/g,(_,prefix)=>prefix+(current-1)));
+    rejected();
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('verified learning sweep preserves a newer native binding instead of downgrading it',()=>{
+  const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
+  assert.match(sweep,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION/);
+  assert.match(sweep,/currentNativeBindingVersion>ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION/);
+  assert.match(sweep,/ROBLOX_SWEEP_NEWER_NATIVE_BINDING_CONFIG_DRIFT/);
+  assert.match(sweep,/PRESERVED_NEWER_NATIVE_BINDING/);
+  assert.match(sweep,/newerNativeBindingPreserved/);
+});
+
+test('verified APK refresh is owned by one Roblox sweep instead of duplicate per-game source jobs',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/existing-source-verified-external-learning-required/);
+  assert.match(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND/);
+  assert.match(workflow,/if\(existingSourceLearningRebind&&!nativeCreatureRepairPending\)\{/);
+  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind\|\|materialRepairPending\|\|nativeCreatureRepairPending;/);
+});
+
+
+test('verified APK principles drive the full Roblox native stack for new and existing source',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const context=fs.readFileSync(new URL('../tools/vibe3-roblox-learning-context.mjs',import.meta.url),'utf8');
+  assert.match(context,/verifiedExternalGameDevelopmentPrinciples=Object\.freeze\(\[\.\.\.verifiedExternalLearningPrinciples\]\)/);
+  assert.doesNotMatch(context,/verifiedExternalLearningPrinciples\.filter\(gameDevelopmentPrinciple\)/);
+  assert.match(source,/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/);
+  assert.match(source,/VerifiedLearningColorGrade/);
+  assert.match(source,/VerifiedLearningBloom/);
+  assert.match(source,/syncVerifiedLearningCharacterMotion/);
+  assert.match(source,/animator:GetPlayingAnimationTracks/);
+  assert.match(source,/VerifiedLearningSkillImpact/);
+  assert.match(source,/VerifiedLearningSkillSparkles/);
+  assert.match(source,/FieldOfView/);
+  assert.match(source,/VerifiedLearningTouchTarget/);
+  assert.match(source,/VerifiedLearningProgressionRiskCue/);
+  assert.match(source,/VerifiedExternalLearningGameplayState/);
+  assert.match(source,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6/);
+  assert.match(source,/ApplicationPrinciples = \{/);
+  assert.match(source,/GameDevelopmentPrinciples = \{/);
+  assert.doesNotMatch(source,/ROBLOX_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED/);
+  assert.doesNotMatch(source,/CONFIG_VERIFIED_EXTERNAL_LEARNING_100_REQUIRED/);
+  assert.match(source,/CONFIG_VERIFIED_EXTERNAL_LEARNING_CONTENT_REQUIRED/);
+});
+
+
+test('verified APK learning is unconditional across Roblox native gameplay axes',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(source,/function requireRobloxVerifiedExternalLearning/);
+  assert.doesNotMatch(source,/const nativeLearningRuntime=learning\.applied\?/);
+  assert.doesNotMatch(source,/const learnedInput=learning\.applied\?/);
+  assert.doesNotMatch(source,/generationMode:learning\.applied\?/);
+  assert.match(source,/VerifiedLearningColorGrade/);
+  assert.match(source,/VerifiedLearningBloom/);
+  assert.match(source,/syncVerifiedLearningCharacterMotion/);
+  assert.match(source,/VerifiedLearningSkillImpact/);
+  assert.match(source,/VerifiedLearningSkillSparkles/);
+  assert.match(source,/VerifiedLearningTouchTarget/);
+  assert.match(source,/VerifiedLearningProgressionRiskCue/);
+  assert.match(source,/VerifiedExternalLearningServerConfirmedAt/);
+  assert.match(source,/playVerifiedLearningActionFeedback\(verifiedLearningLastControl, true\)/);
+  assert.doesNotMatch(source,/local verifiedLearningGuidance = Instance.new/);
+  assert.match(source,/if serverConfirmed\s*~=\s*true then return end/);
+});
+
+
+test('Roblox APK learning gate ignores server instrumentation and requires native application axes',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.doesNotMatch(bootstrap,/SERVER_VIBE3_LEARNING_INSTRUMENTATION_REQUIRED/);
+  assert.match(bootstrap,/ROBLOX_SEMANTIC_MAPPING_VERSION_REQUIRED/);
+  assert.match(bootstrap,/GameSpecificSemanticMappings/);
+  assert.match(bootstrap,/LearningDispositions/);
+  assert.match(bootstrap,/QA_INFRASTRUCTURE_PRINCIPLE_IN_GAME_SOURCE/);
+  assert.match(bootstrap,/SemanticMappingVersion/);
+  assert.match(bootstrap,/BloomEffect/);
+  assert.match(bootstrap,/AdjustSpeed/);
+  assert.match(bootstrap,/VerifiedLearningSkillImpact/);
+  assert.match(bootstrap,/Sparkles/);
+  assert.match(bootstrap,/FieldOfView/);
+  assert.match(bootstrap,/UISizeConstraint/);
+  assert.match(bootstrap,/VerifiedLearningProgressionRiskCue/);
+  assert.doesNotMatch(workflow,/learningOk[\s\S]{0,1000}gameplayAuthorityChanged/);
+  assert.doesNotMatch(workflow,/learningOk[\s\S]{0,1000}serverSourceChanged/);
+});
+
+
+test('visual learning rebind does not require or inspect Roblox server source',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-visual-learning-no-server-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    fs.rmSync(path.join(root,'server','Game.server.luau'),{force:true});
+    const applied=applyRobloxStudioAssetBindingToExistingSource({
+      root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning,foundationRepair:false
+    });
+    assert.equal(applied.serverSourceChanged,false);
+    assert.equal(fs.existsSync(path.join(root,'server','Game.server.luau')),false);
+    const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    assert.match(client,/Atmosphere/);
+    assert.match(client,/DepthOfFieldEffect/);
+    assert.match(client,/AdjustSpeed/);
+    assert.match(client,/ParticleEmitter/);
+    assert.match(client,/PointLight/);
+    assert.match(client,/VerifiedLearningSkillImpact/);
+    assert.match(client,/FieldOfView/);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('verified learning rebind injects a dedicated GameConfig require when the client did not already use Config',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-client-no-config-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    const clientFile=path.join(root,'client','Game.client.luau');
+    fs.writeFileSync(clientFile,[
+      '-- existing client without GameConfig require',
+      'local ReplicatedStorage = game:GetService("ReplicatedStorage")',
+      'local remotes = ReplicatedStorage:WaitForChild("CustomRemotes")',
+      'local root = Instance.new("Frame")',
+      'root.Name = "Root"',
+      'root.Parent = Instance.new("ScreenGui")'
+    ].join('\n')+'\n');
+    const applied=applyVerifiedExternalLearningToExistingRobloxSource({root,learning:verifiedLearning});
+    assert.equal(applied.changed,true);
+    const client=fs.readFileSync(clientFile,'utf8');
+    assert.match(client,/local VerifiedExternalLearningConfig = require\(game:GetService\("ReplicatedStorage"\):WaitForChild\("Shared"\):WaitForChild\("GameConfig"\)\)/);
+    assert.match(client,/local remotes = ReplicatedStorage:WaitForChild\("CustomRemotes"\)/);
+    assert.match(client,/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/);
+    assert.match(client,/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('foundation repair still requires Roblox server source',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-foundation-server-required-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    fs.rmSync(path.join(root,'server','Game.server.luau'),{force:true});
+    assert.throws(()=>applyRobloxStudioAssetBindingToExistingSource({
+      root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning,foundationRepair:true
+    }),/EXISTING_ROBLOX_SOURCE_FILE_MISSING:Game\.server\.luau/);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('verified APK native binding covers Roblox background motion and skill effects beyond UI',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  for(const signal of [
+    'ColorCorrectionEffect','BloomEffect','Atmosphere','DepthOfFieldEffect',
+    'AdjustSpeed','ParticleEmitter','PointLight','VerifiedLearningSkillImpact',
+    'VerifiedLearningSkillParticles','VerifiedLearningSkillLight','FieldOfView'
+  ])assert.match(source,new RegExp(signal));
+});
+
+
+test('Roblox native binding v6 requires semantic mapping and affected-scope signals',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const reconcile=fs.readFileSync(new URL('../tools/company-development-roblox-source-reconcile.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6/);
+  for(const signal of ['SemanticMappingVersion','GameSpecificSemanticMappings','LearningDispositions','VerifiedLearningSemanticVariant','VerifiedLearningTouchTarget']){
+    assert.match(bootstrap,new RegExp(signal));
+    assert.match(reconcile,new RegExp(signal));
+  }
+});
+
+test('existing Roblox Studio binding requires verified APK learning unconditionally',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const fn=source.slice(source.indexOf('export function applyRobloxStudioAssetBindingToExistingSource'),source.indexOf('function sourceBlockers'));
+  assert.match(fn,/const verifiedLearning=requireRobloxVerifiedExternalLearning\(learning\)/);
+  assert.doesNotMatch(fn,/if\(learning\?\.applied===true\)/);
+  assert.match(fn,/afterConfig=replaceOrInsertVerifiedExternalLearningConfig\(afterConfig,verifiedLearning\)/);
+  assert.match(fn,/afterClient=bindExistingClientVerifiedExternalLearning\(afterClient,verifiedLearning\)/);
+  assert.match(fn,/verifiedExternalLearningApplied:true/);
+});
+
+
+test('Roblox semantic mapping routes game-entry QA evidence to validation-only without blocking source application',()=>{
+  const qaBoundaryRow={
+    id:'external-black-box-qa-boundary-fixture',
+    project:'fixture-black-box',
+    sourceRevision:'sha256:qa-boundary',
+    distilledApplicationPrinciples:[
+      'id=tutorial-separated-from-game-entry; scope=mobile-rpg-onboarding; lesson=Tutorial is a distinct pre-game state.; apply=For RPG QA, preserve tutorial and live gameplay entry as separate milestones.',
+      'id=first-run-friction-separated-from-game-entry; scope=mobile-rpg-onboarding; lesson=First-run setup is not gameplay.; apply=For Roblox/mobile QA, preserve onboarding and first live gameplay as separate milestones.',
+      'id=world-entry-needs-load-window-before-input-proof; scope=mobile-runtime-evidence; lesson=World launch needs a load window before input proof.; apply=Bind input evidence to the post-load playable frame.',
+      'id=narrative-onboarding-is-not-game-entry; scope=rpg-onboarding-qa; lesson=Narrative onboarding is a pre-game state.; apply=For Roblox RPG QA, separate narrative onboarding from controllable world entry.',
+      'id=gameplay-state-must-be-visually-distinct-from-selection-state; scope=mobile-runtime-evidence; lesson=Selection state is not gameplay entry.; apply=Define GAME_ENTRY using visible gameplay-specific state.',
+      'id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=Compact tactical actions need immediate feedback.; apply=Keep bounded tactical actions visibly responsive.'
+    ],
+    distilledAvoidancePrinciples:[],
+    distilledLearningUseAllowed:['interaction feedback'],
+    distilledLearningUseForbidden:['source-code or asset copying']
+  };
+  const qaBoundaryTask=()=>({authority:'verified-task-playbook',checklist:[],reuse:[qaBoundaryRow]});
+  const qaBoundaryPlaybooks={
+    policy:{verifiedExternalBlackBoxAllTaskTypesRequired:true,verifiedExternalBlackBoxTruncationForbidden:true},
+    taskTypes:{roblox:qaBoundaryTask(),coding:qaBoundaryTask()}
+  };
+  const learning=createRobloxVibe3LearningContext({
+    gameId,
+    profile:{genre:'Simulation',subgenre:'Tycoon',playMode:'SINGLE'},
+    playbooks:qaBoundaryPlaybooks
+  });
+  const validationIds=new Set(
+    learning.verifiedExternalLearningDispositions
+      .filter(row=>row.disposition==='VALIDATION_ONLY')
+      .map(row=>row.principleId)
+  );
+  for(const id of [
+    'tutorial-separated-from-game-entry',
+    'first-run-friction-separated-from-game-entry',
+    'world-entry-needs-load-window-before-input-proof',
+    'narrative-onboarding-is-not-game-entry',
+    'gameplay-state-must-be-visually-distinct-from-selection-state'
+  ])assert.ok(validationIds.has(id),id);
+  assert.equal(learning.applied,true);
+  assert.equal(learning.allRetrievedPrinciplesHaveExplicitDisposition,true);
+  assert.ok(learning.verifiedExternalLearningDispositions.every(row=>row.disposition!=='FAIL_CLOSED'));
+  assert.ok(learning.gameSpecificSemanticMappings.some(row=>row.principleId==='compact-tactical-state-with-immediate-feedback'));
+});
+
+test('Roblox semantic mapping keeps QA-only learning out of game-source application',()=>{
+  assert.equal(verifiedLearning.allRetrievedPrinciplesHaveExplicitDisposition,true);
+  assert.ok(verifiedLearning.gameSpecificSemanticMappings.length>0);
+  assert.ok(verifiedLearning.verifiedExternalValidationOnlyPrincipleCount>=0);
+  assert.ok(verifiedLearning.verifiedExternalLearningDispositions.every(row=>row.disposition!=='FAIL_CLOSED'));
+  assert.doesNotMatch(JSON.stringify(verifiedLearning.verifiedExternalLearningPrinciples),/android|apk|hosted-emulator|qa-evidence/i);
+});
+test('stale Roblox technical workers drop before Rojo model and F0 without poisoning runtime state',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/Drop superseded Roblox technical work before heavy execution/);
+  assert.match(workflow,/ROBLOX_TECHNICAL_SUPERSEDED=/);
+  assert.match(workflow,/SOURCE_REVISION_MOVED/);
+  assert.match(workflow,/VERIFIED_LEARNING_BINDING_STALE/);
+  assert.match(workflow,/Install pinned Rojo package tool[\s\S]{0,120}if: steps\.freshness\.outputs\.superseded != 'true'/);
+  assert.match(workflow,/superseded,\n\s+supersedeReason:/);
+  assert.match(workflow,/ROBLOX_PACKAGE_SUPERSEDED_RESULT_IGNORED/);
+  assert.match(workflow,/ROBLOX_TECHNICAL_WORK=SUPERSEDED/);
+  assert.doesNotMatch(workflow,/max-parallel:\s*[0-9]+/);
+});
+
+
+
+test('runtime reconciliation preserves downstream evidence for unchanged game bytes',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const marker=workflow.indexOf('if(result.pass===true&&result.preserveDownstreamEvidence===true)');
+  const reset=workflow.indexOf('if(result.pass===true){',marker);
+  assert.ok(marker>0&&reset>marker);
+  const block=workflow.slice(marker,reset);
+  assert.match(block,/ROBLOX_UNCHANGED_SOURCE_DOWNSTREAM_EVIDENCE_PRESERVED=/);
+  assert.match(block,/item\.robloxBuildArtifactIdentity/);
+  assert.doesNotMatch(block,/robloxBuildArtifactIdentity:null/);
+  assert.doesNotMatch(block,/robloxFoundationF0Passed:false/);
+  assert.doesNotMatch(block,/robloxF9ReleaseRegressionPassed:false/);
+});
+
+test('source reconciliation and sweep derive verified learning from the same build profile',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-source-reconcile.mjs',import.meta.url),'utf8');
+  const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
+  assert.match(source,/robloxBuildProfileFromBaseline/);
+  assert.match(source,/const learningProfile=baseline\?robloxBuildProfileFromBaseline\(baseline\):null/);
+  assert.match(source,/verifiedExternalLearningRefreshState\(\{root,playbooks,gameId:item\.gameId,profile:learningProfile\}\)/);
+  assert.match(sweep,/robloxBuildProfileFromBaseline/);
+  assert.match(sweep,/const designProfile=designContext\?\.record\?robloxBuildProfileFromBaseline\(designContext\.record\):null/);
+  assert.doesNotMatch(sweep,/robloxDesignProfileFromBaseline/);
+  assert.match(sweep,/runtimeBaseline\?\{record:runtimeBaseline\}/);
+  assert.match(sweep,/ROBLOX_SWEEP_RUNTIME_DESIGN_BASELINE_UNAVAILABLE/);
+  assert.match(sweep,/PRESERVED_NEWER_NATIVE_BINDING/);
+  assert.match(sweep,/!requestedGameSet\.has\(gameId\)/);
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-verified-learning-sweep.yml','utf8');
+  assert.match(workflow,/origin\/company-runtime:development-queue\.json/);
+  assert.equal((workflow.match(/--runtime-ref=origin\/company-runtime/g)||[]).length,2);
+  // 실제 메인 정책이 없는 학습 스윕은 fail-closed로 멈추며, 워크플로는 정확한 원본 경로만 전달한다.
+  assert.match(workflow,/^  COMPANY_VERIFIED_POLICY_PATH: company-learning\/platform-release-roadmap\.json$/m);
+  assert.match(workflow,/^  COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning\/platform-release-roadmap\.json$/m);
+  assert.match(workflow,/COMPANY_VERIFIED_POLICY_PATH: company-learning\/platform-release-roadmap\.json[\s\S]*Apply verified learning to selected Roblox source scope/);
+  assert.match(workflow,/assets\/roblox\/common-\*\/\*\*/);
+  assert.match(workflow,/company-learning\/vibe2-code-pattern-library\.json/);
+  assert.match(sweep,/synchronizeRobloxCommonModules\(\{project,gameRoot\}\)/);
+});
+
+test('retired Roblox sources are not invented as verified native common-module projects',()=>{
+  // The owner removed Baeksu and Cozy source trees. No test is allowed to restore them
+  // through synthetic production source or pretend an unverified project is deployed.
+  assert.equal(fs.existsSync('roblox-games/baeksu-war/default.project.json'),false);
+  assert.equal(fs.existsSync('roblox-games/cozy-island/client/Game.client.luau'),false);
+  const sweep=fs.readFileSync('tools/company-roblox-verified-learning-sweep.mjs','utf8');
+  assert.match(sweep,/synchronizeRobloxCommonModules\(\{project,gameRoot\}\)/);
+  assert.match(sweep,/moduleSyncOnly:true,verifiedExternalLearningApplied:false/);
+  assert.match(sweep,/sourceValidationPassed:true,sourceValidationBlockers:\[\]/);
+  assert.match(sweep,/if\(learning\.applied!==true\)throw new Error\('ROBLOX_SWEEP_LEARNING_NOT_APPLIED:'/);
+});
+
+test('verified learning promotion remains fail-closed without a real playbook or active source',()=>{
+  assert.equal(fs.existsSync('roblox-games/baeksu-war/shared/GameConfig.luau'),false);
+  const sweep=fs.readFileSync('tools/company-roblox-verified-learning-sweep.mjs','utf8');
+  assert.match(sweep,/if\(learning\.applied!==true\)throw new Error\('ROBLOX_SWEEP_LEARNING_NOT_APPLIED:'/);
+  assert.match(sweep,/!fs\.existsSync\(standardConfigFile\)/);
+  assert.match(sweep,/moduleSyncOnly:true,verifiedExternalLearningApplied:false/);
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-verified-learning-sweep.yml','utf8');
+  assert.match(workflow,/company-learning\/platform-release-roadmap\.json/);
+});
+
+test('legacy module-only admission survives game-specific Config to GameConfig rename in isolated source workers',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-module-only-rename-'));
+  try{
+    const root=path.join(tmp,'roblox-games','baeksu-war');
+    const shared=path.join(root,'shared');
+    const server=path.join(root,'server','Game.server.luau');
+    const client=path.join(root,'client','Game.client.luau');
+    fs.mkdirSync(shared,{recursive:true});
+    fs.mkdirSync(path.dirname(server),{recursive:true});
+    fs.mkdirSync(path.dirname(client),{recursive:true});
+    fs.writeFileSync(path.join(shared,'GameConfig.luau'),'return {GameId="baeksu-war"}\n');
+    fs.writeFileSync(server,'-- existing authoritative server\n');
+    fs.writeFileSync(client,'-- existing game-owned client\n');
+    const projectFile=path.join(root,'default.project.json');
+    fs.writeFileSync(projectFile,JSON.stringify({name:'백수대전쟁',tree:{
+      $className:'DataModel',
+      ReplicatedStorage:{Shared:{$path:'shared',
+        RobloxCommonUI:{$path:'../../assets/roblox/common-ui-v1/RobloxCommonUI.luau'},
+        RobloxCommonIcons:{$path:'../../assets/roblox/common-ui-v1/RobloxCommonIcons.luau'}}},
+      ServerScriptService:{GameServer:{$path:'server'}},
+      StarterPlayer:{StarterPlayerScripts:{GameClient:{$path:'client'}}}
+    }},null,2)+'\n');
+    const evidenceFile=path.join(root,'roblox-source-bootstrap.json');
+    fs.writeFileSync(evidenceFile,JSON.stringify({
+      version:1,gameId:'baeksu-war',platform:'ROBLOX',moduleSyncOnly:true
+    },null,2)+'\n');
+    const playbooksFile=path.join(tmp,'playbooks.json');
+    fs.writeFileSync(playbooksFile,'{}\n');
+    const reportFile=path.join(tmp,'report.json');
+    const args=[
+      path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
+      '--root='+path.join(tmp,'roblox-games'),'--game-id=baeksu-war',
+      '--playbooks='+playbooksFile,'--report='+reportFile
+    ];
+    execFileSync(process.execPath,args,{stdio:'pipe'});
+    const first=JSON.parse(fs.readFileSync(reportFile,'utf8'));
+    assert.equal(first.changedGameCount,1);
+    assert.equal(first.results[0].moduleSyncOnly,true);
+    assert.equal(first.results[0].verifiedExternalLearningApplied,false);
+    assert.equal(first.results[0].commonModuleCount,15);
+    const receipt=JSON.parse(fs.readFileSync(evidenceFile,'utf8'));
+    assert.equal(receipt.sourceValidationPassed,undefined);
+    assert.equal(receipt.vibe3LearningApplied,undefined);
+    assert.equal(Object.keys(JSON.parse(fs.readFileSync(projectFile,'utf8')).tree.ReplicatedStorage.Shared)
+      .filter(name=>name.startsWith('RobloxCommon')).length,15);
+    assert.equal(fs.readFileSync(server,'utf8'),'-- existing authoritative server\n');
+    assert.equal(fs.readFileSync(client,'utf8'),'-- existing game-owned client\n');
+    execFileSync(process.execPath,args,{stdio:'pipe'});
+    assert.equal(JSON.parse(fs.readFileSync(reportFile,'utf8')).changedGameCount,0);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('verified learning sweep supports exact per-game and exact batched scope without per-game dispatch fanout',()=>{
+  const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-roblox-verified-learning-sweep.yml',import.meta.url),'utf8');
+  const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(sweep,/const requestedGameId=String\(args\['game-id'\]\|\|''\)\.trim\(\)/);
+  assert.match(sweep,/args\['game-ids'\]/);
+  assert.match(sweep,/const requestedGameSet=new Set\(requestedGameIds\)/);
+  assert.match(sweep,/\.filter\(gameId=>!requestedGameSet\.size\|\|requestedGameSet\.has\(gameId\)\)/);
+  assert.match(sweep,/ROBLOX_LEARNING_SWEEP_GAME_NOT_FOUND/);
+  assert.match(sweep,/requestedGameIds,/);
+  assert.match(workflow,/game_ids:/);
+  assert.match(workflow,/scope_key:/);
+  assert.match(workflow,/--game-ids="\$GAME_IDS"/);
+  assert.match(runtime,/Dispatch verified learning batch sweep when reconciliation finds refresh debt/);
+  assert.match(runtime,/-f game_ids="\$game_ids"/);
+  assert.match(runtime,/-f scope_key="\$scope_key"/);
+  const dispatch=runtime.slice(runtime.indexOf('Dispatch verified learning batch sweep'),runtime.indexOf('Resolve next Roblox source execution slice'));
+  assert.doesNotMatch(dispatch,/while IFS= read -r game_id/);
+  assert.match(dispatch,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=1/);
+});
+
+
+test('stale family status rebind takes precedence over current package repair evidence',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-family-status-rebind-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const currentClient=fs.readFileSync(clientFile,'utf8');
+    assert.match(currentClient,/\bUI\s*=\s*["']APPLIED["']/);
+    fs.writeFileSync(clientFile,currentClient.replace(/\bUI\s*=\s*["']APPLIED["']/,'UI = "NOT_APPLICABLE"'));
+    initGitRepo(tmp);
+    const git=(...args)=>execFileSync('git',args,{cwd:tmp,encoding:'utf8'}).trim();
+    const revision=git('rev-parse','HEAD');
+    const sourceTreeSha=git('rev-parse',`HEAD:roblox-games/${gameId}`);
+    const item={
+      ...staleItem(),
+      robloxSourceCommit:revision,
+      robloxQualityBuildUpRequired:true,
+      robloxQualityBuildUpSourceRevision:revision,
+      robloxQualityBuildUpEvidence:{
+        gameId,sourceRevision:revision,sourceTreeSha,artifactIdentity:null,
+        authority:'roblox-package-asset-binding-failure',
+        assetThreshold:{pass:false,blockers:['ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:UI']},
+        assetRepairContext:robloxPackageAssetRepairContext({assetLibrary:companyAssetLibrary,baseline})
+      }
+    };
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,
+      loadBaseline:()=>baseline,assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
+    assert.equal(rows[0].studioAssetBindingRefreshRequired,true);
+    assert.equal(rows[0].studioAssetBindingRefreshReason,'FAMILY_STATUS_SOURCE_MISMATCH');
+    assert.deepEqual(rows[0].studioAssetFamilyStatusMismatches,['UI']);
+    assert.notEqual(rows[0].sourceRepairPending,true);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('unchanged package asset failure cannot be turned into a new source PASS by shallow reconciliation',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-package-repair-reconcile-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);writeCompiledTree(root);initGitRepo(tmp);
+    const git=(...args)=>execFileSync('git',args,{cwd:tmp,encoding:'utf8'}).trim();
+    const revision=git('rev-parse','HEAD'),sourceTreeSha=git('rev-parse',`HEAD:roblox-games/${gameId}`);
+    const item={...staleItem(),robloxSourceCommit:revision,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision,
+      robloxQualityBuildUpEvidence:{gameId,sourceRevision:revision,sourceTreeSha,artifactIdentity:null,authority:'roblox-package-asset-binding-failure',
+        assetThreshold:{pass:false,blockers:['ACTUAL_BINDING_REQUIRED']},assetRepairContext:robloxPackageAssetRepairContext({assetLibrary:companyAssetLibrary,baseline})}};
+    const evaluate=(assetLibrary=companyAssetLibrary)=>evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:git('rev-parse','HEAD'),loadBaseline:()=>baseline,assetLibrary,playbooks:verifiedPlaybooks});
+    assert.equal(evaluate()[0].sourceRepairPending,true);assert.equal(evaluate()[0].pass,false);
+    fs.writeFileSync(path.join(tmp,'unrelated.txt'),'unrelated');git('add','.');git('commit','-m','unrelated change');
+    assert.equal(evaluate()[0].sourceRepairPending,true,'unrelated main advance must not replay source binding');
+    assert.notEqual(evaluate({...companyAssetLibrary,version:companyAssetLibrary.version+1})[0]?.sourceRepairPending,true);
+    fs.appendFileSync(path.join(root,'server','Game.server.luau'),'\n-- repaired source change\n');git('add','.');git('commit','-m','real game source repair');
+    assert.notEqual(evaluate()[0]?.sourceRepairPending,true,'changed game tree must run source validation');
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+
+test('verified learning refresh debt coalesces into one exact existing batch sweep',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const start=workflow.indexOf('      - name: Dispatch verified learning batch sweep when reconciliation finds refresh debt');
+  const end=workflow.indexOf('      - name: Resolve next Roblox source execution slice',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/scope_key="batch-\$scope_hash"/);
+  assert.match(block,/const title='Roblox verified learning sweep · '\+String\(process\.env\.SCOPE_KEY\|\|''\)/);
+  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES_BATCH/);
+  assert.match(block,/gh workflow run company-roblox-verified-learning-sweep\.yml/);
+  assert.match(block,/-f game_ids="\$game_ids"/);
+  assert.match(block,/-f scope_key="\$scope_key"/);
+  assert.doesNotMatch(block,/while IFS= read -r game_id/);
+  assert.doesNotMatch(block,/-f game_id=/);
+});
+
+
+test('foundation repair grounds managed spawn before player binding and corrects spawn center math',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/native-foundation-spawn-grounding-v3/);
+  assert.match(bootstrap,/groundHit\.Position\.Y \+ \$\{spawn\}\.Size\.Y \* 0\.5 \+ 0\.05/);
+  assert.match(bootstrap,/player\.Character == character/);
+  assert.match(bootstrap,/if contacts >= 3 then/);
+  assert.doesNotMatch(bootstrap,/spawnHit\.Position\.Y - \$\{spawn\}\.Size\.Y \* 0\.5/);
+  assert.match(bootstrap,/FoundationSpawnGrounded/);
+  assert.match(bootstrap,/const currentManaged=\/NativeFoundationGroundingVersion\//);
+  assert.match(bootstrap,/if\(!legacyManaged&&!currentManaged\)return body/);
+});
+
+
+test('Roblox verified learning sweep rebinds exact runtime design and config without downgrading a newer native client',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-runtime-learning-sweep-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    const initialBaseline={
+      ...baseline,
+      content:{...baseline.content,robloxBuildProfile:{...robloxBuildProfileFromBaseline(baseline),version:4,genre:'Simulation',subgenre:'Workshop Simulator'}}
+    };
+    const runtimeBaseline={
+      ...initialBaseline,gameId,
+      content:{...initialBaseline.content,robloxBuildProfile:{...initialBaseline.content.robloxBuildProfile,subgenre:'Factory Simulator'}}
+    };
+    const revisedRow={
+      ...verifiedExternalRow,
+      distilledApplicationPrinciples:verifiedExternalRow.distilledApplicationPrinciples.map(x=>x+'; verifiedCurrent=source-lineage')
+    };
+    const revisedPlaybooks={
+      ...verifiedPlaybooks,
+      taskTypes:Object.fromEntries(Object.entries(verifiedPlaybooks.taskTypes).map(([kind,task])=>[
+        kind,{...task,reuse:[revisedRow]}
+      ]))
+    };
+    const compiled=compileRobloxSource({
+      gameId,gameName:'Pocket Foundry',baseline:initialBaseline,artbook:{},
+      playbooks:verifiedPlaybooks,assetLibrary:companyAssetLibrary
+    });
+    for(const folder of ['shared','server','client'])fs.mkdirSync(path.join(root,folder),{recursive:true});
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const serverFile=path.join(root,'server','Game.server.luau');
+    fs.writeFileSync(configFile,compiled.result.sharedConfig);
+    fs.writeFileSync(serverFile,compiled.result.serverCode);
+    const clientBefore=compiled.result.clientCode.replace(
+      /(VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*)6\b/,'$17'
+    );
+    const nativePattern=/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END/;
+    assert.match(clientBefore,/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*7\b/);
+    const nativeBefore=clientBefore.match(nativePattern)?.[0];
+    assert.ok(nativeBefore);
+    fs.writeFileSync(clientFile,clientBefore);
+    // 새 모듈 없이 생성된 레거시 게임도 학습 스윕에서 재연결되는지 검증한다.
+    const projectFile=path.join(root,'default.project.json');
+    const legacyProject=projectJsonForGame(gameId);
+    for(const name of Object.keys(legacyProject.tree.ReplicatedStorage.Shared)){
+      if(name.startsWith('RobloxCommon'))delete legacyProject.tree.ReplicatedStorage.Shared[name];
+    }
+    fs.writeFileSync(projectFile,JSON.stringify(legacyProject,null,2)+'\n');
+    const serverBefore=fs.readFileSync(serverFile,'utf8');
+    const baselinePath='design/'+gameId+'/2026-09-12/design-revised.json';
+    const baselineFile=path.join(tmp,baselinePath);
+    fs.mkdirSync(path.dirname(baselineFile),{recursive:true});
+    fs.writeFileSync(baselineFile,JSON.stringify(runtimeBaseline,null,2)+'\n');
+    const queueFile=path.join(tmp,'development-queue.json');
+    fs.writeFileSync(queueFile,JSON.stringify({items:[{
+      gameId,status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',designBaselineSource:baselinePath
+    }]},null,2)+'\n');
+    const playbookFile=path.join(tmp,'verified-playbooks.json');
+    fs.writeFileSync(playbookFile,JSON.stringify(revisedPlaybooks,null,2)+'\n');
+    initGitRepo(tmp);
+    // The exact baseline remains readable from the canonical runtime Git ref,
+    // even when the main worktree does not contain the design directory.
+    fs.rmSync(path.join(tmp,'design'),{recursive:true,force:true});
+    const reportFile=path.join(tmp,'learning-report.json');
+    const args=[
+      path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
+      '--root='+path.join(tmp,'roblox-games'),
+      '--game-id='+gameId,
+      '--runtime-ref=HEAD',
+      '--runtime-queue='+queueFile,
+      '--playbooks='+playbookFile,
+      '--report='+reportFile
+    ];
+    execFileSync(process.execPath,args,{cwd:tmp,stdio:'pipe'});
+    const report=JSON.parse(fs.readFileSync(reportFile,'utf8'));
+    assert.equal(report.scannedGameCount,1);
+    assert.equal(report.results[0].runtimeDesignBaselineSource,baselinePath);
+    assert.equal(report.results[0].designProfile.subgenre,'Factory Simulator');
+    assert.equal(report.results[0].newerNativeBindingPreserved,true);
+    assert.equal(report.results[0].commonModuleProjectChanged,true);
+    assert.ok(report.results[0].commonModuleCount>=12);
+    assert.equal(report.results[0].commonModuleConflictCount,0);
+    assert.equal(JSON.parse(fs.readFileSync(projectFile,'utf8')).tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,
+      '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+    assert.ok(report.results[0].changedFiles.some(file=>file.endsWith('default.project.json')));
+    assert.match(fs.readFileSync(path.join(root,'roblox-source-bootstrap.json'),'utf8'),/runtimeBindingFingerprint/);
+    const expected=createRobloxVibe3LearningContext({
+      gameId,profile:robloxBuildProfileFromBaseline(runtimeBaseline),playbooks:revisedPlaybooks
+    });
+    assert.match(fs.readFileSync(configFile,'utf8'),
+      new RegExp('MemoryFingerprint\\s*=\\s*"'+expected.verifiedExternalLearningFingerprint+'"'));
+    assert.match(fs.readFileSync(configFile,'utf8'),
+      new RegExp('SemanticMappingFingerprint\\s*=\\s*"'+expected.semanticMappingFingerprint+'"'));
+    assert.equal(fs.readFileSync(clientFile,'utf8').match(nativePattern)?.[0],nativeBefore);
+    assert.equal(fs.readFileSync(serverFile,'utf8'),serverBefore);
+    const boundProject=fs.readFileSync(projectFile,'utf8');
+    execFileSync(process.execPath,args,{cwd:tmp,stdio:'pipe'});
+    assert.equal(JSON.parse(fs.readFileSync(reportFile,'utf8')).changedGameCount,0);
+    assert.equal(fs.readFileSync(projectFile,'utf8'),boundProject);
+    // Unscoped maintenance cannot rewrite the newer client native block.
+    execFileSync(process.execPath,args.filter(arg=>!arg.startsWith('--game-id=')),{cwd:tmp,stdio:'pipe'});
+    assert.equal(JSON.parse(fs.readFileSync(reportFile,'utf8')).changedGameCount,0);
+    assert.equal(fs.readFileSync(clientFile,'utf8').match(nativePattern)?.[0],nativeBefore);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+ test('preserved-source refresh reports profile and implementation defects without claiming static PASS',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-rebind-contract-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const pass=validateExistingRobloxSourceTree({root,baseline});
+    assert.equal(pass.pass,true,pass.blockers.join(','));
+    const config=path.join(root,'shared','GameConfig.luau');
+    const before=fs.readFileSync(config,'utf8');
+    fs.writeFileSync(config,before.replace(/Genre = "[^"]*"/,'Genre = "wrong-profile"'));
+    const failed=validateExistingRobloxSourceTree({root,baseline});
+    assert.equal(failed.pass,false);
+    assert.ok(failed.blockers.includes('CONFIG_GENRE_PROFILE_REQUIRED'));
+    assert.equal(fs.readFileSync(config,'utf8'),before.replace(/Genre = "[^"]*"/,'Genre = "wrong-profile"'));
+    const server=path.join(root,'server','Game.server.luau');
+    fs.writeFileSync(server,'-- preserved custom source; not a validated contract');
+    const invalid=validateExistingRobloxSourceTree({root,baseline});
+    assert.equal(invalid.pass,false);
+    assert.ok(invalid.blockers.includes('SERVER_REMOTE_BOUNDARY_REQUIRED'));
+    const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+    assert.ok(!workflow.includes('Static source contract: PASS.'));
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+ });
+
+test('current static source failure goes to existing Vibe repair and rejects stale source, design and validator evidence',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-contract-repair-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);writeCompiledTree(root);
+    const config=path.join(root,'shared','GameConfig.luau');
+    fs.writeFileSync(config,fs.readFileSync(config,'utf8').replace(/Genre = "[^"]*"/,'Genre = "wrong-profile"'));
+    initGitRepo(tmp);
+    const git=(...args)=>execFileSync('git',args,{cwd:tmp,encoding:'utf8'}).trim();
+    const revision=git('rev-parse','HEAD'),sourceTreeSha=git('rev-parse',`HEAD:roblox-games/${gameId}`);
+    const rows=evaluateExistingRobloxSources({queue:{items:[{...staleItem(),robloxSourceCommit:revision}]},repoRoot:tmp,sourceRevision:revision,loadBaseline:()=>baseline});
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].sourceContractRepairRequired,true);
+    const failedTechnicalItem={...staleItem(),currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',robloxSourceCommit:revision,
+      robloxBuildOrPackagePassed:false,robloxFailureSignature:'existing-source-static-revalidation-failed'};
+    const sameTree=evaluateExistingRobloxSources({queue:{items:[failedTechnicalItem]},repoRoot:tmp,sourceRevision:revision,loadBaseline:()=>baseline});
+    assert.equal(sameTree[0].sourceContractRepairRequired,true,'unchanged source must not hide an unresolved failed contract');
+
+    const evidence=rows[0].sourceContractRepairEvidence;
+    assert.equal(evidence.authority,'roblox-source-static-contract-failure');
+    assert.ok(evidence.staticContract.blockers.includes('CONFIG_GENRE_PROFILE_REQUIRED'));
+    assert.equal(evidence.artifactIdentity,null);
+    const item={...staleItem(),robloxSourceCommit:revision,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision,robloxQualityBuildUpEvidence:evidence};
+    const inspect=(extra={})=>hasCurrentRobloxPackageAssetRepair({item,baseline,sourceTreeSha,...extra});
+    assert.equal(inspect(),true);
+    assert.equal(inspect({sourceTreeSha:'9'.repeat(40)}),false);
+    assert.equal(inspect({baseline:{content:{identity:'changed design'}}}),false);
+    assert.equal(inspect({item:{...item,robloxQualityBuildUpEvidence:{...evidence,assetRepairContext:{...evidence.assetRepairContext,validatorFingerprint:'old'}}}}),false);
+    const pending=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,loadBaseline:()=>baseline});
+    assert.equal(pending[0].sourceRepairPending,true);
+    assert.deepEqual(pending[0].blockers,evidence.staticContract.blockers);
+    const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+    assert.ok(workflow.includes('reconciliationRow?.sourceContractRepairRequired===true'));
+    assert.ok(workflow.includes('robloxQualityBuildUpEvidence:{...result.sourceContractRepairEvidence'));
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+// 회귀: 최신 네이티브 유형 충돌은 동일 실패 학습 갱신 대신 기존 책임 소스 복구로 인계한다.
+test('newer native semantic mismatch enters causal source repair without rewriting game source',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-native-variant-repair-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const clientFile=path.join(root,'client','Game.client.luau');
+    fs.writeFileSync(clientFile,fs.readFileSync(clientFile,'utf8').replace(
+      /(VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*)6\b/,'$17'));
+    initGitRepo(tmp);
+    const files=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau'];
+    const before=files.map(file=>fs.readFileSync(path.join(root,file),'utf8'));
+    const revised={...baseline,content:{...baseline.content,robloxBuildProfile:{...robloxBuildProfileFromBaseline(baseline),genre:'Action',subgenre:'Battlegrounds & fighting'}}};
+    const sourceRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'TARGET_PLATFORM_SOURCE_BIND'};
+    const [row]=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision,
+      loadBaseline:()=>revised,playbooks:verifiedPlaybooks,assetLibrary:companyAssetLibrary,requestedGameId:gameId});
+    assert.equal(row.pass,false);
+    assert.equal(row.failure,'existing-source-static-revalidation-failed');
+    assert.equal(row.sourceContractRepairRequired,true);
+    assert.deepEqual(row.blockers,['ROBLOX_VERIFIED_LEARNING_NATIVE_VARIANT_MISMATCH']);
+    assert.equal(row.verifiedExternalLearningRefreshRequired,undefined);
+    assert.equal(row.sourceContractRepairEvidence.authority,'roblox-source-static-contract-failure');
+    const observed=row.sourceContractRepairEvidence.qualityFailureDetails[0].observed;
+    assert.notEqual(observed.currentVariant,observed.expectedVariant);
+    assert.ok(observed.currentNativeVersion>observed.generatorNativeVersion);
+    assert.deepEqual(files.map(file=>fs.readFileSync(path.join(root,file),'utf8')),before);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('compact existing Roblox GameConfig preserves game balance while learning is really bound',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-compact-learning-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const flat='local C={GameId="'+gameId+'",PolicySource="company-learning/platform-release-roadmap.json",Genre="Simulation",PlayMode="SINGLE",MultiplayerRequired=false,SaveKey="keep-save",StartGold=300,GateHP=500}\nC.World={CaptureZ={-56,132}}\nreturn C\n';
+    fs.writeFileSync(configFile,flat);
+    const first=applyVerifiedExternalLearningToExistingRobloxSource({root,learning:verifiedLearning});
+    assert.equal(first.changed,true);
+    const output=fs.readFileSync(configFile,'utf8');
+    for(const preserved of ['SaveKey="keep-save"','StartGold=300','GateHP=500','C.World={CaptureZ={-56,132}}','return C'])assert.ok(output.includes(preserved),preserved);
+    assert.match(output,/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/);
+    assert.match(output,/GameSpecificSemanticMappings/);
+    assert.match(fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8'),/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/);
+    const second=applyVerifiedExternalLearningToExistingRobloxSource({root,learning:verifiedLearning});
+    assert.equal(second.changed,false,'repeat learning sweep must not change native gameplay');
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('legacy module-only source cannot be promoted without current native static QA',()=>{
+  const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
+  assert.match(sweep,/validateExistingRobloxSourceTree/);
+  assert.match(sweep,/ROBLOX_LEGACY_NATIVE_SOURCE_ADMISSION/);
+  assert.match(sweep,/moduleSyncOnly===true&&!independentlyVerifiedNativeSource/);
+  assert.match(sweep,/independentlyVerifiedNativeSource\?\{moduleSyncOnly:false,sourceValidationPassed:true,sourceValidationBlockers:\[\]\}/);
+  assert.match(sweep,/runtimeRef\+':'\+baselinePath/);
+});
+
+
+// [복합장르] 설계 A 또는 B 장르 하나만 일치하면 인정하되, 실제 소스·모드 검증은 유지한다.
+// [삭제된 게임 QA 정리] 삭제된 소스 파일을 현재 활성 게임의 검증 대상으로 취급하지 않는다.

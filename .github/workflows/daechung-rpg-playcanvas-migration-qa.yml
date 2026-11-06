@@ -1,0 +1,24 @@
+name: Daechung RPG PlayCanvas Migration QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'web-games/daechung-rpg/playcanvas/**'
+      - 'qa/daechung-rpg-playcanvas-migration.test.mjs'
+      - '.github/workflows/daechung-rpg-playcanvas-migration-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'web-games/daechung-rpg/playcanvas/**'
+      - 'qa/daechung-rpg-playcanvas-migration.test.mjs'
+      - '.github/workflows/daechung-rpg-playcanvas-migration-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  migration-foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: node --test qa/daechung-rpg-playcanvas-migration.test.mjs

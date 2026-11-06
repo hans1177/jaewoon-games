@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "kind": "vibe2-verified-code-pattern-library",
+  "patterns": [],
+  "policy": {
+    "verifiedEvidenceRequired": true,
+    "independentQaRequiredForPositivePattern": true,
+    "sourceRevisionRequired": true,
+    "sameGamePreferred": true,
+    "sameEnginePreferred": true,
+    "rawUnauthorizedExternalCodeForbidden": true,
+    "wholeGameCopyForbidden": true,
+    "reusableUnit": "small-implementation-pattern-or-contract",
+    "failedPatternMayEnterOnlyAsVerifiedAvoidPattern": true
+  },
+  "populationSources": [
+    "verified Web candidate promotion",
+    "verified Roblox Studio candidate promotion",
+    "verified regression repair",
+    "verified save migration",
+    "verified runtime performance repair"
+  ]
+}

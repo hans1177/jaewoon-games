@@ -1,0 +1,151 @@
+name: Main Write Guard
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'tools/main-write-guard.mjs'
+      - 'qa/main-write-guard.test.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/security-immune-system.json'
+      - 'company-learning/vibe3-engine-contract.json'
+      - 'company-learning/vibe3-task-playbooks.json'
+      - '.github/workflows/company-central-policy-contract-qa.yml'
+      - 'tools/company-build-up-directive.mjs'
+      - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-gemini-free-rotation.mjs'
+      - 'tools/vibe2-design-intelligence.mjs'
+      - 'tools/vibe2-auto-planner.mjs'
+      - 'tools/vibe2-verified-design-handoff.mjs'
+      - 'tools/vibe2-fan-in-review.mjs'
+      - 'tools/vibe2-queue-control.mjs'
+      - 'tools/design-only-promotion-sync.mjs'
+      - 'qa/vibe2-owner-game-flow-lock.test.mjs'
+      - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'tools/company-development-roblox-runtime-foundation.mjs'
+      - 'tools/vibe3-roblox-platform.mjs'
+      - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'tools/main-write-guard.mjs'
+      - 'qa/main-write-guard.test.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/security-immune-system.json'
+      - 'company-learning/vibe3-engine-contract.json'
+      - 'company-learning/vibe3-task-playbooks.json'
+      - '.github/workflows/company-central-policy-contract-qa.yml'
+      - 'tools/company-build-up-directive.mjs'
+      - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-gemini-free-rotation.mjs'
+      - 'tools/vibe2-design-intelligence.mjs'
+      - 'tools/vibe2-auto-planner.mjs'
+      - 'tools/vibe2-verified-design-handoff.mjs'
+      - 'tools/vibe2-fan-in-review.mjs'
+      - 'tools/vibe2-queue-control.mjs'
+      - 'tools/design-only-promotion-sync.mjs'
+      - 'qa/vibe2-owner-game-flow-lock.test.mjs'
+      - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'tools/company-development-roblox-runtime-foundation.mjs'
+      - 'tools/vibe3-roblox-platform.mjs'
+      - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: main-write-guard-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          fetch-tags: false
+          filter: blob:none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Resolve comparison base
+        id: base
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base_sha='${{ github.event.pull_request.base.sha }}'
+            git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base_sha"
+            echo "ref=$base_sha" >> "$GITHUB_OUTPUT"
+          else
+            before='${{ github.event.before }}'
+            if [[ -n "$before" && "$before" != '0000000000000000000000000000000000000000' ]]; then
+              git cat-file -e "$before^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$before"
+              echo "ref=$before" >> "$GITHUB_OUTPUT"
+            else
+              echo "ref=HEAD^" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Detect guard implementation change
+        id: scope
+        env:
+          BASE_REF: ${{ steps.base.outputs.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --name-only "$BASE_REF" HEAD > /tmp/main-write-guard-files.txt
+          guard_changed=NO
+          if grep -Eq '^(tools/main-write-guard\.mjs|qa/main-write-guard\.test\.mjs|\.github/workflows/main-write-guard\.yml)$' /tmp/main-write-guard-files.txt; then
+            guard_changed=YES
+          fi
+          echo "guard_changed=$guard_changed" >> "$GITHUB_OUTPUT"
+          echo "MAIN_WRITE_GUARD_UNIT_QA=$guard_changed"
+
+      - name: Unit test deterministic guard only when guard implementation changed
+        if: ${{ steps.scope.outputs.guard_changed == 'YES' }}
+        run: node --test qa/main-write-guard.test.mjs
+
+      - name: Enforce owner-locked Designer to F0-F9 game production flow
+        run: node --test qa/vibe2-owner-game-flow-lock.test.mjs
+
+      - name: Reject new workflow direct writes to main
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title || '' }}
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_SHA: ${{ github.sha }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          unlock_title="$PR_TITLE"
+          if [ "$EVENT_NAME" = 'push' ] && [ -z "$unlock_title" ]; then
+            unlock_title="$(gh api "repos/$GITHUB_REPOSITORY/commits/$HEAD_SHA/pulls?per_page=20" --jq '[.[] | select(.merged_at != null) | .title][0] // ""' 2>/dev/null || true)"
+          fi
+          if [ -n "$unlock_title" ]; then
+            echo 'MAIN_WRITE_GUARD_UNLOCK_METADATA=ASSOCIATED_PR_OR_EVENT'
+          else
+            echo 'MAIN_WRITE_GUARD_UNLOCK_METADATA=NONE'
+          fi
+          node tools/main-write-guard.mjs --base='${{ steps.base.outputs.ref }}' --head=HEAD --actor='${{ github.actor }}' --owner=hans1177 --unlock-title="$unlock_title"
+
+      - name: Protection status
+        shell: bash
+        run: |
+          echo 'MAIN_DIRECT_WRITE_GUARD=PASS'
+          echo 'PR_ONLY_MERGE_GUARD=ACTIVE_FOR_CHANGED_WORKFLOWS'
+          echo 'ADMIN_PROTECTION_BLOCKER=branch/ruleset protection must still be enforced by repository admin settings'

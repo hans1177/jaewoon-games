@@ -1,0 +1,300 @@
+{
+  "version": 4,
+  "generation": "V3-PUMP",
+  "generatedFrom": "VERIFIED_MEMORY_PLUS_LOCKED_BASE_CHECKLISTS",
+  "taskTypes": {
+    "coding": {
+      "taskType": "coding",
+      "checklist": [
+        "rank-responsible-source-before-edit",
+        "generate-3-to-5-independent-candidates",
+        "prefer-smallest-behavior-preserving-diff",
+        "run-syntax-tests-runtime-regression"
+      ],
+      "reuse": [],
+      "avoid": [],
+      "authority": "verified-task-playbook"
+    },
+    "bugfix": {
+      "taskType": "bugfix",
+      "checklist": [
+        "reproduce-or-bind-failure-evidence",
+        "trace-failure-to-responsible-source",
+        "repair-smallest-surface",
+        "rerun-original-failure-and-regression"
+      ],
+      "reuse": [],
+      "avoid": [],
+      "authority": "verified-task-playbook"
+    },
+    "qa": {
+      "taskType": "qa",
+      "checklist": [
+        "bind-exact-revision",
+        "separate-launch-from-real-success",
+        "preserve-positive-and-negative-boundaries",
+        "require-observed-runtime-evidence"
+      ],
+      "reuse": [
+        {
+          "id": "external-black-box-block-blast-run-30",
+          "project": "block-blast",
+          "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1"
+        }
+      ],
+      "avoid": [],
+      "authority": "verified-task-playbook"
+    },
+    "unity": {
+      "taskType": "unity",
+      "checklist": [
+        "bind-current-source-tree-and-build",
+        "require-android-runtime-pass",
+        "require-independent-qa",
+        "preserve-save-and-core-design-lock"
+      ],
+      "reuse": [],
+      "avoid": [],
+      "authority": "verified-task-playbook"
+    },
+    "graphics": {
+      "taskType": "graphics",
+      "checklist": [
+        "rights-gate-before-derivative",
+        "never-overwrite-original",
+        "generate-3-to-5-derived-variants",
+        "score-style-silhouette-quality-animation-mobile-performance",
+        "connect-graphics-to-motion-ui-inventory-vfx-camera-and-audio-state-language",
+        "before-after-runtime-difference-must-be-visible-at-normal-gameplay-scale"
+      ],
+      "reuse": [],
+      "avoid": [],
+      "authority": "verified-task-playbook"
+    },
+    "planning": {
+      "taskType": "planning",
+      "checklist": [
+        "retrieve-verified-project-patterns",
+        "preserve-owner-and-design-locks",
+        "compare-alternatives",
+        "separate-evidence-from-inference"
+      ],
+      "reuse": [],
+      "avoid": [],
+      "authority": "verified-task-playbook"
+    },
+    "general": {
+      "taskType": "general",
+      "checklist": [
+        "retrieve-verified-success-and-failure-memory",
+        "rank-responsible-context",
+        "compare-candidates",
+        "require-verifiable-completion"
+      ],
+      "reuse": [],
+      "avoid": [],
+      "authority": "verified-task-playbook"
+    },
+    "storytelling": {
+      "taskType": "storytelling",
+      "checklist": [
+        "read-central-policy-and-locked-world-facts-first",
+        "separate-world-rules-character-wants-needs-and-conflicts",
+        "build-cause-and-effect-plot-before-dialogue-polish",
+        "bind-quests-to-prerequisite-state-action-consequence-and-reward",
+        "track-foreshadowing-reveal-and-payoff",
+        "keep-character-knowledge-and-motivation-consistent",
+        "make-dialogue-serve-scene-objective-character-and-subtext",
+        "verify-story-state-save-load-and-no-softlock",
+        "distill-technique-not-reference-expression"
+      ],
+      "reuse": [],
+      "avoid": [
+        "raw-reference-copy",
+        "unearned-reveal",
+        "character-knowledge-leak",
+        "fake-choice-without-consequence",
+        "quest-without-state-causality",
+        "exposition-only-progression"
+      ],
+      "authority": "verified-task-playbook"
+    },
+    "quest": {
+      "taskType": "quest",
+      "checklist": [
+        "bind-prerequisite-and-start-state",
+        "define-player-action-and-observable-state-change",
+        "define-completion-failure-and-retry-path",
+        "connect-reward-to-progression-or-story-consequence",
+        "verify-save-load-and-reentry-state",
+        "prevent-softlock-and-duplicate-reward"
+      ],
+      "reuse": [],
+      "avoid": [
+        "orphan-objective",
+        "duplicate-reward",
+        "invisible-prerequisite",
+        "nonrecoverable-story-state"
+      ],
+      "authority": "verified-task-playbook"
+    },
+    "dialogue": {
+      "taskType": "dialogue",
+      "checklist": [
+        "read-character-goal-relationship-and-known-information",
+        "define-scene-objective-and-turn",
+        "prefer-character-specific-subtext-over-generic-exposition",
+        "do-not-reveal-information-character-does-not-know",
+        "keep-branch-consequences-consistent-with-game-state"
+      ],
+      "reuse": [],
+      "avoid": [
+        "generic-exposition-dump",
+        "knowledge-leak",
+        "voice-collapse",
+        "choice-without-state-consequence"
+      ],
+      "authority": "verified-task-playbook"
+    },
+    "presentation": {
+      "taskType": "presentation",
+      "checklist": [
+        "read-central-living-motion-and-audio-contracts",
+        "audit-motion-ui-inventory-audio-vfx-camera-world-and-mobile-as-one-player-experience",
+        "rank-weakest-three-player-facing-tracks-before-decorative-extras",
+        "preserve-gameplay-save-progression-hit-semantics",
+        "preserve-owner-intentionally-disabled-audio-categories",
+        "modify-existing-responsible-presentation-system-directly",
+        "avoid-wrapper-shadow-presentation-pipeline",
+        "presence-or-marker-alone-never-passes-player-facing-quality",
+        "implement-current-highest-value-experience-gaps",
+        "capture-before-after-under-same-scene-input-and-state",
+        "require-runtime-mobile-qa-before-completion",
+        "repeat-build-up-until-critical-player-facing-gaps-close"
+      ],
+      "reuse": [],
+      "avoid": [
+        "gameplay-balance-drift",
+        "save-semantic-drift",
+        "animation-state-pop",
+        "unbounded-effects",
+        "input-obscuring-camera",
+        "micro-polish-that-is-not-perceptible-in-normal-play",
+        "single-loop-music-across-distinct-gameplay-contexts",
+        "inventory-ui-disconnected-from-authoritative-equipment-state",
+        "root-only-character-motion-presented-as-animation-quality"
+      ],
+      "authority": "verified-task-playbook"
+    },
+    "vfx": {
+      "taskType": "vfx",
+      "checklist": [
+        "bind-vfx-to-existing-gameplay-impact-event",
+        "keep-effect-lifetime-bounded",
+        "preserve-danger-and-touch-readability",
+        "avoid-per-frame-transient-growth",
+        "run-mobile-clutter-and-performance-qa"
+      ],
+      "reuse": [],
+      "avoid": [
+        "unbounded-particles",
+        "effect-over-gameplay-readability",
+        "vfx-driven-gameplay-state"
+      ],
+      "authority": "verified-task-playbook"
+    },
+    "audio": {
+      "taskType": "audio",
+      "checklist": [
+        "reuse-existing-audio-owner",
+        "preserve-owner-intentionally-disabled-audio-categories",
+        "initialize-audio-through-platform-native-lifecycle",
+        "preserve-mute-and-volume-controls",
+        "bind-impact-sound-to-existing-impact-event",
+        "use-region-state-combat-music-transitions-when-multiple-contexts-exist",
+        "use-smooth-state-transition-or-crossfade",
+        "use-spatial-rolloff-for-world-sounds-when-platform-and-game-require-it",
+        "handle-app-background-resume-or-respawn-without-duplicate-playback",
+        "verify-audio-against-animation-vfx-camera-impact-timing",
+        "run-mobile-speaker-and-transition-qa"
+      ],
+      "reuse": [],
+      "avoid": [
+        "audio-before-platform-runtime-ready",
+        "duplicate-music-owner",
+        "resume-duplicate-playback",
+        "audio-changing-gameplay-state"
+      ],
+      "authority": "verified-task-playbook"
+    }
+  },
+  "policy": {
+    "localWeightTrainingRequired": false,
+    "paidApiRequired": false,
+    "benchmarkCountsAsTrainingSample": false,
+    "hourlyCanonicalRefresh": true
+  },
+  "directNativePlatformContext": {
+    "version": 2,
+    "commonCoreDesign": "design-revised.json#content",
+    "platformProfiles": {
+      "ROBLOX": "design-revised.json#content.platformProfiles.ROBLOX",
+      "UNITY": "design-revised.json#content.platformProfiles.UNITY"
+    },
+    "requestEitherStartsBoth": false,
+    "platformEvidenceIndependent": true,
+    "unityWeb": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
+    "unityWebRequired": true,
+    "unityWebNativeGateAuthority": true,
+    "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
+    "upperPlatformTargets": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "upperPlatformStartAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
+    "unityWebReleaseStage": false,
+    "experienceBuildUp": {
+      "version": 1,
+      "authority": "tools/company-build-up-directive.mjs#EXPERIENCE_BUILD_UP_TRACKS",
+      "commonTracks": [
+        "MOTION_AND_ACTING",
+        "COMBAT_AND_PRIMARY_ACTION_FEEL",
+        "UI_HUD_AND_MENU",
+        "INVENTORY_AND_EQUIPMENT",
+        "AUDIO_MUSIC_AND_FEEDBACK",
+        "VFX_CAMERA_AND_IMPACT_SYNC",
+        "WORLD_VISUAL_COHESION",
+        "MOBILE_TOUCH_AND_ACCESSIBILITY",
+        "PERFORMANCE_AND_RUNTIME_STABILITY"
+      ],
+      "loop": [
+        "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
+        "RANK_WEAKEST_APPLICABLE_TRACKS",
+        "IMPLEMENT_EXISTING_RESPONSIBLE_SYSTEMS_DIRECTLY",
+        "REPLAY_REAL_INPUTS_AND_CAPTURE_SAME_SCENE_BEFORE_AFTER",
+        "VERIFY_PLAYER_FACING_EFFECT_AND_NO_SEMANTIC_REGRESSION",
+        "PROMOTE_VERIFIED_BASELINE_OR_REPEAT"
+      ],
+      "presenceOnlyPassForbidden": true,
+      "weakestTrackBatchSize": 3,
+      "ownerDisabledAudioCategoriesPreserved": true,
+      "platformAttention": {
+        "WEB": "STANDARD",
+        "UNITY": "HIGH",
+        "ROBLOX": "EXTRA"
+      },
+      "robloxExtra": {
+        "officialStudioMcpBeforeAfterRequired": true,
+        "mobileRuntimeEvidenceRequired": true,
+        "rootOnlyMotionCannotPass": true,
+        "articulatedActorJointMotionRequired": true,
+        "touchFirstUiRequired": true,
+        "inventoryEquipFeedbackRequiredWhenApplicable": true,
+        "soundServiceSoundGroupLifecycleRequiredWhenAudioApplicable": true,
+        "spatialRolloffRequiredForWorldAudioWhenApplicable": true,
+        "bgmRegionStateCombatTransitionRequiredWhenMultipleContextsExist": true,
+        "vfxCameraAudioMustShareAuthoritativeImpactEvent": true
+      }
+    }
+  }
+}

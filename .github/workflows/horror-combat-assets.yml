@@ -1,0 +1,196 @@
+# [마력숲] 기존 자산 ID와 권한이 같으면 재업로드·반복 권한 요청을 금지한다.
+name: Horror Authored Combat Assets
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/horror-combat-assets.yml'
+      - 'tools/horror-combat-assets.mjs'
+      - 'roblox-games/fantasy-survival/icons.png'
+      - 'roblox-games/fantasy-survival/right-icons.png'
+      - 'roblox-games/fantasy-survival/painted-icons.png'
+      - 'roblox-games/fantasy-survival/illustrated-icons.png'
+      - 'roblox-games/fantasy-survival/skill-icons.png'
+      - 'roblox-games/fantasy-survival/item-icons.png'
+      - 'roblox-games/fantasy-survival/guide-icons.png'
+      - 'roblox-games/fantasy-survival/assets/village-extra/*.glb'
+      - 'roblox-games/fantasy-survival/assets/village-extra2/*.glb'
+      - 'roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json'
+      - 'roblox-games/fantasy-survival/action-icons/**'
+      - 'assets/roblox/common-ui-v1/icons.png'
+      - 'assets/roblox/common-ui-v1/panel.png'
+      - 'assets/roblox/common-vfx-v1/sources/**'
+      - 'company-asset-library.json'
+      - 'assets/roblox/actors/native/**'
+      - 'assets/shared/*.glb'
+      - 'assets/roblox/world-ghosts/native/mesh/bride.glb'
+      - 'assets/roblox/common-materials-v1/manifest.json'
+      - 'assets/roblox/common-materials-v1/sources/**'
+  workflow_dispatch:
+    inputs:
+      village_extra_only:
+        description: 마력숲 마을 CC0 모델(village-extra/extra2) 미등록분만 업로드
+        type: boolean
+        default: false
+      world_map_only:
+        description: 'Upload generated world relief map only'
+        type: boolean
+        default: false
+      item_assets_only:
+        description: 마력숲 CC0 3D 아이템 등록
+        type: boolean
+        default: false
+      monster_assets_only:
+        description: 마력숲 CC0 몬스터(용) 등록
+        type: boolean
+        default: false
+      painted_hud_only:
+        description: 마력숲 오너 제작 시안 아이콘 16종 기존 경로 등록
+        type: boolean
+        default: false
+      illustrated_hud_only:
+        description: 마력숲 신규 제작 원화 21종 PNG 등록과 Universe 이미지 사용 권한 승인
+        type: boolean
+        default: false
+      magic_ui_only:
+        description: 마력숲 CC0 아이콘만 기존 등록 경로로 처리
+        type: boolean
+        default: false
+      forest_action_icons_only:
+        description: 마력숲 외부 액션 아이콘 5개 등록·검증, 기존 물약·가방 원본 보존
+        type: boolean
+        default: false
+      ui_only:
+        description: 오너 승인 UI 이미지만 등록
+        type: boolean
+        default: false
+      vfx_only:
+        description: 공용 CC0 이펙트 이미지만 등록
+        type: boolean
+        default: false
+      camp_assets_only:
+        description: 마력숲 기사단 야영지 CC0 소품 업로드
+        type: boolean
+        default: false
+      cape_check_only:
+        description: 마력숲 망토 원본 상태 점검
+        type: boolean
+        default: false
+      cape_grant_only:
+        description: 마력숲 빨간 망토 Universe 사용 권한 부여
+        type: boolean
+        default: false
+      forest_deer_only:
+        description: 마력숲 새 CC0 암사슴 원본 다운로드·등록
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: horror-authored-combat-assets-v2
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Import combat model and verified shared PBR sources
+        env:
+          WORLD_MAP_ONLY: ${{ inputs.world_map_only || false }}
+          MONSTER_ASSETS_ONLY: ${{ inputs.monster_assets_only || false }}
+          ITEM_ASSETS_ONLY: ${{ inputs.item_assets_only || false }}
+          CAMP_ASSETS_ONLY: ${{ inputs.camp_assets_only || false }}
+          CAPE_GRANT_ONLY: ${{ inputs.cape_grant_only || false }}
+          CAPE_CHECK_ONLY: ${{ inputs.cape_check_only || false }}
+          PAINTED_HUD_ONLY: ${{ inputs.painted_hud_only || false }}
+          ILLUSTRATED_HUD_ONLY: ${{ inputs.illustrated_hud_only || false }}
+          MAGIC_UI_ONLY: ${{ inputs.magic_ui_only || false }}
+          FOREST_ACTION_ICONS_ONLY: ${{ inputs.forest_action_icons_only || false }}
+          UI_ONLY: ${{ inputs.ui_only || false }}
+          VFX_ONLY: ${{ inputs.vfx_only || false }}
+          FOREST_DEER_ONLY: ${{ inputs.forest_deer_only || false }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        run: |
+          if [ "$WORLD_MAP_ONLY" = "true" ]; then
+            node tools/horror-combat-assets.mjs --world-map-only
+          elif [ "$ITEM_ASSETS_ONLY" = "true" ]; then
+            node tools/horror-combat-assets.mjs --item-assets-only
+          elif [ "$MONSTER_ASSETS_ONLY" = "true" ]; then
+            node tools/horror-combat-assets.mjs --monster-assets-only
+          elif [ "$CAMP_ASSETS_ONLY" = "true" ]; then
+            node tools/horror-combat-assets.mjs --camp-assets-only
+          elif [ "$CAPE_CHECK_ONLY" = "true" ]; then
+            node tools/horror-combat-assets.mjs --cape-check-only
+          elif [ "$CAPE_GRANT_ONLY" = "true" ]; then
+            node tools/horror-combat-assets.mjs --cape-grant-only
+          elif [ "${{ inputs.village_extra_only }}" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/assets/village-extra roblox-games/fantasy-survival/assets/village-extra2 | grep -q .; then
+            node tools/horror-combat-assets.mjs --village-extra-only
+          elif git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/skill-icons.png roblox-games/fantasy-survival/item-icons.png roblox-games/fantasy-survival/guide-icons.png | grep -q .; then
+            node tools/horror-combat-assets.mjs --gear-icons-only
+          elif [ "$ILLUSTRATED_HUD_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json | grep -q .; then
+            node tools/horror-combat-assets.mjs --illustrated-hud-only
+          elif [ "$PAINTED_HUD_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/painted-icons.png | grep -q .; then
+            node tools/horror-combat-assets.mjs --painted-hud-only
+          elif [ "$FOREST_ACTION_ICONS_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- .github/workflows/horror-combat-assets.yml | grep -q .; then
+            node tools/horror-combat-assets.mjs --magic-action-icons-only
+          elif [ "$FOREST_DEER_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q .; then
+            node tools/horror-combat-assets.mjs --forest-deer-only
+          elif [ "$MAGIC_UI_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/icons.png roblox-games/fantasy-survival/right-icons.png | grep -q .; then
+            node tools/horror-combat-assets.mjs --magic-ui-only
+          elif [ "$VFX_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- assets/roblox/common-vfx-v1/sources | grep -q .; then
+            node tools/horror-combat-assets.mjs --shared-vfx-only
+          elif [ "$UI_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- assets/roblox/common-ui-v1/icons.png assets/roblox/common-ui-v1/panel.png roblox-games/daechung-rpg/shared/RPGMenu.luau | grep -q .; then
+            node tools/horror-combat-assets.mjs --shared-ui-only
+          else
+            node tools/horror-combat-assets.mjs --include-shared-materials --include-shared-models
+          fi
+      - name: Preserve native import receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-material-import-receipts
+          path: |
+            assets/roblox/common-materials-v1/native-bindings.json
+            assets/roblox/world-ghosts/native/combat-roblox-assets.json
+            company-asset-library.json
+            roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json
+            roblox-games/fantasy-survival/native-assets.json
+            roblox-games/fantasy-survival/shared/VisualAssetIds.luau
+            assets/shared/forest/deer-real.glb
+            assets/roblox/common-ui-v1/catalog.json
+            assets/roblox/common-vfx-v1/catalog.json
+          if-no-files-found: ignore
+      - name: Open exact combat asset binding PR
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-horror-combat-assets'
+          git config user.email 'actions@users.noreply.github.com'
+          for binding_path in assets/shared/forest/deer-real.glb roblox-games/fantasy-survival/native-assets.json roblox-games/fantasy-survival/shared/VisualAssetIds.luau roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json roblox-games/fantasy-survival/client/Game.client.luau roblox-games/fantasy-survival/action-icons/ assets/roblox/common-vfx-v1/catalog.json roblox-games/daechung-rpg/shared/RPGMenu.luau assets/roblox/common-ui-v1/catalog.json assets/roblox/common-ui-v1/RobloxCommonUI.luau roblox-games/cozy-island/shared/RobloxCommonUI.luau roblox-games/daechung-rpg/shared/RobloxCommonUI.luau company-asset-library.json assets/roblox/world-ghosts/native/combat-roblox-assets.json assets/roblox/common-materials-v1/native-bindings.json roblox-games/cozy-island/default.project.json roblox-games/daechung-rpg/default.project.json; do
+            if test -e "$binding_path"; then git add -- "$binding_path"; fi
+          done
+          if git diff --cached --quiet; then
+            echo 'COMBAT_ASSET_BINDING_ALREADY_CURRENT=YES'
+            exit 0
+          fi
+          git commit -m 'assets: bind native combat model and shared PBR textures'
+          branch="automation/horror-combat-asset-${GITHUB_RUN_ID}"
+          git push origin "HEAD:refs/heads/$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title '기존 공용 모델 자동 변환과 네이티브 PBR 바인딩' --body '기존 권리·해시 확인 공용 GLB와 CC0 재질을 같은 네이티브 자산 등록 경로로 자동 변환·업로드한다. 범용 원본은 보존하고 플랫폼 파생 ID를 기존 자산 원장에 별도로 기록한다. 성공한 부분만 보존하며 실패 자산은 미완료로 남긴다. API 등록 성공은 화면 검증 완료를 뜻하지 않으며 productionVerified는 false로 유지한다. 동일 소스의 모바일 런타임·이미지 검증이 필요하다.')"
+          echo "COMBAT_ASSET_BINDING_PR=$pr_url"

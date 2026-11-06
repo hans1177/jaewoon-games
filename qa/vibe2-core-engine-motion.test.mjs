@@ -1,0 +1,242 @@
+// 파일명: qa/vibe2-core-engine-motion.test.mjs
+// 역할: Vibe2 엔진 어댑터, Core Runtime, Motion, 경험 학습, 병렬 우선순위 큐를 회귀검사한다.
+
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { detectVibeEngineTarget, createVibeEngineAdapter, validateVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
+import { planVibeWorkbenchTask, createVibeEditBrief } from '../assets/vibe-workbench.js';
+import { planVibeCoreTask, beginVibeCoreTask, recordVibeCoreOutcome } from '../assets/vibe-core-runtime.js';
+import {
+  createVibeMotionContract,
+  validateVibeMotionContract,
+  validateVibeMotionTransition,
+  createVibeCombatMotionSync,
+  createVibeRetargetContract,
+  scoreVibeMotionQuality,
+  createVibeMotionLearningRecord
+} from '../assets/vibe-motion-core.js';
+import { createVibeExperienceMemory, addVibeExperience, searchVibeExperience } from '../assets/vibe-experience-memory.js';
+import { createVibeContinuousQueue, selectNextVibeQueueTask, selectVibeQueueBatch, beginVibeQueueTask, finishVibeQueueTask } from '../assets/vibe-continuous-queue.js';
+
+test('engine adapters expose Unreal and gated Vibe Web first-implementation contracts', () => {
+  assert.equal(detectVibeEngineTarget('언리얼 UE5 블루프린트'), 'unreal');
+  const unreal = createVibeEngineAdapter({ target: 'unreal', gameSlug: 'motion-test' });
+  assert.equal(unreal.mayWriteSource, true);
+  assert(unreal.source.ignoredPaths.includes('unreal-games/motion-test/Intermediate/**'));
+  assert.equal(validateVibeEngineAdapter(unreal).valid, true);
+
+  const web = createVibeEngineAdapter({ target: 'web', gameSlug: 'legacy' });
+  assert.equal(web.mayWriteSource, true);
+  assert.equal(web.webArchiveReadOnly, false);
+  assert.equal(web.webMaintenanceOnly, false);
+  assert.equal(web.source.maintenanceOnly, false);
+  assert.equal(web.source.newGameAutomatic, true);
+  assert.equal(validateVibeEngineAdapter(web).valid, true);
+});
+
+test('픽셀 지역 디테일·몹 모션·무기 이펙트가 제작 지시와 모바일 검증에 포함된다', () => {
+  const request='픽셀 지역별 타일과 몹 걷기 회전 모션 및 무기 타격 잔상 이펙트 개선';
+  const brief=createVibeEditBrief({request,target:'web',gameId:'fantasy-survival',files:['web-games/fantasy-survival/world3d.mjs']});
+  assert.equal(brief.target,'web');
+  assert.deepEqual(brief.responsibleFiles,['web-games/fantasy-survival/world3d.mjs']);
+  assert(brief.directives.some(x=>x.includes('타일 경계')&&x.includes('새 렌더러')));
+  assert(brief.directives.some(x=>x.includes('발 접지')&&x.includes('쿨다운')));
+  assert(brief.directives.some(x=>x.includes('잔상')&&x.includes('모바일 버튼')));
+  assert(brief.requiredChecks.some(x=>x.includes('동일 장면 전후')));
+  assert(brief.requiredChecks.some(x=>x.includes('연속 프레임')));
+  assert(brief.requiredChecks.some(x=>x.includes('메모리 예산')));
+  assert.equal(brief.outputContract.noWrapperPatch,true);
+});
+test('workbench permits existing web source maintenance', () => {
+  const plan = planVibeWorkbenchTask({ request: '기존 웹게임 버튼 오류 수정', target: 'web', gameId: 'legacy' });
+  const brief = createVibeEditBrief({ request: '기존 웹게임 버튼 오류 수정', target: 'web', gameId: 'legacy' });
+  assert.equal(plan.target, 'web');
+  assert.equal(plan.applyPolicy.sourceWriteAllowed, true);
+  assert.equal(plan.applyPolicy.webArchiveReadOnly, false);
+  assert.equal(brief.outputContract.sourceWriteAllowed, true);
+});
+
+test('existing-game preservation wording does not trigger new-game owner gate while real new-game intent remains gated', () => {
+  const existingRequest='기존 게임 품질 백필 세대다. 현재 구현을 새 게임처럼 초기화하지 말고 기존 기능·세이브·진행·권한·핵심 규칙을 보존하며 UI와 조작을 개선해.';
+  const existingWorkbench=planVibeWorkbenchTask({request:existingRequest,target:'unity',gameId:'existing-holistic'});
+  const existingCore=planVibeCoreTask({request:existingRequest,target:'unity',gameId:'existing-holistic'});
+  assert.equal(existingWorkbench.companyDevelopment.required,false);
+  assert.equal(existingWorkbench.companyDevelopment.ownerGateRequired,false);
+  assert.equal(existingCore.executionGate.mayExecute,true);
+  assert.ok(!existingCore.executionGate.reasons.includes('company-owner-gate-required'));
+
+  const newGameCore=planVibeCoreTask({request:'새 게임 만들어. 모바일 생존 게임으로 제작해.',target:'unity',gameId:'brand-new'});
+  assert.equal(newGameCore.workbench.companyDevelopment.required,true);
+  assert.equal(newGameCore.workbench.companyDevelopment.ownerGateRequired,true);
+  assert.equal(newGameCore.executionGate.mayExecute,false);
+  assert.ok(newGameCore.executionGate.reasons.includes('company-owner-gate-required'));
+});
+
+test('core runtime composes verified Unreal learning and motion', () => {
+  const seeded = addVibeExperience(createVibeExperienceMemory(), {
+    gameId: 'old-game', engine: 'unreal', departments: ['development', 'qa'], taskType: 'motion',
+    problem: '공격 모션 전환 끊김', change: 'Montage blend 조정', outcome: 'PASS',
+    evidence: ['old-qa-1'], reusablePatterns: ['Montage blend 검증'], verified: true
+  });
+  const plan = planVibeCoreTask({
+    request: '캐릭터 공격 모션 개선', target: 'unreal', gameId: 'motion-test', experienceMemory: seeded.memory,
+    ownerDirective: true,
+    motion: {
+      actorId: 'hero',
+      states: [
+        { id: 'idle', clips: ['Idle'] }, { id: 'move', clips: ['Run'] }, { id: 'attack', clips: ['Attack01'] },
+        { id: 'hit', clips: ['Hit01'] }, { id: 'death', clips: ['Death01'] }
+      ],
+      transitions: { idle: ['move','attack','hit','death'], move: ['idle','attack','hit','death'], attack: ['idle','move','hit','death'], hit: ['idle','move','death'], death: [] }
+    }
+  });
+  assert.equal(plan.executionGate.mayExecute, true);
+  assert.equal(plan.learning.records.length, 1);
+  assert.equal(plan.motion.status, 'MOTION_CONTRACT_VALID');
+  const started = beginVibeCoreTask(plan);
+  assert.equal(started.started, true);
+  const recorded = recordVibeCoreOutcome({
+    plan, queue: started.queue, experienceMemory: seeded.memory, outcome: 'PASS', evidence: ['new-qa-1'], verified: true,
+    problem: '공격 모션 전환 끊김', change: 'Blend와 타격 타이밍 동기화', reusablePatterns: ['공격 blend + hit timing']
+  });
+  assert.equal(recorded.learning.added, true);
+  assert.equal(recorded.mayReuseLearning, true);
+});
+
+test('invalid required motion blocks execution', () => {
+  const plan = planVibeCoreTask({
+    request: '캐릭터 공격 모션 개선', target: 'unreal', gameId: 'motion-test',
+    motion: {
+      states: [{ id: 'idle', clips: ['Idle'] }, { id: 'move', clips: ['Move'] }, { id: 'attack', clips: [] }, { id: 'hit', clips: ['Hit'] }, { id: 'death', clips: ['Death'] }],
+      transitions: { idle: ['move'], move: ['idle'], attack: ['idle'], hit: ['idle'], death: [] }
+    }
+  });
+  assert.equal(plan.executionGate.mayExecute, false);
+  assert(plan.executionGate.reasons.includes('motion-contract-invalid'));
+});
+
+test('motion contract and combat timing gates remain enforced', () => {
+  const contract = createVibeMotionContract({
+    actorId: 'hero', engine: 'unreal',
+    states: [{ id: 'idle', clips: ['Idle'] }, { id: 'move', clips: ['Run'] }, { id: 'attack', clips: ['Attack'] }, { id: 'hit', clips: ['Hit'] }, { id: 'death', clips: ['Death'] }],
+    transitions: { idle: ['move','attack'], move: ['idle','attack'], attack: ['idle'], hit: ['idle'], death: [] }
+  });
+  assert.equal(validateVibeMotionContract(contract).valid, true);
+  assert.equal(validateVibeMotionTransition(contract, { from: 'death', to: 'idle' }).valid, false);
+  assert.equal(createVibeCombatMotionSync({ actionType: 'melee', activeStart: 0.2, activeEnd: 0.4, recoveryEnd: 0.8 }).valid, false);
+  assert.equal(createVibeCombatMotionSync({ actionType: 'melee', activeStart: 0.2, activeEnd: 0.4, recoveryEnd: 0.8, hitMarker: 'HitWindow' }).valid, true);
+});
+
+test('motion quality hard failure overrides perfect average', () => {
+  const result = scoreVibeMotionQuality({ coverage:100, transition:100, combatSync:100, footStability:100, rootMotion:100, retarget:100, readability:100, performance:100, repetition:100 }, { gateFailures:['attack-hit-timing-mismatch'] });
+  assert.equal(result.average, 100);
+  assert.equal(result.decision, 'REVISE');
+});
+
+test('default motion transitions only connect available states and explicit mistakes stay visible', () => {
+  const states = ['idle', 'move', 'attack', 'hit', 'death'].map(id => ({ id, clips: [id] }));
+  const contract = createVibeMotionContract({ states });
+  assert.equal(validateVibeMotionContract(contract).valid, true);
+  assert.equal(validateVibeMotionTransition(contract, { from: 'idle', to: 'attack' }).valid, true);
+  assert.equal(validateVibeMotionTransition(contract, { from: 'death', to: 'idle' }).valid, false);
+  const explicit = createVibeMotionContract({ states, transitions: { idle: ['missing'] } });
+  assert.ok(validateVibeMotionContract(explicit).issues.includes('transition-target-unknown:idle->missing'));
+  const plan = planVibeCoreTask({ request: '기존 캐릭터 모션 수정', target: 'web', gameId: 'existing', motion: { states } });
+  assert.equal(plan.executionGate.mayExecute, true);
+});
+
+test('combat contact cannot precede the authored windup', () => {
+  const input = { actionType: 'melee', windup: .3, activeStart: .2, activeEnd: .4, recoveryEnd: .8, hitMarker: 'HitWindow' };
+  const invalid = createVibeCombatMotionSync(input);
+  assert.equal(invalid.valid, false);
+  assert.ok(invalid.issues.includes('active-before-windup-end'));
+  assert.equal(invalid.timing.activeStart, .2);
+  assert.equal(createVibeCombatMotionSync({ ...input, windup: .2 }).valid, true);
+});
+
+test('only verified evidence becomes reusable learning', () => {
+  const bad = createVibeMotionLearningRecord({ problem:'foot sliding', solution:'turn state', verified:true });
+  const good = createVibeMotionLearningRecord({ problem:'foot sliding', solution:'turn state', evidence:'qa-run-1', verified:true });
+  assert.equal(bad.reusable, false);
+  assert.equal(good.reusable, true);
+
+  let memory = createVibeExperienceMemory();
+  assert.equal(addVibeExperience(memory, { engine:'unreal', taskType:'motion', problem:'slide', change:'turn', outcome:'PASS', verified:false }).added, false);
+  const accepted = addVibeExperience(memory, { engine:'unreal', taskType:'motion', problem:'slide', change:'turn', outcome:'PASS', evidence:['qa-1'], reusablePatterns:['turn state'], verified:true });
+  memory = accepted.memory;
+  assert.equal(searchVibeExperience(memory, { engine:'unreal', taskType:'motion', problem:'slide' }).count, 1);
+});
+
+test('queue priority is owner directive then release state then task priority', () => {
+  const queue = createVibeContinuousQueue([
+    { id:'dev-unity', target:'unity', gameId:'dev-unity', sourceRoot:'unity-games/dev-unity', goal:'개발확정', releaseState:'development-confirmed', priority:'critical' },
+    { id:'release-web', target:'web', gameId:'release-web', sourceRoot:'web-games/release-web', goal:'출시확정', releaseState:'release-confirmed', priority:'normal' },
+    { id:'owner', target:'unity', gameId:'owner', sourceRoot:'unity-games/owner', goal:'사용자 지시', releaseState:'other', priority:'owner-immediate', ownerDirective:true }
+  ]);
+  assert.equal(selectNextVibeQueueTask(queue).selected.id, 'owner');
+  const afterOwner = finishVibeQueueTask(beginVibeQueueTask(queue, 'owner').queue, { taskId:'owner', outcome:'PASS', evidence:['qa'] });
+  assert.equal(afterOwner.next.selected[0].id, 'release-web');
+});
+
+test('running task permits same-root disjoint work and serializes only overlapping responsible files', () => {
+  let queue = createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    { id:'release', gameId:'release', sourceRoot:'web-games/release', responsibleFiles:['web-games/release/game.js'], target:'web', goal:'출시확정 유지보수', releaseState:'release-confirmed' },
+    { id:'same-root-disjoint', gameId:'release', sourceRoot:'web-games/release', responsibleFiles:['web-games/release/ui.js'], target:'web', goal:'같은 루트 비충돌 작업', releaseState:'development-confirmed' },
+    { id:'same-file-conflict', gameId:'release', sourceRoot:'web-games/release', responsibleFiles:['web-games/release/game.js'], target:'web', goal:'같은 책임 파일 충돌 작업', releaseState:'development-confirmed' },
+    { id:'dev', gameId:'dev', sourceRoot:'unity-games/dev', responsibleFiles:['unity-games/dev/Assets/Scripts/Game.cs'], target:'unity', goal:'개발확정 작업', releaseState:'development-confirmed' }
+  ]});
+  queue = beginVibeQueueTask(queue, 'release').queue;
+  const next = selectVibeQueueBatch(queue);
+  assert.equal(next.selected.some(task=>task.id==='dev'), true);
+  assert.equal(next.selected.some(task=>task.id==='same-root-disjoint'), true);
+  assert.equal(next.selected.some(task=>task.id==='same-file-conflict'), false);
+  assert.equal(next.deferredConflicts.some(row=>row.task.id==='same-file-conflict'&&row.reason==='responsible-file-conflict'), true);
+  assert.equal(next.deferredConflicts.some(row=>row.reason==='source-root-conflict'), false);
+});
+
+test('protected or paid autonomous work remains blocked while web maintenance is eligible', () => {
+  const queue = createVibeContinuousQueue([
+    { id:'web-maintenance', target:'web', gameId:'web-maintenance', sourceRoot:'web-games/web-maintenance', goal:'기존 웹게임 버튼 버그 수정', releaseState:'release-confirmed' },
+    { id:'core-change', target:'unity', gameId:'core-change', sourceRoot:'unity-games/core-change', goal:'핵심 규칙 변경', requiresOwnerDecision:true },
+    { id:'paid', target:'unreal', gameId:'paid', sourceRoot:'unreal-games/paid', goal:'유료 API 작업', paidResourceRequired:true }
+  ]);
+  const next = selectNextVibeQueueTask(queue);
+  assert.equal(next.selected.id, 'web-maintenance');
+  assert.equal(next.blocked.length, 2);
+});
+
+
+test('studio motion core keeps contact, IK and presentation timing non-authoritative', () => {
+  const sync=createVibeCombatMotionSync({
+    actionId:'heavy-slash',actionType:'melee',activeStart:.3,activeEnd:.5,recoveryEnd:.8,
+    hitMarker:'blade-contact',contactSampleHz:60,hitStopMs:70,cameraImpulse:1.25,audioVelocitySync:true
+  });
+  assert.equal(sync.valid,true);
+  assert.equal(sync.presentation.contactSolver.continuousSweep,true);
+  assert.equal(sync.presentation.contactSolver.damageAuthority,false);
+  assert.equal(sync.presentation.hitStopMs,70);
+  assert.equal(sync.gameplayAuthority,'engine-resolves-damage-and-resource-results');
+
+  const retarget=createVibeRetargetContract({
+    engine:'roblox',sourceSkeleton:'shared-humanoid',targetSkeleton:'r15',referencePose:'a-pose',
+    footIK:true,handIK:true,lookIK:true,multiLimbIK:true,contactCorrection:true
+  });
+  assert.equal(retarget.valid,true);
+  assert.equal(retarget.footIK,true);
+  assert.equal(retarget.handIK,true);
+  assert.equal(retarget.lookIK,true);
+  assert.equal(retarget.multiLimbIK,true);
+  assert.equal(retarget.plantedContactMustPreserveWorldPosition,true);
+  assert.equal(retarget.gameplayColliderAndRootAuthorityImmutable,true);
+});
+
+
+test('existing lobby menu new-session label does not enter new-project owner gate',()=>{
+ const request='[WORLD_LOBBY_FIRST] 기존 게임의 로비와 저장을 보존한다. menuStructure: 타이틀→계속하기 또는 새 게임→본편→장비·지도·설정→실패 복구. 새 게임 버튼은 새 세션을 시작한다.';
+ const plan=planVibeCoreTask({request,target:'roblox',gameId:'daechung-rpg'});
+ assert.equal(plan.workbench.companyDevelopment.required,false);
+ assert.equal(plan.executionGate.mayExecute,true);
+ const newProject=planVibeCoreTask({request:'새 게임 만들어. 타이틀에는 새 게임 버튼을 넣어.',target:'roblox',gameId:'new-project'});
+ assert.equal(newProject.workbench.companyDevelopment.required,true);
+ assert.ok(newProject.executionGate.reasons.includes('company-owner-gate-required'));
+});

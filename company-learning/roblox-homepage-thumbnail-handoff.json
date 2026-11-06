@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "kind": "ROBLOX_HOMEPAGE_THUMBNAIL_NEXT_WORKER_HANDOFF",
+  "authority": "NON_AUTHORITATIVE_EXECUTION_HANDOFF",
+  "createdAt": "2026-09-26",
+  "repository": "hans1177/jaewoon-games",
+  "baseMain": "3443b667d3ea131e8c1796abf5578022d6d876ac",
+  "ownerRequest": {
+    "status": "HANDOFF_ONLY_STOP_IMPLEMENTATION",
+    "request": "홈페이지 내부 게임사진과 Roblox 서버 썸네일을 동일 이미지로 사용. Roblox스럽고 고품질로 제작. 표기는 영문 게임명을 크게, 한글 게임명을 부제처럼 작게. 현재 작업자는 적용을 멈추고 다음 작업자가 이어서 처리.",
+    "lowSizeRequired": true
+  },
+  "canonicalContracts": {
+    "centralPolicy": "company-learning/platform-release-roadmap.json#robloxHomepageThumbnailSyncContract",
+    "centralPolicyVersion": 399,
+    "architecture": "company-learning/company-architecture-map.json#robloxHomepageThumbnailSyncTopology",
+    "architectureVersion": 207,
+    "security": "company-learning/security-immune-system.json#robloxThumbnailOpenCloudSecurity",
+    "securityVersion": 50,
+    "sameSourceAssetForHomepageAndRoblox": true,
+    "verifiedUniverseOnly": true,
+    "publicReleaseAuthorityUnchanged": true
+  },
+  "currentRepositoryState": {
+    "catalogVersion": 31,
+    "targetGames": [
+      {
+        "gameId": "cozy-island",
+        "currentTitle": "포근섬: 작은 왕국 키우기",
+        "currentAsset": "assets/roblox-thumbnails/cozy-island.svg"
+      },
+      {
+        "gameId": "daechung-rpg",
+        "currentTitle": "5포탈 RPG: 던전 파티",
+        "currentAsset": "assets/roblox-thumbnails/daechung-rpg.svg"
+      },
+      {
+        "gameId": "horror-escape-room",
+        "currentTitle": "심야 감염전 [4대4]",
+        "currentAsset": "assets/roblox-thumbnails/horror-escape-room.svg"
+      },
+      {
+        "gameId": "village-dungeons",
+        "currentTitle": "마을 던전 RPG",
+        "currentAsset": "assets/roblox-thumbnails/village-dungeons.svg"
+      }
+    ],
+    "catalogFieldsAlreadyPointToCanonicalSharedAsset": [
+      "game.image",
+      "game.marketingThumbnail",
+      "game.canonical.identity.image",
+      "game.canonical.marketing.thumbnail"
+    ],
+    "rendererAlreadyPrefersCanonicalMarketingThumbnail": true,
+    "robloxThumbnailSyncTool": "tools/company-roblox-thumbnail-sync.mjs",
+    "qa": [
+      "qa/company-roblox-thumbnail-sync.test.mjs",
+      "qa/company-homepage-runtime-propagation.test.mjs"
+    ]
+  },
+  "approvedCreativeDirection": [
+    {
+      "gameId": "cozy-island",
+      "englishTitle": "COZY ISLAND",
+      "koreanSubtitle": "포근섬: 작은 왕국 키우기",
+      "artDirection": "밝은 블록형 3D 섬 왕국, 성/마을/농장/주민/병사/바다/배가 보이는 고밀도 Roblox풍 대표 장면. 영어 제목이 가장 크고 한글 부제는 보조."
+    },
+    {
+      "gameId": "daechung-rpg",
+      "englishTitle": "5 PORTAL RPG",
+      "koreanSubtitle": "5포탈 RPG: 던전 파티",
+      "artDirection": "중앙 영웅과 파티, 서로 다른 색의 5개 마법 포탈, 판타지 던전/보스/보물 느낌. 강한 입체 조명과 액션 RPG 썸네일 구성."
+    },
+    {
+      "gameId": "horror-escape-room",
+      "englishTitle": "MIDNIGHT INFECTION",
+      "koreanSubtitle": "심야 감염전 [4대4]",
+      "artDirection": "어두운 시설 복도에서 인간 4명과 감염체 4명이 맞붙는 레드/블루 대치 구도. 잔혹 표현 없이 Roblox형 3D PvP 호러."
+    },
+    {
+      "gameId": "village-dungeons",
+      "englishTitle": "VILLAGE DUNGEONS",
+      "koreanSubtitle": "마을 던전 RPG",
+      "artDirection": "밝은 판타지 마을에서 여러 던전 입구로 이어지는 모험 장면. 영웅, 장비, 퀘스트, 포탈, 보스 실루엣을 포함한 Roblox형 RPG 썸네일."
+    }
+  ],
+  "generatedButNotApplied": {
+    "ownerApprovedVisualDirection": true,
+    "repositoryCommit": false,
+    "catalogMutation": false,
+    "robloxUpload": false,
+    "note": "이 세션에서 이미지 생성 결과 4장을 사용자가 '좋아 적용'으로 승인했으나, 이후 '문서화만 해놔 다음작업자가 하게'라고 지시하여 실제 적용은 중단됨.",
+    "ephemeralContainerFiles": [
+      "/mnt/data/포근섬_작은_왕국_키우기.png",
+      "/mnt/data/다섯_포탈_rpg_어드벤처.png",
+      "/mnt/data/심야_감염전_4대4_대치.png",
+      "/mnt/data/마을_던전_rpg_모험_썸네일.png"
+    ],
+    "warning": "위 경로는 현재 세션 컨테이너 전용이므로 다음 작업자에게 보존된다고 가정하지 말 것. 접근 불가 시 approvedCreativeDirection 기준으로 재생성."
+  },
+  "lowSizeTarget": {
+    "preferredDisplaySource": "저용량 JPG 또는 PNG를 canonical asset로 사용하되 기존 동기화 도구가 지원하는 확장자 유지",
+    "workingCompressionResult": [
+      {
+        "gameId": "cozy-island",
+        "resolution": "512x288",
+        "jpegQuality": 48,
+        "approxSizeKB": 33
+      },
+      {
+        "gameId": "daechung-rpg",
+        "resolution": "512x288",
+        "jpegQuality": 48,
+        "approxSizeKB": 34
+      },
+      {
+        "gameId": "horror-escape-room",
+        "resolution": "512x288",
+        "jpegQuality": 48,
+        "approxSizeKB": 24
+      },
+      {
+        "gameId": "village-dungeons",
+        "resolution": "512x288",
+        "jpegQuality": 48,
+        "approxSizeKB": 35
+      }
+    ],
+    "instruction": "화질이 눈에 띄게 무너지지 않는 범위에서 저장소 전송량과 홈페이지 로딩을 우선. Roblox 업로드 시 동기화 도구가 최종 1920x1080 업로드 PNG를 만들 수 있게 validate/render 경로 확인."
+  },
+  "nextWorkerExecutionOrder": [
+    "FETCH_FRESH_MAIN_AND_RELOAD_CENTRAL_POLICY_LOG_ARCHITECTURE_SECURITY",
+    "RECOVER_OR_REGENERATE_THE_FOUR_APPROVED_IMAGES",
+    "COMPRESS_TO_LOW_SIZE_16_9_ASSETS",
+    "REPLACE_THE_FOUR_CANONICAL_assets/roblox-thumbnails_ASSETS_WITHOUT_CREATING_DUPLICATE_HOMEPAGE_ART",
+    "IF_EXTENSION_CHANGES_UPDATE_game-catalog.json_FIELDS_TO_THE_SAME_CANONICAL_FILE_FOR_ALL_FOUR_GAMES",
+    "KEEP_ENGLISH_TITLE_DOMINANT_AND_KOREAN_TITLE_AS_SUBTITLE_IN_THE_IMAGE",
+    "UPDATE_QA_ONLY_IF_EXTENSION_OR_VALIDATION_ASSUMPTIONS_CHANGE",
+    "RUN_company-roblox-thumbnail-sync_AND_homepage_runtime_QA",
+    "VERIFY_HOMEPAGE_RENDER_USES_THE_EXACT_SAME_CANONICAL_ASSET",
+    "USE_EXISTING_ROBLOX_OPEN_CLOUD_THUMBNAIL_SYNC_ONLY_FOR_VERIFIED_UNIVERSE_TARGETS",
+    "VERIFY_UPLOAD_STATUS_FINISHED_AND_PERSIST_EXISTING_RUNTIME_EVIDENCE",
+    "MERGE_ONLY_AFTER_FRESH_QA_AND_SHARED_CONTEXT_REVALIDATION"
+  ],
+  "doNot": [
+    "DO_NOT_CREATE_SEPARATE_HOMEPAGE_AND_ROBLOX_ART",
+    "DO_NOT_KEEP_THE_OLD_SIMPLE_PLACEHOLDER_STYLE_IF_NEW_APPROVED_ART_IS_AVAILABLE",
+    "DO_NOT_CHANGE_GAMEPLAY_SOURCE",
+    "DO_NOT_CHANGE_PUBLICATION_TARGETS",
+    "DO_NOT_LOG_OR_PERSIST_ROBLOX_API_KEYS",
+    "DO_NOT_USE_ROBLOX_PLAYER_AUTOMATION_OR_EXTERNAL_GUI_MACROS",
+    "DO_NOT_CREATE_SHADOW_THUMBNAIL_PIPELINE",
+    "DO_NOT_CLAIM_ROBLOX_UPLOAD_COMPLETE_WITHOUT_FINISHED_STATUS_EVIDENCE"
+  ]
+}

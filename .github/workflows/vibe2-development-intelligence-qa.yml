@@ -1,0 +1,56 @@
+name: Vibe2 Development Intelligence QA
+
+on:
+  pull_request:
+    paths:
+      - "tools/vibe2-development-intelligence.mjs"
+      - "tools/autonomous-department-scope.mjs"
+      - "tools/autonomous-department-integrator.mjs"
+      - "assets/jaewoon-graphics-engine.js"
+      - "qa/vibe2-development-intelligence.test.mjs"
+      - "qa/vibe2-graphics-implementation.test.mjs"
+      - "qa/vibe2-graphics-scope.test.mjs"
+      - "qa/autonomous-department-scope.test.mjs"
+      - "qa/jaewoon-graphics-engine.test.cjs"
+      - ".github/workflows/vibe2-development-intelligence-qa.yml"
+  push:
+    branches: [main]
+    paths:
+      - "tools/vibe2-development-intelligence.mjs"
+      - "tools/autonomous-department-scope.mjs"
+      - "tools/autonomous-department-integrator.mjs"
+      - "assets/jaewoon-graphics-engine.js"
+      - "qa/vibe2-development-intelligence.test.mjs"
+      - "qa/vibe2-graphics-implementation.test.mjs"
+      - "qa/vibe2-graphics-scope.test.mjs"
+      - "qa/autonomous-department-scope.test.mjs"
+      - "qa/jaewoon-graphics-engine.test.cjs"
+      - ".github/workflows/vibe2-development-intelligence-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  intelligence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check assets/jaewoon-graphics-engine.js
+          node --check tools/vibe2-development-intelligence.mjs
+          node --check tools/autonomous-department-scope.mjs
+          node --check tools/autonomous-department-integrator.mjs
+      - name: Vibe2 development intelligence tests
+        run: node --test qa/vibe2-development-intelligence.test.mjs
+      - name: Graphics engine regression and implementation tests
+        run: node --test qa/jaewoon-graphics-engine.test.cjs qa/vibe2-graphics-implementation.test.mjs
+      - name: Department scope regression and graphics routing tests
+        run: node --test qa/autonomous-department-scope.test.mjs qa/vibe2-graphics-scope.test.mjs

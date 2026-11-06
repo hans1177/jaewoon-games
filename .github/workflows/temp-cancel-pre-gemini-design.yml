@@ -1,0 +1,34 @@
+name: Cancel Superseded Design Runtime
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/temp-cancel-pre-gemini-design.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel pre-truncation-fix DESIGN_ONLY run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id=35319309029
+          keep_run_id=35319991295
+          state="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status')"
+          echo "SUPERSEDED_RUN_STATUS=$state"
+          if [[ "$state" =~ ^(queued|in_progress|pending|waiting|requested)$ ]]; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/force-cancel" >/dev/null
+            echo 'SUPERSEDED_RUN_FORCE_CANCEL_REQUESTED=YES'
+          else
+            echo 'SUPERSEDED_RUN_CANCEL_REQUESTED=NO_ALREADY_TERMINAL'
+          fi
+          echo "KEEP_GEMINI_RUN_ID=$keep_run_id"
+          echo 'DESIGN_PROVIDER=GEMINI_ONLY'

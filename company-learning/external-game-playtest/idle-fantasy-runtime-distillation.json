@@ -1,0 +1,125 @@
+{
+  "version": 3,
+  "gameId": "idle-fantasy",
+  "packageId": "com.tristinbaker.idlefantasy",
+  "sourceType": "EXTERNAL_OPEN_SOURCE_BLACK_BOX_RUNTIME_EVIDENCE",
+  "authority": "PRACTICE_ONLY_MIXED_EVIDENCE",
+  "observedThrough": "2026-09-17",
+  "runtimePromotionAllowed": true,
+  "gameplayBehaviorPromotionAllowed": true,
+  "partialObservableDistillationAllowed": true,
+  "codeExtractionAllowed": false,
+  "binaryRedistributionAllowed": false,
+  "positiveTrainingSample": true,
+  "verifiedRuntimePass": true,
+  "stablePlaytestVerified": true,
+  "stablePlaytestBoundary": "CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY",
+  "gameEntryObserved": true,
+  "gameEntryEvidenceAuthority": "CORRELATED_GITHUB_ACTIONS_BLACK_BOX_EVIDENCE",
+  "gameEntryObservationRecordedAt": "2026-09-17",
+  "verifiedObservedStages": [
+    "APP_LAUNCH",
+    "GAME_ENTRY",
+    "INPUT_EXERCISE",
+    "VISUAL_STATE_CHANGE",
+    "PROCESS_SURVIVAL",
+    "NO_FATAL_CRASH_OR_ANR"
+  ],
+  "sourceEvidence": {
+    "privateRepository": "hans1177/jaewoon-ai-company",
+    "workflowPath": ".github/workflows/vibe2-open-source-apk-blackbox.yml",
+    "latestCompletedRun": 35129017248,
+    "latestRunNumber": 42,
+    "latestArtifactId": 10460453510,
+    "latestArtifactDigest": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d",
+    "latestResult": "PASS",
+    "latestFailure": null,
+    "runtimeType": "REDROID_NATIVE_ARM64_DIRECT_EXEC",
+    "hostArch": "aarch64",
+    "guestAndroid": "14",
+    "guestAbi": "arm64-v8a",
+    "redroidImage": "redroid/redroid:14.0.0_64only-latest",
+    "apkSha256": "599c96fbae877caf33c5d6f0da2896d694acd4d9a38d75f3ad706d0e2bb91500",
+    "apkSource": "OFFICIAL_GITHUB_RELEASE"
+  },
+  "verifiedObservedFacts": [
+    {
+      "id": "actual-game-entry-correlated",
+      "evidenceAuthority": "RUN_42_ARTIFACT",
+      "fact": "After the notification prompt and first-run onboarding were dismissed through visible controls, the captured run reached the live Idle Fantasy home/town game state with the character, combat level, town actions, event state and bottom gameplay navigation visible.",
+      "boundary": "This proves actual game entry only for the captured validation window."
+    },
+    {
+      "id": "input-caused-visible-state-change",
+      "evidenceAuthority": "RUN_42_ARTIFACT",
+      "fact": "A bounded tap on the visible Combat navigation control changed the captured game state from the home/town view to the Combat screen, where dungeon choices, level requirements and combat navigation were visibly presented.",
+      "boundary": "Only the directly observed navigation-to-visible-state transition is promoted; combat formulas, dungeon balance and hidden progression rules are not inferred."
+    },
+    {
+      "id": "runtime-survived-observed-input",
+      "evidenceAuthority": "RUN_42_ARTIFACT",
+      "fact": "The package remained alive and foreground after onboarding and gameplay navigation inputs, with no captured FATAL EXCEPTION, SIGABRT, SIGSEGV or ANR marker in the validation window.",
+      "boundary": "This proves the captured validation window and does not claim indefinite long-run stability."
+    }
+  ],
+  "distilledPositiveRuntimePatterns": [
+    {
+      "id": "first-run-friction-separated-from-game-entry",
+      "scope": "mobile-rpg-onboarding",
+      "evidence": [42],
+      "lesson": "Permission prompts, introductory slides and character creation are distinct pre-game states and should not be mistaken for successful RPG gameplay entry.",
+      "reuseRule": "For Roblox/mobile QA, preserve separate milestones for permission handling, onboarding, character setup and the first live gameplay dashboard."
+    },
+    {
+      "id": "persistent-primary-rpg-navigation",
+      "scope": "mobile-rpg-ui",
+      "evidence": [42],
+      "lesson": "The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.",
+      "reuseRule": "For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change."
+    },
+    {
+      "id": "danger-and-level-gating-visible-before-commitment",
+      "scope": "rpg-progression-observation",
+      "evidence": [42],
+      "lesson": "The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.",
+      "reuseRule": "Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game."
+    },
+    {
+      "id": "semantic-input-plus-runtime-survival",
+      "scope": "qa-evidence",
+      "evidence": [42],
+      "lesson": "A gameplay navigation input becomes useful evidence when the before/after screens show a meaningful semantic transition and the target process remains foreground and crash-free.",
+      "reuseRule": "Bind gameplay input evidence to semantic before/after frames plus process, focus and crash checks."
+    }
+  ],
+  "distilledFailurePatterns": [
+    {
+      "id": "unchanged-screen-after-tap-is-not-input-pass",
+      "scope": "black-box-input-automation",
+      "evidence": [41],
+      "lesson": "A prior tap left the visible home state unchanged, so process survival alone was insufficient to claim input-response success.",
+      "reuseRule": "If the intended input does not produce a meaningful visible state change, do not promote it; target a visible semantic control and capture a new before/after pair."
+    }
+  ],
+  "routeDecisions": {
+    "githubHostedArm64Redroid": "VERIFIED_WORKING_ANDROID14_NATIVE_ARM64_RUN42",
+    "sourceOrAssetExtraction": "NOT_USED_FOR_THIS_BLACK_BOX_FLOW",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "learningUse": {
+    "allowed": [
+      "mobile RPG onboarding stage separation",
+      "persistent primary-system navigation",
+      "visible progression and danger cues",
+      "input-to-visible-state evidence binding",
+      "foreground/process/crash correlation",
+      "portable RPG interaction lessons that may inform later Roblox-specific implementation and verification"
+    ],
+    "stillForbidden": [
+      "treating Android evidence as Roblox runtime evidence",
+      "inferring hidden combat, dungeon, economy or progression formulas",
+      "copying game artwork, UI trade dress, names, text or implementation details into a Roblox game",
+      "claims about long-run progression, balance or economy not measured by the captured validation window"
+    ]
+  }
+}

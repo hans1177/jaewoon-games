@@ -1,0 +1,666 @@
+// 파일명: tools/vibe2-distillation-ingest.mjs
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { buildVerifiedTrainingSample, qaEvidencePasses, TRAINING_SAMPLE_VERSION, EXTERNAL_BLACK_BOX_QA_MARKER, AUTHORIZED_SOURCE_QA_MARKER } from './vibe2-training-sample.mjs';
+import { validateFormalWebLearningEvidence } from './vibe2-web-experience-ingest.mjs';
+
+const SAFE_ID = /^[A-Za-z0-9._-]+$/;
+const SHA = /^[0-9a-f]{7,40}$/i;
+const SHA256_DIGEST = /^sha256:[0-9a-f]{64}$/i;
+const EXTERNAL_DISTILLATION_PATH = /^company-learning\/external-game-playtest\/[A-Za-z0-9._-]+-runtime-distillation\.json$/;
+const AUTHORIZED_SOURCE_SUMMARY_PATH = 'company-learning/authorized-source/block-blast/authorized-learning-summary.json';
+const EXTERNAL_BLACK_BOX_REQUIRED_STAGES = Object.freeze([
+  'APP_LAUNCH',
+  'GAME_ENTRY',
+  'INPUT_EXERCISE',
+  'VISUAL_STATE_CHANGE',
+  'PROCESS_SURVIVAL',
+  'NO_FATAL_CRASH_OR_ANR',
+]);
+const LEGACY_EXTERNAL_BLACK_BOX_FACT_IDS = Object.freeze([
+  'actual-game-entry-correlated',
+  'drag-input-changed-board-state',
+  'runtime-survived-observed-input',
+]);
+
+function git(args, { allowFailure = false } = {}) {
+  const result = spawnSync('git', args, { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
+  if (result.status !== 0 && !allowFailure) {
+    throw new Error(`git ${args.join(' ')} 실패: ${(result.stderr || result.stdout || '').trim().slice(0, 800)}`);
+  }
+  return result;
+}
+
+function gitText(args, options = {}) {
+  const result = git(args, options);
+  return result.status === 0 ? String(result.stdout || '').trim() : '';
+}
+
+function readJsonAt(ref, file) {
+  const content = gitText(['show', `${ref}:${file}`], { allowFailure: true });
+  if (!content) return null;
+  try { return JSON.parse(content); } catch { return null; }
+}
+function readTextAt(ref, file) {
+  const result = git(['show', `${ref}:${file}`], { allowFailure: true });
+  return result.status === 0 ? String(result.stdout || '') : '';
+}
+
+function sha256Exact(value) {
+  return crypto.createHash('sha256').update(String(value ?? ''), 'utf8').digest('hex');
+}
+
+export function findMainWebSourceRevisionByHash(mainRef = 'origin/main', sourceRoot = '', expectedSha256 = '') {
+  const root = clean(sourceRoot).replaceAll('\\','/').replace(/\/+$/,'');
+  const expected = clean(expectedSha256).toLowerCase();
+  if (!root.startsWith('web-games/') || root.includes('..') || !/^[0-9a-f]{64}$/i.test(expected)) return '';
+  const file = `${root}/index.html`;
+  const commits = gitText(['log', mainRef, '--format=%H', '--', file], { allowFailure: true }).split(/\r?\n/).map(clean).filter((value) => SHA.test(value)).slice(0, 250);
+  for (const revision of commits) {
+    const source = readTextAt(revision, file);
+    if (source && sha256Exact(source) === expected) return revision;
+  }
+  return '';
+}
+
+export function commitChecksPass(sourceRevision) {
+  if (!SHA.test(clean(sourceRevision))) return false;
+  const repoName = clean(process.env.GITHUB_REPOSITORY);
+  if (!repoName) return false;
+  const result = spawnSync('gh', ['api', `repos/${repoName}/commits/${sourceRevision}/check-runs`, '-H', 'Accept: application/vnd.github+json'], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
+  if (result.status !== 0) return false;
+  let payload;
+  try { payload = JSON.parse(String(result.stdout || '')); } catch { return false; }
+  const runs = Array.isArray(payload?.check_runs) ? payload.check_runs : [];
+  if (!runs.length) return false;
+  const bad = new Set(['failure','cancelled','timed_out','action_required','startup_failure']);
+  if (runs.some((row) => clean(row?.status).toLowerCase() !== 'completed' || bad.has(clean(row?.conclusion).toLowerCase()))) return false;
+  return runs.some((row) => clean(row?.conclusion).toLowerCase() === 'success');
+}
+
+export function validateVerifiedWebFinalBinding({ item = {}, report = {}, sourceRoot = '', sourceRevision = '', pullRequest = 0, ciPass = false, patch = '', sourceHashMatched = false } = {}) {
+  const gate = validateFormalWebLearningEvidence(item, report);
+  const issues = [...gate.issues];
+  const gameId = clean(gate.gameId);
+  const expectedRoot = gameId ? `web-games/${gameId}` : '';
+  const promotion = report?.promotionRevalidation || {};
+  if (clean(sourceRoot) !== expectedRoot) issues.push('canonical-web-source-root-required');
+  if (promotion.sourceHashMatch !== true) issues.push('promotion-source-hash-match-required');
+  if (promotion.baselineHashMatch !== true) issues.push('promotion-baseline-hash-match-required');
+  if (sourceHashMatched !== true) issues.push('main-source-hash-binding-required');
+  if (!SHA.test(clean(sourceRevision))) issues.push('main-source-revision-required');
+  if (!Number.isInteger(Number(pullRequest)) || Number(pullRequest) <= 0) issues.push('merged-pr-required');
+  if (ciPass !== true) issues.push('main-ci-pass-required');
+  if (!clean(patch)) issues.push('verified-web-patch-required');
+  return { pass: issues.length === 0, issues: [...new Set(issues)], gate, gameId, sourceRoot: expectedRoot || null, sourceRevision: clean(sourceRevision) || null, pullRequest: Number(pullRequest) || 0 };
+}
+
+function verifiedWebFinalRecord({ mainRef = 'origin/main', companyRuntimeRef = 'origin/company-runtime', item = {} } = {}) {
+  const gameId = clean(item?.gameId);
+  const evidencePath = clean(item?.webValidationEvidencePath || item?.webFinalContentDepthEvidencePath);
+  if (!gameId || !SAFE_ID.test(gameId)) return { pass:false, reason:'INVALID_WEB_GAME_ID', gameId:gameId || null, evidencePath:evidencePath || null };
+  if (item?.formalImplementationPassed !== true) return { pass:false, reason:'FORMAL_WEB_IMPLEMENTATION_NOT_PASS', gameId, evidencePath:evidencePath || null };
+  if (!evidencePath || evidencePath.includes('..')) return { pass:false, reason:'WEB_FINAL_EVIDENCE_PATH_MISSING', gameId, evidencePath:evidencePath || null };
+  const report = readJsonAt(companyRuntimeRef, evidencePath);
+  if (!report) return { pass:false, reason:'WEB_FINAL_EVIDENCE_UNREADABLE', gameId, evidencePath };
+  const sourceRoot = `web-games/${gameId}`;
+  const sourceRevision = findMainWebSourceRevisionByHash(mainRef, sourceRoot, clean(report?.sourceIndexSha256));
+  const sourceHashMatched = Boolean(sourceRevision);
+  const pullRequest = sourceRevision ? findMergedPullRequest(sourceRevision) : 0;
+  const ciPass = sourceRevision ? commitChecksPass(sourceRevision) : false;
+  const patch = sourceRevision ? readPromotionPatch(sourceRevision, sourceRoot) : '';
+  const binding = validateVerifiedWebFinalBinding({ item, report, sourceRoot, sourceRevision, pullRequest, ciPass, patch, sourceHashMatched });
+  if (!binding.pass) return { pass:false, reason:'WEB_FINAL_BINDING_REJECTED', gameId, evidencePath, issues:binding.issues };
+  const changedFiles = gitText(['diff','--name-only',`${sourceRevision}^`,sourceRevision,'--',sourceRoot],{allowFailure:true}).split(/\r?\n/).map(clean).filter(Boolean);
+  if (!changedFiles.length) return { pass:false, reason:'WEB_CHANGED_FILES_MISSING', gameId, evidencePath };
+  const evidence = {
+    gameId,
+    candidateId:`web-final-${gameId}-${sourceRevision.slice(0,12)}`,
+    sourcePath:sourceRoot,
+    role:'development',
+    goal:`검증된 Web ${gameId} 최종 구현의 core loop, 상태, 입력, 저장, 진행 구조와 회귀 방지 판단을 학습한다`,
+    summary:`Web strict ${binding.gate.score} + 30분 실제 플레이 + 독립 재검증 + main source hash + merged PR/CI가 결속된 최종 Web diff`,
+    expectedEffect:'검증된 Web 구현 패턴을 같은 게임과 이후 native 플랫폼 재구현에서 재사용하되 게임 규칙과 저장 의미를 보존한다',
+    responsibilityFiles:changedFiles,
+    changedFiles,
+    verificationTrace:{state:'PASS',sourceRevision,commitSha:sourceRevision,pullRequest,ci:'PASS',independentQa:'PASS',runtime:'PASS',stale:false,flaky:false},
+    syntaxChecks:['WEB_STRICT_90_PLUS','REAL_ELAPSED_GAMEPLAY_30MIN','INDEPENDENT_PROMOTION_REVALIDATION','MAIN_SOURCE_HASH_BOUND','MERGED_PR_CI_PASS']
+  };
+  return { pass:true, gameId, evidencePath, sourceRoot, sourceRevision, pullRequest, patch, evidence, report };
+}
+
+export function ingestVerifiedWebFinals({ mainRef = 'origin/main', companyRuntimeRef = 'origin/company-runtime', outDir = 'company-learning/training-samples' } = {}) {
+  fs.mkdirSync(outDir,{recursive:true});
+  const queue = readJsonAt(companyRuntimeRef,'development-queue.json');
+  const result = { examined:0, written:[], refreshed:[], skipped:[] };
+  for (const item of queue?.items || queue?.projects || []) {
+    if (item?.formalImplementationPassed !== true) continue;
+    result.examined += 1;
+    const record = verifiedWebFinalRecord({mainRef,companyRuntimeRef,item});
+    if (!record.pass) { result.skipped.push({gameId:record.gameId??null,evidencePath:record.evidencePath??null,reason:record.reason,issues:record.issues||[]}); continue; }
+    const outFile = path.join(outDir,`${record.evidence.candidateId}.json`);
+    const existing = fs.existsSync(outFile) ? readJsonFile(outFile) : null;
+    if (existing && Number(existing.version??0) >= TRAINING_SAMPLE_VERSION && existing?.provenance?.sourceRevision === record.sourceRevision && qaEvidencePasses({taskType:'coding',independentQa:existing.independentQa,browserQa:existing.browserQa,runtime:existing.verification?.trace?.runtime})) {
+      result.skipped.push({gameId:record.gameId,evidencePath:record.evidencePath,reason:'ALREADY_CURRENT'});
+      continue;
+    }
+    try {
+      const sample = buildVerifiedTrainingSample({evidence:record.evidence,patch:record.patch,sourceRevision:record.sourceRevision,independentQa:'PASS',browserQa:'PASS',taskType:'coding'});
+      sample.provenance.webValidationEvidencePath = record.evidencePath;
+      sample.provenance.webRuntimeSourceSha256 = clean(record.report?.sourceIndexSha256) || null;
+      sample.provenance.releasePullRequest = record.pullRequest;
+      sample.provenance.companyRuntimeRef = companyRuntimeRef;
+      fs.writeFileSync(outFile,`${JSON.stringify(sample,null,2)}\n`);
+      const written={candidateId:sample.candidateId,gameId:sample.gameId,taskType:'coding',sourceRevision:record.sourceRevision,outFile};
+      if(existing)result.refreshed.push(written);else result.written.push(written);
+    } catch(error) {
+      result.skipped.push({gameId:record.gameId,evidencePath:record.evidencePath,reason:'SAMPLE_REJECTED',detail:String(error?.message??error).slice(0,300)});
+    }
+  }
+  return result;
+}
+
+function readJsonFile(file) {
+  try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return null; }
+}
+
+function upper(value) { return String(value ?? '').trim().toUpperCase(); }
+function clean(value) { return String(value ?? '').trim(); }
+
+export function listDevHistoryPaths(devRef = 'origin/autonomous-dev') {
+  return gitText(['ls-tree', '-r', '--name-only', devRef, '--', '.autonomous/dev-history'], { allowFailure: true })
+    .split(/\r?\n/)
+    .map((value) => value.trim())
+    .filter((value) => /^\.autonomous\/dev-history\/[A-Za-z0-9._-]+\.json$/.test(value))
+    .sort();
+}
+
+export function listUnityReleaseBaselinePaths(mainRef = 'origin/main') {
+  return gitText(['ls-tree', '-r', '--name-only', mainRef, '--', 'design'], { allowFailure: true })
+    .split(/\r?\n/)
+    .map((value) => value.trim())
+    .filter((value) => /^design\/[^/]+\/\d{4}-\d{2}-\d{2}\/release-baseline\.json$/.test(value))
+    .sort();
+}
+
+export function listExternalBlackBoxDistillationPaths(mainRef = 'origin/main') {
+  return gitText(['ls-tree', '-r', '--name-only', mainRef, '--', 'company-learning/external-game-playtest'], { allowFailure: true })
+    .split(/\r?\n/)
+    .map((value) => value.trim())
+    .filter((value) => EXTERNAL_DISTILLATION_PATH.test(value))
+    .sort();
+}
+
+export function findPromotionCommit(candidateId, devRef = 'origin/autonomous-dev') {
+  if (!SAFE_ID.test(candidateId)) return '';
+  const rows = gitText(['log', devRef, '--format=%H%x09%s', '--', '.autonomous/dev-history'], { allowFailure: true })
+    .split(/\r?\n/)
+    .filter(Boolean);
+  const suffix = ` candidate ${candidateId}`;
+  for (const row of rows) {
+    const tab = row.indexOf('\t');
+    if (tab < 1) continue;
+    const sha = row.slice(0, tab);
+    const subject = row.slice(tab + 1);
+    if (subject.startsWith('dev: promote verified ') && subject.endsWith(suffix)) return sha;
+  }
+  return '';
+}
+
+export function readCandidateEvidence(candidateCommit, candidateId) {
+  if (!SAFE_ID.test(candidateId) || !SHA.test(candidateCommit)) return null;
+  return readJsonAt(candidateCommit, `.autonomous/evidence/${candidateId}.json`);
+}
+
+export function readPromotionPatch(promotionCommit, sourcePath) {
+  if (!SHA.test(promotionCommit) || !sourcePath || String(sourcePath).includes('..')) return '';
+  return gitText(['diff', '--no-ext-diff', '--unified=3', `${promotionCommit}^`, promotionCommit, '--', sourcePath], { allowFailure: true });
+}
+
+export function findMergedPullRequest(sourceRevision) {
+  if (!SHA.test(sourceRevision)) return 0;
+  const body = gitText(['log', '-1', '--format=%B', sourceRevision], { allowFailure: true });
+  const messageMatch = body.match(/\(#(\d+)\)|Merge pull request #(\d+)/i);
+  if (messageMatch) return Number(messageMatch[1] ?? messageMatch[2]);
+  const repo = clean(process.env.GITHUB_REPOSITORY);
+  if (!repo) return 0;
+  const result = spawnSync('gh', ['api', `repos/${repo}/commits/${sourceRevision}/pulls`, '--jq', 'map(select(.merged_at != null))[0].number // 0'], { encoding: 'utf8', maxBuffer: 1024 * 1024 });
+  if (result.status !== 0) return 0;
+  const number = Number(String(result.stdout || '').trim());
+  return Number.isInteger(number) && number > 0 ? number : 0;
+}
+
+function unityReleaseRecord(mainRef, baselinePath) {
+  const match = baselinePath.match(/^design\/([^/]+)\/(\d{4}-\d{2}-\d{2})\/release-baseline\.json$/);
+  if (!match) return { pass: false, reason: 'INVALID_RELEASE_BASELINE_PATH' };
+  const [, gameId, date] = match;
+  const base = `design/${gameId}/${date}`;
+  const baseline = readJsonAt(mainRef, baselinePath);
+  const status = readJsonAt(mainRef, `${base}/release-production-status.json`) ?? readJsonAt(mainRef, `${base}/cycle-status.json`);
+  const implementation = readJsonAt(mainRef, `${base}/vibe2-release-implementation.json`);
+  const build = readJsonAt(mainRef, `${base}/unity-android-build.json`);
+  const runtime = readJsonAt(mainRef, `${base}/android-runtime-validation.json`);
+  const qa = readJsonAt(mainRef, `${base}/independent-release-qa.json`);
+  if (!baseline || upper(baseline.status ?? baseline.state) !== 'RELEASE_READY' || baseline.coreDesignLockPreserved !== true) return { pass: false, reason: 'RELEASE_BASELINE_NOT_READY', gameId, date };
+  if (!status || upper(status.state) !== 'RELEASE_READY' || upper(status.status) !== 'COMPLETE') return { pass: false, reason: 'RELEASE_STATUS_NOT_READY', gameId, date };
+  if (status.evidence?.implementation?.boundToCurrentSource !== true || upper(status.evidence?.build?.state) !== 'PASS' || status.evidence?.build?.boundToCurrentSource !== true || status.evidence?.build?.boundToImplementation !== true) return { pass: false, reason: 'CURRENT_SOURCE_BUILD_BINDING_MISSING', gameId, date };
+  if (upper(status.evidence?.runtime?.state) !== 'PASS' || status.evidence?.runtime?.bound !== true || upper(status.evidence?.independentQa?.state) !== 'PASS' || status.evidence?.independentQa?.bound !== true) return { pass: false, reason: 'RUNTIME_OR_INDEPENDENT_QA_NOT_BOUND', gameId, date };
+  if (!implementation || !build || !runtime || !qa) return { pass: false, reason: 'RELEASE_EVIDENCE_FILE_MISSING', gameId, date };
+  const sourceRoot = clean(status.unityProjectPath ?? implementation.sourceRoot ?? build.sourceRoot);
+  if (!sourceRoot || sourceRoot.includes('..') || !sourceRoot.startsWith('unity-games/')) return { pass: false, reason: 'UNITY_SOURCE_ROOT_INVALID', gameId, date };
+  const sourceRevision = clean(implementation.sourceCommit ?? build.sourceCommit ?? baseline.sourceCommit);
+  if (!SHA.test(sourceRevision)) return { pass: false, reason: 'SOURCE_REVISION_MISSING', gameId, date };
+  const currentTree = clean(status.currentSourceTreeSha);
+  const implementationTree = clean(implementation.sourceTreeSha);
+  const buildTree = clean(build.sourceTreeSha);
+  if (!currentTree || implementationTree !== currentTree || buildTree !== currentTree) return { pass: false, reason: 'SOURCE_TREE_SHA_MISMATCH', gameId, date };
+  const buildId = clean(build.buildId ?? build.sha256 ?? build.artifactSha256);
+  const runtimeBuild = clean(runtime.buildId ?? runtime.build_id ?? runtime.buildSha256 ?? runtime.artifactSha256 ?? runtime.sha256);
+  const qaBuild = clean(qa.buildId ?? qa.build_id ?? qa.buildSha256 ?? qa.artifactSha256 ?? qa.sha256);
+  if (!buildId || runtimeBuild !== buildId || qaBuild !== buildId) return { pass: false, reason: 'BUILD_ID_MISMATCH', gameId, date };
+  const patch = readPromotionPatch(sourceRevision, sourceRoot);
+  if (!patch) return { pass: false, reason: 'VERIFIED_UNITY_PATCH_NOT_FOUND', gameId, date };
+  const pullRequest = findMergedPullRequest(sourceRevision);
+  if (!pullRequest) return { pass: false, reason: 'MERGED_PR_NOT_FOUND', gameId, date };
+  const changedFiles = gitText(['diff', '--name-only', `${sourceRevision}^`, sourceRevision, '--', sourceRoot], { allowFailure: true }).split(/\r?\n/).map(clean).filter(Boolean);
+  if (!changedFiles.length) return { pass: false, reason: 'UNITY_CHANGED_FILES_MISSING', gameId, date };
+  const evidence = {
+    gameId,
+    candidateId: `unity-release-${gameId}-${sourceRevision.slice(0, 12)}`,
+    sourcePath: sourceRoot,
+    role: 'development',
+    goal: `검증된 Unity ${gameId} 출시 수정의 구현 구조와 회귀 방지 판단을 학습한다`,
+    summary: `RELEASE_READY Unity source diff; Android runtime 및 independent QA가 동일 build에 결속됨`,
+    expectedEffect: '검증된 Unity 구현 패턴을 재사용하되 게임 규칙과 저장 의미를 보존한다',
+    responsibilityFiles: changedFiles,
+    changedFiles,
+    verificationTrace: { state: 'PASS', sourceRevision, commitSha: sourceRevision, pullRequest, ci: 'PASS', independentQa: 'PASS', runtime: 'PASS', stale: false, flaky: false },
+  };
+  return { pass: true, gameId, date, baselinePath, sourceRoot, sourceRevision, pullRequest, patch, evidence };
+}
+
+export function ingestVerifiedUnityReleases({ mainRef = 'origin/main', outDir = 'company-learning/training-samples' } = {}) {
+  fs.mkdirSync(outDir, { recursive: true });
+  const result = { examined: 0, written: [], refreshed: [], skipped: [] };
+  for (const baselinePath of listUnityReleaseBaselinePaths(mainRef)) {
+    result.examined += 1;
+    const release = unityReleaseRecord(mainRef, baselinePath);
+    if (!release.pass) { result.skipped.push({ baselinePath, gameId: release.gameId ?? null, reason: release.reason }); continue; }
+    const outFile = path.join(outDir, `${release.evidence.candidateId}.json`);
+    const existing = fs.existsSync(outFile) ? readJsonFile(outFile) : null;
+    if (existing && Number(existing.version ?? 0) >= TRAINING_SAMPLE_VERSION && qaEvidencePasses({ taskType: 'unity', independentQa: existing.independentQa, browserQa: existing.browserQa, runtime: existing.verification?.trace?.runtime }) && existing.provenance?.sourceRevision === release.sourceRevision) {
+      result.skipped.push({ baselinePath, gameId: release.gameId, reason: 'ALREADY_CURRENT' });
+      continue;
+    }
+    try {
+      const sample = buildVerifiedTrainingSample({ evidence: release.evidence, patch: release.patch, sourceRevision: release.sourceRevision, independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', taskType: 'unity' });
+      sample.provenance.releaseBaselinePath = baselinePath;
+      sample.provenance.releaseDate = release.date;
+      sample.provenance.releasePullRequest = release.pullRequest;
+      fs.writeFileSync(outFile, `${JSON.stringify(sample, null, 2)}\n`);
+      const record = { candidateId: sample.candidateId, gameId: sample.gameId, taskType: 'unity', sourceRevision: release.sourceRevision, outFile };
+      if (existing) result.refreshed.push(record); else result.written.push(record);
+    } catch (error) {
+      result.skipped.push({ baselinePath, gameId: release.gameId, reason: 'SAMPLE_REJECTED', detail: String(error?.message ?? error).slice(0, 300) });
+    }
+  }
+  return result;
+}
+
+export function buildExternalBlackBoxLearningPrinciples(record = {}) {
+  const serialize = (row = {}) => {
+    const id = clean(row?.id);
+    const scope = clean(row?.scope);
+    const lesson = clean(row?.lesson);
+    const reuseRule = clean(row?.reuseRule);
+    return [
+      id && `id=${id}`,
+      scope && `scope=${scope}`,
+      lesson && `lesson=${lesson}`,
+      reuseRule && `apply=${reuseRule}`,
+    ].filter(Boolean).join('; ');
+  };
+  const application = (Array.isArray(record?.distilledPositiveRuntimePatterns) ? record.distilledPositiveRuntimePatterns : [])
+    .map(serialize).filter(Boolean);
+  const avoidance = (Array.isArray(record?.distilledFailurePatterns) ? record.distilledFailurePatterns : [])
+    .map(serialize).filter(Boolean);
+  const allowed = (Array.isArray(record?.learningUse?.allowed) ? record.learningUse.allowed : [])
+    .map(clean).filter(Boolean);
+  const forbidden = (Array.isArray(record?.learningUse?.stillForbidden) ? record.learningUse.stillForbidden : [])
+    .map(clean).filter(Boolean);
+  return Object.freeze({
+    application:Object.freeze([...new Set(application)]),
+    avoidance:Object.freeze([...new Set(avoidance)]),
+    allowed:Object.freeze([...new Set(allowed)]),
+    forbidden:Object.freeze([...new Set(forbidden)]),
+  });
+}
+
+function externalBlackBoxRecord(mainRef, distillationPath) {
+  const record = readJsonAt(mainRef, distillationPath);
+  const gameId = clean(record?.gameId);
+  const source = record?.sourceEvidence ?? {};
+  const runId = Number(source.latestCompletedRun ?? 0);
+  const runNumber = Number(source.latestRunNumber ?? 0);
+  const artifactId = Number(source.latestArtifactId ?? 0);
+  const artifactDigest = clean(source.latestArtifactDigest);
+  const facts = Array.isArray(record?.verifiedObservedFacts) ? record.verifiedObservedFacts : [];
+  const factIds = new Set(facts.map((fact) => clean(fact?.id)));
+  const observedStages = new Set((Array.isArray(record?.verifiedObservedStages) ? record.verifiedObservedStages : []).map(upper));
+  if (!record || !gameId || !SAFE_ID.test(gameId)) return { pass: false, reason: 'INVALID_EXTERNAL_GAME_ID', distillationPath };
+  if (upper(record.authority) !== 'PRACTICE_ONLY_MIXED_EVIDENCE') return { pass: false, reason: 'EXTERNAL_AUTHORITY_NOT_PRACTICE_ONLY', gameId, distillationPath };
+  if (record.runtimePromotionAllowed !== true || record.gameplayBehaviorPromotionAllowed !== true || record.positiveTrainingSample !== true) return { pass: false, reason: 'POSITIVE_PROMOTION_GATE_NOT_PASS', gameId, distillationPath };
+  if (record.verifiedRuntimePass !== true || record.stablePlaytestVerified !== true) return { pass: false, reason: 'VERIFIED_RUNTIME_GATE_NOT_PASS', gameId, distillationPath };
+  if (record.codeExtractionAllowed !== false || record.binaryRedistributionAllowed !== false) return { pass: false, reason: 'PROPRIETARY_BOUNDARY_NOT_ENFORCED', gameId, distillationPath };
+  if (upper(source.latestResult) !== 'PASS' || !Number.isInteger(runId) || runId <= 0 || !Number.isInteger(runNumber) || runNumber <= 0 || !Number.isInteger(artifactId) || artifactId <= 0 || !SHA256_DIGEST.test(artifactDigest)) return { pass: false, reason: 'SOURCE_EVIDENCE_IDENTITY_INVALID', gameId, distillationPath };
+  if (observedStages.size > 0) {
+    for (const requiredStage of EXTERNAL_BLACK_BOX_REQUIRED_STAGES) {
+      if (!observedStages.has(requiredStage)) return { pass: false, reason: `REQUIRED_OBSERVED_STAGE_MISSING:${requiredStage}`, gameId, distillationPath };
+    }
+  } else {
+    for (const requiredFact of LEGACY_EXTERNAL_BLACK_BOX_FACT_IDS) {
+      if (!factIds.has(requiredFact)) return { pass: false, reason: `REQUIRED_OBSERVED_FACT_MISSING:${requiredFact}`, gameId, distillationPath };
+    }
+  }
+  const candidateId = `external-black-box-${gameId}-run-${runNumber}`;
+  const distilledLearning=buildExternalBlackBoxLearningPrinciples(record);
+  if(!distilledLearning.application.length) return { pass:false, reason:'EXTERNAL_DISTILLED_APPLICATION_PRINCIPLES_MISSING', gameId, distillationPath };
+  const instruction = '외부 Android 게임을 black-box로 검증할 때 실행, 실제 게임 진입, 입력 반응, 프로세스 생존, 크래시 부재를 단계별 증거로 결속해 판정하고 코드·에셋·내부 알고리즘은 추출하거나 추론하지 않는다.';
+  const input = JSON.stringify({
+    evidenceMode: 'EXTERNAL_BLACK_BOX',
+    stages: EXTERNAL_BLACK_BOX_REQUIRED_STAGES,
+    stableBoundary: clean(record.stablePlaytestBoundary),
+    runId,
+    runNumber,
+    artifactId,
+    artifactDigest,
+  }, null, 2);
+  const output = [
+    '검증된 관찰 원칙:',
+    '- 프로세스 실행과 실제 게임 진입을 같은 것으로 취급하지 않는다.',
+    '- 입력 주입만으로 성공 처리하지 않고 입력 전후의 의미 있는 화면 변화와 대상 프로세스 생존을 함께 확인한다.',
+    '- 시스템 오버레이·동의 화면·게임 진입·입력 반응을 서로 다른 증거 단계로 보존한다.',
+    '- 성공 범위는 캡처된 검증 구간으로 제한하고 장시간 안정성이나 숨은 규칙을 추정하지 않는다.',
+    '- 부분 성공 뒤 실패가 생기면 성공 경계와 실패 경계를 모두 기록한다.',
+    '- 외부 게임의 소스 코드, 에셋, 고유 UI 표현, 내부 알고리즘, 숨은 점수·경제 규칙은 black-box 학습 데이터로 추출하거나 복제하지 않는다.',
+    '검증된 게임별 적용 원리:',
+    ...distilledLearning.application.map(value=>`- APPLY: ${value}`),
+    ...(distilledLearning.avoidance.length?['검증된 게임별 회피 원리:',...distilledLearning.avoidance.map(value=>`- AVOID: ${value}`)]:[]),
+    ...(distilledLearning.allowed.length?['검증된 학습 활용 범위:',...distilledLearning.allowed.map(value=>`- ALLOWED: ${value}`)]:[]),
+    ...(distilledLearning.forbidden.length?['검증된 학습 금지 범위:',...distilledLearning.forbidden.map(value=>`- FORBIDDEN: ${value}`)]:[]),
+  ].join('\n');
+  const sample = {
+    version: TRAINING_SAMPLE_VERSION,
+    instruction,
+    input,
+    output,
+    distilledApplicationPrinciples:[...distilledLearning.application],
+    distilledAvoidancePrinciples:[...distilledLearning.avoidance],
+    distilledLearningUseAllowed:[...distilledLearning.allowed],
+    distilledLearningUseForbidden:[...distilledLearning.forbidden],
+    taskType: 'qa',
+    difficulty: 'regression',
+    lifecycle: 'active',
+    sourceKind: 'external-black-box',
+    project: gameId,
+    gameId,
+    candidateId,
+    sourceCommit: null,
+    sourceRevision: artifactDigest,
+    independentQa: EXTERNAL_BLACK_BOX_QA_MARKER,
+    browserQa: 'NOT_APPLICABLE',
+    quality: { codeQuality: 1, noRegression: true, playImprovement: 0, ruleCompliance: 1, evidenceQuality: 1 },
+    provenance: {
+      sourceKind: 'external-black-box',
+      sourceRevision: artifactDigest,
+      gameId,
+      candidateId,
+      evidencePath: distillationPath,
+      authority: record.authority,
+      runId,
+      runNumber,
+      artifactId,
+      artifactDigest,
+    },
+    verification: {
+      independentQa: EXTERNAL_BLACK_BOX_QA_MARKER,
+      browserQa: 'NOT_APPLICABLE',
+      runtime: 'PASS',
+      blackBoxEvidence: 'PASS',
+      gameEntry: 'PASS',
+      inputResponse: 'PASS',
+      processSurvival: 'PASS',
+      noFatalCrashOrAnr: 'PASS',
+      proprietaryExtraction: false,
+      stableBoundary: clean(record.stablePlaytestBoundary),
+    },
+  };
+  if (!qaEvidencePasses({ taskType: sample.taskType, independentQa: sample.independentQa, browserQa: sample.browserQa, runtime: sample.verification.runtime })) return { pass: false, reason: 'EXTERNAL_QA_GATE_REJECTED', gameId, distillationPath };
+  return { pass: true, gameId, distillationPath, sourceRevision: artifactDigest, sample };
+}
+
+export function ingestVerifiedExternalBlackBox({ mainRef = 'origin/main', outDir = 'company-learning/training-samples' } = {}) {
+  fs.mkdirSync(outDir, { recursive: true });
+  const result = { examined: 0, written: [], refreshed: [], skipped: [] };
+  for (const distillationPath of listExternalBlackBoxDistillationPaths(mainRef)) {
+    result.examined += 1;
+    const external = externalBlackBoxRecord(mainRef, distillationPath);
+    if (!external.pass) { result.skipped.push({ distillationPath, gameId: external.gameId ?? null, reason: external.reason }); continue; }
+    const outFile = path.join(outDir, `${external.sample.candidateId}.json`);
+    const existing = fs.existsSync(outFile) ? readJsonFile(outFile) : null;
+    const currentEnough = existing
+      && Number(existing.version ?? 0) >= TRAINING_SAMPLE_VERSION
+      && existing.provenance?.sourceKind === 'external-black-box'
+      && existing.provenance?.sourceRevision === external.sourceRevision
+      && JSON.stringify(existing.distilledApplicationPrinciples||[]) === JSON.stringify(external.sample.distilledApplicationPrinciples||[])
+      && JSON.stringify(existing.distilledAvoidancePrinciples||[]) === JSON.stringify(external.sample.distilledAvoidancePrinciples||[])
+      && JSON.stringify(existing.distilledLearningUseAllowed||[]) === JSON.stringify(external.sample.distilledLearningUseAllowed||[])
+      && JSON.stringify(existing.distilledLearningUseForbidden||[]) === JSON.stringify(external.sample.distilledLearningUseForbidden||[])
+      && qaEvidencePasses({ taskType: existing.taskType, independentQa: existing.independentQa, browserQa: existing.browserQa, runtime: existing.verification?.runtime });
+    if (currentEnough) { result.skipped.push({ distillationPath, gameId: external.gameId, reason: 'ALREADY_CURRENT' }); continue; }
+    fs.writeFileSync(outFile, `${JSON.stringify(external.sample, null, 2)}\n`);
+    const written = { candidateId: external.sample.candidateId, gameId: external.gameId, taskType: 'qa', sourceRevision: external.sourceRevision, outFile };
+    if (existing) result.refreshed.push(written); else result.written.push(written);
+  }
+  return result;
+}
+
+function authorizedSourceRecord(mainRef, summaryPath = AUTHORIZED_SOURCE_SUMMARY_PATH) {
+  const summary = readJsonAt(mainRef, summaryPath);
+  const gameId = clean(summary?.gameId);
+  const packageId = clean(summary?.packageId);
+  const authority = upper(summary?.authority);
+  const packageFingerprint = clean(summary?.packageFingerprint).toLowerCase();
+  const learningDomains = Array.isArray(summary?.learningDomains) ? summary.learningDomains.map(clean).filter(Boolean) : [];
+  const reusablePatterns = Array.isArray(summary?.reusablePatterns) ? summary.reusablePatterns.map(clean).filter(Boolean) : [];
+  const sourceDocuments = Number(summary?.sourceCorpus?.documents ?? 0);
+  const sourceChars = Number(summary?.sourceCorpus?.totalChars ?? 0);
+  const assetCount = Number(summary?.assets?.count ?? 0);
+  const nativeCount = Number(summary?.nativeLibraries?.count ?? 0);
+  if (!summary) return { pass: false, reason: 'AUTHORIZED_SOURCE_SUMMARY_MISSING', summaryPath };
+  if (gameId !== 'block-blast' || packageId !== 'com.block.juggle') return { pass: false, reason: 'AUTHORIZED_SOURCE_IDENTITY_MISMATCH', summaryPath };
+  if (authority !== 'OWNER_ASSERTED_REUSE_REINTERPRETATION') return { pass: false, reason: 'AUTHORIZED_SOURCE_AUTHORITY_MISSING', gameId, summaryPath };
+  if (!/^[0-9a-f]{64}$/i.test(packageFingerprint)) return { pass: false, reason: 'AUTHORIZED_SOURCE_FINGERPRINT_INVALID', gameId, summaryPath };
+  if (!learningDomains.length || !reusablePatterns.length || sourceDocuments <= 0 || sourceChars <= 0) return { pass: false, reason: 'AUTHORIZED_SOURCE_CONTENT_INCOMPLETE', gameId, summaryPath };
+
+  const sourceRevision = `sha256:${packageFingerprint}`;
+  const candidateId = `authorized-source-${gameId}-${packageFingerprint.slice(0, 16)}`;
+  const sample = {
+    version: TRAINING_SAMPLE_VERSION,
+    instruction: '재사용·재해석 권한이 확인된 Block Blast 소스/에셋/네이티브 구조/알고리즘 분석 결과를 코드 구현 컨텍스트로 학습하되 정적 분석을 런타임 PASS로 오인하지 않는다.',
+    input: JSON.stringify({
+      evidenceMode: 'AUTHORIZED_SOURCE_STATIC',
+      authority: summary.authority,
+      packageId,
+      packageFingerprint,
+      learningDomains,
+      counts: {
+        sourceDocuments,
+        sourceChars,
+        assets: assetCount,
+        nativeLibraries: nativeCount,
+      },
+    }, null, 2),
+    output: [
+      '검증된 재사용 패턴:',
+      ...reusablePatterns.map((pattern) => `- ${pattern}`),
+      '',
+      '검증 경계:',
+      '- 정적 추출 결과는 소스 구조/에셋 구성/네이티브 구조/알고리즘 후보 학습에 사용한다.',
+      '- 정적 분석만으로 현재 프로젝트 런타임 PASS를 주장하지 않는다.',
+      '- 새 프로젝트에 적용할 때 기존 QA/런타임 게이트를 그대로 통과해야 한다.',
+    ].join('\n'),
+    taskType: 'coding',
+    difficulty: 'simple',
+    lifecycle: 'active',
+    sourceKind: 'authorized-source',
+    project: gameId,
+    gameId,
+    candidateId,
+    sourceCommit: null,
+    sourceRevision,
+    independentQa: AUTHORIZED_SOURCE_QA_MARKER,
+    browserQa: 'NOT_APPLICABLE',
+    quality: { codeQuality: 1, noRegression: true, playImprovement: 0, ruleCompliance: 1, evidenceQuality: 1 },
+    provenance: {
+      sourceKind: 'authorized-source',
+      sourceRevision,
+      gameId,
+      candidateId,
+      evidencePath: summaryPath,
+      authority: summary.authority,
+      packageId,
+      packageFingerprint,
+    },
+    verification: {
+      independentQa: AUTHORIZED_SOURCE_QA_MARKER,
+      browserQa: 'NOT_APPLICABLE',
+      runtime: 'STATIC_VERIFIED',
+      authorizedSourceEvidence: 'PASS',
+      runtimePassClaimed: false,
+      packageFingerprint,
+      ownerReuseAuthority: 'PASS',
+    },
+  };
+  if (!qaEvidencePasses({
+    taskType: sample.taskType,
+    independentQa: sample.independentQa,
+    browserQa: sample.browserQa,
+    runtime: sample.verification.runtime,
+    sourceKind: sample.sourceKind,
+  })) return { pass: false, reason: 'AUTHORIZED_SOURCE_QA_GATE_REJECTED', gameId, summaryPath };
+  return { pass: true, gameId, summaryPath, sourceRevision, sample };
+}
+
+export function ingestVerifiedAuthorizedSource({ mainRef = 'origin/main', outDir = 'company-learning/training-samples' } = {}) {
+  fs.mkdirSync(outDir, { recursive: true });
+  const result = { examined: 1, written: [], refreshed: [], skipped: [] };
+  const authorized = authorizedSourceRecord(mainRef, AUTHORIZED_SOURCE_SUMMARY_PATH);
+  if (!authorized.pass) {
+    result.skipped.push({ summaryPath: AUTHORIZED_SOURCE_SUMMARY_PATH, gameId: authorized.gameId ?? null, reason: authorized.reason });
+    return result;
+  }
+  const outFile = path.join(outDir, `${authorized.sample.candidateId}.json`);
+  const existing = fs.existsSync(outFile) ? readJsonFile(outFile) : null;
+  const currentEnough = existing
+    && Number(existing.version ?? 0) >= TRAINING_SAMPLE_VERSION
+    && existing.provenance?.sourceKind === 'authorized-source'
+    && existing.provenance?.sourceRevision === authorized.sourceRevision
+    && qaEvidencePasses({
+      taskType: existing.taskType,
+      independentQa: existing.independentQa,
+      browserQa: existing.browserQa,
+      runtime: existing.verification?.runtime,
+      sourceKind: existing.provenance?.sourceKind,
+    });
+  if (currentEnough) {
+    result.skipped.push({ summaryPath: AUTHORIZED_SOURCE_SUMMARY_PATH, gameId: authorized.gameId, reason: 'ALREADY_CURRENT' });
+    return result;
+  }
+  fs.writeFileSync(outFile, `${JSON.stringify(authorized.sample, null, 2)}\n`);
+  const written = { candidateId: authorized.sample.candidateId, gameId: authorized.gameId, taskType: 'coding', sourceRevision: authorized.sourceRevision, outFile };
+  if (existing) result.refreshed.push(written); else result.written.push(written);
+  return result;
+}
+
+export function ingestVerifiedHistories({ devRef = 'origin/autonomous-dev', mainRef = 'origin/main', companyRuntimeRef = 'origin/company-runtime', outDir = 'company-learning/training-samples' } = {}) {
+  fs.mkdirSync(outDir, { recursive: true });
+  const result = { version: 6, trainingSampleVersion: TRAINING_SAMPLE_VERSION, devRef, mainRef, companyRuntimeRef, written: [], refreshed: [], skipped: [], examined: 0, webFinal: null, unityRelease: null, externalBlackBox: null, authorizedSource: null };
+
+  for (const historyPath of listDevHistoryPaths(devRef)) {
+    result.examined += 1;
+    const history = readJsonAt(devRef, historyPath);
+    const candidateId = String(history?.candidateId ?? '').trim();
+    const outFile = candidateId && SAFE_ID.test(candidateId) ? path.join(outDir, `${candidateId}.json`) : '';
+    if (!candidateId || !outFile) { result.skipped.push({ historyPath, reason: 'INVALID_CANDIDATE_ID' }); continue; }
+    const existing = fs.existsSync(outFile) ? readJsonFile(outFile) : null;
+    const currentEnough = existing && Number(existing.version ?? 0) >= TRAINING_SAMPLE_VERSION && qaEvidencePasses({ taskType: existing.taskType, independentQa: existing.independentQa, browserQa: existing.browserQa, runtime: existing.verification?.trace?.runtime }) && existing.provenance?.sourceRevision;
+    if (currentEnough) { result.skipped.push({ candidateId, reason: 'ALREADY_CURRENT' }); continue; }
+    if (history?.verdict !== 'ADVANCE_TO_AUTONOMOUS_DEV' || history?.independentQa !== 'PASS' || history?.browserQa !== 'PASS') { result.skipped.push({ candidateId, reason: 'VERIFICATION_NOT_PASS' }); continue; }
+    const promotionCommit = findPromotionCommit(candidateId, devRef);
+    if (!promotionCommit) { result.skipped.push({ candidateId, reason: 'PROMOTION_COMMIT_NOT_FOUND' }); continue; }
+    const candidateCommit = String(history.candidateCommit ?? '').trim();
+    const evidence = readCandidateEvidence(candidateCommit, candidateId);
+    if (!evidence) { result.skipped.push({ candidateId, reason: 'CANDIDATE_EVIDENCE_NOT_FOUND' }); continue; }
+    if (String(evidence.gameId ?? '') !== String(history.gameId ?? '')) { result.skipped.push({ candidateId, reason: 'GAME_ID_MISMATCH' }); continue; }
+    const sourcePath = String(evidence.sourcePath ?? '').trim();
+    const patch = readPromotionPatch(promotionCommit, sourcePath);
+    if (!patch) { result.skipped.push({ candidateId, reason: 'VERIFIED_PATCH_NOT_FOUND' }); continue; }
+    try {
+      const sample = buildVerifiedTrainingSample({ evidence, patch, sourceRevision: promotionCommit, independentQa: history.independentQa, browserQa: history.browserQa, performance: history.performance ?? null });
+      sample.provenance.devHistoryPath = historyPath;
+      sample.provenance.candidateCommit = candidateCommit;
+      sample.provenance.promotionCommit = promotionCommit;
+      fs.writeFileSync(outFile, `${JSON.stringify(sample, null, 2)}\n`);
+      const written = { candidateId, gameId: sample.gameId, taskType: sample.taskType, promotionCommit, outFile };
+      if (existing) result.refreshed.push(written); else result.written.push(written);
+    } catch (error) { result.skipped.push({ candidateId, reason: 'SAMPLE_REJECTED', detail: String(error?.message ?? error).slice(0, 300) }); }
+  }
+  result.webFinal = ingestVerifiedWebFinals({ mainRef, companyRuntimeRef, outDir });
+  result.examined += result.webFinal.examined;
+  result.written.push(...result.webFinal.written);
+  result.refreshed.push(...result.webFinal.refreshed);
+  result.skipped.push(...result.webFinal.skipped);
+
+  result.unityRelease = ingestVerifiedUnityReleases({ mainRef, outDir });
+  result.examined += result.unityRelease.examined;
+  result.written.push(...result.unityRelease.written);
+  result.refreshed.push(...result.unityRelease.refreshed);
+  result.skipped.push(...result.unityRelease.skipped);
+
+  result.externalBlackBox = ingestVerifiedExternalBlackBox({ mainRef, outDir });
+  result.examined += result.externalBlackBox.examined;
+  result.written.push(...result.externalBlackBox.written);
+  result.refreshed.push(...result.externalBlackBox.refreshed);
+  result.skipped.push(...result.externalBlackBox.skipped);
+
+  result.authorizedSource = ingestVerifiedAuthorizedSource({ mainRef, outDir });
+  result.examined += result.authorizedSource.examined;
+  result.written.push(...result.authorizedSource.written);
+  result.refreshed.push(...result.authorizedSource.refreshed);
+  result.skipped.push(...result.authorizedSource.skipped);
+  return result;
+}
+
+function parseArgs(argv) {
+  const args = {};
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (!arg.startsWith('--')) continue;
+    const [key, inline] = arg.slice(2).split('=', 2);
+    args[key] = inline ?? argv[++i];
+  }
+  return args;
+}
+
+function main() {
+  const args = parseArgs(process.argv.slice(2));
+  const result = ingestVerifiedHistories({ devRef: args['dev-ref'] || 'origin/autonomous-dev', mainRef: args['main-ref'] || 'origin/main', companyRuntimeRef: args['company-runtime-ref'] || 'origin/company-runtime', outDir: args['out-dir'] || 'company-learning/training-samples' });
+  console.log(JSON.stringify(result));
+}
+
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) { try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; } }

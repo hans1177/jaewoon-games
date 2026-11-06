@@ -1,0 +1,341 @@
+name: Roblox World Ghost Assets
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/roblox/world-ghosts/**'
+      - 'assets/roblox/common-environment-v1/**'
+      - 'qa/roblox-world-ghost-skins.test.mjs'
+      - 'qa/shared-character-motion-production.test.mjs'
+      - 'qa/shared-character-motion-action-isolation.py'
+      - 'qa/asset-library-sync.test.mjs'
+      - 'assets/asset-library*.js'
+      - 'asset-library.html'
+      - '.github/workflows/roblox-world-ghost-assets.yml'
+  pull_request:
+    paths:
+      - 'assets/roblox/world-ghosts/**'
+      - 'assets/roblox/common-environment-v1/**'
+      - 'qa/roblox-world-ghost-skins.test.mjs'
+      - 'qa/shared-character-motion-production.test.mjs'
+      - 'qa/shared-character-motion-action-isolation.py'
+      - 'qa/asset-library-sync.test.mjs'
+      - 'assets/asset-library*.js'
+      - 'asset-library.html'
+      - '.github/workflows/roblox-world-ghost-assets.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ghost-assets-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build-assets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Detect impacted authored asset lanes
+        id: asset_scope
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EVENT_BEFORE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "motion=true" >> "$GITHUB_OUTPUT"
+            echo "spider=true" >> "$GITHUB_OUTPUT"
+            echo "ASSET_SCOPE motion=true spider=true reason=manual-dispatch"
+            exit 0
+          fi
+          base=""
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            if [[ "$EVENT_ACTION" == "synchronize" && -n "${EVENT_BEFORE_SHA:-}" && ! "$EVENT_BEFORE_SHA" =~ ^0+$ ]]; then
+              base="$EVENT_BEFORE_SHA"
+            else
+              base="${PR_BASE_SHA:-}"
+            fi
+          else
+            base="${EVENT_BEFORE_SHA:-}"
+          fi
+          if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
+            echo "motion=true" >> "$GITHUB_OUTPUT"
+            echo "spider=true" >> "$GITHUB_OUTPUT"
+            echo "ASSET_SCOPE motion=true spider=true reason=no-valid-base"
+            exit 0
+          fi
+          if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$base"
+          fi
+          motion=false
+          spider=false
+          while IFS= read -r changed; do
+            case "$changed" in
+              assets/roblox/world-ghosts/refine-humanoid-motion.py|assets/roblox/world-ghosts/native/mesh/bride.glb|qa/shared-character-motion-production.test.mjs|qa/shared-character-motion-action-isolation.py)
+                motion=true
+                ;;
+              assets/roblox/world-ghosts/build-spider.py)
+                spider=true
+                ;;
+            esac
+          done < <(git diff --name-only "$base" "$HEAD_SHA")
+          echo "motion=$motion" >> "$GITHUB_OUTPUT"
+          echo "spider=$spider" >> "$GITHUB_OUTPUT"
+          echo "ASSET_SCOPE motion=$motion spider=$spider base=$base head=$HEAD_SHA"
+      - name: Install checksum-pinned official asset tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ghost-tools/rojo /tmp/ghost-tools/luau
+          curl -fsSL --retry 3 -o /tmp/ghost-tools/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          curl -fsSL --retry 3 -o /tmp/ghost-tools/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/ghost-tools/rojo.zip' | sha256sum -c -
+          echo '8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247  /tmp/ghost-tools/luau.zip' | sha256sum -c -
+          unzip -q /tmp/ghost-tools/rojo.zip -d /tmp/ghost-tools/rojo
+          unzip -q /tmp/ghost-tools/luau.zip -d /tmp/ghost-tools/luau
+          chmod +x /tmp/ghost-tools/rojo/rojo /tmp/ghost-tools/luau/luau /tmp/ghost-tools/luau/luau-compile
+      - name: Rebuild gallery and reusable native module pack
+        env:
+          VIBE2_LUAU_COMPILER: /tmp/ghost-tools/luau/luau-compile
+          VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
+          VIBE2_ROJO_BINARY: /tmp/ghost-tools/rojo/rojo
+        run: node assets/roblox/world-ghosts/build-native.mjs
+      # [공용 CC0 원본 검사] QA가 실물 바이너리 해시를 확인하도록 15개 LFS 원본만 복원한다.
+      - name: Hydrate manifest-pinned CC0 Blender sources
+        run: |
+          set -euo pipefail
+          git lfs pull --include="assets/external/simple-rpg/priority-v1/*.blend,assets/external/simple-rpg/wildlife/*.blend" --exclude=""
+      - name: Verify regenerated packages
+        env:
+          VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
+        run: node --test qa/roblox-world-ghost-skins.test.mjs qa/asset-library-sync.test.mjs qa/shared-character-motion-production.test.mjs
+      - name: Install Blender for authored assets
+        if: steps.asset_scope.outputs.motion == 'true' || steps.asset_scope.outputs.spider == 'true'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+          blender --background --python-expr "import numpy; print('BLENDER_NUMPY_OK', numpy.__version__)"
+      - name: Build high-detail spider asset
+        if: steps.asset_scope.outputs.spider == 'true'
+        run: |
+          blender --background --python assets/roblox/world-ghosts/build-spider.py -- --output assets/roblox/world-ghosts/native/spider --render
+      - name: Build high-quality humanoid foundation motion derivative
+        if: steps.asset_scope.outputs.motion == 'true'
+        run: |
+          blender --background --python-exit-code 1 --python qa/shared-character-motion-action-isolation.py
+          blender --background --python-exit-code 1 --python assets/roblox/world-ghosts/refine-humanoid-motion.py -- \
+            --source assets/roblox/world-ghosts/native/mesh/bride.glb \
+            --output assets/roblox/world-ghosts/native/mesh/bride-motion-v3 \
+            --render-dir assets/roblox/world-ghosts/native/mesh/bride-motion-v3/previews
+      - name: Validate humanoid foundation GLB and 17 measured motions
+        if: steps.asset_scope.outputs.motion == 'true'
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, struct
+          from pathlib import Path
+          source=Path('assets/roblox/world-ghosts/native/mesh/bride.glb')
+          root=Path('assets/roblox/world-ghosts/native/mesh/bride-motion-v3')
+          evidence=json.loads((root/'evidence.json').read_text(encoding='utf-8'))
+          expected={
+            'hero_idle_hq','hero_walk_hq','hero_jog_hq','hero_run_hq','hero_sprint_hq',
+            'hero_start_hq','hero_stop_hq','hero_strafe_left_hq','hero_strafe_right_hq','hero_backward_hq',
+            'hero_turn_45_hq','hero_turn_90_hq','hero_turn_180_hq',
+            'hero_jump_start_hq','hero_jump_air_hq','hero_land_hq','hero_crouch_hq'
+          }
+          assert evidence['foundationMotionCount']==17
+          assert evidence['foundationTargetMotionCount']==40
+          assert evidence['foundationRemainingMotionCount']==23
+          assert evidence['foundationStage']=='BASE_LOCOMOTION_TRAVERSAL_17_OF_40'
+          assert set(evidence['foundationMotions'])==expected
+          assert evidence['sourceOriginalPreserved'] is True
+          assert evidence['gameplayAuthorityChanged'] is False
+          assert evidence['productionVerified'] is False
+          assert evidence['nativeStudioVerified'] is False
+          assert evidence['unityRuntimeVerified'] is False
+          assert evidence['staticMotionQa']['staticMotionQaPass'] is True, evidence['staticMotionQa']
+          assert evidence['staticMotionQa']['failures']==[]
+          assert evidence['staticMotionQa']['root']['rotationMaxRad']<=evidence['staticMotionQa']['thresholds']['rootRotationMaxRad']
+          assert evidence['staticMotionQa']['root']['locationMax']<=evidence['staticMotionQa']['thresholds']['rootLocationMax']
+          assert evidence['staticMotionQa']['allSamplesFinite'] is True
+          assert evidence['platformConversionQa']['pass'] is True
+          assert evidence['mobileBudget']['pass'] is True
+          assert evidence['sourceSha256']==hashlib.sha256(source.read_bytes()).hexdigest()
+          assert evidence['sourceSha256AfterBuild']==evidence['sourceSha256']
+          assert len(evidence.get('previewFiles',[]))==17
+          assert evidence.get('previewIsRuntimeProof') is False
+          preview_root=root/'previews'
+          assert (preview_root/'source-bind-reference.png').is_file()
+          for name in expected:
+              assert (preview_root/(name+'.png')).is_file(), name
+          glb=root/'bride-motion-v3.glb'
+          assert evidence['derivedSha256']==hashlib.sha256(glb.read_bytes()).hexdigest()
+          raw=glb.read_bytes()
+          magic,version,total=struct.unpack_from('<4sII',raw,0)
+          assert magic==b'glTF' and version==2 and total==len(raw)
+          off=12; doc=None
+          while off<total:
+              size,kind=struct.unpack_from('<II',raw,off); off+=8
+              chunk=raw[off:off+size]; off+=size
+              if kind==0x4E4F534A:
+                  doc=json.loads(chunk.decode('utf-8').rstrip('\x00 '))
+          assert doc is not None
+          names={row.get('name') for row in doc.get('animations',[])}
+          assert names==expected, (names,expected)
+          assert len(doc.get('skins',[]))>=1
+          print('HUMANOID_MOTION_GLTF_OK',{
+            'animations':len(names),
+            'skins':len(doc.get('skins',[])),
+            'bones':evidence['boneCount'],
+            'staticQa':evidence['staticMotionQa']['staticMotionQaPass'],
+            'platformQa':evidence['platformConversionQa']['pass'],
+            'mobileBudget':evidence['mobileBudget']['pass']
+          })
+          PY
+      - name: Register measured humanoid motion derivative as runtime-pending asset
+        if: steps.asset_scope.outputs.motion == 'true'
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('assets/roblox/world-ghosts/native/mesh/bride-motion-v3')
+          evidence_path=root/'evidence.json'
+          artifact_path=root/'bride-motion-v3.glb'
+          assert evidence_path.is_file() and artifact_path.is_file()
+          evidence=json.loads(evidence_path.read_text(encoding='utf-8'))
+          assert evidence['staticMotionQa']['staticMotionQaPass'] is True
+          assert evidence['platformConversionQa']['pass'] is True
+          assert evidence['mobileBudget']['pass'] is True
+          assert evidence['productionVerified'] is False
+          library_path=Path('company-asset-library.json')
+          library=json.loads(library_path.read_text(encoding='utf-8'))
+          assets=library.setdefault('assets',[])
+          asset_id='shared-humanoid-foundation-motion-bride-v3'
+          row={
+            'id':asset_id,
+            'title':'공용 휴머노이드 고퀄 기초 모션 V3 17/40',
+            'category':'MOTION',
+            'family':'MOTION',
+            'platform':'SHARED_NATIVE_SOURCE',
+            'platformTargets':['UNITY','ROBLOX'],
+            'status':'REPO_ASSET',
+            'path':'/assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb',
+            'license':'project-original-derivative',
+            'sourceAssetId':'roblox-world-ghost-gwisin-bride',
+            'sourceAssetPath':'assets/roblox/world-ghosts/native/mesh/bride.glb',
+            'sourceSha256':evidence['sourceSha256'],
+            'derivedSha256':evidence['derivedSha256'],
+            'sourceOriginalPreserved':True,
+            'foundationTargetMotionCount':40,
+            'motionCount':evidence['foundationMotionCount'],
+            'remainingMotionCount':evidence['foundationRemainingMotionCount'],
+            'motionStates':evidence['foundationMotions'],
+            'staticMotionQaState':'MEASURED_STATIC_QA_PASS',
+            'staticMotionQa':evidence['staticMotionQa'],
+            'platformConversionQa':evidence['platformConversionQa'],
+            'mobileBudget':evidence['mobileBudget'],
+            'runtimeVerificationState':'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',
+            'productionVerified':False,
+            'verifiedCompanyReusable':False,
+            'robloxStudioVerified':False,
+            'unityRuntimeVerified':False,
+            'gameplayAuthorityChanged':False,
+            'sourceFiles':[
+              'assets/roblox/world-ghosts/refine-humanoid-motion.py',
+              'assets/roblox/world-ghosts/native/mesh/bride.glb',
+              'assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb',
+              'assets/roblox/world-ghosts/native/mesh/bride-motion-v3/evidence.json'
+            ],
+            'note':'원본 스킨드 GLB를 보존하고 17개 기초 이동/회전/점프/웅크리기 모션을 직접 재제작. Blender 수치 QA·GLB 구조·모바일 예산만 검증됐으며 Roblox Studio/Unity 네이티브 런타임 검증 전.'
+          }
+          index=next((i for i,item in enumerate(assets) if item.get('id')==asset_id),None)
+          if index is None: assets.append(row)
+          else: assets[index]=row
+          library_path.write_text(json.dumps(library,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('HUMANOID_MOTION_LIBRARY_REGISTERED',asset_id)
+          PY
+      - name: Validate spider GLB and 12 motions
+        if: steps.asset_scope.outputs.spider == 'true'
+        run: |
+          python3 - <<'PY'
+          import json, struct
+          from pathlib import Path
+          root=Path('assets/roblox/world-ghosts/native/spider')
+          evidence=json.loads((root/'evidence.json').read_text(encoding='utf-8'))
+          assert evidence['legCount']==8
+          assert evidence['eyeCount']==8
+          assert evidence['bones']>=45
+          assert evidence['motionCount']==12
+          expected={'idle','walk','run','strafe','climb','threat','bite','pounce','web_cast','hit','stagger','death'}
+          assert set(evidence['clips'])==expected
+          raw=(root/'spider.glb').read_bytes()
+          magic,version,total=struct.unpack_from('<4sII',raw,0)
+          assert magic==b'glTF' and version==2 and total==len(raw)
+          off=12; doc=None
+          while off<total:
+              size,kind=struct.unpack_from('<II',raw,off); off+=8
+              chunk=raw[off:off+size]; off+=size
+              if kind==0x4E4F534A:
+                  doc=json.loads(chunk.decode('utf-8').rstrip('\x00 '))
+          assert doc is not None
+          names={a.get('name') for a in doc.get('animations',[])}
+          assert names==expected, (names, expected)
+          assert len(doc.get('skins',[]))>=1
+          print('SPIDER_GLTF_OK', {'animations':len(names),'skins':len(doc.get('skins',[])),'bones':evidence['bones'],'vertices':evidence['vertices'],'triangles':evidence['triangles']})
+          PY
+      - name: Commit verified native packages and authored assets to PR branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        env:
+          HEAD_BRANCH: ${{ github.head_ref }}
+          MOTION_BUILT: ${{ steps.asset_scope.outputs.motion }}
+          SPIDER_BUILT: ${{ steps.asset_scope.outputs.spider }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            assets/roblox/world-ghosts/native/world-ghosts-gallery.rbxlx \
+            assets/roblox/world-ghosts/native/world-ghost-skins.rbxmx \
+            assets/roblox/world-ghosts/native/build-evidence.json \
+            assets/roblox/world-ghosts/native/motion-experiments.json \
+            assets/roblox/world-ghosts/native/asset-gallery.json \
+            assets/roblox/world-ghosts/native/gallery/
+          if [[ "$SPIDER_BUILT" == 'true' ]]; then
+            git add \
+              assets/roblox/world-ghosts/native/spider/spider.glb \
+              assets/roblox/world-ghosts/native/spider/spider.png \
+              assets/roblox/world-ghosts/native/spider/evidence.json
+          fi
+          if [[ "$MOTION_BUILT" == 'true' ]]; then
+            git add \
+              assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb \
+              assets/roblox/world-ghosts/native/mesh/bride-motion-v3/evidence.json \
+              company-asset-library.json
+          fi
+          if git diff --cached --quiet; then
+            echo "Authored asset artifacts already current"
+            exit 0
+          fi
+          git commit -m "assets: synchronize verified native packages and authored derivatives"
+          git fetch --no-tags origin "$HEAD_BRANCH"
+          git rebase "origin/$HEAD_BRANCH"
+          # A concurrent source edit must not publish stale derived previews.
+          node --test --test-name-pattern='native place and model|published comparison frames|automatic asset gallery' qa/roblox-world-ghost-skins.test.mjs
+          git push origin "HEAD:$HEAD_BRANCH"
+      - uses: actions/upload-artifact@v4
+        if: steps.asset_scope.outputs.motion == 'true' || steps.asset_scope.outputs.spider == 'true'
+        with:
+          name: world-ghosts-native-${{ github.sha }}
+          path: assets/roblox/world-ghosts/native/
+          if-no-files-found: error
+          retention-days: 14
+

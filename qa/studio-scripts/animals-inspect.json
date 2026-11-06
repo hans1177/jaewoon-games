@@ -1,0 +1,57 @@
+[
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "click_text",
+  "text": "모험 시작"
+ },
+ {
+  "type": "wait",
+  "ms": 14000
+ },
+ {
+  "type": "click_text",
+  "text": "건너뛰기"
+ },
+ {
+  "type": "wait",
+  "ms": 5000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local char=game.Players.LocalPlayer.Character\nchar:PivotTo(CFrame.new(88,8,60))\nreturn \"ok\""
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local W=workspace:FindFirstChild(\"FantasySurvivalWorld\") local char=game.Players.LocalPlayer.Character\nlocal hrp=char and char:FindFirstChild(\"HumanoidRootPart\")\nlocal best={} \nfor _,m in ipairs(W:GetChildren()) do if m:IsA(\"Model\") then local sp=m:GetAttribute(\"Species\") or m:GetAttribute(\"MeadowWildlife\")\n if (sp==\"wolf\" or sp==\"deer\") and hrp then local d=(m:GetPivot().Position-hrp.Position).Magnitude\n  if not best[sp] or d<best[sp].d then best[sp]={m=m,d=d} end end end end\nlocal o={}\nfor sp,b in pairs(best) do local m=b.m\n table.insert(o,sp..\" \"..m.Name..\" d=\"..string.format(\"%.0f\",b.d)..\" mot=\"..tostring(m:GetAttribute(\"NativeMobMotion\"))..\" rig=\"..tostring(m:GetAttribute(\"NativeCreatureRigMode\"))..\" pivotLook=\"..tostring(m:GetPivot().LookVector))\n for _,d in ipairs(m:GetDescendants()) do if d:IsA(\"Bone\") then local k=d.Name:lower():gsub(\"[^%w]\",\"\")\n  if k:find(\"leg\") or k:find(\"bone0\") then\n   local x,y,z=d.Transform:ToEulerAnglesXYZ()\n   local wl=d.WorldCFrame\n   table.insert(o,string.format(\"  %s T=(%.0f,%.0f,%.0f) wpos=(%.1f,%.1f,%.1f) wX=(%.2f,%.2f,%.2f) wY=(%.2f,%.2f,%.2f)\",d.Name,math.deg(x),math.deg(y),math.deg(z),wl.Position.X,wl.Position.Y,wl.Position.Z,wl.RightVector.X,wl.RightVector.Y,wl.RightVector.Z,wl.UpVector.X,wl.UpVector.Y,wl.UpVector.Z))\n  end end end\nend\nprint(table.concat(o,\"\\n\")) return table.concat(o,\"\\n\")"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local W=workspace:FindFirstChild(\"FantasySurvivalWorld\") local char=game.Players.LocalPlayer.Character\nlocal hrp=char and char:FindFirstChild(\"HumanoidRootPart\")\nlocal best={} \nfor _,m in ipairs(W:GetChildren()) do if m:IsA(\"Model\") then local sp=m:GetAttribute(\"Species\") or m:GetAttribute(\"MeadowWildlife\")\n if (sp==\"wolf\" or sp==\"deer\") and hrp then local d=(m:GetPivot().Position-hrp.Position).Magnitude\n  if not best[sp] or d<best[sp].d then best[sp]={m=m,d=d} end end end end\nlocal o={}\nfor sp,b in pairs(best) do local m=b.m\n table.insert(o,sp..\" \"..m.Name..\" d=\"..string.format(\"%.0f\",b.d)..\" mot=\"..tostring(m:GetAttribute(\"NativeMobMotion\"))..\" rig=\"..tostring(m:GetAttribute(\"NativeCreatureRigMode\"))..\" pivotLook=\"..tostring(m:GetPivot().LookVector))\n for _,d in ipairs(m:GetDescendants()) do if d:IsA(\"Bone\") then local k=d.Name:lower():gsub(\"[^%w]\",\"\")\n  if k:find(\"leg\") or k:find(\"bone0\") then\n   local x,y,z=d.Transform:ToEulerAnglesXYZ()\n   local wl=d.WorldCFrame\n   table.insert(o,string.format(\"  %s T=(%.0f,%.0f,%.0f) wpos=(%.1f,%.1f,%.1f) wX=(%.2f,%.2f,%.2f) wY=(%.2f,%.2f,%.2f)\",d.Name,math.deg(x),math.deg(y),math.deg(z),wl.Position.X,wl.Position.Y,wl.Position.Z,wl.RightVector.X,wl.RightVector.Y,wl.RightVector.Z,wl.UpVector.X,wl.UpVector.Y,wl.UpVector.Z))\n  end end end\nend\nprint(table.concat(o,\"\\n\")) return table.concat(o,\"\\n\")"
+ },
+ {
+  "type": "capture",
+  "name": "near1"
+ },
+ {
+  "type": "wait",
+  "ms": 500
+ },
+ {
+  "type": "capture",
+  "name": "near2"
+ }
+]

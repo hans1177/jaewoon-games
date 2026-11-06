@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-08",
+  "policy": {
+    "scope": "homepage-published-games-and-public-homepage",
+    "webArchiveWriteBack": false,
+    "autoFixPublishedGameCode": false,
+    "healthScore": true,
+    "autoplay": true,
+    "bugMemory": true,
+    "failureLearningXp": true,
+    "qualityFloorRisesWithCompanyExperience": true,
+    "assetHealth": true,
+    "safeRollback": true,
+    "researchNotes": true,
+    "paidAutomation": false
+  },
+  "healthModel": {
+    "maxScore": 100,
+    "dimensions": {
+      "launch": 20,
+      "runtimeErrors": 20,
+      "progression": 20,
+      "saveLoad": 15,
+      "assetsAndLinks": 15,
+      "mobileAndPerformance": 10
+    },
+    "severity": {
+      "critical": "0-39",
+      "high": "40-59",
+      "medium": "60-79",
+      "healthy": "80-100"
+    }
+  },
+  "autoplayScenarios": [
+    "open-or-install",
+    "start-game",
+    "primary-input",
+    "basic-progress",
+    "death-or-failure-recovery",
+    "save-load-when-supported"
+  ],
+  "bugMemory": {
+    "file": "qa/bug-memory.json",
+    "fields": ["symptom", "rootCause", "fix", "regressionTest", "games", "firstSeen", "lastSeen", "recurrence"]
+  },
+  "researchNotes": {
+    "directory": "research/game-notes",
+    "reuseAcrossProjects": true
+  },
+  "safeRollback": {
+    "trigger": "verified-health-regression",
+    "rule": "never promote a worse verified build over the last known good public build",
+    "automaticSourceRollback": false,
+    "publicDownloadRollback": "allowed-only-to-last-verified-approved-build"
+  }
+}

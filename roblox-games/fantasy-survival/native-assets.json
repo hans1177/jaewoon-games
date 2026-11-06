@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "gameId": "fantasy-survival",
+  "ownerApproved": true,
+  "ownerDirective": "2026-10-30_OWNER_REPLACE_GREY_TREE_WITH_CC0_LEAFY_TREE_AND_REPAIR_WOLF_WALK",
+  "license": "CC0-1.0",
+  "models": {
+    "wolf": {
+      "atom": "HEAD_CANINE",
+      "sourcePath": "assets/shared/forest/wolf.fbx",
+      "sourceSha256": "84a55b60ff741c1e7c0e725f9c7b659ef27ad4b658784642c09d191ba9636f0f",
+      "licenseEvidence": "https://opengameart.org/content/animated-animales-low-poly"
+    },
+    "bee": {
+      "atom": "HEAD_INSECT",
+      "sourcePath": "assets/shared/forest/bee.fbx",
+      "sourceSha256": "2c67d359a861ff3508dd61d014d6826c39f800d576a6757b6fba90656a361a54",
+      "licenseEvidence": "https://opengameart.org/content/textured-cute-monster-pack"
+    },
+    "golem": {
+      "atom": "HEAD_GOLEM",
+      "archiveUrl": "https://opengameart.org/sites/default/files/pok_-_fbx_blend_textures_and_unity_setup.zip",
+      "archiveSha256": "c0e504c2449528f3f54bcac713b6a06d5ebfbe940bebc024769eb35519d56385",
+      "archiveEntry": "Pok optimized.fbx",
+      "sourceSha256": "680a0acf04101e96943b49044eddf0f92d855c660978c7495884115088076096",
+      "licenseEvidence": "https://opengameart.org/content/pok"
+    },
+    "deer": {
+      "atom": "ANTLER",
+      "sourcePath": "assets/shared/forest/deer-animated.glb",
+      "sourceSha256": "fabf360b22eaccccd056ee99d698a9562d15aa245821f96e4fbad6db3751604e",
+      "licenseEvidence": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "role": "PASSIVE_MEADOW_WILDLIFE"
+    },
+    "boar": {
+      "atom": "JAW_SHORT",
+      "sourcePath": "assets/shared/forest/hog.glb",
+      "sourceSha256": "cdb47daa5e2392f7ab931356d0836e97dd5029aa16305115f7e19da4ce1d8180",
+      "licenseEvidence": "https://opengameart.org/content/cube-pets",
+      "role": "PASSIVE_MEADOW_WILDLIFE"
+    },
+    "rabbit": {
+      "atom": "EAR_POINTED",
+      "sourcePath": "assets/shared/forest/bunny.glb",
+      "sourceSha256": "3e694e98c48f0556587d9a3202da2f20344aa21a15f70bb3736eec5048129548",
+      "licenseEvidence": "https://opengameart.org/content/cube-pets",
+      "role": "PASSIVE_MEADOW_WILDLIFE"
+    },
+    "tree": {
+      "atom": "TREE_CROWN_ROUND",
+      "sourcePath": "assets/shared/party/tree.glb",
+      "sourceSha256": "bf32ae3bc0892c5975b90c9492a22d78e53ef0ccb0e4d58990b218ce31d1fb67",
+      "licenseEvidence": "https://kenney.nl/assets/fantasy-town-kit",
+      "role": "MEADOW_ENVIRONMENT"
+    },
+    "bat": {
+      "atom": "WING_LEATHER",
+      "sourcePath": "assets/roblox/actors/sources/quaternius-monsters/FBX/Bat.fbx",
+      "sourceSha256": "b31b1f94800c4fbd9204c42bd8853d91c0df16e27612ae6c0d6168c6bc64be51",
+      "licenseEvidence": "https://opengameart.org/content/lowpoly-animated-monsters",
+      "role": "HOSTILE_MEADOW_CREATURE"
+    },
+    "mushroom": {
+      "atom": "ROOT_LIMB",
+      "sourcePath": "assets/roblox/actors/sources/quaternius-cute/FBX/Mushroom.fbx",
+      "sourceSha256": "d329b5cdc503c500aa9d915969e228fed103597f3885a7b0b9ee1aa0f1406158",
+      "licenseEvidence": "https://opengameart.org/content/textured-cute-monster-pack",
+      "role": "HOSTILE_MEADOW_CREATURE"
+    },
+    "skeleton": {
+      "atom": "HEAD_SKULL",
+      "sourcePath": "assets/roblox/actors/sources/quaternius-monsters/FBX/Skeleton.fbx",
+      "sourceSha256": "be0a5992b677e563c6c9601e76fdcb9d50e91c195aebb1eb70604fbfe8fb26d5",
+      "licenseEvidence": "https://opengameart.org/content/lowpoly-animated-monsters",
+      "role": "HOSTILE_MEADOW_CREATURE"
+    },
+    "ruin": {
+      "atom": "RUIN_WALL",
+      "sourcePath": "assets/shared/party/wall-broken.glb",
+      "sourceSha256": "c5c347a39ae0c508fb97fa198b8b8a8c8d68b170d3f8ac232535cb01d2c8d808",
+      "licenseEvidence": "https://kenney.nl/assets/fantasy-town-kit",
+      "role": "MEADOW_EXPLORATION_RUIN"
+    }
+  },
+  "runtimeVerified": false,
+  "universeUseGrant": "REQUIRED_FOR_EACH_EXACT_PUBLISH_TARGET",
+  "sourceOnlyUntilRegisteredAndExactUniverseGranted": true
+}

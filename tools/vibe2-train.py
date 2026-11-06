@@ -1,0 +1,433 @@
+# 파일명: tools/vibe2-train.py
+import argparse
+import hashlib
+import json
+import os
+import random
+from pathlib import Path
+
+EXTERNAL_BLACK_BOX_QA_MARKER = "BLACK_BOX_EVIDENCE_PASS"
+EXTERNAL_BLACK_BOX_SOURCE_KIND = "external-black-box"
+PLATFORM_TASK_TYPES = {"unity", "roblox", "fortnite_uefn"}
+PLATFORM_RUNTIME_REQUIREMENTS = {
+    "unity": ("androidRuntimeRequired", "Unity Android/runtime"),
+    "roblox": ("robloxRuntimeRequired", "Roblox runtime"),
+    "fortnite_uefn": ("uefnRuntimeRequired", "Fortnite UEFN runtime"),
+}
+
+
+# Research-informed difficulty curriculum; verified sample retention is mandatory.
+# He et al. 2025 (DA-KD): https://proceedings.mlr.press/v267/he25c.html
+# He et al. 2026 (D2A2): https://www.sciencedirect.com/science/article/pii/S0957417426003064
+# All verified train windows are sampled exactly once per epoch.
+def difficulty_curriculum_weights(rows):
+    priorities = {
+        "simple": 1.0,
+        "bug": 1.15,
+        "regression": 1.3,
+        "unity-build": 1.4,
+        "roblox-release": 1.4,
+        "uefn-release": 1.4,
+    }
+    return [priorities.get(str(row.get("difficulty") or "simple").strip().lower(), 1.0) for row in rows]
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Vibe2 Qwen LoRA/QLoRA trainer")
+    parser.add_argument("--train", required=True)
+    parser.add_argument("--eval", required=True)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--base-model", default="Qwen/Qwen3-1.7B")
+    parser.add_argument("--method", choices=("lora", "qlora"), default="lora")
+    parser.add_argument("--seed", type=int, default=20260910)
+    parser.add_argument("--adapter-version", required=True)
+    parser.add_argument("--dataset-manifest", required=True)
+    parser.add_argument("--task-type", choices=("coding", "bugfix", "unity", "roblox", "fortnite_uefn", "qa", "planning", "general"), default="general")
+    parser.add_argument("--parent-adapter", default="")
+    parser.add_argument("--epochs", type=float, default=1.0)
+    parser.add_argument("--learning-rate", type=float, default=2e-4)
+    parser.add_argument("--max-length", type=int, default=2048)
+    parser.add_argument("--batch-size", type=int, default=1)
+    parser.add_argument("--grad-accum", type=int, default=8)
+    parser.add_argument(
+        "--final-eval-only",
+        action="store_true",
+        help="Skip repeated epoch evaluation; ordinary jobs also skip intermediate checkpoints.",
+    )
+    parser.add_argument("--cpu-practice-recovery", action="store_true",
+                        help="Enable periodic durable CPU practice checkpoints on trusted Windows workers.")
+    parser.add_argument("--resume-checkpoint", action="store_true",
+                        help="Resume only an exact-input verified CPU practice checkpoint.")
+    return parser.parse_args()
+
+
+def load_jsonl(path):
+    with open(path, "r", encoding="utf-8") as handle:
+        return [json.loads(line) for line in handle if line.strip()]
+
+
+def stable_row(row):
+    return json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def dataset_hash(rows):
+    return hashlib.sha256("\n".join(stable_row(row) for row in rows).encode("utf-8")).hexdigest()
+
+
+def encode_answer_windows(tokenizer, row, max_length):
+    """Supervise every answer token once, retaining causal overlap per window.
+
+    Prefix truncation used to discard the end of a code answer. A small CPU
+    window must not silently train only its opening declaration or prose.
+    """
+    if max_length < 16:
+        raise RuntimeError('max_length must be at least 16')
+    instruction = row['instruction'].strip()
+    user_input = row.get('input', '').strip()
+    answer = row['output'].strip()
+    if not instruction or not answer:
+        raise RuntimeError('nonempty instruction and answer required')
+    user_text = instruction if not user_input else f'{instruction}\n\n입력:\n{user_input}'
+    if getattr(tokenizer, 'chat_template', None):
+        prompt = tokenizer.apply_chat_template(
+            [{'role': 'user', 'content': user_text}], tokenize=False,
+            add_generation_prompt=True, enable_thinking=False,
+        )
+    else:
+        prompt = f'### 지시\n{user_text}\n\n### 답변\n'
+    prompt_ids = tokenizer(prompt, add_special_tokens=False)['input_ids']
+    answer_ids = tokenizer(answer, add_special_tokens=False)['input_ids']
+    if not prompt_ids or not answer_ids:
+        raise RuntimeError('tokenizer produced empty prompt or answer')
+    if tokenizer.eos_token_id is not None:
+        answer_ids = answer_ids + [tokenizer.eos_token_id]
+    full = prompt_ids + answer_ids
+    cursor = len(prompt_ids)
+    windows = []
+    stride = max_length // 2
+    while cursor < len(full):
+        end = min(len(full), max(max_length, cursor + stride))
+        start = max(0, end - max_length)
+        ids = full[start:end]
+        # New target tokens always have left context; overlapping tokens mask out.
+        masked = cursor - start
+        if masked < 1:
+            raise RuntimeError('answer window lost causal context')
+        labels = [-100] * masked + full[cursor:end]
+        windows.append({'input_ids': ids, 'attention_mask': [1] * len(ids), 'labels': labels})
+        cursor = end
+    supervised = sum(sum(label != -100 for label in w['labels']) for w in windows)
+    if supervised != len(answer_ids):
+        raise RuntimeError('answer token coverage mismatch')
+    return windows, {'answerTokens': len(answer_ids), 'supervisedAnswerTokens': supervised,
+                     'windowCount': len(windows), 'promptTokens': len(prompt_ids),
+                     'fullPromptFits': len(prompt_ids) < max_length}
+
+
+def is_external_black_box_qa(row, qa):
+    provenance = row.get("provenance") or {}
+    source_kind = str(provenance.get("sourceKind") or row.get("sourceKind") or "").lower()
+    return (
+        str(row.get("taskType") or "").lower() == "qa"
+        and source_kind == EXTERNAL_BLACK_BOX_SOURCE_KIND
+        and qa.get("independentQa") == EXTERNAL_BLACK_BOX_QA_MARKER
+        and qa.get("browserQa") == "NOT_APPLICABLE"
+        and qa.get("runtime") == "PASS"
+    )
+
+
+def validate_manifest(args, manifest, train_rows, eval_rows):
+    if int(manifest.get("version", 0)) < 3:
+        raise RuntimeError("dataset manifest v3 or newer is required")
+    if manifest.get("readyForTraining") is not True:
+        raise RuntimeError("dataset manifest is not readyForTraining")
+
+    contamination = manifest.get("contamination") or {}
+    if contamination.get("pass") is not True or float(contamination.get("contaminationRate", 1)) > 0:
+        raise RuntimeError("contaminated dataset is forbidden")
+
+    diversity = manifest.get("diversity") or {}
+    if diversity.get("pass") is not True:
+        raise RuntimeError("dataset diversity gate did not pass")
+    batching = manifest.get("batching") or {}
+    if batching.get("pass") is not True:
+        raise RuntimeError("dataset batch gate did not pass")
+
+    target_task_type = manifest.get("targetTaskType")
+    if target_task_type and target_task_type != args.task_type:
+        raise RuntimeError("trainer task type must match dataset targetTaskType")
+
+    task_plan = manifest.get("taskTrainingPlan") or {}
+    if target_task_type:
+        target_plan = task_plan.get(target_task_type) or {}
+        if target_plan.get("ready") is not True:
+            raise RuntimeError("target task adapter is not ready for training")
+
+    policy = manifest.get("policy") or {}
+    if policy.get("teacherOnlyDifficult") is not True:
+        raise RuntimeError("teacher-only-difficult policy must be enabled")
+
+    stats = manifest.get("stats") or {}
+    if stats.get("deprecatedUsed") is True:
+        raise RuntimeError("deprecated/obsolete samples are forbidden")
+    if int(stats.get("train", 0)) != len(train_rows) or int(stats.get("eval", 0)) != len(eval_rows):
+        raise RuntimeError("dataset row counts do not match manifest")
+    if dataset_hash(train_rows) != manifest.get("trainSha256"):
+        raise RuntimeError("train dataset hash mismatch")
+    if dataset_hash(eval_rows) != manifest.get("evalSha256"):
+        raise RuntimeError("eval dataset hash mismatch")
+    if int(stats.get("syntheticTrain", 0)) >= len(train_rows) and train_rows:
+        raise RuntimeError("synthetic-only self-training is forbidden")
+    if args.seed != int(manifest.get("seed", args.seed)):
+        raise RuntimeError("trainer seed must match dataset manifest seed")
+
+    for row in train_rows + eval_rows:
+        qa = row.get("qa") or {}
+        row_task_type = str(row.get("taskType") or "").lower()
+        external_black_box = is_external_black_box_qa(row, qa)
+        if qa.get("independentQa") != "PASS" and not external_black_box:
+            raise RuntimeError("independent QA PASS or verified external black-box QA evidence is required")
+        if row_task_type in PLATFORM_TASK_TYPES:
+            requirement_key, runtime_label = PLATFORM_RUNTIME_REQUIREMENTS[row_task_type]
+            if qa.get("runtime") != "PASS":
+                raise RuntimeError(f"{runtime_label} PASS is required")
+            if qa.get("browserQa") != "NOT_APPLICABLE":
+                raise RuntimeError(f"{row_task_type} browser QA must be NOT_APPLICABLE")
+            requirements = qa.get("requirements") or {}
+            if requirements.get(requirement_key) is not True:
+                raise RuntimeError(f"{runtime_label} binding is missing")
+            if row.get("synthetic") is not False:
+                raise RuntimeError(f"{row_task_type} production training forbids synthetic rows")
+            provenance = row.get("provenance") or {}
+            if str(provenance.get("sourceKind") or "").lower() != "vibe2":
+                raise RuntimeError(f"{row_task_type} production training requires verified Vibe2 source evidence")
+        elif external_black_box:
+            if row_task_type != "qa":
+                raise RuntimeError("external black-box evidence is only accepted for QA task samples")
+        elif qa.get("browserQa") != "PASS":
+            raise RuntimeError("browser QA PASS is required for non-platform samples")
+        if row.get("lifecycle") != "active":
+            raise RuntimeError("inactive sample reached trainer")
+        if float(row.get("qualityScore", 0)) < 0.75:
+            raise RuntimeError("low-quality sample reached trainer")
+        if target_task_type and row_task_type != target_task_type:
+            raise RuntimeError("mixed task type reached task-specific trainer")
+
+
+def cpu_practice_identity(args, manifest):
+    # Bind checkpoints to the original practice-only dataset and exact model/optimizer settings.
+    fields = {
+        "trainSha256": manifest.get("trainSha256"),
+        "evalSha256": manifest.get("evalSha256"),
+        "baseModel": args.base_model, "adapterVersion": args.adapter_version,
+        "taskType": args.task_type, "method": args.method,
+        "seed": args.seed, "epochs": args.epochs, "learningRate": args.learning_rate,
+        "maxLength": args.max_length, "batchSize": args.batch_size, "gradAccum": args.grad_accum,
+    }
+    if not all(isinstance(fields[key], str) and len(fields[key]) == 64
+               and all(c in "0123456789abcdefABCDEF" for c in fields[key])
+               for key in ("trainSha256", "evalSha256")):
+        raise RuntimeError("CPU practice checkpoint identity requires exact dataset SHA256")
+    return hashlib.sha256(json.dumps(fields, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def validated_cpu_practice_checkpoint(output, identity, resume):
+    root = Path(output)
+    checkpoint_root = root / "checkpoints"
+    marker = root / ".cpu-practice-recovery.json"
+    if not resume:
+        if marker.exists() or checkpoint_root.exists():
+            raise RuntimeError("CPU practice recovery directory is not fresh")
+        marker.write_text(json.dumps({"version": 1, "identitySha256": identity}), encoding="utf-8")
+        return None
+    if not marker.is_file():
+        raise RuntimeError("CPU practice recovery identity marker missing")
+    data = json.loads(marker.read_text(encoding="utf-8"))
+    if data != {"version": 1, "identitySha256": identity}:
+        raise RuntimeError("CPU practice recovery exact-input mismatch")
+    candidates = []
+    if checkpoint_root.exists():
+        for entry in checkpoint_root.iterdir():
+            if not entry.is_dir() or not entry.name.startswith("checkpoint-"):
+                continue
+            step = entry.name.split("checkpoint-", 1)[1]
+            if not step.isdecimal() or int(step) == 0:
+                continue
+            # Hugging Face Trainer must have written its full state and optimizer.
+            if (entry / "trainer_state.json").is_file() and (entry / "optimizer.pt").is_file():
+                candidates.append((int(step), entry))
+    if not candidates:
+        raise RuntimeError("CPU practice recovery has no complete Trainer checkpoint")
+    return str(max(candidates)[1])
+
+
+def main():
+    args = parse_args()
+    os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+    random.seed(args.seed)
+    train_rows = load_jsonl(args.train)
+    eval_rows = load_jsonl(args.eval)
+    if not train_rows or not eval_rows:
+        raise RuntimeError("train and eval datasets must both contain verified samples")
+    manifest = json.loads(Path(args.dataset_manifest).read_text(encoding="utf-8"))
+    validate_manifest(args, manifest, train_rows, eval_rows)
+
+    import torch
+    from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+    from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Trainer, TrainingArguments
+
+    torch.manual_seed(args.seed)
+    use_cuda = torch.cuda.is_available()
+    if use_cuda:
+        torch.cuda.manual_seed_all(args.seed)
+    if args.method == "qlora" and not use_cuda:
+        raise RuntimeError("QLoRA requires a local CUDA GPU; paid remote runners are not used")
+    cpu_practice_no_recompute = (
+        args.final_eval_only
+        and not use_cuda
+        and manifest.get("authority") == "PRACTICE_ONLY"
+        and manifest.get("practiceOnly") is True
+    )
+    if (args.cpu_practice_recovery or args.resume_checkpoint) and not cpu_practice_no_recompute:
+        raise RuntimeError("CPU checkpoint recovery is restricted to verified practice-only CPU training")
+    if args.resume_checkpoint and not args.cpu_practice_recovery:
+        raise RuntimeError("CPU resume requires checkpoint recovery mode")
+    tokenizer = AutoTokenizer.from_pretrained(args.base_model, trust_remote_code=True)
+    if tokenizer.pad_token_id is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    model_kwargs = {"trust_remote_code": True}
+    if use_cuda:
+        model_kwargs["device_map"] = "auto"
+        model_kwargs["torch_dtype"] = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+    if args.method == "qlora":
+        model_kwargs["quantization_config"] = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
+        )
+    model = AutoModelForCausalLM.from_pretrained(args.base_model, **model_kwargs)
+    if args.method == "qlora":
+        model = prepare_model_for_kbit_training(model)
+    model.config.use_cache = False
+    if not cpu_practice_no_recompute:
+        model.gradient_checkpointing_enable()
+    model = get_peft_model(
+        model,
+        LoraConfig(
+            r=16,
+            lora_alpha=32,
+            lora_dropout=0.05,
+            bias="none",
+            task_type="CAUSAL_LM",
+            target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+        ),
+    )
+
+    class JsonlDataset(torch.utils.data.Dataset):
+        def __init__(self, rows):
+            self.rows, self.coverage, self.sampling_weights = [], [], []
+            for row, priority in zip(rows, difficulty_curriculum_weights(rows)):
+                windows, coverage = encode_answer_windows(tokenizer, row, args.max_length)
+                self.rows.extend(windows)
+                self.coverage.append(coverage)
+                self.sampling_weights.extend([priority] * len(windows))
+        def __len__(self): return len(self.rows)
+        def __getitem__(self, index): return self.rows[index]
+
+    class Collator:
+        def __call__(self, features):
+            features = [dict(item) for item in features]
+            labels = [item.pop("labels") for item in features]
+            batch = tokenizer.pad(features, padding=True, return_tensors="pt")
+            max_len = batch["input_ids"].shape[1]
+            batch["labels"] = torch.tensor([label + [-100] * (max_len - len(label)) for label in labels], dtype=torch.long)
+            return batch
+
+    # Preserve every verified example, the exact dataset split, and the untouched holdout.
+    # Prioritize difficult windows without replacement or extra model calls.
+    class DifficultyCurriculumTrainer(Trainer):
+        def _get_train_sampler(self, train_dataset=None):
+            dataset = train_dataset if train_dataset is not None else self.train_dataset
+            weights = getattr(dataset, "sampling_weights", [])
+            if len(weights) != len(dataset) or len(set(weights)) <= 1:
+                return super()._get_train_sampler(train_dataset)
+            return torch.utils.data.WeightedRandomSampler(
+                weights=torch.tensor(weights, dtype=torch.double),
+                num_samples=len(weights),
+                replacement=False,
+                generator=torch.Generator().manual_seed(args.seed),
+            )
+
+    train_dataset = JsonlDataset(train_rows)
+    eval_dataset = JsonlDataset(eval_rows)
+    output = Path(args.output)
+    output.mkdir(parents=True, exist_ok=True)
+    resume_path = None
+    if args.cpu_practice_recovery:
+        identity = cpu_practice_identity(args, manifest)
+        resume_path = validated_cpu_practice_checkpoint(output, identity, args.resume_checkpoint)
+        print("CPU_PRACTICE_CHECKPOINT=" + (resume_path or "FRESH"))
+    training_args = TrainingArguments(
+        output_dir=str(output / "checkpoints"), num_train_epochs=args.epochs, learning_rate=args.learning_rate,
+        per_device_train_batch_size=args.batch_size, per_device_eval_batch_size=args.batch_size,
+        gradient_accumulation_steps=args.grad_accum, logging_steps=5,
+        eval_strategy="no" if args.final_eval_only else "epoch",
+        save_strategy="steps" if args.cpu_practice_recovery else ("no" if args.final_eval_only else "epoch"),
+        save_steps=16, save_total_limit=2,
+        report_to=[], seed=args.seed, data_seed=args.seed,
+        bf16=use_cuda and torch.cuda.is_bf16_supported(), fp16=use_cuda and not torch.cuda.is_bf16_supported(), remove_unused_columns=False,
+    )
+    trainer = DifficultyCurriculumTrainer(model=model, args=training_args, train_dataset=train_dataset, eval_dataset=eval_dataset, data_collator=Collator())
+    train_result = trainer.train(resume_from_checkpoint=resume_path) if resume_path else trainer.train()
+    eval_result = trainer.evaluate()
+    losses = [float(train_result.metrics.get("train_loss", 0)), float(eval_result.get("eval_loss", 0))]
+    if not all(value == value and abs(value) != float("inf") for value in losses):
+        raise RuntimeError("non-finite loss: adapter is not saved")
+    model.save_pretrained(output / "adapter")
+    tokenizer.save_pretrained(output / "adapter")
+    metadata = {
+        "version": 5,
+        "trainingEncoding": "COMPLETE_ANSWER_CAUSAL_WINDOWS_V2",
+        "difficultyCurriculum": {
+            "mode": "DIFFICULTY_PRIORITY_NO_REPLACEMENT" if len(set(train_dataset.sampling_weights)) > 1 else "BASELINE_UNIFORM",
+            "reference": "DA-KD_2025_AND_D2A2_2026_INSPIRED",
+            "verifiedTrainWindowsRetainedPerEpoch": len(train_dataset),
+            "evalAndFixedHoldoutUntouched": True,
+            "sampleDroppingAllowed": False,
+            "additionalTeacherCalls": False,
+        },
+        "answerCoverage": {"train": train_dataset.coverage, "eval": eval_dataset.coverage},
+        "encodedTrainWindows": len(train_dataset),
+        "encodedEvalWindows": len(eval_dataset),
+        "codeImplementationTrainSamples": sum(row.get('sampleKind') == 'CODE_IMPLEMENTATION' for row in train_rows),
+        "adapterVersion": args.adapter_version,
+        "taskType": args.task_type,
+        "baseModel": args.base_model,
+        "method": args.method,
+        "seed": args.seed,
+        "parentAdapter": args.parent_adapter or None,
+        "datasetVersion": manifest.get("version"),
+        "datasetTrainSha256": manifest.get("trainSha256"),
+        "datasetEvalSha256": manifest.get("evalSha256"),
+        "datasetHoldoutSha256": manifest.get("holdoutSha256"),
+        "datasetDiversity": manifest.get("diversity"),
+        "datasetBatching": manifest.get("batching"),
+        "contaminationRate": (manifest.get("contamination") or {}).get("contaminationRate"),
+        "verifiedRealOnly": args.task_type in PLATFORM_TASK_TYPES,
+        "verifiedExternalBlackBoxQaAllowed": args.task_type == "qa",
+        "finalEvalOnly": args.final_eval_only,
+        "gradientCheckpointing": not cpu_practice_no_recompute,
+        "trainMetrics": train_result.metrics,
+        "evalMetrics": eval_result,
+        "promotionState": "UNVERIFIED",
+        "runtimePromotionAllowed": False,
+        "requiredNextGate": "FIXED_HOLDOUT_AB_AND_CANARY",
+    }
+    (output / "training-metadata.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps(metadata, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

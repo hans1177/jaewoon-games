@@ -1,0 +1,1517 @@
+# 파일명: .github/workflows/vibe2-candidate-release.yml
+name: Vibe2 Candidate Release Gate
+
+on:
+  push:
+    branches:
+      - 'vibe2/candidate/**'
+  workflow_dispatch:
+    inputs:
+      candidate_branch:
+        description: 'Exact vibe2/candidate/** branch to inspect when another GitHub Actions workflow created it'
+        required: true
+        type: string
+
+      evidence_only:
+        description: 'Collect exact candidate runtime evidence without source promotion or publication'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+  pull-requests: write
+
+concurrency:
+  # Serialize only duplicate runs for the same candidate. Different candidates must not
+  # share one pending slot, otherwise GitHub concurrency cancels older pending runs.
+  group: vibe2-release-${{ github.event.inputs.candidate_branch || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    outputs:
+      evidence_only: ${{ steps.gate.outputs.evidence_only }}
+      decision: ${{ steps.gate.outputs.decision }}
+      control_sha: ${{ steps.gate.outputs.control_sha }}
+      reason: ${{ steps.gate.outputs.reason }}
+      task_id: ${{ steps.gate.outputs.task_id }}
+      game_id: ${{ steps.gate.outputs.game_id }}
+      target: ${{ steps.gate.outputs.target }}
+      execution_surface: ${{ steps.gate.outputs.execution_surface }}
+      source_root: ${{ steps.gate.outputs.source_root }}
+      base_sha: ${{ steps.gate.outputs.base_sha }}
+      transport_base_sha: ${{ steps.gate.outputs.transport_base_sha }}
+      release_state: ${{ steps.gate.outputs.release_state }}
+      production_class: ${{ steps.gate.outputs.production_class }}
+      request_file: ${{ steps.gate.outputs.request_file }}
+      candidate_sha: ${{ steps.gate.outputs.candidate_sha }}
+      candidate_branch: ${{ steps.gate.outputs.candidate_branch }}
+      origin: ${{ steps.gate.outputs.origin }}
+      already_promoted: ${{ steps.gate.outputs.already_promoted }}
+      asset_promotion_candidates: ${{ steps.gate.outputs.asset_promotion_candidates }}
+      generated_asset_files: ${{ steps.gate.outputs.generated_asset_files }}
+      asset_source_usage_fingerprint: ${{ steps.gate.outputs.asset_source_usage_fingerprint }}
+      asset_source_usage_library_version: ${{ steps.gate.outputs.asset_source_usage_library_version }}
+      asset_selection_fingerprint: ${{ steps.gate.outputs.asset_selection_fingerprint }}
+      asset_selection_library_version: ${{ steps.gate.outputs.asset_selection_library_version }}
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.candidate_branch || github.ref_name }}
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Resolve candidate, central production authority and boundary
+        id: gate
+        env:
+          EVIDENCE_ONLY: ${{ github.event.inputs.evidence_only || 'false' }}
+          SUBMITTED_CANDIDATE_BRANCH: ${{ github.event.inputs.candidate_branch || github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+          echo "control_sha=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
+          candidate_sha="$(git rev-parse HEAD)"
+          echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
+          echo "evidence_only=$EVIDENCE_ONLY" >> "$GITHUB_OUTPUT"
+          echo "candidate_branch=$SUBMITTED_CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
+          mapfile -t manifests < <(find .vibe2/candidates -type f -name manifest.json 2>/dev/null | sort)
+          matching_manifests=()
+          for candidate_manifest in "${manifests[@]}"; do
+            manifest_branch="$(MANIFEST="$candidate_manifest" node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.env.MANIFEST,'utf8'));process.stdout.write(String(m.branch||''))")"
+            if [ "$manifest_branch" = "$SUBMITTED_CANDIDATE_BRANCH" ]; then
+              matching_manifests+=("$candidate_manifest")
+            fi
+          done
+          if [ "${#matching_manifests[@]}" -eq 1 ]; then
+            manifest="${matching_manifests[0]}"
+            echo "VIBE2_CANDIDATE_MANIFEST_MATCH=$manifest"
+          elif [ "${#manifests[@]}" -eq 1 ]; then
+            manifest="${manifests[0]}"
+            echo "VIBE2_CANDIDATE_MANIFEST_LEGACY_SINGLE=$manifest"
+          else
+            echo 'decision=reject' >> "$GITHUB_OUTPUT"
+            echo 'reason=candidate-manifest-not-unique-for-branch' >> "$GITHUB_OUTPUT"
+            echo "VIBE2_CANDIDATE_MANIFEST_MATCH_COUNT=${#matching_manifests[@]}"
+            exit 0
+          fi
+          git show origin/main:game-catalog.json > /tmp/main-game-catalog.json
+          MANIFEST="$manifest" node <<'NODE'
+          const fs=require('fs');
+          const m=JSON.parse(fs.readFileSync(process.env.MANIFEST,'utf8'));
+          const catalog=JSON.parse(fs.readFileSync('/tmp/main-game-catalog.json','utf8'));
+          const out=process.env.GITHUB_OUTPUT;
+          const put=(k,v)=>fs.appendFileSync(out,`${k}=${String(v??'').replaceAll('\n',' ')}\n`);
+          const task=String(m.taskId||'').trim();
+          const game=String(m.gameId||'').trim();
+          const target=String(m.target||'').trim().toLowerCase();
+          const executionSurface=String(m.executionSurface||'').trim().toUpperCase();
+          const root=String(m.sourceRoot||'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/$/,'');
+          const base=String(m.baseMainSha||'').trim();
+          const transportBase=String(m.transportBaseSha||base).trim();
+          const origin=String(m.origin||'VIBE2_NATIVE').trim().toUpperCase();
+          const assetSourceUsageFingerprint=String(m?.codingMethod?.internalAssetSourceUsageFingerprint||'').trim();
+          const assetSourceUsageLibraryVersion=Math.max(0,Math.floor(Number(m?.codingMethod?.internalAssetSourceUsageLibraryVersion)||0));
+          // Web F0 also binds the exact BUILD_UP library selection to the submitted candidate.
+          // This is source-integrity evidence, never a substitute for browser/runtime QA.
+          const webBindingPlan=m?.assetProduction?.allGameDynamicLibraryBinding||{};
+          const webBindingFingerprint=String(m?.codingMethod?.allGameDynamicAssetBindingFingerprint||'').trim();
+          const webBindingLibraryFingerprint=String(webBindingPlan.fingerprint||'').trim();
+          const webBindingLibraryVersion=Math.max(0,Math.floor(Number(webBindingPlan.libraryVersion)||0));
+          const assetSelectionFingerprint=String(m?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'').trim();
+          const assetSelectionLibraryVersion=Math.max(0,Math.floor(Number(m?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion)||0));
+          const row=(catalog.games||[]).find(g=>String(g.id||'')===game);
+          const productionClass=String(row?.productionClass||'').trim().toUpperCase();
+          const legacyState=String(row?.homepageCategory||'other').toLowerCase();
+          const state=productionClass==='RELEASE_CONFIRMED'?'release-confirmed':productionClass==='DEVELOPMENT_CONFIRMED'?'development-confirmed':legacyState;
+          let decision='reject', reason='unknown';
+          if(!task||!game||!base||!transportBase) reason='manifest-required-field-missing';
+          else if(!['roblox','web','unity'].includes(target)) reason='target-auto-release-not-configured';
+          else if(target==='unity' && !['UNITY_WEB','UNITY_NATIVE'].includes(executionSurface)) reason='unity-execution-surface-missing-or-invalid';
+          else if(target==='roblox' && root!==`roblox-games/${game}`) reason='roblox-source-root-mismatch';
+          else if(target==='roblox' && !/^[0-9a-f]{64}$/i.test(assetSourceUsageFingerprint)) reason='roblox-build-up-asset-fingerprint-missing';
+          else if(target==='roblox' && assetSourceUsageLibraryVersion<=0) reason='roblox-build-up-asset-library-version-missing';
+          else if(target==='roblox' && !/^[0-9a-f]{64}$/i.test(assetSelectionFingerprint)) reason='roblox-build-up-selection-fingerprint-missing';
+          else if(target==='roblox' && assetSelectionLibraryVersion<=0) reason='roblox-build-up-selection-library-version-missing';
+          else if(target==='web' && root!==`web-games/${game}`) reason='web-source-root-mismatch';
+          else if(target==='web' && !/^[0-9a-f]{64}$/i.test(assetSourceUsageFingerprint)) reason='web-f0-build-up-asset-fingerprint-missing';
+          else if(target==='web' && assetSourceUsageLibraryVersion<=0) reason='web-f0-build-up-asset-library-version-missing';
+          else if(target==='web' && m?.codingMethod?.allGameDynamicAssetBindingRequired!==true) reason='web-f0-dynamic-asset-binding-not-required';
+          else if(target==='web' && m?.codingMethod?.allGameDynamicAssetBindingPass!==true) reason='web-f0-dynamic-asset-binding-unverified';
+          else if(target==='web' && (!/^[0-9a-f]{64}$/i.test(webBindingFingerprint)
+            ||webBindingFingerprint!==webBindingLibraryFingerprint)) reason='web-f0-dynamic-asset-binding-fingerprint-mismatch';
+          else if(target==='web' && (webBindingLibraryVersion<=0
+            ||webBindingLibraryVersion!==assetSourceUsageLibraryVersion)) reason='web-f0-dynamic-asset-library-version-mismatch';
+          else if(target==='unity' && root!==`unity-games/${game}`) reason='unity-source-root-mismatch';
+          else if(!row) reason='game-not-in-canonical-catalog';
+          else if(!['ACTIVE','REBUILD'].includes(String(row?.canonical?.lifecycle?.state||row?.lifecycleState||'ACTIVE').toUpperCase())) reason='game-not-active';
+          else {
+            decision=target==='unity'&&executionSurface==='UNITY_WEB'?'unity-web':target;
+            reason='candidate-authorized';
+          }
+          put('candidate_decision',decision); put('candidate_reason',reason); put('task_id',task); put('game_id',game);
+          put('target',target); put('execution_surface',executionSurface); put('source_root',root); put('base_sha',base); put('transport_base_sha',transportBase); put('release_state',state); put('production_class',productionClass); put('origin',origin);
+          put('asset_source_usage_fingerprint',assetSourceUsageFingerprint); put('asset_source_usage_library_version',assetSourceUsageLibraryVersion);
+          put('asset_selection_fingerprint',assetSelectionFingerprint); put('asset_selection_library_version',assetSelectionLibraryVersion);
+          const promotionCandidates=(Array.isArray(m.runtimePromotionCandidates)?m.runtimePromotionCandidates:[]).slice(0,64).map(row=>({
+            assetId:String(row?.assetId||'').trim(),
+            family:String(row?.family||'').trim(),
+            license:String(row?.license||'').trim(),
+            path:String(row?.path||'').trim()||null,
+            robloxAssetId:String(row?.robloxAssetId||'').trim()||null,
+            sourceHash:String(row?.sourceHash||'').trim(),
+            artifactHash:String(row?.artifactHash||'').trim()||null,
+            bindingEvidence:Array.isArray(row?.bindingEvidence)?row.bindingEvidence.map(String).slice(0,8):[],
+            candidateSourceBindingVerified:row?.candidateSourceBindingVerified===true,
+            generatedByDeclaredRecipe:row?.generatedByDeclaredRecipe===true,
+            persistedForCandidate:row?.persistedForCandidate===true
+          })).filter(row=>row.assetId&&row.family&&row.license&&row.sourceHash&&row.candidateSourceBindingVerified);
+          put('asset_promotion_candidates',JSON.stringify(promotionCandidates));
+          const lockFiles=new Set(Array.isArray(m?.compiledWorkContract?.workLock?.files)?m.compiledWorkContract.workLock.files.map(String):[]);
+          const generatedAssetFiles=[...new Set((Array.isArray(m.generatedAssetFiles)?m.generatedAssetFiles:[]).map(value=>String(value||'').replaceAll('\\','/').replace(/^\.\//,'')).filter(Boolean))];
+          for(const file of generatedAssetFiles){
+            if(!file.startsWith('assets/')||file.startsWith('/')||file.split('/').includes('..'))throw new Error('generated asset path invalid:'+file);
+            if(!lockFiles.has(file))throw new Error('generated asset missing from work lock:'+file);
+          }
+          put('generated_asset_files',JSON.stringify(generatedAssetFiles));
+          put('request_file',decision==='unity'?`.build-requests/unity/${game}.json`:'');
+          NODE
+
+          decision="$(sed -n 's/^candidate_decision=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          reason="$(sed -n 's/^candidate_reason=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          if [ "$decision" = 'reject' ]; then
+            echo 'decision=reject' >> "$GITHUB_OUTPUT"
+            echo "reason=$reason" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          task_id="$(sed -n 's/^task_id=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          source_root="$(sed -n 's/^source_root=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          base_sha="$(sed -n 's/^base_sha=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          transport_base_sha="$(sed -n 's/^transport_base_sha=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          game_id="$(sed -n 's/^game_id=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          production_class="$(sed -n 's/^production_class=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          candidate_origin="$(sed -n 's/^origin=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          generated_asset_files_json="$(sed -n 's/^generated_asset_files=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          mapfile -t generated_asset_files < <(GENERATED_ASSET_FILES="$generated_asset_files_json" node -e "for(const file of JSON.parse(process.env.GENERATED_ASSET_FILES||'[]'))console.log(file)")
+
+          if [ "$candidate_origin" = 'VIBE2_NATIVE' ]; then
+            git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
+            git show origin/vibe2-unreal-core:.vibe2/queue.json > /tmp/vibe2-current-control-queue.json
+            control_state="$(TASK_ID="$task_id" CANDIDATE_BRANCH="$SUBMITTED_CANDIDATE_BRANCH" TARGET="$decision" CANDIDATE_SHA="$candidate_sha" node <<'NODE'
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync('/tmp/vibe2-current-control-queue.json','utf8'));
+          const task=(queue.tasks||[]).find(row=>String(row?.id||'').trim()===String(process.env.TASK_ID||'').trim());
+          const evidence=(task?.evidence||[]).map(value=>String(value||'').trim());
+          const blocker=String(task?.blocker||'').trim();
+          const target=String(process.env.TARGET||'').trim().toLowerCase();
+          const branch=String(process.env.CANDIDATE_BRANCH||'').trim();
+          const f9Verified=target!=='web'||(
+            evidence.includes('web-f0-f9-verified')
+            &&evidence.includes('web-f9-verified')
+            &&evidence.includes('candidate-sha:'+process.env.CANDIDATE_SHA)
+          );
+          const activeCandidate=task
+            &&task.status==='running'
+            &&/candidate-awaiting-qa-and-deployment|awaiting.*qa/i.test(blocker)
+            &&evidence.includes(branch)
+            &&evidence.includes('package-review:all-required-roles-pass')
+            &&f9Verified;
+          const publicationPending=task
+            &&target==='web'
+            &&task.status==='verified'
+            &&evidence.includes(branch)
+            &&evidence.includes('package-review:all-required-roles-pass')
+            &&f9Verified
+            &&evidence.includes('web-publish-after-f9-required')
+            &&!evidence.includes('web-publication-retry-resolved');
+          const publicationRetry=publicationPending
+            &&evidence.includes('web-publication-retry-required');
+          const pending=task?.runtimeEvidenceCandidate;
+          const evidenceOnly=process.env.EVIDENCE_ONLY==='true';
+          const exactProbe=evidenceOnly&&target==='roblox'&&task?.status==='running'
+            &&blocker==='candidate-awaiting-runtime-evidence'
+            &&pending?.evidenceOnly===true&&pending?.candidateBranch===branch
+            &&pending?.candidateSha===process.env.CANDIDATE_SHA;
+          process.stdout.write((evidenceOnly?exactProbe:activeCandidate||publicationPending||publicationRetry)?'CURRENT':'STALE');
+          NODE
+            )"
+            if [ "$control_state" != 'CURRENT' ]; then
+              echo 'decision=stale' >> "$GITHUB_OUTPUT"
+              echo 'reason=stale-candidate-not-current-control-winner' >> "$GITHUB_OUTPUT"
+              echo "VIBE2_CANDIDATE_RELEASE_STALE=$SUBMITTED_CANDIDATE_BRANCH"
+              exit 0
+            fi
+            echo "VIBE2_CANDIDATE_CURRENT_WINNER=$SUBMITTED_CANDIDATE_BRANCH"
+          fi
+
+          if [ "$EVIDENCE_ONLY" = true ] && { [ "$decision" != roblox ] || [ "$candidate_origin" != VIBE2_NATIVE ]; }; then
+            echo 'decision=reject' >> "$GITHUB_OUTPUT"
+            echo 'reason=evidence-only-origin-or-target-invalid' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          reject() { echo 'decision=reject' >> "$GITHUB_OUTPUT"; echo "reason=$1" >> "$GITHUB_OUTPUT"; exit 0; }
+          [[ "$base_sha" =~ ^[0-9a-fA-F]{40}$ ]] || reject base-main-sha-invalid
+          [[ "$transport_base_sha" =~ ^[0-9a-fA-F]{40}$ ]] || reject transport-base-sha-invalid
+          # Tree comparisons need the exact contract and transport snapshots.
+          if ! git cat-file -e "${base_sha}^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$base_sha" --quiet || reject base-main-sha-missing
+          fi
+          git cat-file -e "${base_sha}^{commit}" 2>/dev/null || reject base-main-sha-missing
+          if ! git cat-file -e "${transport_base_sha}^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$transport_base_sha" --quiet || reject transport-base-sha-missing
+          fi
+          git cat-file -e "${transport_base_sha}^{commit}" 2>/dev/null || reject transport-base-sha-missing
+          candidate_paths=("$source_root" "${generated_asset_files[@]}")
+          already_promoted=false
+          if [ -n "$(git diff --name-only "$base_sha" origin/main -- "${candidate_paths[@]}")" ]; then
+            if git diff --quiet "$candidate_sha" origin/main -- "${candidate_paths[@]}"; then
+              already_promoted=true
+              echo "VIBE2_CANDIDATE_ALREADY_PROMOTED=$SUBMITTED_CANDIDATE_BRANCH"
+            else
+              reject source-or-generated-asset-changed-on-main
+            fi
+          fi
+          echo "already_promoted=$already_promoted" >> "$GITHUB_OUTPUT"
+          mapfile -t source_changed < <(git diff --name-only "$transport_base_sha" "$candidate_sha" -- "$source_root")
+          [ "${#source_changed[@]}" -gt 0 ] || reject no-source-change
+          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check "$transport_base_sha" "$candidate_sha" || reject candidate-diff-check-failed
+          mapfile -t changed < <(git diff --name-only "$transport_base_sha" "$candidate_sha")
+          for file in "${changed[@]}"; do
+            case "$file" in
+              "$source_root"/*|.vibe2/candidates/*) ;;
+              *)
+                printf '%s\n' "${generated_asset_files[@]}" | grep -Fxq "$file" || reject candidate-path-outside-boundary
+                ;;
+            esac
+          done
+          echo "VIBE2_CANDIDATE_GENERATED_ASSET_FILES=${generated_asset_files[*]:-NONE}"
+
+          if [ "$decision" = 'roblox' ]; then
+            # Source admission precedes packaging; generated evidence belongs to roblox-package.
+            test -f "$source_root/default.project.json" || reject roblox-project-missing
+            mapfile -d '' source_scripts < <(find "$source_root" -type f \( -name '*.luau' -o -name '*.lua' \) -print0)
+            [ "${#source_scripts[@]}" -gt 0 ] || reject roblox-source-scripts-missing
+          fi
+
+          if [ "$decision" = 'unity' ] && [ "$production_class" = 'RELEASE_CONFIRMED' ]; then
+            GAME_ID="$game_id" node <<'NODE' || reject development-baseline-required
+          const {execFileSync}=require('node:child_process');
+          const game=String(process.env.GAME_ID||'').trim();
+          const prefix=`design/${game}/`;
+          let files=[];
+          try{files=execFileSync('git',['ls-tree','-r','--name-only','origin/main','--',`design/${game}`],{encoding:'utf8'}).split(/\r?\n/).filter(x=>x.startsWith(prefix)&&x.endsWith('/cycle-status.json')).sort().reverse();}catch{}
+          let ready=false;
+          for(const file of files){
+            try{
+              const status=JSON.parse(execFileSync('git',['show',`origin/main:${file}`],{encoding:'utf8'}));
+              const gate=status?.baselineGate;
+              const e=gate?.evidence||{};
+              const minimumDesignPass=e.minimumDesign?.pass===true;
+              const unityProjectPass=e.unityProject?.present===true||(
+                e.targetPlatformProject?.platform==='UNITY'&&e.targetPlatformProject?.present===true
+              );
+              const unityTechnicalPass=e.unityTechnical?.pass===true||(
+                e.targetPlatformTechnical?.platform==='UNITY'&&e.targetPlatformTechnical?.pass===true
+              );
+              const webIsNonBlocking=e.webGameplay?.required!==true;
+              if(
+                gate?.policyDocument==='company-learning/platform-release-roadmap.json'
+                &&gate?.state==='DEVELOPMENT_BASELINE_READY'
+                &&gate?.ready===true
+                &&minimumDesignPass
+                &&unityProjectPass
+                &&unityTechnicalPass
+                &&webIsNonBlocking
+              ){ready=true;break;}
+            }catch{}
+          }
+          if(!ready){console.error(`RELEASE_GATE_BLOCKED=${game}:DEVELOPMENT_BASELINE_REQUIRED`);process.exit(1);}
+          console.log(`RELEASE_DEVELOPMENT_BASELINE_GATE=${game}:PASS`);
+          console.log('RELEASE_DEVELOPMENT_ADMISSION=MINIMUM_DESIGN_PLUS_UNITY_NATIVE_EVIDENCE');
+          console.log('UNITY_WEB_RELEASE_GATE_AUTHORITY=NONE');
+          NODE
+          fi
+
+          echo "decision=$decision" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+
+  web-release:
+    needs: inspect
+    if: needs.inspect.outputs.decision == 'web'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.inspect.outputs.candidate_sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Confirm Web F9 fan-in handoff before deployment
+        run: |
+          echo 'WEB_F9_VERIFIED=YES'
+          echo 'PLATFORM_F9_VERIFIED=WEB'
+
+      - name: Web syntax QA
+        id: webqa
+        continue-on-error: true
+        env:
+          SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+          BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            case "$file" in *.js|*.mjs|*.cjs) node --check "$file" ;; esac
+          done < <(find "$SOURCE_ROOT" -type f -print0)
+
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import os from 'node:os';
+          import path from 'node:path';
+          import { execFileSync } from 'node:child_process';
+
+          const root=String(process.env.SOURCE_ROOT||'').trim();
+          const baseSha=String(process.env.BASE_SHA||'').trim();
+          const htmlFiles=[];
+          const walk=dir=>{
+            for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+              const full=path.join(dir,entry.name);
+              if(entry.isDirectory())walk(full);
+              else if(entry.isFile()&&entry.name.toLowerCase().endsWith('.html'))htmlFiles.push(full);
+            }
+          };
+          walk(root);
+          for(const file of htmlFiles){
+            const source=fs.readFileSync(file,'utf8');
+            const rel=file.replaceAll('\\','/');
+            const scripts=[...source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
+              .filter(match=>!/\bsrc\s*=\s*/i.test(match[1]||''));
+            for(let i=0;i<scripts.length;i++){
+              const tmp=path.join(os.tmpdir(),`vibe2-inline-${process.pid}-${i}.mjs`);
+              fs.writeFileSync(tmp,scripts[i][2]||'','utf8');
+              execFileSync(process.execPath,['--check',tmp],{stdio:'inherit'});
+              fs.rmSync(tmp,{force:true});
+            }
+            let base='';
+            try{base=execFileSync('git',['show',`${baseSha}:${rel}`],{encoding:'utf8',maxBuffer:4*1024*1024});}catch{}
+            const storageContract=raw=>{
+              const text=String(raw||'');
+              const literalKeys=[...text.matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*['"]([^'"]+)['"]/g)].map(match=>match[1]);
+              const variableNames=[...text.matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*([A-Za-z_$][\w$]*)\b/g)].map(match=>match[1]);
+              const variableBindings={};
+              for(const name of [...new Set(variableNames)]){
+                const escaped=String(name).replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&');
+                const match=new RegExp('\\b(?:const|let|var)\\s+'+escaped+'\\s*=\\s*([^;\\n]{1,420})\\s*;').exec(text);
+                if(match)variableBindings[name]=String(match[1]||'').trim();
+              }
+              return{literalKeys:[...new Set(literalKeys)],variableBindings};
+            };
+            const beforeStorage=storageContract(base),afterStorage=storageContract(source);
+            for(const key of beforeStorage.literalKeys){
+              if(!afterStorage.literalKeys.includes(key))throw new Error('VIBE2_WEB_SAVE_CONTRACT_MUTATION:'+rel+':literal:'+key);
+            }
+            for(const [name,expression] of Object.entries(beforeStorage.variableBindings)){
+              if(afterStorage.variableBindings[name]!==expression)throw new Error('VIBE2_WEB_SAVE_CONTRACT_MUTATION:'+rel+':binding:'+name);
+            }
+          }
+          NODE
+          echo 'VIBE2_WEB_INLINE_SCRIPT_QA=PASS'
+          echo 'VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS'
+          echo 'VIBE2_WEB_STATIC_QA=PASS'
+
+      - name: Confirm playable Web deployment authority
+        id: release_gate
+        if: steps.webqa.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'eligible=true' >> "$GITHUB_OUTPUT"
+          echo 'WEB_DEPLOYMENT_ELIGIBILITY=PLAYABLE_F0_F9_PLUS_STATIC_SAVE_QA'
+          echo 'WEB_NATIVE_HOMEPAGE_READINESS_REQUIRED=NO'
+          echo 'WEB_PLAYABLE_VERIFIED_MUST_DEPLOY=YES'
+
+      - name: Promote approved web source root through reviewed PR
+        id: promote
+        if: steps.webqa.outcome == 'success' && steps.release_gate.outputs.eligible == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+          BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          GENERATED_ASSET_FILES: ${{ needs.inspect.outputs.generated_asset_files }}
+          ALREADY_PROMOTED: ${{ needs.inspect.outputs.already_promoted }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # 승격: 검증된 소스와 작업 범위에 묶인 생성 자산을 함께 보존한다.
+          mapfile -t generated_asset_files < <(node -e 'for(const file of JSON.parse(process.env.GENERATED_ASSET_FILES||"[]"))console.log(file)')
+          promotion_paths=("$SOURCE_ROOT" "${generated_asset_files[@]}")
+          git fetch origin main --quiet
+          if [ "$ALREADY_PROMOTED" = 'true' ]; then
+            git diff --quiet "$CANDIDATE_SHA" origin/main -- "${promotion_paths[@]}" || { echo 'already-promoted source no longer matches candidate' >&2; exit 1; }
+            promotion_sha="$(git rev-parse origin/main)"
+            echo 'VIBE2_WEB_ALREADY_PROMOTED=YES'
+          else
+            [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "${promotion_paths[@]}")" ] || { echo 'main source or generated asset changed; replan required' >&2; exit 1; }
+            rm -rf /tmp/vibe2-promote
+            git worktree prune
+            safe_task="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
+            release_branch="automation/vibe2-web-release-${safe_task}-${GITHUB_RUN_ID}"
+            git worktree add -b "$release_branch" /tmp/vibe2-promote origin/main >/dev/null
+            cd /tmp/vibe2-promote
+            git config user.name 'jaewoon-vibe2-release'
+            git config user.email 'vibe2-release@users.noreply.github.com'
+            git checkout "$CANDIDATE_SHA" -- "${promotion_paths[@]}"
+            git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
+            git add -- "${promotion_paths[@]}"
+            git diff --cached --quiet && { echo 'nothing to promote' >&2; exit 1; }
+            git commit -m "vibe2: deploy ${TASK_ID}"
+            release_commit="$(git rev-parse HEAD)"
+            git push origin "HEAD:$release_branch"
+            pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$release_branch" --title "vibe2: deploy ${TASK_ID}" --body "Verified Web release candidate. Direct main write: NO. Release PASS requires this PR's CI, merge and exact main deployment.")"
+            # 기존 홈페이지 PR Fast QA를 같은 웹게임 후보 커밋에서 확인한다.
+            preview_pass=false
+            for attempt in $(seq 1 60); do
+              pages_state="$(gh api -H 'Accept: application/vnd.github+json' \
+                "repos/$GITHUB_REPOSITORY/commits/$release_commit/check-runs?per_page=100" \
+                --jq '[.check_runs[] | select(.name=="Homepage PR Fast QA")] | sort_by(.started_at) | last | if . == null then "missing:" else (.status + ":" + (.conclusion // "")) end')"
+              echo "VIBE2_RELEASE_PAGES_CHECK=$pages_state"
+              case "$pages_state" in
+                completed:success) preview_pass=true; break ;;
+                completed:*) echo "Homepage PR candidate QA failed: $pages_state" >&2; exit 1 ;;
+              esac
+              if [ "$attempt" -ge 60 ]; then echo "Homepage PR candidate QA not verified" >&2; exit 1; fi
+              sleep 10
+            done
+            test "$preview_pass" = true
+            git fetch origin main --quiet
+            [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "${promotion_paths[@]}")" ] || { echo 'main source or generated asset changed before merge; replan required' >&2; exit 1; }
+            gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+            git fetch origin main --quiet
+            git diff --quiet "$release_commit" origin/main -- "${promotion_paths[@]}"
+            promotion_sha="$(gh pr view "$pr_url" --repo "$GITHUB_REPOSITORY" --json mergeCommit --jq '.mergeCommit.oid // empty')"
+            echo "VIBE2_RELEASE_PR=$pr_url"
+          fi
+          [[ "$promotion_sha" =~ ^[0-9a-f]{40}$ ]]
+          git diff --quiet "$CANDIDATE_SHA" "$promotion_sha" -- "${promotion_paths[@]}"
+          source_tree_sha="$(git rev-parse "$promotion_sha:$SOURCE_ROOT")"
+          [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+
+          # GITHUB_TOKEN으로 main에 PR 병합한 커밋은 push-triggered Pages 게시를 깨우지 않는다.
+          # 기존 Magic Forest Static Play를 workflow_dispatch로 명시적으로 깨우고,
+          # 같은 exact SHA 게시가 이미 대기/실행 중이면 중복으로 보내지 않는다.
+          pages_active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/magic-forest-pages.yml/runs?per_page=100" \
+            --jq "[.workflow_runs[] | select(.head_sha==\"$promotion_sha\" and (.status==\"queued\" or .status==\"pending\" or .status==\"in_progress\"))] | length")"
+          [[ "$pages_active" =~ ^[0-9]+$ ]]
+          if [ "$pages_active" -eq 0 ]; then
+            gh workflow run magic-forest-pages.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo "WEB_PAGES_NATIVE_PUBLISH_DISPATCHED=$promotion_sha"
+          else
+            echo "WEB_PAGES_NATIVE_PUBLISH_ALREADY_ACTIVE=$promotion_sha:$pages_active"
+          fi
+
+          # 승인된 main SHA와 실제 GitHub Pages 게시 매니페스트, 게임 HTTP를 함께 확인한다.
+          # 다른 main 커밋의 배포와 오래된 Pages HEAD는 성공 증거가 아니다.
+          pages_base="https://$GITHUB_REPOSITORY_OWNER.github.io/$(basename "$GITHUB_REPOSITORY")/"
+          manifest_url="$pages_base""web-games/publish-manifest.json"
+          target_route="web-games/$GAME_ID/"
+          published=false
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error --location --max-time 15 "$manifest_url" -o /tmp/vibe2-pages-manifest.json; then
+              if node - "$source_tree_sha" "$GAME_ID" "$target_route" <<'NODE'
+          const fs=require('node:fs');
+          const [treeSha,gameId,route]=process.argv.slice(2);
+          let m;
+          try{m=JSON.parse(fs.readFileSync('/tmp/vibe2-pages-manifest.json','utf8'));}catch{process.exit(1);}
+          // A newer unrelated main commit cannot invalidate an otherwise exact F9 game artifact.
+          // The public manifest still pins the complete main SHA; this game must match its exact source tree.
+          if(!/^[a-f0-9]{40}$/.test(m.sourceSha)||
+             !Array.isArray(m.routes)||!m.routes.includes(route)||
+             m.sourceTreeShas?.[gameId]!==treeSha)process.exit(1);
+          NODE
+              then
+                if curl --fail --silent --show-error --location --max-time 15 -o /dev/null "$pages_base$target_route"; then
+                  published=true
+                  break
+                fi
+              fi
+            fi
+            echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=PENDING:$promotion_sha:$GAME_ID:$attempt"
+            if [ "$attempt" -lt 60 ]; then sleep 10; fi
+          done
+          if [ "$published" != true ]; then
+            echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=FAILED:$promotion_sha:$GAME_ID" >&2
+            exit 1
+          fi
+          echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=SUCCESS:$promotion_sha:$GAME_ID"
+          echo 'deployment_pass=true' >> "$GITHUB_OUTPUT"
+          echo "promotion_sha=$promotion_sha" >> "$GITHUB_OUTPUT"
+          echo "source_tree_sha=$source_tree_sha" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_MAIN_PROMOTION_SHA=$promotion_sha"
+          echo "VIBE2_WEB_MAIN_PROMOTION_SOURCE_TREE_SHA=$source_tree_sha"
+          echo 'DIRECT_MAIN_WRITE=NO'
+
+      - name: Settle web result and continue correct source queue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
+          QA_OUTCOME: ${{ steps.webqa.outcome }}
+          PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
+          DEPLOYMENT_PASS: ${{ steps.promote.outputs.deployment_pass }}
+          PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.promotion_sha }}
+          PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
+          CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
+          CANDIDATE_BRANCH: ${{ needs.inspect.outputs.candidate_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ] && [ "$DEPLOYMENT_PASS" = true ]; then
+            result=PASS
+          elif [ "$QA_OUTCOME" != success ]; then
+            result=QA_REPAIR_REQUIRED
+          else
+            result=DEPLOY_RETRY_REQUIRED
+          fi
+          if [ "$result" = PASS ] && [[ ! "$PROMOTED_SOURCE_TREE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo 'WEB_PROMOTED_SOURCE_TREE_IDENTITY=INVALID' >&2
+            result=DEPLOY_RETRY_REQUIRED
+          fi
+
+          if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
+            if [ "$result" = PASS ]; then
+              gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main -f released_game_id="$GAME_ID" -f release_task_id="$TASK_ID" -f release_origin="$CANDIDATE_ORIGIN" || true
+              gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main || true
+              echo 'AUTONOMOUS_POST_RELEASE_HEALTH=DISPATCHED'
+              echo 'AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED_AFTER_WEB_DEPLOY'
+            elif [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
+              echo 'AUTONOMOUS_WEB_PUBLICATION_RETRY_REQUIRED=YES'
+              gh workflow run vibe2-candidate-release.yml --repo "$GITHUB_REPOSITORY" --ref main -f candidate_branch="$CANDIDATE_BRANCH" || true
+              # 게시 실패 복구와 다음 제작 주기는 독립적이다. 같은 기존 자율개발 플로우를 다시 사용한다.
+              if gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main; then
+                echo 'AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED_AFTER_WEB_PUBLISH_ATTEMPT'
+              else
+                echo 'AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCH_RETRY_REQUIRED'
+              fi
+            else
+              echo 'AUTONOMOUS_WEB_QA_REPAIR_REQUIRED=YES'
+              gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main || true
+            fi
+            echo "AUTONOMOUS_RELEASE_RESULT=$result"
+            exit 0
+          fi
+
+          if [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
+            echo "WEB_PUBLICATION_RETRY_REQUIRED=${TASK_ID:-NONE}:${CANDIDATE_BRANCH:-NONE}"
+            echo 'WEB_PUBLICATION_RETRY_TRACKED=YES'
+            echo 'WEB_SAME_VERIFIED_CANDIDATE_RETRY=YES'
+            # 동일 후보의 무제한 자체 재호출을 피하고, 기존 24H 5분 복구의
+            # exact candidate SHA 확인 + 2분 cooldown + 큐 원자적 타임스탬프를 이용한다.
+            # F9 verified 상태는 아래 큐 settle에서 보존하므로 복구 감시가 이어진다.
+            echo 'WEB_PUBLICATION_RETRY_OWNER=VIBE2_24H_EXACT_F9_RECOVERY'
+            echo 'WEB_NEXT_EVOLUTION_DISPATCH_AFTER_PUBLICATION_ATTEMPT=YES'
+          fi
+
+          rm -rf /tmp/vibe2-control
+          gh auth setup-git --hostname github.com
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+          rm -rf /tmp/vibe2-main-contract
+          git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
+          cd /tmp/vibe2-control
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          settled=0
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
+            git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            if [ "$result" = PASS ]; then
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-deploy-attempted,web-static-qa-pass,web-github-pages-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},web-publication-retry-resolved,actions-run-${GITHUB_RUN_ID}"
+            elif [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
+              # F9가 검증된 동일 후보를 보존하고 기존 게시 재시도만 추적한다. 이 실패를 QA 실패로 덮어쓰지 않는다.
+              echo 'WEB_F9_VERIFIED_QUEUE_PRESERVED_FOR_SAME_CYCLE_PUBLISH_RETRY=YES'
+            else
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-release-qa-failed --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-qa-${QA_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+            fi
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
+            git add .vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            if git diff --cached --quiet; then
+              settled=1
+              break
+            fi
+            git commit -m "vibe2: settle web task ${TASK_ID} ${result} [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              settled=1
+              break
+            fi
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
+          done
+          test "$settled" = 1
+
+          payload_outcome=QUEUE_UPDATED
+          payload_reason=web-release-qa-repair-required
+          if [ "$result" = PASS ]; then
+            payload_outcome=VERIFIED
+            payload_reason=web-playable-deployed-next-cycle
+          elif [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
+            payload_outcome=QUEUE_UPDATED
+            payload_reason=web-f9-publish-attempted-retry-in-parallel-with-next-cycle
+          fi
+          payload="$(jq -nc \
+            --arg run "${GITHUB_RUN_ID:-}" \
+            --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+            --arg task "${TASK_ID:-}" \
+            --arg outcome "$payload_outcome" \
+            --arg reason "$payload_reason" \
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:$reason}}')"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+
+          echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:$payload_outcome"
+          echo "WEB_DEPLOY_ATTEMPTED=$GAME_ID:$result"
+          if [ "$result" = PASS ]; then
+            echo "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=$GAME_ID"
+            echo "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:$GAME_ID"
+            echo 'WEB_PUBLICATION_RETRY_TRACKED=YES'
+            echo 'VIBE2_WEB_AUTO_DEPLOY=PASS'
+            echo "VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:${PROMOTED_SOURCE_TREE_SHA}"
+          elif [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
+            echo "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED_AFTER_PUBLISH_ATTEMPT=$GAME_ID"
+            echo "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:$GAME_ID"
+            echo 'WEB_PUBLICATION_RETRY_TRACKED=YES'
+          else
+            echo 'WEB_QA_REPAIR_REQUIRED=YES'
+          fi
+          exit 0
+
+  unity-web-build:
+    needs: inspect
+    if: needs.inspect.outputs.decision == 'unity-web'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Dispatch candidate Unity Web QA and reviewed promotion
+        id: dispatch
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
+          SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          CANDIDATE_BRANCH: ${{ needs.inspect.outputs.candidate_branch }}
+          GENERATED_ASSET_FILES: ${{ needs.inspect.outputs.generated_asset_files }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run unity-web-first-stage-build.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f game_id="$GAME_ID" \
+            -f project_path="$SOURCE_ROOT" \
+            -f source_commit="$CANDIDATE_SHA" \
+            -f base_main_sha="$BASE_SHA" \
+            -f publish_to_main=true \
+            -f vibe2_task_id="$TASK_ID" \
+            -f vibe2_candidate_branch="$CANDIDATE_BRANCH" \
+            -f generated_asset_files="$GENERATED_ASSET_FILES"
+          echo 'VIBE2_UNITY_WEB_RELEASE_DISPATCHED=YES'
+          echo "VIBE2_CANDIDATE_EXECUTION_SURFACE=UNITY_WEB"
+
+      - name: Recover queue if Unity Web dispatch failed
+        if: steps.dispatch.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/vibe2-control
+          gh auth setup-git --hostname github.com
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+          rm -rf /tmp/vibe2-main-contract
+          git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
+          cd /tmp/vibe2-control
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          settled=0
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
+            git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-web-build-dispatch-failed --evidence="actions-run-${GITHUB_RUN_ID}"
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
+            git add .vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            if git diff --cached --quiet; then
+              settled=1
+              break
+            fi
+            git commit -m "vibe2: recover Unity Web dispatch failure ${TASK_ID} [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              settled=1
+              break
+            fi
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
+          done
+          test "$settled" = 1
+          payload="$(jq -nc \
+            --arg run "${GITHUB_RUN_ID:-}" \
+            --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+            --arg task "${TASK_ID:-}" \
+            --arg outcome "QUEUE_UPDATED" \
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"dependency-or-retry-ready"}}')"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:QUEUE_UPDATED"
+          exit 1
+
+  unity-build:
+    needs: inspect
+    if: needs.inspect.outputs.decision == 'unity'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.inspect.outputs.candidate_branch }}
+      - name: Dispatch candidate APK QA
+        id: dispatch
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUEST_FILE: ${{ needs.inspect.outputs.request_file }}
+          CANDIDATE_BRANCH: ${{ needs.inspect.outputs.candidate_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$REQUEST_FILE"
+          gh workflow run unity-hybrid-android-build.yml --repo "$GITHUB_REPOSITORY" --ref "$CANDIDATE_BRANCH" -f request_file="$REQUEST_FILE"
+          echo 'VIBE2_UNITY_CANDIDATE_BUILD_DISPATCHED=YES'
+
+      - name: Recover queue if build dispatch failed
+        if: steps.dispatch.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
+            gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'AUTONOMOUS_UNITY_BUILD_DISPATCH=FAIL'
+            exit 1
+          fi
+          rm -rf /tmp/vibe2-control
+          gh auth setup-git --hostname github.com
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+          rm -rf /tmp/vibe2-main-contract
+          git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
+          cd /tmp/vibe2-control
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          settled=0
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
+            git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-dispatch-failed --evidence="actions-run-${GITHUB_RUN_ID}"
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
+            git add .vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            if git diff --cached --quiet; then
+              settled=1
+              break
+            fi
+            git commit -m "vibe2: recover Unity dispatch failure ${TASK_ID} [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              settled=1
+              break
+            fi
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
+          done
+          test "$settled" = 1
+          payload="$(jq -nc \
+            --arg run "${GITHUB_RUN_ID:-}" \
+            --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+            --arg task "${TASK_ID:-}" \
+            --arg outcome "QUEUE_UPDATED" \
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"dependency-or-retry-ready"}}')"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:QUEUE_UPDATED"
+          exit 1
+
+  roblox-package:
+    needs: inspect
+    if: needs.inspect.outputs.decision == 'roblox'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GAME_ID: ${{ needs.inspect.outputs.game_id }}
+      SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+      CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+      PRODUCTION_CLASS: ${{ needs.inspect.outputs.production_class }}
+      BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
+      BUILD_UP_ASSET_FINGERPRINT: ${{ needs.inspect.outputs.asset_source_usage_fingerprint }}
+      BUILD_UP_ASSET_LIBRARY_VERSION: ${{ needs.inspect.outputs.asset_source_usage_library_version }}
+      BUILD_UP_SELECTION_FINGERPRINT: ${{ needs.inspect.outputs.asset_selection_fingerprint }}
+      BUILD_UP_SELECTION_LIBRARY_VERSION: ${{ needs.inspect.outputs.asset_selection_library_version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.inspect.outputs.control_sha }}
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare isolated candidate build inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GAME_ID" =~ ^[a-zA-Z0-9_-]+$ ]]
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$SOURCE_ROOT" = "roblox-games/$GAME_ID"
+          git fetch --no-tags --depth=1 origin "$CANDIDATE_SHA" "$BASE_SHA" +refs/heads/company-runtime:refs/remotes/origin/company-runtime --quiet
+          mkdir -p /tmp/roblox-candidate/context /tmp/roblox-candidate/package/packages /tmp/roblox-candidate/package/results
+          git show origin/company-runtime:development-queue.json > /tmp/roblox-candidate/runtime.json
+          node <<'NODE'
+          const fs=require('fs'),cp=require('child_process');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-candidate/runtime.json','utf8'));
+          const old=q.items.find(x=>x.gameId===process.env.GAME_ID);
+          if(!old)throw Error('candidate game missing from canonical queue');
+          const baselinePath=String(old.designBaselineSource||'');
+          if(!baselinePath||baselinePath.includes('..'))throw Error('canonical design baseline missing');
+          const baseline=JSON.parse(cp.execFileSync('git',['show','origin/company-runtime:'+baselinePath],{encoding:'utf8'}));
+          fs.writeFileSync('/tmp/roblox-candidate/baseline.json',JSON.stringify(baseline));
+          const item={gameId:old.gameId,status:'ACTIVE',productionClass:process.env.PRODUCTION_CLASS,selectedPlatform:old.selectedPlatform,targetPlatform:old.targetPlatform,platformExecutionMode:old.platformExecutionMode,concurrentTargetPlatforms:old.concurrentTargetPlatforms,designBaselineSource:baselinePath,robloxSourceCommit:process.env.CANDIDATE_SHA,robloxProjectPath:process.env.SOURCE_ROOT,robloxInternalVibePlayEvidence:old.robloxInternalVibePlayEvidence||null,robloxBuildUpAssetSourceUsageFingerprint:process.env.BUILD_UP_ASSET_FINGERPRINT,robloxBuildUpAssetSourceUsageLibraryVersion:Number(process.env.BUILD_UP_ASSET_LIBRARY_VERSION||0)};
+          fs.writeFileSync('/tmp/roblox-candidate/context/development-queue.json',JSON.stringify({items:[item]}));
+          let launch;
+          try{launch=JSON.parse(cp.execFileSync('git',['show',process.env.CANDIDATE_SHA+':'+process.env.SOURCE_ROOT+'/launch-mvp.json'],{encoding:'utf8',stdio:['ignore','pipe','ignore']}));}
+          catch{launch={launchCore:[JSON.stringify(baseline)]};}
+          launch.launchCore=[...(Array.isArray(launch.launchCore)?launch.launchCore:[]),'mobile UI, loading, lobby, tutorial, objective, retry, multiplayer sync, late join'];
+          fs.writeFileSync('/tmp/roblox-candidate/context/launch-mvp.json',JSON.stringify(launch));
+          NODE
+      - name: Install pinned build and source validation tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rojo-bin /tmp/luau-bin
+          curl -fsSL --retry 3 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          curl -fsSL --retry 3 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          echo '8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247  /tmp/luau.zip' | sha256sum -c -
+          unzip -q /tmp/luau.zip -d /tmp/luau-bin
+          chmod +x /tmp/rojo-bin/rojo /tmp/luau-bin/luau-compile /tmp/luau-bin/luau-ast
+          VIBE2_LUAU_COMPILER=/tmp/luau-bin/luau-compile node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import os from 'node:os';
+          import path from 'node:path';
+          import {execFileSync} from 'node:child_process';
+          import {validateCandidateSyntax} from './tools/vibe2-source-worker.mjs';
+          const {BASE_SHA:base,CANDIDATE_SHA:head,SOURCE_ROOT:root}=process.env;
+          const files=execFileSync('git',['diff','--name-only','--no-renames','-z',base,head,'--',root],{encoding:'utf8'}).split('\0').filter(file=>/\.(?:lua|luau)$/i.test(file));
+          const baseline=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-release-source-'));
+          try{
+            const candidate={edits:[],newFiles:[],replaceFiles:[]};
+            for(const file of files){
+              if(!file.startsWith(root+'/'))throw Error('candidate-source-boundary-invalid');
+              const relative=file.slice(root.length+1);
+              const before=execFileSync('git',['ls-tree','--name-only',base,'--',file],{encoding:'utf8'}).trim();
+              if(before){
+                const original=path.join(baseline,relative);
+                fs.mkdirSync(path.dirname(original),{recursive:true});
+                fs.writeFileSync(original,execFileSync('git',['show',base+':'+file]));
+              }
+              const after=execFileSync('git',['ls-tree','--name-only',head,'--',file],{encoding:'utf8'}).trim();
+              candidate.replaceFiles.push({path:relative,content:after?execFileSync('git',['show',head+':'+file],{encoding:'utf8'}):''});
+            }
+            const result=validateCandidateSyntax({candidate,sourceRoot:baseline,target:'roblox',luauCompiler:process.env.VIBE2_LUAU_COMPILER});
+            console.log('VIBE2_CANDIDATE_SOURCE_CHANGE='+JSON.stringify({baseSha:base,candidateSha:head,...result}));
+          }finally{fs.rmSync(baseline,{recursive:true,force:true});}
+          NODE
+      - name: Build candidate package before runtime verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-development-roblox-package.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_ROOT" --source-revision="$CANDIDATE_SHA" --baseline=/tmp/roblox-candidate/baseline.json --rojo=/tmp/rojo-bin/rojo --output-dir=/tmp/roblox-candidate/package/packages --evidence=/tmp/roblox-candidate/package/results/build.json --build-up-asset-fingerprint="$BUILD_UP_ASSET_FINGERPRINT" --build-up-asset-library-version="$BUILD_UP_ASSET_LIBRARY_VERSION" --expected-asset-selection-fingerprint="$BUILD_UP_SELECTION_FINGERPRINT" --expected-asset-library-version="$BUILD_UP_SELECTION_LIBRARY_VERSION"
+          mapfile -d '' place_files < <(find /tmp/roblox-candidate/package/packages -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) -print0)
+          [ "${#place_files[@]}" -eq 1 ] || { echo 'roblox-place-package-count-invalid' >&2; exit 1; }
+          node <<'NODE'
+          const fs=require('fs');const file='/tmp/roblox-candidate/context/development-queue.json';
+          const q=JSON.parse(fs.readFileSync(file)),build=JSON.parse(fs.readFileSync('/tmp/roblox-candidate/package/results/build.json'));
+          if(build.buildOrPackagePassed!==true||build.sourceRevision!==process.env.CANDIDATE_SHA)throw Error('candidate package invalid');
+          if(build.buildUpAssetSourceUsageFingerprint!==process.env.BUILD_UP_ASSET_FINGERPRINT)throw Error('candidate package BUILD_UP asset fingerprint mismatch');
+          if(Number(build.buildUpAssetSourceUsageLibraryVersion||0)!==Number(process.env.BUILD_UP_ASSET_LIBRARY_VERSION||0))throw Error('candidate package BUILD_UP asset library mismatch');
+          if(build.assetSelectionFingerprint!==process.env.BUILD_UP_SELECTION_FINGERPRINT)throw Error('candidate package BUILD_UP selection fingerprint mismatch');
+          if(Number(build.assetLibraryVersion||0)!==Number(process.env.BUILD_UP_SELECTION_LIBRARY_VERSION||0))throw Error('candidate package BUILD_UP selection library mismatch');
+          const selectedFamilies=build.assetThreshold?.selectedFamilies||{};
+          const expectedAtomIds=[...new Set(Object.values(selectedFamilies).flat().map(String).filter(Boolean))].sort();
+          const familyResults=Array.isArray(build.assetThreshold?.familyResults)?build.assetThreshold.familyResults:[];
+          Object.assign(q.items[0],{
+            robloxBuildOrPackagePassed:true,
+            robloxBuildSourceRevision:build.sourceRevision,
+            robloxBuildArtifactIdentity:build.artifactIdentity,
+            robloxBuildUpAssetSourceUsageFingerprint:build.buildUpAssetSourceUsageFingerprint,
+            robloxBuildUpAssetSourceUsageLibraryVersion:Number(build.buildUpAssetSourceUsageLibraryVersion||0),
+            robloxBuildAssetSelectionFingerprint:build.assetSelectionFingerprint,
+            robloxBuildAssetLibraryVersion:Number(build.assetLibraryVersion||0),
+            robloxStudioAssetBinding:{
+              required:true,bindingVersion:2,libraryVersion:Number(build.assetLibraryVersion||0),
+              selectionFingerprint:build.assetSelectionFingerprint,expectedAtomIds,
+              familyResults:familyResults.map(row=>({family:String(row.family||''),status:String(row.status||''),actualBinding:row.actualBinding===true,systemPresent:row.systemPresent===true})),
+              buildUpAssetSourceUsageFingerprint:build.buildUpAssetSourceUsageFingerprint,
+              authority:'roblox-package-exact-build-up-selection'
+            }
+          });
+          fs.writeFileSync(file,JSON.stringify(q));
+          NODE
+      - name: Verify candidate package with existing preflight and full Luau compilation
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'NO' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-development-roblox-build-preflight.mjs --game-id="$GAME_ID" --queue=/tmp/roblox-candidate/context/development-queue.json --directive=company-directive.json --output=/tmp/roblox-candidate/package/results/preflight.json
+          mkdir -p /tmp/roblox-candidate/source
+          git archive "$CANDIDATE_SHA" "$SOURCE_ROOT" | tar -x -C /tmp/roblox-candidate/source
+          mapfile -d '' scripts < <(find "/tmp/roblox-candidate/source/$SOURCE_ROOT" -type f \( -name '*.luau' -o -name '*.lua' \) -print0)
+          [ "${#scripts[@]}" -gt 0 ]
+          for file in "${scripts[@]}"; do /tmp/luau-bin/luau-compile "$file" >/dev/null; done
+          identity="$(node -e "console.log(require('/tmp/roblox-candidate/package/results/build.json').artifactIdentity)")"
+          asset_selection_fingerprint="$(node -e "console.log(require('/tmp/roblox-candidate/package/results/build.json').assetSelectionFingerprint)")"
+          asset_library_version="$(node -e "console.log(require('/tmp/roblox-candidate/package/results/build.json').assetLibraryVersion)")"
+          node tools/company-development-roblox-headless-fast-mvp.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_ROOT" --source-revision="$CANDIDATE_SHA" --artifact-identity="$identity" --rebuilt-artifact-identity="$identity" --artifact-run-id="$GITHUB_RUN_ID" --native-language-compile-passed=true --native-compiler-version=0.739 --build-up-asset-fingerprint="$BUILD_UP_ASSET_FINGERPRINT" --asset-selection-fingerprint="$asset_selection_fingerprint" --asset-library-version="$asset_library_version" --baseline=/tmp/roblox-candidate/baseline.json --output=/tmp/roblox-candidate/package/results/f0.json
+          node <<'NODE'
+          const fs=require('fs');const file='/tmp/roblox-candidate/context/development-queue.json';
+          const q=JSON.parse(fs.readFileSync(file)),i=q.items[0],read=name=>JSON.parse(fs.readFileSync('/tmp/roblox-candidate/package/results/'+name+'.json'));
+          const pre=read('preflight'),f0=read('f0');
+          for(const e of [pre,f0])if(e.pass!==true||e.sourceRevision!==i.robloxSourceCommit||e.artifactIdentity!==i.robloxBuildArtifactIdentity)throw Error('candidate preflight identity mismatch');
+          if(f0.buildUpAssetSourceUsageFingerprint!==i.robloxBuildUpAssetSourceUsageFingerprint)throw Error('candidate F0 BUILD_UP asset fingerprint mismatch');
+          if(f0.assetSelectionFingerprint!==i.robloxBuildAssetSelectionFingerprint||f0.observedAssetSelectionFingerprint!==i.robloxBuildAssetSelectionFingerprint)throw Error('candidate F0 asset selection fingerprint mismatch');
+          if(Number(f0.assetLibraryVersion||0)!==Number(i.robloxBuildAssetLibraryVersion||0)||Number(f0.observedAssetLibraryVersion||0)!==Number(i.robloxBuildAssetLibraryVersion||0))throw Error('candidate F0 asset library version mismatch');
+          Object.assign(i,{currentStep:'CANDIDATE_STATIC_REVIEW',robloxBuildPreflightPassed:true,robloxBuildPreflightEvidence:pre,robloxFoundationF0Passed:true,robloxFoundationF0Evidence:f0});
+          const launchFile='/tmp/roblox-candidate/context/launch-mvp.json',launch=JSON.parse(fs.readFileSync(launchFile));
+          if(f0.saveExists===true)launch.launchCore.push('save and rejoin persistence');
+          fs.writeFileSync(launchFile,JSON.stringify(launch));fs.writeFileSync(file,JSON.stringify(q));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: development-roblox-package-${{ needs.inspect.outputs.game_id }}
+          path: /tmp/roblox-candidate/package
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: roblox-candidate-context-${{ needs.inspect.outputs.game_id }}
+          path: /tmp/roblox-candidate/context
+          if-no-files-found: error
+          retention-days: 7
+
+  roblox-studio:
+    needs: [inspect, roblox-package]
+    if: needs.inspect.outputs.decision == 'roblox'
+    uses: ./.github/workflows/company-development-roblox-post-runtime-qa.yml
+    with:
+      run_studio: true
+      game_id: ${{ needs.inspect.outputs.game_id }}
+      candidate_revision: ${{ needs.inspect.outputs.candidate_sha }}
+      control_revision: ${{ needs.inspect.outputs.control_sha }}
+      candidate_context: roblox-candidate-context-${{ needs.inspect.outputs.game_id }}
+
+  roblox-release:
+    needs: [inspect, roblox-package]
+    if: always() && needs.inspect.outputs.decision == 'roblox'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.inspect.outputs.candidate_sha }}
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Checkout trusted V3 control plane
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.inspect.outputs.control_sha }}
+          path: .vibe3-control
+          fetch-depth: 1
+
+      - name: Download exact candidate static result
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: roblox-candidate-context-${{ needs.inspect.outputs.game_id }}
+          path: /tmp/roblox-candidate-review
+
+      - name: Validate exact Roblox release evidence
+        id: validate
+        continue-on-error: true
+        env:
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          PACKAGE_RESULT: ${{ needs.roblox-package.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$PACKAGE_RESULT" = success
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {validateRobloxReleaseEvidence} from './.vibe3-control/tools/vibe3-roblox-platform.mjs';
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-candidate-review/development-queue.json','utf8'));
+          const item=q.items?.[0];
+          if(q.items?.length!==1||item.gameId!==process.env.GAME_ID)throw Error('candidate result game mismatch');
+          if(Number(item.robloxFoundationF0Evidence?.artifactRunId)!==Number(process.env.GITHUB_RUN_ID))throw Error('candidate static run mismatch');
+          const gate=validateRobloxReleaseEvidence(item,process.env.CANDIDATE_SHA,{stage:'SOURCE_PROMOTION',validationMode:'STATIC'});
+          fs.writeFileSync('/tmp/roblox-candidate-review/release-evidence-review.json',JSON.stringify(gate));
+          if(!gate.pass)throw Error(gate.blockedReasons.join('|'));
+          console.log('ROBLOX_EXACT_CANDIDATE_STATIC_EVIDENCE=PASS');
+          console.log('ROBLOX_FINAL_PUBLICATION_CLAIM=NO');
+          NODE
+
+      - name: Promote verified Roblox source and declared generated assets through reviewed PR
+        id: promote
+        if: steps.validate.outcome == 'success' && needs.inspect.outputs.evidence_only != 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+          BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          GENERATED_ASSET_FILES: ${{ needs.inspect.outputs.generated_asset_files }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t generated_asset_files < <(node -e "for(const file of JSON.parse(process.env.GENERATED_ASSET_FILES||'[]'))console.log(file)")
+          promotion_paths=("$SOURCE_ROOT" "${generated_asset_files[@]}")
+          git fetch --no-tags --depth=1 origin "$BASE_SHA" --quiet
+          git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "${promotion_paths[@]}")" ] || { echo 'main source or generated asset changed; replan required' >&2; exit 1; }
+          rm -rf /tmp/vibe2-roblox-promote
+          git worktree prune
+          safe_task="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
+          release_branch="automation/vibe2-roblox-release-${safe_task}-${GITHUB_RUN_ID}"
+          git worktree add -b "$release_branch" /tmp/vibe2-roblox-promote origin/main >/dev/null
+          cd /tmp/vibe2-roblox-promote
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          git checkout "$CANDIDATE_SHA" -- "${promotion_paths[@]}"
+          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
+          git add -- "${promotion_paths[@]}"
+          git diff --cached --quiet && { echo 'nothing to promote' >&2; exit 1; }
+          git commit -m "vibe2: promote Roblox ${TASK_ID}"
+          release_commit="$(git rev-parse HEAD)"
+          git push origin "HEAD:$release_branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$release_branch" --title "vibe2: promote Roblox ${TASK_ID}" --body "Verified Roblox candidate. Direct main write: NO. Open Cloud publish runs only after this PR CI passes and source-root merge is verified.")"
+          sleep 5
+          gh pr checks "$pr_url" --watch --fail-fast --interval 10
+          git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "${promotion_paths[@]}")" ] || { echo 'main source or generated asset changed before merge; replan required' >&2; exit 1; }
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+          git diff --quiet "$release_commit" origin/main -- "${promotion_paths[@]}"
+          promoted_main_sha="$(git rev-parse origin/main)"
+          promoted_source_tree_sha="$(git rev-parse "origin/main:$SOURCE_ROOT")"
+          [[ "$promoted_source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "main_sha=$promoted_main_sha" >> "$GITHUB_OUTPUT"
+          echo "source_tree_sha=$promoted_source_tree_sha" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_MAIN_PROMOTION_SHA=$promoted_main_sha"
+          echo "ROBLOX_MAIN_PROMOTION_SOURCE_TREE_SHA=$promoted_source_tree_sha"
+          echo "ROBLOX_RELEASE_PR=$pr_url"
+          echo 'DIRECT_MAIN_WRITE=NO'
+
+      - name: Persist exact runtime asset binding and promotion plan
+        id: asset_binding
+        if: steps.promote.outcome == 'success' && needs.inspect.outputs.evidence_only != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.main_sha }}
+          PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
+          ASSET_PROMOTION_CANDIDATES: ${{ needs.inspect.outputs.asset_promotion_candidates }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/vibe2-asset-runtime
+          gh auth setup-git --hostname github.com
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-asset-runtime -- --branch company-runtime --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          cd /tmp/vibe2-asset-runtime
+          git config user.name 'jaewoon-vibe2-asset-runtime'
+          git config user.email 'vibe2-worker@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin company-runtime
+            git reset --hard origin/company-runtime
+            node <<'NODE'
+          const fs=require('fs');
+          const file='development-queue.json';
+          const queue=JSON.parse(fs.readFileSync(file,'utf8'));
+          const gameId=String(process.env.GAME_ID||'').trim();
+          const candidateRevision=String(process.env.CANDIDATE_SHA||'').trim();
+          const promotedMainSha=String(process.env.PROMOTED_MAIN_SHA||'').trim();
+          const sourceTreeSha=String(process.env.PROMOTED_SOURCE_TREE_SHA||'').trim();
+          const candidates=JSON.parse(process.env.ASSET_PROMOTION_CANDIDATES||'[]');
+          if(!gameId||!/^[0-9a-f]{40}$/.test(candidateRevision)||!/^[0-9a-f]{40}$/.test(promotedMainSha)||!/^[0-9a-f]{40}$/.test(sourceTreeSha))throw Error('asset runtime identity invalid');
+          if(!Array.isArray(candidates))throw Error('asset promotion candidates invalid');
+          const candidateContext=JSON.parse(fs.readFileSync('/tmp/roblox-candidate-review/development-queue.json','utf8'));
+          const candidateItem=(candidateContext.items||[]).find(row=>String(row?.gameId||'')===gameId);
+          const binding=candidateItem?.robloxStudioAssetBinding;
+          if(binding?.required!==true||Number(binding.bindingVersion||0)!==2
+            ||!/^[0-9a-f]{64}$/i.test(String(binding.selectionFingerprint||''))
+            ||Number(binding.libraryVersion||0)<=0
+            ||!/^[0-9a-f]{64}$/i.test(String(binding.buildUpAssetSourceUsageFingerprint||''))
+            ||!Array.isArray(binding.expectedAtomIds)||binding.expectedAtomIds.length===0){
+            throw Error('exact Roblox asset binding missing from candidate context');
+          }
+          const item=(queue.items||[]).find(row=>String(row?.gameId||'')===gameId);
+          if(!item)throw Error('asset runtime binding game missing');
+          const persistedBinding={
+            ...binding,
+            version:2,
+            required:true,
+            sourceRevision:promotedMainSha,
+            candidateRevision,
+            promotedSourceTreeSha:sourceTreeSha,
+            exactSourceBinding:true,
+            runtimeVerificationRequired:true,
+            actualRuntimeVerified:false,
+            persistedAt:new Date().toISOString()
+          };
+          const priorBinding=item.robloxStudioAssetBinding||null;
+          const comparable=value=>JSON.stringify(value,(key,row)=>['persistedAt','requestedAt'].includes(key)?undefined:row);
+          let changed=comparable(priorBinding)!==comparable(persistedBinding)
+            ||String(item.robloxBuildUpAssetSourceUsageFingerprint||'')!==String(binding.buildUpAssetSourceUsageFingerprint||'')
+            ||Number(item.robloxBuildUpAssetSourceUsageLibraryVersion||0)!==Number(binding.buildUpAssetSourceUsageLibraryVersion||binding.libraryVersion||0)
+            ||String(item.robloxBuildAssetSelectionFingerprint||'')!==String(binding.selectionFingerprint||'')
+            ||Number(item.robloxBuildAssetLibraryVersion||0)!==Number(binding.libraryVersion||0)
+            ||item.robloxStudioAssetBindingApplied!==true;
+          item.robloxStudioAssetBinding=persistedBinding;
+          item.robloxStudioAssetBindingApplied=true;
+          item.robloxBuildUpAssetSourceUsageFingerprint=String(binding.buildUpAssetSourceUsageFingerprint);
+          item.robloxBuildUpAssetSourceUsageLibraryVersion=Number(binding.buildUpAssetSourceUsageLibraryVersion||binding.libraryVersion||0);
+          item.robloxBuildAssetSelectionFingerprint=String(binding.selectionFingerprint);
+          item.robloxBuildAssetLibraryVersion=Number(binding.libraryVersion);
+          if(candidates.length){
+            const plan={
+              version:1,gameId,candidateRevision,promotedMainSha,promotedSourceTreeSha:sourceTreeSha,candidates,
+              status:'PENDING_EXACT_NATIVE_RUNTIME',exactSourceBindingRequired:true,studioRuntimeRequired:false,mobilePerformanceRequired:true,
+              independentQaRequired:true,regressionRequired:true,verifiedCompanyPromotionAuthority:'assets/vibe-studio-asset-universe.js',requestedAt:new Date().toISOString()
+            };
+            const prior=item.robloxAssetRuntimePromotionPlan;
+            if(comparable(prior)!==comparable(plan)){
+              item.robloxAssetRuntimePromotionPlan=plan;
+              changed=true;
+            }
+          }
+          if(!changed)process.exit(0);
+          item.updatedAt=new Date().toISOString();
+          queue.updatedAt=item.updatedAt;
+          fs.writeFileSync(file,JSON.stringify(queue,null,2)+'\n');
+          console.log('ROBLOX_ASSET_RUNTIME_BINDING='+gameId+':selection='+binding.selectionFingerprint+':atoms='+binding.expectedAtomIds.length);
+          if(candidates.length)console.log('ROBLOX_ASSET_RUNTIME_PROMOTION_PLAN='+gameId+':'+candidates.map(row=>row.assetId).join(','));
+          NODE
+            git add development-queue.json
+            if git diff --cached --quiet; then
+              persisted=1
+              echo 'ROBLOX_ASSET_RUNTIME_BINDING_STATE=NO_CHANGE'
+              break
+            fi
+            git commit -m "runtime: bind exact Roblox asset identity for $GAME_ID [skip ci]"
+            if git push origin HEAD:company-runtime; then
+              persisted=1
+              echo "ROBLOX_ASSET_RUNTIME_BINDING_STATE=PUSHED:$attempt"
+              break
+            fi
+            sleep $((attempt*2))
+          done
+          test "$persisted" = 1
+      - name: Hand exact promoted Roblox source to F0-F9 runtime without pre-F9 canonical publish
+        id: publish
+        if: steps.validate.outcome == 'success' && steps.promote.outcome == 'success' && (needs.inspect.outputs.evidence_only == 'true' || steps.asset_binding.outcome == 'success')
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'ROBLOX_PRE_F9_CANONICAL_PUBLISH=FORBIDDEN'
+          echo 'ROBLOX_F0_F9_RUNTIME_HANDOFF=PASS'
+          echo 'ROBLOX_OPEN_CLOUD_PUBLISH_BEFORE_F9=NO'
+
+      - name: Settle Roblox result and continue canonical queue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
+          VALIDATE_OUTCOME: ${{ steps.validate.outcome }}
+          PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
+          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          EVIDENCE_ONLY: ${{ needs.inspect.outputs.evidence_only }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          CANDIDATE_BRANCH: ${{ needs.inspect.outputs.candidate_branch }}
+          CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
+          PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.main_sha }}
+          PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$VALIDATE_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ] && [ "$PUBLISH_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
+          if [ "$result" = PASS ] && [[ ! "$PROMOTED_SOURCE_TREE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo 'ROBLOX_PROMOTED_SOURCE_TREE_IDENTITY=INVALID' >&2
+            result=FAIL
+          fi
+          if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
+            if [ "$result" = PASS ]; then
+              gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main
+            else
+              gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
+            fi
+            echo "AUTONOMOUS_ROBLOX_RELEASE_RESULT=$result"
+            [ "$result" = PASS ]
+            exit
+          fi
+          rm -rf /tmp/vibe2-control
+          gh auth setup-git --hostname github.com
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+          rm -rf /tmp/vibe2-main-contract
+          git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
+          cd /tmp/vibe2-control
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          settled=0
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
+            git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            if [ "$EVIDENCE_ONLY" = true ]; then
+              node <<'NODE'
+          const fs=require('fs');const file='.vibe2/queue.json';
+          const queue=JSON.parse(fs.readFileSync(file,'utf8'));
+          const task=(queue.tasks||[]).find(row=>row.id===process.env.TASK_ID);
+          const pending=task?.runtimeEvidenceCandidate;
+          if(task?.status!=='running'||task?.blocker!=='candidate-awaiting-runtime-evidence'
+            ||pending?.evidenceOnly!==true||pending?.candidateSha!==process.env.CANDIDATE_SHA||pending?.candidateBranch!==process.env.CANDIDATE_BRANCH)throw Error('stale runtime evidence candidate');
+          const reportFile='/tmp/roblox-candidate-review/release-evidence-review.json';
+          const report=fs.existsSync(reportFile)?JSON.parse(fs.readFileSync(reportFile,'utf8')):null;
+          const reportMatches=report?.pass===true&&report.sourceRevision===process.env.CANDIDATE_SHA
+            &&report.authority==='roblox-candidate-static-source-promotion-gate'&&report.validationMode==='STATIC'
+            &&report.runtimeVerified===false&&report.releaseClaim===false
+            &&Array.isArray(report.blockedReasons)&&report.blockedReasons.length===0;
+          const pass=process.env.VALIDATE_OUTCOME==='success'&&reportMatches;
+          const reasons=Array.isArray(report?.blockedReasons)?report.blockedReasons.map(String).slice(0,30):[];
+          if(!reportMatches)reasons.push('static-review-report-missing-or-invalid');
+          task.evidence=[...new Set([...(task.evidence||[]),
+            'candidate-static-probe:'+process.env.CANDIDATE_SHA+':'+(pass?'PASS':'FAIL'),
+            'candidate-static-probe-run:'+process.env.GITHUB_RUN_ID,
+            'candidate-static-probe-artifact:roblox-candidate-context-'+process.env.GAME_ID,
+            'candidate-static-probe-source-promotion:FORBIDDEN',
+            ...reasons.map(reason=>'candidate-static-probe-failure:'+reason)])];
+          task.runtimeEvidenceCandidate={...pending,runId:process.env.GITHUB_RUN_ID,verified:false,staticVerified:pass,validationMode:'STATIC',blockedReasons:reasons,reviewStillRequired:true};
+          Object.assign(task,{status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,neuronExpectedVariants:0,neuronResults:[],lastOutcome:'STATIC_EVIDENCE_COLLECTED_REVIEW_REQUIRED'});
+          fs.writeFileSync(file,JSON.stringify(queue,null,2)+'\n');
+          NODE
+            elif [ "$result" = PASS ]; then
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs await \
+                --id="$TASK_ID" \
+                --blocker=candidate-awaiting-roblox-runtime-qa \
+                --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-f0-f9-runtime-handoff,roblox-pre-f9-canonical-publish-forbidden,roblox-runtime-await-game:${GAME_ID},roblox-runtime-await-source-tree:${PROMOTED_SOURCE_TREE_SHA},roblox-runtime-await-main-sha:${PROMOTED_MAIN_SHA},roblox-runtime-verification-required,roblox-studio-asset-runtime-proof-required,actions-run-${GITHUB_RUN_ID}"
+            else
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=roblox-release-or-evidence-failed --evidence="roblox-validate-${VALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},publish-${PUBLISH_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+            fi
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
+            git add .vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            if git diff --cached --quiet; then
+              settled=1
+              break
+            fi
+            if [ "$EVIDENCE_ONLY" = true ]; then
+              git commit -m "vibe2: collect Roblox candidate runtime evidence for ${TASK_ID} [skip ci]"
+            elif [ "$result" = PASS ]; then
+              git commit -m "vibe2: await Roblox runtime QA for ${TASK_ID} [skip ci]"
+            else
+              git commit -m "vibe2: settle Roblox task ${TASK_ID} ${result} [skip ci]"
+            fi
+            if git push origin HEAD:vibe2-unreal-core; then
+              settled=1
+              break
+            fi
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
+          done
+          test "$settled" = 1
+          if [ "$EVIDENCE_ONLY" = true ]; then
+            echo 'VIBE2_RUNTIME_EVIDENCE_COLLECTED=YES'
+            echo 'VIBE2_SOURCE_PROMOTION=FORBIDDEN_REVIEW_REQUIRED'
+            exit 0
+          fi
+          if [ "$result" = PASS ]; then
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
+            echo "VIBE2_ROBLOX_RUNTIME_QA_DISPATCHED=$GAME_ID"
+          fi
+          payload="$(jq -nc \
+            --arg run "${GITHUB_RUN_ID:-}" \
+            --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+            --arg task "${TASK_ID:-}" \
+            --arg outcome "${result:-QUEUE_UPDATED}" \
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"dependency-or-retry-ready"}}')"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:${result:-QUEUE_UPDATED}"
+          echo "VIBE2_ROBLOX_F0_F9_HANDOFF=$result"
+          echo 'ROBLOX_CANONICAL_SERVER_PUBLISH_OWNER=F9_FINAL_REVIEW_ONLY'
+          if [ "$result" = PASS ]; then echo 'VIBE2_ROBLOX_TASK_FINAL_PASS=NO_RUNTIME_QA_PENDING'; fi
+          [ "$result" = PASS ]
+
+  reject:
+    needs: inspect
+    if: needs.inspect.outputs.decision == 'reject' && needs.inspect.outputs.task_id != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Return rejected candidate to canonical queue without global serialization
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          REASON: ${{ needs.inspect.outputs.reason }}
+          CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
+            gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo "AUTONOMOUS_RELEASE_REJECTED=$REASON"
+            exit 1
+          fi
+          rm -rf /tmp/vibe2-control
+          gh auth setup-git --hostname github.com
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+          rm -rf /tmp/vibe2-main-contract
+          git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
+          cd /tmp/vibe2-control
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          settled=0
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
+            git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            # 이미 정리된 과거 후보의 지연 콜백은 현재 작업을 다시 실패 처리하지 않는다.
+          # 저장 형식/정책/큐 해석 오류는 그대로 실패시키고, 유효한 작업은 원래 fail 관문을 통과한다.
+          jq -e '.tasks | type == "array"' .vibe2/queue.json >/dev/null
+          if jq -e --arg id "$TASK_ID" '.tasks | any(.id == $id)' .vibe2/queue.json >/dev/null; then
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker="$REASON" --evidence="candidate-release-rejected,actions-run-${GITHUB_RUN_ID}"
+          else
+            echo "VIBE2_STALE_REJECT_CALLBACK_NO_QUEUE_TASK=${TASK_ID}"
+            echo "VIBE2_CANDIDATE_REJECT_GAMEPLAY_QA_OR_RELEASE_PASS=NO"
+          fi
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
+            git add .vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            if git diff --cached --quiet; then
+              settled=1
+              break
+            fi
+            git commit -m "vibe2: reject candidate ${TASK_ID} [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              settled=1
+              break
+            fi
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
+          done
+          test "$settled" = 1
+          payload="$(jq -nc \
+            --arg run "${GITHUB_RUN_ID:-}" \
+            --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+            --arg task "${TASK_ID:-}" \
+            --arg outcome "${result:-QUEUE_UPDATED}" \
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"dependency-or-retry-ready"}}')"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:${result:-QUEUE_UPDATED}"

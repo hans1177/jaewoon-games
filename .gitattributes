@@ -1,0 +1,36 @@
+# Git LFS for large Unity/mobile source assets.
+# Keep ordinary source text and small web images in normal Git.
+*.fbx filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.psd filter=lfs diff=lfs merge=lfs -text
+*.tga filter=lfs diff=lfs merge=lfs -text
+*.exr filter=lfs diff=lfs merge=lfs -text
+*.hdr filter=lfs diff=lfs merge=lfs -text
+*.wav filter=lfs diff=lfs merge=lfs -text
+*.mp3 filter=lfs diff=lfs merge=lfs -text
+*.ogg filter=lfs diff=lfs merge=lfs -text
+
+# This original downloaded CC0 music file is committed as a regular Git binary,
+# not an LFS pointer. Preserve its exact bytes during Actions checkout/branch switch.
+web-games/ocean-voyage/assets/cc0/music/pirate_ship_in_game.ogg -filter -diff -merge -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+*.unitypackage filter=lfs diff=lfs merge=lfs -text
+
+# Small browser inspection previews are stored as ordinary Git binaries.
+assets/roblox/world-ghosts/native/mesh/attack.mp4 -filter -diff -merge -text
+assets/roblox/world-ghosts/native/mesh/idle.mp4 -filter -diff -merge -text
+
+# Small CC0 Roblox source meshes and inspection preview are ordinary Git binaries.
+# Preserve the exact downloaded FBX bytes so native authoring can verify their hashes.
+assets/roblox/actors/sources/quaternius-characters/FBX/*.fbx -filter -diff -merge -text
+assets/roblox/actors/sources/quaternius-cute/FBX/*.fbx -filter -diff -merge -text
+assets/roblox/actors/sources/quaternius-monsters/FBX/*.fbx -filter -diff -merge -text
+assets/roblox/actors/native/quaternius-skeleton/preview-motion.mp4 -filter -diff -merge -text
+
+
+# Downloaded CC0 browser models must publish as real files, not LFS pointers.
+assets/shared/forest/*.fbx -filter -diff -merge -text
+
+# Mare Scientia CC0 주민 모델은 실제 FBX 원본 바이너리로 보존한다.
+roblox-games/mare-scientia/assets/people/*.fbx -filter -diff -merge -text

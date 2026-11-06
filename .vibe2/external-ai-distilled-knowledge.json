@@ -1,0 +1,748 @@
+{
+  "version": 1,
+  "kind": "vibe2-external-ai-distilled-knowledge",
+  "entries": [
+    {
+      "id": "external-ai-distilled:openai-advanced-coding-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "DEBUGGING",
+        "RECOVERY",
+        "PERFORMANCE",
+        "ORCHESTRATION"
+      ],
+      "patterns": [
+        "Edit the existing responsible function or complete responsibility block first; avoid wrappers, shadow pipelines, and validation-only bypasses.",
+        "Use optimistic concurrency or compare-and-swap for shared state; reread latest state after conflicts instead of force-pushing stale snapshots.",
+        "Make retries idempotent and deduplicated; a repeated callback must not duplicate state transitions, writes, rewards, or downstream dispatch.",
+        "Repair the exact causal failure stage first, then revalidate from the first invalidated gate; unrelated safe work continues in parallel.",
+        "Fan in immutable worker results by exact source identity and content hash; do not trust self-reported success without matching QA evidence.",
+        "Run impact-first checks for speed, then require final regression on the exact candidate before promotion or durable positive learning.",
+        "Keep deterministic state planning separate from side effects; make mutation boundaries explicit, minimal, and least-privilege.",
+        "Cache only by exact content and environment identity; stale source, dependency, policy, or toolchain hashes invalidate reuse."
+      ],
+      "cautions": [
+        "Do not trade correctness for abstraction count; simpler direct responsibility is preferred when it preserves the canonical flow.",
+        "Concurrency must serialize only exact shared-state or responsible-file conflicts, never the whole repository or unrelated games."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "d40ca2b060e527c7ae2f59f53fe4fcfdc893402964beac0f44eb182f476fe031",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:.github/workflows/vibe2-continuous-core.yml#optimistic-state-fanin-and-exact-locking",
+          "qa:qa/vibe2-learning-motor.test.mjs#verified-learning-causal-repair-and-knowledge-gates"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-visual-aesthetic-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "VISUAL_IDENTITY",
+        "CONCEPT_DIRECTION",
+        "ASSET_ADAPTATION",
+        "ASSET_PRODUCTION"
+      ],
+      "patterns": [
+        "Design silhouette first: role and identity should read in grayscale and at gameplay distance before texture or microdetail is considered.",
+        "Build hierarchy from large, medium, then small forms; proportion and shape language should communicate role before surface decoration.",
+        "Group values into a few readable masses and reserve strongest contrast for the focal gameplay feature instead of spreading contrast everywhere.",
+        "Use dominant, support, and accent color roles; saturation and value extremes should be scarce and tied to identity or gameplay focus.",
+        "Preserve negative space between limbs, props, and landmarks so silhouettes do not collapse into one noisy mass at mobile scale.",
+        "Match detail frequency to camera distance: large forms carry distant readability, medium forms carry identity, microdetail is optional polish.",
+        "Prefer distinct geometry, material boundaries, and structural features over recolor-only variation for meaningful visual differentiation.",
+        "Reauthor platform-native presentation while preserving palette, silhouette language, region identity, and material language."
+      ],
+      "cautions": [
+        "Polygon count, texture density, glow, or saturation alone do not prove quality.",
+        "Do not clone distinctive trade dress or another game's exact visual expression."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "2050e8a6be74ba35e6c03a4e95a24d313adff7d5b507ed50fbee3d6b1a379f0a",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:tools/vibe2-asset-production-plan.mjs#silhouette-topology-material-boundary-workflow",
+          "qa:qa/vibe2-native-asset-production.test.mjs#real-asset-detail-runtime-quality-gates"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-rig-joint-motion-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ],
+      "patterns": [
+        "Place joints near anatomical or mechanical rotation centers and support bends with deformation-friendly topology rather than compensating with extreme weights.",
+        "Use smooth normalized skin-weight falloff, distribute twist across suitable joints, and preserve volume around shoulders, hips, elbows, knees, and long twists.",
+        "Locomotion should keep center of mass believable over the support region, lock visible contacts during stance, and coordinate pelvis and limb counter-motion.",
+        "Choose gait from body form: diagonal coordination suits many quadrupeds while multi-leg creatures need phase staggering instead of mirrored simultaneous swings.",
+        "Author one-shots as anticipation, action, overshoot, settle, and rest recovery; attacks should visibly finish instead of freezing at peak pose.",
+        "Drive tails, cloth-like chains, wings, and appendages with bounded phase-lagged secondary motion based on perceived mass and length.",
+        "Keep adjacent-frame changes bounded and loops closed enough to avoid visible pops, foot sliding, or sudden joint discontinuities.",
+        "Cosmetic animation must restore rest transforms and must not move authoritative gameplay roots or change hit, AI, damage, or movement semantics."
+      ],
+      "cautions": [
+        "Avoid candy-wrapper twist, single-vertex weight spikes, knee/elbow inversion, and root drift used to fake locomotion.",
+        "Do not force one humanoid gait onto quadruped, arachnid, floating, serpentine, or bound body forms."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "6e39efd62acb25c6112d60ecb076ff3c9990efb3486ecacf59afcb701da3c8a6",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:assets/roblox/world-ghosts/GhostSkinMotion.luau#form-specific-gaits-secondary-motion-and-root-preservation",
+          "qa:qa/roblox-world-ghost-skins.test.mjs#joint-gait-loop-settle-and-rest-transform-tests"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-material-lighting-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "VISUAL_IDENTITY",
+        "ENVIRONMENT_COMPOSITION"
+      ],
+      "patterns": [
+        "Separate materials through coherent roughness, normal, metallic, and base-color response; recolor alone should not stand in for material identity.",
+        "Require usable UVs, normals, and stable tangent-space assumptions before texture polish; broken shading cannot be hidden by higher texture resolution.",
+        "Place wear causally at contact edges, stress zones, exposed surfaces, and interaction points instead of applying uniform random dirt everywhere.",
+        "Use lighting hierarchy: key establishes form, fill controls readability, rim separates silhouette when needed, and environment light anchors the scene.",
+        "Judge value readability before saturation; materials and characters should remain separable under the actual gameplay lighting and camera.",
+        "Keep a coherent color script across region, character, VFX, and UI while reserving exceptional hues for meaningful states or landmarks.",
+        "Validate material and lighting choices in the target runtime because editor thumbnails and source parameters do not prove final appearance."
+      ],
+      "cautions": [
+        "Do not overuse emissive, bloom, metallic, or pure black/white values to manufacture contrast.",
+        "Do not claim material quality from source metadata without rendered target-runtime inspection."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "fe229e6a1d98d154ba292d78a65440cd156434c6de18cdf619fa02f91a46506c",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:tools/vibe2-asset-production-plan.mjs#uv-normals-material-separation-and-runtime-review",
+          "qa:qa/vibe2-native-asset-production.test.mjs#native-material-binding-and-runtime-evidence"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-vfx-camera-readability-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "VFX",
+        "CAMERA_LANGUAGE",
+        "PERFORMANCE",
+        "VISUAL_IDENTITY"
+      ],
+      "patterns": [
+        "Bind VFX to real gameplay events: telegraph before danger, contact-timed impact, and readable recovery after the event instead of decorative continuous noise.",
+        "Layer feedback by time scale: immediate flash or hit-stop, short trail or shockwave, then slower residue; each layer should have a distinct information purpose.",
+        "Keep camera shake short, bounded, and frequency-matched to impact weight; preserve aiming, touch control, and motion comfort.",
+        "Scale opacity, particle count, trail width, and screen coverage to focal hierarchy so effects support the subject instead of obscuring silhouettes and UI.",
+        "Design for gameplay zoom and mobile screens: important attack direction, threat area, and hit confirmation must survive reduced particles and lower detail.",
+        "Pool or deterministically retire transient effects and cap lifetime so visual polish does not create unbounded CPU, GPU, memory, or network work."
+      ],
+      "cautions": [
+        "Do not change damage, hit timing, authority, or movement rules to make VFX look stronger.",
+        "Avoid full-screen bloom, long shake, opaque particles, and persistent trails that hide combat state."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "3ca7f7f06fe283bd60b49f1c853411db0f83f40d622223fd0554f7ab4e58d1a4",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:tools/vibe2-asset-production-plan.mjs#runtime-visual-vfx-camera-performance-contract",
+          "qa:qa/vibe2-native-asset-production.test.mjs#before-after-runtime-visual-and-mobile-quality-gates"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-roblox-cloud-coding-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "roblox",
+      "gameId": "cross-game",
+      "domains": [
+        "ROBLOX_DATASTORE",
+        "ROBLOX_REMOTE_SECURITY",
+        "ROBLOX_REPLICATION",
+        "ROBLOX_MULTIPLAYER",
+        "ROBLOX_TOUCH_INPUT",
+        "ROBLOX_CHARACTER_STATE",
+        "ROBLOX_UI_STATE",
+        "STATE_MACHINE",
+        "PERFORMANCE"
+      ],
+      "patterns": [
+        "Keep authoritative gameplay state on the server; clients send bounded intent, never trusted final damage, currency, inventory, or progression state.",
+        "Validate every RemoteEvent and RemoteFunction request on the server for player identity, payload type, bounds, current state, cooldown or nonce, and replay/idempotency before mutation.",
+        "Make remote-triggered rewards and purchases idempotent with request identities so retries or duplicate packets cannot duplicate currency, items, XP, or state transitions.",
+        "Persist progression with failure-safe transactions: validate schema and revision, commit in-memory authoritative state only after the durable write succeeds, and make retry paths preserve the last known-good state.",
+        "Replicate immutable or copied snapshots with monotonic revisions; clients reject stale revisions and render server state rather than owning canonical gameplay truth.",
+        "For late join and rejoin, reconstruct the current authoritative snapshot from server state and saved data instead of aliasing mutable tables or replaying historical side effects.",
+        "Treat PlayerAdded, PlayerRemoving, CharacterAdded, respawn, and UI/input subscriptions as lifecycle-owned resources; replace or disconnect old subscriptions so one logical handler has one active connection.",
+        "Use ContextActionService or bounded input adapters to convert touch and controller input into intent; keep mobile UI responsive and never let UI callbacks directly author server-owned state.",
+        "Bound per-frame and per-player work: cap transient tables, queues, effects, raycasts, pathfinding, remote frequency, and cache growth; reuse pooled objects when repeated allocation would scale with playtime.",
+        "Keep modules small around ownership boundaries: server domain services own mutation, shared modules hold pure schemas and deterministic helpers, and client modules own presentation and input only.",
+        "Bind cloud validation to the exact source revision, artifact identity, universe, place, and place version; stale or locally cached evidence cannot satisfy current Open Cloud runtime acceptance.",
+        "Treat Open Cloud 408, 429, and provider 5xx responses as infrastructure pressure with bounded retry/backoff; never convert provider failure into game-code PASS or consume game repair authority."
+      ],
+      "cautions": [
+        "Do not trust client-provided prices, damage, ownership, cooldown completion, save revisions, or reward results.",
+        "Do not use Studio-local or cached local evidence as the production runtime proof for this cloud-only Roblox coding knowledge.",
+        "Do not widen writable scope or bypass F0-F9, security, independent QA, regression, or exact-candidate checks."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "95fd77d5fb1072c433a371f4de3fedf89de462e79eb304478b1088df9f01b226",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:tools/company-development-roblox-runtime-foundation.mjs#official-open-cloud-exact-version-runtime-contract",
+          "qa:qa/company-development-roblox-runtime-foundation.test.mjs#cloud-only-open-cloud-runtime-contract"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-roblox-engine-systems-v2",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "roblox",
+      "gameId": "cross-game",
+      "domains": [
+        "PERFORMANCE",
+        "ROBLOX_REMOTE_SECURITY",
+        "ROBLOX_REPLICATION",
+        "ROBLOX_MULTIPLAYER",
+        "ROBLOX_DATASTORE",
+        "DEBUGGING",
+        "ROBLOX_PARALLEL_LUAU",
+        "ROBLOX_NETWORK_OWNERSHIP",
+        "ROBLOX_STREAMING",
+        "LUAU_TYPE_SYSTEM"
+      ],
+      "patterns": [
+        "Use Actors for measured CPU-heavy independent work; run parallel compute with task.desynchronize() or parallel callbacks, then synchronize only for DataModel operations that are not thread-safe.",
+        "Treat each Actor as a separate Luau VM: module state is not shared across Actors. Use Actor messages or SharedTable intentionally, and avoid large copied message payloads across VM boundaries.",
+        "Check API thread-safety tags before parallel access; require needed modules before entering parallel phases and keep cross-Actor mutation explicit instead of assuming ordinary tables are shared.",
+        "Network ownership is a performance mechanism, not gameplay authority. Validate critical physics on the server and force server ownership only where exploit risk outweighs responsiveness cost.",
+        "Never trust Touched or client-owned physics alone for damage, rewards, or objectives. Re-check reach, state, timing, target validity, and finite numeric values on the server.",
+        "Use UnreliableRemoteEvent only for disposable continuously changing data. Critical state, rewards, inventory, and ordered transitions need reliable protocols plus sequence or revision handling.",
+        "Do not depend on ordering across RemoteEvent and RemoteFunction channels; when ordering matters, use one protocol stream or explicit sequence numbers and reject stale messages.",
+        "For multi-server save updates, use UpdateAsync-style transforms when the new value depends on prior state; keep transforms non-yielding and preserve existing metadata and user IDs unless intentionally changing them.",
+        "Write streaming-aware client code that tolerates absent instances. Pre-stream predicted teleport destinations from the server when needed and treat streaming availability as local and temporary, not global world presence.",
+        "Profile before parallelizing or pooling. Use Script Profiler and MicroProfiler to identify CPU or frame hotspots, then move only measured hot computation away from the serial path.",
+        "Use --!strict and explicit types at subsystem boundaries where practical; model protocol and state variants to catch invalid shapes early while retaining runtime validation for all network input."
+      ],
+      "cautions": [
+        "Do not move authoritative combat, economy, inventory, or save mutation to clients or parallel workers merely for performance.",
+        "Do not force server network ownership on every moving assembly; measure responsiveness and reserve it for gameplay-critical physics.",
+        "Do not repair dropped unreliable packets, streaming absence, or cross-channel reordering by replaying side effects without idempotency."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "1409fbde1800df716873b6b18f20f334d91b70879571e4fa7a8a1a3694d3fbb7",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:https://create.roblox.com/docs/scripting/multithreading",
+          "source:https://create.roblox.com/docs/scripting/security/network-ownership",
+          "source:https://create.roblox.com/docs/scripting/events/remote",
+          "source:https://create.roblox.com/docs/cloud-services/data-stores/best-practices",
+          "source:https://create.roblox.com/docs/workspace/streaming",
+          "source:https://luau.org/types/",
+          "qa:qa/company-system-ai-learning.test.mjs#advanced-roblox-luau-v2"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-insect-morphology-surface-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ],
+      "patterns": [
+        "Build insects from functional regions first: head, thorax, abdomen, then segment appendages from their real attachment regions instead of placing decorative limbs arbitrarily.",
+        "Treat the exoskeleton as overlapping hardened plates separated by softer flexible membranes; show seams, sutures, and compression at joints rather than bending one rigid shell.",
+        "Leg design should preserve the coxa-trochanter-femur-tibia-tarsus hierarchy and exaggerate only the functionally dominant segment for running, jumping, digging, grasping, or swimming.",
+        "Use setae, spines, wax, powder, scales, and surface microtexture selectively by species and function; do not cover every insect with the same glossy chitin material.",
+        "Differentiate hard sclerotized plates, translucent membranes, eyes, mouthparts, antennae, and claws with separate material response and scale-appropriate roughness.",
+        "For multi-leg motion, phase-stagger contacts so the body stays supported; avoid moving every leg in mirrored synchrony unless the species and action justify it.",
+        "Keep antennae, palps, wings, cerci, and hairs as lighter secondary-motion systems with faster damping than the heavy thorax and abdomen.",
+        "At gameplay distance preserve species identity through body ratio, leg specialization, antenna shape, wing silhouette, mandible shape, and color blocking before microdetail."
+      ],
+      "cautions": [
+        "Do not model insect joints like mammalian elbows or knees; the visible exoskeletal segmentation and membrane gaps must drive the bend.",
+        "Avoid universal black glossy shells: many insects are matte, dusty, hairy, waxy, iridescent, translucent, patterned, or scale-covered."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "5b69c5fd9d88e118d7f4a9f22fbca8d861d61b9eff1133acd69a8b0fd5fb1bf5",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "multi-source-consistency",
+        "evidence": [
+          "multi-source:entomology-chitin-sclerites-body-segments-leg-specialization-reference",
+          "source:assets/roblox/world-ghosts/GhostSkinMotion.luau#multi-leg-phase-stagger-and-form-specific-gait",
+          "qa:qa/roblox-world-ghost-skins.test.mjs#multi-leg-visible-joint-and-gait-tests"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-mammal-fur-anatomy-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "LIVING_MOTION"
+      ],
+      "patterns": [
+        "Block mammals from skeleton and major muscle masses before fur; shoulder, ribcage, pelvis, elbows, knees, hocks, and paws must read through the coat.",
+        "Layer fur by function and length: dense underfur forms soft volume while fewer longer guard hairs break the silhouette and catch highlights.",
+        "Comb fur flow along body growth directions and surface curvature; change direction around joints, face landmarks, mane regions, tails, and friction zones.",
+        "Use clumping at medium scale and sparse flyaway hairs at silhouette edges; uniform strand density produces synthetic carpet-like fur.",
+        "Compress fur at planted paws, folded joints, harness contact, and body overlap while allowing stretch and separation on exposed convex surfaces.",
+        "Drive locomotion from scapula and pelvis rhythm with spine flexion, head stabilization, tail counterbalance, and foot contact rather than rotating legs from isolated sockets.",
+        "Use skin and fur color variation at larger anatomical regions first; micro-speckle should support, not replace, readable markings and form.",
+        "For wet, dirty, injured, winter, or juvenile variants change clump size, sheen, length, and exposed skin logically instead of only shifting hue."
+      ],
+      "cautions": [
+        "Do not hide broken anatomy under long fur; silhouette and joint motion should remain structurally believable.",
+        "Avoid equally long fur everywhere, uniform noise, and perfectly smooth fur normals."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "0142ef70aa6f56f3e82c82af514cb9a2270df09f7620bd88b234df31e091e2ae",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "multi-source-consistency",
+        "evidence": [
+          "multi-source:mammalian-fur-guard-hair-underfur-layering-reference",
+          "source:tools/vibe2-asset-production-plan.mjs#silhouette-topology-material-boundary-workflow"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-reptile-amphibian-surface-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "ASSET_ADAPTATION",
+        "LIVING_MOTION"
+      ],
+      "patterns": [
+        "Treat reptile scales as region-specific structures: large protective plates, smaller flexible scales near joints, and specialized ventral or facial scales should not share one tiling pattern.",
+        "Align overlapping scales with growth direction and body flow; preserve softer folds around neck, armpit, groin, jaw, and limb flexion so deformation does not look like rubber armor.",
+        "Use roughness and normal variation to distinguish dry keratin, polished scutes, wet skin, mucus, horn, claw, and eye surfaces instead of relying on color alone.",
+        "For amphibians emphasize soft continuous skin, local folds, moisture response, glandular or granular texture, and strong contact deformation rather than hard reptile plating.",
+        "Snake and long-body motion should propagate curvature through the body in phase, preserving a coherent spine arc and ground contact instead of translating a rigid tube.",
+        "Reptile limbs usually carry clear weight and body mass; animate toe spread, belly clearance, tail counterbalance, and shoulder or pelvic rotation according to gait.",
+        "Pattern design should follow body topology and anatomy so stripes, spots, and bands wrap forms consistently across motion.",
+        "Use subsurface or translucent response sparingly for thin membranes and amphibian skin, with mobile performance limits preserved."
+      ],
+      "cautions": [
+        "Do not tile one scale texture uniformly over joints, eyes, lips, claws, belly, and flexible skin.",
+        "Avoid making amphibians look lacquered; wetness needs broad controlled highlights plus underlying skin variation."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "6da37ae17d9fb98cab193b9e2c8804439a442e7dd60b8c82aa1acf7c156f48b1",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:tools/vibe2-asset-production-plan.mjs#uv-normals-material-separation-and-deformation-review",
+          "qa:qa/vibe2-native-asset-production.test.mjs#native-material-and-runtime-visual-quality-gates"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-bird-feather-wing-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ],
+      "patterns": [
+        "Build feather hierarchy from feather groups before strands: body contour masses, downy soft regions, wing coverts, flight feathers, and tail feathers each need different shape and stiffness.",
+        "Represent a feather as shaft and vane hierarchy rather than a flat leaf; large feathers need readable rachis direction, barb flow, and controlled separation at damaged or soft edges.",
+        "Overlap feathers in growth order like layered shingles so roots are hidden and tips define silhouette; random floating cards break anatomical flow.",
+        "Wing motion must respect shoulder, elbow, wrist, and finger-supported feather fan structure; primary feathers rotate and spread differently from body contour feathers.",
+        "During flapping, compress and fold feather groups on recovery while opening the aerodynamic surface on the power stroke; preserve plausible inertia and delayed settling.",
+        "Use specular response anisotropically and sparingly: feather sheen follows structure, while downy regions scatter light softly and should not share one plastic highlight.",
+        "Keep beak, cere, claws, bare skin, eye, and feathers as separate material families with different roughness and microstructure.",
+        "At mobile distance prioritize head shape, beak, wing planform, tail silhouette, major plumage blocks, and posture before individual barb detail."
+      ],
+      "cautions": [
+        "Do not animate wings as one rigid board hinged at the shoulder.",
+        "Do not use identical card density, size, or stiffness for down, contour, flight, and tail feathers."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "983d219410b7ed87f9d81a8cf4a804dd2077a339273fa5148d8b53d33bfefdf9",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "multi-source-consistency",
+        "evidence": [
+          "multi-source:peer-reviewed-feather-rachis-barb-barbule-and-flight-feather-hierarchy",
+          "source:tools/vibe2-asset-production-plan.mjs#rig-morph-action-and-silhouette-review"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-aquatic-animal-surface-motion-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "LIVING_MOTION",
+        "ASSET_ADAPTATION"
+      ],
+      "patterns": [
+        "Build fish and aquatic animals around body section, fin placement, propulsion mode, and silhouette before scale or skin detail.",
+        "Use scale or denticle direction to reinforce flow along the body; avoid random normal noise that contradicts hydrodynamic surface direction.",
+        "Treat mucus or wet skin as a broad surface layer with controlled sheen over underlying scales, denticles, or skin rather than turning the whole animal into a mirror.",
+        "Different fins have different jobs: caudal propulsion, pectoral steering and braking, dorsal or anal stabilization; animate them with distinct amplitudes and timing.",
+        "Propagate swimming curvature through the body according to propulsion style, keeping the head, trunk, tail, and fins phase-related instead of oscillating every segment equally.",
+        "For crustacean-like aquatic forms separate rigid shell plates from flexible joints and membranes, preserving appendage segmentation and local material changes.",
+        "Use color and reflectance with depth and habitat logic: countershading, disruptive bands, translucency, bioluminescence, and iridescence should serve ecology or readability.",
+        "Preserve a lower-detail mobile variant where body plan, fins, eyes, mouth, major markings, and motion remain readable without dense surface microgeometry."
+      ],
+      "cautions": [
+        "Do not infer realism from maximum gloss; underwater readability still depends on value grouping, silhouette, and controlled highlights.",
+        "Avoid identical sine-wave swimming for eel-like, tuna-like, ray-like, crustacean, and cephalopod body plans."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "0b1b6f70ae46c0c12315193c328e1f0cf74fd63255a5a4703ca9c5abc901236c",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "multi-source-consistency",
+        "evidence": [
+          "multi-source:fish-scale-skin-mucus-fin-and-shark-denticle-surface-reference",
+          "source:tools/vibe2-asset-production-plan.mjs#material-surface-and-platform-runtime-review"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-roblox-distributed-services-v3",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "roblox",
+      "gameId": "cross-game",
+      "domains": [
+        "ROBLOX_MEMORYSTORE",
+        "ROBLOX_MESSAGING",
+        "ROBLOX_PATHFINDING",
+        "ROBLOX_COLLECTION_LIFECYCLE",
+        "ROBLOX_MULTIPLAYER",
+        "PERFORMANCE",
+        "RECOVERY"
+      ],
+      "patterns": [
+        "Use MemoryStore for ephemeral cross-server coordination, matchmaking, caches, and rapidly changing shared state; keep durable progression and session-rejoin truth in DataStore.",
+        "Choose MemoryStore structures by access semantics: hash map for keyed lookup, sorted map for ordered state, queue for ordered work; use short TTLs and explicit cleanup to bound shared memory.",
+        "Treat MemoryStore calls as fallible network operations. Catch failures, bound retry pressure, stagger recurring requests, and monitor universe-level quota and throttling instead of hot-loop retrying.",
+        "MemoryStore queue items can reappear after invisibility timeout or failed removal, so make processing idempotent and remove an item only after the intended durable or authoritative effect succeeds.",
+        "For contended MemoryStore map state, prefer UpdateAsync-style transforms over blind Set writes when the new value depends on existing state; reject stale or invalid transitions inside the transform.",
+        "MessagingService is best-effort cross-server signaling, not durable authority. Critical state must be recoverable without a message; attach identity or revision data and make subscribers safe to replay.",
+        "Own MessagingService subscriptions by lifecycle and disconnect them when their owner leaves or shuts down; validate topic payload shape before it can trigger server-side gameplay actions.",
+        "For NPC navigation, react to Path.Blocked only when the blocked waypoint is still ahead, then recompute deliberately; avoid per-frame path recomputation and handle path failure as a normal state.",
+        "In streaming worlds, do not assume a client can see the destination instance used for pathfinding. Prefer server-side world-aware navigation or explicit streamed-instance availability checks.",
+        "Use CollectionService tags for centralized behavior registration: initialize already-tagged instances, subscribe to future additions, and release connections or tables when tags or instances are removed.",
+        "Treat server-applied tags as canonical for authoritative behavior. Client-only tags can be overwritten by server replication, so client tag mutation must not grant damage, rewards, ownership, or progression."
+      ],
+      "cautions": [
+        "Do not use MemoryStore as a persistence substitute or allow expired ephemeral coordination state to become permanent player truth.",
+        "Do not make MessagingService delivery a prerequisite for irreversible rewards, purchases, saves, or security decisions.",
+        "Do not use CollectionService tags or client-visible path state as a substitute for server validation of authoritative gameplay."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "1dc869c5da9013baaedcbbcaf6fbf391a49e381be9311ab1db6575438df12604",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:https://create.roblox.com/docs/cloud-services/memory-stores",
+          "source:https://create.roblox.com/docs/cloud-services/memory-stores/queue",
+          "source:https://create.roblox.com/docs/reference/engine/classes/MessagingService",
+          "source:https://create.roblox.com/docs/characters/pathfinding",
+          "source:https://create.roblox.com/docs/reference/engine/classes/CollectionService",
+          "qa:qa/company-system-ai-learning.test.mjs#roblox-distributed-services-v3"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:shared-native-import-38289558589",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OpenAI",
+      "model": "Codex-session",
+      "engine": "roblox",
+      "gameId": "daechung-rpg",
+      "domains": [
+        "ASSET_ADAPTATION",
+        "GRAPHICS",
+        "NATIVE_ASSET_IMPORT"
+      ],
+      "patterns": [
+        "공용 원본을 플랫폼 모델로 변환할 때 원본 경로와 SHA256을 대조하고 원본 파일을 보존한 채 파생 자산 번호·변환 계보를 기존 원장에 기록한다.",
+        "같은 원본 해시의 유효한 자산 번호를 재사용하고, 잘못된 원본은 자산별로 격리하며 성공 영수증은 실패 여부와 별개로 보존한다.",
+        "플랫폼 자산 등록 후 승인된 게임 서버의 사용 권한을 확인하고, 정확한 자산 번호로 네이티브 프로젝트를 다시 빌드한다."
+      ],
+      "cautions": [
+        "자산 등록과 소스 검사 성공은 실제 화면·모바일 조작·골격 애니메이션·F9·최종 서버 배포 성공을 증명하지 않는다.",
+        "기존 게임 규칙·밸런스·저장·권한과 공개 여부를 변경하지 않고, 바인딩 변경 후 기존 F0~F9 검수를 다시 수행한다."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "11484a350fb947e1eb3896edaa156d904fa2990a6a3214dca7c5aa270948dd60",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "multi-source-consistency",
+        "evidence": [
+          "actions-run:https://github.com/hans1177/jaewoon-games/actions/runs/38289558589:23-models-66-material-channels-import-pass",
+          "source:b52fdffd9f3f18480d10701e3bd28992e59087d9:23-preserved-source-hashes-and-three-project-bindings",
+          "qa:qa/vibe-studio-asset-universe.test.mjs+qa/asset-library-sync.test.mjs+qa/horror-escape-room-release.test.mjs:12fe245276c6e9200145ca443e2bf38d9e149db9:281-pass",
+          "artifact:11766696498:sha256:15cac6583cc7b715f1886dc6676f5e3d7a440901126c8a1e052c8df008b58eb8"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    }
+  ],
+  "policy": {
+    "rawExternalAiOutputMayEnterDevelopment": false,
+    "independentVerificationRequired": true,
+    "distilledKnowledgeAdvisoryOnly": true,
+    "directSourceWrite": false,
+    "directProductionPass": false,
+    "directMasteryCredit": false,
+    "directTrainingSample": false,
+    "verifiedProjectOutcomeRequiredForLaterMasteryOrTraining": true,
+    "authorityExpanded": false,
+    "minimumTraceableVerificationEvidenceItems": 2,
+    "externalAiAdvisoryAlwaysRanksAfterInternalVerified": true
+  },
+  "authorityExpanded": false
+}

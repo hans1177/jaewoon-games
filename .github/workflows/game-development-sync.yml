@@ -1,0 +1,138 @@
+name: All Games Development Sync
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'game-catalog.json'
+      - 'web-games/**'
+      - 'roblox-games/**'
+      - 'unity-games/**'
+      - 'godot-games/**'
+      - 'uefn-games/**'
+      - 'assets/external/**'
+      - 'assets/roblox/actors/native/**'
+      - 'qa/**'
+      - 'tools/game-development-sync.mjs'
+      - 'tools/game-development-qa-runner.mjs'
+      - 'qa/game-development-sync.test.mjs'
+      - 'qa/game-development-qa-runner.test.mjs'
+      - '.github/workflows/game-development-sync.yml'
+  pull_request:
+    paths:
+      - 'game-catalog.json'
+      - 'web-games/**'
+      - 'roblox-games/**'
+      - 'unity-games/**'
+      - 'godot-games/**'
+      - 'uefn-games/**'
+      - 'assets/external/**'
+      - 'assets/roblox/actors/native/**'
+      - 'qa/**'
+      - 'tools/game-development-sync.mjs'
+      - 'tools/game-development-qa-runner.mjs'
+      - 'qa/game-development-sync.test.mjs'
+      - 'qa/game-development-qa-runner.test.mjs'
+      - '.github/workflows/game-development-sync.yml'
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: 'Optional exact game ID; empty checks all games'
+        type: string
+        required: false
+permissions:
+  contents: read
+concurrency:
+  group: game-development-sync-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  discover-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify game-focused source and asset linking
+        run: |
+          node --check tools/game-development-sync.mjs
+          node --check tools/game-development-qa-runner.mjs
+          node --test qa/game-development-sync.test.mjs qa/game-development-qa-runner.test.mjs
+      - name: Generate all-game development connections
+        env:
+          GAME_ID: ${{ inputs.game_id || '' }}
+        run: |
+          set -euo pipefail
+          if [ -n "$GAME_ID" ]; then
+            node tools/game-development-sync.mjs --game-id="$GAME_ID" --strict --output=/tmp/game-development-connections.json
+          else
+            node tools/game-development-sync.mjs --output=/tmp/game-development-connections.json
+          fi
+      - name: Resolve changed game files
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BASE: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > /tmp/changed-game-files.txt
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then
+            echo 'GAME_QA_SCOPE=MANUAL_REQUEST'
+            exit 0
+          fi
+          base="$PR_BASE"
+          if [ -z "$base" ]; then base="$PUSH_BASE"; fi
+          if [ -z "$base" ] || [[ "$base" =~ ^0+$ ]]; then
+            base="$(git rev-parse HEAD^ 2>/dev/null || true)"
+          fi
+          if [ -n "$base" ]; then
+            git cat-file -e "$base^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base"
+            head=HEAD
+            if [ "$EVENT_NAME" = pull_request ]; then
+              # PR의 자동 생성 merge SHA는 다른 게임의 최근 main 변경을 섞을 수 있다.
+              # 실제 PR head만 비교해 변경한 게임의 QA를 정확히 실행한다.
+              if [ -z "$PR_HEAD" ]; then echo 'GAME_QA_PR_HEAD_REQUIRED' >&2; exit 1; fi
+              git cat-file -e "$PR_HEAD^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$PR_HEAD"
+              head="$PR_HEAD"
+              # [PR 실제 변경 범위] main이 앞으로 이동해도 타 게임을 포함하지 않는다.
+              # GitHub가 판정한 공통 조상을 정확히 사용하고 조회 실패 시 fail closed.
+              common_base="$(gh api "repos/$GITHUB_REPOSITORY/compare/$base...$head" --jq '.merge_base_commit.sha')"
+              if ! [[ "$common_base" =~ ^[a-f0-9]{40}$ ]]; then
+                echo 'GAME_QA_PR_MERGE_BASE_UNKNOWN' >&2
+                exit 1
+              fi
+              git cat-file -e "$common_base^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$common_base"
+              base="$common_base"
+              echo "GAME_QA_PR_MERGE_BASE=$base"
+            fi
+            git diff --name-only "$base" "$head" > /tmp/changed-game-files.txt
+          fi
+          echo "GAME_QA_CHANGED_FILES=$(wc -l < /tmp/changed-game-files.txt)"
+      - name: Run only game-relevant QA
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "$GAME_ID" ]; then
+            node tools/game-development-qa-runner.mjs --game-id="$GAME_ID" --run --output=/tmp/game-scoped-qa-report.json
+          elif [ "$EVENT_NAME" = workflow_dispatch ]; then
+            node tools/game-development-qa-runner.mjs --all --run --output=/tmp/game-scoped-qa-report.json
+          else
+            node tools/game-development-qa-runner.mjs --changed-files=/tmp/changed-game-files.txt --run --output=/tmp/game-scoped-qa-report.json
+          fi
+      - name: Keep source, asset and per-game QA reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-games-development-connections
+          path: |
+            /tmp/game-development-connections.json
+            /tmp/game-scoped-qa-report.json
+          if-no-files-found: warn
+          retention-days: 7

@@ -1,0 +1,179 @@
+{
+  "version": 3,
+  "gameId": "block-blast",
+  "packageId": "com.block.juggle",
+  "sourceType": "EXTERNAL_COMMERCIAL_BLACK_BOX_MIXED_RUNTIME_EVIDENCE",
+  "authority": "PRACTICE_ONLY_MIXED_EVIDENCE",
+  "observedThrough": "2026-09-12",
+  "runtimePromotionAllowed": true,
+  "gameplayBehaviorPromotionAllowed": true,
+  "partialObservableDistillationAllowed": true,
+  "codeExtractionAllowed": false,
+  "binaryRedistributionAllowed": false,
+  "positiveTrainingSample": true,
+  "verifiedRuntimePass": true,
+  "stablePlaytestVerified": true,
+  "stablePlaytestBoundary": "CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY",
+  "gameEntryObserved": true,
+  "gameEntryEvidenceAuthority": "CORRELATED_GITHUB_ACTIONS_BLACK_BOX_EVIDENCE",
+  "gameEntryObservationRecordedAt": "2026-09-12",
+  "sourceEvidence": {
+    "privateRepository": "hans1177/jaewoon-ai-company",
+    "historyPath": "server-playtest/block-blast-experiment-history.md",
+    "latestCompletedRun": 34653320467,
+    "latestRunNumber": 30,
+    "latestArtifactId": 10284397608,
+    "latestArtifactDigest": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1",
+    "latestResult": "PASS",
+    "latestFailure": null,
+    "runtimeType": "REDROID_NATIVE_ARM64_DIRECT_EXEC",
+    "hostArch": "aarch64",
+    "guestAndroid": "14",
+    "guestAbi": "arm64-v8a",
+    "redroidImage": "redroid/redroid:14.0.0_64only-latest"
+  },
+  "verifiedObservedFacts": [
+    {
+      "id": "actual-game-entry-correlated",
+      "evidenceAuthority": "RUN_30_ARTIFACT",
+      "fact": "The commercial game reached the actual Block Blast tutorial board in the correlated server run.",
+      "boundary": "This is black-box observable game-entry evidence only and does not expose proprietary implementation details."
+    },
+    {
+      "id": "drag-input-changed-board-state",
+      "evidenceAuthority": "RUN_30_ARTIFACT",
+      "fact": "A drag input moved the visible blue piece from the lower piece area onto the tutorial board and changed the captured board state.",
+      "boundary": "Only the directly captured input-response behavior may be distilled; hidden placement algorithms or internal scoring logic are not inferred."
+    },
+    {
+      "id": "runtime-survived-observed-input",
+      "evidenceAuthority": "RUN_30_ARTIFACT",
+      "fact": "The package remained alive and foreground after exercised input with no captured FATAL EXCEPTION, SIGABRT, SIGSEGV or ANR marker.",
+      "boundary": "This proves the captured validation window, not indefinite long-run stability."
+    }
+  ],
+  "distilledPositiveRuntimePatterns": [
+    {
+      "id": "native-arm64-redroid-is-valid-free-server-route",
+      "scope": "android-runtime-compatibility",
+      "evidence": [30],
+      "lesson": "A GitHub-hosted native ARM64 runner can provide a working Android 14 Redroid runtime for this ARM64 commercial package when Android userspace boots with the container's own Binder devices.",
+      "reuseRule": "Prefer proven native-architecture execution over returning to an exhausted x86-to-ARM translation path when a native hosted runner is available."
+    },
+    {
+      "id": "separate-system-overlay-consent-and-game-entry",
+      "scope": "black-box-playtest-automation",
+      "evidence": [28, 30],
+      "lesson": "A workflow can satisfy process and foreground checks while still being blocked by an Android system overlay or first-run consent screen. Visual stage evidence is required before claiming gameplay entry.",
+      "reuseRule": "Capture and validate LAUNCH, CONSENT_OR_SYSTEM_OVERLAY, GAME_ENTRY and INPUT_RESPONSE as separate visual stages."
+    },
+    {
+      "id": "visual-state-change-plus-process-survival-strengthens-input-evidence",
+      "scope": "qa-evidence",
+      "evidence": [30],
+      "lesson": "Meaningful black-box input evidence is stronger when the post-input frame visibly changes in the expected interaction area while the target process remains alive and foreground.",
+      "reuseRule": "Do not treat injected input alone as gameplay evidence; bind input to a correlated visual state change and runtime survival check."
+    }
+  ],
+  "distilledPartialRuntimePatterns": [
+    {
+      "id": "preserve-partial-success-before-later-crash",
+      "scope": "qa-evidence",
+      "lesson": "If an app reaches the actual game before a later crash or compatibility failure, record both the successful game-entry boundary and the later failure boundary. Do not collapse the entire run into a statement that the game never entered.",
+      "reuseRule": "Track INSTALL, LAUNCH, GAME_ENTRY, INPUT_EXERCISE, STABILITY and CRASH as separate evidence stages."
+    },
+    {
+      "id": "game-entry-is-not-full-runtime-pass",
+      "scope": "runtime-evidence",
+      "lesson": "Actual game entry is meaningful positive partial runtime evidence even when the full stable-play gate is not satisfied.",
+      "reuseRule": "Require foreground ownership, process survival, exercised input and crash-free captured evidence before promoting game entry to runtimePass:true."
+    }
+  ],
+  "distilledFailurePatterns": [
+    {
+      "id": "android-hosted-x86-arm-translation-native-crash",
+      "scope": "android-runtime-compatibility",
+      "evidence": [5, 6, 16, 17],
+      "lesson": "A successful ARM64 split-APK install on an x86_64 Android guest does not prove sustained runtime compatibility. Native translation can still fail after launch or game entry in JNI/native-library or application initialization paths.",
+      "reuseRule": "Do not promote install or game-entry success to stable runtime success. Preserve the partial success boundary, then require process survival, foreground state and crash-free input evidence for full runtime pass."
+    },
+    {
+      "id": "adb-streaming-install-finalization-fragility",
+      "scope": "android-package-install",
+      "evidence": [15, 16],
+      "lesson": "Large split-APK streaming installs can fail at session finalization even when transfer appears complete; no-streaming materially changed the failure boundary and allowed installation to complete.",
+      "reuseRule": "When a split install fails at finalization or package-service transport, test a no-streaming path before changing Android API levels or application payload assumptions."
+    },
+    {
+      "id": "nested-virtualization-unavailable-on-hosted-macos-arm64",
+      "scope": "hosted-emulator-infrastructure",
+      "evidence": [14],
+      "lesson": "A native ARM64 CI host does not imply nested hardware virtualization is available to an Android ARM64 emulator.",
+      "reuseRule": "Probe acceleration capability before downloading or booting a large ARM64 system image; treat HV_UNSUPPORTED as an infrastructure blocker, not an app failure."
+    },
+    {
+      "id": "abi-list-and-native-bridge-must-be-proven",
+      "scope": "android-abi-validation",
+      "evidence": [13, 15],
+      "lesson": "Host architecture and guest architecture labels are insufficient. The guest must explicitly expose a compatible ABI or a proven native bridge before package installation is treated as meaningful runtime evidence.",
+      "reuseRule": "Gate ARM64 package installation on observed guest ABI compatibility instead of host labels alone."
+    },
+    {
+      "id": "hosted-arm64-binder-ready-does-not-guarantee-redroid-boot",
+      "scope": "android-container-runtime",
+      "evidence": [18, 19, 20],
+      "lesson": "On GitHub-hosted ubuntu-24.04-arm, native aarch64, 4K pages, Docker availability and Binder devices can all be valid while Redroid userspace still fails to boot if the Android container/device setup is wrong.",
+      "reuseRule": "Separate host-capability PASS from Android-userspace-boot PASS and preserve boot diagnostics before changing the app payload."
+    },
+    {
+      "id": "ephemeral-transfer-expiry-is-not-runtime-regression",
+      "scope": "artifact-transfer",
+      "evidence": [29],
+      "lesson": "A one-use or short-lived proprietary APK transfer URL may expire after Android runtime preparation succeeds. That failure must be classified as transfer infrastructure, not application runtime regression.",
+      "reuseRule": "Refresh only the ephemeral transfer reference while preserving the package hash and already-proven runtime configuration."
+    },
+    {
+      "id": "avoid-random-api-cycling-after-repeated-class-failure",
+      "scope": "experiment-strategy",
+      "evidence": [5, 6, 13, 15, 16, 17, 20],
+      "lesson": "Repeated failures sharing the same compatibility class should narrow the search space instead of causing random Android API cycling.",
+      "reuseRule": "After two or more materially similar failures, require a new hypothesis or infrastructure capability before retrying another API/image variant."
+    },
+    {
+      "id": "runtime-pass-evidence-gate",
+      "scope": "qa-evidence",
+      "evidence": [4, 5, 6, 15, 16, 17, 20, 28, 30],
+      "lesson": "Install PASS, process creation or injected input are staged evidence but are not individually equivalent to verified gameplay runtime. Run 30 demonstrates the complete gate with correlated visual game entry, meaningful input response, foreground/process survival and no captured fatal crash or ANR.",
+      "reuseRule": "runtimePass:true requires launch, foreground ownership, process survival, input exercise, correlated game-entry evidence and absence of fatal exception/native crash/ANR in the captured evidence window."
+    }
+  ],
+  "routeDecisions": {
+    "x86ArmTranslation": "EXHAUSTED_FOR_STABLE_RUNTIME_UNLESS_NEW_MATERIAL_EVIDENCE",
+    "hostedMacArm64Emulator": "BLOCKED_BY_NESTED_HVF",
+    "githubHostedArm64Redroid": "VERIFIED_WORKING_ANDROID14_NATIVE_ARM64_RUN30",
+    "localPc": "FORBIDDEN_BY_OWNER_FOR_THIS_FLOW",
+    "paidRunnerOrPaidCloud": "FORBIDDEN_BY_OWNER_FOR_THIS_FLOW"
+  },
+  "learningUse": {
+    "allowed": [
+      "runtime-infrastructure failure classification",
+      "ABI/native-bridge preflight design",
+      "split-APK install recovery strategy",
+      "host capability versus guest readiness separation",
+      "staged runtime evidence gating",
+      "partial success boundary preservation",
+      "actual launch/game-entry fact distillation",
+      "directly observed tutorial-board interaction",
+      "directly observed drag-input response and visible state change",
+      "failure-to-next-experiment decision quality",
+      "positive gameplay pattern distillation limited to directly captured black-box behavior"
+    ],
+    "stillForbidden": [
+      "source-code or internal algorithm extraction",
+      "asset extraction or redistribution",
+      "hidden scoring/economy inference not present in captured evidence",
+      "long-run retention or pacing claims not measured by this validation window",
+      "copying proprietary names, artwork, trade dress or implementation details into a new game"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+[{"type": "wait", "ms": 8000}, {"type": "capture", "name": "title"}, {"type": "luau", "ctx": "Client", "code": "local o={} for _,d in ipairs(game.Players.LocalPlayer.PlayerGui:GetDescendants()) do if d.Name==\"MeadowTitle\" then table.insert(o,tostring(d.Visible)..\" \"..tostring(d.AbsoluteSize)) end end return table.concat(o,\";\")"}]

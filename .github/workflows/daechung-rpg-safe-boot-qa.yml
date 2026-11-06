@@ -1,0 +1,31 @@
+name: Daechung RPG Safe Boot QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'web-games/daechung-rpg/**'
+      - 'sw.js'
+      - 'qa/daechung-rpg-safe-boot.test.mjs'
+      - '.github/workflows/daechung-rpg-safe-boot-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'web-games/daechung-rpg/**'
+      - 'sw.js'
+      - 'qa/daechung-rpg-safe-boot.test.mjs'
+      - '.github/workflows/daechung-rpg-safe-boot-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  safe-boot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Daechung RPG safe boot
+        run: |
+          set -euo pipefail
+          node --check sw.js
+          node --test qa/daechung-rpg-safe-boot.test.mjs
+          echo 'DAECHUNG_RPG_SAFE_BOOT=PASS'
