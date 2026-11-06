@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Luau
         run: |
-          curl -fsSL --retry 3 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.700/luau-ubuntu.zip || curl -fsSL --retry 3 -o /tmp/luau.zip https://github.com/Roblox/luau/releases/latest/download/luau-ubuntu.zip
+          curl -fsSL --retry 3 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
           mkdir -p /tmp/luau && unzip -q /tmp/luau.zip -d /tmp/luau && chmod +x /tmp/luau/*
       - name: Asset registration gate
         run: python3 roblox-games/mare-scientia/tools/devloop/asset_check.py roblox-games/mare-scientia
