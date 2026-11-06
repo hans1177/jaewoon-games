@@ -141,14 +141,10 @@ function Pose.walkR15(model, phase, moving)
 	local motors = rigMotors[model]
 	if not motors then return end
 	local stride = if moving then math.sin(phase) * 0.48 else 0
-	for _, pair in {
-		{ motors.leftArm, -stride }, { motors.rightArm, stride },
-		{ motors.leftLeg, stride }, { motors.rightLeg, -stride },
-	} do
-		if pair[1] and pair[1]:IsA("Motor6D") then
-			pair[1].Transform = CFrame.Angles(pair[2], 0, 0)
-		end
-	end
+	if motors.leftArm then motors.leftArm.Transform = CFrame.Angles(-stride, 0, 0) end
+	if motors.rightArm then motors.rightArm.Transform = CFrame.Angles(stride, 0, 0) end
+	if motors.leftLeg then motors.leftLeg.Transform = CFrame.Angles(stride, 0, 0) end
+	if motors.rightLeg then motors.rightLeg.Transform = CFrame.Angles(-stride, 0, 0) end
 end
 
 return Pose
