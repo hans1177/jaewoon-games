@@ -20,7 +20,12 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=60 cam.CFrame=CFrame.lookAt(Vector3.new(-90,330,1),Vector3.new(-90,0,0),Vector3.new(0,1,0)) return \"ok\""
+  "code": "local RS=game:GetService(\"RunService\") pcall(function() RS:UnbindFromRenderStep(\"MareShot\") end) RS:BindToRenderStep(\"MareShot\",Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute(\"ShotCF\") if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute(\"ShotFov\") or 65 end end) return \"bound\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",60) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-90,330,1),Vector3.new(-90,0,0),Vector3.new(0,1,0))) return \"ok\""
  },
  {
   "type": "wait",
@@ -33,7 +38,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=65 cam.CFrame=CFrame.lookAt(Vector3.new(25,28,0),Vector3.new(-40,4,0),Vector3.new(0,1,0)) return \"ok\""
+  "code": "workspace:SetAttribute(\"ShotFov\",65) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(25,28,0),Vector3.new(-40,4,0),Vector3.new(0,1,0))) return \"ok\""
  },
  {
   "type": "wait",
@@ -46,7 +51,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=70 cam.CFrame=CFrame.lookAt(Vector3.new(-55,7,0),Vector3.new(-150,9,0),Vector3.new(0,1,0)) return \"ok\""
+  "code": "workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-55,7,0),Vector3.new(-150,9,0),Vector3.new(0,1,0))) return \"ok\""
  },
  {
   "type": "wait",
@@ -59,7 +64,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=65 cam.CFrame=CFrame.lookAt(Vector3.new(28,16,-34),Vector3.new(62,2,8),Vector3.new(0,1,0)) return \"ok\""
+  "code": "workspace:SetAttribute(\"ShotFov\",65) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(28,16,-34),Vector3.new(62,2,8),Vector3.new(0,1,0))) return \"ok\""
  },
  {
   "type": "wait",
@@ -72,7 +77,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=65 cam.CFrame=CFrame.lookAt(Vector3.new(45,95,95),Vector3.new(-80,0,-10),Vector3.new(0,1,0)) return \"ok\""
+  "code": "workspace:SetAttribute(\"ShotFov\",65) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(45,95,95),Vector3.new(-80,0,-10),Vector3.new(0,1,0))) return \"ok\""
  },
  {
   "type": "wait",
@@ -85,7 +90,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=70 cam.CFrame=CFrame.lookAt(Vector3.new(-70,9,87),Vector3.new(-150,9,87),Vector3.new(0,1,0)) return \"ok\""
+  "code": "workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-70,9,87),Vector3.new(-150,9,87),Vector3.new(0,1,0))) return \"ok\""
  },
  {
   "type": "wait",
@@ -98,7 +103,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=70 cam.CFrame=CFrame.lookAt(Vector3.new(-185,45,0),Vector3.new(-100,0,0),Vector3.new(0,1,0)) return \"ok\""
+  "code": "workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-185,45,0),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return \"ok\""
  },
  {
   "type": "wait",
