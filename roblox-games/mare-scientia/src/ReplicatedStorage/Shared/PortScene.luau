@@ -246,8 +246,10 @@ local function villager(parent, pos, facing, coat, rng, role)
 	return m
 end
 
-local function house(parent, pos, w, d, floors, style, rng)
-	local mesh = importedModel(parent, "Town", "house", pos, math.max(w, d), true)
+local function house(parent, pos, w, d, floors, style, rng, wallColor)
+	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
+	local tintColor = wallColor or style.walls[rng:NextInteger(1, #style.walls)]
+	local mesh = importedModel(parent, "Town", "house", pos, math.max(w, d), true, tintColor)
 	if mesh then
 		mesh.Name = "HarborHouse"
 		return mesh:FindFirstChildWhichIsA("BasePart", true)
@@ -498,6 +500,14 @@ function PortScene.build(info, onFacility)
 	-- 광장
 	part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), style.street, Enum.Material.Cobblestone)
 	part(folder, Vector3.new(130, 0.25, 10), CFrame.new(-80, 0.13, 0), style.street, Enum.Material.Cobblestone)
+	-- 시설 앞 큰 광장과 주택가 골목: 동선이 눈에 보이도록 돌바닥을 깐다
+	part(folder, Vector3.new(96, 0.3, 50), CFrame.new(-34, 0.14, 0), style.street, Enum.Material.Cobblestone)
+	for _, sz in { 57, -57 } do
+		part(folder, Vector3.new(120, 0.25, 6), CFrame.new(-92, 0.12, sz), style.street, Enum.Material.Cobblestone)
+	end
+	for _, sx in { -50, -90, -130 } do
+		part(folder, Vector3.new(5, 0.25, 130), CFrame.new(sx, 0.12, 0), style.street, Enum.Material.Cobblestone)
+	end
 	-- 광장 분수도 CC0 수입 메쉬 우선
 	if true then
 		part(folder, Vector3.new(2, 8, 8), CFrame.new(-8, 1, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
@@ -516,8 +526,7 @@ function PortScene.build(info, onFacility)
 	}
 	for _, f in facilities do
 		if f.always or (f.key and fac[f.key]) then
-			local body = house(folder, f.pos, f.w, f.d, f.floors, style, rng)
-			body.Color = f.color
+			local body = house(folder, f.pos, f.w, f.d, f.floors, style, rng, f.color)
 			-- 문이 광장(가운데 길) 쪽을 보도록: 위쪽 줄은 -Z, 아래쪽 줄은 +Z 방향 입구
 			local doorZ = if f.pos.Z > 0 then f.pos.Z - f.d / 2 - 2 else f.pos.Z + f.d / 2 + 2
 			sign(folder, body, f.name, nil, f.floors * 3 + 6)
@@ -533,8 +542,7 @@ function PortScene.build(info, onFacility)
 			part(folder, Vector3.new(0.8, 8, 0.8), CFrame.new(14 + i * 3, 4.5, -48) * CFrame.Angles(math.rad(90), 0, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
 		end
 		part(folder, Vector3.new(22, 1, 1), CFrame.new(23, 1.6, -48), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
-		local shed = house(folder, Vector3.new(0, 0, -50), 14, 12, 2, style, rng)
-		shed.Color = Color3.fromRGB(110, 90, 70)
+		local shed = house(folder, Vector3.new(0, 0, -50), 14, 12, 2, style, rng, Color3.fromRGB(150, 118, 84))
 		sign(folder, shed, "조선소", Color3.fromRGB(90, 60, 30), 12)
 		prompt(folder, Vector3.new(8, 3, -50), "조선소", "들어가기", "yard", onFacility)
 	end
