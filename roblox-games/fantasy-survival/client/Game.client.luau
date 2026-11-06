@@ -3096,7 +3096,7 @@ renderTree=function()
       "\n최종 강화: "..branchText..(rank==3 and " · 선택 "..choice or "")
     local isActive=node.Kind=="ACTIVE"
     local learned=rank>0
-    nodeQuick.Visible=isActive;nodeUse.Visible=isActive;nodePreview.Visible=isActive
+    nodeQuick.Visible=false;nodeUse.Visible=isActive;nodePreview.Visible=isActive
     nodeQuick.Text=learned and "퀵슬롯 등록" or "잠김";nodeUse.Text=learned and "바로 사용" or "잠김"
     nodeQuick.Active=learned;nodeUse.Active=learned
     learnA.Visible=true;learnB.Visible=rank==2
@@ -3177,7 +3177,7 @@ skillUse.BackgroundColor3=Color3.fromRGB(98,65,45);skillUse.Parent=skillDetail
 -- [스킬 장착] 선택한 기술을 화면 하단 다섯 칸에 등록·교체한다.
 local skillQuick=CommonUI.CreatePrimaryButton({name="RegisterQuickSkill",text="퀵슬롯 등록",minHeight=52})
 skillQuick.Position=UDim2.new(1/3,2,0,134);skillQuick.Size=UDim2.new(1/3,-8,0,52)
-skillQuick.BackgroundColor3=Color3.fromRGB(46,86,98);skillQuick.Parent=skillDetail
+skillQuick.BackgroundColor3=Color3.fromRGB(46,86,98);skillQuick.Parent=skillDetail;skillQuick.Visible=false
 local ultToggle=CommonUI.CreatePrimaryButton({name="UltimateVariant",text="변형 A",minHeight=30})
 ultToggle.Position=UDim2.new(1,-112,0,7);ultToggle.Size=UDim2.fromOffset(100,30)
 ultToggle.BackgroundColor3=Color3.fromRGB(110,78,40);ultToggle.Visible=false;ultToggle.Parent=skillDetail
@@ -3316,7 +3316,7 @@ do
   skillGrid.LayoutOrder=4
   skillDetail.LayoutOrder=5
   local dz=meadowPages[7]:FindFirstChild("QuickSlotDrop")
-  if dz then dz.LayoutOrder=1;dz.Visible=true end
+  if dz then dz.LayoutOrder=1;dz.Visible=false end
   meadowPages[7].CanvasPosition=Vector2.new(0,0)
 end
 -- [각인] 무기 룬 선택 줄. 서버가 재료·코인을 검증하고 적용한다.
@@ -3479,6 +3479,7 @@ do
     row.button.InputBegan:Connect(function(input)
       local kind=input.UserInputType
       if kind~=Enum.UserInputType.Touch and kind~=Enum.UserInputType.MouseButton1 then return end
+      if not tray.Visible then return end
       drag={input=input,row=row,start=Vector2.new(input.Position.X,input.Position.Y),moved=false}
     end)
   end
@@ -3510,7 +3511,7 @@ do
   meadowActionButtons.refreshDrop=refreshDrop
   meadowArt.refreshQuickTray=refreshDrop
   meadowArt.assignQuick=assign
-  tray.Visible=true -- 기본 전투 기술 탭에서 장착칸을 바로 보여 준다.
+  tray.Visible=false -- 장착은 하단 퀵슬롯의 '편집'에서만 한다.
 end
 skillQuick.Activated:Connect(function()
   if not selectedSkill then return end
@@ -3750,7 +3751,7 @@ local function layoutMeadowJournal()
   trackerDetail.Visible=not folded;trackerVillage.Visible=not folded;trackerCompanion.Visible=not folded
   local foldBtn=gui:FindFirstChild("QuestFoldButton")
   if foldBtn then
-    foldBtn.Text=folded and "▸ 펼치기" or "▾ 접기"
+    foldBtn.Text=folded and "펼치기" or "접기"
     foldBtn.Size=UDim2.fromOffset(compact and 62 or 70,compact and 22 or 26)
     foldBtn.Position=UDim2.fromOffset(questLeft+width-4,questTop+(folded and 3 or 4))
     foldBtn.Visible=questTracker.Visible
@@ -3778,7 +3779,7 @@ do
   fold.Name="QuestFoldButton";fold.AnchorPoint=Vector2.new(1,0);fold.Position=UDim2.fromOffset(0,0)
   fold.Size=UDim2.fromOffset(70,26);fold.AutomaticSize=Enum.AutomaticSize.None;fold.BackgroundColor3=Color3.fromRGB(34,52,44);fold.BackgroundTransparency=.08
   fold.BorderSizePixel=0;fold.AutoButtonColor=true;fold.Font=Enum.Font.GothamMedium;fold.TextSize=13;fold.TextWrapped=false;fold.TextColor3=Color3.fromRGB(245,236,200)
-  fold.Text="▾ 접기";fold.ZIndex=questTracker.ZIndex+8;fold.Parent=gui
+  fold.Text="접기";fold.ZIndex=questTracker.ZIndex+8;fold.Parent=gui
   Instance.new("UICorner",fold).CornerRadius=UDim.new(0,8)
   local foldStroke=Instance.new("UIStroke");foldStroke.Color=Color3.fromRGB(220,176,91);foldStroke.Thickness=1.2;foldStroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;foldStroke.Parent=fold
   local foldLimit=Instance.new("UISizeConstraint");foldLimit.MaxSize=Vector2.new(80,30);foldLimit.Parent=fold
@@ -12062,23 +12063,7 @@ end)()
     local timer=Instance.new("TextLabel")
     timer.BackgroundTransparency=1;timer.Size=UDim2.fromScale(1,1);timer.Font=Enum.Font.GothamBlack;timer.TextSize=18
     timer.TextColor3=Color3.new(1,1,1);timer.Text="";timer.ZIndex=35;timer.Parent=slot
-    -- 길게 누르거나(편집 모드면 그냥 눌러서) 무엇을 넣을지 고른다.
-    slot.InputBegan:Connect(function(input)
-      if input.UserInputType~=Enum.UserInputType.Touch and input.UserInputType~=Enum.UserInputType.MouseButton1 then return end
-      holdToken[i]=(holdToken[i] or 0)+1
-      local token=holdToken[i]
-      task.delay(.55,function()
-        if holdToken[i]==token and input.UserInputState~=Enum.UserInputState.End then
-          holdFired[i]=true
-          if openQuickPicker then openQuickPicker(i) end
-        end
-      end)
-    end)
-    slot.InputEnded:Connect(function(input)
-      if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then
-        holdToken[i]=(holdToken[i] or 0)+1
-      end
-    end)
+    -- 칸 교체는 '편집' 모드에서만 한다(길게 눌러 고르기 기능은 제거).
     slot.Activated:Connect(function()
       if holdFired[i] then holdFired[i]=false return end
       if quickEditMode then if openQuickPicker then openQuickPicker(i) end return end
@@ -12533,6 +12518,8 @@ end)()
     {"전투 버튼","큰 칼 = 공격 · 방패 = 막기 · 소용돌이 = 회피 · 질주 = 자동질주 ON/OFF",function() return Vector2.new(guiRoot.AbsoluteSize.X*.9,guiRoot.AbsoluteSize.Y*.72),"left" end,nil},
     {"퀵슬롯","아래 1~5칸을 누르면 바로 써. '편집'을 눌러 칸을 바꿀 수 있어.",function()
       local bar=player.PlayerGui:FindFirstChild("MeadowQuickBar",true)
+      local edit=bar and (bar:FindFirstChild("QuickEdit",true) or findText("TextButton","편집"))
+      if edit and edit.AbsoluteSize.X>0 then return Vector2.new(edit.AbsolutePosition.X+edit.AbsoluteSize.X/2,edit.AbsolutePosition.Y),"down" end
       if bar and bar.AbsoluteSize.X>0 then return Vector2.new(bar.AbsolutePosition.X+bar.AbsoluteSize.X/2,bar.AbsolutePosition.Y),"down" end
       return Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.88),"down"
     end,nil},
@@ -12540,14 +12527,25 @@ end)()
     {"길 안내 켜고 끄기","지도 왼쪽 '길 안내' 버튼을 눌러 봐. 끄면 표시가 사라지고, 다시 누르면 켜져.",function() local c=guideChip.Visible and center(guideChip) or nil;return c,"up" end,"guide"},
     {"메뉴 열기","오른쪽 위 '가방'을 눌러 메뉴를 열어 봐.",function() local l=findText("TextLabel","가방");return l and (center(l)+Vector2.new(0,-26)) or Vector2.new(guiRoot.AbsoluteSize.X*.62,40),"up" end,"menu"},
     {"스킬 탭","메뉴 아래쪽 탭에서 '스킬'을 눌러.",function() local t=findText("TextButton","스킬");return t and center(t) or nil,"down" end,"skillpage"},
-    {"기술 배우기","금색 칸(무술)을 눌러 고르고 '습득!'을 눌러. 첫 점수는 선물이야!",function()
-      local branch=player.PlayerGui:FindFirstChild("TalentBranch_Martial",true)
-      local n=branch and branch:FindFirstChild("TalentNode1")
-      local learn=findText("TextButton","습득! 바로 적용")
-      if learn then return center(learn),"down" end
-      return n and center(n) or nil,"down"
+    {"기술 배우기","금색 칸(무술 첫 기술)을 눌러 고르고 '습득'을 눌러. 첫 점수는 선물이야!",function()
+      local function shown(o)
+        while o and o:IsA("GuiObject") do
+          if not o.Visible then return false end
+          o=o.Parent
+        end
+        return true
+      end
+      local learn=player.PlayerGui:FindFirstChild("SkillNodeLearnA",true)
+      if learn and learn.AbsoluteSize.X>0 and shown(learn) and not tostring(learn.Text):find("잠김") then return center(learn),"down" end
+      local node=player.PlayerGui:FindFirstChild("TalentNode_1",true)
+      if node and node.AbsoluteSize.X>0 and shown(node) then return center(node),"down" end
+      return nil,"down"
     end,"learned"},
-    {"퀵슬롯 등록","잘했어! 배운 기술은 스킬창의 '퀵슬롯 등록'으로 칸에 넣으면 바로 쓸 수 있어.",function() local t=findText("TextButton","퀵슬롯 등록");return t and center(t) or nil,"down" end,nil},
+    {"퀵슬롯 편집","잘했어! 메뉴를 닫고 아래 '편집'을 누르면 칸마다 기술·약·무기를 바꿀 수 있어.",function()
+      local edit=player.PlayerGui:FindFirstChild("QuickEdit",true)
+      if edit and edit.AbsoluteSize.X>0 and not menuOpen() then return Vector2.new(edit.AbsolutePosition.X+edit.AbsoluteSize.X/2,edit.AbsolutePosition.Y),"down" end
+      return nil,"down"
+    end,nil},
     {"시작!","이제 노란 ▼ 표시를 따라 모험을 시작해! 메뉴는 오른쪽 위 설정 옆 '도우미'에서 다시 볼 수 있어.",function() return nil,"down" end,nil},
   }
   local card=Instance.new("Frame")
@@ -12621,15 +12619,22 @@ end)()
     elseif cond=="skillpage" and skillPageOpen() then show(current+1) return
     elseif cond=="learned" and anyTalent() then show(current+1) return end
     -- 메뉴가 닫히면 메뉴 단계로 되돌린다.
-    if (cond=="skillpage" or cond=="learned" or steps[current][1]=="퀵슬롯 등록") and not menuOpen() then show(idx("메뉴 열기")) return end
+    if (cond=="skillpage" or cond=="learned") and not menuOpen() then show(idx("메뉴 열기")) return end
     if cond=="learned" and not skillPageOpen() then show(idx("스킬 탭")) return end
     -- 카드 위치: 평소엔 위쪽(퀵슬롯·버튼을 안 가림), 메뉴가 열려 있으면 아래쪽.
     local radar=player.PlayerGui:FindFirstChild("MeadowExplorerRadar",true)
     if menuOpen() then
-      card.AnchorPoint=Vector2.new(.5,1);card.Position=UDim2.new(.5,0,1,-14);card.BackgroundTransparency=.3
+      -- 메뉴창(스킬 칸)을 가리지 않도록 화면 맨 위에 작게 붙인다.
+      card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,0,2);card.BackgroundTransparency=.25
+      card.Size=UDim2.fromOffset(460,nextBtn.Visible and 92 or 62)
+      ctitle.TextSize=15;ctitle.Size=UDim2.new(1,0,0,20)
+      cbody.TextSize=13;cbody.Position=UDim2.fromOffset(0,20);cbody.Size=UDim2.new(1,0,0,38)
     else
       local y=radar and (radar.AbsolutePosition.Y+radar.AbsoluteSize.Y-guiRoot.AbsolutePosition.Y+6) or 84
       card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,0,y);card.BackgroundTransparency=1
+      card.Size=UDim2.fromOffset(460,132)
+      ctitle.TextSize=19;ctitle.Size=UDim2.new(1,0,0,26)
+      cbody.TextSize=17;cbody.Position=UDim2.fromOffset(0,28);cbody.Size=UDim2.new(1,0,0,66)
     end
     local pos,dir=s[3]()
     if pos then
