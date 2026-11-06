@@ -471,7 +471,7 @@ local Config = {
     Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0, Steel = 0, Meat = 0, Feather = 0, MeadowGuide = 0, ArmorTier = 0, SmithXp = 0, QLSmith = 0, QLSmithP = 0, QLSmith2 = 0, QLSmith2P = 0, QLSmith3 = 0, QLSmith3P = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
-    MeadowGearOwned=2705,MeadowGearOwned2=0,MeadowGearOwned3=0,
+    MeadowGearOwned=2705,MeadowGearOwned2=0,MeadowGearOwned3=0,MeadowGearOwned4=0,
     MeadowEquipWeapon=1,MeadowEquipChest=5,MeadowEquipHands=8,
     MeadowEquipLegs=10,MeadowEquipFeet=12,MeadowEquipCape=0,MeadowEquipAccessory=0,MeadowEquipShield=0,
     MeadowPotionHealth=0,MeadowPotionStamina=0,
@@ -484,7 +484,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, EstateA = 0, EcoChestMask = 0, EcoChestMask2 = 0, EcoChestMask3 = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, LandmarkClaim = 0, TrackFlags = 0, QLWind = 0, QLWindP = 0, QLWindC = 0, QLHunt = 0, QLHuntP = 0, QLHuntC = 0, QLBog = 0, QLBogP = 0, QLBogC = 0, QLRoot = 0, QLRootP = 0, QLRootC = 0, QLTrack1 = 0, QLTrack1P = 0, QLTrack1C = 0, QLTrack2 = 0, QLTrack2P = 0, QLTrack2C = 0, QLTrack3 = 0, QLTrack3P = 0, QLTrack3C = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, EstateA = 0, EstateB = 0, EstateC = 0, EcoChestMask = 0, EcoChestMask2 = 0, EcoChestMask3 = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, LandmarkClaim = 0, TrackFlags = 0, QLWind = 0, QLWindP = 0, QLWindC = 0, QLHunt = 0, QLHuntP = 0, QLHuntC = 0, QLBog = 0, QLBogP = 0, QLBogC = 0, QLRoot = 0, QLRootP = 0, QLRootC = 0, QLTrack1 = 0, QLTrack1P = 0, QLTrack1C = 0, QLTrack2 = 0, QLTrack2P = 0, QLTrack2C = 0, QLTrack3 = 0, QLTrack3P = 0, QLTrack3C = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -1277,6 +1277,21 @@ end
 -- 건물은 등록된 CC0 모델만 쓴다. Cost는 코인·주괴·가죽.
 Config.Estate = {
   Slots = 5,
+  -- 내실 가구 5칸(EstateB, 칸당 4비트)과 동료 자리 3칸(EstateC, 자리당 5비트).
+  Furniture = {
+    {Name = "전시 상자", Key = "vxChest", Height = 2.6, Coins = 150},
+    {Name = "성배 받침", Key = "item_chalice", Height = 2.2, Coins = 250},
+    {Name = "보급 배낭", Key = "item_backpack", Height = 2.4, Coins = 120},
+    {Name = "두루마리 서가", Key = "item_scroll", Height = 2, Coins = 180},
+    {Name = "전리품 해골", Key = "item_skull", Height = 2.2, Coins = 200},
+    {Name = "벽 횃불", Key = "item_torch", Height = 5, Coins = 100},
+    {Name = "금괴 더미", Key = "item_gold_ingots", Height = 2, Coins = 400},
+    {Name = "광석 진열대", Key = "item_mineral", Height = 2.4, Coins = 220},
+    {Name = "작업대", Key = "vxWorkbench", Height = 3, Coins = 300, Ingot = 1},
+    {Name = "식탁 접시", Key = "vxPlate", Height = 1.4, Coins = 80},
+    {Name = "주머니 선반", Key = "item_pouch", Height = 2, Coins = 90},
+    {Name = "주막 화덕", Key = "vxCampfirePit", Height = 3, Coins = 150},
+  },
   Catalog = {
     {Name = "농가 별채", Key = "villageHouseA", Height = 12, Coins = 600, Ingot = 2},
     {Name = "관리인 저택", Key = "villageHouseB", Height = 13, Coins = 1000, Ingot = 3, Leather = 2},

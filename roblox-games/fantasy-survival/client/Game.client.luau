@@ -2465,7 +2465,7 @@ local selectedKey="Wood"
 local category="전체"
 local function owned(item)
   if item.gear then
-    local mask=math.max(0,tonumber(player:GetAttribute(item.index>64 and "MeadowGearOwned3" or item.index>32 and "MeadowGearOwned2" or "MeadowGearOwned")) or 0)
+    local mask=math.max(0,tonumber(player:GetAttribute(item.index>96 and "MeadowGearOwned4" or item.index>64 and "MeadowGearOwned3" or item.index>32 and "MeadowGearOwned2" or "MeadowGearOwned")) or 0)
     return bit32.band(mask,bit32.lshift(1,(item.index-1)%32))~=0 and 1 or 0
   end
   if item.tonic then
@@ -2781,7 +2781,7 @@ if player.Character then
 end
 for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Ingot","Steel","Meat","Feather","SmithXp","Leather","Coins","ResearchRecords","ProfileReady","MeadowGearOwned","MeadowGearOwned2",
   "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
-  "MeadowEquipAccessory","MeadowEquipCape","MeadowEquipShield","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
+  "MeadowGearOwned3","MeadowGearOwned4","MeadowEquipAccessory","MeadowEquipCape","MeadowEquipShield","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)
 end
 renderInventory()

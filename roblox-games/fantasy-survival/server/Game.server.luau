@@ -3020,12 +3020,12 @@ local meadowRpg=(function()
   for _,item in ipairs(tonics)do tonicById[item.Id]=item end
   -- 장비 33번째부터는 두 번째 비트마스크(MeadowGearOwned2)에 저장한다.
   local function hasGear(player,index)
-    local field=index>64 and "MeadowGearOwned3" or index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
+    local field=index>96 and "MeadowGearOwned4" or index>64 and "MeadowGearOwned3" or index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
     local mask=math.max(0,readNumber(player,field,0))
     return bit32.band(mask,bit32.lshift(1,(index-1)%32))~=0
   end
   local function grantGear(player,index)
-    local field=index>64 and "MeadowGearOwned3" or index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
+    local field=index>96 and "MeadowGearOwned4" or index>64 and "MeadowGearOwned3" or index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
     setNumber(player,field,bit32.bor(math.max(0,readNumber(player,field,0)),bit32.lshift(1,(index-1)%32)))
   end
   local function equipped(player,slot)
@@ -3486,7 +3486,7 @@ local function refreshCapeTint(player)
 end
 local function watchArmorVisual(player)
   player:GetAttributeChangedSignal("MeadowEquipChest"):Connect(function() refreshArmorVisual(player) end)
-  for _,attribute in ipairs({"MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet","MeadowGearOwned","MeadowGearOwned2","MeadowGearOwned3"}) do
+  for _,attribute in ipairs({"MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet","MeadowGearOwned","MeadowGearOwned2","MeadowGearOwned3","MeadowGearOwned4"}) do
     player:GetAttributeChangedSignal(attribute):Connect(function() refreshGearVisuals(player) end)
   end
   player:GetAttributeChangedSignal("MeadowEquipCape"):Connect(function() refreshCapeTint(player) end)
@@ -3500,6 +3500,7 @@ local function watchBowVisual(player)
   player:GetAttributeChangedSignal("MeadowEquipWeapon"):Connect(function() refreshBowVisual(player) end)
   player:GetAttributeChangedSignal("MeadowGearOwned2"):Connect(function() refreshBowVisual(player) end)
   player:GetAttributeChangedSignal("MeadowGearOwned3"):Connect(function() refreshBowVisual(player) end)
+  player:GetAttributeChangedSignal("MeadowGearOwned4"):Connect(function() refreshBowVisual(player) end)
   player:GetAttributeChangedSignal("MeadowEquipShield"):Connect(function() refreshBowVisual(player) end)
   player:GetAttributeChangedSignal("MeadowSkillBits3"):Connect(function() refreshBowVisual(player) end)
   player.CharacterAdded:Connect(function() task.wait(1.5);refreshBowVisual(player) end)
@@ -7904,8 +7905,26 @@ do
       mobs={"rogue","roguehooded","rogue","tribal","roguehooded"},tier=6},
     {name="심연의 제단",entry=12,cx=8800,boss={"demon","제단의 군주 · 심연 악마",8,5},
       mobs={"demon","skullorc","assassin","demon","skullorc"},tier=8},
+    -- [지역 던전 8곳] 새 이정표(25~32)가 입구. 지역 괴물 테마의 보스와 전용 보상을 가진다.
+    {name="지룡의 보물 동굴",entry=25,cx=9200,anchor={1580,-1760},boss={"trex","비늘 수호룡 · 파프니르의 그림자",9,5},
+      mobs={"triceratops","bladespider","triceratops","bladespider","skullorc"},tier=7,loot={Claw=4,Steel=1,Hide=4}},
+    {name="서리 폐광",entry=26,cx=9600,anchor={-820,-1720},boss={"yeti","폐광의 왕 · 서리 거인",9,4.5},
+      mobs={"goblinscout","goblin","yeti","goblin","goblinscout"},tier=6,loot={Ore=6,Feather=3,Hide=4}},
+    {name="히드라의 독굴",entry=27,cx=10000,anchor={-660,1720},boss={"stegosaurus","머리 아홉의 히드라 · 독굴의 어미",9,5},
+      mobs={"parasaur","toad","snake","parasaur","toad"},tier=6,loot={Fang=5,Moonbloom=4,Hide=3}},
+    {name="뿌리 밑 거미 둥지",entry=28,cx=10400,anchor={1200,10},boss={"spider","거미 여왕 아라크네의 분신",9,5},
+      mobs={"spider","fangspider","wasp","spider","fangspider"},tier=7,loot={Fang=5,Moonbloom=4,Crystal=2}},
+    {name="잊힌 사막 무덤",entry=29,cx=10800,anchor={3620,-70},boss={"skwarrior","무덤의 파수장 · 파라오 수호병",8,4.5},
+      mobs={"skwarrior","assassin","snakeangry","skminion","skwarrior"},tier=8,loot={Crystal=4,Hide=4,Feather=3}},
+    {name="독버섯 동굴",entry=30,cx=11200,anchor={4800,10},boss={"mushroomking","동굴의 독버섯 왕",7,4.5},
+      mobs={"glub","toad","glub","snake","toad"},tier=8,loot={Moonbloom=6,Ectoplasm=3,Crystal=2}},
+    {name="서리 마귀 동굴",entry=31,cx=11600,anchor={4330,-1640},boss={"frostfiend","마귀 군주 · 서리 심연",10,5},
+      mobs={"frostfiend","demon","spiritgolem","frostfiend","demon"},tier=10,loot={Ectoplasm=4,Crystal=4,Magma=3}},
+    {name="성채 지하 감옥",entry=32,cx=12000,anchor={5850,40},boss={"knight","지하 감옥의 간수장",9,5},
+      mobs={"skullorc","skwarrior","demon","skullorc","skwarrior"},tier=10,loot={Steel=2,Ingot=4,Crystal=4}},
   }
   local anchors={{1800,300},{3200,800},{4900,700}}
+  for i=4,#dungeons do anchors[i]=dungeons[i].anchor end
   local drops={spider={{"Fang",.6},{"Ectoplasm",.3}},fangspider={{"Fang",.6}},bladespider={{"Fang",.5},{"Claw",.4}},
     goblin={{"Ore",.4},{"Mushroom",.3}},goblinscout={{"Hide",.4}},tribal={{"Moonbloom",.4},{"Ore",.3}},
     demon={{"Magma",.6},{"Crystal",.4}},skullorc={{"Ore",.6},{"Magma",.3}},assassin={{"Claw",.6},{"Crystal",.3}}}
@@ -7946,7 +7965,7 @@ do
     for i,model in ipairs(d.mobs) do
       for pack=1,2 do
         table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=model,tier=d.tier,height=model:find("spider") and 3.6 or 4.4,
-          hp=1.8,dmg=1.3,drops=drops[model],dungeon=index,
+          hp=1.8,dmg=1.3,drops=drops[model] or {{"Hide",.5},{"Fang",.3}},dungeon=index,
           position=Vector3.new(d.cx+random:NextNumber(-65,65),3,random:NextNumber(-65,30))})
       end
     end
@@ -7966,7 +7985,8 @@ do
       local flag=bit32.lshift(1,index-1)
       if bit32.band(mask,flag)~=0 then say("이미 비워 둔 상자다.");return end
       setNumber(player,"DungeonCleared",bit32.bor(mask,flag))
-      setNumber(player,"RelicMask",bit32.bor(readNumber(player,"RelicMask",0),bit32.lshift(1,6+index-1)))
+      if index<=3 then setNumber(player,"RelicMask",bit32.bor(readNumber(player,"RelicMask",0),bit32.lshift(1,6+index-1))) end
+      for field,n in pairs(d.loot or {}) do setNumber(player,field,readNumber(player,field,0)+n) end
       setNumber(player,"Crystal",readNumber(player,"Crystal",0)+3+index)
       setNumber(player,"Magma",readNumber(player,"Magma",0)+2+index)
       setNumber(player,"Ore",readNumber(player,"Ore",0)+4+index)
@@ -9674,6 +9694,133 @@ do
     sessions[player]=os.clock()+90
     villageDialogue(player,"영지 문서 · "..slot.."번 칸",table.concat(lines,"\n"),options)
   end
+  -- [내실 가구 · 동료 배치] 터 뒤쪽 줄에 가구 5칸과 동료 자리 3칸을 둔다.
+  local F=E.Furniture
+  local roster=Config.Companions
+  local function fChoice(player,slot) return bit32.band(bit32.rshift(readNumber(player,"EstateB",0),(slot-1)*4),15) end
+  local function cChoice(player,post) return bit32.band(bit32.rshift(readNumber(player,"EstateC",0),(post-1)*5),31) end
+  local function ownsCompanion(player,idx) return idx>=1 and roster[idx]~=nil and bit32.band(readNumber(player,"CompanionOwned",0),bit32.lshift(1,idx-1))~=0 end
+  local function groundAt(pos)
+    local rp=RaycastParams.new();rp.FilterType=Enum.RaycastFilterType.Include;rp.FilterDescendantsInstances={meadowTerrain}
+    return workspace:Raycast(Vector3.new(pos.X,300,pos.Z),Vector3.new(0,-600,0),rp)
+  end
+  local function renderFurn(player,slot)
+    local plot=plotOf[player]
+    if not plot then return end
+    local folder=folderOf(player)
+    local old=folder:FindFirstChild("Furn"..slot)
+    if old then old:Destroy() end
+    local entry=F[fChoice(player,slot)]
+    if not entry then return end
+    local hit=groundAt(origin+Vector3.new((plot-1)*130+(slot-1)*24-24,0,105))
+    if not hit then warn("ESTATE_FURN_GROUND_UNVERIFIED "..player.Name);return end
+    local model=worldAsset(entry.Key,hit.Position,entry.Height)
+    if model then model.Name="Furn"..slot;model:SetAttribute("MeadowScenery",true);model.Parent=folder end
+  end
+  local function renderPost(player,post)
+    local plot=plotOf[player]
+    if not plot then return end
+    local folder=folderOf(player)
+    local old=folder:FindFirstChild("Post"..post)
+    if old then old:Destroy() end
+    local idx=cChoice(player,post)
+    if idx==0 or not ownsCompanion(player,idx) then return end
+    local c=roster[idx]
+    local pos=origin+Vector3.new((plot-1)*130+(post-1)*40,0,72)
+    local hit=groundAt(pos)
+    if not hit then warn("ESTATE_POST_GROUND_UNVERIFIED "..player.Name);return end
+    local ok,npc=pcall(function()
+      local desc=Instance.new("HumanoidDescription")
+      local skin=Color3.fromRGB(c.Skin[1],c.Skin[2],c.Skin[3])
+      desc.HeadColor=skin;desc.LeftArmColor=skin;desc.RightArmColor=skin;desc.TorsoColor=Color3.fromRGB(c.Shirt[1],c.Shirt[2],c.Shirt[3])
+      desc.LeftLegColor=Color3.fromRGB(60,56,52);desc.RightLegColor=Color3.fromRGB(60,56,52)
+      local m=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
+      desc:Destroy()
+      return m
+    end)
+    if not ok or not npc then return end
+    npc.Name="Post"..post
+    local hum=npc:FindFirstChildOfClass("Humanoid")
+    if hum then hum.DisplayName=c.Name end
+    npc:PivotTo(CFrame.lookAt(hit.Position+Vector3.new(0,3.2,0),hit.Position+Vector3.new(0,3.2,-10)))
+    for _,part in ipairs(npc:GetDescendants()) do if part:IsA("BasePart") then part.Anchored=true end end
+    npc.Parent=folder
+    local root=npc:FindFirstChild("HumanoidRootPart")
+    if root then
+      local prompt=Instance.new("ProximityPrompt");prompt.ActionText="대화";prompt.ObjectText=c.Name.." · "..c.Role;prompt.HoldDuration=.4
+      prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=root
+      prompt.Triggered:Connect(function(who)
+        pcall(function() villageDialogue(who,c.Name.." · "..c.Role,"\""..c.Worldview.."\"\n\n"..(who==player and "영지를 지키며 네 귀환을 기다리고 있었어." or "이 영지의 주인을 기다리는 중이야.")) end)
+      end)
+    end
+  end
+  local function renderAllExtra(player)
+    for slot=1,5 do renderFurn(player,slot) end
+    for post=1,3 do renderPost(player,post) end
+  end
+  local function topMenu(player)
+    local plot=plotOf[player] or assignPlot(player)
+    sessions[player]=os.clock()+90
+    villageDialogue(player,"영지 문서","내 영지 터: "..(plot or "?").."번 구역 (안식처 동쪽).\n건물 5칸, 내실 가구 5칸, 동료 자리 3칸을 꾸밀 수 있다.",{
+      {label="건물 짓기 (5칸)",action="estate:m:1"},
+      {label="내실 가구 (5칸)",action="estate:m:2"},
+      {label="동료 배치 (3자리)",action="estate:m:3"}})
+  end
+  local function furnSlotMenu(player)
+    local lines={"내실 가구 칸을 골라라.\n"}
+    local options={}
+    for slot=1,5 do
+      local e=F[fChoice(player,slot)]
+      lines[#lines+1]=slot.."번 — "..(e and e.Name or "빈 칸")
+      options[#options+1]={label=slot.."번 · "..(e and e.Name or "빈 칸"),action="estate:f:"..slot}
+    end
+    sessions[player]=os.clock()+90
+    villageDialogue(player,"영지 문서 · 내실",table.concat(lines,"\n"),options)
+  end
+  local function furnBuildMenu(player,slot,page)
+    local per=3
+    local first=(page-1)*per+1
+    local lines={slot.."번 가구 칸 ("..page.."/"..math.ceil(#F/per).."쪽)\n"}
+    local options={}
+    for i=first,math.min(#F,first+per-1) do
+      lines[#lines+1]=F[i].Name.." — "..costText(F[i])
+      options[#options+1]={label=F[i].Name,action="estate:g:"..slot..":"..i}
+    end
+    if first+per<=#F then options[#options+1]={label="다음 쪽 ▶",action="estate:q:"..slot..":"..(page+1)} end
+    if fChoice(player,slot)~=0 then options[#options+1]={label="치우기",action="estate:g:"..slot..":0"} end
+    sessions[player]=os.clock()+90
+    villageDialogue(player,"영지 문서 · 가구 "..slot.."번",table.concat(lines,"\n"),options)
+  end
+  local function postMenu(player)
+    local lines={"동료를 세울 자리를 골라라. 영입한 동료만 세울 수 있다.\n"}
+    local options={}
+    for post=1,3 do
+      local idx=cChoice(player,post)
+      local c=ownsCompanion(player,idx) and roster[idx] or nil
+      lines[#lines+1]=post.."번 자리 — "..(c and c.Name or "비어 있음")
+      options[#options+1]={label=post.."번 자리 · "..(c and c.Name or "비어 있음"),action="estate:c:"..post}
+    end
+    sessions[player]=os.clock()+90
+    villageDialogue(player,"영지 문서 · 동료 배치",table.concat(lines,"\n"),options)
+  end
+  local function postPickMenu(player,post,page)
+    local owned={}
+    for idx,c in ipairs(roster) do if ownsCompanion(player,idx) then owned[#owned+1]=idx end end
+    local per=3
+    local first=(page-1)*per+1
+    local lines={post.."번 자리에 세울 동료 ("..page.."/"..math.max(1,math.ceil(#owned/per)).."쪽)\n"}
+    local options={}
+    if #owned==0 then lines[#lines+1]="아직 영입한 동료가 없다." end
+    for i=first,math.min(#owned,first+per-1) do
+      local c=roster[owned[i]]
+      lines[#lines+1]=c.Name.." — "..c.Role
+      options[#options+1]={label=c.Name,action="estate:d:"..post..":"..owned[i]}
+    end
+    if first+per<=#owned then options[#options+1]={label="다음 쪽 ▶",action="estate:r:"..post..":"..(page+1)} end
+    if cChoice(player,post)~=0 then options[#options+1]={label="자리 비우기",action="estate:d:"..post..":0"} end
+    sessions[player]=os.clock()+90
+    villageDialogue(player,"영지 문서 · "..post.."번 자리",table.concat(lines,"\n"),options)
+  end
   task.spawn(function()
     task.wait(12)
     local anchor=Instance.new("Attachment");anchor.Name="Estate_Deed";anchor.WorldPosition=Vector3.new(300,5,215);anchor.Parent=workspace.Terrain
@@ -9686,7 +9833,7 @@ do
     end)
     prompt.Triggered:Connect(function(player)
       if player:GetAttribute("ProfileReady")~=true then return end
-      slotMenu(player)
+      topMenu(player)
     end)
   end)
   remote.OnServerEvent:Connect(function(player,action)
@@ -9694,6 +9841,73 @@ do
     if os.clock()>(sessions[player] or 0) then return end
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     if not root or (root.Position-Vector3.new(300,5,215)).Magnitude>60 then return end
+    local m=tonumber(action:match("^estate:m:(%d)$"))
+    if m then
+      if m==1 then slotMenu(player) elseif m==2 then furnSlotMenu(player) elseif m==3 then postMenu(player) end
+      return
+    end
+    local fs=tonumber(action:match("^estate:f:(%d+)$"))
+    if fs and fs>=1 and fs<=5 then furnBuildMenu(player,fs,1);return end
+    local qs,qp=action:match("^estate:q:(%d+):(%d+)$")
+    if qs then
+      qs,qp=tonumber(qs),tonumber(qp)
+      if qs>=1 and qs<=5 and qp>=1 and qp<=math.ceil(#F/3) then furnBuildMenu(player,qs,qp) end
+      return
+    end
+    local gs,gi=action:match("^estate:g:(%d+):(%d+)$")
+    if gs then
+      gs,gi=tonumber(gs),tonumber(gi)
+      if gs<1 or gs>5 or gi<0 or gi>#F then return end
+      if os.clock()-(lastBuild[player] or 0)<1.5 then return end
+      lastBuild[player]=os.clock()
+      local mask=readNumber(player,"EstateB",0)
+      local cleared=bit32.band(mask,bit32.bnot(bit32.lshift(15,(gs-1)*4)))
+      if gi==0 then
+        setNumber(player,"EstateB",cleared);renderFurn(player,gs)
+        villageDialogue(player,"영지 문서",gs.."번 가구를 치웠다.",{{label="다른 칸 보기",action="estate:m:2"}});return
+      end
+      local entry=F[gi]
+      if fChoice(player,gs)==gi then villageDialogue(player,"영지 문서","이미 그 가구가 놓여 있다.");return end
+      for _,pair in ipairs({{"Coins",entry.Coins},{"Ingot",entry.Ingot}}) do
+        if (pair[2] or 0)>0 and readNumber(player,pair[1],0)<pair[2] then villageDialogue(player,"영지 문서","재료가 부족하다: "..costText(entry));return end
+      end
+      for _,pair in ipairs({{"Coins",entry.Coins},{"Ingot",entry.Ingot}}) do
+        if (pair[2] or 0)>0 then setNumber(player,pair[1],readNumber(player,pair[1],0)-pair[2]) end
+      end
+      setNumber(player,"EstateB",bit32.bor(cleared,bit32.lshift(gi,(gs-1)*4)))
+      renderFurn(player,gs)
+      villageDialogue(player,"영지 문서",entry.Name.."을(를) "..gs.."번 칸에 놓았다!",{{label="다른 칸 보기",action="estate:m:2"}})
+      return
+    end
+    local cp=tonumber(action:match("^estate:c:(%d+)$"))
+    if cp and cp>=1 and cp<=3 then postPickMenu(player,cp,1);return end
+    local rs,rp2=action:match("^estate:r:(%d+):(%d+)$")
+    if rs then
+      rs,rp2=tonumber(rs),tonumber(rp2)
+      if rs>=1 and rs<=3 and rp2>=1 and rp2<=6 then postPickMenu(player,rs,rp2) end
+      return
+    end
+    local ds,di=action:match("^estate:d:(%d+):(%d+)$")
+    if ds then
+      ds,di=tonumber(ds),tonumber(di)
+      if ds<1 or ds>3 or di<0 or di>31 then return end
+      if os.clock()-(lastBuild[player] or 0)<1.5 then return end
+      lastBuild[player]=os.clock()
+      if di~=0 and not ownsCompanion(player,di) then return end
+      local mask=readNumber(player,"EstateC",0)
+      -- 같은 동료가 다른 자리에 있으면 그 자리를 비운다.
+      if di~=0 then
+        for post=1,3 do
+          if post~=ds and cChoice(player,post)==di then mask=bit32.band(mask,bit32.bnot(bit32.lshift(31,(post-1)*5))) end
+        end
+      end
+      mask=bit32.band(mask,bit32.bnot(bit32.lshift(31,(ds-1)*5)))
+      mask=bit32.bor(mask,bit32.lshift(di,(ds-1)*5))
+      setNumber(player,"EstateC",mask)
+      for post=1,3 do task.spawn(renderPost,player,post) end
+      villageDialogue(player,"영지 문서",di==0 and (ds.."번 자리를 비웠다.") or (roster[di].Name.."을(를) "..ds.."번 자리에 세웠다."),{{label="다른 자리 보기",action="estate:m:3"}})
+      return
+    end
     local slot=tonumber(action:match("^estate:s:(%d+)$"))
     if slot and slot>=1 and slot<=E.Slots then buildMenu(player,slot,1);return end
     local ps,pp=action:match("^estate:p:(%d+):(%d+)$")
@@ -9736,7 +9950,7 @@ do
       while player.Parent and player:GetAttribute("ProfileReady")~=true do task.wait(1) end
       if not player.Parent then return end
       task.wait(14)
-      if assignPlot(player) then renderAll(player) end
+      if assignPlot(player) then renderAll(player);renderAllExtra(player) end
     end)
   end
   for _,player in ipairs(Players:GetPlayers()) do onJoin(player) end
