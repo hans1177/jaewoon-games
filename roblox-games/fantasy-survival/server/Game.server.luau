@@ -897,19 +897,16 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
               end
               local order=game:GetService("HttpService"):JSONDecode(clone:GetAttribute("DeerRankJson") or "{}")
               local rank=order[surface.Name] or 1
-              -- [실사 재질] 털은 Fabric, 뿔은 Wood, 발굽은 Slate, 코·눈은 매끈한 SmoothPlastic. 개체마다 ±5% 명도 차이.
+              -- [토이 톤] 전부 SmoothPlastic, 부위별 투톤. 개체마다 ±5% 명도 차이.
               local jitter=1+((math.sin(location.X*12.9898+location.Z*78.233)*43758.5453)%1-.5)*.1
-              local base=rank==1 and Color3.fromRGB(139,106,68)
-                or rank==2 and Color3.fromRGB(216,201,168)
-                or rank==3 and Color3.fromRGB(110,80,52)
-                or rank==4 and Color3.fromRGB(120,100,78)
+              local base=rank==1 and Color3.fromRGB(168,124,78)
+                or rank==2 and Color3.fromRGB(228,212,178)
+                or rank==3 and Color3.fromRGB(128,92,58)
+                or rank==4 and Color3.fromRGB(176,150,112)
                 or rank==5 and Color3.fromRGB(46,40,36)
                 or Color3.fromRGB(24,20,20)
               surface.Color=Color3.new(math.clamp(base.R*jitter,0,1),math.clamp(base.G*jitter,0,1),math.clamp(base.B*jitter,0,1))
-              surface.Material=rank<=3 and Enum.Material.Fabric
-                or rank==4 and Enum.Material.Wood
-                or rank==5 and Enum.Material.Slate
-                or Enum.Material.SmoothPlastic
+              surface.Material=Enum.Material.SmoothPlastic
             elseif id=="rabbit" then
               -- [토끼 부위별 색] 몸통은 갈색, 다리는 더 진한 갈색, 작은 조각(꼬리·귀 끝)은 흰색.
               local piece=surface.Name:lower()
@@ -5077,7 +5074,7 @@ local function spawnEnemy(site, siteIndex)
         surface.MaterialVariant=""
         -- [재질] 털 달린 몹은 Fabric(보풀 질감), 골렘은 Slate(거친 돌), 벌은 매끈한 광택으로 표현한다.
         local furry=partId=="wolf" or partId=="bat" or partId=="boar" or partId=="rabbit"
-        surface.Material=furry and Enum.Material.Fabric
+        surface.Material=furry and Enum.Material.SmoothPlastic
           or (isBoss or partId=="golem") and Enum.Material.Slate
           or partId=="bee" and Enum.Material.SmoothPlastic
           or Enum.Material.Plastic
@@ -5086,7 +5083,8 @@ local function spawnEnemy(site, siteIndex)
         -- [실사 재질] 개체마다 ±5% 명도 차이. 늑대는 큰 조각(몸통)·그다음 조각(배·턱)·나머지(사지·귀) 순으로 톤을 나눈다.
         local jitter=1+((math.sin(location.X*12.9898+location.Z*78.233)*43758.5453)%1-.5)*.1
         shade*=jitter
-        local tone=bodyTint
+        -- 로우폴리 토이 톤: 어두운 털은 살짝 밝혀서 얼룩져 보이지 않게 한다.
+        local tone=partId=="wolf" and not isAlpha and bodyTint:Lerp(Color3.fromRGB(190,180,168),.22) or bodyTint
         if partId=="wolf" and not isAlpha then
           local order=model:GetAttribute("WolfRankJson")
           if not order then
@@ -5101,8 +5099,8 @@ local function spawnEnemy(site, siteIndex)
             model:SetAttribute("WolfRankJson",order)
           end
           local rank=game:GetService("HttpService"):JSONDecode(order)[surface.Name] or 1
-          tone=rank==2 and bodyTint:Lerp(Color3.fromRGB(140,135,126),.7)
-            or rank>=4 and bodyTint:Lerp(Color3.fromRGB(40,38,36),.35) or bodyTint
+          tone=rank==2 and tone:Lerp(Color3.fromRGB(205,198,186),.6)
+            or rank>=4 and tone:Lerp(Color3.fromRGB(60,56,52),.3) or tone
         end
         surface.Color=Color3.new(math.clamp(tone.R*shade,0,1),math.clamp(tone.G*shade,0,1),math.clamp(tone.B*shade,0,1))
       end
