@@ -20,7 +20,9 @@ h1{font-size:22px;margin:0}
 #notice{min-height:34px;display:flex;align-items:center;justify-content:center;text-align:center;color:#ffd978;font-weight:800;font-size:13px;margin-bottom:8px}
 #playBox{margin-bottom:10px}
 .actions button{width:100%;min-height:50px;border:0;border-radius:10px;padding:0 14px;font-weight:900;color:#fff;background:#4169e1}
-.boardWrap{display:flex;justify-content:center}
+.boardWrap{display:flex;justify-content:center;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.boardWrap.wide{justify-content:flex-start;justify-content:safe center}
+.board.wide{width:640px;min-width:640px;flex-shrink:0}
 .board{width:min(94vw,560px);aspect-ratio:1;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:6px;background:#26324a;border-radius:14px}
 .cell{position:relative;border:0;border-radius:10px;background:#34415d;color:#fff;overflow:hidden;min-width:0}
 .cell.homeBlue{background:#2c4b62}.cell.homeRed{background:#5c343e}
@@ -28,7 +30,9 @@ h1{font-size:22px;margin:0}
 .cell.goldChestCell{background:#594728;border:2px solid #bc9a4c}
 .goldChest{position:absolute;inset:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;pointer-events:none;color:#ffe6a0;font-weight:1000}
 .goldChest span{font-size:clamp(22px,6vw,36px);line-height:1}
-.goldChest small{font-size:10px}
+/* 2×2 정사각형 원화 시트: 카드·유닛·상자 모두 같은 비율로 자른다. */
+.portrait.gameArt,.card .art.gameArt,.goldChest.gameArt{background-size:200% 200%;background-repeat:no-repeat}
+.goldChest.gameArt{display:block}
 .unit{position:absolute;inset:4px;border-radius:9px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:3px}
 .unit.blue{background:linear-gradient(#3568b7,#264b88)}
 .unit.red{background:linear-gradient(#a74851,#753038)}
@@ -38,6 +42,7 @@ h1{font-size:22px;margin:0}
 .portrait.hammerArt,.card .art.hammerArt{background-size:400% 400%;background-position:66.6667% 66.6667%;background-repeat:no-repeat}
 .portrait img.newArt,.card .art img.newArt,.tileArt img{width:400%;height:400%;max-width:none}
 .portrait img.newAllyArt,.card .art img.newAllyArt{width:200%;height:200%;max-width:none}
+@media(max-width:520px){.board.wide{width:600px;min-width:600px}}
 .tileArt{position:absolute;inset:7%;z-index:0;border-radius:8px;overflow:hidden;pointer-events:none;opacity:.92}.unit{z-index:1}
 .unit b{font-size:11px}.unit small{font-size:9px;color:#e7eeff}
 .hp{position:absolute;left:5px;right:5px;bottom:4px;height:5px;background:#311;border-radius:99px;overflow:hidden}
@@ -233,8 +238,8 @@ let state=null,side='BLUE',selectedUnit=null,selectedCard='',mode='idle',aiThink
 
 function msg(t){notice.textContent=t}
 function other(s){return s==='BLUE'?'RED':'BLUE'}
-function boardRows(){return state?.stage===5?10:state?.stage===4?7:BASE_ROWS}
-function boardCols(){return BASE_COLS}
+function boardRows(){return state?.stage===4?7:BASE_ROWS}
+function boardCols(){return state?.stage===5?BASE_COLS*2:BASE_COLS}
 function homeRow(s){return s==='BLUE'?boardRows():1}
 function moveDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
 function attackDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
@@ -276,6 +281,15 @@ function loadProgress(){
     const raw=localStorage.getItem(PROGRESS_KEY);
     if(!raw)return null;
     const saved=JSON.parse(raw);
+    // 과거 세로 10×가로 5 스테이지 5 저장본을 가로 10×세로 5로 변환한다.
+    // 유닛·상자 위치와 재화·턴·증원 기록은 유지한다.
+    if(saved?.stage===5&&saved.mapOrientation!=='wide'&&Array.isArray(saved.units)
+      &&(saved.chests===undefined||Array.isArray(saved.chests))){
+      const rotate=p=>({ ...p,r:p.c,c:p.r });
+      saved.units=saved.units.map(rotate);
+      if(saved.chests)saved.chests=saved.chests.map(rotate);
+      saved.mapOrientation='wide'
+    }
     if(!saved||!Number.isInteger(saved.stage)||saved.stage<1||saved.stage>5
       ||!Number.isInteger(saved.turn)||saved.turn<1||!['BATTLE','REST'].includes(saved.phase)
       ||!['BLUE','RED'].includes(saved.current)||!['','BLUE','RED'].includes(saved.winner)
@@ -286,10 +300,12 @@ function loadProgress(){
       ||!saved.summons||!Number.isInteger(saved.summons.BLUE)||!Number.isInteger(saved.summons.RED)
       ||saved.units.some(u=>!u||!CARDS[u.side]?.[u.card]||!Number.isFinite(u.hp)
         ||!Number.isInteger(u.r)||!Number.isInteger(u.c)
-        ||u.r<1||u.r>(saved.stage===5?10:saved.stage===4?7:BASE_ROWS)
-        ||u.c<1||u.c>BASE_COLS)
+        ||u.r<1||u.r>(saved.stage===4?7:BASE_ROWS)
+        ||u.c<1||u.c>(saved.stage===5?BASE_COLS*2:BASE_COLS))
       ||saved.unlocked.some(id=>!CARDS.BLUE[id])
-      ||(saved.chests!==undefined&&!Array.isArray(saved.chests))
+      ||(saved.chests!==undefined&&(!Array.isArray(saved.chests)
+        ||saved.chests.some(x=>!x||!Number.isInteger(x.r)||!Number.isInteger(x.c)
+          ||x.r<1||x.r>BASE_ROWS||x.c<1||x.c>(saved.stage===5?BASE_COLS*2:BASE_COLS))))
       ||(saved.specialTiles!==undefined&&!Array.isArray(saved.specialTiles)))return null;
     saved.diamonds=diamondWallet();
     return saved
@@ -485,7 +501,13 @@ function resolveStageFourEnemyTurn(){
 }
 // 스테이지 5: 골드 상자는 중간 지역 6곳에 각 1개씩 놓는다.
 function createStageFiveChests(){
-  return [3,4,5,6,7,8].map(r=>({r,c:1+Math.floor(Math.random()*BASE_COLS)}))
+  const spots=[];
+  for(let r=2;r<=4;r++)for(let c=2;c<boardCols();c++)spots.push({r,c});
+  for(let i=spots.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [spots[i],spots[j]]=[spots[j],spots[i]]
+  }
+  return spots.slice(0,6)
 }
 function spawnStageFiveWave(){
   if(state.stage!==5||state.phase!=='BATTLE')return;
@@ -682,7 +704,15 @@ function act(payload){
     msg('그 행동은 지금 할 수 없어.')
   }
 }
+// 사용자 제작 원화를 2×2로 연결하며 정사각형 비율을 유지한다.
+const GAME_ART_POS={GOLD_CHEST:[0,0],ORC_MAGE:[1,0],RIFLEMAN:[0,1],HEAVY_INFANTRY:[1,1]};
+function gameArtStyle(id){
+  const p=GAME_ART_POS[id];
+  if(!p)return '';
+  return 'background-image:url(./portraits/new-cards.webp);background-position:'+(p[0]*100)+'% '+(p[1]*100)+'%;'
+}
 function portraitHtml(id,d){
+  if(GAME_ART_POS[id])return '<span class="portrait gameArt" role="img" aria-label="'+d.name+'" style="'+gameArtStyle(id)+'"></span>';
   if(id==='HAMMER')return '<span class="portrait hammerArt" role="img" aria-label="'+d.name+'" style="background-image:url('+NEW_ART_SPRITE+')"></span>';
   if(NEW_ALLY_POS[id])return '<span class="portrait"><img class="newAllyArt" src="'+NEW_ALLY_SPRITE+'" alt="'+d.name+'" style="'+newAllyArtStyle(id)+'"></span>';
   if(NEW_ART_POS[id])return '<span class="portrait"><img class="newArt" src="'+NEW_ART_SPRITE+'" alt="'+d.name+'" style="'+newArtStyle(id)+'"></span>';
@@ -692,6 +722,7 @@ function portraitHtml(id,d){
     : '<span class="portrait" style="display:flex;align-items:center;justify-content:center;font-size:24px">'+d.icon+'</span>'
 }
 function artHtml(id,d){
+  if(GAME_ART_POS[id])return '<div class="art gameArt" role="img" aria-label="'+d.name+'" style="'+gameArtStyle(id)+'"></div>';
   if(id==='HAMMER')return '<div class="art hammerArt" role="img" aria-label="'+d.name+'" style="background-image:url('+NEW_ART_SPRITE+')"></div>';
   if(NEW_ALLY_POS[id])return '<div class="art"><img class="newAllyArt" src="'+NEW_ALLY_SPRITE+'" alt="'+d.name+'" style="'+newAllyArtStyle(id)+'"></div>';
   if(NEW_ART_POS[id])return '<div class="art"><img class="newArt" src="'+NEW_ART_SPRITE+'" alt="'+d.name+'" style="'+newArtStyle(id)+'"></div>';
@@ -731,6 +762,8 @@ function render(){
   renderWallet();
   board.innerHTML='';
   const rows=boardRows(),cols=boardCols();
+  board.classList.toggle('wide',state?.stage===5);
+  board.parentElement.classList.toggle('wide',state?.stage===5);
   board.style.gridTemplateColumns='repeat('+cols+',1fr)';
   board.style.gridTemplateRows='repeat('+rows+',1fr)';
   board.style.aspectRatio=cols+'/'+rows;
@@ -742,7 +775,7 @@ function render(){
     if(chest&&!u){
       b.classList.add('goldChestCell');
       b.title='골드 상자 · 공격하면 10~70골드';
-      b.insertAdjacentHTML('beforeend','<span class="goldChest"><span>🧰</span><small>골드 상자</small></span>')
+      b.insertAdjacentHTML('beforeend','<span class="goldChest gameArt" role="img" aria-label="골드 상자" style="'+gameArtStyle('GOLD_CHEST')+'"></span>')
     }
     if(u){b.insertAdjacentHTML('beforeend',unitText(u));if(u.id===selectedUnit)b.classList.add('sel')}
     b.addEventListener('click',()=>cellTap(r,c,u));
@@ -990,6 +1023,7 @@ function startStage(next){
   state.lastWaveRound=0;
   state.specialTiles=[];
   state.chests=next===5?createStageFiveChests():[];
+  state.mapOrientation=next===5?'wide':'';
   selectedUnit=null;
   selectedCard='';
   $('#drawResult').textContent='';
@@ -997,7 +1031,7 @@ function startStage(next){
   else if(next===2)msg('2스테이지 시작 · 기본 골드 250 · 적 8마리 / 아군 12마리');
   else if(next===3)msg('3스테이지 시작 · 해골궁수/해골법사 제외 · 강화 고블린/골렘/멧돼지 등장');
   else if(next===4){state.specialTiles=createStageFourTiles();msg('4스테이지 시작 · 7×5 맵 · 특수 발판 5개 · 방패 고블린/돌격 오크/독전갈/유적 수호자')}
-  else if(next===5)msg('5스테이지 시작 · 10×5 맵 · 특수 발판 없음 · 2/4/5/7/8턴 적 증원');
+  else if(next===5)msg('5스테이지 시작 · 가로 10×세로 5 맵 · 특수 발판 없음 · 2/4/5/7/8턴 적 증원');
   state.version++;
   saveProgress();
   render()
