@@ -9087,13 +9087,13 @@ task.spawn(function()
   -- 아직 쓰지 않던 등록 소품도 어울리는 지역에 놓는다(석조 계단·바위 지붕·노점·울타리).
   local extra={
     windcliff={{"vxStall",4,2},{"villageFenceBroken",2.5,2},{"vxOverhang",9,2}},
-    worldtree={{"vxHedgeGate",4,2}},
-    oasis={{"vxStairsStone",3,3}},
-    citadel={{"vxStairsStone",3,4},{"vxOverhang",10,2}},
+    worldtree={{"vxHedgeGate",4,2},{"villageWatermill",8,1}},
+    oasis={{"vxStairsStone",3,3},{"villageFountain",5,1},{"vxTowerMid",16,1}},
+    citadel={{"vxStairsStone",3,4},{"vxOverhang",10,2},{"vxTowerMid",18,2},{"vxTowerRoof",14,1}},
     canyon={{"vxStairsStone",3,3},{"vxOverhang",10,3}},
     highland={{"vxOverhang",10,2}},
-    wetland={{"villageFenceBroken",2.5,3}},
-    desert={{"vxStairsStone",3,3}},
+    wetland={{"villageFenceBroken",2.5,3},{"villageWatermill",8,1}},
+    desert={{"vxStairsStone",3,3},{"vxTowerMid",16,1},{"villageRoad",1.2,3}},
     deadmarsh={{"vxStairsStone",3,3},{"villageFenceBroken",2.5,2}},
   }
   for zoneId,list in pairs(extra) do
