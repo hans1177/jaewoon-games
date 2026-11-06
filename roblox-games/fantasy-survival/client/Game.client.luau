@@ -6017,13 +6017,31 @@ do
         return
       end
       local world=workspace:WaitForChild("FantasySurvivalWorld",20)
-      local character=player.Character or player.CharacterAdded:Wait()
-      local rootPart=character and character:WaitForChild("HumanoidRootPart",12)
+      -- [캐릭터 준비] 생성 이벤트 무한 대기를 없애고 실제 몸체 확인 후에만 입장한다.
+      local character,rootPart
+      local characterDeadline=os.clock()+24
+      local recoveryAt=os.clock()+4
+      repeat
+        if not entranceOpen or token~=runToken then return end
+        character=player.Character
+        rootPart=character and character:FindFirstChild("HumanoidRootPart")
+        local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+        if character and character:IsDescendantOf(workspace) and rootPart
+          and humanoid and humanoid.Health>0 then break end
+        rootPart=nil
+        setProgress(0,0,"캐릭터 생성 확인 중")
+        if os.clock()>=recoveryAt then
+          local endpoint=ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")
+          if endpoint and endpoint:IsA("RemoteEvent") then endpoint:FireServer("CHARACTER_RECOVERY") end
+          recoveryAt=os.clock()+8
+        end
+        task.wait(.15)
+      until os.clock()>=characterDeadline
       if not entranceOpen or token~=runToken then return end
       if not world or not rootPart then
         loadPanel.Visible=false
         titlePanel.Visible=true
-        titleStatus.Text="월드 준비 실패 · 다시 시도해"
+        titleStatus.Text=not rootPart and "캐릭터 생성 지연 · 다시 시작해" or "월드 준비 실패 · 다시 시도해"
         return
       end
       local assets={}

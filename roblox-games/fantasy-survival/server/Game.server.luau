@@ -553,38 +553,31 @@ local function bindNativeFoundationPlayer(player)
   end)
   if player.Character then
     task.defer(onCharacterAdded, player.Character)
-  else
-    -- [최초 등장] 엔진 자동 생성을 우선하고, 미생성 상태만 서버가 복구한다.
-    -- 지면 확인은 재시도하며, 일시적인 Raycast 실패로 아바타를 영원히 차단하지 않는다.
-    task.delay(4,function()
-      if player.Parent~=Players or player.Character then return end
-      local params=RaycastParams.new()
-      params.FilterType=Enum.RaycastFilterType.Include
-      params.FilterDescendantsInstances={meadowTerrain}
-      local at=nativeFoundationSpawn.Position
-      local ground
-      for attempt=1,10 do
-        if player.Parent~=Players or player.Character then return end
-        ground=workspace:Raycast(at+Vector3.new(0,48,0),Vector3.new(0,-110,0),params)
-        if ground and ground.Normal.Y>=.65 then break end
-        if attempt<10 then task.wait(.2) end
-      end
-      if not ground or ground.Normal.Y<.65 then
-        warn("MEADOW_INITIAL_SPAWN_GROUND_UNVERIFIED")
-        return
-      end
-      for attempt=1,3 do
-        if player.Parent~=Players or player.Character then return end
+  end
+  -- [최초 등장] 모델 존재만으로 완료 처리하지 않고 살아 있는 실제 몸체를 확인한다.
+  -- 지면 보정은 기존 CharacterAdded 경로가 담당하며 생성 실패와 별도로 처리한다.
+  task.delay(8,function()
+    for attempt=1,3 do
+      if player.Parent~=Players then return end
+      local character=player.Character
+      local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+      local root=character and character:FindFirstChild("HumanoidRootPart")
+      if player:GetAttribute("MeadowEnteredWorld")==true or (humanoid and humanoid.Health<=0) then return end
+      if character and character:IsDescendantOf(workspace) and humanoid
+        and humanoid.Health>0 and root then return end
+      if player:GetAttribute("MeadowSpawnRecoveryBusy")~=true then
+        player:SetAttribute("MeadowSpawnRecoveryBusy",true)
+        player:SetAttribute("MeadowSpawnRecoveryAt",os.clock())
+        player.RespawnLocation=nativeFoundationSpawn
         local spawned,reason=pcall(function() player:LoadCharacterAsync() end)
-        if spawned then return end
-        if attempt==3 then
+        player:SetAttribute("MeadowSpawnRecoveryBusy",false)
+        if not spawned then
           warn("MEADOW_INITIAL_CHARACTER_LOAD_FAILED: "..tostring(reason))
-        else
-          task.wait(2)
         end
       end
-    end)
-  end
+      if attempt<3 then task.wait(8) end
+    end
+  end)
 end
 Players.PlayerAdded:Connect(bindNativeFoundationPlayer)
 for _, nativeFoundationPlayer in ipairs(Players:GetPlayers()) do
@@ -592,6 +585,30 @@ for _, nativeFoundationPlayer in ipairs(Players:GetPlayers()) do
 end
 nativeFoundationRemote.OnServerEvent:Connect(function(player, signal)
   if typeof(signal) ~= "string" then return end
+  if signal=="CHARACTER_RECOVERY" then
+    -- [시작 복구] 서버가 실제 캐릭터 부재를 확인한 경우에만 기존 아바타 생성 API를 호출한다.
+    -- 정상 캐릭터·이어하기 위치는 유지하고 반복 요청과 동시 생성을 차단한다.
+    local character=player.Character
+    local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+    local root=character and character:FindFirstChild("HumanoidRootPart")
+    if player:GetAttribute("ProfileReady")~=true or (humanoid and humanoid.Health<=0) then return end
+    if character and character:IsDescendantOf(workspace) and humanoid
+      and humanoid.Health>0 and root then return end
+    if player:GetAttribute("MeadowSpawnRecoveryBusy")==true then return end
+    local now=os.clock()
+    if now-(player:GetAttribute("MeadowSpawnRecoveryAt") or -100)<8 then return end
+    player:SetAttribute("MeadowSpawnRecoveryAt",now)
+    player:SetAttribute("MeadowSpawnRecoveryBusy",true)
+    task.spawn(function()
+      if player.Parent==Players then
+        player.RespawnLocation=nativeFoundationSpawn
+        local spawned,reason=pcall(function() player:LoadCharacterAsync() end)
+        if not spawned then warn("MEADOW_REQUESTED_CHARACTER_LOAD_FAILED: "..tostring(reason)) end
+      end
+      if player.Parent==Players then player:SetAttribute("MeadowSpawnRecoveryBusy",false) end
+    end)
+    return
+  end
   player:SetAttribute("NativeFoundationReadyAt", os.time())
 end)
 -- [서버 메인: 초원 날씨·새벽/낮/저녁/밤]
