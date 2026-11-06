@@ -3733,7 +3733,7 @@ local function layoutMeadowJournal()
   questTracker.Position=UDim2.fromOffset(questLeft,questTop)
   questTracker.Size=UDim2.fromOffset(width,height)
   trackerTitle.Position=UDim2.fromOffset(compact and 24 or 8,compact and 4 or 6)
-  trackerTitle.Size=UDim2.new(1,(compact and -28 or -14)-46,0,compact and 22 or 20)
+  trackerTitle.Size=UDim2.new(1,(compact and -28 or -14)-76,0,compact and 22 or 20)
   trackerTitle.TextSize=compact and 17 or 17
   trackerDetail.Position=UDim2.fromOffset(compact and 8 or 10,compact and 30 or 28)
   trackerDetail.Size=UDim2.new(1,compact and -14 or -18,0,compact and 40 or 46)
@@ -3748,8 +3748,13 @@ local function layoutMeadowJournal()
   trackerNavigation.Size=UDim2.new(1,-17,0,14)
   trackerNavigation.Visible=not compact and not folded
   trackerDetail.Visible=not folded;trackerVillage.Visible=not folded;trackerCompanion.Visible=not folded
-  local foldBtn=questTracker:FindFirstChild("QuestFoldButton")
-  if foldBtn then foldBtn.Text=folded and "펼치기" or "접기" end
+  local foldBtn=gui:FindFirstChild("QuestFoldButton")
+  if foldBtn then
+    foldBtn.Text=folded and "▸ 펼치기" or "▾ 접기"
+    foldBtn.Size=UDim2.fromOffset(compact and 62 or 70,compact and 22 or 26)
+    foldBtn.Position=UDim2.fromOffset(questLeft+width-4,questTop+(folded and 3 or 4))
+    foldBtn.Visible=questTracker.Visible
+  end
   local questIcon=questTracker:FindFirstChild("CC0QuestIcon")
   if questIcon then
     questIcon.Size=UDim2.fromOffset(compact and 18 or 22,compact and 18 or 22)
@@ -3767,18 +3772,21 @@ gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
 end)
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
 do
-  -- [퀘스트창 접기/펼치기] 오른쪽 위 작은 버튼. 접으면 제목 한 줄만 남는다.
+  -- [퀘스트창 접기/펼치기] 외부 게임(젤다·원신·로블록스 RPG)처럼 제목줄 오른쪽의 작은 ▾/▸ 버튼.
+  -- 퀘스트창(버튼) 자식이 아니라 gui 바로 아래에 둬서 크기가 다른 코드에 휘둘리지 않고, 접으면 제목 한 줄만 남는다.
   local fold=Instance.new("TextButton")
-  fold.Name="QuestFoldButton";fold.AnchorPoint=Vector2.new(1,0);fold.Position=UDim2.new(1,-3,0,2)
-  fold.Size=UDim2.fromOffset(40,18);fold.AutomaticSize=Enum.AutomaticSize.None;fold.BackgroundColor3=Color3.fromRGB(34,46,42);fold.BackgroundTransparency=.1
-  fold.BorderSizePixel=0;fold.Font=Enum.Font.GothamMedium;fold.TextSize=11;fold.TextWrapped=false;fold.TextColor3=Color3.fromRGB(240,232,200)
-  fold.Text="접기";fold.ZIndex=questTracker.ZIndex+6;fold.Parent=questTracker
-  Instance.new("UICorner",fold).CornerRadius=UDim.new(0,6)
-  local foldLimit=Instance.new("UISizeConstraint");foldLimit.MaxSize=Vector2.new(46,20);foldLimit.Parent=fold -- 크기가 다른 코드로 커지는 것을 막는다
+  fold.Name="QuestFoldButton";fold.AnchorPoint=Vector2.new(1,0);fold.Position=UDim2.fromOffset(0,0)
+  fold.Size=UDim2.fromOffset(70,26);fold.AutomaticSize=Enum.AutomaticSize.None;fold.BackgroundColor3=Color3.fromRGB(34,52,44);fold.BackgroundTransparency=.08
+  fold.BorderSizePixel=0;fold.AutoButtonColor=true;fold.Font=Enum.Font.GothamMedium;fold.TextSize=13;fold.TextWrapped=false;fold.TextColor3=Color3.fromRGB(245,236,200)
+  fold.Text="▾ 접기";fold.ZIndex=questTracker.ZIndex+8;fold.Parent=gui
+  Instance.new("UICorner",fold).CornerRadius=UDim.new(0,8)
+  local foldStroke=Instance.new("UIStroke");foldStroke.Color=Color3.fromRGB(220,176,91);foldStroke.Thickness=1.2;foldStroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;foldStroke.Parent=fold
+  local foldLimit=Instance.new("UISizeConstraint");foldLimit.MaxSize=Vector2.new(80,30);foldLimit.Parent=fold
   fold.Activated:Connect(function()
     meadowArt.questFolded=not (meadowArt.questFolded==true)
     layoutMeadowJournal()
   end)
+  questTracker:GetPropertyChangedSignal("Visible"):Connect(function() fold.Visible=questTracker.Visible end)
 end
 layoutMeadowJournal()
 for _,name in ipairs({"QuestStage","QuestProgress","QuestWood","QuestStone","ResearchRecords","Wood","Stone","Coins","WeaponTier",
@@ -12459,7 +12467,7 @@ end)()
     local t=(os.clock()*1.1)%1
     pulse.Size=UDim2.fromOffset(40+t*110,40+t*110)
     pulseStroke.Transparency=t
-    pulse.Visible=inside
+    pulse.Visible=false
     local near=dist<45
     pinColor(near and Color3.fromRGB(190,255,200) or Color3.new(1,1,1))
     infoLabel.Text=string.format("%s\n%dm",tlabel or "목표",math.floor(dist))
@@ -12523,7 +12531,11 @@ end)()
     {"이동하기","왼쪽 아래 조이스틱을 밀어 걸어 봐.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.1,guiRoot.AbsoluteSize.Y*.8),"up" end,"move"},
     {"카메라 돌리기","화면 오른쪽 빈 곳을 끌면 시야가 돌아가.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.62,guiRoot.AbsoluteSize.Y*.45),"down" end,nil},
     {"전투 버튼","큰 칼 = 공격 · 방패 = 막기 · 소용돌이 = 회피 · 질주 = 자동질주 ON/OFF",function() return Vector2.new(guiRoot.AbsoluteSize.X*.9,guiRoot.AbsoluteSize.Y*.72),"left" end,nil},
-    {"퀵슬롯","아래 1~5칸을 누르면 바로 써. '편집'을 눌러 칸을 바꿀 수 있어.",function() return Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.88),"down" end,nil},
+    {"퀵슬롯","아래 1~5칸을 누르면 바로 써. '편집'을 눌러 칸을 바꿀 수 있어.",function()
+      local bar=player.PlayerGui:FindFirstChild("MeadowQuickBar",true)
+      if bar and bar.AbsoluteSize.X>0 then return Vector2.new(bar.AbsolutePosition.X+bar.AbsoluteSize.X/2,bar.AbsolutePosition.Y),"down" end
+      return Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.88),"down"
+    end,nil},
     {"퀘스트와 길 안내","왼쪽 퀘스트창이 지금 할 일이야. 노란 보석 표시를 따라가면 돼.",function() local c=guideChip.Visible and center(guideChip) or Vector2.new(guiRoot.AbsoluteSize.X*.5,guiRoot.AbsoluteSize.Y*.28);return c,"up" end,nil},
     {"길 안내 켜고 끄기","지도 왼쪽 '길 안내' 버튼을 눌러 봐. 끄면 표시가 사라지고, 다시 누르면 켜져.",function() local c=guideChip.Visible and center(guideChip) or nil;return c,"up" end,"guide"},
     {"메뉴 열기","오른쪽 위 '가방'을 눌러 메뉴를 열어 봐.",function() local l=findText("TextLabel","가방");return l and (center(l)+Vector2.new(0,-26)) or Vector2.new(guiRoot.AbsoluteSize.X*.62,40),"up" end,"menu"},
@@ -12621,16 +12633,16 @@ end)()
     end
     local pos,dir=s[3]()
     if pos then
-      local bob=math.abs(math.sin(os.clock()*5))*14
-      local off=dir=="up" and Vector2.new(0,56+bob) or dir=="down" and Vector2.new(0,-56-bob)
-        or dir=="left" and Vector2.new(56+bob,0) or Vector2.new(-56-bob,0)
+      -- 화살표 끝이 목표 좌표에 닿도록 반 크기(35)만큼 띄우고, 통통 튈 때만 최대 10px 떨어진다.
+      local bob=math.abs(math.sin(os.clock()*5))*10
+      local gap=35+bob
+      local off=dir=="up" and Vector2.new(0,gap) or dir=="down" and Vector2.new(0,-gap)
+        or dir=="left" and Vector2.new(gap,0) or Vector2.new(-gap,0)
       pointer.Rotation=dir=="up" and 180 or dir=="down" and 0 or dir=="left" and 90 or -90
       local o=guiRoot.AbsolutePosition
       pointer.Position=UDim2.fromOffset(pos.X+off.X-o.X,pos.Y+off.Y-o.Y)
       local t=(os.clock()*1.2)%1
-      ring.Position=UDim2.fromOffset(pos.X-o.X,pos.Y-o.Y)
-      ring.Size=UDim2.fromOffset(40+t*60,40+t*60);ringStroke.Transparency=t
-      pointer.Visible=true;ring.Visible=true
+      pointer.Visible=true;ring.Visible=false
     else
       pointer.Visible=false;ring.Visible=false
     end
@@ -12685,28 +12697,3 @@ end)()
   end)
 end)()
 
--- [오디세이 고유 기술] 스파르타 킥 · 황소 돌진 버튼. 판정·재사용 시간은 서버가 정하고 버튼은 요청만 보낸다.
-;(function()
-  local playerGui=player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui")
-  local gui=Instance.new("ScreenGui");gui.Name="OdysseySkillGui";gui.ResetOnSpawn=false;gui.DisplayOrder=30;gui.Parent=playerGui
-  local function makeButton(name,label,offsetY,action,attr)
-    local button=Instance.new("TextButton")
-    button.Name=name;button.AnchorPoint=Vector2.new(1,.5);button.Position=UDim2.new(1,-14,.5,offsetY);button.Size=UDim2.fromOffset(56,56)
-    button.BackgroundColor3=Color3.fromRGB(70,34,30);button.BackgroundTransparency=.12;button.TextColor3=Color3.fromRGB(255,214,170)
-    button.Font=Enum.Font.GothamBold;button.TextSize=13;button.Text=label;button.AutoButtonColor=true;button.Parent=gui
-    local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(1,0);corner.Parent=button
-    local stroke=Instance.new("UIStroke");stroke.Color=Color3.fromRGB(230,120,90);stroke.Thickness=2;stroke.Parent=button
-    button.Activated:Connect(function() remote:FireServer(action) end)
-    task.spawn(function()
-      while button.Parent do
-        local ready=tonumber(player:GetAttribute(attr)) or 0
-        local left=ready-workspace:GetServerTimeNow()
-        button.Text=left>0 and tostring(math.ceil(left)) or label
-        button.BackgroundTransparency=left>0 and .5 or .12
-        task.wait(.25)
-      end
-    end)
-  end
-  makeButton("OdysseyKickButton","킥",-4,"odyssey:kick:0","OdyKickAt")
-  makeButton("OdysseyRushButton","돌진",-68,"odyssey:rush:0","OdyRushAt")
-end)()
