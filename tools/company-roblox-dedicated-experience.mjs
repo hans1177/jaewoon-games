@@ -206,7 +206,7 @@ export async function publishRobloxDedicatedPlace({
   universeId,placeId,placeFile,
   apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,
   fetchImpl=globalThis.fetch,
-  retryDelaysMs=[3000,8000,15000],
+  retryDelaysMs=[3000,8000,15000,30000,60000,90000,120000,180000],
 }={}){
   if(!validId(universeId)||!validId(placeId))throw new Error('publish target ids invalid');
   const key=clean(apiKey);
