@@ -1,0 +1,112 @@
+[
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "click_text",
+  "text": "모험 시작"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if hit then return string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if hit then return string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if hit then return string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if hit then return string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "code": "local p=game.Players.LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 then local hit=(d:IsA(\"TextButton\") and string.find(d.Text,\"건너뛰기\")) if hit then return string.format(\"%d,%d\",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end end return \"NONE\"",
+  "label": "skip"
+ },
+ {
+  "type": "wait",
+  "ms": 7000
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local p=game.Players:GetPlayers()[1] p:SetAttribute(\"TutorialStep\",99) return \"ok\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local p=game.Players:GetPlayers()[1] local Cfg for _,m in ipairs(game:GetDescendants()) do if m:IsA(\"ModuleScript\") and m.Name==\"GameConfig\" then local ok,r=pcall(require,m) if ok and r.MeadowEquipment then Cfg=r break end end end\nlocal function give(id) for i,it in ipairs(Cfg.MeadowEquipment) do if it.Id==id then local f=i>64 and \"MeadowGearOwned3\" or i>32 and \"MeadowGearOwned2\" or \"MeadowGearOwned\" local b=(i-1)%32 p:SetAttribute(f,bit32.bor(p:GetAttribute(f) or 0,bit32.lshift(1,b))) return i,it end end end\nlocal out={}\nfor _,pair in ipairs({{\"guardian_armor\",\"MeadowEquipChest\"},{\"wind_feather_gloves\",\"MeadowEquipHands\"},{\"rune_greaves\",\"MeadowEquipLegs\"},{\"wind_boots\",\"MeadowEquipFeet\"},{\"wind_feather_cape\",\"MeadowEquipCape\"}}) do local i,it=give(pair[1]) if i then p:SetAttribute(pair[2],i) table.insert(out,pair[1]..\":\"..i) else table.insert(out,pair[1]..\":MISSING\") end end\nreturn table.concat(out,\",\")"
+ },
+ {
+  "type": "wait",
+  "ms": 7000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end return \"ui off\""
+ },
+ {
+  "type": "wait",
+  "ms": 2000
+ },
+ {
+  "type": "capture",
+  "name": "front-full"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"RunService\") RS.RenderStepped:Connect(function() local cam=workspace.CurrentCamera local c=game.Players.LocalPlayer.Character local r=c and c:FindFirstChild(\"HumanoidRootPart\") if not r then return end cam.CameraType=Enum.CameraType.Scriptable local b=r.CFrame local pos=r.Position+b.RightVector*2.4+Vector3.new(0,1.6,0)-b.LookVector*7 cam.CFrame=CFrame.lookAt(pos,r.Position+Vector3.new(0,1,0)) end) return \"back\""
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "back-cape"
+ }
+]
