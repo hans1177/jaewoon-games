@@ -1,0 +1,53 @@
+# Mare Scientia 전용: 오너 컴퓨터(self-hosted runner, 라벨 studio)에서 Roblox Studio로 장소를 열어 화면·오류 로그를 모은다.
+# 외부 PR에서는 실행하지 않는다. 오너 컴퓨터에서 저장소 코드가 실행되므로 이 파일 외의 워크플로는 이 러너를 쓰지 않는다.
+name: Devloop Studio Probe (Mare Scientia)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 3,15 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: devloop-studio
+  cancel-in-progress: false
+jobs:
+  probe:
+    if: github.repository == 'hans1177/jaewoon-games' && github.event_name != 'pull_request'
+    runs-on: [self-hosted, windows, studio]
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: roblox-games/mare-scientia
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Build place with pinned Rojo
+        run: |
+          New-Item -ItemType Directory -Force -Path out | Out-Null
+          Invoke-WebRequest -Uri https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip -OutFile out\rojo.zip
+          Expand-Archive -Force out\rojo.zip out\rojo
+          .\out\rojo\rojo.exe build default.project.json -o out\MareScientia.rbxlx
+      - name: Open in Studio, screenshot, collect logs
+        run: .\tools\devloop\studio_probe.ps1 -Place out\MareScientia.rbxlx -WaitSeconds 90
+      - name: Upload evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: studio-evidence
+          path: |
+            roblox-games/mare-scientia/out/screen.png
+            roblox-games/mare-scientia/out/studio-errors.txt
+            roblox-games/mare-scientia/out/summary.json
+      - name: Commit evidence (for the next Claude run)
+        run: |
+          New-Item -ItemType Directory -Force -Path docs\devloop\studio | Out-Null
+          Copy-Item out\screen.png docs\devloop\studio\latest.png -Force -ErrorAction SilentlyContinue
+          Copy-Item out\studio-errors.txt docs\devloop\studio\latest-errors.txt -Force -ErrorAction SilentlyContinue
+          Copy-Item out\summary.json docs\devloop\studio\latest-summary.json -Force -ErrorAction SilentlyContinue
+          git config user.name "devloop-bot"
+          git config user.email "devloop-bot@users.noreply.github.com"
+          git add docs/devloop/studio
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) { git commit -m "devloop: studio evidence"; git pull -q --rebase; git push }
