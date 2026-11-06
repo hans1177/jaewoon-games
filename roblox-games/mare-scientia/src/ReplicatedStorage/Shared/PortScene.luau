@@ -929,7 +929,7 @@ function PortScene.build(info, onFacility)
 	do
 		local Lighting = game:GetService("Lighting")
 		Lighting.ClockTime = 13.5
-		Lighting.Brightness = 2.6
+		Lighting.Brightness = 2.0
 		Lighting.Ambient = Color3.fromRGB(96, 98, 110)
 		Lighting.OutdoorAmbient = Color3.fromRGB(122, 124, 138)
 		Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
@@ -955,9 +955,9 @@ function PortScene.build(info, onFacility)
 			cc.Parent = Lighting
 			local bloom = Instance.new("BloomEffect")
 			bloom.Name = "MareBloom"
-			bloom.Intensity = 0.35
+			bloom.Intensity = 0.2
 			bloom.Size = 28
-			bloom.Threshold = 1.6
+			bloom.Threshold = 2.2
 			bloom.Parent = Lighting
 			local rays = Instance.new("SunRaysEffect")
 			rays.Name = "MareRays"
@@ -1036,8 +1036,8 @@ function PortScene.build(info, onFacility)
 		importedModel(folder, "Town", "stall-stool", Vector3.new(-12, 0, 11), 2, false)
 		-- 조선소가 있는 큰 항구는 항구 어귀에 감시탑을 세운다
 		if PortData.Ports[info.portId] and PortData.Ports[info.portId].shipyard then
-			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(34, 0, -34), 18, true)
-			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(34, 0, 34), 18, true)
+			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(40, 0, -46), 12, true)
+			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(40, 0, 46), 12, true)
 			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, -28), 8, false)
 			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, 28), 8, false)
 		end
