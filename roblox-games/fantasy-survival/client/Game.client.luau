@@ -11361,6 +11361,10 @@ end)()
         local seat=workspace:GetAttribute("LordSeat_"..step.Zone)
         if typeof(seat)=="Vector3" then return seat.X,seat.Z end
       end
+      if step.Named and step.Zone then
+        local seat=workspace:GetAttribute("NamedSeat_"..step.Zone)
+        if typeof(seat)=="Vector3" then return seat.X,seat.Z end
+      end
       if step.Zone then return zoneSeed(step.Zone) end
     end
     return nil

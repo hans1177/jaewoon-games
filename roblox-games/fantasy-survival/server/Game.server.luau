@@ -109,6 +109,9 @@ local meadowEncounterSites = {
   -- [사용자 제거] 해골 몬스터 서식지 3곳도 폐쇄. 저장·기존 나머지 몬스터 배치는 유지.
   -- [마을 의뢰] 우두머리 늑대는 마을 서쪽 외곽 숲에만 스폰한다.
   {id="wolf",atom="HEAD_CANINE",tier=1,height=4.8,position=Vector3.new(-321,3,-193),questIndex=1,alpha=true},
+  -- [봉인 파편의 수호자] 우물 퀘스트(sera-join)가 요구하는 초원 명명 보스. 무작위 배치에서 빠질 수 있어 고정 위치에 둔다.
+  {id="wolf",atom="HEAD_CANINE",model="barbarian",name="봉인 파편의 수호자",tier=3,height=6,hp=3,dmg=1.5,alpha=true,bonusBoss=true,named=true,zoneTag="meadow",
+    drops={{"Crystal",1,2},{"Claw",.7,2},{"Hide",.9,2}},position=Vector3.new(-180,3,-70)},
   -- [초원 생태 야영지] 자원이 나는 곳에 그곳을 지키는 몹을 둔다(서브퀘 mine/den/batcave와 연결).
   -- 폐광 고블린: 광석 드랍. 소굴 늑대: 가죽·고기·송곳니. 동굴 박쥐: 날개·수정.
   {id="wolf",atom="HEAD_CANINE",model="roguehooded",name="폐광 약탈 고블린",tier=2,height=3,hp=1.1,dmg=.9,drops={{"Ore",.6,1},{"Hide",.3,1}},position=Vector3.new(198,3,-128)},
@@ -3402,12 +3405,14 @@ local function refreshArmorVisual(player)
   if not chest then warn("ARMORVIS no chest equipped") return end
   local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
   if not torso then warn("ARMORVIS no torso") return end
-  local model=worldAsset(armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather",(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),3.7)
+  local model=worldAsset(armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather",(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),2.5)
   local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
   if not mesh then warn("ARMORVIS no mesh model="..tostring(model)) if model then model:Destroy() end return end
-  warn("ARMORVIS ok "..tostring(chest.Id))
   local visual=mesh:Clone()
   model:Destroy()
+  -- 텍스처가 없는 메시라 회색으로 보이므로 등급별 소재 색을 입힌다.
+  visual.Color=({Common=Color3.fromRGB(140,100,64),Uncommon=Color3.fromRGB(140,100,64),Rare=Color3.fromRGB(165,172,186),
+    Epic=Color3.fromRGB(58,58,72),Legendary=Color3.fromRGB(226,184,76)})[chest.Rarity or "Common"] or visual.Color
   visual.Name="MeadowArmorVisual"
   visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
   visual.Parent=character
@@ -9793,3 +9798,15 @@ do
     end
   end)
 end
+
+-- [지역 명명 보스 위치 공개] 지역 이름만 걸린 처치 퀘스트(예: 봉인 파편의 수호자)가 실제 보스 위치를 가리키도록
+-- 각 지역의 첫 명명 보스(영주 제외) 위치를 NamedSeat_<지역> 속성으로 알린다. 클라이언트 목표 마커가 이 값을 읽는다.
+task.delay(8,function()
+  local seen={}
+  for _,site in ipairs(meadowEncounterSites) do
+    if site.named and not site.lord and site.zoneTag and site.position and not seen[site.zoneTag] then
+      seen[site.zoneTag]=true
+      workspace:SetAttribute("NamedSeat_"..site.zoneTag,Vector3.new(site.position.X,0,site.position.Z))
+    end
+  end
+end)
