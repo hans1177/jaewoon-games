@@ -415,3 +415,23 @@ Game-icons 원본 33종: https://game-icons.net/about.html , 고정 리비전 `8
 | `goods/wool.png` | `delapouite/wool.svg` | `2d0d52cb6c7f95652cac363c2f22d99f8c63f33d` | `642d8c61c61ec8a14589076ff0860ccdd4eaceccb64e961d34f7dc9d9a9aa290` |
 
 
+
+
+## 2026-11-06 추가 확보: 금속 적재·원광·보석 화물 12종
+
+KayKit Resource Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylousberg.itch.io/resource-bits , 원본 미러 https://github.com/GeorgeQLe/assets-kaykit-3d-props , 고정 리비전 `4376b8becf4218424edaba18c0e43a5989c189f6`. 원본 GLTF·BIN 24개와 공유 텍스처 1개 Git SHA 일치 확인. 원본 메시·재질·UV를 변경하지 않고 버퍼와 텍스처만 GLB에 내장했다. 기존 파일명과 중복하지 않는 12종이며 신규 상품·가격·보상 규칙을 만들지 않는다. 모델 원본 확보와 실제 Roblox 등록/개별 사용 권한/게임 배치는 별도 단계다.
+
+| 파일 | 원본 GLTF Git SHA | 원본 BIN Git SHA | GLB SHA-256 |
+|---|---|---|---|
+| `cargo/copper-bars-stack-large.glb` | `5593072e47a8b07323849da48c8a373f4ffffb8f` | `1c4f881108b922dd320a40480a79954c28557529` | `967dc1e3f235cf2077ed6f0ed50f67c08ed26245ee66a0b2ca08f1b15c2ad1e2` |
+| `cargo/gold-bars-stack-large.glb` | `6039f562582993c8146aaef12e88cda508d3dce1` | `298560bb67df92813ce743078880f67a03335d2b` | `6a17926f88e598f7b0bc5c4a5f317161e44f72fda45713fb5b3e2da52b1bda4e` |
+| `cargo/iron-bars-stack-large.glb` | `dccb0c2c9f67f9b136f771d5f48ce00f3bcabbcf` | `74cfa733530face980a0bdd64dd5ab6f1536ff09` | `22be1deeb426c172f1596715e159efa913eb364458fabf01900d47f335dd1112` |
+| `cargo/silver-bars-stack-large.glb` | `f1ccf2e6df716948fce2d9552981f3fb9262f843` | `d1c0cf7b19dd304c7c51cbf53be29703b953801e` | `978f0d5592b169f3092f386beb2c20ff0531805281b5800be76b963654d6cf6d` |
+| `cargo/copper-nugget-large.glb` | `31ff9b6533a63286c19ef2be61c0195e6992e2cf` | `ea10a0160cdb63a11bd87bc45567dbae8340b115` | `e655a113d8ccd4a517fabbb590924621dbe4e01af8777fa6f0af50bb93d643c7` |
+| `cargo/gold-nugget-large.glb` | `6e1810f368b7b46a6c8aa15d0cfe028cdc15fdaf` | `0d4196d37e33e0045aeeee2bdd48b0c69d3a7abf` | `583c0a1fefaeaf1a1002b450e426edf1c9e2e9d95bba2000b7a269482acd99d7` |
+| `cargo/iron-nugget-large.glb` | `babbac0923225f23180381755e796bdcb86c144d` | `41e8d81ef1f7586bb62ab4c23ca1ab8262547de3` | `72f2a5fdaa757e638688a2334a3c4fd00eb9415f43d42b66e0d9696aee26a8ca` |
+| `cargo/silver-nugget-large.glb` | `99c41f6301962dcebe5bd147c4faeeed15e30b8e` | `7da38c5ce114a033e713d404540adcecb77c7720` | `77e5686bcd6b3f01e7a959a0ffac035f53da961b49ccfa67343f51e4f4d4f6b8` |
+| `cargo/gems-chest.glb` | `ba43724f7a03d16f206df22569328925f6aa007a` | `6bc450de0a37ad54751e1c754852f9541aab1eba` | `eccf6cdb798db5cfbd002ac2d4654bfdf6743043292bfe244c1138880d08a55b` |
+| `cargo/gems-chest-empty.glb` | `6bb4e1c08ae82a62e15812bd216729fd59081101` | `f3499738d3326283c5ff56275058424172f7ef3f` | `5bea5fba04eb59b86f0b9b3033695457f494fab7aced9bd387a3e9637b68d714` |
+| `cargo/gems-pile-large.glb` | `bf6a4e60ef5a2b7c75a72399b57764f821b66133` | `d6b4f5a75b747c96d02cb3c8e5695e0c944de8da` | `81cdf4e5eb014cfc2a29ce1f6aacb1c8644dab3935bd37307dc32c25a8e40fbb` |
+| `cargo/gems-pile-small.glb` | `962e19e08fc77bc151ad9ce2bb637544fd51c122` | `59981a82ec4c20de3fb1eef76f4c291167fb763d` | `5c17b5815d452f184e4bea1708ee92d28ac0f3343285e5d4f3b4af09a9f33c56` |
