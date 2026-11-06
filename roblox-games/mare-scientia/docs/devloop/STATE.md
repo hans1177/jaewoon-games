@@ -20,6 +20,17 @@
 4. 검사 통과 확인 → 커밋·푸시 → (15분 규칙 지켜서) 배포.
 5. "최근 기록"에 한 줄 남기고 `QUALITY.md`를 다시 생성한다 (`tests/run.sh quality > docs/devloop/QUALITY.md`).
 
+## 그래픽 구현력 도구 (이미 있음)
+- `docs/devloop/asset-sizes.json`: 등록 에셋 388종의 실제 크기(X,Y,Z 스터드, importedModel 배율 전 원본). 예: Town/house 5.9×5.6×6.5, Town/wall·wall-door·wall-window-shutters·balcony-wall 은 두께 0.1의 1×1 벽 패널, Town/roof-gable 1.1×0.6×1.1, Town/chimney 0.2×1×0.3, Naval/tower-complete-large 3.6×10.2×3.6. 배치·배율은 이 표로 계산한다(추측 금지). 새 에셋이 등록되면 `studio-scripts/asset-sizes.json`을 `devloop-studio.yml`(script 입력)로 돌려 갱신한다.
+- 사진 확인 루프: `devloop-studio.yml` → 브랜치 `mare-studio-frames`.
+
+## 그래픽 품질 우선순위 (건축·오브젝트·배경)
+1. **모듈식 건물 빌더** (`Shared/Buildings.luau` 새로 만들기): 벽 패널·문·창·발코니·지붕·굴뚝 조각을 조합해 폭·깊이·층수·지붕 종류가 다른 집을 생성(같은 모양 상자 집 금지). 항구 style별 색·재질 변주, 문이 길을 향하도록 방향 지정. PortScene의 house()가 이것을 쓰게 한다.
+2. **바닥·배경**: 집 뒤 평평한 모래 대신 풀·흙·돌길 패치, 골목 포장, 성벽 밖 언덕·숲 밀도. 지평선 쪽 원경 실루엣.
+3. **조명**: 과노출 완화(Brightness·Bloom·ColorCorrection), 그림자·안개로 깊이감, 시간대 변주(낮/해질녘).
+4. **스케일 비율**: 탑·배·집·사람 크기 비율 표준화(사람 키 5.8 기준 집 문 높이 ≈ 7, 탑 ≈ 30 등).
+5. **오브젝트 군집**: 시장·부두·창고를 소품 군집(상자 더미, 통, 그물, 수레)으로 묶어 배치, 빈 공간 비율 점검.
+
 ## 할 일 (위가 먼저)
 0. 위 '첫 실제 화면 관찰'의 문제1~4를 고치고 `devloop-studio.yml`을 다시 돌려 사진으로 확인한다(수정→배포 없이 캡처로 먼저 검증).
 1. 품질표 하위 10개 항구에 탐험지·이야기·퀘스트 보강 (점수 70 미만 없애기).
