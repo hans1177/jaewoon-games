@@ -3779,10 +3779,12 @@ do
   fold.Name="QuestFoldButton";fold.AnchorPoint=Vector2.new(1,0);fold.Position=UDim2.fromOffset(0,0)
   fold.Size=UDim2.fromOffset(70,26);fold.AutomaticSize=Enum.AutomaticSize.None;fold.BackgroundColor3=Color3.fromRGB(34,52,44);fold.BackgroundTransparency=.08
   fold.BorderSizePixel=0;fold.AutoButtonColor=true;fold.Font=Enum.Font.GothamMedium;fold.TextSize=13;fold.TextWrapped=false;fold.TextColor3=Color3.fromRGB(245,236,200)
-  fold.Text="접기";fold.ZIndex=questTracker.ZIndex+8;fold.Parent=gui
+  fold.Text="접기";fold.ZIndex=questTracker.ZIndex+8
   Instance.new("UICorner",fold).CornerRadius=UDim.new(0,8)
   local foldStroke=Instance.new("UIStroke");foldStroke.Color=Color3.fromRGB(220,176,91);foldStroke.Thickness=1.2;foldStroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;foldStroke.Parent=fold
-  local foldLimit=Instance.new("UISizeConstraint");foldLimit.MaxSize=Vector2.new(80,30);foldLimit.Parent=fold
+  -- 공용 터치 최소 크기(52) 자동 부여를 피하려고 같은 이름의 제한을 먼저 달아 둔다.
+  local foldLimit=Instance.new("UISizeConstraint");foldLimit.Name="VerifiedLearningTouchTarget";foldLimit.MinSize=Vector2.new(56,22);foldLimit.MaxSize=Vector2.new(80,30);foldLimit.Parent=fold
+  fold.Parent=gui
   fold.Activated:Connect(function()
     meadowArt.questFolded=not (meadowArt.questFolded==true)
     layoutMeadowJournal()
@@ -12445,6 +12447,13 @@ end)()
       px,py=cx+vx*scale,cy+vy*scale
       rot=math.deg(math.atan2(vy,vx))-90
     end
+    -- 왼쪽 퀘스트창 위에 목표 마커·거리표가 겹치지 않도록 창 오른쪽 바깥으로 밀어낸다.
+    do
+      local qp,qs=questTracker.AbsolutePosition-guiRoot.AbsolutePosition,questTracker.AbsoluteSize
+      if questTracker.Visible and px<qp.X+qs.X+100 and py>qp.Y-70 and py<qp.Y+qs.Y+80 then
+        px=qp.X+qs.X+100
+      end
+    end
     marker.Position=UDim2.fromOffset(px,py)
     -- 안: ▼ 핀이 통통 튄다. 밖: 같은 큰 화살표(▼)를 목표 방향으로 돌린다.
     pin.Rotation=inside and 0 or rot
@@ -12494,8 +12503,12 @@ end)()
   end
   local function center(o) return Vector2.new(o.AbsolutePosition.X+o.AbsoluteSize.X/2,o.AbsolutePosition.Y+o.AbsoluteSize.Y/2) end
   local function anyTalent()
-    for _,n in ipairs({"MeadowTalentMartial","MeadowTalentSigns","MeadowTalentDefense","MeadowTalentAgility"}) do
-      if (tonumber(player:GetAttribute(n)) or 0)>0 then return true end
+    -- 스킬창 머리글 "90개 중 습득 N단계"를 읽어 실제 습득 여부를 판단한다.
+    local header=player.PlayerGui:FindFirstChild("TalentPoints",true)
+    local n=header and tonumber(tostring(header.Text):match("습득%s*(%d+)"))
+    if n and n>0 then return true end
+    for _,name in ipairs({"MeadowTalentMartial","MeadowTalentSigns","MeadowTalentDefense","MeadowTalentAgility"}) do
+      if (tonumber(player:GetAttribute(name)) or 0)>0 then return true end
     end
     return false
   end
@@ -12527,7 +12540,7 @@ end)()
     {"길 안내 켜고 끄기","지도 왼쪽 '길 안내' 버튼을 눌러 봐. 끄면 표시가 사라지고, 다시 누르면 켜져.",function() local c=guideChip.Visible and center(guideChip) or nil;return c,"up" end,"guide"},
     {"메뉴 열기","오른쪽 위 '가방'을 눌러 메뉴를 열어 봐.",function() local l=findText("TextLabel","가방");return l and (center(l)+Vector2.new(0,-26)) or Vector2.new(guiRoot.AbsoluteSize.X*.62,40),"up" end,"menu"},
     {"스킬 탭","메뉴 아래쪽 탭에서 '스킬'을 눌러.",function() local t=findText("TextButton","스킬");return t and center(t) or nil,"down" end,"skillpage"},
-    {"기술 배우기","금색 칸(무술 첫 기술)을 눌러 고르고 '습득'을 눌러. 첫 점수는 선물이야!",function()
+    {"기술 배우기","'전사' 탭의 맨 위 첫 기술을 눌러 고르고, 아래 '습득' 버튼을 눌러. 첫 점수는 선물이야!",function()
       local function shown(o)
         while o and o:IsA("GuiObject") do
           if not o.Visible then return false end
