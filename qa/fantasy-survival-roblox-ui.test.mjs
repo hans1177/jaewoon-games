@@ -746,3 +746,26 @@ test('fantasy saved game start shows progress and retries only a failed server p
   assert.match(server,/if not store then error\("SURVIVAL_DATASTORE_UNAVAILABLE"\) end/);
   assert.match(server,/return store:UpdateAsync\("player:"\.\.player\.UserId/);
 });
+
+
+// [스폰 회귀] 초기 지면 검사 실패나 서버 스크립트 지연이 아바타 생성을 영구 차단하지 않도록 검증한다.
+// 정적 계약만 확인하며 실제 Roblox 접속·부활·착지 QA의 PASS를 대체하지 않는다.
+test('fantasy spawn must never suppress engine avatar creation',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const project=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/default.project.json','utf8'));
+  const spawn=project.tree.Workspace.NativeFoundationSpawn;
+  assert.equal(spawn.$className,'SpawnLocation');
+  assert.equal(spawn.$properties.Enabled,true);
+  assert.equal(spawn.$properties.CanCollide,true);
+  assert.deepEqual(spawn.$properties.Position,[0,3,-75]);
+  assert.match(server,/Players\.CharacterAutoLoads\s*=\s*true/);
+  assert.doesNotMatch(server,/Players\.CharacterAutoLoads\s*=\s*false/);
+  assert.match(server,/nativeFoundationSpawn\.CanCollide\s*=\s*true/);
+  assert.ok(server.indexOf('createStartingMeadow()')<server.indexOf('Players.PlayerAdded:Connect(bindNativeFoundationPlayer)'));
+  assert.match(server,/for attempt=1,10 do[\s\S]*?spawnHit = workspace:Raycast/);
+  assert.match(server,/height>clearance\+9 or height<clearance-5/);
+  assert.match(server,/task\.delay\(4,function\(\)[\s\S]*?for attempt=1,3 do[\s\S]*?player:LoadCharacterAsync\(\)/);
+  assert.match(server,/task\.delay\(Players\.RespawnTime\+5,[\s\S]*?player:LoadCharacterAsync\(\)/);
+  assert.match(server,/character:GetAttribute\("MeadowResumeApplied"\)==true/);
+  assert.match(server,/Players\.PlayerAdded:Connect\(onSurvivalPlayerAdded\)/);
+});

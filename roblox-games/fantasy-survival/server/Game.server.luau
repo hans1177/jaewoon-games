@@ -1,8 +1,8 @@
 -- 파일명: roblox-games/fantasy-survival/server/Game.server.luau
 local Players = game:GetService("Players")
--- [스폰: 지면 생성 선행] 캐릭터 자동 출현보다 서버 초원 Terrain 생성과 SpawnLocation 연결을 먼저 끝낸다.
--- 기존 사망 후 복구는 아래 플레이어 스폰 책임 함수가 같은 경로로 수행한다.
-Players.CharacterAutoLoads = false
+-- [스폰: 캐릭터 소실 방지] 서버 초기화가 늦거나 실패해도 엔진의 기본 아바타 생성을 차단하지 않는다.
+-- 기존 SpawnLocation은 Rojo 프로젝트에 미리 존재하고, 서버는 지면 생성 후 실제 착지를 보정한다.
+Players.CharacterAutoLoads = true
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
 local store = nil
@@ -252,7 +252,7 @@ nativeFoundationSpawn.Transparency = 1 -- Engine spawn locator only, never visib
 nativeFoundationSpawn.Position = Vector3.new(0, 3, -75)
 nativeFoundationSpawn.Anchored = true
 nativeFoundationSpawn.Enabled = true
-nativeFoundationSpawn.CanCollide = false
+nativeFoundationSpawn.CanCollide = true
 nativeFoundationSpawn.CanTouch = false
 nativeFoundationSpawn.CanQuery = false
 nativeFoundationSpawn.Neutral = true
@@ -290,17 +290,34 @@ local function bindNativeFoundationCharacter(character)
   params.IgnoreWater = true
   if character:GetAttribute("MeadowResumeApplied") ~= true then
     local spawnPosition = nativeFoundationSpawn.Position
-    local spawnHit = workspace:Raycast(Vector3.new(spawnPosition.X, 44, spawnPosition.Z),
-      Vector3.new(0, -110, 0), params)
+    local spawnHit
+    for attempt=1,10 do
+      if player.Character~=character or humanoid.Health<=0 then return end
+      spawnHit = workspace:Raycast(Vector3.new(spawnPosition.X, 44, spawnPosition.Z),
+        Vector3.new(0, -110, 0), params)
+      if spawnHit and spawnHit.Normal.Y>=.65 then break end
+      if attempt<10 then task.wait(.2) end
+    end
     if spawnHit and spawnHit.Normal.Y >= .65 then
       local leg = character:FindFirstChild("Left Leg")
       local legHeight = humanoid.RigType == Enum.HumanoidRigType.R6 and leg and leg.Size.Y or 0
       local clearance = humanoid.HipHeight + rootPart.Size.Y * .5 + legHeight + .15
-      rootPart.CFrame = CFrame.new(spawnPosition.X, spawnHit.Position.Y + clearance, spawnPosition.Z)
-        * rootPart.CFrame.Rotation
-      rootPart.AssemblyLinearVelocity = Vector3.zero
-      rootPart.AssemblyAngularVelocity = Vector3.zero
+      -- [엔진 최종 배치 보정] 첫 위치는 즉시 고정하고, 늦은 배치로 공중에 뜨면 재착지한다.
+      -- 이미 지면에 착지해 움직이는 플레이어와 저장된 이어하기 위치는 다시 이동시키지 않는다.
+      for attempt=1,5 do
+        if player.Character~=character or humanoid.Health<=0
+          or character:GetAttribute("MeadowResumeApplied")==true then break end
+        local height=rootPart.Position.Y-spawnHit.Position.Y
+        if attempt==1 or height>clearance+9 or height<clearance-5 then
+          rootPart.CFrame = CFrame.new(spawnPosition.X, spawnHit.Position.Y + clearance, spawnPosition.Z)
+            * rootPart.CFrame.Rotation
+          rootPart.AssemblyLinearVelocity = Vector3.zero
+          rootPart.AssemblyAngularVelocity = Vector3.zero
+        end
+        if attempt<5 then task.wait(.25) end
+      end
     else
+      -- 최초 기본 출현은 엔진에 맡긴다. 충돌 가능한 기본 SpawnLocation은 유지한다.
       warn("MEADOW_SPAWN_GROUND_UNVERIFIED")
     end
   end
@@ -510,12 +527,16 @@ local function bindNativeFoundationPlayer(player)
   end
   local function onCharacterAdded(character)
     player.RespawnLocation = nativeFoundationSpawn
-    -- [리스폰] 엔진 자동 출현을 막은 대신 동일한 서버 스폰에서 기존 부활 대기 후 재생성한다.
+    -- [리스폰] 엔진이 동일 SpawnLocation에서 자동 재생성한다.
+    -- 기본 부활 시간 이후에도 새 아바타가 없을 때만 기존 서버 생성 API로 복구한다.
     local respawnHumanoid = character:WaitForChild("Humanoid", 10)
     if respawnHumanoid then
       respawnHumanoid.Died:Connect(function()
-        task.delay(Players.RespawnTime+1, function()
-          if player.Parent~=Players or player.Character~=character or respawnHumanoid.Health>0 then return end
+        task.delay(Players.RespawnTime+5, function()
+          if player.Parent~=Players then return end
+          local current=player.Character
+          if current and current~=character then return end
+          if current==character and respawnHumanoid.Health>0 then return end
           local recovered, reason = pcall(function() player:LoadCharacterAsync() end)
           if not recovered then warn("SURVIVAL_RESPAWN_RECOVERY_FAILED: "..tostring(reason)) end
         end)
@@ -533,21 +554,35 @@ local function bindNativeFoundationPlayer(player)
   if player.Character then
     task.defer(onCharacterAdded, player.Character)
   else
-    -- [최초 등장] 기존 초원 Terrain에 실제 지면이 있을 때만 캐릭터를 생성한다.
-    -- SpawnLocation은 위치 마커이며 충돌·장식용 파츠로 바꾸지 않는다.
-    task.defer(function()
+    -- [최초 등장] 엔진 자동 생성을 우선하고, 미생성 상태만 서버가 복구한다.
+    -- 지면 확인은 재시도하며, 일시적인 Raycast 실패로 아바타를 영원히 차단하지 않는다.
+    task.delay(4,function()
       if player.Parent~=Players or player.Character then return end
-      local params = RaycastParams.new()
-      params.FilterType = Enum.RaycastFilterType.Include
-      params.FilterDescendantsInstances = {meadowTerrain}
-      local at = nativeFoundationSpawn.Position
-      local ground = workspace:Raycast(at+Vector3.new(0,48,0),Vector3.new(0,-110,0),params)
+      local params=RaycastParams.new()
+      params.FilterType=Enum.RaycastFilterType.Include
+      params.FilterDescendantsInstances={meadowTerrain}
+      local at=nativeFoundationSpawn.Position
+      local ground
+      for attempt=1,10 do
+        if player.Parent~=Players or player.Character then return end
+        ground=workspace:Raycast(at+Vector3.new(0,48,0),Vector3.new(0,-110,0),params)
+        if ground and ground.Normal.Y>=.65 then break end
+        if attempt<10 then task.wait(.2) end
+      end
       if not ground or ground.Normal.Y<.65 then
         warn("MEADOW_INITIAL_SPAWN_GROUND_UNVERIFIED")
         return
       end
-      local spawned, reason = pcall(function() player:LoadCharacterAsync() end)
-      if not spawned then warn("MEADOW_INITIAL_CHARACTER_LOAD_FAILED: "..tostring(reason)) end
+      for attempt=1,3 do
+        if player.Parent~=Players or player.Character then return end
+        local spawned,reason=pcall(function() player:LoadCharacterAsync() end)
+        if spawned then return end
+        if attempt==3 then
+          warn("MEADOW_INITIAL_CHARACTER_LOAD_FAILED: "..tostring(reason))
+        else
+          task.wait(2)
+        end
+      end
     end)
   end
 end
