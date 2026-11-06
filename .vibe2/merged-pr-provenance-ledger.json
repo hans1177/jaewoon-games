@@ -164990,11 +164990,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_740ff4298d845c0e0bb990e0",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-12094",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "60271943b9821c77fc6f1a13cd95892748f9787a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12094,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/fantasy-spawn-recovery-20261106",
+        "baseSha": "60271943b9821c77fc6f1a13cd95892748f9787a",
+        "headSha": "f1841401a62f767876d52692b6df54c3a1a05205",
+        "mergeCommitSha": "781c8832fbc8fef325b8a8418d0103e41257c8ec",
+        "mergedAt": "2026-11-06T07:56:26Z",
+        "authorLogin": "hans1177",
+        "titleHash": "471e4303930e7049430f7a50bc3454d41cec93248164711bd334ae22f61b03b9",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/fantasy-spawn-recovery-20261106",
+        "candidateSha": "f1841401a62f767876d52692b6df54c3a1a05205"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 515,
+        "deletedLineCount": 125,
+        "changedFiles": [
+          "qa/fantasy-survival-roblox-ui.test.mjs",
+          "roblox-games/fantasy-survival/default.project.json",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/mare-scientia/assets-registered.json",
+          "roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-scientia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-scientia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-scientia/src/ServerScriptService/AssetLoader.server.luau",
+          "tools/mare-scientia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/fantasy-survival-roblox-ui.test.mjs",
+          "roblox-games/fantasy-survival/default.project.json",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/mare-scientia/assets-registered.json",
+          "roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-scientia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-scientia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-scientia/src/ServerScriptService/AssetLoader.server.luau",
+          "tools/mare-scientia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12094",
+        "merge-commit:781c8832fbc8fef325b8a8418d0103e41257c8ec",
+        "base-main:60271943b9821c77fc6f1a13cd95892748f9787a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1316
+    "total": 1317
   }
 }
