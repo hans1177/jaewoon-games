@@ -57,6 +57,9 @@ local view = nil -- 서버가 보낸 최신 스냅샷
 local currentTab = "status"
 local syncScene
 local openTab
+local applyView
+local overview = true -- 항구 전경(고정 시점) / 걷기 전환
+local sceneSpawn = nil
 local assetWaitStarted = false
 local sceneKey = nil
 local sceneCtl = nil -- 현재 3D 장면의 제어(출항 연출 등)
@@ -351,7 +354,7 @@ dockPad.PaddingLeft, dockPad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8)
 dockPad.Parent = dock
 
 local DOCK = {
-	{ "trade", "교역" }, { "harbor", "항구" }, { "route", "항해" }, { "map", "지도" },
+	{ "view", "걷기" }, { "trade", "교역" }, { "harbor", "항구" }, { "route", "항해" }, { "map", "지도" },
 	{ "yard", "조선소" }, { "explore", "탐험" }, { "codex", "도감" }, { "tech", "연구" },
 	{ "quest", "퀘스트" }, { "battle", "전투" }, { "status", "상태" },
 }
@@ -373,7 +376,13 @@ for i, d in DOCK do
 	bs.Transparency = 0.35
 	bs.Parent = b
 	b.Activated:Connect(function()
-		openTab(d[1])
+		if d[1] == "view" then
+			overview = not overview
+			b.Text = if overview then "걷기" else "전경"
+			applyView()
+		else
+			openTab(d[1])
+		end
 	end)
 end
 
@@ -1924,10 +1933,46 @@ syncScene = function()
 	sceneKey = key
 	sceneCtl = res.controls
 	arriveNext = false
+	sceneSpawn = res.spawn
 	local char = player.Character
 	if char and char:FindFirstChild("HumanoidRootPart") then
 		char:PivotTo(res.spawn)
 	end
+	applyView()
+end
+
+-- 항구 전경: 대항해시대 온라인처럼 항구 전체를 보여 주는 고정 시점 (천천히 흔들린다)
+do
+	local camBase = CFrame.lookAt(Vector3.new(72, 20, 54), Vector3.new(-28, 9, -4))
+	applyView = function()
+		local camera = workspace.CurrentCamera
+		local char = player.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		if overview then
+			camera.CameraType = Enum.CameraType.Scriptable
+			camera.FieldOfView = 62
+			if root then
+				char:PivotTo(CFrame.new(-200, 8, 0)) -- 마을 뒤에 숨겨 둔다
+			end
+		else
+			camera.CameraType = Enum.CameraType.Custom
+			camera.FieldOfView = 70
+			local hum = char and char:FindFirstChildOfClass("Humanoid")
+			if hum then
+				camera.CameraSubject = hum
+			end
+			if char and sceneSpawn then
+				char:PivotTo(sceneSpawn)
+			end
+		end
+	end
+	game:GetService("RunService").RenderStepped:Connect(function()
+		local camera = workspace.CurrentCamera
+		if overview and not sceneHold and camera.CameraType == Enum.CameraType.Scriptable then
+			local t = os.clock()
+			camera.CFrame = camBase * CFrame.new(math.sin(t * 0.25) * 5, math.sin(t * 0.4) * 0.7, 0)
+		end
+	end)
 end
 
 function render()
