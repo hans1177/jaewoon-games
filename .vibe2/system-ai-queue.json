@@ -1957,7 +1957,7 @@
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": null,
       "taskType": null,
@@ -2003,12 +2003,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:42310475964:1",
+      "reservedAt": "2026-11-06T23:21:21.524Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -3286,7 +3286,8 @@
         "system-ai-handoff-to-reservation:system-ai:41921118927:1",
         "actions-run:41921118927",
         "system-ai-handoff-to-reservation:system-ai:42088152788:1",
-        "actions-run:42088152788"
+        "actions-run:42088152788",
+        "system-ai-handoff-to-reservation:system-ai:42310475964:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1446,
@@ -3301,7 +3302,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-11-05T19:06:15.658Z"
+      "updatedAt": "2026-11-06T23:21:21.524Z"
     },
     {
       "id": "marketing-amusement-tycoon-pre-release-v1",
@@ -122794,7 +122795,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -122837,12 +122838,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:42310475964:1",
+      "reservedAt": "2026-11-06T23:21:21.524Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -123323,14 +123324,17 @@
         "system-ai-handoff-to-reservation:system-ai:42304559545:1",
         "actions-run:42304559545",
         "system-ai-handoff-to-reservation:system-ai:42306018282:1",
-        "actions-run:42306018282"
+        "actions-run:42306018282",
+        "system-ai-impact-score:1918",
+        "system-ai-blocked-task-count:42",
+        "system-ai-handoff-to-reservation:system-ai:42310475964:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1862,
+      "impactScore": 1918,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 40,
-        "recurrenceCount": 40,
+        "blockedTaskCount": 42,
+        "recurrenceCount": 42,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -123338,7 +123342,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-06T22:47:48.448Z"
+      "updatedAt": "2026-11-06T23:21:21.524Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
