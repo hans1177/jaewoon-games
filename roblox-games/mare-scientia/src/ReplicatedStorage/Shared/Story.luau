@@ -281,6 +281,116 @@ local Events: { Event } = {
 			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_astrolabe", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
+	{
+		id = "npc_barcelona_shipwright", title = "바르셀로나의 조선공", portId = "barcelona", art = "forge", npc = "조선공",
+		lines = {
+			"\"갤리선이든 범선이든, 뼈대가 곧 배의 목숨이오.\"",
+			"조선공이 거대한 용골 앞에서 손을 털었다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_birch", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_birch", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_algiers_corsair", title = "알제의 옛 사략선원", portId = "algiers", art = "tavern", npc = "옛 사략선원",
+		lines = {
+			"\"바다에서 제일 무서운 건 폭풍이 아니라 깃발 없는 배지.\"",
+			"그가 낮은 목소리로 웃었다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_maelstrom", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_maelstrom", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_tunis_digger", title = "튀니스의 발굴꾼", portId = "tunis", art = "ruins", npc = "발굴꾼",
+		lines = {
+			"\"모래 아래엔 아직도 옛 도시가 잠들어 있소.\"",
+			"발굴꾼이 깨진 항아리 조각을 건넨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_pewter_plate", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_pewter_plate", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_palermo_monk", title = "팔레르모의 수도사", portId = "palermo", art = "library", npc = "수도사",
+		lines = {
+			"\"이곳엔 세 문명의 책이 한 서가에 꽂혀 있지요.\"",
+			"수도사가 두꺼운 필사본을 펼친다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_hansa_seal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_hansa_seal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_valletta_knight", title = "발레타의 기사", portId = "valletta", art = "palace", npc = "성채 기사",
+		lines = {
+			"\"이 성채는 바다를 지키려고 바위를 깎아 세웠다오.\"",
+			"기사가 투구를 벗고 인사한다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_viking_helm", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_viking_helm", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_ragusa_merchant", title = "라구사의 상인", portId = "ragusa", art = "market", npc = "라구사 상인",
+		lines = {
+			"\"우리는 누구와도 싸우지 않고 모두와 거래하지요.\"",
+			"상인이 소금 가마를 가리킨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "min_chalk", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_chalk", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_athens_scholar", title = "아테네의 학자", portId = "athens", art = "ruins", npc = "학자",
+		lines = {
+			"\"이 돌기둥들은 아직도 철학자들의 말소리를 기억한다오.\"",
+			"학자가 대리석 조각을 쓰다듬는다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_ogham_stone", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_ogham_stone", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_istanbul_trader", title = "이스탄불의 향신료 상인", portId = "istanbul", art = "market", npc = "향신료 상인",
+		lines = {
+			"\"동쪽의 길은 이 도시를 지나야만 서쪽으로 이어지지요.\"",
+			"상인이 향신료 자루를 열어 향을 맡게 한다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_amber_room", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_amber_room", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_alexandria_sage", title = "알렉산드리아의 현자", portId = "alexandria", art = "library", npc = "현자",
+		lines = {
+			"\"불타 사라진 책들도 사람들의 기억 속에는 남았다네.\"",
+			"현자가 별자리 그림을 펼친다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_astrolabe", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_astrolabe", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_tangier_guide", title = "탕헤르의 길잡이", portId = "tangier", art = "harbor", npc = "길잡이",
+		lines = {
+			"\"헤라클레스의 기둥을 지나면 이제 바다가 끝없이 이어지지.\"",
+			"길잡이가 수평선을 가리킨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_maelstrom", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_maelstrom", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
 }
 
 local ById: { [string]: Event } = {}

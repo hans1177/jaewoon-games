@@ -291,6 +291,22 @@ local Sites: { Site } = {
 	{ id = "porto_ribeira", name = "히베이라 부두", portId = "porto", minLevel = 2, days = 1, pool = { "relic_astrolabe", "relic_pewter_plate" } },
 	{ id = "cadiz_bay", name = "카디스 만", portId = "cadiz", minLevel = 1, days = 1, pool = { "zoo_lobster", "geo_tidal_flat" } },
 	{ id = "cadiz_treasure_fleet", name = "보물 함대 부두", portId = "cadiz", minLevel = 3, days = 2, pool = { "relic_astrolabe", "relic_amber_room" } },
+	{ id = "barcelona_gothic", name = "바르셀로나 고딕 지구", portId = "barcelona", minLevel = 1, days = 1, pool = { "geo_estuary", "zoo_lobster" } },
+	{ id = "barcelona_montjuic", name = "몬주익 언덕", portId = "barcelona", minLevel = 2, days = 1, pool = { "min_sandstone", "bot_heather" } },
+	{ id = "valencia_albufera", name = "알부페라 습지", portId = "valencia", minLevel = 1, days = 1, pool = { "zoo_gannet", "geo_tidal_flat", "bot_cranberry" } },
+	{ id = "algiers_kasbah", name = "알제 카스바", portId = "algiers", minLevel = 2, days = 1, pool = { "relic_astrolabe", "min_sandstone" } },
+	{ id = "tunis_carthage", name = "카르타고 유적", portId = "tunis", minLevel = 3, days = 2, pool = { "relic_ogham_stone", "min_basalt", "relic_pewter_plate" } },
+	{ id = "tripoli_oasis", name = "트리폴리 오아시스", portId = "tripoli", minLevel = 2, days = 2, pool = { "bot_dune_grass", "min_sandstone" } },
+	{ id = "palermo_cathedral", name = "팔레르모 대성당", portId = "palermo", minLevel = 2, days = 1, pool = { "site_rouen_cathedral", "zoo_oyster" } },
+	{ id = "palermo_etna", name = "에트나 산기슭", portId = "palermo", minLevel = 3, days = 2, pool = { "min_basalt", "min_flint" } },
+	{ id = "valletta_bastions", name = "발레타 성채", portId = "valletta", minLevel = 2, days = 1, pool = { "site_edinburgh_castle", "zoo_lobster" } },
+	{ id = "ragusa_walls", name = "라구사 성벽", portId = "ragusa", minLevel = 2, days = 1, pool = { "site_copenhagen_castle", "geo_skerries" } },
+	{ id = "athens_acropolis", name = "아크로폴리스", portId = "athens", minLevel = 3, days = 2, pool = { "relic_ogham_stone", "min_chalk", "relic_astrolabe" } },
+	{ id = "istanbul_bazaar", name = "이스탄불 대시장", portId = "istanbul", minLevel = 2, days = 1, pool = { "relic_amber_room", "relic_pewter_plate" } },
+	{ id = "istanbul_bosphorus", name = "보스포루스 해협", portId = "istanbul", minLevel = 3, days = 2, pool = { "geo_estuary", "zoo_orca", "relic_astrolabe" } },
+	{ id = "alexandria_library", name = "알렉산드리아 옛 도서관터", portId = "alexandria", minLevel = 4, days = 3, pool = { "relic_astrolabe", "relic_rune_stone", "min_granite" } },
+	{ id = "alexandria_pharos", name = "파로스 등대 터", portId = "alexandria", minLevel = 3, days = 2, pool = { "site_gdansk_crane", "min_chalk" } },
+	{ id = "tangier_strait", name = "지브롤터 해협", portId = "tangier", minLevel = 2, days = 1, pool = { "geo_maelstrom", "zoo_orca" } },
 }
 
 return {

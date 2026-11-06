@@ -10,7 +10,7 @@ local Pose = require(script.Parent:WaitForChild("Pose"))
 
 local PortScene = {}
 
-local MED = { cadiz = true, porto = true, lisbon = true, seville = true, marseille = true, genoa = true, venice = true, livorno = true, naples = true }
+local MED = { barcelona = true, valencia = true, palermo = true, valletta = true, ragusa = true, athens = true, cadiz = true, porto = true, lisbon = true, seville = true, marseille = true, genoa = true, venice = true, livorno = true, naples = true }
 
 local STYLE = {
 	north = {
@@ -46,7 +46,11 @@ STYLE.nordic = variant(STYLE.north,
 STYLE.stone = variant(STYLE.north,
 	{ C(150, 148, 140), C(176, 168, 150), C(128, 120, 108), C(200, 192, 176), C(150, 110, 84) },
 	{ C(78, 80, 88), C(60, 62, 70) }, C(92, 124, 76), C(118, 116, 112), 0.9)
+STYLE.desert = variant(STYLE.med,
+	{ C(226, 204, 160), C(214, 186, 140), C(238, 222, 190), C(200, 170, 124), C(244, 236, 214) },
+	{ C(210, 180, 130), C(196, 164, 116) }, C(204, 184, 132), C(206, 190, 150), 0.12)
 local REGION = {
+	algiers = "desert", tunis = "desert", tripoli = "desert", alexandria = "desert", istanbul = "desert", tangier = "desert",
 	amsterdam = "brick", rotterdam = "brick", antwerp = "brick", hamburg = "brick", lubeck = "brick", gdansk = "brick",
 	bergen = "nordic", oslo = "nordic", stockholm = "nordic", gothenburg = "nordic", copenhagen = "nordic",
 	london = "stone", edinburgh = "stone", glasgow = "stone", dublin = "stone", plymouth = "stone", hull = "stone",

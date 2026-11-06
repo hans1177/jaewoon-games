@@ -174,6 +174,54 @@ local Ports: { [string]: Port } = {
 		id = "cadiz", name = "카디스", country = "spain", lat = 36.53, lon = -6.29,
 		produces = { "salt", "wine", "tobacco", "sugar" }, demands = { "fur", "timber", "cloth", "coal" }, shipyard = true,
 	},
+	barcelona = {
+		id = "barcelona", name = "바르셀로나", country = "spain", lat = 41.38, lon = 2.17,
+		produces = { "wool", "olive_oil", "wine" }, demands = { "fish", "iron", "sugar", "cloth" }, shipyard = true,
+	},
+	valencia = {
+		id = "valencia", name = "발렌시아", country = "spain", lat = 39.47, lon = -0.38,
+		produces = { "olive_oil", "silk", "salt" }, demands = { "wool", "timber", "coal", "fur" }, shipyard = false,
+	},
+	algiers = {
+		id = "algiers", name = "알제", country = "algeria", lat = 36.75, lon = 3.06,
+		produces = { "olive_oil", "salt", "wool" }, demands = { "cloth", "iron", "timber", "glass" }, shipyard = false,
+	},
+	tunis = {
+		id = "tunis", name = "튀니스", country = "tunisia", lat = 36.80, lon = 10.18,
+		produces = { "olive_oil", "salt", "fish" }, demands = { "cloth", "iron", "glass", "wine" }, shipyard = false,
+	},
+	tripoli = {
+		id = "tripoli", name = "트리폴리", country = "tripoli", lat = 32.90, lon = 13.18,
+		produces = { "olive_oil", "salt" }, demands = { "cloth", "iron", "timber", "glass" }, shipyard = false,
+	},
+	palermo = {
+		id = "palermo", name = "팔레르모", country = "sicily", lat = 38.12, lon = 13.36,
+		produces = { "wine", "salt", "olive_oil", "sugar" }, demands = { "iron", "timber", "coal", "cloth" }, shipyard = false,
+	},
+	valletta = {
+		id = "valletta", name = "발레타", country = "malta", lat = 35.90, lon = 14.51,
+		produces = { "salt", "cloth", "fish" }, demands = { "timber", "iron", "wool", "wine" }, shipyard = true,
+	},
+	ragusa = {
+		id = "ragusa", name = "라구사", country = "ragusa", lat = 42.65, lon = 18.09,
+		produces = { "salt", "wine", "olive_oil" }, demands = { "wool", "cloth", "iron", "fur" }, shipyard = false,
+	},
+	athens = {
+		id = "athens", name = "아테네", country = "greece", lat = 37.94, lon = 23.65,
+		produces = { "olive_oil", "wine", "silk" }, demands = { "wool", "iron", "timber", "glass" }, shipyard = false,
+	},
+	istanbul = {
+		id = "istanbul", name = "이스탄불", country = "ottoman", lat = 41.01, lon = 28.98,
+		produces = { "silk", "spice", "coffee", "porcelain" }, demands = { "wool", "fur", "iron", "glass", "amber" }, shipyard = true,
+	},
+	alexandria = {
+		id = "alexandria", name = "알렉산드리아", country = "egypt", lat = 31.20, lon = 29.92,
+		produces = { "spice", "coffee", "sugar", "silk" }, demands = { "wool", "timber", "iron", "glass", "wine" }, shipyard = false,
+	},
+	tangier = {
+		id = "tangier", name = "탕헤르", country = "morocco", lat = 35.78, lon = -5.80,
+		produces = { "olive_oil", "salt", "fish", "sugar" }, demands = { "cloth", "iron", "timber", "tea" }, shipyard = false,
+	},
 }
 
 local Nations: { [string]: Nation } = {
