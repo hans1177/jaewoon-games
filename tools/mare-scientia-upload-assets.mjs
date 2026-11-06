@@ -16,19 +16,31 @@ if (!key) throw new Error('MISSING_ROBLOX_OPEN_CLOUD_API_KEY');
 const rawCookie = String(process.env.ROBLOX_ROBLOSECURITY || process.env.ROBLOX_SECURITY_COOKIE || '').trim();
 const cookie = rawCookie.includes('.ROBLOSECURITY=') ? rawCookie : (rawCookie ? '.ROBLOSECURITY=' + rawCookie + ';' : '');
 let csrf = '';
+// 요청 제한은 실패로 확정하기 전에 기존 엔드포인트에서 지수 백오프로 재시도한다.
 async function request(url, options = {}) {
   const authenticated = Boolean(cookie) && url.startsWith('https://apis.roblox.com/');
   if (authenticated && url.startsWith('https://apis.roblox.com/assets/v1/')) url = url.replace('/assets/v1/', '/assets/user-auth/v1/');
-  const headers = {...(options.headers ?? {})};
-  if (authenticated) { headers.cookie = cookie; if (csrf) headers['x-csrf-token'] = csrf; } else headers['x-api-key'] = key;
-  let result = await fetch(url, {...options, headers, signal: AbortSignal.timeout(90000)});
-  if (authenticated && result.status === 403 && result.headers.get('x-csrf-token')) {
-    csrf = result.headers.get('x-csrf-token');
-    result = await fetch(url, {...options, headers: {...headers, 'x-csrf-token': csrf}, signal: AbortSignal.timeout(90000)});
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const headers = {...(options.headers ?? {})};
+    if (authenticated) { headers.cookie = cookie; if (csrf) headers['x-csrf-token'] = csrf; }
+    else headers['x-api-key'] = key;
+    let result = await fetch(url, {...options, headers, signal: AbortSignal.timeout(90000)});
+    if (authenticated && result.status === 403 && result.headers.get('x-csrf-token')) {
+      csrf = result.headers.get('x-csrf-token');
+      result = await fetch(url, {...options, headers: {...headers, 'x-csrf-token': csrf}, signal: AbortSignal.timeout(90000)});
+    }
+    if (result.status === 429 && attempt < 3) {
+      const retryAfter = Number(result.headers.get('retry-after'));
+      const delay = Number.isFinite(retryAfter) && retryAfter > 0 ? Math.min(60000, retryAfter * 1000) : 6000 * 2 ** attempt;
+      console.log('ROBLOX_RATE_LIMIT_BACKOFF', attempt + 1, delay);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      continue;
+    }
+    const data = await result.json().catch(() => ({}));
+    if (!result.ok) throw new Error('ROBLOX_ASSET_API_' + result.status + ': ' + JSON.stringify(data).slice(0, 300));
+    return data;
   }
-  const data = await result.json().catch(() => ({}));
-  if (!result.ok) throw new Error('ROBLOX_ASSET_API_' + result.status + ': ' + JSON.stringify(data).slice(0, 300));
-  return data;
+  throw new Error('ROBLOX_RATE_LIMIT_EXHAUSTED');
 }
 
 let creatorId = process.env.ROBLOX_CREATOR_USER_ID;
@@ -76,8 +88,35 @@ for (const item of plan) {
     continue;
   }
   try {
-    const binary = await fs.readFile(item.file);
+    let binary = await fs.readFile(item.file);
     if (binary.length > 20 * 1024 * 1024) throw new Error('FILE_TOO_LARGE');
+    // Nature Kit 일부 GLB의 KHR_materials_unlit은 Roblox 수입기에서 파싱 실패한다.
+    // 원본 GLB를 유지하고 전송본의 머티리얼 선언만 PBR로 정규화한다. 메시·텍스처·좌표는 변경하지 않는다.
+    if (item.ext === '.glb' && binary.subarray(0, 4).toString('ascii') === 'glTF') {
+      const jsonSize = binary.readUInt32LE(12);
+      if (binary.readUInt32LE(16) !== 0x4e4f534a || 20 + jsonSize > binary.length) throw new Error('INVALID_GLB_JSON_CHUNK');
+      const gltf = JSON.parse(binary.subarray(20, 20 + jsonSize).toString('utf8'));
+      if (gltf.extensionsUsed?.includes('KHR_materials_unlit')) {
+        gltf.extensionsUsed = gltf.extensionsUsed.filter(x => x !== 'KHR_materials_unlit');
+        if (gltf.extensionsRequired) gltf.extensionsRequired = gltf.extensionsRequired.filter(x => x !== 'KHR_materials_unlit');
+        for (const material of gltf.materials || []) {
+          if (material.extensions?.KHR_materials_unlit) delete material.extensions.KHR_materials_unlit;
+          if (material.extensions && !Object.keys(material.extensions).length) delete material.extensions;
+          if (material.pbrMetallicRoughness) {
+            material.pbrMetallicRoughness.metallicFactor = 0;
+            material.pbrMetallicRoughness.roughnessFactor = 1;
+          }
+        }
+        let json = Buffer.from(JSON.stringify(gltf));
+        const padded = Buffer.alloc(Math.ceil(json.length / 4) * 4, 0x20);
+        json.copy(padded);
+        const prefix = Buffer.from(binary.subarray(0, 20));
+        prefix.writeUInt32LE(20 + padded.length + (binary.length - (20 + jsonSize)), 8);
+        prefix.writeUInt32LE(padded.length, 12);
+        binary = Buffer.concat([prefix, padded, binary.subarray(20 + jsonSize)]);
+        console.log('NORMALIZED_GLTF_UNLIT', id);
+      }
+    }
     const form = new FormData();
     form.set('request', JSON.stringify({
       assetType: item.assetType, displayName: 'MareScientia ' + id,
@@ -97,34 +136,40 @@ for (const item of plan) {
       if (op.done) assetId = String(op.response?.assetId || op.response?.asset?.assetId || '');
     }
     if (!/^[1-9][0-9]*$/.test(assetId || '')) throw new Error('NO_ASSET_ID');
-    let usePermissionGranted = false;
-    try {
-      await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions', {
-        method: 'PATCH', headers: {'content-type': 'application/json'},
-        body: JSON.stringify({subjectType: 'Universe', subjectId: UNIVERSE_ID, action: 'Use', requests: [{assetId: Number(assetId), grantToDependencies: true}]}),
-      });
-      usePermissionGranted = true;
-    } catch (e) { console.log('GRANT_WARNING', id, String(e.message).slice(0, 160)); }
-    registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted};
+    // 신규 자산도 기존 목록과 함께 일괄 권한 부여한다. 자산별 개별 PATCH 300회 호출 금지.
+    registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted: false};
+    pendingPermissions.push({id, assetId});
+
     console.log('UPLOADED', id, assetId);
   } catch (e) {
     failures.push(id + ': ' + String(e.message).slice(0, 200));
     console.log('FAILED', id, String(e.message).slice(0, 200));
   }
 }
-// 신규 모델을 먼저 업로드한 뒤, 이전 실행에서 사용권한 확인이 누락된 모델을 보완한다.
-for (const item of pendingPermissions) {
+// 사용 권한: 공식 BatchGrantPermissionsRequest/Response로 25개씩 부여하고 실제 성공 목록만 기록한다.
+// HTTP 200이라도 일부 assetId가 오류면 그 항목은 승인되지 않은 것으로 유지한다.
+for (let offset = 0; offset < pendingPermissions.length; offset += 25) {
+  const batch = pendingPermissions.slice(offset, offset + 25);
   try {
-    await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions', {
+    const response = await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions', {
       method: 'PATCH', headers: {'content-type': 'application/json'},
       body: JSON.stringify({subjectType: 'Universe', subjectId: UNIVERSE_ID, action: 'Use',
-        requests: [{assetId: Number(item.assetId), grantToDependencies: true}]}),
+        requests: batch.map(item => ({assetId: Number(item.assetId), grantToDependencies: true}))}),
     });
-    registry.assets[item.id].usePermissionGranted = true;
-    console.log('GRANTED_EXISTING', item.id);
-  } catch (e) {
-    failures.push(item.id + ': USE_PERMISSION_UNVERIFIED');
-    console.log('GRANT_WARNING', item.id, String(e.message).slice(0, 160));
+    const granted = new Set((response.successAssetIds || []).map(String));
+    const rejected = new Map((response.errors || []).map(row => [String(row.assetId), String(row.code)]));
+    for (const item of batch) {
+      if (granted.has(String(item.assetId))) {
+        registry.assets[item.id].usePermissionGranted = true;
+        console.log('GRANTED_ASSET', item.id);
+      } else {
+        failures.push(item.id + ': USE_PERMISSION_UNVERIFIED_' + (rejected.get(String(item.assetId)) || 'NOT_CONFIRMED'));
+        console.log('GRANT_WARNING', item.id, rejected.get(String(item.assetId)) || 'NOT_CONFIRMED');
+      }
+    }
+  } catch (error) {
+    for (const item of batch) failures.push(item.id + ': USE_PERMISSION_UNVERIFIED');
+    console.log('GRANT_BATCH_FAILED', offset, batch.length, String(error.message).slice(0, 180));
   }
 }
 registry.updatedAt = new Date().toISOString();
