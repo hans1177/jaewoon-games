@@ -169,6 +169,96 @@ jobs:
           if(registeredDedicated&&!currentDedicated)console.log('ROBLOX_DEDICATED_TARGET_RECOVERED_FROM_REGISTRY=YES');
           NODE
 
+      # [마력숲 장비 종류 확장] 기존 네이티브 업로더를 재사용한다. 미등록 ID를 임의 배포하지 않는다.
+      - name: Register source-verified Forest weapons and armor
+        id: forest_gear
+        if: matrix.gameId == 'fantasy-survival'
+        working-directory: main
+        env:
+          ROBLOX_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+          ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$ROBLOX_UNIVERSE_ID" = '10773436325'
+          # Licensed original OBJ/FBX -> GLB conversion only; no generated geometry.
+          if ! command -v blender >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq blender python3-numpy
+          fi
+          node tools/baeksu-war-upload-meshes.mjs --register-forest-gear --game-id=fantasy-survival
+
+      # [실물 등록 영속화] API 업로드 후 실패해도 이미 발급된 ID를 중복 업로드하지 않도록 main에 증거를 보존한다.
+      - name: Persist Forest registered model IDs in canonical sources
+        if: ${{ always() && matrix.gameId == 'fantasy-survival' && steps.forest_gear.outcome != 'skipped' }}
+        working-directory: main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          registry='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json'
+          if git diff --quiet -- "$registry"; then echo 'FOREST_GEAR_REGISTRATION_NO_CHANGES'; exit 0; fi
+          cp "$registry" /tmp/forest-gear-registered.json
+          git config user.name 'jaewoon-roblox-asset-register'
+          git config user.email 'actions@users.noreply.github.com'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch --no-tags origin main
+            git reset --hard origin/main
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+          const idsFile='roblox-games/fantasy-survival/shared/VisualAssetIds.luau';
+          const incoming=JSON.parse(fs.readFileSync('/tmp/forest-gear-registered.json','utf8'));
+          const current=JSON.parse(fs.readFileSync(file,'utf8'));
+          const newer=incoming.gearExpansionV1,old=current.gearExpansionV1;
+          if(!newer?.models||newer.gameId!=='fantasy-survival'||newer.universeId!=='10773436325')
+            throw Error('FOREST_GEAR_RECEIPT_UNVERIFIED');
+          const entries={...(old?.models||{})};
+          for(const [name,row] of Object.entries(newer.models)){
+            const prev=entries[name];
+            if(prev&&(prev.sha256!==row.sha256||prev.sourceArchive!==row.sourceArchive||
+                (prev.assetId&&row.assetId&&prev.assetId!==row.assetId)))
+              throw Error('FOREST_GEAR_RECEIPT_CONFLICT:'+name);
+            entries[name]={...prev,...row};
+          }
+          if(Object.keys(entries).length>20)throw Error('FOREST_GEAR_UNEXPECTED_EXTRA_MODELS');
+          const complete=Object.keys(entries).length===20 && Object.values(entries).every(row=>
+            Number.isSafeInteger(row.assetId)&&row.assetId>0&&row.nativeRegistrationVerified===true&&
+            row.universeUseGrantVerified===true);
+          current.gearExpansionV1={
+            ...old,...newer,models:entries,
+            nativeRegistrationVerified:complete,universeUseGrantVerified:complete,
+            runtimeVerified:false,
+            status:complete?'REGISTERED_AND_UNIVERSE_USE_GRANTED_PENDING_RUNTIME':'PARTIAL_REGISTRATION_PENDING',
+          };
+          fs.writeFileSync(file,JSON.stringify(current,null,2)+'\n');
+          if(complete){
+            let lua=fs.readFileSync(idsFile,'utf8');
+            const missing=[];
+            for(const [key,row] of Object.entries(entries)){
+              const match=lua.match(new RegExp('^\\s*'+key+'\\s*=\\s*(\\d+)\\s*,?\\s*$','m'));
+              if(match&&Number(match[1])!==row.assetId)
+                throw Error('FOREST_GEAR_ASSET_ID_CONFLICT:'+key);
+              if(!match)missing.push(' '+key+'='+row.assetId+',');
+            }
+            if(!/}\s*$/.test(lua))throw Error('FOREST_GEAR_LUA_INVALID');
+            lua=lua.replace(/}\s*$/,missing.join('\n')+(missing.length?'\n':'')+'}\n');
+            fs.writeFileSync(idsFile,lua);
+          }
+          NODE
+            git add "$registry" roblox-games/fantasy-survival/shared/VisualAssetIds.luau
+            if git diff --cached --quiet; then echo 'FOREST_GEAR_REGISTRATION_ALREADY_PERSISTED'; exit 0; fi
+            git commit -m 'assets(fantasy-survival): persist CC0 equipment upload IDs and exact Universe grants'
+            if git push origin HEAD:main; then echo 'FOREST_GEAR_MODEL_IDS_MAIN_PERSISTED'; exit 0; fi
+            echo "FOREST_GEAR_MAIN_MOVED_RETRY=$attempt"
+          done
+          echo 'FOREST_GEAR_REGISTRATION_PERSIST_FAILED' >&2
+          exit 1
+
       # [12개 개별 원화] 기존 비공개 게임의 자산 등록/권한 승인기를 직접 확장한다.
       # 하나의 그림을 잘라 쓰지 않으며, 미인증 이미지 ID는 게임에 바인딩하지 않는다.
       - name: Register approved Forest village originals through the existing asset pipeline

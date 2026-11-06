@@ -438,6 +438,32 @@ local Config = {
     {Id="jotun_cape",Rarity="Epic",Need=240,Name="요툰의 서리 망토",Slot="Cape",Category="갑옷",Tint={170,215,250},Attack=2,Defense=3,Icon=3,Leather=4,Hide=4,Crystal=2,Coins=190,Desc="거인의 털가죽으로 지은 서리 망토."},
     {Id="arachne_silk_cape",Rarity="Legendary",Need=700,Name="아라크네 비단 망토",Slot="Cape",Category="갑옷",Tint={160,255,190},Attack=4,Defense=5,Icon=3,Leather=3,Fang=5,Crystal=5,Ectoplasm=3,Coins=450,Desc="거미 여왕의 비단으로 짠 전설 망토."},
     {Id="behemoth_bulwark",Rarity="Legendary",Need=720,Name="베헤모스의 성벽 방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="vxShieldD",ForgeOnly=true,Tint={235,200,110},Attack=0,Defense=9,Icon=3,Ingot=9,Leather=4,Hide=6,Crystal=4,Coins=450,Desc="거신의 등뼈로 만든 거대한 방패."},
+    -- [장비 종류 보강] 기존 85종 저장 인덱스와 보상·능력치 그대로 보존. 신규 25종은 뒤에만 추가한다.
+    {Id="forest_sword_01",Rarity="Uncommon",Need=0,Name="숲 경계검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_01",GearSourceKey=true,ForgeOnly=true,Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_sword_02",Rarity="Uncommon",Need=0,Name="청동 호위검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_02",GearSourceKey=true,ForgeOnly=true,Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_sword_03",Rarity="Uncommon",Need=0,Name="기사단 예식검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_03",GearSourceKey=true,ForgeOnly=true,Attack=4,Defense=0,Icon=2,Art=2,Ingot=2,Leather=1,Coins=30,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_sword_04",Rarity="Rare",Need=60,Name="그림자 추적검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_04",GearSourceKey=true,ForgeOnly=true,Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_sword_05",Rarity="Rare",Need=60,Name="은빛 수호검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_05",GearSourceKey=true,ForgeOnly=true,Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_sword_06",Rarity="Rare",Need=60,Name="서리빛 검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_06",GearSourceKey=true,ForgeOnly=true,Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_sword_07",Rarity="Epic",Need=220,Name="붉은 잿불검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_07",GearSourceKey=true,ForgeOnly=true,Attack=15,Defense=0,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_sword_08",Rarity="Epic",Need=220,Name="달빛 사냥검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_08",GearSourceKey=true,ForgeOnly=true,Attack=15,Defense=0,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_sword_09",Rarity="Epic",Need=220,Name="고대 수호검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_09",GearSourceKey=true,ForgeOnly=true,Attack=15,Defense=0,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_sword_10",Rarity="Legendary",Need=700,Name="마력 서약검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_10",GearSourceKey=true,ForgeOnly=true,Attack=24,Defense=0,Icon=2,Art=18,Ingot=9,Leather=4,Coins=420,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_sword_11",Rarity="Legendary",Need=700,Name="황혼 진혼검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_11",GearSourceKey=true,ForgeOnly=true,Attack=24,Defense=0,Icon=2,Art=18,Ingot=9,Leather=4,Coins=420,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_sword_12",Rarity="Legendary",Need=700,Name="세계수 의장검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_sword_12",GearSourceKey=true,ForgeOnly=true,Attack=24,Defense=0,Icon=2,Art=18,Ingot=9,Leather=4,Coins=420,Desc="CC0 독립 원본 메시 검. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_relic_sword",Rarity="Rare",Need=60,Name="유적 무장검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="gear_relic_sword",GearSourceKey=true,ForgeOnly=true,Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Desc="CC0 실물 원본 장비. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_relic_axe",Rarity="Rare",Need=60,Name="유적 전투도끼",Slot="Weapon",Category="무기",WeaponFamily="Axe",ModelKey="gear_relic_axe",GearSourceKey=true,ForgeOnly=true,Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Desc="CC0 실물 원본 장비. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_relic_hammer",Rarity="Rare",Need=60,Name="유적 전쟁망치",Slot="Weapon",Category="무기",WeaponFamily="Hammer",ModelKey="gear_relic_hammer",GearSourceKey=true,ForgeOnly=true,Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Desc="CC0 실물 원본 장비. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_relic_staff",Rarity="Epic",Need=220,Name="고대 마도 지팡이",Slot="Weapon",Category="무기",WeaponFamily="Staff",ModelKey="gear_relic_staff",GearSourceKey=true,ForgeOnly=true,Attack=15,Defense=0,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Desc="CC0 실물 원본 장비. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_relic_shield",Rarity="Rare",Need=60,Name="유적의 수호방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="gear_relic_shield",GearSourceKey=true,ForgeOnly=true,Attack=0,Defense=4,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Desc="CC0 실물 원본 장비. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_relic_dagger",Rarity="Rare",Need=60,Name="폐허의 날붙이",Slot="Weapon",Category="무기",WeaponFamily="Dagger",ModelKey="gear_relic_dagger",GearSourceKey=true,ForgeOnly=true,Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Desc="CC0 실물 원본 장비. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_relic_crossbow",Rarity="Rare",Need=60,Name="정찰용 석궁",Slot="Weapon",Category="무기",WeaponFamily="Bow",ModelKey="gear_relic_crossbow",GearSourceKey=true,ForgeOnly=true,Bow=true,Attack=9,Defense=0,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Desc="CC0 실물 원본 장비. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_relic_armor",Rarity="Rare",Need=60,Name="유적 방랑자 흉갑",Slot="Chest",Category="갑옷",ModelKey="gear_relic_armor",GearSourceKey=true,ForgeOnly=true,Attack=0,Defense=6,Icon=3,Art=3,Ingot=4,Leather=2,Coins=90,Desc="CC0 실물 원본 장비. 등록 확인 후 제작할 수 있어."},
+    {Id="forest_ranger_jacket",Rarity="Uncommon",Need=0,Name="숲 정찰병 갑옷",Slot="Chest",Category="갑옷",ModelKey="item_armor_leather",Tint={150,117,74},ForgeOnly=true,Attack=0,Defense=3,Icon=3,Art=2,Ingot=2,Leather=1,Coins=30,Desc="기존 등록된 고유 갑옷 원본 모델로 제작하는 흉갑."},
+    {Id="forest_steel_cuirass",Rarity="Rare",Need=60,Name="철벽 기사 흉갑",Slot="Chest",Category="갑옷",ModelKey="item_armor_metal2",Tint={155,174,190},ForgeOnly=true,Attack=0,Defense=6,Icon=3,Art=3,Ingot=4,Leather=2,Coins=90,Desc="기존 등록된 고유 갑옷 원본 모델로 제작하는 흉갑."},
+    {Id="forest_dark_plate",Rarity="Epic",Need=220,Name="검은 기사 판금갑",Slot="Chest",Category="갑옷",ModelKey="item_armor_black",Tint={64,78,98},ForgeOnly=true,Attack=0,Defense=12,Icon=3,Art=4,Ingot=6,Leather=3,Coins=170,Desc="기존 등록된 고유 갑옷 원본 모델로 제작하는 흉갑."},
+    {Id="forest_sun_guard",Rarity="Legendary",Need=700,Name="태양 근위갑",Slot="Chest",Category="갑옷",ModelKey="item_armor_golden",Tint={218,178,79},ForgeOnly=true,Attack=0,Defense=18,Icon=3,Art=18,Ingot=9,Leather=4,Coins=420,Desc="기존 등록된 고유 갑옷 원본 모델로 제작하는 흉갑."},
+    {Id="forest_chainmail",Rarity="Rare",Need=60,Name="은빛 사슬 흉갑",Slot="Chest",Category="갑옷",ModelKey="item_armor_metal",Tint={164,172,182},ForgeOnly=true,Attack=0,Defense=7,Icon=3,Art=3,Ingot=4,Leather=2,Coins=90,Desc="기존 등록된 고유 갑옷 원본 모델로 제작하는 흉갑."},
   },
   -- [회복 소모품] 한 번 제작하면 1개 소지, 사용 시 서버에서 1개 소비.
   MeadowConsumables = {
@@ -2378,6 +2404,12 @@ for id,className in pairs({
   hunter_longbow="Bow",
   arcane_bow="Bow",
 }) do Config.GearWeaponClass[id]=className end
+-- [실물 장비 추가] 신규 무기는 기존 무기 계열의 전투·스킬 규칙만 그대로 재사용한다.
+for _,entry in ipairs(Config.MeadowEquipment) do
+  if entry.GearSourceKey and entry.WeaponFamily and entry.Slot=="Weapon" then
+    Config.GearWeaponClass[entry.Id]=entry.WeaponFamily
+  end
+end
 Config.MeadowSkillSchools[1].Weapon="검·대검·도끼·망치"
 Config.MeadowSkillSchools[2].Weapon="검·도끼·망치 + 방패"
 Config.MeadowSkillSchools[3].Weapon="활"
@@ -2489,6 +2521,12 @@ for _, line in ipairs({
 -- [장비 외형] 등록된 CC0 메시(갑옷 5종·장갑·바지·장화·목걸이·반지·수정)를 아이템별로 다르게 입히는 표.
 -- model: 메시 키 · tint: 소재 색 · glow: 희귀 장비의 은은한 광원 · fit: 크기 배율 · acc: 장신구 부착 위치
 Config.GearLook = {
+  forest_relic_armor={model="gear_relic_armor",tint={156,175,185}},
+  forest_ranger_jacket={model="item_armor_leather",tint={150,117,74}},
+  forest_steel_cuirass={model="item_armor_metal2",tint={155,174,190}},
+  forest_dark_plate={model="item_armor_black",tint={64,78,98}},
+  forest_sun_guard={model="item_armor_golden",tint={218,178,79}},
+  forest_chainmail={model="item_armor_metal",tint={164,172,182}},
   travel_armor={model="item_armor_leather",tint={150,112,72}},
   hunter_armor={model="item_armor_leather",tint={96,126,70}},
   moss_robe={model="item_armor_leather",tint={78,122,86},fit=0.96},

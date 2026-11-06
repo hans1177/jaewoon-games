@@ -3144,6 +3144,10 @@ local meadowRpg=(function()
       local item,index=gear.entry,gear.index
       local ownedGear=hasGear(player,index)
       if verb=="craft" then
+        -- [장비 원본 검증] 미등록 CC0 메시의 제작으로 재료만 소비하는 문제를 막는다.
+        if item.GearSourceKey and (typeof(NativeCreatureAssets[item.ModelKey])~="number" or NativeCreatureAssets[item.ModelKey]<1) then
+          feedback(player,"실물 장비 로블록스 등록이 아직 확인되지 않았어.");return true
+        end
         if ownedGear then feedback(player,"이미 보유한 장비야.");return true end
         -- [대장간 제작] 신규 무기·방패는 모루 근처에서만 실물 제련·제작한다.
         if item.ForgeOnly then
@@ -3387,7 +3391,7 @@ local function refreshBowVisualCore(player)
   if human then human:UnequipTools() end
   local hand=character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm")
   if not hand then return end
-  local model=worldAsset("item_bow_wooden",(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),3.4)
+  local model=worldAsset(weapon.ModelKey or "item_bow_wooden",(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),3.4)
   local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
   if not mesh then if model then model:Destroy() end return end
   local visual=mesh:Clone()
