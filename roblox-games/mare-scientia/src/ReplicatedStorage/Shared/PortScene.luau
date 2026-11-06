@@ -216,71 +216,16 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	return m
 end
 
--- 주민 NPC: 다리·몸통·팔·머리·얼굴·모자를 나눠 만든 사람 모양
-local SKINS = { Color3.fromRGB(242, 205, 170), Color3.fromRGB(214, 165, 125), Color3.fromRGB(176, 125, 90), Color3.fromRGB(128, 88, 62) }
-local HAIRS = { Color3.fromRGB(40, 28, 20), Color3.fromRGB(96, 62, 34), Color3.fromRGB(176, 130, 66), Color3.fromRGB(150, 150, 150), Color3.fromRGB(20, 18, 18) }
-local PEOPLE_ROLES = { "Pirate_Male", "Pirate_Female", "Worker_Male", "Worker_Female", "Casual_Male", "Casual_Female", "OldClassy_Male", "OldClassy_Female" }
+-- 항구 주민·시설 NPC: 공통 R15 Humanoid 관절 모델 사용.
 local KEEPER_ROLE = {
 	["교역소"] = "Rogue", ["주점"] = "Barbarian", ["항만청"] = "Knight", ["은행"] = "Mage",
 	["상인 길드"] = "Rogue_Hooded", ["학자의 서재"] = "Mage", ["도서관 (도감)"] = "Mage",
 }
 local function villager(parent, pos, facing, coat, rng, role)
-	-- 직업 NPC(시설 담당·이야기 손님)는 등록된 KayKit CC0 모델을 쓰고, 없으면 아래 코드 모양을 쓴다
 	role = role or ({ "Knight", "Barbarian", "Mage", "Rogue", "Rogue_Hooded" })[rng:NextInteger(1, 5)]
-	if role then
-		local figure = importedModel(parent, "People", "KayKit_" .. role, pos, 5.8, false)
-		if figure then
-			figure.Name = "Villager"
-			figure:PivotTo(figure:GetPivot() * CFrame.Angles(0, facing + math.pi, 0))
-			return figure
-		end
-	end
-	local m = Instance.new("Model")
-	m.Name = "Villager"
-	local skin = SKINS[rng:NextInteger(1, #SKINS)]
-	local hair = HAIRS[rng:NextInteger(1, #HAIRS)]
-	local pants = Color3.fromRGB(rng:NextInteger(36, 90), rng:NextInteger(32, 76), rng:NextInteger(30, 70))
-	local base = CFrame.new(pos) * CFrame.Angles(0, facing, 0)
-	local function at(x, y, z)
-		return base * CFrame.new(x, y, z)
-	end
-	-- 다리와 신발
-	part(m, Vector3.new(0.85, 1.7, 0.95), at(-0.5, 1.15, 0), pants, Enum.Material.Fabric)
-	part(m, Vector3.new(0.85, 1.7, 0.95), at(0.5, 1.15, 0), pants, Enum.Material.Fabric)
-	part(m, Vector3.new(0.95, 0.5, 1.25), at(-0.5, 0.25, -0.1), Color3.fromRGB(38, 28, 22), Enum.Material.Leather)
-	part(m, Vector3.new(0.95, 0.5, 1.25), at(0.5, 0.25, -0.1), Color3.fromRGB(38, 28, 22), Enum.Material.Leather)
-	-- 몸통(겉옷), 허리띠, 옷깃
-	part(m, Vector3.new(2.1, 2.1, 1.15), at(0, 3.05, 0), coat, Enum.Material.Fabric)
-	part(m, Vector3.new(2.2, 0.35, 1.25), at(0, 2.2, 0), Color3.fromRGB(70, 48, 28), Enum.Material.Leather)
-	part(m, Vector3.new(0.5, 0.5, 0.2), at(0, 2.2, -0.65), Color3.fromRGB(214, 170, 82), Enum.Material.Metal)
-	part(m, Vector3.new(1.5, 0.45, 1.25), at(0, 4.15, 0), Color3.fromRGB(235, 232, 222), Enum.Material.Fabric)
-	-- 팔과 손
-	part(m, Vector3.new(0.75, 1.9, 0.85), at(-1.5, 3.0, 0), coat, Enum.Material.Fabric)
-	part(m, Vector3.new(0.75, 1.9, 0.85), at(1.5, 3.0, 0), coat, Enum.Material.Fabric)
-	part(m, Vector3.new(0.7, 0.7, 0.7), at(-1.5, 1.85, 0), skin, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
-	part(m, Vector3.new(0.7, 0.7, 0.7), at(1.5, 1.85, 0), skin, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
-	-- 머리, 얼굴, 머리카락
-	local head = part(m, Vector3.new(1.55, 1.55, 1.55), at(0, 5.0, 0), skin, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
-	local face = Instance.new("Decal")
-	face.Texture = "rbxasset://textures/face.png"
-	face.Face = Enum.NormalId.Front
-	face.Parent = head
-	part(m, Vector3.new(1.62, 0.9, 1.62), at(0, 5.35, 0.12), hair, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
-	-- 모자: 삼각모, 챙모자, 두건 중 하나
-	local hat = rng:NextInteger(1, 4)
-	local hatColor = Color3.fromRGB(rng:NextInteger(24, 70), rng:NextInteger(22, 56), rng:NextInteger(22, 56))
-	if hat == 1 then
-		part(m, Vector3.new(2.5, 0.25, 2.5), at(0, 5.75, 0), hatColor, Enum.Material.Fabric)
-		part(m, Vector3.new(1.5, 0.7, 1.5), at(0, 6.1, 0), hatColor, Enum.Material.Fabric)
-		part(m, Vector3.new(2.5, 0.25, 0.3), at(0, 5.9, -1.2), Color3.fromRGB(214, 170, 82), Enum.Material.Metal)
-	elseif hat == 2 then
-		part(m, Vector3.new(1.9, 0.2, 1.9), at(0, 5.65, 0), hatColor, Enum.Material.Fabric)
-		part(m, Vector3.new(1.45, 0.6, 1.45), at(0, 5.95, 0), hatColor, Enum.Material.Fabric)
-	elseif hat == 3 then
-		part(m, Vector3.new(1.75, 0.8, 1.75), at(0, 5.55, 0.05), Color3.fromRGB(190, 60, 50), Enum.Material.Fabric, Enum.PartType.Ball)
-	end
-	m.Parent = parent
-	return m
+	local figure = Pose.createR15(parent, pos, facing, coat, rng, role, 5.8)
+	if figure then figure.Name = "Villager" end
+	return figure
 end
 
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
@@ -634,7 +579,7 @@ function PortScene.build(info, onFacility)
 	-- 광장의 이야기 NPC
 	if (info.storyCount or 0) > 0 then
 		local n = villager(folder, Vector3.new(2, 0, -8), math.pi / 2, Color3.fromRGB(150, 40, 60), rng, "Rogue_Hooded")
-		local npcPart = n:FindFirstChildWhichIsA("BasePart", true)
+		local npcPart = n and (n:FindFirstChild("Head") or n:FindFirstChildWhichIsA("BasePart", true))
 		if npcPart then sign(folder, npcPart, "! 이야기", Color3.fromRGB(180, 120, 30), 4) end
 		prompt(folder, Vector3.new(2, 3, -8), "수상한 손님", "이야기 듣기", "harbor", onFacility)
 	end
@@ -661,6 +606,7 @@ function PortScene.build(info, onFacility)
 				local bob = math.abs(math.sin(now * 6 + w.phase)) * 0.15
 				local turn = if forward then CFrame.new() else CFrame.Angles(0, math.pi, 0)
 				w.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * turn * rot)
+				Pose.walkR15(w.model, now * w.speed * 2.5 + w.phase, true)
 			end
 		end
 	end)
