@@ -8929,6 +8929,21 @@ do
         local house=worldAsset(key,center+Vector3.new(math.cos(angle)*38,0,math.sin(angle)*38),11)
         if house then house.Name="TownHouse_"..town.Id.."_"..i;house:SetAttribute("MeadowScenery",true) end
       end
+      -- 마을 아낙(등록 CC0 인물 메시): 우물가에서 마을 소문을 들려준다.
+      task.spawn(function()
+        local woman=worldAsset("mon_womanmedieval",center+Vector3.new(7,0,-6),5.4)
+        if woman then
+          woman.Name="TownVillager_"..town.Id;woman:SetAttribute("MeadowScenery",true)
+          local rumors={
+            "우물가 아낙: '"..town.Hold.."에서는 구석구석 홀로 사는 괴물이 있다더라. 이정표를 따라 걸어 봐.'",
+            "우물가 아낙: '"..town.Scout.."에게 가 보렴. 이 일대 곤란한 일을 다 알고 있단다.'",
+            "우물가 아낙: '저주받은 괴물 중엔 풀어 주면 사람이 되는 이도 있다더라. 눈빛을 잘 봐.'",
+          }
+          villagePrompt(woman,"우물가 아낙","이야기 듣기",function(player)
+            villageDialogue(player,"우물가 아낙",rumors[math.random(#rumors)])
+          end)
+        end
+      end)
       local well=worldAsset("villageWell",center,5)
       if well then well.Name="TownWell_"..town.Id;well:SetAttribute("MeadowScenery",true) end
       for i=1,4 do
@@ -9216,7 +9231,7 @@ task.spawn(function()
     worldtree={{"vxTreeLog",3.5,6},{"vxCampfirePit",2.5,3}},
     volcano={{"vxRockLarge",18,6},{"vxRockWide",16,4}},
     oasis={{"vxCastleWall",8,4},{"vxCastleCorner",8,2},{"vxCastlePillar",11,4},{"vxTowerBase",12,2}},
-    swamp={{"vxTreeLog",3.5,6},{"vxRockWide",10,3}},
+    swamp={{"vxTreeLog",3.5,6},{"vxRockWide",10,3},{"mushroom",3,8}},
     citadel={{"vxCastleWall",10,8},{"vxCastleCorner",10,3},{"vxCastlePillar",13,6},{"vxTowerBase",14,3},{"vxCastleGate",14,1}},
     highland={{"vxRockLarge",18,6},{"vxRockWide",15,5}},
     canyon={{"vxRockLarge",20,7},{"vxCastleWall",9,3},{"vxCastlePillar",12,3}},
@@ -9229,14 +9244,14 @@ task.spawn(function()
   -- 아직 쓰지 않던 등록 소품도 어울리는 지역에 놓는다(석조 계단·바위 지붕·노점·울타리).
   local extra={
     windcliff={{"vxStall",4,2},{"villageFenceBroken",2.5,2},{"vxOverhang",9,2}},
-    worldtree={{"vxHedgeGate",4,2},{"villageWatermill",8,1}},
+    worldtree={{"vxHedgeGate",4,2},{"villageWatermill",8,1},{"mushroom",2.5,6},{"vxPlate",1.2,2}},
     oasis={{"vxStairsStone",3,3},{"villageFountain",5,1},{"vxTowerMid",16,1}},
     citadel={{"vxStairsStone",3,4},{"vxOverhang",10,2},{"vxTowerMid",18,2},{"vxTowerRoof",14,1}},
     canyon={{"vxStairsStone",3,3},{"vxOverhang",10,3}},
     highland={{"vxOverhang",10,2}},
-    wetland={{"villageFenceBroken",2.5,3},{"villageWatermill",8,1}},
+    wetland={{"villageFenceBroken",2.5,3},{"villageWatermill",8,1},{"mushroom",2.5,6}},
     desert={{"vxStairsStone",3,3},{"vxTowerMid",16,1},{"villageRoad",1.2,3}},
-    deadmarsh={{"vxStairsStone",3,3},{"villageFenceBroken",2.5,2}},
+    deadmarsh={{"vxStairsStone",3,3},{"villageFenceBroken",2.5,2},{"mushroom",3,5},{"vxPlate",1.2,3}},
   }
   for zoneId,list in pairs(extra) do
     scatter[zoneId]=scatter[zoneId] or {}
