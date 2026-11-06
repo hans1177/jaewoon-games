@@ -1372,17 +1372,44 @@ local function renderYard()
 		end)
 	end
 	add(function() return mkHeader(content, "배 목록") end)
+	local maxCargo, maxSpeed, maxHull = 1, 1, 1
+	for _, s in yard.ships do
+		maxCargo, maxSpeed, maxHull = math.max(maxCargo, s.cargo), math.max(maxSpeed, s.speed), math.max(maxHull, s.hull)
+	end
 	for _, s in yard.ships do
 		add(function()
-			local sub = string.format("%s\n화물 %d · 속도 %d · 선체 %d · 포 %d · 선원 %d", s.summary, s.cargo, s.speed, s.hull, s.cannons, s.crew)
+			local sub = string.format("%s\n포 %d · 선원 %d", s.summary, s.cannons, s.crew)
 			if s.locked then
 				sub ..= "\n" .. s.locked
 			end
 			local label = if s.owned then "보유중" else (if s.price == 0 then "기본" else tostring(s.price))
-			return mkRow(content, string.format("[등급%d] ", s.class) .. s.name .. (if s.steam then " (증기)" else ""), sub, {
+			local row = mkRow(content, string.format("[등급%d] ", s.class) .. s.name .. (if s.steam then " (증기)" else ""), sub, {
 				{ text = label, color = if s.steam then COLORS.steam else COLORS.blue, onClick = function() call("BuyShip", { shipId = s.id }) end,
 					enabled = yard.available and not s.owned and not s.locked },
-			}, 92)
+			}, 128)
+			-- 성능 막대: 화물·속도·선체를 한눈에 비교
+			local stats = { { "화물", s.cargo, maxCargo, COLORS.gold }, { "속도", s.speed, maxSpeed, COLORS.blue }, { "선체", s.hull, maxHull, COLORS.green } }
+			for i, st in stats do
+				local y = 76 + (i - 1) * 16
+				local lb = mkLabel(row, string.format("%s %d", st[1], st[2]), 11, COLORS.muted, false)
+				lb.Position = UDim2.fromOffset(8, y - 2)
+				lb.Size = UDim2.fromOffset(70, 14)
+				lb.AutomaticSize = Enum.AutomaticSize.None
+				local back = Instance.new("Frame")
+				back.BackgroundColor3 = Color3.fromRGB(8, 14, 22)
+				back.BorderSizePixel = 0
+				back.Position = UDim2.new(0, 82, 0, y)
+				back.Size = UDim2.new(1, -170, 0, 8)
+				back.Parent = row
+				corner(back, 4)
+				local fill = Instance.new("Frame")
+				fill.BackgroundColor3 = st[4]
+				fill.BorderSizePixel = 0
+				fill.Size = UDim2.fromScale(math.clamp(st[2] / st[3], 0.03, 1), 1)
+				fill.Parent = back
+				corner(fill, 4)
+			end
+			return row
 		end)
 	end
 end
