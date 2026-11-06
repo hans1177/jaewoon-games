@@ -54,7 +54,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = 'Stop'
-          if (@(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue).Count) { throw 'Studio already open; close it and rerun' }
+          if (@(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue).Count) { Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 5 }
           $roots = @((Join-Path $env:LOCALAPPDATA 'Roblox\Versions'), (Join-Path ${env:ProgramFiles(x86)} 'Roblox\Versions'))
           $studio = $roots | Where-Object { Test-Path $_ } | ForEach-Object { Get-ChildItem $_ -Recurse -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue } | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
           if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
