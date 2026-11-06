@@ -469,7 +469,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, EcoChestMask = 0, EcoChestMask2 = 0, EcoChestMask3 = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, LandmarkClaim = 0, TrackFlags = 0, QLWind = 0, QLWindP = 0, QLWindC = 0, QLHunt = 0, QLHuntP = 0, QLHuntC = 0, QLBog = 0, QLBogP = 0, QLBogC = 0, QLRoot = 0, QLRootP = 0, QLRootC = 0, QLTrack1 = 0, QLTrack1P = 0, QLTrack1C = 0, QLTrack2 = 0, QLTrack2P = 0, QLTrack2C = 0, QLTrack3 = 0, QLTrack3P = 0, QLTrack3C = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, EstateA = 0, EcoChestMask = 0, EcoChestMask2 = 0, EcoChestMask3 = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, LandmarkClaim = 0, TrackFlags = 0, QLWind = 0, QLWindP = 0, QLWindC = 0, QLHunt = 0, QLHuntP = 0, QLHuntC = 0, QLBog = 0, QLBogP = 0, QLBogC = 0, QLRoot = 0, QLRootP = 0, QLRootC = 0, QLTrack1 = 0, QLTrack1P = 0, QLTrack1C = 0, QLTrack2 = 0, QLTrack2P = 0, QLTrack2C = 0, QLTrack3 = 0, QLTrack3P = 0, QLTrack3C = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -1245,6 +1245,41 @@ do
     table.insert(Config.WorldMap.Towns, d)
   end
 end
+
+-- [마을 작업장] 12개 마을마다 대장간(제련·무두질·모루·숫돌)과 요리 화덕이 있다. 초원 마을의 원래 작업대는 SmithStations/CookStation 그대로.
+do
+  Config.CraftSites = {}
+  for _, t in ipairs(Config.WorldMap.Towns) do
+    table.insert(Config.CraftSites, {Id = t.Id, Name = t.Name .. " 작업장", X = t.X + math.cos(1.2) * 24, Z = t.Z + math.sin(1.2) * 24})
+  end
+  -- 작업장 중심 기준 배치(스터드). 제작은 작업장 중심에서 Radius 안이면 가능.
+  Config.CraftSiteLayout = {
+    Smelter = {-3, 0}, Tanner = {-10, 6}, Anvil = {8, -3}, Grindstone = {2, 9}, Cook = {-9, -9},
+  }
+end
+
+-- [영지 · 성채 꾸미기] 스카이림 하스파이어식. 안식처 곁 영지 터에 건물을 세워 성채를 꾸민다. 플레이어마다 자기 터(5칸)를 가진다.
+-- 건물은 등록된 CC0 모델만 쓴다. Cost는 코인·주괴·가죽.
+Config.Estate = {
+  Slots = 5,
+  Catalog = {
+    {Name = "농가 별채", Key = "villageHouseA", Height = 12, Coins = 600, Ingot = 2},
+    {Name = "관리인 저택", Key = "villageHouseB", Height = 13, Coins = 1000, Ingot = 3, Leather = 2},
+    {Name = "곡물 창고", Key = "villageHouseC", Height = 11, Coins = 700, Ingot = 2},
+    {Name = "마구간", Key = "villageHouseD", Height = 11, Coins = 700, Ingot = 2},
+    {Name = "성문", Key = "vxCastleGate", Height = 15, Coins = 1500, Ingot = 6},
+    {Name = "성벽과 모서리 탑", Key = "vxCastleCorner", Height = 12, Coins = 1200, Ingot = 5},
+    {Name = "감시탑", Key = "vxTowerBase", Height = 16, Coins = 1400, Ingot = 6, Leather = 2},
+    {Name = "높은 성탑", Key = "vxTowerMid", Height = 20, Coins = 2200, Ingot = 9, Leather = 3},
+    {Name = "성채 기둥 회랑", Key = "vxCastlePillar", Height = 13, Coins = 900, Ingot = 3},
+    {Name = "분수 광장", Key = "villageFountain", Height = 6, Coins = 800, Ingot = 1},
+    {Name = "물레방아", Key = "villageWatermill", Height = 10, Coins = 900, Ingot = 3},
+    {Name = "시장 노점", Key = "vxStall", Height = 4, Coins = 300, Leather = 1},
+    {Name = "정원 문", Key = "vxHedgeGate", Height = 5, Coins = 250},
+    {Name = "야영 화덕", Key = "vxCampfirePit", Height = 3, Coins = 150},
+    {Name = "등불 거리", Key = "villageLantern", Height = 7, Coins = 200},
+  },
+}
 
 -- [바람 절벽 생태 거점] 해풍촌 둘레에 자원이 나는 곳과 그곳을 지키는 몹을 둔다. 서버(몹·채집점)와 퀘스트가 같은 좌표를 읽는다.
 do

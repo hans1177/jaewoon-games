@@ -2951,7 +2951,13 @@ local function nearStation(player,stationId)
   local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
   if not station or not root then return false end
   local dx,dz=root.Position.X-station.X,root.Position.Z-station.Z
-  return dx*dx+dz*dz<=station.Radius*station.Radius
+  if dx*dx+dz*dz<=station.Radius*station.Radius then return true end
+  -- 다른 마을의 작업장에서도 대장간 작업을 할 수 있다.
+  for _,site in ipairs(Config.CraftSites or {}) do
+    local sx,sz=root.Position.X-site.X,root.Position.Z-site.Z
+    if sx*sx+sz*sz<=(station.Radius+4)*(station.Radius+4) then return true end
+  end
+  return false
 end
 local function meadowProficiencyPower(player)
   local points=math.max(0,readNumber(player,"CombatProficiency",0))
@@ -6674,7 +6680,13 @@ remote.OnServerEvent:Connect(function(player, actionId)
     if os.clock()>(cookSessions[player] or 0) then return end
     local station=Config.CookStation
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-    if not root or (Vector3.new(root.Position.X,0,root.Position.Z)-Vector3.new(station.X,0,station.Z)).Magnitude>station.Radius+8 then return end
+    local atCook=root and (Vector3.new(root.Position.X,0,root.Position.Z)-Vector3.new(station.X,0,station.Z)).Magnitude<=station.Radius+8
+    if root and not atCook then
+      for _,site in ipairs(Config.CraftSites or {}) do
+        if (Vector3.new(root.Position.X,0,root.Position.Z)-Vector3.new(site.X,0,site.Z)).Magnitude<=station.Radius+8 then atCook=true;break end
+      end
+    end
+    if not root or not atCook then return end
     local dish=Config.MeadowFoods[tonumber(actionId:sub(-1))]
     if not dish then return end
     local skill=readNumber(player,"CookingProficiency",0)
@@ -9403,7 +9415,7 @@ task.spawn(function()
   for _,mesh in ipairs(model:GetDescendants()) do
     if mesh:IsA("MeshPart") then mesh.CanCollide=false;mesh.CanQuery=true;mesh.CanTouch=false end
   end
-  villagePrompt(model,station.Name,"요리하기",function(player)
+  meadowOil.cookMenu=function(player)
     local skill=readNumber(player,"CookingProficiency",0)
     local options,lines={},{}
     for index,dish in ipairs(Config.MeadowFoods) do
@@ -9422,8 +9434,212 @@ task.spawn(function()
     end
     cookSessions[player]=os.clock()+60
     villageDialogue(player,"식당 화덕 · 요리 숙련 "..skill,table.concat(lines,"\n"),options)
-  end)
+  end
+  villagePrompt(model,station.Name,"요리하기",meadowOil.cookMenu)
 end)
+
+-- [마을 작업장] 다른 마을에도 대장간 · 요리 화덕을 세운다(제작은 nearStation/요리 거리 검사가 작업장 중심 기준으로 허용).
+task.spawn(function()
+  task.wait(14)
+  local rp=RaycastParams.new()
+  rp.FilterType=Enum.RaycastFilterType.Include
+  rp.FilterDescendantsInstances={meadowTerrain}
+  local tips={
+    Smelter="광석 2개 → 철 주괴 1개. 대장 Lv4부터 철 주괴 3개 → 강철 주괴 1개.",
+    Tanner="가죽 2장 → 무두질 가죽 1개.",
+    Anvil="무기·방패·갑옷을 제작하고 각인한다. 영웅·전설 장비는 강철 주괴가 필요해.",
+    Grindstone="무기를 단련(강화)한다. 주괴가 들고, +3강마다 무두질 가죽이 들어.",
+  }
+  for _,site in ipairs(Config.CraftSites or {}) do
+    task.spawn(function()
+      for id,off in pairs(Config.CraftSiteLayout) do
+        local x,z=site.X+off[1],site.Z+off[2]
+        local hit=workspace:Raycast(Vector3.new(x,80,z),Vector3.new(0,-160,0),rp)
+        local y=hit and hit.Position.Y or 3
+        local def=id=="Cook" and Config.CookStation or Config.SmithStations[id]
+        local model=def and worldAsset(def.Model,Vector3.new(x,y+1,z),def.Height)
+        if model then
+          model.Name="Craft_"..site.Id.."_"..id
+          model:SetAttribute("MeadowVillageScenery",true)
+          for _,mesh in ipairs(model:GetDescendants()) do
+            if mesh:IsA("MeshPart") then mesh.CanCollide=false;mesh.CanQuery=true;mesh.CanTouch=false end
+          end
+          if id=="Cook" then
+            villagePrompt(model,site.Name.." 화덕","요리하기",meadowOil.cookMenu)
+          else
+            villagePrompt(model,site.Name.." "..def.Name,def.Action.." 안내",function(player)
+              villageDialogue(player,site.Name.." · "..def.Name,tips[id].."\n\n내 대장 Lv"..smithLevelOf(player).." · 가방(인벤토리)에서 해당 작업을 누르면 이 작업장 근처에서 적용돼.")
+            end)
+          end
+        else
+          warn("CRAFT_SITE_UNVERIFIED "..site.Id.." "..id)
+        end
+      end
+    end)
+  end
+end)
+
+-- [영지 · 성채 꾸미기] 안식처 곁 영지 문서에서 내 터(5칸)에 건물을 세우거나 바꾼다. 선택은 EstateA(칸당 4비트)에 저장된다.
+-- 플레이어마다 접속 순서대로 터를 하나씩 받고, 건물은 모든 플레이어에게 보인다(등록된 CC0 모델만 사용).
+do
+  local E=Config.Estate
+  local origin=Vector3.new(330,3,250)
+  local plotOf={}
+  local usedPlots={}
+  local sessions={}
+  local lastBuild={}
+  local function slotChoice(player,slot) return bit32.band(bit32.rshift(readNumber(player,"EstateA",0),(slot-1)*4),15) end
+  local function slotCenter(plot,slot)
+    local col=(slot-1)%3
+    local row=math.floor((slot-1)/3)
+    return origin+Vector3.new((plot-1)*130+col*40,0,row*40)
+  end
+  local function folderOf(player)
+    local name="Estate_"..player.UserId
+    local f=workspace:FindFirstChild(name)
+    if not f then f=Instance.new("Folder");f.Name=name;f.Parent=workspace end
+    return f
+  end
+  local function renderSlot(player,slot)
+    local plot=plotOf[player]
+    if not plot then return end
+    local folder=folderOf(player)
+    local old=folder:FindFirstChild("Slot"..slot)
+    if old then old:Destroy() end
+    local choice=slotChoice(player,slot)
+    local entry=E.Catalog[choice]
+    if not entry then return end
+    local center=slotCenter(plot,slot)
+    local rp=RaycastParams.new()
+    rp.FilterType=Enum.RaycastFilterType.Include
+    rp.FilterDescendantsInstances={meadowTerrain}
+    local hit=workspace:Raycast(Vector3.new(center.X,300,center.Z),Vector3.new(0,-600,0),rp)
+    if not hit then warn("ESTATE_GROUND_UNVERIFIED "..player.Name.." "..slot);return end
+    local model=worldAsset(entry.Key,hit.Position,entry.Height)
+    if model then
+      model.Name="Slot"..slot;model:SetAttribute("MeadowScenery",true)
+      model.Parent=folder
+    end
+  end
+  local function renderAll(player)
+    for slot=1,E.Slots do renderSlot(player,slot) end
+  end
+  local function assignPlot(player)
+    if plotOf[player] then return plotOf[player] end
+    for i=1,8 do
+      if not usedPlots[i] then usedPlots[i]=player;plotOf[player]=i;return i end
+    end
+  end
+  local function costText(entry)
+    local parts={}
+    if (entry.Coins or 0)>0 then parts[#parts+1]="코인 "..entry.Coins end
+    if (entry.Ingot or 0)>0 then parts[#parts+1]="주괴 "..entry.Ingot end
+    if (entry.Leather or 0)>0 then parts[#parts+1]="가죽 "..entry.Leather end
+    return table.concat(parts,", ")
+  end
+  local function slotMenu(player)
+    local plot=plotOf[player] or assignPlot(player)
+    local lines={"내 영지 터: "..(plot or "?").."번 구역 (안식처 동쪽). 칸을 골라 건물을 세우거나 바꿔라.\n"}
+    local options={}
+    for slot=1,E.Slots do
+      local entry=E.Catalog[slotChoice(player,slot)]
+      lines[#lines+1]=slot.."번 칸 — "..(entry and entry.Name or "빈터")
+      options[#options+1]={label=slot.."번 칸 · "..(entry and entry.Name or "빈터"),action="estate:s:"..slot}
+    end
+    sessions[player]=os.clock()+90
+    villageDialogue(player,"영지 문서",table.concat(lines,"\n"),options)
+  end
+  local function buildMenu(player,slot,page)
+    page=page or 1
+    local per=3
+    local first=(page-1)*per+1
+    local lines={slot.."번 칸에 세울 건물 ("..page.."/"..math.ceil(#E.Catalog/3).."쪽)\n"}
+    local options={}
+    for i=first,math.min(#E.Catalog,first+per-1) do
+      local entry=E.Catalog[i]
+      lines[#lines+1]=entry.Name.." — "..costText(entry)
+      options[#options+1]={label=entry.Name,action="estate:b:"..slot..":"..i}
+    end
+    if first+per<=#E.Catalog then options[#options+1]={label="다음 쪽 ▶",action="estate:p:"..slot..":"..(page+1)} end
+    if slotChoice(player,slot)~=0 then options[#options+1]={label="철거하기",action="estate:b:"..slot..":0"} end
+    sessions[player]=os.clock()+90
+    villageDialogue(player,"영지 문서 · "..slot.."번 칸",table.concat(lines,"\n"),options)
+  end
+  task.spawn(function()
+    task.wait(12)
+    local anchor=Instance.new("Attachment");anchor.Name="Estate_Deed";anchor.WorldPosition=Vector3.new(300,5,215);anchor.Parent=workspace.Terrain
+    local glow=Instance.new("PointLight");glow.Color=Color3.fromRGB(255,220,140);glow.Range=22;glow.Brightness=2;glow.Parent=anchor
+    local prompt=Instance.new("ProximityPrompt");prompt.ActionText="영지 관리";prompt.ObjectText="영지 문서";prompt.HoldDuration=.4
+    prompt.MaxActivationDistance=14;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+    task.spawn(function()
+      local m=worldAsset("vxStall",Vector3.new(300,3,215),4)
+      if m then m.Name="Estate_DeedBoard";m:SetAttribute("MeadowScenery",true) end
+    end)
+    prompt.Triggered:Connect(function(player)
+      if player:GetAttribute("ProfileReady")~=true then return end
+      slotMenu(player)
+    end)
+  end)
+  remote.OnServerEvent:Connect(function(player,action)
+    if typeof(action)~="string" or action:sub(1,7)~="estate:" then return end
+    if os.clock()>(sessions[player] or 0) then return end
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not root or (root.Position-Vector3.new(300,5,215)).Magnitude>60 then return end
+    local slot=tonumber(action:match("^estate:s:(%d+)$"))
+    if slot and slot>=1 and slot<=E.Slots then buildMenu(player,slot,1);return end
+    local ps,pp=action:match("^estate:p:(%d+):(%d+)$")
+    if ps then
+      ps,pp=tonumber(ps),tonumber(pp)
+      if ps>=1 and ps<=E.Slots and pp>=1 and pp<=math.ceil(#E.Catalog/3) then buildMenu(player,ps,pp) end
+      return
+    end
+    local bs,bi=action:match("^estate:b:(%d+):(%d+)$")
+    if not bs then return end
+    bs,bi=tonumber(bs),tonumber(bi)
+    if bs<1 or bs>E.Slots or bi<0 or bi>#E.Catalog then return end
+    if os.clock()-(lastBuild[player] or 0)<1.5 then return end
+    lastBuild[player]=os.clock()
+    local current=slotChoice(player,bs)
+    local mask=readNumber(player,"EstateA",0)
+    local cleared=bit32.band(mask,bit32.bnot(bit32.lshift(15,(bs-1)*4)))
+    if bi==0 then
+      setNumber(player,"EstateA",cleared)
+      renderSlot(player,bs)
+      villageDialogue(player,"영지 문서",bs.."번 칸을 철거했다.",{{label="다른 칸 보기",action="estate:s:"..bs}})
+      return
+    end
+    if bi==current then villageDialogue(player,"영지 문서","이미 그 건물이 서 있다.");return end
+    local entry=E.Catalog[bi]
+    for _,pair in ipairs({{"Coins",entry.Coins},{"Ingot",entry.Ingot},{"Leather",entry.Leather}}) do
+      if (pair[2] or 0)>0 and readNumber(player,pair[1],0)<pair[2] then
+        villageDialogue(player,"영지 문서","재료가 부족하다: "..costText(entry));return
+      end
+    end
+    for _,pair in ipairs({{"Coins",entry.Coins},{"Ingot",entry.Ingot},{"Leather",entry.Leather}}) do
+      if (pair[2] or 0)>0 then setNumber(player,pair[1],readNumber(player,pair[1],0)-pair[2]) end
+    end
+    setNumber(player,"EstateA",bit32.bor(cleared,bit32.lshift(bi,(bs-1)*4)))
+    renderSlot(player,bs)
+    villageDialogue(player,"영지 문서",entry.Name.."을(를) "..bs.."번 칸에 세웠다!",{{label="다른 칸 보기",action="estate:s:"..bs}})
+  end)
+  local function onJoin(player)
+    task.spawn(function()
+      while player.Parent and player:GetAttribute("ProfileReady")~=true do task.wait(1) end
+      if not player.Parent then return end
+      task.wait(14)
+      if assignPlot(player) then renderAll(player) end
+    end)
+  end
+  for _,player in ipairs(Players:GetPlayers()) do onJoin(player) end
+  Players.PlayerAdded:Connect(onJoin)
+  Players.PlayerRemoving:Connect(function(player)
+    local f=workspace:FindFirstChild("Estate_"..player.UserId)
+    if f then f:Destroy() end
+    local plot=plotOf[player]
+    if plot then usedPlots[plot]=nil end
+    plotOf[player]=nil;sessions[player]=nil;lastBuild[player]=nil
+  end)
+end
 
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
 -- 도달/재료 판정은 2초마다, 처치 판정은 몬스터 처치 시점에 확인한다. 거울 정원은 메인 줄 완료(HiddenOpen)로 열린다.
