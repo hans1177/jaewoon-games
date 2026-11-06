@@ -9142,7 +9142,7 @@ do
     local reward=line.Reward or {}
     setNumber(player,line.Field,#line.Steps+1)
     pcall(awardProgress,player,reward.Xp or 0,reward.Coins or 0)
-    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Feather","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Feather","Ectoplasm","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
       if reward[field] then setNumber(player,field,readNumber(player,field,0)+reward[field]) end
     end
     if reward.Relic then setNumber(player,"RelicMask",bit32.bor(readNumber(player,"RelicMask",0),bit32.lshift(1,reward.Relic-1))) end
@@ -9251,7 +9251,7 @@ do
     setNumber(player,line.Field.."C",action=="ql:1" and 1 or 2)
     if choice.Flag then setNumber(player,"TrackFlags",bit32.bor(readNumber(player,"TrackFlags",0),choice.Flag)) end
     if choice.Join and meadowOil.joinCompanion then meadowOil.joinCompanion(player,choice.Join,choice.Bond) end
-    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Feather","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Feather","Ectoplasm","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
       if choice[field] then setNumber(player,field,readNumber(player,field,0)+choice[field]) end
     end
     if choice.Coins then setNumber(player,"Coins",readNumber(player,"Coins",0)+choice.Coins) end
