@@ -423,6 +423,21 @@ local Config = {
     {Id="wraith_cape",Rarity="Epic",Need=260,Name="원혼 망토",Slot="Cape",Category="갑옷",Tint={110,200,190},Attack=2,Defense=3,Icon=3,Ectoplasm=4,Hide=3,Crystal=2,Coins=190,Desc="원혼의 잔재로 짠 망토. 안개 늪지와 죽음의 늪 재료가 필요해."},
     {Id="ember_cape",Rarity="Epic",Need=300,Name="화염 망토",Slot="Cape",Category="갑옷",Tint={210,90,50},Attack=3,Defense=2,Icon=3,Magma=4,Hide=3,Coins=200,Desc="식지 않는 화산석으로 물들인 망토."},
     {Id="dusk_cape",Rarity="Legendary",Need=700,Name="황혼의 망토",Slot="Cape",Category="갑옷",Tint={150,110,200},Attack=4,Defense=5,Icon=3,Crystal=5,Ectoplasm=4,Magma=3,Hide=4,Coins=450,Desc="세 지역의 재료로 완성한 전설 망토."},
+    -- [신화 괴물 전리품 장비] 지룡·히드라·베헤모스·와이번·전설 크리처의 재료로 대장간에서 만든다.
+    {Id="fafnir_edge",Rarity="Epic",Need=260,Name="파프니르의 비늘 대검",Slot="Weapon",Category="무기",WeaponFamily="Greatsword",ModelKey="item_sword_big",ForgeOnly=true,Tint={235,110,80},Attack=16,Defense=0,Icon=2,Art=5,Ingot=6,Leather=3,Claw=4,Crystal=2,Coins=170,Desc="탐욕의 지룡 파프니르의 발톱과 비늘로 벼린 대검."},
+    {Id="hydra_fang_dagger",Rarity="Epic",Need=250,Name="히드라 독니 단검",Slot="Weapon",Category="무기",WeaponFamily="Dagger",ModelKey="item_dagger",ForgeOnly=true,Tint={110,230,140},Attack=15,Defense=0,Icon=2,Art=5,Ingot=5,Leather=3,Fang=5,Moonbloom=3,Coins=170,Desc="어미 히드라의 독니로 만든 단검."},
+    {Id="behemoth_maul",Rarity="Epic",Need=270,Name="베헤모스 철퇴",Slot="Weapon",Category="무기",WeaponFamily="Hammer",ModelKey="item_hammer_double",ForgeOnly=true,Tint={235,200,110},Attack=16,Defense=0,Icon=2,Art=5,Ingot=7,Leather=3,Hide=5,Crystal=2,Coins=170,Desc="거신 베헤모스의 가죽과 뼈로 만든 철퇴."},
+    {Id="wyvern_bow",Rarity="Epic",Need=260,Name="와이번 깃털활",Slot="Weapon",Category="무기",WeaponFamily="Bow",ModelKey="item_bow_wooden",ForgeOnly=true,Tint={240,215,120},Attack=15,Defense=0,Icon=2,Art=5,Ingot=5,Leather=4,Feather=6,Crystal=2,Coins=170,Bow=true,Desc="사막 와이번의 깃털과 힘줄로 만든 활."},
+    {Id="jotun_axe",Rarity="Epic",Need=250,Name="요툰의 서리 도끼",Slot="Weapon",Category="무기",WeaponFamily="Axe",ModelKey="item_axe_small",ForgeOnly=true,Tint={170,215,250},Attack=15,Defense=0,Icon=2,Art=5,Ingot=6,Leather=3,Hide=5,Crystal=3,Coins=170,Desc="눈보라 거인 요툰의 얼음 조각을 박은 도끼."},
+    {Id="ifrit_staff",Rarity="Legendary",Need=700,Name="이프리트의 불꽃 지팡이",Slot="Weapon",Category="무기",WeaponFamily="Staff",ModelKey="item_staff",ForgeOnly=true,Tint={255,120,50},Attack=24,Defense=0,Icon=2,Art=18,Ingot=9,Leather=4,Magma=6,Crystal=5,Coins=420,Desc="재의 이프리트의 불씨로 타오르는 지팡이."},
+    {Id="arachne_blade",Rarity="Legendary",Need=700,Name="아라크네의 실검",Slot="Weapon",Category="무기",WeaponFamily="Sword",ModelKey="item_sword_golden",ForgeOnly=true,Tint={160,255,190},Attack=24,Defense=0,Icon=2,Art=18,Ingot=9,Leather=4,Fang=6,Crystal=5,Coins=420,Desc="뿌리 밑 아라크네의 실로 벼린 검."},
+    {Id="fafnir_scale_mail",Rarity="Legendary",Need=720,Name="파프니르의 비늘 흉갑",Slot="Chest",Category="갑옷",Tint={235,110,80},Attack=0,Defense=16,Icon=3,Leather=6,Claw=5,Magma=4,Steel=2,Coins=450,Desc="지룡의 비늘을 겹겹이 이은 전설 흉갑."},
+    {Id="hydra_hide_gloves",Rarity="Epic",Need=250,Name="히드라 가죽 장갑",Slot="Hands",Category="갑옷",Tint={110,230,140},Attack=1,Defense=5,Icon=3,Leather=4,Fang=4,Coins=190,Desc="독을 머금은 히드라 가죽 장갑."},
+    {Id="behemoth_greaves",Rarity="Epic",Need=260,Name="베헤모스 각반",Slot="Legs",Category="갑옷",Tint={235,200,110},Attack=0,Defense=8,Icon=3,Leather=5,Ingot=4,Hide=4,Coins=190,Desc="거신의 가죽으로 만든 묵직한 각반."},
+    {Id="wyvern_boots",Rarity="Epic",Need=250,Name="와이번 장화",Slot="Feet",Category="갑옷",Tint={240,215,120},Attack=0,Defense=6,Icon=3,Leather=4,Feather=5,Coins=190,Desc="와이번 깃털을 덧댄 가벼운 장화."},
+    {Id="jotun_cape",Rarity="Epic",Need=240,Name="요툰의 서리 망토",Slot="Cape",Category="갑옷",Tint={170,215,250},Attack=2,Defense=3,Icon=3,Leather=4,Hide=4,Crystal=2,Coins=190,Desc="거인의 털가죽으로 지은 서리 망토."},
+    {Id="arachne_silk_cape",Rarity="Legendary",Need=700,Name="아라크네 비단 망토",Slot="Cape",Category="갑옷",Tint={160,255,190},Attack=4,Defense=5,Icon=3,Leather=3,Fang=5,Crystal=5,Ectoplasm=3,Coins=450,Desc="거미 여왕의 비단으로 짠 전설 망토."},
+    {Id="behemoth_bulwark",Rarity="Legendary",Need=720,Name="베헤모스의 성벽 방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="vxShieldD",ForgeOnly=true,Tint={235,200,110},Attack=0,Defense=9,Icon=3,Ingot=9,Leather=4,Hide=6,Crystal=4,Coins=450,Desc="거신의 등뼈로 만든 거대한 방패."},
   },
   -- [회복 소모품] 한 번 제작하면 1개 소지, 사용 시 서버에서 1개 소비.
   MeadowConsumables = {
@@ -2253,6 +2268,7 @@ Config.GearWeaponClass={wanderer_blade="Sword",hunter_blade="Sword",runic_blade=
   hunter_bow="Bow",wind_bow="Bow",worldtree_bow="Bow"}
 -- [새 무기 계열] 기존 서버 공격·스킬 계산과 결합한다.
 for id,className in pairs({
+  fafnir_edge="Greatsword",hydra_fang_dagger="Dagger",behemoth_maul="Hammer",wyvern_bow="Bow",jotun_axe="Axe",ifrit_staff="Staff",arachne_blade="Sword",
   iron_arming_sword="Sword",
   veteran_longsword="Sword",
   royal_gilded_sword="Sword",
