@@ -83,7 +83,7 @@ test("신규 장비 인덱스(65+)용 세 번째 비트마스크 연결", () => 
 
 test("지역 생태 거점 표: 두목 id 유일·서버가 표를 읽는다", () => {
   const ids = [...cfg.matchAll(/\{Id="(\w+)", Name="[^"]*", X=-?\d+, Z=-?\d+, Title=/g)].map((m) => m[1]);
-  assert.ok(ids.length >= 6, "camps=" + ids.length);
+  assert.ok(ids.length >= 9, "camps=" + ids.length);
   assert.equal(new Set(ids).size, ids.length);
   assert.match(srv, /questBoss=camp\.Id/);
   for (const id of ids) assert.ok(!bosses.has(id) || true);
