@@ -9608,6 +9608,174 @@ task.spawn(function()
   end
 end)
 
+-- [탈것] 마을 마구간(12곳)에서 당나귀·말·황소·숲사슴을 사고 탄다. 타면 걸음이 빨라지고, 피격·마을 진입·던전 입장 시 자동으로 내린다.
+do
+  local MOUNTS=Config.Mounts
+  local riding={}
+  local sessions={}
+  local lastAction={}
+  local function dismount(player,reason)
+    local st=riding[player]
+    if not st then return end
+    riding[player]=nil
+    if st.conn then st.conn:Disconnect() end
+    if st.model then st.model:Destroy() end
+    local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+      humanoid.HipHeight=st.hip
+      humanoid.WalkSpeed=st.walk
+    end
+    player:SetAttribute("MountRiding",0)
+    if reason then pcall(function() villageDialogue(player,"탈것",reason) end) end
+  end
+  local function inSafePlace(root)
+    local v=Config.WorldMap.Village
+    local p=root.Position
+    if p.X>=v.X0 and p.X<=v.X1 and p.Z>=v.Z0 and p.Z<=v.Z1 then return true end
+    if p.X>7000 then return true end
+    for _,t in ipairs(Config.WorldMap.Towns or {}) do
+      local dx,dz=p.X-t.X,p.Z-t.Z
+      if dx*dx+dz*dz<70*70 then return true end
+    end
+    return false
+  end
+  local function mount(player,index)
+    local m=MOUNTS[index]
+    local character=player.Character
+    local root=character and character:FindFirstChild("HumanoidRootPart")
+    local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+    if not m or not root or not humanoid or humanoid.Health<=0 then return end
+    dismount(player)
+    local model=worldAsset(m.Key,root.Position,m.Height)
+    if not model then pcall(function() villageDialogue(player,"탈것",m.Name.." 모델을 불러오지 못했다.") end);return end
+    model.Name="Mount_"..player.UserId
+    local st={hip=humanoid.HipHeight,walk=humanoid.WalkSpeed,model=model,index=index}
+    riding[player]=st
+    humanoid.HipHeight=st.hip+math.max(0,m.Height-2)
+    task.wait()
+    -- 안장 위치: 모델 윗면을 루트 아래 1스터드에 맞춘다.
+    local size=model:GetExtentsSize()
+    local center=model:GetBoundingBox().Position
+    local pivot=model:GetPivot()
+    local offset=pivot.Position-center
+    local target=Vector3.new(root.Position.X,root.Position.Y-1-size.Y/2,root.Position.Z)
+    model:PivotTo(CFrame.new(target+offset)*CFrame.Angles(0,math.atan2(-root.CFrame.LookVector.X,-root.CFrame.LookVector.Z)+math.pi,0))
+    local anchorPart
+    for _,part in ipairs(model:GetDescendants()) do
+      if part:IsA("BasePart") then
+        part.Anchored=false;part.CanCollide=false;part.CanQuery=false;part.CanTouch=false;part.Massless=true
+        if not anchorPart or part.Size.Magnitude>anchorPart.Size.Magnitude then anchorPart=part end
+      end
+    end
+    if anchorPart then
+      for _,part in ipairs(model:GetDescendants()) do
+        if part:IsA("BasePart") and part~=anchorPart then
+          local w=Instance.new("WeldConstraint");w.Part0=anchorPart;w.Part1=part;w.Parent=anchorPart
+        end
+      end
+      local w=Instance.new("WeldConstraint");w.Part0=root;w.Part1=anchorPart;w.Parent=anchorPart
+    end
+    model.Parent=workspace
+    humanoid.WalkSpeed=m.Speed
+    player:SetAttribute("MountRiding",index)
+    local last=humanoid.Health
+    st.conn=humanoid.HealthChanged:Connect(function(h)
+      if h<last-0.5 then dismount(player,"공격을 받아 "..m.Name.."에서 떨어졌다!") end
+      last=h
+    end)
+    task.spawn(function()
+      while riding[player]==st and player.Parent do
+        task.wait(1)
+        local r=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        local h=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        if not r or not h or h.Health<=0 then dismount(player);break end
+        if inSafePlace(r) then dismount(player,"마을에 들어와 "..m.Name.."에서 내렸다.");break end
+        h.WalkSpeed=m.Speed
+      end
+    end)
+  end
+  local function costText(m)
+    local parts={"코인 "..m.Coins}
+    if (m.Ingot or 0)>0 then parts[#parts+1]="주괴 "..m.Ingot end
+    if (m.Feather or 0)>0 then parts[#parts+1]="깃털 "..m.Feather end
+    return table.concat(parts,", ")
+  end
+  local function stableMenu(player,town)
+    local owned=readNumber(player,"MountOwned",0)
+    local lines={town.Name.." 마구간. 탈것을 타면 마을 밖 넓은 대륙을 빠르게 달릴 수 있다. 공격을 받으면 떨어진다.\n"}
+    local options={}
+    for i,m in ipairs(MOUNTS) do
+      local has=bit32.band(owned,bit32.lshift(1,i-1))~=0
+      lines[#lines+1]=m.Name.." (속도 "..m.Speed..") — "..(has and "보유" or costText(m))
+      options[#options+1]={label=has and ("타기 · "..m.Name) or ("사기 · "..m.Name),action=(has and "mount:ride:" or "mount:buy:")..i}
+    end
+    options[#options+1]={label="내리기",action="mount:off:0"}
+    sessions[player]={town=town,expires=os.clock()+60}
+    villageDialogue(player,"마구간",table.concat(lines,"\n"),options)
+  end
+  remote.OnServerEvent:Connect(function(player,action)
+    if typeof(action)~="string" or action:sub(1,6)~="mount:" then return end
+    local verb,arg=action:match("^mount:(%a+):(%d)$")
+    if not verb then return end
+    arg=tonumber(arg)
+    local session=sessions[player]
+    if not session or os.clock()>session.expires then return end
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not root or (root.Position-Vector3.new(session.town.X,root.Position.Y,session.town.Z)).Magnitude>115 then return end
+    if os.clock()-(lastAction[player] or 0)<1 then return end
+    lastAction[player]=os.clock()
+    if verb=="off" then dismount(player,"탈것에서 내렸다.");return end
+    local m=MOUNTS[arg]
+    if not m then return end
+    local owned=readNumber(player,"MountOwned",0)
+    local flag=bit32.lshift(1,arg-1)
+    if verb=="buy" then
+      if bit32.band(owned,flag)~=0 then return end
+      for _,pair in ipairs({{"Coins",m.Coins},{"Ingot",m.Ingot},{"Feather",m.Feather}}) do
+        if (pair[2] or 0)>0 and readNumber(player,pair[1],0)<pair[2] then
+          villageDialogue(player,"마구간","재료가 부족하다: "..costText(m));return
+        end
+      end
+      for _,pair in ipairs({{"Coins",m.Coins},{"Ingot",m.Ingot},{"Feather",m.Feather}}) do
+        if (pair[2] or 0)>0 then setNumber(player,pair[1],readNumber(player,pair[1],0)-pair[2]) end
+      end
+      setNumber(player,"MountOwned",bit32.bor(owned,flag))
+      villageDialogue(player,"마구간",m.Name.."을(를) 샀다! 이제 마구간에서 탈 수 있다.",{{label="타기 · "..m.Name,action="mount:ride:"..arg}})
+    elseif verb=="ride" then
+      if bit32.band(owned,flag)==0 then return end
+      -- 마을 안에서는 바로 내리므로 마을 밖으로 나가서 탄다. 마구간은 마을 가장자리에 둔다.
+      mount(player,arg)
+    end
+  end)
+  Players.PlayerRemoving:Connect(function(player) dismount(player);sessions[player]=nil;lastAction[player]=nil end)
+  task.spawn(function()
+    while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(3) end
+    task.wait(24)
+    local rp=RaycastParams.new();rp.FilterType=Enum.RaycastFilterType.Include;rp.FilterDescendantsInstances={workspace.Terrain}
+    for _,town in ipairs(Config.WorldMap.Towns or {}) do
+      -- 마을 밖(반경 84)에 마구간을 둔다. 반경 70 안쪽은 탑승 불가 구역이다.
+      local a=4.2
+      local x,z=town.X+math.cos(a)*84,town.Z+math.sin(a)*84
+      local hit=workspace:Raycast(Vector3.new(x,400,z),Vector3.new(0,-800,0),rp)
+      if hit then
+        task.spawn(function()
+          local stall=worldAsset("vxStall",hit.Position,4)
+          if stall then stall.Name="Stable_"..town.Id;stall:SetAttribute("MeadowScenery",true) end
+          local horse=worldAsset("mon_horse",hit.Position+Vector3.new(6,0,2),5)
+          if horse then horse.Name="StableHorse_"..town.Id;horse:SetAttribute("MeadowScenery",true) end
+        end)
+        local anchor=Instance.new("Attachment");anchor.Name="Stable_"..town.Id;anchor.WorldPosition=hit.Position+Vector3.new(0,2,0);anchor.Parent=workspace.Terrain
+        local prompt=Instance.new("ProximityPrompt");prompt.ActionText="마구간";prompt.ObjectText=town.Name.." 마구간";prompt.HoldDuration=.4
+        prompt.MaxActivationDistance=14;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+        prompt.Triggered:Connect(function(player)
+          if player:GetAttribute("ProfileReady")~=true then return end
+          stableMenu(player,town)
+        end)
+      else warn("STABLE_GROUND_UNVERIFIED "..town.Id) end
+    end
+  end)
+end
+
 -- [영지 · 성채 꾸미기] 안식처 곁 영지 문서에서 내 터(5칸)에 건물을 세우거나 바꾼다. 선택은 EstateA(칸당 4비트)에 저장된다.
 -- 플레이어마다 접속 순서대로 터를 하나씩 받고, 건물은 모든 플레이어에게 보인다(등록된 CC0 모델만 사용).
 do
