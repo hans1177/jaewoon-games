@@ -3391,7 +3391,7 @@ local function refreshArmorVisual(player)
   if not chest then warn("ARMORVIS no chest equipped") return end
   local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
   if not torso then warn("ARMORVIS no torso") return end
-  local model=worldAsset(armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather",(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),2.5)
+  local model=worldAsset(armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather",(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),3.7)
   local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
   if not mesh then warn("ARMORVIS no mesh model="..tostring(model)) if model then model:Destroy() end return end
   warn("ARMORVIS ok "..tostring(chest.Id))
@@ -3401,7 +3401,7 @@ local function refreshArmorVisual(player)
   visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
   visual.Parent=character
   local weld=Instance.new("Weld");weld.Part0=torso;weld.Part1=visual
-  weld.C0=CFrame.new(0,.1,0)
+  weld.C0=CFrame.new(0,.25,-.05)
   weld.Parent=visual
 end
 local function watchArmorVisual(player)
