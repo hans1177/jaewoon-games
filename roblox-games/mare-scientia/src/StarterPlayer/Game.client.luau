@@ -142,6 +142,87 @@ local function mkLabel(parent, text, size, color, bold, order)
 	return l
 end
 
+-- 3D 모델 아이콘: 등록된 CC0 모델을 작은 뷰포트에 비춘다. 모델이 없으면 물음표 칸을 보인다.
+local GOOD_ICON = {
+	wool = { "Naval", "crate", Color3.fromRGB(238, 236, 224) }, coal = { "Naval", "crate", Color3.fromRGB(52, 52, 58) },
+	spice = { "Naval", "crate-bottles", Color3.fromRGB(214, 100, 44) }, cheese = { "Naval", "barrel", Color3.fromRGB(240, 200, 84) },
+	wine = { "Naval", "bottle", Color3.fromRGB(150, 44, 76) }, cloth = { "Naval", "crate", Color3.fromRGB(94, 124, 194) },
+	amber = { "Naval", "chest", Color3.fromRGB(232, 164, 44) }, fish = { "Naval", "barrel", Color3.fromRGB(120, 172, 204) },
+	iron = { "Naval", "cannon-ball", Color3.fromRGB(110, 114, 124) }, timber = { "Naval", "crate", Color3.fromRGB(152, 108, 62) },
+	salt = { "Naval", "crate", Color3.fromRGB(246, 246, 252) }, fur = { "Naval", "crate", Color3.fromRGB(122, 82, 52) },
+	glass = { "Naval", "bottle", Color3.fromRGB(150, 222, 232) }, beer = { "Naval", "barrel", Color3.fromRGB(204, 144, 54) },
+	sugar = { "Naval", "crate", Color3.fromRGB(252, 252, 246) }, tea = { "Naval", "crate", Color3.fromRGB(84, 134, 74) },
+	olive_oil = { "Naval", "bottle", Color3.fromRGB(144, 164, 64) }, silk = { "Naval", "chest", Color3.fromRGB(204, 64, 124) },
+	linen = { "Naval", "crate", Color3.fromRGB(232, 222, 192) }, whale_oil = { "Naval", "barrel", Color3.fromRGB(232, 202, 124) },
+	tin = { "Naval", "cannon-ball", Color3.fromRGB(172, 178, 186) }, porcelain = { "Naval", "chest", Color3.fromRGB(242, 246, 252) },
+	coffee = { "Naval", "crate", Color3.fromRGB(92, 62, 42) }, tobacco = { "Naval", "crate", Color3.fromRGB(152, 112, 62) },
+}
+local SHIP_ICON = {
+	caravel = { "Naval", "ship-small" }, fluyt = { "Naval", "ship-medium" }, frigate = { "Naval", "ship-large" },
+	galleon = { "Naval", "ship-pirate-large" }, paddle_steamer = { "Naval", "ship-medium", Color3.fromRGB(70, 70, 78) },
+	ironclad_frigate = { "Naval", "ship-large", Color3.fromRGB(96, 102, 112) },
+}
+
+local function modelIcon(parent, kind, asset, tint, px)
+	local vf = Instance.new("ViewportFrame")
+	vf.Size = UDim2.fromOffset(px, px)
+	vf.BackgroundColor3 = Color3.fromRGB(40, 58, 86)
+	vf.Ambient = Color3.fromRGB(190, 190, 200)
+	vf.LightColor = Color3.fromRGB(255, 244, 222)
+	vf.LightDirection = Vector3.new(-1, -1.5, -1)
+	corner(vf, 8)
+	local st = Instance.new("UIStroke")
+	st.Color = Color3.fromRGB(214, 170, 82)
+	st.Thickness = 1.5
+	st.Transparency = 0.3
+	st.Parent = vf
+	local cam = Instance.new("Camera")
+	cam.FieldOfView = 35
+	cam.Parent = vf
+	vf.CurrentCamera = cam
+	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
+	local group = lib and lib:FindFirstChild(kind)
+	local tpl = group and group:FindFirstChild(asset)
+	if tpl and tpl:IsA("Model") then
+		local m = tpl:Clone()
+		for _, d in m:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.Anchored = true
+				if tint and d:IsA("MeshPart") then
+					d.Color = tint
+				end
+			end
+		end
+		m.Parent = vf
+		local cf, size = m:GetBoundingBox()
+		local reach = math.max(size.Magnitude, 0.5) * 1.15
+		cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.7, 0.55, 1) .Unit * reach, cf.Position)
+	else
+		local q = Instance.new("TextLabel")
+		q.BackgroundTransparency = 1
+		q.Size = UDim2.fromScale(1, 1)
+		q.Text = "?"
+		q.TextColor3 = Color3.fromRGB(214, 170, 82)
+		q.Font = Enum.Font.GothamBold
+		q.TextSize = px * 0.5
+		q.Parent = vf
+	end
+	vf.Parent = parent
+	return vf
+end
+
+-- 줄(row) 왼쪽에 아이콘을 붙이고 글자 상자를 오른쪽으로 민다
+local function withIcon(row, kind, asset, tint, px)
+	local icon = modelIcon(row, kind, asset, tint, px)
+	icon.Position = UDim2.new(0, 8, 0.5, -px / 2)
+	local box = row:FindFirstChildWhichIsA("Frame")
+	if box then
+		box.Position = UDim2.new(0, px + 16, 0, box.Position.Y.Offset)
+		box.Size = UDim2.new(box.Size.X.Scale, box.Size.X.Offset - (px + 8), box.Size.Y.Scale, box.Size.Y.Offset)
+	end
+	return icon
+end
+
 local function mkButton(parent, text, color, size, onClick, enabled)
 	local b = Instance.new("TextButton")
 	b.Text = text
@@ -1295,13 +1376,17 @@ local function renderTrade()
 			st.Color = if g.trend == "up" then COLORS.green elseif g.trend == "down" then COLORS.red else Color3.fromRGB(70, 84, 104)
 			st.Thickness = 1.5
 			st.Parent = cardF
+			local gi = GOOD_ICON[g.id]
+			if gi then
+				modelIcon(cardF, gi[1], gi[2], gi[3], 54).Position = UDim2.fromOffset(8, 8)
+			end
 			local nm = mkLabel(cardF, g.name .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 14, COLORS.text, true)
-			nm.Position = UDim2.fromOffset(8, 4)
-			nm.Size = UDim2.new(1, -16, 0, 18)
+			nm.Position = UDim2.fromOffset(70, 6)
+			nm.Size = UDim2.new(1, -78, 0, 18)
 			nm.AutomaticSize = Enum.AutomaticSize.None
 			local info = mkLabel(cardF, string.format("사기 %d · 팔기 %d\n보유 %d%s", g.buy, g.sell, g.owned, if g.tag ~= "" then ("  [" .. g.tag .. "]") else ""), 11, COLORS.muted, false)
-			info.Position = UDim2.fromOffset(8, 24)
-			info.Size = UDim2.new(1, -16, 0, 30)
+			info.Position = UDim2.fromOffset(70, 26)
+			info.Size = UDim2.new(1, -78, 0, 30)
 			info.AutomaticSize = Enum.AutomaticSize.None
 			local buy = mkButton(cardF, "구매", COLORS.blue, UDim2.new(0.5, -10, 0, 30), function() call("Buy", { goodId = g.id, amount = amount() }) end, true)
 			buy.Position = UDim2.new(0, 6, 1, -36)
@@ -1355,10 +1440,12 @@ local function renderYard()
 			if c.locked then
 				sub ..= "\n" .. c.locked
 			end
-			return mkRow(content, c.name, sub, {
+			local crow = mkRow(content, c.name, sub, {
 				{ text = if c.owned then "장착중" else (if c.price == 0 then "기본" else tostring(c.price)), color = COLORS.steam, onClick = function() call("BuyCannon", { cannonId = c.id }) end,
 					enabled = yard.available and not c.owned and not c.locked },
 			}, 80)
+			withIcon(crow, "Naval", if c.id == "basic" then "cannon" else "cannon-mobile", if c.id == "steam_gun" then Color3.fromRGB(150, 110, 70) else nil, 56)
+			return crow
 		end)
 	end
 	if rf.nextPlating then
@@ -1389,19 +1476,23 @@ local function renderYard()
 				{ text = label, color = if s.steam then COLORS.steam else COLORS.blue, onClick = function() call("BuyShip", { shipId = s.id }) end,
 					enabled = yard.available and not s.owned and not s.locked },
 			}, 128)
+			local si = SHIP_ICON[s.id]
+			if si then
+				withIcon(row, si[1], si[2], si[3], 72)
+			end
 			-- 성능 막대: 화물·속도·선체를 한눈에 비교
 			local stats = { { "화물", s.cargo, maxCargo, COLORS.gold }, { "속도", s.speed, maxSpeed, COLORS.blue }, { "선체", s.hull, maxHull, COLORS.green } }
 			for i, st in stats do
 				local y = 76 + (i - 1) * 16
 				local lb = mkLabel(row, string.format("%s %d", st[1], st[2]), 11, COLORS.muted, false)
-				lb.Position = UDim2.fromOffset(8, y - 2)
+				lb.Position = UDim2.fromOffset(88, y - 2)
 				lb.Size = UDim2.fromOffset(70, 14)
 				lb.AutomaticSize = Enum.AutomaticSize.None
 				local back = Instance.new("Frame")
 				back.BackgroundColor3 = Color3.fromRGB(8, 14, 22)
 				back.BorderSizePixel = 0
-				back.Position = UDim2.new(0, 82, 0, y)
-				back.Size = UDim2.new(1, -170, 0, 8)
+				back.Position = UDim2.new(0, 162, 0, y)
+				back.Size = UDim2.new(1, -250, 0, 8)
 				back.Parent = row
 				corner(back, 4)
 				local fill = Instance.new("Frame")
@@ -2038,7 +2129,7 @@ local function renderTabs()
 		end, true)
 		b.LayoutOrder = i
 	end
-	local fold = mkButton(tabBar, "닫기 ✕", COLORS.red, UDim2.fromOffset(60, 38), function()
+	local fold = mkButton(tabBar, "닫기", COLORS.red, UDim2.fromOffset(60, 38), function()
 		main.Visible = false
 		menuToggle.Visible = true
 	end, true)
