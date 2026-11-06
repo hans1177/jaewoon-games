@@ -18,7 +18,7 @@ cp "$ROOT"/tests/*.luau "$TMP/"
 # Roblox 엔진 전용(3D 장면)은 CLI 로 분석·실행할 수 없어 제외한다
 rm -f "$TMP"/Shared/PortScene.luau "$TMP"/Shared/VoyageScene.luau "$TMP"/Shared/FieldScene.luau "$TMP"/Shared/Pose.luau "$TMP"/Shared/NavalBattle.luau
 
-sed -i -E 's/require\(script\.Parent\.([A-Za-z]+)\)/require(".\/\1")/g' "$TMP"/Shared/*.luau "$TMP"/Services/*.luau
+sed -i -E 's/require\(script\.Parent\.([A-Za-z0-9]+)\)/require(".\/\1")/g' "$TMP"/Shared/*.luau "$TMP"/Services/*.luau
 
 if [ "${1:-}" = "balance" ]; then
   (cd "$TMP" && "$LUAU" balance.luau)
