@@ -6,6 +6,8 @@
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Pose = require(script.Parent:WaitForChild("Pose"))
+
 local PortScene = {}
 
 local MED = { lisbon = true, seville = true, marseille = true, genoa = true, venice = true, livorno = true, naples = true }
@@ -84,7 +86,7 @@ end
 local function sign(parent, adornee, text, color, height)
 	local bb = Instance.new("BillboardGui")
 	bb.Adornee = adornee
-	bb.Size = UDim2.fromOffset(240, 52)
+	bb.Size = UDim2.fromOffset(210, 46)
 	bb.StudsOffset = Vector3.new(0, (height or 4) + 2.5, 0)
 	bb.AlwaysOnTop = false
 	bb.LightInfluence = 0
@@ -95,8 +97,10 @@ local function sign(parent, adornee, text, color, height)
 	l.BackgroundTransparency = 0.05
 	l.TextColor3 = Color3.new(1, 1, 1)
 	l.Font = Enum.Font.GothamBold
-	l.TextScaled = true
+	l.TextScaled = false
+	l.TextSize = 26
 	l.TextWrapped = false
+	l.TextTruncate = Enum.TextTruncate.AtEnd
 	l.Text = text
 	local st = Instance.new("UIStroke")
 	st.Color = Color3.fromRGB(230, 196, 120)
@@ -170,6 +174,9 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		local center, size = m:GetBoundingBox()
 		local bottom = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
 		m:PivotTo(CFrame.new(bottomPosition - bottom) * m:GetPivot())
+		if kind == "People" then
+			Pose.relaxArms(m)
+		end
 	end)
 	if not ok then
 		warn("[MareScientia] 모델 수입본 배치 오류", kind, asset, err)

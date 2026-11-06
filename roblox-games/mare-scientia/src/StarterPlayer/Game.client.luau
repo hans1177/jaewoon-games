@@ -14,6 +14,7 @@ local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
 local PortScene = require(Shared:WaitForChild("PortScene"))
 local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
 local FieldScene = require(Shared:WaitForChild("FieldScene"))
+local Pose = require(Shared:WaitForChild("Pose"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
@@ -396,6 +397,7 @@ local function setPortrait(groupName)
 		end
 	end
 	m.Parent = portraitFrame
+	Pose.relaxArms(m)
 	local cf, size = m:GetBoundingBox()
 	local head = cf.Position + Vector3.new(0, size.Y * 0.32, 0)
 	portraitCam.CFrame = CFrame.lookAt(head + Vector3.new(0, 0.2, size.Y * 1.2), head)

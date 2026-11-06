@@ -7,6 +7,8 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Pose = require(script.Parent:WaitForChild("Pose"))
+
 local FieldScene = {}
 
 local ORIGIN = Vector3.new(3000, 0, 0) -- 항구 장면과 멀리 떨어진 곳
@@ -85,6 +87,9 @@ local function placeModel(parent, kind, asset, bottom, desired, solid)
 		local center, size = m:GetBoundingBox()
 		local b = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
 		m:PivotTo(CFrame.new(bottom - b) * m:GetPivot())
+		if kind == "People" then
+			Pose.relaxArms(m)
+		end
 	end)
 	if not ok then
 		m:Destroy()
