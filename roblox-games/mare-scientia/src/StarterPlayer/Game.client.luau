@@ -144,19 +144,48 @@ end
 
 -- 3D 모델 아이콘: 등록된 CC0 모델을 작은 뷰포트에 비춘다. 모델이 없으면 물음표 칸을 보인다.
 local GOOD_ICON = {
-	wool = { "Naval", "crate", Color3.fromRGB(238, 236, 224) }, coal = { "Naval", "crate", Color3.fromRGB(52, 52, 58) },
-	spice = { "Naval", "crate-bottles", Color3.fromRGB(214, 100, 44) }, cheese = { "Naval", "barrel", Color3.fromRGB(240, 200, 84) },
-	wine = { "Naval", "bottle", Color3.fromRGB(150, 44, 76) }, cloth = { "Naval", "crate", Color3.fromRGB(94, 124, 194) },
-	amber = { "Naval", "chest", Color3.fromRGB(232, 164, 44) }, fish = { "Naval", "barrel", Color3.fromRGB(120, 172, 204) },
-	iron = { "Naval", "cannon-ball", Color3.fromRGB(110, 114, 124) }, timber = { "Naval", "crate", Color3.fromRGB(152, 108, 62) },
-	salt = { "Naval", "crate", Color3.fromRGB(246, 246, 252) }, fur = { "Naval", "crate", Color3.fromRGB(122, 82, 52) },
-	glass = { "Naval", "bottle", Color3.fromRGB(150, 222, 232) }, beer = { "Naval", "barrel", Color3.fromRGB(204, 144, 54) },
-	sugar = { "Naval", "crate", Color3.fromRGB(252, 252, 246) }, tea = { "Naval", "crate", Color3.fromRGB(84, 134, 74) },
-	olive_oil = { "Naval", "bottle", Color3.fromRGB(144, 164, 64) }, silk = { "Naval", "chest", Color3.fromRGB(204, 64, 124) },
-	linen = { "Naval", "crate", Color3.fromRGB(232, 222, 192) }, whale_oil = { "Naval", "barrel", Color3.fromRGB(232, 202, 124) },
-	tin = { "Naval", "cannon-ball", Color3.fromRGB(172, 178, 186) }, porcelain = { "Naval", "chest", Color3.fromRGB(242, 246, 252) },
-	coffee = { "Naval", "crate", Color3.fromRGB(92, 62, 42) }, tobacco = { "Naval", "crate", Color3.fromRGB(152, 112, 62) },
+	wool = { "Naval", "crate", Color3.fromRGB(238, 236, 224) }, coal = { "Cargo", "bucket", Color3.fromRGB(40, 40, 46) },
+	spice = { "Cargo", "mortar-pestle", Color3.fromRGB(214, 100, 44) }, cheese = { "Cargo", "cheese" },
+	wine = { "Cargo", "wine-red" }, cloth = { "Cargo", "box-open", Color3.fromRGB(94, 124, 194) },
+	amber = { "Cargo", "honey", Color3.fromRGB(232, 164, 44) }, fish = { "Cargo", "fish-large" },
+	iron = { "Naval", "cannon-ball", Color3.fromRGB(110, 114, 124) }, timber = { "Cargo", "resource-wood" },
+	salt = { "Cargo", "bucket", Color3.fromRGB(246, 246, 252) }, fur = { "Cargo", "meat-raw", Color3.fromRGB(122, 82, 52) },
+	glass = { "Relics", "potion", Color3.fromRGB(150, 222, 232) }, beer = { "Cargo", "mug" },
+	sugar = { "Cargo", "bread", Color3.fromRGB(252, 252, 246) }, tea = { "Cargo", "mug", Color3.fromRGB(84, 134, 74) },
+	olive_oil = { "Relics", "pot", Color3.fromRGB(144, 164, 64) }, silk = { "Naval", "chest", Color3.fromRGB(204, 64, 124) },
+	linen = { "Cargo", "box-open", Color3.fromRGB(232, 222, 192) }, whale_oil = { "Cargo", "barrel-open", Color3.fromRGB(232, 202, 124) },
+	tin = { "Cargo", "plate", Color3.fromRGB(172, 178, 186) }, porcelain = { "Cargo", "plate", Color3.fromRGB(242, 246, 252) },
+	coffee = { "Cargo", "mug", Color3.fromRGB(92, 62, 42) }, tobacco = { "Cargo", "loaf-round", Color3.fromRGB(152, 112, 62) },
 }
+-- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
+local TITLE_ICONS = {
+	{ "식물", "Cargo", "apple" }, { "동물", "Cargo", "fish-large" }, { "광물", "Relics", "coin" }, { "유물", "Relics", "pot" },
+	{ "유적", "Castle", "tower-square-base" }, { "천문", "Relics", "key" }, { "화학", "Relics", "potion" }, { "물리", "Cargo", "bucket" },
+	{ "지리", "Naval", "ship-small" }, { "철학", "Interior", "bookcaseclosed" }, { "의학", "Cargo", "mortar-pestle" }, { "신화", "Relics", "weapon-sword" },
+	{ "항해술", "Naval", "ship-medium" }, { "기상", "Naval", "flag-pennant" }, { "건축", "Town", "house" }, { "예술", "Relics", "shield-round" },
+	{ "교역품", "Cargo", "box-open" }, { "조선", "Naval", "ship-large" }, { "언어", "Interior", "bookcaseopenlow" },
+}
+local TEXT_ICONS = {
+	{ "코인 투자", "Relics", "coin" }, { "예금", "Relics", "coin" }, { "→", "Cargo", "box-open" }, { "면허", "Relics", "shield-round" },
+	{ "보험", "Relics", "shield-rectangle" }, { "알현", "Castle", "flag-banner-short" }, { "소문", "Cargo", "mug" },
+	{ "납품", "Cargo", "box-open" }, { "해전", "Relics", "weapon-sword" }, { "승리", "Relics", "weapon-sword" }, { "방문", "Naval", "ship-small" },
+	{ "연구", "Relics", "potion" }, { "도감 카드", "Relics", "key" }, { "카드", "Relics", "key" }, { "발견", "Relics", "key" },
+	{ "이야기", "Relics", "key" },
+}
+local function iconFor(title, subtitle)
+	for _, t in TITLE_ICONS do
+		if string.find(title, t[1], 1, true) then
+			return t
+		end
+	end
+	local both = title .. " " .. (subtitle or "")
+	for _, t in TEXT_ICONS do
+		if string.find(both, t[1], 1, true) then
+			return t
+		end
+	end
+	return nil
+end
 local SHIP_ICON = {
 	caravel = { "Naval", "ship-small" }, fluyt = { "Naval", "ship-medium" }, frigate = { "Naval", "ship-large" },
 	galleon = { "Naval", "ship-pirate-large" }, paddle_steamer = { "Naval", "ship-medium", Color3.fromRGB(70, 70, 78) },
@@ -272,6 +301,10 @@ local function mkRow(parent, title, subtitle, buttons, height)
 			b.AnchorPoint = Vector2.new(1, 0.5)
 			b.Position = UDim2.new(1, -6 - (btnCount - i) * 68, 0.5, 0)
 		end
+	end
+	local ic = iconFor(title, subtitle)
+	if ic and (height or 60) >= 50 then
+		withIcon(row, ic[2], ic[3], nil, math.min(46, (height or 60) - 10))
 	end
 	return row
 end
