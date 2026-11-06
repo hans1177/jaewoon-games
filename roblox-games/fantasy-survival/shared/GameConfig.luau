@@ -1140,6 +1140,14 @@ Config.Companions = {
    Worldview="이야기가 남으면 사람은 죽지 않는다. 죽음도 노래가 되면 견딜 만하다.", Likes={"ifa","ria"}, Dislikes={"doran","baren"}, Where="초원 이정표의 길손"},
   {Id="cassian", Name="카시안", Role="몰락한 성채 기사", Arch="tank", B=8, C=4, G=3, K=4, L=9, Skin={175,140,115}, Shirt={80,30,30}, Dmg=15, Interval=2, Range=10,
    Worldview="명예는 갑옷이 아니라 선택이다. 늦은 선택도 선택이다.", Likes={"sera"}, Dislikes={"har","rowen"}, Where="저주받은 성문의 기사 (자유 탐험)"},
+  {Id="garon", Name="가론", Role="저주 풀린 늑대 사냥꾼", Arch="ranged", B=7, C=5, G=2, K=5, L=8, Skin={150,120,95}, Shirt={90,80,60}, Dmg=15, Interval=1.8, Range=40,
+   Worldview="달이 뜰 때마다 내 이름을 외웠다. 이제 누가 불러 주는 이름이 있다.", Likes={"nick","rowen"}, Dislikes={"har"}, Where="세계수 숲의 저주받은 소굴 (저주 해방)"},
+  {Id="pafnir", Name="파프니르", Role="탐욕을 버린 용 기사", Arch="melee", B=8, C=3, G=4, K=3, L=7, Skin={170,110,90}, Shirt={140,50,40}, Dmg=22, Interval=2.4, Range=10,
+   Worldview="재물에 눈이 멀어 비늘을 얻었다. 비늘을 벗고서야 지킬 것이 보였다.", Likes={"cassian","doran"}, Dislikes={"mina"}, Where="고대 협곡의 지룡 둥지 (저주 해방)"},
+  {Id="lyva", Name="리바", Role="독을 이긴 치유 마법사", Arch="healer", B=2, C=8, G=2, K=9, L=7, Skin={195,185,170}, Shirt={80,150,110}, Dmg=0, Interval=8, Range=0,
+   Worldview="독은 약과 한 끗 차이다. 나는 그 끗을 넘었다 돌아왔다.", Likes={"ifa","morgan"}, Dislikes={"har"}, Where="남부 습원의 히드라 늪 (저주 해방)"},
+  {Id="bemus", Name="베무스", Role="대상의 수호 거신", Arch="tank", B=6, C=6, G=1, K=6, L=10, Skin={200,170,120}, Shirt={170,140,80}, Dmg=13, Interval=2.2, Range=10,
+   Worldview="길은 지키는 자가 있어 길이다. 수백 년도 한 번의 걸음으로 시작했다.", Likes={"sera","cassian"}, Dislikes={"mina"}, Where="모래 폐허의 호수 (저주 해방)"},
 }
 -- 모집 퀘스트(전원 합류, 선택은 유대의 깊이만 바꾼다: 1=가까운 유대 +15% 피해, 2=거리를 둔 합류 +보상).
 do
@@ -1273,13 +1281,14 @@ Config.EcoRegions = {
      ChoiceB={Label="코인 500",Done="이든이 코인을 건넨다. '뿌리쉼터에 큰 도움이 됐어.'",Coins=500},
      Reward={Coins=400,Xp=400,Ore=6,Ingot=2}},
     {Id="werewolfden", Name="저주받은 소굴", X=1100, Z=110, Title="[서브] 저주받은 소굴",
-     Intro="숲지기 이든: '남서쪽 소굴의 웨어울프가 숲 사냥꾼을 해쳤어. 우두머리를 쓰러뜨려 줘. 발톱과 가죽은 네 몫이야.'",
+     Intro="숲지기 이든: '남서쪽 소굴의 웨어울프 우두머리 눈을 봤어? 사냥꾼 가론의 눈이야. 저주에 먹혔어. 죽이지 말고 제압해 줘. 저주는 풀 수도 있어.'",
      Reach="소굴 입구에 뼈가 쌓여 있다. 안쪽에서 낮은 울음이 들린다.", BossDone="우두머리가 쓰러지고 소굴이 조용해진다.",
      Nodes={},
      Guard={model="barbarian",name="저주받은 웨어울프",tier=4,height=4.4,hp=1.7,dmg=1.3,drops={{"Claw",.5,1},{"Hide",.5,1}},Offs={{-14,10},{16,12},{-4,-16}}},
      Boss={model="barbarian",name="소굴의 웨어울프 우두머리",tier=6,height=6.6,hp=3.8,dmg=2,dx=8,dz=-6,drops={{"Claw",1,4},{"Hide",1,3},{"Fang",.8,2}}},
-     ChoiceA={Label="발톱 4개",Done="이든이 발톱을 건넨다. '장갑 재료로 좋아.'",Claw=4},
-     ChoiceB={Label="무두질 가죽 4장",Done="이든이 가죽을 건넨다. '질기게 손질해 뒀어.'",Leather=4},
+     ChoiceA={Label="저주를 풀어 가론을 해방한다",Done="우두머리의 털이 빠지며 사냥꾼 가론이 쓰러진 채 숨을 쉰다. '…내 이름이 가론이었지. 빚을 졌다, 이 칼날로 갚겠다.'",Join="garon",Bond=true,Claw=2,Coins=150},
+     ChoiceB={Label="저주받은 괴물로 끝낸다",Done="이든이 발톱과 가죽을 건넨다. '…숲에 또 하나의 전설이 묻혔구나.'",Claw=4,Leather=3,Coins=300},
+     Prompt="제압당한 우두머리가 가론의 눈빛으로 올려다본다. 저주를 풀 수 있는 건 지금뿐이다. 어떻게 할까?",
      Reward={Coins=440,Xp=440,Hide=3}},
   }},
   {Zone="volcano", HubX=2400, HubZ=0, Giver="재의 순찰병", Camps={
@@ -1340,13 +1349,14 @@ Config.EcoRegions = {
      ChoiceB={Label="무두질 가죽 4장",Done="하미드가 가죽을 건넨다. '사막 열기에 강한 가죽이야.'",Leather=4},
      Reward={Coins=520,Xp=520,Hide=3}},
     {Id="oasisbehemoth", Name="베헤모스의 호수", X=3640, Z=-170, Title="[서브] 베헤모스의 호수",
-     Intro="오아시스 상인 하미드: '호숫가에 베헤모스가 나타나 대상이 못 지나가. 거신 베헤모스만 쓰러뜨려 줘. 바실리스크들은 알아서 흩어질 거야.'",
+     Intro="오아시스 상인 하미드: '호숫가의 베헤모스는 대상을 지키다 저주받은 수호전사라는 전설이 있어. 제압해 줘. 저주를 풀면 우리 편이 될지도 몰라.'",
      Reach="호숫가에 거대한 발자국이 깊게 패어 있고 바실리스크가 어슬렁거린다.", BossDone="베헤모스가 쓰러지고 호숫길이 열린다.",
      Nodes={},
      Guard={model="parasaur",name="모래 바실리스크",tier=6,style="mage",myth={color=Color3.fromRGB(255,220,80)},height=4.6,hp=1.8,dmg=1.5,drops={{"Hide",.5,1}},Offs={{-14,10},{16,12},{-4,-16}}},
      Boss={model="apatosaur",name="사막의 거신 베헤모스",tier=7,myth={color=Color3.fromRGB(255,190,60),range=28,rate=20},height=9,hp=3.6,dmg=1.9,dx=8,dz=-6,drops={{"Hide",1,3},{"Crystal",.4,1}}},
-     ChoiceA={Label="무두질 가죽 4장",Done="하미드가 가죽을 건넨다. '대상 짐에 딱이야.'",Leather=4},
-     ChoiceB={Label="코인 650",Done="하미드가 코인을 건넨다. '장사가 살았어.'",Coins=650},
+     ChoiceA={Label="저주를 풀어 베무스를 해방한다",Done="베헤모스의 거대한 몸이 모래로 부서지고, 방패를 든 거구의 전사 베무스가 일어선다. '수백 년 대상을 지키다 괴물이 됐군. 마지막 길까지 지키겠다.'",Join="bemus",Bond=true,Leather=2,Coins=150},
+     ChoiceB={Label="저주받은 거신으로 끝낸다",Done="하미드가 가죽과 코인을 건넨다. '덕분에 호숫길이 열렸어.'",Leather=4,Coins=650},
+     Prompt="거신의 몸에서 모래가 흘러내리고 그 안에서 전사의 눈이 열린다. 저주를 풀 수 있을 것 같다.",
      Reward={Coins=540,Xp=540,Hide=3}},
   }},
   {Zone="swamp", HubX=4800, HubZ=0, Giver="안개 부두 뱃사공", Camps={
@@ -1454,13 +1464,14 @@ Config.EcoRegions = {
      ChoiceB={Label="마력 수정 3개",Done="순례자가 수정을 건넨다. '그림자의 전리품이야.'",Crystal=3},
      Reward={Coins=540,Xp=540,Hide=3}},
     {Id="canyonwyrm", Name="협곡 지룡의 둥지", X=1560, Z=-1830, Title="[서브] 지룡의 둥지",
-     Intro="협곡 순례자: '남쪽 바위 틈에 지룡이 알을 품고 있어. 둥지의 주인 파프니르만 쓰러뜨려 줘. 가죽과 뼈는 네 몫이야.'",
+     Intro="협곡 순례자: '남쪽 바위 틈의 지룡은 재물에 눈먼 기사가 저주로 변한 모습이래. 파프니르를 제압해 줘. 저주를 풀 수 있는지 보자. 가죽과 뼈는 네 몫이야.'",
      Reach="바위 틈에서 비늘 조각과 뼈 더미가 보인다.", BossDone="파프니르가 쓰러지고 둥지가 조용해진다.",
      Nodes={},
      Guard={model="triceratops",name="협곡 가시룡",tier=6,height=5.2,hp=2.04,dmg=1.68,style="mage",myth={color=Color3.fromRGB(255,120,60)},drops={{"Hide",.6,1},{"Fang",.4,1}},Offs={{-14,10},{16,12},{-4,-16}}},
      Boss={model="trex",name="탐욕의 지룡 파프니르",tier=7,height=8,hp=3.9,dmg=2.14,style="mage",myth={color=Color3.fromRGB(255,80,40),range=26,rate=24},dx=8,dz=-6,drops={{"Hide",1,3},{"Fang",1,2},{"Claw",.8,2}}},
-     ChoiceA={Label="무두질 가죽 4장",Done="순례자가 가죽을 건넨다. '두껍고 질겨.'",Leather=4},
-     ChoiceB={Label="코인 650",Done="순례자가 코인을 건넨다. '순례길이 한결 안전해졌어.'",Coins=650},
+     ChoiceA={Label="저주를 풀어 파프니르를 해방한다",Done="지룡의 비늘이 재가 되어 흩어지고, 갑옷 입은 기사 파프니르가 무릎을 꿇는다. '탐욕이 나를 짐승으로 만들었다. 이번엔 지키는 데 쓰겠다.'",Join="pafnir",Bond=true,Steel=1,Coins=150},
+     ChoiceB={Label="저주받은 지룡으로 끝낸다",Done="순례자가 가죽을 건넨다. '두껍고 질겨. 슬픈 재료지.'",Leather=4,Coins=450},
+     Prompt="쓰러진 지룡이 갑옷 조각을 흘리며 사람의 목소리로 속삭인다. '…끝내 줘, 아니면 풀어 줘.'",
      Reward={Coins=560,Xp=560,Hide=3}},
   }},
   {Zone="wetland", HubX=-700, HubZ=1750, Giver="늪 길잡이 미르", Camps={
@@ -1492,13 +1503,14 @@ Config.EcoRegions = {
      ChoiceB={Label="코인 500",Done="미르가 코인을 건넨다. '이끼마루가 숨통이 트였어.'",Coins=500},
      Reward={Coins=320,Xp=320,Ore=5,Ingot=2}},
     {Id="wethydra", Name="히드라의 늪", X=-620, Z=1620, Title="[서브] 히드라의 늪",
-     Intro="늪 길잡이 미르: '북쪽 늪가에 히드라 새끼들이 길을 막고 있어. 어미 히드라만 쓰러뜨려 줘. 근처 약초는 네 거야.'",
+     Intro="늪 길잡이 미르: '북쪽 늪가의 어미 히드라는 전염병을 고치던 마법사가 저주로 변한 거래. 제압해 줘. 해독할 방법이 있을지 몰라. 근처 약초는 네 거야.'",
      Reach="늪가에 독액 자국이 가득하고 약초가 자란다.", BossDone="히드라가 쓰러지고 늪가가 열린다.",
      Nodes={{"HERB",-8,-14},{"HERB",12,-10}},
      Guard={model="parasaur",name="히드라 새끼",tier=3,style="mage",myth={color=Color3.fromRGB(90,255,150)},height=4.6,hp=1.92,dmg=1.59,drops={{"Hide",.5,1},{"Moonbloom",.3,1}},Offs={{-14,10},{16,12},{-4,-16}}},
      Boss={model="stegosaurus",name="아홉 머리 어미 히드라",tier=4,style="mage",myth={color=Color3.fromRGB(60,255,120),range=24,rate=22},height=7,hp=3.75,dmg=2.02,dx=8,dz=-6,drops={{"Hide",1,3},{"Moonbloom",.8,2}}},
-     ChoiceA={Label="달맞이꽃 4개",Done="미르가 약초를 건넨다. '늪이 고마워할 거야.'",Moonbloom=4},
-     ChoiceB={Label="코인 400",Done="미르가 코인을 건넨다. '길이 열렸어.'",Coins=400},
+     ChoiceA={Label="저주를 풀어 리바를 해방한다",Done="아홉 머리가 한 사람의 그림자로 줄어든다. 치유 마법사 리바가 눈을 뜬다. '독을 없애려다 독이 됐지… 이제 사람을 고치게 해 줘.'",Join="lyva",Bond=true,Moonbloom=3,Coins=120},
+     ChoiceB={Label="저주받은 히드라로 끝낸다",Done="미르가 코인과 약초를 건넨다. '독이 가셨어. 길이 열렸어.'",Moonbloom=3,Coins=380},
+     Prompt="머리가 하나씩 사라지며 어미 히드라가 여인의 모습으로 돌아온다. 해독의 의식을 할 수 있다.",
      Reward={Coins=420,Xp=420,Hide=2}},
   }},
   {Zone="desert", HubX=2800, HubZ=1750, Giver="사막 길잡이 하산", Camps={
@@ -1628,7 +1640,7 @@ for _, region in ipairs(Config.EcoRegions) do
     for _, n in ipairs(camp.Nodes) do if n[1] == "ORE" then hasOre = true else hasHerb = true end end
     if hasOre then table.insert(steps, {Type="event", Event="MINE_ORE", Count=2, Title="되찾은 광맥에서 광석 캐기", Text="광맥에 다가가 광석을 두 번 캐라.", Done="질 좋은 광석이다. "..region.Giver.."에게 가져가자."}) end
     if hasHerb then table.insert(steps, {Type="event", Event="GATHER_HERB", Count=1, Title="약초 채집", Text="약초 덤불에서 약초를 채집하라.", Done="약초가 한가득이다. "..region.Giver.."에게 가져가자."}) end
-    table.insert(steps, {Type="choice", X=region.HubX, Z=region.HubZ, R=90, Title=region.Giver.."에게 보고", Prompt=region.Giver..": '해결해 줬군! 사례는 무엇으로 줄까?'", Choices={camp.ChoiceA, camp.ChoiceB}})
+    table.insert(steps, {Type="choice", X=region.HubX, Z=region.HubZ, R=90, Title=region.Giver.."에게 보고", Prompt=camp.Prompt or (region.Giver..": '해결해 줬군! 사례는 무엇으로 줄까?'"), Choices={camp.ChoiceA, camp.ChoiceB}})
     table.insert(Config.QuestLines, {Id=camp.Id, Name=camp.Title, Kind="Sub", Field="QLEco"..camp.Id, Need={Zone=region.Zone}, Intro=camp.Intro, Steps=steps, Reward=camp.Reward})
   end
 end
