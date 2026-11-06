@@ -3868,8 +3868,8 @@ local function refreshArmorVisual(player)
   weld.C0=CFrame.new(0,-.05,0)
   weld.Parent=visual
 end
--- [장갑·바지·장화 외형] 희귀 이상 장비만 등록된 CC0 메시(item_glove / item_pants / item_boots)를 해당 부위에 용접한다.
--- 시작 장비와 일반·고급 장비는 기본 모습 그대로 둔다. 장비에 Tint가 있으면 색을 살짝 입힌다.
+-- [장갑·바지·장화 외형] 모든 등급에 이미 등록된 CC0 메시(item_glove / item_pants / item_boots)를 연결한다.
+-- 기본 장비도 실물 메시를 쓰되 기존 등급·공격·방어·저장 흐름은 변경하지 않는다.
 local gearVisualSpec={
   Hands={model="item_glove",height=1.0,parts={"LeftHand","RightHand"},offset=CFrame.new(0,-.02,0),fit=Vector3.new(1.35,1.3,1.35)},
   Feet={model="item_boots",height=1.1,parts={"LeftFoot","RightFoot"},offset=CFrame.new(0,.1,0),fit=Vector3.new(1.35,1.9,1.3)},
@@ -3883,7 +3883,7 @@ local function refreshGearVisuals(player)
       if child.Name=="MeadowGearVisual_"..slot then child:Destroy() end
     end
     local item=meadowRpg.equippedSlot and meadowRpg.equippedSlot(player,slot)
-    if item and item.Rarity~="Common" then
+    if item then
       for _,partName in ipairs(spec.parts) do
         local anchor=character:FindFirstChild(partName)
         if anchor then
