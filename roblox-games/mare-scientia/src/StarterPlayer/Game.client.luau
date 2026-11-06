@@ -636,6 +636,7 @@ local function call(action, payload)
 	-- 해전을 했다면 전투 기록을 3D 장면으로 보여 준다
 	if result.ok and (action == "Hunt" or action == "ChallengeBoss") and view and view.lastBattle and not inField then
 		local lb = view.lastBattle
+		local resolved = false
 		inField = true
 		main.Visible = false
 		NavalBattle.play({
@@ -645,7 +646,17 @@ local function call(action, payload)
 			winner = lb.winner,
 			reason = lb.reason,
 			isBoss = action == "ChallengeBoss",
+			canFlee = lb.canFlee == true,
+			onFlee = function()
+				resolved = true
+				call("ResolveBattle", { flee = true })
+				return view ~= nil and view.lastBattle ~= nil and view.lastBattle.fled == true
+			end,
 			onDone = function()
+				if lb.pending and not resolved then
+					resolved = true
+					call("ResolveBattle", { flee = false })
+				end
 				inField = false
 				applyView()
 				main.Visible = true

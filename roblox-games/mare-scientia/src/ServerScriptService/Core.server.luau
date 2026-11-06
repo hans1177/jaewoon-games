@@ -106,6 +106,10 @@ local function saveSession(player)
 		return
 	end
 	session.dirty = false
+	-- 보류된 해전(도망 대기 중)은 저장 전에 확정한다: 접속을 끊어 패배를 피하지 못하게
+	if session.state.pendingBattle then
+		pcall(S.Battle.resolve, session.state, ctx, false)
+	end
 	local data = S.State.serialize(session.state)
 	local ok, err = pcall(function()
 		store:SetAsync(keyFor(player), data)

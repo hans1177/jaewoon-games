@@ -195,7 +195,7 @@ function NavalBattle.play(opts)
 	subtitle.Size = UDim2.new(0.7, 0, 0, 40)
 	subtitle.TextWrapped = true
 
-	local hint = label(gui, "가까이 가면 대포가 자동으로 나가고, 배가 맞닿으면 백병전! 스틱을 놓으면 옆면을 자동으로 맞춰 줍니다.", 14, Color3.fromRGB(255, 226, 170))
+	local hint = label(gui, "가까이 가면 대포가 자동으로 나가고, 배가 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요.", 14, Color3.fromRGB(255, 226, 170))
 	hint.AnchorPoint = Vector2.new(0.5, 0)
 	hint.Position = UDim2.new(0.5, 0, 0, 98)
 	hint.Size = UDim2.new(0.8, 0, 0, 36)
@@ -459,7 +459,8 @@ function NavalBattle.play(opts)
 
 	local sinkStart = nil
 	local loser = if opts.winner == "a" then "foe" elseif opts.winner == "b" then "me" else nil
-	local phase = "duel" -- duel → board → end
+	local phase = "duel" -- duel → board → end (도주 중엔 fleeing)
+	local fleeProgress, fleeTried = 0, false
 	local nextMeFire, nextFoeFire = os.clock() + 2.2, os.clock() + 3.4
 	local boardStart = nil
 	local endAt = nil
@@ -506,12 +507,49 @@ function NavalBattle.play(opts)
 				foe.pos = foe.pos:Lerp(me.pos + Vector3.new(0, 0, -16), dt * 0.8)
 			end
 			-- 경계 밖으로 나가지 않게 가운데로 되돌린다
-			for _, sh in { me, foe } do
+			for _, sh in (if opts.canFlee and not fleeTried then { foe } else { me, foe }) do
 				if sh.pos.Magnitude > 260 then
 					steerToward(sh, math.atan2(-sh.pos.Z, -sh.pos.X), dt, 1.5)
 				end
 			end
 
+			-- 도주: 해역 가장자리 밖으로 몇 초 버티면 도망 시도 (서버가 성공 여부를 판정)
+			if phase == "duel" and opts.canFlee and not fleeTried then
+				if me.pos.Magnitude > 230 then
+					fleeProgress += dt
+					hint.Text = string.format("도주 중... %d%%", math.floor(math.min(1, fleeProgress / 2.5) * 100))
+					if fleeProgress >= 2.5 then
+						fleeTried = true
+						phase = "fleeing"
+						subtitle.Text = "돛을 올리고 전속력으로 도주한다!"
+						task.spawn(function()
+							local ok = opts.onFlee and opts.onFlee()
+							if finished then
+								return
+							end
+							if ok then
+								phase = "end"
+								endAt = os.clock()
+								banner.Text = "도망 성공!"
+								banner.TextColor3 = Color3.fromRGB(150, 220, 255)
+								banner.TextTransparency = 0
+								banner.TextStrokeTransparency = 0.3
+								subtitle.Text = ""
+							else
+								subtitle.Text = "도망 실패! 해적이 따라붙었다"
+								me.pos = me.pos * 0.35
+								phase = "duel"
+								hint.Text = ""
+							end
+						end)
+					end
+				else
+					fleeProgress = math.max(0, fleeProgress - dt * 2)
+					if fleeProgress == 0 and hint.Text:sub(1, 3) == "도주" then
+						hint.Text = ""
+					end
+				end
+			end
 			if phase == "duel" then
 				local d = (foe.pos - me.pos).Magnitude
 				-- 자동 포격: 사정거리 안이면 쿨타임마다 한 발씩 기록을 소비한다

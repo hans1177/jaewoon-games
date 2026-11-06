@@ -58,30 +58,17 @@ return function(D, S)
 		return math.max(1, base + bonus + math.floor(rng() * 3) - 1)
 	end
 
-	-- 사략선과의 자동 해전. msgs에 요약을 덧붙이고 이겼는지 돌려준다.
-	local function encounter(state, ctx, msgs)
-		local enemyLv = enemyLevel(state, ctx.rng)
-		local enemy = D.Combat.pirate(enemyLv, ctx.rng)
-		local me = playerFighter(state)
-		local startFuel = me.fuel
-		local result = D.Combat.run(me, enemy, ctx.rng)
-		local reward = D.Combat.pirateReward(enemyLv)
-
-		state.ship.hull = math.max(1, math.floor(result.a.hull))
-		state.ship.crew = math.max(1, math.floor(result.a.crew))
-		local used = startFuel - result.a.fuel
+	-- 해전 결과를 상태에 반영한다 (pb: 미리 계산해 둔 전투 결과)
+	local function settle(state, msgs, pb)
+		state.ship.hull = math.max(1, math.floor(pb.hull))
+		state.ship.crew = math.max(1, math.floor(pb.crew))
+		local used = pb.startFuel - pb.fuel
 		if used > 0 then
 			S.State.removeCargo(state, "coal", math.min(used, state.cargo.coal or 0))
 		end
-
-		state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = enemy.name }
-		table.insert(msgs, string.format("사략선 '%s'(Lv.%d)와 조우!", enemy.name, enemyLv))
-		for _, line in S.Perk.companionLines(state, "battle") do
-			table.insert(msgs, line)
-		end
-
-		if result.winner == "a" then
-			local coins = if result.reason == "boarded" or result.reason == "surrender"
+		local reward = pb.reward
+		if pb.winner == "a" then
+			local coins = if pb.reason == "boarded" or pb.reason == "surrender"
 				then math.floor(reward.coins * 1.5)
 				else reward.coins
 			state.coins += coins
@@ -94,7 +81,7 @@ return function(D, S)
 			S.State.gainXp(state, "battle", reward.xp, msgs)
 			S.Perk.addAffinity(state, 2, msgs)
 			return true
-		elseif result.winner == "b" then
+		elseif pb.winner == "b" then
 			local lost = 0
 			if state.insured then
 				state.insured = false
@@ -117,15 +104,69 @@ return function(D, S)
 		return false
 	end
 
+	-- 사략선과의 해전. deferred면 결과를 바로 적용하지 않고 보류한다 (도망 가능).
+	local function encounter(state, ctx, msgs, deferred)
+		local enemyLv = enemyLevel(state, ctx.rng)
+		local enemy = D.Combat.pirate(enemyLv, ctx.rng)
+		local me = playerFighter(state)
+		local result = D.Combat.run(me, enemy, ctx.rng)
+		local pb = {
+			hull = result.a.hull, crew = result.a.crew, fuel = result.a.fuel, startFuel = me.fuel,
+			winner = result.winner, reason = result.reason, reward = D.Combat.pirateReward(enemyLv),
+			fleeChance = math.clamp(0.5 + (me.speed - enemy.speed) * 0.08, 0.15, 0.9),
+		}
+		state.lastBattle = { log = result.log, winner = result.winner, reason = result.reason, enemy = enemy.name, canFlee = deferred == true, pending = deferred == true }
+		table.insert(msgs, string.format("사략선 '%s'(Lv.%d)와 조우!", enemy.name, enemyLv))
+		for _, line in S.Perk.companionLines(state, "battle") do
+			table.insert(msgs, line)
+		end
+		if deferred then
+			state.pendingBattle = pb
+			return nil
+		end
+		return settle(state, msgs, pb)
+	end
+
+	-- 보류된 해전 처리. flee면 도망을 시도한다.
+	local function resolve(state, ctx, flee)
+		local pb = state.pendingBattle
+		if not pb then
+			return false, "진행 중인 해전이 없어요"
+		end
+		state.pendingBattle = nil
+		local msgs = {}
+		if flee then
+			if ctx.rng() < pb.fleeChance then
+				state.lastBattle.fled = true
+				state.lastBattle.pending = false
+				state.ship.hull = math.max(1, math.floor(state.ship.hull * 0.9))
+				table.insert(msgs, "도망 성공! 추격을 따돌렸다 (선체 약간 손상)")
+				return true, table.concat(msgs, "\n")
+			end
+			table.insert(msgs, "도망 실패! 해적에게 따라잡혔다")
+			state.lastBattle.fled = false
+		end
+		state.lastBattle.pending = false
+		settle(state, msgs, pb)
+		return true, table.concat(msgs, "\n")
+	end
+
 	function handlers.Hunt(state, _p, ctx)
+		if state.pendingBattle then
+			resolve(state, ctx, false)
+		end
 		local def = S.State.shipDef(state)
 		if state.ship.hull < def.hull * 0.3 then
 			return false, "선체가 너무 손상됐어요. 수리가 필요해요"
 		end
 		local msgs = {}
 		S.State.advanceDays(state, 1)
-		encounter(state, ctx, msgs)
+		encounter(state, ctx, msgs, true)
 		return true, table.concat(msgs, "\n")
+	end
+
+	function handlers.ResolveBattle(state, p, ctx)
+		return resolve(state, ctx, p ~= nil and p.flee == true)
 	end
 
 	function handlers.SetLoadout(state, p)
@@ -156,5 +197,5 @@ return function(D, S)
 		return true, "자동스킬 우선순위를 저장했어요"
 	end
 
-	return { handlers = handlers, skillBlock = skillBlock, playerFighter = playerFighter, encounter = encounter, enemyLevel = enemyLevel }
+	return { handlers = handlers, resolve = resolve, skillBlock = skillBlock, playerFighter = playerFighter, encounter = encounter, enemyLevel = enemyLevel }
 end

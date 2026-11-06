@@ -420,6 +420,22 @@ do
 	check("lastBattle recorded", st.lastBattle ~= nil and #st.lastBattle.log > 0)
 	check("hull stays >= 1 after battle", st.ship.hull >= 1 and st.ship.crew >= 1)
 
+	-- 도망: 해전은 보류되고, ResolveBattle로 확정된다
+	local fl = newState()
+	local d2 = S.State.shipDef(fl)
+	fl.ship.hull, fl.ship.crew = d2.hull, d2.crew
+	local coins0 = fl.coins
+	act(fl, "Hunt", {})
+	check("hunt defers result", fl.pendingBattle ~= nil and fl.coins == coins0 and fl.lastBattle.canFlee == true)
+	fl.pendingBattle.fleeChance = 1
+	local okF = act(fl, "ResolveBattle", { flee = true })
+	check("flee succeeds", okF and fl.pendingBattle == nil and fl.lastBattle.fled == true and fl.coins == coins0)
+	act(fl, "Hunt", {})
+	fl.pendingBattle.fleeChance = 0
+	act(fl, "ResolveBattle", { flee = true })
+	check("flee failure settles battle", fl.pendingBattle == nil and fl.lastBattle.fled == false)
+	check("resolve without battle fails", not (act(fl, "ResolveBattle", {})))
+
 	-- 승패에 따라 보상/손실이 다르다
 	local win = newState()
 	local c0 = win.coins
