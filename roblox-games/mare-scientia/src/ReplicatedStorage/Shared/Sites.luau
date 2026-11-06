@@ -231,6 +231,18 @@ local Sites: { Site } = {
 	{ id = "auto_language_venice_mid", name = "베네치아 문서 보관소 열람 심층 조사", portId = "venice", minLevel = 3, days = 2, pool = { "lang_cipher" } },
 	{ id = "lisbon_apothecary", name = "리스본 약재상", portId = "lisbon", minLevel = 2, days = 1, pool = { "med_cinchona" } },
 	{ id = "hamburg_docks", name = "함부르크 항구 도서관", portId = "hamburg", minLevel = 2, days = 1, pool = { "phy_pendulum" } },
+	{ id = "edinburgh_highlands", name = "스코틀랜드 고지", portId = "edinburgh", minLevel = 1, days = 1, pool = { "bot_heather", "min_peat", "zoo_gannet" } },
+	{ id = "edinburgh_colliery", name = "로디언 탄광", portId = "edinburgh", minLevel = 2, days = 1, pool = { "min_coal_seam" } },
+	{ id = "orkney_brodgar", name = "오크니 환상열석", portId = "edinburgh", minLevel = 4, days = 3, pool = { "site_brodgar" } },
+	{ id = "london_tower", name = "런던탑과 템스 강변", portId = "london", minLevel = 2, days = 1, pool = { "site_tower_london" } },
+	{ id = "bergen_maelstrom", name = "말스트룀 해역", portId = "bergen", minLevel = 3, days = 2, pool = { "geo_maelstrom", "zoo_orca" } },
+	{ id = "bergen_whale_station", name = "고래 해체장", portId = "bergen", minLevel = 2, days = 1, pool = { "goods_whale_oil" } },
+	{ id = "hamburg_hops_farm", name = "홉 농장", portId = "hamburg", minLevel = 1, days = 1, pool = { "bot_hops" } },
+	{ id = "hamburg_hansa_hall", name = "한자 창고", portId = "hamburg", minLevel = 2, days = 2, pool = { "relic_hansa_cog", "relic_hanseatic_seal" } },
+	{ id = "antwerp_flax_fields", name = "플랑드르 아마 밭", portId = "antwerp", minLevel = 1, days = 1, pool = { "bot_flax", "goods_linen" } },
+	{ id = "amsterdam_dogger", name = "도거뱅크 어장", portId = "amsterdam", minLevel = 2, days = 2, pool = { "geo_dogger_bank" } },
+	{ id = "rouen_mont_saint_michel", name = "몽생미셸 만", portId = "rouen", minLevel = 3, days = 3, pool = { "site_mont_saint_michel" } },
+	{ id = "copenhagen_eider_isle", name = "솜털오리 섬", portId = "copenhagen", minLevel = 1, days = 1, pool = { "zoo_eider" } },
 }
 
 return {
