@@ -353,7 +353,8 @@ jobs:
             'manifest.webmanifest','sw.js','install.html','offline.html','register.html',
             'command.html','emergency-ai.js','asset-library.html',
             'company-asset-library.json','backup.html','company.html',
-            'multiplayer/multiplayer-client.js'
+            'multiplayer/multiplayer-client.js',
+            'card-grid-duel/index.html'
           ];
           // Hydrate the fixed, trusted homepage source list in one Git operation.
           // Preserve the original per-file 24MB size gate and output paths.
@@ -367,6 +368,9 @@ jobs:
             fs.mkdirSync(path.dirname(destination),{recursive:true});
             fs.writeFileSync(destination,source);
           }
+          // 기존 카드 워즈도 같은 공식 Pages 게시 경로에 포함한다. 원본은 유지한다.
+          transformRoute(path.join(site,'card-grid-duel'));
+          if(!fs.existsSync(path.join(site,'card-grid-duel/index.html')))throw Error('CARD_WARS_PAGES_ENTRY_MISSING');
           // 모든 루트 절대경로는 배포 사본에서만 변환한다. 게임/카탈로그 원본은 수정하지 않는다.
           // JSON 중 PWA manifest 이외에는 canonical /web-games/ 경로를 보존해야 한다.
           const pathAdaptFiles=[
