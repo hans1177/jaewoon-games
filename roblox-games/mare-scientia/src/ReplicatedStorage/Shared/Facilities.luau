@@ -13,7 +13,7 @@ Facilities.NAMES = { bank = "은행", guild = "상인 길드", palace = "왕궁"
 Facilities.INSURANCE_RATE = 0.08 -- 배 값 대비 보험료 (최소 100)
 Facilities.PALACE_NAMES = {
 	london = "잉글랜드 왕궁", amsterdam = "총독 관저", copenhagen = "덴마크 왕궁", stockholm = "스웨덴 왕궁",
-	istanbul = "술탄의 궁전", venice = "총독궁", lisbon = "포르투갈 왕궁", seville = "스페인 궁정", naples = "나폴리 왕궁",
+	st_petersburg = "러시아 황궁", istanbul = "술탄의 궁전", venice = "총독궁", lisbon = "포르투갈 왕궁", seville = "스페인 궁정", naples = "나폴리 왕궁",
 }
 
 -- 은행

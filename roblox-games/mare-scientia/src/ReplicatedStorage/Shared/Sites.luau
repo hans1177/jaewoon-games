@@ -307,6 +307,18 @@ local Sites: { Site } = {
 	{ id = "alexandria_library", name = "알렉산드리아 옛 도서관터", portId = "alexandria", minLevel = 4, days = 3, pool = { "relic_astrolabe", "relic_rune_stone", "min_granite" } },
 	{ id = "alexandria_pharos", name = "파로스 등대 터", portId = "alexandria", minLevel = 3, days = 2, pool = { "site_gdansk_crane", "min_chalk" } },
 	{ id = "tangier_strait", name = "지브롤터 해협", portId = "tangier", minLevel = 2, days = 1, pool = { "geo_maelstrom", "zoo_orca" } },
+	{ id = "riga_old_town", name = "리가 구시가", portId = "riga", minLevel = 1, days = 1, pool = { "site_hamburg_speicher", "bot_flax" } },
+	{ id = "riga_gulf", name = "리가 만", portId = "riga", minLevel = 2, days = 1, pool = { "min_amber_raw", "zoo_seal" } },
+	{ id = "tallinn_walls", name = "탈린 성벽", portId = "tallinn", minLevel = 2, days = 1, pool = { "relic_hansa_seal", "bot_birch" } },
+	{ id = "helsinki_archipelago", name = "핀란드 군도", portId = "helsinki", minLevel = 2, days = 1, pool = { "geo_skerries", "zoo_eider", "zoo_seal" } },
+	{ id = "petersburg_neva", name = "네바 강 하구", portId = "st_petersburg", minLevel = 3, days = 2, pool = { "geo_estuary", "relic_viking_helm", "bot_birch" } },
+	{ id = "petersburg_forest", name = "러시아 숲", portId = "st_petersburg", minLevel = 3, days = 2, pool = { "zoo_arctic_fox", "bot_cranberry", "bot_birch" } },
+	{ id = "koenigsberg_amber", name = "호박 해안", portId = "koenigsberg", minLevel = 2, days = 1, pool = { "min_amber_raw", "relic_amber_room" } },
+	{ id = "visby_ruins", name = "비스뷔 성벽 유적", portId = "visby", minLevel = 2, days = 1, pool = { "relic_rune_stone", "site_gdansk_crane" } },
+	{ id = "visby_cliffs", name = "고틀란드 절벽", portId = "visby", minLevel = 1, days = 1, pool = { "zoo_puffin", "min_chalk" } },
+	{ id = "las_palmas_volcano", name = "카나리아 화산", portId = "las_palmas", minLevel = 2, days = 1, pool = { "min_basalt", "bot_dune_grass" } },
+	{ id = "funchal_vineyards", name = "마데이라 포도밭", portId = "funchal", minLevel = 1, days = 1, pool = { "bot_hops", "zoo_gannet" } },
+	{ id = "azores_crater", name = "아조레스 분화구 호수", portId = "ponta_delgada", minLevel = 3, days = 2, pool = { "min_basalt", "zoo_orca", "geo_dogger_bank" } },
 }
 
 return {

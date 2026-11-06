@@ -222,6 +222,42 @@ local Ports: { [string]: Port } = {
 		id = "tangier", name = "탕헤르", country = "morocco", lat = 35.78, lon = -5.80,
 		produces = { "olive_oil", "salt", "fish", "sugar" }, demands = { "cloth", "iron", "timber", "tea" }, shipyard = false,
 	},
+	riga = {
+		id = "riga", name = "리가", country = "livonia", lat = 56.95, lon = 24.10,
+		produces = { "timber", "fur", "linen" }, demands = { "salt", "wine", "cloth", "whale_oil" }, shipyard = false,
+	},
+	tallinn = {
+		id = "tallinn", name = "탈린", country = "estonia", lat = 59.44, lon = 24.75,
+		produces = { "timber", "fur", "fish" }, demands = { "salt", "wine", "cloth", "glass" }, shipyard = false,
+	},
+	helsinki = {
+		id = "helsinki", name = "헬싱키", country = "finland", lat = 60.17, lon = 24.94,
+		produces = { "fish", "timber", "iron" }, demands = { "salt", "wine", "cloth", "coffee" }, shipyard = false,
+	},
+	st_petersburg = {
+		id = "st_petersburg", name = "상트페테르부르크", country = "russia", lat = 59.93, lon = 30.30,
+		produces = { "fur", "timber", "iron", "linen" }, demands = { "wine", "glass", "sugar", "tea", "porcelain" }, shipyard = true,
+	},
+	koenigsberg = {
+		id = "koenigsberg", name = "쾨니히스베르크", country = "prussia", lat = 54.71, lon = 20.51,
+		produces = { "amber", "timber", "linen" }, demands = { "wine", "cloth", "spice", "coffee" }, shipyard = false,
+	},
+	visby = {
+		id = "visby", name = "비스뷔", country = "gotland", lat = 57.64, lon = 18.30,
+		produces = { "fish", "salt", "wool" }, demands = { "wine", "iron", "cloth", "beer" }, shipyard = false,
+	},
+	las_palmas = {
+		id = "las_palmas", name = "라스팔마스", country = "canary", lat = 28.12, lon = -15.41,
+		produces = { "wine", "sugar", "salt" }, demands = { "cloth", "iron", "timber", "coal" }, shipyard = false,
+	},
+	funchal = {
+		id = "funchal", name = "푼샬", country = "madeira", lat = 32.65, lon = -16.91,
+		produces = { "wine", "sugar" }, demands = { "wool", "cloth", "timber", "iron" }, shipyard = false,
+	},
+	ponta_delgada = {
+		id = "ponta_delgada", name = "퐁타델가다", country = "azores", lat = 37.74, lon = -25.67,
+		produces = { "fish", "wine", "salt" }, demands = { "cloth", "iron", "timber", "wool" }, shipyard = false,
+	},
 }
 
 local Nations: { [string]: Nation } = {

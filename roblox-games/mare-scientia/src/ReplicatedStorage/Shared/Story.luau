@@ -391,6 +391,105 @@ local Events: { Event } = {
 			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_maelstrom", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
+	{
+		id = "npc_riga_timber", title = "리가의 목재상", portId = "riga", art = "market", npc = "목재상",
+		lines = {
+			"\"이 돛대감은 발트의 숲에서 강을 타고 내려온 것이오.\"",
+			"목재상이 곧게 뻗은 통나무를 두드린다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_birch", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_birch", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_tallinn_watch", title = "탈린의 파수꾼", portId = "tallinn", art = "palace", npc = "파수꾼",
+		lines = {
+			"\"성벽 위에서 보면 상인의 배와 해적의 배가 한눈에 구분되지.\"",
+			"파수꾼이 망원경을 건넨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_hansa_seal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_hansa_seal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_helsinki_pilot", title = "헬싱키의 군도 도선사", portId = "helsinki", art = "storm", npc = "군도 도선사",
+		lines = {
+			"\"수천 개의 섬 사이를 지나려면 바위 이름을 모두 외워야 하오.\"",
+			"도선사가 손으로 섬들을 헤아린다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_skerries", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_skerries", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_petersburg_tsar", title = "페테르부르크의 건설 감독", portId = "st_petersburg", art = "palace", npc = "건설 감독",
+		lines = {
+			"\"늪 위에 도시를 세우다니, 황제의 고집은 못 말리지.\"",
+			"감독이 설계도를 펼친다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_estuary", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_estuary", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_koenigsberg_amber", title = "쾨니히스베르크의 호박 세공사", portId = "koenigsberg", art = "market", npc = "호박 세공사",
+		lines = {
+			"\"이 안에 갇힌 벌레는 수천 년 전부터 그대로라오.\"",
+			"세공사가 호박을 빛에 비춘다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "min_amber_raw", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_amber_raw", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_visby_monk", title = "비스뷔의 수도사", portId = "visby", art = "ruins", npc = "수도사",
+		lines = {
+			"\"무너진 성당들은 이곳이 얼마나 부유했는지 말해 주지요.\"",
+			"수도사가 돌 부스러기를 쓸어낸다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_rune_stone", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_rune_stone", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_palmas_sailor", title = "라스팔마스의 항해사", portId = "las_palmas", art = "harbor", npc = "항해사",
+		lines = {
+			"\"여기서 서쪽으로 닷새만 가면 새로운 땅이 있다는 소문이 있소.\"",
+			"항해사가 서쪽 수평선을 가리킨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_dogger_bank", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_dogger_bank", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_funchal_vintner", title = "푼샬의 포도주 상인", portId = "funchal", art = "tavern", npc = "포도주 상인",
+		lines = {
+			"\"배에서 흔들릴수록 맛이 깊어지는 술이라오.\"",
+			"상인이 잔을 기울인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_hops", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_hops", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_azores_whaler", title = "아조레스의 고래잡이", portId = "ponta_delgada", art = "storm", npc = "고래잡이",
+		lines = {
+			"\"산 위 망루에서 고래를 보면 종을 울리지.\"",
+			"고래잡이가 작살을 어깨에 멘다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_orca", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_orca", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
 }
 
 local ById: { [string]: Event } = {}
