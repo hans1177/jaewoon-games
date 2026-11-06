@@ -8582,6 +8582,32 @@ do
           tier=tiers[zone.Id],height=5.2,hp=1.6,dmg=1.2,zoneTag=zone.Id,
           drops={{"Hide",.7,2},{"Ore",.4,1}},position=center+Vector3.new(math.cos(a)*18,0,math.sin(a)*18)})
       end
+      -- [영주 성채] 영주 자리 둘레에 지역 성격에 맞는 방벽·탑·야영 소품을 세운다(등록된 CC0 모델만).
+      task.spawn(function()
+        while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(3) end
+        local castle={windcliff=1,oasis=1,citadel=1,canyon=1,desert=1,deadmarsh=1,chaos=1}
+        local parts
+        if castle[zone.Id] then
+          parts={{"vxCastleGate",0,-34,15,0},{"vxCastleCorner",-34,-34,12,0},{"vxCastleCorner",34,-34,12,1.57},
+            {"vxCastleWall",-34,6,9,1.57},{"vxCastleWall",34,6,9,1.57},{"vxCastleCorner",-34,34,12,-1.57},{"vxCastleCorner",34,34,12,3.14},
+            {"vxTowerBase",0,40,16,0},{"vxCastlePillar",-14,-26,11,0},{"vxCastlePillar",14,-26,11,0},{"vxCampfirePit",0,8,2.6,0}}
+        else
+          parts={{"vxPoles",-30,-20,5,0},{"vxPoles",30,-20,5,0},{"vxPoles",0,36,5,0},{"vxCampfirePit",0,10,2.6,0},{"vxCampfirePit",-18,-4,2.4,0},
+            {"vxStall",22,12,4,0.8},{"vxRockLarge",-34,22,10,0},{"vxRockWide",34,28,8,0},{"vxTreeLog",-22,34,3.5,0.6}}
+        end
+        local rp=RaycastParams.new();rp.FilterType=Enum.RaycastFilterType.Include;rp.FilterDescendantsInstances={workspace.Terrain}
+        for k,spec in ipairs(parts) do
+          local pos=center+Vector3.new(spec[2],0,spec[3])
+          local hit=workspace:Raycast(Vector3.new(pos.X,400,pos.Z),Vector3.new(0,-800,0),rp)
+          if hit then
+            local m=worldAsset(spec[1],hit.Position,spec[4])
+            if m then
+              m.Name="LordKeep_"..zone.Id.."_"..k;m:SetAttribute("MeadowScenery",true)
+              if spec[5]~=0 then pcall(function() m:PivotTo(m:GetPivot()*CFrame.Angles(0,spec[5],0)) end) end
+            end
+          else warn("LORD_KEEP_GROUND_UNVERIFIED "..zone.Id) break end
+        end
+      end)
       local anchor=Instance.new("Attachment");anchor.Name="LordFort_"..zone.Id;anchor.WorldPosition=center+Vector3.new(0,4,0);anchor.Parent=workspace.Terrain
       local smoke=Instance.new("ParticleEmitter");smoke.Color=ColorSequence.new(Color3.fromRGB(120,100,90));smoke.Rate=6
       smoke.Lifetime=NumberRange.new(5,7);smoke.Speed=NumberRange.new(8,12);smoke.EmissionDirection=Enum.NormalId.Top
@@ -8924,14 +8950,37 @@ do
     task.spawn(function()
       task.wait(6+index*.6)
       local center=Vector3.new(town.X,3,town.Z)
+      -- [마을 구성] 1번 집=여관(가장 크게), 2번=상점(노점 포함), 3번=의뢰소, 4번=민가. 주민은 각자 집 앞에 선다.
+      local houseRoles={{"여관",14},{"상점",12},{"의뢰소",12},{"민가",11}}
       for i,key in ipairs(houseKeys) do
         local angle=i/4*math.pi*2+.4
-        local house=worldAsset(key,center+Vector3.new(math.cos(angle)*38,0,math.sin(angle)*38),11)
-        if house then house.Name="TownHouse_"..town.Id.."_"..i;house:SetAttribute("MeadowScenery",true) end
+        local role=houseRoles[i]
+        local house=worldAsset(key,center+Vector3.new(math.cos(angle)*38,0,math.sin(angle)*38),role[2])
+        if house then
+          house.Name="TownHouse_"..town.Id.."_"..i;house:SetAttribute("MeadowScenery",true)
+          local mesh=house:FindFirstChildWhichIsA("MeshPart",true)
+          if mesh and i<=3 then
+            local gui=Instance.new("BillboardGui");gui.Name="TownSign";gui.Adornee=mesh;gui.Size=UDim2.fromOffset(120,34)
+            gui.StudsOffsetWorldSpace=Vector3.new(0,role[2]*.75,0);gui.AlwaysOnTop=false;gui.MaxDistance=140;gui.Parent=mesh
+            local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundColor3=Color3.fromRGB(60,40,24)
+            label.BackgroundTransparency=.15;label.TextColor3=Color3.fromRGB(255,232,180);label.Font=Enum.Font.GothamBold
+            label.TextScaled=true;label.Text=role[1];label.Parent=gui
+            local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,6);corner.Parent=label
+          end
+        end
+      end
+      -- 상점 앞 노점, 여관 앞 모닥불.
+      do
+        local a2=2/4*math.pi*2+.4
+        local stall=worldAsset("vxStall",center+Vector3.new(math.cos(a2)*27+5,0,math.sin(a2)*27),4)
+        if stall then stall.Name="TownStall_"..town.Id;stall:SetAttribute("MeadowScenery",true) end
+        local a1=1/4*math.pi*2+.4
+        local fire=worldAsset("vxCampfirePit",center+Vector3.new(math.cos(a1)*24-5,0,math.sin(a1)*24+5),2.4)
+        if fire then fire.Name="TownInnFire_"..town.Id;fire:SetAttribute("MeadowScenery",true) end
       end
       -- 여관 손님 아낙(등록 CC0 인물 메시): 여관 주인 곁에서 마을 소문을 들려준다.
       task.spawn(function()
-        local woman=worldAsset("mon_womanmedieval",center+Vector3.new(math.cos(2.09)*10+4,0,math.sin(2.09)*10+4),5.4)
+        local woman=worldAsset("mon_womanmedieval",center+Vector3.new(math.cos(1/4*math.pi*2+.4)*27+4,0,math.sin(1/4*math.pi*2+.4)*27+5),5.4)
         if woman then
           woman.Name="TownInnGuest_"..town.Id;woman:SetAttribute("MeadowScenery",true)
           local rumors={
@@ -8952,8 +9001,8 @@ do
         if lamp then lamp:SetAttribute("MeadowScenery",true) end
       end
       for r,role in ipairs(roles) do
-        local angle=r/3*math.pi*2
-        local position=center+Vector3.new(math.cos(angle)*10,3,math.sin(angle)*10)
+        local angle=r/4*math.pi*2+.4 -- 여관(1)·상점(2)·의뢰소(3) 집 앞
+        local position=center+Vector3.new(math.cos(angle)*27,3,math.sin(angle)*27)
         local ok,npc=pcall(function()
           local desc=Instance.new("HumanoidDescription")
           local skin=Color3.fromRGB(role.look.skin[1],role.look.skin[2],role.look.skin[3])
@@ -9902,6 +9951,29 @@ do
         local statue=worldAsset(lm.Statue,base+Vector3.new(0,(lm.Shape=="plateau" and 16) or (lm.Shape=="crater" and 8) or 0,0),lm.Height or 40)
         if statue then statue.Name="Landmark_"..lm.Id;statue:SetAttribute("MeadowScenery",true) end
       end
+      -- [성지 경내] 랜드마크 둘레에 기둥·화덕·돌계단·공물대를 세워 참배하는 곳처럼 꾸민다.
+      task.spawn(function()
+        while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(3) end
+        local rp=RaycastParams.new();rp.FilterType=Enum.RaycastFilterType.Include;rp.FilterDescendantsInstances={workspace.Terrain}
+        local radius=(lm.Shape=="gate" and 64) or (lm.Shape=="giantTree" and 46) or 58
+        local list={}
+        for k=0,3 do
+          local a=k*math.pi/2+.785
+          list[#list+1]={"vxCastlePillar",math.cos(a)*radius,math.sin(a)*radius,12}
+        end
+        list[#list+1]={"vxCampfirePit",math.cos(.3)*(radius-14),math.sin(.3)*(radius-14),2.6}
+        list[#list+1]={"vxCampfirePit",math.cos(3.44)*(radius-14),math.sin(3.44)*(radius-14),2.6}
+        list[#list+1]={"vxStairsStone",0,radius-6,3}
+        list[#list+1]={"vxStall",-radius+8,6,4}
+        for k,spec in ipairs(list) do
+          local x,z=base.X+spec[2],base.Z+spec[3]
+          local hit=workspace:Raycast(Vector3.new(x,400,z),Vector3.new(0,-800,0),rp)
+          if hit then
+            local m=worldAsset(spec[1],hit.Position,spec[4])
+            if m then m.Name="Shrine_"..lm.Id.."_"..k;m:SetAttribute("MeadowScenery",true) end
+          else warn("SHRINE_GROUND_UNVERIFIED "..lm.Id) break end
+        end
+      end)
       local anchor=Instance.new("Attachment");anchor.Name="Landmark_"..lm.Id;anchor.WorldPosition=base+Vector3.new(0,2,0);anchor.Parent=workspace.Terrain
       local color=Color3.fromRGB(lm.Light[1],lm.Light[2],lm.Light[3])
       local beam=Instance.new("ParticleEmitter");beam.Color=ColorSequence.new(color);beam.LightEmission=1;beam.Rate=40

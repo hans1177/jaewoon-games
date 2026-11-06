@@ -1690,6 +1690,41 @@ for _, region in ipairs(Config.EcoRegions) do
   end
 end
 
+-- [성지 순례] 지역마다 랜드마크(성지)를 찾아 참배하고 공물로 보상을 고르는 자유 서브 퀘스트. 순서·선행 조건 없음.
+do
+  local offerings = {
+    meadow = {{"Moonbloom", 3, "달맞이꽃 3송이"}, {"Crystal", 1, "마력 결정 1개"}},
+    windcliff = {{"Feather", 3, "바람 깃털 3개"}, {"Crystal", 1, "마력 결정 1개"}},
+    worldtree = {{"Moonbloom", 4, "달맞이꽃 4송이"}, {"Crystal", 2, "마력 결정 2개"}},
+    volcano = {{"Magma", 3, "화산석 3개"}, {"Crystal", 2, "마력 결정 2개"}},
+    oasis = {{"Crystal", 3, "마력 결정 3개"}, {"Hide", 3, "가죽 3장"}},
+    swamp = {{"Ectoplasm", 2, "원혼의 잔재 2개"}, {"Moonbloom", 4, "달맞이꽃 4송이"}},
+    citadel = {{"Steel", 1, "강철 주괴 1개"}, {"Crystal", 3, "마력 결정 3개"}},
+    highland = {{"Hide", 4, "가죽 4장"}, {"Feather", 3, "바람 깃털 3개"}},
+    canyon = {{"Steel", 1, "강철 주괴 1개"}, {"Claw", 4, "발톱 4개"}},
+    chaos = {{"Ectoplasm", 3, "원혼의 잔재 3개"}, {"Crystal", 3, "마력 결정 3개"}},
+    wetland = {{"Moonbloom", 4, "달맞이꽃 4송이"}, {"Hide", 4, "가죽 4장"}},
+    desert = {{"Feather", 4, "바람 깃털 4개"}, {"Crystal", 2, "마력 결정 2개"}},
+    deadmarsh = {{"Ectoplasm", 3, "원혼의 잔재 3개"}, {"Fang", 4, "송곳니 4개"}},
+  }
+  for _, lm in ipairs(Config.WorldMap.Landmarks) do
+    local o = offerings[lm.Zone]
+    if o then
+      local ch1 = {Label = "공물을 올린다 (" .. o[1][3] .. " 받음)", Done = "성지의 불꽃이 잠시 일렁인다. 제단 아래에서 공물의 답례가 나온다.", Coins = 120}
+      ch1[o[1][1]] = o[1][2]
+      local ch2 = {Label = "비문을 베껴 간다 (" .. o[2][3] .. " + 코인)", Done = "비문의 한 구절을 베껴 적자 기억 속에서 오래된 길이 열린다.", Coins = 200}
+      ch2[o[2][1]] = o[2][2]
+      table.insert(Config.QuestLines, {Id = "pilg-" .. lm.Id, Name = "[성지] " .. lm.Name .. " 참배", Kind = "Sub", Field = "QLPilg" .. lm.Id,
+        Need = {Zone = lm.Zone}, Intro = "길손의 소문: '" .. lm.Name .. "에 참배하면 성지가 응답한다더군. 순서도 조건도 없이 누구나 가능해.'",
+        Steps = {
+          {Type = "reach", X = lm.X, Z = lm.Z, R = 90, Title = lm.Name .. "으로 가라", Text = lm.Name .. " 앞까지 가서 제단을 살펴라.", Done = "제단 앞에 서자 바람이 잦아든다."},
+          {Type = "choice", X = lm.X, Z = lm.Z, R = 90, Title = "성지에 응답하라", Prompt = lm.Lore .. "\n\n제단이 응답을 기다린다. 어떻게 할까?", Choices = {ch1, ch2}},
+        },
+        Reward = {Coins = 150, Xp = 180}})
+    end
+  end
+end
+
 -- [스카이림식 연계 퀘스트] 홀드 미스터리 4편 + 렌스기사단 3인 추적(메인) 3부작. 선택과 모순된 행동이 이야기를 비튼다.
 do
   local towns = {}
