@@ -191,6 +191,19 @@ function FieldScene.start(opts)
 		end
 	end
 
+	-- 생산지·탐험 지역에 신규 CC0 자연 자산을 배치한다.
+	-- 실제 모델이 등록되지 않았으면 배치를 생략하고 임시 원형/상자 대체물을 만들지 않는다.
+	if string.find(opts.name or "", "농장", 1, true) or string.find(opts.name or "", "과수원", 1, true)
+		or string.find(opts.name or "", "들판", 1, true) then
+		local farmModels = { "crop-carrot", "crop-melon", "crop-turnip", "crops-cornstagec", "crops-wheatstagea" }
+		for index, crop in farmModels do
+			placeModel(folder, "Terrain", crop, ORIGIN + Vector3.new(-22 + index * 7, 0, -24), 3.8, false)
+		end
+	end
+	if string.find(opts.name or "", "숲", 1, true) or string.find(opts.name or "", "고지", 1, true) then
+		placeModel(folder, "Terrain", "campfire-logs", ORIGIN + Vector3.new(28, 0, -24), 3.4, false)
+	end
+
 	-- 상태
 	local hp, maxHp = 100, 100
 	local found = 0

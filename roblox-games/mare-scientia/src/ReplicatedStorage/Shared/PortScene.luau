@@ -684,6 +684,8 @@ function PortScene.build(info, onFacility)
 		-- 종려나무 (부두 앞 해안)
 		for _, z in { -16, 16, -32, 32 } do
 			importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(13, 0, z), 6.5, false)
+			importedModel(folder, "Naval", "palm-bend", Vector3.new(17, 0, z + 5), 7.5, false)
+			importedModel(folder, "Naval", "grass-plant", Vector3.new(20, 0, z - 4), 2, false)
 		end
 	end
 	-- 부두: 짐과 대포
@@ -698,6 +700,9 @@ function PortScene.build(info, onFacility)
 		importedModel(folder, "Naval", "pulley", Vector3.new(74, 2, -3.5), 4.8, false)
 		importedModel(folder, "Naval", "cargo-pile-a", Vector3.new(28, 2, -3.2), 3.6, false)
 		importedModel(folder, "Naval", "cargo-pile-b", Vector3.new(70, 2, 3.1), 3.8, false)
+		-- 신규 CC0 원본 화물통: 미등록이면 없는 상태로 유지하며 임시 도형으로 대체하지 않는다.
+		importedModel(folder, "Cargo", "barrel", Vector3.new(82, 2, 3.3), 3.1, false)
+		importedModel(folder, "Cargo", "barrel", Vector3.new(87, 2, -3.3), 2.8, false)
 		importedModel(folder, "Naval", "buoy", Vector3.new(105, 0.8, -25), 2.5, false)
 		importedModel(folder, "Naval", "buoy-flag", Vector3.new(112, 0.8, 25), 2.5, false)
 		importedModel(folder, "Naval", "boat-sail-a", Vector3.new(112, 0.8, 48), 14, false)
@@ -711,6 +716,20 @@ function PortScene.build(info, onFacility)
 				importedModel(folder, "Town", "stall", spot, 6.5, false)
 			end
 		end
+		-- 신규 교역품 원본 메시를 시장 가판대에 전시한다. 교역 가격·재고·거래 판정은 그대로다.
+		local showcase = {
+			"cheese-cut", "chocolate", "croissant", "bowl",
+			"glass", "mortar", "plate-dinner", "shaker-pepper",
+			"turkey", "coconut-half", "lemon-half", "fish-bones",
+		}
+		local stalls = { Vector3.new(-18, 2.5, -13), Vector3.new(-18, 2.5, 13), Vector3.new(2, 2.5, 14) }
+		for index, good in showcase do
+			local stand = stalls[math.ceil(index / 4)]
+			importedModel(folder, "Cargo", good, stand + Vector3.new(((index - 1) % 4 - 1.5) * 1.7, 0, 0), 1.6, false)
+		end
+		importedModel(folder, "Interior", "tablecrosscloth", Vector3.new(-30, 0, -13), 4.8, false)
+		importedModel(folder, "Interior", "coatrack", Vector3.new(-36, 0, -23), 3.4, false)
+		importedModel(folder, "Interior", "rugrounded", Vector3.new(-10, 0, -18), 4.8, false)
 		importedModel(folder, "Town", "village-well", Vector3.new(-30, 0, 15), 5.5, true)
 		importedModel(folder, "Town", "cart", Vector3.new(-24, 0, 19), 5.5, false)
 		importedModel(folder, "Town", "cart", Vector3.new(-26, 0, -19), 5.5, false)
