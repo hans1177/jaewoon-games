@@ -34,6 +34,8 @@ h1{font-size:22px;margin:0}
 .unit.red{background:linear-gradient(#a74851,#753038)}
 .portrait{display:block;width:44px;height:44px;border-radius:7px;overflow:hidden;background:#24324a;box-shadow:0 1px 4px #0008}
 .portrait img,.card .art img{display:block;width:400%;height:200%;max-width:none;pointer-events:none}
+/* 망치병: 기존 4×4 원화를 정사각형 배경으로 잘라 이미지 비율 변형 방지 */
+.portrait.hammerArt,.card .art.hammerArt{background-size:400% 400%;background-position:66.6667% 66.6667%;background-repeat:no-repeat}
 .portrait img.newArt,.card .art img.newArt,.tileArt img{width:400%;height:400%;max-width:none}
 .portrait img.newAllyArt,.card .art img.newAllyArt{width:200%;height:200%;max-width:none}
 .tileArt{position:absolute;inset:7%;z-index:0;border-radius:8px;overflow:hidden;pointer-events:none;opacity:.92}.unit{z-index:1}
@@ -681,6 +683,7 @@ function act(payload){
   }
 }
 function portraitHtml(id,d){
+  if(id==='HAMMER')return '<span class="portrait hammerArt" role="img" aria-label="'+d.name+'" style="background-image:url('+NEW_ART_SPRITE+')"></span>';
   if(NEW_ALLY_POS[id])return '<span class="portrait"><img class="newAllyArt" src="'+NEW_ALLY_SPRITE+'" alt="'+d.name+'" style="'+newAllyArtStyle(id)+'"></span>';
   if(NEW_ART_POS[id])return '<span class="portrait"><img class="newArt" src="'+NEW_ART_SPRITE+'" alt="'+d.name+'" style="'+newArtStyle(id)+'"></span>';
   const fallbackId=id==='CROSSBOW'?'ARCHER':id;
@@ -689,6 +692,7 @@ function portraitHtml(id,d){
     : '<span class="portrait" style="display:flex;align-items:center;justify-content:center;font-size:24px">'+d.icon+'</span>'
 }
 function artHtml(id,d){
+  if(id==='HAMMER')return '<div class="art hammerArt" role="img" aria-label="'+d.name+'" style="background-image:url('+NEW_ART_SPRITE+')"></div>';
   if(NEW_ALLY_POS[id])return '<div class="art"><img class="newAllyArt" src="'+NEW_ALLY_SPRITE+'" alt="'+d.name+'" style="'+newAllyArtStyle(id)+'"></div>';
   if(NEW_ART_POS[id])return '<div class="art"><img class="newArt" src="'+NEW_ART_SPRITE+'" alt="'+d.name+'" style="'+newArtStyle(id)+'"></div>';
   const fallbackId=id==='CROSSBOW'?'ARCHER':id;
