@@ -6601,6 +6601,7 @@ export function buildVibeAssetProductionPlan({
       visualVerificationAndVisualQualitySeparated:true,
       detailInvestmentPriority:freezeList(['SCREEN_SPACE_OCCUPANCY','PLAYER_DWELL_TIME','INTERACTION_FREQUENCY','HERO_BOSS_SIGNATURE_ROLE','CAMERA_PROXIMITY','GAMEPLAY_READABILITY'])
     }),
+    contentSafety:freeze(currentRoadmap?.livingMotionVisualQualityContract?.assetAdaptation?.contentSafety||{}),
     generatedAssetOutputContract:GENERATED_ASSET_OUTPUT_CONTRACT,
     modelRouting,
     nativeAuthoringExecution,
@@ -7116,6 +7117,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    '[OWNER IMAGE CONTENT SAFETY] '+JSON.stringify(plan.contentSafety||{})+'. 모든 게임 이미지에서 유혈·고어를 금지한다. 제재받은 원본과 크롭·레이어·색상 변경 등 파생본, 새 ID 재업로드도 금지한다. 소스/파생 해시와 실제 이미지를 확인하고 중앙정책의 차단 ID·경로·해시는 사용·업로드·재연결하지 않는다. 안전성이 미확인이면 업로드나 사용을 멈추고 기존 책임 경로에서 이미지 검토를 먼저 수행한다. 라이선스나 과거 등록 성공을 콘텐츠 안전성 증거로 쓰지 않는다.',
     plan.familyAssetOptimization?.enabled
       ?'[F0-F9 EXISTING ASSET FAMILY OPTIMIZATION EXECUTION] '+JSON.stringify({
         trigger:plan.familyAssetOptimization.trigger,

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// 파일명: tools/company-roblox-dedicated-experience.mjs
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 
@@ -213,6 +214,17 @@ export async function publishRobloxDedicatedPlace({
   if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
   if(!placeFile||!fs.existsSync(placeFile))throw new Error('place file missing');
   const body=fs.readFileSync(placeFile);
+  // [이미지 정책] 모든 기존 전용 게시 경로에서 알려진 제재 이미지 연결을 검사한다.
+  const contentSafety=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'))
+    .livingMotionVisualQualityContract.assetAdaptation.contentSafety;
+  if(contentSafety?.enabled!==true)throw new Error('IMAGE_CONTENT_SAFETY_POLICY_REQUIRED');
+  const artifactText=body.toString('utf8');
+  for(const row of contentSafety.blockedAssets){
+    for(const assetId of row.assetIds||[]){
+      if(new RegExp('(^|[^0-9])'+String(assetId)+'([^0-9]|$)').test(artifactText))
+        throw new Error('REMOVED_IMAGE_ID_IN_PUBLISH_ARTIFACT:'+assetId);
+    }
+  }
   const ext=placeFile.toLowerCase().endsWith('.rbxlx')?'application/xml':'application/octet-stream';
   const endpoint=`https://apis.roblox.com/universes/v1/${universeId}/places/${placeId}/versions?versionType=Published`;
   for(let i=0;i<=retryDelaysMs.length;i+=1){

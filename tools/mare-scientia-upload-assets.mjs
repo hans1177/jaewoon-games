@@ -4,12 +4,20 @@
 // 필요: ROBLOX_OPEN_CLOUD_API_KEY (+ ROBLOX_ROBLOSECURITY 선택). 결과는 JSON과 Luau(AssetIds)로 저장한다.
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
 
 const UNIVERSE_ID = process.env.MARE_UNIVERSE_ID || '10774821253';
 const ROOT = 'roblox-games/mare-scientia';
 const JSON_OUT = ROOT + '/assets-registered.json';
 const LUAU_OUT = ROOT + '/src/ReplicatedStorage/Shared/AssetIds.luau';
+// [이미지 정책] 경고 원본·파생본은 경로/해시/등록번호가 바뀌어도 다시 사용하지 않는다.
+const contentSafety = JSON.parse(await fs.readFile('company-learning/platform-release-roadmap.json', 'utf8'))
+  .livingMotionVisualQualityContract.assetAdaptation.contentSafety;
+if (contentSafety?.enabled !== true) throw new Error('IMAGE_CONTENT_SAFETY_POLICY_REQUIRED');
+const blockedPaths = new Set(contentSafety.blockedAssets.flatMap(row => row.sourcePaths || []));
+const blockedHashes = new Set(contentSafety.blockedAssets.flatMap(row => row.sha256 || []));
+const blockedIds = new Set(contentSafety.blockedAssets.flatMap(row => row.assetIds || []).map(String));
 const key = process.env.ROBLOX_OPEN_CLOUD_API_KEY;
 if (!key) throw new Error('MISSING_ROBLOX_OPEN_CLOUD_API_KEY');
 
@@ -67,6 +75,7 @@ if (!creatorId) {
 const plan = [];
 for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
+    if (blockedPaths.has(path.join(ROOT, 'assets', dir, f))) continue;
     const ext = path.extname(f).toLowerCase();
     const image = kind === 'Menu' || kind === 'Goods';
     if (image ? ext !== '.png' : ext !== '.glb' && ext !== '.fbx') continue;
@@ -79,11 +88,20 @@ for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'Peo
 
 let registry = {schema: 1, universeId: UNIVERSE_ID, license: 'CC0-1.0', assets: {}};
 try { registry = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')); } catch {}
+for (const [name, row] of Object.entries(registry.assets)) {
+  if (blockedPaths.has(row.source) || blockedIds.has(String(row.assetId))) delete registry.assets[name];
+}
 const failures = [];
 const pendingPermissions = [];
 let accountBlocked = false;
 for (const item of plan) {
   const id = item.kind + '/' + item.name;
+  const originalBytes = await fs.readFile(item.file);
+  if (blockedHashes.has(crypto.createHash('sha256').update(originalBytes).digest('hex'))) {
+    delete registry.assets[id];
+    console.log('REMOVED_IMAGE_SOURCE_EXCLUDED', id);
+    continue;
+  }
   if (registry.assets[id]?.assetId) {
     // 이미 발급된 ID는 다시 업로드하지 않고 실제 파일 형식/경로만 갱신한다.
     registry.assets[id].source = item.file;
@@ -92,7 +110,7 @@ for (const item of plan) {
     continue;
   }
   try {
-    let binary = await fs.readFile(item.file);
+    let binary = originalBytes;
     if (binary.length > 20 * 1024 * 1024) throw new Error('FILE_TOO_LARGE');
     let uploadExt = item.ext;
     // UniGLTF 1.27 모델은 Roblox GLB 해석기에서 실패한다. 원본 메시/재질/좌표는 보존한 채

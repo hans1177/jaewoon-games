@@ -5454,10 +5454,10 @@ do
     task.defer(function()
       local ids={}
       for _,id in ipairs(Config.CinematicIntroSceneIds or {}) do
-        if type(id)=="string" then ids[#ids+1]=id end
+        if type(id)=="string" and id:match("^rbxassetid://%d+$") then ids[#ids+1]=id end
       end
       for _,id in pairs(Config.CinematicIntroForegroundIds or {}) do
-        if type(id)=="string" then ids[#ids+1]=id end
+        if type(id)=="string" and id:match("^rbxassetid://%d+$") then ids[#ids+1]=id end
       end
       if #ids>0 then
         pcall(function() game:GetService("ContentProvider"):PreloadAsync(ids) end)

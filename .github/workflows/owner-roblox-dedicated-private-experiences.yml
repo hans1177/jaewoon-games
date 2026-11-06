@@ -367,8 +367,18 @@ jobs:
           import {execFileSync} from 'node:child_process';
           import {introspectRobloxApiKey} from './tools/company-roblox-dedicated-experience.mjs';
           const dir='roblox-games/fantasy-survival/';
+          const contentSafety=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'))
+            .livingMotionVisualQualityContract.assetAdaptation.contentSafety;
+          if(contentSafety?.enabled!==true)throw Error('IMAGE_CONTENT_SAFETY_POLICY_REQUIRED');
+          const blockedIds=new Set(contentSafety.blockedAssets.flatMap(row=>row.assetIds||[]).map(String));
+          const blockedHashes=new Set(contentSafety.blockedAssets.flatMap(row=>row.sha256||[]));
+          const removedScenes=new Set(contentSafety.blockedAssets.filter(row=>row.gameId==='fantasy-survival')
+            .flatMap(row=>row.sceneIndexes||[]));
+          const sceneIndexes=Array.from({length:12},(_,i)=>i+1).filter(index=>!removedScenes.has(index));
+          const depthIndexes=sceneIndexes.filter(index=>index!==8);
+          const expectedImages=sceneIndexes.length+depthIndexes.length;
           const bundles=[
-            ['intro-1.zip','d84bfc30a9c6c5381059e978f98f96ab91dd1bb9c1e1dd60deecd0e84015b154'],
+            ['intro-1.zip','546e83424540c64cb749b7f251da64a89fcd4155ed5a077d13bc7975abb18d09'],
             ['intro-2.zip','b073315a901e3e5a6ee5b7253040772bb3677f7b8a0011a9508fbf7bf574beae'],
             ['intro-31.zip',null],
             ['intro-32.zip',null],
@@ -384,6 +394,7 @@ jobs:
             const extract=file=>execFileSync('unzip',['-p',archive,file],{maxBuffer:6*1024*1024});
             const manifest=JSON.parse(extract('manifest.json').toString('utf8'));
             for(const row of manifest.scenes){
+              if(removedScenes.has(row.index))continue;
               const bg=extract(row.file);
               if(sha(bg)!==row.sha256||bg.length!==row.bytes)throw Error('FOREST_INTRO_BG_HASH_MISMATCH:'+row.index);
               illustrations.push({index:row.index,type:'bg',data:bg,name:row.file,hash:row.sha256,mime:'image/jpeg'});
@@ -395,15 +406,16 @@ jobs:
               }
             }
           }
-          if(illustrations.length!==23||illustrations.filter(x=>x.type==='bg').length!==12||
-            illustrations.filter(x=>x.type==='fg').length!==11)
+          if(illustrations.some(art=>blockedHashes.has(art.hash)))throw Error('REMOVED_IMAGE_SOURCE_FORBIDDEN');
+          if(illustrations.length!==expectedImages||illustrations.filter(x=>x.type==='bg').length!==sceneIndexes.length||
+            illustrations.filter(x=>x.type==='fg').length!==depthIndexes.length)
             throw Error('FOREST_INTRO_SCENE_COUNT_MISMATCH');
           const cfg=fs.readFileSync(dir+'shared/GameConfig.luau','utf8');
           const bgBound=cfg.match(/CinematicIntroSceneIds\s*=\s*\{([^}]+)\}/);
           const fgBound=cfg.match(/CinematicIntroForegroundIds\s*=\s*\{([^}]+)\}/);
           const idsFrom=text=>[...(text||'').matchAll(/rbxassetid:\/\/([1-9]\d*)/g)].map(x=>x[1]);
           const bgIds=idsFrom(bgBound?.[1]),fgIds=idsFrom(fgBound?.[1]);
-          const bound=bgIds.length===12&&fgIds.length===11;
+          const bound=bgIds.length===sceneIndexes.length&&fgIds.length===depthIndexes.length;
           const universe=String(process.env.ROBLOX_UNIVERSE_ID||'');
           const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
           const raw=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
@@ -411,6 +423,7 @@ jobs:
           if(universe!=='10773436325'||!key)throw Error('FOREST_INTRO_OWNER_UNIVERSE_AUTH_REQUIRED');
           const read=r=>r.json().catch(()=>({}));
           const grant=async ids=>{
+            if(ids.some(id=>blockedIds.has(String(id))))throw Error('REMOVED_IMAGE_ID_FORBIDDEN');
             const url='https://apis.roblox.com/asset-permissions-api/v1/assets/permissions';
             const body=JSON.stringify({subjectType:'Universe',subjectId:universe,action:'Use',requests:ids.map(id=>({assetId:Number(id),grantToDependencies:true}))});
             const valid=(r,j)=>r.ok&&Array.isArray(j.successAssetIds)
@@ -437,9 +450,9 @@ jobs:
           };
           if(bound){
             const boundList=bgIds.concat(fgIds);
-            if(new Set(boundList).size!==23)throw Error('FOREST_INTRO_DUPLICATE_ASSET_ID');
+            if(new Set(boundList).size!==expectedImages)throw Error('FOREST_INTRO_DUPLICATE_ASSET_ID');
             await grant(boundList);
-            console.log('FOREST_INTRO_REGISTERED=23');
+            console.log('FOREST_INTRO_REGISTERED='+expectedImages);
             console.log('FOREST_INTRO_UNIVERSE_GRANT=PASS');
             process.exit(0);
           }
@@ -493,8 +506,6 @@ jobs:
           const registeredReceipts={
             '1:bg':['72108751885220','0b72201f7e3c1ed0ef6fc563f804d44649c24d470ba653acf1c38930eeab13ac'],
             '1:fg':['111914313566974','d38f0af01eab62ce3035f8599d312673e145bd9f339c8df7901a06192de4a0b3'],
-            '2:bg':['109503451367036','0b764b0319cf43373eacc2a99ce34d36f165663bcf7608295521271508c72aa4'],
-            '2:fg':['120867921607093','ee4357714f0d94ea8e76aa0a997ed56fa239cb68dd01d2b5c904db92c68dea15'],
             '3:bg':['74417332635767','66b7b4ce6503cfc85d6bdb30f9792ecc8ef8c86d2582f8ecb3992eb009c8752b'],
             '3:fg':['125945487568822','49541515fb6a054ae89684e891a7f2acc45355e57c520b393e009341f66239e5'],
           };
@@ -548,13 +559,13 @@ jobs:
             console.log('FOREST_INTRO_UPLOADED_'+String(art.index).padStart(2,'0')+'_'+art.type.toUpperCase()+'='+id);
             await sleep(6000);
           }
-          // [정합성] 실제 원본 12개 배경/11개 전경의 ID와 순서, 중복을 검증한다.
+          // [정합성] 오너가 제거한 장면을 제외하고 원본 ID·장면 번호·중복을 검증한다.
           const scenes=registered.filter(x=>x.type==='bg').sort((a,b)=>a.index-b.index);
           const depth=registered.filter(x=>x.type==='fg').sort((a,b)=>a.index-b.index);
           const assetIds=registered.map(x=>x.assetId);
-          if(scenes.length!==12||depth.length!==11||new Set(assetIds).size!==23
-            ||scenes.some((x,i)=>x.index!==i+1)
-            ||new Set(depth.map(x=>x.index)).size!==11||depth.some(x=>x.index<1||x.index>12))
+          if(scenes.length!==sceneIndexes.length||depth.length!==depthIndexes.length||new Set(assetIds).size!==expectedImages
+            ||scenes.some((x,i)=>x.index!==sceneIndexes[i])
+            ||depth.some((x,i)=>x.index!==depthIndexes[i]))
             throw Error('FOREST_INTRO_ASSET_SET_INCOMPLETE');
           await grant(assetIds);
           console.log('FOREST_INTRO_SCENES_REGISTERED='+JSON.stringify(registered));
@@ -565,9 +576,12 @@ jobs:
           const current=fs.readFileSync(configPath,'utf8');
           if(!current.includes(anchor)||current.includes('CinematicIntroSceneIds ='))
             throw Error('FOREST_INTRO_SCENE_CONFIG_CHANGED');
-          const row=entries=>entries.map(x=>'"rbxassetid://'+x.assetId+'"').join(', ');
+          const row=entries=>Array.from({length:12},(_,i)=>{
+            const art=entries.find(x=>x.index===i+1);
+            return art?'"rbxassetid://'+art.assetId+'"':'""';
+          }).join(', ');
           const rowDepth=depth.map(x=>'['+x.index+']="rbxassetid://'+x.assetId+'"').join(', ');
-          const bind='\n  -- [검증된 2.5D 오프닝] 개별 원화 12장과 장면별 전경 11개의 실제 Roblox ID.'
+          const bind='\n  -- [오너 제거] 경고받은 장면은 비워 두고 승인된 원본만 연결한다.'
             +'\n  CinematicIntroSceneIds = {'+row(scenes)+'},'
             +'\n  CinematicIntroForegroundIds = {'+rowDepth+'},';
           fs.writeFileSync(configPath,current.replace(anchor,anchor+bind));

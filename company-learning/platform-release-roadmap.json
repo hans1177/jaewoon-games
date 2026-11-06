@@ -1,5 +1,5 @@
 {
-  "version": 600,
+  "version": 601,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -170,7 +170,66 @@
       "externalAssetPolicy": "CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED",
       "unclearLicenseForbidden": true,
       "nonCommercialLicenseForbidden": true,
-      "licenseEvidenceRequired": true
+      "licenseEvidenceRequired": true,
+      "contentSafety": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-11-06",
+        "enabled": true,
+        "scope": "ALL_GAME_IMAGE_CREATION_ACQUISITION_UPLOAD_AND_USE",
+        "bloodImagesForbidden": true,
+        "goreImagesForbidden": true,
+        "sanctionedImagesAndDerivedCopiesForbidden": true,
+        "newAssetIdReuploadOfSanctionedContentForbidden": true,
+        "visualContentReviewBeforeUploadAndBindingRequired": true,
+        "unknownContentSafetyAction": "DO_NOT_UPLOAD_OR_BIND_UNTIL_VISUALLY_REVIEWED",
+        "licenseOrPreviousUploadSuccessCannotSubstituteContentReview": true,
+        "warningHistoryCannotBeClaimedClearedBySourceRemoval": true,
+        "blockedAssets": [
+          {
+            "reason": "REGULATED_ALCOHOL_IMAGE",
+            "gameId": "mare-scientia",
+            "assetIds": [
+              "80898177403207",
+              "97945167293753"
+            ],
+            "sourcePaths": [
+              "roblox-games/mare-scientia/assets/goods/wine.png"
+            ],
+            "sha256": [
+              "7ac3a0f7575d38c19f1c499bb74664484d3682e09d31304081c944ab15d187b1"
+            ]
+          },
+          {
+            "reason": "REGULATED_TOBACCO_IMAGE",
+            "gameId": "mare-scientia",
+            "assetIds": [
+              "99822424787566",
+              "77241324416824"
+            ],
+            "sourcePaths": [
+              "roblox-games/mare-scientia/assets/goods/tobacco.png"
+            ],
+            "sha256": [
+              "dc00157f930022708a62958d4f93d15fa96351e7e99b1c080f2f10ad3eba523f"
+            ]
+          },
+          {
+            "reason": "VIOLENT_CONTENT_AND_GORE_IMAGE",
+            "gameId": "fantasy-survival",
+            "sceneIndexes": [
+              2
+            ],
+            "assetIds": [
+              "109503451367036",
+              "120867921607093"
+            ],
+            "sha256": [
+              "0b764b0319cf43373eacc2a99ce34d36f165663bcf7608295521271508c72aa4",
+              "ee4357714f0d94ea8e76aa0a997ed56fa239cb68dd01d2b5c904db92c68dea15"
+            ]
+          }
+        ]
+      }
     },
     "styleLock": {
       "requiredPerGame": true,

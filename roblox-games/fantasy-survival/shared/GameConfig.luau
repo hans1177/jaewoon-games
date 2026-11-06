@@ -12,9 +12,9 @@ local Config = {
   -- [오프닝 일러스트] 소유자 승인 원본 단일 그림, Roblox 이미지 등록 및 Universe 권한 검증 완료.
   CinematicIntroAtlasId = "rbxassetid://100481673402406",
   CinematicIntroAtlasSha256 = "a535d55a0a6c2af4ce9fb2bfdb339fb1e3919f530af5d3cc51f0861a7c717eda",
-  -- [검증된 2.5D 오프닝] 개별 원화 12장과 장면별 전경 11개의 실제 Roblox ID.
-  CinematicIntroSceneIds = {"rbxassetid://72108751885220", "rbxassetid://109503451367036", "rbxassetid://74417332635767", "rbxassetid://71703818310686", "rbxassetid://125037268325809", "rbxassetid://91571069532594", "rbxassetid://136653900563341", "rbxassetid://119215473322447", "rbxassetid://126419929651315", "rbxassetid://103601601501006", "rbxassetid://71987342086962", "rbxassetid://106361079271546"},
-  CinematicIntroForegroundIds = {[1]="rbxassetid://111914313566974", [2]="rbxassetid://120867921607093", [3]="rbxassetid://125945487568822", [4]="rbxassetid://138937112237058", [5]="rbxassetid://84120560054367", [6]="rbxassetid://136470944392637", [7]="rbxassetid://127692948861079", [9]="rbxassetid://101497233688637", [10]="rbxassetid://132907827575722", [11]="rbxassetid://140570637855368", [12]="rbxassetid://98350520359431"},
+  -- [오너 제거] 경고받은 2번 배경·전경은 사용하지 않는다. 장면 번호와 자막은 유지한다.
+  CinematicIntroSceneIds = {"rbxassetid://72108751885220", "", "rbxassetid://74417332635767", "rbxassetid://71703818310686", "rbxassetid://125037268325809", "rbxassetid://91571069532594", "rbxassetid://136653900563341", "rbxassetid://119215473322447", "rbxassetid://126419929651315", "rbxassetid://103601601501006", "rbxassetid://71987342086962", "rbxassetid://106361079271546"},
+  CinematicIntroForegroundIds = {[1]="rbxassetid://111914313566974", [3]="rbxassetid://125945487568822", [4]="rbxassetid://138937112237058", [5]="rbxassetid://84120560054367", [6]="rbxassetid://136470944392637", [7]="rbxassetid://127692948861079", [9]="rbxassetid://101497233688637", [10]="rbxassetid://132907827575722", [11]="rbxassetid://140570637855368", [12]="rbxassetid://98350520359431"},
   Genre = "Survival",
   Subgenre = "",
   PlayMode = "HYBRID",

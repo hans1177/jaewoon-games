@@ -1,9 +1,13 @@
-# Mare Scientia 오너 직접배포. 수동 실행 전용.
+# Mare Scientia 오너 직접배포. 명시적 자산 연결 변경은 기존 전용 체험에 반영한다.
 # Universe/Place ID를 비워 두면 비공개 전용 체험을 새로 만들고, 입력하면 그 체험에 새 버전으로 게시한다.
 name: Owner Mare Scientia Direct Publish
 run-name: Owner Mare Scientia publish · ${{ github.sha }}
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau'
   workflow_dispatch:
     inputs:
       universe_id:
@@ -56,7 +60,7 @@ jobs:
 
       - name: Publish to private Roblox Experience
         env:
-          EXISTING_UNIVERSE_ID: ${{ inputs.universe_id }}
+          EXISTING_UNIVERSE_ID: ${{ inputs.universe_id || (github.event_name == 'push' && '10774821253') || '' }}
           EXISTING_PLACE_ID: ${{ inputs.place_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}

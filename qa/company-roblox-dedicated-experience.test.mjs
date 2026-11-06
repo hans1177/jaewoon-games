@@ -220,3 +220,22 @@ test('unrelated web commits do not starve the canonical Roblox owner publisher',
   assert.match(workflow,/git diff --name-only "\$BEFORE_SHA" HEAD -- roblox-games\//);
   assert.doesNotMatch(workflow,/git push --force/);
 });
+
+// 제재 자산은 이름·연결 형식이 달라도 게시 요청 전에 차단한다.
+test('publish rejects sanctioned image IDs before network access', async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-sanctioned-'));
+  const place=path.join(dir,'place.rbxlx');
+  let requests=0;
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const ids=policy.livingMotionVisualQualityContract.assetAdaptation.contentSafety.blockedAssets.flatMap(row=>row.assetIds);
+  try {
+    for(const id of ids){
+      fs.writeFileSync(place,'<roblox><string name="Source">local image = "rbxassetid://'+id+'"</string></roblox>');
+      await assert.rejects(publishRobloxDedicatedPlace({
+        universeId:'12345',placeId:'67890',placeFile:place,apiKey:'key',
+        fetchImpl:async()=>{requests++;throw new Error('must not upload');},
+      }),/REMOVED_IMAGE_ID_IN_PUBLISH_ARTIFACT/);
+    }
+    assert.equal(requests,0);
+  } finally {fs.rmSync(dir,{recursive:true,force:true});}
+});

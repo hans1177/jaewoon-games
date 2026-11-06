@@ -409,9 +409,7 @@ Game-icons 원본 33종: https://game-icons.net/about.html , 고정 리비전 `8
 | `goods/tea.png` | `delapouite/teapot-leaves.svg` | `f1cbd06789f5ea8c606bb6b49497d9ab8c1c04ee` | `65542fb0d6de0c8023664c3f02ffd427d8986cecac622060c4d8d2478e9ac39b` |
 | `goods/timber.png` | `delapouite/wood-pile.svg` | `fe7cbe03b6a76f81b8e6a8a5cd6b3005461a84ea` | `a23a87a464e76a3f4940a1d92c0133502434ccf8968884a56ae96a92e9c2eb68` |
 | `goods/tin.png` | `delapouite/metal-plate.svg` | `9c7993fb176fe88b4b17c929c0238ea2cb20bc38` | `d899d264a0e1b98f6d4a565bc6e82244c8c93fef0c462ad4d23ae7459327b63d` |
-| `goods/tobacco.png` | `delapouite/cigar.svg` | `769110b9795b6c182ec657905b58f87ead43b392` | `dc00157f930022708a62958d4f93d15fa96351e7e99b1c080f2f10ad3eba523f` |
 | `goods/whale_oil.png` | `skoll/oil-drum.svg` | `50d181e257fb817f4a7b6b4fd2b124a6de8d02a0` | `63c5f04a327f7b2027dedb107d596be0788f36202ae27fdf87b069b8d1332cf5` |
-| `goods/wine.png` | `delapouite/wine-bottle.svg` | `98ea3c4d7cbdb72f69587aae3903fbb5e2ba6470` | `7ac3a0f7575d38c19f1c499bb74664484d3682e09d31304081c944ab15d187b1` |
 | `goods/wool.png` | `delapouite/wool.svg` | `2d0d52cb6c7f95652cac363c2f22d99f8c63f33d` | `642d8c61c61ec8a14589076ff0860ccdd4eaceccb64e961d34f7dc9d9a9aa290` |
 
 

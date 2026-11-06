@@ -12,6 +12,11 @@ const receiptPath=dir+'/uploaded.json';
 const idsPath='roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau';
 const universeId='10773436325';
 const expectedCount=72;
+const contentSafety=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'))
+  .livingMotionVisualQualityContract.assetAdaptation.contentSafety;
+if(contentSafety?.enabled!==true)throw Error('IMAGE_CONTENT_SAFETY_POLICY_REQUIRED');
+const blockedHashes=new Set(contentSafety.blockedAssets.flatMap(row=>row.sha256||[]));
+const blockedIds=new Set(contentSafety.blockedAssets.flatMap(row=>row.assetIds||[]).map(String));
 
 if(manifest.source!=='OWNER_REQUESTED_GENERATED_24_SCENE_OPENING_LAYERS'||manifest.license!=='OWNER_CREATED_UI')
   throw Error('OPENING24_PROVENANCE_INVALID');
@@ -23,6 +28,7 @@ for(const name of names){
   const sha=crypto.createHash('sha256').update(bytes).digest('hex');
   if(sha!==manifest.files[name].sha256||bytes.length!==manifest.files[name].bytes)
     throw Error('OPENING24_SOURCE_HASH_INVALID:'+name);
+  if(blockedHashes.has(sha))throw Error('REMOVED_IMAGE_SOURCE_FORBIDDEN:'+name);
   sources.set(name,{bytes,sha});
 }
 
@@ -79,6 +85,7 @@ const save=()=>fs.writeFileSync(receiptPath,JSON.stringify(receipt,null,1)+'\n')
 for(const name of names){
   const {bytes,sha}=sources.get(name);
   const done=receipt.assets[name];
+  if(done&&blockedIds.has(String(done.assetId)))throw Error('REMOVED_IMAGE_ID_FORBIDDEN:'+name);
   if(done&&done.sha256===sha&&/^[1-9]\d*$/.test(String(done.assetId)))continue;
   try{
     const isJpg=name.endsWith('.jpg');
