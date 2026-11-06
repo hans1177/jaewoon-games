@@ -6496,8 +6496,8 @@ local function onSurvivalPlayerAdded(player)
   if validSaved and typeof(saved)=="table" and saved.MeadowResumeValid==1 then
     local x,y,z=saved.MeadowResumeX,saved.MeadowResumeY,saved.MeadowResumeZ
     if typeof(x)=="number" and typeof(y)=="number" and typeof(z)=="number"
-      and x==x and y==y and z==z and math.abs(x)<=338
-      and math.abs(z)<=338 and y>=-25 and y<=145 then
+      and x==x and y==y and z==z and x>=Config.WorldMap.Bounds.X0 and x<=Config.WorldMap.Bounds.X1
+      and z>=Config.WorldMap.Bounds.Z0 and z<=Config.WorldMap.Bounds.Z1 and y>=-60 and y<=560 then
       resumePosition=Vector3.new(x,y,z)
     end
   end
@@ -6570,9 +6570,14 @@ local function onSurvivalPlayerAdded(player)
         local ray=RaycastParams.new()
         ray.FilterType=Enum.RaycastFilterType.Include
         ray.FilterDescendantsInstances={meadowTerrain}
-        local hit=workspace:Raycast(Vector3.new(resumePosition.X,150,resumePosition.Z),
-          Vector3.new(0,-240,0),ray)
-        if hit and hit.Position.Y>=-22 and hit.Position.Y<=130 then
+        -- 먼 지역은 지형이 늦게 만들어질 수 있어 최대 12초 동안 다시 확인한다.
+        local hit
+        local tries=0
+        repeat
+          hit=workspace:Raycast(Vector3.new(resumePosition.X,620,resumePosition.Z),Vector3.new(0,-900,0),ray)
+          if not hit then task.wait(1);tries+=1 end
+        until hit or tries>=12 or player.Parent~=Players or player.Character~=character
+        if hit and hit.Position.Y>=-58 and hit.Position.Y<=540 then
           root.CFrame=CFrame.new(resumePosition.X,hit.Position.Y+3.5,resumePosition.Z)
           root.AssemblyLinearVelocity=Vector3.zero
         else
@@ -6890,7 +6895,8 @@ local function saveSurvivalProgress(player)
   local human=character and character:FindFirstChildOfClass("Humanoid")
   if root and human and human.Health>0 then
     local pos=root.Position
-    if math.abs(pos.X)<=338 and math.abs(pos.Z)<=338 and pos.Y>=-25 and pos.Y<=145 then
+    local wb=Config.WorldMap.Bounds
+    if pos.X>=wb.X0 and pos.X<=wb.X1 and pos.Z>=wb.Z0 and pos.Z<=wb.Z1 and pos.Y>=-60 and pos.Y<=560 then
       snapshot.MeadowResumeValid=1
       snapshot.MeadowResumeX=pos.X
       snapshot.MeadowResumeY=pos.Y
