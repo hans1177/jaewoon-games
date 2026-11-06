@@ -13,12 +13,17 @@ local ORIGIN = Vector3.new(3000, 0, 0) -- 항구 장면과 멀리 떨어진 곳
 local SIZE = 200
 
 local BIOMES = {
-	{ words = { "해안", "갯벌", "바위", "절벽", "만", "섬", "부두", "어장", "군도" }, ground = Color3.fromRGB(196, 178, 128), mat = Enum.Material.Sand, trees = 4, rocks = 26 },
-	{ words = { "고지", "봉분", "평원", "열석", "들판", "돌" }, ground = Color3.fromRGB(110, 134, 82), mat = Enum.Material.Grass, trees = 8, rocks = 22 },
-	{ words = { "광산", "탄광", "채석" }, ground = Color3.fromRGB(110, 108, 104), mat = Enum.Material.Slate, trees = 2, rocks = 40 },
-	{ words = { "숲", "과수원", "호수", "농장", "아마", "정원" }, ground = Color3.fromRGB(70, 118, 66), mat = Enum.Material.Grass, trees = 34, rocks = 8 },
+	{ words = { "해안", "갯벌", "바위", "절벽", "만", "섬", "부두", "어장", "군도" }, ground = Color3.fromRGB(196, 178, 128), mat = Enum.Material.Sand, trees = 4, rocks = 26,
+		mobs = { { "해적", "Rogue_Hooded", 3, 8, 8.5 }, { "밀수꾼", "Rogue", 3, 7, 9.5 }, { "해적 두목", "Barbarian", 6, 12, 7.5, true } } },
+	{ words = { "고지", "봉분", "평원", "열석", "들판", "돌" }, ground = Color3.fromRGB(110, 134, 82), mat = Enum.Material.Grass, trees = 8, rocks = 22,
+		mobs = { { "산적", "Barbarian", 3, 8, 8.5 }, { "탈영병", "Knight", 4, 9, 7.5 }, { "산적 두목", "Barbarian", 7, 12, 7.5, true } } },
+	{ words = { "광산", "탄광", "채석" }, ground = Color3.fromRGB(110, 108, 104), mat = Enum.Material.Slate, trees = 2, rocks = 40,
+		mobs = { { "광산 도적", "Rogue", 3, 8, 9.5 }, { "갱 감독", "Knight", 5, 10, 7 }, { "도적 두목", "Barbarian", 7, 12, 7.5, true } } },
+	{ words = { "숲", "과수원", "호수", "농장", "아마", "정원" }, ground = Color3.fromRGB(70, 118, 66), mat = Enum.Material.Grass, trees = 34, rocks = 8,
+		mobs = { { "밀렵꾼", "Rogue_Hooded", 3, 8, 9 }, { "산적", "Barbarian", 3, 8, 8.5 }, { "숲의 사냥꾼", "Rogue", 4, 9, 10 }, { "산적 두목", "Knight", 7, 12, 7.5, true } } },
 }
-local DEFAULT_BIOME = { ground = Color3.fromRGB(96, 128, 72), mat = Enum.Material.Grass, trees = 16, rocks = 14 }
+local DEFAULT_BIOME = { ground = Color3.fromRGB(96, 128, 72), mat = Enum.Material.Grass, trees = 16, rocks = 14,
+	mobs = { { "산적", "Barbarian", 3, 8, 8.5 }, { "도적", "Rogue", 3, 8, 9.5 }, { "산적 두목", "Knight", 7, 12, 7.5, true } } }
 
 local function biomeFor(name)
 	for _, b in BIOMES do
@@ -302,10 +307,20 @@ function FieldScene.start(opts)
 
 	-- 적: 가까이 오면 쫓아와 때린다
 	local enemyCount = math.clamp(2 + math.floor((opts.danger or 1) / 2), 2, 6)
-	local roles = { "Barbarian", "Rogue", "Knight" }
-	for i = 1, enemyCount do
+	for i = 1, enemyCount + 1 do
+		-- 마지막 한 마리는 두목(위험이 높은 곳에서만 나온다)
+		local isBoss = i == enemyCount + 1
+		if isBoss and (opts.danger or 1) < 3 then
+			break
+		end
+		local def
+		if isBoss then
+			def = biome.mobs[#biome.mobs]
+		else
+			def = biome.mobs[rng:NextInteger(1, math.max(1, #biome.mobs - 1))]
+		end
 		local pos = ORIGIN + scatter(36)
-		local model = placeModel(folder, "People", "KayKit_" .. roles[(i - 1) % #roles + 1], pos, 5.6, false)
+		local model = placeModel(folder, "People", "KayKit_" .. def[2], pos, if isBoss then 7.6 else 5.6, false)
 		local root
 		if model then
 			model.Name = "FieldEnemy"
@@ -321,7 +336,7 @@ function FieldScene.start(opts)
 		bb.AlwaysOnTop = true
 		bb.MaxDistance = 80
 		bb.Parent = root
-		local tag = label(bb, "산적", 14, Color3.fromRGB(255, 120, 110))
+		local tag = label(bb, def[1], if isBoss then 16 else 14, if isBoss then Color3.fromRGB(255, 190, 90) else Color3.fromRGB(255, 120, 110))
 		tag.Size = UDim2.new(1, 0, 0, 16)
 		local barBack = Instance.new("Frame")
 		barBack.Position = UDim2.new(0.15, 0, 0, 20)
@@ -334,7 +349,7 @@ function FieldScene.start(opts)
 		bar.BackgroundColor3 = Color3.fromRGB(214, 82, 76)
 		bar.BorderSizePixel = 0
 		bar.Parent = barBack
-		table.insert(enemies, { model = model, root = root, hp = 3, maxHp = 3, bar = bar, nextHit = 0, home = pos })
+		table.insert(enemies, { model = model, root = root, hp = def[3], maxHp = def[3], dmg = def[4], speed = def[5], bar = bar, nextHit = 0, home = pos, boss = isBoss })
 	end
 
 	-- 입력 버튼
@@ -381,7 +396,7 @@ function FieldScene.start(opts)
 		if best.hp <= 0 then
 			table.remove(enemies, table.find(enemies, best))
 			best.model:Destroy()
-			say("적을 물리쳤다!")
+			say(if best.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
 		end
 		refresh()
 	end
@@ -403,12 +418,12 @@ function FieldScene.start(opts)
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude
 			if dist < 38 and dist > 3.2 then
-				local step = flat.Unit * math.min(8.5 * dt, dist - 3)
+				local step = flat.Unit * math.min(e.speed * dt, dist - 3)
 				local target = e.model:GetPivot().Position + step
 				e.model:PivotTo(CFrame.new(target) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
 			elseif dist <= 3.6 and now >= e.nextHit then
 				e.nextHit = now + 1.2
-				hp = math.max(0, hp - 8)
+				hp = math.max(0, hp - e.dmg)
 				say("공격을 받았다!")
 				refresh()
 				if hp <= 0 then
