@@ -9543,6 +9543,51 @@ task.spawn(function()
   end
 end)
 
+-- [마을 외곽 순찰 몹] 마을(12곳) 둘레 120~140 스터드에 그 지역 거점 지킴이와 같은 종의 무리를 3마리씩 둔다.
+-- 마을 안(80 이내)에는 두지 않아 안전지대는 그대로 유지된다.
+do
+  local zoneRegion={}
+  for _,region in ipairs(Config.EcoRegions or {}) do zoneRegion[region.Zone]=region end
+  local count=0
+  for ti,town in ipairs(Config.WorldMap.Towns or {}) do
+    local region=zoneRegion[town.Zone]
+    if region and #region.Camps>0 then
+      local camp=region.Camps[(ti-1)%#region.Camps+1]
+      local g=camp.Guard
+      for k=1,3 do
+        local angle=ti*1.3+k*2.09
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=g.model,name=g.name.." (마을 외곽)",tier=g.tier,height=g.height,hp=g.hp,dmg=g.dmg,
+          style=g.style,myth=g.myth,zoneTag=town.Zone,drops=g.drops,
+          position=Vector3.new(town.X+math.cos(angle)*(120+k*8),3,town.Z+math.sin(angle)*(120+k*8))})
+        count+=1
+      end
+    end
+  end
+  workspace:SetAttribute("TownOutskirtMobs",count)
+end
+
+-- [아이템 소품] 등록된 아이콘 모델(물약·하트·별)을 마을 상점·여관·의뢰소, 성지 위에 띄워 둔다.
+task.spawn(function()
+  while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(3) end
+  task.wait(20)
+  local rp=RaycastParams.new();rp.FilterType=Enum.RaycastFilterType.Include;rp.FilterDescendantsInstances={workspace.Terrain}
+  local function float(key,x,z,size,above,name)
+    local hit=workspace:Raycast(Vector3.new(x,400,z),Vector3.new(0,-800,0),rp)
+    if not hit then return end
+    local m=worldAsset(key,hit.Position,size,above)
+    if m then m.Name=name;m:SetAttribute("MeadowScenery",true) end
+  end
+  for _,town in ipairs(Config.WorldMap.Towns or {}) do
+    local function at(i,r) local a=i/4*math.pi*2+.4 return town.X+math.cos(a)*r,town.Z+math.sin(a)*r end
+    local x,z=at(1,27) float("item_heart",x,z,2.2,9,"TownHeart_"..town.Id)
+    x,z=at(2,27) float("item_potion5_filled",x,z,2.2,8,"TownPotion_"..town.Id)
+    x,z=at(3,27) float("item_star",x,z,2.2,9,"TownStar_"..town.Id)
+  end
+  for _,lm in ipairs(Config.WorldMap.Landmarks or {}) do
+    float("item_star",lm.X+8,lm.Z+8,3,6,"ShrineStar_"..lm.Id)
+  end
+end)
+
 -- [영지 · 성채 꾸미기] 안식처 곁 영지 문서에서 내 터(5칸)에 건물을 세우거나 바꾼다. 선택은 EstateA(칸당 4비트)에 저장된다.
 -- 플레이어마다 접속 순서대로 터를 하나씩 받고, 건물은 모든 플레이어에게 보인다(등록된 CC0 모델만 사용).
 do
