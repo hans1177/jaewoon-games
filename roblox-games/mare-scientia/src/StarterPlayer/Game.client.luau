@@ -53,6 +53,28 @@ local TABS = {
 	{ id = "battle", name = "전투" },
 }
 
+-- 시설별 창: 건물에 들어가면 그 시설의 탭만 열린다
+local GROUPS = {
+	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "harbor" } },
+	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
+	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
+	{ name = "주점", keeper = "주점 주인", tabs = { "quest", "explore", "battle" } },
+	{ name = "학자의 서재", keeper = "학자", tabs = { "codex", "tech" } },
+	{ name = "선장실", keeper = "선장", tabs = { "status" } },
+}
+local function groupOf(tabId)
+	for _, g in GROUPS do
+		if table.find(g.tabs, tabId) then
+			return g
+		end
+	end
+	return GROUPS[1]
+end
+local TAB_NAME = {}
+for _, t in TABS do
+	TAB_NAME[t.id] = t.name
+end
+
 local view = nil -- 서버가 보낸 최신 스냅샷
 local currentTab = "status"
 local syncScene
@@ -217,19 +239,19 @@ local tabBar = Instance.new("Frame")
 tabBar.BackgroundTransparency = 1
 tabBar.BorderSizePixel = 0
 tabBar.Position = UDim2.fromOffset(8, 52)
-tabBar.Size = UDim2.new(1, -16, 0, 124) -- 세 줄 (탭이 많아 한 줄에 다 안 들어간다)
+tabBar.Size = UDim2.new(1, -16, 0, 40) -- 시설별로 관련 탭만 한 줄에 보여준다
 tabBar.Parent = mainInner
 local tabLayout = Instance.new("UIGridLayout")
-tabLayout.CellSize = UDim2.new(0.2, -5, 0, 36)
-tabLayout.CellPadding = UDim2.fromOffset(5, 6)
+tabLayout.CellSize = UDim2.new(0.25, -5, 0, 38)
+tabLayout.CellPadding = UDim2.fromOffset(5, 0)
 tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
 tabLayout.Parent = tabBar
 
 local content = Instance.new("ScrollingFrame")
 content.BackgroundTransparency = 1
 content.BorderSizePixel = 0
-content.Position = UDim2.fromOffset(8, 182)
-content.Size = UDim2.new(1, -16, 1, -190)
+content.Position = UDim2.fromOffset(8, 100)
+content.Size = UDim2.new(1, -16, 1, -108)
 content.CanvasSize = UDim2.new()
 content.AutomaticCanvasSize = Enum.AutomaticSize.Y
 content.ScrollBarThickness = 4
@@ -1867,21 +1889,22 @@ local function renderTabs()
 			child:Destroy()
 		end
 	end
-	for i, t in TABS do
-		local b = mkButton(tabBar, t.name, if currentTab == t.id then COLORS.gold else COLORS.grey, UDim2.fromOffset(68, 36), function()
-			currentTab = t.id
-			if t.id ~= "battle" then
+	local g = groupOf(currentTab)
+	for i, id in g.tabs do
+		local b = mkButton(tabBar, TAB_NAME[id], if currentTab == id then COLORS.gold else COLORS.grey, UDim2.fromOffset(68, 38), function()
+			currentTab = id
+			if id ~= "battle" then
 				equipped = nil
 			end
 			render()
 		end, true)
 		b.LayoutOrder = i
 	end
-	local fold = mkButton(tabBar, "접기", COLORS.red, UDim2.fromOffset(60, 36), function()
+	local fold = mkButton(tabBar, "닫기 ✕", COLORS.red, UDim2.fromOffset(60, 38), function()
 		main.Visible = false
 		menuToggle.Visible = true
 	end, true)
-	fold.LayoutOrder = #TABS + 1
+	fold.LayoutOrder = #g.tabs + 1
 end
 
 -- 3D 항구 장면: 항구나 배가 바뀔 때만 다시 만든다
@@ -1992,12 +2015,13 @@ function render()
 	end
 
 	tabBar.Visible = true
-	content.Position = UDim2.fromOffset(8, 182)
-	content.Size = UDim2.new(1, -16, 1, -190)
+	content.Position = UDim2.fromOffset(8, 100)
+	content.Size = UDim2.new(1, -16, 1, -108)
 
 	local p, ship = view.player, view.ship
-	headerLabel.Text = string.format("%s · %d년 · %s\n%s  선체 %d/%d  화물 %d/%d  명성 %d",
-		p.nation, p.year, p.portName, ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity, p.fame)
+	local grp = groupOf(currentTab)
+	headerLabel.Text = string.format("%s · %s\n%s %s  선체 %d/%d  화물 %d/%d",
+		grp.name, grp.keeper, p.portName, ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity)
 	coinValue.Text = tostring(p.coins)
 	updateHud(p, ship)
 	renderTabs()
