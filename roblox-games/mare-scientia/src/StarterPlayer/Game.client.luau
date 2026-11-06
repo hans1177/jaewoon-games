@@ -145,26 +145,22 @@ local function mkLabel(parent, text, size, color, bold, order)
 	return l
 end
 
--- 3D 모델 아이콘: 등록된 CC0 모델을 작은 뷰포트에 비춘다. 모델이 없으면 물음표 칸을 보인다.
+-- 상품별 실제 모델. 해당 물건이 아닌 대체 모형은 연결하지 않는다.
+-- 전용 모델이 아직 없는 품목은 상품명 카드로 구분해 오인하지 않도록 한다.
 local GOOD_ICON = {
-	wool = { "Naval", "crate", Color3.fromRGB(238, 236, 224) }, coal = { "Cargo", "bucket", Color3.fromRGB(40, 40, 46) },
-	spice = { "Cargo", "mortar-pestle", Color3.fromRGB(214, 100, 44) }, cheese = { "Cargo", "cheese" },
-	wine = { "Cargo", "wine-red" }, cloth = { "Cargo", "box-open", Color3.fromRGB(94, 124, 194) },
-	amber = { "Cargo", "honey", Color3.fromRGB(232, 164, 44) }, fish = { "Cargo", "fish-large" },
-	iron = { "Naval", "cannon-ball", Color3.fromRGB(110, 114, 124) }, timber = { "Cargo", "resource-wood" },
-	salt = { "Cargo", "bucket", Color3.fromRGB(246, 246, 252) }, fur = { "Cargo", "meat-raw", Color3.fromRGB(122, 82, 52) },
-	glass = { "Relics", "potion", Color3.fromRGB(150, 222, 232) }, beer = { "Cargo", "mug" },
-	sugar = { "Cargo", "bread", Color3.fromRGB(252, 252, 246) }, tea = { "Cargo", "mug", Color3.fromRGB(84, 134, 74) },
-	olive_oil = { "Relics", "pot", Color3.fromRGB(144, 164, 64) }, silk = { "Naval", "chest", Color3.fromRGB(204, 64, 124) },
-	linen = { "Cargo", "box-open", Color3.fromRGB(232, 222, 192) }, whale_oil = { "Cargo", "barrel-open", Color3.fromRGB(232, 202, 124) },
-	tin = { "Cargo", "plate", Color3.fromRGB(172, 178, 186) }, porcelain = { "Cargo", "plate", Color3.fromRGB(242, 246, 252) },
-	coffee = { "Cargo", "mug", Color3.fromRGB(92, 62, 42) }, tobacco = { "Cargo", "loaf-round", Color3.fromRGB(152, 112, 62) },
-	marble = { "Terrain", "column", Color3.fromRGB(240, 238, 232) }, coral = { "Cargo", "mushroom", Color3.fromRGB(230, 80, 70) },
-	saffron = { "Cargo", "mortar-pestle", Color3.fromRGB(240, 140, 30) }, carpet = { "Interior", "rugrectangle", Color3.fromRGB(170, 40, 50) },
-	incense = { "Terrain", "lantern-candle", Color3.fromRGB(236, 200, 120) }, dates = { "Cargo", "corn", Color3.fromRGB(120, 76, 40) },
-	raisins = { "Cargo", "grapes", Color3.fromRGB(90, 40, 110) }, pearls = { "Relics", "coin", Color3.fromRGB(246, 244, 250) },
-	ivory = { "Relics", "weapon-spear", Color3.fromRGB(250, 246, 226) }, pepper = { "Cargo", "mortar-pestle", Color3.fromRGB(40, 36, 34) },
-	cotton = { "Cargo", "box-open", Color3.fromRGB(252, 252, 252) }, leather = { "Cargo", "bread", Color3.fromRGB(120, 76, 44) },
+	coal = { "Cargo", "resource-stone", Color3.fromRGB(48, 50, 54) },
+	spice = { "Cargo", "mortar-pestle" }, cheese = { "Cargo", "cheese" },
+	wine = { "Cargo", "wine-red" }, cloth = { "Cargo", "textiles-stack-large-colored" },
+	fish = { "Cargo", "fish-large" }, iron = { "Cargo", "iron-bars" },
+	timber = { "Cargo", "resource-wood" }, salt = { "Cargo", "shaker-salt" },
+	glass = { "Cargo", "glass-wine" }, beer = { "Cargo", "mug" },
+	tea = { "Cargo", "cup-tea" }, olive_oil = { "Cargo", "bottle-oil" },
+	silk = { "Cargo", "textiles-stack-large-colored" }, linen = { "Cargo", "textiles-b" },
+	whale_oil = { "Cargo", "barrel-open" }, tin = { "Cargo", "silver-bar", Color3.fromRGB(174, 181, 188) },
+	porcelain = { "Cargo", "plate" }, coffee = { "Cargo", "cup-coffee" },
+	marble = { "Terrain", "column" }, saffron = { "Cargo", "mortar-pestle" },
+	carpet = { "Interior", "rugrectangle" }, raisins = { "Cargo", "grapes" },
+	pepper = { "Cargo", "pepper-mill" },
 }
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
 local TITLE_ICONS = {
@@ -201,7 +197,7 @@ local SHIP_ICON = {
 	ironclad_frigate = { "Naval", "ship-large", Color3.fromRGB(96, 102, 112) },
 }
 
-local function modelIcon(parent, kind, asset, tint, px)
+local function modelIcon(parent, kind, asset, tint, px, labelText)
 	local vf = Instance.new("ViewportFrame")
 	vf.Size = UDim2.fromOffset(px, px)
 	vf.BackgroundColor3 = Color3.fromRGB(40, 58, 86)
@@ -219,8 +215,8 @@ local function modelIcon(parent, kind, asset, tint, px)
 	cam.Parent = vf
 	vf.CurrentCamera = cam
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
-	local group = lib and lib:FindFirstChild(kind)
-	local tpl = group and group:FindFirstChild(asset)
+	local group = kind and lib and lib:FindFirstChild(kind)
+	local tpl = group and asset and group:FindFirstChild(asset)
 	if tpl and tpl:IsA("Model") then
 		local m = tpl:Clone()
 		for _, d in m:GetDescendants() do
@@ -236,14 +232,25 @@ local function modelIcon(parent, kind, asset, tint, px)
 		local reach = math.max(size.Magnitude, 0.5) * 1.15
 		cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.7, 0.55, 1) .Unit * reach, cf.Position)
 	else
-		local q = Instance.new("TextLabel")
-		q.BackgroundTransparency = 1
-		q.Size = UDim2.fromScale(1, 1)
-		q.Text = "?"
-		q.TextColor3 = Color3.fromRGB(214, 170, 82)
-		q.Font = Enum.Font.GothamBold
-		q.TextSize = px * 0.5
-		q.Parent = vf
+		local knownId = if kind and asset then AssetIds[kind .. "/" .. asset] else nil
+		if knownId then
+			local image = Instance.new("ImageLabel")
+			image.Size = UDim2.fromScale(1, 1)
+			image.BackgroundTransparency = 1
+			image.Image = "rbxthumb://type=Asset&id=" .. tostring(knownId) .. "&w=150&h=150"
+			image.ScaleType = Enum.ScaleType.Fit
+			image.Parent = vf
+		else
+			local q = Instance.new("TextLabel")
+			q.BackgroundTransparency = 1
+			q.Size = UDim2.fromScale(1, 1)
+			q.Text = labelText or "자산 준비"
+			q.TextWrapped = true
+			q.TextColor3 = Color3.fromRGB(232, 209, 154)
+			q.Font = Enum.Font.GothamBold
+			q.TextSize = math.min(14, math.max(10, px / 4))
+			q.Parent = vf
+		end
 	end
 	vf.Parent = parent
 	return vf
@@ -1478,9 +1485,9 @@ local function renderTrade()
 			st.Thickness = 1.5
 			st.Parent = cardF
 			local gi = GOOD_ICON[g.id]
-			if gi then
-				modelIcon(cardF, gi[1], gi[2], gi[3], 54).Position = UDim2.fromOffset(8, 8)
-			end
+			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 54, g.name)
+				else modelIcon(cardF, nil, nil, nil, 54, g.name)
+			icon.Position = UDim2.fromOffset(8, 8)
 			local nm = mkLabel(cardF, g.name .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 14, COLORS.text, true)
 			nm.Position = UDim2.fromOffset(70, 6)
 			nm.Size = UDim2.new(1, -78, 0, 18)
