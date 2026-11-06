@@ -382,7 +382,7 @@ if(process.argv.includes('--village-extra-only')){
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
  // V1: Fantasy Town Kit, V2: Survival/Food/Nature/Fantasy Town Kit 추가분(모두 Kenney CC0).
  const kenneyEvidence=new Set(['https://kenney.nl/assets/fantasy-town-kit','https://kenney.nl/assets/survival-kit',
-  'https://kenney.nl/assets/food-kit','https://kenney.nl/assets/nature-kit','https://opengameart.org/content/cethiels-weapons-3d']);
+  'https://kenney.nl/assets/food-kit','https://kenney.nl/assets/nature-kit','https://kenney.nl/assets/castle-kit','https://opengameart.org/content/cethiels-weapons-3d']);
  for(const groupName of ['villageExtraV1','villageExtraV2']){
  const group=registry[groupName];
  if(!group)continue;
