@@ -10,6 +10,11 @@ on:
         type: string
         required: false
         default: '10774821253'
+      publish_after_register:
+        description: '자산 등록 확인 후 게시까지 할지 (기본: 게시 안 함)'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: write
@@ -42,11 +47,13 @@ jobs:
         run: node tools/mare-scientia-upload-assets.mjs
 
       - name: Commit registered asset IDs (API, main이 움직여도 안전)
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           for f in roblox-games/mare-scientia/assets-registered.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau; do
+            if git diff --quiet -- "$f"; then echo "SKIP_UNCHANGED $f"; continue; fi
             sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=main" --jq .sha 2>/dev/null || true)"
             args=(-X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" -f message='Mare Scientia: Roblox 등록 자산 ID 갱신' -f content="$(base64 -w0 "$f")" -f branch=main)
             if [ -n "$sha" ]; then args+=(-f sha="$sha"); fi
@@ -55,6 +62,7 @@ jobs:
           done
 
       - name: Publish the place with the new asset IDs
+        if: ${{ inputs.publish_after_register == true && success() }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run owner-mare-scientia-direct-publish.yml --ref main -f universe_id="${{ inputs.universe_id }}"
