@@ -268387,6 +268387,46 @@
       "maxRetries": null,
       "createdAt": "2026-11-06T02:20:43.079Z",
       "updatedAt": "2026-11-06T02:23:13.958Z"
+    },
+    {
+      "id": "recovery-40b606157f0210e3c9b6",
+      "status": "queued",
+      "priority": "critical",
+      "sourceQueue": "security",
+      "sourceTaskId": "security-run-42152232579",
+      "gameId": null,
+      "responsibleFiles": [],
+      "contextFiles": [],
+      "goal": null,
+      "relatedTaskIds": [],
+      "failureStage": "SECURITY_IMMUNE_SCAN",
+      "failureSignature": "security-quarantine-HIGH",
+      "blastRadius": "affected-change",
+      "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "evidence": [
+        "security-run:42152232579",
+        "security-report:artifact-42152232579",
+        "security-repair-file:.github/workflows/owner-mare-scientia-assets.yml"
+      ],
+      "recoveryStrategy": "SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW",
+      "verificationPlan": [
+        "RERUN_SECURITY_SCAN",
+        "VERIFY_NO_SECRET_OR_MALWARE_PAYLOAD",
+        "REGRESSION_RESCAN",
+        "PRIMARY_AI_SECURITY_REVIEW"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 0,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-11-06T02:48:23.560Z",
+      "updatedAt": "2026-11-06T02:48:23.561Z"
     }
   ]
 }
