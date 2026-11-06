@@ -15,6 +15,7 @@ local PortScene = require(Shared:WaitForChild("PortScene"))
 local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
 local FieldScene = require(Shared:WaitForChild("FieldScene"))
 local Pose = require(Shared:WaitForChild("Pose"))
+local NavalBattle = require(Shared:WaitForChild("NavalBattle"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
@@ -632,6 +633,26 @@ local function call(action, payload)
 		message, messageOk = result.message, result.ok
 	end
 	render()
+	-- 해전을 했다면 전투 기록을 3D 장면으로 보여 준다
+	if result.ok and (action == "Hunt" or action == "ChallengeBoss") and view and view.lastBattle and not inField then
+		local lb = view.lastBattle
+		inField = true
+		main.Visible = false
+		NavalBattle.play({
+			shipId = view.ship and view.ship.id,
+			enemyName = lb.enemy,
+			log = lb.log,
+			winner = lb.winner,
+			reason = lb.reason,
+			isBoss = action == "ChallengeBoss",
+			onDone = function()
+				inField = false
+				applyView()
+				main.Visible = true
+				render()
+			end,
+		})
+	end
 	return result
 end
 
