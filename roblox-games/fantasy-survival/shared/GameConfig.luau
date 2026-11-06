@@ -414,6 +414,9 @@ local Config = {
     {Id="knight_shield",Rarity="Rare",Need=60,Name="기사단 방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="vxShieldB",ForgeOnly=true,Tint={170,200,225},Attack=0,Defense=3,Icon=2,Art=3,Ingot=4,Leather=2,Coins=90,Crystal=1,Desc="마력숲 대장간에서 제련·제작 가능한 기사단 방패."},
     {Id="sun_shield",Rarity="Epic",Need=220,Name="금빛 수호 방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="vxShieldC",ForgeOnly=true,Tint={190,175,230},Attack=0,Defense=4,Icon=2,Art=4,Ingot=6,Leather=3,Coins=170,Crystal=2,Desc="마력숲 대장간에서 제련·제작 가능한 금빛 수호 방패."},
     {Id="dusk_shield",Rarity="Legendary",Need=700,Name="황혼의 방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="vxShieldD",ForgeOnly=true,Tint={210,191,232},Attack=0,Defense=5,Icon=2,Art=18,Ingot=9,Leather=4,Coins=420,Crystal=4,Magma=3,Desc="마력숲 대장간에서 제련·제작 가능한 황혼의 방패."},
+    -- [바람 절벽 전용 장비] 65·66번째 장비는 세 번째 비트마스크(MeadowGearOwned3)에 저장한다.
+    {Id="wind_feather_gloves",Rarity="Rare",Need=80,Name="깃털 장갑",Slot="Hands",Category="갑옷",Tint={170,215,240},Attack=1,Defense=3,Icon=3,Feather=4,Coins=110,Desc="바람 절벽의 깃털로 엮은 가벼운 장갑. 대장간 모루에서 제작해."},
+    {Id="cliff_steel_shield",Rarity="Epic",Need=240,Name="절벽 강철 방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="vxShieldB",ForgeOnly=true,Tint={150,190,215},Attack=0,Defense=5,Icon=2,Art=3,Feather=5,Crystal=2,Coins=200,Desc="바람 절벽의 깃털과 강철로 벼린 방패. 절벽 지역 재료가 필요해."},
   },
   -- [회복 소모품] 한 번 제작하면 1개 소지, 사용 시 서버에서 1개 소비.
   MeadowConsumables = {
@@ -444,10 +447,10 @@ local Config = {
     BuildingProficiency = 0, HuntingProficiency = 0, AlchemyProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     RedLeaf = 0, Moonbloom = 0, Mushroom = 0, Ore = 0, Crystal = 0, Magma = 0,
-    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0, Steel = 0, Meat = 0, ArmorTier = 0, SmithXp = 0, QLSmith = 0, QLSmithP = 0, QLSmith2 = 0, QLSmith2P = 0, QLSmith3 = 0, QLSmith3P = 0,
+    Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0, Steel = 0, Meat = 0, Feather = 0, ArmorTier = 0, SmithXp = 0, QLSmith = 0, QLSmithP = 0, QLSmith2 = 0, QLSmith2P = 0, QLSmith3 = 0, QLSmith3P = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
-    MeadowGearOwned=2705,MeadowGearOwned2=0,
+    MeadowGearOwned=2705,MeadowGearOwned2=0,MeadowGearOwned3=0,
     MeadowEquipWeapon=1,MeadowEquipChest=5,MeadowEquipHands=8,
     MeadowEquipLegs=10,MeadowEquipFeet=12,MeadowEquipAccessory=0,MeadowEquipShield=0,
     MeadowPotionHealth=0,MeadowPotionStamina=0,
@@ -748,6 +751,7 @@ Config.Materials={
   {Field="Meat",Name="생고기",Kind="부위",Value=4,Color={196,98,92},Desc="늑대와 소굴 어미에게서 얻어. 마을 식당 화덕에서 요리하면 회복과 버프를 줘.",Drop="늑대·소굴 어미"},
   {Field="Steel",Name="강철 주괴",Kind="가공",Value=44,Color={146,168,196},Desc="제련로에서 철 주괴 3개를 담금질해 만들어. 대장 Lv4부터 가능하고, 희귀 이상 무기·방패의 재료야.",Refine={From="Ingot",Need=3,Verb="강철 제련",Note="주괴 3 → 강철 주괴 1 (대장 Lv4)",Level=4,Station="Smelter"}},
   {Field="Leather",Name="무두질 가죽",Kind="가공",Value=10,Color={150,98,60},Desc="가죽 걸이에서 늑대 가죽 2장을 가공해 만들어. 갑옷·장화·장갑에 쓰여.",Refine={From="Hide",Need=2,Verb="무두질",Note="가죽 2 → 무두질 가죽 1",Station="Tanner"}},
+  {Field="Feather",Name="바람 깃털",Kind="부위",Value=9,Color={190,226,246},Desc="바람 절벽의 박쥐 둥지와 오크 정찰병에게서만 나와. 절벽 지역 전용 장갑·방패의 재료야.",Drop="바람 절벽 박쥐·정찰병"},
   {Field="Ectoplasm",Name="원혼의 잔재",Kind="부위",Value=8,Color={150,230,220},Desc="원혼이 남기는 차가운 잔재. 전설 장신구 제작에 쓰여."},
 }
 Config.MaterialByField={}
@@ -1255,10 +1259,10 @@ do
       {Type="kill", Boss="cliffnest", X=Config.WorldMap.EcoCamps.cliffnest.X + 6, Z=Config.WorldMap.EcoCamps.cliffnest.Z + 8, Count=1, Title="절벽의 큰박쥐를 쓰러뜨려라", Text="둥지의 큰박쥐를 처치하라. 날개와 수정을 떨군다.", Done="큰박쥐가 절벽 아래로 떨어진다. 이제 약초를 캘 수 있다."},
       {Type="event", Event="GATHER_HERB", Count=1, Title="둥지 밑 약초 채집", Text="둥지 아래 약초 덤불에서 약초를 채집하라.", Done="달맞이꽃이 한가득이다. 마르타에게 가져가자."},
       {Type="choice", X=town.X, Z=town.Z, R=60, Title="마르타의 부탁", Prompt="마르타: '이 정도면 큰 장사야! 어떻게 나눌까?'",
-       Choices={{Label="약초 현물로 (달맞이꽃 4)", Done="마르타가 약초 꾸러미를 건넨다. '물약 만들 때 써.'", Moonbloom=4},
+       Choices={{Label="약초 현물로 (달맞이꽃 4 · 바람 깃털 2)", Done="마르타가 약초 꾸러미와 깃털을 건넨다. '깃털 장갑을 만들어 보게.'", Moonbloom=4, Feather=2},
                 {Label="마력 수정으로 (수정 3)", Done="마르타가 수정을 꺼낸다. '약초는 내 가게에 쓸게.'", Crystal=3}}}
      },
-     Reward={Coins=360, Xp=380, Moonbloom=1}},
+     Reward={Coins=360, Xp=380, Moonbloom=1, Feather=3}},
     {Id="orccamp", Name="[서브] 오크 정찰대장", Kind="Sub", Field="QLOrcCamp", Need={Zone="windcliff"},
      Intro="등대 경비 오르간: '서쪽 야영지에 오크 정찰대가 모였어. 등대를 노리는 것 같다. 가서 대장이 뭘 원하는지 확인해.'",
      Steps={
@@ -1669,6 +1673,7 @@ Config.SmithPerks={
   {Level=3,Name="풍부한 제련",Desc="제련 시 15% 확률로 1개 더 나와."},
   {Level=4,Name="철의 손길",Desc="주괴·가죽 요구량 -1, 강철 제련 가능."},
   {Level=5,Name="효율 담금질",Desc="강철 제련에 철 주괴가 3개 대신 2개."},
+  {Level=5,Name="명인 단련",Desc="무기·갑옷을 +7 이상으로 단련할 수 있어."},
   {Level=7,Name="숙련 대장장이",Desc="주괴·가죽 요구량 -2."},
   {Level=8,Name="재료 환급",Desc="무기 제작 시 20% 확률로 주괴 1개를 돌려받아."},
   {Level=10,Name="대장장이의 명인",Desc="주괴·가죽 요구량 -3."},

@@ -3011,12 +3011,12 @@ local meadowRpg=(function()
   for _,item in ipairs(tonics)do tonicById[item.Id]=item end
   -- 장비 33번째부터는 두 번째 비트마스크(MeadowGearOwned2)에 저장한다.
   local function hasGear(player,index)
-    local field=index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
+    local field=index>64 and "MeadowGearOwned3" or index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
     local mask=math.max(0,readNumber(player,field,0))
     return bit32.band(mask,bit32.lshift(1,(index-1)%32))~=0
   end
   local function grantGear(player,index)
-    local field=index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
+    local field=index>64 and "MeadowGearOwned3" or index>32 and "MeadowGearOwned2" or "MeadowGearOwned"
     setNumber(player,field,bit32.bor(math.max(0,readNumber(player,field,0)),bit32.lshift(1,(index-1)%32)))
   end
   local function equipped(player,slot)
@@ -3117,6 +3117,7 @@ local meadowRpg=(function()
       if not nearStation(player,"Anvil") then feedback(player,"마을 대장간의 모루 가까이에서 갑옷을 단련할 수 있어.");return true end
       local tier=readNumber(player,"ArmorTier",0)
       if tier>=10 then feedback(player,"갑옷 단련은 최대 10단계야.");return true end
+      if tier>=6 and smithLevelOf(player)<5 then feedback(player,"+7 이상은 대장 Lv5 '명인 단련'부터 가능해.");return true end
       local ingotCost,leatherCost=Config.ArmorTemperCost(tier,readNumber(player,"SmithXp",0))
       if readNumber(player,"Ingot",0)<ingotCost or readNumber(player,"Leather",0)<leatherCost then
         feedback(player,"갑옷 단련 재료: 철 주괴 "..ingotCost.." · 무두질 가죽 "..leatherCost);return true
@@ -3422,6 +3423,7 @@ Players.PlayerAdded:Connect(watchArmorVisual)
 local function watchBowVisual(player)
   player:GetAttributeChangedSignal("MeadowEquipWeapon"):Connect(function() refreshBowVisual(player) end)
   player:GetAttributeChangedSignal("MeadowGearOwned2"):Connect(function() refreshBowVisual(player) end)
+  player:GetAttributeChangedSignal("MeadowGearOwned3"):Connect(function() refreshBowVisual(player) end)
   player:GetAttributeChangedSignal("MeadowEquipShield"):Connect(function() refreshBowVisual(player) end)
   player:GetAttributeChangedSignal("MeadowSkillBits3"):Connect(function() refreshBowVisual(player) end)
   player.CharacterAdded:Connect(function() task.wait(1.5);refreshBowVisual(player) end)
@@ -5031,6 +5033,11 @@ end
 local function upgradeEquipment(player)
   local tier=readNumber(player,"WeaponTier",0)
   if tier>=10 then return false end
+  if tier>=6 and smithLevelOf(player)<5 then
+    player:SetAttribute("MeadowGearMessage","+7 이상은 대장 Lv5 '명인 단련'부터 가능해.")
+    player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+    return false
+  end
   if not nearStation(player,"Grindstone") then
     player:SetAttribute("MeadowGearMessage","마을 대장간의 숫돌 가까이에서 단련할 수 있어.")
     player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
@@ -7272,7 +7279,7 @@ do
     chaos=Enum.Material.Basalt,wetland=Enum.Material.Mud,desert=Enum.Material.Sand,deadmarsh=Enum.Material.Mud}
   local zoneTier={windcliff=2,meadow=1,worldtree=3,volcano=5,oasis=6,swamp=7,citadel=9,highland=4,canyon=6,chaos=8,wetland=3,desert=6,deadmarsh=8}
   local pools={
-    windcliff={{"wolf","roguehooded","절벽 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"wolf","tribal","절벽 주술전사",4.2,1.4,{{"Moonbloom",.3},{"Ore",.3}}},{"wolf","wolf","절벽 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3}}}},
+    windcliff={{"wolf","roguehooded","절벽 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"wolf","tribal","절벽 주술전사",4.2,1.4,{{"Moonbloom",.3},{"Ore",.3}}},{"wolf","wolf","절벽 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3},{"Feather",.25}}}},
     meadow={{"wolf",nil,nil,3.4,1},{"wolf","roguehooded","초원 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"bat",nil,nil,3.3,1}},
     worldtree={{"wolf","barbarian","저주받은 웨어울프",5.4,1.5,{{"Claw",.6},{"Hide",.7},{"Fang",.3}}},{"wolf","wolf","숲 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3}}},
       {"wolf","spider","숲 거미",3,1.1,{{"Fang",.5},{"Mushroom",.3}}},{"bat",nil,nil,3.4,1}},
@@ -8879,16 +8886,16 @@ do
     goblin(m,-14,10);goblin(m,16,14)
     table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="orc",name="오크 광산 감독",tier=4,height=5.2,hp=2.8,dmg=1.5,alpha=true,named=true,
       questBoss="cliffmine",drops={{"Ore",1,4},{"Magma",.6,1},{"Hide",.5,1}},position=at(m,10,-8)})
-    table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",tier=3,height=3.2,position=at(n,-16,-8)})
-    table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",tier=3,height=3.2,position=at(n,18,-4)})
+    table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",tier=3,height=3.2,drops={{"Feather",.7,1}},position=at(n,-16,-8)})
+    table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",tier=3,height=3.2,drops={{"Feather",.7,1}},position=at(n,18,-4)})
     table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",name="절벽의 큰박쥐",tier=5,height=4.6,alpha=true,named=true,
-      questBoss="cliffnest",drops={{"BatWing",1,3},{"Crystal",1,2},{"Moonbloom",.6,1}},position=at(n,6,8)})
+      questBoss="cliffnest",drops={{"BatWing",1,3},{"Crystal",1,2},{"Moonbloom",.6,1},{"Feather",1,3}},position=at(n,6,8)})
     for _,off in ipairs({{-12,10},{14,12}}) do
       table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="tribal",name="오크 정찰병",tier=3,height=4.4,hp=1.5,dmg=1.2,
-        drops={{"Hide",.5,1},{"Claw",.4,1},{"Moonbloom",.3,1}},position=at(o,off[1],off[2])})
+        drops={{"Hide",.5,1},{"Claw",.4,1},{"Moonbloom",.3,1},{"Feather",.4,1}},position=at(o,off[1],off[2])})
     end
     table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="orc",name="오크 정찰대장",tier=4,height=5.4,hp=3,dmg=1.6,alpha=true,named=true,
-      questBoss="orccamp",drops={{"Hide",1,3},{"Claw",1,3},{"Fang",.8,2}},position=at(o,-8,-6)})
+      questBoss="orccamp",drops={{"Hide",1,3},{"Claw",1,3},{"Fang",.8,2},{"Feather",1,2}},position=at(o,-8,-6)})
     -- 채집점은 지형이 만들어진 뒤(OpenWorldReady) 지면을 확인하고 놓는다.
     task.spawn(function()
       while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(2) end
@@ -9055,7 +9062,7 @@ do
     local reward=line.Reward or {}
     setNumber(player,line.Field,#line.Steps+1)
     pcall(awardProgress,player,reward.Xp or 0,reward.Coins or 0)
-    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Feather","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
       if reward[field] then setNumber(player,field,readNumber(player,field,0)+reward[field]) end
     end
     if reward.Relic then setNumber(player,"RelicMask",bit32.bor(readNumber(player,"RelicMask",0),bit32.lshift(1,reward.Relic-1))) end
@@ -9159,7 +9166,7 @@ do
     setNumber(player,line.Field.."C",action=="ql:1" and 1 or 2)
     if choice.Flag then setNumber(player,"TrackFlags",bit32.bor(readNumber(player,"TrackFlags",0),choice.Flag)) end
     if choice.Join and meadowOil.joinCompanion then meadowOil.joinCompanion(player,choice.Join,choice.Bond) end
-    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Feather","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
       if choice[field] then setNumber(player,field,readNumber(player,field,0)+choice[field]) end
     end
     if choice.Coins then setNumber(player,"Coins",readNumber(player,"Coins",0)+choice.Coins) end
