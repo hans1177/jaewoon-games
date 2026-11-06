@@ -3415,17 +3415,19 @@ local function refreshArmorVisual(player)
     Epic=Color3.fromRGB(58,58,72),Legendary=Color3.fromRGB(226,184,76)})[chest.Rarity or "Common"] or visual.Color
   visual.Name="MeadowArmorVisual"
   visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
+  -- 몸통 크기에 맞춰 늘려 붙인다(어깨까지 살짝 덮고 머리는 가리지 않게).
+  visual.Size=Vector3.new(torso.Size.X*1.18,torso.Size.Y*1.12,torso.Size.Z*1.5)
   visual.Parent=character
   local weld=Instance.new("Weld");weld.Part0=torso;weld.Part1=visual
-  weld.C0=CFrame.new(0,.25,-.05)
+  weld.C0=CFrame.new(0,-.05,0)
   weld.Parent=visual
 end
 -- [장갑·바지·장화 외형] 희귀 이상 장비만 등록된 CC0 메시(item_glove / item_pants / item_boots)를 해당 부위에 용접한다.
 -- 시작 장비와 일반·고급 장비는 기본 모습 그대로 둔다. 장비에 Tint가 있으면 색을 살짝 입힌다.
 local gearVisualSpec={
-  Hands={model="item_glove",height=1.0,parts={"LeftHand","RightHand"},offset=CFrame.new(0,-.05,0)},
-  Feet={model="item_boots",height=1.1,parts={"LeftFoot","RightFoot"},offset=CFrame.new(0,-.05,0)},
-  Legs={model="item_pants",height=2.3,parts={"LowerTorso"},offset=CFrame.new(0,-.7,0)},
+  Hands={model="item_glove",height=1.0,parts={"LeftHand","RightHand"},offset=CFrame.new(0,-.02,0),fit=Vector3.new(1.35,1.3,1.35)},
+  Feet={model="item_boots",height=1.1,parts={"LeftFoot","RightFoot"},offset=CFrame.new(0,.1,0),fit=Vector3.new(1.35,1.9,1.3)},
+  Legs={model="item_pants",height=2.3,parts={"LowerTorso"},offset=CFrame.new(0,-1.0,0),fit=Vector3.new(1.12,5.6,1.35)},
 }
 local function refreshGearVisuals(player)
   local character=player.Character
@@ -3448,6 +3450,7 @@ local function refreshGearVisuals(player)
             visual.Name="MeadowGearVisual_"..slot
             visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
             if item.Tint then visual.Color=visual.Color:Lerp(Color3.fromRGB(item.Tint[1],item.Tint[2],item.Tint[3]),.4) end
+            visual.Size=Vector3.new(anchor.Size.X*spec.fit.X,anchor.Size.Y*spec.fit.Y,anchor.Size.Z*spec.fit.Z)
             visual.Parent=character
             local weld=Instance.new("Weld");weld.Part0=anchor;weld.Part1=visual;weld.C0=spec.offset;weld.Parent=visual
           elseif model then

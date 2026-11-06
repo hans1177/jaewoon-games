@@ -3690,7 +3690,7 @@ local function layoutMeadowJournal()
   questTracker.Position=UDim2.fromOffset(questLeft,questTop)
   questTracker.Size=UDim2.fromOffset(width,height)
   trackerTitle.Position=UDim2.fromOffset(compact and 24 or 8,compact and 4 or 6)
-  trackerTitle.Size=UDim2.new(1,(compact and -28 or -14)-30,0,compact and 22 or 20)
+  trackerTitle.Size=UDim2.new(1,(compact and -28 or -14)-46,0,compact and 22 or 20)
   trackerTitle.TextSize=compact and 17 or 17
   trackerDetail.Position=UDim2.fromOffset(compact and 8 or 10,compact and 30 or 28)
   trackerDetail.Size=UDim2.new(1,compact and -14 or -18,0,compact and 40 or 46)
@@ -3726,11 +3726,12 @@ gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
 do
   -- [퀘스트창 접기/펼치기] 오른쪽 위 작은 버튼. 접으면 제목 한 줄만 남는다.
   local fold=Instance.new("TextButton")
-  fold.Name="QuestFoldButton";fold.AnchorPoint=Vector2.new(1,0);fold.Position=UDim2.new(1,-4,0,3)
-  fold.Size=UDim2.fromOffset(56,24);fold.BackgroundColor3=Color3.fromRGB(34,46,42);fold.BackgroundTransparency=.1
-  fold.BorderSizePixel=0;fold.Font=Enum.Font.GothamMedium;fold.TextSize=13;fold.TextColor3=Color3.fromRGB(240,232,200)
+  fold.Name="QuestFoldButton";fold.AnchorPoint=Vector2.new(1,0);fold.Position=UDim2.new(1,-3,0,2)
+  fold.Size=UDim2.fromOffset(40,18);fold.AutomaticSize=Enum.AutomaticSize.None;fold.BackgroundColor3=Color3.fromRGB(34,46,42);fold.BackgroundTransparency=.1
+  fold.BorderSizePixel=0;fold.Font=Enum.Font.GothamMedium;fold.TextSize=11;fold.TextWrapped=false;fold.TextColor3=Color3.fromRGB(240,232,200)
   fold.Text="접기";fold.ZIndex=questTracker.ZIndex+6;fold.Parent=questTracker
-  Instance.new("UICorner",fold).CornerRadius=UDim.new(0,8)
+  Instance.new("UICorner",fold).CornerRadius=UDim.new(0,6)
+  local foldLimit=Instance.new("UISizeConstraint");foldLimit.MaxSize=Vector2.new(46,20);foldLimit.Parent=fold -- 크기가 다른 코드로 커지는 것을 막는다
   fold.Activated:Connect(function()
     meadowArt.questFolded=not (meadowArt.questFolded==true)
     layoutMeadowJournal()
