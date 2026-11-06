@@ -490,6 +490,171 @@ local Events: { Event } = {
 			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_orca", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
+	{
+		id = "npc_palma_fisher", title = "팔마의 어부", portId = "palma", art = "harbor", npc = "어부",
+		lines = {
+			"\"문어는 항아리에 숨는 걸 좋아해서 쉽게 잡힌다오.\"",
+			"어부가 토기 항아리를 보여 준다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_octopus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_octopus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_cagliari_saltman", title = "카글리아리의 염부", portId = "cagliari", art = "market", npc = "염부",
+		lines = {
+			"\"홍학이 오면 소금이 잘 익은 거라오.\"",
+			"염부가 소금 산을 가리킨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_flamingo", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_flamingo", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_ajaccio_shepherd", title = "코르시카의 양치기", portId = "ajaccio", art = "ruins", npc = "양치기",
+		lines = {
+			"\"이 섬의 관목숲은 도망자들의 오랜 은신처지.\"",
+			"양치기가 지팡이에 기대어 웃는다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_cork_oak", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_cork_oak", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_toulon_shipwright", title = "툴롱의 선박 목수", portId = "toulon", art = "forge", npc = "선박 목수",
+		lines = {
+			"\"송진이 마르기 전에 틈을 메워야 한다오.\"",
+			"목수가 역청 통을 휘젓는다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_pine_resin", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_pine_resin", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_syracuse_actor", title = "시라쿠사의 배우", portId = "syracuse", art = "ruins", npc = "늙은 배우",
+		lines = {
+			"\"이 돌 객석에서 수천 년 전에도 박수가 터졌소.\"",
+			"배우가 극장 무대 위에서 인사한다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_mosaic", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_mosaic", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_ancona_notary", title = "안코나의 공증인", portId = "ancona", art = "library", npc = "공증인",
+		lines = {
+			"\"계약서는 바다가 변해도 변하지 않는 유일한 약속이오.\"",
+			"공증인이 잉크병을 정리한다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_hansa_seal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_hansa_seal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_split_mason", title = "스플리트의 석공", portId = "split", art = "forge", npc = "석공",
+		lines = {
+			"\"황제의 궁전 안에 사람들이 집을 짓고 사는 곳이오.\"",
+			"석공이 대리석 조각을 쓰다듬는다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "min_marble", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_marble", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_salonica_priest", title = "테살로니키의 사제", portId = "thessaloniki", art = "library", npc = "사제",
+		lines = {
+			"\"이 도시의 성화는 천 년 동안 바뀌지 않았소.\"",
+			"사제가 촛불을 켠다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_icon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_icon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_candia_diver", title = "칸디아의 잠수부", portId = "candia", art = "harbor", npc = "해면 잠수부",
+		lines = {
+			"\"바닷속에는 옛 항아리가 가득 쌓여 있지요.\"",
+			"잠수부가 젖은 항아리 조각을 건넨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_amphora", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_amphora", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_rhodes_knight", title = "로도스의 기사", portId = "rhodes", art = "palace", npc = "기사",
+		lines = {
+			"\"한때 이 항구 입구에 청동 거인이 서 있었다고 하오.\"",
+			"기사가 항구 입구를 가리킨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_carthage_coin", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_carthage_coin", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_cyprus_miner", title = "키프로스의 광부", portId = "famagusta", art = "forge", npc = "광부",
+		lines = {
+			"\"구리라는 말이 이 섬 이름에서 나왔다오.\"",
+			"광부가 구릿빛 돌을 쥐어 준다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "min_tin_ore", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_tin_ore", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_smyrna_dealer", title = "이즈미르의 융단 상인", portId = "smyrna", art = "market", npc = "융단 상인",
+		lines = {
+			"\"한 땀 한 땀 짠 융단이니 값을 깎지 마시오.\"",
+			"상인이 붉은 융단을 펼친다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_sundial", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_sundial", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_acre_templar", title = "아크레의 옛 기사", portId = "acre", art = "palace", npc = "옛 기사",
+		lines = {
+			"\"성벽은 무너져도 이 땅을 지키려던 맹세는 남았소.\"",
+			"기사가 낡은 십자 문장을 만진다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_icon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_icon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_oran_potter", title = "오랑의 도공", portId = "oran", art = "market", npc = "도공",
+		lines = {
+			"\"붉은 흙을 구우면 이렇게 단단한 항아리가 되지요.\"",
+			"도공이 물레를 멈춘다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_amphora", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_amphora", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_benghazi_nomad", title = "벵가지의 유목민", portId = "benghazi", art = "ruins", npc = "유목민",
+		lines = {
+			"\"사막의 모래 아래엔 옛 그리스인의 도시가 잠들어 있소.\"",
+			"유목민이 낙타 고삐를 쥔다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_camel", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_camel", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
 }
 
 local ById: { [string]: Event } = {}

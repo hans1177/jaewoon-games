@@ -339,6 +339,22 @@ local Sites: { Site } = {
 	{ id = "tallinn_forest", name = "에스토니아 숲", portId = "tallinn", minLevel = 1, days = 1, pool = { "zoo_elk", "bot_pine_resin" } },
 	{ id = "funchal_grapes", name = "마데이라 포도밭", portId = "funchal", minLevel = 1, days = 1, pool = { "bot_grape", "bot_olive" } },
 	{ id = "tripoli_dig", name = "트리폴리 옛 항구", portId = "tripoli", minLevel = 2, days = 1, pool = { "relic_amphora", "min_alabaster" } },
+	{ id = "palma_cathedral", name = "팔마 대성당", portId = "palma", minLevel = 1, days = 1, pool = { "zoo_octopus", "bot_olive" } },
+	{ id = "cagliari_salt", name = "카글리아리 염호", portId = "cagliari", minLevel = 2, days = 1, pool = { "zoo_flamingo", "min_alabaster" } },
+	{ id = "corsica_maquis", name = "코르시카 관목숲", portId = "ajaccio", minLevel = 2, days = 1, pool = { "bot_cork_oak", "zoo_dolphin" } },
+	{ id = "toulon_arsenal", name = "툴롱 조선소", portId = "toulon", minLevel = 1, days = 1, pool = { "bot_pine_resin", "zoo_tuna" } },
+	{ id = "syracuse_theatre", name = "시라쿠사 원형극장", portId = "syracuse", minLevel = 2, days = 1, pool = { "relic_mosaic", "min_marble" } },
+	{ id = "ancona_arch", name = "안코나 개선문", portId = "ancona", minLevel = 1, days = 1, pool = { "relic_amphora", "zoo_octopus" } },
+	{ id = "split_palace", name = "스플리트 궁전", portId = "split", minLevel = 2, days = 1, pool = { "min_marble", "relic_mosaic", "relic_carthage_coin" } },
+	{ id = "thessaloniki_walls", name = "테살로니키 성벽", portId = "thessaloniki", minLevel = 2, days = 1, pool = { "relic_icon", "bot_grape" } },
+	{ id = "crete_knossos", name = "크노소스 궁전", portId = "candia", minLevel = 3, days = 2, pool = { "relic_amphora", "relic_mosaic", "zoo_sea_turtle" } },
+	{ id = "rhodes_colossus", name = "로도스 거상 터", portId = "rhodes", minLevel = 3, days = 2, pool = { "relic_carthage_coin", "min_marble", "zoo_dolphin" } },
+	{ id = "cyprus_copper", name = "키프로스 구리 광산", portId = "famagusta", minLevel = 2, days = 2, pool = { "min_tin_ore", "min_obsidian" } },
+	{ id = "smyrna_bazaar", name = "이즈미르 시장", portId = "smyrna", minLevel = 2, days = 1, pool = { "relic_sundial", "bot_olive" } },
+	{ id = "acre_crusader", name = "아크레 십자군 성채", portId = "acre", minLevel = 3, days = 2, pool = { "relic_icon", "site_valletta_walls", "bot_date_palm" } },
+	{ id = "oran_cliffs", name = "오랑 해안 절벽", portId = "oran", minLevel = 1, days = 1, pool = { "zoo_flamingo", "min_sandstone" } },
+	{ id = "benghazi_ruins", name = "키레나이카 유적", portId = "benghazi", minLevel = 3, days = 2, pool = { "relic_mosaic", "relic_amphora", "zoo_camel" } },
+	{ id = "aegean_isles", name = "에게 해 섬들", portId = "rhodes", minLevel = 2, days = 1, pool = { "geo_skerries", "zoo_octopus", "zoo_dolphin" } },
 }
 
 return {

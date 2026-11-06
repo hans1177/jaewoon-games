@@ -258,6 +258,66 @@ local Ports: { [string]: Port } = {
 		id = "ponta_delgada", name = "퐁타델가다", country = "azores", lat = 37.74, lon = -25.67,
 		produces = { "fish", "wine", "salt" }, demands = { "cloth", "iron", "timber", "wool" }, shipyard = false,
 	},
+	palma = {
+		id = "palma", name = "팔마", country = "mallorca", lat = 39.57, lon = 2.65,
+		produces = { "olive_oil", "salt", "wine" }, demands = { "wool", "timber", "iron", "cloth" }, shipyard = false,
+	},
+	cagliari = {
+		id = "cagliari", name = "카글리아리", country = "sardinia", lat = 39.22, lon = 9.12,
+		produces = { "salt", "wool", "olive_oil" }, demands = { "cloth", "iron", "timber", "glass" }, shipyard = false,
+	},
+	ajaccio = {
+		id = "ajaccio", name = "아자치오", country = "corsica", lat = 41.92, lon = 8.74,
+		produces = { "wine", "timber", "olive_oil" }, demands = { "cloth", "iron", "salt", "glass" }, shipyard = false,
+	},
+	toulon = {
+		id = "toulon", name = "툴롱", country = "france", lat = 43.12, lon = 5.93,
+		produces = { "wine", "salt", "olive_oil" }, demands = { "coal", "timber", "iron", "fish" }, shipyard = true,
+	},
+	syracuse = {
+		id = "syracuse", name = "시라쿠사", country = "sicily", lat = 37.07, lon = 15.29,
+		produces = { "olive_oil", "wine", "salt" }, demands = { "cloth", "iron", "timber", "coal" }, shipyard = false,
+	},
+	ancona = {
+		id = "ancona", name = "안코나", country = "papal", lat = 43.62, lon = 13.52,
+		produces = { "wool", "wine", "olive_oil" }, demands = { "fish", "timber", "iron", "spice" }, shipyard = false,
+	},
+	split = {
+		id = "split", name = "스플리트", country = "dalmatia", lat = 43.51, lon = 16.44,
+		produces = { "wine", "olive_oil", "salt" }, demands = { "cloth", "iron", "wool", "glass" }, shipyard = false,
+	},
+	thessaloniki = {
+		id = "thessaloniki", name = "테살로니키", country = "ottoman", lat = 40.64, lon = 22.94,
+		produces = { "silk", "wool", "tobacco" }, demands = { "cloth", "iron", "fish", "glass" }, shipyard = false,
+	},
+	candia = {
+		id = "candia", name = "칸디아", country = "crete", lat = 35.34, lon = 25.14,
+		produces = { "olive_oil", "wine", "salt" }, demands = { "cloth", "iron", "timber", "wool" }, shipyard = true,
+	},
+	rhodes = {
+		id = "rhodes", name = "로도스", country = "rhodes", lat = 36.43, lon = 28.22,
+		produces = { "olive_oil", "wine", "silk" }, demands = { "timber", "iron", "wool", "cloth" }, shipyard = false,
+	},
+	famagusta = {
+		id = "famagusta", name = "파마구스타", country = "cyprus", lat = 35.13, lon = 33.94,
+		produces = { "sugar", "wine", "salt", "silk" }, demands = { "cloth", "iron", "timber", "glass" }, shipyard = false,
+	},
+	smyrna = {
+		id = "smyrna", name = "이즈미르", country = "ottoman", lat = 38.42, lon = 27.14,
+		produces = { "silk", "spice", "olive_oil", "tobacco" }, demands = { "wool", "iron", "fur", "glass" }, shipyard = true,
+	},
+	acre = {
+		id = "acre", name = "아크레", country = "levant", lat = 32.92, lon = 35.07,
+		produces = { "spice", "silk", "sugar", "olive_oil" }, demands = { "wool", "iron", "timber", "glass" }, shipyard = false,
+	},
+	oran = {
+		id = "oran", name = "오랑", country = "algeria", lat = 35.70, lon = -0.63,
+		produces = { "wool", "salt", "olive_oil" }, demands = { "cloth", "iron", "timber", "glass" }, shipyard = false,
+	},
+	benghazi = {
+		id = "benghazi", name = "벵가지", country = "tripoli", lat = 32.12, lon = 20.07,
+		produces = { "wool", "olive_oil", "salt" }, demands = { "cloth", "iron", "timber", "glass" }, shipyard = false,
+	},
 }
 
 local Nations: { [string]: Nation } = {
