@@ -417,6 +417,12 @@ local Config = {
     -- [바람 절벽 전용 장비] 65·66번째 장비는 세 번째 비트마스크(MeadowGearOwned3)에 저장한다.
     {Id="wind_feather_gloves",Rarity="Rare",Need=80,Name="깃털 장갑",Slot="Hands",Category="갑옷",Tint={170,215,240},Attack=1,Defense=3,Icon=3,Feather=4,Coins=110,Desc="바람 절벽의 깃털로 엮은 가벼운 장갑. 대장간 모루에서 제작해."},
     {Id="cliff_steel_shield",Rarity="Epic",Need=240,Name="절벽 강철 방패",Slot="Shield",Category="방패",WeaponFamily="Shield",ModelKey="vxShieldB",ForgeOnly=true,Tint={150,190,215},Attack=0,Defense=5,Icon=2,Art=3,Feather=5,Crystal=2,Coins=200,Desc="바람 절벽의 깃털과 강철로 벼린 방패. 절벽 지역 재료가 필요해."},
+    -- [망토 슬롯] 67번째부터 세 번째 비트마스크에 저장한다. 망토는 오프닝 망토 모델에 색(Tint)만 바꿔 입힌다.
+    {Id="traveler_cape",Rarity="Uncommon",Need=0,Name="여행자 망토",Slot="Cape",Category="갑옷",Tint={86,110,78},Attack=0,Defense=1,Icon=3,Hide=2,Coins=30,Desc="숲 빛깔로 물들인 가벼운 망토."},
+    {Id="wind_feather_cape",Rarity="Rare",Need=80,Name="바람 깃털 망토",Slot="Cape",Category="갑옷",Tint={170,215,240},Attack=1,Defense=2,Icon=3,Feather=4,Hide=2,Coins=110,Desc="바람 절벽의 깃털을 엮은 망토. 바람 절벽 재료가 필요해."},
+    {Id="wraith_cape",Rarity="Epic",Need=260,Name="원혼 망토",Slot="Cape",Category="갑옷",Tint={110,200,190},Attack=2,Defense=3,Icon=3,Ectoplasm=4,Hide=3,Crystal=2,Coins=190,Desc="원혼의 잔재로 짠 망토. 안개 늪지와 죽음의 늪 재료가 필요해."},
+    {Id="ember_cape",Rarity="Epic",Need=300,Name="화염 망토",Slot="Cape",Category="갑옷",Tint={210,90,50},Attack=3,Defense=2,Icon=3,Magma=4,Hide=3,Coins=200,Desc="식지 않는 화산석으로 물들인 망토."},
+    {Id="dusk_cape",Rarity="Legendary",Need=700,Name="황혼의 망토",Slot="Cape",Category="갑옷",Tint={150,110,200},Attack=4,Defense=5,Icon=3,Crystal=5,Ectoplasm=4,Magma=3,Hide=4,Coins=450,Desc="세 지역의 재료로 완성한 전설 망토."},
   },
   -- [회복 소모품] 한 번 제작하면 1개 소지, 사용 시 서버에서 1개 소비.
   MeadowConsumables = {
@@ -452,7 +458,7 @@ local Config = {
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
     MeadowGearOwned=2705,MeadowGearOwned2=0,MeadowGearOwned3=0,
     MeadowEquipWeapon=1,MeadowEquipChest=5,MeadowEquipHands=8,
-    MeadowEquipLegs=10,MeadowEquipFeet=12,MeadowEquipAccessory=0,MeadowEquipShield=0,
+    MeadowEquipLegs=10,MeadowEquipFeet=12,MeadowEquipCape=0,MeadowEquipAccessory=0,MeadowEquipShield=0,
     MeadowPotionHealth=0,MeadowPotionStamina=0,
     MeadowTalentMartial=0,MeadowTalentSigns=0,MeadowTalentDefense=0,MeadowTalentAgility=0,
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
@@ -772,6 +778,7 @@ for _,item in ipairs(Config.MeadowEquipment) do
     elseif item.Slot=="Hands" then add("Hide",t);add("Claw",t)
     elseif item.Slot=="Legs" then add("Hide",t);add("Ore",t)
     elseif item.Slot=="Feet" then add("Hide",t);add("BatWing",t)
+    elseif item.Slot=="Cape" then add("Hide",t)
     else add("Moonbloom",t);add("Crystal",t-1);add("Ectoplasm",t-3) end
   end
   -- [위쳐·스카이림식 제작] 장비 제작은 나무·돌을 쓰지 않는다. 사냥한 몬스터 부위(가죽·송곳니·발톱·날개),

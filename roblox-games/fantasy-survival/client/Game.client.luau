@@ -1524,7 +1524,7 @@ local function renderMeadowPages()
 end
 for _,name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(renderMeadowPages) end
 for _,key in ipairs({"MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs",
-  "MeadowEquipFeet","MeadowEquipAccessory","MeadowEquipShield","MeadowGearAttack","MeadowGearDefense"})do
+  "MeadowEquipFeet","MeadowEquipAccessory","MeadowEquipCape","MeadowEquipShield","MeadowGearAttack","MeadowGearDefense"})do
   player:GetAttributeChangedSignal(key):Connect(renderMeadowPages)
 end
 player:GetAttributeChangedSignal("MeadowGearRevision"):Connect(renderMeadowPages)
@@ -2781,7 +2781,7 @@ if player.Character then
 end
 for _,name in ipairs({"Wood","Stone","RedLeaf","Moonbloom","Mushroom","Ore","Crystal","Magma","Hide","Fang","BatWing","Claw","Ectoplasm","Ingot","Steel","Meat","Feather","SmithXp","Leather","Coins","ResearchRecords","ProfileReady","MeadowGearOwned","MeadowGearOwned2",
   "MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet",
-  "MeadowEquipAccessory","MeadowEquipShield","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
+  "MeadowEquipAccessory","MeadowEquipCape","MeadowEquipShield","MeadowPotionHealth","MeadowPotionStamina","MeadowGearRevision"})do
   player:GetAttributeChangedSignal(name):Connect(renderInventory)
 end
 renderInventory()

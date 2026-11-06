@@ -2962,7 +2962,7 @@ local meadowRpg=(function()
   local tonics=Config.MeadowConsumables or {}
   local slots={Weapon="MeadowEquipWeapon",Chest="MeadowEquipChest",
     Hands="MeadowEquipHands",Legs="MeadowEquipLegs",Feet="MeadowEquipFeet",
-    Accessory="MeadowEquipAccessory",Shield="MeadowEquipShield"}
+    Accessory="MeadowEquipAccessory",Shield="MeadowEquipShield",Cape="MeadowEquipCape"}
   local talents={Martial="MeadowTalentMartial",Signs="MeadowTalentSigns",
     Defense="MeadowTalentDefense",Agility="MeadowTalentAgility"}
   local talentMax={Agility=5,Martial=5} -- 회피·검술은 5단, 나머지 계열은 3단.
@@ -3453,11 +3453,30 @@ local function refreshGearVisuals(player)
     end
   end
 end
+-- [망토 색] 오프닝 망토 모델의 손잡이 메시 색을 장착한 망토의 Tint로 바꾼다. 장착 해제하면 원래 색으로 돌아온다.
+local function refreshCapeTint(player)
+  local character=player.Character
+  local cape=character and character:FindFirstChild("MeadowWornCrimsonCape")
+  local handle=cape and cape:FindFirstChild("Handle")
+  if not handle or not handle:IsA("MeshPart") then return end
+  if handle:GetAttribute("CapeBaseR")==nil then
+    handle:SetAttribute("CapeBaseR",handle.Color.R);handle:SetAttribute("CapeBaseG",handle.Color.G);handle:SetAttribute("CapeBaseB",handle.Color.B)
+  end
+  local base=Color3.new(handle:GetAttribute("CapeBaseR"),handle:GetAttribute("CapeBaseG"),handle:GetAttribute("CapeBaseB"))
+  local item=meadowRpg.equippedSlot and meadowRpg.equippedSlot(player,"Cape")
+  if item and item.Tint then
+    handle.Color=base:Lerp(Color3.fromRGB(item.Tint[1],item.Tint[2],item.Tint[3]),.75)
+  else
+    handle.Color=base
+  end
+end
 local function watchArmorVisual(player)
   player:GetAttributeChangedSignal("MeadowEquipChest"):Connect(function() refreshArmorVisual(player) end)
   for _,attribute in ipairs({"MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet","MeadowGearOwned","MeadowGearOwned2","MeadowGearOwned3"}) do
     player:GetAttributeChangedSignal(attribute):Connect(function() refreshGearVisuals(player) end)
   end
+  player:GetAttributeChangedSignal("MeadowEquipCape"):Connect(function() refreshCapeTint(player) end)
+  player.CharacterAdded:Connect(function() for _,gap in ipairs({4,4,6}) do task.wait(gap);refreshCapeTint(player) end end)
   player.CharacterAdded:Connect(function() task.wait(2.2);refreshGearVisuals(player) end)
   player.CharacterAdded:Connect(function() task.wait(1.8);refreshArmorVisual(player) end)
 end
