@@ -355,6 +355,17 @@ local Sites: { Site } = {
 	{ id = "oran_cliffs", name = "오랑 해안 절벽", portId = "oran", minLevel = 1, days = 1, pool = { "zoo_flamingo", "min_sandstone" } },
 	{ id = "benghazi_ruins", name = "키레나이카 유적", portId = "benghazi", minLevel = 3, days = 2, pool = { "relic_mosaic", "relic_amphora", "zoo_camel" } },
 	{ id = "aegean_isles", name = "에게 해 섬들", portId = "rhodes", minLevel = 2, days = 1, pool = { "geo_skerries", "zoo_octopus", "zoo_dolphin" } },
+	{ id = "malaga_alcazaba", name = "말라가 알카사바", portId = "malaga", minLevel = 1, days = 1, pool = { "bot_grape", "site_alhambra" } },
+	{ id = "cartagena_mines", name = "카르타헤나 은광", portId = "cartagena", minLevel = 2, days = 2, pool = { "min_lead", "min_sulfur" } },
+	{ id = "trieste_karst", name = "카르스트 해안", portId = "trieste", minLevel = 1, days = 1, pool = { "min_chalk", "geo_tidal_flat" } },
+	{ id = "messina_strait", name = "메시나 해협", portId = "messina", minLevel = 2, days = 1, pool = { "zoo_tuna", "geo_etna" } },
+	{ id = "corfu_fortress", name = "코르푸 요새", portId = "corfu", minLevel = 2, days = 1, pool = { "bot_olive", "site_valletta_walls" } },
+	{ id = "beirut_cedars", name = "레바논 삼나무 숲", portId = "beirut", minLevel = 3, days = 2, pool = { "bot_pine_resin", "relic_icon" } },
+	{ id = "damietta_nile", name = "나일 삼각주", portId = "damietta", minLevel = 2, days = 2, pool = { "bot_date_palm", "zoo_flamingo", "geo_estuary" } },
+	{ id = "bone_ruins", name = "히포 레기우스 유적", portId = "bone", minLevel = 2, days = 1, pool = { "relic_mosaic", "relic_carthage_coin" } },
+	{ id = "coral_banks", name = "산호 암초 해역", portId = "messina", minLevel = 3, days = 2, pool = { "zoo_sea_turtle", "zoo_octopus" } },
+	{ id = "saffron_fields", name = "사프란 밭", portId = "valencia", minLevel = 2, days = 1, pool = { "bot_olive", "bot_cork_oak" } },
+	{ id = "marble_quarry", name = "대리석 채석장", portId = "split", minLevel = 2, days = 1, pool = { "min_marble", "min_alabaster" } },
 }
 
 return {

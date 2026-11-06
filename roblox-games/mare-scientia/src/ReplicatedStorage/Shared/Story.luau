@@ -655,6 +655,105 @@ local Events: { Event } = {
 			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_camel", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
+	{
+		id = "npc_malaga_raisin", title = "말라가의 건포도 농부", portId = "malaga", art = "market", npc = "농부",
+		lines = {
+			"\"햇볕에 말린 포도는 먼 북쪽에서도 귀한 대접을 받지요.\"",
+			"농부가 건포도 한 줌을 건넨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_grape", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_grape", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_gibraltar_guard", title = "지브롤터의 경비병", portId = "gibraltar", art = "palace", npc = "경비병",
+		lines = {
+			"\"이 바위가 지켜보는 한 해협은 아무도 몰래 지나갈 수 없소.\"",
+			"경비병이 해협 쪽을 가리킨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_strait_gibraltar", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_strait_gibraltar", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_cartagena_miner", title = "카르타헤나의 광부", portId = "cartagena", art = "forge", npc = "광부",
+		lines = {
+			"\"로마 시절 갱도가 아직도 산속에 이어져 있다오.\"",
+			"광부가 등불을 높이 든다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "min_lead", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_lead", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_trieste_clerk", title = "트리에스테의 서기", portId = "trieste", art = "library", npc = "서기",
+		lines = {
+			"\"항구에 닿는 화물은 모두 장부에 한 줄씩 남지요.\"",
+			"서기가 장부를 넘긴다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_hansa_seal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_hansa_seal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_messina_fisher", title = "메시나의 창고기잡이", portId = "messina", art = "harbor", npc = "어부",
+		lines = {
+			"\"좁은 해협에서는 거대한 물고기를 작살로 잡소.\"",
+			"어부가 긴 작살을 보여 준다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_tuna", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_tuna", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_corfu_priest", title = "코르푸의 사제", portId = "corfu", art = "library", npc = "사제",
+		lines = {
+			"\"섬의 성인은 이 항구를 몇 번이나 지켰다고 하오.\"",
+			"사제가 성화 앞에 촛불을 켠다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_icon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_icon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_beirut_cedar", title = "베이루트의 삼나무 장수", portId = "beirut", art = "market", npc = "나무 장수",
+		lines = {
+			"\"배의 돛대는 레바논의 삼나무가 제일이지.\"",
+			"장수가 향긋한 나무토막을 건넨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_pine_resin", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_pine_resin", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_damietta_farmer", title = "다미에타의 농부", portId = "damietta", art = "garden", npc = "농부",
+		lines = {
+			"\"강물이 불어났다 빠지면 땅이 저절로 기름지다오.\"",
+			"농부가 진흙 묻은 손을 턴다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_date_palm", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_date_palm", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_bone_coral", title = "본의 산호 채취꾼", portId = "bone", art = "harbor", npc = "산호 채취꾼",
+		lines = {
+			"\"붉은 산호는 바닷속 보석이라 귀부인들이 탐내지요.\"",
+			"채취꾼이 붉은 가지를 보여 준다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_octopus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_octopus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
 }
 
 local ById: { [string]: Event } = {}

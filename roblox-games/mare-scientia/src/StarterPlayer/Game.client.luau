@@ -158,6 +158,12 @@ local GOOD_ICON = {
 	linen = { "Cargo", "box-open", Color3.fromRGB(232, 222, 192) }, whale_oil = { "Cargo", "barrel-open", Color3.fromRGB(232, 202, 124) },
 	tin = { "Cargo", "plate", Color3.fromRGB(172, 178, 186) }, porcelain = { "Cargo", "plate", Color3.fromRGB(242, 246, 252) },
 	coffee = { "Cargo", "mug", Color3.fromRGB(92, 62, 42) }, tobacco = { "Cargo", "loaf-round", Color3.fromRGB(152, 112, 62) },
+	marble = { "Terrain", "column", Color3.fromRGB(240, 238, 232) }, coral = { "Cargo", "mushroom", Color3.fromRGB(230, 80, 70) },
+	saffron = { "Cargo", "mortar-pestle", Color3.fromRGB(240, 140, 30) }, carpet = { "Interior", "rugrectangle", Color3.fromRGB(170, 40, 50) },
+	incense = { "Terrain", "lantern-candle", Color3.fromRGB(236, 200, 120) }, dates = { "Cargo", "corn", Color3.fromRGB(120, 76, 40) },
+	raisins = { "Cargo", "grapes", Color3.fromRGB(90, 40, 110) }, pearls = { "Relics", "coin", Color3.fromRGB(246, 244, 250) },
+	ivory = { "Relics", "weapon-spear", Color3.fromRGB(250, 246, 226) }, pepper = { "Cargo", "mortar-pestle", Color3.fromRGB(40, 36, 34) },
+	cotton = { "Cargo", "box-open", Color3.fromRGB(252, 252, 252) }, leather = { "Cargo", "bread", Color3.fromRGB(120, 76, 44) },
 }
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
 local TITLE_ICONS = {
