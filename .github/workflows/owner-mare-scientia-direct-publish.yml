@@ -66,7 +66,7 @@ jobs:
         run: |
           set -euo pipefail
           if [[ -n "${EXISTING_UNIVERSE_ID:-}" && -z "${EXISTING_PLACE_ID:-}" ]]; then
-            EXISTING_PLACE_ID="$(curl -fsSL --retry 3 "https://games.roblox.com/v1/games?universeIds=${EXISTING_UNIVERSE_ID}" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const g=JSON.parse(d).data?.[0];if(!g||!g.rootPlaceId){console.error('ROOT_PLACE_LOOKUP_FAILED');process.exit(1)}console.log(g.rootPlaceId)})")"
+            EXISTING_PLACE_ID="$(curl -fsSL --retry 3 -H "x-api-key: ${ROBLOX_OPEN_CLOUD_API_KEY}" "https://apis.roblox.com/cloud/v2/universes/${EXISTING_UNIVERSE_ID}" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);const m=String(j.rootPlace||'').match(/(\\d+)\\s*$/);if(!m){console.error('ROOT_PLACE_LOOKUP_FAILED');process.exit(1)}console.log(m[1])})")"
             echo "ROOT_PLACE_ID=${EXISTING_PLACE_ID}"
           fi
           args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/owner-mare/$GAME_ID.rbxlx" --source-revision "$GITHUB_SHA" --output "/tmp/owner-mare/result.json")
