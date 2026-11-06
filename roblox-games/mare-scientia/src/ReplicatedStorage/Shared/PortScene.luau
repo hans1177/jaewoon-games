@@ -84,11 +84,11 @@ end
 local function sign(parent, adornee, text, color, height)
 	local bb = Instance.new("BillboardGui")
 	bb.Adornee = adornee
-	bb.Size = UDim2.fromOffset(200, 44)
+	bb.Size = UDim2.fromOffset(240, 52)
 	bb.StudsOffset = Vector3.new(0, (height or 4) + 2.5, 0)
 	bb.AlwaysOnTop = false
 	bb.LightInfluence = 0
-	bb.MaxDistance = 55
+	bb.MaxDistance = 90
 	local l = Instance.new("TextLabel")
 	l.Size = UDim2.fromScale(1, 1)
 	l.BackgroundColor3 = color or Color3.fromRGB(30, 34, 44)
@@ -602,9 +602,34 @@ function PortScene.build(info, onFacility)
 		prompt(folder, Vector3.new(2, 3, -8), "수상한 손님", "이야기 듣기", "harbor", onFacility)
 	end
 	-- 광장을 오가는 주민
-	for _ = 1, 5 do
-		villager(folder, Vector3.new(rng:NextNumber(-20, 8), 0, rng:NextNumber(-14, 14)), rng:NextNumber(0, math.pi * 2), Color3.fromRGB(rng:NextInteger(60, 200), rng:NextInteger(60, 160), rng:NextInteger(40, 140)), rng)
+	local walkers = {}
+	for _ = 1, 8 do
+		local v = villager(folder, Vector3.new(rng:NextNumber(-60, 8), 0, rng:NextNumber(-14, 14)), rng:NextNumber(0, math.pi * 2), Color3.fromRGB(rng:NextInteger(60, 200), rng:NextInteger(60, 160), rng:NextInteger(40, 140)), rng)
+		if v then
+			table.insert(walkers, { model = v, base = v:GetPivot(), len = rng:NextNumber(8, 18), speed = rng:NextNumber(1.6, 2.6), phase = rng:NextNumber(0, 10) })
+		end
 	end
+	-- 주민이 광장을 천천히 오간다 (끝에서 몸을 돌려 되돌아온다)
+	local walkConn = RunService.Heartbeat:Connect(function()
+		local now = os.clock()
+		for _, w in walkers do
+			if w.model.Parent then
+				local cycle = w.len / w.speed
+				local u = ((now + w.phase) % (cycle * 2)) / cycle -- 0..2
+				local forward = u < 1
+				local d = if forward then u * w.len else (2 - u) * w.len
+				local rot = w.base - w.base.Position
+				local dir = w.base.LookVector
+				local pos = w.base.Position + dir * d
+				local bob = math.abs(math.sin(now * 6 + w.phase)) * 0.15
+				local turn = if forward then CFrame.new() else CFrame.Angles(0, math.pi, 0)
+				w.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * turn * rot)
+			end
+		end
+	end)
+	folder.Destroying:Connect(function()
+		walkConn:Disconnect()
+	end)
 	-- 가로등
 	for x = -40, 10, 25 do
 		for side = -1, 1, 2 do

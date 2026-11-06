@@ -1270,15 +1270,43 @@ local function renderTrade()
 		frame.Parent = content
 		return frame
 	end)
-	for _, g in view.goods do
-		add(function()
-			local tag = if g.tag ~= "" then (" [" .. g.tag .. "]") else ""
-			return mkRow(content, g.name .. tag .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), string.format("사기 %d · 팔기 %d · 보유 %d", g.buy, g.sell, g.owned), {
-				{ text = "구매", color = COLORS.blue, onClick = function() call("Buy", { goodId = g.id, amount = amount() }) end },
-				{ text = "판매", color = COLORS.green, onClick = function() call("Sell", { goodId = g.id, amount = amount() }) end, enabled = g.owned > 0 },
-			}, 56)
-		end)
-	end
+	-- 상품 카드 격자: 한눈에 보고 바로 사고판다 (대항해시대 온라인 교역소처럼)
+	add(function()
+		local grid = Instance.new("Frame")
+		grid.BackgroundTransparency = 1
+		grid.Size = UDim2.new(1, -6, 0, 0)
+		grid.AutomaticSize = Enum.AutomaticSize.Y
+		local gl = Instance.new("UIGridLayout")
+		gl.CellSize = UDim2.new(0.5, -4, 0, 96)
+		gl.CellPadding = UDim2.fromOffset(6, 6)
+		gl.SortOrder = Enum.SortOrder.LayoutOrder
+		gl.Parent = grid
+		for i, g in view.goods do
+			local cardF = Instance.new("Frame")
+			cardF.LayoutOrder = i
+			cardF.BackgroundColor3 = COLORS.row
+			cardF.BorderSizePixel = 0
+			corner(cardF, 10)
+			cardF.Parent = grid
+			local st = Instance.new("UIStroke")
+			st.Color = if g.trend == "up" then COLORS.green elseif g.trend == "down" then COLORS.red else Color3.fromRGB(70, 84, 104)
+			st.Thickness = 1.5
+			st.Parent = cardF
+			local nm = mkLabel(cardF, g.name .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 14, COLORS.text, true)
+			nm.Position = UDim2.fromOffset(8, 4)
+			nm.Size = UDim2.new(1, -16, 0, 18)
+			nm.AutomaticSize = Enum.AutomaticSize.None
+			local info = mkLabel(cardF, string.format("사기 %d · 팔기 %d\n보유 %d%s", g.buy, g.sell, g.owned, if g.tag ~= "" then ("  [" .. g.tag .. "]") else ""), 11, COLORS.muted, false)
+			info.Position = UDim2.fromOffset(8, 24)
+			info.Size = UDim2.new(1, -16, 0, 30)
+			info.AutomaticSize = Enum.AutomaticSize.None
+			local buy = mkButton(cardF, "구매", COLORS.blue, UDim2.new(0.5, -10, 0, 30), function() call("Buy", { goodId = g.id, amount = amount() }) end, true)
+			buy.Position = UDim2.new(0, 6, 1, -36)
+			local sell = mkButton(cardF, "판매", COLORS.green, UDim2.new(0.5, -10, 0, 30), function() call("Sell", { goodId = g.id, amount = amount() }) end, g.owned > 0)
+			sell.Position = UDim2.new(0.5, 4, 1, -36)
+		end
+		return grid
+	end)
 end
 
 local function renderRoute()
