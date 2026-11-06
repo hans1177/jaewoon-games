@@ -1447,6 +1447,22 @@ local function renderMeadowPages()
     worldLines[#worldLines+1]=string.format("채굴 Lv%d (%d%s) · 곡괭이: %s",level,prof,nextNeed and ("/"..nextNeed) or " 최고",pick and pick.Name or "없음 — 광부에게서 구한다")
   end
   do
+    local seat=workspace:GetAttribute("MeteorSeat")
+    if typeof(seat)=="Vector3" then
+      local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+      local zoneId=Config.WorldMap.ZoneAt(seat.X,seat.Z)
+      local zoneName=zoneId
+      for _,z in ipairs(Config.WorldMap.Zones) do if z.Id==zoneId then zoneName=z.Name end end
+      local text=string.format("★ 별똥별 낙하 중 — %s (%d, %d)",zoneName or "?",seat.X,seat.Z)
+      if root then
+        local dx,dz=seat.X-root.Position.X,seat.Z-root.Position.Z
+        local dir=(math.abs(dx)>math.abs(dz) and (dx>0 and "동쪽" or "서쪽")) or (dz>0 and "남쪽" or "북쪽")
+        text=text..string.format(" · 여기서 %s으로 약 %d스터드",dir,math.floor(math.sqrt(dx*dx+dz*dz)))
+      end
+      worldLines[#worldLines+1]=text
+    end
+  end
+  do
     worldLines[#worldLines+1]="— 연계 퀘스트 —"
     for _,line in ipairs(Config.QuestLines or {})do
       local stage=player:GetAttribute(line.Field) or 0
@@ -1539,6 +1555,7 @@ end
 player:GetAttributeChangedSignal("MeadowGearRevision"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("RunActive"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("QuestStage"):Connect(renderMeadowPages)
+workspace:GetAttributeChangedSignal("MeteorSeat"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestProgress"):Connect(renderMeadowPages)
 for _,name in ipairs({"MiningProficiency","PickaxeTier","ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","CampWorldtree","CampVolcano","CampOasis","BountyIndex","BountyPhase","BountyClues","WorldDiscovered","WaypointMask","DexKillWolf","DexKillBat","DexKillAlpha"})do
@@ -6210,7 +6227,7 @@ do
     for i,button in ipairs(choices)do
       local option=typeof(payload.options)=="table" and payload.options[i] or nil
       local action=option and option.action
-      local permitted=(typeof(action)=="string" and (action:match("^village:story:%d$") or action:match("^smith:%a+$") or action:match("^cook:%d$") or action:match("^lm:%d+:%d$")) ~= nil) or action=="wp:east" or action=="wp:west" or (action:match("^wp:near:[123]$")~=nil) or (action:match("^estate:%a:%d+$")~=nil) or (action:match("^mount:%a+:%d$")~=nil) or (action:match("^bounty:%a+:%d$")~=nil) or (action:match("^miner:%a+:%d$")~=nil) or (action:match("^estate:%a:%d+:%d+$")~=nil) or action=="co:toggle" or action=="ql:1" or action=="ql:2" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
+      local permitted=(typeof(action)=="string" and (action:match("^village:story:%d$") or action:match("^smith:%a+$") or action:match("^cook:%d$") or action:match("^cookp:%d$") or action:match("^lm:%d+:%d$")) ~= nil) or action=="wp:east" or action=="wp:west" or (action:match("^wp:near:[123]$")~=nil) or (action:match("^estate:%a:%d+$")~=nil) or (action:match("^mount:%a+:%d$")~=nil) or (action:match("^bounty:%a+:%d$")~=nil) or (action:match("^miner:%a+:%d$")~=nil) or (action:match("^estate:%a:%d+:%d+$")~=nil) or action=="co:toggle" or action=="ql:1" or action=="ql:2" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
       button.Visible=permitted
       choiceActions[i]=permitted and action or nil
       if permitted then button.Text=tostring(option.label or "선택") end

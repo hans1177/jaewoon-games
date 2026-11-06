@@ -2276,6 +2276,10 @@ Config.MeadowFoods={
   {Id=3,Name="달빛 약초 수프",Need=6,Moonbloom=1,Mushroom=1,Stamina=60,Adrenaline=20,Desc="기력 +60 · 아드레날린 +20"},
   {Id=4,Name="사냥꾼의 파이",Need=10,Meat=3,RedLeaf=2,Coins=20,Atk=.10,Seconds=300,Desc="5분간 주는 피해 +10%"},
   {Id=5,Name="마력숲 연회",Need=20,Meat=4,Mushroom=2,Moonbloom=2,RedLeaf=2,Coins=80,Atk=.12,Def=.08,Heal=80,Seconds=900,Desc="15분간 피해 +12% · 받는 피해 -8% · 체력 80 회복"},
+  {Id=6,Name="용암 바비큐",Need=14,Meat=3,Magma=1,Coins=30,Atk=.15,Seconds=420,Desc="7분간 주는 피해 +15%"},
+  {Id=7,Name="히드라 해독 수프",Need=16,Moonbloom=2,Fang=1,Heal=100,Def=.12,Seconds=420,Desc="7분간 받는 피해 -12% · 체력 100 회복"},
+  {Id=8,Name="사막 황금 빵",Need=18,Meat=2,Crystal=1,Stamina=100,Adrenaline=40,Desc="기력 +100 · 아드레날린 +40"},
+  {Id=9,Name="서리 훈제 육포",Need=22,Meat=4,Hide=1,Atk=.08,Def=.15,Seconds=900,Desc="15분간 피해 +8% · 받는 피해 -15%"},
 }
 -- [스카이림식 대장 기술] 제련·무두질·제작·단련을 할 때마다 대장 경험치(SmithXp)가 쌓이고 대장 레벨(1~10)이 오른다.
 -- 레벨 4·7·10에서 주괴·가죽 요구량이 1개씩 줄고(최대 3단), Lv3 제련 추가 산출, Lv5 강철 제련 비용 절감, Lv8 제작 환급 퍽이 열린다.

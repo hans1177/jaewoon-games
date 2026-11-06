@@ -6678,6 +6678,11 @@ remote.OnServerEvent:Connect(function(player, actionId)
     end
     return
   end
+  if actionId:match("^cookp:%d$") then
+    if os.clock()>(cookSessions[player] or 0) then return end
+    if meadowOil.cookMenu then meadowOil.cookMenu(player,tonumber(actionId:sub(-1))) end
+    return
+  end
   if actionId:match("^cook:%d$") then
     if os.clock()>(cookSessions[player] or 0) then return end
     local station=Config.CookStation
@@ -6693,12 +6698,12 @@ remote.OnServerEvent:Connect(function(player, actionId)
     if not dish then return end
     local skill=readNumber(player,"CookingProficiency",0)
     if skill<dish.Need then villageDialogue(player,"식당 화덕","요리 숙련 "..dish.Need.."이 필요해. (지금 "..skill..")");return end
-    for _,field in ipairs({"Meat","Mushroom","Moonbloom","RedLeaf","Coins"}) do
+    for _,field in ipairs({"Meat","Mushroom","Moonbloom","RedLeaf","Coins","Magma","Fang","Hide","Crystal"}) do
       if readNumber(player,field,0)<(dish[field] or 0) then
         villageDialogue(player,"식당 화덕","재료가 모자라. "..dish.Name..": "..dish.Desc);return
       end
     end
-    for _,field in ipairs({"Meat","Mushroom","Moonbloom","RedLeaf","Coins"}) do
+    for _,field in ipairs({"Meat","Mushroom","Moonbloom","RedLeaf","Coins","Magma","Fang","Hide","Crystal"}) do
       if (dish[field] or 0)>0 then setNumber(player,field,readNumber(player,field,0)-dish[field]) end
     end
     setNumber(player,"CookingProficiency",skill+1)
@@ -9500,13 +9505,17 @@ task.spawn(function()
   for _,mesh in ipairs(model:GetDescendants()) do
     if mesh:IsA("MeshPart") then mesh.CanCollide=false;mesh.CanQuery=true;mesh.CanTouch=false end
   end
-  meadowOil.cookMenu=function(player)
+  meadowOil.cookMenu=function(player,page)
+    page=page or 1
     local skill=readNumber(player,"CookingProficiency",0)
     local options,lines={},{}
+    local total=#Config.MeadowFoods
+    local first=(page-1)*4+1
     for index,dish in ipairs(Config.MeadowFoods) do
-      if skill>=dish.Need then
+      if index<first or index>first+3 then
+      elseif skill>=dish.Need then
         local parts={}
-        for _,field in ipairs({"Meat","Mushroom","Moonbloom","RedLeaf","Coins"}) do
+        for _,field in ipairs({"Meat","Mushroom","Moonbloom","RedLeaf","Coins","Magma","Fang","Hide","Crystal"}) do
           if (dish[field] or 0)>0 then
             parts[#parts+1]=(Config.MaterialByField[field] and Config.MaterialByField[field].Name or "재화").." "..dish[field]
           end
@@ -9518,7 +9527,8 @@ task.spawn(function()
       end
     end
     cookSessions[player]=os.clock()+60
-    villageDialogue(player,"식당 화덕 · 요리 숙련 "..skill,table.concat(lines,"\n"),options)
+    if total>4 then options[#options+1]={label=first+3<total and "다음 쪽 ▶" or "첫 쪽으로",action="cookp:"..(first+3<total and page+1 or 1)} end
+    villageDialogue(player,"식당 화덕 · 요리 숙련 "..skill.." ("..page.."/"..math.ceil(total/4).."쪽)",table.concat(lines,"\n"),options)
   end
   villagePrompt(model,station.Name,"요리하기",meadowOil.cookMenu)
 end)
