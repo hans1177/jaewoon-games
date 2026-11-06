@@ -139,6 +139,8 @@ const STAGES={
 const GACHA_POOL=['LANCER','LANCER','CROSSBOW','CROSSBOW','HAMMER','HAMMER','RIFLEMAN','RIFLEMAN','HEAVY_INFANTRY'];
 // 다이아: 기존 저장 키를 유지해 이전 잔액을 그대로 사용한다.
 const DIAMOND_KEY='card-grid-duel-diamonds-v1';
+// 저장: 현재 턴·스테이지·유닛·뽑기·업그레이드 진행을 같은 기기에서 유지한다.
+const PROGRESS_KEY='card-grid-duel-progress-v1';
 function diamondWallet(){return Math.max(0,Number(localStorage.getItem(DIAMOND_KEY)||0))}
 function setDiamondWallet(v){localStorage.setItem(DIAMOND_KEY,String(Math.max(0,Math.floor(v))))}
 function renderWallet(){
@@ -158,6 +160,7 @@ function resetDiamonds(){
   if(!window.confirm('저장된 다이아를 모두 0개로 초기화할까? 다른 진행 데이터는 유지돼.'))return;
   setDiamondWallet(0);
   if(state)state.diamonds=0;
+  saveProgress();
   render();
   msg('다이아를 0개로 초기화했어.');
 }
@@ -261,6 +264,37 @@ function newState(){
     units:[]
   };
   return state
+}
+// 진행 저장은 단일 키를 쓰고 다이아 잔액은 기존 저장 키를 그대로 사용한다.
+function saveProgress(){
+  if(state)localStorage.setItem(PROGRESS_KEY,JSON.stringify(state))
+}
+function loadProgress(){
+  try{
+    const raw=localStorage.getItem(PROGRESS_KEY);
+    if(!raw)return null;
+    const saved=JSON.parse(raw);
+    if(!saved||!Number.isInteger(saved.stage)||saved.stage<1||saved.stage>5
+      ||!Number.isInteger(saved.turn)||saved.turn<1||!['BATTLE','REST'].includes(saved.phase)
+      ||!['BLUE','RED'].includes(saved.current)||!['','BLUE','RED'].includes(saved.winner)
+      ||!Number.isInteger(saved.keys)||saved.keys<0
+      ||!Array.isArray(saved.units)||!Array.isArray(saved.unlocked)
+      ||!saved.upgrades||typeof saved.upgrades!=='object'||Array.isArray(saved.upgrades)
+      ||!saved.gold||!Number.isFinite(saved.gold.BLUE)||!Number.isFinite(saved.gold.RED)
+      ||!saved.summons||!Number.isInteger(saved.summons.BLUE)||!Number.isInteger(saved.summons.RED)
+      ||saved.units.some(u=>!u||!CARDS[u.side]?.[u.card]||!Number.isFinite(u.hp)
+        ||!Number.isInteger(u.r)||!Number.isInteger(u.c)
+        ||u.r<1||u.r>(saved.stage===5?10:saved.stage===4?7:BASE_ROWS)
+        ||u.c<1||u.c>BASE_COLS)
+      ||saved.unlocked.some(id=>!CARDS.BLUE[id])
+      ||(saved.chests!==undefined&&!Array.isArray(saved.chests))
+      ||(saved.specialTiles!==undefined&&!Array.isArray(saved.specialTiles)))return null;
+    saved.diamonds=diamondWallet();
+    return saved
+  }catch(error){
+    console.warn('카드워즈 진행 저장 불러오기 실패',error);
+    return null
+  }
 }
 function card(s,id){return CARDS[s][id]}
 function upgradeLevel(id){return Math.max(0,Math.min(3,Number(state?.upgrades?.[id]||0)))}
@@ -639,6 +673,7 @@ function processAction(actor,p){
 function act(payload){
   if(!canAct()){msg('지금은 상대 턴이야.');return}
   if(processAction(side,payload)){
+    saveProgress();
     render();
     if(mode==='play'&&state.current==='RED')setTimeout(aiTurn,420)
   }else{
@@ -737,6 +772,8 @@ function render(){
   }
 
   if(!state){
+    $('#playBtn').textContent='플레이';
+    $('#playBtn').disabled=false;
     turnEl.textContent='대기';
     deckInfo.textContent='골드 -';
     $('#restScreen').classList.add('hidden');
@@ -745,6 +782,9 @@ function render(){
   }
 
   const resting=state.phase==='REST';
+  const won=state.winner==='BLUE',lost=state.winner==='RED';
+  $('#playBtn').textContent=lost?state.stage+'스테이지 재도전':won?'처음부터 다시 플레이':'진행 중';
+  $('#playBtn').disabled=!lost&&!won;
   $('#restScreen').classList.toggle('hidden',!resting);
   $('#battlePanel').classList.toggle('hidden',resting);
   $('.bottom').classList.toggle('hidden',resting);
@@ -780,7 +820,7 @@ function render(){
   deckInfo.textContent='골드 '+state.gold.BLUE+' · 내 소환 '+state.summons[side]+'/'+maxSummons(side)+' · 상대 소환 '+state.summons[other(side)]+'/'+maxSummons(other(side));
   modeInfo.textContent=mode==='play'?'플레이':'대기';
 
-  if(state.winner)msg(state.winner===side?'승리!':'패배')
+  if(state.winner)msg(state.winner===side?'5스테이지 클리어!':state.stage+'스테이지 패배 · 재도전을 눌러 같은 스테이지에서 다시 시작해.')
 }
 function cellTap(r,c,u){
   if(!canAct())return msg('지금은 상대 턴이야.');
@@ -846,15 +886,34 @@ function aiTurn(){
 
   if(!state.winner&&state.phase==='BATTLE')processAction('RED',{type:'end'});
   aiThinking=false;
+  saveProgress();
   render()
 }
 
 $('#resetDiamonds').onclick=resetDiamonds;
 $('#playBtn').onclick=()=>{
-  mode='play';side='BLUE';newState();
+  mode='play';side='BLUE';
+  // 패배한 스테이지만 초기화하고 이전 보상·뽑기·강화는 유지한다.
+  if(state?.winner==='RED'){
+    startStage(state.stage);
+    return
+  }
+  if(state?.winner==='BLUE'){
+    newState();
+    msg('1스테이지 시작 · 200골드 · 파랑 선공');
+  }else if(!state){
+    state=loadProgress();
+    if(!state){
+      newState();
+      msg('1스테이지 시작 · 200골드 · 파랑 선공');
+    }else{
+      msg(state.stage+'스테이지 이어하기')
+    }
+  }
   playersEl.textContent='나 VS 적';
-  msg('1스테이지 시작 · 200골드 · 파랑 선공');
-  render()
+  saveProgress();
+  render();
+  if(state.phase==='BATTLE'&&state.current==='RED')setTimeout(aiTurn,420)
 };
 $('#endTurn').onclick=()=>act({type:'end'});
 $('#cancel').onclick=()=>{selectedUnit=null;selectedCard='';msg('선택 취소');render()};
@@ -884,6 +943,7 @@ $('#upgradeAlly').onclick=()=>{
   state.upgrades[id]=lv+1;
   msg(card('BLUE',id).name+' '+(lv+1)+'강 완료');
   state.version++;
+  saveProgress();
   render()
 };
 
@@ -903,14 +963,14 @@ function drawAlly(useDiamonds){
   if(!duplicate)state.unlocked.push(id);
   $('#drawResult').textContent=(duplicate?'중복! ':'새 아군! ')+card('BLUE',id).name;
   state.version++;
+  saveProgress();
   render()
 }
 $('#drawAlly').onclick=()=>drawAlly(false);
 $('#drawDiamond').onclick=()=>drawAlly(true);
-$('#nextStage').onclick=()=>{
-  if(!state||state.phase!=='REST')return;
-  if(side!=='BLUE')return msg('파랑 팀의 다음 스테이지 시작을 기다리는 중');
-  const next=state.stage+1;
+// 다음 스테이지 및 패배 재도전은 같은 시작 함수를 이용한다.
+function startStage(next){
+  if(!state||!STAGES[next])return;
   state.stage=next;
   state.phase='BATTLE';
   state.turn=1;
@@ -918,7 +978,7 @@ $('#nextStage').onclick=()=>{
   state.summonUsed=false;
   state.winner='';
   state.stageTookDamage=false;
-  if(next===2||next===3||next===4||next===5)state.gold.BLUE=250;
+  state.gold.BLUE=next===1?START_GOLD:250;
   state.gold.RED=0;
   state.summons={BLUE:0,RED:0};
   state.units=[];
@@ -929,15 +989,32 @@ $('#nextStage').onclick=()=>{
   selectedUnit=null;
   selectedCard='';
   $('#drawResult').textContent='';
-  if(next===2)msg('2스테이지 시작 · 기본 골드 250 · 적 8마리 / 아군 12마리');
+  if(next===1)msg('1스테이지 시작 · 200골드 · 파랑 선공');
+  else if(next===2)msg('2스테이지 시작 · 기본 골드 250 · 적 8마리 / 아군 12마리');
   else if(next===3)msg('3스테이지 시작 · 해골궁수/해골법사 제외 · 강화 고블린/골렘/멧돼지 등장');
   else if(next===4){state.specialTiles=createStageFourTiles();msg('4스테이지 시작 · 7×5 맵 · 특수 발판 5개 · 방패 고블린/돌격 오크/독전갈/유적 수호자')}
   else if(next===5)msg('5스테이지 시작 · 10×5 맵 · 특수 발판 없음 · 2/4/5/7/8턴 적 증원');
   state.version++;
+  saveProgress();
   render()
+}
+$('#nextStage').onclick=()=>{
+  if(!state||state.phase!=='REST'||side!=='BLUE')return;
+  startStage(state.stage+1)
 };
 
-render();
+// 재접속하면 저장된 턴 그대로 복구한다. 적 턴 복구 시 AI도 이어서 진행한다.
+state=loadProgress();
+if(state){
+  mode='play';
+  side='BLUE';
+  playersEl.textContent='나 VS 적';
+  render();
+  if(state.winner==='RED')msg(state.stage+'스테이지 패배 · 재도전 버튼으로 다시 시작해.');
+  else if(state.winner==='BLUE')msg('5스테이지 클리어! 다시 플레이할 수 있어.');
+  else msg(state.stage+'스테이지 저장된 지점에서 이어서 진행해.');
+  if(state.phase==='BATTLE'&&state.current==='RED'&&!state.winner)setTimeout(aiTurn,420)
+}else render();
 </script>
 </body>
 </html>
