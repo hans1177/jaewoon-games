@@ -8232,6 +8232,7 @@ do
   end
   local shakeToken=0
   local suppress=false
+  local odyMotionSerial=0
   local function shake(mag,t)
     if reducedEffects or suppress then return end
     local human=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
@@ -8511,14 +8512,41 @@ do
     if isMine then meadowArt.lastSkill={color=color,at=os.clock(),style=style} end
     -- 본인 화면이 아닌 연출은 흔들림을 쓰지 않도록 shake/screen을 무력화한 복사본이 아니라, 거리로 걸러낸다.
     if not isMine and (root.Position-(player.Character and player.Character:GetPivot().Position or root.Position)).Magnitude>70 then return end
-    suppress=not isMine
-    pcall(styles[style],ctx)
-    suppress=false
+    -- 직접 만든 관절 모션이 있으면 접촉 키프레임 시점에 맞춰 충격 연출을 낸다(본인 화면만. 타인은 즉시).
+    local delay=0
+    if isMine and meadowArt.motion and actionId~="skill-meadow-guard" and actionId~="skill-meadow-parry"
+      and not actionId:find("dodge",1,true) then
+      local tr=meadowArt.motion.track(actionId)
+      if tr then
+        for _,k in ipairs(tr.keys) do if k.c then delay=math.min(k.t,1.5);break end end
+      end
+    end
+    local mine=isMine
+    local function run()
+      suppress=not mine
+      pcall(styles[style],ctx)
+      suppress=false
+    end
+    if delay>.05 then task.delay(delay,run) else run() end
+  end
+  meadowArt.styleOf=function(actionId)
+    if actionId=="odyssey-kick" then return "kick" elseif actionId=="odyssey-rush" then return "rush" end
+    local node=Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[actionId]
+    local style=node and modeStyle[node.Mode] or coreStyle[actionId]
+    if style=="dodge" or style=="healaoe" and false then return nil end
+    return style
   end
   remote.OnClientEvent:Connect(function(kind,name,position)
     if kind~="ODY_FX" or typeof(position)~="Vector3" then return end
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-    if root then meadowArt.signature("odyssey-"..tostring(name),root,position,true) end
+    if root then
+      local id="odyssey-"..tostring(name)
+      -- 서버 승인 스킬이 아닌 고유 기술도 같은 관절 모션 경로를 쓰도록 클라이언트 전용 액션을 등록한다.
+      actionsById[id]=actionsById[id] or {Id=id,Kind="ODY",MotionAtom="HEAVY_ATTACK_1",Label=name}
+      odyMotionSerial=(odyMotionSerial or 0)+1
+      player:SetAttribute("ApprovedActionMotion",id..":"..odyMotionSerial)
+      meadowArt.signature(id,root,position,true)
+    end
   end)
   -- 타격 반응: 직전 스킬의 색과 상태이상·치명타 색을 반영한 추가 충격.
   meadowArt.impactDetail=function(payload)
@@ -8980,6 +9008,270 @@ for _,style in pairs(martialSkillTracks) do
     beat.hitPose=martialShot(beat.hit)
   end
 end
+-- [스킬 전용 관절 모션] 스킬 × 무기군별로 직접 저작한 키프레임. 기존 맨손 승룡권 5타와 같은 12값 키포즈(martialShot)를 쓰고
+-- 루트 공중 회전·상승을 더해 승룡·회축·덤블링 같은 전신 동작을 만든다. 시각 전용이며 판정·이동 권한은 서버가 가진다.
+-- 튜플: 루트회전,전후기울기,허리꼬임,좌팔,우팔,좌허벅지,우허벅지,좌무릎,우무릎,상승,좌팔꿈치,우팔꿈치,[공중축회전,공중피치,공중높이]
+do
+  local R0={0,6,0,-45,-45,-8,12,10,18,0,-80,-80}
+  local function K(t,...) return {t=t,v={...}} end
+  local function Kc(t,...) return {t=t,v={...},c=true} end
+  local B,F,BOWV,STV={},{},{},{}
+  -- ───── 기본(한손 검·도구) ─────
+  B.slam={dur=.95,keys={K(0,unpack(R0)),
+    K(.26,18,34,22,-158,-172,-18,24,28,42,.14,-40,-48,0,0,.1),
+    K(.40,8,14,8,-150,-168,-30,10,20,30,.34,-30,-40,0,-8,.45),
+    Kc(.52,-34,-52,-52,-75,-52,-48,20,70,18,-.2,-30,-12,0,6,-.1),
+    K(.68,-30,-46,-46,-72,-55,-44,20,62,18,-.16,-34,-16,0,4,-.08),K(.95,unpack(R0))}}
+  B.strike={dur=.65,keys={K(0,unpack(R0)),
+    K(.2,40,12,45,-60,-120,-10,18,20,30,0,-90,-60),
+    Kc(.34,-48,-30,-62,-50,-96,-34,26,48,20,.05,-80,-14),
+    K(.5,-44,-26,-56,-52,-98,-30,24,44,20,.04,-80,-20),K(.65,unpack(R0))}}
+  B.sweep={dur=.9,keys={K(0,unpack(R0)),
+    K(.2,50,10,40,-80,-95,-10,22,28,36,-.05,-50,-50,0,0,0),
+    Kc(.4,-80,-10,-70,-85,-90,-40,25,40,34,.08,-20,-15,-200,0,.1),
+    K(.62,-80,-10,-70,-85,-90,-30,20,36,30,.04,-20,-15,-360,0,.04),
+    K(.9,0,6,0,-45,-45,-8,12,10,18,0,-80,-80,-360,0,0)}}
+  B.dash={dur=.55,keys={K(0,unpack(R0)),
+    K(.14,25,22,30,-50,-95,-40,35,60,20,-.1,-90,-130),
+    Kc(.28,-35,-60,-50,-60,-92,-80,45,20,8,-.18,-60,-8),
+    K(.42,-32,-52,-46,-62,-92,-76,42,22,10,-.16,-60,-10),K(.55,unpack(R0))}}
+  B.stun={dur=.8,keys={K(0,unpack(R0)),
+    K(.22,-20,14,-30,-40,-110,30,-20,25,20,.1,-90,-130),
+    Kc(.38,30,-28,45,-100,-50,-118,20,105,12,.2,-20,-60,0,0,.15),
+    K(.52,26,-22,38,-96,-54,-112,20,100,14,.16,-24,-60,0,0,.1),K(.8,unpack(R0))}}
+  B.fury={dur=1.15,keys={K(0,unpack(R0)),
+    K(.3,0,-20,0,-10,-12,-15,20,60,62,-.2,-40,-40),
+    K(.55,0,30,0,-170,-170,-8,10,8,10,.32,-20,-20,0,0,.3),
+    Kc(.75,-20,-48,-40,-62,-82,-44,22,60,20,-.15,-20,-12),
+    K(.9,-18,-44,-36,-62,-80,-40,22,58,20,-.14,-24,-14),K(1.15,unpack(R0))}}
+  B.multi={dur=1.0,keys={K(0,unpack(R0)),
+    Kc(.14,45,-8,58,-100,-50,-30,22,40,24,.04,-30,-70),
+    Kc(.28,-48,-16,-60,-52,-96,-30,22,44,22,.04,-70,-14),
+    Kc(.42,50,-10,62,-120,-40,-26,24,38,26,.06,-14,-80),
+    Kc(.56,-52,-18,-66,-44,-110,-34,24,46,20,.05,-80,-10),
+    Kc(.72,0,-50,0,-130,-130,-50,22,70,18,-.15,-10,-10),
+    K(.85,-4,-44,-4,-124,-124,-46,22,66,18,-.12,-14,-14),K(1.0,unpack(R0))}}
+  B.pierce={dur=.85,keys={K(0,unpack(R0)),
+    K(.3,50,10,55,-90,-70,-20,30,50,24,.02,-20,-140),
+    Kc(.45,-45,-40,-70,-110,-95,-60,40,30,8,-.1,-8,-5),
+    K(.62,-42,-36,-66,-108,-94,-56,38,32,10,-.08,-8,-6),K(.85,unpack(R0))}}
+  B.backstab={dur=.6,keys={K(0,unpack(R0)),
+    K(.15,10,-50,10,-40,-30,-20,30,80,70,-.3,-60,-120,0,0,-.1),
+    Kc(.3,-70,-30,-75,-60,-105,-30,30,40,12,-.05,-60,-10,-90,0,0),
+    K(.45,-60,-26,-66,-62,-100,-28,28,40,14,-.04,-60,-14,-90,0,0),K(.6,0,6,0,-45,-45,-8,12,10,18,0,-80,-80,-90,0,0)}}
+  B.ultimate={dur=2.0,keys={K(0,unpack(R0)),
+    K(.4,0,-24,0,-14,-14,-20,20,70,72,-.3,-40,-40),
+    K(.85,0,26,0,-165,-165,-6,6,6,6,.5,-20,-20,180,-6,.6),
+    K(1.1,0,28,0,-170,-170,-6,6,6,6,.7,-18,-18,360,-8,.9),
+    Kc(1.38,-24,-62,-30,-70,-90,-50,18,70,16,-.25,-12,-8,360,10,-.2),
+    K(1.6,-22,-56,-28,-68,-88,-48,18,66,16,-.2,-14,-10,360),K(2.0,0,6,0,-45,-45,-8,12,10,18,0,-80,-80,360)}}
+  B.chain={dur=.75,keys={K(0,unpack(R0)),
+    K(.2,55,6,50,-120,-60,-14,18,24,28,0,-20,-80),
+    Kc(.36,-50,-12,-60,-60,-110,-20,22,30,24,.02,-70,-10),
+    K(.55,-30,-8,-30,-70,-96,-16,20,28,24,.02,-60,-30),K(.75,unpack(R0))}}
+  B.bolt={dur=.65,keys={K(0,unpack(R0)),
+    K(.18,15,10,18,-60,-40,-12,16,20,30,0,-90,-125),
+    Kc(.3,-20,-18,-28,-70,-92,-30,18,40,16,.03,-70,-5),
+    K(.48,-18,-16,-24,-72,-92,-28,18,38,16,.03,-72,-6),K(.65,unpack(R0))}}
+  B.burst={dur=.9,keys={K(0,unpack(R0)),
+    K(.3,0,12,0,-82,-82,-10,14,28,30,.04,-120,-120),
+    Kc(.5,0,-28,0,-96,-96,-32,18,44,14,.08,-6,-6),
+    K(.7,0,-24,0,-94,-94,-30,18,42,14,.06,-8,-8),K(.9,unpack(R0))}}
+  B.rain={dur=1.05,keys={K(0,unpack(R0)),
+    K(.36,10,26,8,-100,-172,-14,18,16,26,.14,-60,-20),
+    Kc(.62,-14,-34,-18,-70,-52,-34,18,52,20,-.05,-40,-14),
+    K(.8,-12,-30,-16,-72,-54,-30,18,48,20,-.04,-40,-16),K(1.05,unpack(R0))}}
+  B.root={dur=.9,keys={K(0,unpack(R0)),
+    K(.3,0,8,0,-70,-70,-90,12,110,18,.2,-70,-70),
+    Kc(.46,0,-38,0,-30,-30,-20,10,60,12,-.2,-12,-12),
+    K(.7,0,-34,0,-28,-28,-18,10,58,12,-.18,-14,-14),K(.9,unpack(R0))}}
+  B.mark={dur=.75,keys={K(0,unpack(R0)),
+    K(.22,-20,6,-26,-20,-95,-8,14,16,24,0,-135,-4),
+    K(.4,-22,4,-28,-18,-96,-8,14,16,24,0,-135,-3),
+    K(.58,-22,4,-28,-18,-96,-8,14,16,24,0,-135,-3),K(.75,unpack(R0))}}
+  B.heal={dur=1.2,keys={K(0,unpack(R0)),
+    K(.35,0,2,0,-20,-20,-6,10,10,16,.02,-30,-30),
+    K(.7,0,16,0,-150,-150,-6,8,8,10,.16,-20,-20),
+    K(.95,0,18,0,-146,-146,-6,8,8,10,.18,-22,-22),K(1.2,unpack(R0))}}
+  B.healaoe=B.heal
+  B.kick={dur=.6,keys={K(0,unpack(R0)),
+    K(.14,10,14,8,-70,-60,-6,10,12,100,.05,-100,-90),
+    Kc(.26,-20,26,-24,-100,-30,10,-105,40,8,.14,-60,-70,0,0,.1),
+    K(.4,-16,22,-20,-96,-34,10,-98,40,12,.1,-60,-70),K(.6,unpack(R0))}}
+  B.rush={dur=.6,keys={K(0,unpack(R0)),
+    K(.1,10,-30,12,-60,-70,-30,24,60,50,-.12,-130,-130),
+    Kc(.22,-30,-60,-34,-104,-104,-70,36,34,10,-.18,-132,-132),
+    K(.4,-26,-52,-30,-100,-100,-64,34,32,12,-.15,-132,-132),K(.6,unpack(R0))}}
+  B.buff={dur=1.1,keys={K(0,unpack(R0)),
+    K(.32,0,-16,0,-72,-72,-14,20,48,52,-.12,-150,-150),
+    Kc(.55,0,16,0,-22,-22,-8,10,10,12,.22,-18,-18),
+    K(.8,0,12,0,-30,-30,-8,12,12,14,.12,-30,-30),K(1.1,unpack(R0))}}
+  B.oath={dur=1.7,keys={K(0,unpack(R0)),
+    K(.45,0,-12,0,-40,-100,-92,-8,100,92,-.4,-80,-60),
+    K(.9,0,10,0,-48,-170,-92,-8,100,92,-.36,-60,-8),
+    K(1.3,0,12,0,-48,-172,-92,-8,100,92,-.36,-60,-8),K(1.7,unpack(R0))}}
+  B.smoke={dur=.65,keys={K(0,unpack(R0)),
+    K(.18,10,-40,10,-80,-80,-12,24,70,70,-.3,-140,-140),
+    Kc(.4,0,-10,0,-90,-90,-12,18,30,30,.05,-100,-100,-270,0,0),
+    K(.65,0,6,0,-45,-45,-8,12,10,18,0,-80,-80,-360)}}
+  B.guard={dur=.8,keys={K(0,unpack(R0)),
+    K(.15,0,-8,0,-100,-100,-12,16,36,36,-.04,-130,-130),
+    K(.55,0,-8,0,-100,-100,-12,16,36,36,-.04,-130,-130),K(.8,unpack(R0))}}
+  B.parry={dur=.55,keys={K(0,unpack(R0)),
+    K(.12,20,2,25,-70,-60,-12,16,24,26,0,-100,-100),
+    Kc(.24,-30,-14,-40,-80,-120,-20,18,34,20,.02,-60,-10),K(.55,unpack(R0))}}
+  -- ───── 맨손: 승룡권급 전신 기술 ─────
+  F.slam={dur=1.05,keys={K(0,unpack(R0)),
+    K(.16,25,34,32,-45,-70,5,-10,70,80,-.28,-100,-125,0,0,-.1),
+    Kc(.30,-30,-8,-42,-60,-165,-35,-55,20,110,.6,-90,-20,90,-14,.4),
+    K(.48,-20,18,-30,-50,-160,-30,-40,40,95,.55,-90,-40,220,-10,.55),
+    K(.66,-25,-30,-20,-70,-90,-28,20,60,30,-.08,-60,-60,360,0,0),K(1.05,0,6,0,-45,-45,-8,12,10,18,0,-80,-80,360)}}
+  F.sweep={dur=.95,keys={K(0,unpack(R0)),
+    K(.18,40,10,30,-55,-95,-30,10,40,60,-.1,-70,-90),
+    Kc(.38,-10,22,-30,-95,-70,-30,-110,40,6,.3,-30,-40,-300,0,.25),
+    K(.6,-8,12,-24,-70,-60,-20,20,50,40,.0,-60,-60,-360,0,0),K(.95,0,6,0,-45,-45,-8,12,10,18,0,-80,-80,-360)}}
+  F.dash={dur=.7,keys={K(0,unpack(R0)),
+    K(.14,25,10,20,-50,-70,10,0,60,80,-.28,-100,-120),
+    Kc(.30,0,42,0,-120,-45,25,-100,90,5,.55,-20,-80,0,-55,.4),
+    K(.46,0,30,0,-110,-50,20,-90,80,10,.3,-30,-80,0,-30,.1),K(.7,unpack(R0))}}
+  F.multi={dur=1.2,keys={K(0,unpack(R0)),
+    Kc(.1,28,-25,39,-122,-57,-32,30,8,28,.06,-10,-72),
+    Kc(.2,-35,-29,-48,-48,-133,35,-31,30,7,.08,-78,-8),
+    Kc(.3,38,-25,55,-86,-45,-36,34,8,27,.07,-99,-69),
+    Kc(.4,-41,-29,-54,-49,-98,36,-35,27,9,.1,-74,-102),
+    Kc(.5,28,-25,39,-122,-57,-32,30,8,28,.06,-10,-72),
+    Kc(.6,-35,-29,-48,-48,-133,35,-31,30,7,.08,-78,-8),
+    Kc(.7,38,-25,55,-86,-45,-36,34,8,27,.07,-99,-69),
+    Kc(.8,-41,-29,-54,-49,-98,36,-35,27,9,.1,-74,-102),
+    K(.88,-5,22,-10,-60,-150,-20,14,50,60,.0,-80,-20),
+    Kc(.98,-25,-34,-32,-60,-168,-34,-40,20,100,.5,-90,-15,0,-12,.35),K(1.2,unpack(R0))}}
+  F.ultimate={dur=2.2,keys={K(0,unpack(R0)),
+    K(.5,0,-28,0,-16,-16,-20,20,80,84,-.34,-40,-40),
+    K(1.0,0,24,0,-170,-170,-6,-60,6,100,.9,-20,-20,360,-10,1.1),
+    K(1.25,0,26,0,-172,-172,-6,-70,6,100,1.1,-18,-18,720,-12,1.5),
+    Kc(1.5,-18,-70,-24,-30,-110,-30,15,100,10,-.3,-10,-6,720,-58,-.2),
+    K(1.75,-14,-58,-20,-34,-100,-30,15,90,14,-.25,-14,-10,720,-20),K(2.2,0,6,0,-45,-45,-8,12,10,18,0,-80,-80,720)}}
+  F.stun={dur=.8,keys={K(0,unpack(R0)),
+    K(.18,-10,14,-20,-80,-110,20,-10,30,40,.0,-90,-110),
+    Kc(.34,0,-12,0,-150,-150,0,-125,20,125,.5,-80,-80,0,0,.2),
+    K(.52,0,-8,0,-130,-130,0,-100,20,100,.3,-80,-80),K(.8,unpack(R0))}}
+  -- ───── 활: 시위를 당겨 쏘는 동작 ─────
+  local BOW0={45,2,28,-88,-62,-12,14,12,22,0,-6,-105}
+  local DRAW={52,0,38,-92,-92,-14,16,14,24,0,-3,-152}
+  local REL={50,5,34,-92,-70,-14,16,14,24,0,-3,-95}
+  local function bowKeys(list)
+    local keys={K(0,unpack(R0))}
+    for _,e in ipairs(list) do keys[#keys+1]={t=e[1],c=e[3],v=e[2]} end
+    return keys
+  end
+  local function shift(v,i,add) local c=table.clone(v);c[i]=(c[i] or 0)+add;return c end
+  local DRAWK=shift(shift(shift(shift(DRAW,9,50),8,16),10,-.25),2,-4)
+  local RELK=shift(shift(shift(shift(REL,9,50),8,16),10,-.25),2,-4)
+  BOWV.single={dur=.95,keys=bowKeys({{.2,BOW0},{.38,DRAW},{.5,DRAW},{.56,REL,true},{.72,REL},{.95,R0}})}
+  BOWV.snipe={dur=1.5,keys=bowKeys({{.25,shift(BOW0,9,50)},{.55,DRAWK},{.95,DRAWK},{1.0,RELK,true},{1.2,RELK},{1.5,R0}})}
+  BOWV.multi={dur=1.15,keys=bowKeys({{.16,DRAW},{.26,REL,true},{.38,shift(DRAW,1,-14)},{.48,shift(REL,1,-14),true},
+    {.6,shift(DRAW,1,14)},{.7,shift(REL,1,14),true},{1.15,R0}})}
+  local UP=shift(shift(shift(DRAW,4,-56),5,-40),2,26)
+  BOWV.rain={dur=1.05,keys=bowKeys({{.28,UP},{.5,UP},{.58,shift(UP,2,6),true},{.78,shift(UP,2,6)},{1.05,R0}})}
+  BOWV.bash={dur=.75,keys=bowKeys({{.2,{-60,8,-50,-60,-60,-12,14,14,24,0,-60,-100}},{.36,{70,-14,60,-100,-60,-30,22,30,20,.04,-4,-80},true},{.75,R0}})}
+  BOWV.spin={dur=1.1,keys=bowKeys({{.15,shift(R0,9,50)},{.5,shift(shift(DRAW,13,-360),4,0)},{.62,shift(DRAW,13,-360)},{.7,shift(REL,13,-360),true},{1.1,shift(R0,13,-360)}})}
+  BOWV.flip={dur=1.1,keys=bowKeys({{.1,shift(R0,9,40)},{.3,shift(shift(R0,14,180),15,.6)},{.5,shift(shift(R0,14,360),15,.4)},
+    {.62,shift(DRAW,14,360)},{.7,shift(REL,14,360),true},{1.1,shift(R0,14,360)}})}
+  -- ───── 지팡이: 올려 들고 내려 찍는 영창 ─────
+  local STF_UP={10,16,8,-150,-160,-14,16,20,28,.1,-60,-60}
+  local STF_TH={-14,-30,-22,-96,-100,-30,18,38,16,-.05,-8,-6}
+  STV.single={dur=.85,keys={K(0,unpack(R0)),K(.28,unpack(STF_UP)),Kc(.42,unpack(STF_TH)),K(.62,unpack(STF_TH)),K(.85,unpack(R0))}}
+  STV.spin={dur=1.0,keys={K(0,unpack(R0)),K(.2,30,8,20,-92,-92,-30,30,30,30,0,-30,-30),
+    Kc(.45,-40,0,-40,-90,-90,-20,20,34,30,.05,-24,-24,-200),K(.68,-40,0,-40,-90,-90,-20,20,34,30,.05,-24,-24,-360),
+    K(1.0,0,6,0,-45,-45,-8,12,10,18,0,-80,-80,-360)}}
+  STV.slam={dur=1.0,keys={K(0,unpack(R0)),K(.26,10,20,10,-160,-168,-18,24,28,42,.2,-50,-50,0,0,.1),
+    K(.4,0,14,0,-160,-168,-30,10,20,30,.4,-50,-50,0,-6,.5),
+    Kc(.52,-10,-48,-26,-60,-70,-40,20,60,18,-.2,-12,-10,0,6,-.1),K(.72,-10,-44,-24,-62,-72,-38,20,58,18,-.16,-14,-12),K(1.0,unpack(R0))}}
+  -- ───── 무기군 변환 ─────
+  local function xform(src,fn,durScale)
+    local out={dur=src.dur*durScale,keys={}}
+    for i,k in ipairs(src.keys) do
+      local v=table.clone(k.v)
+      for j=1,15 do v[j]=v[j] or 0 end
+      fn(v)
+      out.keys[i]={t=k.t*durScale,v=v,c=k.c}
+    end
+    return out
+  end
+  local function two(v) v[4]=v[5];v[11]=v[12];v[1]*=1.2;v[2]*=1.15;v[3]*=1.1;v[8]+=8;v[9]+=8 end
+  local function blunt(v) v[2]*=1.15;v[10]*=1.2;v[9]+=6 end
+  local function dagger(v) v[1]*=1.2;v[2]*=.8;v[8]+=14;v[9]+=14;v[10]-=.05;v[11]=v[11]*1.1;v[12]=v[12]*1.1 end
+  local ATTACK={slam=1,strike=1,sweep=1,dash=1,stun=1,fury=1,multi=1,bolt=1,pierce=1,rain=1,backstab=1,ultimate=1,burst=1,chain=1}
+  local bowMap={slam="snipe",strike="single",sweep="spin",dash="flip",stun="bash",fury="multi",multi="multi",bolt="single",
+    pierce="snipe",rain="rain",backstab="flip",ultimate="rain",burst="single",chain="multi"}
+  local stMap={slam="slam",strike="single",sweep="spin",dash="single",stun="slam",fury="spin",multi="spin",bolt="single",
+    pierce="single",rain="single",backstab="single",ultimate="slam",burst="single",chain="spin"}
+  local cache={}
+  local motion={}
+  motion.family=function()
+    local item=Config.MeadowEquipment and Config.MeadowEquipment[tonumber(player:GetAttribute("MeadowEquipWeapon")) or 0]
+    local cls=item and Config.GearWeaponClass[item.Id]
+    local tool=player.Character and player.Character:FindFirstChildOfClass("Tool")
+    if cls=="Bow" then return "bow" elseif cls=="Staff" then return "staff" elseif cls=="Greatsword" then return "h2"
+    elseif cls=="Axe" or cls=="Hammer" then return "blunt" elseif cls=="Dagger" then return "dagger" end
+    if cls=="Sword" or tool then return "h1" end
+    return "fist"
+  end
+  motion.build=function(style,family)
+    local base=B[style]
+    if not base then return nil end
+    if family=="fist" then return F[style] or base end
+    if family=="bow" and ATTACK[style] then return BOWV[bowMap[style]] end
+    if family=="staff" and ATTACK[style] then
+      local s=STV[stMap[style]]
+      return s
+    end
+    if family=="h2" then return xform(base,two,1.2) end
+    if family=="blunt" then return xform(base,blunt,1.15) end
+    if family=="dagger" then return xform(base,dagger,.8) end
+    return base
+  end
+  motion.track=function(actionId)
+    local style=meadowArt.styleOf and meadowArt.styleOf(actionId)
+    if not style then return nil end
+    local family=motion.family()
+    local key=style.."|"..family
+    local tr=cache[key]
+    if tr==nil then
+      tr=motion.build(style,family) or false
+      cache[key]=tr
+    end
+    return tr or nil,style,family
+  end
+  local function lerpKey(a,b,u,out)
+    for i=1,15 do
+      local x,y=a[i] or 0,b[i] or 0
+      out[i]=x+(y-x)*u
+    end
+  end
+  local tmp={}
+  -- 시간 t(초)의 포즈를 out에 채운다. 접촉 키로 향하는 구간은 빠르게 꽂히도록 가속한다.
+  motion.pose=function(track,t,out)
+    local keys=track.keys
+    local last=keys[#keys]
+    if t>=last.t then lerpKey(last.v,last.v,0,tmp)
+    else
+      local a,b=keys[1],keys[2]
+      for i=2,#keys do
+        if t<=keys[i].t then a,b=keys[i-1],keys[i];break end
+      end
+      local u=math.clamp((t-a.t)/math.max(.001,b.t-a.t),0,1)
+      u=b.c and (u*u*(3-2*u)*.45+u*u*u*.55) or u*u*(3-2*u)
+      lerpKey(a.v,b.v,u,tmp)
+    end
+    local shot=martialShot(tmp)
+    for joint,cf in pairs(shot) do out[joint]=cf end
+    local base=out.Root or CFrame.identity
+    out.FlipRoot=CFrame.new(0,tmp[15],0)*CFrame.Angles(0,math.rad(tmp[13]),0)*base*CFrame.Angles(math.rad(tmp[14]),0,0)
+    out.Root=nil
+  end
+  meadowArt.motion=motion
+end
 -- [연타 5단계] 같은 연타 버튼을 연속 입력할 때마다 1→2→3→4→5→1단.
 -- 승인된 공격 1회당 시각 모션 한 단계만 사용한다. 1.4초를 넘기면 첫 단계로 복귀.
 local activeCombatRushStage=0
@@ -9244,6 +9536,7 @@ local skillMotionDeadline=0
 local skillMotionState=nil
 local skillMotionStart=0
 local skillMotionDuration=0
+local skillAuthored=nil
 local skillMotionJoints={}
 local skillMotionAvailable={}
 local skillMotionTargets={}
@@ -9282,6 +9575,7 @@ local function finishMeadowSkillPose()
   skillMotionR15=nil
   skillMotionCharacter=nil
   skillMotionState=nil
+  skillAuthored=nil
   table.clear(skillMotionJoints)
   table.clear(skillMotionAvailable)
   table.clear(skillMotionTargets)
@@ -9365,6 +9659,17 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
     skillMotionDeadline=skillMotionStart+skillMotionDuration+.12
     meadowArt.motionDeadline=skillMotionDeadline
     dodgePoseUntil=skillMotionStart+(motionStage>=5 and .7 or .46)+.12
+  end
+  skillAuthored=nil
+  if not (isDodge or isGuard or isParry) and meadowArt.motion then
+    local track,style,family=meadowArt.motion.track(id)
+    if track then
+      skillAuthored=track
+      skillMotionDuration=track.dur
+      skillMotionDeadline=skillMotionStart+track.dur+.12
+      meadowArt.motionDeadline=skillMotionDeadline
+      character:SetAttribute("NativeSkillStyle",style.."|"..family)
+    end
   end
   character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
   character:SetAttribute("NativeSkillActionId",id)
@@ -9511,6 +9816,8 @@ RunService.PreSimulation:Connect(function(dt)
       skillMotionTargets.FootL=CFrame.identity
       skillMotionTargets.FootR=CFrame.identity
     end
+  elseif skillAuthored then
+    meadowArt.motion.pose(skillAuthored,os.clock()-skillMotionStart,skillMotionTargets)
   else
     local _,matched=combatMotionSource.SampleProceduralActorMotion(skillMotionState,phase,{
       bodyPlan="BIPED",actorClass="PLAYER",availableJoints=skillMotionAvailable,
