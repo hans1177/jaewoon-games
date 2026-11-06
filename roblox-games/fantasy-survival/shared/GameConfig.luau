@@ -1214,6 +1214,19 @@ do
   end
 end
 
+-- [바람 절벽 생태 거점] 해풍촌 둘레에 자원이 나는 곳과 그곳을 지키는 몹을 둔다. 서버(몹·채집점)와 퀘스트가 같은 좌표를 읽는다.
+do
+  local town
+  for _, t in ipairs(Config.WorldMap.Towns) do if t.Id == "windcliff" then town = t end end
+  if town then
+    Config.WorldMap.EcoCamps = {
+      cliffmine = {X = town.X + 150, Z = town.Z - 110, Name = "절벽 광산"},
+      cliffnest = {X = town.X - 60, Z = town.Z + 170, Name = "바람 박쥐 둥지"},
+      orccamp   = {X = town.X - 160, Z = town.Z - 130, Name = "오크 정찰 야영지"},
+    }
+  end
+end
+
 -- [스카이림식 연계 퀘스트] 홀드 미스터리 4편 + 렌스기사단 3인 추적(메인) 3부작. 선택과 모순된 행동이 이야기를 비튼다.
 do
   local towns = {}
@@ -1221,7 +1234,41 @@ do
   local function lm(id) for _, l in ipairs(Config.WorldMap.Landmarks) do if l.Id == id then return l end end end
   local lighthouse, throne, rootaltar, toadMon = lm("lighthouse"), lm("throne"), lm("rootaltar"), lm("toadMonument")
   local misttower, rift = lm("mistTower"), lm("rift")
+  local town = towns.windcliff
   for _, line in ipairs({
+    -- [바람 절벽 생태 의뢰] 광산·둥지·야영지를 따라가는 스카이림식 퀘스트. 몹 처치는 두목 1마리뿐.
+    {Id="cliffmine", Name="[서브] 절벽 광산 탈환", Kind="Sub", Field="QLCliffMine", Need={Zone="windcliff"},
+     Intro="소금 상인 베른: '절벽 광산이 오크 감독 손에 넘어갔어. 철광석이 끊겨 대장간이 굶는다. 되찾아 주면 광석은 네 몫이야.'",
+     Steps={
+      {Type="reach", X=Config.WorldMap.EcoCamps.cliffmine.X, Z=Config.WorldMap.EcoCamps.cliffmine.Z, R=50, Title="절벽 광산으로 가라", Text="해풍촌 북동쪽 절벽 광산. 광부 도적과 오크 감독이 지킨다.", Done="갱도 앞에 광석 수레가 쌓여 있다. 감독만 쓰러뜨리면 도적들이 흩어진다."},
+      {Type="kill", Boss="cliffmine", X=Config.WorldMap.EcoCamps.cliffmine.X + 10, Z=Config.WorldMap.EcoCamps.cliffmine.Z - 8, Count=1, Title="오크 광산 감독을 쓰러뜨려라", Text="갱도 안쪽의 오크 감독을 처치하라.", Done="감독이 쓰러지고 광맥이 드러난다."},
+      {Type="event", Event="MINE_ORE", Count=2, Title="되찾은 광맥에서 광석 캐기", Text="광산 광맥에서 광석을 두 번 캐라.", Done="질 좋은 광석이다. 베른에게 가져가자."},
+      {Type="choice", X=town.X, Z=town.Z, R=60, Title="광산의 주인", Prompt="베른: '광산이 돌아왔군! 운영은 어떻게 할까?'",
+       Choices={{Label="상인과 공동 운영 (강철 2개)", Done="베른이 강철 주괴 두 개를 건넨다. '다음 광석 값은 깎아 주지.'", Steel=2, Coins=150},
+                {Label="마을 공용으로 (코인 600)", Done="촌장이 눈물을 훔친다. '해풍촌이 오래 기억할 거요.'", Coins=600}}}
+     },
+     Reward={Coins=400, Xp=420, Ore=8, Ingot=3}},
+    {Id="cliffnest", Name="[서브] 절벽 둥지의 약초", Kind="Sub", Field="QLCliffNest", Need={Zone="windcliff"},
+     Intro="소금 주막 마르타: '남쪽 절벽 둥지 밑에 달맞이꽃이 핀다네. 큰박쥐가 지키니 아무도 못 가. 날개와 약초는 값이 좋지.'",
+     Steps={
+      {Type="reach", X=Config.WorldMap.EcoCamps.cliffnest.X, Z=Config.WorldMap.EcoCamps.cliffnest.Z, R=50, Title="바람 박쥐 둥지로 가라", Text="해풍촌 남쪽 절벽 아래 둥지. 낮에도 박쥐가 날아다닌다.", Done="절벽 틈 아래 약초 덤불이 보인다. 위에 큰박쥐가 매달려 있다."},
+      {Type="kill", Boss="cliffnest", X=Config.WorldMap.EcoCamps.cliffnest.X + 6, Z=Config.WorldMap.EcoCamps.cliffnest.Z + 8, Count=1, Title="절벽의 큰박쥐를 쓰러뜨려라", Text="둥지의 큰박쥐를 처치하라. 날개와 수정을 떨군다.", Done="큰박쥐가 절벽 아래로 떨어진다. 이제 약초를 캘 수 있다."},
+      {Type="event", Event="GATHER_HERB", Count=1, Title="둥지 밑 약초 채집", Text="둥지 아래 약초 덤불에서 약초를 채집하라.", Done="달맞이꽃이 한가득이다. 마르타에게 가져가자."},
+      {Type="choice", X=town.X, Z=town.Z, R=60, Title="마르타의 부탁", Prompt="마르타: '이 정도면 큰 장사야! 어떻게 나눌까?'",
+       Choices={{Label="약초 현물로 (달맞이꽃 4)", Done="마르타가 약초 꾸러미를 건넨다. '물약 만들 때 써.'", Moonbloom=4},
+                {Label="마력 수정으로 (수정 3)", Done="마르타가 수정을 꺼낸다. '약초는 내 가게에 쓸게.'", Crystal=3}}}
+     },
+     Reward={Coins=360, Xp=380, Moonbloom=1}},
+    {Id="orccamp", Name="[서브] 오크 정찰대장", Kind="Sub", Field="QLOrcCamp", Need={Zone="windcliff"},
+     Intro="등대 경비 오르간: '서쪽 야영지에 오크 정찰대가 모였어. 등대를 노리는 것 같다. 가서 대장이 뭘 원하는지 확인해.'",
+     Steps={
+      {Type="reach", X=Config.WorldMap.EcoCamps.orccamp.X, Z=Config.WorldMap.EcoCamps.orccamp.Z, R=50, Title="오크 정찰 야영지로 가라", Text="해풍촌 서북쪽 오크 야영지. 정찰병이 길을 막고 있다.", Done="천막 안쪽에 오크 정찰대장이 있다. 쉽게 물러설 상대가 아니다."},
+      {Type="kill", Boss="orccamp", X=Config.WorldMap.EcoCamps.orccamp.X - 8, Z=Config.WorldMap.EcoCamps.orccamp.Z - 6, Count=1, Title="오크 정찰대장을 쓰러뜨려라", Text="야영지 중앙의 정찰대장을 처치하라.", Done="대장이 쓰러지며 지도 한 장을 놓친다. '군단장은 등대에…' 라고 적혀 있다."},
+      {Type="choice", X=town.X, Z=town.Z, R=60, Title="오르간에게 보고", Prompt="오르간: '군단장 이야기가 적혀 있군. 이 지도를 어떻게 할래?'",
+       Choices={{Label="등대 경비대에 넘긴다 (코인 500)", Done="오르간: '경비대가 길목을 막겠다. 마을이 안전해질 거야.'", Coins=500},
+                {Label="내가 가진다 (송곳니 2 · 발톱 3)", Done="오르간: '혼자 군단장에게 가겠다고? 조심해.'", Fang=2, Claw=3}}}
+     },
+     Reward={Coins=300, Xp=340, Hide=3}},
     -- 홀드 미스터리 ---------------------------------------------------------
     {Id="wind", Name="[미스터리] 등대지기는 왜 죽었나", Kind="Sub", Field="QLWind", Need={Zone="windcliff"},
      Intro="해풍촌 사람들은 등대지기가 도적에게 죽었다고 말한다. 그런데 소금 주막의 마르타는 그날 등대에 불이 켜져 있었다고 한다.",

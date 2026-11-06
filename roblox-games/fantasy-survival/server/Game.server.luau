@@ -7446,6 +7446,11 @@ do
             if (x-wp[2])^2+(z-wp[3])^2<70*70 then blocked=true;break end
           end
           if not blocked then
+            for _,town in ipairs(world.Towns or {}) do
+              if (x-town.X)^2+(z-town.Z)^2<90*90 then blocked=true;break end
+            end
+          end
+          if not blocked then
             for _,placed in ipairs(placedSites) do
               if (x-placed.X)^2+(z-placed.Z)^2<38*38 then blocked=true;break end
             end
@@ -8863,6 +8868,63 @@ for _,site in ipairs(meadowEncounterSites) do
     site.tier=d<200 and 1 or d<300 and 2 or d<380 and 3 or 4
   end
 end
+-- [바람 절벽 생태 거점] 자원이 나는 곳에 지킴이를 둔다(서브퀘 cliffmine/cliffnest/orccamp와 연결).
+do
+  local camps=Config.WorldMap.EcoCamps
+  if camps then
+    local function at(c,dx,dz) return Vector3.new(c.X+dx,3,c.Z+dz) end
+    local m,n,o=camps.cliffmine,camps.cliffnest,camps.orccamp
+    local function goblin(c,dx,dz) table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="roguehooded",name="절벽 광부 도적",tier=3,height=3.2,hp=1.4,dmg=1.1,
+      drops={{"Ore",.6,1},{"Hide",.3,1}},position=at(c,dx,dz)}) end
+    goblin(m,-14,10);goblin(m,16,14)
+    table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="orc",name="오크 광산 감독",tier=4,height=5.2,hp=2.8,dmg=1.5,alpha=true,named=true,
+      questBoss="cliffmine",drops={{"Ore",1,4},{"Magma",.6,1},{"Hide",.5,1}},position=at(m,10,-8)})
+    table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",tier=3,height=3.2,position=at(n,-16,-8)})
+    table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",tier=3,height=3.2,position=at(n,18,-4)})
+    table.insert(meadowEncounterSites,{id="bat",atom="WING_LEATHER",name="절벽의 큰박쥐",tier=5,height=4.6,alpha=true,named=true,
+      questBoss="cliffnest",drops={{"BatWing",1,3},{"Crystal",1,2},{"Moonbloom",.6,1}},position=at(n,6,8)})
+    for _,off in ipairs({{-12,10},{14,12}}) do
+      table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="tribal",name="오크 정찰병",tier=3,height=4.4,hp=1.5,dmg=1.2,
+        drops={{"Hide",.5,1},{"Claw",.4,1},{"Moonbloom",.3,1}},position=at(o,off[1],off[2])})
+    end
+    table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="orc",name="오크 정찰대장",tier=4,height=5.4,hp=3,dmg=1.6,alpha=true,named=true,
+      questBoss="orccamp",drops={{"Hide",1,3},{"Claw",1,3},{"Fang",.8,2}},position=at(o,-8,-6)})
+    -- 채집점은 지형이 만들어진 뒤(OpenWorldReady) 지면을 확인하고 놓는다.
+    task.spawn(function()
+      while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(2) end
+      local params=RaycastParams.new()
+      params.FilterType=Enum.RaycastFilterType.Include
+      params.FilterDescendantsInstances={workspace.Terrain}
+      for _,spec in ipairs({
+        {"ORE",m.X-6,m.Z+2},{"ORE",m.X+4,m.Z-18},
+        {"HERB",n.X-4,n.Z-14},{"HERB",n.X+12,n.Z-12},
+      }) do
+        local hit=workspace:Raycast(Vector3.new(spec[2],400,spec[3]),Vector3.new(0,-800,0),params)
+        if hit then
+          local position=hit.Position
+          local node={position=position,kind=spec[1],readyAt=0}
+          table.insert(resourceNodes,node)
+          local terrain=workspace.Terrain
+          pcall(function()
+            if spec[1]=="ORE" then terrain:FillBall(position+Vector3.new(0,1.2,0),3,Enum.Material.Slate)
+              terrain:FillBall(position+Vector3.new(1.6,2.4,0),1.6,Enum.Material.CrackedLava)
+            else terrain:FillBall(position+Vector3.new(0,.6,0),3,Enum.Material.LeafyGrass) end
+          end)
+          local anchor=Instance.new("Attachment")
+          anchor.Name="MeadowGatherAnchor";anchor.WorldPosition=position+Vector3.new(0,3,0);anchor.Parent=terrain
+          local prompt=Instance.new("ProximityPrompt")
+          prompt.Name="GatherPrompt"
+          prompt.ActionText=spec[1]=="ORE" and "광석 채굴" or "약초 채집"
+          prompt.ObjectText=spec[1]=="ORE" and "광맥" or "약초 덤불"
+          prompt.MaxActivationDistance=14;prompt.HoldDuration=.3;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+          prompt.Triggered:Connect(function(player) gatherResource(player,node) end)
+        else
+          warn("WINDCLIFF_NODE_GROUND_UNVERIFIED "..spec[1])
+        end
+      end
+    end)
+  end
+end
 do
   for _,c in ipairs({
     {"mina","저주받은 마녀 미나","witch",7,5000,-300,"mage","swamp",3.2,1.6},
@@ -8993,7 +9055,7 @@ do
     local reward=line.Reward or {}
     setNumber(player,line.Field,#line.Steps+1)
     pcall(awardProgress,player,reward.Xp or 0,reward.Coins or 0)
-    for _,field in ipairs({"Crystal","Moonbloom","Claw","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
       if reward[field] then setNumber(player,field,readNumber(player,field,0)+reward[field]) end
     end
     if reward.Relic then setNumber(player,"RelicMask",bit32.bor(readNumber(player,"RelicMask",0),bit32.lshift(1,reward.Relic-1))) end
@@ -9097,7 +9159,7 @@ do
     setNumber(player,line.Field.."C",action=="ql:1" and 1 or 2)
     if choice.Flag then setNumber(player,"TrackFlags",bit32.bor(readNumber(player,"TrackFlags",0),choice.Flag)) end
     if choice.Join and meadowOil.joinCompanion then meadowOil.joinCompanion(player,choice.Join,choice.Bond) end
-    for _,field in ipairs({"Crystal","Moonbloom","Claw","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
+    for _,field in ipairs({"Crystal","Moonbloom","Claw","Fang","Hide","Ore","Magma","Ingot","Leather","Steel"}) do
       if choice[field] then setNumber(player,field,readNumber(player,field,0)+choice[field]) end
     end
     if choice.Coins then setNumber(player,"Coins",readNumber(player,"Coins",0)+choice.Coins) end
