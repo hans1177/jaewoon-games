@@ -258,6 +258,23 @@ local Sites: { Site } = {
 	{ id = "edinburgh_castle_rock", name = "에든버러 성 바위", portId = "edinburgh", minLevel = 2, days = 1, pool = { "site_edinburgh_castle" } },
 	{ id = "dublin_stones", name = "아일랜드 돌기둥 들판", portId = "dublin", minLevel = 2, days = 2, pool = { "relic_ogham_stone", "min_basalt" } },
 	{ id = "london_pewter_shop", name = "런던 백랍 상점", portId = "london", minLevel = 2, days = 1, pool = { "relic_pewter_plate", "min_sandstone" } },
+	{ id = "copenhagen_sound", name = "외레순 해협", portId = "copenhagen", minLevel = 2, days = 1, pool = { "site_copenhagen_castle", "zoo_seal" } },
+	{ id = "copenhagen_birch", name = "덴마크 자작나무 숲", portId = "copenhagen", minLevel = 1, days = 1, pool = { "bot_birch", "bot_hops" } },
+	{ id = "antwerp_cathedral", name = "안트베르펜 대성당 광장", portId = "antwerp", minLevel = 2, days = 1, pool = { "site_antwerp_cathedral", "bot_tulip" } },
+	{ id = "antwerp_flax", name = "플랑드르 아마 밭", portId = "antwerp", minLevel = 1, days = 1, pool = { "bot_flax", "bot_hops" } },
+	{ id = "london_chalk", name = "도버 백악 절벽", portId = "london", minLevel = 1, days = 1, pool = { "geo_white_cliffs", "min_chalk" } },
+	{ id = "bordeaux_quay", name = "보르도 포도주 부두", portId = "bordeaux", minLevel = 1, days = 1, pool = { "site_bordeaux_quay", "zoo_oyster" } },
+	{ id = "hamburg_speicher", name = "함부르크 창고 거리", portId = "hamburg", minLevel = 1, days = 1, pool = { "site_hamburg_speicher", "relic_hansa_seal" } },
+	{ id = "bergen_wharf", name = "브뤼겐 부두", portId = "bergen", minLevel = 2, days = 1, pool = { "site_bergen_wharf", "zoo_cod" } },
+	{ id = "bergen_fjord", name = "베르겐 피오르", portId = "bergen", minLevel = 3, days = 2, pool = { "geo_fjord", "zoo_orca", "zoo_puffin" } },
+	{ id = "gdansk_amber_beach", name = "발트 호박 해변", portId = "gdansk", minLevel = 2, days = 1, pool = { "min_amber_raw", "relic_amber_room" } },
+	{ id = "stockholm_runes", name = "룬 비석 들판", portId = "stockholm", minLevel = 3, days = 2, pool = { "relic_rune_stone", "relic_viking_helm" } },
+	{ id = "edinburgh_heather", name = "스코틀랜드 히스 언덕", portId = "edinburgh", minLevel = 1, days = 1, pool = { "bot_heather", "zoo_gannet", "min_granite" } },
+	{ id = "dublin_cranberry", name = "아일랜드 늪지", portId = "dublin", minLevel = 1, days = 1, pool = { "bot_cranberry", "geo_tidal_flat" } },
+	{ id = "amsterdam_flats", name = "와덴 갯벌", portId = "amsterdam", minLevel = 1, days = 1, pool = { "geo_tidal_flat", "geo_dogger_bank", "zoo_mackerel" } },
+	{ id = "gothenburg_eider", name = "서해안 섬", portId = "gothenburg", minLevel = 2, days = 1, pool = { "zoo_eider", "zoo_puffin" } },
+	{ id = "london_tin", name = "콘월 주석 광산", portId = "london", minLevel = 2, days = 2, pool = { "min_tin_ore", "relic_astrolabe" } },
+	{ id = "bergen_ice_edge", name = "북극 얼음 가장자리", portId = "bergen", minLevel = 5, days = 3, pool = { "zoo_narwhal", "geo_fjord" } },
 }
 
 return {

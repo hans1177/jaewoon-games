@@ -361,6 +361,23 @@ local Cards: { Card } = {
 	card("geo_skerries", "스케리 군도", "Geography", "Uncommon", "바다 위에 흩어진 작은 바위섬 무리. 수로를 아는 도선사가 꼭 필요했다.", "연안 항해", 15, 36),
 	card("geo_estuary", "강 하구", "Geography", "Common", "강물과 바닷물이 섞이는 넓은 입구. 큰 항구 도시가 자리 잡는 곳이다.", "연안 항해", 5, 12),
 	card("geo_north_sea_swell", "북해의 너울", "Geography", "Common", "짧고 거친 파도가 겹쳐 오는 북해 특유의 바다. 작은 배에는 큰 시험이었다.", "항해 기록", 5, 12),
+	card("zoo_mackerel", "고등어", "Zoology", "Common", "떼지어 다니는 푸른 등 생선. 여름 항구마다 가득 올라왔다.", "어시장 관찰", 5, 12),
+	card("zoo_narwhal", "일각고래", "Zoology", "Rare", "긴 뿔 같은 엄니를 가진 북극 고래. 뿔은 한때 전설의 유니콘 뿔로 팔렸다.", "북극 항해 기록", 40, 110),
+	card("bot_cranberry", "크랜베리", "Botany", "Common", "늪지에서 자라는 새빨간 열매. 신맛이 괴혈병 예방에 도움을 주었다.", "습지 채집", 5, 12),
+	card("bot_birch", "자작나무", "Botany", "Common", "하얀 껍질의 가벼운 나무. 북유럽의 숲과 목공의 기본 재료다.", "숲 채집", 5, 12),
+	card("min_amber_raw", "원석 호박", "Mineral", "Uncommon", "발트 해 모래에 묻힌 송진 화석. 파도에 씻겨 해안으로 밀려온다.", "해안 채집", 15, 36),
+	card("min_tin_ore", "주석 광석", "Mineral", "Uncommon", "콘월 광산에서 캐던 검은 돌. 녹이면 구리와 섞어 청동을 만든다.", "광산 견학", 15, 36),
+	card("relic_viking_helm", "바이킹 투구", "Relic", "Rare", "눈가리개가 달린 쇠 투구. 북쪽 바다를 누빈 전사들이 썼다.", "북방 유적 탐사", 40, 110),
+	card("relic_rune_stone", "룬 문자 비석", "Relic", "Rare", "고인의 이름과 공적을 룬 문자로 새긴 돌. 길가에 세워 기억을 남겼다.", "유적 탐사", 40, 110),
+	card("relic_hansa_seal", "한자 동맹 인장", "Relic", "Uncommon", "상인 도시들이 맹약의 증표로 찍던 납 인장.", "수집가의 진열실", 15, 36),
+	card("relic_amber_room", "호박 조각 상자", "Relic", "Uncommon", "호박 조각을 이어 붙여 만든 작은 상자. 왕궁 선물로 인기가 높았다.", "수집가의 진열실", 15, 36),
+	card("site_bergen_wharf", "베르겐 브뤼겐 부두", "Site", "Rare", "한자 상인들의 목조 창고가 늘어선 부두. 말린 대구가 이곳에서 팔려 나갔다.", "항구 탐방", 40, 110),
+	card("site_copenhagen_castle", "크론보르 성", "Site", "Rare", "외레순 해협을 내려다보는 성. 통과하는 배마다 통행세를 거뒀다.", "도시 탐방", 40, 110),
+	card("site_antwerp_cathedral", "안트베르펜 대성당", "Site", "Rare", "높이 솟은 탑을 가진 성당. 거리의 상인과 화가를 함께 품었다.", "도시 탐방", 40, 110),
+	card("site_bordeaux_quay", "보르도 포도주 부두", "Site", "Uncommon", "가론 강변에 줄지어 선 포도주 창고. 통 실은 배가 매일 떠났다.", "항구 탐방", 15, 36),
+	card("site_hamburg_speicher", "함부르크 창고 거리", "Site", "Uncommon", "운하 위에 붉은 벽돌로 지은 창고들. 한자 상인의 부를 보여 준다.", "항구 탐방", 15, 36),
+	card("geo_white_cliffs", "하얀 절벽", "Geography", "Uncommon", "도버 해협의 백악 절벽. 영국으로 돌아오는 배의 첫 인사다.", "연안 항해", 15, 36),
+	card("geo_tidal_flat", "갯벌", "Geography", "Common", "밀물과 썰물 사이에 드러나는 넓은 진흙 벌. 새와 조개의 낙원이다.", "연안 항해", 5, 12),
 }
 
 local ById: { [string]: Card } = {}
