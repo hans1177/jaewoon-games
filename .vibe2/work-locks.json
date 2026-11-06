@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-11jb9wu",
+      "worker": "vibe2",
+      "taskId": "mini-empire-web-library-cc0-replacement-v1",
+      "gameId": "mini-empire",
+      "files": [
+        "web-games/mini-empire/index.html"
+      ],
+      "baseSha": "a4bbfb49092ac39f178a188117cfa33e7df4e068",
+      "runId": "42159910572",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-06T04:36:18.523Z",
+      "expiresAt": "2026-11-06T05:21:18.523Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:mini-empire-web-library-cc0-replacement-v1"
+      ]
+    }
+  ]
 }
