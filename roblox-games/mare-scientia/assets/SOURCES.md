@@ -225,3 +225,19 @@ Kenney Food Kit 2.0 · CC0-1.0, 공식 원본 및 라이선스: https://kenney.n
 | `cargo/cup-tea.glb` | `6a2009a2092053ecc445f6fac0f4df1a1cf856ee` |
 
 로블록스 모델 업로드와 게임 내 외형·텍스처 검증은 별도로 필요하다.
+
+
+## 2026-11-06 3차 교역 농산물 8종
+
+Kenney Food Kit CC0 (https://kenney.nl/assets/food-kit) 신규 원본 모델, 바이너리 미러 `Hidencod/tge-assets` 고정 리비전 `ea2f2aa1ca8da0898330c97df8a5489976b051d0`. 소스와 대상 Git Blob SHA가 동일하며 `cargo/`에 파일 추가. 실제 Roblox Asset ID 및 게임 표시 성공은 기존 등록 흐름의 결과 확인 전까지 미검증이다.
+
+| 신규 파일 | SHA |
+|---|---|
+| `cargo/cauliflower.glb` | `71d5a5285fefa7cee6a70464948ce213bfdbbc73` |
+| `cargo/cherries.glb` | `6af993dfe8a5d611d8b36d4853cccc99a8286a36` |
+| `cargo/eggplant.glb` | `7072b23301dd8bc660b28d3b425ea1cfeefd3328` |
+| `cargo/leek.glb` | `1c7cc7e186a00df723f4e4e1a04d32e7144f127c` |
+| `cargo/lemon.glb` | `25d5c40f52fc76482ea1076d85f1fab2c2833a2f` |
+| `cargo/orange.glb` | `98c6e4b44e020b4e715fefad54c575e81f02c143` |
+| `cargo/pineapple.glb` | `f9ce8b314b4e3d37376db7697653493883d28350` |
+| `cargo/strawberry.glb` | `1320622041f4c0854ff160126a70d02429084e72` |
