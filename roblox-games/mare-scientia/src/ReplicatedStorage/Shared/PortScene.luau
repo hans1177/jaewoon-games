@@ -429,8 +429,8 @@ function PortScene.build(info, onFacility)
 	end
 
 	-- 바다(동쪽, x > 20)와 부두
-	local water = part(folder, Vector3.new(240, 1, 512), CFrame.new(140, 0.3, 0), Color3.fromRGB(40, 100, 150), Enum.Material.Glass)
-	water.Transparency = 0.15
+	local water = part(folder, Vector3.new(240, 1, 512), CFrame.new(140, 0.3, 0), Color3.fromRGB(32, 118, 160), Enum.Material.Glass)
+	water.Transparency = 0.28
 	water.Reflectance = 0.1
 	water.CanCollide = false
 	part(folder, Vector3.new(8, 2, 300), CFrame.new(18, 0, 0), Color3.fromRGB(130, 126, 120), Enum.Material.Cobblestone)
@@ -577,8 +577,107 @@ function PortScene.build(info, onFacility)
 	for x = -40, 10, 25 do
 		for side = -1, 1, 2 do
 			part(folder, Vector3.new(0.5, 7, 0.5), CFrame.new(x, 3.5, side * 7), Color3.fromRGB(40, 40, 44), Enum.Material.Metal)
-			part(folder, Vector3.new(1, 1, 1), CFrame.new(x, 7.2, side * 7), Color3.fromRGB(255, 220, 140), Enum.Material.Neon)
+			local bulb = part(folder, Vector3.new(1, 1, 1), CFrame.new(x, 7.2, side * 7), Color3.fromRGB(255, 220, 140), Enum.Material.Neon)
+			local glow = Instance.new("PointLight")
+			glow.Color = Color3.fromRGB(255, 214, 140)
+			glow.Range = 24
+			glow.Brightness = 1.4
+			glow.Parent = bulb
 		end
+	end
+
+	-- 항구 다듬기 -------------------------------------------------------------
+	-- 하늘·빛: 늦은 오후의 따뜻한 바다 분위기
+	do
+		local Lighting = game:GetService("Lighting")
+		Lighting.ClockTime = 16.2
+		Lighting.Brightness = 2.4
+		Lighting.Ambient = Color3.fromRGB(96, 98, 110)
+		Lighting.OutdoorAmbient = Color3.fromRGB(122, 124, 138)
+		Lighting.ColorShift_Top = Color3.fromRGB(255, 224, 170)
+		Lighting.GlobalShadows = true
+		local atmos = Lighting:FindFirstChild("MareAtmosphere")
+		if not atmos then
+			atmos = Instance.new("Atmosphere")
+			atmos.Name = "MareAtmosphere"
+			atmos.Parent = Lighting
+		end
+		atmos.Density = 0.28
+		atmos.Offset = 0.2
+		atmos.Color = Color3.fromRGB(214, 200, 184)
+		atmos.Decay = Color3.fromRGB(120, 140, 170)
+		atmos.Glare = 0.35
+		atmos.Haze = 1.4
+		if not Lighting:FindFirstChild("MareGrade") then
+			local cc = Instance.new("ColorCorrectionEffect")
+			cc.Name = "MareGrade"
+			cc.Saturation = 0.12
+			cc.Contrast = 0.08
+			cc.TintColor = Color3.fromRGB(255, 246, 232)
+			cc.Parent = Lighting
+			local bloom = Instance.new("BloomEffect")
+			bloom.Name = "MareBloom"
+			bloom.Intensity = 0.35
+			bloom.Size = 28
+			bloom.Threshold = 1.6
+			bloom.Parent = Lighting
+			local rays = Instance.new("SunRaysEffect")
+			rays.Name = "MareRays"
+			rays.Intensity = 0.08
+			rays.Spread = 0.6
+			rays.Parent = Lighting
+		end
+	end
+	-- 물가: 거품 띠와 바위
+	do
+		local foam = part(folder, Vector3.new(3, 0.2, 300), CFrame.new(21.5, 0.45, 0), Color3.fromRGB(240, 246, 250), Enum.Material.SmoothPlastic)
+		foam.Transparency = 0.45
+		foam.CanCollide = false
+		for _, z in { -120, -70, 70, 120 } do
+			if not importedModel(folder, "Town", "rock-large", Vector3.new(15, 0, z), 7, true) then
+				part(folder, Vector3.new(6, 4, 6), CFrame.new(15, 1, z), Color3.fromRGB(120, 118, 112), Enum.Material.Slate, Enum.PartType.Ball)
+			end
+		end
+		for _, z in { -34, 34, -96, 96 } do
+			importedModel(folder, "Town", "rock-small", Vector3.new(16.5, 0, z), 3.5, false)
+		end
+		-- 종려나무 (부두 앞 해안)
+		for _, z in { -16, 16, -32, 32 } do
+			importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(13, 0, z), 6.5, false)
+		end
+	end
+	-- 부두: 짐과 대포
+	do
+		for i, x in { 30, 36, 44, 52 } do
+			importedModel(folder, "Naval", "chest", Vector3.new(x, 2, if i % 2 == 0 then 3.4 else -3.4), 2.4, false)
+		end
+		importedModel(folder, "Naval", "cannon", Vector3.new(40, 2, -3.6), 3.4, false)
+		importedModel(folder, "Naval", "cannon", Vector3.new(58, 2, 3.6), 3.4, false)
+	end
+	-- 광장: 시장 가판대, 우물, 수레, 벤치
+	do
+		for _, spot in { Vector3.new(-18, 0, -13), Vector3.new(-18, 0, 13), Vector3.new(2, 0, 14) } do
+			importedModel(folder, "Town", "stall", spot, 6.5, false)
+		end
+		importedModel(folder, "Town", "village-well", Vector3.new(-30, 0, 15), 5.5, true)
+		importedModel(folder, "Town", "cart", Vector3.new(-24, 0, 19), 5.5, false)
+		importedModel(folder, "Town", "cart", Vector3.new(-26, 0, -19), 5.5, false)
+		importedModel(folder, "Town", "bench_A", Vector3.new(-8, 0, 9), 4.5, false)
+		importedModel(folder, "Town", "bench_B", Vector3.new(-8, 0, -9), 4.5, false)
+		for _, x in { -52, -74, -96, -118, -138 } do
+			for side = -1, 1, 2 do
+				local pick = ({ "tree", "tree-high", "tree-crooked", "tree_large", "tree_tiny" })[rng:NextInteger(1, 5)]
+				local kind = if pick == "tree_large" or pick == "tree_tiny" then "Town" else "Town"
+				importedModel(folder, kind, pick, Vector3.new(x + rng:NextNumber(-3, 3), 0, side * rng:NextNumber(10, 13)), rng:NextNumber(6, 9), false)
+			end
+		end
+		for _, z in { -44, 44 } do
+			importedModel(folder, "Town", "foliage_A", Vector3.new(-2, 0, z), 5, false)
+			importedModel(folder, "Town", "foliage_B", Vector3.new(-16, 0, z), 5, false)
+		end
+		-- 성곽풍 길목 문 (큰길 입구)
+		importedModel(folder, "Town", "gate_double_left", Vector3.new(-46, 0, -5.5), 6, false)
+		importedModel(folder, "Town", "gate_double_right", Vector3.new(-46, 0, 5.5), 6, false)
 	end
 
 	-- 갈매기 (항구 위를 맴돈다)
