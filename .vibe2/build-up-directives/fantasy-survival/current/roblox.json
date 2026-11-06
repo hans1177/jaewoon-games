@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g1-445a0d01b33e",
-  "directiveFingerprint": "445a0d01b33e021c21ede2d0d134108134dd5f793201b00009ecc2187f8cbcce",
+  "directiveId": "fantasy-survival-build-up-g1-33c3bb86927a",
+  "directiveFingerprint": "33c3bb86927ac8656dbdcbdb614519fe0c78af009176cf1c3364faf9ea8fd284",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "fantasy-survival",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "c5c46a9f6c9755118e64f00d3906cccfb2c21683dff962b7dae925696d42b5a6",
+  "sourceTreeFingerprint": "527e17b12b9310a44fc58b5d2d1f32d38c758f42f13bbcf43f63814e2115fd75",
   "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
   "designSourceBuildUp": {
     "version": 1,
@@ -346,7 +346,7 @@
           "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
           "VFX_AUDIO_CAMERA_POLISH_MOBILE"
         ],
-        "sourceTreeFingerprint": "c5c46a9f6c9755118e64f00d3906cccfb2c21683dff962b7dae925696d42b5a6",
+        "sourceTreeFingerprint": "527e17b12b9310a44fc58b5d2d1f32d38c758f42f13bbcf43f63814e2115fd75",
         "rule": "MAIN_A_NAMED_GAME_SYSTEM_B_EXISTING_GAME_SYSTEMS; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -493,7 +493,7 @@
       "nextAction": "OPTIONAL_COMPATIBILITY_COMPARISON_ONLY_ROBLOX_LUAU_REMAINS_ORIGINAL"
     },
     "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
-    "sourceTreeFingerprint": "c5c46a9f6c9755118e64f00d3906cccfb2c21683dff962b7dae925696d42b5a6",
+    "sourceTreeFingerprint": "527e17b12b9310a44fc58b5d2d1f32d38c758f42f13bbcf43f63814e2115fd75",
     "multiplayerMode": "HYBRID",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -595,11 +595,6 @@
         "inspectedSymbols": [
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "setEnemyAttackState",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedShield",
             "kind": "FUNCTION"
           },
@@ -610,12 +605,17 @@
           },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "watchBowVisual",
+            "symbol": "setEnemyAttackState",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "strike",
+            "symbol": "equippedSlot",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+            "symbol": "watchBowVisual",
             "kind": "FUNCTION"
           }
         ],
@@ -704,11 +704,6 @@
         "inspectedSymbols": [
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "setEnemyAttackState",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedShield",
             "kind": "FUNCTION"
           },
@@ -719,12 +714,17 @@
           },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "watchBowVisual",
+            "symbol": "setEnemyAttackState",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "strike",
+            "symbol": "equippedSlot",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+            "symbol": "watchBowVisual",
             "kind": "FUNCTION"
           }
         ],
@@ -807,11 +807,6 @@
         "inspectedSymbols": [
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "setEnemyAttackState",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedShield",
             "kind": "FUNCTION"
           },
@@ -822,12 +817,17 @@
           },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "watchBowVisual",
+            "symbol": "setEnemyAttackState",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "strike",
+            "symbol": "equippedSlot",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+            "symbol": "watchBowVisual",
             "kind": "FUNCTION"
           }
         ],
@@ -909,11 +909,6 @@
         "inspectedSymbols": [
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "setEnemyAttackState",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedShield",
             "kind": "FUNCTION"
           },
@@ -924,12 +919,17 @@
           },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "watchBowVisual",
+            "symbol": "setEnemyAttackState",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "strike",
+            "symbol": "equippedSlot",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+            "symbol": "watchBowVisual",
             "kind": "FUNCTION"
           }
         ],
@@ -1042,8 +1042,8 @@
       "runtimeVerified": false
     },
     "observedGameCodeFiles": [
-      "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
@@ -1054,8 +1054,8 @@
       "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau"
     ],
     "executableCodeCandidateFiles": [
-      "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
@@ -1104,7 +1104,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "c5c46a9f6c9755118e64f00d3906cccfb2c21683dff962b7dae925696d42b5a6",
+    "sourceTreeFingerprint": "527e17b12b9310a44fc58b5d2d1f32d38c758f42f13bbcf43f63814e2115fd75",
     "mode": "PRESERVATION_PRESENTATION_MILESTONES_ONLY",
     "authoredItemCount": 48,
     "authoredCounts": {
@@ -10111,52 +10111,52 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=190",
+      "CURRENT_SOURCE_FILES=300",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH"
     ],
     "signals": {
-      "combat": 1818,
-      "progression": 1528,
-      "ai": 470,
-      "save": 459,
-      "multiplayer": 65,
-      "animation": 561,
-      "motionStates": 2794,
-      "gameFeel": 206,
-      "vfx": 453,
-      "camera": 362,
-      "audio": 86,
-      "audioDynamics": 55,
-      "ui": 2184,
-      "uiFlow": 1819,
+      "combat": 2104,
+      "progression": 1790,
+      "ai": 510,
+      "save": 472,
+      "multiplayer": 68,
+      "animation": 586,
+      "motionStates": 3162,
+      "gameFeel": 223,
+      "vfx": 515,
+      "camera": 388,
+      "audio": 105,
+      "audioDynamics": 59,
+      "ui": 2388,
+      "uiFlow": 1924,
       "entryFlow": 14,
       "loadingFlow": 4,
-      "input": 354,
-      "map": 3296,
-      "landmark": 439,
-      "interaction": 1085,
-      "inventory": 743,
-      "equipment": 352,
+      "input": 363,
+      "map": 4541,
+      "landmark": 628,
+      "interaction": 1301,
+      "inventory": 892,
+      "equipment": 417,
       "settings": 76,
-      "feedback": 252,
-      "session": 143,
-      "content": 3335,
-      "choice": 2130,
-      "connection": 15,
-      "performance": 184,
-      "lighting": 415,
-      "primitive": 86,
+      "feedback": 290,
+      "session": 197,
+      "content": 3904,
+      "choice": 2333,
+      "connection": 16,
+      "performance": 213,
+      "lighting": 459,
+      "primitive": 90,
       "todo": 0,
-      "errorRecovery": 204
+      "errorRecovery": 267
     },
     "topFiles": [
       {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "score": 3806
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "score": 4621
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "score": 3515
+        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+        "score": 3991
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -10164,11 +10164,11 @@
       },
       {
         "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
-        "score": 613
+        "score": 770
       },
       {
         "file": "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-        "score": 199
+        "score": 374
       },
       {
         "file": "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
@@ -10201,8 +10201,24 @@
     ],
     "sourceAnchors": [
       {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 3718,
+        "kind": "FUNCTION",
+        "symbol": "equippedShield",
+        "context": "equippedShield=function(player) return equipped(player,\"Shield\") end,",
+        "score": 170
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 3719,
+        "kind": "FUNCTION",
+        "symbol": "equippedChest",
+        "context": "equippedChest=function(player) return equipped(player,\"Chest\") end,",
+        "score": 170
+      },
+      {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 11449,
+        "line": 12475,
         "kind": "FUNCTION",
         "symbol": "paintGuide",
         "context": "local function paintGuide()",
@@ -10210,7 +10226,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5039,
+        "line": 5692,
         "kind": "FUNCTION",
         "symbol": "setEnemyAttackState",
         "context": "local function setEnemyAttackState(enemy, state)",
@@ -10226,19 +10242,19 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3308,
+        "line": 3720,
         "kind": "FUNCTION",
-        "symbol": "equippedShield",
-        "context": "equippedShield=function(player) return equipped(player,\"Shield\") end,",
+        "symbol": "equippedSlot",
+        "context": "equippedSlot=function(player,slot) return equipped(player,slot) end,",
         "score": 138
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3309,
+        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+        "line": 12692,
         "kind": "FUNCTION",
-        "symbol": "equippedChest",
-        "context": "equippedChest=function(player) return equipped(player,\"Chest\") end,",
-        "score": 138
+        "symbol": "makeButton",
+        "context": "local function makeButton(name,label,offsetY,action,attr)",
+        "score": 122
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -10258,7 +10274,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3412,
+        "line": 3991,
         "kind": "FUNCTION",
         "symbol": "watchBowVisual",
         "context": "local function watchBowVisual(player)",
@@ -10266,7 +10282,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 6075,
+        "line": 6734,
         "kind": "FUNCTION",
         "symbol": "strike",
         "context": "local function strike(enemy,scale)",
@@ -10298,7 +10314,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 1739,
+        "line": 1781,
         "kind": "FUNCTION",
         "symbol": "refreshMeadowCameraOption",
         "context": "local function refreshMeadowCameraOption()",
@@ -10306,7 +10322,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 2479,
+        "line": 2521,
         "kind": "FUNCTION",
         "symbol": "itemValue",
         "context": "local function itemValue(item)",
@@ -10314,7 +10330,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 7914,
+        "line": 7996,
         "kind": "FUNCTION",
         "symbol": "updateMeadowQuestDirection",
         "context": "local function updateMeadowQuestDirection()",
@@ -10322,7 +10338,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 10973,
+        "line": 11995,
         "kind": "FUNCTION",
         "symbol": "quickSay",
         "context": "local function quickSay(text)",
@@ -10330,7 +10346,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 693,
+        "line": 1092,
         "kind": "FUNCTION",
         "symbol": "villageChoose",
         "context": "local function villageChoose(player,actionId)",
@@ -10338,7 +10354,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3013,
+        "line": 3418,
         "kind": "FUNCTION",
         "symbol": "equipped",
         "context": "local function equipped(player,slot)",
@@ -10346,7 +10362,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5964,
+        "line": 6623,
         "kind": "FUNCTION",
         "symbol": "stun",
         "context": "local function stun(list,seconds)",
@@ -10378,7 +10394,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 6282,
+        "line": 6361,
         "kind": "FUNCTION",
         "symbol": "bindForestClimate",
         "context": "local function bindForestClimate(model)",
@@ -10386,7 +10402,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 6972,
+        "line": 7051,
         "kind": "FUNCTION",
         "symbol": "layoutMeadowCombatUi",
         "context": "local function layoutMeadowCombatUi()",
@@ -10394,7 +10410,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 2918,
+        "line": 3317,
         "kind": "FUNCTION",
         "symbol": "awardProgress",
         "context": "local function awardProgress(player, experience, coinReward)",
@@ -10402,7 +10418,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5136,
+        "line": 5789,
         "kind": "FUNCTION",
         "symbol": "chooseMeadowMobSkill",
         "context": "local function chooseMeadowMobSkill(enemy)",
@@ -10410,7 +10426,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5954,
+        "line": 6613,
         "kind": "FUNCTION",
         "symbol": "inRange",
         "context": "local function inRange(r,limit)",
@@ -10418,7 +10434,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 7743,
+        "line": 8253,
         "kind": "FUNCTION",
         "symbol": "say",
         "context": "local function say(text) pcall(function() villageDialogue(player,d.name,text) end) end",
@@ -10426,7 +10442,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 7901,
+        "line": 8412,
         "kind": "FUNCTION",
         "symbol": "say",
         "context": "local function say(text) pcall(function() villageDialogue(player,room.name,text) end) end",
@@ -10434,7 +10450,15 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 8907,
+        "line": 10634,
+        "kind": "FUNCTION",
+        "symbol": "topMenu",
+        "context": "local function topMenu(player)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 10848,
         "kind": "FUNCTION",
         "symbol": "stageOf",
         "context": "local function stageOf(player,line) return readNumber(player,line.Field,0) end",
@@ -10442,7 +10466,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 8929,
+        "line": 10870,
         "kind": "FUNCTION",
         "symbol": "complete",
         "context": "local function complete(player,line)",
@@ -10450,7 +10474,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
-        "line": 733,
+        "line": 815,
         "kind": "FUNCTION",
         "symbol": "add",
         "context": "local function add(field,n) if n>0 then item[field]=(item[field] or 0)+n end end",
@@ -10490,7 +10514,15 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 1281,
+        "line": 9429,
+        "kind": "METHOD",
+        "symbol": "motion.family",
+        "context": "motion.family=function()",
+        "score": 88
+      },
+      {
+        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+        "line": 1284,
         "kind": "FUNCTION",
         "symbol": "equippedName",
         "context": "local function equippedName(slot)",
@@ -10498,7 +10530,15 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 4830,
+        "line": 2509,
+        "kind": "FUNCTION",
+        "symbol": "owned",
+        "context": "local function owned(item)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+        "line": 4891,
         "kind": "FUNCTION",
         "symbol": "showArrivalCamera",
         "context": "local function showArrivalCamera()",
@@ -10506,7 +10546,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 10978,
+        "line": 12000,
         "kind": "FUNCTION",
         "symbol": "press",
         "context": "local function press(i)",
@@ -10514,7 +10554,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 2928,
+        "line": 3327,
         "kind": "FUNCTION",
         "symbol": "addSmithXp",
         "context": "local function addSmithXp(player,amount)",
@@ -10522,7 +10562,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3038,
+        "line": 3443,
         "kind": "FUNCTION",
         "symbol": "publishStats",
         "context": "local function publishStats(player)",
@@ -10530,7 +10570,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5946,
+        "line": 6605,
         "kind": "FUNCTION",
         "symbol": "meadowUltimate",
         "context": "local function meadowUltimate(player)",
@@ -10538,55 +10578,15 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 6081,
+        "line": 6740,
         "kind": "FUNCTION",
         "symbol": "crowd",
         "context": "local function crowd(center,count,scale)",
         "score": 82
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 8906,
-        "kind": "FUNCTION",
-        "symbol": "say",
-        "context": "local function say(player,title,text) pcall(function() villageDialogue(player,title,text) end) end",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 8908,
-        "kind": "FUNCTION",
-        "symbol": "unlocked",
-        "context": "local function unlocked(player,line)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "line": 1050,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "line": 4319,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "line": 4969,
-        "kind": "FUNCTION",
-        "symbol": "overTabs",
-        "context": "local function overTabs(position)",
-        "score": 82
-      },
-      {
         "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
-        "line": 1248,
+        "line": 1988,
         "kind": "FUNCTION",
         "symbol": "lm",
         "context": "local function lm(id) for _, l in ipairs(Config.WorldMap.Landmarks) do if l.Id == id then return l end end end",
@@ -10594,7 +10594,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
-        "line": 1249,
+        "line": 1989,
         "kind": "FUNCTION",
         "symbol": "make",
         "context": "local function make(id, field, kind, name, need, intro, lmId, zone, namedOrLord, step1, step2, step3, prompt, c1, c2, reward)",
@@ -11752,9 +11752,9 @@
   ],
   "primaryFocus": "USABILITY",
   "thisLoopPrimaryGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"마력숲 생존기\", 현재 책임 소스는 roblox-games/fantasy-survival/client/Game.client.luau::paintGuide, roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState, roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode, roblox-games/fantasy-survival/server/Game.server.luau::equippedShield, roblox-games/fantasy-survival/server/Game.server.luau::equippedChest, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync, roblox-games/fantasy-survival/client/Game.client.luau::cycleMeadowCameraMode, roblox-games/fantasy-survival/server/Game.server.luau::watchBowVisual이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"마력숲 생존기\", 현재 책임 소스는 roblox-games/fantasy-survival/server/Game.server.luau::equippedShield, roblox-games/fantasy-survival/server/Game.server.luau::equippedChest, roblox-games/fantasy-survival/client/Game.client.luau::paintGuide, roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState, roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode, roblox-games/fantasy-survival/server/Game.server.luau::equippedSlot, roblox-games/fantasy-survival/client/Game.client.luau::makeButton, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/fantasy-survival/client/Game.client.luau::paintGuide, roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState, roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode, roblox-games/fantasy-survival/server/Game.server.luau::equippedShield, roblox-games/fantasy-survival/server/Game.server.luau::equippedChest, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync, roblox-games/fantasy-survival/client/Game.client.luau::cycleMeadowCameraMode, roblox-games/fantasy-survival/server/Game.server.luau::watchBowVisual에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/fantasy-survival/server/Game.server.luau::equippedShield, roblox-games/fantasy-survival/server/Game.server.luau::equippedChest, roblox-games/fantasy-survival/client/Game.client.luau::paintGuide, roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState, roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode, roblox-games/fantasy-survival/server/Game.server.luau::equippedSlot, roblox-games/fantasy-survival/client/Game.client.luau::makeButton, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "마력숲 생존기를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "전투와 획득 장비의 조합 운용 × 철학·사상가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -11900,7 +11900,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 51094357,
+        "sourceBytes": 54919310,
         "largestFileBytes": 2114676,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -12099,13 +12099,13 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "fantasy-survival",
     "sourceRoot": "roblox-games/fantasy-survival",
-    "sourceTreeFingerprint": "c5c46a9f6c9755118e64f00d3906cccfb2c21683dff962b7dae925696d42b5a6",
+    "sourceTreeFingerprint": "527e17b12b9310a44fc58b5d2d1f32d38c758f42f13bbcf43f63814e2115fd75",
     "sourceRevision": null,
     "scan": {
       "complete": true,
       "reason": null,
       "sourceCount": 19,
-      "assetCount": 173,
+      "assetCount": 341,
       "assetReferences": 3,
       "missingReferences": 0
     },
@@ -13123,6 +13123,276 @@
         "runtimeVerified": false
       },
       {
+        "path": "roblox-games/fantasy-survival/assets/forest/bridge-stone.glb",
+        "bytes": 17708,
+        "sha256": "sha256:b8b311f525ad616fcdebb6463db8b0c7710af58eb45308b54c08bcb290a2315e",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/bridge-wood.glb",
+        "bytes": 15692,
+        "sha256": "sha256:3da4c208b0f72b7f2ba42db521b62ec4b0278050c75256a6982c40d21aab5701",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/campfire-stones.glb",
+        "bytes": 17344,
+        "sha256": "sha256:54869db23243a3f4905bc00bd4cd93b1037b28556ab3ef93e7a893a093791e35",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cliff-cave-rock.glb",
+        "bytes": 5480,
+        "sha256": "sha256:2d83296b0166ad0e980152ad4f45b4e45349e932a6b6c2adbe7eb606a6472d8d",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cliff-steps-rock.glb",
+        "bytes": 15952,
+        "sha256": "sha256:f290e67a836ec459efcedb013f67258c2043fec128f07d6a16454e8505b7530f",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cliff-waterfall-rock.glb",
+        "bytes": 4488,
+        "sha256": "sha256:08063b24498cae385c204e9038a72f0dd438fdfa29ecf106a0df5e656b7edff6",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cliff-waterfalltop-rock.glb",
+        "bytes": 7076,
+        "sha256": "sha256:c5f7b299f3a8ec16c138bd962eace461f06a882f3614c396d3ba8020f1a8bbe6",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/crop-pumpkin.glb",
+        "bytes": 10840,
+        "sha256": "sha256:5b4878c5996033629419c26ac32153ce8ac06bbbdac98e4fa8a5cbab98f78077",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/crops-wheatstageb.glb",
+        "bytes": 30040,
+        "sha256": "sha256:589db4d6fe0bd7616c1f1c2f10a335704b2dad5d24638dc08a5b2e5334c68852",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ground-pathstraight.glb",
+        "bytes": 5620,
+        "sha256": "sha256:86a1e88aaa028ccdfb98b6653c282c6aadb0fbccf9c4de00a834516b9bf79d37",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ground-riverbend.glb",
+        "bytes": 5684,
+        "sha256": "sha256:26bc9c6cc1a9f6c0e9e6a430a92b655e53150dd6dea0085e76a3828d0fd92f86",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ground-rivercross.glb",
+        "bytes": 7560,
+        "sha256": "sha256:dcea9a91eb3117162ea70dd7f8718c1df7490d2eb27ed0a94e0f8f0d27f14033",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ground-riverstraight.glb",
+        "bytes": 6044,
+        "sha256": "sha256:d1061c7ab8d883fb26177e7cc36b2564b0a437620465c24f1a29629423cda096",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/hanging-moss.glb",
+        "bytes": 4776,
+        "sha256": "sha256:2124c2d038054f1ea89d470a6095d35c2fbdb2674916db93400ea6ed5f499cb0",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/log-large.glb",
+        "bytes": 7924,
+        "sha256": "sha256:e7a92369062d491e5a31a163d390e07db04ee573605bbfa84c00660d18896b4c",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/log-stack.glb",
+        "bytes": 10896,
+        "sha256": "sha256:90eaae4a01ba1f25c2f0c6d83087e4a7a8fac684f2452615245333968d118d68",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/plant-bush.glb",
+        "bytes": 4396,
+        "sha256": "sha256:ae7b1beb39e242b13f5f29e3ec23ef21034b814f82297b8aa00a9bf4e1b09590",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/platform-beach.glb",
+        "bytes": 13204,
+        "sha256": "sha256:4fa4a12535983be876098841c2114bfd755a590b0db84251f44a96cbd224bfe5",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/statue-column.glb",
+        "bytes": 10472,
+        "sha256": "sha256:5d7f6c8bce8d1dc7ee62b1841376cda331c4359acfa2b9a11dd7e78c14ea9dbb",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/statue-columndamaged.glb",
+        "bytes": 8824,
+        "sha256": "sha256:ce8f21c31ec16ad67759dd171860bd85fd57fc3857963610c4ed8a39c8d91b95",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/statue-head.glb",
+        "bytes": 14704,
+        "sha256": "sha256:02a0c58e713176004f9054f6a6181b965e2cc25ff7c77f5d17458b00c270b60e",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/statue-obelisk.glb",
+        "bytes": 4416,
+        "sha256": "sha256:e18013044ad6453a1850226be29f63c37d67e0002141f5f6a4d14a46bde69e00",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/statue-ring.glb",
+        "bytes": 6568,
+        "sha256": "sha256:5c62e4165f7a76436faa0b20e98b47d0a9e5021dcbf2a0eef0cdf0912180f02c",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/tent-detailedopen.glb",
+        "bytes": 15324,
+        "sha256": "sha256:d54d9665d07e0ff9680e56731c9f5338fc25d93788504d63b8375f54e6444193",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/tree-default-fall.glb",
+        "bytes": 16940,
+        "sha256": "sha256:f8e90ed7f7771644998a7c361302213af04350150b3ea0631e8384d26506efa2",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/tree-oak.glb",
+        "bytes": 14644,
+        "sha256": "sha256:d7fd8773674928c50c11b66d12c636d49bdcc15a8b1c7fbb98e6f63a3439a3f3",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/tree-pinedefaulta.glb",
+        "bytes": 17220,
+        "sha256": "sha256:60d8f352fa3659ed275e06cbddfecf8f92c8effe2977c2f2d7b29b6c9b582e46",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
         "path": "roblox-games/fantasy-survival/assets/village-extra/banner-green.glb",
         "bytes": 21400,
         "sha256": "sha256:ab47fc05d2c5ec045a78161a191e5d635de119ce6fed9cbbbae8e74b51babb74",
@@ -13276,6 +13546,76 @@
         "path": "roblox-games/fantasy-survival/assets/village-extra/windmill.glb",
         "bytes": 82356,
         "sha256": "sha256:1ea7e7714b71f65a2ff6c2a153274a9e9edaa826748eb6f3e3350793d24ce4b5",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/village-extra2/castle-gate.glb",
+        "bytes": 21424,
+        "sha256": "sha256:ae32a26b2038c50bb1da0b2302550d6697e797c91f662a85fdd52c475d948ed2",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/village-extra2/castle-tower-square-base.glb",
+        "bytes": 12008,
+        "sha256": "sha256:c28cc20ca9e03e9fef6b4996d7224732b832d6aeae56fada269061ba5f0bedc2",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/village-extra2/castle-tower-square-mid.glb",
+        "bytes": 15292,
+        "sha256": "sha256:232421ab4739b2d65e5b810f8642c9d561cfdc0862970adb773ecd98fb2fe563",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/village-extra2/castle-tower-square-roof.glb",
+        "bytes": 21584,
+        "sha256": "sha256:251278b3dc46c1416fcde71c6e568e62e160c689e6f61f865ed8d90dc11adc35",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/village-extra2/castle-wall-corner.glb",
+        "bytes": 22816,
+        "sha256": "sha256:4c18b0151bef5bccebd4f0ba8836ec9a8c96e1719c9d2d935b5af3f6ceae8bbd",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/village-extra2/castle-wall-pillar.glb",
+        "bytes": 25708,
+        "sha256": "sha256:0fc10abae8bad91ec938da54a0d457143f4976c497facab076d0d756b783e4e0",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/village-extra2/castle-wall.glb",
+        "bytes": 24104,
+        "sha256": "sha256:196df14932c4277adcc71696722b04c0f1911d34fa3316fff74fab6bb72ffd9c",
         "familyCandidate": "BUILDINGS_PROPS",
         "integrity": "HEADER_VALID",
         "rightsVerified": false,
@@ -13846,6 +14186,1346 @@
         "path": "roblox-games/fantasy-survival/assets/village-extra2/town-tree-high.glb",
         "bytes": 31892,
         "sha256": "sha256:d9b38773fbb33d0aa4c4488ff462db306df371dce534732d073eb38e40a3f164",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/barrel-open.glb",
+        "bytes": 39236,
+        "sha256": "sha256:15e8195b6edbca9a832f50a39d30db26608183e29c10fe9d0628a24612d2b0e9",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/box-open.glb",
+        "bytes": 24516,
+        "sha256": "sha256:2d1c4e6a40008f2b27541619319d2732a863afabc528691e3668de861a624bea",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/bread.glb",
+        "bytes": 20204,
+        "sha256": "sha256:f21bd08e3bf28bec12dce82278e32fbd0cbcd92c6afd54f8031a4d960ead70ab",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/bucket.glb",
+        "bytes": 15288,
+        "sha256": "sha256:5b447c790783bb1f159a8fc2ae8344864dca4977770080b2626f02c651f919b9",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/chest.glb",
+        "bytes": 42556,
+        "sha256": "sha256:5bede1ade06a6854e6b92e502512d01f88dd0394008d407ba7d1bc403d07e37e",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/egg.glb",
+        "bytes": 16784,
+        "sha256": "sha256:e790fdab4fb5c3c839192df32cc52bdaf4ed0435f3a41b2b19ddf7617dd548e9",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/fish-large.glb",
+        "bytes": 39196,
+        "sha256": "sha256:72fbad4e41022c179619141845ad62a7e5d6f44e7c3a3433930e0cccd410c123",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/fish.glb",
+        "bytes": 42412,
+        "sha256": "sha256:4e0a385db54547264ed692e174cc7e001756262c71e8587acb22ec98e564146f",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/glass-wine.glb",
+        "bytes": 34728,
+        "sha256": "sha256:0ac759fc13fcb6614683b517f19b9cbb47a73ec63fb5b549ad5773cc6c8c30d2",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/grapes.glb",
+        "bytes": 69732,
+        "sha256": "sha256:50c699fe66bf86c3a722aad5e6073a8354695eb84125f1a1c3ff879c2c2f718e",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/honey.glb",
+        "bytes": 25628,
+        "sha256": "sha256:a22f9046ffa153fb06f971b611489527740b817e739c5eae44d59eb171771989",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/loaf-round.glb",
+        "bytes": 21856,
+        "sha256": "sha256:90f46a743a0f7c2b18ea6f7f9e25b8103207b43c268577b34eb56e8cb80019d0",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/meat-raw.glb",
+        "bytes": 20684,
+        "sha256": "sha256:09b09ce3ca68f4b0a83d88cea906e477655de6c3a06d175121bfbf7ffe63606f",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/mortar-pestle.glb",
+        "bytes": 17976,
+        "sha256": "sha256:34b36c73f27708af3ca57b938b6ee444822224db5937af371e250a1c3805d45e",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/mushroom.glb",
+        "bytes": 19188,
+        "sha256": "sha256:a6e666e8ed150fb01f02662cec1e8447e49057cfbb86c26a2f5531d5df81d113",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/pear.glb",
+        "bytes": 26296,
+        "sha256": "sha256:06fabbc0e5a9adeb36b208be4ab28190c41a4d24c28995500e9da51ef3269d73",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/plate.glb",
+        "bytes": 19216,
+        "sha256": "sha256:3181b14d2ee0fd67e3320097d56f8aad75caa94dab0fba828187445b1945245a",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/resource-wood.glb",
+        "bytes": 14736,
+        "sha256": "sha256:443cf511b4d39363b91ff70a9172c43182e1c4762ead43395110b5d7ce3197a2",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/whole-ham.glb",
+        "bytes": 22496,
+        "sha256": "sha256:eddc001988977c22a7e3e64c6dd1846a2f3964109cdba99a90bcdb00258aecc3",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/wine-red.glb",
+        "bytes": 24936,
+        "sha256": "sha256:6b428af4a79aac7bcafab081bd725e1d5593256efe4b9ef54bc41657ad2089e3",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/cargo/wine-white.glb",
+        "bytes": 24264,
+        "sha256": "sha256:bf71e8d4b8750674f707f9e0334b3f3d9ced22d26f1cf7fa639e7a8619261bfc",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/beddouble.glb",
+        "bytes": 23368,
+        "sha256": "sha256:c49b33e7d797d2ba1111895587dba7ff63b17a712eb9b4ceeb40a598f73e476c",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/bookcaseclosed.glb",
+        "bytes": 23132,
+        "sha256": "sha256:9d210448de5e1179541da895450bbc7a39f4cd673d677654cd6b134e4ea0e047",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/bookcaseclosedwide.glb",
+        "bytes": 23140,
+        "sha256": "sha256:55b9903e9646dc407ed5237a1c41c1f0a14f9edc22e3392bdb9a4804d846af6a",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/bookcaseopenlow.glb",
+        "bytes": 11520,
+        "sha256": "sha256:6d4d625faf977a2dbf155f1313cd32c6310e463114a1cd4c08cb9f80a5fb1d75",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/coatrackstanding.glb",
+        "bytes": 13288,
+        "sha256": "sha256:d8231c22dab63ceb9fc8678f6c8ceafc62afa8726b51a73b4ce349043d3cdc91",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/lampwall.glb",
+        "bytes": 4828,
+        "sha256": "sha256:a9679ecd3be05731846f22ade97c37069598ca7a06dd9319f50230e63a1ea83c",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/rugrectangle.glb",
+        "bytes": 3188,
+        "sha256": "sha256:a989d2d59c04e3071e0c90388b113a9a8f339ce1814ef984c51cb6dcd7c8e0eb",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/ruground.glb",
+        "bytes": 10164,
+        "sha256": "sha256:c4cdc8f51ed2dbfb853b147521ed40e995307392fd3b19045b2203ea50f376db",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/sidetable.glb",
+        "bytes": 8800,
+        "sha256": "sha256:8227810584f7d37582e4e9ec821c56f1dc54b99c88a8dc74242ea3b7402bc472",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/sidetabledrawers.glb",
+        "bytes": 19072,
+        "sha256": "sha256:911145653c11b103b2c2e84f3d019205d1886186015c3b52aceddc3801ae8fdf",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/stoolbar.glb",
+        "bytes": 11816,
+        "sha256": "sha256:a86167a9f92401a61fec7e509ad089ecc552d0f299743add3aeb919acb24e341",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/tablecloth.glb",
+        "bytes": 9920,
+        "sha256": "sha256:64de52b5c4370724c29feefd68a65b157c55c88592e2096987bbce007ae80bcb",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/tablecross.glb",
+        "bytes": 12140,
+        "sha256": "sha256:f0d83392aff5df82f6c9585cadff694643dbd30a4ff2b8bb01a00a7a161338a3",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/interior/tableround.glb",
+        "bytes": 6444,
+        "sha256": "sha256:f8daea9124a542a00b7bdacfddac82dc468573d43e44d7b54dd6316e9695754b",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/boat-fishing-small.glb",
+        "bytes": 31788,
+        "sha256": "sha256:61ecc608d6df76c1f8b98988593bcf79f4b0d25baf026bf46c29db389b12e278",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/boat-row-large.glb",
+        "bytes": 26024,
+        "sha256": "sha256:c3a1ee47defb9a9dab70ff24de848c31eb188d1b3292a1451038e180516058b2",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/boat-row-small.glb",
+        "bytes": 27672,
+        "sha256": "sha256:c7f1521885d7a4a54092349de394770af77d1bfeba7456de23dcf4126091eafd",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/buoy-flag.glb",
+        "bytes": 30560,
+        "sha256": "sha256:85fff2565bd715b1a0d71aa654c4b0af0978c0db38d8964bf2e7a532d5f72e02",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/buoy.glb",
+        "bytes": 20952,
+        "sha256": "sha256:b5f7260e4c2d67238473de29732dc63f881f386b7513cc2e544dd79e08778e1a",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/cargo-pile-a.glb",
+        "bytes": 27148,
+        "sha256": "sha256:8c501e1b3013fdb032ce868936d836d1755d505346f63e9c1d935eeee2d4abd0",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/cargo-pile-b.glb",
+        "bytes": 43608,
+        "sha256": "sha256:075507f03f39e1a33e494b683034b0b53e0f03281216e6e2a5e86ddcc96d295f",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/crate-bottles.glb",
+        "bytes": 68672,
+        "sha256": "sha256:35e00ee70b8b28e2b39efffcfc85bd92a564eae1d2fcfe9f5351070515a1c38d",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/dock-corner.glb",
+        "bytes": 17584,
+        "sha256": "sha256:1f8540a7f121213db48cc9ec68756b85091be40130942f3f76f70d5e155a02e5",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/dock-side.glb",
+        "bytes": 16544,
+        "sha256": "sha256:769893a4f572a1c9725f303de8499915777aeffecaa693df6d7cfeedbc0b03dc",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/ladder.glb",
+        "bytes": 19604,
+        "sha256": "sha256:f3e3ef3dd15f31e20541e65222c125fc4b9886c935ab84e0e8b528ce2eeec7f1",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/palm-detailed-straight.glb",
+        "bytes": 62008,
+        "sha256": "sha256:a2aec044cdd7bbdee914e1c3761425e5d8bd109c1fa624041199403be6ec925a",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/patch-sand.glb",
+        "bytes": 20312,
+        "sha256": "sha256:b9d645e49421ba8df70feaa45ef5d09717b689f536b916396f1a6ca2c76ae1d9",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/platform-planks.glb",
+        "bytes": 16612,
+        "sha256": "sha256:2022ab436a1fd0594ca0a59c2f4848bcb6b15d43b922e714ffe27a4064f8d539",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/structure-platform-dock-small.glb",
+        "bytes": 42252,
+        "sha256": "sha256:650df3f500ac640d07396884cd86bdec3e20f836f197050de69c71c07f0412a8",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/lake/tool-paddle.glb",
+        "bytes": 16952,
+        "sha256": "sha256:5d733ee6002b87d6a6dbb4dcf820f7b524538247bdf515d4d048e5ca6746a0bf",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/relics/coin.glb",
+        "bytes": 32988,
+        "sha256": "sha256:6a0e9fc0ae3415fc0cf38edce491c58dcf6ed8259811cb22ae57a05935643326",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/relics/key.glb",
+        "bytes": 27676,
+        "sha256": "sha256:cbe41ebed4a528f9687d903e77f4b41bd5c42e08e6a6f901f602a8058004054e",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/relics/pot.glb",
+        "bytes": 37380,
+        "sha256": "sha256:ef1f421ce0840fae7482161860c48632135edd82bea91127e6692a7de2492c13",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/relics/potion.glb",
+        "bytes": 23720,
+        "sha256": "sha256:9ca7bd80940854a619cd13fafb0ea5c1c6a4e3ca043619f03f9f58e7430bc25f",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/relics/shield-rectangle.glb",
+        "bytes": 24068,
+        "sha256": "sha256:bb71b6c6d42166f146d837e1525a3b82a940c3e647058c0dfb891b32455cfe2d",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/relics/shield-round.glb",
+        "bytes": 26380,
+        "sha256": "sha256:35a10a80b7478a66be8bc1847b6376e09064a2745e1acf53eb031ac5ce649400",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/relics/weapon-spear.glb",
+        "bytes": 18020,
+        "sha256": "sha256:22a9d07d0abcf7bd72c9e464f023367a6b449de0ccffd929f724b341f4fab7ac",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/relics/weapon-sword.glb",
+        "bytes": 20156,
+        "sha256": "sha256:17ce43897fe2bbe0cdc22ecf0abfc3a9d213bb2893b626675fa116326512547a",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/altar-stone.glb",
+        "bytes": 28152,
+        "sha256": "sha256:fa84fe7317826b8fc281d2f63c7a5600c8219dc7638db6f3e0cd594e0da22414",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/bridge-draw.glb",
+        "bytes": 12688,
+        "sha256": "sha256:4e96bd32d71db84861a7f1e15c4761fd8e5f7de6ba391e81310ce57539dd85f1",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/bridge-straight.glb",
+        "bytes": 24380,
+        "sha256": "sha256:13fc2e9191a7ecb29bd1862b548357f2bb5da33f4bbd6917bdd8a2584de7ec3a",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/candle-multiple.glb",
+        "bytes": 28308,
+        "sha256": "sha256:dd5e63c9d113c4e8fd2669089b89a90990a95b555e0cbb0f2c930dd997402291",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/candle.glb",
+        "bytes": 17800,
+        "sha256": "sha256:3964e85f258f7588c8c0b24b79410fc17f90d3a87442f7638128a5737705fde3",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/crypt-large.glb",
+        "bytes": 65840,
+        "sha256": "sha256:09cd1416b4976c19d2d99d8f24e6591f432e97cf840fd7565f2499dd7efd359a",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/debris.glb",
+        "bytes": 36132,
+        "sha256": "sha256:120316475ac0a48992c26aef1ea6e7bdc1267af8760312dab7939f861f44cc28",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/door.glb",
+        "bytes": 24516,
+        "sha256": "sha256:e183718440fcca8c0bc842ea2d8a2ddfe9e5ac3ed529758b9e9c8e9f95ac5683",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/flag-banner-long.glb",
+        "bytes": 14208,
+        "sha256": "sha256:198b23751e855d1fc0bf051b33087ee90b45528abd72bcc398dfe0473bff95e2",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/flag-banner-short.glb",
+        "bytes": 14212,
+        "sha256": "sha256:29cb68e2467ccae70b8a071b86a25b56222ca311f7c4ef10e447c99668356e8f",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/lantern-candle.glb",
+        "bytes": 33116,
+        "sha256": "sha256:d028d5d442dab77020d2714d2134b46c8d0773a984805ccb9c670eea5b0fb889",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/metal-gate.glb",
+        "bytes": 30792,
+        "sha256": "sha256:7a217d67811bd75f80eaddcb7785ee2ef7b7e0a368894f7da98a6fcfe8f5715a",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/stairs-stone.glb",
+        "bytes": 17384,
+        "sha256": "sha256:ee53f363c725cc737a8621e4999285cbbd41785859d898fbe9f8152bfe349c92",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/tower-hexagon-base.glb",
+        "bytes": 15888,
+        "sha256": "sha256:85aa903cab5557c6f62a893b81fe5595d1da89e580acaa8e5a4e4e366b2c6b87",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/tower-hexagon-mid.glb",
+        "bytes": 41116,
+        "sha256": "sha256:4118a067558056afa9c4a3c1da246351880a9b844e9c16a6fa42ba4005b9d41d",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/tower-hexagon-roof.glb",
+        "bytes": 15960,
+        "sha256": "sha256:c10dc05430e216064b5ea717f3ed8dcc78961593ff3c444e5caa620e26369884",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/tower-hexagon-top-wood.glb",
+        "bytes": 21408,
+        "sha256": "sha256:4dcb6ee5975cafadcb585094fb69a37c05342db03420d831f6ed202103286917",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/tower-hexagon-top.glb",
+        "bytes": 21404,
+        "sha256": "sha256:29069cc6772ae42899622791ff233735c50247459bfd805e26d03ac5b0d73fab",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/tower-square-mid-door.glb",
+        "bytes": 36544,
+        "sha256": "sha256:099827e739442988f6d5e999ebeb57badb2c638ed92d05f2c818d3f0b886e7ae",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/tower-square-mid-windows.glb",
+        "bytes": 38400,
+        "sha256": "sha256:062ef655abb73150d62d88b4995ef9c82836a270d53cc2e7d4379efdb6481fed",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/tower-square-top-roof.glb",
+        "bytes": 18808,
+        "sha256": "sha256:74363d2f318f4a5bae2fba429914453ae64690cd75bb6b3b0f147da2373b8602",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/trap.glb",
+        "bytes": 53668,
+        "sha256": "sha256:c88cbd2dbf2a2e0483967bfdb781a96405bcc6b320383cfce6272c9239702d7d",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/wall-corner-half-tower.glb",
+        "bytes": 87572,
+        "sha256": "sha256:7ca24d3d706a94e9c4135156c59459b130d5636e29c1a0c10e21ca42cea0a9e3",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/wall-doorway.glb",
+        "bytes": 45112,
+        "sha256": "sha256:a559e4d4d0d109ec23909c4ebfda694016296ec39661aedb49fa3e32dfb30d90",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/wall-half.glb",
+        "bytes": 19684,
+        "sha256": "sha256:c17ed148fa31a37c61f6ce69c56d798ed26ec96902e7dfb9e9e70508c8b6421e",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/wall-narrow-gate.glb",
+        "bytes": 24644,
+        "sha256": "sha256:cb595ca8c7d39d62cd02647068c6ddaae3379556e08d66948f8759cba257d47f",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/wall-narrow-stairs.glb",
+        "bytes": 34524,
+        "sha256": "sha256:0b1145e77e7e74bf025f785e4720f5c07a9f2c81caa6db0527a440c11819f64b",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/wall-narrow-wood-fence.glb",
+        "bytes": 40540,
+        "sha256": "sha256:483d049658ec652e810d08991d53ab59d795517ac333f5b19b52b1d6d6790654",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/wall-to-narrow.glb",
+        "bytes": 27328,
+        "sha256": "sha256:c9d3e29ba5f8ea1d0d6f90e7683d2b9888d1da10232d6d03e4abbf6efd96e8a1",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/wood-structure.glb",
+        "bytes": 37152,
+        "sha256": "sha256:925daabc06d8690914ae4d133a2c798baf053811b3ea9495779f864469487354",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/ruins/wood-support.glb",
+        "bytes": 22096,
+        "sha256": "sha256:9735088f960a9920cf139e25e6b07d5ddbae356ae85886a89ed40bd71a0e74dc",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/terrain/canoe.glb",
+        "bytes": 15780,
+        "sha256": "sha256:ad9c7a315f55accbce8d1ee3dc853f919f01f97ab4e3096bb235d1815aed6941",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/terrain/cliff-rock.glb",
+        "bytes": 3556,
+        "sha256": "sha256:64b555b394b4312938ccd389862d5c01beb3fc417100aa41bb1e5e96a9889de0",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/terrain/column.glb",
+        "bytes": 22128,
+        "sha256": "sha256:f08459ee6979a23394a2f74f6eeec2d5aabf0ce27443c1323703a48274c0adf8",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/terrain/gate-metal-bars.glb",
+        "bytes": 95964,
+        "sha256": "sha256:944c97c3182c42c0501dd9c8dc68ff2c6b41204133a178b89957311715907b5d",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/terrain/gate-overhang.glb",
+        "bytes": 37948,
+        "sha256": "sha256:1c5b091ee0b1904454053ca2ef4a39219ea90659ec28e4ffd00047e719e56bcc",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/terrain/gate-rock.glb",
+        "bytes": 59528,
+        "sha256": "sha256:8097e54ceb25f64b8eaed30cc76971c5d345cc22532017802481f8ca81e88188",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/terrain/pillar-obelisk.glb",
+        "bytes": 19544,
+        "sha256": "sha256:b4b9e3c80ff6ff5c5d55af6dce0e546b5524cc6c41b044365204519a7efd91f0",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/balcony-wall-fence.glb",
+        "bytes": 22404,
+        "sha256": "sha256:0e0a25632937e21c5dbc22db967e824ecb38925d176e495cf25f2ae436c26089",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/balcony-wall.glb",
+        "bytes": 18584,
+        "sha256": "sha256:fad827f8de6b9834ce35975366eb13bfcf158c436ef7d43bca896612ebe22dad",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/bench_A.glb",
+        "bytes": 36476,
+        "sha256": "sha256:c99220b705834ddbb0f8803e61f8938a0b24cbfe2739f46d2aa8ed45a386c9d9",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/bench_B.glb",
+        "bytes": 13860,
+        "sha256": "sha256:053373f244d6f4c91694a0bc45c483129a3271e05768a94f9565e621e574c88a",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/chimney-base.glb",
+        "bytes": 19576,
+        "sha256": "sha256:f4e8babd642d32e4dea26eb7763719caae5913014ab5586ab0a2e82edafaf023",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/chimney-top.glb",
+        "bytes": 19060,
+        "sha256": "sha256:201acdebca8bcc3dc2ff32a3e07b7738d45993776306b495a887e22dcb34a2db",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/cobblestones.glb",
+        "bytes": 23344,
+        "sha256": "sha256:65d773a30a1aafd354168eba84e9cd819bb8359b8dc0aed4231284286220e63e",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/fence_corner.glb",
+        "bytes": 19044,
+        "sha256": "sha256:fd9b53ded96aa941c1a6f9f54d78aa0310466248727d976472c6d0f2409800ad",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/fence_open_long.glb",
+        "bytes": 8892,
+        "sha256": "sha256:f64a8ce31229515374269cfa7f52579edcb945c65e0125424155f1c5a8124f37",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/fence_open.glb",
+        "bytes": 6128,
+        "sha256": "sha256:d28959a33afd28c47f7c440ec1f2bbef4389a307af8fa94ac433749b37bc0cc3",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/fence_post.glb",
+        "bytes": 4216,
+        "sha256": "sha256:bd6fe038e3f8fdf1cec9c3468ae823713d2a4f9461050677f835f9ff964be5ae",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/fence_rails_long.glb",
+        "bytes": 3328,
+        "sha256": "sha256:3e5a853e05b9b01795ae5b3dc54078f1c551358fd8f042c87e690501189ab1a5",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/fence_rails.glb",
+        "bytes": 3316,
+        "sha256": "sha256:944f7fc463099d36719bb2d2727fb18d00d144d0b97beb6e7f0fc18382491fee",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/fence_straight_long.glb",
+        "bytes": 11728,
+        "sha256": "sha256:494ccaf74942fc9fbad794f6927cee5d307945b14d5fd2c2a4d5f945b68d2a03",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/fence_straight.glb",
+        "bytes": 8904,
+        "sha256": "sha256:6ac0f881ba91376d2d86f9ec0aceaa56f7c686e8ca77fa647c5293c50de34522",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/floor_base.glb",
+        "bytes": 8836,
+        "sha256": "sha256:af0ff4b7b2f7f66695e7b3c381c44a3904a989bb5a8352fc4eba80f0a15b7219",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/foliage_A.glb",
+        "bytes": 12896,
+        "sha256": "sha256:5c76727611e2f2f5e3718ca1656448d028ebffb2cd3a590554ac0561ea985b96",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/foliage_B.glb",
+        "bytes": 18616,
+        "sha256": "sha256:8872a8e50bced34aac4b58d9b9ed28b2dd61c626e5cf2d688832e6076a3409c9",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/fountain-square.glb",
+        "bytes": 38224,
+        "sha256": "sha256:819164b532b27eb0d4a51aa596e3c3d86138a0046337104825e4d7dcafc53338",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/gate_double_left.glb",
+        "bytes": 18572,
+        "sha256": "sha256:647ec7b3cb509d5abb1be018c6784bdd8c390d0b10c594ee168e153c290f5362",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/gate_double_right.glb",
+        "bytes": 18572,
+        "sha256": "sha256:295d56c79ba58142fd5ebbe8a72ace25fbf86f27b5216cbd18e04a5f61238595",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/gate_single.glb",
+        "bytes": 23108,
+        "sha256": "sha256:8460851a19acf1835a5141a35edd0b8d9fd60e147cbdd8fcac5299e7b6005c01",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/house_chimney.glb",
+        "bytes": 24012,
+        "sha256": "sha256:fc3edcc350819125a076b826b7e62dab849ecbe03dfc4ddc72254387f4cac44d",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/house_door.glb",
+        "bytes": 18280,
+        "sha256": "sha256:c793257534e11f3fef7b03a5b25e7eb5740ff2138b8f3429bd1dbac99e7cda24",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/house.glb",
+        "bytes": 166828,
+        "sha256": "sha256:22003f809a0e028807e0e36b484d087bed6d0a0697eb21bf3d449d2bab78e4a1",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/overhang.glb",
+        "bytes": 18812,
+        "sha256": "sha256:c58837520571e53102e9b9b63bb70137300884fbc538668e668c7f15170a788b",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/roof-high-window.glb",
+        "bytes": 31896,
+        "sha256": "sha256:27ee560c46bc2074ec3e0fa6073295712041842b6cfccbca28b77eed532c8c21",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/stall-bench.glb",
+        "bytes": 25336,
+        "sha256": "sha256:cca3e1373a205cbcd3f0ae67700477d9fb719f1f8316e4f0a15ba69681b1359f",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/stall-green.glb",
+        "bytes": 38284,
+        "sha256": "sha256:b7c21488f0bbab0df872018dbd99873bb0c4c5c8d348ab2e5bf7393964177dba",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/stall-red.glb",
+        "bytes": 35468,
+        "sha256": "sha256:a765d60d344266c3ba187791c39a78154c394804c3da93744198541d0869fa9f",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/stall-stool.glb",
+        "bytes": 25336,
+        "sha256": "sha256:c521140e61ad2144e92c23c2a9aa2f9d911a8d1a8123a9832da39b71a2c64471",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/tree_large.glb",
+        "bytes": 17788,
+        "sha256": "sha256:c219e8936d632458d499a24eb6096900390cf4c3cc26908694e6c2d709f24e60",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/tree_tiny.glb",
+        "bytes": 13436,
+        "sha256": "sha256:87526f01642311a9f85d86d6ee8f70ebc967bb18185c296913c392cad62626e4",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/tree-crooked.glb",
+        "bytes": 30460,
+        "sha256": "sha256:0020e1cf6871462cee7ed9ce78df453ca4c8e1827d945fefcb85e5e72ff572ba",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/wall-arch.glb",
+        "bytes": 16060,
+        "sha256": "sha256:4f342c7b4f62b8d599c1d5413215b615bc07765bcce1cf51d676616fc647d311",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/wall-detail-cross.glb",
+        "bytes": 19628,
+        "sha256": "sha256:8a3a77c6fe6186e88650d6386f0210c5abd26b40075dc6403a6bcdcc10748784",
+        "familyCandidate": "BUILDINGS_PROPS",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/assets/forest/village/wall-door.glb",
+        "bytes": 40492,
+        "sha256": "sha256:5798bc660cacc637fa428429bd3f32cc80bca64fd07ae01fd76dd17c5651fbbb",
         "familyCandidate": "BUILDINGS_PROPS",
         "integrity": "HEADER_VALID",
         "rightsVerified": false,
@@ -16886,7 +18566,9 @@
         "id": "ACTION_IMPACT",
         "kind": "system",
         "priority": "P2",
-        "sourceFiles": [],
+        "sourceFiles": [
+          "roblox-games/fantasy-survival/assets/forest/cargo/wine-white.glb"
+        ],
         "sourceSignalOnly": true,
         "assetCount": 0,
         "sourceState": "CANDIDATE_NOT_VERIFIED",
@@ -16919,11 +18601,12 @@
         "kind": "system",
         "priority": "P2",
         "sourceFiles": [
-          "roblox-games/fantasy-survival/assets/village-extra2/town-fountain-round-detail.glb",
-          "roblox-games/fantasy-survival/assets/village-extra2/town-stairs-stone.glb",
-          "roblox-games/fantasy-survival/opening-art/fb01_training.jpg",
-          "roblox-games/fantasy-survival/opening-art/fb08_stairs_sunset.jpg",
-          "roblox-games/fantasy-survival/painted-icons.png"
+          "roblox-games/fantasy-survival/assets/forest/ground-pathstraight.glb",
+          "roblox-games/fantasy-survival/assets/forest/ground-riverstraight.glb",
+          "roblox-games/fantasy-survival/assets/forest/lake/palm-detailed-straight.glb",
+          "roblox-games/fantasy-survival/assets/forest/ruins/bridge-straight.glb",
+          "roblox-games/fantasy-survival/assets/forest/ruins/stairs-stone.glb",
+          "roblox-games/fantasy-survival/assets/forest/ruins/wall-narrow-stairs.glb"
         ],
         "sourceSignalOnly": true,
         "assetCount": 0,
@@ -16988,9 +18671,15 @@
         "id": "BUILDINGS_PROPS",
         "kind": "asset",
         "priority": "P2",
-        "sourceFiles": [],
+        "sourceFiles": [
+          "roblox-games/fantasy-survival/assets/forest/lake/structure-platform-dock-small.glb",
+          "roblox-games/fantasy-survival/assets/forest/ruins/wood-structure.glb",
+          "roblox-games/fantasy-survival/assets/forest/village/house.glb",
+          "roblox-games/fantasy-survival/assets/forest/village/house_chimney.glb",
+          "roblox-games/fantasy-survival/assets/forest/village/house_door.glb"
+        ],
         "sourceSignalOnly": true,
-        "assetCount": 74,
+        "assetCount": 242,
         "sourceState": "CANDIDATE_NOT_VERIFIED",
         "issues": [],
         "improvement": "Improve proportions, entrance clearances and usable interactions.",
@@ -17019,6 +18708,7 @@
         "kind": "asset",
         "priority": "P2",
         "sourceFiles": [
+          "roblox-games/fantasy-survival/assets/forest/village/gate_double_right.glb",
           "roblox-games/fantasy-survival/right-icons.png"
         ],
         "sourceSignalOnly": true,
@@ -17035,7 +18725,9 @@
         "id": "COMBAT_BALANCE",
         "kind": "system",
         "priority": "P2",
-        "sourceFiles": [],
+        "sourceFiles": [
+          "roblox-games/fantasy-survival/assets/forest/statue-columndamaged.glb"
+        ],
         "sourceSignalOnly": true,
         "assetCount": 0,
         "sourceState": "CANDIDATE_NOT_VERIFIED",
@@ -17066,9 +18758,12 @@
         "kind": "asset",
         "priority": "P2",
         "sourceFiles": [
-          "roblox-games/fantasy-survival/assets/village-extra/tree-high-round.glb",
-          "roblox-games/fantasy-survival/assets/village-extra2/survival-tree-log.glb",
-          "roblox-games/fantasy-survival/assets/village-extra2/town-tree-high.glb"
+          "roblox-games/fantasy-survival/assets/forest/tree-default-fall.glb",
+          "roblox-games/fantasy-survival/assets/forest/tree-oak.glb",
+          "roblox-games/fantasy-survival/assets/forest/tree-pinedefaulta.glb",
+          "roblox-games/fantasy-survival/assets/forest/village/foliage_A.glb",
+          "roblox-games/fantasy-survival/assets/forest/village/foliage_B.glb",
+          "roblox-games/fantasy-survival/assets/forest/village/tree-crooked.glb"
         ],
         "sourceSignalOnly": true,
         "assetCount": 0,
@@ -17107,6 +18802,7 @@
         "kind": "asset",
         "priority": "P2",
         "sourceFiles": [
+          "roblox-games/fantasy-survival/assets/forest/cargo/resource-wood.glb",
           "roblox-games/fantasy-survival/assets/village-extra2/survival-resource-planks.glb",
           "roblox-games/fantasy-survival/assets/village-extra2/survival-resource-stone.glb",
           "roblox-games/fantasy-survival/assets/village-extra2/survival-resource-wood.glb",
@@ -17328,8 +19024,11 @@
         "priority": "P2",
         "sourceFiles": [
           "roblox-games/fantasy-survival/UI_PLAN.md",
-          "roblox-games/fantasy-survival/guide-icons.png",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/fantasy-survival/assets/forest/ruins/altar-stone.glb",
+          "roblox-games/fantasy-survival/assets/forest/ruins/bridge-draw.glb",
+          "roblox-games/fantasy-survival/assets/forest/ruins/bridge-straight.glb",
+          "roblox-games/fantasy-survival/assets/forest/ruins/candle-multiple.glb",
+          "roblox-games/fantasy-survival/assets/forest/ruins/candle.glb"
         ],
         "sourceSignalOnly": true,
         "assetCount": 0,
@@ -17361,11 +19060,12 @@
         "kind": "asset",
         "priority": "P2",
         "sourceFiles": [
-          "roblox-games/fantasy-survival/assets/village-extra/stall-stool.glb",
-          "roblox-games/fantasy-survival/assets/village-extra2/survival-tool-axe.glb",
-          "roblox-games/fantasy-survival/assets/village-extra2/survival-tool-hoe.glb",
-          "roblox-games/fantasy-survival/assets/village-extra2/survival-tool-pickaxe.glb",
-          "roblox-games/fantasy-survival/assets/village-extra2/survival-tool-shovel.glb"
+          "roblox-games/fantasy-survival/assets/forest/interior/stoolbar.glb",
+          "roblox-games/fantasy-survival/assets/forest/lake/tool-paddle.glb",
+          "roblox-games/fantasy-survival/assets/forest/relics/weapon-spear.glb",
+          "roblox-games/fantasy-survival/assets/forest/relics/weapon-sword.glb",
+          "roblox-games/fantasy-survival/assets/forest/village/stall-stool.glb",
+          "roblox-games/fantasy-survival/assets/village-extra/stall-stool.glb"
         ],
         "sourceSignalOnly": true,
         "assetCount": 0,
@@ -17382,7 +19082,12 @@
         "kind": "asset",
         "priority": "P2",
         "sourceFiles": [
-          "roblox-games/fantasy-survival/world-map.png"
+          "roblox-games/fantasy-survival/assets/forest/ground-pathstraight.glb",
+          "roblox-games/fantasy-survival/assets/forest/ground-riverbend.glb",
+          "roblox-games/fantasy-survival/assets/forest/ground-rivercross.glb",
+          "roblox-games/fantasy-survival/assets/forest/ground-riverstraight.glb",
+          "roblox-games/fantasy-survival/assets/forest/interior/ruground.glb",
+          "roblox-games/fantasy-survival/assets/forest/terrain/canoe.glb"
         ],
         "sourceSignalOnly": true,
         "assetCount": 0,
@@ -17415,7 +19120,9 @@
         "id": "ACTION_IMPACT",
         "kind": "system",
         "priority": "P2",
-        "sourceFiles": [],
+        "sourceFiles": [
+          "roblox-games/fantasy-survival/assets/forest/cargo/wine-white.glb"
+        ],
         "sourceSignalOnly": true,
         "assetCount": 0,
         "sourceState": "CANDIDATE_NOT_VERIFIED",
@@ -17448,11 +19155,12 @@
         "kind": "system",
         "priority": "P2",
         "sourceFiles": [
-          "roblox-games/fantasy-survival/assets/village-extra2/town-fountain-round-detail.glb",
-          "roblox-games/fantasy-survival/assets/village-extra2/town-stairs-stone.glb",
-          "roblox-games/fantasy-survival/opening-art/fb01_training.jpg",
-          "roblox-games/fantasy-survival/opening-art/fb08_stairs_sunset.jpg",
-          "roblox-games/fantasy-survival/painted-icons.png"
+          "roblox-games/fantasy-survival/assets/forest/ground-pathstraight.glb",
+          "roblox-games/fantasy-survival/assets/forest/ground-riverstraight.glb",
+          "roblox-games/fantasy-survival/assets/forest/lake/palm-detailed-straight.glb",
+          "roblox-games/fantasy-survival/assets/forest/ruins/bridge-straight.glb",
+          "roblox-games/fantasy-survival/assets/forest/ruins/stairs-stone.glb",
+          "roblox-games/fantasy-survival/assets/forest/ruins/wall-narrow-stairs.glb"
         ],
         "sourceSignalOnly": true,
         "assetCount": 0,
@@ -17603,7 +19311,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "c5c46a9f6c9755118e64f00d3906cccfb2c21683dff962b7dae925696d42b5a6",
+    "sourceFingerprint": "527e17b12b9310a44fc58b5d2d1f32d38c758f42f13bbcf43f63814e2115fd75",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -17623,7 +19331,7 @@
     "version": 1,
     "gameId": "fantasy-survival",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "c5c46a9f6c9755118e64f00d3906cccfb2c21683dff962b7dae925696d42b5a6",
+    "sourceTreeFingerprint": "527e17b12b9310a44fc58b5d2d1f32d38c758f42f13bbcf43f63814e2115fd75",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -17643,8 +19351,8 @@
         "id": "CUSTOMIZATION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
@@ -17659,8 +19367,8 @@
         "id": "MATERIAL",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
           "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau"
         ],
@@ -17674,8 +19382,8 @@
         "id": "INVENTORY",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
@@ -17691,8 +19399,8 @@
         "id": "EQUIPMENT",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
         ],
         "requiredByDesign": false,
@@ -17705,8 +19413,8 @@
         "id": "UI",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
@@ -17721,8 +19429,8 @@
         "id": "WORLD",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
@@ -17736,8 +19444,9 @@
         "id": "BIOME",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
+          "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/server/Game.server.luau"
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -17749,7 +19458,10 @@
         "id": "HOUSING",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -17761,8 +19473,8 @@
         "id": "MOTION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/server/Game.server.luau"
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -17774,8 +19486,8 @@
         "id": "ACTION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
@@ -17790,8 +19502,8 @@
         "id": "INTERACTION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
@@ -17806,8 +19518,8 @@
         "id": "SHOP",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
@@ -17821,8 +19533,8 @@
         "id": "SAVE",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
@@ -17836,8 +19548,8 @@
         "id": "COMBAT",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
@@ -17853,10 +19565,11 @@
         "id": "REWARD",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -17868,8 +19581,8 @@
         "id": "NPC_AI",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
@@ -17884,8 +19597,8 @@
         "id": "QUEST_DIALOGUE",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
@@ -17914,8 +19627,8 @@
         "id": "ECONOMY",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
@@ -17945,7 +19658,8 @@
         "responsibleFiles": [
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -17957,8 +19671,8 @@
         "id": "WEATHER",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
         ],
         "requiredByDesign": false,
@@ -17971,8 +19685,8 @@
         "id": "PHYSICS",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
         ],
@@ -18017,8 +19731,8 @@
         "id": "SKILL_VFX",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/default.project.json"
@@ -18033,8 +19747,8 @@
         "id": "NETWORK",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "requiredByDesign": true,
@@ -18049,72 +19763,76 @@
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
       ],
       "CUSTOMIZATION": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
         "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
       ],
       "MATERIAL": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
         "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau"
       ],
       "INVENTORY": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
         "roblox-games/fantasy-survival/shared/VisualAssetIds.luau"
       ],
       "EQUIPMENT": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
       ],
       "UI": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "WORLD": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "BIOME": [
+        "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
+        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "HOUSING": [
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+        "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "MOTION": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
+        "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau"
       ],
       "ACTION": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "NPC_AI": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "QUEST_DIALOGUE": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
@@ -18125,8 +19843,8 @@
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "ECONOMY": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
@@ -18138,16 +19856,17 @@
       "FARMING": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "WEATHER": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
       ],
       "PHYSICS": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
       ],
@@ -18165,47 +19884,48 @@
         "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
       ],
       "SKILL_VFX": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
         "roblox-games/fantasy-survival/default.project.json"
       ],
       "NETWORK": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "INTERACTION": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "REWARD": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "SAVE": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "COMBAT": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
         "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ]
@@ -18240,17 +19960,21 @@
       "enabled": true,
       "nodesDiscoveredFromExactRuntime": false,
       "sourceFiles": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau"
       ],
       "biomeSourceFiles": [
+        "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
+        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "housingSourceFiles": [
-        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+        "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "biomeNativeSceneBindingVerified": false,
       "housingPlacementPersistenceVerified": false,
@@ -18258,8 +19982,8 @@
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
       ],
       "interactionFiles": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
@@ -18268,7 +19992,7 @@
         {
           "from": "EXISTING_ENTRY",
           "to": "EXISTING_WORLD_DESTINATION",
-          "sourceEvidence": "roblox-games/fantasy-survival/client/Game.client.luau",
+          "sourceEvidence": "roblox-games/fantasy-survival/server/Game.server.luau",
           "state": "SOURCE_ROUTE_CANDIDATE_NOT_WALKABILITY_PROOF"
         }
       ],
@@ -18295,8 +20019,8 @@
           "id": "ACQUIRE",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
@@ -18307,8 +20031,8 @@
           "id": "STORE",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
@@ -18319,8 +20043,8 @@
           "id": "EQUIP",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
           ],
           "passed": false
@@ -18329,8 +20053,8 @@
           "id": "STAT_AND_APPEARANCE",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
@@ -18341,8 +20065,8 @@
           "id": "SAVE",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau"
           ],
@@ -18352,8 +20076,8 @@
           "id": "RECONNECT_RESTORE",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
@@ -18378,10 +20102,11 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "missingRoles": [],
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
         "checks": [
           "NATIVE_TERRAIN_AND_REGION_GRAPH",
@@ -18402,11 +20127,11 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "missingRoles": [],
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/VisualAssetIds.luau"
         ],
         "checks": [
@@ -18428,8 +20153,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "missingRoles": [],
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
@@ -18453,8 +20178,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "missingRoles": [],
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
@@ -18477,8 +20202,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "missingRoles": [],
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
@@ -18532,6 +20257,7 @@
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/client/Game.client.luau"
         ],
         "checks": [
@@ -18552,8 +20278,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "missingRoles": [],
         "responsibleFiles": [
-          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/default.project.json",
@@ -18611,8 +20337,8 @@
         {
           "actorClass": "PLAYER",
           "sourceOwnerFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
@@ -18631,8 +20357,8 @@
         {
           "actorClass": "NPC",
           "sourceOwnerFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
@@ -18651,8 +20377,8 @@
         {
           "actorClass": "ENEMY",
           "sourceOwnerFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
             "roblox-games/fantasy-survival/native-assets.json"
@@ -18669,8 +20395,8 @@
         {
           "actorClass": "BOSS",
           "sourceOwnerFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau"
           ],
@@ -18687,8 +20413,8 @@
         {
           "actorClass": "CREATURE",
           "sourceOwnerFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
@@ -18708,8 +20434,8 @@
         {
           "actorClass": "COMPANION",
           "sourceOwnerFiles": [
-            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
+            "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau"
           ],
@@ -18726,7 +20452,9 @@
           "actorClass": "MOUNT",
           "sourceOwnerFiles": [
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+            "roblox-games/fantasy-survival/client/Game.client.luau",
+            "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
+            "roblox-games/fantasy-survival/shared/GameConfig.luau"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
           "motions": [
@@ -18835,7 +20563,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "c5c46a9f6c9755118e64f00d3906cccfb2c21683dff962b7dae925696d42b5a6",
+      "sourceTreeFingerprint": "527e17b12b9310a44fc58b5d2d1f32d38c758f42f13bbcf43f63814e2115fd75",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -18859,17 +20587,21 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "c5c46a9f6c9755118e64f00d3906cccfb2c21683dff962b7dae925696d42b5a6",
+      "sourceTreeFingerprint": "527e17b12b9310a44fc58b5d2d1f32d38c758f42f13bbcf43f63814e2115fd75",
       "sourceFiles": [
         {
           "file": "roblox-games/fantasy-survival/client/Game.client.luau",
           "sites": [
             {
-              "line": 10297,
+              "line": 8236,
+              "source": "local p=Instance.new(\"Part\")"
+            },
+            {
+              "line": 11318,
               "source": "local holder=Instance.new(\"Part\")"
             },
             {
-              "line": 11396,
+              "line": 12422,
               "source": "local beam=Instance.new(\"Part\")"
             }
           ],
@@ -18947,7 +20679,7 @@
     "gameId": "fantasy-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "c5c46a9f6c9755118e64f00d3906cccfb2c21683dff962b7dae925696d42b5a6",
+    "sourceTreeFingerprint": "527e17b12b9310a44fc58b5d2d1f32d38c758f42f13bbcf43f63814e2115fd75",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -19531,8 +21263,26 @@
     ],
     "sourceSymbolsOrStateAnchors": [
       {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 3718,
+        "kind": "FUNCTION",
+        "symbol": "equippedShield",
+        "currentBehavior": "equippedShield=function(player) return equipped(player,\"Shield\") end,",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equippedShield의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 3719,
+        "kind": "FUNCTION",
+        "symbol": "equippedChest",
+        "currentBehavior": "equippedChest=function(player) return equipped(player,\"Chest\") end,",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equippedChest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 11449,
+        "line": 12475,
         "kind": "FUNCTION",
         "symbol": "paintGuide",
         "currentBehavior": "local function paintGuide()",
@@ -19541,7 +21291,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5039,
+        "line": 5692,
         "kind": "FUNCTION",
         "symbol": "setEnemyAttackState",
         "currentBehavior": "local function setEnemyAttackState(enemy, state)",
@@ -19559,21 +21309,21 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3308,
+        "line": 3720,
         "kind": "FUNCTION",
-        "symbol": "equippedShield",
-        "currentBehavior": "equippedShield=function(player) return equipped(player,\"Shield\") end,",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equippedShield의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "symbol": "equippedSlot",
+        "currentBehavior": "equippedSlot=function(player,slot) return equipped(player,slot) end,",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equippedSlot의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3309,
+        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+        "line": 12692,
         "kind": "FUNCTION",
-        "symbol": "equippedChest",
-        "currentBehavior": "equippedChest=function(player) return equipped(player,\"Chest\") end,",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equippedChest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "makeButton",
+        "currentBehavior": "local function makeButton(name,label,offsetY,action,attr)",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 makeButton의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -19583,27 +21333,21 @@
         "currentBehavior": "local function sync(state)",
         "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 43,
-        "kind": "FUNCTION",
-        "symbol": "cycleMeadowCameraMode",
-        "currentBehavior": "local function cycleMeadowCameraMode()",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 cycleMeadowCameraMode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3412,
-        "kind": "FUNCTION",
-        "symbol": "watchBowVisual",
-        "currentBehavior": "local function watchBowVisual(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 watchBowVisual의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "symbol": "equippedShield",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "symbol": "equippedChest",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
         "symbol": "paintGuide",
@@ -19624,32 +21368,20 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "symbol": "equippedShield",
+        "symbol": "equippedSlot",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "symbol": "equippedChest",
-        "role": "SERVER_AUTHORITY",
+        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+        "symbol": "makeButton",
+        "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "symbol": "sync",
         "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "symbol": "cycleMeadowCameraMode",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "symbol": "watchBowVisual",
-        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
@@ -19742,8 +21474,32 @@
     ],
     "sourceAnchors": [
       {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 3718,
+        "kind": "FUNCTION",
+        "symbol": "equippedShield",
+        "context": "equippedShield=function(player) return equipped(player,\"Shield\") end,",
+        "score": 170,
+        "currentBehavior": "equippedShield=function(player) return equipped(player,\"Shield\") end,",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equippedShield의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::equippedShield이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 3719,
+        "kind": "FUNCTION",
+        "symbol": "equippedChest",
+        "context": "equippedChest=function(player) return equipped(player,\"Chest\") end,",
+        "score": 170,
+        "currentBehavior": "equippedChest=function(player) return equipped(player,\"Chest\") end,",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equippedChest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::equippedChest이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 11449,
+        "line": 12475,
         "kind": "FUNCTION",
         "symbol": "paintGuide",
         "context": "local function paintGuide()",
@@ -19755,7 +21511,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5039,
+        "line": 5692,
         "kind": "FUNCTION",
         "symbol": "setEnemyAttackState",
         "context": "local function setEnemyAttackState(enemy, state)",
@@ -19779,27 +21535,27 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3308,
+        "line": 3720,
         "kind": "FUNCTION",
-        "symbol": "equippedShield",
-        "context": "equippedShield=function(player) return equipped(player,\"Shield\") end,",
+        "symbol": "equippedSlot",
+        "context": "equippedSlot=function(player,slot) return equipped(player,slot) end,",
         "score": 138,
-        "currentBehavior": "equippedShield=function(player) return equipped(player,\"Shield\") end,",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equippedShield의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::equippedShield이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "currentBehavior": "equippedSlot=function(player,slot) return equipped(player,slot) end,",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equippedSlot의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::equippedSlot이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3309,
+        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+        "line": 12692,
         "kind": "FUNCTION",
-        "symbol": "equippedChest",
-        "context": "equippedChest=function(player) return equipped(player,\"Chest\") end,",
-        "score": 138,
-        "currentBehavior": "equippedChest=function(player) return equipped(player,\"Chest\") end,",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 equippedChest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::equippedChest이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "makeButton",
+        "context": "local function makeButton(name,label,offsetY,action,attr)",
+        "score": 122,
+        "currentBehavior": "local function makeButton(name,label,offsetY,action,attr)",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 makeButton의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fantasy-survival/client/Game.client.luau::makeButton이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -19812,30 +21568,6 @@
         "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 43,
-        "kind": "FUNCTION",
-        "symbol": "cycleMeadowCameraMode",
-        "context": "local function cycleMeadowCameraMode()",
-        "score": 114,
-        "currentBehavior": "local function cycleMeadowCameraMode()",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 cycleMeadowCameraMode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/client/Game.client.luau::cycleMeadowCameraMode이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3412,
-        "kind": "FUNCTION",
-        "symbol": "watchBowVisual",
-        "context": "local function watchBowVisual(player)",
-        "score": 114,
-        "currentBehavior": "local function watchBowVisual(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 watchBowVisual의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::watchBowVisual이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -19967,7 +21699,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "c5c46a9f6c9755118e64f00d3906cccfb2c21683dff962b7dae925696d42b5a6",
+      "sourceTreeFingerprint": "527e17b12b9310a44fc58b5d2d1f32d38c758f42f13bbcf43f63814e2115fd75",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
@@ -20089,5 +21821,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-06T00:12:48.486Z"
+  "generatedAt": "2026-11-06T16:52:14.707Z"
 }

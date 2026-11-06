@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "deep-diver-build-up-g1-32a23e2b633d",
-  "directiveFingerprint": "32a23e2b633dae70c33d445f05c544d24ceba2fbf57388ffab31861cf4e08bef",
+  "directiveId": "deep-diver-build-up-g1-e16d1f2d46b8",
+  "directiveFingerprint": "e16d1f2d46b8c21a035c120a71673c09e558b7a93fbd2a2e372239cb817a62ee",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "deep-diver",
@@ -9,8 +9,8 @@
   "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "DEEPER_CAUSAL_REPAIR",
-  "previousDirectiveOutcome": "repair_required",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/deep-diver",
@@ -5871,13 +5871,9 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "roblox-package-asset-binding-failed",
+    "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
     "blockers": [
-      "roblox-build-package:roblox-package-asset-binding-failed",
-      "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT",
-      "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL",
-      "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:VFX",
-      "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MOTION"
+      "roblox-build-package-revalidation-pending"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -7101,7 +7097,7 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
     "contentExpansionDeferredUntilRuntimeRepairPass": false,
     "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
@@ -7115,7 +7111,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 602176,
+        "sourceBytes": 631527,
         "largestFileBytes": 269817,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -7149,7 +7145,7 @@
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
     "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=REGRESSION; previousCoverage=0; uncoveredBefore=7.",
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -11009,7 +11005,7 @@
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "287755fd7b969fd66a24cbd81ef206d10de5b8e28ed5098674bb29b9b809d3b5",
     "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "REGRESSION",
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -13323,8 +13319,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "심해 잠수부 · 검은 바다의 보물. 자연·생태·유전학 액션. 심해 잠수부 · 검은 바다의 보물에서 탐험 중 적 패턴과 도구를 조합하는 전투 × 자연·생태과 공간 상태 변환 × 유전학이 서로 결과를 되돌려 바꾸며 풍자·스릴러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -13332,7 +13328,7 @@
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "roblox-package-asset-binding-failed"
+      "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -13343,8 +13339,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial USABILITY build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -13394,7 +13390,7 @@
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "DEEPER_CAUSAL_REPAIR",
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
     "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
@@ -13452,5 +13448,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-06T00:12:43.318Z"
+  "generatedAt": "2026-11-06T16:52:09.495Z"
 }
