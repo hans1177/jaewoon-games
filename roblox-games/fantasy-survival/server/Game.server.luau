@@ -4931,9 +4931,10 @@ local function applyMeadowDamage(player,target,damage,isDot)
   damage=damage+gearAttack
   -- [장비 특수 효과] 치명타는 피해에, 상태이상·기절·흡수는 명중 뒤에 적용한다(지속 피해 틱 제외).
   local gfx=nil
+  local critHit=false
   if not isDot then
     gfx=meadowOil.gearFx(player)
-    if (gfx.crit or 0)>0 and math.random()<math.min(.4,gfx.crit) then damage=math.floor(damage*1.5) end
+    if (gfx.crit or 0)>0 and math.random()<math.min(.4,gfx.crit) then damage=math.floor(damage*1.5);critHit=true end
   end
   player:SetAttribute("ApprovedActionTarget",target.position)
   target.HP=math.max(0,target.HP-damage)
@@ -4966,6 +4967,8 @@ local function applyMeadowDamage(player,target,damage,isDot)
     boss=target.isBoss or target.isAlpha,
     finisher=target.HP<=0,
     damage=damage,
+    crit=critHit,
+    status=target.model:GetAttribute("MeadowStatus"),
   })
   setNumber(player,"Combo",readNumber(player,"Combo",0)+1)
   setNumber(player,"Score",readNumber(player,"Score",0)+damage)
@@ -11218,6 +11221,7 @@ do
         stunEnemy(target,target.isBoss and .8 or 1.6)
       end
       if broke then toast(player,"방어 붕괴! 스파르타 킥이 공격 준비를 깨뜨렸다.") end
+      remote:FireClient(player,"ODY_FX","kick",target.position)
       if meadowOil.questEvent then pcall(meadowOil.questEvent,player,"KICK") end
     else
       local look=flat(root.CFrame.LookVector)
@@ -11249,6 +11253,7 @@ do
           end
         end
       end
+      remote:FireClient(player,"ODY_FX","rush",start+look*dist)
       if hits>0 and meadowOil.questEvent then pcall(meadowOil.questEvent,player,"RUSH") end
       task.spawn(function()
         local began=os.clock()
