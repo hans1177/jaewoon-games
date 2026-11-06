@@ -264,6 +264,18 @@ local function bindNativeFoundationCharacter(character)
   local player = Players:GetPlayerFromCharacter(character)
   if not humanoid or not rootPart or not player or player.Character ~= character
     or humanoid.Health <= 0 then return end
+  -- [실제 착지] CharacterAdded는 로블록스가 아바타를 Workspace에 놓고
+  -- 최종 스폰 좌표를 적용하기 전에 실행된다. 엔진 배치를 마친 다음 지면 보정을 수행한다.
+  local spawnDeadline = os.clock() + 15
+  while character.Parent ~= workspace and player.Character == character
+    and humanoid.Health > 0 and os.clock() < spawnDeadline do
+    task.wait()
+  end
+  if character.Parent ~= workspace or player.Character ~= character
+    or humanoid.Health <= 0 then return end
+  RunService.Heartbeat:Wait()
+  RunService.Heartbeat:Wait()
+  if player.Character ~= character or humanoid.Health <= 0 then return end
   rootPart.Anchored = false
   rootPart.AssemblyLinearVelocity = Vector3.zero
   rootPart.AssemblyAngularVelocity = Vector3.zero
