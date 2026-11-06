@@ -431,6 +431,258 @@ local function buildShip(parent, shipId, at)
 	return m
 end
 
+-- 마을 밀도·외곽 --------------------------------------------------------------
+local function styleKeyOf(style)
+	for k, v in STYLE do
+		if v == style then return k end
+	end
+	return "north"
+end
+
+local function rotateAround(m, pos, yaw)
+	if m then
+		m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, yaw, 0) * CFrame.new(-pos) * m:GetPivot())
+	end
+end
+
+local function strip(folder, style, cx, cz, sx, sz)
+	local p = part(folder, Vector3.new(sx, 0.2, sz), CFrame.new(cx, 0.1, cz), style.street, Enum.Material.Cobblestone)
+	p.CanCollide = false
+	p.CanQuery = false
+end
+
+local function smokeOn(folder, pos)
+	local s = part(folder, Vector3.new(1, 1, 1), CFrame.new(pos), Color3.new(1, 1, 1))
+	s.Transparency = 1
+	s.CanCollide = false
+	s.CanQuery = false
+	local sm = Instance.new("Smoke")
+	sm.Color = Color3.fromRGB(200, 200, 200)
+	sm.Size = 1.6
+	sm.Opacity = 0.2
+	sm.RiseVelocity = 3
+	sm.Parent = s
+end
+
+local function densify(folder, info, style, rng, walkers, made)
+	local key = styleKeyOf(style)
+	local warm = key == "med" or key == "desert" or key == "tropic"
+	local cold = not warm
+	local port = PortData.Ports[info.portId]
+	local big = (port and port.shipyard) or false
+	local streetsX = { -50, -90, -130 }
+	local function nearStreet(x, w)
+		for _, sx in streetsX do
+			if math.abs(x - sx) < w / 2 + 3.5 then return true end
+		end
+		return false
+	end
+
+	-- 1) 건물 밀도: 골목을 더 깔고 집을 빽빽하게 채운다 (뒷줄일수록 높고 크게)
+	for _, side in { 1, -1 } do
+		strip(folder, style, -92, side * 38, 130, 6)
+		strip(folder, style, -92, side * 73, 130, 4)
+		strip(folder, style, -98, side * 87, 140, 5)
+		strip(folder, style, -98, side * 101, 140, 5)
+		strip(folder, style, -98, side * 115, 140, 5)
+	end
+	for _, sx in streetsX do
+		strip(folder, style, sx, 0, 5, 250)
+	end
+	local rows = {
+		{ z = 20, w0 = 7, w1 = 9, d = 7, fl = 1, from = -74, step = 10 },
+		{ z = 48, w0 = 6, w1 = 8, d = 8, fl = 2, from = -38, step = 16, off = 8 },
+		{ z = 66, w0 = 6, w1 = 8, d = 8, fl = 2, from = -38, step = 16, off = 8 },
+		{ z = 80, w0 = 8, w1 = 11, d = 8, fl = 2, from = -26, step = 12 },
+		{ z = 94, w0 = 8, w1 = 11, d = 8, fl = 2, from = -26, step = 12 },
+		{ z = 108, w0 = 10, w1 = 13, d = 9, fl = 3, from = -26, step = 14 },
+		{ z = 122, w0 = 11, w1 = 15, d = 10, fl = 3, from = -26, step = 14 },
+	}
+	local smokers = 0
+	for _, row in rows do
+		for _, side in { 1, -1 } do
+			local x = row.from - (row.off or 0)
+			while x > -168 do
+				local w = rng:NextNumber(row.w0, row.w1)
+				if not nearStreet(x, w) and rng:NextNumber() < 0.93 then
+					local z = side * (row.z + rng:NextNumber(-1, 1))
+					local pos = Vector3.new(x + rng:NextNumber(-1.5, 1.5), 0, z)
+					house(folder, pos, w, row.d, row.fl, style, rng)
+					if smokers < 28 and rng:NextNumber() < 0.25 then
+						smokers += 1
+						smokeOn(folder, pos + Vector3.new(w * 0.2, row.fl * 6 + 4, 0))
+					end
+				end
+				x -= row.step
+			end
+		end
+	end
+	-- 골목 모퉁이: 덤불·화분·통·상자 더미
+	local clutter = { { "Cargo", "barrel" }, { "Naval", "crate" }, { "Naval", "cargo-pile-a" }, { "Naval", "cargo-pile-b" }, { "Cargo", "box-open" }, { "Town", "foliage_A" }, { "Town", "foliage_B" }, { "Town", "fence_post" } }
+	for _, side in { 1, -1 } do
+		for x = -30, -160, -9 do
+			local c = clutter[rng:NextInteger(1, #clutter)]
+			importedModel(folder, c[1], c[2], Vector3.new(x + rng:NextNumber(-2, 2), 0, side * (35.2 + rng:NextNumber(0, 1))), rng:NextNumber(2.2, 3.4), false)
+			if rng:NextNumber() < 0.5 then
+				local c2 = clutter[rng:NextInteger(1, #clutter)]
+				importedModel(folder, c2[1], c2[2], Vector3.new(x + rng:NextNumber(-3, 3), 0, side * (54.2 + rng:NextNumber(0, 1))), rng:NextNumber(2.2, 3.2), false)
+			end
+		end
+		-- 골목 가로등
+		for x = -40, -150, -22 do
+			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, side * 40.8), 4.5, false)
+			importedModel(folder, "Town", "lantern", Vector3.new(x - 8, 0, side * 59.2), 4.5, false)
+		end
+	end
+
+	-- 2) 광장 중심: 동상·기둥·깃발, 시장 가판대를 더 둘러 세운다
+	importedModel(folder, "Terrain", "statue-column", Vector3.new(-26, 0, 0), 12, true)
+	for _, c in { Vector3.new(-26, 0, 8), Vector3.new(-26, 0, -8), Vector3.new(-17, 0, 8), Vector3.new(-17, 0, -8) } do
+		importedModel(folder, "Town", "pillar-stone", c, 5, false)
+	end
+	for _, z in { -24, 24 } do
+		for _, x in { -2, -22, -42, -62 } do
+			importedModel(folder, "Castle", "flag-banner-short", Vector3.new(x, 0, z), 7, false)
+		end
+	end
+	local extraStalls = { Vector3.new(-44, 0, 19), Vector3.new(-44, 0, -19), Vector3.new(-70, 0, 19), Vector3.new(-70, 0, -19), Vector3.new(-6, 0, -20), Vector3.new(-6, 0, 22) }
+	for i, spot in extraStalls do
+		importedModel(folder, "Town", if i % 2 == 0 then "stall-red" else "stall-green", spot, 6.5, false)
+		for k = 1, 4 do
+			local good = made[(i + k) % math.max(1, #made) + 1] or "cheese"
+			local mesh = GOOD_MESH[good]
+			importedModel(folder, mesh[1], mesh[2], spot + Vector3.new((k - 2.5) * 1.7, 2.5, 0), 1.8, false, mesh[3])
+		end
+	end
+
+	-- 3) 부두: 둘째 잔교, 배 여러 척, 하역장
+	local pier = part(folder, Vector3.new(44, 0.8, 7), CFrame.new(44, 1.6, 46), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
+	pier.CanCollide = false
+	for x = 26, 64, 9 do
+		for s2 = -1, 1, 2 do
+			local post = part(folder, Vector3.new(1.2, 6, 1.2), CFrame.new(x, -1, 46 + s2 * 3.3) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(90, 64, 40), Enum.Material.Wood, Enum.PartType.Cylinder)
+			post.CanCollide = false
+		end
+	end
+	local dockCargo = { { "Naval", "crate" }, { "Cargo", "barrel" }, { "Naval", "cargo-pile-a" }, { "Naval", "cargo-pile-b" }, { "Naval", "chest" }, { "Naval", "crate-bottles" }, { "Naval", "detail-crate-ropes" } }
+	for i = 0, 9 do
+		local c = dockCargo[i % #dockCargo + 1]
+		importedModel(folder, c[1], c[2], Vector3.new(26 + i * 4.2, 2, 46 + (if i % 2 == 0 then 1.6 else -1.6)), 2.6, false)
+	end
+	for i = 0, 5 do
+		local c = dockCargo[(i + 2) % #dockCargo + 1]
+		importedModel(folder, c[1], c[2], Vector3.new(26 + i * 12, 2, if i % 2 == 0 then 4.2 else -4.2), 2.6, false)
+	end
+	importedModel(folder, "Naval", "pulley-crate", Vector3.new(60, 2, 47), 4.6, false)
+	importedModel(folder, "Naval", "mast", Vector3.new(66, 2, 44), 12, false)
+	importedModel(folder, "Naval", "flag-pennant", Vector3.new(66, 14, 44), 3, false)
+	local boats = { { "boat-sail-a", 14 }, { "boat-sail-b", 14 }, { "boat-fishing-small", 10 }, { "boat-row-large", 8 }, { "boat-row-small", 6 }, { "boat-fishing-small", 10 }, { "boat-sail-b", 13 } }
+	local spots = { { 40, 60 }, { 70, 64 }, { 100, 78 }, { 52, -64 }, { 86, -70 }, { 120, -92 }, { 130, 100 }, { 38, 34 } }
+	for i, spot in spots do
+		local b = boats[i % #boats + 1]
+		local m = importedModel(folder, "Naval", b[1], Vector3.new(spot[1], 0.8, spot[2]), b[2], false)
+		rotateAround(m, Vector3.new(spot[1], 0, spot[2]), rng:NextNumber(-0.5, 0.5))
+	end
+	if big then
+		importedModel(folder, "Naval", "ship-wreck", Vector3.new(150, 0.4, -120), 22, false)
+		importedModel(folder, "Naval", "ship-pirate-small", Vector3.new(80, 0.8, 90), 20, false)
+	end
+
+	-- 4) 생활감 소품: 담장, 수레, 통, 횃불
+	for _, side in { 1, -1 } do
+		for x = -30, -150, -24 do
+			importedModel(folder, "Town", "cart", Vector3.new(x - 6, 0, side * 36.2), 5, false)
+			importedModel(folder, "Town", "bench_A", Vector3.new(x - 14, 0, side * 41.6), 3.8, false)
+		end
+		for x = -20, -160, -10 do
+			importedModel(folder, "Town", "fence_straight", Vector3.new(x, 0, side * 130), 8, false)
+		end
+	end
+	importedModel(folder, "Terrain", "campfire-logs", Vector3.new(-80, 0, 30.5), 4, false)
+
+	-- 5) 움직임: 골목을 오가는 주민 14명
+	for i = 1, 14 do
+		local sideZ = ({ 38, -38, 57, -57, 73, -73, 87, -87 })[(i - 1) % 8 + 1]
+		local v = villager(folder, Vector3.new(rng:NextNumber(-140, -30), 0, sideZ + rng:NextNumber(-0.8, 0.8)), 0, Color3.fromRGB(rng:NextInteger(60, 200), rng:NextInteger(60, 160), rng:NextInteger(50, 150)), rng)
+		if v then
+			local p = v:GetPivot().Position
+			v:PivotTo(CFrame.lookAt(p, p + Vector3.new(if i % 2 == 0 then 1 else -1, 0, 0)))
+			table.insert(walkers, { model = v, base = v:GetPivot(), len = rng:NextNumber(14, 30), speed = rng:NextNumber(1.4, 2.4), phase = rng:NextNumber(0, 10) })
+		end
+	end
+
+	-- 6) 항구마다 랜드마크 (왕궁 뒤)
+	local lx = -186
+	if key == "med" then
+		for z = -24, 24, 8 do
+			importedModel(folder, "Terrain", "column", Vector3.new(lx, 0, z), 12, true)
+		end
+		importedModel(folder, "Terrain", "statue-head", Vector3.new(lx - 10, 0, 0), 14, true)
+	elseif key == "desert" then
+		importedModel(folder, "Terrain", "pillar-obelisk", Vector3.new(lx, 0, 0), 34, true)
+		for _, z in { -22, 22 } do
+			importedModel(folder, "Terrain", "statue-obelisk", Vector3.new(lx, 0, z), 18, true)
+		end
+		importedModel(folder, "Terrain", "tent-detailedopen", Vector3.new(lx + 12, 0, 12), 14, false)
+		importedModel(folder, "Terrain", "tent-detailedopen", Vector3.new(lx + 12, 0, -12), 14, false)
+	elseif key == "tropic" then
+		importedModel(folder, "Terrain", "statue-ring", Vector3.new(lx, 0, 0), 18, true)
+		for _, z in { -20, -10, 10, 20 } do
+			importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(lx + 8, 0, z), 14, false)
+		end
+		importedModel(folder, "Terrain", "tent-detailedopen", Vector3.new(lx + 14, 0, 0), 14, false)
+	else
+		importedModel(folder, "Naval", "tower-complete-large", Vector3.new(lx, 0, 0), 32, true)
+		for _, z in { -24, 24 } do
+			importedModel(folder, "Naval", "tower-complete-small", Vector3.new(lx, 0, z), 16, true)
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(lx + 10, 0, z / 2), 10, false)
+		end
+	end
+
+	-- 7) 외곽: 성벽·망루로 마을을 두르고, 그 밖은 언덕과 숲으로 막는다
+	local WZ, WX = 150, -204
+	for _, side in { 1, -1 } do
+		local x = -22
+		while x > WX do
+			local m = importedModel(folder, "Castle", "wall", Vector3.new(x, 0, side * WZ), 12.5, true)
+			if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(x, 0, side * WZ), 12.5, true) end
+			x -= 12
+		end
+		for _, tx in { -22, -80, -140, WX } do
+			importedModel(folder, "Naval", "tower-watch", Vector3.new(tx, 0, side * WZ), 16, true)
+		end
+	end
+	local z = -WZ
+	while z <= WZ do
+		local m = importedModel(folder, "Castle", "wall", Vector3.new(WX, 0, z), 12.5, true)
+		if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(WX, 0, z), 12.5, true) end
+		rotateAround(m, Vector3.new(WX, 0, z), math.pi / 2)
+		z += 12
+	end
+	importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true)
+	-- 성벽 밖 언덕과 숲
+	for i = 1, 36 do
+		local side = if i % 2 == 0 then 1 else -1
+		local pos = Vector3.new(rng:NextNumber(-250, -20), 0, side * rng:NextNumber(170, 250))
+		importedModel(folder, "Terrain", if i % 3 == 0 then "cliff-steps-rock" else "cliff-rock", pos, rng:NextNumber(26, 46), true)
+	end
+	for i = 1, 14 do
+		importedModel(folder, "Terrain", "cliff-rock", Vector3.new(rng:NextNumber(-270, -225), 0, rng:NextNumber(-170, 170)), rng:NextNumber(26, 44), true)
+	end
+	local trees = if cold then { "tree-pinedefaulta", "tree-oak", "tree_large", "tree-high" } else { "palm-detailed-straight", "palm-bend", "tree-crooked", "tree_large" }
+	for i = 1, 150 do
+		local side = if i % 2 == 0 then 1 else -1
+		local pos = Vector3.new(rng:NextNumber(-262, -10), 0, side * rng:NextNumber(158, 245))
+		local pick = trees[rng:NextInteger(1, #trees)]
+		local kind = if pick:find("palm") or pick:find("tree-pine") or pick:find("tree-oak") then (if pick:find("palm") then "Naval" else "Terrain") else "Town"
+		importedModel(folder, kind, pick, pos, rng:NextNumber(8, 14), false)
+	end
+	for i = 1, 30 do
+		local pos = Vector3.new(-212 - rng:NextNumber(0, 40), 0, rng:NextNumber(-150, 150))
+		importedModel(folder, "Terrain", trees[1] == "tree-pinedefaulta" and "tree-pinedefaulta" or "tree-oak", pos, rng:NextNumber(8, 13), false)
+	end
+end
+
 -- 장면 만들기. info: { portId, portName, shipId, hasShipyard, facilities = { "bank", ... }, storyCount }
 -- 돌려주는 값: { folder, spawn = 캐릭터를 둘 위치, stop = 애니메이션 정지 함수 }
 function PortScene.build(info, onFacility)
@@ -818,6 +1070,8 @@ function PortScene.build(info, onFacility)
 		importedModel(folder, "Town", "gate_double_left", Vector3.new(-46, 0, -5.5), 6, false)
 		importedModel(folder, "Town", "gate_double_right", Vector3.new(-46, 0, 5.5), 6, false)
 	end
+
+	densify(folder, info, style, rng, walkers, (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {})
 
 	-- 갈매기 (항구 위를 맴돈다)
 	local gulls = {}
