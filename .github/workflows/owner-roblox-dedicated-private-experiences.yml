@@ -98,6 +98,22 @@ jobs:
           console.log('OWNER_DIRECT_SELECTED_GAMES='+selected.map(row=>row.gameId).join(','));
           NODE
 
+      - name: Roblox load smoke (compile + GameConfig runs end to end)
+        # 설정 파일의 로드 순서 오류·nil 인덱스는 서버·클라이언트를 함께 죽이므로 게시 전에 막는다.
+        if: github.event_name != 'pull_request' && steps.targets.outputs.count != '0'
+        env:
+          MATRIX_JSON: ${{ steps.targets.outputs.matrix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/luau_bin
+          curl -fsSL -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.700/luau-ubuntu.zip \
+            || curl -fsSL -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/latest/download/luau-ubuntu.zip
+          unzip -q -o /tmp/luau.zip -d /tmp/luau_bin
+          chmod +x /tmp/luau_bin/luau /tmp/luau_bin/luau-compile
+          games=$(node -e "const m=JSON.parse(process.env.MATRIX_JSON);console.log((m.include||[]).map(r=>'roblox-games/'+r.gameId).join(' '))")
+          LUAU_BIN_DIR=/tmp/luau_bin node tools/roblox-luau-load-smoke.mjs $games
+
   publish:
     needs: contract
     if: github.event_name != 'pull_request' && needs.contract.outputs.count != '0'
