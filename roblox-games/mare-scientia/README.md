@@ -47,7 +47,7 @@ Luau CLI는 https://github.com/luau-lang/luau/releases 에서 받는다.
 
 ## 3D 원본 확보 및 6종 선박 모델 연결
 
-`assets/`에는 GLB 201개, FBX 22개, OBJ 22개, MTL 재질 22개가 있다. (OBJ 22개는 같은 이름의 GLB와 병행 보유한 형식이다.) 2026-11-06에 확보한 신규 CC0 모델 기존 80개에 이어, 내부 저장소 전체의 동일 바이너리를 제외한 게임용 GLB 59개를 추가했다. 원본 Git 해시를 검증했다.
+`assets/`에는 GLB 245개, FBX 22개, OBJ 22개, MTL 재질 22개가 있다. OBJ 22개는 같은 이름의 GLB와 함께 보유한 형식이다. CC0 신규 모델 80개 + 59개에 이어 항구·항해·교역·탐험용 GLB **44개**를 더 확보했다. 원본 Git SHA를 확인하고 외부 텍스처를 병합했다. 자산 ID는 실제 Roblox 업로드 후에만 등록한다.
 실행할 때는 Roblox Studio의 **가져오기**로 GLB/OBJ/FBX를 MeshPart 모델로 수입하고,
 `ReplicatedStorage/MareAssets` 폴더 아래에 넣어야 한다. GitHub에만 있는 모델은 자동 로드되지 않는다.
 
