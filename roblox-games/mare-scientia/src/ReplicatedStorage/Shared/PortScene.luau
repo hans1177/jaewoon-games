@@ -54,6 +54,9 @@ STYLE.tropic = variant(STYLE.med,
 	{ C(184, 140, 96), C(160, 110, 74), C(204, 164, 112), C(140, 96, 64), C(226, 196, 150) },
 	{ C(150, 120, 70), C(130, 100, 60) }, C(112, 150, 70), C(176, 150, 112), 0.55)
 local REGION = {
+	san_francisco = "stone",
+	sitka = "nordic", vancouver = "nordic",
+	sydney = "tropic", hobart = "tropic", perth = "tropic", darwin = "tropic", auckland = "tropic", port_moresby = "tropic", suva = "tropic", tahiti = "tropic", honolulu = "tropic", guam = "tropic", acapulco = "tropic", panama = "tropic", guayaquil = "tropic", callao = "tropic", valparaiso = "tropic",
 	charleston = "tropic", new_orleans = "tropic", nassau = "tropic", havana = "tropic", veracruz = "tropic", campeche = "tropic", kingston = "tropic", santo_domingo = "tropic", san_juan = "tropic", bridgetown = "tropic", port_of_spain = "tropic", la_guaira = "tropic", cartagena_indias = "tropic", portobelo = "tropic", paramaribo = "tropic", belem = "tropic", recife = "tropic", salvador = "tropic", rio = "tropic", montevideo = "tropic", buenos_aires = "tropic",
 	halifax = "stone", st_johns = "stone", boston = "stone", new_york = "stone", philadelphia = "stone", quebec = "stone",
 	nagasaki = "brick", osaka = "brick", edo = "brick",

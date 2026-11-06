@@ -1733,6 +1733,204 @@ local Events: { Event } = {
 			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_llama", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
+	{
+		id = "npc_pac_sydney", title = "시드니의 안내인", portId = "sydney", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_kangaroo", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_kangaroo", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_hobart", title = "호바트의 안내인", portId = "hobart", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_emu", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_emu", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_perth", title = "퍼스의 안내인", portId = "perth", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_tasmanian_devil", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_tasmanian_devil", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_darwin", title = "다윈의 안내인", portId = "darwin", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_marine_iguana", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_marine_iguana", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_auckland", title = "오클랜드의 안내인", portId = "auckland", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_birdwing", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_birdwing", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_port_moresby", title = "포트모르즈비의 안내인", portId = "port_moresby", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_breadfruit", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_breadfruit", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_suva", title = "수바의 안내인", portId = "suva", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_hibiscus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_hibiscus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_tahiti", title = "타히티의 안내인", portId = "tahiti", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_kelp_forest", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_kelp_forest", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_honolulu", title = "호놀룰루의 안내인", portId = "honolulu", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_black_pearl", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_black_pearl", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_guam", title = "괌의 안내인", portId = "guam", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_coral_white", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_coral_white", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_acapulco", title = "아카풀코의 안내인", portId = "acapulco", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_moai", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_moai", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_panama", title = "파나마의 안내인", portId = "panama", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_boomerang", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_boomerang", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_guayaquil", title = "과야킬의 안내인", portId = "guayaquil", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_conch_horn", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_conch_horn", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_callao", title = "카야오의 안내인", portId = "callao", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_fur_trade_pelt", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_fur_trade_pelt", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_valparaiso", title = "발파라이소의 안내인", portId = "valparaiso", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "site_uluru", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_uluru", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_san_francisco", title = "샌프란시스코의 안내인", portId = "san_francisco", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "site_panama_viejo", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_panama_viejo", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_sitka", title = "싯카의 안내인", portId = "sitka", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "site_sitka_church", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_sitka_church", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_pac_vancouver", title = "밴쿠버의 안내인", portId = "vancouver", art = "harbor", npc = "안내인",
+		lines = {
+			"\"이곳 바다는 처음 오는 이에게는 낯설지만, 알고 나면 보물창고이지요.\"",
+			"안내인이 해도 한 장을 펼쳐 보인다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_tasman_sea", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_tasman_sea", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
 }
 
 local ById: { [string]: Event } = {}
