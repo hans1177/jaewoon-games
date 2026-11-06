@@ -56,6 +56,7 @@ local TABS = {
 local view = nil -- 서버가 보낸 최신 스냅샷
 local currentTab = "status"
 local syncScene
+local openTab
 local sceneKey = nil
 local sceneCtl = nil -- 현재 3D 장면의 제어(출항 연출 등)
 local sceneHold = false -- 항해 중에는 장면을 바꾸지 않는다
@@ -176,9 +177,16 @@ end
 -- 메인 화면 구조 ------------------------------------------------------------
 
 local main, mainInner = CommonUI.CreatePanel({ name = "Main", size = UDim2.new(1, -16, 1, -16) })
-main.AnchorPoint = Vector2.new(0.5, 0.5)
-main.Position = UDim2.fromScale(0.5, 0.5)
+main.AnchorPoint = Vector2.new(0, 0.5)
+main.Position = UDim2.new(0, 8, 0.5, 0)
+main.BackgroundColor3 = Color3.fromRGB(14, 24, 38)
 main.Parent = gui
+do
+	local st = Instance.new("UIStroke")
+	st.Color = Color3.fromRGB(214, 170, 82)
+	st.Thickness = 2
+	st.Parent = main
+end
 local sizeLimit = Instance.new("UISizeConstraint")
 sizeLimit.MaxSize = Vector2.new(560, 900)
 sizeLimit.Parent = main
@@ -232,6 +240,143 @@ menuToggle.AnchorPoint = Vector2.new(0, 0)
 menuToggle.Position = UDim2.fromOffset(8, 8)
 menuToggle.Visible = false
 menuToggle.Parent = gui
+menuToggle.Size = UDim2.fromOffset(0, 0) -- 옛 "메뉴" 버튼은 HUD가 대신한다 (표시 상태 신호만 사용)
+menuToggle.BackgroundTransparency = 1
+menuToggle.Text = ""
+
+-- 대항해시대 온라인풍 HUD: 좌상단 선장 카드, 우상단 소지금, 하단 메뉴 독 -----------------
+local NAVY = Color3.fromRGB(14, 24, 38)
+local NAVY2 = Color3.fromRGB(28, 46, 70)
+local BRASS = Color3.fromRGB(214, 170, 82)
+
+local function hudStroke(obj, thickness)
+	local st = Instance.new("UIStroke")
+	st.Color = BRASS
+	st.Thickness = thickness or 1.5
+	st.Parent = obj
+end
+
+local hud = Instance.new("Frame")
+hud.Name = "Hud"
+hud.BackgroundTransparency = 1
+hud.Size = UDim2.fromScale(1, 1)
+hud.Visible = false
+hud.Parent = gui
+
+local card = Instance.new("Frame")
+card.BackgroundColor3 = NAVY
+card.BackgroundTransparency = 0.08
+card.Position = UDim2.fromOffset(8, 8)
+card.Size = UDim2.fromOffset(236, 84)
+card.Parent = hud
+corner(card, 10)
+hudStroke(card, 2)
+
+local function hudText(parent, pos, size, textSize, color, align)
+	local l = Instance.new("TextLabel")
+	l.BackgroundTransparency = 1
+	l.Position = pos
+	l.Size = size
+	l.Font = Enum.Font.GothamBold
+	l.TextSize = textSize
+	l.TextColor3 = color
+	l.TextXAlignment = align or Enum.TextXAlignment.Left
+	l.Text = ""
+	l.Parent = parent
+	return l
+end
+
+local hudName = hudText(card, UDim2.fromOffset(10, 6), UDim2.new(1, -20, 0, 20), 15, BRASS)
+local hudPort = hudText(card, UDim2.fromOffset(10, 27), UDim2.new(1, -20, 0, 18), 13, COLORS.text)
+local hullBack = Instance.new("Frame")
+hullBack.BackgroundColor3 = Color3.fromRGB(8, 14, 22)
+hullBack.Position = UDim2.fromOffset(10, 50)
+hullBack.Size = UDim2.new(1, -20, 0, 9)
+hullBack.Parent = card
+corner(hullBack, 4)
+local hullFill = Instance.new("Frame")
+hullFill.BackgroundColor3 = COLORS.green
+hullFill.Size = UDim2.fromScale(1, 1)
+hullFill.Parent = hullBack
+corner(hullFill, 4)
+local hudShip = hudText(card, UDim2.fromOffset(10, 61), UDim2.new(1, -20, 0, 18), 12, COLORS.muted)
+
+local coinCard = Instance.new("Frame")
+coinCard.BackgroundColor3 = NAVY
+coinCard.BackgroundTransparency = 0.08
+coinCard.AnchorPoint = Vector2.new(1, 0)
+coinCard.Position = UDim2.new(1, -8, 0, 8)
+coinCard.Size = UDim2.fromOffset(170, 40)
+coinCard.Parent = hud
+corner(coinCard, 10)
+hudStroke(coinCard, 2)
+local hudCoin = hudText(coinCard, UDim2.fromOffset(12, 0), UDim2.new(1, -24, 1, 0), 18, BRASS, Enum.TextXAlignment.Right)
+
+local dock = Instance.new("ScrollingFrame")
+dock.Name = "Dock"
+dock.BackgroundColor3 = NAVY
+dock.BackgroundTransparency = 0.08
+dock.BorderSizePixel = 0
+dock.AnchorPoint = Vector2.new(0.5, 1)
+dock.Position = UDim2.new(0.5, 0, 1, -8)
+dock.Size = UDim2.new(1, -16, 0, 68)
+dock.CanvasSize = UDim2.new()
+dock.AutomaticCanvasSize = Enum.AutomaticSize.X
+dock.ScrollBarThickness = 0
+dock.ScrollingDirection = Enum.ScrollingDirection.X
+dock.Parent = hud
+corner(dock, 12)
+hudStroke(dock, 2)
+local dockLayout = Instance.new("UIListLayout")
+dockLayout.FillDirection = Enum.FillDirection.Horizontal
+dockLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+dockLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+dockLayout.Padding = UDim.new(0, 6)
+dockLayout.SortOrder = Enum.SortOrder.LayoutOrder
+dockLayout.Parent = dock
+local dockPad = Instance.new("UIPadding")
+dockPad.PaddingLeft, dockPad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8)
+dockPad.Parent = dock
+
+local DOCK = {
+	{ "trade", "교역" }, { "harbor", "항구" }, { "route", "항해" }, { "map", "지도" },
+	{ "yard", "조선소" }, { "explore", "탐험" }, { "codex", "도감" }, { "tech", "연구" },
+	{ "quest", "퀘스트" }, { "battle", "전투" }, { "status", "상태" },
+}
+for i, d in DOCK do
+	local b = Instance.new("TextButton")
+	b.LayoutOrder = i
+	b.Size = UDim2.fromOffset(66, 54)
+	b.BackgroundColor3 = NAVY2
+	b.AutoButtonColor = true
+	b.Font = Enum.Font.GothamBold
+	b.TextSize = 15
+	b.TextColor3 = Color3.fromRGB(250, 236, 200)
+	b.Text = d[2]
+	b.Parent = dock
+	corner(b, 8)
+	local bs = Instance.new("UIStroke")
+	bs.Color = BRASS
+	bs.Thickness = 1
+	bs.Transparency = 0.35
+	bs.Parent = b
+	b.Activated:Connect(function()
+		openTab(d[1])
+	end)
+end
+
+local function updateHud(p, ship)
+	hudName.Text = string.format("%s · %d년", p.nation, p.year)
+	hudPort.Text = "항구  " .. tostring(p.portName)
+	hullFill.Size = UDim2.fromScale(math.clamp(ship.hull / math.max(1, ship.maxHull), 0, 1), 1)
+	hullFill.BackgroundColor3 = if ship.hull / math.max(1, ship.maxHull) < 0.35 then COLORS.red else COLORS.green
+	hudShip.Text = string.format("%s  화물 %d/%d  명성 %d", ship.name, ship.cargoUsed, ship.cargoCapacity, p.fame)
+	hudCoin.Text = tostring(p.coins) .. " 코인"
+end
+
+menuToggle:GetPropertyChangedSignal("Visible"):Connect(function()
+	hud.Visible = menuToggle.Visible
+end)
 
 local function clearContent()
 	for _, child in content:GetChildren() do
@@ -1778,6 +1923,7 @@ function render()
 	headerLabel.Text = string.format("%s · %d년 · %s\n%s  선체 %d/%d  화물 %d/%d  명성 %d",
 		p.nation, p.year, p.portName, ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity, p.fame)
 	coinValue.Text = tostring(p.coins)
+	updateHud(p, ship)
 	renderTabs()
 	syncScene()
 
@@ -1805,6 +1951,16 @@ task.spawn(function()
 	message, messageOk = "서버에 연결하지 못했어요", false
 	render()
 end)
+
+openTab = function(tabId)
+	currentTab = tabId
+	if tabId ~= "battle" then
+		equipped = nil
+	end
+	main.Visible = true
+	menuToggle.Visible = false
+	render()
+end
 
 menuToggle.Activated:Connect(function()
 	main.Visible = true

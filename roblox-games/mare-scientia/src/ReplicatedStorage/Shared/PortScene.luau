@@ -84,18 +84,24 @@ end
 local function sign(parent, adornee, text, color, height)
 	local bb = Instance.new("BillboardGui")
 	bb.Adornee = adornee
-	bb.Size = UDim2.fromOffset(160, 36)
-	bb.StudsOffset = Vector3.new(0, height or 4, 0)
+	bb.Size = UDim2.fromOffset(150, 30)
+	bb.StudsOffset = Vector3.new(0, (height or 4) + 2.5, 0)
 	bb.AlwaysOnTop = false
-	bb.MaxDistance = 160
+	bb.LightInfluence = 0
+	bb.MaxDistance = 55
 	local l = Instance.new("TextLabel")
 	l.Size = UDim2.fromScale(1, 1)
 	l.BackgroundColor3 = color or Color3.fromRGB(30, 34, 44)
-	l.BackgroundTransparency = 0.15
+	l.BackgroundTransparency = 0.05
 	l.TextColor3 = Color3.new(1, 1, 1)
 	l.Font = Enum.Font.GothamBold
 	l.TextScaled = true
+	l.TextWrapped = false
 	l.Text = text
+	local st = Instance.new("UIStroke")
+	st.Color = Color3.fromRGB(230, 196, 120)
+	st.Thickness = 1.5
+	st.Parent = l
 	local c = Instance.new("UICorner")
 	c.CornerRadius = UDim.new(0, 8)
 	c.Parent = l
@@ -173,23 +179,54 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	return m
 end
 
--- 주민 NPC (실제 FBX 모델 우선)
+-- 주민 NPC: 다리·몸통·팔·머리·얼굴·모자를 나눠 만든 사람 모양
+local SKINS = { Color3.fromRGB(242, 205, 170), Color3.fromRGB(214, 165, 125), Color3.fromRGB(176, 125, 90), Color3.fromRGB(128, 88, 62) }
+local HAIRS = { Color3.fromRGB(40, 28, 20), Color3.fromRGB(96, 62, 34), Color3.fromRGB(176, 130, 66), Color3.fromRGB(150, 150, 150), Color3.fromRGB(20, 18, 18) }
 local function villager(parent, pos, facing, coat, rng)
-	local roles = { "Pirate_Male", "Pirate_Female", "Worker_Male", "Worker_Female", "Casual_Male", "Casual_Female", "OldClassy_Male", "OldClassy_Female" }
-	local character = importedModel(parent, "People", roles[rng:NextInteger(1, #roles)], pos, 5.6, false)
-	if character then
-		character.Name = "Villager"
-		character:PivotTo(character:GetPivot() * CFrame.Angles(0, facing, 0))
-		return character
-	end
 	local m = Instance.new("Model")
 	m.Name = "Villager"
-	local skin = ({ Color3.fromRGB(234, 196, 160), Color3.fromRGB(200, 150, 110), Color3.fromRGB(160, 110, 80) })[rng:NextInteger(1, 3)]
+	local skin = SKINS[rng:NextInteger(1, #SKINS)]
+	local hair = HAIRS[rng:NextInteger(1, #HAIRS)]
+	local pants = Color3.fromRGB(rng:NextInteger(36, 90), rng:NextInteger(32, 76), rng:NextInteger(30, 70))
 	local base = CFrame.new(pos) * CFrame.Angles(0, facing, 0)
-	part(m, Vector3.new(1.6, 2, 1), base * CFrame.new(0, 1, 0), Color3.fromRGB(50, 44, 40))
-	part(m, Vector3.new(2, 2.2, 1.2), base * CFrame.new(0, 3.1, 0), coat)
-	part(m, Vector3.new(1.3, 1.3, 1.3), base * CFrame.new(0, 4.9, 0), skin, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
-	part(m, Vector3.new(1.6, 0.4, 1.6), base * CFrame.new(0, 5.6, 0), Color3.fromRGB(40, 32, 30))
+	local function at(x, y, z)
+		return base * CFrame.new(x, y, z)
+	end
+	-- 다리와 신발
+	part(m, Vector3.new(0.85, 1.7, 0.95), at(-0.5, 1.15, 0), pants, Enum.Material.Fabric)
+	part(m, Vector3.new(0.85, 1.7, 0.95), at(0.5, 1.15, 0), pants, Enum.Material.Fabric)
+	part(m, Vector3.new(0.95, 0.5, 1.25), at(-0.5, 0.25, -0.1), Color3.fromRGB(38, 28, 22), Enum.Material.Leather)
+	part(m, Vector3.new(0.95, 0.5, 1.25), at(0.5, 0.25, -0.1), Color3.fromRGB(38, 28, 22), Enum.Material.Leather)
+	-- 몸통(겉옷), 허리띠, 옷깃
+	part(m, Vector3.new(2.1, 2.1, 1.15), at(0, 3.05, 0), coat, Enum.Material.Fabric)
+	part(m, Vector3.new(2.2, 0.35, 1.25), at(0, 2.2, 0), Color3.fromRGB(70, 48, 28), Enum.Material.Leather)
+	part(m, Vector3.new(0.5, 0.5, 0.2), at(0, 2.2, -0.65), Color3.fromRGB(214, 170, 82), Enum.Material.Metal)
+	part(m, Vector3.new(1.5, 0.45, 1.25), at(0, 4.15, 0), Color3.fromRGB(235, 232, 222), Enum.Material.Fabric)
+	-- 팔과 손
+	part(m, Vector3.new(0.75, 1.9, 0.85), at(-1.5, 3.0, 0), coat, Enum.Material.Fabric)
+	part(m, Vector3.new(0.75, 1.9, 0.85), at(1.5, 3.0, 0), coat, Enum.Material.Fabric)
+	part(m, Vector3.new(0.7, 0.7, 0.7), at(-1.5, 1.85, 0), skin, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+	part(m, Vector3.new(0.7, 0.7, 0.7), at(1.5, 1.85, 0), skin, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+	-- 머리, 얼굴, 머리카락
+	local head = part(m, Vector3.new(1.55, 1.55, 1.55), at(0, 5.0, 0), skin, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+	local face = Instance.new("Decal")
+	face.Texture = "rbxasset://textures/face.png"
+	face.Face = Enum.NormalId.Front
+	face.Parent = head
+	part(m, Vector3.new(1.62, 0.9, 1.62), at(0, 5.35, 0.12), hair, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+	-- 모자: 삼각모, 챙모자, 두건 중 하나
+	local hat = rng:NextInteger(1, 4)
+	local hatColor = Color3.fromRGB(rng:NextInteger(24, 70), rng:NextInteger(22, 56), rng:NextInteger(22, 56))
+	if hat == 1 then
+		part(m, Vector3.new(2.5, 0.25, 2.5), at(0, 5.75, 0), hatColor, Enum.Material.Fabric)
+		part(m, Vector3.new(1.5, 0.7, 1.5), at(0, 6.1, 0), hatColor, Enum.Material.Fabric)
+		part(m, Vector3.new(2.5, 0.25, 0.3), at(0, 5.9, -1.2), Color3.fromRGB(214, 170, 82), Enum.Material.Metal)
+	elseif hat == 2 then
+		part(m, Vector3.new(1.9, 0.2, 1.9), at(0, 5.65, 0), hatColor, Enum.Material.Fabric)
+		part(m, Vector3.new(1.45, 0.6, 1.45), at(0, 5.95, 0), hatColor, Enum.Material.Fabric)
+	elseif hat == 3 then
+		part(m, Vector3.new(1.75, 0.8, 1.75), at(0, 5.55, 0.05), Color3.fromRGB(190, 60, 50), Enum.Material.Fabric, Enum.PartType.Ball)
+	end
 	m.Parent = parent
 	return m
 end
@@ -376,6 +413,11 @@ function PortScene.build(info, onFacility)
 	if plate then
 		plate.Color = style.ground
 		plate.Material = Enum.Material.Grass
+	else
+		-- 로블록스 기본 Baseplate가 없는 빌드: 항구 땅(서쪽)과 바다 밑바닥을 직접 만든다
+		local land = part(folder, Vector3.new(900, 4, 900), CFrame.new(-430, -2, 0), style.ground, Enum.Material.Grass)
+		land.Name = "Ground"
+		part(folder, Vector3.new(1400, 4, 1000), CFrame.new(430, -12, 0), Color3.fromRGB(176, 160, 120), Enum.Material.Sand)
 	end
 
 	-- 바다(동쪽, x > 20)와 부두
