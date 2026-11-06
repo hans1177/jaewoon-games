@@ -8568,6 +8568,97 @@ do
       orb(hitPos,col,1,6,.35)
     end
   end
+  -- ───── 오디세이식 화려함: 잔상·화면 줌·피격 정지·림라이트·무기 궤적 ─────
+  local function afterimage(character,color,life)
+    if reducedEffects then return end
+    local ok,clone=pcall(function() character.Archivable=true;return character:Clone() end)
+    if not ok or not clone then return end
+    clone.Name="MeadowAfterimage"
+    for _,d in ipairs(clone:GetDescendants()) do
+      if d:IsA("LuaSourceContainer") or d:IsA("Humanoid") or d:IsA("Sound") or d:IsA("Tool") or d:IsA("Decal")
+        or d:IsA("SurfaceAppearance") or d:IsA("BillboardGui") or d:IsA("ParticleEmitter") or d:IsA("Highlight") then
+        d:Destroy()
+      end
+    end
+    local parts={}
+    for _,d in ipairs(clone:GetDescendants()) do
+      if d:IsA("BasePart") then
+        d.Anchored=true;d.CanCollide=false;d.CanQuery=false;d.CanTouch=false;d.CastShadow=false
+        d.Material=Enum.Material.Neon;d.Color=color;d.Transparency=d.Name=="HumanoidRootPart" and 1 or .5
+        if d:IsA("MeshPart") then d.TextureID="" end
+        parts[#parts+1]=d
+      end
+    end
+    clone.Parent=workspace
+    for _,d in ipairs(parts) do
+      TS:Create(d,TweenInfo.new(life,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Transparency=1}):Play()
+    end
+    DB:AddItem(clone,life+.1)
+  end
+  local function fovPunch(amount,t)
+    if reducedEffects or suppress then return end
+    local cam=workspace.CurrentCamera
+    if not cam then return end
+    local base=cam.FieldOfView
+    TS:Create(cam,TweenInfo.new(.07,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{FieldOfView=base+amount}):Play()
+    task.delay(.07,function()
+      TS:Create(cam,TweenInfo.new(t or .3,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{FieldOfView=base}):Play()
+    end)
+  end
+  local function rim(character,color,t)
+    if reducedEffects then return end
+    local h=Instance.new("Highlight")
+    h.Adornee=character;h.FillColor=color;h.OutlineColor=white
+    h.FillTransparency=.35;h.OutlineTransparency=0;h.DepthMode=Enum.HighlightDepthMode.Occluded;h.Parent=character
+    TS:Create(h,TweenInfo.new(t),{FillTransparency=1,OutlineTransparency=1}):Play()
+    DB:AddItem(h,t+.1)
+  end
+  local flairSpec={
+    slam={fov=9,rim=.35,sfx={"hit",.9,.7}},sweep={fov=4,ghost=3,gap=.09,sfx={"swing",.6,.9}},dash={fov=10,ghost=3,gap=.07,sfx={"whoosh",.5,1.2}},
+    strike={fov=3,ghost=1,sfx={"swing",.5,1.1}},fury={fov=8,rim=.6,sfx={"lunge",.7,.8}},multi={fov=3,ghost=2,gap=.1,sfx={"swing",.5,1.2}},
+    backstab={fov=5,ghost=2,gap=.08,sfx={"lunge",.5,1.3}},ultimate={fov=14,ghost=4,gap=.12,rim=.7,sfx={"lunge",.9,.6}},
+    stun={fov=5,sfx={"hit",.7,.9}},kick={fov=6,ghost=1,rim=.25,sfx={"hit",.8,.85}},rush={fov=8,ghost=2,gap=.08,sfx={"whoosh",.6,.9}},
+    bolt={fov=2},burst={fov=3,rim=.3},pierce={fov=3,sfx={"lunge",.5,1.1}},chain={fov=3},parry={fov=4,rim=.3},
+  }
+  meadowArt.flair=function(style,color,mine)
+    local spec=flairSpec[style]
+    if not spec or not mine then return end
+    local character=player.Character
+    if not character then return end
+    if spec.fov then fovPunch(spec.fov) end
+    if spec.rim then rim(character,color,spec.rim) end
+    if spec.sfx and meadowArt.sfx then pcall(meadowArt.sfx,spec.sfx[1],spec.sfx[2],spec.sfx[3]) end
+    if spec.ghost then
+      for i=1,spec.ghost do task.delay((i-1)*(spec.gap or .08),function() afterimage(character,color,.45) end) end
+    end
+  end
+  -- 무기(맨손은 발/주먹)에 접촉 직전부터 굵은 궤적을 단다.
+  local trailStyles={slam=1,strike=1,sweep=1,dash=1,stun=1,fury=1,multi=1,pierce=1,backstab=1,ultimate=1,chain=1,kick=1,rush=1,parry=1}
+  meadowArt.motionTrail=function(actionId,track)
+    if not combatVFX or reducedEffects then return end
+    local style=meadowArt.styleOf(actionId)
+    if not style or not trailStyles[style] then return end
+    local family=meadowArt.motion.family()
+    if family=="bow" then return end
+    local character=player.Character
+    if not character then return end
+    local tool=character:FindFirstChildOfClass("Tool")
+    local handle=tool and tool:FindFirstChild("Handle")
+    local legStyle=style=="kick" or (family=="fist" and (style=="sweep" or style=="dash" or style=="stun" or style=="slam"))
+    local host=legStyle and (character:FindFirstChild("RightFoot") or character:FindFirstChild("Right Leg"))
+      or (handle and handle:IsA("BasePart") and handle) or character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
+    if not host then return end
+    local contact,last=0,track.dur
+    for _,k in ipairs(track.keys) do if k.c then contact=k.t;break end end
+    if style=="multi" then contact=track.keys[#track.keys-1].t end
+    local color=meadowArt.colorOf(actionId)
+    local ok,_,ctl=pcall(combatVFX.AttachShortTrail,host,{color=color,lifetime=.4,width=family=="h2" and 2 or 1.4,length=family=="h2" and 5 or 3.6})
+    if not ok or not ctl then return end
+    ctl.SetEnabled(false)
+    local from=style=="multi" and 0 or math.max(0,contact-.24)
+    task.delay(from,function() pcall(ctl.SetEnabled,true) end)
+    task.delay(math.min(last,contact+.32),function() pcall(ctl.SetEnabled,false);task.delay(.5,function() pcall(ctl.Destroy) end) end)
+  end
   meadowArt.lastSkill={color=Color3.fromRGB(128,250,201),at=-100}
 
   -- actionId: 승인된 스킬 ID 또는 'odyssey-kick'/'odyssey-rush'. root: 시전자 루트, pos: 목표 위치.
@@ -8601,9 +8692,15 @@ do
     local function run()
       suppress=not mine
       pcall(styles[style],ctx)
+      pcall(meadowArt.flair,style,color,mine)
       suppress=false
     end
     if delay>.05 then task.delay(delay,run) else run() end
+  end
+  meadowArt.colorOf=function(actionId)
+    local node=Config.MeadowSkillNodeById and Config.MeadowSkillNodeById[actionId]
+    if node then return schoolColor[node.School] or Color3.fromRGB(255,235,170) end
+    return coreColor[actionId] or Color3.fromRGB(255,235,170)
   end
   meadowArt.styleOf=function(actionId)
     if actionId=="odyssey-kick" then return "kick" elseif actionId=="odyssey-rush" then return "rush" end
@@ -8641,6 +8738,7 @@ do
       ring(pos,Color3.fromRGB(255,225,120),.8,5.5,.25,.3);screen(Color3.fromRGB(255,225,120),.92,.15);shake(.4,.15)
     end
     if payload.finisher then ring(pos,white,1,9,.35,.3);shake(.5,.25) end
+    if recent and meadowArt.motionHold then meadowArt.motionHold(payload.finisher and .12 or .06) end
   end
 end
 local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetPosition,sequence)
@@ -9653,6 +9751,7 @@ local skillMotionState=nil
 local skillMotionStart=0
 local skillMotionDuration=0
 local skillAuthored=nil
+local skillHoldUntil=0
 local skillGuardFamily="h1"
 local skillMotionJoints={}
 local skillMotionAvailable={}
@@ -9687,6 +9786,7 @@ local skillMotionStates={
   CHANNEL_LOOP="GESTURE",SPRINT="START",EMOTE_WAVE="GESTURE",
   LIGHT_ATTACK_1="ATTACK",
 }
+meadowArt.motionHold=function(sec) if skillAuthored then skillHoldUntil=os.clock()+sec end end
 local function finishMeadowSkillPose()
   if skillMotionR15 then skillMotionR15.Destroy(true) end
   skillMotionR15=nil
@@ -9787,6 +9887,7 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
       skillMotionDeadline=skillMotionStart+track.dur+.12
       meadowArt.motionDeadline=skillMotionDeadline
       character:SetAttribute("NativeSkillStyle",style.."|"..family)
+      if meadowArt.motionTrail then pcall(meadowArt.motionTrail,id,track) end
     end
   end
   character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
@@ -9802,6 +9903,10 @@ RunService.PreSimulation:Connect(function(dt)
   end
   table.clear(skillMotionTargets)
   table.clear(skillMotionR15Targets)
+  -- [피격 정지] 적중 순간 동작이 아주 짧게 멈췄다 이어진다(시각 전용).
+  if os.clock()<skillHoldUntil then
+    skillMotionStart+=dt;skillMotionDeadline+=dt
+  end
   local phase=math.clamp((os.clock()-skillMotionStart)/skillMotionDuration,0,1)
   local actionId=skillMotionCharacter:GetAttribute("NativeSkillActionId")
   local isDodge=actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right"
