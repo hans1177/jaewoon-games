@@ -65,12 +65,15 @@ if (!creatorId) {
 
 // kind(MareAssets 하위 폴더) / 모델 이름 / 원본 파일. OBJ는 Open Cloud가 받지 않아 제외한다.
 const plan = [];
-for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu']]) {
+for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     const ext = path.extname(f).toLowerCase();
-    if (kind === 'Menu' ? ext !== '.png' : ext !== '.glb' && ext !== '.fbx') continue;
+    const image = kind === 'Menu' || kind === 'Goods';
+    if (image ? ext !== '.png' : ext !== '.glb' && ext !== '.fbx') continue;
     plan.push({kind, name: path.basename(f, ext), file: path.join(ROOT, 'assets', dir, f), ext,
-      assetType: kind === 'Menu' ? 'Decal' : 'Model', license: kind === 'Menu' ? 'CC-BY-3.0' : 'CC0-1.0'});
+      assetType: image ? 'Decal' : 'Model',
+      license: kind === 'Goods' && ['dates.png', 'raisins.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
+        : kind === 'Goods' && f === 'saffron.png' ? 'CC0-1.0' : image ? 'CC-BY-3.0' : 'CC0-1.0'});
   }
 }
 
@@ -149,8 +152,10 @@ for (const item of plan) {
     const form = new FormData();
     form.set('request', JSON.stringify({
       assetType: item.assetType, displayName: 'MareScientia ' + id,
-      description: item.kind === 'Menu'
-        ? 'Icons by Lorc, Delapouite, Lord Berandas / game-icons.net / CC BY 3.0. Brass recolor and PNG export for Mare Scientia; see assets/SOURCES.md'
+      description: item.assetType === 'Decal'
+        ? item.license === 'PROJECT_ORIGINAL_ART' ? 'Original vector commodity art made for Mare Scientia at owner request; see assets/SOURCES.md'
+          : item.license === 'CC0-1.0' ? 'Tiny Speck Glitch / CC0, vector conversion by Bart; see assets/SOURCES.md'
+          : 'Icons by Lorc, Delapouite, Lord Berandas, Skoll / game-icons.net / CC BY 3.0. Color edit and PNG export for Mare Scientia; see assets/SOURCES.md'
         : 'CC0 model for Mare Scientia (' + item.kind + '); see assets/SOURCES.md',
       creationContext: {creator: {userId: Number(creatorId)}},
     }));
@@ -211,3 +216,4 @@ if (!Object.keys(registry.assets).length || failures.length) {
   console.error('REGISTRATION_INCOMPLETE', failures.length, failures.slice(0, 12).join(' | '));
   process.exitCode = 1;
 }
+

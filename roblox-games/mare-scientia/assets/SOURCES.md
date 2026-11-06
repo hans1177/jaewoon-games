@@ -364,3 +364,54 @@ KayKit Resource Bits 1.0, 제작자 Kay Lousberg. CC0-1.0, 상업 이용·수정
 | `naval/tower-roof.glb` | `pirate-kit` | `76be3cb9bd4083512d6168d92ff65d67c89dae44` | 21868 |
 
 해당 모델의 실제 개별 로블록스 등록 및 권한이 확인되기 전에는 제작 완료/게시 완료로 간주하지 않는다.
+
+
+
+## 2026-11-06 교역품·특산품 그림 전체 36종 및 실물 화물 연결
+
+기존 상품 ID 36종 전부에 전용 512×512 PNG를 연결한다. 상품을 다른 물건의 3D 모델로 표시하던 연결을 제거하고 분류를 나타내는 품목별 그림으로 교체했다. 새 화물·품목·가격·드랍·보상은 만들지 않는다. 아이콘은 상품을 식별하는 UI용 그림이며 정확한 광물/섬유의 실물 3D 인증을 의미하지 않는다. 보유 실물 모델 중 철·목재·직물·생선·치즈·와인·오일·차·커피는 기존 항구 생산품 목록에 따라 부두에 배치한다.
+
+Game-icons 원본 33종: https://game-icons.net/about.html , 고정 리비전 `82d948812bfe3f269ef8f731dcdb07b08160edc4`, CC BY 3.0. Lorc·Delapouite·Skoll 원본 실루엣 보존, 투명 배경·품목별 재질 그라데이션·PNG 변환. 상태 화면 저작자 표시 포함.
+
+사프란: Tiny Speck Glitch CC0 원화, Bart SVG 변환. https://openclipart.org/detail/210622/spice-saffron , 다운로드 https://openclipart.org/download/210622/spice-saffron.svg . 원본 라이선스 https://github.com/tinyspeck/glitch-items/blob/master/README.md , 교차 확인 https://freesvg.org/spice-saffron . 대추야자·건포도: 사용자의 품목별 고퀄리티 제작 요청에 따라 기존 벡터 아이콘 체계에 맞춰 작성한 게임 전용 2D 원화. 외부 자산/검증된 3D 모델이라고 주장하지 않는다. 원본 SVG도 함께 보존한다.
+
+| 파일 | 원본 경로/제작 | 원본 해시 | PNG SHA-256 |
+|---|---|---|---|
+| `goods/amber.png` | `delapouite/amber-mosquito.svg` | `a7029c419426de146169cc644fa5cc004ab29756` | `a877e6f1ce23507d0e0d3751772ee1be307d8c6216218e881d8b3ca01d00b6f1` |
+| `goods/beer.png` | `lorc/beer-stein.svg` | `7f9c5145d4429cd95f1b0fa49cf3054dc3aca282` | `d8f7f47bb64e26fd664c933efc3f967d877791d47cd6e9bc7241b7ae51a76e20` |
+| `goods/carpet.png` | `delapouite/red-carpet.svg` | `1a0002d612ee539a800d61721d78c87a77d36c71` | `9fe676f2d9113a747a5c9c25561a10dff96923ef42fdf28ba0a15ff6af38a568` |
+| `goods/cheese.png` | `lorc/cheese-wedge.svg` | `a8e8286f2d10e84d21ad1fa5d3e9b53775343aef` | `aa5b130054b6df35b8988f17bd2c1bdf35839ba3334cd5a790387fe89866cd03` |
+| `goods/cloth.png` | `delapouite/rolled-cloth.svg` | `94df554744be50f0526a42abc81cb2918a7ea484` | `50dad120c6ecd311ceb3ef1f3d3078c1430042d510b27a8125cfe17eace7e47b` |
+| `goods/coal.png` | `delapouite/coal-pile.svg` | `11e232932f2cb87897261b784b14c2123c600c7b` | `ee6c1a4ad20a9c63e951c053b8ff6dfee4da058f2ac7951d9307c6799aed3828` |
+| `goods/coffee.png` | `delapouite/coffee-beans.svg` | `a18f376c4fa9a9799713554d8428024dd286154f` | `3b08c23209e927bd62b634dcc1d12ece417ec5455eff5362b049be06abc69bab` |
+| `goods/coral.png` | `delapouite/coral.svg` | `207d1beb5c1f8afe3d721c7244bc71368239d84e` | `afc9fc7bc86db735cc79dc2873298a9af2909e99513d9e22b58b904a43c2cb2b` |
+| `goods/cotton.png` | `delapouite/cotton-flower.svg` | `07121b977b19fe082fecea01a61868928966da72` | `f04bca862f6c06b778a7e1a5300f1232db8d710b6df793c4e31d4c2fe60c6624` |
+| `goods/dates.png` | `PROJECT_ORIGINAL_VECTOR` | `6c297716c3663d0a49e9ffa6b7df0ce6addd6d026f7623d8161b79503e2ef5f7` | `6286d804124223d8825ddc4fd48c6601708552723c6ca8b71949e92c06429948` |
+| `goods/fish.png` | `delapouite/fish-bucket.svg` | `d2fcf238e1f2288ec32909bba3540ddf955ec615` | `a3ff8663a1b46a7e4aff32d7b136258efa71614cfe77d95dc19224b1130db97f` |
+| `goods/fur.png` | `delapouite/fur-shirt.svg` | `aec7643b78bfc31edaec40f1bcd49b56fd6aeaa5` | `7fb6ea50c938702adba3bfc0ec40a887fc97459832efc3c724a36bfe517ca7ad` |
+| `goods/glass.png` | `lorc/glass-shot.svg` | `78de84b784c103e516d197c5a8044667f21aebd7` | `adc79b19da843a4155f2eb255e4cb6d4d5481548ae52823883f5588ecd5350e7` |
+| `goods/incense.png` | `lorc/incense.svg` | `93497f033ffbaa0dbf9446ddf5a13ff93cd969d2` | `bd73aa48af06b4a85430280235a520008a805148220dbae4913088057c7b6e29` |
+| `goods/iron.png` | `lorc/metal-bar.svg` | `22b3353ea033ab36de2fd3c58eba41fa76cc374b` | `5ea2682b4b7cd2b8fb7f11f91ab15c01a084c869fca6a95a4897ef93f98d2d57` |
+| `goods/ivory.png` | `delapouite/ivory-tusks.svg` | `c9aa008aba4ed2f876ab79c0a2baa145ff458d1b` | `60d53b3072c21a133da48934fab447a0ba9ea4cfc1a7c9ea7daafd4bb3b4906c` |
+| `goods/leather.png` | `delapouite/animal-hide.svg` | `f790db5952f75300708d836e4ff6a13f83c390f1` | `07772533a568a5e445484ee9cac6843baf293b02d873b65b3249d665639d6c8c` |
+| `goods/linen.png` | `delapouite/flax.svg` | `f3615d7db5b57ee7efb9c3787f7e3735d162649b` | `a369c463a02d46e604044eef661689d23d7a2cf8b15d8285e187513fe12936e5` |
+| `goods/marble.png` | `lorc/stone-block.svg` | `08c13b99a24a505376e02c021c4debd80e1d46b1` | `97f84dec855fcea784dbd78f8f2fdeca426ad9bdb4316f587bd4d6b4e9bacd23` |
+| `goods/olive_oil.png` | `delapouite/olive.svg` | `bbb4f901b1f5e66e835f72ec91e5460d24e705c7` | `6833560fa3a6868d519e554bdf1297586fd874813aa0ab5f78719cfbc83da1d3` |
+| `goods/pearls.png` | `delapouite/oyster-pearl.svg` | `faa3c6dc3e3bb3a6fd0ffdcdc5d6ef47b82c22f9` | `76bf61be7471d4415124a19a2fdd4e0a51a9a879f457b9e020a6dd63eaea9cec` |
+| `goods/pepper.png` | `skoll/pestle-mortar.svg` | `2760b1393d4190c2c38628a55edffa925472035e` | `adfc6519c11da73eb6db50134e2c58e3773e00b6969cda2c7a504ddb98afb299` |
+| `goods/porcelain.png` | `delapouite/porcelain-vase.svg` | `51e82fce8a175b0fe2b6a091ddd2d266af0593a9` | `78290a23eec120ec8a541e47a2a717315d43c3594ee2f559e44773fc9a651ce6` |
+| `goods/raisins.png` | `PROJECT_ORIGINAL_VECTOR` | `0c48a5790b606654cdc7f2f9cd5bb186f63ff9971d0050e0e3f6ca0cc52dd9f5` | `fb480707a0c56ab070c5312d32c0d6256da141af49ea552f5663271d9bd23faf` |
+| `goods/saffron.png` | `Tiny Speck / Bart / Openclipart 210622` | `3a735a58e15484d241b0ffec01d31cb3006be3ae1526828f8eaee0f0f53c1d2b` | `dabdaa9a41aaba420a1c7c45ff3c28a3a0045c25475c1eb4edfb85d3e36863be` |
+| `goods/salt.png` | `lorc/salt-shaker.svg` | `d569eea35621e0297ad4c3779006ac9cfdf6797d` | `6fe921dd185ebc451aaaca3bc79cb2d3383842f9d47b5bd7579a535743e2d9b8` |
+| `goods/silk.png` | `delapouite/cloth-jar.svg` | `cca965ba289402607dbb2faba3e752646731192f` | `227ae7119914aa0fb1e760a073c82acf8ec5806054289ae438ceee567eaf098f` |
+| `goods/spice.png` | `lorc/cool-spices.svg` | `1208fd1731e4284d34016346f93fc68be67d5d00` | `fce85ea596d50af77aa9640cb97167de69f10e02a6a1d73c717648d21192ddc5` |
+| `goods/sugar.png` | `delapouite/powder-bag.svg` | `c487d31556c4c585fe46a4e2837cdc66333c5dde` | `fee9b472e1b67b6a6b8df8e6e47ba8e8fa0a21470d0b4d78dc6a653ae681d127` |
+| `goods/tea.png` | `delapouite/teapot-leaves.svg` | `f1cbd06789f5ea8c606bb6b49497d9ab8c1c04ee` | `65542fb0d6de0c8023664c3f02ffd427d8986cecac622060c4d8d2478e9ac39b` |
+| `goods/timber.png` | `delapouite/wood-pile.svg` | `fe7cbe03b6a76f81b8e6a8a5cd6b3005461a84ea` | `a23a87a464e76a3f4940a1d92c0133502434ccf8968884a56ae96a92e9c2eb68` |
+| `goods/tin.png` | `delapouite/metal-plate.svg` | `9c7993fb176fe88b4b17c929c0238ea2cb20bc38` | `d899d264a0e1b98f6d4a565bc6e82244c8c93fef0c462ad4d23ae7459327b63d` |
+| `goods/tobacco.png` | `delapouite/cigar.svg` | `769110b9795b6c182ec657905b58f87ead43b392` | `dc00157f930022708a62958d4f93d15fa96351e7e99b1c080f2f10ad3eba523f` |
+| `goods/whale_oil.png` | `skoll/oil-drum.svg` | `50d181e257fb817f4a7b6b4fd2b124a6de8d02a0` | `63c5f04a327f7b2027dedb107d596be0788f36202ae27fdf87b069b8d1332cf5` |
+| `goods/wine.png` | `delapouite/wine-bottle.svg` | `98ea3c4d7cbdb72f69587aae3903fbb5e2ba6470` | `7ac3a0f7575d38c19f1c499bb74664484d3682e09d31304081c944ab15d187b1` |
+| `goods/wool.png` | `delapouite/wool.svg` | `2d0d52cb6c7f95652cac363c2f22d99f8c63f33d` | `642d8c61c61ec8a14589076ff0860ccdd4eaceccb64e961d34f7dc9d9a9aa290` |
+
+

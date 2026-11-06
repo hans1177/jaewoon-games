@@ -7,6 +7,7 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Pose = require(script.Parent:WaitForChild("Pose"))
+local PortData = require(script.Parent:WaitForChild("Ports"))
 
 local PortScene = {}
 
@@ -452,14 +453,21 @@ function PortScene.build(info, onFacility)
 		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, 440))
 		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, -440))
 	end
-	-- 화물(상자, 통)
-	for i = 1, 8 do
-		local x = rng:NextNumber(24, 74)
-		local z = rng:NextNumber(-3.5, 3.5)
-		if rng:NextNumber() < 0.5 then
-			part(folder, Vector3.new(2.2, 2.2, 2.2), CFrame.new(x, 3.1, z) * CFrame.Angles(0, rng:NextNumber(0, 1), 0), Color3.fromRGB(160, 120, 70), Enum.Material.WoodPlanks)
-		else
-			part(folder, Vector3.new(2.4, 1.8, 1.8), CFrame.new(x, 3.2, z) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(120, 76, 44), Enum.Material.Wood, Enum.PartType.Cylinder)
+	-- 부두 화물: 등록된 실제 상품 모델을 쓰며 생산품·가격·보행 판정에는 영향을 주지 않는다.
+	local cargoModels = {
+		iron = "iron-bars", timber = "wood-log-stack", cloth = "textiles-stack-large-colored",
+		fish = "food-barrel-fish", cheese = "cheese", wine = "wine-red",
+		olive_oil = "bottle-oil", tea = "cup-tea", coffee = "cup-coffee",
+	}
+	local port = PortData.Ports[info.portId]
+	local cargoIndex = 0
+	for _, id in (if port then port.produces else {}) do
+		local mesh = cargoModels[id]
+		if mesh then
+			cargoIndex += 1
+			local model = importedModel(folder, "Cargo", mesh,
+				Vector3.new(25 + cargoIndex * 5, 2, if cargoIndex % 2 == 0 then 3.2 else -3.2), 2.4, false)
+			if model then model.Name = "TradeCargo_" .. id end
 		end
 	end
 	-- 등대 (부두 끝)
@@ -882,3 +890,4 @@ end
 PortScene.makeShip = buildShip
 
 return PortScene
+

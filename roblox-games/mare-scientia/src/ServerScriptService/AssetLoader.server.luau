@@ -21,7 +21,7 @@ local order = { Town = 1, Naval = 2, Cargo = 3, Interior = 4, Terrain = 5, Castl
 local queue = {}
 for key, assetId in ids do
 	local kind, name = string.match(key, "^(%w+)/(.+)$")
-	if kind and name and kind ~= "Menu" and type(assetId) == "number" and assetId > 0 then
+	if kind and name and kind ~= "Menu" and kind ~= "Goods" and type(assetId) == "number" and assetId > 0 then
 		table.insert(queue, { kind = kind, name = name, id = assetId, key = key })
 	end
 end
@@ -76,3 +76,4 @@ if priorityPending > 0 then
 end
 print(string.format("[MareScientia] 모델 초기 로드 %d개, 실패 %d개, 대기 %d개", loaded, failed, pending))
 ReplicatedStorage:SetAttribute("MareAssetsReady", true)
+

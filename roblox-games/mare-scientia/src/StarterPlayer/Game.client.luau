@@ -145,23 +145,11 @@ local function mkLabel(parent, text, size, color, bold, order)
 	return l
 end
 
--- 상품별 실제 모델. 해당 물건이 아닌 대체 모형은 연결하지 않는다.
--- 전용 모델이 아직 없는 품목은 상품명 카드로 구분해 오인하지 않도록 한다.
-local GOOD_ICON = {
-	coal = { "Cargo", "resource-stone", Color3.fromRGB(48, 50, 54) },
-	spice = { "Cargo", "mortar-pestle" }, cheese = { "Cargo", "cheese" },
-	wine = { "Cargo", "wine-red" }, cloth = { "Cargo", "textiles-stack-large-colored" },
-	fish = { "Cargo", "fish-large" }, iron = { "Cargo", "iron-bars" },
-	timber = { "Cargo", "resource-wood" }, salt = { "Cargo", "shaker-salt" },
-	glass = { "Cargo", "glass-wine" }, beer = { "Cargo", "mug" },
-	tea = { "Cargo", "cup-tea" }, olive_oil = { "Cargo", "bottle-oil" },
-	silk = { "Cargo", "textiles-stack-large-colored" }, linen = { "Cargo", "textiles-b" },
-	whale_oil = { "Cargo", "barrel-open" }, tin = { "Cargo", "silver-bar", Color3.fromRGB(174, 181, 188) },
-	porcelain = { "Cargo", "plate" }, coffee = { "Cargo", "cup-coffee" },
-	marble = { "Terrain", "column" }, saffron = { "Cargo", "mortar-pestle" },
-	carpet = { "Interior", "rugrectangle" }, raisins = { "Cargo", "grapes" },
-	pepper = { "Cargo", "pepper-mill" },
-}
+-- 교역품: 상품 ID마다 전용 고해상도 그림을 사용한다. 다른 물건의 모델을 대체 표시하지 않는다.
+local GOOD_ICON = {}
+for id in PortData.Goods do
+	GOOD_ICON[id] = { "Goods", id }
+end
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
 local TITLE_ICONS = {
 	{ "식물", "Cargo", "apple" }, { "동물", "Cargo", "fish-large" }, { "광물", "Relics", "coin" }, { "유물", "Relics", "pot" },
@@ -198,12 +186,31 @@ local SHIP_ICON = {
 }
 
 local function modelIcon(parent, kind, asset, tint, px, labelText)
+	-- 등록된 상품·메뉴 그림은 3D 모델을 복제하지 않아 모바일 화면의 렌더 비용을 줄인다.
+	if kind == "Goods" or kind == "Menu" then
+		local image = Instance.new("ImageLabel")
+		image.Name = kind .. "_" .. asset
+		image.Size = UDim2.fromOffset(px, px)
+		image.BackgroundColor3 = Color3.fromRGB(24, 37, 53)
+		image.ScaleType = Enum.ScaleType.Fit
+		local assetId = AssetIds[kind .. "/" .. asset]
+		if assetId then
+			image.Image = "rbxthumb://type=Asset&id=" .. tostring(assetId) .. "&w=420&h=420"
+		end
+		corner(image, 8)
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = Color3.fromRGB(214, 170, 82)
+		stroke.Transparency = 0.5
+		stroke.Parent = image
+		image.Parent = parent
+		return image
+	end
 	local vf = Instance.new("ViewportFrame")
 	vf.Size = UDim2.fromOffset(px, px)
-	vf.BackgroundColor3 = Color3.fromRGB(40, 58, 86)
-	vf.Ambient = Color3.fromRGB(190, 190, 200)
-	vf.LightColor = Color3.fromRGB(255, 244, 222)
-	vf.LightDirection = Vector3.new(-1, -1.5, -1)
+	vf.BackgroundColor3 = Color3.fromRGB(24, 37, 53)
+	vf.Ambient = Color3.fromRGB(148, 160, 177)
+	vf.LightColor = Color3.fromRGB(255, 237, 205)
+	vf.LightDirection = Vector3.new(-1, -1.5, -0.6).Unit
 	corner(vf, 8)
 	local st = Instance.new("UIStroke")
 	st.Color = Color3.fromRGB(214, 170, 82)
@@ -227,10 +234,15 @@ local function modelIcon(parent, kind, asset, tint, px, labelText)
 				end
 			end
 		end
-		m.Parent = vf
+		local world = Instance.new("WorldModel")
+		world.Name = "Display"
+		world.Parent = vf
+		m.Parent = world
 		local cf, size = m:GetBoundingBox()
-		local reach = math.max(size.Magnitude, 0.5) * 1.15
-		cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.7, 0.55, 1) .Unit * reach, cf.Position)
+		-- 수직·수평 시야에 모델 전체가 들어오도록 바운딩 구로 거리를 계산한다.
+		local radius = math.max(size.Magnitude * 0.5, 0.1)
+		local reach = radius / math.sin(math.rad(cam.FieldOfView * 0.5)) * 1.08
+		cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.85, 0.65, 1.2).Unit * reach, cf.Position)
 	else
 		local knownId = if kind and asset then AssetIds[kind .. "/" .. asset] else nil
 		if knownId then
@@ -1403,7 +1415,7 @@ local function renderStatus()
 	end
 	add(function() return mkHeader(content, "시작 가이드") end)
 	add(function()
-		return mkLabel(content, "메뉴 그림: Lorc · Delapouite · Lord Berandas / game-icons.net / CC BY 3.0\n황동 색상 편집 및 이미지 변환: 마리 에센시아", 10, COLORS.muted, false)
+		return mkLabel(content, "메뉴·상품 그림: Lorc · Delapouite · Lord Berandas · Skoll / game-icons.net / CC BY 3.0\n사프란: Tiny Speck·Bart / CC0 · 대추야자·건포도: 게임 전용 벡터 원화\n색상·재질 편집 및 이미지 변환: 마리 에센시아", 10, COLORS.muted, false)
 	end)
 	add(function()
 		return mkLabel(content, "1) 교역: 특산(싸게)을 사서 수요(비싸게) 항구에 팔아요. ▲▼는 시장 사건으로 값이 움직이는 품목이에요.\n2) 항해: 항구를 옮기면 날짜가 지나고 보급품이 줄어요. 증기선은 석탄을 태워요.\n3) 탐험·도감: 항구 근처에서 카드를 발견하면 명성과 코인을 얻고, 학자를 만나 지식을 전수받아요.\n4) 연구: 증기 지식을 모으면 증기선과 증기 스킬이 열려요.\n5) 전투: 사략선 사냥으로 경험을 쌓고, 레벨이 오르면 신화 괴물에 도전해요.", 12, COLORS.muted, false)
@@ -2426,3 +2438,4 @@ menuToggle.Activated:Connect(function()
 	main.Visible = true
 	menuToggle.Visible = false
 end)
+
