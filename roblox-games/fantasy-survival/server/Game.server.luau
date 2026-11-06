@@ -1,5 +1,8 @@
 -- 파일명: roblox-games/fantasy-survival/server/Game.server.luau
 local Players = game:GetService("Players")
+-- [스폰: 지면 생성 선행] 캐릭터 자동 출현보다 서버 초원 Terrain 생성과 SpawnLocation 연결을 먼저 끝낸다.
+-- 기존 사망 후 복구는 아래 플레이어 스폰 책임 함수가 같은 경로로 수행한다.
+Players.CharacterAutoLoads = false
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
 local store = nil
@@ -248,6 +251,7 @@ nativeFoundationSpawn.Transparency = 1 -- Engine spawn locator only, never visib
 -- 저장된 이어하기 위치는 기존 MeadowResumeReady 복구가 우선하며 변경하지 않는다.
 nativeFoundationSpawn.Position = Vector3.new(0, 3, -75)
 nativeFoundationSpawn.Anchored = true
+nativeFoundationSpawn.Enabled = true
 nativeFoundationSpawn.CanCollide = false
 nativeFoundationSpawn.CanTouch = false
 nativeFoundationSpawn.CanQuery = false
@@ -494,6 +498,17 @@ local function bindNativeFoundationPlayer(player)
   end
   local function onCharacterAdded(character)
     player.RespawnLocation = nativeFoundationSpawn
+    -- [리스폰] 엔진 자동 출현을 막은 대신 동일한 서버 스폰에서 기존 부활 대기 후 재생성한다.
+    local respawnHumanoid = character:WaitForChild("Humanoid", 10)
+    if respawnHumanoid then
+      respawnHumanoid.Died:Connect(function()
+        task.delay(Players.RespawnTime+1, function()
+          if player.Parent~=Players or player.Character~=character or respawnHumanoid.Health>0 then return end
+          local recovered, reason = pcall(function() player:LoadCharacterAsync() end)
+          if not recovered then warn("SURVIVAL_RESPAWN_RECOVERY_FAILED: "..tostring(reason)) end
+        end)
+      end)
+    end
     bindNativeFoundationCharacter(character)
     -- 스폰·부활 모두 외형 로딩 경로를 보존한 뒤 한 번만 망토 착용을 시도한다.
     task.spawn(applyOpeningCape, character)
@@ -503,7 +518,26 @@ local function bindNativeFoundationPlayer(player)
   player.CharacterAppearanceLoaded:Connect(function(character)
     if player.Character==character then clearUnwantedHeadwear(character) end
   end)
-  if player.Character then task.defer(onCharacterAdded, player.Character) end
+  if player.Character then
+    task.defer(onCharacterAdded, player.Character)
+  else
+    -- [최초 등장] 기존 초원 Terrain에 실제 지면이 있을 때만 캐릭터를 생성한다.
+    -- SpawnLocation은 위치 마커이며 충돌·장식용 파츠로 바꾸지 않는다.
+    task.defer(function()
+      if player.Parent~=Players or player.Character then return end
+      local params = RaycastParams.new()
+      params.FilterType = Enum.RaycastFilterType.Include
+      params.FilterDescendantsInstances = {meadowTerrain}
+      local at = nativeFoundationSpawn.Position
+      local ground = workspace:Raycast(at+Vector3.new(0,48,0),Vector3.new(0,-110,0),params)
+      if not ground or ground.Normal.Y<.65 then
+        warn("MEADOW_INITIAL_SPAWN_GROUND_UNVERIFIED")
+        return
+      end
+      local spawned, reason = pcall(function() player:LoadCharacterAsync() end)
+      if not spawned then warn("MEADOW_INITIAL_CHARACTER_LOAD_FAILED: "..tostring(reason)) end
+    end)
+  end
 end
 Players.PlayerAdded:Connect(bindNativeFoundationPlayer)
 for _, nativeFoundationPlayer in ipairs(Players:GetPlayers()) do
@@ -6849,18 +6883,7 @@ local function bindSurvivalHealth(player)
     humanoid.Died:Connect(function()
       player:SetAttribute("RunActive", false)
       player:SetAttribute("LastApprovedScope", "survival-respawn")
-      -- [실제 부활 복구] Roblox 자동 리스폰의 기본 대기시간을 먼저 보장한다.
-      -- 이후에도 같은 죽은 캐릭터가 남아 있을 때만 LoadCharacterAsync로 복구한다.
-      -- 새 캐릭터가 생성됐다면 호출하지 않아 중복 스폰과 저장 상태 손실을 피한다.
-      task.delay(Players.RespawnTime+1,function()
-        if player.Parent~=Players or player.Character~=character or humanoid.Health>0 then return end
-        local recovered,reason=pcall(function()
-          player:LoadCharacterAsync()
-        end)
-        if not recovered then
-          warn("SURVIVAL_RESPAWN_RECOVERY_FAILED: "..tostring(reason))
-        end
-      end)
+      -- 실제 캐릭터 재생성은 최초 스폰과 동일한 bindNativeFoundationPlayer 경로만 담당한다.
     end)
   end
   player.CharacterAdded:Connect(bindCharacter)
