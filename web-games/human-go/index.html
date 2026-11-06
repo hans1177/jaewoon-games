@@ -3898,7 +3898,29 @@ async function fightOneEnemy(mode, waveIndex=1, waveTotal=1){
 
       relicHealOnAttack();
 
-      await tryMageLightning(e,target);
+      // 마법사 고유 능력: 기본 공격 2회마다 번개 50 피해.
+      // 전투 순서의 기존 책임 함수에서 직접 처리해 누락된 함수 호출로 전투가 중단되지 않게 한다.
+      if(G.job==='mage' && e.hp>0){
+        G.mageTurnCount++;
+        if(G.mageTurnCount>=2){
+          G.mageTurnCount=0;
+          const lightningDamage=50;
+          e.hp-=lightningDamage;
+          lightningFx.classList.remove('show');
+          void lightningFx.offsetWidth;
+          lightningFx.classList.add('show');
+          showDamageNumber(target,lightningDamage);
+          target.classList.add('hit');
+          playHitSound();
+          lg('⚡ 마법사 번개 '+lightningDamage+' 피해');
+          enemyFightHp.style.width=Math.max(0,e.hp/e.max*100)+'%';
+          setTimeout(()=>{
+            lightningFx.classList.remove('show');
+            target.classList.remove('hit');
+          },650);
+          await wait(650);
+        }
+      }
       if(e.hp<=0) break;
 
       const holyWeaponUsed=await tryEnhancedWeaponSkill(e,target);
