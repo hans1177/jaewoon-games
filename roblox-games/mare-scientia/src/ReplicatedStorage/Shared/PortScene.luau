@@ -535,9 +535,8 @@ local function densify(folder, info, style, rng, walkers, made)
 			end
 		end
 		-- 골목 가로등
-		for x = -40, -150, -22 do
-			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, side * 40.8), 4.5, false)
-			importedModel(folder, "Town", "lantern", Vector3.new(x - 8, 0, side * 59.2), 4.5, false)
+		for x = -40, -150, -44 do
+			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, side * 40.8), 3, false)
 		end
 	end
 
@@ -924,8 +923,8 @@ function PortScene.build(info, onFacility)
 			local bulb = part(folder, Vector3.new(1, 1, 1), CFrame.new(x, 7.2, side * 7), Color3.fromRGB(255, 220, 140), Enum.Material.Neon)
 			local glow = Instance.new("PointLight")
 			glow.Color = Color3.fromRGB(255, 214, 140)
-			glow.Range = 24
-			glow.Brightness = 1.4
+			glow.Range = 14
+			glow.Brightness = 0.5
 			glow.Parent = bulb
 		end
 	end
@@ -1033,9 +1032,9 @@ function PortScene.build(info, onFacility)
 			importedModel(folder, mesh[1], mesh[2], stand + Vector3.new(((index - 1) % 4 - 1.5) * 1.7, 0, 0), 1.8, false, mesh[3])
 		end
 		-- 큰길 가로등과 울타리, 광장 분수
-		for _, x in { -30, -60, -90, -120 } do
-			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, 7), 4.5, false)
-			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, -7), 4.5, false)
+		for _, x in { -30, -75, -120 } do
+			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, 7), 3, false)
+			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, -7), 3, false)
 		end
 		importedModel(folder, "Town", "fountain-square", Vector3.new(-10, 0, 0), 7, true)
 		importedModel(folder, "Town", "stall-bench", Vector3.new(-6, 0, 13), 4, false)
