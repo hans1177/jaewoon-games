@@ -65,11 +65,13 @@ for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'Peo
 let registry = {schema: 1, universeId: UNIVERSE_ID, license: 'CC0-1.0', assets: {}};
 try { registry = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')); } catch {}
 const failures = [];
+const pendingPermissions = [];
 for (const item of plan) {
   const id = item.kind + '/' + item.name;
   if (registry.assets[id]?.assetId) {
     // 이미 발급된 ID는 다시 업로드하지 않고 실제 파일 형식/경로만 갱신한다.
     registry.assets[id].source = item.file;
+    if (registry.assets[id].usePermissionGranted !== true) pendingPermissions.push({id, assetId: registry.assets[id].assetId});
     console.log('SKIP_ALREADY_REGISTERED', id);
     continue;
   }
@@ -108,6 +110,21 @@ for (const item of plan) {
   } catch (e) {
     failures.push(id + ': ' + String(e.message).slice(0, 200));
     console.log('FAILED', id, String(e.message).slice(0, 200));
+  }
+}
+// 신규 모델을 먼저 업로드한 뒤, 이전 실행에서 사용권한 확인이 누락된 모델을 보완한다.
+for (const item of pendingPermissions) {
+  try {
+    await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions', {
+      method: 'PATCH', headers: {'content-type': 'application/json'},
+      body: JSON.stringify({subjectType: 'Universe', subjectId: UNIVERSE_ID, action: 'Use',
+        requests: [{assetId: Number(item.assetId), grantToDependencies: true}]}),
+    });
+    registry.assets[item.id].usePermissionGranted = true;
+    console.log('GRANTED_EXISTING', item.id);
+  } catch (e) {
+    failures.push(item.id + ': USE_PERMISSION_UNVERIFIED');
+    console.log('GRANT_WARNING', item.id, String(e.message).slice(0, 160));
   }
 }
 registry.updatedAt = new Date().toISOString();
