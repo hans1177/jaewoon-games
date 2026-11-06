@@ -269638,6 +269638,45 @@
       "maxRetries": null,
       "createdAt": "2026-11-06T18:45:12.436Z",
       "updatedAt": "2026-11-06T18:45:16.427Z"
+    },
+    {
+      "id": "recovery-dd5d0274705cb3a74a91",
+      "status": "queued",
+      "priority": "critical",
+      "sourceQueue": "security",
+      "sourceTaskId": "security-run-42277112176",
+      "gameId": null,
+      "responsibleFiles": [],
+      "contextFiles": [],
+      "goal": null,
+      "relatedTaskIds": [],
+      "failureStage": "SECURITY_IMMUNE_SCAN",
+      "failureSignature": "security-quarantine-HIGH",
+      "blastRadius": "affected-change",
+      "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "evidence": [
+        "security-run:42277112176",
+        "security-report:artifact-42277112176"
+      ],
+      "recoveryStrategy": "SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW",
+      "verificationPlan": [
+        "RERUN_SECURITY_SCAN",
+        "VERIFY_NO_SECRET_OR_MALWARE_PAYLOAD",
+        "REGRESSION_RESCAN",
+        "PRIMARY_AI_SECURITY_REVIEW"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 0,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-11-06T19:11:52.581Z",
+      "updatedAt": "2026-11-06T19:11:52.582Z"
     }
   ]
 }
