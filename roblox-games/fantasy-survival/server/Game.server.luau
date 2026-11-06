@@ -4651,6 +4651,22 @@ local function spawnEnemy(site, siteIndex)
       if banditIdle then banditIdle:Play(.2) end
     end
   end
+  -- [신화 변이] 원본 크리처 모델은 그대로 두고 색 윤곽·광원·입자·크기 비율로 신화 괴물처럼 보이게 한다(추가 파츠 없음).
+  if site.myth then
+    pcall(function()
+      local c=site.myth.color or Color3.fromRGB(180,120,255)
+      local hl=Instance.new("Highlight");hl.FillColor=c;hl.OutlineColor=c:Lerp(Color3.new(1,1,1),.35)
+      hl.FillTransparency=site.myth.fill or .72;hl.OutlineTransparency=.15;hl.DepthMode=Enum.HighlightDepthMode.Occluded;hl.Parent=model
+      local anchor=model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart",true)
+      if anchor then
+        local light=Instance.new("PointLight");light.Color=c;light.Range=site.myth.range or 16;light.Brightness=1.6;light.Parent=anchor
+        local fx=Instance.new("ParticleEmitter");fx.Color=ColorSequence.new(c);fx.Rate=site.myth.rate or 12;fx.Lifetime=NumberRange.new(1.2,2.2)
+        fx.Speed=NumberRange.new(1,3);fx.SpreadAngle=Vector2.new(180,180);fx.LightEmission=.8
+        fx.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.5),NumberSequenceKeypoint.new(1,0)});fx.Parent=anchor
+      end
+      if site.myth.stretch then model:ScaleTo(model:GetScale()*site.myth.stretch) end
+    end)
+  end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
     isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,style=site.style or mobStyleByModel[site.model or ''],oilClass=oilClass,poiGuard=site.poiGuard,bonusBoss=site.bonusBoss,zoneTag=site.zoneTag,named=site.named,lord=site.lord,questBoss=site.questBoss,contractNo=site.contractIndex,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
@@ -8984,16 +9000,36 @@ end
 -- [세계수 숲 · 재의 황야 생태 거점] Config.EcoRegions 표대로 지킴이 몹을 놓고, 지형이 만들어진 뒤 채집점을 놓는다.
 do
   local nodeSpecs={}
+  local legendByZone={
+    worldtree={model="spider",name="뿌리 밑의 아라크네",tier=6,height=8,dx=-240,dz=200,style="mage",color=Color3.fromRGB(120,255,160),drops={{"Fang",1,3},{"Moonbloom",1,3},{"Crystal",.8,2}}},
+    volcano={model="demon",name="재의 이프리트",tier=8,height=9,dx=240,dz=-210,style="mage",color=Color3.fromRGB(255,90,30),drops={{"Magma",1,3},{"Crystal",.8,2}}},
+    oasis={model="raptor",name="사막의 와이번",tier=8,height=9,dx=-230,dz=210,color=Color3.fromRGB(255,210,80),drops={{"Hide",1,3},{"Feather",1,3},{"Crystal",.8,2}}},
+    swamp={model="toad",name="늪의 고대 두꺼비신",tier=9,height=8,dx=230,dz=-200,style="mage",color=Color3.fromRGB(150,255,90),drops={{"Moonbloom",1,3},{"Crystal",.8,2}}},
+    highland={model="yeti",name="눈보라 거인 요툰",tier=7,height=10,dx=-220,dz=-190,color=Color3.fromRGB(170,220,255),drops={{"Hide",1,3},{"Crystal",.8,2},{"Feather",.6,2}}},
+    canyon={model="bladespider",name="칼날 여왕 만티코어",tier=8,height=8,dx=230,dz=200,color=Color3.fromRGB(255,120,120),drops={{"Fang",1,3},{"Claw",1,3},{"Crystal",.8,2}}},
+    wetland={model="toad",name="안개 속의 크라켄 새끼",tier=5,height=7,dx=-210,dz=-200,style="mage",color=Color3.fromRGB(80,200,255),drops={{"Moonbloom",1,2},{"Crystal",.7,1}}},
+    desert={model="fangspider",name="모래 속 전갈 여왕",tier=8,height=8,dx=220,dz=210,color=Color3.fromRGB(255,190,90),drops={{"Fang",1,3},{"Crystal",.8,2}}},
+    chaos={model="frostfiend",name="균열의 서리 거인",tier=10,height=10,dx=-230,dz=190,style="mage",color=Color3.fromRGB(150,130,255),drops={{"Crystal",1,3},{"Magma",.8,2}}},
+    citadel={model="skullorc",name="성채의 망령 기사단장",tier=11,height=9,dx=230,dz=-200,color=Color3.fromRGB(190,190,220),drops={{"Ingot",1,3},{"Crystal",1,3}}},
+    deadmarsh={model="demon",name="죽음 늪의 바실리스크 왕",tier=10,height=9,dx=-220,dz=-210,style="mage",color=Color3.fromRGB(120,255,120),drops={{"Fang",1,3},{"Crystal",1,3}}},
+  }
   for _,region in ipairs(Config.EcoRegions or {}) do
     for _,camp in ipairs(region.Camps) do
       local function at(dx,dz) return Vector3.new(camp.X+dx,3,camp.Z+dz) end
       local g,b=camp.Guard,camp.Boss
       for _,off in ipairs(g.Offs) do
-        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=g.model,name=g.name,tier=g.tier,height=g.height,hp=g.hp,dmg=g.dmg,drops=g.drops,position=at(off[1],off[2])})
+        table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=g.model,name=g.name,tier=g.tier,height=g.height,hp=g.hp,dmg=g.dmg,drops=g.drops,style=g.style,myth=g.myth,position=at(off[1],off[2])})
       end
       table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=b.model,name=b.name,tier=b.tier,height=b.height,hp=b.hp,dmg=b.dmg,
-        alpha=true,named=true,questBoss=camp.Id,drops=b.drops,position=at(b.dx,b.dz)})
+        alpha=true,named=true,questBoss=camp.Id,drops=b.drops,style=b.style,myth=b.myth,position=at(b.dx,b.dz)})
       for _,n in ipairs(camp.Nodes) do nodeSpecs[#nodeSpecs+1]={n[1],camp.X+n[2],camp.Z+n[3]} end
+    end
+    -- [전설 크리처] 퀘스트 없이 지역 구석에 홀로 사는 신화 괴물. 찾아가 쓰러뜨리면 희귀 재료를 준다(오디세이식 자유 사냥).
+    local legend=legendByZone[region.Zone]
+    if legend then
+      table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=legend.model,name=legend.name,tier=legend.tier,height=legend.height,hp=4.2,dmg=2.2,
+        alpha=true,named=true,style=legend.style,myth={color=legend.color,range=30,rate=26,fill=.6},drops=legend.drops,
+        position=Vector3.new(region.HubX+legend.dx,3,region.HubZ+legend.dz)})
     end
   end
   task.spawn(function()
