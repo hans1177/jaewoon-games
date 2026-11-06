@@ -6,6 +6,9 @@ local CHUNKS: { { [string]: string } } = {
 	require(script.Parent.SeaRoutes1),
 	require(script.Parent.SeaRoutes2),
 	require(script.Parent.SeaRoutes3),
+	require(script.Parent.SeaRoutes4),
+	require(script.Parent.SeaRoutes5),
+	require(script.Parent.SeaRoutes6),
 }
 
 local U = 20
