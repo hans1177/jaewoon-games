@@ -8853,6 +8853,16 @@ do
 end
 
 -- [저주받은 3인] 미나(마녀) · 닉(늑대인간) · 렌스(영혼을 판 악마 영주). 쓰러뜨리면 저주가 풀린다.
+-- [초원 위험 구역] 마을 중심에서 멀수록 강해진다: ~200 안쪽 1단계, ~300 2단계, ~380 3단계, 그 바깥 4단계.
+-- 이름 없는 기본 늑대·박쥐만 조정하고 의뢰 표적·야영지·우두머리는 그대로 둔다.
+for _,site in ipairs(meadowEncounterSites) do
+  local p=site.position
+  if p and math.abs(p.X)<=450 and math.abs(p.Z)<=450 and not site.name and not site.model and not site.alpha
+    and not site.questIndex and not site.questBoss and not site.contractIndex then
+    local d=math.sqrt(p.X*p.X+p.Z*p.Z)
+    site.tier=d<200 and 1 or d<300 and 2 or d<380 and 3 or 4
+  end
+end
 do
   for _,c in ipairs({
     {"mina","저주받은 마녀 미나","witch",7,5000,-300,"mage","swamp",3.2,1.6},
