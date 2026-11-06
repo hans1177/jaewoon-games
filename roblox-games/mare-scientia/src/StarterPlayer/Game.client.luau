@@ -493,7 +493,7 @@ local card = Instance.new("Frame")
 card.BackgroundColor3 = NAVY
 card.BackgroundTransparency = 0.08
 card.Position = UDim2.fromOffset(8, 8)
-card.Size = UDim2.fromOffset(176, 66)
+card.Size = UDim2.fromOffset(226, 66)
 card.Parent = hud
 corner(card, 10)
 hudStroke(card, 2)
@@ -513,6 +513,7 @@ local function hudText(parent, pos, size, textSize, color, align)
 end
 
 local hudName = hudText(card, UDim2.fromOffset(8, 4), UDim2.new(1, -16, 0, 16), 12, BRASS)
+local hudCoin = hudText(card, UDim2.fromOffset(8, 4), UDim2.new(1, -16, 0, 16), 12, Color3.fromRGB(255, 226, 120), Enum.TextXAlignment.Right)
 local hudPort = hudText(card, UDim2.fromOffset(8, 21), UDim2.new(1, -16, 0, 14), 11, COLORS.text)
 local hullBack = Instance.new("Frame")
 hullBack.BackgroundColor3 = Color3.fromRGB(8, 14, 22)
@@ -534,6 +535,7 @@ banner.Position = UDim2.new(0.5, 0, 0, 8)
 banner.Size = UDim2.fromOffset(130, 28)
 banner.BackgroundColor3 = Color3.fromRGB(90, 62, 28)
 banner.Parent = hud
+banner.Visible = false -- 상단 중앙 항구 이름은 쓰지 않는다
 corner(banner, 8)
 hudStroke(banner, 2)
 local hudBanner = hudText(banner, UDim2.new(), UDim2.fromScale(1, 1), 20, Color3.fromRGB(255, 240, 200), Enum.TextXAlignment.Center)
@@ -546,9 +548,9 @@ coinCard.AnchorPoint = Vector2.new(1, 0)
 coinCard.Position = UDim2.new(1, -8, 0, 8)
 coinCard.Size = UDim2.fromOffset(120, 30)
 coinCard.Parent = hud
+coinCard.Visible = false -- 코인은 왼쪽 카드에 표시
 corner(coinCard, 10)
 hudStroke(coinCard, 2)
-local hudCoin = hudText(coinCard, UDim2.fromOffset(12, 0), UDim2.new(1, -24, 1, 0), 14, BRASS, Enum.TextXAlignment.Right)
 
 local dock = Instance.new("ScrollingFrame")
 dock.Name = "Dock"
@@ -556,7 +558,7 @@ dock.BackgroundColor3 = NAVY
 dock.BackgroundTransparency = 0.15
 dock.BorderSizePixel = 0
 dock.AnchorPoint = Vector2.new(1, 0)
-dock.Position = UDim2.new(1, -8, 0, 46) -- 오른쪽 위: 왼쪽 조이스틱과 점프 버튼을 피한다
+dock.Position = UDim2.new(1, -8, 0, 8) -- 오른쪽 위: 왼쪽 조이스틱과 점프 버튼을 피한다
 dock.Size = UDim2.fromOffset(112, 232)
 dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
