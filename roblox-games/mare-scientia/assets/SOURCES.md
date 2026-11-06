@@ -435,3 +435,31 @@ KayKit Resource Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylous
 | `cargo/gems-chest-empty.glb` | `6bb4e1c08ae82a62e15812bd216729fd59081101` | `f3499738d3326283c5ff56275058424172f7ef3f` | `5bea5fba04eb59b86f0b9b3033695457f494fab7aced9bd387a3e9637b68d714` |
 | `cargo/gems-pile-large.glb` | `bf6a4e60ef5a2b7c75a72399b57764f821b66133` | `d6b4f5a75b747c96d02cb3c8e5695e0c944de8da` | `81cdf4e5eb014cfc2a29ce1f6aacb1c8644dab3935bd37307dc32c25a8e40fbb` |
 | `cargo/gems-pile-small.glb` | `962e19e08fc77bc151ad9ce2bb637544fd51c122` | `59981a82ec4c20de3fb1eef76f4c291167fb763d` | `5c17b5815d452f184e4bea1708ee92d28ac0f3343285e5d4f3b4af09a9f33c56` |
+
+
+## 2026-11-06 항해·연구·조선 도구 16종 추가 확보
+
+KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylousberg.itch.io/rpg-tools-bits . 원본 미러 https://github.com/GeorgeQLe/assets-kaykit-3d-props , 고정 리비전 `4376b8becf4218424edaba18c0e43a5989c189f6`, 원본 하위 경로 `assets/kaykit/rpg-tools-bits-1.0/Assets/gltf/`. 원본 36개 파일의 Git Blob SHA를 확인하고 메시·재질·UV를 보존하며 버퍼·텍스처만 GLB에 내장했다. 기존 relics 파일명과 중복 없음. 로블록스 계정 제재 응답이 확인된 상태이므로 원본 확보/저장과 실제 등록/사용 권한/배치를 구분한다. 신규 게임 규칙·제작법·보상은 추가하지 않는다.
+
+| 파일 | 원본 GLTF Git SHA | 원본 BIN Git SHA | GLB SHA-256 |
+|---|---|---|---|
+| `relics/map.glb` | `6ef4311fe7ce7c23a689563bd272eec9ce392bb5` | `3f164177802e95a20f68021d4980ad3b1c6e3a96` | `c4e14e14d1c4bf7227131c0f4e4fdcbb01e687afc7b1d2f5456e09bdced8d0d6` |
+| `relics/map-rolled.glb` | `a7da7ab4728b72bf97cc0194bc4e503b9992eb6b` | `3615db6661fcb150b59b610023e3303f9cb7ea4e` | `210f21ccd6a0d7a2fd3f1410c9578980a234150ee4d73fada0ce06a0bcf85b21` |
+| `relics/compass-base.glb` | `aae3a305e2b3f0bdf3539f0a4e75f3d4694625f9` | `943885bdb15b05e5b235de82a1e2effcb68c505a` | `6218562607b1cade58538a814a135a88cad54ddf6d19bcfb6613c19d6fe68a86` |
+| `relics/drafting-compass.glb` | `f2c83f14f8f3b980d8700df315d74ac3366a1678` | `e35d18d7f989d2204b598f3f71315224f188f4e0` | `8173fe34b8cdc3383ccb6212d2b45bdc5662bc2cfb234055f9a767d531fee808` |
+| `relics/journal-open.glb` | `2bc8935f2a0d9f881953da6886fdf36e13c3522c` | `7ce61a8e245dc8abfa68d260eba1834c389cc806` | `a9e77e569b15f9fd6d3cb04d414229ca1e19bff1463253a082855d74249fd17e` |
+| `relics/journal-closed.glb` | `204088668f200d1d1fd2d61225f506cc6ac5108c` | `a202d8dfeae53164733cf68d007b07e9b6d09f22` | `effe7f517a9dfd4b211f397c56f390b396598383f9afa57b43acaaaf3b71fc32` |
+| `relics/magnifying-glass.glb` | `4bd7b4fd16a81ae61d851c842de8ffd777ad4e82` | `211dd02eb430aed6e3533b01df4bac5508eb49b8` | `419bc8f0516824a0b88e39a76b2f0a3bd074d72821aaad4b1106a29c1b28e3db` |
+| `relics/blueprint.glb` | `c2ed249e80986d0f5f6155743e07a3c6d0f88775` | `073a2b2ea3c86a2e61fa96b23bcca349892369f0` | `d77d708c09a6f197124314748c6bea2258dba4571f77953bd61dfce22f13c883` |
+| `relics/blueprint-stacked.glb` | `e57368d5c8f7eb408c7b0614d9fc54f8f0c30c5d` | `3befa299f859e25da854070555cbf28387211a96` | `369a4c55bc64040b97ee46a5c5635cb8b63e0d0cf5b7920f4def3d990ccf2885` |
+| `relics/rope-bundle-a.glb` | `12c877e44925c001dcb7ff1757e828d8241d1411` | `13f6886a262190f1316fe4e13ef15294265cebd4` | `02c2890f3d6a375c6131a25f8544167c24d44373a991b97c6265df54684537e2` |
+| `relics/rope-bundle-b.glb` | `2faa81270dafd75944a7d9e9f8b37994f5122b91` | `036a1a9ba0777e5c8c6237eeb1b4d3695db729d4` | `15fabc2a88d95c02a630caddbb48f46b1ad3d01cdad5ef214b282a4c7e469590` |
+| `relics/lantern.glb` | `b5122dfc77f9486acc7c22639c99446c4959ebb0` | `04a3ae5eb418d604bd26fd77506d4da39703fe0b` | `42f22ecd2597d795ed96815d5f84b45211f5940a33113af9cc9a59a7e5b3f34c` |
+| `relics/hammer.glb` | `49479694d07d925e2a0dcf44395cce54aa7b348e` | `0f78ead27f6f5284883d5b105c377ed9122ee810` | `eaf072acd7daf1047a5dfda8771bd434524bc20c1c1d9a05ce3abaad7f2be460` |
+| `relics/handplane.glb` | `e4c2886a04b3ae65e7ee43772ca8feab8c7d09d3` | `ef59ac447cf16d7067e0b32276e6795eb2a8ebd2` | `04b0d1fe8099f1fec099062f75ca276b058eadd2affb3d8e8d692b0190d88b67` |
+| `relics/saw.glb` | `446a6a3c90ac15456f7ad2b181497518ce03a9d6` | `62bad658e864338a137cf7f0f8e79e8c037e237f` | `bb254d14e7850ada07173edb8b655285770307db343ada6a3c4455aa8af7eed0` |
+| `relics/chisel.glb` | `e8647d7fea0e6c4f3778a621737ef0cb3d59da9a` | `3b4cd13ae353553e6a562f9fb9678f74a9aa4ea1` | `4bd9ede379cfc8642a6d68c8a03ba68ccf33cd22a507d13c48720c6374f72773` |
+
+### 기존 지형 파일의 확인된 규격 위반 수정
+
+원본 지형 35개에서 `scene.nodes`의 최상위 노드가 사용되지 않는 `tmpParent.children`에도 등록된 구조를 확인했다. glTF 2.0은 최상위 노드가 어느 노드의 자식으로도 연결되지 않도록 요구한다: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html . 기존 업로드 정규화 책임 코드에서 장면 밖 부모의 해당 연결만 분리하고 빈 확장 배열을 제거한다. 실제 정규화 코드로 35개를 대조하여 원본 버퍼(정점·UV 포함), 노드 좌표, 삼각형 인덱스 값의 보존과 루트 구조 수정 확인. 이 결과는 Roblox 가져오기/실행 성공을 뜻하지 않는다. 계정 제재 응답 시 남은 업로드·권한 쓰기를 즉시 중단해 반복 실패 요청을 막는다.

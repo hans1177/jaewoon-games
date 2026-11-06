@@ -81,6 +81,7 @@ let registry = {schema: 1, universeId: UNIVERSE_ID, license: 'CC0-1.0', assets: 
 try { registry = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')); } catch {}
 const failures = [];
 const pendingPermissions = [];
+let accountBlocked = false;
 for (const item of plan) {
   const id = item.kind + '/' + item.name;
   if (registry.assets[id]?.assetId) {
@@ -109,6 +110,27 @@ for (const item of plan) {
         if (!Array.isArray(gltf.buffers) || gltf.buffers.length !== 1) throw new Error('INVALID_GLB_BUFFER_COUNT');
         gltf.extensionsUsed = (gltf.extensionsUsed || []).filter(name => name !== 'KHR_materials_unlit');
         if (gltf.extensionsRequired) gltf.extensionsRequired = gltf.extensionsRequired.filter(name => name !== 'KHR_materials_unlit');
+        if (!gltf.extensionsUsed.length) delete gltf.extensionsUsed;
+        if (gltf.extensionsRequired && !gltf.extensionsRequired.length) delete gltf.extensionsRequired;
+        // scene.nodes는 부모가 없는 루트여야 한다. 원본의 화면 밖 tmpParent 연결만 분리한다.
+        // 장면에서 보이는 노드·좌표·메시·재질·스킨 인덱스는 바꾸지 않는다.
+        const sceneRoots = new Set((gltf.scenes || []).flatMap(scene => scene.nodes || []));
+        const visible = new Set();
+        const visit = [...sceneRoots];
+        while (visit.length) {
+          const index = visit.pop();
+          if (visible.has(index)) continue;
+          if (!Number.isInteger(index) || !gltf.nodes?.[index]) throw new Error('INVALID_SCENE_NODE');
+          visible.add(index);
+          for (const child of gltf.nodes[index].children || []) visit.push(child);
+        }
+        for (let index = 0; index < (gltf.nodes || []).length; index++) {
+          const parent = gltf.nodes[index];
+          if (!(parent.children || []).some(child => sceneRoots.has(child))) continue;
+          if (visible.has(index)) throw new Error('SCENE_ROOT_HAS_VISIBLE_PARENT');
+          parent.children = parent.children.filter(child => !sceneRoots.has(child));
+          if (!parent.children.length) delete parent.children;
+        }
         for (const material of gltf.materials || []) {
           if (material.extensions?.KHR_materials_unlit) delete material.extensions.KHR_materials_unlit;
           if (material.extensions && !Object.keys(material.extensions).length) delete material.extensions;
@@ -178,11 +200,16 @@ for (const item of plan) {
   } catch (e) {
     failures.push(id + ': ' + String(e.message).slice(0, 200));
     console.log('FAILED', id, String(e.message).slice(0, 200));
+    if (/User is moderated/i.test(String(e.message))) {
+      accountBlocked = true;
+      console.error('REGISTRATION_BLOCKED_ACCOUNT_MODERATED: remaining uploads and permission writes stopped');
+      break;
+    }
   }
 }
 // 사용 권한: 공식 BatchGrantPermissionsRequest/Response로 25개씩 부여하고 실제 성공 목록만 기록한다.
 // HTTP 200이라도 일부 assetId가 오류면 그 항목은 승인되지 않은 것으로 유지한다.
-for (let offset = 0; offset < pendingPermissions.length; offset += 25) {
+for (let offset = 0; !accountBlocked && offset < pendingPermissions.length; offset += 25) {
   const batch = pendingPermissions.slice(offset, offset + 25);
   try {
     const response = await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions', {
@@ -216,4 +243,5 @@ if (!Object.keys(registry.assets).length || failures.length) {
   console.error('REGISTRATION_INCOMPLETE', failures.length, failures.slice(0, 12).join(' | '));
   process.exitCode = 1;
 }
+
 
