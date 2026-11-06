@@ -3490,6 +3490,13 @@ local function recordMeadowQuest(player, eventName)
   elseif stage==12 then
     if eventName~="MINA_NOTE" then return end
     progress+=1
+  elseif quest.Event then
+    -- 13장 이후: 지정한 지역(Zone)에서 같은 이벤트(KILL)가 올 때만 센다.
+    if eventName~=quest.Event then return end
+    if quest.Zone and meadowRegionOf(player)~=quest.Zone then return end
+    progress+=1
+  else
+    return
   end
   progress=math.min(quest.Goal,progress)
   if progress>=quest.Goal then
@@ -3502,7 +3509,7 @@ local function recordMeadowQuest(player, eventName)
     setNumber(player,"QuestProgress",0)
     remote:FireClient(player,"MEADOW_QUEST_UPDATE",{
       completed=quest.Name,
-      nextQuest=Config.MainQuests[stage+1] and Config.MainQuests[stage+1].Name or "초원 기사단 연대기 완료",
+      nextQuest=Config.MainQuests[stage+1] and Config.MainQuests[stage+1].Name or "기사단 연대기 — 엔딩은 이어진다",
       record=recordIndex,
     })
   else

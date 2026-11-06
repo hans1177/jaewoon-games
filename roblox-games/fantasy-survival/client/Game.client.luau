@@ -10741,7 +10741,8 @@ end)
   goal.Font=Enum.Font.GothamBlack;goal.TextSize=22;goal.Text="★";goal.TextColor3=Color3.fromRGB(255,120,90)
   goal.TextStrokeTransparency=0;goal.ZIndex=69;goal.Parent=canvas
   local zoneOfStage=function(stage)
-    return stage<=6 and "meadow" or stage<=9 and "worldtree" or stage==10 and "volcano" or stage<=12 and "oasis" or nil
+    local q=Config.MainQuests and Config.MainQuests[stage]
+    return stage<=6 and "meadow" or stage<=9 and "worldtree" or stage==10 and "volcano" or stage<=12 and "oasis" or (q and q.Zone) or nil
   end
   local function refresh()
     if not overlay.Visible then return end
