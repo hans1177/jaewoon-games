@@ -195,7 +195,7 @@ function NavalBattle.play(opts)
 	subtitle.Size = UDim2.new(0.7, 0, 0, 40)
 	subtitle.TextWrapped = true
 
-	local hint = label(gui, "◀ ▶ 로 배를 돌려 적선에 옆면을 대세요. 사정거리에 들어가면 대포가 자동으로 나갑니다.", 14, Color3.fromRGB(255, 226, 170))
+	local hint = label(gui, "스틱을 좌우로 밀어 배를 돌리고, 위로 밀면 가속합니다. 적선에 옆면을 대면 대포가 자동으로 나갑니다.", 14, Color3.fromRGB(255, 226, 170))
 	hint.AnchorPoint = Vector2.new(0.5, 0)
 	hint.Position = UDim2.new(0.5, 0, 0, 98)
 	hint.Size = UDim2.new(0.8, 0, 0, 36)
@@ -258,29 +258,77 @@ function NavalBattle.play(opts)
 		return b
 	end
 	local steerDir, throttle = 0, 1
-	local leftBtn = mkBtn("◀", UDim2.new(0, 24, 1, -24), UDim2.fromOffset(100, 84))
-	local rightBtn = mkBtn("▶", UDim2.new(0, 136, 1, -24), UDim2.fromOffset(100, 84))
 	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(120, 70), Vector2.new(1, 1))
 	speedBtn.TextSize = 18
 	local skip = mkBtn("건너뛰기", UDim2.new(0.5, 0, 0, 62), UDim2.fromOffset(96, 30), Vector2.new(0.5, 0))
 	skip.TextSize = 14
 	skip.Activated:Connect(finish)
-	local function hold(btn, dir)
-		btn.InputBegan:Connect(function(i)
-			if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
-				steerDir = dir
-			end
-		end)
-		btn.InputEnded:Connect(function(i)
-			if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
-				if steerDir == dir then
-					steerDir = 0
-				end
-			end
-		end)
+	-- 가상 스틱: 좌우 = 방향 전환, 위/아래 = 속도 (모바일 중심)
+	local stickBase = Instance.new("Frame")
+	stickBase.AnchorPoint = Vector2.new(0, 1)
+	stickBase.Position = UDim2.new(0, 28, 1, -28)
+	stickBase.Size = UDim2.fromOffset(170, 170)
+	stickBase.BackgroundColor3 = Color3.fromRGB(20, 34, 54)
+	stickBase.BackgroundTransparency = 0.35
+	stickBase.BorderSizePixel = 0
+	stickBase.Parent = gui
+	do
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(1, 0)
+		c.Parent = stickBase
+		local st = Instance.new("UIStroke")
+		st.Color = Color3.fromRGB(214, 170, 82)
+		st.Thickness = 2
+		st.Parent = stickBase
 	end
-	hold(leftBtn, 1)
-	hold(rightBtn, -1)
+	local knob = Instance.new("Frame")
+	knob.AnchorPoint = Vector2.new(0.5, 0.5)
+	knob.Position = UDim2.fromScale(0.5, 0.5)
+	knob.Size = UDim2.fromOffset(72, 72)
+	knob.BackgroundColor3 = Color3.fromRGB(240, 205, 120)
+	knob.BorderSizePixel = 0
+	knob.Parent = stickBase
+	do
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(1, 0)
+		c.Parent = knob
+	end
+	local stickTouch = nil
+	local stickThrottle = nil
+	local function stickUpdate(pos)
+		local center = stickBase.AbsolutePosition + stickBase.AbsoluteSize / 2
+		local d = Vector2.new(pos.X, pos.Y) - center
+		local r = stickBase.AbsoluteSize.X / 2
+		if d.Magnitude > r then
+			d = d.Unit * r
+		end
+		knob.Position = UDim2.new(0.5, d.X, 0.5, d.Y)
+		local nx, ny = d.X / r, -d.Y / r
+		steerDir = if math.abs(nx) < 0.12 then 0 else -nx
+		stickThrottle = math.clamp(0.6 + ny * 0.5, 0.1, 1)
+	end
+	local function stickRelease()
+		stickTouch = nil
+		stickThrottle = nil
+		steerDir = 0
+		knob.Position = UDim2.fromScale(0.5, 0.5)
+	end
+	stickBase.InputBegan:Connect(function(i)
+		if i.UserInputType == Enum.UserInputType.Touch or i.UserInputType == Enum.UserInputType.MouseButton1 then
+			stickTouch = i
+			stickUpdate(i.Position)
+		end
+	end)
+	table.insert(conns, game:GetService("UserInputService").InputChanged:Connect(function(i)
+		if stickTouch and (i == stickTouch or (stickTouch.UserInputType == Enum.UserInputType.MouseButton1 and i.UserInputType == Enum.UserInputType.MouseMovement)) then
+			stickUpdate(i.Position)
+		end
+	end))
+	table.insert(conns, game:GetService("UserInputService").InputEnded:Connect(function(i)
+		if stickTouch and (i == stickTouch or i.UserInputType == Enum.UserInputType.MouseButton1) then
+			stickRelease()
+		end
+	end))
 	speedBtn.Activated:Connect(function()
 		throttle = if throttle >= 1 then 0.45 elseif throttle > 0.4 then 0 else 1
 		speedBtn.Text = if throttle >= 1 then "가속" elseif throttle > 0.4 then "순항" else "정지"
@@ -430,7 +478,7 @@ function NavalBattle.play(opts)
 		if phase == "duel" or phase == "board" then
 			-- 우리 배: 방향키로 돌리고 가속 설정만큼 앞으로
 			me.theta += steerDir * 0.9 * dt
-			me.speed = 11 * throttle
+			me.speed = 11 * (stickThrottle or throttle)
 			me.pos += forward(me.theta) * me.speed * dt
 
 			-- 적선: 우리 배와 거리를 유지하며 옆면을 대려고 맴돈다
