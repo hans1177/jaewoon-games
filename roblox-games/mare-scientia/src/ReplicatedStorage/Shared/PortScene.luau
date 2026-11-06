@@ -77,6 +77,27 @@ local REGION = {
 	london = "stone", edinburgh = "stone", glasgow = "stone", dublin = "stone", plymouth = "stone", hull = "stone",
 }
 
+-- 특산품 진열용 3D 모델 (없는 상품은 상자로 대신한다)
+local GOOD_MESH = {
+	cheese = { "Cargo", "cheese" }, wine = { "Cargo", "wine-red" }, fish = { "Cargo", "fish-large" }, wool = { "Cargo", "textiles-stack-small" },
+	cloth = { "Cargo", "textiles-stack-large" }, silk = { "Cargo", "textiles-stack-large-colored" }, grain = { "Cargo", "food-flour" },
+	iron = { "Cargo", "iron-bars" }, copper = { "Cargo", "copper-bars" }, silver = { "Cargo", "silver-bars" }, gold = { "Cargo", "gold-bars" },
+	gems = { "Cargo", "gems-pile-small" }, pearls = { "Cargo", "gem-small" }, honey = { "Cargo", "honey" }, pepper = { "Cargo", "pepper-mill" },
+	olive_oil = { "Cargo", "bottle-oil" }, timber = { "Cargo", "wood-log-stack" }, mahogany = { "Cargo", "wood-planks-stack-small" },
+	coffee = { "Cargo", "cup-coffee" }, tea = { "Cargo", "cup-tea" }, cocoa = { "Cargo", "chocolate" }, rum = { "Cargo", "barrel" },
+	salt = { "Cargo", "shaker-salt" }, sugar = { "Cargo", "bag" }, fruit = { "Cargo", "grapes" }, grapes = { "Cargo", "grapes" },
+	lemon = { "Cargo", "lemon" }, maize = { "Cargo", "corn" }, coconut = { "Cargo", "coconut" }, meat = { "Cargo", "whole-ham" },
+}
+setmetatable(GOOD_MESH, { __index = function() return { "Cargo", "box-open" } end })
+-- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
+local TITLE_ICONS = {
+	{ "식물", "Cargo", "apple" }, { "동물", "Cargo", "fish-large" }, { "광물", "Relics", "coin" }, { "유물", "Relics", "pot" },
+	{ "유적", "Castle", "tower-square-base" }, { "천문", "Relics", "key" }, { "화학", "Relics", "potion" }, { "물리", "Cargo", "bucket" },
+	{ "지리", "Naval", "ship-small" }, { "철학", "Interior", "bookcaseclosed" }, { "의학", "Cargo", "mortar-pestle" }, { "신화", "Relics", "weapon-sword" },
+	{ "항해술", "Naval", "ship-medium" }, { "기상", "Naval", "flag-pennant" }, { "건축", "Town", "house" }, { "예술", "Relics", "shield-round" },
+	{ "교역품", "Cargo", "box-open" }, { "조선", "Naval", "ship-large" }, { "언어", "Interior", "bookcaseopenlow" },
+}
+
 local SHIP_LOOK = {
 	caravel = { scale = 1.0, masts = 2, hull = Color3.fromRGB(110, 70, 40) },
 	fluyt = { scale = 1.15, masts = 3, hull = Color3.fromRGB(96, 66, 44) },
@@ -741,16 +762,32 @@ function PortScene.build(info, onFacility)
 				importedModel(folder, "Town", "stall", spot, 6.5, false)
 			end
 		end
-		-- 신규 교역품 원본 메시를 시장 가판대에 전시한다. 교역 가격·재고·거래 판정은 그대로다.
-		local showcase = {
-			"cheese-cut", "chocolate", "croissant", "bowl",
-			"glass", "mortar", "plate-dinner", "shaker-pepper",
-			"turkey", "coconut-half", "lemon-half", "fish-bones",
-		}
+		-- 가판대에는 이 항구의 특산품을 3D 모델로 진열한다 (교역 가격·재고·판정은 그대로).
+		local made = (PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {}
+		local showcase = {}
+		for i = 1, 12 do
+			showcase[i] = made[(i - 1) % math.max(1, #made) + 1] or "cheese"
+		end
 		local stalls = { Vector3.new(-18, 2.5, -13), Vector3.new(-18, 2.5, 13), Vector3.new(2, 2.5, 14) }
 		for index, good in showcase do
 			local stand = stalls[math.ceil(index / 4)]
-			importedModel(folder, "Cargo", good, stand + Vector3.new(((index - 1) % 4 - 1.5) * 1.7, 0, 0), 1.6, false)
+			local mesh = GOOD_MESH[good]
+			importedModel(folder, mesh[1], mesh[2], stand + Vector3.new(((index - 1) % 4 - 1.5) * 1.7, 0, 0), 1.8, false, mesh[3])
+		end
+		-- 큰길 가로등과 울타리, 광장 분수
+		for _, x in { -30, -60, -90, -120 } do
+			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, 7), 4.5, false)
+			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, -7), 4.5, false)
+		end
+		importedModel(folder, "Town", "fountain-square", Vector3.new(-10, 0, 0), 7, true)
+		importedModel(folder, "Town", "stall-bench", Vector3.new(-6, 0, 13), 4, false)
+		importedModel(folder, "Town", "stall-stool", Vector3.new(-12, 0, 11), 2, false)
+		-- 조선소가 있는 큰 항구는 항구 어귀에 감시탑을 세운다
+		if PortData.Ports[info.portId] and PortData.Ports[info.portId].shipyard then
+			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(34, 0, -34), 18, true)
+			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(34, 0, 34), 18, true)
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, -28), 8, false)
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, 28), 8, false)
 		end
 		importedModel(folder, "Interior", "tablecrosscloth", Vector3.new(-30, 0, -13), 4.8, false)
 		importedModel(folder, "Interior", "coatrack", Vector3.new(-36, 0, -23), 3.4, false)
