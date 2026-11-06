@@ -293,7 +293,7 @@ local card = Instance.new("Frame")
 card.BackgroundColor3 = NAVY
 card.BackgroundTransparency = 0.08
 card.Position = UDim2.fromOffset(8, 8)
-card.Size = UDim2.fromOffset(236, 84)
+card.Size = UDim2.fromOffset(176, 66)
 card.Parent = hud
 corner(card, 10)
 hudStroke(card, 2)
@@ -312,12 +312,12 @@ local function hudText(parent, pos, size, textSize, color, align)
 	return l
 end
 
-local hudName = hudText(card, UDim2.fromOffset(10, 6), UDim2.new(1, -20, 0, 20), 15, BRASS)
-local hudPort = hudText(card, UDim2.fromOffset(10, 27), UDim2.new(1, -20, 0, 18), 13, COLORS.text)
+local hudName = hudText(card, UDim2.fromOffset(8, 4), UDim2.new(1, -16, 0, 16), 12, BRASS)
+local hudPort = hudText(card, UDim2.fromOffset(8, 21), UDim2.new(1, -16, 0, 14), 11, COLORS.text)
 local hullBack = Instance.new("Frame")
 hullBack.BackgroundColor3 = Color3.fromRGB(8, 14, 22)
-hullBack.Position = UDim2.fromOffset(10, 50)
-hullBack.Size = UDim2.new(1, -20, 0, 9)
+hullBack.Position = UDim2.fromOffset(8, 38)
+hullBack.Size = UDim2.new(1, -16, 0, 7)
 hullBack.Parent = card
 corner(hullBack, 4)
 local hullFill = Instance.new("Frame")
@@ -325,54 +325,54 @@ hullFill.BackgroundColor3 = COLORS.green
 hullFill.Size = UDim2.fromScale(1, 1)
 hullFill.Parent = hullBack
 corner(hullFill, 4)
-local hudShip = hudText(card, UDim2.fromOffset(10, 61), UDim2.new(1, -20, 0, 18), 12, COLORS.muted)
+local hudShip = hudText(card, UDim2.fromOffset(8, 48), UDim2.new(1, -16, 0, 14), 10, COLORS.muted)
 
 -- 상단 중앙 항구 현판 (대항해시대 온라인의 항구 이름 리본처럼)
 local banner = Instance.new("Frame")
 banner.AnchorPoint = Vector2.new(0.5, 0)
 banner.Position = UDim2.new(0.5, 0, 0, 8)
-banner.Size = UDim2.fromOffset(190, 40)
+banner.Size = UDim2.fromOffset(130, 28)
 banner.BackgroundColor3 = Color3.fromRGB(90, 62, 28)
 banner.Parent = hud
 corner(banner, 8)
 hudStroke(banner, 2)
 local hudBanner = hudText(banner, UDim2.new(), UDim2.fromScale(1, 1), 20, Color3.fromRGB(255, 240, 200), Enum.TextXAlignment.Center)
+hudBanner.TextSize = 15
 
 local coinCard = Instance.new("Frame")
 coinCard.BackgroundColor3 = NAVY
 coinCard.BackgroundTransparency = 0.08
 coinCard.AnchorPoint = Vector2.new(1, 0)
 coinCard.Position = UDim2.new(1, -8, 0, 8)
-coinCard.Size = UDim2.fromOffset(170, 40)
+coinCard.Size = UDim2.fromOffset(120, 30)
 coinCard.Parent = hud
 corner(coinCard, 10)
 hudStroke(coinCard, 2)
-local hudCoin = hudText(coinCard, UDim2.fromOffset(12, 0), UDim2.new(1, -24, 1, 0), 18, BRASS, Enum.TextXAlignment.Right)
+local hudCoin = hudText(coinCard, UDim2.fromOffset(12, 0), UDim2.new(1, -24, 1, 0), 14, BRASS, Enum.TextXAlignment.Right)
 
 local dock = Instance.new("ScrollingFrame")
 dock.Name = "Dock"
 dock.BackgroundColor3 = NAVY
-dock.BackgroundTransparency = 0.08
+dock.BackgroundTransparency = 0.15
 dock.BorderSizePixel = 0
-dock.AnchorPoint = Vector2.new(0, 1)
-dock.Position = UDim2.new(0, 8, 1, -8)
-dock.Size = UDim2.new(1, -190, 0, 62) -- 오른쪽 점프 버튼을 피한다
+dock.AnchorPoint = Vector2.new(1, 0)
+dock.Position = UDim2.new(1, -8, 0, 46) -- 오른쪽 위: 왼쪽 조이스틱과 점프 버튼을 피한다
+dock.Size = UDim2.fromOffset(112, 150)
 dock.CanvasSize = UDim2.new()
-dock.AutomaticCanvasSize = Enum.AutomaticSize.X
-dock.ScrollBarThickness = 0
-dock.ScrollingDirection = Enum.ScrollingDirection.X
+dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
+dock.ScrollBarThickness = 2
+dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hud
-corner(dock, 12)
-hudStroke(dock, 2)
-local dockLayout = Instance.new("UIListLayout")
-dockLayout.FillDirection = Enum.FillDirection.Horizontal
-dockLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-dockLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-dockLayout.Padding = UDim.new(0, 4)
+corner(dock, 10)
+hudStroke(dock, 1.5)
+local dockLayout = Instance.new("UIGridLayout")
+dockLayout.CellSize = UDim2.fromOffset(48, 34)
+dockLayout.CellPadding = UDim2.fromOffset(4, 4)
 dockLayout.SortOrder = Enum.SortOrder.LayoutOrder
+dockLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 dockLayout.Parent = dock
 local dockPad = Instance.new("UIPadding")
-dockPad.PaddingLeft, dockPad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8)
+dockPad.PaddingTop, dockPad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 5)
 dockPad.Parent = dock
 
 local DOCK = {
@@ -383,11 +383,11 @@ local DOCK = {
 for i, d in DOCK do
 	local b = Instance.new("TextButton")
 	b.LayoutOrder = i
-	b.Size = UDim2.fromOffset(52, 48)
+	b.Size = UDim2.fromOffset(48, 34)
 	b.BackgroundColor3 = NAVY2
 	b.AutoButtonColor = true
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = 13
+	b.TextSize = 11
 	b.TextColor3 = Color3.fromRGB(250, 236, 200)
 	b.Text = d[2]
 	b.Parent = dock
