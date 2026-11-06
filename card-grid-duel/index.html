@@ -25,6 +25,10 @@ h1{font-size:22px;margin:0}
 .cell{position:relative;border:0;border-radius:10px;background:#34415d;color:#fff;overflow:hidden;min-width:0}
 .cell.homeBlue{background:#2c4b62}.cell.homeRed{background:#5c343e}
 .cell.sel{outline:3px solid #ffd86b}
+.cell.goldChestCell{background:#594728;border:2px solid #bc9a4c}
+.goldChest{position:absolute;inset:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;pointer-events:none;color:#ffe6a0;font-weight:1000}
+.goldChest span{font-size:clamp(22px,6vw,36px);line-height:1}
+.goldChest small{font-size:10px}
 .unit{position:absolute;inset:4px;border-radius:9px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:3px}
 .unit.blue{background:linear-gradient(#3568b7,#264b88)}
 .unit.red{background:linear-gradient(#a74851,#753038)}
@@ -53,6 +57,7 @@ h1{font-size:22px;margin:0}
 #restScreen .restActions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
 #restScreen .restActions button{min-height:48px;border:0;border-radius:11px;padding:0 16px;font-weight:1000;color:#fff;background:#4169e1}
 #restScreen .restActions .draw{background:#8b691e}
+#restScreen .restActions .diamondDraw{background:#4d5cc4}
 #drawResult{min-height:42px;margin:10px 0;color:#d8e4ff;font-weight:800}
 #unlockedList{font-size:12px;color:#b7c6e4;line-height:1.5}
 #diamondLine{font-size:15px;color:#78d7ff;font-weight:1000;margin:7px 0}
@@ -96,6 +101,7 @@ h1{font-size:22px;margin:0}
     </div>
     <div class="restActions">
       <button id="drawAlly" class="draw">열쇠 1개로 아군 뽑기</button>
+      <button id="drawDiamond" class="diamondDraw">다이아 120개로 아군 뽑기</button>
       <button id="nextStage">2스테이지 시작</button>
     </div>
   </div>
@@ -125,9 +131,12 @@ const STAGES={
   1:{blueMax:10,redMax:6,enemyScale:1,redPool:['GOBLIN','SKELETON_ARCHER','SKELETON_MAGE','ORC']},
   2:{blueMax:12,redMax:8,enemyScale:1.5,redPool:['SKELETON_SOLDIER','SKELETON_ARCHER','SKELETON_MAGE','ORC','SLIME']},
   3:{blueMax:12,redMax:8,enemyScale:1.35,redPool:['ENHANCED_GOBLIN','GOLEM','BOAR','SKELETON_SOLDIER','ORC','SLIME']},
-  4:{blueMax:12,redMax:8,enemyScale:1,redPool:['SHIELD_GOBLIN','CHARGE_ORC','POISON_SCORPION','RUIN_GUARDIAN']}
+  4:{blueMax:12,redMax:8,enemyScale:1,redPool:['SHIELD_GOBLIN','CHARGE_ORC','POISON_SCORPION','RUIN_GUARDIAN']},
+  // 5스테이지: 5×10 = 기본 5×5 맵의 2배. 증원은 정해진 라운드에만 출현.
+  5:{blueMax:12,redMax:14,enemyScale:1,redPool:['POISON_SCORPION','CHARGE_ORC','SLIME','ORC_MAGE','BOAR','ORC']}
 };
-const GACHA_POOL=['LANCER','CROSSBOW','HAMMER'];
+// 중갑병은 다른 카드(각 2칸)보다 낮은 확률(1칸)로 뽑힌다.
+const GACHA_POOL=['LANCER','LANCER','CROSSBOW','CROSSBOW','HAMMER','HAMMER','RIFLEMAN','RIFLEMAN','HEAVY_INFANTRY'];
 // 다이아: 기존 저장 키를 유지해 이전 잔액을 그대로 사용한다.
 const DIAMOND_KEY='card-grid-duel-diamonds-v1';
 function diamondWallet(){return Math.max(0,Number(localStorage.getItem(DIAMOND_KEY)||0))}
@@ -189,7 +198,9 @@ const CARDS={
     GUARDIAN:{name:'방패병',icon:'🛡️',hp:150,atk:18,range:1,cost:60,reward:50,reduce:.3,desc:'피해 30% 감소'},
     LANCER:{name:'창병',icon:'🔱',hp:130,atk:45,range:1,cost:60,reward:60,desc:'높은 체력의 근접 창병'},
     CROSSBOW:{name:'쇠뇌병',icon:'🎯',hp:60,atk:55,range:2,cost:70,reward:55,desc:'궁수보다 체력 10↓ 공격력 30↑ · 2칸'},
-    HAMMER:{name:'망치병',icon:'🔨',hp:170,atk:80,range:1,cost:60,reward:50,charge:true,desc:'공격 전 1턴 충전 필요 · 피해 80'}
+    HAMMER:{name:'망치병',icon:'🔨',hp:170,atk:80,range:1,cost:60,reward:50,charge:true,desc:'공격 전 1턴 충전 필요 · 피해 80'},
+    RIFLEMAN:{name:'소총수',icon:'🪖',hp:70,atk:70,range:4,cost:90,reward:60,forwardShot:true,desc:'4칸 전방 직선·좌우 전방 대각선 사격'},
+    HEAVY_INFANTRY:{name:'중갑병',icon:'🛡️',hp:180,atk:30,range:1,cost:80,reward:60,desc:'검사와 같은 근접 공격 · 낮은 뽑기 확률'}
   },
   RED:{
     GOBLIN:{name:'고블린',icon:'👺',hp:80,atk:25,range:1,cost:0,reward:30,desc:'처치 보상 30골드'},
@@ -205,7 +216,9 @@ const CARDS={
     SHIELD_GOBLIN:{name:'방패 고블린',icon:'🛡️👺',hp:120,atk:30,range:1,cost:0,reward:55,reduce:.4,desc:'받는 피해 40% 감소'},
     CHARGE_ORC:{name:'돌격 오크',icon:'👹💨',hp:150,atk:45,range:1,cost:0,reward:70,turnCharge:true,desc:'적 턴 시작 시 40% 확률로 벽까지 돌진 · 충돌 55 피해 + 1턴 공격 불가'},
     POISON_SCORPION:{name:'독전갈',icon:'🦂',hp:90,atk:35,range:1,cost:0,reward:55,desc:'4스테이지 독전갈'},
-    RUIN_GUARDIAN:{name:'유적 수호자',icon:'🗿',hp:190,atk:40,range:1,cost:0,reward:80,guardianPulse:true,desc:'3번째 적 턴마다 주변 아군에게 25 피해'}
+    RUIN_GUARDIAN:{name:'유적 수호자',icon:'🗿',hp:190,atk:40,range:1,cost:0,reward:80,guardianPulse:true,desc:'3번째 적 턴마다 주변 아군에게 25 피해'},
+    ORC_MAGE:{name:'오크 마법사',icon:'👹🔮',hp:115,atk:50,range:2,cost:0,reward:60,areaLock:true,desc:'적 턴마다 60% 확률로 주변 8칸 공격 · 1턴 공격 불가'}
+
   }
 };
 const BASE_BLUE_IDS=['SWORDSMAN','ARCHER','MAGE','GUARDIAN'];
@@ -215,11 +228,20 @@ let state=null,side='BLUE',selectedUnit=null,selectedCard='',mode='idle',aiThink
 
 function msg(t){notice.textContent=t}
 function other(s){return s==='BLUE'?'RED':'BLUE'}
-function boardRows(){return state?.stage===4?7:BASE_ROWS}
+function boardRows(){return state?.stage===5?10:state?.stage===4?7:BASE_ROWS}
 function boardCols(){return BASE_COLS}
 function homeRow(s){return s==='BLUE'?boardRows():1}
 function moveDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
 function attackDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
+// 소총수는 전방 직선과 양쪽 전방 대각선 3방향으로 최대 4칸.
+function canAttackTarget(attacker,target){
+  if(attacker.side==='BLUE'&&attacker.card==='RIFLEMAN'){
+    const forward=attacker.r-target.r;
+    const across=Math.abs(attacker.c-target.c);
+    return forward>=1&&forward<=4&&(across===0||across===forward)
+  }
+  return attackDist(attacker,target)<=card(attacker.side,attacker.card).range
+}
 function newState(){
   state={
     version:3,
@@ -253,6 +275,7 @@ function unitMaxHp(u){return u.side==='BLUE'?scaledStat(u.card,'hp'):enemyStat(u
 function unitAtk(u){return u.side==='BLUE'?scaledStat(u.card,'atk'):enemyStat(u.card,'atk')}
 function at(r,c){return state?.units.find(u=>u.r===r&&u.c===c)}
 function byId(id){return state?.units.find(u=>u.id===id)}
+function chestAt(r,c){return state?.stage===5?(state.chests||[]).find(x=>x.r===r&&x.c===c):null}
 function canAct(){return state&&!state.winner&&state.phase==='BATTLE'&&state.current===side}
 function livingCount(s){return state.units.filter(u=>u.side===s).length}
 function stageConfig(){return STAGES[state?.stage||1]||STAGES[1]}
@@ -364,6 +387,11 @@ function clearStageThree(){
   const r=stageClearRewards(3);
   enterRest('3스테이지 클리어 · 열쇠 3개 + 다이아 '+r.base+'개'+(r.bonus?' + 무피해 '+r.bonus+'개':''))
 }
+// 4스테이지 승리 시 다이아 60개 지급 후 5스테이지 진입 및 뽑기 허용.
+function clearStageFour(){
+  awardDiamonds(60);
+  enterRest('4스테이지 클리어 · 다이아 60개 획득 · 열쇠 또는 다이아로 뽑기 가능')
+}
 function checkWin(){
   if(!state||state.phase!=='BATTLE'||state.winner)return;
   if(exhausted('BLUE')){state.winner='RED';return}
@@ -371,7 +399,8 @@ function checkWin(){
     if(state.stage===1){clearStageOne();return}
     if(state.stage===2){clearStageTwo();return}
     if(state.stage===3){clearStageThree();return}
-    if(state.stage===4){state.winner='BLUE';msg('4스테이지 클리어');return}
+    if(state.stage===4){clearStageFour();return}
+    if(state.stage===5){state.winner='BLUE';msg('5스테이지 클리어!');return}
     state.winner='BLUE'
   }
 }
@@ -418,6 +447,65 @@ function resolveStageFourEnemyTurn(){
     }
   }
 }
+// 스테이지 5: 골드 상자는 중간 지역 6곳에 각 1개씩 놓는다.
+function createStageFiveChests(){
+  return [3,4,5,6,7,8].map(r=>({r,c:1+Math.floor(Math.random()*BASE_COLS)}))
+}
+function spawnStageFiveWave(){
+  if(state.stage!==5||state.phase!=='BATTLE')return;
+  const round=Math.ceil(state.turn/2);
+  if(round<2||round===state.lastWaveRound)return;
+  const waves={
+    2:['POISON_SCORPION','POISON_SCORPION','POISON_SCORPION'],
+    4:['CHARGE_ORC','CHARGE_ORC','SLIME'],
+    5:['ORC_MAGE'],
+    7:['BOAR','BOAR','BOAR'],
+    8:['ORC_MAGE','ORC_MAGE','SLIME','ORC']
+  };
+  const enemies=waves[round];
+  if(!enemies)return;
+  const free=[];
+  for(let r=1;r<=boardRows();r++){
+    const row=[];
+    for(let c=1;c<=boardCols();c++)if(!at(r,c)&&!chestAt(r,c))row.push({r,c});
+    for(let i=row.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [row[i],row[j]]=[row[j],row[i]];
+    }
+    free.push(...row)
+  }
+  if(free.length<enemies.length)return msg('증원 공간이 부족해.');
+  for(const id of enemies){
+    const pos=free.shift();
+    state.units.push({
+      id:crypto.randomUUID(),side:'RED',card:id,hp:enemyStat(id,'hp'),
+      r:pos.r,c:pos.c,moved:false,attacked:false,freeze:0,
+      frozenNow:false,attackLockedNow:false,hammerTarget:''
+    });
+    state.summons.RED++
+  }
+  state.lastWaveRound=round;
+  msg('5스테이지 '+round+'턴 · 적 '+enemies.length+'마리 출현!')
+}
+// 오크 마법사: 적 턴마다 60% 확률로 주변 8칸에 공격력 50을 적용.
+// 맞고 살아남은 아군은 다음 자기 턴에 이동 가능, 공격만 불가.
+function resolveStageFiveEnemyTurn(){
+  if(state.stage!==5)return;
+  for(const mage of [...state.units].filter(u=>u.side==='RED'&&u.card==='ORC_MAGE'&&u.hp>0)){
+    if(mage.frozenNow||Math.random()>=0.6)continue;
+    const nearby=state.units.filter(u=>u.side==='BLUE'&&u.hp>0&&
+      Math.max(Math.abs(u.r-mage.r),Math.abs(u.c-mage.c))===1);
+    if(!nearby.length)continue;
+    for(const ally of nearby){
+      applyDamage(ally,unitAtk(mage),'RED');
+      if(ally.hp>0)ally.attackLock=Math.max(ally.attackLock||0,1)
+    }
+    mage.attacked=true;
+    removeDeadAndSplit();
+    checkWin();
+    if(state.winner||state.phase!=='BATTLE')return
+  }
+}
 function startTurn(s){
   state.current=s;
   state.turn++;
@@ -434,6 +522,8 @@ function startTurn(s){
     u.attackLockedNow=(u.attackLock||0)>0;
     if(u.attackLockedNow)u.attackLock--
   }
+  if(s==='BLUE')spawnStageFiveWave();
+  if(s==='RED')resolveStageFiveEnemyTurn();
 }
 function processAction(actor,p){
   if(!state||state.winner||actor!==state.current)return false;
@@ -443,7 +533,7 @@ function processAction(actor,p){
     if(state.summons[actor]>=maxSummons(actor))return false;
     const id=String(p.card||'');
     const d=card(actor,id);
-    if(!d||p.r!==homeRow(actor)||at(p.r,p.c))return false;
+    if(!d||p.r!==homeRow(actor)||at(p.r,p.c)||chestAt(p.r,p.c))return false;
     if(actor==='BLUE'){
       if(!bluePool().includes(id)||state.gold.BLUE<d.cost)return false;
       state.gold.BLUE-=d.cost;
@@ -468,15 +558,23 @@ function processAction(actor,p){
     state.summonUsed=true;
   }else if(p.type==='move'){
     const u=byId(p.unit);
-    if(!u||u.side!==actor||u.moved||u.frozenNow||at(p.r,p.c)||moveDist(u,{r:p.r,c:p.c})!==1)return false;
+    if(!u||u.side!==actor||u.moved||u.frozenNow||at(p.r,p.c)||chestAt(p.r,p.c)||moveDist(u,{r:p.r,c:p.c})!==1)return false;
     u.r=p.r;u.c=p.c;u.moved=true;
     applyTile(u);
+  }else if(p.type==='attackChest'){
+    const a=byId(p.unit),chest=chestAt(p.r,p.c);
+    if(actor!=='BLUE'||!a||a.side!==actor||!chest||a.attacked||a.frozenNow||a.attackLockedNow||!canAttackTarget(a,chest))return false;
+    const gold=10+Math.floor(Math.random()*61);
+    state.gold.BLUE+=gold;
+    state.chests=state.chests.filter(x=>x!==chest);
+    a.attacked=true;
+    msg('골드 상자 파괴 · '+gold+'골드 획득!');
   }else if(p.type==='attack'){
     const a=byId(p.unit),t=byId(p.target);
     if(!a||!t||a.side!==actor||t.side===actor||a.attacked||a.frozenNow||a.attackLockedNow)return false;
 
     const d=card(actor,a.card);
-    if(attackDist(a,t)>d.range)return false;
+    if(!canAttackTarget(a,t))return false;
     if(d.charge){
       a.hammerTarget=t.id;
       a.attacked=true;
@@ -600,8 +698,13 @@ function render(){
   for(let r=1;r<=rows;r++)for(let c=1;c<=cols;c++){
     const b=document.createElement('button');
     b.className='cell '+(r===1?'homeRed ':'')+(r===homeRow('BLUE')?'homeBlue ':'');
-    const u=state?at(r,c):null,tile=state?tileAt(r,c):null;
+    const u=state?at(r,c):null,tile=state?tileAt(r,c):null,chest=state?chestAt(r,c):null;
     if(tile){b.dataset.tile=tile.type;b.title=({SPIKE:'가시 발판',HEAL:'회복 발판',JUMP:'점프 발판',CRACK:'균열 발판'})[tile.type]||'특수 발판';b.style.boxShadow='inset 0 0 0 3px '+({SPIKE:'#d9534f',HEAL:'#47b96b',JUMP:'#5b8cff',CRACK:'#b57cff'})[tile.type];b.insertAdjacentHTML('beforeend',tileHtml(tile.type))}
+    if(chest&&!u){
+      b.classList.add('goldChestCell');
+      b.title='골드 상자 · 공격하면 10~70골드';
+      b.insertAdjacentHTML('beforeend','<span class="goldChest"><span>🧰</span><small>골드 상자</small></span>')
+    }
     if(u){b.insertAdjacentHTML('beforeend',unitText(u));if(u.id===selectedUnit)b.classList.add('sel')}
     b.addEventListener('click',()=>cellTap(r,c,u));
     board.appendChild(b)
@@ -652,6 +755,7 @@ function render(){
     $('#restText').textContent=state.stage+'스테이지 완료 · 다음 전투 전에 정비할 수 있어.';
     $('#unlockedList').textContent='추가 아군: '+((state.unlocked||[]).map(id=>card('BLUE',id).name).join(', ')||'없음');
     $('#drawAlly').disabled=(state.keys||0)<=0;
+    $('#drawDiamond').disabled=diamondWallet()<120;
     const upgradeOpen=state.stage>=2;
     $('#upgradeBox').classList.toggle('hidden',!upgradeOpen);
     if(upgradeOpen){
@@ -671,7 +775,8 @@ function render(){
     return
   }
 
-  turnEl.textContent=state.winner?(state.winner===side?'승리':'패배'):'스테이지 '+state.stage+' · '+(state.current===side?'내 턴':'상대 턴')+' · '+state.turn;
+  const shownTurn=state.stage===5?Math.ceil(state.turn/2):state.turn;
+  turnEl.textContent=state.winner?(state.winner===side?'승리':'패배'):'스테이지 '+state.stage+' · '+(state.current===side?'내 턴':'상대 턴')+' · '+shownTurn;
   deckInfo.textContent='골드 '+state.gold.BLUE+' · 내 소환 '+state.summons[side]+'/'+maxSummons(side)+' · 상대 소환 '+state.summons[other(side)]+'/'+maxSummons(other(side));
   modeInfo.textContent=mode==='play'?'플레이':'대기';
 
@@ -693,6 +798,11 @@ function cellTap(r,c,u){
     msg(card(side,u.card).name+' 선택');
     return render()
   }
+  if(chestAt(r,c)){
+    if(!selectedUnit)return msg('골드 상자를 공격할 아군을 먼저 선택해.');
+    act({type:'attackChest',unit:selectedUnit,r,c});
+    return
+  }
 
   if(!selectedUnit)return msg('먼저 내 유닛이나 소환할 종류를 선택해.');
   if(u)act({type:'attack',unit:selectedUnit,target:u.id});
@@ -711,7 +821,7 @@ function aiTurn(){
   for(let c=1;c<=boardCols();c++)if(!at(1,c))free.push(c);
   const options=affordableCards('RED');
 
-  if(!state.summonUsed&&free.length&&options.length){
+  if(state.stage!==5&&!state.summonUsed&&free.length&&options.length){
     const id=options[Math.floor(Math.random()*options.length)];
     processAction('RED',{type:'summon',card:id,r:1,c:free[Math.floor(Math.random()*free.length)]})
   }
@@ -728,7 +838,7 @@ function aiTurn(){
       const t=targets[0];
       const moves=[[u.r+1,u.c],[u.r-1,u.c],[u.r,u.c+1],[u.r,u.c-1]]
         .map(([r,c])=>({r,c}))
-        .filter(p=>isInside(p.r,p.c)&&!at(p.r,p.c))
+        .filter(p=>isInside(p.r,p.c)&&!at(p.r,p.c)&&!chestAt(p.r,p.c))
         .sort((a,b)=>moveDist(a,t)-moveDist(b,t));
       if(moves[0])processAction('RED',{type:'move',unit:u.id,...moves[0]})
     }
@@ -777,17 +887,26 @@ $('#upgradeAlly').onclick=()=>{
   render()
 };
 
-$('#drawAlly').onclick=()=>{
-  if(!state||state.phase!=='REST'||state.keys<=0)return;
-  if(side!=='BLUE')return msg('파랑 팀의 휴식 선택을 기다리는 중');
+// 기존 뽑기 흐름을 그대로 사용하고 결제 수단만 열쇠·다이아로 구분한다.
+function drawAlly(useDiamonds){
+  if(!state||state.phase!=='REST'||side!=='BLUE')return;
+  if(useDiamonds){
+    if(diamondWallet()<120)return msg('다이아 120개가 필요해.');
+    setDiamondWallet(diamondWallet()-120);
+    state.diamonds=diamondWallet();
+  }else{
+    if(state.keys<=0)return msg('열쇠가 부족해.');
+    state.keys--;
+  }
   const id=GACHA_POOL[Math.floor(Math.random()*GACHA_POOL.length)];
-  state.keys--;
   const duplicate=state.unlocked.includes(id);
   if(!duplicate)state.unlocked.push(id);
   $('#drawResult').textContent=(duplicate?'중복! ':'새 아군! ')+card('BLUE',id).name;
   state.version++;
   render()
-};
+}
+$('#drawAlly').onclick=()=>drawAlly(false);
+$('#drawDiamond').onclick=()=>drawAlly(true);
 $('#nextStage').onclick=()=>{
   if(!state||state.phase!=='REST')return;
   if(side!=='BLUE')return msg('파랑 팀의 다음 스테이지 시작을 기다리는 중');
@@ -799,17 +918,21 @@ $('#nextStage').onclick=()=>{
   state.summonUsed=false;
   state.winner='';
   state.stageTookDamage=false;
-  if(next===2||next===3||next===4)state.gold.BLUE=250;
+  if(next===2||next===3||next===4||next===5)state.gold.BLUE=250;
   state.gold.RED=0;
   state.summons={BLUE:0,RED:0};
   state.units=[];
   state.enemyTurns=0;
+  state.lastWaveRound=0;
+  state.specialTiles=[];
+  state.chests=next===5?createStageFiveChests():[];
   selectedUnit=null;
   selectedCard='';
   $('#drawResult').textContent='';
   if(next===2)msg('2스테이지 시작 · 기본 골드 250 · 적 8마리 / 아군 12마리');
   else if(next===3)msg('3스테이지 시작 · 해골궁수/해골법사 제외 · 강화 고블린/골렘/멧돼지 등장');
   else if(next===4){state.specialTiles=createStageFourTiles();msg('4스테이지 시작 · 7×5 맵 · 특수 발판 5개 · 방패 고블린/돌격 오크/독전갈/유적 수호자')}
+  else if(next===5)msg('5스테이지 시작 · 10×5 맵 · 특수 발판 없음 · 2/4/5/7/8턴 적 증원');
   state.version++;
   render()
 };
