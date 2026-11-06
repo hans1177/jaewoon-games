@@ -83,7 +83,7 @@ test("신규 장비 인덱스(65+)용 세 번째 비트마스크 연결", () => 
 
 test("지역 생태 거점 표: 두목 id 유일·서버가 표를 읽는다", () => {
   const ids = [...cfg.matchAll(/\{Id="(\w+)", Name="[^"]*", X=-?\d+, Z=-?\d+, Title=/g)].map((m) => m[1]);
-  assert.ok(ids.length >= 15, "camps=" + ids.length);
+  assert.ok(ids.length >= 33, "camps=" + ids.length);
   assert.equal(new Set(ids).size, ids.length);
   assert.match(srv, /questBoss=camp\.Id/);
   for (const id of ids) assert.ok(!bosses.has(id) || true);
@@ -93,4 +93,13 @@ test("초원 비석·안내 코드가 있다", () => {
   assert.match(srv, /Meadow_Stele/);
   assert.match(srv, /MeadowGuide/);
   assert.match(cfg, /MeadowGuide = 0/);
+});
+
+test("랜드마크 축복: 설정·서버 처리·클라이언트 허용 패턴이 연결된다", () => {
+  assert.match(cfg, /Config\.LandmarkBlessing/);
+  assert.match(cfg, /LandmarkClaim = 0/);
+  assert.match(srv, /\^lm:%d\+:%d\$/);
+  assert.match(fs.readFileSync(root + "client/Game.client.luau", "utf8"), /\^lm:%d\+:%d\$/);
+  const lmZones = [...cfg.matchAll(/\{Id="\w+", Zone="(\w+)", Name="[^"]*", X=-?\d+/g)].map((m) => m[1]);
+  for (const z of lmZones) assert.match(cfg, new RegExp(`\\b${z}=\\{"\\w+",\\d+,`), `${z} 축복 없음`);
 });

@@ -6562,6 +6562,28 @@ remote.OnServerEvent:Connect(function(player, actionId)
     member:SetAttribute("MeadowGearMessage",text)
     member:SetAttribute("MeadowGearRevision",(member:GetAttribute("MeadowGearRevision") or 0)+1)
   end
+  if actionId:match("^lm:%d+:%d$") then
+    local sessions=meadowOil.lmSessions or {}
+    local session=sessions[player]
+    local index,choice=actionId:match("^lm:(%d+):(%d)$")
+    index,choice=tonumber(index),tonumber(choice)
+    if not session or session.index~=index or os.clock()>session.expires then return end
+    local lm=Config.WorldMap.Landmarks[index]
+    local blessing=lm and Config.LandmarkBlessing[lm.Zone]
+    local flag=bit32.lshift(1,index-1)
+    if not blessing or bit32.band(readNumber(player,"LandmarkClaim",0),flag)~=0 then return end
+    sessions[player]=nil
+    setNumber(player,"LandmarkClaim",bit32.bor(readNumber(player,"LandmarkClaim",0),flag))
+    if choice==1 then
+      setNumber(player,blessing[1],readNumber(player,blessing[1],0)+blessing[2])
+      runeNote(player,lm.Name..": "..blessing[3].." "..blessing[2].."개를 받았다.")
+    else
+      setNumber(player,"Crystal",readNumber(player,"Crystal",0)+2)
+      pcall(awardProgress,player,120,0)
+      runeNote(player,lm.Name..": 비문을 베꼈다. 마력 수정 2개 · 경험치.")
+    end
+    return
+  end
   if actionId:match("^cook:%d$") then
     if os.clock()>(cookSessions[player] or 0) then return end
     local station=Config.CookStation
@@ -9375,7 +9397,16 @@ do
           pcall(awardProgress,player,60,40)
           text="[랜드마크 "..count.."/"..#lms.."] "..lm.Lore.."\n(보상 60 재화)"
         end
-        pcall(function() villageDialogue(player,lm.Name,text) end)
+        local blessing=Config.LandmarkBlessing[lm.Zone]
+        if blessing and bit32.band(readNumber(player,"LandmarkClaim",0),flag)==0 then
+          meadowOil.lmSessions=meadowOil.lmSessions or {}
+          meadowOil.lmSessions[player]={index=index,expires=os.clock()+90}
+          pcall(function() villageDialogue(player,lm.Name,text.."\n\n비문 앞에서 무엇을 할까?",{
+            {label=blessing[3].." "..blessing[2].."개를 받는다",action="lm:"..index..":1"},
+            {label="비문을 베껴 간다 (수정 2 · 경험치)",action="lm:"..index..":2"}}) end)
+        else
+          pcall(function() villageDialogue(player,lm.Name,text) end)
+        end
       end)
     end)
   end
