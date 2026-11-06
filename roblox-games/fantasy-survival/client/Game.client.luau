@@ -1434,8 +1434,8 @@ local function renderMeadowPages()
   end
   do
     local count=0
-    for i=0,23 do if bit32.band(player:GetAttribute("WaypointMask") or 0,bit32.lshift(1,i))~=0 then count+=1 end end
-    worldLines[#worldLines+1]=string.format("발견한 이정표 %d/24 — 이정표를 조사하면 빠른 이동 거점이 된다.",count)
+    for i=0,31 do if bit32.band(player:GetAttribute("WaypointMask") or 0,bit32.lshift(1,i))~=0 then count+=1 end end
+    worldLines[#worldLines+1]=string.format("발견한 이정표 %d/32 — 이정표를 조사하면 빠른 이동 거점이 된다.",count)
   end
   do
     worldLines[#worldLines+1]="— 연계 퀘스트 —"
@@ -6201,7 +6201,7 @@ do
     for i,button in ipairs(choices)do
       local option=typeof(payload.options)=="table" and payload.options[i] or nil
       local action=option and option.action
-      local permitted=(typeof(action)=="string" and (action:match("^village:story:%d$") or action:match("^smith:%a+$") or action:match("^cook:%d$") or action:match("^lm:%d+:%d$")) ~= nil) or action=="wp:east" or action=="wp:west" or action=="co:toggle" or action=="ql:1" or action=="ql:2" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
+      local permitted=(typeof(action)=="string" and (action:match("^village:story:%d$") or action:match("^smith:%a+$") or action:match("^cook:%d$") or action:match("^lm:%d+:%d$")) ~= nil) or action=="wp:east" or action=="wp:west" or (action:match("^wp:near:[123]$")~=nil) or action=="co:toggle" or action=="ql:1" or action=="ql:2" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
       button.Visible=permitted
       choiceActions[i]=permitted and action or nil
       if permitted then button.Text=tostring(option.label or "선택") end

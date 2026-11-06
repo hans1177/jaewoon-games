@@ -469,7 +469,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, LandmarkClaim = 0, TrackFlags = 0, QLWind = 0, QLWindP = 0, QLWindC = 0, QLHunt = 0, QLHuntP = 0, QLHuntC = 0, QLBog = 0, QLBogP = 0, QLBogC = 0, QLRoot = 0, QLRootP = 0, QLRootC = 0, QLTrack1 = 0, QLTrack1P = 0, QLTrack1C = 0, QLTrack2 = 0, QLTrack2P = 0, QLTrack2C = 0, QLTrack3 = 0, QLTrack3P = 0, QLTrack3C = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, EcoChestMask = 0, EcoChestMask2 = 0, EcoChestMask3 = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, LandmarkClaim = 0, TrackFlags = 0, QLWind = 0, QLWindP = 0, QLWindC = 0, QLHunt = 0, QLHuntP = 0, QLHuntC = 0, QLBog = 0, QLBogP = 0, QLBogC = 0, QLRoot = 0, QLRootP = 0, QLRootC = 0, QLTrack1 = 0, QLTrack1P = 0, QLTrack1C = 0, QLTrack2 = 0, QLTrack2P = 0, QLTrack2C = 0, QLTrack3 = 0, QLTrack3P = 0, QLTrack3C = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -824,6 +824,9 @@ Config.WorldMap = {
     {"저주받은 성문",5500,-600},{"불꽃 대장간 터",5800,700},{"성채 외곽 초소",6100,-300},{"군주의 옥좌 앞",6300,300},
     {"북부 감시탑",-1200,-1800},{"고대 협곡 제단",1600,-1900},{"혼돈의 균열",4500,-1800},{"바람 절벽 등대",-1700,300},
     {"남부 습원 부두",-600,1900},{"황금 사막 폐허",2900,1900},{"죽음의 늪 사당",5300,1900},{"서쪽 옛 요새",-1800,-800},
+    -- [생태 거점 이정표] 새 거점·전설 크리처 길목에 둔 이정표(25~32). 비트 마스크 한계(32) 때문에 여기까지.
+    {"협곡 지룡 전망대",1580,-1760},{"고원 폐광 초소",-820,-1720},{"습원 히드라 나루",-660,1720},{"세계수 뿌리 야영지",1200,10},
+    {"오아시스 호수 나루",3620,-70},{"안개 늪 허브",4800,10},{"혼돈 서리 초소",4330,-1640},{"성채 서쪽 보루",5850,40},
   },
 }
 

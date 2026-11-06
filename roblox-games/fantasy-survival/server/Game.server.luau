@@ -7714,10 +7714,20 @@ do
           pcall(awardProgress,player,30+index*6,12+index*2)
         end
         sessions[player]={index=index,expires=os.clock()+40}
-        local east,west=neighbor(player,index,1),neighbor(player,index,-1)
+        -- [동선 이동] 번호 순서가 아니라 지금 위치에서 가까운 발견 이정표 3곳(+마을 귀환)을 보여 준다.
+        local near={}
+        for i=1,#waypoints do
+          if i~=index and discovered(player,i) then
+            near[#near+1]={i=i,d=math.sqrt((waypoints[i][2]-spec[2])^2+(waypoints[i][3]-spec[3])^2)}
+          end
+        end
+        table.sort(near,function(a,b) return a.d<b.d end)
+        sessions[player]={index=index,expires=os.clock()+40,near=near}
         local options={}
-        if east then options[#options+1]={label="동쪽 이정표로 · "..waypoints[east][1],action="wp:east"} end
-        options[#options+1]={label=west and ("서쪽 이정표로 · "..waypoints[west][1]) or "초원 마을로 귀환",action="wp:west"}
+        for k=1,math.min(3,#near) do
+          options[#options+1]={label=string.format("%s · %d걸음",waypoints[near[k].i][1],math.floor(near[k].d/4)),action="wp:near:"..k}
+        end
+        options[#options+1]={label="초원 마을로 귀환",action="wp:west"}
         local count=0
         for i=1,#waypoints do if discovered(player,i) then count+=1 end end
         pcall(function() villageDialogue(player,spec[1],(first and "새로운 장소를 발견했다! 경험치와 재화를 얻었다.\n" or "")..
@@ -7782,7 +7792,7 @@ do
       end
       return
     end
-    if action~="wp:east" and action~="wp:west" then return end
+    if action~="wp:east" and action~="wp:west" and not (typeof(action)=="string" and action:match("^wp:near:[123]$")) then return end
     local session=sessions[player]
     if not session or os.clock()>session.expires then return end
     sessions[player]=nil
@@ -7790,7 +7800,14 @@ do
     local root=character and character:FindFirstChild("HumanoidRootPart")
     local from=waypoints[session.index]
     if not root or (root.Position-Vector3.new(from[2],3,from[3])).Magnitude>40 then return end
-    local target=neighbor(player,session.index,action=="wp:east" and 1 or -1)
+    local target
+    if action:match("^wp:near:") then
+      local entry=session.near and session.near[tonumber(action:sub(-1))]
+      target=entry and entry.i
+      if target and not discovered(player,target) then target=nil end
+      if not target then return end
+    elseif action=="wp:east" then target=neighbor(player,session.index,1)
+    else target=nil end
     if target then
       travelTo(player,Vector3.new(waypoints[target][2],3,waypoints[target][3]))
     elseif action=="wp:west" then
@@ -7810,6 +7827,8 @@ do
     [14]={"orc","대장간의 불꽃 오크",5.6},[15]={"skullorc","초소 지휘관",5.6},[16]={"demon","옥좌의 집행자",6.6},
     [17]={"yeti","북부 감시탑의 괴수",5.8},[18]={"skullorc","협곡 제단의 사제",5.4},[19]={"frostfiend","혼돈의 균열 마귀",5.6},[20]={"rogue","등대의 해적 두목",4.4},
     [21]={"toad","부두의 독두꺼비 왕",4.4},[22]={"fangspider","폐허의 독거미 여왕",4.8},[23]={"tribal","사당의 늪 주술사",5.2},[24]={"barbarian","옛 요새의 저주받은 기사",5.8},
+    [25]={"bladespider","지룡 전망대의 비늘 사냥꾼",4.8},[26]={"goblin","폐광 초소의 고블린 두목",4.2},[27]={"toad","나루터의 히드라 사냥꾼",4.2},[28]={"barbarian","뿌리 야영지의 웨어울프",5},
+    [29]={"assassin","호수 나루의 모래 도적",4.6},[30]={"tribal","늪 허브의 주술전사",4.6},[31]={"frostfiend","초소의 서리 마귀",5.6},[32]={"demon","보루의 재 악마",6},
   }
   local anchors={}
   for index,spec in ipairs(Config.WorldMap.Waypoints) do anchors[index]={spec[2],spec[3]} end
@@ -9031,6 +9050,68 @@ do
         alpha=true,named=true,style=legend.style,myth={color=legend.color,range=30,rate=26,fill=.6},drops=legend.drops,
         position=Vector3.new(region.HubX+legend.dx,3,region.HubZ+legend.dz)})
     end
+  end
+  -- [보스 상자] 거점마다 지킴이 우두머리를 쓰러뜨리면 열 수 있는 상자. 제련·무두질 재료와 부위 재료가 나오고 플레이어마다 한 번만 연다.
+  do
+    local chestSpecs={}
+    for _,region in ipairs(Config.EcoRegions or {}) do
+      for _,camp in ipairs(region.Camps) do
+        table.insert(chestSpecs,{x=camp.X-9,z=camp.Z+13,boss=camp.Id,by="quest",name=camp.Name,tier=camp.Boss.tier,drops=camp.Boss.drops})
+      end
+      local lg=legendByZone[region.Zone]
+      if lg then table.insert(chestSpecs,{x=region.HubX+lg.dx-8,z=region.HubZ+lg.dz+12,boss=lg.name,by="name",name=lg.name.."의 은신처",tier=lg.tier,drops=lg.drops,legend=true}) end
+    end
+    task.spawn(function()
+      while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(2) end
+      local params=RaycastParams.new()
+      params.FilterType=Enum.RaycastFilterType.Include
+      params.FilterDescendantsInstances={workspace.Terrain}
+      for index,spec in ipairs(chestSpecs) do
+        if index<=96 then
+          local hit=workspace:Raycast(Vector3.new(spec.x,400,spec.z),Vector3.new(0,-800,0),params)
+          if not hit then
+            warn("ECO_CHEST_GROUND_UNVERIFIED "..spec.name)
+          else
+            local pos=hit.Position
+            local anchor=Instance.new("Attachment");anchor.Name="EcoChest_"..index;anchor.WorldPosition=pos+Vector3.new(0,1.5,0);anchor.Parent=workspace.Terrain
+            task.spawn(function()
+              local m=worldAsset("vxChest",pos,2.6)
+              if m then m.Name="EcoChestModel_"..index;m:SetAttribute("MeadowScenery",true) end
+            end)
+            local prompt=Instance.new("ProximityPrompt")
+            prompt.ActionText="상자 열기";prompt.ObjectText=spec.name;prompt.HoldDuration=.7
+            prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+            prompt.Triggered:Connect(function(player)
+              if player:GetAttribute("ProfileReady")~=true then return end
+              local field=index>64 and "EcoChestMask3" or index>32 and "EcoChestMask2" or "EcoChestMask"
+              local bitv=bit32.lshift(1,(index-1)%32)
+              if bit32.band(readNumber(player,field,0),bitv)~=0 then
+                pcall(function() villageDialogue(player,spec.name,"상자는 이미 비어 있다.",{}) end);return
+              end
+              for _,e in ipairs(enemies) do
+                if e.HP>0 and e.model.Parent and ((spec.by=="quest" and e.questBoss==spec.boss) or (spec.by=="name" and e.named and e.model.Name==spec.boss)) then
+                  pcall(function() villageDialogue(player,spec.name,"우두머리가 아직 살아 있다. 먼저 쓰러뜨려야 상자를 열 수 있다.",{}) end);return
+                end
+              end
+              setNumber(player,field,bit32.bor(readNumber(player,field,0),bitv))
+              local lines={}
+              local function give(f,n)
+                setNumber(player,f,readNumber(player,f,0)+n)
+                local mat=Config.MaterialByField[f]
+                lines[#lines+1]=(mat and mat.Name or f).." x"..n
+              end
+              for _,d in ipairs(spec.drops or {}) do give(d[1],math.max(1,math.floor((d[3] or 1)*(spec.legend and 3 or 2)))) end
+              give("Ingot",spec.legend and 3 or 1+math.floor(spec.tier/5))
+              give("Leather",spec.legend and 3 or 1+math.floor(spec.tier/5))
+              local coins=spec.tier*(spec.legend and 160 or 70)
+              setNumber(player,"Coins",readNumber(player,"Coins",0)+coins)
+              pcall(awardProgress,player,spec.tier*25,0)
+              pcall(function() villageDialogue(player,spec.name,"상자를 열었다!\n"..table.concat(lines,"\n").."\n코인 +"..coins,{}) end)
+            end)
+          end
+        end
+      end
+    end)
   end
   task.spawn(function()
     while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(2) end
