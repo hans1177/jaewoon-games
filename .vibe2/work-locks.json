@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-ryuw4c",
+      "worker": "vibe2",
+      "taskId": "line-defense-web-startup-spatial-repair-v3",
+      "gameId": "line-defense",
+      "files": [
+        "web-games/line-defense/index.html"
+      ],
+      "baseSha": "0b02ecbb373c5a2436c8c7de6fba95569470d04f",
+      "runId": "42282581584",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-06T20:05:42.020Z",
+      "expiresAt": "2026-11-06T20:50:42.020Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:line-defense-web-startup-spatial-repair-v3"
+      ]
+    }
+  ]
 }
