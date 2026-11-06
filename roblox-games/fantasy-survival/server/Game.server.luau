@@ -6659,8 +6659,10 @@ local function onSurvivalPlayerAdded(player)
   player:SetAttribute("ProfileReady", true)
   broadcastSurvivalState(player)
   if resumePosition then
+    -- 어떤 경우에도 클라이언트 복원 대기(26초)보다 먼저 끝나도록 18초 안전장치를 둔다.
+    task.delay(18,function() if player.Parent==Players then player:SetAttribute("MeadowResumeReady",true) end end)
     task.spawn(function()
-      local deadline=os.clock()+22
+      local deadline=os.clock()+10
       while player.Parent==Players and gameWorld:GetAttribute("MeadowOuterRegionReady")~=true
         and os.clock()<deadline do task.wait(.15) end
       if player.Parent~=Players then return end
@@ -6671,13 +6673,13 @@ local function onSurvivalPlayerAdded(player)
         local ray=RaycastParams.new()
         ray.FilterType=Enum.RaycastFilterType.Include
         ray.FilterDescendantsInstances={meadowTerrain}
-        -- 먼 지역은 지형이 늦게 만들어질 수 있어 최대 12초 동안 다시 확인한다.
+        -- 먼 지역은 지형이 늦게 만들어질 수 있어 최대 6초 다시 확인한다(클라이언트 복원 대기 26초 안에 끝나야 한다).
         local hit
         local tries=0
         repeat
           hit=workspace:Raycast(Vector3.new(resumePosition.X,620,resumePosition.Z),Vector3.new(0,-900,0),ray)
           if not hit then task.wait(1);tries+=1 end
-        until hit or tries>=12 or player.Parent~=Players or player.Character~=character
+        until hit or tries>=6 or player.Parent~=Players or player.Character~=character
         if hit and hit.Position.Y>=-58 and hit.Position.Y<=540 then
           root.CFrame=CFrame.new(resumePosition.X,hit.Position.Y+3.5,resumePosition.Z)
           root.AssemblyLinearVelocity=Vector3.zero
