@@ -184,10 +184,16 @@ jobs:
         run: |
           set -euo pipefail
           test "$ROBLOX_UNIVERSE_ID" = '10773436325'
-          # Licensed original OBJ/FBX -> GLB conversion only; no generated geometry.
+          # [자산 도구] 준비된 패키지 목록으로 먼저 설치하고, 실패할 때만 목록을 갱신한다.
+          # 패키지 서명 검증은 유지하며 네트워크 지연이 게시 작업 전체를 소진하지 않게 한다.
           if ! command -v blender >/dev/null 2>&1; then
-            sudo apt-get update -qq
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq blender python3-numpy
+            echo 'FOREST_BLENDER_INSTALL_STARTED'
+            if ! sudo DEBIAN_FRONTEND=noninteractive timeout 240 apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y -qq --no-install-recommends blender python3-numpy; then
+              echo 'FOREST_PACKAGE_INDEX_REFRESH_STARTED'
+              sudo timeout 120 apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update -qq
+              sudo DEBIAN_FRONTEND=noninteractive timeout 240 apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y -qq --no-install-recommends blender python3-numpy
+            fi
+            echo 'FOREST_BLENDER_INSTALL_COMPLETED'
           fi
           node tools/baeksu-war-upload-meshes.mjs --register-forest-gear --game-id=fantasy-survival
 
@@ -421,7 +427,13 @@ jobs:
               }
               j=await read(r);
             }
-            if(!valid(r,j))throw Error('FOREST_INTRO_UNIVERSE_GRANT_UNVERIFIED_HTTP_'+r.status);
+            if(!valid(r,j)){
+              const reasons=(Array.isArray(j.errors)?j.errors:[]).map(e=>({
+                code:e.code??null,message:String(e.message||'').slice(0,180),
+              }));
+              throw Error('FOREST_INTRO_UNIVERSE_GRANT_UNVERIFIED_HTTP_'+r.status
+                +':'+JSON.stringify(reasons).slice(0,600));
+            }
           };
           if(bound){
             const boundList=bgIds.concat(fgIds);
