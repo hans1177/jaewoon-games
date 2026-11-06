@@ -120496,7 +120496,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -120530,7 +120530,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 20,
-      "previousReservationId": "system-ai:42269683164:1",
+      "previousReservationId": "system-ai:42271699402:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -120538,12 +120538,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:42271699402:1",
-      "reservedAt": "2026-11-06T18:41:15.787Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -122694,7 +122694,8 @@
         "actions-run:42265787460",
         "system-ai-handoff-to-reservation:system-ai:42269683164:1",
         "actions-run:42269683164",
-        "system-ai-handoff-to-reservation:system-ai:42271699402:1"
+        "system-ai-handoff-to-reservation:system-ai:42271699402:1",
+        "actions-run:42271699402"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1890,
@@ -122709,7 +122710,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-06T18:41:15.787Z"
+      "updatedAt": "2026-11-06T18:47:00.370Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -199267,6 +199268,7 @@
       "department": "recovery",
       "taskType": "bottleneck-repair",
       "gameId": "fantasy-survival",
+      "jointDecisionRequired": false,
       "goal": "Analyze the exact failed WEB deployment stage DEPLOY_GITHUB_PAGES_EXPLICITLY_INSTEAD_OF_RELYING_ON_A_GITHUB_TOKEN_PUSH for fantasy-survival using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
       "responsibleFiles": [
         ".github/workflows/magic-forest-pages.yml"
@@ -199275,36 +199277,7 @@
         ".github/workflows/magic-forest-pages.yml",
         "web-games/fantasy-survival"
       ],
-      "failureStage": "DEPLOYMENT_WEB_DEPLOY_GITHUB_PAGES_EXPLICITLY_INSTEAD_OF_RELYING_ON_A_GITHUB_TOKEN_PUSH",
-      "failureSignature": "WORKFLOW_FAILED_DEPLOY_GITHUB_PAGES_EXPLICITLY_INSTEAD_OF_RELYING_ON_A_GITHUB_TOKEN_PUSH",
-      "relatedTaskIds": [
-        "deployment:.github/workflows/magic-forest-pages.yml:75061ade4bca7fbe47e98cee6168be7c1931997c:fantasy-survival"
-      ],
-      "blockedTaskIds": [
-        "deployment:.github/workflows/magic-forest-pages.yml:75061ade4bca7fbe47e98cee6168be7c1931997c:fantasy-survival"
-      ],
-      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
-      "recurrenceCount": 1,
-      "repairMode": "FOCUSED_REPAIR",
-      "userAssistanceRequired": false,
-      "sourceMutationRequired": true,
-      "sourceMutationBaseline": "75061ade4bca7fbe47e98cee6168be7c1931997c",
-      "gameRepairContract": {
-        "version": 1,
-        "mode": "FOCUSED_REPAIR",
-        "prePatchReproductionRequired": true,
-        "causalResponsibleSystemRequired": true,
-        "compareLastKnownGoodFirstBrokenCurrentRequired": false,
-        "originalScenarioReplayRequired": true,
-        "invariantValidationRequired": true,
-        "saveMigrationValidationRequired": false,
-        "multiplayerLifecycleValidationRequired": false,
-        "multiplayerUserAssistanceRequired": false,
-        "multiplayerMinimumAutomatedClients": 0,
-        "impactRegressionRequired": true,
-        "fullRegressionFanInRequired": true,
-        "repeatedSameApproachWithoutNewCausalEvidenceForbidden": false
-      },
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "repair only assigned responsible files",
         "reproduce the exact failure before patch or preserve existing verified reproduction evidence",
@@ -199328,7 +199301,24 @@
         "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
       ],
       "dependencies": [],
+      "relatedTaskIds": [
+        "deployment:.github/workflows/magic-forest-pages.yml:75061ade4bca7fbe47e98cee6168be7c1931997c:fantasy-survival"
+      ],
+      "blockedTaskIds": [
+        "deployment:.github/workflows/magic-forest-pages.yml:75061ade4bca7fbe47e98cee6168be7c1931997c:fantasy-survival"
+      ],
       "retries": 0,
+      "recurrenceCount": 1,
+      "failureStage": "DEPLOYMENT_WEB_DEPLOY_GITHUB_PAGES_EXPLICITLY_INSTEAD_OF_RELYING_ON_A_GITHUB_TOKEN_PUSH",
+      "failureSignature": "WORKFLOW_FAILED_DEPLOY_GITHUB_PAGES_EXPLICITLY_INSTEAD_OF_RELYING_ON_A_GITHUB_TOKEN_PUSH",
+      "failureClass": null,
+      "handoffCount": 0,
+      "previousReservationId": null,
+      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "knownGoodRevision": null,
+      "repairRisk": 1,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "75061ade4bca7fbe47e98cee6168be7c1931997c",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "reservationId": null,
@@ -199363,8 +199353,8 @@
         "primary-ai-collaboration-task:recovery-recovery-7955c308df5e201f7bdd"
       ],
       "supervisorReviewRequired": true,
-      "workerSelfAcceptance": false,
-      "learningCandidate": true,
+      "impactScore": 0,
+      "impactComponents": null,
       "createdAt": "2026-11-06T18:45:16.427Z",
       "updatedAt": "2026-11-06T18:45:16.427Z"
     }
