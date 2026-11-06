@@ -1306,30 +1306,6 @@ Config.MiningLevel = function(prof)
   for i, need in ipairs(Config.MiningThresholds) do if (prof or 0) >= need then level = i end end
   return level
 end
--- [광부 의뢰] 12개 지역마다 광맥 의뢰 서브 퀘스트: 그 지역 광맥 두 종류를 캐서 마을 광부에게 보고한다. 순서·선행 조건 없음.
-do
-  local eventOf = {Ore = "MINE_ORE", Crystal = "MINE_CRYSTAL", Magma = "MINE_MAGMA", Ectoplasm = "MINE_SOUL", Ingot = "MINE_DEEP"}
-  local matName = {Ore = "철광석", Crystal = "마력 결정", Magma = "화산석", Ectoplasm = "원혼의 잔재", Ingot = "철 주괴(심층 철맥)"}
-  for _, town in ipairs(Config.WorldMap.Towns) do
-    local veins = Config.MiningVeins[town.Zone]
-    if veins and veins[1] and veins[2] then
-      local v1, v2 = veins[1], veins[2]
-      table.insert(Config.QuestLines, {Id = "mine-" .. town.Id, Name = "[광부] " .. town.Name .. "의 광맥 의뢰", Kind = "Sub", Field = "QLMine" .. town.Id,
-        Need = {Zone = town.Zone},
-        Intro = "광부: '" .. town.Hold .. "의 광맥을 캐 보고 싶으면 이 일을 맡아 줘. " .. v1[1] .. "과(와) " .. v2[1] .. "을(를) 한 번씩 캐 오면 요령을 가르쳐 주지.'",
-        Steps = {
-          {Type = "event", Event = eventOf[v1[2]], Count = 2, Title = v1[1] .. "에서 " .. matName[v1[2]] .. " 캐기", Text = v1[1] .. "을(를) 두 번 캐라. (채굴 Lv" .. v1[3] .. " 필요)", Done = "광석이 손에 묵직하게 잡힌다."},
-          {Type = "event", Event = eventOf[v2[2]], Count = 2, Title = v2[1] .. "에서 " .. matName[v2[2]] .. " 캐기", Text = v2[1] .. "을(를) 두 번 캐라. (채굴 Lv" .. v2[3] .. " 필요)", Done = "깊은 맥에서 좋은 결이 나온다."},
-          {Type = "choice", X = town.X, Z = town.Z, R = 110, Title = town.Name .. " 광부에게 보고", Prompt = "광부: '솜씨가 좋군! 사례는 무엇으로 줄까?'",
-           Choices = {
-             {Label = "철 주괴 2개 + 코인 300", Done = "광부가 주괴와 코인을 건넨다. '좋은 광석은 좋은 무기가 되지.'", Ingot = 2, Coins = 300},
-             {Label = "채굴 요령 전수 (채굴 숙련 +12)", Done = "광부가 곡괭이 쥐는 법과 맥 읽는 법을 가르쳐 준다. '이 요령은 평생 가.'", MiningProficiency = 12},
-           }},
-        },
-        Reward = {Coins = 200, Xp = 220}})
-    end
-  end
-end
 
 -- 곡괭이: 가장 높은 단계가 자동 적용된다. Level=채굴 레벨 보정(더 깊은 광맥), Amount=수확량 보정, Rare=희귀 확률 보정. 광부 NPC가 판다.
 Config.Pickaxes = {
@@ -1354,6 +1330,31 @@ Config.MiningVeins = {
   desert = {{"사막 수정맥", "Crystal", 3, {255, 220, 130}}, {"황금 철광맥", "Ingot", 3, {255, 215, 140}}},
   deadmarsh = {{"죽음의 원혼석", "Ectoplasm", 4, {130, 255, 140}}, {"늪 심층 철맥", "Ingot", 4, {170, 190, 170}}},
 }
+
+-- [광부 의뢰] 12개 지역마다 광맥 의뢰 서브 퀘스트: 그 지역 광맥 두 종류를 캐서 마을 광부에게 보고한다. 순서·선행 조건 없음.
+do
+  local eventOf = {Ore = "MINE_ORE", Crystal = "MINE_CRYSTAL", Magma = "MINE_MAGMA", Ectoplasm = "MINE_SOUL", Ingot = "MINE_DEEP"}
+  local matName = {Ore = "철광석", Crystal = "마력 결정", Magma = "화산석", Ectoplasm = "원혼의 잔재", Ingot = "철 주괴(심층 철맥)"}
+  for _, town in ipairs(Config.WorldMap.Towns) do
+    local veins = Config.MiningVeins[town.Zone]
+    if veins and veins[1] and veins[2] then
+      local v1, v2 = veins[1], veins[2]
+      table.insert(Config.QuestLines, {Id = "mine-" .. town.Id, Name = "[광부] " .. town.Name .. "의 광맥 의뢰", Kind = "Sub", Field = "QLMine" .. town.Id,
+        Need = {Zone = town.Zone},
+        Intro = "광부: '" .. town.Hold .. "의 광맥을 캐 보고 싶으면 이 일을 맡아 줘. " .. v1[1] .. "과(와) " .. v2[1] .. "을(를) 한 번씩 캐 오면 요령을 가르쳐 주지.'",
+        Steps = {
+          {Type = "event", Event = eventOf[v1[2]], Count = 2, Title = v1[1] .. "에서 " .. matName[v1[2]] .. " 캐기", Text = v1[1] .. "을(를) 두 번 캐라. (채굴 Lv" .. v1[3] .. " 필요)", Done = "광석이 손에 묵직하게 잡힌다."},
+          {Type = "event", Event = eventOf[v2[2]], Count = 2, Title = v2[1] .. "에서 " .. matName[v2[2]] .. " 캐기", Text = v2[1] .. "을(를) 두 번 캐라. (채굴 Lv" .. v2[3] .. " 필요)", Done = "깊은 맥에서 좋은 결이 나온다."},
+          {Type = "choice", X = town.X, Z = town.Z, R = 110, Title = town.Name .. " 광부에게 보고", Prompt = "광부: '솜씨가 좋군! 사례는 무엇으로 줄까?'",
+           Choices = {
+             {Label = "철 주괴 2개 + 코인 300", Done = "광부가 주괴와 코인을 건넨다. '좋은 광석은 좋은 무기가 되지.'", Ingot = 2, Coins = 300},
+             {Label = "채굴 요령 전수 (채굴 숙련 +12)", Done = "광부가 곡괭이 쥐는 법과 맥 읽는 법을 가르쳐 준다. '이 요령은 평생 가.'", MiningProficiency = 12},
+           }},
+        },
+        Reward = {Coins = 200, Xp = 220}})
+    end
+  end
+end
 
 -- [탈것] 마을 마구간에서 사서 탄다. 넓은 대륙을 가로지르는 빠른 이동 수단. 피격·마을 진입·던전 입장 시 자동으로 내린다.
 Config.Mounts = {
