@@ -2485,6 +2485,30 @@ for _, line in ipairs({
    },
    Reward={Coins=500, Xp=500}},
 }) do table.insert(Config.QuestLines, line) end
+
+-- [장비 외형] 등록된 CC0 메시(갑옷 5종·장갑·바지·장화·목걸이·반지·수정)를 아이템별로 다르게 입히는 표.
+-- model: 메시 키 · tint: 소재 색 · glow: 희귀 장비의 은은한 광원 · fit: 크기 배율 · acc: 장신구 부착 위치
+Config.GearLook = {
+  travel_armor={model="item_armor_leather",tint={150,112,72}},
+  hunter_armor={model="item_armor_leather",tint={96,126,70}},
+  moss_robe={model="item_armor_leather",tint={78,122,86},fit=0.96},
+  frost_leather={model="item_armor_leather",tint={168,210,236},glow={150,205,255}},
+  guardian_armor={model="item_armor_metal",tint={150,172,205}},
+  magma_plate={model="item_armor_black",tint={196,72,42},glow={255,110,50}},
+  worldtree_mail={model="item_armor_golden",tint={150,205,95},glow={160,255,140}},
+  fafnir_scale_mail={model="item_armor_metal2",tint={232,112,82},glow={255,140,80}},
+  hunter_gloves={tint={140,108,70}}, guardian_gauntlet={tint={168,182,205},fit=1.15}, arcane_gloves={tint={150,100,232},glow={190,140,255}},
+  wind_feather_gloves={tint={170,215,240}}, hydra_hide_gloves={tint={110,230,140},glow={110,255,160}},
+  guardian_pants={tint={150,162,188}}, hunter_greaves={tint={122,96,62}}, rune_greaves={tint={92,122,205},glow={120,160,255}},
+  behemoth_greaves={tint={235,200,110},glow={255,210,120}},
+  guardian_boots={tint={150,162,188}}, hunter_boots={tint={116,90,60}}, wind_boots={tint={150,232,232},glow={170,255,245}},
+  wyvern_boots={tint={240,215,120},glow={255,225,130}},
+  moon_amulet={acc={model="item_necklace1",part="UpperTorso",off={0,.5,-.58},height=.9},tint={190,210,255},glow={190,210,255}},
+  fang_necklace={acc={model="item_necklace1",part="UpperTorso",off={0,.5,-.58},height=.9},tint={235,225,200}},
+  herb_bracelet={acc={model="item_ring1",part="LeftHand",off={0,.25,0},height=.7},tint={110,190,100}},
+  worldtree_ring={acc={model="item_ring2",part="RightHand",off={0,-.2,0},height=.4},tint={200,235,120},glow={170,255,140}},
+  abyss_eye={acc={model="item_crystal1",part="UpperTorso",off={1.5,1.7,0},height=1.1},tint={170,90,240},glow={190,110,255}},
+}
 Config.InitialState.Notoriety = 0
 Config.InitialState.ConquestMask = 0
 Config.InitialState.HunterKills = 0

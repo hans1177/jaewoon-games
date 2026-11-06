@@ -3450,7 +3450,7 @@ local function refreshArmorVisual(player)
   if not chest then warn("ARMORVIS no chest equipped") return end
   local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
   if not torso then warn("ARMORVIS no torso") return end
-  local model=worldAsset(armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather",(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),2.5)
+  local model=worldAsset(((Config.GearLook[chest.Id] or {}).model or armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather"),(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),2.5)
   local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
   if not mesh then warn("ARMORVIS no mesh model="..tostring(model)) if model then model:Destroy() end return end
   local visual=mesh:Clone()
@@ -3459,6 +3459,13 @@ local function refreshArmorVisual(player)
   visual.Color=({Common=Color3.fromRGB(140,100,64),Uncommon=Color3.fromRGB(140,100,64),Rare=Color3.fromRGB(165,172,186),
     Epic=Color3.fromRGB(58,58,72),Legendary=Color3.fromRGB(226,184,76)})[chest.Rarity or "Common"] or visual.Color
   visual.Name="MeadowArmorVisual"
+  do
+    local look=Config.GearLook[chest.Id]
+    if look and look.tint then visual.Color=Color3.fromRGB(look.tint[1],look.tint[2],look.tint[3]) end
+    if look and look.glow then
+      local l=Instance.new("PointLight");l.Color=Color3.fromRGB(look.glow[1],look.glow[2],look.glow[3]);l.Range=9;l.Brightness=.9;l.Parent=visual
+    end
+  end
   visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
   -- 몸통 크기에 맞춰 늘려 붙인다(어깨까지 살짝 덮고 머리는 가리지 않게).
   visual.Size=Vector3.new(torso.Size.X*1.18,torso.Size.Y*1.12,torso.Size.Z*1.5)
@@ -3482,7 +3489,7 @@ local function refreshGearVisuals(player)
       if child.Name=="MeadowGearVisual_"..slot then child:Destroy() end
     end
     local item=meadowRpg.equippedSlot and meadowRpg.equippedSlot(player,slot)
-    if item and (item.Rarity=="Rare" or item.Rarity=="Epic" or item.Rarity=="Legendary") then
+    if item and item.Rarity~="Common" then
       for _,partName in ipairs(spec.parts) do
         local anchor=character:FindFirstChild(partName)
         if anchor then
@@ -3494,8 +3501,14 @@ local function refreshGearVisuals(player)
             model:Destroy()
             visual.Name="MeadowGearVisual_"..slot
             visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
-            if item.Tint then visual.Color=visual.Color:Lerp(Color3.fromRGB(item.Tint[1],item.Tint[2],item.Tint[3]),.4) end
-            visual.Size=Vector3.new(anchor.Size.X*spec.fit.X,anchor.Size.Y*spec.fit.Y,anchor.Size.Z*spec.fit.Z)
+            local look=Config.GearLook[item.Id] or {}
+            if look.tint then visual.Color=Color3.fromRGB(look.tint[1],look.tint[2],look.tint[3])
+            elseif item.Tint then visual.Color=visual.Color:Lerp(Color3.fromRGB(item.Tint[1],item.Tint[2],item.Tint[3]),.4) end
+            local k=look.fit or 1
+            visual.Size=Vector3.new(anchor.Size.X*spec.fit.X*k,anchor.Size.Y*spec.fit.Y,anchor.Size.Z*spec.fit.Z*k)
+            if look.glow then
+              local l=Instance.new("PointLight");l.Color=Color3.fromRGB(look.glow[1],look.glow[2],look.glow[3]);l.Range=6;l.Brightness=.6;l.Parent=visual
+            end
             visual.Parent=character
             local weld=Instance.new("Weld");weld.Part0=anchor;weld.Part1=visual;weld.C0=spec.offset;weld.Parent=visual
           elseif model then
@@ -3505,6 +3518,52 @@ local function refreshGearVisuals(player)
       end
     end
   end
+end
+-- [장신구 외형] 목걸이·반지·팔찌·수정을 착용 부위에 붙인다(등록된 CC0 메시만).
+local function refreshAccessoryVisual(player)
+  local character=player.Character
+  if not character then return end
+  local old=character:FindFirstChild("MeadowAccessoryVisual")
+  if old then old:Destroy() end
+  local item=meadowRpg.equippedSlot and meadowRpg.equippedSlot(player,"Accessory")
+  local look=item and Config.GearLook[item.Id]
+  local spec=look and look.acc
+  if not spec then return end
+  local anchor=character:FindFirstChild(spec.part) or character:FindFirstChild("Torso")
+  if not anchor then return end
+  local origin=character:FindFirstChild("HumanoidRootPart")
+  local model=worldAsset(spec.model,origin and origin.Position or Vector3.new(0,5,0),spec.height)
+  local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
+  if not mesh then if model then model:Destroy() end return end
+  local visual=mesh:Clone();model:Destroy()
+  visual.Name="MeadowAccessoryVisual"
+  visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
+  if look.tint then visual.Color=Color3.fromRGB(look.tint[1],look.tint[2],look.tint[3]) end
+  visual.Parent=character
+  local weld=Instance.new("Weld");weld.Part0=anchor;weld.Part1=visual
+  weld.C0=CFrame.new(spec.off[1],spec.off[2],spec.off[3]);weld.Parent=visual
+  if look.glow then
+    local l=Instance.new("PointLight");l.Color=Color3.fromRGB(look.glow[1],look.glow[2],look.glow[3]);l.Range=8;l.Brightness=1;l.Parent=visual
+  end
+end
+-- [무기 자동 꺼내기] 무기를 장착하면 손에 들고, 무기 종류에 맞는 전투 모션을 쓰도록 도구에 표시한다. 활은 도구를 넣는다.
+local classMotionProfile={Sword="SWORD",Greatsword="GREATSWORD",Dagger="DAGGER",Axe="WAR_AXE",Hammer="HAMMER",Staff="STAFF"}
+local function autoDrawWeapon(player,forceDraw)
+  local character=player.Character
+  local human=character and character:FindFirstChildOfClass("Humanoid")
+  if not human or human.Health<=0 then return end
+  local weapon=meadowRpg.equippedWeapon(player)
+  if not weapon or weapon.Bow then return end
+  local cls=Config.GearWeaponClass[weapon.Id]
+  local backpack=player:FindFirstChildOfClass("Backpack")
+  local tool=character:FindFirstChildOfClass("Tool")
+  if not tool and backpack then
+    for _,t in ipairs(backpack:GetChildren()) do if t:IsA("Tool") then tool=t;break end end
+  end
+  if not tool then return end
+  local profile=classMotionProfile[cls]
+  if profile then tool:SetAttribute("WeaponMotionProfile",profile) end
+  if forceDraw and tool.Parent~=character then human:EquipTool(tool) end
 end
 -- [망토 색] 오프닝 망토 모델의 손잡이 메시 색을 장착한 망토의 Tint로 바꾼다. 장착 해제하면 원래 색으로 돌아온다.
 local function refreshCapeTint(player)
@@ -3529,6 +3588,9 @@ local function watchArmorVisual(player)
     player:GetAttributeChangedSignal(attribute):Connect(function() refreshGearVisuals(player) end)
   end
   player:GetAttributeChangedSignal("MeadowEquipCape"):Connect(function() refreshCapeTint(player) end)
+  player:GetAttributeChangedSignal("MeadowEquipAccessory"):Connect(function() refreshAccessoryVisual(player) end)
+  player:GetAttributeChangedSignal("MeadowEquipWeapon"):Connect(function() task.delay(.5,function() autoDrawWeapon(player,true) end) end)
+  player.CharacterAdded:Connect(function() task.wait(2.6);refreshAccessoryVisual(player);autoDrawWeapon(player,true) end)
   player.CharacterAdded:Connect(function() for _,gap in ipairs({4,4,6}) do task.wait(gap);refreshCapeTint(player) end end)
   player.CharacterAdded:Connect(function() task.wait(2.2);refreshGearVisuals(player) end)
   player.CharacterAdded:Connect(function() task.wait(1.8);refreshArmorVisual(player) end)
