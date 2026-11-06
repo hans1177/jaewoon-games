@@ -1,0 +1,25 @@
+# 개발 루프의 "기준": Mare Scientia 소스가 바뀌면 타입 검사·로직 테스트·에셋 등록 검사를 돌린다.
+name: Devloop Gates (Mare Scientia)
+on:
+  push:
+    branches: [main]
+    paths: ['roblox-games/mare-scientia/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Luau
+        run: |
+          curl -fsSL --retry 3 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.700/luau-ubuntu.zip || curl -fsSL --retry 3 -o /tmp/luau.zip https://github.com/Roblox/luau/releases/latest/download/luau-ubuntu.zip
+          mkdir -p /tmp/luau && unzip -q /tmp/luau.zip -d /tmp/luau && chmod +x /tmp/luau/*
+      - name: Asset registration gate
+        run: python3 roblox-games/mare-scientia/tools/devloop/asset_check.py roblox-games/mare-scientia
+      - name: Type check and logic tests
+        run: LUAU_DIR=/tmp/luau bash roblox-games/mare-scientia/tests/run.sh
+      - name: Port quality table
+        run: LUAU_DIR=/tmp/luau bash roblox-games/mare-scientia/tests/run.sh quality | head -20

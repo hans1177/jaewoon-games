@@ -25,6 +25,11 @@ if [ "${1:-}" = "balance" ]; then
   exit 0
 fi
 
+if [ "${1:-}" = "quality" ]; then
+  (cd "$TMP" && "$LUAU" gen_quality.luau)
+  exit 0
+fi
+
 if [ "${1:-}" = "catalog" ]; then
   (cd "$TMP" && "$LUAU" gen_catalog.luau)
   exit 0
