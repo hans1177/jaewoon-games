@@ -305,3 +305,23 @@ KayKit Resource Bits 1.0, 제작자 Kay Lousberg. CC0-1.0, 상업 이용·수정
 | `cargo/food-crate-large-apples.glb` | `da44ed07390e36b98c3157542d665724431a6912` | `1f9a659851c18788e75666cd34feb6ce670e1a16` | `43e77fc185893c8a3239d56ec5e352b1aeb347a99cc2dc9c92417d9721eb4836` |
 
 공유 텍스처 Git Blob SHA: `b0e6fab6acb6af12a5eb81c50e9a125b39ca8c80`. 원본 라이선스 Git Blob SHA: `0db19d25d701192a4d5dc58860ce161f75f73968`.
+
+
+## 2026-11-06 메뉴 아이콘 12종
+
+출처: https://game-icons.net/about.html , 원본 저장소 https://github.com/game-icons/icons , 고정 리비전 `82d948812bfe3f269ef8f731dcdb07b08160edc4`. CC BY 3.0, 저작자 Lorc, Delapouite, Lord Berandas. 상업 이용·수정 가능, 저작자 표시 필수. 상태 메뉴에 저작자·출처·라이선스·변경 내용을 표시한다. 원본 실루엣 보존, 투명 배경·황동 색상·512×512 PNG 변환. Roblox Decal 등록·표시 결과 별도 확인.
+
+| 파일 | 원본 | 원본 Git SHA | PNG SHA-256 |
+|---|---|---|---|
+| `icons/view.png` | `lorc/leather-boot.svg` | `32438660f191785b7f796a1bd4583a3b45f5f024` | `c72e8da52044913348d047e03eb949e6c87f7620c836ca94ea49bed2005118fa` |
+| `icons/trade.png` | `lorc/swap-bag.svg` | `f60dbae65165df3a0d875c504c5aaae11d2c57ab` | `b734f67c49eded9e74218f1e99f7476a5a93a8a907417b7f72e2fc3a5d42cdd3` |
+| `icons/harbor.png` | `lorc/anchor.svg` | `9d52b18992dde7d9fabd6c0d94eba258047f3d53` | `9eabd7e1abe11fb37539937d76c2b0cdfd86b06b74316cbed071ced1d712ddc3` |
+| `icons/route.png` | `lorc/compass.svg` | `82985d65f6a03f47c2398a5c7f567bf4bfa1eab5` | `74370520a2630d9280974e4bad694c4d14bf46bb4bef91a110d4fe3784a90f49` |
+| `icons/map.png` | `lorc/treasure-map.svg` | `29a7bc4c52c4931e889753738e1a3d076956f772` | `b2b1ea42f06390b1a377b79d71483aa749b11717c5dc356607d15b2c5150878a` |
+| `icons/yard.png` | `delapouite/sailboat.svg` | `698a70a0b9d818649eda28ea912659af82e856a9` | `5bee15b39fee42d509c94d82e4362f0eea25da334078af53b0a08d7444ab40bc` |
+| `icons/explore.png` | `lorc/spyglass.svg` | `13342c695e861724a747e393f8162083be7770de` | `0ebb8a02bc6e257534d822d219cd7a6495be991954c33491cccc41624c5e7ea1` |
+| `icons/codex.png` | `lorc/book-cover.svg` | `739e94747990a3596e7a915e712a55091cfa7e06` | `86e3653206fc358f147ddc8c99da9e125d1b69e3a411745fe18dbb1aec98eec2` |
+| `icons/tech.png` | `lord-berandas/microscope.svg` | `572a249dba5e13ec049716e9345d6bed1a3db3cc` | `f86e4d9b0a64048435f7cdf92c52ec4bd06a2204bee1267e67dd193a1392b452` |
+| `icons/quest.png` | `delapouite/scroll-quill.svg` | `7712bda49c0244aa4304355f48c7ecdbc042f245` | `667e088e15f20f8aea319ca5720480cc572e73dfcd380e112817f12cc6f8ff25` |
+| `icons/battle.png` | `lorc/crossed-sabres.svg` | `e5250e622ce85de087d54997ba488a8b5f7b4008` | `482381e2617bb6b4cd706677bc9afd0fec44461723c8ebee979eccde47ad4ee8` |
+| `icons/status.png` | `delapouite/pirate-hat.svg` | `236c2b4772507c1376034510027fa6200c1a6e9d` | `269bc97cb9ee247d6927835bb8e5bd8799ca85da978fc24ea720a5bebfe3bfdf` |

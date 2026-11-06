@@ -1,5 +1,5 @@
 # 파일명: .github/workflows/owner-mare-scientia-assets.yml
-# Mare Scientia: 신규 CC0 모델을 기존 Open Cloud 등록 통로로 등록한다.
+# Mare Scientia: CC0 모델과 CC BY 3.0 메뉴 그림을 기존 Open Cloud 등록 통로로 등록한다.
 # main 자산 변경 또는 수동 실행 시 동작하며 게임 게시 기본값은 꺼져 있다.
 name: Owner Mare Scientia Register Assets
 run-name: Owner Mare Scientia assets · ${{ github.sha }}
@@ -45,7 +45,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Upload CC0 models to Roblox and write AssetIds
+      - name: Upload licensed models and menu icons to Roblox and write AssetIds
         env:
           MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}

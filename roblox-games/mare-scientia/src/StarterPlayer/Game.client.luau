@@ -16,6 +16,7 @@ local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
 local FieldScene = require(Shared:WaitForChild("FieldScene"))
 local Pose = require(Shared:WaitForChild("Pose"))
 local NavalBattle = require(Shared:WaitForChild("NavalBattle"))
+local AssetIds = require(Shared:WaitForChild("AssetIds"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
 local DEBUG_LOG = true -- 개발 중에는 서버 응답을 출력창에 남긴다 (출시 전에 false)
 
@@ -50,7 +51,7 @@ local TABS = {
 	{ id = "route", name = "항해" },
 	{ id = "yard", name = "조선소" },
 	{ id = "explore", name = "탐험" },
-	{ id = "codex", name = "도감" },
+	{ id = "codex", name = "백과사전" },
 	{ id = "tech", name = "연구" },
 	{ id = "quest", name = "퀘스트" },
 	{ id = "battle", name = "전투" },
@@ -537,7 +538,7 @@ dock.BackgroundTransparency = 0.15
 dock.BorderSizePixel = 0
 dock.AnchorPoint = Vector2.new(1, 0)
 dock.Position = UDim2.new(1, -8, 0, 46) -- 오른쪽 위: 왼쪽 조이스틱과 점프 버튼을 피한다
-dock.Size = UDim2.fromOffset(112, 150)
+dock.Size = UDim2.fromOffset(112, 232)
 dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
 dock.ScrollBarThickness = 2
@@ -546,7 +547,7 @@ dock.Parent = hud
 corner(dock, 10)
 hudStroke(dock, 1.5)
 local dockLayout = Instance.new("UIGridLayout")
-dockLayout.CellSize = UDim2.fromOffset(48, 34)
+dockLayout.CellSize = UDim2.fromOffset(48, 54)
 dockLayout.CellPadding = UDim2.fromOffset(4, 4)
 dockLayout.SortOrder = Enum.SortOrder.LayoutOrder
 dockLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -557,20 +558,44 @@ dockPad.Parent = dock
 
 local DOCK = {
 	{ "view", "걷기" }, { "trade", "교역" }, { "harbor", "항구" }, { "route", "항해" }, { "map", "지도" },
-	{ "yard", "조선소" }, { "explore", "탐험" }, { "codex", "도감" }, { "tech", "연구" },
+	{ "yard", "조선소" }, { "explore", "탐험" }, { "codex", "백과사전" }, { "tech", "연구" },
 	{ "quest", "퀘스트" }, { "battle", "전투" }, { "status", "상태" },
 }
 for i, d in DOCK do
 	local b = Instance.new("TextButton")
+	b.Name = "Menu_" .. d[1]
 	b.LayoutOrder = i
-	b.Size = UDim2.fromOffset(48, 34)
+	b.Size = UDim2.fromOffset(48, 54)
 	b.BackgroundColor3 = NAVY2
 	b.AutoButtonColor = true
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 11
 	b.TextColor3 = Color3.fromRGB(250, 236, 200)
-	b.Text = d[2]
+	b.Text = ""
 	b.Parent = dock
+	-- 메뉴 그림과 이름은 함께 유지해서 터치와 읽기를 지원한다.
+	local menuLabel = Instance.new("TextLabel")
+	menuLabel.Name = "Label"
+	menuLabel.BackgroundTransparency = 1
+	menuLabel.Position = UDim2.fromOffset(1, 35)
+	menuLabel.Size = UDim2.new(1, -2, 0, 17)
+	menuLabel.Font = Enum.Font.GothamBold
+	menuLabel.TextSize = 10
+	menuLabel.TextColor3 = Color3.fromRGB(250, 236, 200)
+	menuLabel.Text = d[2]
+	menuLabel.Parent = b
+	local menuAssetId = AssetIds["Menu/" .. d[1]]
+	if menuAssetId then
+		local image = Instance.new("ImageLabel")
+		image.Name = "Icon"
+		image.BackgroundTransparency = 1
+		image.AnchorPoint = Vector2.new(0.5, 0)
+		image.Position = UDim2.new(0.5, 0, 0, 3)
+		image.Size = UDim2.fromOffset(31, 31)
+		image.ScaleType = Enum.ScaleType.Fit
+		image.Image = "rbxthumb://type=Asset&id=" .. tostring(menuAssetId) .. "&w=420&h=420"
+		image.Parent = b
+	end
 	corner(b, 8)
 	local bs = Instance.new("UIStroke")
 	bs.Color = BRASS
@@ -580,7 +605,7 @@ for i, d in DOCK do
 	b.Activated:Connect(function()
 		if d[1] == "view" then
 			overview = not overview
-			b.Text = if overview then "걷기" else "전경"
+			menuLabel.Text = if overview then "걷기" else "전경"
 			applyView()
 		else
 			openTab(d[1])
@@ -1370,6 +1395,9 @@ local function renderStatus()
 		end)
 	end
 	add(function() return mkHeader(content, "시작 가이드") end)
+	add(function()
+		return mkLabel(content, "메뉴 그림: Lorc · Delapouite · Lord Berandas / game-icons.net / CC BY 3.0\n황동 색상 편집 및 이미지 변환: 마리 에센시아", 10, COLORS.muted, false)
+	end)
 	add(function()
 		return mkLabel(content, "1) 교역: 특산(싸게)을 사서 수요(비싸게) 항구에 팔아요. ▲▼는 시장 사건으로 값이 움직이는 품목이에요.\n2) 항해: 항구를 옮기면 날짜가 지나고 보급품이 줄어요. 증기선은 석탄을 태워요.\n3) 탐험·도감: 항구 근처에서 카드를 발견하면 명성과 코인을 얻고, 학자를 만나 지식을 전수받아요.\n4) 연구: 증기 지식을 모으면 증기선과 증기 스킬이 열려요.\n5) 전투: 사략선 사냥으로 경험을 쌓고, 레벨이 오르면 신화 괴물에 도전해요.", 12, COLORS.muted, false)
 	end)
@@ -2201,6 +2229,28 @@ local function renderTabs()
 			render()
 		end, true)
 		b.LayoutOrder = i
+		local menuAssetId = AssetIds["Menu/" .. id]
+		if menuAssetId then
+			b.Text = ""
+			local image = Instance.new("ImageLabel")
+			image.Name = "Icon"
+			image.BackgroundTransparency = 1
+			image.Position = UDim2.new(0, 4, 0.5, -12)
+			image.Size = UDim2.fromOffset(24, 24)
+			image.ScaleType = Enum.ScaleType.Fit
+			image.Image = "rbxthumb://type=Asset&id=" .. tostring(menuAssetId) .. "&w=420&h=420"
+			image.Parent = b
+			local label = Instance.new("TextLabel")
+			label.Name = "Label"
+			label.BackgroundTransparency = 1
+			label.Position = UDim2.fromOffset(29, 0)
+			label.Size = UDim2.new(1, -32, 1, 0)
+			label.Font = b.Font
+			label.TextSize = 11
+			label.TextColor3 = b.TextColor3
+			label.Text = TAB_NAME[id]
+			label.Parent = b
+		end
 	end
 	local fold = mkButton(tabBar, "닫기", COLORS.red, UDim2.fromOffset(60, 38), function()
 		main.Visible = false

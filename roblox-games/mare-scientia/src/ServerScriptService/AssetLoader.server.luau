@@ -14,7 +14,7 @@ end
 local pending, loaded, failed = 0, 0, 0
 for key, assetId in ids do
 	local kind, name = string.match(key, "^(%w+)/(.+)$")
-	if kind and name then
+	if kind and name and kind ~= "Menu" then
 		pending += 1
 		task.spawn(function()
 			local good, container = pcall(InsertService.LoadAsset, InsertService, assetId)

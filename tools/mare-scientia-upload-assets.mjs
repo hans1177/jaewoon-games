@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Mare Scientia: 저장소에 있는 CC0 3D 모델(선박·부두·소품·마을·주민)을 Roblox Model 자산으로 등록한다.
+// 파일명: tools/mare-scientia-upload-assets.mjs
+// Mare Scientia: CC0 3D 모델과 CC BY 3.0 메뉴 이미지를 기존 Open Cloud 통로로 등록한다.
 // 필요: ROBLOX_OPEN_CLOUD_API_KEY (+ ROBLOX_ROBLOSECURITY 선택). 결과는 JSON과 Luau(AssetIds)로 저장한다.
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -52,11 +53,12 @@ if (!creatorId) {
 
 // kind(MareAssets 하위 폴더) / 모델 이름 / 원본 파일. OBJ는 Open Cloud가 받지 않아 제외한다.
 const plan = [];
-for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo']]) {
+for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     const ext = path.extname(f).toLowerCase();
-    if (ext !== '.glb' && ext !== '.fbx') continue;
-    plan.push({kind, name: path.basename(f, ext), file: path.join(ROOT, 'assets', dir, f), ext});
+    if (kind === 'Menu' ? ext !== '.png' : ext !== '.glb' && ext !== '.fbx') continue;
+    plan.push({kind, name: path.basename(f, ext), file: path.join(ROOT, 'assets', dir, f), ext,
+      assetType: kind === 'Menu' ? 'Decal' : 'Model', license: kind === 'Menu' ? 'CC-BY-3.0' : 'CC0-1.0'});
   }
 }
 
@@ -76,11 +78,13 @@ for (const item of plan) {
     if (binary.length > 20 * 1024 * 1024) throw new Error('FILE_TOO_LARGE');
     const form = new FormData();
     form.set('request', JSON.stringify({
-      assetType: 'Model', displayName: 'MareScientia ' + id,
-      description: 'CC0 model for Mare Scientia (' + item.kind + '); see assets/SOURCES.md',
+      assetType: item.assetType, displayName: 'MareScientia ' + id,
+      description: item.kind === 'Menu'
+        ? 'Icons by Lorc, Delapouite, Lord Berandas / game-icons.net / CC BY 3.0. Brass recolor and PNG export for Mare Scientia; see assets/SOURCES.md'
+        : 'CC0 model for Mare Scientia (' + item.kind + '); see assets/SOURCES.md',
       creationContext: {creator: {userId: Number(creatorId)}},
     }));
-    form.set('fileContent', new Blob([binary], {type: item.ext === '.glb' ? 'model/gltf-binary' : 'model/fbx'}), path.basename(item.file));
+    form.set('fileContent', new Blob([binary], {type: item.ext === '.png' ? 'image/png' : item.ext === '.glb' ? 'model/gltf-binary' : 'model/fbx'}), path.basename(item.file));
     const initial = await request('https://apis.roblox.com/assets/v1/assets', {method: 'POST', body: form});
     if (!/^operations\/[A-Za-z0-9_\-/]+$/.test(String(initial.path))) throw new Error('NO_UPLOAD_OPERATION');
     let assetId = null;
@@ -91,13 +95,15 @@ for (const item of plan) {
       if (op.done) assetId = String(op.response?.assetId || op.response?.asset?.assetId || '');
     }
     if (!/^[1-9][0-9]*$/.test(assetId || '')) throw new Error('NO_ASSET_ID');
+    let usePermissionGranted = false;
     try {
       await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions', {
         method: 'PATCH', headers: {'content-type': 'application/json'},
         body: JSON.stringify({subjectType: 'Universe', subjectId: UNIVERSE_ID, action: 'Use', requests: [{assetId: Number(assetId), grantToDependencies: true}]}),
       });
+      usePermissionGranted = true;
     } catch (e) { console.log('GRANT_WARNING', id, String(e.message).slice(0, 160)); }
-    registry.assets[id] = {assetId, source: item.file, license: 'CC0-1.0'};
+    registry.assets[id] = {assetId, source: item.file, license: item.license, assetType: item.assetType, usePermissionGranted};
     console.log('UPLOADED', id, assetId);
   } catch (e) {
     failures.push(id + ': ' + String(e.message).slice(0, 200));
@@ -105,6 +111,7 @@ for (const item of plan) {
   }
 }
 registry.updatedAt = new Date().toISOString();
+registry.license = Object.values(registry.assets).every(a => a.license === 'CC0-1.0') ? 'CC0-1.0' : 'SEE_INDIVIDUAL_ASSET_LICENSES';
 await fs.writeFile(JSON_OUT, JSON.stringify(registry, null, 2) + '\n');
 const lines = Object.entries(registry.assets).sort().map(([k, v]) => `\t["${k}"] = ${v.assetId},`);
 await fs.writeFile(LUAU_OUT, '-- 자동 생성: tools/mare-scientia-upload-assets.mjs (직접 고치지 말 것)\nreturn {\n' + lines.join('\n') + (lines.length ? '\n' : '') + '}\n');
