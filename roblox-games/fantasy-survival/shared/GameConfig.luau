@@ -484,7 +484,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, EstateA = 0, EstateB = 0, EstateC = 0, MountOwned = 0, BountyZone = 0, BountyKills = 0, BountyNeed = 0, BountyBig = 0, EcoChestMask = 0, EcoChestMask2 = 0, EcoChestMask3 = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, LandmarkClaim = 0, TrackFlags = 0, QLWind = 0, QLWindP = 0, QLWindC = 0, QLHunt = 0, QLHuntP = 0, QLHuntC = 0, QLBog = 0, QLBogP = 0, QLBogC = 0, QLRoot = 0, QLRootP = 0, QLRootC = 0, QLTrack1 = 0, QLTrack1P = 0, QLTrack1C = 0, QLTrack2 = 0, QLTrack2P = 0, QLTrack2C = 0, QLTrack3 = 0, QLTrack3P = 0, QLTrack3C = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, EstateA = 0, EstateB = 0, EstateC = 0, MountOwned = 0, MiningProficiency = 0, BountyZone = 0, BountyKills = 0, BountyNeed = 0, BountyBig = 0, EcoChestMask = 0, EcoChestMask2 = 0, EcoChestMask3 = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, LandmarkClaim = 0, TrackFlags = 0, QLWind = 0, QLWindP = 0, QLWindC = 0, QLHunt = 0, QLHuntP = 0, QLHuntC = 0, QLBog = 0, QLBogP = 0, QLBogC = 0, QLRoot = 0, QLRootP = 0, QLRootC = 0, QLTrack1 = 0, QLTrack1P = 0, QLTrack1C = 0, QLTrack2 = 0, QLTrack2P = 0, QLTrack2C = 0, QLTrack3 = 0, QLTrack3P = 0, QLTrack3C = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -1272,6 +1272,29 @@ do
     Smelter = {-3, 0}, Tanner = {-10, 6}, Anvil = {8, -3}, Grindstone = {2, 9}, Cook = {-9, -9},
   }
 end
+
+-- [채굴] 지역마다 광맥이 흩어져 있다. 채굴 숙련이 오르면 더 깊은 광맥을 캐고 수확량·희귀 확률이 늘어난다. 낚시는 넣지 않는다.
+Config.MiningThresholds = {0, 10, 30, 70, 130, 220}
+Config.MiningLevel = function(prof)
+  local level = 1
+  for i, need in ipairs(Config.MiningThresholds) do if (prof or 0) >= need then level = i end end
+  return level
+end
+-- 지역별 광맥: {이름, 재료 필드, 필요 채굴 레벨, 빛 색}. 지역마다 4곳에 이 목록을 돌려 가며 놓는다.
+Config.MiningVeins = {
+  windcliff = {{"절벽 철광맥", "Ore", 1, {200, 200, 210}}, {"소금 수정맥", "Crystal", 2, {220, 240, 255}}},
+  worldtree = {{"뿌리 철광맥", "Ore", 1, {200, 200, 210}}, {"뿌리 수정맥", "Crystal", 2, {150, 255, 200}}},
+  volcano = {{"화산석 광맥", "Magma", 2, {255, 120, 60}}, {"심층 철광맥", "Ingot", 3, {255, 200, 150}}},
+  oasis = {{"사막 수정맥", "Crystal", 3, {255, 235, 150}}, {"폐허 철광맥", "Ore", 2, {200, 200, 210}}},
+  swamp = {{"원혼석 광맥", "Ectoplasm", 3, {150, 230, 220}}, {"늪 철광맥", "Ore", 2, {200, 200, 210}}},
+  citadel = {{"성채 심층 철맥", "Ingot", 4, {255, 170, 120}}, {"화염 수정맥", "Crystal", 4, {255, 120, 120}}},
+  highland = {{"고원 철광맥", "Ore", 2, {200, 200, 210}}, {"서리 수정맥", "Crystal", 3, {190, 230, 255}}},
+  canyon = {{"협곡 화산석맥", "Magma", 3, {255, 140, 80}}, {"협곡 철광맥", "Ore", 2, {200, 200, 210}}},
+  chaos = {{"균열 원혼석", "Ectoplasm", 4, {190, 120, 255}}, {"혼돈 수정맥", "Crystal", 5, {200, 150, 255}}},
+  wetland = {{"습원 철광맥", "Ore", 1, {200, 200, 210}}, {"이끼 수정맥", "Crystal", 2, {150, 255, 200}}},
+  desert = {{"사막 수정맥", "Crystal", 3, {255, 220, 130}}, {"황금 철광맥", "Ingot", 3, {255, 215, 140}}},
+  deadmarsh = {{"죽음의 원혼석", "Ectoplasm", 4, {130, 255, 140}}, {"늪 심층 철맥", "Ingot", 4, {170, 190, 170}}},
+}
 
 -- [탈것] 마을 마구간에서 사서 탄다. 넓은 대륙을 가로지르는 빠른 이동 수단. 피격·마을 진입·던전 입장 시 자동으로 내린다.
 Config.Mounts = {

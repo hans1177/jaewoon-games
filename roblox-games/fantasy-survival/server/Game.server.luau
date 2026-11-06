@@ -9609,6 +9609,92 @@ task.spawn(function()
   end
 end)
 
+-- [채굴] 지역마다 광맥 4곳(총 48곳). 채굴 숙련 레벨이 광맥 요구 레벨 이상이어야 캘 수 있고, 레벨이 높을수록 수확량과 희귀 확률이 늘어난다.
+do
+  local W=Config.WorldMap
+  local random=Random.new(5252)
+  local village=W.Village
+  local cooldown=75
+  local function toast(player,text)
+    player:SetAttribute("MeadowGearMessage",text)
+    player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+  end
+  local specs={}
+  for _,zone in ipairs(W.Zones) do
+    local list=Config.MiningVeins[zone.Id]
+    if list then
+      local placed=0
+      local tries=0
+      while placed<4 and tries<40 do
+        tries+=1
+        local x,z=W.RandomPoint(zone.Id,random,200)
+        if x and not (x>village.X0-150 and x<village.X1+150 and z>village.Z0-150 and z<village.Z1+150) then
+          local tooClose=false
+          for _,t in ipairs(W.Towns or {}) do if (x-t.X)^2+(z-t.Z)^2<120^2 then tooClose=true end end
+          if not tooClose then
+            placed+=1
+            specs[#specs+1]={x=x,z=z,vein=list[(placed-1)%#list+1],zone=zone.Id}
+          end
+        end
+      end
+    end
+  end
+  workspace:SetAttribute("MiningVeinCount",#specs)
+  task.spawn(function()
+    while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(3) end
+    task.wait(30)
+    local rp=RaycastParams.new();rp.FilterType=Enum.RaycastFilterType.Include;rp.FilterDescendantsInstances={workspace.Terrain}
+    for index,spec in ipairs(specs) do
+      local hit=workspace:Raycast(Vector3.new(spec.x,400,spec.z),Vector3.new(0,-800,0),rp)
+      if hit then
+        local name,material,req,color=spec.vein[1],spec.vein[2],spec.vein[3],spec.vein[4]
+        local col=Color3.fromRGB(color[1],color[2],color[3])
+        task.spawn(function()
+          local rock=worldAsset("vxRockLarge",hit.Position,5)
+          if rock then rock.Name="MiningVein_"..index;rock:SetAttribute("MeadowScenery",true) end
+        end)
+        local anchor=Instance.new("Attachment");anchor.Name="MiningVein_"..index;anchor.WorldPosition=hit.Position+Vector3.new(0,3,0);anchor.Parent=workspace.Terrain
+        local fx=Instance.new("ParticleEmitter");fx.Color=ColorSequence.new(col);fx.LightEmission=1;fx.Rate=8;fx.Lifetime=NumberRange.new(1.5,2.5)
+        fx.Speed=NumberRange.new(.5,2);fx.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.7),NumberSequenceKeypoint.new(1,0)});fx.Parent=anchor
+        local light=Instance.new("PointLight");light.Color=col;light.Range=14;light.Brightness=1.5;light.Parent=anchor
+        local prompt=Instance.new("ProximityPrompt");prompt.ActionText="채굴하기";prompt.ObjectText=name.." (채굴 Lv"..req..")";prompt.HoldDuration=1.2
+        prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+        local readyAt=0
+        prompt.Triggered:Connect(function(player)
+          if player:GetAttribute("ProfileReady")~=true then return end
+          if os.clock()<readyAt then toast(player,name.."은(는) 아직 광석이 차오르는 중이다.");return end
+          local prof=readNumber(player,"MiningProficiency",0)
+          local level=Config.MiningLevel(prof)
+          if level<req then toast(player,name.." 채굴에는 채굴 Lv"..req.."이 필요하다. (지금 Lv"..level..")");return end
+          readyAt=os.clock()+cooldown
+          prompt.Enabled=false;fx.Enabled=false
+          task.delay(cooldown,function() prompt.Enabled=true;fx.Enabled=true end)
+          local amount=2+math.floor((level-req)/1)+(level>=4 and 1 or 0)
+          if material=="Ingot" or material=="Ectoplasm" or material=="Magma" then amount=math.max(1,math.ceil(amount*.6)) end
+          setNumber(player,material,readNumber(player,material,0)+amount)
+          local extra={}
+          if math.random()<.06+level*.02 then
+            local rare=material=="Crystal" and "Magma" or "Crystal"
+            setNumber(player,rare,readNumber(player,rare,0)+1)
+            extra[#extra+1]=(Config.MaterialByField[rare] and Config.MaterialByField[rare].Name or rare).." +1 (희귀)"
+          end
+          if material=="Ore" and math.random()<.25 then setNumber(player,"Stone",readNumber(player,"Stone",0)+2);extra[#extra+1]="돌 +2" end
+          local gain=1+math.floor(req/2)
+          setNumber(player,"MiningProficiency",prof+gain)
+          setNumber(player,"SmithXp",readNumber(player,"SmithXp",0)+1)
+          pcall(awardProgress,player,5+req*3,2)
+          local after=Config.MiningLevel(prof+gain)
+          local matName=Config.MaterialByField[material] and Config.MaterialByField[material].Name or material
+          local msg=name..": "..matName.." +"..amount..(#extra>0 and (" · "..table.concat(extra,", ")) or "")
+          if after>level then msg=msg.."\n채굴 Lv"..after.." 달성!" end
+          toast(player,msg)
+          if material=="Ore" and meadowOil.questEvent then pcall(meadowOil.questEvent,player,"MINE_ORE") end
+        end)
+      else warn("MINING_VEIN_GROUND_UNVERIFIED "..index) end
+    end
+  end)
+end
+
 -- [마을 현상금] 마을 현상금 게시판에서 그 지역 몬스터 처치 현상금을 받는다(소형 8마리 · 대형 20마리). 한 번에 하나, 보고는 아무 마을 게시판에서나.
 do
   local W=Config.WorldMap
