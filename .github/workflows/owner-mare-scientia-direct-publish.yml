@@ -1,0 +1,93 @@
+# Mare Scientia 오너 직접배포. 수동 실행 전용.
+# Universe/Place ID를 비워 두면 비공개 전용 체험을 새로 만들고, 입력하면 그 체험에 새 버전으로 게시한다.
+name: Owner Mare Scientia Direct Publish
+run-name: Owner Mare Scientia publish · ${{ github.sha }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      universe_id:
+        description: '기존 Universe ID (비우면 새 비공개 체험 생성)'
+        type: string
+        required: false
+        default: ''
+      place_id:
+        description: '기존 Place ID (Universe ID와 함께 입력)'
+        type: string
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-mare-scientia-direct-publish
+  cancel-in-progress: false
+
+env:
+  GAME_ID: mare-scientia
+  GAME_NAME: 'Mare Scientia: Explorer''s Encyclopedia'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Mare Scientia place with pinned Rojo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/owner-mare /tmp/rojo-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          chmod +x /tmp/rojo-bin/rojo
+          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/owner-mare/$GAME_ID.rbxlx"
+          test -s "/tmp/owner-mare/$GAME_ID.rbxlx"
+
+      - name: Publish to private Roblox Experience
+        env:
+          EXISTING_UNIVERSE_ID: ${{ inputs.universe_id }}
+          EXISTING_PLACE_ID: ${{ inputs.place_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+          ROBLOX_CREATOR_USER_ID: ${{ vars.ROBLOX_CREATOR_USER_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/owner-mare/$GAME_ID.rbxlx" --source-revision "$GITHUB_SHA" --output "/tmp/owner-mare/result.json")
+          if [[ -n "${EXISTING_UNIVERSE_ID:-}" && -n "${EXISTING_PLACE_ID:-}" ]]; then
+            args+=(--reuse-universe-id "$EXISTING_UNIVERSE_ID" --reuse-place-id "$EXISTING_PLACE_ID")
+          fi
+          node tools/company-roblox-dedicated-experience.mjs "${args[@]}"
+
+      - name: Report published Roblox version
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('/tmp/owner-mare/result.json','utf8'));
+          if(r.published!==true||r.pass!==true||!(r.versionNumber>0))throw new Error('MARE_SCIENTIA_NOT_PUBLISHED');
+          console.log('MARE_SCIENTIA_PUBLISHED_VERSION='+r.versionNumber);
+          console.log('MARE_SCIENTIA_PLACE_ID='+r.placeId);
+          console.log('MARE_SCIENTIA_UNIVERSE_ID='+r.universeId);
+          console.log('MARE_SCIENTIA_LINK=https://www.roblox.com/games/'+r.placeId);
+          NODE
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: owner-mare-scientia-direct-publication
+          path: /tmp/owner-mare/result.json
+          if-no-files-found: warn
+          retention-days: 14
