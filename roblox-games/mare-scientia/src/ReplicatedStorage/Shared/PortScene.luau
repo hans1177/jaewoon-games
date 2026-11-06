@@ -54,6 +54,8 @@ STYLE.tropic = variant(STYLE.med,
 	{ C(184, 140, 96), C(160, 110, 74), C(204, 164, 112), C(140, 96, 64), C(226, 196, 150) },
 	{ C(150, 120, 70), C(130, 100, 60) }, C(112, 150, 70), C(176, 150, 112), 0.55)
 local REGION = {
+	aden = "desert", mocha = "desert", jeddah = "desert", muscat = "desert", bandar_abbas = "desert", basra = "desert",
+	mozambique = "tropic", kilwa = "tropic", mombasa = "tropic", zanzibar = "tropic", mogadishu = "tropic", goa = "tropic", calicut = "tropic", cochin = "tropic", colombo = "tropic", madras = "tropic", calcutta = "tropic", malacca = "tropic", port_louis = "tropic", diu = "tropic", surat = "tropic",
 	praia = "tropic", saint_louis = "tropic", dakar = "tropic", bissau = "tropic", freetown = "tropic", elmina = "tropic", ouidah = "tropic",
 	lagos = "tropic", calabar = "tropic", sao_tome = "tropic", luanda = "tropic", benguela = "tropic", st_helena = "tropic",
 	casablanca = "desert", safi = "desert", agadir = "desert", cape_town = "med",

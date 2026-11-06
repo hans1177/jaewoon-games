@@ -941,6 +941,237 @@ local Events: { Event } = {
 			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_cape_good_hope", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
 		},
 	},
+	{
+		id = "npc_mozambique_gov", title = "모잠비크의 총독", portId = "mozambique", art = "palace", npc = "총독",
+		lines = {
+			"\"이 성은 인도로 가는 모든 배의 중간 기착지요.\"",
+			"총독이 항구를 내려다본다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "site_fort_jesus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_fort_jesus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_kilwa_chronicler", title = "킬와의 기록관", portId = "kilwa", art = "library", npc = "기록관",
+		lines = {
+			"\"한때 이 도시의 금이 바다 건너까지 소문났다오.\"",
+			"기록관이 낡은 두루마리를 펼친다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_swahili_door", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_swahili_door", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_mombasa_dhow", title = "몸바사의 다우선 선장", portId = "mombasa", art = "harbor", npc = "다우선 선장",
+		lines = {
+			"\"겨울 계절풍을 타면 인도까지 한 달이오.\"",
+			"선장이 삼각돛을 가리킨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_monsoon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_monsoon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_zanzibar_clove", title = "잔지바르의 정향 농부", portId = "zanzibar", art = "garden", npc = "정향 농부",
+		lines = {
+			"\"꽃봉오리가 붉어지기 전에 따야 향이 좋다오.\"",
+			"농부가 말린 꽃봉오리를 쥐여 준다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_clove_tree", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_clove_tree", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_mogadishu_trader", title = "모가디슈의 상인", portId = "mogadishu", art = "market", npc = "상인",
+		lines = {
+			"\"용연향 한 조각이 배 한 척 값이라오.\"",
+			"상인이 회색 덩어리를 보여 준다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_dhow_model", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_dhow_model", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_aden_guard", title = "아덴의 경비병", portId = "aden", art = "palace", npc = "경비병",
+		lines = {
+			"\"홍해로 드나드는 배는 모두 이 문을 지나야 하오.\"",
+			"경비병이 바위 절벽을 가리킨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_red_sea", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_red_sea", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_mocha_merchant", title = "모카의 커피 상인", portId = "mocha", art = "market", npc = "커피 상인",
+		lines = {
+			"\"우리 커피 열매는 한 알도 밖으로 못 나가던 보물이었소.\"",
+			"상인이 볶은 열매를 건넨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_prayer_beads", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_prayer_beads", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_jeddah_pilgrim", title = "제다의 순례자", portId = "jeddah", art = "ruins", npc = "순례자",
+		lines = {
+			"\"먼 곳에서 온 이들이 이 항구에서 첫 기도를 올린다오.\"",
+			"순례자가 염주를 만진다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_prayer_beads", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_prayer_beads", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_muscat_diver", title = "무스카트의 진주잠수부", portId = "muscat", art = "harbor", npc = "진주 잠수부",
+		lines = {
+			"\"숨을 오래 참을수록 큰 진주를 만나지요.\"",
+			"잠수부가 조개를 쥔다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_pearl_oyster", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_pearl_oyster", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_hormuz_navigator", title = "호르무즈의 항해사", portId = "bandar_abbas", art = "storm", npc = "항해사",
+		lines = {
+			"\"좁은 입구에서는 바람보다 해류가 무섭지요.\"",
+			"항해사가 해도를 펼친다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_persian_gulf", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_persian_gulf", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_basra_gardener", title = "바스라의 정원사", portId = "basra", art = "garden", npc = "정원사",
+		lines = {
+			"\"대추야자는 발은 물에, 머리는 불 속에 둔다고들 하지요.\"",
+			"정원사가 야자를 올려다본다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_date_palm", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_date_palm", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_diu_captain", title = "디우의 요새 대장", portId = "diu", art = "palace", npc = "요새 대장",
+		lines = {
+			"\"이 요새는 바다 위의 마지막 방벽이었소.\"",
+			"대장이 성벽을 두드린다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_dhow_model", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_dhow_model", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_surat_banker", title = "수라트의 환전상", portId = "surat", art = "market", npc = "환전상",
+		lines = {
+			"\"먼 나라 돈도 이 저울 위에서는 모두 같지요.\"",
+			"환전상이 금화를 저울에 올린다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "min_saltpeter", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_saltpeter", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_goa_priest", title = "고아의 신부", portId = "goa", art = "library", npc = "신부",
+		lines = {
+			"\"이 땅의 향신료 냄새가 기도 속에도 스며든다오.\"",
+			"신부가 성당 문을 연다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "site_goa_church", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_goa_church", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_calicut_zamorin", title = "캘리컷의 상인 대표", portId = "calicut", art = "market", npc = "상인 대표",
+		lines = {
+			"\"후추 한 자루에 수많은 항로가 얽혀 있다오.\"",
+			"대표가 후추 열매를 건넨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_pepper_vine", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_pepper_vine", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_cochin_fisher", title = "코친의 어부", portId = "cochin", art = "harbor", npc = "어부",
+		lines = {
+			"\"이 거대한 그물은 여러 사람이 함께 내려야 하오.\"",
+			"어부가 지렛대를 가리킨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "site_cochin_nets", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_cochin_nets", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_colombo_gem", title = "콜롬보의 보석상", portId = "colombo", art = "market", npc = "보석상",
+		lines = {
+			"\"사파이어는 빛을 받아야 속살을 보여 준다오.\"",
+			"보석상이 푸른 돌을 빛에 비춘다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "min_sapphire", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_sapphire", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_madras_weaver", title = "마드라스의 직공", portId = "madras", art = "market", npc = "직공",
+		lines = {
+			"\"한 폭의 천에 꽃밭이 들어 있지요.\"",
+			"직공이 인쇄 천을 펼친다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_indigo_plant", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_indigo_plant", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_calcutta_clerk", title = "캘커타의 서기", portId = "calcutta", art = "library", npc = "서기",
+		lines = {
+			"\"강물처럼 장부도 끝없이 이어진다오.\"",
+			"서기가 붓을 내려놓는다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_ganges_delta", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_ganges_delta", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_malacca_harbor", title = "말라카의 항만 관리", portId = "malacca", art = "palace", npc = "항만 관리",
+		lines = {
+			"\"동서의 모든 배가 이 좁은 물길에서 만나지.\"",
+			"관리가 해협을 가리킨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_malacca_strait", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_malacca_strait", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
+	{
+		id = "npc_louis_sailor", title = "포트루이의 선원", portId = "port_louis", art = "harbor", npc = "선원",
+		lines = {
+			"\"이 섬에는 날지 못하는 커다란 새가 살았다고 하오.\"",
+			"선원이 해변을 가리킨다.",
+		},
+		choices = {
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_mozambique_channel", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_mozambique_channel", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+		},
+	},
 }
 
 local ById: { [string]: Event } = {}
