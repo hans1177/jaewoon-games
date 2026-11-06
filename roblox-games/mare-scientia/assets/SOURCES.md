@@ -188,3 +188,22 @@ NPC 모델 22개는 모두 LFS 포인터가 아닌 원본 바이너리 Git 객�
 | `terrain/template-wall-stairs.glb` | `modular-cave` | `ca465753ed99a1ea9fd6a13f3a4342918edc9061` | `f32afaf0fcea8bf81d59480c36db8187a7085b2f` |
 
 검증: 원본 SHA 일치 및 변환 결과 GLB 헤더와 파일 길이 일치, 저장소 내 신규 바이너리 중복 0. 신규 파일 **44개**다. 실제 Roblox 자산 ID 등록은 `tools/mare-scientia-upload-assets.mjs`와 기존 수동 워크플로가 담당하며, 승인된 ID를 생성하기 전에는 `assets-registered.json`에 가짜 ID를 넣지 않는다. 엔진 구동·모바일·게시 검증 전에는 게임 적용 완료로 표시하지 않는다.
+
+
+## 2026-11-06 교역물품 긴급 보강: 저장소 검증 원본 9종
+
+마리 에센시아 교역 화면용 실물 3D 물품을 신규 확보했다. 기존 `fantasy-survival`의 실제 Kenney CC0 GLB 원본 Git 객체를 재사용한다. 파일 자체를 변경하지 않으므로 SHA와 라이선스 증거를 보존한다. Roblox 자산 발급 ID는 기존 `owner-mare-scientia-assets.yml`과 `tools/mare-scientia-upload-assets.mjs`를 통해 실제 등록된 경우에만 기록한다.
+
+| 신규 교역 자산 | 기존 검증 원본 | SHA256 | 공식 라이선스 |
+|---|---|---|---|
+| `cargo/cabbage.glb` | `roblox-games/fantasy-survival/assets/village-extra2/food-cabbage.glb` | `5d008e7ee6e8c6f5d0dd6ed5d7ef48c0b4d760d0cfc14066e54c00c1ae203ad8` | https://kenney.nl/assets/food-kit · CC0-1.0 |
+| `cargo/carrot.glb` | `roblox-games/fantasy-survival/assets/village-extra2/food-carrot.glb` | `76d52ef42f985d6bee2b4f6a763e049b008484e528181e1bbca8dda9bbb00f2c` | https://kenney.nl/assets/food-kit · CC0-1.0 |
+| `cargo/corn.glb` | `roblox-games/fantasy-survival/assets/village-extra2/food-corn.glb` | `0306694d119f64f779e6c531010ee34f3d80eca2a0a7f32083ad4a7e70b902cf` | https://kenney.nl/assets/food-kit · CC0-1.0 |
+| `cargo/loaf-baguette.glb` | `roblox-games/fantasy-survival/assets/village-extra2/food-loaf-baguette.glb` | `0f0ba68e0f6140a48541c6bf2898dea47488a6ab22201d04e2a4b70430f6069b` | https://kenney.nl/assets/food-kit · CC0-1.0 |
+| `cargo/meat-cooked.glb` | `roblox-games/fantasy-survival/assets/village-extra2/food-meat-cooked.glb` | `8e8f680dcb5fbf3f439235fe8b6d489ea8ec5f4d546c3cd9dc5c6f73c27ae305` | https://kenney.nl/assets/food-kit · CC0-1.0 |
+| `cargo/pie.glb` | `roblox-games/fantasy-survival/assets/village-extra2/food-pie.glb` | `1e4d8b334dcedf7a572ab6f7d17030b30bb7c5799c5ad4580eb2e82641d967e9` | https://kenney.nl/assets/food-kit · CC0-1.0 |
+| `cargo/pumpkin.glb` | `roblox-games/fantasy-survival/assets/village-extra2/food-pumpkin.glb` | `df2ae59e7bfa8649ce66e75956462a13d55969009654e982188c9655aa734d00` | https://kenney.nl/assets/food-kit · CC0-1.0 |
+| `cargo/resource-planks.glb` | `roblox-games/fantasy-survival/assets/village-extra2/survival-resource-planks.glb` | `0605b3c34f5f4d6e02e60a48c575044a28611a06c24ce1fad7a9429c37492124` | https://kenney.nl/assets/survival-kit · CC0-1.0 |
+| `cargo/resource-stone.glb` | `roblox-games/fantasy-survival/assets/village-extra2/survival-resource-stone.glb` | `76e2e7412a5ccc726852dd74705c4070dbb8bce6768674a474bdde66e56f28aa` | https://kenney.nl/assets/survival-kit · CC0-1.0 |
+
+상태 구분: 저장소 바이너리 확보 및 원본 라이선스 확인은 로블록스 서버 실물 로딩·게시 성공을 의미하지 않는다. 게임 경제의 상품 수·가격·밸런스·저장 구조는 변경하지 않았다.
