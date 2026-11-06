@@ -2416,4 +2416,77 @@ for preset=1,3 do
   for slot=1,5 do Config.InitialState["MeadowLoadout"..preset.."Slot"..slot]=0 end
 end
 
+-- [오디세이식 장비 특수 효과] 능력치와 별개로 착용 중인 장비가 전투에 거는 고유 효과. 같은 효과는 합산(상한 있음).
+-- burn/poison/frost/bleed: 명중 시 상태이상 확률 · stun: 기절 확률 · leech: 피해 흡수 비율 · crit: 치명타(1.5배) 확률
+-- dr: 받는 피해 경감 · dodge: 공격 무효 확률
+Config.GearEffects = {
+  forest_blade={leech=.04}, worldtree_staff={leech=.05}, royal_gilded_sword={leech=.03}, guardian_greatblade={dr=.05},
+  magma_greatsword={burn=.25}, ancient_rune_sword={crit=.12}, rune_reaver_axe={bleed=.2}, thunder_maul={stun=.15},
+  moonlit_dagger={bleed=.3}, ember_staff={burn=.25}, crystal_staff={frost=.25}, hunter_longbow={crit=.15},
+  arcane_bow={frost=.2}, worldtree_bow={poison=.2},
+  fafnir_edge={burn=.2,crit=.1}, hydra_fang_dagger={poison=.35}, behemoth_maul={stun=.12}, wyvern_bow={bleed=.25,crit=.1},
+  jotun_axe={frost=.25}, ifrit_staff={burn=.35}, arachne_blade={poison=.2,bleed=.2},
+  magma_plate={dr=.06}, worldtree_mail={dr=.08,leech=.02}, fafnir_scale_mail={dr=.1}, arcane_gloves={crit=.05},
+  hydra_hide_gloves={poison=.1}, rune_greaves={dr=.03}, behemoth_greaves={dr=.05}, wind_boots={dodge=.06}, wyvern_boots={dodge=.06},
+  worldtree_ring={leech=.02}, abyss_eye={crit=.1},
+  sun_shield={dr=.04}, dusk_shield={dodge=.05}, cliff_steel_shield={dr=.05}, behemoth_bulwark={dr=.08,stun=.1},
+  wind_feather_cape={dodge=.03}, wraith_cape={dodge=.04}, ember_cape={burn=.1}, dusk_cape={dodge=.05},
+  jotun_cape={frost=.1}, arachne_silk_cape={bleed=.1,dodge=.04},
+}
+do
+  local label={burn="화상",poison="독",frost="빙결",bleed="출혈"}
+  local function pct(v) return tostring(math.floor(v*100+.5)).."%" end
+  for _, item in ipairs(Config.MeadowEquipment or {}) do
+    local fx = Config.GearEffects[item.Id]
+    if fx then
+      local parts = {}
+      for _, k in ipairs({"burn","poison","frost","bleed"}) do
+        if fx[k] then parts[#parts + 1] = "명중 시 " .. pct(fx[k]) .. " " .. label[k] end
+      end
+      if fx.stun then parts[#parts + 1] = "명중 시 " .. pct(fx.stun) .. " 기절" end
+      if fx.crit then parts[#parts + 1] = "치명타 " .. pct(fx.crit) end
+      if fx.leech then parts[#parts + 1] = "피해 흡수 " .. pct(fx.leech) end
+      if fx.dr then parts[#parts + 1] = "받는 피해 -" .. pct(fx.dr) end
+      if fx.dodge then parts[#parts + 1] = "공격 무효 " .. pct(fx.dodge) end
+      item.Desc = (item.Desc or "") .. " ◆ 특수: " .. table.concat(parts, " · ")
+    end
+  end
+end
+
+-- [오디세이 이야기선] 정복·악명·용병 사냥꾼·고유 기술이 이어지는 서브 퀘스트.
+for _, line in ipairs({
+  {Id="odykick", Name="[수련] 스파르타의 발길질", Kind="Sub", Field="QLOdyKick", Need={Stage=2},
+   Intro="떠돌이 용병 노인이 네 싸움을 지켜보다 혀를 찬다. '칼만 믿다 죽는 놈 많이 봤지. 발도 무기다. 화면 오른쪽의 발차기 버튼을 써 봐.'",
+   Steps={
+    {Type="event", Event="KICK", Count=3, Title="스파르타 킥 3번 적중", Text="오른쪽 '킥' 버튼으로 적을 걷어차라. 적이 뒤로 밀리며 기절한다.", Done="노인: '그래, 그거다. 방패 뒤에 숨은 놈도 한 방에 흔들리지.'"},
+    {Type="event", Event="RUSH", Count=2, Title="황소 돌진 2번 적중", Text="'돌진' 버튼으로 적진을 뚫고 지나가며 들이받아라.", Done="노인: '돌진은 포위당했을 때 길을 여는 기술이야.'"},
+    {Type="choice", X=-80, Z=-190, R=40, Title="노인의 마지막 가르침", Prompt="노인: '내 기술은 이게 전부다. 사례는 뭐로 받을래?'",
+     Choices={{Label="전투 숙련 (경험)", Done="노인이 어깨를 두드린다. '살아남아라.'", Coins=150},
+              {Label="용병 인장 (코인 500)", Done="노인이 낡은 인장을 건넨다. '어디서든 용병은 이걸 알아봐.'", Coins=500}}}
+   },
+   Reward={Coins=200, Xp=300}},
+  {Id="odyconq", Name="[정복] 깃발을 꽂아라", Kind="Sub", Field="QLOdyConq", Need={Stage=3},
+   Intro="영주들이 요새를 차지하고 마을을 쥐어짠다. 영주를 쓰러뜨리면 그 요새는 네 영토가 되지만, 빼앗긴 쪽은 반격해 온다.",
+   Steps={
+    {Type="event", Event="CONQUER", Count=1, Title="영주의 요새를 정복하라", Text="지역 영주를 쓰러뜨려 요새를 점령하라. 영주 위치는 월드 탭에서 확인.", Done="요새에 네 깃발이 올랐다. 깃발에서 영토 수입을 거둘 수 있다."},
+    {Type="event", Event="DEFEND", Count=1, Title="반격군을 막아내라", Text="점령한 요새에 반격군이 오면 제한 시간 안에 달려가 모두 쓰러뜨려라.", Done="반격군이 물러갔다. 영토는 지켜냈다."},
+    {Type="choice", X=-80, Z=-190, R=40, Title="전리품의 분배", Prompt="병사들이 묻는다. '이번 전리품은 어떻게 할까요?'",
+     Choices={{Label="병사들에게 나눠 준다 (악명↓ 평판↑)", Done="병사들이 환호한다. 소문이 좋게 돈다.", Coins=100, Notoriety=-1},
+              {Label="전부 챙긴다 (코인 600)", Done="코인 주머니가 묵직하다. 눈초리가 따갑다.", Coins=600}}}
+   },
+   Reward={Coins=400, Xp=400, Crystal=3}},
+  {Id="odymerc", Name="[용병] 낙인과 사냥꾼", Kind="Sub", Field="QLOdyMerc", Need={Done="odyconq"},
+   Intro="영주 가문들이 네 목에 현상금을 걸고 용병 사냥꾼을 풀었다. 악명이 높을수록 더 강한 사냥꾼이 쫓아온다.",
+   Steps={
+    {Type="event", Event="HUNTER_DOWN", Count=3, Title="현상금 사냥꾼 3명 격파", Text="마을 밖에서 쫓아오는 사냥꾼을 쓰러뜨려라. 쓰러뜨릴 때마다 악명이 1 줄어든다.", Done="사냥꾼의 품에서 영주 가문의 인장이 나왔다. 배후는 하나다."},
+    {Type="choice", X=-80, Z=-190, R=40, Title="용병단장의 제안", Prompt="용병단장이 직접 찾아온다. '네 칼솜씨가 아깝군. 우리 편이 되겠나, 아니면 여기서 끝낼까?'",
+     Choices={{Label="제안을 받아들인다 (코인 800, 악명 초기화)", Done="단장이 인장을 거두고 사냥꾼을 거둬들였다.", Coins=800, Notoriety=-5},
+              {Label="거절하고 맞선다 (마력 결정 6)", Done="단장이 물러서며 이를 간다. '다음엔 더 강한 놈들이 올 거다.'", Crystal=6}}}
+   },
+   Reward={Coins=500, Xp=500}},
+}) do table.insert(Config.QuestLines, line) end
+Config.InitialState.Notoriety = 0
+Config.InitialState.ConquestMask = 0
+Config.InitialState.HunterKills = 0
+
 return table.freeze(Config)

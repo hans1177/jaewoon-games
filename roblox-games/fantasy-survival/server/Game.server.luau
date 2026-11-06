@@ -4776,6 +4776,15 @@ end)
 -- [상태이상] 출혈·독·화염은 지속 피해, 빙결은 짧은 정지. 서로 다른 상태가 겹칠수록 받는 피해가 늘어나는 연계 보너스가 있다.
 local STATUS_NAMES={bleed="출혈",poison="독",burn="화염",frost="빙결"}
 local applyMeadowDamageRef
+meadowOil.gearFx=function(player)
+  local sum={}
+  for _,slot in ipairs({"Weapon","Shield","Chest","Hands","Legs","Feet","Accessory","Cape"}) do
+    local item=meadowRpg.equippedSlot(player,slot)
+    local fx=item and Config.GearEffects[item.Id]
+    if fx then for k,v in pairs(fx) do sum[k]=(sum[k] or 0)+v end end
+  end
+  return sum
+end
 local function applyStatus(player,target,kind,seconds)
   if not target or target.HP<=0 or not target.model.Parent then return end
   local now=os.clock()
@@ -4920,9 +4929,32 @@ local function applyMeadowDamage(player,target,damage,isDot)
   -- [장비 공격력] 기존 무기 강화·숙련도·기술 배율은 그대로 두고 새 장비 보너스만 가산.
   local gearAttack=meadowRpg.stats(player)
   damage=damage+gearAttack
+  -- [장비 특수 효과] 치명타는 피해에, 상태이상·기절·흡수는 명중 뒤에 적용한다(지속 피해 틱 제외).
+  local gfx=nil
+  if not isDot then
+    gfx=meadowOil.gearFx(player)
+    if (gfx.crit or 0)>0 and math.random()<math.min(.4,gfx.crit) then damage=math.floor(damage*1.5) end
+  end
   player:SetAttribute("ApprovedActionTarget",target.position)
   target.HP=math.max(0,target.HP-damage)
   target.model:SetAttribute("EnemyHealth",target.HP)
+  if gfx and target.HP>0 then
+    for _,kind in ipairs({"burn","poison","frost","bleed"}) do
+      if (gfx[kind] or 0)>0 and math.random()<math.min(.6,gfx[kind]) then
+        applyStatus(player,target,kind,kind=="burn" and 5 or 6)
+      end
+    end
+    if (gfx.stun or 0)>0 and not target.isBoss and (target.stunUntil or 0)<=now and math.random()<math.min(.25,gfx.stun) then
+      target.stunUntil=now+.8
+    end
+  end
+  if gfx and (gfx.leech or 0)>0 then
+    local _,hum=liveMeadowCharacter(player)
+    if hum then
+      hum.Health=math.min(hum.MaxHealth,hum.Health+math.max(1,math.floor(damage*math.min(.15,gfx.leech))))
+      setNumber(player,"Health",math.max(0,math.floor(hum.Health)))
+    end
+  end
   if (target.isBoss or target.isAlpha) and target.HP>0 and target.HP<=target.maxHP*.5 then
     target.model:SetAttribute("BossPhase",2)
   end
@@ -4982,6 +5014,7 @@ local function applyMeadowDamage(player,target,damage,isDot)
       for _,entry in ipairs(target.siteDrops or {}) do drop(entry[1],entry[2],entry[3]) end
       if meadowOil.questKill then pcall(meadowOil.questKill,player,target) end
       if meadowOil.bountyKill then pcall(meadowOil.bountyKill,player,target) end
+      if meadowOil.odysseyKill then pcall(meadowOil.odysseyKill,player,target) end
       if target.contractIndex then
         local flag=bit32.lshift(1,target.contractIndex-1)
         if bit32.band(readNumber(player,"ContractAccepted",0),flag)~=0 then
@@ -5284,6 +5317,11 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   local defense=meadowDefense[player] or {}
   local now=os.clock()
   if (defense.dodgeUntil or 0)>now then return end
+  local gearFx=meadowOil.gearFx(player)
+  if (gearFx.dodge or 0)>0 and math.random()<math.min(.2,gearFx.dodge) then
+    remote:FireClient(player,"MEADOW_REACTION","DODGE")
+    return
+  end
   -- [완벽 막기] 서버가 승인한 막기 시작 직후만 연타를 끊고 공격자에게 기절을 적용한다.
   if (defense.parryUntil or 0)>now or (defense.perfectGuardUntil or 0)>now then
     defense.parryUntil=0
@@ -5414,6 +5452,7 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   -- [갑옷 피해 경감] 완벽 방어·회피 판정 이후 실제 착용 장비와 방호 숙련만 적용.
   local _,armor=meadowRpg.stats(player)
   damage=math.max(1,damage-armor)
+  if (gearFx.dr or 0)>0 then damage=math.max(1,math.floor(damage*(1-math.min(.3,gearFx.dr)))) end
   humanoid:TakeDamage(damage)
   setNumber(player,"Health",math.max(0,math.floor(humanoid.Health)))
 end
@@ -9930,7 +9969,12 @@ do
       local zoneIndex
       for i,z in ipairs(W.Zones) do if z.Id==zid then zoneIndex=i end end
       villageDialogue(player,town.Name.." 현상금 게시판",town.Hold.."에서 몬스터를 처치하는 현상금이다. 어느 몬스터든 이 지역에서 잡으면 센다. 한 번에 하나만 받을 수 있다.\n\n· 소형: 8마리 — 코인과 주괴\n· 대형: 20마리 — 큰 코인과 결정, 가죽",
-        {{label="소형 현상금 (8마리)",action="bounty:take:1"},{label="대형 현상금 (20마리)",action="bounty:take:2"}})
+        (function()
+          local o={{label="소형 현상금 (8마리)",action="bounty:take:1"},{label="대형 현상금 (20마리)",action="bounty:take:2"}}
+          local n=readNumber(player,"Notoriety",0)
+          if n>0 then o[#o+1]={label="수배 해제 ("..(150*n).."코인)",action="bounty:pay:0"} end
+          return o
+        end)())
     else
       local need=readNumber(player,"BountyNeed",0)
       local have=readNumber(player,"BountyKills",0)
@@ -9938,6 +9982,8 @@ do
       local options={}
       if have>=need then options[#options+1]={label="보상 받기",action="bounty:claim:0"} end
       options[#options+1]={label="현상금 포기",action="bounty:drop:0"}
+      local n=readNumber(player,"Notoriety",0)
+      if n>0 then options[#options+1]={label="수배 해제 ("..(150*n).."코인)",action="bounty:pay:0"} end
       villageDialogue(player,town.Name.." 현상금 게시판",text,options)
     end
   end
@@ -9953,6 +9999,16 @@ do
     if not root or (root.Position-Vector3.new(town.X,root.Position.Y,town.Z)).Magnitude>120 then return end
     if os.clock()-(lastAction[player] or 0)<1 then return end
     lastAction[player]=os.clock()
+    if verb=="pay" then
+      local n=readNumber(player,"Notoriety",0)
+      if n<=0 then return end
+      local cost=150*n
+      if readNumber(player,"Coins",0)<cost then villageDialogue(player,"수배 해제","코인이 부족해. "..cost.."코인이 필요해.");return end
+      setNumber(player,"Coins",readNumber(player,"Coins",0)-cost)
+      setNumber(player,"Notoriety",n-1)
+      villageDialogue(player,"수배 해제","코인 "..cost.."을 내고 수배 단계를 1 낮췄다. (현재 "..(n-1).."단계)")
+      return
+    end
     local zi=readNumber(player,"BountyZone",0)
     if verb=="take" and zi==0 and (arg==1 or arg==2) then
       local zoneIndex
@@ -10700,6 +10756,7 @@ do
       if choice[field] then setNumber(player,field,readNumber(player,field,0)+choice[field]) end
     end
     if choice.Coins then setNumber(player,"Coins",readNumber(player,"Coins",0)+choice.Coins) end
+    if choice.Notoriety then setNumber(player,"Notoriety",math.clamp(readNumber(player,"Notoriety",0)+choice.Notoriety,0,5)) end
     say(player,line.Name,choice.Done)
     complete(player,line)
   end)
@@ -11094,3 +11151,318 @@ task.delay(8,function()
     end
   end
 end)
+
+-- ============================================================================
+-- [오디세이식 시스템] 고유 기술(스파르타 킥·황소 돌진) / 악명과 용병 사냥꾼 / 정복과 영토 전쟁
+-- 이야기: 영주를 쓰러뜨려 요새를 정복하면 악명이 오르고, 영주 가문이 용병 사냥꾼을 풀며 반격군을 보낸다.
+-- 모든 판정은 서버가 한다. 클라이언트는 'odyssey:kick:0', 'odyssey:rush:0' 요청만 보낸다.
+-- ============================================================================
+do
+  local W=Config.WorldMap
+  local zoneTier={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
+  local function toast(player,text)
+    player:SetAttribute("MeadowGearMessage",text)
+    player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+  end
+  local function zoneIndexOf(id) for i,z in ipairs(W.Zones) do if z.Id==id then return i,z end end end
+  local function flat(v) return Vector3.new(v.X,0,v.Z) end
+  local function safePlace(root)
+    local v=W.Village
+    local p=root.Position
+    if p.X>=v.X0 and p.X<=v.X1 and p.Z>=v.Z0 and p.Z<=v.Z1 then return true end
+    if p.X>7000 then return true end
+    for _,t in ipairs(W.Towns or {}) do
+      local dx,dz=p.X-t.X,p.Z-t.Z
+      if dx*dx+dz*dz<70*70 then return true end
+    end
+    return false
+  end
+  local function stars(n) return string.rep("★",n)..string.rep("☆",5-n) end
+
+  -- ── 고유 기술 ───────────────────────────────────────────────
+  local cooldown={kick={},rush={}}
+  local function stunEnemy(e,seconds)
+    local now=os.clock()
+    if e.windupUntil then cancelEnemyWindup(e) end
+    e.stunUntil=math.max(e.stunUntil or 0,now+seconds)
+    e.lastAttack=now
+    e.model:SetAttribute("NativeMobStunnedUntil",workspace:GetServerTimeNow()+seconds)
+    setEnemyAttackState(e,"STUNNED")
+  end
+  remote.OnServerEvent:Connect(function(player,action)
+    if action~="odyssey:kick:0" and action~="odyssey:rush:0" then return end
+    if player:GetAttribute("ProfileReady")~=true then return end
+    local character,humanoid,root=liveMeadowCharacter(player)
+    if not root then return end
+    local isKick=action=="odyssey:kick:0"
+    local cd=isKick and cooldown.kick or cooldown.rush
+    local now=os.clock()
+    if now<(cd[player] or 0) then return end
+    local cost=isKick and 12 or 18
+    if readNumber(player,"MeadowStamina",0)<cost then toast(player,"스태미나가 부족해.");return end
+    local power=meadowProficiencyPower(player)
+    if isKick then
+      local target=nearestEnemy(root,10)
+      if not target then cd[player]=now+1.2;return end
+      cd[player]=now+7
+      player:SetAttribute("OdyKickAt",workspace:GetServerTimeNow()+7)
+      player:SetAttribute("MeadowStamina",readNumber(player,"MeadowStamina",0)-cost)
+      local dir=flat(target.position-root.Position)
+      dir=dir.Magnitude>.1 and dir.Unit or flat(root.CFrame.LookVector).Unit
+      local broke=target.windupUntil~=nil
+      local damage=22+math.floor(power*1.1)
+      if broke then damage=math.floor(damage*1.5) end
+      applyMeadowDamageRef(player,target,damage)
+      if target.HP>0 then
+        if not target.isBoss then target.position=target.position+dir*11 end
+        stunEnemy(target,target.isBoss and .8 or 1.6)
+      end
+      if broke then toast(player,"방어 붕괴! 스파르타 킥이 공격 준비를 깨뜨렸다.") end
+      if meadowOil.questEvent then pcall(meadowOil.questEvent,player,"KICK") end
+    else
+      local look=flat(root.CFrame.LookVector)
+      if look.Magnitude<.1 then return end
+      look=look.Unit
+      cd[player]=now+10
+      player:SetAttribute("OdyRushAt",workspace:GetServerTimeNow()+10)
+      player:SetAttribute("MeadowStamina",readNumber(player,"MeadowStamina",0)-cost)
+      local params=RaycastParams.new()
+      params.FilterType=Enum.RaycastFilterType.Exclude
+      params.FilterDescendantsInstances={character}
+      local blocked=workspace:Raycast(root.Position,look*15,params)
+      local dist=blocked and math.max(0,blocked.Distance-3) or 14
+      local origin=character:GetPivot()
+      local start=root.Position
+      local defense=meadowDefense[player] or {}
+      defense.dodgeUntil=now+.4
+      meadowDefense[player]=defense
+      local hits=0
+      for _,e in ipairs(enemies) do
+        if e.HP>0 and e.model.Parent then
+          local rel=flat(e.position-start)
+          local along=rel:Dot(look)
+          local side=(rel-look*along).Magnitude
+          if along>-2 and along<dist+3 and side<5 then
+            hits+=1
+            applyMeadowDamageRef(player,e,16+math.floor(power*.8))
+            if e.HP>0 then stunEnemy(e,e.isBoss and .5 or 1) end
+          end
+        end
+      end
+      if hits>0 and meadowOil.questEvent then pcall(meadowOil.questEvent,player,"RUSH") end
+      task.spawn(function()
+        local began=os.clock()
+        while character.Parent and player.Character==character and humanoid.Health>0 do
+          local t=math.clamp((os.clock()-began)/.22,0,1)
+          character:PivotTo(origin+look*dist*t)
+          if t>=1 then break end
+          RunService.Heartbeat:Wait()
+        end
+      end)
+    end
+  end)
+
+  -- ── 정복 · 영토 전쟁 ──────────────────────────────────────
+  local incomeAt={}
+  local raids={}
+  local warNext={}
+  local function spawnFoe(spec)
+    local site={id="bandit",position=spec.position,name=spec.name,tier=spec.tier,height=spec.height,hp=spec.hp,dmg=spec.dmg,
+      named=spec.named,drops=spec.drops,zoneTag=spec.zoneTag}
+    local ok,res=pcall(spawnEnemy,site,nil)
+    if not ok or res~=true then return nil end
+    for i=#enemies,1,-1 do
+      local e=enemies[i]
+      if e.model.Name==spec.name and not e.odyTag then e.odyTag=true;return e end
+    end
+  end
+  local function purge(list)
+    for _,e in ipairs(list or {}) do
+      if e.HP>0 then
+        e.HP=0
+        for i=#enemies,1,-1 do if enemies[i]==e then table.remove(enemies,i);break end end
+        if e.model.Parent then e.model:Destroy() end
+      end
+    end
+  end
+  local function conquer(player,zoneId)
+    local idx,zone=zoneIndexOf(zoneId)
+    if not idx then return end
+    local bit=bit32.lshift(1,idx-1)
+    local mask=readNumber(player,"ConquestMask",0)
+    if bit32.band(mask,bit)~=0 then return end
+    setNumber(player,"ConquestMask",bit32.bor(mask,bit))
+    incomeAt[player]=incomeAt[player] or {}
+    incomeAt[player][zoneId]=os.clock()
+    local tier=zoneTier[zoneId] or 4
+    pcall(awardProgress,player,tier*40,tier*120)
+    setNumber(player,"Crystal",readNumber(player,"Crystal",0)+3)
+    local n=math.min(5,readNumber(player,"Notoriety",0)+1)
+    setNumber(player,"Notoriety",n)
+    toast(player,"⚔ "..zone.Name.." 요새 정복! 코인 +"..(tier*120).." · 악명 "..stars(n).." — 영주 가문이 사냥꾼을 보낼 거야.")
+    if meadowOil.questEvent then pcall(meadowOil.questEvent,player,"CONQUER") end
+  end
+  meadowOil.odysseyKill=function(player,target)
+    if target.hunterOf==player.UserId then
+      local n=math.max(0,readNumber(player,"Notoriety",0)-1)
+      setNumber(player,"Notoriety",n)
+      setNumber(player,"HunterKills",readNumber(player,"HunterKills",0)+1)
+      toast(player,"사냥꾼 격파! 악명 "..stars(n))
+      if meadowOil.questEvent then pcall(meadowOil.questEvent,player,"HUNTER_DOWN") end
+    end
+    if target.lord and target.zoneTag then conquer(player,target.zoneTag) end
+  end
+
+  -- 영주의 깃발: 정복한 영토에서 시간당 수입을 거둔다.
+  task.spawn(function()
+    while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(3) end
+    task.wait(24)
+    local rp=RaycastParams.new();rp.FilterType=Enum.RaycastFilterType.Include;rp.FilterDescendantsInstances={workspace.Terrain}
+    for _,zone in ipairs(W.Zones) do
+      local seat=workspace:GetAttribute("LordSeat_"..zone.Id)
+      if typeof(seat)=="Vector3" then
+        local a=2.3
+        local x,z=seat.X+math.cos(a)*26,seat.Z+math.sin(a)*26
+        local hit=workspace:Raycast(Vector3.new(x,400,z),Vector3.new(0,-800,0),rp)
+        if hit then
+          task.spawn(function()
+            local pole=worldAsset("vxPoles",hit.Position,7)
+            if pole then pole.Name="ConquestFlag_"..zone.Id;pole:SetAttribute("MeadowScenery",true) end
+          end)
+          local anchor=Instance.new("Attachment");anchor.Name="ConquestFlag_"..zone.Id;anchor.WorldPosition=hit.Position+Vector3.new(0,3,0);anchor.Parent=workspace.Terrain
+          local prompt=Instance.new("ProximityPrompt");prompt.ActionText="영토 수입 · 깃발";prompt.ObjectText=zone.Name.." 요새";prompt.HoldDuration=.5
+          prompt.MaxActivationDistance=14;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+          prompt.Triggered:Connect(function(player)
+            if player:GetAttribute("ProfileReady")~=true then return end
+            local idx=zoneIndexOf(zone.Id)
+            if bit32.band(readNumber(player,"ConquestMask",0),bit32.lshift(1,idx-1))==0 then
+              toast(player,"영주를 쓰러뜨려야 이 깃발이 네 것이 돼.");return
+            end
+            incomeAt[player]=incomeAt[player] or {}
+            local since=incomeAt[player][zone.Id] or (os.clock()-300)
+            local units=math.floor(math.min(900,os.clock()-since)/30)
+            if units<2 then toast(player,"아직 거둘 수입이 없어. 잠시 뒤에 다시 와.");return end
+            local coins=units*(zoneTier[zone.Id] or 4)*4
+            incomeAt[player][zone.Id]=os.clock()
+            setNumber(player,"Coins",readNumber(player,"Coins",0)+coins)
+            toast(player,zone.Name.." 영토 수입 코인 +"..coins)
+          end)
+        else warn("CONQUEST_FLAG_GROUND_UNVERIFIED "..zone.Id) end
+      end
+    end
+  end)
+
+  -- 반격군(영토 전쟁)과 용병 사냥꾼(악명) 관리 루프.
+  local hunters={}
+  local HUNTER_NAMES={"붉은 낫 카르다","검은 늑대 레이븐","철가면 보르크","독사 이레나","창잡이 파르시","흉터 바라크"}
+  local function clearRaid(player)
+    player:SetAttribute("RaidZone",nil)
+    player:SetAttribute("RaidUntil",nil)
+  end
+  task.spawn(function()
+    while true do
+      task.wait(2)
+      local now=os.clock()
+      for _,player in ipairs(Players:GetPlayers()) do
+        if player:GetAttribute("ProfileReady")==true then
+          local _,hum,root=liveMeadowCharacter(player)
+          -- 반격
+          local mask=readNumber(player,"ConquestMask",0)
+          local r=raids[player]
+          if not r then
+            warNext[player]=warNext[player] or (now+420)
+            if mask~=0 and root and now>=warNext[player] then
+              local owned={}
+              for i,z in ipairs(W.Zones) do
+                if bit32.band(mask,bit32.lshift(1,i-1))~=0 and typeof(workspace:GetAttribute("LordSeat_"..z.Id))=="Vector3" then owned[#owned+1]=z end
+              end
+              if #owned>0 then
+                local z=owned[math.random(#owned)]
+                raids[player]={zone=z,deadline=now+210,spawned=false,list={}}
+                player:SetAttribute("RaidZone",z.Name)
+                player:SetAttribute("RaidUntil",workspace:GetServerTimeNow()+210)
+                toast(player,"⚔ "..z.Name.." 요새에 반격군이 몰려온다! 210초 안에 달려가 지켜라. 놓치면 영토를 잃어.")
+              else warNext[player]=now+420 end
+            end
+          else
+            local seat=workspace:GetAttribute("LordSeat_"..r.zone.Id)
+            if root and typeof(seat)=="Vector3" and not r.spawned
+              and (flat(root.Position)-flat(seat)).Magnitude<95 then
+              local tier=zoneTier[r.zone.Id] or 4
+              local count=3+math.min(2,tier//4)
+              for k=1,count do
+                local a=k*math.pi*2/count
+                local captain=k==1
+                local e=spawnFoe({position=Vector3.new(seat.X+math.cos(a)*16,3,seat.Z+math.sin(a)*16),
+                  name=captain and "반격군 대장" or "반격군 병사",tier=math.min(10,tier+1),height=captain and 7 or 6,
+                  hp=captain and 2.4 or 1.2,dmg=captain and 1.6 or 1,zoneTag=r.zone.Id,
+                  drops={{"Coins",1,tier*(captain and 40 or 12)},{"Ore",.5,1}}})
+                if e then r.list[#r.list+1]=e end
+              end
+              r.spawned=true
+              toast(player,"반격군이다! 모두 쓰러뜨려 요새를 지켜라.")
+            end
+            local alive=0
+            for _,e in ipairs(r.list) do if e.HP>0 and e.model.Parent then alive+=1 end end
+            if r.spawned and #r.list>0 and alive==0 then
+              local tier=zoneTier[r.zone.Id] or 4
+              pcall(awardProgress,player,tier*30,tier*100)
+              setNumber(player,"Crystal",readNumber(player,"Crystal",0)+2)
+              toast(player,"✔ "..r.zone.Name.." 방어 성공! 코인 +"..(tier*100).." · 마력 결정 +2")
+              if meadowOil.questEvent then pcall(meadowOil.questEvent,player,"DEFEND") end
+              raids[player]=nil;warNext[player]=now+math.random(360,600);clearRaid(player)
+            elseif now>r.deadline then
+              local idx=zoneIndexOf(r.zone.Id)
+              setNumber(player,"ConquestMask",bit32.band(readNumber(player,"ConquestMask",0),bit32.bnot(bit32.lshift(1,idx-1))))
+              purge(r.list)
+              toast(player,"✘ "..r.zone.Name.." 요새를 빼앗겼다! 영주를 다시 쓰러뜨려 되찾아라.")
+              raids[player]=nil;warNext[player]=now+math.random(360,600);clearRaid(player)
+            end
+          end
+          -- 악명 · 용병 사냥꾼
+          local n=readNumber(player,"Notoriety",0)
+          local st=hunters[player]
+          if not st then st={nextAt=now+45,decayAt=now+600,list={}};hunters[player]=st end
+          local alive=0
+          for _,e in ipairs(st.list) do
+            if e.HP>0 and e.model.Parent then
+              alive+=1
+              if root and (flat(e.position)-flat(root.Position)).Magnitude>240 then purge({e});alive-=1 end
+            end
+          end
+          if n<=0 then
+            st.nextAt=math.max(st.nextAt,now+45);st.decayAt=now+600
+          else
+            if now>=st.decayAt and alive==0 then
+              setNumber(player,"Notoriety",n-1);st.decayAt=now+600
+              toast(player,"소문이 잦아든다. 악명 "..stars(n-1))
+            elseif alive==0 and root and hum and now>=st.nextAt and not safePlace(root) then
+              st.list={}
+              local count=n>=4 and 2 or 1
+              for k=1,count do
+                local a=math.random()*math.pi*2
+                local d=55+math.random()*15
+                local name=HUNTER_NAMES[math.random(#HUNTER_NAMES)]
+                local e=spawnFoe({position=Vector3.new(root.Position.X+math.cos(a)*d,3,root.Position.Z+math.sin(a)*d),
+                  name="현상금 사냥꾼 · "..name,tier=math.min(10,2+n*2),height=6.4,hp=1.6+n*.7,dmg=1+n*.35,named=true,
+                  drops={{"Coins",1,n*70},{"Ore",.5,2},{"Crystal",.25*n,1}}})
+                if e then e.hunterOf=player.UserId;st.list[#st.list+1]=e
+                  if k==1 then toast(player,"⚠ "..e.model.Name.."이(가) 네 목을 노리고 쫓아온다! (악명 "..stars(n)..")") end
+                end
+              end
+              st.nextAt=now+math.max(60,170-n*25)
+            end
+          end
+        end
+      end
+    end
+  end)
+  Players.PlayerRemoving:Connect(function(player)
+    local r=raids[player]
+    if r then purge(r.list) end
+    local st=hunters[player]
+    if st then purge(st.list) end
+    raids[player]=nil;hunters[player]=nil;warNext[player]=nil;incomeAt[player]=nil
+    cooldown.kick[player]=nil;cooldown.rush[player]=nil
+  end)
+end

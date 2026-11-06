@@ -1447,6 +1447,19 @@ local function renderMeadowPages()
     worldLines[#worldLines+1]=string.format("채굴 Lv%d (%d%s) · 곡괭이: %s",level,prof,nextNeed and ("/"..nextNeed) or " 최고",pick and pick.Name or "없음 — 광부에게서 구한다")
   end
   do
+    local n=tonumber(player:GetAttribute("Notoriety")) or 0
+    local mask=tonumber(player:GetAttribute("ConquestMask")) or 0
+    local owned=0
+    for i=0,31 do if bit32.band(mask,bit32.lshift(1,i))~=0 then owned+=1 end end
+    worldLines[#worldLines+1]=string.format("악명 %s · 정복한 요새 %d곳 · 격파한 사냥꾼 %d",string.rep("★",n)..string.rep("☆",5-n),owned,tonumber(player:GetAttribute("HunterKills")) or 0)
+    local raidZone=player:GetAttribute("RaidZone")
+    local raidUntil=tonumber(player:GetAttribute("RaidUntil"))
+    if raidZone and raidUntil then
+      local left=math.max(0,math.floor(raidUntil-workspace:GetServerTimeNow()))
+      worldLines[#worldLines+1]=string.format("⚔ %s 요새에 반격군! 남은 시간 %d초 — 달려가 지켜라.",raidZone,left)
+    end
+  end
+  do
     local seat=workspace:GetAttribute("MeteorSeat")
     if typeof(seat)=="Vector3" then
       local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -1558,7 +1571,7 @@ player:GetAttributeChangedSignal("QuestStage"):Connect(renderMeadowPages)
 workspace:GetAttributeChangedSignal("MeteorSeat"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestProgress"):Connect(renderMeadowPages)
-for _,name in ipairs({"MiningProficiency","PickaxeTier","ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","CampWorldtree","CampVolcano","CampOasis","BountyIndex","BountyPhase","BountyClues","WorldDiscovered","WaypointMask","DexKillWolf","DexKillBat","DexKillAlpha"})do
+for _,name in ipairs({"Notoriety","ConquestMask","HunterKills","RaidZone","RaidUntil","MiningProficiency","PickaxeTier","ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","CampWorldtree","CampVolcano","CampOasis","BountyIndex","BountyPhase","BountyClues","WorldDiscovered","WaypointMask","DexKillWolf","DexKillBat","DexKillAlpha"})do
   player:GetAttributeChangedSignal(name):Connect(renderMeadowPages)
 end
 for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채집","scope-coreloop-1-6ebe58f496"},{"장비 강화","scope-coreloop-2-6c927cfa40"}})do
@@ -11728,4 +11741,30 @@ end)()
   button.Activated:Connect(function()
     remote:FireServer("mount:quick:0")
   end)
+end)()
+
+-- [오디세이 고유 기술] 스파르타 킥 · 황소 돌진 버튼. 판정·재사용 시간은 서버가 정하고 버튼은 요청만 보낸다.
+;(function()
+  local playerGui=player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui")
+  local gui=Instance.new("ScreenGui");gui.Name="OdysseySkillGui";gui.ResetOnSpawn=false;gui.DisplayOrder=30;gui.Parent=playerGui
+  local function makeButton(name,label,offsetY,action,attr)
+    local button=Instance.new("TextButton")
+    button.Name=name;button.AnchorPoint=Vector2.new(1,.5);button.Position=UDim2.new(1,-14,.5,offsetY);button.Size=UDim2.fromOffset(56,56)
+    button.BackgroundColor3=Color3.fromRGB(70,34,30);button.BackgroundTransparency=.12;button.TextColor3=Color3.fromRGB(255,214,170)
+    button.Font=Enum.Font.GothamBold;button.TextSize=13;button.Text=label;button.AutoButtonColor=true;button.Parent=gui
+    local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(1,0);corner.Parent=button
+    local stroke=Instance.new("UIStroke");stroke.Color=Color3.fromRGB(230,120,90);stroke.Thickness=2;stroke.Parent=button
+    button.Activated:Connect(function() remote:FireServer(action) end)
+    task.spawn(function()
+      while button.Parent do
+        local ready=tonumber(player:GetAttribute(attr)) or 0
+        local left=ready-workspace:GetServerTimeNow()
+        button.Text=left>0 and tostring(math.ceil(left)) or label
+        button.BackgroundTransparency=left>0 and .5 or .12
+        task.wait(.25)
+      end
+    end)
+  end
+  makeButton("OdysseyKickButton","킥",-4,"odyssey:kick:0","OdyKickAt")
+  makeButton("OdysseyRushButton","돌진",-68,"odyssey:rush:0","OdyRushAt")
 end)()
