@@ -109,6 +109,15 @@ local meadowEncounterSites = {
   -- [사용자 제거] 해골 몬스터 서식지 3곳도 폐쇄. 저장·기존 나머지 몬스터 배치는 유지.
   -- [마을 의뢰] 우두머리 늑대는 마을 서쪽 외곽 숲에만 스폰한다.
   {id="wolf",atom="HEAD_CANINE",tier=1,height=4.8,position=Vector3.new(-321,3,-193),questIndex=1,alpha=true},
+  -- [초원 생태 야영지] 자원이 나는 곳에 그곳을 지키는 몹을 둔다(서브퀘 mine/den/batcave와 연결).
+  -- 폐광 고블린: 광석 드랍. 소굴 늑대: 가죽·고기·송곳니. 동굴 박쥐: 날개·수정.
+  {id="wolf",atom="HEAD_CANINE",model="roguehooded",name="폐광 약탈 고블린",tier=2,height=3,hp=1.1,dmg=.9,drops={{"Ore",.6,1},{"Hide",.3,1}},position=Vector3.new(198,3,-128)},
+  {id="wolf",atom="HEAD_CANINE",model="roguehooded",name="폐광 약탈 고블린",tier=2,height=3,hp=1.1,dmg=.9,drops={{"Ore",.6,1},{"Hide",.3,1}},position=Vector3.new(214,3,-152)},
+  {id="wolf",atom="HEAD_CANINE",model="roguehooded",name="폐광 고블린 두목",tier=3,height=4.2,hp=2.2,dmg=1.2,alpha=true,named=true,questBoss="mine",drops={{"Ore",1,4},{"Hide",.8,2}},position=Vector3.new(222,3,-150)},
+  {id="wolf",atom="HEAD_CANINE",name="소굴의 어미 늑대",tier=3,height=5,alpha=true,named=true,questBoss="den",drops={{"Hide",1,4},{"Fang",1,2},{"Meat",1,3},{"Claw",.8,2}},position=Vector3.new(-255,3,55)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(-240,3,72)},
+  {id="wolf",atom="HEAD_CANINE",tier=2,height=3.15,position=Vector3.new(-268,3,44)},
+  {id="bat",atom="WING_LEATHER",name="동굴의 큰박쥐",tier=4,height=4.4,alpha=true,named=true,questBoss="batcave",drops={{"BatWing",1,3},{"Crystal",1,2},{"Moonbloom",.6,1}},position=Vector3.new(258,3,240)},
   -- [요청: 원혼·도적 몹 삭제] 마을 안의 두 비정상 몬스터를 출현시키지 않는다.
   -- 기존 의뢰 번호와 처치 판정 비트는 보존하고, 실제 CC0 박쥐·늑대로 마을 밖에서 대체한다.
   {id="bat",atom="WING_LEATHER",tier=2,height=3.15,position=Vector3.new(300,3,-212),questIndex=2},
@@ -3546,6 +3555,8 @@ local function gatherResource(player, node)
   setNumber(player,"GatheringProficiency",readNumber(player,"GatheringProficiency",0)+1)
   player:SetAttribute("LastApprovedScope", "resource-harvest")
   if node.kind=="WOOD" or node.kind=="STONE" then recordMeadowQuest(player,node.kind) end
+  if node.kind=="ORE" and meadowOil.questEvent then pcall(meadowOil.questEvent,player,"MINE_ORE") end
+  if node.kind=="HERB" and meadowOil.questEvent then pcall(meadowOil.questEvent,player,"GATHER_HERB") end
   broadcastSurvivalState(player)
   return true
 end
@@ -3563,6 +3574,11 @@ local function createResourceNodes()
     {kind="HERB",position=Vector3.new(45,2,5)},
     {kind="ORE",position=Vector3.new(-45,2,-5)},
     {kind="ORE",position=Vector3.new(30,2,45)},
+    -- [생태 자원] 폐광 광맥은 고블린 야영지가 지키고, 박쥐 동굴 앞에는 약초가 자란다.
+    {kind="ORE",position=Vector3.new(205,2,-138)},
+    {kind="ORE",position=Vector3.new(226,2,-158)},
+    {kind="HERB",position=Vector3.new(246,2,226)},
+    {kind="HERB",position=Vector3.new(268,2,232)},
   }
   for _, spec in ipairs(sites) do
     local model = spec.visual and worldAsset(spec.visual,spec.position,11) or nil
