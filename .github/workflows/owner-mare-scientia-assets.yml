@@ -41,15 +41,18 @@ jobs:
           ROBLOX_CREATOR_USER_ID: ${{ vars.ROBLOX_CREATOR_USER_ID }}
         run: node tools/mare-scientia-upload-assets.mjs
 
-      - name: Commit registered asset IDs
+      - name: Commit registered asset IDs (API, main이 움직여도 안전)
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add roblox-games/mare-scientia/assets-registered.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau
-          if git diff --cached --quiet; then echo 'NO_ASSET_CHANGES'; exit 0; fi
-          git commit -m 'Mare Scientia: Roblox 등록 자산 ID 갱신'
-          git push origin HEAD:main
+          for f in roblox-games/mare-scientia/assets-registered.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau; do
+            sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=main" --jq .sha 2>/dev/null || true)"
+            args=(-X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" -f message='Mare Scientia: Roblox 등록 자산 ID 갱신' -f content="$(base64 -w0 "$f")" -f branch=main)
+            if [ -n "$sha" ]; then args+=(-f sha="$sha"); fi
+            gh api "${args[@]}" --silent
+            echo "COMMITTED $f"
+          done
 
       - name: Publish the place with the new asset IDs
         env:

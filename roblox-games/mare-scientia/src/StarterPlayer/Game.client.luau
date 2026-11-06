@@ -178,8 +178,8 @@ end
 -- 메인 화면 구조 ------------------------------------------------------------
 
 local main, mainInner = CommonUI.CreatePanel({ name = "Main", size = UDim2.new(1, -16, 1, -16) })
-main.AnchorPoint = Vector2.new(0, 0.5)
-main.Position = UDim2.new(0, 8, 0.5, 0)
+main.AnchorPoint = Vector2.new(0.5, 0.5)
+main.Position = UDim2.fromScale(0.5, 0.5)
 main.BackgroundColor3 = Color3.fromRGB(14, 24, 38)
 main.Parent = gui
 do
@@ -189,7 +189,7 @@ do
 	st.Parent = main
 end
 local sizeLimit = Instance.new("UISizeConstraint")
-sizeLimit.MaxSize = Vector2.new(560, 900)
+sizeLimit.MaxSize = Vector2.new(620, 900)
 sizeLimit.Parent = main
 
 local headerLabel = Instance.new("TextLabel")
@@ -302,6 +302,17 @@ hullFill.Parent = hullBack
 corner(hullFill, 4)
 local hudShip = hudText(card, UDim2.fromOffset(10, 61), UDim2.new(1, -20, 0, 18), 12, COLORS.muted)
 
+-- 상단 중앙 항구 현판 (대항해시대 온라인의 항구 이름 리본처럼)
+local banner = Instance.new("Frame")
+banner.AnchorPoint = Vector2.new(0.5, 0)
+banner.Position = UDim2.new(0.5, 0, 0, 8)
+banner.Size = UDim2.fromOffset(190, 40)
+banner.BackgroundColor3 = Color3.fromRGB(90, 62, 28)
+banner.Parent = hud
+corner(banner, 8)
+hudStroke(banner, 2)
+local hudBanner = hudText(banner, UDim2.new(), UDim2.fromScale(1, 1), 20, Color3.fromRGB(255, 240, 200), Enum.TextXAlignment.Center)
+
 local coinCard = Instance.new("Frame")
 coinCard.BackgroundColor3 = NAVY
 coinCard.BackgroundTransparency = 0.08
@@ -318,9 +329,9 @@ dock.Name = "Dock"
 dock.BackgroundColor3 = NAVY
 dock.BackgroundTransparency = 0.08
 dock.BorderSizePixel = 0
-dock.AnchorPoint = Vector2.new(0.5, 1)
-dock.Position = UDim2.new(0.5, 0, 1, -8)
-dock.Size = UDim2.new(1, -16, 0, 68)
+dock.AnchorPoint = Vector2.new(0, 1)
+dock.Position = UDim2.new(0, 8, 1, -8)
+dock.Size = UDim2.new(1, -190, 0, 62) -- 오른쪽 점프 버튼을 피한다
 dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.X
 dock.ScrollBarThickness = 0
@@ -330,9 +341,9 @@ corner(dock, 12)
 hudStroke(dock, 2)
 local dockLayout = Instance.new("UIListLayout")
 dockLayout.FillDirection = Enum.FillDirection.Horizontal
-dockLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+dockLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 dockLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-dockLayout.Padding = UDim.new(0, 6)
+dockLayout.Padding = UDim.new(0, 4)
 dockLayout.SortOrder = Enum.SortOrder.LayoutOrder
 dockLayout.Parent = dock
 local dockPad = Instance.new("UIPadding")
@@ -347,11 +358,11 @@ local DOCK = {
 for i, d in DOCK do
 	local b = Instance.new("TextButton")
 	b.LayoutOrder = i
-	b.Size = UDim2.fromOffset(66, 54)
+	b.Size = UDim2.fromOffset(52, 48)
 	b.BackgroundColor3 = NAVY2
 	b.AutoButtonColor = true
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = 15
+	b.TextSize = 13
 	b.TextColor3 = Color3.fromRGB(250, 236, 200)
 	b.Text = d[2]
 	b.Parent = dock
@@ -369,6 +380,7 @@ end
 local function updateHud(p, ship)
 	hudName.Text = string.format("%s · %d년", p.nation, p.year)
 	hudPort.Text = "항구  " .. tostring(p.portName)
+	hudBanner.Text = tostring(p.portName)
 	hullFill.Size = UDim2.fromScale(math.clamp(ship.hull / math.max(1, ship.maxHull), 0, 1), 1)
 	hullFill.BackgroundColor3 = if ship.hull / math.max(1, ship.maxHull) < 0.35 then COLORS.red else COLORS.green
 	hudShip.Text = string.format("%s  화물 %d/%d  명성 %d", ship.name, ship.cargoUsed, ship.cargoCapacity, p.fame)

@@ -84,7 +84,7 @@ end
 local function sign(parent, adornee, text, color, height)
 	local bb = Instance.new("BillboardGui")
 	bb.Adornee = adornee
-	bb.Size = UDim2.fromOffset(150, 30)
+	bb.Size = UDim2.fromOffset(200, 44)
 	bb.StudsOffset = Vector3.new(0, (height or 4) + 2.5, 0)
 	bb.AlwaysOnTop = false
 	bb.LightInfluence = 0
@@ -183,13 +183,19 @@ end
 local SKINS = { Color3.fromRGB(242, 205, 170), Color3.fromRGB(214, 165, 125), Color3.fromRGB(176, 125, 90), Color3.fromRGB(128, 88, 62) }
 local HAIRS = { Color3.fromRGB(40, 28, 20), Color3.fromRGB(96, 62, 34), Color3.fromRGB(176, 130, 66), Color3.fromRGB(150, 150, 150), Color3.fromRGB(20, 18, 18) }
 local PEOPLE_ROLES = { "Pirate_Male", "Pirate_Female", "Worker_Male", "Worker_Female", "Casual_Male", "Casual_Female", "OldClassy_Male", "OldClassy_Female" }
-local function villager(parent, pos, facing, coat, rng)
-	-- 등록된 CC0 주민 모델이 있으면 그것을 쓰고, 없으면 아래 코드 모양을 쓴다
-	local character = importedModel(parent, "People", PEOPLE_ROLES[rng:NextInteger(1, #PEOPLE_ROLES)], pos, 5.6, false)
-	if character then
-		character.Name = "Villager"
-		character:PivotTo(character:GetPivot() * CFrame.Angles(0, facing, 0))
-		return character
+local KEEPER_ROLE = {
+	["교역소"] = "Rogue", ["주점"] = "Barbarian", ["항만청"] = "Knight", ["은행"] = "Mage",
+	["상인 길드"] = "Rogue_Hooded", ["학자의 서재"] = "Mage", ["도서관 (도감)"] = "Mage",
+}
+local function villager(parent, pos, facing, coat, rng, role)
+	-- 직업 NPC(시설 담당·이야기 손님)는 등록된 KayKit CC0 모델을 쓰고, 없으면 아래 코드 모양을 쓴다
+	if role then
+		local figure = importedModel(parent, "People", "KayKit_" .. role, pos, 5.8, false)
+		if figure then
+			figure.Name = "Villager"
+			figure:PivotTo(figure:GetPivot() * CFrame.Angles(0, facing + math.pi, 0))
+			return figure
+		end
 	end
 	local m = Instance.new("Model")
 	m.Name = "Villager"
@@ -435,7 +441,7 @@ function PortScene.build(info, onFacility)
 	water.CanCollide = false
 	part(folder, Vector3.new(8, 2, 300), CFrame.new(18, 0, 0), Color3.fromRGB(130, 126, 120), Enum.Material.Cobblestone)
 	local dock = part(folder, Vector3.new(60, 0.8, 10), CFrame.new(50, 1.6, 0), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
-	if importedModel(folder, "Naval", "structure-platform-dock", Vector3.new(50, 1.6, 0), 60, false) then
+	if false and importedModel(folder, "Naval", "structure-platform-dock", Vector3.new(50, 1.6, 0), 60, false) then
 		-- 실제 메쉬를 보여주면서 기존 부두의 안전한 보행 판정은 유지.
 		dock.Transparency = 1
 	end
@@ -443,6 +449,23 @@ function PortScene.build(info, onFacility)
 		for side = -1, 1, 2 do
 			part(folder, Vector3.new(1.2, 6, 1.2), CFrame.new(x, -1, side * 4.6), Color3.fromRGB(90, 64, 40), Enum.Material.Wood, Enum.PartType.Cylinder).CFrame = CFrame.new(x, -1, side * 4.6) * CFrame.Angles(0, 0, math.pi / 2)
 		end
+	end
+	-- 바다 쪽 보이지 않는 벽: 해안선과 부두 옆·끝을 막아 바닷속으로 떨어지지 않게 한다
+	do
+		local function wall(size, cf)
+			local w = part(folder, size, cf, Color3.new(1, 1, 1))
+			w.Transparency = 1
+			w.CanQuery = false
+			w.CastShadow = false
+		end
+		wall(Vector3.new(1, 40, 440), CFrame.new(22.5, 18, 225.5))
+		wall(Vector3.new(1, 40, 440), CFrame.new(22.5, 18, -225.5))
+		wall(Vector3.new(66, 40, 1), CFrame.new(56, 18, 5.6))
+		wall(Vector3.new(66, 40, 1), CFrame.new(56, 18, -5.6))
+		wall(Vector3.new(1, 40, 12), CFrame.new(89.5, 18, 0))
+		wall(Vector3.new(1, 40, 900), CFrame.new(-600, 18, 0))
+		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, 440))
+		wall(Vector3.new(1200, 40, 1), CFrame.new(0, 18, -440))
 	end
 	-- 화물(상자, 통)
 	for i = 1, 8 do
@@ -475,7 +498,7 @@ function PortScene.build(info, onFacility)
 	part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), style.street, Enum.Material.Cobblestone)
 	part(folder, Vector3.new(130, 0.25, 10), CFrame.new(-80, 0.13, 0), style.street, Enum.Material.Cobblestone)
 	-- 광장 분수도 CC0 수입 메쉬 우선
-	if not importedModel(folder, "Town", "fountain-round", Vector3.new(-8, 0, 0), 8, false) then
+	if true then
 		part(folder, Vector3.new(2, 8, 8), CFrame.new(-8, 1, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(200, 196, 186), Enum.Material.Marble, Enum.PartType.Cylinder)
 		part(folder, Vector3.new(2.2, 6.5, 6.5), CFrame.new(-8, 1.2, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(80, 150, 200), Enum.Material.Glass, Enum.PartType.Cylinder)
 	end
@@ -498,7 +521,7 @@ function PortScene.build(info, onFacility)
 			local doorZ = if f.pos.Z > 0 then f.pos.Z - f.d / 2 - 2 else f.pos.Z + f.d / 2 + 2
 			sign(folder, body, f.name, nil, f.floors * 3 + 6)
 			prompt(folder, Vector3.new(f.pos.X, 3, doorZ), f.name, "들어가기", f.tab, onFacility)
-			villager(folder, Vector3.new(f.pos.X + 3, 0, doorZ), if f.pos.Z > 0 then 0 else math.pi, Color3.fromRGB(rng:NextInteger(60, 160), rng:NextInteger(50, 120), rng:NextInteger(40, 110)), rng)
+			villager(folder, Vector3.new(f.pos.X + 3, 0, doorZ), if f.pos.Z > 0 then 0 else math.pi, Color3.fromRGB(rng:NextInteger(60, 160), rng:NextInteger(50, 120), rng:NextInteger(40, 110)), rng, KEEPER_ROLE[f.name] or "Knight")
 		end
 	end
 
@@ -564,7 +587,7 @@ function PortScene.build(info, onFacility)
 
 	-- 광장의 이야기 NPC
 	if (info.storyCount or 0) > 0 then
-		local n = villager(folder, Vector3.new(2, 0, -8), math.pi / 2, Color3.fromRGB(150, 40, 60), rng)
+		local n = villager(folder, Vector3.new(2, 0, -8), math.pi / 2, Color3.fromRGB(150, 40, 60), rng, "Rogue_Hooded")
 		local npcPart = n:FindFirstChildWhichIsA("BasePart", true)
 		if npcPart then sign(folder, npcPart, "! 이야기", Color3.fromRGB(180, 120, 30), 4) end
 		prompt(folder, Vector3.new(2, 3, -8), "수상한 손님", "이야기 듣기", "harbor", onFacility)
