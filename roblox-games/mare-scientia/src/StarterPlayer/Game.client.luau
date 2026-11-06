@@ -2375,6 +2375,9 @@ do
 	end
 	game:GetService("RunService").RenderStepped:Connect(function()
 		local camera = workspace.CurrentCamera
+		if workspace:GetAttribute("ShotCF") then
+			return -- 개발용 캡처 카메라(devloop-studio)가 켜져 있으면 전경 카메라는 양보한다
+		end
 		if overview and not inField and not sceneHold and camera.CameraType == Enum.CameraType.Scriptable then
 			local t = os.clock()
 			camera.CFrame = camBase * CFrame.new(math.sin(t * 0.25) * 5, math.sin(t * 0.4) * 0.7, 0)
