@@ -243,6 +243,21 @@ local Sites: { Site } = {
 	{ id = "amsterdam_dogger", name = "도거뱅크 어장", portId = "amsterdam", minLevel = 2, days = 2, pool = { "geo_dogger_bank" } },
 	{ id = "rouen_mont_saint_michel", name = "몽생미셸 만", portId = "rouen", minLevel = 3, days = 3, pool = { "site_mont_saint_michel" } },
 	{ id = "copenhagen_eider_isle", name = "솜털오리 섬", portId = "copenhagen", minLevel = 1, days = 1, pool = { "zoo_eider" } },
+	{ id = "dunkirk_flats", name = "도버 해협 갯벌", portId = "rouen", minLevel = 1, days = 1, pool = { "zoo_oyster", "zoo_lobster", "min_flint" } },
+	{ id = "norman_orchards", name = "노르망디 과수원", portId = "rouen", minLevel = 1, days = 1, pool = { "bot_apple", "bot_dune_grass" } },
+	{ id = "rouen_cathedral", name = "루앙 대성당 광장", portId = "rouen", minLevel = 2, days = 1, pool = { "site_rouen_cathedral" } },
+	{ id = "amsterdam_canals", name = "운하 고리 산책", portId = "amsterdam", minLevel = 2, days = 1, pool = { "site_amsterdam_canals", "geo_estuary" } },
+	{ id = "amsterdam_herring_quay", name = "청어 부두", portId = "amsterdam", minLevel = 1, days = 1, pool = { "zoo_herring", "geo_north_sea_swell" } },
+	{ id = "hamburg_estuary", name = "엘베 강 하구", portId = "hamburg", minLevel = 1, days = 1, pool = { "geo_estuary", "bot_barley", "bot_rye" } },
+	{ id = "gdansk_harbor", name = "그단스크 크레인 부두", portId = "gdansk", minLevel = 2, days = 1, pool = { "site_gdansk_crane", "zoo_herring" } },
+	{ id = "stockholm_skerries", name = "스톡홀름 스케리 군도", portId = "stockholm", minLevel = 2, days = 2, pool = { "geo_skerries", "bot_juniper", "zoo_sea_eagle" } },
+	{ id = "uppsala_mounds", name = "웁살라 봉분 들판", portId = "stockholm", minLevel = 3, days = 3, pool = { "site_uppsala_mounds", "relic_thor_hammer" } },
+	{ id = "gothenburg_beaver_lake", name = "서스웨덴 호수", portId = "gothenburg", minLevel = 2, days = 1, pool = { "zoo_beaver", "min_lead" } },
+	{ id = "bergen_kelp_coast", name = "베르겐 해초 해안", portId = "bergen", minLevel = 1, days = 1, pool = { "bot_kelp", "zoo_arctic_fox" } },
+	{ id = "bergen_arctic_log", name = "북극 항해 일지 열람", portId = "bergen", minLevel = 4, days = 3, pool = { "zoo_walrus", "zoo_polar_bear", "geo_midnight_sun" } },
+	{ id = "edinburgh_castle_rock", name = "에든버러 성 바위", portId = "edinburgh", minLevel = 2, days = 1, pool = { "site_edinburgh_castle" } },
+	{ id = "dublin_stones", name = "아일랜드 돌기둥 들판", portId = "dublin", minLevel = 2, days = 2, pool = { "relic_ogham_stone", "min_basalt" } },
+	{ id = "london_pewter_shop", name = "런던 백랍 상점", portId = "london", minLevel = 2, days = 1, pool = { "relic_pewter_plate", "min_sandstone" } },
 }
 
 return {
