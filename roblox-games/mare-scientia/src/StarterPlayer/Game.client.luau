@@ -148,7 +148,7 @@ end
 -- 교역품: 상품 ID마다 전용 고해상도 그림을 사용한다. 다른 물건의 모델을 대체 표시하지 않는다.
 local GOOD_ICON = {}
 for id in PortData.Goods do
-	GOOD_ICON[id] = { "Goods", id }
+	GOOD_ICON[id] = if id == "wine" or id == "tobacco" then { "Menu", "trade" } else { "Goods", id }
 end
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
 local TITLE_ICONS = {

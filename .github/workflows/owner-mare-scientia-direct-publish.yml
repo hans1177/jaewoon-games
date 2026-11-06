@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - 'roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau'
+      - 'roblox-games/mare-scientia/src/StarterPlayer/Game.client.luau'
   workflow_dispatch:
     inputs:
       universe_id:

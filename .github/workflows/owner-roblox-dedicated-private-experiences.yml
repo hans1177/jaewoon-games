@@ -374,8 +374,11 @@ jobs:
           const blockedHashes=new Set(contentSafety.blockedAssets.flatMap(row=>row.sha256||[]));
           const removedScenes=new Set(contentSafety.blockedAssets.filter(row=>row.gameId==='fantasy-survival')
             .flatMap(row=>row.sceneIndexes||[]));
-          const sceneIndexes=Array.from({length:12},(_,i)=>i+1).filter(index=>!removedScenes.has(index));
-          const depthIndexes=sceneIndexes.filter(index=>index!==8);
+          const replacements=contentSafety.blockedAssets.filter(row=>row.gameId==='fantasy-survival'&&row.replacementImage)
+            .map(row=>row.replacementImage);
+          const sceneIndexes=Array.from({length:12},(_,i)=>i+1).filter(index=>!removedScenes.has(index)
+            ||replacements.some(row=>row.sceneIndex===index));
+          const depthIndexes=sceneIndexes.filter(index=>index!==8&&!removedScenes.has(index));
           const expectedImages=sceneIndexes.length+depthIndexes.length;
           const bundles=[
             ['intro-1.zip','546e83424540c64cb749b7f251da64a89fcd4155ed5a077d13bc7975abb18d09'],
@@ -384,7 +387,7 @@ jobs:
             ['intro-32.zip',null],
             ['intro-4.zip','a8d5231aee3e1149d7ee456f1eef30e381663a7807219b6fc58fde354715015b'],
             ['intro-5.zip','a550f9bd42fd7ec37498f8d28863b3fb1531bc3dfaa8b3fbe9c8d8575d8316c4'],
-            ['intro-6.zip','fa58555e941beadc313a009a47b644b7b274cac47563c84cbff4c73ad74dfb9f'],
+            ['intro-6.zip','909241ef9d2a326998c1cd866f855b1035079fb5f69b1c346fb2831962f53ab2'],
           ];
           const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
           const illustrations=[];
@@ -405,6 +408,15 @@ jobs:
                 illustrations.push({index:row.index,type:'fg',data:fg,name:row.foreground,hash:row.foregroundSha256,mime:'image/png'});
               }
             }
+          }
+          // [안전 대체] 기존 소유 원본의 실물 파일·해시·등록번호가 일치하는 이미지만 재사용한다.
+          for(const row of replacements){
+            const data=fs.readFileSync(row.sourcePath);
+            if(sha(data)!==row.sha256||blockedHashes.has(row.sha256)||blockedIds.has(String(row.assetId))
+              ||row.visualReview!=='NO_BLOOD_NO_GORE_NO_REGULATED_GOODS_OBSERVED')
+              throw Error('SAFE_REPLACEMENT_PROVENANCE_INVALID:'+row.sceneIndex);
+            illustrations.push({index:row.sceneIndex,type:'bg',data,name:row.sourcePath.split('/').pop(),
+              hash:row.sha256,mime:'image/jpeg',assetId:String(row.assetId)});
           }
           if(illustrations.some(art=>blockedHashes.has(art.hash)))throw Error('REMOVED_IMAGE_SOURCE_FORBIDDEN');
           if(illustrations.length!==expectedImages||illustrations.filter(x=>x.type==='bg').length!==sceneIndexes.length||
@@ -512,7 +524,7 @@ jobs:
           const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
           const registered=[];
           for(const art of illustrations){
-            const receipt=registeredReceipts[art.index+':'+art.type];
+            const receipt=art.assetId?[art.assetId,art.hash]:registeredReceipts[art.index+':'+art.type];
             if(receipt){
               if(receipt[1]!==art.hash)throw Error('FOREST_INTRO_RECEIPT_PROVENANCE_MISMATCH_'+art.index);
               registered.push({index:art.index,type:art.type,assetId:receipt[0],sha256:art.hash});
