@@ -3317,6 +3317,7 @@ local meadowRpg=(function()
   return {transact=transact,stats=stats,publishStats=publishStats,equippedWeapon=function(player) return equipped(player,"Weapon") end,
     equippedShield=function(player) return equipped(player,"Shield") end,
     equippedChest=function(player) return equipped(player,"Chest") end,
+    equippedSlot=function(player,slot) return equipped(player,slot) end,
     nodeRank=nodeRank,nodeChoice=nodeChoice,passiveLevel=passiveLevel,validQuickCode=validQuickCode}
 end)()
 
@@ -3414,8 +3415,50 @@ local function refreshArmorVisual(player)
   weld.C0=CFrame.new(0,.25,-.05)
   weld.Parent=visual
 end
+-- [장갑·바지·장화 외형] 희귀 이상 장비만 등록된 CC0 메시(item_glove / item_pants / item_boots)를 해당 부위에 용접한다.
+-- 시작 장비와 일반·고급 장비는 기본 모습 그대로 둔다. 장비에 Tint가 있으면 색을 살짝 입힌다.
+local gearVisualSpec={
+  Hands={model="item_glove",height=1.0,parts={"LeftHand","RightHand"},offset=CFrame.new(0,-.05,0)},
+  Feet={model="item_boots",height=1.1,parts={"LeftFoot","RightFoot"},offset=CFrame.new(0,-.05,0)},
+  Legs={model="item_pants",height=2.3,parts={"LowerTorso"},offset=CFrame.new(0,-.7,0)},
+}
+local function refreshGearVisuals(player)
+  local character=player.Character
+  if not character then return end
+  for slot,spec in pairs(gearVisualSpec) do
+    for _,child in ipairs(character:GetChildren()) do
+      if child.Name=="MeadowGearVisual_"..slot then child:Destroy() end
+    end
+    local item=meadowRpg.equippedSlot and meadowRpg.equippedSlot(player,slot)
+    if item and (item.Rarity=="Rare" or item.Rarity=="Epic" or item.Rarity=="Legendary") then
+      for _,partName in ipairs(spec.parts) do
+        local anchor=character:FindFirstChild(partName)
+        if anchor then
+          local origin=character:FindFirstChild("HumanoidRootPart")
+          local model=worldAsset(spec.model,origin and origin.Position or Vector3.new(0,5,0),spec.height)
+          local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
+          if mesh then
+            local visual=mesh:Clone()
+            model:Destroy()
+            visual.Name="MeadowGearVisual_"..slot
+            visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
+            if item.Tint then visual.Color=visual.Color:Lerp(Color3.fromRGB(item.Tint[1],item.Tint[2],item.Tint[3]),.4) end
+            visual.Parent=character
+            local weld=Instance.new("Weld");weld.Part0=anchor;weld.Part1=visual;weld.C0=spec.offset;weld.Parent=visual
+          elseif model then
+            model:Destroy()
+          end
+        end
+      end
+    end
+  end
+end
 local function watchArmorVisual(player)
   player:GetAttributeChangedSignal("MeadowEquipChest"):Connect(function() refreshArmorVisual(player) end)
+  for _,attribute in ipairs({"MeadowEquipHands","MeadowEquipLegs","MeadowEquipFeet","MeadowGearOwned","MeadowGearOwned2","MeadowGearOwned3"}) do
+    player:GetAttributeChangedSignal(attribute):Connect(function() refreshGearVisuals(player) end)
+  end
+  player.CharacterAdded:Connect(function() task.wait(2.2);refreshGearVisuals(player) end)
   player.CharacterAdded:Connect(function() task.wait(1.8);refreshArmorVisual(player) end)
 end
 for _,existing in ipairs(Players:GetPlayers()) do watchArmorVisual(existing) end
