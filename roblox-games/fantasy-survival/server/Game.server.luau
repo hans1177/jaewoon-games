@@ -8977,6 +8977,60 @@ task.spawn(function()
     end
   end
 end)
+-- [지역 빈틈 배경 오브젝트] 지역마다 어울리는 CC0 바위·성곽 폐허·통나무 등을 흩어 놓아 빈 땅을 메운다(Kenney, 등록 모델만 사용).
+-- 길목·이정표·마을·생태 거점 가까이에는 놓지 않는다. 모델이 등록 안 됐거나 지면을 못 찾으면 그 자리는 건너뛴다.
+task.spawn(function()
+  while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(2) end
+  task.wait(6)
+  local world=Config.WorldMap
+  local village=world.Village
+  local random=Random.new(7711)
+  local scatter={
+    windcliff={{"vxRockLarge",16,5},{"vxRockWide",14,4}},
+    worldtree={{"vxTreeLog",3.5,6},{"vxCampfirePit",2.5,3}},
+    volcano={{"vxRockLarge",18,6},{"vxRockWide",16,4}},
+    oasis={{"vxCastleWall",8,4},{"vxCastleCorner",8,2},{"vxCastlePillar",11,4},{"vxTowerBase",12,2}},
+    swamp={{"vxTreeLog",3.5,6},{"vxRockWide",10,3}},
+    citadel={{"vxCastleWall",10,8},{"vxCastleCorner",10,3},{"vxCastlePillar",13,6},{"vxTowerBase",14,3},{"vxCastleGate",14,1}},
+    highland={{"vxRockLarge",18,6},{"vxRockWide",15,5}},
+    canyon={{"vxRockLarge",20,7},{"vxCastleWall",9,3},{"vxCastlePillar",12,3}},
+    chaos={{"vxRockLarge",18,5},{"vxCastlePillar",13,5}},
+    wetland={{"vxTreeLog",3.5,6},{"vxRockWide",10,3}},
+    desert={{"vxCastleWall",8,4},{"vxCastlePillar",11,4},{"vxTowerBase",12,2},{"vxRockLarge",14,3}},
+    deadmarsh={{"vxCastlePillar",12,4},{"vxCastleWall",9,3},{"vxTreeLog",3.5,4}},
+    meadow={{"vxTreeLog",3.5,4},{"vxCampfirePit",2.5,3},{"vxRockLarge",12,2}},
+  }
+  local function blocked(x,z)
+    if x>village.X0-30 and x<village.X1+30 and z>village.Z0-30 and z<village.Z1+30 then return true end
+    for _,wp in ipairs(world.Waypoints) do if (x-wp[2])^2+(z-wp[3])^2<90*90 then return true end end
+    for _,town in ipairs(world.Towns or {}) do if (x-town.X)^2+(z-town.Z)^2<110*110 then return true end end
+    for _,landmark in ipairs(world.Landmarks) do if (x-landmark.X)^2+(z-landmark.Z)^2<80*80 then return true end end
+    for _,region in ipairs(Config.EcoRegions or {}) do
+      for _,camp in ipairs(region.Camps) do if (x-camp.X)^2+(z-camp.Z)^2<45*45 then return true end end
+    end
+    for _,camp in pairs(world.EcoCamps or {}) do if (x-camp.X)^2+(z-camp.Z)^2<45*45 then return true end end
+    return false
+  end
+  local placed=0
+  for _,zone in ipairs(world.Zones) do
+    for _,entry in ipairs(scatter[zone.Id] or {}) do
+      for _=1,entry[3] do
+        local x,z=world.RandomPoint(zone.Id,random,40)
+        if x and not blocked(x,z) then
+          local model=worldAsset(entry[1],Vector3.new(x,3,z),entry[2]*random:NextNumber(.85,1.2))
+          if model then
+            model.Name="Scenery_"..zone.Id.."_"..entry[1].."_"..placed
+            model:SetAttribute("MeadowScenery",true)
+            model:PivotTo(model:GetPivot()*CFrame.Angles(0,random:NextNumber(0,math.pi*2),0))
+            placed+=1
+          end
+        end
+        task.wait()
+      end
+    end
+  end
+  workspace:SetAttribute("SceneryPlaced",placed)
+end)
 -- [바람 절벽 생태 거점] 자원이 나는 곳에 지킴이를 둔다(서브퀘 cliffmine/cliffnest/orccamp와 연결).
 do
   local camps=Config.WorldMap.EcoCamps
