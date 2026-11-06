@@ -6201,7 +6201,7 @@ do
     for i,button in ipairs(choices)do
       local option=typeof(payload.options)=="table" and payload.options[i] or nil
       local action=option and option.action
-      local permitted=(typeof(action)=="string" and (action:match("^village:story:%d$") or action:match("^smith:%a+$") or action:match("^cook:%d$") or action:match("^lm:%d+:%d$")) ~= nil) or action=="wp:east" or action=="wp:west" or (action:match("^wp:near:[123]$")~=nil) or (action:match("^estate:%a:%d+$")~=nil) or (action:match("^mount:%a+:%d$")~=nil) or (action:match("^estate:%a:%d+:%d+$")~=nil) or action=="co:toggle" or action=="ql:1" or action=="ql:2" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
+      local permitted=(typeof(action)=="string" and (action:match("^village:story:%d$") or action:match("^smith:%a+$") or action:match("^cook:%d$") or action:match("^lm:%d+:%d$")) ~= nil) or action=="wp:east" or action=="wp:west" or (action:match("^wp:near:[123]$")~=nil) or (action:match("^estate:%a:%d+$")~=nil) or (action:match("^mount:%a+:%d$")~=nil) or (action:match("^bounty:%a+:%d$")~=nil) or (action:match("^estate:%a:%d+:%d+$")~=nil) or action=="co:toggle" or action=="ql:1" or action=="ql:2" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
       button.Visible=permitted
       choiceActions[i]=permitted and action or nil
       if permitted then button.Text=tostring(option.label or "선택") end
@@ -11678,5 +11678,28 @@ end)()
     local v=tostring(player:GetAttribute("QAAction") or "")
     local id=v:match("^([^|]+)")
     if id then pcall(activateMeadowAction,id) end
+  end)
+end)()
+
+-- [탈것 빠른 버튼] 탈것을 하나라도 샀으면 화면 오른쪽에 버튼이 나온다. 누르면 마지막 탈것을 타고, 타는 중이면 내린다(서버가 마을·전투 상태를 검사).
+;(function()
+  local playerGui=player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui")
+  local gui=Instance.new("ScreenGui");gui.Name="MountQuickGui";gui.ResetOnSpawn=false;gui.DisplayOrder=30;gui.Parent=playerGui
+  local button=Instance.new("TextButton")
+  button.Name="MountQuickButton";button.AnchorPoint=Vector2.new(1,.5);button.Position=UDim2.new(1,-14,.5,60);button.Size=UDim2.fromOffset(56,56)
+  button.BackgroundColor3=Color3.fromRGB(60,44,30);button.BackgroundTransparency=.12;button.TextColor3=Color3.fromRGB(255,232,180)
+  button.Font=Enum.Font.GothamBold;button.TextSize=13;button.Text="탈것";button.AutoButtonColor=true;button.Visible=false;button.Parent=gui
+  local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(1,0);corner.Parent=button
+  local stroke=Instance.new("UIStroke");stroke.Color=Color3.fromRGB(230,190,110);stroke.Thickness=2;stroke.Parent=button
+  local function refresh()
+    local owned=tonumber(player:GetAttribute("MountOwned")) or 0
+    button.Visible=owned~=0
+    button.Text=(tonumber(player:GetAttribute("MountRiding")) or 0)~=0 and "내리기" or "탈것"
+  end
+  player:GetAttributeChangedSignal("MountOwned"):Connect(refresh)
+  player:GetAttributeChangedSignal("MountRiding"):Connect(refresh)
+  refresh()
+  button.Activated:Connect(function()
+    remote:FireServer("mount:quick:0")
   end)
 end)()

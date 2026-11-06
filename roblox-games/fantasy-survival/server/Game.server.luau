@@ -4981,6 +4981,7 @@ local function applyMeadowDamage(player,target,damage,isDot)
       drop("Magma",target.isBoss and 1 or 0.03,target.isBoss and 3 or 1)
       for _,entry in ipairs(target.siteDrops or {}) do drop(entry[1],entry[2],entry[3]) end
       if meadowOil.questKill then pcall(meadowOil.questKill,player,target) end
+      if meadowOil.bountyKill then pcall(meadowOil.bountyKill,player,target) end
       if target.contractIndex then
         local flag=bit32.lshift(1,target.contractIndex-1)
         if bit32.band(readNumber(player,"ContractAccepted",0),flag)~=0 then
@@ -9608,12 +9609,125 @@ task.spawn(function()
   end
 end)
 
+-- [마을 현상금] 마을 현상금 게시판에서 그 지역 몬스터 처치 현상금을 받는다(소형 8마리 · 대형 20마리). 한 번에 하나, 보고는 아무 마을 게시판에서나.
+do
+  local W=Config.WorldMap
+  local zoneTier={windcliff=3,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9,meadow=2}
+  local sessions={}
+  local lastAction={}
+  local function zoneName(id) for _,z in ipairs(W.Zones) do if z.Id==id then return z.Name end end return id end
+  local function zoneIdOf(index) return W.Zones[index] and W.Zones[index].Id end
+  local function toast(player,text)
+    player:SetAttribute("MeadowGearMessage",text)
+    player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+  end
+  meadowOil.bountyKill=function(player,target)
+    local zi=readNumber(player,"BountyZone",0)
+    if zi==0 or not target.position then return end
+    local need=readNumber(player,"BountyNeed",0)
+    local have=readNumber(player,"BountyKills",0)
+    if have>=need then return end
+    if W.ZoneAt(target.position.X,target.position.Z)~=zoneIdOf(zi) then return end
+    have+=1
+    setNumber(player,"BountyKills",have)
+    if have>=need then toast(player,"현상금 목표 완료! 마을 게시판에서 보상을 받아라.")
+    elseif have%2==0 then toast(player,"현상금 "..zoneName(zoneIdOf(zi)).." "..have.."/"..need) end
+  end
+  local function boardMenu(player,town)
+    sessions[player]={town=town,expires=os.clock()+60}
+    local zi=readNumber(player,"BountyZone",0)
+    if zi==0 then
+      local zid=town.Zone
+      local zoneIndex
+      for i,z in ipairs(W.Zones) do if z.Id==zid then zoneIndex=i end end
+      villageDialogue(player,town.Name.." 현상금 게시판",town.Hold.."에서 몬스터를 처치하는 현상금이다. 어느 몬스터든 이 지역에서 잡으면 센다. 한 번에 하나만 받을 수 있다.\n\n· 소형: 8마리 — 코인과 주괴\n· 대형: 20마리 — 큰 코인과 결정, 가죽",
+        {{label="소형 현상금 (8마리)",action="bounty:take:1"},{label="대형 현상금 (20마리)",action="bounty:take:2"}})
+    else
+      local need=readNumber(player,"BountyNeed",0)
+      local have=readNumber(player,"BountyKills",0)
+      local text="진행 중: "..zoneName(zoneIdOf(zi)).." 몬스터 "..have.."/"..need.."마리 ("..(readNumber(player,"BountyBig",0)==1 and "대형" or "소형")..")"
+      local options={}
+      if have>=need then options[#options+1]={label="보상 받기",action="bounty:claim:0"} end
+      options[#options+1]={label="현상금 포기",action="bounty:drop:0"}
+      villageDialogue(player,town.Name.." 현상금 게시판",text,options)
+    end
+  end
+  remote.OnServerEvent:Connect(function(player,action)
+    if typeof(action)~="string" or action:sub(1,7)~="bounty:" then return end
+    local verb,arg=action:match("^bounty:(%a+):(%d)$")
+    if not verb then return end
+    arg=tonumber(arg)
+    local session=sessions[player]
+    if not session or os.clock()>session.expires then return end
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    local town=session.town
+    if not root or (root.Position-Vector3.new(town.X,root.Position.Y,town.Z)).Magnitude>120 then return end
+    if os.clock()-(lastAction[player] or 0)<1 then return end
+    lastAction[player]=os.clock()
+    local zi=readNumber(player,"BountyZone",0)
+    if verb=="take" and zi==0 and (arg==1 or arg==2) then
+      local zoneIndex
+      for i,z in ipairs(W.Zones) do if z.Id==town.Zone then zoneIndex=i end end
+      if not zoneIndex then return end
+      setNumber(player,"BountyZone",zoneIndex)
+      setNumber(player,"BountyNeed",arg==1 and 8 or 20)
+      setNumber(player,"BountyKills",0)
+      setNumber(player,"BountyBig",arg==2 and 1 or 0)
+      villageDialogue(player,"현상금","현상금을 받았다. "..town.Hold.."에서 몬스터 "..(arg==1 and 8 or 20).."마리를 처치하라.")
+    elseif verb=="drop" and zi~=0 then
+      setNumber(player,"BountyZone",0);setNumber(player,"BountyKills",0);setNumber(player,"BountyNeed",0)
+      villageDialogue(player,"현상금","현상금을 포기했다.")
+    elseif verb=="claim" and zi~=0 then
+      local need=readNumber(player,"BountyNeed",0)
+      if readNumber(player,"BountyKills",0)<need then return end
+      local tier=zoneTier[zoneIdOf(zi)] or 4
+      local big=readNumber(player,"BountyBig",0)==1
+      local coins=tier*(big and 140 or 60)
+      setNumber(player,"Coins",readNumber(player,"Coins",0)+coins)
+      local gifts={}
+      if big then
+        setNumber(player,"Crystal",readNumber(player,"Crystal",0)+3);gifts[#gifts+1]="마력 결정 3"
+        setNumber(player,"Leather",readNumber(player,"Leather",0)+3);gifts[#gifts+1]="무두질 가죽 3"
+      else
+        setNumber(player,"Ingot",readNumber(player,"Ingot",0)+1+math.floor(tier/4));gifts[#gifts+1]="주괴 "..(1+math.floor(tier/4))
+      end
+      pcall(awardProgress,player,tier*(big and 60 or 25),0)
+      setNumber(player,"BountyZone",0);setNumber(player,"BountyKills",0);setNumber(player,"BountyNeed",0)
+      villageDialogue(player,"현상금","현상금을 받았다!\n코인 +"..coins.."\n"..table.concat(gifts,", "))
+    end
+  end)
+  task.spawn(function()
+    while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(3) end
+    task.wait(26)
+    local rp=RaycastParams.new();rp.FilterType=Enum.RaycastFilterType.Include;rp.FilterDescendantsInstances={workspace.Terrain}
+    for _,town in ipairs(W.Towns or {}) do
+      local a=3/4*math.pi*2+.4
+      local x,z=town.X+math.cos(a)*19,town.Z+math.sin(a)*19
+      local hit=workspace:Raycast(Vector3.new(x,400,z),Vector3.new(0,-800,0),rp)
+      if hit then
+        task.spawn(function()
+          local board=worldAsset("vxPoles",hit.Position,4.4)
+          if board then board.Name="BountyBoard_"..town.Id;board:SetAttribute("MeadowScenery",true) end
+        end)
+        local anchor=Instance.new("Attachment");anchor.Name="BountyBoard_"..town.Id;anchor.WorldPosition=hit.Position+Vector3.new(0,2,0);anchor.Parent=workspace.Terrain
+        local prompt=Instance.new("ProximityPrompt");prompt.ActionText="현상금 게시판";prompt.ObjectText=town.Name;prompt.HoldDuration=.4
+        prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=anchor
+        prompt.Triggered:Connect(function(player)
+          if player:GetAttribute("ProfileReady")~=true then return end
+          boardMenu(player,town)
+        end)
+      else warn("BOUNTY_BOARD_GROUND_UNVERIFIED "..town.Id) end
+    end
+  end)
+end
+
 -- [탈것] 마을 마구간(12곳)에서 당나귀·말·황소·숲사슴을 사고 탄다. 타면 걸음이 빨라지고, 피격·마을 진입·던전 입장 시 자동으로 내린다.
 do
   local MOUNTS=Config.Mounts
   local riding={}
   local sessions={}
   local lastAction={}
+  local lastRide={}
   local function dismount(player,reason)
     local st=riding[player]
     if not st then return end
@@ -9651,6 +9765,7 @@ do
     model.Name="Mount_"..player.UserId
     local st={hip=humanoid.HipHeight,walk=humanoid.WalkSpeed,model=model,index=index}
     riding[player]=st
+    lastRide[player]=index
     humanoid.HipHeight=st.hip+math.max(0,m.Height-2)
     task.wait()
     -- 안장 위치: 모델 윗면을 루트 아래 1스터드에 맞춘다.
@@ -9718,6 +9833,23 @@ do
     local verb,arg=action:match("^mount:(%a+):(%d)$")
     if not verb then return end
     arg=tonumber(arg)
+    if verb=="quick" then
+      -- 빠른 버튼: 타는 중이면 내리고, 아니면 마지막(없으면 가장 빠른) 보유 탈것을 탄다. 마을·던전 안에서는 타지 못한다.
+      if os.clock()-(lastAction[player] or 0)<1 then return end
+      lastAction[player]=os.clock()
+      if riding[player] then dismount(player,"탈것에서 내렸다.");return end
+      local r=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+      if not r then return end
+      if inSafePlace(r) then pcall(function() villageDialogue(player,"탈것","마을과 던전 안에서는 탈것을 탈 수 없다. 마을 밖으로 나가자.") end);return end
+      local owned=readNumber(player,"MountOwned",0)
+      local pick=lastRide[player]
+      if not pick or bit32.band(owned,bit32.lshift(1,pick-1))==0 then
+        pick=nil
+        for i=#MOUNTS,1,-1 do if bit32.band(owned,bit32.lshift(1,i-1))~=0 then pick=i;break end end
+      end
+      if pick then mount(player,pick) end
+      return
+    end
     local session=sessions[player]
     if not session or os.clock()>session.expires then return end
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
