@@ -54,6 +54,10 @@ STYLE.tropic = variant(STYLE.med,
 	{ C(184, 140, 96), C(160, 110, 74), C(204, 164, 112), C(140, 96, 64), C(226, 196, 150) },
 	{ C(150, 120, 70), C(130, 100, 60) }, C(112, 150, 70), C(176, 150, 112), 0.55)
 local REGION = {
+	nagasaki = "brick", osaka = "brick", edo = "brick",
+	hakodate = "nordic",
+	macau = "stone", canton = "stone", amoy = "stone", ningbo = "stone", shanghai = "stone", tianjin = "stone", busan = "stone", incheon = "stone",
+	manila = "tropic", hoi_an = "tropic", bangkok = "tropic", rangoon = "tropic", singapore = "tropic", batavia = "tropic", makassar = "tropic", ternate = "tropic", ambon = "tropic", banda = "tropic", brunei = "tropic", tainan = "tropic",
 	aden = "desert", mocha = "desert", jeddah = "desert", muscat = "desert", bandar_abbas = "desert", basra = "desert",
 	mozambique = "tropic", kilwa = "tropic", mombasa = "tropic", zanzibar = "tropic", mogadishu = "tropic", goa = "tropic", calicut = "tropic", cochin = "tropic", colombo = "tropic", madras = "tropic", calcutta = "tropic", malacca = "tropic", port_louis = "tropic", diu = "tropic", surat = "tropic",
 	praia = "tropic", saint_louis = "tropic", dakar = "tropic", bissau = "tropic", freetown = "tropic", elmina = "tropic", ouidah = "tropic",
