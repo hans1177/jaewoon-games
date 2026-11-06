@@ -259,3 +259,49 @@ Kenney Food Kit · CC0-1.0 공식 허용: https://kenney.nl/assets/food-kit. 원
 | `cargo/sausage.glb` | `1ab2174d07093b9657b7681b76a60a6c4e4c7c4f` |
 
 미검증: Roblox 실물 모델 업로드/권한/배치/텍스처/모바일 런타임/배포.
+
+
+## 2026-11-06 교역 원자재·직물·보석·화물 34종
+
+KayKit Resource Bits 1.0, 제작자 Kay Lousberg. CC0-1.0, 상업 이용·수정 허용. 공식 출처: https://kaylousberg.itch.io/resource-bits 및 https://kaylousberg.com/game-assets/resource-bits . 원본 미러: https://github.com/GeorgeQLe/assets-kaykit-3d-props , 고정 리비전 `4376b8becf4218424edaba18c0e43a5989c189f6`. 미러 동봉 `LICENSES/KayKit-CC0-License.txt` 확인. 원본 GLTF+BIN+텍스처 69개와 라이선스 1개의 Git Blob SHA 검증. GLB는 원본 메시·재질·UV를 바꾸지 않고 외부 버퍼와 텍스처만 내장해 패키징했다.
+
+이름이 없는 보석의 광물 종류 및 직물의 섬유 종류는 확정하지 않는다. 항구별 특산품·가격·저장 구조는 변경하지 않는다. Roblox 등록은 기존 `owner-mare-scientia-assets.yml` 및 `mare-scientia-upload-assets.mjs` 사용. 실제 등록 ID·Universe 사용 권한·게임 내 표시 결과 확인 전까지 미검증.
+
+| 파일 | 원본 GLTF Git SHA | 원본 BIN Git SHA | GLB SHA-256 |
+|---|---|---|---|
+| `cargo/copper-bar.glb` | `62ba03eb45d9f3bab7d37e3a5466749fbdece4c3` | `dd4213281bcd636f92ecd6cf3d5e2161a0ab1d21` | `6e6e3d7a4287860f43dd5f2fe948e5077ddef291dfb05120d1901c2780816dc2` |
+| `cargo/copper-bars.glb` | `3b1b595ab692c26e9d6fd4282bae12cb7fb8fe9b` | `137101244d5bfcc87cfc0750aa4693d80ef80734` | `65468366a31b1549c154fd31597d8198a39d0fb1c151fb91ee951ae0afa9bca4` |
+| `cargo/copper-nuggets.glb` | `2060ff1f8ce67a809563869a0f59ae9dd92b8b31` | `cf96594265205429f42b01eb1fd4048ae1427b13` | `5bbdde0572d7ae4a850be0408689c8926290407dc60185bb08444480a7fdd90a` |
+| `cargo/gold-bar.glb` | `2f19e6c9a05e85248e0e7a36f1fa956689aa69ff` | `52e56cc45dca6b90569b0f18515dee31a1ba2b6e` | `385e7342e94daaf4b0c13cd7d893970c9095f4d41cc71274479c2bcffccb28d4` |
+| `cargo/gold-bars.glb` | `8294e75b86d4473645b54d9230eec4957978f4fd` | `6dfdc31d8145b7a6052e73eb94cc2797495cd6ab` | `0454f8d78dda205b0dd23de4be4dc21647550ea9a09ca6b6cad42fc1d19dc93e` |
+| `cargo/gold-nuggets.glb` | `8ed7406393b242664b7d5e084a96be26e014a0a3` | `5e878550ccf32bcabd31196dc8ec7a380f0ff51e` | `83e2a9f255b52ec267bb39f3820ba1be7adacd853b0cb334874bf904259ca5b9` |
+| `cargo/iron-bar.glb` | `fb11fcda2eaeff16f6df39957f20605bb30df670` | `f960cffc97ecc006516dca6cd2da72256313743c` | `be7b4ee78a37a470ed6cd08deaaadb8df1e406476d7c5d5104762a290cb19693` |
+| `cargo/iron-bars.glb` | `6522f0286d5cb3a5e2a0d3e62021ac124f9c1252` | `e30c8686f6c6bcddf60c5e8e9fa10e1b04720403` | `b6c05e0db465b6379952912f4a506da7cd2b2c2d5d9292c768d6cf74d64405ff` |
+| `cargo/iron-nuggets.glb` | `d936e84917b1b9eec9e16e69d712496c0aaef156` | `21f0323678c70b4340b1e4dd360ff00c6cacea82` | `c3a77d0ae92201288cd7979c1127b8958d73671d688062b63a113aaa168842aa` |
+| `cargo/silver-bar.glb` | `31d1c7551862f74f948b0bd234da22eb0f27f5f5` | `489f0ba637bd550ee640803c9e7f2c0e0c057508` | `c6ca3f618246a3ded65c93611878e60d3d8a25b77c38576e51a83b95eddcf525` |
+| `cargo/silver-bars.glb` | `aa17f92ff8596dd6c0a21587d7934303d3175c05` | `c48208008f973c4221b732b650201cae42b0fe97` | `25dca8a8d1dc1235e2e859b0e45fea23662d4f83ff8780a437d5d97aba02805d` |
+| `cargo/silver-nuggets.glb` | `fef1a3645862fa71de05aace640900bd9b89a73d` | `e980b4fa657a47e4c369b55fd495d4e0fca7b670` | `166b0e3ccd49bd81b73051034bb24d3c087818a519ef31593673e6ebdd240e20` |
+| `cargo/textiles-a.glb` | `b6328eb10fd79e0af4248822ca1dfba9fe10af3a` | `5742c9f7a16665da9ad31661df1c05cd40c8ea6f` | `ce81c2c7c15b73a3b3380eaeac3a32852321945c8d3d6a8b7425a8989eb19bee` |
+| `cargo/textiles-b.glb` | `f027aa68c654329da624df0a9424a13b3bf942a4` | `e22d2223f3c39b402416f265b4c83a2d34eb4e43` | `f2fc9d3425946826ed7d5da0e979f06573c43cd6a65b35318f83ab68367ec4e0` |
+| `cargo/textiles-c.glb` | `18db3f7fdbbb3bbe014f4ad70757d10a9adf5677` | `7aeca4fbbc19ff8164b2818bfefec116f6c704db` | `2d7a5aa760ba9f6803bba6da1f5eba1585a07c8f8b5383411386bdca7fbe9345` |
+| `cargo/textiles-stack-large.glb` | `505b7c6c27f2e2e3c6ad95399c4a44fc62d7d482` | `2144078092c2ae33916c37fd7ac775de0d9a914f` | `a01b0aee6e25bd22a444b841d2597180b7d4790f0c9b0defd40dd8667b86f136` |
+| `cargo/textiles-stack-large-colored.glb` | `0bcfd91eadecdb280543c033c453544a7bfbe4cf` | `fc59ce4a46ff39996f4ca0254195dd0f56745706` | `0ec3ba2ca20072155c3d170f0c4f4848df602d10611fe5508a70d92e1ae58a08` |
+| `cargo/textiles-stack-small.glb` | `3b83155ac8ca20146b1188a7e49c7387456fb287` | `62976a4c9f50dad3b6105063fab56ab07a0388e9` | `ec57565a62acf4b1d76902561f39500425f9e9d5acdbd2857a061a3d205fd616` |
+| `cargo/wood-log-a.glb` | `bed16dd56de2ccea7ae840ece7eaa30c8a4cde3b` | `3462f8a449c6e73b0bb893c40fc3e83c16182e8c` | `7c814dcee624df429aa81828b219c58c1cb18dce49bf737919aef8342e071dd9` |
+| `cargo/wood-log-stack.glb` | `2a781efd80d3c717bc5e5a1aab5f09c8f01e18d1` | `fb078a5a53156a19dcd6f253df69b513f2233b3a` | `457874838bb6ec6c0019a7087330b895b704d1ac572700b57077216f2ac43824` |
+| `cargo/wood-plank-a.glb` | `b6308fb681f8082683d848fd853c0f16a13505d2` | `896485350d44bc086e69f18a709e0c5a1c40822f` | `cf6f3f72f0359bb926b6d7c060dae2cfbcf772f0ac0551963d64cf97736cbc52` |
+| `cargo/wood-planks-stack-small.glb` | `98b3bf8593c9d26a31b2e9205559299faa2a16a0` | `a4a22af0f593543f676b45ddf5567b8c6f4a215d` | `a5deaf27ca5221bf32e35236f75c2d20734ec03f6ca5c3c800501ef952c64a71` |
+| `cargo/stone-brick.glb` | `2ee9ea4be57dbd023018a14ea9cc44837a5a69c6` | `0c5cfef320479d2b608fe2ed2ab67fb3f1228301` | `1795e9b294990e94f54ac6f3b5406a2ac7057cfe7a86cb99bb29822c444639c8` |
+| `cargo/stone-bricks-stack-small.glb` | `cc0c13efbbcd127c073a66813943e790d98a481a` | `8723d0f56f059449d33a60cab661bb98876d1f9a` | `881d3a6b4b2c86dd0d66c2882fbb93775104f4650eeec03203c60c8fadbecb97` |
+| `cargo/parts-cog.glb` | `b6ced1c10f64431274e31d98a8bee6dbdbe82897` | `55041d3412870e244a15df36bb7e5f0a66a55af7` | `c0a02c3d894ae231e3d6f18b65e157a291ac923445287c9143c77b02e0c0ece9` |
+| `cargo/parts-pile-small.glb` | `ff5604d340e4d00c0a3fa868284ccc4d78ccec28` | `57e3ff2136ec04bb87a729e3968542199cbb6b88` | `77bf70bb33da6316b8726e65b2aea63db910f231a918320ba2e72e74784adaa3` |
+| `cargo/gem-large.glb` | `2f653f9f4bf6d3e8fa1228a7e698ed92c51f6ae5` | `fedb6b6354311ec998ef90d7e791f6ed5d80b099` | `083942d6365accab2dfddb381097a9f57f502269b29470c9c66631bf859f26ad` |
+| `cargo/gem-medium.glb` | `0f88ed6a8fb40afe65de2f4c7580853a5a633432` | `0eb08cc52131fb0d016cdfa96d4e52bb261a71d9` | `47dcca396ae4eb7904068cd8842a1211ad828ffbb16210d789b8d287d06b4f05` |
+| `cargo/gem-small.glb` | `f9148255bd694e8fd48f829e689ae323ca2d3cd5` | `6c8e87900598651ca2559630632e5126f5790410` | `2ed43c725331a7d26ffec361d5a5579818e2835e9976cf014bdd87cfb3a61cf6` |
+| `cargo/gems-sack.glb` | `9b13bd371dfdae856c1441700fbe97c413f2404a` | `b4e9fba27a1efb8ade7ef345cc25bc19ed5b6bbe` | `c0f370505c8cec22c7bb4d8e05f0e935666b69e7860b42bd35954244334d3e8d` |
+| `cargo/food-flour.glb` | `e5769fb746e3974871f1df52497c9fa9810cafea` | `bb2a69c4adb6301318c14c8e12d947272613845f` | `a3a7c3a6a9160cc2e71d205b85dea84184f3fb9067e63c1a46a4cccc9747df9d` |
+| `cargo/food-barrel-fish.glb` | `8fc4ac8127a99018f41370dd8f6890290b03fa24` | `016b92abea9d726824fa7758c9aeff94a491a08a` | `3f190e1410c001b2f047afcd227fa92deadd5749566c4be63a80bccf1f4a0d54` |
+| `cargo/food-basket-a-berries.glb` | `01c244e9265ec9eb31f4ca6ee0891374e61fd068` | `429abfb5b2cd376aeee0ab0b9ee01382fd5a0627` | `7c52e814b8d2b920da1013684a2ba0d5ca2d20d9968ba7fb43f2b6ab845003c5` |
+| `cargo/food-crate-large-apples.glb` | `da44ed07390e36b98c3157542d665724431a6912` | `1f9a659851c18788e75666cd34feb6ce670e1a16` | `43e77fc185893c8a3239d56ec5e352b1aeb347a99cc2dc9c92417d9721eb4836` |
+
+공유 텍스처 Git Blob SHA: `b0e6fab6acb6af12a5eb81c50e9a125b39ca8c80`. 원본 라이선스 Git Blob SHA: `0db19d25d701192a4d5dc58860ce161f75f73968`.
