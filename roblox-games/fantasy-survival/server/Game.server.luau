@@ -9665,15 +9665,18 @@ do
           if os.clock()<readyAt then toast(player,name.."은(는) 아직 광석이 차오르는 중이다.");return end
           local prof=readNumber(player,"MiningProficiency",0)
           local level=Config.MiningLevel(prof)
-          if level<req then toast(player,name.." 채굴에는 채굴 Lv"..req.."이 필요하다. (지금 Lv"..level..")");return end
+          local pick=Config.Pickaxes[readNumber(player,"PickaxeTier",0)]
+          local effective=level+(pick and pick.Level or 0)
+          if effective<req then toast(player,name.." 채굴에는 채굴 Lv"..req.."이 필요하다. (지금 Lv"..level..(pick and ("+곡괭이 "..pick.Level) or "")..")");return end
           readyAt=os.clock()+cooldown
           prompt.Enabled=false;fx.Enabled=false
           task.delay(cooldown,function() prompt.Enabled=true;fx.Enabled=true end)
-          local amount=2+math.floor((level-req)/1)+(level>=4 and 1 or 0)
+          local amount=2+math.max(0,effective-req)+(effective>=4 and 1 or 0)+(pick and pick.Amount or -1)
+          amount=math.max(1,amount)
           if material=="Ingot" or material=="Ectoplasm" or material=="Magma" then amount=math.max(1,math.ceil(amount*.6)) end
           setNumber(player,material,readNumber(player,material,0)+amount)
           local extra={}
-          if math.random()<.06+level*.02 then
+          if math.random()<.06+level*.02+(pick and pick.Rare or 0) then
             local rare=material=="Crystal" and "Magma" or "Crystal"
             setNumber(player,rare,readNumber(player,rare,0)+1)
             extra[#extra+1]=(Config.MaterialByField[rare] and Config.MaterialByField[rare].Name or rare).." +1 (희귀)"
@@ -9687,10 +9690,134 @@ do
           local matName=Config.MaterialByField[material] and Config.MaterialByField[material].Name or material
           local msg=name..": "..matName.." +"..amount..(#extra>0 and (" · "..table.concat(extra,", ")) or "")
           if after>level then msg=msg.."\n채굴 Lv"..after.." 달성!" end
+          if not pick then msg=msg.."\n(곡괭이가 없어 수확이 적다. 마을 광부에게 구하자)" end
           toast(player,msg)
           if material=="Ore" and meadowOil.questEvent then pcall(meadowOil.questEvent,player,"MINE_ORE") end
         end)
       else warn("MINING_VEIN_GROUND_UNVERIFIED "..index) end
+    end
+  end)
+end
+
+-- [광부 NPC] 12개 마을마다 광부가 있다. 채굴 훈련(코인)과 곡괭이 제작을 맡는다. 훈련은 채굴 Lv4까지만 가르쳐 준다.
+do
+  local sessions={}
+  local lastAction={}
+  local PICKS=Config.Pickaxes
+  local function toast(player,text)
+    player:SetAttribute("MeadowGearMessage",text)
+    player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+  end
+  local function costParts(pick)
+    local parts={}
+    for _,f in ipairs({"Coins","Ingot","Steel","Crystal","Claw","Fang"}) do
+      if (pick[f] or 0)>0 then
+        local mat=Config.MaterialByField[f]
+        parts[#parts+1]=(f=="Coins" and "코인" or mat and mat.Name or f).." "..pick[f]
+      end
+    end
+    return table.concat(parts,", ")
+  end
+  local function menu(player,town)
+    sessions[player]={town=town,expires=os.clock()+60}
+    local prof=readNumber(player,"MiningProficiency",0)
+    local level=Config.MiningLevel(prof)
+    local tier=readNumber(player,"PickaxeTier",0)
+    local nextPick=PICKS[tier+1]
+    local lines={"광부: '"..town.Hold.."의 광맥은 깊을수록 값이 나가지. 곡괭이와 요령만 있으면 누구나 캘 수 있어.'\n",
+      "채굴 Lv"..level.." ("..prof.."/"..(Config.MiningThresholds[level+1] or "최고")..") · 곡괭이: "..(PICKS[tier] and PICKS[tier].Name or "없음")}
+    local options={}
+    if level<4 then
+      lines[#lines+1]="채굴 훈련 — 코인 "..(60*level).." (숙련 +8, 최대 Lv4까지)"
+      options[#options+1]={label="채굴 훈련 ("..(60*level).." 코인)",action="miner:train:0"}
+    end
+    if nextPick then
+      lines[#lines+1]="다음 곡괭이: "..nextPick.Name.." (채굴 Lv"..nextPick.NeedMining.." 필요) — "..costParts(nextPick)
+      options[#options+1]={label=nextPick.Name.." 제작",action="miner:craft:0"}
+    else
+      lines[#lines+1]="가장 좋은 곡괭이를 가졌다."
+    end
+    options[#options+1]={label="광맥 이야기",action="miner:info:0"}
+    villageDialogue(player,town.Name.." 광부",table.concat(lines,"\n"),options)
+  end
+  remote.OnServerEvent:Connect(function(player,action)
+    if typeof(action)~="string" or action:sub(1,6)~="miner:" then return end
+    local verb=action:match("^miner:(%a+):%d$")
+    if not verb then return end
+    local session=sessions[player]
+    if not session or os.clock()>session.expires then return end
+    local town=session.town
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not root or (root.Position-Vector3.new(town.X,root.Position.Y,town.Z)).Magnitude>120 then return end
+    if os.clock()-(lastAction[player] or 0)<1 then return end
+    lastAction[player]=os.clock()
+    local prof=readNumber(player,"MiningProficiency",0)
+    local level=Config.MiningLevel(prof)
+    if verb=="train" then
+      if level>=4 then return end
+      local cost=60*level
+      if readNumber(player,"Coins",0)<cost then villageDialogue(player,"광부","훈련비가 모자라. 코인 "..cost.."이 필요해.");return end
+      setNumber(player,"Coins",readNumber(player,"Coins",0)-cost)
+      setNumber(player,"MiningProficiency",prof+8)
+      local after=Config.MiningLevel(prof+8)
+      villageDialogue(player,"광부","망치질 요령을 가르쳐 줬다. 채굴 숙련 +8"..(after>level and ("\n채굴 Lv"..after.." 달성!") or ""),{{label="계속 이야기",action="miner:info:0"}})
+    elseif verb=="craft" then
+      local tier=readNumber(player,"PickaxeTier",0)
+      local pick=PICKS[tier+1]
+      if not pick then return end
+      if level<pick.NeedMining then villageDialogue(player,"광부",pick.Name.."은(는) 채굴 Lv"..pick.NeedMining.."부터 쓸 수 있어.");return end
+      for _,f in ipairs({"Coins","Ingot","Steel","Crystal","Claw","Fang"}) do
+        if (pick[f] or 0)>0 and readNumber(player,f,0)<pick[f] then villageDialogue(player,"광부","재료가 모자라: "..costParts(pick));return end
+      end
+      for _,f in ipairs({"Coins","Ingot","Steel","Crystal","Claw","Fang"}) do
+        if (pick[f] or 0)>0 then setNumber(player,f,readNumber(player,f,0)-pick[f]) end
+      end
+      setNumber(player,"PickaxeTier",tier+1)
+      villageDialogue(player,"광부",pick.Name.."을(를) 만들어 줬다! 가장 좋은 곡괭이가 자동으로 쓰여. 더 깊은 광맥을 캘 수 있고 수확도 늘어.",{{label="계속 이야기",action="miner:info:0"}})
+    elseif verb=="info" then
+      villageDialogue(player,"광부","· 철광맥은 어디서나 캘 수 있어.\n· 수정맥과 화산석은 채굴 Lv2~3부터.\n· 원혼석과 심층 철맥은 Lv4 이상, 혼돈의 수정맥은 Lv5야.\n· 좋은 곡괭이는 레벨이 모자라도 한 단계 깊은 맥을 캐게 해 줘.")
+    end
+  end)
+  task.spawn(function()
+    while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(3) end
+    task.wait(28)
+    local rp=RaycastParams.new();rp.FilterType=Enum.RaycastFilterType.Include;rp.FilterDescendantsInstances={workspace.Terrain}
+    for _,town in ipairs(Config.WorldMap.Towns or {}) do
+      local a=2.2
+      local x,z=town.X+math.cos(a)*30,town.Z+math.sin(a)*30
+      local hit=workspace:Raycast(Vector3.new(x,400,z),Vector3.new(0,-800,0),rp)
+      if not hit then warn("MINER_GROUND_UNVERIFIED "..town.Id)
+      else
+        task.spawn(function()
+          local ok,npc=pcall(function()
+            local desc=Instance.new("HumanoidDescription")
+            local skin=Color3.fromRGB(190,140,100)
+            desc.HeadColor=skin;desc.LeftArmColor=skin;desc.RightArmColor=skin;desc.TorsoColor=Color3.fromRGB(90,80,70)
+            desc.LeftLegColor=Color3.fromRGB(60,50,44);desc.RightLegColor=Color3.fromRGB(60,50,44)
+            local m=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
+            desc:Destroy()
+            return m
+          end)
+          if not ok or not npc then return end
+          npc.Name="TownMiner_"..town.Id
+          local hum=npc:FindFirstChildOfClass("Humanoid")
+          if hum then hum.DisplayName="광부";hum.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.Viewer end
+          npc:PivotTo(CFrame.lookAt(hit.Position+Vector3.new(0,3.2,0),Vector3.new(town.X,hit.Position.Y+3.2,town.Z)))
+          for _,part in ipairs(npc:GetDescendants()) do if part:IsA("BasePart") then part.Anchored=true end end
+          npc.Parent=workspace
+          local rock=worldAsset("vxRockWide",hit.Position+Vector3.new(4,0,3),3)
+          if rock then rock.Name="MinerRock_"..town.Id;rock:SetAttribute("MeadowScenery",true) end
+          local root=npc:FindFirstChild("HumanoidRootPart")
+          if root then
+            local prompt=Instance.new("ProximityPrompt");prompt.ActionText="광부와 이야기";prompt.ObjectText=town.Name.." 광부";prompt.HoldDuration=.4
+            prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=root
+            prompt.Triggered:Connect(function(player)
+              if player:GetAttribute("ProfileReady")~=true then return end
+              menu(player,town)
+            end)
+          end
+        end)
+      end
     end
   end)
 end

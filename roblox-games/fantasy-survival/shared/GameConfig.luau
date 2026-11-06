@@ -484,7 +484,7 @@ local Config = {
     -- [몬스터 도감·지역 발견] 처치 횟수와 지역 발견 비트(1 초원·2 숲·4 화산·8 오아시스).
     CampWorldtree = 0, CampVolcano = 0, CampOasis = 0,
     BountyIndex = 1, BountyPhase = 0, BountyClues = 0, BountyOutcomes = 0,
-    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, EstateA = 0, EstateB = 0, EstateC = 0, MountOwned = 0, MiningProficiency = 0, BountyZone = 0, BountyKills = 0, BountyNeed = 0, BountyBig = 0, EcoChestMask = 0, EcoChestMask2 = 0, EcoChestMask3 = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, LandmarkClaim = 0, TrackFlags = 0, QLWind = 0, QLWindP = 0, QLWindC = 0, QLHunt = 0, QLHuntP = 0, QLHuntC = 0, QLBog = 0, QLBogP = 0, QLBogC = 0, QLRoot = 0, QLRootP = 0, QLRootC = 0, QLTrack1 = 0, QLTrack1P = 0, QLTrack1C = 0, QLTrack2 = 0, QLTrack2P = 0, QLTrack2C = 0, QLTrack3 = 0, QLTrack3P = 0, QLTrack3C = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
+    DexKillWolf = 0, DexKillBat = 0, DexKillAlpha = 0, WorldDiscovered = 1, WaypointMask = 0, EstateA = 0, EstateB = 0, EstateC = 0, MountOwned = 0, MiningProficiency = 0, PickaxeTier = 0, BountyZone = 0, BountyKills = 0, BountyNeed = 0, BountyBig = 0, EcoChestMask = 0, EcoChestMask2 = 0, EcoChestMask3 = 0, QLMirror = 0, QLMirrorP = 0, QLMina = 0, QLMinaP = 0, QLNick = 0, QLNickP = 0, QLSera = 0, QLSeraP = 0, QLGarden = 0, QLGardenP = 0, LandmarkMask = 0, LandmarkClaim = 0, TrackFlags = 0, QLWind = 0, QLWindP = 0, QLWindC = 0, QLHunt = 0, QLHuntP = 0, QLHuntC = 0, QLBog = 0, QLBogP = 0, QLBogC = 0, QLRoot = 0, QLRootP = 0, QLRootC = 0, QLTrack1 = 0, QLTrack1P = 0, QLTrack1C = 0, QLTrack2 = 0, QLTrack2P = 0, QLTrack2C = 0, QLTrack3 = 0, QLTrack3P = 0, QLTrack3C = 0, QLHarJ = 0, QLHarJP = 0, QLHarJC = 0, QLRiaJ = 0, QLRiaJP = 0, QLRiaJC = 0, QLMorganJ = 0, QLMorganJP = 0, QLMorganJC = 0, QLBarenJ = 0, QLBarenJP = 0, QLBarenJC = 0, QLTiboJ = 0, QLTiboJP = 0, QLTiboJC = 0, QLCassianJ = 0, QLCassianJP = 0, QLCassianJC = 0, CompanionBond = 0, QLSeraJ = 0, QLSeraJP = 0, QLSeraJC = 0, QLRowenJ = 0, QLRowenJP = 0, QLRowenJC = 0, QLDoranJ = 0, QLDoranJP = 0, QLDoranJC = 0, QLIfaJ = 0, QLIfaJP = 0, QLIfaJC = 0, HiddenOpen = 0, CompanionOwned = 0, CompanionActive = 0, RelicMask = 0, ChapterMask = 0, PoiFound1 = 0, PoiFound2 = 0, PoiLoot1 = 0, PoiLoot2 = 0, ContractAccepted = 0, ContractDone = 0, ContractClaimed = 0, DungeonCleared = 0,
     MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0,
   },
   Actions = {
@@ -1280,6 +1280,14 @@ Config.MiningLevel = function(prof)
   for i, need in ipairs(Config.MiningThresholds) do if (prof or 0) >= need then level = i end end
   return level
 end
+-- 곡괭이: 가장 높은 단계가 자동 적용된다. Level=채굴 레벨 보정(더 깊은 광맥), Amount=수확량 보정, Rare=희귀 확률 보정. 광부 NPC가 판다.
+Config.Pickaxes = {
+  {Name = "철 곡괭이", Level = 0, Amount = 1, Rare = 0, Coins = 300, Ingot = 3, NeedMining = 1},
+  {Name = "강철 곡괭이", Level = 1, Amount = 1, Rare = .03, Coins = 900, Ingot = 4, Steel = 2, NeedMining = 3},
+  {Name = "수정 곡괭이", Level = 1, Amount = 2, Rare = .08, Coins = 2400, Steel = 4, Crystal = 6, NeedMining = 5},
+  {Name = "신화 곡괭이", Level = 2, Amount = 3, Rare = .15, Coins = 5000, Steel = 6, Crystal = 8, Claw = 6, Fang = 6, NeedMining = 6},
+}
+
 -- 지역별 광맥: {이름, 재료 필드, 필요 채굴 레벨, 빛 색}. 지역마다 4곳에 이 목록을 돌려 가며 놓는다.
 Config.MiningVeins = {
   windcliff = {{"절벽 철광맥", "Ore", 1, {200, 200, 210}}, {"소금 수정맥", "Crystal", 2, {220, 240, 255}}},

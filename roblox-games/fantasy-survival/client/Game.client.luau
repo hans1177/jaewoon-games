@@ -1438,6 +1438,15 @@ local function renderMeadowPages()
     worldLines[#worldLines+1]=string.format("발견한 이정표 %d/32 — 이정표를 조사하면 빠른 이동 거점이 된다.",count)
   end
   do
+    local prof=tonumber(player:GetAttribute("MiningProficiency")) or 0
+    local level,thr=1,Config.MiningThresholds or {0}
+    for i,need in ipairs(thr) do if prof>=need then level=i end end
+    local nextNeed=thr[level+1]
+    local tier=tonumber(player:GetAttribute("PickaxeTier")) or 0
+    local pick=Config.Pickaxes and Config.Pickaxes[tier]
+    worldLines[#worldLines+1]=string.format("채굴 Lv%d (%d%s) · 곡괭이: %s",level,prof,nextNeed and ("/"..nextNeed) or " 최고",pick and pick.Name or "없음 — 광부에게서 구한다")
+  end
+  do
     worldLines[#worldLines+1]="— 연계 퀘스트 —"
     for _,line in ipairs(Config.QuestLines or {})do
       local stage=player:GetAttribute(line.Field) or 0
@@ -1532,7 +1541,7 @@ player:GetAttributeChangedSignal("RunActive"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("QuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestProgress"):Connect(renderMeadowPages)
-for _,name in ipairs({"ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","CampWorldtree","CampVolcano","CampOasis","BountyIndex","BountyPhase","BountyClues","WorldDiscovered","WaypointMask","DexKillWolf","DexKillBat","DexKillAlpha"})do
+for _,name in ipairs({"MiningProficiency","PickaxeTier","ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","CampWorldtree","CampVolcano","CampOasis","BountyIndex","BountyPhase","BountyClues","WorldDiscovered","WaypointMask","DexKillWolf","DexKillBat","DexKillAlpha"})do
   player:GetAttributeChangedSignal(name):Connect(renderMeadowPages)
 end
 for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채집","scope-coreloop-1-6ebe58f496"},{"장비 강화","scope-coreloop-2-6c927cfa40"}})do
@@ -6201,7 +6210,7 @@ do
     for i,button in ipairs(choices)do
       local option=typeof(payload.options)=="table" and payload.options[i] or nil
       local action=option and option.action
-      local permitted=(typeof(action)=="string" and (action:match("^village:story:%d$") or action:match("^smith:%a+$") or action:match("^cook:%d$") or action:match("^lm:%d+:%d$")) ~= nil) or action=="wp:east" or action=="wp:west" or (action:match("^wp:near:[123]$")~=nil) or (action:match("^estate:%a:%d+$")~=nil) or (action:match("^mount:%a+:%d$")~=nil) or (action:match("^bounty:%a+:%d$")~=nil) or (action:match("^estate:%a:%d+:%d+$")~=nil) or action=="co:toggle" or action=="ql:1" or action=="ql:2" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
+      local permitted=(typeof(action)=="string" and (action:match("^village:story:%d$") or action:match("^smith:%a+$") or action:match("^cook:%d$") or action:match("^lm:%d+:%d$")) ~= nil) or action=="wp:east" or action=="wp:west" or (action:match("^wp:near:[123]$")~=nil) or (action:match("^estate:%a:%d+$")~=nil) or (action:match("^mount:%a+:%d$")~=nil) or (action:match("^bounty:%a+:%d$")~=nil) or (action:match("^miner:%a+:%d$")~=nil) or (action:match("^estate:%a:%d+:%d+$")~=nil) or action=="co:toggle" or action=="ql:1" or action=="ql:2" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
       button.Visible=permitted
       choiceActions[i]=permitted and action or nil
       if permitted then button.Text=tostring(option.label or "선택") end
