@@ -517,11 +517,11 @@ function PortScene.build(info, onFacility)
 	-- 시설 건물: { 이름, 탭, 위치, 크기, 벽색 }
 	local facilities = {
 		{ name = "교역소", tab = "trade", pos = Vector3.new(-10, 0, 28), w = 20, d = 12, floors = 1, color = Color3.fromRGB(176, 120, 60), always = true },
-		{ name = "주점", tab = "harbor", pos = Vector3.new(-10, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 76, 44), always = true },
-		{ name = "항만청", tab = "harbor", pos = Vector3.new(6, 0, 46), w = 12, d = 10, floors = 2, color = Color3.fromRGB(90, 110, 140), key = "harbormaster" },
+		{ name = "주점", tab = "quest", pos = Vector3.new(-10, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 76, 44), always = true },
+		{ name = "항만청", tab = "route", pos = Vector3.new(6, 0, 46), w = 12, d = 10, floors = 2, color = Color3.fromRGB(90, 110, 140), key = "harbormaster" },
 		{ name = "은행", tab = "harbor", pos = Vector3.new(-34, 0, 28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(220, 214, 200), key = "bank" },
-		{ name = "상인 길드", tab = "harbor", pos = Vector3.new(-34, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(150, 120, 90), key = "guild" },
-		{ name = "학자의 서재", tab = "explore", pos = Vector3.new(-58, 0, 28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), always = true },
+		{ name = "상인 길드", tab = "trade", pos = Vector3.new(-34, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(150, 120, 90), key = "guild" },
+		{ name = "학자의 서재", tab = "tech", pos = Vector3.new(-58, 0, 28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(120, 100, 140), always = true },
 		{ name = "도서관 (도감)", tab = "codex", pos = Vector3.new(-58, 0, -28), w = 14, d = 12, floors = 2, color = Color3.fromRGB(100, 120, 110), always = true },
 	}
 	for _, f in facilities do
