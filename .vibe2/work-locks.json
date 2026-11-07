@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1yezf3y",
+      "worker": "vibe2",
+      "taskId": "exorcist-office-web-startup-spatial-repair-v3",
+      "gameId": "exorcist-office",
+      "files": [
+        "web-games/exorcist-office/index.html"
+      ],
+      "baseSha": "2f92809dbd431da553eacc9fde0c2feeb49d1688",
+      "runId": "42416406548",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-07T21:45:38.894Z",
+      "expiresAt": "2026-11-07T22:30:38.894Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:exorcist-office-web-startup-spatial-repair-v3"
+      ]
+    }
+  ]
 }
