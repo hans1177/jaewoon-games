@@ -1166,6 +1166,26 @@ function prepareBossMusic(){
     limiter.attack.value=.008;limiter.release.value=.22;
     source.connect(bass);bass.connect(middle);middle.connect(clarity);clarity.connect(mixer);
     mixer.connect(limiter);limiter.connect(ctx.destination);
+    // 가상 대성당 잔향: 원곡의 공간감과 합창 울림을 보강한다.
+    // 기본 음원 직결을 유지하므로 모바일 잔향 미지원 시에도 음악은 재생된다.
+    if(typeof ctx.createConvolver==='function'){
+      try{
+        const hall=ctx.createConvolver(),wet=ctx.createGain();
+        const impulse=ctx.createBuffer(2,Math.round(ctx.sampleRate*1.9),ctx.sampleRate);
+        for(let ch=0;ch<2;ch++){
+          const samples=impulse.getChannelData(ch);
+          let last=0;
+          for(let i=0;i<samples.length;i++){
+            const time=i/ctx.sampleRate;
+            const decay=Math.exp(-3.2*time);
+            last=.68*last+.32*(Math.random()*2-1);
+            samples[i]=last*decay
+          }
+        }
+        hall.buffer=impulse;wet.gain.value=.25;
+        clarity.connect(hall);hall.connect(wet);wet.connect(mixer)
+      }catch(error){console.warn('보스 음악 잔향은 생략하고 기본 믹스를 유지해.',error)}
+    }
     const drums=ctx.createGain();
     drums.gain.value=0;drums.connect(mixer);
     const noise=ctx.createBuffer(1,Math.round(ctx.sampleRate*.26),ctx.sampleRate);
