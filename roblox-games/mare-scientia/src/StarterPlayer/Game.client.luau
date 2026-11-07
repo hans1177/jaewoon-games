@@ -1843,8 +1843,9 @@ local function openTradeHall()
 			m.Parent = world
 			pcall(Pose.relaxArms, m)
 			local cf, size = m:GetBoundingBox()
-			local focus = cf.Position
-			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.08, 1).Unit * (size.Y * 2.0), focus)
+			local focus = cf.Position + Vector3.new(0, size.Y * 0.1, 0)
+			cam.FieldOfView = 40
+			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.08, 1).Unit * (math.max(size.X, size.Y, size.Z) * 2.4), focus)
 		end
 		local bubble = mkBox(left, UDim2.new(0, 10, 1, -146), UDim2.new(1, -20, 0, 136), Color3.fromRGB(240, 228, 200))
 		corner(bubble, 12)
