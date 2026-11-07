@@ -173,6 +173,21 @@ function VoyageScene.play(info)
 	atmosphere.Color = Color3.fromRGB(190, 210, 230)
 	atmosphere.Decay = Color3.fromRGB(240, 200, 160)
 	atmosphere.Parent = Lighting
+	-- 색감·빛번짐을 살려 바다를 덜 밋밋하게
+	local grade = Instance.new("ColorCorrectionEffect")
+	grade.Saturation = 0.18
+	grade.Contrast = 0.08
+	grade.TintColor = Color3.fromRGB(255, 248, 238)
+	grade.Parent = Lighting
+	local bloom = Instance.new("BloomEffect")
+	bloom.Intensity = 0.35
+	bloom.Size = 28
+	bloom.Threshold = 1.1
+	bloom.Parent = Lighting
+	local rays = Instance.new("SunRaysEffect")
+	rays.Intensity = 0.12
+	rays.Spread = 0.6
+	rays.Parent = Lighting
 	Lighting.FogColor = Color3.fromRGB(176, 205, 232)
 	Lighting.FogStart = 600
 	Lighting.FogEnd = 2600
@@ -183,8 +198,47 @@ function VoyageScene.play(info)
 	sea.Name = "Sea"
 	sea.Reflectance = 0.12
 
+	-- 물결치는 진짜 물(지형 물)을 배 주변에만 깐다. 실패하면 위의 판이 바다를 맡는다.
+	local terrain = workspace.Terrain
+	local savedWater = { c = terrain.WaterColor, t = terrain.WaterTransparency, r = terrain.WaterReflectance, ws = terrain.WaterWaveSize, wsp = terrain.WaterWaveSpeed }
+	sea.Position = Vector3.new(sea.Position.X, -3.2, sea.Position.Z)
+	local waterOk = pcall(function()
+		terrain.WaterColor = Color3.fromRGB(22, 96, 150)
+		terrain.WaterTransparency = 0.25
+		terrain.WaterReflectance = 0.55
+		terrain.WaterWaveSize = 0.45
+		terrain.WaterWaveSpeed = 16
+	end)
+	local CH = 240
+	local filledChunks = {}
+	local function fillChunksAround(center, maxNew)
+		if not waterOk then
+			return
+		end
+		local cx0, cz0 = math.floor(center.X / CH), math.floor(center.Z / CH)
+		local made = 0
+		for r = 0, 2 do
+			for dx = -r, r do
+				for dz = -r, r do
+					if math.max(math.abs(dx), math.abs(dz)) == r then
+						local key = (cx0 + dx) .. "," .. (cz0 + dz)
+						if not filledChunks[key] and made < maxNew then
+							filledChunks[key] = CFrame.new((cx0 + dx) * CH + CH / 2, -4, (cz0 + dz) * CH + CH / 2)
+							pcall(function()
+								terrain:FillBlock(filledChunks[key], Vector3.new(CH, 8, CH), Enum.Material.Water)
+							end)
+							made += 1
+						end
+					end
+				end
+			end
+		end
+	end
+	fillChunksAround(ORIGIN, 25)
+
 	-- 내 배
 	local ship = info.makeShip(folder, info.shipId, ORIGIN + Vector3.new(0, 1.2, 0))
+	pcall(function() ship:ScaleTo(1.7) end)
 	ship.Name = "VoyageShip"
 	local shipBase = ship:GetPivot()
 	-- 배 바닥이 수면 아래로 잠기도록 높이를 맞춘다 (떠 있는 느낌 제거)
@@ -288,6 +342,7 @@ function VoyageScene.play(info)
 	elseif ev.kind == "pirates" then
 		enemy = info.makeShip(folder, "frigate", ORIGIN + Vector3.new(0, 1.2, 0))
 		enemy.Name = "PirateShip"
+		pcall(function() enemy:ScaleTo(1.7) end)
 		-- 검은 돛 느낌: 선체 색을 어둡게
 		for _, d in enemy:GetDescendants() do
 			if d:IsA("MeshPart") then
@@ -333,14 +388,34 @@ function VoyageScene.play(info)
 		em.Parent = p
 		return p, em
 	end
-	local sternPart = emitterPart(26, 3, 2, 80, 3, 11, Vector3.zero, Enum.NormalId.Top)
-	local bowPart, bowEm = emitterPart(30, 0.9, 11, 28, 1.2, 3, Vector3.new(0, -24, 0), Enum.NormalId.Top)
-	local wakes = {}
-	for _ = 1, 2 do
-		local w = part(folder, Vector3.new(shipLen * 2.4, 0.12, 1.4), CFrame.new(ORIGIN), Color3.fromRGB(240, 248, 255), Enum.Material.SmoothPlastic)
-		w.Transparency = 0.5
-		table.insert(wakes, w)
+	local FOAM = "rbxasset://textures/particles/smoke_main.dds"
+	local sternPart, sternEm = emitterPart(22, 3.2, 3, 90, 5, 16, Vector3.zero, Enum.NormalId.Top)
+	sternEm.Texture = FOAM
+	sternEm.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.55), NumberSequenceKeypoint.new(1, 1) })
+	local bowPart, bowEm = emitterPart(34, 1.1, 12, 30, 2, 6, Vector3.new(0, -26, 0), Enum.NormalId.Top)
+	bowEm.Texture = FOAM
+	bowEm.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(1, 1) })
+	-- 선미 양옆에서 이어지는 하얀 항적 띠
+	local trailParts = {}
+	for i = 1, 2 do
+		local tp = part(folder, Vector3.new(0.5, 0.5, 0.5), CFrame.new(ORIGIN), Color3.new(1, 1, 1))
+		tp.Transparency = 1
+		local a0, a1 = Instance.new("Attachment"), Instance.new("Attachment")
+		a0.Position, a1.Position = Vector3.new(0, 0, -1.2), Vector3.new(0, 0, 1.2)
+		a0.Parent, a1.Parent = tp, tp
+		local tr = Instance.new("Trail")
+		tr.Attachment0, tr.Attachment1 = a0, a1
+		tr.Lifetime = 3.2
+		tr.MinLength = 0.2
+		tr.FaceCamera = false
+		tr.Color = ColorSequence.new(Color3.fromRGB(235, 246, 255))
+		tr.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(1, 1) })
+		tr.WidthScale = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(1, 5) })
+		tr.LightEmission = 0.25
+		tr.Parent = tp
+		table.insert(trailParts, tp)
 	end
+	local wakes = {}
 
 	-- 사건 소품: 지나가는 상선, 암초, 섬, 유령선 등 (승인된 모델만)
 	local props = {}
@@ -413,6 +488,7 @@ function VoyageScene.play(info)
 	local escorts = {}
 	for i = 1, math.min(3, info.escorts or 0) do
 		local es = info.makeShip(folder, "caravel", ORIGIN + Vector3.new(0, 1.2, 0))
+		pcall(function() es:ScaleTo(1.4) end)
 		local ebase = es:GetPivot()
 		local ey = restY(es)
 		table.insert(escorts, { m = es, rot = CFrame.new(-ebase.Position) * ebase, y = ey, back = 34 + i * 12, side = ({ 28, -28, 52 })[i], phase = i * 1.7 })
@@ -439,7 +515,7 @@ function VoyageScene.play(info)
 
 	-- 카메라
 	camera.CameraType = Enum.CameraType.Scriptable
-	camera.FieldOfView = 62
+	camera.FieldOfView = 66
 
 	local function ui(k, t)
 		bar.Size = UDim2.fromScale(k, 1)
@@ -478,12 +554,12 @@ function VoyageScene.play(info)
 			local rgt = Vector3.new(math.sin(yaw), 0, math.cos(yaw))
 			sternPart.CFrame = CFrame.new(pos - fwd * shipLen * 0.45 + Vector3.new(0, 0.2, 0))
 			bowPart.CFrame = CFrame.new(pos + fwd * shipLen * 0.5 + Vector3.new(0, 0.1, 0))
-			bowEm.Rate = 18 + 22 * math.min(1, speedNow / 20)
-			for i, w in wakes do
-				local s = if i == 1 then 1 else -1
-				w.CFrame = CFrame.new(pos - fwd * shipLen * 0.85 + rgt * s * shipLen * 0.34 + Vector3.new(0, 0.05, 0)) * CFrame.Angles(0, yaw + s * 0.2, 0)
-				w.Transparency = 0.45 + math.sin(t * 2 + i) * 0.1
+			bowEm.Rate = 20 + 30 * math.min(1, speedNow / 20)
+			for i, tp in trailParts do
+				local sgn = if i == 1 then 1 else -1
+				tp.CFrame = CFrame.new(pos - fwd * shipLen * 0.4 + rgt * sgn * shipLen * 0.22 + Vector3.new(0, 0.12, 0)) * CFrame.Angles(0, yaw, 0)
 			end
+			fillChunksAround(pos, 1)
 		end
 		sea.CFrame = CFrame.new(pos.X, -1.6, pos.Z)
 
@@ -627,7 +703,7 @@ function VoyageScene.play(info)
 
 		-- 카메라: 배 뒤쪽 위에서 천천히 좌우로 돌며 비춘다
 		local sway = math.sin(t * 0.25) * 0.9
-		local back = CFrame.new(pos) * CFrame.Angles(0, yaw + sway, 0) * CFrame.new(-60, 24, 0)
+		local back = CFrame.new(pos) * CFrame.Angles(0, yaw + sway, 0) * CFrame.new(-54, 19, 0)
 		camera.CFrame = CFrame.lookAt(back.Position + Vector3.new(0, math.sin(t * 1.3) * 0.5, 0), pos + Vector3.new(0, 7 + math.sin(t * 1.3 + 0.6) * 0.4, 0))
 		ui(k, t)
 
@@ -652,6 +728,19 @@ function VoyageScene.play(info)
 	Lighting.FogColor = saved.fogColor
 	Lighting.Ambient = saved.ambient
 	atmosphere:Destroy()
+	grade:Destroy()
+	bloom:Destroy()
+	rays:Destroy()
+	-- 깔았던 물을 걷어 낸다
+	for _, cf in filledChunks do
+		pcall(function()
+			terrain:FillBlock(cf, Vector3.new(CH, 8, CH), Enum.Material.Air)
+		end)
+	end
+	pcall(function()
+		terrain.WaterColor, terrain.WaterTransparency, terrain.WaterReflectance = savedWater.c, savedWater.t, savedWater.r
+		terrain.WaterWaveSize, terrain.WaterWaveSpeed = savedWater.ws, savedWater.wsp
+	end)
 	folder:Destroy()
 	gui:Destroy()
 end
