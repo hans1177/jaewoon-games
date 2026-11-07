@@ -59,7 +59,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
       "enqueuedAt": "2026-11-04T12:04:52.759Z",
-      "updatedAt": "2026-11-07T16:21:13.507Z",
+      "updatedAt": "2026-11-07T16:23:12.283Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1333,20 +1333,13 @@
         "version": 1,
         "pass": true,
         "source": "design/deep-diver/2026-10-31/design-revised.json",
-        "date": "2026-10-31",
-        "releaseChecklist": {
-          "identity": true,
-          "coreLoop": true,
-          "sessionRules": true,
-          "signatureSystems": true,
-          "presentation": true
-        },
         "commonCoreReady": true,
         "platformProfiles": {
           "ROBLOX": true,
           "UNITY": true,
           "distinct": true
-        }
+        },
+        "migratedFromLegacy": false
       },
       "platformDesignProfiles": {
         "ROBLOX": {
@@ -1364,7 +1357,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-31T12:41:10.231Z",
-      "updatedAt": "2026-11-07T16:22:02.385Z",
+      "updatedAt": "2026-11-07T16:23:11.819Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2678,7 +2671,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-07T16:23:04.204Z",
+      "updatedAt": "2026-11-07T16:23:12.283Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4901,7 +4894,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-07T16:13:02.977Z"
       },
-      "updatedAt": "2026-11-07T16:21:13.507Z",
+      "updatedAt": "2026-11-07T16:23:12.283Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4999,7 +4992,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-07T16:13:02.977Z"
       },
-      "updatedAt": "2026-11-07T16:21:13.507Z",
+      "updatedAt": "2026-11-07T16:23:12.283Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -5097,7 +5090,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-07T16:13:02.977Z"
       },
-      "updatedAt": "2026-11-07T16:21:13.507Z",
+      "updatedAt": "2026-11-07T16:23:12.283Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -5171,7 +5164,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
       "enqueuedAt": "2026-11-07T16:13:02.977Z",
-      "updatedAt": "2026-11-07T16:21:13.507Z",
+      "updatedAt": "2026-11-07T16:23:12.283Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -5269,7 +5262,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-11-07T16:13:02.977Z"
       },
-      "updatedAt": "2026-11-07T16:21:13.507Z",
+      "updatedAt": "2026-11-07T16:23:12.283Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -5286,7 +5279,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-11-07T16:23:04.204Z",
+  "updatedAt": "2026-11-07T16:23:12.283Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
