@@ -11,6 +11,87 @@ const output='roblox-games/horror-escape-room/shared/CombatAssets.luau';
 const file=fs.readFileSync(source);
 if(file.toString('utf8',0,4)!=='glTF'||file.readUInt32LE(4)!==2)throw Error('INVALID_COMBAT_GLB');
 const hash=crypto.createHash('sha256').update(file).digest('hex');
+
+// [마력숲 갑옷 실물 원본 다운로드] 기존 소스 수집·등록 파이프라인의 SOURCE-ONLY 단계.
+// 사용자 요구: 랜덤 파츠 생성 금지. CC0 원본 메시·스킨·PBR 텍스처만 핀 고정 다운로드.
+if(process.argv.includes('--modular-armor-source-only')){
+ const dir='assets/external/simple-rpg/priority-v1/modular-armor';
+ const manifestPath=dir+'/manifest.json';
+ const commit='db3df04d1e4714298a09510b26fb6de6645138a2';
+ const owner='agentkaerf',repo='FreeModels';
+ const upstream='Modular Character Outfits - Fantasy[Standard]/Exports/glTF (Godot-Unreal)/Modular Parts';
+ const license=fs.readFileSync(dir+'/License_Standard.txt','utf8');
+ if(!license.includes('CC0 1.0 Universal')||!license.includes('Models by @Quaternius'))throw Error('MODULAR_ARMOR_CC0_EVIDENCE_MISSING');
+ const people={
+  Male_Ranger:['Body','Arms','Legs','Feet_Boots','Acc_Pauldron','Head_Hood'],
+  Female_Ranger:['Body','Arms','Legs','Feet','Acc_Pauldrons','Head_Hood'],
+ };
+ const textures=['T_Ranger_BaseColor.png','T_Ranger_Normal.png','T_Ranger_ORM.png',
+  'T_Regular_Male_Dark_BaseColor.png','T_Regular_Male_Normal.png','T_Regular_Male_Roughness.png',
+  'T_Regular_Female_Dark_BaseColor.png','T_Regular_Female_Normal.png','T_Regular_Female_Roughness.png'];
+ const names=[...Object.entries(people).flatMap(([who,parts])=>parts.flatMap(part=>[who+'_'+part+'.gltf',who+'_'+part+'.bin'])),...textures];
+ const apiPath=upstream.split('/').map(encodeURIComponent).join('/');
+ const headers={'user-agent':'jaewoon-games-modular-armor-source','accept':'application/vnd.github+json'};
+ const indexResponse=await fetch('https://api.github.com/repos/'+owner+'/'+repo+'/contents/'+apiPath+'?ref='+commit,
+  {headers,signal:AbortSignal.timeout(60000)});
+ if(!indexResponse.ok)throw Error('MODULAR_ARMOR_SOURCE_INDEX_HTTP_'+indexResponse.status);
+ const rows=await indexResponse.json();
+ if(!Array.isArray(rows))throw Error('MODULAR_ARMOR_SOURCE_INDEX_INVALID');
+ const entries=new Map(rows.map(row=>[row.name,row]));
+ const planned=new Set(names);
+ const imported=await Promise.all(names.map(async(name)=>{
+  if(!/^[A-Za-z0-9_]+\.(?:gltf|bin|png)$/.test(name))throw Error('MODULAR_ARMOR_UNSAFE_NAME');
+  const source=entries.get(name);
+  if(!source||source.type!=='file'||!/^[a-f0-9]{40}$/.test(String(source.sha))
+    ||source.size<64||source.size>25000000)throw Error('MODULAR_ARMOR_SOURCE_NOT_VERIFIED:'+name);
+  const dest=dir+'/'+name;
+  let bytes;
+  if(fs.existsSync(dest)){
+   bytes=fs.readFileSync(dest);
+  }else{
+   const url='https://raw.githubusercontent.com/'+owner+'/'+repo+'/'+commit+'/'+apiPath+'/'+encodeURIComponent(name);
+   let last='';
+   for(let attempt=0;attempt<3&&!bytes;attempt++){
+    try{
+     const response=await fetch(url,{headers:{'user-agent':headers['user-agent']},signal:AbortSignal.timeout(120000)});
+     if(!response.ok)throw Error('HTTP_'+response.status);
+     bytes=Buffer.from(await response.arrayBuffer());
+    }catch(error){last=String(error);if(attempt<2)await new Promise(r=>setTimeout(r,1500*(attempt+1)));}
+   }
+   if(!bytes)throw Error('MODULAR_ARMOR_DOWNLOAD_FAILED:'+name+':'+last);
+  }
+  const gitHash=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
+  if(gitHash!==source.sha||bytes.length!==source.size)throw Error('MODULAR_ARMOR_SOURCE_HASH_MISMATCH:'+name);
+  if(name.endsWith('.png')){
+   if(!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))throw Error('MODULAR_ARMOR_INVALID_PNG:'+name);
+  }else if(name.endsWith('.gltf')){
+   const model=JSON.parse(bytes.toString('utf8'));
+   if(!model.meshes?.length||!model.skins?.length||!model.buffers?.length)throw Error('MODULAR_ARMOR_RIGGED_MESH_MISSING:'+name);
+   for(const res of [...model.buffers,...(model.images||[])]){
+    if(res.uri&&!planned.has(res.uri))throw Error('MODULAR_ARMOR_MISSING_DEPENDENCY:'+name+':'+res.uri);
+   }
+  }
+  if(!fs.existsSync(dest))fs.writeFileSync(dest,bytes);
+  return {file:name,gitSha:source.sha,sourceCommit:commit,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length};
+ }));
+ const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+ manifest.version=2;
+ manifest.sourceCommit=commit;
+ manifest.downloaded=true;
+ manifest.scope='male_and_female_ranger_armor_rigged_geometry_and_pbr';
+ manifest.status='SOURCE_GEOMETRY_AND_PBR_DOWNLOADED_PENDING_NATIVE_RIG_QA';
+ manifest.files=imported.sort((a,b)=>a.file.localeCompare(b.file));
+ manifest.requiredTexturesNotDownloaded=[];
+ manifest.rigCompatibilityWithRobloxR15='UNVERIFIED';
+ manifest.robloxRuntimeVerified=false;
+ manifest.gameSourceApplied=false;
+ manifest.robloxImported=false;
+ manifest.doNotMarkProductionVerified=true;
+ fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');
+ console.log('MODULAR_ARMOR_CC0_SOURCE_VERIFIED='+imported.length+';MODEL_PARTS=12;PBR_TEXTURES='+textures.length+';R15=UNVERIFIED');
+ process.exit(0);
+}
+
 const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
 const key0=key;
 const rawCookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
