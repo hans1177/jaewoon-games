@@ -166730,11 +166730,175 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ae9747f2725c1ad89a9fca36",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12143",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b764405089abc2fe8c84fa4848f6ff202523ec76",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12143,
+        "baseBranch": "main",
+        "headBranch": "automation/horror-combat-asset-42323825679",
+        "baseSha": "b764405089abc2fe8c84fa4848f6ff202523ec76",
+        "headSha": "ebeffe6a3cdd013b37c07f656f9294d7ca3044b6",
+        "mergeCommitSha": "9194ef39c267590643e2aea24ddbd1784546e7d8",
+        "mergedAt": "2026-11-07T01:30:08Z",
+        "authorLogin": "github-actions[bot]",
+        "titleHash": "dc5b1bc3754479321d7e1cfcdd55d5c210b78a63f63dffdbcce1c7a3ba738628",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "automation/horror-combat-asset-42323825679",
+        "candidateSha": "ebeffe6a3cdd013b37c07f656f9294d7ca3044b6"
+      },
+      "changeStats": {
+        "changedFileCount": 25,
+        "codingRelevantFileCount": 25,
+        "addedLineCount": 163,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Arrow.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Axe.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Axe_Double.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Axe_Small.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Bow_Evil.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Bow_Golden.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Bow_Wooden.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Bow_Wooden2.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Claymore.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Dagger.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Dagger_2.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Hammer_Double.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Hammer_Small.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Scythe.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Shield_Celtic_Golden.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Shield_Heater.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Shield_Heater_2.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Shield_Round.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Shield_Round_2.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Spear.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Sword.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Sword_2.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Sword_Big.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Sword_Golden.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/manifest.json"
+        ],
+        "codingRelevantFiles": [
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Arrow.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Axe.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Axe_Double.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Axe_Small.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Bow_Evil.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Bow_Golden.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Bow_Wooden.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Bow_Wooden2.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Claymore.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Dagger.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Dagger_2.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Hammer_Double.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Hammer_Small.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Scythe.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Shield_Celtic_Golden.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Shield_Heater.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Shield_Heater_2.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Shield_Round.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Shield_Round_2.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Spear.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Sword.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Sword_2.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Sword_Big.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/Sword_Golden.glb",
+          "assets/external/simple-rpg/priority-v1/medieval-weapons/manifest.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12143",
+        "merge-commit:9194ef39c267590643e2aea24ddbd1784546e7d8",
+        "base-main:b764405089abc2fe8c84fa4848f6ff202523ec76"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1330
+    "total": 1331
   }
 }
