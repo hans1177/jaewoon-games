@@ -25,10 +25,13 @@ if(process.argv.includes('--modular-armor-source-only')){
  const people={
   Male_Ranger:['Body','Arms','Legs','Feet_Boots','Acc_Pauldron','Head_Hood'],
   Female_Ranger:['Body','Arms','Legs','Feet','Acc_Pauldrons','Head_Hood'],
+  Male_Peasant:['Body','Arms','Legs','Feet'],
+  Female_Peasant:['Body','Arms','Legs','Feet'],
  };
  const textures=['T_Ranger_BaseColor.png','T_Ranger_Normal.png','T_Ranger_ORM.png',
   'T_Regular_Male_Dark_BaseColor.png','T_Regular_Male_Normal.png','T_Regular_Male_Roughness.png',
-  'T_Regular_Female_Dark_BaseColor.png','T_Regular_Female_Normal.png','T_Regular_Female_Roughness.png'];
+  'T_Regular_Female_Dark_BaseColor.png','T_Regular_Female_Normal.png','T_Regular_Female_Roughness.png',
+  'T_Peasant_BaseColor.png','T_Peasant_Normal.png','T_Peasant_ORM.png'];
  const names=[...Object.entries(people).flatMap(([who,parts])=>parts.flatMap(part=>[who+'_'+part+'.gltf',who+'_'+part+'.bin'])),...textures];
  const apiPath=upstream.split('/').map(encodeURIComponent).join('/');
  const headers={'user-agent':'jaewoon-games-modular-armor-source','accept':'application/vnd.github+json'};
@@ -82,7 +85,7 @@ if(process.argv.includes('--modular-armor-source-only')){
  manifest.version=2;
  manifest.sourceCommit=commit;
  manifest.downloaded=true;
- manifest.scope='male_and_female_ranger_armor_rigged_geometry_and_pbr';
+ manifest.scope='male_and_female_ranger_and_peasant_armor_rigged_geometry_and_pbr';
  manifest.status='SOURCE_GEOMETRY_AND_PBR_DOWNLOADED_PENDING_NATIVE_RIG_QA';
  manifest.files=imported.sort((a,b)=>a.file.localeCompare(b.file));
  manifest.requiredTexturesNotDownloaded=[];
@@ -92,7 +95,7 @@ if(process.argv.includes('--modular-armor-source-only')){
  manifest.robloxImported=false;
  manifest.doNotMarkProductionVerified=true;
  fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');
- console.log('MODULAR_ARMOR_CC0_SOURCE_VERIFIED='+imported.length+';MODEL_PARTS=12;PBR_TEXTURES='+textures.length+';R15=UNVERIFIED');
+ console.log('MODULAR_ARMOR_CC0_SOURCE_VERIFIED='+imported.length+';MODEL_PARTS='+imported.filter(x=>x.file.endsWith('.gltf')).length+';PBR_TEXTURES='+textures.length+';R15=UNVERIFIED');
  process.exit(0);
 }
 
