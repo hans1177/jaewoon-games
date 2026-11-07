@@ -1,0 +1,29 @@
+# 개발 루프의 "눈": 게임이 모아 둔 오류·FPS(DataStore MeadowDevLog)를 읽어 docs/devloop/TELEMETRY.md 로 남긴다.
+name: Devloop Report (마력숲)
+on:
+  schedule:
+    - cron: '17 */1 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: devloop-report-meadow
+  cancel-in-progress: false
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read telemetry from Open Cloud
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          UNIVERSE_ID: '10773436325'
+        run: python3 roblox-games/fantasy-survival/tools/devloop/telemetry_report.py > /tmp/telemetry.md
+      - name: Commit report
+        run: |
+          cp /tmp/telemetry.md roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md
+          git config user.name "devloop-bot"
+          git config user.email "devloop-bot@users.noreply.github.com"
+          git add roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md
+          git diff --cached --quiet || (git commit -m "devloop: telemetry report" && git pull -q --rebase && git push)
