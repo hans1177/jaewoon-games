@@ -1,0 +1,27 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('VoyageActive', true) for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') and g.Name~='BattleGui' then g.Enabled=false end end local ch=game.Players.LocalPlayer.Character if ch and ch:FindFirstChild('HumanoidRootPart') then ch.HumanoidRootPart.Anchored=true end local RS=game:GetService('ReplicatedStorage') local NB=require(RS.Shared.NavalBattle) local ok,err=pcall(function() NB.play({shipId='galleon',shipName='갈레온',fleet={'플루트선','호위함'},weatherName='맑음',wind=1.0,windAngle=60,enemyName='검은 수염의 배',log={'[1] 우리 배: 포격! 적 선체 -12','[1] 검은 수염의 배: 포격! 선체 -8','[2] 우리 배: 포격! 적 선체 -15','[2] 검은 수염의 배: 포격! 선체 -6','[3] 우리 배: 포격! 적 선체 -30'},winner='a',reason='sunk',isBoss=false,onDone=function() end}) end) return 'play ok='..tostring(ok)..' '..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 7000
+ },
+ {
+  "type": "capture",
+  "name": "b1_start"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "capture",
+  "name": "b2_mid"
+ }
+]

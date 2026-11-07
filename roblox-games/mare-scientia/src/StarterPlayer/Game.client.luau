@@ -775,6 +775,20 @@ local function call(action, payload)
 		end)
 		NavalBattle.play({
 			shipId = view.ship and view.ship.id,
+			shipName = view.ship and view.ship.name,
+			fleet = (function()
+				local names = {}
+				for _, f in (view.fleet and view.fleet.ships) or {} do
+					table.insert(names, f.name)
+				end
+				for _ = 1, (view.fleet and view.fleet.escorts) or 0 do
+					table.insert(names, "호위함")
+				end
+				return names
+			end)(),
+			weatherName = view.weather and view.weather.name,
+			wind = view.weather and view.weather.wind,
+			windAngle = ((view.weather and string.byte(view.weather.id or "x", 1) or 0) * 47) % 360,
 			enemyName = lb.enemy,
 			log = lb.log,
 			winner = lb.winner,

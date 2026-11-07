@@ -189,6 +189,94 @@ function NavalBattle.play(opts)
 	local meFill = bar("L", "우리 배")
 	local foeFill = bar("R", opts.enemyName or "해적선")
 
+	-- 선단 카드: 대항해시대 온라인처럼 우리 배와 적 배를 카드로 늘어놓고, 배마다 선체 막대를 보여 준다
+	local function cardRow(anchorX, posX, posY, color)
+		local row = Instance.new("Frame")
+		row.AnchorPoint = Vector2.new(anchorX, 0)
+		row.Position = UDim2.new(posX, 0, 0, posY)
+		row.Size = UDim2.fromOffset(0, 46)
+		row.AutomaticSize = Enum.AutomaticSize.X
+		row.BackgroundTransparency = 1
+		row.Parent = gui
+		local l = Instance.new("UIListLayout")
+		l.FillDirection = Enum.FillDirection.Horizontal
+		l.Padding = UDim.new(0, 6)
+		l.HorizontalAlignment = if anchorX == 1 then Enum.HorizontalAlignment.Right else Enum.HorizontalAlignment.Left
+		l.Parent = row
+		return row
+	end
+	local function card(row, name, color, star)
+		local f = Instance.new("Frame")
+		f.Size = UDim2.fromOffset(if star then 96 else 82, 46)
+		f.BackgroundColor3 = Color3.fromRGB(14, 24, 38)
+		f.BackgroundTransparency = 0.15
+		f.BorderSizePixel = 0
+		f.Parent = row
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(0, 8)
+		c.Parent = f
+		local st = Instance.new("UIStroke")
+		st.Color = if star then Color3.fromRGB(240, 205, 120) else Color3.fromRGB(110, 120, 140)
+		st.Thickness = if star then 2 else 1
+		st.Parent = f
+		local nm = label(f, (if star then "★ " else "") .. name, 12, Color3.fromRGB(250, 236, 200))
+		nm.Position = UDim2.fromOffset(4, 3)
+		nm.Size = UDim2.new(1, -8, 0, 16)
+		local back = Instance.new("Frame")
+		back.Position = UDim2.new(0, 6, 0, 28)
+		back.Size = UDim2.new(1, -12, 0, 8)
+		back.BackgroundColor3 = Color3.fromRGB(40, 48, 62)
+		back.BorderSizePixel = 0
+		back.Parent = f
+		local bc = Instance.new("UICorner")
+		bc.CornerRadius = UDim.new(0, 4)
+		bc.Parent = back
+		local fill = Instance.new("Frame")
+		fill.Size = UDim2.fromScale(1, 1)
+		fill.BackgroundColor3 = color
+		fill.BorderSizePixel = 0
+		fill.Parent = back
+		local fc = Instance.new("UICorner")
+		fc.CornerRadius = UDim.new(0, 4)
+		fc.Parent = fill
+		return { frame = f, fill = fill, name = nm, color = color }
+	end
+	local myCards, foeCards = {}, {}
+	do
+		local mine = cardRow(0, 0, 112)
+		table.insert(myCards, { c = card(mine, opts.shipName or "기함", Color3.fromRGB(91, 181, 120), true), share = 1 })
+		for _, f in opts.fleet or {} do
+			table.insert(myCards, { c = card(mine, f, Color3.fromRGB(91, 181, 120), false), share = 0.5 })
+		end
+		local theirs = cardRow(1, 1, 112)
+		table.insert(foeCards, { c = card(theirs, opts.enemyName or "해적선", Color3.fromRGB(214, 82, 76), true), share = 1 })
+		for i = 1, if opts.isBoss then 0 else 2 do
+			table.insert(foeCards, { c = card(theirs, "호위선", Color3.fromRGB(214, 120, 76), false), share = 0.4 })
+		end
+	end
+	-- 바람 표시: 날씨와 바람 세기를 위쪽 가운데에 보여 준다
+	do
+		local wind = Instance.new("Frame")
+		wind.AnchorPoint = Vector2.new(0.5, 0)
+		wind.Position = UDim2.new(0.5, 0, 0, 24)
+		wind.Size = UDim2.fromOffset(190, 34)
+		wind.BackgroundColor3 = Color3.fromRGB(14, 24, 38)
+		wind.BackgroundTransparency = 0.15
+		wind.BorderSizePixel = 0
+		wind.Parent = gui
+		local wc = Instance.new("UICorner")
+		wc.CornerRadius = UDim.new(0, 8)
+		wc.Parent = wind
+		local arrow = label(wind, "➤", 22, Color3.fromRGB(150, 220, 255))
+		arrow.Position = UDim2.fromOffset(6, 3)
+		arrow.Size = UDim2.fromOffset(28, 28)
+		arrow.Rotation = opts.windAngle or 0
+		local wl = label(wind, string.format("%s · 바람 %d%%", opts.weatherName or "맑음", math.floor((opts.wind or 1) * 100 + 0.5)), 14, Color3.fromRGB(250, 236, 200))
+		wl.Position = UDim2.fromOffset(38, 6)
+		wl.Size = UDim2.new(1, -44, 0, 22)
+		wl.TextXAlignment = Enum.TextXAlignment.Left
+	end
+
 	local subtitle = label(gui, "", 16)
 	subtitle.AnchorPoint = Vector2.new(0.5, 1)
 	subtitle.Position = UDim2.new(0.5, 0, 1, -76)
@@ -197,7 +285,7 @@ function NavalBattle.play(opts)
 
 	local hint = label(gui, "가까이 가면 대포가 자동으로 나가고, 배가 맞닿으면 백병전! 해역 가장자리까지 달리면 도망칠 수 있어요.", 14, Color3.fromRGB(255, 226, 170))
 	hint.AnchorPoint = Vector2.new(0.5, 0)
-	hint.Position = UDim2.new(0.5, 0, 0, 98)
+	hint.Position = UDim2.new(0.5, 0, 0, 164)
 	hint.Size = UDim2.new(0.8, 0, 0, 36)
 	hint.TextWrapped = true
 
@@ -658,6 +746,22 @@ function NavalBattle.play(opts)
 		end
 		meFill.Size = UDim2.fromScale(meHp, 1)
 		foeFill.Size = UDim2.fromScale(foeHp, 1)
+		-- 배 카드: 기함은 전체 막대를, 선단 배는 피해의 절반만 받은 것으로 보여 준다
+		for _, mc in myCards do
+			local v = 1 - (1 - meHp) * mc.share
+			mc.c.fill.Size = UDim2.fromScale(math.clamp(v, 0, 1), 1)
+			mc.c.fill.BackgroundColor3 = if v < 0.35 then Color3.fromRGB(214, 82, 76) else mc.c.color
+			if loser == "me" and sinkStart and mc.share == 1 then
+				mc.c.frame.BackgroundTransparency = 0.6
+			end
+		end
+		for _, fc in foeCards do
+			local v = 1 - (1 - foeHp) * fc.share
+			fc.c.fill.Size = UDim2.fromScale(math.clamp(v, 0, 1), 1)
+			if loser == "foe" and sinkStart and fc.share == 1 then
+				fc.c.frame.BackgroundTransparency = 0.6
+			end
+		end
 
 		-- 카메라: 우리 배 뒤쪽 위에서 따라간다
 		shake = math.max(0, shake - 0.05)
