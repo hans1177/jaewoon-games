@@ -1942,7 +1942,7 @@ if witcherTabs then
           icon.Name="CC0MenuIcon";icon.BackgroundTransparency=1
           icon.Size=UDim2.fromOffset(38,38);icon.Position=UDim2.new(.5,-19,0,4)
           icon.ZIndex=46;icon.Parent=button
-          meadowArt.skill(icon,"skill-meadow-focus")
+          if not applySkillTreeIcon(icon) then meadowArt.skill(icon,"skill-meadow-focus") end
         elseif atlasCell then
           local icon=Instance.new("ImageLabel")
           icon.Name="CC0MenuIcon";icon.BackgroundTransparency=1
@@ -1983,6 +1983,16 @@ meadowReferenceMenu.Name="MeadowReferenceTopMenu"
 meadowReferenceMenu.BackgroundTransparency=1
 meadowReferenceMenu.ZIndex=26
 meadowReferenceMenu.Parent=meadowTouchLayer
+-- [전용 스킬 아이콘] CC0(pauliuw) 스킬 아이콘 시트 1번의 '스킬북'(25번째 칸). 업로드 ID가 아직 없으면 기존 아이콘을 쓴다.
+local function applySkillTreeIcon(icon)
+  local ok,ids=pcall(function() return require(Shared:WaitForChild("SkillTreeIconIds",3)) end)
+  local sheet=ok and type(ids)=="table" and ids.skill_1
+  if type(sheet)=="string" and sheet~="" then
+    icon.Image=sheet;icon.ImageRectSize=Vector2.new(200,200);icon.ImageRectOffset=Vector2.new(800,800)
+    return true
+  end
+  return false
+end
 -- {이름,페이지,예비 칸,섹션,원화 칸 x,y}. 건설 기능이 없어 '건설' 버튼은 제거했고, 도감·연대기는 세계 탭의 해당 섹션으로 바로 간다.
 local referenceMenuItems={
   {"가방",2,6,nil,0,0},{"제작",2,11,nil,200,0},
@@ -2009,7 +2019,7 @@ for index,info in ipairs(referenceMenuItems) do
   icon.Size=UDim2.fromScale(1,1)
   icon.ZIndex=28
   icon.Parent=button
-  if info[2]==7 then meadowArt.skill(icon,"skill-meadow-focus") end
+  if info[2]==7 and not applySkillTreeIcon(icon) then meadowArt.skill(icon,"skill-meadow-focus") end
   -- [메뉴 아이콘] 원화가 로드되지 않을 때만 이미 등록한 16칸 원본으로 복구.
   task.delay(25,function()
     if info[2]==7 then return end

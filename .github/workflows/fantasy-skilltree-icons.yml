@@ -1,0 +1,58 @@
+# [마력숲] CC0 스킬 아이콘 시트 4장을 로블록스 이미지로 등록한다. 같은 해시는 다시 올리지 않는다.
+name: Fantasy Skill Tree Icons
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'roblox-games/fantasy-survival/skilltree-icons/*.png'
+      - 'roblox-games/fantasy-survival/skilltree-icons/files.json'
+      - 'tools/fantasy-skilltree-icons.mjs'
+      - '.github/workflows/fantasy-skilltree-icons.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: fantasy-skilltree-icons
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Upload skill icon sheets and grant Universe use
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        run: node tools/fantasy-skilltree-icons.mjs
+      - name: Open asset binding PR
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'fantasy-skilltree-icons'
+          git config user.email 'actions@users.noreply.github.com'
+          for binding_path in roblox-games/fantasy-survival/skilltree-icons/uploaded.json roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau; do
+            if test -e "$binding_path"; then git add -- "$binding_path"; fi
+          done
+          if git diff --cached --quiet; then
+            echo 'SKILLTREE_BINDING_ALREADY_CURRENT=YES'
+            exit 0
+          fi
+          git commit -m 'assets: bind skill tree icon sheet ids'
+          branch="automation/fantasy-skilltree-icons-${GITHUB_RUN_ID}"
+          git push origin "HEAD:refs/heads/$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title '마력숲 스킬 아이콘 시트 ID 연결' --body 'CC0(pauliuw, OpenGameArt) 스킬 아이콘 시트 4장의 로블록스 이미지 ID와 Universe 사용 권한 승인 결과를 기록한다. 4장이 모두 등록되고 권한이 승인된 경우에만 SkillTreeIconIds.luau 가 채워지며, 그렇지 않으면 기존 아이콘이 그대로 유지된다.')"
+          echo "SKILLTREE_BINDING_PR=$pr_url"
