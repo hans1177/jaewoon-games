@@ -341,6 +341,16 @@ do
   end)
 end
 local meadowPaintedHudAtlas="rbxassetid://84007761993593" -- [고퀄 원화] 1000x1000 5x5 / 200px 칸 21종 (Roblox 1024 제한 이하), 게임 내 로딩은 게시 후 검증
+-- [전용 스킬 아이콘] CC0(pauliuw) 스킬 아이콘 시트 1번의 '스킬북'(25번째 칸). 업로드 ID가 아직 없으면 기존 아이콘을 쓴다.
+local function applySkillTreeIcon(icon)
+  local ok,ids=pcall(function() return require(Shared:WaitForChild("SkillTreeIconIds",3)) end)
+  local sheet=ok and type(ids)=="table" and ids.skill_1
+  if type(sheet)=="string" and sheet~="" then
+    icon.Image=sheet;icon.ImageRectSize=Vector2.new(200,200);icon.ImageRectOffset=Vector2.new(800,800)
+    return true
+  end
+  return false
+end
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
   fist="rbxassetid://127661757924412",
@@ -1983,16 +1993,6 @@ meadowReferenceMenu.Name="MeadowReferenceTopMenu"
 meadowReferenceMenu.BackgroundTransparency=1
 meadowReferenceMenu.ZIndex=26
 meadowReferenceMenu.Parent=meadowTouchLayer
--- [전용 스킬 아이콘] CC0(pauliuw) 스킬 아이콘 시트 1번의 '스킬북'(25번째 칸). 업로드 ID가 아직 없으면 기존 아이콘을 쓴다.
-local function applySkillTreeIcon(icon)
-  local ok,ids=pcall(function() return require(Shared:WaitForChild("SkillTreeIconIds",3)) end)
-  local sheet=ok and type(ids)=="table" and ids.skill_1
-  if type(sheet)=="string" and sheet~="" then
-    icon.Image=sheet;icon.ImageRectSize=Vector2.new(200,200);icon.ImageRectOffset=Vector2.new(800,800)
-    return true
-  end
-  return false
-end
 -- {이름,페이지,예비 칸,섹션,원화 칸 x,y}. 건설 기능이 없어 '건설' 버튼은 제거했고, 도감·연대기는 세계 탭의 해당 섹션으로 바로 간다.
 local referenceMenuItems={
   {"가방",2,6,nil,0,0},{"제작",2,11,nil,200,0},
@@ -2379,6 +2379,7 @@ end -- [상단 상태 HUD] 연결된 표시·갱신 이벤트는 유지한다.
 -- [스토리·아이템 HUD] 실제 서버 퀘스트와 DataStore 소장 기록만 보여준다.
 -- 중앙 게임 화면과 점프/전투 영역은 비워 두고 좌상단에 펼침 단추만 둔다.
 local questTracker=Instance.new("TextButton")
+_G.MeadowQuestTracker=questTracker
 questTracker.Name="MeadowMainQuest"
 questTracker.Size=UDim2.fromOffset(290,64)
 questTracker.Position=UDim2.fromOffset(10,130)
@@ -8144,6 +8145,7 @@ promptHighlight.OutlineTransparency=.12;promptHighlight.DepthMode=Enum.Highlight
 promptHighlight.Enabled=false;promptHighlight.Parent=gui
 -- [실제 의뢰 목적지] 기존 서버 ProximityPrompt에만 마커를 연결한다. 가짜 위치·목표·보상 생성 금지.
 local guidePrompts={}
+_G.MeadowGuidePrompts=guidePrompts
 local function registerMeadowPrompt(descendant)
   if not descendant:IsA("ProximityPrompt") then return end
   if descendant.Name=="MeadowVillageInteraction" then
@@ -12098,7 +12100,7 @@ end)()
       local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
       local function nearestPrompt(match)
         local best,bestD=nil,math.huge
-        for prompt in pairs(guidePrompts) do
+        for prompt in pairs(_G.MeadowGuidePrompts or {}) do
           local host=prompt.Parent
           if prompt.Enabled and host and host:IsA("BasePart") and prompt:IsDescendantOf(workspace) and match(prompt) and root then
             local d=(host.Position-root.Position).Magnitude
@@ -12231,7 +12233,7 @@ end)()
     -- 왼쪽 퀘스트창 위에 목표 마커·거리표가 겹치지 않도록 창 오른쪽 바깥으로 밀어낸다.
     do
       -- questTracker가 아직 없거나(nil) 이 범위에서 보이지 않으면 건너뛴다 (캡처 콘솔에서 매 프레임 오류가 났던 곳)
-      local qt=questTracker
+      local qt=_G.MeadowQuestTracker
       if qt and guiRoot and qt.Visible then
         local qp,qs=qt.AbsolutePosition-guiRoot.AbsolutePosition,qt.AbsoluteSize
         if px<qp.X+qs.X+100 and py>qp.Y-70 and py<qp.Y+qs.Y+80 then
