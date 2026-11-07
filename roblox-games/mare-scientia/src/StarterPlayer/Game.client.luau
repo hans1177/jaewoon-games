@@ -1864,7 +1864,7 @@ local function openTradeHall()
 			local cf, size = m:GetBoundingBox()
 			local focus = cf.Position + Vector3.new(0, size.Y * 0.1, 0)
 			cam.FieldOfView = 40
-			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.08, 1).Unit * (math.max(size.X, size.Y, size.Z) * 2.4), focus)
+			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.08, 1).Unit * (math.max(size.X, size.Y, size.Z) * 1.7), focus)
 		end
 		local bubble = mkBox(left, UDim2.new(0, 10, 1, -146), UDim2.new(1, -20, 0, 136), Color3.fromRGB(240, 228, 200))
 		corner(bubble, 12)
@@ -1996,7 +1996,7 @@ local function openTradeHall()
 			sm.Position = UDim2.new(0.5, 6, 0, 324)
 			sm.TextSize = 16
 			local allB = mkButton(right, "보유분 전부 팔기", COLORS.grey, UDim2.new(1, -24, 0, 40), function() call("Sell", { goodId = sel.id, amount = math.min(20, sel.owned) }) end, sel.owned > 0)
-			allB.Position = UDim2.fromOffset(12, 378)
+			allB.Position = UDim2.fromOffset(12, 372)
 			allB.TextSize = 16
 			do
 				local top = view.compare and view.compare[sel.id]
@@ -2010,13 +2010,13 @@ local function openTradeHall()
 					elseif #lines == 0 then "다른 항구 시세 정보 없음"
 					else (if view.intel >= 2 then "비싸게 팔리는 항구 (팔기 시세)\n" else "비싸게 팔릴 듯한 항구\n") .. table.concat(lines, "\n")
 				local cl = mkLabel(right, cmpText, 15, COLORS.text, false)
-				cl.Position = UDim2.fromOffset(14, 430)
-				cl.Size = UDim2.new(1, -28, 0, 90)
+				cl.Position = UDim2.fromOffset(14, 414)
+				cl.Size = UDim2.new(1, -28, 0, 78)
 				cl.AutomaticSize = Enum.AutomaticSize.None
 			end
-			local hint = mkLabel(right, string.format("동료 장사 감각 %s · 흥정은 물건마다 한 번, 성공하면 다음 구매가 싸져요.", intelName(view.intel or 0)), 13, COLORS.muted, false)
-			hint.Position = UDim2.fromOffset(14, 526)
-			hint.Size = UDim2.new(1, -28, 0, 50)
+			local hint = mkLabel(right, string.format("동료 장사 감각 %s · 흥정은 물건마다 한 번, 성공하면 다음 구매가 싸져요.", intelName(view.intel or 0)), 12, COLORS.muted, false)
+			hint.Position = UDim2.fromOffset(14, 494)
+			hint.Size = UDim2.new(1, -28, 0, 34)
 			hint.AutomaticSize = Enum.AutomaticSize.None
 		end
 	end
