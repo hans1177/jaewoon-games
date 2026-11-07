@@ -517,6 +517,7 @@ function VoyageScene.play(info)
 	end
 
 	-- 카메라
+	workspace:SetAttribute("VoyageActive", true)
 	camera.CameraType = Enum.CameraType.Scriptable
 	camera.FieldOfView = 66
 
@@ -753,6 +754,7 @@ function VoyageScene.play(info)
 	end
 
 	-- 정리
+	workspace:SetAttribute("VoyageActive", nil)
 	camera.CameraType = saved.camType
 	camera.FieldOfView = saved.camFov
 	Lighting.ClockTime = saved.clock
