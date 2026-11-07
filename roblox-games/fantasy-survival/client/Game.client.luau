@@ -8459,6 +8459,7 @@ do
   local TweenSvc=game:GetService("TweenService")
   local DebrisSvc=game:GetService("Debris")
   local meadowShakeAmount=0
+  local meadowHitStopActive=false
   do
     local hitFlash=Instance.new("Frame")
     hitFlash.Name="MeadowHitFlash";hitFlash.Size=UDim2.fromScale(1,1)
@@ -8550,6 +8551,26 @@ do
       local power=payload.finisher and 1 or (payload.boss and .7 or (payload.crit and .5 or 0))
       if power>0 then
         meadowShakeAmount=math.max(meadowShakeAmount,reducedEffects and power*.5 or power)
+        -- [히트스톱] 내 공격 애니메이션만 아주 잠깐 늦춘다(0.07초). 서버 판정·쿨다운과 무관한 표시 효과다.
+        if not meadowHitStopActive and power>=.5 then
+          local character=player.Character
+          local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+          local animator=humanoid and humanoid:FindFirstChildOfClass("Animator")
+          if animator then
+            meadowHitStopActive=true
+            local frozen={}
+            for _,track in ipairs(animator:GetPlayingAnimationTracks()) do
+              frozen[#frozen+1]={track=track,speed=track.Speed}
+              track:AdjustSpeed(.12)
+            end
+            task.delay(power>=1 and .09 or .06,function()
+              for _,entry in ipairs(frozen) do
+                if entry.track.IsPlaying then entry.track:AdjustSpeed(entry.speed) end
+              end
+              meadowHitStopActive=false
+            end)
+          end
+        end
         local flash=gui:FindFirstChild("MeadowHitFlash")
         if flash then
           flash.BackgroundTransparency=.82
