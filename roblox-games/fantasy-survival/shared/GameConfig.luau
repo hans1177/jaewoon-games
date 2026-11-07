@@ -497,7 +497,7 @@ local Config = {
     Hide = 0, Fang = 0, BatWing = 0, Claw = 0, Ectoplasm = 0, Ingot = 0, Leather = 0, Steel = 0, Meat = 0, Feather = 0, MeadowGuide = 0, ArmorTier = 0, SmithXp = 0, QLSmith = 0, QLSmithP = 0, QLSmith2 = 0, QLSmith2P = 0, QLSmith3 = 0, QLSmith3P = 0,
     -- [저장 마이그레이션] 옛 세이브에는 없는 신규 장비·소모품·스킬 숫자 필드만 보충한다.
     -- 스타터 장비 인덱스 1·5·8·10·12 = bit32 1+16+128+512+2048.
-    MeadowGearOwned=2705,MeadowGearOwned2=0,MeadowGearOwned3=0,MeadowGearOwned4=0,
+    Affinity_village=0,Affinity_windcliff=0,Affinity_highland=0,Affinity_wetland=0,MeadowGearOwned=2705,MeadowGearOwned2=0,MeadowGearOwned3=0,MeadowGearOwned4=0,
     MeadowEquipWeapon=1,MeadowEquipChest=5,MeadowEquipHands=8,
     MeadowEquipLegs=10,MeadowEquipFeet=12,MeadowEquipCape=0,MeadowEquipAccessory=0,MeadowEquipShield=0,
     MeadowPotionHealth=0,MeadowPotionStamina=0,

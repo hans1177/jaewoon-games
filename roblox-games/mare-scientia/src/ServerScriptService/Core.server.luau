@@ -34,10 +34,12 @@ local D = {
 	Story = require(Shared:WaitForChild("Story")),
 	Harbor = require(Shared:WaitForChild("Harbor")),
 	SeaRoutes = require(Shared:WaitForChild("SeaRoutes")),
+	Regions = require(Shared:WaitForChild("Regions")),
 }
 
 local Registry = require(ServicesFolder:WaitForChild("Registry"))(D)
 local S = Registry.S
+local QUEST_WATCH = { Explore = true, Hunt = true, ChallengeBoss = true, Research = true, StartResearch = true, Buy = true }
 local handlers = Registry.handlers
 
 local STORE_NAME = "MareScientia_v2"
@@ -255,6 +257,14 @@ remote.OnServerInvoke = function(player, action, payload)
 	end
 	if success then
 		session.dirty = true -- 저장은 자동저장 루프가 모아서 한다 (응답을 막지 않는다)
+		-- 탐험·전투·연구 등으로 퀘스트 조건을 채우면 바로 알려 준다
+		if QUEST_WATCH[action] then
+			local extra = {}
+			S.Quest.autoDeliver(state, extra)
+			if #extra > 0 then
+				message = (message and message ~= "" and (message .. "\n") or "") .. table.concat(extra, "\n")
+			end
+		end
 	end
 	return reply(state, success, message)
 end

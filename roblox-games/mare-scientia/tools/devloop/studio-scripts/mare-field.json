@@ -1,1 +1,42 @@
-[{"type": "wait", "ms": 30000}, {"type": "luau", "ctx": "Client", "code": "local ch=game.Players.LocalPlayer.Character if ch and ch:FindFirstChild('HumanoidRootPart') then ch.HumanoidRootPart.Anchored=true end local RS=game:GetService('ReplicatedStorage') local FS=require(RS.Shared.FieldScene) local pg=game.Players.LocalPlayer.PlayerGui local before={} for _,g in pg:GetChildren() do if g:IsA('ScreenGui') then before[g]=true g.Enabled=false end end workspace:SetAttribute('VoyageActive',true) task.spawn(function() local ok,err=xpcall(function() return FS.start({name='카리브 해적 소굴',nodes=2,danger=3,seed=5,onFinish=function(r) workspace:SetAttribute('FieldDone',tostring(r)) end}) end,function(e) return debug.traceback(tostring(e)) end) workspace:SetAttribute('FieldErr',tostring(ok)..' '..tostring(err)) end) task.wait(1) for _,g in pg:GetChildren() do if g:IsA('ScreenGui') and not before[g] then g.Enabled=true end end return 'started'"}, {"type": "luau", "ctx": "Client", "code": "local c=workspace.CurrentCamera c.CameraType=Enum.CameraType.Scriptable c.FieldOfView=70 c.CFrame=CFrame.lookAt(Vector3.new(3000,14,96),Vector3.new(3000,3,40)) local n=0 local names={} local f=workspace.FieldScene for _,m in f:GetChildren() do if m:IsA('Model') and m:FindFirstChildOfClass('Humanoid') then n+=1 local r=m:FindFirstChild('HumanoidRootPart') names[#names+1]=m.Name..'@'..tostring(r and r.Position) end end return 'mobs='..n..' '..table.concat(names,';')"}, {"type": "wait", "ms": 9000}, {"type": "capture", "name": "f1_start"}, {"type": "luau", "ctx": "Client", "code": "local f=workspace:FindFirstChild('FieldScene') local h,parts,models=0,0,0 if f then for _,d in f:GetDescendants() do if d:IsA('Humanoid') then h+=1 elseif d:IsA('Model') then models+=1 elseif d:IsA('BasePart') then parts+=1 end end end local c=workspace.CurrentCamera local ch=game.Players.LocalPlayer.Character local hr=ch and ch:FindFirstChild('HumanoidRootPart') return 'err='..tostring(workspace:GetAttribute('FieldErr'))..' done='..tostring(workspace:GetAttribute('FieldDone'))..' humanoids='..h..' models='..models..' parts='..parts..' cam='..tostring(c.CFrame.Position)..' hrp='..tostring(hr and hr.Position)"}, {"type": "wait", "ms": 6000}, {"type": "capture", "name": "f2_later"}]
+[
+ {
+  "type": "wait",
+  "ms": 30000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local ch=game.Players.LocalPlayer.Character if ch and ch:FindFirstChild('HumanoidRootPart') then ch.HumanoidRootPart.Anchored=true end local RS=game:GetService('ReplicatedStorage') local FS=require(RS.Shared.FieldScene) local pg=game.Players.LocalPlayer.PlayerGui local before={} for _,g in pg:GetChildren() do if g:IsA('ScreenGui') then before[g]=true g.Enabled=false end end workspace:SetAttribute('VoyageActive',true) task.spawn(function() local ok,err=xpcall(function() return FS.start({name='카리브 해적 소굴',nodes=2,danger=3,seed=5,onFinish=function(r) workspace:SetAttribute('FieldDone',tostring(r)) end}) end,function(e) return debug.traceback(tostring(e)) end) workspace:SetAttribute('FieldErr',tostring(ok)..' '..tostring(err)) end) task.wait(1) for _,g in pg:GetChildren() do if g:IsA('ScreenGui') and not before[g] then g.Enabled=true end end return 'started'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=workspace.CurrentCamera c.CameraType=Enum.CameraType.Scriptable c.FieldOfView=70 c.CFrame=CFrame.lookAt(Vector3.new(3000,14,96),Vector3.new(3000,3,40)) local n=0 local names={} local f=workspace.FieldScene for _,m in f:GetChildren() do if m:IsA('Model') and m:FindFirstChildOfClass('Humanoid') then n+=1 local r=m:FindFirstChild('HumanoidRootPart') names[#names+1]=m.Name..'@'..tostring(r and r.Position) end end return 'mobs='..n..' '..table.concat(names,';')"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('MareFieldShot') end) RS:BindToRenderStep('MareFieldShot',Enum.RenderPriority.Last.Value+1,function() local f=workspace:FindFirstChild('FieldScene') local r=nil if f then for _,m in f:GetChildren() do if m.Name=='FieldEnemy' and m:FindFirstChild('HumanoidRootPart') then r=m.HumanoidRootPart break end end end local cam=workspace.CurrentCamera cam.CameraType=Enum.CameraType.Scriptable cam.FieldOfView=55 if r then local p=r.Position cam.CFrame=CFrame.lookAt(p+Vector3.new(7,4.5,-13),p+Vector3.new(0,3,0)) end end) return 'bound'"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "capture",
+  "name": "f1_start"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('FieldScene') local h,parts,models=0,0,0 if f then for _,d in f:GetDescendants() do if d:IsA('Humanoid') then h+=1 elseif d:IsA('Model') then models+=1 elseif d:IsA('BasePart') then parts+=1 end end end local c=workspace.CurrentCamera local ch=game.Players.LocalPlayer.Character local hr=ch and ch:FindFirstChild('HumanoidRootPart') return 'err='..tostring(workspace:GetAttribute('FieldErr'))..' done='..tostring(workspace:GetAttribute('FieldDone'))..' humanoids='..h..' models='..models..' parts='..parts..' cam='..tostring(c.CFrame.Position)..' hrp='..tostring(hr and hr.Position)"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "capture",
+  "name": "f2_later"
+ }
+]

@@ -175,7 +175,7 @@ function FieldScene.start(opts)
 
 	-- 나무와 바위
 	local treeNames = { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
-	for _ = 1, biome.trees do
+	for _ = 1, biome.trees * 2 do
 		local pos = ORIGIN + scatter(14)
 		local h = rng:NextNumber(9, 15)
 		if not placeModel(folder, "Town", treeNames[rng:NextInteger(1, #treeNames)], pos, h, false) then
@@ -184,7 +184,7 @@ function FieldScene.start(opts)
 		end
 	end
 	local rockNames = { "rock-large", "rock-small", "rock-wide" }
-	for _ = 1, biome.rocks do
+	for _ = 1, math.floor(biome.rocks * 1.6) do
 		local pos = ORIGIN + scatter(10)
 		if not placeModel(folder, "Town", rockNames[rng:NextInteger(1, #rockNames)], pos, rng:NextNumber(2.5, 6), true) then
 			part(folder, Vector3.new(rng:NextNumber(2, 4), rng:NextNumber(1.5, 3), rng:NextNumber(2, 4)), CFrame.new(pos + Vector3.new(0, 1, 0)) * CFrame.Angles(0, rng:NextNumber(0, 3), 0), Color3.fromRGB(128, 126, 122), Enum.Material.Slate)
@@ -366,7 +366,7 @@ function FieldScene.start(opts)
 		bar.BackgroundColor3 = Color3.fromRGB(214, 82, 76)
 		bar.BorderSizePixel = 0
 		bar.Parent = barBack
-		table.insert(enemies, { model = model, root = root, hp = def[3], maxHp = def[3], dmg = def[4], speed = def[5], bar = bar, nextHit = 0, home = pos, boss = isBoss })
+		table.insert(enemies, { model = model, root = root, hp = def[3], maxHp = def[3], dmg = def[4], speed = def[5], bar = bar, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock() })
 	end
 
 	-- 입력 버튼
@@ -404,6 +404,7 @@ function FieldScene.start(opts)
 			return
 		end
 		best.hp -= 1
+		best.hurtAt = os.clock()
 		best.bar.Size = UDim2.fromScale(math.max(best.hp, 0) / best.maxHp, 1)
 		-- 밀려나는 연출
 		local away = (best.root.Position - hrp.Position) * Vector3.new(1, 0, 1)
@@ -412,7 +413,15 @@ function FieldScene.start(opts)
 		end
 		if best.hp <= 0 then
 			table.remove(enemies, table.find(enemies, best))
-			best.model:Destroy()
+			local dying = best.model
+			task.spawn(function()
+				local t0 = os.clock()
+				while dying.Parent and os.clock() - t0 < 0.7 do
+					Pose.dieR15(dying, (os.clock() - t0) / 0.7)
+					task.wait()
+				end
+				dying:Destroy()
+			end)
 			say(if best.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
 		end
 		refresh()
@@ -440,6 +449,7 @@ function FieldScene.start(opts)
 				e.model:PivotTo(CFrame.new(target) * CFrame.Angles(0, math.atan2(-flat.Unit.X, -flat.Unit.Z) + math.pi, 0))
 			elseif dist <= 3.6 and now >= e.nextHit then
 				e.nextHit = now + 1.2
+				e.swingAt = now
 				hp = math.max(0, hp - e.dmg)
 				say("공격을 받았다!")
 				refresh()
@@ -450,7 +460,13 @@ function FieldScene.start(opts)
 					return
 				end
 			end
-			Pose.walkR15(e.model, now * e.speed * 2.4, dist < 38 and dist > 3.2)
+			Pose.animateR15(e.model, {
+				phase = (now - e.spawnT) * e.speed * 1.5,
+				moving = dist < 38 and dist > 3.2,
+				t = now - e.spawnT,
+				attack = (now - e.swingAt) / 0.5,
+				hurt = math.max(0, 1 - (now - e.hurtAt) / 0.3),
+			})
 		end
 	end))
 

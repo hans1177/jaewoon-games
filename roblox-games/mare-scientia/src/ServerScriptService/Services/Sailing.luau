@@ -21,8 +21,8 @@ return function(D, S)
 			return
 		end
 		local ids = {}
-		for id in D.Ports.Ports do
-			if id ~= state.portId then
+		for id, port in D.Ports.Ports do
+			if id ~= state.portId and D.Regions.of(port).minLevel <= state.careers.adventure.level then
 				table.insert(ids, id)
 			end
 		end
@@ -55,6 +55,11 @@ return function(D, S)
 		end
 		if toId == state.portId then
 			return false, "이미 이 항구에 있어요"
+		end
+		local region = D.Regions.of(to)
+		local lvAdv = state.careers.adventure.level
+		if lvAdv < region.minLevel then
+			return false, string.format("%s 해역은 모험 Lv.%d부터 갈 수 있어요 (지금 Lv.%d)", region.name, region.minLevel, lvAdv)
 		end
 		local def = S.State.shipDef(state)
 		if state.ship.hull < def.hull * 0.2 then

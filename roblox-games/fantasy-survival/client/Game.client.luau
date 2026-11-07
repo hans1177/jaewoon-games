@@ -210,27 +210,20 @@ local meadowArt={skillSheet="rbxassetid://129030506278489",gearSheet="rbxassetid
     ["skill-meadow-emote"]=10,["skill-meadow-oath"]=15,["skill-meadow-ultimate"]=15,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
     Martial=15,Signs=16,Defense=17,Agility=18},
   slotEmpty={Weapon=36,Chest=37,Hands=38,Legs=39,Feet=40,Accessory=41}}
--- [90노드 전용 아이콘] 이미 등록된 CC0 시트 4장을 스킬 노드 번호 순서로 사용한다.
--- 로블록스 이미지 ID 또는 모듈이 없으면 기존 5x5 아이콘으로 복구한다. 스킬 판정·저장은 변경하지 않는다.
-local meadowSkillTreeSheets=nil
-do
-  local iconModule=Shared:FindFirstChild("SkillTreeIconIds") or Shared:WaitForChild("SkillTreeIconIds",3)
-  if iconModule and iconModule:IsA("ModuleScript") then
-    local ok,ids=pcall(require,iconModule)
-    if ok and type(ids)=="table" then meadowSkillTreeSheets=ids end
-  end
-end
+-- [90개 CC0 스킬 아이콘] 기존 업로드 시트 4장을 한 함수에서 연결한다.
+-- 등록된 원화가 없는 경우 기존 스킬 아이콘 시트를 유지하며 전투·저장은 변경하지 않는다.
 meadowArt.skillNodeIndex={}
 for _,node in ipairs(Config.MeadowSkillNodes or {}) do
   meadowArt.skillNodeIndex[node.Id]=node.Index
-  if node.Kind=="ACTIVE" then meadowArt.skillCell[node.Id]=node.IconCell end
+  meadowArt.skillCell[node.Id]=node.IconCell
 end
 function meadowArt.skill(icon,key)
   local index=meadowArt.skillNodeIndex[key]
-  if index and index>=1 and index<=90 and meadowSkillTreeSheets then
-    local sheet=meadowSkillTreeSheets["skill_"..math.ceil(index/25)]
+  local sheets=meadowArt.talentSheets
+  if index and index>=1 and index<=90 and sheets then
+    local sheet=sheets[(index-1)%4+1]
     if type(sheet)=="string" and sheet:match("^rbxassetid://%d+$") then
-      local cell=(index-1)%25
+      local cell=math.floor((index-1)/4)%25
       icon.Image=sheet
       icon.ImageRectOffset=Vector2.new((cell%5)*200,math.floor(cell/5)*200)
       icon.ImageRectSize=Vector2.new(200,200)
@@ -363,6 +356,27 @@ do
   end)
 end
 local meadowPaintedHudAtlas="rbxassetid://84007761993593" -- [고퀄 원화] 1000x1000 5x5 / 200px 칸 21종 (Roblox 1024 제한 이하), 게임 내 로딩은 게시 후 검증
+do -- [노드별 아이콘 시트] 4장이 모두 있을 때만 쓴다.
+  local okIds,idTable=pcall(function() return require(Shared:WaitForChild("SkillTreeIconIds",3)) end)
+  if okIds and type(idTable)=="table" then
+    local list={}
+    for n=1,4 do
+      local v=idTable["skill_"..n]
+      if type(v)=="string" and v~="" then list[n]=v end
+    end
+    if #list==4 then meadowArt.talentSheets=list end
+  end
+end
+-- [전용 스킬 아이콘] CC0(pauliuw) 스킬 아이콘 시트 1번의 '스킬북'(25번째 칸). 업로드 ID가 아직 없으면 기존 아이콘을 쓴다.
+local function applySkillTreeIcon(icon)
+  local ok,ids=pcall(function() return require(Shared:WaitForChild("SkillTreeIconIds",3)) end)
+  local sheet=ok and type(ids)=="table" and ids.skill_1
+  if type(sheet)=="string" and sheet~="" then
+    icon.Image=sheet;icon.ImageRectSize=Vector2.new(200,200);icon.ImageRectOffset=Vector2.new(800,800)
+    return true
+  end
+  return false
+end
 -- [오른쪽 아이콘] 외부 다운로드 후 등록 승인된 5종 + 물약·가방 원본 보존
 local meadowRealActionIcons={
   fist="rbxassetid://127661757924412",
@@ -1866,6 +1880,15 @@ for index,name in ipairs({"효과음","환경음","타격 효과"}) do
   end)
   refreshOption()
 end
+do -- [전투 표시 옵션] 데미지 숫자를 끄고 켤 수 있다.
+  local dmgOption=CommonUI.CreatePrimaryButton({name="MeadowDamageNumbers",text="데미지 숫자",minHeight=52})
+  dmgOption.LayoutOrder=5
+  dmgOption.Size=UDim2.new(1,-8,0,54)
+  dmgOption.Parent=meadowPages[4]
+  local function refreshDmg() dmgOption.Text="데미지 숫자  ·  "..(_G.MeadowDamageNumbersOff and "끔" or "켬").."   눌러 변경" end
+  dmgOption.Activated:Connect(function() _G.MeadowDamageNumbersOff=not _G.MeadowDamageNumbersOff refreshDmg() end)
+  refreshDmg()
+end
 -- [카메라 옵션] Roblox 기본 카메라는 손가락 드래그/마우스 회전과 확대를 지원한다.
 local meadowCameraOption=CommonUI.CreatePrimaryButton({
   name="MeadowCameraMode",text="카메라 시점",minHeight=52
@@ -2005,16 +2028,6 @@ meadowReferenceMenu.Name="MeadowReferenceTopMenu"
 meadowReferenceMenu.BackgroundTransparency=1
 meadowReferenceMenu.ZIndex=26
 meadowReferenceMenu.Parent=meadowTouchLayer
--- [전용 스킬 아이콘] CC0(pauliuw) 스킬 아이콘 시트 1번의 '스킬북'(25번째 칸). 업로드 ID가 아직 없으면 기존 아이콘을 쓴다.
-local function applySkillTreeIcon(icon)
-  local ok,ids=pcall(function() return require(Shared:WaitForChild("SkillTreeIconIds",3)) end)
-  local sheet=ok and type(ids)=="table" and ids.skill_1
-  if type(sheet)=="string" and sheet~="" then
-    icon.Image=sheet;icon.ImageRectSize=Vector2.new(200,200);icon.ImageRectOffset=Vector2.new(800,800)
-    return true
-  end
-  return false
-end
 -- {이름,페이지,예비 칸,섹션,원화 칸 x,y}. 건설 기능이 없어 '건설' 버튼은 제거했고, 도감·연대기는 세계 탭의 해당 섹션으로 바로 간다.
 local referenceMenuItems={
   {"가방",2,6,nil,0,0},{"제작",2,11,nil,200,0},
@@ -2401,6 +2414,7 @@ end -- [상단 상태 HUD] 연결된 표시·갱신 이벤트는 유지한다.
 -- [스토리·아이템 HUD] 실제 서버 퀘스트와 DataStore 소장 기록만 보여준다.
 -- 중앙 게임 화면과 점프/전투 영역은 비워 두고 좌상단에 펼침 단추만 둔다.
 local questTracker=Instance.new("TextButton")
+_G.MeadowQuestTracker=questTracker
 questTracker.Name="MeadowMainQuest"
 questTracker.Size=UDim2.fromOffset(290,64)
 questTracker.Position=UDim2.fromOffset(10,130)
@@ -3099,8 +3113,7 @@ for school=1,5 do
       local icon=Instance.new("ImageLabel")
       icon.Name="NodeIcon";icon.BackgroundTransparency=1;icon.Position=UDim2.new(.5,-17,0,2)
       icon.Size=UDim2.fromOffset(34,34)
-      -- [90개 독립 스킬 원화] 스킬 ID로 등록된 4개 CC0 시트의 고유 칸을 사용한다.
-      -- 실패하면 meadowArt.skill이 기존 아이콘으로 복구한다.
+      -- [90개 독립 스킬 원화] 기존 공용 스킬 함수에서 고유 CC0 아이콘과 복구를 처리한다.
       meadowArt.skill(icon,node.Id);icon.Parent=button
       local label=Instance.new("TextLabel")
       label.BackgroundTransparency=1;label.Position=UDim2.fromOffset(3,36);label.Size=UDim2.new(1,-6,0,30)
@@ -6507,6 +6520,22 @@ do
     dialog.Visible=true
   end)
   player.CharacterAdded:Connect(function()dialog.Visible=false end)
+  -- [대화 연출] 대화창이 열리면 시야각을 살짝 좁혀 인물에 집중시키고, 닫히면 원래 값으로 천천히 되돌린다(화면 효과만).
+  do
+    local fovTween=game:GetService("TweenService")
+    local savedFov=nil
+    dialog:GetPropertyChangedSignal("Visible"):Connect(function()
+      local camera=workspace.CurrentCamera
+      if not camera then return end
+      if dialog.Visible then
+        if savedFov==nil then savedFov=camera.FieldOfView end
+        fovTween:Create(camera,TweenInfo.new(.45,Enum.EasingStyle.Sine,Enum.EasingDirection.Out),{FieldOfView=math.max(45,savedFov-14)}):Play()
+      elseif savedFov~=nil then
+        local back=savedFov;savedFov=nil
+        fovTween:Create(camera,TweenInfo.new(.5,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{FieldOfView=back}):Play()
+      end
+    end)
+  end
 end
 
 do
@@ -8166,6 +8195,7 @@ promptHighlight.OutlineTransparency=.12;promptHighlight.DepthMode=Enum.Highlight
 promptHighlight.Enabled=false;promptHighlight.Parent=gui
 -- [실제 의뢰 목적지] 기존 서버 ProximityPrompt에만 마커를 연결한다. 가짜 위치·목표·보상 생성 금지.
 local guidePrompts={}
+_G.MeadowGuidePrompts=guidePrompts
 local function registerMeadowPrompt(descendant)
   if not descendant:IsA("ProximityPrompt") then return end
   if descendant.Name=="MeadowVillageInteraction" then
@@ -8431,7 +8461,29 @@ end)
 do
   local TweenSvc=game:GetService("TweenService")
   local DebrisSvc=game:GetService("Debris")
+  local meadowShakeAmount=0
+  local meadowHitStopActive=false
+  do
+    local hitFlash=Instance.new("Frame")
+    hitFlash.Name="MeadowHitFlash";hitFlash.Size=UDim2.fromScale(1,1)
+    hitFlash.BackgroundColor3=Color3.fromRGB(255,236,200);hitFlash.BackgroundTransparency=1
+    hitFlash.BorderSizePixel=0;hitFlash.Active=false;hitFlash.ZIndex=1;hitFlash.Parent=gui
+    game:GetService("RunService").RenderStepped:Connect(function(dt)
+      local character=player.Character
+      local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+      if not humanoid then return end
+      if meadowShakeAmount>.01 then
+        local a=meadowShakeAmount*.45
+        humanoid.CameraOffset=Vector3.new((math.random()-.5)*a,(math.random()-.5)*a,0)
+        meadowShakeAmount=meadowShakeAmount*math.max(0,1-dt*9)
+      elseif humanoid.CameraOffset.Magnitude>0 then
+        humanoid.CameraOffset=Vector3.zero
+        meadowShakeAmount=0
+      end
+    end)
+  end
   local function spawnDamageNumber(position,amount,crit,finisher,boss)
+    if _G.MeadowDamageNumbersOff then return end
     local holder=Instance.new("Attachment")
     holder.Name="MeadowDamageNumber"
     holder.WorldPosition=position+Vector3.new((math.random()-.5)*1.6,3.2+math.random()*.6,(math.random()-.5)*1.6)
@@ -8498,6 +8550,36 @@ do
     if kind~="MEADOW_IMPACT" or typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end
     if typeof(payload.damage)=="number" then
       spawnDamageNumber(payload.position,payload.damage,payload.crit==true,payload.finisher==true,payload.boss==true)
+      -- [타격감] 강타·피니셔·보스 타격 때만 짧게 카메라를 흔들고 화면 가장자리를 번쩍인다. 판정과는 무관하다.
+      local power=payload.finisher and 1 or (payload.boss and .7 or (payload.crit and .5 or 0))
+      if power>0 then
+        meadowShakeAmount=math.max(meadowShakeAmount,reducedEffects and power*.5 or power)
+        -- [히트스톱] 내 공격 애니메이션만 아주 잠깐 늦춘다(0.07초). 서버 판정·쿨다운과 무관한 표시 효과다.
+        if not meadowHitStopActive and power>=.5 then
+          local character=player.Character
+          local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+          local animator=humanoid and humanoid:FindFirstChildOfClass("Animator")
+          if animator then
+            meadowHitStopActive=true
+            local frozen={}
+            for _,track in ipairs(animator:GetPlayingAnimationTracks()) do
+              frozen[#frozen+1]={track=track,speed=track.Speed}
+              track:AdjustSpeed(.12)
+            end
+            task.delay(power>=1 and .09 or .06,function()
+              for _,entry in ipairs(frozen) do
+                if entry.track.IsPlaying then entry.track:AdjustSpeed(entry.speed) end
+              end
+              meadowHitStopActive=false
+            end)
+          end
+        end
+        local flash=gui:FindFirstChild("MeadowHitFlash")
+        if flash then
+          flash.BackgroundTransparency=.82
+          TweenSvc:Create(flash,TweenInfo.new(.16),{BackgroundTransparency=1}):Play()
+        end
+      end
     end
     if payload.boss and typeof(payload.model)=="Instance" then
       bossModel=payload.model;bossLastHit=os.clock()
@@ -12120,7 +12202,7 @@ end)()
       local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
       local function nearestPrompt(match)
         local best,bestD=nil,math.huge
-        for prompt in pairs(guidePrompts) do
+        for prompt in pairs(_G.MeadowGuidePrompts or {}) do
           local host=prompt.Parent
           if prompt.Enabled and host and host:IsA("BasePart") and prompt:IsDescendantOf(workspace) and match(prompt) and root then
             local d=(host.Position-root.Position).Magnitude
@@ -12253,7 +12335,7 @@ end)()
     -- 왼쪽 퀘스트창 위에 목표 마커·거리표가 겹치지 않도록 창 오른쪽 바깥으로 밀어낸다.
     do
       -- questTracker가 아직 없거나(nil) 이 범위에서 보이지 않으면 건너뛴다 (캡처 콘솔에서 매 프레임 오류가 났던 곳)
-      local qt=questTracker
+      local qt=_G.MeadowQuestTracker
       if qt and guiRoot and qt.Visible then
         local qp,qs=qt.AbsolutePosition-guiRoot.AbsolutePosition,qt.AbsoluteSize
         if px<qp.X+qs.X+100 and py>qp.Y-70 and py<qp.Y+qs.Y+80 then

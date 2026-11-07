@@ -118,7 +118,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
 	if not humanoid or not root then model:Destroy(); return nil end
 	local skins = { Color3.fromRGB(242, 205, 170), Color3.fromRGB(214, 165, 125), Color3.fromRGB(176, 125, 90), Color3.fromRGB(128, 88, 62) }
 	local skin = skins[rng:NextInteger(1, #skins)]
-	local trousers = Color3.fromRGB(rng:NextInteger(38, 85), rng:NextInteger(35, 75), rng:NextInteger(33, 72))
+	local trousers = Color3.fromRGB(rng:NextInteger(70, 120), rng:NextInteger(62, 105), rng:NextInteger(55, 95))
 	local coats = {
 		Knight = Color3.fromRGB(110, 120, 142), Barbarian = Color3.fromRGB(128, 88, 62),
 		Mage = Color3.fromRGB(102, 80, 144), Rogue = Color3.fromRGB(92, 108, 78),
@@ -131,14 +131,38 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
 			descendant.CanCollide = false
 			descendant.CanTouch = false
 			descendant.Massless = descendant ~= root
+			local n = descendant.Name
 			if descendant == root then
 				descendant.Transparency = 1
-			elseif descendant.Name == "Head" or string.find(descendant.Name, "Arm") or string.find(descendant.Name, "Hand") then
-				descendant.Color = skin
-			elseif string.find(descendant.Name, "Leg") or string.find(descendant.Name, "Foot") then
+			elseif n == "Head" then
+				descendant.Color = if role == "Rogue_Hooded" then jacket else skin
+				descendant.Material = if role == "Rogue_Hooded" then Enum.Material.Fabric else Enum.Material.SmoothPlastic
+			elseif string.find(n, "Hand") then
+				-- 손: 기사·도적은 가죽 장갑, 나머지는 맨손
+				local gloved = role == "Knight" or role == "Rogue" or role == "Rogue_Hooded"
+				descendant.Color = if gloved then trousers:Lerp(Color3.new(0, 0, 0), 0.25) else skin
+				descendant.Material = if gloved then Enum.Material.Leather else Enum.Material.SmoothPlastic
+			elseif string.find(n, "Arm") then
+				if role == "Knight" then
+					descendant.Color = jacket
+					descendant.Material = Enum.Material.Metal
+				elseif role == "Barbarian" then
+					descendant.Color = skin
+					descendant.Material = Enum.Material.SmoothPlastic
+				else
+					descendant.Color = jacket
+					descendant.Material = Enum.Material.Fabric
+				end
+			elseif string.find(n, "Foot") then
+				descendant.Color = trousers:Lerp(Color3.new(0, 0, 0), 0.4)
+				descendant.Material = if role == "Knight" then Enum.Material.Metal else Enum.Material.Leather
+			elseif string.find(n, "Leg") then
 				descendant.Color = trousers
-			elseif string.find(descendant.Name, "Torso") then
-				descendant.Color = jacket
+				descendant.Material = if role == "Knight" then Enum.Material.Metal else Enum.Material.Fabric
+			elseif string.find(n, "Torso") then
+				-- 윗몸은 겉옷 색, 아랫몸은 조금 어둡게 (허리띠 느낌)
+				descendant.Color = if n == "LowerTorso" then jacket:Lerp(Color3.new(0, 0, 0), 0.22) else jacket
+				descendant.Material = if role == "Knight" then Enum.Material.Metal elseif role == "Barbarian" then Enum.Material.Leather else Enum.Material.Fabric
 			end
 		end
 	end
@@ -161,6 +185,13 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
 		rightArm = model:FindFirstChild("RightShoulder", true),
 		leftLeg = model:FindFirstChild("LeftHip", true),
 		rightLeg = model:FindFirstChild("RightHip", true),
+		leftKnee = model:FindFirstChild("LeftKnee", true),
+		rightKnee = model:FindFirstChild("RightKnee", true),
+		leftElbow = model:FindFirstChild("LeftElbow", true),
+		rightElbow = model:FindFirstChild("RightElbow", true),
+		waist = model:FindFirstChild("Waist", true),
+		neck = model:FindFirstChild("Neck", true),
+		root = model:FindFirstChild("Root", true),
 	}
 	return model
 end
@@ -173,6 +204,72 @@ function Pose.walkR15(model, phase, moving)
 	if motors.rightArm then motors.rightArm.Transform = CFrame.Angles(stride, 0, 0) end
 	if motors.leftLeg then motors.leftLeg.Transform = CFrame.Angles(stride, 0, 0) end
 	if motors.rightLeg then motors.rightLeg.Transform = CFrame.Angles(-stride, 0, 0) end
+end
+
+-- 전투용 모션: 걷기(무릎·팔꿈치·몸 흔들림), 숨쉬기, 공격 휘두르기, 맞아서 휘청임
+-- st = { phase, moving, t, attack = 0..1 (휘두르는 진행도, 0이면 안 함), hurt = 0..1 }
+function Pose.animateR15(model, st)
+	local m = rigMotors[model]
+	if not m then
+		return
+	end
+	local moving = st.moving
+	local sw = if moving then math.sin(st.phase) else 0
+	local atk = st.attack or 0
+	local hurt = st.hurt or 0
+	local swing = if atk > 0 then math.sin(math.min(atk, 1) * math.pi) else 0
+	local breathe = math.sin((st.t or 0) * 2.2) * 0.025
+	local bob = if moving then math.abs(math.cos(st.phase)) * 0.18 else 0
+	if m.root then
+		m.root.Transform = CFrame.new(0, bob, 0) * CFrame.Angles(if moving then -0.1 else 0, if moving then sw * 0.07 else 0, 0)
+	end
+	if m.waist then
+		m.waist.Transform = CFrame.Angles(breathe + swing * 0.35 - hurt * 0.4, -swing * 0.5 + (if moving then -sw * 0.12 else 0), 0)
+	end
+	if m.neck then
+		m.neck.Transform = CFrame.Angles(hurt * 0.3 - swing * 0.1, 0, 0)
+	end
+	local armA = -sw * 0.65
+	if m.leftArm then
+		m.leftArm.Transform = CFrame.Angles(armA - hurt * 0.5, 0, 0.08 + hurt * 0.2)
+	end
+	if m.rightArm then
+		local raise = -swing * 2.4
+		m.rightArm.Transform = CFrame.Angles(-armA + raise - hurt * 0.5, 0, -0.08 - hurt * 0.2)
+	end
+	if m.leftElbow then
+		m.leftElbow.Transform = CFrame.Angles(-(if moving then math.max(0, -sw) * 0.5 else 0.12) - hurt * 0.3, 0, 0)
+	end
+	if m.rightElbow then
+		m.rightElbow.Transform = CFrame.Angles(-(if moving then math.max(0, sw) * 0.5 else 0.12) - swing * 0.7, 0, 0)
+	end
+	if m.leftLeg then
+		m.leftLeg.Transform = CFrame.Angles(sw * 0.7, 0, 0)
+	end
+	if m.rightLeg then
+		m.rightLeg.Transform = CFrame.Angles(-sw * 0.7, 0, 0)
+	end
+	if m.leftKnee then
+		m.leftKnee.Transform = CFrame.Angles(if moving then math.max(0, -sw) * 0.9 else 0, 0, 0)
+	end
+	if m.rightKnee then
+		m.rightKnee.Transform = CFrame.Angles(if moving then math.max(0, sw) * 0.9 else 0, 0, 0)
+	end
+end
+
+-- 쓰러지는 모션: alpha 0 -> 1 동안 뒤로 눕고 점점 투명해진다
+function Pose.dieR15(model, alpha)
+	local m = rigMotors[model]
+	if m and m.root then
+		local a = math.clamp(alpha, 0, 1)
+		m.root.Transform = CFrame.new(0, -a * 1.2, a * 0.8) * CFrame.Angles(-a * 1.45, 0, 0)
+	end
+	local t = math.clamp((alpha - 0.4) / 0.6, 0, 1)
+	for _, d in model:GetDescendants() do
+		if d:IsA("BasePart") and d.Name ~= "HumanoidRootPart" then
+			d.Transparency = t
+		end
+	end
 end
 
 return Pose

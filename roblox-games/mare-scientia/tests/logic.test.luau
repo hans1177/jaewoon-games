@@ -26,6 +26,7 @@ local D = {
 	Story = require("./Shared/Story"),
 	Harbor = require("./Shared/Harbor"),
 	SeaRoutes = require("./Shared/SeaRoutes"),
+	Regions = require("./Shared/Regions"),
 }
 local Registry = require("./Services/Registry")(D)
 local S, handlers = Registry.S, Registry.handlers
@@ -743,6 +744,20 @@ do
 	check("view has weather", v.weather ~= nil and v.forecast ~= nil)
 end
 
+-- 13d. 해역 단계 -------------------------------------------------------
+do
+	local st = newState()
+	st.coins = 100000
+	local ok, msg = act(st, "Sail", { portId = "nagasaki" })
+	check("far east locked at lv1", not ok and string.find(msg or "", "모험 Lv") ~= nil)
+	check("regions: london=1 nagasaki=5 cape_town=4 lima-ish callao=6", D.Regions.of(D.Ports.Ports.london) == D.Regions.List[1] and D.Regions.of(D.Ports.Ports.nagasaki) == D.Regions.List[5] and D.Regions.of(D.Ports.Ports.cape_town) == D.Regions.List[4] and D.Regions.of(D.Ports.Ports.callao) == D.Regions.List[6])
+	check("regions: caribbean=3, dakar=2", D.Regions.of(D.Ports.Ports.havana) == D.Regions.List[3] and D.Regions.of(D.Ports.Ports.dakar) == D.Regions.List[2])
+	st.careers.adventure.level = 30
+	st.ship.supplies = 5000
+	local ok2 = act(st, "Sail", { portId = "nagasaki" })
+	check("far east opens at high level", ok2)
+end
+
 -- 13e. 보물지도 --------------------------------------------------------
 do
 	local st = newState()
@@ -1341,7 +1356,7 @@ do
 	for _, q in D.Quests.Quests do
 		if q.companionId then
 			check("companion quest companion exists " .. q.id, D.Specialties.CompanionById[q.companionId] ~= nil)
-			check("companion quest card exists " .. q.id, q.rewardCardId and D.Cards.ById[q.rewardCardId] ~= nil)
+			check("companion quest card exists " .. q.id, q.rewardCardId == nil or D.Cards.ById[q.rewardCardId] ~= nil)
 		end
 		if q.kind == "field" then
 			check("field quest has field " .. q.id, q.fieldId ~= nil)

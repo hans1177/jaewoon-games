@@ -1039,7 +1039,20 @@ local function villageBoardDialogue(player,sourcePosition)
   end
   local index,contract=villageCurrentContract(player)
   if not contract then
-    villageDialogue(player,"초원 마을 · 의뢰 완료","세 의뢰의 진상을 모두 기록했어. 기사단 연대기는 그대로 이어져.")
+    -- [선택의 결과] 세 의뢰에서 고른 해결 방식과 나린 이야기 선택에 따라 마지막 말이 달라진다.
+    local outcomes=readNumber(player,"VillageContractOutcomes",0)
+    local mercy,justice=0,0
+    for i=0,2 do
+      local pick=bit32.band(bit32.rshift(outcomes,i*2),3)
+      if pick==1 then mercy+=1 elseif pick==2 then justice+=1 end
+    end
+    local tone=mercy>justice and "마을 사람들은 네가 사정을 먼저 들어 준다고 말해."
+      or justice>mercy and "마을 사람들은 네 판결이 단호하다고 말해."
+      or "마을 사람들은 네 판단이 때마다 다르다고 말해."
+    local story=readNumber(player,"NarinStory",0)
+    local closing=story==1 and "\n나린: \"진실을 보겠다던 네 말, 의뢰판이 기억하고 있어.\""
+      or story==2 and "\n나린: \"의심하던 네가 끝까지 해냈구나. 이제 조금은 믿어도 되겠어.\"" or ""
+    villageDialogue(player,"초원 마을 · 의뢰 완료","세 의뢰의 진상을 모두 기록했어. "..tone..closing.."\n기사단 연대기는 그대로 이어져.")
     return
   end
   local phase=readNumber(player,"VillageContractPhase",0)
@@ -1111,7 +1124,7 @@ local gearShopSessions={}
 local meadowShopApi={}
 local gearShopNames={hunter_blade="사냥꾼 장검",hunter_armor="사냥꾼 갑옷",hunter_gloves="강화 장갑",
   guardian_pants="수호자 바지",guardian_boots="수호자 장화",hunter_bow="사냥꾼 활"}
--- [NPC 호감도] 같은 상인에게서 살수록 호감이 쌓여 단골 할인(최대 15%)과 인사가 달라진다. 이번 접속 동안 유지된다.
+-- [NPC 호감도] 같은 상인에게서 살수록 호감이 쌓여 단골 할인(최대 15%)과 인사가 달라진다. 세이브에 저장된다.
 local affinityThresholds={0,2,5,9,14}
 local function affinityLevel(player,shopId)
   local points=readNumber(player,"Affinity_"..shopId,0)
@@ -1133,6 +1146,7 @@ local function meadowOpenGearShop(player,shopId,position)
     options[#options+1]={label=(gearShopNames[id] or id).."  ·  "..tostring(price or "?").." 재화",action="shop:buy:"..id}
   end
   villageDialogue(player,shop.Title.."  "..affinityHearts(level),affinityGreetings[level]..
+    ((game:GetService("Lighting").ClockTime>=18 or game:GetService("Lighting").ClockTime<5) and "\n(밤이라 등불 아래서 장사 중이야. 길 조심해.)" or "")..
     "\n기본 장비만 팔아. 더 좋은 장비는 대장간에서 직접 제작해."..(discount>0 and string.format("\n단골 할인 %d%%",math.floor(discount*100+.5)) or "")..
     "\n보유 재화 "..readNumber(player,"Coins",0),options)
 end
@@ -1178,9 +1192,17 @@ local function villageChoose(player,actionId)
       return
     end
     setNumber(player,"Coins",readNumber(player,"Coins",0)+(pick==1 and 40 or 25))
+    -- [선택의 결과] 진실을 택하면 마을 사람들이, 의심을 택하면 떠돌이 상인들이 먼저 마음을 연다(단골 호감도 시작점).
+    if pick==1 then
+      setNumber(player,"Affinity_village",math.max(readNumber(player,"Affinity_village",0),3))
+    else
+      for _,shopId in ipairs({"windcliff","highland","wetland"}) do
+        setNumber(player,"Affinity_"..shopId,math.max(readNumber(player,"Affinity_"..shopId,0),3))
+      end
+    end
     villageDialogue(player,"촌장 나린",pick==1
-      and "의뢰판 뒷면에 네 이름이 있었어. 길은 서쪽 숲 우두머리 너머로 이어져. (재화 +40 · 스토리: 진실을 택했어)"
-      or "…좋아, 의심은 살아남는 자의 몫이야. 숲의 이름 도둑을 막아 줘. (재화 +25 · 스토리: 의심을 택했어)")
+      and "의뢰판 뒷면에 네 이름이 있었어. 길은 서쪽 숲 우두머리 너머로 이어져. (재화 +40 · 스토리: 진실을 택했어 · 마을 대장장이와 가까워졌어)"
+      or "…좋아, 의심은 살아남는 자의 몫이야. 숲의 이름 도둑을 막아 줘. (재화 +25 · 스토리: 의심을 택했어 · 떠돌이 상인들과 가까워졌어)")
     return
   end
   local index,contract=villageCurrentContract(player)
