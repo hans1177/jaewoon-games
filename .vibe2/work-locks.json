@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-cu53x3",
+      "worker": "vibe2",
+      "taskId": "kingshot-ad-studio-evolution-roblox-usability-v1",
+      "gameId": "kingshot-ad",
+      "files": [
+        "roblox-games/kingshot-ad/client/Game.client.luau",
+        "roblox-games/kingshot-ad/shared/GameConfig.luau",
+        "roblox-games/kingshot-ad/server/Game.server.luau",
+        "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
+        "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
+        "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "fa180b5acdcbffe2f297e7d800209eea64a21f97",
+      "runId": "42338953742",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-07T04:44:31.925Z",
+      "expiresAt": "2026-11-07T05:29:31.925Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:kingshot-ad-studio-evolution-roblox-usability-v1"
+      ]
+    }
+  ]
 }
