@@ -15,3 +15,4 @@
 
 ## 최근 기록
 - 2026-11-07: 개발 루프 틀(devloop.json, STATE.md, 공통 사진 캡처) 추가.
+- 2026-11-08: 튜토리얼 화살표의 AbsolutePosition 오류 대응 — 화면 기준점을 안전하게 읽는 `meadowArt.origin` 으로 교체(원인 위치는 로그 없이 추정, 캡처로 재확인 필요). 크래시 3건(applySkillTreeIcon 선언 순서, questTracker/guidePrompts 범위) 수정, 호감도 저장, 타격감(흔들림·번쩍임·히트스톱), 대화 줌, 노드별 스킬 아이콘 추가.

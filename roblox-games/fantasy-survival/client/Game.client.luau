@@ -214,6 +214,12 @@ local meadowArt={skillSheet="rbxassetid://129030506278489",gearSheet="rbxassetid
 for _,node in ipairs(Config.MeadowSkillNodes or {}) do
   if node.Kind=="ACTIVE" then meadowArt.skillCell[node.Id]=node.IconCell end
 end
+-- [화면 기준점] ScreenGui 는 AbsolutePosition 이 없을 수 있어 안전하게 읽는다(튜토리얼 화살표 반복 오류 방지).
+function meadowArt.origin(root)
+  local ok,value=pcall(function() return root.AbsolutePosition end)
+  if ok and typeof(value)=="Vector2" then return value end
+  return Vector2.zero
+end
 function meadowArt.skill(icon,key)
   local cell=meadowArt.skillCell[key]
   if meadowArt.skillSheet=="" or cell==nil then return false end
@@ -3944,7 +3950,7 @@ local function layoutMeadowJournal()
   if folded then height=32 end
   -- [가로 화면] 오른쪽 전투 버튼과 겹치지 않도록 퀘스트창은 왼쪽 체력바 아래에 둔다.
   local questLeft=landscape and 10 or v.X-width-8
-  local questTop=landscape and math.max(0,72-math.floor(gui.AbsolutePosition.Y)) or top -- 화면 기준 체력바 바로 아래(상단 안전영역 보정)
+  local questTop=landscape and math.max(0,72-math.floor(meadowArt.origin(gui).Y)) or top -- 화면 기준 체력바 바로 아래(상단 안전영역 보정)
   questTracker.Position=UDim2.fromOffset(questLeft,questTop)
   questTracker.Size=UDim2.fromOffset(width,height)
   trackerTitle.Position=UDim2.fromOffset(compact and 24 or 8,compact and 4 or 6)
@@ -12334,7 +12340,7 @@ end)()
       -- questTracker가 아직 없거나(nil) 이 범위에서 보이지 않으면 건너뛴다 (캡처 콘솔에서 매 프레임 오류가 났던 곳)
       local qt=_G.MeadowQuestTracker
       if qt and guiRoot and qt.Visible then
-        local qp,qs=qt.AbsolutePosition-guiRoot.AbsolutePosition,qt.AbsoluteSize
+        local qp,qs=qt.AbsolutePosition-meadowArt.origin(guiRoot),qt.AbsoluteSize
         if px<qp.X+qs.X+100 and py>qp.Y-70 and py<qp.Y+qs.Y+80 then
           px=qp.X+qs.X+100
         end
@@ -12555,7 +12561,7 @@ end)()
       ctitle.TextSize=13;ctitle.Size=UDim2.new(1,0,0,16)
       cbody.TextSize=12;cbody.Position=UDim2.fromOffset(0,17);cbody.Size=UDim2.new(1,0,0,28)
     else
-      local y=radar and (radar.AbsolutePosition.Y+radar.AbsoluteSize.Y-guiRoot.AbsolutePosition.Y+6) or 84
+      local y=radar and (radar.AbsolutePosition.Y+radar.AbsoluteSize.Y-meadowArt.origin(guiRoot).Y+6) or 84
       card.AnchorPoint=Vector2.new(.5,0);card.Position=UDim2.new(.5,0,0,y);card.BackgroundTransparency=1
       card.Size=UDim2.fromOffset(460,132)
       ctitle.TextSize=19;ctitle.Size=UDim2.new(1,0,0,26)
@@ -12575,7 +12581,7 @@ end)()
       local off=dir=="up" and Vector2.new(0,gap) or dir=="down" and Vector2.new(0,-gap)
         or dir=="left" and Vector2.new(gap,0) or Vector2.new(-gap,0)
       pointer.Rotation=dir=="up" and 180 or dir=="down" and 0 or dir=="left" and 90 or -90
-      local o=guiRoot.AbsolutePosition
+      local o=meadowArt.origin(guiRoot)
       pointer.Position=UDim2.fromOffset(pos.X+off.X-o.X,pos.Y+off.Y-o.Y)
       local t=(os.clock()*1.2)%1
       pointer.Visible=true;ring.Visible=false
