@@ -1262,7 +1262,7 @@ local function playStory(ev)
 		pcall(Pose.relaxArms, m)
 		local cf, size = m:GetBoundingBox()
 		local focus = cf.Position + Vector3.new(0, size.Y * 0.2, 0)
-		cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.35, 0.12, 1) .Unit * (size.Y * 1.05), focus)
+		cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.3, 0.12, -1).Unit * (size.Y * 1.05), focus)
 	else
 		local npc = mkBox(picture, UDim2.fromScale(0.5, 0.95), UDim2.fromOffset(90, 150), Color3.new(0, 0, 0), 1)
 		npc.AnchorPoint = Vector2.new(0.5, 1)
@@ -1864,7 +1864,7 @@ local function openTradeHall()
 			local cf, size = m:GetBoundingBox()
 			local focus = cf.Position + Vector3.new(0, size.Y * 0.1, 0)
 			cam.FieldOfView = 40
-			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.08, 1).Unit * (math.max(size.X, size.Y, size.Z) * 1.7), focus)
+			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.08, -1).Unit * (math.max(size.X, size.Y, size.Z) * 1.7), focus)
 		end
 		local bubble = mkBox(left, UDim2.new(0, 10, 1, -146), UDim2.new(1, -20, 0, 136), Color3.fromRGB(240, 228, 200))
 		corner(bubble, 12)
@@ -2350,6 +2350,117 @@ local function renderYard()
 			return row
 		end)
 	end
+end
+
+
+-- 조선소 별도 화면: 조선 장인과 마주 보고 정비·보급·배 구입·개조를 한다 (기존 조선소 목록을 큰 화면에 그대로 쓴다)
+local function openYardHall()
+	closeTradeHall()
+	local layer = overlayGui("TradeHallGui", 15)
+	main.Visible = false
+	local root = Instance.new("Frame")
+	root.Size = UDim2.fromScale(1, 1)
+	root.BackgroundColor3 = Color3.fromRGB(26, 32, 40)
+	root.BorderSizePixel = 0
+	root.Parent = layer
+	local scroll = Instance.new("ScrollingFrame")
+	scroll.Position = UDim2.fromOffset(258, 62)
+	scroll.Size = UDim2.new(1, -266, 1, -70)
+	scroll.BackgroundTransparency = 1
+	scroll.BorderSizePixel = 0
+	scroll.ScrollBarThickness = 6
+	scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	scroll.CanvasSize = UDim2.new()
+	scroll.Parent = root
+	local sl = Instance.new("UIListLayout")
+	sl.Padding = UDim.new(0, 8)
+	sl.SortOrder = Enum.SortOrder.LayoutOrder
+	sl.Parent = scroll
+	local lastScroll = 0
+
+	local function build()
+		if not layer.Parent or not view then
+			return
+		end
+		lastScroll = scroll.CanvasPosition.Y
+		for _, c in root:GetChildren() do
+			if c ~= scroll then
+				c:Destroy()
+			end
+		end
+		for _, c in scroll:GetChildren() do
+			if not c:IsA("UIListLayout") then
+				c:Destroy()
+			end
+		end
+		local p, ship = view.player, view.ship
+		local top = mkBox(root, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 54), Color3.fromRGB(40, 50, 62))
+		local title = mkLabel(top, string.format("조선소 · %s", p.portName), 24, COLORS.gold, true)
+		title.Position = UDim2.fromOffset(18, 12)
+		title.Size = UDim2.fromOffset(420, 30)
+		title.AutomaticSize = Enum.AutomaticSize.None
+		local hold = mkLabel(top, string.format("코인 %d    %s 선체 %d/%d", p.coins, ship.name, ship.hull, ship.maxHull), 20, COLORS.text, true)
+		hold.AnchorPoint = Vector2.new(1, 0)
+		hold.Position = UDim2.new(1, -140, 0, 14)
+		hold.Size = UDim2.fromOffset(520, 28)
+		hold.AutomaticSize = Enum.AutomaticSize.None
+		hold.TextXAlignment = Enum.TextXAlignment.Right
+		local leave = mkButton(top, "나가기", COLORS.red, UDim2.fromOffset(110, 38), closeTradeHall, true)
+		leave.AnchorPoint = Vector2.new(1, 0.5)
+		leave.Position = UDim2.new(1, -12, 0.5, 0)
+		leave.TextSize = 18
+
+		local left = mkBox(root, UDim2.fromOffset(0, 54), UDim2.new(0, 250, 1, -54), Color3.fromRGB(32, 40, 50))
+		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
+		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("조선 장인", p.portId or ""))
+		if tpl then
+			local vf = Instance.new("ViewportFrame")
+			vf.BackgroundTransparency = 1
+			vf.Size = UDim2.new(1, 0, 1, -150)
+			vf.Ambient = Color3.fromRGB(170, 170, 178)
+			vf.LightColor = Color3.fromRGB(255, 236, 205)
+			vf.LightDirection = Vector3.new(-0.6, -0.8, -1).Unit
+			vf.Parent = left
+			local cam = Instance.new("Camera")
+			cam.FieldOfView = 40
+			cam.Parent = vf
+			vf.CurrentCamera = cam
+			local world = Instance.new("WorldModel")
+			world.Parent = vf
+			local m = tpl:Clone()
+			for _, d in m:GetDescendants() do
+				if d:IsA("BasePart") then
+					d.Anchored = true
+				end
+			end
+			m.Parent = world
+			pcall(Pose.relaxArms, m)
+			local cf, size = m:GetBoundingBox()
+			local focus = cf.Position + Vector3.new(0, size.Y * 0.1, 0)
+			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.08, -1).Unit * (math.max(size.X, size.Y, size.Z) * 1.7), focus)
+		end
+		local bubble = mkBox(left, UDim2.new(0, 10, 1, -146), UDim2.new(1, -20, 0, 136), Color3.fromRGB(240, 228, 200))
+		corner(bubble, 12)
+		local say = (message ~= "" and message) or "어서 오게. 배는 뱃사람의 목숨이지. 손볼 데가 있나?"
+		local sayL = mkLabel(bubble, say, 16, Color3.fromRGB(50, 36, 24), true)
+		sayL.Position = UDim2.fromOffset(10, 8)
+		sayL.Size = UDim2.new(1, -20, 1, -16)
+		sayL.AutomaticSize = Enum.AutomaticSize.None
+		sayL.TextWrapped = true
+		sayL.TextYAlignment = Enum.TextYAlignment.Top
+
+		-- 기존 조선소 화면 내용을 이 스크롤 영역에 그린다
+		local saved = content
+		content = scroll
+		local ok, err = pcall(renderYard)
+		content = saved
+		if not ok then
+			warn("[Game] 조선소 화면 오류", err)
+		end
+		scroll.CanvasPosition = Vector2.new(0, lastScroll)
+	end
+	tradeHallRefresh = build
+	build()
 end
 
 local function startField(s)
@@ -3052,9 +3163,15 @@ syncScene = function()
 		arrive = arriveNext,
 	}, function(tab)
 		currentTab = tab
-		main.Visible = true
 		menuToggle.Visible = false
-		render()
+		if tab == "trade" then
+			openTradeHall()
+		elseif tab == "yard" then
+			openYardHall()
+		else
+			main.Visible = true
+			render()
+		end
 	end)
 	if not ok then
 		warn("[Game] 항구 장면 오류", res)

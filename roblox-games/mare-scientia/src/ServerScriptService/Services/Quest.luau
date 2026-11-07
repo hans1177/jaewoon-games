@@ -110,5 +110,27 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
-	return { handlers = handlers, progress = progress, visible = visible }
+	-- 항구에 도착하면 받아 둔 납품 퀘스트의 물건을 자동으로 넘긴다. 조건을 채운 퀘스트는 알려 준다.
+	local function autoDeliver(state, msgs)
+		for _, quest in D.Quests.Quests do
+			local a = state.quests.active[quest.id]
+			if a and quest.kind == "deliver" and quest.portId == state.portId and a.delivered < quest.amount then
+				local amount = math.min(quest.amount - a.delivered, state.cargo[quest.goodId] or 0)
+				if amount > 0 then
+					S.State.removeCargo(state, quest.goodId, amount)
+					a.delivered += amount
+					table.insert(msgs, string.format("퀘스트 납품: %s %d개 (%d/%d)", D.Ports.Goods[quest.goodId].name, amount, a.delivered, quest.amount))
+				end
+			end
+		end
+		for _, quest in D.Quests.Quests do
+			local a = state.quests.active[quest.id]
+			if a and not a.notified and progress(state, quest) >= quest.amount then
+				a.notified = true
+				table.insert(msgs, "퀘스트 조건 달성! 퀘스트 탭에서 보상을 받으세요: " .. quest.name)
+			end
+		end
+	end
+
+	return { handlers = handlers, progress = progress, visible = visible, autoDeliver = autoDeliver }
 end

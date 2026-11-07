@@ -267,13 +267,16 @@ local function villager(parent, pos, facing, coat, rng, role)
 	return figure
 end
 
+-- 캐릭터(약 5스터드)에 비해 집이 장난감처럼 작아 보여서 전체적으로 키운다 (대신 간격도 같이 넓힌다)
+local HOUSE_SCALE = 1.45
+
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
 	local tintColor = wallColor or style.walls[rng:NextInteger(1, #style.walls)]
 	-- 위치로 정한 크기 변주(0.86~1.08배)와 180도 뒤집기로 같은 집이 반복돼 보이지 않게 한다
 	local seed = math.floor(math.abs(pos.X * 3 + pos.Z * 5))
 	local variation = 0.86 + (seed % 7) * 0.037
-	local mesh = importedModel(parent, "Town", "house", pos, math.max(w, d) * variation, true, tintColor)
+	local mesh = importedModel(parent, "Town", "house", pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
 	if mesh then
 		mesh.Name = "HarborHouse"
 		if (seed // 7) % 2 == 1 then
@@ -513,11 +516,8 @@ local function densify(folder, info, style, rng, walkers, made)
 	local rows = {
 		{ z = 20, w0 = 7, w1 = 9, d = 7, fl = 1, from = -74, step = 10 },
 		{ z = 48, w0 = 6, w1 = 8, d = 8, fl = 2, from = -38, step = 16, off = 8 },
-		{ z = 66, w0 = 6, w1 = 8, d = 8, fl = 2, from = -38, step = 16, off = 8 },
 		{ z = 80, w0 = 8, w1 = 11, d = 8, fl = 2, from = -26, step = 12 },
-		{ z = 94, w0 = 8, w1 = 11, d = 8, fl = 2, from = -26, step = 12 },
 		{ z = 108, w0 = 10, w1 = 13, d = 9, fl = 3, from = -26, step = 14 },
-		{ z = 122, w0 = 11, w1 = 15, d = 10, fl = 3, from = -26, step = 14 },
 	}
 	local smokers = 0
 	for _, row in rows do
@@ -525,7 +525,7 @@ local function densify(folder, info, style, rng, walkers, made)
 			local x = row.from - (row.off or 0)
 			while x > -168 do
 				local w = rng:NextNumber(row.w0, row.w1)
-				if not nearStreet(x, w) and rng:NextNumber() < 0.93 then
+				if not nearStreet(x, w * HOUSE_SCALE) and rng:NextNumber() < 0.93 then
 					-- 격자 느낌을 깨기 위해 앞뒤 위치·깊이·층수를 줄마다 흩뜨린다
 					local z = side * (row.z + rng:NextNumber(-2.5, 2.5))
 					local pos = Vector3.new(x + rng:NextNumber(-2.5, 2.5), 0, z)
@@ -538,7 +538,7 @@ local function densify(folder, info, style, rng, walkers, made)
 						smokeOn(folder, pos + Vector3.new(w * 0.2, row.fl * 6 + 4, 0))
 					end
 				end
-				x -= row.step + rng:NextNumber(-2, 3)
+				x -= row.step * HOUSE_SCALE + rng:NextNumber(-2, 3)
 			end
 		end
 	end
@@ -887,7 +887,7 @@ function PortScene.build(info, onFacility)
 	-- 주택가: 큰길 양옆과 뒤쪽 블록
 	for row = 0, 3 do
 		for col = 0, 6 do
-			local x = -30 - col * 16
+			local x = -30 - col * 16 * HOUSE_SCALE
 			local z = (if row < 2 then 1 else -1) * (48 + (row % 2) * 18)
 			if rng:NextNumber() < 0.85 then
 				local w = if info.portId == "amsterdam" then rng:NextNumber(6, 8) else rng:NextNumber(9, 13)

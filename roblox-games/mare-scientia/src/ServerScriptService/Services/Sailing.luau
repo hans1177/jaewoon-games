@@ -217,6 +217,7 @@ return function(D, S)
 		end
 		S.Shipyard.payUpkeep(state, days, msgs)
 		S.Shipyard.autoTopUp(state, msgs)
+		S.Quest.autoDeliver(state, msgs)
 		return true, table.concat(msgs, "\n")
 	end
 

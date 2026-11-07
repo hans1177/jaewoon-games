@@ -833,6 +833,26 @@ do
 	st.rep[D.Ports.Ports.lisbon.country] = 50
 	local okC, msgC = S.Trade.handlers.Smuggle(st, { goodId = "wool", amount = 5 }, rngHigh)
 	check("smuggle caught confiscates", okC and (st.cargo.wool or 0) == 0 and st.rep[D.Ports.Ports.lisbon.country] == 42, msgC)
+	-- 도착하면 납품 퀘스트 물건을 자동으로 넘긴다
+	do
+		local qs = newState()
+		local q
+		for _, x in D.Quests.Quests do
+			if x.kind == "deliver" and not x.companionId then
+				q = x
+				break
+			end
+		end
+		qs.portId = q.portId
+		qs.coins = 100000
+		check("quest accept", act(qs, "Accept", { questId = q.id }))
+		qs.cargo[q.goodId] = q.amount
+		local msgs = {}
+		S.Quest.autoDeliver(qs, msgs)
+		check("auto deliver delivered", qs.quests.active[q.id].delivered == q.amount, tostring(qs.quests.active[q.id].delivered))
+		check("auto deliver notifies completion", #msgs >= 2)
+		check("claim after auto deliver", act(qs, "Claim", { questId = q.id }))
+	end
 	-- 흥정: 한 항구·물건당 한 번, 성공하면 다음 구매 한 번만 싸다
 	do
 		local hs = newState()
