@@ -64,8 +64,10 @@ async function req(url,opts={}){
 // [FOREST_GEAR_REGISTER_ORIGINAL_CC0] 마력숲 무기·갑옷 독립 원본을 기존 Open Cloud 책임 경로로 등록한다.
 // 기존 장비 번호·AssetIds 및 다른 게임의 업로더는 그대로 유지한다.
 if(fantasy&&(process.argv.includes('--register-forest-gear')
-  ||process.argv.includes('--register-forest-distinct-weapons'))){
+  ||process.argv.includes('--register-forest-distinct-weapons')
+  ||process.argv.includes('--register-forest-kaykit-weapons'))){
  const distinct=process.argv.includes('--register-forest-distinct-weapons');
+ const kaykit=process.argv.includes('--register-forest-kaykit-weapons');
  if(targetUniverse!=='10773436325')throw Error('FOREST_GEAR_UNIVERSE_NOT_APPROVED');
  const {execFileSync}=await import('node:child_process');
  const root='roblox-games/fantasy-survival';
@@ -154,6 +156,32 @@ if(fantasy&&(process.argv.includes('--register-forest-gear')
   if(plan.length!==42||new Set(plan.map(p=>p.key)).size!==42)
    throw Error('FOREST_DISTINCT_PLAN_INVALID');
  }
+ // [무기 실물 추가] 카이킷 원본 48개는 glTF 메시·BIN·PBR 색상 텍스처 원형 보존.
+ let kaykitSource=null;
+ if(kaykit){
+  const folder=sourceRoot+'/kaykit-weapons';
+  const original=await fs.readFile(folder+'/manifest.json');
+  kaykitSource=JSON.parse(original.toString('utf8'));
+  if(kaykitSource.gameId!=='fantasy-survival'||kaykitSource.license!=='CC0-1.0'
+   ||kaykitSource.sourceCount!==48||kaykitSource.models.length!==48
+   ||kaykitSource.files.length!==97
+   ||kaykitSource.upstreamRevision!=='4376b8becf4218424edaba18c0e43a5989c189f6')
+   throw Error('FOREST_KAYKIT_SOURCE_MANIFEST_INVALID');
+  for(const row of kaykitSource.files){
+   const bytes=await fs.readFile(folder+'/'+row.file);
+   if(row.bytes!==bytes.length||crypto.createHash('sha256').update(bytes).digest('hex')!==row.sha256)
+    throw Error('FOREST_KAYKIT_SOURCE_DIGEST_MISMATCH:'+row.file);
+  }
+  expected['kaykit-weapons']=crypto.createHash('sha256').update(original).digest('hex');
+  licenseSources['kaykit-weapons']='https://kaylousberg.itch.io/fantasy-weapons-bits';
+  plan.length=0;
+  for(const file of kaykitSource.models){
+   if(!/^[A-Za-z0-9_]+\.gltf$/.test(file))throw Error('FOREST_KAYKIT_UNSAFE_MODEL_NAME');
+   plan.push({key:'gear_kaykit_'+file.slice(0,-5),archive:'kaykit-weapons',entry:file});
+  }
+  if(plan.length!==48||new Set(plan.map(p=>p.key)).size!==48)
+   throw Error('FOREST_KAYKIT_48_SOURCE_COUNT_INVALID');
+ }
  // [기존 3D 모델 변환] 원본 OBJ/FBX를 Blender에서 그대로 GLB로 내보낸다. 도형 자동 생성 금지.
  const python=[
   'import bpy,os',
@@ -164,6 +192,7 @@ if(fantasy&&(process.argv.includes('--register-forest-gear')
   '  bpy.ops.wm.obj_import(filepath=p) if hasattr(bpy.ops.wm,"obj_import") else bpy.ops.import_scene.obj(filepath=p)',
   'elif p.lower().endswith(".fbx"):',
   '  bpy.ops.import_scene.fbx(filepath=p)',
+  'elif p.lower().endswith(".gltf"): bpy.ops.import_scene.gltf(filepath=p)',
   'else: raise RuntimeError("UNSUPPORTED_FOREST_GEAR_SOURCE")',
   'if not any(o.type=="MESH" for o in bpy.data.objects): raise RuntimeError("FOREST_GEAR_MESH_MISSING")',
   'bpy.ops.export_scene.gltf(filepath=os.environ["FOREST_GEAR_OUTPUT"],export_format="GLB")',
@@ -172,7 +201,15 @@ if(fantasy&&(process.argv.includes('--register-forest-gear')
  for(const item of plan){
   const pack=archiveMap.get(item.archive);
   let binary;
-  if(distinct&&item.archive==='medieval-weapons'){
+  if(kaykit&&item.archive==='kaykit-weapons'){
+   const input=path.join(sourceRoot,'kaykit-weapons',item.entry);
+   const output=path.join(temp,item.key+'.glb');
+   execFileSync('blender',['--background','--python-expr',python],{
+    env:{...process.env,FOREST_GEAR_INPUT:input,FOREST_GEAR_OUTPUT:output},
+    timeout:180000,maxBuffer:1024*1024,
+   });
+   binary=await fs.readFile(output);
+  }else if(distinct&&item.archive==='medieval-weapons'){
    binary=await fs.readFile(sourceRoot+'/medieval-weapons/'+item.entry);
    const evidence=medievalSource.files.find(x=>x.file===item.entry);
    if(!evidence||evidence.bytes!==binary.length
@@ -197,14 +234,14 @@ if(fantasy&&(process.argv.includes('--register-forest-gear')
  // [등록 증거] 전부 실물과 일치함을 검사한 뒤에만 Roblox 업로드를 시작한다.
  const registry=JSON.parse(await fs.readFile(registryFile,'utf8'));
  if(registry.gameId!=='fantasy-survival')throw Error('FOREST_GEAR_WRONG_GAME');
- const group=(distinct?registry.gearExpansionV2:registry.gearExpansionV1)||{version:distinct?2:1,gameId:'fantasy-survival',universeId:targetUniverse,
+ const group=(kaykit?registry.gearExpansionV3:distinct?registry.gearExpansionV2:registry.gearExpansionV1)||{version:kaykit?3:distinct?2:1,gameId:'fantasy-survival',universeId:targetUniverse,
   sourceVerified:true,license:'CC0-1.0',sourcePacks:expected,
-  licenseSources,modelCount:distinct?42:20,models:{},nativeRegistrationVerified:false,
+  licenseSources,modelCount:kaykit?48:distinct?42:20,models:{},nativeRegistrationVerified:false,
   universeUseGrantVerified:false,runtimeVerified:false};
- if(group.gameId!=='fantasy-survival'||group.universeId!==targetUniverse||group.modelCount!==(distinct?42:20))
+ if(group.gameId!=='fantasy-survival'||group.universeId!==targetUniverse||group.modelCount!==(kaykit?48:distinct?42:20))
   throw Error('FOREST_GEAR_REGISTRY_CONFLICT');
  group.models||={};
- if(distinct)registry.gearExpansionV2=group;else registry.gearExpansionV1=group;
+ if(kaykit)registry.gearExpansionV3=group;else if(distinct)registry.gearExpansionV2=group;else registry.gearExpansionV1=group;
  const save=()=>fs.writeFile(registryFile,JSON.stringify(registry,null,2)+'\n');
  for(const item of plan){
   const {binary,sha256,archive,entry,key}=modelFiles.get(item.key);
@@ -245,7 +282,7 @@ if(fantasy&&(process.argv.includes('--register-forest-gear')
    group.models[key].universeUseGrantVerified=true;
    await save();
   }
-  console.log((distinct?'FOREST_DISTINCT_NATIVE_MODEL=':'FOREST_GEAR_REGISTERED_AND_GRANTED=')+key+':'+id);
+  console.log((kaykit?'FOREST_KAYKIT_NATIVE_MODEL=':distinct?'FOREST_DISTINCT_NATIVE_MODEL=':'FOREST_GEAR_REGISTERED_AND_GRANTED=')+key+':'+id);
  }
  const valid=plan.every(({key})=>group.models[key]?.nativeRegistrationVerified===true
   &&group.models[key]?.universeUseGrantVerified===true
@@ -267,7 +304,7 @@ if(fantasy&&(process.argv.includes('--register-forest-gear')
  group.status='REGISTERED_AND_UNIVERSE_USE_GRANTED_PENDING_RUNTIME';
  await fs.writeFile(idsFile,merged);
  await save();
- console.log((distinct?'FOREST_DISTINCT_MODELS_REGISTERED=':'FOREST_GEAR_ALL_REGISTERED=')+plan.length+' UNIVERSE='+targetUniverse);
+ console.log((kaykit?'FOREST_KAYKIT_MODELS_REGISTERED=':distinct?'FOREST_DISTINCT_MODELS_REGISTERED=':'FOREST_GEAR_ALL_REGISTERED=')+plan.length+' UNIVERSE='+targetUniverse);
  process.exit(0);
 }
 
