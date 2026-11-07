@@ -202,8 +202,10 @@ function VoyageScene.play(info)
 	-- 물결치는 진짜 물(지형 물)을 배 주변에만 깐다. 실패하면 위의 판이 바다를 맡는다.
 	local terrain = workspace.Terrain
 	local savedWater = { c = terrain.WaterColor, t = terrain.WaterTransparency, r = terrain.WaterReflectance, ws = terrain.WaterWaveSize, wsp = terrain.WaterWaveSpeed }
-	sea.Position = Vector3.new(sea.Position.X, -3.2, sea.Position.Z)
-	local waterOk = pcall(function()
+	-- 지형 물은 검은 타원 얼룩이 생겨 쓰지 않는다. 판의 윗면을 수면(0)에 맞춘다.
+	sea.Position = Vector3.new(sea.Position.X, -1, sea.Position.Z)
+	local waterOk = false
+	pcall(function()
 		terrain.WaterColor = Color3.fromRGB(22, 96, 150)
 		terrain.WaterTransparency = 0.25
 		terrain.WaterReflectance = 0.55
