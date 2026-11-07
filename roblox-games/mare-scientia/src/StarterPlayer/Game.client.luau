@@ -3143,3 +3143,14 @@ menuToggle.Activated:Connect(function()
 	menuToggle.Visible = false
 end)
 
+
+-- 개발 캡처용: 로컬에서 "DevCall" 속성에 State 를 넣으면 화면을 서버 상태로 새로 그린다 (읽기 전용 요청만)
+task.spawn(function()
+	while true do
+		task.wait(1)
+		if workspace:GetAttribute("DevCall") == "State" then
+			workspace:SetAttribute("DevCall", nil)
+			call("State")
+		end
+	end
+end)
