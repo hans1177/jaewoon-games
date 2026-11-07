@@ -488,7 +488,9 @@ local function bindNativeFoundationPlayer(player)
             local pbr=item:FindFirstChildOfClass("SurfaceAppearance")
             if pbr then pbr:Destroy() end
             item.Color=Color3.fromRGB(158,32,40)
-            item.Material=Enum.Material.SmoothPlastic
+            -- 조명 방향과 무관하게 진홍색이 보이도록 평면 발색 재질을 쓴다(검게 죽던 뒷면 문제 방지).
+            item.Material=Enum.Material.Neon
+            item.Color=Color3.fromRGB(128,22,30)
           end
         end
         -- [실제 3D 천] 어깨 윗선이 등 위쪽에 닿고, 네 군데 찢어진 밑단은 엉덩이까지.

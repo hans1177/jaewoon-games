@@ -1157,7 +1157,7 @@ local function layoutNativeAvatar()
   local slot=width<360 and 52 or 60
   local gap=math.floor((192-slot*3)/2)
   local avatarWidth=math.clamp(width-slot*2-36,110,260)
-  characterHero.Size=UDim2.new(1,-8,0,352)
+  characterHero.Size=UDim2.new(1,-8,0,250)
   characterPortrait.Size=UDim2.fromOffset(avatarWidth,192)
   characterPortrait.Position=UDim2.fromOffset(math.floor((width-avatarWidth)/2),10)
   characterViewport.Size=characterPortrait.Size
@@ -1171,9 +1171,8 @@ local function layoutNativeAvatar()
   characterHeroName.Position=UDim2.fromOffset(12,208)
   characterHeroName.Size=UDim2.new(1,-24,0,28)
   characterHeroName.TextXAlignment=Enum.TextXAlignment.Center
-  heroHealth.Position=UDim2.fromOffset(12,240);heroHealth.Size=UDim2.new(1,-24,0,24)
-  heroStamina.Position=UDim2.fromOffset(12,268);heroStamina.Size=UDim2.new(1,-24,0,24)
-  heroChips.Position=UDim2.fromOffset(12,298);heroChips.Size=UDim2.new(1,-24,0,46)
+  -- [오딧세이식 간결 캐릭터창] 체력·기력 바와 공격/방어/무기강화/보스 카드는 제거(HUD에서 항상 보인다).
+  heroHealth.Visible=false;heroStamina.Visible=false;heroChips.Visible=false
   local chipWidth=math.floor((heroChips.AbsoluteSize.X-18)/4)
   heroChipGrid.CellSize=UDim2.fromOffset(math.max(40,chipWidth),46)
 end
@@ -1190,11 +1189,13 @@ equipmentHeading.Size=UDim2.new(1,-8,0,30);equipmentHeading.BackgroundTransparen
 equipmentHeading.Font=Enum.Font.GothamBold;equipmentHeading.TextSize=17
 equipmentHeading.Text="장착 장비  ·  6개 슬롯";equipmentHeading.TextColor3=meadowGold
 equipmentHeading.TextXAlignment=Enum.TextXAlignment.Left;equipmentHeading.Parent=meadowPages[1]
+equipmentHeading.Visible=false -- 아바타 좌우 슬롯과 중복
 -- [캐릭터 장비] 기존 여섯 슬롯을 게임 화면 폭에 따라 배치한다. 실제 장착/능력치는 서버 값을 유지한다.
 local equipmentGrid=Instance.new("Frame")
 equipmentGrid.Name="WitcherEquipmentGrid";equipmentGrid.LayoutOrder=3
 equipmentGrid.Size=UDim2.new(1,-8,0,448);equipmentGrid.BackgroundTransparency=1
 equipmentGrid.Parent=meadowPages[1]
+equipmentGrid.Visible=false -- 아바타 좌우 슬롯과 중복
 local equipmentLayout=Instance.new("UIGridLayout")
 equipmentLayout.SortOrder=Enum.SortOrder.LayoutOrder
 equipmentLayout.CellPadding=UDim2.fromOffset(8,8);equipmentLayout.Parent=equipmentGrid
