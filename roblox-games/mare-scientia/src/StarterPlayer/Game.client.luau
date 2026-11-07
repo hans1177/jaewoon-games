@@ -1814,6 +1814,16 @@ local function renderStatus()
 			return mkLabel(content, string.format("%s\n\"%s\"\n%s", view.talk.name, view.talk.line, view.talk.note or ""), 16, COLORS.gold, true)
 		end)
 	end
+	if view.talk and view.talk.options then
+		add(function()
+			return mkLabel(content, view.talk.question or "", 16, COLORS.gold, true)
+		end)
+		for i, text in view.talk.options do
+			add(function()
+				return mkRow(content, text, "", { { text = "대답", color = COLORS.green, onClick = function() call("TalkChoice", { index = i }) end } }, 48)
+			end)
+		end
+	end
 	for _, c in view.companions.list do
 		add(function()
 			local sub = string.format("%s\n영입 %d코인 · 호감도 %d (%s)%s", c.summary, c.fee, c.affinity, ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier], if c.blocked and not c.joined then " · " .. c.blocked else "")

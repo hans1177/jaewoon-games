@@ -69,4 +69,49 @@ local Stories: { [string]: { [number]: { line: string, fame: number?, coins: num
 	t_surgeon = { [2] = { line = "엘레나가 선원들 건강검진을 해 줬다. 모두 마음이 놓였다.", morale = 15 }, [3] = { line = "엘레나가 자신의 약초 비법서를 선물했다.", fame = 4 } },
 }
 
-return { Talk = CompanionTalk, Stories = Stories }
+-- 대화 끝에 동료가 던지는 질문. 어떤 대답을 하느냐에 따라 반응과 보상이 다르다.
+-- kind: bond(호감도) / coins / fame / morale / none(웃음만)
+local Choices: { [string]: { q: string, opts: { { text: string, reply: string, kind: string, amount: number } } } } = {
+	c_merian = { q = "마리아가 스케치북을 내밀었다. '이 애벌레, 나비가 되면 무슨 색일까요?'", opts = {
+		{ text = "황금빛이요", reply = "'어머, 저도 그렇게 칠하려던 참이에요!' 마리아가 활짝 웃었다.", kind = "bond", amount = 3 },
+		{ text = "먹으면 맛있을 색", reply = "'...선장님, 제 모델을 먹지는 마세요.' 선원들이 폭소했다.", kind = "morale", amount = 6 },
+		{ text = "팔리는 색이요", reply = "'현실적이네요.' 그림 한 장을 슬쩍 팔아 보라며 건넸다.", kind = "coins", amount = 60 } } },
+	c_halley = { q = "핼리가 밤하늘을 가리켰다. '저 별빛은 몇 년 전에 출발한 빛일세. 무슨 생각이 드나?'", opts = {
+		{ text = "우리도 오래 기억될까요?", reply = "핼리가 잠시 말이 없더니 웃었다. '자네는 그럴 걸세.'", kind = "fame", amount = 2 },
+		{ text = "배고픈데요", reply = "'...낭만을 모르는군.' 그래도 건빵을 나눠 줬다.", kind = "morale", amount = 5 },
+		{ text = "혜성 이름을 제 이름으로!", reply = "'그건 안 되네!' 핼리가 손사래를 쳤지만 즐거워 보인다.", kind = "bond", amount = 2 } } },
+	c_leeuwenhoek = { q = "레이우엔훅이 렌즈를 내밀었다. '이 이빨 사이 찌꺼기를 보시겠소?'", opts = {
+		{ text = "봅시다!", reply = "'보시오, 꿈틀대는 작은 생명들이오!' 둘 다 한참 소리를 질렀다.", kind = "bond", amount = 3 },
+		{ text = "사양하겠습니다", reply = "'겁쟁이로군.' 대신 선원들이 줄을 서서 구경했다.", kind = "morale", amount = 5 },
+		{ text = "그걸 팔면 돈이 될까요?", reply = "'좋은 생각이오!' 그림 한 장이 의외로 팔렸다.", kind = "coins", amount = 70 } } },
+	c_linnaeus = { q = "린네가 선장을 위아래로 훑었다. '자네는 무슨 속의 선장인가? 분류해 주겠네.'", opts = {
+		{ text = "대항해속 으뜸종이라 하죠", reply = "'받아 적겠네!' 린네가 도감에 선장의 이름을 올렸다.", kind = "fame", amount = 2 },
+		{ text = "낮잠속입니다", reply = "'정직하군. 낮잠속 선장이라 기록하겠네.' 갑판에 웃음이 퍼졌다.", kind = "morale", amount = 6 },
+		{ text = "분류는 사양할게요", reply = "'자네는 '신비속'으로 두겠네.' 린네가 흡족해했다.", kind = "bond", amount = 2 } } },
+	c_boyle = { q = "보일이 시험관을 흔들었다. '이 액체에 소금을 넣으면 어떻게 되겠소?'", opts = {
+		{ text = "가라앉겠죠", reply = "'맞소! 관찰이 날카롭구려.' 보일이 박수를 쳤다.", kind = "bond", amount = 3 },
+		{ text = "폭발한다!", reply = "'아니오!' 그러나 선원들은 이미 갑판 뒤로 숨어 있었다.", kind = "morale", amount = 6 },
+		{ text = "그걸 팔면 되겠네요", reply = "'실험 결과를 파는 건 상술이오. 하지만 좋소.'", kind = "coins", amount = 70 } } },
+	c_papin = { q = "파팽이 솥 뚜껑을 가리켰다. '이 뚜껑이 날아가면 누가 책임지겠소?'", opts = {
+		{ text = "제가 책임질게요", reply = "'믿음직하오!' 파팽이 압력을 조금 낮췄다.", kind = "bond", amount = 3 },
+		{ text = "일단 엎드립시다", reply = "모두 갑판에 엎드렸다. 뚜껑은 멀쩡했다. 한참 웃었다.", kind = "morale", amount = 6 },
+		{ text = "날아가면 발명품이죠", reply = "'그 말 적어 두겠소!' 파팽이 눈을 반짝였다.", kind = "fame", amount = 2 } } },
+	t_navigator = { q = "마르코가 키를 잡은 채 물었다. '선장님, 길을 잃으면 어디로 갈까요?'", opts = {
+		{ text = "별을 따라서", reply = "'바로 그겁니다!' 마르코가 어깨를 폈다.", kind = "bond", amount = 3 },
+		{ text = "제일 맛있는 항구로", reply = "'그럼 항상 길을 잃겠습니다!' 선원들이 환호했다.", kind = "morale", amount = 6 },
+		{ text = "모르겠다, 네가 정해", reply = "'책임지겠습니다.' 마르코가 지름길 하나를 알려 줬다.", kind = "coins", amount = 60 } } },
+	t_gunner = { q = "아나가 포탄을 닦으며 물었다. '선장님, 가장 멋진 한 방은 어떤 걸까요?'", opts = {
+		{ text = "한 발에 끝내는 것", reply = "'좋아요, 연습하겠습니다!' 아나의 눈이 반짝였다.", kind = "bond", amount = 3 },
+		{ text = "축포요!", reply = "'그럼 오늘 밤 한 발만!' 갑판에 박수가 터졌다.", kind = "morale", amount = 6 },
+		{ text = "적이 항복하는 것", reply = "'그게 진짜 고수죠.' 아나가 조용히 웃었다.", kind = "fame", amount = 2 } } },
+	t_purser = { q = "얀이 장부를 덮었다. '선장님, 이번 달 흑자인데... 어디에 쓸까요?'", opts = {
+		{ text = "저금합시다", reply = "'역시 선장님!' 얀이 비상금을 조금 더 채웠다.", kind = "coins", amount = 80 },
+		{ text = "선원들에게 한턱!", reply = "'...그럴 줄 알았습니다.' 그래도 얀의 입꼬리가 올라갔다.", kind = "morale", amount = 8 },
+		{ text = "배를 더 사자", reply = "'야심이 크시군요.' 얀이 숫자를 다시 계산했다.", kind = "bond", amount = 2 } } },
+	t_surgeon = { q = "엘레나가 약상자를 닫으며 물었다. '선장님, 오늘 몸 어디가 제일 불편하세요?'", opts = {
+		{ text = "아무 데도요", reply = "'거짓말이네요. 눈 밑이 어두워요.' 약차를 한 잔 건넸다.", kind = "morale", amount = 6 },
+		{ text = "마음이 좀...", reply = "엘레나가 조용히 곁에 앉았다. 한참 이야기를 나눴다.", kind = "bond", amount = 3 },
+		{ text = "지갑이 아파요", reply = "'그건 얀에게 가세요.' 엘레나가 웃으며 약초를 팔았다.", kind = "coins", amount = 40 } } },
+}
+
+return { Talk = CompanionTalk, Stories = Stories, Choices = Choices }

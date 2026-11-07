@@ -243,7 +243,44 @@ return function(D, S)
 			end
 		end
 		state.talk = { name = c.name, line = line, note = table.concat(msgs, " · ") }
+		local ch = D.CompanionTalk.Choices[id]
+		if ch and state.chatted ~= state.day .. id then
+			state.talk.pending = id
+			state.talk.question = ch.q
+			state.talk.options = {}
+			for i, o in ch.opts do
+				state.talk.options[i] = o.text
+			end
+		end
 		return true, string.format("%s: \"%s\"", c.name, line)
+	end
+
+	-- 대화 끝 질문에 대답: 반응과 보상이 대답마다 다르다 (동료마다 하루 한 번)
+	function handlers.TalkChoice(state, p)
+		local id = state.talk and state.talk.pending
+		local ch = id and D.CompanionTalk.Choices[id]
+		local o = ch and type(p.index) == "number" and ch.opts[p.index]
+		if not o or not table.find(state.companions, id) then
+			return false, "대답할 수 있는 질문이 없어요"
+		end
+		local c = Sp.CompanionById[id]
+		state.chatted = state.day .. id
+		local note
+		if o.kind == "bond" then
+			state.affinity[id] = math.min(Sp.MAX_AFFINITY, affinityOf(state, id) + o.amount)
+			note = string.format("호감도 +%d", o.amount)
+		elseif o.kind == "coins" then
+			state.coins += o.amount
+			note = string.format("+%d코인", o.amount)
+		elseif o.kind == "fame" then
+			state.fame += o.amount
+			note = string.format("명성 +%d", o.amount)
+		elseif o.kind == "morale" then
+			state.morale = math.min(100, state.morale + o.amount)
+			note = string.format("사기 +%d", o.amount)
+		end
+		state.talk = { name = c.name, line = o.reply, note = note }
+		return true, string.format("%s: \"%s\"", c.name, o.reply)
 	end
 
 	function handlers.BuyGear(state, p)
