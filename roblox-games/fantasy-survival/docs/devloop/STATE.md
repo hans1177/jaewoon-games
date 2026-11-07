@@ -10,7 +10,8 @@
 - 거짓 보고 금지: 못 본 것은 못 봤다고 쓴다.
 
 ## 할 일
-- (비어 있음: 오너 지시나 사진에서 발견한 문제를 여기에 적는다)
+- [오류 발견 2026-11-07] 오프닝 캡처 콘솔에 `Game:12462: attempt to index nil with 'AbsolutePosition'` 가 37회 반복(GameClient 스크립트). UI 객체(예: 튜토리얼 화살표 `center(o)`, `guiRoot`, `questTracker` 주변)가 nil일 때 `.AbsolutePosition`을 읽는 것으로 보임. 해당 코드는 현재 다른 작업자가 수정 중이므로 충돌을 피해 작은 수정으로 nil 가드 추가. 수정 후 `devloop-studio.yml`(game=fantasy-survival)로 다시 캡처해 콘솔 오류 0 확인.
+- [화면] 오프닝 일러스트(복면 인물, 숲 지도 장면)는 품질 양호. 인게임 월드 장면은 아직 캡처하지 않았다. `qa/studio-scripts/*.json`(예: 모험 시작 클릭 → 대기 → 카메라 캡처)을 참고해 `tools/devloop/studio-scripts/default.json` 을 만들면 인게임도 자동 확인된다.
 
 ## 최근 기록
 - 2026-11-07: 개발 루프 틀(devloop.json, STATE.md, 공통 사진 캡처) 추가.

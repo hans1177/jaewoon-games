@@ -1,0 +1,28 @@
+# 공통 합격선: devloop.json 이 있는 모든 게임에 tools/devloop/gate.py 를 돌려 결과를 요약한다.
+# (엔진 F9 본체는 건드리지 않는다. 필요하면 이 결과를 엔진 단계가 읽도록 나중에 연결한다.)
+name: Devloop Gate All
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '41 */3 * * *'
+permissions:
+  contents: read
+jobs:
+  gate:
+    if: github.repository == 'hans1177/jaewoon-games'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run gates
+        run: |
+          rc=0
+          for f in roblox-games/*/devloop.json; do
+            g=$(basename "$(dirname "$f")")
+            echo "::group::$g"
+            python3 tools/devloop/gate.py "$g" || { echo "::warning::$g 합격선 미달"; rc=1; }
+            echo "::endgroup::"
+          done
+          exit $rc
