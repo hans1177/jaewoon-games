@@ -148,9 +148,9 @@ h1{font-size:22px;margin:0}
     <div id="bossMusicPanel" class="hidden">
       <button id="bossMusicToggle" type="button">유튜브 리믹스 재생하기</button>
       <div id="bossMusicPlayer"></div>
-      <small>모차르트 라크리모사 웅장한 리믹스 · 새뮤얼 킴 · 실제 유튜브 공식 영상<br>
+      <small>모차르트 라크리모사 웅장한 편곡 · 크루티코프 뮤직 · 영상 4분 46초<br>
         모바일에서 자동재생이 막히면 영상의 재생 버튼을 눌러.<br>
-        <a href="https://www.youtube.com/watch?v=9uatm_Q_a2U" target="_blank" rel="noopener noreferrer">유튜브에서 원본 듣기</a>
+        <a href="https://www.youtube.com/watch?v=2BbinQxbyI8" target="_blank" rel="noopener noreferrer">유튜브에서 원본 듣기</a>
       </small>
     </div>
     <div class="boardWrap"><div id="board" class="board"></div></div>
@@ -1148,7 +1148,7 @@ function aiTurn(){
 // 7스테이지 보스 음악: 임의 합성음·위키미디어 연주를 완전히 제거한다.
 // 유튜브 원본 리믹스를 공식 임베드로 재생한다. 오디오 추출·복제·비공개 우회는 하지 않는다.
 // 영상 플레이어는 유튜브 정책에 맞게 표시하고 원본 재생 컨트롤을 유지한다.
-const BOSS_REMIX_VIDEO='9uatm_Q_a2U';
+const BOSS_REMIX_VIDEO='2BbinQxbyI8';
 const bossPlayer=$('#bossMusicPlayer');
 let bossMusicRequested=false;
 function playBossMusic(){
@@ -1156,7 +1156,7 @@ function playBossMusic(){
     ||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
   if(bossPlayer.querySelector('iframe'))return;
   const frame=document.createElement('iframe');
-  frame.title='우르수스 보스 음악 · 새뮤얼 킴 라크리모사 웅장한 리믹스';
+  frame.title='우르수스 보스 음악 · 크루티코프 뮤직 라크리모사 웅장한 편곡 (4분 46초)';
   frame.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; web-share');
   frame.setAttribute('allowfullscreen','');
   frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
