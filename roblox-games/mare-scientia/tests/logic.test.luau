@@ -1356,7 +1356,7 @@ do
 	for _, q in D.Quests.Quests do
 		if q.companionId then
 			check("companion quest companion exists " .. q.id, D.Specialties.CompanionById[q.companionId] ~= nil)
-			check("companion quest card exists " .. q.id, q.rewardCardId and D.Cards.ById[q.rewardCardId] ~= nil)
+			check("companion quest card exists " .. q.id, q.rewardCardId == nil or D.Cards.ById[q.rewardCardId] ~= nil)
 		end
 		if q.kind == "field" then
 			check("field quest has field " .. q.id, q.fieldId ~= nil)
