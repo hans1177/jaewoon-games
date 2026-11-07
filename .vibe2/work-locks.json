@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1uhjp3s",
+      "worker": "vibe2",
+      "taskId": "ocean-voyage-existing-web-assessment-v1",
+      "gameId": "ocean-voyage",
+      "files": [
+        "web-games/ocean-voyage/index.html"
+      ],
+      "baseSha": "c66224b5c472a673813951b1e9d5248116e7d63a",
+      "runId": "42349991560",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-07T07:32:40.184Z",
+      "expiresAt": "2026-11-07T08:17:40.184Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:ocean-voyage-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
