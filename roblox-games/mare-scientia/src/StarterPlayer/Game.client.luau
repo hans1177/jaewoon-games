@@ -2249,7 +2249,12 @@ local function renderRoute()
 			elseif ship.steam and r.coal == 0 then
 				warn = " ⚠ 석탄 없음"
 			end
-			return mkRow(content, r.name, string.format("%d일 · %d km · 보급품 %d%s%s", r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
+			if r.locked then
+				return mkRow(content, r.name, string.format("%s · 🔒 %s", r.region, r.locked), {
+					{ text = "잠김", color = COLORS.grey, onClick = function() message = r.region .. " 해역은 " .. r.locked; messageOk = false; render() end },
+				}, 56)
+			end
+			return mkRow(content, r.name, string.format("%s · %d일 · %d km · 보급품 %d%s%s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
 				{ text = "출항", color = COLORS.blue, onClick = function() sail(r.id) end },
 			}, 56)
 		end)
@@ -3006,7 +3011,12 @@ local function renderMap()
 		for _, r in view.routes do
 			if r.id == selectedPort then
 				add(function()
-					return mkRow(content, r.name, string.format("%d일 · %d km · 보급품 %d%s", r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else ""), {
+					if r.locked then
+						return mkRow(content, r.name, string.format("%s · 🔒 %s", r.region, r.locked), {
+							{ text = "잠김", color = COLORS.grey, onClick = function() message = r.region .. " 해역은 " .. r.locked; messageOk = false; render() end },
+						}, 56)
+					end
+					return mkRow(content, r.name, string.format("%s · %d일 · %d km · 보급품 %d%s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else ""), {
 						{ text = "출항", color = COLORS.blue, onClick = function() selectedPort = nil; sail(r.id) end },
 					}, 56)
 				end)

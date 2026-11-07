@@ -34,6 +34,7 @@ local D = {
 	Story = require(Shared:WaitForChild("Story")),
 	Harbor = require(Shared:WaitForChild("Harbor")),
 	SeaRoutes = require(Shared:WaitForChild("SeaRoutes")),
+	Regions = require(Shared:WaitForChild("Regions")),
 }
 
 local Registry = require(ServicesFolder:WaitForChild("Registry"))(D)

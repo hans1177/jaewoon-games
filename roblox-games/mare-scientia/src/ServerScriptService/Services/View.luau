@@ -205,7 +205,10 @@ return function(D, S)
 		for _, portId in sortedKeys(D.Ports.Ports) do
 			if portId ~= port.id then
 				local plan = S.Sailing.preview(state, portId)
+				local region = D.Regions.of(D.Ports.Ports[portId])
 				table.insert(view.routes, {
+					region = region.name,
+					locked = if state.careers.adventure.level < region.minLevel then string.format("모험 Lv.%d 필요", region.minLevel) else nil,
 					id = portId,
 					name = D.Ports.Ports[portId].name,
 					days = plan.days,
