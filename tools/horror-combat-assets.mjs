@@ -161,6 +161,87 @@ if(process.argv.includes('--medieval-weapons-source-only')){
  process.exit(0);
 }
 
+
+// [마력숲 카이킷 실물 무기] CC0 48종 모델 원본 glTF·BIN 및 공유 재질 텍스처를 받는다.
+// 색만 바꾼 프리미티브 제작 금지, 원본 Blender 메시와 질감 원형 유지.
+if(process.argv.includes('--kaykit-weapons-source-only')){
+ const owner='GeorgeQLe',repo='assets-kaykit-3d-props';
+ const revision='4376b8becf4218424edaba18c0e43a5989c189f6';
+ const dir='assets/external/simple-rpg/priority-v1/kaykit-weapons';
+ const upstream='assets/kaykit/fantasy-weapons-bits-1.0/Assets/gltf';
+ const sourceRoot='https://raw.githubusercontent.com/'+owner+'/'+repo+'/'+revision+'/';
+ const headers={'user-agent':'jaewoon-games-kaykit-cc0','accept':'application/vnd.github+json'};
+ const licenseResp=await fetch(sourceRoot+'LICENSES/KayKit-CC0-License.txt',{
+  headers,signal:AbortSignal.timeout(60000)});
+ if(!licenseResp.ok)throw Error('FOREST_KAYKIT_LICENSE_NOT_FOUND');
+ const license=await licenseResp.text();
+ if(!license.includes('License: (Creative Commons Zero, CC0)')
+  ||!license.includes('This content is free to use in personal, educational and commercial projects.'))
+  throw Error('FOREST_KAYKIT_LICENSE_INVALID');
+ const res=await fetch('https://api.github.com/repos/'+owner+'/'+repo+'/contents/'+upstream+'?ref='+revision,
+  {headers,signal:AbortSignal.timeout(60000)});
+ if(!res.ok)throw Error('FOREST_KAYKIT_SOURCE_HTTP_'+res.status);
+ const list=await res.json();
+ if(!Array.isArray(list)||list.length!==97)throw Error('FOREST_KAYKIT_SOURCE_COUNT_CHANGED');
+ const models=list.filter(x=>x.name.endsWith('.gltf'));
+ const sources=list.filter(x=>x.name.endsWith('.bin'));
+ if(models.length!==48||sources.length!==48
+  ||models.some(x=>!sources.some(y=>y.name===x.name.slice(0,-5)+'.bin')))
+  throw Error('FOREST_KAYKIT_MODEL_PARTS_MISSING');
+ const selected=[...models,...sources];
+ const imageUrl='assets/kaykit/fantasy-weapons-bits-1.0/Textures/weapons_bits_texture.png';
+ const apiImage='https://api.github.com/repos/'+owner+'/'+repo+'/contents/'+imageUrl+'?ref='+revision;
+ const imageIndex=await fetch(apiImage,{headers,signal:AbortSignal.timeout(60000)});
+ if(!imageIndex.ok)throw Error('FOREST_KAYKIT_TEXTURE_INDEX_MISSING');
+ const image=await imageIndex.json();
+ selected.push(image);
+ fs.mkdirSync(dir,{recursive:true});
+ const saved=[];
+ for(let i=0;i<selected.length;i+=5){
+  const batch=await Promise.all(selected.slice(i,i+5).map(async row=>{
+   if(!/^[a-zA-Z0-9_]+\.(?:gltf|bin|png)$/.test(row.name)
+    ||row.type!=='file'||!/^[a-f0-9]{40}$/.test(String(row.sha))
+    ||row.size<64||row.size>2000000)throw Error('FOREST_KAYKIT_SOURCE_INVALID:'+row.name);
+   const dest=dir+'/'+row.name;
+   let bytes=fs.existsSync(dest)?fs.readFileSync(dest):null;
+   if(!bytes){
+    let last='';
+    for(let t=0;t<3&&!bytes;t++){
+     try{
+      const response=await fetch(sourceRoot+row.path.split('/').map(encodeURIComponent).join('/'),{
+       headers,signal:AbortSignal.timeout(120000)});
+      if(!response.ok)throw Error('HTTP_'+response.status);
+      bytes=Buffer.from(await response.arrayBuffer());
+     }catch(error){last=String(error);if(t<2)await new Promise(r=>setTimeout(r,1000*(t+1)));}
+    }
+    if(!bytes)throw Error('FOREST_KAYKIT_DOWNLOAD_FAILED:'+row.name+':'+last);
+   }
+   const gitSha=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
+   if(gitSha!==row.sha||bytes.length!==row.size)throw Error('FOREST_KAYKIT_SHA_INVALID:'+row.name);
+   if(row.name.endsWith('.gltf')){
+    const model=JSON.parse(bytes.toString('utf8'));
+    if(!model.meshes?.length||!model.buffers?.length)throw Error('FOREST_KAYKIT_NO_REAL_MESH:'+row.name);
+    const files=[...model.buffers,...(model.images||[])].map(v=>v.uri).filter(Boolean);
+    for(const dep of files)if(dep!==row.name.slice(0,-5)+'.bin'&&dep!=='weapons_bits_texture.png')
+     throw Error('FOREST_KAYKIT_MISSING_DEPENDENCY:'+row.name+':'+dep);
+   }
+   if(!fs.existsSync(dest))fs.writeFileSync(dest,bytes);
+   return {file:row.name,bytes:bytes.length,gitSha:row.sha,
+    sha256:crypto.createHash('sha256').update(bytes).digest('hex')};
+  }));
+  saved.push(...batch);
+ }
+ const manifest={version:1,gameId:'fantasy-survival',source:'KayKit Fantasy Weapons Bits 1.0 FREE',
+  author:'Kay Lousberg',license:'CC0-1.0',licenseEvidence:'https://kaylousberg.itch.io/fantasy-weapons-bits',
+  upstreamRepository:owner+'/'+repo,upstreamRevision:revision,sourceCount:48,
+  models:models.map(x=>x.name),files:saved.sort((a,b)=>a.file.localeCompare(b.file)),
+  status:'SOURCE_DOWNLOADED_PENDING_ROBLOX_MESH_REGISTRATION',
+  nativeRegistrationVerified:false,runtimeVerified:false,gameSourceApplied:false};
+ fs.writeFileSync(dir+'/manifest.json',JSON.stringify(manifest,null,2)+'\n');
+ console.log('FOREST_KAYKIT_48_DISTINCT_CC0_WEAPON_MESHES_AND_TEXTURE_DOWNLOADED='+saved.length);
+ process.exit(0);
+}
+
 const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
 const key0=key;
 const rawCookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
