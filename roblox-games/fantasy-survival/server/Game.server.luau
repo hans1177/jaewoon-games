@@ -4816,7 +4816,7 @@ end
 local function spawnEnemy(site, siteIndex)
   if #enemies >= MAX_ENEMIES then return false end
   -- [늑대 안전 스폰] 추가된 지점이나 오래된 설정도 마을 구역이면 거부한다.
-  if site.id=="wolf" and meadowVillageContains(site.position) then return false end
+  if site.id=="wolf" and meadowVillageContains(site.position) and not site.named and not site.questBoss and not site.name then return false end
   local isBoss=site.id=="golem"
   local isAlpha=site.alpha==true -- 우두머리 늑대는 돌 골렘과 별도 보스 패턴을 가진다.
   local location=site.position
