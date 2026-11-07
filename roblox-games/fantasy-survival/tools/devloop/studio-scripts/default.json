@@ -1,0 +1,31 @@
+[
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "click_text",
+  "text": "모험 시작"
+ },
+ {
+  "type": "wait",
+  "ms": 88000
+ },
+ {
+  "type": "capture",
+  "name": "world_1"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "capture",
+  "name": "world_2"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local out={} for _,m in ipairs(game:GetService(\"LogService\"):GetLogHistory()) do if m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning then out[#out+1]=string.sub(m.message,1,160) end end local c={} for _,l in ipairs(out) do c[l]=(c[l] or 0)+1 end local r={} for l,n in pairs(c) do r[#r+1]=n..\"x \"..l end table.sort(r) return \"CONSOLE \"..#out..\"|\"..table.concat(r,\"\\n\")"
+ }
+]

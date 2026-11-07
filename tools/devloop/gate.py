@@ -35,6 +35,14 @@ if br:
         if age > cfg.get("maxFrameAgeHours", 24):
             fails.append(f"사진이 {age:.0f}시간 지남")
         print(f"사진 {len(pics)}장, 나이 {age:.1f}시간")
+if os.environ.get("GATE_JSON"):
+    ev = {}
+    try:
+        ev = json.load(open(os.environ["GATE_JSON"]))
+    except Exception:
+        pass
+    ev[game] = {"pass": not fails, "fails": fails, "at": int(time.time())}
+    json.dump(ev, open(os.environ["GATE_JSON"], "w"), ensure_ascii=False, indent=1)
 if fails:
     print("합격선 미달:", "; ".join(fails))
     sys.exit(1)

@@ -6,7 +6,7 @@ on:
   schedule:
     - cron: '41 */3 * * *'
 permissions:
-  contents: read
+  contents: write
 jobs:
   gate:
     if: github.repository == 'hans1177/jaewoon-games'
@@ -19,10 +19,17 @@ jobs:
       - name: Run gates
         run: |
           rc=0
+          export GATE_JSON=$PWD/qa/devloop-evidence.json
+          mkdir -p qa
+          echo '{}' > "$GATE_JSON"
           for f in roblox-games/*/devloop.json; do
             g=$(basename "$(dirname "$f")")
             echo "::group::$g"
             python3 tools/devloop/gate.py "$g" || { echo "::warning::$g 합격선 미달"; rc=1; }
             echo "::endgroup::"
           done
+          git config user.name "devloop-bot"
+          git config user.email "devloop-bot@users.noreply.github.com"
+          git add qa/devloop-evidence.json
+          git diff --cached --quiet || (git commit -q -m "devloop: gate evidence" && git pull -q --rebase && git push -q) || true
           exit $rc

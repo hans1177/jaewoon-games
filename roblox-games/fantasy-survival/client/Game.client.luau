@@ -11915,9 +11915,13 @@ end)()
     end
     -- 왼쪽 퀘스트창 위에 목표 마커·거리표가 겹치지 않도록 창 오른쪽 바깥으로 밀어낸다.
     do
-      local qp,qs=questTracker.AbsolutePosition-guiRoot.AbsolutePosition,questTracker.AbsoluteSize
-      if questTracker.Visible and px<qp.X+qs.X+100 and py>qp.Y-70 and py<qp.Y+qs.Y+80 then
-        px=qp.X+qs.X+100
+      -- questTracker가 아직 없거나(nil) 이 범위에서 보이지 않으면 건너뛴다 (캡처 콘솔에서 매 프레임 오류가 났던 곳)
+      local qt=questTracker
+      if qt and guiRoot and qt.Visible then
+        local qp,qs=qt.AbsolutePosition-guiRoot.AbsolutePosition,qt.AbsoluteSize
+        if px<qp.X+qs.X+100 and py>qp.Y-70 and py<qp.Y+qs.Y+80 then
+          px=qp.X+qs.X+100
+        end
       end
     end
     marker.Position=UDim2.fromOffset(px,py)
