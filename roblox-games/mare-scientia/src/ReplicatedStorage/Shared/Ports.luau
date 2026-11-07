@@ -835,27 +835,27 @@ local Nations: { [string]: Nation } = {
 	england = {
 		id = "england", name = "영국", startPort = "london",
 		summary = "항해술 우수 (항해 속도 +5%)",
-		speedMult = 1.05, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1, hidden = true,
+		speedMult = 1.05, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1,
 	},
 	netherlands = {
 		id = "netherlands", name = "네덜란드", startPort = "amsterdam",
 		summary = "교역 수완 (판매 비율 +2%)",
-		speedMult = 1, sellBonus = 0.02, startCoins = 0, adventureXpMult = 1, battleXpMult = 1, hidden = true,
+		speedMult = 1, sellBonus = 0.02, startCoins = 0, adventureXpMult = 1, battleXpMult = 1,
 	},
 	france = {
 		id = "france", name = "프랑스", startPort = "rouen",
 		summary = "귀족 후원 (시작 코인 +200)",
-		speedMult = 1, sellBonus = 0, startCoins = 200, adventureXpMult = 1, battleXpMult = 1, hidden = true,
+		speedMult = 1, sellBonus = 0, startCoins = 200, adventureXpMult = 1, battleXpMult = 1,
 	},
 	denmark = {
 		id = "denmark", name = "덴마크", startPort = "copenhagen",
 		summary = "북해 해군 전통 (전투 경험 +20%)",
-		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1.2, hidden = true,
+		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1.2,
 	},
 	sweden = {
 		id = "sweden", name = "스웨덴", startPort = "gothenburg",
 		summary = "자연 연구 (모험 경험 +20%)",
-		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.2, battleXpMult = 1, hidden = true,
+		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.2, battleXpMult = 1,
 	},
 	venice = {
 		id = "venice", name = "베네치아 공화국", startPort = "venice",
@@ -886,6 +886,11 @@ local Nations: { [string]: Nation } = {
 		id = "new_spain", name = "누에바 에스파냐", startPort = "veracruz",
 		summary = "신대륙 탐험 (모험 경험 +25%) · 신대륙 시작",
 		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.25, battleXpMult = 1,
+	},
+	portugal = {
+		id = "portugal", name = "포르투갈", startPort = "lisbon",
+		summary = "대항해의 선구자 (항해 속도 +4%, 모험 경험 +10%)",
+		speedMult = 1.04, sellBonus = 0, startCoins = 0, adventureXpMult = 1.1, battleXpMult = 1,
 	},
 }
 
