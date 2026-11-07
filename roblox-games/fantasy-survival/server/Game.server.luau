@@ -4932,6 +4932,55 @@ local meadowR15Looks={
 }
 local MEADOW_R15_ANIMS={idle=507766388,walk=507777826,run=507767714,slash=522635514,lunge=522638767}
 
+-- [NPC 일상 동작] 앵커된 R15 NPC가 가만히 서 있지 않게 한다: 플레이어가 가까이 오면 몸을 돌려 쳐다보고 손을 흔들며,
+-- 가끔 혼자서도 손짓·환호·웃음 같은 Roblox 공식 감정 애니를 한 번씩 재생한다. 위치는 그대로, 방향만 부드럽게 바뀐다.
+_G.MeadowNpcLife=function(npc,animator,baseCF,seed)
+  local root=npc and npc:FindFirstChild("HumanoidRootPart")
+  if not root or not animator then return end
+  local ids={wave=507770239,point=507770453,cheer=507770677,laugh=507770818}
+  local tracks={}
+  for key,id in pairs(ids) do
+    pcall(function()
+      local a=Instance.new("Animation");a.AnimationId="rbxassetid://"..id
+      local t=animator:LoadAnimation(a);a:Destroy()
+      t.Priority=Enum.AnimationPriority.Action;t.Looped=false;tracks[key]=t
+    end)
+  end
+  local rng=Random.new(math.floor(seed*1000)%100000)
+  local order={"point","laugh","cheer","wave"}
+  local cur=baseCF
+  task.spawn(function()
+    local nextGesture=os.clock()+rng:NextNumber(4,11)
+    local greeted=false
+    while npc.Parent do
+      task.wait(.1)
+      local nearest,nearestDist=nil,16
+      for _,player in ipairs(Players:GetPlayers()) do
+        local pr=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if pr then
+          local d=Vector3.new(pr.Position.X-baseCF.Position.X,0,pr.Position.Z-baseCF.Position.Z).Magnitude
+          if d<nearestDist then nearest,nearestDist=pr.Position,d end
+        end
+      end
+      local target=baseCF
+      if nearest then target=CFrame.lookAt(baseCF.Position,Vector3.new(nearest.X,baseCF.Position.Y,nearest.Z)) end
+      cur=cur:Lerp(target,.28)
+      npc:PivotTo(cur)
+      local now=os.clock()
+      if nearest and not greeted then
+        greeted=true
+        if tracks.wave then tracks.wave:Play(.15) end
+        nextGesture=now+rng:NextNumber(7,14)
+      elseif not nearest then greeted=false end
+      if now>nextGesture then
+        local track=tracks[order[rng:NextInteger(1,#order)]]
+        if track then track:Play(.2) end
+        nextGesture=now+rng:NextNumber(6,15)
+      end
+    end
+  end)
+end
+
 -- [신화 합성체] 등록된 CC0 모델 여러 개를 한 몸으로 합쳐 신화 괴물을 만든다(히드라·켄타우로스·아라크네 등).
 -- 새 도형 파츠를 만들지 않고 실제 메시 모델만 겹쳐 붙인다. 각 조각은 몸통 모델 안으로 옮겨 함께 움직인다.
 -- spec: model(mon_ 키), height(스터드), up/fwd/side(몸통 경계상자 대비 비율, 중심 기준), yaw/pitch(도), 본체 앞이 -Z라고 가정한다.
@@ -6162,7 +6211,25 @@ local function animateMeadowOriginalMob(enemy,now)
     end
     enemy.r15StatusSpeed=speed~=nil
   end
-  local pivot=(enemy.visualPosition or enemy.position)
+  -- [기본 공격 몸놀림] 근접 몹은 예고 때 몸을 웅크려 뒤로 빼고, 타격 순간 앞으로 튀어나갔다가 돌아온다(늑대·멧돼지는 도약).
+  local lungeOffset=Vector3.zero
+  if not aerial and not enemy.isBoss and enemy.variant~="roguehooded" and enemy.variant~="adventurer" then
+    local flatFace=Vector3.new(facing.X,0,facing.Z)
+    if flatFace.Magnitude>.01 then
+      flatFace=flatFace.Unit
+      local reach=kind=="boar" and 2.8 or kind=="wolf" and 2.4 or enemy.r15Tracks and 1.1 or 1.5
+      if attacking then
+        local dur=math.max(.12,enemy.model:GetAttribute("NativeMobMotionDuration") or .5)
+        local prep=math.clamp((now-(enemy.attackStateStartedAt or now))/dur,0,1)
+        lungeOffset=-flatFace*(.55*prep)
+        movingHeight-=.12*prep
+      elseif recoil>.02 then
+        lungeOffset=flatFace*(reach*recoil)
+        if kind=="wolf" or kind=="boar" then movingHeight+=math.sin(math.clamp(recoil,0,1)*math.pi)*.35 end
+      end
+    end
+  end
+  local pivot=(enemy.visualPosition or enemy.position)+lungeOffset
     +Vector3.new(0,(enemy.visibleGroundOffset or 0)
       +(enemy.terrainGroundOffset or 0)+movingHeight,0)
   enemy.model:PivotTo(CFrame.lookAt(pivot,pivot+facing)
@@ -9011,6 +9078,7 @@ do
               track.Looped=true
               track:Play(.3)
               track.TimePosition=(index*.37)%1 -- 12명이 같은 박자로 숨 쉬지 않게 어긋나게 시작
+              _G.MeadowNpcLife(npc,animator,npc:GetPivot(),index)
             end)
           end
         end
@@ -9774,6 +9842,7 @@ do
               local loaded,track=pcall(function() return animator:LoadAnimation(anim) end)
               if loaded and track then track.Looped=true;track:Play() end
               anim:Destroy()
+              _G.MeadowNpcLife(npc,animator,npc:GetPivot(),os.clock()+position.X)
             end
             local prompt=Instance.new("ProximityPrompt");prompt.ActionText=role.action;prompt.ObjectText=town[role.key];prompt.HoldDuration=.4
             prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=root
