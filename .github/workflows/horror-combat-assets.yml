@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/horror-combat-assets.yml'
       - 'tools/horror-combat-assets.mjs'
+      - 'tools/baeksu-war-upload-meshes.mjs'
       - 'roblox-games/fantasy-survival/icons.png'
       - 'roblox-games/fantasy-survival/right-icons.png'
       - 'roblox-games/fantasy-survival/painted-icons.png'
@@ -96,6 +97,10 @@ on:
         description: 마력숲 CC0 고유 검·활·지팡이·망치 등 48종 원본 다운로드
         type: boolean
         default: false
+      forest_distinct_weapons_only:
+        description: 이미 확보한 고유 검·활·도끼·방패 42종 정식 Roblox 모델 등록·권한
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -117,6 +122,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verify canonical native asset importer syntax
+        run: node --check tools/baeksu-war-upload-meshes.mjs
       - name: Import combat model and verified shared PBR sources
         env:
           WORLD_MAP_ONLY: ${{ inputs.world_map_only || false }}
@@ -135,11 +142,16 @@ jobs:
           MODULAR_ARMOR_SOURCE_ONLY: ${{ inputs.modular_armor_source_only || false }}
           MEDIEVAL_WEAPONS_SOURCE_ONLY: ${{ inputs.medieval_weapons_source_only || false }}
           KAYKIT_WEAPONS_SOURCE_ONLY: ${{ inputs.kaykit_weapons_source_only || false }}
+          FOREST_DISTINCT_WEAPONS_ONLY: ${{ inputs.forest_distinct_weapons_only || false }}
+          ROBLOX_UNIVERSE_ID: '10773436325'
+          ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$KAYKIT_WEAPONS_SOURCE_ONLY" = "true" ] || git diff --unified=0 HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q '^+// \[마력숲 카이킷 실물 무기\]'; then
+          if [ "$FOREST_DISTINCT_WEAPONS_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- tools/baeksu-war-upload-meshes.mjs | grep -q .; then
+            node tools/baeksu-war-upload-meshes.mjs --game-id=fantasy-survival --register-forest-distinct-weapons
+          elif [ "$KAYKIT_WEAPONS_SOURCE_ONLY" = "true" ] || git diff --unified=0 HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q '^+// \[마력숲 카이킷 실물 무기\]'; then
             node tools/horror-combat-assets.mjs --kaykit-weapons-source-only
           elif [ "$MEDIEVAL_WEAPONS_SOURCE_ONLY" = "true" ] || git diff --unified=0 HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q '^+// \[마력숲 장비 전용 실물\]'; then
             node tools/horror-combat-assets.mjs --medieval-weapons-source-only
