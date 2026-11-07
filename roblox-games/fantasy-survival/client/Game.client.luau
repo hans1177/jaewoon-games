@@ -12721,3 +12721,38 @@ end)()
   end)
 end)()
 
+
+-- [동료 스토리 연동] 안식처(집)에는 이미 합류한 동료만 보인다. 아직 만나지 못한 동료는 이 화면에서 모습·이름표·대화 버튼을 숨긴다
+-- (각 지역 이야기에서 만나는 즐거움을 미리 깨지 않는다). 서버 모델은 그대로이고 내 화면에서만 가린다.
+task.spawn(function()
+  local lastApplied=nil
+  while true do
+    local owned=tonumber(player:GetAttribute("CompanionOwned")) or 0
+    for index,companion in ipairs(Config.Companions or {}) do
+      local have=bit32.band(owned,bit32.lshift(1,index-1))~=0
+      local model=workspace:FindFirstChild("Homestead_NPC_"..companion.Id)
+      if model then
+        for _,item in ipairs(model:GetDescendants()) do
+          if item:IsA("BasePart") then
+            item.LocalTransparencyModifier=have and 0 or 1
+          elseif item:IsA("Decal") then
+            if item:GetAttribute("MeadowOrigTransparency")==nil then item:SetAttribute("MeadowOrigTransparency",item.Transparency) end
+            item.Transparency=have and (item:GetAttribute("MeadowOrigTransparency") or 0) or 1
+          end
+        end
+        local human=model:FindFirstChildOfClass("Humanoid")
+        if human then
+          human.DisplayDistanceType=have and Enum.HumanoidDisplayDistanceType.Viewer or Enum.HumanoidDisplayDistanceType.None
+        end
+      end
+      local stand=workspace.Terrain:FindFirstChild("Homestead_"..companion.Id)
+      if stand then
+        for _,item in ipairs(stand:GetChildren()) do
+          if item:IsA("ProximityPrompt") or item:IsA("ParticleEmitter") then item.Enabled=have end
+        end
+      end
+    end
+    task.wait(lastApplied==owned and 2.5 or .6)
+    lastApplied=owned
+  end
+end)
