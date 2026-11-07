@@ -120,12 +120,22 @@
     "ms": 2500
   },
   {
+    "type": "luau",
+    "ctx": "Server",
+    "code": "local out={} for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\")==\"human\" then local h=m:FindFirstChildOfClass(\"Humanoid\") local a=h and h:FindFirstChildOfClass(\"Animator\") local t=a and a:GetPlayingAnimationTracks() or {} local names={} for _,k in ipairs(t) do names[#names+1]=k.Animation.AnimationId:match(\"%d+$\")..\"@\"..string.format(\"%.2f\",k.WeightCurrent)..\"/\"..string.format(\"%.1f\",k.TimePosition) end local r=m:FindFirstChild(\"HumanoidRootPart\") out[#out+1]=m:GetAttribute(\"Variant\")..\": hum=\"..tostring(h~=nil)..\" animator=\"..tostring(a~=nil)..\" tracks=\"..#t..\" [\"..table.concat(names,\",\")..\"] state=\"..tostring(m:GetAttribute(\"AttackState\"))..\" rootAnch=\"..tostring(r and r.Anchored)..\" hp=\"..tostring(m:GetAttribute(\"EnemyHealth\")) end end return table.concat(out,\" || \")"
+  },
+  {
     "type": "capture",
     "name": "human_seq_0"
   },
   {
     "type": "wait",
     "ms": 350
+  },
+  {
+    "type": "luau",
+    "ctx": "Server",
+    "code": "local out={} for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\")==\"human\" then local h=m:FindFirstChildOfClass(\"Humanoid\") local a=h and h:FindFirstChildOfClass(\"Animator\") local t=a and a:GetPlayingAnimationTracks() or {} local names={} for _,k in ipairs(t) do names[#names+1]=k.Animation.AnimationId:match(\"%d+$\")..\"@\"..string.format(\"%.2f\",k.WeightCurrent)..\"/\"..string.format(\"%.1f\",k.TimePosition) end local r=m:FindFirstChild(\"HumanoidRootPart\") out[#out+1]=m:GetAttribute(\"Variant\")..\": hum=\"..tostring(h~=nil)..\" animator=\"..tostring(a~=nil)..\" tracks=\"..#t..\" [\"..table.concat(names,\",\")..\"] state=\"..tostring(m:GetAttribute(\"AttackState\"))..\" rootAnch=\"..tostring(r and r.Anchored)..\" hp=\"..tostring(m:GetAttribute(\"EnemyHealth\")) end end return table.concat(out,\" || \")"
   },
   {
     "type": "capture",
