@@ -5975,6 +5975,10 @@ end
 
 local function setEnemyAttackState(enemy, state)
   if enemy.attackState==state then return end
+  -- [발견 반응] 처음 추격을 시작할 때 잠깐 몸을 세워 플레이어를 알아챈 듯 보이게 한다.
+  if state=="CHASE" and (enemy.attackState=="IDLE" or enemy.attackState=="PATROL" or enemy.attackState=="RETURN_TO_SPAWN") then
+    enemy.alertAt=os.clock()
+  end
   enemy.attackState=state
   enemy.attackStateStartedAt=os.clock()
   enemy.model:SetAttribute("NativeMobMotionDuration",state=="ANTICIPATION" and math.max(.12,(enemy.windupUntil or os.clock()+.68)-os.clock()) or .46)
@@ -6115,11 +6119,54 @@ local function animateMeadowOriginalMob(enemy,now)
   if sinceHit<.7 and not aerial then
     attackPitch+=.42*(enemy.hitPower or .5)*math.exp(-sinceHit*7)
   end
+  -- [발견 반응] 추격 시작 직후 0.45초 동안 상체를 번쩍 든다.
+  local sinceAlert=now-(enemy.alertAt or -9)
+  if sinceAlert<.45 and not aerial then
+    attackPitch+=.22*math.sin(math.clamp(sinceAlert/.45,0,1)*math.pi)
+  end
+  -- [상태이상 반응] 빙결은 굳고, 화염은 허둥대고, 독은 비틀거리며, 출혈은 맥박처럼 움찔거린다.
+  local st=enemy.status or {}
+  local frozen=(st.frost or 0)>now
+  local burning=(st.burn or 0)>now
+  local poisoned=(st.poison or 0)>now
+  local bleeding=(st.bleed or 0)>now
+  local statusYaw=0
+  if burning then
+    bank+=math.sin(now*26)*.1;statusYaw=math.sin(now*19)*.16
+    attackPitch+=math.sin(now*13)*.05
+  elseif poisoned then
+    bank+=math.sin(now*3.2)*.13;statusYaw=math.sin(now*2.1)*.1
+    attackPitch+=.06
+  elseif bleeding then
+    attackPitch+=math.max(0,math.sin(now*6.28))^6*.1
+  end
+  if frozen then bank=0;statusYaw=0 end
+  -- 상태 윤곽선(공식 Highlight 인스턴스 하나만 재사용).
+  local tint=enemy.model:FindFirstChild("StatusTint")
+  local wantColor=frozen and Color3.fromRGB(140,205,255) or burning and Color3.fromRGB(255,110,40)
+    or poisoned and Color3.fromRGB(110,200,70) or bleeding and Color3.fromRGB(190,40,50) or nil
+  if wantColor then
+    if not tint then
+      tint=Instance.new("Highlight");tint.Name="StatusTint";tint.FillTransparency=.78
+      tint.OutlineTransparency=.35;tint.DepthMode=Enum.HighlightDepthMode.Occluded;tint.Parent=enemy.model
+    end
+    tint.FillColor=wantColor;tint.OutlineColor=wantColor;tint.Enabled=true
+  elseif tint then tint.Enabled=false end
+  -- 인간형 애니메이션: 빙결이면 정지, 화염이면 빠르게, 독이면 느리게.
+  if enemy.r15Tracks then
+    local speed=frozen and 0 or burning and 1.6 or poisoned and .6 or nil
+    for _,t in pairs(enemy.r15Tracks) do
+      if t.IsPlaying then
+        if speed then t:AdjustSpeed(speed) elseif enemy.r15StatusSpeed then t:AdjustSpeed(1) end
+      end
+    end
+    enemy.r15StatusSpeed=speed~=nil
+  end
   local pivot=(enemy.visualPosition or enemy.position)
     +Vector3.new(0,(enemy.visibleGroundOffset or 0)
       +(enemy.terrainGroundOffset or 0)+movingHeight,0)
   enemy.model:PivotTo(CFrame.lookAt(pivot,pivot+facing)
-    *CFrame.Angles(0,enemy.model:GetAttribute("NativeMobFacingYaw") or 0,0)
+    *CFrame.Angles(0,(enemy.model:GetAttribute("NativeMobFacingYaw") or 0)+statusYaw,0)
     *CFrame.Angles(attackPitch+stridePitch+idleBreath,0,bank))
 end
 
