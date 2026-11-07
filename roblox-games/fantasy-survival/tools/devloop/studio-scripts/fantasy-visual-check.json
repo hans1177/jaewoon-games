@@ -1,0 +1,108 @@
+[
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "click_text",
+  "text": "이어하기"
+ },
+ {
+  "type": "wait",
+  "ms": 70000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"RunService\") pcall(function() RS:UnbindFromRenderStep(\"FantasyShot\") end) RS:BindToRenderStep(\"FantasyShot\",Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute(\"ShotCF\") if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute(\"ShotFov\") or 60 end end) for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true end return \"bound\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(262,12,150)) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",60) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(262,11,172),Vector3.new(262,5,201))) return \"shot\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "capture",
+  "name": "companions_ring"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-317,12,-100)) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",60) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-310,8,-112),Vector3.new(-318,2,-150))) return \"shot\""
+ },
+ {
+  "type": "wait",
+  "ms": 8000
+ },
+ {
+  "type": "capture",
+  "name": "road"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(262,12,0)) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",60) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(262,10,-30),Vector3.new(300,3,30))) return \"shot\""
+ },
+ {
+  "type": "wait",
+  "ms": 8000
+ },
+ {
+  "type": "capture",
+  "name": "hills"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(198,12,-100)) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local best,bd=nil,1e9 local me=game.Players.LocalPlayer.Character.HumanoidRootPart.Position local set={roguehooded=1,rogue=1,barbarian=1,knight=1,adventurer=1,king=1,punk=1} for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\") and set[m:GetAttribute(\"Variant\") or \"\"] then local d=(m:GetPivot().Position-me).Magnitude if d<bd then best,bd=m,d end end end if not best then return \"no human mob near\" end local p=best:GetPivot().Position workspace:SetAttribute(\"ShotFov\",50) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(7,4,7),p+Vector3.new(0,2.5,0))) return \"mob=\"..best.Name..\" var=\"..tostring(best:GetAttribute(\"Variant\"))..\" dist=\"..math.floor(bd)..\" state=\"..tostring(best:GetAttribute(\"AttackState\"))"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "human_mob_a"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "human_mob_b"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local out={} for _,m in ipairs(game:GetService(\"LogService\"):GetLogHistory()) do if m.messageType==Enum.MessageType.MessageError then out[#out+1]=string.sub(m.message,1,160) end end local c={} for _,l in ipairs(out) do c[l]=(c[l] or 0)+1 end local r={} for l,n in pairs(c) do r[#r+1]=n..\"x \"..l end table.sort(r) return \"ERRORS \"..#out..\"|\"..table.concat(r,\"\\n\")"
+ }
+]
