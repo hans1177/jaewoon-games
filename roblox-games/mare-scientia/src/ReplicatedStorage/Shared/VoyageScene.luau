@@ -187,6 +187,14 @@ function VoyageScene.play(info)
 	local ship = info.makeShip(folder, info.shipId, ORIGIN + Vector3.new(0, 1.2, 0))
 	ship.Name = "VoyageShip"
 	local shipBase = ship:GetPivot()
+	-- 배 바닥이 수면 아래로 잠기도록 높이를 맞춘다 (떠 있는 느낌 제거)
+	local function restY(model)
+		local bcf, bsize = model:GetBoundingBox()
+		local bottomRel = (bcf.Position.Y - bsize.Y / 2) - model:GetPivot().Position.Y
+		return math.clamp(-0.9 - bottomRel, -6, 6), math.max(bsize.X, bsize.Z)
+	end
+	local baseY, shipLen = restY(ship)
+	local heel = 0
 	local wheels = {}
 	for _, name in { "PaddleWheelPort", "PaddleWheelStarboard" } do
 		local w = ship:FindFirstChild(name)
@@ -195,8 +203,8 @@ function VoyageScene.play(info)
 		end
 	end
 	local function shipPose(pos, yaw, t)
-		return CFrame.new(pos.X, 1.2 + math.sin(t * 1.3) * 0.5, pos.Z) * CFrame.Angles(0, yaw, 0)
-			* CFrame.Angles(math.sin(t * 0.9) * 0.03, 0, math.sin(t * 1.1) * 0.04)
+		return CFrame.new(pos.X, baseY + math.sin(t * 1.3) * 0.45 + math.sin(t * 2.7) * 0.12, pos.Z) * CFrame.Angles(0, yaw, 0)
+			* CFrame.Angles(heel + math.sin(t * 1.1) * 0.035, 0, math.sin(t * 0.9) * 0.05 + math.sin(t * 1.9) * 0.015)
 	end
 	local rot0 = CFrame.new(-shipBase.Position) * shipBase -- 모델의 원래 방향(회전만)
 	local function applyShip(pos, yaw, t)
@@ -260,6 +268,7 @@ function VoyageScene.play(info)
 	local EVENT_LEN = 0.26
 	local rain = nil
 	local enemy = nil
+	local enemyY = 1.2
 	local barrel = nil
 	if ev.kind == "storm" then
 		-- 비: 배 위쪽에서 따라다니는 파티클 판
@@ -285,6 +294,7 @@ function VoyageScene.play(info)
 				d.Color = d.Color:Lerp(Color3.new(0.05, 0.05, 0.06), 0.55)
 			end
 		end
+		enemyY = restY(enemy)
 		enemy:PivotTo(enemy:GetPivot() + Vector3.new(0, -500, 0)) -- 아직 숨김
 	elseif ev.kind == "drift" then
 		barrel = part(folder, Vector3.new(3, 2.6, 3), CFrame.new(ORIGIN), Color3.fromRGB(120, 76, 44), Enum.Material.Wood, Enum.PartType.Cylinder)
@@ -304,6 +314,93 @@ function VoyageScene.play(info)
 	end
 	local nextShot = 0
 	local lightning = 0
+
+	-- 항적: 선미 거품, 뱃머리 물보라, V자 물결
+	local function emitterPart(rate, life, speed, spread, sizeFrom, sizeTo, accel, dir)
+		local p = part(folder, Vector3.new(1, 1, 1), CFrame.new(ORIGIN), Color3.new(1, 1, 1))
+		p.Transparency = 1
+		local em = Instance.new("ParticleEmitter")
+		em.Rate = rate
+		em.Lifetime = NumberRange.new(life * 0.7, life)
+		em.Speed = NumberRange.new(speed * 0.6, speed)
+		em.SpreadAngle = Vector2.new(spread, spread)
+		em.EmissionDirection = dir or Enum.NormalId.Top
+		em.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, sizeFrom), NumberSequenceKeypoint.new(1, sizeTo) })
+		em.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.25), NumberSequenceKeypoint.new(1, 1) })
+		em.Color = ColorSequence.new(Color3.fromRGB(240, 248, 255))
+		em.Acceleration = accel or Vector3.zero
+		em.LockedToPart = false
+		em.Parent = p
+		return p, em
+	end
+	local sternPart = emitterPart(26, 3, 2, 80, 3, 11, Vector3.zero, Enum.NormalId.Top)
+	local bowPart, bowEm = emitterPart(30, 0.9, 11, 28, 1.2, 3, Vector3.new(0, -24, 0), Enum.NormalId.Top)
+	local wakes = {}
+	for _ = 1, 2 do
+		local w = part(folder, Vector3.new(shipLen * 2.4, 0.12, 1.4), CFrame.new(ORIGIN), Color3.fromRGB(240, 248, 255), Enum.Material.SmoothPlastic)
+		w.Transparency = 0.5
+		table.insert(wakes, w)
+	end
+
+	-- 사건 소품: 지나가는 상선, 암초, 섬, 유령선 등 (승인된 모델만)
+	local props = {}
+	local fish = {}
+	local function addProp(kind, asset, size, side, along, extraYaw, y)
+		if not info.place then
+			return nil
+		end
+		local m = info.place(folder, kind, asset, ORIGIN + Vector3.new(0, 0, 0), size)
+		if not m then
+			return nil
+		end
+		local bcf, bsize = m:GetBoundingBox()
+		local off = (bcf.Position.Y - bsize.Y / 2) - m:GetPivot().Position.Y
+		local rec = { m = m, side = side, along = along, yaw = extraYaw or 0, y = (y or 0) - off }
+		table.insert(props, rec)
+		return rec
+	end
+	local eventBanner = {
+		school = "물고기떼 발견!", merchant = "상선을 만났다", fog = "짙은 안개", reef = "암초 조심!", rescue = "표류자 발견!",
+		island = "미지의 섬!", ghost = "유령선...", storm = "폭풍!", pirates = "해적선 출현!", drift = "표류물 발견", fever = "열병 발생", tailwind = "순풍!", calm = "잔잔한 바다",
+	}
+	local banner = title:Clone()
+	banner.Position = UDim2.new(0, 0, 0.22, 0)
+	banner.Size = UDim2.new(1, 0, 0, 44)
+	banner.TextSize = 34
+	banner.TextColor3 = Color3.fromRGB(255, 220, 120)
+	banner.Text = eventBanner[ev.kind] or ""
+	banner.TextTransparency = 1
+	banner.TextStrokeTransparency = 1
+	banner.Parent = gui
+	if ev.kind == "merchant" then
+		addProp("Naval", "ship-medium", 16, -70, 0.55, math.pi)
+		addProp("Naval", "boat-sail-a", 9, -110, 0.4, math.pi)
+	elseif ev.kind == "reef" then
+		for i = 1, 4 do
+			addProp("Town", "rock-wide", 11 + i * 2, 30 + i * 9, 0.5 - i * 0.04, i, -2.5)
+		end
+		addProp("Naval", "buoy", 5, 22, 0.5, 0, 0)
+	elseif ev.kind == "rescue" then
+		local raft = addProp("Naval", "boat-row-small", 9, 26, 0.5, math.pi / 2, 0)
+		local who = addProp("People", "Worker_Male", 4, 26, 0.5, 0, 1.2)
+		if raft and who then
+			who.follow = raft
+		end
+	elseif ev.kind == "island" then
+		addProp("Terrain", "cliff-rock", 70, 150, 0.12, 0, -3)
+		for i = 1, 4 do
+			addProp("Naval", "palm-detailed-straight", 16, 135 + i * 7, 0.12 + i * 0.006, i, -1)
+		end
+	elseif ev.kind == "ghost" then
+		addProp("Naval", "ship-ghost", 18, -80, 0.35, math.pi, 0)
+	elseif ev.kind == "school" and info.place then
+		for i = 1, 8 do
+			local m = info.place(folder, "Cargo", "fish-large", ORIGIN, 4)
+			if m then
+				table.insert(fish, { m = m, side = 18 + (i % 4) * 9, phase = i * 0.8, along = (i - 4) * 14 })
+			end
+		end
+	end
 
 	-- 카메라
 	camera.CameraType = Enum.CameraType.Scriptable
@@ -339,7 +436,20 @@ function VoyageScene.play(info)
 		local targetYaw = yawOf(dir)
 		local diff = (targetYaw - yaw + math.pi) % (math.pi * 2) - math.pi
 		yaw += diff * math.min(1, dt * 2.2)
+		heel += (math.clamp(diff, -0.6, 0.6) * 0.22 - heel) * math.min(1, dt * 2)
 		applyShip(pos, yaw, t)
+		do
+			local fwd = Vector3.new(math.cos(yaw), 0, -math.sin(yaw))
+			local rgt = Vector3.new(math.sin(yaw), 0, math.cos(yaw))
+			sternPart.CFrame = CFrame.new(pos - fwd * shipLen * 0.45 + Vector3.new(0, 0.2, 0))
+			bowPart.CFrame = CFrame.new(pos + fwd * shipLen * 0.5 + Vector3.new(0, 0.1, 0))
+			bowEm.Rate = 18 + 22 * math.min(1, speedNow / 20)
+			for i, w in wakes do
+				local s = if i == 1 then 1 else -1
+				w.CFrame = CFrame.new(pos - fwd * shipLen * 0.85 + rgt * s * shipLen * 0.34 + Vector3.new(0, 0.05, 0)) * CFrame.Angles(0, yaw + s * 0.2, 0)
+				w.Transparency = 0.45 + math.sin(t * 2 + i) * 0.1
+			end
+		end
 		sea.CFrame = CFrame.new(pos.X, -1.6, pos.Z)
 
 		for _, s in streaks do
@@ -399,7 +509,7 @@ function VoyageScene.play(info)
 				-- 적선이 오른쪽 뒤에서 접근해 나란히 달린다
 				local gap = 120 - 85 * math.min(1, ek * 2.2)
 				local epos = pos + right * gap - Vector3.new(math.cos(yaw), 0, -math.sin(yaw)) * (40 * (1 - math.min(1, ek * 2)))
-				local epose = CFrame.new(epos.X, 1.2 + math.sin(t * 1.2) * 0.4, epos.Z) * CFrame.Angles(0, yaw + math.rad(8) * (1 - intensity), 0) * enemyRot
+				local epose = CFrame.new(epos.X, enemyY + math.sin(t * 1.2) * 0.4, epos.Z) * CFrame.Angles(0, yaw + math.rad(8) * (1 - intensity), 0) * enemyRot
 				enemy:PivotTo(epose)
 				if ek > 0.35 and t > nextShot then
 					nextShot = t + rng:NextNumber(0.25, 0.6)
@@ -416,7 +526,7 @@ function VoyageScene.play(info)
 					local sink = math.clamp((k - EVENT_AT - EVENT_LEN) / 0.12, 0, 1)
 					local epos = pos + right * 35 - Vector3.new(math.cos(yaw), 0, -math.sin(yaw)) * (if ev.won then 20 else 20 + sink * 300)
 					local drop = if ev.won then sink * 18 else 0
-					enemy:PivotTo(CFrame.new(epos.X, 1.2 - drop, epos.Z) * CFrame.Angles(if ev.won then sink * 0.6 else 0, yaw, 0) * enemyRot)
+					enemy:PivotTo(CFrame.new(epos.X, enemyY - drop, epos.Z) * CFrame.Angles(if ev.won then sink * 0.6 else 0, yaw, 0) * enemyRot)
 				else
 					enemy:PivotTo(CFrame.new(pos.X, -500, pos.Z) * enemyRot)
 				end
@@ -427,6 +537,38 @@ function VoyageScene.play(info)
 			local front = (EVENT_AT + EVENT_LEN / 2 - k) * total * 0.5
 			local bp = pos + Vector3.new(math.cos(yaw), 0, -math.sin(yaw)) * front + right * 14
 			barrel.CFrame = CFrame.new(bp.X, 0.3 + math.sin(t * 2) * 0.25, bp.Z) * CFrame.Angles(t * 0.4, t * 0.2, math.pi / 2)
+		end
+		-- 사건 소품: 사건 구간에 가까워질 때만 보인다
+		do
+			local fwd = Vector3.new(math.cos(yaw), 0, -math.sin(yaw))
+			local near = ek > -0.25 and ek < 1.25
+			for _, pr in props do
+				local target = pr.follow or pr
+				local front = (EVENT_AT + EVENT_LEN / 2 - k) * total * target.along
+				local p = pos + fwd * front + right * target.side
+				if near then
+					local y = pr.y + math.sin(t * 1.4 + target.side) * 0.3
+					if pr.follow then
+						y = pr.y + math.sin(t * 1.4 + target.side) * 0.3
+					end
+					pr.m:PivotTo(CFrame.new(p.X, y, p.Z) * CFrame.Angles(0, yaw + pr.yaw, 0))
+				else
+					pr.m:PivotTo(CFrame.new(p.X, -500, p.Z))
+				end
+			end
+			for _, f in fish do
+				local u = (t * 0.9 + f.phase) % 3 -- 3초 주기로 한 번 뛴다
+				local jump = if u < 1 and active then math.sin(u * math.pi) else -1
+				local p = pos + fwd * (f.along + (EVENT_AT + EVENT_LEN / 2 - k) * total * 0.3) + right * f.side
+				f.m:PivotTo(CFrame.new(p.X, if jump >= 0 then jump * 7 + 0.5 else -500, p.Z) * CFrame.Angles(0, yaw + math.pi / 2, -(1 - jump) * 0.8))
+			end
+			if ev.kind == "fog" or ev.kind == "ghost" then
+				Lighting.FogEnd = 2600 - intensity * (if ev.kind == "fog" then 2300 else 1900)
+				Lighting.FogColor = Color3.fromRGB(176, 205, 232):Lerp(if ev.kind == "fog" then Color3.fromRGB(205, 210, 215) else Color3.fromRGB(110, 130, 150), intensity)
+				atmosphere.Density = 0.25 + intensity * 0.4
+			end
+			banner.TextTransparency = 1 - math.clamp(intensity * 2.2, 0, 1)
+			banner.TextStrokeTransparency = 1 - math.clamp(intensity * 1.6, 0, 0.6)
 		end
 		for i = #flashes, 1, -1 do
 			local f = flashes[i]
@@ -442,7 +584,7 @@ function VoyageScene.play(info)
 		-- 카메라: 배 뒤쪽 위에서 천천히 좌우로 돌며 비춘다
 		local sway = math.sin(t * 0.25) * 0.9
 		local back = CFrame.new(pos) * CFrame.Angles(0, yaw + sway, 0) * CFrame.new(-60, 24, 0)
-		camera.CFrame = CFrame.lookAt(back.Position, pos + Vector3.new(0, 7, 0))
+		camera.CFrame = CFrame.lookAt(back.Position + Vector3.new(0, math.sin(t * 1.3) * 0.5, 0), pos + Vector3.new(0, 7 + math.sin(t * 1.3 + 0.6) * 0.4, 0))
 		ui(k, t)
 
 		if k > 0.93 and not fading then

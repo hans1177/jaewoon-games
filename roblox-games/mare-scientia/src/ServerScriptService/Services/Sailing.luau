@@ -41,6 +41,8 @@ return function(D, S)
 		local days = plan.days
 		if event.kind == "tailwind" and days > 1 then
 			days -= 1
+		elseif event.kind == "fog" then
+			days += 1
 		end
 
 		-- 석탄 소모
@@ -63,6 +65,27 @@ return function(D, S)
 			table.insert(msgs, string.format("보급품이 부족했다! 선원 %d명을 잃었다", loss))
 		end
 
+		-- 사기: 항해가 길수록 떨어진다. 의사 동료가 있으면 하락이 줄어든다.
+		local heal = S.Perk.healReduction(state)
+		local moraleDrop = math.floor(days * 1.5 * (1 - heal) + 0.5)
+		local function moraleAdd(n)
+			if n < 0 then
+				n = math.floor(n * (1 - heal) - 0.5)
+			end
+			state.morale = math.clamp(state.morale + n, 0, 100)
+		end
+		moraleAdd(-moraleDrop)
+		-- 괴혈병: 15일 이상 항해하는데 신선한 식량(생선·대추야자·건포도)이 없으면 선원이 앓는다
+		local fresh = (state.cargo.fish or 0) + (state.cargo.dates or 0) + (state.cargo.raisins or 0)
+		if days >= 15 and fresh == 0 and event.kind ~= "school" then
+			local loss = math.min(state.ship.crew - 1, math.floor((1 + state.ship.crew * 0.08) * (1 - heal)))
+			if loss > 0 then
+				state.ship.crew -= loss
+				moraleAdd(-8)
+				table.insert(msgs, string.format("괴혈병이 번졌다! 선원 %d명을 잃었다 (신선한 생선·과일을 실으면 막을 수 있어요)", loss))
+			end
+		end
+
 		S.State.advanceDays(state, days)
 		table.insert(msgs, string.format("%s을(를) 출발해 %d일 만에 %s에 도착했다 (%d km)", from.name, days, to.name, math.floor(dist)))
 
@@ -75,6 +98,7 @@ return function(D, S)
 			local dmg = math.floor(def.hull * event.amount * (1 - S.State.techSum(state, "pumpReduction")))
 			state.ship.hull = math.max(1, state.ship.hull - dmg)
 			table.insert(msgs, string.format("폭풍! 선체 -%d", dmg))
+			moraleAdd(-6)
 		elseif event.kind == "drift" then
 			state.coins += event.amount
 			table.insert(msgs, string.format("표류물을 건져 %d코인을 얻었다", event.amount))
@@ -84,6 +108,40 @@ return function(D, S)
 				state.ship.crew -= loss
 				table.insert(msgs, string.format("열병으로 선원 %d명을 잃었다", loss))
 			end
+		elseif event.kind == "school" then
+			local room = S.State.maxSupplies() - state.ship.supplies
+			local n = math.min(event.amount, room)
+			state.ship.supplies += n
+			table.insert(msgs, string.format("물고기떼를 만나 그물을 던졌다! 보급품 +%d", n))
+			moraleAdd(6)
+		elseif event.kind == "merchant" then
+			state.coins += event.amount
+			table.insert(msgs, string.format("지나가던 상선과 물물교환을 했다. +%d코인", event.amount))
+		elseif event.kind == "fog" then
+			table.insert(msgs, "짙은 안개에 갇혀 하루를 더 보냈다")
+			moraleAdd(-3)
+		elseif event.kind == "reef" then
+			local dmg = math.max(1, math.floor(def.hull * event.amount))
+			state.ship.hull = math.max(1, state.ship.hull - dmg)
+			table.insert(msgs, string.format("암초를 스쳤다! 선체 -%d", dmg))
+		elseif event.kind == "rescue" then
+			local n = math.min(event.amount, def.crew - state.ship.crew)
+			if n > 0 then
+				state.ship.crew += n
+				table.insert(msgs, string.format("표류하던 선원 %d명을 구했다. 그들이 합류했다", n))
+			else
+				state.coins += 30
+				table.insert(msgs, "표류하던 사람들을 구했다. 사례금 30코인을 받았다")
+			end
+		elseif event.kind == "island" then
+			state.coins += event.amount
+			state.fame += 1
+			table.insert(msgs, string.format("지도에 없는 섬을 발견했다! 명성 +1, 코인 +%d", event.amount))
+			moraleAdd(8)
+		elseif event.kind == "ghost" then
+			state.fame += event.amount
+			table.insert(msgs, string.format("안개 속에서 유령선을 보았다... 뱃사람들의 이야깃거리가 되었다 (명성 +%d)", event.amount))
+			moraleAdd(-8)
 		elseif event.kind == "pirates" then
 			S.Battle.encounter(state, ctx, msgs)
 		end
@@ -101,6 +159,13 @@ return function(D, S)
 		S.State.gainXp(state, "adventure", days * 2 + math.floor(dist / 200), msgs)
 		S.Perk.gainSpec(state, "voyage", days * 3, msgs)
 		S.Perk.addAffinity(state, 1, msgs)
+		-- 입항: 선원들이 뭍에서 쉰다. 사기가 너무 낮으면 탈영한다.
+		if state.morale < 25 and state.ship.crew > 2 then
+			local desert = math.min(state.ship.crew - 1, math.max(1, math.floor(state.ship.crew * 0.1)))
+			state.ship.crew -= desert
+			table.insert(msgs, string.format("사기가 바닥이라 선원 %d명이 배를 떠났다. 주점에서 한턱 내면 사기가 올라요", desert))
+		end
+		state.morale = math.min(100, state.morale + 8)
 		S.Shipyard.autoTopUp(state, msgs)
 		return true, table.concat(msgs, "\n")
 	end

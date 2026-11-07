@@ -46,6 +46,20 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
+	-- 주점 회식: 선원 수 × 3코인으로 사기 +30
+	function handlers.Feast(state)
+		local cost = math.max(10, state.ship.crew * 3)
+		if state.morale >= 100 then
+			return false, "선원들의 사기는 이미 하늘을 찔러요"
+		end
+		if state.coins < cost then
+			return false, string.format("회식에는 %d코인이 필요해요", cost)
+		end
+		state.coins -= cost
+		state.morale = math.min(100, state.morale + 30)
+		return true, string.format("선원들에게 한턱 냈다! 사기 +30 (-%d코인)", cost)
+	end
+
 	-- 거래 정보 수준: 동료의 장사 감각 + 무역가 전문 레벨. 0=감만, 1~2=대략, 3 이상=정확한 수치.
 	local COMPANION_INTEL = { c_boyle = 3, c_halley = 2 }
 	local function intel(state)

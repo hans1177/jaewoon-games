@@ -196,6 +196,20 @@ local function modelIcon(parent, kind, asset, tint, px, labelText)
 		local assetId = AssetIds[kind .. "/" .. asset]
 		if assetId then
 			image.Image = "rbxthumb://type=Asset&id=" .. tostring(assetId) .. "&w=420&h=420"
+		else
+			-- 승인된 그림이 아직 없는 상품: 빈 칸 대신 이름 타일로 표시한다
+			local nameTile = Instance.new("TextLabel")
+			nameTile.Size = UDim2.fromScale(1, 1)
+			nameTile.BackgroundTransparency = 1
+			nameTile.Text = labelText or tostring(asset)
+			nameTile.TextWrapped = true
+			nameTile.TextScaled = true
+			nameTile.Font = Enum.Font.GothamBold
+			nameTile.TextColor3 = Color3.fromRGB(232, 209, 154)
+			local pad = Instance.new("UIPadding")
+			pad.PaddingLeft, pad.PaddingRight, pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 5), UDim.new(0, 8), UDim.new(0, 8)
+			pad.Parent = nameTile
+			nameTile.Parent = image
 		end
 		corner(image, 8)
 		local stroke = Instance.new("UIStroke")
@@ -984,6 +998,7 @@ local function sail(portId)
 			fromName = from,
 			toName = view.player.portName,
 			makeShip = PortScene.makeShip,
+			place = PortScene.placeModel,
 			event = view.voyageEvent,
 		})
 		if not ok then
@@ -1101,6 +1116,31 @@ local function paintScene(parent, art, t)
 	end
 end
 
+-- 이야기 속 인물 → 승인된 People 모델. 직함 낱말로 고르고, 없으면 이름으로 항상 같은 사람을 고른다.
+local STORY_PEOPLE = {
+	{ { "해적", "사략", "뱃사람", "선원", "선장", "항해사" }, { "Pirate_Male", "Pirate_Female" } },
+	{ { "학자", "박사", "의사", "약", "연금" }, { "Doctor_Male_Old", "Doctor_Female_Old", "Doctor_Male_Young" } },
+	{ { "여왕", "왕", "귀족", "총독", "제독", "백작", "공작", "대사" }, { "OldClassy_Male", "OldClassy_Female" } },
+	{ { "병사", "수비", "군인", "근위" }, { "Soldier_Male", "Soldier_Female", "BlueSoldier_Male" } },
+	{ { "주조", "대장", "목수", "상인", "장인", "어부", "정비" }, { "Worker_Male", "Worker_Female" } },
+	{ { "요리", "주방", "포도주", "양조" }, { "Chef_Male", "Chef_Female" } },
+}
+local STORY_DEFAULT = { "Casual_Male", "Casual2_Female", "Casual3_Male", "Casual_Female", "Casual2_Male", "Casual3_Female" }
+local function storyPortraitModel(npcName, id)
+	local seed = 0
+	for i = 1, #npcName + #id do
+		seed = (seed * 31 + string.byte((npcName .. id), i)) % 9973
+	end
+	for _, row in STORY_PEOPLE do
+		for _, kw in row[1] do
+			if string.find(npcName, kw, 1, true) then
+				return row[2][seed % #row[2] + 1]
+			end
+		end
+	end
+	return STORY_DEFAULT[seed % #STORY_DEFAULT + 1]
+end
+
 local function playStory(ev)
 	local overlay = Instance.new("Frame")
 	overlay.Name = "StoryScene"
@@ -1115,27 +1155,54 @@ local function playStory(ev)
 	picture.ClipsDescendants = true
 	paintScene(picture, ev.art)
 
-	-- 등장 인물 (실루엣): 머리, 몸, 두건
-	local npc = mkBox(picture, UDim2.fromScale(0.5, 0.95), UDim2.fromOffset(90, 150), Color3.new(0, 0, 0), 1)
-	npc.AnchorPoint = Vector2.new(0.5, 1)
-	local body = mkBox(npc, UDim2.fromOffset(10, 56), UDim2.fromOffset(70, 94), Color3.fromRGB(58, 44, 70))
-	local bc = Instance.new("UICorner")
-	bc.CornerRadius = UDim.new(0.3, 0)
-	bc.Parent = body
-	mkBox(npc, UDim2.fromOffset(2, 66), UDim2.fromOffset(86, 6), Color3.fromRGB(224, 170, 69))
-	mkRound(npc, UDim2.fromOffset(45, 34), UDim2.fromOffset(40, 40), Color3.fromRGB(232, 196, 160), 0, Vector2.new(0.5, 0.5))
-	local hat = mkBox(npc, UDim2.fromOffset(20, 6), UDim2.fromOffset(50, 18), Color3.fromRGB(40, 30, 52))
-	local hc = Instance.new("UICorner")
-	hc.CornerRadius = UDim.new(0.5, 0)
-	hc.Parent = hat
+	-- 등장 인물: 승인된 3D 인물 모델을 반신 초상으로 보여 준다 (모델이 없으면 실루엣)
+	local portraitModel = storyPortraitModel(ev.npc or "", ev.id or "")
+	local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
+	local tpl = portraitModel and lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(portraitModel)
+	if tpl then
+		local vf = Instance.new("ViewportFrame")
+		vf.BackgroundTransparency = 1
+		vf.AnchorPoint = Vector2.new(0.5, 1)
+		vf.Position = UDim2.fromScale(0.5, 1)
+		vf.Size = UDim2.new(0, 330, 1, 6)
+		vf.Ambient = Color3.fromRGB(170, 170, 178)
+		vf.LightColor = Color3.fromRGB(255, 236, 205)
+		vf.LightDirection = Vector3.new(-0.6, -0.8, -1).Unit
+		vf.Parent = picture
+		local cam = Instance.new("Camera")
+		cam.FieldOfView = 32
+		cam.Parent = vf
+		vf.CurrentCamera = cam
+		local world = Instance.new("WorldModel")
+		world.Parent = vf
+		local m = tpl:Clone()
+		for _, d in m:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.Anchored = true
+			end
+		end
+		m.Parent = world
+		pcall(Pose.relaxArms, m)
+		local cf, size = m:GetBoundingBox()
+		local focus = cf.Position + Vector3.new(0, size.Y * 0.2, 0)
+		cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.35, 0.12, 1) .Unit * (size.Y * 1.05), focus)
+	else
+		local npc = mkBox(picture, UDim2.fromScale(0.5, 0.95), UDim2.fromOffset(90, 150), Color3.new(0, 0, 0), 1)
+		npc.AnchorPoint = Vector2.new(0.5, 1)
+		local body = mkBox(npc, UDim2.fromOffset(10, 56), UDim2.fromOffset(70, 94), Color3.fromRGB(58, 44, 70))
+		local bc = Instance.new("UICorner")
+		bc.CornerRadius = UDim.new(0.3, 0)
+		bc.Parent = body
+		mkRound(npc, UDim2.fromOffset(45, 34), UDim2.fromOffset(40, 40), Color3.fromRGB(232, 196, 160), 0, Vector2.new(0.5, 0.5))
+	end
 
 	local chapter = Instance.new("TextLabel")
 	chapter.BackgroundTransparency = 1
-	chapter.Position = UDim2.fromOffset(110, 14)
-	chapter.Size = UDim2.new(1, -122, 0, 22)
+	chapter.Position = UDim2.fromOffset(0, 14)
+	chapter.Size = UDim2.new(1, 0, 0, 22)
 	chapter.Font = Enum.Font.GothamBold
 	chapter.TextSize = 15
-	chapter.TextXAlignment = Enum.TextXAlignment.Left
+	chapter.TextXAlignment = Enum.TextXAlignment.Center
 	chapter.TextColor3 = Color3.new(1, 1, 1)
 	chapter.TextStrokeTransparency = 0.4
 	chapter.Text = (if ev.chapter then ev.chapter .. " · " else "") .. ev.title
@@ -1386,7 +1453,9 @@ local function renderHarbor()
 
 	add(function() return mkHeader(content, "항구 보급 (조선소가 없어도 돼요)") end)
 	add(function()
-		return mkLabel(content, string.format("선원 %d/%d · 보급품 %d/%d\n선원 %d코인/명 · 보급품 %d코인/개", view.ship.crew, view.ship.maxCrew, view.ship.supplies, view.supplyMax or 100, view.shipyard.hireCost, view.shipyard.supplyCost), 16, COLORS.text, true)
+		local m = view.morale or 80
+		local mText = if m >= 70 then "높음" elseif m >= 40 then "보통" elseif m >= 25 then "낮음 ⚠" else "바닥 ⚠ 탈영 위험"
+		return mkLabel(content, string.format("선원 %d/%d · 보급품 %d/%d · 사기 %d (%s)\n선원 %d코인/명 · 보급품 %d코인/개", view.ship.crew, view.ship.maxCrew, view.ship.supplies, view.supplyMax or 100, m, mText, view.shipyard.hireCost, view.shipyard.supplyCost), 16, COLORS.text, true)
 	end)
 	add(function()
 		return mkRow(content, "선원 충원", "부족한 만큼 고용해요", {
@@ -1434,6 +1503,27 @@ local function renderHarbor()
 		}, 72)
 	end)
 	addRumorPanel()
+	add(function()
+		return mkRow(content, "선원 회식", string.format("%d코인 · 사기 +30 (사기가 낮으면 탈영하고, 긴 항해에는 괴혈병이 돌아요)", view.feastCost or 30), {
+			{ text = "한턱", color = COLORS.gold, onClick = function() call("Feast", {}) end },
+		}, 72)
+	end)
+	add(function() return mkHeader(content, "주점 동료 (직능)") end)
+	for _, c in view.companions.list do
+		if c.role then
+			add(function()
+				local sub = string.format("%s\n영입 %d코인 · 호감도 %d%s", c.summary, c.fee, c.affinity, if c.blocked and not c.joined then " · " .. c.blocked else "")
+				local btn = if c.joined
+					then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
+					else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }
+				local btns = { btn }
+				if c.joined then
+					table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
+				end
+				return mkRow(content, string.format("[%s] %s%s", c.role, c.name, if c.joined then "  ✔" else ""), sub, btns, 84)
+			end)
+		end
+	end
 end
 
 local function renderStatus()

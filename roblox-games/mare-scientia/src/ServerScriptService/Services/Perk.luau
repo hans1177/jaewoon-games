@@ -5,7 +5,7 @@ return function(D, S)
 	local handlers = {}
 	local Sp = D.Specialties
 
-	local NUMERIC = { "discoverBonus", "coinMult", "speedMult", "sellBonus", "cannonMult" }
+	local NUMERIC = { "discoverBonus", "coinMult", "speedMult", "sellBonus", "cannonMult", "healMult" }
 
 	local function scaled(perk, k)
 		if k == 1 then
@@ -161,7 +161,7 @@ return function(D, S)
 		if #state.companions >= Sp.MAX_COMPANIONS then
 			return string.format("동료는 최대 %d명이에요", Sp.MAX_COMPANIONS)
 		end
-		if not state.scholarsMet[c.scholarId] then
+		if c.scholarId ~= "" and not state.scholarsMet[c.scholarId] then
 			return "먼저 이 학자를 만나 지식을 전수받아야 해요"
 		end
 		if state.fame < c.minFame then
@@ -248,5 +248,9 @@ return function(D, S)
 		sellBonus = sellBonus,
 		cannonBonus = cannonBonus,
 		recruitBlock = recruitBlock,
+		-- 의사 동료: 열병·괴혈병·사기 하락을 줄이는 비율 (최대 80%)
+		healReduction = function(state)
+			return math.min(0.8, sum(state, "healMult"))
+		end,
 	}
 end

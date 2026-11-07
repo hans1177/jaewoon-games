@@ -694,6 +694,28 @@ do
 	check("exact rumor has numbers", string.find(st.rumor.lines[1], "%d") ~= nil)
 end
 
+-- 13c. 사기·괴혈병·주점 동료·새 항해 사건 ---------------------------------
+do
+	local st = newState()
+	st.coins = 2000
+	st.morale = 40
+	check("feast raises morale", act(st, "Feast", {}) and st.morale == 70)
+	st.fame = 100
+	check("tavern companion recruitable without scholar", act(st, "Recruit", { companionId = "t_surgeon" }) and table.find(st.companions, "t_surgeon") ~= nil)
+	check("surgeon heal reduction", S.Perk.healReduction(st) >= 0.5)
+	local seen = {}
+	local n = 0
+	for i = 1, 4000 do
+		local e = D.Voyage.rollEvent(function() return math.random() end, 10)
+		seen[e.kind] = true
+	end
+	for _, k in { "school", "merchant", "fog", "reef", "rescue", "island", "ghost", "storm", "pirates" } do
+		if seen[k] then n += 1 end
+	end
+	check("all new voyage events roll", n == 9)
+	check("morale survives save", S.State.sanitize(S.State.serialize(st)).morale == st.morale)
+end
+
 -- 14. 화면 스냅샷 -------------------------------------------------------
 do
 	local st = newState()
@@ -833,7 +855,7 @@ end
 -- 전문 분야와 동료 ---------------------------------------------------
 do
 	for _, c in D.Specialties.Companions do
-		check("companion scholar exists " .. c.id, (function()
+		check("companion scholar exists " .. c.id, c.scholarId == "" and c.role ~= nil or (function()
 			for _, sc in D.Scholars.Scholars do
 				if sc.id == c.scholarId then
 					return true

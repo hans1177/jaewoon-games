@@ -29,6 +29,7 @@ return function(D)
 			license = 0,
 			insured = false,
 			auto = { supplies = false, crew = false },
+			morale = 80,
 			talked = {},
 			cargo = {},
 			basis = {},
@@ -268,6 +269,7 @@ return function(D)
 		end
 		s.license = math.floor(num(saved.license, 0, 0, #D.Ships.Licenses))
 		s.insured = saved.insured == true
+		s.morale = math.floor(num(saved.morale, 80, 0, 100))
 		if type(saved.auto) == "table" then
 			s.auto.supplies = saved.auto.supplies == true
 			s.auto.crew = saved.auto.crew == true
@@ -369,6 +371,7 @@ return function(D)
 			license = state.license,
 			insured = state.insured,
 			auto = state.auto,
+			morale = state.morale,
 			story = state.story,
 			collected = state.collected,
 		}

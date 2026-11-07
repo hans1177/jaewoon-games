@@ -79,7 +79,14 @@ local EVENT_WEIGHTS = {
 	{ "storm", 20 },
 	{ "pirates", 25 },
 	{ "drift", 10 },
-	{ "fever", 10 },
+	{ "fever", 8 },
+	{ "school", 9 }, -- 물고기떼: 식량을 얻는다
+	{ "merchant", 10 }, -- 상선 조우: 물물교환 이문
+	{ "fog", 8 }, -- 짙은 안개: 하루 지연
+	{ "reef", 6 }, -- 암초: 선체 손상
+	{ "rescue", 6 }, -- 조난자 구조
+	{ "island", 5 }, -- 미지의 섬
+	{ "ghost", 3 }, -- 유령선 목격
 }
 
 -- rng: 0~1 사이 값을 돌려주는 함수
@@ -112,6 +119,20 @@ function Voyage.rollEvent(rng: () -> number, days: number): Event
 		amount = 1 + math.floor(2 * rng()) -- 선원 손실
 	elseif picked == "tailwind" then
 		amount = 1 -- 하루 단축
+	elseif picked == "school" then
+		amount = 10 + math.floor(15 * rng()) -- 보급품
+	elseif picked == "merchant" then
+		amount = math.floor(40 + 90 * rng()) -- 코인
+	elseif picked == "fog" then
+		amount = 1 -- 하루 지연
+	elseif picked == "reef" then
+		amount = 0.03 + 0.05 * rng() -- 선체 피해 비율
+	elseif picked == "rescue" then
+		amount = 1 + math.floor(3 * rng()) -- 합류 선원
+	elseif picked == "island" then
+		amount = math.floor(60 + 140 * rng()) -- 코인
+	elseif picked == "ghost" then
+		amount = 2 -- 명성
 	end
 	return { kind = picked, amount = amount }
 end

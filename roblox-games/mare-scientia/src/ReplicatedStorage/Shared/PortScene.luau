@@ -1098,6 +1098,8 @@ function PortScene.build(info, onFacility)
 			c_merian = { "Rogue", Color3.fromRGB(176, 96, 120) }, c_halley = { "Knight", Color3.fromRGB(60, 80, 140) },
 			c_leeuwenhoek = { "Mage", Color3.fromRGB(110, 90, 70) }, c_linnaeus = { "Rogue_Hooded", Color3.fromRGB(70, 120, 84) },
 			c_boyle = { "Mage", Color3.fromRGB(130, 70, 70) }, c_papin = { "Barbarian", Color3.fromRGB(96, 100, 110) },
+			t_navigator = { "Knight", Color3.fromRGB(40, 90, 120) }, t_gunner = { "Barbarian", Color3.fromRGB(120, 60, 50) },
+			t_purser = { "Rogue", Color3.fromRGB(90, 80, 50) }, t_surgeon = { "Mage", Color3.fromRGB(230, 230, 235) },
 		}
 		for i, c in info.companions or {} do
 			local look = looks[c.id] or { "Rogue", Color3.fromRGB(120, 100, 80) }
@@ -1283,6 +1285,10 @@ end
 
 -- 항해 장면(VoyageScene)에서 같은 배 모델을 쓰기 위해 내보낸다
 PortScene.makeShip = buildShip
+-- 항해 장면 등에서 승인된 모델 하나를 놓는다 (없으면 nil)
+function PortScene.placeModel(parent, kind, asset, pos, size)
+	return importedModel(parent, kind, asset, pos, size, false)
+end
 
 return PortScene
 

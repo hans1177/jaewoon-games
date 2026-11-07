@@ -10,6 +10,7 @@ export type Perk = {
 	speedMult: number?, -- 항해 속도 +
 	sellBonus: number?, -- 되파는 비율 +
 	cannonMult: number?, -- 포격 +
+	healMult: number?, -- 열병·괴혈병·사기 하락 감소 (0.5 = 절반)
 }
 
 export type Specialty = { id: string, name: string, summary: string, perk: Perk, xpOn: { string } } -- xpOn: 경험치를 주는 카드 분야 또는 "voyage"/"trade"
@@ -17,7 +18,8 @@ export type Specialty = { id: string, name: string, summary: string, perk: Perk,
 export type Companion = {
 	id: string,
 	name: string,
-	scholarId: string, -- 먼저 이 학자를 만나 지식을 전수받아야 한다
+	scholarId: string, -- 먼저 이 학자를 만나 지식을 전수받아야 한다 ("" = 주점에서 바로 영입)
+	role: string?, -- 항해사·포수·회계사·의사 (주점 동료)
 	fee: number, -- 영입 비용
 	minFame: number,
 	summary: string,
@@ -70,6 +72,23 @@ local Companions: { Companion } = {
 		perk = { cannonMult = 0.05 },
 		battleLine = "압력 게이지를 확인했소. 증기는 언제든 준비되어 있소!",
 		winLine = "압력이 아주 잘 버텨 줬소. 뿌듯하군." },
+	-- 주점에서 영입하는 직능 동료 (학자 전수 불필요)
+	{ id = "t_navigator", name = "항해사 마르코", scholarId = "", role = "항해사", fee = 250, minFame = 20,
+		summary = "별과 바람을 읽는 노련한 항해사. 항해 속도 +6%",
+		perk = { speedMult = 0.06 },
+		battleLine = "바람을 등지게 키를 돌리겠습니다!", winLine = "항로는 흔들리지 않았습니다, 선장님." },
+	{ id = "t_gunner", name = "포수 아나", scholarId = "", role = "포수", fee = 300, minFame = 30,
+		summary = "포대를 지휘하는 베테랑 포수. 포격 +8%",
+		perk = { cannonMult = 0.08 },
+		battleLine = "장전 완료! 신호만 주세요!", winLine = "적선 돛대가 부러지는 소리, 언제 들어도 좋군요." },
+	{ id = "t_purser", name = "회계사 얀", scholarId = "", role = "회계사", fee = 280, minFame = 25,
+		summary = "장부에 밝은 사무장. 되파는 비율 +2%",
+		perk = { sellBonus = 0.02 },
+		battleLine = "전투 비용은 나중에 청구하겠습니다... 지금은 숨으세요!", winLine = "노획품 목록은 제가 정리하겠습니다." },
+	{ id = "t_surgeon", name = "의사 엘레나", scholarId = "", role = "의사", fee = 320, minFame = 35,
+		summary = "선상 외과의. 열병·괴혈병 피해와 사기 하락이 절반",
+		perk = { healMult = 0.5 },
+		battleLine = "다친 사람은 제게 데려오세요!", winLine = "부상자 모두 무사합니다. 오늘은 운이 좋았어요." },
 }
 
 local SpecialtyById: { [string]: Specialty } = {}

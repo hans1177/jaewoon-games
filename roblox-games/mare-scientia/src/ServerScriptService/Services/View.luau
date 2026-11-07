@@ -123,6 +123,8 @@ return function(D, S)
 		end
 		view.intel = S.Harbor.intel(state)
 		view.supplyMax = S.State.maxSupplies()
+		view.morale = state.morale
+		view.feastCost = math.max(10, state.ship.crew * 3)
 		if state.rumor and state.rumor.portId == state.portId then
 			view.rumor = state.rumor
 		end
@@ -314,6 +316,7 @@ return function(D, S)
 				id = c.id,
 				name = c.name,
 				summary = c.summary,
+				role = c.role,
 				fee = c.fee,
 				joined = table.find(state.companions, c.id) ~= nil,
 				affinity = state.affinity[c.id] or 0,
