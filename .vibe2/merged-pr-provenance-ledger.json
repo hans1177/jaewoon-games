@@ -166224,11 +166224,165 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_486ca23b8cc279c61eec7cc5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12138",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b5d5b4b300547ef82cfb771ecabdb0a0e41511ed",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12138,
+        "baseBranch": "main",
+        "headBranch": "automation/horror-combat-asset-42321334534",
+        "baseSha": "b5d5b4b300547ef82cfb771ecabdb0a0e41511ed",
+        "headSha": "4bb222a21192f800ac4a311115ca90cf23ac87cb",
+        "mergeCommitSha": "162f1a7067246994aa8d00242e80ecc6d5bce232",
+        "mergedAt": "2026-11-07T00:58:38Z",
+        "authorLogin": "github-actions[bot]",
+        "titleHash": "dc5b1bc3754479321d7e1cfcdd55d5c210b78a63f63dffdbcce1c7a3ba738628",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "automation/horror-combat-asset-42321334534",
+        "candidateSha": "4bb222a21192f800ac4a311115ca90cf23ac87cb"
+      },
+      "changeStats": {
+        "changedFileCount": 20,
+        "codingRelevantFileCount": 20,
+        "addedLineCount": 17343,
+        "deletedLineCount": 1,
+        "changedFiles": [
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Arms.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Arms.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Body.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Body.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Feet.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Feet.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Legs.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Legs.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Arms.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Arms.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Body.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Body.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Feet.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Feet.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Legs.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Legs.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/T_Peasant_BaseColor.png",
+          "assets/external/simple-rpg/priority-v1/modular-armor/T_Peasant_Normal.png",
+          "assets/external/simple-rpg/priority-v1/modular-armor/T_Peasant_ORM.png",
+          "assets/external/simple-rpg/priority-v1/modular-armor/manifest.json"
+        ],
+        "codingRelevantFiles": [
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Arms.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Arms.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Body.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Body.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Feet.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Feet.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Legs.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Female_Peasant_Legs.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Arms.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Arms.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Body.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Body.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Feet.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Feet.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Legs.bin",
+          "assets/external/simple-rpg/priority-v1/modular-armor/Male_Peasant_Legs.gltf",
+          "assets/external/simple-rpg/priority-v1/modular-armor/T_Peasant_BaseColor.png",
+          "assets/external/simple-rpg/priority-v1/modular-armor/T_Peasant_Normal.png",
+          "assets/external/simple-rpg/priority-v1/modular-armor/T_Peasant_ORM.png",
+          "assets/external/simple-rpg/priority-v1/modular-armor/manifest.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12138",
+        "merge-commit:162f1a7067246994aa8d00242e80ecc6d5bce232",
+        "base-main:b5d5b4b300547ef82cfb771ecabdb0a0e41511ed"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1326
+    "total": 1327
   }
 }
