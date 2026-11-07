@@ -1646,6 +1646,25 @@ local function renderStatus()
 			return mkRow(content, string.format("%s Lv.%d", c.name, c.level), string.format("경험치 %d / %d", c.xp, c.nextXp), nil, 48)
 		end)
 	end
+	add(function() return mkHeader(content, "소리") end)
+	add(function()
+		local musicOn, sfxOn = Sfx.state()
+		return mkRow(content, "음악", if musicOn then "켜짐" else "꺼짐", {
+			{ text = if musicOn then "끄기" else "켜기", color = if musicOn then COLORS.grey else COLORS.blue, onClick = function()
+				Sfx.setMusicEnabled(not musicOn)
+				render()
+			end },
+		}, 52)
+	end)
+	add(function()
+		local musicOn, sfxOn = Sfx.state()
+		return mkRow(content, "효과음", if sfxOn then "켜짐" else "꺼짐", {
+			{ text = if sfxOn then "끄기" else "켜기", color = if sfxOn then COLORS.grey else COLORS.blue, onClick = function()
+				Sfx.setSfxEnabled(not sfxOn)
+				render()
+			end },
+		}, 52)
+	end)
 	add(function() return mkHeader(content, "시작 가이드") end)
 	add(function()
 		return mkLabel(content, "메뉴·상품 그림: Lorc · Delapouite · Lord Berandas · Skoll / game-icons.net / CC BY 3.0\n사프란: Tiny Speck·Bart / CC0 · 대추야자·건포도: 게임 전용 벡터 원화\n색상·재질 편집 및 이미지 변환: 마리 에센시아", 10, COLORS.muted, false)
@@ -1979,8 +1998,24 @@ local function openTradeHall()
 			local allB = mkButton(right, "보유분 전부 팔기", COLORS.grey, UDim2.new(1, -24, 0, 40), function() call("Sell", { goodId = sel.id, amount = math.min(20, sel.owned) }) end, sel.owned > 0)
 			allB.Position = UDim2.fromOffset(12, 378)
 			allB.TextSize = 16
+			do
+				local top = view.compare and view.compare[sel.id]
+				local lines = {}
+				if top then
+					for _, t in top do
+						table.insert(lines, if t.sell then string.format("%s  %d", t.name, t.sell) else t.name)
+					end
+				end
+				local cmpText = if (view.intel or 0) <= 0 then "다른 항구 시세: 장사 감각이 있는 동료가 필요해요"
+					elseif #lines == 0 then "다른 항구 시세 정보 없음"
+					else (if view.intel >= 2 then "비싸게 팔리는 항구 (팔기 시세)\n" else "비싸게 팔릴 듯한 항구\n") .. table.concat(lines, "\n")
+				local cl = mkLabel(right, cmpText, 15, COLORS.text, false)
+				cl.Position = UDim2.fromOffset(14, 430)
+				cl.Size = UDim2.new(1, -28, 0, 90)
+				cl.AutomaticSize = Enum.AutomaticSize.None
+			end
 			local hint = mkLabel(right, string.format("동료 장사 감각 %s · 흥정은 물건마다 한 번, 성공하면 다음 구매가 싸져요.", intelName(view.intel or 0)), 13, COLORS.muted, false)
-			hint.Position = UDim2.fromOffset(14, 428)
+			hint.Position = UDim2.fromOffset(14, 526)
 			hint.Size = UDim2.new(1, -28, 0, 50)
 			hint.AutomaticSize = Enum.AutomaticSize.None
 		end

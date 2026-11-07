@@ -691,6 +691,15 @@ do
 	act(st, "Talk", { companionId = "c_boyle" })
 	check("second talk same day no more affinity", st.affinity.c_boyle == a0 + 2)
 	check("boyle gives exact intel", S.Harbor.intel(st) >= 3)
+	do
+		local v = S.View.build(st, ctx)
+		local anyGood = v.goods[1]
+		local top = v.compare and v.compare[anyGood.id]
+		check("compare lists other ports with intel", top ~= nil and #top >= 1 and top[1].sell ~= nil, tostring(top))
+		check("compare sorted by sell", top and (#top < 2 or top[1].sell >= top[2].sell))
+		local low = newState()
+		check("no compare without intel", next(S.View.build(low, ctx).compare) == nil)
+	end
 	st.coins = 500
 	act(st, "Rumor", {})
 	check("exact rumor has numbers", string.find(st.rumor.lines[1], "%d") ~= nil)

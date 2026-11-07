@@ -128,6 +128,32 @@ return function(D, S)
 			end
 		end
 		view.intel = S.Harbor.intel(state)
+		-- 다른 항구 시세 비교: 물건마다 팔값이 가장 높은 항구 3곳. 장사 감각(intel)이 높을수록 자세히 알려 준다.
+		--   0: 알 수 없음 / 1: 항구 이름만 / 2 이상: 이름과 값
+		view.compare = {}
+		if view.intel >= 1 then
+			for _, g in view.goods do
+				local list = {}
+				for otherId, other in D.Ports.Ports do
+					if otherId ~= port.id then
+						local m = ctx.market:get(otherId, g.id)
+						local e = ctx.market:eventMult(otherId, g.id)
+						table.insert(list, { name = other.name, sell = D.TradeMath.sellPrice(otherId, g.id, m, rate, e) })
+					end
+				end
+				table.sort(list, function(x, y)
+					if x.sell ~= y.sell then
+						return x.sell > y.sell
+					end
+					return x.name < y.name
+				end)
+				local top = {}
+				for i = 1, math.min(3, #list) do
+					table.insert(top, { name = list[i].name, sell = if view.intel >= 2 then list[i].sell else nil })
+				end
+				view.compare[g.id] = top
+			end
+		end
 		view.supplyMax = S.State.maxSupplies()
 		view.board = {}
 		for _, b in S.Harbor.boardHere(state) do
