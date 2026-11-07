@@ -1039,7 +1039,20 @@ local function villageBoardDialogue(player,sourcePosition)
   end
   local index,contract=villageCurrentContract(player)
   if not contract then
-    villageDialogue(player,"초원 마을 · 의뢰 완료","세 의뢰의 진상을 모두 기록했어. 기사단 연대기는 그대로 이어져.")
+    -- [선택의 결과] 세 의뢰에서 고른 해결 방식과 나린 이야기 선택에 따라 마지막 말이 달라진다.
+    local outcomes=readNumber(player,"VillageContractOutcomes",0)
+    local mercy,justice=0,0
+    for i=0,2 do
+      local pick=bit32.band(bit32.rshift(outcomes,i*2),3)
+      if pick==1 then mercy+=1 elseif pick==2 then justice+=1 end
+    end
+    local tone=mercy>justice and "마을 사람들은 네가 사정을 먼저 들어 준다고 말해."
+      or justice>mercy and "마을 사람들은 네 판결이 단호하다고 말해."
+      or "마을 사람들은 네 판단이 때마다 다르다고 말해."
+    local story=readNumber(player,"NarinStory",0)
+    local closing=story==1 and "\n나린: \"진실을 보겠다던 네 말, 의뢰판이 기억하고 있어.\""
+      or story==2 and "\n나린: \"의심하던 네가 끝까지 해냈구나. 이제 조금은 믿어도 되겠어.\"" or ""
+    villageDialogue(player,"초원 마을 · 의뢰 완료","세 의뢰의 진상을 모두 기록했어. "..tone..closing.."\n기사단 연대기는 그대로 이어져.")
     return
   end
   local phase=readNumber(player,"VillageContractPhase",0)
