@@ -8,8 +8,8 @@ local IDS = require(script.Parent:WaitForChild("AudioIds"))
 
 -- 기본 음량 (0~1)
 local VOLUME = {
-	music_harbor = 0.32, music_sea = 0.36, music_battle = 0.4, music_market = 0.3,
-	sfx_waves = 0.28, sfx_wind = 0.18,
+	music_harbor = 0.7, music_sea = 0.75, music_battle = 0.8, music_market = 0.65,
+	sfx_waves = 0.5, sfx_wind = 0.35,
 }
 
 local Sfx = {}
@@ -24,6 +24,8 @@ sfxGroup.Name = "MareSfx"
 sfxGroup.Parent = group
 
 local musicOn, sfxOn = true, true
+-- 사용자가 고르는 전체 크기 (기본 1.5배로 키웠다. 0.4 ~ 3.0)
+local musicLevel, sfxLevel = 1.5, 1.5
 local currentMusic, currentName = nil, nil
 local ambient = {}
 local lastPlayed = {}
@@ -119,14 +121,38 @@ function Sfx.ambient(names)
 	end
 end
 
+musicGroup.Volume = musicLevel
+sfxGroup.Volume = sfxLevel
+
 function Sfx.setMusicEnabled(on)
 	musicOn = on
-	musicGroup.Volume = if on then 1 else 0
+	musicGroup.Volume = if on then musicLevel else 0
 end
 
 function Sfx.setSfxEnabled(on)
 	sfxOn = on
-	sfxGroup.Volume = if on then 1 else 0
+	sfxGroup.Volume = if on then sfxLevel else 0
+end
+
+-- 음량 단계 조절 (dir: +1 크게, -1 작게). 바뀐 크기를 돌려준다.
+function Sfx.stepMusic(dir)
+	musicLevel = math.clamp(math.floor((musicLevel + dir * 0.3) * 10 + 0.5) / 10, 0.4, 3.0)
+	if musicOn then
+		musicGroup.Volume = musicLevel
+	end
+	return musicLevel
+end
+
+function Sfx.stepSfx(dir)
+	sfxLevel = math.clamp(math.floor((sfxLevel + dir * 0.3) * 10 + 0.5) / 10, 0.4, 3.0)
+	if sfxOn then
+		sfxGroup.Volume = sfxLevel
+	end
+	return sfxLevel
+end
+
+function Sfx.levels()
+	return musicLevel, sfxLevel
 end
 
 function Sfx.state()

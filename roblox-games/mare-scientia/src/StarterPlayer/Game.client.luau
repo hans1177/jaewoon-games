@@ -105,6 +105,7 @@ local busy = false
 local equipped = nil -- 자동스킬 편집 중인 목록
 local chosenNation = "england"
 local chosenYear = 1700
+local newGameMode = false -- 저장된 게임이 있어도 새로 시작하는 선택 화면을 보여 준다
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "MareScientiaGui"
@@ -1695,6 +1696,20 @@ local function renderStatus()
 			end },
 		}, 52)
 	end)
+	add(function()
+		local ml, sl = Sfx.levels()
+		return mkRow(content, string.format("음악 크기 %d%%", math.floor(ml / 1.5 * 100 + 0.5)), "소리가 작으면 크게를 눌러 보세요", {
+			{ text = "작게", color = COLORS.grey, onClick = function() Sfx.stepMusic(-1); render() end },
+			{ text = "크게", color = COLORS.blue, onClick = function() Sfx.stepMusic(1); render() end },
+		}, 52)
+	end)
+	add(function()
+		local ml, sl = Sfx.levels()
+		return mkRow(content, string.format("효과음 크기 %d%%", math.floor(sl / 1.5 * 100 + 0.5)), nil, {
+			{ text = "작게", color = COLORS.grey, onClick = function() Sfx.stepSfx(-1); render() end },
+			{ text = "크게", color = COLORS.blue, onClick = function() Sfx.stepSfx(1); render() end },
+		}, 52)
+	end)
 	add(function() return mkHeader(content, "시작 가이드") end)
 	add(function()
 		return mkLabel(content, "메뉴·상품 그림: Lorc · Delapouite · Lord Berandas · Skoll / game-icons.net / CC BY 3.0\n사프란: Tiny Speck·Bart / CC0 · 대추야자·건포도: 게임 전용 벡터 원화\n색상·재질 편집 및 이미지 변환: 마리 에센시아", 10, COLORS.muted, false)
@@ -3123,9 +3138,23 @@ local function renderNewGame()
 	end
 	add(function()
 		return mkButton(content, "출항!", COLORS.green, UDim2.new(1, -6, 0, 48), function()
-			call("NewGame", { nationId = chosenNation, startYear = chosenYear })
+			local restart = view ~= nil
+			newGameMode = false
+			local result = call("NewGame", { nationId = chosenNation, startYear = chosenYear, restart = restart })
+			if not (result and result.ok) and restart then
+				newGameMode = true
+				render()
+			end
 		end, true)
 	end)
+	if view then
+		add(function()
+			return mkButton(content, "취소 (이어서 하기)", COLORS.grey, UDim2.new(1, -6, 0, 40), function()
+				newGameMode = false
+				render()
+			end, true)
+		end)
+	end
 end
 
 -- 전체 그리기 -----------------------------------------------------------------
@@ -3297,7 +3326,7 @@ function render()
 		end
 	end
 
-	if not view then
+	if not view or newGameMode then
 		headerLabel.Text = "새 게임"
 		tabBar.Visible = false
 		content.Position = UDim2.fromOffset(8, 52)
@@ -3329,6 +3358,128 @@ function render()
 	RENDERERS[currentTab]()
 end
 
+-- 시작 화면: 이어하기 / 새 게임 / 소리 ---------------------------------------------
+
+local function showTitle()
+	local layer = overlayGui("TitleGui", 40)
+	local wasMain = main.Visible
+	main.Visible = false
+	menuToggle.Visible = false
+	local root = Instance.new("Frame")
+	root.Size = UDim2.fromScale(1, 1)
+	root.BackgroundColor3 = Color3.fromRGB(8, 16, 30)
+	root.BackgroundTransparency = 0.18
+	root.BorderSizePixel = 0
+	root.Parent = layer
+	local grad = Instance.new("UIGradient")
+	grad.Rotation = 90
+	grad.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(1, 0) })
+	grad.Parent = root
+
+	local box = Instance.new("Frame")
+	box.AnchorPoint = Vector2.new(0.5, 0.5)
+	box.Position = UDim2.fromScale(0.5, 0.5)
+	box.Size = UDim2.fromOffset(420, 460)
+	box.BackgroundTransparency = 1
+	box.Parent = root
+	local lay = Instance.new("UIListLayout")
+	lay.Padding = UDim.new(0, 12)
+	lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	lay.SortOrder = Enum.SortOrder.LayoutOrder
+	lay.Parent = box
+
+	local function text(str, size, color, h, order)
+		local l = Instance.new("TextLabel")
+		l.BackgroundTransparency = 1
+		l.Size = UDim2.new(1, 0, 0, h)
+		l.Text = str
+		l.TextSize = size
+		l.TextColor3 = color
+		l.Font = Enum.Font.GothamBold
+		l.TextWrapped = true
+		l.TextStrokeTransparency = 0.5
+		l.LayoutOrder = order
+		l.Parent = box
+		return l
+	end
+	text("MARE SCIENTIA", 40, COLORS.gold, 50, 1)
+	text("과학의 바다 · 대항해시대", 20, COLORS.text, 28, 2)
+
+	local function big(label, color, order, enabled, onClick)
+		local b = mkButton(box, label, color, UDim2.new(1, 0, 0, 58), onClick, enabled)
+		b.TextSize = 24
+		b.LayoutOrder = order
+		return b
+	end
+	local continueText = "이어하기"
+	if view then
+		continueText = string.format("이어하기\n%s · %d코인", view.player.portName, view.player.coins)
+	end
+	local cont = big(continueText, COLORS.green, 3, view ~= nil, function()
+		layer:Destroy()
+		main.Visible = wasMain
+		menuToggle.Visible = not wasMain
+	end)
+	cont.TextSize = if view then 20 else 24
+	local confirmed = false
+	local newBtn
+	newBtn = big("새 게임", COLORS.blue, 4, true, function()
+		if view and not confirmed then
+			confirmed = true
+			newBtn.Text = "정말 새로 시작할까요? (저장이 사라져요) 한 번 더 누르세요"
+			newBtn.TextSize = 16
+			newBtn.BackgroundColor3 = COLORS.red
+			return
+		end
+		layer:Destroy()
+		newGameMode = true
+		main.Visible = true
+		menuToggle.Visible = false
+		render()
+	end)
+
+	-- 소리
+	local snd = Instance.new("Frame")
+	snd.BackgroundTransparency = 1
+	snd.Size = UDim2.new(1, 0, 0, 44)
+	snd.LayoutOrder = 5
+	snd.Parent = box
+	local sl = Instance.new("UIListLayout")
+	sl.FillDirection = Enum.FillDirection.Horizontal
+	sl.Padding = UDim.new(0, 8)
+	sl.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	sl.VerticalAlignment = Enum.VerticalAlignment.Center
+	sl.Parent = snd
+	local function small(label, color, w, onClick)
+		local b = mkButton(snd, label, color, UDim2.fromOffset(w, 40), onClick, true)
+		b.TextSize = 15
+		return b
+	end
+	local musicBtn
+	local function musicLabel()
+		local on = Sfx.state()
+		local ml = Sfx.levels()
+		return string.format("음악 %s %d%%", if on then "켜짐" else "꺼짐", math.floor(ml / 1.5 * 100 + 0.5))
+	end
+	musicBtn = small(musicLabel(), COLORS.grey, 150, function()
+		local on = Sfx.state()
+		Sfx.setMusicEnabled(not on)
+		musicBtn.Text = musicLabel()
+	end)
+	small("음량 -", COLORS.grey, 80, function()
+		Sfx.stepMusic(-1)
+		Sfx.stepSfx(-1)
+		musicBtn.Text = musicLabel()
+	end)
+	small("음량 +", COLORS.blue, 80, function()
+		Sfx.stepMusic(1)
+		Sfx.stepSfx(1)
+		musicBtn.Text = musicLabel()
+	end)
+	text("모험 Lv와 명성이 쌓이면 먼 바다가 열려요", 14, COLORS.muted, 24, 6)
+	Sfx.music("music_harbor")
+end
+
 -- 시작 --------------------------------------------------------------------
 
 task.spawn(function()
@@ -3337,6 +3488,7 @@ task.spawn(function()
 		if result and (result.view or result.needsNewGame) then
 			message = ""
 			render()
+			showTitle()
 			return
 		end
 		if result and not result.loading then

@@ -199,7 +199,7 @@ remote.OnServerInvoke = function(player, action, payload)
 
 	-- 새 게임: 나라와 시작 연도 선택
 	if action == "NewGame" then
-		if session.state then
+		if session.state and payload.restart ~= true then
 			return reply(session.state, false, "이미 진행 중인 게임이 있어요")
 		end
 		local nationId = payload.nationId
