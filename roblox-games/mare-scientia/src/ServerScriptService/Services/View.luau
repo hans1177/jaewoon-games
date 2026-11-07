@@ -222,7 +222,7 @@ return function(D, S)
 					n += 1
 				end
 				if n <= 1 and state.day <= 3 then
-					view.prologue = D.Narrative.Prologue
+					view.prologue = D.Narrative.Prologues[state.nationId] or D.Narrative.Prologue
 				end
 			end
 			local activeQuest
