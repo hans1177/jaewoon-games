@@ -278,13 +278,9 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	local variation = 0.86 + (seed % 7) * 0.037
 	-- 층수가 높을수록 집도 키워서 1·2·3층이 실루엣으로 구분되게 한다 (0.92~1.12배)
 	variation *= 0.92 + (math.clamp(floors or 2, 1, 3) - 1) * 0.1
-	-- 집 모양 3종(기본형·굴뚝형·문 강조형)을 위치로 골라 실루엣을 다양화한다 (승인된 Town 에셋)
-	local variant = ({ "house", "house_chimney", "house_door", "house" })[1 + (seed // 3) % 4]
+	-- (Town/house_chimney, house_door 는 집 전체가 아니라 굴뚝·문 부품이라 집 본체로 쓰지 않는다)
+	local variant = "house"
 	local mesh = importedModel(parent, "Town", variant, pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
-	if not mesh and variant ~= "house" then
-		variant = "house"
-		mesh = importedModel(parent, "Town", "house", pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
-	end
 	if mesh then
 		mesh.Name = "HarborHouse"
 		if (seed // 7) % 2 == 1 then
