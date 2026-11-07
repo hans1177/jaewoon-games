@@ -113,6 +113,63 @@
   {
     "type": "luau",
     "ctx": "Client",
+    "code": "local pos=workspace:GetAttribute(\"MobShotPos\") task.spawn(function() local RS=game:GetService(\"RunService\") while true do local best,bd=nil,1e9 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\")==\"human\" then local dd=(m:GetPivot().Position-pos).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(6,3.5,6),p+Vector3.new(0,2.5,0))) end RS.Heartbeat:Wait() end end) return \"follow on\""
+  },
+  {
+    "type": "wait",
+    "ms": 2500
+  },
+  {
+    "type": "capture",
+    "name": "human_seq_0"
+  },
+  {
+    "type": "wait",
+    "ms": 350
+  },
+  {
+    "type": "capture",
+    "name": "human_seq_1"
+  },
+  {
+    "type": "wait",
+    "ms": 350
+  },
+  {
+    "type": "capture",
+    "name": "human_seq_2"
+  },
+  {
+    "type": "wait",
+    "ms": 350
+  },
+  {
+    "type": "capture",
+    "name": "human_seq_3"
+  },
+  {
+    "type": "wait",
+    "ms": 350
+  },
+  {
+    "type": "capture",
+    "name": "human_seq_4"
+  },
+  {
+    "type": "wait",
+    "ms": 350
+  },
+  {
+    "type": "capture",
+    "name": "human_seq_5"
+  },
+  {
+    "type": "wait",
+    "ms": 350
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
     "code": "local out={} for _,m in ipairs(game:GetService(\"LogService\"):GetLogHistory()) do if m.messageType==Enum.MessageType.MessageError then out[#out+1]=string.sub(m.message,1,160) end end local c={} for _,l in ipairs(out) do c[l]=(c[l] or 0)+1 end local r={} for l,n in pairs(c) do r[#r+1]=n..\"x \"..l end table.sort(r) return \"ERRORS \"..#out..\"|\"..table.concat(r,\"\\n\")"
   }
 ]
