@@ -5575,6 +5575,8 @@ local function applyMeadowDamage(player,target,damage,isDot)
     damage=damage,
     crit=critHit,
     status=target.model:GetAttribute("MeadowStatus"),
+    model=target.model,
+    named=target.named==true,
   })
   setNumber(player,"Combo",readNumber(player,"Combo",0)+1)
   setNumber(player,"Score",readNumber(player,"Score",0)+damage)

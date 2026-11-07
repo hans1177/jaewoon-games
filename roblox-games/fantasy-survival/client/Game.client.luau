@@ -920,7 +920,7 @@ meadowArt.applySection=function(pageIndex)
     chip.TextColor3=on and Color3.fromRGB(255,240,197) or Color3.fromRGB(191,215,198)
   end
 end
-for pageIndex,names in pairs({[3]={"메인","서브","현상금","도움말"},[6]={"지역","도감","파티·야영","수수께끼","이야기"}})do
+for pageIndex,names in pairs({[3]={"전체","메인","서브","현상금","도움말"},[6]={"지역","도감","파티·야영","수수께끼","이야기"}})do
   local bar=Instance.new("Frame")
   bar.Name="SectionChips";bar.LayoutOrder=0;bar.BackgroundTransparency=1;bar.Size=UDim2.new(1,-8,0,38);bar.Parent=meadowPages[pageIndex]
   local chipLayout=Instance.new("UIListLayout")
@@ -1606,7 +1606,26 @@ local function renderMeadowPages()
   sec[6].texts={table.concat(worldLines,"\n"),table.concat(dexLines,"\n"),table.concat(partyLines,"\n"),
     table.concat(mystLines,"\n"),table.concat(storyLines,"\n")}
   local howTo=string.match(meadowLabels[5].Text,"【처음 조작】.*") or ""
+  -- [퀘스트 로그 통합] 메인·마을·현상금·동료·연계 퀘스트를 한 화면에 한 줄 요약으로 모아 보여 준다.
+  local allLines={"진행 중인 모든 의뢰  (자세한 내용은 위 탭)",""}
+  local function firstLine(text) return (tostring(text):match("^[^\n]*")) or "" end
+  allLines[#allLines+1]="▶ 메인  "..mainText:gsub("\n","  ·  ")
+  allLines[#allLines+1]="▶ 마을  "..villageText:gsub("\n","  ·  ")
+  allLines[#allLines+1]="▶ 현상금  "..bountyText:gsub("\n","  ·  ")
+  allLines[#allLines+1]="▶ 동료  "..companionText:gsub("\n","  ·  ")
+  for _,line in ipairs(Config.QuestLines or {}) do
+    local stage=player:GetAttribute(line.Field) or 0
+    local step=line.Steps[stage]
+    if stage>=1 and step then
+      local progress=player:GetAttribute(line.Field.."P") or 0
+      allLines[#allLines+1]=string.format("▶ 연계  %s [%d/%d]  ·  %s%s",line.Name,stage,#line.Steps,step.Title,
+        step.Count and step.Count>1 and string.format(" (%d/%d)",progress,step.Count) or "")
+    end
+  end
+  allLines[#allLines+1]=""
+  allLines[#allLines+1]="목표 위치는 지도 옆 '길 안내'가 가리켜. 왼쪽 퀘스트를 누르면 길 안내가 켜져."
   sec[3].texts={
+    table.concat(allLines,"\n"),
     "【메인 퀘스트】\n"..mainText.."\n\n【다음 행동 안내】\n"..suggestion..string.format("\n\n다음 단련 재료: 철 주괴 %d · 무두질 가죽 %d",Config.TemperCost(player:GetAttribute("WeaponTier") or 0,player:GetAttribute("SmithXp") or 0)),
     "【서브 · 마을】\n"..villageText.."\n\n"..table.concat(companionLines,"\n\n"),
     "【현상금 게시판】\n"..bountyText,
@@ -8375,6 +8394,84 @@ remote.OnClientEvent:Connect(function(kind,payload)
     })
   end
 end)
+
+-- [전투 피드백] 서버가 확정한 타격만 데미지 숫자와 보스 체력바로 보여 준다(판정·피해는 건드리지 않는다).
+do
+  local TweenSvc=game:GetService("TweenService")
+  local DebrisSvc=game:GetService("Debris")
+  local function spawnDamageNumber(position,amount,crit,finisher,boss)
+    local holder=Instance.new("Attachment")
+    holder.Name="MeadowDamageNumber"
+    holder.WorldPosition=position+Vector3.new((math.random()-.5)*1.6,3.2+math.random()*.6,(math.random()-.5)*1.6)
+    holder.Parent=workspace.Terrain
+    local board=Instance.new("BillboardGui")
+    board.Adornee=holder;board.AlwaysOnTop=true;board.LightInfluence=0
+    board.Size=UDim2.fromOffset(crit and 120 or 88,crit and 44 or 32);board.StudsOffset=Vector3.zero
+    board.MaxDistance=90;board.Parent=holder
+    local label=Instance.new("TextLabel")
+    label.BackgroundTransparency=1;label.Size=UDim2.fromScale(1,1)
+    label.Font=Enum.Font.GothamBlack;label.TextScaled=true
+    label.Text=(crit and "치명 " or "")..tostring(math.max(0,math.floor(amount)))
+    label.TextColor3=crit and Color3.fromRGB(255,204,72) or finisher and Color3.fromRGB(255,142,94) or boss and Color3.fromRGB(255,190,150) or Color3.fromRGB(240,246,232)
+    label.TextStrokeColor3=Color3.fromRGB(20,10,6);label.TextStrokeTransparency=.15
+    label.Parent=board
+    TweenSvc:Create(holder,TweenInfo.new(.75,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
+      {WorldPosition=holder.WorldPosition+Vector3.new(0,crit and 3.4 or 2.4,0)}):Play()
+    TweenSvc:Create(label,TweenInfo.new(.75,Enum.EasingStyle.Quad,Enum.EasingDirection.In),
+      {TextTransparency=1,TextStrokeTransparency=1}):Play()
+    DebrisSvc:AddItem(holder,.85)
+  end
+  -- 보스 체력바(화면 위 중앙): 마지막으로 때린 보스·우두머리를 보여 준다.
+  local bossFrame=Instance.new("Frame")
+  bossFrame.Name="MeadowBossBar";bossFrame.AnchorPoint=Vector2.new(.5,0)
+  bossFrame.Position=UDim2.new(.5,0,0,64);bossFrame.Size=UDim2.fromOffset(320,34)
+  bossFrame.BackgroundColor3=Color3.fromRGB(14,16,16);bossFrame.BackgroundTransparency=.3
+  bossFrame.BorderSizePixel=0;bossFrame.Visible=false;bossFrame.ZIndex=40;bossFrame.Parent=gui
+  Instance.new("UICorner",bossFrame).CornerRadius=UDim.new(0,8)
+  local bossEdge=Instance.new("UIStroke");bossEdge.Color=Color3.fromRGB(218,189,126);bossEdge.Thickness=1.5;bossEdge.Parent=bossFrame
+  local bossName=Instance.new("TextLabel")
+  bossName.BackgroundTransparency=1;bossName.Position=UDim2.fromOffset(8,1);bossName.Size=UDim2.new(1,-16,0,16)
+  bossName.Font=Enum.Font.GothamBold;bossName.TextSize=13;bossName.TextColor3=Color3.fromRGB(255,236,190)
+  bossName.TextXAlignment=Enum.TextXAlignment.Left;bossName.ZIndex=41;bossName.Parent=bossFrame
+  local bossTrack=Instance.new("Frame")
+  bossTrack.Position=UDim2.fromOffset(8,19);bossTrack.Size=UDim2.new(1,-16,0,10)
+  bossTrack.BackgroundColor3=Color3.fromRGB(44,24,24);bossTrack.BorderSizePixel=0;bossTrack.ZIndex=41;bossTrack.Parent=bossFrame
+  Instance.new("UICorner",bossTrack).CornerRadius=UDim.new(0,5)
+  local bossFill=Instance.new("Frame")
+  bossFill.Size=UDim2.fromScale(1,1);bossFill.BackgroundColor3=Color3.fromRGB(204,62,52);bossFill.BorderSizePixel=0
+  bossFill.ZIndex=42;bossFill.Parent=bossTrack
+  Instance.new("UICorner",bossFill).CornerRadius=UDim.new(0,5)
+  local bossModel,bossLastHit=nil,0
+  local function refreshBossBar()
+    local model=bossModel
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not model or not model.Parent or not root or os.clock()-bossLastHit>12 then bossFrame.Visible=false;return end
+    local hp=tonumber(model:GetAttribute("EnemyHealth")) or 0
+    local maxHp=math.max(1,tonumber(model:GetAttribute("EnemyMaxHealth")) or 1)
+    if hp<=0 or (model:GetPivot().Position-root.Position).Magnitude>140 then bossFrame.Visible=false;return end
+    local phase=tonumber(model:GetAttribute("BossPhase")) or 1
+    bossName.Text=model.Name..(phase>=2 and "  · 격분" or "")
+    bossFill.BackgroundColor3=phase>=2 and Color3.fromRGB(230,110,40) or Color3.fromRGB(204,62,52)
+    TweenSvc:Create(bossFill,TweenInfo.new(.18),{Size=UDim2.fromScale(math.clamp(hp/maxHp,0,1),1)}):Play()
+    bossFrame.Visible=gui:GetAttribute("GameMenuOpen")~=true
+  end
+  game:GetService("RunService").Heartbeat:Connect(function()
+    if bossModel then refreshBossBar() end
+  end)
+  remote.OnClientEvent:Connect(function(kind,payload)
+    if kind=="MEADOW_BOSS_INTRO" and typeof(payload)=="table" and typeof(payload.model)=="Instance" then
+      bossModel=payload.model;bossLastHit=os.clock()
+      return
+    end
+    if kind~="MEADOW_IMPACT" or typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end
+    if typeof(payload.damage)=="number" then
+      spawnDamageNumber(payload.position,payload.damage,payload.crit==true,payload.finisher==true,payload.boss==true)
+    end
+    if payload.boss and typeof(payload.model)=="Instance" then
+      bossModel=payload.model;bossLastHit=os.clock()
+    end
+  end)
+end
 
 -- Source-bound Roblox SKILL / VFX packages. Server approval is the only trigger.
 -- UI actions never apply local damage, healing, knockback, cooldown or inventory.
