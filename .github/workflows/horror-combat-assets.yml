@@ -6,8 +6,6 @@ on:
     paths:
       - '.github/workflows/horror-combat-assets.yml'
       - 'tools/horror-combat-assets.mjs'
-      - 'tools/baeksu-war-upload-meshes.mjs'
-      - 'assets/external/simple-rpg/priority-v1/medieval-weapons/**'
       - 'roblox-games/fantasy-survival/icons.png'
       - 'roblox-games/fantasy-survival/right-icons.png'
       - 'roblox-games/fantasy-survival/painted-icons.png'
@@ -94,10 +92,6 @@ on:
         description: 마력숲 검·활·망치·도끼·방패 독립 원본 24종 다운로드
         type: boolean
         default: false
-      forest_distinct_weapons_only:
-        description: 마력숲 추가 실물 무기 42종 로블록스 등록·권한 승인
-        type: boolean
-        default: false
 
 permissions:
   contents: write
@@ -136,16 +130,11 @@ jobs:
           FOREST_DEER_ONLY: ${{ inputs.forest_deer_only || false }}
           MODULAR_ARMOR_SOURCE_ONLY: ${{ inputs.modular_armor_source_only || false }}
           MEDIEVAL_WEAPONS_SOURCE_ONLY: ${{ inputs.medieval_weapons_source_only || false }}
-          FOREST_DISTINCT_WEAPONS_ONLY: ${{ inputs.forest_distinct_weapons_only || false }}
-          ROBLOX_UNIVERSE_ID: '10773436325'
-          ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$FOREST_DISTINCT_WEAPONS_ONLY" = "true" ] || git diff --unified=0 HEAD^ HEAD -- tools/baeksu-war-upload-meshes.mjs | grep -q '^+// \[마력숲 고유 무기 실물 등록\]'; then
-            node tools/baeksu-war-upload-meshes.mjs --game-id=fantasy-survival --register-forest-distinct-weapons
-          elif [ "$MEDIEVAL_WEAPONS_SOURCE_ONLY" = "true" ] || git diff --unified=0 HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q '^+// \[마력숲 장비 전용 실물\]'; then
+          if [ "$MEDIEVAL_WEAPONS_SOURCE_ONLY" = "true" ] || git diff --unified=0 HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q '^+// \[마력숲 장비 전용 실물\]'; then
             node tools/horror-combat-assets.mjs --medieval-weapons-source-only
           elif [ "$MODULAR_ARMOR_SOURCE_ONLY" = "true" ] || git diff --unified=0 HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q '^+// \[마력숲 갑옷 실물 원본 다운로드\]' || git diff --unified=0 HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q '^+  Male_Peasant:'; then
             node tools/horror-combat-assets.mjs --modular-armor-source-only
