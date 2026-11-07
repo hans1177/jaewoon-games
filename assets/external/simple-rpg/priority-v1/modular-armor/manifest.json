@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "pack": "Quaternius Modular Character Outfits - Fantasy [Standard]",
   "gameId": "fantasy-survival",
   "sourceRepository": "https://github.com/agentkaerf/FreeModels",
@@ -9,60 +9,246 @@
   "license": "CC0-1.0",
   "originalLicensePath": "License_Standard.txt",
   "downloaded": true,
-  "scope": "male_ranger_modular_armor_geometry",
-  "status": "SOURCE_GEOMETRY_DOWNLOADED_TEXTURES_PENDING",
+  "scope": "male_and_female_ranger_armor_rigged_geometry_and_pbr",
+  "status": "SOURCE_GEOMETRY_AND_PBR_DOWNLOADED_PENDING_NATIVE_RIG_QA",
   "files": [
     {
-      "file": "Male_Ranger_Body.bin",
-      "gitSha": "7d199a8e240bdb7eb52cd9082aa78fd49bb4dac2",
-      "bytes": 309108
+      "file": "Female_Ranger_Acc_Pauldrons.bin",
+      "gitSha": "f0982a076a59b7e0c9fe3690a85bcada77e70e97",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "32213f8f5d44bc2a060c21e822db501e92ae3c9782d01df68bc670958c7a312c",
+      "bytes": 91040
     },
     {
-      "file": "Male_Ranger_Body.gltf",
-      "gitSha": "a8ef1f96f83d3a4d453260976beb3f03630046cc",
-      "bytes": 26865
+      "file": "Female_Ranger_Acc_Pauldrons.gltf",
+      "gitSha": "d45fad296ffa46c0ab89b6d675dcb8d51c6d1603",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "9ebbd79c8cf2316f0edf1ab76c6613ff8f7c5842d9faf98825b9afc205f6ce1e",
+      "bytes": 24621
+    },
+    {
+      "file": "Female_Ranger_Arms.bin",
+      "gitSha": "af57eb95c4c53c53b2188e61cdc803966f28cbbf",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "55592d6a2c47f120f76fd84a5caa6728fb8ec169c9b19d71f8132d32f8bedf12",
+      "bytes": 557480
+    },
+    {
+      "file": "Female_Ranger_Arms.gltf",
+      "gitSha": "7b754e81b5ceba0962fbc08b7dceae985fb675f7",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "98a1b7a5d5d98b6de2f914f810cf75b359d7e11c62f33197948cf4c17c2c95eb",
+      "bytes": 29655
+    },
+    {
+      "file": "Female_Ranger_Body.bin",
+      "gitSha": "614018f96bc49db0258a75f21927ae79e87d17ba",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "3c9ce3dfc1511ab2a44a1f5050dc0c3ffd67d8814fd8a87dcdf0c8150839f01b",
+      "bytes": 421432
+    },
+    {
+      "file": "Female_Ranger_Body.gltf",
+      "gitSha": "ab33294f155cc9fd811210dfd8478aecff17b160",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "7215f19c1c31fa8f19286357f93e6e043b0dd162d4418fdc73f530a88717db35",
+      "bytes": 29451
+    },
+    {
+      "file": "Female_Ranger_Feet.bin",
+      "gitSha": "24582069545c2f7bd12be5f5eddb632fb103c123",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "35c4350bed0931ad015cd959d9750de0d103d7575deb3ac4c257488daf294b54",
+      "bytes": 791720
+    },
+    {
+      "file": "Female_Ranger_Feet.gltf",
+      "gitSha": "3a9fe5b3c9d658a4b4ddc8a0cfb4cc17292a0f18",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "11fef23ffa6099722f44f7411622f24db8728e9b7b5c028d5c40f980f5f97501",
+      "bytes": 24625
+    },
+    {
+      "file": "Female_Ranger_Head_Hood.bin",
+      "gitSha": "bca00365c8b003b9a098300a1f3c7a77a6baf4c3",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "ad02a4529f77562e248a2de6f5f69e3625ae18740c1abb975d957b28017959f3",
+      "bytes": 106256
+    },
+    {
+      "file": "Female_Ranger_Head_Hood.gltf",
+      "gitSha": "f67628d05f1064c1234b0e4af508ad723418a698",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "3ac6867e32cba7793d9393d4844cc21f38c53e833d468d7d5adebfb42bba7d0e",
+      "bytes": 24614
+    },
+    {
+      "file": "Female_Ranger_Legs.bin",
+      "gitSha": "7985fa63b9edb4e02aac00c40c301f44e7e2a2ba",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "aeab54821bec8c817b519af10129f5a8c5d71c10d9800c60922470fc00c5e81e",
+      "bytes": 74404
+    },
+    {
+      "file": "Female_Ranger_Legs.gltf",
+      "gitSha": "5e7bc94b9b2eeb5ef154790ab0241df0c47b1638",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "804932b0e0b49601a565aef57422bc7ca17e526656518e399ef5d72f7134db6c",
+      "bytes": 24978
+    },
+    {
+      "file": "Male_Ranger_Acc_Pauldron.bin",
+      "gitSha": "7954b1b7c05535b34dd192f969dedad120e81545",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "e8ccb52c8e2bc771ffa53d03dd6bda9e13680b91f3feec78e2d6451f8d3a20be",
+      "bytes": 69200
+    },
+    {
+      "file": "Male_Ranger_Acc_Pauldron.gltf",
+      "gitSha": "6387d88a73c70e95861946cf968be3a2839416cb",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "967bd4e8d85821fbc7116269440b9a90904f6c7eeb0fc17b86349ee1fa3a7aa9",
+      "bytes": 23314
     },
     {
       "file": "Male_Ranger_Arms.bin",
       "gitSha": "a8a7fa77fb9994bbe1021b00ac581d766e5edf1a",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "d630f5cd806c8edce8c48f807d64468ef4207d317baf238d942fe630afd4c023",
       "bytes": 252752
     },
     {
       "file": "Male_Ranger_Arms.gltf",
       "gitSha": "02e8760e7a6663a8da3642afb7d37b280b9698f1",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "437d71553d79dbf4583351718b5cb5c6d342f5e0682b287a7cd806630ed2b349",
       "bytes": 26704
     },
     {
-      "file": "Male_Ranger_Legs.bin",
-      "gitSha": "26cc3e45f58006caf773982157983ae70395bc78",
-      "bytes": 52144
+      "file": "Male_Ranger_Body.bin",
+      "gitSha": "7d199a8e240bdb7eb52cd9082aa78fd49bb4dac2",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "e3ebad21b1865c37e46b93c9249d0eb58949498ad99773e9db415b48d8df925e",
+      "bytes": 309108
     },
     {
-      "file": "Male_Ranger_Legs.gltf",
-      "gitSha": "b405c610abc21190ac4a1de8505d37c465471fd8",
-      "bytes": 23712
+      "file": "Male_Ranger_Body.gltf",
+      "gitSha": "a8ef1f96f83d3a4d453260976beb3f03630046cc",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "c5bb520006116222bad30533bd39e0f215abbf8d44e3fa1769ebad12043eac57",
+      "bytes": 26865
     },
     {
       "file": "Male_Ranger_Feet_Boots.bin",
       "gitSha": "1cf3ea93094a4f786f272d107578065b67dd4552",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "8079ffa4ac2c9a3522a6aa08386e6df92f2de900ece8102d12cdeb96e4476625",
       "bytes": 710328
     },
     {
       "file": "Male_Ranger_Feet_Boots.gltf",
       "gitSha": "0cad245b5f69adb88a847e6002f6c727b999cd1d",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "e71cd92792aeabca0dd1621556c54945dd97d154147790a5cb1afd75415a4e02",
       "bytes": 23762
+    },
+    {
+      "file": "Male_Ranger_Head_Hood.bin",
+      "gitSha": "cf6411f2c7c4b0f707abee92e75abd3ad5d4e3db",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "d126c2e0438508983ca092847b772691c3cd6a80fc355c7ea7921324c1ff8053",
+      "bytes": 96336
+    },
+    {
+      "file": "Male_Ranger_Head_Hood.gltf",
+      "gitSha": "abfcb4816e027369f8a496192d98c504cdcbb7e6",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "57affa34c145d2c1a02a3d9b17066e22b84eb4ce2bb79c6c7b90588af00846b6",
+      "bytes": 23737
+    },
+    {
+      "file": "Male_Ranger_Legs.bin",
+      "gitSha": "26cc3e45f58006caf773982157983ae70395bc78",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "74691dd17e15f755436fafdc75da25ddc156c7c7811c43f08a4b9f55eba90666",
+      "bytes": 52144
+    },
+    {
+      "file": "Male_Ranger_Legs.gltf",
+      "gitSha": "b405c610abc21190ac4a1de8505d37c465471fd8",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "c415a01384d34b77a98ff4b0d01d42453dfe98bee259e58a328a803d36ac9df2",
+      "bytes": 23712
+    },
+    {
+      "file": "T_Ranger_BaseColor.png",
+      "gitSha": "55c8cc0a55966781610fe97cd215ec38b816952f",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "846ef2170b04ee584ad83bb8a1e86dab57a9a43b1193204505912c274d949925",
+      "bytes": 6630927
+    },
+    {
+      "file": "T_Ranger_Normal.png",
+      "gitSha": "e7676c5cf2c8ef9f6943949bcc3efa8bad7f43fa",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "dd64da2af3180f0c8f0b721cfc5f0d2720c351b97da8285c6cf49e7717c84147",
+      "bytes": 12713653
+    },
+    {
+      "file": "T_Ranger_ORM.png",
+      "gitSha": "806c4c6fc9b6c0ec7dfa9a4299f9d37a4f13fadc",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "aca03d2fba12508ef07d5968ca22267fb207ea26ae898b6b2def8a296bd44f1c",
+      "bytes": 10792085
+    },
+    {
+      "file": "T_Regular_Female_Dark_BaseColor.png",
+      "gitSha": "4b97582044f8334de647ba06fbe56e215be79632",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "3b6ab973f9f3d6f8961226a0dbd99cf6d1b72df3795a8a5c1620a55754c161c2",
+      "bytes": 1348542
+    },
+    {
+      "file": "T_Regular_Female_Normal.png",
+      "gitSha": "f452ce11ec312f445a52f32f001b1fd8426b417a",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "e1051d3d56df9cf061bc14c769c37253aecd595f8275f9d4c0d6e0e953c00e18",
+      "bytes": 3913459
+    },
+    {
+      "file": "T_Regular_Female_Roughness.png",
+      "gitSha": "8dae8d59821a5ebf8d88149f93121d66118a3322",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "da541fbd4b3bffe754fada5c29f8a0d8f836bf20ce7df8273607af4729a3a5ae",
+      "bytes": 3274215
+    },
+    {
+      "file": "T_Regular_Male_Dark_BaseColor.png",
+      "gitSha": "4520f4cc2bef13ff3cde709aa07d4aa6e18a7877",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "b4dcc0f4139aab548d7c070c4655bd2080ef16caeaaabee6c4aeb693c524e802",
+      "bytes": 1316151
+    },
+    {
+      "file": "T_Regular_Male_Normal.png",
+      "gitSha": "705c2f2f20b25192783b37c054a5d21354906dfe",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "10cd71e2453e577fdd43e912b6016a99baf64964f0593e524bdd304855e15e2a",
+      "bytes": 4064184
+    },
+    {
+      "file": "T_Regular_Male_Roughness.png",
+      "gitSha": "3979c3ed368cd8e3834aaa4eadce8e3948253781",
+      "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+      "sha256": "086c2eb25bddfdb77d8e639ccbffb8df723ef4a1910d8e1b217e852f8668bfe5",
+      "bytes": 3160102
     }
   ],
-  "requiredTexturesNotDownloaded": [
-    "T_Ranger_BaseColor.png",
-    "T_Ranger_Normal.png",
-    "T_Ranger_ORM.png",
-    "T_Regular_Male_Dark_BaseColor.png",
-    "T_Regular_Male_Normal.png",
-    "T_Regular_Male_Roughness.png"
-  ],
+  "requiredTexturesNotDownloaded": [],
   "rigCompatibilityWithRobloxR15": "UNVERIFIED",
   "robloxRuntimeVerified": false,
   "gameSourceApplied": false,
-  "doNotMarkProductionVerified": true
+  "doNotMarkProductionVerified": true,
+  "sourceCommit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+  "robloxImported": false
 }
