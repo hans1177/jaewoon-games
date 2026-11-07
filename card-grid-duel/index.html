@@ -506,7 +506,12 @@ function removeDeadAndSplit(){
 }
 function exhausted(s){
   if(livingCount(s)!==0)return false;
-  if(s==='RED')return state.summons.RED>=maxSummons('RED');
+  if(s==='RED'){
+    // 6스테이지의 마지막 8턴 증원을 모두 처리했다면 저장된 소환 수가
+    // 과거 저장본에서 어긋나더라도 적 전멸을 정상 클리어로 판정한다.
+    if(state.stage===6&&state.lastWaveRound>=8)return true;
+    return state.summons.RED>=maxSummons('RED')
+  }
   return state.summons.BLUE>=maxSummons('BLUE')||!canSummonMore('BLUE');
 }
 function enterRest(rewardText){
@@ -1009,8 +1014,11 @@ function render(){
 
   const resting=state.phase==='REST';
   const won=state.winner==='BLUE',lost=state.winner==='RED';
-  $('#playBtn').textContent=lost?state.stage+'스테이지 재도전':won?'처음부터 다시 플레이':'진행 중';
-  $('#playBtn').disabled=!lost&&!won;
+  // 휴식 중에도 상단 플레이 버튼으로 다음 스테이지에 진입할 수 있게 한다.
+  // 모바일에서 하단 정비/뽑기 버튼까지 스크롤하지 않아도 진행 가능하다.
+  const hasNextStage=resting&&!!STAGES[state.stage+1];
+  $('#playBtn').textContent=hasNextStage?(state.stage+1)+'스테이지 시작':lost?state.stage+'스테이지 재도전':won?'처음부터 다시 플레이':'진행 중';
+  $('#playBtn').disabled=!hasNextStage&&!lost&&!won;
   const restPanel=$('#restScreen');
   const restJustOpened=resting&&restPanel.classList.contains('hidden');
   restPanel.classList.toggle('hidden',!resting);
@@ -1040,6 +1048,7 @@ function render(){
       updateUpgradeInfo()
     }
     $('#nextStage').textContent=(state.stage+1)+'스테이지 시작';
+    $('#nextStage').disabled=!hasNextStage;
     // 전투 맵 아래로 내려가 있었어도 클리어 시 뽑기·강화 화면을 바로 보여준다.
     if(restJustOpened)restPanel.scrollIntoView({block:'start',behavior:'auto'});
     return
@@ -1197,6 +1206,12 @@ $('#bossMusicToggle').onclick=()=>{
 $('#resetDiamonds').onclick=resetDiamonds;
 $('#playBtn').onclick=()=>{
   mode='play';side='BLUE';
+  // 6스테이지 승리 후 상단 버튼도 7스테이지 시작 버튼으로 작동한다.
+  // 기존 휴식 화면의 뽑기/강화와 아래쪽 다음 스테이지 버튼은 유지한다.
+  if(state?.phase==='REST'&&STAGES[state.stage+1]){
+    startStage(state.stage+1);
+    return
+  }
   // 패배한 스테이지만 초기화하고 이전 보상·뽑기·강화는 유지한다.
   if(state?.winner==='RED'){
     startStage(state.stage);
