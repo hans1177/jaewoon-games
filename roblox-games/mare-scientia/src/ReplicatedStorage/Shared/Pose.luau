@@ -71,9 +71,20 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
 			return nil
 		end
 		local humanoid = result:FindFirstChildOfClass("Humanoid")
-		local joints = 0
-		for _, descendant in result:GetDescendants() do
-			if descendant:IsA("Motor6D") then joints += 1 end
+		local function countJoints()
+			local n = 0
+			for _, descendant in result:GetDescendants() do
+				if descendant:IsA("Motor6D") then n += 1 end
+			end
+			return n
+		end
+		local joints = countJoints()
+		-- 설명서로 만든 모델은 부품과 부착점만 있고 관절(Motor6D)이 없을 수 있다: 부착점으로 관절을 만든다
+		if joints < 12 and humanoid then
+			result.Parent = workspace
+			pcall(function() humanoid:BuildRigFromAttachments() end)
+			result.Parent = nil
+			joints = countJoints()
 		end
 		if not humanoid or humanoid.RigType ~= Enum.HumanoidRigType.R15 or joints < 12 or not result:FindFirstChild("HumanoidRootPart") then
 			warn("[MareScientia] 불완전한 R15 리그", joints)

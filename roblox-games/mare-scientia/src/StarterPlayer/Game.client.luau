@@ -3152,5 +3152,9 @@ task.spawn(function()
 			workspace:SetAttribute("DevCall", nil)
 			call("State")
 		end
+		if workspace:GetAttribute("DevCall") == "Hall" then
+			workspace:SetAttribute("DevCall", nil)
+			openTradeHall()
+		end
 	end
 end)
