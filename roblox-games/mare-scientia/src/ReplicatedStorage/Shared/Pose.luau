@@ -74,7 +74,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
 		local function countJoints()
 			local n = 0
 			for _, descendant in result:GetDescendants() do
-				if descendant:IsA("Motor6D") then n += 1 end
+				if descendant:IsA("Motor6D") or descendant:IsA("AnimationConstraint") then n += 1 end
 			end
 			return n
 		end
