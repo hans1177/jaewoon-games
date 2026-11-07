@@ -1016,10 +1016,12 @@ local function villageDialogue(player,title,message,options)
     title=title,message=message,options=options or {},
   })
 end
+local narinStoryDeferred={}
 local function villageBoardDialogue(player,sourcePosition)
   -- [스토리 연결 · 오딧세이식 대화 선택] 초원 메인 퀘스트(05 연대기)를 마치면 촌장 나린이 기사단 이야기를 꺼낸다.
+  -- 이야기 선택(1·2)을 끝냈거나 '미룬다'를 고른 뒤에는 마을 의뢰를 바로 받을 수 있어야 한다.
   local story=readNumber(player,"NarinStory",0)
-  if readNumber(player,"QuestStage",1)>=6 then
+  if readNumber(player,"QuestStage",1)>=6 and story==0 and not narinStoryDeferred[player] then
     villageSessions[player]={position=sourcePosition or villageCenter,expires=os.clock()+60}
     if story==0 then
       villageDialogue(player,"촌장 나린 · 지워진 기사단",
@@ -1030,12 +1032,6 @@ local function villageBoardDialogue(player,sourcePosition)
         {label="이 마을이 무엇을 숨기는지 말해 (의심한다)",action="village:story:2"},
         {label="지금은 마을 일이 먼저야 (미룬다)",action="village:story:3"},
       })
-      return
-    elseif story==1 then
-      villageDialogue(player,"촌장 나린","의뢰판 뒷면의 이름들은 네 동료의 것이야. 서쪽 숲의 우두머리 늑대를 넘어야 세계수로 길이 열려. 그곳에서 닉을 찾아.")
-      return
-    elseif story==2 then
-      villageDialogue(player,"촌장 나린","의심하는 건 당연해. 그래도 숲이 사람의 이름을 먹는다는 건 사실이야. 서쪽 길목의 우두머리부터 쓰러뜨려야 해.")
       return
     end
   end
@@ -1114,6 +1110,7 @@ local function villageChoose(player,actionId)
     villageSessions[player]=nil
     if pick==3 then
       setNumber(player,"NarinStory",0) -- 미루면 다시 말을 걸 수 있다.
+      narinStoryDeferred[player]=true -- 이번 접속에서는 바로 마을 의뢰를 받을 수 있다.
       villageDialogue(player,"촌장 나린","그래, 서두를 일은 아니야. 준비가 되면 다시 와.")
       return
     end
