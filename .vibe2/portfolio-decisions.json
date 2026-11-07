@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-11-07T18:58:34.002Z",
+  "generatedAt": "2026-11-07T19:06:14.610Z",
   "decisions": [
     {
       "gameId": "amusement-tycoon",
@@ -45,7 +45,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 1
@@ -765,7 +765,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 1
@@ -795,7 +795,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 0,
+          "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 0
@@ -825,7 +825,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 0
@@ -845,8 +845,8 @@
     },
     {
       "gameId": "ocean-voyage",
-      "decision": "CONTINUE",
-      "reason": "NORMAL_ACTIVE_DEVELOPMENT",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "evidence": {
@@ -855,13 +855,13 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 0,
+          "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 0
         },
         "qa": {
-          "criticalRuntimeOrGateBlocker": false
+          "criticalRuntimeOrGateBlocker": true
         },
         "balance": {
           "structuralCoreFailure": false
@@ -885,7 +885,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 1,
+          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 1
