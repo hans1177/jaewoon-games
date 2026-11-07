@@ -1058,8 +1058,8 @@ function PortScene.build(info, onFacility)
 		if PortData.Ports[info.portId] and PortData.Ports[info.portId].shipyard then
 			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(40, 0, -46), 12, true)
 			importedModel(folder, "Naval", "tower-complete-large", Vector3.new(40, 0, 46), 12, true)
-			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, -28), 8, false)
-			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, 28), 8, false)
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, -28), 5, false)
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(30, 0, 28), 5, false)
 		end
 		importedModel(folder, "Interior", "tablecrosscloth", Vector3.new(-30, 0, -13), 4.8, false)
 		importedModel(folder, "Interior", "coatrack", Vector3.new(-36, 0, -23), 3.4, false)
