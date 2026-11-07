@@ -481,7 +481,16 @@ local function bindNativeFoundationPlayer(player)
         handle.Transparency=0
         handle.DoubleSided=true
         handle.Reflectance=0
-        handle.Material=Enum.Material.Fabric
+        -- [망토 색] 임포트로 붙은 검정/흰 텍스처·PBR이 천을 까맣게 만든다. 원본 메시는 그대로 두고 진홍색만 지정한다.
+        for _,item in ipairs(cape:GetDescendants()) do
+          if item:IsA("MeshPart") then
+            if item.TextureID~="" then item.TextureID="" end
+            local pbr=item:FindFirstChildOfClass("SurfaceAppearance")
+            if pbr then pbr:Destroy() end
+            item.Color=Color3.fromRGB(158,32,40)
+            item.Material=Enum.Material.SmoothPlastic
+          end
+        end
         -- [실제 3D 천] 어깨 윗선이 등 위쪽에 닿고, 네 군데 찢어진 밑단은 엉덩이까지.
         local weld=Instance.new("Weld")
         weld.Name="AccessoryWeld" -- 기존 클라이언트 펄럭임 관절 이름을 유지한다.
