@@ -982,6 +982,41 @@ local previewCamera=Instance.new("Camera")
 previewCamera.Name="AvatarCamera";previewCamera.FieldOfView=38
 previewCamera.Parent=characterViewport;characterViewport.CurrentCamera=previewCamera
 local lastPreviewCharacter,lastPreviewTool,lastPreviewGearRevision=nil,nil,nil
+do
+  local hint=Instance.new("TextLabel")
+  hint.Name="RotateHint";hint.BackgroundTransparency=1;hint.AnchorPoint=Vector2.new(1,1)
+  hint.Position=UDim2.new(1,-6,1,-4);hint.Size=UDim2.fromOffset(150,16)
+  hint.Font=Enum.Font.GothamMedium;hint.TextSize=11;hint.TextColor3=Color3.fromRGB(190,184,170)
+  hint.TextXAlignment=Enum.TextXAlignment.Right;hint.Text="끌어서 회전";hint.ZIndex=5;hint.Parent=characterViewport
+end
+-- [자유 회전] 아바타를 손가락/마우스로 끌어 앞·옆·뒤(망토)를 자유롭게 본다. 기본은 앞모습.
+local previewYaw,previewPitch,previewFocus,previewDistance=math.rad(25),0.08,Vector3.zero,10
+local function placePreviewCamera()
+  local cp=math.cos(previewPitch)
+  local offset=Vector3.new(math.sin(previewYaw)*cp,math.sin(previewPitch),-math.cos(previewYaw)*cp)*previewDistance
+  previewCamera.CFrame=CFrame.lookAt(previewFocus+offset,previewFocus)
+end
+do
+  local dragInput,lastPos=nil,nil
+  characterViewport.Active=true
+  characterViewport.InputBegan:Connect(function(input)
+    if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+      dragInput=input;lastPos=input.Position
+    end
+  end)
+  UserInputService.InputChanged:Connect(function(input)
+    if not dragInput then return end
+    if input==dragInput or (dragInput.UserInputType==Enum.UserInputType.MouseButton1 and input.UserInputType==Enum.UserInputType.MouseMovement) then
+      local delta=input.Position-lastPos;lastPos=input.Position
+      previewYaw=previewYaw-delta.X*.012
+      previewPitch=math.clamp(previewPitch+delta.Y*.006,-.35,.6)
+      placePreviewCamera()
+    end
+  end)
+  UserInputService.InputEnded:Connect(function(input)
+    if input==dragInput then dragInput=nil end
+  end)
+end
 local function redrawNativeAvatar(character,tool,force)
   local gearRevision=player:GetAttribute("MeadowGearRevision") or 0
   if not force and character==lastPreviewCharacter and tool==lastPreviewTool
@@ -1014,7 +1049,8 @@ local function redrawNativeAvatar(character,tool,force)
   local aspect=math.max(.55,characterViewport.AbsoluteSize.X/math.max(1,characterViewport.AbsoluteSize.Y))
   local halfFov=math.tan(math.rad(previewCamera.FieldOfView*.5))
   local distance=math.max(size.Y/(2*halfFov),size.X/(2*halfFov*aspect),size.Z*1.8,5)*1.35
-  previewCamera.CFrame=CFrame.lookAt(focus+Vector3.new(distance*.18,distance*.07,distance),focus)
+  previewFocus,previewDistance=focus,distance
+  placePreviewCamera()
   characterPortrait.Visible=false
   characterViewport.Visible=true
 end
