@@ -3545,8 +3545,8 @@ local meadowRpg=(function()
           feedback(player,"실물 장비 로블록스 등록이 아직 확인되지 않았어.");return true
         end
         if ownedGear then feedback(player,"이미 보유한 장비야.");return true end
-        -- [대장간 제작] 신규 무기·방패는 모루 근처에서만 실물 제련·제작한다.
-        if item.ForgeOnly then
+        -- [스카이림식 제작] 모든 장비는 대장간 모루 근처에서만 제작한다(가방은 확인·장착 전용).
+        do
           local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
           if not root or not nearStation(player,"Anvil") then
             feedback(player,"마을 대장간의 모루 가까이에서 제작해야 해.");return true

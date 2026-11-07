@@ -1934,6 +1934,7 @@ meadowReferenceMenu.Parent=meadowTouchLayer
 local referenceMenuItems={
   {"가방",2,6},{"제작",2,11},{"건설",2,12},
   {"도감",3,13},{"기사단 연대기",3,14},{"설정",4,15},
+  {"스킬트리",7,0}, -- [오딧세이식 스킬 트리] 등록된 스킬 원화 시트의 아이콘을 쓴다.
 }
 for index,info in ipairs(referenceMenuItems) do
   local button=Instance.new("TextButton")
@@ -1948,15 +1949,17 @@ for index,info in ipairs(referenceMenuItems) do
   icon.BackgroundTransparency=1
   icon.Image=meadowPaintedHudAtlas
   icon.ImageRectSize=Vector2.new(200,200)
-  icon.ImageRectOffset=Vector2.new(({0,200,400,600,800,0})[index],({0,0,0,0,0,200})[index])
+  icon.ImageRectOffset=Vector2.new(({0,200,400,600,800,0})[index] or 0,({0,0,0,0,0,200})[index] or 0)
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.fromScale(.5,0)
   icon.Size=UDim2.fromScale(1,1)
   icon.ZIndex=28
   icon.Parent=button
+  if info[2]==7 then meadowArt.skill(icon,"skill-meadow-focus") end
   -- [메뉴 아이콘] 원화가 로드되지 않을 때만 이미 등록한 16칸 원본으로 복구.
   task.delay(25,function()
+    if info[2]==7 then return end
     if not icon.Parent or icon.IsLoaded then return end
     icon.ImageRectSize=Vector2.new(40,40)
     icon.ImageRectOffset=Vector2.new(info[3]*40,0)
@@ -2092,9 +2095,9 @@ local function layoutMeadowReferenceHud()
   -- [시안 기준 709x446] 상단 6개는 오른쪽 끝에서 34px 간격, 10칸 단축바는 화면 폭 49%로 정렬.
   local landscape=v.X>v.Y
   -- [모바일 터치] 엔진 품질검사(짧은 변 44 이상)를 모든 화면에서 만족하도록 메뉴 칸을 키운다.
-  local step=landscape and math.floor(math.clamp(v.X/15,47,55))
-    or math.floor(math.clamp((v.X-18)/6,47,52))
-  local menuWidth=step*6
+  local step=landscape and math.floor(math.clamp(v.X/17,44,55))
+    or math.floor(math.clamp((v.X-18)/7,44,52))
+  local menuWidth=step*7
   meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+17)
   -- [최상단] 기본 메뉴 여백 위, 화면 맨 위 오른쪽에 붙인다.
   meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-6,0,2)
@@ -2639,8 +2642,9 @@ local function redrawSelection()
     if item.gear then
       local has=owned(item)>0
       local worn=player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index
-      equip.Text=not has and (item.gear.ForgeOnly and "대장간 제작" or "장비 제작") or worn and "장착 해제" or "장착"
-      equip.Active=player:GetAttribute("ProfileReady")==true
+      -- [스카이림식 제작] 제작은 대장간 모루에서만. 가방은 제작법·재료 확인과 장착만 한다.
+      equip.Text=not has and "대장간 모루에서 제작" or worn and "장착 해제" or "장착"
+      equip.Active=has and player:GetAttribute("ProfileReady")==true
     elseif item.tonic then
       equip.Text="물약 사용"
       equip.Active=owned(item)>0 and player:GetAttribute("ProfileReady")==true
@@ -2811,8 +2815,8 @@ equip.Activated:Connect(function()
   local item=itemRows[selectedKey]
   if not item then return end
   if item.gear then
-    local op=owned(item)<1 and "craft" or
-      (player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index and "unequip" or "equip")
+    if owned(item)<1 then return end -- 제작은 대장간 모루 전용
+    local op=(player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index and "unequip" or "equip")
     remote:FireServer("meadow:rpg:gear:"..op..":"..item.gear.Id)
   elseif item.tonic then
     remote:FireServer("meadow:rpg:tonic:use:"..item.tonic.Id)
@@ -3704,6 +3708,8 @@ trackerNavigation.TextSize=9
 trackerNavigation.TextColor3=Color3.fromRGB(183,183,172)
 questTracker.Activated:Connect(function()
   if meadowTutorialAdvance then meadowTutorialAdvance(2) end
+  -- [길 안내 연동] 퀘스트를 누르면 길 안내가 켜지고 목표 표시가 바로 뜬다.
+  gui:SetAttribute("MeadowGuideForceOn",(gui:GetAttribute("MeadowGuideForceOn") or 0)+1)
   meadowMenu.open(3)
 end)
 
@@ -11863,6 +11869,40 @@ end)()
         end
       end
     end
+    -- [메인 퀘스트 길 안내] 초원 1~6단계와 이후 지역 이동 단계도 표시한다.
+    do
+      local stage=player:GetAttribute("QuestStage") or 1
+      local quest=Config.MainQuests and Config.MainQuests[stage]
+      local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+      local function nearestPrompt(match)
+        local best,bestD=nil,math.huge
+        for prompt in pairs(guidePrompts) do
+          local host=prompt.Parent
+          if prompt.Enabled and host and host:IsA("BasePart") and prompt:IsDescendantOf(workspace) and match(prompt) and root then
+            local d=(host.Position-root.Position).Magnitude
+            if d<bestD then best,bestD=host,d end
+          end
+        end
+        return best
+      end
+      if quest then
+        local host
+        if stage==1 then host=nearestPrompt(function(pr) return pr.Name=="MeadowSurvivalInspect" and pr.ObjectText~="오래된 유적" end)
+        elseif stage==2 then
+          local needWood=(player:GetAttribute("QuestWood") or 0)==0
+          host=nearestPrompt(function(pr) return pr.Name=="GatherPrompt" and (pr.ActionText=="나무 채집")==needWood end)
+        elseif stage==5 then host=nearestPrompt(function(pr) return pr.Name=="MeadowSurvivalInspect" and pr.ObjectText=="숲 가장자리" end)
+        elseif stage==6 then return -321,-193,"서쪽 숲 우두머리 늑대"
+        end
+        if host then return host.Position.X,host.Position.Z,quest.Name end
+        local zoneId=quest.Zone or ({[7]="worldtree",[8]="worldtree",[9]="worldtree",[10]="volcano",[11]="oasis",[12]="oasis"})[stage]
+        if zoneId then
+          for _,zone in ipairs(Config.WorldMap.Zones) do
+            if zone.Id==zoneId then return zone.Seed[1],zone.Seed[2],quest.Name end
+          end
+        end
+      end
+    end
     local x,z,label=fromLines(true)
     if x then return x,z,label end
     local idx=player:GetAttribute("VillageContractIndex") or 1
@@ -12002,6 +12042,9 @@ end)()
     guideChip.TextColor3=guideOff and Color3.fromRGB(150,150,140) or Color3.fromRGB(140,235,160)
     guideChip.BackgroundColor3=guideOff and Color3.fromRGB(30,28,28) or Color3.fromRGB(13,30,28)
   end
+  gui:GetAttributeChangedSignal("MeadowGuideForceOn"):Connect(function()
+    if guideOff then guideOff=false;paintGuide();pref("guide",0) end
+  end)
   guideChip.Activated:Connect(function()
     guideOff=not guideOff;paintGuide();pref("guide",guideOff and 1 or 0)
     meadowArt.sfx("click",.4,1)

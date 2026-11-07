@@ -1711,7 +1711,7 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.match(client,/meadowSkillButtons\.referenceJump=meadowReferenceJump/);
   assert.match(client,/meadowSkillButtons\.primarySword\.Position=UDim2\.fromOffset/);
   assert.match(client,/meadowSkillButtons\.referenceJump\.Position=UDim2\.fromOffset/);
-  assert.match(client,/local step=landscape and math\.floor\(math\.clamp\(v\.X\/15,47,55\)\)/);
+  assert.match(client,/local step=landscape and math\.floor\(math\.clamp\(v\.X\/17,44,55\)\)/);
   assert.match(client,/meadowSkillButtons\.primarySword\.Position=UDim2\.fromOffset\(math\.floor\(146\*scale\)/);
   // [미니맵] 지도는 상단에 밀착시키고 실제 위치 이름→축소 좌표 순서로 표시한다.
   assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapWidth,mapHeight\+20\)/);
@@ -2184,7 +2184,7 @@ test('마력숲 동료 의뢰와 인트로는 기존 메인·저장을 보존한
  assert.ok(recorder.indexOf('CompanionQuestStage')<recorder.indexOf('if not quest then return end'));
  assert.doesNotMatch(recorder,/awardProgress|Coins|XP/);
  assert.match(client,/info.Story or ""/);
- assert.match(client,/questTracker.Activated:Connect\(function\(\)\s*if meadowTutorialAdvance then meadowTutorialAdvance\(2\) end\s*meadowMenu.open\(3\)/);
+ assert.match(client,/questTracker.Activated:Connect\(function\(\)\s*if meadowTutorialAdvance then meadowTutorialAdvance\(2\) end[\s\S]*?meadowMenu.open\(3\)/);
  assert.doesNotMatch(client,/local journalShade=/);
  assert.match(client,/task.delay\(bossScene and 1\.5 or 2\.5/);
  assert.match(client,/skip.Activated:Connect\(closeIntro\)/);

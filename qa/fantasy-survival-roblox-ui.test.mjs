@@ -95,7 +95,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
     'ReferenceCharacterName','ReferenceHotbar','ReferenceMenu',
     'local referenceMenuItems=', 'local referenceHotbarSlots={}',
     'local hotbarActions={','local function layoutMeadowReferenceHud()',
-    'local step=landscape and math.floor(math.clamp(v.X/15,47,55))',
+    'local step=landscape and math.floor(math.clamp(v.X/17,44,55))',
     'meadowReferenceHotbar.Position=UDim2.new(.5,0,1,-99)',
     'meadowSkillButtons.primarySword.Position=UDim2.fromOffset(math.floor(146*scale)',
     'meadowHealthTrack.Position=UDim2.fromOffset(x,top+16)',
@@ -118,7 +118,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   // [시안 원화] 상단 6 / 하단 단축바 10 / 전투 5 = 21종을 같은 1000x1000(5x5, 200px 칸) 아틀라스에 연결.
   assert.match(client,/local meadowPaintedHudAtlas="rbxassetid:\/\/84007761993593"/);
   assert.match(client,/icon\.ImageRectSize=Vector2\.new\(200,200\)/);
-  assert.match(client,/icon\.ImageRectOffset=Vector2\.new\(\(\{0,200,400,600,800,0\}\)\[index\],\(\{0,0,0,0,0,200\}\)\[index\]\)/);
+  assert.match(client,/icon\.ImageRectOffset=Vector2\.new\(\(\{0,200,400,600,800,0\}\)\[index\] or 0,\(\{0,0,0,0,0,200\}\)\[index\] or 0\)/);
   assert.match(client,/local hudCell=index\+5/);
   assert.match(client,/icon\.ImageRectOffset=Vector2\.new\(\(hudCell%5\)\*200,math\.floor\(hudCell\/5\)\*200\)/);
   assert.match(client,/local paintedCell=\(\{sprint=Vector2\.new\(200,600\),fist=Vector2\.new\(400,600\),dodge=Vector2\.new\(600,600\),jump=Vector2\.new\(800,600\),guard=Vector2\.new\(200,800\)\}\)\[role\]/);
@@ -154,7 +154,7 @@ test('reference landscape HUD keeps original combat authority and screenshot com
   assert.match(client,/if rim then rim.Enabled=false end/);
   assert.match(client,/if inner then inner.Visible=false end/);
   // [모바일 터치] 엔진 품질검사(짧은 변 36 미만 불합격, 44 미만 아쉬움)를 모든 화면에서 만족한다.
-  assert.match(client,/local step=landscape and math.floor\(math.clamp\(v.X\/15,47,55\)\)\s+or math.floor\(math.clamp\(\(v.X-18\)\/6,47,52\)\)/);
+  assert.match(client,/local step=landscape and math.floor\(math.clamp\(v.X\/17,44,55\)\)\s+or math.floor\(math.clamp\(\(v.X-18\)\/7,44,52\)\)/);
   assert.match(client,/local menuStep=landscape and math.floor\(math.clamp\(v.X\/15,47,55\)\)\s+or math.floor\(math.clamp\(\(v.X-18\)\/6,47,52\)\)/);
   assert.match(client,/local slotSize=landscape and math.floor\(math.clamp\(v.X\/17,44,52\)\)\s+or math.floor\(math.clamp\(\(v.X-24\)\/columns-2,44,48\)\)/);
   assert.match(client,/local columns=5 -- \[요청\] 단축바는 1~5번 5칸만 표시/);
