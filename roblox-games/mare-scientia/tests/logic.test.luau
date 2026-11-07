@@ -824,6 +824,25 @@ do
 	st.rep[D.Ports.Ports.lisbon.country] = 50
 	local okC, msgC = S.Trade.handlers.Smuggle(st, { goodId = "wool", amount = 5 }, rngHigh)
 	check("smuggle caught confiscates", okC and (st.cargo.wool or 0) == 0 and st.rep[D.Ports.Ports.lisbon.country] == 42, msgC)
+	-- 흥정: 한 항구·물건당 한 번, 성공하면 다음 구매 한 번만 싸다
+	do
+		local hs = newState()
+		hs.coins = 100000
+		local win = { rng = function() return 0 end, market = ctx.market }
+		local lose = { rng = function() return 0.999 end, market = ctx.market }
+		local okH, msgH = S.Trade.handlers.Haggle(hs, { goodId = "wool" }, win)
+		check("haggle success", okH, msgH)
+		check("haggle once per good", not S.Trade.handlers.Haggle(hs, { goodId = "wool" }, win))
+		local before = hs.coins
+		S.Trade.handlers.Buy(hs, { goodId = "wool", amount = 1 }, win)
+		local paid1 = before - hs.coins
+		before = hs.coins
+		S.Trade.handlers.Buy(hs, { goodId = "wool", amount = 1 }, win)
+		local paid2 = before - hs.coins
+		check("haggle discount applies once", paid1 < paid2 and hs.haggle.deal == nil, paid1 .. "/" .. paid2)
+		check("haggle fail gives no deal", not S.Trade.handlers.Haggle(hs, { goodId = "silk" }, lose) and hs.haggle.deal == nil)
+		check("haggle bad good rejected", not S.Trade.handlers.Haggle(hs, { goodId = "zzz" }, win))
+	end
 	local seenB = false
 	for _ = 1, 5000 do
 		if D.Voyage.rollEvent(function() return math.random() end, 10).kind == "blockade" then seenB = true break end

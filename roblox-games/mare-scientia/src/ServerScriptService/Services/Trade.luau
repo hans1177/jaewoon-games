@@ -52,6 +52,12 @@ return function(D, S)
 			total += T.getPrice(state.portId, goodId, mult, ev)
 			mult = T.nextStockMult(mult, 1, true)
 		end
+		-- 흥정으로 받은 할인은 같은 항구·같은 물건의 다음 구매 한 번에만 적용된다
+		local h = state.haggle
+		if h and h.deal and h.deal.goodId == goodId and h.portId == state.portId then
+			total = math.max(1, math.floor(total * h.deal.mult))
+			h.deal = nil
+		end
 		if total > state.coins then
 			return false, "코인이 부족해요"
 		end
@@ -62,6 +68,33 @@ return function(D, S)
 		state.cargo[goodId] = owned + amount
 		ctx.market:set(state.portId, goodId, mult)
 		return true, string.format("%s %d개 구매 (-%d)", D.Ports.Goods[goodId].name, amount, total)
+	end
+
+	-- 흥정: 물건마다 항구에서 한 번만 시도할 수 있다. 성공하면 다음 구매가 4~8% 싸진다.
+	-- 동료의 장사 감각(intel)과 그 나라 우호도가 높을수록 잘 통한다.
+	function handlers.Haggle(state, p, ctx)
+		local goodId = p.goodId
+		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] then
+			return false, "잘못된 요청"
+		end
+		local h = state.haggle
+		if not h or h.portId ~= state.portId then
+			h = { portId = state.portId, tried = {} }
+			state.haggle = h
+		end
+		if h.tried[goodId] then
+			return false, "이미 흥정해 봤어요. 다음에 들러 보세요"
+		end
+		h.tried[goodId] = true
+		local port = D.Ports.Ports[state.portId]
+		local intel = S.Harbor.intel(state)
+		local chance = math.clamp(0.35 + 0.1 * intel + (state.rep[port.country] or 0) / 100 * 0.2, 0.2, 0.9)
+		if ctx.rng() < chance then
+			local mult = 1 - (0.04 + ctx.rng() * 0.04)
+			h.deal = { goodId = goodId, mult = mult }
+			return true, string.format("흥정 성공! %s 다음 구매가 %d%% 싸져요", D.Ports.Goods[goodId].name, math.floor((1 - mult) * 100 + 0.5))
+		end
+		return false, "상인이 고개를 젓네요. 정가대로 사야 해요"
 	end
 
 	function handlers.Sell(state, p, ctx)

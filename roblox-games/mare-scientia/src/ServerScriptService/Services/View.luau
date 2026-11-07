@@ -80,6 +80,12 @@ return function(D, S)
 		-- 시장
 		local rate = S.Trade.sellRateFor(state)
 		view.sellRate = rate
+		do
+			local h = state.haggle
+			if h and h.portId == port.id then
+				view.haggle = { tried = h.tried, deal = h.deal and { goodId = h.deal.goodId, pct = math.floor((1 - h.deal.mult) * 100 + 0.5) } or nil }
+			end
+		end
 		view.goods = {}
 		for _, goodId in sortedKeys(D.Ports.Goods) do
 			local good = D.Ports.Goods[goodId]
