@@ -99,6 +99,68 @@ if(process.argv.includes('--modular-armor-source-only')){
  process.exit(0);
 }
 
+
+// [마력숲 장비 전용 실물] Quaternius 원본 고유 검·활·도끼·망치·방패·단검 24종.
+// 오브젝트·원통·구체를 새로 만들지 않고, 출처·CC0·파일 해시를 확인한 원본 GLB만 내려받는다.
+if(process.argv.includes('--medieval-weapons-source-only')){
+ const dir='assets/external/simple-rpg/priority-v1/medieval-weapons';
+ const upstream='trebeljahr/quaternius-showcase';
+ const commit='c06a6fa9a1b13576edf3bd62d7b52aba334f8fc0';
+ const pack='public/glb/medieval_weapons_pack';
+ const api='https://api.github.com/repos/'+upstream+'/contents/';
+ const headers={'user-agent':'jaewoon-games-cc0-weapon-source','accept':'application/vnd.github+json'};
+ const licenseResponse=await fetch('https://raw.githubusercontent.com/'+upstream+'/'+commit+'/LICENSES.md',
+   {headers,signal:AbortSignal.timeout(45000)});
+ if(!licenseResponse.ok)throw Error('FOREST_WEAPON_LICENSE_DOWNLOAD_FAILED');
+ const license=await licenseResponse.text();
+ if(!license.includes('| \`medieval_weapons_pack\` | Modular Weapons Pack | CC0-1.0 | https://quaternius.com/packs/medievalweapons.html |'))
+  throw Error('FOREST_WEAPON_SOURCE_NOT_CC0');
+ const indexResponse=await fetch(api+pack+'?ref='+commit,{headers,signal:AbortSignal.timeout(45000)});
+ if(!indexResponse.ok)throw Error('FOREST_WEAPON_INDEX_HTTP_'+indexResponse.status);
+ const catalog=await indexResponse.json();
+ if(!Array.isArray(catalog)||catalog.length!==24||catalog.some(e=>e.type!=='file'||!e.name.endsWith('.glb')))
+  throw Error('FOREST_WEAPON_SOURCE_COUNT_INVALID');
+ const models=[];
+ fs.mkdirSync(dir,{recursive:true});
+ for(let i=0;i<catalog.length;i+=4){
+  const group=await Promise.all(catalog.slice(i,i+4).map(async(e)=>{
+   const name=e.name;
+   if(!/^[A-Za-z0-9_]+\.glb$/.test(name)||!/^[a-f0-9]{40}$/.test(String(e.sha))
+    ||e.size<1000||e.size>12000000)throw Error('FOREST_WEAPON_SOURCE_INVALID:'+name);
+   const dest=dir+'/'+name;
+   let bytes=fs.existsSync(dest)?fs.readFileSync(dest):null;
+   if(!bytes){
+    let last='';
+    for(let attempt=0;attempt<3&&!bytes;attempt++){
+     try{
+      const r=await fetch('https://raw.githubusercontent.com/'+upstream+'/'+commit+'/'+pack+'/'+encodeURIComponent(name),
+       {headers,signal:AbortSignal.timeout(120000)});
+      if(!r.ok)throw Error('HTTP_'+r.status);
+      bytes=Buffer.from(await r.arrayBuffer());
+     }catch(error){last=String(error);if(attempt<2)await new Promise(r=>setTimeout(r,1500*(attempt+1)));}
+    }
+    if(!bytes)throw Error('FOREST_WEAPON_ORIGINAL_DOWNLOAD_FAILED:'+name+':'+last);
+   }
+   if(bytes.length!==e.size||bytes.toString('utf8',0,4)!=='glTF'||bytes.readUInt32LE(4)!==2)
+    throw Error('FOREST_WEAPON_GLB_INVALID:'+name);
+   const blobHash=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
+   if(blobHash!==e.sha)throw Error('FOREST_WEAPON_SOURCE_DIGEST_CHANGED:'+name);
+   if(!fs.existsSync(dest))fs.writeFileSync(dest,bytes);
+   return {file:name,bytes:bytes.length,gitSha:e.sha,sha256:crypto.createHash('sha256').update(bytes).digest('hex')};
+  }));
+  models.push(...group);
+ }
+ const data={version:1,gameId:'fantasy-survival',pack:'Quaternius Modular Weapons Pack',license:'CC0-1.0',
+  licenseEvidence:'https://quaternius.com/packs/medievalweapons.html',
+  repository:upstream,sourcePath:pack,sourceCommit:commit,modelCount:models.length,
+  files:models.sort((a,b)=>a.file.localeCompare(b.file)),
+  sourceDownloadedVerified:true,robloxRegistered:false,universeUseGrantVerified:false,
+  runtimeVerified:false,gameSourceApplied:false,status:'SOURCE_DOWNLOADED_PENDING_NATIVE_REGISTRATION'};
+ fs.writeFileSync(dir+'/manifest.json',JSON.stringify(data,null,2)+'\n');
+ console.log('FOREST_WEAPON_24_DISTINCT_CC0_ORIGINALS_DOWNLOADED_AND_HASH_VERIFIED='+models.length);
+ process.exit(0);
+}
+
 const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
 const key0=key;
 const rawCookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
