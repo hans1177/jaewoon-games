@@ -1854,6 +1854,15 @@ for index,name in ipairs({"효과음","환경음","타격 효과"}) do
   end)
   refreshOption()
 end
+do -- [전투 표시 옵션] 데미지 숫자를 끄고 켤 수 있다.
+  local dmgOption=CommonUI.CreatePrimaryButton({name="MeadowDamageNumbers",text="데미지 숫자",minHeight=52})
+  dmgOption.LayoutOrder=5
+  dmgOption.Size=UDim2.new(1,-8,0,54)
+  dmgOption.Parent=meadowPages[4]
+  local function refreshDmg() dmgOption.Text="데미지 숫자  ·  "..(_G.MeadowDamageNumbersOff and "끔" or "켬").."   눌러 변경" end
+  dmgOption.Activated:Connect(function() _G.MeadowDamageNumbersOff=not _G.MeadowDamageNumbersOff refreshDmg() end)
+  refreshDmg()
+end
 -- [카메라 옵션] Roblox 기본 카메라는 손가락 드래그/마우스 회전과 확대를 지원한다.
 local meadowCameraOption=CommonUI.CreatePrimaryButton({
   name="MeadowCameraMode",text="카메라 시점",minHeight=52
@@ -8412,6 +8421,7 @@ do
   local TweenSvc=game:GetService("TweenService")
   local DebrisSvc=game:GetService("Debris")
   local function spawnDamageNumber(position,amount,crit,finisher,boss)
+    if _G.MeadowDamageNumbersOff then return end
     local holder=Instance.new("Attachment")
     holder.Name="MeadowDamageNumber"
     holder.WorldPosition=position+Vector3.new((math.random()-.5)*1.6,3.2+math.random()*.6,(math.random()-.5)*1.6)
