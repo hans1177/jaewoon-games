@@ -210,11 +210,33 @@ local meadowArt={skillSheet="rbxassetid://129030506278489",gearSheet="rbxassetid
     ["skill-meadow-emote"]=10,["skill-meadow-oath"]=15,["skill-meadow-ultimate"]=15,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
     Martial=15,Signs=16,Defense=17,Agility=18},
   slotEmpty={Weapon=36,Chest=37,Hands=38,Legs=39,Feet=40,Accessory=41}}
--- [90노드 아이콘] 기존 정식 스킬 아이콘 시트를 재사용한다.
+-- [90노드 전용 아이콘] 이미 등록된 CC0 시트 4장을 스킬 노드 번호 순서로 사용한다.
+-- 로블록스 이미지 ID 또는 모듈이 없으면 기존 5x5 아이콘으로 복구한다. 스킬 판정·저장은 변경하지 않는다.
+local meadowSkillTreeSheets=nil
+do
+  local iconModule=Shared:FindFirstChild("SkillTreeIconIds") or Shared:WaitForChild("SkillTreeIconIds",3)
+  if iconModule and iconModule:IsA("ModuleScript") then
+    local ok,ids=pcall(require,iconModule)
+    if ok and type(ids)=="table" then meadowSkillTreeSheets=ids end
+  end
+end
+meadowArt.skillNodeIndex={}
 for _,node in ipairs(Config.MeadowSkillNodes or {}) do
+  meadowArt.skillNodeIndex[node.Id]=node.Index
   if node.Kind=="ACTIVE" then meadowArt.skillCell[node.Id]=node.IconCell end
 end
 function meadowArt.skill(icon,key)
+  local index=meadowArt.skillNodeIndex[key]
+  if index and index>=1 and index<=90 and meadowSkillTreeSheets then
+    local sheet=meadowSkillTreeSheets["skill_"..math.ceil(index/25)]
+    if type(sheet)=="string" and sheet:match("^rbxassetid://%d+$") then
+      local cell=(index-1)%25
+      icon.Image=sheet
+      icon.ImageRectOffset=Vector2.new((cell%5)*200,math.floor(cell/5)*200)
+      icon.ImageRectSize=Vector2.new(200,200)
+      return true
+    end
+  end
   local cell=meadowArt.skillCell[key]
   if meadowArt.skillSheet=="" or cell==nil then return false end
   icon.Image=meadowArt.skillSheet
@@ -3077,9 +3099,9 @@ for school=1,5 do
       local icon=Instance.new("ImageLabel")
       icon.Name="NodeIcon";icon.BackgroundTransparency=1;icon.Position=UDim2.new(.5,-17,0,2)
       icon.Size=UDim2.fromOffset(34,34)
-      -- 스킬 원화 시트는 5x5 / 200px 칸이다(예전 64px 계산은 엉뚱한 칸을 잘랐다).
-      icon.Image=meadowArt.skillSheet;icon.ImageRectSize=Vector2.new(200,200)
-      icon.ImageRectOffset=Vector2.new((node.IconCell%5)*200,math.floor(node.IconCell/5)*200);icon.Parent=button
+      -- [90개 독립 스킬 원화] 스킬 ID로 등록된 4개 CC0 시트의 고유 칸을 사용한다.
+      -- 실패하면 meadowArt.skill이 기존 아이콘으로 복구한다.
+      meadowArt.skill(icon,node.Id);icon.Parent=button
       local label=Instance.new("TextLabel")
       label.BackgroundTransparency=1;label.Position=UDim2.fromOffset(3,36);label.Size=UDim2.new(1,-6,0,30)
       label.Font=Enum.Font.GothamBold;label.TextSize=10;label.TextWrapped=true
