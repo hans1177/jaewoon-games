@@ -1283,7 +1283,7 @@ local function renderHarbor()
 	local h = view.harbor
 	add(function() return mkHeader(content, view.player.portName .. " · " .. h.name .. " (" .. h.level .. "단계)") end)
 	add(function()
-		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 13, COLORS.muted, false)
+		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
 	end)
 	add(function()
 		local nextText = if h.nextAt then string.format("다음 단계까지 %d 더 투자", h.nextAt - h.invested) else "최고 단계예요"
@@ -1384,6 +1384,41 @@ local function renderHarbor()
 		end
 	end
 
+	add(function() return mkHeader(content, "항구 보급 (조선소가 없어도 돼요)") end)
+	add(function()
+		return mkLabel(content, string.format("선원 %d/%d · 보급품 %d/%d\n선원 %d코인/명 · 보급품 %d코인/개", view.ship.crew, view.ship.maxCrew, view.ship.supplies, view.supplyMax or 100, view.shipyard.hireCost, view.shipyard.supplyCost), 16, COLORS.text, true)
+	end)
+	add(function()
+		return mkRow(content, "선원 충원", "부족한 만큼 고용해요", {
+			{ text = "+5", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
+			{ text = "+10", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 10 }) end },
+			{ text = "가득", color = COLORS.green, onClick = function() call("Resupply", { what = "crew" }) end },
+		}, 64)
+	end)
+	add(function()
+		return mkRow(content, "보급품 채우기", "항해일수 × 선원 수만큼 쓰여요", {
+			{ text = "+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
+			{ text = "+50", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 50 }) end },
+			{ text = "가득", color = COLORS.green, onClick = function() call("Resupply", { what = "supplies" }) end },
+		}, 64)
+	end)
+	add(function()
+		return mkRow(content, "한 번에 모두 채우기", "선원과 보급품을 가득", {
+			{ text = "모두", color = COLORS.gold, onClick = function() call("Resupply", { what = "both" }) end },
+		}, 52)
+	end)
+	add(function()
+		local on = view.auto and view.auto.supplies
+		return mkRow(content, "자동 보급 " .. (if on then "● 켜짐" else "○ 꺼짐"), "항구에 도착할 때마다 보급품을 채워요", {
+			{ text = if on then "끄기" else "켜기", color = if on then COLORS.red else COLORS.green, onClick = function() call("SetAuto", { key = "supplies", value = not on }) end },
+		}, 56)
+	end)
+	add(function()
+		local on = view.auto and view.auto.crew
+		return mkRow(content, "자동 선원 충원 " .. (if on then "● 켜짐" else "○ 꺼짐"), "항구에 도착할 때마다 빈 자리를 고용해요", {
+			{ text = if on then "끄기" else "켜기", color = if on then COLORS.red else COLORS.green, onClick = function() call("SetAuto", { key = "crew", value = not on }) end },
+		}, 56)
+	end)
 	add(function() return mkHeader(content, "교역소 투자") end)
 	for _, amt in h.options do
 		add(function()
@@ -1394,10 +1429,11 @@ local function renderHarbor()
 	end
 	add(function() return mkHeader(content, "주점") end)
 	add(function()
-		return mkRow(content, "소문 듣기", string.format("술값 %d · 지금 여기서 사서 다른 항구에 팔면 남는 상품", h.rumorCost), {
+		return mkRow(content, "소문 듣기", string.format("술값 %d · 지금 여기서 사서 다른 항구에 팔면 남는 상품\n(지금 정보 수준: %s)", h.rumorCost, intelName(view.intel or 0)), {
 			{ text = "듣기", color = COLORS.blue, onClick = function() call("Rumor", {}) end },
-		}, 56)
+		}, 72)
 	end)
+	addRumorPanel()
 end
 
 local function renderStatus()
@@ -1437,13 +1473,22 @@ local function renderStatus()
 		end)
 	end
 	add(function() return mkHeader(content, string.format("동료 (최대 %d명)", view.companions.max)) end)
+	if view.talk then
+		add(function()
+			return mkLabel(content, string.format("%s\n\"%s\"\n%s", view.talk.name, view.talk.line, view.talk.note or ""), 16, COLORS.gold, true)
+		end)
+	end
 	for _, c in view.companions.list do
 		add(function()
 			local sub = string.format("%s\n영입 %d코인 · 호감도 %d (%s)%s", c.summary, c.fee, c.affinity, ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier], if c.blocked and not c.joined then " · " .. c.blocked else "")
 			local btn = if c.joined
 				then { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
 				else { text = "영입", color = COLORS.green, enabled = c.blocked == nil, onClick = function() call("Recruit", { companionId = c.id }) end }
-			return mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, { btn }, 76)
+			local btns = { btn }
+			if c.joined then
+				table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
+			end
+			return mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, btns, 76)
 		end)
 	end
 	add(function() return mkHeader(content, "기록") end)
@@ -1453,10 +1498,36 @@ local function renderStatus()
 	end)
 end
 
-local function renderTrade()
-	if view.news and #view.news > 0 then
-		add(function() return mkLabel(content, "시장 소식\n" .. table.concat(view.news, "\n"), 12, COLORS.gold, false) end)
+local function intelName(level)
+	if level >= 3 then
+		return "정확한 수치"
+	elseif level >= 1 then
+		return "대략적인 범위"
 	end
+	return "감만 잡는 힌트"
+end
+
+-- 뱃사람 귀띔: 크게, 눈에 잘 띄게
+local function addRumorPanel()
+	local r = view.rumor
+	if not r then
+		return
+	end
+	add(function() return mkHeader(content, "뱃사람 귀띔 · " .. intelName(r.level)) end)
+	add(function()
+		return mkLabel(content, "· " .. table.concat(r.lines, "\n· "), 17, COLORS.gold, true)
+	end)
+end
+
+local function renderTrade()
+	add(function()
+		return mkLabel(content, string.format("동료의 장사 감각: %s (동료가 있으면 시장·귀띔 정보가 정확해져요)", intelName(view.intel or 0)), 14, COLORS.muted, false)
+	end)
+	if view.news and #view.news > 0 then
+		add(function() return mkHeader(content, "시장 소식") end)
+		add(function() return mkLabel(content, table.concat(view.news, "\n"), 16, COLORS.gold, true) end)
+	end
+	addRumorPanel()
 	add(function()
 		local frame = Instance.new("Frame")
 		frame.BackgroundTransparency = 1
@@ -1483,7 +1554,7 @@ local function renderTrade()
 		grid.Size = UDim2.new(1, -6, 0, 0)
 		grid.AutomaticSize = Enum.AutomaticSize.Y
 		local gl = Instance.new("UIGridLayout")
-		gl.CellSize = UDim2.new(0.5, -4, 0, 96)
+		gl.CellSize = UDim2.new(0.5, -4, 0, 128)
 		gl.CellPadding = UDim2.fromOffset(6, 6)
 		gl.SortOrder = Enum.SortOrder.LayoutOrder
 		gl.Parent = grid
@@ -1499,21 +1570,34 @@ local function renderTrade()
 			st.Thickness = 1.5
 			st.Parent = cardF
 			local gi = GOOD_ICON[g.id]
-			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 54, g.name)
-				else modelIcon(cardF, nil, nil, nil, 54, g.name)
+			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 60, g.name)
+				else modelIcon(cardF, nil, nil, nil, 60, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(cardF, g.name .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 14, COLORS.text, true)
-			nm.Position = UDim2.fromOffset(70, 6)
-			nm.Size = UDim2.new(1, -78, 0, 18)
+			local nm = mkLabel(cardF, g.name .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 18, COLORS.text, true)
+			nm.Position = UDim2.fromOffset(76, 6)
+			nm.Size = UDim2.new(1, -150, 0, 24)
 			nm.AutomaticSize = Enum.AutomaticSize.None
-			local info = mkLabel(cardF, string.format("사기 %d · 팔기 %d\n보유 %d%s", g.buy, g.sell, g.owned, if g.tag ~= "" then ("  [" .. g.tag .. "]") else ""), 11, COLORS.muted, false)
-			info.Position = UDim2.fromOffset(70, 26)
-			info.Size = UDim2.new(1, -78, 0, 30)
+			if g.tag ~= "" then
+				local badge = Instance.new("TextLabel")
+				badge.Text = g.tag
+				badge.TextSize = 15
+				badge.Font = Enum.Font.GothamBold
+				badge.TextColor3 = Color3.new(1, 1, 1)
+				badge.BackgroundColor3 = if g.tag == "특산" then COLORS.green else COLORS.gold
+				badge.Size = UDim2.fromOffset(52, 24)
+				badge.AnchorPoint = Vector2.new(1, 0)
+				badge.Position = UDim2.new(1, -8, 0, 6)
+				corner(badge, 6)
+				badge.Parent = cardF
+			end
+			local info = mkLabel(cardF, string.format("사기 %d · 팔기 %d\n보유 %d", g.buy, g.sell, g.owned), 16, COLORS.text, false)
+			info.Position = UDim2.fromOffset(76, 34)
+			info.Size = UDim2.new(1, -84, 0, 44)
 			info.AutomaticSize = Enum.AutomaticSize.None
-			local buy = mkButton(cardF, "구매", COLORS.blue, UDim2.new(0.5, -10, 0, 30), function() call("Buy", { goodId = g.id, amount = amount() }) end, true)
-			buy.Position = UDim2.new(0, 6, 1, -36)
-			local sell = mkButton(cardF, "판매", COLORS.green, UDim2.new(0.5, -10, 0, 30), function() call("Sell", { goodId = g.id, amount = amount() }) end, g.owned > 0)
-			sell.Position = UDim2.new(0.5, 4, 1, -36)
+			local buy = mkButton(cardF, "구매", COLORS.blue, UDim2.new(0.5, -10, 0, 36), function() call("Buy", { goodId = g.id, amount = amount() }) end, true)
+			buy.Position = UDim2.new(0, 6, 1, -42)
+			local sell = mkButton(cardF, "판매", COLORS.green, UDim2.new(0.5, -10, 0, 36), function() call("Sell", { goodId = g.id, amount = amount() }) end, g.owned > 0)
+			sell.Position = UDim2.new(0.5, 4, 1, -42)
 		end
 		return grid
 	end)

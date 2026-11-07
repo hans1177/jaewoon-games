@@ -177,7 +177,67 @@ return function(D, S)
 		return true, string.format("보급품 %d개 구매 (-%d)", n, n * cost(state, SUPPLY_COST))
 	end
 
+	-- 항구에서 한 번에 채우기 (조선소가 없어도 항구면 어디서나)
+	function handlers.Resupply(state, p)
+		local msgs = {}
+		local what = p and p.what
+		if what ~= "crew" and what ~= "supplies" and what ~= "both" then
+			return false, "잘못된 요청"
+		end
+		local def = S.State.shipDef(state)
+		if what ~= "supplies" then
+			local n = math.min(def.crew - state.ship.crew, math.floor(state.coins / cost(state, HIRE_COST)))
+			if n > 0 then
+				state.coins -= n * cost(state, HIRE_COST)
+				state.ship.crew += n
+				table.insert(msgs, string.format("선원 %d명 충원 (-%d)", n, n * cost(state, HIRE_COST)))
+			end
+		end
+		if what ~= "crew" then
+			local n = math.min(S.State.maxSupplies() - state.ship.supplies, math.floor(state.coins / cost(state, SUPPLY_COST)))
+			if n > 0 then
+				state.coins -= n * cost(state, SUPPLY_COST)
+				state.ship.supplies += n
+				table.insert(msgs, string.format("보급품 %d개 보급 (-%d)", n, n * cost(state, SUPPLY_COST)))
+			end
+		end
+		if #msgs == 0 then
+			return false, "이미 가득 찼거나 코인이 부족해요"
+		end
+		return true, table.concat(msgs, "\n")
+	end
+
+	function handlers.SetAuto(state, p)
+		if p.key ~= "supplies" and p.key ~= "crew" then
+			return false, "잘못된 요청"
+		end
+		state.auto[p.key] = p.value == true
+		return true, string.format("자동 %s: %s", if p.key == "supplies" then "보급" else "선원 충원", if p.value == true then "켜짐 (항구에 도착할 때마다 채워요)" else "꺼짐")
+	end
+
+	-- 입항할 때 자동으로 채운다 (켜 둔 항목만, 코인이 되는 만큼)
+	local function autoTopUp(state, msgs)
+		if state.auto.crew then
+			local def = S.State.shipDef(state)
+			local n = math.min(def.crew - state.ship.crew, math.floor(state.coins / cost(state, HIRE_COST)))
+			if n > 0 then
+				state.coins -= n * cost(state, HIRE_COST)
+				state.ship.crew += n
+				table.insert(msgs, string.format("[자동] 선원 %d명 충원 (-%d)", n, n * cost(state, HIRE_COST)))
+			end
+		end
+		if state.auto.supplies then
+			local n = math.min(S.State.maxSupplies() - state.ship.supplies, math.floor(state.coins / cost(state, SUPPLY_COST)))
+			if n > 0 then
+				state.coins -= n * cost(state, SUPPLY_COST)
+				state.ship.supplies += n
+				table.insert(msgs, string.format("[자동] 보급품 %d개 보급 (-%d)", n, n * cost(state, SUPPLY_COST)))
+			end
+		end
+	end
+
 	return {
+		autoTopUp = autoTopUp,
 		handlers = handlers,
 		cannonMult = cannonMult,
 		cannonBlock = cannonBlock,

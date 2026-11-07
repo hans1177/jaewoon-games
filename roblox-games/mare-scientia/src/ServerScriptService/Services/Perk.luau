@@ -187,6 +187,33 @@ return function(D, S)
 		return true, string.format("%s이(가) 동료가 되었다! (-%d코인)", c.name, c.fee)
 	end
 
+	-- 동료와 대화: 하루에 한 번 호감도 +2. 호감 단계에 따라 다른 이야기를 한다.
+	function handlers.Talk(state, p, ctx)
+		local id = p.companionId
+		local c = type(id) == "string" and Sp.CompanionById[id]
+		if not c or not table.find(state.companions, id) then
+			return false, "함께하고 있지 않아요"
+		end
+		local tier = Sp.affinityTier(affinityOf(state, id))
+		local pool = D.CompanionTalk[id][tier]
+		local line = pool[math.min(#pool, math.floor(ctx.rng() * #pool) + 1)]
+		local msgs = {}
+		local fresh = state.talked[id] ~= state.day
+		if fresh then
+			state.talked[id] = state.day
+			local before = affinityOf(state, id)
+			state.affinity[id] = math.min(Sp.MAX_AFFINITY, before + 2)
+			table.insert(msgs, "호감도 +2")
+			if Sp.affinityTier(state.affinity[id]) > Sp.affinityTier(before) then
+				table.insert(msgs, string.format("%s와(과)의 유대가 깊어졌다 (효과 x%.2f)", c.name, Sp.affinityMult(state.affinity[id])))
+			end
+		else
+			table.insert(msgs, "(오늘은 이미 깊은 이야기를 나눴어요)")
+		end
+		state.talk = { name = c.name, line = line, note = table.concat(msgs, " · ") }
+		return true, string.format("%s: \"%s\"", c.name, line)
+	end
+
 	function handlers.Dismiss(state, p)
 		local idx = type(p.companionId) == "string" and table.find(state.companions, p.companionId)
 		if not idx then

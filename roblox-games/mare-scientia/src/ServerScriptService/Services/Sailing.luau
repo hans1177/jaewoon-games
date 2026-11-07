@@ -101,6 +101,7 @@ return function(D, S)
 		S.State.gainXp(state, "adventure", days * 2 + math.floor(dist / 200), msgs)
 		S.Perk.gainSpec(state, "voyage", days * 3, msgs)
 		S.Perk.addAffinity(state, 1, msgs)
+		S.Shipyard.autoTopUp(state, msgs)
 		return true, table.concat(msgs, "\n")
 	end
 

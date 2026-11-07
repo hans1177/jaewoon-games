@@ -65,7 +65,14 @@ return function(D, S)
 		for _, e in ctx.market:activeEvents() do
 			local pt, gd = D.Ports.Ports[e.portId], D.Ports.Goods[e.goodId]
 			if pt and gd then
-				table.insert(view.news, pt.name .. ": " .. (tostring(e.text):gsub("%%s", gd.name)))
+				local line = pt.name .. ": " .. (tostring(e.text):gsub("%%s", gd.name))
+				local lv = S.Harbor.intel(state)
+				if lv >= 3 then
+					line ..= string.format(" (약 %+d%%)", math.floor((e.mult - 1) * 100 + 0.5))
+				elseif lv >= 1 then
+					line ..= if math.abs(e.mult - 1) >= 0.3 then " (크게)" else " (조금)"
+				end
+				table.insert(view.news, line)
 			end
 		end
 		table.sort(view.news)
@@ -94,6 +101,33 @@ return function(D, S)
 				owned = state.cargo[goodId] or 0,
 			})
 		end
+
+		-- 이 항구에서 다루는 물건만 보인다: 특산 > 수요 > 내가 가진 것. (너무 적으면 전부)
+		do
+			local shown = {}
+			for _, g in view.goods do
+				if g.tag ~= "" or g.owned > 0 then
+					table.insert(shown, g)
+				end
+			end
+			if #shown >= 4 then
+				local rank = { ["특산"] = 1, ["수요"] = 2, [""] = 3 }
+				table.sort(shown, function(a, b)
+					if rank[a.tag] ~= rank[b.tag] then
+						return rank[a.tag] < rank[b.tag]
+					end
+					return a.name < b.name
+				end)
+				view.goods = shown
+			end
+		end
+		view.intel = S.Harbor.intel(state)
+		view.supplyMax = S.State.maxSupplies()
+		if state.rumor and state.rumor.portId == state.portId then
+			view.rumor = state.rumor
+		end
+		view.talk = state.talk
+		view.auto = state.auto
 
 		-- 항해 미리보기
 		view.routes = {}

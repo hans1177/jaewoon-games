@@ -46,7 +46,31 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
-	-- 주점 소문: 지금 이 항구에서 사서 다른 항구에 팔면 가장 남는 상품 3가지
+	-- 거래 정보 수준: 동료의 장사 감각 + 무역가 전문 레벨. 0=감만, 1~2=대략, 3 이상=정확한 수치.
+	local COMPANION_INTEL = { c_boyle = 3, c_halley = 2 }
+	local function intel(state)
+		local total = 0
+		for _, id in state.companions do
+			local base = COMPANION_INTEL[id] or 1
+			total += base * D.Specialties.affinityMult(S.Perk.affinityOf(state, id))
+		end
+		if state.specialty == "merchant" then
+			total += S.Perk.specLevel(state, "merchant")
+		end
+		return math.floor(total)
+	end
+
+	local function vagueProfit(profit)
+		if profit >= 120 then
+			return "큰 이문이 남는다고 한다"
+		elseif profit >= 60 then
+			return "쏠쏠하게 남는다고 한다"
+		end
+		return "조금은 남는다고 한다"
+	end
+
+	-- 주점 소문: 지금 이 항구에서 사서 다른 항구에 팔면 남는 상품.
+	-- 동료가 없으면 어느 항구가 좋다는 정도의 힌트만, 있으면 범위, 장사 감각이 높으면 정확한 수치.
 	function handlers.Rumor(state, _p, ctx)
 		if state.coins < H.RUMOR_COST then
 			return false, "코인이 부족해요"
@@ -59,24 +83,35 @@ return function(D, S)
 			for portId, port in D.Ports.Ports do
 				if portId ~= here then
 					local sell = T.sellPrice(portId, goodId, ctx.market:get(portId, goodId), rate, ctx.market:eventMult(portId, goodId))
-					table.insert(deals, { text = string.format("%s: %s에서 팔면 개당 %+d", good.name, port.name, sell - buy), profit = sell - buy })
+					table.insert(deals, { good = good.name, port = port.name, profit = sell - buy })
 				end
 			end
 		end
 		table.sort(deals, function(a, b)
 			return a.profit > b.profit
 		end)
+		local level = intel(state)
+		local limit = if level >= 3 then 5 elseif level >= 1 then 4 else 3
 		state.coins -= H.RUMOR_COST
-		local msgs = { string.format("술값 %d코인. 뱃사람이 귀띔한다:", H.RUMOR_COST) }
-		local seen = {}
+		local lines, seen = {}, {}
 		for _, d in deals do
-			local key = d.text:match("^[^:]+")
-			if not seen[key] and #msgs < 4 then
-				seen[key] = true
-				table.insert(msgs, "· " .. d.text)
+			if not seen[d.good] and #lines < limit then
+				seen[d.good] = true
+				local text
+				if level >= 3 then
+					text = string.format("%s: %s에서 팔면 개당 약 %+d", d.good, d.port, d.profit)
+				elseif level >= 1 then
+					local lo = math.floor(d.profit * 0.8 / 10) * 10
+					text = string.format("%s: %s 쪽이 개당 %d~%d 남는다더라", d.good, d.port, lo, lo + math.max(20, math.floor(d.profit * 0.4 / 10) * 10))
+				else
+					text = string.format("%s: %s 쪽에서 %s", d.good, d.port, vagueProfit(d.profit))
+				end
+				table.insert(lines, text)
 			end
 		end
-		return true, table.concat(msgs, "\n")
+		state.rumor = { portId = here, level = level, lines = lines }
+		local who = if level >= 3 then "동료가 장부를 펼치며 정확히 짚어 준다" elseif level >= 1 then "동료가 대강의 시세를 보태 준다" else "뱃사람이 취기에 귀띔한다 (동료가 있으면 더 정확해요)"
+		return true, string.format("술값 %d코인. %s", H.RUMOR_COST, who)
 	end
 
 	return {
@@ -85,5 +120,6 @@ return function(D, S)
 		sellBonus = sellBonus,
 		costMult = costMult,
 		invested = invested,
+		intel = intel,
 	}
 end

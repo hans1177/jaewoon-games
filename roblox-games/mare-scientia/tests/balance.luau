@@ -17,6 +17,7 @@ local D = {
 	Combat = require("./Shared/Combat"),
 	Bosses = require("./Shared/Bosses"),
 	Specialties = require("./Shared/Specialties"),
+	CompanionTalk = require("./Shared/CompanionTalk"),
 	Fields = require("./Shared/Fields"),
 	Collection = require("./Shared/Collection"),
 	CardArt = require("./Shared/CardArt"),

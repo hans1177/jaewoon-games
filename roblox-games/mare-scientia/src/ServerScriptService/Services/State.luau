@@ -28,6 +28,8 @@ return function(D)
 			ship = { id = def.id, hull = def.hull, crew = def.crew, supplies = 30, cannon = "basic", plating = 0 },
 			license = 0,
 			insured = false,
+			auto = { supplies = false, crew = false },
+			talked = {},
 			cargo = {},
 			basis = {},
 			discovered = {},
@@ -266,6 +268,10 @@ return function(D)
 		end
 		s.license = math.floor(num(saved.license, 0, 0, #D.Ships.Licenses))
 		s.insured = saved.insured == true
+		if type(saved.auto) == "table" then
+			s.auto.supplies = saved.auto.supplies == true
+			s.auto.crew = saved.auto.crew == true
+		end
 		s.title = math.floor(num(saved.title, 0, 0, #D.Facilities.TITLES))
 		if type(saved.contract) == "table" and D.Ports.Goods[saved.contract.goodId] and D.Ports.Ports[saved.contract.toPortId] then
 			local c = saved.contract
@@ -362,6 +368,7 @@ return function(D)
 			title = state.title,
 			license = state.license,
 			insured = state.insured,
+			auto = state.auto,
 			story = state.story,
 			collected = state.collected,
 		}

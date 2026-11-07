@@ -16,6 +16,7 @@ local D = {
 	Combat = require("./Shared/Combat"),
 	Bosses = require("./Shared/Bosses"),
 	Specialties = require("./Shared/Specialties"),
+	CompanionTalk = require("./Shared/CompanionTalk"),
 	Fields = require("./Shared/Fields"),
 	Collection = require("./Shared/Collection"),
 	CardArt = require("./Shared/CardArt"),
@@ -664,12 +665,41 @@ do
 	check("garbage rejected", S.State.sanitize("hello") == nil and S.State.sanitize({ nationId = "mars" }) == nil)
 end
 
+-- 13b. 보급 / 자동 충원 / 동료 대화 / 교역 힌트 ---------------------------
+do
+	local st = newState()
+	st.coins = 1000
+	st.ship.crew = 1
+	st.ship.supplies = 0
+	local ok = act(st, "Resupply", { what = "both" })
+	check("resupply fills crew and supplies", ok and st.ship.crew == S.State.shipDef(st).crew and st.ship.supplies > 0)
+	check("resupply bad arg rejected", not act(st, "Resupply", { what = "x" }))
+	check("set auto on", act(st, "SetAuto", { key = "crew", value = true }) and st.auto.crew == true)
+	check("auto survives save", S.State.sanitize(S.State.serialize(st)).auto.crew == true)
+	st.ship.crew = 1
+	st.coins = 1000
+	local msgs = {}
+	S.Shipyard.autoTopUp(st, msgs)
+	check("auto top up crew on arrival", st.ship.crew == S.State.shipDef(st).crew and #msgs >= 1)
+	check("talk needs companion", not act(st, "Talk", { companionId = "c_boyle" }))
+	st.companions = { "c_boyle" }
+	local a0 = st.affinity.c_boyle or 0
+	local okT = act(st, "Talk", { companionId = "c_boyle" })
+	check("talk gives affinity once per day", okT and st.affinity.c_boyle == a0 + 2 and st.talk.name ~= nil)
+	act(st, "Talk", { companionId = "c_boyle" })
+	check("second talk same day no more affinity", st.affinity.c_boyle == a0 + 2)
+	check("boyle gives exact intel", S.Harbor.intel(st) >= 3)
+	st.coins = 500
+	act(st, "Rumor", {})
+	check("exact rumor has numbers", string.find(st.rumor.lines[1], "%d") ~= nil)
+end
+
 -- 14. 화면 스냅샷 -------------------------------------------------------
 do
 	local st = newState()
 	local v = S.View.build(st, ctx)
 	check("view has player", v.player.portName == "런던" and v.player.year == 1700)
-	check("view goods", #v.goods == (function() local n = 0 for _ in D.Ports.Goods do n += 1 end return n end)())
+	check("view goods only local specialties/demands/owned", #v.goods >= 4 and #v.goods < (function() local n = 0 for _ in D.Ports.Goods do n += 1 end return n end)() + 1 and v.goods[1].tag == "특산")
 	check("view routes", #v.routes == (function() local n = 0 for _ in D.Ports.Ports do n += 1 end return n - 1 end)())
 	check("view codex", v.codex.total == #D.Cards.Cards and v.codex.found == 0)
 	check("view hides unfound names", v.codex.cards[1].name == "???")
@@ -1167,7 +1197,7 @@ do
 	check("rumor without coins rejected", not ok)
 	st.coins = 100
 	local ok2, msg2 = act(st, "Rumor", {})
-	check("rumor works and costs", ok2 and st.coins == 60 and string.find(msg2, "·") ~= nil, msg2)
+	check("rumor works and costs", ok2 and st.coins == 60 and S.View.build ~= nil and st.rumor ~= nil and #st.rumor.lines >= 3 and string.find(st.rumor.lines[1], "%d") == nil, msg2)
 	local back = S.State.sanitize(S.State.serialize(st))
 	check("harbor survives save", back.harbor[st.portId] == st.harbor[st.portId])
 	local evil = S.State.sanitize({ nationId = "england", startYear = 1700, harbor = { nowhere = 5, london = -9, dublin = 77 } })
