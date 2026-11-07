@@ -223,8 +223,11 @@ function meadowArt.skill(icon,key)
 end
 function meadowArt.gear(icon,cell)
   if meadowArt.gearSheet=="" or cell==nil then return false end
+  -- [장비 110종 아이콘] 기존 64칸 원본 시트 범위를 넘기지 않는다. 개별 실물은 3D 프리뷰가 덮는다.
+  local safeCell=math.clamp(math.floor(tonumber(cell) or 0),0,63)
   icon.Image=meadowArt.gearSheet
-  icon.ImageRectOffset=Vector2.new((cell%8)*128,math.floor(cell/8)*128);icon.ImageRectSize=Vector2.new(128,128)
+  icon.ImageRectOffset=Vector2.new((safeCell%8)*128,math.floor(safeCell/8)*128)
+  icon.ImageRectSize=Vector2.new(128,128)
   return true
 end
 -- [3D 아이템 보기] 서버가 ReplicatedStorage.MeadowItemModels에 올려 둔 CC0 아이템 메시를 뷰포트에서 천천히 돌린다.
@@ -242,24 +245,34 @@ do
   local tints={moss_robe=Color3.fromRGB(125,185,115),frost_leather=Color3.fromRGB(150,195,240),magma_plate=Color3.fromRGB(255,120,75),
     worldtree_mail=Color3.fromRGB(150,240,170),hunter_armor=Color3.fromRGB(190,200,170),guardian_armor=Color3.fromRGB(190,210,255)}
   function meadowArt.itemTintFor(item)
-    if item and item.gear and item.gear.Tint then
-      local rgb=item.gear.Tint
-      return Color3.fromRGB(rgb[1],rgb[2],rgb[3])
+    if not item or not item.gear then return nil end
+    local gear=item.gear
+    if gear.Tint then
+      return Color3.fromRGB(gear.Tint[1],gear.Tint[2],gear.Tint[3])
     end
-    return item and item.gear and tints[item.gear.Id] or nil
+    local look=Config.GearLook and Config.GearLook[gear.Id]
+    if look and look.tint then return Color3.fromRGB(look.tint[1],look.tint[2],look.tint[3]) end
+    return tints[gear.Id]
   end
   local matKeys={Wood="item_woodlog",Stone="item_rock_1",Ore="item_mineral",Magma="item_mineral",Fang="item_bone",Claw="item_bone",Ectoplasm="item_skull",Crystal="item_crystal1",Ingot="item_mineral",Steel="item_gold_ingots",Meat="item_chickenleg",Leather="item_bone"}
   function meadowArt.itemKeyFor(item)
     if not item then return nil end
     if item.gear then
-      if item.gear.ModelKey then return item.gear.ModelKey end
-      if gearKeys[item.gear.Id] then return gearKeys[item.gear.Id] end
-      if armorKeys[item.gear.Id] then return armorKeys[item.gear.Id] end
-      if item.gear.Slot=="Hands" then return "item_glove" end
-      if item.gear.Slot=="Legs" then return "item_pants" end
-      if item.gear.Slot=="Feet" then return "item_boots" end
-      if item.gear.Id=="worldtree_staff" then return "item_staff" end
-      if item.gear.Category=="장신구" then return "item_ring1" end
+      local gear=item.gear
+      if gear.ModelKey then return gear.ModelKey end
+      -- [장비 실물 아이콘] 착용 화면·도감·가방 모두 같은 등록 3D 모델 키를 쓴다.
+      local look=Config.GearLook and Config.GearLook[gear.Id]
+      if look then
+        if look.model then return look.model end
+        if look.acc and look.acc.model then return look.acc.model end
+      end
+      if gear.Slot=="Cape" then return Config.OpeningCapeModelKey end
+      if gearKeys[gear.Id] then return gearKeys[gear.Id] end
+      if armorKeys[gear.Id] then return armorKeys[gear.Id] end
+      if gear.Slot=="Hands" then return "item_glove" end
+      if gear.Slot=="Legs" then return "item_pants" end
+      if gear.Slot=="Feet" then return "item_boots" end
+      if gear.Category=="장신구" then return "item_ring1" end
       return nil
     end
     if type(item.key)=="string" and matKeys[item.key] then return matKeys[item.key] end
@@ -1335,7 +1348,11 @@ return function(character,humanoid,tool,force)
       heroSlot.icon.ImageTransparency=have and 0 or .6
       local slotKey=({"Weapon","Hands","Chest","Legs","Feet","Accessory"})[order]
       local equippedIndex=player:GetAttribute("MeadowEquip"..slotKey)
+      local gear=have and typeof(equippedIndex)=="number" and catalog[equippedIndex] or nil
       meadowArt.gear(heroSlot.icon,have and typeof(equippedIndex)=="number" and equippedIndex-1 or meadowArt.slotEmpty[slotKey])
+      if not heroSlot.icon3D then heroSlot.icon3D=meadowArt.new3D(heroSlot.icon) end
+      local previewItem=gear and {gear=gear} or nil
+      meadowArt.set3D(heroSlot.icon3D,meadowArt.itemKeyFor(previewItem),meadowArt.itemTintFor(previewItem))
       heroSlot.edge.Color=have and meadowGold or Color3.fromRGB(88,120,104)
       heroSlot.name.Text=have and (string.gsub(label.Text," · .*$","")) or heroSlot.default
     end

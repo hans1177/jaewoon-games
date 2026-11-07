@@ -9744,8 +9744,21 @@ end
 do
   local folder=ReplicatedStorage:FindFirstChild("MeadowItemModels") or Instance.new("Folder")
   folder.Name="MeadowItemModels";folder.Parent=ReplicatedStorage
+  -- [장비 고유 아이콘] 기존 아이템 이외에 독립 검/방패 모델과 망토 원본도 가방에 공유한다.
+  -- 미등록·승인 전 키는 불러오지 않고 기존 평면 아이콘을 유지한다.
+  local usedGearModels={}
+  for _,gear in ipairs(Config.MeadowEquipment or {}) do
+    if gear.ModelKey then usedGearModels[gear.ModelKey]=true end
+    local look=Config.GearLook and Config.GearLook[gear.Id]
+    if look then
+      if look.model then usedGearModels[look.model]=true end
+      if look.acc and look.acc.model then usedGearModels[look.acc.model]=true end
+    end
+  end
+  if Config.OpeningCapeModelKey then usedGearModels[Config.OpeningCapeModelKey]=true end
   for key,id in pairs(NativeCreatureAssets) do
-    if type(key)=="string" and key:sub(1,5)=="item_" then
+    if type(key)=="string" and typeof(id)=="number" and id>0
+      and (key:sub(1,5)=="item_" or usedGearModels[key]) then
       task.spawn(function()
         local ok,model=pcall(function() return AssetService:LoadAssetAsync(id) end)
         if not ok or not model then warn("마력숲 아이템 모델 불러오기 실패: "..key) return end
