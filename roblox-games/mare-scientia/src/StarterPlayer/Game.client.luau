@@ -1805,6 +1805,11 @@ local function openTradeHall()
 		local hold = mkLabel(top, string.format("코인 %d    화물 %d/%d", p.coins, ship.cargoUsed, ship.cargoCapacity), 20, COLORS.text, true)
 		hold.AnchorPoint = Vector2.new(1, 0)
 		hold.Position = UDim2.new(1, -140, 0, 14)
+		hold.Size = UDim2.fromOffset(420, 28)
+		hold.AutomaticSize = Enum.AutomaticSize.None
+		hold.TextXAlignment = Enum.TextXAlignment.Right
+		title.Size = UDim2.fromOffset(420, 30)
+		title.AutomaticSize = Enum.AutomaticSize.None
 		local leave = mkButton(top, "나가기", COLORS.red, UDim2.fromOffset(110, 38), closeTradeHall, true)
 		leave.AnchorPoint = Vector2.new(1, 0.5)
 		leave.Position = UDim2.new(1, -12, 0.5, 0)
@@ -1838,8 +1843,8 @@ local function openTradeHall()
 			m.Parent = world
 			pcall(Pose.relaxArms, m)
 			local cf, size = m:GetBoundingBox()
-			local focus = cf.Position + Vector3.new(0, size.Y * 0.15, 0)
-			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.3, 0.1, 1).Unit * (size.Y * 1.25), focus)
+			local focus = cf.Position
+			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.08, 1).Unit * (size.Y * 2.0), focus)
 		end
 		local bubble = mkBox(left, UDim2.new(0, 10, 1, -146), UDim2.new(1, -20, 0, 136), Color3.fromRGB(240, 228, 200))
 		corner(bubble, 12)
