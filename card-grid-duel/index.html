@@ -33,13 +33,11 @@ h1{font-size:22px;margin:0}
 .cell.jungle.borderJungle{box-shadow:inset 5px 0 0 #719d3e}
 .cell.jungleHeal{outline:2px solid #75f898;z-index:0}
 
-/* 7스테이지 우르수스: 영상 대신 기기 내 음원과 부드러운 페이드 재생. */
-#bossMusicSetup{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0;padding:9px 11px}
-#bossMusicSetup label{display:inline-flex;align-items:center;justify-content:center;padding:10px 13px;min-height:44px;border-radius:9px;background:#51426b;color:#fff;font-weight:850;cursor:pointer}
-#bossMusicFile{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
-#bossMusicFileStatus{font-size:12px;color:#d8c9f1;overflow-wrap:anywhere}
+/* 7스테이지 우르수스: 유튜브 공식 영상 플레이어를 화면에 표시한다. */
 #bossMusicPanel{margin:8px 0 10px;padding:9px 11px;border:1px solid #965960;border-radius:12px;background:#251722;color:#ffe6db;font-size:12px;text-align:center}
 #bossMusicToggle{min-height:44px;border:1px solid #bb827b;border-radius:9px;background:#633139;color:#fff4df;padding:0 14px;font-weight:900}
+#bossMusicPlayer{width:100%;max-width:520px;min-height:200px;margin:9px auto 0}
+#bossMusicPlayer iframe{display:block;width:100%;height:auto;min-height:200px;aspect-ratio:16/9;border:0;border-radius:8px}
 #bossMusicPanel small{display:block;margin-top:8px;line-height:1.5;opacity:.88}
 #bossMusicPanel a{color:#f9d6aa}
 .portrait.ursusArt,.card .art.ursusArt{box-shadow:0 0 0 2px #b13935,0 0 14px #e34237;background-color:#4b1820}
@@ -147,18 +145,14 @@ h1{font-size:22px;margin:0}
       <button id="viewEnemy" type="button">적 진영 보기</button>
       <button id="viewAlly" type="button">내 진영 보기</button>
     </div>
-    <div id="bossMusicSetup" class="panel">
-      <label for="bossMusicFile">보스 브금 파일 선택</label>
-      <input id="bossMusicFile" type="file" accept="audio/*,.mp3,.ogg,.m4a,.wav">
-      <span id="bossMusicFileStatus">등록된 음악 없음 · 파일을 선택하면 기기에 저장돼.</span>
-    </div>
     <div id="bossMusicPanel" class="hidden">
-      <button id="bossMusicToggle" type="button">보스 음악 켜기</button>
-      <small>영상 없이 음악만 재생 · 우르수스 처치 시 6초 동안 서서히 줄어듦.<br>
-        <a href="https://www.youtube.com/watch?v=2BbinQxbyI8" target="_blank" rel="noopener noreferrer">4분 46초 원본 영상 확인</a> · 직접 준비한 음원 파일을 선택해.
+      <button id="bossMusicToggle" type="button">유튜브 리믹스 재생하기</button>
+      <div id="bossMusicPlayer"></div>
+      <small>모차르트 라크리모사 웅장한 편곡 · 크루티코프 뮤직 · 영상 4분 46초<br>
+        모바일에서 자동재생이 막히면 영상의 재생 버튼을 눌러.<br>
+        <a href="https://www.youtube.com/watch?v=2BbinQxbyI8" target="_blank" rel="noopener noreferrer">유튜브에서 원본 듣기</a>
       </small>
     </div>
-    <audio id="bossMusic" preload="none" loop></audio>
     <div class="boardWrap"><div id="board" class="board"></div></div>
     <div class="statusRow">
       <span id="deckInfo">골드 -</span>
@@ -1151,127 +1145,55 @@ function aiTurn(){
   render()
 }
 
-// 7스테이지 보스 음악: 유튜브 영상 화면 및 무단 오디오 추출을 사용하지 않는다.
-// 사용자가 기기에서 선택한 음원만 브라우저 기본 오디오로 재생한다.
-// 파일은 이 브라우저에 하나만 보관하며 게임 진행/다이아 저장 키는 건드리지 않는다.
-const bossAudio=$('#bossMusic');
-const bossMusicInput=$('#bossMusicFile');
-let bossMusicRequested=false,bossMusicMuted=false,bossFadeTimer=null,bossTrackUrl='';
-let bossTrackSelected=false;
-function fadeBossMusic(target,duration){
-  if(bossFadeTimer!==null){clearInterval(bossFadeTimer);bossFadeTimer=null}
-  if(!bossAudio.src)return;
-  const startVolume=bossAudio.volume,started=Date.now();
-  bossFadeTimer=setInterval(()=>{
-    const elapsed=Math.min(1,(Date.now()-started)/duration);
-    const smooth=elapsed*elapsed*(3-2*elapsed);
-    bossAudio.volume=Math.max(0,Math.min(1,startVolume+(target-startVolume)*smooth));
-    if(elapsed>=1){
-      clearInterval(bossFadeTimer);bossFadeTimer=null;
-      if(target===0){bossAudio.pause();bossAudio.currentTime=0}
-    }
-  },50)
-}
+// 7스테이지 보스 음악: 임의 합성음·위키미디어 연주를 완전히 제거한다.
+// 유튜브 원본 리믹스를 공식 임베드로 재생한다. 오디오 추출·복제·비공개 우회는 하지 않는다.
+// 영상 플레이어는 유튜브 정책에 맞게 표시하고 원본 재생 컨트롤을 유지한다.
+const BOSS_REMIX_VIDEO='2BbinQxbyI8';
+const bossPlayer=$('#bossMusicPlayer');
+let bossMusicRequested=false;
 function playBossMusic(){
-  if(!bossAudio.src){
-    $('#bossMusicToggle').textContent='브금 파일 선택하기';
-    return
-  }
-  if(bossFadeTimer!==null){clearInterval(bossFadeTimer);bossFadeTimer=null}
-  bossAudio.volume=0;
-  if(bossAudio.paused)bossAudio.currentTime=0;
-  const attempt=bossAudio.play();
-  const started=()=>{
-    if(!bossMusicRequested||bossMusicMuted||state?.stage!==7||state.phase!=='BATTLE'
-      ||state.winner||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
-    $('#bossMusicToggle').textContent='보스 음악 끄기';
-    fadeBossMusic(.95,1800)
-  };
-  if(attempt&&typeof attempt.then==='function'){
-    attempt.then(started).catch(()=>{$('#bossMusicToggle').textContent='보스 음악 재생(터치)'})
-  }else started()
+  if(!state||state.stage!==7||state.phase!=='BATTLE'||state.winner
+    ||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
+  if(bossPlayer.querySelector('iframe'))return;
+  const frame=document.createElement('iframe');
+  frame.title='우르수스 보스 음악 · 크루티코프 뮤직 라크리모사 웅장한 편곡 (4분 46초)';
+  frame.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; web-share');
+  frame.setAttribute('allowfullscreen','');
+  frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
+  // 소리를 임의 제작하지 않고 제작자의 실제 유튜브 영상 그대로 연결한다.
+  frame.src='https://www.youtube-nocookie.com/embed/'+BOSS_REMIX_VIDEO
+    +'?autoplay=1&controls=1&playsinline=1&loop=1&playlist='+BOSS_REMIX_VIDEO
+    +'&enablejsapi=1';
+  bossPlayer.appendChild(frame);
+  $('#bossMusicToggle').textContent='영상에서 ▶ 눌러 재생'
 }
 function syncBossMusic(){
   const active=!!(state?.stage===7&&state.phase==='BATTLE'&&!state.winner
     &&state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0));
   $('#bossMusicPanel').classList.toggle('hidden',!active);
   if(active){
-    if(!bossMusicRequested&&!bossMusicMuted){
+    if(!bossMusicRequested){
       bossMusicRequested=true;
       playBossMusic()
     }
   }else{
     if(bossMusicRequested){
       bossMusicRequested=false;
-      // 처치 즉시 음원을 끊지 말고 6초 동안 볼륨을 부드럽게 내린다.
-      if(!bossAudio.paused)fadeBossMusic(0,6000)
+      // 보스가 죽거나 전투가 끝나면 영상 자체를 내려 소리가 남지 않는다.
+      bossPlayer.replaceChildren()
     }
-    bossMusicMuted=false
   }
 }
 $('#bossMusicToggle').onclick=()=>{
-  if(!state||state.stage!==7||state.phase!=='BATTLE'||state.winner
+  if(!state||state.stage!==7||state.winner
     ||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
-  if(!bossAudio.src){bossMusicInput.click();return}
-  if(!bossAudio.paused&&!bossMusicMuted){
-    bossMusicMuted=true;
-    $('#bossMusicToggle').textContent='보스 음악 켜기';
-    fadeBossMusic(0,1800)
-  }else{
-    bossMusicMuted=false;
-    bossMusicRequested=true;
-    playBossMusic()
-  }
+  const frame=bossPlayer.querySelector('iframe');
+  if(!frame){playBossMusic();return}
+  frame.scrollIntoView({behavior:'smooth',block:'center'});
+  // 직접 터치가 필요한 모바일에서는 유튜브 영상 자체의 ▶ 버튼으로 재생할 수 있다.
+  frame.contentWindow?.postMessage(JSON.stringify({event:'command',func:'playVideo',args:[]}),
+    'https://www.youtube-nocookie.com')
 };
-bossMusicInput.onchange=()=>{
-  const file=bossMusicInput.files?.[0];
-  if(!file)return;
-  if((!file.type.startsWith('audio/')&&!/\.(mp3|m4a|ogg|wav)$/i.test(file.name))
-    ||file.size>60*1024*1024){
-    $('#bossMusicFileStatus').textContent='지원되는 음악 파일(60MB 이하)을 선택해.';
-    return
-  }
-  bossTrackSelected=true;
-  if(bossFadeTimer!==null){clearInterval(bossFadeTimer);bossFadeTimer=null}
-  bossAudio.pause();
-  if(bossTrackUrl)URL.revokeObjectURL(bossTrackUrl);
-  bossTrackUrl=URL.createObjectURL(file);
-  bossAudio.src=bossTrackUrl;bossAudio.load();
-  bossMusicMuted=false;
-  $('#bossMusicFileStatus').textContent=file.name+' · 이 기기에 저장됨';
-  if('indexedDB' in window){
-    const open=indexedDB.open('card-grid-duel-boss-audio',1);
-    open.onupgradeneeded=()=>open.result.createObjectStore('track');
-    open.onsuccess=()=>{
-      const tx=open.result.transaction('track','readwrite');
-      tx.objectStore('track').put(file,'selected');
-      tx.oncomplete=()=>open.result.close()
-    };
-  }
-  if(bossMusicRequested&&state?.stage===7&&state.phase==='BATTLE'&&!state.winner)playBossMusic()
-};
-// 저장된 음악을 복원한다. 저장 실패/미지원 모바일에서도 현재 선택한 파일은 재생된다.
-if('indexedDB' in window){
-  const open=indexedDB.open('card-grid-duel-boss-audio',1);
-  open.onupgradeneeded=()=>open.result.createObjectStore('track');
-  open.onsuccess=()=>{
-    const db=open.result,tx=db.transaction('track','readonly');
-    const get=tx.objectStore('track').get('selected');
-    get.onsuccess=()=>{
-      const file=get.result;
-      if(!file||bossTrackSelected)return;
-      if(bossTrackUrl)URL.revokeObjectURL(bossTrackUrl);
-      bossTrackUrl=URL.createObjectURL(file);
-      bossAudio.src=bossTrackUrl;bossAudio.load();
-      $('#bossMusicFileStatus').textContent=file.name+' · 저장된 브금';
-      if(bossMusicRequested&&state?.stage===7&&state.phase==='BATTLE'&&!state.winner)playBossMusic()
-    };
-    tx.oncomplete=()=>db.close()
-  }
-}
-bossAudio.addEventListener('error',()=>{
-  $('#bossMusicToggle').textContent='음원 재생 오류 · 파일 확인'
-});
 $('#resetDiamonds').onclick=resetDiamonds;
 $('#playBtn').onclick=()=>{
   mode='play';side='BLUE';
