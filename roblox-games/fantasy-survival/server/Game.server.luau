@@ -1099,6 +1099,47 @@ local function villageInvestigate(player,clueIndex,role,sceneContractIndex)
     or "\n\n남은 진술·현장 단서·전투를 완료해."
   villageDialogue(player,role,clue..note)
 end
+-- [지역 상인 · 기본 장비] 지역마다 파는 기본 장비가 달라 여러 마을을 돌아야 모두 모은다.
+local meadowGearShops={
+  village={Title="대장장이 브란 · 기본 장비",Gear={"hunter_blade","hunter_armor","hunter_gloves","guardian_pants","guardian_boots"}},
+  windcliff={Title="소금 상인 베른 · 기본 장비",Gear={"hunter_blade","guardian_boots"}},
+  highland={Title="모피 상인 토르 · 기본 장비",Gear={"hunter_armor","hunter_gloves","hunter_bow"}},
+  wetland={Title="약초 상인 파블로 · 기본 장비",Gear={"guardian_pants","hunter_bow"}},
+}
+local meadowGearShopDefault={Title="마을 상인 · 기본 장비",Gear={"hunter_blade","hunter_armor"}}
+local gearShopSessions={}
+local meadowShopApi={}
+local gearShopNames={hunter_blade="사냥꾼 장검",hunter_armor="사냥꾼 갑옷",hunter_gloves="강화 장갑",
+  guardian_pants="수호자 바지",guardian_boots="수호자 장화",hunter_bow="사냥꾼 활"}
+local function meadowOpenGearShop(player,shopId,position)
+  local shop=meadowGearShops[shopId] or meadowGearShopDefault
+  gearShopSessions[player]={shop=shopId,position=position,expires=os.clock()+60}
+  local options={}
+  for _,id in ipairs(shop.Gear) do
+    local price=meadowShopApi.priceOf and meadowShopApi.priceOf(id)
+    options[#options+1]={label=(gearShopNames[id] or id).."  ·  "..tostring(price or "?").." 재화",action="shop:buy:"..id}
+  end
+  villageDialogue(player,shop.Title,"기본 장비만 팔아. 더 좋은 장비는 대장간에서 직접 제작해.\n보유 재화 "..readNumber(player,"Coins",0),options)
+end
+local function meadowGearShopAction(player,actionId)
+  if player:GetAttribute("ProfileReady")~=true then return end
+  local session=gearShopSessions[player]
+  local open=actionId:match("^shop:open:([%w_]+)$")
+  if open then
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if root then meadowOpenGearShop(player,open,root.Position) end
+    return
+  end
+  local id=actionId:match("^shop:buy:([%w_]+)$")
+  if not id or not session or os.clock()>session.expires or not villageNear(player,session.position,24) then return end
+  local shop=meadowGearShops[session.shop] or meadowGearShopDefault
+  if not table.find(shop.Gear,id) then return end
+  if os.clock()-(villageInteractionCooldown[player] or 0)<.35 then return end
+  villageInteractionCooldown[player]=os.clock()
+  if meadowShopApi.buyGear then meadowShopApi.buyGear(player,id) end
+  meadowOpenGearShop(player,session.shop,session.position)
+end
+
 local function villageChoose(player,actionId)
   if os.clock()-(villageInteractionCooldown[player] or 0)<.35 then return end
   local session=villageSessions[player]
@@ -3232,6 +3273,7 @@ local function createMeadowVillage()
           local options={
             {label="대장 훈련 ("..(40*level).." 코인)",action="smith:train"},
             {label="대장 기술·작업대 안내",action="smith:info"},
+            {label="기본 장비 구매",action="shop:open:village"},
           }
           villageDialogue(player,row[1],row[2][n].."\n\n대장 Lv"..level.." · 경험치 "..xp..(nextNeed and ("/"..nextNeed) or " (최고)"),options)
         end
@@ -3738,12 +3780,31 @@ local meadowRpg=(function()
     end
     return false
   end
-  return {transact=transact,stats=stats,publishStats=publishStats,equippedWeapon=function(player) return equipped(player,"Weapon") end,
+  -- [상인 장비 구매] 기본 장비(희귀도 고급·숙련 요구 없음·대장간 전용 아님)만 코인으로 산다.
+  local function buyGear(player,id)
+    local gear=gearById[id]
+    if not gear then return false end
+    local item=gear.entry
+    if item.Starter or item.ForgeOnly or (item.Need or 0)>0 or item.Rarity~="Uncommon" then return false end
+    if hasGear(player,gear.index) then feedback(player,"이미 가진 장비야.");return true end
+    local price=(item.Wood or 0)*5+(item.Stone or 0)*5+(item.Coins or 0)*3
+    if readNumber(player,"Coins",0)<price then feedback(player,item.Name.." 구매에는 "..price.." 재화가 필요해.");return true end
+    setNumber(player,"Coins",readNumber(player,"Coins",0)-price)
+    grantGear(player,gear.index)
+    feedback(player,item.Name.." 구매 완료  (-"..price.." 재화)")
+    return true
+  end
+  return {buyGear=buyGear,priceOf=function(id)
+      local g=gearById[id];local it=g and g.entry
+      return it and ((it.Wood or 0)*5+(it.Stone or 0)*5+(it.Coins or 0)*3) or nil
+    end,
+    transact=transact,stats=stats,publishStats=publishStats,equippedWeapon=function(player) return equipped(player,"Weapon") end,
     equippedShield=function(player) return equipped(player,"Shield") end,
     equippedChest=function(player) return equipped(player,"Chest") end,
     equippedSlot=function(player,slot) return equipped(player,slot) end,
     nodeRank=nodeRank,nodeChoice=nodeChoice,passiveLevel=passiveLevel,validQuickCode=validQuickCode}
 end)()
+meadowShopApi.buyGear=meadowRpg.buyGear;meadowShopApi.priceOf=meadowRpg.priceOf
 
 -- [활 장착 외형] 등록된 CC0 활 메시(item_bow_wooden)를 왼손에 용접한다. 장검 도구는 집어넣는다.
 local function refreshBowVisualCore(player)
@@ -7387,6 +7448,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   if actionId=="ult:set:1" or actionId=="ult:set:2" then
     setNumber(player,"MeadowUltChoice",tonumber(actionId:sub(-1)));return
   end
+  if string.sub(actionId,1,5)=="shop:" then meadowGearShopAction(player,actionId);return end
   if string.sub(actionId,1,8)=="village:" then villageChoose(player,actionId);return end
   local chargedBolt=actionId=="mf-magic-1-1:charge"
   local combatActionId=chargedBolt and "mf-magic-1-1" or actionId
@@ -9395,6 +9457,16 @@ do
             end
             local prompt=Instance.new("ProximityPrompt");prompt.ActionText=role.action;prompt.ObjectText=town[role.key];prompt.HoldDuration=.4
             prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=root
+            if role.key=="Merchant" then
+              -- [지역 장비 상인] 같은 상인에게서 그 지역의 기본 장비를 산다.
+              local shopPrompt=Instance.new("ProximityPrompt");shopPrompt.ActionText="장비 사기";shopPrompt.ObjectText=town[role.key]
+              shopPrompt.HoldDuration=.3;shopPrompt.MaxActivationDistance=12;shopPrompt.RequiresLineOfSight=false
+              shopPrompt.KeyboardKeyCode=Enum.KeyCode.F;shopPrompt.UIOffset=Vector2.new(0,-60);shopPrompt.Parent=root
+              shopPrompt.Triggered:Connect(function(player)
+                if player:GetAttribute("ProfileReady")~=true then return end
+                meadowOpenGearShop(player,town.Id,root.Position)
+              end)
+            end
             prompt.Triggered:Connect(function(player)
               if player:GetAttribute("ProfileReady")~=true then return end
               if role.key=="Inn" then
