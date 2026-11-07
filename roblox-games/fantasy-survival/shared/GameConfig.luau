@@ -2297,6 +2297,8 @@ Config.MeadowSkillNodes = {
 }
 -- [스카이림식 요리] 마을 식당 화덕에서 요리하면 즉시 먹고 회복·버프를 얻는다. 요리할수록 숙련(CookingProficiency)이 올라 새 레시피가 열린다.
 Config.CookStation={Name="식당 화덕",X=63,Z=-104,Radius=16,Model="vxPotStew",Height=2.6}
+-- [연금 작업대] 등록된 CC0 작업대 모델로 세운다. 물약 조합은 이 근처에서만 한다.
+Config.AlchemyStation={Name="연금 작업대",X=84,Z=-104,Radius=12,Model="vxWorkbench",Height=3}
 Config.MeadowFoods={
   {Id=1,Name="구운 늑대 고기",Need=0,Meat=2,Heal=50,Seconds=10,Desc="체력을 10초에 걸쳐 50 회복"},
   {Id=2,Name="숲 버섯 스튜",Need=3,Meat=1,Mushroom=2,RedLeaf=1,Def=.10,Seconds=300,Desc="5분간 받는 피해 -10%"},

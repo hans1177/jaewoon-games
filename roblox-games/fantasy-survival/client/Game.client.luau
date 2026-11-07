@@ -2712,7 +2712,7 @@ local function redrawSelection()
     local ingot,leather=Config.ArmorTemperCost(armorTier,player:GetAttribute("SmithXp") or 0)
     secondary.Text=armorTier>=10 and "갑옷 단련 최대" or string.format("갑옷 단련 +%d → +%d  (주괴 %d · 가죽 %d)",armorTier,armorTier+1,ingot,leather)
   else
-    secondary.Text=item.tonic and "화덕에서 조합" or (refineSource and refineSource.Refine.Verb.."  ("..refineSource.Refine.Note..")" or "소모품 조합")
+    secondary.Text=item.tonic and "연금 작업대에서 조합" or (refineSource and refineSource.Refine.Verb.."  ("..refineSource.Refine.Note..")" or "소모품 조합")
   end
   secondary.Visible=item.tonic~=nil or refineSource~=nil or isArmor
   equip.Size=secondary.Visible and UDim2.new(.5,-16,0,48) or UDim2.new(1,-24,0,48)

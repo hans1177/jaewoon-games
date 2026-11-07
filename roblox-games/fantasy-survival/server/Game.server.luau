@@ -1111,15 +1111,30 @@ local gearShopSessions={}
 local meadowShopApi={}
 local gearShopNames={hunter_blade="사냥꾼 장검",hunter_armor="사냥꾼 갑옷",hunter_gloves="강화 장갑",
   guardian_pants="수호자 바지",guardian_boots="수호자 장화",hunter_bow="사냥꾼 활"}
+-- [NPC 호감도] 같은 상인에게서 살수록 호감이 쌓여 단골 할인(최대 15%)과 인사가 달라진다. 이번 접속 동안 유지된다.
+local affinityThresholds={0,2,5,9,14}
+local function affinityLevel(player,shopId)
+  local points=readNumber(player,"Affinity_"..shopId,0)
+  local level=1
+  for i,need in ipairs(affinityThresholds) do if points>=need then level=i end end
+  return level,points
+end
+local function affinityDiscount(level) return (level-1)*.0375 end
+local function affinityHearts(level) return string.rep("♥",level-1)..string.rep("♡",5-level) end
+local affinityGreetings={"처음 보는 얼굴이군. 천천히 둘러봐.","또 왔군! 좋은 물건만 골라 두었어.","단골 대접해 주지. 값을 조금 깎아 줄게.","자네라면 믿고 팔 수 있지. 특별히 챙겨 뒀어.","이 마을에서 자네만큼 반가운 손님이 없어!"}
 local function meadowOpenGearShop(player,shopId,position)
   local shop=meadowGearShops[shopId] or meadowGearShopDefault
   gearShopSessions[player]={shop=shopId,position=position,expires=os.clock()+60}
   local options={}
+  local level=affinityLevel(player,shopId)
+  local discount=affinityDiscount(level)
   for _,id in ipairs(shop.Gear) do
-    local price=meadowShopApi.priceOf and meadowShopApi.priceOf(id)
+    local price=meadowShopApi.priceOf and meadowShopApi.priceOf(id,discount)
     options[#options+1]={label=(gearShopNames[id] or id).."  ·  "..tostring(price or "?").." 재화",action="shop:buy:"..id}
   end
-  villageDialogue(player,shop.Title,"기본 장비만 팔아. 더 좋은 장비는 대장간에서 직접 제작해.\n보유 재화 "..readNumber(player,"Coins",0),options)
+  villageDialogue(player,shop.Title.."  "..affinityHearts(level),affinityGreetings[level]..
+    "\n기본 장비만 팔아. 더 좋은 장비는 대장간에서 직접 제작해."..(discount>0 and string.format("\n단골 할인 %d%%",math.floor(discount*100+.5)) or "")..
+    "\n보유 재화 "..readNumber(player,"Coins",0),options)
 end
 local function meadowGearShopAction(player,actionId)
   if player:GetAttribute("ProfileReady")~=true then return end
@@ -1136,7 +1151,12 @@ local function meadowGearShopAction(player,actionId)
   if not table.find(shop.Gear,id) then return end
   if os.clock()-(villageInteractionCooldown[player] or 0)<.35 then return end
   villageInteractionCooldown[player]=os.clock()
-  if meadowShopApi.buyGear then meadowShopApi.buyGear(player,id) end
+  local level=affinityLevel(player,session.shop)
+  local before=readNumber(player,"Coins",0)
+  if meadowShopApi.buyGear then meadowShopApi.buyGear(player,id,affinityDiscount(level)) end
+  if readNumber(player,"Coins",0)<before then
+    setNumber(player,"Affinity_"..session.shop,readNumber(player,"Affinity_"..session.shop,0)+1)
+  end
   meadowOpenGearShop(player,session.shop,session.position)
 end
 
@@ -3648,18 +3668,18 @@ local meadowRpg=(function()
     elseif group=="tonic" and tonic then
       local attr=id=="herbal_tonic" and "MeadowPotionHealth" or "MeadowPotionStamina"
       if verb=="craft" then
-        -- [스카이림식 연금] 물약 조합은 마을 화덕(연금 겸용) 가까이에서만 한다.
+        -- [스카이림식 연금] 물약 조합은 연금 작업대 가까이에서만 한다.
         do
           local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-          local station=Config.CookStation
+          local station=Config.AlchemyStation
           local flat=root and Vector3.new(root.Position.X,0,root.Position.Z)
-          local atStation=flat and (flat-Vector3.new(station.X,0,station.Z)).Magnitude<=station.Radius+8
+          local atStation=flat and (flat-Vector3.new(station.X,0,station.Z)).Magnitude<=station.Radius+4
           if flat and not atStation then
             for _,site in ipairs(Config.CraftSites or {}) do
               if (flat-Vector3.new(site.X,0,site.Z)).Magnitude<=station.Radius+8 then atStation=true;break end
             end
           end
-          if not atStation then feedback(player,"물약 조합은 마을 식당 화덕 가까이에서 할 수 있어.");return true end
+          if not atStation then feedback(player,"물약 조합은 마을 연금 작업대(식당 화덕 옆) 가까이에서 할 수 있어.");return true end
         end
         if readNumber(player,attr,0)>=25 then feedback(player,"물약은 최대 25개까지 소지할 수 있어.");return true end
         if not charge(player,tonic) then feedback(player,"물약 재료가 부족해.");return true end
@@ -3781,22 +3801,22 @@ local meadowRpg=(function()
     return false
   end
   -- [상인 장비 구매] 기본 장비(희귀도 고급·숙련 요구 없음·대장간 전용 아님)만 코인으로 산다.
-  local function buyGear(player,id)
+  local function buyGear(player,id,discount)
     local gear=gearById[id]
     if not gear then return false end
     local item=gear.entry
     if item.Starter or item.ForgeOnly or (item.Need or 0)>0 or item.Rarity~="Uncommon" then return false end
     if hasGear(player,gear.index) then feedback(player,"이미 가진 장비야.");return true end
-    local price=(item.Wood or 0)*5+(item.Stone or 0)*5+(item.Coins or 0)*3
+    local price=math.max(1,math.floor(((item.Wood or 0)*5+(item.Stone or 0)*5+(item.Coins or 0)*3)*(1-(discount or 0))))
     if readNumber(player,"Coins",0)<price then feedback(player,item.Name.." 구매에는 "..price.." 재화가 필요해.");return true end
     setNumber(player,"Coins",readNumber(player,"Coins",0)-price)
     grantGear(player,gear.index)
     feedback(player,item.Name.." 구매 완료  (-"..price.." 재화)")
     return true
   end
-  return {buyGear=buyGear,priceOf=function(id)
+  return {buyGear=buyGear,priceOf=function(id,discount)
       local g=gearById[id];local it=g and g.entry
-      return it and ((it.Wood or 0)*5+(it.Stone or 0)*5+(it.Coins or 0)*3) or nil
+      return it and math.max(1,math.floor(((it.Wood or 0)*5+(it.Stone or 0)*5+(it.Coins or 0)*3)*(1-(discount or 0)))) or nil
     end,
     transact=transact,stats=stats,publishStats=publishStats,equippedWeapon=function(player) return equipped(player,"Weapon") end,
     equippedShield=function(player) return equipped(player,"Shield") end,
@@ -9911,6 +9931,25 @@ task.spawn(function()
       end)
     end
   end
+end)
+-- [연금 작업대] 등록된 작업대 모델을 세우고 눌러 보면 쓰임새를 알려 준다.
+task.spawn(function()
+  task.wait(10)
+  local station=Config.AlchemyStation
+  local rp=RaycastParams.new()
+  rp.FilterType=Enum.RaycastFilterType.Include
+  rp.FilterDescendantsInstances={meadowTerrain}
+  local hit=workspace:Raycast(Vector3.new(station.X,80,station.Z),Vector3.new(0,-160,0),rp)
+  local model=worldAsset(station.Model,Vector3.new(station.X,(hit and hit.Position.Y or 3)+1,station.Z),station.Height)
+  if not model then return end
+  model.Name="Meadow_Alchemy_Bench"
+  model:SetAttribute("MeadowVillageScenery",true)
+  for _,mesh in ipairs(model:GetDescendants()) do
+    if mesh:IsA("MeshPart") then mesh.CanCollide=false;mesh.CanQuery=true;mesh.CanTouch=false end
+  end
+  villagePrompt(model,station.Name,"연금 안내",function(player)
+    villageDialogue(player,"연금 작업대","약초와 재료로 물약을 조합해. 가방에서 물약을 고르고 '조합'을 누르면 이 근처에서만 적용돼.\n\n내 연금 숙련 "..readNumber(player,"AlchemyProficiency",0))
+  end)
 end)
 -- [식당 화덕] 요리 메뉴. 해금된 레시피(요리 숙련)만 선택지에 나온다.
 task.spawn(function()
