@@ -1042,8 +1042,29 @@ local function sail(portId)
 	audioLock = true
 	Sfx.music("music_sea")
 	Sfx.ambient({ "sfx_waves", "sfx_wind" })
+	Sfx.play("sfx_sail")
 	local result = call("Sail", { portId = portId })
 	if result and result.ok then
+		local vk = view and view.voyageEvent and view.voyageEvent.kind
+		if vk == "dolphins" or vk == "whale" then
+			task.delay(4, function()
+				Sfx.play("sfx_splash")
+				task.wait(1.2)
+				Sfx.play("sfx_splash", 0.5)
+			end)
+		end
+		-- 바다 위의 소리: 갈매기와 삐걱거리는 선체가 가끔 들린다
+		task.spawn(function()
+			local names = { "sfx_gull", "sfx_creak", "sfx_bell", "sfx_gull" }
+			local n = 0
+			while audioLock and n < 8 do
+				task.wait(3 + math.random() * 3)
+				if audioLock then
+					Sfx.play(names[1 + n % #names], 0.45)
+				end
+				n += 1
+			end
+		end)
 		-- 1) 3D 항구에서 배가 실제로 부두를 떠나는 장면 (카메라가 배를 따라간다)
 		pcall(function()
 			if not sceneCtl then
@@ -1830,6 +1851,7 @@ local function closeTradeHall()
 end
 
 local function openTradeHall()
+	Sfx.play("sfx_bell")
 	closeTradeHall()
 	local layer = overlayGui("TradeHallGui", 15)
 	main.Visible = false
@@ -2428,6 +2450,7 @@ end
 
 -- 조선소 별도 화면: 조선 장인과 마주 보고 정비·보급·배 구입·개조를 한다 (기존 조선소 목록을 큰 화면에 그대로 쓴다)
 local function openYardHall()
+	Sfx.play("sfx_creak")
 	closeTradeHall()
 	local layer = overlayGui("TradeHallGui", 15)
 	main.Visible = false

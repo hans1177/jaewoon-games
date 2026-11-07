@@ -88,6 +88,8 @@ local EVENT_WEIGHTS = {
 	{ "island", 5 }, -- 미지의 섬
 	{ "ghost", 3 }, -- 유령선 목격
 	{ "blockade", 5 }, -- 해상 봉쇄: 통행료
+	{ "dolphins", 7 }, -- 돌고래 떼: 사기 상승, 도감
+	{ "whale", 4 }, -- 고래 목격: 도감, 명성
 }
 
 -- rng: 0~1 사이 값을 돌려주는 함수
@@ -171,6 +173,10 @@ function Voyage.rollEvent(rng: () -> number, days: number, weatherId: string?): 
 		amount = 2 -- 명성
 	elseif picked == "blockade" then
 		amount = 0.05 + 0.05 * rng() -- 통행료 비율
+	elseif picked == "dolphins" then
+		amount = 5 -- 사기
+	elseif picked == "whale" then
+		amount = 4 -- 사기
 	end
 	return { kind = picked, amount = amount }
 end

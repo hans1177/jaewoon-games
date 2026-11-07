@@ -187,6 +187,15 @@ return function(D, S)
 			state.fame += event.amount
 			table.insert(msgs, string.format("안개 속에서 유령선을 보았다... 뱃사람들의 이야깃거리가 되었다 (명성 +%d)", event.amount))
 			moraleAdd(-8)
+		elseif event.kind == "dolphins" then
+			table.insert(msgs, "돌고래 떼가 뱃머리를 따라왔다! 선원들의 사기가 올랐다")
+			moraleAdd(event.amount)
+			S.Discovery.grantCard(state, "zoo_dolphin", msgs)
+		elseif event.kind == "whale" then
+			state.fame += 1
+			table.insert(msgs, "멀리서 거대한 고래가 물을 뿜었다! 선원들이 환호했다 (명성 +1)")
+			moraleAdd(event.amount)
+			S.Discovery.grantCard(state, "zoo_whale", msgs)
 		elseif event.kind == "pirates" then
 			S.Battle.encounter(state, ctx, msgs)
 		end

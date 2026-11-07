@@ -439,7 +439,35 @@ function VoyageScene.play(info)
 		table.insert(props, rec)
 		return rec
 	end
+	-- 물보라·물기둥: 돌고래 떼와 고래 장면. 모델 없이 입자만 쓴다.
+	local function addSpray(side, along, speed, rate, size)
+		local part = Instance.new("Part")
+		part.Name = "Spray"
+		part.Anchored = true
+		part.CanCollide = false
+		part.CanQuery = false
+		part.CanTouch = false
+		part.Transparency = 1
+		part.Size = Vector3.new(1, 1, 1)
+		part.Parent = folder
+		local e = Instance.new("ParticleEmitter")
+		e.Rate = rate
+		e.Lifetime = NumberRange.new(0.9, 1.5)
+		e.Speed = NumberRange.new(speed * 0.8, speed * 1.2)
+		e.SpreadAngle = Vector2.new(14, 14)
+		e.EmissionDirection = Enum.NormalId.Top
+		e.Acceleration = Vector3.new(0, -speed * 1.1, 0)
+		e.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, size * 0.4), NumberSequenceKeypoint.new(1, size) })
+		e.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.1), NumberSequenceKeypoint.new(1, 1) })
+		e.Color = ColorSequence.new(Color3.fromRGB(240, 248, 255))
+		e.LightEmission = 0.3
+		e.Parent = part
+		local rec = { m = part, side = side, along = along, yaw = 0, y = 0.5 }
+		table.insert(props, rec)
+		return rec
+	end
 	local eventBanner = {
+		dolphins = "돌고래 떼!", whale = "고래다!",
 		school = "물고기떼 발견!", merchant = "상선을 만났다", fog = "짙은 안개", reef = "암초 조심!", rescue = "표류자 발견!",
 		island = "미지의 섬!", ghost = "유령선...", blockade = "해상 봉쇄!", storm = "폭풍!", pirates = "해적선 출현!", drift = "표류물 발견", fever = "열병 발생", tailwind = "순풍!", calm = "잔잔한 바다",
 	}
@@ -452,7 +480,15 @@ function VoyageScene.play(info)
 	banner.TextTransparency = 1
 	banner.TextStrokeTransparency = 1
 	banner.Parent = gui
-	if ev.kind == "merchant" then
+	if ev.kind == "dolphins" then
+		addSpray(18, 0.46, 16, 40, 3)
+		addSpray(-22, 0.5, 18, 40, 3)
+		addSpray(30, 0.54, 15, 40, 3)
+		addSpray(-34, 0.58, 17, 40, 3)
+	elseif ev.kind == "whale" then
+		addSpray(40, 0.5, 34, 60, 7)
+		addSpray(43, 0.5, 26, 30, 5)
+	elseif ev.kind == "merchant" then
 		addProp("Naval", "ship-medium", 16, -70, 0.55, math.pi)
 		addProp("Naval", "boat-sail-a", 9, -110, 0.4, math.pi)
 	elseif ev.kind == "reef" then
