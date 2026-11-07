@@ -33,6 +33,7 @@ return function(D)
 			maps = {},
 			bounty = { taken = {}, done = {} },
 			escorts = 0,
+			fleet = {},
 			rep = {},
 			gear = { owned = {}, equipped = {} },
 			storySeen = {},
@@ -83,8 +84,66 @@ return function(D)
 		return total
 	end
 
+	-- 선단(기함 외의 배, 최대 3척): 화물칸은 더해지고, 속도는 가장 느린 배에 맞춰진다
+	State.MAX_FLEET = 3
+	function State.fleetCargo(state)
+		local n = 0
+		for _, f in state.fleet do
+			local fd = D.Ships.Ships[f.id]
+			if fd then
+				n += fd.cargo
+			end
+		end
+		return n
+	end
+
+	function State.fleetSpeed(state, speed)
+		for _, f in state.fleet do
+			local fd = D.Ships.Ships[f.id]
+			if fd and not fd.steam then
+				speed = math.min(speed, fd.speed)
+			end
+		end
+		return speed
+	end
+
+	-- 선단 배의 선원은 정원의 60%를 따로 태운다 (보급품 소모에 더해진다)
+	function State.fleetCrew(state)
+		local n = 0
+		for _, f in state.fleet do
+			local fd = D.Ships.Ships[f.id]
+			if fd then
+				n += math.floor(fd.crew * 0.6)
+			end
+		end
+		return n
+	end
+
+	function State.totalCrew(state)
+		return state.ship.crew + State.fleetCrew(state)
+	end
+
+	function State.fleetCannons(state)
+		local n = 0
+		for _, f in state.fleet do
+			local fd = D.Ships.Ships[f.id]
+			if fd then
+				n += fd.cannons
+			end
+		end
+		return math.floor(n * 0.6)
+	end
+
+	function State.fleetHull(state)
+		local n = 0
+		for _, f in state.fleet do
+			n += math.floor(f.hull * 0.5)
+		end
+		return n
+	end
+
 	function State.cargoCapacityFor(state, def)
-		return math.floor(def.cargo * (1 + State.techSum(state, "cargoMult")))
+		return math.floor((def.cargo + State.fleetCargo(state)) * (1 + State.techSum(state, "cargoMult")))
 	end
 
 	function State.cargoCapacity(state)
@@ -293,6 +352,15 @@ return function(D)
 			end
 		end
 		s.escorts = math.floor(num(saved.escorts, 0, 0, 3))
+		s.fleet = {}
+		if type(saved.fleet) == "table" then
+			for _, f in saved.fleet do
+				if type(f) == "table" and type(f.id) == "string" and D.Ships.Ships[f.id] and #s.fleet < 3 then
+					local fd = D.Ships.Ships[f.id]
+					table.insert(s.fleet, { id = f.id, hull = math.floor(num(f.hull, fd.hull, 1, fd.hull)) })
+				end
+			end
+		end
 		if type(saved.rep) == "table" then
 			for k, v in saved.rep do
 				if type(k) == "string" and #k < 30 then
@@ -435,6 +503,7 @@ return function(D)
 			maps = state.maps,
 			bounty = state.bounty,
 			escorts = state.escorts,
+			fleet = state.fleet,
 			rep = state.rep,
 			gear = state.gear,
 			storySeen = state.storySeen,

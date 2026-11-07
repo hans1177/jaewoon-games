@@ -140,6 +140,9 @@ return function(D, S)
 		end
 		local def = S.State.shipDef(state)
 		local missing = def.hull - state.ship.hull
+		for _, f in state.fleet do
+			missing += D.Ships.Ships[f.id].hull - f.hull
+		end
 		if missing <= 0 then
 			return false, "수리할 곳이 없어요"
 		end
@@ -148,7 +151,16 @@ return function(D, S)
 			return false, "코인이 부족해요"
 		end
 		state.coins -= points * cost(state, REPAIR_COST)
-		state.ship.hull += points
+		-- 기함부터, 남는 만큼 선단 배를 고친다
+		local left = points
+		local own = math.min(left, def.hull - state.ship.hull)
+		state.ship.hull += own
+		left -= own
+		for _, f in state.fleet do
+			local n = math.min(left, D.Ships.Ships[f.id].hull - f.hull)
+			f.hull += n
+			left -= n
+		end
 		return true, string.format("선체 +%d 수리 (-%d)", points, points * cost(state, REPAIR_COST))
 	end
 
@@ -205,12 +217,95 @@ return function(D, S)
 		return true, string.format("호위함 한 척을 돌려보냈다 (%d척)", state.escorts)
 	end
 
-	-- 항해 후 유지비: 코인이 모자라면 호위함이 떠난다
+	-- 선단 편성: 기함 외에 실제 배를 최대 3척 더 거느린다.
+	-- 화물칸은 더해지고, 속도는 가장 느린 배에 맞춰지고, 해전에서는 포와 선체가 보태진다. 유지비 25코인/척/일.
+	local FLEET_UPKEEP = 25
+	local function fleetFameNeed(state)
+		return 20 + #state.fleet * 30
+	end
+
+	function handlers.BuyFleetShip(state, p)
+		local def = type(p.shipId) == "string" and D.Ships.Ships[p.shipId]
+		if not def then
+			return false, "잘못된 요청"
+		end
+		if not currentPort(state).shipyard then
+			return false, "선단에 배를 들이려면 조선소가 있는 항구여야 해요"
+		end
+		if #state.fleet >= S.State.MAX_FLEET then
+			return false, "선단은 기함 외에 최대 3척이에요"
+		end
+		if def.techReq and not state.tech[def.techReq] then
+			return false, "연구가 필요해요: " .. D.Tech.Tech[def.techReq].name
+		end
+		if def.class >= 2 and state.license < def.class - 1 then
+			return false, string.format("항만청 면허가 필요해요: %s", D.Ships.Licenses[def.class - 1].name)
+		end
+		if state.fame < fleetFameNeed(state) then
+			return false, string.format("명성 %d 이상이 필요해요", fleetFameNeed(state))
+		end
+		if state.coins < def.price then
+			return false, string.format("코인이 부족해요 (필요 %d)", def.price)
+		end
+		state.coins -= def.price
+		table.insert(state.fleet, { id = def.id, hull = def.hull })
+		return true, string.format("%s 한 척이 선단에 합류했다 (선단 %d척, -%d)", def.name, #state.fleet, def.price)
+	end
+
+	function handlers.SellFleetShip(state, p)
+		local idx = math.floor(tonumber(p.index) or 0)
+		local f = state.fleet[idx]
+		if not f then
+			return false, "그런 배가 없어요"
+		end
+		local def = D.Ships.Ships[f.id]
+		local refund = math.floor(def.price * TRADE_IN_RATE)
+		table.remove(state.fleet, idx)
+		if S.State.cargoUsed(state) > S.State.cargoCapacity(state) then
+			table.insert(state.fleet, idx, f)
+			return false, "화물을 먼저 비워 주세요 (그 배의 화물칸이 줄어요)"
+		end
+		state.coins += refund
+		return true, string.format("%s을(를) 팔았다 (+%d)", def.name, refund)
+	end
+
+	-- 선단 배를 기함으로 올린다 (기함과 자리를 맞바꾼다. 대포·보강은 기함 자리에 남는다)
+	function handlers.SetFlagship(state, p)
+		local idx = math.floor(tonumber(p.index) or 0)
+		local f = state.fleet[idx]
+		if not f then
+			return false, "그런 배가 없어요"
+		end
+		local newDef = D.Ships.Ships[f.id]
+		local oldDef = S.State.shipDef(state)
+		local oldId, oldHull = state.ship.id, state.ship.hull
+		state.fleet[idx] = { id = oldId, hull = oldHull }
+		state.ship.id = f.id
+		local rdef = S.State.shipDef(state)
+		state.ship.hull = math.min(f.hull, rdef.hull)
+		state.ship.crew = math.min(state.ship.crew, newDef.crew)
+		if S.State.cargoUsed(state) > S.State.cargoCapacity(state) then
+			state.fleet[idx] = f
+			state.ship.id = oldId
+			state.ship.hull = oldHull
+			state.ship.crew = math.min(state.ship.crew, oldDef.crew)
+			return false, "화물을 먼저 비워 주세요"
+		end
+		return true, string.format("%s이(가) 새 기함이 되었다", newDef.name)
+	end
+
+	-- 항해 후 유지비: 코인이 모자라면 호위함·선단 배가 떠난다
 	local function payUpkeep(state, days, msgs)
-		if state.escorts <= 0 then
+		if state.escorts <= 0 and #state.fleet == 0 then
 			return
 		end
-		local cost = state.escorts * 15 * days
+		local cost = (state.escorts * 15 + #state.fleet * FLEET_UPKEEP) * days
+		if state.escorts <= 0 and #state.fleet > 0 and state.coins < cost then
+			state.coins = 0
+			local gone = table.remove(state.fleet)
+			table.insert(msgs, string.format("유지비를 못 내서 %s 한 척이 떠났다", D.Ships.Ships[gone.id].name))
+			return
+		end
 		if state.coins >= cost then
 			state.coins -= cost
 			table.insert(msgs, string.format("선단 유지비 -%d", cost))

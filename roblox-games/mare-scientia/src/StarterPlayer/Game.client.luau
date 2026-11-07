@@ -1071,7 +1071,7 @@ local function sail(portId)
 			toName = view.player.portName,
 			makeShip = PortScene.makeShip,
 			place = PortScene.placeModel,
-			escorts = view.fleet and view.fleet.escorts or 0,
+			escorts = math.min(3, (view.fleet and view.fleet.escorts or 0) + (view.fleet and view.fleet.ships and #view.fleet.ships or 0)),
 			weatherId = view.weather and view.weather.id,
 			event = view.voyageEvent,
 		})
@@ -2309,6 +2309,30 @@ local function renderYard()
 			{ text = "해산", color = COLORS.red, enabled = view.fleet.escorts > 0, onClick = function() call("DismissEscort") end },
 		}, 84)
 	end)
+	-- 선단 편성: 기함 외에 실제 배를 최대 3척 거느린다
+	add(function() return mkHeader(content, string.format("선단 편성 (기함 + %d/%d척)", #view.fleet.ships, view.fleet.max)) end)
+	add(function()
+		return mkLabel(content, string.format("화물칸이 더해져요(+%d) · 속도는 가장 느린 배에 맞춰져요(%d) · 해전에서 포와 선체가 보태져요 · 유지비 %d코인/척/일 · 다음 배는 명성 %d 필요", view.fleet.cargo, view.fleet.speed, view.fleet.upkeep, view.fleet.fameNeed), 12, COLORS.muted, false)
+	end)
+	for _, f in view.fleet.ships do
+		add(function()
+			return mkRow(content, string.format("%d번함 · %s", f.index, f.name), string.format("선체 %d/%d · 포 %d · 화물 %d · 속도 %d", f.hull, f.maxHull, f.cannons, f.cargo, f.speed), {
+				{ text = "기함으로", color = COLORS.blue, onClick = function() call("SetFlagship", { index = f.index }) end },
+				{ text = string.format("매각 %d", f.sell), color = COLORS.red, onClick = function() call("SellFleetShip", { index = f.index }) end },
+			}, 72)
+		end)
+	end
+	if #view.fleet.ships < view.fleet.max then
+		for _, s in yard.ships do
+			if not s.locked and s.price > 0 then
+				add(function()
+					return mkRow(content, string.format("선단에 추가: %s", s.name), string.format("포 %d · 화물 %d · 속도 %d · 선체 %d", s.cannons, s.cargo, s.speed, s.hull), {
+						{ text = tostring(s.price), color = COLORS.green, enabled = yard.available, onClick = function() call("BuyFleetShip", { shipId = s.id }) end },
+					}, 56)
+				end)
+			end
+		end
+	end
 	add(function() return mkHeader(content, string.format("개조 (우리 배: 등급 %d · %s)", rf.class, rf.className)) end)
 	add(function()
 		return mkLabel(content, "새 배를 사면 대포와 보강은 초기화돼요. 대포가 무거울수록 화물칸이 줄어요.", 12, COLORS.muted, false)

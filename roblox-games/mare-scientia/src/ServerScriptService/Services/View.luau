@@ -166,6 +166,19 @@ return function(D, S)
 			})
 		end
 		view.fleet = { escorts = state.escorts, price = 1200, needFame = 30 + state.escorts * 30 }
+		view.fleet.ships = {}
+		for i, f in state.fleet do
+			local fd = D.Ships.Ships[f.id]
+			table.insert(view.fleet.ships, {
+				index = i, id = f.id, name = fd.name, hull = f.hull, maxHull = fd.hull, cargo = fd.cargo, cannons = fd.cannons,
+				speed = fd.speed, sell = math.floor(fd.price * 0.5),
+			})
+		end
+		view.fleet.max = S.State.MAX_FLEET
+		view.fleet.fameNeed = 20 + #state.fleet * 30
+		view.fleet.upkeep = 25
+		view.fleet.cargo = S.State.fleetCargo(state)
+		view.fleet.speed = S.State.fleetSpeed(state, S.State.shipDef(state).speed)
 		do
 			local nat = D.Ports.Nations[port.country]
 			view.rep = { name = if nat then nat.name else port.country, value = state.rep[port.country] or 0, bonus = S.Trade.repBonus(state), tariff = S.Trade.tariffRate(state) }

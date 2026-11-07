@@ -32,13 +32,14 @@ return function(D, S)
 				table.insert(skills, id)
 			end
 		end
+		local bonusHull = S.State.fleetHull(state)
 		return {
-			name = "우리 배",
-			hull = state.ship.hull,
-			maxHull = def.hull,
+			name = if #state.fleet > 0 then string.format("우리 선단(%d척)", #state.fleet + 1) else "우리 배",
+			hull = state.ship.hull + bonusHull,
+			maxHull = def.hull + bonusHull,
 			crew = state.ship.crew,
 			maxCrew = def.crew,
-			cannons = def.cannons,
+			cannons = def.cannons + S.State.fleetCannons(state),
 			speed = def.speed,
 			steam = def.steam,
 			fuel = if def.steam then (state.cargo.coal or 0) else 0,
@@ -53,14 +54,24 @@ return function(D, S)
 	-- 적 레벨: 내 배의 능력치를 해적 레벨로 환산하고, 전투 레벨이 오를수록 조금씩 더 센 적이 나온다. (± 1)
 	local function enemyLevel(state, rng)
 		local def = S.State.shipDef(state)
-		local base = D.Combat.equivalentLevel(def.cannons, def.hull, def.crew)
+		local base = D.Combat.equivalentLevel(def.cannons, def.hull, def.crew) + #state.fleet
 		local bonus = math.floor((state.careers.battle.level - 1) / 5)
 		return math.max(1, base + bonus + math.floor(rng() * 3) - 1)
 	end
 
 	-- 해전 결과를 상태에 반영한다 (pb: 미리 계산해 둔 전투 결과)
 	local function settle(state, msgs, pb)
-		state.ship.hull = math.max(1, math.floor(pb.hull))
+		-- 선단의 보태진 선체는 기함이 아니라 선단 전체가 나눠 입는다: 받은 피해를 기함·선단 배에 나눈다
+		local bonus = S.State.fleetHull(state)
+		local damage = math.max(0, state.ship.hull + bonus - math.floor(pb.hull))
+		local flagshipShare = if bonus > 0 then math.floor(damage * 0.6) else damage
+		state.ship.hull = math.max(1, state.ship.hull - flagshipShare)
+		local rest = damage - flagshipShare
+		for _, f in state.fleet do
+			local take = math.min(rest, math.floor(f.hull * 0.5))
+			f.hull = math.max(1, f.hull - take)
+			rest -= take
+		end
 		state.ship.crew = math.max(1, math.floor(pb.crew))
 		local used = pb.startFuel - pb.fuel
 		if used > 0 then

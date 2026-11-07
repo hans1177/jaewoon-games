@@ -55,7 +55,7 @@ return function(D, S)
 			return false, "이곳은 이미 모두 조사했어요"
 		end
 
-		local need = D.Voyage.suppliesPerDay(state.ship.crew) * site.days
+		local need = D.Voyage.suppliesPerDay(S.State.totalCrew(state)) * site.days
 		if state.ship.supplies < need then
 			return false, string.format("보급품이 부족해요 (필요 %d)", need)
 		end

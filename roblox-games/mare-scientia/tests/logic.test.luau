@@ -758,6 +758,47 @@ do
 	check("far east opens at high level", ok2)
 end
 
+-- 13f. 선단 편성 -------------------------------------------------------
+do
+	local st = newState()
+	st.coins = 100000
+	st.fame = 500
+	st.portId = "london"
+	local cap0 = S.State.cargoCapacity(st)
+	local speed0 = S.State.fleetSpeed(st, 9)
+	check("fleet: starts empty", #st.fleet == 0)
+	local ok1 = act(st, "BuyFleetShip", { shipId = "fluyt" })
+	check("fleet: buy fluyt", ok1 and #st.fleet == 1)
+	check("fleet: cargo adds up", S.State.cargoCapacity(st) > cap0)
+	check("fleet: speed matches slowest", S.State.fleetSpeed(st, 9) == D.Ships.Ships.fluyt.speed and speed0 == 9)
+	check("fleet: crew counts for supplies", S.State.totalCrew(st) > st.ship.crew)
+	local me = S.Battle.playerFighter(st)
+	check("fleet: battle cannons increase", me.cannons > D.Ships.Ships.caravel.cannons or D.Ships.Ships.fluyt.cannons * 0.6 < 1)
+	check("fleet: battle hull bonus", me.maxHull > D.Ships.Ships.caravel.hull)
+	act(st, "BuyFleetShip", { shipId = "fluyt" })
+	act(st, "BuyFleetShip", { shipId = "fluyt" })
+	local ok4 = act(st, "BuyFleetShip", { shipId = "fluyt" })
+	check("fleet: max 3", not ok4 and #st.fleet == 3)
+	local okF = act(st, "SetFlagship", { index = 1 })
+	check("fleet: swap flagship", okF and st.ship.id == "fluyt" and st.fleet[1].id == "caravel")
+	local c0 = st.coins
+	local okS = act(st, "SellFleetShip", { index = 2 })
+	check("fleet: sell refunds", okS and st.coins > c0 and #st.fleet == 2)
+	st.fleet[1].hull = 1
+	local okR = act(st, "Repair", {})
+	check("fleet: repair covers fleet ships", okR and st.fleet[1].hull > 1)
+	st.coins = 0
+	local msgs = {}
+	S.Shipyard.payUpkeep(st, 5, msgs)
+	check("fleet: unpaid upkeep loses a ship", #st.fleet == 1)
+	local saved = S.State.serialize and S.State.serialize(st)
+	check("fleet survives save", saved == nil or (type(saved.fleet) == "table" and #saved.fleet == 1))
+	local poor = newState()
+	poor.portId = "london"
+	local okP, msgP = act(poor, "BuyFleetShip", { shipId = "fluyt" })
+	check("fleet: needs fame/coins", not okP and msgP ~= nil)
+end
+
 -- 13e. 보물지도 --------------------------------------------------------
 do
 	local st = newState()
