@@ -5936,6 +5936,35 @@ local function animateMeadowOriginalMob(enemy,now)
       enemy.banditWalk:Stop(.18);enemy.banditIdle:Play(.18)
     end
   end
+  -- [걸음 주기] 걷는 속도에 맞춰 보폭 위상을 쌓는다. 멈추면 위아래 흔들림도 같이 멈춘다.
+  local visual=enemy.visualPosition or enemy.position
+  local lastVisual=enemy.lastStrideVisual or visual
+  local travelled=Vector3.new(visual.X-lastVisual.X,0,visual.Z-lastVisual.Z).Magnitude
+  enemy.lastStrideVisual=visual
+  enemy.strideSpeed=(enemy.strideSpeed or 0)+(math.min(travelled/(1/30),40)-(enemy.strideSpeed or 0))*.25
+  if not aerial and inMotion then
+    local cadence=kind=="golem" and .5 or heavy and .85 or 1.15
+    enemy.stridePhase=(enemy.stridePhase or 0)+travelled*cadence
+    local amount=math.clamp(enemy.strideSpeed/6,0,1)
+    movingHeight=math.abs(math.sin(enemy.stridePhase))*(kind=="golem" and .14 or .05)*amount
+    stridePitch=math.sin(enemy.stridePhase)*(kind=="wolf" and .03 or heavy and .02 or .045)*amount
+  end
+  -- [지면 높이 보간] 0.15초마다 샘플한 목표 높이를 매 프레임 부드럽게 따라간다.
+  if enemy.terrainGroundTarget then
+    enemy.terrainGroundOffset=(enemy.terrainGroundOffset or enemy.terrainGroundTarget)
+      +(enemy.terrainGroundTarget-(enemy.terrainGroundOffset or enemy.terrainGroundTarget))*.35
+  end
+  -- [경사 기울기] 오르막은 코를 들고 내리막은 숙인다(날개 몹 제외, 최대 약 17도).
+  local slopeTarget=0
+  local normal=enemy.groundNormal
+  if normal and not aerial then
+    local flat=Vector3.new(facing.X,0,facing.Z)
+    if flat.Magnitude>.01 then
+      slopeTarget=math.clamp(math.asin(math.clamp(-normal:Dot(flat.Unit),-1,1)),-.3,.3)
+    end
+  end
+  enemy.slopePitch=(enemy.slopePitch or 0)+(slopeTarget-(enemy.slopePitch or 0))*.2
+  attackPitch+=enemy.slopePitch
   local pivot=(enemy.visualPosition or enemy.position)
     +Vector3.new(0,(enemy.visibleGroundOffset or 0)
       +(enemy.terrainGroundOffset or 0)+movingHeight,0)
@@ -6200,8 +6229,13 @@ local function updateEnemyAI(dt,now)
         ray.FilterDescendantsInstances={meadowTerrain}
         local hit=workspace:Raycast(enemy.position+Vector3.new(0,90,0),
           Vector3.new(0,-180,0),ray)
-        if hit then enemy.terrainGroundOffset=hit.Position.Y-(enemy.spawnGroundY or hit.Position.Y) end
-        enemy.nextGroundSample=now+.45
+        if hit then
+          -- [지면 추종] 목표 높이·경사만 기록하고, 실제 모델 높이는 렌더 단계에서 부드럽게 따라간다(튀는 현상 방지).
+          enemy.terrainGroundTarget=hit.Position.Y-(enemy.spawnGroundY or hit.Position.Y)
+          enemy.groundNormal=hit.Normal
+          if enemy.terrainGroundOffset==nil or enemy.terrainGroundOffset==0 then enemy.terrainGroundOffset=enemy.terrainGroundTarget end
+        end
+        enemy.nextGroundSample=now+.15
       end
       -- [기절] 해당 몬스터만 추적·예고·연타를 중지하며 다른 몬스터와 웨이브는 계속 진행한다.
       if now<(enemy.stunUntil or 0) then
