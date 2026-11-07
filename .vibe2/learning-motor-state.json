@@ -12,18 +12,18 @@
       "lastEvidence": "capability_ctrace_5f74ba87502b8d922847049e"
     },
     "STATE_MACHINE": {
-      "xp": 4328,
-      "level": 27,
+      "xp": 4333,
+      "level": 28,
       "verifiedSuccesses": 131,
-      "verifiedFailureLessons": 560,
-      "lastEvidence": "capability_ctrace_9d3ad35249417f78c8c14341"
+      "verifiedFailureLessons": 561,
+      "lastEvidence": "capability_ctrace_e15dc84ee7684eccf3e32bd6"
     },
     "COMBAT": {
-      "xp": 1736,
+      "xp": 1741,
       "level": 15,
       "verifiedSuccesses": 113,
-      "verifiedFailureLessons": 76,
-      "lastEvidence": "capability_ctrace_9d3ad35249417f78c8c14341"
+      "verifiedFailureLessons": 77,
+      "lastEvidence": "capability_ctrace_e15dc84ee7684eccf3e32bd6"
     },
     "AI": {
       "xp": 767,
@@ -68,25 +68,25 @@
       "lastEvidence": "capability_ctrace_bd8b9013205dc24481a824b8"
     },
     "DEBUGGING": {
-      "xp": 4340,
+      "xp": 4345,
       "level": 28,
       "verifiedSuccesses": 134,
-      "verifiedFailureLessons": 560,
-      "lastEvidence": "capability_ctrace_9d3ad35249417f78c8c14341"
+      "verifiedFailureLessons": 561,
+      "lastEvidence": "capability_ctrace_e15dc84ee7684eccf3e32bd6"
     },
     "RECOVERY": {
-      "xp": 1656,
+      "xp": 1661,
       "level": 14,
       "verifiedSuccesses": 116,
-      "verifiedFailureLessons": 56,
-      "lastEvidence": "capability_ctrace_9d3ad35249417f78c8c14341"
+      "verifiedFailureLessons": 57,
+      "lastEvidence": "capability_ctrace_e15dc84ee7684eccf3e32bd6"
     },
     "SECURITY": {
-      "xp": 380,
+      "xp": 385,
       "level": 7,
       "verifiedSuccesses": 13,
-      "verifiedFailureLessons": 48,
-      "lastEvidence": "capability_ctrace_9d3ad35249417f78c8c14341"
+      "verifiedFailureLessons": 49,
+      "lastEvidence": "capability_ctrace_e15dc84ee7684eccf3e32bd6"
     },
     "PERFORMANCE": {
       "xp": 24,
@@ -117,11 +117,11 @@
       "lastEvidence": "capability_ctrace_d88b3fb6a7ce0fd1b13cc918"
     },
     "ANIMATION_FEEL": {
-      "xp": 2138,
+      "xp": 2143,
       "level": 17,
       "verifiedSuccesses": 104,
-      "verifiedFailureLessons": 178,
-      "lastEvidence": "capability_ctrace_9d3ad35249417f78c8c14341"
+      "verifiedFailureLessons": 179,
+      "lastEvidence": "capability_ctrace_e15dc84ee7684eccf3e32bd6"
     },
     "VFX": {
       "xp": 545,
@@ -306,11 +306,11 @@
       "lastEvidence": null
     },
     "LEVEL_DESIGN": {
-      "xp": 241,
+      "xp": 246,
       "level": 5,
       "verifiedSuccesses": 3,
-      "verifiedFailureLessons": 41,
-      "lastEvidence": "capability_ctrace_9d3ad35249417f78c8c14341"
+      "verifiedFailureLessons": 42,
+      "lastEvidence": "capability_ctrace_e15dc84ee7684eccf3e32bd6"
     },
     "NAVIGATION": {
       "xp": 0,
@@ -320,11 +320,11 @@
       "lastEvidence": null
     },
     "ROUTE_DESIGN": {
-      "xp": 241,
+      "xp": 246,
       "level": 5,
       "verifiedSuccesses": 3,
-      "verifiedFailureLessons": 41,
-      "lastEvidence": "capability_ctrace_9d3ad35249417f78c8c14341"
+      "verifiedFailureLessons": 42,
+      "lastEvidence": "capability_ctrace_e15dc84ee7684eccf3e32bd6"
     },
     "STREAMING": {
       "xp": 0,
@@ -1134,7 +1134,8 @@
     "capability_ctrace_7229b93e662b2d54c75b1436",
     "capability_ctrace_511a37bfa7de4b0a01b058bb",
     "capability_ctrace_8bc317dc8f8cec763afa49b2",
-    "capability_ctrace_9d3ad35249417f78c8c14341"
+    "capability_ctrace_9d3ad35249417f78c8c14341",
+    "capability_ctrace_e15dc84ee7684eccf3e32bd6"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -1632,8 +1633,8 @@
       ]
     },
     "fail_179iwmr": {
-      "count": 7,
-      "lastEvidence": "capability_ctrace_9d3ad35249417f78c8c14341",
+      "count": 8,
+      "lastEvidence": "capability_ctrace_e15dc84ee7684eccf3e32bd6",
       "example": "SOURCE_CANDIDATE_GENERATION:VIBE4_OFFLINE_PATTERN_UNAVAILABLE",
       "domains": [
         "STATE_MACHINE",
@@ -29511,7 +29512,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-11-07T05:36:23.279Z",
+    "lastBuiltAt": "2026-11-07T20:08:22.370Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -39301,5 +39302,5 @@
     "failures": [],
     "seenEvidenceIds": []
   },
-  "updatedAt": "2026-11-07T05:36:23.279Z"
+  "updatedAt": "2026-11-07T20:08:22.370Z"
 }
