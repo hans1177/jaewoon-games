@@ -270,11 +270,18 @@ end
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
 	local tintColor = wallColor or style.walls[rng:NextInteger(1, #style.walls)]
-	local mesh = importedModel(parent, "Town", "house", pos, math.max(w, d), true, tintColor)
+	-- 위치로 정한 크기 변주(0.86~1.08배)와 180도 뒤집기로 같은 집이 반복돼 보이지 않게 한다
+	local seed = math.floor(math.abs(pos.X * 3 + pos.Z * 5))
+	local variation = 0.86 + (seed % 7) * 0.037
+	local mesh = importedModel(parent, "Town", "house", pos, math.max(w, d) * variation, true, tintColor)
 	if mesh then
 		mesh.Name = "HarborHouse"
+		if (seed // 7) % 2 == 1 then
+			local c = mesh:GetBoundingBox().Position
+			mesh:PivotTo(CFrame.new(c) * CFrame.Angles(0, math.pi, 0) * CFrame.new(-c) * mesh:GetPivot())
+		end
 		-- 집마다 같은 실루엣이 되지 않게, 위치로 정한 일부 집 용마루에 승인된 굴뚝(Town/chimney)을 얹는다
-		local size = math.max(w, d)
+		local size = math.max(w, d) * variation
 		if math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0 then
 			local chim = importedModel(parent, "Town", "chimney", pos + Vector3.new(0, size * 0.7, 0), size * 0.4, false, Color3.fromRGB(122, 98, 84))
 			if chim then chim.Name = "HarborChimney" end
