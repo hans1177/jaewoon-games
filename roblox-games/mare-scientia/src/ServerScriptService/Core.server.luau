@@ -55,6 +55,8 @@ local ctx = {
 	market = market,
 }
 
+local Social = require(script.Parent:WaitForChild("Social"))(D, S)
+
 -- 플레이어별 세션. state가 nil이면 새 게임 선택 전이다.
 local sessions = {}
 
@@ -215,6 +217,24 @@ remote.OnServerInvoke = function(player, action, payload)
 
 	if action == "State" then
 		return reply(state, true, "")
+	end
+
+	if Social[action] then
+		local ok, success, message, extra = pcall(Social[action], player, state, payload)
+		if not ok then
+			warn("[Core] social error:", action, success)
+			return reply(state, false, "오류가 발생했어요")
+		end
+		if success and (action == "MailSend" or action == "MailClaim" or action == "MarketPost" or action == "MarketBuy" or action == "MarketCancel") then
+			session.dirty = true
+		end
+		local result = reply(state, success, message)
+		if extra then
+			for k, v in extra do
+				result[k] = v
+			end
+		end
+		return result
 	end
 
 	if action == "Ranking" then

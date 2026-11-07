@@ -96,6 +96,9 @@ local amountIndex = 1
 local message = ""
 local messageOk = true
 local ranking = nil
+local mailBox, marketList = nil, nil
+local mailDraft = { to = "", coins = "", text = "" }
+local postPrice = {}
 local busy = false
 local equipped = nil -- 자동스킬 편집 중인 목록
 local chosenNation = "england"
@@ -706,6 +709,12 @@ local function call(action, payload)
 	end
 	if result.ranking then
 		ranking = result.ranking
+	end
+	if result.mail then
+		mailBox = result.mail
+	end
+	if result.market then
+		marketList = result.market
 	end
 	if result.view then
 		view = result.view
@@ -1731,6 +1740,7 @@ local function renderTrade()
 		frame.Parent = content
 		return frame
 	end)
+	-- 우편·거래소 (아래쪽에서 이어서 그린다)
 	-- 상품 카드 격자: 한눈에 보고 바로 사고판다 (대항해시대 온라인 교역소처럼)
 	add(function()
 		local grid = Instance.new("Frame")
@@ -1789,6 +1799,97 @@ local function renderTrade()
 			end
 		end
 		return grid
+	end)
+
+	-- 거래소 게시판: 다른 항해자와 고정가로 사고판다 (수수료 5%)
+	local function mkInput(parent, placeholder, text, width, onChanged)
+		local box = Instance.new("TextBox")
+		box.Size = UDim2.new(0, width, 0, 34)
+		box.BackgroundColor3 = Color3.fromRGB(30, 40, 56)
+		box.TextColor3 = COLORS.text
+		box.PlaceholderText = placeholder
+		box.PlaceholderColor3 = COLORS.muted
+		box.Text = text
+		box.TextSize = 15
+		box.Font = Enum.Font.Gotham
+		box.ClearTextOnFocus = false
+		corner(box, 6)
+		box.FocusLost:Connect(function()
+			onChanged(box.Text)
+		end)
+		box.Parent = parent
+		return box
+	end
+	add(function() return mkHeader(content, "거래소 게시판 (다른 항해자와 거래)") end)
+	add(function()
+		return mkRow(content, "게시판 보기", "다른 항해자가 올린 물건을 불러와요", {
+			{ text = "새로고침", color = COLORS.blue, onClick = function() call("MarketList", {}) end },
+		}, 52)
+	end)
+	for _, l in marketList or {} do
+		add(function()
+			local mine = l.sellerId == player.UserId
+			local btn = if mine
+				then { text = "취소", color = COLORS.red, onClick = function() call("MarketCancel", { id = l.id }) end }
+				else { text = "구매", color = COLORS.green, onClick = function() call("MarketBuy", { id = l.id }) end }
+			local name = (PortData.Goods[l.goodId] and PortData.Goods[l.goodId].name) or l.goodId
+			return mkRow(content, string.format("%s %d개 · %d코인", name, l.amount, l.price), string.format("판매자 %s", l.sellerName), { btn }, 52)
+		end)
+	end
+	for _, g in view.goods do
+		if g.owned > 0 then
+			add(function()
+				local frame = Instance.new("Frame")
+				frame.Size = UDim2.new(1, -6, 0, 44)
+				frame.BackgroundColor3 = COLORS.row
+				frame.BorderSizePixel = 0
+				corner(frame, 8)
+				local lbl = mkLabel(frame, string.format("%s (보유 %d)", g.name, g.owned), 14, COLORS.text, true)
+				lbl.Position = UDim2.fromOffset(8, 12)
+				lbl.Size = UDim2.new(0.4, 0, 0, 20)
+				lbl.AutomaticSize = Enum.AutomaticSize.None
+				local qty = math.min(amount(), g.owned)
+				local input = mkInput(frame, "총 가격", tostring(postPrice[g.id] or (g.sell * qty)), 90, function(t) postPrice[g.id] = tonumber(t) end)
+				input.AnchorPoint = Vector2.new(1, 0.5)
+				input.Position = UDim2.new(1, -86, 0.5, 0)
+				local post = mkButton(frame, "등록", COLORS.gold, UDim2.fromOffset(70, 34), function()
+					call("MarketPost", { goodId = g.id, amount = qty, price = tonumber(input.Text) or 0 })
+				end, true)
+				post.AnchorPoint = Vector2.new(1, 0.5)
+				post.Position = UDim2.new(1, -8, 0.5, 0)
+				frame.Parent = content
+				return frame
+			end)
+		end
+	end
+
+	-- 우편
+	add(function() return mkHeader(content, "우편 (코인·쪽지 보내기)") end)
+	add(function()
+		local count = if mailBox then #mailBox else nil
+		return mkRow(content, "내 우편함", if count then string.format("받을 우편 %d통", count) else "열어서 확인해요", {
+			{ text = "열기", color = COLORS.blue, onClick = function() call("MailInbox", {}) end },
+			{ text = "받기", color = COLORS.green, onClick = function() call("MailClaim", {}) end },
+		}, 56)
+	end)
+	add(function()
+		local frame = Instance.new("Frame")
+		frame.Size = UDim2.new(1, -6, 0, 86)
+		frame.BackgroundColor3 = COLORS.row
+		frame.BorderSizePixel = 0
+		corner(frame, 8)
+		local a = mkInput(frame, "받는 사람 이름", mailDraft.to, 150, function(t) mailDraft.to = t end)
+		a.Position = UDim2.fromOffset(8, 6)
+		local b = mkInput(frame, "코인", mailDraft.coins, 80, function(t) mailDraft.coins = t end)
+		b.Position = UDim2.fromOffset(166, 6)
+		local c = mkInput(frame, "한마디 (60자)", mailDraft.text, 240, function(t) mailDraft.text = t end)
+		c.Position = UDim2.fromOffset(8, 46)
+		local send = mkButton(frame, "보내기", COLORS.gold, UDim2.fromOffset(80, 34), function()
+			call("MailSend", { to = a.Text, coins = tonumber(b.Text) or 0, text = c.Text })
+		end, true)
+		send.Position = UDim2.fromOffset(256, 46)
+		frame.Parent = content
+		return frame
 	end)
 end
 
