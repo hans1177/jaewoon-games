@@ -4917,7 +4917,8 @@ end)
 -- [전투 성향] 모델 종류에 따라 공격 방식을 나눈다. mage: 원거리 마법탄·광역 폭발, rogue: 빠른 찌르기·연속 베기,
 -- 이름 있는 보스(named): 후반 충격파. 서버가 판정·피해를 소유하며 클라이언트는 연출만 한다.
 local mobStyleByModel={mage="mage",skmage="mage",witch="mage",frostfiend="mage",demon="mage",
-  rogue="rogue",roguehooded="rogue",skrogue="rogue",assassin="rogue",wasp="rogue",fox="rogue",ninja="rogue",hywirl="mage"}
+  rogue="rogue",roguehooded="rogue",skrogue="rogue",assassin="rogue",wasp="rogue",fox="rogue",ninja="rogue",hywirl="mage",
+  snake="rogue",snakeangry="rogue",rat="rogue",skminion="rogue",goblin="rogue",goblinscout="rogue"}
 
 -- [R15 인간형 몹] 인간형 변종은 Roblox 공식 R15 리그와 공식 애니메이션(대기/걷기/달리기/베기/찌르기)으로 움직인다.
 -- 색·체형만 HumanoidDescription/스케일로 구분하고 가짜 파츠는 만들지 않는다. 판정·AI는 기존 서버 로직 그대로.
@@ -6239,7 +6240,7 @@ end
 
 -- [인간형 몹 전투 스타일] 모델 종류에 따라 무기 쓰는 방식이 다르다. 총 피해량은 기존 1회 피해와 같고 예고 시간·범위·모양만 다르다.
 local meadowRangedVariants={roguehooded=true,adventurer=true}
-local meadowBruteVariants={barbarian=true,knight=true,king=true,punk=true}
+local meadowBruteVariants={barbarian=true,knight=true,king=true,punk=true,orc=true,skullorc=true,skwarrior=true,yeti=true,tribal=true,bull=true,cactoro=true,spiritgolem=true}
 local function meadowHumanStyleOf(enemy)
   local variant=enemy.model and enemy.model:GetAttribute("Variant")
   if meadowRangedVariants[variant] then return "ranged" end
@@ -8393,7 +8394,7 @@ do
   local placedSites={}
   for _,zone in ipairs(world.Zones) do
     local pool=pools[zone.Id]
-    local sites=math.floor(zone.Area/65000)
+    local sites=math.floor(zone.Area/40000)
     for index=1,sites do
       local spec=pool[random:NextInteger(1,#pool)]
       local x,z=world.RandomPoint(zone.Id,random,30)
