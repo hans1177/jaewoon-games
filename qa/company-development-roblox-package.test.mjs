@@ -1659,8 +1659,8 @@ test('fantasy monster shared actions have restrained impacts stable targets and 
   assert.match(server,/facing=enemy\.visualFacing/);
   assert.match(client,/local function mobVfx\(pattern,where,stage,facing\)/);
   assert.match(client,/stage=="IMPACT" and \(charge and "SHAPE_BURST" or "IMPACT_FLASH"\)/);
-  assert.match(client,/textureKey=wolf and stage=="IMPACT" and "slash" or nil/);
-  assert.match(client,/startDiameter=boss and \(pattern=="GOLEM_SHOCKWAVE" and 16\.8 or 10\.4\) or nil/);
+  assert.match(client,/textureKey=\(wolf or brute\) and stage=="IMPACT" and "slash" or nil/);
+  assert.match(client,/startDiameter=boss and \(pattern=="GOLEM_SHOCKWAVE" and 16\.8 or 10\.4\) or \(pattern=="BRUTE_SWEEP" and 11\.2\) or nil/);
   assert.match(client,/hideRing=pattern=="GOLEM_SLAM" or stage=="IMPACT" and not charge/);
   assert.match(client,/mobVfx\(payload\.pattern,payload\.position,"IMPACT",payload\.facing\)/);
   assert.match(client,/if mode=="IDLE" then/);

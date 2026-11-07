@@ -10217,7 +10217,12 @@ local function mobVfx(pattern,where,stage,facing)
   local wolf=pattern=="WOLF_BITE" or pattern=="WOLF_LUNGE"
   local boar=pattern=="BOAR_CHARGE" or pattern=="BOAR_TUSK"
   local arcane=pattern=="ARCANE_BOLT" or pattern=="ARCANE_NOVA"
-  local tint=arcane and Color3.fromRGB(176,110,255)
+  -- [인간형 무기 공격] 무겁게 내려치기·휩쓸기·방패 치기, 석궁 사격은 각각 색과 모양이 다르다.
+  local brute=pattern=="BRUTE_OVERHEAD" or pattern=="BRUTE_SWEEP" or pattern=="BRUTE_BASH"
+  local shot=pattern=="CROSSBOW_SHOT" or pattern=="CROSSBOW_VOLLEY"
+  local tint=brute and Color3.fromRGB(255,170,96)
+    or shot and Color3.fromRGB(255,214,120)
+    or arcane and Color3.fromRGB(176,110,255)
     or boss and Color3.fromRGB(255,131,91)
     or flying and Color3.fromRGB(243,224,123)
     or wolf and Color3.fromRGB(173,217,245)
@@ -10228,6 +10233,7 @@ local function mobVfx(pattern,where,stage,facing)
     or wolf and Color3.fromRGB(222,246,255)
     or Color3.fromRGB(244,241,219)
   local charge=pattern=="WOLF_LUNGE" or pattern=="BOAR_CHARGE" or pattern=="ARCANE_NOVA"
+    or pattern=="BRUTE_OVERHEAD" or pattern=="BRUTE_SWEEP"
     or pattern=="GOLEM_SLAM" or pattern=="GOLEM_SHOCKWAVE"
   local effect=stage=="DEATH" and "DESTRUCTION_BURST"
     or stage=="ANTICIPATION" and (boss and "BOSS_WARNING_PULSE" or "ATTACK_TELEGRAPH_PULSE")
@@ -10257,9 +10263,9 @@ local function mobVfx(pattern,where,stage,facing)
       or stage=="DEATH" and .55 or .28,
     reducedMotion=reducedEffects,
     -- [공격 범위 의미] 실제 광역 판정은 기존 수문장 충격파에만 있다.
-    startDiameter=boss and (pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4) or nil,
-    endDiameter=boss and (pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4) or nil,
-    textureKey=wolf and stage=="IMPACT" and "slash" or nil,
+    startDiameter=boss and (pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4) or (pattern=="BRUTE_SWEEP" and 11.2) or nil,
+    endDiameter=boss and (pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4) or (pattern=="BRUTE_SWEEP" and 11.2) or nil,
+    textureKey=(wolf or brute) and stage=="IMPACT" and "slash" or nil,
     hideFlash=stage=="ANTICIPATION",
     hideRing=pattern=="GOLEM_SLAM" or stage=="IMPACT" and not charge,
     mist=stage=="DEATH" and not reducedEffects,
@@ -11199,7 +11205,21 @@ do
 end
 remote.OnClientEvent:Connect(function(kind,payload)
   if typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end
-  if kind=="MEADOW_MOB_ATTACK" then mobVfx(payload.pattern,payload.position,"IMPACT",payload.facing)
+  if kind=="MEADOW_MOB_ATTACK" then
+    mobVfx(payload.pattern,payload.position,"IMPACT",payload.facing)
+    -- [석궁 사격] 몹 가슴 높이에서 목표까지 짧은 화살 궤적(Terrain Attachment + Beam, Part 없음).
+    if (payload.pattern=="CROSSBOW_SHOT" or payload.pattern=="CROSSBOW_VOLLEY")
+      and typeof(payload.position)=="Vector3" and typeof(payload.target)=="Vector3" then
+      local from=payload.position+Vector3.new(0,2.4,0)
+      local to=payload.target+Vector3.new(0,1.6,0)
+      local a0=Instance.new("Attachment");a0.WorldPosition=from;a0.Parent=workspace.Terrain
+      local a1=Instance.new("Attachment");a1.WorldPosition=to;a1.Parent=workspace.Terrain
+      local beam=Instance.new("Beam");beam.Attachment0=a0;beam.Attachment1=a1
+      beam.Width0=.18;beam.Width1=.05;beam.FaceCamera=true;beam.LightEmission=.8
+      beam.Color=ColorSequence.new(Color3.fromRGB(255,226,150))
+      beam.Transparency=NumberSequence.new(.1,.6);beam.Parent=a0
+      game:GetService("Debris"):AddItem(a0,.16);game:GetService("Debris"):AddItem(a1,.16)
+    end
   elseif kind=="MEADOW_MOB_DEATH" then
     mobVfx(payload.pattern,payload.position,"DEATH")
   end

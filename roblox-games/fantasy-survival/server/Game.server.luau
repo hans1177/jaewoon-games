@@ -5944,6 +5944,15 @@ local function animateMeadowOriginalMob(enemy,now)
     *CFrame.Angles(attackPitch+stridePitch+idleBreath,0,bank))
 end
 
+-- [인간형 몹 전투 스타일] 모델 종류에 따라 무기 쓰는 방식이 다르다. 총 피해량은 기존 1회 피해와 같고 예고 시간·범위·모양만 다르다.
+local meadowRangedVariants={roguehooded=true,adventurer=true}
+local meadowBruteVariants={barbarian=true,knight=true,king=true,punk=true}
+local function meadowHumanStyleOf(enemy)
+  local variant=enemy.model and enemy.model:GetAttribute("Variant")
+  if meadowRangedVariants[variant] then return "ranged" end
+  if meadowBruteVariants[variant] then return "brute" end
+  return nil
+end
 local function chooseMeadowMobSkill(enemy)
   enemy.attackSerial+=1
   -- 수문장 후반부는 충격파 연타를 사용하되 원래 총 피해·체력·보상은 보존한다.
@@ -5953,6 +5962,8 @@ local function chooseMeadowMobSkill(enemy)
     or enemy.named and second and enemy.HP<=enemy.maxHP*.6 and "GOLEM_SHOCKWAVE"
     or enemy.style=="mage" and (second and "ARCANE_NOVA" or "ARCANE_BOLT")
     or enemy.style=="rogue" and (second and "BANDIT_FEINT" or "BANDIT_SLASH")
+    or meadowHumanStyleOf(enemy)=="ranged" and (second and "CROSSBOW_VOLLEY" or "CROSSBOW_SHOT")
+    or meadowHumanStyleOf(enemy)=="brute" and (({"BRUTE_OVERHEAD","BRUTE_SWEEP","BRUTE_BASH"})[enemy.attackSerial%3+1])
     or enemy.kind=="bee" and (second and "BEE_STING" or "BEE_SWEEP")
     or enemy.kind=="boar" and (second and "BOAR_TUSK" or "BOAR_CHARGE")
     or enemy.kind=="bat" and (second and "BAT_SWEEP" or "BAT_DIVE")
@@ -6259,6 +6270,7 @@ local function updateEnemyAI(dt,now)
         -- Three source-authored enemy patterns; authoritative damage and saves are unchanged.
         local attackRange=(enemy.kind=="bee" or enemy.kind=="bat") and 5.6
           or enemy.style=="mage" and 14
+          or meadowHumanStyleOf(enemy)=="ranged" and 12
           or (enemy.isBoss and 5.2 or enemy.isAlpha and 5.0 or 4.4)
         -- [공통 전방 주시] 공격 예고 중에는 실제 목표 방향을 바라보되 판정은 기존 서버 규칙으로만 한다.
         if distance>.05 and (enemy.windupUntil or distance<=attackRange) then
@@ -6268,12 +6280,15 @@ local function updateEnemyAI(dt,now)
           -- 공격 예고 중 대상이 사라지거나 거리를 벌렸다면 피해 없이 취소한다.
           local activeRange=enemy.attackPattern=="GOLEM_SHOCKWAVE" and 8.4
             or enemy.attackPattern=="WOLF_LUNGE" and 6.5
+            or (enemy.attackPattern=="CROSSBOW_SHOT" or enemy.attackPattern=="CROSSBOW_VOLLEY") and 13
+            or enemy.attackPattern=="BRUTE_SWEEP" and 6.2
             or enemy.attackPattern=="GOLEM_SHOCKWAVE" and 8.4 or attackRange
           if targetPlayer.UserId~=enemy.windupTargetUserId or distance>activeRange+1 or targetHuman.Health<=0 then
             cancelEnemyWindup(enemy)
           elseif now>=enemy.windupUntil then
             local hitIndex=enemy.comboHit or 1
             local hitCount=enemy.model:GetAttribute("NativeMobSkillActive")==true and 3 or 1
+            if enemy.attackPattern=="CROSSBOW_VOLLEY" then hitCount=2 elseif enemy.attackPattern=="BRUTE_OVERHEAD" or enemy.attackPattern=="BRUTE_BASH" or enemy.attackPattern=="CROSSBOW_SHOT" or enemy.attackPattern=="BRUTE_SWEEP" then hitCount=1 end
             -- 연속 스킬의 총 피해량은 기존 1회 피해와 같다. 반올림 잔여는 마지막 타격에 포함한다.
             local hitDamage=math.floor(enemy.damage/hitCount)
             if hitIndex==hitCount then hitDamage=enemy.damage-hitDamage*(hitCount-1) end
@@ -6289,6 +6304,17 @@ local function updateEnemyAI(dt,now)
                 local root=avatar and avatar:FindFirstChild("HumanoidRootPart")
                 local human=avatar and avatar:FindFirstChildOfClass("Humanoid")
                 if root and human and (root.Position-enemy.position).Magnitude<=8.4 then
+                  applyMeadowMobHit(victim,human,hitDamage,enemy)
+                  if (enemy.stunUntil or 0)>now then break end
+                end
+              end
+            elseif enemy.attackPattern=="BRUTE_SWEEP" then
+              -- 큰 무기 휩쓸기: 몹 앞 5.6스터드 안의 플레이어를 한 번씩 맞춘다.
+              for _,victim in ipairs(Players:GetPlayers()) do
+                local avatar=victim.Character
+                local root=avatar and avatar:FindFirstChild("HumanoidRootPart")
+                local human=avatar and avatar:FindFirstChildOfClass("Humanoid")
+                if root and human and (root.Position-enemy.position).Magnitude<=5.6 then
                   applyMeadowMobHit(victim,human,hitDamage,enemy)
                   if (enemy.stunUntil or 0)>now then break end
                 end
@@ -6321,7 +6347,7 @@ local function updateEnemyAI(dt,now)
             remote:FireAllClients("MEADOW_MOB_ATTACK",{
               species=enemy.kind,pattern=enemy.attackPattern,
               position=arcane and (targetRoot.Position-enemy.visualFacing*1.0) or enemy.position,
-              facing=enemy.visualFacing,
+              facing=enemy.visualFacing,target=targetRoot.Position,
             })
           end
         elseif distance>attackRange then
@@ -6362,6 +6388,8 @@ local function updateEnemyAI(dt,now)
           enemy.comboHit=1
           enemy.windupTargetUserId=targetPlayer.UserId
           enemy.windupUntil=now+(enemy.isBoss and .68 or
+            pattern=="BRUTE_OVERHEAD" and .72 or pattern=="BRUTE_SWEEP" and .5 or pattern=="BRUTE_BASH" and .38
+            or pattern=="CROSSBOW_SHOT" and .6 or pattern=="CROSSBOW_VOLLEY" and .45 or
             ((pattern=="WOLF_LUNGE" or pattern=="BOAR_CHARGE" or pattern=="ARCANE_BOLT" or pattern=="ARCANE_NOVA") and .55
               or (enemy.kind=="bee" or enemy.kind=="bat") and .32 or .42))
           setEnemyAttackState(enemy,"ANTICIPATION")
