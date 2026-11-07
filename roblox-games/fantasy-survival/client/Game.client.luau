@@ -10438,7 +10438,11 @@ local function bindOriginalMob(model)
       elseif not sourceChannels[name] and (species=="bee" or species=="bat") then
         if key:find("wing",1,true) and side then name="Wing"..side end
       elseif not sourceChannels[name] and species=="golem" then
-        if (key:find("arm",1,true) or key:find("shoulder",1,true)) and side then
+        local humanoidRig=rigNames.handslotl or rigNames.kneeikl
+        if humanoidRig and key=="spine" then name="Spine"
+        elseif humanoidRig and key=="chest" then name="Chest"
+        elseif humanoidRig and key=="head" then name="Head"
+        elseif (key:find("arm",1,true) or key:find("shoulder",1,true)) and side then
           name="UpperArm"..side
         end
       end
@@ -10470,6 +10474,25 @@ local function bindOriginalMob(model)
       forward=forward.Unit
       local upAxis=Vector3.yAxis
       local canon=CFrame.fromMatrix(Vector3.zero,forward:Cross(upAxis),upAxis,-forward)
+      axisFix={}
+      for name,joint in pairs(joints) do
+        if joint:IsA("Bone") then
+          local rest=(joint.WorldCFrame*joint.Transform:Inverse()).Rotation
+          axisFix[name]={pre=rest:Inverse()*canon,post=canon:Inverse()*rest}
+        end
+      end
+    end
+  end
+  -- [인간형 관절 축 보정] KayKit 인간형(야만인·기사·도적 등)의 팔·다리 뼈는 로컬 축이 몸 기준과 달라
+  -- 같은 각도를 넣으면 팔다리가 옆으로 휘둘렸다. 4족과 같은 방식으로 '몸 기준 축 → 뼈 축'으로 바꿔 넣는다.
+  -- 이 리그만(손 슬롯·무릎 IK 뼈가 있는 모델) 대상이라 기존 수문장 골렘 리그는 그대로다.
+  if species=="golem" and not axisFix and (rigNames.handslotl or rigNames.kneeikl)
+    and (available.ThighL or available.UpperArmL) then
+    local look=(model:GetPivot()*CFrame.Angles(0,-(model:GetAttribute("NativeMobFacingYaw") or 0),0)).LookVector
+    local forward=Vector3.new(look.X,0,look.Z)
+    if forward.Magnitude>.05 then
+      forward=forward.Unit
+      local canon=CFrame.fromMatrix(Vector3.zero,forward:Cross(Vector3.yAxis),Vector3.yAxis,-forward)
       axisFix={}
       for name,joint in pairs(joints) do
         if joint:IsA("Bone") then
@@ -10554,6 +10577,7 @@ local function bindOriginalMob(model)
     followAnimator=true,response=26,
   }) or nil
   local row={controller=controller,nativeTracks=nativeTracks,available=available,plan=bodyPlan,axisFix=axisFix,
+    humanoid=(species=="golem" and (rigNames.handslotl or rigNames.kneeikl)) and true or false,
     species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock(),
     lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0,renderAccumulator=0,
     lastHeading=model:GetPivot().LookVector,turnLean=0,
@@ -11079,7 +11103,37 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           end
         end
         -- [수문장 액션] 실제 원본 팔·다리만 큰 예비 동작과 충격 뒤 복귀에 연결한다.
-        if row.species=="golem" and (mode=="ANTICIPATION" or mode=="ATTACK" or mode=="RECOVERY" or mode=="HIT") then
+        -- [인간형 무기 동작] 공격 종류마다 팔 자세가 다르다: 내려치기=머리 위로 들었다 찍기, 휩쓸기=몸을 비틀어 가로로,
+        -- 방패 치기=팔을 앞으로 밀기, 석궁=두 팔을 앞으로 겨누기. 관절만 움직이며 판정과 무관하다.
+        if row.humanoid and (mode=="ANTICIPATION" or mode=="ATTACK" or mode=="RECOVERY") then
+          local pattern=model:GetAttribute("AttackPattern")
+          local wind=mode=="ANTICIPATION" and math.sin(phase*math.pi*.5) or mode=="ATTACK" and 1 or (1-phase)
+          local strike=mode=="ATTACK" and math.sin(math.clamp(phase,0,1)*math.pi) or 0
+          local armR,armL,spin=row.available.UpperArmR,row.available.UpperArmL,row.available.Spine
+          if pattern=="BRUTE_OVERHEAD" then
+            if armR then row.poses.UpperArmR=CFrame.Angles(-2.3*wind+1.6*strike,0,.18*wind) end
+            if armL then row.poses.UpperArmL=CFrame.Angles(-1.1*wind,0,-.2*wind) end
+            if spin then row.poses.Spine=CFrame.Angles(-.22*wind+.38*strike,0,0) end
+          elseif pattern=="BRUTE_SWEEP" then
+            if armR then row.poses.UpperArmR=CFrame.Angles(-1.35*wind,0,.9*wind-1.3*strike) end
+            if armL then row.poses.UpperArmL=CFrame.Angles(-.9*wind,0,-.5*wind) end
+            if spin then row.poses.Spine=CFrame.Angles(0,.8*wind-1.4*strike,0) end
+          elseif pattern=="BRUTE_BASH" then
+            if armL then row.poses.UpperArmL=CFrame.Angles(-1.5*wind-.4*strike,0,-.1*wind) end
+            if armR then row.poses.UpperArmR=CFrame.Angles(-.6*wind,0,.2*wind) end
+            if spin then row.poses.Spine=CFrame.Angles(.18*wind,0,0) end
+          elseif pattern=="CROSSBOW_SHOT" or pattern=="CROSSBOW_VOLLEY" then
+            if armR then row.poses.UpperArmR=CFrame.Angles(-1.45*wind,0,.12*wind) end
+            if armL then row.poses.UpperArmL=CFrame.Angles(-1.55*wind,0,-.12*wind) end
+            if spin then row.poses.Spine=CFrame.Angles(-.06*wind-.1*strike,0,0) end
+          else
+            -- 도적 베기·페인트 등: 오른팔을 뒤로 당겼다가 비스듬히 베기.
+            if armR then row.poses.UpperArmR=CFrame.Angles(-1.7*wind+1.3*strike,0,.5*wind-.8*strike) end
+            if armL then row.poses.UpperArmL=CFrame.Angles(-.5*wind,0,-.3*wind) end
+            if spin then row.poses.Spine=CFrame.Angles(0,.35*wind-.7*strike,0) end
+          end
+        end
+        if row.species=="golem" and not row.humanoid and (mode=="ANTICIPATION" or mode=="ATTACK" or mode=="RECOVERY" or mode=="HIT") then
           local shock=model:GetAttribute("AttackPattern")=="GOLEM_SHOCKWAVE"
           local lift=(mode=="ANTICIPATION" or mode=="ATTACK") and math.sin(phase*math.pi*.5) or (1-phase)
           local pitch=(mode=="ANTICIPATION" or mode=="ATTACK") and -(shock and .75 or 1.35)*lift or .5*lift
