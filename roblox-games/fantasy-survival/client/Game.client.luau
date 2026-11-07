@@ -2995,8 +2995,9 @@ for school=1,5 do
       local icon=Instance.new("ImageLabel")
       icon.Name="NodeIcon";icon.BackgroundTransparency=1;icon.Position=UDim2.new(.5,-17,0,2)
       icon.Size=UDim2.fromOffset(34,34)
-      icon.Image=meadowArt.skillSheet;icon.ImageRectSize=Vector2.new(64,64)
-      icon.ImageRectOffset=Vector2.new(node.IconCell*64,0);icon.Parent=button
+      -- 스킬 원화 시트는 5x5 / 200px 칸이다(예전 64px 계산은 엉뚱한 칸을 잘랐다).
+      icon.Image=meadowArt.skillSheet;icon.ImageRectSize=Vector2.new(200,200)
+      icon.ImageRectOffset=Vector2.new((node.IconCell%5)*200,math.floor(node.IconCell/5)*200);icon.Parent=button
       local label=Instance.new("TextLabel")
       label.BackgroundTransparency=1;label.Position=UDim2.fromOffset(3,36);label.Size=UDim2.new(1,-6,0,30)
       label.Font=Enum.Font.GothamBold;label.TextSize=10;label.TextWrapped=true
@@ -3005,7 +3006,16 @@ for school=1,5 do
         selectedNode=node
         if renderTree then renderTree() end
       end)
-      talentRows[node.Index]={node=node,button=button,edge=edge,icon=icon,label=label}
+      -- [연결선] 같은 분기의 앞 노드를 익히면 다음 노드로 금빛이 이어진다.
+      local connector
+      if step<6 then
+        connector=Instance.new("Frame")
+        connector.Name="TalentLink_"..node.Index;connector.AnchorPoint=Vector2.new(.5,0)
+        connector.Position=UDim2.new(.5,0,0,40+step*75-8);connector.Size=UDim2.fromOffset(4,8)
+        connector.BorderSizePixel=0;connector.BackgroundColor3=Color3.fromRGB(60,72,68);connector.ZIndex=2
+        connector.Parent=column
+      end
+      talentRows[node.Index]={node=node,button=button,edge=edge,icon=icon,label=label,connector=connector}
     end
   end
 end
@@ -3110,6 +3120,8 @@ yes.Activated:Connect(function()
   resetConfirm.Visible=false
   if player:GetAttribute("ProfileReady")==true then remote:FireServer("meadow:rpg:tree:reset:all") end
 end)
+local lastTalentRank={}
+local talentTween=game:GetService("TweenService")
 renderTree=function()
   local mastery=tonumber(player:GetAttribute("CombatProficiency")) or 0
   local points=Config.MeadowSkillPointProgress(mastery)
@@ -3133,6 +3145,35 @@ renderTree=function()
     entry.button.BackgroundColor3=rank>0 and Color3.fromRGB(54,94,74) or Color3.fromRGB(42,51,49)
     entry.edge.Color=selected and Color3.new(1,1,1) or ready and gold or Color3.fromRGB(81,99,91)
     entry.edge.Thickness=selected and 3 or ready and 2 or 1
+    if entry.connector then
+      entry.connector.BackgroundColor3=rank>=1 and gold or Color3.fromRGB(60,72,68)
+    end
+    -- [습득 가능 노드 숨쉬기] 점수가 있고 선행 조건을 만족한 노드의 테두리가 천천히 깜빡인다.
+    if ready and not selected then
+      if not entry.pulse then
+        entry.pulse=talentTween:Create(entry.edge,TweenInfo.new(.9,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut,-1,true),{Transparency=.65})
+        entry.pulse:Play()
+      end
+    elseif entry.pulse then
+      entry.pulse:Cancel();entry.pulse=nil;entry.edge.Transparency=0
+    end
+    -- [습득 연출] 단계가 오른 노드는 황금 섬광이 번지고 아이콘이 튕긴다.
+    local before=lastTalentRank[node.Index]
+    lastTalentRank[node.Index]=rank
+    if before and rank>before then
+      local flash=Instance.new("Frame")
+      flash.Name="LearnFlash";flash.AnchorPoint=Vector2.new(.5,.5);flash.Position=UDim2.fromScale(.5,.5)
+      flash.Size=UDim2.fromScale(1,1);flash.BackgroundColor3=Color3.fromRGB(255,226,140)
+      flash.BackgroundTransparency=.25;flash.BorderSizePixel=0;flash.ZIndex=entry.button.ZIndex+3;flash.Parent=entry.button
+      local flashCorner=Instance.new("UICorner");flashCorner.CornerRadius=UDim.new(0,8);flashCorner.Parent=flash
+      local fade=talentTween:Create(flash,TweenInfo.new(.55,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
+        {BackgroundTransparency=1,Size=UDim2.fromScale(1.18,1.18)})
+      fade.Completed:Connect(function() flash:Destroy() end);fade:Play()
+      entry.icon.Size=UDim2.fromOffset(46,46);entry.icon.Position=UDim2.new(.5,-23,0,-4)
+      talentTween:Create(entry.icon,TweenInfo.new(.45,Enum.EasingStyle.Back,Enum.EasingDirection.Out),
+        {Size=UDim2.fromOffset(34,34),Position=UDim2.new(.5,-17,0,2)}):Play()
+      if meadowArt.sfx then pcall(meadowArt.sfx,"click",.6,rank>=3 and 1.35 or 1.1) end
+    end
     entry.icon.ImageTransparency=rank>0 and 0 or ready and .12 or .65
     entry.label.Text=node.Name.."  "..rank.."/3"
     entry.label.TextColor3=rank>0 and Color3.fromRGB(235,248,221) or parchment
