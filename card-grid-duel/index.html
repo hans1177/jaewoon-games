@@ -446,7 +446,9 @@ function enterRest(rewardText){
   state.current='BLUE';
   selectedUnit=null;
   selectedCard='';
-  msg(rewardText)
+  msg(rewardText);
+  // 적 마지막 처치 직후에도 휴식·보상 선택이 저장되게 한다.
+  saveProgress()
 }
 function stageClearRewards(stageNo){
   const base={1:50,2:200,3:250}[stageNo]||0;
@@ -826,6 +828,11 @@ function applyTile(u){
   }else if(t.type==='CRACK')state.specialTiles=state.specialTiles.filter(x=>x!==t)
 }
 function render(){
+  // 구버전 5스테이지 승리 화면이 열린 채로 남은 경우에도 휴식 화면으로 복구한다.
+  if(state?.stage===5&&state.phase==='BATTLE'&&state.winner==='BLUE'){
+    state.winner='';
+    clearStageFive()
+  }
   renderWallet();
   board.innerHTML='';
   const rows=boardRows(),cols=boardCols();
@@ -898,7 +905,9 @@ function render(){
   const won=state.winner==='BLUE',lost=state.winner==='RED';
   $('#playBtn').textContent=lost?state.stage+'스테이지 재도전':won?'처음부터 다시 플레이':'진행 중';
   $('#playBtn').disabled=!lost&&!won;
-  $('#restScreen').classList.toggle('hidden',!resting);
+  const restPanel=$('#restScreen');
+  const restJustOpened=resting&&restPanel.classList.contains('hidden');
+  restPanel.classList.toggle('hidden',!resting);
   $('#battlePanel').classList.toggle('hidden',resting);
   $('.bottom').classList.toggle('hidden',resting);
 
@@ -925,6 +934,8 @@ function render(){
       updateUpgradeInfo()
     }
     $('#nextStage').textContent=(state.stage+1)+'스테이지 시작';
+    // 전투 맵 아래로 내려가 있었어도 클리어 시 뽑기·강화 화면을 바로 보여준다.
+    if(restJustOpened)restPanel.scrollIntoView({block:'start',behavior:'auto'});
     return
   }
 
