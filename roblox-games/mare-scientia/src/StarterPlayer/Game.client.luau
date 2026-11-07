@@ -1089,11 +1089,33 @@ local function sail(portId)
 			local hull = sceneCtl.hull()
 			local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 			main.Visible = false
+			-- 배 진행 방향(+X, 바다 쪽)을 따라가는 추적 카메라: 배 뒤쪽 위에서 바라본다
+			local RS = game:GetService("RunService")
+			local camName = "MareDepartCam"
 			if cam and hull then
-				cam.CameraSubject = hull
+				workspace:SetAttribute("VoyageActive", true)
+				pcall(function() RS:UnbindFromRenderStep(camName) end)
+				local t0 = os.clock()
+				RS:BindToRenderStep(camName, Enum.RenderPriority.Last.Value + 1, function()
+					local c = workspace.CurrentCamera
+					if not (c and hull.Parent) then
+						return
+					end
+					local p = hull.Position
+					local k = math.clamp((os.clock() - t0) / dur, 0, 1)
+					-- 처음엔 부두 쪽 옆에서, 점점 뒤쪽으로 돌아가며 멀어지는 배를 보여 준다
+					local back = 34 + k * 26
+					local side = 22 * (1 - k * 0.7)
+					c.CameraType = Enum.CameraType.Scriptable
+					c.FieldOfView = 62
+					c.CFrame = CFrame.lookAt(p + Vector3.new(-back, 13 + k * 5, side), p + Vector3.new(16, 2, 0))
+				end)
 			end
 			task.wait(dur)
+			pcall(function() RS:UnbindFromRenderStep(camName) end)
+			workspace:SetAttribute("VoyageActive", nil)
 			if cam and hum then
+				cam.CameraType = Enum.CameraType.Custom
 				cam.CameraSubject = hum
 			end
 		end)

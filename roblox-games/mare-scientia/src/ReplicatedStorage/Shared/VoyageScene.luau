@@ -461,6 +461,7 @@ function VoyageScene.play(info)
 		e.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.1), NumberSequenceKeypoint.new(1, 1) })
 		e.Color = ColorSequence.new(Color3.fromRGB(240, 248, 255))
 		e.LightEmission = 0.3
+		e.Texture = "rbxasset://textures/particles/smoke_main.dds"
 		e.Parent = part
 		local rec = { m = part, side = side, along = along, yaw = 0, y = 0.5 }
 		table.insert(props, rec)

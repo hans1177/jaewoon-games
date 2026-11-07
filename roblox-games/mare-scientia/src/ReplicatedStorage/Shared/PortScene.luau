@@ -4,6 +4,7 @@
 -- 판정에는 쓰이지 않는다. 시설 앞의 ProximityPrompt를 누르면 onFacility(탭 id)가 불린다.
 
 local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Pose = require(script.Parent:WaitForChild("Pose"))
@@ -231,9 +232,11 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	local ok, err = pcall(function()
 		m.Parent = parent
 		local _, ext = m:GetBoundingBox()
-		local axis = if kind == "People" or asset == "chimney" then ext.Y else math.max(ext.X, ext.Z)
+		local isPalm = string.find(asset, "palm", 1, true) ~= nil
+		local axis = if kind == "People" or asset == "chimney" or isPalm then ext.Y else math.max(ext.X, ext.Z)
 		if axis < 0.01 then error("빈 모델") end
-		local scale = desiredSize / axis
+		-- 야자나무는 잎이 넓어 가로 기준으로 줄이면 줄기가 뒤틀려 보인다: 높이 기준으로 맞춘다
+		local scale = desiredSize * (if isPalm then 1.5 else 1) / axis
 		if scale < 0.01 or scale > 100 then error("비정상적인 모델 배율") end
 		m:ScaleTo(scale)
 		if kind ~= "People" then
@@ -721,7 +724,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	for i = 1, 12 do
 		importedModel(folder, "Town", "rock-wide", Vector3.new(rng:NextNumber(-270, -225), 0, rng:NextNumber(-170, 170)), rng:NextNumber(14, 24), true)
 	end
-	local trees = if cold then { "tree-pinedefaulta", "tree-oak", "tree_large", "tree-high" } else { "palm-detailed-straight", "palm-bend", "tree-crooked", "tree_large" }
+	local trees = if cold then { "tree-pinedefaulta", "tree-oak", "tree_large", "tree-high" } else { "palm-detailed-straight", "tree-crooked", "tree_large" }
 	for i = 1, 150 do
 		local side = if i % 2 == 0 then 1 else -1
 		local pos = Vector3.new(rng:NextNumber(-262, -10), 0, side * rng:NextNumber(158, 245))
@@ -763,7 +766,7 @@ function PortScene.build(info, onFacility)
 	end
 
 	-- 바다(동쪽, x > 20)와 부두
-	local water = part(folder, Vector3.new(240, 1, 512), CFrame.new(140, 0.3, 0), Color3.fromRGB(32, 118, 160), Enum.Material.Glass)
+	local water = part(folder, Vector3.new(1300, 1, 1000), CFrame.new(670, 0.3, 0), Color3.fromRGB(32, 118, 160), Enum.Material.Glass)
 	water.Transparency = 0.28
 	water.Reflectance = 0.1
 	water.CanCollide = false
@@ -1018,6 +1021,25 @@ function PortScene.build(info, onFacility)
 			rays.Parent = Lighting
 		end
 	end
+	-- 안전망: 어떤 이유로든 바다나 허공으로 떨어지면 광장으로 되돌린다
+	do
+		local conn
+		conn = RunService.Heartbeat:Connect(function()
+			if not folder.Parent then
+				conn:Disconnect()
+				return
+			end
+			if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") then
+				return
+			end
+			local char = Players.LocalPlayer and Players.LocalPlayer.Character
+			local hrp = char and char:FindFirstChild("HumanoidRootPart")
+			if hrp and hrp.Position.Y < -12 and hrp.Position.X < 1000 then
+				hrp.AssemblyLinearVelocity = Vector3.zero
+				char:PivotTo(CFrame.new(-6, 6, 10))
+			end
+		end)
+	end
 	-- 낮과 밤: 실시간 10분이 하루. 밤이 되면 하늘이 어두워지고 가로등·등불이 켜진다
 	do
 		local Lighting = game:GetService("Lighting")
@@ -1098,7 +1120,7 @@ function PortScene.build(info, onFacility)
 		for _, z in { -16, 16, -32, 32 } do
 			if palmOk(info.portId, style) then
 				importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(13, 0, z), 6.5, false)
-				importedModel(folder, "Naval", "palm-bend", Vector3.new(17, 0, z + 5), 7.5, false)
+				importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(17, 0, z + 5), 6, false)
 			else
 				importedModel(folder, "Terrain", "tree-oak", Vector3.new(13, 0, z), 7, false)
 				importedModel(folder, "Town", "tree", Vector3.new(17, 0, z + 5), 7, false)
@@ -1330,6 +1352,7 @@ function PortScene.build(info, onFacility)
 						att.Parent = hull
 						local em = Instance.new("ParticleEmitter")
 						em.Name = "WakeFoam"
+						em.Texture = "rbxasset://textures/particles/smoke_main.dds"
 						em.Rate = 30
 						em.Lifetime = NumberRange.new(2, 3)
 						em.Speed = NumberRange.new(2, 4)
