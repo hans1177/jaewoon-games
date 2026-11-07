@@ -511,15 +511,19 @@ local function densify(folder, info, style, rng, walkers, made)
 			while x > -168 do
 				local w = rng:NextNumber(row.w0, row.w1)
 				if not nearStreet(x, w) and rng:NextNumber() < 0.93 then
-					local z = side * (row.z + rng:NextNumber(-1, 1))
-					local pos = Vector3.new(x + rng:NextNumber(-1.5, 1.5), 0, z)
-					house(folder, pos, w, row.d, row.fl, style, rng)
+					-- 격자 느낌을 깨기 위해 앞뒤 위치·깊이·층수를 줄마다 흩뜨린다
+					local z = side * (row.z + rng:NextNumber(-2.5, 2.5))
+					local pos = Vector3.new(x + rng:NextNumber(-2.5, 2.5), 0, z)
+					local fl = row.fl
+					local r = rng:NextNumber()
+					if r < 0.2 and fl > 1 then fl -= 1 elseif r > 0.88 and fl < 3 then fl += 1 end
+					house(folder, pos, w, row.d + rng:NextNumber(-1, 1.5), fl, style, rng)
 					if smokers < 28 and rng:NextNumber() < 0.25 then
 						smokers += 1
 						smokeOn(folder, pos + Vector3.new(w * 0.2, row.fl * 6 + 4, 0))
 					end
 				end
-				x -= row.step
+				x -= row.step + rng:NextNumber(-2, 3)
 			end
 		end
 	end
