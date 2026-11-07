@@ -175,7 +175,7 @@ function FieldScene.start(opts)
 
 	-- 나무와 바위
 	local treeNames = { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
-	for _ = 1, biome.trees do
+	for _ = 1, biome.trees * 2 do
 		local pos = ORIGIN + scatter(14)
 		local h = rng:NextNumber(9, 15)
 		if not placeModel(folder, "Town", treeNames[rng:NextInteger(1, #treeNames)], pos, h, false) then
@@ -184,7 +184,7 @@ function FieldScene.start(opts)
 		end
 	end
 	local rockNames = { "rock-large", "rock-small", "rock-wide" }
-	for _ = 1, biome.rocks do
+	for _ = 1, math.floor(biome.rocks * 1.6) do
 		local pos = ORIGIN + scatter(10)
 		if not placeModel(folder, "Town", rockNames[rng:NextInteger(1, #rockNames)], pos, rng:NextNumber(2.5, 6), true) then
 			part(folder, Vector3.new(rng:NextNumber(2, 4), rng:NextNumber(1.5, 3), rng:NextNumber(2, 4)), CFrame.new(pos + Vector3.new(0, 1, 0)) * CFrame.Angles(0, rng:NextNumber(0, 3), 0), Color3.fromRGB(128, 126, 122), Enum.Material.Slate)
