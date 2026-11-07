@@ -276,6 +276,8 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 위치로 정한 크기 변주(0.86~1.08배)와 180도 뒤집기로 같은 집이 반복돼 보이지 않게 한다
 	local seed = math.floor(math.abs(pos.X * 3 + pos.Z * 5))
 	local variation = 0.86 + (seed % 7) * 0.037
+	-- 층수가 높을수록 집도 키워서 1·2·3층이 실루엣으로 구분되게 한다 (0.92~1.12배)
+	variation *= 0.92 + (math.clamp(floors or 2, 1, 3) - 1) * 0.1
 	local mesh = importedModel(parent, "Town", "house", pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
 	if mesh then
 		mesh.Name = "HarborHouse"
