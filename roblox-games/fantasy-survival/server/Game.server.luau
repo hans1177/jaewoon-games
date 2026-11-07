@@ -753,6 +753,16 @@ task.defer(function()
 end)
 
 local function worldAsset(id, location, targetHeight, heightAboveGround)
+  -- [지형 굴곡 대응] 지형이 평평한 기준(높이 2)보다 높거나 낮은 곳이면 소품을 지표에 맞춰 올리고 내린다.
+  do
+    local rp=RaycastParams.new()
+    rp.FilterType=Enum.RaycastFilterType.Include
+    rp.FilterDescendantsInstances={workspace.Terrain}
+    local hit=workspace:Raycast(Vector3.new(location.X,400,location.Z),Vector3.new(0,-800,0),rp)
+    if hit and math.abs(hit.Position.Y-2)>.5 and hit.Position.Y>-3 then
+      location=location+Vector3.new(0,hit.Position.Y-2,0)
+    end
+  end
   local modelId = NativeCreatureAssets[id]
   if typeof(modelId) ~= "number" or modelId < 1 then
     warn("마력숲 등록된 CC0 초원 자산 없음: "..id)
@@ -8308,6 +8318,69 @@ do
           end
         end
         task.wait()
+      end
+      -- 2b) [지역 지형 개성] 평평한 판때기 대신 지역마다 완만한 굴곡(큰 돔)과 고유 재질 얼룩을 더한다.
+      -- 마을·이정표·거점·큰길 주변은 평평하게 둬서 기존 건물·NPC·자원점이 묻히지 않게 한다.
+      do
+        local keepOut={}
+        for _,wp in ipairs(world.Waypoints or {}) do keepOut[#keepOut+1]={wp[2],wp[3]} end
+        for _,town in ipairs(world.Towns or {}) do keepOut[#keepOut+1]={town.X,town.Z} end
+        for _,eco in ipairs(Config.EcoRegions or {}) do
+          keepOut[#keepOut+1]={eco.HubX,eco.HubZ}
+          for _,camp in ipairs(eco.Camps or {}) do keepOut[#keepOut+1]={camp.X,camp.Z} end
+        end
+        local function clear(x,z,r)
+          if math.abs(z)<r*.55 or math.abs(x)<r*.55 or math.abs(x-3000)<r*.55 then return false end
+          for _,k in ipairs(keepOut) do
+            if (x-k[1])^2+(z-k[2])^2<r*r then return false end
+          end
+          return true
+        end
+        -- 지역별 [돔 최대 높이, 얼룩 재질 목록]
+        local relief={
+          windcliff={26,{Enum.Material.Rock,Enum.Material.Mud,Enum.Material.Grass}},
+          meadow={7,{Enum.Material.LeafyGrass,Enum.Material.Ground}},
+          worldtree={14,{Enum.Material.Mud,Enum.Material.Ground,Enum.Material.LeafyGrass}},
+          volcano={24,{Enum.Material.CrackedLava,Enum.Material.Slate,Enum.Material.Rock}},
+          oasis={12,{Enum.Material.Sandstone,Enum.Material.Salt,Enum.Material.Limestone}},
+          swamp={5,{Enum.Material.Mud,Enum.Material.Ground,Enum.Material.Water}},
+          citadel={18,{Enum.Material.CrackedLava,Enum.Material.Cobblestone,Enum.Material.Rock}},
+          highland={30,{Enum.Material.Snow,Enum.Material.Rock,Enum.Material.Glacier}},
+          canyon={22,{Enum.Material.Sandstone,Enum.Material.Rock,Enum.Material.Ground}},
+          chaos={22,{Enum.Material.Slate,Enum.Material.Glacier,Enum.Material.CrackedLava}},
+          wetland={4,{Enum.Material.Mud,Enum.Material.LeafyGrass,Enum.Material.Water}},
+          desert={11,{Enum.Material.Sandstone,Enum.Material.Salt,Enum.Material.Sand}},
+          deadmarsh={6,{Enum.Material.Mud,Enum.Material.Slate,Enum.Material.Water}},
+        }
+        for _,zone in ipairs(world.Zones) do
+          local info=relief[zone.Id]
+          if info then
+            local zoneMat=mats[zone.Id]
+            -- 큰 돔: 중심을 땅 아래에 둬서 지표 위로 완만하게 솟는다(반지름 대비 낮은 언덕).
+            for _=1,math.floor(zone.Area/55000) do
+              local x,z=world.RandomPoint(zone.Id,random,80)
+              if x and clear(x,z,100) and not (x>village.X0-140 and x<village.X1+140 and z>village.Z0-140 and z<village.Z1+140) then
+                local radius=random:NextNumber(55,140)
+                local height=random:NextNumber(.35,1)*info[1]
+                terrain:FillBall(Vector3.new(x,2+height-radius,z),radius,zoneMat)
+              end
+            end
+            -- 얼룩: 지표 높이의 납작한 원판으로 재질 색을 바꿔 단조로운 바닥을 깬다.
+            for _=1,math.floor(zone.Area/32000) do
+              local x,z=world.RandomPoint(zone.Id,random,40)
+              if x and not (x>village.X0-30 and x<village.X1+30 and z>village.Z0-30 and z<village.Z1+30)
+                and not (math.abs(z)<30 or math.abs(x)<30 or math.abs(x-3000)<30) then
+                local mat=info[2][random:NextInteger(1,#info[2])]
+                if mat==Enum.Material.Water then
+                  terrain:FillBall(Vector3.new(x,-6,z),random:NextNumber(9,22),Enum.Material.Water)
+                else
+                  terrain:FillCylinder(CFrame.new(x,0,z),4,random:NextNumber(14,46),mat)
+                end
+              end
+            end
+          end
+          task.wait()
+        end
       end
       -- 3) 큰길(동서 z=0, 남북 x=0·x=3000).
       local b=world.Bounds

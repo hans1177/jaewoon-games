@@ -12756,3 +12756,47 @@ task.spawn(function()
     lastApplied=owned
   end
 end)
+
+-- [지역 분위기] 지역마다 안개 색·농도, 색조, 밝기를 달리해 어느 지역에 있는지 한눈에 알 수 있게 한다.
+-- 플레이어가 지역 경계를 넘으면 2.5초에 걸쳐 부드럽게 바뀐다. 지형·판정과 무관한 연출이다.
+task.spawn(function()
+  local TweenService=game:GetService("TweenService")
+  local Lighting=game:GetService("Lighting")
+  local moods={
+    -- {안개색, 농도, 안개 두께, 색조, 채도, 밝기, 대비}
+    windcliff={Color3.fromRGB(190,215,235),.16,.5,Color3.fromRGB(240,248,255),.12,.02,0},
+    meadow={Color3.fromRGB(190,205,170),.2,.8,Color3.fromRGB(255,255,255),0,0,0},
+    worldtree={Color3.fromRGB(80,165,145),.32,1.3,Color3.fromRGB(205,255,235),.18,-.02,.05},
+    volcano={Color3.fromRGB(205,85,45),.4,2.3,Color3.fromRGB(255,200,165),.12,-.05,.12},
+    oasis={Color3.fromRGB(240,200,120),.22,1.4,Color3.fromRGB(255,240,200),.1,.03,.04},
+    swamp={Color3.fromRGB(95,128,88),.46,2.5,Color3.fromRGB(210,235,200),-.1,-.04,.04},
+    citadel={Color3.fromRGB(150,58,48),.42,2.7,Color3.fromRGB(255,190,180),0,-.07,.14},
+    highland={Color3.fromRGB(220,232,245),.26,1,Color3.fromRGB(225,238,255),-.05,.03,.04},
+    canyon={Color3.fromRGB(232,150,92),.24,1.2,Color3.fromRGB(255,225,200),.12,.01,.08},
+    chaos={Color3.fromRGB(118,58,150),.44,2.5,Color3.fromRGB(235,200,255),.05,-.07,.14},
+    wetland={Color3.fromRGB(140,182,150),.36,1.8,Color3.fromRGB(220,250,225),.05,-.02,0},
+    desert={Color3.fromRGB(245,205,140),.27,1.8,Color3.fromRGB(255,238,205),.08,.04,.05},
+    deadmarsh={Color3.fromRGB(88,110,68),.52,2.9,Color3.fromRGB(200,225,190),-.16,-.06,.08},
+  }
+  local atmosphere=Lighting:FindFirstChildOfClass("Atmosphere")
+  if not atmosphere then atmosphere=Instance.new("Atmosphere");atmosphere.Parent=Lighting end
+  local grade=Lighting:FindFirstChild("MeadowZoneGrade")
+  if not grade then grade=Instance.new("ColorCorrectionEffect");grade.Name="MeadowZoneGrade";grade.Parent=Lighting end
+  local current=nil
+  while true do
+    task.wait(.6)
+    local ok=pcall(function()
+      local character=Players.LocalPlayer.Character
+      local root=character and character:FindFirstChild("HumanoidRootPart")
+      if not root then return end
+      local zone=Config.WorldMap.ZoneAt(root.Position.X,root.Position.Z)
+      if not zone or zone==current or not moods[zone] then return end
+      current=zone
+      local m=moods[zone]
+      local info=TweenInfo.new(2.5,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut)
+      TweenService:Create(atmosphere,info,{Color=m[1],Decay=m[1],Density=m[2],Haze=m[3]}):Play()
+      TweenService:Create(grade,info,{TintColor=m[4],Saturation=m[5],Brightness=m[6],Contrast=m[7]}):Play()
+    end)
+    if not ok then task.wait(2) end
+  end
+end)
