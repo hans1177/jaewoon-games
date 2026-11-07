@@ -57,6 +57,7 @@ return function(D, S)
 			return false, "이미 이 항구에 있어요"
 		end
 		state.voyageChoice = nil
+		state.voyageBonusDays = nil
 		local region = D.Regions.of(to)
 		local lvAdv = state.careers.adventure.level
 		local homeTier = D.Regions.homeTier(D.Ports.Ports, D.Ports.Nations[state.nationId])
@@ -239,6 +240,7 @@ return function(D, S)
 				table.insert(msgs, string.format("【동료 합류】 %s이(가) 항해 도중 함께하겠다고 나섰다!", ally.name))
 			end
 		end
+		state.voyageBonusDays = days
 		state.portId = toId
 		state.stats.visited[toId] = true
 		S.State.gainXp(state, "adventure", days * 2 + math.floor(dist / 200), msgs)
@@ -316,6 +318,33 @@ return function(D, S)
 		state.day += 1
 		morale(-3)
 		return true, "먼 길로 돌아 봉쇄를 피했다. 하루가 더 걸렸다"
+	end
+
+	-- 직접 항해 점수(0~1)에 따라 보상: 모험 경험·사기·명성 (항해마다 한 번)
+	function handlers.VoyageBonus(state, p)
+		local days = state.voyageBonusDays
+		if not days or type(p.score) ~= "number" then
+			return false, "받을 보상이 없어요"
+		end
+		state.voyageBonusDays = nil
+		local score = math.clamp(p.score, 0, 1)
+		local msgs = {}
+		local xp = math.floor(days * 3 * score)
+		if xp > 0 then
+			S.State.gainXp(state, "adventure", xp, msgs)
+		end
+		if score >= 0.7 then
+			state.morale = math.min(100, state.morale + 8)
+			state.fame += 1
+			table.insert(msgs, string.format("바람을 훌륭하게 탔다 (%d%%)! 사기 +8, 명성 +1", math.floor(score * 100)))
+		elseif score >= 0.4 then
+			state.morale = math.min(100, state.morale + 3)
+			table.insert(msgs, string.format("무난한 항해였다 (%d%%). 사기 +3", math.floor(score * 100)))
+		else
+			state.morale = math.max(0, state.morale - 3)
+			table.insert(msgs, string.format("바람을 잘 못 탔다 (%d%%). 사기 -3", math.floor(score * 100)))
+		end
+		return true, table.concat(msgs, "\n")
 	end
 
 	function handlers.WaitDay(state)

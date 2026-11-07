@@ -6,6 +6,7 @@
 local RunService = game:GetService("RunService")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 
 local VoyageScene = {}
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
@@ -161,6 +162,77 @@ function VoyageScene.play(info)
 	skip.Activated:Connect(function()
 		skipped = true
 	end)
+
+	-- 직접 항해: 바람 띠 안에 배를 두면 점수가 오른다 (A/D·←/→ 또는 화면 버튼). 화면 도형만 쓴다.
+	local manual = info.manual == true
+	local lat, latV = 0, 0
+	local inBand, bandTime = 0, 0
+	local held = { l = false, r = false }
+	local bandFrame, bandMark, shipMark, scoreLabel
+	if manual then
+		skip.Visible = false
+		hint.Text = "A/D 또는 ◀ ▶ 로 배를 몰아 초록 바람 띠 안에 머물러요"
+		local track = Instance.new("Frame")
+		track.AnchorPoint = Vector2.new(0.5, 1)
+		track.Position = UDim2.new(0.5, 0, 1, -86)
+		track.Size = UDim2.fromOffset(460, 18)
+		track.BackgroundColor3 = Color3.fromRGB(20, 40, 64)
+		track.BackgroundTransparency = 0.25
+		track.BorderSizePixel = 0
+		track.ZIndex = 5
+		track.Parent = gui
+		local tc = Instance.new("UICorner")
+		tc.CornerRadius = UDim.new(0, 9)
+		tc.Parent = track
+		bandFrame = Instance.new("Frame")
+		bandFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+		bandFrame.Size = UDim2.new(0.3, 0, 1, 0)
+		bandFrame.BackgroundColor3 = Color3.fromRGB(90, 220, 130)
+		bandFrame.BackgroundTransparency = 0.25
+		bandFrame.BorderSizePixel = 0
+		bandFrame.ZIndex = 6
+		bandFrame.Parent = track
+		local bc = Instance.new("UICorner")
+		bc.CornerRadius = UDim.new(0, 9)
+		bc.Parent = bandFrame
+		shipMark = Instance.new("Frame")
+		shipMark.AnchorPoint = Vector2.new(0.5, 0.5)
+		shipMark.Size = UDim2.fromOffset(10, 26)
+		shipMark.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		shipMark.BorderSizePixel = 0
+		shipMark.ZIndex = 7
+		shipMark.Parent = track
+		scoreLabel = Instance.new("TextLabel")
+		scoreLabel.BackgroundTransparency = 1
+		scoreLabel.AnchorPoint = Vector2.new(0.5, 1)
+		scoreLabel.Position = UDim2.new(0.5, 0, 0, -4)
+		scoreLabel.Size = UDim2.fromOffset(300, 20)
+		scoreLabel.Font = Enum.Font.GothamBold
+		scoreLabel.TextSize = 14
+		scoreLabel.TextColor3 = Color3.new(1, 1, 1)
+		scoreLabel.TextStrokeTransparency = 0.4
+		scoreLabel.ZIndex = 7
+		scoreLabel.Parent = track
+		for _, side in { "l", "r" } do
+			local b = Instance.new("TextButton")
+			b.AnchorPoint = Vector2.new(0.5, 1)
+			b.Position = UDim2.new(0.5, if side == "l" then -290 else 290, 1, -78)
+			b.Size = UDim2.fromOffset(64, 44)
+			b.BackgroundColor3 = Color3.fromRGB(40, 80, 130)
+			b.BackgroundTransparency = 0.2
+			b.Text = if side == "l" then "◀" else "▶"
+			b.TextSize = 24
+			b.TextColor3 = Color3.new(1, 1, 1)
+			b.Font = Enum.Font.GothamBold
+			b.ZIndex = 8
+			b.Parent = gui
+			local c = Instance.new("UICorner")
+			c.Parent = b
+			b.MouseButton1Down:Connect(function() held[side] = true end)
+			b.MouseButton1Up:Connect(function() held[side] = false end)
+			b.MouseLeave:Connect(function() held[side] = false end)
+		end
+	end
 
 	-- 조명 저장 후 바다 분위기로 바꾼다
 	local saved = {
@@ -588,6 +660,32 @@ function VoyageScene.play(info)
 		t += dt
 		dist = math.min(total, dist + speedNow * dt * (0.25 + 0.75 * math.min(t / 2, 1)))
 		local pos, dir = positionAt(pts, cum, dist)
+		if manual then
+			local push = 0
+			if held.l or UserInputService:IsKeyDown(Enum.KeyCode.A) or UserInputService:IsKeyDown(Enum.KeyCode.Left) then
+				push -= 1
+			end
+			if held.r or UserInputService:IsKeyDown(Enum.KeyCode.D) or UserInputService:IsKeyDown(Enum.KeyCode.Right) then
+				push += 1
+			end
+			latV = (latV + push * dt * 2.6) * (1 - math.min(1, dt * 1.4))
+			lat = math.clamp(lat + latV * dt, -1, 1)
+			if math.abs(lat) >= 1 then
+				latV = 0
+			end
+			-- 바람 띠: 천천히 좌우로 흔들리며 움직인다
+			local bandC = math.clamp(0.62 * math.sin(t * 0.55) + 0.28 * math.sin(t * 1.35 + 1), -0.78, 0.78)
+			bandTime += dt
+			local good = math.abs(lat - bandC) <= 0.15
+			if good then
+				inBand += dt
+			end
+			bandFrame.Position = UDim2.fromScale(0.5 + bandC * 0.45, 0.5)
+			bandFrame.BackgroundColor3 = if good then Color3.fromRGB(90, 220, 130) else Color3.fromRGB(220, 170, 70)
+			shipMark.Position = UDim2.fromScale(0.5 + lat * 0.45, 0.5)
+			scoreLabel.Text = string.format("순풍 유지 %d%%", math.floor(inBand / math.max(bandTime, 0.01) * 100))
+			pos = pos + Vector3.new(-dir.Z, 0, dir.X) * lat * 14
+		end
 		-- 뱃머리는 부드럽게 항로 방향으로 돈다
 		local targetYaw = yawOf(dir)
 		local diff = (targetYaw - yaw + math.pi) % (math.pi * 2) - math.pi
@@ -819,6 +917,10 @@ function VoyageScene.play(info)
 	end)
 	folder:Destroy()
 	gui:Destroy()
+	if manual and not skipped then
+		return inBand / math.max(bandTime, 0.01)
+	end
+	return nil
 end
 
 return VoyageScene

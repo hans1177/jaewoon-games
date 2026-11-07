@@ -1044,6 +1044,7 @@ local function playVoyage(fromName, toName, days, steam, path)
 end
 
 local playStory
+local sailManual = false
 
 local function sail(portId)
 	local from = view.player.portName
@@ -1212,16 +1213,28 @@ local function confirmSail(r)
 	local info = Instance.new("TextLabel")
 	info.BackgroundTransparency = 1
 	info.Position = UDim2.fromOffset(14, 46)
-	info.Size = UDim2.new(1, -28, 0, 170)
+	info.Size = UDim2.new(1, -28, 0, 130)
 	info.Font = Enum.Font.Gotham
 	info.TextSize = 15
 	info.TextWrapped = true
 	info.TextXAlignment = Enum.TextXAlignment.Left
 	info.TextYAlignment = Enum.TextYAlignment.Top
 	info.TextColor3 = COLORS.text
-	info.Text = table.concat(lines, "\n\n")
+	info.Text = table.concat(lines, "\n")
 	info.ZIndex = 52
 	info.Parent = card
+	local modeBtn
+	local function paintMode()
+		modeBtn.Text = if sailManual then "항해 방식: 직접 항해 (바람 띠 따라가기)" else "항해 방식: 자동 항해"
+		modeBtn.BackgroundColor3 = if sailManual then COLORS.gold else COLORS.blue
+	end
+	modeBtn = mkButton(card, "", COLORS.blue, UDim2.new(1, -28, 0, 34), function()
+		sailManual = not sailManual
+		paintMode()
+	end, true)
+	modeBtn.Position = UDim2.fromOffset(14, 182)
+	modeBtn.ZIndex = 52
+	paintMode()
 	local go = mkButton(card, "⚓ 닻 올리기", COLORS.green, UDim2.new(0.5, -20, 0, 40), function()
 		layer:Destroy()
 		sail(r.id)

@@ -1163,6 +1163,11 @@ do
 		okv = act(c, "VoyageChoice", { index = 3 })
 		check("voyage choice blockade detour", okv and c.day == day + 1)
 		check("voyage choice rejects when none", not act(c, "VoyageChoice", { index = 1 }))
+		c.voyageBonusDays = 6
+		local m0 = c.morale
+		okv = act(c, "VoyageBonus", { score = 0.9 })
+		check("voyage bonus good score", okv and c.morale >= math.min(100, m0 + 8) and c.voyageBonusDays == nil)
+		check("voyage bonus only once", not act(c, "VoyageBonus", { score = 1 }))
 	end
 	check("perk speed with companion", S.Perk.speedMult(c) > 1)
 	ok = act(c, "Dismiss", { companionId = "c_halley" })
