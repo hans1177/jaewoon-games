@@ -17,6 +17,7 @@ local D = {
 	Bosses = require("./Shared/Bosses"),
 	Specialties = require("./Shared/Specialties"),
 	CompanionTalk = require("./Shared/CompanionTalk"),
+	Narrative = require("./Shared/Narrative"),
 	Gear = require("./Shared/Gear"),
 	Bounties = require("./Shared/Bounties"),
 	Fields = require("./Shared/Fields"),

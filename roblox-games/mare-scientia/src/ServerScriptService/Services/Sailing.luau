@@ -208,6 +208,24 @@ return function(D, S)
 			S.Discovery.grantCard(state, "geo_gulfstream", msgs)
 		end
 
+		do
+			-- 새 해역에 처음 들어서면 이야기 한 막이 열린다
+			local tier = D.Regions.tierOf(toId, D.Ports.Ports[toId].lat, D.Ports.Ports[toId].lon)
+			local seen = false
+			for vid in state.stats.visited do
+				local vp = D.Ports.Ports[vid]
+				if vp and D.Regions.tierOf(vid, vp.lat, vp.lon) == tier then
+					seen = true
+					break
+				end
+			end
+			local act = D.Narrative.Regions[tier]
+			if not seen and act then
+				state.fame += 3
+				state.story = { title = act.title, text = act.intro, goal = act.goal }
+				table.insert(msgs, string.format("【%s】 %s (명성 +3)", act.title, act.intro))
+			end
+		end
 		state.portId = toId
 		state.stats.visited[toId] = true
 		S.State.gainXp(state, "adventure", days * 2 + math.floor(dist / 200), msgs)

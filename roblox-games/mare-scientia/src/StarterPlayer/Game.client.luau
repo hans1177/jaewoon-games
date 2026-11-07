@@ -1871,6 +1871,23 @@ local function intelName(level)
 	return "감만 잡는 힌트"
 end
 
+-- 이야기와 조언: 프롤로그, 새 해역의 막, 동료의 한마디
+local function addStoryPanel()
+	if view.prologue then
+		add(function() return mkHeader(content, view.prologue.title) end)
+		add(function() return mkLabel(content, view.prologue.text, 16, COLORS.gold, true) end)
+	end
+	if view.story then
+		add(function() return mkHeader(content, view.story.title) end)
+		add(function() return mkLabel(content, view.story.text .. "\n목표: " .. view.story.goal, 16, COLORS.gold, true) end)
+	elseif view.act then
+		add(function() return mkLabel(content, view.act.title .. " — 목표: " .. view.act.goal, 15, COLORS.gold, true) end)
+	end
+	if view.advice then
+		add(function() return mkLabel(content, string.format("💬 %s의 조언\n\"%s\"", view.advice.who, view.advice.text), 16, COLORS.gold, true) end)
+	end
+end
+
 -- 뱃사람 귀띔: 크게, 눈에 잘 띄게
 local function addRumorPanel()
 	local r = view.rumor
@@ -2153,6 +2170,7 @@ local function renderTrade()
 	add(function()
 		return mkLabel(content, string.format("동료의 장사 감각: %s (동료가 있으면 시장·귀띔 정보가 정확해져요)", intelName(view.intel or 0)), 14, COLORS.muted, false)
 	end)
+	addStoryPanel()
 	if view.news and #view.news > 0 then
 		add(function() return mkHeader(content, "시장 소식") end)
 		add(function() return mkLabel(content, table.concat(view.news, "\n"), 16, COLORS.gold, true) end)

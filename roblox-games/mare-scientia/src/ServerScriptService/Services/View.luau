@@ -212,6 +212,42 @@ return function(D, S)
 		end
 		view.talk = state.talk
 		view.auto = state.auto
+		view.story = state.story
+		do
+			local tier = D.Regions.tierOf(port.id, port.lat, port.lon)
+			view.act = D.Narrative.Regions[tier]
+			if next(state.stats.visited) ~= nil then
+				local n = 0
+				for _ in state.stats.visited do
+					n += 1
+				end
+				if n <= 1 and state.day <= 3 then
+					view.prologue = D.Narrative.Prologue
+				end
+			end
+			local activeQuest
+			for _, q in D.Quests.Quests do
+				if state.quests.active[q.id] then
+					activeQuest = q
+					break
+				end
+			end
+			local locked
+			for _, r in D.Regions.List do
+				if state.careers.adventure.level < r.minLevel then
+					locked = r
+					break
+				end
+			end
+			local cargoAny = false
+			for _, qty in state.cargo or {} do
+				if type(qty) == "number" and qty > 0 then
+					cargoAny = true
+				end
+			end
+			local who = if #state.companions > 0 then D.Specialties.CompanionById[state.companions[1]].name else "늙은 항해사 베르나르"
+			view.advice = { who = who, text = D.Narrative.advice({ coins = state.coins, ship = state.ship, morale = state.morale, cargoAny = cargoAny }, D.Regions, #state.companions > 0, activeQuest, locked) }
+		end
 
 		-- 항해 미리보기
 		view.routes = {}
