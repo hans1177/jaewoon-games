@@ -33,6 +33,15 @@ h1{font-size:22px;margin:0}
 .cell.jungle.borderJungle{box-shadow:inset 5px 0 0 #719d3e}
 .cell.jungleHeal{outline:2px solid #75f898;z-index:0}
 
+/* 7스테이지 보스 음원·재생 버튼 */
+#bossMusicPanel{margin:8px 0 10px;padding:9px 11px;border:1px solid #965960;border-radius:12px;background:#251722;color:#ffe6db;font-size:12px;text-align:center}
+#bossMusicToggle{min-height:44px;border:1px solid #bb827b;border-radius:9px;background:#633139;color:#fff4df;padding:0 14px;font-weight:900}
+#bossMusicPanel small{display:block;margin-top:6px;line-height:1.4;opacity:.78}
+#bossMusicPanel a{color:#f9d6aa}
+.portrait.ursusArt,.card .art.ursusArt{box-shadow:0 0 0 2px #b13935,0 0 14px #e34237;background-color:#4b1820}
+.cell.bossCell{border:2px solid #d26037;background:#3e2027}
+
+
 .board{width:min(94vw,560px);aspect-ratio:1;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:6px;background:#26324a;border-radius:14px}
 .cell{position:relative;border:0;border-radius:10px;background:#34415d;color:#fff;overflow:hidden;min-width:0}
 .cell.homeBlue{background:#2c4b62}.cell.homeRed{background:#5c343e}
@@ -134,6 +143,13 @@ h1{font-size:22px;margin:0}
       <button id="viewEnemy" type="button">적 진영 보기</button>
       <button id="viewAlly" type="button">내 진영 보기</button>
     </div>
+    <div id="bossMusicPanel" class="hidden">
+      <button id="bossMusicToggle" type="button">보스 음악 켜기</button>
+      <small>라크리모사 전자 편곡 · Metzner ·
+        <a href="https://commons.wikimedia.org/wiki/File:M1_Lacrimosa1991.ogg" target="_blank" rel="noopener noreferrer">원본·CC BY 3.0</a>
+      </small>
+    </div>
+    <audio id="bossMusic" preload="none" loop src="https://upload.wikimedia.org/wikipedia/commons/9/94/M1_Lacrimosa1991.ogg"></audio>
     <div class="boardWrap"><div id="board" class="board"></div></div>
     <div class="statusRow">
       <span id="deckInfo">골드 -</span>
@@ -158,7 +174,9 @@ const STAGES={
   // 5스테이지: 5×10 = 기본 5×5 맵의 2배. 증원은 정해진 라운드에만 출현.
   5:{blueMax:12,redMax:14,enemyScale:1,redPool:['POISON_SCORPION','CHARGE_ORC','SLIME','ORC_MAGE','BOAR','ORC']},
   // 6스테이지는 3·5·8턴 총 17마리만 지정된 시간에 등장한다.
-  6:{blueMax:12,redMax:17,enemyScale:1,redPool:['ORC_MAGE','POISON_SCORPION','BEAR','CHARGE_ORC','MOUNTED_ORC','ORC']}
+  6:{blueMax:12,redMax:17,enemyScale:1,redPool:['ORC_MAGE','POISON_SCORPION','BEAR','CHARGE_ORC','MOUNTED_ORC','ORC']},
+  // 7스테이지는 4턴 3마리, 7턴 우르수스 보스 1마리.
+  7:{blueMax:12,redMax:4,enemyScale:1,redPool:['CHARGE_ORC','BEAR','URSUS']}
 };
 // 중갑병은 다른 카드(각 2칸)보다 낮은 확률(1칸)로 뽑힌다.
 const GACHA_POOL=['LANCER','LANCER','CROSSBOW','CROSSBOW','HAMMER','HAMMER','RIFLEMAN','RIFLEMAN','HEAVY_INFANTRY'];
@@ -247,7 +265,8 @@ const CARDS={
     RUIN_GUARDIAN:{name:'유적 수호자',icon:'🗿',hp:190,atk:40,range:1,cost:0,reward:80,guardianPulse:true,desc:'3번째 적 턴마다 주변 아군에게 25 피해'},
     ORC_MAGE:{name:'오크 마법사',icon:'👹🔮',hp:115,atk:50,range:2,cost:0,reward:60,areaLock:true,desc:'적 턴마다 60% 확률로 주변 8칸 공격 · 1턴 공격 불가'},
     BEAR:{name:'곰',icon:'🐻',hp:250,atk:55,range:1,cost:0,reward:75,desc:'체력 250 · 공격 55'},
-    MOUNTED_ORC:{name:'기마병 오크',icon:'🐎👹',hp:200,atk:48,range:1,move:2,cost:0,reward:75,desc:'최대 2칸 이동 · 장애물·전투 상황에서는 1칸'}
+    MOUNTED_ORC:{name:'기마병 오크',icon:'🐎👹',hp:200,atk:48,range:1,move:2,cost:0,reward:75,desc:'최대 2칸 이동 · 장애물·전투 상황에서는 1칸'},
+    URSUS:{name:'우르수스',icon:'🐻',hp:1200,atk:86,range:1,cost:0,reward:150,roar:true,desc:'7스테이지 보스 · 포효 시 3턴 공격력 2배 · 아군 2명 공격 봉인'}
 
   }
 };
@@ -258,8 +277,8 @@ let state=null,side='BLUE',selectedUnit=null,selectedCard='',mode='idle',aiThink
 
 function msg(t){notice.textContent=t}
 function other(s){return s==='BLUE'?'RED':'BLUE'}
-function boardRows(){return state?.stage===6?10:state?.stage===4?7:BASE_ROWS}
-function boardCols(){return state?.stage===6?10:state?.stage===5?BASE_COLS*2:BASE_COLS}
+function boardRows(){return state?.stage===6||state?.stage===7?10:state?.stage===4?7:BASE_ROWS}
+function boardCols(){return state?.stage===6||state?.stage===7?10:state?.stage===5?BASE_COLS*2:BASE_COLS}
 function homeRow(s){return s==='BLUE'?boardRows():1}
 function moveDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
 function attackDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
@@ -351,7 +370,7 @@ function loadProgress(){
       if(saved.chests)saved.chests=saved.chests.map(rotate);
       saved.mapOrientation='wide'
     }
-    if(!saved||!Number.isInteger(saved.stage)||saved.stage<1||saved.stage>6
+    if(!saved||!Number.isInteger(saved.stage)||saved.stage<1||saved.stage>7
       ||!Number.isInteger(saved.turn)||saved.turn<1||!['BATTLE','REST'].includes(saved.phase)
       ||!['BLUE','RED'].includes(saved.current)||!['','BLUE','RED'].includes(saved.winner)
       ||!Number.isInteger(saved.keys)||saved.keys<0
@@ -361,8 +380,8 @@ function loadProgress(){
       ||!saved.summons||!Number.isInteger(saved.summons.BLUE)||!Number.isInteger(saved.summons.RED)
       ||saved.units.some(u=>!u||!CARDS[u.side]?.[u.card]||!Number.isFinite(u.hp)
         ||!Number.isInteger(u.r)||!Number.isInteger(u.c)
-        ||u.r<1||u.r>(saved.stage===6?10:saved.stage===4?7:BASE_ROWS)
-        ||u.c<1||u.c>(saved.stage===6?10:saved.stage===5?BASE_COLS*2:BASE_COLS))
+        ||u.r<1||u.r>(saved.stage===6||saved.stage===7?10:saved.stage===4?7:BASE_ROWS)
+        ||u.c<1||u.c>(saved.stage===6||saved.stage===7?10:saved.stage===5?BASE_COLS*2:BASE_COLS))
       ||saved.unlocked.some(id=>!CARDS.BLUE[id])
       ||(saved.chests!==undefined&&(!Array.isArray(saved.chests)
         ||saved.chests.some(x=>!x||!Number.isInteger(x.r)||!Number.isInteger(x.c)
@@ -374,6 +393,13 @@ function loadProgress(){
         setDiamondWallet(diamondWallet()+30);
         saved.stageFiveRewarded=true
       }
+      saved.winner='';
+      saved.phase='REST';
+      saved.current='BLUE';
+      localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))
+    }
+    // 기존 6스테이지 최종 승리 저장은 보상 없이 7스테이지 진입 휴식으로 전환한다.
+    if(saved.stage===6&&saved.winner==='BLUE'&&saved.phase==='BATTLE'){
       saved.winner='';
       saved.phase='REST';
       saved.current='BLUE';
@@ -397,7 +423,10 @@ function scaledStat(id,key){
 function enemyStageScale(){return Number(stageConfig().enemyScale||1)}
 function enemyStat(id,key){return Math.round((card('RED',id)?.[key]||0)*enemyStageScale())}
 function unitMaxHp(u){return u.side==='BLUE'?scaledStat(u.card,'hp'):enemyStat(u.card,'hp')}
-function unitAtk(u){return u.side==='BLUE'?scaledStat(u.card,'atk'):enemyStat(u.card,'atk')}
+function unitAtk(u){
+  const base=u.side==='BLUE'?scaledStat(u.card,'atk'):enemyStat(u.card,'atk');
+  return u.side==='RED'&&u.card==='URSUS'&&(u.roarTurns||0)>0?base*2:base
+}
 function at(r,c){return state?.units.find(u=>u.r===r&&u.c===c)}
 function byId(id){return state?.units.find(u=>u.id===id)}
 function chestAt(r,c){return state?.stage===5?(state.chests||[]).find(x=>x.r===r&&x.c===c):null}
@@ -536,7 +565,8 @@ function checkWin(){
     if(state.stage===3){clearStageThree();return}
     if(state.stage===4){clearStageFour();return}
     if(state.stage===5){clearStageFive();return}
-    if(state.stage===6){state.winner='BLUE';msg('6스테이지 클리어!');return}
+    if(state.stage===6){enterRest('6스테이지 클리어 · 7스테이지 준비');return}
+    if(state.stage===7){state.winner='BLUE';msg('7스테이지 클리어!');return}
     state.winner='BLUE'
   }
 }
@@ -593,9 +623,9 @@ function createStageFiveChests(){
   }
   return spots.slice(0,6)
 }
-// 스테이지 5·6 증원은 같은 책임 함수에서 정해진 아군 라운드에만 실행한다.
+// 스테이지 5·6·7 증원은 같은 책임 함수에서 정해진 아군 라운드에만 실행한다.
 function spawnScriptedWave(){
-  if(!state||state.phase!=='BATTLE'||(state.stage!==5&&state.stage!==6))return;
+  if(!state||state.phase!=='BATTLE'||![5,6,7].includes(state.stage))return;
   const round=Math.ceil(state.turn/2);
   if(round<2||round===state.lastWaveRound)return;
   const waves=state.stage===5?{
@@ -604,16 +634,19 @@ function spawnScriptedWave(){
     5:['ORC_MAGE'],
     7:['BOAR','BOAR','BOAR'],
     8:['ORC_MAGE','ORC_MAGE','SLIME','ORC']
-  }:{
+  }:state.stage===6?{
     3:['ORC_MAGE','ORC_MAGE','ORC_MAGE','POISON_SCORPION','POISON_SCORPION'],
     5:['BEAR','BEAR','CHARGE_ORC','CHARGE_ORC','CHARGE_ORC'],
     8:['MOUNTED_ORC','ORC_MAGE','ORC_MAGE','CHARGE_ORC','CHARGE_ORC','CHARGE_ORC','ORC']
+  }:{
+    4:['CHARGE_ORC','CHARGE_ORC','BEAR'],
+    7:['URSUS']
   };
   const enemies=waves[round];
   if(!enemies)return;
   const free=[];
   // 정글 치유 칸은 비워두고, 6스테이지 적은 맵 북쪽에서 증원한다.
-  const lastRow=state.stage===6?10:boardRows();
+  const lastRow=state.stage===7?5:boardRows();
   for(let r=1;r<=lastRow;r++){
     const row=[];
     for(let c=1;c<=boardCols();c++){
@@ -636,7 +669,9 @@ function spawnScriptedWave(){
     state.summons.RED++
   }
   state.lastWaveRound=round;
-  msg(state.stage+'스테이지 '+round+'턴 · 적 '+enemies.length+'마리 출현!')
+  msg(state.stage+'스테이지 '+round+'턴 · 적 '+enemies.length+'마리 출현!'+(enemies.includes('URSUS')?' 우르수스 등장!':''))
+  if(enemies.includes('URSUS'))syncBossMusic()
+
 }
 // 오크 마법사: 적 턴마다 60% 확률로 주변 8칸에 공격력 50을 적용.
 // 맞고 살아남은 아군은 다음 자기 턴에 이동 가능, 공격만 불가.
@@ -657,6 +692,22 @@ function resolveOrcMageEnemyTurn(){
     if(state.winner||state.phase!=='BATTLE')return
   }
 }
+// 우르수스는 첫 적 턴에 포효해 3번의 적 턴 동안 공격력을 2배로 높인다.
+function resolveUrsusRoar(){
+  if(state.stage!==7)return;
+  for(const boss of state.units.filter(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0)){
+    if(boss.roarUsed||boss.frozenNow)continue;
+    boss.roarUsed=true;
+    boss.roarTurns=3;
+    const allies=state.units.filter(u=>u.side==='BLUE'&&u.hp>0);
+    for(let i=allies.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [allies[i],allies[j]]=[allies[j],allies[i]]
+    }
+    for(const ally of allies.slice(0,2))ally.attackLock=Math.max(ally.attackLock||0,1);
+    msg('우르수스 포효! 3턴 공격력 2배 · 아군 최대 2명 다음 턴 공격 불가')
+  }
+}
 function startTurn(s){
   state.current=s;
   state.turn++;
@@ -674,7 +725,10 @@ function startTurn(s){
     if(u.attackLockedNow)u.attackLock--
   }
   if(s==='BLUE')spawnScriptedWave();
-  if(s==='RED')resolveOrcMageEnemyTurn();
+  if(s==='RED'){
+    resolveOrcMageEnemyTurn();
+    resolveUrsusRoar()
+  }
 }
 function processAction(actor,p){
   if(!state||state.winner||actor!==state.current)return false;
@@ -785,6 +839,10 @@ function processAction(actor,p){
     removeDeadAndSplit();
     checkWin();
   }else if(p.type==='end'){
+    // 우르수스 포효 버프는 적의 행동을 마친 후 감소시켜 정확히 3번 적용한다.
+    if(actor==='RED'&&state.stage===7){
+      for(const boss of state.units.filter(u=>u.side==='RED'&&u.card==='URSUS'&&u.roarTurns>0))boss.roarTurns--
+    }
     startTurn(other(actor));
     checkWin();
   }else return false;
@@ -810,6 +868,7 @@ function gameArtStyle(id){
   return 'background-position:'+(p[0]*100)+'% '+(p[1]*100)+'%;'
 }
 function portraitHtml(id,d){
+  if(id==='URSUS')return '<span class="portrait warArt ursusArt" role="img" aria-label="'+d.name+'" style="background-position:0% 50%"></span>';
   if(id==='BEAR'||id==='MOUNTED_ORC')return '<span class="portrait warArt" role="img" aria-label="'+d.name+'" style="background-position:'+(id==='BEAR'?'0%':'100%')+' 50%"></span>';
   if(GAME_ART_POS[id])return '<span class="portrait gameArt" role="img" aria-label="'+d.name+'" style="'+gameArtStyle(id)+'"></span>';
   if(id==='HAMMER')return '<span class="portrait hammerArt" role="img" aria-label="'+d.name+'" style="background-image:url('+NEW_ART_SPRITE+')"></span>';
@@ -821,6 +880,7 @@ function portraitHtml(id,d){
     : '<span class="portrait" style="display:flex;align-items:center;justify-content:center;font-size:24px">'+d.icon+'</span>'
 }
 function artHtml(id,d){
+  if(id==='URSUS')return '<div class="art warArt ursusArt" role="img" aria-label="'+d.name+'" style="background-position:0% 50%"></div>';
   if(id==='BEAR'||id==='MOUNTED_ORC')return '<div class="art warArt" role="img" aria-label="'+d.name+'" style="background-position:'+(id==='BEAR'?'0%':'100%')+' 50%"></div>';
   if(GAME_ART_POS[id])return '<div class="art gameArt" role="img" aria-label="'+d.name+'" style="'+gameArtStyle(id)+'"></div>';
   if(id==='HAMMER')return '<div class="art hammerArt" role="img" aria-label="'+d.name+'" style="background-image:url('+NEW_ART_SPRITE+')"></div>';
@@ -838,8 +898,9 @@ function unitText(u){
   const d=card(u.side,u.card);
   const charge=u.card==='HAMMER'?(u.hammerTarget?' · 공격예약':' · 대상지정 필요'):'';
   const lock=u.attackLockedNow?' · 공격불가':'';
+  const rage=u.card==='URSUS'&&u.roarTurns>0?' · 포효 '+u.roarTurns+'턴':'';
   const maxHp=unitMaxHp(u),atk=unitAtk(u);
-  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+maxHp+' · 공'+atk+' 사'+d.range+charge+(u.frozenNow?' · 봉인':'')+lock+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/maxHp*100)+'%"></i></span></div>'
+  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+maxHp+' · 공'+atk+' 사'+d.range+charge+(u.frozenNow?' · 봉인':'')+lock+rage+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/maxHp*100)+'%"></i></span></div>'
 }
 function createStageFourTiles(){
   const cells=[];
@@ -869,19 +930,19 @@ function applyTile(u){
   }else if(t.type==='CRACK')state.specialTiles=state.specialTiles.filter(x=>x!==t)
 }
 function render(){
-  // 구버전 5스테이지 승리 화면이 열린 채로 남은 경우에도 휴식 화면으로 복구한다.
-  if(state?.stage===5&&state.phase==='BATTLE'&&state.winner==='BLUE'){
-    state.winner='';
-    clearStageFive()
+  // 최종 스테이지 확장 전 승리 저장은 다음 스테이지 진입 휴식 화면으로 이전한다.
+  if(state?.phase==='BATTLE'&&state.winner==='BLUE'){
+    if(state.stage===5){state.winner='';clearStageFive()}
+    else if(state.stage===6){state.winner='';enterRest('6스테이지 클리어 · 7스테이지 준비')}
   }
   renderWallet();
   board.innerHTML='';
   const rows=boardRows(),cols=boardCols();
   board.classList.toggle('wide',state?.stage===5);
   board.parentElement.classList.toggle('wide',state?.stage===5);
-  board.classList.toggle('giant',state?.stage===6);
-  board.parentElement.classList.toggle('giant',state?.stage===6);
-  $('#mapControls').classList.toggle('hidden',state?.stage!==6);
+  board.classList.toggle('giant',state?.stage===6||state?.stage===7);
+  board.parentElement.classList.toggle('giant',state?.stage===6||state?.stage===7);
+  $('#mapControls').classList.toggle('hidden',state?.stage!==6&&state?.stage!==7);
   board.style.gridTemplateColumns='repeat('+cols+',1fr)';
   board.style.gridTemplateRows='repeat('+rows+',1fr)';
   board.style.aspectRatio=cols+'/'+rows;
@@ -901,7 +962,11 @@ function render(){
       b.title='골드 상자 · 공격하면 10~70골드';
       b.insertAdjacentHTML('beforeend','<span class="goldChest gameArt" role="img" aria-label="골드 상자" style="'+gameArtStyle('GOLD_CHEST')+'"></span>')
     }
-    if(u){b.insertAdjacentHTML('beforeend',unitText(u));if(u.id===selectedUnit)b.classList.add('sel')}
+    if(u){
+      if(u.card==='URSUS')b.classList.add('bossCell');
+      b.insertAdjacentHTML('beforeend',unitText(u));
+      if(u.id===selectedUnit)b.classList.add('sel')
+    }
     b.addEventListener('click',()=>cellTap(r,c,u));
     board.appendChild(b)
   }
@@ -980,12 +1045,13 @@ function render(){
     return
   }
 
-  const shownTurn=state.stage===5||state.stage===6?Math.ceil(state.turn/2):state.turn;
+  const shownTurn=state.stage>=5?Math.ceil(state.turn/2):state.turn;
   turnEl.textContent=state.winner?(state.winner===side?'승리':'패배'):'스테이지 '+state.stage+' · '+(state.current===side?'내 턴':'상대 턴')+' · '+shownTurn;
   deckInfo.textContent='골드 '+state.gold.BLUE+' · 내 소환 '+state.summons[side]+'/'+maxSummons(side)+' · 상대 소환 '+state.summons[other(side)]+'/'+maxSummons(other(side));
   modeInfo.textContent=mode==='play'?'플레이':'대기';
 
-  if(state.winner)msg(state.winner===side?state.stage+'스테이지 클리어!':state.stage+'스테이지 패배 · 재도전을 눌러 같은 스테이지에서 다시 시작해.')
+  if(state.winner)msg(state.winner===side?state.stage+'스테이지 클리어!':state.stage+'스테이지 패배 · 재도전을 눌러 같은 스테이지에서 다시 시작해.');
+  syncBossMusic()
 }
 function cellTap(r,c,u){
   if(!canAct())return msg('지금은 상대 턴이야.');
@@ -1026,7 +1092,7 @@ function aiTurn(){
   for(let c=1;c<=boardCols();c++)if(!at(1,c))free.push(c);
   const options=affordableCards('RED');
 
-  if(state.stage!==5&&state.stage!==6&&!state.summonUsed&&free.length&&options.length){
+  if(state.stage!==5&&state.stage!==6&&state.stage!==7&&!state.summonUsed&&free.length&&options.length){
     const id=options[Math.floor(Math.random()*options.length)];
     processAction('RED',{type:'summon',card:id,r:1,c:free[Math.floor(Math.random()*free.length)]})
   }
@@ -1067,6 +1133,67 @@ function aiTurn(){
   render()
 }
 
+// 우르수스의 라크리모사 전자 편곡 음악. 무음→4.5초 상승, 처치→3.5초 감소.
+const bossAudio=$('#bossMusic');
+let bossMusicRequested=false,bossMusicMuted=false,bossFadeTimer=null;
+function fadeBossMusic(to,duration){
+  if(bossFadeTimer!==null)clearInterval(bossFadeTimer);
+  const from=bossAudio.volume||0,started=Date.now();
+  bossFadeTimer=setInterval(()=>{
+    const elapsed=Math.min(1,(Date.now()-started)/duration);
+    bossAudio.volume=Math.max(0,Math.min(1,from+(to-from)*elapsed));
+    if(elapsed>=1){
+      clearInterval(bossFadeTimer);
+      bossFadeTimer=null;
+      if(to===0){bossAudio.pause();bossAudio.currentTime=0}
+    }
+  },60)
+}
+function playBossMusic(){
+  if(bossFadeTimer!==null){clearInterval(bossFadeTimer);bossFadeTimer=null}
+  if(bossAudio.paused)bossAudio.volume=0;
+  const attempt=bossAudio.play();
+  if(attempt&&typeof attempt.then==='function'){
+    attempt.then(()=>{
+      if(!bossMusicRequested||bossMusicMuted||!state||state.stage!==7||state.winner||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'))return;
+      $('#bossMusicToggle').textContent='보스 음악 끄기';
+      fadeBossMusic(0.6,4500)
+    }).catch(()=>{
+      $('#bossMusicToggle').textContent='보스 음악 재생(터치)'
+    })
+  }else{
+    $('#bossMusicToggle').textContent='보스 음악 끄기';
+    fadeBossMusic(0.6,4500)
+  }
+}
+function syncBossMusic(){
+  const active=!!(state?.stage===7&&state.phase==='BATTLE'&&!state.winner&&state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0));
+  $('#bossMusicPanel').classList.toggle('hidden',!active);
+  if(active){
+    if(!bossMusicRequested&&!bossMusicMuted){
+      bossMusicRequested=true;
+      playBossMusic()
+    }
+  }else{
+    if(bossMusicRequested){
+      bossMusicRequested=false;
+      if(!bossAudio.paused)fadeBossMusic(0,3500)
+    }
+    bossMusicMuted=false
+  }
+}
+$('#bossMusicToggle').onclick=()=>{
+  if(!state||state.stage!==7||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
+  if(!bossAudio.paused&&!bossMusicMuted){
+    bossMusicMuted=true;
+    $('#bossMusicToggle').textContent='보스 음악 켜기';
+    fadeBossMusic(0,3500)
+  }else{
+    bossMusicMuted=false;
+    bossMusicRequested=true;
+    playBossMusic()
+  }
+};
 $('#resetDiamonds').onclick=resetDiamonds;
 $('#playBtn').onclick=()=>{
   mode='play';side='BLUE';
@@ -1176,10 +1303,11 @@ function startStage(next){
   else if(next===4){state.specialTiles=createStageFourTiles();msg('4스테이지 시작 · 7×5 맵 · 특수 발판 5개 · 방패 고블린/돌격 오크/독전갈/유적 수호자')}
   else if(next===5)msg('5스테이지 시작 · 가로 10×세로 5 · 좌우로 밀어 이동 · 2/4/5/7/8턴 적 증원');
   else if(next===6)msg('6스테이지 시작 · 10×10 맵 · 정글은 오른쪽 · 3/5/8턴 적 증원');
+  else if(next===7)msg('7스테이지 시작 · 10×10 · 4턴 돌격 오크/곰 · 7턴 우르수스');
   state.version++;
   saveProgress();
   render();
-  if(next===6)board.parentElement.scrollTop=board.parentElement.scrollHeight
+  if(next===6||next===7)board.parentElement.scrollTop=board.parentElement.scrollHeight
 }
 $('#nextStage').onclick=()=>{
   if(!state||state.phase!=='REST'||side!=='BLUE')return;
@@ -1195,7 +1323,7 @@ if(state){
   side='BLUE';
   playersEl.textContent='나 VS 적';
   render();
-  if(state.stage===6)board.parentElement.scrollTop=board.parentElement.scrollHeight;
+  if(state.stage===6||state.stage===7)board.parentElement.scrollTop=board.parentElement.scrollHeight;
   if(state.winner==='RED')msg(state.stage+'스테이지 패배 · 재도전 버튼으로 다시 시작해.');
   else if(state.winner==='BLUE')msg(state.stage+'스테이지 클리어! 다시 플레이할 수 있어.');
   else msg(state.stage+'스테이지 저장된 지점에서 이어서 진행해.');
