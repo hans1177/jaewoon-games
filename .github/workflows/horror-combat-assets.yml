@@ -129,7 +129,7 @@ jobs:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$MODULAR_ARMOR_SOURCE_ONLY" = "true" ] || git diff --unified=0 HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q '^+// \[마력숲 갑옷 실물 원본 다운로드\]'; then
+          if [ "$MODULAR_ARMOR_SOURCE_ONLY" = "true" ] || git diff --unified=0 HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q '^+// \[마력숲 갑옷 실물 원본 다운로드\]' || git diff --unified=0 HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q '^+  Male_Peasant:'; then
             node tools/horror-combat-assets.mjs --modular-armor-source-only
           elif [ "$WORLD_MAP_ONLY" = "true" ]; then
             node tools/horror-combat-assets.mjs --world-map-only
