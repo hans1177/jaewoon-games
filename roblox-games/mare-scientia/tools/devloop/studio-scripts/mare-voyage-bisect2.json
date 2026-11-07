@@ -1,0 +1,60 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end local RS=game:GetService(\"ReplicatedStorage\") local VS=require(RS.Shared.VoyageScene) local PS=require(RS.Shared.PortScene) local SR=require(RS.Shared.SeaRoutes) local PD=require(RS.Shared.Ports) task.spawn(function() local ok,err=pcall(VS.play,{shipId=\"galleon\",steam=false,days=30,path=SR.path(\"lisbon\",\"london\",PD.Ports),fromName=\"Lisbon\",toName=\"London\",makeShip=PS.makeShip,place=PS.placeModel,escorts=2,weatherId=\"clear\",event={kind=\"merchant\"}}) workspace:SetAttribute(\"VoyageDone\",tostring(ok)..tostring(err)) end) return \"started\""
+ },
+ {
+  "type": "wait",
+  "ms": 5000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=workspace.CurrentCamera local f=workspace:FindFirstChild('VoyageScene') local sh=f and f:FindFirstChild('VoyageShip') local v,on=c:WorldToViewportPoint(sh:GetPivot().Position) return 'type='..tostring(c.CameraType)..' camdist='..tostring((c.CFrame.Position-sh:GetPivot().Position).Magnitude)..' vp='..tostring(v)..' on='..tostring(on)"
+ },
+ {
+  "type": "capture",
+  "name": "A_base"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "game:GetService('Lighting').GlobalShadows=false return 'shadows off'"
+ },
+ {
+  "type": "wait",
+  "ms": 800
+ },
+ {
+  "type": "capture",
+  "name": "B_noshadow"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "game:GetService('Lighting').GlobalShadows=true local n=0 for _,o in ipairs(workspace:GetDescendants()) do if o:IsA('BasePart') and o.Position.Y>20 and o.Transparency<1 and o.CastShadow then n+=1 end end return 'highparts='..n"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local list={} for _,o in ipairs(workspace:GetDescendants()) do if o:IsA('BasePart') and o.Position.Y>15 and o.Transparency<1 and o.CastShadow and #list<12 then list[#list+1]=o:GetFullName()..'@'..math.floor(o.Position.X)..','..math.floor(o.Position.Y)..','..math.floor(o.Position.Z) end end return table.concat(list,' | ')"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "pcall(function() workspace.Terrain:Clear() end) return 'cleared'"
+ },
+ {
+  "type": "wait",
+  "ms": 800
+ },
+ {
+  "type": "capture",
+  "name": "C_noterrain"
+ }
+]
