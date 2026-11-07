@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-ln471t",
+      "worker": "vibe2",
+      "taskId": "fifty-days-existing-web-assessment-v1",
+      "gameId": "fifty-days",
+      "files": [
+        "web-games/fifty-days/index.html"
+      ],
+      "baseSha": "fa180b5acdcbffe2f297e7d800209eea64a21f97",
+      "runId": "42338953742",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-07T04:41:07.067Z",
+      "expiresAt": "2026-11-07T05:26:07.067Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fifty-days-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
