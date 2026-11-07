@@ -90,20 +90,55 @@ local EVENT_WEIGHTS = {
 }
 
 -- rng: 0~1 사이 값을 돌려주는 함수
-function Voyage.rollEvent(rng: () -> number, days: number): Event
+-- 날씨: 날짜와 항구로 정해지는 예보. 같은 날 같은 항구에서는 항상 같다.
+export type Weather = { id: string, name: string, wind: number, hint: string }
+local WEATHERS: { { any } } = {
+	{ 18, "tail", "순풍", 1.2, "바람이 등을 밀어요. 빨리 갈 수 있어요" },
+	{ 50, "clear", "맑음", 1.0, "항해하기 좋은 날씨예요" },
+	{ 68, "head", "역풍", 0.85, "맞바람이에요. 시간이 더 걸려요" },
+	{ 80, "calm", "무풍", 0.7, "바람이 거의 없어요. 매우 느려요" },
+	{ 92, "rain", "비", 0.95, "비가 와요. 안개와 암초에 주의해요" },
+	{ 100, "storm", "폭풍 접근", 0.9, "폭풍이 올 수 있어요. 하루 기다리는 것도 방법이에요" },
+}
+function Voyage.weather(day: number, portId: string): Weather
+	local h = day * 131 + 7
+	for i = 1, #portId do
+		h = (h * 31 + string.byte(portId, i)) % 100003
+	end
+	h = (h * 7919 + day * 17) % 100
+	for _, w in WEATHERS do
+		if h < (w[1] :: number) then
+			return { id = w[2] :: string, name = w[3] :: string, wind = w[4] :: number, hint = w[5] :: string }
+		end
+	end
+	return { id = "clear", name = "맑음", wind = 1.0, hint = "" }
+end
+
+function Voyage.rollEvent(rng: () -> number, days: number, weatherId: string?): Event
 	local chance = math.min(0.85, 0.35 + 0.04 * days)
 	if rng() > chance then
 		return { kind = "none", amount = 0 }
 	end
 
+	-- 날씨가 사건 확률을 바꾼다
+	local boost: { [string]: number } = {}
+	if weatherId == "storm" then
+		boost = { storm = 4, pirates = 0.6 }
+	elseif weatherId == "rain" then
+		boost = { fog = 2.5, reef = 1.8, storm = 1.5 }
+	elseif weatherId == "tail" then
+		boost = { tailwind = 2, calm = 0.5 }
+	elseif weatherId == "calm" then
+		boost = { calm = 2, fever = 1.5 }
+	end
 	local total = 0
 	for _, entry in EVENT_WEIGHTS do
-		total += entry[2] :: number
+		total += (entry[2] :: number) * (boost[entry[1] :: string] or 1)
 	end
 	local roll = rng() * total
 	local picked = "calm"
 	for _, entry in EVENT_WEIGHTS do
-		roll -= entry[2] :: number
+		roll -= (entry[2] :: number) * (boost[entry[1] :: string] or 1)
 		if roll <= 0 then
 			picked = entry[1] :: string
 			break

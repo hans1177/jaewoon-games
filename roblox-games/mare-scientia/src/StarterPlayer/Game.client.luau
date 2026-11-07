@@ -1508,6 +1508,15 @@ local function renderHarbor()
 			{ text = "한턱", color = COLORS.gold, onClick = function() call("Feast", {}) end },
 		}, 72)
 	end)
+	add(function()
+		local names = {}
+		for _, m in view.maps or {} do
+			table.insert(names, m.toName)
+		end
+		return mkRow(content, "보물지도 사기", string.format("200코인 · 가진 지도 %d/3%s\n표시된 항구로 가면 보물을 찾아요", #names, if #names > 0 then (": " .. table.concat(names, ", ")) else ""), {
+			{ text = "구입", color = COLORS.gold, onClick = function() call("BuyMap", {}) end },
+		}, 72)
+	end)
 	add(function() return mkHeader(content, "주점 동료 (직능)") end)
 	for _, c in view.companions.list do
 		if c.role then
@@ -1695,6 +1704,24 @@ end
 
 local function renderRoute()
 	local ship = view.ship
+	if view.weather then
+		add(function()
+			local fc = ""
+			if view.forecast and #view.forecast > 0 then
+				local parts = {}
+				for _, f in view.forecast do
+					table.insert(parts, string.format("%d일 뒤 %s", f.inDays, f.name))
+				end
+				fc = "\n항해사의 예보: " .. table.concat(parts, " · ")
+			end
+			return mkLabel(content, string.format("오늘 날씨: %s (바람 x%.2f) — %s%s", view.weather.name, view.weather.wind, view.weather.hint, fc), 16, COLORS.gold, true)
+		end)
+		add(function()
+			return mkRow(content, "하루 기다리기", "날씨가 나쁘면 하루 쉬었다 떠나요 (사기 +2)", {
+				{ text = "대기", color = COLORS.blue, onClick = function() call("WaitDay", {}) end },
+			}, 56)
+		end)
+	end
 	add(function()
 		return mkLabel(content, string.format("보급품 %d · 석탄 %d%s", ship.supplies, ship.coal, if ship.steam then " (증기선은 석탄을 태워요)" else ""), 13, COLORS.muted, false)
 	end)

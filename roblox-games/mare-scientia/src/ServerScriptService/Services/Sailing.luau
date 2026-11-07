@@ -12,7 +12,39 @@ return function(D, S)
 		local nation = D.Ports.Nations[state.nationId]
 		local dist = D.SeaRoutes.lengthKm(from.id, to.id, D.Ports.Ports)
 		local coal = if def.steam then (state.cargo.coal or 0) else 0
-		return D.Voyage.plan(def.speed * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coal, state.ship.crew, dist, 1.0)
+		return D.Voyage.plan(def.speed * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coal, state.ship.crew, dist, D.Voyage.weather(state.day, state.portId).wind)
+	end
+
+	-- 보물지도: 목적지 항구 근처 해역에 묻힌 보물. 도착하면 찾는다.
+	local function giveMap(state, ctx, msgs)
+		if #state.maps >= 3 then
+			return
+		end
+		local ids = {}
+		for id in D.Ports.Ports do
+			if id ~= state.portId then
+				table.insert(ids, id)
+			end
+		end
+		table.sort(ids)
+		local to = ids[math.min(#ids, math.floor(ctx.rng() * #ids) + 1)]
+		local reward = math.floor(250 + ctx.rng() * 650)
+		table.insert(state.maps, { to = to, reward = reward })
+		table.insert(msgs, string.format("낡은 보물지도를 손에 넣었다! 표시된 곳: %s 근처", D.Ports.Ports[to].name))
+	end
+
+	function handlers.BuyMap(state, _p, ctx)
+		local price = 200
+		if #state.maps >= 3 then
+			return false, "보물지도는 3장까지 가질 수 있어요"
+		end
+		if state.coins < price then
+			return false, string.format("%d코인이 필요해요", price)
+		end
+		state.coins -= price
+		local msgs = {}
+		giveMap(state, ctx, msgs)
+		return true, table.concat(msgs, "\n") .. string.format(" (-%d코인)", price)
 	end
 
 	function handlers.Sail(state, p, ctx)
@@ -31,11 +63,12 @@ return function(D, S)
 
 		local from = D.Ports.Ports[state.portId]
 		local nation = D.Ports.Nations[state.nationId]
-		local wind = D.Voyage.windMult(ctx.rng)
+		local weather = D.Voyage.weather(state.day, state.portId)
+		local wind = weather.wind
 		local dist = D.SeaRoutes.lengthKm(from.id, to.id, D.Ports.Ports)
 		local coalAvailable = if def.steam then (state.cargo.coal or 0) else 0
 		local plan = D.Voyage.plan(def.speed * nation.speedMult * S.Perk.speedMult(state), def.steam, def.fuelPerDay, coalAvailable, state.ship.crew, dist, wind)
-		local event = D.Voyage.rollEvent(ctx.rng, plan.days)
+		local event = D.Voyage.rollEvent(ctx.rng, plan.days, weather.id)
 
 		local msgs = {}
 		local days = plan.days
@@ -138,6 +171,9 @@ return function(D, S)
 			state.fame += 1
 			table.insert(msgs, string.format("지도에 없는 섬을 발견했다! 명성 +1, 코인 +%d", event.amount))
 			moraleAdd(8)
+			if ctx.rng() < 0.35 then
+				giveMap(state, ctx, msgs)
+			end
 		elseif event.kind == "ghost" then
 			state.fame += event.amount
 			table.insert(msgs, string.format("안개 속에서 유령선을 보았다... 뱃사람들의 이야깃거리가 되었다 (명성 +%d)", event.amount))
@@ -166,8 +202,25 @@ return function(D, S)
 			table.insert(msgs, string.format("사기가 바닥이라 선원 %d명이 배를 떠났다. 주점에서 한턱 내면 사기가 올라요", desert))
 		end
 		state.morale = math.min(100, state.morale + 8)
+		for i = #state.maps, 1, -1 do
+			local m = state.maps[i]
+			if m.to == toId then
+				table.remove(state.maps, i)
+				state.coins += m.reward
+				state.fame += 2
+				table.insert(msgs, string.format("보물지도의 표시를 따라 해안을 파 보니... 보물 상자가 나왔다! +%d코인, 명성 +2", m.reward))
+			end
+		end
 		S.Shipyard.autoTopUp(state, msgs)
 		return true, table.concat(msgs, "\n")
+	end
+
+	-- 항구에서 하루 기다린다 (날씨가 바뀌길 기다릴 때)
+	function handlers.WaitDay(state)
+		S.State.advanceDays(state, 1)
+		state.morale = math.min(100, state.morale + 2)
+		local w = D.Voyage.weather(state.day, state.portId)
+		return true, string.format("하루를 기다렸다. 오늘 날씨: %s", w.name)
 	end
 
 	return { handlers = handlers, preview = preview }

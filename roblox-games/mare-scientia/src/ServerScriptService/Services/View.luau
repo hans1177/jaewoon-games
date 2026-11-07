@@ -123,6 +123,21 @@ return function(D, S)
 		end
 		view.intel = S.Harbor.intel(state)
 		view.supplyMax = S.State.maxSupplies()
+		view.maps = {}
+		for _, m in state.maps do
+			table.insert(view.maps, { toName = D.Ports.Ports[m.to].name })
+		end
+		do
+			local w = D.Voyage.weather(state.day, state.portId)
+			view.weather = { name = w.name, hint = w.hint, wind = w.wind }
+			view.forecast = {}
+			if table.find(state.companions, "t_navigator") then
+				for i = 1, 3 do
+					local f = D.Voyage.weather(state.day + i, state.portId)
+					table.insert(view.forecast, { inDays = i, name = f.name })
+				end
+			end
+		end
 		view.morale = state.morale
 		view.feastCost = math.max(10, state.ship.crew * 3)
 		if state.rumor and state.rumor.portId == state.portId then

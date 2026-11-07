@@ -716,6 +716,39 @@ do
 	check("morale survives save", S.State.sanitize(S.State.serialize(st)).morale == st.morale)
 end
 
+-- 13d. 날씨 ------------------------------------------------------------
+do
+	local st = newState()
+	local a = D.Voyage.weather(10, "london")
+	local b = D.Voyage.weather(10, "london")
+	check("weather deterministic", a.id == b.id and a.wind == b.wind)
+	local kinds = {}
+	for d = 1, 200 do kinds[D.Voyage.weather(d, "lisbon").id] = true end
+	local nk = 0 for _ in kinds do nk += 1 end
+	check("weather varies", nk >= 5)
+	local d0 = st.day
+	check("wait a day", act(st, "WaitDay", {}) and st.day == d0 + 1)
+	local v = S.View.build(st, ctx)
+	check("view has weather", v.weather ~= nil and v.forecast ~= nil)
+end
+
+-- 13e. 보물지도 --------------------------------------------------------
+do
+	local st = newState()
+	st.coins = 1000
+	check("buy map", act(st, "BuyMap", {}) and #st.maps == 1)
+	local target = st.maps[1].to
+	local c0 = st.coins
+	st.coins = c0
+	local okS = act(st, "Sail", { portId = target })
+	check("treasure found on arrival", okS and #st.maps == 0 and st.coins > c0 - 500)
+	check("maps survive save", (function()
+		local s2 = newState()
+		s2.maps = { { to = "lisbon", reward = 400 } }
+		return #S.State.sanitize(S.State.serialize(s2)).maps == 1
+	end)())
+end
+
 -- 14. 화면 스냅샷 -------------------------------------------------------
 do
 	local st = newState()

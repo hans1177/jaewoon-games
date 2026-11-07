@@ -30,6 +30,7 @@ return function(D)
 			insured = false,
 			auto = { supplies = false, crew = false },
 			morale = 80,
+			maps = {},
 			talked = {},
 			cargo = {},
 			basis = {},
@@ -270,6 +271,13 @@ return function(D)
 		s.license = math.floor(num(saved.license, 0, 0, #D.Ships.Licenses))
 		s.insured = saved.insured == true
 		s.morale = math.floor(num(saved.morale, 80, 0, 100))
+		if type(saved.maps) == "table" then
+			for _, m in saved.maps do
+				if type(m) == "table" and type(m.to) == "string" and D.Ports.Ports[m.to] and #s.maps < 3 then
+					table.insert(s.maps, { to = m.to, reward = math.floor(num(m.reward, 300, 50, 5000)) })
+				end
+			end
+		end
 		if type(saved.auto) == "table" then
 			s.auto.supplies = saved.auto.supplies == true
 			s.auto.crew = saved.auto.crew == true
@@ -372,6 +380,7 @@ return function(D)
 			insured = state.insured,
 			auto = state.auto,
 			morale = state.morale,
+			maps = state.maps,
 			story = state.story,
 			collected = state.collected,
 		}
