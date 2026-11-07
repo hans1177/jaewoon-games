@@ -1877,9 +1877,9 @@ local function addStoryPanel()
 		add(function() return mkHeader(content, view.prologue.title) end)
 		add(function() return mkLabel(content, view.prologue.text, 16, COLORS.gold, true) end)
 	end
-	if view.story then
-		add(function() return mkHeader(content, view.story.title) end)
-		add(function() return mkLabel(content, view.story.text .. "\n목표: " .. view.story.goal, 16, COLORS.gold, true) end)
+	if view.actIntro then
+		add(function() return mkHeader(content, view.actIntro.title) end)
+		add(function() return mkLabel(content, view.actIntro.text .. "\n목표: " .. view.actIntro.goal, 16, COLORS.gold, true) end)
 	elseif view.act then
 		add(function() return mkLabel(content, view.act.title .. " — 목표: " .. view.act.goal, 15, COLORS.gold, true) end)
 	end

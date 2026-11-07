@@ -212,7 +212,7 @@ return function(D, S)
 		end
 		view.talk = state.talk
 		view.auto = state.auto
-		view.story = state.story
+		view.actIntro = state.actIntro
 		do
 			local tier = D.Regions.tierOf(port.id, port.lat, port.lon)
 			view.act = D.Narrative.Regions[tier]

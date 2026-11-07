@@ -222,7 +222,7 @@ return function(D, S)
 			local act = D.Narrative.Regions[tier]
 			if not seen and act then
 				state.fame += 3
-				state.story = { title = act.title, text = act.intro, goal = act.goal }
+				state.actIntro = { title = act.title, text = act.intro, goal = act.goal }
 				table.insert(msgs, string.format("【%s】 %s (명성 +3)", act.title, act.intro))
 			end
 		end
