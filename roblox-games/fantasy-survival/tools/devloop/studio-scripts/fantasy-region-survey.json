@@ -1,0 +1,283 @@
+[
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "click_text",
+  "text": "이어하기"
+ },
+ {
+  "type": "wait",
+  "ms": 70000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"RunService\") pcall(function() RS:UnbindFromRenderStep(\"FantasyShot\") end) RS:BindToRenderStep(\"FantasyShot\",Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute(\"ShotCF\") if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute(\"ShotFov\") or 60 end end) for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true end return \"bound\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-1700,80,100)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(-1700,600,100),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-1700,gy+7,100),Vector3.new(-1640,gy+9,125))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_windcliff"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(1200,80,60)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(1200,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(1200,gy+7,60),Vector3.new(1260,gy+9,85))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_worldtree"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(2400,80,60)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(2400,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(2400,gy+7,60),Vector3.new(2460,gy+9,85))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_volcano"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(3600,80,60)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(3600,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(3600,gy+7,60),Vector3.new(3660,gy+9,85))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_oasis"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(4800,80,60)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(4800,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(4800,gy+7,60),Vector3.new(4860,gy+9,85))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_swamp"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(5850,80,60)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(5850,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(5850,gy+7,60),Vector3.new(5910,gy+9,85))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_citadel"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-900,80,-1700)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(-900,600,-1700),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-900,gy+7,-1700),Vector3.new(-840,gy+9,-1675))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_highland"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(1500,80,-1700)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(1500,600,-1700),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(1500,gy+7,-1700),Vector3.new(1560,gy+9,-1675))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_canyon"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(4300,80,-1700)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(4300,600,-1700),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(4300,gy+7,-1700),Vector3.new(4360,gy+9,-1675))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_chaos"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-700,80,1750)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(-700,600,1750),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-700,gy+7,1750),Vector3.new(-640,gy+9,1775))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_wetland"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(2800,80,1750)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(2800,600,1750),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(2800,gy+7,1750),Vector3.new(2860,gy+9,1775))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_desert"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(5200,80,1750)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local r=workspace:Raycast(Vector3.new(5200,600,1750),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(5200,gy+7,1750),Vector3.new(5260,gy+9,1775))) return \"gy=\"..math.floor(gy)"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "zone_deadmarsh"
+ }
+]
