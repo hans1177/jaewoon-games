@@ -6517,6 +6517,22 @@ do
     dialog.Visible=true
   end)
   player.CharacterAdded:Connect(function()dialog.Visible=false end)
+  -- [대화 연출] 대화창이 열리면 시야각을 살짝 좁혀 인물에 집중시키고, 닫히면 원래 값으로 천천히 되돌린다(화면 효과만).
+  do
+    local fovTween=game:GetService("TweenService")
+    local savedFov=nil
+    dialog:GetPropertyChangedSignal("Visible"):Connect(function()
+      local camera=workspace.CurrentCamera
+      if not camera then return end
+      if dialog.Visible then
+        if savedFov==nil then savedFov=camera.FieldOfView end
+        fovTween:Create(camera,TweenInfo.new(.45,Enum.EasingStyle.Sine,Enum.EasingDirection.Out),{FieldOfView=math.max(45,savedFov-14)}):Play()
+      elseif savedFov~=nil then
+        local back=savedFov;savedFov=nil
+        fovTween:Create(camera,TweenInfo.new(.5,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{FieldOfView=back}):Play()
+      end
+    end)
+  end
 end
 
 do
