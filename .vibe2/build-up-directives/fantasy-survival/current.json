@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g1-8d7ad9c908c7",
-  "directiveFingerprint": "8d7ad9c908c711bfd1bc4635c70cd18790e12e8282474d6cef3e8fb521365f53",
+  "directiveId": "fantasy-survival-build-up-g1-fcb8b449b543",
+  "directiveFingerprint": "fcb8b449b5439a8e3dfe67a6bfa5defc54c35068120833ccdf2333dad1a3190f",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "fantasy-survival",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "3cee12bab453793ad39bb4b7d304a05b556620542442339c87fc2c11aabf133b",
+  "sourceTreeFingerprint": "b027dfca939b50828b2766666a1eb72ed40bb4be2f87ae0f644fdbe502808640",
   "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
   "designSourceBuildUp": {
     "version": 1,
@@ -346,7 +346,7 @@
           "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
           "VFX_AUDIO_CAMERA_POLISH_MOBILE"
         ],
-        "sourceTreeFingerprint": "3cee12bab453793ad39bb4b7d304a05b556620542442339c87fc2c11aabf133b",
+        "sourceTreeFingerprint": "b027dfca939b50828b2766666a1eb72ed40bb4be2f87ae0f644fdbe502808640",
         "rule": "MAIN_A_NAMED_GAME_SYSTEM_B_EXISTING_GAME_SYSTEMS; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -493,7 +493,7 @@
       "nextAction": "OPTIONAL_COMPATIBILITY_COMPARISON_ONLY_ROBLOX_LUAU_REMAINS_ORIGINAL"
     },
     "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
-    "sourceTreeFingerprint": "3cee12bab453793ad39bb4b7d304a05b556620542442339c87fc2c11aabf133b",
+    "sourceTreeFingerprint": "b027dfca939b50828b2766666a1eb72ed40bb4be2f87ae0f644fdbe502808640",
     "multiplayerMode": "HYBRID",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -580,19 +580,24 @@
             "WorldAccessState"
           ],
           "inspectedExecutableFiles": [
+            "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/GameConfig.luau",
-            "roblox-games/fantasy-survival/shared/Opening24.luau"
+            "roblox-games/fantasy-survival/shared/GameConfig.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
+          "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/shared/Opening24.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "inspectedSymbols": [
+          {
+            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+            "symbol": "setEnemyAttackState",
+            "kind": "FUNCTION"
+          },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedShield",
@@ -601,11 +606,6 @@
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedChest",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "setEnemyAttackState",
             "kind": "FUNCTION"
           },
           {
@@ -689,19 +689,24 @@
             "ResourceState"
           ],
           "inspectedExecutableFiles": [
+            "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/GameConfig.luau",
-            "roblox-games/fantasy-survival/shared/Opening24.luau"
+            "roblox-games/fantasy-survival/shared/GameConfig.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
+          "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/shared/Opening24.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "inspectedSymbols": [
+          {
+            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+            "symbol": "setEnemyAttackState",
+            "kind": "FUNCTION"
+          },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedShield",
@@ -710,11 +715,6 @@
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedChest",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "setEnemyAttackState",
             "kind": "FUNCTION"
           },
           {
@@ -792,19 +792,24 @@
             "RiskState"
           ],
           "inspectedExecutableFiles": [
+            "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/GameConfig.luau",
-            "roblox-games/fantasy-survival/shared/Opening24.luau"
+            "roblox-games/fantasy-survival/shared/GameConfig.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
+          "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/shared/Opening24.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "inspectedSymbols": [
+          {
+            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+            "symbol": "setEnemyAttackState",
+            "kind": "FUNCTION"
+          },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedShield",
@@ -813,11 +818,6 @@
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedChest",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "setEnemyAttackState",
             "kind": "FUNCTION"
           },
           {
@@ -894,19 +894,24 @@
             "IntentState"
           ],
           "inspectedExecutableFiles": [
+            "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/GameConfig.luau",
-            "roblox-games/fantasy-survival/shared/Opening24.luau"
+            "roblox-games/fantasy-survival/shared/GameConfig.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
+          "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/shared/Opening24.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau"
         ],
         "inspectedSymbols": [
+          {
+            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+            "symbol": "setEnemyAttackState",
+            "kind": "FUNCTION"
+          },
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedShield",
@@ -915,11 +920,6 @@
           {
             "file": "roblox-games/fantasy-survival/server/Game.server.luau",
             "symbol": "equippedChest",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-            "symbol": "setEnemyAttackState",
             "kind": "FUNCTION"
           },
           {
@@ -1048,10 +1048,13 @@
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
-      "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
+      "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
+      "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
+      "roblox-games/fantasy-survival/client/DevReport.client.luau",
       "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
-      "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau"
+      "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
+      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau"
     ],
     "executableCodeCandidateFiles": [
       "roblox-games/fantasy-survival/server/Game.server.luau",
@@ -1059,8 +1062,10 @@
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
+      "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
+      "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
-      "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau"
+      "roblox-games/fantasy-survival/client/DevReport.client.luau"
     ],
     "gapReasons": [
       "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
@@ -1104,7 +1109,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "3cee12bab453793ad39bb4b7d304a05b556620542442339c87fc2c11aabf133b",
+    "sourceTreeFingerprint": "b027dfca939b50828b2766666a1eb72ed40bb4be2f87ae0f644fdbe502808640",
     "mode": "PRESERVATION_PRESENTATION_MILESTONES_ONLY",
     "authoredItemCount": 48,
     "authoredCounts": {
@@ -10115,48 +10120,48 @@
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH"
     ],
     "signals": {
-      "combat": 2132,
-      "progression": 1821,
-      "ai": 491,
-      "save": 479,
-      "multiplayer": 68,
-      "animation": 590,
-      "motionStates": 3186,
-      "gameFeel": 223,
-      "vfx": 492,
-      "camera": 367,
+      "combat": 2268,
+      "progression": 1828,
+      "ai": 523,
+      "save": 503,
+      "multiplayer": 70,
+      "animation": 642,
+      "motionStates": 3333,
+      "gameFeel": 234,
+      "vfx": 518,
+      "camera": 416,
       "audio": 88,
       "audioDynamics": 55,
-      "ui": 2384,
-      "uiFlow": 1933,
+      "ui": 2388,
+      "uiFlow": 1952,
       "entryFlow": 14,
       "loadingFlow": 4,
-      "input": 363,
-      "map": 4581,
-      "landmark": 703,
-      "interaction": 1338,
-      "inventory": 899,
+      "input": 364,
+      "map": 4705,
+      "landmark": 707,
+      "interaction": 1347,
+      "inventory": 902,
       "equipment": 426,
       "settings": 76,
-      "feedback": 306,
-      "session": 210,
-      "content": 3962,
-      "choice": 2336,
+      "feedback": 326,
+      "session": 217,
+      "content": 4326,
+      "choice": 2342,
       "connection": 16,
-      "performance": 217,
-      "lighting": 439,
-      "primitive": 86,
+      "performance": 254,
+      "lighting": 468,
+      "primitive": 93,
       "todo": 0,
-      "errorRecovery": 261
+      "errorRecovery": 272
     },
     "topFiles": [
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "score": 4731
+        "score": 4894
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "score": 4036
+        "score": 4108
       },
       {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -10171,8 +10176,20 @@
         "score": 374
       },
       {
+        "file": "roblox-games/fantasy-survival/skilltree-icons/source-manifest.json",
+        "score": 204
+      },
+      {
         "file": "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
         "score": 45
+      },
+      {
+        "file": "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json",
+        "score": 31
       },
       {
         "file": "roblox-games/fantasy-survival/shared/Opening24.luau",
@@ -10183,26 +10200,22 @@
         "score": 19
       },
       {
-        "file": "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
-        "score": 6
-      },
-      {
-        "file": "roblox-games/fantasy-survival/native-assets.json",
-        "score": 4
-      },
-      {
-        "file": "roblox-games/fantasy-survival/opening24/audio.json",
-        "score": 3
-      },
-      {
-        "file": "roblox-games/fantasy-survival/opening24/files.json",
-        "score": 2
+        "file": "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
+        "score": 16
       }
     ],
     "sourceAnchors": [
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3822,
+        "line": 6036,
+        "kind": "FUNCTION",
+        "symbol": "setEnemyAttackState",
+        "context": "local function setEnemyAttackState(enemy, state)",
+        "score": 178
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 3854,
         "kind": "FUNCTION",
         "symbol": "equippedShield",
         "context": "equippedShield=function(player) return equipped(player,\"Shield\") end,",
@@ -10210,7 +10223,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3823,
+        "line": 3855,
         "kind": "FUNCTION",
         "symbol": "equippedChest",
         "context": "equippedChest=function(player) return equipped(player,\"Chest\") end,",
@@ -10218,18 +10231,10 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 12252,
+        "line": 12451,
         "kind": "FUNCTION",
         "symbol": "paintGuide",
         "context": "local function paintGuide()",
-        "score": 154
-      },
-      {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5828,
-        "kind": "FUNCTION",
-        "symbol": "setEnemyAttackState",
-        "context": "local function setEnemyAttackState(enemy, state)",
         "score": 154
       },
       {
@@ -10242,7 +10247,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 8445,
+        "line": 8535,
         "kind": "FUNCTION",
         "symbol": "refreshBossBar",
         "context": "local function refreshBossBar()",
@@ -10250,7 +10255,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3824,
+        "line": 3856,
         "kind": "FUNCTION",
         "symbol": "equippedSlot",
         "context": "equippedSlot=function(player,slot) return equipped(player,slot) end,",
@@ -10274,7 +10279,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 4119,
+        "line": 4151,
         "kind": "FUNCTION",
         "symbol": "watchBowVisual",
         "context": "local function watchBowVisual(player)",
@@ -10282,7 +10287,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 12089,
+        "line": 12288,
         "kind": "FUNCTION",
         "symbol": "nearestPrompt",
         "context": "local function nearestPrompt(match)",
@@ -10290,7 +10295,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 6885,
+        "line": 7244,
         "kind": "FUNCTION",
         "symbol": "strike",
         "context": "local function strike(enemy,scale)",
@@ -10322,7 +10327,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 1854,
+        "line": 1905,
         "kind": "FUNCTION",
         "symbol": "refreshMeadowCameraOption",
         "context": "local function refreshMeadowCameraOption()",
@@ -10330,7 +10335,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 8179,
+        "line": 8247,
         "kind": "FUNCTION",
         "symbol": "updateMeadowQuestDirection",
         "context": "local function updateMeadowQuestDirection()",
@@ -10338,7 +10343,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 11723,
+        "line": 11922,
         "kind": "FUNCTION",
         "symbol": "quickSay",
         "context": "local function quickSay(text)",
@@ -10346,7 +10351,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3491,
+        "line": 3523,
         "kind": "FUNCTION",
         "symbol": "equipped",
         "context": "local function equipped(player,slot)",
@@ -10354,7 +10359,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 6774,
+        "line": 7133,
         "kind": "FUNCTION",
         "symbol": "stun",
         "context": "local function stun(list,seconds)",
@@ -10378,7 +10383,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 6544,
+        "line": 6611,
         "kind": "FUNCTION",
         "symbol": "bindForestClimate",
         "context": "local function bindForestClimate(model)",
@@ -10386,15 +10391,23 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 7234,
+        "line": 7301,
         "kind": "FUNCTION",
         "symbol": "layoutMeadowCombatUi",
         "context": "local function layoutMeadowCombatUi()",
         "score": 90
       },
       {
+        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
+        "line": 8205,
+        "kind": "FUNCTION",
+        "symbol": "registerMeadowPrompt",
+        "context": "local function registerMeadowPrompt(descendant)",
+        "score": 90
+      },
+      {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 1163,
+        "line": 1187,
         "kind": "FUNCTION",
         "symbol": "villageChoose",
         "context": "local function villageChoose(player,actionId)",
@@ -10402,7 +10415,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3390,
+        "line": 3422,
         "kind": "FUNCTION",
         "symbol": "awardProgress",
         "context": "local function awardProgress(player, experience, coinReward)",
@@ -10410,7 +10423,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5925,
+        "line": 6260,
         "kind": "FUNCTION",
         "symbol": "chooseMeadowMobSkill",
         "context": "local function chooseMeadowMobSkill(enemy)",
@@ -10418,7 +10431,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 6764,
+        "line": 7123,
         "kind": "FUNCTION",
         "symbol": "inRange",
         "context": "local function inRange(r,limit)",
@@ -10426,7 +10439,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 8405,
+        "line": 8872,
         "kind": "FUNCTION",
         "symbol": "say",
         "context": "local function say(text) pcall(function() villageDialogue(player,d.name,text) end) end",
@@ -10434,7 +10447,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 8564,
+        "line": 9031,
         "kind": "FUNCTION",
         "symbol": "say",
         "context": "local function say(text) pcall(function() villageDialogue(player,room.name,text) end) end",
@@ -10442,7 +10455,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 10828,
+        "line": 11314,
         "kind": "FUNCTION",
         "symbol": "topMenu",
         "context": "local function topMenu(player)",
@@ -10450,7 +10463,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 11042,
+        "line": 11528,
         "kind": "FUNCTION",
         "symbol": "stageOf",
         "context": "local function stageOf(player,line) return readNumber(player,line.Field,0) end",
@@ -10458,7 +10471,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 11064,
+        "line": 11550,
         "kind": "FUNCTION",
         "symbol": "complete",
         "context": "local function complete(player,line)",
@@ -10506,7 +10519,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 9147,
+        "line": 9267,
         "kind": "METHOD",
         "symbol": "motion.family",
         "context": "motion.family=function()",
@@ -10514,7 +10527,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 1334,
+        "line": 1376,
         "kind": "FUNCTION",
         "symbol": "equippedName",
         "context": "local function equippedName(slot)",
@@ -10522,7 +10535,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 2607,
+        "line": 2659,
         "kind": "FUNCTION",
         "symbol": "owned",
         "context": "local function owned(item)",
@@ -10530,7 +10543,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 2631,
+        "line": 2683,
         "kind": "FUNCTION",
         "symbol": "itemValue",
         "context": "local function itemValue(item)",
@@ -10538,7 +10551,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 5074,
+        "line": 5125,
         "kind": "FUNCTION",
         "symbol": "showArrivalCamera",
         "context": "local function showArrivalCamera()",
@@ -10546,7 +10559,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 11728,
+        "line": 11927,
         "kind": "FUNCTION",
         "symbol": "press",
         "context": "local function press(i)",
@@ -10554,7 +10567,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3400,
+        "line": 3432,
         "kind": "FUNCTION",
         "symbol": "addSmithXp",
         "context": "local function addSmithXp(player,amount)",
@@ -10562,7 +10575,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3516,
+        "line": 3548,
         "kind": "FUNCTION",
         "symbol": "publishStats",
         "context": "local function publishStats(player)",
@@ -10570,18 +10583,10 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5441,
+        "line": 5576,
         "kind": "FUNCTION",
         "symbol": "applyStatus",
         "context": "local function applyStatus(player,target,kind)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5444,
-        "kind": "FUNCTION",
-        "symbol": "tickBase",
-        "context": "tickBase=function() return 16+meadowProficiencyPower(player)+readNumber(player,\"WeaponTier\",0)*8 end,",
         "score": 82
       },
       {
@@ -10630,6 +10635,22 @@
         "kind": "FUNCTION",
         "symbol": "enqueue",
         "context": "local function enqueue(instance)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
+        "line": 27,
+        "kind": "FUNCTION",
+        "symbol": "add",
+        "context": "local function add(side, kind, text)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
+        "line": 80,
+        "kind": "FUNCTION",
+        "symbol": "flush",
+        "context": "local function flush()",
         "score": 26
       },
       {
@@ -11752,9 +11773,9 @@
   ],
   "primaryFocus": "USABILITY",
   "thisLoopPrimaryGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"마력숲 생존기\", 현재 책임 소스는 roblox-games/fantasy-survival/server/Game.server.luau::equippedShield, roblox-games/fantasy-survival/server/Game.server.luau::equippedChest, roblox-games/fantasy-survival/client/Game.client.luau::paintGuide, roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState, roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode, roblox-games/fantasy-survival/client/Game.client.luau::refreshBossBar, roblox-games/fantasy-survival/server/Game.server.luau::equippedSlot, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"마력숲 생존기\", 현재 책임 소스는 roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState, roblox-games/fantasy-survival/server/Game.server.luau::equippedShield, roblox-games/fantasy-survival/server/Game.server.luau::equippedChest, roblox-games/fantasy-survival/client/Game.client.luau::paintGuide, roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode, roblox-games/fantasy-survival/client/Game.client.luau::refreshBossBar, roblox-games/fantasy-survival/server/Game.server.luau::equippedSlot, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/fantasy-survival/server/Game.server.luau::equippedShield, roblox-games/fantasy-survival/server/Game.server.luau::equippedChest, roblox-games/fantasy-survival/client/Game.client.luau::paintGuide, roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState, roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode, roblox-games/fantasy-survival/client/Game.client.luau::refreshBossBar, roblox-games/fantasy-survival/server/Game.server.luau::equippedSlot, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState, roblox-games/fantasy-survival/server/Game.server.luau::equippedShield, roblox-games/fantasy-survival/server/Game.server.luau::equippedChest, roblox-games/fantasy-survival/client/Game.client.luau::paintGuide, roblox-games/fantasy-survival/client/Game.client.luau::applyMeadowCameraMode, roblox-games/fantasy-survival/client/Game.client.luau::refreshBossBar, roblox-games/fantasy-survival/server/Game.server.luau::equippedSlot, roblox-games/fantasy-survival/shared/RobloxCommonUI.luau::sync에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "마력숲 생존기를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "전투와 획득 장비의 조합 운용 × 철학·사상가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -11781,10 +11802,10 @@
         "gameId": "fantasy-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/fantasy-survival/client/DevReport.client.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11796,10 +11817,10 @@
         "gameId": "fantasy-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/fantasy-survival/client/DevReport.client.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11811,10 +11832,10 @@
         "gameId": "fantasy-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/fantasy-survival/client/DevReport.client.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11826,10 +11847,10 @@
         "gameId": "fantasy-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/fantasy-survival/client/DevReport.client.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11841,10 +11862,10 @@
         "gameId": "fantasy-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/fantasy-survival/client/DevReport.client.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11900,7 +11921,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 54929308,
+        "sourceBytes": 58610236,
         "largestFileBytes": 2114676,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -12099,13 +12120,13 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "fantasy-survival",
     "sourceRoot": "roblox-games/fantasy-survival",
-    "sourceTreeFingerprint": "3cee12bab453793ad39bb4b7d304a05b556620542442339c87fc2c11aabf133b",
+    "sourceTreeFingerprint": "b027dfca939b50828b2766666a1eb72ed40bb4be2f87ae0f644fdbe502808640",
     "sourceRevision": null,
     "scan": {
       "complete": true,
       "reason": null,
-      "sourceCount": 22,
-      "assetCount": 341,
+      "sourceCount": 31,
+      "assetCount": 345,
       "assetReferences": 3,
       "missingReferences": 0
     },
@@ -13116,6 +13137,46 @@
         "path": "roblox-games/fantasy-survival/opening24/s24_fg.png",
         "bytes": 24911,
         "sha256": "sha256:844ca8559087fda7f9e74c27f5b82e79e4497928487dbf6bf50c0a1c6a202f1b",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/skilltree-icons/skill_1.png",
+        "bytes": 1028941,
+        "sha256": "sha256:09822e3aff33c55b05ab4ca921b6d26ef8628b546333fa9b07cff16cdca50dd8",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/skilltree-icons/skill_2.png",
+        "bytes": 1002826,
+        "sha256": "sha256:691b08006c70aa8a64b33d536383635835f6927b326584529a59fd73cbd0fbe9",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/skilltree-icons/skill_3.png",
+        "bytes": 990975,
+        "sha256": "sha256:bb6d6713a3b8bacd594a6f1ca36dfd40bdc07761cc1fad409020cb8426095aca",
+        "familyCandidate": "ICONS_IMAGES",
+        "integrity": "HEADER_VALID",
+        "rightsVerified": false,
+        "visualVerified": false,
+        "runtimeVerified": false
+      },
+      {
+        "path": "roblox-games/fantasy-survival/skilltree-icons/skill_4.png",
+        "bytes": 533954,
+        "sha256": "sha256:26788106000f2a13710b0d37fdcb26baf6c3d003a1be8552a5e7581054861357",
         "familyCandidate": "ICONS_IMAGES",
         "integrity": "HEADER_VALID",
         "rightsVerified": false,
@@ -18788,7 +18849,7 @@
           "roblox-games/fantasy-survival/guide-icons.png"
         ],
         "sourceSignalOnly": true,
-        "assetCount": 99,
+        "assetCount": 103,
         "sourceState": "CANDIDATE_NOT_VERIFIED",
         "issues": [],
         "improvement": "Improve contrast and semantic identity of owned icons.",
@@ -18945,7 +19006,9 @@
         "id": "REGIONS_LANDMARKS",
         "kind": "asset",
         "priority": "P2",
-        "sourceFiles": [],
+        "sourceFiles": [
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
+        ],
         "sourceSignalOnly": true,
         "assetCount": 0,
         "sourceState": "CANDIDATE_NOT_VERIFIED",
@@ -18976,6 +19039,7 @@
         "kind": "source",
         "priority": "P2",
         "sourceFiles": [
+          "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau"
         ],
         "sourceSignalOnly": true,
@@ -18993,7 +19057,9 @@
         "kind": "source",
         "priority": "P2",
         "sourceFiles": [
-          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/default.json"
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/default.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json"
         ],
         "sourceSignalOnly": true,
         "assetCount": 0,
@@ -19313,7 +19379,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "3cee12bab453793ad39bb4b7d304a05b556620542442339c87fc2c11aabf133b",
+    "sourceFingerprint": "b027dfca939b50828b2766666a1eb72ed40bb4be2f87ae0f644fdbe502808640",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -19333,7 +19399,7 @@
     "version": 1,
     "gameId": "fantasy-survival",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "3cee12bab453793ad39bb4b7d304a05b556620542442339c87fc2c11aabf133b",
+    "sourceTreeFingerprint": "b027dfca939b50828b2766666a1eb72ed40bb4be2f87ae0f644fdbe502808640",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -19419,7 +19485,8 @@
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -19434,7 +19501,8 @@
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -19476,7 +19544,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/fantasy-survival/server/Game.server.luau",
-          "roblox-games/fantasy-survival/client/Game.client.luau"
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -19539,7 +19608,8 @@
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/server/DevTelemetry.server.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -19648,7 +19718,8 @@
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -19692,6 +19763,7 @@
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json",
           "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": true,
@@ -19722,8 +19794,8 @@
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/opening24/audio.json",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
+          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
+          "roblox-games/fantasy-survival/opening24/audio.json"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -19753,7 +19825,8 @@
         "responsibleFiles": [
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/server/DevTelemetry.server.luau"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -19797,13 +19870,15 @@
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
-        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
+        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
       ],
       "WORLD": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
       ],
       "BIOME": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
@@ -19818,7 +19893,8 @@
       ],
       "MOTION": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
-        "roblox-games/fantasy-survival/client/Game.client.luau"
+        "roblox-games/fantasy-survival/client/Game.client.luau",
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json"
       ],
       "ACTION": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
@@ -19857,7 +19933,8 @@
         "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau"
       ],
       "FARMING": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
@@ -19874,6 +19951,7 @@
         "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json",
         "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
       ],
       "CAMERA": [
@@ -19886,8 +19964,8 @@
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
-        "roblox-games/fantasy-survival/opening24/audio.json",
-        "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
+        "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
+        "roblox-games/fantasy-survival/opening24/audio.json"
       ],
       "SKILL_VFX": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
@@ -19899,7 +19977,8 @@
       "NETWORK": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/server/DevTelemetry.server.luau"
       ],
       "INTERACTION": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
@@ -19919,7 +19998,8 @@
         "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/server/DevTelemetry.server.luau"
       ],
       "COMBAT": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
@@ -19969,7 +20049,8 @@
         "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
       ],
       "biomeSourceFiles": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
@@ -20074,7 +20155,8 @@
             "roblox-games/fantasy-survival/server/Game.server.luau",
             "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-            "roblox-games/fantasy-survival/shared/GameConfig.luau"
+            "roblox-games/fantasy-survival/shared/GameConfig.luau",
+            "roblox-games/fantasy-survival/server/DevTelemetry.server.luau"
           ],
           "passed": false
         },
@@ -20086,7 +20168,7 @@
             "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
-            "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
+            "roblox-games/fantasy-survival/server/DevTelemetry.server.luau"
           ],
           "passed": false
         }
@@ -20112,6 +20194,7 @@
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
         "checks": [
@@ -20138,7 +20221,8 @@
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/VisualAssetIds.luau"
+          "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
+          "roblox-games/fantasy-survival/server/DevTelemetry.server.luau"
         ],
         "checks": [
           "ACTUAL_PLACEMENT_COLLISION",
@@ -20164,7 +20248,8 @@
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
-          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
+          "roblox-games/fantasy-survival/server/DevTelemetry.server.luau"
         ],
         "checks": [
           "REAL_RIG_AND_OUTFIT_BINDING",
@@ -20213,7 +20298,8 @@
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-          "roblox-games/fantasy-survival/default.project.json"
+          "roblox-games/fantasy-survival/default.project.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json"
         ],
         "checks": [
           "INPUT_TO_AUTHORITATIVE_HIT",
@@ -20264,7 +20350,8 @@
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-          "roblox-games/fantasy-survival/client/Game.client.luau"
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
         ],
         "checks": [
           "APPROVED_CROP_REGION_AND_SEASON",
@@ -20290,8 +20377,8 @@
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/default.project.json",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/opening24/audio.json",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
+          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
+          "roblox-games/fantasy-survival/opening24/audio.json"
         ],
         "checks": [
           "SKILL_ACTUAL_EVENT_TO_EFFECT",
@@ -20348,8 +20435,9 @@
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-            "roblox-games/fantasy-survival/default.project.json",
-            "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau"
+            "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json",
+            "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json",
+            "roblox-games/fantasy-survival/default.project.json"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
           "motions": [
@@ -20387,6 +20475,7 @@
             "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+            "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json",
             "roblox-games/fantasy-survival/native-assets.json"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
@@ -20569,7 +20658,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "3cee12bab453793ad39bb4b7d304a05b556620542442339c87fc2c11aabf133b",
+      "sourceTreeFingerprint": "b027dfca939b50828b2766666a1eb72ed40bb4be2f87ae0f644fdbe502808640",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -20593,7 +20682,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "3cee12bab453793ad39bb4b7d304a05b556620542442339c87fc2c11aabf133b",
+      "sourceTreeFingerprint": "b027dfca939b50828b2766666a1eb72ed40bb4be2f87ae0f644fdbe502808640",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -20666,7 +20755,7 @@
     "gameId": "fantasy-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "3cee12bab453793ad39bb4b7d304a05b556620542442339c87fc2c11aabf133b",
+    "sourceTreeFingerprint": "b027dfca939b50828b2766666a1eb72ed40bb4be2f87ae0f644fdbe502808640",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -20996,21 +21085,22 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/fantasy-survival/client/DevReport.client.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
       "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
+      "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
+      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau",
       "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-      "roblox-games/fantasy-survival/default.project.json",
-      "roblox-games/fantasy-survival/native-assets.json",
-      "roblox-games/fantasy-survival/opening24/audio.json",
-      "roblox-games/fantasy-survival/opening24/files.json"
+      "roblox-games/fantasy-survival/skilltree-icons/source-manifest.json",
+      "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -21232,26 +21322,36 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/fantasy-survival/client/DevReport.client.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
       "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
+      "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
+      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau",
       "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-      "roblox-games/fantasy-survival/default.project.json",
-      "roblox-games/fantasy-survival/native-assets.json",
-      "roblox-games/fantasy-survival/opening24/audio.json",
-      "roblox-games/fantasy-survival/opening24/files.json"
+      "roblox-games/fantasy-survival/skilltree-icons/source-manifest.json",
+      "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3822,
+        "line": 6036,
+        "kind": "FUNCTION",
+        "symbol": "setEnemyAttackState",
+        "currentBehavior": "local function setEnemyAttackState(enemy, state)",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 setEnemyAttackState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 3854,
         "kind": "FUNCTION",
         "symbol": "equippedShield",
         "currentBehavior": "equippedShield=function(player) return equipped(player,\"Shield\") end,",
@@ -21260,7 +21360,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3823,
+        "line": 3855,
         "kind": "FUNCTION",
         "symbol": "equippedChest",
         "currentBehavior": "equippedChest=function(player) return equipped(player,\"Chest\") end,",
@@ -21269,21 +21369,12 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 12252,
+        "line": 12451,
         "kind": "FUNCTION",
         "symbol": "paintGuide",
         "currentBehavior": "local function paintGuide()",
         "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 paintGuide의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5828,
-        "kind": "FUNCTION",
-        "symbol": "setEnemyAttackState",
-        "currentBehavior": "local function setEnemyAttackState(enemy, state)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 setEnemyAttackState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
@@ -21296,7 +21387,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 8445,
+        "line": 8535,
         "kind": "FUNCTION",
         "symbol": "refreshBossBar",
         "currentBehavior": "local function refreshBossBar()",
@@ -21305,7 +21396,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3824,
+        "line": 3856,
         "kind": "FUNCTION",
         "symbol": "equippedSlot",
         "currentBehavior": "equippedSlot=function(player,slot) return equipped(player,slot) end,",
@@ -21325,6 +21416,12 @@
     "serverClientResponsibility": [
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "symbol": "setEnemyAttackState",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
         "symbol": "equippedShield",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
@@ -21339,12 +21436,6 @@
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
         "symbol": "paintGuide",
         "role": "CLIENT_INPUT_OR_PRESENTATION",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "symbol": "setEnemyAttackState",
-        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
@@ -21443,26 +21534,39 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/fantasy-survival/client/DevReport.client.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
       "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
+      "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
+      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau",
       "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-      "roblox-games/fantasy-survival/default.project.json",
-      "roblox-games/fantasy-survival/native-assets.json",
-      "roblox-games/fantasy-survival/opening24/audio.json",
-      "roblox-games/fantasy-survival/opening24/files.json"
+      "roblox-games/fantasy-survival/skilltree-icons/source-manifest.json",
+      "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
     ],
     "sourceAnchors": [
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3822,
+        "line": 6036,
+        "kind": "FUNCTION",
+        "symbol": "setEnemyAttackState",
+        "context": "local function setEnemyAttackState(enemy, state)",
+        "score": 178,
+        "currentBehavior": "local function setEnemyAttackState(enemy, state)",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 setEnemyAttackState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "line": 3854,
         "kind": "FUNCTION",
         "symbol": "equippedShield",
         "context": "equippedShield=function(player) return equipped(player,\"Shield\") end,",
@@ -21474,7 +21578,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3823,
+        "line": 3855,
         "kind": "FUNCTION",
         "symbol": "equippedChest",
         "context": "equippedChest=function(player) return equipped(player,\"Chest\") end,",
@@ -21486,7 +21590,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 12252,
+        "line": 12451,
         "kind": "FUNCTION",
         "symbol": "paintGuide",
         "context": "local function paintGuide()",
@@ -21495,18 +21599,6 @@
         "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 paintGuide의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/fantasy-survival/client/Game.client.luau::paintGuide이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 5828,
-        "kind": "FUNCTION",
-        "symbol": "setEnemyAttackState",
-        "context": "local function setEnemyAttackState(enemy, state)",
-        "score": 154,
-        "currentBehavior": "local function setEnemyAttackState(enemy, state)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 setEnemyAttackState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::setEnemyAttackState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
@@ -21522,7 +21614,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 8445,
+        "line": 8535,
         "kind": "FUNCTION",
         "symbol": "refreshBossBar",
         "context": "local function refreshBossBar()",
@@ -21534,7 +21626,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 3824,
+        "line": 3856,
         "kind": "FUNCTION",
         "symbol": "equippedSlot",
         "context": "equippedSlot=function(player,slot) return equipped(player,slot) end,",
@@ -21598,21 +21690,22 @@
     "gameId": "fantasy-survival",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/fantasy-survival/client/DevReport.client.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
       "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
+      "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
+      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau",
       "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-      "roblox-games/fantasy-survival/default.project.json",
-      "roblox-games/fantasy-survival/native-assets.json",
-      "roblox-games/fantasy-survival/opening24/audio.json",
-      "roblox-games/fantasy-survival/opening24/files.json"
+      "roblox-games/fantasy-survival/skilltree-icons/source-manifest.json",
+      "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
     ],
     "impact": {
       "version": 1,
@@ -21686,7 +21779,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "3cee12bab453793ad39bb4b7d304a05b556620542442339c87fc2c11aabf133b",
+      "sourceTreeFingerprint": "b027dfca939b50828b2766666a1eb72ed40bb4be2f87ae0f644fdbe502808640",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
@@ -21808,5 +21901,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-07T04:37:21.417Z"
+  "generatedAt": "2026-11-07T18:48:43.614Z"
 }
