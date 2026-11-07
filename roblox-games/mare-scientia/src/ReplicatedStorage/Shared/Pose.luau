@@ -81,9 +81,26 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
 		local joints = countJoints()
 		-- 설명서로 만든 모델은 부품과 부착점만 있고 관절(Motor6D)이 없을 수 있다: 부착점으로 관절을 만든다
 		if joints < 12 and humanoid then
-			result.Parent = workspace
-			pcall(function() humanoid:BuildRigFromAttachments() end)
-			result.Parent = nil
+			-- BuildRigFromAttachments 가 관절을 만들지 못하는 환경이 있어, R15 표준 관절표대로 직접 잇는다
+			local LINKS = {
+				{ "Root", "HumanoidRootPart", "LowerTorso" }, { "Waist", "LowerTorso", "UpperTorso" }, { "Neck", "UpperTorso", "Head" },
+				{ "LeftShoulder", "UpperTorso", "LeftUpperArm" }, { "LeftElbow", "LeftUpperArm", "LeftLowerArm" }, { "LeftWrist", "LeftLowerArm", "LeftHand" },
+				{ "RightShoulder", "UpperTorso", "RightUpperArm" }, { "RightElbow", "RightUpperArm", "RightLowerArm" }, { "RightWrist", "RightLowerArm", "RightHand" },
+				{ "LeftHip", "LowerTorso", "LeftUpperLeg" }, { "LeftKnee", "LeftUpperLeg", "LeftLowerLeg" }, { "LeftAnkle", "LeftLowerLeg", "LeftFoot" },
+				{ "RightHip", "LowerTorso", "RightUpperLeg" }, { "RightKnee", "RightUpperLeg", "RightLowerLeg" }, { "RightAnkle", "RightLowerLeg", "RightFoot" },
+			}
+			for _, link in LINKS do
+				local p0, p1 = result:FindFirstChild(link[2]), result:FindFirstChild(link[3])
+				local a0 = p0 and p0:FindFirstChild(link[1] .. "RigAttachment")
+				local a1 = p1 and p1:FindFirstChild(link[1] .. "RigAttachment")
+				if p0 and p1 and a0 and a1 and not p1:FindFirstChild(link[1]) then
+					local m = Instance.new("Motor6D")
+					m.Name = link[1]
+					m.Part0, m.Part1 = p0, p1
+					m.C0, m.C1 = a0.CFrame, a1.CFrame
+					m.Parent = p1
+				end
+			end
 			joints = countJoints()
 		end
 		if not humanoid or humanoid.RigType ~= Enum.HumanoidRigType.R15 or joints < 12 or not result:FindFirstChild("HumanoidRootPart") then
