@@ -50,6 +50,17 @@ function Regions.tierOf(portId: string, lat: number, lon: number): number
 	return 6
 end
 
+-- 시작한 해역은 레벨과 상관없이 갈 수 있다 (인도양·극동에서 시작해도 갇히지 않게)
+function Regions.isOpen(level: number, homeTier: number, tier: number): boolean
+	return tier == homeTier or Regions.List[tier].minLevel <= level
+end
+
+-- 이 나라 주인공이 시작한 해역 단계
+function Regions.homeTier(ports: any, nation: any): number
+	local sp = ports[nation.startPort]
+	return Regions.tierOf(sp.id, sp.lat, sp.lon)
+end
+
 function Regions.of(port: { id: string, lat: number, lon: number }): Region
 	return Regions.List[Regions.tierOf(port.id, port.lat, port.lon)]
 end

@@ -3190,7 +3190,9 @@ local function renderNewGame()
 	add(function() return mkHeader(content, "나라를 선택하세요") end)
 	local list = {}
 	for id, n in PortData.Nations do
-		table.insert(list, n)
+		if not n.hidden then
+			table.insert(list, n)
+		end
 	end
 	table.sort(list, function(a, b) return a.id < b.id end)
 	for _, n in list do

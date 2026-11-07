@@ -28,6 +28,7 @@ export type Nation = {
 	startCoins: number, -- 시작 코인 추가
 	adventureXpMult: number,
 	battleXpMult: number,
+	hidden: boolean?, -- 새 게임 선택에서 숨김 (옛 저장 호환용)
 }
 
 local Goods: { [string]: Good } = {
@@ -834,32 +835,57 @@ local Nations: { [string]: Nation } = {
 	england = {
 		id = "england", name = "영국", startPort = "london",
 		summary = "항해술 우수 (항해 속도 +5%)",
-		speedMult = 1.05, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1,
+		speedMult = 1.05, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1, hidden = true,
 	},
 	netherlands = {
 		id = "netherlands", name = "네덜란드", startPort = "amsterdam",
 		summary = "교역 수완 (판매 비율 +2%)",
-		speedMult = 1, sellBonus = 0.02, startCoins = 0, adventureXpMult = 1, battleXpMult = 1,
+		speedMult = 1, sellBonus = 0.02, startCoins = 0, adventureXpMult = 1, battleXpMult = 1, hidden = true,
 	},
 	france = {
 		id = "france", name = "프랑스", startPort = "rouen",
 		summary = "귀족 후원 (시작 코인 +200)",
-		speedMult = 1, sellBonus = 0, startCoins = 200, adventureXpMult = 1, battleXpMult = 1,
+		speedMult = 1, sellBonus = 0, startCoins = 200, adventureXpMult = 1, battleXpMult = 1, hidden = true,
 	},
 	denmark = {
 		id = "denmark", name = "덴마크", startPort = "copenhagen",
 		summary = "북해 해군 전통 (전투 경험 +20%)",
-		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1.2,
+		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1.2, hidden = true,
 	},
 	sweden = {
 		id = "sweden", name = "스웨덴", startPort = "gothenburg",
 		summary = "자연 연구 (모험 경험 +20%)",
-		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.2, battleXpMult = 1,
+		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.2, battleXpMult = 1, hidden = true,
 	},
 	venice = {
 		id = "venice", name = "베네치아 공화국", startPort = "venice",
 		summary = "지중해 무역 전통 (판매 비율 +3%, 시작 코인 -100)",
 		speedMult = 1, sellBonus = 0.03, startCoins = -100, adventureXpMult = 1, battleXpMult = 1,
+	},
+	ottoman = {
+		id = "ottoman", name = "오스만 제국", startPort = "istanbul",
+		summary = "제국의 후원 (시작 코인 +100, 판매 비율 +1%)",
+		speedMult = 1, sellBonus = 0.01, startCoins = 100, adventureXpMult = 1, battleXpMult = 1,
+	},
+	swahili = {
+		id = "swahili", name = "스와힐리 해안", startPort = "zanzibar",
+		summary = "계절풍의 아이 (항해 속도 +8%) · 인도양 시작",
+		speedMult = 1.08, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1,
+	},
+	malabar = {
+		id = "malabar", name = "말라바르 해안", startPort = "calicut",
+		summary = "향신료 항구 출신 (판매 비율 +4%, 시작 코인 -100) · 인도양 시작",
+		speedMult = 1, sellBonus = 0.04, startCoins = -100, adventureXpMult = 1, battleXpMult = 1,
+	},
+	japan = {
+		id = "japan", name = "일본", startPort = "nagasaki",
+		summary = "무사 전통 (전투 경험 +25%) · 극동 시작",
+		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1.25,
+	},
+	new_spain = {
+		id = "new_spain", name = "누에바 에스파냐", startPort = "veracruz",
+		summary = "신대륙 탐험 (모험 경험 +25%) · 신대륙 시작",
+		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.25, battleXpMult = 1,
 	},
 }
 

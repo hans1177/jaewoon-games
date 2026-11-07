@@ -233,8 +233,8 @@ return function(D, S)
 				end
 			end
 			local locked
-			for _, r in D.Regions.List do
-				if state.careers.adventure.level < r.minLevel then
+			for ri, r in D.Regions.List do
+				if not D.Regions.isOpen(state.careers.adventure.level, D.Regions.homeTier(D.Ports.Ports, D.Ports.Nations[state.nationId]), ri) then
 					locked = r
 					break
 				end
@@ -257,7 +257,7 @@ return function(D, S)
 				local region = D.Regions.of(D.Ports.Ports[portId])
 				table.insert(view.routes, {
 					region = region.name,
-					locked = if state.careers.adventure.level < region.minLevel then string.format("모험 Lv.%d 필요", region.minLevel) else nil,
+					locked = if not D.Regions.isOpen(state.careers.adventure.level, D.Regions.homeTier(D.Ports.Ports, D.Ports.Nations[state.nationId]), D.Regions.tierOf(portId, D.Ports.Ports[portId].lat, D.Ports.Ports[portId].lon)) then string.format("모험 Lv.%d 필요", region.minLevel) else nil,
 					id = portId,
 					name = D.Ports.Ports[portId].name,
 					days = plan.days,

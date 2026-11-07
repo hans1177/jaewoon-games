@@ -22,7 +22,7 @@ return function(D, S)
 		end
 		local ids = {}
 		for id, port in D.Ports.Ports do
-			if id ~= state.portId and D.Regions.of(port).minLevel <= state.careers.adventure.level then
+			if id ~= state.portId and D.Regions.isOpen(state.careers.adventure.level, D.Regions.homeTier(D.Ports.Ports, D.Ports.Nations[state.nationId]), D.Regions.tierOf(id, port.lat, port.lon)) then
 				table.insert(ids, id)
 			end
 		end
@@ -58,7 +58,8 @@ return function(D, S)
 		end
 		local region = D.Regions.of(to)
 		local lvAdv = state.careers.adventure.level
-		if lvAdv < region.minLevel then
+		local homeTier = D.Regions.homeTier(D.Ports.Ports, D.Ports.Nations[state.nationId])
+		if not D.Regions.isOpen(lvAdv, homeTier, D.Regions.tierOf(to.id, to.lat, to.lon)) then
 			return false, string.format("%s 해역은 모험 Lv.%d부터 갈 수 있어요 (지금 Lv.%d)", region.name, region.minLevel, lvAdv)
 		end
 		local def = S.State.shipDef(state)
