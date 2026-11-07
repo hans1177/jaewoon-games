@@ -12,8 +12,8 @@ local Sfx = require(script.Parent:WaitForChild("Sfx"))
 
 local ORIGIN = Vector3.new(0, 0, 20000) -- 항구와 겹치지 않는 먼 곳
 local SPEED = 70 -- 스터드/초
-local STREAKS = 90
-local CLOUDS = 16
+local STREAKS = 0 -- 곧은 흰 막대는 어색해서 쓰지 않는다
+local CLOUDS = 0 -- 공 모양 구름은 바다에 어두운 그림자 얼룩을 만들어서 쓰지 않는다(하늘 구름은 스카이박스)
 
 local function part(parent, size, cf, color, material, shape)
 	local p = Instance.new("Part")
@@ -408,11 +408,13 @@ function VoyageScene.play(info)
 		a0.Parent, a1.Parent = tp, tp
 		local tr = Instance.new("Trail")
 		tr.Attachment0, tr.Attachment1 = a0, a1
-		tr.Lifetime = 3.2
+		tr.Lifetime = 2.4
+		tr.Texture = FOAM
+		tr.TextureMode = Enum.TextureMode.Stretch
 		tr.MinLength = 0.2
 		tr.FaceCamera = false
 		tr.Color = ColorSequence.new(Color3.fromRGB(235, 246, 255))
-		tr.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(1, 1) })
+		tr.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.8), NumberSequenceKeypoint.new(0.4, 0.88), NumberSequenceKeypoint.new(1, 1) })
 		tr.WidthScale = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(1, 5) })
 		tr.LightEmission = 0.25
 		tr.Parent = tp
