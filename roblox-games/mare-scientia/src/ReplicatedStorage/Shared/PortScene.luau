@@ -683,13 +683,18 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true)
 	-- 성벽 밖 언덕과 숲
-	for i = 1, 36 do
+	-- 평평한 절벽 판자(cliff-rock 은 두께 0.2 패널) 대신 입체 바위 군집
+	local rocks = { "rock-large", "rock-wide", "rock-small" }
+	for i = 1, 40 do
 		local side = if i % 2 == 0 then 1 else -1
-		local pos = Vector3.new(rng:NextNumber(-250, -20), 0, side * rng:NextNumber(170, 250))
-		importedModel(folder, "Terrain", if i % 3 == 0 then "cliff-steps-rock" else "cliff-rock", pos, rng:NextNumber(26, 46), true)
+		local c = Vector3.new(rng:NextNumber(-250, -20), 0, side * rng:NextNumber(170, 250))
+		importedModel(folder, "Town", "rock-large", c, rng:NextNumber(16, 26), true)
+		for j = 1, 2 do
+			importedModel(folder, "Town", rocks[rng:NextInteger(1, 3)], c + Vector3.new(rng:NextNumber(-12, 12), 0, rng:NextNumber(-12, 12)), rng:NextNumber(7, 13), false)
+		end
 	end
-	for i = 1, 14 do
-		importedModel(folder, "Terrain", "cliff-rock", Vector3.new(rng:NextNumber(-270, -225), 0, rng:NextNumber(-170, 170)), rng:NextNumber(26, 44), true)
+	for i = 1, 12 do
+		importedModel(folder, "Town", "rock-wide", Vector3.new(rng:NextNumber(-270, -225), 0, rng:NextNumber(-170, 170)), rng:NextNumber(14, 24), true)
 	end
 	local trees = if cold then { "tree-pinedefaulta", "tree-oak", "tree_large", "tree-high" } else { "palm-detailed-straight", "palm-bend", "tree-crooked", "tree_large" }
 	for i = 1, 150 do
