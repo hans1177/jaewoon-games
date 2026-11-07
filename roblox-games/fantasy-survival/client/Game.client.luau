@@ -210,9 +210,12 @@ local meadowArt={skillSheet="rbxassetid://129030506278489",gearSheet="rbxassetid
     ["skill-meadow-emote"]=10,["skill-meadow-oath"]=15,["skill-meadow-ultimate"]=15,["meadow-unarmed-rush"]=11,["meadow-unarmed-uppercut"]=12,["meadow-unarmed-kick"]=13,["meadow-unarmed-elbow"]=14,
     Martial=15,Signs=16,Defense=17,Agility=18},
   slotEmpty={Weapon=36,Chest=37,Hands=38,Legs=39,Feet=40,Accessory=41}}
--- [90노드 아이콘] 기존 정식 스킬 아이콘 시트를 재사용한다.
+-- [90개 CC0 스킬 아이콘] 기존 업로드 시트 4장을 한 함수에서 연결한다.
+-- 등록된 원화가 없는 경우 기존 스킬 아이콘 시트를 유지하며 전투·저장은 변경하지 않는다.
+meadowArt.skillNodeIndex={}
 for _,node in ipairs(Config.MeadowSkillNodes or {}) do
-  if node.Kind=="ACTIVE" then meadowArt.skillCell[node.Id]=node.IconCell end
+  meadowArt.skillNodeIndex[node.Id]=node.Index
+  meadowArt.skillCell[node.Id]=node.IconCell
 end
 -- [화면 기준점] ScreenGui 는 AbsolutePosition 이 없을 수 있어 안전하게 읽는다(튜토리얼 화살표 반복 오류 방지).
 function meadowArt.origin(root)
@@ -221,6 +224,18 @@ function meadowArt.origin(root)
   return Vector2.zero
 end
 function meadowArt.skill(icon,key)
+  local index=meadowArt.skillNodeIndex[key]
+  local sheets=meadowArt.talentSheets
+  if index and index>=1 and index<=90 and sheets then
+    local sheet=sheets[(index-1)%4+1]
+    if type(sheet)=="string" and sheet:match("^rbxassetid://%d+$") then
+      local cell=math.floor((index-1)/4)%25
+      icon.Image=sheet
+      icon.ImageRectOffset=Vector2.new((cell%5)*200,math.floor(cell/5)*200)
+      icon.ImageRectSize=Vector2.new(200,200)
+      return true
+    end
+  end
   local cell=meadowArt.skillCell[key]
   if meadowArt.skillSheet=="" or cell==nil then return false end
   icon.Image=meadowArt.skillSheet
@@ -3104,20 +3119,8 @@ for school=1,5 do
       local icon=Instance.new("ImageLabel")
       icon.Name="NodeIcon";icon.BackgroundTransparency=1;icon.Position=UDim2.new(.5,-17,0,2)
       icon.Size=UDim2.fromOffset(34,34)
-      -- 스킬 원화 시트는 5x5 / 200px 칸이다(예전 64px 계산은 엉뚱한 칸을 잘랐다).
-      icon.Image=meadowArt.skillSheet;icon.ImageRectSize=Vector2.new(200,200)
-      icon.ImageRectOffset=Vector2.new((node.IconCell%5)*200,math.floor(node.IconCell/5)*200);icon.Parent=button
-      -- [노드별 고유 아이콘] 업로드된 CC0 스킬 시트 4장(5x5)을 번갈아 써서 노드마다 다른 그림을 준다. ID가 없으면 위 원화를 그대로 쓴다.
-      do
-        local sheetIds=meadowArt.talentSheets
-        if sheetIds then
-          local sheet=sheetIds[(node.Index-1)%4+1]
-          local cell=math.floor((node.Index-1)/4)%25
-          if sheet then
-            icon.Image=sheet;icon.ImageRectOffset=Vector2.new((cell%5)*200,math.floor(cell/5)*200)
-          end
-        end
-      end
+      -- [90개 독립 스킬 원화] 기존 공용 스킬 함수에서 고유 CC0 아이콘과 복구를 처리한다.
+      meadowArt.skill(icon,node.Id);icon.Parent=button
       local label=Instance.new("TextLabel")
       label.BackgroundTransparency=1;label.Position=UDim2.fromOffset(3,36);label.Size=UDim2.new(1,-6,0,30)
       label.Font=Enum.Font.GothamBold;label.TextSize=10;label.TextWrapped=true
