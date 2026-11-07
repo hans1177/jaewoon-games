@@ -123,6 +123,13 @@ return function(D, S)
 		end
 		view.intel = S.Harbor.intel(state)
 		view.supplyMax = S.State.maxSupplies()
+		view.gear = { slots = D.Gear.SLOTS, list = {} }
+		for _, g in D.Gear.Items do
+			table.insert(view.gear.list, {
+				id = g.id, name = g.name, price = g.price, summary = g.summary, minFame = g.minFame,
+				owned = table.find(state.gear.owned, g.id) ~= nil, equipped = table.find(state.gear.equipped, g.id) ~= nil,
+			})
+		end
 		view.maps = {}
 		for _, m in state.maps do
 			table.insert(view.maps, { toName = D.Ports.Ports[m.to].name })

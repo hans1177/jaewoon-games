@@ -42,6 +42,12 @@ return function(D, S)
 				table.insert(list, scaled(c.perk, Sp.affinityMult(affinityOf(state, id))))
 			end
 		end
+		for _, id in state.gear.equipped do
+			local g = D.Gear.ById[id]
+			if g then
+				table.insert(list, g.perk)
+			end
+		end
 		return list
 	end
 
@@ -195,7 +201,7 @@ return function(D, S)
 			return false, "함께하고 있지 않아요"
 		end
 		local tier = Sp.affinityTier(affinityOf(state, id))
-		local pool = D.CompanionTalk[id][tier]
+		local pool = D.CompanionTalk.Talk[id][tier]
 		local line = pool[math.min(#pool, math.floor(ctx.rng() * #pool) + 1)]
 		local msgs = {}
 		local fresh = state.talked[id] ~= state.day
@@ -210,8 +216,72 @@ return function(D, S)
 		else
 			table.insert(msgs, "(오늘은 이미 깊은 이야기를 나눴어요)")
 		end
+		-- 호감 단계가 오른 뒤 처음 대화하면 개인 이야기를 들려준다 (한 번, 보상 포함)
+		for t = 2, tier do
+			local key = id .. "_" .. t
+			local story = D.CompanionTalk.Stories[id] and D.CompanionTalk.Stories[id][t]
+			if story and not state.storySeen[key] then
+				state.storySeen[key] = true
+				line = story.line
+				table.insert(msgs, "★ 동료의 이야기")
+				if story.coins then
+					state.coins += story.coins
+					table.insert(msgs, string.format("+%d코인", story.coins))
+				end
+				if story.fame then
+					state.fame += story.fame
+					table.insert(msgs, string.format("명성 +%d", story.fame))
+				end
+				if story.morale then
+					state.morale = math.min(100, state.morale + story.morale)
+					table.insert(msgs, string.format("사기 +%d", story.morale))
+				end
+				break
+			end
+		end
 		state.talk = { name = c.name, line = line, note = table.concat(msgs, " · ") }
 		return true, string.format("%s: \"%s\"", c.name, line)
+	end
+
+	function handlers.BuyGear(state, p)
+		local g = type(p.gearId) == "string" and D.Gear.ById[p.gearId]
+		if not g then
+			return false, "알 수 없는 장비예요"
+		end
+		if table.find(state.gear.owned, g.id) then
+			return false, "이미 가지고 있어요"
+		end
+		if state.fame < g.minFame then
+			return false, string.format("명성 %d 이상이 필요해요", g.minFame)
+		end
+		if state.coins < g.price then
+			return false, string.format("%d코인이 필요해요", g.price)
+		end
+		state.coins -= g.price
+		table.insert(state.gear.owned, g.id)
+		local msg = string.format("%s을(를) 샀다 (-%d코인)", g.name, g.price)
+		if #state.gear.equipped < D.Gear.SLOTS then
+			table.insert(state.gear.equipped, g.id)
+			msg ..= " · 자동으로 장착했다"
+		end
+		return true, msg
+	end
+
+	function handlers.ToggleGear(state, p)
+		local id = p.gearId
+		if type(id) ~= "string" or not table.find(state.gear.owned, id) then
+			return false, "가지고 있지 않아요"
+		end
+		local idx = table.find(state.gear.equipped, id)
+		if idx then
+			table.remove(state.gear.equipped, idx)
+			return true, D.Gear.ById[id].name .. " 해제"
+		end
+		if #state.gear.equipped >= D.Gear.SLOTS then
+			return false, string.format("장비는 %d개까지 장착해요", D.Gear.SLOTS)
+		end
+		table.insert(state.gear.equipped, id)
+		return true, D.Gear.ById[id].name .. " 장착"
 	end
 
 	function handlers.Dismiss(state, p)

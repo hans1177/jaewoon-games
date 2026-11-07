@@ -17,6 +17,7 @@ local D = {
 	Bosses = require("./Shared/Bosses"),
 	Specialties = require("./Shared/Specialties"),
 	CompanionTalk = require("./Shared/CompanionTalk"),
+	Gear = require("./Shared/Gear"),
 	Fields = require("./Shared/Fields"),
 	Collection = require("./Shared/Collection"),
 	CardArt = require("./Shared/CardArt"),
@@ -747,6 +748,31 @@ do
 		s2.maps = { { to = "lisbon", reward = 400 } }
 		return #S.State.sanitize(S.State.serialize(s2)).maps == 1
 	end)())
+end
+
+-- 13f. 장비와 동료 이야기 -----------------------------------------------
+do
+	local st = newState()
+	st.coins = 5000
+	st.fame = 100
+	local sp0 = S.Perk.speedMult(st)
+	check("buy gear equips", act(st, "BuyGear", { gearId = "sextant" }) and #st.gear.equipped == 1)
+	check("gear boosts speed", S.Perk.speedMult(st) > sp0)
+	check("gear toggle off", act(st, "ToggleGear", { gearId = "sextant" }) and #st.gear.equipped == 0)
+	act(st, "BuyGear", { gearId = "ledger" })
+	act(st, "BuyGear", { gearId = "naval_chart" })
+	act(st, "BuyGear", { gearId = "lucky_charm" })
+	check("gear slots capped", #st.gear.equipped <= D.Gear.SLOTS)
+	check("gear survives save", #S.State.sanitize(S.State.serialize(st)).gear.owned == #st.gear.owned)
+	st.companions = { "c_boyle" }
+	st.affinity.c_boyle = 40
+	local c0 = st.coins
+	act(st, "Talk", { companionId = "c_boyle" })
+	check("companion story gives reward once", st.storySeen.c_boyle_2 == true and st.talk.note:find("이야기") ~= nil)
+	st.day += 1
+	act(st, "Talk", { companionId = "c_boyle" })
+	check("story not repeated", st.talk.note:find("이야기") == nil)
+	check("storySeen survives save", S.State.sanitize(S.State.serialize(st)).storySeen.c_boyle_2 == true)
 end
 
 -- 14. 화면 스냅샷 -------------------------------------------------------

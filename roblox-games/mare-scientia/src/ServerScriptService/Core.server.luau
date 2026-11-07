@@ -25,6 +25,7 @@ local D = {
 	Bosses = require(Shared:WaitForChild("Bosses")),
 	Specialties = require(Shared:WaitForChild("Specialties")),
 	CompanionTalk = require(Shared:WaitForChild("CompanionTalk")),
+	Gear = require(Shared:WaitForChild("Gear")),
 	Fields = require(Shared:WaitForChild("Fields")),
 	Collection = require(Shared:WaitForChild("Collection")),
 	CardArt = require(Shared:WaitForChild("CardArt")),

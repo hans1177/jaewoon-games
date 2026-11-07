@@ -31,6 +31,8 @@ return function(D)
 			auto = { supplies = false, crew = false },
 			morale = 80,
 			maps = {},
+			gear = { owned = {}, equipped = {} },
+			storySeen = {},
 			talked = {},
 			cargo = {},
 			basis = {},
@@ -271,6 +273,29 @@ return function(D)
 		s.license = math.floor(num(saved.license, 0, 0, #D.Ships.Licenses))
 		s.insured = saved.insured == true
 		s.morale = math.floor(num(saved.morale, 80, 0, 100))
+		if type(saved.gear) == "table" then
+			if type(saved.gear.owned) == "table" then
+				for _, id in saved.gear.owned do
+					if type(id) == "string" and D.Gear.ById[id] and not table.find(s.gear.owned, id) then
+						table.insert(s.gear.owned, id)
+					end
+				end
+			end
+			if type(saved.gear.equipped) == "table" then
+				for _, id in saved.gear.equipped do
+					if type(id) == "string" and table.find(s.gear.owned, id) and not table.find(s.gear.equipped, id) and #s.gear.equipped < D.Gear.SLOTS then
+						table.insert(s.gear.equipped, id)
+					end
+				end
+			end
+		end
+		if type(saved.storySeen) == "table" then
+			for k, v in saved.storySeen do
+				if type(k) == "string" and v == true and #k < 40 then
+					s.storySeen[k] = true
+				end
+			end
+		end
 		if type(saved.maps) == "table" then
 			for _, m in saved.maps do
 				if type(m) == "table" and type(m.to) == "string" and D.Ports.Ports[m.to] and #s.maps < 3 then
@@ -381,6 +406,8 @@ return function(D)
 			auto = state.auto,
 			morale = state.morale,
 			maps = state.maps,
+			gear = state.gear,
+			storySeen = state.storySeen,
 			story = state.story,
 			collected = state.collected,
 		}

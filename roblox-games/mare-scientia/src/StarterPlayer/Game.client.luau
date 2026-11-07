@@ -1571,6 +1571,18 @@ local function renderStatus()
 			}, 56)
 		end)
 	end
+	add(function() return mkHeader(content, string.format("항해 장비 (장착 최대 %d개)", view.gear.slots)) end)
+	for _, g in view.gear.list do
+		add(function()
+			local btn
+			if g.owned then
+				btn = { text = if g.equipped then "해제" else "장착", color = if g.equipped then COLORS.red else COLORS.green, onClick = function() call("ToggleGear", { gearId = g.id }) end }
+			else
+				btn = { text = tostring(g.price), color = COLORS.gold, enabled = view.player.fame >= g.minFame, onClick = function() call("BuyGear", { gearId = g.id }) end }
+			end
+			return mkRow(content, g.name .. (if g.equipped then "  ✔" else ""), g.summary .. (if not g.owned then string.format(" · 명성 %d 필요", g.minFame) else ""), { btn }, 56)
+		end)
+	end
 	add(function() return mkHeader(content, string.format("동료 (최대 %d명)", view.companions.max)) end)
 	if view.talk then
 		add(function()
