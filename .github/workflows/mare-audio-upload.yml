@@ -1,0 +1,39 @@
+# [마리 에센시아] 직접 합성한 음악·효과음을 로블록스 오디오로 등록하고 AudioIds.luau 에 기록한다. 같은 해시는 다시 올리지 않는다.
+name: Mare Audio Upload
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mare-audio-upload
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Upload audio and grant Universe use
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        run: node tools/mare-audio-upload.mjs
+      - name: Commit audio ids
+        run: |
+          set -euo pipefail
+          git config user.name 'mare-audio-upload'
+          git config user.email 'actions@users.noreply.github.com'
+          git add roblox-games/mare-scientia/audio/uploaded.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AudioIds.luau
+          if git diff --cached --quiet; then echo 'AUDIO_IDS_ALREADY_CURRENT'; exit 0; fi
+          git commit -m 'assets(mare-scientia): bind synthesized audio ids'
+          git pull --rebase origin main
+          git push origin HEAD:main

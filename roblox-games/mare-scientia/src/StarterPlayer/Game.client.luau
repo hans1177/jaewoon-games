@@ -15,6 +15,8 @@ local PortScene = require(Shared:WaitForChild("PortScene"))
 local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
 local FieldScene = require(Shared:WaitForChild("FieldScene"))
 local Pose = require(Shared:WaitForChild("Pose"))
+local Sfx = require(Shared:WaitForChild("Sfx"))
+local audioLock = false -- 해전·항해 중에는 장면이 음악을 정한다
 local NavalBattle = require(Shared:WaitForChild("NavalBattle"))
 local AssetIds = require(Shared:WaitForChild("AssetIds"))
 local remote = ReplicatedStorage:WaitForChild("GameAction")
@@ -326,7 +328,10 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 	corner(b, 8)
 	b.Parent = parent
 	if enabled ~= false and onClick then
-		b.Activated:Connect(onClick)
+		b.Activated:Connect(function()
+			Sfx.play("sfx_click")
+			onClick()
+		end)
 	end
 	return b
 end
@@ -707,6 +712,26 @@ local function call(action, payload)
 		render()
 		return nil
 	end
+	do
+		local good = result.ok
+		local snd = nil
+		if not good then
+			snd = if result.message and result.message ~= "" and result.message ~= "너무 빨라요" then "sfx_error" else nil
+		elseif action == "Buy" or action == "MarketBuy" then
+			snd = "sfx_buy"
+		elseif action == "Sell" or action == "Smuggle" or action == "MarketPost" then
+			snd = "sfx_sell"
+		elseif action == "TurnInBounty" or action == "MailClaim" or action == "Audience" or action == "Recruit" then
+			snd = "sfx_fanfare"
+		elseif action == "BuyGear" or action == "BuyShip" or action == "BuyEscort" or action == "Invest" or action == "Feast" then
+			snd = "sfx_coin"
+		elseif action == "Sail" then
+			snd = "sfx_horn"
+		end
+		if snd then
+			Sfx.play(snd)
+		end
+	end
 	if result.ranking then
 		ranking = result.ranking
 	end
@@ -732,6 +757,17 @@ local function call(action, payload)
 		local resolved = false
 		inField = true
 		main.Visible = false
+		audioLock = true
+		Sfx.music("music_battle")
+		task.spawn(function()
+			while audioLock and inField do
+				Sfx.play("sfx_cannon", 0.55 + math.random() * 0.3)
+				task.wait(0.8 + math.random() * 1.4)
+				if math.random() < 0.4 then
+					Sfx.play("sfx_hit", 0.5)
+				end
+			end
+		end)
 		NavalBattle.play({
 			shipId = view.ship and view.ship.id,
 			enemyName = lb.enemy,
@@ -751,6 +787,8 @@ local function call(action, payload)
 					call("ResolveBattle", { flee = false })
 				end
 				inField = false
+				audioLock = false
+				Sfx.play(if lb.winner == "a" then "sfx_fanfare" else "sfx_error")
 				applyView()
 				main.Visible = true
 				render()
@@ -996,6 +1034,9 @@ local function sail(portId)
 		end
 	end
 	sceneHold = true
+	audioLock = true
+	Sfx.music("music_sea")
+	Sfx.ambient({ "sfx_waves", "sfx_wind" })
 	local result = call("Sail", { portId = portId })
 	if result and result.ok then
 		-- 1) 3D 항구에서 배가 실제로 부두를 떠나는 장면 (카메라가 배를 따라간다)
@@ -1057,6 +1098,9 @@ local function sail(portId)
 	menuToggle.Visible = false
 	sceneHold = false
 	sceneKey = nil
+	audioLock = false
+	Sfx.play("sfx_bell")
+	Sfx.ambient({ "sfx_waves" })
 	syncScene()
 end
 
@@ -2786,6 +2830,12 @@ end
 function render()
 	order = 0
 	clearContent()
+	if not audioLock then
+		Sfx.music(if view and currentTab == "trade" then "music_market" else "music_harbor")
+		if view then
+			Sfx.ambient({ "sfx_waves" })
+		end
+	end
 
 	if not view then
 		headerLabel.Text = "새 게임"

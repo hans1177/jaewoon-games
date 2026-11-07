@@ -8,6 +8,7 @@ local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 
 local VoyageScene = {}
+local Sfx = require(script.Parent:WaitForChild("Sfx"))
 
 local ORIGIN = Vector3.new(0, 0, 20000) -- 항구와 겹치지 않는 먼 곳
 local SPEED = 70 -- 스터드/초
@@ -318,6 +319,8 @@ function VoyageScene.play(info)
 	end
 
 	-- 사건 연출 ------------------------------------------------------------
+	local evSoundDone = false
+	local nextGull = 4
 	local EVENT_AT = 0.42 -- 항해의 이 지점에서 사건이 시작된다
 	local EVENT_LEN = 0.26
 	local rain = nil
@@ -577,6 +580,10 @@ function VoyageScene.play(info)
 			c.model:PivotTo(CFrame.new(p))
 		end
 		local k = dist / total
+		if t > nextGull and k < 0.4 then
+			nextGull = t + rng:NextNumber(6, 12)
+			Sfx.play("sfx_gull", 0.35)
+		end
 		for _, g in gulls do
 			local visible = k < 0.3
 			g.model.Parent = if visible then folder else nil
@@ -594,6 +601,26 @@ function VoyageScene.play(info)
 		-- 사건
 		local ek = (k - EVENT_AT) / EVENT_LEN
 		local active = ek > 0 and ek < 1
+		if active and not evSoundDone then
+			evSoundDone = true
+			local k2 = ev.kind
+			if k2 == "pirates" then
+				Sfx.play("sfx_horn")
+			elseif k2 == "storm" then
+				Sfx.play("sfx_creak")
+			elseif k2 == "ghost" then
+				Sfx.play("sfx_bell", 0.5, 0.7)
+			elseif k2 == "merchant" or k2 == "blockade" then
+				Sfx.play("sfx_horn", 0.6, 1.1)
+			elseif k2 == "island" or k2 == "school" then
+				Sfx.play("sfx_gull")
+			elseif k2 == "reef" then
+				Sfx.play("sfx_creak")
+				Sfx.play("sfx_splash", 0.5)
+			elseif k2 == "rescue" then
+				Sfx.play("sfx_bell", 0.5)
+			end
+		end
 		local intensity = if active then math.sin(ek * math.pi) else 0
 		local right = Vector3.new(math.sin(yaw), 0, math.cos(yaw)) -- 뱃머리 기준 오른쪽(+Z 쪽)
 		if rain then
@@ -627,6 +654,7 @@ function VoyageScene.play(info)
 					local fromEnemy = rng:NextNumber() < 0.5
 					local at = if fromEnemy then epos - right * 6 + Vector3.new(0, 4, rng:NextNumber(-8, 8)) else pos + right * 6 + Vector3.new(0, 4, rng:NextNumber(-8, 8))
 					cannonFlash(at)
+					Sfx.play("sfx_cannon", 0.5 + rng:NextNumber() * 0.3)
 				end
 				if ev.won == false and ek > 0.8 then
 					-- 패배: 적이 가까이에 남는다
