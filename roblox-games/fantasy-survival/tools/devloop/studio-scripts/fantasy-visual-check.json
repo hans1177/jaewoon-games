@@ -77,12 +77,12 @@
  },
  {
   "type": "wait",
-  "ms": 9000
+  "ms": 16000
  },
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local best,bd=nil,1e9 local me=game.Players.LocalPlayer.Character.HumanoidRootPart.Position local set={roguehooded=1,rogue=1,barbarian=1,knight=1,adventurer=1,king=1,punk=1} for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\") and set[m:GetAttribute(\"Variant\") or \"\"] then local d=(m:GetPivot().Position-me).Magnitude if d<bd then best,bd=m,d end end end if not best then return \"no human mob near\" end local p=best:GetPivot().Position workspace:SetAttribute(\"ShotFov\",50) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(7,4,7),p+Vector3.new(0,2.5,0))) return \"mob=\"..best.Name..\" var=\"..tostring(best:GetAttribute(\"Variant\"))..\" dist=\"..math.floor(bd)..\" state=\"..tostring(best:GetAttribute(\"AttackState\"))"
+  "code": "local me=game.Players.LocalPlayer.Character.HumanoidRootPart.Position local set={roguehooded=1,rogue=1,barbarian=1,knight=1,adventurer=1,king=1,punk=1} local list={} local best,bd=nil,1e9 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\") then local d=(m:GetPivot().Position-me).Magnitude list[#list+1]={d,m.Name..\"/\"..tostring(m:GetAttribute(\"Species\"))..\"/\"..tostring(m:GetAttribute(\"Variant\"))} local hum=set[m:GetAttribute(\"Variant\") or \"\"] or m:GetAttribute(\"Species\")==\"bandit\" if hum and d<bd then best,bd=m,d end end end table.sort(list,function(a,b) return a[1]<b[1] end) local out={} for i=1,math.min(8,#list) do out[#out+1]=math.floor(list[i][1])..\":\"..list[i][2] end if not best then return \"NO HUMAN. total=\"..#list..\" near: \"..table.concat(out,\" | \") end local p=best:GetPivot().Position workspace:SetAttribute(\"ShotFov\",50) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(7,4,7),p+Vector3.new(0,2.5,0))) return \"mob=\"..best.Name..\" var=\"..tostring(best:GetAttribute(\"Variant\"))..\" dist=\"..math.floor(bd)..\" near: \"..table.concat(out,\" | \")"
  },
  {
   "type": "wait",
