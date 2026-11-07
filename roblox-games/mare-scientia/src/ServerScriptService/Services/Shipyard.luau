@@ -177,6 +177,50 @@ return function(D, S)
 		return true, string.format("보급품 %d개 구매 (-%d)", n, n * cost(state, SUPPLY_COST))
 	end
 
+	-- 선단: 호위함을 최대 3척 거느린다. 포격 +8%/척, 속도 -3%/척, 항해 하루당 유지비 15코인/척.
+	local ESCORT_PRICE = 1200
+	function handlers.BuyEscort(state)
+		if not currentPort(state).shipyard then
+			return false, "호위함은 조선소가 있는 항구에서만 고용해요"
+		end
+		if state.escorts >= 3 then
+			return false, "호위함은 최대 3척이에요"
+		end
+		if state.fame < 30 + state.escorts * 30 then
+			return false, string.format("명성 %d 이상이 필요해요", 30 + state.escorts * 30)
+		end
+		if state.coins < ESCORT_PRICE then
+			return false, string.format("%d코인이 필요해요", ESCORT_PRICE)
+		end
+		state.coins -= ESCORT_PRICE
+		state.escorts += 1
+		return true, string.format("호위함을 선단에 들였다 (%d척, -%d코인)", state.escorts, ESCORT_PRICE)
+	end
+
+	function handlers.DismissEscort(state)
+		if state.escorts <= 0 then
+			return false, "호위함이 없어요"
+		end
+		state.escorts -= 1
+		return true, string.format("호위함 한 척을 돌려보냈다 (%d척)", state.escorts)
+	end
+
+	-- 항해 후 유지비: 코인이 모자라면 호위함이 떠난다
+	local function payUpkeep(state, days, msgs)
+		if state.escorts <= 0 then
+			return
+		end
+		local cost = state.escorts * 15 * days
+		if state.coins >= cost then
+			state.coins -= cost
+			table.insert(msgs, string.format("선단 유지비 -%d", cost))
+		else
+			state.coins = 0
+			state.escorts -= 1
+			table.insert(msgs, "유지비를 못 내서 호위함 한 척이 떠났다")
+		end
+	end
+
 	-- 항구에서 한 번에 채우기 (조선소가 없어도 항구면 어디서나)
 	function handlers.Resupply(state, p)
 		local msgs = {}
@@ -238,6 +282,7 @@ return function(D, S)
 
 	return {
 		autoTopUp = autoTopUp,
+		payUpkeep = payUpkeep,
 		handlers = handlers,
 		cannonMult = cannonMult,
 		cannonBlock = cannonBlock,

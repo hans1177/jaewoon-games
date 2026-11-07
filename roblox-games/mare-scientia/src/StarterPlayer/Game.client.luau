@@ -95,6 +95,7 @@ local arriveNext = false -- 다음 장면은 입항 연출로 시작
 local amountIndex = 1
 local message = ""
 local messageOk = true
+local ranking = nil
 local busy = false
 local equipped = nil -- 자동스킬 편집 중인 목록
 local chosenNation = "england"
@@ -688,6 +689,9 @@ local function call(action, payload)
 		message, messageOk = "서버와 연결하지 못했어요", false
 		render()
 		return nil
+	end
+	if result.ranking then
+		ranking = result.ranking
 	end
 	if result.view then
 		view = result.view
@@ -1602,6 +1606,24 @@ local function renderStatus()
 			return mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, btns, 76)
 		end)
 	end
+	add(function() return mkHeader(content, "명성 랭킹 (서버 전체 상위 10)") end)
+	add(function()
+		return mkRow(content, "랭킹 보기", "다른 항해자들의 명성 순위를 불러와요", {
+			{ text = "보기", color = COLORS.blue, onClick = function() call("Ranking", {}) end },
+		}, 52)
+	end)
+	if ranking then
+		add(function()
+			if #ranking == 0 then
+				return mkLabel(content, "아직 기록이 없어요 (저장 후 반영돼요)", 15, COLORS.muted, false)
+			end
+			local lines = {}
+			for _, r in ranking do
+				table.insert(lines, string.format("%d위  %s  ·  명성 %d", r.rank, r.name, r.fame))
+			end
+			return mkLabel(content, table.concat(lines, "\n"), 16, COLORS.gold, true)
+		end)
+	end
 	add(function() return mkHeader(content, "기록") end)
 	add(function()
 		return mkRow(content, string.format("%s · %d년 (항해 %d일째)", p.nation, p.year, p.day),
@@ -1631,6 +1653,11 @@ local function addRumorPanel()
 end
 
 local function renderTrade()
+	if view.rep then
+		add(function()
+			return mkLabel(content, string.format("%s 우호도 %d/100 · 되파는 비율 +%.1f%% (이 나라에 팔수록 올라요)", view.rep.name, view.rep.value, view.rep.bonus * 100), 15, COLORS.text, true)
+		end)
+	end
 	add(function()
 		return mkLabel(content, string.format("동료의 장사 감각: %s (동료가 있으면 시장·귀띔 정보가 정확해져요)", intelName(view.intel or 0)), 14, COLORS.muted, false)
 	end)
@@ -1765,6 +1792,12 @@ local function renderYard()
 		add(function() return mkLabel(content, "이 항구에는 조선소가 없어서 배를 살 수 없어요. 수리도 조선소가 있는 항구에서만 할 수 있어요.", 13, COLORS.gold, false) end)
 	end
 	local rf = view.refit
+	add(function()
+		return mkRow(content, string.format("선단 · 호위함 %d/3척", view.fleet.escorts), string.format("고용 %d코인 · 명성 %d 필요\n포격 +8%%/척 · 속도 -3%%/척 · 유지비 15코인/척/일", view.fleet.price, view.fleet.needFame), {
+			{ text = "고용", color = COLORS.blue, enabled = yard.available and view.fleet.escorts < 3, onClick = function() call("BuyEscort") end },
+			{ text = "해산", color = COLORS.red, enabled = view.fleet.escorts > 0, onClick = function() call("DismissEscort") end },
+		}, 84)
+	end)
 	add(function() return mkHeader(content, string.format("개조 (우리 배: 등급 %d · %s)", rf.class, rf.className)) end)
 	add(function()
 		return mkLabel(content, "새 배를 사면 대포와 보강은 초기화돼요. 대포가 무거울수록 화물칸이 줄어요.", 12, COLORS.muted, false)

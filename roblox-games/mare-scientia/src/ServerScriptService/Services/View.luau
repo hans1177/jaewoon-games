@@ -123,6 +123,11 @@ return function(D, S)
 		end
 		view.intel = S.Harbor.intel(state)
 		view.supplyMax = S.State.maxSupplies()
+		view.fleet = { escorts = state.escorts, price = 1200, needFame = 30 + state.escorts * 30 }
+		do
+			local nat = D.Ports.Nations[port.country]
+			view.rep = { name = if nat then nat.name else port.country, value = state.rep[port.country] or 0, bonus = S.Trade.repBonus(state) }
+		end
 		view.gear = { slots = D.Gear.SLOTS, list = {} }
 		for _, g in D.Gear.Items do
 			table.insert(view.gear.list, {

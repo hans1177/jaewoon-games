@@ -31,6 +31,8 @@ return function(D)
 			auto = { supplies = false, crew = false },
 			morale = 80,
 			maps = {},
+			escorts = 0,
+			rep = {},
 			gear = { owned = {}, equipped = {} },
 			storySeen = {},
 			talked = {},
@@ -273,6 +275,14 @@ return function(D)
 		s.license = math.floor(num(saved.license, 0, 0, #D.Ships.Licenses))
 		s.insured = saved.insured == true
 		s.morale = math.floor(num(saved.morale, 80, 0, 100))
+		s.escorts = math.floor(num(saved.escorts, 0, 0, 3))
+		if type(saved.rep) == "table" then
+			for k, v in saved.rep do
+				if type(k) == "string" and #k < 30 then
+					s.rep[k] = math.floor(num(v, 0, 0, 100))
+				end
+			end
+		end
 		if type(saved.gear) == "table" then
 			if type(saved.gear.owned) == "table" then
 				for _, id in saved.gear.owned do
@@ -406,6 +416,8 @@ return function(D)
 			auto = state.auto,
 			morale = state.morale,
 			maps = state.maps,
+			escorts = state.escorts,
+			rep = state.rep,
 			gear = state.gear,
 			storySeen = state.storySeen,
 			story = state.story,

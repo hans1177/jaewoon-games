@@ -67,6 +67,46 @@ do
 	end
 end
 
+-- 명성 랭킹 (서버 전체, OrderedDataStore)
+local rankStore = nil
+do
+	local ok, result = pcall(function()
+		return DataStoreService:GetOrderedDataStore("MareFameRank")
+	end)
+	if ok then
+		rankStore = result
+	end
+end
+local rankCache = { at = 0, list = {} }
+local nameCache = {}
+local function rankingList()
+	if os.clock() - rankCache.at < 60 or not rankStore then
+		return rankCache.list
+	end
+	rankCache.at = os.clock()
+	local ok, pages = pcall(function()
+		return rankStore:GetSortedAsync(false, 10)
+	end)
+	if not ok then
+		return rankCache.list
+	end
+	local list = {}
+	for i, entry in pages:GetCurrentPage() do
+		local uid = tonumber(entry.key)
+		if uid then
+			if not nameCache[uid] then
+				local okN, name = pcall(function()
+					return Players:GetNameFromUserIdAsync(uid)
+				end)
+				nameCache[uid] = if okN then name else ("플레이어" .. uid)
+			end
+			table.insert(list, { rank = i, name = nameCache[uid], fame = entry.value })
+		end
+	end
+	rankCache.list = list
+	return list
+end
+
 local remote = Instance.new("RemoteFunction")
 remote.Name = "GameAction"
 remote.Parent = ReplicatedStorage
@@ -116,6 +156,11 @@ local function saveSession(player)
 	local ok, err = pcall(function()
 		store:SetAsync(keyFor(player), data)
 	end)
+	if rankStore then
+		pcall(function()
+			rankStore:SetAsync(tostring(player.UserId), math.max(0, math.floor(session.state.fame)))
+		end)
+	end
 	if not ok then
 		warn("[Core] save failed:", err)
 	end
@@ -169,6 +214,12 @@ remote.OnServerInvoke = function(player, action, payload)
 
 	if action == "State" then
 		return reply(state, true, "")
+	end
+
+	if action == "Ranking" then
+		local result = reply(state, true, "")
+		result.ranking = rankingList()
+		return result
 	end
 
 	local handler = handlers[action]

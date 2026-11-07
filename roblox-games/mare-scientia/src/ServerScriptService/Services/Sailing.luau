@@ -211,6 +211,7 @@ return function(D, S)
 				table.insert(msgs, string.format("보물지도의 표시를 따라 해안을 파 보니... 보물 상자가 나왔다! +%d코인, 명성 +2", m.reward))
 			end
 		end
+		S.Shipyard.payUpkeep(state, days, msgs)
 		S.Shipyard.autoTopUp(state, msgs)
 		return true, table.concat(msgs, "\n")
 	end

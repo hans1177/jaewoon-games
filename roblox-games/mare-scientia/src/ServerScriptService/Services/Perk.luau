@@ -42,6 +42,9 @@ return function(D, S)
 				table.insert(list, scaled(c.perk, Sp.affinityMult(affinityOf(state, id))))
 			end
 		end
+		for _ = 1, state.escorts do
+			table.insert(list, { cannonMult = 0.08, speedMult = -0.03 })
+		end
 		for _, id in state.gear.equipped do
 			local g = D.Gear.ById[id]
 			if g then

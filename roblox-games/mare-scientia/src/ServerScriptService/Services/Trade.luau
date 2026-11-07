@@ -17,9 +17,15 @@ return function(D, S)
 		return n
 	end
 
+	-- 국가 우호도: 그 나라 항구에서 거래할수록 오른다. 우호도 100이면 관세 우대로 되파는 비율 +3%.
+	local function repBonus(state)
+		local port = D.Ports.Ports[state.portId]
+		return math.min(0.03, (state.rep[port.country] or 0) / 100 * 0.03)
+	end
+
 	local function sellRateFor(state)
 		local nation = D.Ports.Nations[state.nationId]
-		return T.sellRate(D.Careers.sellBonus(state.careers.trade.level) + nation.sellBonus + S.Perk.sellBonus(state) + S.Harbor.sellBonus(state) + S.Facility.titleBonus(state))
+		return T.sellRate(D.Careers.sellBonus(state.careers.trade.level) + nation.sellBonus + S.Perk.sellBonus(state) + S.Harbor.sellBonus(state) + S.Facility.titleBonus(state) + repBonus(state))
 	end
 
 	function handlers.Buy(state, p, ctx)
@@ -72,6 +78,17 @@ return function(D, S)
 		ctx.market:set(state.portId, goodId, mult)
 
 		local msgs = { string.format("%s %d개 판매 (+%d)", D.Ports.Goods[goodId].name, amount, revenue) }
+		do
+			local country = D.Ports.Ports[state.portId].country
+			local gain = math.min(3, math.floor(revenue / 150))
+			if gain > 0 then
+				local before = state.rep[country] or 0
+				state.rep[country] = math.min(100, before + gain)
+				if math.floor(state.rep[country] / 25) > math.floor(before / 25) then
+					table.insert(msgs, "이 나라와의 우호도가 올랐다 (관세 우대 확대)")
+				end
+			end
+		end
 		if profit > 0 then
 			S.State.gainXp(state, "trade", math.floor(profit / 8) + 1, msgs)
 			S.Perk.gainSpec(state, "trade", math.floor(profit / 10) + 1, msgs)
@@ -79,5 +96,5 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
-	return { handlers = handlers, sellRateFor = sellRateFor }
+	return { handlers = handlers, sellRateFor = sellRateFor, repBonus = repBonus }
 end

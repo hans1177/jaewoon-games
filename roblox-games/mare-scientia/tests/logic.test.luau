@@ -775,6 +775,35 @@ do
 	check("storySeen survives save", S.State.sanitize(S.State.serialize(st)).storySeen.c_boyle_2 == true)
 end
 
+-- 13g. 국가 우호도 -----------------------------------------------------
+do
+	local st = newState()
+	local r0 = S.Trade.sellRateFor(st)
+	local port = D.Ports.Ports[st.portId]
+	st.rep[port.country] = 100
+	check("rep raises sell rate", S.Trade.sellRateFor(st) > r0)
+	check("rep survives save", S.State.sanitize(S.State.serialize(st)).rep[port.country] == 100)
+	local v = S.View.build(st, ctx)
+	check("view has rep", v.rep ~= nil and v.rep.value == 100)
+end
+
+-- 13h. 선단 ------------------------------------------------------------
+do
+	local st = newState()
+	st.coins = 5000
+	st.fame = 100
+	local c0 = S.Perk.cannonBonus(st)
+	check("escort buy needs shipyard port", D.Ports.Ports[st.portId].shipyard == false or act(st, "BuyEscort", {}))
+	if D.Ports.Ports[st.portId].shipyard then
+		check("escort raises cannon", S.Perk.cannonBonus(st) > c0 and st.escorts == 1)
+		local m = {}
+		S.Shipyard.payUpkeep(st, 2, m)
+		check("upkeep charged", #m == 1 and st.coins < 5000 - 1200)
+		check("escorts survive save", S.State.sanitize(S.State.serialize(st)).escorts == 1)
+		check("dismiss escort", act(st, "DismissEscort", {}) and st.escorts == 0)
+	end
+end
+
 -- 14. 화면 스냅샷 -------------------------------------------------------
 do
 	local st = newState()
