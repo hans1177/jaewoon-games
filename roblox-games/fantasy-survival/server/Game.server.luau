@@ -4919,6 +4919,19 @@ end)
 local mobStyleByModel={mage="mage",skmage="mage",witch="mage",frostfiend="mage",demon="mage",
   rogue="rogue",roguehooded="rogue",skrogue="rogue",assassin="rogue",wasp="rogue",fox="rogue",ninja="rogue",hywirl="mage"}
 
+-- [R15 인간형 몹] 인간형 변종은 Roblox 공식 R15 리그와 공식 애니메이션(대기/걷기/달리기/베기/찌르기)으로 움직인다.
+-- 색·체형만 HumanoidDescription/스케일로 구분하고 가짜 파츠는 만들지 않는다. 판정·AI는 기존 서버 로직 그대로.
+local meadowR15Looks={
+  barbarian={skin=Color3.fromRGB(190,140,105),torso=Color3.fromRGB(122,78,48),legs=Color3.fromRGB(70,52,40),wide=1.12},
+  knight={skin=Color3.fromRGB(205,160,128),torso=Color3.fromRGB(140,150,168),legs=Color3.fromRGB(96,104,120),wide=1.1},
+  king={skin=Color3.fromRGB(205,160,128),torso=Color3.fromRGB(150,40,60),legs=Color3.fromRGB(214,176,70),wide=1.14},
+  punk={skin=Color3.fromRGB(180,130,100),torso=Color3.fromRGB(40,40,52),legs=Color3.fromRGB(150,60,150),wide=1.0},
+  roguehooded={skin=Color3.fromRGB(190,150,120),torso=Color3.fromRGB(46,70,52),legs=Color3.fromRGB(40,44,40),wide=.92},
+  rogue={skin=Color3.fromRGB(190,150,120),torso=Color3.fromRGB(70,60,86),legs=Color3.fromRGB(44,40,52),wide=.92},
+  adventurer={skin=Color3.fromRGB(200,155,120),torso=Color3.fromRGB(96,120,70),legs=Color3.fromRGB(84,66,48),wide=1.0},
+}
+local MEADOW_R15_ANIMS={idle=507766388,walk=507777826,run=507767714,slash=522635514,lunge=522638767}
+
 -- [신화 합성체] 등록된 CC0 모델 여러 개를 한 몸으로 합쳐 신화 괴물을 만든다(히드라·켄타우로스·아라크네 등).
 -- 새 도형 파츠를 만들지 않고 실제 메시 모델만 겹쳐 붙인다. 각 조각은 몸통 모델 안으로 옮겨 함께 움직인다.
 -- spec: model(mon_ 키), height(스터드), up/fwd/side(몸통 경계상자 대비 비율, 중심 기준), yaw/pitch(도), 본체 앞이 -Z라고 가정한다.
@@ -4989,21 +5002,26 @@ local function spawnEnemy(site, siteIndex)
   if site.model and typeof(NativeCreatureAssets["mon_"..site.model])=="number" then
     modelId=NativeCreatureAssets["mon_"..site.model]
   end
+  local r15Look=site.model and meadowR15Looks[site.model] or nil
   local nativeScale=site.height
-  if not nativeScale or (partId~="bandit" and (typeof(modelId)~="number" or modelId<1)) then
+  if not nativeScale or (partId~="bandit" and not r15Look and (typeof(modelId)~="number" or modelId<1)) then
     warn("마력숲 승인 생물 자산 선택 누락: "..partId)
     return false
   end
   local ok, model = pcall(function()
-    if partId=="bandit" then
+    if partId=="bandit" or r15Look then
       -- Roblox 정식 R15 전신 모델을 적으로 재사용한다. 가짜 몸체 파츠를 만들지 않는다.
       local desc=Instance.new("HumanoidDescription")
-      desc.HeadColor=Color3.fromRGB(174,127,97)
-      desc.LeftArmColor=Color3.fromRGB(174,127,97)
-      desc.RightArmColor=Color3.fromRGB(174,127,97)
-      desc.TorsoColor=Color3.fromRGB(92,65,55)
-      desc.LeftLegColor=Color3.fromRGB(63,62,67)
-      desc.RightLegColor=Color3.fromRGB(63,62,67)
+      local skin=r15Look and r15Look.skin or Color3.fromRGB(174,127,97)
+      local torsoC=r15Look and r15Look.torso or Color3.fromRGB(92,65,55)
+      local legC=r15Look and r15Look.legs or Color3.fromRGB(63,62,67)
+      desc.HeadColor=skin
+      desc.LeftArmColor=skin
+      desc.RightArmColor=skin
+      desc.TorsoColor=torsoC
+      desc.LeftLegColor=legC
+      desc.RightLegColor=legC
+      if r15Look then desc.WidthScale=r15Look.wide;desc.BodyTypeScale=0 end
       local native=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
       desc:Destroy()
       for _,part in ipairs(native:GetDescendants()) do
@@ -5295,7 +5313,7 @@ local function spawnEnemy(site, siteIndex)
     end
   end
   model:SetAttribute("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP")
-  model:SetAttribute("Species",partId)
+  model:SetAttribute("Species",r15Look and "human" or partId)
   if site.model then model:SetAttribute("Variant",site.model) end
   local oilClass=meadowOil.classOf[site.model or ""] or (not site.model and meadowOil.kindClass[partId]) or nil
   if oilClass then model:SetAttribute("Weakness",meadowOil.names[oilClass]) end
@@ -5335,24 +5353,28 @@ local function spawnEnemy(site, siteIndex)
   model:SetAttribute("AttackState", "IDLE")
   -- [도적 애니메이션] 공식 R15 Animator의 걷기/대기 트랙. 서버 전투 판정과 분리한다.
   local banditIdle,banditWalk=nil,nil
-  if partId=="bandit" then
+  local r15Tracks=nil
+  if partId=="bandit" or r15Look then
     local humanoid=model:FindFirstChildOfClass("Humanoid")
     if humanoid then
       humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None
       humanoid.HealthDisplayType=Enum.HumanoidHealthDisplayType.AlwaysOff
       local animator=humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator")
       animator.Parent=humanoid
-      for name,assetId in pairs({idle=507766388,walk=507777826}) do
+      r15Tracks={}
+      for name,assetId in pairs(MEADOW_R15_ANIMS) do
         local anim=Instance.new("Animation")
         anim.AnimationId="rbxassetid://"..assetId
         local okTrack,track=pcall(function()return animator:LoadAnimation(anim) end)
         anim:Destroy()
         if okTrack and track then
-          track.Looped=true
-          track.Priority=Enum.AnimationPriority.Movement
-          if name=="idle" then banditIdle=track else banditWalk=track end
+          local action=name=="slash" or name=="lunge"
+          track.Looped=not action
+          track.Priority=action and Enum.AnimationPriority.Action or Enum.AnimationPriority.Movement
+          r15Tracks[name]=track
         end
       end
+      banditIdle=r15Tracks.idle;banditWalk=r15Tracks.walk
       if banditIdle then banditIdle:Play(.2) end
     end
   end
@@ -5375,7 +5397,7 @@ local function spawnEnemy(site, siteIndex)
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
     isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,style=site.style or mobStyleByModel[site.model or ''],oilClass=oilClass,poiGuard=site.poiGuard,bonusBoss=site.bonusBoss,zoneTag=site.zoneTag,named=site.named,lord=site.lord,questBoss=site.questBoss,contractNo=site.contractIndex,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
-    banditIdle=banditIdle,banditWalk=banditWalk,
+    banditIdle=banditIdle,banditWalk=banditWalk,r15Tracks=r15Tracks,
     damage=isAlpha and math.floor(13*(site.dmg or 1)) or math.floor(((isBoss and 20 or 6)+math.floor(site.tier/2))*(site.dmg or 1)),
     speed=isAlpha and 8.4 or (isBoss and 4.8 or 7.5),position=location,spawnPosition=location,siteIndex=siteIndex,
     visibleGroundOffset=meshOffset,spawnGroundY=groundHit.Position.Y,
@@ -5953,11 +5975,30 @@ local function animateMeadowOriginalMob(enemy,now)
     or inMotion and math.sin(phase*.65)*(heavy and .014 or .025) or 0
   local facing=enemy.visualFacingSmooth or enemy.visualFacing
   if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1) end
-  if kind=="bandit" and enemy.banditIdle and enemy.banditWalk then
-    if inMotion and not enemy.banditWalk.IsPlaying then
-      enemy.banditIdle:Stop(.18);enemy.banditWalk:Play(.18)
-    elseif not inMotion and not enemy.banditIdle.IsPlaying then
-      enemy.banditWalk:Stop(.18);enemy.banditIdle:Play(.18)
+  if enemy.r15Tracks and enemy.banditIdle and enemy.banditWalk then
+    local tr=enemy.r15Tracks
+    -- 추격은 달리기, 순찰/복귀는 걷기. 걸음 속도에 맞춰 재생 속도를 조절한다.
+    local moveTrack=(enemy.attackState=="CHASE" and tr.run) or enemy.banditWalk
+    if inMotion then
+      if enemy.banditIdle.IsPlaying then enemy.banditIdle:Stop(.18) end
+      for _,t in ipairs({tr.walk,tr.run}) do
+        if t and t~=moveTrack and t.IsPlaying then t:Stop(.18) end
+      end
+      if not moveTrack.IsPlaying then moveTrack:Play(.18) end
+      moveTrack:AdjustSpeed(math.clamp((enemy.strideSpeed or 6)/(moveTrack==tr.run and 12 or 7.5),.55,1.5))
+    else
+      for _,t in ipairs({tr.walk,tr.run}) do
+        if t and t.IsPlaying then t:Stop(.18) end
+      end
+      if not enemy.banditIdle.IsPlaying then enemy.banditIdle:Play(.18) end
+    end
+    -- 공격 예고(ANTICIPATION) 진입 순간 베기/찌르기 애니를 1회 재생한다.
+    if attacking and enemy.r15AttackMark~=enemy.attackStateStartedAt then
+      enemy.r15AttackMark=enemy.attackStateStartedAt
+      local pat=tostring(enemy.attackPattern or "")
+      local act=(pat:find("BASH") or pat:find("SHOT") or pat:find("VOLLEY") or pat:find("FEINT") or pat:find("STAB")) and tr.lunge or tr.slash
+      act=act or tr.slash or tr.lunge
+      if act then act:Play(.06);act:AdjustSpeed(.9) end
     end
   end
   -- [걸음 주기] 걷는 속도에 맞춰 보폭 위상을 쌓는다. 멈추면 위아래 흔들림도 같이 멈춘다.
