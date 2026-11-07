@@ -145,11 +145,11 @@ h1{font-size:22px;margin:0}
     </div>
     <div id="bossMusicPanel" class="hidden">
       <button id="bossMusicToggle" type="button">보스 음악 켜기</button>
-      <small>라크리모사 편곡 · 잔잔한 도입 후 대합창·전쟁 북 폭발 · Metzner ·
-        <a href="https://commons.wikimedia.org/wiki/File:M1_Lacrimosa1991.ogg" target="_blank" rel="noopener noreferrer">원본·CC BY 3.0</a>
+      <small>모차르트 라크리모사 · 실제 합창·오케스트라 녹음 ·
+        <a href="https://commons.wikimedia.org/wiki/File:PMLP02751-S002-07-Mozart_Requiem_Mass.ogg" target="_blank" rel="noopener noreferrer">원본·CC BY-SA 3.0</a>
       </small>
     </div>
-    <audio id="bossMusic" crossorigin="anonymous" preload="none" loop src="https://upload.wikimedia.org/wikipedia/commons/9/94/M1_Lacrimosa1991.ogg"></audio>
+    <audio id="bossMusic" crossorigin="anonymous" preload="none" loop src="https://upload.wikimedia.org/wikipedia/commons/6/6c/PMLP02751-S002-07-Mozart_Requiem_Mass.ogg"></audio>
     <div class="boardWrap"><div id="board" class="board"></div></div>
     <div class="statusRow">
       <span id="deckInfo">골드 -</span>
@@ -1144,206 +1144,53 @@ function aiTurn(){
 
 // 기존 CC BY 3.0 라크리모사 원곡에 저음·다이내믹 보강과 전장 타악기를
 // 실시간 믹싱한다. 파일·라이선스는 그대로 유지하고 다른 스테이지에는 영향 없다.
+// 7스테이지 음악: 인위적인 합성 북·현악·합창을 모두 제거한다.
+// 원곡의 실제 합창/관현악 연주(위키미디어 공용, CC BY-SA 3.0) 1곡만 재생한다.
+// 스마트폰 자동재생 제한 때문에 첫 재생이 막힐 때는 재생 버튼으로 수동 시작한다.
 const bossAudio=$('#bossMusic');
-let bossMusicRequested=false,bossMusicMuted=false,bossFadeTimer=null;
-let bossMix=null,bossDrumTimer=null,bossDropTimer=null,bossNextBeat=0,bossBeatCount=0,bossMusicDropped=false;
-function prepareBossMusic(){
-  if(bossMix)return;
-  const AudioEngine=window.AudioContext||window.webkitAudioContext;
-  if(!AudioEngine)return;
-  try{
-    const ctx=new AudioEngine();
-    const source=ctx.createMediaElementSource(bossAudio);
-    const bass=ctx.createBiquadFilter();
-    bass.type='lowshelf';bass.frequency.value=170;bass.gain.value=6;
-    const middle=ctx.createBiquadFilter();
-    middle.type='peaking';middle.frequency.value=850;middle.Q.value=.8;middle.gain.value=-2.8;
-    const clarity=ctx.createBiquadFilter();
-    clarity.type='highshelf';clarity.frequency.value=3000;clarity.gain.value=1.5;
-    const mixer=ctx.createGain();
-    const limiter=ctx.createDynamicsCompressor();
-    limiter.threshold.value=-14;limiter.knee.value=10;limiter.ratio.value=3.4;
-    limiter.attack.value=.008;limiter.release.value=.22;
-    source.connect(bass);bass.connect(middle);middle.connect(clarity);clarity.connect(mixer);
-    mixer.connect(limiter);limiter.connect(ctx.destination);
-    // 가상 대성당 잔향: 원곡의 공간감과 합창 울림을 보강한다.
-    // 기본 음원 직결을 유지하므로 모바일 잔향 미지원 시에도 음악은 재생된다.
-    if(typeof ctx.createConvolver==='function'){
-      try{
-        const hall=ctx.createConvolver(),wet=ctx.createGain();
-        const impulse=ctx.createBuffer(2,Math.round(ctx.sampleRate*1.9),ctx.sampleRate);
-        for(let ch=0;ch<2;ch++){
-          const samples=impulse.getChannelData(ch);
-          let last=0;
-          for(let i=0;i<samples.length;i++){
-            const time=i/ctx.sampleRate;
-            const decay=Math.exp(-3.2*time);
-            last=.68*last+.32*(Math.random()*2-1);
-            samples[i]=last*decay
-          }
-        }
-        hall.buffer=impulse;wet.gain.value=.25;
-        clarity.connect(hall);hall.connect(wet);wet.connect(mixer)
-      }catch(error){console.warn('보스 음악 잔향은 생략하고 기본 믹스를 유지해.',error)}
-    }
-    const drums=ctx.createGain();
-    drums.gain.value=0;drums.connect(mixer);
-    // 합창·현악의 화성층도 큰북과 함께 페이드한다.
-    const orchestra=ctx.createGain();
-    orchestra.gain.value=0;orchestra.connect(mixer);
-    const noise=ctx.createBuffer(1,Math.round(ctx.sampleRate*.26),ctx.sampleRate);
-    const samples=noise.getChannelData(0);
-    for(let i=0;i<samples.length;i++)samples[i]=(Math.random()*2-1)*Math.pow(1-i/samples.length,1.5);
-    bossMix={ctx,drums,orchestra,noise}
-  }catch(err){
-    // 오디오 엔진 미지원 환경은 기존 HTML 오디오를 그대로 재생한다.
-    console.warn('보스 음악 음향 효과를 사용할 수 없어 기본 음원으로 재생해.',err)
-  }
-}
-function beatBossDrums(){
-  if(!bossMix||bossAudio.paused||!bossMusicRequested||bossMusicMuted||!bossMusicDropped)return;
-  const {ctx,drums,orchestra,noise}=bossMix;
-  // 라크리모사의 느린 4박 위에 깊은 전쟁 북·금속 타격·현악·합창을 쌓는다.
-  const duration=60/72;
-  const chords=[[146.83,174.61,220],[116.54,146.83,174.61],[98,146.83,196],[110,138.59,164.81]];
-  while(bossNextBeat<ctx.currentTime+.35){
-    const when=Math.max(ctx.currentTime+.01,bossNextBeat);
-    const count=bossBeatCount++,beat=count%4,bar=Math.floor(count/4),strong=beat===0;
-    const drum=ctx.createOscillator(),env=ctx.createGain();
-    drum.type='sine';
-    drum.frequency.setValueAtTime(strong?104:beat===2?88:69,when);
-    drum.frequency.exponentialRampToValueAtTime(strong?37:46,when+.42);
-    env.gain.setValueAtTime(.0001,when);
-    env.gain.exponentialRampToValueAtTime(strong?.88:beat===2?.48:.22,when+.014);
-    env.gain.exponentialRampToValueAtTime(.0001,when+.49);
-    drum.connect(env);env.connect(drums);
-    drum.start(when);drum.stop(when+.5);
-    if(strong||beat===2||beat===3){
-      const hit=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),tail=ctx.createGain();
-      hit.buffer=noise;filter.type=strong?'lowpass':'highpass';
-      filter.frequency.value=strong?820:beat===2?1800:3200;
-      tail.gain.setValueAtTime(strong?.36:beat===2?.20:.10,when);
-      tail.gain.exponentialRampToValueAtTime(.0001,when+(strong?.34:.18));
-      hit.connect(filter);filter.connect(tail);tail.connect(drums);
-      hit.start(when);hit.stop(when+.25)
-    }
-    if(strong){
-      // 첫 폭발에는 심벌 크래시를 길게, 이후에는 강박마다 짧게 덧댄다.
-      const crash=ctx.createBufferSource(),crashFilter=ctx.createBiquadFilter(),crashEnv=ctx.createGain();
-      crash.buffer=noise;crash.loop=true;
-      crashFilter.type='highpass';crashFilter.frequency.value=2100;
-      crashEnv.gain.setValueAtTime(bar===0?.42:.14,when);
-      crashEnv.gain.exponentialRampToValueAtTime(.0001,when+(bar===0?1.3:.7));
-      crash.connect(crashFilter);crashFilter.connect(crashEnv);crashEnv.connect(drums);
-      crash.start(when);crash.stop(when+(bar===0?1.35:.75));
-      const roots=[73.42,58.27,49,55],root=roots[bar%4];
-      for(const [frequency,level,type] of [[root,.24,'triangle'],[root/2,.18,'sine']]){
-        const osc=ctx.createOscillator(),gain=ctx.createGain();
-        osc.type=type;osc.frequency.value=frequency;
-        gain.gain.setValueAtTime(.0001,when);
-        gain.gain.exponentialRampToValueAtTime(level,when+.16);
-        gain.gain.exponentialRampToValueAtTime(.0001,when+duration*3.85);
-        osc.connect(gain);gain.connect(orchestra);
-        osc.start(when);osc.stop(when+duration*3.9)
-      }
-      for(const frequency of chords[bar%4]){
-        // 3성부×2옥타브 대합창: '아' 모음 공명과 음정 미세 떨림을 겹친다.
-        for(const [multiplier,detune,level] of [[1,-5,.028],[2,4,.015]]){
-          const choir=ctx.createOscillator(),vibrato2=ctx.createOscillator();
-          const bend=ctx.createGain(),formant=ctx.createBiquadFilter(),body=ctx.createBiquadFilter(),choirEnv=ctx.createGain();
-          choir.type='sawtooth';choir.frequency.value=frequency*multiplier;choir.detune.value=detune;
-          vibrato2.type='sine';vibrato2.frequency.value=4.9;bend.gain.value=1.5;
-          vibrato2.connect(bend);bend.connect(choir.frequency);
-          formant.type='peaking';formant.frequency.value=750;formant.Q.value=1.4;formant.gain.value=8;
-          body.type='lowpass';body.frequency.value=1500;
-          choirEnv.gain.setValueAtTime(.0001,when);
-          choirEnv.gain.exponentialRampToValueAtTime(level,when+.3);
-          choirEnv.gain.setValueAtTime(level,when+duration*3.1);
-          choirEnv.gain.exponentialRampToValueAtTime(.0001,when+duration*3.9);
-          choir.connect(formant);formant.connect(body);body.connect(choirEnv);choirEnv.connect(orchestra);
-          choir.start(when);vibrato2.start(when);
-          choir.stop(when+duration*3.95);vibrato2.stop(when+duration*3.95)
-        }
-        const voice=ctx.createOscillator(),vibrato=ctx.createOscillator();
-        const depth=ctx.createGain(),tone=ctx.createBiquadFilter(),gain=ctx.createGain();
-        voice.type='sawtooth';voice.frequency.value=frequency;
-        vibrato.type='sine';vibrato.frequency.value=4.5;depth.gain.value=.75;
-        vibrato.connect(depth);depth.connect(voice.frequency);
-        tone.type='lowpass';tone.frequency.value=900;tone.Q.value=.55;
-        gain.gain.setValueAtTime(.0001,when);
-        gain.gain.exponentialRampToValueAtTime(.035,when+.8);
-        gain.gain.setValueAtTime(.035,when+duration*3.15);
-        gain.gain.exponentialRampToValueAtTime(.0001,when+duration*3.9);
-        voice.connect(tone);tone.connect(gain);gain.connect(orchestra);
-        voice.start(when);vibrato.start(when);
-        voice.stop(when+duration*3.95);vibrato.stop(when+duration*3.95)
-      }
-    }
-    bossNextBeat+=duration
-  }
-}
+let bossMusicRequested=false,bossMusicMuted=false,bossFadeTimer=null,bossIntroTimer=null;
 function fadeBossMusic(to,duration){
   if(bossFadeTimer!==null){clearInterval(bossFadeTimer);bossFadeTimer=null}
-  const from=bossAudio.volume||0,started=Date.now();
+  const from=bossAudio.volume,started=Date.now();
   bossFadeTimer=setInterval(()=>{
     const elapsed=Math.min(1,(Date.now()-started)/duration);
-    const easing=elapsed*elapsed*(3-2*elapsed);
-    const current=Math.max(0,Math.min(1,from+(to-from)*easing));
-    bossAudio.volume=current;
-    if(bossMix){
-      // 조용한 도입부에는 전쟁 북과 대합창이 완전히 빠졌다가 동시에 진입한다.
-      bossMix.drums.gain.value=bossMusicDropped?current*.9:0;
-      bossMix.orchestra.gain.value=bossMusicDropped?current*.95:0
-    }
+    const eased=elapsed*elapsed*(3-2*elapsed);
+    bossAudio.volume=Math.max(0,Math.min(1,from+(to-from)*eased));
     if(elapsed>=1){
-      clearInterval(bossFadeTimer);
-      bossFadeTimer=null;
-      if(to===0){
-        bossAudio.pause();bossAudio.currentTime=0;
-        if(bossDrumTimer!==null){clearInterval(bossDrumTimer);bossDrumTimer=null}
-      }
+      clearInterval(bossFadeTimer);bossFadeTimer=null;
+      if(to===0){bossAudio.pause();bossAudio.currentTime=0}
     }
   },60)
 }
 function playBossMusic(){
+  if(bossIntroTimer!==null){clearTimeout(bossIntroTimer);bossIntroTimer=null}
   if(bossFadeTimer!==null){clearInterval(bossFadeTimer);bossFadeTimer=null}
-  if(bossDropTimer!==null){clearTimeout(bossDropTimer);bossDropTimer=null}
-  if(bossDrumTimer!==null){clearInterval(bossDrumTimer);bossDrumTimer=null}
-  bossMusicDropped=false;
-  prepareBossMusic();
-  if(bossMix){
-    bossMix.drums.gain.value=0;
-    bossMix.orchestra.gain.value=0;
-    if(bossMix.ctx.state==='suspended')bossMix.ctx.resume().catch(()=>{})
-  }
   bossAudio.volume=0;
+  bossAudio.currentTime=0;
   bossAudio.playbackRate=1;
   const started=()=>{
-    if(!bossMusicRequested||bossMusicMuted||!state||state.stage!==7||state.winner||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
+    if(!bossMusicRequested||bossMusicMuted||!state||state.stage!==7||state.winner
+      ||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
     $('#bossMusicToggle').textContent='보스 음악 끄기';
-    // 첫 7초는 라크리모사 선율만 잔잔하게. 합창·전쟁 북은 아직 나오지 않는다.
-    fadeBossMusic(.24,1800);
-    bossDropTimer=setTimeout(()=>{
-      bossDropTimer=null;
-      if(!bossMusicRequested||bossMusicMuted||bossAudio.paused||!state||state.stage!==7||state.winner||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
-      // 정적 뒤 갑자기 대합창·현악·심벌·전쟁 북 동시 진입.
-      bossMusicDropped=true;
-      if(bossMix){
-        bossNextBeat=bossMix.ctx.currentTime+.025;
-        bossBeatCount=0;
-        bossDrumTimer=setInterval(beatBossDrums,120);
-        beatBossDrums()
-      }
-      fadeBossMusic(.96,650)
+    // 실제 연주의 조용한 도입부 7초만 남기고, 인공 악기 없이 원 녹음만 크게 펼친다.
+    fadeBossMusic(.30,1600);
+    bossIntroTimer=setTimeout(()=>{
+      bossIntroTimer=null;
+      if(!bossMusicRequested||bossMusicMuted||bossAudio.paused||state?.stage!==7||state.winner
+        ||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
+      fadeBossMusic(.95,1500)
     },7000)
   };
   const attempt=bossAudio.play();
   if(attempt&&typeof attempt.then==='function'){
-    attempt.then(started).catch(()=>{$('#bossMusicToggle').textContent='보스 음악 재생(터치)'})
+    attempt.then(started).catch(()=>{
+      $('#bossMusicToggle').textContent='보스 음악 재생(터치)'
+    })
   }else started()
 }
 function syncBossMusic(){
-  const active=!!(state?.stage===7&&state.phase==='BATTLE'&&!state.winner&&state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0));
+  const active=!!(state?.stage===7&&state.phase==='BATTLE'&&!state.winner
+    &&state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0));
   $('#bossMusicPanel').classList.toggle('hidden',!active);
   if(active){
     if(!bossMusicRequested&&!bossMusicMuted){
@@ -1351,11 +1198,10 @@ function syncBossMusic(){
       playBossMusic()
     }
   }else{
+    if(bossIntroTimer!==null){clearTimeout(bossIntroTimer);bossIntroTimer=null}
     if(bossMusicRequested){
       bossMusicRequested=false;
-      if(bossDropTimer!==null){clearTimeout(bossDropTimer);bossDropTimer=null}
-      if(bossDrumTimer!==null){clearInterval(bossDrumTimer);bossDrumTimer=null}
-      if(!bossAudio.paused)fadeBossMusic(0,4200)
+      if(!bossAudio.paused)fadeBossMusic(0,3600)
     }
     bossMusicMuted=false
   }
@@ -1364,16 +1210,18 @@ $('#bossMusicToggle').onclick=()=>{
   if(!state||state.stage!==7||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
   if(!bossAudio.paused&&!bossMusicMuted){
     bossMusicMuted=true;
-    if(bossDropTimer!==null){clearTimeout(bossDropTimer);bossDropTimer=null}
-    if(bossDrumTimer!==null){clearInterval(bossDrumTimer);bossDrumTimer=null}
+    if(bossIntroTimer!==null){clearTimeout(bossIntroTimer);bossIntroTimer=null}
     $('#bossMusicToggle').textContent='보스 음악 켜기';
-    fadeBossMusic(0,4200)
+    fadeBossMusic(0,1200)
   }else{
     bossMusicMuted=false;
     bossMusicRequested=true;
     playBossMusic()
   }
 };
+bossAudio.addEventListener('error',()=>{
+  $('#bossMusicToggle').textContent='음원 로딩 오류 · 다시 재생';
+});
 $('#resetDiamonds').onclick=resetDiamonds;
 $('#playBtn').onclick=()=>{
   mode='play';side='BLUE';
