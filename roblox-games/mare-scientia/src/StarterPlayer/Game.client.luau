@@ -151,6 +151,20 @@ local GOOD_ICON = {}
 for id in PortData.Goods do
 	GOOD_ICON[id] = if id == "wine" or id == "tobacco" then { "Menu", "trade" } else { "Goods", id }
 end
+-- 승인된 그림이 없는 상품 중, 같은 물건의 3D 모델이 있는 것은 그것을 쓴다
+local WOOD = Color3.fromRGB(120, 78, 50)
+for id, spec in {
+	gold = { "Cargo", "gold-bar" }, silver = { "Cargo", "silver-bar" }, copper = { "Cargo", "copper-bar" },
+	gems = { "Cargo", "gems-sack" }, jade = { "Cargo", "gem-medium", Color3.fromRGB(80, 170, 120) },
+	pearl_shell = { "Cargo", "mussel-open" }, wine = { "Cargo", "glass-wine" },
+	mahogany = { "Cargo", "wood-log-a", Color3.fromRGB(110, 54, 40) }, ebony = { "Cargo", "wood-log-a", Color3.fromRGB(40, 32, 30) },
+	kauri = { "Cargo", "wood-log-a", Color3.fromRGB(176, 132, 82) }, logwood = { "Cargo", "wood-log-a", Color3.fromRGB(120, 50, 70) },
+	brazilwood = { "Cargo", "wood-log-a", Color3.fromRGB(160, 62, 48) }, sandalwood = { "Cargo", "wood-log-a", Color3.fromRGB(190, 150, 96) },
+	sandalwood_hi = { "Cargo", "wood-log-a", Color3.fromRGB(200, 160, 100) },
+	palm_oil = { "Cargo", "barrel-open" }, rum = { "Cargo", "barrel-open", Color3.fromRGB(110, 70, 40) },
+} do
+	GOOD_ICON[id] = spec
+end
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
 local TITLE_ICONS = {
 	{ "식물", "Cargo", "apple" }, { "동물", "Cargo", "fish-large" }, { "광물", "Relics", "coin" }, { "유물", "Relics", "pot" },
@@ -1003,6 +1017,8 @@ local function sail(portId)
 			toName = view.player.portName,
 			makeShip = PortScene.makeShip,
 			place = PortScene.placeModel,
+			escorts = view.fleet and view.fleet.escorts or 0,
+			weatherId = view.weather and view.weather.id,
 			event = view.voyageEvent,
 		})
 		if not ok then
@@ -1517,9 +1533,11 @@ local function renderHarbor()
 		for _, m in view.maps or {} do
 			table.insert(names, m.toName)
 		end
-		return mkRow(content, "보물지도 사기", string.format("200코인 · 가진 지도 %d/3%s\n표시된 항구로 가면 보물을 찾아요", #names, if #names > 0 then (": " .. table.concat(names, ", ")) else ""), {
+		local mrow = mkRow(content, "보물지도 사기", string.format("200코인 · 가진 지도 %d/3%s\n표시된 항구로 가면 보물을 찾아요", #names, if #names > 0 then (": " .. table.concat(names, ", ")) else ""), {
 			{ text = "구입", color = COLORS.gold, onClick = function() call("BuyMap", {}) end },
 		}, 72)
+		withIcon(mrow, "Relics", "map-rolled", nil, 52)
+		return mrow
 	end)
 	add(function() return mkHeader(content, "주점 동료 (직능)") end)
 	for _, c in view.companions.list do
@@ -1584,7 +1602,15 @@ local function renderStatus()
 			else
 				btn = { text = tostring(g.price), color = COLORS.gold, enabled = view.player.fame >= g.minFame, onClick = function() call("BuyGear", { gearId = g.id }) end }
 			end
-			return mkRow(content, g.name .. (if g.equipped then "  ✔" else ""), g.summary .. (if not g.owned then string.format(" · 명성 %d 필요", g.minFame) else ""), { btn }, 56)
+			local grow = mkRow(content, g.name .. (if g.equipped then "  ✔" else ""), g.summary .. (if not g.owned then string.format(" · 명성 %d 필요", g.minFame) else ""), { btn }, 60)
+			local gi = ({
+				sextant = { "Relics", "compass-base" }, brass_telescope = { "Relics", "magnifying-glass" }, ledger = { "Relics", "journal-closed" },
+				medicine_chest = { "Cargo", "mortar" }, lucky_charm = { "Cargo", "gem-medium" }, naval_chart = { "Relics", "map-rolled" },
+			})[g.id]
+			if gi then
+				withIcon(grow, gi[1], gi[2], nil, 44)
+			end
+			return grow
 		end)
 	end
 	add(function() return mkHeader(content, string.format("동료 (최대 %d명)", view.companions.max)) end)

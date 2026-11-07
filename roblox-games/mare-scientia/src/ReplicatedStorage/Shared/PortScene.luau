@@ -669,7 +669,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	local z = -WZ
 	while z <= WZ do
-		local m = importedModel(folder, "Castle", "wall", Vector3.new(WX, 0, z), 12.5, true)
+		local m = importedModel(folder, "Castle", if z == -18 or z == 18 then "wall-narrow-gate" else "wall", Vector3.new(WX, 0, z), 12.5, true)
 		if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(WX, 0, z), 12.5, true) end
 		rotateAround(m, Vector3.new(WX, 0, z), math.pi / 2)
 		z += 12

@@ -141,7 +141,7 @@ return function(D, S)
 		end
 		do
 			local w = D.Voyage.weather(state.day, state.portId)
-			view.weather = { name = w.name, hint = w.hint, wind = w.wind }
+			view.weather = { id = w.id, name = w.name, hint = w.hint, wind = w.wind }
 			view.forecast = {}
 			if table.find(state.companions, "t_navigator") then
 				for i = 1, 3 do

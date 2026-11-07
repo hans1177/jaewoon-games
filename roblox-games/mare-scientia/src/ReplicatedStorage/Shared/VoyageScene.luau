@@ -381,13 +381,16 @@ function VoyageScene.play(info)
 		end
 		addProp("Naval", "buoy", 5, 22, 0.5, 0, 0)
 	elseif ev.kind == "rescue" then
-		local raft = addProp("Naval", "boat-row-small", 9, 26, 0.5, math.pi / 2, 0)
+		local raft = addProp("Terrain", "canoe", 9, 26, 0.5, math.pi / 2, 0) or addProp("Naval", "boat-row-small", 9, 26, 0.5, math.pi / 2, 0)
 		local who = addProp("People", "Worker_Male", 4, 26, 0.5, 0, 1.2)
 		if raft and who then
 			who.follow = raft
 		end
 	elseif ev.kind == "island" then
 		addProp("Terrain", "cliff-rock", 70, 150, 0.12, 0, -3)
+		addProp("Terrain", "campfire-stones", 5, 128, 0.12, 0, 0.5)
+		addProp("Terrain", "log-stack", 6, 124, 0.12, 0.5, 0.5)
+		addProp("Terrain", "canoe", 9, 118, 0.12, 1.2, 0)
 		for i = 1, 4 do
 			addProp("Naval", "palm-detailed-straight", 16, 135 + i * 7, 0.12 + i * 0.006, i, -1)
 		end
@@ -400,6 +403,34 @@ function VoyageScene.play(info)
 				table.insert(fish, { m = m, side = 18 + (i % 4) * 9, phase = i * 0.8, along = (i - 4) * 14 })
 			end
 		end
+	end
+
+	-- 선단: 호위함이 뒤와 양옆에서 따라온다
+	local escorts = {}
+	for i = 1, math.min(3, info.escorts or 0) do
+		local es = info.makeShip(folder, "caravel", ORIGIN + Vector3.new(0, 1.2, 0))
+		local ebase = es:GetPivot()
+		local ey = restY(es)
+		table.insert(escorts, { m = es, rot = CFrame.new(-ebase.Position) * ebase, y = ey, back = 34 + i * 12, side = ({ 28, -28, 52 })[i], phase = i * 1.7 })
+	end
+	-- 날씨 연출: 비·폭풍 예보면 처음부터 가랑비가 내리고 흐리다
+	local wRain = nil
+	if (info.weatherId == "rain" or info.weatherId == "storm") and not rain then
+		local sky = part(folder, Vector3.new(160, 1, 160), CFrame.new(ORIGIN + Vector3.new(0, 90, 0)), Color3.new(0, 0, 0))
+		sky.Transparency = 1
+		local em = Instance.new("ParticleEmitter")
+		em.Rate = if info.weatherId == "storm" then 600 else 260
+		em.Lifetime = NumberRange.new(0.8, 1.1)
+		em.Speed = NumberRange.new(110, 140)
+		em.EmissionDirection = Enum.NormalId.Bottom
+		em.SpreadAngle = Vector2.new(6, 6)
+		em.Size = NumberSequence.new(0.3)
+		em.Transparency = NumberSequence.new(0.4)
+		em.Color = ColorSequence.new(Color3.fromRGB(190, 205, 225))
+		em.Parent = sky
+		wRain = sky
+		Lighting.FogEnd = 1500
+		Lighting.FogColor = Color3.fromRGB(150, 165, 180)
 	end
 
 	-- 카메라
@@ -537,6 +568,15 @@ function VoyageScene.play(info)
 			local front = (EVENT_AT + EVENT_LEN / 2 - k) * total * 0.5
 			local bp = pos + Vector3.new(math.cos(yaw), 0, -math.sin(yaw)) * front + right * 14
 			barrel.CFrame = CFrame.new(bp.X, 0.3 + math.sin(t * 2) * 0.25, bp.Z) * CFrame.Angles(t * 0.4, t * 0.2, math.pi / 2)
+		end
+		for _, e in escorts do
+			local fwd = Vector3.new(math.cos(yaw), 0, -math.sin(yaw))
+			local rgt = Vector3.new(math.sin(yaw), 0, math.cos(yaw))
+			local ep = pos - fwd * e.back + rgt * e.side
+			e.m:PivotTo(CFrame.new(ep.X, e.y + math.sin(t * 1.2 + e.phase) * 0.4, ep.Z) * CFrame.Angles(0, yaw, 0) * CFrame.Angles(math.sin(t + e.phase) * 0.03, 0, math.sin(t * 0.8 + e.phase) * 0.05) * e.rot)
+		end
+		if wRain then
+			wRain.CFrame = CFrame.new(pos + Vector3.new(0, 90, 0))
 		end
 		-- 사건 소품: 사건 구간에 가까워질 때만 보인다
 		do
