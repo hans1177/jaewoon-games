@@ -4683,11 +4683,25 @@ task.defer(function()
     for step=1,34 do
       local t=step/34
       local p=track.from:Lerp(track.to,t)
-      local bend=math.sin(t*math.pi*2+route)*3.4
+      -- [자연스러운 길] 양 끝 연결점은 맞추고(엔벨로프), 중간은 두 겹 물결로 구불거린다.
+      local envelope=math.sin(t*math.pi)
+      local bend=(math.sin(t*math.pi*2+route)*3.4+math.sin(t*math.pi*5+route*1.7)*1.6)*envelope
       -- 폭 7~9의 불규칙한 길. 표면이 높아져 보행을 막지 않도록 기존 높이를 유지한다.
       local width=3.8+math.sin(t*12+route)*.45
-      meadowTerrain:FillBall(Vector3.new(p.X+bend,2.1-width,p.Y-bend*.45),
-        width,Enum.Material.Ground)
+      local cx,cz=p.X+bend,p.Y-bend*.45
+      meadowTerrain:FillBall(Vector3.new(cx,2.1-width,cz),width,Enum.Material.Ground)
+      -- 바퀴 자국처럼 가운데는 젖은 흙, 가장자리는 풀·자갈이 섞이게 같은 높이로 덧칠한다.
+      meadowTerrain:FillBall(Vector3.new(cx,2.1-width*.55,cz),width*.55,Enum.Material.Mud)
+      if step%2==0 then
+        local side=(step%4==0) and 1 or -1
+        local ox=-(track.to.Y-track.from.Y);local oz=(track.to.X-track.from.X)
+        local len=math.max(1,math.sqrt(ox*ox+oz*oz))
+        local edge=width+.9+math.abs(math.sin(step*1.3+route))*1.2
+        local ex,ez=cx+ox/len*edge*side,cz+oz/len*edge*side
+        local edgeRadius=1.4+math.abs(math.sin(step+route))*.7
+        meadowTerrain:FillBall(Vector3.new(ex,2.1-edgeRadius,ez),edgeRadius,
+          (step%6==0) and Enum.Material.Rock or Enum.Material.LeafyGrass)
+      end
       if step%4==0 then task.wait(.025) end
     end
   end
@@ -4719,6 +4733,7 @@ task.defer(function()
     {x=303,z=-226,sx=29,sz=67,leaf=Enum.Material.Ground,accent=Enum.Material.LeafyGrass},
   }
   local meadowHabitatDetails=0
+  local meadowTerrainMounds=0
   for region,zone in ipairs(habitatZones) do
     for index=1,24 do
       local theta=index*2.399963+region*.62
@@ -4768,11 +4783,20 @@ task.defer(function()
         -- 원래 잔디 상단 +2 높이의 얇은 질감. 능선이나 충돌성 돌무더기 없음.
         meadowTerrain:FillBall(Vector3.new(x,2.04-size,z),size,material)
         meadowHabitatDetails+=1
+        -- [완만한 언덕] 평평한 초원에 높이 변화를 준다. 길·유적·몬스터 출현점 주변 보호 구역은 위에서 이미 제외됐고,
+        -- 높이 0.8~1.7, 넓은 반경이라 경사가 약 20도 이하라서 걷기·전투를 막지 않는다(물체는 살짝 묻히기만 한다).
+        if index%3==0 then
+          local hillRadius=17+((index*5+region)%11)*1.1
+          local hillHeight=.8+math.abs(math.noise(x*.031,z*.031,region*1.3))*1.7
+          meadowTerrain:FillBall(Vector3.new(x,2.04+hillHeight-hillRadius,z),hillRadius,zone.leaf)
+          meadowTerrainMounds+=1
+        end
       end
       if index%8==0 then task.wait() end
     end
   end
   gameWorld:SetAttribute("MeadowHabitatTerrainDetails",meadowHabitatDetails)
+  gameWorld:SetAttribute("MeadowTerrainMounds",meadowTerrainMounds)
   gameWorld:SetAttribute("MeadowOuterRouteBranches",#tracks-8)
   gameWorld:SetAttribute("MeadowOuterDiscoveryCorners",4)
   -- [이끼 낀 암석] 나무 군락 바깥에만 Terrain 암반을 겹쳐 자연스럽게 노출한다.
