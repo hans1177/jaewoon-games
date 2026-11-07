@@ -1043,6 +1043,8 @@ local function playVoyage(fromName, toName, days, steam, path)
 	overlay:Destroy()
 end
 
+local playStory
+
 local function sail(portId)
 	local from = view.player.portName
 	local fromId = view.player.portId
@@ -1161,9 +1163,76 @@ local function sail(portId)
 	sceneHold = false
 	sceneKey = nil
 	audioLock = false
+	if view and view.voyageChoice then
+		local vc = view.voyageChoice
+		vc.id = "voyage"
+		vc.submit = function(i) return call("VoyageChoice", { index = i }) end
+		playStory(vc)
+	end
 	Sfx.play("sfx_bell")
 	Sfx.ambient({ "sfx_waves" })
 	syncScene()
+end
+
+
+-- 출항 준비 화면: 항로·일수·보급·날씨를 확인하고 닻을 올린다 -----------------------------------
+local function confirmSail(r)
+	if r.locked then
+		sail(r.id)
+		return
+	end
+	local layer = overlayGui("DepartConfirm", 25)
+	local dim = mkBox(layer, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.new(0, 0, 0), 0.45)
+	dim.ZIndex = 50
+	local card = mkBox(dim, UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(420, 300), Color3.fromRGB(24, 28, 38))
+	card.AnchorPoint = Vector2.new(0.5, 0.5)
+	card.ZIndex = 51
+	local cc = Instance.new("UICorner")
+	cc.CornerRadius = UDim.new(0, 10)
+	cc.Parent = card
+	local title = Instance.new("TextLabel")
+	title.BackgroundTransparency = 1
+	title.Position = UDim2.fromOffset(14, 10)
+	title.Size = UDim2.new(1, -28, 0, 26)
+	title.Font = Enum.Font.GothamBold
+	title.TextSize = 20
+	title.TextColor3 = COLORS.gold
+	title.TextXAlignment = Enum.TextXAlignment.Left
+	title.Text = string.format("출항 준비 · %s → %s", view.player.portName, r.name)
+	title.ZIndex = 52
+	title.Parent = card
+	local enough = view.ship.supplies >= (r.supplies or 0)
+	local lines = {
+		string.format("해역: %s · 거리 약 %d km · 예상 %d일", r.region or "", r.distanceKm or 0, r.days or 1),
+		string.format("보급품: %d / 필요 약 %d%s", view.ship.supplies, r.supplies or 0, if enough then "" else "  ⚠ 부족해요"),
+		string.format("선원: %d / %d · 선체: %d / %d", view.ship.crew, view.ship.maxCrew, view.ship.hull, view.ship.maxHull),
+		string.format("날씨: %s · 사기: %s", view.weather and view.weather.name or "맑음", tostring(view.morale or "-")),
+		"닻을 올리면 항해가 시작돼요. 바다에서 무슨 일이 생길지 아무도 몰라요.",
+	}
+	local info = Instance.new("TextLabel")
+	info.BackgroundTransparency = 1
+	info.Position = UDim2.fromOffset(14, 46)
+	info.Size = UDim2.new(1, -28, 0, 170)
+	info.Font = Enum.Font.Gotham
+	info.TextSize = 15
+	info.TextWrapped = true
+	info.TextXAlignment = Enum.TextXAlignment.Left
+	info.TextYAlignment = Enum.TextYAlignment.Top
+	info.TextColor3 = COLORS.text
+	info.Text = table.concat(lines, "\n\n")
+	info.ZIndex = 52
+	info.Parent = card
+	local go = mkButton(card, "⚓ 닻 올리기", COLORS.green, UDim2.new(0.5, -20, 0, 40), function()
+		layer:Destroy()
+		sail(r.id)
+	end, true)
+	go.Position = UDim2.new(0, 14, 1, -54)
+	go.ZIndex = 52
+	local cancel = mkButton(card, "취소", COLORS.red, UDim2.new(0.5, -20, 0, 40), function()
+		layer:Destroy()
+	end, true)
+	cancel.Position = UDim2.new(0.5, 6, 1, -54)
+	cancel.ZIndex = 52
 end
 
 -- 이야기 장면: 코드로 그린 일러스트 + 대화 + 선택지 ----------------------------------------
@@ -1317,7 +1386,7 @@ local function storyPortraitModel(npcName, id)
 	return STORY_DEFAULT[seed % #STORY_DEFAULT + 1]
 end
 
-local function playStory(ev)
+function playStory(ev)
 	local overlay = Instance.new("Frame")
 	overlay.Name = "StoryScene"
 	overlay.Size = UDim2.fromScale(1, 1)
@@ -1463,7 +1532,7 @@ local function playStory(ev)
 		for _, ch in ev.choices do
 			local label = ch.text
 			local b = mkButton(list, label, COLORS.blue, UDim2.new(1, 0, 0, 36), function()
-				local result = call("PlayStory", { eventId = ev.id, choice = ch.index })
+				local result = if ev.submit then ev.submit(ch.index) else call("PlayStory", { eventId = ev.id, choice = ch.index })
 				if result and result.ok then
 					for _, c in list:GetChildren() do
 						if c:IsA("TextButton") then
@@ -2396,7 +2465,7 @@ local function renderRoute()
 				}, 56)
 			end
 			return mkRow(content, r.name, string.format("%s · %d일 · %d km · 보급품 %d%s%s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
-				{ text = "출항", color = COLORS.blue, onClick = function() sail(r.id) end },
+				{ text = "출항", color = COLORS.blue, onClick = function() confirmSail(r) end },
 			}, 56)
 		end)
 	end
@@ -3182,7 +3251,7 @@ local function renderMap()
 						}, 56)
 					end
 					return mkRow(content, r.name, string.format("%s · %d일 · %d km · 보급품 %d%s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else ""), {
-						{ text = "출항", color = COLORS.blue, onClick = function() selectedPort = nil; sail(r.id) end },
+						{ text = "출항", color = COLORS.blue, onClick = function() selectedPort = nil; confirmSail(r) end },
 					}, 56)
 				end)
 			end

@@ -1152,6 +1152,18 @@ do
 		end
 	end
 	check("view companions listed", #S.View.build(c, ctx).companions.list == visibleCompanions)
+	-- 항해 중 상선·봉쇄 앞의 선택
+	do
+		local before = c.coins
+		c.voyageChoice = { kind = "merchant", amount = 50 }
+		local okv = act(c, "VoyageChoice", { index = 1 })
+		check("voyage choice merchant trade", okv and c.coins == before + 50 and c.voyageChoice == nil)
+		c.voyageChoice = { kind = "blockade", amount = 0.1 }
+		local day = c.day
+		okv = act(c, "VoyageChoice", { index = 3 })
+		check("voyage choice blockade detour", okv and c.day == day + 1)
+		check("voyage choice rejects when none", not act(c, "VoyageChoice", { index = 1 }))
+	end
 	check("perk speed with companion", S.Perk.speedMult(c) > 1)
 	ok = act(c, "Dismiss", { companionId = "c_halley" })
 	check("dismiss works", ok and #c.companions == 1)

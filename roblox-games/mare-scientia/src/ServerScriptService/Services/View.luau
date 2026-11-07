@@ -213,6 +213,22 @@ return function(D, S)
 		view.talk = state.talk
 		view.auto = state.auto
 		view.actIntro = state.actIntro
+		if state.voyageChoice then
+			local vc = state.voyageChoice
+			if vc.kind == "merchant" then
+				view.voyageChoice = {
+					title = "상선 조우", art = "harbor", npc = "상선 선장",
+					lines = { "수평선에서 상선 한 척이 다가온다. 돛에는 낯선 깃발이 달려 있다.", "\"이쪽은 짐이 많소. 서로 이문을 나눌 수 있지 않겠소?\"" },
+					choices = { { index = 1, text = "공정하게 거래한다" }, { index = 2, text = "대포를 겨누고 짐을 요구한다 (위험)" }, { index = 3, text = "정중히 인사하고 보낸다" } },
+				}
+			else
+				view.voyageChoice = {
+					title = "해상 봉쇄", art = "storm", npc = "해군 장교",
+					lines = { "해군 함선들이 항로를 막고 있다. 깃발이 신호를 보낸다.", "\"통행료를 내시오. 아니면 되돌아가시오.\"" },
+					choices = { { index = 1, text = "통행료를 낸다" }, { index = 2, text = "돌파를 시도한다 (위험)" }, { index = 3, text = "먼 길로 돌아간다 (하루 지연)" } },
+				}
+			end
+		end
 		do
 			local tier = D.Regions.tierOf(port.id, port.lat, port.lon)
 			view.act = D.Narrative.Regions[tier]

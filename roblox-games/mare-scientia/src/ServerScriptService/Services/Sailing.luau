@@ -56,6 +56,7 @@ return function(D, S)
 		if toId == state.portId then
 			return false, "이미 이 항구에 있어요"
 		end
+		state.voyageChoice = nil
 		local region = D.Regions.of(to)
 		local lvAdv = state.careers.adventure.level
 		local homeTier = D.Regions.homeTier(D.Ports.Ports, D.Ports.Nations[state.nationId])
@@ -154,8 +155,9 @@ return function(D, S)
 			table.insert(msgs, string.format("물고기떼를 만나 그물을 던졌다! 보급품 +%d", n))
 			moraleAdd(6)
 		elseif event.kind == "merchant" then
-			state.coins += event.amount
-			table.insert(msgs, string.format("지나가던 상선과 물물교환을 했다. +%d코인", event.amount))
+			-- 상선 조우: 도착 후 어떻게 대할지 고른다 (VoyageChoice)
+			state.voyageChoice = { kind = "merchant", amount = event.amount }
+			table.insert(msgs, "항해 중 상선을 만났다")
 		elseif event.kind == "fog" then
 			table.insert(msgs, "짙은 안개에 갇혀 하루를 더 보냈다")
 			moraleAdd(-3)
@@ -181,9 +183,8 @@ return function(D, S)
 				giveMap(state, ctx, msgs)
 			end
 		elseif event.kind == "blockade" then
-			local toll = math.min(200, math.floor(state.coins * event.amount))
-			state.coins -= toll
-			table.insert(msgs, string.format("해군이 항로를 봉쇄했다. 통행료 %d코인을 내고 지나갔다", toll))
+			state.voyageChoice = { kind = "blockade", amount = event.amount }
+			table.insert(msgs, "해군이 항로를 봉쇄했다")
 		elseif event.kind == "ghost" then
 			state.fame += event.amount
 			table.insert(msgs, string.format("안개 속에서 유령선을 보았다... 뱃사람들의 이야깃거리가 되었다 (명성 +%d)", event.amount))
@@ -266,6 +267,57 @@ return function(D, S)
 	end
 
 	-- 항구에서 하루 기다린다 (날씨가 바뀌길 기다릴 때)
+	-- 항해 중 만난 상선·봉쇄 앞에서 고른 대응을 처리한다
+	function handlers.VoyageChoice(state, p, ctx)
+		local vc = state.voyageChoice
+		local idx = type(p.index) == "number" and math.floor(p.index)
+		if not vc or not idx or idx < 1 or idx > 3 then
+			return false, "고를 수 있는 상황이 아니에요"
+		end
+		state.voyageChoice = nil
+		local def = S.State.shipDef(state)
+		local function morale(n)
+			state.morale = math.max(0, math.min(100, state.morale + n))
+		end
+		if vc.kind == "merchant" then
+			if idx == 1 then
+				state.coins += vc.amount
+				return true, string.format("공정하게 물물교환을 했다. +%d코인", vc.amount)
+			elseif idx == 2 then
+				if ctx.rng() < 0.55 then
+					state.coins += vc.amount * 2
+					morale(-4)
+					return true, string.format("상선이 겁먹고 짐을 내놓았다. +%d코인 (선원들 마음이 불편하다)", vc.amount * 2)
+				end
+				local dmg = math.max(1, math.floor(def.hull * 0.12))
+				state.ship.hull = math.max(1, state.ship.hull - dmg)
+				state.fame = math.max(0, state.fame - 1)
+				return true, string.format("상선이 맞서 반격했다! 선체 -%d, 명성 -1", dmg)
+			end
+			state.fame += 1
+			morale(5)
+			return true, "상선을 정중히 보냈다. 소문이 좋게 퍼졌다 (명성 +1, 사기 +5)"
+		end
+		-- 봉쇄
+		local toll = math.min(200, math.floor(state.coins * vc.amount))
+		if idx == 1 then
+			state.coins -= toll
+			return true, string.format("통행료 %d코인을 내고 지나갔다", toll)
+		elseif idx == 2 then
+			if ctx.rng() < 0.5 then
+				state.fame += 2
+				return true, "봉쇄선을 돌파했다! 무사히 빠져나왔다 (명성 +2)"
+			end
+			local dmg = math.max(1, math.floor(def.hull * 0.2))
+			state.ship.hull = math.max(1, state.ship.hull - dmg)
+			state.coins -= toll
+			return true, string.format("돌파에 실패했다. 선체 -%d, 통행료 %d코인", dmg, toll)
+		end
+		state.day += 1
+		morale(-3)
+		return true, "먼 길로 돌아 봉쇄를 피했다. 하루가 더 걸렸다"
+	end
+
 	function handlers.WaitDay(state)
 		S.State.advanceDays(state, 1)
 		state.morale = math.min(100, state.morale + 2)
