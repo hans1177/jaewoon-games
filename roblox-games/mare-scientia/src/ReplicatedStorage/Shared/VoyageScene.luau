@@ -730,6 +730,11 @@ function VoyageScene.play(info)
 		end
 
 		-- 카메라: 배 뒤쪽 위에서 천천히 좌우로 돌며 비춘다
+		camera = workspace.CurrentCamera or camera
+		if camera.CameraType ~= Enum.CameraType.Scriptable then
+			camera.CameraType = Enum.CameraType.Scriptable
+		end
+		camera.FieldOfView = 66
 		local sway = math.sin(t * 0.25) * 0.9
 		local back = CFrame.new(pos) * CFrame.Angles(0, yaw + sway, 0) * CFrame.new(-54, 19, 0)
 		camera.CFrame = CFrame.lookAt(back.Position + Vector3.new(0, math.sin(t * 1.3) * 0.5, 0), pos + Vector3.new(0, 7 + math.sin(t * 1.3 + 0.6) * 0.4, 0))
