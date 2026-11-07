@@ -278,7 +278,13 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	local variation = 0.86 + (seed % 7) * 0.037
 	-- 층수가 높을수록 집도 키워서 1·2·3층이 실루엣으로 구분되게 한다 (0.92~1.12배)
 	variation *= 0.92 + (math.clamp(floors or 2, 1, 3) - 1) * 0.1
-	local mesh = importedModel(parent, "Town", "house", pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
+	-- 집 모양 3종(기본형·굴뚝형·문 강조형)을 위치로 골라 실루엣을 다양화한다 (승인된 Town 에셋)
+	local variant = ({ "house", "house_chimney", "house_door", "house" })[1 + (seed // 3) % 4]
+	local mesh = importedModel(parent, "Town", variant, pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
+	if not mesh and variant ~= "house" then
+		variant = "house"
+		mesh = importedModel(parent, "Town", "house", pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
+	end
 	if mesh then
 		mesh.Name = "HarborHouse"
 		if (seed // 7) % 2 == 1 then
@@ -287,7 +293,14 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		end
 		-- 집마다 같은 실루엣이 되지 않게, 위치로 정한 일부 집 용마루에 승인된 굴뚝(Town/chimney)을 얹는다
 		local size = math.max(w, d) * variation
-		if math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0 then
+		-- 네 채 중 한 채는 옆에 작은 별채를 붙여 ㄱ자 집처럼 보이게 한다
+		if seed % 4 == 1 then
+			local annex = importedModel(parent, "Town", "house", pos + Vector3.new(size * 0.95, 0, size * 0.25), size * 0.62 * HOUSE_SCALE, true, tintColor)
+			if annex then
+				annex.Name = "HarborAnnex"
+			end
+		end
+		if variant ~= "house_chimney" and math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0 then
 			local chim = importedModel(parent, "Town", "chimney", pos + Vector3.new(0, size * 0.7, 0), size * 0.4, false, Color3.fromRGB(122, 98, 84))
 			if chim then chim.Name = "HarborChimney" end
 		end
