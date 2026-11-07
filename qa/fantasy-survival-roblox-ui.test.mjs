@@ -467,8 +467,8 @@ test('intro renders only one of original painted backdrop and separated 3D actor
   const backgrounds=[...art[1].matchAll(/rbxassetid:\/\/(\d+)/g)].map(x=>x[1]);
   const foregrounds=[...front[1].matchAll(/\[(\d+)\]="rbxassetid:\/\/(\d+)"/g)];
   assert.equal(backgrounds.length,12);
-  assert.equal(foregrounds.length,11);
-  assert.equal(new Set([...backgrounds,...foregrounds.map(x=>x[2])]).size,23);
+  assert.equal(foregrounds.length,9); // 오너 지시로 일부 이미지 제거(d26a7d8bea)
+  assert.equal(new Set([...backgrounds,...foregrounds.map(x=>x[2])]).size,21);
   const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
   assert.match(intro,/local artworkId=\(Config\.CinematicIntroSceneIds or \{\}\)\[index\]/);
   assert.match(intro,/local foregroundId=\(Config\.CinematicIntroForegroundIds or \{\}\)\[index\]/);
@@ -764,7 +764,7 @@ test('fantasy spawn must never suppress engine avatar creation',()=>{
   assert.ok(server.indexOf('createStartingMeadow()')<server.indexOf('Players.PlayerAdded:Connect(bindNativeFoundationPlayer)'));
   assert.match(server,/for attempt=1,10 do[\s\S]*?spawnHit = workspace:Raycast/);
   assert.match(server,/height>clearance\+9 or height<clearance-5/);
-  assert.match(server,/task\.delay\(4,function\(\)[\s\S]*?for attempt=1,3 do[\s\S]*?player:LoadCharacterAsync\(\)/);
+  assert.match(server,/task\.delay\(8,function\(\)[\s\S]*?for attempt=1,3 do[\s\S]*?player:LoadCharacterAsync\(\)/);
   assert.match(server,/task\.delay\(Players\.RespawnTime\+5,[\s\S]*?player:LoadCharacterAsync\(\)/);
   assert.match(server,/character:GetAttribute\("MeadowResumeApplied"\)==true/);
   assert.match(server,/Players\.PlayerAdded:Connect\(onSurvivalPlayerAdded\)/);

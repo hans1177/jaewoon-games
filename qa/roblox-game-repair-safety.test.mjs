@@ -132,7 +132,7 @@ assert(objects.NativeFoundationSpawn.Position.Y-objects.NativeFoundationSpawn.Si
  assert.match(village,/humanoid\.FloorMaterial ~= Enum\.Material\.Air/);
 });
 
-test('cozy touch actions fit their dock and popup with separate rows',()=>{
+test('cozy touch actions fit their dock and popup with separate rows',{skip:cozy?false:'cozy-island 게임이 저장소에 없음(퇴역)'},()=>{
  const client=read('roblox-games/cozy-island/client/Game.client.luau');
  const camera=read('roblox-games/cozy-island/shared/QACamera.luau');
  const dock=Number(client.match(/controls.Size=UDim2.fromOffset\(196,(\d+)\)/)[1]);

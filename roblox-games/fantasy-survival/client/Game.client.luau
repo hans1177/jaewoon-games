@@ -10793,9 +10793,9 @@ do
   remote.OnClientEvent:Connect(function(kind,payload)
     if kind~="MEADOW_ULT_FX" or typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end
     local color=ultColors[payload.class] or ultColors.Sword
-    local holder=Instance.new("Part")
-    holder.Name="MeadowUltFx";holder.Anchored=true;holder.CanCollide=false;holder.CanQuery=false;holder.CanTouch=false
-    holder.Transparency=1;holder.Size=Vector3.one;holder.Position=payload.position+Vector3.new(0,1,0);holder.Parent=workspace
+    -- Part 대신 Terrain 위 Attachment에 입자·빛을 붙인다(형상 없음).
+    local holder=Instance.new("Attachment")
+    holder.Name="MeadowUltFx";holder.WorldPosition=payload.position+Vector3.new(0,1,0);holder.Parent=workspace.Terrain
     local burst=Instance.new("ParticleEmitter")
     burst.Color=ColorSequence.new(color);burst.LightEmission=1;burst.Rate=0
     burst.Lifetime=NumberRange.new(.5,.9)
@@ -11881,10 +11881,26 @@ end)()
   infoLabel.TextColor3=Color3.fromRGB(255,244,205);infoLabel.TextStrokeTransparency=1;infoLabel.ZIndex=27;infoLabel.Parent=marker
   Instance.new("UICorner",infoLabel).CornerRadius=UDim.new(0,10)
   local infoStroke=Instance.new("UIStroke");infoStroke.Color=Color3.fromRGB(255,214,70);infoStroke.Thickness=1;infoStroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;infoStroke.Parent=infoLabel
-  local beam=Instance.new("Part")
-  beam.Name="MeadowGuideBeam";beam.Anchored=true;beam.CanCollide=false;beam.CanQuery=false;beam.CanTouch=false
-  beam.CastShadow=false;beam.Material=Enum.Material.Neon;beam.Color=Color3.fromRGB(255,214,70);beam.Transparency=.6
-  beam.Size=Vector3.new(3,90,3);beam.Parent=nil
+  -- 목표 위 빛기둥: Part 대신 두 Attachment를 잇는 Beam(형상 없음). 기존 beam.CFrame/beam.Parent 사용법은 그대로 둔다.
+  local beamBottom=Instance.new("Attachment");beamBottom.Name="MeadowGuideBeamBottom"
+  local beamTop=Instance.new("Attachment");beamTop.Name="MeadowGuideBeamTop"
+  local beamLine=Instance.new("Beam");beamLine.Name="MeadowGuideBeam"
+  beamLine.Attachment0=beamBottom;beamLine.Attachment1=beamTop
+  beamLine.Color=ColorSequence.new(Color3.fromRGB(255,214,70));beamLine.Transparency=NumberSequence.new(.6)
+  beamLine.LightEmission=1;beamLine.Width0=3;beamLine.Width1=3;beamLine.FaceCamera=true;beamLine.Segments=1
+  local beamCenter=Vector3.zero
+  local beam=setmetatable({},{__newindex=function(_,key,value)
+    if key=="CFrame" then
+      beamCenter=value.Position
+    elseif key=="Parent" then
+      local host=value and workspace.Terrain or nil
+      beamBottom.Parent=host;beamTop.Parent=host;beamLine.Parent=host
+      if host then
+        beamBottom.WorldPosition=beamCenter-Vector3.new(0,45,0)
+        beamTop.WorldPosition=beamCenter+Vector3.new(0,45,0)
+      end
+    end
+  end})
   local camera=workspace.CurrentCamera
   local tx,tz,tlabel=nil,nil,nil
   local lastFind=0

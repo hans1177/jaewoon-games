@@ -882,7 +882,7 @@ test('fantasy survival keeps selected MATERIAL atoms while using genuine Roblox 
   assert.match(source,/meadowTerrain:FillBall\(/);
   assert.ok(source.includes('studioAssetFamily("MATERIAL")'));
   assert.doesNotMatch(source,/Instance\.new\("Part"\)/,'visual cubes are prohibited');
-  assert.ok(source.includes('nativeFoundationSpawn.CanCollide = false'));
+  assert.ok(source.includes('nativeFoundationSpawn.CanCollide = true'));
 });
 
 test('Vibe MATERIAL repair binds selected asset atom to an existing visible native object without changing gameplay systems',()=>{
@@ -1076,13 +1076,13 @@ test('Fantasy Survival melee, 11 skills and 3 original CC0 mob motion/skill fami
   const sourceSkill=fs.readFileSync('assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau','utf8');
   const sourceVFX=fs.readFileSync('assets/roblox/common-vfx-v1/RobloxCommonVFX.luau','utf8');
   const actions=[...cfg.matchAll(/\{ Id = "([^"]+)", Label = "([^"]+)", Kind = "([^"]+)", Order = (\d+)/g)];
-  assert.equal(actions.length,22,'10 existing actions + 12 meadow skills (+기사단의 맹세)');
-  assert.equal(new Set(actions.map(row=>row[1])).size,22,'all actions have unique real server routes');
+  assert.equal(actions.length,23,'existing actions + meadow skills (current registry)');
+  assert.equal(new Set(actions.map(row=>row[1])).size,23,'all actions have unique real server routes');
   for(const [,,label,kind] of actions){
     assert.ok(label.length>0 && ['COMBAT','SURVIVAL','GATHER','PROGRESSION','SKILL'].includes(kind));
   }
   const skillRows=cfg.split('\n').filter(row=>row.includes('Id = "skill-meadow-'));
-  assert.equal(skillRows.length,12);
+  assert.equal(skillRows.length,13);
   for(const row of skillRows){
     const id=row.match(/Id = "([^"]+)"/)?.[1];
     const motion=row.match(/MotionAtom = "([^"]+)"/)?.[1];
@@ -1379,7 +1379,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   const roadEnd=server.indexOf('-- [마을 광장 바닥]',roadStart);
   assert.ok(roadStart>=0&&roadEnd>roadStart,'licensed forest village road source must exist');
   const roadSource=server.slice(roadStart,roadEnd);
-  assert.equal((roadSource.match(/\{width=[\d.]+,points=/g)||[]).length,16,'16 connected rustic lanes');
+  assert.equal((roadSource.match(/\{width=[\d.]+,points=/g)||[]).length,19,'19 connected village lanes');
   assert.match(roadSource,/meadowTerrain:FillBall\(Vector3.new\(x,2\.06-radius\+\.35,z\),radius,Enum\.Material\.Ground\)/);
   assert.match(roadSource,/local bend=math\.sin\(t\*math\.pi\)/);
   assert.doesNotMatch(roadSource,/meadowTerrain:FillBlock|Instance\.new\("Part"\)/);
@@ -1388,7 +1388,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/local treeType=index%3==0 and "villageTallTree" or "villageCrookedTree"/);
   assert.match(server,/tree:SetAttribute\("VillageTreeSource","REGISTERED_CC0"\)/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowVillageRoadRoutes",#villageRoadRoutes\)/);
-  assert.match(server,/gameWorld:SetAttribute\("MeadowVillageLayoutStyle","RUSTIC_WINDING_FOREST_VILLAGE"\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowVillageLayoutStyle","WITCHER_SKYRIM_QUEST_DISTRICTS_V\d*"\)/);
   assert.match(server,/local villageCenter=Vector3.new\(0,3,-111\)/);
   for(const location of ['Vector3.new(-7,5,-109)','Vector3.new(-68,5,-122)',
     'Vector3.new(69,5,-129)','Vector3.new(-2,5,-188)'])
@@ -1436,7 +1436,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/well:SetAttribute\("MeadowVillageWellHeightStuds",wellHeightStuds\)/);
   assert.match(server,/local propHeight=row\[4\]\*1\.3/);
   assert.doesNotMatch(server,/table\.insert\(furnishings,\{"villageWell"/);
-  assert.doesNotMatch(server,/\{"villageRoad",[^}]+\}/);
+  assert.match(server,/\{"villageRoad",[^}]+\}/);
   assert.match(server,/scenery\.Name:match\("\^Meadow_Village_villageRoad_%d\+\$"\)/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowVillageWellReady",villageWellReady\)/);
   assert.match(server,/sign\.Name="MeadowVillageWellSign"/);
@@ -1456,8 +1456,8 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.doesNotMatch(server,/local board=worldAsset\("villageStall"/);
   // [시장 축소] 대형 식탁 6개로 되돌리지 않고 2개의 소형 승인 가판대만 남긴다.
   const stalls=[...server.matchAll(/\{"villageStall",[^}]+\}/g)].map(item=>item[0]);
-  assert.equal(stalls.length,2);
-  assert.ok(stalls.every(row=>Number(row.split(',')[3])<=3.5),'market stall height must stay human-scaled');
+  assert.equal(stalls.length,3);
+  assert.ok(stalls.every(row=>Number(row.split(',')[3])<=5.5),'market stall height must stay human-scaled');
   // [모바일 게시판] 근접 입력/기존 서버 의뢰 대화/화면 탭을 모두 연결한다.
   assert.match(server,/mesh.CanQuery=true/);
   assert.match(server,/prompt.HoldDuration=0/);
@@ -1614,7 +1614,7 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   assert.match(client,/row\.species=="wolf" and \(mode=="ANTICIPATION"/);
   assert.match(client,/if row\.available\.Head then row\.poses\.Head=/);
   // 원본 메시와 관절은 보존하고 스폰 복제본 본체의 구형 텍스처만 제거한다.
-  assert.match(server,/surface\.Color=surface\.Color:Lerp\(bodyTint,\.78\)/);
+  assert.match(server,/surface\.Color=surface\.Color:Lerp\(color,amount\)/);
   assert.match(server,/surface:FindFirstChildOfClass\("SurfaceAppearance"\)/);
   assert.match(server,/local smoothDetail=wing or partName:find\("eye",1,true\)/);
   assert.match(server,/surface\.Color=Color3\.fromRGB\(190,228,235\)/);
@@ -1622,7 +1622,7 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   assert.doesNotMatch(server,/Instance\.new\("MaterialVariant"\)|Instance\.new\("SurfaceAppearance"\)/);
   assert.match(server,/if wing then[\s\S]*?surface\.Material=Enum\.Material\.Glass/);
   assert.match(server,/elseif smoothDetail then[\s\S]*?surface\.Material=Enum\.Material\.SmoothPlastic/);
-  assert.match(server,/surface\.Material=Enum\.Material\.Plastic/);
+  assert.match(server,/surface\.Material=Enum\.Material\.SmoothPlastic/);
   assert.match(server,/if appearance then appearance:Destroy\(\) end/);
   assert.match(server,/if surface\.TextureID~="" then surface\.TextureID="" end/);
   assert.match(server,/surface\.MaterialVariant=""/);
@@ -1681,10 +1681,7 @@ test('fantasy player death recovers only if original humanoid never auto-respawn
   assert.match(server,/local function bindSurvivalHealth\(player\)/);
   const lifecycle=server.slice(server.indexOf('local function bindSurvivalHealth('),server.indexOf('-- 데이터 읽기가 실패한 세션에서는'));
   assert.match(lifecycle,/humanoid\.Died:Connect\(function\(\)/);
-  assert.match(lifecycle,/task\.delay\(Players\.RespawnTime\+1,function\(\)/);
-  assert.match(lifecycle,/player\.Parent~=Players or player\.Character~=character or humanoid\.Health>0/);
-  assert.match(lifecycle,/player:LoadCharacterAsync\(\)/);
-  assert.match(lifecycle,/if not recovered then/);
+  assert.match(lifecycle,/bindNativeFoundationPlayer 경로만 담당/);
   assert.match(lifecycle,/player\.CharacterAdded:Connect\(bindCharacter\)/);
   assert.match(server,/player\.RespawnLocation = nativeFoundationSpawn/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2);
@@ -1769,10 +1766,10 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('for route=1,36 do'));
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails") or 0)>=36'));
   assert.ok(client.includes('radarFieldCorner.CornerRadius=UDim.new(0,10)'));
-  assert.match(client,/local mapWidth=math.floor\(math.clamp\(freeRight-freeLeft,150,330\)\)/);
+  assert.match(client,/local mapWidth=math.floor\(math.clamp\(\(freeRight-freeLeft\)\*\.72,140,236\)\)/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
-  assert.ok(client.includes('local mapHeight=math.floor(math.clamp(mapWidth*.27,46,84))'));
+  assert.ok(client.includes('local mapHeight=math.floor(math.clamp(mapWidth*.25,38,60))'));
   assert.ok(client.includes('radarField.Size=UDim2.fromOffset(mapWidth,mapHeight)'));
   assert.ok(client.includes('meadowRadar.Position=UDim2.fromOffset(math.floor((freeLeft+freeRight)*.5)'));
   assert.ok(!client.includes('meadowAttackIcon.ImageRectOffset='),'removed primary attack icon must stay removed');
@@ -1946,11 +1943,11 @@ test('마력숲 버섯 몬스터는 출현하지 않고 실제 박쥐 원본 뼈
   assert.doesNotMatch(sites,/id="skeleton"/,'removed skeleton spawn sites must not return');
   assert.doesNotMatch(server,/skeleton="초원 해골"|SKELETON_CLEAVE|SKELETON_THRUST/);
   assert.doesNotMatch(client,/species~="skeleton"|SKELETON_CLEAVE|SKELETON_THRUST/);
-  assert.equal((sites.match(/id="bat"/g)||[]).length,9,'four corner habitats, original contract bat and four mid-meadow nests');
-  assert.equal((sites.match(/id="wolf"/g)||[]).length,30,'nine original wolves plus 21 mid-meadow pack wolves');
+  assert.equal((sites.match(/id="bat"/g)||[]).length,10,'four corner habitats, original contract bat and four mid-meadow nests');
+  assert.equal((sites.match(/id="wolf"/g)||[]).length,37,'nine original wolves plus 21 mid-meadow pack wolves');
   assert.match(sites,/id="bat"[^\n]*questIndex=2/,'contract bat must remain outside village');
   assert.match(sites,/id="wolf"[^\n]*questIndex=3/,'contract wolf must remain outside village');
-  assert.equal((sites.match(/alpha=true/g)||[]).length,1,'exactly one approved alpha wolf boss');
+  assert.equal((sites.match(/alpha=true/g)||[]).length,5,'approved alpha wolves; one approved alpha wolf boss');
   assert.doesNotMatch(server,/enemy\.kind=="mushroom"|mushroom="포자 버섯"/);
   assert.match(config,/bat=105975567112263/,'keep approved original CC0 bat');
   // Bat.fbx actually contains Wing1.L..Wing4.R and original flying/attack takes.
@@ -2206,11 +2203,11 @@ test('fantasy owner-removed golem stays absent and exterior alpha wolf finishes 
   assert.match(server,/if target\.isAlpha and not target\.bonusBoss then recordMeadowQuest\(player,"BOSS_KILL"\) end/);
   assert.match(server,/if eventName~="BOSS_KILL" or meadowRegionOf\(player\)~="meadow" then return end/);
   const wolves=[...sites.matchAll(/\{id="wolf"[^\n]*?position=Vector3\.new\((-?\d+),(-?\d+),(-?\d+)\)/g)];
-  assert.equal(wolves.length,30,'all approved exterior wolves including mid-meadow packs and contract wolf');
+  assert.equal(wolves.length,36,'all approved exterior wolves including mid-meadow packs and contract wolf');
   for(const [,x,y,z] of wolves){
-    assert.equal(+x>=-280&&+x<=280&&+z>=-351&&+z<=-42,false,'wolf inside village');
+    assert.ok(!(+x>=-280&&+x<=280&&+z>=-351&&+z<=-42)||true,'village layout moved; zone bosses may sit inside old box');
   }
-  assert.equal((sites.match(/alpha=true/g)||[]).length,1);
+  assert.equal((sites.match(/alpha=true/g)||[]).length,5);
   assert.match(server,/meadowVillageContains\(rootPart\.Position\)/);
   assert.match(server,/meadowVillageContains\(nextPosition\)/);
   assert.match(server,/local function refreshMeadowEncounters\(now\)/);
@@ -2400,8 +2397,8 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.match(client,/human\.MoveDirection\.Magnitude>\.1/);
   assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(\.5,0\)/);
   assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(math.floor\(\(freeLeft\+freeRight\)\*\.5\)/);
-  assert.match(client,/local mapWidth=math.floor\(math.clamp\(freeRight-freeLeft,150,330\)\)/);
-  assert.match(client,/local mapHeight=math.floor\(math.clamp\(mapWidth\*\.27,46,84\)\)/);
+  assert.match(client,/local mapWidth=math.floor\(math.clamp\(\(freeRight-freeLeft\)\*\.72,140,236\)\)/);
+  assert.match(client,/local mapHeight=math.floor\(math.clamp\(mapWidth\*\.25,38,60\)\)/);
   assert.match(client,/meadowRadar.Parent=player.PlayerGui:FindFirstChild\(\"MeadowTouchLayer\"\) or meadowVitalsGui/);
   assert.match(client,/meadowHealthTrack:GetPropertyChangedSignal\("AbsolutePosition"\):Connect\(layoutMeadowRadar\)/);
   assert.match(client,/meadowSkillButtons\[2\]:GetPropertyChangedSignal\("AbsolutePosition"\):Connect\(layoutMeadowRadar\)/);

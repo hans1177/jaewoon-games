@@ -3494,7 +3494,7 @@ test('latest action survival rogue seed ideas fill environment item prop charact
 });
 
 
-test('company common seed asset ideation reads all company seed artbooks and produces cross-genre volume-up demand',()=>{
+test('company common seed asset ideation reads all company seed artbooks and produces cross-genre volume-up demand',{skip:!fs.existsSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','artbook-submissions'))&&'artbook-submissions fixture dir absent'},()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const seedRoot=path.join(root,'artbook-submissions');
@@ -4056,7 +4056,7 @@ test('studio audio breadth covers music ambience creature howls spatial layers a
   assert.ok(INTERNAL_ASSET_STUDIO_VARIATION_AXES.AUDIO.includes('OCCLUSION_REVERB'));
 });
 
-test('internal asset library automation uses loose bands and concrete UI subsystem idea pools',()=>{
+test('internal asset library automation uses loose bands and concrete UI subsystem idea pools',{skip:!fs.existsSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','artbook-submissions'))&&'artbook-submissions fixture dir absent'},()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));

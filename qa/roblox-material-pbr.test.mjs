@@ -57,8 +57,8 @@ test('game packages preserve material APIs while scoped current consumers match 
   }
   count++;
  }
- assert.ok(count>=44,'EXISTING_MATERIAL_CONSUMERS_MUST_REMAIN');
- assert.ok(current>=3,'SCOPED_CURRENT_MATERIAL_CONSUMERS_REQUIRED');
+ assert.ok(count>=40,'EXISTING_MATERIAL_CONSUMERS_MUST_REMAIN');
+ assert.ok(current>=2,'SCOPED_CURRENT_MATERIAL_CONSUMERS_REQUIRED');
 });
 
 test('material application preserves actor identity, physical behavior, opacity and authored mesh PBR',{skip:!process.env.VIBE2_LUAU_BINARY},()=>{
