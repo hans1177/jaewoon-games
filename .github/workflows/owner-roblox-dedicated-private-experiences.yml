@@ -113,6 +113,7 @@ jobs:
           chmod +x /tmp/luau_bin/luau /tmp/luau_bin/luau-compile
           games=$(node -e "const m=JSON.parse(process.env.MATRIX_JSON);console.log((m.include||[]).map(r=>'roblox-games/'+r.gameId).join(' '))")
           LUAU_BIN_DIR=/tmp/luau_bin node tools/roblox-luau-load-smoke.mjs $games
+          case " $games " in *roblox-games/fantasy-survival*) node tools/fantasy-asset-link-check.mjs;; esac
 
   publish:
     needs: contract

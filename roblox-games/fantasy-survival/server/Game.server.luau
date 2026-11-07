@@ -3604,6 +3604,19 @@ local meadowRpg=(function()
     elseif group=="tonic" and tonic then
       local attr=id=="herbal_tonic" and "MeadowPotionHealth" or "MeadowPotionStamina"
       if verb=="craft" then
+        -- [스카이림식 연금] 물약 조합은 마을 화덕(연금 겸용) 가까이에서만 한다.
+        do
+          local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+          local station=Config.CookStation
+          local flat=root and Vector3.new(root.Position.X,0,root.Position.Z)
+          local atStation=flat and (flat-Vector3.new(station.X,0,station.Z)).Magnitude<=station.Radius+8
+          if flat and not atStation then
+            for _,site in ipairs(Config.CraftSites or {}) do
+              if (flat-Vector3.new(site.X,0,site.Z)).Magnitude<=station.Radius+8 then atStation=true;break end
+            end
+          end
+          if not atStation then feedback(player,"물약 조합은 마을 식당 화덕 가까이에서 할 수 있어.");return true end
+        end
         if readNumber(player,attr,0)>=25 then feedback(player,"물약은 최대 25개까지 소지할 수 있어.");return true end
         if not charge(player,tonic) then feedback(player,"물약 재료가 부족해.");return true end
         setNumber(player,attr,readNumber(player,attr,0)+1)
