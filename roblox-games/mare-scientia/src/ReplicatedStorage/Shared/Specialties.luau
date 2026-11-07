@@ -26,6 +26,7 @@ export type Companion = {
 	perk: Perk,
 	battleLine: string, -- 전투가 시작될 때 하는 말
 	winLine: string, -- 이겼을 때 하는 말
+	nation: string?, -- 이 나라 주인공의 동료 (첫 항해에서 자동 합류)
 }
 
 local Specialties: { Specialty } = {
@@ -89,6 +90,42 @@ local Companions: { Companion } = {
 		summary = "선상 외과의. 열병·괴혈병 피해와 사기 하락이 절반",
 		perk = { healMult = 0.5 },
 		battleLine = "다친 사람은 제게 데려오세요!", winLine = "부상자 모두 무사합니다. 오늘은 운이 좋았어요." },
+	{ id = "n_england", name = "조수 윌", scholarId = "", role = "관측 조수", fee = 0, minFame = 0, nation = "england",
+		summary = "관측 기구를 든 어린 조수. 항해 속도 +4%",
+		perk = { speedMult = 0.04 },
+		battleLine = "바람 방향 기록했습니다, 선장님!", winLine = "관측 값이 정확했어요. 논문에 넣을 수 있겠어요." },
+	{ id = "n_netherlands", name = "장부원 피터", scholarId = "", role = "장부원", fee = 0, minFame = 0, nation = "netherlands",
+		summary = "숫자에 밝은 젊은 장부원. 되파는 비율 +2%",
+		perk = { sellBonus = 0.02 },
+		battleLine = "전투 비용은 제가 기록하겠습니다!", winLine = "노획품 정리는 제 몫이죠." },
+	{ id = "n_france", name = "시종 로랑", scholarId = "", role = "옛 영지 시종", fee = 0, minFame = 0, nation = "france",
+		summary = "가문을 모시던 충직한 시종. 열병·사기 하락 30% 감소",
+		perk = { healMult = 0.3 },
+		battleLine = "아가씨, 제 뒤로 서세요!", winLine = "아가씨가 무사하시니 그걸로 충분합니다." },
+	{ id = "n_portugal", name = "도선사 페드루", scholarId = "", role = "동기 도선사", fee = 0, minFame = 0, nation = "portugal",
+		summary = "항해학교 동기 도선사. 항해 속도 +5%",
+		perk = { speedMult = 0.05 },
+		battleLine = "키는 제게 맡겨!", winLine = "우리가 해냈어, 이네스!" },
+	{ id = "n_ottoman", name = "대상 상인 카심", scholarId = "", role = "베테랑 대상 상인", fee = 0, minFame = 0, nation = "ottoman",
+		summary = "사막과 바다를 오간 노련한 상인. 되파는 비율 +2%",
+		perk = { sellBonus = 0.02 },
+		battleLine = "상인이라고 칼을 못 쥐는 건 아니오!", winLine = "전리품은 공정하게 나눕시다." },
+	{ id = "n_swahili", name = "젊은 선원 주마", scholarId = "", role = "다우선 선원", fee = 0, minFame = 0, nation = "swahili",
+		summary = "계절풍을 몸으로 아는 선원. 항해 속도 +5%",
+		perk = { speedMult = 0.05 },
+		battleLine = "돛을 올려라! 바람이 우리 편이다!", winLine = "바람이 우릴 지켜줬어!" },
+	{ id = "n_malabar", name = "후추 농부 쿠티", scholarId = "", role = "농부 대표", fee = 0, minFame = 0, nation = "malabar",
+		summary = "마을의 후추를 맡긴 농부 대표. 되파는 비율 +3%",
+		perk = { sellBonus = 0.03 },
+		battleLine = "고향 마을을 생각하면 겁날 게 없소!", winLine = "이 후추 한 알에 마을의 희망이 있소." },
+	{ id = "n_japan", name = "사무라이 겐지", scholarId = "", role = "낭인 무사", fee = 0, minFame = 0, nation = "japan",
+		summary = "항구에서 만난 낭인 무사. 포격 +8%",
+		perk = { cannonMult = 0.08 },
+		battleLine = "칼은 바다에서도 무뎌지지 않소!", winLine = "승패는 병가지상사. 하지만 오늘은 이겼소." },
+	{ id = "n_new_spain", name = "광부 출신 마테오", scholarId = "", role = "광산 출신 선원", fee = 0, minFame = 0, nation = "new_spain",
+		summary = "광산에서 단련된 힘센 선원. 포격 +6%",
+		perk = { cannonMult = 0.06 },
+		battleLine = "곡괭이 대신 대포를 잡아도 힘은 같소!", winLine = "이 정도면 광산 폭발보다 쉽소." },
 }
 
 local SpecialtyById: { [string]: Specialty } = {}

@@ -1187,6 +1187,7 @@ local ART = {
 	observatory = { sky = Color3.fromRGB(16, 22, 52), floor = Color3.fromRGB(40, 44, 60) },
 	storm = { sky = Color3.fromRGB(52, 62, 78), floor = Color3.fromRGB(28, 52, 80) },
 	library = { sky = Color3.fromRGB(110, 76, 50), floor = Color3.fromRGB(70, 46, 32) },
+	epilogue = { sky = Color3.fromRGB(246, 150, 96), floor = Color3.fromRGB(34, 62, 110) },
 }
 
 local function paintScene(parent, art, t)
@@ -1219,6 +1220,16 @@ local function paintScene(parent, art, t)
 			mkBox(parent, UDim2.fromScale(0.1 + i * 0.12, 0.34 - i * 0.03), UDim2.fromOffset(34, 38), Color3.fromRGB(245, 238, 220))
 		end
 		mkBox(parent, UDim2.fromScale(0, 0.78), UDim2.fromScale(0.5, 0.04), Color3.fromRGB(110, 80, 56))
+	elseif art == "epilogue" then
+		-- 석양, 수평선 위의 하얀 돛배, 날아가는 새
+		mkRound(parent, UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(120, 120), Color3.fromRGB(255, 226, 150), 0.1, Vector2.new(0.5, 0.5))
+		mkBox(parent, UDim2.fromScale(0, 0.6), UDim2.fromScale(1, 0.02), Color3.fromRGB(255, 214, 160), 0.3)
+		mkBox(parent, UDim2.fromScale(0.58, 0.5), UDim2.fromOffset(5, 80), Color3.fromRGB(60, 40, 28))
+		mkBox(parent, UDim2.fromScale(0.59, 0.5), UDim2.fromOffset(46, 52), Color3.fromRGB(250, 244, 226))
+		mkBox(parent, UDim2.fromScale(0.55, 0.62), UDim2.fromOffset(72, 14), Color3.fromRGB(100, 62, 40))
+		for i = 0, 2 do
+			mkBox(parent, UDim2.fromScale(0.2 + i * 0.07, 0.22 + (i % 2) * 0.05), UDim2.fromOffset(16, 3), Color3.fromRGB(70, 50, 50))
+		end
 	elseif art == "ruins" then
 		for i = 0, 4 do
 			mkBox(parent, UDim2.fromScale(0.08 + i * 0.19, 0.62 - (0.16 + (i % 3) * 0.08)), UDim2.fromScale(0.07, 0.16 + (i % 3) * 0.08), Color3.fromRGB(200, 190, 175))

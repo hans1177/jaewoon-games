@@ -433,6 +433,7 @@ return function(D, S)
 		end
 		view.companions = { max = D.Specialties.MAX_COMPANIONS, list = {} }
 		for _, c in D.Specialties.Companions do
+			if not c.nation or c.nation == state.nationId then
 			table.insert(view.companions.list, {
 				id = c.id,
 				name = c.name,
@@ -444,6 +445,7 @@ return function(D, S)
 				tier = D.Specialties.affinityTier(state.affinity[c.id] or 0),
 				blocked = S.Perk.recruitBlock(state, c),
 			})
+			end
 		end
 
 		view.bosses = {}

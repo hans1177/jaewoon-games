@@ -1145,7 +1145,13 @@ do
 	act(c, "Recruit", { companionId = "c_merian" })
 	ok = act(c, "Recruit", { companionId = "c_boyle" })
 	check("companion max enforced", not ok and #c.companions == D.Specialties.MAX_COMPANIONS)
-	check("view companions listed", #S.View.build(c, ctx).companions.list == #D.Specialties.Companions)
+	local visibleCompanions = 0
+	for _, cc in D.Specialties.Companions do
+		if not cc.nation or cc.nation == c.nationId then
+			visibleCompanions += 1
+		end
+	end
+	check("view companions listed", #S.View.build(c, ctx).companions.list == visibleCompanions)
 	check("perk speed with companion", S.Perk.speedMult(c) > 1)
 	ok = act(c, "Dismiss", { companionId = "c_halley" })
 	check("dismiss works", ok and #c.companions == 1)

@@ -170,6 +170,9 @@ return function(D, S)
 		if #state.companions >= Sp.MAX_COMPANIONS then
 			return string.format("동료는 최대 %d명이에요", Sp.MAX_COMPANIONS)
 		end
+		if c.nation and c.nation ~= state.nationId then
+			return "다른 주인공의 동료예요"
+		end
 		if c.scholarId ~= "" and not state.scholarsMet[c.scholarId] then
 			return "먼저 이 학자를 만나 지식을 전수받아야 해요"
 		end

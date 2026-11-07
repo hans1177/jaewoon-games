@@ -227,6 +227,17 @@ return function(D, S)
 				table.insert(msgs, string.format("【%s】 %s (명성 +3)", act.title, act.intro))
 			end
 		end
+		do
+			-- 첫 항해: 주인공의 오랜 동료가 배에 합류한다
+			local allyId = "n_" .. state.nationId
+			local ally = D.Specialties.CompanionById[allyId]
+			if ally and not state.allyJoined and #state.companions < D.Specialties.MAX_COMPANIONS and not table.find(state.companions, allyId) then
+				state.allyJoined = true
+				table.insert(state.companions, allyId)
+				state.affinity[allyId] = math.max(state.affinity[allyId] or 0, 10)
+				table.insert(msgs, string.format("【동료 합류】 %s이(가) 항해 도중 함께하겠다고 나섰다!", ally.name))
+			end
+		end
 		state.portId = toId
 		state.stats.visited[toId] = true
 		S.State.gainXp(state, "adventure", days * 2 + math.floor(dist / 200), msgs)

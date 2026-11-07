@@ -835,7 +835,7 @@ local Nations: { [string]: Nation } = {
 	england = {
 		id = "england", name = "영국", startPort = "london",
 		summary = "항해술 우수 (항해 속도 +5%)",
-		speedMult = 1.05, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1,
+		speedMult = 1.05, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1, hidden = true,
 	},
 	netherlands = {
 		id = "netherlands", name = "네덜란드", startPort = "amsterdam",
@@ -850,12 +850,12 @@ local Nations: { [string]: Nation } = {
 	denmark = {
 		id = "denmark", name = "덴마크", startPort = "copenhagen",
 		summary = "북해 해군 전통 (전투 경험 +20%)",
-		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1.2,
+		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1, battleXpMult = 1.2, hidden = true,
 	},
 	sweden = {
 		id = "sweden", name = "스웨덴", startPort = "gothenburg",
 		summary = "자연 연구 (모험 경험 +20%)",
-		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.2, battleXpMult = 1,
+		speedMult = 1, sellBonus = 0, startCoins = 0, adventureXpMult = 1.2, battleXpMult = 1, hidden = true,
 	},
 	venice = {
 		id = "venice", name = "베네치아 공화국", startPort = "venice",
