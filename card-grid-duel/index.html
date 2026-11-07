@@ -1188,10 +1188,13 @@ function prepareBossMusic(){
     }
     const drums=ctx.createGain();
     drums.gain.value=0;drums.connect(mixer);
+    // 합창·현악의 화성층도 큰북과 함께 페이드한다.
+    const orchestra=ctx.createGain();
+    orchestra.gain.value=0;orchestra.connect(mixer);
     const noise=ctx.createBuffer(1,Math.round(ctx.sampleRate*.26),ctx.sampleRate);
     const samples=noise.getChannelData(0);
     for(let i=0;i<samples.length;i++)samples[i]=(Math.random()*2-1)*Math.pow(1-i/samples.length,1.5);
-    bossMix={ctx,drums,noise}
+    bossMix={ctx,drums,orchestra,noise}
   }catch(err){
     // 오디오 엔진 미지원 환경은 기존 HTML 오디오를 그대로 재생한다.
     console.warn('보스 음악 음향 효과를 사용할 수 없어 기본 음원으로 재생해.',err)
@@ -1199,38 +1202,57 @@ function prepareBossMusic(){
 }
 function beatBossDrums(){
   if(!bossMix||bossAudio.paused||!bossMusicRequested||bossMusicMuted)return;
-  const {ctx,drums,noise}=bossMix;
-  // 모차르트 라크리모사의 느린 박자를 무겁게 받쳐주는 전장 큰북.
+  const {ctx,drums,orchestra,noise}=bossMix;
+  // 라크리모사의 느린 4박 위에 깊은 전쟁 북·금속 타격·현악·합창을 쌓는다.
   const duration=60/72;
+  const chords=[[146.83,174.61,220],[116.54,146.83,174.61],[98,146.83,196],[110,138.59,164.81]];
   while(bossNextBeat<ctx.currentTime+.35){
-    const when=Math.max(ctx.currentTime+.01,bossNextBeat),beat=bossBeatCount++%4;
+    const when=Math.max(ctx.currentTime+.01,bossNextBeat);
+    const count=bossBeatCount++,beat=count%4,bar=Math.floor(count/4),strong=beat===0;
     const drum=ctx.createOscillator(),env=ctx.createGain();
     drum.type='sine';
-    drum.frequency.setValueAtTime(beat===0?95:76,when);
-    drum.frequency.exponentialRampToValueAtTime(beat===0?39:47,when+.38);
+    drum.frequency.setValueAtTime(strong?104:beat===2?88:69,when);
+    drum.frequency.exponentialRampToValueAtTime(strong?37:46,when+.42);
     env.gain.setValueAtTime(.0001,when);
-    env.gain.exponentialRampToValueAtTime(beat===0?.78:.29,when+.015);
-    env.gain.exponentialRampToValueAtTime(.0001,when+.43);
+    env.gain.exponentialRampToValueAtTime(strong?.88:beat===2?.48:.22,when+.014);
+    env.gain.exponentialRampToValueAtTime(.0001,when+.49);
     drum.connect(env);env.connect(drums);
-    drum.start(when);drum.stop(when+.45);
-    if(beat===0||beat===2){
-      const noiseSource=ctx.createBufferSource(),drumFilter=ctx.createBiquadFilter(),tail=ctx.createGain();
-      noiseSource.buffer=noise;drumFilter.type='lowpass';drumFilter.frequency.value=beat===0?520:1100;
-      tail.gain.setValueAtTime(beat===0?.23:.11,when);
-      tail.gain.exponentialRampToValueAtTime(.0001,when+.25);
-      noiseSource.connect(drumFilter);drumFilter.connect(tail);tail.connect(drums);
-      noiseSource.start(when);noiseSource.stop(when+.26)
+    drum.start(when);drum.stop(when+.5);
+    if(strong||beat===2||beat===3){
+      const hit=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),tail=ctx.createGain();
+      hit.buffer=noise;filter.type=strong?'lowpass':'highpass';
+      filter.frequency.value=strong?820:beat===2?1800:3200;
+      tail.gain.setValueAtTime(strong?.36:beat===2?.20:.10,when);
+      tail.gain.exponentialRampToValueAtTime(.0001,when+(strong?.34:.18));
+      hit.connect(filter);filter.connect(tail);tail.connect(drums);
+      hit.start(when);hit.stop(when+.25)
     }
-    if(beat===0){
-      // 강박마다 Dm–B♭–Gm–A의 저음 진행을 더해 오케스트라의 무게감을 만든다.
-      const bassNotes=[73.42,58.27,49,55],note=bassNotes[Math.floor((bossBeatCount-1)/4)%4];
-      const sub=ctx.createOscillator(),subGain=ctx.createGain();
-      sub.type='triangle';sub.frequency.value=note;
-      subGain.gain.setValueAtTime(.0001,when);
-      subGain.gain.exponentialRampToValueAtTime(.18,when+.11);
-      subGain.gain.exponentialRampToValueAtTime(.0001,when+duration*3.7);
-      sub.connect(subGain);subGain.connect(drums);
-      sub.start(when);sub.stop(when+duration*3.8)
+    if(strong){
+      const roots=[73.42,58.27,49,55],root=roots[bar%4];
+      for(const [frequency,level,type] of [[root,.24,'triangle'],[root/2,.18,'sine']]){
+        const osc=ctx.createOscillator(),gain=ctx.createGain();
+        osc.type=type;osc.frequency.value=frequency;
+        gain.gain.setValueAtTime(.0001,when);
+        gain.gain.exponentialRampToValueAtTime(level,when+.16);
+        gain.gain.exponentialRampToValueAtTime(.0001,when+duration*3.85);
+        osc.connect(gain);gain.connect(orchestra);
+        osc.start(when);osc.stop(when+duration*3.9)
+      }
+      for(const frequency of chords[bar%4]){
+        const voice=ctx.createOscillator(),vibrato=ctx.createOscillator();
+        const depth=ctx.createGain(),tone=ctx.createBiquadFilter(),gain=ctx.createGain();
+        voice.type='sawtooth';voice.frequency.value=frequency;
+        vibrato.type='sine';vibrato.frequency.value=4.5;depth.gain.value=.75;
+        vibrato.connect(depth);depth.connect(voice.frequency);
+        tone.type='lowpass';tone.frequency.value=900;tone.Q.value=.55;
+        gain.gain.setValueAtTime(.0001,when);
+        gain.gain.exponentialRampToValueAtTime(.035,when+.8);
+        gain.gain.setValueAtTime(.035,when+duration*3.15);
+        gain.gain.exponentialRampToValueAtTime(.0001,when+duration*3.9);
+        voice.connect(tone);tone.connect(gain);gain.connect(orchestra);
+        voice.start(when);vibrato.start(when);
+        voice.stop(when+duration*3.95);vibrato.stop(when+duration*3.95)
+      }
     }
     bossNextBeat+=duration
   }
@@ -1243,7 +1265,10 @@ function fadeBossMusic(to,duration){
     const easing=elapsed*elapsed*(3-2*elapsed);
     const current=Math.max(0,Math.min(1,from+(to-from)*easing));
     bossAudio.volume=current;
-    if(bossMix)bossMix.drums.gain.value=current*.65;
+    if(bossMix){
+      bossMix.drums.gain.value=current*.72;
+      bossMix.orchestra.gain.value=current*.8
+    }
     if(elapsed>=1){
       clearInterval(bossFadeTimer);
       bossFadeTimer=null;
@@ -1259,7 +1284,7 @@ function playBossMusic(){
   prepareBossMusic();
   if(bossMix&&bossMix.ctx.state==='suspended')bossMix.ctx.resume().catch(()=>{});
   if(bossAudio.paused)bossAudio.volume=0;
-  bossAudio.playbackRate=1.06;
+  bossAudio.playbackRate=1;
   const started=()=>{
     if(!bossMusicRequested||bossMusicMuted||!state||state.stage!==7||state.winner||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
     $('#bossMusicToggle').textContent='보스 음악 끄기';
@@ -1269,7 +1294,7 @@ function playBossMusic(){
       bossDrumTimer=setInterval(beatBossDrums,120);
       beatBossDrums()
     }
-    fadeBossMusic(.9,3900)
+    fadeBossMusic(.94,4800)
   };
   const attempt=bossAudio.play();
   if(attempt&&typeof attempt.then==='function'){
@@ -1289,7 +1314,7 @@ function syncBossMusic(){
   }else{
     if(bossMusicRequested){
       bossMusicRequested=false;
-      if(!bossAudio.paused)fadeBossMusic(0,3400)
+      if(!bossAudio.paused)fadeBossMusic(0,4200)
     }
     bossMusicMuted=false
   }
@@ -1299,7 +1324,7 @@ $('#bossMusicToggle').onclick=()=>{
   if(!bossAudio.paused&&!bossMusicMuted){
     bossMusicMuted=true;
     $('#bossMusicToggle').textContent='보스 음악 켜기';
-    fadeBossMusic(0,3400)
+    fadeBossMusic(0,4200)
   }else{
     bossMusicMuted=false;
     bossMusicRequested=true;
