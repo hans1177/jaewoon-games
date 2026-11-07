@@ -1,113 +1,118 @@
 [
- {
-  "type": "wait",
-  "ms": 9000
- },
- {
-  "type": "click_text",
-  "text": "이어하기"
- },
- {
-  "type": "wait",
-  "ms": 70000
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local RS=game:GetService(\"RunService\") pcall(function() RS:UnbindFromRenderStep(\"FantasyShot\") end) RS:BindToRenderStep(\"FantasyShot\",Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute(\"ShotCF\") if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute(\"ShotFov\") or 60 end end) for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true end return \"bound\""
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(262,12,150)) end return \"tp\""
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "workspace:SetAttribute(\"ShotFov\",60) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(262,11,172),Vector3.new(262,5,201))) return \"shot\""
- },
- {
-  "type": "wait",
-  "ms": 9000
- },
- {
-  "type": "capture",
-  "name": "companions_ring"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-317,12,-100)) end return \"tp\""
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "workspace:SetAttribute(\"ShotFov\",60) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-310,8,-112),Vector3.new(-318,2,-150))) return \"shot\""
- },
- {
-  "type": "wait",
-  "ms": 8000
- },
- {
-  "type": "capture",
-  "name": "road"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(262,12,0)) end return \"tp\""
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "workspace:SetAttribute(\"ShotFov\",60) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(262,10,-30),Vector3.new(300,3,30))) return \"shot\""
- },
- {
-  "type": "wait",
-  "ms": 8000
- },
- {
-  "type": "capture",
-  "name": "hills"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(198,12,-100)) end return \"tp\""
- },
- {
-  "type": "wait",
-  "ms": 16000
- },
- {
-  "type": "luau",
-  "ctx": "Server",
-  "code": "local set={roguehooded=1,rogue=1,barbarian=1,knight=1,adventurer=1,king=1,punk=1} local total,bestm=0,nil local counts={} for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\") then total+=1 local k=tostring(m:GetAttribute(\"Species\"))..\"/\"..tostring(m:GetAttribute(\"Variant\")) counts[k]=(counts[k] or 0)+1 if not bestm and (set[m:GetAttribute(\"Variant\") or \"\"] or m:GetAttribute(\"Species\")==\"bandit\") and m:GetAttribute(\"EnemyHealth\") then bestm=m end end end local r={} for k,n in pairs(counts) do r[#r+1]=n..\"x \"..k end table.sort(r) if bestm then workspace:SetAttribute(\"MobShotPos\",bestm:GetPivot().Position) end return \"SERVER total=\"..total..\" best=\"..(bestm and (bestm.Name..\":\"..tostring(bestm:GetAttribute(\"Variant\"))) or \"none\")..\" | \"..table.concat(r,\" , \")"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local pos=workspace:GetAttribute(\"MobShotPos\") if typeof(pos)~=\"Vector3\" then return \"no MobShotPos\" end local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(pos+Vector3.new(14,6,14))) task.wait(4) local best,bd=nil,1e9 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\") then local d=(m:GetPivot().Position-pos).Magnitude if d<bd then best,bd=m,d end end end local p=best and best:GetPivot().Position or pos workspace:SetAttribute(\"ShotFov\",50) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(7,4,7),p+Vector3.new(0,2.5,0))) return \"client mob=\"..(best and best.Name or \"none\")..\" d=\"..math.floor(bd)"
- },
- {
-  "type": "wait",
-  "ms": 1500
- },
- {
-  "type": "capture",
-  "name": "human_mob_a"
- },
- {
-  "type": "wait",
-  "ms": 1500
- },
- {
-  "type": "capture",
-  "name": "human_mob_b"
- },
- {
-  "type": "luau",
-  "ctx": "Client",
-  "code": "local out={} for _,m in ipairs(game:GetService(\"LogService\"):GetLogHistory()) do if m.messageType==Enum.MessageType.MessageError then out[#out+1]=string.sub(m.message,1,160) end end local c={} for _,l in ipairs(out) do c[l]=(c[l] or 0)+1 end local r={} for l,n in pairs(c) do r[#r+1]=n..\"x \"..l end table.sort(r) return \"ERRORS \"..#out..\"|\"..table.concat(r,\"\\n\")"
- }
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "click_text",
+    "text": "이어하기"
+  },
+  {
+    "type": "wait",
+    "ms": 70000
+  },
+  {
+    "type": "luau",
+    "ctx": "Server",
+    "code": "workspace:SetAttribute(\"StudioForceHumanMobs\",true) return \"force on\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService(\"RunService\") pcall(function() RS:UnbindFromRenderStep(\"FantasyShot\") end) RS:BindToRenderStep(\"FantasyShot\",Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute(\"ShotCF\") if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute(\"ShotFov\") or 60 end end) for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true end return \"bound\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(262,12,150)) end return \"tp\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute(\"ShotFov\",60) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(262,11,172),Vector3.new(262,5,201))) return \"shot\""
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "capture",
+    "name": "companions_ring"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-317,12,-100)) end return \"tp\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute(\"ShotFov\",60) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-310,8,-112),Vector3.new(-318,2,-150))) return \"shot\""
+  },
+  {
+    "type": "wait",
+    "ms": 8000
+  },
+  {
+    "type": "capture",
+    "name": "road"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(262,12,0)) end return \"tp\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute(\"ShotFov\",60) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(262,10,-30),Vector3.new(300,3,30))) return \"shot\""
+  },
+  {
+    "type": "wait",
+    "ms": 8000
+  },
+  {
+    "type": "capture",
+    "name": "hills"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(198,12,-100)) end return \"tp\""
+  },
+  {
+    "type": "wait",
+    "ms": 16000
+  },
+  {
+    "type": "luau",
+    "ctx": "Server",
+    "code": "local set={roguehooded=1,rogue=1,barbarian=1,knight=1,adventurer=1,king=1,punk=1} local total,bestm=0,nil local counts={} for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\") then total+=1 local k=tostring(m:GetAttribute(\"Species\"))..\"/\"..tostring(m:GetAttribute(\"Variant\")) counts[k]=(counts[k] or 0)+1 if not bestm and (set[m:GetAttribute(\"Variant\") or \"\"] or m:GetAttribute(\"Species\")==\"bandit\") and m:GetAttribute(\"EnemyHealth\") then bestm=m end end end local r={} for k,n in pairs(counts) do r[#r+1]=n..\"x \"..k end table.sort(r) if bestm then workspace:SetAttribute(\"MobShotPos\",bestm:GetPivot().Position) end return \"SERVER total=\"..total..\" best=\"..(bestm and (bestm.Name..\":\"..tostring(bestm:GetAttribute(\"Variant\"))) or \"none\")..\" | \"..table.concat(r,\" , \")"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pos=workspace:GetAttribute(\"MobShotPos\") if typeof(pos)~=\"Vector3\" then return \"no MobShotPos\" end local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(pos+Vector3.new(14,6,14))) task.wait(4) local best,bd=nil,1e9 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\") then local d=(m:GetPivot().Position-pos).Magnitude if d<bd then best,bd=m,d end end end local p=best and best:GetPivot().Position or pos workspace:SetAttribute(\"ShotFov\",50) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(7,4,7),p+Vector3.new(0,2.5,0))) return \"client mob=\"..(best and best.Name or \"none\")..\" d=\"..math.floor(bd)"
+  },
+  {
+    "type": "wait",
+    "ms": 1500
+  },
+  {
+    "type": "capture",
+    "name": "human_mob_a"
+  },
+  {
+    "type": "wait",
+    "ms": 1500
+  },
+  {
+    "type": "capture",
+    "name": "human_mob_b"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local out={} for _,m in ipairs(game:GetService(\"LogService\"):GetLogHistory()) do if m.messageType==Enum.MessageType.MessageError then out[#out+1]=string.sub(m.message,1,160) end end local c={} for _,l in ipairs(out) do c[l]=(c[l] or 0)+1 end local r={} for l,n in pairs(c) do r[#r+1]=n..\"x \"..l end table.sort(r) return \"ERRORS \"..#out..\"|\"..table.concat(r,\"\\n\")"
+  }
 ]

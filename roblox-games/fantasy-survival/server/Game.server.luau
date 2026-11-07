@@ -5428,6 +5428,13 @@ local function refreshMeadowEncounters(now)
         if player:GetAttribute("ProfileReady")==true and root and humanoid and humanoid.Health>0
           and (root.Position-site.position).Magnitude<165 then nearby=true;break end
       end
+      -- [스튜디오 전용 점검 스위치] CI 캡처에서 인간형 몹을 확인하려고 워크스페이스 속성이 켜졌을 때만
+      -- 인간형 변종 지점 최대 3곳을 거리와 상관없이 스폰한다. 실서버(Studio 아님)에서는 동작하지 않는다.
+      if not nearby and RunService:IsStudio() and workspace:GetAttribute("StudioForceHumanMobs")==true
+        and site.model and meadowR15Looks[site.model] and (workspace:GetAttribute("StudioForcedHumanMobs") or 0)<3 then
+        nearby=true
+        workspace:SetAttribute("StudioForcedHumanMobs",(workspace:GetAttribute("StudioForcedHumanMobs") or 0)+1)
+      end
       if nearby then
         site.loading=true
         task.defer(function()
