@@ -5822,7 +5822,7 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   local now=os.clock()
   if (defense.dodgeUntil or 0)>now then return end
   local gearFx=meadowOil.gearFx(player)
-  if (gearFx.dodge or 0)>0 and math.random()<math.min(.2,gearFx.dodge) then
+  if CombatStatus.DefendRoll(gearFx).dodged then
     remote:FireClient(player,"MEADOW_REACTION","DODGE")
     return
   end
@@ -5956,7 +5956,7 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   -- [갑옷 피해 경감] 완벽 방어·회피 판정 이후 실제 착용 장비와 방호 숙련만 적용.
   local _,armor=meadowRpg.stats(player)
   damage=math.max(1,damage-armor)
-  if (gearFx.dr or 0)>0 then damage=math.max(1,math.floor(damage*(1-math.min(.3,gearFx.dr)))) end
+  if (gearFx.dr or 0)>0 then damage=math.max(1,math.floor(damage*CombatStatus.DamageMultiplier(gearFx))) end
   humanoid:TakeDamage(damage)
   setNumber(player,"Health",math.max(0,math.floor(humanoid.Health)))
 end

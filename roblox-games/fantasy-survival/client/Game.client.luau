@@ -8246,7 +8246,8 @@ do
       player=player,gui=gui,Config=Config,actionsById=actionsById,remote=remote,
       meadowArt=meadowArt,combatVFX=combatVFX,reducedEffects=function() return reducedEffects end,
     })
-    if not okInstall then warn("SKILL_SIGNATURE_INSTALL_FAILED: "..tostring(installError)) end
+    if not okInstall then warn("SKILL_SIGNATURE_INSTALL_FAILED: "..tostring(installError))
+    else meadowArt.signatureHandle=installError end
   else
     warn("SKILL_SIGNATURE_MODULE_MISSING")
   end

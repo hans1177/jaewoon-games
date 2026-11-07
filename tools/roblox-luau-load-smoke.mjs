@@ -19,7 +19,7 @@ export function findLuau(){
   return luau&&compile?{luau,compile}:null;
 }
 
-const STUB_PRELUDE=`
+export const STUB_PRELUDE=`
 local function stub() return setmetatable({},{
   __index=function() return stub end,__call=function() return stub() end,
   __add=function() return stub() end,__sub=function() return stub() end,__mul=function() return stub() end,
@@ -33,8 +33,49 @@ Rect=stub() BrickColor=stub() TweenInfo=stub() Ray=stub() Region3=stub() Font=st
 game=stub() workspace=stub() script=stub()
 `;
 
-export function smokeGame(gameDir,tools=findLuau()){
+
+// default.project.json 검사: 모든 $path 파일이 있는지, 그리고 소스가 Shared:WaitForChild/FindFirstChild("이름")으로
+// require하는 모듈이 실제로 매핑돼 있는지 확인한다(매핑 누락 = 런타임에서 nil require로 시작 실패).
+export function checkProjectMappings(gameDir){
   const errors=[];
+  const projectFile=path.join(gameDir,'default.project.json');
+  if(!fs.existsSync(projectFile))return errors;
+  let project;
+  try{project=JSON.parse(fs.readFileSync(projectFile,'utf8'))}catch(error){return [`PROJECT ${projectFile}: JSON 파싱 실패 ${error.message}`]}
+  const shared=new Set();
+  const walk=(node,trail)=>{
+    if(!node||typeof node!=='object')return;
+    if(typeof node.$path==='string'){
+      const target=path.resolve(gameDir,node.$path);
+      if(!fs.existsSync(target))errors.push(`PROJECT $path 없음: ${trail.join('.')} -> ${node.$path}`);
+    }
+    for(const [key,value] of Object.entries(node)){
+      if(key.startsWith('$'))continue;
+      if(trail.join('.')==='ReplicatedStorage'&&key==='Shared')shared.add('__shared__');
+      if(trail.join('.')==='ReplicatedStorage.Shared')shared.add(key);
+      walk(value,[...trail,key]);
+    }
+  };
+  walk(project.tree||{},[]);
+  // $path 폴더(shared)의 .luau 파일 이름도 Shared 자식이다.
+  const sharedDir=path.join(gameDir,'shared');
+  if(fs.existsSync(sharedDir))for(const f of fs.readdirSync(sharedDir)){const m=f.match(/^(.*)\.luau?$/);if(m)shared.add(m[1])}
+  for(const sub of ['server','client','shared']){
+    const dir=path.join(gameDir,sub);
+    if(!fs.existsSync(dir))continue;
+    for(const f of fs.readdirSync(dir)){
+      if(!/\.luau?$/.test(f))continue;
+      const text=fs.readFileSync(path.join(dir,f),'utf8');
+      for(const m of text.matchAll(/Shared:(?:WaitForChild|FindFirstChild)\("([A-Za-z0-9_]+)"/g)){
+        if(!shared.has(m[1]))errors.push(`REQUIRE ${path.join(sub,f)}: Shared.${m[1]} 이(가) default.project.json에 매핑되지 않음`);
+      }
+    }
+  }
+  return errors;
+}
+
+export function smokeGame(gameDir,tools=findLuau()){
+  const errors=[...checkProjectMappings(gameDir)];
   if(!tools)return {skipped:true,errors};
   const files=[];
   for(const sub of ['server','client','shared']){

@@ -5,10 +5,41 @@
 -- 사용: require(Shared.RobloxCommonSkillSignature).Install({
 --   player=Players.LocalPlayer, gui=ScreenGui, Config=GameConfig, actionsById={[id]=action}, remote=RemoteEvent,
 --   meadowArt=table(sfx 함수 포함), combatVFX=RobloxCommonVFX 또는 nil, reducedEffects=function() return bool end })
+-- Install 은 핸들({Styles, Preview, LiveParts, Uninstall})을 돌려주고, 입력이 잘못되면 nil, 문제목록을 돌려준다(게임은 계속된다).
+-- 설치 전에 Signature.Validate(ctx)로 확인할 수 있고, 동시 이펙트 파트 수는 PART_BUDGET(저사양 PART_BUDGET_REDUCED)로 제한된다.
 -- 설치 후 meadowArt.signature/styleOf/colorOf/flair/guardShield/guardHit/motionTrail/impactDetail 이 채워진다.
 local Signature = {}
 
+-- 공개 스타일 이름(24종 중 호출 가능한 시각 스타일). 새 게임이 액션을 이 이름에 매핑할 때 참고한다.
+Signature.StyleNames = {
+  "slam", "strike", "sweep", "dash", "stun", "fury", "multi", "bolt", "pierce", "burst", "rain", "root", "mark",
+  "guard", "parry", "heal", "healaoe", "buff", "oath", "smoke", "backstab", "chain", "ultimate", "dodge", "kick", "rush",
+}
+
+-- 설치 전에 입력을 검증한다. 문제 목록(빈 배열이면 정상)을 돌려준다.
+function Signature.Validate(ctx)
+  local problems = {}
+  if type(ctx) ~= "table" then return {"ctx 가 표가 아님"} end
+  if typeof(ctx.player) ~= "Instance" then problems[#problems + 1] = "player(Players.LocalPlayer)가 필요함" end
+  if typeof(ctx.gui) ~= "Instance" then problems[#problems + 1] = "gui(ScreenGui)가 필요함" end
+  if type(ctx.Config) ~= "table" then problems[#problems + 1] = "Config(게임 설정 표)가 필요함" end
+  if type(ctx.actionsById) ~= "table" then problems[#problems + 1] = "actionsById 표가 필요함" end
+  if typeof(ctx.remote) ~= "Instance" then problems[#problems + 1] = "remote(RemoteEvent)가 필요함" end
+  if type(ctx.meadowArt) ~= "table" then problems[#problems + 1] = "meadowArt 표가 필요함" end
+  if type(ctx.reducedEffects) ~= "function" then problems[#problems + 1] = "reducedEffects() 함수가 필요함" end
+  return problems
+end
+
+-- 설치 한도: 동시에 화면에 붙는 이펙트 파트 수. 저사양(reducedEffects)에서는 절반 이하로 줄인다.
+Signature.PART_BUDGET = 160
+Signature.PART_BUDGET_REDUCED = 70
+
 function Signature.Install(ctx)
+  local problems = Signature.Validate(ctx)
+  if #problems > 0 then
+    warn("SKILL_SIGNATURE_INVALID_CONTEXT: " .. table.concat(problems, " / "))
+    return nil, problems
+  end
   local Config, actionsById, combatVFX = ctx.Config, ctx.actionsById, ctx.combatVFX
   local gui, meadowArt, player, remote = ctx.gui, ctx.meadowArt, ctx.player, ctx.remote
   local function reducedEffects() return ctx.reducedEffects() == true end
@@ -16,12 +47,22 @@ function Signature.Install(ctx)
   local DB=game:GetService("Debris")
   local RS=game:GetService("RunService")
   local white=Color3.fromRGB(255,255,245)
+  local liveParts=0
   local function anchorPart(cf,size,color,shape,transp)
     local p=Instance.new("Part")
     p.Anchored=true;p.CanCollide=false;p.CanTouch=false;p.CanQuery=false;p.CastShadow=false
     p.Material=Enum.Material.Neon;p.Color=color;p.Transparency=transp or 0
     if shape then p.Shape=shape end
-    p.Size=size;p.CFrame=cf;p.Parent=workspace
+    p.Size=size;p.CFrame=cf
+    -- [성능] 동시 이펙트 파트 한도를 넘으면 화면에 붙이지 않는다(연출은 건너뛰고 Debris가 곧 정리).
+    local budget=reducedEffects() and Signature.PART_BUDGET_REDUCED or Signature.PART_BUDGET
+    if liveParts<budget then
+      liveParts+=1
+      p.Destroying:Connect(function() liveParts=math.max(0,liveParts-1) end)
+      p.Parent=workspace
+    else
+      DB:AddItem(p,.1)
+    end
     return p
   end
   local function fade(p,goal,t,style)
@@ -536,7 +577,7 @@ function Signature.Install(ctx)
     if style=="dodge" or style=="healaoe" and false then return nil end
     return style
   end
-  remote.OnClientEvent:Connect(function(kind,name,position)
+  local odyConnection=remote.OnClientEvent:Connect(function(kind,name,position)
     if kind~="ODY_FX" or typeof(position)~="Vector3" then return end
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     if root then
@@ -567,6 +608,25 @@ function Signature.Install(ctx)
     if payload.finisher then ring(pos,white,1,9,.35,.3);shake(.5,.25) end
     if recent and meadowArt.motionHold then meadowArt.motionHold(payload.finisher and .12 or .06) end
   end
+
+  -- 설치 결과 핸들: 스타일 목록, 미리보기, 정리.
+  local installed={"guardPulse","guardShield","guardHit","guardPerfect","flair","motionTrail","lastSkill","signature","colorOf","styleOf","impactDetail"}
+  local handle={Styles=styles}
+  function handle.LiveParts() return liveParts end
+  -- 지정한 스타일을 위치에 한 번 재생한다(도구·테스트용). 반환: 재생 성공 여부.
+  function handle.Preview(styleName,position,color)
+    local style=styles[styleName]
+    if not style then return false end
+    local origin=typeof(position)=="Vector3" and position or Vector3.zero
+    local ok=pcall(style,{root={Position=origin,CFrame=CFrame.new(origin)},pos=origin,color=color or Color3.fromRGB(255,235,170),dir=Vector3.zAxis,side=1})
+    return ok
+  end
+  function handle.Uninstall()
+    for _,name in ipairs(installed) do meadowArt[name]=nil end
+    if handle.Connection then handle.Connection:Disconnect();handle.Connection=nil end
+  end
+  handle.Connection=odyConnection
+  return handle
 end
 
 return Signature
