@@ -11398,7 +11398,9 @@ end)
   close.ZIndex=63;close.Parent=panel;Instance.new("UICorner",close).CornerRadius=UDim.new(0,9)
   local field=Instance.new("Frame")
   field.AnchorPoint=Vector2.new(.5,1);field.Position=UDim2.new(.5,0,1,-10)
-  field.Size=UDim2.new(1,-20,1,-62);field.BackgroundColor3=Color3.fromRGB(14,16,14);field.ZIndex=62;field.ClipsDescendants=true;field.Parent=panel
+  field.Size=UDim2.new(1,-20,1,-62);field.BackgroundColor3=Color3.fromRGB(14,16,14);field.ZIndex=62;field.ClipsDescendants=true
+  -- [지도 드래그 닫힘 방지] 입력을 지도 창이 받아야 뒤의 오버레이 버튼이 '바깥을 눌렀다'고 보고 지도를 닫지 않는다.
+  field.Active=true;panel.Active=true;field.Parent=panel
   local ratio=Instance.new("UIAspectRatioConstraint");ratio.AspectRatio=mapImage and mapImage.W/mapImage.H or width/height;ratio.AspectType=Enum.AspectType.ScaleWithParentSize
   ratio.DominantAxis=Enum.DominantAxis.Width;ratio.Parent=field
   -- 확대/이동용 캔버스: 지도 그림과 모든 표시가 이 안에 들어간다. field는 잘라내는 창 역할.
@@ -11406,6 +11408,7 @@ end)
   canvas.Name="MapCanvas";canvas.BackgroundTransparency=1;canvas.BorderSizePixel=0
   canvas.Size=UDim2.fromScale(1,1);canvas.Position=UDim2.fromScale(0,0);canvas.ZIndex=62;canvas.Parent=field
   local zoom,panX,panY=1,0,0
+  local mapDragMoved=0 -- 드래그로 움직인 거리(px). 드래그 끝에 이정표 위에서 손을 떼도 눌린 것으로 치지 않는다.
   local function applyZoom(newZoom,fx_,fy_)
     newZoom=math.clamp(newZoom,1,5)
     local cx=(fx_-panX)/zoom;local cy=(fy_-panY)/zoom
@@ -11428,7 +11431,7 @@ end)
     local dragging,startPos,startPan
     field.InputBegan:Connect(function(input)
       if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
-        dragging=true;startPos=input.Position;startPan=Vector2.new(panX,panY)
+        dragging=true;startPos=input.Position;startPan=Vector2.new(panX,panY);mapDragMoved=0
       end
     end)
     field.InputEnded:Connect(function(input)
@@ -11438,6 +11441,7 @@ end)
       if not overlay.Visible then return end
       if dragging and zoom>1 and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
         local size=field.AbsoluteSize
+        mapDragMoved=math.max(mapDragMoved,(Vector2.new(input.Position.X,input.Position.Y)-Vector2.new(startPos.X,startPos.Y)).Magnitude)
         local dx=(input.Position.X-startPos.X)/size.X
         local dy=(input.Position.Y-startPos.Y)/size.Y
         panX=math.clamp(startPan.X+dx,1-zoom,0);panY=math.clamp(startPan.Y+dy,1-zoom,0)
@@ -11565,6 +11569,7 @@ end)
     label.Font=Enum.Font.GothamBold;label.TextSize=10;label.TextColor3=Color3.fromRGB(255,244,214);label.TextStrokeTransparency=.2
     label.Text="";label.ZIndex=68;label.Parent=marker
     marker.Activated:Connect(function()
+      if mapDragMoved>8 then return end
       if bit32.band(player:GetAttribute("WaypointMask") or 0,bit32.lshift(1,index-1))~=0 then
         remote:FireServer("wp:map:"..index)
         overlay.Visible=false
@@ -11602,7 +11607,7 @@ end)
   end
   info.Active=true
   local function pin(mark,textFn)
-    mark.Activated:Connect(function() showInfo(textFn()) end)
+    mark.Activated:Connect(function() if mapDragMoved>8 then return end showInfo(textFn()) end)
   end
   local function zoneSeen(zoneId)
     local discovered=player:GetAttribute("WorldDiscovered") or 1

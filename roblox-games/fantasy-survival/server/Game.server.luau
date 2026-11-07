@@ -8802,9 +8802,10 @@ do
       end
     end)
     for index,c in ipairs(roster) do
-      local col=(index-1)%6
-      local row=math.floor((index-1)/6)
-      local spot=homePos+Vector3.new(-30+col*12,0,-14-row*12)
+      -- [동료 배치] 일렬로 서 있던 12명을 화덕 둘레에 둥글게(반지름은 사람마다 조금씩 다르게) 세워 모닥불을 바라보게 한다.
+      local angle=(index-1)/#roster*math.pi*2+math.sin(index*2.3)*.12
+      local ringRadius=15+math.sin(index*1.7)*3.2
+      local spot=homePos+Vector3.new(math.cos(angle)*ringRadius,0,math.sin(angle)*ringRadius-4)
       local stand=Instance.new("Attachment");stand.Name="Homestead_"..c.Id;stand.WorldPosition=spot+Vector3.new(0,3,0);stand.Parent=workspace.Terrain
       local mark=Instance.new("ParticleEmitter");mark.Color=ColorSequence.new(Color3.fromRGB(255,236,170));mark.LightEmission=1;mark.Rate=6
       mark.Lifetime=NumberRange.new(2,3);mark.Size=NumberSequence.new(.5);mark.EmissionDirection=Enum.NormalId.Top;mark.Parent=stand
@@ -8818,11 +8819,27 @@ do
           desc.LeftLegColor=Color3.fromRGB(60,56,52);desc.RightLegColor=Color3.fromRGB(60,56,52)
           npc=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
           desc:Destroy()
-          npc:PivotTo(CFrame.new(spot+Vector3.new(0,3.2,0)))
-          for _,part in ipairs(npc:GetDescendants()) do if part:IsA("BasePart") then part.Anchored=true end end
+          local lookAtFire=Vector3.new(homePos.X,spot.Y+3.2,homePos.Z)
+          npc:PivotTo(CFrame.lookAt(spot+Vector3.new(0,3.2,0),lookAtFire))
+          -- 루트만 고정하고 나머지는 풀어 둬야 공식 대기 애니메이션이 팔다리를 움직인다(전신 고정이면 T자세로 굳는다).
+          for _,part in ipairs(npc:GetDescendants()) do
+            if part:IsA("BasePart") then part.Anchored=(part.Name=="HumanoidRootPart") end
+          end
           npc.Parent=workspace
           local hum=npc:FindFirstChildOfClass("Humanoid")
-          if hum then hum.DisplayName=c.Name end
+          if hum then
+            hum.DisplayName=c.Name
+            pcall(function()
+              local animator=hum:FindFirstChildOfClass("Animator") or Instance.new("Animator",hum)
+              local anim=Instance.new("Animation")
+              anim.AnimationId="rbxassetid://507766388" -- Roblox 공식 R15 대기(숨쉬기)
+              local track=animator:LoadAnimation(anim)
+              anim:Destroy()
+              track.Looped=true
+              track:Play(.3)
+              track.TimePosition=(index*.37)%1 -- 12명이 같은 박자로 숨 쉬지 않게 어긋나게 시작
+            end)
+          end
         end
         if npc then npc.Name="Homestead_NPC_"..c.Id end
       end)
