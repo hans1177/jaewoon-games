@@ -1,2 +1,23 @@
--- 업로드 워크플로(mare-audio-upload)가 채운다. 등록과 권한 승인이 끝난 것만 들어간다. 없으면 소리 없이 지나간다.
-return {}
+-- 업로드 워크플로(mare-audio-upload)가 기록한 음악·효과음 ID. 등록과 권한 승인이 끝난 것만 들어간다. 없으면 소리 없이 지나간다.
+return {
+ music_harbor="rbxassetid://94877172157272",
+ music_sea="rbxassetid://88652424990448",
+ music_battle="rbxassetid://104964043307868",
+ music_market="rbxassetid://111625086264844",
+ sfx_click="rbxassetid://106017582357217",
+ sfx_coin="rbxassetid://109692086583312",
+ sfx_buy="rbxassetid://127180401550407",
+ sfx_sell="rbxassetid://112740748482492",
+ sfx_cannon="rbxassetid://89226890354390",
+ sfx_hit="rbxassetid://109677580355981",
+ sfx_splash="rbxassetid://136298615661213",
+ sfx_waves="rbxassetid://76255025063962",
+ sfx_wind="rbxassetid://73929156281423",
+ sfx_gull="rbxassetid://87292639789131",
+ sfx_bell="rbxassetid://88616189270295",
+ sfx_creak="rbxassetid://139139816260817",
+ sfx_fanfare="rbxassetid://92668588860351",
+ sfx_error="rbxassetid://98668739739299",
+ sfx_horn="rbxassetid://98311274744576",
+ sfx_sail="rbxassetid://79547197431613",
+}
