@@ -1193,6 +1193,36 @@ local function paintScene(parent, art, t)
 	end
 end
 
+-- 초상화용 인물: 색·재질이 있는 R15 모델을 우선 쓰고, 만들 수 없으면 승인된 People 모델을 쓴다
+local function portraitPerson(world, key, role, tpl)
+	local seed = 0
+	for i = 1, #key do
+		seed = (seed * 31 + string.byte(key, i)) % 100000
+	end
+	local m = Pose.createR15(world, Vector3.zero, 0, nil, Random.new(seed), role, 6)
+	if m then
+		for _, d in m:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.Anchored = true
+			end
+		end
+		pcall(Pose.animateR15, m, { phase = 0, moving = false, t = 0.6 })
+		return m
+	end
+	if tpl then
+		local c = tpl:Clone()
+		for _, d in c:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.Anchored = true
+			end
+		end
+		c.Parent = world
+		pcall(Pose.relaxArms, c)
+		return c
+	end
+	return nil
+end
+
 -- 이야기 속 인물 → 승인된 People 모델. 직함 낱말로 고르고, 없으면 이름으로 항상 같은 사람을 고른다.
 local STORY_PEOPLE = {
 	{ { "해적", "사략", "뱃사람", "선원", "선장", "항해사" }, { "Pirate_Male", "Pirate_Female" } },
@@ -1838,7 +1868,7 @@ local function openTradeHall()
 		local left = mkBox(root, UDim2.fromOffset(0, 54), UDim2.new(0, 250, 1, -54), Color3.fromRGB(46, 34, 26))
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("상인", p.portId or ""))
-		if tpl then
+		do
 			local vf = Instance.new("ViewportFrame")
 			vf.BackgroundTransparency = 1
 			vf.Size = UDim2.new(1, 0, 1, -150)
@@ -1853,15 +1883,14 @@ local function openTradeHall()
 			vf.CurrentCamera = cam
 			local world = Instance.new("WorldModel")
 			world.Parent = vf
-			local m = tpl:Clone()
-			for _, d in m:GetDescendants() do
-				if d:IsA("BasePart") then
-					d.Anchored = true
-				end
+			local m = portraitPerson(world, "merchant" .. (p.portId or ""), "Rogue", tpl)
+			if not m then
+				vf:Destroy()
 			end
-			m.Parent = world
-			pcall(Pose.relaxArms, m)
-			local cf, size = m:GetBoundingBox()
+			local cf, size = CFrame.new(), Vector3.new(4, 6, 2)
+			if m then
+				cf, size = m:GetBoundingBox()
+			end
 			local focus = cf.Position + Vector3.new(0, size.Y * 0.1, 0)
 			cam.FieldOfView = 40
 			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.08, -1).Unit * (math.max(size.X, size.Y, size.Z) * 1.7), focus)
@@ -2418,7 +2447,7 @@ local function openYardHall()
 		local left = mkBox(root, UDim2.fromOffset(0, 54), UDim2.new(0, 250, 1, -54), Color3.fromRGB(32, 40, 50))
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("조선 장인", p.portId or ""))
-		if tpl then
+		do
 			local vf = Instance.new("ViewportFrame")
 			vf.BackgroundTransparency = 1
 			vf.Size = UDim2.new(1, 0, 1, -150)
@@ -2432,15 +2461,14 @@ local function openYardHall()
 			vf.CurrentCamera = cam
 			local world = Instance.new("WorldModel")
 			world.Parent = vf
-			local m = tpl:Clone()
-			for _, d in m:GetDescendants() do
-				if d:IsA("BasePart") then
-					d.Anchored = true
-				end
+			local m = portraitPerson(world, "yard" .. (p.portId or ""), "Knight", tpl)
+			if not m then
+				vf:Destroy()
 			end
-			m.Parent = world
-			pcall(Pose.relaxArms, m)
-			local cf, size = m:GetBoundingBox()
+			local cf, size = CFrame.new(), Vector3.new(4, 6, 2)
+			if m then
+				cf, size = m:GetBoundingBox()
+			end
 			local focus = cf.Position + Vector3.new(0, size.Y * 0.1, 0)
 			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.08, -1).Unit * (math.max(size.X, size.Y, size.Z) * 1.7), focus)
 		end
