@@ -145,11 +145,11 @@ h1{font-size:22px;margin:0}
     </div>
     <div id="bossMusicPanel" class="hidden">
       <button id="bossMusicToggle" type="button">보스 음악 켜기</button>
-      <small>라크리모사 전자 편곡 · Metzner ·
+      <small>라크리모사 전자 편곡 · 전장 큰북·저음 강화 · Metzner ·
         <a href="https://commons.wikimedia.org/wiki/File:M1_Lacrimosa1991.ogg" target="_blank" rel="noopener noreferrer">원본·CC BY 3.0</a>
       </small>
     </div>
-    <audio id="bossMusic" preload="none" loop src="https://upload.wikimedia.org/wikipedia/commons/9/94/M1_Lacrimosa1991.ogg"></audio>
+    <audio id="bossMusic" crossorigin="anonymous" preload="none" loop src="https://upload.wikimedia.org/wikipedia/commons/9/94/M1_Lacrimosa1991.ogg"></audio>
     <div class="boardWrap"><div id="board" class="board"></div></div>
     <div class="statusRow">
       <span id="deckInfo">골드 -</span>
@@ -1142,38 +1142,121 @@ function aiTurn(){
   render()
 }
 
-// 우르수스의 라크리모사 전자 편곡 음악. 무음→4.5초 상승, 처치→3.5초 감소.
+// 기존 CC BY 3.0 라크리모사 원곡에 저음·다이내믹 보강과 전장 타악기를
+// 실시간 믹싱한다. 파일·라이선스는 그대로 유지하고 다른 스테이지에는 영향 없다.
 const bossAudio=$('#bossMusic');
 let bossMusicRequested=false,bossMusicMuted=false,bossFadeTimer=null;
+let bossMix=null,bossDrumTimer=null,bossNextBeat=0,bossBeatCount=0;
+function prepareBossMusic(){
+  if(bossMix)return;
+  const AudioEngine=window.AudioContext||window.webkitAudioContext;
+  if(!AudioEngine)return;
+  try{
+    const ctx=new AudioEngine();
+    const source=ctx.createMediaElementSource(bossAudio);
+    const bass=ctx.createBiquadFilter();
+    bass.type='lowshelf';bass.frequency.value=170;bass.gain.value=6;
+    const middle=ctx.createBiquadFilter();
+    middle.type='peaking';middle.frequency.value=850;middle.Q.value=.8;middle.gain.value=-2.8;
+    const clarity=ctx.createBiquadFilter();
+    clarity.type='highshelf';clarity.frequency.value=3000;clarity.gain.value=1.5;
+    const mixer=ctx.createGain();
+    const limiter=ctx.createDynamicsCompressor();
+    limiter.threshold.value=-14;limiter.knee.value=10;limiter.ratio.value=3.4;
+    limiter.attack.value=.008;limiter.release.value=.22;
+    source.connect(bass);bass.connect(middle);middle.connect(clarity);clarity.connect(mixer);
+    mixer.connect(limiter);limiter.connect(ctx.destination);
+    const drums=ctx.createGain();
+    drums.gain.value=0;drums.connect(mixer);
+    const noise=ctx.createBuffer(1,Math.round(ctx.sampleRate*.26),ctx.sampleRate);
+    const samples=noise.getChannelData(0);
+    for(let i=0;i<samples.length;i++)samples[i]=(Math.random()*2-1)*Math.pow(1-i/samples.length,1.5);
+    bossMix={ctx,drums,noise}
+  }catch(err){
+    // 오디오 엔진 미지원 환경은 기존 HTML 오디오를 그대로 재생한다.
+    console.warn('보스 음악 음향 효과를 사용할 수 없어 기본 음원으로 재생해.',err)
+  }
+}
+function beatBossDrums(){
+  if(!bossMix||bossAudio.paused||!bossMusicRequested||bossMusicMuted)return;
+  const {ctx,drums,noise}=bossMix;
+  // 모차르트 라크리모사의 느린 박자를 무겁게 받쳐주는 전장 큰북.
+  const duration=60/72;
+  while(bossNextBeat<ctx.currentTime+.35){
+    const when=Math.max(ctx.currentTime+.01,bossNextBeat),beat=bossBeatCount++%4;
+    const drum=ctx.createOscillator(),env=ctx.createGain();
+    drum.type='sine';
+    drum.frequency.setValueAtTime(beat===0?95:76,when);
+    drum.frequency.exponentialRampToValueAtTime(beat===0?39:47,when+.38);
+    env.gain.setValueAtTime(.0001,when);
+    env.gain.exponentialRampToValueAtTime(beat===0?.78:.29,when+.015);
+    env.gain.exponentialRampToValueAtTime(.0001,when+.43);
+    drum.connect(env);env.connect(drums);
+    drum.start(when);drum.stop(when+.45);
+    if(beat===0||beat===2){
+      const noiseSource=ctx.createBufferSource(),drumFilter=ctx.createBiquadFilter(),tail=ctx.createGain();
+      noiseSource.buffer=noise;drumFilter.type='lowpass';drumFilter.frequency.value=beat===0?520:1100;
+      tail.gain.setValueAtTime(beat===0?.23:.11,when);
+      tail.gain.exponentialRampToValueAtTime(.0001,when+.25);
+      noiseSource.connect(drumFilter);drumFilter.connect(tail);tail.connect(drums);
+      noiseSource.start(when);noiseSource.stop(when+.26)
+    }
+    if(beat===0){
+      // 강박마다 Dm–B♭–Gm–A의 저음 진행을 더해 오케스트라의 무게감을 만든다.
+      const bassNotes=[73.42,58.27,49,55],note=bassNotes[Math.floor((bossBeatCount-1)/4)%4];
+      const sub=ctx.createOscillator(),subGain=ctx.createGain();
+      sub.type='triangle';sub.frequency.value=note;
+      subGain.gain.setValueAtTime(.0001,when);
+      subGain.gain.exponentialRampToValueAtTime(.18,when+.11);
+      subGain.gain.exponentialRampToValueAtTime(.0001,when+duration*3.7);
+      sub.connect(subGain);subGain.connect(drums);
+      sub.start(when);sub.stop(when+duration*3.8)
+    }
+    bossNextBeat+=duration
+  }
+}
 function fadeBossMusic(to,duration){
-  if(bossFadeTimer!==null)clearInterval(bossFadeTimer);
+  if(bossFadeTimer!==null){clearInterval(bossFadeTimer);bossFadeTimer=null}
   const from=bossAudio.volume||0,started=Date.now();
   bossFadeTimer=setInterval(()=>{
     const elapsed=Math.min(1,(Date.now()-started)/duration);
-    bossAudio.volume=Math.max(0,Math.min(1,from+(to-from)*elapsed));
+    const easing=elapsed*elapsed*(3-2*elapsed);
+    const current=Math.max(0,Math.min(1,from+(to-from)*easing));
+    bossAudio.volume=current;
+    if(bossMix)bossMix.drums.gain.value=current*.65;
     if(elapsed>=1){
       clearInterval(bossFadeTimer);
       bossFadeTimer=null;
-      if(to===0){bossAudio.pause();bossAudio.currentTime=0}
+      if(to===0){
+        bossAudio.pause();bossAudio.currentTime=0;
+        if(bossDrumTimer!==null){clearInterval(bossDrumTimer);bossDrumTimer=null}
+      }
     }
   },60)
 }
 function playBossMusic(){
   if(bossFadeTimer!==null){clearInterval(bossFadeTimer);bossFadeTimer=null}
+  prepareBossMusic();
+  if(bossMix&&bossMix.ctx.state==='suspended')bossMix.ctx.resume().catch(()=>{});
   if(bossAudio.paused)bossAudio.volume=0;
+  bossAudio.playbackRate=1.06;
+  const started=()=>{
+    if(!bossMusicRequested||bossMusicMuted||!state||state.stage!==7||state.winner||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
+    $('#bossMusicToggle').textContent='보스 음악 끄기';
+    if(bossMix){
+      if(bossDrumTimer!==null)clearInterval(bossDrumTimer);
+      bossNextBeat=bossMix.ctx.currentTime+.08;bossBeatCount=0;
+      bossDrumTimer=setInterval(beatBossDrums,120);
+      beatBossDrums()
+    }
+    fadeBossMusic(.9,3900)
+  };
   const attempt=bossAudio.play();
   if(attempt&&typeof attempt.then==='function'){
-    attempt.then(()=>{
-      if(!bossMusicRequested||bossMusicMuted||!state||state.stage!==7||state.winner||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'))return;
-      $('#bossMusicToggle').textContent='보스 음악 끄기';
-      fadeBossMusic(0.6,4500)
-    }).catch(()=>{
+    attempt.then(started).catch(()=>{
       $('#bossMusicToggle').textContent='보스 음악 재생(터치)'
     })
-  }else{
-    $('#bossMusicToggle').textContent='보스 음악 끄기';
-    fadeBossMusic(0.6,4500)
-  }
+  }else started()
 }
 function syncBossMusic(){
   const active=!!(state?.stage===7&&state.phase==='BATTLE'&&!state.winner&&state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0));
@@ -1186,7 +1269,7 @@ function syncBossMusic(){
   }else{
     if(bossMusicRequested){
       bossMusicRequested=false;
-      if(!bossAudio.paused)fadeBossMusic(0,3500)
+      if(!bossAudio.paused)fadeBossMusic(0,3400)
     }
     bossMusicMuted=false
   }
@@ -1196,7 +1279,7 @@ $('#bossMusicToggle').onclick=()=>{
   if(!bossAudio.paused&&!bossMusicMuted){
     bossMusicMuted=true;
     $('#bossMusicToggle').textContent='보스 음악 켜기';
-    fadeBossMusic(0,3500)
+    fadeBossMusic(0,3400)
   }else{
     bossMusicMuted=false;
     bossMusicRequested=true;
