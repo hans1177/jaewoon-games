@@ -1133,6 +1133,7 @@ local function meadowOpenGearShop(player,shopId,position)
     options[#options+1]={label=(gearShopNames[id] or id).."  ·  "..tostring(price or "?").." 재화",action="shop:buy:"..id}
   end
   villageDialogue(player,shop.Title.."  "..affinityHearts(level),affinityGreetings[level]..
+    ((game:GetService("Lighting").ClockTime>=18 or game:GetService("Lighting").ClockTime<5) and "\n(밤이라 등불 아래서 장사 중이야. 길 조심해.)" or "")..
     "\n기본 장비만 팔아. 더 좋은 장비는 대장간에서 직접 제작해."..(discount>0 and string.format("\n단골 할인 %d%%",math.floor(discount*100+.5)) or "")..
     "\n보유 재화 "..readNumber(player,"Coins",0),options)
 end

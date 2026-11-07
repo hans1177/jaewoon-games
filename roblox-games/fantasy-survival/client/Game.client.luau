@@ -341,6 +341,17 @@ do
   end)
 end
 local meadowPaintedHudAtlas="rbxassetid://84007761993593" -- [고퀄 원화] 1000x1000 5x5 / 200px 칸 21종 (Roblox 1024 제한 이하), 게임 내 로딩은 게시 후 검증
+do -- [노드별 아이콘 시트] 4장이 모두 있을 때만 쓴다.
+  local okIds,idTable=pcall(function() return require(Shared:WaitForChild("SkillTreeIconIds",3)) end)
+  if okIds and type(idTable)=="table" then
+    local list={}
+    for n=1,4 do
+      local v=idTable["skill_"..n]
+      if type(v)=="string" and v~="" then list[n]=v end
+    end
+    if #list==4 then meadowArt.talentSheets=list end
+  end
+end
 -- [전용 스킬 아이콘] CC0(pauliuw) 스킬 아이콘 시트 1번의 '스킬북'(25번째 칸). 업로드 ID가 아직 없으면 기존 아이콘을 쓴다.
 local function applySkillTreeIcon(icon)
   local ok,ids=pcall(function() return require(Shared:WaitForChild("SkillTreeIconIds",3)) end)
@@ -3090,6 +3101,17 @@ for school=1,5 do
       -- 스킬 원화 시트는 5x5 / 200px 칸이다(예전 64px 계산은 엉뚱한 칸을 잘랐다).
       icon.Image=meadowArt.skillSheet;icon.ImageRectSize=Vector2.new(200,200)
       icon.ImageRectOffset=Vector2.new((node.IconCell%5)*200,math.floor(node.IconCell/5)*200);icon.Parent=button
+      -- [노드별 고유 아이콘] 업로드된 CC0 스킬 시트 4장(5x5)을 번갈아 써서 노드마다 다른 그림을 준다. ID가 없으면 위 원화를 그대로 쓴다.
+      do
+        local sheetIds=meadowArt.talentSheets
+        if sheetIds then
+          local sheet=sheetIds[(node.Index-1)%4+1]
+          local cell=math.floor((node.Index-1)/4)%25
+          if sheet then
+            icon.Image=sheet;icon.ImageRectOffset=Vector2.new((cell%5)*200,math.floor(cell/5)*200)
+          end
+        end
+      end
       local label=Instance.new("TextLabel")
       label.BackgroundTransparency=1;label.Position=UDim2.fromOffset(3,36);label.Size=UDim2.new(1,-6,0,30)
       label.Font=Enum.Font.GothamBold;label.TextSize=10;label.TextWrapped=true
@@ -8420,6 +8442,26 @@ end)
 do
   local TweenSvc=game:GetService("TweenService")
   local DebrisSvc=game:GetService("Debris")
+  local meadowShakeAmount=0
+  do
+    local hitFlash=Instance.new("Frame")
+    hitFlash.Name="MeadowHitFlash";hitFlash.Size=UDim2.fromScale(1,1)
+    hitFlash.BackgroundColor3=Color3.fromRGB(255,236,200);hitFlash.BackgroundTransparency=1
+    hitFlash.BorderSizePixel=0;hitFlash.Active=false;hitFlash.ZIndex=1;hitFlash.Parent=gui
+    game:GetService("RunService").RenderStepped:Connect(function(dt)
+      local character=player.Character
+      local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+      if not humanoid then return end
+      if meadowShakeAmount>.01 then
+        local a=meadowShakeAmount*.45
+        humanoid.CameraOffset=Vector3.new((math.random()-.5)*a,(math.random()-.5)*a,0)
+        meadowShakeAmount=meadowShakeAmount*math.max(0,1-dt*9)
+      elseif humanoid.CameraOffset.Magnitude>0 then
+        humanoid.CameraOffset=Vector3.zero
+        meadowShakeAmount=0
+      end
+    end)
+  end
   local function spawnDamageNumber(position,amount,crit,finisher,boss)
     if _G.MeadowDamageNumbersOff then return end
     local holder=Instance.new("Attachment")
@@ -8488,6 +8530,16 @@ do
     if kind~="MEADOW_IMPACT" or typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end
     if typeof(payload.damage)=="number" then
       spawnDamageNumber(payload.position,payload.damage,payload.crit==true,payload.finisher==true,payload.boss==true)
+      -- [타격감] 강타·피니셔·보스 타격 때만 짧게 카메라를 흔들고 화면 가장자리를 번쩍인다. 판정과는 무관하다.
+      local power=payload.finisher and 1 or (payload.boss and .7 or (payload.crit and .5 or 0))
+      if power>0 then
+        meadowShakeAmount=math.max(meadowShakeAmount,reducedEffects and power*.5 or power)
+        local flash=gui:FindFirstChild("MeadowHitFlash")
+        if flash then
+          flash.BackgroundTransparency=.82
+          TweenSvc:Create(flash,TweenInfo.new(.16),{BackgroundTransparency=1}):Play()
+        end
+      end
     end
     if payload.boss and typeof(payload.model)=="Instance" then
       bossModel=payload.model;bossLastHit=os.clock()
