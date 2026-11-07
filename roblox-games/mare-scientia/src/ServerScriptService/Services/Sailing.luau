@@ -174,6 +174,10 @@ return function(D, S)
 			if ctx.rng() < 0.35 then
 				giveMap(state, ctx, msgs)
 			end
+		elseif event.kind == "blockade" then
+			local toll = math.min(200, math.floor(state.coins * event.amount))
+			state.coins -= toll
+			table.insert(msgs, string.format("해군이 항로를 봉쇄했다. 통행료 %d코인을 내고 지나갔다", toll))
 		elseif event.kind == "ghost" then
 			state.fame += event.amount
 			table.insert(msgs, string.format("안개 속에서 유령선을 보았다... 뱃사람들의 이야깃거리가 되었다 (명성 +%d)", event.amount))

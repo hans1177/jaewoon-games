@@ -361,7 +361,7 @@ function VoyageScene.play(info)
 	end
 	local eventBanner = {
 		school = "물고기떼 발견!", merchant = "상선을 만났다", fog = "짙은 안개", reef = "암초 조심!", rescue = "표류자 발견!",
-		island = "미지의 섬!", ghost = "유령선...", storm = "폭풍!", pirates = "해적선 출현!", drift = "표류물 발견", fever = "열병 발생", tailwind = "순풍!", calm = "잔잔한 바다",
+		island = "미지의 섬!", ghost = "유령선...", blockade = "해상 봉쇄!", storm = "폭풍!", pirates = "해적선 출현!", drift = "표류물 발견", fever = "열병 발생", tailwind = "순풍!", calm = "잔잔한 바다",
 	}
 	local banner = title:Clone()
 	banner.Position = UDim2.new(0, 0, 0.22, 0)
@@ -396,6 +396,10 @@ function VoyageScene.play(info)
 		end
 	elseif ev.kind == "ghost" then
 		addProp("Naval", "ship-ghost", 18, -80, 0.35, math.pi, 0)
+	elseif ev.kind == "blockade" then
+		addProp("Naval", "ship-large", 20, -50, 0.45, math.pi, 0)
+		addProp("Naval", "ship-medium", 16, 55, 0.45, math.pi, 0)
+		addProp("Naval", "flag-high", 6, -50, 0.45, 0, 4)
 	elseif ev.kind == "school" and info.place then
 		for i = 1, 8 do
 			local m = info.place(folder, "Cargo", "fish-large", ORIGIN, 4)

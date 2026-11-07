@@ -123,10 +123,20 @@ return function(D, S)
 		end
 		view.intel = S.Harbor.intel(state)
 		view.supplyMax = S.State.maxSupplies()
+		view.board = {}
+		for _, b in S.Harbor.boardHere(state) do
+			local prog = state.bounty.taken[b.id]
+			table.insert(view.board, {
+				id = b.id, title = b.title, coins = b.coins, fame = b.fame, kind = b.kind,
+				state = if state.bounty.done[b.id] then "done" elseif prog ~= nil then "taken" else "open",
+				progress = if b.kind == "hunt" and prog ~= nil then math.min(b.count, state.stats.battlesWon - prog) else nil,
+				count = b.count,
+			})
+		end
 		view.fleet = { escorts = state.escorts, price = 1200, needFame = 30 + state.escorts * 30 }
 		do
 			local nat = D.Ports.Nations[port.country]
-			view.rep = { name = if nat then nat.name else port.country, value = state.rep[port.country] or 0, bonus = S.Trade.repBonus(state) }
+			view.rep = { name = if nat then nat.name else port.country, value = state.rep[port.country] or 0, bonus = S.Trade.repBonus(state), tariff = S.Trade.tariffRate(state) }
 		end
 		view.gear = { slots = D.Gear.SLOTS, list = {} }
 		for _, g in D.Gear.Items do

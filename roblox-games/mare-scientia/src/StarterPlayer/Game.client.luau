@@ -1471,6 +1471,23 @@ local function renderHarbor()
 		end
 	end
 
+	add(function() return mkHeader(content, "길드 의뢰 보드 (7일마다 바뀌어요)") end)
+	for _, b in view.board or {} do
+		add(function()
+			local sub = string.format("보상 %d코인 · 명성 %d%s", b.coins, b.fame, if b.progress then string.format(" · 진행 %d/%d", b.progress, b.count) else "")
+			local btn
+			if b.state == "done" then
+				btn = { text = "완료", color = COLORS.grey, enabled = false, onClick = function() end }
+			elseif b.state == "taken" then
+				btn = { text = "제출", color = COLORS.green, onClick = function() call("TurnInBounty", { bountyId = b.id }) end }
+			else
+				btn = { text = "수락", color = COLORS.blue, onClick = function() call("AcceptBounty", { bountyId = b.id }) end }
+			end
+			local brow = mkRow(content, b.title, sub, { btn }, 60)
+			withIcon(brow, "Cargo", if b.kind == "hunt" then "box-open" else "crate" , nil, 44)
+			return brow
+		end)
+	end
 	add(function() return mkHeader(content, "항구 보급 (조선소가 없어도 돼요)") end)
 	add(function()
 		local m = view.morale or 80
@@ -1679,9 +1696,12 @@ local function addRumorPanel()
 end
 
 local function renderTrade()
+	add(function()
+		return mkLabel(content, "‘암’ 버튼 = 암시장 판매: 관세 없이 +10%, 하지만 들키면 압수와 벌금(우호도가 높을수록 덜 들켜요)", 12, COLORS.muted, false)
+	end)
 	if view.rep then
 		add(function()
-			return mkLabel(content, string.format("%s 우호도 %d/100 · 되파는 비율 +%.1f%% (이 나라에 팔수록 올라요)", view.rep.name, view.rep.value, view.rep.bonus * 100), 15, COLORS.text, true)
+			return mkLabel(content, string.format("%s 우호도 %d/100 · 되파는 비율 +%.1f%% (이 나라에 팔수록 올라요) · 관세 %.1f%%", view.rep.name, view.rep.value, view.rep.bonus * 100, view.rep.tariff * 100), 15, COLORS.text, true)
 		end)
 	end
 	add(function()
@@ -1762,6 +1782,11 @@ local function renderTrade()
 			buy.Position = UDim2.new(0, 6, 1, -42)
 			local sell = mkButton(cardF, "판매", COLORS.green, UDim2.new(0.5, -10, 0, 36), function() call("Sell", { goodId = g.id, amount = amount() }) end, g.owned > 0)
 			sell.Position = UDim2.new(0.5, 4, 1, -42)
+			if g.owned > 0 then
+				local sm = mkButton(cardF, "암", COLORS.red, UDim2.fromOffset(34, 24), function() call("Smuggle", { goodId = g.id, amount = amount() }) end, true)
+				sm.AnchorPoint = Vector2.new(1, 0)
+				sm.Position = UDim2.new(1, -8, 0, 34)
+			end
 		end
 		return grid
 	end)

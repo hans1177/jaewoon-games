@@ -18,6 +18,7 @@ local D = {
 	Specialties = require("./Shared/Specialties"),
 	CompanionTalk = require("./Shared/CompanionTalk"),
 	Gear = require("./Shared/Gear"),
+	Bounties = require("./Shared/Bounties"),
 	Fields = require("./Shared/Fields"),
 	Collection = require("./Shared/Collection"),
 	CardArt = require("./Shared/CardArt"),
@@ -802,6 +803,53 @@ do
 		check("escorts survive save", S.State.sanitize(S.State.serialize(st)).escorts == 1)
 		check("dismiss escort", act(st, "DismissEscort", {}) and st.escorts == 0)
 	end
+end
+
+-- 13i. 관세·암시장·봉쇄 --------------------------------------------------
+do
+	local st = newState()
+	local home = D.Ports.Ports[st.portId].country
+	check("no tariff at home nation", S.Trade.tariffRate(st) == 0 or home ~= st.nationId)
+	st.portId = "lisbon"
+	st.rep = {}
+	check("tariff at foreign port", S.Trade.tariffRate(st) > 0 or D.Ports.Ports.lisbon.country == st.nationId)
+	st.rep[D.Ports.Ports.lisbon.country] = 100
+	check("tariff 0 at max rep", S.Trade.tariffRate(st) == 0)
+	st.cargo.wool = 5
+	local rngLow = { rng = function() return 0.99 end, market = ctx.market }
+	local okSm, msgSm = S.Trade.handlers.Smuggle(st, { goodId = "wool", amount = 5 }, rngLow)
+	check("smuggle sells when not caught", okSm and (st.cargo.wool or 0) == 0, msgSm)
+	st.cargo.wool = 5
+	local rngHigh = { rng = function() return 0 end, market = ctx.market }
+	st.rep[D.Ports.Ports.lisbon.country] = 50
+	local okC, msgC = S.Trade.handlers.Smuggle(st, { goodId = "wool", amount = 5 }, rngHigh)
+	check("smuggle caught confiscates", okC and (st.cargo.wool or 0) == 0 and st.rep[D.Ports.Ports.lisbon.country] == 42, msgC)
+	local seenB = false
+	for _ = 1, 5000 do
+		if D.Voyage.rollEvent(function() return math.random() end, 10).kind == "blockade" then seenB = true break end
+	end
+	check("blockade event rolls", seenB)
+end
+
+-- 13j. 길드 의뢰 보드 ----------------------------------------------------
+do
+	local st = newState()
+	local b1 = D.Bounties.board(st.portId, st.day, D.Ports.Goods, (function() local t = {} for id in D.Ports.Goods do table.insert(t, id) end table.sort(t) return t end)())
+	check("board has 3", #b1 == 3 and b1[3].kind == "hunt")
+	local deliver = b1[1]
+	check("accept bounty", act(st, "AcceptBounty", { bountyId = deliver.id }))
+	check("no double accept", not act(st, "AcceptBounty", { bountyId = deliver.id }))
+	check("turn in needs goods", not act(st, "TurnInBounty", { bountyId = deliver.id }))
+	st.cargo[deliver.goodId] = deliver.count
+	local c0 = st.coins
+	check("turn in pays", act(st, "TurnInBounty", { bountyId = deliver.id }) and st.coins == c0 + deliver.coins)
+	check("done not repeatable", not act(st, "AcceptBounty", { bountyId = deliver.id }))
+	check("fake id rejected", not act(st, "AcceptBounty", { bountyId = "x:1:1" }))
+	check("bounty survives save", S.State.sanitize(S.State.serialize(st)).bounty.done[deliver.id] == true)
+	local hunt = b1[3]
+	act(st, "AcceptBounty", { bountyId = hunt.id })
+	st.stats.battlesWon += hunt.count
+	check("hunt bounty completes", act(st, "TurnInBounty", { bountyId = hunt.id }))
 end
 
 -- 14. 화면 스냅샷 -------------------------------------------------------

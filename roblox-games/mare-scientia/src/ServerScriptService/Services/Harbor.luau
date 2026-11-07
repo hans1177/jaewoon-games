@@ -46,6 +46,79 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
+	-- 길드 의뢰 보드
+	local function sortedGoods()
+		local ids = {}
+		for id in D.Ports.Goods do
+			table.insert(ids, id)
+		end
+		table.sort(ids)
+		return ids
+	end
+	local function boardHere(state)
+		return D.Bounties.board(state.portId, state.day, D.Ports.Goods, sortedGoods())
+	end
+	local function findBounty(state, id)
+		for _, b in boardHere(state) do
+			if b.id == id then
+				return b
+			end
+		end
+		return nil
+	end
+
+	function handlers.AcceptBounty(state, p)
+		local b = type(p.bountyId) == "string" and findBounty(state, p.bountyId)
+		if not b then
+			return false, "게시판에 없는 의뢰예요"
+		end
+		if state.bounty.done[b.id] then
+			return false, "이미 끝낸 의뢰예요"
+		end
+		if state.bounty.taken[b.id] then
+			return false, "이미 맡은 의뢰예요"
+		end
+		local n = 0
+		for _ in state.bounty.taken do
+			n += 1
+		end
+		if n >= 5 then
+			return false, "의뢰는 5건까지 맡을 수 있어요"
+		end
+		state.bounty.taken[b.id] = state.stats.battlesWon
+		return true, "의뢰를 맡았다: " .. b.title
+	end
+
+	function handlers.TurnInBounty(state, p)
+		local b = type(p.bountyId) == "string" and findBounty(state, p.bountyId)
+		if not b or state.bounty.taken[b.id] == nil then
+			return false, "맡은 의뢰가 아니에요"
+		end
+		if b.kind == "deliver" then
+			if (state.cargo[b.goodId] or 0) < b.count then
+				return false, string.format("%s %d개가 필요해요", D.Ports.Goods[b.goodId].name, b.count)
+			end
+			S.State.removeCargo(state, b.goodId, b.count)
+		else
+			if state.stats.battlesWon - state.bounty.taken[b.id] < b.count then
+				return false, string.format("해전 승리 %d번이 더 필요해요", b.count - (state.stats.battlesWon - state.bounty.taken[b.id]))
+			end
+		end
+		state.bounty.taken[b.id] = nil
+		state.bounty.done[b.id] = true
+		-- 오래된 완료 기록은 정리한다
+		local week = math.floor(state.day / 7)
+		for id in state.bounty.done do
+			local w = tonumber(string.match(id, ":(%d+):"))
+			if w and w < week - 3 then
+				state.bounty.done[id] = nil
+			end
+		end
+		state.coins += b.coins
+		state.fame += b.fame
+		return true, string.format("의뢰 완료! +%d코인, 명성 +%d", b.coins, b.fame)
+	end
+
 	-- 주점 회식: 선원 수 × 3코인으로 사기 +30
 	function handlers.Feast(state)
 		local cost = math.max(10, state.ship.crew * 3)
@@ -135,5 +208,6 @@ return function(D, S)
 		costMult = costMult,
 		invested = invested,
 		intel = intel,
+		boardHere = boardHere,
 	}
 end

@@ -31,6 +31,7 @@ return function(D)
 			auto = { supplies = false, crew = false },
 			morale = 80,
 			maps = {},
+			bounty = { taken = {}, done = {} },
 			escorts = 0,
 			rep = {},
 			gear = { owned = {}, equipped = {} },
@@ -275,6 +276,22 @@ return function(D)
 		s.license = math.floor(num(saved.license, 0, 0, #D.Ships.Licenses))
 		s.insured = saved.insured == true
 		s.morale = math.floor(num(saved.morale, 80, 0, 100))
+		if type(saved.bounty) == "table" then
+			if type(saved.bounty.taken) == "table" then
+				for id, v in saved.bounty.taken do
+					if type(id) == "string" and #id < 40 and type(v) == "number" then
+						s.bounty.taken[id] = math.floor(num(v, 0, 0, 1e9))
+					end
+				end
+			end
+			if type(saved.bounty.done) == "table" then
+				for id, v in saved.bounty.done do
+					if type(id) == "string" and #id < 40 and v == true then
+						s.bounty.done[id] = true
+					end
+				end
+			end
+		end
 		s.escorts = math.floor(num(saved.escorts, 0, 0, 3))
 		if type(saved.rep) == "table" then
 			for k, v in saved.rep do
@@ -416,6 +433,7 @@ return function(D)
 			auto = state.auto,
 			morale = state.morale,
 			maps = state.maps,
+			bounty = state.bounty,
 			escorts = state.escorts,
 			rep = state.rep,
 			gear = state.gear,
