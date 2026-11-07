@@ -8206,6 +8206,51 @@ do
     desert={{"wolf","fangspider","황금 독거미",3.4,1.6,{{"Fang",.6}}},{"wolf","raptor","사막 랩터",4.4,1.6,{{"Hide",.6},{"Claw",.4}}},{"wolf","assassin","황금 암살자",4.2,1.7,{{"Claw",.5},{"Moonbloom",.3}}},{"bat",nil,nil,3.4,1}},
     deadmarsh={{"wolf","tribal","죽음의 주술전사",4.6,2,{{"Moonbloom",.5},{"Ore",.3}}},{"wolf","demon","늪의 악마",5.4,2.3,{{"Magma",.5},{"Crystal",.4}}},{"ghost","spider","죽은 늪 거미",3.4,1.6,{{"Ectoplasm",.7},{"Fang",.3}}}},
   }
+  -- [몬스터 다양화] 등록된 CC0 모델 중 쓰지 않던 종(뱀·들소·닌자·마녀·해골 병과·날개악마·정령 골렘 등)을 지역별 풀에 추가한다.
+  local extraPools={
+    windcliff={{"wolf","ninja","절벽 그림자 닌자",4,1.5,{{"Claw",0.4},{"Ore",0.3}}},
+      {"wolf","bull","절벽 들소",4.6,1.5,{{"Hide",0.7},{"Meat",0.5}}},
+      {"wolf","snake","절벽 뱀",2.4,1.1,{{"Fang",0.5}}}},
+    meadow={{"wolf","snake","초원 독뱀",2.2,1,{{"Fang",0.5}}},
+      {"wolf","bull","성난 들소",4.2,1.4,{{"Hide",0.6},{"Meat",0.5}}},
+      {"wolf","rat","들쥐 떼",1.7,0.8,{{"Hide",0.4}}}},
+    worldtree={{"wolf","witch","숲 마녀",4,1.4,{{"Moonbloom",0.6},{"Crystal",0.2}}},
+      {"wolf","snakeangry","숲 독사",2.6,1.2,{{"Fang",0.6}}}},
+    volcano={{"wolf","wingdemon","화염 날개악마",4.8,1.8,{{"Magma",0.5},{"Crystal",0.3}}},
+      {"wolf","skwarrior","재의 해골 전사",4.6,1.7,{{"Ore",0.5},{"Claw",0.3}}},
+      {"wolf","dragonlite","불도마뱀",3.6,1.6,{{"Hide",0.5},{"Magma",0.3}}}},
+    oasis={{"wolf","snake","사막 뱀",2.4,1.3,{{"Fang",0.5}}},
+      {"wolf","cactoro","선인장 괴물",3.8,1.5,{{"Hide",0.4},{"Mushroom",0.3}}},
+      {"wolf","ninja","사막 닌자",4,1.6,{{"Claw",0.5}}}},
+    swamp={{"wolf","skminion","늪 해골 졸병",3.6,1.4,{{"Ectoplasm",0.4},{"Ore",0.3}}},
+      {"wolf","snakeangry","늪 독사",2.6,1.4,{{"Fang",0.5},{"Mushroom",0.3}}},
+      {"wolf","witch","늪 마녀",4,1.6,{{"Moonbloom",0.5},{"Ectoplasm",0.3}}}},
+    citadel={{"wolf","skwarrior","성채 해골 전사",4.8,2.1,{{"Ore",0.5},{"Magma",0.3}}},
+      {"wolf","skmage","성채 해골 마법사",4.4,2,{{"Crystal",0.5},{"Magma",0.3}}},
+      {"wolf","knight","타락한 성채 기사",4.8,2.2,{{"Ore",0.6},{"Crystal",0.3}}}},
+    highland={{"wolf","knight","고원 용병 기사",4.8,1.7,{{"Ore",0.5},{"Hide",0.4}}},
+      {"wolf","bull","고원 들소",4.8,1.6,{{"Hide",0.7},{"Meat",0.5}}},
+      {"wolf","ninja","고원 닌자",4.2,1.6,{{"Claw",0.5}}}},
+    canyon={{"wolf","ninja","협곡 닌자",4.2,1.7,{{"Claw",0.5},{"Crystal",0.2}}},
+      {"wolf","snake","협곡 방울뱀",2.6,1.5,{{"Fang",0.6}}},
+      {"wolf","cactoro","협곡 선인장 괴물",3.8,1.6,{{"Hide",0.4}}}},
+    chaos={{"wolf","wingdemon","혼돈 날개악마",5,2.2,{{"Magma",0.5},{"Crystal",0.4}}},
+      {"wolf","skmage","혼돈 해골 술사",4.6,2.1,{{"Crystal",0.6}}},
+      {"wolf","spiritgolem","혼돈 정령 골렘",5.6,2.4,{{"Crystal",0.6},{"Ore",0.4}}},
+      {"wolf","skrogue","혼돈 해골 자객",4.2,2,{{"Claw",0.5},{"Crystal",0.3}}}},
+    wetland={{"wolf","snake","습원 뱀",2.4,1.2,{{"Fang",0.5}}},
+      {"wolf","skminion","습원 해골 졸병",3.6,1.3,{{"Ectoplasm",0.4}}}},
+    desert={{"wolf","cactoro","황금 선인장 괴물",3.8,1.6,{{"Hide",0.4}}},
+      {"wolf","snake","황금 독사",2.4,1.5,{{"Fang",0.6}}},
+      {"wolf","ninja","황금 닌자",4,1.7,{{"Claw",0.5},{"Moonbloom",0.2}}}},
+    deadmarsh={{"wolf","skwarrior","죽은 늪 해골 전사",4.8,2,{{"Ore",0.5},{"Ectoplasm",0.4}}},
+      {"wolf","skmage","죽은 늪 해골 술사",4.4,2.1,{{"Crystal",0.5},{"Ectoplasm",0.4}}},
+      {"wolf","witch","죽은 늪 마녀",4,2,{{"Moonbloom",0.6},{"Ectoplasm",0.4}}},
+      {"wolf","ghostskull","떠도는 해골 유령",3.6,1.9,{{"Ectoplasm",0.7}}}},
+  }
+  for zoneId,list in pairs(extraPools) do
+    if pools[zoneId] then for _,entry in ipairs(list) do table.insert(pools[zoneId],entry) end end
+  end
   local village=world.Village
   local bounds=world.Bounds
   -- 사각형에서 마을 구역을 뺀 나머지를 최대 4조각으로 칠한다.
