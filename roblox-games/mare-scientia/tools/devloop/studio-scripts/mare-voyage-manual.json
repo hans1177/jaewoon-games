@@ -1,0 +1,27 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"ReplicatedStorage\") local VS=require(RS.Shared.VoyageScene) local PS=require(RS.Shared.PortScene) local SR=require(RS.Shared.SeaRoutes) local PD=require(RS.Shared.Ports) task.spawn(function() local ok,err=pcall(VS.play,{shipId=\"galleon\",steam=false,days=12,path=SR.path(\"lisbon\",\"london\",PD.Ports),fromName=\"Lisbon\",toName=\"London\",makeShip=PS.makeShip,place=PS.placeModel,escorts=2,weatherId=\"clear\",event={kind=\"none\"},manual=true}) workspace:SetAttribute(\"VoyageDone\",tostring(ok)..tostring(err)) end) return \"started\""
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "capture",
+  "name": "manual_hud"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "capture",
+  "name": "manual_hud2"
+ }
+]
