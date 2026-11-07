@@ -3764,13 +3764,17 @@ local function refreshBowVisualCore(player)
       local sm=worldAsset(modelKey,(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),2.4)
       local sp=sm and sm:FindFirstChildWhichIsA("MeshPart",true)
       if sp then
-        local sv=sp:Clone();sm:Destroy()
-        sv.Name="MeadowShieldVisual"
-        sv.Anchored=false;sv.CanCollide=false;sv.CanTouch=false;sv.CanQuery=false;sv.Massless=true
-        sv.Parent=character
-        local sw=Instance.new("Weld");sw.Part0=arm;sw.Part1=sv
-        sw.C0=CFrame.new(-.55,0,-.1)*CFrame.Angles(0,math.rad(-90),0)
-        sw.Parent=sv
+        -- [고유 방패] 실제 원본의 문장·테두리·손잡이 모든 MeshPart를 보존한다.
+        local grip=arm.CFrame*CFrame.new(-.55,0,-.1)*CFrame.Angles(0,math.rad(-90),0)
+        sm:PivotTo(grip*sp.CFrame:Inverse()*sm:GetPivot())
+        sm.Name="MeadowShieldVisual"
+        for _,part in ipairs(sm:GetDescendants()) do
+          if part:IsA("BasePart") then
+            part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true
+            local joint=Instance.new("WeldConstraint");joint.Part0=arm;joint.Part1=part;joint.Parent=part
+          end
+        end
+        sm.Parent=character
       elseif sm then sm:Destroy() end
     end
   end
@@ -3784,14 +3788,17 @@ local function refreshBowVisualCore(player)
       local model=worldAsset(weapon.ModelKey,(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),3.5)
       local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
       if mesh then
-        local visual=mesh:Clone();model:Destroy()
-        visual.Name="MeadowForgedWeaponVisual"
-        visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
-        visual.Parent=character
-        local joint=Instance.new("Weld")
-        joint.Part0=hand;joint.Part1=visual
-        joint.C0=CFrame.new(0,-.45,-.15)*CFrame.Angles(0,math.rad(90),math.rad(-90))
-        joint.Parent=visual
+        -- [고유 무기] 여러 파츠로 된 원본 검날·자루·장식·텍스처를 하나도 버리지 않는다.
+        local grip=hand.CFrame*CFrame.new(0,-.45,-.15)*CFrame.Angles(0,math.rad(90),math.rad(-90))
+        model:PivotTo(grip*mesh.CFrame:Inverse()*model:GetPivot())
+        model.Name="MeadowForgedWeaponVisual"
+        for _,part in ipairs(model:GetDescendants()) do
+          if part:IsA("BasePart") then
+            part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true
+            local joint=Instance.new("WeldConstraint");joint.Part0=hand;joint.Part1=part;joint.Parent=part
+          end
+        end
+        model.Parent=character
       elseif model then model:Destroy() end
     end
   end
@@ -3803,15 +3810,17 @@ local function refreshBowVisualCore(player)
   local model=worldAsset(weapon.ModelKey or "item_bow_wooden",(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),3.4)
   local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
   if not mesh then if model then model:Destroy() end return end
-  local visual=mesh:Clone()
-  model:Destroy()
-  visual.Name="MeadowBowVisual"
-  visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
-  visual.Parent=character
-  local weld=Instance.new("Weld")
-  weld.Part0=hand;weld.Part1=visual
-  weld.C0=CFrame.new(0,-.35,-.15)*CFrame.Angles(0,math.rad(90),math.rad(-90))
-  weld.Parent=visual
+  -- [고유 활] 활몸·활시위 등 원본 전체가 손에 따라 움직이도록 각각 직접 고정한다.
+  local grip=hand.CFrame*CFrame.new(0,-.35,-.15)*CFrame.Angles(0,math.rad(90),math.rad(-90))
+  model:PivotTo(grip*mesh.CFrame:Inverse()*model:GetPivot())
+  model.Name="MeadowBowVisual"
+  for _,part in ipairs(model:GetDescendants()) do
+    if part:IsA("BasePart") then
+      part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true
+      local weld=Instance.new("WeldConstraint");weld.Part0=hand;weld.Part1=part;weld.Parent=part
+    end
+  end
+  model.Parent=character
 end
 -- [무기 중복 방지] 제작·장착한 무기의 실물 메시가 손에 붙어 있으면 기본 도구(장검)의 외형은 숨긴다(도구는 그대로 유지).
 local function syncToolVisual(player)
@@ -3860,32 +3869,46 @@ local function refreshArmorVisual(player)
   local old=character:FindFirstChild("MeadowArmorVisual")
   if old then old:Destroy() end
   local chest=meadowRpg.equippedChest and meadowRpg.equippedChest(player)
-  if not chest then warn("ARMORVIS no chest equipped") return end
+  if not chest then return end
   local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
   if not torso then warn("ARMORVIS no torso") return end
-  local model=worldAsset(((Config.GearLook[chest.Id] or {}).model or armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather"),(character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position or Vector3.new(0,5,0)),2.5)
-  local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
-  if not mesh then warn("ARMORVIS no mesh model="..tostring(model)) if model then model:Destroy() end return end
-  local visual=mesh:Clone()
-  model:Destroy()
-  -- 텍스처가 없는 메시라 회색으로 보이므로 등급별 소재 색을 입힌다.
-  visual.Color=({Common=Color3.fromRGB(140,100,64),Uncommon=Color3.fromRGB(140,100,64),Rare=Color3.fromRGB(165,172,186),
-    Epic=Color3.fromRGB(58,58,72),Legendary=Color3.fromRGB(226,184,76)})[chest.Rarity or "Common"] or visual.Color
-  visual.Name="MeadowArmorVisual"
-  do
-    local look=Config.GearLook[chest.Id]
-    if look and look.tint then visual.Color=Color3.fromRGB(look.tint[1],look.tint[2],look.tint[3]) end
-    if look and look.glow then
-      local l=Instance.new("PointLight");l.Color=Color3.fromRGB(look.glow[1],look.glow[2],look.glow[3]);l.Range=9;l.Brightness=.9;l.Parent=visual
+  local look=(Config.GearLook or {})[chest.Id] or {}
+  local modelKey=look.model or chest.ModelKey or armorModelByRarity[chest.Rarity or "Common"] or "item_armor_leather"
+  local origin=character:FindFirstChild("HumanoidRootPart")
+  local model=worldAsset(modelKey,origin and origin.Position or torso.Position,2.5)
+  if not model or not model:FindFirstChildWhichIsA("MeshPart",true) then
+    if model then model:Destroy() end
+    warn("ARMORVIS source 3D missing: "..tostring(modelKey))
+    return
+  end
+  -- [고품질 갑옷] 실물 흉갑의 여러 MeshPart/색상/텍스처를 보존하고 균일 배율만 적용한다.
+  -- 이전처럼 첫 조각만 떼거나 너비·높이를 제각각 늘려 메시를 찌그러뜨리지 않는다.
+  local _,box=model:GetBoundingBox()
+  if box.X<=.01 or box.Y<=.01 or box.Z<=.01 then model:Destroy();return end
+  local ratio=math.min(torso.Size.X*1.2/box.X,torso.Size.Y*1.15/box.Y,torso.Size.Z*1.6/box.Z)
+  model:ScaleTo(model:GetScale()*math.clamp(ratio,.4,2.4))
+  local bounds=model:GetBoundingBox()
+  local wanted=torso.CFrame*CFrame.new(0,-.05,0)
+  model:PivotTo(wanted*bounds:Inverse()*model:GetPivot())
+  model.Name="MeadowArmorVisual"
+  local tint=look.tint and Color3.fromRGB(look.tint[1],look.tint[2],look.tint[3]) or nil
+  local lit=false
+  for _,part in ipairs(model:GetDescendants()) do
+    if part:IsA("BasePart") then
+      if part:IsA("MeshPart") then
+        if tint then part.Color=tint end
+        if look.glow and not lit then
+          local lamp=Instance.new("PointLight")
+          lamp.Color=Color3.fromRGB(look.glow[1],look.glow[2],look.glow[3])
+          lamp.Range=9;lamp.Brightness=.9;lamp.Parent=part
+          lit=true
+        end
+      end
+      part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true
+      local weld=Instance.new("WeldConstraint");weld.Part0=torso;weld.Part1=part;weld.Parent=part
     end
   end
-  visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
-  -- 몸통 크기에 맞춰 늘려 붙인다(어깨까지 살짝 덮고 머리는 가리지 않게).
-  visual.Size=Vector3.new(torso.Size.X*1.18,torso.Size.Y*1.12,torso.Size.Z*1.5)
-  visual.Parent=character
-  local weld=Instance.new("Weld");weld.Part0=torso;weld.Part1=visual
-  weld.C0=CFrame.new(0,-.05,0)
-  weld.Parent=visual
+  model.Parent=character
 end
 -- [장갑·바지·장화 외형] 모든 등급에 이미 등록된 CC0 메시(item_glove / item_pants / item_boots)를 연결한다.
 -- 기본 장비도 실물 메시를 쓰되 기존 등급·공격·방어·저장 흐름은 변경하지 않는다.
@@ -3907,14 +3930,14 @@ local function refreshGearVisuals(player)
         local anchor=character:FindFirstChild(partName)
         if anchor then
           local origin=character:FindFirstChild("HumanoidRootPart")
-          local model=worldAsset(spec.model,origin and origin.Position or Vector3.new(0,5,0),spec.height)
+          local look=Config.GearLook[item.Id] or {}
+          local model=worldAsset(look.model or spec.model,origin and origin.Position or Vector3.new(0,5,0),spec.height)
           local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
           if mesh then
             local visual=mesh:Clone()
             model:Destroy()
             visual.Name="MeadowGearVisual_"..slot
             visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
-            local look=Config.GearLook[item.Id] or {}
             if look.tint then visual.Color=Color3.fromRGB(look.tint[1],look.tint[2],look.tint[3])
             elseif item.Tint then visual.Color=visual.Color:Lerp(Color3.fromRGB(item.Tint[1],item.Tint[2],item.Tint[3]),.4) end
             local k=look.fit or 1
