@@ -39,7 +39,9 @@ if(process.argv.includes('--modular-armor-source-only')){
  if(!Array.isArray(rows))throw Error('MODULAR_ARMOR_SOURCE_INDEX_INVALID');
  const entries=new Map(rows.map(row=>[row.name,row]));
  const planned=new Set(names);
- const imported=await Promise.all(names.map(async(name)=>{
+ const imported=[];
+ for(let start=0;start<names.length;start+=4){
+  const batch=await Promise.all(names.slice(start,start+4).map(async(name)=>{
   if(!/^[A-Za-z0-9_]+\.(?:gltf|bin|png)$/.test(name))throw Error('MODULAR_ARMOR_UNSAFE_NAME');
   const source=entries.get(name);
   if(!source||source.type!=='file'||!/^[a-f0-9]{40}$/.test(String(source.sha))
@@ -73,7 +75,9 @@ if(process.argv.includes('--modular-armor-source-only')){
   }
   if(!fs.existsSync(dest))fs.writeFileSync(dest,bytes);
   return {file:name,gitSha:source.sha,sourceCommit:commit,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length};
- }));
+  }));
+  imported.push(...batch);
+ }
  const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
  manifest.version=2;
  manifest.sourceCommit=commit;
