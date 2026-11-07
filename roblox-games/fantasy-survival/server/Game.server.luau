@@ -5523,6 +5523,56 @@ end
 local function statusCount(target)
   return CombatStatus.CountActive(target,os.clock())
 end
+-- [사망 모션] 인간형은 뒤로 넘어지고, 네발 몹은 옆으로 쓰러지며, 날개 몹은 추락한다. 잠시 누워 있다가 서서히 사라진다.
+-- 원본 모델을 PivotTo/Transparency만 바꾸며 가짜 시체 파츠를 만들지 않는다. 피해·보상은 기존 로직 그대로.
+local function meadowDeathFall(model,enemy)
+  if enemy.r15Tracks then
+    for _,t in pairs(enemy.r15Tracks) do pcall(function() t:Stop(.08) end) end
+  end
+  local origin=model:GetPivot()
+  local human=enemy.r15Tracks~=nil
+  local aerial=enemy.kind=="bee" or enemy.kind=="bat" or enemy.kind=="ghost"
+  local away=enemy.hitDir or Vector3.new(-origin.LookVector.X,0,-origin.LookVector.Z)
+  if away.Magnitude<.01 then away=Vector3.new(0,0,1) end
+  away=away.Unit
+  local ext=model:GetExtentsSize().Y
+  local parts={}
+  for _,d in ipairs(model:GetDescendants()) do
+    if d:IsA("BasePart") then parts[#parts+1]={d,d.Transparency} end
+  end
+  local fall=human and .5 or .38
+  local hold=human and 1.1 or .3
+  local fade=.5
+  task.spawn(function()
+    local t0=os.clock()
+    while model.Parent do
+      local e=os.clock()-t0
+      if e>=fall+hold+fade then break end
+      local a=math.min(1,e/fall)
+      local k=1-(1-a)*(1-a)
+      local rot,drop,push
+      if aerial then
+        rot=CFrame.Angles(0,0,1.2*k);drop=math.min(1.8,ext*1.2)*k;push=.6*k
+      elseif human then
+        -- 뒤로 넘어짐: 앞쪽이 위로 들리며 등으로 눕는다.
+        rot=CFrame.Angles(1.5*k,0,0);drop=ext*.42*k;push=1.4*k
+      else
+        rot=CFrame.Angles(0,0,-1.45*k);drop=ext*.3*k;push=.9*k
+      end
+      local pos=origin.Position+away*push-Vector3.new(0,drop,0)
+      model:PivotTo(CFrame.new(pos)*origin.Rotation*rot)
+      if e>fall+hold then
+        local f=math.clamp((e-fall-hold)/fade,0,1)
+        for _,row in ipairs(parts) do
+          if row[1].Parent then row[1].Transparency=row[2]+(1-row[2])*f end
+        end
+      end
+      RunService.Heartbeat:Wait()
+    end
+    if model.Parent then model:Destroy() end
+  end)
+end
+
 local function applyMeadowDamage(player,target,damage,isDot)
   if not target or target.HP<=0 or not target.model.Parent then return false end
   if not isDot then addAdrenaline(player,3) end
@@ -5644,6 +5694,33 @@ local function applyMeadowDamage(player,target,damage,isDot)
   player:SetAttribute("ApprovedActionTarget",target.position)
   target.HP=math.max(0,target.HP-damage)
   target.model:SetAttribute("EnemyHealth",target.HP)
+  -- [피격 반응] 맞은 방향으로 몸이 젖혀지고 뒤로 밀린다. 치명타·강타는 더 크게, 보스는 거의 안 밀린다.
+  if not isDot and target.model and target.model.Parent then
+    local pRoot=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    local away=pRoot and Vector3.new(target.position.X-pRoot.Position.X,0,target.position.Z-pRoot.Position.Z) or Vector3.zero
+    if away.Magnitude>.05 then
+      away=away.Unit
+      target.hitDir=away
+      local heavy=critHit or damage>=target.maxHP*.15
+      local weight=target.isBoss and .15 or target.isAlpha and .45 or 1
+      target.hitAt=os.clock()
+      target.hitPower=(heavy and 1 or .55)*weight
+      local dist=(heavy and 3.4 or 1.7)*weight
+      if target.HP>0 and dist>.2 then
+        local startPos=target.position
+        task.spawn(function()
+          local t0=os.clock()
+          while true do
+            local a=math.min(1,(os.clock()-t0)/.2)
+            if target.HP<=0 or not target.model.Parent then break end
+            target.position=startPos+away*dist*(1-(1-a)*(1-a))
+            if a>=1 then break end
+            RunService.Heartbeat:Wait()
+          end
+        end)
+      end
+    end
+  end
   local hitFx=gfx and CombatStatus.RollHitEffects(gfx,{
     targetDead=target.HP<=0,isBoss=target.isBoss,stunReady=(target.stunUntil or 0)<=now})
   if hitFx then
@@ -5689,12 +5766,8 @@ local function applyMeadowDamage(player,target,damage,isDot)
       pattern=target.model:GetAttribute("AttackPattern"),
       position=target.position,boss=target.isBoss or target.isAlpha,
     })
-    local fallenModel=target.model
     -- Only the original mesh is rotated/faded. No surrogate corpse or Part.
-    fallenModel:PivotTo(fallenModel:GetPivot()*CFrame.Angles(0,0,.42))
-    task.delay(.35,function()
-      if fallenModel.Parent then fallenModel:Destroy() end
-    end)
+    meadowDeathFall(target.model,target)
     for i=#enemies,1,-1 do if enemies[i]==target then table.remove(enemies,i);break end end
     awardProgress(player,target.isBoss and 75 or target.isAlpha and 35 or 12,
       target.isBoss and 45 or target.isAlpha and 18 or 5)
@@ -6037,6 +6110,11 @@ local function animateMeadowOriginalMob(enemy,now)
   end
   enemy.slopePitch=(enemy.slopePitch or 0)+(slopeTarget-(enemy.slopePitch or 0))*.2
   attackPitch+=enemy.slopePitch
+  -- [피격 젖힘] 맞은 직후 몸이 뒤로 젖혔다가 빠르게 돌아온다.
+  local sinceHit=now-(enemy.hitAt or -9)
+  if sinceHit<.7 and not aerial then
+    attackPitch+=.42*(enemy.hitPower or .5)*math.exp(-sinceHit*7)
+  end
   local pivot=(enemy.visualPosition or enemy.position)
     +Vector3.new(0,(enemy.visibleGroundOffset or 0)
       +(enemy.terrainGroundOffset or 0)+movingHeight,0)
