@@ -255,6 +255,20 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	return m
 end
 
+-- 등불: 승인된 Town/lantern 위에 불빛을 단다 (낮엔 약하고 밤엔 밝아진다)
+local function lantern(parent, pos, size)
+	local m = importedModel(parent, "Town", "lantern", pos, size, false)
+	local base = m and m:FindFirstChildWhichIsA("BasePart", true)
+	if base then
+		local light = Instance.new("PointLight")
+		light.Color = Color3.fromRGB(255, 205, 130)
+		light.Range = 12
+		light.Brightness = 0.4
+		light.Parent = base
+	end
+	return m
+end
+
 -- 항구 주민·시설 NPC: 공통 R15 Humanoid 관절 모델 사용.
 local KEEPER_ROLE = {
 	["교역소"] = "Rogue", ["주점"] = "Barbarian", ["항만청"] = "Knight", ["은행"] = "Mage",
@@ -566,7 +580,7 @@ local function densify(folder, info, style, rng, walkers, made)
 		end
 		-- 골목 가로등
 		for x = -40, -150, -44 do
-			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, side * 40.8), 3, false)
+			lantern(folder, Vector3.new(x, 0, side * 40.8), 3)
 		end
 	end
 
@@ -1004,6 +1018,69 @@ function PortScene.build(info, onFacility)
 			rays.Parent = Lighting
 		end
 	end
+	-- 낮과 밤: 실시간 10분이 하루. 밤이 되면 하늘이 어두워지고 가로등·등불이 켜진다
+	do
+		local Lighting = game:GetService("Lighting")
+		local DAY_SECONDS = 600
+		local startClock = 13.5
+		local t0 = os.clock()
+		local function lerpC(a, b, t)
+			return a:Lerp(b, t)
+		end
+		local lights, lastScan = {}, -10
+		local conn
+		conn = RunService.Heartbeat:Connect(function()
+			if not folder.Parent then
+				conn:Disconnect()
+				return
+			end
+			if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") then
+				return
+			end
+			local now = os.clock()
+			local clock = (startClock + (now - t0) / DAY_SECONDS * 24) % 24
+			-- 해 높이: 6시 일출, 12시 정오, 18시 일몰
+			local sun = math.sin((clock - 6) / 12 * math.pi)
+			local day = math.clamp(sun * 3 + 0.35, 0, 1) -- 낮 1, 밤 0 (해 뜨고 질 때 부드럽게)
+			local night = 1 - day
+			Lighting.ClockTime = clock
+			Lighting.Brightness = 0.5 + 1.5 * day
+			Lighting.Ambient = lerpC(Color3.fromRGB(34, 40, 70), Color3.fromRGB(96, 98, 110), day)
+			Lighting.OutdoorAmbient = lerpC(Color3.fromRGB(40, 48, 84), Color3.fromRGB(122, 124, 138), day)
+			local atmos = Lighting:FindFirstChild("MareAtmosphere")
+			if atmos then
+				atmos.Color = lerpC(Color3.fromRGB(60, 72, 110), Color3.fromRGB(199, 214, 235), day)
+			end
+			local bloom = Lighting:FindFirstChild("MareBloom")
+			if bloom then
+				bloom.Threshold = 2.2 - 1.3 * night
+				bloom.Intensity = 0.2 + 0.25 * night
+			end
+			local grade = Lighting:FindFirstChild("MareGrade")
+			if grade then
+				grade.TintColor = lerpC(Color3.fromRGB(190, 205, 255), Color3.fromRGB(255, 255, 255), day)
+			end
+			if now - lastScan > 3 then
+				lastScan = now
+				lights = {}
+				for _, d in folder:GetDescendants() do
+					if d:IsA("PointLight") then
+						if not d:GetAttribute("BaseB") then
+							d:SetAttribute("BaseB", d.Brightness)
+							d:SetAttribute("BaseR", d.Range)
+						end
+						table.insert(lights, d)
+					end
+				end
+			end
+			for _, l in lights do
+				if l.Parent then
+					l.Brightness = l:GetAttribute("BaseB") * (0.3 + 3.2 * night)
+					l.Range = l:GetAttribute("BaseR") * (1 + 0.8 * night)
+				end
+			end
+		end)
+	end
 	-- 물가: 거품 띠와 바위
 	do
 		local foam = part(folder, Vector3.new(3, 0.2, 300), CFrame.new(21.5, 0.45, 0), Color3.fromRGB(240, 246, 250), Enum.Material.SmoothPlastic)
@@ -1071,8 +1148,8 @@ function PortScene.build(info, onFacility)
 		end
 		-- 큰길 가로등과 울타리, 광장 분수
 		for _, x in { -30, -75, -120 } do
-			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, 7), 3, false)
-			importedModel(folder, "Town", "lantern", Vector3.new(x, 0, -7), 3, false)
+			lantern(folder, Vector3.new(x, 0, 7), 3)
+			lantern(folder, Vector3.new(x, 0, -7), 3)
 		end
 		importedModel(folder, "Town", "fountain-square", Vector3.new(-10, 0, 0), 7, true)
 		importedModel(folder, "Town", "stall-bench", Vector3.new(-6, 0, 13), 4, false)

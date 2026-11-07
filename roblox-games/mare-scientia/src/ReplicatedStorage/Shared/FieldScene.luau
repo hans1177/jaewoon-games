@@ -159,6 +159,30 @@ function FieldScene.start(opts)
 		p.CanQuery = false
 	end
 
+	-- 지평선 언덕: 사방 가장자리 바깥에 복셀 지형 언덕을 쌓아 평평한 느낌을 줄인다 (끝나면 지운다)
+	do
+		local terrain = workspace.Terrain
+		local mat = biome.mat
+		if mat ~= Enum.Material.Sand and mat ~= Enum.Material.Slate and mat ~= Enum.Material.Mud then
+			mat = Enum.Material.Grass
+		end
+		local hills = {}
+		local hillRng = Random.new((opts.seed or 7) * 13 + 5)
+		for i = 0, 27 do
+			local ang = i / 28 * math.pi * 2 + hillRng:NextNumber(-0.08, 0.08)
+			local dist = half + hillRng:NextNumber(34, 54)
+			local r = hillRng:NextNumber(22, 38)
+			local c = ORIGIN + Vector3.new(math.cos(ang) * dist, -r * hillRng:NextNumber(0.35, 0.6), math.sin(ang) * dist)
+			terrain:FillBall(c, r, mat)
+			table.insert(hills, { c, r })
+		end
+		folder.Destroying:Connect(function()
+			for _, h in hills do
+				terrain:FillBall(h[1], h[2] + 2, Enum.Material.Air)
+			end
+		end)
+	end
+
 	local spawn = ORIGIN + Vector3.new(0, 4, half - 14)
 	-- 시작 지점 표지
 	part(folder, Vector3.new(10, 0.3, 10), CFrame.new(ORIGIN + Vector3.new(0, 0.15, half - 14)), Color3.fromRGB(214, 170, 82), Enum.Material.Cobblestone, Enum.PartType.Cylinder).CFrame = CFrame.new(ORIGIN + Vector3.new(0, 0.2, half - 14)) * CFrame.Angles(0, 0, math.pi / 2)

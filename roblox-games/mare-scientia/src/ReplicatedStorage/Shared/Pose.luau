@@ -57,6 +57,86 @@ local r15Template = nil
 local r15Unavailable = false
 local rigMotors = setmetatable({}, { __mode = "k" })
 
+-- 얼굴: 기본 얼굴 데칼 대신 눈썹·눈·입·수염·흉터를 UI 로 그려, 사람마다 표정과 생김새가 다르게 한다.
+-- (뷰포트 초상화는 SurfaceGui 를 그리지 못하므로 그때는 기본 얼굴을 그대로 둔다)
+local function drawFace(head, role, skin, rng)
+	local decal = head:FindFirstChildWhichIsA("Decal")
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "MareFace"
+	gui.Face = Enum.NormalId.Front
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.FixedSize
+	gui.CanvasSize = Vector2.new(200, 200)
+	gui.LightInfluence = 0.6
+	gui.Parent = head
+	local function box(x, y, w, h, color, rot, round)
+		local f = Instance.new("Frame")
+		f.AnchorPoint = Vector2.new(0.5, 0.5)
+		f.Position = UDim2.fromOffset(x, y)
+		f.Size = UDim2.fromOffset(w, h)
+		f.BackgroundColor3 = color
+		f.BorderSizePixel = 0
+		f.Rotation = rot or 0
+		f.Parent = gui
+		if round then
+			local c = Instance.new("UICorner")
+			c.CornerRadius = UDim.new(0.5, 0)
+			c.Parent = f
+		end
+		return f
+	end
+	local dark = Color3.fromRGB(34, 26, 22)
+	local hair = ({ Color3.fromRGB(40, 28, 20), Color3.fromRGB(92, 60, 34), Color3.fromRGB(150, 112, 60), Color3.fromRGB(120, 120, 120), Color3.fromRGB(24, 22, 22) })[rng:NextInteger(1, 5)]
+	local angry = role == "Barbarian" or role == "Rogue" or role == "Rogue_Hooded"
+	local eyeY = 92
+	-- 눈썹: 험상궂은 사람은 안쪽이 내려가고, 점잖은 사람은 부드럽게 올라간다
+	local tilt = if angry then 16 else -6
+	box(66, eyeY - 22, 36, 8, hair, tilt)
+	box(134, eyeY - 22, 36, 8, hair, -tilt)
+	-- 눈
+	local eyeW = rng:NextInteger(14, 20)
+	box(66, eyeY, eyeW, eyeW * (if angry then 0.7 else 1), Color3.fromRGB(245, 245, 240), 0, true)
+	box(134, eyeY, eyeW, eyeW * (if angry then 0.7 else 1), Color3.fromRGB(245, 245, 240), 0, true)
+	box(66 + 1, eyeY, eyeW * 0.55, eyeW * 0.55 * (if angry then 1.1 else 1), dark, 0, true)
+	box(134 - 1, eyeY, eyeW * 0.55, eyeW * 0.55 * (if angry then 1.1 else 1), dark, 0, true)
+	-- 코 그림자
+	box(100, 112, 10, 18, skin:Lerp(Color3.new(0, 0, 0), 0.18), 0, true)
+	-- 입
+	local mouth = rng:NextInteger(1, 3)
+	if role == "Knight" then
+		box(100, 148, 40, 6, dark, 0)
+	elseif angry then
+		box(100, 150, 44, 8, dark, 0)
+		box(80, 156, 8, 6, dark, 30)
+		box(120, 156, 8, 6, dark, -30)
+	elseif mouth == 1 then
+		box(100, 148, 38, 7, dark, 0, true)
+		box(80, 144, 7, 7, dark, 25, true)
+		box(120, 144, 7, 7, dark, -25, true)
+	else
+		box(100, 150, 30, 6, dark, 0, true)
+	end
+	-- 수염과 콧수염
+	local beard = rng:NextInteger(1, 4)
+	if role == "Barbarian" or beard == 1 then
+		box(100, 176, 100, 40, hair, 0, true)
+		box(100, 132, 56, 12, hair, 0, true)
+	elseif beard == 2 then
+		box(100, 132, 60, 12, hair, 0, true)
+	end
+	-- 흉터와 안대
+	if role == "Rogue" or role == "Rogue_Hooded" then
+		if rng:NextInteger(1, 2) == 1 then
+			box(66, eyeY, 40, 30, dark, 0, true)
+			box(100, eyeY - 14, 130, 4, dark, -8)
+		else
+			box(140, 100, 5, 46, Color3.fromRGB(150, 70, 62), 14)
+		end
+	end
+	if decal and gui.Parent then
+		decal:Destroy()
+	end
+end
+
 function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
 	if not r15Template then
 		if r15Unavailable then return nil end
@@ -165,6 +245,10 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
 				descendant.Material = if role == "Knight" then Enum.Material.Metal elseif role == "Barbarian" then Enum.Material.Leather else Enum.Material.Fabric
 			end
 		end
+	end
+	local headPart = model:FindFirstChild("Head")
+	if headPart and headPart:IsA("BasePart") and not parent:IsA("WorldModel") then
+		pcall(drawFace, headPart, role, skin, rng)
 	end
 	humanoid.AutoRotate = false
 	humanoid.WalkSpeed = 0
