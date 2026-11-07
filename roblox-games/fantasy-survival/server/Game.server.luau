@@ -1179,9 +1179,17 @@ local function villageChoose(player,actionId)
       return
     end
     setNumber(player,"Coins",readNumber(player,"Coins",0)+(pick==1 and 40 or 25))
+    -- [선택의 결과] 진실을 택하면 마을 사람들이, 의심을 택하면 떠돌이 상인들이 먼저 마음을 연다(단골 호감도 시작점).
+    if pick==1 then
+      setNumber(player,"Affinity_village",math.max(readNumber(player,"Affinity_village",0),3))
+    else
+      for _,shopId in ipairs({"windcliff","highland","wetland"}) do
+        setNumber(player,"Affinity_"..shopId,math.max(readNumber(player,"Affinity_"..shopId,0),3))
+      end
+    end
     villageDialogue(player,"촌장 나린",pick==1
-      and "의뢰판 뒷면에 네 이름이 있었어. 길은 서쪽 숲 우두머리 너머로 이어져. (재화 +40 · 스토리: 진실을 택했어)"
-      or "…좋아, 의심은 살아남는 자의 몫이야. 숲의 이름 도둑을 막아 줘. (재화 +25 · 스토리: 의심을 택했어)")
+      and "의뢰판 뒷면에 네 이름이 있었어. 길은 서쪽 숲 우두머리 너머로 이어져. (재화 +40 · 스토리: 진실을 택했어 · 마을 대장장이와 가까워졌어)"
+      or "…좋아, 의심은 살아남는 자의 몫이야. 숲의 이름 도둑을 막아 줘. (재화 +25 · 스토리: 의심을 택했어 · 떠돌이 상인들과 가까워졌어)")
     return
   end
   local index,contract=villageCurrentContract(player)
