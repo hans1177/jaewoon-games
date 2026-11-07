@@ -118,7 +118,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
 	if not humanoid or not root then model:Destroy(); return nil end
 	local skins = { Color3.fromRGB(242, 205, 170), Color3.fromRGB(214, 165, 125), Color3.fromRGB(176, 125, 90), Color3.fromRGB(128, 88, 62) }
 	local skin = skins[rng:NextInteger(1, #skins)]
-	local trousers = Color3.fromRGB(rng:NextInteger(38, 85), rng:NextInteger(35, 75), rng:NextInteger(33, 72))
+	local trousers = Color3.fromRGB(rng:NextInteger(70, 120), rng:NextInteger(62, 105), rng:NextInteger(55, 95))
 	local coats = {
 		Knight = Color3.fromRGB(110, 120, 142), Barbarian = Color3.fromRGB(128, 88, 62),
 		Mage = Color3.fromRGB(102, 80, 144), Rogue = Color3.fromRGB(92, 108, 78),
