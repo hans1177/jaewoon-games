@@ -965,7 +965,7 @@ function PortScene.build(info, onFacility)
 			local cc = Instance.new("ColorCorrectionEffect")
 			cc.Name = "MareGrade"
 			cc.Saturation = 0.12
-			cc.Contrast = 0.08
+			cc.Contrast = 0.04
 			cc.TintColor = Color3.fromRGB(255, 255, 255)
 			cc.Parent = Lighting
 			local bloom = Instance.new("BloomEffect")
