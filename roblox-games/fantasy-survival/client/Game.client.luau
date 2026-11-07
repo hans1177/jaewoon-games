@@ -1908,7 +1908,22 @@ if witcherTabs then
       local index=button:GetAttribute("FilterIndex")
       if typeof(index)=="number" then
         local atlasCell=({3,4,2,5,7,6})[index]
-        if atlasCell then
+        -- [아이콘 동기화] 상단 메뉴와 같은 개념(가방·스킬·기록·설정)은 같은 원화를 쓴다.
+        local painted=({[2]={0,0},[5]={800,0},[6]={0,200}})[index]
+        if painted then
+          local icon=Instance.new("ImageLabel")
+          icon.Name="CC0MenuIcon";icon.BackgroundTransparency=1
+          icon.Image=meadowPaintedHudAtlas;icon.ImageRectOffset=Vector2.new(painted[1],painted[2])
+          icon.ImageRectSize=Vector2.new(200,200);icon.ScaleType=Enum.ScaleType.Fit
+          icon.Size=UDim2.fromOffset(38,38);icon.Position=UDim2.new(.5,-19,0,4)
+          icon.ZIndex=46;icon.Parent=button
+        elseif index==3 then
+          local icon=Instance.new("ImageLabel")
+          icon.Name="CC0MenuIcon";icon.BackgroundTransparency=1
+          icon.Size=UDim2.fromOffset(38,38);icon.Position=UDim2.new(.5,-19,0,4)
+          icon.ZIndex=46;icon.Parent=button
+          meadowArt.skill(icon,"skill-meadow-focus")
+        elseif atlasCell then
           local icon=Instance.new("ImageLabel")
           icon.Name="CC0MenuIcon";icon.BackgroundTransparency=1
           icon.Image=meadowIconAtlas;icon.ImageRectOffset=Vector2.new(atlasCell*64,0)
@@ -1948,10 +1963,11 @@ meadowReferenceMenu.Name="MeadowReferenceTopMenu"
 meadowReferenceMenu.BackgroundTransparency=1
 meadowReferenceMenu.ZIndex=26
 meadowReferenceMenu.Parent=meadowTouchLayer
+-- {이름,페이지,예비 칸,섹션,원화 칸 x,y}. 건설 기능이 없어 '건설' 버튼은 제거했고, 도감·연대기는 세계 탭의 해당 섹션으로 바로 간다.
 local referenceMenuItems={
-  {"가방",2,6},{"제작",2,11},{"건설",2,12},
-  {"도감",3,13},{"기사단 연대기",3,14},{"설정",4,15},
-  {"스킬트리",7,0}, -- [오딧세이식 스킬 트리] 등록된 스킬 원화 시트의 아이콘을 쓴다.
+  {"가방",2,6,nil,0,0},{"제작",2,11,nil,200,0},
+  {"도감",6,13,2,600,0},{"기사단 연대기",6,14,5,800,0},{"설정",4,15,nil,0,200},
+  {"스킬트리",7,0,nil,0,0}, -- [오딧세이식 스킬 트리] 등록된 스킬 원화 시트의 아이콘을 쓴다.
 }
 for index,info in ipairs(referenceMenuItems) do
   local button=Instance.new("TextButton")
@@ -1966,7 +1982,7 @@ for index,info in ipairs(referenceMenuItems) do
   icon.BackgroundTransparency=1
   icon.Image=meadowPaintedHudAtlas
   icon.ImageRectSize=Vector2.new(200,200)
-  icon.ImageRectOffset=Vector2.new(({0,200,400,600,800,0})[index] or 0,({0,0,0,0,0,200})[index] or 0)
+  icon.ImageRectOffset=Vector2.new(info[5] or 0,info[6] or 0)
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,0)
   icon.Position=UDim2.fromScale(.5,0)
@@ -1996,7 +2012,13 @@ for index,info in ipairs(referenceMenuItems) do
   caption.Position=UDim2.new(.5,0,1,1)
   caption.ZIndex=28
   caption.Parent=button
-  button.Activated:Connect(function()meadowMenu.open(info[2])end)
+  button.Activated:Connect(function()
+    meadowMenu.open(info[2])
+    -- [직관 이동] 도감·연대기는 세계 탭의 해당 섹션을 바로 연다.
+    if info[4] and meadowArt.sections[info[2]] then
+      meadowArt.sections[info[2]].selected=info[4];meadowArt.applySection(info[2])
+    end
+  end)
 end
 local meadowReferenceHotbar=Instance.new("Frame")
 meadowReferenceHotbar.Name="MeadowReferenceHotbar"
@@ -2113,8 +2135,8 @@ local function layoutMeadowReferenceHud()
   local landscape=v.X>v.Y
   -- [모바일 터치] 엔진 품질검사(짧은 변 44 이상)를 모든 화면에서 만족하도록 메뉴 칸을 키운다.
   local step=landscape and math.floor(math.clamp(v.X/17,44,55))
-    or math.floor(math.clamp((v.X-18)/7,44,52))
-  local menuWidth=step*7
+    or math.floor(math.clamp((v.X-18)/6,44,52))
+  local menuWidth=step*6
   meadowReferenceMenu.Size=UDim2.fromOffset(menuWidth,step+17)
   -- [최상단] 기본 메뉴 여백 위, 화면 맨 위 오른쪽에 붙인다.
   meadowReferenceMenu.Position=UDim2.new(1,-menuWidth-6,0,2)
