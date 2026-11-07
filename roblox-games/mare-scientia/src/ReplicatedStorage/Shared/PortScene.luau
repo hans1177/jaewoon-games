@@ -470,10 +470,18 @@ local function smokeOn(folder, pos)
 	sm.Parent = s
 end
 
+-- 야자수는 위도 36도 이하(또는 열대/사막)에서만. 프랑스 등 북·서유럽은 참나무·소나무.
+local function palmOk(portId, style)
+	local p = PortData.Ports[portId]
+	if p and p.country == "france" then return false end
+	if p and p.lat > 36 then return false end
+	return true
+end
+
 local function densify(folder, info, style, rng, walkers, made)
 	local key = styleKeyOf(style)
-	local warm = key == "med" or key == "desert" or key == "tropic"
-	local cold = not warm
+	local palm = palmOk(info.portId, style)
+	local cold = not palm
 	local port = PortData.Ports[info.portId]
 	local big = (port and port.shipyard) or false
 	local streetsX = { -50, -90, -130 }
@@ -567,11 +575,9 @@ local function densify(folder, info, style, rng, walkers, made)
 	-- 3) 부두: 둘째 잔교, 배 여러 척, 하역장
 	local pier = part(folder, Vector3.new(44, 0.8, 7), CFrame.new(44, 1.6, 46), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
 	pier.CanCollide = false
-	for x = 26, 64, 9 do
-		for s2 = -1, 1, 2 do
-			local post = part(folder, Vector3.new(1.2, 6, 1.2), CFrame.new(x, -1, 46 + s2 * 3.3) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(90, 64, 40), Enum.Material.Wood, Enum.PartType.Cylinder)
-			post.CanCollide = false
-		end
+	pier.Transparency = 1
+	for x = 30, 62, 16 do
+		importedModel(folder, "Naval", "structure-platform-dock-small", Vector3.new(x, 0.8, 46), 14, false)
 	end
 	local dockCargo = { { "Naval", "crate" }, { "Cargo", "barrel" }, { "Naval", "cargo-pile-a" }, { "Naval", "cargo-pile-b" }, { "Naval", "chest" }, { "Naval", "crate-bottles" }, { "Naval", "detail-crate-ropes" } }
 	for i = 0, 9 do
@@ -726,7 +732,7 @@ function PortScene.build(info, onFacility)
 	water.CanCollide = false
 	part(folder, Vector3.new(8, 2, 300), CFrame.new(18, 0, 0), Color3.fromRGB(130, 126, 120), Enum.Material.Cobblestone)
 	local dock = part(folder, Vector3.new(60, 0.8, 10), CFrame.new(50, 1.6, 0), Color3.fromRGB(150, 110, 70), Enum.Material.WoodPlanks)
-	if importedModel(folder, "Naval", "structure-platform-dock", Vector3.new(50, 1.6, 0), 60, false) then
+	if importedModel(folder, "Naval", "structure-platform-dock", Vector3.new(40, 0.8, 0), 22, false) then
 		-- 실제 메쉬를 보여주면서 기존 부두의 안전한 보행 판정은 유지.
 		dock.Transparency = 1
 	end
@@ -990,8 +996,13 @@ function PortScene.build(info, onFacility)
 		end
 		-- 종려나무 (부두 앞 해안)
 		for _, z in { -16, 16, -32, 32 } do
-			importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(13, 0, z), 6.5, false)
-			importedModel(folder, "Naval", "palm-bend", Vector3.new(17, 0, z + 5), 7.5, false)
+			if palmOk(info.portId, style) then
+				importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(13, 0, z), 6.5, false)
+				importedModel(folder, "Naval", "palm-bend", Vector3.new(17, 0, z + 5), 7.5, false)
+			else
+				importedModel(folder, "Terrain", "tree-oak", Vector3.new(13, 0, z), 7, false)
+				importedModel(folder, "Town", "tree", Vector3.new(17, 0, z + 5), 7, false)
+			end
 			importedModel(folder, "Naval", "grass-plant", Vector3.new(20, 0, z - 4), 2, false)
 		end
 	end
@@ -1061,7 +1072,7 @@ function PortScene.build(info, onFacility)
 		for _, x in { -52, -74, -96, -118, -138 } do
 			for side = -1, 1, 2 do
 				-- 사막·열대·지중해 마을에는 소나무 대신 야자나무
-				local warm = style ~= STYLE.north and style ~= STYLE.brick and style ~= STYLE.nordic and style ~= STYLE.stone
+				local warm = palmOk(info.portId, style)
 				local pick = ({ "tree", "tree-high", "tree-crooked", "tree_large", "tree_tiny" })[rng:NextInteger(1, 5)]
 				local at = Vector3.new(x + rng:NextNumber(-3, 3), 0, side * rng:NextNumber(10, 13))
 				if warm then
