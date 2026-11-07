@@ -122969,7 +122969,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -123004,7 +123004,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 16,
-      "previousReservationId": "system-ai:42335985849:1",
+      "previousReservationId": "system-ai:42356590061:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -123012,12 +123012,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:42356590061:1",
-      "reservedAt": "2026-11-07T08:46:09.732Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -123509,7 +123509,15 @@
         "system-ai-handoff-from-reservation:system-ai:42331287102:1",
         "system-ai-handoff-to-reservation:system-ai:42335985849:1",
         "actions-run:42335985849",
-        "system-ai-handoff-to-reservation:system-ai:42356590061:1"
+        "system-ai-handoff-to-reservation:system-ai:42356590061:1",
+        "actions-run:42356590061",
+        "external-ai-raw-output-sha256:ffa863b79c61ff18971c005474b263efc877edb5e2d8aab9168c075739a75659",
+        "selected-strategy:comprehensive-pre-release-marketing-artifact",
+        "system-ai-critic-decision-sha256:740bf929a485b697c1261c5d6d84b89c72df6f6b4c74c4deaf6ddb1e2456b887",
+        "system-ai-applied-answer-sha256:41137764e1b9208b39f688363c2f277548e74843c00496cb25982d7777d55b3c",
+        "repair-strategy-fingerprint:0823c1cab51320c9a914989764262d26db06ca5daeef8ef340942bbfb98021b8",
+        "failed-strategy-fingerprint:0823c1cab51320c9a914989764262d26db06ca5daeef8ef340942bbfb98021b8",
+        "model-output-sha256:ffa863b79c61ff18971c005474b263efc877edb5e2d8aab9168c075739a75659"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1862,
@@ -123524,7 +123532,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-07T08:46:09.732Z"
+      "updatedAt": "2026-11-07T08:55:12.011Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
