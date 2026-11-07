@@ -2597,6 +2597,18 @@ local function owned(item)
   if typeof(item.key)=="Instance" then return item.key.Parent~=nil and 1 or 0 end
   return math.max(0,tonumber(player:GetAttribute(item.key)) or 0)
 end
+local function nearAnvil()
+  local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+  if not root then return false end
+  local st=Config.SmithStations.Anvil
+  local dx,dz=root.Position.X-st.X,root.Position.Z-st.Z
+  if dx*dx+dz*dz<=st.Radius*st.Radius then return true end
+  for _,site in ipairs(Config.CraftSites or {}) do
+    local sx,sz=root.Position.X-site.X,root.Position.Z-site.Z
+    if sx*sx+sz*sz<=(st.Radius+4)*(st.Radius+4) then return true end
+  end
+  return false
+end
 local function itemValue(item)
   if item.gear then
     return owned(item)>0 and (player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index and "장착 중" or "보유") or "미보유 · 제작법"
@@ -2698,8 +2710,9 @@ local function redrawSelection()
       local has=owned(item)>0
       local worn=player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index
       -- [스카이림식 제작] 제작은 대장간 모루에서만. 가방은 제작법·재료 확인과 장착만 한다.
-      equip.Text=not has and "대장간 모루에서 제작" or worn and "장착 해제" or "장착"
-      equip.Active=has and player:GetAttribute("ProfileReady")==true
+      local atAnvil=nearAnvil()
+      equip.Text=not has and (atAnvil and "제작" or "대장간 모루에서 제작") or worn and "장착 해제" or "장착"
+      equip.Active=(has or atAnvil) and player:GetAttribute("ProfileReady")==true
     elseif item.tonic then
       equip.Text="물약 사용"
       equip.Active=owned(item)>0 and player:GetAttribute("ProfileReady")==true
@@ -2870,8 +2883,10 @@ equip.Activated:Connect(function()
   local item=itemRows[selectedKey]
   if not item then return end
   if item.gear then
-    if owned(item)<1 then return end -- 제작은 대장간 모루 전용
-    local op=(player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index and "unequip" or "equip")
+    -- 제작은 대장간 모루 근처에서만(서버도 같은 거리를 다시 검사한다).
+    if owned(item)<1 and not nearAnvil() then return end
+    local op=owned(item)<1 and "craft" or
+      (player:GetAttribute("MeadowEquip"..item.gear.Slot)==item.index and "unequip" or "equip")
     remote:FireServer("meadow:rpg:gear:"..op..":"..item.gear.Id)
   elseif item.tonic then
     remote:FireServer("meadow:rpg:tonic:use:"..item.tonic.Id)
@@ -11965,6 +11980,10 @@ end)()
         end
       end
     end
+    if gui:GetAttribute("TutorialAnvil")==true then
+      local st=Config.SmithStations.Anvil
+      return st.X,st.Z,"대장간 모루"
+    end
     -- [메인 퀘스트 길 안내] 초원 1~6단계와 이후 지역 이동 단계도 표시한다.
     do
       local stage=player:GetAttribute("QuestStage") or 1
@@ -12221,6 +12240,16 @@ end)()
       if edit and edit.AbsoluteSize.X>0 and not menuOpen() then return Vector2.new(edit.AbsolutePosition.X+edit.AbsoluteSize.X/2,edit.AbsolutePosition.Y),"down" end
       return nil,"down"
     end,nil},
+    {"대장간 가기","마을 서쪽 대장간(대장장이 브란)으로 가 봐. 모루 근처에서만 장비를 만들 수 있어. 길 안내 ▼를 따라가.",function()
+      local cam=workspace.CurrentCamera
+      local st=Config.SmithStations.Anvil
+      if cam then
+        local sp,on=cam:WorldToViewportPoint(Vector3.new(st.X,6,st.Z))
+        if on and sp.Z>0 then return Vector2.new(sp.X,sp.Y-30),"down" end
+      end
+      return nil,"down"
+    end,"anvil"},
+    {"모루에서 제작","메뉴 '가방'에서 만들 장비를 골라 '제작'을 눌러. 재료가 모자라면 상인에게서 기본 장비를 살 수도 있어. 요리·물약은 식당 화덕에서 해.",function() return nil,"down" end,nil},
     {"시작!","이제 노란 ▼ 표시를 따라 모험을 시작해! 메뉴는 오른쪽 위 설정 옆 '도우미'에서 다시 볼 수 있어.",function() return nil,"down" end,nil},
   }
   local card=Instance.new("Frame")
@@ -12257,6 +12286,7 @@ end)()
   local function finish()
     current=0;card.Visible=false;pointer.Visible=false;ring.Visible=false
     tutorialStep=99;pref("tut",99)
+    gui:SetAttribute("TutorialAnvil",false)
     gui:SetAttribute("TutorialOverviewDone",true)
     if menuOpen() then pcall(function() meadowMenu.close() end) end
   end
@@ -12273,6 +12303,7 @@ end)()
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     moveStart=root and root.Position or nil
     guideAtShow=guideOff
+    gui:SetAttribute("TutorialAnvil",s[4]=="anvil")
     if s[4]=="menu" and not granted then granted=true;pref("grant",1) end
     if i<50 then pref("tut",math.min(i,49)) end
   end
@@ -12293,7 +12324,12 @@ end)()
       guideOff=false;paintGuide();pref("guide",0);show(current+1) return
     elseif cond=="menu" and menuOpen() then show(current+1) return
     elseif cond=="skillpage" and skillPageOpen() then show(current+1) return
-    elseif cond=="learned" and anyTalent() then show(current+1) return end
+    elseif cond=="learned" and anyTalent() then show(current+1) return
+    elseif cond=="anvil" then
+      local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+      local st=Config.SmithStations.Anvil
+      if root and (Vector2.new(root.Position.X-st.X,root.Position.Z-st.Z)).Magnitude<=st.Radius+6 then show(current+1) return end
+    end
     -- 메뉴가 닫히면 메뉴 단계로 되돌린다.
     if (cond=="skillpage" or cond=="learned") and not menuOpen() then show(idx("메뉴 열기")) return end
     if cond=="learned" and not skillPageOpen() then show(idx("스킬 탭")) return end
