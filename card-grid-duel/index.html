@@ -23,6 +23,16 @@ h1{font-size:22px;margin:0}
 .boardWrap{display:flex;justify-content:center;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 .boardWrap.wide{justify-content:flex-start;justify-content:safe center}
 .board.wide{width:900px;min-width:900px;flex-shrink:0}
+/* 6스테이지: 20×20 큰 맵. 모바일에서는 가로·세로로 밀어 이동한다. */
+.boardWrap.giant{max-height:min(70svh,800px);justify-content:flex-start;overflow:auto;touch-action:pan-x pan-y}
+.board.giant{width:1200px;min-width:1200px;flex-shrink:0}
+.mapControls{display:flex;gap:8px;justify-content:center;margin:8px auto}
+.mapControls button{min-height:44px;border:1px solid #3b7251;background:#1e4436;color:#e0ffe5;border-radius:10px;padding:4px 14px;font-size:13px;font-weight:900}
+.cell.jungle{background:radial-gradient(ellipse at 20% 18%,#356d3d 0%,transparent 48%),radial-gradient(ellipse at 83% 75%,#275236 0%,transparent 55%),linear-gradient(140deg,#112a20,#1b442c 55%,#142a1c);border:1px solid #366742}
+.cell.jungle.bush{background:radial-gradient(ellipse at 30% 30%,#4a9050 0%,transparent 50%),radial-gradient(ellipse at 85% 62%,#234d30 0%,transparent 52%),linear-gradient(155deg,#12351e,#2a5c36)}
+.cell.jungle.borderJungle{box-shadow:inset 5px 0 0 #719d3e}
+.cell.jungleHeal{outline:2px solid #75f898;z-index:0}
+
 .board{width:min(94vw,560px);aspect-ratio:1;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:6px;background:#26324a;border-radius:14px}
 .cell{position:relative;border:0;border-radius:10px;background:#34415d;color:#fff;overflow:hidden;min-width:0}
 .cell.homeBlue{background:#2c4b62}.cell.homeRed{background:#5c343e}
@@ -118,6 +128,10 @@ h1{font-size:22px;margin:0}
       <span id="players">파랑 VS 빨강</span>
       <b id="turn">대기</b>
     </div>
+    <div id="mapControls" class="mapControls hidden">
+      <button id="viewEnemy" type="button">적 진영 보기</button>
+      <button id="viewAlly" type="button">내 진영 보기</button>
+    </div>
     <div class="boardWrap"><div id="board" class="board"></div></div>
     <div class="statusRow">
       <span id="deckInfo">골드 -</span>
@@ -140,7 +154,9 @@ const STAGES={
   3:{blueMax:12,redMax:8,enemyScale:1.35,redPool:['ENHANCED_GOBLIN','GOLEM','BOAR','SKELETON_SOLDIER','ORC','SLIME']},
   4:{blueMax:12,redMax:8,enemyScale:1,redPool:['SHIELD_GOBLIN','CHARGE_ORC','POISON_SCORPION','RUIN_GUARDIAN']},
   // 5스테이지: 5×10 = 기본 5×5 맵의 2배. 증원은 정해진 라운드에만 출현.
-  5:{blueMax:12,redMax:14,enemyScale:1,redPool:['POISON_SCORPION','CHARGE_ORC','SLIME','ORC_MAGE','BOAR','ORC']}
+  5:{blueMax:12,redMax:14,enemyScale:1,redPool:['POISON_SCORPION','CHARGE_ORC','SLIME','ORC_MAGE','BOAR','ORC']},
+  // 6스테이지는 3·5·8턴 총 17마리만 지정된 시간에 등장한다.
+  6:{blueMax:12,redMax:17,enemyScale:1,redPool:['ORC_MAGE','POISON_SCORPION','BEAR','CHARGE_ORC','MOUNTED_ORC','ORC']}
 };
 // 중갑병은 다른 카드(각 2칸)보다 낮은 확률(1칸)로 뽑힌다.
 const GACHA_POOL=['LANCER','LANCER','CROSSBOW','CROSSBOW','HAMMER','HAMMER','RIFLEMAN','RIFLEMAN','HEAVY_INFANTRY'];
@@ -227,7 +243,9 @@ const CARDS={
     CHARGE_ORC:{name:'돌격 오크',icon:'👹💨',hp:150,atk:45,range:1,cost:0,reward:70,turnCharge:true,desc:'적 턴 시작 시 40% 확률로 벽까지 돌진 · 충돌 55 피해 + 1턴 공격 불가'},
     POISON_SCORPION:{name:'독전갈',icon:'🦂',hp:90,atk:35,range:1,cost:0,reward:55,desc:'4스테이지 독전갈'},
     RUIN_GUARDIAN:{name:'유적 수호자',icon:'🗿',hp:190,atk:40,range:1,cost:0,reward:80,guardianPulse:true,desc:'3번째 적 턴마다 주변 아군에게 25 피해'},
-    ORC_MAGE:{name:'오크 마법사',icon:'👹🔮',hp:115,atk:50,range:2,cost:0,reward:60,areaLock:true,desc:'적 턴마다 60% 확률로 주변 8칸 공격 · 1턴 공격 불가'}
+    ORC_MAGE:{name:'오크 마법사',icon:'👹🔮',hp:115,atk:50,range:2,cost:0,reward:60,areaLock:true,desc:'적 턴마다 60% 확률로 주변 8칸 공격 · 1턴 공격 불가'},
+    BEAR:{name:'곰',icon:'🐻',hp:250,atk:55,range:1,cost:0,reward:75,desc:'체력 250 · 공격 55'},
+    MOUNTED_ORC:{name:'기마병 오크',icon:'🐎👹',hp:200,atk:48,range:1,move:2,cost:0,reward:75,desc:'최대 2칸 이동 · 장애물·전투 상황에서는 1칸'}
 
   }
 };
@@ -238,8 +256,8 @@ let state=null,side='BLUE',selectedUnit=null,selectedCard='',mode='idle',aiThink
 
 function msg(t){notice.textContent=t}
 function other(s){return s==='BLUE'?'RED':'BLUE'}
-function boardRows(){return state?.stage===4?7:BASE_ROWS}
-function boardCols(){return state?.stage===5?BASE_COLS*2:BASE_COLS}
+function boardRows(){return state?.stage===6?20:state?.stage===4?7:BASE_ROWS}
+function boardCols(){return state?.stage===6?20:state?.stage===5?BASE_COLS*2:BASE_COLS}
 function homeRow(s){return s==='BLUE'?boardRows():1}
 function moveDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
 function attackDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
@@ -249,6 +267,11 @@ function canAttackTarget(attacker,target){
     const forward=attacker.r-target.r;
     const across=Math.abs(attacker.c-target.c);
     return forward>=1&&forward<=4&&(across===0||across===forward)
+  }
+  // 6스테이지 적은 전방 3칸(정면·양 대각선)과 좌우 1칸도 공격한다.
+  if(attacker.side==='RED'&&state?.stage===6){
+    const forward=target.r-attacker.r,across=Math.abs(target.c-attacker.c);
+    if((forward===1&&across<=1)||(forward===0&&across===1))return true
   }
   return attackDist(attacker,target)<=card(attacker.side,attacker.card).range
 }
@@ -290,7 +313,7 @@ function loadProgress(){
       if(saved.chests)saved.chests=saved.chests.map(rotate);
       saved.mapOrientation='wide'
     }
-    if(!saved||!Number.isInteger(saved.stage)||saved.stage<1||saved.stage>5
+    if(!saved||!Number.isInteger(saved.stage)||saved.stage<1||saved.stage>6
       ||!Number.isInteger(saved.turn)||saved.turn<1||!['BATTLE','REST'].includes(saved.phase)
       ||!['BLUE','RED'].includes(saved.current)||!['','BLUE','RED'].includes(saved.winner)
       ||!Number.isInteger(saved.keys)||saved.keys<0
@@ -300,13 +323,24 @@ function loadProgress(){
       ||!saved.summons||!Number.isInteger(saved.summons.BLUE)||!Number.isInteger(saved.summons.RED)
       ||saved.units.some(u=>!u||!CARDS[u.side]?.[u.card]||!Number.isFinite(u.hp)
         ||!Number.isInteger(u.r)||!Number.isInteger(u.c)
-        ||u.r<1||u.r>(saved.stage===4?7:BASE_ROWS)
-        ||u.c<1||u.c>(saved.stage===5?BASE_COLS*2:BASE_COLS))
+        ||u.r<1||u.r>(saved.stage===6?20:saved.stage===4?7:BASE_ROWS)
+        ||u.c<1||u.c>(saved.stage===6?20:saved.stage===5?BASE_COLS*2:BASE_COLS))
       ||saved.unlocked.some(id=>!CARDS.BLUE[id])
       ||(saved.chests!==undefined&&(!Array.isArray(saved.chests)
         ||saved.chests.some(x=>!x||!Number.isInteger(x.r)||!Number.isInteger(x.c)
           ||x.r<1||x.r>BASE_ROWS||x.c<1||x.c>(saved.stage===5?BASE_COLS*2:BASE_COLS))))
       ||(saved.specialTiles!==undefined&&!Array.isArray(saved.specialTiles)))return null;
+    // 예전 5스테이지 최종 승리 저장을 새 6스테이지 입장 전 휴식 화면으로 이전한다.
+    if(saved.stage===5&&saved.winner==='BLUE'&&saved.phase==='BATTLE'){
+      if(!saved.stageFiveRewarded){
+        setDiamondWallet(diamondWallet()+30);
+        saved.stageFiveRewarded=true
+      }
+      saved.winner='';
+      saved.phase='REST';
+      saved.current='BLUE';
+      localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))
+    }
     saved.diamonds=diamondWallet();
     return saved
   }catch(error){
@@ -444,6 +478,14 @@ function clearStageFour(){
   awardDiamonds(60);
   enterRest('4스테이지 클리어 · 다이아 60개 획득 · 열쇠 또는 다이아로 뽑기 가능')
 }
+function clearStageFive(){
+  if(!state.stageFiveRewarded){
+    awardDiamonds(30);
+    state.stageFiveRewarded=true
+  }
+  // 5스테이지는 열쇠 지급 없이 30다이아만 지급한다.
+  enterRest('5스테이지 클리어 · 다이아 30개 획득 · 열쇠 추가 없음')
+}
 function checkWin(){
   if(!state||state.phase!=='BATTLE'||state.winner)return;
   if(exhausted('BLUE')){state.winner='RED';return}
@@ -452,7 +494,8 @@ function checkWin(){
     if(state.stage===2){clearStageTwo();return}
     if(state.stage===3){clearStageThree();return}
     if(state.stage===4){clearStageFour();return}
-    if(state.stage===5){state.winner='BLUE';msg('5스테이지 클리어!');return}
+    if(state.stage===5){clearStageFive();return}
+    if(state.stage===6){state.winner='BLUE';msg('6스테이지 클리어!');return}
     state.winner='BLUE'
   }
 }
@@ -509,26 +552,35 @@ function createStageFiveChests(){
   }
   return spots.slice(0,6)
 }
-function spawnStageFiveWave(){
-  if(state.stage!==5||state.phase!=='BATTLE')return;
+// 스테이지 5·6 증원은 같은 책임 함수에서 정해진 아군 라운드에만 실행한다.
+function spawnScriptedWave(){
+  if(!state||state.phase!=='BATTLE'||(state.stage!==5&&state.stage!==6))return;
   const round=Math.ceil(state.turn/2);
   if(round<2||round===state.lastWaveRound)return;
-  const waves={
+  const waves=state.stage===5?{
     2:['POISON_SCORPION','POISON_SCORPION','POISON_SCORPION'],
     4:['CHARGE_ORC','CHARGE_ORC','SLIME'],
     5:['ORC_MAGE'],
     7:['BOAR','BOAR','BOAR'],
     8:['ORC_MAGE','ORC_MAGE','SLIME','ORC']
+  }:{
+    3:['ORC_MAGE','ORC_MAGE','ORC_MAGE','POISON_SCORPION','POISON_SCORPION'],
+    5:['BEAR','BEAR','CHARGE_ORC','CHARGE_ORC','CHARGE_ORC'],
+    8:['MOUNTED_ORC','ORC_MAGE','ORC_MAGE','CHARGE_ORC','CHARGE_ORC','CHARGE_ORC','ORC']
   };
   const enemies=waves[round];
   if(!enemies)return;
   const free=[];
-  for(let r=1;r<=boardRows();r++){
+  // 정글 치유 칸은 비워두고, 6스테이지 적은 맵 북쪽에서 증원한다.
+  const lastRow=state.stage===6?10:boardRows();
+  for(let r=1;r<=lastRow;r++){
     const row=[];
-    for(let c=1;c<=boardCols();c++)if(!at(r,c)&&!chestAt(r,c))row.push({r,c});
+    for(let c=1;c<=boardCols();c++){
+      if(!at(r,c)&&!chestAt(r,c)&&!(state.stage===6&&tileAt(r,c)))row.push({r,c})
+    }
     for(let i=row.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
-      [row[i],row[j]]=[row[j],row[i]];
+      [row[i],row[j]]=[row[j],row[i]]
     }
     free.push(...row)
   }
@@ -543,12 +595,12 @@ function spawnStageFiveWave(){
     state.summons.RED++
   }
   state.lastWaveRound=round;
-  msg('5스테이지 '+round+'턴 · 적 '+enemies.length+'마리 출현!')
+  msg(state.stage+'스테이지 '+round+'턴 · 적 '+enemies.length+'마리 출현!')
 }
 // 오크 마법사: 적 턴마다 60% 확률로 주변 8칸에 공격력 50을 적용.
 // 맞고 살아남은 아군은 다음 자기 턴에 이동 가능, 공격만 불가.
-function resolveStageFiveEnemyTurn(){
-  if(state.stage!==5)return;
+function resolveOrcMageEnemyTurn(){
+  if(state.stage!==5&&state.stage!==6)return;
   for(const mage of [...state.units].filter(u=>u.side==='RED'&&u.card==='ORC_MAGE'&&u.hp>0)){
     if(mage.frozenNow||Math.random()>=0.6)continue;
     const nearby=state.units.filter(u=>u.side==='BLUE'&&u.hp>0&&
@@ -580,8 +632,8 @@ function startTurn(s){
     u.attackLockedNow=(u.attackLock||0)>0;
     if(u.attackLockedNow)u.attackLock--
   }
-  if(s==='BLUE')spawnStageFiveWave();
-  if(s==='RED')resolveStageFiveEnemyTurn();
+  if(s==='BLUE')spawnScriptedWave();
+  if(s==='RED')resolveOrcMageEnemyTurn();
 }
 function processAction(actor,p){
   if(!state||state.winner||actor!==state.current)return false;
@@ -616,7 +668,12 @@ function processAction(actor,p){
     state.summonUsed=true;
   }else if(p.type==='move'){
     const u=byId(p.unit);
-    if(!u||u.side!==actor||u.moved||u.frozenNow||at(p.r,p.c)||chestAt(p.r,p.c)||moveDist(u,{r:p.r,c:p.c})!==1)return false;
+    if(!u||u.side!==actor||u.moved||u.frozenNow||!isInside(p.r,p.c)||at(p.r,p.c)||chestAt(p.r,p.c))return false;
+    const distance=moveDist(u,{r:p.r,c:p.c});
+    const cavalry=state.stage===6&&u.side==='RED'&&u.card==='MOUNTED_ORC';
+    if(distance!==1&&!(cavalry&&distance===2
+      &&(u.r===p.r||u.c===p.c)
+      &&!at(u.r+Math.sign(p.r-u.r),u.c+Math.sign(p.c-u.c))))return false;
     u.r=p.r;u.c=p.c;u.moved=true;
     applyTile(u);
   }else if(p.type==='attackChest'){
@@ -748,7 +805,17 @@ function createStageFourTiles(){
   const types=['SPIKE','HEAL','JUMP','CRACK'];
   return cells.slice(0,5).map((p,i)=>({...p,type:types[i%types.length]}))
 }
-function tileAt(r,c){return state?.stage===4?(state.specialTiles||[]).find(t=>t.r===r&&t.c===c):null}
+function tileAt(r,c){return state&&(state.stage===4||state.stage===6)?(state.specialTiles||[]).find(t=>t.r===r&&t.c===c):null}
+function createStageSixJungle(){
+  // 오른쪽 정글 5열에 1~2개 치유 발판. 적 운에는 1개만 출현한다.
+  const candidates=[];
+  for(let r=3;r<=18;r++)for(let c=16;c<=20;c++)candidates.push({r,c,type:'HEAL'});
+  for(let i=candidates.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [candidates[i],candidates[j]]=[candidates[j],candidates[i]]
+  }
+  return candidates.slice(0,Math.random()<0.3?1:2)
+}
 function applyTile(u){
   const t=tileAt(u.r,u.c);if(!t)return;
   if(t.type==='SPIKE'){applyDamage(u,20,u.side==='BLUE'?'RED':'BLUE');removeDeadAndSplit();checkWin()}
@@ -764,6 +831,9 @@ function render(){
   const rows=boardRows(),cols=boardCols();
   board.classList.toggle('wide',state?.stage===5);
   board.parentElement.classList.toggle('wide',state?.stage===5);
+  board.classList.toggle('giant',state?.stage===6);
+  board.parentElement.classList.toggle('giant',state?.stage===6);
+  $('#mapControls').classList.toggle('hidden',state?.stage!==6);
   board.style.gridTemplateColumns='repeat('+cols+',1fr)';
   board.style.gridTemplateRows='repeat('+rows+',1fr)';
   board.style.aspectRatio=cols+'/'+rows;
@@ -771,6 +841,12 @@ function render(){
     const b=document.createElement('button');
     b.className='cell '+(r===1?'homeRed ':'')+(r===homeRow('BLUE')?'homeBlue ':'');
     const u=state?at(r,c):null,tile=state?tileAt(r,c):null,chest=state?chestAt(r,c):null;
+    if(state?.stage===6&&c>=16){
+      b.classList.add('jungle');
+      if((r+c)%3===0)b.classList.add('bush');
+      if(c===16)b.classList.add('borderJungle')
+    }
+    if(tile?.type==='HEAL'&&state?.stage===6)b.classList.add('jungleHeal');
     if(tile){b.dataset.tile=tile.type;b.title=({SPIKE:'가시 발판',HEAL:'회복 발판',JUMP:'점프 발판',CRACK:'균열 발판'})[tile.type]||'특수 발판';b.style.boxShadow='inset 0 0 0 3px '+({SPIKE:'#d9534f',HEAL:'#47b96b',JUMP:'#5b8cff',CRACK:'#b57cff'})[tile.type];b.insertAdjacentHTML('beforeend',tileHtml(tile.type))}
     if(chest&&!u){
       b.classList.add('goldChestCell');
@@ -852,12 +928,12 @@ function render(){
     return
   }
 
-  const shownTurn=state.stage===5?Math.ceil(state.turn/2):state.turn;
+  const shownTurn=state.stage===5||state.stage===6?Math.ceil(state.turn/2):state.turn;
   turnEl.textContent=state.winner?(state.winner===side?'승리':'패배'):'스테이지 '+state.stage+' · '+(state.current===side?'내 턴':'상대 턴')+' · '+shownTurn;
   deckInfo.textContent='골드 '+state.gold.BLUE+' · 내 소환 '+state.summons[side]+'/'+maxSummons(side)+' · 상대 소환 '+state.summons[other(side)]+'/'+maxSummons(other(side));
   modeInfo.textContent=mode==='play'?'플레이':'대기';
 
-  if(state.winner)msg(state.winner===side?'5스테이지 클리어!':state.stage+'스테이지 패배 · 재도전을 눌러 같은 스테이지에서 다시 시작해.')
+  if(state.winner)msg(state.winner===side?state.stage+'스테이지 클리어!':state.stage+'스테이지 패배 · 재도전을 눌러 같은 스테이지에서 다시 시작해.')
 }
 function cellTap(r,c,u){
   if(!canAct())return msg('지금은 상대 턴이야.');
@@ -898,7 +974,7 @@ function aiTurn(){
   for(let c=1;c<=boardCols();c++)if(!at(1,c))free.push(c);
   const options=affordableCards('RED');
 
-  if(state.stage!==5&&!state.summonUsed&&free.length&&options.length){
+  if(state.stage!==5&&state.stage!==6&&!state.summonUsed&&free.length&&options.length){
     const id=options[Math.floor(Math.random()*options.length)];
     processAction('RED',{type:'summon',card:id,r:1,c:free[Math.floor(Math.random()*free.length)]})
   }
@@ -909,14 +985,26 @@ function aiTurn(){
     const d=card('RED',u.card);
     const targets=state.units.filter(x=>x.side==='BLUE').sort((a,b)=>attackDist(u,a)-attackDist(u,b));
 
-    if(targets[0]&&attackDist(u,targets[0])<=d.range){
-      processAction('RED',{type:'attack',unit:u.id,target:targets[0].id})
+    const inRange=targets.find(t=>canAttackTarget(u,t));
+    if(inRange){
+      processAction('RED',{type:'attack',unit:u.id,target:inRange.id})
     }else if(targets[0]&&!u.moved){
-      const t=targets[0];
-      const moves=[[u.r+1,u.c],[u.r-1,u.c],[u.r,u.c+1],[u.r,u.c-1]]
-        .map(([r,c])=>({r,c}))
-        .filter(p=>isInside(p.r,p.c)&&!at(p.r,p.c)&&!chestAt(p.r,p.c))
-        .sort((a,b)=>moveDist(a,t)-moveDist(b,t));
+      const t=targets[0],cavalry=state.stage===6&&u.card==='MOUNTED_ORC';
+      const moves=[];
+      for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const near={r:u.r+dr,c:u.c+dc};
+        if(!isInside(near.r,near.c)||at(near.r,near.c)||chestAt(near.r,near.c))continue;
+        moves.push(near);
+        if(cavalry){
+          const far={r:u.r+2*dr,c:u.c+2*dc};
+          if(isInside(far.r,far.c)&&!at(far.r,far.c)&&!chestAt(far.r,far.c))moves.push(far)
+        }
+      }
+      // 1칸 이동만으로 다음 공격 사거리에 들어오면 2칸으로 넘어가지 않는다.
+      moves.sort((a,b)=>{
+        const aa=canAttackTarget({...u,...a},t),bb=canAttackTarget({...u,...b},t);
+        return Number(bb)-Number(aa)||moveDist(a,t)-moveDist(b,t)
+      });
       if(moves[0])processAction('RED',{type:'move',unit:u.id,...moves[0]})
     }
   }
@@ -1024,6 +1112,8 @@ function startStage(next){
   state.specialTiles=[];
   state.chests=next===5?createStageFiveChests():[];
   state.mapOrientation=next===5?'wide':'';
+  state.specialTiles=next===6?createStageSixJungle():state.specialTiles;
+  if(next!==5)state.stageFiveRewarded=false;
   selectedUnit=null;
   selectedCard='';
   $('#drawResult').textContent='';
@@ -1032,14 +1122,18 @@ function startStage(next){
   else if(next===3)msg('3스테이지 시작 · 해골궁수/해골법사 제외 · 강화 고블린/골렘/멧돼지 등장');
   else if(next===4){state.specialTiles=createStageFourTiles();msg('4스테이지 시작 · 7×5 맵 · 특수 발판 5개 · 방패 고블린/돌격 오크/독전갈/유적 수호자')}
   else if(next===5)msg('5스테이지 시작 · 가로 10×세로 5 · 좌우로 밀어 이동 · 2/4/5/7/8턴 적 증원');
+  else if(next===6)msg('6스테이지 시작 · 20×20 맵 · 정글은 오른쪽 · 3/5/8턴 적 증원');
   state.version++;
   saveProgress();
-  render()
+  render();
+  if(next===6)board.parentElement.scrollTop=board.parentElement.scrollHeight
 }
 $('#nextStage').onclick=()=>{
   if(!state||state.phase!=='REST'||side!=='BLUE')return;
   startStage(state.stage+1)
 };
+$('#viewEnemy').onclick=()=>{board.parentElement.scrollTop=0};
+$('#viewAlly').onclick=()=>{board.parentElement.scrollTop=board.parentElement.scrollHeight};
 
 // 재접속하면 저장된 턴 그대로 복구한다. 적 턴 복구 시 AI도 이어서 진행한다.
 state=loadProgress();
@@ -1048,8 +1142,9 @@ if(state){
   side='BLUE';
   playersEl.textContent='나 VS 적';
   render();
+  if(state.stage===6)board.parentElement.scrollTop=board.parentElement.scrollHeight;
   if(state.winner==='RED')msg(state.stage+'스테이지 패배 · 재도전 버튼으로 다시 시작해.');
-  else if(state.winner==='BLUE')msg('5스테이지 클리어! 다시 플레이할 수 있어.');
+  else if(state.winner==='BLUE')msg(state.stage+'스테이지 클리어! 다시 플레이할 수 있어.');
   else msg(state.stage+'스테이지 저장된 지점에서 이어서 진행해.');
   if(state.phase==='BATTLE'&&state.current==='RED'&&!state.winner)setTimeout(aiTurn,420)
 }else render();
