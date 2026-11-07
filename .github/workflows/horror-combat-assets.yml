@@ -101,6 +101,10 @@ on:
         description: 이미 확보한 고유 검·활·도끼·방패 42종 정식 Roblox 모델 등록·권한
         type: boolean
         default: false
+      forest_kaykit_register_only:
+        description: 고유 무기 48종 KayKit glTF 원본 변환 및 Roblox 공식 등록·권한
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -143,13 +147,16 @@ jobs:
           MEDIEVAL_WEAPONS_SOURCE_ONLY: ${{ inputs.medieval_weapons_source_only || false }}
           KAYKIT_WEAPONS_SOURCE_ONLY: ${{ inputs.kaykit_weapons_source_only || false }}
           FOREST_DISTINCT_WEAPONS_ONLY: ${{ inputs.forest_distinct_weapons_only || false }}
+          FOREST_KAYKIT_REGISTER_ONLY: ${{ inputs.forest_kaykit_register_only || false }}
           ROBLOX_UNIVERSE_ID: '10773436325'
           ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$FOREST_DISTINCT_WEAPONS_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- tools/baeksu-war-upload-meshes.mjs | grep -q .; then
+          if [ "$FOREST_KAYKIT_REGISTER_ONLY" = "true" ] || git diff --unified=0 HEAD^ HEAD -- tools/baeksu-war-upload-meshes.mjs | grep -q '^+ if(kaykit){'; then
+            node tools/baeksu-war-upload-meshes.mjs --game-id=fantasy-survival --register-forest-kaykit-weapons
+          elif [ "$FOREST_DISTINCT_WEAPONS_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- tools/baeksu-war-upload-meshes.mjs | grep -q .; then
             node tools/baeksu-war-upload-meshes.mjs --game-id=fantasy-survival --register-forest-distinct-weapons
           elif [ "$KAYKIT_WEAPONS_SOURCE_ONLY" = "true" ] || git diff --unified=0 HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q '^+// \[마력숲 카이킷 실물 무기\]'; then
             node tools/horror-combat-assets.mjs --kaykit-weapons-source-only
