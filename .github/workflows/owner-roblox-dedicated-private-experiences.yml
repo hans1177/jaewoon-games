@@ -66,7 +66,10 @@ jobs:
             if [[ "$(git rev-parse HEAD)" != "$(git rev-parse FETCH_HEAD)" ]]; then
               # [로블록스 배포 병목] 다른 웹게임의 main 커밋은 이 게임 게시를 무효화하지 않는다.
               # 로블록스 소스/자산/게시 책임 파일이 바뀐 경우에만 오래된 후보를 건너뛴다.
-              if git diff --quiet HEAD FETCH_HEAD -- roblox-games/ assets/roblox/ assets/shared/ assets/external/ .github/workflows/owner-roblox-dedicated-private-experiences.yml tools/company-roblox-dedicated-experience.mjs company-learning/platform-release-roadmap.json; then
+              # 게임 ID를 지정한 수동 실행은 다른 로블록스 게임의 main 커밋 때문에 건너뛰지 않는다(해당 게임 경로만 비교).
+              if [[ -n "$REQUESTED_GAME_ID" ]] && git diff --quiet HEAD FETCH_HEAD -- "roblox-games/$REQUESTED_GAME_ID/" assets/roblox/; then
+                echo "OWNER_STALE_MAIN_REVISION=UNCHANGED_ROBLOX_SOURCE"
+              elif git diff --quiet HEAD FETCH_HEAD -- roblox-games/ assets/roblox/ assets/shared/ assets/external/ .github/workflows/owner-roblox-dedicated-private-experiences.yml tools/company-roblox-dedicated-experience.mjs company-learning/platform-release-roadmap.json; then
                 echo "OWNER_STALE_MAIN_REVISION=UNCHANGED_ROBLOX_SOURCE"
               else
                 echo "OWNER_STALE_MAIN_REVISION=SKIP_SUPERSEDED_SOURCE"
