@@ -1111,7 +1111,7 @@ local gearShopSessions={}
 local meadowShopApi={}
 local gearShopNames={hunter_blade="사냥꾼 장검",hunter_armor="사냥꾼 갑옷",hunter_gloves="강화 장갑",
   guardian_pants="수호자 바지",guardian_boots="수호자 장화",hunter_bow="사냥꾼 활"}
--- [NPC 호감도] 같은 상인에게서 살수록 호감이 쌓여 단골 할인(최대 15%)과 인사가 달라진다. 이번 접속 동안 유지된다.
+-- [NPC 호감도] 같은 상인에게서 살수록 호감이 쌓여 단골 할인(최대 15%)과 인사가 달라진다. 세이브에 저장된다.
 local affinityThresholds={0,2,5,9,14}
 local function affinityLevel(player,shopId)
   local points=readNumber(player,"Affinity_"..shopId,0)
