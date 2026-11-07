@@ -2651,8 +2651,23 @@ local function redrawSelection()
   local stats=item.gear and string.format("%s 등급  ·  공격 +%d  ·  방어 +%d\n%s%s",meadowArt.rarityName[item.gear.Rarity or "Common"] or "일반",item.gear.Attack or 0,item.gear.Defense or 0,
     classInfo and ("무기 계열 "..classInfo.Name.."  ·  어울리는 스킬 강화\n") or "",
     (item.gear.Need or 0)>0 and string.format("필요 전투 숙련 %d\n",item.gear.Need) or "") or ""
+  -- [단순 비교] 같은 칸에 지금 끼고 있는 장비와 공격·방어 차이만 한 줄로 보여 준다.
+  local compare=""
+  if item.gear and player:GetAttribute("MeadowEquip"..item.gear.Slot)~=item.index then
+    for _,other in pairs(itemRows) do
+      if type(other)=="table" and other.gear and other.gear.Slot==item.gear.Slot
+        and player:GetAttribute("MeadowEquip"..other.gear.Slot)==other.index then
+        local function diff(label,a,b)
+          local d=(a or 0)-(b or 0)
+          return d==0 and label.." 같음" or string.format("%s %s%d",label,d>0 and "▲+" or "▼",d)
+        end
+        compare=string.format("비교 (지금 %s)  %s · %s\n",other.name,diff("공격",item.gear.Attack,other.gear.Attack),diff("방어",item.gear.Defense,other.gear.Defense))
+        break
+      end
+    end
+  end
   local feedback=player:GetAttribute("MeadowGearMessage")
-  description.Text="소지 / 상태   "..itemValue(item).."\n"..stats..(cost~="" and cost.."\n" or "")..
+  description.Text="소지 / 상태   "..itemValue(item).."\n"..stats..compare..(cost~="" and cost.."\n" or "")..
     item.description..(recipe and typeof(feedback)=="string" and ("\n"..feedback) or "")
   -- 광석·가죽 같은 날것은 '제련/무두질' 버튼이 같이 보이고, 가공품은 판매만 한다.
   local refineSource=nil
