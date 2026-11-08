@@ -12806,9 +12806,11 @@ task.spawn(function()
     -- 밤에는 안개색도 함께 어두워진다.
     local hour=Lighting.ClockTime
     local dim=(hour>=19.5 or hour<4.8) and .3 or (hour>=18 or hour<6.3) and .65 or 1
-    local fog=Color3.new(cur.color.R*dim,cur.color.G*dim,cur.color.B*dim)
+    -- 단색 띠처럼 보이지 않도록 지역 색을 맑은 하늘빛 안개와 절반 섞는다.
+    local mix=cur.color:Lerp(Color3.fromRGB(176,194,206),.5)
+    local fog=Color3.new(mix.R*dim,mix.G*dim,mix.B*dim)
     atmosphere.Color=fog;atmosphere.Decay=fog
-    atmosphere.Density=cur.density;atmosphere.Haze=cur.haze
+    atmosphere.Density=cur.density*.7;atmosphere.Haze=cur.haze*.8
     Lighting.FogColor=fog
     Lighting.OutdoorAmbient=Lighting.OutdoorAmbient:Lerp(fog,.35)
     grade.TintColor=cur.tint;grade.Saturation=cur.sat;grade.Brightness=cur.bri;grade.Contrast=cur.con
