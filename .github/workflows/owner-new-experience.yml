@@ -21,6 +21,11 @@ on:
         required: false
         type: string
         default: ''
+      probe:
+        description: '(진단) true면 빈 place·전체 place를 각각 게시해 409 원인만 확인'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -57,7 +62,28 @@ jobs:
           mkdir -p /tmp/new-exp
           /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/new-exp/$GAME_ID.rbxl"
           test -s "/tmp/new-exp/$GAME_ID.rbxl"
+      - name: Probe place publish (diagnostic)
+        if: inputs.probe == 'true'
+        shell: bash
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+          KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          U: ${{ inputs.universe_id }}
+          P: ${{ inputs.place_id }}
+        run: |
+          set -u
+          printf '{"name":"probe","tree":{"$className":"DataModel"}}' > /tmp/new-exp/probe.project.json
+          /tmp/rojo-bin/rojo build /tmp/new-exp/probe.project.json -o /tmp/new-exp/empty.rbxl
+          ls -l /tmp/new-exp
+          try() {
+            code=$(curl -sS -o /tmp/new-exp/$1.out -w '%{http_code}' -X POST -H "x-api-key: $KEY" -H 'content-type: application/octet-stream' --data-binary @"$2" "https://apis.roblox.com/universes/v1/$U/places/$P/versions?versionType=$3")
+            echo "PROBE $1 versionType=$3 http=$code body=$(head -c 300 /tmp/new-exp/$1.out)"
+          }
+          try empty /tmp/new-exp/empty.rbxl Published
+          try full_saved "/tmp/new-exp/$GAME_ID.rbxl" Saved
+          try full_published "/tmp/new-exp/$GAME_ID.rbxl" Published
       - name: Create new private Experience and publish
+        if: inputs.probe != 'true'
         shell: bash
         env:
           GAME_ID: ${{ inputs.game_id }}
@@ -85,6 +111,7 @@ jobs:
           node tools/company-roblox-dedicated-experience.mjs "${args[@]}"
           cat /tmp/new-exp/result.json
       - name: Record new target through an existing GitHub pull request
+        if: inputs.probe != 'true'
         shell: bash
         env:
           GAME_ID: ${{ inputs.game_id }}
