@@ -505,13 +505,13 @@ end
 -- streets: 세로 골목 x좌표, alley: 골목 폭, gap: 집 간격 배수, wMul: 집 폭 배수, dAdd: 집 깊이 가감,
 -- flAdd/flMax: 층수 가감·상한, dens: 빈터 비율 배수, jz/jx: 앞뒤·좌우 흐트러짐 배수, canal: 운하, fence: 울타리 마을
 local PROFILE = {
-	north = { S = 12, gapf = 0.25, fl0 = 1, flGrow = 1, streets = { -50, -90, -130 }, alley = 5, gap = 1, wMul = 1, dAdd = 0, flAdd = 0, flMax = 3, dens = 1, jz = 1, jx = 1 },
-	stone = { S = 13, gapf = 0.3, fl0 = 1, flGrow = 2, streets = { -50, -90, -130 }, alley = 5, gap = 1.05, wMul = 1.1, dAdd = 1, flAdd = 0, flMax = 3, dens = 0.95, jz = 1, jx = 1 },
-	brick = { S = 9.5, gapf = 0.04, fl0 = 2, flGrow = 1, streets = { -50, -76, -102, -130 }, alley = 4, gap = 0.72, wMul = 0.7, dAdd = 2, flAdd = 1, flMax = 3, dens = 1.05, jz = 0.4, jx = 0.4, canal = true },
-	nordic = { S = 9, gapf = 1.0, fl0 = 1, flGrow = 1, streets = { -62, -122 }, alley = 4, gap = 1.5, wMul = 0.8, dAdd = -1, flAdd = 0, flMax = 2, dens = 0.75, jz = 2.4, jx = 1.6, fence = true },
-	med = { S = 11, gapf = 0.1, fl0 = 2, flGrow = 1, streets = { -45, -70, -95, -120, -145 }, alley = 3, gap = 0.85, wMul = 1, dAdd = 0, flAdd = 1, flMax = 3, dens = 1, jz = 1.6, jx = 1.6 },
-	desert = { S = 13.5, gapf = 0.06, fl0 = 1, flGrow = 1, streets = { -56, -86, -116, -146 }, alley = 3, gap = 0.78, wMul = 1.2, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.05, jz = 0.4, jx = 0.5 },
-	tropic = { S = 8.5, gapf = 1.3, fl0 = 1, flGrow = 0, streets = { -72 }, alley = 5, gap = 1.7, wMul = 0.8, dAdd = -1, flAdd = -1, flMax = 1, dens = 0.7, jz = 2.6, jx = 2, fence = true },
+	north = { S = 15, gapf = 0.25, fl0 = 1, flGrow = 1, streets = { -50, -90, -130 }, alley = 5, gap = 1, wMul = 1, dAdd = 0, flAdd = 0, flMax = 3, dens = 1, jz = 1, jx = 1 },
+	stone = { S = 16, gapf = 0.3, fl0 = 1, flGrow = 2, streets = { -50, -90, -130 }, alley = 5, gap = 1.05, wMul = 1.1, dAdd = 1, flAdd = 0, flMax = 3, dens = 0.95, jz = 1, jx = 1 },
+	brick = { S = 12, gapf = 0.04, fl0 = 2, flGrow = 1, streets = { -50, -76, -102, -130 }, alley = 4, gap = 0.72, wMul = 0.7, dAdd = 2, flAdd = 1, flMax = 3, dens = 1.05, jz = 0.4, jx = 0.4, canal = true },
+	nordic = { S = 11.5, gapf = 1.0, fl0 = 1, flGrow = 1, streets = { -62, -122 }, alley = 4, gap = 1.5, wMul = 0.8, dAdd = -1, flAdd = 0, flMax = 2, dens = 0.75, jz = 2.4, jx = 1.6, fence = true },
+	med = { S = 14, gapf = 0.1, fl0 = 2, flGrow = 1, streets = { -45, -70, -95, -120, -145 }, alley = 3, gap = 0.85, wMul = 1, dAdd = 0, flAdd = 1, flMax = 3, dens = 1, jz = 1.6, jx = 1.6 },
+	desert = { S = 17, gapf = 0.06, fl0 = 1, flGrow = 1, streets = { -56, -86, -116, -146 }, alley = 3, gap = 0.78, wMul = 1.2, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.05, jz = 0.4, jx = 0.5 },
+	tropic = { S = 11, gapf = 1.3, fl0 = 1, flGrow = 0, streets = { -72 }, alley = 5, gap = 1.7, wMul = 0.8, dAdd = -1, flAdd = -1, flMax = 1, dens = 0.7, jz = 2.6, jx = 2, fence = true },
 }
 
 local function strip(folder, style, cx, cz, sx, sz)
