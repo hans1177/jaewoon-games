@@ -14,6 +14,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
+import {runPython} from './vibe-python.mjs';
 
 const MODEL_EXT=/\.(obj|glb|gltf)$/i,IMAGE_EXT=/\.(png|jpe?g|webp|svg)$/i;
 const CC0_TEXT=/CC0|Creative Commons Zero|public domain dedication/i;
@@ -109,7 +110,7 @@ export function approvedLibraryParents(dir){
 
 // zip 해제(경로 탈출 zip-slip 방지). 성공하면 status 0.
 export function extractZipSafe(zipPath,dest){
-  return spawnSync('python3',['-c','import sys,zipfile,os\nz=zipfile.ZipFile(sys.argv[1]);d=os.path.realpath(sys.argv[2])\nfor n in z.namelist():\n    t=os.path.realpath(os.path.join(d,n))\n    if not t.startswith(d+os.sep) and t!=d: raise SystemExit("ZIP_SLIP "+n)\nz.extractall(d)',zipPath,dest],{encoding:'utf8'});
+  return runPython(['-c','import sys,zipfile,os\nz=zipfile.ZipFile(sys.argv[1]);d=os.path.realpath(sys.argv[2])\nfor n in z.namelist():\n    t=os.path.realpath(os.path.join(d,n))\n    if not t.startswith(d+os.sep) and t!=d: raise SystemExit("ZIP_SLIP "+n)\nz.extractall(d)',zipPath,dest],{encoding:'utf8'});
 }
 
 // _inbox/*.zip → 팩 폴더(zip 이름). provenance는 --source 가 주어지면 레지스트리 externalSources에서 가져오고, 없으면 CC0 증거 파일이 zip 안에 있어야 한다.

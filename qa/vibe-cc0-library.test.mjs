@@ -8,6 +8,7 @@ import {spawnSync} from 'node:child_process';
 import {checkLicense,scanLibrary,approvePack,approvedLibraryParents,ingestInbox,readApprovals} from '../tools/vibe-cc0-library.mjs';
 import {countByFamily,shortages,candidateSources,methodFor,plan,acquire} from '../tools/vibe-cc0-fetch.mjs';
 import {guardBranch,pull,publish,summarize} from '../tools/vibe-gym-publish.mjs';
+import {pythonCmd,runPython,findBlender} from '../tools/vibe-python.mjs';
 
 const tmp=()=>fs.mkdtempSync(path.join(os.tmpdir(),'cc0lib-'));
 const mk=(dir,files)=>{for(const [n,c] of Object.entries(files)){fs.mkdirSync(path.dirname(path.join(dir,n)),{recursive:true});fs.writeFileSync(path.join(dir,n),c)}};
@@ -154,4 +155,12 @@ test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부�
   assert.deepEqual(files.sort(),['ledger-summary.jsonl','op-stats.json']);          // GLB·미리보기는 올리지 않는다
   assert.equal(JSON.parse(summarize([{id:'a',gain:1}]).trim()).registered,false);
   assert.equal(publish({stats:'stats.json',ledger:'ledger.json',cwd:work}).published,true); // 장부는 계속 누적
+});
+
+test('파이썬·Blender 찾기: 실행 가능한 파이썬을 찾고, 잘못된 Blender 경로는 없는 것으로 본다', () => {
+  assert.equal(runPython(['-c','print(7)'],{encoding:'utf8'}).stdout.trim(),'7');
+  assert.ok(pythonCmd().cmd);
+  const old=process.env.VIBE2_BLENDER_BINARY;
+  process.env.VIBE2_BLENDER_BINARY=path.join(os.tmpdir(),'no-such-blender-binary');
+  try{assert.equal(findBlender(),null)}finally{if(old===undefined)delete process.env.VIBE2_BLENDER_BINARY;else process.env.VIBE2_BLENDER_BINARY=old}
 });

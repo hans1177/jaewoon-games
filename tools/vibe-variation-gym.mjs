@@ -9,6 +9,7 @@ import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {approvedLibraryParents} from './vibe-cc0-library.mjs';
+import {runPython,findBlender} from './vibe-python.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const sha256=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
@@ -96,20 +97,19 @@ export function updateStats(stats,family,rows){
 }
 
 export function blenderAvailable(){
-  if(process.env.VIBE2_BLENDER_BINARY)return spawnSync(process.env.VIBE2_BLENDER_BINARY,['--version']).status===0;
-  return spawnSync('python3',['-c','import bpy']).status===0;
+  return !!findBlender()||runPython(['-c','import bpy']).status===0;
 }
 function runGym(jobsFile,outDir){
   const script=path.join(here,'vibe_variation_gym.py');
-  const bl=process.env.VIBE2_BLENDER_BINARY;
+  const bl=findBlender();
   const r=bl?spawnSync(bl,['--background','--factory-startup','--python-exit-code','1','--python',script,'--','--jobs',jobsFile,'--out',outDir],{encoding:'utf8',maxBuffer:1<<27})
-    :spawnSync('python3',['-c',`import sys,runpy;sys.argv=['x','--','--jobs',${JSON.stringify(jobsFile)},'--out',${JSON.stringify(outDir)}];runpy.run_path(${JSON.stringify(script)},run_name='__main__')`],{encoding:'utf8',maxBuffer:1<<27});
+    :runPython(['-c',`import sys,runpy;sys.argv=['x','--','--jobs',${JSON.stringify(jobsFile)},'--out',${JSON.stringify(outDir)}];runpy.run_path(${JSON.stringify(script)},run_name='__main__')`],{encoding:'utf8',maxBuffer:1<<27});
   const res=path.join(outDir,'results.json');
   if(!fs.existsSync(res))throw new Error('VARIATION_GYM_FAILED: '+String(r.stderr||r.stdout).split('\n').slice(-5).join('\n'));
   return JSON.parse(fs.readFileSync(res,'utf8'));
 }
 function scoreChild(png,parentPng){
-  const r=spawnSync('python3',[path.join(here,'vibe_object_score.py'),'--png',png,'--parent',parentPng],{encoding:'utf8',maxBuffer:1<<26});
+  const r=runPython([path.join(here,'vibe_object_score.py'),'--png',png,'--parent',parentPng],{encoding:'utf8',maxBuffer:1<<26});
   const j=JSON.parse(r.stdout.trim().split('\n').pop());
   if(!j.available)throw new Error('OBJECT_SCORER_UNAVAILABLE(Pillow/numpy)');
   return j.results[0];
