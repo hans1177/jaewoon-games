@@ -7,7 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
 
-const UNIVERSE_ID = process.env.MARE_UNIVERSE_ID || '10774821253';
+const UNIVERSE_ID = process.env.MARE_UNIVERSE_ID || '10775310508';
 const ROOT = 'roblox-games/mare-essentia';
 const JSON_OUT = ROOT + '/assets-registered.json';
 const LUAU_OUT = ROOT + '/src/ReplicatedStorage/Shared/AssetIds.luau';
