@@ -583,7 +583,7 @@ local COMPANION_MODEL = {
 -- 새 시설 NPC 초상화는 등록·권한 승인된 ID가 있을 때만 사용한다.
 -- 등록 전에는 기존 초상화 시트를 그대로 표시하므로 화면이 비지 않는다.
 local PORTRAIT_ATLAS = AssetIds["Portraits/npcs_new"] or AssetIds["Portraits/characters"]
-local PORTRAIT_SIZE = if AssetIds["Portraits/npcs_new"] then Vector2.new(128, 168) else Vector2.new(256, 336)
+local PORTRAIT_SIZE = Vector2.new(256, 336)
 local PORTRAIT_TILE = {
 	merchant = Vector2.new(0, 0),
 	harbor = Vector2.new(PORTRAIT_SIZE.X, 0),
@@ -603,13 +603,13 @@ local HERO_SIZE = Vector2.new(256, 336)
 -- 제작 원화와 직업·문화권이 맞는 주인공부터 새 초상화로 교체한다.
 -- 외형이 안 맞는 국가 주인공은 기존에 등록된 고유 초상화를 보존한다.
 local HERO_NEW_ATLAS = AssetIds["Portraits/heroes_new"]
-local HERO_NEW_SIZE = Vector2.new(128, 168)
+local HERO_NEW_SIZE = Vector2.new(256, 336)
 local HERO_NEW_TILE = {
 	england = Vector2.new(0, 0), -- 엘리너: 해류 관측 학자
-	netherlands = Vector2.new(128, 168), -- 얀: 젊은 상사 설립자
-	france = Vector2.new(128, 336), -- 마리온: 몰락 귀족 가문
-	swahili = Vector2.new(0, 336), -- 아민: 잔지바르 선장
-	new_spain = Vector2.new(256, 336), -- 디에고: 광산 마을 출신
+	netherlands = Vector2.new(256, 336), -- 얀: 젊은 상사 설립자
+	france = Vector2.new(256, 672), -- 마리온: 몰락 귀족 가문
+	swahili = Vector2.new(0, 672), -- 아민: 잔지바르 선장
+	new_spain = Vector2.new(512, 672), -- 디에고: 광산 마을 출신
 }
 local HERO_TILE = {
 	england = Vector2.new(0, 0), -- 엘리너 렌
