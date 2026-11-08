@@ -18,3 +18,9 @@
 
 ## 소통
 - 사용자 응답은 짧은 한국어. 끝에 결과 한두 줄과 다음 단계 하나.
+
+## 엔진 도구 (`tools/devloop/`)
+- `gate.py <게임>`: 에셋 등록 + 캡처 브랜치(사진 존재·오류 0·나이) + 시각 검수(visual_lint) 합격선.
+- `new_game.py <게임>`: 새 게임을 엔진에 올리는 표준 절차(devloop.json·STATE.md·캡처 스크립트 폴더 생성).
+- `workflow_inventory.py`: 워크플로 149개 점검 → `docs/devloop/WORKFLOW_INVENTORY.json` (읽기 전용, 삭제·비활성화는 하지 않는다).
+- game-catalog / .vibe2 큐 등록은 공용 파이프라인이 게시·F0 재시작을 자동으로 돌릴 수 있어 오너 확인 후에만 한다.

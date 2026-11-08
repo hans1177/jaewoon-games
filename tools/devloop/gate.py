@@ -35,6 +35,15 @@ if br:
         if age > cfg.get("maxFrameAgeHours", 24):
             fails.append(f"사진이 {age:.0f}시간 지남")
         print(f"사진 {len(pics)}장, 나이 {age:.1f}시간")
+        # 시각 검수: 너무 어둡거나 단색인 화면이 있으면 미달
+        import tempfile
+        tmp = tempfile.mkdtemp()
+        subprocess.run(f"git archive FETCH_HEAD | tar -x -C {tmp}", shell=True, capture_output=True)
+        lint = os.path.join(os.path.dirname(os.path.abspath(__file__)), "visual_lint.py")
+        r = subprocess.run([sys.executable, lint, tmp], capture_output=True, text=True)
+        print(r.stdout.strip())
+        if r.returncode == 1 and "이상:" in r.stdout:
+            fails.append("이상 화면(어두움/단색) 있음")
 if os.environ.get("GATE_JSON"):
     ev = {}
     try:
