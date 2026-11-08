@@ -1106,7 +1106,7 @@ test('Studio MCP retries only infrastructure failures and skips restart after a 
 });
 
 test('existing fantasy Studio boot tolerates unavailable DataStore before remote setup',()=>{
-  const source=fantasyServer.slice(0,1600);
+  const source=fantasyServer.slice(0,3200);
   assert.match(source,/local store = nil/);
   assert.doesNotMatch(source,/local store\s*=\s*DataStoreService:GetDataStore/);
   assert.match(source,/local storeOk, storeResult = pcall\(function\(\)/);
