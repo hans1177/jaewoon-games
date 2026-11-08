@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       game_id:
-        description: 'roblox-games 폴더 이름 (fantasy-survival 또는 mare-scientia)'
+        description: 'roblox-games 폴더 이름 (fantasy-survival 또는 mare-essentia)'
         required: true
         type: string
       game_name:
@@ -47,7 +47,7 @@ jobs:
           GAME_ID: ${{ inputs.game_id }}
         run: |
           set -euo pipefail
-          case "$GAME_ID" in fantasy-survival|mare-scientia) ;; *) echo 'GAME_NOT_ALLOWED'; exit 1;; esac
+          case "$GAME_ID" in fantasy-survival|mare-essentia) ;; *) echo 'GAME_NOT_ALLOWED'; exit 1;; esac
           mkdir -p /tmp/new-exp
           /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/new-exp/$GAME_ID.rbxlx"
           test -s "/tmp/new-exp/$GAME_ID.rbxlx"
