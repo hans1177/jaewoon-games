@@ -77,11 +77,20 @@ export function rankAdaptiveContextCandidates({files=[],diagnostic=null,responsi
 export function packAdaptiveContext(options={}){
   const limits={...DEFAULT_CONTEXT_LIMITS,...(options.limits||{})};
   const ranked=rankAdaptiveContextCandidates(options);
+  const selected=ranked.slice(0,Math.max(1,Math.floor(Number(limits.maxFiles)||DEFAULT_CONTEXT_LIMITS.maxFiles)));
+  // [코어 코딩·책임 문맥] 긴 오류 파일 하나가 남은 책임 함수/연결 소스의 문맥을 모두 먹지 않게 한다.
+  // 실제로 있는 핵심 파일에만 예산을 남기며 기존 총 바이트 제한을 유지한다.
+  const critical=new Set(uniq([options.diagnostic?.file,options.diagnostic?.path,
+    ...safeArray(options.diagnostic?.relatedFiles),...safeArray(options.responsibilityFiles)]));
   const packed=[];let bytes=0;
-  for(const row of ranked){
-    if(packed.length>=limits.maxFiles||bytes>=limits.maxBytes)break;
-    const available=Math.min(limits.maxFileBytes,limits.maxBytes-bytes);
-    if(available<=0)break;
+  for(const [index,row] of selected.entries()){
+    if(bytes>=limits.maxBytes)break;
+    const remaining=limits.maxBytes-bytes;
+    const pending=selected.slice(index+1).filter(candidate=>
+      critical.has(candidate.path)&&Buffer.byteLength(String(candidate.content??''),'utf8')>0).length;
+    const reserved=pending?Math.min(Math.floor(remaining/2),pending*2048):0;
+    const available=Math.min(limits.maxFileBytes,remaining-reserved);
+    if(available<=0)continue;
     const content=truncateUtf8(row.content??'',available,options.diagnostic?.needle),used=Buffer.byteLength(content);
     if(used<1)continue;
     packed.push({...row,content,packedBytes:used,truncated:used<Buffer.byteLength(String(row.content??''))});
@@ -118,7 +127,11 @@ function isVisualPath(file){
 }
 function isGameplayPath(file){
   const rel=posix(file).toLowerCase();
-  return !isMetaOnlyPath(rel)&&(/^(?:web-games|unity-games)\//.test(rel)||/\.(?:js|mjs|cjs|html?|cs|json)$/.test(rel));
+  if(isMetaOnlyPath(rel))return false;
+  // [플랫폼별 실제 소스] Roblox Luau 함수 변경도 정적 개발 영향도에 포함한다.
+  // 문서·바이너리 Place 파일은 코드 구현으로 승격하지 않는다.
+  if(rel.startsWith('roblox-games/'))return /\.(?:lua|luau|js|mjs|ts|json)$/.test(rel);
+  return /^(?:web-games|unity-games)\//.test(rel)||/\.(?:js|mjs|cjs|html?|cs|json)$/.test(rel);
 }
 
 export function classifyImplementationImpact({changedFiles=[],role='development'}={}){
