@@ -62,3 +62,14 @@ test('대시보드 페이지와 전체 현황 JSON이 두 게임을 담는다', 
   const status=JSON.parse(fs.readFileSync('vibe-ladder-status.json','utf8'));
   for(const g of games) assert.ok(status.games[g],g);
 });
+
+test('리그 키트 가족 표가 Luau 모듈과 같고 이족·사족·뱀·날개 리그를 분류한다', async () => {
+  const r=spawnSync('node',['tools/vibe-rig-kit.mjs','--check'],{encoding:'utf8'});
+  assert.equal(r.status,0,r.stderr);
+  const {classify}=await import('../tools/vibe-rig-kit.mjs');
+  assert.equal(classify(['UpperArm.L','UpperArm.R','UpperLeg.L','UpperLeg.R']).id,'biped');
+  assert.equal(classify(['FrontUpperLeg.L','BackUpperLeg.L','Body']).id,'quadruped');
+  assert.equal(classify(['Head','Tail','Chest','Body']).id,'snake');
+  assert.equal(classify(['Wing1.L','Wing1.R','Torso']).id,'winged');
+  assert.equal(classify(['Nothing']).id,'static');
+});

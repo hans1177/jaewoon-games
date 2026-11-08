@@ -803,6 +803,55 @@ return function(expected, observed)
     end
     return true
 end`),
+  lesson('RIG_UP_FROM_BONES','뼈 위치로 몹 자세 판정','ANIMATION','rig bone orientation upside down lying 몹 자세 거꾸로 눕 세로 뼈 방향',
+    'Decide which way is up from bone positions (feet toward torso), not from model size ratios.',
+    'Run once after spawning an imported bone-rig mob; if the result is not near zero, rotate the model pivot about X and store the rotation as an attribute so every later pivot-level animation multiplies the same correction.',
+    'Size ratios fail for animals that import sideways or upside down; a model can be tall and still lying on its back.',
+    'Spawn every registered species, capture one frame each, and confirm feet touch the ground and heads face forward.',`
+return function(feetPositions, torsoPositions)
+    local feet, torso = Vector3.zero, Vector3.zero
+    for _, p in ipairs(feetPositions) do feet += p end
+    for _, p in ipairs(torsoPositions) do torso += p end
+    if #feetPositions == 0 or #torsoPositions == 0 then return nil end
+    local up = torso / #torsoPositions - feet / #feetPositions
+    if up.Magnitude < 0.05 then return 0 end
+    up = up.Unit
+    local pitch = math.atan2(-up.Z, up.Y)
+    return math.abs(pitch) > 0.35 and pitch or 0
+end`),
+  lesson('RIG_MODEL_SPACE_BONE_POSE','모델 기준 뼈 회전 변환','ANIMATION','bone transform rest rotation model space 뼈 회전 축 T자 팔 모델 기준',
+    'Convert a model-space rotation into the bone local space with the rest rotation so any bone axis convention works.',
+    'Capture each bone rest rotation relative to the model pivot once, then write Transform = rest^-1 * rotation * rest every frame, lerped by alpha. Forward is -Z and up is +Y in pivot space.',
+    'Writing raw angles to Bone.Transform swings limbs sideways when bone axes differ between rigs; capturing rest after animation starts bakes the pose in.',
+    'Run walk, attack and hit on two rigs with different bone axes; both should swing forward and back relative to the body.',`
+return function(modelPivot, bone)
+    local rest = (modelPivot:Inverse() * (bone.WorldCFrame * bone.Transform:Inverse())).Rotation
+    return function(rotation, current, alpha)
+        local target = rest:Inverse() * rotation * rest
+        return current:Lerp(target, alpha)
+    end
+end`),
+  lesson('RIG_FAMILY_ROUTING','뼈 이름으로 리그 가족 분류','ANIMATION','rig family classify bone names biped quadruped snake wing 리그 가족 분류 모션 없음',
+    'Route each imported mob to one motion plan by bone-name signatures and report models that match none.',
+    'Normalize bone names, test ordered family signatures, and give each family exactly one animator so two systems never write the same bone. A model matching no family needs a new family rule, not a guess.',
+    'Two animators writing one bone flicker; silently skipping an unmatched model leaves a statue in the game.',
+    'List every registered mob with its family and confirm none is static unless it is an R15 body animated by official clips.',`
+return function(boneSet, families)
+    for _, family in ipairs(families) do
+        local ok = true
+        for _, name in ipairs(family.all) do
+            if not boneSet[name] then ok = false break end
+        end
+        if ok and #family.any > 0 then
+            ok = false
+            for _, name in ipairs(family.any) do
+                if boneSet[name] then ok = true break end
+            end
+        end
+        if ok then return family.id end
+    end
+    return "static"
+end`),
 ]);
 
 export function studioLessonMetadata(row){

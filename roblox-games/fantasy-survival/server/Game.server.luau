@@ -5474,6 +5474,11 @@ local function spawnEnemy(site, siteIndex)
       stegosaurus=C(122,132,82),triceratops=C(132,114,86),apatosaur=C(118,130,112),orc=C(84,114,72),skullorc=C(192,186,170),
       spiritgolem=C(122,172,204),tribal=C(152,102,66),yeti=C(224,228,234),mushroomking=C(182,64,58),wingdemon=C(100,42,72),
       dragon=C(154,52,44),knightchar=C(150,156,170),
+      -- [리그 키트 점검으로 찾은 누락분] 색칠 팔레트가 없어 회색 기본색으로 나오던 몹.
+      birb=C(86,150,206),cactoro=C(96,148,80),dragonlite=C(120,172,124),farmer=C(176,140,96),fish=C(78,150,170),
+      hywirl=C(150,122,200),mage=C(96,80,150),monkroose=C(150,110,70),ninja=C(40,40,52),
+      skmage=C(206,200,184),skminion=C(196,190,172),skrogue=C(190,184,168),skwarrior=C(200,194,176),
+      witch=C(92,62,120),womanmedieval=C(150,90,100),womansoldier=C(110,120,140),
     }
     local base=palette[site.model]
     if base then

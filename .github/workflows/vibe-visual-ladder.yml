@@ -62,13 +62,15 @@ jobs:
               node tools/vibe-visual-ladder.mjs --game "$game" --advance "${extra[@]}"
             fi
             node tools/vibe-visual-ladder.mjs --game "$game" --check
+            # 리그 키트 점검: 새 몬스터의 모션 가족·팔레트 누락을 일감 표로 남긴다(보고서에 BONES 줄이 없으면 건너뜀).
+            [ -n "$report" ] && node tools/vibe-rig-kit.mjs --game "$game" --report "$report" || true
           done
       - name: Commit ladder state
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add roblox-games/*/visual-ladder-state.json roblox-games/*/shared/VisualLadderState.luau roblox-games/*/src/ReplicatedStorage/Shared/VisualLadderState.luau docs/devloop/VISUAL_LADDER_*.md vibe-ladder-status.json docs/devloop/ladder
+          git add roblox-games/*/visual-ladder-state.json roblox-games/*/shared/VisualLadderState.luau roblox-games/*/src/ReplicatedStorage/Shared/VisualLadderState.luau docs/devloop/VISUAL_LADDER_*.md docs/devloop/RIG_KIT_*.md vibe-ladder-status.json docs/devloop/ladder
           if git diff --cached --quiet; then echo "no ladder change"; exit 0; fi
           git commit -m "비주얼 래더: 루프 검증 통과로 디테일 단계 갱신"
           for i in 1 2 3; do
