@@ -79,3 +79,24 @@ test('Luau 모듈이 같은 정규화 규칙과 ClassifyAll을 갖는다', () =>
   for(const [k,v] of Object.entries(table.renames))assert.ok(luau.includes(`["${k}"] = "${v}"`),k);
   for(const f of table.families)assert.ok(luau.includes(`id = "${f.id}"`),f.id);
 });
+
+test('한 글자 접두(L_UpperArm)는 알려진 뼈 이름 앞에서만 읽고 정상 이름은 건드리지 않는다', () => {
+  assert.equal(norm('L_UpperArm'),'upperarml');
+  assert.equal(norm('R_Thigh'),'upperlegr');
+  assert.equal(norm('L_Shin'),'lowerlegl');
+  assert.equal(norm('R_Forearm'),'lowerarmr');
+  assert.equal(norm('mixamorig:LeftCalf'),'lowerlegl');
+  // 이미 표준인 이름·l/r로 시작하는 다른 이름은 그대로
+  for(const n of ['LowerArm.L','LowerLeg.R','Leg1L','LegL','Lower','Root','L_Thumb1','Right'])
+    assert.equal(norm(n),n.toLowerCase().replace(/[._\s:-]/g,''),n);
+});
+
+test('저장소의 캐릭터 공장이 만드는 뼈 이름은 이족 리그로 인식된다', () => {
+  // 공장 스크립트(tools/vibe_genre_character_factory.py)에서 뼈 이름을 읽어 와서, 공장 뼈가 바뀌어도 이 검사가 따라간다.
+  const src=fs.readFileSync('tools/vibe_genre_character_factory.py','utf8');
+  const names=new Set();
+  for(const m of src.matchAll(/bone\('(\w+)'/g))names.add(m[1]);
+  for(const m of src.matchAll(/bone\(side\+'_(\w+)'/g))for(const side of ['L','R'])names.add(`${side}_${m[1]}`);
+  for(const must of ['Root','Hips','Spine','Head','L_UpperArm','R_Thigh','L_Shin','R_Foot'])assert.ok(names.has(must),`공장 스크립트에서 ${must} 뼈를 찾지 못함`);
+  assert.equal(classify([...names]).id,'biped');
+});

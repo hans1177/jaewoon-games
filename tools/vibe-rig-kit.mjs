@@ -13,16 +13,22 @@ const opt=n=>{const i=args.indexOf(`--${n}`);return i>=0?args[i+1]:null};
 const kitDir='assets/roblox/common-rig-kit-v1';
 const table=JSON.parse(fs.readFileSync(path.join(kitDir,'rig-families.json'),'utf8'));
 const luauPath=path.join(kitDir,'RobloxCommonRigKit.luau');
-const SIDE_WORDS={left:'l',right:'r'};
+const SIDE_WORDS=[['left','l'],['right','r']];
+const SIDE_LETTERS=[['l','l'],['r','r']];
+const stemName=stem=>Object.hasOwn(table.renames||{},stem)?table.renames[stem]:stem;
 // 이름 정규화(Luau Kit.Normalize와 같은 규칙): 소문자, . _ 공백 : - 제거, mixamorig 접두 제거,
 // Left/Right 접두는 L/R 접미로 옮기고 renames로 표준 이름에 맞춘다(LeftUpperArm·mixamorig:LeftArm → upperarml).
+// 한 글자 접두(L_UpperArm)는 sideStems에 있는 뼈 이름 앞에서만 읽는다(lowerarm 같은 정상 이름 보호).
 export function norm(n){
   let s=n.toLowerCase().replace(/[._\s:-]/g,'');
   if(s.startsWith('mixamorig'))s=s.slice(9);
-  for(const [word,side] of Object.entries(SIDE_WORDS)){
-    if(s.startsWith(word)&&s.length>word.length){
-      const stem=s.slice(word.length);
-      return (Object.hasOwn(table.renames||{},stem)?table.renames[stem]:stem)+side;
+  for(const [word,side] of SIDE_WORDS){
+    if(s.startsWith(word)&&s.length>word.length)return stemName(s.slice(word.length))+side;
+  }
+  for(const [letter,side] of SIDE_LETTERS){
+    if(s.startsWith(letter)&&s.length>1){
+      const stem=s.slice(1);
+      if((table.sideStems||[]).includes(stem))return stemName(stem)+side;
     }
   }
   return s;
@@ -53,7 +59,8 @@ function generated(){
   const list=a=>`{${(a||[]).map(x=>`"${x}"`).join(', ')}}`;
   const rows=table.families.map(f=>`\t{ id = "${f.id}", all = ${list(f.all)}, any = ${list(f.any)}, minAny = ${f.minAny||1}, overlay = ${f.overlay?'true':'false'} },`);
   const renames=Object.entries(table.renames||{}).map(([k,v])=>`\t["${k}"] = "${v}",`);
-  return `-- BEGIN GENERATED FAMILIES (tools/vibe-rig-kit.mjs --emit, 직접 수정 금지)\nKit.Renames = {\n${renames.join('\n')}\n}\nKit.Families = {\n${rows.join('\n')}\n}\n-- END GENERATED FAMILIES`;
+  const stems=(table.sideStems||[]).map(k=>`\t["${k}"] = true,`);
+  return `-- BEGIN GENERATED FAMILIES (tools/vibe-rig-kit.mjs --emit, 직접 수정 금지)\nKit.Renames = {\n${renames.join('\n')}\n}\nKit.SideStems = {\n${stems.join('\n')}\n}\nKit.Families = {\n${rows.join('\n')}\n}\n-- END GENERATED FAMILIES`;
 }
 function syncLuau(write){
   const src=fs.readFileSync(luauPath,'utf8');

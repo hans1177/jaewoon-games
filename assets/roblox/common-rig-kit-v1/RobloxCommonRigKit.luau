@@ -8,6 +8,7 @@ local Kit = {}
 -- 소문자, '.' '_' 공백 ':' '-' 제거, mixamorig 접두 제거, Left/Right 접두는 L/R 접미로 옮기고
 -- Kit.Renames(생성 구간)로 표준 이름에 맞춘다. (UpperArm.L -> upperarml, LeftUpperArm -> upperarml, mixamorig:LeftArm -> upperarml)
 local SIDE_WORDS = { { "left", "l" }, { "right", "r" } }
+local SIDE_LETTERS = { { "l", "l" }, { "r", "r" } }
 function Kit.Normalize(name)
 	local s = (string.lower(name):gsub("[%._%s:%-]", ""))
 	if string.sub(s, 1, 9) == "mixamorig" then
@@ -18,6 +19,16 @@ function Kit.Normalize(name)
 		if string.sub(s, 1, #word) == word and #s > #word then
 			local stem = string.sub(s, #word + 1)
 			return (Kit.Renames[stem] or stem) .. pair[2]
+		end
+	end
+	-- 한 글자 접두(L_UpperArm)는 SideStems에 있는 뼈 이름 앞에서만 읽는다(lowerarm 같은 정상 이름 보호).
+	for _, pair in ipairs(SIDE_LETTERS) do
+		local letter = pair[1]
+		if string.sub(s, 1, 1) == letter and #s > 1 then
+			local stem = string.sub(s, 2)
+			if Kit.SideStems[stem] then
+				return (Kit.Renames[stem] or stem) .. pair[2]
+			end
 		end
 	end
 	return s
@@ -42,6 +53,29 @@ Kit.Renames = {
 	["uparm"] = "upperarm",
 	["arm"] = "upperarm",
 	["forearm"] = "lowerarm",
+	["thigh"] = "upperleg",
+	["shin"] = "lowerleg",
+	["calf"] = "lowerleg",
+}
+Kit.SideStems = {
+	["upperarm"] = true,
+	["lowerarm"] = true,
+	["upperleg"] = true,
+	["lowerleg"] = true,
+	["thigh"] = true,
+	["shin"] = true,
+	["calf"] = true,
+	["forearm"] = true,
+	["uparm"] = true,
+	["upleg"] = true,
+	["arm"] = true,
+	["leg"] = true,
+	["hand"] = true,
+	["foot"] = true,
+	["wing1"] = true,
+	["wing2"] = true,
+	["wing3"] = true,
+	["wing"] = true,
 }
 Kit.Families = {
 	{ id = "quadruped", all = {}, any = {"frontupperlegl", "frontuplegl", "backupperlegl", "backuplegl"}, minAny = 1, overlay = false },
