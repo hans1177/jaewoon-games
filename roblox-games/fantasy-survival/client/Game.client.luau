@@ -133,7 +133,7 @@ local STUDIO_ASSET_FAMILY_STATUS = {
   CREATURE = "APPLIED",
   BUILDING = "APPLIED",
   ENVIRONMENT = "APPLIED",
-  WEAPON = "NOT_APPLICABLE",
+  WEAPON = "APPLIED",
   SKILL = "APPLIED",
   MATERIAL = "APPLIED",
   AUDIO = "APPLIED",
@@ -449,12 +449,9 @@ meadowArt.sfx=function(name,volume,pitch)
 end
 local root = Instance.new("Frame")
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
--- [표현 초기화] 날씨에서 재사용하는 객체만 외부 범위에 유지한다.
-local verifiedLearningLighting, verifiedLearningColorGrade
-do
 local verifiedLearningPlayers = game:GetService("Players")
 local verifiedLearningTweenService = game:GetService("TweenService")
-verifiedLearningLighting = game:GetService("Lighting")
+local verifiedLearningLighting = game:GetService("Lighting")
 local verifiedLearningPlayer = verifiedLearningPlayers.LocalPlayer
 local verifiedLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
@@ -477,7 +474,7 @@ verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMood", verifiedLearni
 verifiedLearningRoot:SetAttribute("VerifiedLearningGameSpecificMappingCount", #(verifiedLearningContext.GameSpecificSemanticMappings or {}))
 
 -- Game-specific color and atmosphere response, authored locally in Roblox.
-verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
+local verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
 if not verifiedLearningColorGrade then
   verifiedLearningColorGrade = Instance.new("ColorCorrectionEffect")
   verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
@@ -507,8 +504,6 @@ end
 verifiedLearningAtmosphere.Density = 0.22
 verifiedLearningAtmosphere.Haze = 1.1
 verifiedLearningAtmosphere.Glare = 0.08
-verifiedLearningAtmosphere.Color = Color3.fromRGB(176,203,230)
-verifiedLearningAtmosphere.Decay = Color3.fromRGB(150,176,206)
 local verifiedLearningDepth = verifiedLearningLighting:FindFirstChild("VerifiedLearningDepthOfField")
 if not verifiedLearningDepth then
   verifiedLearningDepth = Instance.new("DepthOfFieldEffect")
@@ -647,7 +642,6 @@ verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(fu
   playVerifiedLearningActionFeedback(verifiedLearningLastControl, true)
   verifiedLearningLastControl = nil
 end)
-end
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
 
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
