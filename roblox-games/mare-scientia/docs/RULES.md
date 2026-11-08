@@ -38,3 +38,8 @@
 
 ## 아이템 표시 (UI)
 - 큰(60px↑) 3D 아이템은 `ViewportFrame` 안에서 천천히 회전, 큰 상품 그림은 기울기·숨쉬기(2.5D 카드). 화면에 남은 것만 최대 10개를 한 곳(`addItemMotion`)에서 갱신한다. 새 도형은 만들지 않는다.
+
+## 실존 인물 초상 자동 수집·등록·적용 (사람이 다운로드하지 않는다)
+- 목록: `famous-figures.json` (학자 19명). 수집기 `tools/devloop/fetch_commons.py` 가 위키미디어 공용 API 로 검색해 **퍼블릭 도메인/CC0 표시 + 인물 이름 일치 + 제외어(동상·묘·우표 등) 통과** 그림만 받아 3:4 로 잘라 `assets/portraits/scholar_<id>.jpg` 로 저장하고 `portraits-report.json` 에 원본 URL·제작자·라이선스를 남긴다.
+- 흐름: `owner-mare-scientia-assets` 워크플로(푸시 또는 수동 실행) → 수집 → Open Cloud 업로드 → `AssetIds` 반영 → 커밋. 배포 후 탐험 탭 "이 항구의 학자" 행에 초상이 뜬다(등록된 인물만).
+- 로컬 샌드박스는 위키 접속이 막혀 있어 CI 러너에서만 동작한다. 못 받은 인물은 보고서에 `no-public-domain-match`/`error` 로 남고 초상 없이 표시된다. 잘못 고른 그림은 `avoid` 에 파일명 조각을 넣고 해당 `scholar_*.jpg` 를 지우면 다음 실행에서 다시 고른다.

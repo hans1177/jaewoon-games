@@ -3224,9 +3224,14 @@ local function renderExplore()
 	for _, sc in view.scholars do
 		add(function()
 			local sub = if sc.status == "ready" then "만날 수 있어요" elseif sc.status == "met" then "지식을 전수받았어요" else sc.status
-			return mkRow(content, sc.name, sub, {
+			local srow = mkRow(content, sc.name, sub, {
 				{ text = "방문", color = COLORS.gold, onClick = function() call("Visit", { scholarId = sc.id }) end, enabled = sc.status == "ready" },
-			}, 54)
+			}, 60)
+			-- 실존 학자의 퍼블릭 도메인 초상(자동 수집·등록된 것만)
+			if AssetIds["Portraits/scholar_" .. sc.id] then
+				withIcon(srow, "Portraits", "scholar_" .. sc.id, nil, 50)
+			end
+			return srow
 		end)
 	end
 end

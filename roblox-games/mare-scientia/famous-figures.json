@@ -1,0 +1,26 @@
+{
+  "_doc": "실존 인물 초상 자동 수집 목록. query 로 위키미디어 공용(Commons)을 검색해 '퍼블릭 도메인/CC0' 로 표시된 그림만 받는다. avoid 에 파일명 조각을 넣으면 그 파일은 건너뛴다.",
+  "kind": "scholar",
+  "figures": [
+    {"id": "descartes", "name": "René Descartes", "query": "Portrait of René Descartes Frans Hals"},
+    {"id": "huygens", "name": "Christiaan Huygens", "query": "Portrait of Christiaan Huygens"},
+    {"id": "boyle", "name": "Robert Boyle", "query": "Portrait of Robert Boyle"},
+    {"id": "newton", "name": "Isaac Newton", "query": "Portrait of Isaac Newton Godfrey Kneller 1689"},
+    {"id": "leeuwenhoek", "name": "Antonie van Leeuwenhoek", "query": "Portrait of Antonie van Leeuwenhoek Verkolje"},
+    {"id": "papin", "name": "Denis Papin", "query": "Portrait of Denis Papin"},
+    {"id": "savery", "name": "Thomas Savery", "query": "Thomas Savery portrait engraving"},
+    {"id": "newcomen", "name": "Thomas Newcomen", "query": "Thomas Newcomen portrait"},
+    {"id": "merian", "name": "Maria Sibylla Merian", "query": "Portrait of Maria Sibylla Merian"},
+    {"id": "halley", "name": "Edmond Halley", "query": "Portrait of Edmond Halley Thomas Murray"},
+    {"id": "leibniz", "name": "Gottfried Wilhelm Leibniz", "query": "Portrait of Gottfried Wilhelm Leibniz"},
+    {"id": "sloane", "name": "Hans Sloane", "query": "Portrait of Sir Hans Sloane Kneller"},
+    {"id": "spinoza", "name": "Baruch Spinoza", "query": "Portrait of Baruch Spinoza"},
+    {"id": "romer", "name": "Ole Rømer", "query": "Portrait of Ole Rømer"},
+    {"id": "celsius", "name": "Anders Celsius", "query": "Portrait of Anders Celsius"},
+    {"id": "banks", "name": "Joseph Banks", "query": "Portrait of Sir Joseph Banks Reynolds"},
+    {"id": "redi", "name": "Francesco Redi", "query": "Portrait of Francesco Redi"},
+    {"id": "malpighi", "name": "Marcello Malpighi", "query": "Portrait of Marcello Malpighi"},
+    {"id": "linnaeus", "name": "Carl Linnaeus", "query": "Portrait of Carl Linnaeus Roslin"}
+  ],
+  "avoid": ["statue", "monument", "grave", "stamp", "coin", "bust", "signature", "house", "tomb", "memorial", "banknote", "medal"]
+}
