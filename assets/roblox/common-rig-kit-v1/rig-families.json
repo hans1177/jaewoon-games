@@ -1,10 +1,15 @@
 {
-  "note": "뼈 이름 신호로 리그 가족을 판정하는 표. 이름은 소문자로 바꾸고 . _ 공백을 뺀 형태다(UpperArm.L → upperarml). 위에서부터 처음 맞는 가족을 쓴다. 이 표가 원본이며 RobloxCommonRigKit.luau의 생성 구간과 tools/vibe-rig-kit.mjs가 같은 표를 쓴다.",
+  "note": "뼈 이름 신호로 리그 가족을 판정하는 표. 이름은 소문자로 바꾸고 . _ 공백을 뺀 형태다(UpperArm.L → upperarml). 위에서부터 처음 맞는 가족을 쓴다. 이 표가 원본이며 RobloxCommonRigKit.luau의 생성 구간과 tools/vibe-rig-kit.mjs가 같은 표를 쓴다. | 이름 정규화: 소문자, . _ 공백 : - 제거, mixamorig 접두 제거, Left/Right 접두는 L/R 접미로 옮기고 renames로 표준 이름(upperarm 등)에 맞춘다. overlay 가족은 주 가족과 함께 겹쳐 인식된다(classifyAll). minAny는 any 중 최소 일치 개수. needsAnimator는 분류만 되고 전용 애니메이터가 아직 없다는 뜻. | 한 글자 접두(L_UpperArm, R_Thigh)는 sideStems에 있는 뼈 이름 앞에서만 L/R로 읽는다(lowerarm 같은 정상 이름을 건드리지 않기 위해).",
+  "renames": {"upleg": "upperleg", "leg": "lowerleg", "uparm": "upperarm", "arm": "upperarm", "forearm": "lowerarm", "thigh": "upperleg", "shin": "lowerleg", "calf": "lowerleg"},
+  "sideStems": ["upperarm", "lowerarm", "upperleg", "lowerleg", "thigh", "shin", "calf", "forearm", "uparm", "upleg", "arm", "leg", "hand", "foot", "wing1", "wing2", "wing3", "wing"],
   "families": [
     {"id": "quadruped", "any": ["frontupperlegl", "frontuplegl", "backupperlegl", "backuplegl"], "plan": "다리 뼈 보행 시스템(FL/FR/BL/BR 관절 별칭)이 맡는다. 자세는 뼈 위치로 판정한다."},
     {"id": "biped", "all": ["upperarml", "upperarmr", "upperlegl", "upperlegr"], "plan": "이족 뼈 애니메이터(팔 내림 보정 + 걷기·공격·피격·사망)가 맡는다."},
     {"id": "snake", "all": ["head", "tail", "chest", "body"], "plan": "체인 애니메이터: 머리→꼬리 물결, 상체 들기, 턱·혀."},
-    {"id": "winged", "any": ["wing1l", "wing1r", "wingl", "wingr"], "plan": "체인 애니메이터: 날개짓(뒤 뼈일수록 지연). 이름에 spider가 들어가면 날개 뼈를 다리처럼 흔든다."},
+    {"id": "winged", "any": ["wing1l", "wing1r", "wingl", "wingr"], "plan": "체인 애니메이터: 날개짓(뒤 뼈일수록 지연). 이름에 spider가 들어가면 날개 뼈를 다리처럼 흔든다.", "overlay": true},
+    {"id": "multileg", "any": ["leg1l", "leg2l", "leg3l", "leg4l", "leg1r", "leg2r", "leg3r", "leg4r"], "minAny": 6, "needsAnimator": true, "plan": "거미·곤충류(다리 6개 이상): 분류만 됨. 다리 순차 보행 애니메이터가 아직 없다(일감)."},
+    {"id": "tentacle", "any": ["tentacle1", "tentacle2", "tentacle3", "tentacle4"], "minAny": 3, "needsAnimator": true, "plan": "문어·촉수류: 분류만 됨. 촉수 물결 애니메이터가 아직 없다(일감)."},
+    {"id": "swimmer", "any": ["tailfin", "dorsalfin", "pectoralfinl", "pectoralfinr", "pelvicfin"], "minAny": 2, "needsAnimator": true, "plan": "물고기류: 분류만 됨. 척추 물결·지느러미 애니메이터가 아직 없다(일감)."},
     {"id": "chain", "all": ["body1", "body2"], "plan": "체인 애니메이터: 몸통 물결(유령·용·글럽 계열)."},
     {"id": "simple", "all": ["body", "head"], "plan": "체인 애니메이터: 몸 흔들림·머리 끄덕임(4뼈 단순 리그)."}
   ],
