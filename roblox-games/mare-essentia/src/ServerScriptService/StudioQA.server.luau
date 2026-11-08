@@ -237,6 +237,7 @@ task.spawn(function()
 	end
 	local sailFail = 0
 	for _, id in portIds do
+		task.wait(0.1) -- 쉬지 않고 돌리면 Studio가 시간 초과로 멈춘다
 		local res = call("Sail", { portId = id })
 		if res and res.message == "오류가 발생했어요" then
 			sailFail += 1
