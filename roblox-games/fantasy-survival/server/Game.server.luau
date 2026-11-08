@@ -716,7 +716,7 @@ local function updateMeadowClimate()
   -- [중세 숲] 낮의 푸른 먹구름과 황혼의 따뜻한 등불 색 대비를 표현한다.
   local tint=hour>=16.5 and hour<20.5 and Color3.fromRGB(231,206,179)
     or period=="NIGHT" and Color3.fromRGB(172,193,219)
-    or period=="DAWN" and Color3.fromRGB(211,215,195)
+    or period=="DAWN" and Color3.fromRGB(236,230,228)
     or Color3.fromRGB(238,236,228)
   if weather=="STORM" or weather=="RAIN" then
     tint=tint:Lerp(Color3.fromRGB(173,195,210),weather=="STORM" and .38 or .2)

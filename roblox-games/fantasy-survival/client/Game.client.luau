@@ -6719,7 +6719,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     atmosphere.Color=Color3.fromRGB(176,203,230);atmosphere.Decay=Color3.fromRGB(150,176,206)
   end
   local tint=night and Color3.fromRGB(176,193,207)
-    or period=="DAWN" and Color3.fromRGB(220,211,191)
+    or period=="DAWN" and Color3.fromRGB(238,230,226)
     or period=="DUSK" and Color3.fromRGB(228,200,178)
     or Color3.fromRGB(238,236,228)
   if storm then tint=tint:Lerp(Color3.fromRGB(180,195,206),.35)
