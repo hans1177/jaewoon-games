@@ -5113,7 +5113,10 @@ export function buildVibeAssetProductionPlan({
       let text='';
       try{
         const stat=fs.statSync(filename);
-        if(!stat.isFile()||stat.size>600000)continue;
+        // [실제 몬스터 에셋 탐색] 대형 서버 소스도 F0의 기존 스폰 테이블에서 읽는다.
+        // 공유 스타일 파일은 기존 제한을 유지하고 서버 게임 소스만 최대 2MiB로 제한한다.
+        const sourceLimit=relative.startsWith('server/')?2*1024*1024:600000;
+        if(!stat.isFile()||stat.size>sourceLimit)continue;
         text=fs.readFileSync(filename,'utf8');
       }catch{continue;}
       if(relative.startsWith('shared/')){

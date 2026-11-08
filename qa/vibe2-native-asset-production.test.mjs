@@ -5532,6 +5532,34 @@ test('F0-F9 automatically chooses the closest CC0 actor original while refusing 
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('large Roblox native server source still discovers active creature bindings',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-large-spawn-'));
+ const dir=path.join(root,'roblox-games','large-source','server');
+ try{
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'Game.server.luau'),[
+   'local meadowEncounterSites = {',
+   ' {id="wolf",atom="HEAD_CANINE"},',
+   ' {id="bat",atom="WING_LEATHER"}',
+   '}',
+   'local function spawnEnemy(site, siteIndex) return site.id end',
+   'local function refresh()',
+   ' for index,site in ipairs(meadowEncounterSites) do',
+   '  pcall(spawnEnemy,site,index)',
+   ' end',
+   'end',
+   '--'+'.'.repeat(650000)
+  ].join('\n'));
+  const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',manifest:{assets:[]},
+   task:{gameId:'large-source',goal:'normal F0 source build-up'}});
+  const roles=new Set(plan.sourceActorRequirements.map(row=>row.family+':'+row.role));
+  assert.ok(roles.has('CREATURE:wolf'),'large source must retain wolf');
+  assert.ok(roles.has('CREATURE:bat'),'large source must retain bat');
+  assert.equal(roles.has('CREATURE:golem'),false,'no unused enemy may be invented');
+  assert.equal(plan.sourceActorRequirements.every(row=>row.runtimeVerified===false),true);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('each existing Roblox F0 build-up sources real visible actors even without explicit asset roles',()=>{
  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
  const live=buildVibeAssetProductionPlan({
