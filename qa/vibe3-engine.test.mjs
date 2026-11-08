@@ -33,6 +33,24 @@ const dependencyGraph=createVibeSourceGraph({files:[
   {path:'src/game.js',imports:['./combat/weapon'],tests:['qa/game.test.mjs']},
   {path:'src/ai.js',calls:['resolveDamage'],tests:['qa/ai.test.mjs']}
 ]});
+// [코어 책임 추적 회귀] 기존 상대경로 import와 함수 호출을 실제 책임 파일로 연결한다.
+const inferredGraph=createVibeSourceGraph({files:[
+  {path:'game/combat.js',symbols:['applyHit']},
+  {path:'game/client.js',imports:['./combat.js'],calls:['applyHit']},
+  {path:'game/unused.js',symbols:['unrelated']},
+]});
+const inferred=rankVibeResponsibleSources({graph:inferredGraph,request:'',hints:['game/client.js']});
+assert.equal(inferred.candidates.find(row=>row.path==='game/combat.js').score,.05);
+assert(inferred.candidates.find(row=>row.path==='game/combat.js').score>inferred.candidates.find(row=>row.path==='game/unused.js').score);
+const ambiguousGraph=createVibeSourceGraph({files:[
+  {path:'game/combat-a.js',symbols:['applyHit']},
+  {path:'game/combat-b.js',symbols:['applyHit']},
+  {path:'game/client.js',calls:['applyHit']},
+]});
+const ambiguous=rankVibeResponsibleSources({graph:ambiguousGraph,request:'',hints:['game/client.js']});
+assert.equal(ambiguous.candidates.find(row=>row.path==='game/combat-a.js').score,0);
+assert.equal(ambiguous.candidates.find(row=>row.path==='game/combat-b.js').score,0);
+
 const impacted=createVibeImpactPlan({graph:dependencyGraph,changedPaths:['src/combat/damage.js']});
 assert.deepEqual(impacted.impactedSources.map(row=>row.path),['src/combat/damage.js','src/ai.js','src/combat/weapon.js','src/game.js']);
 assert.deepEqual(impacted.affectedTests.map(row=>row.path),['qa/damage.test.mjs','qa/ai.test.mjs','qa/weapon.test.mjs','qa/game.test.mjs']);
@@ -90,6 +108,22 @@ const identicalSourceEdits=runVibeCandidateTournament({requiredCandidateCount:3,
 assert.equal(identicalSourceEdits.ready,false);
 assert.equal(identicalSourceEdits.independentCandidateCount,2);
 assert.ok(identicalSourceEdits.blockedReasons.includes('duplicate-candidate-patch'));
+
+// [후보 코드 독립성] 동일한 기준 소스 해시만으로 다른 코드를 중복 처리하지 않는다.
+const sameStartingSource=runVibeCandidateTournament({requiredCandidateCount:3,candidates:[
+  {id:'candidate-1',sourceHash:'shared-base',patchRef:'run-1',edits:[{path:'server/Game.luau',find:'old()',replace:'alpha()'}],evidence:passEvidence},
+  {id:'candidate-2',sourceHash:'shared-base',patchRef:'run-2',edits:[{path:'server/Game.luau',find:'old()',replace:'beta()'}],evidence:passEvidence},
+  {id:'candidate-3',sourceHash:'shared-base',patchRef:'run-3',edits:[{path:'server/Game.luau',find:'old()',replace:'gamma()'}],evidence:passEvidence}
+]});
+assert.equal(sameStartingSource.ready,true);
+assert.equal(sameStartingSource.independentCandidateCount,3);
+const duplicateWithDistinctRefs=runVibeCandidateTournament({requiredCandidateCount:3,candidates:[
+  {id:'ref-1',patchRef:'run-1',edits:[{path:'server/Game.luau',find:'old()',replace:'alpha()'}],evidence:passEvidence},
+  {id:'ref-2',patchRef:'run-2',edits:[{path:'server/Game.luau',find:'old()',replace:'alpha()'}],evidence:passEvidence},
+  {id:'ref-3',patchRef:'run-3',edits:[{path:'server/Game.luau',find:'old()',replace:'beta()'}],evidence:passEvidence}
+]});
+assert.equal(duplicateWithDistinctRefs.ready,false);
+assert.ok(duplicateWithDistinctRefs.blockedReasons.includes('duplicate-candidate-patch'));
 
 const shortTournament=runVibeCandidateTournament({requiredCandidateCount:5,candidates:[{id:'only',evidence:passEvidence}]});
 assert.equal(shortTournament.ready,false);
