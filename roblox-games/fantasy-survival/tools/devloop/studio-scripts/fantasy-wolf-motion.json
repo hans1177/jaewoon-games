@@ -1,0 +1,141 @@
+[
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "click_text",
+  "text": "이어하기"
+ },
+ {
+  "type": "wait",
+  "ms": 70000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"RunService\") pcall(function() RS:UnbindFromRenderStep(\"FantasyShot\") end) RS:BindToRenderStep(\"FantasyShot\",Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute(\"ShotCF\") if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute(\"ShotFov\") or 60 end end) for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true end return \"bound\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "local best,bd=nil,1e9 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\")==\"wolf\" and m:GetAttribute(\"EnemyHealth\") and not m:GetAttribute(\"Boss\") then local p=m:GetPivot().Position local d=(p-Vector3.new(-200,3,-120)).Magnitude if d<bd then best,bd=m,d end end end if best then workspace:SetAttribute(\"MobShotPos\",best:GetPivot().Position) return \"wolf \"..best.Name..\" var=\"..tostring(best:GetAttribute(\"Variant\")) end return \"no wolf\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local pos=workspace:GetAttribute(\"MobShotPos\") if typeof(pos)~=\"Vector3\" then return \"no pos\" end local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(pos+Vector3.new(26,5,0))) task.spawn(function() local RS=game:GetService(\"RunService\") while true do local best,bd=nil,1e9 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\")==\"wolf\" and m:GetAttribute(\"EnemyHealth\") then local d=(m:GetPivot().Position-pos).Magnitude if d<bd then best,bd=m,d end end end if best then local p=best:GetPivot().Position workspace:SetAttribute(\"ShotFov\",55) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(0,3.2,11),p+Vector3.new(0,1.4,0))) end task.wait(.1) end end) return \"follow\""
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_00"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_01"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_02"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_03"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_04"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_05"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_06"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_07"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_08"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_09"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_10"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_11"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_12"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "wolf_13"
+ }
+]
