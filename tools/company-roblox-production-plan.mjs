@@ -623,6 +623,50 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     candidates:list(interfaceContract.internalLibraryMatches).filter(row=>row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED'),
     assetLibrarySelection:'EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE',automaticImport:false,runtimeVerified:false
   }:null;
+
+  // [로블 바이브 엔진] 기존 BUILD_UP의 책임 소스와 검증 루프에만 연결한다.
+  // 작업 계획은 소스 변경·실제 플레이·자산 사용권·배포 성공의 증거가 아니다.
+  const robloxCapabilityWork=target==='ROBLOX'?[
+    {id:'REAL_ASSET_BINDING',roles:['SERVER_AUTHORITY','CLIENT_PRESENTATION','SHARED_DEFINITION'],
+      action:'실제 소스에 선언된 캐릭터·몬스터·건물·아이템 모델만 확인하고 승인된 실물 메시·리그와 연결한다. 사용 가능한 원본·해시·라이선스·콘텐츠 안전성·해당 Universe 권한 중 하나라도 불명확하면 해당 모델 작업을 중단하고 부족 자산을 기록한다. 원형·기본 Part·임의 모델로 대체하지 않는다.',
+      evidence:['APPROVED_ORIGINAL_ASSET_HASH_LICENSE_AND_UNIVERSE_GRANT','ACTUAL_NATIVE_MESH_AND_RIG_BINDING','VISUAL_CONTENT_REVIEW']},
+    {id:'CONNECTED_GAMEPLAY_LOOP',roles:['SERVER_AUTHORITY','CLIENT_PRESENTATION','SHARED_DEFINITION'],
+      action:'승인된 핵심 행동의 입력→서버 기준 상태 변화→피드백→다음 목표를 기존 함수에서 완결한다. 설계되지 않은 신규 보상·적·수치·경제 규칙을 생성하지 않는다.',
+      evidence:['SOURCE_BOUND_ACTION_STATE_FEEDBACK_NEXT_GOAL','EXACT_BUILD_PLAYABLE_PROGRESS_WITHOUT_SOFTLOCK']},
+    {id:'LIVING_ANIMATION',roles:['CLIENT_PRESENTATION','SHARED_DEFINITION'],
+      action:'기존 Animator·AnimationTrack·Humanoid·Motor6D와 승인된 리그·클립에서 대기·이동·공격·피격·전환을 자연스럽게 연결한다. 이동 속도·히트 판정·무적 시간은 변경하지 않고 발 미끄러짐·상태 누락·입력 복구를 확인한다.',
+      evidence:['RIG_AND_CLIP_COMPATIBILITY','ACTUAL_MOTION_STATE_TRANSITIONS_AND_INPUT_RESTORATION']},
+    {id:'CONNECTED_WORLD',roles:['SERVER_AUTHORITY','CLIENT_PRESENTATION','SHARED_DEFINITION'],worldOnly:true,
+      action:'원본 월드·지형·맵 책임 함수에서 실제 지형·승인된 모델과 충돌체·이동 경로·목표 접근·카메라 시야를 연결한다. 이미 승인된 배치와 위치를 유지하고 임의 지형·건물을 만들지 않는다.',
+      evidence:['CURRENT_SOURCE_BOUND_REGION_AND_ROUTE','GROUND_COLLIDER_ROUTE_AND_CAMERA_PLAY_EVIDENCE']},
+    {id:'CAUSAL_SOURCE_REPAIR',roles:['SERVER_AUTHORITY','CLIENT_PRESENTATION','SHARED_DEFINITION'],
+      action:'실패 로그·증상·소스 그래프를 정확한 현재 리비전과 연결하고 기존 책임 함수를 직접 수정한다. 실패 지점만 재시도하며 래퍼·중복 실행기·새 큐를 만들지 않는다.',
+      evidence:['EXACT_FAILURE_SIGNATURE_AND_SOURCE_REVISION','RESPONSIBLE_FUNCTION_DIFF_AND_RECHECK']},
+    {id:'NATIVE_PLAYABILITY',roles:['SERVER_AUTHORITY','CLIENT_PRESENTATION','SHARED_DEFINITION'],
+      action:'실제 플레이에서 접속→이동→기존 행동·전투→목표→사망/부활→재접속을 사용자 게임의 해당 기능 범위에서 확인한다. 스튜디오·실제 조작 증거가 없으면 정적 로딩만으로 통과 처리하지 않는다.',
+      evidence:['OFFICIAL_STUDIO_PLAY_AND_CONSOLE_OBSERVATION','SAME_REVISION_OPEN_CLOUD_EVIDENCE_WHEN_REQUIRED']},
+    {id:'MOBILE_TOUCH_PERFORMANCE',roles:['CLIENT_PRESENTATION'],
+      action:'기존 모바일 조이스틱·버튼·스크롤·안전 여백을 유지하면서 작은 화면 잘림·터치 중복·시야 방해·로딩·프레임·메모리 원인을 기존 렌더·입력 책임 함수에서 줄인다.',
+      evidence:['REAL_DEVICE_TOUCH_AND_SAFE_AREA','MEASURED_FRAME_MEMORY_LOAD_AND_NO_INPUT_REGRESSION']},
+    {id:'GAME_IDENTITY_AND_SAVE_LOCK',roles:['SERVER_AUTHORITY','CLIENT_PRESENTATION','SHARED_DEFINITION'],
+      action:'해당 게임 고유 스타일·기존 ID·서버 권한·진행도·경제·밸런스·저장 키와 스키마를 보존한다. 저장 형식 변경이 반드시 필요한 경우 승인된 마이그레이션을 연결한다.',
+      evidence:['BEFORE_AFTER_GAMEPLAY_BALANCE_AND_SAVE_DIFF','SAVE_RELOAD_REJOIN_AND_SERVER_AUTHORITY']},
+    {id:'OWNER_ONEPATCH_SCOPE',roles:['SERVER_AUTHORITY','CLIENT_PRESENTATION','SHARED_DEFINITION'],
+      action:'동일 게임의 허용된 책임 파일을 기존 원패치로 묶고 함수 자체를 수정한다. 기존 BUILD_UP·source-drift-sync·F0~F9·게시 절차만 사용하며 중복 워크플로를 만들지 않는다.',
+      evidence:['EXACT_OWNED_SOURCE_FILES_AND_MAIN_REVISION','CANONICAL_F0_F9_POST_PUBLISH_CHAIN_WHEN_APPLICABLE']},
+    {id:'VERIFIED_REPAIR_LEARNING',roles:['SERVER_AUTHORITY','CLIENT_PRESENTATION','SHARED_DEFINITION'],
+      action:'실패 원인은 기존 복구 기억에 경고로 남기고, 같은 버전의 실제 런타임·독립 QA·회귀 증거를 통과한 사례만 기존 학습·재사용 흐름에 전달한다. 미검증 후보를 성공 학습 자료로 승격하지 않는다.',
+      evidence:['VERIFIED_TRAJECTORY_EXACT_REVISION','FAILED_CANDIDATE_IS_WARNING_NOT_SUCCESS']}
+  ].map(row=>{
+    const sourceFiles=unique(packages.filter(pack=>row.roles.includes(pack.role))
+      .flatMap(pack=>pack.files)
+      .filter(file=>!row.worldOnly||/(?:world|environment|terrain|map|level|spawn|scene)/i.test(file)));
+    return {id:row.id,sourceFiles,applicable:sourceFiles.length>0,
+      mode:sourceOnly?'REPAIR_EXISTING_ONLY':presentationOnly?'PRESENTATION_ONLY':'APPROVED_CONNECTED_CONTENT',
+      action:row.action,evidenceRequired:row.evidence,
+      actualSourceChanged:false,runtimeVerified:false,
+      existingF0F9Only:true,newStage:false};
+  }):null;
   return {
     version:3,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
     conceptIdentity:identity,coreAction:(authoredGrammar?coreLoop[0]:selected?.action)||coreLoop[0]||'승인된 핵심 행동',
@@ -640,7 +684,7 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     ideas,selectedIdea:chosen,ideaHistory:unique([...(available.length||repair?used:[]),chosen.id]),
     implementationPackages:packages,sourceTreeFingerprint:clean(source.sourceTreeFingerprint),
     spatialBlueprintContract:buildSpatialBlueprintContract({design,source,files,mode,platform:target,enabled:policy.spatialBlueprint?.enabled===true}),
-    interfaceBlueprintContract:interfaceContract,libraryReuseContract,detailedDesignContract,
+    interfaceBlueprintContract:interfaceContract,libraryReuseContract,detailedDesignContract,robloxCapabilityWork,
     qualityContract:{
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
       implementation:target==='UNITY'?'EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':target==='WEB'?'EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS':'EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
@@ -711,6 +755,13 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
       prefix+'SPATIAL_RULE=When required=true, first author spatialBlueprint in the same candidate JSON, then implement it in existing source. Otherwise include a report only for relevant spatial changes. Scope the sketch to the owned task region and its existing entry/objective boundaries, not the entire game or sibling files. Use source dimensions, axis direction, units, player size and stable IDs. Draw regions before object bounds and typed connections. Preserve locations unless authorized. In 3D account for support, headroom, elevation, stairs, slopes, camera sightlines and swept clearance; in 2D distinguish top-down from side-view and layers. Bind each row to executable source. AABB checks are conservative and cannot prove curved terrain, ramps, jumps, engine physics or runtime PASS. For an explicitly approved new environment, derive seeded gradient-noise elevation and drainage by climate and biome; connect walkable road and optional routes before placing any building. Zone footprints by local function (housing, services and workshops), snap modular foundations/walls/openings/roofs to the existing grid, face door openings toward a traversable road, and preserve any reserved player/objective/interaction cells. Use local material and climate for architecture, keep a clear landmark sightline from a decision point, and budget cell/prop density, LOD and reusable mesh instances for mobile. These are authoring constraints, not proof of native instancing or runtime visibility; bind placements to real existing source and reject blocked routes instead of claiming PASS. An approved macroSketch.proceduralWorldStudy provides only bounded route and lot samples, not a full terrain mesh or a verified game implementation. If status is not STATIC_LAYOUT_PROPOSED, repair route or placement feasibility before using its layout; do not substitute the study for actual source implementation. Existing map repairs and presentation-only tasks must preserve established layout and gameplay state.'
     ]:[]),
     ...(plan.qualityContract?[prefix+'QUALITY='+JSON.stringify(plan.qualityContract)]:[]),
+    ...(plan.platform==='ROBLOX'&&list(plan.robloxCapabilityWork).length?[
+      prefix+'CAPABILITY_WORK='+JSON.stringify(plan.robloxCapabilityWork.map(row=>({
+        ...row,sourceFiles:row.sourceFiles.filter(file=>scopedFiles.includes(file)),
+        applicable:row.sourceFiles.some(file=>scopedFiles.includes(file))
+      })).filter(row=>row.applicable)),
+      prefix+'CAPABILITY_RULE=Implement applicable owner-requested changes within listed existing source files only. REPAIR_EXISTING_ONLY forbids new gameplay; PRESENTATION_ONLY preserves server authority and gameplay meaning. A plan, asset catalog, static result, or model claim never proves a real asset or native runtime. Missing approved asset, source, license, content review or Universe permission stays blocked, never substituted by primitive Parts or generated placeholder meshes. Reuse existing source-drift-sync and F0-F9 evidence without adding gates or workflows. Verify exact revision after canonical publication; retain failures as warnings and learn only independently verified outcomes.'
+    ]:[]),
     ...list(plan.ownerFeatureChanges).map(change=>prefix+'OWNER='+JSON.stringify(change)+'; latest owner intent wins; REMOVE must not be restored by autonomous expansion; ADD/UPDATE must be preserved within this request scope.'),
     prefix+'SCOPE='+plan.contentRule+'; '+plan.handoffRule+' Preserve approved concept, style, balance, save and server authority. Independent files can proceed in parallel inside the existing worker; this is no new stage.'
   ];
