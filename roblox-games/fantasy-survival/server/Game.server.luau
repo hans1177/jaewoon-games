@@ -5726,7 +5726,7 @@ if RunService:IsStudio() then
       if key then
         local ok,spawned=pcall(function()
           return spawnEnemy({id="wolf",atom="HEAD_CANINE",model=key,name=key,tier=1,height=3.4,hp=40,dmg=.05,studioGallery=true,
-            position=Vector3.new(-12+(slot-1)*12,3,420)},9000+group*3+slot)
+            position=Vector3.new(-7+(slot-1)*7,3,420)},9000+group*3+slot)
         end)
         for _,enemy in ipairs(enemies) do
           if enemy.siteIndex==9000+group*3+slot then enemy.gallery=true end
