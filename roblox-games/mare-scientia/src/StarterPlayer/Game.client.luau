@@ -1555,6 +1555,14 @@ function playStory(ev)
 			local label = ch.text
 			local b = mkButton(list, label, COLORS.blue, UDim2.new(1, 0, 0, 36), function()
 				local result = if ev.submit then ev.submit(ch.index) else call("PlayStory", { eventId = ev.id, choice = ch.index })
+				if not result then
+					hint.Text = "잠시 후 다시 눌러 주세요"
+				elseif not result.ok then
+					-- 실패 이유를 대화창 안에 바로 보여 준다
+					hint.Text = tostring(result.message or "처리하지 못했어요")
+					hint.TextColor3 = COLORS.red
+					hint.TextSize = 14
+				end
 				if result and result.ok then
 					for _, c in list:GetChildren() do
 						if c:IsA("TextButton") then
