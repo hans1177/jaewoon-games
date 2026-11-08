@@ -769,6 +769,7 @@ jobs:
           VIBE2_BLENDER_BINARY=blender node --test --test-name-pattern="actual Blender authoring|GLB production inspection|native asset recipe preserves" qa/vibe2-native-asset-production.test.mjs
           python3 -m pip install --quiet pillow numpy
           VIBE2_BLENDER_BINARY=blender node --test qa/vibe-variation-gym.test.mjs
+          node --test qa/vibe-cc0-library.test.mjs
       - name: Preserve authored GLB and preview evidence
         if: always()
         uses: actions/upload-artifact@v4

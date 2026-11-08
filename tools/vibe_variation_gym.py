@@ -170,7 +170,80 @@ def op_outline(obj, p):
     return shell
 
 
-OPS = {'hue_shift': op_hue_shift, 'saturate_contrast': op_saturate_contrast, 'proportion': op_proportion,
+ATTACH = {}
+
+
+def world_tree(obj):
+    from mathutils.bvhtree import BVHTree
+    dg2 = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg2)
+    me = ev.to_mesh()
+    verts = [ev.matrix_world @ v.co for v in me.vertices]
+    polys = [tuple(pl.vertices) for pl in me.polygons]
+    tree = BVHTree.FromPolygons(verts, polys)
+    ev.to_mesh_clear()
+    return tree, verts
+
+
+def settle(host, part, direction, step=0.01, limit=0.8):
+    """부품을 direction 방향으로 조금씩 옮겨 호스트와 겹치는 순간 멈춘다(떠 있지 않게). 닿았는지 돌려준다."""
+    for i in range(int(limit / step)):
+        bpy.context.view_layer.update()
+        ht, _ = world_tree(host)
+        pt, _ = world_tree(part)
+        if ht.overlap(pt):
+            part.location += direction * 0.015  # 살짝 파묻어 단단히 붙여 보이게
+            bpy.context.view_layer.update()
+            return True
+        part.location += direction * step
+    return False
+
+
+def attach_gap(host, part):
+    """부품 정점에서 호스트 표면까지 최단 거리(키 1.0 기준)."""
+    ht, _ = world_tree(host)
+    _, pv = world_tree(part)
+    best = 1e9
+    for v in pv:
+        hit = ht.find_nearest(v)
+        if hit and hit[0] is not None:
+            best = min(best, (hit[0] - v).length)
+    return best
+
+
+def op_kitbash(obj, p):
+    """승인된 CC0 부품 하나를 부모에 붙인다(위 또는 옆). 새 도형이 아니라 CC0 두 개의 조합이다. 실제로 닿을 때까지 내려놓는다."""
+    parts = import_parent(p['part'])
+    if not parts:
+        raise RuntimeError('NO_MESH_IN_PART')
+    part = join(parts)
+    normalize(part)
+    s = float(p.get('scale', 0.3))
+    part.scale = (s, s, s)
+    bpy.context.view_layer.objects.active = part
+    part.select_set(True)
+    bpy.ops.object.transform_apply(scale=True)
+    hl, hh = bbox(obj)
+    pl, ph = bbox(part)
+    if p.get('mode', 'top') == 'top':
+        part.location += Vector(((hl.x + hh.x) / 2 - (pl.x + ph.x) / 2, (hl.y + hh.y) / 2 - (pl.y + ph.y) / 2, hh.z - pl.z + 0.05))
+        direction = Vector((0, 0, -1))
+    else:
+        part.location += Vector((hh.x - pl.x + 0.1, (hl.y + hh.y) / 2 - (pl.y + ph.y) / 2, hl.z - pl.z))
+        direction = Vector((-1, 0, 0))
+    touched = settle(obj, part, direction)
+    gap = attach_gap(obj, part) if not touched else 0.0
+    ATTACH.update({'touched': touched, 'gap': round(gap, 4)})
+    for o in bpy.context.scene.objects:
+        o.select_set(False)
+    obj.select_set(True)
+    part.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.join()
+    normalize(bpy.context.view_layer.objects.active)
+
+
+OPS = {'kitbash': op_kitbash, 'hue_shift': op_hue_shift, 'saturate_contrast': op_saturate_contrast, 'proportion': op_proportion,
        'bevel': op_bevel, 'outline': op_outline, 'identity': lambda o, p: None}
 
 
@@ -222,9 +295,12 @@ for job in json.load(open(args.jobs, encoding='utf8')):
             raise RuntimeError('NO_MESH_IN_PARENT')
         obj = join(parts)
         normalize(obj)
+        ATTACH.clear()
         extra = OPS[job['op']](obj, job.get('params', {}))
         objs = [obj] + ([extra] if extra is not None and hasattr(extra, 'type') else [])
         rec.update(measure(objs))
+        if ATTACH:
+            rec['attach'] = dict(ATTACH)
         for o in objs:
             sync_preview_colors(o)
         setup_render()

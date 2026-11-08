@@ -8,17 +8,22 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
+import {approvedLibraryParents} from './vibe-cc0-library.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const sha256=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 const pick=(rng,arr)=>arr[Math.floor(rng()*arr.length)];
 
+const rnd=(rng,lo,hi,d=2)=>+(lo+rng()*(hi-lo)).toFixed(d);
+// 연산마다 세기(soft/strong) 두 구간을 가진다. 성적표는 연산:세기 단위로 쌓여서 "세게 주면 해롭다" 같은 것도 배운다.
+export const STRENGTHS=['soft','strong'];
 export const OPERATORS={
-  hue_shift:{sample:rng=>({degrees:pick(rng,[-120,-60,-30,30,60,120,180])}),note:'색조만 바꾼 변형(다양성)'},
-  saturate_contrast:{sample:rng=>({saturation:+(1.1+rng()*0.5).toFixed(2),value:+(0.95+rng()*0.2).toFixed(2),contrast:+(0.1+rng()*0.25).toFixed(2)}),note:'채도·대비 강화'},
-  proportion:{sample:rng=>({x:+(0.8+rng()*0.5).toFixed(2),y:+(0.8+rng()*0.5).toFixed(2),z:+(0.75+rng()*0.6).toFixed(2)}),note:'비율 바꾸기'},
-  bevel:{sample:rng=>({width:+(0.008+rng()*0.014).toFixed(3),segments:2}),note:'모서리 다듬기'},
-  outline:{sample:rng=>({thickness:+(0.008+rng()*0.01).toFixed(3)}),note:'만화풍 외곽선'},
+  hue_shift:{sample:(rng,st)=>({degrees:(rng()<0.5?-1:1)*(st==='soft'?rnd(rng,30,60,0):rnd(rng,90,180,0))}),note:'색조만 바꾼 변형(다양성)'},
+  saturate_contrast:{sample:(rng,st)=>st==='soft'?{saturation:rnd(rng,1.05,1.25),value:rnd(rng,0.97,1.08),contrast:rnd(rng,0.05,0.15)}:{saturation:rnd(rng,1.3,1.7),value:rnd(rng,0.95,1.15),contrast:rnd(rng,0.2,0.4)},note:'채도·대비 강화'},
+  proportion:{sample:(rng,st)=>st==='soft'?{x:rnd(rng,0.9,1.15),y:rnd(rng,0.9,1.15),z:rnd(rng,0.9,1.15)}:{x:rnd(rng,0.7,1.4),y:rnd(rng,0.7,1.4),z:rnd(rng,0.7,1.4)},note:'비율 바꾸기'},
+  bevel:{sample:(rng,st)=>({width:st==='soft'?rnd(rng,0.006,0.012,3):rnd(rng,0.014,0.03,3),segments:2}),note:'모서리 다듬기'},
+  outline:{sample:(rng,st)=>({thickness:st==='soft'?rnd(rng,0.006,0.01,3):rnd(rng,0.012,0.02,3)}),note:'만화풍 외곽선'},
+  kitbash:{sample:(rng,st)=>({scale:st==='soft'?rnd(rng,0.2,0.3):rnd(rng,0.35,0.5),mode:rng()<0.6?'top':'side'}),needsPart:true,note:'CC0 부품 조립(두 부모)'},
 };
 
 export function mulberry32(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -38,23 +43,41 @@ export function pickParents(registry,repoRoot,n,rng,only=null){
   return ok.slice(0,n);
 }
 
-// 연산 선택: 성적표가 있으면 평균 이득이 큰 연산을 더 자주(1-epsilon), 아니면 무작위 탐험(epsilon)
-export function chooseOps(stats,family,count,rng,epsilon=0.3){
-  const names=Object.keys(OPERATORS),fam=stats?.[family]||{};
-  const ranked=names.filter(o=>fam[o]?.n>=2).sort((a,b)=>fam[b].gainSum/fam[b].n-fam[a].gainSum/fam[a].n);
+// 팔(arm) = 연산:세기. 성적표가 있으면 평균 이득이 큰 팔을 더 자주(1-epsilon), 없으면 무작위 탐험(epsilon).
+export const armKey=(op,strength)=>`${op}:${strength}`;
+export function chooseArms(stats,family,count,rng,epsilon=0.3){
+  const all=Object.keys(OPERATORS).flatMap(op=>STRENGTHS.map(strength=>({op,strength}))),fam=stats?.[family]||{};
+  const mean=a=>{const f=fam[armKey(a.op,a.strength)];return f&&f.n>=2?f.gainSum/f.n:null};
+  // 이득이 플러스인 팔만 활용 대상. 이득에 비례한 가중으로 뽑아서, 나쁜 팔(마이너스)은 탐험 때만 나온다.
+  const good=all.map(a=>({a,m:mean(a)})).filter(x=>x.m!==null&&x.m>0).sort((x,y)=>y.m-x.m).slice(0,4);
+  const total=good.reduce((t,x)=>t+x.m,0);
   const out=[];
   for(let i=0;i<count;i++){
-    const explore=!ranked.length||rng()<epsilon;
-    out.push(explore?pick(rng,names):ranked[Math.min(ranked.length-1,Math.floor(rng()*Math.min(2,ranked.length)))]);
+    if(!good.length||rng()<epsilon){out.push(pick(rng,all));continue}
+    let r=rng()*total;
+    out.push((good.find(x=>(r-=x.m)<=0)||good[0]).a);
   }
   return out;
 }
 
-export const LIMITS={minNovelty:0.012,improveGain:1,varietyFloor:-1.5};
+const rulesPath=path.join(here,'vibe-kitbash-rules.json');
+// 부품이 부모에 어울리는지: 규칙표에 맞는 방식(top/side) 목록. 없으면 [] (시도하지 않음).
+export function kitbashModes(hostName,partName,rules=JSON.parse(fs.readFileSync(rulesPath,'utf8')).rules){
+  const modes=new Set();
+  for(const r of rules)if(new RegExp(r.part,'i').test(partName)&&new RegExp(r.host,'i').test(hostName))r.modes.forEach(m=>modes.add(m));
+  return [...modes];
+}
+const nameOf=p=>`${p.id} ${path.basename(p.file)}`;
+
+export const LIMITS={minNovelty:0.012,improveGain:1,varietyFloor:-1.5,maxDarkening:0.2,maxDetailDrop:0.35,maxAttachGap:0.03};
 // 판정: 고장 / 너무 비슷함(색만 살짝) / 개선 / 다양성(나빠지지 않은 다른 모습) / 후퇴
 export function judge(row,limits=LIMITS){
   if(!row.ok||row.empty)return {verdict:'BROKEN',keep:false};
   if(row.novelty<limits.minNovelty)return {verdict:'TOO_SIMILAR',keep:false};
+  // 부품이 부모에 닿지 않고 떠 있으면 점수와 상관없이 후퇴
+  if(row.attach&&(!row.attach.touched&&row.attach.gap>limits.maxAttachGap))return {verdict:'REGRESSED',keep:false,reason:'FLOATING_PART'};
+  // 점수가 올랐어도 안쪽이 크게 어두워졌거나 세부가 뭉개졌으면 후퇴(점수 속이기 방지)
+  if(row.darkening>limits.maxDarkening||row.detailDrop>limits.maxDetailDrop)return {verdict:'REGRESSED',keep:false,reason:row.darkening>limits.maxDarkening?'DARKENED':'DETAIL_LOST'};
   if(row.gain>=limits.improveGain)return {verdict:'IMPROVED',keep:true};
   if(row.gain>=limits.varietyFloor)return {verdict:'VARIETY',keep:true};
   return {verdict:'REGRESSED',keep:false};
@@ -63,7 +86,7 @@ export function judge(row,limits=LIMITS){
 export function updateStats(stats,family,rows){
   stats[family]??={};
   for(const r of rows){
-    const s=stats[family][r.op]??={n:0,gainSum:0,keep:0,improved:0,broken:0};
+    const s=stats[family][r.arm||r.op]??={n:0,gainSum:0,keep:0,improved:0,broken:0};
     s.n++;s.gainSum=+(s.gainSum+(r.gain||0)).toFixed(3);
     if(r.keep)s.keep++;
     if(r.verdict==='IMPROVED')s.improved++;
@@ -92,22 +115,37 @@ function scoreChild(png,parentPng){
   return j.results[0];
 }
 
-export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=1,out='build/variation-gym',statsPath=null,only=null}={}){
+const slugOf=id=>id.replace(/[^a-z0-9]+/gi,'-').slice(0,40);
+const absOf=(repoRoot,p)=>path.isAbsolute(p.file)?p.file:path.join(repoRoot,p.file);
+const relOrAbs=(repoRoot,p)=>path.isAbsolute(p.file)?p.file:p.file;
+
+export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=1,out='build/variation-gym',statsPath=null,only=null,libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null}={}){
   const rng=mulberry32(seed);
   const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
   const stats=statsPath&&fs.existsSync(statsPath)?JSON.parse(fs.readFileSync(statsPath,'utf8')):{};
-  const chosen=pickParents(registry,repoRoot,parents,rng,only);
+  // 부모·부품 풀: 레지스트리의 승인된 CC0 + (있으면) 오너가 승인한 로컬 라이브러리 팩
+  const lib=libraryDir?approvedLibraryParents(libraryDir).filter(x=>!only||only.includes(x.id)):[];
+  const pool=[...pickParents(registry,repoRoot,1e9,mulberry32(seed+1),only),...lib];
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+  const chosen=pool.slice(0,parents);
   if(!chosen.length)throw new Error('NO_ELIGIBLE_CC0_PARENT');
+  // 부품 풀: 작은 소품(PROP)류. 부모와 다른 에셋만.
+  const partPool=[...pickParents(registry,repoRoot,1e9,mulberry32(seed+2)),...approvedLibraryParents(libraryDir||'')].filter(x=>/PROP|ITEM|DECOR/i.test(x.family));
   const outDir=path.resolve(repoRoot,out);fs.mkdirSync(outDir,{recursive:true});
   const jobs=[],meta={};
   for(const p of chosen){
-    const slug=p.id.replace(/[^a-z0-9]+/gi,'-').slice(0,40);
-    const abs=path.join(repoRoot,p.file);
+    const slug=slugOf(p.id),abs=absOf(repoRoot,p);
     jobs.push({id:`${slug}__parent`,parent:abs,op:'identity',params:{}});
-    meta[`${slug}__parent`]={parent:p,isParent:true};
-    chooseOps(stats,p.family,variants,rng).forEach((op,i)=>{
-      const params=OPERATORS[op].sample(rng),id=`${slug}__${op}__${i}`;
-      jobs.push({id,parent:abs,op,params});meta[id]={parent:p,slug};
+    chooseArms(stats,p.family,variants,rng).forEach((arm,i)=>{
+      const params=OPERATORS[arm.op].sample(rng,arm.strength),id=`${slug}__${arm.op}-${arm.strength}__${i}`;
+      let part=null;
+      if(OPERATORS[arm.op].needsPart){
+        const cands=partPool.filter(x=>x.id!==p.id&&kitbashModes(nameOf(p),nameOf(x)).length);
+        if(!cands.length)return; // 규칙표에 어울리는 부품이 없으면 이 시도는 건너뛴다
+        part=pick(rng,cands);params.part=absOf(repoRoot,part);
+        params.mode=pick(rng,kitbashModes(nameOf(p),nameOf(part)));
+      }
+      jobs.push({id,parent:abs,op:arm.op,params});meta[id]={arm:armKey(arm.op,arm.strength),part};
     });
   }
   const jobsFile=path.join(outDir,'jobs.json');fs.writeFileSync(jobsFile,JSON.stringify(jobs));
@@ -115,18 +153,21 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
   const byId=Object.fromEntries(results.map(r=>[r.id,r]));
   const ledger=[];
   for(const p of chosen){
-    const slug=p.id.replace(/[^a-z0-9]+/gi,'-').slice(0,40);
-    const parentRes=byId[`${slug}__parent`];
-    const parentSha=sha256(path.join(repoRoot,p.file));
+    const slug=slugOf(p.id),parentRes=byId[`${slug}__parent`],parentSha=sha256(absOf(repoRoot,p));
     if(!parentRes?.ok)continue;
     const parentScore=scoreChild(parentRes.png,parentRes.png);
     const rows=[];
     for(const j of jobs.filter(j=>j.id.startsWith(slug+'__')&&j.op!=='identity')){
-      const res=byId[j.id];
-      let row={id:j.id,parentId:p.id,parentFile:p.file,parentSha256:parentSha,license:p.license,family:p.family,op:j.op,params:j.params,ok:!!res?.ok,registered:false};
+      const res=byId[j.id],m=meta[j.id];
+      const params={...j.params};
+      const row={id:j.id,parentId:p.id,parentFile:relOrAbs(repoRoot,p),parentSha256:parentSha,license:p.license,family:p.family,source:p.source||'REGISTRY',op:j.op,arm:m.arm,params,ok:!!res?.ok,registered:false};
+      if(m.part){ // 두 부모 모두 출처·해시를 남긴다
+        delete params.part;
+        row.partParent={id:m.part.id,file:relOrAbs(repoRoot,m.part),sha256:sha256(absOf(repoRoot,m.part)),license:m.part.license};
+      }
       if(res?.ok){
         const sc=scoreChild(res.png,parentRes.png);
-        Object.assign(row,{score:sc.score,parentScore:parentScore.score,gain:sc.gain,novelty:sc.novelty,sub:sc.sub,empty:!!sc.empty,triangles:res.triangles,glb:path.relative(repoRoot,res.glb),glbSha256:sha256(res.glb)});
+        Object.assign(row,{attach:res.attach||null,score:sc.score,parentScore:parentScore.score,gain:sc.gain,novelty:sc.novelty,darkening:sc.darkening,detailDrop:sc.detailDrop,sub:sc.sub,empty:!!sc.empty,triangles:res.triangles,glb:path.relative(repoRoot,res.glb),glbSha256:sha256(res.glb)});
       }else row.error=res?.error||'NO_RESULT';
       Object.assign(row,judge(row));
       rows.push(row);ledger.push(row);

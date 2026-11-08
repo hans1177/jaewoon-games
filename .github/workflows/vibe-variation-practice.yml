@@ -1,0 +1,89 @@
+name: Vibe Variation Practice
+# CC0 변형 연습장을 스스로 계속 돌린다. 학습 상태는 main이 아니라 전용 브랜치(vibe-gym-data)에만 쌓는다.
+# practice-cloud: GitHub 러너에서 레지스트리의 승인된 CC0만으로 연습.
+# practice-local: (저장소 변수 VIBE_GYM_LOCAL=true 일 때) 자체 러너의 E 드라이브 라이브러리를 정리·부족분 확보 계획까지 하고 연습.
+#   - 자동 다운로드는 오너 규칙대로 "부족한 분야가 선택됐을 때, 레지스트리에 CC0로 검증된 출처만" 받는다. 받은 팩은 후보이며 승인은 사람이 한다.
+on:
+  schedule:
+    - cron: '23 18 * * *'
+  workflow_dispatch:
+    inputs:
+      parents:
+        description: 부모 수
+        default: '4'
+      variants:
+        description: 부모당 변형 수
+        default: '5'
+permissions:
+  contents: write
+concurrency:
+  group: vibe-variation-practice
+  cancel-in-progress: false
+jobs:
+  practice-cloud:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Blender and imaging libs
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+          python3 -m pip install --quiet pillow numpy
+      - name: Pull learned stats
+        run: node tools/vibe-gym-publish.mjs pull --stats build/gym-stats.json
+      - name: Practice
+        env:
+          VIBE2_BLENDER_BINARY: blender
+        run: |
+          node tools/vibe-variation-gym.mjs --parents "${{ inputs.parents || '4' }}" --variants "${{ inputs.variants || '5' }}" --seed "$(date +%s)" --out build/variation-gym --stats build/gym-stats.json
+      - name: Publish stats to vibe-gym-data (never main)
+        run: node tools/vibe-gym-publish.mjs publish --stats build/gym-stats.json --ledger build/variation-gym/ledger.json
+      - name: Upload kept children and previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: variation-gym-${{ github.run_id }}
+          path: |
+            build/variation-gym/ledger.json
+            build/variation-gym/*.png
+          retention-days: 14
+          if-no-files-found: warn
+
+  practice-local:
+    if: ${{ vars.VIBE_GYM_LOCAL == 'true' }}
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 90
+    env:
+      VIBE_CC0_LIBRARY_DIR: ${{ vars.VIBE_CC0_LIBRARY_DIR || 'E:\jaewoon-cc0-library' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Check tools
+        shell: pwsh
+        run: |
+          node --version
+          python -c "import bpy,PIL,numpy; print('bpy', bpy.app.version_string)"
+      - name: Ingest inbox, scan library, plan shortage fill
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "$env:VIBE_CC0_LIBRARY_DIR\_inbox" | Out-Null
+          node tools/vibe-cc0-library.mjs ingest
+          node tools/vibe-cc0-library.mjs scan
+          # 부족한 분야가 있을 때만, 레지스트리에 CC0로 검증된 출처에서만 받는다(받은 팩은 승인 전 후보).
+          node tools/vibe-cc0-fetch.mjs --execute --max 1
+          node tools/vibe-cc0-library.mjs scan
+      - name: Pull learned stats
+        shell: pwsh
+        run: node tools/vibe-gym-publish.mjs pull --stats build/gym-stats.json
+      - name: Practice
+        shell: pwsh
+        run: node tools/vibe-variation-gym.mjs --parents 4 --variants 5 --seed ([int](Get-Date -UFormat %s)) --out build/variation-gym --stats build/gym-stats.json
+      - name: Publish stats to vibe-gym-data (never main)
+        shell: pwsh
+        run: node tools/vibe-gym-publish.mjs publish --stats build/gym-stats.json --ledger build/variation-gym/ledger.json

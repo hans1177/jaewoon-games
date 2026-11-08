@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {mulberry32,pickParents,chooseOps,judge,updateStats,OPERATORS,blenderAvailable,runGymSession} from '../tools/vibe-variation-gym.mjs';
+import {mulberry32,pickParents,chooseArms,armKey,judge,updateStats,OPERATORS,STRENGTHS,kitbashModes,blenderAvailable,runGymSession} from '../tools/vibe-variation-gym.mjs';
 
 const repo=process.cwd();
 const imaging=spawnSync('python3',['-c','import PIL,numpy'],{encoding:'utf8'}).status===0;
@@ -25,21 +25,37 @@ test('부모 후보는 오너 승인 CC0·실제 파일·비파생·막힘 없�
   assert.deepEqual(pickParents(reg,root,10,mulberry32(1)).map(p=>p.id),['ok']);
 });
 
-test('시드가 같으면 부모·연산 선택이 같다(재현 가능)', () => {
-  const draw=()=>{const r=mulberry32(42);return [r(),r(),r()].join()};
-  assert.equal(draw(),draw());
-  const stats={PROP:{outline:{n:4,gainSum:40,keep:4,improved:4,broken:0},bevel:{n:4,gainSum:0,keep:0,improved:0,broken:0}}};
-  const a=chooseOps(stats,'PROP',6,mulberry32(5)),b=chooseOps(stats,'PROP',6,mulberry32(5));
-  assert.deepEqual(a,b);
+test('시드가 같으면 부모·팔(연산:세기) 선택이 같다(재현 가능)', () => {
+  const stats={PROP:{'outline:soft':{n:4,gainSum:40,keep:4,improved:4,broken:0},'bevel:soft':{n:4,gainSum:0,keep:0,improved:0,broken:0}}};
+  assert.deepEqual(chooseArms(stats,'PROP',6,mulberry32(5)),chooseArms(stats,'PROP',6,mulberry32(5)));
 });
 
-test('성적표가 쌓이면 이득이 큰 연산을 더 자주 고르고, 성적표가 없으면 전부 탐험한다', () => {
-  const stats={PROP:{outline:{n:5,gainSum:50,keep:5,improved:5,broken:0},hue_shift:{n:5,gainSum:-2,keep:2,improved:0,broken:0},bevel:{n:5,gainSum:-20,keep:0,improved:0,broken:0}}};
-  const rng=mulberry32(9),picks=chooseOps(stats,'PROP',400,rng,0.1);
-  const count=o=>picks.filter(x=>x===o).length;
-  assert.ok(count('outline')>count('bevel')*3,`${count('outline')} vs ${count('bevel')}`);
-  const cold=chooseOps({},'PROP',500,mulberry32(2));
-  for(const op of Object.keys(OPERATORS))assert.ok(cold.includes(op),op);
+test('성적표가 쌓이면 이득이 큰 팔을 더 자주 고르고, 같은 연산도 세기별로 따로 배운다', () => {
+  const stats={PROP:{
+    'outline:soft':{n:5,gainSum:50,keep:5,improved:5,broken:0},
+    'outline:strong':{n:5,gainSum:-40,keep:0,improved:0,broken:0},   // 같은 연산이라도 세게 주면 해롭다
+    'bevel:soft':{n:5,gainSum:-20,keep:0,improved:0,broken:0}}};
+  const picks=chooseArms(stats,'PROP',600,mulberry32(9),0.1);
+  const count=(op,st)=>picks.filter(x=>x.op===op&&x.strength===st).length;
+  assert.ok(count('outline','soft')>count('outline','strong')*3,`${count('outline','soft')} vs ${count('outline','strong')}`);
+  const cold=chooseArms({},'PROP',800,mulberry32(2));
+  for(const op of Object.keys(OPERATORS))for(const st of STRENGTHS)assert.ok(cold.some(x=>x.op===op&&x.strength===st),armKey(op,st));
+});
+
+test('세기 구간이 실제로 다르다: strong 파라미터는 soft보다 크다', () => {
+  const rng=mulberry32(3);
+  const soft=Array.from({length:50},()=>OPERATORS.saturate_contrast.sample(rng,'soft').contrast);
+  const strong=Array.from({length:50},()=>OPERATORS.saturate_contrast.sample(rng,'strong').contrast);
+  assert.ok(Math.max(...soft)<Math.min(...strong));
+  const b=OPERATORS.bevel;assert.ok(b.sample(rng,'soft').width<b.sample(rng,'strong').width);
+});
+
+test('부품 조립 규칙표: 어울리는 조합만 허용하고 엉뚱한 조합은 시도하지 않는다', () => {
+  assert.deepEqual(kitbashModes('house.obj','lampRoundFloor.glb'),['top']);
+  assert.deepEqual(kitbashModes('house.obj','bench_A.obj'),['side']);
+  assert.deepEqual(kitbashModes('tree.obj','table.glb'),[]);       // 나무 위 탁자
+  assert.deepEqual(kitbashModes('heart.obj','rugDoormat.glb'),[]); // 하트 위 러그
+  assert.ok(kitbashModes('tree.obj','mushroom.glb').includes('top'));
 });
 
 test('판정: 고장·너무 비슷함·개선·다양성·후퇴를 가른다', () => {
@@ -51,10 +67,18 @@ test('판정: 고장·너무 비슷함·개선·다양성·후퇴를 가른다',
   assert.deepEqual(judge({ok:true,novelty:0.1,gain:-6}),{verdict:'REGRESSED',keep:false});
 });
 
+test('판정: 점수가 올라도 안쪽이 어두워지거나 세부가 뭉개지거나 부품이 떠 있으면 후퇴', () => {
+  const base={ok:true,novelty:0.2,gain:8};
+  assert.deepEqual(judge({...base,darkening:0.3,detailDrop:0}),{verdict:'REGRESSED',keep:false,reason:'DARKENED'});
+  assert.equal(judge({...base,darkening:0,detailDrop:0.6}).reason,'DETAIL_LOST');
+  assert.equal(judge({...base,darkening:0,detailDrop:0,attach:{touched:false,gap:0.2}}).reason,'FLOATING_PART');
+  assert.equal(judge({...base,darkening:0.05,detailDrop:0.1,attach:{touched:true,gap:0}}).verdict,'IMPROVED');
+});
+
 test('성적표 갱신: 횟수·이득 합·유지·개선·고장을 센다', () => {
-  const s=updateStats({}, 'PROP',[{op:'bevel',gain:2,keep:true,verdict:'IMPROVED'},{op:'bevel',gain:-4,keep:false,verdict:'REGRESSED'},{op:'outline',gain:0,keep:false,verdict:'BROKEN'}]);
-  assert.deepEqual(s.PROP.bevel,{n:2,gainSum:-2,keep:1,improved:1,broken:0});
-  assert.equal(s.PROP.outline.broken,1);
+  const s=updateStats({}, 'PROP',[{arm:'bevel:soft',op:'bevel',gain:2,keep:true,verdict:'IMPROVED'},{arm:'bevel:soft',op:'bevel',gain:-4,keep:false,verdict:'REGRESSED'},{arm:'outline:strong',op:'outline',gain:0,keep:false,verdict:'BROKEN'}]);
+  assert.deepEqual(s.PROP['bevel:soft'],{n:2,gainSum:-2,keep:1,improved:1,broken:0});
+  assert.equal(s.PROP['outline:strong'].broken,1);
 });
 
 function png(dir,name,py){fs.mkdirSync(dir,{recursive:true});const f=path.join(dir,name);
@@ -79,8 +103,10 @@ test('실제 Blender: CC0 부모 변형 → 렌더 → 채점 → 출처·해시
   const out=tmp(),statsPath=path.join(out,'stats.json');
   const before=crypto.createHash('sha256').update(fs.readFileSync('company-asset-library.json')).digest('hex');
   const {ledger}=runGymSession({repoRoot:repo,parents:1,variants:3,seed:11,out:path.relative(repo,out),statsPath,only:['external-tinytreats-bench-a-v1']});
-  assert.equal(ledger.length,3);
+  assert.ok(ledger.length>=1&&ledger.length<=3);
   for(const r of ledger){
+    assert.match(r.arm,/^[a-z_]+:(soft|strong)$/);
+    assert.ok(Number.isFinite(r.darkening)&&Number.isFinite(r.detailDrop));
     assert.equal(r.parentId,'external-tinytreats-bench-a-v1');
     assert.equal(r.license,'CC0');
     assert.equal(r.registered,false); // 자식은 오너 승인 전 자동 등록되지 않는다

@@ -63,6 +63,7 @@ def score(path):
     mm = (m[:-1, :-1] & m[1:, 1:]) & er[:-1, :-1]
     detail = float(((gx + gy)[mm] > 0.05).mean()) if mm.sum() else 0.0
     contour_dark = float((lum[edge_px] < 0.22).mean()) if perim else 0.0
+    interior = float(lum[er].mean()) if er.any() else float(L.mean())  # 윤곽 안쪽 평균 밝기(외곽선 껍질이 안쪽을 어둡게 하는지 보려고)
     sub = {
         "form": band(rng, 0.3, 0.75, 0.2),
         "saturation": band(sat, 0.15, 0.5, 0.15),
@@ -71,10 +72,10 @@ def score(path):
         "detail": band(detail, 0.04, 0.25, 0.04),
         "contour": min(1.0, contour_dark / 0.5),
     }
-    w = {"form": 1.6, "saturation": 1.2, "harmony": 0.8, "silhouette": 1.0, "detail": 1.0, "contour": 1.0}
+    w = {"form": 1.6, "saturation": 1.2, "harmony": 0.8, "silhouette": 1.0, "detail": 1.0, "contour": 0.5}  # 외곽선은 점수를 부풀리기 쉬워 절반만 반영
     sc = 100 * sum(sub[k] * w[k] for k in sub) / sum(w.values())
     return {"score": round(sc, 1), "sub": {k: round(v, 2) for k, v in sub.items()},
-            "raw": {"range": round(rng, 3), "saturation": round(sat, 3), "effectiveHues": round(eff, 2), "compactness": round(compact, 2), "detail": round(detail, 3), "contourDark": round(contour_dark, 2), "pixels": n}}
+            "raw": {"range": round(rng, 3), "saturation": round(sat, 3), "effectiveHues": round(eff, 2), "compactness": round(compact, 2), "detail": round(detail, 3), "contourDark": round(contour_dark, 2), "interiorLuma": round(interior, 3), "pixels": n}}
 
 
 def novelty(path, parent):
@@ -96,5 +97,9 @@ for p in a.png:
         r["novelty"] = novelty(p, a.parent)
         r["parentScore"] = par["score"]
         r["gain"] = round(r["score"] - par["score"], 1)
+        # 점수와 별개로 '망가뜨렸는지'를 잰다: 안쪽이 얼마나 어두워졌나, 세부 점수가 얼마나 떨어졌나
+        pi = par["raw"].get("interiorLuma", 0.0)
+        r["darkening"] = round(max(0.0, (pi - r["raw"].get("interiorLuma", 0.0)) / max(pi, 0.05)), 3) if not r.get("empty") else 1.0
+        r["detailDrop"] = round(max(0.0, par["sub"].get("detail", 0.0) - r["sub"].get("detail", 0.0)), 3) if not r.get("empty") else 1.0
     out["results"].append(r)
 print(json.dumps(out, ensure_ascii=False))
