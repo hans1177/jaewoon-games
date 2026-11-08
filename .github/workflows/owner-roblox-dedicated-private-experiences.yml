@@ -229,10 +229,10 @@ jobs:
           cp "$registry" /tmp/forest-gear-registered.json
           git config user.name 'jaewoon-roblox-asset-register'
           git config user.email 'actions@users.noreply.github.com'
-          for attempt in 1 2 3 4 5 6; do
-            git fetch --no-tags origin main
-            git reset --hard origin/main
-            node --input-type=module <<'NODE'
+          # [기록] 기존 main 보호규칙을 지키고 소유 원본의 등록 증거는 검토 PR로 남긴다.
+          git fetch --no-tags origin main
+          git reset --hard origin/main
+          node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const file='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
           const idsFile='roblox-games/fantasy-survival/shared/VisualAssetIds.luau';
@@ -274,14 +274,16 @@ jobs:
             fs.writeFileSync(idsFile,lua);
           }
           NODE
-            git add "$registry" roblox-games/fantasy-survival/shared/VisualAssetIds.luau
-            if git diff --cached --quiet; then echo 'FOREST_GEAR_REGISTRATION_ALREADY_PERSISTED'; exit 0; fi
-            git commit -m 'assets(fantasy-survival): persist CC0 equipment upload IDs and exact Universe grants'
-            if git push origin HEAD:main; then echo 'FOREST_GEAR_MODEL_IDS_MAIN_PERSISTED'; exit 0; fi
-            echo "FOREST_GEAR_MAIN_MOVED_RETRY=$attempt"
-          done
-          echo 'FOREST_GEAR_REGISTRATION_PERSIST_FAILED' >&2
-          exit 1
+          git add "$registry" roblox-games/fantasy-survival/shared/VisualAssetIds.luau
+          if git diff --cached --quiet; then echo 'FOREST_GEAR_REGISTRATION_ALREADY_PERSISTED'; exit 0; fi
+          branch="asset/fantasy-gear-${GITHUB_RUN_ID}"
+          git switch -c "$branch"
+          git commit -m 'assets(fantasy-survival): persist CC0 equipment upload IDs and exact Universe grants'
+          git push origin "HEAD:refs/heads/$branch"
+          gh pr create --base main --head "$branch" \
+            --title '마력숲 실물 장비 원본 등록 ID 검토' \
+            --body '검증된 원본 해시·라이선스·Asset ID·Universe 권한 승인 결과를 검토 후 main에 반영한다. 기존 저장과 장비 규칙은 변경하지 않는다.'
+          echo 'FOREST_GEAR_MODEL_IDS_PENDING_PR_REVIEW'
 
       # [12개 개별 원화] 기존 비공개 게임의 자산 등록/권한 승인기를 직접 확장한다.
       # 하나의 그림을 잘라 쓰지 않으며, 미인증 이미지 ID는 게임에 바인딩하지 않는다.
