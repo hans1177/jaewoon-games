@@ -62,6 +62,8 @@ function candidatesFor(key,names){
   return names.filter(n=>re.test(n)).slice(0,8);
 }
 
+// 보고서에서 승급을 막는 런타임 오류 흔적. Luau/Roblox가 실제로 출력하는 대표 문구만 잡는다(설명 문장의 오탐을 피하려고 짧고 구체적인 형태).
+const RUNTIME_ERROR_PATTERN=/(CHAIN_RIG_ERROR|BIPED_RIG_ERROR|BOSS_SKILL_ERROR)[^\n"]{0,80}|Script error[^\n"]{0,80}|attempt to (index|call|perform|compare|concatenate|iterate|get length)[^\n"]{0,80}|\S+ is not a valid member of \S+[^\n"]{0,60}|Requested module experienced an error while loading[^\n"]{0,60}/;
 // 검증: 보고서가 있고 스크립트 오류 흔적이 없어야 통과.
 let pendingSha=null;
 let framesInfo=null;
@@ -73,16 +75,17 @@ function verify(){
   const sha=crypto.createHash('sha256').update(text).digest('hex').slice(0,16);
   if(state.lastReportSha===sha)return {ok:false,why:'이미 반영된 보고서(새 캡처 필요)'};
   pendingSha=sha;
-  const bad=text.match(/(CHAIN_RIG_ERROR|BIPED_RIG_ERROR|BOSS_SKILL_ERROR)[^\n"]{0,80}|Script error[^\n"]{0,80}|attempt to (index|call|perform)[^\n"]{0,80}/);
+  const bad=text.match(RUNTIME_ERROR_PATTERN);
   if(bad)return {ok:false,why:`보고서에 오류: ${bad[0].trim()}`};
   const fr=opt('frames');
-  if(fr&&fs.existsSync(fr)){
+  if(fr&&!fs.existsSync(fr))return {ok:false,why:'프레임 폴더 없음: 화면 증거 없이는 승급하지 않음'};
+  if(fr){
     const py=spawnSync('python3',['tools/vibe-ladder-frames.py','--dir',fr,'--save',path.join('docs','devloop','ladder',game,'_pending'),'--max','4'],{encoding:'utf8'});
-    try{
-      framesInfo=JSON.parse(py.stdout.trim().split('\n').pop());
-      if(framesInfo.available&&framesInfo.checked>0&&framesInfo.ratio>=.4)
-        return {ok:false,why:`깨진 화면 ${framesInfo.bad}/${framesInfo.checked}장(검정·흰색·단색)`};
-    }catch{framesInfo=null}
+    try{framesInfo=JSON.parse(py.stdout.trim().split('\n').pop())}catch{framesInfo=null}
+    // --frames를 준 회차는 화면 증거가 있어야 승급한다. 분석기가 없거나(Pillow 없음) 0장이면 '정상'을 입증하지 못한 것이다.
+    if(!framesInfo||framesInfo.available!==true)return {ok:false,why:'화면 검사 불가(Pillow 또는 분석기 오류): 화면 증거 없이는 승급하지 않음'};
+    if(!(framesInfo.checked>0))return {ok:false,why:'캡처 화면 0장: 화면 증거 없이는 승급하지 않음'};
+    if(framesInfo.ratio>=.4)return {ok:false,why:`깨진 화면 ${framesInfo.bad}/${framesInfo.checked}장(검정·흰색·단색)`};
   }
   return {ok:true,why:'Studio 캡처 오류 없음'+(framesInfo&&framesInfo.available?`, 화면 ${framesInfo.checked}장 정상`:'')};
 }

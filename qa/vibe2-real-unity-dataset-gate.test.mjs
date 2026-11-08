@@ -5,7 +5,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { validateRealUnityDataset } from '../tools/vibe2-real-unity-dataset-gate.mjs';
+import { validateRealPlatformDataset } from '../tools/vibe2-real-platform-dataset-gate.mjs';
+
+// The Unity-only gate was generalized into the platform gate; keep these Unity cases on the shared implementation.
+const validateRealUnityDataset = (data) => validateRealPlatformDataset({ taskType: 'unity', ...data });
 
 function stableStringify(value) {
   if (value === null || typeof value !== 'object') return JSON.stringify(value);
@@ -120,7 +123,8 @@ test('실제 CI+독립QA+Android runtime 검증 Unity 샘플만 train/eval/holdo
   const data = fixture();
   try {
     const result = validateRealUnityDataset(data);
-    assert.equal(result.state, 'REAL_VERIFIED_UNITY_DATASET_PASS');
+    assert.equal(result.state, 'REAL_VERIFIED_PLATFORM_DATASET_PASS');
+    assert.equal(result.taskType, 'unity');
     assert.equal(result.syntheticAllowed, false);
     assert.equal(result.holdout, 1);
   } finally {
