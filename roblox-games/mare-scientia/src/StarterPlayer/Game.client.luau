@@ -754,171 +754,7 @@ end
 
 -- 설정 창 (대항해 계열 게임의 시스템 메뉴처럼): 소리 · 화면 · 도움말 · 게임 관리를 한 창에 모았다 ------------------
 local render
-local optionsGui = nil
-local function closeOptions()
-	if optionsGui then
-		optionsGui:Destroy()
-		optionsGui = nil
-	end
-end
-local HELP_LINES = {
-	"⚓ 기본 흐름",
-	"1. 교역소에서 특산품을 싸게 삽니다.",
-	"2. 항만청(지도)에서 수요가 높은 항구로 출항합니다.",
-	"3. 도착한 항구에서 팔아 이익을 남깁니다.",
-	"4. 주점에서 동료를 영입하고 의뢰를 받습니다.",
-	"5. 명성과 모험 레벨이 오르면 먼 바다가 열려요.",
-	"",
-	"🧭 조작",
-	"· 오른쪽 메뉴 버튼으로 교역·항해·조선소 등 화면을 엽니다.",
-	"· '걷기' 버튼으로 항구 전경과 걷기 시점을 바꿉니다.",
-	"· 항해 중 화면을 누르면 연출을 건너뜁니다.",
-}
-local function openOptions()
-	closeOptions()
-	local layer = overlayGui("Options", 60)
-	optionsGui = layer
-	local helpOpen, confirmNew = false, false
-	local dim = Instance.new("TextButton")
-	dim.Size = UDim2.fromScale(1, 1)
-	dim.BackgroundColor3 = Color3.new(0, 0, 0)
-	dim.BackgroundTransparency = 0.45
-	dim.Text = ""
-	dim.AutoButtonColor = false
-	dim.BorderSizePixel = 0
-	dim.Parent = layer
-	dim.Activated:Connect(closeOptions)
-	local win = Instance.new("Frame")
-	win.AnchorPoint = Vector2.new(0.5, 0.5)
-	win.Position = UDim2.fromScale(0.5, 0.5)
-	win.Size = UDim2.new(0, 540, 0.86, 0)
-	win.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
-	win.BorderSizePixel = 0
-	win.Parent = layer
-	corner(win, 16)
-	local wst = Instance.new("UIStroke")
-	wst.Color = BRASS
-	wst.Thickness = 2.5
-	wst.Parent = win
-	local limit = Instance.new("UISizeConstraint")
-	limit.MaxSize = Vector2.new(560, 520)
-	limit.MinSize = Vector2.new(300, 200)
-	limit.Parent = win
-	local bar = mkBox(win, UDim2.fromScale(0, 0), UDim2.new(1, 0, 0, 46), Color3.fromRGB(40, 32, 18))
-	corner(bar, 16)
-	local ttl = mkLabel(bar, "⚙  설정", 20, Color3.fromRGB(246, 208, 130), true)
-	ttl.Position = UDim2.fromOffset(16, 9)
-	ttl.Size = UDim2.new(1, -70, 0, 28)
-	ttl.AutomaticSize = Enum.AutomaticSize.None
-	local x = mkButton(bar, "✕", Color3.fromRGB(150, 54, 54), UDim2.fromOffset(38, 32), closeOptions, true)
-	x.AnchorPoint = Vector2.new(1, 0.5)
-	x.Position = UDim2.new(1, -8, 0.5, 0)
-	x.TextSize = 16
-	local body = Instance.new("ScrollingFrame")
-	body.BackgroundTransparency = 1
-	body.BorderSizePixel = 0
-	body.Position = UDim2.fromOffset(12, 54)
-	body.Size = UDim2.new(1, -24, 1, -64)
-	body.ScrollBarThickness = 4
-	body.AutomaticCanvasSize = Enum.AutomaticSize.Y
-	body.CanvasSize = UDim2.new()
-	body.Parent = win
-	local list = Instance.new("UIListLayout")
-	list.Padding = UDim.new(0, 8)
-	list.SortOrder = Enum.SortOrder.LayoutOrder
-	list.Parent = body
-
-	local function draw()
-		for _, c in body:GetChildren() do
-			if not c:IsA("UIListLayout") then
-				c:Destroy()
-			end
-		end
-		local order = 0
-		local function nxt()
-			order += 1
-			return order
-		end
-		local function section(text)
-			local l = mkLabel(body, text, 14, Color3.fromRGB(226, 182, 92), true, nxt())
-			l.Size = UDim2.new(1, 0, 0, 22)
-			l.AutomaticSize = Enum.AutomaticSize.None
-		end
-		-- 한 줄: 이름 + 오른쪽 버튼들
-		local function row(name, sub, buttons)
-			local r = mkBox(body, UDim2.new(), UDim2.new(1, -4, 0, 52), Color3.fromRGB(24, 34, 50))
-			r.LayoutOrder = nxt()
-			corner(r, 10)
-			local n = mkLabel(r, name, 15, COLORS.text, true)
-			n.Position = UDim2.fromOffset(12, if sub then 7 else 15)
-			n.Size = UDim2.new(1, -24 - #buttons * 76, 0, 20)
-			n.AutomaticSize = Enum.AutomaticSize.None
-			if sub then
-				local sl = mkLabel(r, sub, 12, COLORS.muted, false)
-				sl.Position = UDim2.fromOffset(12, 28)
-				sl.Size = UDim2.new(1, -24 - #buttons * 76, 0, 18)
-				sl.AutomaticSize = Enum.AutomaticSize.None
-			end
-			for i, b in buttons do
-				local btn = mkButton(r, b.text, b.color or COLORS.blue, UDim2.fromOffset(68, 36), b.onClick, true)
-				btn.AnchorPoint = Vector2.new(1, 0.5)
-				btn.Position = UDim2.new(1, -8 - (#buttons - i) * 76, 0.5, 0)
-				btn.TextSize = 13
-			end
-		end
-		section("🔊 소리")
-		do
-			local musicOn, sfxOn = Sfx.state()
-			local ml, sl = Sfx.levels()
-			row("음악  " .. math.floor(ml / 1.5 * 100 + 0.5) .. "%", if musicOn then "켜짐" else "꺼짐", {
-				{ text = if musicOn then "끄기" else "켜기", color = if musicOn then COLORS.grey else COLORS.green, onClick = function() Sfx.setMusicEnabled(not musicOn); draw() end },
-				{ text = "－", color = COLORS.grey, onClick = function() Sfx.stepMusic(-1); draw() end },
-				{ text = "＋", color = COLORS.blue, onClick = function() Sfx.stepMusic(1); draw() end },
-			})
-			row("효과음  " .. math.floor(sl / 1.5 * 100 + 0.5) .. "%", if sfxOn then "켜짐" else "꺼짐", {
-				{ text = if sfxOn then "끄기" else "켜기", color = if sfxOn then COLORS.grey else COLORS.green, onClick = function() Sfx.setSfxEnabled(not sfxOn); draw() end },
-				{ text = "－", color = COLORS.grey, onClick = function() Sfx.stepSfx(-1); draw() end },
-				{ text = "＋", color = COLORS.blue, onClick = function() Sfx.stepSfx(1); draw() end },
-			})
-		end
-		section("🖥 화면")
-		row("항구 보기", if overview then "전경 시점" else "걷기 시점", {
-			{ text = if overview then "걷기" else "전경", color = COLORS.blue, onClick = function() overview = not overview; applyView(); draw() end },
-		})
-		section("📖 도움말")
-		row("게임 방법", "교역 · 항해 · 의뢰의 기본 흐름", {
-			{ text = if helpOpen then "접기" else "보기", color = COLORS.blue, onClick = function() helpOpen = not helpOpen; draw() end },
-		})
-		if helpOpen then
-			local hl = mkLabel(body, table.concat(HELP_LINES, "\n"), 14, COLORS.text, false, nxt())
-			hl.Size = UDim2.new(1, -16, 0, 0)
-		end
-		section("🗂 게임")
-		row("저장", "진행은 자동으로 저장돼요", {})
-		if view then
-			if confirmNew then
-				row("정말 새로 시작할까요?", "지금 진행 상황은 사라져요", {
-					{ text = "취소", color = COLORS.grey, onClick = function() confirmNew = false; draw() end },
-					{ text = "시작", color = COLORS.red, onClick = function()
-						closeOptions()
-						newGameMode = true
-						render()
-					end },
-				})
-			else
-				row("새 게임", "나라와 시대를 다시 고릅니다", {
-					{ text = "새 게임", color = COLORS.red, onClick = function() confirmNew = true; draw() end },
-				})
-			end
-		end
-		local back = mkButton(body, "게임으로 돌아가기", COLORS.gold, UDim2.new(1, -4, 0, 46), closeOptions, true)
-		back.LayoutOrder = nxt()
-		back.TextSize = 17
-		back.TextColor3 = Color3.fromRGB(22, 14, 4)
-	end
-	draw()
-end
-
+local openOptions
 local gear = Instance.new("TextButton")
 gear.Name = "OptionsButton"
 gear.AnchorPoint = Vector2.new(1, 0)
@@ -2142,6 +1978,8 @@ local function add(builder)
 	return obj
 end
 
+local intelName
+local addRumorPanel
 local function renderHarbor()
 	local h = view.harbor
 	add(function() return mkHeader(content, view.player.portName .. " · " .. h.name .. " (" .. h.level .. "단계)") end)
@@ -2501,7 +2339,7 @@ local function renderStatus()
 	end)
 end
 
-local function intelName(level)
+function intelName(level)
 	if level >= 3 then
 		return "정확한 수치"
 	elseif level >= 1 then
@@ -2538,7 +2376,7 @@ local function addStoryPanel()
 end
 
 -- 뱃사람 귀띔: 크게, 눈에 잘 띄게
-local function addRumorPanel()
+function addRumorPanel()
 	local r = view.rumor
 	if not r then
 		return
@@ -4025,6 +3863,171 @@ do
 	end)
 end
 
+local optionsGui = nil
+local function closeOptions()
+	if optionsGui then
+		optionsGui:Destroy()
+		optionsGui = nil
+	end
+end
+local HELP_LINES = {
+	"⚓ 기본 흐름",
+	"1. 교역소에서 특산품을 싸게 삽니다.",
+	"2. 항만청(지도)에서 수요가 높은 항구로 출항합니다.",
+	"3. 도착한 항구에서 팔아 이익을 남깁니다.",
+	"4. 주점에서 동료를 영입하고 의뢰를 받습니다.",
+	"5. 명성과 모험 레벨이 오르면 먼 바다가 열려요.",
+	"",
+	"🧭 조작",
+	"· 오른쪽 메뉴 버튼으로 교역·항해·조선소 등 화면을 엽니다.",
+	"· '걷기' 버튼으로 항구 전경과 걷기 시점을 바꿉니다.",
+	"· 항해 중 화면을 누르면 연출을 건너뜁니다.",
+}
+openOptions = function()
+	closeOptions()
+	local layer = overlayGui("Options", 60)
+	optionsGui = layer
+	local helpOpen, confirmNew = false, false
+	local dim = Instance.new("TextButton")
+	dim.Size = UDim2.fromScale(1, 1)
+	dim.BackgroundColor3 = Color3.new(0, 0, 0)
+	dim.BackgroundTransparency = 0.45
+	dim.Text = ""
+	dim.AutoButtonColor = false
+	dim.BorderSizePixel = 0
+	dim.Parent = layer
+	dim.Activated:Connect(closeOptions)
+	local win = Instance.new("Frame")
+	win.AnchorPoint = Vector2.new(0.5, 0.5)
+	win.Position = UDim2.fromScale(0.5, 0.5)
+	win.Size = UDim2.new(0, 540, 0.86, 0)
+	win.BackgroundColor3 = Color3.fromRGB(14, 22, 36)
+	win.BorderSizePixel = 0
+	win.Parent = layer
+	corner(win, 16)
+	local wst = Instance.new("UIStroke")
+	wst.Color = BRASS
+	wst.Thickness = 2.5
+	wst.Parent = win
+	local limit = Instance.new("UISizeConstraint")
+	limit.MaxSize = Vector2.new(560, 520)
+	limit.MinSize = Vector2.new(300, 200)
+	limit.Parent = win
+	local bar = mkBox(win, UDim2.fromScale(0, 0), UDim2.new(1, 0, 0, 46), Color3.fromRGB(40, 32, 18))
+	corner(bar, 16)
+	local ttl = mkLabel(bar, "⚙  설정", 20, Color3.fromRGB(246, 208, 130), true)
+	ttl.Position = UDim2.fromOffset(16, 9)
+	ttl.Size = UDim2.new(1, -70, 0, 28)
+	ttl.AutomaticSize = Enum.AutomaticSize.None
+	local x = mkButton(bar, "✕", Color3.fromRGB(150, 54, 54), UDim2.fromOffset(38, 32), closeOptions, true)
+	x.AnchorPoint = Vector2.new(1, 0.5)
+	x.Position = UDim2.new(1, -8, 0.5, 0)
+	x.TextSize = 16
+	local body = Instance.new("ScrollingFrame")
+	body.BackgroundTransparency = 1
+	body.BorderSizePixel = 0
+	body.Position = UDim2.fromOffset(12, 54)
+	body.Size = UDim2.new(1, -24, 1, -64)
+	body.ScrollBarThickness = 4
+	body.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	body.CanvasSize = UDim2.new()
+	body.Parent = win
+	local list = Instance.new("UIListLayout")
+	list.Padding = UDim.new(0, 8)
+	list.SortOrder = Enum.SortOrder.LayoutOrder
+	list.Parent = body
+
+	local function draw()
+		for _, c in body:GetChildren() do
+			if not c:IsA("UIListLayout") then
+				c:Destroy()
+			end
+		end
+		local order = 0
+		local function nxt()
+			order += 1
+			return order
+		end
+		local function section(text)
+			local l = mkLabel(body, text, 14, Color3.fromRGB(226, 182, 92), true, nxt())
+			l.Size = UDim2.new(1, 0, 0, 22)
+			l.AutomaticSize = Enum.AutomaticSize.None
+		end
+		-- 한 줄: 이름 + 오른쪽 버튼들
+		local function row(name, sub, buttons)
+			local r = mkBox(body, UDim2.new(), UDim2.new(1, -4, 0, 52), Color3.fromRGB(24, 34, 50))
+			r.LayoutOrder = nxt()
+			corner(r, 10)
+			local n = mkLabel(r, name, 15, COLORS.text, true)
+			n.Position = UDim2.fromOffset(12, if sub then 7 else 15)
+			n.Size = UDim2.new(1, -24 - #buttons * 76, 0, 20)
+			n.AutomaticSize = Enum.AutomaticSize.None
+			if sub then
+				local sl = mkLabel(r, sub, 12, COLORS.muted, false)
+				sl.Position = UDim2.fromOffset(12, 28)
+				sl.Size = UDim2.new(1, -24 - #buttons * 76, 0, 18)
+				sl.AutomaticSize = Enum.AutomaticSize.None
+			end
+			for i, b in buttons do
+				local btn = mkButton(r, b.text, b.color or COLORS.blue, UDim2.fromOffset(68, 36), b.onClick, true)
+				btn.AnchorPoint = Vector2.new(1, 0.5)
+				btn.Position = UDim2.new(1, -8 - (#buttons - i) * 76, 0.5, 0)
+				btn.TextSize = 13
+			end
+		end
+		section("🔊 소리")
+		do
+			local musicOn, sfxOn = Sfx.state()
+			local ml, sl = Sfx.levels()
+			row("음악  " .. math.floor(ml / 1.5 * 100 + 0.5) .. "%", if musicOn then "켜짐" else "꺼짐", {
+				{ text = if musicOn then "끄기" else "켜기", color = if musicOn then COLORS.grey else COLORS.green, onClick = function() Sfx.setMusicEnabled(not musicOn); draw() end },
+				{ text = "－", color = COLORS.grey, onClick = function() Sfx.stepMusic(-1); draw() end },
+				{ text = "＋", color = COLORS.blue, onClick = function() Sfx.stepMusic(1); draw() end },
+			})
+			row("효과음  " .. math.floor(sl / 1.5 * 100 + 0.5) .. "%", if sfxOn then "켜짐" else "꺼짐", {
+				{ text = if sfxOn then "끄기" else "켜기", color = if sfxOn then COLORS.grey else COLORS.green, onClick = function() Sfx.setSfxEnabled(not sfxOn); draw() end },
+				{ text = "－", color = COLORS.grey, onClick = function() Sfx.stepSfx(-1); draw() end },
+				{ text = "＋", color = COLORS.blue, onClick = function() Sfx.stepSfx(1); draw() end },
+			})
+		end
+		section("🖥 화면")
+		row("항구 보기", if overview then "전경 시점" else "걷기 시점", {
+			{ text = if overview then "걷기" else "전경", color = COLORS.blue, onClick = function() overview = not overview; applyView(); draw() end },
+		})
+		section("📖 도움말")
+		row("게임 방법", "교역 · 항해 · 의뢰의 기본 흐름", {
+			{ text = if helpOpen then "접기" else "보기", color = COLORS.blue, onClick = function() helpOpen = not helpOpen; draw() end },
+		})
+		if helpOpen then
+			local hl = mkLabel(body, table.concat(HELP_LINES, "\n"), 14, COLORS.text, false, nxt())
+			hl.Size = UDim2.new(1, -16, 0, 0)
+		end
+		section("🗂 게임")
+		row("저장", "진행은 자동으로 저장돼요", {})
+		if view then
+			if confirmNew then
+				row("정말 새로 시작할까요?", "지금 진행 상황은 사라져요", {
+					{ text = "취소", color = COLORS.grey, onClick = function() confirmNew = false; draw() end },
+					{ text = "시작", color = COLORS.red, onClick = function()
+						closeOptions()
+						newGameMode = true
+						render()
+					end },
+				})
+			else
+				row("새 게임", "나라와 시대를 다시 고릅니다", {
+					{ text = "새 게임", color = COLORS.red, onClick = function() confirmNew = true; draw() end },
+				})
+			end
+		end
+		local back = mkButton(body, "게임으로 돌아가기", COLORS.gold, UDim2.new(1, -4, 0, 46), closeOptions, true)
+		back.LayoutOrder = nxt()
+		back.TextSize = 17
+		back.TextColor3 = Color3.fromRGB(22, 14, 4)
+	end
+	draw()
+end
+
 local function startNewGame()
 	local restart = view ~= nil
 	newGameMode = false
@@ -4438,9 +4441,10 @@ renderTitle = function()
 end
 
 local wasTitle = false
+local titleMenuOpen = false
 local function setTitleMode(on)
-	titleGui.Enabled = on
-	titlePanel.Visible = on
+	titleGui.Enabled = on or titleMenuOpen
+	titlePanel.Visible = on and not titleMenuOpen
 	if on then
 		main.Visible = false
 	elseif wasTitle then
@@ -4500,118 +4504,113 @@ local function showTitle()
 	local wasMain = main.Visible
 	main.Visible = false
 	menuToggle.Visible = false
+	titleMenuOpen = true
+	titleGui.Enabled = true
+	titlePanel.Visible = false
+	local function leave()
+		titleMenuOpen = false
+		layer:Destroy()
+	end
 	local root = Instance.new("Frame")
 	root.Size = UDim2.fromScale(1, 1)
-	root.BackgroundColor3 = Color3.fromRGB(8, 16, 30)
-	root.BackgroundTransparency = 0.18
+	root.BackgroundTransparency = 1
 	root.BorderSizePixel = 0
 	root.Parent = layer
-	local grad = Instance.new("UIGradient")
-	grad.Rotation = 90
-	grad.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(1, 0) })
-	grad.Parent = root
 
 	local box = Instance.new("Frame")
-	box.AnchorPoint = Vector2.new(0.5, 0.5)
-	box.Position = UDim2.fromScale(0.5, 0.5)
-	box.Size = UDim2.fromOffset(420, 460)
-	box.BackgroundTransparency = 1
+	box.AnchorPoint = Vector2.new(1, 0.5)
+	box.Position = UDim2.new(1, -18, 0.5, 0)
+	box.Size = UDim2.new(0.4, 0, 0, 330)
+	box.BackgroundColor3 = Color3.fromRGB(12, 20, 34)
+	box.BackgroundTransparency = 0.1
+	box.BorderSizePixel = 0
 	box.Parent = root
-	local lay = Instance.new("UIListLayout")
-	lay.Padding = UDim.new(0, 12)
-	lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	lay.SortOrder = Enum.SortOrder.LayoutOrder
-	lay.Parent = box
-
-	local function text(str, size, color, h, order)
-		local l = Instance.new("TextLabel")
-		l.BackgroundTransparency = 1
-		l.Size = UDim2.new(1, 0, 0, h)
-		l.Text = str
-		l.TextSize = size
-		l.TextColor3 = color
-		l.Font = Enum.Font.GothamBold
-		l.TextWrapped = true
-		l.TextStrokeTransparency = 0.5
-		l.LayoutOrder = order
-		l.Parent = box
-		return l
+	corner(box, 16)
+	do
+		local st = Instance.new("UIStroke")
+		st.Color = Color3.fromRGB(226, 182, 92)
+		st.Thickness = 2
+		st.Parent = box
+		local lim = Instance.new("UISizeConstraint")
+		lim.MaxSize = Vector2.new(440, 400)
+		lim.MinSize = Vector2.new(280, 300)
+		lim.Parent = box
+		local pad = Instance.new("UIPadding")
+		pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 16), UDim.new(0, 14)
+		pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 18), UDim.new(0, 18)
+		pad.Parent = box
+		local lay = Instance.new("UIListLayout")
+		lay.Padding = UDim.new(0, 10)
+		lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		lay.SortOrder = Enum.SortOrder.LayoutOrder
+		lay.Parent = box
 	end
-	text("MARE SCIENTIA", 40, COLORS.gold, 50, 1)
-	text("과학의 바다 · 대항해시대", 20, COLORS.text, 28, 2)
+	local head = mkLabel(box, "항해를 시작합니다", 20, Color3.fromRGB(246, 208, 130), true, 1)
+	head.Size = UDim2.new(1, 0, 0, 26)
+	head.AutomaticSize = Enum.AutomaticSize.None
+	head.TextXAlignment = Enum.TextXAlignment.Center
 
-	local function big(label, color, order, enabled, onClick)
-		local b = mkButton(box, label, color, UDim2.new(1, 0, 0, 58), onClick, enabled)
-		b.TextSize = 24
+	local function big(label, color, order, height, onClick)
+		local b = mkButton(box, label, color, UDim2.new(1, 0, 0, height), onClick, true)
+		b.TextSize = 22
 		b.LayoutOrder = order
+		local st = Instance.new("UIStroke")
+		st.Color = Color3.fromRGB(255, 226, 150)
+		st.Transparency = 0.4
+		st.Thickness = 1.5
+		st.Parent = b
 		return b
 	end
-	local continueText = "이어하기"
 	if view then
-		continueText = string.format("이어하기\n%s · %d코인", view.player.portName, view.player.coins)
+		local cont = big(string.format("▶  이어하기\n%s · %d년 · %d코인", view.player.portName, view.player.year, view.player.coins), Color3.fromRGB(206, 154, 56), 2, 76, function()
+			leave()
+			titleGui.Enabled = false
+			main.Visible = wasMain
+			menuToggle.Visible = not wasMain
+		end)
+		cont.TextSize = 19
+		cont.TextColor3 = Color3.fromRGB(22, 14, 4)
 	end
-	local cont = big(continueText, COLORS.green, 3, view ~= nil, function()
-		layer:Destroy()
-		main.Visible = wasMain
-		menuToggle.Visible = not wasMain
-	end)
-	cont.TextSize = if view then 20 else 24
 	local confirmed = false
 	local newBtn
-	newBtn = big("새 게임", COLORS.blue, 4, true, function()
+	newBtn = big("⚓  새 게임", Color3.fromRGB(34, 52, 82), if view then 3 else 2, if view then 56 else 76, function()
 		if view and not confirmed then
 			confirmed = true
-			newBtn.Text = "정말 새로 시작할까요? (저장이 사라져요) 한 번 더 누르세요"
-			newBtn.TextSize = 16
+			newBtn.Text = "저장이 사라져요. 한 번 더 누르면 새로 시작"
+			newBtn.TextSize = 15
 			newBtn.BackgroundColor3 = COLORS.red
 			return
 		end
-		layer:Destroy()
+		leave()
 		newGameMode = true
-		main.Visible = true
-		menuToggle.Visible = false
 		render()
 	end)
-
-	-- 소리
-	local snd = Instance.new("Frame")
-	snd.BackgroundTransparency = 1
-	snd.Size = UDim2.new(1, 0, 0, 44)
-	snd.LayoutOrder = 5
-	snd.Parent = box
-	local sl = Instance.new("UIListLayout")
-	sl.FillDirection = Enum.FillDirection.Horizontal
-	sl.Padding = UDim.new(0, 8)
-	sl.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	sl.VerticalAlignment = Enum.VerticalAlignment.Center
-	sl.Parent = snd
-	local function small(label, color, w, onClick)
-		local b = mkButton(snd, label, color, UDim2.fromOffset(w, 40), onClick, true)
-		b.TextSize = 15
-		return b
-	end
-	local musicBtn
+	local row = Instance.new("Frame")
+	row.BackgroundTransparency = 1
+	row.Size = UDim2.new(1, 0, 0, 44)
+	row.LayoutOrder = 4
+	row.Parent = box
+	local rl = Instance.new("UIListLayout")
+	rl.FillDirection = Enum.FillDirection.Horizontal
+	rl.Padding = UDim.new(0, 8)
+	rl.Parent = row
+	local setBtn = mkButton(row, "⚙ 설정", Color3.fromRGB(44, 56, 74), UDim2.new(0.5, -4, 1, 0), function() openOptions() end, true)
+	setBtn.TextSize = 15
 	local function musicLabel()
 		local on = Sfx.state()
-		local ml = Sfx.levels()
-		return string.format("음악 %s %d%%", if on then "켜짐" else "꺼짐", math.floor(ml / 1.5 * 100 + 0.5))
+		return if on then "🔊 음악 켜짐" else "🔇 음악 꺼짐"
 	end
-	musicBtn = small(musicLabel(), COLORS.grey, 150, function()
+	local musicBtn
+	musicBtn = mkButton(row, musicLabel(), Color3.fromRGB(44, 56, 74), UDim2.new(0.5, -4, 1, 0), function()
 		local on = Sfx.state()
 		Sfx.setMusicEnabled(not on)
 		musicBtn.Text = musicLabel()
-	end)
-	small("음량 -", COLORS.grey, 80, function()
-		Sfx.stepMusic(-1)
-		Sfx.stepSfx(-1)
-		musicBtn.Text = musicLabel()
-	end)
-	small("음량 +", COLORS.blue, 80, function()
-		Sfx.stepMusic(1)
-		Sfx.stepSfx(1)
-		musicBtn.Text = musicLabel()
-	end)
-	text("모험 Lv와 명성이 쌓이면 먼 바다가 열려요", 14, COLORS.muted, 24, 6)
+	end, true)
+	musicBtn.TextSize = 15
+	local foot = mkLabel(box, "진행은 자동으로 저장돼요 · 화면을 누르면 소리가 켜져요", 12, COLORS.muted, false, 5)
+	foot.Size = UDim2.new(1, 0, 0, 18)
+	foot.AutomaticSize = Enum.AutomaticSize.None
+	foot.TextXAlignment = Enum.TextXAlignment.Center
 	Sfx.music("music_harbor")
 end
 
