@@ -12234,10 +12234,14 @@ do
   remote.OnServerEvent:Connect(function(player,action)
     if action~="camp:upgrade" and action~="camp:rest" then return end
     if player:GetAttribute("ProfileReady")~=true then return end
-    local regionId=meadowRegionOf(player)
-    local camp=camps[regionId]
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-    if not camp or not root or (root.Position-camp.center).Magnitude>40 then return end
+    if not root then return end
+    -- 지역 경계 판정이 아니라 가장 가까운 야영지(40칸 이내)로 찾는다. 경계가 바뀌어도 모닥불이 동작한다.
+    local camp
+    for _,candidate in pairs(camps) do
+      if (root.Position-candidate.center).Magnitude<=40 then camp=candidate end
+    end
+    if not camp then return end
     local level=levelOf(player,camp)
     if action=="camp:upgrade" then
       local upgrade=Config.CampUpgrades[level+1]
