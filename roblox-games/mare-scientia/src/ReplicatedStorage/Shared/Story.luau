@@ -2016,7 +2016,7 @@ for _, nid in { "england", "netherlands", "france", "ottoman", "swahili", "malab
 		end
 		table.insert(Events, {
 			id = f[1], chapter = def.chapter, title = f[5], portId = f[2], art = if i == #def.events then "epilogue" else f[3], npc = f[4],
-			lines = lines, choices = ch, minFame = math.min(f[6], ({ 0, 10, 30, 60, 100 })[i] or f[6]), nation = nid,
+			lines = lines, choices = ch, minFame = f[6], nation = nid,
 			requires = if i > 1 then { { id = def.events[i - 1][1] } } else nil,
 		})
 	end

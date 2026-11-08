@@ -1451,7 +1451,8 @@ local function storyPortraitModel(npcName, id)
 	return STORY_DEFAULT[seed % #STORY_DEFAULT + 1]
 end
 
-local function playEpilogue(msg)
+local function playEpilogue(msg, opts)
+	opts = opts or {}
 	local TweenService = game:GetService("TweenService")
 	local layer = overlayGui("Epilogue", 30)
 	local root = Instance.new("Frame")
@@ -1502,15 +1503,27 @@ local function playEpilogue(msg)
 	TweenService:Create(hull, TweenInfo.new(22, Enum.EasingStyle.Linear), { Position = UDim2.fromScale(1.1, 0.575) }):Play()
 	TweenService:Create(sun, TweenInfo.new(22, Enum.EasingStyle.Sine), { Position = UDim2.fromScale(0.5, 0.58) }):Play()
 	task.wait(1.5)
-	local p = view and view.player
-	say("에필로그", 0.2, 30, Color3.fromRGB(240, 200, 120), 2.5)
-	say(tostring(msg or ""), 0.32, 18, COLORS.text, 4.5)
-	if p then
-		say(string.format("항해 %d일 · 명성 %d · 보유 코인 %d", p.day or 0, math.floor(p.fame or 0), math.floor(p.coins or 0)), 0.5, 16, Color3.fromRGB(190, 200, 215), 3.5)
+	if opts.lines then
+		say(opts.title or "프롤로그", 0.16, 28, Color3.fromRGB(240, 200, 120), 2.5)
+		for i, line in opts.lines do
+			local l = say(line, 0.3, 19, COLORS.text, 3.8)
+			if i < #opts.lines then
+				TweenService:Create(l, TweenInfo.new(0.8), { TextTransparency = 1 }):Play()
+				task.wait(0.8)
+				l:Destroy()
+			end
+		end
+	else
+		local p = view and view.player
+		say("에필로그", 0.2, 30, Color3.fromRGB(240, 200, 120), 2.5)
+		say(tostring(msg or ""), 0.32, 18, COLORS.text, 4.5)
+		if p then
+			say(string.format("항해 %d일 · 명성 %d · 보유 코인 %d", p.day or 0, math.floor(p.fame or 0), math.floor(p.coins or 0)), 0.5, 16, Color3.fromRGB(190, 200, 215), 3.5)
+		end
+		say("그러나 바다는 끝나지 않는다.\n당신의 항해는 계속된다.", 0.62, 18, Color3.fromRGB(240, 200, 120), 2.5)
 	end
-	say("그러나 바다는 끝나지 않는다.\n당신의 항해는 계속된다.", 0.62, 18, Color3.fromRGB(240, 200, 120), 2.5)
 	local finished = false
-	local b = mkButton(root, "계속 항해하기", COLORS.gold, UDim2.fromOffset(200, 48), function() finished = true end, true)
+	local b = mkButton(root, opts.button or "계속 항해하기", COLORS.gold, UDim2.fromOffset(200, 48), function() finished = true end, true)
 	b.AnchorPoint = Vector2.new(0.5, 0)
 	b.Position = UDim2.fromScale(0.5, 0.78)
 	b.ZIndex = 9
@@ -3609,11 +3622,7 @@ local function renderNewGame()
 					end
 				end
 				task.spawn(function()
-					playStory({
-						title = pro.title, art = "harbor", lines = lines,
-						choices = { { index = 1, text = "항해를 시작한다" } },
-						submit = function() return { ok = true, message = "닻을 올려라! 이야기는 이제 시작이다." } end,
-					})
+					playEpilogue(nil, { title = pro.title, lines = lines, button = "⚓ 항해를 시작한다" })
 				end)
 			end
 		end, true)
