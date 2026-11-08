@@ -28,7 +28,7 @@ test('Forest dedicated publishing and CC0 registration never reuse a different a
   for(const text of [workflow,uploader]){
     assert.doesNotMatch(text,/ROBLOX_ROBLOSECURITY|ROBLOX_SECURITY_COOKIE|OWNER_COOKIE_CSRF/);
   }
-  assert.match(workflow,/FOREST_INTRO_AUTH_ROUTE=OPEN_CLOUD/);
+  assert.doesNotMatch(workflow,/Register 12 original prologue scenes|FOREST_INTRO_AUTH_ROUTE/);
   assert.match(workflow,/ROBLOX_CC0_GRANT_OPEN_CLOUD_API_KEY_REQUIRED/);
   assert.match(uploader,/headers:\{\.\.\.\(opts\.headers\|\|\{\}\),'x-api-key':key\}/);
 });
@@ -217,13 +217,9 @@ test('Forest original village models register before private publishing without 
   assert.match(workflow,/node tools\/baeksu-war-upload-meshes\.mjs \/tmp\/forest-village-assets \/tmp\/forest-village-receipt\.json --game-id=fantasy-survival/);
   assert.match(workflow,/gh pr create --base main --head asset\/fantasy-worn-cape-rigged/);
   assert.match(workflow,/FOREST_VILLAGE_REGISTRATION_AWAIT_MAIN_MERGE/);
-  assert.ok(workflow.indexOf('Register approved Forest village originals')<workflow.indexOf('Register 12 original prologue scenes'),
-    'owner requested licensed well registration before unrelated prologue image upload retries');
+  assert.doesNotMatch(workflow,/Register 12 original prologue scenes|FOREST_INTRO_UNIVERSE_GRANT/);
   assert.match(workflow,/assets\/shared\/party\/village-well\.glb/);
   assert.match(workflow,/const wellEvidence='https:/);
-  assert.match(workflow,/FOREST_INTRO_AUTH_ROUTE/);
-  assert.match(workflow,/FOREST_INTRO_BINDING_PR_CREATED=YES/);
-  assert.match(workflow,/FOREST_INTRO_SCENE_IDS_MAIN_BIND_REQUIRED/);
   assert.match(workflow,/FOREST_VILLAGE_REGISTRATION_AWAIT_MAIN_MERGE[\s\S]*?exit 1/);
   assert.match(source,/FANTASY_NATIVE_MODEL_REUSED/);
   assert.match(source,/registrationVerified:Object\.keys\(village\)\.length===Object\.keys\(villageRows\)\.length/);

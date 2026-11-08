@@ -9,12 +9,6 @@ local Config = {
   -- 길이: 어깨~엉덩이 1.52스터드. 기존 네이티브 원본 에셋 등록·Universe 권한 경로만 사용.
   -- 원본: roblox-games/fantasy-survival/assets/worn-cape.obj / 3본 스킨 실물 등록 ID 92370050558893 (VisualAssetIds.wornCape).
   OpeningCapeModelKey = "wornCape",
-  -- [오프닝 일러스트] 소유자 승인 원본 단일 그림, Roblox 이미지 등록 및 Universe 권한 검증 완료.
-  CinematicIntroAtlasId = "rbxassetid://100481673402406",
-  CinematicIntroAtlasSha256 = "a535d55a0a6c2af4ce9fb2bfdb339fb1e3919f530af5d3cc51f0861a7c717eda",
-  -- [오너 대체] 2번은 맑은 숲길, 12번은 해돋이 풍경. 기존 유혈 원본·전경은 제거한다.
-  CinematicIntroSceneIds = {"rbxassetid://72108751885220", "rbxassetid://92018914298845", "rbxassetid://74417332635767", "rbxassetid://71703818310686", "rbxassetid://125037268325809", "rbxassetid://91571069532594", "rbxassetid://136653900563341", "rbxassetid://119215473322447", "rbxassetid://126419929651315", "rbxassetid://103601601501006", "rbxassetid://71987342086962", "rbxassetid://138063202477552"},
-  CinematicIntroForegroundIds = {[1]="rbxassetid://111914313566974", [3]="rbxassetid://125945487568822", [4]="rbxassetid://138937112237058", [5]="rbxassetid://84120560054367", [6]="rbxassetid://136470944392637", [7]="rbxassetid://127692948861079", [9]="rbxassetid://101497233688637", [10]="rbxassetid://132907827575722", [11]="rbxassetid://140570637855368"},
   Genre = "Survival",
   Subgenre = "",
   PlayMode = "HYBRID",

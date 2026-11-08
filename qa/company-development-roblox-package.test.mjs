@@ -2278,14 +2278,14 @@ test('fantasy arrival shows native world title, actual map preloads, safe resume
   assert.match(client,/panel\("MeadowTitle",390,306\)/);
   assert.match(client,/panel\("MeadowMapLoading",390,178\)/);
   assert.doesNotMatch(client,/paper.Name="DiscoveredMap"|marker.Name="RegionMarker"/);
-  assert.match(client,/Name="FirstArrivalScene"/);
+  assert.doesNotMatch(client,/Name="FirstArrivalScene"|startIntro\(|Opening24/);
   assert.match(client,/CameraType=Enum.CameraType.Scriptable/);
-  assert.match(client,/restoreCamera\(\)/);
+  assert.match(client,/openingCamera.CameraType=Enum.CameraType.Custom/);
   assert.match(client,/gui.Enabled=true/);
   assert.match(client,/meadowVitalsGui.Enabled=true/);
   assert.match(client,/controls:Enable\(\)/);
   assert.match(client,/controls:Disable\(\)/);
-  assert.match(client,/skipButton.Activated:Once\(finish\)/);
+  assert.match(client,/local function closeArrival\(\)/);
   assert.match(client,/ContentProvider:PreloadAsync\(\{asset\}\)/);
   assert.match(client,/setProgress\(loaded,total,/);
   assert.match(client,/local total=1\+#assets/);

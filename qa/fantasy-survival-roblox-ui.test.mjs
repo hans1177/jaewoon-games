@@ -459,98 +459,22 @@ test('menu retains 8 original pages and keeps selected tab reachable on a short 
   assert.ok(client.includes('subtitle.Text=captions[index] or "마력숲 탐험"'));
 });
 
-test('intro renders only one of original painted backdrop and separated 3D actor',()=>{
+test('fantasy entry starts real play without an opening or replay screen',()=>{
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
-  const art=config.match(/CinematicIntroSceneIds\s*=\s*\{([^}]+)\}/);
-  const front=config.match(/CinematicIntroForegroundIds\s*=\s*\{([^}]+)\}/);
-  assert.ok(art&&front,'approved originals must be preserved for existing game data');
-  const backgrounds=[...art[1].matchAll(/rbxassetid:\/\/(\d+)/g)].map(x=>x[1]);
-  const foregrounds=[...front[1].matchAll(/\[(\d+)\]="rbxassetid:\/\/(\d+)"/g)];
-  assert.equal(backgrounds.length,12);
-  assert.equal(foregrounds.length,9); // 오너 지시로 일부 이미지 제거(d26a7d8bea)
-  assert.equal(new Set([...backgrounds,...foregrounds.map(x=>x[2])]).size,21);
-  const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
-  assert.match(intro,/local artworkId=\(Config\.CinematicIntroSceneIds or \{\}\)\[index\]/);
-  assert.match(intro,/local foregroundId=\(Config\.CinematicIntroForegroundIds or \{\}\)\[index\]/);
-  assert.match(intro,/local useWorldActor=/);
-  assert.match(intro,/local useWorldActor=foregroundAvailable/);
-  assert.match(intro,/local usePaintedBackdrop=artworkAvailable and not useWorldActor/);
-  assert.match(intro,/setIntroPlayerHidden\(useWorldActor and scene\.actor=="PLAYER"\)/);
-  assert.match(client,/local function setIntroPlayerHidden\(hidden\)/);
-  assert.match(client,/if part\.Parent then part\.LocalTransparencyModifier=transparency end/);
-  assert.match(client,/setIntroPlayerHidden\(false\)/);
-  assert.match(intro,/storyArtwork\.Visible=usePaintedBackdrop/);
-  assert.match(intro,/storyForeground\.Visible=useWorldActor/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/storyArtwork\.Image=usePaintedBackdrop and artworkId or ""/)
-  assert.match(intro,/storyForeground\.Image=useWorldActor and foregroundId or ""/);
-  assert.match(intro,/backdrop\.BackgroundTransparency=usePaintedBackdrop and \.06 or 1/);
-  assert.match(client,/local storyPaintStage=Instance\.new\("Frame"\)/);
-  assert.match(client,/storyPaintStage\.Name="IntroPainted25DStage"/);
-  assert.match(client,/storyPaintStage\.ClipsDescendants=true/);
-  assert.match(client,/storyArtwork\.Parent=storyPaintStage/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/storyPaintStage\.Visible=usePaintedBackdrop/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(client,/storySky\.Name="PrologueDistantSky"/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(client,/storyGround\.Name="PrologueNearGround"/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/storySky\.ImageRectOffset=Vector2\.new\(0,0\)/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/storyArtwork\.ImageRectOffset=Vector2\.new\(0,skyHeight\)/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/storyGround\.ImageRectOffset=Vector2\.new\(0,skyHeight\+midd
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/storySky\.ImageRectSize=Vector2\.new\(imageWidth,skyHeight\)
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/storyArtwork\.ImageRectSize=Vector2\.new\(imageWidth,middleH
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/storyGround\.ImageRectSize=Vector2\.new\(imageWidth,groundHe
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/local planes=\{/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/for _,plane in ipairs\(planes\) do/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/activePaintTweens\[#activePaintTweens\+1\]=motion/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/local actual=storyArtwork\.ContentImageSize/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(client,/for _,motion in ipairs\(activePaintTweens\) do motion:Cance
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(intro,/activeActorGestureTween=TweenService:Create\(storyForeground
-  assert.match(intro,/ContentProvider"\):PreloadAsync\(ids\)/);
-  assert.match(client,/local cinematicLight=Instance\.new\("Frame"\)/);
-  assert.match(client,/spark\.Image="rbxasset:\/\/textures\/particles\/sparkles_main\.dds"/);
-  assert.match(intro,/activeLightTween=TweenService:Create\(cinematicLight,/);
-  assert.match(intro,/if cinematicLight\.Visible then activeLightTween:Play\(\) end/);
-  assert.match(client,/storyFarHaze\.ZIndex=7/);
-  assert.match(intro,/activeFarHazeTween=TweenService:Create\(storyFarHaze,/);
-  assert.match(client,/if activeFarHazeTween then activeFarHazeTween:Cancel\(\);activeFarHazeTween=nil end/);
-  assert.match(intro,/cinematicShadow\.Visible=activeVisual and not reducedEffects and isDramatic/);
-  assert.match(intro,/storyVision\.Visible=false/);
-  assert.doesNotMatch(intro,/storyArtwork\.Visible=true.*storyForeground\.Visible=true/s);
-  assert.match(intro,/spark\.ImageTransparency=\.52/);
-  assert.doesNotMatch(intro,/spark\.BackgroundTransparency=\.44/);
-  assert.match(client,/if activeLightTween then activeLightTween:Cancel\(\);activeLightTween=nil end/);
-  // (옛 인트로 구조 검사 — 개편된 코드에 없어 제거) assert.match(client,/storyArtwork\.ScaleType=Enum\.ScaleType\.Stretch/);
-  assert.match(client,/storyForeground\.ScaleType=Enum\.ScaleType\.Fit/);
-  assert.match(client,/storyPaintStage\.Size=UDim2\.fromOffset\(math\.floor\(fitWidth\),math\.floor\(fitWidth\/ratio\)\)/);
-  assert.doesNotMatch(intro,/openingScale/);
-});
-
-test('native world prologue preserves all twelve scripted beats and camera coverage',()=>{
-  const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
-  const sceneTable=intro.match(/local scenes=\{([\s\S]*?)\n    \}\n    local total=0/);
-  assert.ok(sceneTable);
-  assert.deepEqual([...sceneTable[1].matchAll(/cinema="([^"]+)"/g)].map(x=>x[1]),[
-    'siege','charge','crown','freeze','omen','betrayal','reach','erasure','rift','dawn','relic','journey'
-  ]);
-  assert.deepEqual([...sceneTable[1].matchAll(/seconds=(\d+),title=/g)].map(x=>Number(x[1])),
-    [5,5,5,4,5,6,5,4,5,6,5,5]);
-  for(const key of ['RUIN_1','RUIN_2','RUIN_3','PLAYER']){
-    assert.ok(sceneTable[1].includes('actor="'+key+'"'),key+' real source missing');
-  }
-  for(const cue of [
-    'world:FindFirstChild("Meadow_"..(scene.actor=="RUIN_1"',
-    'root.Position+Vector3.new(0,scene.actor=="PLAYER" and 1.6 or 3,0)',
-    'cameraMotionConnection=RunService.RenderStepped:Connect(function()',
-    'liveCamera.CFrame=CFrame.lookAt(at+offset,target)*CFrame.Angles(0,0,roll)',
-    'activeTween=TweenService:Create(cameraMotionValue,',
-    'Value=ending',
-    'camera.CameraType=Enum.CameraType.Scriptable',
-    'storyArtwork.Visible=usePaintedBackdrop','storyForeground.Visible=useWorldActor',
-    'backdrop.BackgroundTransparency=usePaintedBackdrop and .06 or 1',
-    'introPanel.BackgroundTransparency=usePaintedBackdrop and .1 or 1',
-    'skipButton.Activated:Once(finish)',
-    'closeArrival(true)',
-  ]) assert.ok(intro.includes(cue),'world film marker missing: '+cue);
-  assert.doesNotMatch(intro,/Instance\.new\("Part"\)|CreateHumanoidModelFromDescription|Humanoid:MoveTo|character:PivotTo|player.Character:PivotTo/);
-  assert.match(client,/remote:FireServer\("meadow:enter-world"\)/);
+  const entry=client.slice(client.indexOf('  local function closeArrival()'),client.indexOf('  local function loadRegion()'));
+  const loading=client.slice(client.indexOf('  local function loadRegion()'),client.indexOf('  continueButton.Activated:Connect'));
+  assert.match(client,/local function closeArrival\(\)/);
+  assert.match(entry,/remote:FireServer\("meadow:enter-world"\)/);
+  assert.match(entry,/meadowVitalsGui.Enabled=true/);
+  assert.match(entry,/arrivalControls\(true\)/);
+  assert.match(entry,/player:SetAttribute\("MeadowEnteredWorld",true\)/);
+  assert.match(entry,/openingCamera.CameraType=Enum.CameraType.Custom/);
+  assert.match(loading,/player:GetAttribute\("ProfileReady"\)~=true/);
+  assert.match(loading,/player:GetAttribute\("MeadowResumeReady"\)==false/);
+  assert.match(loading,/ContentProvider:PreloadAsync\(\{asset\}\)/);
+  assert.match(loading,/closeArrival\(\)/);
+  assert.doesNotMatch(client,/FirstArrivalScene|startIntro\(|Opening24|ReplayPrologue|introPanel/);
+  assert.doesNotMatch(config,/CinematicIntroAtlasId|CinematicIntroSceneIds|CinematicIntroForegroundIds/);
 });
 
 test('2.5D gameplay camera follows the actual Roblox mesh with mobile-safe transition',()=>{
@@ -561,74 +485,10 @@ test('2.5D gameplay camera follows the actual Roblox mesh with mobile-safe trans
   assert.match(client,/local focus=root\.Position\+Vector3\.new\(0,2\.5,0\)\+heading\*/);
   assert.match(client,/camera\.CFrame=paintedCameraFrame/);
   assert.match(client,/camera\.FieldOfView=portrait and 48 or 51/);
-  const intro=client.slice(client.indexOf('  local function closeArrival(showVillageReveal)'),client.indexOf('  local function loadRegion('));
-  assert.equal([...intro.matchAll(/player:SetAttribute\("MeadowEnteredWorld",true\)/g)].length,1);
-  assert.match(intro,/local function finishArrival\(\)/);
-  assert.doesNotMatch(intro,/Instance\.new\("Part"\)|Instance\.new\("WedgePart"\)/);
-});
-
-test('native world cinematic protects the mobile screen and restores controls and camera',()=>{
-  const intro=client.slice(client.indexOf('-- [2.5D 오프닝 / 메인]'),client.indexOf('  local function loadRegion('));
-  assert.match(intro,/local portrait=size\.Y>size\.X\*1\.1/);
-  assert.match(intro,/introDialogue\.Position=UDim2\.fromScale\(\.5,portrait and \.860 or \.856\)/);
-  assert.match(intro,/storyCurtain\.BackgroundColor3=Color3\.fromRGB\(5,8,11\)/);
-  assert.match(intro,/activeCurtainTween=TweenService:Create\(storyCurtain,/);
-  assert.match(intro,/storyCurtain\.BackgroundTransparency=0/);
-  assert.match(intro,/if cameraMotionConnection then cameraMotionConnection:Disconnect\(\);cameraMotionConnection=nil end/);
-  assert.match(intro,/if cameraMotionValue then cameraMotionValue:Destroy\(\);cameraMotionValue=nil end/);
-  assert.match(intro,/openingCamera\.CameraType=Enum\.CameraType\.Custom/);
-  assert.match(intro,/arrivalControls\(true\)/);
-  assert.match(intro,/meadowVitalsGui\.Enabled=true/);
-  assert.match(intro,/introBeatSound:Destroy\(\)/);
-  assert.match(intro,/local function closeArrival\(showVillageReveal\)/);
-  assert.match(intro,/local revealSeconds=reducedEffects and 2\.4 or 3\.4/);
-  assert.match(intro,/TweenService:Create\(reveal,TweenInfo\.new\(1\.25,Enum\.EasingStyle\.Sine\)/);
-  assert.equal([...intro.matchAll(/label\(introPanel,/g)].length,2,'title and subtitles only');
-});
-
-test('twelve real-world beats use existing sound, movement and narration instead of images',()=>{
-  const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
-  assert.match(intro,/introBeatSound\.PlaybackSpeed=scene\.cinema=="betrayal"/);
-  assert.match(intro,/introBeatSound:Play\(\)/);
-  assert.match(intro,/local isSilent=scene\.cinema=="freeze" or scene\.cinema=="erasure"/);
-  assert.match(intro,/local beatAt=\(scene\.cinema=="siege" or scene\.cinema=="charge"\)/);
-  assert.match(intro,/regionIntro\.Text=scene\.title/);
-  assert.match(intro,/introDialogue\.Text=scene\.subtitle/);
-  assert.match(intro,/introDialogue\.MaxVisibleGraphemes=i/);
-  assert.match(intro,/regionIntro\.MaxVisibleGraphemes=count/);
-  assert.match(intro,/task\.delay\(scene\.seconds-\.55,function\(\)/);
-  assert.match(intro,/TweenService:Create\(cinematicBars\[1\]/);
-  assert.match(intro,/TweenService:Create\(cinematicBars\[2\]/);
-  assert.doesNotMatch(intro,/storyImage|showFront|showArtwork|portraitShots|CinematicLightSweep/);
-});
-
-test('twelve cinematic beats use licensed particle VFX and weather grading without fake actors',()=>{
-  const intro=client.slice(client.indexOf('  local function startIntro(isFresh)'),client.indexOf('  local function loadRegion('));
-  for(const source of [
-    'local approvedFXModule=Shared:FindFirstChild("RobloxCommonVFX")',
-    'pcall(approvedFX.Create,asset,{',
-    'hideFlash=true,hideRing=true,particlesOnly=true',
-    'DESTRUCTION_BURST','WEATHER_GUST_PULSE','BOSS_WARNING_PULSE',
-    'STATUS_PULSE','DEBUFF_PULSE','CRITICAL_BURST','DISMANTLE_SHARDS',
-    'ENVIRONMENT_MOTE_PULSE','QUEST_UPDATE_PULSE',
-    'local introGrade=Instance.new("ColorCorrectionEffect")',
-    'local introBloom=Instance.new("BloomEffect")',
-    'local introBlur=Instance.new("BlurEffect")',
-    'local introDepth=Instance.new("DepthOfFieldEffect")',
-    'activeSubjectHighlight=Instance.new("Highlight")',
-    'TweenService:Create(introGrade,',
-    'TweenService:Create(introBloom,',
-    'TweenService:Create(introBlur,',
-    'if introDepth.Enabled then introDepth.FocusDistance=(target-at).Magnitude end',
-    'activeFovTween=TweenService:Create(camera,',
-    'playSceneFX(scene,activeScene)',
-    'introGrade:Destroy()','introBloom:Destroy()',
-    'introBlur:Destroy()','introDepth:Destroy()',
-  ]) assert.ok(intro.includes(source),'cinematic effect missing: '+source);
-  assert.ok(intro.indexOf('local introGrade=Instance.new')<intro.indexOf('local function finish()'),
-    'skip cleanup must capture live effect locals');
-  assert.doesNotMatch(intro,/actor="Guard"|actor="Elder"|actor="Tracker"/);
-  assert.doesNotMatch(intro,/Instance\.new\("Part"\)|CreateHumanoidModelFromDescription/);
+  const entry=client.slice(client.indexOf('  local function closeArrival()'),client.indexOf('  local function loadRegion()'));
+  assert.equal([...entry.matchAll(/player:SetAttribute\("MeadowEnteredWorld",true\)/g)].length,1);
+  assert.match(entry,/arrivalControls\(true\)/);
+  assert.doesNotMatch(entry,/Instance\.new\("Part"\)|Instance\.new\("WedgePart"\)/);
 });
 
 test('original village well matches human-scale medieval proportions and keeps collisions source-bound',()=>{
