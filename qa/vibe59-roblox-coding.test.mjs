@@ -47,6 +47,53 @@ test('repairs remain review plans limited to responsible source',()=>{
   assert.ok(plan.plans.every(row=>row.path===files[0].path&&row.sourceChange===false));
   assert.equal(plan.runtimeVerified,false);
 });
+// [품질 감독 회귀] 기존 Luau 책임 분석만 사용하며 품질 통과나 쓰기 권한을 만들지 않는다.
+test('Roblox director traces server-client remote candidates and unique source edit anchors',()=>{
+  const files=[
+    {path:'client/Fight.client.luau',source:[
+      'local remote = script.Parent.Remote',
+      'remote:FireServer("hit")',
+      'humanoid:TakeDamage(8)'
+    ].join('\n')},
+    {path:'server/Fight.server.luau',source:[
+      'local remote = script.Parent.Remote',
+      'remote.OnServerEvent:Connect(function(player) end)'
+    ].join('\n')}
+  ];
+  const result=inspectVibe59RobloxCoding({files,responsiblePaths:[files[0].path]});
+  const call=result.remoteLinks.find(x=>x.method==='FireServer');
+  assert.equal(call.path,files[0].path);
+  assert.deepEqual(call.possibleReceivers,[files[1].path]);
+  assert.equal(call.status,'POTENTIAL_RECEIVER');
+  assert.equal(call.runtimeVerified,false);
+  const finding=result.qualityDirector.priorityFindings.find(x=>x.code==='COMBAT_CLIENT_DAMAGE');
+  assert.ok(finding);
+  assert.equal(finding.path,files[0].path);
+  assert.equal(finding.exactAnchorUnique,true);
+  assert.equal(finding.exactFind,'humanoid:TakeDamage(8)');
+  const plans=planVibe59RobloxOfflineRepairs({files,responsiblePaths:[files[0].path]});
+  assert.ok(plans.plans.some(x=>x.exactFind==='humanoid:TakeDamage(8)'&&x.exactAnchorUnique));
+  assert.equal(result.qualityDirector.qualityScore,null);
+  assert.equal(result.qualityDirector.gameplayPass,false);
+  assert.equal(result.qualityDirector.sourceWrite,false);
+  assert.equal(result.qualityDirector.runtimeVerified,false);
+});
+
+test('duplicate edit anchors fail closed and missing receivers never become proven defects',()=>{
+  const files=[{path:'client/Fight.client.luau',source:[
+    'humanoid:TakeDamage(8)',
+    'humanoid:TakeDamage(8)',
+    'remote:FireServer("hit")'
+  ].join('\n')}];
+  const result=inspectVibe59RobloxCoding({files,responsiblePaths:[files[0].path]});
+  assert.equal(result.remoteLinks[0].status,'RECEIVER_NOT_OBSERVED');
+  assert.equal(result.qualityDirector.missingReceiverMeansConfirmedDefect,false);
+  assert.ok(result.qualityDirector.priorityFindings.filter(x=>x.code==='COMBAT_CLIENT_DAMAGE')
+    .every(x=>x.exactAnchorUnique===false&&x.exactFind===null));
+  const plans=planVibe59RobloxOfflineRepairs({files,responsiblePaths:[files[0].path]});
+  assert.ok(plans.plans.every(x=>x.exactFind===null));
+});
+
 test('existing authorized Luau code synthesis stays intact',()=>{
   const machine={handlerName:'handleFight',stateVariable:'phase',states:['idle','fight'],
     events:['attack'],transitions:[{from:'idle',to:'fight',event:'attack',actions:[]}]};

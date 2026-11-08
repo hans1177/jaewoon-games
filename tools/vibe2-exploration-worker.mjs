@@ -766,6 +766,11 @@ export function explorationGuidance(handoff={}){
     ...(handoff.robloxCoding?[
       `Vibe5.9 Roblox 책임 경로=${handoff.robloxCoding.files.filter(x=>x.responsible).map(x=>x.path+':'+x.side+':수신 '+x.events.map(e=>e.remote+'.'+e.signal).join('/')+':송신 '+x.calls.map(e=>e.remote+':'+e.method).join('/')+':상태 '+x.stateEffects.map(e=>e.method).join('/')).join(' | ')||'NONE'}`,
       `Vibe5.9 Roblox 점검 신호=${handoff.robloxCoding.warnings.map(x=>x.path+':'+x.code+'@'+x.line).join(',')||'NONE'}`,
+      ...(handoff.robloxCoding.qualityDirector?[
+        `Roblox 게임 감독 우선 검토=${handoff.robloxCoding.qualityDirector.priorityFindings.map(x=>x.path+':'+x.code+'@'+x.line+':'+x.review+(x.exactAnchorUnique?' [정확 앵커 확보]':' [앵커 미확인]')).join(' | ')||'관측된 책임 파일 위험 신호 없음(품질 통과 아님)'}`,
+        `Roblox 원격 이벤트 영향 관계=${handoff.robloxCoding.qualityDirector.remoteLinks.map(x=>x.path+':'+x.method+'('+x.remote+') -> '+x.expectedSignal+':'+(x.possibleReceivers.join('/')||'관측 안 됨')+' ['+x.status+']').join(' | ')||'관측된 원격 호출 없음'}`,
+        'Roblox 감독 결과는 정적 관측이다. Remote 변수명 일치는 실제 인스턴스 연결 증명이 아니고 수신 파일 미관측도 결함 확정이 아니다. 책임 파일의 정확한 함수·유일 앵커만 사용하고 게임 저장·밸런스·서버 권한을 보호한다.'
+      ]:[]),
       'Roblox 정적 분석은 실제 Studio 실행 또는 보안 검증 통과의 증거가 아니다.'
     ]:[]),
     ...(handoff.codeFlow?[

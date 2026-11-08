@@ -37,6 +37,28 @@ function workOrder(){return{
   workPackage:{id:'demo-wp',sharedContext:{diagnosticEvidence:['diagnostic:PLAYER_MOVE']}}
 };}
 
+test('canonical exploration guidance carries Roblox quality director without granting edit scope',()=>{
+  const report=explorationGuidance({
+    reuseKey:'roblox-director-contract',
+    responsibleFiles:['client/Fight.client.luau'],
+    impactFiles:['client/Fight.client.luau','server/Fight.server.luau'],
+    robloxCoding:{
+      files:[],warnings:[],diagnostics:[],
+      qualityDirector:{
+        priorityFindings:[{path:'client/Fight.client.luau',code:'COMBAT_CLIENT_DAMAGE',line:3,
+          review:'서버 피해 판정',exactAnchorUnique:true}],
+        remoteLinks:[{path:'client/Fight.client.luau',method:'FireServer',remote:'remote',
+          expectedSignal:'OnServerEvent',possibleReceivers:['server/Fight.server.luau'],status:'POTENTIAL_RECEIVER'}]
+      }
+    }
+  });
+  assert.match(report,/Roblox 게임 감독 우선 검토=/);
+  assert.match(report,/COMBAT_CLIENT_DAMAGE@3/);
+  assert.match(report,/Roblox 원격 이벤트 영향 관계=/);
+  assert.match(report,/실제 인스턴스 연결 증명이 아니고/);
+  assert.match(report,/책임 파일의 정확한 함수·유일 앵커만 사용/);
+});
+
 test('exploration worker collects reusable impact context without changing source',()=>{
   const cwd=tempRoot();
   const player=path.join(cwd,'unity-games/demo/Assets/Player.cs');
