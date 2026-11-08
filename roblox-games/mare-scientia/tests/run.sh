@@ -16,7 +16,7 @@ cp "$ROOT"/src/ReplicatedStorage/Shared/*.luau "$TMP/Shared/"
 cp "$ROOT"/src/ServerScriptService/Services/*.luau "$TMP/Services/"
 cp "$ROOT"/tests/*.luau "$TMP/"
 # Roblox 엔진 전용(3D 장면)은 CLI 로 분석·실행할 수 없어 제외한다
-rm -f "$TMP"/Shared/PortScene.luau "$TMP"/Shared/VoyageScene.luau "$TMP"/Shared/FieldScene.luau "$TMP"/Shared/Pose.luau "$TMP"/Shared/NavalBattle.luau "$TMP"/Shared/Sfx.luau
+rm -f "$TMP"/Shared/PortScene.luau "$TMP"/Shared/VoyageScene.luau "$TMP"/Shared/FieldScene.luau "$TMP"/Shared/Pose.luau "$TMP"/Shared/NavalBattle.luau "$TMP"/Shared/Sfx.luau "$TMP"/Shared/PortCultures.luau "$TMP"/Shared/PortCultures.luau
 
 sed -i -E 's/require\(script\.Parent\.([A-Za-z0-9]+)\)/require(".\/\1")/g' "$TMP"/Shared/*.luau "$TMP"/Services/*.luau
 
@@ -35,9 +35,16 @@ if [ "${1:-}" = "catalog" ]; then
   exit 0
 fi
 
+echo "== 에셋 등록 검사 =="
+python3 "$ROOT/tools/devloop/asset_check.py" "$ROOT"
+
 echo "== 타입 검사 =="
 "$ANALYZE" "$TMP"/Shared/*.luau "$TMP"/Services/*.luau "$TMP/logic.test.luau"
 echo "OK"
 
 echo "== 로직 테스트 =="
 (cd "$TMP" && "$LUAU" logic.test.luau)
+
+echo "== 문화권 표 검사 =="
+{ cat "$ROOT/tests/cultures_stub.luau"; sed "1d" "$ROOT"/src/ReplicatedStorage/Shared/PortCultures.luau; } > "$TMP/Shared/PortCultures.luau"
+(cd "$TMP" && "$LUAU" cultures.test.luau)

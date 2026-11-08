@@ -9,10 +9,11 @@ kinds = sorted({k.split("/")[0] for k in reg})
 p1 = re.compile(r'importedModel\([^,\n]+,\s*"(\w+)",\s*"([\w\-\.]+)"')
 p2 = re.compile(r'\{\s*"(%s)",\s*"([\w\-\.]+)"' % "|".join(kinds))
 p3 = re.compile(r'(?:place|addProp|placeModel)\((?:[^,\n"]+,\s*)?"(%s)",\s*"([\w\-\.]+)"' % "|".join(kinds))
+p4 = re.compile(r'\b(?:rowOf|one)\(\s*"(%s)",\s*"([\w\-\.]+)"' % "|".join(kinds))
 used, missing = set(), []
 for f in glob.glob(os.path.join(root, "src/**/*.luau"), recursive=True):
     text = open(f, encoding="utf-8").read()
-    for k, n in p1.findall(text) + p2.findall(text) + p3.findall(text):
+    for k, n in p1.findall(text) + p2.findall(text) + p3.findall(text) + p4.findall(text):
         used.add(f"{k}/{n}")
         if f"{k}/{n}" not in reg:
             missing.append((os.path.basename(f), f"{k}/{n}"))
