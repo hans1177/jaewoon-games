@@ -55,8 +55,8 @@ jobs:
           set -euo pipefail
           case "$GAME_ID" in fantasy-survival|mare-essentia) ;; *) echo 'GAME_NOT_ALLOWED'; exit 1;; esac
           mkdir -p /tmp/new-exp
-          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/new-exp/$GAME_ID.rbxlx"
-          test -s "/tmp/new-exp/$GAME_ID.rbxlx"
+          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/new-exp/$GAME_ID.rbxl"
+          test -s "/tmp/new-exp/$GAME_ID.rbxl"
       - name: Create new private Experience and publish
         shell: bash
         env:
@@ -70,7 +70,7 @@ jobs:
           ROBLOX_SECURITY_COOKIE: ${{ inputs.universe_id == '' && secrets.ROBLOX_SECURITY_COOKIE || '' }}
         run: |
           set -euo pipefail
-          args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/new-exp/$GAME_ID.rbxlx" --source-revision "$(git rev-parse HEAD)" --output "/tmp/new-exp/result.json")
+          args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/new-exp/$GAME_ID.rbxl" --source-revision "$(git rev-parse HEAD)" --output "/tmp/new-exp/result.json")
           if [[ -n "${REUSE_UNIVERSE_ID:-}" ]]; then
             [[ "$REUSE_UNIVERSE_ID" =~ ^[0-9]+$ ]] || { echo 'UNIVERSE_ID_INVALID'; exit 1; }
             if [[ -z "${REUSE_PLACE_ID:-}" ]]; then
