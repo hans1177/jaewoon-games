@@ -5361,7 +5361,11 @@ local function spawnEnemy(site, siteIndex)
         local jitter=1+((math.sin(location.X*12.9898+location.Z*78.233)*43758.5453)%1-.5)*.1
         shade*=jitter
         -- 로우폴리 토이 톤: 어두운 털은 살짝 밝혀서 얼룩져 보이지 않게 한다.
-        local tone=partId=="wolf" and not isAlpha and bodyTint:Lerp(Color3.fromRGB(190,180,168),.22) or bodyTint
+        -- [털색 다양화] 일반 늑대는 개체마다 회갈색·먹색·백색·적갈색·은회색 중 하나의 털색을 가진다.
+        local peltHash=((math.sin(location.X*7.31+location.Z*3.17)*43758.5453)%1)
+        local pelts={Color3.fromRGB(92,74,60),Color3.fromRGB(58,56,60),Color3.fromRGB(205,205,200),Color3.fromRGB(128,84,52),Color3.fromRGB(118,120,126)}
+        local base=(partId=="wolf" and not isAlpha and not site.model) and pelts[1+math.floor(peltHash*#pelts)] or bodyTint
+        local tone=partId=="wolf" and not isAlpha and base:Lerp(Color3.fromRGB(190,180,168),.22) or bodyTint
         if partId=="wolf" and not isAlpha then
           local order=model:GetAttribute("WolfRankJson")
           if not order then
@@ -6256,6 +6260,17 @@ local function animateMeadowOriginalMob(enemy,now)
     or inMotion and math.sin(phase*.65)*(heavy and .014 or .025) or 0
   local facing=(enemy.fightUntil and now<enemy.fightUntil and enemy.fightDir) or enemy.visualFacingSmooth or enemy.visualFacing
   if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1) end
+  -- [코너링] 방향을 틀 때 몸이 회전 방향 안쪽으로 기운다(네발 몹).
+  do
+    local ang=math.atan2(facing.X,facing.Z)
+    local last=enemy.lastFaceAng or ang
+    local delta=(ang-last+math.pi)%(math.pi*2)-math.pi
+    enemy.lastFaceAng=ang
+    enemy.turnRate=(enemy.turnRate or 0)+(delta*30-(enemy.turnRate or 0))*.2
+    if not aerial and not enemy.r15Tracks and inMotion then
+      bank+=math.clamp(-enemy.turnRate*.07,-.22,.22)*math.clamp((enemy.strideSpeed or 0)/6,0,1)
+    end
+  end
   if enemy.r15Tracks and enemy.banditIdle and enemy.banditWalk then
     local tr=enemy.r15Tracks
     -- 추격은 달리기, 순찰/복귀는 걷기. 걸음 속도에 맞춰 재생 속도를 조절한다.
@@ -6294,6 +6309,16 @@ local function animateMeadowOriginalMob(enemy,now)
     local amount=math.clamp(enemy.strideSpeed/6,0,1)
     movingHeight=math.abs(math.sin(enemy.stridePhase))*(kind=="golem" and .14 or .05)*amount
     stridePitch=math.sin(enemy.stridePhase)*(kind=="wolf" and .03 or heavy and .02 or .045)*amount
+    if kind=="wolf" or kind=="boar" then
+      if enemy.attackState=="CHASE" then
+        -- [질주] 한 걸음마다 네 발이 땅을 차고 떠올랐다가 앞발부터 내려앉는다. 도약 순간 코가 들리고 착지 때 숙인다.
+        local air=math.max(0,math.sin(enemy.stridePhase))
+        movingHeight=air*(kind=="wolf" and .34 or .16)*amount
+        stridePitch=-math.cos(enemy.stridePhase)*(kind=="wolf" and .10 or .05)*amount
+      else
+        movingHeight=math.abs(math.sin(enemy.stridePhase))*.035*amount
+      end
+    end
   end
   -- [지면 높이 보간] 0.15초마다 샘플한 목표 높이를 매 프레임 부드럽게 따라간다.
   if enemy.terrainGroundTarget then
@@ -6337,7 +6362,26 @@ local function animateMeadowOriginalMob(enemy,now)
   elseif bleeding then
     attackPitch+=math.max(0,math.sin(now*6.28))^6*.1
   end
+  -- [몸통 흔들림] 늑대는 달릴 때 어깨와 엉덩이가 엇갈려 뱀처럼 좌우로 살짝 흔들린다.
+  if kind=="wolf" and inMotion and enemy.stridePhase then
+    statusYaw+=math.sin(enemy.stridePhase*.5)*.06*math.clamp((enemy.strideSpeed or 0)/6,0,1)
+  end
   if frozen then bank=0;statusYaw=0 end
+  -- [먼지] 달리는 늑대·멧돼지·골렘의 발밑에서 먼지가 일어난다.
+  if (kind=="wolf" or kind=="boar" or kind=="golem") then
+    if not enemy.dust then
+      local anchor=enemy.model.PrimaryPart or enemy.model:FindFirstChildWhichIsA("BasePart",true)
+      if anchor then
+        local e=Instance.new("ParticleEmitter");e.Name="DustKick";e.Rate=0;e.Lifetime=NumberRange.new(.5,.9)
+        e.Speed=NumberRange.new(1,3);e.SpreadAngle=Vector2.new(35,35);e.EmissionDirection=Enum.NormalId.Back;e.LockedToPart=false
+        e.Color=ColorSequence.new(Color3.fromRGB(150,135,110));e.Acceleration=Vector3.new(0,1.5,0)
+        e.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.5),NumberSequenceKeypoint.new(1,1.6)})
+        e.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.55),NumberSequenceKeypoint.new(1,1)})
+        e.Parent=anchor;enemy.dust=e
+      end
+    end
+    if enemy.dust then enemy.dust.Rate=(enemy.attackState=="CHASE" and (enemy.strideSpeed or 0)>7) and (kind=="golem" and 30 or 24) or 0 end
+  end
   -- 상태 윤곽선(공식 Highlight 인스턴스 하나만 재사용).
   local tint=enemy.model:FindFirstChild("StatusTint")
   local wantColor=frozen and Color3.fromRGB(140,205,255) or burning and Color3.fromRGB(255,110,40)
@@ -6365,18 +6409,18 @@ local function animateMeadowOriginalMob(enemy,now)
     local flatFace=Vector3.new(facing.X,0,facing.Z)
     if flatFace.Magnitude>.01 then
       flatFace=flatFace.Unit
-      local reach=kind=="boar" and 2.8 or kind=="wolf" and 2.4 or enemy.r15Tracks and 1.1 or 1.5
+      local reach=kind=="boar" and 2.8 or kind=="wolf" and 3.6 or enemy.r15Tracks and 1.1 or 1.5
       if attacking then
         local dur=math.max(.12,enemy.model:GetAttribute("NativeMobMotionDuration") or .5)
         local prep=math.clamp((now-(enemy.attackStateStartedAt or now))/dur,0,1)
-        lungeOffset=-flatFace*(.55*prep)
-        movingHeight-=.12*prep
+        lungeOffset=-flatFace*((kind=="wolf" and .9 or .55)*prep)
+        movingHeight-=(kind=="wolf" and .30 or .12)*prep
       else
         local brawl=(now-(enemy.brawlAt or -9)<.5) and math.exp(-(now-enemy.brawlAt)*7) or 0
         local lungeR=math.max(recoil,brawl)
         if lungeR>.02 then
           lungeOffset=flatFace*(reach*lungeR)
-          if kind=="wolf" or kind=="boar" then movingHeight+=math.sin(math.clamp(lungeR,0,1)*math.pi)*.35 end
+          if kind=="wolf" or kind=="boar" then movingHeight+=math.sin(math.clamp(lungeR,0,1)*math.pi)*(kind=="wolf" and .95 or .45) end
         end
       end
     end

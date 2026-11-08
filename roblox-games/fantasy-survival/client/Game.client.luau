@@ -10820,6 +10820,21 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             local scent=math.sin(cycle*.8)
             if row.available.Neck then row.poses.Neck=CFrame.Angles(.045+scent*.08,0,0) end
             if row.available.Head then row.poses.Head=CFrame.Angles(-.04+scent*.10,math.sin(cycle*.4)*.11,0) end
+            -- [하울링] 가끔 고개를 번쩍 들고 주둥이를 벌려 길게 운다(약 25초마다 3초).
+            row.howlSeed=row.howlSeed or math.random()*25
+            local howlT=(os.clock()+row.howlSeed)%25
+            if howlT<3.2 then
+              local p=howlT/3.2
+              local up=math.sin(p*math.pi)^.6
+              if row.available.Chest then row.poses.Chest=CFrame.Angles(-.16*up,0,0) end
+              if row.available.Neck then row.poses.Neck=CFrame.Angles(-.52*up,0,0) end
+              if row.available.Head then row.poses.Head=CFrame.Angles(-.62*up,math.sin(p*math.pi*3)*.05*up,0) end
+              if row.available.Jaw then row.poses.Jaw=CFrame.Angles(.46*up,0,0) end
+              if row.available.Tail then row.poses.Tail=CFrame.Angles(-.2*up,0,0) end
+              for _,key in ipairs({"FL","FR"}) do
+                if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(.10*up,0,0) end
+              end
+            end
           end
           -- [4족 대기] 호흡에 맞춰 어깨와 뒷다리에 체중을 번갈아 실어 생명감을 준다.
           if row.plan=="QUADRUPED" then
