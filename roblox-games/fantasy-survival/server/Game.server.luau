@@ -8671,6 +8671,63 @@ do
       end
     end
   end
+  -- [동선 매복] 이정표에서 이정표로 이어지는 길과 대륙 큰길(동서 z=0, 남북 x=0·x=3000)을 따라 길가에 몬스터를 둔다.
+  -- 길 한가운데가 아니라 양옆 14~28칸에 서 있어서, 길을 따라 걷다 보면 지역 몬스터를 차례로 마주친다.
+  do
+    local function nearHub(x,z)
+      if x>village.X0-60 and x<village.X1+60 and z>village.Z0-60 and z<village.Z1+60 then return true end
+      for _,wp in ipairs(world.Waypoints) do
+        if (x-wp[2])^2+(z-wp[3])^2<70*70 then return true end
+      end
+      for _,town in ipairs(world.Towns or {}) do
+        if (x-town.X)^2+(z-town.Z)^2<90*90 then return true end
+      end
+      return false
+    end
+    local function addAmbush(x,z)
+      local zoneId=world.ZoneAt(x,z)
+      local pool=zoneId and pools[zoneId]
+      if not pool or nearHub(x,z) then return end
+      for _,placed in ipairs(placedSites) do
+        if (x-placed.X)^2+(z-placed.Z)^2<32*32 then return end
+      end
+      local spec=pool[random:NextInteger(1,#pool)]
+      local tierGain=0
+      for _,zn in ipairs(world.Zones) do
+        if zn.Id==zoneId and zn.Seed then tierGain=math.floor(math.sqrt((x-zn.Seed[1])^2+(z-zn.Seed[2])^2)/700) end
+      end
+      table.insert(meadowEncounterSites,{id=spec[1],atom=spec[1]=="bat" and "WING_LEATHER" or "HEAD_CANINE",model=spec[2],
+        name=spec[3] and "길목의 "..spec[3] or nil,tier=math.min(10,zoneTier[zoneId]+tierGain),height=spec[4],
+        hp=spec[2] and spec[5] or nil,dmg=spec[2] and spec[5]*.8 or nil,
+        drops=spec[6],position=Vector3.new(x,3,z)})
+      placedSites[#placedSites+1]={X=x,Z=z}
+      count+=1
+    end
+    local function roadside(x,z,dx,dz)
+      -- (dx,dz)는 길 방향. 길에 수직으로 14~28칸, 좌우 번갈아 비켜 선다.
+      local side=random:NextInteger(0,1)==0 and 1 or -1
+      local off=random:NextNumber(14,28)*side
+      addAmbush(x-dz*off,z+dx*off)
+    end
+    local wps=world.Waypoints
+    for i=1,#wps-1 do
+      local ax,az,bx,bz=wps[i][2],wps[i][3],wps[i+1][2],wps[i+1][3]
+      local len=math.sqrt((bx-ax)^2+(bz-az)^2)
+      if len>240 and len<1900 then
+        local dx,dz=(bx-ax)/len,(bz-az)/len
+        for k=1,math.min(8,math.floor(len/190)) do
+          local t=k/(math.min(8,math.floor(len/190))+1)
+          roadside(ax+(bx-ax)*t,az+(bz-az)*t,dx,dz)
+        end
+      end
+    end
+    local b=world.Bounds
+    for x=b.X0+150,b.X1-150,210 do roadside(x+random:NextNumber(-30,30),0,1,0) end
+    for z=b.Z0+150,b.Z1-150,210 do
+      roadside(0,z+random:NextNumber(-30,30),0,1)
+      roadside(3000,z+random:NextNumber(-30,30),0,1)
+    end
+  end
   -- 지역 군주(보스).
   for _,boss in ipairs({
     {x=5900,z=0,model="chieftain",name="성채의 군주 · 늑대인간 족장",height=9,hp=5,dmg=2.4,tier=10,drops={{"Crystal",1,4},{"Claw",1,3},{"Magma",.8,2}}},
@@ -8807,6 +8864,27 @@ do
         pcall(function() villageDialogue(player,spec[1],(first and "새로운 장소를 발견했다! 경험치와 재화를 얻었다.\n" or "")..
           "발견한 이정표 "..count.."/"..#waypoints..". 이미 발견한 이정표로 빠르게 이동할 수 있다.",options) end)
       end)
+    end
+  end)
+  -- [자유 탐험] 이정표 45칸 안으로 걸어 들어가면 조사하지 않아도 자동 발견된다(스카이림식). 발견하면 지도에서 바로 빠른 이동이 열린다.
+  task.spawn(function()
+    task.wait(6)
+    while true do
+      task.wait(1.5)
+      for _,player in ipairs(game:GetService("Players"):GetPlayers()) do
+        local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if root and player:GetAttribute("ProfileReady")==true then
+          local p=root.Position
+          for index,spec in ipairs(waypoints) do
+            if not discovered(player,index) and (p.X-spec[2])^2+(p.Z-spec[3])^2<45*45 then
+              setNumber(player,"WaypointMask",bit32.bor(readNumber(player,"WaypointMask",0),bit32.lshift(1,index-1)))
+              pcall(awardProgress,player,30+index*6,12+index*2)
+              player:SetAttribute("MeadowGearMessage","이정표 발견: "..spec[1].." — 지도에서 빠른 이동 가능")
+              player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+            end
+          end
+        end
+      end
     end
   end)
   local lastMapTravel={}
