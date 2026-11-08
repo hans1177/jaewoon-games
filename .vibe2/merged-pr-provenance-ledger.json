@@ -169455,11 +169455,169 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_69e14d809eae52ecdc3ce26e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12228",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "83a290684cca04043e3b15acd66380d371faa130",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12228,
+        "baseBranch": "main",
+        "headBranch": "remove-room-cozy-fix-fantasy-luau-20261108",
+        "baseSha": "83a290684cca04043e3b15acd66380d371faa130",
+        "headSha": "389fd50b8b52c95471f5c1a0330e90dcaa4f3213",
+        "mergeCommitSha": "c9872ca9f130813c6a5f976b605f64971ccb8290",
+        "mergedAt": "2026-11-08T07:33:57Z",
+        "authorLogin": "hans1177",
+        "titleHash": "6bb0edc41c84509d7b59a0c5ac47fd3ad5437c96baa996123567560ae13b6b2d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "remove-room-cozy-fix-fantasy-luau-20261108",
+        "candidateSha": "389fd50b8b52c95471f5c1a0330e90dcaa4f3213"
+      },
+      "changeStats": {
+        "changedFileCount": 22,
+        "codingRelevantFileCount": 22,
+        "addedLineCount": 28,
+        "deletedLineCount": 12710,
+        "changedFiles": [
+          ".github/workflows/owner-cozy-island-direct-publish.yml",
+          "assets/homepage-media/cozy-island.mp4",
+          "assets/roblox-thumbnails/cozy-island.svg",
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/cozy-cc0-library-audit.test.mjs",
+          "qa/cozy-island-wildlife.test.mjs",
+          "qa/homepage-manager-publication-order.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/room-survival/client/Game.client.luau",
+          "roblox-games/room-survival/client/MaterialPresentation.client.luau",
+          "roblox-games/room-survival/default.project.json",
+          "roblox-games/room-survival/roblox-source-bootstrap.json",
+          "roblox-games/room-survival/server/Game.server.luau",
+          "roblox-games/room-survival/shared/GameConfig.luau",
+          "roblox-games/room-survival/shared/RobloxCommonMaterials.luau",
+          "roblox-games/room-survival/shared/RobloxCommonMotion.luau",
+          "roblox-games/room-survival/shared/RobloxCommonUI.luau",
+          "roblox-games/room-survival/shared/RobloxCommonVFX.luau",
+          "tools/cozy-cc0-library-audit.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-cozy-island-direct-publish.yml",
+          "assets/homepage-media/cozy-island.mp4",
+          "assets/roblox-thumbnails/cozy-island.svg",
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/cozy-cc0-library-audit.test.mjs",
+          "qa/cozy-island-wildlife.test.mjs",
+          "qa/homepage-manager-publication-order.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/room-survival/client/Game.client.luau",
+          "roblox-games/room-survival/client/MaterialPresentation.client.luau",
+          "roblox-games/room-survival/default.project.json",
+          "roblox-games/room-survival/roblox-source-bootstrap.json",
+          "roblox-games/room-survival/server/Game.server.luau",
+          "roblox-games/room-survival/shared/GameConfig.luau",
+          "roblox-games/room-survival/shared/RobloxCommonMaterials.luau",
+          "roblox-games/room-survival/shared/RobloxCommonMotion.luau",
+          "roblox-games/room-survival/shared/RobloxCommonUI.luau",
+          "roblox-games/room-survival/shared/RobloxCommonVFX.luau",
+          "tools/cozy-cc0-library-audit.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12228",
+        "merge-commit:c9872ca9f130813c6a5f976b605f64971ccb8290",
+        "base-main:83a290684cca04043e3b15acd66380d371faa130"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1351
+    "total": 1352
   }
 }
