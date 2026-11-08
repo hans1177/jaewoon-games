@@ -5592,7 +5592,7 @@ if RunService:IsStudio() then
     if type(key)=="string" and key:sub(1,4)=="mon_" then galleryKeys[#galleryKeys+1]=key:sub(5) end
   end
   table.sort(galleryKeys)
-  workspace:SetAttribute("StudioGalleryCount",math.ceil(#galleryKeys/6))
+  workspace:SetAttribute("StudioGalleryCount",math.ceil(#galleryKeys/3))
   workspace:GetAttributeChangedSignal("StudioGalleryGroup"):Connect(function()
     local group=workspace:GetAttribute("StudioGalleryGroup")
     if typeof(group)~="number" then return end
@@ -5605,20 +5605,46 @@ if RunService:IsStudio() then
       end
     end
     local names={}
-    for slot=1,6 do
-      local key=galleryKeys[group*6+slot]
+    for slot=1,3 do
+      local key=galleryKeys[group*3+slot]
       if key then
         local ok,spawned=pcall(function()
           return spawnEnemy({id="wolf",atom="HEAD_CANINE",model=key,name=key,tier=1,height=3.4,hp=40,dmg=.05,
-            position=Vector3.new(-25+(slot-1)*10,3,420)},9000+group*6+slot)
+            position=Vector3.new(-7+(slot-1)*7,3,420)},9000+group*3+slot)
         end)
         for _,enemy in ipairs(enemies) do
-          if enemy.siteIndex==9000+group*6+slot then enemy.gallery=true end
+          if enemy.siteIndex==9000+group*3+slot then enemy.gallery=true end
         end
         names[#names+1]=key..(ok and spawned and "" or "(실패)")
       end
     end
     workspace:SetAttribute("StudioGalleryNames",table.concat(names,","))
+    -- 진단: 모델마다 자세(위쪽 벡터)·크기·재질·텍스처·뼈 개수를 기록한다.
+    task.delay(2.5,function()
+      local rows={}
+      for _,enemy in ipairs(enemies) do
+        if enemy.gallery and enemy.model and enemy.model.Parent then
+          local m=enemy.model
+          local _,size=m:GetBoundingBox()
+          local meshes,textured,bones,motors,mat,col,trans=0,0,0,0,"",nil,0
+          for _,d in ipairs(m:GetDescendants()) do
+            if d:IsA("MeshPart") then
+              meshes+=1
+              if d.TextureID~="" or d:FindFirstChildOfClass("SurfaceAppearance") then textured+=1 end
+              if mat=="" then mat=tostring(d.Material):gsub("Enum.Material.","");col=d.Color end
+              trans=math.max(trans,d.Transparency)
+            elseif d:IsA("Bone") then bones+=1
+            elseif d:IsA("Motor6D") then motors+=1 end
+          end
+          local hl={}
+          for _,d in ipairs(m:GetChildren()) do if d:IsA("Highlight") then hl[#hl+1]=d.Name..(d.Enabled and "+" or "-") end end
+          rows[#rows+1]=string.format("%s up=%.2f size=%.1fx%.1fx%.1f mesh=%d tex=%d bone=%d m6d=%d mat=%s col=%s tr=%.2f hl=%s",
+            tostring(m:GetAttribute("Variant")),m:GetPivot().UpVector.Y,size.X,size.Y,size.Z,meshes,textured,bones,motors,mat,
+            col and string.format("%d,%d,%d",col.R*255,col.G*255,col.B*255) or "-",trans,table.concat(hl,"/"))
+        end
+      end
+      workspace:SetAttribute("StudioGalleryDiag",table.concat(rows," || "))
+    end)
   end)
 end
 
