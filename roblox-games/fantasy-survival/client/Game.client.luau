@@ -10823,7 +10823,8 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             -- [하울링] 가끔 고개를 번쩍 들고 주둥이를 벌려 길게 운다(약 25초마다 3초).
             row.howlSeed=row.howlSeed or math.random()*25
             local howlT=(os.clock()+row.howlSeed)%25
-            if howlT<3.2 then
+            local variant=model:GetAttribute("Variant")
+            if howlT<3.2 and (variant==nil or variant=="wolf" or variant=="husky" or variant=="keltir") then
               local p=howlT/3.2
               local up=math.sin(p*math.pi)^.6
               if row.available.Chest then row.poses.Chest=CFrame.Angles(-.16*up,0,0) end

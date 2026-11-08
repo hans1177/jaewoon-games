@@ -6206,9 +6206,18 @@ end
 -- and attack anticipation are driven on the original mesh's Model pivot.
 -- [몹 원본 액션] 관절 없는 소스 메시도 기존 서버 Pivot 동작을 종별 공격에 맞게 연출한다.
 -- 서버 타격 위치·스폰 위치·속도·공격 빈도는 바꾸지 않는다.
+-- [종별 몸놀림 계열] 모델마다 걷는 방식이 달라야 자연스럽다. 계열별로 몸통 피벗의 높이·기울기·좌우 흔들림을 따로 준다.
+local meadowMotionClass={snake="serpent",snakeangry="serpent",spider="arachnid",fangspider="arachnid",bladespider="arachnid",
+  toad="hopper",glub="hopper",rat="skitter",raptor="biped",trex="biped",parasaur="biped",
+  stegosaurus="lumber",triceratops="lumber",apatosaur="lumber",wasp="hover",ghost="float",ghostskull="float",wingdemon="float",
+  dragon="flyer",dragonlite="flyer",birb="flyer",yeti="heavy",orc="heavy",skullorc="heavy",bull="heavy",spiritgolem="heavy",
+  tribal="heavy",chieftain="heavy",beastman="heavy",cactoro="heavy",demon="heavy",frostfiend="heavy"}
+local meadowWolfLike={wolf=true,husky=true,keltir=true,fox=true}
 local function animateMeadowOriginalMob(enemy,now)
   if not enemy.model.Parent then return end
   local kind=enemy.kind
+  local mclass=enemy.variant and meadowMotionClass[enemy.variant] or nil
+  local wolfLike=kind=="wolf" and (enemy.variant==nil or meadowWolfLike[enemy.variant]==true)
   local phase=now*((kind=="bee" or kind=="bat") and 9 or
     kind=="wolf" and 7 or kind=="boar" and 6 or 3)
     +enemy.spawnPosition.X*.11
@@ -6309,12 +6318,12 @@ local function animateMeadowOriginalMob(enemy,now)
     local amount=math.clamp(enemy.strideSpeed/6,0,1)
     movingHeight=math.abs(math.sin(enemy.stridePhase))*(kind=="golem" and .14 or .05)*amount
     stridePitch=math.sin(enemy.stridePhase)*(kind=="wolf" and .03 or heavy and .02 or .045)*amount
-    if kind=="wolf" or kind=="boar" then
+    if wolfLike or kind=="boar" then
       if enemy.attackState=="CHASE" then
         -- [질주] 한 걸음마다 네 발이 땅을 차고 떠올랐다가 앞발부터 내려앉는다. 도약 순간 코가 들리고 착지 때 숙인다.
         local air=math.max(0,math.sin(enemy.stridePhase))
-        movingHeight=air*(kind=="wolf" and .34 or .16)*amount
-        stridePitch=-math.cos(enemy.stridePhase)*(kind=="wolf" and .10 or .05)*amount
+        movingHeight=air*(wolfLike and .34 or .16)*amount
+        stridePitch=-math.cos(enemy.stridePhase)*(wolfLike and .10 or .05)*amount
       else
         movingHeight=math.abs(math.sin(enemy.stridePhase))*.035*amount
       end
@@ -6363,12 +6372,12 @@ local function animateMeadowOriginalMob(enemy,now)
     attackPitch+=math.max(0,math.sin(now*6.28))^6*.1
   end
   -- [몸통 흔들림] 늑대는 달릴 때 어깨와 엉덩이가 엇갈려 뱀처럼 좌우로 살짝 흔들린다.
-  if kind=="wolf" and inMotion and enemy.stridePhase then
+  if wolfLike and inMotion and enemy.stridePhase then
     statusYaw+=math.sin(enemy.stridePhase*.5)*.06*math.clamp((enemy.strideSpeed or 0)/6,0,1)
   end
   if frozen then bank=0;statusYaw=0 end
   -- [먼지] 달리는 늑대·멧돼지·골렘의 발밑에서 먼지가 일어난다.
-  if (kind=="wolf" or kind=="boar" or kind=="golem") then
+  if wolfLike or kind=="boar" or kind=="golem" or mclass=="heavy" or mclass=="biped" or mclass=="lumber" then
     if not enemy.dust then
       local anchor=enemy.model.PrimaryPart or enemy.model:FindFirstChildWhichIsA("BasePart",true)
       if anchor then
@@ -6409,19 +6418,74 @@ local function animateMeadowOriginalMob(enemy,now)
     local flatFace=Vector3.new(facing.X,0,facing.Z)
     if flatFace.Magnitude>.01 then
       flatFace=flatFace.Unit
-      local reach=kind=="boar" and 2.8 or kind=="wolf" and 3.6 or enemy.r15Tracks and 1.1 or 1.5
+      local reach=kind=="boar" and 2.8 or wolfLike and 3.6 or mclass=="arachnid" and 3 or kind=="wolf" and 2.4 or enemy.r15Tracks and 1.1 or 1.5
       if attacking then
         local dur=math.max(.12,enemy.model:GetAttribute("NativeMobMotionDuration") or .5)
         local prep=math.clamp((now-(enemy.attackStateStartedAt or now))/dur,0,1)
-        lungeOffset=-flatFace*((kind=="wolf" and .9 or .55)*prep)
-        movingHeight-=(kind=="wolf" and .30 or .12)*prep
+        lungeOffset=-flatFace*((wolfLike and .9 or .55)*prep)
+        movingHeight-=(wolfLike and .30 or .12)*prep
       else
         local brawl=(now-(enemy.brawlAt or -9)<.5) and math.exp(-(now-enemy.brawlAt)*7) or 0
         local lungeR=math.max(recoil,brawl)
         if lungeR>.02 then
           lungeOffset=flatFace*(reach*lungeR)
-          if kind=="wolf" or kind=="boar" then movingHeight+=math.sin(math.clamp(lungeR,0,1)*math.pi)*(kind=="wolf" and .95 or .45) end
+          if kind=="wolf" or kind=="boar" then movingHeight+=math.sin(math.clamp(lungeR,0,1)*math.pi)*(wolfLike and .95 or mclass=="arachnid" and .6 or kind=="wolf" and .35 or .45) end
         end
+      end
+    end
+  end
+  -- [종별 개성] 계열마다 다른 걸음걸이·대기 습관을 몸통 피벗에 더한다(판정·속도와 무관).
+  if mclass then
+    local sp=enemy.stridePhase or now*3
+    local amount=math.clamp((enemy.strideSpeed or 0)/6,0,1)
+    local seed=enemy.spawnPosition.X*.07
+    local idle=not inMotion and not attacking and not stunned
+    if mclass=="serpent" then
+      if inMotion then statusYaw+=math.sin(sp*.9)*.4*amount;bank+=math.cos(sp*.9)*.06*amount;movingHeight=0 end
+      if idle then statusYaw+=math.sin(now*.8+seed)*.18;attackPitch+=.12+math.sin(now*1.6+seed)*.04 end
+    elseif mclass=="arachnid" then
+      if inMotion then
+        movingHeight+=math.sin(now*38+seed)*.025*amount;statusYaw+=math.sin(now*22+seed)*.05*amount
+        bank+=math.sin(sp*2)*.035*amount
+      end
+      if idle then bank+=(math.sin(now*2.3+seed)>.94) and .05 or 0;movingHeight-=.04 end
+    elseif mclass=="hopper" then
+      if inMotion then
+        local ph=sp*.6
+        movingHeight=math.abs(math.sin(ph))*.7*amount
+        attackPitch+=math.cos(ph)*.28*amount
+      end
+    elseif mclass=="skitter" then
+      if inMotion then movingHeight+=math.abs(math.sin(sp*2))*.04*amount;statusYaw+=math.sin(now*17+seed)*.08*amount end
+      if idle then statusYaw+=math.sin(now*1.7+seed)*.3;attackPitch+=math.max(0,math.sin(now*5+seed))*.06 end
+    elseif mclass=="biped" then
+      local big=enemy.variant=="trex" and 1.4 or 1
+      if inMotion then
+        movingHeight+=math.abs(math.sin(sp))*.16*big*amount
+        stridePitch+=math.sin(sp)*.045*amount;bank+=math.sin(sp)*.05*amount
+        if enemy.variant=="raptor" then attackPitch-=.08*amount end
+      end
+      if idle and enemy.variant=="trex" then
+        local p=(now+seed*30)%14
+        if p<2.2 then attackPitch+=.24*math.sin(p/2.2*math.pi) end
+      end
+    elseif mclass=="lumber" then
+      if inMotion then movingHeight+=math.abs(math.sin(sp))*.08*amount;bank+=math.sin(sp)*.04*amount end
+    elseif mclass=="hover" then
+      movingHeight+=math.sin(now*17+seed)*.05+math.sin(now*5+seed)*.15
+      bank+=math.sin(now*11+seed)*.08;statusYaw+=math.sin(now*7+seed)*.06
+    elseif mclass=="float" then
+      bank+=math.sin(now*.9+seed)*.1
+      if inMotion then attackPitch-=.15 end
+    elseif mclass=="flyer" then
+      movingHeight+=math.sin(now*3+seed)*.3
+      bank+=math.sin(now*1.5+seed)*.12
+      if attacking then attackPitch-=.4 end
+    elseif mclass=="heavy" then
+      if inMotion then movingHeight+=math.abs(math.sin(sp))*.09*amount;bank+=math.sin(sp)*.06*amount end
+      if idle then
+        local p=(now+seed*20)%11
+        if p<1.6 then attackPitch+=.14*math.sin(p/1.6*math.pi);bank+=math.sin(p*14)*.03 end
       end
     end
   end
