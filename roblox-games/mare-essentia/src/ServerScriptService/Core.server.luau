@@ -261,12 +261,14 @@ local function onInvoke(player, action, payload)
 	if success then
 		session.dirty = true -- 저장은 자동저장 루프가 모아서 한다 (응답을 막지 않는다)
 		-- 탐험·전투·연구 등으로 퀘스트 조건을 채우면 바로 알려 준다
+		local extra = {}
 		if QUEST_WATCH[action] then
-			local extra = {}
 			S.Quest.autoDeliver(state, extra)
-			if #extra > 0 then
-				message = (message and message ~= "" and (message .. "\n") or "") .. table.concat(extra, "\n")
-			end
+		end
+		-- 도감 발견·항구 방문·연구는 퀘스트를 수락하지 않아도 자동으로 보고하고 보상을 준다
+		S.Quest.autoReport(state, extra)
+		if #extra > 0 then
+			message = (message and message ~= "" and (message .. "\n") or "") .. table.concat(extra, "\n")
 		end
 	end
 	return reply(state, success, message)

@@ -295,6 +295,27 @@ return function(D, S)
 			end
 			local who = if #state.companions > 0 then D.Specialties.CompanionById[state.companions[1]].name else "늙은 항해사 베르나르"
 			view.advice = { who = who, text = D.Narrative.advice({ coins = state.coins, ship = state.ship, morale = state.morale, cargoAny = cargoAny }, D.Regions, #state.companions > 0, activeQuest, locked) }
+			-- 화면 중앙 상단 동료 말풍선: 인사 한마디와 '앞으로 할 일'
+			do
+				local companionId = state.companions[1]
+				if companionId then
+					local pool = D.CompanionTalk.Talk[companionId] and D.CompanionTalk.Talk[companionId][D.Specialties.affinityTier(state.affinity[companionId] or 0)]
+					if pool and #pool > 0 then
+						view.advice.line = pool[1 + state.day % #pool]
+					end
+					view.advice.companionId = companionId
+				else
+					view.advice.line = "선장님, 오늘도 좋은 바람입니다."
+				end
+				if view.guide then
+					for _, st in view.guide.steps do
+						if not st.done then
+							view.advice.next = st.text
+							break
+						end
+					end
+				end
+			end
 		end
 
 		-- 항해 미리보기
@@ -398,7 +419,7 @@ return function(D, S)
 					rewardCoins = q.rewardCoins,
 				})
 			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) then
-				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary, rewardCoins = q.rewardCoins })
+				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary, rewardCoins = q.rewardCoins, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
 			end
 		end
 

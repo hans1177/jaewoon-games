@@ -933,8 +933,96 @@ local function updateHud(p, ship)
 	hudCoin.Text = tostring(p.coins) .. " 코인"
 end
 
+-- 화면 중앙 상단 동료 말풍선: 게임을 시작하거나 새 항구에 닿으면 동료가 인사하고 앞으로 할 일을 조언한다.
+local bubble = Instance.new("Frame")
+bubble.Name = "CompanionBubble"
+bubble.AnchorPoint = Vector2.new(0.5, 0)
+bubble.Position = UDim2.new(0.5, 0, 0, 8)
+bubble.Size = UDim2.new(0.42, 0, 0, 0)
+bubble.AutomaticSize = Enum.AutomaticSize.Y
+bubble.BackgroundColor3 = NAVY
+bubble.BackgroundTransparency = 0.05
+bubble.Visible = false
+bubble.Active = true
+bubble.ZIndex = 20
+bubble.Parent = hud
+corner(bubble, 12)
+hudStroke(bubble, 2)
+do
+	local limit = Instance.new("UISizeConstraint")
+	limit.MinSize = Vector2.new(220, 0)
+	limit.MaxSize = Vector2.new(460, 1000)
+	limit.Parent = bubble
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 10), UDim.new(0, 10)
+	pad.Parent = bubble
+	local list = Instance.new("UIListLayout")
+	list.Padding = UDim.new(0, 3)
+	list.SortOrder = Enum.SortOrder.LayoutOrder
+	list.Parent = bubble
+end
+local function bubbleLabel(order, textSize, color)
+	local l = Instance.new("TextLabel")
+	l.BackgroundTransparency = 1
+	l.Size = UDim2.new(1, 0, 0, 0)
+	l.AutomaticSize = Enum.AutomaticSize.Y
+	l.Font = Enum.Font.GothamMedium
+	l.TextSize = textSize
+	l.TextColor3 = color
+	l.TextWrapped = true
+	l.TextXAlignment = Enum.TextXAlignment.Left
+	l.RichText = false
+	l.Text = ""
+	l.LayoutOrder = order
+	l.ZIndex = 21
+	l.Parent = bubble
+	return l
+end
+local bubbleWho = bubbleLabel(1, 14, COLORS.gold)
+local bubbleLine = bubbleLabel(2, 13, COLORS.text)
+local bubbleAdvice = bubbleLabel(3, 13, Color3.fromRGB(190, 230, 200))
+local bubbleNext = bubbleLabel(4, 12, COLORS.muted)
+local bubbleKey, bubbleToken = nil, 0
+local function hideBubble()
+	bubbleToken += 1
+	bubble.Visible = false
+end
+bubble.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		hideBubble()
+	end
+end)
+local function refreshBubble()
+	local adv = view and view.advice
+	if not adv or not hud.Visible then
+		return
+	end
+	local key = tostring(adv.who) .. "|" .. tostring(view.player and view.player.portName)
+	if key == bubbleKey then
+		return
+	end
+	local first = bubbleKey == nil
+	bubbleKey = key
+	bubbleWho.Text = "💬 " .. tostring(adv.who)
+	bubbleLine.Text = "\"" .. tostring(adv.line or "") .. "\""
+	bubbleAdvice.Text = "조언: " .. tostring(adv.text)
+	bubbleNext.Text = if adv.next then "▶ 다음 할 일: " .. adv.next else ""
+	bubbleNext.Visible = adv.next ~= nil
+	bubbleToken += 1
+	local token = bubbleToken
+	bubble.Visible = true
+	task.delay(if first then 16 else 10, function()
+		if bubbleToken == token then
+			bubble.Visible = false
+		end
+	end)
+end
+
 menuToggle:GetPropertyChangedSignal("Visible"):Connect(function()
 	hud.Visible = menuToggle.Visible
+	if hud.Visible then
+		refreshBubble()
+	end
 end)
 
 local function clearContent()
@@ -1022,6 +1110,7 @@ local function call(action, payload)
 		if currentTab ~= "battle" then
 			equipped = nil
 		end
+		refreshBubble()
 	end
 	if result.message and result.message ~= "" then
 		message, messageOk = result.message, result.ok
@@ -3708,6 +3797,10 @@ local function renderQuest()
 	add(function() return mkHeader(content, "받을 수 있는 퀘스트") end)
 	for _, q in view.quests.available do
 		add(function()
+			if q.auto then
+				-- 발견·방문·연구 퀘스트는 수락하지 않아도 조건을 채우면 자동으로 보고되고 보상이 들어온다
+				return mkRow(content, q.name, string.format("%s\n자동 보고 · 진행 %d/%d · 보상 %d코인", q.summary, math.min(q.progress or 0, q.amount or 0), q.amount or 0, q.rewardCoins), nil, 64)
+			end
 			return mkRow(content, q.name, string.format("%s\n보상 %d코인", q.summary, q.rewardCoins), {
 				{ text = "수락", color = COLORS.blue, onClick = function() call("Accept", { questId = q.id }) end },
 			}, 64)

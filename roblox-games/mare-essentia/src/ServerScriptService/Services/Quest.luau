@@ -5,8 +5,15 @@ return function(D, S)
 	local handlers = {}
 	local MAX_ACTIVE = 5
 
-	local function progress(state, quest)
-		local a = state.quests.active[quest.id]
+	-- 발견·방문·연구처럼 플레이어 상태만으로 진행도가 정해지는 퀘스트는 수락하지 않아도 자동으로 보고된다.
+	local AUTO_KINDS = { discover = true, field = true, visit = true, research = true }
+
+	local function isAuto(quest)
+		return AUTO_KINDS[quest.kind] == true
+	end
+
+	-- a: 수락 기록(없으면 수락 전이라 0). 자동 보고 퀘스트는 수락 기록 없이도 계산한다.
+	local function progressWith(state, quest, a)
 		if not a then
 			return 0
 		end
@@ -31,6 +38,15 @@ return function(D, S)
 			return if state.tech[quest.techId] then 1 else 0
 		end
 		return 0
+	end
+
+	local function progress(state, quest)
+		return progressWith(state, quest, state.quests.active[quest.id])
+	end
+
+	-- 수락 전이어도 지금 상태로 진행도를 본다 (자동 보고 퀘스트 표시용)
+	local function progressAny(state, quest)
+		return progressWith(state, quest, state.quests.active[quest.id] or { delivered = 0, baseWins = state.stats.battlesWon })
 	end
 
 	local function countActive(state)
@@ -88,6 +104,20 @@ return function(D, S)
 		return true, string.format("%s %d개 납품 (%d/%d)", D.Ports.Goods[quest.goodId].name, amount, a.delivered, quest.amount)
 	end
 
+	local function payout(state, quest, label, msgs)
+		state.quests.active[quest.id] = nil
+		state.quests.done[quest.id] = true
+		state.coins += quest.rewardCoins
+		state.fame += quest.rewardFame
+		table.insert(msgs, string.format("%s: %s (+%d코인, 명성 +%d)", label, quest.name, quest.rewardCoins, quest.rewardFame))
+		if quest.rewardCareer then
+			S.State.gainXp(state, quest.rewardCareer, quest.rewardXp, msgs)
+		end
+		if quest.rewardCardId then
+			S.Discovery.grantCard(state, quest.rewardCardId, msgs)
+		end
+	end
+
 	function handlers.Claim(state, p)
 		local quest = type(p.questId) == "string" and D.Quests.ById[p.questId]
 		if not quest or not state.quests.active[quest.id] then
@@ -96,18 +126,32 @@ return function(D, S)
 		if progress(state, quest) < quest.amount then
 			return false, "아직 조건을 채우지 못했어요"
 		end
-		state.quests.active[quest.id] = nil
-		state.quests.done[quest.id] = true
-		state.coins += quest.rewardCoins
-		state.fame += quest.rewardFame
-		local msgs = { string.format("퀘스트 완료: %s (+%d코인, 명성 +%d)", quest.name, quest.rewardCoins, quest.rewardFame) }
-		if quest.rewardCareer then
-			S.State.gainXp(state, quest.rewardCareer, quest.rewardXp, msgs)
-		end
-		if quest.rewardCardId then
-			S.Discovery.grantCard(state, quest.rewardCardId, msgs)
-		end
+		local msgs = {}
+		payout(state, quest, "퀘스트 완료", msgs)
 		return true, table.concat(msgs, "\n")
+	end
+
+	-- 수락 여부와 상관없이, 발견·방문·연구 조건을 채운 퀘스트를 자동으로 보고하고 보상을 준다.
+	-- 보상 카드가 또 다른 퀘스트 조건을 채울 수 있어 더 나올 때까지 반복한다.
+	local function autoReport(state, msgs)
+		local reported = 0
+		for _ = 1, 8 do
+			local again = false
+			for _, quest in D.Quests.Quests do
+				if AUTO_KINDS[quest.kind] and not state.quests.done[quest.id] and visible(state, quest) then
+					local a = state.quests.active[quest.id] or { delivered = 0, baseWins = state.stats.battlesWon }
+					if progressWith(state, quest, a) >= quest.amount then
+						payout(state, quest, "발견 보고", msgs)
+						reported += 1
+						again = true
+					end
+				end
+			end
+			if not again then
+				break
+			end
+		end
+		return reported
 	end
 
 	-- 항구에 도착하면 받아 둔 납품 퀘스트의 물건을 자동으로 넘긴다. 조건을 채운 퀘스트는 알려 준다.
@@ -132,5 +176,5 @@ return function(D, S)
 		end
 	end
 
-	return { handlers = handlers, progress = progress, visible = visible, autoDeliver = autoDeliver }
+	return { handlers = handlers, progress = progress, visible = visible, autoDeliver = autoDeliver, autoReport = autoReport, isAuto = isAuto, progressAny = progressAny }
 end
