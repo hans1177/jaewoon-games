@@ -1,0 +1,64 @@
+# 파일명: .github/workflows/owner-fantasy-assets.yml
+# 마력숲: 3D 모델을 현재 계정으로 다시 올리고 체험에 사용 권한을 준다. 수동 실행 전용.
+name: Owner Fantasy Re-register Assets
+run-name: Owner Fantasy assets · ${{ github.sha }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      universe_id:
+        description: 'Universe ID'
+        type: string
+        required: false
+        default: '10775310122'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: owner-fantasy-assets
+  cancel-in-progress: false
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Upload models and write VisualAssetIds
+        env:
+          FANTASY_UNIVERSE_ID: ${{ inputs.universe_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_CREATOR_USER_ID: '11664914771'
+        run: node tools/fantasy-survival-reupload.mjs
+
+      - name: Commit registered IDs
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for f in roblox-games/fantasy-survival/assets-registered.json roblox-games/fantasy-survival/shared/VisualAssetIds.luau; do
+            if [ ! -e "$f" ]; then echo "SKIP_MISSING $f"; continue; fi
+            if git diff --quiet -- "$f" && git ls-files --error-unmatch "$f" >/dev/null 2>&1; then echo "SKIP_UNCHANGED $f"; continue; fi
+            sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=${GITHUB_REF_NAME}" --jq .sha 2>/dev/null || true)"
+            payload="$(mktemp)"
+            python3 - "$f" "$sha" "$payload" "$GITHUB_REF_NAME" <<'PYJSON'
+          import base64, json, pathlib, sys
+          source, current_sha, output, branch = sys.argv[1:]
+          body = {"message": "마력숲: 새 계정 자산 ID 갱신", "content": base64.b64encode(pathlib.Path(source).read_bytes()).decode("ascii"), "branch": branch}
+          if current_sha:
+              body["sha"] = current_sha
+          pathlib.Path(output).write_text(json.dumps(body), encoding="utf-8")
+          PYJSON
+            gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" --input "$payload" --silent
+            rm -f "$payload"
+            echo "COMMITTED $f"
+          done
