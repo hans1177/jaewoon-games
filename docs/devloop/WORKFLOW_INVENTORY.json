@@ -1,0 +1,2313 @@
+{
+ "generatedAt": 1794110387,
+ "total": 149,
+ "dormantCandidates": [],
+ "heavyInline": [
+  "company-development-roblox-post-runtime-qa.yml",
+  "vibe2-continuous-core.yml",
+  "company-development-roblox-runtime.yml",
+  "company-development-roblox-release-promotion.yml",
+  "vibe2-24h-runner.yml",
+  "company-development-roblox-final-review-revalidation.yml",
+  "company-seed-design-runtime.yml",
+  "company-development-unity-runtime.yml",
+  "owner-roblox-dedicated-private-experiences.yml",
+  "unity-web-first-stage-build.yml",
+  "vibe2-candidate-release.yml",
+  "magic-forest-pages.yml",
+  "director-supervisor.yml",
+  "company-security-immune.yml",
+  "company-system-ai-workers.yml"
+ ],
+ "workflows": [
+  {
+   "file": "apply-company-evolution.yml",
+   "name": "Apply Company Evolution",
+   "triggers": [
+    "push"
+   ],
+   "lines": 56,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "apply-existing-development-onboarding-fix.yml",
+   "name": "Apply Existing Development Onboarding Fix",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 42,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "apply-release-publication-atomicity.yml",
+   "name": "Apply Release Publication Atomicity",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 66,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "build-jaewoon-company-apk.yml",
+   "name": "Build Jaewoon Company APK",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 88,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "cc0-forest-fetch.yml",
+   "name": "CC0 Forest Asset Fetch",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 18,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "cc0-monster-fetch.yml",
+   "name": "CC0 Monster Fetch",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 18,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "cc0-monster-scout.yml",
+   "name": "CC0 Monster Scout",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 16,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-bridge-export.yml",
+   "name": "Company Bridge Export",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run",
+    "push"
+   ],
+   "lines": 74,
+   "inlineLines": 0,
+   "referencedBy": [
+    "free-budget-telemetry-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-central-policy-contract-qa.yml",
+   "name": "Company Central Policy Contract QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 399,
+   "inlineLines": 0,
+   "referencedBy": [
+    "director-supervisor.yml",
+    "main-write-guard.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-department-audit-sync.yml",
+   "name": "Company Department Audit Sync",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run",
+    "push"
+   ],
+   "lines": 109,
+   "inlineLines": 28,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-design-promotion-sync.yml",
+   "name": "Company DESIGN_ONLY Promotion Sync",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run",
+    "push"
+   ],
+   "lines": 247,
+   "inlineLines": 46,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-development-queue-reconcile.yml",
+    "company-roblox-source-drift-sync.yml",
+    "company-seed-design-runtime.yml",
+    "company-status-sync.yml",
+    "director-supervisor.yml",
+    "horror-owner-system-publish.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-development-confirmed-runtime.yml",
+   "name": "Company DEVELOPMENT_CONFIRMED Runtime",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run",
+    "push"
+   ],
+   "lines": 357,
+   "inlineLines": 125,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-design-promotion-sync.yml",
+    "company-development-queue-reconcile.yml",
+    "company-development-roblox-final-review-revalidation.yml",
+    "company-development-unity-runtime.yml",
+    "company-status-sync.yml",
+    "company-system-ai-workers.yml",
+    "director-supervisor.yml",
+    "homepage-manager.yml",
+    "one-shot-schema15-runtime-worker-fix.yml",
+    "unity-web-floor-source-bootstrap.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-development-queue-reconcile.yml",
+   "name": "Company Development Queue Reconcile",
+   "triggers": [
+    "workflow_dispatch",
+    "workflow_run",
+    "push"
+   ],
+   "lines": 252,
+   "inlineLines": 109,
+   "referencedBy": [
+    "company-development-confirmed-runtime.yml",
+    "company-evolution-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-development-roblox-final-review-revalidation.yml",
+   "name": "Company DEVELOPMENT_CONFIRMED Roblox F9 Final Review",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 1104,
+   "inlineLines": 975,
+   "referencedBy": [
+    "company-development-roblox-post-runtime-qa.yml",
+    "company-development-roblox-release-promotion.yml",
+    "homepage-manager.yml",
+    "vibe3-engine-contract.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-development-roblox-headless-fast-mvp.yml",
+   "name": "Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 445,
+   "inlineLines": 279,
+   "referencedBy": [
+    "company-development-roblox-final-review-revalidation.yml",
+    "company-development-roblox-post-runtime-qa.yml",
+    "company-development-roblox-runtime-continuation.yml",
+    "company-development-roblox-runtime.yml",
+    "company-evolution-qa.yml",
+    "vibe2-candidate-release.yml",
+    "vibe2-recovery-fast.yml",
+    "vibe3-engine-contract.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-development-roblox-multiplayer-qa.yml",
+   "name": "Company DEVELOPMENT_CONFIRMED Roblox Multiplayer Studio QA (Disabled)",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 10,
+   "inlineLines": 0,
+   "referencedBy": [
+    "roblox-post-runtime-qa-kickoff.yml",
+    "vibe2-core-qa.yml",
+    "vibe3-engine-contract.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-development-roblox-post-runtime-qa.yml",
+   "name": "Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 4333,
+   "inlineLines": 3197,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-development-roblox-release-promotion.yml",
+    "company-development-roblox-runtime.yml",
+    "main-write-guard.yml",
+    "vibe2-candidate-release.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-development-roblox-release-promotion.yml",
+   "name": "Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "push",
+    "repository_dispatch"
+   ],
+   "lines": 1952,
+   "inlineLines": 1267,
+   "referencedBy": [
+    "apply-release-publication-atomicity.yml",
+    "company-central-policy-contract-qa.yml",
+    "company-development-roblox-final-review-revalidation.yml",
+    "company-development-roblox-headless-fast-mvp.yml",
+    "company-development-roblox-post-runtime-qa.yml",
+    "company-development-roblox-runtime.yml",
+    "director-supervisor.yml",
+    "homepage-manager.yml",
+    "roblox-skyline-final-publish-kickoff.yml",
+    "vibe2-recovery-fast.yml",
+    "vibe3-engine-contract.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-development-roblox-runtime-continuation.yml",
+   "name": "Company DEVELOPMENT_CONFIRMED Roblox Vibe Shared Preflight",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 432,
+   "inlineLines": 270,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-development-roblox-runtime.yml",
+    "director-supervisor.yml",
+    "vibe3-engine-contract.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-development-roblox-runtime.yml",
+   "name": "Company DEVELOPMENT_CONFIRMED Roblox Runtime",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 2634,
+   "inlineLines": 1939,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-development-confirmed-runtime.yml",
+    "company-development-roblox-final-review-revalidation.yml",
+    "company-development-roblox-post-runtime-qa.yml",
+    "company-development-roblox-release-promotion.yml",
+    "company-development-roblox-runtime-continuation.yml",
+    "company-platform-exposure-sync.yml",
+    "company-roblox-source-drift-sync.yml",
+    "company-security-immune.yml",
+    "company-system-ai-workers.yml",
+    "director-supervisor.yml",
+    "main-write-guard.yml",
+    "owner-cozy-island-direct-publish.yml",
+    "vibe-qa.yml",
+    "vibe2-candidate-release.yml",
+    "vibe2-core-qa.yml",
+    "vibe2-recovery-fast.yml",
+    "vibe2-roblox-release-handoff.yml",
+    "vibe3-engine-contract.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-development-unity-runtime.yml",
+   "name": "Company DEVELOPMENT_CONFIRMED Unity Runtime",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 1694,
+   "inlineLines": 860,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-development-confirmed-runtime.yml",
+    "company-platform-exposure-sync.yml",
+    "company-status-sync.yml",
+    "director-supervisor.yml",
+    "homepage-manager.yml",
+    "vibe2-unity-release-result.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-dna-learning.yml",
+   "name": "Company DNA Learning",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run",
+    "push",
+    "pull_request"
+   ],
+   "lines": 129,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-evolution-qa.yml",
+   "name": "Company Evolution QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 353,
+   "inlineLines": 107,
+   "referencedBy": [
+    "director-supervisor.yml",
+    "vibe2-24h-runner.yml",
+    "vibe2-learning-pipeline-contract.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-game-seed-bootstrap.yml",
+   "name": "Company GAME_SEED Bootstrap",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 258,
+   "inlineLines": 77,
+   "referencedBy": [
+    "company-game-seed-qa.yml",
+    "company-seed-design-runtime.yml",
+    "free-budget-telemetry-qa.yml",
+    "owner-all-games-design-reset.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-game-seed-qa.yml",
+   "name": "Company GAME_SEED Production QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 122,
+   "inlineLines": 14,
+   "referencedBy": [
+    "director-supervisor.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-growth-marketing-runtime.yml",
+   "name": "Company Growth Marketing Runtime",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 126,
+   "inlineLines": 21,
+   "referencedBy": [
+    "vibe2-24h-runner.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-owner-web-edit-propagation.yml",
+   "name": "Owner Web Edit Native Isolation Audit",
+   "triggers": [
+    "push",
+    "pull_request"
+   ],
+   "lines": 81,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-platform-exposure-sync.yml",
+   "name": "Company Platform Exposure Sync",
+   "triggers": [
+    "workflow_dispatch",
+    "workflow_run",
+    "push"
+   ],
+   "lines": 156,
+   "inlineLines": 48,
+   "referencedBy": [
+    "director-supervisor.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-records-governance.yml",
+   "name": "Company Records Governance",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 109,
+   "inlineLines": 3,
+   "referencedBy": [
+    "company-security-immune.yml",
+    "verify-four-doc-data-lock.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-release-artifact-safety-qa.yml",
+   "name": "Company Release Artifact Safety QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 70,
+   "inlineLines": 29,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-roblox-hosted-studio-mcp-connect.yml",
+   "name": "Official Roblox Studio MCP · GitHub Windows connectivity probe",
+   "triggers": [
+    "workflow_dispatch",
+    "pull_request"
+   ],
+   "lines": 257,
+   "inlineLines": 0,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-roblox-runner-pwsh-bootstrap.yml",
+   "name": "Company Roblox Runner Hidden Startup Bootstrap",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 367,
+   "inlineLines": 0,
+   "referencedBy": [
+    "emergency-kill-roblox-studio.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-roblox-source-drift-sync.yml",
+   "name": "Roblox Changed Source Runtime Sync",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 378,
+   "inlineLines": 182,
+   "referencedBy": [
+    "company-development-roblox-release-promotion.yml",
+    "company-development-roblox-runtime.yml",
+    "owner-cozy-island-direct-publish.yml",
+    "roblox-f0-restart.yml",
+    "vibe-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-roblox-verified-learning-sweep.yml",
+   "name": "Company Roblox Verified Learning Sweep",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 183,
+   "inlineLines": 0,
+   "referencedBy": [
+    "company-development-roblox-runtime.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-security-immune.yml",
+   "name": "Company Security Immune System",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 857,
+   "inlineLines": 526,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "director-supervisor.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-security-recovery-assignment.yml",
+   "name": "Company Security Recovery Assignment",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 100,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-security-recovery-review.yml",
+   "name": "Company Security Recovery Review",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 109,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-seed-design-runtime.yml",
+   "name": "Company Seed DESIGN_ONLY Runtime",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 1356,
+   "inlineLines": 931,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-design-promotion-sync.yml",
+    "company-development-queue-reconcile.yml",
+    "company-game-seed-bootstrap.yml",
+    "company-status-sync.yml",
+    "director-supervisor.yml",
+    "owner-all-games-design-reset.yml",
+    "temp-design-runtime-cleanup.yml",
+    "vibe2-continuous-core.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-status-sync.yml",
+   "name": "Company Status Sync",
+   "triggers": [
+    "workflow_dispatch",
+    "workflow_run",
+    "push"
+   ],
+   "lines": 289,
+   "inlineLines": 110,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-development-queue-reconcile.yml",
+    "company-evolution-qa.yml",
+    "homepage-manager.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-store.yml",
+   "name": "Company Store Integrity",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 107,
+   "inlineLines": 50,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "company-system-ai-workers.yml",
+   "name": "Company System AI Workers",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "push",
+    "repository_dispatch"
+   ],
+   "lines": 820,
+   "inlineLines": 455,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-evolution-qa.yml",
+    "company-growth-marketing-runtime.yml",
+    "vibe2-recovery-fast.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "daechung-rpg-playcanvas-migration-qa.yml",
+   "name": "Daechung RPG PlayCanvas Migration QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 24,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "daechung-rpg-safe-boot-qa.yml",
+   "name": "Daechung RPG Safe Boot QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 31,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "department-experience.yml",
+   "name": "Department Experience",
+   "triggers": [
+    "workflow_run"
+   ],
+   "lines": 69,
+   "inlineLines": 0,
+   "referencedBy": [
+    "company-dna-learning.yml",
+    "vibe2-distillation-ingest.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "department-standards-qa.yml",
+   "name": "Company Department Standards QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 57,
+   "inlineLines": 4,
+   "referencedBy": [
+    "company-department-audit-sync.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "devloop-gate-all.yml",
+   "name": "Devloop Gate All",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch"
+   ],
+   "lines": 35,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 1.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "devloop-gates.yml",
+   "name": "Devloop Gates (Mare Scientia)",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 25,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 1.4,
+   "dormantCandidate": false
+  },
+  {
+   "file": "devloop-report-meadow.yml",
+   "name": "Devloop Report (마력숲)",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch"
+   ],
+   "lines": 29,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 0.5,
+   "dormantCandidate": false
+  },
+  {
+   "file": "devloop-report.yml",
+   "name": "Devloop Report (Mare Scientia)",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch"
+   ],
+   "lines": 29,
+   "inlineLines": 0,
+   "referencedBy": [
+    "devloop-report-meadow.yml"
+   ],
+   "ageDays": 1.4,
+   "dormantCandidate": false
+  },
+  {
+   "file": "devloop-studio.yml",
+   "name": "Devloop Studio Capture",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 111,
+   "inlineLines": 0,
+   "referencedBy": [
+    "vibe-visual-ladder.yml"
+   ],
+   "ageDays": 1.3,
+   "dormantCandidate": false
+  },
+  {
+   "file": "director-supervisor.yml",
+   "name": "Director Staff Supervisor",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run",
+    "push"
+   ],
+   "lines": 803,
+   "inlineLines": 569,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-system-ai-workers.yml",
+    "vibe2-parallelism-contract-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "emergency-kill-roblox-studio.yml",
+   "name": "Emergency Cancel Roblox Studio QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 87,
+   "inlineLines": 59,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "external-mobile-cloud-playtest.yml",
+   "name": "Vibe2 External Mobile Cloud Playtest",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 241,
+   "inlineLines": 67,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "external-mobile-free-game-playtest.yml",
+   "name": "Vibe2 External Mobile Free Game Playtest",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 304,
+   "inlineLines": 65,
+   "referencedBy": [
+    "vibe-qa.yml",
+    "vibe2-core-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "external-mobile-google-play-pc-diagnostic.yml",
+   "name": "Vibe2 Google Play Games PC Diagnostic",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 52,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "fantasy-opening-assets.yml",
+   "name": "Fantasy Opening 24 Assets",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 59,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "fantasy-opening-audio.yml",
+   "name": "Fantasy Opening Audio",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 58,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "fantasy-opening-studio-check.yml",
+   "name": "Fantasy Opening Studio Check",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 111,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "fantasy-skilltree-icons.yml",
+   "name": "Fantasy Skill Tree Icons",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 58,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 0.8,
+   "dormantCandidate": false
+  },
+  {
+   "file": "finalize-detailed-stage-scoring-v2.yml",
+   "name": "Finalize Detailed Stage Scoring V2",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 88,
+   "inlineLines": 33,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "free-budget-telemetry-qa.yml",
+   "name": "Free Budget Telemetry QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 81,
+   "inlineLines": 28,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "game-development-sync.yml",
+   "name": "All Games Development Sync",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 138,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "generate-lab-recorder.yml",
+   "name": "Generate Korean Lab Recorder Audio",
+   "triggers": [
+    "push"
+   ],
+   "lines": 81,
+   "inlineLines": 23,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "godot-android-apk.yml",
+   "name": "Godot Android APK",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 111,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "godot-bug-defense-android.yml",
+   "name": "Bug Defense Android Build",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 93,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "graphics-engine-qa.yml",
+   "name": "Graphics Engine QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 46,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "homepage-manager.yml",
+   "name": "Homepage Manager",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run",
+    "push",
+    "pull_request"
+   ],
+   "lines": 672,
+   "inlineLines": 236,
+   "referencedBy": [
+    "apply-release-publication-atomicity.yml",
+    "company-central-policy-contract-qa.yml",
+    "company-evolution-qa.yml",
+    "company-platform-exposure-sync.yml",
+    "company-status-sync.yml",
+    "director-supervisor.yml",
+    "magic-forest-pages.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "homepage-touch-controls-qa.yml",
+   "name": "Homepage Touch Controls QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 27,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "horror-combat-assets.yml",
+   "name": "Horror Authored Combat Assets",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 239,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 1.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "horror-manor-review.yml",
+   "name": "Horror Manor Native Review",
+   "triggers": [
+    "push"
+   ],
+   "lines": 95,
+   "inlineLines": 0,
+   "referencedBy": [
+    "emergency-kill-roblox-studio.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "horror-owner-system-publish.yml",
+   "name": "Horror Owner Direct Publish",
+   "triggers": [
+    "push"
+   ],
+   "lines": 414,
+   "inlineLines": 234,
+   "referencedBy": [
+    "emergency-kill-roblox-studio.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "magic-forest-pages.yml",
+   "name": "Magic Forest Static Play",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request",
+    "issues"
+   ],
+   "lines": 1065,
+   "inlineLines": 578,
+   "referencedBy": [
+    "company-security-immune.yml",
+    "homepage-manager.yml",
+    "pwa-command-bridge.yml",
+    "vibe2-candidate-release.yml",
+    "vibe2-recovery-fast.yml"
+   ],
+   "ageDays": 1.5,
+   "dormantCandidate": false
+  },
+  {
+   "file": "main-write-guard.yml",
+   "name": "Main Write Guard",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 151,
+   "inlineLines": 0,
+   "referencedBy": [
+    "director-supervisor.yml",
+    "vibe2-24h-runner.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "mare-audio-upload.yml",
+   "name": "Mare Audio Upload",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 40,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 1.0,
+   "dormantCandidate": false
+  },
+  {
+   "file": "motion-evolution-qa.yml",
+   "name": "Motion Evolution QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 62,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "one-shot-schema15-runtime-worker-fix.yml",
+   "name": "One Shot Schema15 Runtime Worker Fix",
+   "triggers": [
+    "push"
+   ],
+   "lines": 59,
+   "inlineLines": 33,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "owner-all-games-design-reset.yml",
+   "name": "Owner All Games Design Reset",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 133,
+   "inlineLines": 59,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "owner-baeksu-war-private-preview.yml",
+   "name": "Owner Baeksu War Versioned Private Preview",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 147,
+   "inlineLines": 42,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "owner-cozy-island-direct-publish.yml",
+   "name": "Owner Cozy Island Direct Publish",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 268,
+   "inlineLines": 89,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "owner-daechung-rpg-direct-publish.yml",
+   "name": "Owner Daechung RPG Direct Publish",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 247,
+   "inlineLines": 126,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "owner-fast-pages-publish.yml",
+   "name": "Owner Fast Pages Publish",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 107,
+   "inlineLines": 21,
+   "referencedBy": [
+    "vibe2-24h-runner.yml",
+    "vibe2-continuous-core.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "owner-mare-scientia-assets.yml",
+   "name": "Owner Mare Scientia Register Assets",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 178,
+   "inlineLines": 101,
+   "referencedBy": [],
+   "ageDays": 0.0,
+   "dormantCandidate": false
+  },
+  {
+   "file": "owner-mare-scientia-direct-publish.yml",
+   "name": "Owner Mare Scientia Direct Publish",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 107,
+   "inlineLines": 21,
+   "referencedBy": [
+    "owner-mare-scientia-assets.yml"
+   ],
+   "ageDays": 1.4,
+   "dormantCandidate": false
+  },
+  {
+   "file": "owner-roblox-dedicated-private-experiences.yml",
+   "name": "Owner Roblox Dedicated Private Experiences",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 1122,
+   "inlineLines": 825,
+   "referencedBy": [
+    "company-status-sync.yml"
+   ],
+   "ageDays": 1.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "owner-simple-rpg-direct-publish.yml",
+   "name": "Owner 대충알피지 Direct Publish",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 647,
+   "inlineLines": 293,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "party-rpg-mobile-test.yml",
+   "name": "Party RPG mobile browser smoke test",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 458,
+   "inlineLines": 430,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "post-modification-revote.yml",
+   "name": "Post Modification Department Revote",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 205,
+   "inlineLines": 51,
+   "referencedBy": [
+    "department-standards-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "primary-three-release-polish-qa.yml",
+   "name": "Primary Three Release Polish QA",
+   "triggers": [
+    "push",
+    "pull_request"
+   ],
+   "lines": 39,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "pwa-chat-flow-qa.yml",
+   "name": "PWA Chat Flow QA",
+   "triggers": [
+    "push",
+    "pull_request"
+   ],
+   "lines": 33,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "pwa-command-bridge.yml",
+   "name": "PWA Command Bridge",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "push",
+    "repository_dispatch",
+    "issue_comment"
+   ],
+   "lines": 534,
+   "inlineLines": 48,
+   "referencedBy": [
+    "vibe2-24h-runner.yml",
+    "web-vibe-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-f0-restart.yml",
+   "name": "Roblox F0 Restart & Resync",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 56,
+   "inlineLines": 11,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-post-runtime-qa-kickoff.yml",
+   "name": "One-shot Skyline Roblox Publication Target Recovery Kickoff",
+   "triggers": [
+    "push"
+   ],
+   "lines": 31,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-qa-camera-fetch.yml",
+   "name": "Roblox QA Camera Fetch",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 73,
+   "inlineLines": 45,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-qa-camera-scope-audit.yml",
+   "name": "Roblox QA Camera Scope Audit",
+   "triggers": [
+    "push"
+   ],
+   "lines": 33,
+   "inlineLines": 10,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-skyline-create-new.yml",
+   "name": "One-shot Skyline Rush New Roblox Experience",
+   "triggers": [
+    "push"
+   ],
+   "lines": 198,
+   "inlineLines": 112,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-skyline-emergency-final-publish.yml",
+   "name": "Skyline Rush Normalized Publish",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 245,
+   "inlineLines": 87,
+   "referencedBy": [
+    "roblox-skyline-emergency-publish-kickoff.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-skyline-emergency-publish-kickoff.yml",
+   "name": "Kick Skyline Rush Normalized Publish",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 20,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-skyline-final-publish-kickoff.yml",
+   "name": "One-shot Skyline Rush Final Publish Kickoff",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 27,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-skyline-publication-discovery.yml",
+   "name": "One-shot Skyline Roblox Publication Discovery",
+   "triggers": [
+    "push"
+   ],
+   "lines": 179,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-skyline-recover-new-target-from-studio-logs.yml",
+   "name": "One-shot Recover Fresh Skyline Target From Studio Logs",
+   "triggers": [
+    "push"
+   ],
+   "lines": 83,
+   "inlineLines": 0,
+   "referencedBy": [
+    "emergency-kill-roblox-studio.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-skyline-restore-release-target.yml",
+   "name": "One-shot Restore Skyline Release Gate And Fresh Target",
+   "triggers": [
+    "push"
+   ],
+   "lines": 130,
+   "inlineLines": 88,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-skyline-studio-publish-dialog-probe.yml",
+   "name": "One-shot Skyline Studio Publish Dialog Probe",
+   "triggers": [
+    "push"
+   ],
+   "lines": 130,
+   "inlineLines": 0,
+   "referencedBy": [
+    "emergency-kill-roblox-studio.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-skyline-studio-ui-probe.yml",
+   "name": "One-shot Skyline Studio Publish UI Probe",
+   "triggers": [
+    "push"
+   ],
+   "lines": 108,
+   "inlineLines": 0,
+   "referencedBy": [
+    "emergency-kill-roblox-studio.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "roblox-world-ghost-assets.yml",
+   "name": "Roblox World Ghost Assets",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 341,
+   "inlineLines": 149,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "temp-cancel-pre-gemini-design.yml",
+   "name": "Cancel Superseded Design Runtime",
+   "triggers": [
+    "push"
+   ],
+   "lines": 34,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "temp-design-runtime-cleanup.yml",
+   "name": "Temporary DESIGN_ONLY Superseded Run Cleanup",
+   "triggers": [
+    "push"
+   ],
+   "lines": 37,
+   "inlineLines": 14,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-android-independent-qa.yml",
+   "name": "Unity Android Independent QA",
+   "triggers": [
+    "workflow_dispatch",
+    "workflow_run"
+   ],
+   "lines": 258,
+   "inlineLines": 47,
+   "referencedBy": [
+    "company-development-unity-runtime.yml",
+    "director-supervisor.yml",
+    "unity-android-verification-dispatch.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-android-regression.yml",
+   "name": "Unity Android Exact Artifact Regression",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 187,
+   "inlineLines": 75,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-development-unity-runtime.yml",
+    "director-supervisor.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-android-runtime-smoke.yml",
+   "name": "Unity Android Runtime Smoke",
+   "triggers": [
+    "workflow_dispatch",
+    "workflow_run"
+   ],
+   "lines": 226,
+   "inlineLines": 42,
+   "referencedBy": [
+    "company-department-audit-sync.yml",
+    "company-development-unity-runtime.yml",
+    "department-standards-qa.yml",
+    "director-supervisor.yml",
+    "unity-android-verification-dispatch.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-android-verification-dispatch.yml",
+   "name": "Unity Android Verification Dispatch Bridge",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 136,
+   "inlineLines": 37,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-cloud-android-test.yml",
+   "name": "Unity Cloud Android Test",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 634,
+   "inlineLines": 208,
+   "referencedBy": [
+    "company-development-unity-runtime.yml",
+    "homepage-manager.yml",
+    "unity-hybrid-android-build.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-cloud-personal-license-request.yml",
+   "name": "Unity Cloud Personal License Request",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 66,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-hybrid-android-build.yml",
+   "name": "Unity Hybrid Android Build",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 215,
+   "inlineLines": 123,
+   "referencedBy": [
+    "company-department-audit-sync.yml",
+    "department-standards-qa.yml",
+    "director-supervisor.yml",
+    "homepage-manager.yml",
+    "unity-android-independent-qa.yml",
+    "unity-android-runtime-smoke.yml",
+    "vibe2-candidate-release.yml",
+    "vibe2-unity-candidate-result.yml",
+    "vibe2-unity-release-result.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-license-diagnostic.yml",
+   "name": "Unity License Diagnostic",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 86,
+   "inlineLines": 60,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-local-pc-android.yml",
+   "name": "Unity Local PC Android APK",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 306,
+   "inlineLines": 0,
+   "referencedBy": [
+    "homepage-manager.yml",
+    "unity-hybrid-android-build.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-local-runner-heartbeat.yml",
+   "name": "Unity Local Runner Heartbeat",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 130,
+   "inlineLines": 0,
+   "referencedBy": [
+    "unity-hybrid-android-build.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-web-first-stage-build.yml",
+   "name": "Unity Web Development Floor",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 1333,
+   "inlineLines": 795,
+   "referencedBy": [
+    "company-development-unity-runtime.yml",
+    "homepage-manager.yml",
+    "vibe2-candidate-release.yml",
+    "vibe2-recovery-fast.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "unity-web-floor-source-bootstrap.yml",
+   "name": "Unity Web Floor Source Bootstrap",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 255,
+   "inlineLines": 61,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "verify-four-doc-data-lock.yml",
+   "name": "Verify Four Document Data Lock",
+   "triggers": [
+    "push",
+    "pull_request"
+   ],
+   "lines": 63,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe-qa.yml",
+   "name": "Vibe QA",
+   "triggers": [
+    "push",
+    "pull_request"
+   ],
+   "lines": 350,
+   "inlineLines": 176,
+   "referencedBy": [
+    "department-experience.yml",
+    "vibe2-core-qa.yml",
+    "web-vibe-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe-regression.yml",
+   "name": "Vibe Integrated Regression",
+   "triggers": [
+    "push",
+    "pull_request"
+   ],
+   "lines": 169,
+   "inlineLines": 6,
+   "referencedBy": [
+    "vibe-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe-visual-ladder.yml",
+   "name": "Vibe Visual Ladder",
+   "triggers": [
+    "workflow_dispatch",
+    "workflow_run"
+   ],
+   "lines": 78,
+   "inlineLines": 13,
+   "referencedBy": [],
+   "ageDays": 0.0,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe-work-lock-qa.yml",
+   "name": "Vibe Shared Work Lock QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 75,
+   "inlineLines": 3,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-24h-canary.yml",
+   "name": "Vibe2 24H Canary",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 103,
+   "inlineLines": 18,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-24h-runner.yml",
+   "name": "Vibe2 24H Runner",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run",
+    "push"
+   ],
+   "lines": 1615,
+   "inlineLines": 1019,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "company-design-promotion-sync.yml",
+    "company-evolution-qa.yml",
+    "company-roblox-source-drift-sync.yml",
+    "director-supervisor.yml",
+    "unity-web-first-stage-build.yml",
+    "vibe2-core-qa.yml",
+    "vibe2-learning-pipeline-contract.yml",
+    "vibe2-parallelism-contract-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-candidate-release.yml",
+   "name": "Vibe2 Candidate Release Gate",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 1517,
+   "inlineLines": 753,
+   "referencedBy": [
+    "company-evolution-qa.yml",
+    "director-supervisor.yml",
+    "homepage-manager.yml",
+    "vibe2-24h-runner.yml",
+    "vibe2-continuous-core.yml",
+    "vibe2-recovery-fast.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-continuous-core.yml",
+   "name": "Vibe2 Continuous Core",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "push",
+    "repository_dispatch"
+   ],
+   "lines": 3783,
+   "inlineLines": 2546,
+   "referencedBy": [
+    "company-central-policy-contract-qa.yml",
+    "director-supervisor.yml",
+    "pwa-command-bridge.yml",
+    "vibe2-24h-runner.yml",
+    "vibe2-core-qa.yml",
+    "vibe2-parallelism-contract-qa.yml",
+    "vibe2-recovery-fast.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-core-qa.yml",
+   "name": "Vibe2 Core QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 799,
+   "inlineLines": 211,
+   "referencedBy": [
+    "director-supervisor.yml",
+    "vibe2-24h-runner.yml",
+    "vibe2-continuous-core.yml",
+    "vibe2-learning-pipeline-contract.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-development-intelligence-qa.yml",
+   "name": "Vibe2 Development Intelligence QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 56,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-distillation-ingest.yml",
+   "name": "Vibe2 Distillation Sample Ingest",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run",
+    "push"
+   ],
+   "lines": 342,
+   "inlineLines": 46,
+   "referencedBy": [
+    "external-mobile-free-game-playtest.yml",
+    "vibe2-24h-runner.yml",
+    "vibe2-fast-distillation-bootstrap.yml",
+    "vibe2-learning-pipeline-contract.yml",
+    "vibe2-local-distillation-train.yml",
+    "vibe2-structural-repair-distillation.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-fast-distillation-bootstrap.yml",
+   "name": "Vibe2 Fast Distillation Bootstrap",
+   "triggers": [
+    "workflow_dispatch",
+    "workflow_run"
+   ],
+   "lines": 190,
+   "inlineLines": 23,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-learning-pipeline-contract.yml",
+   "name": "Vibe2 Learning Pipeline Contract",
+   "triggers": [
+    "workflow_dispatch",
+    "workflow_run",
+    "push",
+    "pull_request"
+   ],
+   "lines": 205,
+   "inlineLines": 27,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-licensed-reference-learning-qa.yml",
+   "name": "Vibe2 Licensed Unity Reference QA",
+   "triggers": [
+    "push",
+    "pull_request"
+   ],
+   "lines": 56,
+   "inlineLines": 10,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-local-distillation-train.yml",
+   "name": "Vibe2 Local Distillation Training",
+   "triggers": [
+    "workflow_dispatch",
+    "workflow_run"
+   ],
+   "lines": 264,
+   "inlineLines": 48,
+   "referencedBy": [
+    "vibe2-distillation-ingest.yml",
+    "vibe2-fast-distillation-bootstrap.yml",
+    "vibe2-learning-pipeline-contract.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-merged-pr-provenance.yml",
+   "name": "Vibe2 Merged PR Provenance",
+   "triggers": [
+    "pull_request"
+   ],
+   "lines": 138,
+   "inlineLines": 0,
+   "referencedBy": [
+    "vibe2-core-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-mobile-apk-server-playtest.yml",
+   "name": "Vibe2 Mobile APK Server Playtest",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 240,
+   "inlineLines": 74,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-parallelism-contract-qa.yml",
+   "name": "Vibe2 Parallelism Contract QA",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 50,
+   "inlineLines": 0,
+   "referencedBy": [
+    "director-supervisor.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-practice-cpu-fallback.yml",
+   "name": "Vibe2 Unity Practice CPU Fallback",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 215,
+   "inlineLines": 0,
+   "referencedBy": [
+    "vibe2-licensed-reference-learning-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-recovery-fast.yml",
+   "name": "Vibe2 Recovery Fast",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run",
+    "repository_dispatch"
+   ],
+   "lines": 243,
+   "inlineLines": 125,
+   "referencedBy": [
+    "director-supervisor.yml",
+    "vibe2-core-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-roblox-candidate-result.yml",
+   "name": "Vibe2 Roblox Candidate Result",
+   "triggers": [
+    "workflow_dispatch",
+    "workflow_run"
+   ],
+   "lines": 421,
+   "inlineLines": 154,
+   "referencedBy": [
+    "vibe2-24h-runner.yml",
+    "vibe2-recovery-fast.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-roblox-candidate-runtime.yml",
+   "name": "Vibe2 Roblox Candidate Runtime",
+   "triggers": [
+    "workflow_dispatch",
+    "push",
+    "pull_request"
+   ],
+   "lines": 221,
+   "inlineLines": 36,
+   "referencedBy": [
+    "vibe2-24h-runner.yml",
+    "vibe2-recovery-fast.yml",
+    "vibe2-roblox-candidate-result.yml",
+    "vibe2-roblox-release-handoff.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-roblox-release-handoff.yml",
+   "name": "Vibe2 Roblox Release Handoff",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 276,
+   "inlineLines": 143,
+   "referencedBy": [
+    "vibe2-recovery-fast.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-structural-repair-distillation.yml",
+   "name": "Vibe2 Unity Coding Structural Distillation",
+   "triggers": [
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run",
+    "push"
+   ],
+   "lines": 457,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-system-evolution-release.yml",
+   "name": "Vibe2 System Architecture Evolution Gate",
+   "triggers": [
+    "workflow_dispatch"
+   ],
+   "lines": 198,
+   "inlineLines": 77,
+   "referencedBy": [
+    "vibe2-continuous-core.yml",
+    "vibe2-core-qa.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-unity-candidate-result.yml",
+   "name": "Vibe2 Unity Candidate Result",
+   "triggers": [
+    "workflow_run"
+   ],
+   "lines": 134,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe2-unity-release-result.yml",
+   "name": "Vibe2 Unity Release Result",
+   "triggers": [
+    "workflow_run"
+   ],
+   "lines": 391,
+   "inlineLines": 173,
+   "referencedBy": [
+    "company-evolution-qa.yml",
+    "company-platform-exposure-sync.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe3-engine-contract.yml",
+   "name": "Vibe3 Engine Contract",
+   "triggers": [
+    "push",
+    "pull_request"
+   ],
+   "lines": 275,
+   "inlineLines": 105,
+   "referencedBy": [
+    "director-supervisor.yml",
+    "main-write-guard.yml"
+   ],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "vibe59-luau-compiler.yml",
+   "name": "Vibe5.9 real Luau compiler gate",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "lines": 62,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  },
+  {
+   "file": "web-vibe-qa.yml",
+   "name": "Independent Web Vibe QA",
+   "triggers": [
+    "push",
+    "pull_request"
+   ],
+   "lines": 61,
+   "inlineLines": 0,
+   "referencedBy": [],
+   "ageDays": 2.1,
+   "dormantCandidate": false
+  }
+ ]
+}
