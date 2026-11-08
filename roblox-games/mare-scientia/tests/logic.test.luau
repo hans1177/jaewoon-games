@@ -1739,6 +1739,39 @@ do
 	check("sea routes start/end near ports", okEnds)
 end
 
+-- 15. 모든 나라로 여러 행동을 해도 화면 정보(View)를 만들 수 있어야 한다 -------------------------
+do
+	local names = {}
+	for name in handlers do
+		table.insert(names, name)
+	end
+	table.sort(names)
+	local skip = { Hunt = true, ChallengeBoss = true }
+	local firstFail = nil
+	for nid, nation in D.Ports.Nations do
+		for _, year in { 1650, 1750 } do
+			local st = S.State.new(nid, year)
+			st.coins = 5000
+			st.fame = 200
+			for round = 1, 3 do
+				for _, name in names do
+					if not skip[name] then
+						local payloads = { {}, { id = "x" }, { index = 1 }, { eventId = "lc_1", choice = 1 }, { portId = st.portId } }
+						for _, pl in payloads do
+							pcall(handlers[name], st, pl, ctx)
+						end
+						local okV, err = pcall(S.View.build, st, ctx)
+						if not okV and not firstFail then
+							firstFail = string.format("%s/%d after %s: %s", nid, year, name, tostring(err))
+						end
+					end
+				end
+			end
+		end
+	end
+	check("view builds for every nation after any action", firstFail == nil, firstFail)
+end
+
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then
 	error("tests failed")
