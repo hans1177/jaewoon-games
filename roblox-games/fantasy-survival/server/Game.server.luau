@@ -5082,7 +5082,7 @@ end
 
 -- [지역 몬스터] 서식지의 위치와 위험도를 서버가 소유한다.
 local function spawnEnemy(site, siteIndex)
-  if #enemies >= MAX_ENEMIES then return false end
+  if #enemies >= MAX_ENEMIES and not site.studioGallery then return false end
   -- [늑대 안전 스폰] 추가된 지점이나 오래된 설정도 마을 구역이면 거부한다.
   if site.id=="wolf" and meadowVillageContains(site.position) and not site.named and not site.questBoss and not site.name then return false end
   local isBoss=site.id=="golem"
@@ -5725,7 +5725,7 @@ if RunService:IsStudio() then
       local key=galleryKeys[group*3+slot]
       if key then
         local ok,spawned=pcall(function()
-          return spawnEnemy({id="wolf",atom="HEAD_CANINE",model=key,name=key,tier=1,height=3.4,hp=40,dmg=.05,
+          return spawnEnemy({id="wolf",atom="HEAD_CANINE",model=key,name=key,tier=1,height=3.4,hp=40,dmg=.05,studioGallery=true,
             position=Vector3.new(-12+(slot-1)*12,3,420)},9000+group*3+slot)
         end)
         for _,enemy in ipairs(enemies) do
