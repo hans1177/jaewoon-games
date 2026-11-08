@@ -256,6 +256,229 @@ function VoyageScene.play(info)
 		end
 	end
 
+	-- 수동 항해(helm): 스틱/WASD로 배를 직접 몰고, 바람 방향에 따라 속도가 달라진다.
+	-- 항해 결과(전투·거래)는 서버가 이미 정했으므로 여기서는 연출·조종만 다룬다.
+	local helm = info.helm == true and not info.intro and not manual
+	local helmConns = {}
+	local stickX, stickY = 0, 0
+	local autoOn = false
+	local helmTrim = 0.8
+	local helmSpeed = 0
+	local helmYaw = 0
+	local helmPos = pts[1]
+	local helmDest = pts[#pts]
+	local helmStartDist = math.max((helmDest - pts[1]).Magnitude, 1)
+	local windFrom = 0
+	local tackSide = 1
+	local helmMsg, windLabel, speedLabel, distLabel, trimFill, mapFrame, mapShip, mapDest, windArrow, autoBtn
+	local MAP = 150
+	local function wrapAngle(a)
+		return (a + math.pi) % (math.pi * 2) - math.pi
+	end
+	-- 돛 효율: 맞바람이면 거의 못 가고, 옆바람~뒷바람에서 가장 빠르다
+	local function polar(a)
+		local d = math.deg(math.abs(a))
+		if d < 30 then
+			return 0.1
+		elseif d < 60 then
+			return 0.1 + (d - 30) / 30 * 0.6
+		elseif d < 100 then
+			return 0.7 + (d - 60) / 40 * 0.3
+		elseif d < 150 then
+			return 1
+		end
+		return 1 - (d - 150) / 30 * 0.15
+	end
+	if helm then
+		skip.Visible = false
+		do
+			local d0 = helmDest - pts[1]
+			helmYaw = yawOf(d0.Unit)
+			-- 항로가 바람에 80~160도 비껴가게 두어 기본 코스로도 갈 수 있게 한다
+			local seed = 0
+			for i = 1, #(info.fromName .. info.toName) do
+				seed += string.byte((info.fromName .. info.toName), i)
+			end
+			local sign = if seed % 2 == 0 then 1 else -1
+			windFrom = helmYaw + sign * math.rad(80 + (seed % 80))
+		end
+		hint.Text = "스틱·WASD로 조종 · 위/아래(W/S)로 돛 펴기/접기 · 금색 깃발이 목적지"
+		local function mkLabel(size, pos, text, anchor)
+			local l = Instance.new("TextLabel")
+			l.BackgroundTransparency = 1
+			l.AnchorPoint = anchor or Vector2.new(0, 0)
+			l.Position = pos
+			l.Size = size
+			l.Font = Enum.Font.GothamBold
+			l.TextSize = 15
+			l.TextColor3 = Color3.new(1, 1, 1)
+			l.TextStrokeTransparency = 0.35
+			l.Text = text
+			l.ZIndex = 9
+			l.Parent = gui
+			return l
+		end
+		-- 스틱 (왼쪽 아래): 좌우=키, 위아래=돛
+		local base = Instance.new("Frame")
+		base.Name = "HelmStick"
+		base.AnchorPoint = Vector2.new(0, 1)
+		base.Position = UDim2.new(0, 26, 1, -70)
+		base.Size = UDim2.fromOffset(150, 150)
+		base.BackgroundColor3 = Color3.fromRGB(18, 38, 62)
+		base.BackgroundTransparency = 0.4
+		base.BorderSizePixel = 0
+		base.Active = true
+		base.ZIndex = 8
+		base.Parent = gui
+		do
+			local c = Instance.new("UICorner")
+			c.CornerRadius = UDim.new(1, 0)
+			c.Parent = base
+			local st = Instance.new("UIStroke")
+			st.Color = Color3.fromRGB(224, 170, 69)
+			st.Thickness = 2
+			st.Parent = base
+		end
+		local knob = Instance.new("Frame")
+		knob.AnchorPoint = Vector2.new(0.5, 0.5)
+		knob.Position = UDim2.fromScale(0.5, 0.5)
+		knob.Size = UDim2.fromOffset(62, 62)
+		knob.BackgroundColor3 = Color3.fromRGB(224, 170, 69)
+		knob.BackgroundTransparency = 0.1
+		knob.BorderSizePixel = 0
+		knob.ZIndex = 9
+		knob.Parent = base
+		do
+			local c = Instance.new("UICorner")
+			c.CornerRadius = UDim.new(1, 0)
+			c.Parent = knob
+		end
+		local stickInput = nil
+		local function setStick(pos2)
+			local centre = base.AbsolutePosition + base.AbsoluteSize / 2
+			local v = (Vector2.new(pos2.X, pos2.Y) - centre) / (base.AbsoluteSize.X / 2 - 8)
+			if v.Magnitude > 1 then
+				v = v.Unit
+			end
+			stickX, stickY = v.X, -v.Y
+			knob.Position = UDim2.new(0.5, v.X * 44, 0.5, v.Y * 44)
+		end
+		local function resetStick()
+			stickInput = nil
+			stickX, stickY = 0, 0
+			knob.Position = UDim2.fromScale(0.5, 0.5)
+		end
+		base.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				stickInput = input
+				setStick(input.Position)
+			end
+		end)
+		table.insert(helmConns, UserInputService.InputChanged:Connect(function(input)
+			if stickInput and (input == stickInput or input.UserInputType == Enum.UserInputType.MouseMovement) then
+				setStick(input.Position)
+			end
+		end))
+		table.insert(helmConns, UserInputService.InputEnded:Connect(function(input)
+			if stickInput and (input == stickInput or input.UserInputType == Enum.UserInputType.MouseButton1) then
+				resetStick()
+			end
+		end))
+		-- 바람·속도·거리 표시
+		windLabel = mkLabel(UDim2.fromOffset(190, 20), UDim2.new(0, 16, 0, 100), "바람", nil)
+		windLabel.TextXAlignment = Enum.TextXAlignment.Left
+		speedLabel = mkLabel(UDim2.fromOffset(190, 20), UDim2.new(0, 16, 0, 122), "속도", nil)
+		speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+		distLabel = mkLabel(UDim2.fromOffset(190, 20), UDim2.new(0, 16, 0, 144), "거리", nil)
+		distLabel.TextXAlignment = Enum.TextXAlignment.Left
+		helmMsg = mkLabel(UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0.18, 0), "", nil)
+		helmMsg.TextSize = 20
+		-- 미니맵 (오른쪽 위): 출발·목적지·내 배·바람 화살표
+		mapFrame = Instance.new("Frame")
+		mapFrame.AnchorPoint = Vector2.new(1, 0)
+		mapFrame.Position = UDim2.new(1, -16, 0, 100)
+		mapFrame.Size = UDim2.fromOffset(MAP, MAP)
+		mapFrame.BackgroundColor3 = Color3.fromRGB(226, 208, 168)
+		mapFrame.BackgroundTransparency = 0.12
+		mapFrame.BorderSizePixel = 0
+		mapFrame.ClipsDescendants = true
+		mapFrame.ZIndex = 8
+		mapFrame.Parent = gui
+		do
+			local c = Instance.new("UICorner")
+			c.CornerRadius = UDim.new(0, 10)
+			c.Parent = mapFrame
+			local st = Instance.new("UIStroke")
+			st.Color = Color3.fromRGB(120, 84, 40)
+			st.Thickness = 2
+			st.Parent = mapFrame
+		end
+		local function mapDot(text, size, color)
+			local l = Instance.new("TextLabel")
+			l.AnchorPoint = Vector2.new(0.5, 0.5)
+			l.BackgroundTransparency = 1
+			l.Size = UDim2.fromOffset(size, size)
+			l.Font = Enum.Font.GothamBold
+			l.TextSize = size
+			l.TextColor3 = color
+			l.Text = text
+			l.ZIndex = 10
+			l.Parent = mapFrame
+			return l
+		end
+		local startDot = mapDot("●", 12, Color3.fromRGB(70, 90, 120))
+		startDot.Name = "Start"
+		mapDest = mapDot("⚑", 22, Color3.fromRGB(190, 120, 20))
+		mapShip = mapDot("➤", 20, Color3.fromRGB(20, 60, 140))
+		windArrow = mapDot("➤", 22, Color3.fromRGB(40, 150, 90))
+		windArrow.Position = UDim2.new(0, 22, 0, 22)
+		-- 돛 막대 (오른쪽 가운데): 위로 올리면 돛을 펴고 아래로 내리면 접는다
+		local trimBack = Instance.new("Frame")
+		trimBack.AnchorPoint = Vector2.new(1, 1)
+		trimBack.Position = UDim2.new(1, -22, 1, -70)
+		trimBack.Size = UDim2.fromOffset(16, 150)
+		trimBack.BackgroundColor3 = Color3.fromRGB(18, 38, 62)
+		trimBack.BackgroundTransparency = 0.35
+		trimBack.BorderSizePixel = 0
+		trimBack.ZIndex = 8
+		trimBack.Parent = gui
+		trimFill = Instance.new("Frame")
+		trimFill.AnchorPoint = Vector2.new(0, 1)
+		trimFill.Position = UDim2.fromScale(0, 1)
+		trimFill.Size = UDim2.fromScale(1, helmTrim)
+		trimFill.BackgroundColor3 = Color3.fromRGB(240, 235, 215)
+		trimFill.BorderSizePixel = 0
+		trimFill.ZIndex = 9
+		trimFill.Parent = trimBack
+		local trimTag = mkLabel(UDim2.fromOffset(40, 16), UDim2.new(1, -14, 1, -226), "돛", Vector2.new(1, 0))
+		trimTag.TextSize = 13
+		-- 자동 항해 전환 버튼
+		autoBtn = Instance.new("TextButton")
+		autoBtn.AnchorPoint = Vector2.new(1, 1)
+		autoBtn.Position = UDim2.new(1, -52, 1, -70)
+		autoBtn.Size = UDim2.fromOffset(120, 44)
+		autoBtn.BackgroundColor3 = Color3.fromRGB(40, 80, 130)
+		autoBtn.BackgroundTransparency = 0.15
+		autoBtn.Font = Enum.Font.GothamBold
+		autoBtn.TextSize = 15
+		autoBtn.TextColor3 = Color3.new(1, 1, 1)
+		autoBtn.Text = "⚓ 자동 항해"
+		autoBtn.ZIndex = 9
+		autoBtn.Parent = gui
+		do
+			local c = Instance.new("UICorner")
+			c.Parent = autoBtn
+		end
+		autoBtn.Activated:Connect(function()
+			autoOn = not autoOn
+			autoBtn.Text = if autoOn then "🎮 직접 조종" else "⚓ 자동 항해"
+		end)
+		-- 목적지 깃발(멀리서도 보이는 빛기둥)
+		local beacon = part(folder, Vector3.new(5, 160, 5), CFrame.new(helmDest + Vector3.new(0, 80, 0)), Color3.fromRGB(255, 205, 90), Enum.Material.Neon)
+		beacon.Name = "DestBeacon"
+		beacon.Transparency = 0.35
+	end
+
 	-- 조명 저장 후 바다 분위기로 바꾼다
 	local saved = {
 		clock = Lighting.ClockTime, fogEnd = Lighting.FogEnd, fogStart = Lighting.FogStart, fogColor = Lighting.FogColor,
@@ -712,8 +935,85 @@ function VoyageScene.play(info)
 	while not skipped and dist < total and gui.Parent do
 		local dt = RunService.Heartbeat:Wait()
 		t += dt
-		dist = math.min(total, dist + speedNow * dt * (0.25 + 0.75 * math.min(t / 2, 1)))
-		local pos, dir = positionAt(pts, cum, dist)
+		local pos, dir
+		if helm then
+			-- 수동 항해: 키·스틱으로 방향과 돛을 정하고, 바람에 따라 속도가 정해진다
+			local steer = stickX
+			local trimIn = stickY
+			if UserInputService:IsKeyDown(Enum.KeyCode.A) or UserInputService:IsKeyDown(Enum.KeyCode.Left) then
+				steer -= 1
+			end
+			if UserInputService:IsKeyDown(Enum.KeyCode.D) or UserInputService:IsKeyDown(Enum.KeyCode.Right) then
+				steer += 1
+			end
+			if UserInputService:IsKeyDown(Enum.KeyCode.W) or UserInputService:IsKeyDown(Enum.KeyCode.Up) then
+				trimIn += 1
+			end
+			if UserInputService:IsKeyDown(Enum.KeyCode.S) or UserInputService:IsKeyDown(Enum.KeyCode.Down) then
+				trimIn -= 1
+			end
+			local toDest = helmDest - helmPos
+			local remaining = Vector3.new(toDest.X, 0, toDest.Z).Magnitude
+			if t > duration * 3.5 then
+				autoOn = true -- 너무 오래 걸리면 자동 항해로 마무리한다
+			end
+			if autoOn then
+				-- 자동 항해: 목적지로 가되 맞바람이면 지그재그(태킹)로 간다
+				local want = yawOf(toDest.Unit)
+				local rel = wrapAngle(want - windFrom)
+				if math.abs(rel) < math.rad(50) then
+					want = windFrom + tackSide * math.rad(52)
+					if math.abs(wrapAngle(want - helmYaw)) < 0.05 then
+						tackSide = -tackSide
+					end
+				end
+				steer = -math.clamp(wrapAngle(want - helmYaw) * 2.5, -1, 1)
+				trimIn = (0.95 - helmTrim) * 2
+			end
+			helmTrim = math.clamp(helmTrim + trimIn * dt * 0.6, 0.1, 1)
+			local gust = 1 + 0.12 * math.sin(t * 0.3) + 0.05 * math.sin(t * 0.9 + 1)
+			local eff
+			if info.steam then
+				eff = 0.95
+			else
+				eff = polar(wrapAngle(helmYaw - windFrom)) * gust
+			end
+			local baseSpeed = speedNow * 1.2
+			local targetSpeed = baseSpeed * helmTrim * eff
+			helmSpeed += (targetSpeed - helmSpeed) * math.min(1, dt * 0.9)
+			local turnRate = 0.95 * (0.35 + 0.65 * math.min(1, helmSpeed / math.max(baseSpeed * 0.5, 1)))
+			helmYaw -= math.clamp(steer, -1, 1) * turnRate * dt -- 오른쪽(+)으로 틀면 yaw 가 줄어든다
+			local fwd0 = Vector3.new(math.cos(helmYaw), 0, -math.sin(helmYaw))
+			helmPos += fwd0 * helmSpeed * dt
+			pos, dir = helmPos, fwd0
+			toDest = helmDest - helmPos
+			remaining = Vector3.new(toDest.X, 0, toDest.Z).Magnitude
+			dist = if remaining < 55 then total else math.clamp(total * (1 - remaining / helmStartDist), 0, total * 0.995)
+			-- HUD
+			local relWind = math.abs(wrapAngle(helmYaw - windFrom))
+			local wtxt = if info.steam then "증기 기관(바람 무관)" elseif relWind < math.rad(40) then "맞바람! 돛이 처져요" elseif relWind < math.rad(100) then "옆바람 · 빠름" else "뒷바람 · 순항"
+			windLabel.Text = "바람: " .. wtxt
+			speedLabel.Text = string.format("속도 %.0f노트 · 돛 %d%%", helmSpeed / 2, math.floor(helmTrim * 100))
+			distLabel.Text = string.format("목적지까지 %d", math.floor(remaining))
+			trimFill.Size = UDim2.fromScale(1, helmTrim)
+			helmMsg.Text = if autoOn then "자동 항해 중" elseif relWind < math.rad(40) and not info.steam then "맞바람 — 방향을 옆으로 틀어요" else ""
+			-- 미니맵: 동쪽=오른쪽, 북쪽(-Z)=위
+			local mid = (pts[1] + helmDest) / 2
+			local half = math.max(helmStartDist * 0.75, 260)
+			local function toMap(w)
+				local mx = math.clamp(0.5 + (w.X - mid.X) / (2 * half), 0.04, 0.96)
+				local my = math.clamp(0.5 + (w.Z - mid.Z) / (2 * half), 0.04, 0.96)
+				return UDim2.fromScale(mx, my)
+			end
+			mapFrame:FindFirstChild("Start").Position = toMap(pts[1])
+			mapDest.Position = toMap(helmDest)
+			mapShip.Position = toMap(helmPos)
+			mapShip.Rotation = -math.deg(helmYaw)
+			windArrow.Rotation = -math.deg(windFrom + math.pi)
+		else
+			dist = math.min(total, dist + speedNow * dt * (0.25 + 0.75 * math.min(t / 2, 1)))
+			pos, dir = positionAt(pts, cum, dist)
+		end
 		if manual then
 			local push = 0
 			if held.l or UserInputService:IsKeyDown(Enum.KeyCode.A) or UserInputService:IsKeyDown(Enum.KeyCode.Left) then
@@ -972,6 +1272,9 @@ function VoyageScene.play(info)
 		terrain.WaterColor, terrain.WaterTransparency, terrain.WaterReflectance = savedWater.c, savedWater.t, savedWater.r
 		terrain.WaterWaveSize, terrain.WaterWaveSpeed = savedWater.ws, savedWater.wsp
 	end)
+	for _, cn in helmConns do
+		cn:Disconnect()
+	end
 	folder:Destroy()
 	gui:Destroy()
 	if manual and not skipped then
