@@ -72,7 +72,8 @@ jobs:
           if git diff --cached --quiet; then echo "no ladder change"; exit 0; fi
           git commit -m "비주얼 래더: 루프 검증 통과로 디테일 단계 갱신"
           for i in 1 2 3; do
-            git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0
+            git status --short | head -5
+            git pull -q --rebase --autostash origin main && git push -q origin HEAD:main && exit 0
             sleep 4
           done
           exit 1
