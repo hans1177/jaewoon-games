@@ -314,7 +314,14 @@ local function modelIcon(parent, kind, asset, tint, px, labelText)
 		-- 수직·수평 시야에 모델 전체가 들어오도록 바운딩 구로 거리를 계산한다.
 		local radius = math.max(size.Magnitude * 0.5, 0.1)
 		local reach = radius / math.sin(math.rad(cam.FieldOfView * 0.5)) * 1.08
-		cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.85, 0.65, 1.2).Unit * reach, cf.Position)
+		if kind == "People" then
+			-- 동료 얼굴은 전신 도감이 아니라 반신 초상 구도로 보여 준다.
+			local focus = cf.Position + Vector3.new(0, size.Y * 0.30, 0)
+			cam.FieldOfView = 34
+			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.12, 0.08, 1).Unit * (size.Y * 0.88), focus)
+		else
+			cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.85, 0.65, 1.2).Unit * reach, cf.Position)
+		end
 		if px >= 60 then
 			addItemMotion({ gui = vf, model = m, center = cf.Position, base = m:GetPivot() })
 		end
@@ -496,6 +503,17 @@ local portraitKey = nil
 local PORTRAIT_ROLE = {
 	["교역소"] = "Rogue", ["항만청"] = "Knight", ["조선소"] = "Barbarian",
 	["주점"] = "Barbarian", ["학자의 서재"] = "Mage", ["선장실"] = "Rogue_Hooded",
+}
+-- 동료별 실제 등록된 인물 모델. 기존 3D 원본과 역할을 재사용하며 저장 데이터는 건드리지 않는다.
+-- 문화권·성별이 맞지 않는 공용 2D 얼굴을 다른 사람에게 강제로 할당하지 않는다.
+local COMPANION_MODEL = {
+	c_merian = "Casual3_Female", c_halley = "OldClassy_Male", c_leeuwenhoek = "Doctor_Male_Old",
+	c_linnaeus = "Doctor_Male_Young", c_boyle = "Casual2_Male", c_papin = "Worker_Male",
+	t_navigator = "Pirate_Male", t_gunner = "Pirate_Female", t_purser = "OldClassy_Male",
+	t_surgeon = "Doctor_Female_Young",
+	n_england = "Casual3_Male", n_netherlands = "Casual2_Male", n_france = "OldClassy_Male",
+	n_portugal = "Casual_Male", n_ottoman = "Casual2_Male", n_swahili = "Worker_Male",
+	n_malabar = "Worker_Male", n_japan = "Soldier_Male", n_new_spain = "Worker_Male",
 }
 -- 초상화 시트: 왼쪽부터 상인·항만 관리관·조선 장인 / 주점 주인·학자·항해가.
 -- 나이와 직업이 다른 인물을 사용한다. 나라·역할이 맞지 않으면 기존 인물 모델을 보존한다.
@@ -2222,7 +2240,10 @@ local function renderHarbor()
 				if c.joined then
 					table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
 				end
-				return mkRow(content, string.format("[%s] %s%s", c.role, c.name, if c.joined then "  ✔" else ""), sub, btns, 84)
+				local row = mkRow(content, string.format("[%s] %s%s", c.role, c.name, if c.joined then "  ✔" else ""), sub, btns, 84)
+				local model = COMPANION_MODEL[c.id]
+				if model then withIcon(row, "People", model, nil, 56) end
+				return row
 			end)
 		end
 	end
@@ -2351,7 +2372,10 @@ local function renderStatus()
 			if c.joined then
 				table.insert(btns, 1, { text = "대화", color = COLORS.blue, onClick = function() call("Talk", { companionId = c.id }) end })
 			end
-			return mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, btns, 76)
+			local row = mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, btns, 76)
+			local model = COMPANION_MODEL[c.id]
+			if model then withIcon(row, "People", model, nil, 52) end
+			return row
 		end)
 	end
 	add(function() return mkHeader(content, "명성 랭킹 (서버 전체 상위 10)") end)
