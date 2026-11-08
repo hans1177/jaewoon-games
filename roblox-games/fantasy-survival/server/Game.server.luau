@@ -7836,6 +7836,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
         if (Vector3.new(root.Position.X,0,root.Position.Z)-Vector3.new(site.X,0,site.Z)).Magnitude<=station.Radius+8 then atCook=true;break end
       end
     end
+    if root and not atCook and _G.MeadowCampCook and _G.MeadowCampCook(player,root.Position) then atCook=true end
     if not root or not atCook then return end
     local dish=Config.MeadowFoods[tonumber(actionId:sub(-1))]
     if not dish then return end
@@ -12187,6 +12188,13 @@ do
     oasis={field="CampOasis",center=Vector3.new(3460,0,-60),name="오아시스 야영지"},
   }
   local restReady={}
+  -- 요리 화덕(2단계 이상)을 세운 야영지 곁에서는 요리 메뉴의 요리 실행 검사를 통과시킨다.
+  _G.MeadowCampCook=function(player,position)
+    for _,camp in pairs(camps) do
+      if readNumber(player,camp.field,0)>=2 and (Vector3.new(position.X,0,position.Z)-Vector3.new(camp.center.X,0,camp.center.Z)).Magnitude<=45 then return true end
+    end
+    return false
+  end
   local function say(player,title,text,options) pcall(function() villageDialogue(player,title,text,options) end) end
   local function place(name,position,height,yaw)
     local id=Config.CampAssets and Config.CampAssets[name]
@@ -12225,6 +12233,7 @@ do
       lines[#lines+1]="모닥불이 타고 있다. 쉬면 체력과 기력이 회복돼."
       options[#options+1]={label="휴식하기",action="camp:rest"}
     end
+    if level>=2 then options[#options+1]={label="요리하기",action="camp:cook"} end
     if upgrade then
       lines[#lines+1]="다음: "..upgrade.Name.." · 나무 "..upgrade.Wood.." 돌 "..upgrade.Stone..(upgrade.Coins>0 and (" 소지금 "..upgrade.Coins) or "").."\n"..upgrade.Desc
       options[#options+1]={label=upgrade.Name,action="camp:upgrade"}
@@ -12232,7 +12241,7 @@ do
     say(player,camp.name,table.concat(lines,"\n"),options)
   end
   remote.OnServerEvent:Connect(function(player,action)
-    if action~="camp:upgrade" and action~="camp:rest" then return end
+    if action~="camp:upgrade" and action~="camp:rest" and action~="camp:cook" then return end
     if player:GetAttribute("ProfileReady")~=true then return end
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     if not root then return end
@@ -12243,7 +12252,9 @@ do
     end
     if not camp then return end
     local level=levelOf(player,camp)
-    if action=="camp:upgrade" then
+    if action=="camp:cook" then
+      if level>=2 and meadowOil.cookMenu then meadowOil.cookMenu(player,1) end
+    elseif action=="camp:upgrade" then
       local upgrade=Config.CampUpgrades[level+1]
       if not upgrade then return end
       for _,field in ipairs({"Wood","Stone","Coins"}) do
