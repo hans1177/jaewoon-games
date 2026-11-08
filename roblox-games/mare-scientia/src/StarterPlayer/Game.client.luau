@@ -32,17 +32,20 @@ pcall(function()
 	tcs.ChatInputBarConfiguration.Enabled = false
 end)
 
+-- 디자인 시스템: 짙은 남색 바탕 + 가죽빛 행 + 황동 테두리 + 양피지빛 글씨 (대항해시대 풍)
 local COLORS = {
-	text = Color3.fromRGB(240, 243, 247),
-	muted = Color3.fromRGB(173, 181, 192),
-	row = Color3.fromRGB(21, 25, 30),
-	blue = Color3.fromRGB(76, 120, 183),
-	green = Color3.fromRGB(91, 181, 120),
-	red = Color3.fromRGB(214, 82, 76),
-	gold = Color3.fromRGB(224, 170, 69),
-	grey = Color3.fromRGB(80, 88, 98),
+	text = Color3.fromRGB(246, 238, 220),
+	muted = Color3.fromRGB(176, 166, 146),
+	row = Color3.fromRGB(34, 36, 44),
+	blue = Color3.fromRGB(58, 98, 150),
+	green = Color3.fromRGB(70, 140, 92),
+	red = Color3.fromRGB(168, 66, 58),
+	gold = Color3.fromRGB(226, 176, 78),
+	grey = Color3.fromRGB(70, 72, 82),
 	steam = Color3.fromRGB(150, 110, 70),
 }
+local UI_BRASS = Color3.fromRGB(214, 170, 82)
+local UI_BRASS_DARK = Color3.fromRGB(120, 92, 44)
 
 local AMOUNTS = { 1, 5, 10 }
 local TABS = {
@@ -373,8 +376,20 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 	b.TextWrapped = true
 	b.AutoButtonColor = enabled ~= false
 	b.BorderSizePixel = 0
-	corner(b, 8)
+	corner(b, 7)
 	b.Parent = parent
+	do
+		local grad = Instance.new("UIGradient")
+		grad.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(196, 196, 196))
+		grad.Rotation = 90
+		grad.Parent = b
+		local bs = Instance.new("UIStroke")
+		bs.Color = if enabled == false then Color3.fromRGB(100, 100, 108) else UI_BRASS
+		bs.Thickness = 1.2
+		bs.Transparency = if enabled == false then 0.5 else 0.15
+		bs.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		bs.Parent = b
+	end
 	if enabled ~= false and onClick then
 		b.Activated:Connect(function()
 			Sfx.play("sfx_click")
@@ -390,8 +405,26 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	row.Size = UDim2.new(1, -6, 0, height or 60)
 	row.BackgroundColor3 = COLORS.row
 	row.BorderSizePixel = 0
-	corner(row, 8)
+	corner(row, 6)
 	row.Parent = parent
+	do
+		local rs = Instance.new("UIStroke")
+		rs.Color = UI_BRASS_DARK
+		rs.Thickness = 1
+		rs.Transparency = 0.45
+		rs.Parent = row
+		local grad = Instance.new("UIGradient")
+		grad.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(205, 205, 210))
+		grad.Rotation = 90
+		grad.Parent = row
+		local bar = Instance.new("Frame")
+		bar.Name = "AccentBar"
+		bar.BackgroundColor3 = UI_BRASS
+		bar.BorderSizePixel = 0
+		bar.Size = UDim2.new(0, 3, 1, -12)
+		bar.Position = UDim2.fromOffset(0, 6)
+		bar.Parent = row
+	end
 
 	local btnCount = buttons and #buttons or 0
 	local btnWidth = btnCount * 68 + 8
@@ -423,9 +456,19 @@ local function mkRow(parent, title, subtitle, buttons, height)
 end
 
 local function mkHeader(parent, text)
-	local l = mkLabel(parent, text, 15, COLORS.gold, true)
-	l.Size = UDim2.new(1, -8, 0, 22)
+	local l = mkLabel(parent, "◆ " .. text, 15, COLORS.gold, true)
+	l.Size = UDim2.new(1, -8, 0, 24)
 	l.AutomaticSize = Enum.AutomaticSize.None
+	l.TextYAlignment = Enum.TextYAlignment.Center
+	local rule = Instance.new("Frame")
+	rule.Name = "Rule"
+	rule.BackgroundColor3 = UI_BRASS
+	rule.BackgroundTransparency = 0.45
+	rule.BorderSizePixel = 0
+	rule.AnchorPoint = Vector2.new(0, 1)
+	rule.Position = UDim2.new(0, 0, 1, 0)
+	rule.Size = UDim2.new(1, 0, 0, 1)
+	rule.Parent = l
 	return l
 end
 
@@ -434,13 +477,33 @@ end
 local main, mainInner = CommonUI.CreatePanel({ name = "Main", size = UDim2.new(1, -16, 1, -16) })
 main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.Position = UDim2.fromScale(0.5, 0.5)
-main.BackgroundColor3 = Color3.fromRGB(14, 24, 38)
+main.BackgroundColor3 = Color3.fromRGB(16, 24, 36)
 main.Parent = gui
 do
 	local st = Instance.new("UIStroke")
 	st.Color = Color3.fromRGB(214, 170, 82)
-	st.Thickness = 2
+	st.Thickness = 2.5
 	st.Parent = main
+	local grad = Instance.new("UIGradient")
+	grad.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(190, 190, 200))
+	grad.Rotation = 90
+	grad.Parent = main
+	-- 안쪽 가는 테두리 (액자 느낌)
+	local inset = Instance.new("Frame")
+	inset.Name = "InnerFrame"
+	inset.BackgroundTransparency = 1
+	inset.Position = UDim2.fromOffset(5, 5)
+	inset.Size = UDim2.new(1, -10, 1, -10)
+	inset.ZIndex = 0
+	inset.Parent = main
+	local ist = Instance.new("UIStroke")
+	ist.Color = Color3.fromRGB(120, 92, 44)
+	ist.Thickness = 1
+	ist.Transparency = 0.3
+	ist.Parent = inset
+	local ic = Instance.new("UICorner")
+	ic.CornerRadius = UDim.new(0, 8)
+	ic.Parent = inset
 end
 local sizeLimit = Instance.new("UISizeConstraint")
 sizeLimit.MaxSize = Vector2.new(620, 900)

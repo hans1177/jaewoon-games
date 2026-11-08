@@ -4,7 +4,7 @@
 
 | 파일 | 줄 | 의존 |
 |---|---|---|
-| `ReplicatedStorage/Shared/AssetIds.luau` | 441 | - |
+| `ReplicatedStorage/Shared/AssetIds.luau` | 457 | - |
 | `ReplicatedStorage/Shared/AudioIds.luau` | 24 | - |
 | `ReplicatedStorage/Shared/Bosses.luau` | 91 | - |
 | `ReplicatedStorage/Shared/Bounties.luau` | 49 | - |
@@ -70,12 +70,12 @@
 | `ServerScriptService/Services/View.luau` | 621 | - |
 | `ServerScriptService/Social.luau` | 272 | - |
 | `StarterPlayer/DevReport.client.luau` | 44 | - |
-| `StarterPlayer/Game.client.luau` | 4755 | - |
+| `StarterPlayer/Game.client.luau` | 4853 | - |
 | `StarterPlayer/VisualLadder.client.luau` | 92 | - |
 
-## StarterPlayer/Game.client.luau (4755줄) — 최상위 함수 67개
+## StarterPlayer/Game.client.luau (4853줄) — 최상위 함수 67개
 
-`groupOf`:71, `overlayGui`:117, `corner`:130, `mkLabel`:136, `iconFor`:189, `addItemMotion`:213, `modelIcon`:241, `withIcon`:347, `mkButton`:358, `mkRow`:381, `mkHeader`:418, `setPortrait`:531, `hudStroke`:636, `hudText`:659, `updateHud`:816, `clearContent`:830, `call`:843, `amount`:984, `hypot`:992, `mkBox`:996, `geoX`:1008, `geoY`:1009, `drawLand`:1011, `playVoyage`:1022, `sail`:1215, `confirmSail`:1346, `mkRound`:1419, `paintScene`:1441, `portraitPerson`:1514, `storyPortraitModel`:1553, `heroPortrait`:1569, `playEpilogue`:1619, `playStory`:1745, `nextOrder`:2007, `add`:2012, `renderHarbor`:2023, `renderStatus`:2231, `intelName`:2382, `addStoryPanel`:2392, `addRumorPanel`:2419, `closeTradeHall`:2434, `openTradeHall`:2443, `renderTrade`:2696, `renderRoute`:2896, `renderYard`:2939, `openYardHall`:3061, `startField`:3181, `renderExplore`:3207, `fieldColor`:3245, `findField`:3249, `paintCardArt`:3259, `showCardDetail`:3290, `tierRows`:3368, `renderCodexOverview`:3387, `renderCodexField`:3431, `renderCodex`:3509, `renderTech`:3517, `renderQuest`:3537, `renderBattle`:3562, `renderMap`:3647, `renderTabs`:3752, `closeOptions`:3912, `startNewGame`:4076, `tLabel`:4280, `setTitleMode`:4508, `render`:4519, `showTitle`:4565
+`groupOf`:74, `overlayGui`:120, `corner`:133, `mkLabel`:139, `iconFor`:192, `addItemMotion`:216, `modelIcon`:244, `withIcon`:357, `mkButton`:368, `mkRow`:403, `mkHeader`:458, `setPortrait`:612, `hudStroke`:717, `hudText`:740, `updateHud`:897, `clearContent`:911, `call`:924, `amount`:1065, `hypot`:1073, `mkBox`:1077, `geoX`:1089, `geoY`:1090, `drawLand`:1092, `playVoyage`:1103, `sail`:1296, `confirmSail`:1427, `mkRound`:1500, `paintScene`:1522, `portraitPerson`:1595, `storyPortraitModel`:1634, `heroPortrait`:1650, `playEpilogue`:1700, `playStory`:1826, `nextOrder`:2088, `add`:2093, `renderHarbor`:2104, `renderStatus`:2321, `intelName`:2480, `addStoryPanel`:2490, `addRumorPanel`:2517, `closeTradeHall`:2532, `openTradeHall`:2541, `renderTrade`:2794, `renderRoute`:2994, `renderYard`:3037, `openYardHall`:3159, `startField`:3279, `renderExplore`:3305, `fieldColor`:3343, `findField`:3347, `paintCardArt`:3357, `showCardDetail`:3388, `tierRows`:3466, `renderCodexOverview`:3485, `renderCodexField`:3529, `renderCodex`:3607, `renderTech`:3615, `renderQuest`:3635, `renderBattle`:3660, `renderMap`:3745, `renderTabs`:3850, `closeOptions`:4010, `startNewGame`:4174, `tLabel`:4378, `setTitleMode`:4606, `render`:4617, `showTitle`:4663
 
 ## ReplicatedStorage/Shared/SeaRoutes1.luau (3207줄) — 최상위 함수 0개
 
