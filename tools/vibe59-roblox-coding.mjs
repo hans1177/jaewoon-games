@@ -80,7 +80,9 @@ export function planVibe59RobloxOfflineRepairs({files=[],responsiblePaths=[]}={}
   const inspection=inspectVibe59RobloxCoding({files,responsiblePaths});
   return Object.freeze({plans:inspection.diagnostics.filter(x=>x.responsible)
     .map(row=>({path:row.path,line:row.line,code:row.code,system:row.system,
-      review:row.repair,ownerApprovalRequired:true,sourceChange:false}))
+      review:row.repair,exactFind:row.exactAnchor||null,
+      exactAnchorUnique:row.exactAnchorUnique===true,
+      ownerApprovalRequired:true,sourceChange:false}))
     .slice(0,120),modelUsed:false,sourceWrite:false,runtimeVerified:false,
     authority:'responsible-file-review-plan-only'});
 }
@@ -116,13 +118,60 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
         found.push({code:'CLIENT_DATASTORE_SERVICE',line:i+1});
     }
     const offline=diagnoseVibe59RobloxOffline({path,source});
-    diagnostics.push(...offline.diagnostics.map(x=>({...x,responsible:owners.has(path)})));
+    // 정확한 원본 한 줄이 유일할 때만 편집 앵커 후보로 노출한다.
+    // 중복·긴 줄·미확인 위치는 앵커를 생성하지 않고 읽기 전용 검토로 남긴다.
+    const originalLines=source.split('\n');
+    diagnostics.push(...offline.diagnostics.map(x=>{
+      const original=originalLines[x.line-1]||'';
+      const uniqueAnchor=original.length>=8&&original.length<=1024
+        &&source.indexOf(original)>=0&&source.indexOf(original)===source.lastIndexOf(original);
+      return {...x,responsible:owners.has(path),
+        exactAnchor:uniqueAnchor?original:null,exactAnchorUnique:uniqueAnchor};
+    }));
     result.push({path,side,responsible:owners.has(path),events,calls,stateEffects,warnings:found.slice(0,16)});
     warnings.push(...found.slice(0,16).map(x=>({path,...x})));
   }
+  // 실제 Remote 인스턴스 ID가 없는 정적 정보이므로 같은 변수명은 연결 '후보'일 뿐이다.
+  const expectedSignal={FireServer:'OnServerEvent',InvokeServer:'OnServerInvoke',
+    FireClient:'OnClientEvent',FireAllClients:'OnClientEvent',InvokeClient:'OnClientInvoke'};
+  const remoteLinks=result.flatMap(sender=>sender.calls.map(call=>{
+    const signal=expectedSignal[call.method];
+    const receiverSide=['FireServer','InvokeServer'].includes(call.method)?'SERVER':'CLIENT';
+    const receivers=result.filter(receiver=>receiver.path!==sender.path&&receiver.side===receiverSide
+      &&receiver.events.some(event=>event.remote===call.remote&&event.signal===signal))
+      .map(receiver=>receiver.path).sort();
+    return {path:sender.path,line:call.line,remote:call.remote,method:call.method,
+      expectedSignal:signal,possibleReceivers:receivers,
+      status:receivers.length===1?'POTENTIAL_RECEIVER':receivers.length>1?'AMBIGUOUS_RECEIVER':'RECEIVER_NOT_OBSERVED',
+      runtimeVerified:false};
+  })).slice(0,80);
+  const priority=code=>/CLIENT|REMOTE|DATASTORE|SAVE/i.test(code)?3
+    :/COMBAT|DAMAGE|BUILD|INVENTORY|BESTIARY/i.test(code)?2:1;
+  const priorityFindings=[
+    ...diagnostics.filter(row=>row.responsible).map(row=>({
+      path:row.path,line:row.line,code:row.code,system:row.system,
+      priority:priority(row.code),review:row.repair,
+      exactFind:row.exactAnchor||null,exactAnchorUnique:row.exactAnchorUnique===true
+    })),
+    ...warnings.filter(row=>owners.has(row.path)).map(row=>({
+      path:row.path,line:row.line,code:row.code,system:'server-client-boundary',
+      priority:3,review:'서버·클라이언트 권한과 원격 호출 책임 확인',
+      exactFind:null,exactAnchorUnique:false
+    }))
+  ].sort((a,b)=>b.priority-a.priority||a.path.localeCompare(b.path)||a.line-b.line).slice(0,16);
+  const qualityDirector=Object.freeze({
+    mode:'SOURCE_GROUNDED_STATIC_ADVISORY',sourceWrite:false,runtimeVerified:false,
+    qualityScore:null,gameplayPass:false,completeRepositoryGraph:false,
+    observedFiles:result.length,observedResponsibleFiles:result.filter(row=>row.responsible).length,
+    priorityFindings,remoteLinks,
+    missingReceiverMeansConfirmedDefect:false,
+    unobservedClientVisualAndMobileQuality:'UNKNOWN_REQUIRES_REAL_PLAY',
+    existingSaveBalanceAndAuthorityMustBePreserved:true
+  });
   return Object.freeze({authority:'roblox-luau-static-analysis',runtimeVerified:false,
     sourceWrite:false,completeRepositoryGraph:false,files:result,warnings:warnings.slice(0,32),
-    diagnostics:diagnostics.slice(0,200),offlineRuleCount:VIBE59_ROBLOX_OFFLINE_RULES.length,modelUsed:false});
+    diagnostics:diagnostics.slice(0,200),remoteLinks,qualityDirector,
+    offlineRuleCount:VIBE59_ROBLOX_OFFLINE_RULES.length,modelUsed:false});
 }
 function expression(node,depth=0){
   if(!node||typeof node!=='object'||depth>8)throw Error('VIBE59_ROBLOX_EXPRESSION');
