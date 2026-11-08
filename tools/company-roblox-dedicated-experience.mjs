@@ -292,17 +292,25 @@ async function main(){
       const created=await createRobloxDedicatedExperience();
       result.universeId=created.universeId; result.placeId=created.placeId; result.created=true; write();
     }
-    result.stage='CONFIGURE_EXPERIENCE'; write();
-    const configured=await configureRobloxExperience({
+    // [기존 체험 지정] 오너가 Creator Hub에서 만든 체험은 이름·비공개를 이미 정했으므로, 설정 권한이 없어도 게시는 진행한다.
+    const optionalForReuse=async(stage,fn)=>{
+      result.stage=stage; write();
+      try{return await fn();}
+      catch(error){
+        if(!result.reusedTarget||avatarRig)throw error;
+        console.log(`ROBLOX_DEDICATED_${stage}_SKIPPED_FOR_OWNER_TARGET=${String(error?.message||error).slice(0,200)}`);
+        return null;
+      }
+    };
+    const configured=await optionalForReuse('CONFIGURE_EXPERIENCE',()=>configureRobloxExperience({
       universeId:result.universeId,avatarRig,
       name:gameName,
       description:`Private internal build for ${gameName}. Managed from hans1177/jaewoon-games.`,
-    });
-    if(configured.avatarRig){result.avatarRig=configured.avatarRig;console.log('ROBLOX_DEDICATED_AVATAR_RIG='+configured.avatarRig);}
-    result.configured=true; write();
-    result.stage='ENFORCE_PRIVATE'; write();
-    await ensureRobloxExperiencePrivate({universeId:result.universeId});
-    result.private=true; write();
+    }));
+    if(configured?.avatarRig){result.avatarRig=configured.avatarRig;console.log('ROBLOX_DEDICATED_AVATAR_RIG='+configured.avatarRig);}
+    result.configured=!!configured; write();
+    const priv=await optionalForReuse('ENFORCE_PRIVATE',()=>ensureRobloxExperiencePrivate({universeId:result.universeId}).then(()=>true));
+    result.private=!!priv; write();
     result.stage='PUBLISH_PLACE'; write();
     const published=await publishRobloxDedicatedPlace({
       universeId:result.universeId,placeId:result.placeId,placeFile,
