@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1gfnqwh",
+      "worker": "vibe2",
+      "taskId": "defense-web-startup-spatial-repair-v8",
+      "gameId": "defense",
+      "files": [
+        "web-games/defense/index.html",
+        "web-games/defense/defense3d.mjs"
+      ],
+      "baseSha": "ff66369866d5cbea5e3c10e2505975fa42774194",
+      "runId": "42429916664",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-08T00:56:19.022Z",
+      "expiresAt": "2026-11-08T01:41:19.022Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:defense-web-startup-spatial-repair-v8"
+      ]
+    }
+  ]
 }
