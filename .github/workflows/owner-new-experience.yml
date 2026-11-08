@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: owner-new-experience-${{ inputs.game_id }}
@@ -62,11 +63,12 @@ jobs:
           if [[ "$GAME_ID" == 'fantasy-survival' ]]; then args+=(--avatar-rig R15); fi
           node tools/company-roblox-dedicated-experience.mjs "${args[@]}"
           cat /tmp/new-exp/result.json
-      - name: Record new target
+      - name: Record new target through an existing GitHub pull request
         shell: bash
         env:
           GAME_ID: ${{ inputs.game_id }}
           GAME_NAME: ${{ inputs.game_name }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           node -e "
@@ -74,8 +76,14 @@ jobs:
           if(!r.pass&&!(r.published&&r.universeId&&r.placeId))throw Error('NEW_EXPERIENCE_FAILED '+r.stage+' '+r.error);
           fs.writeFileSync('roblox-games/'+process.env.GAME_ID+'/experience-target.json',JSON.stringify({gameId:process.env.GAME_ID,gameName:process.env.GAME_NAME,universeId:String(r.universeId),placeId:String(r.placeId),createdAt:new Date().toISOString()},null,2)+'\n');
           console.log('NEW_UNIVERSE_ID='+r.universeId+' NEW_PLACE_ID='+r.placeId);"
+          # [기록] main 직접 쓰기 금지. 기존 PR 검토 경로를 사용한다.
+          branch="owner/roblox-new-target-$GAME_ID-$GITHUB_RUN_ID"
+          git switch -c "$branch"
           git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "roblox-games/$GAME_ID/experience-target.json"
-          git commit -m "새 체험 생성: $GAME_NAME ($GAME_ID)" -m "Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_012UBHYV5VTXizN9awrTGnEM"
-          for i in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep 4; done
+          git commit -m "새 로블록스 체험 대상 기록: $GAME_ID"
+          git push -q origin "HEAD:refs/heads/$branch"
+          gh pr create --base main --head "$branch" --title "로블록스 신규 체험 대상 확인: $GAME_ID" \
+            --body "게임: $GAME_NAME. 로블록스 게시 ID와 키 기반 결과는 이 PR에서 검토 후 main에 반영. 기존 저장과 게임 규칙은 변경하지 않음."
+          echo "ROBLOX_NEW_TARGET_MAIN_RECORD=PENDING_PR_REVIEW"
