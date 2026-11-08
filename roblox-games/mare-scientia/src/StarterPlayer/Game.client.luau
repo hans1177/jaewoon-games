@@ -1551,18 +1551,55 @@ local function playEpilogue(msg, opts)
 	root.BackgroundColor3 = Color3.new(0, 0, 0)
 	root.BorderSizePixel = 0
 	root.Parent = layer
-	local scene = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.new(0, 0, 0))
+	-- 프롤로그·에필로그의 배경은 임의 도형 범선 대신 기존 승인된 항해선 모델을 사용한다.
+	-- 광원 색과 카메라 움직임만 UI/ViewportFrame에서 처리하며 새 Part는 만들지 않는다.
+	local scene = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(30, 48, 69))
 	scene.ClipsDescendants = true
-	scene.BackgroundTransparency = 1
-	paintScene(scene, "epilogue")
-	-- 석양과 수평선 위를 천천히 지나가는 배
-	local sun = mkRound(scene, UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(120, 120), Color3.fromRGB(255, 214, 140), 0.1, Vector2.new(0.5, 0.5))
-	sun.ZIndex = 2
-	local hull = mkBox(scene, UDim2.fromScale(-0.2, 0.575), UDim2.fromOffset(64, 12), Color3.fromRGB(24, 18, 16))
-	hull.ZIndex = 3
-	local mast = mkBox(hull, UDim2.fromOffset(30, -34), UDim2.fromOffset(3, 34), Color3.fromRGB(24, 18, 16))
-	local sailBox = mkBox(hull, UDim2.fromOffset(34, -32), UDim2.fromOffset(20, 26), Color3.fromRGB(235, 220, 190))
-	mast.ZIndex, sailBox.ZIndex = 3, 3
+	local sky = Instance.new("UIGradient")
+	sky.Rotation = 90
+	sky.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(24, 38, 64)),
+		ColorSequenceKeypoint.new(0.52, Color3.fromRGB(173, 104, 83)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(31, 59, 87)),
+	})
+	sky.Parent = scene
+
+	local voyageView = Instance.new("ViewportFrame")
+	voyageView.Name = "IntroApprovedShip"
+	voyageView.Size = UDim2.fromScale(1, 1)
+	voyageView.BackgroundTransparency = 1
+	voyageView.Ambient = Color3.fromRGB(175, 160, 155)
+	voyageView.LightColor = Color3.fromRGB(255, 218, 163)
+	voyageView.LightDirection = Vector3.new(-0.55, -0.72, -0.43).Unit
+	voyageView.Parent = scene
+	local shipWorld = Instance.new("WorldModel")
+	shipWorld.Parent = voyageView
+	local shipCamera = Instance.new("Camera")
+	shipCamera.FieldOfView = 40
+	shipCamera.Parent = voyageView
+	voyageView.CurrentCamera = shipCamera
+
+	local library = ReplicatedStorage:FindFirstChild("MareAssets")
+	local naval = library and library:FindFirstChild("Naval")
+	if naval and not naval:FindFirstChild("ship-large") then
+		naval:WaitForChild("ship-large", 6)
+	end
+	-- placeModel은 기존 등록 Mesh를 복제하며, 없으면 nil을 반환한다.
+	local vessel = PortScene.placeModel(shipWorld, "Naval", "ship-large", Vector3.zero, 44)
+		or PortScene.placeModel(shipWorld, "Naval", "ship-medium", Vector3.zero, 38)
+		or PortScene.placeModel(shipWorld, "Naval", "boat-sail-a", Vector3.zero, 34)
+	if vessel then
+		local cf, size = vessel:GetBoundingBox()
+		local focus = cf.Position + Vector3.new(0, size.Y * 0.06, 0)
+		local camera = workspace.CurrentCamera
+		local aspect = if camera then camera.ViewportSize.X / math.max(camera.ViewportSize.Y, 1) else 1
+		local distance = math.max(size.X, size.Y, size.Z) * (if aspect < 0.9 then 3 else 1.9)
+		shipCamera.CFrame = CFrame.lookAt(focus + Vector3.new(distance * 0.6, size.Y * 0.65, distance), focus)
+		TweenService:Create(shipCamera, TweenInfo.new(22, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+			CFrame = CFrame.lookAt(focus + Vector3.new(distance * 0.37, size.Y * 0.37, distance * 0.78), focus),
+			FieldOfView = 37,
+		}):Play()
+	end
 	if opts.hero then
 		local hp = heroPortrait(root, opts.hero, 150, 190)
 		hp.AnchorPoint = Vector2.new(0, 0.5)
@@ -1594,11 +1631,8 @@ local function playEpilogue(msg, opts)
 		task.wait(hold or 3)
 		return l
 	end
-	-- 검은 화면에서 서서히 밝아지며 시작
-	TweenService:Create(scene, TweenInfo.new(2), { BackgroundTransparency = 0 }):Play()
+	-- 검은 화면에서 서서히 실제 범선 연출이 드러난다.
 	TweenService:Create(shade, TweenInfo.new(2.5), { BackgroundTransparency = 0.45 }):Play()
-	TweenService:Create(hull, TweenInfo.new(22, Enum.EasingStyle.Linear), { Position = UDim2.fromScale(1.1, 0.575) }):Play()
-	TweenService:Create(sun, TweenInfo.new(22, Enum.EasingStyle.Sine), { Position = UDim2.fromScale(0.5, 0.58) }):Play()
 	task.wait(1.5)
 	if opts.lines then
 		say(opts.title or "프롤로그", 0.16, 28, Color3.fromRGB(240, 200, 120), 2.5)
