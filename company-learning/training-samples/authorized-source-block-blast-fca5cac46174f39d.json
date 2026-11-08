@@ -1,0 +1,43 @@
+{
+  "version": 3,
+  "instruction": "재사용·재해석 권한이 확인된 Block Blast 소스/에셋/네이티브 구조/알고리즘 분석 결과를 코드 구현 컨텍스트로 학습하되 정적 분석을 런타임 PASS로 오인하지 않는다.",
+  "input": "{\n  \"evidenceMode\": \"AUTHORIZED_SOURCE_STATIC\",\n  \"authority\": \"OWNER_ASSERTED_REUSE_REINTERPRETATION\",\n  \"packageId\": \"com.block.juggle\",\n  \"packageFingerprint\": \"fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c\",\n  \"learningDomains\": [\n    \"board-grid-placement\",\n    \"score-combo-reward\",\n    \"input-drag-touch\",\n    \"progression-difficulty\",\n    \"save-state-persistence\",\n    \"ads-monetization\",\n    \"session-retry-gameover\",\n    \"tutorial-onboarding\"\n  ],\n  \"counts\": {\n    \"sourceDocuments\": 52301,\n    \"sourceChars\": 355550086,\n    \"assets\": 10903,\n    \"nativeLibraries\": 30\n  }\n}",
+  "output": "검증된 재사용 패턴:\n- AUTHORIZED_SOURCE:board-grid-placement\n- AUTHORIZED_SOURCE:score-combo-reward\n- AUTHORIZED_SOURCE:input-drag-touch\n- AUTHORIZED_SOURCE:progression-difficulty\n- AUTHORIZED_SOURCE:save-state-persistence\n- AUTHORIZED_SOURCE:ads-monetization\n- AUTHORIZED_SOURCE:session-retry-gameover\n- AUTHORIZED_SOURCE:tutorial-onboarding\n\n검증 경계:\n- 정적 추출 결과는 소스 구조/에셋 구성/네이티브 구조/알고리즘 후보 학습에 사용한다.\n- 정적 분석만으로 현재 프로젝트 런타임 PASS를 주장하지 않는다.\n- 새 프로젝트에 적용할 때 기존 QA/런타임 게이트를 그대로 통과해야 한다.",
+  "taskType": "coding",
+  "difficulty": "simple",
+  "lifecycle": "active",
+  "sourceKind": "authorized-source",
+  "project": "block-blast",
+  "gameId": "block-blast",
+  "candidateId": "authorized-source-block-blast-fca5cac46174f39d",
+  "sourceCommit": null,
+  "sourceRevision": "sha256:fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c",
+  "independentQa": "AUTHORIZED_SOURCE_EVIDENCE_PASS",
+  "browserQa": "NOT_APPLICABLE",
+  "quality": {
+    "codeQuality": 1,
+    "noRegression": true,
+    "playImprovement": 0,
+    "ruleCompliance": 1,
+    "evidenceQuality": 1
+  },
+  "provenance": {
+    "sourceKind": "authorized-source",
+    "sourceRevision": "sha256:fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c",
+    "gameId": "block-blast",
+    "candidateId": "authorized-source-block-blast-fca5cac46174f39d",
+    "evidencePath": "company-learning/authorized-source/block-blast/authorized-learning-summary.json",
+    "authority": "OWNER_ASSERTED_REUSE_REINTERPRETATION",
+    "packageId": "com.block.juggle",
+    "packageFingerprint": "fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c"
+  },
+  "verification": {
+    "independentQa": "AUTHORIZED_SOURCE_EVIDENCE_PASS",
+    "browserQa": "NOT_APPLICABLE",
+    "runtime": "STATIC_VERIFIED",
+    "authorizedSourceEvidence": "PASS",
+    "runtimePassClaimed": false,
+    "packageFingerprint": "fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c",
+    "ownerReuseAuthority": "PASS"
+  }
+}
