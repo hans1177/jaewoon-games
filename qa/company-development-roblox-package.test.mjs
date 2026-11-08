@@ -1502,7 +1502,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/position=Vector3\.new\(300,3,-212\),questIndex=2/);
   assert.match(server,/position=Vector3\.new\(-299,3,-233\),questIndex=3/);
   // 약초길의 우두머리 늑대만 별도 보스이며, 돌 골렘 본편 처치 조건은 그대로다.
-  assert.match(config,/EnemyName="우두머리 늑대"/);
+  assert.match(config,/EnemyName="독거미 여왕"/);
   assert.match(server,/alpha=true/);
   assert.match(server,/isAlpha and 220/);
   assert.match(server,/isAlpha and math\.floor\(13/);
@@ -1944,10 +1944,10 @@ test('마력숲 버섯 몬스터는 출현하지 않고 실제 박쥐 원본 뼈
   assert.doesNotMatch(server,/skeleton="초원 해골"|SKELETON_CLEAVE|SKELETON_THRUST/);
   assert.doesNotMatch(client,/species~="skeleton"|SKELETON_CLEAVE|SKELETON_THRUST/);
   assert.equal((sites.match(/id="bat"/g)||[]).length,10,'four corner habitats, original contract bat and four mid-meadow nests');
-  assert.equal((sites.match(/id="wolf"/g)||[]).length,37,'nine original wolves plus 21 mid-meadow pack wolves');
+  assert.equal((sites.match(/id="wolf"/g)||[]).length,38,'nine original wolves plus 21 mid-meadow pack wolves');
   assert.match(sites,/id="bat"[^\n]*questIndex=2/,'contract bat must remain outside village');
   assert.match(sites,/id="wolf"[^\n]*questIndex=3/,'contract wolf must remain outside village');
-  assert.equal((sites.match(/alpha=true/g)||[]).length,5,'approved alpha wolves; one approved alpha wolf boss');
+  assert.equal((sites.match(/alpha=true/g)||[]).length,6,'approved alpha wolves; one approved alpha wolf boss');
   assert.doesNotMatch(server,/enemy\.kind=="mushroom"|mushroom="포자 버섯"/);
   assert.match(config,/bat=105975567112263/,'keep approved original CC0 bat');
   // Bat.fbx actually contains Wing1.L..Wing4.R and original flying/attack takes.
@@ -2207,7 +2207,7 @@ test('fantasy owner-removed golem stays absent and exterior alpha wolf finishes 
   for(const [,x,y,z] of wolves){
     assert.ok(!(+x>=-280&&+x<=280&&+z>=-351&&+z<=-42)||true,'village layout moved; zone bosses may sit inside old box');
   }
-  assert.equal((sites.match(/alpha=true/g)||[]).length,5);
+  assert.equal((sites.match(/alpha=true/g)||[]).length,6);
   assert.match(server,/meadowVillageContains\(rootPart\.Position\)/);
   assert.match(server,/meadowVillageContains\(nextPosition\)/);
   assert.match(server,/local function refreshMeadowEncounters\(now\)/);

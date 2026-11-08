@@ -111,7 +111,10 @@ local meadowEncounterSites = {
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(-273,3,265)},
   -- [사용자 제거] 해골 몬스터 서식지 3곳도 폐쇄. 저장·기존 나머지 몬스터 배치는 유지.
   -- [마을 의뢰] 우두머리 늑대는 마을 서쪽 외곽 숲에만 스폰한다.
-  {id="wolf",atom="HEAD_CANINE",tier=1,height=4.8,position=Vector3.new(-321,3,-193),questIndex=1,alpha=true},
+  -- 서쪽 숲 우두머리 늑대는 메인 6장 전용이다. 마을 의뢰 01은 별개의 약초 도둑(독거미 여왕)을 잡는다.
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=4.8,position=Vector3.new(-321,3,-193),alpha=true},
+  {id="wolf",atom="HEAD_CANINE",model="fangspider",name="약초 도둑 · 독거미 여왕",tier=2,height=4.6,hp=1.6,dmg=1,
+    drops={{"Fang",.8,2},{"Hide",.5,1}},position=Vector3.new(-346,3,-168),questIndex=1,alpha=true,bonusBoss=true,named=true},
   -- [봉인 파편의 수호자] 우물 퀘스트(sera-join)가 요구하는 초원 명명 보스. 무작위 배치에서 빠질 수 있어 고정 위치에 둔다.
   {id="wolf",atom="HEAD_CANINE",model="barbarian",name="봉인 파편의 수호자",tier=3,height=6,hp=3,dmg=1.5,alpha=true,bonusBoss=true,named=true,zoneTag="meadow",
     drops={{"Crystal",1,2},{"Claw",.7,2},{"Hide",.9,2}},position=Vector3.new(-180,3,-70)},
@@ -5232,6 +5235,31 @@ local function spawnEnemy(site, siteIndex)
     end
   end
   model:PivotTo(CFrame.new(location))
+  -- [네발 몹 자세 보정] 일부 동물 모델(여우·들개·황소·말·독사 등)은 원본이 세로로 서 있어 머리를 땅에 박고 선 채로 나온다.
+  -- 가로 길이보다 높이가 확연히 크면 머리가 앞(-Z)을 보도록 눕힌다. 머리 위치를 보고 방향을 정하며, 회전은 속성에 저장해
+  -- 이후 모든 애니메이션 피벗에 같은 회전을 곱한다.
+  do
+    local lyingFix={fox=true,husky=true,keltir=true,bull=true,horse=true,donkey=true,rat=true,snake=true,snakeangry=true,
+      toad=true,spider=true,fangspider=true,bladespider=true,wolf=true}
+    local key=site.model or partId
+    if lyingFix[key] then
+      local size=model:GetExtentsSize()
+      if size.Y>math.max(size.X,size.Z)*1.15 then
+        local center=model:GetBoundingBox().Position
+        local headY=nil
+        for _,thing in ipairs(model:GetDescendants()) do
+          local lower=thing.Name:lower()
+          if (thing:IsA("Bone") or thing:IsA("BasePart")) and (lower=="head" or lower:find("head")) then
+            local pos=thing:IsA("Bone") and thing.WorldPosition or thing.Position
+            headY=pos.Y-center.Y;break
+          end
+        end
+        local pitch=(headY and headY>0) and -math.rad(90) or math.rad(90)
+        model:PivotTo(CFrame.new(location)*CFrame.Angles(pitch,0,0))
+        model:SetAttribute("NativeMobBasePitch",pitch)
+      end
+    end
+  end
   -- [매몰 수정] CC0 실제 메시 하단을 서버 Terrain에 정렬. 보상/공격 범위는 불변.
   local bottom=math.huge
   for _,mesh in ipairs(model:GetDescendants()) do
@@ -5632,6 +5660,74 @@ local function meadowDeathFall(model,enemy)
     if model.Parent then model:Destroy() end
   end)
 end
+
+-- [몬스터끼리 싸움] 서로 천적인 분류(인간형↔짐승, 악마·해골↔짐승·인간형, 거미↔인간형)가 플레이어가 없는 곳에서 가까이 만나면
+-- 서로 물어뜯고 베며 싸운다. 보스·우두머리·퀘스트 몹은 빠지고, 죽어도 보상은 없으며 서식지는 일정 시간 뒤 다시 채워진다.
+local meadowRivals={human={beast=true,arachnid=true,demon=true},beast={human=true,demon=true},demon={human=true,beast=true},arachnid={human=true}}
+task.spawn(function()
+  while true do
+    task.wait(1.1)
+    pcall(function()
+      local now=os.clock()
+      local roots={}
+      for _,player in ipairs(Players:GetPlayers()) do
+        local pr=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if pr then roots[#roots+1]=pr.Position end
+      end
+      local function playerNear(pos)
+        for _,rp in ipairs(roots) do
+          if (rp-pos).Magnitude<48 then return true end
+        end
+        return false
+      end
+      local function eligible(e)
+        return e.model and e.model.Parent and e.HP and e.HP>0 and e.oilClass and not e.isBoss and not e.isAlpha
+          and not e.lord and not e.named and not e.questIndex and not e.questBoss and not e.bountyIndex
+          and e.attackState~="CHASE" and e.attackState~="ANTICIPATION"
+      end
+      local fought={}
+      for i=1,#enemies do
+        local a=enemies[i]
+        if eligible(a) and not fought[a] and not playerNear(a.position) then
+          for j=i+1,#enemies do
+            local b=enemies[j]
+            if eligible(b) and not fought[b] and meadowRivals[a.oilClass] and meadowRivals[a.oilClass][b.oilClass]
+              and (a.position-b.position).Magnitude<14 then
+              fought[a]=true;fought[b]=true
+              local toB=Vector3.new(b.position.X-a.position.X,0,b.position.Z-a.position.Z)
+              if toB.Magnitude>.1 then
+                local dir=toB.Unit
+                a.fightDir=dir;b.fightDir=-dir
+                a.fightUntil=now+1.6;b.fightUntil=now+1.6
+                -- 서로 다가선다.
+                if toB.Magnitude>5 then
+                  a.position+=dir*2.2;b.position-=dir*2.2
+                end
+                a.brawlAt=now;b.brawlAt=now+.3
+                local victim,attacker=(math.random()<.5) and b or a,nil
+                attacker=victim==a and b or a
+                victim.hitAt=now;victim.hitPower=.45;victim.hitDir=attacker.fightDir
+                local dmg=math.max(4,(victim.maxHP or 100)*.12)
+                victim.HP=victim.HP-dmg
+                victim.model:SetAttribute("EnemyHealth",victim.HP)
+                if victim.HP<=0 then
+                  victim.model:SetAttribute("AttackState","DEATH")
+                  meadowDeathFall(victim.model,victim)
+                  for k=#enemies,1,-1 do if enemies[k]==victim then table.remove(enemies,k);break end end
+                  if victim.siteIndex then
+                    local site=meadowEncounterSites[victim.siteIndex]
+                    if site then site.occupied=false;site.respawnAt=os.clock()+90 end
+                  end
+                end
+              end
+              break
+            end
+          end
+        end
+      end
+    end)
+  end
+end)
 
 local function applyMeadowDamage(player,target,damage,isDot)
   if not target or target.HP<=0 or not target.model.Parent then return false end
@@ -6117,7 +6213,7 @@ local function animateMeadowOriginalMob(enemy,now)
     and math.sin(now*(heavy and 1.35 or 2.0)+enemy.spawnPosition.X*.07)*.012 or 0
   local bank=stunned and math.sin(now*9)*.12 or aerial and math.sin(phase*.52)*.22
     or inMotion and math.sin(phase*.65)*(heavy and .014 or .025) or 0
-  local facing=enemy.visualFacingSmooth or enemy.visualFacing
+  local facing=(enemy.fightUntil and now<enemy.fightUntil and enemy.fightDir) or enemy.visualFacingSmooth or enemy.visualFacing
   if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1) end
   if enemy.r15Tracks and enemy.banditIdle and enemy.banditWalk then
     local tr=enemy.r15Tracks
@@ -6234,9 +6330,13 @@ local function animateMeadowOriginalMob(enemy,now)
         local prep=math.clamp((now-(enemy.attackStateStartedAt or now))/dur,0,1)
         lungeOffset=-flatFace*(.55*prep)
         movingHeight-=.12*prep
-      elseif recoil>.02 then
-        lungeOffset=flatFace*(reach*recoil)
-        if kind=="wolf" or kind=="boar" then movingHeight+=math.sin(math.clamp(recoil,0,1)*math.pi)*.35 end
+      else
+        local brawl=(now-(enemy.brawlAt or -9)<.5) and math.exp(-(now-enemy.brawlAt)*7) or 0
+        local lungeR=math.max(recoil,brawl)
+        if lungeR>.02 then
+          lungeOffset=flatFace*(reach*lungeR)
+          if kind=="wolf" or kind=="boar" then movingHeight+=math.sin(math.clamp(lungeR,0,1)*math.pi)*.35 end
+        end
       end
     end
   end
@@ -6245,6 +6345,7 @@ local function animateMeadowOriginalMob(enemy,now)
       +(enemy.terrainGroundOffset or 0)+movingHeight,0)
   enemy.model:PivotTo(CFrame.lookAt(pivot,pivot+facing)
     *CFrame.Angles(0,(enemy.model:GetAttribute("NativeMobFacingYaw") or 0)+statusYaw,0)
+    *CFrame.Angles(enemy.model:GetAttribute("NativeMobBasePitch") or 0,0,0)
     *CFrame.Angles(attackPitch+stridePitch+idleBreath,0,bank))
 end
 
