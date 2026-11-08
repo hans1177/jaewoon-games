@@ -476,3 +476,18 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 - 출처: 게임 제작 대화에서 생성된 초상화. 외부 사진·상업용 자산 재사용 없음. 권리: PROJECT_ORIGINAL_ART.
 - 기등록 상인 사진 `merchant.jpg`은 신규 시트 등록 이전의 폴백으로 유지한다.
 - 문화권·성별이 맞지 않는 국가 주인공은 전용 시트가 준비될 때까지 기존 국가별 3D 초상을 유지한다.
+
+## 2026-11-08 국가별 주인공 9명 초상화
+
+- `assets/portraits/heroes.jpg`: 3열×3행, 각 칸 256×336의 고유 인물 초상. 선택 화면·항해 프롤로그·에필로그·선장실에 같은 얼굴을 연결한다.
+- 1행: 엘리너 렌(기존 조선 장인 초상 원화), 얀 데 흐로트(기존 서재 학자 원화), 마리온 델라크루아(기존 상인 원화).
+- 2행: 레일라 하미디(역사 오스만 여성 회화), 아민 살림(잔지바르 스와힐리 남성 역사 사진), 라마 나이르(케랄라 나이르 남성 역사 사진).
+- 3행: 사쿠라이 하루카(일본 여성 역사 사진), 디에고 모랄레스(기존 항해가 원화), 이네스 카브랄(기존 상인 초상 원화).
+- 원화 출처: 기존 `characters.jpg`, `merchant.jpg` (`PROJECT_ORIGINAL_ART`).
+- 역사 자료 출처 및 권리 (`PUBLIC_DOMAIN`, Wikimedia Commons 파일 설명과 저작권 종료 확인):
+  - 레일라 대역 이미지: Théodore Ralli, `Young Ottoman Woman` (1879, 작가 1909년 사망), https://commons.wikimedia.org/wiki/File:Young_Ottoman_Woman.jpg
+  - 아민 대역 이미지: `A Swahili of Zanzibar` (1920), https://commons.wikimedia.org/wiki/File:A_Swahili_of_Zanzibar.png
+  - 라마 대역 이미지: Edgar Thurston, `Nair man from North Kerala, British Malabar` (1909), https://commons.wikimedia.org/wiki/File:Nair_man_from_North_Kerala,_British_Malabar.jpg
+  - 하루카 대역 이미지: Felice Beato, `Felice Beato Courtisane` (1860년대, 작가 1909년 사망), https://commons.wikimedia.org/wiki/File:Felice_Beato_Courtisane.jpg
+- 역사 이미지의 실제 인물이 주인공을 연기하거나 해당 국적·시대의 정확한 인물이라는 뜻은 아니다. NPC용 허구 배역 이미지이며, 독립적으로 식별되는 실제 초상임을 밝힌다.
+- 외부 자산은 기존 오너 자산 등록 워크플로의 입력을 생성할 때 원본 출처에서 읽고 `heroes.jpg`로 합성하며, 새로운 업로드/게시 파이프라인을 만들지 않는다.

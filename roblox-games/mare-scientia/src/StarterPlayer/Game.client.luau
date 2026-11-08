@@ -473,10 +473,20 @@ local PORTRAIT_GROUP = {
 	["교역소"] = "merchant", ["항만청"] = "harbor", ["조선소"] = "yard",
 	["주점"] = "tavern", ["학자의 서재"] = "scholar",
 }
--- 각 국가 주인공의 성별과 이야기 배경에 맞는 초상이 있을 때만 지정한다.
+-- 국가별 주인공 9명은 3x3 시트의 서로 다른 실제 인물 사진/원화를 사용한다.
+-- 이 시트를 기존 초상화 컴포넌트에서 공유하므로 새 UI 구조는 필요 없다.
+local HERO_ATLAS = AssetIds["Portraits/heroes"]
+local HERO_SIZE = Vector2.new(256, 336)
 local HERO_TILE = {
-	england = "yard", netherlands = "scholar", france = "merchant",
-	new_spain = "hero", portugal = "yard",
+	england = Vector2.new(0, 0), -- 엘리너 렌
+	netherlands = Vector2.new(256, 0), -- 얀 데 흐로트
+	france = Vector2.new(512, 0), -- 마리온 델라크루아
+	ottoman = Vector2.new(0, 336), -- 레일라 하미디
+	swahili = Vector2.new(256, 336), -- 아민 살림
+	malabar = Vector2.new(512, 336), -- 라마 나이르
+	japan = Vector2.new(0, 672), -- 사쿠라이 하루카
+	new_spain = Vector2.new(256, 672), -- 디에고 모랄레스
+	portugal = Vector2.new(512, 672), -- 이네스 카브랄
 }
 local function setPortrait(groupName)
 	-- 나라별 주인공이 바뀌어도 기존 선장 초상을 잘못 재사용하지 않는다.
@@ -489,6 +499,7 @@ local function setPortrait(groupName)
 	end
 	portraitKey = identity
 	local tile = PORTRAIT_GROUP[groupName]
+	local heroTile = nil
 	if groupName == "선장실" and view and view.player then
 		local nationId = nil
 		for id, nation in PortData.Nations do
@@ -497,15 +508,18 @@ local function setPortrait(groupName)
 				break
 			end
 		end
-		tile = HERO_TILE[nationId or ""]
+		heroTile = HERO_TILE[nationId or ""]
 	end
-	local imageId = if PORTRAIT_ATLAS and tile then PORTRAIT_ATLAS
+	local imageId = if heroTile and HERO_ATLAS then HERO_ATLAS
+		elseif tile and PORTRAIT_ATLAS then PORTRAIT_ATLAS
 		elseif groupName == "교역소" then AssetIds["Portraits/merchant"] else nil
 	portraitImage.Visible = imageId ~= nil
 	portraitFrame.Visible = imageId == nil
 	portraitImage.Image = if imageId then "rbxassetid://" .. tostring(imageId) else ""
-	portraitImage.ImageRectOffset = if tile and PORTRAIT_ATLAS and imageId == PORTRAIT_ATLAS then PORTRAIT_TILE[tile] else Vector2.zero
-	portraitImage.ImageRectSize = if tile and PORTRAIT_ATLAS and imageId == PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero
+	portraitImage.ImageRectOffset = if imageId == HERO_ATLAS and heroTile then heroTile
+		elseif imageId == PORTRAIT_ATLAS and tile then PORTRAIT_TILE[tile] else Vector2.zero
+	portraitImage.ImageRectSize = if imageId == HERO_ATLAS and heroTile then HERO_SIZE
+		elseif imageId == PORTRAIT_ATLAS and tile then PORTRAIT_SIZE else Vector2.zero
 	-- 이미지 전환 시 이전 3D 모델까지 정리해 불필요한 뷰포트 객체가 남지 않도록 한다.
 	for _, c in portraitFrame:GetChildren() do
 		if c:IsA("Model") then
@@ -1676,19 +1690,19 @@ local function storyPortraitModel(npcName, id)
 	return STORY_DEFAULT[seed % #STORY_DEFAULT + 1]
 end
 
--- 주인공 반신 초상 (나라마다 다른 인물). 승인된 인물 모델/R15 몸체만 사용한다.
+-- 주인공 선택·항해 시작·에필로그에 같은 국가별 고유 초상을 사용한다.
 local function heroPortrait(parent, nationId, w, h)
 	local tile = HERO_TILE[nationId]
-	if PORTRAIT_ATLAS and tile then
+	if HERO_ATLAS and tile then
 		local photo = Instance.new("ImageLabel")
 		photo.Name = "HeroPortrait"
 		photo.Size = UDim2.fromOffset(w, h)
 		photo.BackgroundColor3 = Color3.fromRGB(30, 42, 62)
 		photo.BorderSizePixel = 0
 		photo.ScaleType = Enum.ScaleType.Crop
-		photo.Image = "rbxassetid://" .. tostring(PORTRAIT_ATLAS)
-		photo.ImageRectOffset = PORTRAIT_TILE[tile]
-		photo.ImageRectSize = PORTRAIT_SIZE
+		photo.Image = "rbxassetid://" .. tostring(HERO_ATLAS)
+		photo.ImageRectOffset = tile
+		photo.ImageRectSize = HERO_SIZE
 		corner(photo, 10)
 		local st = Instance.new("UIStroke")
 		st.Color = Color3.fromRGB(214, 170, 82)

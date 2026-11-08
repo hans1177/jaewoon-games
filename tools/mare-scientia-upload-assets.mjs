@@ -81,7 +81,8 @@ for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'Peo
     if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
     plan.push({kind, name: path.basename(f, ext), file: path.join(ROOT, 'assets', dir, f), ext,
       assetType: image ? 'Decal' : 'Model',
-      license: kind === 'Portraits' || kind === 'Goods' && ['dates.png', 'raisins.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
+      license: kind === 'Portraits' && f === 'heroes.jpg' ? 'PUBLIC_DOMAIN_AND_ORIGINAL'
+        : kind === 'Portraits' || kind === 'Goods' && ['dates.png', 'raisins.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Goods' && f === 'saffron.png' ? 'CC0-1.0' : image ? 'CC-BY-3.0' : 'CC0-1.0'});
   }
 }
@@ -193,7 +194,8 @@ for (const item of plan) {
     form.set('request', JSON.stringify({
       assetType: item.assetType, displayName: 'MareScientia ' + id,
       description: item.assetType === 'Decal'
-        ? item.kind === 'Portraits' ? 'Original NPC dialogue portrait for Mare Scientia at owner request; see assets/SOURCES.md'
+        ? item.kind === 'Portraits' && item.name === 'heroes' ? 'Nine historical/fictional protagonist portraits: original game art plus public-domain archival images; sources in assets/SOURCES.md'
+          : item.kind === 'Portraits' ? 'Original NPC dialogue portrait for Mare Scientia at owner request; see assets/SOURCES.md'
           : item.license === 'PROJECT_ORIGINAL_ART' ? 'Original vector commodity art made for Mare Scientia at owner request; see assets/SOURCES.md'
           : item.license === 'CC0-1.0' ? 'Tiny Speck Glitch / CC0, vector conversion by Bart; see assets/SOURCES.md'
           : 'Icons by Lorc, Delapouite, Lord Berandas, Skoll / game-icons.net / CC BY 3.0. Color edit and PNG export for Mare Scientia; see assets/SOURCES.md'

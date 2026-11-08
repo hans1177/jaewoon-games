@@ -45,6 +45,60 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Build nine protagonist portraits from original and public-domain source images
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet Pillow==11.3.0
+          python3 - <<'PY'
+          # 파일명: owner-mare-scientia-assets.yml / 주인공 초상화 기존 자산 등록 전처리
+          # 새 제작 파이프라인 없이 기존 Open Cloud 자산 등록 단계의 입력 그림만 준비한다.
+          import io
+          import pathlib
+          import urllib.request
+          from PIL import Image, ImageEnhance, ImageOps
+
+          root = pathlib.Path("roblox-games/mare-scientia/assets/portraits")
+          atlas = Image.open(root / "characters.jpg").convert("RGB")
+          merchant = Image.open(root / "merchant.jpg").convert("RGB")
+          size = (256, 336)
+          output = Image.new("RGB", (768, 1008), (35, 39, 48))
+          sources = {
+              # 9명 모두 얼굴 중복 없는 고유 초상이며, 국적/배경별 역할을 구분한다.
+              "england": ("original", (512, 0, 768, 336)),
+              "netherlands": ("original", (256, 336, 512, 672)),
+              "france": ("original", (0, 0, 256, 336)),
+              "ottoman": ("public", "https://upload.wikimedia.org/wikipedia/commons/3/3a/Young_Ottoman_Woman.jpg", (0.04, 0.04, 0.96, 0.98)),
+              "swahili": ("public", "https://upload.wikimedia.org/wikipedia/commons/6/6a/A_Swahili_of_Zanzibar.png", (0.15, 0.03, 0.85, 0.88)),
+              "malabar": ("public", "https://upload.wikimedia.org/wikipedia/commons/c/c3/Nair_man_from_North_Kerala%2C_British_Malabar.jpg", (0.17, 0.02, 0.83, 0.65)),
+              "japan": ("public", "https://upload.wikimedia.org/wikipedia/commons/a/ad/Felice_Beato_Courtisane.jpg", (0.18, 0.10, 0.82, 0.76)),
+              "new_spain": ("original", (512, 336, 768, 672)),
+              "portugal": ("merchant", None),
+          }
+          order = ("england", "netherlands", "france", "ottoman", "swahili", "malabar", "japan", "new_spain", "portugal")
+          for index, nation in enumerate(order):
+              source = sources[nation]
+              if source[0] == "original":
+                  picture = atlas.crop(source[1])
+              elif source[0] == "merchant":
+                  picture = merchant.copy()
+              else:
+                  uri, box = source[1], source[2]
+                  request = urllib.request.Request(uri, headers={"User-Agent": "MareScientia-Asset-Registration/1.0 (artwork archival use)"})
+                  with urllib.request.urlopen(request, timeout=45) as response:
+                      picture = Image.open(io.BytesIO(response.read())).convert("RGB")
+                  w, h = picture.size
+                  picture = picture.crop((round(box[0]*w), round(box[1]*h), round(box[2]*w), round(box[3]*h)))
+                  picture = ImageEnhance.Contrast(picture).enhance(1.08)
+                  if nation in ("swahili", "malabar", "japan"):
+                      picture = ImageOps.colorize(ImageOps.grayscale(picture), "#22252e", "#e7c69f")
+              picture = ImageOps.fit(picture, size, method=Image.Resampling.LANCZOS, centering=(0.5, 0.4))
+              picture = ImageEnhance.Color(picture).enhance(0.86)
+              output.paste(picture, ((index % 3)*256, (index // 3)*336))
+          output.save(root / "heroes.jpg", quality=89, optimize=True, subsampling=0)
+          print("HERO_PORTRAITS_PREPARED=9")
+          PY
+
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
         env:
           MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
@@ -60,8 +114,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          for f in roblox-games/mare-scientia/assets-registered.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau; do
-            if git diff --quiet -- "$f"; then echo "SKIP_UNCHANGED $f"; continue; fi
+          for f in roblox-games/mare-scientia/assets/portraits/heroes.jpg roblox-games/mare-scientia/assets-registered.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau; do
+            if git ls-files --error-unmatch "$f" >/dev/null 2>&1 && git diff --quiet -- "$f"; then echo "SKIP_UNCHANGED $f"; continue; fi
             sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=main" --jq .sha 2>/dev/null || true)"
             args=(-X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" -f message='Mare Scientia: Roblox 등록 자산 ID 갱신' -f content="$(base64 -w0 "$f")" -f branch=main)
             if [ -n "$sha" ]; then args+=(-f sha="$sha"); fi
