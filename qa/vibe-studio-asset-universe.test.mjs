@@ -3741,6 +3741,37 @@ test('declared internal score without sufficient axis evidence is informational 
   assert.equal(snapshot.nextQualityActions[0].kind,'INSPECT_ASSET_QUALITY');
 });
 
+test('automatic asset quality work improves measured defects before repeated unmeasured inspections',()=>{
+  const consumerGames=[{id:'live',lifecycleState:'ACTIVE',productionClass:'RELEASE_CONFIRMED'}];
+  const assets=[
+    {id:'a-unmeasured',family:'PROP',platform:'ROBLOX',sourceFiles:['assets/a.glb'],
+      consumerGameIds:['live'],internalAuditScore:999},
+    {id:'b-measured',family:'PROP',platform:'ROBLOX',sourceFiles:['assets/b.glb'],
+      consumerGameIds:['live'],sourceHash:'original-b',internalAuditEvidence:{DETAIL_FINISH:20,MATERIAL_SURFACE:90}},
+    {id:'c-quarantined',family:'PROP',platform:'ROBLOX',status:'QUARANTINED',
+      consumerGameIds:['live'],sourceFiles:['assets/c.glb'],internalAuditEvidence:{DETAIL_FINISH:0}}
+  ];
+  const first=buildInternalAssetMaintenanceSnapshot({assets,consumerGames});
+  assert.equal(first.nextQualityActions[0].assetId,'b-measured');
+  assert.equal(first.nextQualityActions[0].kind,'IMPROVE_ASSET_DETAIL');
+  assert.equal(first.nextQualityActions[0].weakestAxis,'DETAIL_FINISH');
+  assert.equal(first.nextQualityActions[0].currentAxisScore,20);
+  assert.equal(first.nextQualityActions[0].sourceHash,'original-b');
+  assert.equal(first.nextQualityActions[0].productionPromotionAllowed,false);
+  assert.equal(first.nextQualityActions[1].kind,'INSPECT_ASSET_QUALITY');
+  assert.equal(first.nextQualityActions.some(row=>row.assetId==='c-quarantined'),false);
+  const inspected=buildInternalAssetMaintenanceSnapshot({
+    assets:assets.map(row=>row.id==='b-measured'
+      ?{...row,sourceHash:'changed-b',internalAuditEvidence:{DETAIL_FINISH:100,MATERIAL_SURFACE:90}}
+      :row),consumerGames,previous:first
+  });
+  assert.equal(inspected.nextQualityActions[0].assetId,'b-measured');
+  assert.equal(inspected.nextQualityActions[0].weakestAxis,'MATERIAL_SURFACE');
+  assert.equal(inspected.nextQualityActions[0].currentAxisScore,90);
+  assert.notEqual(inspected.qualityFingerprint,first.qualityFingerprint);
+  assert.equal(inspected.continueWithoutHuman,true);
+});
+
 test('internal maintenance excludes inactive donors and binds detail repairs to current audit axes',()=>{
   const assets=[
     {id:'active',family:'PROP',internalAuditScore:1000,sourceHash:'source-a',sourceFiles:['assets/props.js'],internalAuditEvidence:{DETAIL_FINISH:20,MATERIAL_SURFACE:90}},

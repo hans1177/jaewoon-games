@@ -2048,11 +2048,14 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
       .map(row=>Object.freeze({...row})));
     qualityRepairStaticCandidates=Object.freeze(rows.filter(row=>row.reuseEligible).map(row=>{
       const axes=Object.entries(row.auditAxes).sort(([a,av],[b,bv])=>av-bv||INTERNAL_ASSET_AUDIT_WEIGHTS[b]-INTERNAL_ASSET_AUDIT_WEIGHTS[a]||a.localeCompare(b));
-      const weakest=axes[0];
+      // [자동 에셋 품질 개선] 이미 실측된 약한 축을 먼저 실제 원본에서 개선한다.
+      // 실측되지 않은 축은 개선 완료로 간주하지 않고 다음 점검에 남긴다.
+      const measuredWeakest=axes.find(([axis,score])=>row.measuredAuditAxes.includes(axis)&&score<1);
+      const weakest=measuredWeakest||axes[0];
       const measured=row.measuredAuditAxes.includes(weakest?.[0]);
       const sourceFiles=row.sourceFiles.map(file=>file.replace(/^\//,''))
         .filter(file=>file.startsWith('assets/')&&!file.split('/').includes('..')&&!/(^|\/)quality-evidence\.json$/.test(file));
-      const kind=!measured?'INSPECT_ASSET_QUALITY':weakest?.[1]<1?'IMPROVE_ASSET_DETAIL':'REAUDIT_ASSET_QUALITY';
+      const kind=measuredWeakest?'IMPROVE_ASSET_DETAIL':!measured?'INSPECT_ASSET_QUALITY':'REAUDIT_ASSET_QUALITY';
       const currentAxisScore=measured?Math.round((weakest?.[1]||0)*100):null;
       return Object.freeze({
         assetId:row.id,packId:row.packId||null,family:row.family,
@@ -2073,11 +2076,14 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
   }
   const inventoryFingerprint=stableAssetMaintenanceHash(JSON.stringify(rows));
   const rowById=new Map(rows.map(row=>[row.id,row]));
+  // [품질 우선순위] 같은 소비자 등급에서는 실측 결함 복구→측정→재점검 순서.
+  // 미측정(-1) 후보가 실제 개선 가능 자산을 매 회차 앞서지 못하게 한다.
+  const qualityActionOrder={IMPROVE_ASSET_DETAIL:0,INSPECT_ASSET_QUALITY:1,REAUDIT_ASSET_QUALITY:2};
   const qualityRepairCandidates=qualityRepairStaticCandidates.map(candidate=>({candidate,row:rowById.get(candidate.assetId)}))
     .filter(entry=>entry.row)
     .sort((a,b)=>b.row.consumerPriority-a.row.consumerPriority
-      ||(a.candidate.kind==='REAUDIT_ASSET_QUALITY')-(b.candidate.kind==='REAUDIT_ASSET_QUALITY')
-      ||Number(a.candidate.currentAxisScore??-1)-Number(b.candidate.currentAxisScore??-1)
+      ||qualityActionOrder[a.candidate.kind]-qualityActionOrder[b.candidate.kind]
+      ||Number(a.candidate.currentAxisScore??101)-Number(b.candidate.currentAxisScore??101)
       ||a.candidate.assetId.localeCompare(b.candidate.assetId));
   const qualityRepairActions=[],repairKeys=new Set();
   for(const {candidate,row} of qualityRepairCandidates){
@@ -2101,8 +2107,9 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
       productionPromotionAllowed:false,gameplayAuthority:false
     }));
   }
-  qualityRepairActions.sort((a,b)=>b.consumerPriority-a.consumerPriority||(a.kind==='REAUDIT_ASSET_QUALITY')-(b.kind==='REAUDIT_ASSET_QUALITY')
-    ||Number(a.currentAxisScore??-1)-Number(b.currentAxisScore??-1)||a.assetId.localeCompare(b.assetId));
+  qualityRepairActions.sort((a,b)=>b.consumerPriority-a.consumerPriority
+    ||qualityActionOrder[a.kind]-qualityActionOrder[b.kind]
+    ||Number(a.currentAxisScore??101)-Number(b.currentAxisScore??101)||a.assetId.localeCompare(b.assetId));
   const prior=previous&&typeof previous==='object'?previous:{};
   const priorReady=Boolean(text(prior.inventoryFingerprint));
   const priorTokens=new Set(Array.isArray(prior.typeRoleTokens)?prior.typeRoleTokens:[]);
