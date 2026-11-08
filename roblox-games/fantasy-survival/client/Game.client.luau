@@ -13368,3 +13368,81 @@ task.spawn(function()
     task.wait(1)
   end
 end)
+
+-- ============================================================================
+-- [비주얼 래더 · 배경] 자동개발 루프가 올려 주는 world 단계(workspace 속성 VisualLadderWorld)에 맞춰 빛·공기 연출을 켠다.
+--   2 햇살 줄기 / 3 블룸·색보정 / 4 꽃가루·반딧불 입자(모바일 저감 모드에서는 생략) / 5 대기 반사·노출 보정.
+-- 새 모델이나 도형은 만들지 않고 Lighting 효과와 ParticleEmitter만 쓴다. 표시 전용이며 판정·저장과 무관하다.
+-- ============================================================================
+task.spawn(function()
+  local Lighting=game:GetService("Lighting")
+  local RunService=game:GetService("RunService")
+  local function tier() return tonumber(workspace:GetAttribute("VisualLadderWorld")) or 1 end
+  local function ensure(class,name)
+    local obj=Lighting:FindFirstChild(name)
+    if not obj then obj=Instance.new(class);obj.Name=name;obj.Parent=Lighting end
+    return obj
+  end
+  local rays,bloom,grade
+  local anchors,emitters={},{}
+  local function buildParticles()
+    if #anchors>0 then return end
+    for i=1,6 do
+      local a=Instance.new("Attachment");a.Name="LadderAmbient"..i;a.Parent=workspace.Terrain
+      local e=Instance.new("ParticleEmitter")
+      e.Name="LadderMote"
+      e.Texture="rbxasset://textures/particles/sparkles_main.dds"
+      e.Lifetime=NumberRange.new(7,11)
+      e.Speed=NumberRange.new(.25,.7)
+      e.SpreadAngle=Vector2.new(180,180)
+      e.Rate=1.6
+      e.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(.15,.2),NumberSequenceKeypoint.new(.85,.16),NumberSequenceKeypoint.new(1,0)})
+      e.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.2,.45),NumberSequenceKeypoint.new(.8,.55),NumberSequenceKeypoint.new(1,1)})
+      e.LightEmission=.7;e.LightInfluence=0
+      e.Acceleration=Vector3.new(.15,.12,.1)
+      e.Parent=a
+      anchors[i]=a;emitters[i]=e
+    end
+  end
+  local angle=0
+  local clock=0
+  RunService.Heartbeat:Connect(function(dt)
+    clock+=dt
+    if clock<.25 then return end
+    local step=clock;clock=0
+    local t=tier()
+    local hour=Lighting.ClockTime
+    local day=hour>=6.5 and hour<=17.5
+    if t>=2 then
+      rays=rays or ensure("SunRaysEffect","LadderSunRays")
+      rays.Intensity=day and (reducedEffects and .08 or .14) or 0;rays.Spread=.55
+    elseif rays then rays.Intensity=0 end
+    if t>=3 then
+      bloom=bloom or ensure("BloomEffect","LadderBloom")
+      bloom.Intensity=reducedEffects and .18 or .3;bloom.Size=26;bloom.Threshold=1.05
+      grade=grade or ensure("ColorCorrectionEffect","LadderGrade")
+      grade.Saturation=.05;grade.Contrast=.04
+    elseif bloom then bloom.Intensity=0 end
+    if t>=5 then
+      Lighting.EnvironmentDiffuseScale=.75;Lighting.EnvironmentSpecularScale=.7
+      Lighting.ExposureCompensation=.12
+    end
+    local camera=workspace.CurrentCamera
+    if t>=4 and not reducedEffects and camera then
+      buildParticles()
+      angle+=step*.05
+      local firefly=not day
+      for i,a in ipairs(anchors) do
+        local ang=angle+i*math.pi/3
+        local radius=14+((i*7)%3)*6
+        a.WorldPosition=camera.CFrame.Position+Vector3.new(math.cos(ang)*radius,-2+((i*5)%4),math.sin(ang)*radius)
+        local e=emitters[i]
+        e.Enabled=true
+        e.Color=ColorSequence.new(firefly and Color3.fromRGB(214,255,120) or Color3.fromRGB(255,244,200))
+        e.Rate=firefly and 2.4 or 1.4
+      end
+    else
+      for _,e in ipairs(emitters) do e.Enabled=false end
+    end
+  end)
+end)

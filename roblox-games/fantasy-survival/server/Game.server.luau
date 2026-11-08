@@ -12,6 +12,17 @@ end)
 if storeOk then store = storeResult end
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
+-- [비주얼 래더] 자동개발 루프가 올려 주는 디테일 단계(tools/vibe-visual-ladder.mjs 생성). 읽기 실패 시 가장 낮은 단계로 동작한다.
+local VisualLadderTier = {npc=1,world=1,mobs=1}
+do
+  local okLadder,ladder=pcall(function() return require(Shared:WaitForChild("VisualLadderState",5)) end)
+  if okLadder and typeof(ladder)=="table" and typeof(ladder.Tier)=="table" then
+    for key,value in pairs(ladder.Tier) do VisualLadderTier[key]=tonumber(value) or 1 end
+  end
+end
+workspace:SetAttribute("VisualLadderNpc",VisualLadderTier.npc)
+workspace:SetAttribute("VisualLadderWorld",VisualLadderTier.world)
+workspace:SetAttribute("VisualLadderMobs",VisualLadderTier.mobs)
 
 -- Apply an actual selected MATERIAL atom to an existing visible spawn marker.
 -- This does not change collision, movement, item economy, or saved player state.
@@ -1277,6 +1288,22 @@ local function villageNativeNpc(spec)
     desc.TorsoColor=spec.cloth
     desc.LeftLegColor=spec.pants
     desc.RightLegColor=spec.pants
+    -- [래더 NPC 2단계] 사람마다 키·체격·머리 크기·피부 명암·바지 명암을 이름 기반으로 고정 변주해 복제 인간처럼 보이지 않게 한다.
+    if VisualLadderTier.npc>=2 then
+      local h=0
+      for i=1,#spec.id do h=(h*31+string.byte(spec.id,i))%9973 end
+      local function roll(n) return ((h*(n*7919+13))%1000)/1000 end
+      desc.HeightScale=.96+roll(1)*.10
+      desc.WidthScale=.92+roll(2)*.16
+      desc.DepthScale=.94+roll(3)*.12
+      desc.HeadScale=.96+roll(4)*.10
+      local skinShade=.94+roll(5)*.12
+      local skin=Color3.new(math.clamp(spec.skin.R*skinShade,0,1),math.clamp(spec.skin.G*skinShade,0,1),math.clamp(spec.skin.B*skinShade,0,1))
+      desc.HeadColor=skin;desc.LeftArmColor=skin;desc.RightArmColor=skin
+      local pantsShade=.88+roll(6)*.2
+      local pants=Color3.new(math.clamp(spec.pants.R*pantsShade,0,1),math.clamp(spec.pants.G*pantsShade,0,1),math.clamp(spec.pants.B*pantsShade,0,1))
+      desc.LeftLegColor=pants;desc.RightLegColor=pants
+    end
     local model=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
     desc:Destroy()
     return model
@@ -4952,6 +4979,8 @@ _G.MeadowNpcLife=function(npc,animator,baseCF,seed)
   local root=npc and npc:FindFirstChild("HumanoidRootPart")
   if not root or not animator then return end
   local ids={wave=507770239,point=507770453,cheer=507770677,laugh=507770818}
+  -- [래더 NPC 3단계] 공식 춤 감정 두 가지를 레퍼토리에 더한다.
+  if VisualLadderTier.npc>=3 then ids.dance=507771019;ids.dance2=507776043 end
   local tracks={}
   for key,id in pairs(ids) do
     pcall(function()
@@ -4962,6 +4991,7 @@ _G.MeadowNpcLife=function(npc,animator,baseCF,seed)
   end
   local rng=Random.new(math.floor(seed*1000)%100000)
   local order={"point","laugh","cheer","wave"}
+  if VisualLadderTier.npc>=3 then order={"point","laugh","cheer","wave","dance","point","dance2","laugh"} end
   local cur=baseCF
   task.spawn(function()
     local nextGesture=os.clock()+rng:NextNumber(4,11)

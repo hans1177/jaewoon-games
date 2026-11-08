@@ -1,0 +1,63 @@
+# 바이브 비주얼 래더: Studio 캡처 한 바퀴(플로어)가 오류 없이 끝날 때마다 NPC·배경·몹 디테일 단계를 한 칸 올린다.
+# 상태 파일과 생성 Luau 모듈만 main에 커밋한다. 승인 자산이 필요한 단계는 올리지 않고 docs/devloop/VISUAL_LADDER.md에 부족 자산으로 기록한다.
+name: Vibe Visual Ladder
+on:
+  workflow_run:
+    workflows: ["Devloop Studio Capture"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      game:
+        description: 게임 폴더 이름 (roblox-games/<game>)
+        required: false
+        default: fantasy-survival
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: vibe-visual-ladder
+  cancel-in-progress: false
+jobs:
+  advance:
+    if: github.repository == 'hans1177/jaewoon-games' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Advance ladder
+        env:
+          GAME_IN: ${{ inputs.game }}
+        run: |
+          set -euo pipefail
+          game="${GAME_IN:-fantasy-survival}"
+          [[ "$game" =~ ^[a-z0-9-]+$ ]] || { echo "bad game id"; exit 1; }
+          [ -f "roblox-games/$game/visual-ladder.json" ] || { echo "no ladder for $game"; exit 0; }
+          report=""
+          if git fetch -q origin "${game}-studio-frames:refs/remotes/origin/${game}-studio-frames" 2>/dev/null; then
+            git show "origin/${game}-studio-frames:report.json" > "$RUNNER_TEMP/report.json" 2>/dev/null && report="$RUNNER_TEMP/report.json"
+          fi
+          if [ -n "$report" ]; then
+            node tools/vibe-visual-ladder.mjs --game "$game" --advance --report "$report"
+          else
+            node tools/vibe-visual-ladder.mjs --game "$game" --advance
+          fi
+          node tools/vibe-visual-ladder.mjs --game "$game" --check
+      - name: Commit ladder state
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add roblox-games/*/visual-ladder-state.json roblox-games/*/shared/VisualLadderState.luau docs/devloop/VISUAL_LADDER.md
+          if git diff --cached --quiet; then echo "no ladder change"; exit 0; fi
+          git commit -m "비주얼 래더: 루프 검증 통과로 디테일 단계 갱신"
+          for i in 1 2 3; do
+            git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0
+            sleep 4
+          done
+          exit 1
