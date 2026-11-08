@@ -301,6 +301,7 @@ return {
 	["People/Soldier_Male"] = 125353461467528,
 	["People/Worker_Female"] = 114818889357240,
 	["People/Worker_Male"] = 114243798017258,
+	["Portraits/merchant"] = 76076947744058,
 	["Relics/blueprint"] = 94602952128147,
 	["Relics/blueprint-stacked"] = 87172157515634,
 	["Relics/chisel"] = 83075986445608,
