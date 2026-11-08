@@ -5239,24 +5239,49 @@ local function spawnEnemy(site, siteIndex)
   -- 가로 길이보다 높이가 확연히 크면 머리가 앞(-Z)을 보도록 눕힌다. 머리 위치를 보고 방향을 정하며, 회전은 속성에 저장해
   -- 이후 모든 애니메이션 피벗에 같은 회전을 곱한다.
   do
-    local lyingFix={fox=true,husky=true,keltir=true,bull=true,horse=true,donkey=true,rat=true,snake=true,snakeangry=true,
-      toad=true,spider=true,fangspider=true,bladespider=true,wolf=true}
-    local key=site.model or partId
-    if lyingFix[key] then
-      local size=model:GetExtentsSize()
-      if size.Y>math.max(size.X,size.Z)*1.15 then
-        local center=model:GetBoundingBox().Position
-        local headY=nil
-        for _,thing in ipairs(model:GetDescendants()) do
-          local lower=thing.Name:lower()
-          if (thing:IsA("Bone") or thing:IsA("BasePart")) and (lower=="head" or lower:find("head")) then
-            local pos=thing:IsA("Bone") and thing.WorldPosition or thing.Position
-            headY=pos.Y-center.Y;break
+    -- [자세 판정 v2] 모델 크기 비율이 아니라 뼈 위치로 '위쪽'을 구한다: 발(다리 끝 뼈)에서 몸통 뼈로 향하는 방향이 위다.
+    -- 이 방향이 +Y가 아니라 -Z/+Z 쪽이면 X축으로 눕혀 세우고, 거꾸로면(-Y) 뒤집는다. 사슴·허스키처럼 비율로는 알 수 없던 모델도 잡는다.
+    if not r15Look then
+      local feet,torso,fc,tc={},{},0,0
+      local feetSum,torsoSum=Vector3.zero,Vector3.zero
+      for _,thing in ipairs(model:GetDescendants()) do
+        if thing:IsA("Bone") then
+          local n=thing.Name:lower():gsub("[%._%s]","")
+          if n:find("lowerleg",1,true) or n:find("lowleg",1,true) or n:find("foot",1,true) then
+            feetSum+=thing.WorldPosition;fc+=1
+          elseif n=="body" or n=="hips" or n=="back" or n=="torso" or n=="torso2" or n=="spine" or n=="chest" or n=="abdomen" then
+            torsoSum+=thing.WorldPosition;tc+=1
           end
         end
-        local pitch=(headY and headY>0) and -math.rad(90) or math.rad(90)
-        model:PivotTo(CFrame.new(location)*CFrame.Angles(pitch,0,0))
-        model:SetAttribute("NativeMobBasePitch",pitch)
+      end
+      if fc>0 and tc>0 then
+        local up=(torsoSum/tc)-(feetSum/fc)
+        if up.Magnitude>.05 then
+          up=up.Unit
+          local pitch=math.atan2(-up.Z,up.Y)
+          if math.abs(pitch)>.35 then
+            model:PivotTo(CFrame.new(location)*CFrame.Angles(pitch,0,0))
+            model:SetAttribute("NativeMobBasePitch",pitch)
+          end
+        end
+      else
+        -- 다리 뼈가 없는 모델(뱀·거미 등)은 기존 방식: 가로보다 확연히 높으면 머리 방향으로 눕힌다.
+        local size=model:GetExtentsSize()
+        if size.Y>math.max(size.X,size.Z)*1.15 and (site.model=="snake" or site.model=="snakeangry" or site.model=="spider"
+          or site.model=="fangspider" or site.model=="bladespider" or site.model=="toad" or site.model=="rat") then
+          local center=model:GetBoundingBox().Position
+          local headY=nil
+          for _,thing in ipairs(model:GetDescendants()) do
+            local lower=thing.Name:lower()
+            if (thing:IsA("Bone") or thing:IsA("BasePart")) and lower:find("head") then
+              local pos=thing:IsA("Bone") and thing.WorldPosition or thing.Position
+              headY=pos.Y-center.Y;break
+            end
+          end
+          local pitch=(headY and headY>0) and -math.rad(90) or math.rad(90)
+          model:PivotTo(CFrame.new(location)*CFrame.Angles(pitch,0,0))
+          model:SetAttribute("NativeMobBasePitch",pitch)
+        end
       end
     end
   end
