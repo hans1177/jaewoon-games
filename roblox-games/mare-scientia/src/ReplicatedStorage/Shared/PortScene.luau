@@ -505,16 +505,14 @@ end
 -- streets: 세로 골목 x좌표, alley: 골목 폭, gap: 집 간격 배수, wMul: 집 폭 배수, dAdd: 집 깊이 가감,
 -- flAdd/flMax: 층수 가감·상한, dens: 빈터 비율 배수, jz/jx: 앞뒤·좌우 흐트러짐 배수, canal: 운하, fence: 울타리 마을
 local PROFILE = {
-	north = { streets = { -50, -90, -130 }, alley = 5, gap = 1, wMul = 1, dAdd = 0, flAdd = 0, flMax = 3, dens = 1, jz = 1, jx = 1 },
-	stone = { streets = { -50, -90, -130 }, alley = 5, gap = 1.05, wMul = 1.1, dAdd = 1, flAdd = 0, flMax = 3, dens = 0.95, jz = 1, jx = 1 },
-	brick = { streets = { -50, -76, -102, -130 }, alley = 4, gap = 0.72, wMul = 0.7, dAdd = 2, flAdd = 1, flMax = 3, dens = 1.05, jz = 0.4, jx = 0.4, canal = true },
-	nordic = { streets = { -62, -122 }, alley = 4, gap = 1.5, wMul = 0.8, dAdd = -1, flAdd = 0, flMax = 2, dens = 0.75, jz = 2.4, jx = 1.6, fence = true },
-	med = { streets = { -45, -70, -95, -120, -145 }, alley = 3, gap = 0.85, wMul = 1, dAdd = 0, flAdd = 1, flMax = 3, dens = 1, jz = 1.6, jx = 1.6 },
-	desert = { streets = { -56, -86, -116, -146 }, alley = 3, gap = 0.78, wMul = 1.2, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.05, jz = 0.4, jx = 0.5 },
-	tropic = { streets = { -72 }, alley = 5, gap = 1.7, wMul = 0.8, dAdd = -1, flAdd = -1, flMax = 1, dens = 0.7, jz = 2.6, jx = 2, fence = true },
+	north = { S = 12, gapf = 0.25, fl0 = 1, flGrow = 1, streets = { -50, -90, -130 }, alley = 5, gap = 1, wMul = 1, dAdd = 0, flAdd = 0, flMax = 3, dens = 1, jz = 1, jx = 1 },
+	stone = { S = 13, gapf = 0.3, fl0 = 1, flGrow = 2, streets = { -50, -90, -130 }, alley = 5, gap = 1.05, wMul = 1.1, dAdd = 1, flAdd = 0, flMax = 3, dens = 0.95, jz = 1, jx = 1 },
+	brick = { S = 9.5, gapf = 0.04, fl0 = 2, flGrow = 1, streets = { -50, -76, -102, -130 }, alley = 4, gap = 0.72, wMul = 0.7, dAdd = 2, flAdd = 1, flMax = 3, dens = 1.05, jz = 0.4, jx = 0.4, canal = true },
+	nordic = { S = 9, gapf = 1.0, fl0 = 1, flGrow = 1, streets = { -62, -122 }, alley = 4, gap = 1.5, wMul = 0.8, dAdd = -1, flAdd = 0, flMax = 2, dens = 0.75, jz = 2.4, jx = 1.6, fence = true },
+	med = { S = 11, gapf = 0.1, fl0 = 2, flGrow = 1, streets = { -45, -70, -95, -120, -145 }, alley = 3, gap = 0.85, wMul = 1, dAdd = 0, flAdd = 1, flMax = 3, dens = 1, jz = 1.6, jx = 1.6 },
+	desert = { S = 13.5, gapf = 0.06, fl0 = 1, flGrow = 1, streets = { -56, -86, -116, -146 }, alley = 3, gap = 0.78, wMul = 1.2, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.05, jz = 0.4, jx = 0.5 },
+	tropic = { S = 8.5, gapf = 1.3, fl0 = 1, flGrow = 0, streets = { -72 }, alley = 5, gap = 1.7, wMul = 0.8, dAdd = -1, flAdd = -1, flMax = 1, dens = 0.7, jz = 2.6, jx = 2, fence = true },
 }
-STYLE.north.sizeMul, STYLE.stone.sizeMul, STYLE.brick.sizeMul = 1, 1.05, 0.88
-STYLE.nordic.sizeMul, STYLE.med.sizeMul, STYLE.desert.sizeMul, STYLE.tropic.sizeMul = 0.85, 1, 1.12, 0.82
 
 local function strip(folder, style, cx, cz, sx, sz)
 	local p = part(folder, Vector3.new(sx, 0.2, sz), CFrame.new(cx, 0.1, cz), roadColor(style), roadMat())
@@ -559,61 +557,67 @@ local function densify(folder, info, style, rng, walkers, made)
 		return false
 	end
 
-	-- 1) 건물 밀도: 골목을 더 깔고 집을 빽빽하게 채운다 (뒷줄일수록 높고 크게)
+	-- 1) 마을 구획: 큰길 앞 두 줄 + 골목마다 등을 맞댄 두 줄. 집 크기·간격·층수·골목 짜임은 지역 프로필을 따르고,
+	--    항구 발전도가 오를수록 구획(줄)이 늘고 길이 포장되며 집이 높아진다.
+	local S = P.S -- 집 한 채가 차지하는 한 변(스터드). house()의 최종 크기 = max(w,d)*변주*HOUSE_SCALE
+	local fw = S / HOUSE_SCALE
+	local laneL = 2 * S + P.alley + 3
+	local pairsMax = math.max(1, math.floor((136 - 38) / laneL))
+	local pairsN = math.min(pairsMax, math.ceil(lvl * 0.8))
+	local dens = math.clamp((0.5 + 0.1 * lvl) * P.dens, 0.3, 0.97)
+	local smokers = 0
+	local X_END = -190
+	local function onStreet(x)
+		for _, sx in streetsX do
+			if math.abs(x - sx) < S / 2 + P.alley / 2 + 1 then
+				return true
+			end
+		end
+		return false
+	end
+	-- 한 줄 채우기: z = 줄의 중심, t = 0(항구 쪽)~1(성벽 쪽)
+	local function fillRow(z, t, xStart)
+		local x = xStart
+		while x > X_END do
+			if not onStreet(x) and rng:NextNumber() < dens then
+				local sz = S * rng:NextNumber(0.9, 1.08)
+				local pos = Vector3.new(x + rng:NextNumber(-1, 1) * P.jx, 0, z + rng:NextNumber(-1, 1) * P.jz)
+				local fl = P.fl0 + math.floor(t * P.flGrow + 0.5) + (if lvl >= 4 then 1 else 0) - (if lvl <= 1 then 1 else 0)
+				if rng:NextNumber() < 0.15 then fl += (if rng:NextNumber() < 0.5 then -1 else 1) end
+				fl = math.clamp(fl, 1, P.flMax)
+				local ww = fw * (sz / S)
+				house(folder, pos, ww, ww * rng:NextNumber(0.85, 1), fl, style, rng)
+				if smokers < 28 and rng:NextNumber() < 0.22 then
+					smokers += 1
+					smokeOn(folder, pos + Vector3.new(ww * 0.2, fl * 6 + 4, 0))
+				end
+			end
+			x -= S * (1 + P.gapf * rng:NextNumber(0.6, 1.4))
+		end
+	end
 	for _, side in { 1, -1 } do
-		strip(folder, style, -92, side * 38, 130, 6)
-		if P.canal then
-			-- 운하 도시: 줄 사이에 물길을 낸다
-			local canal = part(folder, Vector3.new(130, 0.3, 6), CFrame.new(-92, 0.05, side * 64), Color3.fromRGB(70, 120, 150), Enum.Material.Glass)
-			canal.Transparency = 0.25
-			canal.CanCollide = false
-			canal.CanQuery = false
-		else
-			strip(folder, style, -92, side * 73, 130, 4)
-		end
-		if lvl >= 2 then
-			strip(folder, style, -98, side * 87, 140, P.alley)
-			strip(folder, style, -98, side * 101, 140, P.alley)
-		end
-		if lvl >= 3 then
-			strip(folder, style, -98, side * 115, 140, P.alley)
+		-- 큰길(가운데 길) 앞 두 줄: 광장과 시설을 지나 안쪽부터
+		fillRow(side * (6 + S / 2 + 1), 0, -92)
+		fillRow(side * (6 + S + 2 + S / 2 + 1), 0.15, -92)
+		for p = 0, pairsN do
+			local laneZ = 38 + p * laneL
+			if P.canal and p % 2 == 1 then
+				local canal = part(folder, Vector3.new(140, 0.3, P.alley + 1), CFrame.new(-100, 0.05, side * laneZ), Color3.fromRGB(70, 120, 150), Enum.Material.Glass)
+				canal.Transparency = 0.25
+				canal.CanCollide = false
+				canal.CanQuery = false
+			else
+				strip(folder, style, -100, side * laneZ, 140, P.alley)
+			end
+			if p < pairsN then
+				local t = (p + 0.5) / math.max(1, pairsN)
+				fillRow(side * (laneZ + P.alley / 2 + 0.8 + S / 2), t, -26)
+				fillRow(side * (laneZ + laneL - P.alley / 2 - 0.8 - S / 2), t, -26)
+			end
 		end
 	end
 	for _, sx in streetsX do
-		strip(folder, style, sx, 0, P.alley, 250)
-	end
-	local rows = {
-		{ z = 20, w0 = 7, w1 = 9, d = 7, fl = 1, from = -74, step = 10 },
-		{ z = 48, w0 = 6, w1 = 8, d = 8, fl = 2, from = -38, step = 16, off = 8 },
-		{ z = 80, w0 = 8, w1 = 11, d = 8, fl = 2, from = -26, step = 12 },
-		{ z = 108, w0 = 10, w1 = 13, d = 9, fl = 3, from = -26, step = 14 },
-	}
-	local smokers = 0
-	local dens = math.clamp((0.42 + 0.1 * lvl) * P.dens, 0.25, 0.95)
-	local rowCount = math.min(#rows, 1 + math.ceil(lvl * 0.8))
-	for ri, row in rows do
-		if ri > rowCount then break end
-		for _, side in { 1, -1 } do
-			local x = row.from - (row.off or 0)
-			while x > -168 do
-				local w = rng:NextNumber(row.w0, row.w1) * P.wMul
-				if not nearStreet(x, w * HOUSE_SCALE) and rng:NextNumber() < dens then
-					-- 격자 느낌을 깨기 위해 앞뒤 위치·깊이·층수를 줄마다 흩뜨린다
-					local z = side * (row.z + rng:NextNumber(-2.5, 2.5) * P.jz)
-					local pos = Vector3.new(x + rng:NextNumber(-2.5, 2.5) * P.jx, 0, z)
-					local fl = row.fl + P.flAdd + (if lvl >= 4 then 1 else 0) - (if lvl <= 1 then 1 else 0)
-					local r = rng:NextNumber()
-					if r < 0.2 then fl -= 1 elseif r > 0.88 then fl += 1 end
-					fl = math.clamp(fl, 1, P.flMax)
-					house(folder, pos, w, math.max(5, row.d + P.dAdd + rng:NextNumber(-1, 1.5)), fl, style, rng)
-					if smokers < 28 and rng:NextNumber() < 0.25 then
-						smokers += 1
-						smokeOn(folder, pos + Vector3.new(w * 0.2, row.fl * 6 + 4, 0))
-					end
-				end
-				x -= row.step * HOUSE_SCALE * P.gap + rng:NextNumber(-2, 3)
-			end
-		end
+		strip(folder, style, sx, 0, P.alley, 2 * (38 + pairsN * laneL) + 6)
 	end
 	-- 골목 모퉁이: 덤불·화분·통·상자 더미
 	local clutter = { { "Cargo", "barrel" }, { "Naval", "crate" }, { "Naval", "cargo-pile-a" }, { "Naval", "cargo-pile-b" }, { "Cargo", "box-open" }, { "Town", "foliage_A" }, { "Town", "foliage_B" }, { "Town", "fence_post" } }
@@ -977,18 +981,6 @@ function PortScene.build(info, onFacility)
 		for k = 0, 3 do
 			local blade = part(folder, Vector3.new(0.4, 12, 2.2), CFrame.new(mx + 5.8, 12, mz) * CFrame.Angles(math.rad(k * 90), 0, 0) * CFrame.new(0, 6, 0), Color3.fromRGB(230, 220, 200), Enum.Material.Fabric)
 			blade.Name = "MillBlade"
-		end
-	end
-
-	-- 주택가: 큰길 양옆과 뒤쪽 블록
-	for row = 0, 3 do
-		for col = 0, 6 do
-			local x = -30 - col * 16 * HOUSE_SCALE
-			local z = (if row < 2 then 1 else -1) * (48 + (row % 2) * 18)
-			if rng:NextNumber() < 0.85 and (sceneLevel >= 2 or row < 2) then
-				local w = if info.portId == "amsterdam" then rng:NextNumber(6, 8) else rng:NextNumber(9, 13)
-				house(folder, Vector3.new(x + rng:NextNumber(-2, 2), 0, z), w, rng:NextNumber(8, 11), rng:NextInteger(1, 3), style, rng)
-			end
 		end
 	end
 
