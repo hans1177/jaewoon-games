@@ -295,6 +295,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	local variation = 0.86 + (seed % 7) * 0.037
 	-- 층수가 높을수록 집도 키워서 1·2·3층이 실루엣으로 구분되게 한다 (0.92~1.12배)
 	variation *= 0.92 + (math.clamp(floors or 2, 1, 3) - 1) * 0.1
+	variation *= style.sizeMul or 1
 	-- (Town/house_chimney, house_door 는 집 전체가 아니라 굴뚝·문 부품이라 집 본체로 쓰지 않는다)
 	local variant = "house"
 	local mesh = importedModel(parent, "Town", variant, pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
@@ -489,8 +490,34 @@ local function rotateAround(m, pos, yaw)
 	end
 end
 
+-- 항구 발전도(1~5)와 지역별 마을 배치 ------------------------------------------
+local sceneLevel = 1
+local function roadMat()
+	return if sceneLevel <= 1 then Enum.Material.Ground else Enum.Material.Cobblestone
+end
+local function roadColor(style)
+	if sceneLevel <= 1 then
+		return style.street:Lerp(Color3.fromRGB(120, 96, 66), 0.65)
+	end
+	return style.street
+end
+-- 지역마다 길의 짜임·집 크기·간격·층수가 다르다.
+-- streets: 세로 골목 x좌표, alley: 골목 폭, gap: 집 간격 배수, wMul: 집 폭 배수, dAdd: 집 깊이 가감,
+-- flAdd/flMax: 층수 가감·상한, dens: 빈터 비율 배수, jz/jx: 앞뒤·좌우 흐트러짐 배수, canal: 운하, fence: 울타리 마을
+local PROFILE = {
+	north = { streets = { -50, -90, -130 }, alley = 5, gap = 1, wMul = 1, dAdd = 0, flAdd = 0, flMax = 3, dens = 1, jz = 1, jx = 1 },
+	stone = { streets = { -50, -90, -130 }, alley = 5, gap = 1.05, wMul = 1.1, dAdd = 1, flAdd = 0, flMax = 3, dens = 0.95, jz = 1, jx = 1 },
+	brick = { streets = { -50, -76, -102, -130 }, alley = 4, gap = 0.72, wMul = 0.7, dAdd = 2, flAdd = 1, flMax = 3, dens = 1.05, jz = 0.4, jx = 0.4, canal = true },
+	nordic = { streets = { -62, -122 }, alley = 4, gap = 1.5, wMul = 0.8, dAdd = -1, flAdd = 0, flMax = 2, dens = 0.75, jz = 2.4, jx = 1.6, fence = true },
+	med = { streets = { -45, -70, -95, -120, -145 }, alley = 3, gap = 0.85, wMul = 1, dAdd = 0, flAdd = 1, flMax = 3, dens = 1, jz = 1.6, jx = 1.6 },
+	desert = { streets = { -56, -86, -116, -146 }, alley = 3, gap = 0.78, wMul = 1.2, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.05, jz = 0.4, jx = 0.5 },
+	tropic = { streets = { -72 }, alley = 5, gap = 1.7, wMul = 0.8, dAdd = -1, flAdd = -1, flMax = 1, dens = 0.7, jz = 2.6, jx = 2, fence = true },
+}
+STYLE.north.sizeMul, STYLE.stone.sizeMul, STYLE.brick.sizeMul = 1, 1.05, 0.88
+STYLE.nordic.sizeMul, STYLE.med.sizeMul, STYLE.desert.sizeMul, STYLE.tropic.sizeMul = 0.85, 1, 1.12, 0.82
+
 local function strip(folder, style, cx, cz, sx, sz)
-	local p = part(folder, Vector3.new(sx, 0.2, sz), CFrame.new(cx, 0.1, cz), style.street, Enum.Material.Cobblestone)
+	local p = part(folder, Vector3.new(sx, 0.2, sz), CFrame.new(cx, 0.1, cz), roadColor(style), roadMat())
 	p.CanCollide = false
 	p.CanQuery = false
 end
@@ -522,7 +549,9 @@ local function densify(folder, info, style, rng, walkers, made)
 	local cold = not palm
 	local port = PortData.Ports[info.portId]
 	local big = (port and port.shipyard) or false
-	local streetsX = { -50, -90, -130 }
+	local P = PROFILE[key] or PROFILE.north
+	local lvl = sceneLevel
+	local streetsX = P.streets
 	local function nearStreet(x, w)
 		for _, sx in streetsX do
 			if math.abs(x - sx) < w / 2 + 3.5 then return true end
@@ -533,13 +562,25 @@ local function densify(folder, info, style, rng, walkers, made)
 	-- 1) 건물 밀도: 골목을 더 깔고 집을 빽빽하게 채운다 (뒷줄일수록 높고 크게)
 	for _, side in { 1, -1 } do
 		strip(folder, style, -92, side * 38, 130, 6)
-		strip(folder, style, -92, side * 73, 130, 4)
-		strip(folder, style, -98, side * 87, 140, 5)
-		strip(folder, style, -98, side * 101, 140, 5)
-		strip(folder, style, -98, side * 115, 140, 5)
+		if P.canal then
+			-- 운하 도시: 줄 사이에 물길을 낸다
+			local canal = part(folder, Vector3.new(130, 0.3, 6), CFrame.new(-92, 0.05, side * 64), Color3.fromRGB(70, 120, 150), Enum.Material.Glass)
+			canal.Transparency = 0.25
+			canal.CanCollide = false
+			canal.CanQuery = false
+		else
+			strip(folder, style, -92, side * 73, 130, 4)
+		end
+		if lvl >= 2 then
+			strip(folder, style, -98, side * 87, 140, P.alley)
+			strip(folder, style, -98, side * 101, 140, P.alley)
+		end
+		if lvl >= 3 then
+			strip(folder, style, -98, side * 115, 140, P.alley)
+		end
 	end
 	for _, sx in streetsX do
-		strip(folder, style, sx, 0, 5, 250)
+		strip(folder, style, sx, 0, P.alley, 250)
 	end
 	local rows = {
 		{ z = 20, w0 = 7, w1 = 9, d = 7, fl = 1, from = -74, step = 10 },
@@ -548,25 +589,29 @@ local function densify(folder, info, style, rng, walkers, made)
 		{ z = 108, w0 = 10, w1 = 13, d = 9, fl = 3, from = -26, step = 14 },
 	}
 	local smokers = 0
-	for _, row in rows do
+	local dens = math.clamp((0.42 + 0.1 * lvl) * P.dens, 0.25, 0.95)
+	local rowCount = math.min(#rows, 1 + math.ceil(lvl * 0.8))
+	for ri, row in rows do
+		if ri > rowCount then break end
 		for _, side in { 1, -1 } do
 			local x = row.from - (row.off or 0)
 			while x > -168 do
-				local w = rng:NextNumber(row.w0, row.w1)
-				if not nearStreet(x, w * HOUSE_SCALE) and rng:NextNumber() < 0.93 then
+				local w = rng:NextNumber(row.w0, row.w1) * P.wMul
+				if not nearStreet(x, w * HOUSE_SCALE) and rng:NextNumber() < dens then
 					-- 격자 느낌을 깨기 위해 앞뒤 위치·깊이·층수를 줄마다 흩뜨린다
-					local z = side * (row.z + rng:NextNumber(-2.5, 2.5))
-					local pos = Vector3.new(x + rng:NextNumber(-2.5, 2.5), 0, z)
-					local fl = row.fl
+					local z = side * (row.z + rng:NextNumber(-2.5, 2.5) * P.jz)
+					local pos = Vector3.new(x + rng:NextNumber(-2.5, 2.5) * P.jx, 0, z)
+					local fl = row.fl + P.flAdd + (if lvl >= 4 then 1 else 0) - (if lvl <= 1 then 1 else 0)
 					local r = rng:NextNumber()
-					if r < 0.2 and fl > 1 then fl -= 1 elseif r > 0.88 and fl < 3 then fl += 1 end
-					house(folder, pos, w, row.d + rng:NextNumber(-1, 1.5), fl, style, rng)
+					if r < 0.2 then fl -= 1 elseif r > 0.88 then fl += 1 end
+					fl = math.clamp(fl, 1, P.flMax)
+					house(folder, pos, w, math.max(5, row.d + P.dAdd + rng:NextNumber(-1, 1.5)), fl, style, rng)
 					if smokers < 28 and rng:NextNumber() < 0.25 then
 						smokers += 1
 						smokeOn(folder, pos + Vector3.new(w * 0.2, row.fl * 6 + 4, 0))
 					end
 				end
-				x -= row.step * HOUSE_SCALE + rng:NextNumber(-2, 3)
+				x -= row.step * HOUSE_SCALE * P.gap + rng:NextNumber(-2, 3)
 			end
 		end
 	end
@@ -582,23 +627,33 @@ local function densify(folder, info, style, rng, walkers, made)
 			end
 		end
 		-- 골목 가로등
-		for x = -40, -150, -44 do
-			lantern(folder, Vector3.new(x, 0, side * 40.8), 3)
+		if lvl >= 3 then
+			for x = -40, -150, -44 do
+				lantern(folder, Vector3.new(x, 0, side * 40.8), 3)
+			end
 		end
 	end
 
 	-- 2) 광장 중심: 동상·기둥·깃발, 시장 가판대를 더 둘러 세운다
-	importedModel(folder, "Terrain", "statue-column", Vector3.new(-26, 0, 0), 12, true)
-	for _, c in { Vector3.new(-26, 0, 8), Vector3.new(-26, 0, -8), Vector3.new(-17, 0, 8), Vector3.new(-17, 0, -8) } do
-		importedModel(folder, "Town", "pillar-stone", c, 5, false)
+	if lvl >= 2 then
+		importedModel(folder, "Terrain", "statue-column", Vector3.new(-26, 0, 0), 12, true)
 	end
-	for _, z in { -24, 24 } do
-		for _, x in { -2, -22, -42, -62 } do
-			importedModel(folder, "Castle", "flag-banner-short", Vector3.new(x, 0, z), 7, false)
+	if lvl >= 2 then
+		for _, c in { Vector3.new(-26, 0, 8), Vector3.new(-26, 0, -8), Vector3.new(-17, 0, 8), Vector3.new(-17, 0, -8) } do
+			importedModel(folder, "Town", "pillar-stone", c, 5, false)
+		end
+	end
+	if lvl >= 3 then
+		for _, z in { -24, 24 } do
+			for _, x in { -2, -22, -42, -62 } do
+				importedModel(folder, "Castle", "flag-banner-short", Vector3.new(x, 0, z), 7, false)
+			end
 		end
 	end
 	local extraStalls = { Vector3.new(-44, 0, 19), Vector3.new(-44, 0, -19), Vector3.new(-70, 0, 19), Vector3.new(-70, 0, -19), Vector3.new(-6, 0, -20), Vector3.new(-6, 0, 22) }
+	local stallMax = if lvl <= 1 then 2 elseif lvl == 2 then 4 else #extraStalls
 	for i, spot in extraStalls do
+		if i > stallMax then break end
 		importedModel(folder, "Town", if i % 2 == 0 then "stall-red" else "stall-green", spot, 6.5, false)
 		for k = 1, 4 do
 			local good = made[(i + k) % math.max(1, #made) + 1] or "cheese"
@@ -663,7 +718,9 @@ local function densify(folder, info, style, rng, walkers, made)
 
 	-- 6) 항구마다 랜드마크 (왕궁 뒤)
 	local lx = -186
-	if key == "med" then
+	if lvl < 3 then
+		-- 작은 항구: 큰 랜드마크 대신 소박한 표지
+	elseif key == "med" then
 		for z = -24, 24, 8 do
 			importedModel(folder, "Terrain", "column", Vector3.new(lx, 0, z), 12, true)
 		end
@@ -691,25 +748,30 @@ local function densify(folder, info, style, rng, walkers, made)
 
 	-- 7) 외곽: 성벽·망루로 마을을 두르고, 그 밖은 언덕과 숲으로 막는다
 	local WZ, WX = 150, -204
+	local walled = lvl >= 3
 	for _, side in { 1, -1 } do
 		local x = -22
-		while x > WX do
+		while walled and x > WX do
 			local m = importedModel(folder, "Castle", "wall", Vector3.new(x, 0, side * WZ), 12.5, true)
 			if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(x, 0, side * WZ), 12.5, true) end
 			x -= 12
 		end
-		for _, tx in { -22, -80, -140, WX } do
-			importedModel(folder, "Naval", "tower-watch", Vector3.new(tx, 0, side * WZ), 16, true)
+		if lvl >= 2 then
+			for _, tx in { -22, -80, -140, WX } do
+				importedModel(folder, "Naval", "tower-watch", Vector3.new(tx, 0, side * WZ), 16, true)
+			end
 		end
 	end
 	local z = -WZ
-	while z <= WZ do
+	while walled and z <= WZ do
 		local m = importedModel(folder, "Castle", if z == -18 or z == 18 then "wall-narrow-gate" else "wall", Vector3.new(WX, 0, z), 12.5, true)
 		if not m then m = importedModel(folder, "Naval", "castle-wall", Vector3.new(WX, 0, z), 12.5, true) end
 		rotateAround(m, Vector3.new(WX, 0, z), math.pi / 2)
 		z += 12
 	end
-	importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true)
+	if walled then
+		importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true)
+	end
 	-- 성벽 밖 언덕과 숲
 	-- 평평한 절벽 판자(cliff-rock 은 두께 0.2 패널) 대신 입체 바위 군집
 	local rocks = { "rock-large", "rock-wide", "rock-small" }
@@ -749,6 +811,7 @@ function PortScene.build(info, onFacility)
 	folder.Name = "PortScene"
 	local style = if MED[info.portId] then STYLE.med else (STYLE[REGION[info.portId] or "north"] or STYLE.north)
 	local rng = seeded(info.portId)
+	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
 	local fac = {}
 	for _, k in info.facilities or {} do
 		fac[k] = true
@@ -833,15 +896,15 @@ function PortScene.build(info, onFacility)
 	local ship = buildShip(folder, info.shipId, Vector3.new(50, 1.2, 16))
 
 	-- 광장
-	part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), style.street, Enum.Material.Cobblestone)
-	part(folder, Vector3.new(130, 0.25, 10), CFrame.new(-80, 0.13, 0), style.street, Enum.Material.Cobblestone)
+	part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), roadColor(style), roadMat())
+	part(folder, Vector3.new(130, 0.25, 10), CFrame.new(-80, 0.13, 0), roadColor(style), roadMat())
 	-- 시설 앞 큰 광장과 주택가 골목: 동선이 눈에 보이도록 돌바닥을 깐다
-	part(folder, Vector3.new(96, 0.3, 50), CFrame.new(-34, 0.14, 0), style.street, Enum.Material.Cobblestone)
+	part(folder, Vector3.new(96, 0.3, 50), CFrame.new(-34, 0.14, 0), roadColor(style), roadMat())
 	for _, sz in { 57, -57 } do
-		part(folder, Vector3.new(120, 0.25, 6), CFrame.new(-92, 0.12, sz), style.street, Enum.Material.Cobblestone)
+		part(folder, Vector3.new(120, 0.25, 6), CFrame.new(-92, 0.12, sz), roadColor(style), roadMat())
 	end
-	for _, sx in { -50, -90, -130 } do
-		part(folder, Vector3.new(5, 0.25, 130), CFrame.new(sx, 0.12, 0), style.street, Enum.Material.Cobblestone)
+	for _, sx in (PROFILE[styleKeyOf(style)] or PROFILE.north).streets do
+		part(folder, Vector3.new(4, 0.25, 130), CFrame.new(sx, 0.12, 0), roadColor(style), roadMat())
 	end
 	-- 광장 분수도 CC0 수입 메쉬 우선
 	if true then
@@ -922,7 +985,7 @@ function PortScene.build(info, onFacility)
 		for col = 0, 6 do
 			local x = -30 - col * 16 * HOUSE_SCALE
 			local z = (if row < 2 then 1 else -1) * (48 + (row % 2) * 18)
-			if rng:NextNumber() < 0.85 then
+			if rng:NextNumber() < 0.85 and (sceneLevel >= 2 or row < 2) then
 				local w = if info.portId == "amsterdam" then rng:NextNumber(6, 8) else rng:NextNumber(9, 13)
 				house(folder, Vector3.new(x + rng:NextNumber(-2, 2), 0, z), w, rng:NextNumber(8, 11), rng:NextInteger(1, 3), style, rng)
 			end

@@ -3893,13 +3893,15 @@ syncScene = function()
 	for _, c in crew do
 		table.insert(crewIds, c.id)
 	end
-	local key = p.portId .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",")
+	local portLevel = (view.harbor and view.harbor.level) or 1
+	local key = p.portId .. "|L" .. portLevel .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",")
 	if key == sceneKey then
 		return
 	end
 	local ok, res = pcall(PortScene.build, {
 		portId = p.portId,
 		portName = p.portName,
+		level = portLevel,
 		shipId = ship.id,
 		hasShipyard = p.hasShipyard,
 		facilities = view.facilities,
