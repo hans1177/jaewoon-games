@@ -457,15 +457,50 @@ local PORTRAIT_ROLE = {
 	["교역소"] = "Rogue", ["항만청"] = "Knight", ["조선소"] = "Barbarian",
 	["주점"] = "Barbarian", ["학자의 서재"] = "Mage", ["선장실"] = "Rogue_Hooded",
 }
+-- 초상화 시트: 왼쪽부터 상인·항만 관리관·조선 장인 / 주점 주인·학자·항해가.
+-- 나이와 직업이 다른 인물을 사용한다. 나라·역할이 맞지 않으면 기존 인물 모델을 보존한다.
+local PORTRAIT_ATLAS = AssetIds["Portraits/characters"]
+local PORTRAIT_SIZE = Vector2.new(256, 336)
+local PORTRAIT_TILE = {
+	merchant = Vector2.new(0, 0),
+	harbor = Vector2.new(256, 0),
+	yard = Vector2.new(512, 0),
+	tavern = Vector2.new(0, 336),
+	scholar = Vector2.new(256, 336),
+	hero = Vector2.new(512, 336),
+}
+local PORTRAIT_GROUP = {
+	["교역소"] = "merchant", ["항만청"] = "harbor", ["조선소"] = "yard",
+	["주점"] = "tavern", ["학자의 서재"] = "scholar",
+}
+-- 각 국가 주인공의 성별과 이야기 배경에 맞는 초상이 있을 때만 지정한다.
+local HERO_TILE = {
+	england = "yard", netherlands = "scholar", france = "merchant",
+	new_spain = "hero", portugal = "yard",
+}
 local function setPortrait(groupName)
 	if portraitKey == groupName then
 		return
 	end
 	portraitKey = groupName
-	local imageId = if groupName == "교역소" then AssetIds["Portraits/merchant"] else nil
+	local tile = PORTRAIT_GROUP[groupName]
+	if groupName == "선장실" and view and view.player then
+		local nationId = nil
+		for id, nation in PortData.Nations do
+			if nation.name == view.player.nation then
+				nationId = id
+				break
+			end
+		end
+		tile = HERO_TILE[nationId or ""]
+	end
+	local imageId = if PORTRAIT_ATLAS and tile then PORTRAIT_ATLAS
+		elseif groupName == "교역소" then AssetIds["Portraits/merchant"] else nil
 	portraitImage.Visible = imageId ~= nil
 	portraitFrame.Visible = imageId == nil
 	portraitImage.Image = if imageId then "rbxassetid://" .. tostring(imageId) else ""
+	portraitImage.ImageRectOffset = if tile and PORTRAIT_ATLAS and imageId == PORTRAIT_ATLAS then PORTRAIT_TILE[tile] else Vector2.zero
+	portraitImage.ImageRectSize = if tile and PORTRAIT_ATLAS and imageId == PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero
 	-- 이미지 전환 시 이전 3D 모델까지 정리해 불필요한 뷰포트 객체가 남지 않도록 한다.
 	for _, c in portraitFrame:GetChildren() do
 		if c:IsA("Model") then
@@ -1453,6 +1488,25 @@ end
 
 -- 주인공 반신 초상 (나라마다 다른 인물). 승인된 인물 모델/R15 몸체만 사용한다.
 local function heroPortrait(parent, nationId, w, h)
+	local tile = HERO_TILE[nationId]
+	if PORTRAIT_ATLAS and tile then
+		local photo = Instance.new("ImageLabel")
+		photo.Name = "HeroPortrait"
+		photo.Size = UDim2.fromOffset(w, h)
+		photo.BackgroundColor3 = Color3.fromRGB(30, 42, 62)
+		photo.BorderSizePixel = 0
+		photo.ScaleType = Enum.ScaleType.Crop
+		photo.Image = "rbxassetid://" .. tostring(PORTRAIT_ATLAS)
+		photo.ImageRectOffset = PORTRAIT_TILE[tile]
+		photo.ImageRectSize = PORTRAIT_SIZE
+		corner(photo, 10)
+		local st = Instance.new("UIStroke")
+		st.Color = Color3.fromRGB(214, 170, 82)
+		st.Thickness = 2
+		st.Parent = photo
+		photo.Parent = parent
+		return photo
+	end
 	local vf = Instance.new("ViewportFrame")
 	vf.Size = UDim2.fromOffset(w, h)
 	vf.BackgroundColor3 = Color3.fromRGB(30, 42, 62)
@@ -1593,7 +1647,38 @@ function playStory(ev)
 	local portraitModel = storyPortraitModel(ev.npc or "", ev.id or "")
 	local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 	local tpl = portraitModel and lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(portraitModel)
-	local storyImageId = if string.find(ev.npc or "", "상인", 1, true) then AssetIds["Portraits/merchant"] else nil
+	-- 이야기 대화는 인물의 직업·나이를 우선한다. 이름만으로 맞지 않는 외형을 강제하지 않는다.
+	local npcName = ev.npc or ""
+	local tile = nil
+	if string.find(npcName, "늙", 1, true) or string.find(npcName, "노인", 1, true) then
+		tile = "tavern"
+	elseif string.find(npcName, "주조", 1, true) or string.find(npcName, "조선", 1, true)
+		or string.find(npcName, "목수", 1, true) or string.find(npcName, "장인", 1, true) then
+		tile = "yard"
+	elseif string.find(npcName, "항만청", 1, true) or string.find(npcName, "제독", 1, true)
+		or string.find(npcName, "총독", 1, true) or string.find(npcName, "장교", 1, true) then
+		tile = "harbor"
+	elseif string.find(npcName, "학자", 1, true) or string.find(npcName, "학회", 1, true)
+		or string.find(npcName, "서기", 1, true) or string.find(npcName, "천문", 1, true)
+		or string.find(npcName, "지도", 1, true) or string.find(npcName, "연구", 1, true) then
+		tile = "scholar"
+	elseif string.find(npcName, "상인", 1, true) or string.find(npcName, "중개", 1, true)
+		or string.find(npcName, "무역", 1, true) then
+		tile = "merchant"
+	elseif string.find(npcName, "항해사", 1, true) or string.find(npcName, "선장", 1, true)
+		or string.find(npcName, "도선사", 1, true) then
+		tile = "hero"
+	elseif string.find(npcName, "주점", 1, true) or string.find(npcName, "선술집", 1, true) then
+		tile = "tavern"
+	end
+	-- 서로 다른 문화권의 인물에게 유럽형 얼굴을 무리하게 재사용하지 않는다.
+	if string.find(npcName, "인도", 1, true) or string.find(npcName, "일본", 1, true)
+		or string.find(npcName, "오사카", 1, true) or string.find(npcName, "킬와", 1, true)
+		or string.find(npcName, "스와힐리", 1, true) or string.find(npcName, "오스만", 1, true) then
+		tile = nil
+	end
+	local storyImageId = if PORTRAIT_ATLAS and tile then PORTRAIT_ATLAS
+		elseif tile == "merchant" then AssetIds["Portraits/merchant"] else nil
 	if storyImageId then
 		local photo = Instance.new("ImageLabel")
 		photo.Name = "NpcPortrait"
@@ -1604,6 +1689,8 @@ function playStory(ev)
 		photo.BorderSizePixel = 0
 		photo.ScaleType = Enum.ScaleType.Crop
 		photo.Image = "rbxassetid://" .. tostring(storyImageId)
+		photo.ImageRectOffset = if PORTRAIT_ATLAS and tile and storyImageId == PORTRAIT_ATLAS then PORTRAIT_TILE[tile] else Vector2.zero
+		photo.ImageRectSize = if PORTRAIT_ATLAS and tile and storyImageId == PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero
 		photo.Parent = picture
 	elseif tpl then
 		local vf = Instance.new("ViewportFrame")
@@ -2293,7 +2380,7 @@ local function openTradeHall()
 		local left = mkBox(root, UDim2.fromOffset(0, 54), UDim2.new(0, 250, 1, -54), Color3.fromRGB(46, 34, 26))
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("상인", p.portId or ""))
-		local merchantImageId = AssetIds["Portraits/merchant"]
+		local merchantImageId = PORTRAIT_ATLAS or AssetIds["Portraits/merchant"]
 		if merchantImageId then
 			local photo = Instance.new("ImageLabel")
 			photo.Name = "MerchantPortrait"
@@ -2303,6 +2390,8 @@ local function openTradeHall()
 			photo.BorderSizePixel = 0
 			photo.ScaleType = Enum.ScaleType.Crop
 			photo.Image = "rbxassetid://" .. tostring(merchantImageId)
+			photo.ImageRectOffset = if PORTRAIT_ATLAS then PORTRAIT_TILE.merchant else Vector2.zero
+			photo.ImageRectSize = if PORTRAIT_ATLAS then PORTRAIT_SIZE else Vector2.zero
 			photo.Parent = left
 		else
 			local vf = Instance.new("ViewportFrame")
@@ -2914,7 +3003,18 @@ local function openYardHall()
 		local left = mkBox(root, UDim2.fromOffset(0, 54), UDim2.new(0, 250, 1, -54), Color3.fromRGB(32, 40, 50))
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("조선 장인", p.portId or ""))
-		do
+		if PORTRAIT_ATLAS then
+			local photo = Instance.new("ImageLabel")
+			photo.Name = "ShipwrightPortrait"
+			photo.Size = UDim2.new(1, 0, 1, -150)
+			photo.BackgroundTransparency = 1
+			photo.BorderSizePixel = 0
+			photo.ScaleType = Enum.ScaleType.Crop
+			photo.Image = "rbxassetid://" .. tostring(PORTRAIT_ATLAS)
+			photo.ImageRectOffset = PORTRAIT_TILE.yard
+			photo.ImageRectSize = PORTRAIT_SIZE
+			photo.Parent = left
+		else
 			local vf = Instance.new("ViewportFrame")
 			vf.BackgroundTransparency = 1
 			vf.Size = UDim2.new(1, 0, 1, -150)
