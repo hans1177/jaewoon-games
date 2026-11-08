@@ -489,27 +489,26 @@ local HERO_TILE = {
 	portugal = Vector2.new(512, 672), -- 이네스 카브랄
 }
 local function setPortrait(groupName)
-	-- 나라별 주인공이 바뀌어도 기존 선장 초상을 잘못 재사용하지 않는다.
-	local identity = groupName
-	if groupName == "선장실" and view and view.player then
-		identity = groupName .. ":" .. tostring(view.player.nation)
+	-- 새 게임 선택 중에는 선택한 주인공, 이어하기에서는 저장된 주인공의 얼굴을 유지한다.
+	local heroNation = nil
+	if groupName == "선장실" then
+		heroNation = chosenNation
+		if view and view.player and not newGameMode then
+			for id, nation in PortData.Nations do
+				if nation.name == view.player.nation then
+					heroNation = id
+					break
+				end
+			end
+		end
 	end
+	local identity = if heroNation then groupName .. ":" .. heroNation else groupName
 	if portraitKey == identity then
 		return
 	end
 	portraitKey = identity
 	local tile = PORTRAIT_GROUP[groupName]
-	local heroTile = nil
-	if groupName == "선장실" and view and view.player then
-		local nationId = nil
-		for id, nation in PortData.Nations do
-			if nation.name == view.player.nation then
-				nationId = id
-				break
-			end
-		end
-		heroTile = HERO_TILE[nationId or ""]
-	end
+	local heroTile = if heroNation then HERO_TILE[heroNation] else nil
 	local imageId = if heroTile and HERO_ATLAS then HERO_ATLAS
 		elseif tile and PORTRAIT_ATLAS then PORTRAIT_ATLAS
 		elseif groupName == "교역소" then AssetIds["Portraits/merchant"] else nil
