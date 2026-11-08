@@ -54,7 +54,30 @@ STYLE.desert = variant(STYLE.med,
 STYLE.tropic = variant(STYLE.med,
 	{ C(184, 140, 96), C(160, 110, 74), C(204, 164, 112), C(140, 96, 64), C(226, 196, 150) },
 	{ C(150, 120, 70), C(130, 100, 60) }, C(112, 150, 70), C(176, 150, 112), 0.55)
+
+-- 유럽 문화권별 건축: 이베리아(회칠 벽·붉은 기와), 이탈리아(파스텔 벽·운하), 프랑스(크림색 석회암·청회색 지붕),
+-- 영국(목골·회색 석재), 한자(가파른 붉은 벽돌 박공)
+STYLE.iberia = variant(STYLE.med,
+	{ C(246, 242, 232), C(240, 228, 200), C(232, 214, 176), C(226, 200, 150), C(250, 246, 238) },
+	{ C(190, 96, 64), C(176, 84, 56) }, C(188, 168, 118), C(208, 192, 164), 0.42)
+STYLE.italy = variant(STYLE.med,
+	{ C(232, 190, 120), C(222, 150, 120), C(240, 226, 196), C(236, 176, 110), C(190, 196, 150) },
+	{ C(176, 84, 56), C(160, 74, 50) }, C(170, 156, 112), C(200, 190, 168), 0.5)
+STYLE.france = variant(STYLE.north,
+	{ C(238, 228, 204), C(224, 210, 178), C(208, 198, 172), C(232, 220, 196) },
+	{ C(66, 74, 92), C(56, 62, 78) }, C(104, 132, 84), C(176, 170, 156), 1.05)
+STYLE.britain = variant(STYLE.stone,
+	{ C(124, 102, 84), C(176, 168, 150), C(150, 148, 140), C(206, 196, 172), C(110, 90, 72) },
+	{ C(88, 82, 76), C(112, 90, 60) }, C(86, 120, 70), C(122, 118, 112), 1.15)
+STYLE.hanse = variant(STYLE.brick,
+	{ C(150, 58, 44), C(136, 54, 42), C(170, 80, 56), C(120, 50, 40), C(188, 120, 84) },
+	{ C(52, 44, 44), C(70, 52, 48) }, C(92, 118, 74), C(128, 112, 100), 1.55)
 local REGION = {
+	-- 유럽 문화권
+	lisbon = "iberia", porto = "iberia", seville = "iberia", cadiz = "iberia", malaga = "iberia", barcelona = "iberia", valencia = "iberia", cartagena = "iberia", funchal = "iberia", las_palmas = "iberia", ponta_delgada = "iberia", palma = "iberia",
+	genoa = "italy", venice = "italy", livorno = "italy", naples = "italy", palermo = "italy", messina = "italy", syracuse = "italy", trieste = "italy", ancona = "italy", ragusa = "italy", split = "italy", cagliari = "italy", corfu = "italy", candia = "italy", valletta = "italy",
+	rouen = "france", bordeaux = "france", la_rochelle = "france", marseille = "france", toulon = "france", ajaccio = "france",
+	hamburg = "hanse", lubeck = "hanse", gdansk = "hanse", riga = "hanse", tallinn = "hanse", koenigsberg = "hanse",
 	san_francisco = "stone",
 	sitka = "nordic", vancouver = "nordic",
 	sydney = "tropic", hobart = "tropic", perth = "tropic", darwin = "tropic", auckland = "tropic", port_moresby = "tropic", suva = "tropic", tahiti = "tropic", honolulu = "tropic", guam = "tropic", acapulco = "tropic", panama = "tropic", guayaquil = "tropic", callao = "tropic", valparaiso = "tropic",
@@ -71,11 +94,11 @@ local REGION = {
 	casablanca = "desert", safi = "desert", agadir = "desert", cape_town = "med",
 	beirut = "desert", damietta = "desert", bone = "desert",
 	acre = "desert", oran = "desert", benghazi = "desert",
-	riga = "brick", tallinn = "brick", koenigsberg = "brick", visby = "stone", helsinki = "nordic", st_petersburg = "stone",
+	visby = "stone", helsinki = "nordic", st_petersburg = "stone",
 	algiers = "desert", tunis = "desert", tripoli = "desert", alexandria = "desert", istanbul = "desert", tangier = "desert",
-	amsterdam = "brick", rotterdam = "brick", antwerp = "brick", hamburg = "brick", lubeck = "brick", gdansk = "brick",
+	amsterdam = "brick", rotterdam = "brick", antwerp = "brick",
 	bergen = "nordic", oslo = "nordic", stockholm = "nordic", gothenburg = "nordic", copenhagen = "nordic",
-	london = "stone", edinburgh = "stone", glasgow = "stone", dublin = "stone", plymouth = "stone", hull = "stone",
+	london = "britain", edinburgh = "britain", glasgow = "britain", dublin = "britain", plymouth = "britain", hull = "britain",
 }
 
 -- 특산품 진열용 3D 모델 (없는 상품은 상자로 대신한다)
@@ -277,9 +300,36 @@ local KEEPER_ROLE = {
 	["교역소"] = "Rogue", ["주점"] = "Barbarian", ["항만청"] = "Knight", ["은행"] = "Mage",
 	["상인 길드"] = "Rogue_Hooded", ["학자의 서재"] = "Mage", ["도서관 (도감)"] = "Mage",
 }
-local function villager(parent, pos, facing, coat, rng, role)
+-- 문화권별 복식 (옷 색·모자). 주민·점원·이야기 인물이 같은 마을 사람처럼 보이게 한다.
+local OC = Color3.fromRGB
+local OUTFIT = {
+	iberia = { coats = { OC(30, 28, 30), OC(128, 36, 40), OC(206, 170, 100), OC(236, 230, 214) }, hat = "wide", hats = { OC(28, 26, 28), OC(64, 44, 32) } },
+	italy = { coats = { OC(120, 40, 56), OC(40, 90, 66), OC(222, 176, 70), OC(40, 56, 110) }, hat = "cap", hats = { OC(150, 36, 48), OC(44, 96, 70), OC(30, 30, 34) } },
+	france = { coats = { OC(44, 70, 140), OC(130, 36, 56), OC(232, 222, 196), OC(96, 56, 120) }, hat = "plume", hats = { OC(36, 40, 70), OC(28, 26, 30) } },
+	britain = { coats = { OC(110, 112, 118), OC(110, 82, 58), OC(40, 52, 90), OC(84, 96, 60) }, hat = "tricorn", hats = { OC(28, 26, 28), OC(70, 52, 38) } },
+	brick = { coats = { OC(34, 32, 34), OC(70, 52, 40), OC(58, 60, 66), OC(40, 70, 56) }, hat = "wide", hats = { OC(26, 24, 26) }, trousers = { OC(40, 36, 36) } },
+	hanse = { coats = { OC(54, 84, 60), OC(104, 76, 52), OC(110, 112, 116), OC(140, 70, 44) }, hat = "cap", hats = { OC(80, 60, 44), OC(30, 28, 30) } },
+	nordic = { coats = { OC(52, 90, 140), OC(170, 52, 44), OC(120, 86, 60), OC(232, 226, 212) }, hat = "knit", hats = { OC(176, 48, 44), OC(60, 96, 148), OC(150, 150, 150) } },
+	tropic = { coats = { OC(236, 228, 204), OC(222, 150, 70), OC(70, 160, 150), OC(200, 90, 80) }, hat = "straw", hats = { OC(196, 164, 100) } },
+	desert = { coats = { OC(244, 238, 222), OC(228, 214, 180), OC(52, 70, 130), OC(120, 88, 60) }, hat = "turban", hats = { OC(248, 244, 232), OC(232, 220, 190) } },
+	med = { coats = { OC(214, 170, 80), OC(240, 236, 224), OC(60, 130, 140) }, hat = "cap", hats = { OC(150, 50, 44), OC(40, 40, 46) } },
+}
+local currentKey = "north"
+local function villager(parent, pos, facing, coat, rng, role, keepCoat)
 	role = role or ({ "Knight", "Barbarian", "Mage", "Rogue", "Rogue_Hooded" })[rng:NextInteger(1, 5)]
-	local figure = Pose.createR15(parent, pos, facing, coat, rng, role, 5.8)
+	local o = OUTFIT[currentKey]
+	local outfit
+	if o then
+		outfit = {
+			hat = if role == "Rogue_Hooded" or role == "Knight" then nil else o.hat,
+			hatColor = o.hats[rng:NextInteger(1, #o.hats)],
+			trousers = if o.trousers then o.trousers[rng:NextInteger(1, #o.trousers)] else nil,
+		}
+		if not keepCoat then
+			coat = o.coats[rng:NextInteger(1, #o.coats)]
+		end
+	end
+	local figure = Pose.createR15(parent, pos, facing, coat, rng, role, 5.8, outfit)
 	if figure then figure.Name = "Villager" end
 	return figure
 end
@@ -518,6 +568,11 @@ end
 -- streets: 세로 골목 x좌표, alley: 골목 폭, gap: 집 간격 배수, wMul: 집 폭 배수, dAdd: 집 깊이 가감,
 -- flAdd/flMax: 층수 가감·상한, dens: 빈터 비율 배수, jz/jx: 앞뒤·좌우 흐트러짐 배수, canal: 운하, fence: 울타리 마을
 local PROFILE = {
+	iberia = { S = 15, gapf = 0.08, fl0 = 1, flGrow = 1, streets = { -52, -80, -108, -136, -164 }, alley = 3, gap = 1, wMul = 1, dAdd = 0, flAdd = 0, flMax = 2, dens = 1.05, jz = 1.2, jx = 1 },
+	italy = { S = 14, gapf = 0.03, fl0 = 2, flGrow = 1, streets = { -48, -72, -96, -120, -144 }, alley = 3, gap = 1, wMul = 1, dAdd = 0, flAdd = 0, flMax = 3, dens = 1.05, jz = 0.8, jx = 0.8 },
+	france = { S = 16, gapf = 0.35, fl0 = 2, flGrow = 1, streets = { -60, -110, -160 }, alley = 6, gap = 1, wMul = 1, dAdd = 0, flAdd = 0, flMax = 3, dens = 0.95, jz = 0.3, jx = 0.3 },
+	britain = { S = 13, gapf = 0.12, fl0 = 1, flGrow = 1, streets = { -55, -85, -115, -145 }, alley = 3.5, gap = 1, wMul = 1, dAdd = 0, flAdd = 0, flMax = 3, dens = 1, jz = 2, jx = 1.5 },
+	hanse = { S = 13, gapf = 0.05, fl0 = 2, flGrow = 1, streets = { -56, -86, -116, -146 }, alley = 4, gap = 1, wMul = 1, dAdd = 0, flAdd = 0, flMax = 3, dens = 1.1, jz = 0.4, jx = 0.4 },
 	north = { S = 17, gapf = 0.25, fl0 = 1, flGrow = 1, streets = { -50, -90, -130 }, alley = 5, gap = 1, wMul = 1, dAdd = 0, flAdd = 0, flMax = 3, dens = 1, jz = 1, jx = 1 },
 	stone = { S = 18, gapf = 0.3, fl0 = 1, flGrow = 2, streets = { -50, -90, -130 }, alley = 5, gap = 1.05, wMul = 1.1, dAdd = 1, flAdd = 0, flMax = 3, dens = 0.95, jz = 1, jx = 1 },
 	brick = { S = 14, gapf = 0.04, fl0 = 2, flGrow = 1, streets = { -50, -76, -102, -130 }, alley = 4, gap = 0.72, wMul = 0.7, dAdd = 2, flAdd = 1, flMax = 3, dens = 1.05, jz = 0.4, jx = 0.4, canal = true },
@@ -528,6 +583,7 @@ local PROFILE = {
 }
 
 STYLE.north.mat, STYLE.stone.mat, STYLE.brick.mat = Enum.Material.Brick, Enum.Material.Cobblestone, Enum.Material.Brick
+STYLE.iberia.mat, STYLE.italy.mat, STYLE.france.mat, STYLE.britain.mat, STYLE.hanse.mat = Enum.Material.Concrete, Enum.Material.Concrete, Enum.Material.Limestone, Enum.Material.Slate, Enum.Material.Brick
 STYLE.nordic.mat, STYLE.med.mat, STYLE.desert.mat, STYLE.tropic.mat = Enum.Material.WoodPlanks, Enum.Material.Concrete, Enum.Material.Sandstone, Enum.Material.Wood
 
 local function strip(folder, style, cx, cz, sx, sz)
@@ -617,7 +673,7 @@ local function densify(folder, info, style, rng, walkers, made)
 		fillRow(side * (6 + S + 2 + S / 2 + 1), 0.15, -92)
 		for p = 0, pairsN do
 			local laneZ = 38 + p * laneL
-			if P.canal and p % 2 == 1 then
+			if (P.canal or info.portId == "venice") and p % 2 == 1 then
 				local canal = part(folder, Vector3.new(140, 0.3, P.alley + 1), CFrame.new(-100, 0.05, side * laneZ), Color3.fromRGB(70, 120, 150), Enum.Material.Glass)
 				canal.Transparency = 0.25
 				canal.CanCollide = false
@@ -634,6 +690,95 @@ local function densify(folder, info, style, rng, walkers, made)
 	end
 	for _, sx in streetsX do
 		strip(folder, style, sx, 0, P.alley, 2 * (38 + pairsN * laneL) + 6)
+	end
+	-- 문화권 소품: 지역 건축·생활에 맞는 오브젝트 (발전도가 오를수록 늘어난다)
+	do
+		local function rowOf(kind, asset, size, x0, x1, step, z, solid)
+			local x = x0
+			while x > x1 do
+				importedModel(folder, kind, asset, Vector3.new(x + rng:NextNumber(-1.5, 1.5), 0, z + rng:NextNumber(-0.6, 0.6)), size * rng:NextNumber(0.9, 1.1), solid == true)
+				x -= step
+			end
+		end
+		local function one(kind, asset, size, x, y, z, solid)
+			return importedModel(folder, kind, asset, Vector3.new(x, y, z), size, solid == true)
+		end
+		local canalZ = 38 + laneL
+		if key == "iberia" then
+			one("Town", "village-well", 6, -100, 0, 8)
+			one("Town", "village-well", 6, -152, 0, -8)
+			if lvl >= 2 then
+				one("Town", "fountain-square", 9, -122, 0, 0)
+			end
+			rowOf("Cargo", "barrel", 2.4, -100, -180, 18, 7.4)
+			rowOf("Cargo", "food-crate-large-apples", 2.2, -108, -180, 22, -7.4)
+		elseif key == "italy" then
+			rowOf("Terrain", "column", 8, -100, -176, 14, 7.5)
+			rowOf("Terrain", "column", 8, -100, -176, 14, -7.5)
+			if lvl >= 2 then
+				one("Terrain", "statue-column", 12, -122, 0, 0)
+			end
+			if info.portId == "venice" then
+				for _, sd in { 1, -1 } do
+					for _, bx in { -70, -110, -150 } do
+						local b = one("Naval", "boat-row-small", 7, bx, 0.3, sd * canalZ)
+						rotateAround(b, Vector3.new(bx, 0, sd * canalZ), math.pi / 2)
+					end
+				end
+			end
+		elseif key == "france" then
+			rowOf("Terrain", "tree-oak", 9, -100, -182, 14, 10)
+			rowOf("Terrain", "tree-oak", 9, -100, -182, 14, -10)
+			rowOf("Town", "foliage_A", 3, -96, -182, 7, 7.2)
+			rowOf("Town", "foliage_A", 3, -96, -182, 7, -7.2)
+			if lvl >= 2 then
+				one("Town", "fountain-round", 9, -122, 0, 0)
+			end
+			for x = -100, -180, -20 do
+				lantern(folder, Vector3.new(x, 0, 5.6), 3)
+				lantern(folder, Vector3.new(x, 0, -5.6), 3)
+			end
+		elseif key == "britain" then
+			rowOf("Town", "cart", 5, -100, -180, 26, 8)
+			rowOf("Cargo", "barrel", 2.4, -104, -180, 16, -7.4)
+			rowOf("Terrain", "log-stack", 3, -112, -180, 30, 7.4)
+			one("Town", "stall-green", 6.5, -110, 0, -10)
+			one("Town", "bench_A", 3.8, -140, 0, 7)
+		elseif key == "brick" then
+			if pairsN >= 1 then
+				for _, sd in { 1, -1 } do
+					for _, sx in streetsX do
+						local br = one("Terrain", "bridge-wood", 7, sx, 0.2, sd * canalZ)
+						rotateAround(br, Vector3.new(sx, 0, sd * canalZ), math.pi / 2)
+					end
+					for _, bx in { -64, -90, -116, -142 } do
+						local b = one("Naval", "boat-row-small", 6, bx + 8, 0.3, sd * canalZ)
+						rotateAround(b, Vector3.new(bx + 8, 0, sd * canalZ), math.pi / 2)
+					end
+					rowOf("Naval", "crate", 2, -60, -176, 20, sd * (canalZ + 3.4))
+				end
+			end
+		elseif key == "hanse" then
+			-- 한자 항구: 부두의 하역 기중기와 곡물·모직 더미
+			for _, z in { 30, -30, 58, -58 } do
+				if lvl >= 2 or math.abs(z) < 40 then
+					one("Naval", "mast", 16, 58, 2, z, true)
+					one("Naval", "pulley-crate", 4.6, 58, 12, z)
+					one("Naval", "cargo-pile-a", 4.5, 46, 2, z + 3)
+					one("Naval", "cargo-pile-b", 4.5, 36, 2, z - 3)
+				end
+			end
+			rowOf("Cargo", "barrel", 2.4, 30, 22, 4, 36)
+			rowOf("Cargo", "textiles-stack-large", 2.6, -100, -180, 24, 7.4)
+		elseif key == "nordic" then
+			rowOf("Terrain", "log-stack", 3, -100, -180, 18, 7.2)
+			rowOf("Cargo", "food-barrel-fish", 2.6, -108, -180, 22, -7.2)
+			rowOf("Terrain", "tree-pinedefaulta", 9, -100, -182, 24, 11)
+			for x = -110, -170, -30 do
+				one("Town", "fence_rails", 4, x, 0, -9)
+				one("Cargo", "fish-large", 2, x, 3.4, -9)
+			end
+		end
 	end
 	-- 골목 모퉁이: 덤불·화분·통·상자 더미
 	local clutter = { { "Cargo", "barrel" }, { "Naval", "crate" }, { "Naval", "cargo-pile-a" }, { "Naval", "cargo-pile-b" }, { "Cargo", "box-open" }, { "Town", "foliage_A" }, { "Town", "foliage_B" }, { "Town", "fence_post" } }
@@ -740,7 +885,7 @@ local function densify(folder, info, style, rng, walkers, made)
 	local lx = -186
 	if lvl < 3 then
 		-- 작은 항구: 큰 랜드마크 대신 소박한 표지
-	elseif key == "med" then
+	elseif key == "med" or key == "iberia" or key == "italy" then
 		for z = -24, 24, 8 do
 			importedModel(folder, "Terrain", "column", Vector3.new(lx, 0, z), 12, true)
 		end
@@ -829,9 +974,10 @@ function PortScene.build(info, onFacility)
 	end
 	local folder = Instance.new("Folder")
 	folder.Name = "PortScene"
-	local style = if MED[info.portId] then STYLE.med else (STYLE[REGION[info.portId] or "north"] or STYLE.north)
+	local style = if REGION[info.portId] and STYLE[REGION[info.portId]] then STYLE[REGION[info.portId]] elseif MED[info.portId] then STYLE.med else STYLE.north
 	local rng = seeded(info.portId)
 	sceneLevel = math.clamp(math.floor(info.level or 1), 1, 5)
+	currentKey = styleKeyOf(style)
 	local fac = {}
 	for _, k in info.facilities or {} do
 		fac[k] = true
@@ -1002,7 +1148,7 @@ function PortScene.build(info, onFacility)
 
 	-- 광장의 이야기 NPC
 	if (info.storyCount or 0) > 0 then
-		local n = villager(folder, Vector3.new(2, 0, -8), math.pi / 2, Color3.fromRGB(150, 40, 60), rng, "Rogue_Hooded")
+		local n = villager(folder, Vector3.new(2, 0, -8), math.pi / 2, Color3.fromRGB(150, 40, 60), rng, "Rogue_Hooded", true)
 		local npcPart = n and (n:FindFirstChild("Head") or n:FindFirstChildWhichIsA("BasePart", true))
 		if npcPart then sign(folder, npcPart, "! 이야기", Color3.fromRGB(180, 120, 30), 4) end
 		prompt(folder, Vector3.new(2, 3, -8), "수상한 손님", "이야기 듣기", "harbor", onFacility)

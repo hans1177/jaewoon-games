@@ -137,7 +137,53 @@ local function drawFace(head, role, skin, rng)
 	end
 end
 
-function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
+
+-- 지역 복식: 머리에 간단한 모자를 얹는다 (부품 몇 개로 만든 모자: 챙 넓은 모자, 모자(캡), 삼각모, 털모자, 깃털 모자, 터번, 밀짚모자)
+local function addHat(model, kind, color)
+	local head = model:FindFirstChild("Head")
+	if not (head and head:IsA("BasePart") and kind) then
+		return
+	end
+	local h = head.Size
+	local function piece(shape, size, offset, rot, mat)
+		local q = Instance.new("Part")
+		q.Name = "Hat"
+		q.Shape = shape
+		q.Size = size
+		q.Color = color
+		q.Material = mat or Enum.Material.Fabric
+		q.CanCollide, q.CanTouch, q.CanQuery, q.Massless = false, false, false, true
+		q.CFrame = head.CFrame * CFrame.new(offset) * (rot or CFrame.identity)
+		q.Parent = model
+		local w = Instance.new("WeldConstraint")
+		w.Part0, w.Part1 = head, q
+		w.Parent = q
+		return q
+	end
+	local flat = CFrame.Angles(0, 0, math.pi / 2) -- 원기둥(축이 X)을 눕혀 가로로 놓는다
+	if kind == "wide" or kind == "plume" or kind == "straw" then
+		piece(Enum.PartType.Cylinder, Vector3.new(0.1, h.X * 1.9, h.X * 1.9), Vector3.new(0, h.Y * 0.5, 0), flat)
+		piece(Enum.PartType.Cylinder, Vector3.new(h.Y * 0.55, h.X * 1.05, h.X * 1.05), Vector3.new(0, h.Y * 0.78, 0), flat)
+		if kind == "plume" then
+			piece(Enum.PartType.Block, Vector3.new(0.08, h.Y * 0.9, h.X * 0.25), Vector3.new(h.X * 0.45, h.Y * 1.0, 0), CFrame.Angles(0, 0, -0.7)).Color = Color3.fromRGB(240, 236, 226)
+		end
+	elseif kind == "cap" then
+		piece(Enum.PartType.Ball, Vector3.new(h.X * 1.2, h.Y * 0.85, h.X * 1.2), Vector3.new(0, h.Y * 0.38, 0))
+		piece(Enum.PartType.Block, Vector3.new(h.X * 0.9, 0.08, h.X * 0.45), Vector3.new(0, h.Y * 0.35, -h.X * 0.62))
+	elseif kind == "tricorn" then
+		for i = 0, 2 do
+			piece(Enum.PartType.Block, Vector3.new(h.X * 1.9, 0.1, h.X * 0.7), Vector3.new(0, h.Y * 0.55, 0), CFrame.Angles(0, math.rad(60 * i), 0))
+		end
+		piece(Enum.PartType.Cylinder, Vector3.new(h.Y * 0.4, h.X * 0.95, h.X * 0.95), Vector3.new(0, h.Y * 0.72, 0), flat)
+	elseif kind == "knit" then
+		piece(Enum.PartType.Ball, Vector3.new(h.X * 1.15, h.Y * 0.95, h.X * 1.15), Vector3.new(0, h.Y * 0.42, 0))
+		piece(Enum.PartType.Ball, Vector3.new(h.X * 0.3, h.X * 0.3, h.X * 0.3), Vector3.new(0, h.Y * 0.95, 0)).Color = Color3.fromRGB(236, 232, 220)
+	elseif kind == "turban" then
+		piece(Enum.PartType.Ball, Vector3.new(h.X * 1.3, h.Y * 1.0, h.X * 1.3), Vector3.new(0, h.Y * 0.45, 0))
+	end
+end
+
+function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height, outfit)
 	if not r15Template then
 		if r15Unavailable then return nil end
 		local description = Instance.new("HumanoidDescription")
@@ -198,7 +244,7 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
 	if not humanoid or not root then model:Destroy(); return nil end
 	local skins = { Color3.fromRGB(242, 205, 170), Color3.fromRGB(214, 165, 125), Color3.fromRGB(176, 125, 90), Color3.fromRGB(128, 88, 62) }
 	local skin = skins[rng:NextInteger(1, #skins)]
-	local trousers = Color3.fromRGB(rng:NextInteger(70, 120), rng:NextInteger(62, 105), rng:NextInteger(55, 95))
+	local trousers = (outfit and outfit.trousers) or Color3.fromRGB(rng:NextInteger(70, 120), rng:NextInteger(62, 105), rng:NextInteger(55, 95))
 	local coats = {
 		Knight = Color3.fromRGB(110, 120, 142), Barbarian = Color3.fromRGB(128, 88, 62),
 		Mage = Color3.fromRGB(102, 80, 144), Rogue = Color3.fromRGB(92, 108, 78),
@@ -245,6 +291,9 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height)
 				descendant.Material = if role == "Knight" then Enum.Material.Metal elseif role == "Barbarian" then Enum.Material.Leather else Enum.Material.Fabric
 			end
 		end
+	end
+	if outfit and outfit.hat then
+		pcall(addHat, model, outfit.hat, outfit.hatColor or jacket)
 	end
 	local headPart = model:FindFirstChild("Head")
 	if headPart and headPart:IsA("BasePart") and not parent:IsA("WorldModel") then
