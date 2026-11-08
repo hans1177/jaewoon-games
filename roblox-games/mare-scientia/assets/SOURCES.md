@@ -487,7 +487,7 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 - 역사 자료 출처 및 권리 (`PUBLIC_DOMAIN`, Wikimedia Commons 파일 설명과 저작권 종료 확인):
   - 레일라 대역 이미지: Théodore Ralli, `Young Ottoman Woman` (1879, 작가 1909년 사망), https://commons.wikimedia.org/wiki/File:Young_Ottoman_Woman.jpg
   - 아민 대역 이미지: `A Swahili of Zanzibar` (1920), https://commons.wikimedia.org/wiki/File:A_Swahili_of_Zanzibar.png
-  - 라마 대역 이미지: Edgar Thurston, `Nair man from North Kerala, British Malabar` (1909), https://commons.wikimedia.org/wiki/File:Nair_man_from_North_Kerala,_British_Malabar.jpg
+  - 라마 대역 이미지: Teodoro Viero, `A man of Malabar` (1785, 작가 1819년 사망, 역사 인물 삽화), https://commons.wikimedia.org/wiki/File:A_man_of_Malabar.jpg
   - 하루카 대역 이미지: Felice Beato, `Felice Beato Courtisane` (1860년대, 작가 1909년 사망), https://commons.wikimedia.org/wiki/File:Felice_Beato_Courtisane.jpg
 - 역사 이미지의 실제 인물이 주인공을 연기하거나 해당 국적·시대의 정확한 인물이라는 뜻은 아니다. NPC용 허구 배역 이미지이며, 독립적으로 식별되는 실제 초상임을 밝힌다.
 - 외부 자산은 기존 오너 자산 등록 워크플로의 입력을 생성할 때 원본 출처에서 읽고 `heroes.jpg`로 합성하며, 새로운 업로드/게시 파이프라인을 만들지 않는다.
