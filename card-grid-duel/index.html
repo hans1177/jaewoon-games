@@ -323,6 +323,8 @@ function canAttackTarget(attacker,target){
   return attackDist(attacker,target)<=card(attacker.side,attacker.card).range
 }
 function newState(){
+  // 일회성 운영자 열쇠 선물은 처음부터 시작해도 재수령되지 않도록 보존한다.
+  const keyGiftClaimed=state?.ownerKeyGift20261108===true;
   state={
     version:3,
     stage:1,
@@ -332,6 +334,7 @@ function newState(){
     summonUsed:false,
     winner:'',
     keys:0,
+    ownerKeyGift20261108:keyGiftClaimed,
     diamonds:diamondWallet(),
     stageTookDamage:false,
     unlocked:[],
@@ -1493,6 +1496,23 @@ $('#viewAlly').onclick=()=>{board.parentElement.scrollTop=board.parentElement.sc
 
 // 재접속하면 저장된 턴 그대로 복구한다. 적 턴 복구 시 AI도 이어서 진행한다.
 state=loadProgress();
+// 운영자 요청: 해당 링크를 직접 연 기기의 저장 데이터에 열쇠 3개 1회 지급.
+// 별도 서버 계정이 없으므로 기존 기기별 진행 저장에만 적용한다.
+let ownerGiftNotice='';
+const ownerGiftParams=new URLSearchParams(window.location.search);
+if(ownerGiftParams.get('gift')==='keys3-a18d9f72b443ee6a20261108'){
+  ownerGiftParams.delete('gift');
+  const remainingQuery=ownerGiftParams.toString();
+  window.history.replaceState(null,'',window.location.pathname+(remainingQuery?'?'+remainingQuery:'')+window.location.hash);
+  if(!state)newState();
+  if(!state.ownerKeyGift20261108){
+    state.keys+=3;
+    state.ownerKeyGift20261108=true;
+    state.version++;
+    saveProgress();
+    ownerGiftNotice='열쇠 3개 지급 완료! 보유 열쇠 '+state.keys+'개';
+  }else ownerGiftNotice='열쇠 3개 선물은 이미 수령했어.';
+}
 if(state){
   mode='play';
   side='BLUE';
@@ -1502,6 +1522,7 @@ if(state){
   if(state.winner==='RED')msg(state.stage+'스테이지 패배 · 재도전 버튼으로 다시 시작해.');
   else if(state.winner==='BLUE')msg(state.stage+'스테이지 클리어! 다시 플레이할 수 있어.');
   else msg(state.stage+'스테이지 저장된 지점에서 이어서 진행해.');
+  if(ownerGiftNotice)msg(ownerGiftNotice);
   if(state.phase==='BATTLE'&&state.current==='RED'&&!state.winner)setTimeout(aiTurn,420)
 }else render();
 </script>
