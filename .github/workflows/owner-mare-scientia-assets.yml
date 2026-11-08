@@ -57,9 +57,14 @@ jobs:
           import pathlib
           import urllib.request
           import urllib.parse
+          import time
           from PIL import Image, ImageEnhance, ImageOps
 
           root = pathlib.Path("roblox-games/mare-scientia/assets/portraits")
+          # 등록 완료한 합성 자산을 재사용해 후속 실행 시 외부 요청을 방지한다.
+          if (root / "heroes.jpg").is_file():
+              print("HERO_PORTRAITS_PREPARED=9 (tracked)")
+              raise SystemExit(0)
           atlas = Image.open(root / "characters.jpg").convert("RGB")
           merchant = Image.open(root / "merchant.jpg").convert("RGB")
           size = (256, 336)
@@ -85,20 +90,32 @@ jobs:
                   picture = merchant.copy()
               else:
                   uri, box = source[1], source[2]
-                  # 위키미디어가 공유 빌드 IP를 제한하면 공용 이미지 CDN의 동일 원본을 요청한다.
-                  candidates = (uri, "https://wsrv.nl/?url=" + urllib.parse.quote(uri, safe="") + "&w=900")
+                  # 공공원화의 요청제한(429)을 견디도록 동일 원본의 전송 거울과 지수 재시도를 활용한다.
+                  candidates = (
+                      uri,
+                      "https://wsrv.nl/?url=" + urllib.parse.quote(uri, safe="") + "&w=900",
+                      "https://images.weserv.nl/?url=" + urllib.parse.quote(uri, safe="") + "&w=900",
+                  )
                   data = None
+                  last_error = None
                   for address in candidates:
-                      try:
-                          request = urllib.request.Request(address, headers={"User-Agent": "MareScientia-Asset-Registration/1.0"})
-                          with urllib.request.urlopen(request, timeout=35) as response:
-                              data = response.read()
-                          if data:
+                      for attempt in range(3):
+                          try:
+                              request = urllib.request.Request(address, headers={"User-Agent": "Mozilla/5.0 (MareScientia; portrait source verification)"})
+                              with urllib.request.urlopen(request, timeout=40) as response:
+                                  data = response.read()
+                              with Image.open(io.BytesIO(data)) as test:
+                                  test.verify()
                               break
-                      except Exception as exc:
-                          print("PUBLIC_DOMAIN_IMAGE_RETRY", nation, type(exc).__name__)
-                  if not data:
-                      raise RuntimeError("PUBLIC_DOMAIN_IMAGE_UNAVAILABLE: " + nation)
+                          except Exception as exc:
+                              data = None
+                              last_error = exc
+                              print("PUBLIC_DOMAIN_IMAGE_RETRY", nation, type(exc).__name__, getattr(exc, "code", ""))
+                              time.sleep(2 ** (attempt + 1))
+                      if data is not None:
+                          break
+                  if data is None:
+                      raise RuntimeError("PUBLIC_DOMAIN_IMAGE_UNAVAILABLE: " + nation) from last_error
                   picture = Image.open(io.BytesIO(data)).convert("RGB")
                   w, h = picture.size
                   picture = picture.crop((round(box[0]*w), round(box[1]*h), round(box[2]*w), round(box[3]*h)))
