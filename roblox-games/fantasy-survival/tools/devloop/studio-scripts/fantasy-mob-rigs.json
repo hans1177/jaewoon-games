@@ -1,0 +1,331 @@
+[
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "click_text",
+  "text": "이어하기"
+ },
+ {
+  "type": "click_text",
+  "text": "모험 시작"
+ },
+ {
+  "type": "wait",
+  "ms": 40000
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",0) return \"g0\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",1) return \"g1\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",2) return \"g2\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",3) return \"g3\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",4) return \"g4\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",5) return \"g5\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",6) return \"g6\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",7) return \"g7\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",8) return \"g8\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",9) return \"g9\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",10) return \"g10\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",11) return \"g11\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",12) return \"g12\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",13) return \"g13\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",14) return \"g14\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",15) return \"g15\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",16) return \"g16\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",17) return \"g17\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",18) return \"g18\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",19) return \"g19\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",20) return \"g20\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",21) return \"g21\""
+ },
+ {
+  "type": "wait",
+  "ms": 3200
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "return tostring(workspace:GetAttribute(\"StudioGalleryNames\"))..\" ## \"..tostring(workspace:GetAttribute(\"StudioGalleryDiag\"))"
+ }
+]

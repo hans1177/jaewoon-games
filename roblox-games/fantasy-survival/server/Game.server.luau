@@ -5627,17 +5627,20 @@ if RunService:IsStudio() then
           local m=enemy.model
           local _,size=m:GetBoundingBox()
           local meshes,textured,bones,motors,mat,col,trans=0,0,0,0,"",nil,0
+          local boneNames={}
+          local partNames={}
           for _,d in ipairs(m:GetDescendants()) do
             if d:IsA("MeshPart") then
-              meshes+=1
+              meshes+=1;partNames[#partNames+1]=d.Name
               if d.TextureID~="" or d:FindFirstChildOfClass("SurfaceAppearance") then textured+=1 end
               if mat=="" then mat=tostring(d.Material):gsub("Enum.Material.","");col=d.Color end
               trans=math.max(trans,d.Transparency)
-            elseif d:IsA("Bone") then bones+=1
-            elseif d:IsA("Motor6D") then motors+=1 end
+            elseif d:IsA("Bone") then bones+=1;boneNames[#boneNames+1]=d.Name
+            elseif d:IsA("Motor6D") then motors+=1;boneNames[#boneNames+1]="M:"..d.Name end
           end
           local hl={}
           for _,d in ipairs(m:GetChildren()) do if d:IsA("Highlight") then hl[#hl+1]=d.Name..(d.Enabled and "+" or "-") end end
+          rows[#rows+1]="BONES "..tostring(m:GetAttribute("Variant")).."="..table.concat(boneNames,",").." PARTS="..table.concat(partNames,",")
           rows[#rows+1]=string.format("%s up=%.2f size=%.1fx%.1fx%.1f mesh=%d tex=%d bone=%d m6d=%d mat=%s col=%s tr=%.2f hl=%s",
             tostring(m:GetAttribute("Variant")),m:GetPivot().UpVector.Y,size.X,size.Y,size.Z,meshes,textured,bones,motors,mat,
             col and string.format("%d,%d,%d",col.R*255,col.G*255,col.B*255) or "-",trans,table.concat(hl,"/"))
