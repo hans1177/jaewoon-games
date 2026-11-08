@@ -3,7 +3,7 @@
 권한이 없거나 데이터가 없으면 그 사실을 문서에 적고 정상 종료한다."""
 import os, json, urllib.request, urllib.error, datetime
 key = os.environ.get("ROBLOX_OPEN_CLOUD_API_KEY", "")
-uni = os.environ.get("UNIVERSE_ID", "10774821253")
+uni = os.environ.get("UNIVERSE_ID", "10775310508")
 base = f"https://apis.roblox.com/cloud/v2/universes/{uni}/data-stores/MareDevLog/entries/"
 def get(entry):
     req = urllib.request.Request(base + entry, headers={"x-api-key": key})

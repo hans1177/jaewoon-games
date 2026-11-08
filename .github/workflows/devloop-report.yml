@@ -18,7 +18,7 @@ jobs:
       - name: Read telemetry from Open Cloud
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          UNIVERSE_ID: '10774821253'
+          UNIVERSE_ID: '10775310508'
         run: python3 roblox-games/mare-essentia/tools/devloop/telemetry_report.py > /tmp/telemetry.md
       - name: Commit report
         run: |
