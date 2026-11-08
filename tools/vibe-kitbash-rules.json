@@ -1,0 +1,34 @@
+{
+ "note": "부품(part)이 어떤 부모(host)에 어떤 방식으로 붙어도 말이 되는지 정한 규칙표. 이름(id·파일명)에 정규식이 맞을 때만 조립을 시도한다. 오너가 고칠 수 있다. 규칙에 없는 조합은 시도하지 않는다.",
+ "rules": [
+  {
+   "part": "lamp|lantern|flag|banner|sign|chimney|weathervane|antenna",
+   "host": "house|tower|building|hut|cabin|gate|castle|shop|wall",
+   "modes": [
+    "top"
+   ]
+  },
+  {
+   "part": "bush|flower|plant|pot|rock|stone|mailbox|barrel|crate|chest|bench|sack|bucket|cart",
+   "host": "house|tower|building|hut|cabin|gate|castle|shop|wall|fence",
+   "modes": [
+    "side"
+   ]
+  },
+  {
+   "part": "hat|crown|helmet|horn",
+   "host": "character|creature|monster|knight|skeleton|human",
+   "modes": [
+    "top"
+   ]
+  },
+  {
+   "part": "bird|butterfly|bee|mushroom|fruit|apple|pumpkin",
+   "host": "tree|bush|stump|log|rock",
+   "modes": [
+    "top",
+    "side"
+   ]
+  }
+ ]
+}
