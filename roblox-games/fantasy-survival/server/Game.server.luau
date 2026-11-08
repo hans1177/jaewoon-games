@@ -8771,7 +8771,10 @@ end
 
 -- [오픈월드 대륙] 마을을 중심으로 동서남북으로 이어진 13개 지역(Config.WorldMap). 섬이던 숲·화산·오아시스는 걸어서 이어지고,
 -- 지역마다 바닥·큰길·외곽 산맥·변종 몬스터 풀을 갖는다. 마을 구역(Config.WorldMap.Village)은 기존 지형을 그대로 둔다.
+-- [루아우 레지스터] 이 책임 구간을 독립 함수로 묶어 최상위 200 로컬 레지스터 한도를 피한다.
+-- 동기 호출이므로 월드 초기화 시점·수치·저장·전투 흐름은 변경하지 않는다.
 do
+  local function buildOpenWorld()
   local world=Config.WorldMap
   local mats={windcliff=Enum.Material.Ground,meadow=Enum.Material.Grass,worldtree=Enum.Material.LeafyGrass,volcano=Enum.Material.Basalt,
     oasis=Enum.Material.Sand,swamp=Enum.Material.Mud,citadel=Enum.Material.Slate,highland=Enum.Material.Rock,canyon=Enum.Material.Sandstone,
@@ -9259,6 +9262,8 @@ do
     end
   end
   workspace:SetAttribute("OpenWorldSiteCount",count)
+  end
+  buildOpenWorld()
 end
 
 -- [오일 바르기] 가장 가까운 몬스터의 분류에 맞는 오일을 재료로 즉석 제작해 바른다.
