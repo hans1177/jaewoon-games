@@ -8,5 +8,8 @@ test('Blender generator includes ten genres and source exports',()=>{
 });
 test('six animation clips and facial shape keys authored',()=>{
  for(const name of ['Idle_Breath','Walk_Contact','Run_PushOff','Attack_Anticipate_Impact','Dodge_Recover','Wave_Gesture'])assert.ok(src.includes(name));
- for(const name of ['jawOpen','eyeBlinkLeft','eyeBlinkRight','mouthSmileLeft','mouthSmileRight'])assert.ok(src.includes(name));
+ for(const name of ['jawOpen','mouthSmileLeft','mouthSmileRight'])assert.ok(src.includes(name));
+ // eyeBlinkLeft/Right are generated per side ('eyeBlink'+side), so verify the generator and both sides instead of a literal name.
+ assert.ok(src.includes("'eyeBlink'+side"));
+ assert.match(src,/\('Left',-1\),\('Right',1\)/);
 });
