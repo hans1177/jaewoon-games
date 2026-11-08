@@ -4296,14 +4296,32 @@ renderTitle = function()
 		st.Thickness = if selected then 2.5 else 1
 		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
 		st.Parent = card
-		local badge = mkRound(card, UDim2.fromOffset(8, 9), UDim2.fromOffset(32, 32), NATION_COLOR[n.id] or COLORS.blue, 0, Vector2.new(0, 0))
-		badge.ZIndex = 14
-		local ch = mkLabel(badge, string.sub(n.name, 1, 3), 15, Color3.new(1, 1, 1), true)
-		ch.Size = UDim2.fromScale(1, 1)
-		ch.AutomaticSize = Enum.AutomaticSize.None
-		ch.TextXAlignment = Enum.TextXAlignment.Center
-		ch.TextYAlignment = Enum.TextYAlignment.Center
-		ch.ZIndex = 15
+		-- 국가 카드도 국가별 주인공 고유 얼굴을 표시한다. 자산이 없으면 기존 국명 배지를 유지한다.
+		local faceTile = HERO_TILE[n.id]
+		if HERO_ATLAS and faceTile then
+			local face = Instance.new("ImageLabel")
+			face.Name = "NationHeroPortrait"
+			face.Position = UDim2.fromOffset(8, 4)
+			face.Size = UDim2.fromOffset(32, 42)
+			face.BackgroundColor3 = Color3.fromRGB(25, 32, 45)
+			face.BorderSizePixel = 0
+			face.ScaleType = Enum.ScaleType.Crop
+			face.Image = "rbxassetid://" .. tostring(HERO_ATLAS)
+			face.ImageRectOffset = faceTile
+			face.ImageRectSize = HERO_SIZE
+			face.ZIndex = 14
+			corner(face, 6)
+			face.Parent = card
+		else
+			local badge = mkRound(card, UDim2.fromOffset(8, 9), UDim2.fromOffset(32, 32), NATION_COLOR[n.id] or COLORS.blue, 0, Vector2.new(0, 0))
+			badge.ZIndex = 14
+			local ch = mkLabel(badge, string.sub(n.name, 1, 3), 15, Color3.new(1, 1, 1), true)
+			ch.Size = UDim2.fromScale(1, 1)
+			ch.AutomaticSize = Enum.AutomaticSize.None
+			ch.TextXAlignment = Enum.TextXAlignment.Center
+			ch.TextYAlignment = Enum.TextYAlignment.Center
+			ch.ZIndex = 15
+		end
 		local nm = mkLabel(card, n.name, 15, if selected then GOLD else COLORS.text, true)
 		nm.Position = UDim2.fromOffset(48, 6)
 		nm.Size = UDim2.new(1, -52, 0, 20)
