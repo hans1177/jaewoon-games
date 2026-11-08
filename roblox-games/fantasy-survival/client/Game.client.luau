@@ -6513,7 +6513,7 @@ do
     storyScroll.CanvasPosition=Vector2.zero
     for i,button in ipairs(choices)do
       local option=typeof(payload.options)=="table" and payload.options[i] or nil
-      local action=option and option.action
+      local action=(option and option.action) or ""
       local permitted=(typeof(action)=="string" and (action:match("^village:story:%d$") or action:match("^smith:%a+$") or action:match("^cook:%d$") or action:match("^cookp:%d$") or action:match("^lm:%d+:%d$")) ~= nil) or action=="wp:east" or action=="wp:west" or (action:match("^wp:near:[123]$")~=nil) or (action:match("^estate:%a:%d+$")~=nil) or (action:match("^mount:%a+:%d$")~=nil) or (action:match("^bounty:%a+:%d$")~=nil) or (action:match("^miner:%a+:%d$")~=nil) or (action:match("^estate:%a:%d+:%d+$")~=nil) or action=="co:toggle" or action=="ql:1" or action=="ql:2" or action=="ct:accept" or action=="ct:claim" or action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2" or action=="camp:upgrade" or action=="camp:rest" or action=="bounty:accept" or action=="bounty:resolve:1" or action=="bounty:resolve:2"
       button.Visible=permitted
       choiceActions[i]=permitted and action or nil
