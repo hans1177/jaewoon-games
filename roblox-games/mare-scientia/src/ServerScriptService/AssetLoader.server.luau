@@ -25,8 +25,11 @@ for key, assetId in ids do
 		table.insert(queue, { kind = kind, name = name, id = assetId, key = key })
 	end
 end
+-- 시작 프롤로그에서 사용하는 승인된 실물 범선을 먼저 로드한다.
+-- 항구 필수 모델을 제외하거나 기존 큐·동시성 구조를 변경하지 않는다.
 table.sort(queue, function(a, b)
-	local ap, bp = order[a.kind] or 99, order[b.kind] or 99
+	local ap = if a.key == "Naval/ship-large" then -1 elseif a.key == "Naval/ship-medium" then 0 else order[a.kind] or 99
+	local bp = if b.key == "Naval/ship-large" then -1 elseif b.key == "Naval/ship-medium" then 0 else order[b.kind] or 99
 	if ap ~= bp then return ap < bp end
 	return a.key < b.key
 end)
