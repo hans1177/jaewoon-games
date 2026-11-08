@@ -12818,7 +12818,7 @@ task.spawn(function()
   local moods={
     -- {안개색, 농도, 안개 두께, 색조, 채도, 밝기, 대비}
     windcliff={Color3.fromRGB(190,215,235),.16,.5,Color3.fromRGB(240,248,255),.12,.02,0},
-    meadow={Color3.fromRGB(190,205,170),.2,.8,Color3.fromRGB(255,255,255),0,0,0},
+    meadow={Color3.fromRGB(184,208,228),.2,.6,Color3.fromRGB(255,255,255),0,0,0},
     worldtree={Color3.fromRGB(80,165,145),.32,1.3,Color3.fromRGB(205,255,235),.18,-.02,.05},
     volcano={Color3.fromRGB(205,85,45),.4,2.3,Color3.fromRGB(255,200,165),.12,-.05,.12},
     oasis={Color3.fromRGB(240,200,120),.22,1.4,Color3.fromRGB(255,240,200),.1,.03,.04},
@@ -12860,7 +12860,7 @@ task.spawn(function()
     local hour=Lighting.ClockTime
     local dim=(hour>=19.5 or hour<4.8) and .3 or (hour>=18 or hour<6.3) and .65 or 1
     -- 단색 띠처럼 보이지 않도록 지역 색을 맑은 하늘빛 안개와 절반 섞는다.
-    local mix=cur.color:Lerp(Color3.fromRGB(176,194,206),.5)
+    local mix=cur.color:Lerp(Color3.fromRGB(166,198,232),.5)
     local fog=Color3.new(mix.R*dim,mix.G*dim,mix.B*dim)
     atmosphere.Color=fog;atmosphere.Decay=fog
     atmosphere.Density=cur.density*.7;atmosphere.Haze=cur.haze*.8
