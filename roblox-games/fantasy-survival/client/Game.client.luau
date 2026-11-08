@@ -13134,6 +13134,23 @@ task.spawn(function()
     rig.simple=(bones.body and bones.head and not bones.torso and not rig.snake)~=nil
     if found<3 then return nil end
     if not (rig.wings or rig.arms or rig.chain or rig.simple or rig.snake) then return nil end
+    -- 팔만 있고 날개 뼈가 없는 리그(회오리·해골 등)는 T자 기본 자세라 팔을 몸 옆으로 내린다. 날개 겸용 팔(용·거미)은 그대로 둔다.
+    rig.hang={}
+    if rig.arms and not rig.wings and bones.lowerarml and bones.lowerarmr then
+      local cx=(inv:PointToObjectSpace(bones.upperarml.WorldPosition).X+inv:PointToObjectSpace(bones.upperarmr.WorldPosition).X)/2
+      for _,side in ipairs({"l","r"}) do
+        local upper,lower=bones["upperarm"..side],bones["lowerarm"..side]
+        local d=inv:PointToObjectSpace(lower.WorldPosition)-inv:PointToObjectSpace(upper.WorldPosition)
+        local sign=(inv:PointToObjectSpace(upper.WorldPosition).X>=cx) and 1 or -1
+        local target=Vector3.new(.14*sign,-1,0).Unit
+        if d.Magnitude>.001 then
+          d=d.Unit
+          local axis=d:Cross(target)
+          local angle=math.acos(math.clamp(d:Dot(target),-1,1))
+          if axis.Magnitude>1e-4 and angle>.05 and angle<2.2 then rig.hang["upperarm"..side]=CFrame.fromAxisAngle(axis.Unit,angle) end
+        end
+      end
+    end
     return rig
   end
 
@@ -13265,8 +13282,8 @@ task.spawn(function()
     if rig.arms then
       local swing=math.sin(t*1.4)*.05
       local up=2.1*raise-1.0*strike
-      setPose(rig,"upperarml",X(up+swing+.12*hit),alpha)
-      setPose(rig,"upperarmr",X(up-swing+.12*hit),alpha)
+      setPose(rig,"upperarml",X(up+swing+.12*hit)*(rig.hang.upperarml or CFrame.identity),alpha)
+      setPose(rig,"upperarmr",X(up-swing+.12*hit)*(rig.hang.upperarmr or CFrame.identity),alpha)
       local bend=.25+.6*math.max(0,raise)
       setPose(rig,"lowerarml",X(bend),alpha)
       setPose(rig,"lowerarmr",X(bend),alpha)
