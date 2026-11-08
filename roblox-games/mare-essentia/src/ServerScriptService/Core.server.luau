@@ -182,7 +182,7 @@ local function reply(state, ok, message)
 	return result
 end
 
-remote.OnServerInvoke = function(player, action, payload)
+local function onInvoke(player, action, payload)
 	local session = sessions[player]
 	if not session or not session.ready then
 		return { ok = false, message = "불러오는 중이에요", loading = true }
@@ -271,12 +271,13 @@ remote.OnServerInvoke = function(player, action, payload)
 	end
 	return reply(state, success, message)
 end
+remote.OnServerInvoke = onInvoke
 
 -- Studio 전용: 자동 점검(StudioQA)이 같은 서버 함수를 호출할 수 있게 하는 통로. 라이브 서버에는 만들지 않는다.
 if game:GetService("RunService"):IsStudio() then
 	local qa = Instance.new("BindableFunction")
 	qa.Name = "StudioQAInvoke"
-	qa.OnInvoke = remote.OnServerInvoke
+	qa.OnInvoke = onInvoke
 	qa.Parent = game:GetService("ServerStorage")
 end
 
