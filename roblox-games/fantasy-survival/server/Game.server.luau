@@ -8477,18 +8477,25 @@ do
         for _,zone in ipairs(world.Zones) do
           local list=landmarks[zone.Id]
           if list then
-            for index=1,math.floor(zone.Area/330000)+4 do
+            for index=1,math.floor(zone.Area/120000)+8 do
               local x,z=world.RandomPoint(zone.Id,random,60)
               if x and not nearRoad(x,z) and not (x>village.X0-60 and x<village.X1+60 and z>village.Z0-60 and z<village.Z1+60) then
                 local roll,pick=random:NextNumber(),list[1]
                 local acc=0
                 for _,row in ipairs(list) do acc+=row[4];if roll<=acc then pick=row;break end end
-                local prop=worldAsset(pick[1],Vector3.new(x,3,z),random:NextNumber(pick[2],pick[3]))
-                if prop then
-                  prop.Name="OpenWorldLandmark_"..zone.Id.."_"..index;prop:SetAttribute("MeadowScenery",true)
-                  prop:PivotTo(prop:GetPivot()*CFrame.Angles(0,random:NextNumber(0,6.28),0))
-                  for _,surface in ipairs(prop:GetDescendants()) do
-                    if surface:IsA("MeshPart") then surface.Color=surface.Color:Lerp(treeTint[zone.Id],.35) end
+                -- 폐허·해골·버섯은 3~5개가 한 무리(유적·뼈 무더기·버섯 군락)로 모여 서고, 거목은 하나씩 선다.
+                local cluster=(pick[1]=="tree") and 1 or random:NextInteger(3,5)
+                for piece=1,cluster do
+                  local angle=random:NextNumber(0,6.28)
+                  local reach=piece==1 and 0 or random:NextNumber(8,20)
+                  local px,pz=x+math.cos(angle)*reach,z+math.sin(angle)*reach
+                  local prop=worldAsset(pick[1],Vector3.new(px,3,pz),random:NextNumber(pick[2],pick[3])*(piece==1 and 1 or random:NextNumber(.5,.85)))
+                  if prop then
+                    prop.Name="OpenWorldLandmark_"..zone.Id.."_"..index.."_"..piece;prop:SetAttribute("MeadowScenery",true)
+                    prop:PivotTo(prop:GetPivot()*CFrame.Angles(0,random:NextNumber(0,6.28),0))
+                    for _,surface in ipairs(prop:GetDescendants()) do
+                      if surface:IsA("MeshPart") then surface.Color=surface.Color:Lerp(treeTint[zone.Id],.35) end
+                    end
                   end
                 end
               end
