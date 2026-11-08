@@ -4913,6 +4913,64 @@
       "web3dRedevelopmentRequired": true
     },
     {
+      "id": "forest-survival",
+      "name": "숲의 끝 · 생존 협동",
+      "description": "로그인 없이 1~10번 서버에 참가하는 협동 야생 생존게임",
+      "genre": [
+        "생존",
+        "협동",
+        "모험"
+      ],
+      "image": "assets/homepage-covers/wild-survival.webp",
+      "webPath": "web-games/forest-survival",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "selectedPlatform": "WEB",
+      "canonical": {
+        "schemaVersion": 1,
+        "identity": {
+          "gameId": "forest-survival",
+          "name": "숲의 끝 · 생존 협동",
+          "description": "협동 생존게임",
+          "genres": [
+            "생존",
+            "협동"
+          ]
+        },
+        "lifecycle": {
+          "state": "ACTIVE"
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "selectedPlatform": "WEB"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/forest-survival",
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA"
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "web-games/forest-survival/"
+          }
+        },
+        "catalogOrder": 23,
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "runtime": {
+            "authority": "company-runtime"
+          }
+        }
+      },
+      "catalogOrder": 23
+    },
+    {
       "id": "gem-survivor",
       "name": "보석 생존전",
       "description": "사용자 직접 업로드 웹게임",
@@ -4968,7 +5026,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 23,
+        "catalogOrder": 24,
         "authority": "company-runtime",
         "identity": {
           "gameId": "gem-survivor",
@@ -5111,7 +5169,7 @@
           }
         }
       },
-      "catalogOrder": 23,
+      "catalogOrder": 24,
       "homepageMedia": {
         "gameId": "gem-survivor",
         "titleEn": "GEM SURVIVOR",
@@ -5216,7 +5274,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 24,
+        "catalogOrder": 25,
         "authority": "company-runtime",
         "identity": {
           "gameId": "kingshot-ad",
@@ -5359,7 +5417,7 @@
           }
         }
       },
-      "catalogOrder": 24,
+      "catalogOrder": 25,
       "homepageMedia": {
         "gameId": "kingshot-ad",
         "titleEn": "KINGSHOT",
@@ -5461,7 +5519,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 25,
+        "catalogOrder": 26,
         "authority": "company-runtime",
         "identity": {
           "gameId": "mini-empire",
@@ -5576,7 +5634,7 @@
           }
         }
       },
-      "catalogOrder": 25,
+      "catalogOrder": 26,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/mini-empire/index.html",
@@ -5655,7 +5713,7 @@
       "ownerWebEntryFile": "web-games/moon-ruins/index.html",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 26,
+        "catalogOrder": 27,
         "authority": "company-runtime",
         "identity": {
           "gameId": "moon-ruins",
@@ -5768,7 +5826,7 @@
           }
         }
       },
-      "catalogOrder": 26,
+      "catalogOrder": 27,
       "webPublishedRoute": "web-games/moon-ruins/",
       "webPublishedSourceTreeSha": "3c9df920247cf1c63815df0f09de12cc790b92ca",
       "concurrentTargetPlatforms": [
@@ -5817,7 +5875,7 @@
       "homepageRecentWork": "Kenney CC0 3D 범선, 8개 항구 교역, A* 항로, 함포전, 운송 계약, 저장 기능 구현 · 런타임 및 배포 검증 대기",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "selectedPlatform": "WEB",
-      "catalogOrder": 27,
+      "catalogOrder": 28,
       "updatedAt": "2026-10-20T19:38:00+09:00",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -5849,7 +5907,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 27,
+        "catalogOrder": 28,
         "authority": "company-runtime",
         "identity": {
           "gameId": "ocean-voyage",
@@ -6039,7 +6097,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 28,
+        "catalogOrder": 29,
         "authority": "company-runtime",
         "identity": {
           "gameId": "party-rpg",
@@ -6182,7 +6240,7 @@
           }
         }
       },
-      "catalogOrder": 28,
+      "catalogOrder": 29,
       "homepageMedia": {
         "gameId": "party-rpg",
         "titleEn": "PARTY RPG",
@@ -6287,7 +6345,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 29,
+        "catalogOrder": 30,
         "authority": "company-runtime",
         "identity": {
           "gameId": "realistic-builder",
@@ -6430,7 +6488,7 @@
           }
         }
       },
-      "catalogOrder": 29,
+      "catalogOrder": 30,
       "homepageMedia": {
         "gameId": "realistic-builder",
         "titleEn": "REALISTIC BUILDER",
@@ -6532,7 +6590,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 30,
+        "catalogOrder": 31,
         "authority": "company-runtime",
         "identity": {
           "gameId": "restaurant-tycoon",
@@ -6647,7 +6705,7 @@
           }
         }
       },
-      "catalogOrder": 30,
+      "catalogOrder": 31,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/restaurant-tycoon/index.html",
@@ -6727,7 +6785,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 31,
+        "catalogOrder": 32,
         "authority": "company-runtime",
         "identity": {
           "gameId": "star-frontier",
@@ -6868,7 +6926,7 @@
           }
         }
       },
-      "catalogOrder": 31,
+      "catalogOrder": 32,
       "homepageMedia": {
         "gameId": "star-frontier",
         "titleEn": "STAR FRONTIER",
@@ -6973,7 +7031,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 32,
+        "catalogOrder": 33,
         "authority": "company-runtime",
         "identity": {
           "gameId": "tower-choice-rpg",
@@ -7116,7 +7174,7 @@
           }
         }
       },
-      "catalogOrder": 32,
+      "catalogOrder": 33,
       "homepageMedia": {
         "gameId": "tower-choice-rpg",
         "titleEn": "TEN FLOOR TOWER",
@@ -7164,6 +7222,84 @@
       "webPublishedSourceTreeSha": "70cf48f597d546792afb3a425f6a308eb587534d",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
+    },
+    {
+      "id": "turn-rpg",
+      "name": "잃어버린 왕국",
+      "description": "사냥터 4곳과 보스 사냥터, NPC 퀘스트 11개, 장비 19종이 있는 3D 턴제 RPG",
+      "genre": [
+        "RPG",
+        "턴제",
+        "모험"
+      ],
+      "image": "assets/pwa-icon-512.png",
+      "webPath": "web-games/turn-rpg",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
+      "homepageCategory": "development-confirmed",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+      "ownerWebEntryFile": "web-games/turn-rpg/index.html",
+      "productionTarget": "WEB",
+      "selectedPlatform": "WEB",
+      "homepageStage": "웹 개발 중 · 게시 후 검증 대기",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 34,
+        "authority": "OWNER_DIRECT_GAME_BUILD",
+        "identity": {
+          "gameId": "turn-rpg",
+          "name": "잃어버린 왕국",
+          "description": "사냥터 4곳과 보스 사냥터, NPC 퀘스트 11개, 장비 19종이 있는 3D 턴제 RPG",
+          "genres": [
+            "RPG",
+            "턴제",
+            "모험"
+          ],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_GAME_BUILD",
+          "target": "WEB",
+          "selectedPlatform": "WEB",
+          "stage": "웹 개발 중 · 게시 후 검증 대기"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/turn-rpg",
+            "archive": true,
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "web-games/turn-rpg/"
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "stage": "웹 개발 중 · 게시 후 검증 대기",
+          "runtime": {
+            "authority": "company-runtime"
+          }
+        }
+      },
+      "catalogOrder": 34
     },
     {
       "id": "zombie-survival",
@@ -7218,7 +7354,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 33,
+        "catalogOrder": 35,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -7361,7 +7497,7 @@
           }
         }
       },
-      "catalogOrder": 33,
+      "catalogOrder": 35,
       "selectedPlatform": "WEB",
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
@@ -7469,7 +7605,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 34,
+        "catalogOrder": 36,
         "authority": "company-runtime",
         "identity": {
           "gameId": "bug-defense",
@@ -7582,7 +7718,7 @@
           }
         }
       },
-      "catalogOrder": 34,
+      "catalogOrder": 36,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -7661,7 +7797,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 35,
+        "catalogOrder": 37,
         "authority": "company-runtime",
         "identity": {
           "gameId": "insect-survival",
@@ -7802,7 +7938,7 @@
           }
         }
       },
-      "catalogOrder": 35,
+      "catalogOrder": 37,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -7907,7 +8043,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 36,
+        "catalogOrder": 38,
         "authority": "company-runtime",
         "identity": {
           "gameId": "chess-battle",
@@ -8046,7 +8182,7 @@
           }
         }
       },
-      "catalogOrder": 36,
+      "catalogOrder": 38,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8159,7 +8295,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 37,
+        "catalogOrder": 39,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go",
@@ -8270,7 +8406,7 @@
           }
         }
       },
-      "catalogOrder": 37,
+      "catalogOrder": 39,
       "ownerWebSourceState": "RESTORED_LEGACY_PENDING_RUNTIME_QA",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8341,7 +8477,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 38,
+        "catalogOrder": 40,
         "authority": "company-runtime",
         "identity": {
           "gameId": "island-village",
@@ -8454,7 +8590,7 @@
           }
         }
       },
-      "catalogOrder": 38,
+      "catalogOrder": 40,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8534,7 +8670,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 39,
+        "catalogOrder": 41,
         "authority": "company-runtime",
         "identity": {
           "gameId": "monster-adventure",
@@ -8675,7 +8811,7 @@
           }
         }
       },
-      "catalogOrder": 39,
+      "catalogOrder": 41,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8786,7 +8922,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 40,
+        "catalogOrder": 42,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival",
@@ -8897,7 +9033,7 @@
           }
         }
       },
-      "catalogOrder": 40,
+      "catalogOrder": 42,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -8972,7 +9108,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 41,
+        "catalogOrder": 43,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -9111,7 +9247,7 @@
           }
         }
       },
-      "catalogOrder": 41,
+      "catalogOrder": 43,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "targetPlatform": "ROBLOX",
@@ -9174,129 +9310,6 @@
       "webPublishedSourceTreeSha": "bd1cd06ff49b156e284f3d5946e8f9d368819175",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
-    },
-    {
-      "id": "forest-survival",
-      "name": "숲의 끝 · 생존 협동",
-      "description": "로그인 없이 1~10번 서버에 참가하는 협동 야생 생존게임",
-      "genre": [
-        "생존",
-        "협동",
-        "모험"
-      ],
-      "image": "assets/homepage-covers/wild-survival.webp",
-      "webPath": "web-games/forest-survival",
-      "hasWebArchive": true,
-      "homepageWebPlayable": false,
-      "homepageCategory": "development-confirmed",
-      "lifecycleState": "ACTIVE",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "selectedPlatform": "WEB",
-      "canonical": {
-        "schemaVersion": 1,
-        "identity": {
-          "gameId": "forest-survival",
-          "name": "숲의 끝 · 생존 협동",
-          "description": "협동 생존게임",
-          "genres": [
-            "생존",
-            "협동"
-          ]
-        },
-        "lifecycle": {
-          "state": "ACTIVE"
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "selectedPlatform": "WEB"
-        },
-        "sources": {
-          "web": {
-            "path": "web-games/forest-survival",
-            "playable": false,
-            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA"
-          }
-        },
-        "publication": {
-          "web": {
-            "route": "web-games/forest-survival/"
-          }
-        }
-      }
-    },
-    {
-      "id": "turn-rpg",
-      "name": "잃어버린 왕국",
-      "description": "사냥터 4곳과 보스 사냥터, NPC 퀘스트 11개, 장비 19종이 있는 3D 턴제 RPG",
-      "genre": [
-        "RPG",
-        "턴제",
-        "모험"
-      ],
-      "image": "assets/pwa-icon-512.png",
-      "webPath": "web-games/turn-rpg",
-      "hasWebArchive": true,
-      "homepageWebPlayable": false,
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "lifecycleState": "ACTIVE",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
-      "homepageCategory": "development-confirmed",
-      "ownerDirectWebUpload": true,
-      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-      "ownerWebEntryFile": "web-games/turn-rpg/index.html",
-      "productionTarget": "WEB",
-      "selectedPlatform": "WEB",
-      "homepageStage": "웹 개발 중 · 게시 후 검증 대기",
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 42,
-        "authority": "OWNER_DIRECT_GAME_BUILD",
-        "identity": {
-          "gameId": "turn-rpg",
-          "name": "잃어버린 왕국",
-          "description": "사냥터 4곳과 보스 사냥터, NPC 퀘스트 11개, 장비 19종이 있는 3D 턴제 RPG",
-          "genres": [
-            "RPG",
-            "턴제",
-            "모험"
-          ],
-          "image": "assets/pwa-icon-512.png",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_DIRECT_GAME_BUILD",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "OWNER_DIRECT_GAME_BUILD",
-          "target": "WEB",
-          "selectedPlatform": "WEB",
-          "stage": "웹 개발 중 · 게시 후 검증 대기"
-        },
-        "sources": {
-          "web": {
-            "path": "web-games/turn-rpg",
-            "archive": true,
-            "playable": false,
-            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          }
-        },
-        "publication": {
-          "web": {
-            "route": "web-games/turn-rpg/"
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "development-confirmed",
-          "stage": "웹 개발 중 · 게시 후 검증 대기"
-        }
-      }
     }
   ],
   "runtimeAuthority": "company-runtime",
