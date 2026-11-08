@@ -495,8 +495,8 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
 
 ## 2026-11-08 신규 게임 전용 인물 초상화
 
-- `assets/portraits/heroes_new.jpg`: 3열×3행, 총 9개 원화 프레임. 최종 크기 384×504, 프레임당 128×168. SHA-256: `e1dc0675ac3205c255f568e333f304e45c499c99a91fff50657ae9a61057eddf`.
-- `assets/portraits/npcs_new.jpg`: 3열×2행, 총 6개 원화 프레임. 최종 크기 384×336, 프레임당 128×168. SHA-256: `3bf59a0e86b49e7ff884a29b622208af6d82c3f5f0a45bc1632ff0546a09bc71`.
+- `assets/portraits/heroes_new.jpg`: 3열×3행, 총 9개 원화 프레임. 최종 크기 768×1008, 프레임당 256×336. SHA-256: `7d89664973cdc5b7da730d7737d8f4f71b247dbef9c6b8f8029a5ea7932bf4c8`.
+- `assets/portraits/npcs_new.jpg`: 3열×2행, 총 6개 원화 프레임. 최종 크기 768×672, 프레임당 256×336. SHA-256: `d366349a8e26592cedce32d76aa0c375f96f61309694ef83fa5e394b278e1e95`.
 - 원본: 프로젝트 제작 대화에서 직접 생성한 게임 전용 항해시대 인물 원화. 상업 화보·타인 사진을 전사하지 않은 `PROJECT_ORIGINAL_ART`. 인물의 나이·직업·생활 흔적을 강조하며 1600~1700년대 증기 대체역사와의 일관성을 우선한다.
 - 안전 확인: 인물 얼굴·복식 중심 초상 시트이며 피·고어·규제 상품 묘사 없음. 기존 등록 도구의 콘텐츠 차단 정책은 그대로 적용한다.
 - 적용: `Portraits/npcs_new` 자산 등록 후 시설·NPC 대화창의 기존 6역할 이미지를 대체한다. `Portraits/heroes_new`는 외형·역할이 맞는 일부 국가 주인공에 한정하며, 맞지 않는 국가는 기존 `heroes` 자산을 유지한다. 신규 ID/게임별 사용 권한/실제 게시 여부는 각기 확인 전까지 미검증이다.
