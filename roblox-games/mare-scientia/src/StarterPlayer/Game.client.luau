@@ -3321,7 +3321,7 @@ local RENDERERS = {
 -- 새 게임 선택 화면 -------------------------------------------------------------
 
 local function renderNewGame()
-	add(function() return mkHeader(content, "나라를 선택하세요") end)
+	local GOLD = Color3.fromRGB(214, 170, 82)
 	local list = {}
 	for id, n in PortData.Nations do
 		if not n.hidden then
@@ -3329,38 +3329,126 @@ local function renderNewGame()
 		end
 	end
 	table.sort(list, function(a, b) return a.id < b.id end)
-	for _, n in list do
-		add(function()
-			local selected = chosenNation == n.id
-			local row = mkRow(content, n.name .. (if selected then "  ✔" else ""),
-				string.format("시작 항구: %s\n%s", PortData.Ports[n.startPort].name, n.summary), {
-					{ text = if selected then "선택됨" else "선택", color = if selected then COLORS.gold else COLORS.blue, onClick = function()
-						chosenNation = n.id
-						render()
-					end },
-				}, 72)
-			return row
-		end)
+	local cur = PortData.Nations[chosenNation]
+	if not cur or cur.hidden then
+		chosenNation = list[1].id
+		cur = list[1]
 	end
-	add(function() return mkHeader(content, "시대를 선택하세요") end)
-	local eras = {
-		{ 1650, "1650년", "과학혁명의 시작. 증기 연구는 천천히 시작해요" },
-		{ 1700, "1700년 (추천)", "증기 기술의 새벽. 파팽·세이버리·뉴턴을 모두 만날 수 있어요" },
-		{ 1750, "1750년", "분류학의 시대. 린네를 만날 수 있어요" },
-	}
-	for _, e in eras do
-		add(function()
-			local selected = chosenYear == e[1]
-			return mkRow(content, e[2] .. (if selected then "  ✔" else ""), e[3], {
-				{ text = if selected then "선택됨" else "선택", color = if selected then COLORS.gold else COLORS.blue, onClick = function()
-					chosenYear = e[1]
-					render()
-				end },
-			}, 64)
-		end)
-	end
+
+	-- 1) 나라: 카드 두 줄 격자
+	add(function() return mkHeader(content, "① 나라를 고르세요") end)
 	add(function()
-		return mkButton(content, "출항!", COLORS.green, UDim2.new(1, -6, 0, 48), function()
+		local grid = Instance.new("Frame")
+		grid.BackgroundTransparency = 1
+		grid.Size = UDim2.new(1, -6, 0, 0)
+		grid.AutomaticSize = Enum.AutomaticSize.Y
+		local gl = Instance.new("UIGridLayout")
+		gl.CellSize = UDim2.new(0.5, -4, 0, 62)
+		gl.CellPadding = UDim2.fromOffset(8, 8)
+		gl.SortOrder = Enum.SortOrder.LayoutOrder
+		gl.Parent = grid
+		for i, n in list do
+			local selected = chosenNation == n.id
+			local card = Instance.new("TextButton")
+			card.LayoutOrder = i
+			card.Text = ""
+			card.AutoButtonColor = false
+			card.BorderSizePixel = 0
+			card.BackgroundColor3 = if selected then Color3.fromRGB(52, 42, 22) else Color3.fromRGB(24, 32, 46)
+			corner(card, 10)
+			local st = Instance.new("UIStroke")
+			st.Thickness = if selected then 2.5 else 1
+			st.Color = if selected then GOLD else Color3.fromRGB(70, 82, 100)
+			st.Parent = card
+			local nm = mkLabel(card, n.name, 17, if selected then GOLD else COLORS.text, true)
+			nm.Position = UDim2.fromOffset(10, 8)
+			nm.Size = UDim2.new(1, -20, 0, 22)
+			nm.AutomaticSize = Enum.AutomaticSize.None
+			local sub = mkLabel(card, "⚓ " .. PortData.Ports[n.startPort].name, 12, COLORS.muted, false)
+			sub.Position = UDim2.fromOffset(10, 34)
+			sub.Size = UDim2.new(1, -20, 0, 18)
+			sub.AutomaticSize = Enum.AutomaticSize.None
+			card.Activated:Connect(function()
+				Sfx.play("sfx_click")
+				chosenNation = n.id
+				render()
+			end)
+			card.Parent = grid
+		end
+		return grid
+	end)
+
+	-- 선택한 나라 소개
+	add(function()
+		local box = Instance.new("Frame")
+		box.Size = UDim2.new(1, -6, 0, 0)
+		box.AutomaticSize = Enum.AutomaticSize.Y
+		box.BackgroundColor3 = Color3.fromRGB(18, 24, 36)
+		box.BorderSizePixel = 0
+		corner(box, 10)
+		local st = Instance.new("UIStroke")
+		st.Color = GOLD
+		st.Transparency = 0.5
+		st.Parent = box
+		local pad = Instance.new("UIPadding")
+		pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 10), UDim.new(0, 10)
+		pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 12), UDim.new(0, 12)
+		pad.Parent = box
+		local ll = Instance.new("UIListLayout")
+		ll.Padding = UDim.new(0, 4)
+		ll.Parent = box
+		mkLabel(box, cur.name, 20, GOLD, true)
+		mkLabel(box, "시작 항구  " .. PortData.Ports[cur.startPort].name, 13, COLORS.text, true)
+		mkLabel(box, cur.summary, 13, COLORS.muted, false)
+		return box
+	end)
+
+	-- 2) 시대: 한 줄 세 칸
+	add(function() return mkHeader(content, "② 시대를 고르세요") end)
+	add(function()
+		local eras = {
+			{ 1650, "1650", "과학혁명 시작" },
+			{ 1700, "1700 추천", "증기의 새벽" },
+			{ 1750, "1750", "분류학 시대" },
+		}
+		local rowF = Instance.new("Frame")
+		rowF.BackgroundTransparency = 1
+		rowF.Size = UDim2.new(1, -6, 0, 58)
+		local gl = Instance.new("UIGridLayout")
+		gl.CellSize = UDim2.new(1 / 3, -6, 1, 0)
+		gl.CellPadding = UDim2.fromOffset(8, 0)
+		gl.SortOrder = Enum.SortOrder.LayoutOrder
+		gl.Parent = rowF
+		for i, e in eras do
+			local selected = chosenYear == e[1]
+			local b = Instance.new("TextButton")
+			b.LayoutOrder = i
+			b.AutoButtonColor = false
+			b.BorderSizePixel = 0
+			b.Text = e[2] .. "\n" .. e[3]
+			b.TextWrapped = true
+			b.Font = Enum.Font.GothamBold
+			b.TextSize = 13
+			b.TextColor3 = if selected then GOLD else COLORS.text
+			b.BackgroundColor3 = if selected then Color3.fromRGB(52, 42, 22) else Color3.fromRGB(24, 32, 46)
+			corner(b, 10)
+			local st = Instance.new("UIStroke")
+			st.Thickness = if selected then 2.5 else 1
+			st.Color = if selected then GOLD else Color3.fromRGB(70, 82, 100)
+			st.Parent = b
+			b.Activated:Connect(function()
+				Sfx.play("sfx_click")
+				chosenYear = e[1]
+				render()
+			end)
+			b.Parent = rowF
+		end
+		return rowF
+	end)
+
+	-- 3) 시작
+	add(function()
+		local b = mkButton(content, "⚓  출항하기", Color3.fromRGB(196, 146, 52), UDim2.new(1, -6, 0, 56), function()
 			local restart = view ~= nil
 			newGameMode = false
 			local result = call("NewGame", { nationId = chosenNation, startYear = chosenYear, restart = restart })
@@ -3369,6 +3457,9 @@ local function renderNewGame()
 				render()
 			end
 		end, true)
+		b.TextSize = 20
+		b.TextColor3 = Color3.fromRGB(20, 14, 6)
+		return b
 	end)
 	if view then
 		add(function()
