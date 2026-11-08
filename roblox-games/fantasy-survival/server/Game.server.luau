@@ -6567,6 +6567,137 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   setNumber(player,"Health",math.max(0,math.floor(humanoid.Health)))
 end
 
+-- [보스 패턴 스킬] 영주·우두머리·네임드·골렘은 기본 공격과 별개로 바닥에 붉은 예고 표시를 띄우고 잠시 뒤 터뜨리는 광역기를 쓴다.
+-- 지면 폭발(여러 곳 연타) · 돌진(직선 질주) · 포효(전방위 충격파). 후반(체력 50% 이하)엔 더 자주, 더 많이 쓴다.
+-- 피해는 모두 서버가 예고 시간 뒤 범위 안 플레이어에게만 적용하므로 움직이면 피할 수 있다.
+local meadowTweenService=game:GetService("TweenService")
+local function bossGroundY(position,fallback)
+  local params=RaycastParams.new()
+  params.FilterType=Enum.RaycastFilterType.Include;params.FilterDescendantsInstances={workspace.Terrain}
+  local hit=workspace:Raycast(Vector3.new(position.X,position.Y+40,position.Z),Vector3.new(0,-120,0),params)
+  return hit and hit.Position.Y or fallback
+end
+local function bossTelegraph(center,radius,seconds,color,groundY)
+  -- Part 대신 지형(Terrain)에 붙인 핸들 어도먼트로 그린다(예고 원판 + 차오르는 안쪽 원).
+  local function disc(r,transparency)
+    local a=Instance.new("CylinderHandleAdornment");a.Name="BossTelegraph";a.Adornee=workspace.Terrain
+    a.Height=.2;a.Radius=r;a.Color3=color;a.Transparency=transparency;a.AlwaysOnTop=false;a.ZIndex=1
+    a.CFrame=CFrame.new(center.X,groundY+.35,center.Z)*CFrame.Angles(math.rad(-90),0,0);a.Parent=workspace.Terrain
+    game:GetService("Debris"):AddItem(a,seconds+.15)
+    return a
+  end
+  disc(radius,.72)
+  local fill=disc(.5,.35)
+  meadowTweenService:Create(fill,TweenInfo.new(seconds,Enum.EasingStyle.Quad),{Radius=radius}):Play()
+end
+local function bossBlast(enemy,center,radius,damageScale,knock,groundY)
+  remote:FireAllClients("MEADOW_MOB_ATTACK",{species="golem",pattern="GOLEM_SHOCKWAVE",position=Vector3.new(center.X,groundY,center.Z),
+    facing=enemy.visualFacing,target=Vector3.new(center.X,groundY,center.Z)})
+  local damage=math.max(1,math.floor(enemy.damage*damageScale))
+  for _,victim in ipairs(Players:GetPlayers()) do
+    local avatar=victim.Character
+    local root=avatar and avatar:FindFirstChild("HumanoidRootPart")
+    local human=avatar and avatar:FindFirstChildOfClass("Humanoid")
+    if root and human and human.Health>0 and Vector3.new(root.Position.X-center.X,0,root.Position.Z-center.Z).Magnitude<=radius then
+      applyMeadowMobHit(victim,human,damage,enemy)
+      if knock and knock>0 then
+        local away=Vector3.new(root.Position.X-center.X,0,root.Position.Z-center.Z)
+        away=away.Magnitude>.1 and away.Unit or Vector3.new(0,0,1)
+        root.AssemblyLinearVelocity=away*knock+Vector3.new(0,knock*.5,0)
+      end
+    end
+  end
+end
+local function meadowBossSkill(enemy,targetPlayer,targetRoot,distance,now)
+  if enemy.bossSkillBusy and now<enemy.bossSkillBusy then return true end
+  if distance>48 or (enemy.stunUntil or 0)>now then return false end
+  if not enemy.nextBossSkill then enemy.nextBossSkill=now+4;return false end
+  if now<enemy.nextBossSkill then return false end
+  local phase2=enemy.HP<=enemy.maxHP*.5
+  enemy.nextBossSkill=now+(phase2 and 5.5 or 8.5)+math.random()*1.5
+  local choices={"slam","roar"}
+  if distance>9 then choices[#choices+1]="charge";choices[#choices+1]="charge" end
+  local pick=choices[math.random(1,#choices)]
+  local red=Color3.fromRGB(255,40,40)
+  local base=enemy.position
+  local groundY=bossGroundY(base,enemy.spawnGroundY or base.Y)
+  local function alive() return enemy.HP>0 and enemy.model.Parent and (enemy.stunUntil or 0)<=os.clock() end
+  enemy.model:SetAttribute("BossSkill",pick)
+  setEnemyAttackState(enemy,"ANTICIPATION")
+  if pick=="slam" then
+    local warn=1.5
+    enemy.bossSkillBusy=now+warn+.6
+    local spots={targetRoot.Position}
+    for _=1,(phase2 and 4 or 2) do
+      local angle=math.random()*math.pi*2
+      local radius=4+math.random()*9
+      spots[#spots+1]=targetRoot.Position+Vector3.new(math.cos(angle)*radius,0,math.sin(angle)*radius)
+    end
+    for _,spot in ipairs(spots) do bossTelegraph(spot,8,warn,red,bossGroundY(spot,targetRoot.Position.Y-3)) end
+    task.delay(warn,function()
+      setEnemyAttackState(enemy,"RECOVERY")
+      if not alive() then return end
+      for index,spot in ipairs(spots) do
+        task.delay((index-1)*.12,function()
+          if enemy.HP>0 then bossBlast(enemy,spot,8,.75,26,bossGroundY(spot,targetRoot.Position.Y-3)) end
+        end)
+      end
+    end)
+  elseif pick=="roar" then
+    local warn=1.7
+    enemy.bossSkillBusy=now+warn+.7
+    bossTelegraph(base,19,warn,Color3.fromRGB(255,120,30),groundY)
+    task.delay(warn,function()
+      setEnemyAttackState(enemy,"RECOVERY")
+      if not alive() then return end
+      bossBlast(enemy,enemy.position,19,.7,48,groundY)
+    end)
+  else
+    local warn=1.2
+    local direction=Vector3.new(targetRoot.Position.X-base.X,0,targetRoot.Position.Z-base.Z)
+    direction=direction.Magnitude>.1 and direction.Unit or enemy.visualFacing
+    enemy.visualFacing=direction
+    local length=32
+    enemy.bossSkillBusy=now+warn+1
+    -- 직선 예고: 길이 32 · 폭 7의 붉은 띠
+    local from=Vector3.new(base.X,groundY+.35,base.Z)
+    local lane=Instance.new("BoxHandleAdornment");lane.Name="BossTelegraph";lane.Adornee=workspace.Terrain
+    lane.Size=Vector3.new(7,.2,length);lane.Color3=red;lane.Transparency=.6;lane.AlwaysOnTop=false;lane.ZIndex=1
+    lane.CFrame=CFrame.lookAt(from+direction*(length/2),from+direction*length);lane.Parent=workspace.Terrain
+    game:GetService("Debris"):AddItem(lane,warn+.1)
+    task.delay(warn,function()
+      setEnemyAttackState(enemy,"CHASE")
+      if not alive() then return end
+      local start=enemy.position
+      local hitAlready={}
+      local steps=14
+      for i=1,steps do
+        task.delay((i-1)*.03,function()
+          if enemy.HP<=0 or not enemy.model.Parent then return end
+          enemy.position=start+direction*(length*i/steps)
+          enemy.visualFacing=direction
+          for _,victim in ipairs(Players:GetPlayers()) do
+            local avatar=victim.Character
+            local root=avatar and avatar:FindFirstChild("HumanoidRootPart")
+            local human=avatar and avatar:FindFirstChildOfClass("Humanoid")
+            if root and human and human.Health>0 and not hitAlready[victim] and (Vector3.new(root.Position.X-enemy.position.X,0,root.Position.Z-enemy.position.Z)).Magnitude<=5 then
+              hitAlready[victim]=true
+              applyMeadowMobHit(victim,human,math.max(1,math.floor(enemy.damage*1.1)),enemy)
+              local side=Vector3.new(-direction.Z,0,direction.X)
+              root.AssemblyLinearVelocity=(side*(math.random()<.5 and 1 or -1)+direction*.5)*40+Vector3.new(0,22,0)
+            end
+          end
+          if i==steps then
+            setEnemyAttackState(enemy,"RECOVERY")
+            bossBlast(enemy,enemy.position,6,.0,0,groundY)
+          end
+        end)
+      end
+    end)
+  end
+  return true
+end
+
 local function updateEnemyAI(dt,now)
   worldClock+=dt
   -- [지역 생태] 플레이어 위치와 무관하게 자연스러운 동물 이동을 유지한다.
@@ -6718,6 +6849,11 @@ local function updateEnemyAI(dt,now)
       else
         local offset=Vector3.new(targetRoot.Position.X-enemy.position.X,0,targetRoot.Position.Z-enemy.position.Z)
         local distance=offset.Magnitude
+        -- [보스 패턴 스킬] 시전 중이면 기본 추적·공격을 멈추고, 쿨이 차면 새 스킬을 시작한다.
+        if (enemy.isBoss or enemy.isAlpha or enemy.lord or enemy.named) and not enemy.windupUntil
+          and meadowBossSkill(enemy,targetPlayer,targetRoot,distance,now) then
+          continue
+        end
         -- Three source-authored enemy patterns; authoritative damage and saves are unchanged.
         local attackRange=(enemy.kind=="bee" or enemy.kind=="bat") and 5.6
           or enemy.style=="mage" and 14
