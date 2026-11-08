@@ -1096,6 +1096,7 @@ end
 
 local playStory
 local sailManual = false
+local epilogueMessage = nil
 
 local function sail(portId)
 	local from = view.player.portName
@@ -1450,6 +1451,79 @@ local function storyPortraitModel(npcName, id)
 	return STORY_DEFAULT[seed % #STORY_DEFAULT + 1]
 end
 
+local function playEpilogue(msg)
+	local TweenService = game:GetService("TweenService")
+	local layer = overlayGui("Epilogue", 30)
+	local root = Instance.new("Frame")
+	root.Size = UDim2.fromScale(1, 1)
+	root.BackgroundColor3 = Color3.new(0, 0, 0)
+	root.BorderSizePixel = 0
+	root.Parent = layer
+	local scene = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.new(0, 0, 0))
+	scene.ClipsDescendants = true
+	scene.BackgroundTransparency = 1
+	paintScene(scene, "epilogue")
+	-- 석양과 수평선 위를 천천히 지나가는 배
+	local sun = mkRound(scene, UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(120, 120), Color3.fromRGB(255, 214, 140), 0.1, Vector2.new(0.5, 0.5))
+	sun.ZIndex = 2
+	local hull = mkBox(scene, UDim2.fromScale(-0.2, 0.575), UDim2.fromOffset(64, 12), Color3.fromRGB(24, 18, 16))
+	hull.ZIndex = 3
+	local mast = mkBox(hull, UDim2.fromOffset(30, -34), UDim2.fromOffset(3, 34), Color3.fromRGB(24, 18, 16))
+	local sailBox = mkBox(hull, UDim2.fromOffset(34, -32), UDim2.fromOffset(20, 26), Color3.fromRGB(235, 220, 190))
+	mast.ZIndex, sailBox.ZIndex = 3, 3
+	-- 위아래 검은 띠 (영화 같은 화면 비율)
+	local top = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.12), Color3.new(0, 0, 0))
+	local bot = mkBox(root, UDim2.fromScale(0, 0.88), UDim2.fromScale(1, 0.12), Color3.new(0, 0, 0))
+	top.ZIndex, bot.ZIndex = 5, 5
+	local shade = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.new(0, 0, 0))
+	shade.ZIndex = 4
+	local function say(text, y, size, color, hold)
+		local l = mkLabel(root, text, size, color, true)
+		l.AutomaticSize = Enum.AutomaticSize.None
+		l.Size = UDim2.new(0.8, 0, 0, size * 3)
+		l.AnchorPoint = Vector2.new(0.5, 0)
+		l.Position = UDim2.fromScale(0.5, y)
+		l.TextXAlignment = Enum.TextXAlignment.Center
+		l.TextTransparency = 1
+		l.ZIndex = 8
+		local st = Instance.new("UIStroke")
+		st.Thickness = 1.5
+		st.Color = Color3.new(0, 0, 0)
+		st.Transparency = 1
+		st.Parent = l
+		TweenService:Create(l, TweenInfo.new(1.2), { TextTransparency = 0 }):Play()
+		TweenService:Create(st, TweenInfo.new(1.2), { Transparency = 0.3 }):Play()
+		task.wait(hold or 3)
+		return l
+	end
+	-- 검은 화면에서 서서히 밝아지며 시작
+	TweenService:Create(scene, TweenInfo.new(2), { BackgroundTransparency = 0 }):Play()
+	TweenService:Create(shade, TweenInfo.new(2.5), { BackgroundTransparency = 0.45 }):Play()
+	TweenService:Create(hull, TweenInfo.new(22, Enum.EasingStyle.Linear), { Position = UDim2.fromScale(1.1, 0.575) }):Play()
+	TweenService:Create(sun, TweenInfo.new(22, Enum.EasingStyle.Sine), { Position = UDim2.fromScale(0.5, 0.58) }):Play()
+	task.wait(1.5)
+	local p = view and view.player
+	say("에필로그", 0.2, 30, Color3.fromRGB(240, 200, 120), 2.5)
+	say(tostring(msg or ""), 0.32, 18, COLORS.text, 4.5)
+	if p then
+		say(string.format("항해 %d일 · 명성 %d · 보유 코인 %d", p.day or 0, math.floor(p.fame or 0), math.floor(p.coins or 0)), 0.5, 16, Color3.fromRGB(190, 200, 215), 3.5)
+	end
+	say("그러나 바다는 끝나지 않는다.\n당신의 항해는 계속된다.", 0.62, 18, Color3.fromRGB(240, 200, 120), 2.5)
+	local finished = false
+	local b = mkButton(root, "계속 항해하기", COLORS.gold, UDim2.fromOffset(200, 48), function() finished = true end, true)
+	b.AnchorPoint = Vector2.new(0.5, 0)
+	b.Position = UDim2.fromScale(0.5, 0.78)
+	b.ZIndex = 9
+	b.TextSize = 17
+	local t0 = os.clock()
+	while not finished and os.clock() - t0 < 120 do
+		task.wait(0.2)
+	end
+	TweenService:Create(shade, TweenInfo.new(1), { BackgroundTransparency = 0 }):Play()
+	task.wait(1)
+	layer:Destroy()
+end
+
 function playStory(ev)
 	local overlay = Instance.new("Frame")
 	overlay.Name = "StoryScene"
@@ -1637,6 +1711,9 @@ function playStory(ev)
 					text.Size = UDim2.new(1, -28, 1, -80)
 					text.Text = result.message
 					text.MaxVisibleGraphemes = -1
+					if ev.art == "epilogue" then
+						epilogueMessage = result.message
+					end
 					local ok = mkButton(list, "닫기", COLORS.gold, UDim2.new(1, 0, 0, 36), close, true)
 					ok.LayoutOrder = 9
 					list.Position = UDim2.new(0, 14, 1, -46)
@@ -1664,6 +1741,12 @@ function playStory(ev)
 	end)
 	while not done and overlay.Parent do
 		task.wait(0.2)
+	end
+	if epilogueMessage then
+		local m = epilogueMessage
+		epilogueMessage = nil
+		task.wait(0.3)
+		playEpilogue(m)
 	end
 end
 
