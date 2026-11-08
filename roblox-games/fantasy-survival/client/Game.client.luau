@@ -12860,3 +12860,210 @@ task.spawn(function()
     if clouds then local cc=cur.color:Lerp(Color3.new(1,1,1),.5);clouds.Color=clouds.Color:Lerp(Color3.new(cc.R*dim,cc.G*dim,cc.B*dim),.15) end
   end)
 end)
+
+-- ============================================================================
+-- [범용 이족 리그 애니메이터] 그동안 T자 자세로 굳어 있던 이족 몹(오크·예티·악마·해골·닌자 등)의 실제 뼈를 구동한다.
+-- 뼈 이름(UpperArm.L, LowerLeg.R …)만 보고 어떤 리그든 연결하고, 뼈 축 방향에 상관없이 '모델 기준 앞뒤/좌우' 회전으로 변환해 쓴다.
+-- 팔은 먼저 T자에서 몸 옆으로 내리고, 그 위에 걷기·달리기·대기·공격·피격·사망 동작을 얹는다. 서버 판정과 무관한 표시 전용이다.
+-- ============================================================================
+task.spawn(function()
+  local RunService=game:GetService("RunService")
+  local Players=game:GetService("Players")
+  local rigs=setmetatable({},{__mode="k"})
+  local function norm(name) return (name:lower():gsub("[%._%s]","")) end
+  local function smooth(t) t=math.clamp(t,0,1) return t*t*(3-2*t) end
+
+  local function build(model)
+    local bones={}
+    for _,d in ipairs(model:GetDescendants()) do
+      if d:IsA("Bone") then bones[norm(d.Name)]=d end
+    end
+    if not (bones.upperarml and bones.upperarmr and bones.upperlegl and bones.upperlegr and bones.lowerlegl and bones.lowerlegr) then return nil end
+    if math.abs(model:GetAttribute("NativeMobBasePitch") or 0)>.05 then return nil end
+    local pivot=model:GetPivot()
+    local inv=pivot:Inverse()
+    local rig={model=model,bones={},rest={},cur={},hang={},phase=0,seed=math.random()*40,lastPos=pivot.Position,speed=0,lean=0}
+    local _,size=model:GetBoundingBox()
+    rig.height=math.max(2,size.Y)
+    local names={"hips","abdomen","spine","torso","chest","neck","head","upperarml","upperarmr","lowerarml","lowerarmr","upperlegl","upperlegr","lowerlegl","lowerlegr","footl","footr"}
+    for _,n in ipairs(names) do
+      local b=bones[n]
+      if b then
+        rig.bones[n]=b
+        rig.rest[n]=(inv*(b.WorldCFrame*b.Transform:Inverse())).Rotation
+        rig.cur[n]=CFrame.identity
+      end
+    end
+    -- 팔·다리를 몸 옆 아래로 내리는 보정(T자·A자 기본 자세 대응). 방향은 자식 뼈 위치로 구한다.
+    local function dirOf(a,b)
+      if not (rig.bones[a] and rig.bones[b]) then return nil end
+      local d=inv:PointToObjectSpace(rig.bones[b].WorldPosition)-inv:PointToObjectSpace(rig.bones[a].WorldPosition)
+      return d.Magnitude>.001 and d.Unit or nil
+    end
+    local function hangRot(a,b,target)
+      local d=dirOf(a,b)
+      if not d then return CFrame.identity end
+      local axis=d:Cross(target)
+      if axis.Magnitude<1e-4 then return CFrame.identity end
+      local angle=math.acos(math.clamp(d:Dot(target),-1,1))
+      if angle<.05 or angle>2.2 then return CFrame.identity end
+      return CFrame.fromAxisAngle(axis.Unit,angle)
+    end
+    local cx=(inv:PointToObjectSpace(rig.bones.upperarml.WorldPosition).X+inv:PointToObjectSpace(rig.bones.upperarmr.WorldPosition).X)/2
+    for _,side in ipairs({"l","r"}) do
+      local ua=rig.bones["upperarm"..side]
+      local sign=(inv:PointToObjectSpace(ua.WorldPosition).X>=cx) and 1 or -1
+      rig.hang["upperarm"..side]=hangRot("upperarm"..side,"lowerarm"..side,Vector3.new(.14*sign,-1,0).Unit)
+      rig.hang["upperleg"..side]=hangRot("upperleg"..side,"lowerleg"..side,Vector3.new(0,-1,0))
+    end
+    return rig
+  end
+
+  local function setPose(rig,name,rot,alpha)
+    local bone=rig.bones[name]
+    if not bone then return end
+    local rest=rig.rest[name]
+    local target=rest:Inverse()*rot*rest
+    local current=rig.cur[name]:Lerp(target,alpha)
+    rig.cur[name]=current
+    bone.Transform=current
+  end
+  local function X(a) return CFrame.Angles(a,0,0) end
+  local function Y(a) return CFrame.Angles(0,a,0) end
+  local function Z(a) return CFrame.Angles(0,0,a) end
+
+  local function update(rig,dt,now)
+    local model=rig.model
+    local pivot=model:GetPivot()
+    local moved=Vector3.new(pivot.Position.X-rig.lastPos.X,0,pivot.Position.Z-rig.lastPos.Z).Magnitude
+    rig.lastPos=pivot.Position
+    local rawSpeed=moved>6 and 0 or moved/math.max(dt,1/120)
+    rig.speed+=(rawSpeed-rig.speed)*math.min(1,dt*8)
+    local speed=rig.speed
+    local mode=model:GetAttribute("NativeMobMotion") or "IDLE"
+    local walking=speed>.6 and mode~="DEATH"
+    local running=speed>5.2
+    local runAmt=math.clamp((speed-3.5)/4,0,1)
+    local moveAmt=math.clamp(speed/6,0,1)
+    if walking then rig.phase+=moved/(rig.height*1.05) end
+    local ph=rig.phase*math.pi*2
+    local s,c=math.sin(ph),math.cos(ph)
+    local t=now+rig.seed
+    local alpha=1-math.exp(-dt*(mode=="HIT" and 30 or 16))
+
+    -- 서버 전투 상태에서 공격 진행도를 구한다.
+    local serverNow=workspace:GetServerTimeNow()
+    local startedAt=tonumber(model:GetAttribute("NativeMobMotionStartedAt")) or serverNow
+    local duration=math.max(.12,tonumber(model:GetAttribute("NativeMobMotionDuration")) or .5)
+    local age=math.max(0,serverNow-startedAt)
+    local impactAge=serverNow-(tonumber(model:GetAttribute("NativeMobLastImpact")) or -9)
+    local pattern=tostring(model:GetAttribute("AttackPattern") or "")
+    local raise,strike,hit,death=0,0,0,0
+    if mode=="ANTICIPATION" then raise=smooth(age/duration)
+    elseif mode=="RECOVERY" and impactAge>=0 and impactAge<.6 then
+      if impactAge<.18 then raise=1-1.1*smooth(impactAge/.18);strike=math.sin(impactAge/.18*math.pi*.5)
+      else raise=-.1*(1-smooth((impactAge-.18)/.4));strike=1-smooth((impactAge-.18)/.42) end
+    elseif mode=="HIT" then hit=math.sin(math.clamp(age/.45,0,1)*math.pi)
+    elseif mode=="DEATH" then death=smooth(age/1.2) end
+    local sweep=pattern:find("SWEEP")~=nil
+    local ranged=pattern:find("CROSSBOW")~=nil or pattern:find("ARCANE")~=nil
+    local bash=pattern:find("BASH")~=nil or pattern:find("STAB")~=nil or pattern:find("FEINT")~=nil
+
+    -- 대기: 호흡·체중 이동·두리번거림·가벼운 팔 흔들림.
+    local idle=(not walking) and raise==0 and strike==0 and hit==0 and death==0
+    local breath=math.sin(t*1.8)
+    local look=math.sin(t*.45)
+    local shift=math.sin(t*.35)
+
+    -- 보행: 다리는 엇갈려 흔들고 무릎은 앞으로 나올 때만 접으며, 팔은 반대로 흔든다. 달리면 상체가 숙여지고 팔꿈치가 굽는다.
+    local legAmp=(.50+.42*runAmt)*moveAmt
+    local ulL=legAmp*s
+    local ulR=-legAmp*s
+    local llL=-(.18+.95*runAmt*.6)*moveAmt*math.max(0,math.sin(ph+.9))
+    local llR=-(.18+.95*runAmt*.6)*moveAmt*math.max(0,math.sin(ph+.9+math.pi))
+    local armAmp=(.40+.35*runAmt)*moveAmt
+    local uaL=-armAmp*s+(idle and breath*.025 or 0)
+    local uaR=armAmp*s+(idle and breath*.025 or 0)
+    local laBend=.22+.75*runAmt*moveAmt+(idle and .06 or 0)
+    local torsoPitch=-.20*runAmt*moveAmt+(idle and breath*.018 or 0)
+    local torsoYaw=-.14*moveAmt*s
+    local hipsYaw=.12*moveAmt*s
+    local hipsRoll=.045*moveAmt*c+(idle and shift*.03 or 0)
+    local headPitch=.16*runAmt*moveAmt
+    local headYaw=(idle and look*.38 or 0)-torsoYaw*.8
+
+    -- 공격: 팔을 들어올렸다가 내려치고(휩쓸기는 몸을 비튼다), 몸을 젖혔다 숙인다.
+    if raise~=0 or strike~=0 then
+      local up=sweep and 1.45 or ranged and 1.4 or bash and 1.2 or 2.55
+      local r=raise
+      uaL=up*r;uaR=up*r
+      laBend=.3+.55*math.max(0,r)
+      torsoPitch=.30*r-.34*strike
+      torsoYaw=sweep and (.85*r-1.0*strike*(1-r)) or 0
+      ulL=.40*r;ulR=-.28*r
+      llL=-.32*math.max(0,r);llR=-.18*math.max(0,r)
+      hipsYaw=sweep and -torsoYaw*.5 or 0
+      headPitch=-.12*strike
+      headYaw=0
+    end
+    if hit>0 then
+      torsoPitch=.34*hit;headPitch=.42*hit;uaL=.55*hit;uaR=.55*hit;hipsRoll=.08*hit
+      ulL=-.2*hit;ulR=.2*hit
+    end
+    if death>0 then
+      llL=-1.25*death;llR=-1.25*death;ulL=.65*death;ulR=.65*death
+      torsoPitch=-.55*death;headPitch=.35*death;uaL=.3*death;uaR=.3*death;laBend=.2
+    end
+
+    local hangL=rig.hang.upperarml or CFrame.identity
+    local hangR=rig.hang.upperarmr or CFrame.identity
+    local legHangL=rig.hang.upperlegl or CFrame.identity
+    local legHangR=rig.hang.upperlegr or CFrame.identity
+    setPose(rig,"hips",Y(hipsYaw)*Z(hipsRoll),alpha)
+    setPose(rig,"abdomen",Y(torsoYaw*.4)*X(torsoPitch*.4),alpha)
+    setPose(rig,"spine",Y(torsoYaw*.5)*X(torsoPitch*.5),alpha)
+    setPose(rig,"torso",Y(torsoYaw*.6)*X(torsoPitch*.6),alpha)
+    setPose(rig,"chest",Y(torsoYaw*.6)*X(torsoPitch*.6),alpha)
+    setPose(rig,"neck",Y(headYaw*.4)*X(headPitch*.4),alpha)
+    setPose(rig,"head",Y(headYaw*.6)*X(headPitch*.6-torsoPitch*.5),alpha)
+    setPose(rig,"upperarml",X(uaL)*hangL,alpha)
+    setPose(rig,"upperarmr",X(uaR)*hangR,alpha)
+    setPose(rig,"lowerarml",X(laBend),alpha)
+    setPose(rig,"lowerarmr",X(laBend),alpha)
+    setPose(rig,"upperlegl",X(ulL)*legHangL,alpha)
+    setPose(rig,"upperlegr",X(ulR)*legHangR,alpha)
+    setPose(rig,"lowerlegl",X(llL),alpha)
+    setPose(rig,"lowerlegr",X(llR),alpha)
+    -- 발목: 디딜 때 지면과 평행, 뗄 때 발끝이 내려간다.
+    setPose(rig,"footl",X(-ulL*.45-llL*.4),alpha)
+    setPose(rig,"footr",X(-ulR*.45-llR*.4),alpha)
+  end
+
+  local clock=os.clock()
+  local scanAt=0
+  RunService.RenderStepped:Connect(function(dt)
+    local now=os.clock()
+    if now>=scanAt then
+      scanAt=now+1.5
+      local world=workspace:FindFirstChild("FantasySurvivalWorld")
+      if world then
+        for _,model in ipairs(world:GetChildren()) do
+          if model:IsA("Model") and rigs[model]==nil and model:GetAttribute("Species") and model:GetAttribute("EnemyHealth")~=nil then
+            local ok,rig=pcall(build,model)
+            rigs[model]=(ok and rig) or false
+          end
+        end
+      end
+    end
+    local camera=workspace.CurrentCamera
+    local camPos=camera and camera.CFrame.Position
+    for model,rig in pairs(rigs) do
+      if rig and model.Parent then
+        if not camPos or (model:GetPivot().Position-camPos).Magnitude<130 then
+          local ok,err=pcall(update,rig,math.min(dt,.1),now)
+          if not ok then rigs[model]=false;warn("BIPED_RIG_ERROR "..tostring(err)) end
+        end
+      end
+    end
+  end)
+end)

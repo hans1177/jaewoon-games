@@ -5404,6 +5404,56 @@ local function spawnEnemy(site, siteIndex)
       end
     end
   end
+  -- [변종 몹 색칠] 텍스처가 없는 변종 모델은 기본 회색 플라스틱이라 석상처럼 보였다. 종마다 자연스러운 몸 색과 재질을 입힌다.
+  -- 큰 조각=몸통, 둘째 조각=배/얼굴 쪽(밝게), 작은 조각=발·귀·꼬리(어둡게). 눈은 발광, 뿔·이빨·발톱은 뼈색.
+  if site.model and not r15Look and partId~="ghost" then
+    local C=Color3.fromRGB
+    local furMats={deer=1,stag=1,fox=1,husky=1,keltir=1,horse=1,donkey=1,bull=1,rat=1,wolf=1,yeti=1,beastman=1,tribal=1,chieftain=1}
+    local palette={
+      deer=C(176,122,72),stag=C(142,96,60),fox=C(206,106,46),husky=C(128,130,138),keltir=C(84,66,54),wolf=C(104,94,84),
+      horse=C(126,84,54),donkey=C(138,126,114),bull=C(92,60,44),rat=C(118,106,96),
+      snake=C(86,122,66),snakeangry=C(156,60,50),toad=C(92,128,60),glub=C(66,140,148),
+      spider=C(52,44,50),fangspider=C(78,50,62),bladespider=C(62,72,88),wasp=C(224,182,50),
+      assassin=C(48,44,56),beastman=C(120,84,58),chieftain=C(100,72,52),demon=C(146,38,42),frostfiend=C(150,200,232),
+      goblin=C(98,142,64),goblinscout=C(114,132,70),raptor=C(84,112,70),trex=C(88,104,68),parasaur=C(112,142,102),
+      stegosaurus=C(122,132,82),triceratops=C(132,114,86),apatosaur=C(118,130,112),orc=C(84,114,72),skullorc=C(192,186,170),
+      spiritgolem=C(122,172,204),tribal=C(152,102,66),yeti=C(224,228,234),mushroomking=C(182,64,58),wingdemon=C(100,42,72),
+      dragon=C(154,52,44),knightchar=C(150,156,170),
+    }
+    local base=palette[site.model]
+    if base then
+      local hash=((math.sin(location.X*5.17+location.Z*2.91)*43758.5453)%1)
+      local jitter=1+(hash-.5)*.14
+      local list={}
+      for _,part in ipairs(model:GetDescendants()) do
+        if part:IsA("MeshPart") then list[#list+1]={part=part,v=part.Size.X*part.Size.Y*part.Size.Z} end
+      end
+      table.sort(list,function(a,b) return a.v>b.v end)
+      for rank,row in ipairs(list) do
+        local part=row.part
+        local hasSkin=part.TextureID~="" or part:FindFirstChildOfClass("SurfaceAppearance")~=nil
+        if hasSkin==false then
+          local name=part.Name:lower()
+          local tone=base
+          if name:find("eye",1,true) then
+            part.Material=Enum.Material.Neon
+            tone=(site.model=="demon" or site.model=="snakeangry" or site.model=="fangspider") and C(255,70,50) or C(240,196,80)
+          elseif name:find("horn",1,true) or name:find("tooth",1,true) or name:find("teeth",1,true) or name:find("claw",1,true)
+            or name:find("beak",1,true) or name:find("fang",1,true) then
+            tone=C(226,218,196)
+          else
+            if rank==2 then tone=base:Lerp(C(220,208,186),.38)
+            elseif rank>=4 then tone=base:Lerp(C(34,28,26),.30) end
+            part.Material=furMats[site.model] and Enum.Material.Fabric or
+              (site.model=="spiritgolem" or site.model=="frostfiend") and Enum.Material.Glass or Enum.Material.SmoothPlastic
+            if site.model=="spiritgolem" or site.model=="frostfiend" then part.Transparency=math.max(part.Transparency,.15) end
+          end
+          part.Color=C(math.clamp(tone.R*255*jitter,0,255),math.clamp(tone.G*255*jitter,0,255),math.clamp(tone.B*255*jitter,0,255))
+          part.Reflectance=0
+        end
+      end
+    end
+  end
   model:SetAttribute("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP")
   model:SetAttribute("Species",r15Look and "human" or partId)
   if site.model then model:SetAttribute("Variant",site.model) end
