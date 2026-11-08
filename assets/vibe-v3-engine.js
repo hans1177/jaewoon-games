@@ -257,6 +257,7 @@ function evidenceOf(candidate={}){const e=candidate.evidence||{};return Object.f
 
 export function evaluateVibeCandidate(candidate={}){
   const id=clean(candidate.id||candidate.candidateId)||`candidate-${stableHash(JSON.stringify(candidate))}`,evidence=evidenceOf(candidate),blocked=[];
+  if(clean(candidate.failure||candidate.error))blocked.push('reported-failure');
   if(!evidence.syntaxPass)blocked.push('syntax-failed');if(!evidence.testsPass)blocked.push('tests-failed');if(!evidence.runtimePass)blocked.push('runtime-failed');if(!evidence.regressionPass)blocked.push('regression-failed');if(!evidence.protectedStatePreserved)blocked.push('protected-state-changed');if(!evidence.exactRevision)blocked.push('exact-revision-unproven');if(!evidence.responsibleSource)blocked.push('responsible-source-unproven');if(!evidence.checkpoint)blocked.push('checkpoint-missing');if(!evidence.rollbackReady)blocked.push('rollback-unavailable');
   const changedFiles=Math.max(0,Math.floor(finite(candidate.changedFiles,Array.isArray(candidate.files)?candidate.files.length:0))),diffBytes=Math.max(0,finite(candidate.diffBytes,0)),focusScore=1-Math.min(1,(Math.max(0,changedFiles-1)/8)+(diffBytes/500000)),verificationCore=[evidence.syntaxPass,evidence.testsPass,evidence.runtimePass,evidence.regressionPass,evidence.protectedStatePreserved,evidence.exactRevision,evidence.responsibleSource].filter(Boolean).length/7,score=verificationCore*0.68+evidence.qualityScore*0.14+evidence.performanceScore*0.08+focusScore*0.10;
   return Object.freeze({id,eligible:blocked.length===0,score:Number(score.toFixed(6)),evidence,focusScore:Number(focusScore.toFixed(6)),changedFiles,diffBytes,blockedReasons:Object.freeze(blocked),failure:clean(candidate.failure||candidate.error),patchRef:clean(candidate.patchRef)||null,authority:'deterministic-candidate-evaluation'});
@@ -271,7 +272,15 @@ export function runVibeCandidateTournament({candidates=[],requiredCandidateCount
     const id=clean(candidate?.id||candidate?.candidateId)||'candidate-'+stableHash(JSON.stringify(candidate));
     if(ids.has(id))duplicateId=true;
     ids.add(id);
-    const patch=clean(candidate?.patchFingerprint||candidate?.diffHash||candidate?.sourceHash||candidate?.patchRef);
+    // [코어 후보 경쟁] 명시적 해시가 없어도 실제 변경 내용이 같으면 다른 이름의 중복 후보로 간주한다.
+    // 소스 내용이 제공되지 않은 과거 후보의 임의 ID는 기존 경로를 유지한다.
+    const changes=[
+      ...(Array.isArray(candidate?.edits)?candidate.edits:[]).map(row=>['EDIT',clean(row?.path),String(row?.find??''),String(row?.replace??'')]),
+      ...(Array.isArray(candidate?.newFiles)?candidate.newFiles:[]).map(row=>['NEW',clean(row?.path),String(row?.content??'')]),
+      ...(Array.isArray(candidate?.replaceFiles)?candidate.replaceFiles:[]).map(row=>['REPLACE',clean(row?.path),String(row?.content??'')])
+    ];
+    const patch=clean(candidate?.patchFingerprint||candidate?.diffHash||candidate?.sourceHash||candidate?.patchRef)
+      ||(changes.length?'content:'+stableHash(JSON.stringify(changes)):'');
     if(patch&&patchIdentities.has(patch))duplicatePatch=true;
     if(patch)patchIdentities.add(patch);
     identities.add(patch?'patch:'+patch:'id:'+id);
