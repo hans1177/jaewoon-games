@@ -277,7 +277,18 @@ remote.OnServerInvoke = onInvoke
 if game:GetService("RunService"):IsStudio() then
 	local qa = Instance.new("BindableFunction")
 	qa.Name = "StudioQAInvoke"
-	qa.OnInvoke = onInvoke
+	qa.OnInvoke = function(player, action, payload)
+		local session = sessions[player]
+		if session then
+			session.lastAction = -100 -- 점검은 요청 간격 제한을 받지 않는다
+			if action == "QAGrant" and session.state then
+				session.state.coins = 1e9
+				session.state.fame = math.max(session.state.fame or 0, 1000)
+				return { ok = true, message = "granted" }
+			end
+		end
+		return onInvoke(player, action, payload)
+	end
 	qa.Parent = game:GetService("ServerStorage")
 end
 
