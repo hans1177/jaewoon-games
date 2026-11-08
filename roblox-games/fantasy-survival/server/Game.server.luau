@@ -5482,6 +5482,47 @@ local function spawnEnemy(site, siteIndex)
       if site.myth.stretch then model:ScaleTo(model:GetScale()*site.myth.stretch) end
     end)
   end
+  -- [보스 위압감] 영주·우두머리·네임드·골렘은 일반 몹과 한눈에 구별되는 오라(외곽 발광, 불씨·연기, 큰 조명, 지면 파동)를 두른다.
+  if (isBoss or isAlpha or site.lord or site.named) and not site.myth then
+    pcall(function()
+      local tint=site.lord and Color3.fromRGB(255,48,36) or isBoss and Color3.fromRGB(255,170,50)
+        or site.bonusBoss and Color3.fromRGB(190,80,255) or Color3.fromRGB(255,120,60)
+      local hl=Instance.new("Highlight");hl.Name="BossAura";hl.FillColor=tint;hl.OutlineColor=tint:Lerp(Color3.new(1,1,1),.25)
+      hl.FillTransparency=site.lord and .74 or .82;hl.OutlineTransparency=0;hl.DepthMode=Enum.HighlightDepthMode.Occluded;hl.Parent=model
+      local parts={}
+      for _,part in ipairs(model:GetDescendants()) do
+        if part:IsA("BasePart") and part.Transparency<.9 then parts[#parts+1]=part end
+      end
+      table.sort(parts,function(x,y) return x.Size.X*x.Size.Y*x.Size.Z>y.Size.X*y.Size.Y*y.Size.Z end)
+      local big=site.lord and 1.6 or 1.2
+      for index=1,math.min(5,#parts) do
+        local part=parts[index]
+        local fx=Instance.new("ParticleEmitter");fx.Name="BossEmber";fx.Color=ColorSequence.new(tint,Color3.fromRGB(40,20,20))
+        fx.LightEmission=.9;fx.Rate=14*big;fx.Lifetime=NumberRange.new(1.4,2.6);fx.Speed=NumberRange.new(2,6)
+        fx.EmissionDirection=Enum.NormalId.Top;fx.SpreadAngle=Vector2.new(60,60);fx.Acceleration=Vector3.new(0,3,0)
+        fx.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.9*big),NumberSequenceKeypoint.new(1,0)})
+        fx.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.1),NumberSequenceKeypoint.new(1,1)});fx.Parent=part
+      end
+      local anchor=model.PrimaryPart or parts[1]
+      if anchor then
+        local light=Instance.new("PointLight");light.Name="BossLight";light.Color=tint;light.Range=(site.height or 6)*3.2;light.Brightness=3;light.Parent=anchor
+        local smoke=Instance.new("ParticleEmitter");smoke.Name="BossSmoke";smoke.Color=ColorSequence.new(Color3.fromRGB(30,26,30))
+        smoke.Rate=10*big;smoke.Lifetime=NumberRange.new(2.2,3.6);smoke.Speed=NumberRange.new(1,3);smoke.SpreadAngle=Vector2.new(180,180)
+        smoke.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,2*big),NumberSequenceKeypoint.new(1,6*big)})
+        smoke.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.55),NumberSequenceKeypoint.new(1,1)});smoke.Parent=anchor
+        -- 맥박처럼 숨 쉬는 조명 · 외곽선(경고 느낌)
+        task.spawn(function()
+          local t=0
+          while model.Parent and light.Parent do
+            t+=.1
+            light.Brightness=3+math.sin(t*2.2)*1.4
+            hl.FillTransparency=(site.lord and .74 or .82)+math.sin(t*2.2)*.08
+            task.wait(.1)
+          end
+        end)
+      end
+    end)
+  end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
     isBoss=isBoss,isAlpha=isAlpha,kind=partId,variant=site.model,style=site.style or mobStyleByModel[site.model or ''],oilClass=oilClass,poiGuard=site.poiGuard,bonusBoss=site.bonusBoss,zoneTag=site.zoneTag,named=site.named,lord=site.lord,questBoss=site.questBoss,contractNo=site.contractIndex,contractIndex=site.contractIndex,dungeon=site.dungeon,siteDrops=site.drops,questIndex=site.questIndex,bountyIndex=site.bountyIndex,
