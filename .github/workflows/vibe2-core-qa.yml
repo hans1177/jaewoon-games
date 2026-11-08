@@ -116,6 +116,9 @@ on:
       - 'qa/vibe-visual-runtime-quality.test.mjs'
       - 'qa/vibe-crossplatform-visual-components.test.mjs'
       - 'qa/vibe2-native-asset-production.test.mjs'
+      - 'qa/vibe-mesh-audit.test.mjs'
+      - 'tools/vibe-mesh-audit.mjs'
+      - 'tools/vibe_mesh_audit.py'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe59-roblox-coding.test.mjs'
       - 'qa/vibe59-creative-engine.test.mjs'
@@ -773,6 +776,7 @@ jobs:
           python3 -m pip install --quiet pillow numpy
           VIBE2_BLENDER_BINARY=blender node --test qa/vibe-variation-gym.test.mjs
           node --test qa/vibe-cc0-library.test.mjs
+          VIBE2_BLENDER_BINARY=blender node --test qa/vibe-mesh-audit.test.mjs
       - name: Preserve authored GLB and preview evidence
         if: always()
         uses: actions/upload-artifact@v4
