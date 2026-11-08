@@ -45,7 +45,7 @@ task.spawn(function()
 		local kind = nil
 		if string.find(it.key, "AudioIds") then
 			kind = "Sound"
-		elseif string.find(it.key, "%.Menu/") or string.find(it.key, "%.Goods/") or string.find(it.key, "%.Portraits/") then
+		elseif string.find(it.key, ".Menu/", 1, true) or string.find(it.key, ".Goods/", 1, true) or string.find(it.key, ".Portraits/", 1, true) then
 			kind = "ImageLabel"
 		end
 		if kind then
