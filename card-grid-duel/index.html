@@ -94,6 +94,10 @@ h1{font-size:22px;margin:0}
 #restScreen .restActions button{min-height:48px;border:0;border-radius:11px;padding:0 16px;font-weight:1000;color:#fff;background:#4169e1}
 #restScreen .restActions .draw{background:#8b691e}
 #restScreen .restActions .diamondDraw{background:#4d5cc4}
+/* 7스테이지 이후 일반/강화 뽑기 전환 */
+#restScreen .restActions .gachaToggle{width:100%;background:#30435f;border:1px solid #6786b3}
+#restScreen .restActions .gachaToggle[aria-pressed="true"]{background:#245d51;border-color:#61c8a3}
+#gachaModeInfo{margin:9px 0 2px;color:#b7e8d8;font-size:12px;font-weight:800}
 #drawResult{min-height:42px;margin:10px 0;color:#d8e4ff;font-weight:800}
 #unlockedList{font-size:12px;color:#b7c6e4;line-height:1.5}
 #diamondLine{font-size:15px;color:#78d7ff;font-weight:1000;margin:7px 0}
@@ -130,12 +134,14 @@ h1{font-size:22px;margin:0}
     <div id="diamondLine">다이아 <span id="diamondCount">0</span>개</div>
     <div id="drawResult"></div>
     <div id="unlockedList">추가 아군: 없음</div>
+    <div id="gachaModeInfo" class="hidden"></div>
     <div id="upgradeBox" class="hidden">
       <select id="upgradeSelect"></select>
       <button id="upgradeAlly">아군 업그레이드</button>
       <div id="upgradeInfo"></div>
     </div>
     <div class="restActions">
+      <button id="toggleGacha" class="gachaToggle hidden" type="button" aria-pressed="false">강화뽑기: 적용 안 함</button>
       <button id="drawAlly" class="draw">열쇠 1개로 아군 뽑기</button>
       <button id="drawDiamond" class="diamondDraw">다이아 120개로 아군 뽑기</button>
       <button id="nextStage">2스테이지 시작</button>
@@ -192,8 +198,9 @@ const STAGES={
 };
 // 중갑병은 다른 카드(각 2칸)보다 낮은 확률(1칸)로 뽑힌다.
 const GACHA_POOL=['LANCER','LANCER','CROSSBOW','CROSSBOW','HAMMER','HAMMER','RIFLEMAN','RIFLEMAN','HEAVY_INFANTRY'];
-// 7스테이지 클리어 후 강화 뽑기 전용. 성직자는 기마병보다 낮은 확률.
-const ENHANCED_GACHA_POOL=[...GACHA_POOL,'CAVALRY','CAVALRY','PRIEST'];
+// 7스테이지 클리어 후 선택 가능한 강화 뽑기. 기마병 2/3, 성직자 1/3.
+// 일반 뽑기의 기존 아군과 분리하고 원래 등장 확률은 유지한다.
+const ENHANCED_GACHA_POOL=['CAVALRY','CAVALRY','PRIEST'];
 // 다이아: 기존 저장 키를 유지해 이전 잔액을 그대로 사용한다.
 const DIAMOND_KEY='card-grid-duel-diamonds-v1';
 // 저장: 현재 턴·스테이지·유닛·뽑기·업그레이드 진행을 같은 기기에서 유지한다.
@@ -325,6 +332,7 @@ function newState(){
     diamonds:diamondWallet(),
     stageTookDamage:false,
     unlocked:[],
+    enhancedGacha:true,
     upgrades:{},
     gold:{BLUE:START_GOLD,RED:0},
     summons:{BLUE:0,RED:0},
@@ -1103,6 +1111,13 @@ function render(){
     $('#diamondCount').textContent=diamondWallet();
     $('#restText').textContent=state.stage+'스테이지 완료 · 다음 전투 전에 정비할 수 있어.';
     $('#unlockedList').textContent='추가 아군: '+((state.unlocked||[]).map(id=>card('BLUE',id).name).join(', ')||'없음')+(state.stage>=7?' · 강화 뽑기 전용: 기마병(체력 120·공격 60) / 성직자(체력 70·회복 50, 더 희귀)':'');
+    const enhancedOpen=state.stage>=7;
+    const enhancedActive=enhancedOpen&&state.enhancedGacha!==false;
+    $('#toggleGacha').classList.toggle('hidden',!enhancedOpen);
+    $('#toggleGacha').setAttribute('aria-pressed',String(enhancedActive));
+    $('#toggleGacha').textContent='강화뽑기: '+(enhancedActive?'적용':'적용 안 함');
+    $('#gachaModeInfo').classList.toggle('hidden',!enhancedOpen);
+    $('#gachaModeInfo').textContent=enhancedActive?'현재 기마병·성직자만 등장':'현재 기존 아군만 등장';
     $('#drawAlly').disabled=(state.keys||0)<=0;
     $('#drawDiamond').disabled=diamondWallet()<120;
     const upgradeOpen=state.stage>=2;
@@ -1354,7 +1369,7 @@ function drawAlly(useDiamonds){
     if(state.keys<=0)return msg('열쇠가 부족해.');
     state.keys--;
   }
-  const pool=state.stage>=7?ENHANCED_GACHA_POOL:GACHA_POOL;
+  const pool=state.stage>=7&&state.enhancedGacha!==false?ENHANCED_GACHA_POOL:GACHA_POOL;
   const id=pool[Math.floor(Math.random()*pool.length)];
   const duplicate=state.unlocked.includes(id);
   if(!duplicate)state.unlocked.push(id);
@@ -1365,6 +1380,14 @@ function drawAlly(useDiamonds){
 }
 $('#drawAlly').onclick=()=>drawAlly(false);
 $('#drawDiamond').onclick=()=>drawAlly(true);
+$('#toggleGacha').onclick=()=>{
+  if(!state||state.phase!=='REST'||side!=='BLUE'||state.stage<7)return;
+  state.enhancedGacha=state.enhancedGacha===false;
+  state.version++;
+  saveProgress();
+  render();
+  msg(state.enhancedGacha?'강화뽑기 적용 · 기마병/성직자만 등장':'강화뽑기 적용 안 함 · 기존 아군만 등장');
+};
 // 다음 스테이지 및 패배 재도전은 같은 시작 함수를 이용한다.
 function startStage(next){
   if(!state||!STAGES[next])return;
