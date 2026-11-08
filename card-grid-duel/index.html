@@ -667,7 +667,12 @@ function spawnScriptedWave(){
     7:['MOUNTED_ORC','CHARGE_ORC','ORC_MAGE','POISON_SCORPION'],
     10:['BEAR','MOUNTED_ORC','ORC_MAGE','CHARGE_ORC','RUIN_GUARDIAN']
   };
-  const enemies=waves[round];
+  // 8스테이지는 증원 자리가 모자라면 누락된 웨이브부터 다음 턴에 재시도한다.
+  // 이전 스테이지의 지정 턴 출현 규칙은 변경하지 않는다.
+  const waveRound=state.stage===8
+    ?[2,5,7,10].find(n=>n<=round&&n>(state.lastWaveRound||0))
+    :round;
+  const enemies=waves[waveRound];
   if(!enemies)return;
   const free=[];
   // 정글 치유 칸은 비워두고, 6스테이지 적은 맵 북쪽에서 증원한다.
@@ -693,8 +698,8 @@ function spawnScriptedWave(){
     });
     state.summons.RED++
   }
-  state.lastWaveRound=round;
-  msg(state.stage+'스테이지 '+round+'턴 · 적 '+enemies.length+'마리 출현!'+(enemies.includes('URSUS')?' 우르수스 등장!':''))
+  state.lastWaveRound=waveRound;
+  msg(state.stage+'스테이지 '+waveRound+'턴 · 적 '+enemies.length+'마리 출현!'+(enemies.includes('URSUS')?' 우르수스 등장!':''))
   if(enemies.includes('URSUS'))syncBossMusic()
 
 }
@@ -790,7 +795,7 @@ function processAction(actor,p){
     const u=byId(p.unit);
     if(!u||u.side!==actor||u.moved||u.frozenNow||!isInside(p.r,p.c)||at(p.r,p.c)||chestAt(p.r,p.c))return false;
     const distance=moveDist(u,{r:p.r,c:p.c});
-    const enemyMounted=state.stage===6&&u.side==='RED'&&u.card==='MOUNTED_ORC';
+    const enemyMounted=(state.stage===6||state.stage===8)&&u.side==='RED'&&u.card==='MOUNTED_ORC';
     const allyMounted=u.side==='BLUE'&&u.card==='CAVALRY';
     if(distance!==1&&!(distance===2&&(u.r===p.r||u.c===p.c)&&(enemyMounted||allyMounted)))return false;
     if(distance===1){
@@ -1161,7 +1166,7 @@ function aiTurn(){
     if(inRange){
       processAction('RED',{type:'attack',unit:u.id,target:inRange.id})
     }else if(targets[0]&&!u.moved){
-      const t=targets[0],cavalry=state.stage===6&&u.card==='MOUNTED_ORC';
+      const t=targets[0],cavalry=(state.stage===6||state.stage===8)&&u.card==='MOUNTED_ORC';
       const moves=[];
       for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]){
         const near={r:u.r+dr,c:u.c+dc};
