@@ -74,6 +74,23 @@ assert.equal(duplicateTournament.ready,false);
 assert.equal(duplicateTournament.winner,null);
 assert.equal(duplicateTournament.independentCandidateCount,2);
 assert(duplicateTournament.blockedReasons.includes('duplicate-candidate-patch'));
+// [바이브 코어 경쟁] 실패 후보와 해시 없는 동일 코드 패치를 다른 성공 후보로 위장하지 못한다.
+const reportedFailure=runVibeCandidateTournament({requiredCandidateCount:3,candidates:[
+  {id:'failure',failure:'runtime exception after independent qa',evidence:passEvidence},
+  {id:'healthy-1',evidence:passEvidence},
+  {id:'healthy-2',evidence:passEvidence}
+]});
+assert.equal(reportedFailure.evaluations.find(row=>row.id==='failure').eligible,false);
+assert.equal(reportedFailure.evaluations.find(row=>row.id==='failure').blockedReasons.includes('reported-failure'),true);
+const identicalSourceEdits=runVibeCandidateTournament({requiredCandidateCount:3,candidates:[
+  {id:'candidate-a',edits:[{path:'server/Game.server.luau',find:'old()',replace:'new()'}],evidence:passEvidence},
+  {id:'candidate-b',edits:[{path:'server/Game.server.luau',find:'old()',replace:'new()'}],evidence:passEvidence},
+  {id:'candidate-c',edits:[{path:'server/Game.server.luau',find:'old()',replace:'safe()'}],evidence:passEvidence}
+]});
+assert.equal(identicalSourceEdits.ready,false);
+assert.equal(identicalSourceEdits.independentCandidateCount,2);
+assert.ok(identicalSourceEdits.blockedReasons.includes('duplicate-candidate-patch'));
+
 const shortTournament=runVibeCandidateTournament({requiredCandidateCount:5,candidates:[{id:'only',evidence:passEvidence}]});
 assert.equal(shortTournament.ready,false);
 assert.equal(shortTournament.winner,null);
