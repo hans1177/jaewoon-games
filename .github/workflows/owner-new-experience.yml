@@ -11,6 +11,26 @@ on:
         description: '새 체험 이름'
         required: true
         type: string
+      universe_id:
+        description: '(선택) 미리 만든 빈 체험 Universe ID. 넣으면 생성 대신 그 체험에 게시하고 쿠키를 쓰지 않음'
+        required: false
+        type: string
+        default: ''
+      place_id:
+        description: '(선택) 그 체험의 Place ID. 비우면 대표 Place 자동 조회'
+        required: false
+        type: string
+        default: ''
+      use_cookie:
+        description: '(선택) true면 기존 체험 지정 시에도 쿠키로 체험 설정(R15) 적용'
+        required: false
+        type: string
+        default: ''
+      probe:
+        description: '(진단) true면 빈 place·전체 place를 각각 게시해 409 원인만 확인'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -27,7 +47,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
@@ -37,10 +56,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/rojo-bin
-          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
-          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
-          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
-          chmod +x /tmp/rojo-bin/rojo
+          bash tools/install-rojo.sh /tmp/rojo-bin
       - name: Build place
         shell: bash
         env:
@@ -49,21 +65,64 @@ jobs:
           set -euo pipefail
           case "$GAME_ID" in fantasy-survival|mare-essentia) ;; *) echo 'GAME_NOT_ALLOWED'; exit 1;; esac
           mkdir -p /tmp/new-exp
-          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/new-exp/$GAME_ID.rbxlx"
-          test -s "/tmp/new-exp/$GAME_ID.rbxlx"
+          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/new-exp/$GAME_ID.rbxl"
+          test -s "/tmp/new-exp/$GAME_ID.rbxl"
+      - name: Probe asset ownership (diagnostic, read-only)
+        if: inputs.probe == 'assets'
+        run: python3 tools/probe-asset-owners.py
+      - name: Probe place publish (diagnostic)
+        if: inputs.probe == 'true'
+        shell: bash
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+          KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          U: ${{ inputs.universe_id }}
+          P: ${{ inputs.place_id }}
+        run: |
+          set -u
+          printf '{"name":"probe","tree":{"$className":"DataModel"}}' > /tmp/new-exp/probe.project.json
+          /tmp/rojo-bin/rojo build /tmp/new-exp/probe.project.json -o /tmp/new-exp/empty.rbxl
+          ls -l /tmp/new-exp
+          try() {
+            code=$(curl -sS -o /tmp/new-exp/$1.out -w '%{http_code}' -X POST -H "x-api-key: $KEY" -H 'content-type: application/octet-stream' --data-binary @"$2" "https://apis.roblox.com/universes/v1/$U/places/$P/versions?versionType=$3")
+            echo "PROBE $1 versionType=$3 http=$code body=$(head -c 300 /tmp/new-exp/$1.out)"
+          }
+          echo "PROBE universe=$(curl -sS -H "x-api-key: $KEY" "https://apis.roblox.com/cloud/v2/universes/$U" | head -c 700)"
+          echo "PROBE place=$(curl -sS -H "x-api-key: $KEY" "https://apis.roblox.com/cloud/v2/universes/$U/places/$P" | head -c 500)"
+          try empty /tmp/new-exp/empty.rbxl Published
+          try full_saved "/tmp/new-exp/$GAME_ID.rbxl" Saved
+          try full_published "/tmp/new-exp/$GAME_ID.rbxl" Published
       - name: Create new private Experience and publish
+        if: inputs.probe == ''
         shell: bash
         env:
           GAME_ID: ${{ inputs.game_id }}
           GAME_NAME: ${{ inputs.game_name }}
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          REUSE_UNIVERSE_ID: ${{ inputs.universe_id }}
+          REUSE_PLACE_ID: ${{ inputs.place_id }}
+          # 배포 전용 키(ROBLOX_DEPLOY_API_KEY)가 있으면 우선 사용. 기존 체험 지정 시 쿠키는 넘기지 않는다.
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ (inputs.universe_id == '' || inputs.use_cookie == 'true') && secrets.ROBLOX_ROBLOSECURITY || '' }}
+          ROBLOX_SECURITY_COOKIE: ${{ (inputs.universe_id == '' || inputs.use_cookie == 'true') && secrets.ROBLOX_SECURITY_COOKIE || '' }}
         run: |
           set -euo pipefail
-          args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/new-exp/$GAME_ID.rbxlx" --source-revision "$(git rev-parse HEAD)" --output "/tmp/new-exp/result.json")
-          if [[ "$GAME_ID" == 'fantasy-survival' ]]; then args+=(--avatar-rig R15); fi
+          args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/new-exp/$GAME_ID.rbxl" --source-revision "$(git rev-parse HEAD)" --output "/tmp/new-exp/result.json")
+          if [[ -n "${REUSE_UNIVERSE_ID:-}" ]]; then
+            [[ "$REUSE_UNIVERSE_ID" =~ ^[0-9]+$ ]] || { echo 'UNIVERSE_ID_INVALID'; exit 1; }
+            if [[ -z "${REUSE_PLACE_ID:-}" ]]; then
+              REUSE_PLACE_ID="$(curl -fsS --retry 3 -H "x-api-key: ${ROBLOX_OPEN_CLOUD_API_KEY}" "https://apis.roblox.com/cloud/v2/universes/${REUSE_UNIVERSE_ID}" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const m=String(JSON.parse(d).rootPlace||'').match(/(\\d+)\\s*$/);if(!m){console.error('ROOT_PLACE_LOOKUP_FAILED');process.exit(1)}console.log(m[1])})")"
+            fi
+            [[ "$REUSE_PLACE_ID" =~ ^[0-9]+$ ]] || { echo 'PLACE_ID_INVALID'; exit 1; }
+            echo "REUSE_TARGET=${REUSE_UNIVERSE_ID}/${REUSE_PLACE_ID} (R15는 체험 생성 시 Creator Hub에서 설정)"
+            args+=(--reuse-universe-id "$REUSE_UNIVERSE_ID" --reuse-place-id "$REUSE_PLACE_ID")
+            if [[ '${{ inputs.use_cookie }}' == 'true' && "$GAME_ID" == 'fantasy-survival' ]]; then args+=(--avatar-rig R15); fi
+          elif [[ "$GAME_ID" == 'fantasy-survival' ]]; then
+            args+=(--avatar-rig R15)
+          fi
           node tools/company-roblox-dedicated-experience.mjs "${args[@]}"
           cat /tmp/new-exp/result.json
       - name: Record new target through an existing GitHub pull request
+        if: inputs.probe == ''
         shell: bash
         env:
           GAME_ID: ${{ inputs.game_id }}
