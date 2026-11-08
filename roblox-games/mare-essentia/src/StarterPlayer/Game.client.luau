@@ -1411,6 +1411,7 @@ local function sail(portId)
 			escorts = math.min(3, (view.fleet and view.fleet.escorts or 0) + (view.fleet and view.fleet.ships and #view.fleet.ships or 0)),
 			weatherId = view.weather and view.weather.id,
 			event = view.voyageEvent,
+			helm = player:GetAttribute("ManualHelm") == true, -- 설정에서 켠 수동 항해
 		})
 		if not ok then
 			warn("[Game] 3D 항해 오류, 2D로 대체:", err)
@@ -2365,6 +2366,16 @@ local function renderStatus()
 			return mkRow(content, string.format("%s Lv.%d", c.name, c.level), string.format("경험치 %d / %d", c.xp, c.nextXp), nil, 48)
 		end)
 	end
+	add(function() return mkHeader(content, "항해 방식") end)
+	add(function()
+		local manualOn = player:GetAttribute("ManualHelm") == true
+		return mkRow(content, "수동 항해", if manualOn then "켜짐: 스틱·WASD로 직접 조종, 바람을 읽어 가요" else "꺼짐: 자동 항해", {
+			{ text = if manualOn then "자동으로" else "직접 조종", color = if manualOn then COLORS.grey else COLORS.blue, onClick = function()
+				player:SetAttribute("ManualHelm", not manualOn)
+				render()
+			end },
+		}, 60)
+	end)
 	add(function() return mkHeader(content, "소리") end)
 	add(function()
 		local musicOn, sfxOn = Sfx.state()
@@ -4167,6 +4178,13 @@ openOptions = function()
 				btn.Position = UDim2.new(1, -8 - (#buttons - i) * 76, 0.5, 0)
 				btn.TextSize = 13
 			end
+		end
+		section("⛵ 항해 방식")
+		do
+			local manualOn = player:GetAttribute("ManualHelm") == true
+			row("수동 항해", if manualOn then "켜짐: 스틱·WASD로 직접 조종" else "꺼짐: 자동 항해", {
+				{ text = if manualOn then "자동으로" else "직접 조종", color = if manualOn then COLORS.grey else COLORS.green, onClick = function() player:SetAttribute("ManualHelm", not manualOn); draw() end },
+			})
 		end
 		section("🔊 소리")
 		do

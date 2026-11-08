@@ -111,6 +111,7 @@ task.spawn(function()
 	local Ports = require(Shared:WaitForChild("Ports"))
 	local Quests = require(Shared:WaitForChild("Quests"))
 	local nationId = next(Ports.Nations)
+	player:SetAttribute("ManualHelm", true) -- 점검 뒤 화면에서 수동 항해를 바로 눌러 볼 수 있게 한다
 	local r
 	for _ = 1, 8 do
 		task.wait(1.5)
