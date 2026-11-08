@@ -168,10 +168,11 @@ function VoyageScene.play(info)
 	local lat, latV = 0, 0
 	local inBand, bandTime = 0, 0
 	local held = { l = false, r = false }
+	local dragTarget = nil -- 막대를 손가락으로 끌 때 가고 싶은 위치(-1~1)
 	local bandFrame, bandMark, shipMark, scoreLabel
 	if manual then
 		skip.Visible = false
-		hint.Text = "A/D 또는 ◀ ▶ 로 배를 몰아 초록 바람 띠 안에 머물러요"
+		hint.Text = "A/D·◀ ▶ 또는 막대를 끌어 초록 바람 띠 안에 머물러요"
 		local track = Instance.new("Frame")
 		track.AnchorPoint = Vector2.new(0.5, 1)
 		track.Position = UDim2.new(0.5, 0, 1, -86)
@@ -184,6 +185,27 @@ function VoyageScene.play(info)
 		local tc = Instance.new("UICorner")
 		tc.CornerRadius = UDim.new(0, 9)
 		tc.Parent = track
+		-- 모바일: 막대를 손가락으로 끌면 배가 그쪽으로 향한다 (스틱 대신)
+		track.Active = true
+		local function dragTo(x)
+			local rel = (x - track.AbsolutePosition.X) / math.max(track.AbsoluteSize.X, 1)
+			dragTarget = math.clamp((rel - 0.5) / 0.45, -1, 1)
+		end
+		track.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				dragTo(input.Position.X)
+			end
+		end)
+		track.InputChanged:Connect(function(input)
+			if dragTarget and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+				dragTo(input.Position.X)
+			end
+		end)
+		track.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				dragTarget = nil
+			end
+		end)
 		bandFrame = Instance.new("Frame")
 		bandFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 		bandFrame.Size = UDim2.new(0.3, 0, 1, 0)
@@ -667,6 +689,9 @@ function VoyageScene.play(info)
 			end
 			if held.r or UserInputService:IsKeyDown(Enum.KeyCode.D) or UserInputService:IsKeyDown(Enum.KeyCode.Right) then
 				push += 1
+			end
+			if dragTarget then
+				push = math.clamp((dragTarget - lat) * 3, -1, 1)
 			end
 			latV = (latV + push * dt * 2.6) * (1 - math.min(1, dt * 1.4))
 			lat = math.clamp(lat + latV * dt, -1, 1)
