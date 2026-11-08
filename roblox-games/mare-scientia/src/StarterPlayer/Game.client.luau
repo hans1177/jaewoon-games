@@ -479,10 +479,15 @@ local HERO_TILE = {
 	new_spain = "hero", portugal = "yard",
 }
 local function setPortrait(groupName)
-	if portraitKey == groupName then
+	-- 나라별 주인공이 바뀌어도 기존 선장 초상을 잘못 재사용하지 않는다.
+	local identity = groupName
+	if groupName == "선장실" and view and view.player then
+		identity = groupName .. ":" .. tostring(view.player.nation)
+	end
+	if portraitKey == identity then
 		return
 	end
-	portraitKey = groupName
+	portraitKey = identity
 	local tile = PORTRAIT_GROUP[groupName]
 	if groupName == "선장실" and view and view.player then
 		local nationId = nil
