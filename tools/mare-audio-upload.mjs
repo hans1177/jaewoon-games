@@ -9,7 +9,7 @@ const dir='roblox-games/mare-essentia/audio';
 const meta=JSON.parse(fs.readFileSync(dir+'/manifest.json','utf8'));
 const receiptPath=dir+'/uploaded.json';
 const idsPath='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau';
-const universeId='10774821253';
+const universeId=process.env.MARE_UNIVERSE_ID||'10774821253';
 if(meta.source!=='OWNER_REQUESTED_ORIGINAL_SYNTH_SCORE'||meta.license!=='OWNER_CREATED_AUDIO')throw Error('AUDIO_PROVENANCE_INVALID');
 
 const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
@@ -32,8 +32,8 @@ async function request(url,options={}){
   return d;
 }
 
-let creator=null;
-if(cookie){
+let creator=process.env.ROBLOX_CREATOR_USER_ID&&/^[1-9]\d*$/.test(process.env.ROBLOX_CREATOR_USER_ID)?{userId:process.env.ROBLOX_CREATOR_USER_ID}:null;
+if(!creator&&cookie){
   const r=await fetch('https://develop.roblox.com/v1/universes/'+universeId,{headers:{cookie},signal:AbortSignal.timeout(30000)});
   const d=await r.json().catch(()=>({}));
   if(r.ok&&String(d.id)===universeId&&Number(d.creatorTargetId)>0&&['User','Group'].includes(d.creatorType))
@@ -54,7 +54,7 @@ if(!creator){
 }
 
 let receipts={};
-if(fs.existsSync(receiptPath))receipts=JSON.parse(fs.readFileSync(receiptPath,'utf8'));
+if(process.env.AUDIO_FRESH!=='1'&&fs.existsSync(receiptPath))receipts=JSON.parse(fs.readFileSync(receiptPath,'utf8'));
 const save=()=>fs.writeFileSync(receiptPath,JSON.stringify(receipts,null,1)+'\n');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let failures=0;
