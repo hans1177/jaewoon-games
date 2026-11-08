@@ -882,7 +882,8 @@ test('fantasy survival keeps selected MATERIAL atoms while using genuine Roblox 
   assert.match(source,/meadowTerrain:FillBall\(/);
   assert.ok(source.includes('studioAssetFamily("MATERIAL")'));
   assert.doesNotMatch(source,/Instance\.new\("Part"\)/,'visual cubes are prohibited');
-  assert.ok(source.includes('nativeFoundationSpawn.CanCollide = true'));
+  assert.ok(source.includes('nativeFoundationSpawn.CanCollide = false'));
+  assert.match(source,/groundHit ~= nil and groundHit.Instance ~= nil and groundHit.Normal.Y >= .65/);
 });
 
 test('Vibe MATERIAL repair binds selected asset atom to an existing visible native object without changing gameplay systems',()=>{
@@ -1037,6 +1038,10 @@ test('native uploader verifies all originals before registration and emits real 
     fs.writeFileSync(preload,`import fs from 'node:fs';
 let serial=0;globalThis.setTimeout=(callback)=>{callback();return 0};
 globalThis.fetch=async(url,options={})=>{
+ if(url==='https://apis.roblox.com/api-keys/v1/introspect'){
+  return {ok:true,text:async()=>JSON.stringify({enabled:true,expired:false,authorizedUserId:'123',
+    scopes:[{name:'asset',operations:['create','write'],userIds:['123']}]})};
+ }
  if(options.method==='POST'){
   const request=JSON.parse(options.body.get('request'));const file=options.body.get('fileContent');
   if(request.assetType!=='Model'||!((file.type==='model/fbx'&&file.name.endsWith('.fbx'))||(file.type==='model/gltf-binary'&&file.name.endsWith('.glb'))))throw Error('WRONG_UPLOAD');
