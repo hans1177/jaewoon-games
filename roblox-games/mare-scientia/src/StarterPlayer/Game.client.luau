@@ -466,13 +466,14 @@ local function setPortrait(groupName)
 	portraitImage.Visible = imageId ~= nil
 	portraitFrame.Visible = imageId == nil
 	portraitImage.Image = if imageId then "rbxassetid://" .. tostring(imageId) else ""
-	if imageId then
-		return
-	end
+	-- 이미지 전환 시 이전 3D 모델까지 정리해 불필요한 뷰포트 객체가 남지 않도록 한다.
 	for _, c in portraitFrame:GetChildren() do
 		if c:IsA("Model") then
 			c:Destroy()
 		end
+	end
+	if imageId then
+		return
 	end
 	local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 	local people = lib and lib:FindFirstChild("People")
