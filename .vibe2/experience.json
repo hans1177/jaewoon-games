@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -165660,72 +165658,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_cfab85616c34050cec1ed0da",
-          "taskId": "gem-survivor-web-startup-spatial-repair-v10",
-          "workKey": null,
-          "gameId": "gem-survivor",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0ba512009c645c30595b346165d83e6327acb6ea",
-            "actions-run:42472810144",
-            "reservation-id:42472810144:1",
-            "capability-application-sample:04351706c4181260f944"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_73655f2634503be3b58d060c",
-          "taskId": "kingshot-ad-web-startup-spatial-repair-v11",
-          "workKey": null,
-          "gameId": "kingshot-ad",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0ba512009c645c30595b346165d83e6327acb6ea",
-            "actions-run:42472810144",
-            "reservation-id:42472810144:1",
-            "capability-application-sample:07e1948146fc7c36900f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_049f01bf6bb920ad44db565b",
           "taskId": "cat-step-web-startup-spatial-repair-v11",
           "workKey": null,
@@ -167763,6 +167695,72 @@
             "actions-run:42493592561",
             "reservation-id:42493592561:1",
             "capability-application-sample:8ed25086a7c6277372c1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_95ac83408542d8ab90f2006e",
+          "taskId": "gem-survivor-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "gem-survivor",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:efb8422da28dc938e5fd6fc15b9fac436e844e7d",
+            "actions-run:42496937019",
+            "reservation-id:42496937019:1",
+            "capability-application-sample:b0a8c2c02f5ca2f1fc57"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_74e0a13087e02b8b3da9c398",
+          "taskId": "kingshot-ad-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:efb8422da28dc938e5fd6fc15b9fac436e844e7d",
+            "actions-run:42496937019",
+            "reservation-id:42496937019:1",
+            "capability-application-sample:339d08bfaca5873a9d0b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -172692,72 +172690,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_338b414e9222ddb9901c95e1",
-          "taskId": "exorcist-office-web-startup-spatial-repair-v10",
-          "workKey": null,
-          "gameId": "exorcist-office",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0ba512009c645c30595b346165d83e6327acb6ea",
-            "actions-run:42472810144",
-            "reservation-id:42472810144:1",
-            "capability-application-sample:55f8d3c3d423cdc4024a"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_53d4a6fa70daeb80265ba7f2",
-          "taskId": "fifty-days-web-startup-spatial-repair-v10",
-          "workKey": null,
-          "gameId": "fifty-days",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0ba512009c645c30595b346165d83e6327acb6ea",
-            "actions-run:42472810144",
-            "reservation-id:42472810144:1",
-            "capability-application-sample:bf9717373317b44eb2ae"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_989aeee60ba79789144c1f61",
           "taskId": "gem-survivor-web-startup-spatial-repair-v10",
           "workKey": null,
@@ -174795,6 +174727,72 @@
             "actions-run:42493592561",
             "reservation-id:42493592561:1",
             "capability-application-sample:8ed25086a7c6277372c1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f76291e1c4feff64a7896830",
+          "taskId": "gem-survivor-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "gem-survivor",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:efb8422da28dc938e5fd6fc15b9fac436e844e7d",
+            "actions-run:42496937019",
+            "reservation-id:42496937019:1",
+            "capability-application-sample:b0a8c2c02f5ca2f1fc57"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e6da1ca3ad43f03333b372cf",
+          "taskId": "kingshot-ad-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:efb8422da28dc938e5fd6fc15b9fac436e844e7d",
+            "actions-run:42496937019",
+            "reservation-id:42496937019:1",
+            "capability-application-sample:339d08bfaca5873a9d0b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -189196,72 +189194,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_73184e07940c1b29f5e4d076",
-          "taskId": "kingshot-ad-web-startup-spatial-repair-v11",
-          "workKey": null,
-          "gameId": "kingshot-ad",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0ba512009c645c30595b346165d83e6327acb6ea",
-            "actions-run:42472810144",
-            "reservation-id:42472810144:1",
-            "capability-application-sample:07e1948146fc7c36900f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_157c71f738a0ae9f15565f3b",
-          "taskId": "cat-step-web-startup-spatial-repair-v11",
-          "workKey": null,
-          "gameId": "cat-step",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0ba512009c645c30595b346165d83e6327acb6ea",
-            "actions-run:42473760150",
-            "reservation-id:42473760150:1",
-            "capability-application-sample:9fdacdb5a02337d19c79"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_24823a5f2406d01803a1bc69",
           "taskId": "core-clash-4v4-web-startup-spatial-repair-v11",
           "workKey": null,
@@ -191299,6 +191231,72 @@
             "actions-run:42493592561",
             "reservation-id:42493592561:1",
             "capability-application-sample:8ed25086a7c6277372c1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e64a8b6d3fce0d7391d73f24",
+          "taskId": "gem-survivor-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "gem-survivor",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:efb8422da28dc938e5fd6fc15b9fac436e844e7d",
+            "actions-run:42496937019",
+            "reservation-id:42496937019:1",
+            "capability-application-sample:b0a8c2c02f5ca2f1fc57"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_70f273bb1c70c42cb7ba1a2e",
+          "taskId": "kingshot-ad-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:efb8422da28dc938e5fd6fc15b9fac436e844e7d",
+            "actions-run:42496937019",
+            "reservation-id:42496937019:1",
+            "capability-application-sample:339d08bfaca5873a9d0b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196247,72 +196245,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_4f3393243aad46e03a1b4e99",
-          "taskId": "kingshot-ad-web-startup-spatial-repair-v11",
-          "workKey": null,
-          "gameId": "kingshot-ad",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0ba512009c645c30595b346165d83e6327acb6ea",
-            "actions-run:42472810144",
-            "reservation-id:42472810144:1",
-            "capability-application-sample:07e1948146fc7c36900f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_bce3412821afcb8dd34979e3",
-          "taskId": "cat-step-web-startup-spatial-repair-v11",
-          "workKey": null,
-          "gameId": "cat-step",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0ba512009c645c30595b346165d83e6327acb6ea",
-            "actions-run:42473760150",
-            "reservation-id:42473760150:1",
-            "capability-application-sample:9fdacdb5a02337d19c79"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_021e181fdc9c07277b289837",
           "taskId": "core-clash-4v4-web-startup-spatial-repair-v11",
           "workKey": null,
@@ -198350,6 +198282,72 @@
             "actions-run:42493592561",
             "reservation-id:42493592561:1",
             "capability-application-sample:8ed25086a7c6277372c1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c318444799032d69f863f98f",
+          "taskId": "gem-survivor-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "gem-survivor",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:efb8422da28dc938e5fd6fc15b9fac436e844e7d",
+            "actions-run:42496937019",
+            "reservation-id:42496937019:1",
+            "capability-application-sample:b0a8c2c02f5ca2f1fc57"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c2b0ef38c63a5c7a33bfeee6",
+          "taskId": "kingshot-ad-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:efb8422da28dc938e5fd6fc15b9fac436e844e7d",
+            "actions-run:42496937019",
+            "reservation-id:42496937019:1",
+            "capability-application-sample:339d08bfaca5873a9d0b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -201193,72 +201191,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_4ee4a6c1f8ec3c35a87216ea",
-          "taskId": "dice-battle-board-web-startup-spatial-repair-v10",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0ba512009c645c30595b346165d83e6327acb6ea",
-            "actions-run:42472810144",
-            "reservation-id:42472810144:1",
-            "capability-application-sample:1f6c1210a887ad9e4d3c"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_85d39ae51fe49c8dc837f3d9",
-          "taskId": "exorcist-office-web-startup-spatial-repair-v10",
-          "workKey": null,
-          "gameId": "exorcist-office",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0ba512009c645c30595b346165d83e6327acb6ea",
-            "actions-run:42472810144",
-            "reservation-id:42472810144:1",
-            "capability-application-sample:55f8d3c3d423cdc4024a"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_71e7eb000214ddd213818759",
           "taskId": "fifty-days-web-startup-spatial-repair-v10",
           "workKey": null,
@@ -203296,6 +203228,72 @@
             "actions-run:42493592561",
             "reservation-id:42493592561:1",
             "capability-application-sample:8ed25086a7c6277372c1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_8b4c3bb9b3387354f94546d3",
+          "taskId": "gem-survivor-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "gem-survivor",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:efb8422da28dc938e5fd6fc15b9fac436e844e7d",
+            "actions-run:42496937019",
+            "reservation-id:42496937019:1",
+            "capability-application-sample:b0a8c2c02f5ca2f1fc57"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6616eef45614b238e86ed06a",
+          "taskId": "kingshot-ad-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:efb8422da28dc938e5fd6fc15b9fac436e844e7d",
+            "actions-run:42496937019",
+            "reservation-id:42496937019:1",
+            "capability-application-sample:339d08bfaca5873a9d0b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
