@@ -266,7 +266,7 @@ nativeFoundationSpawn.Transparency = 1 -- Engine spawn locator only, never visib
 nativeFoundationSpawn.Position = Vector3.new(0, 3, -75)
 nativeFoundationSpawn.Anchored = true
 nativeFoundationSpawn.Enabled = true
-nativeFoundationSpawn.CanCollide = true
+nativeFoundationSpawn.CanCollide = false
 nativeFoundationSpawn.CanTouch = false
 nativeFoundationSpawn.CanQuery = false
 nativeFoundationSpawn.Neutral = true
@@ -331,13 +331,13 @@ local function bindNativeFoundationCharacter(character)
         if attempt<5 then task.wait(.25) end
       end
     else
-      -- 최초 기본 출현은 엔진에 맡긴다. 충돌 가능한 기본 SpawnLocation은 유지한다.
+      -- 지면 검증 실패 시 엔진 기본 출현으로 되돌리되, 보이지 않는 스폰 지점을 바닥으로 사용하지 않는다.
       warn("MEADOW_SPAWN_GROUND_UNVERIFIED")
     end
   end
   local groundHit = workspace:Raycast(rootPart.Position + Vector3.new(0, 1, 0),
     Vector3.new(0, -16, 0), params)
-  local groundContact = groundHit ~= nil and groundHit.Normal.Y >= .65
+  local groundContact = groundHit ~= nil and groundHit.Instance ~= nil and groundHit.Normal.Y >= .65
   character:SetAttribute("GROUND_CONTACT", groundContact)
   -- Player-customized Roblox R15 characters retain their genuine clothes,
   -- accessories, joints and original animation controller.
