@@ -19,7 +19,9 @@ h1{font-size:22px;margin:0}
 .panel{background:#151f31;border:1px solid #283653;border-radius:14px;padding:10px}
 #notice{min-height:34px;display:flex;align-items:center;justify-content:center;text-align:center;color:#ffd978;font-weight:800;font-size:13px;margin-bottom:8px}
 #playBox{margin-bottom:10px}
-.actions button{width:100%;min-height:50px;border:0;border-radius:10px;padding:0 14px;font-weight:900;color:#fff;background:#4169e1}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.actions button{width:100%;min-height:50px;border:0;border-radius:10px;padding:0 10px;font-weight:900;color:#fff;background:#4169e1}
+.actions #restartBtn{background:#773e48}
 .boardWrap{display:flex;justify-content:center;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 .boardWrap.wide{justify-content:flex-start;justify-content:safe center}
 .board.wide{width:900px;min-width:900px;flex-shrink:0}
@@ -124,6 +126,7 @@ h1{font-size:22px;margin:0}
   <div id="playBox" class="panel">
     <div class="actions">
       <button id="playBtn" type="button">플레이</button>
+      <button id="restartBtn" type="button">처음부터</button>
     </div>
   </div>
 
@@ -1288,6 +1291,18 @@ $('#bossMusicToggle').onclick=()=>{
     'https://www.youtube-nocookie.com')
 };
 $('#resetDiamonds').onclick=resetDiamonds;
+// 진행 중에도 1스테이지 재시작 가능. 다이아 지갑은 기존 저장 키를 유지한다.
+$('#restartBtn').onclick=()=>{
+  if(!window.confirm('1스테이지부터 다시 시작할까? 현재 스테이지·아군 뽑기·강화 진행도가 초기화돼. 보유 다이아는 유지돼.'))return;
+  newState();
+  mode='play';side='BLUE';
+  selectedUnit=null;selectedCard='';healingTargeting=false;aiThinking=false;
+  playersEl.textContent='나 VS 적';
+  $('#drawResult').textContent='';
+  saveProgress();
+  render();
+  msg('1스테이지부터 다시 시작했어. 보유 다이아는 유지돼.');
+};
 $('#playBtn').onclick=()=>{
   mode='play';side='BLUE';
   // 6스테이지 승리 후 상단 버튼도 7스테이지 시작 버튼으로 작동한다.
