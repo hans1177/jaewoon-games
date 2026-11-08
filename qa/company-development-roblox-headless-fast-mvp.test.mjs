@@ -191,7 +191,7 @@ test('fantasy survival anchors the native spawn before foundation player binding
   assert.match(source,/nativeFoundationSpawn\.CanCollide = false/);
   assert.match(source,/nativeFoundationSpawn\.Neutral = true/);
   assert.match(source,/remote\.OnServerEvent:Connect\(function\(player, actionId\)/);
-  assert.match(source,/player:GetAttribute\("ProfileReady"\) ~= true then return end/);
+  assert.match(source,/player:GetAttribute\("ProfileReady"\)\s*~=\s*true then return end/); // 공백 표기 차이는 허용
 });
 
 test('F0 workflow preserves blocker evidence even when validation fails',()=>{

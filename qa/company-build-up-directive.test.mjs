@@ -2020,7 +2020,16 @@ test('large authored game content volume keeps all entries without cloning a ful
   const prompt=directivePrompt(directive);
   assert.match(prompt,/VARIETY_ABILITIES\[0\] 전용 행동 0/);
   assert.match(prompt,/VARIETY_ABILITIES\[63\] 전용 행동 63/);
-  assert.ok(prompt.length<75000,'content index should not repeat the full implementation blueprint for every item');
+  // 절대 길이는 환경(정책 파일 유무)에 따라 달라지므로, 항목 수를 늘렸을 때 항목당 증가량으로 검사한다.
+  const baseDesign=design();
+  baseDesign.content.contentVarietyPlan={regions:[],enemiesOrChallenges:[],objectives:[],antiMonotonyRule:'기존 규칙을 보존한다',
+    abilities:Array.from({length:8},(_,index)=>({id:'ability-'+index,name:'전용 행동 '+index,kind:'ACTIVE',trigger:'입력 후 기존 조건 확인',cooldownSeconds:index+1,cost:index,effect:'현재 플레이어 행동과 기존 상태를 연결한다'}))};
+  const basePrompt=directivePrompt(buildGameSpecificBuildUpDirective({
+    gameId:'volume-large',platform:'ROBLOX',designRecord:baseDesign,sourceObservation,
+    responsibleFiles:['roblox-games/volume-large/server/Game.server.luau']
+  }));
+  const perItem=(prompt.length-basePrompt.length)/56;
+  assert.ok(perItem<1500,'content index should not repeat the full implementation blueprint for every item: '+perItem);
 });
 
 
