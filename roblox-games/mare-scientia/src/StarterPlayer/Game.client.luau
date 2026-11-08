@@ -4061,6 +4061,97 @@ do
 	end)
 end
 
+-- 타이틀(새 게임) 화면 배경: 월드가 비치지 않게 가리고, 해 질 녘 바다와 배 실루엣, 게임 이름을 직접 그려 분위기를 만든다
+local titleGui = overlayGui("TitleBackdrop", -5)
+titleGui.Enabled = false
+local titleShip
+do
+	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(14, 20, 40))
+	root.ClipsDescendants = true
+	local sky = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.66), Color3.new(1, 1, 1))
+	local g = Instance.new("UIGradient")
+	g.Rotation = 90
+	g.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(10, 16, 44)),
+		ColorSequenceKeypoint.new(0.45, Color3.fromRGB(70, 44, 92)),
+		ColorSequenceKeypoint.new(0.8, Color3.fromRGB(226, 112, 78)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 190, 110)),
+	})
+	g.Parent = sky
+	local starRng = Random.new(7)
+	for _ = 1, 40 do
+		local st = mkBox(sky, UDim2.fromScale(starRng:NextNumber(), starRng:NextNumber() * 0.5), UDim2.fromOffset(2, 2), Color3.fromRGB(255, 244, 220), starRng:NextNumber(0.2, 0.7))
+		st.ZIndex = 2
+	end
+	local sun = mkRound(root, UDim2.fromScale(0.3, 0.64), UDim2.fromOffset(150, 150), Color3.fromRGB(255, 214, 140), 0.05, Vector2.new(0.5, 0.5))
+	sun.ZIndex = 2
+	local sea = mkBox(root, UDim2.fromScale(0, 0.64), UDim2.fromScale(1, 0.36), Color3.new(1, 1, 1))
+	sea.ZIndex = 3
+	local sg = Instance.new("UIGradient")
+	sg.Rotation = 90
+	sg.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(190, 120, 96)),
+		ColorSequenceKeypoint.new(0.25, Color3.fromRGB(44, 70, 110)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 18, 38)),
+	})
+	sg.Parent = sea
+	for i = 1, 9 do
+		local w = mkBox(sea, UDim2.fromScale(0.04 + (i * 0.37) % 0.8, 0.08 + i * 0.09), UDim2.fromScale(0.1 + (i % 3) * 0.04, 0.012), Color3.fromRGB(255, 200, 150), 0.7)
+		w.ZIndex = 4
+	end
+	-- 배 실루엣
+	titleShip = mkBox(root, UDim2.fromScale(0.3, 0.655), UDim2.fromOffset(150, 20), Color3.fromRGB(14, 10, 12))
+	titleShip.ZIndex = 5
+	local m1 = mkBox(titleShip, UDim2.fromOffset(40, -80), UDim2.fromOffset(4, 80), Color3.fromRGB(14, 10, 12))
+	local m2 = mkBox(titleShip, UDim2.fromOffset(95, -62), UDim2.fromOffset(4, 62), Color3.fromRGB(14, 10, 12))
+	local s1 = mkBox(titleShip, UDim2.fromOffset(46, -76), UDim2.fromOffset(34, 50), Color3.fromRGB(34, 24, 26))
+	local s2 = mkBox(titleShip, UDim2.fromOffset(101, -58), UDim2.fromOffset(26, 40), Color3.fromRGB(34, 24, 26))
+	for _, f in { m1, m2, s1, s2 } do
+		f.ZIndex = 5
+	end
+	-- 게임 이름
+	local function titleText(text, y, size, color, font)
+		local l = Instance.new("TextLabel")
+		l.BackgroundTransparency = 1
+		l.AnchorPoint = Vector2.new(0.5, 0)
+		l.Position = UDim2.new(0.19, 0, y, 0)
+		l.Size = UDim2.new(0.34, 0, 0, size + 8)
+		l.Text = text
+		l.TextSize = size
+		l.Font = font
+		l.TextColor3 = color
+		l.TextStrokeTransparency = 0.5
+		l.ZIndex = 8
+		l.Parent = root
+		return l
+	end
+	titleText("MARE SCIENTIA", 0.12, 38, Color3.fromRGB(246, 208, 130), Enum.Font.GothamBlack)
+	titleText("학문의 바다", 0.12 + 0.11, 26, Color3.fromRGB(240, 232, 215), Enum.Font.GothamBold)
+	titleText("지식을 싣고, 미지의 바다를 건너라", 0.12 + 0.2, 16, Color3.fromRGB(214, 200, 180), Enum.Font.Gotham)
+	task.spawn(function()
+		while true do
+			task.wait(0.05)
+			if titleGui.Enabled then
+				local t = os.clock()
+				titleShip.Position = UDim2.new(0.3 + math.sin(t * 0.12) * 0.01, -75, 0.655 + math.sin(t * 1.3) * 0.004, 0)
+				titleShip.Rotation = math.sin(t * 0.9) * 1.5
+			end
+		end
+	end)
+end
+local function setTitleMode(on)
+	titleGui.Enabled = on
+	if on then
+		main.AnchorPoint = Vector2.new(1, 0.5)
+		main.Position = UDim2.new(1, -10, 0.5, 0)
+		main.Size = UDim2.new(0.6, 0, 1, -20)
+	else
+		main.AnchorPoint = Vector2.new(0.5, 0.5)
+		main.Position = UDim2.fromScale(0.5, 0.5)
+		main.Size = UDim2.new(1, -16, 1, -16)
+	end
+end
+
 function render()
 	order = 0
 	clearContent()
@@ -4071,6 +4162,7 @@ function render()
 		end
 	end
 
+	setTitleMode(not view or newGameMode)
 	if not view or newGameMode then
 		headerLabel.Text = "새 게임"
 		setPortrait("선장실")
