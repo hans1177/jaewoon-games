@@ -10219,13 +10219,20 @@ local function mobVfx(pattern,where,stage,facing)
   local boss=pattern=="GOLEM_SLAM" or pattern=="GOLEM_SHOCKWAVE"
   local flying=pattern=="BEE_SWEEP" or pattern=="BEE_STING"
     or pattern=="BAT_DIVE" or pattern=="BAT_SWEEP"
-  local wolf=pattern=="WOLF_BITE" or pattern=="WOLF_LUNGE"
+    or pattern=="DIVE_STING" or pattern=="NIGHT_DIVE" or pattern=="WING_LEATHER"
+  local wolf=pattern=="WOLF_BITE" or pattern=="WOLF_LUNGE" or pattern=="LEAP_BITE"
+  -- [종족별 이펙트 계열] 도적(강철 베기)·유령(푸른 영기)·급강하(황색 바람)처럼 패턴 이름으로 색과 모양을 나눈다.
+  local blade=pattern=="BANDIT_SLASH" or pattern=="BANDIT_FEINT" or pattern=="WAR_AXE" or pattern=="FOCUS_STRIKE"
+  local spirit=pattern=="GHOST_WAIL" or pattern=="PHANTOM_LUNGE"
+  local dive=pattern=="DIVE_STING" or pattern=="NIGHT_DIVE" or pattern=="WING_LEATHER"
   local boar=pattern=="BOAR_CHARGE" or pattern=="BOAR_TUSK"
   local arcane=pattern=="ARCANE_BOLT" or pattern=="ARCANE_NOVA"
   -- [인간형 무기 공격] 무겁게 내려치기·휩쓸기·방패 치기, 석궁 사격은 각각 색과 모양이 다르다.
-  local brute=pattern=="BRUTE_OVERHEAD" or pattern=="BRUTE_SWEEP" or pattern=="BRUTE_BASH"
+  local brute=pattern=="BRUTE_OVERHEAD" or pattern=="BRUTE_SWEEP" or pattern=="BRUTE_BASH" or blade
   local shot=pattern=="CROSSBOW_SHOT" or pattern=="CROSSBOW_VOLLEY"
-  local tint=brute and Color3.fromRGB(255,170,96)
+  local tint=blade and Color3.fromRGB(206,222,240)
+    or spirit and Color3.fromRGB(140,214,255)
+    or brute and Color3.fromRGB(255,170,96)
     or shot and Color3.fromRGB(255,214,120)
     or arcane and Color3.fromRGB(176,110,255)
     or boss and Color3.fromRGB(255,131,91)
@@ -10233,11 +10240,14 @@ local function mobVfx(pattern,where,stage,facing)
     or wolf and Color3.fromRGB(173,217,245)
     or boar and Color3.fromRGB(210,157,119)
     or Color3.fromRGB(163,219,164)
-  local accent=arcane and Color3.fromRGB(235,214,255)
+  local accent=spirit and Color3.fromRGB(226,246,255)
+    or blade and Color3.fromRGB(255,255,255)
+    or arcane and Color3.fromRGB(235,214,255)
     or boss and Color3.fromRGB(255,222,168)
     or wolf and Color3.fromRGB(222,246,255)
     or Color3.fromRGB(244,241,219)
   local charge=pattern=="WOLF_LUNGE" or pattern=="BOAR_CHARGE" or pattern=="ARCANE_NOVA"
+    or pattern=="PHANTOM_LUNGE" or pattern=="GHOST_WAIL" or pattern=="NIGHT_DIVE" or pattern=="LEAP_BITE"
     or pattern=="BRUTE_OVERHEAD" or pattern=="BRUTE_SWEEP"
     or pattern=="GOLEM_SLAM" or pattern=="GOLEM_SHOCKWAVE"
   local effect=stage=="DEATH" and "DESTRUCTION_BURST"
@@ -13298,4 +13308,63 @@ task.spawn(function()
       end
     end
   end)
+end)
+
+-- ============================================================================
+-- [몹 공통 피격·사망 연출] 모든 적 몹에 적용한다. 체력이 줄면 하얗게 번쩍이고, 죽으면 서서히 흐려진다.
+-- 표시 전용(Highlight·투명도)이라 서버 판정과 무관하다. 동시에 켜지는 Highlight 수를 제한한다.
+-- ============================================================================
+task.spawn(function()
+  local TweenService=game:GetService("TweenService")
+  local Debris=game:GetService("Debris")
+  local bound=setmetatable({},{__mode="k"})
+  local activeFlashes=0
+  local function flash(model,heavy)
+    if activeFlashes>=6 or not model.Parent then return end
+    local camera=workspace.CurrentCamera
+    if camera and (model:GetPivot().Position-camera.CFrame.Position).Magnitude>110 then return end
+    activeFlashes+=1
+    local h=Instance.new("Highlight")
+    h.Adornee=model
+    h.FillColor=heavy and Color3.fromRGB(255,214,170) or Color3.new(1,1,1)
+    h.OutlineColor=Color3.fromRGB(255,244,224)
+    h.FillTransparency=heavy and .15 or .3
+    h.OutlineTransparency=.1
+    h.DepthMode=Enum.HighlightDepthMode.Occluded
+    h.Parent=model
+    TweenService:Create(h,TweenInfo.new(heavy and .32 or .2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{FillTransparency=1,OutlineTransparency=1}):Play()
+    Debris:AddItem(h,.4)
+    task.delay(.4,function() activeFlashes=math.max(0,activeFlashes-1) end)
+  end
+  local function fadeOut(model)
+    for _,d in ipairs(model:GetDescendants()) do
+      if d:IsA("MeshPart") and d.Transparency<1 then
+        TweenService:Create(d,TweenInfo.new(.8,Enum.EasingStyle.Quad,Enum.EasingDirection.In),{Transparency=1}):Play()
+      end
+    end
+  end
+  local function bind(model)
+    local last=tonumber(model:GetAttribute("EnemyHealth")) or 0
+    local maxHp=math.max(1,last)
+    local dead=false
+    model:GetAttributeChangedSignal("EnemyHealth"):Connect(function()
+      local hp=tonumber(model:GetAttribute("EnemyHealth")) or 0
+      if hp>maxHp then maxHp=hp end
+      if hp<last and hp>0 then flash(model,(last-hp)>maxHp*.12) end
+      if hp<=0 and not dead then dead=true;fadeOut(model) end
+      last=hp
+    end)
+  end
+  while true do
+    local world=workspace:FindFirstChild("FantasySurvivalWorld")
+    if world then
+      for _,model in ipairs(world:GetChildren()) do
+        if model:IsA("Model") and not bound[model] and model:GetAttribute("Species") and model:GetAttribute("EnemyHealth")~=nil then
+          bound[model]=true
+          pcall(bind,model)
+        end
+      end
+    end
+    task.wait(1)
+  end
 end)
