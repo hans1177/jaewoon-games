@@ -18,8 +18,17 @@
  },
  {
   "type": "luau",
+  "ctx": "Client",
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-250,14,-170)) return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 30000
+ },
+ {
+  "type": "luau",
   "ctx": "Server",
-  "code": "local best,bd=nil,1e9 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\")==\"wolf\" and m:GetAttribute(\"EnemyHealth\") and not m:GetAttribute(\"Boss\") then local p=m:GetPivot().Position local d=(p-Vector3.new(-200,3,-120)).Magnitude if d<bd then best,bd=m,d end end end if best then workspace:SetAttribute(\"MobShotPos\",best:GetPivot().Position) return \"wolf \"..best.Name..\" var=\"..tostring(best:GetAttribute(\"Variant\")) end return \"no wolf\""
+  "code": "local counts={} local best,bd=nil,1e9 local root=nil for _,pl in ipairs(game.Players:GetPlayers()) do root=pl.Character and pl.Character:FindFirstChild(\"HumanoidRootPart\") end for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"EnemyHealth\") then local k=tostring(m:GetAttribute(\"Species\"))..\"/\"..tostring(m:GetAttribute(\"Variant\")) counts[k]=(counts[k] or 0)+1 local sp=tostring(m:GetAttribute(\"Species\")) if (sp==\"wolf\" or sp==\"fox\") and not m:GetAttribute(\"Boss\") and root then local dd=(m:GetPivot().Position-root.Position).Magnitude if dd<bd then best,bd=m,dd end end end end local r={} for k,n in pairs(counts) do r[#r+1]=n..\"x\"..k end table.sort(r) if best then workspace:SetAttribute(\"MobShotPos\",best:GetPivot().Position) end return (best and (\"wolf \"..best.Name..\" d=\"..math.floor(bd)) or \"no wolf\")..\" | \"..table.concat(r,\",\")"
  },
  {
   "type": "luau",
