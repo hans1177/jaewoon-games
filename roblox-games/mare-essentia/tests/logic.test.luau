@@ -562,6 +562,22 @@ do
 	check("discover quest not done at start", S.Quest.progress(disc, D.Quests.ById.q_first_discovery) == 0)
 	disc.discovered.bot_oak = true
 	check("discover quest progresses", S.Quest.progress(disc, D.Quests.ById.q_first_discovery) == 1)
+
+	-- 자동 발견 보고: 수락하지 않아도 조건을 채우면 보고되고 보상이 들어온다
+	local ar = newState()
+	local arCoins = ar.coins
+	ar.discovered.bot_oak = true
+	local arMsgs = {}
+	check("auto report discovery without accept", S.Quest.autoReport(ar, arMsgs) >= 1, table.concat(arMsgs, "|"))
+	check("auto report marks done", ar.quests.done.q_first_discovery == true)
+	check("auto report pays", ar.coins > arCoins)
+	check("auto report only once", S.Quest.autoReport(ar, {}) == 0)
+	check("auto report never touches deliver quests", ar.quests.done.q_first_trade == nil)
+	check("deliver quest is not auto", not S.Quest.isAuto(D.Quests.ById.q_first_trade))
+	-- 동료 말풍선 조언 데이터
+	local advState = newState()
+	local advView = S.View.build(advState, ctx)
+	check("view has advice with greeting", advView.advice ~= nil and type(advView.advice.line) == "string", tostring(advView.advice))
 end
 
 -- 10. 조선소 ------------------------------------------------------------
