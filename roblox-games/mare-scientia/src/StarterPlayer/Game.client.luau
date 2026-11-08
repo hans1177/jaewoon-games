@@ -1442,8 +1442,17 @@ function playStory(ev)
 		m.Parent = world
 		pcall(Pose.relaxArms, m)
 		local cf, size = m:GetBoundingBox()
-		local focus = cf.Position + Vector3.new(0, size.Y * 0.2, 0)
-		cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.3, 0.12, -1).Unit * (size.Y * 1.05), focus)
+		local head = m:FindFirstChild("Head", true)
+		if head and head:IsA("BasePart") then
+			-- 머리와 어깨가 보이게: 머리 높이를 기준으로 가까이 잡는다
+			local hp = head.Position
+			local focus = hp - Vector3.new(0, head.Size.Y * 0.9, 0)
+			cam.FieldOfView = 30
+			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.1, -1).Unit * (head.Size.Y * 7.5), focus)
+		else
+			local focus = cf.Position + Vector3.new(0, size.Y * 0.2, 0)
+			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.3, 0.12, -1).Unit * (size.Y * 1.05), focus)
+		end
 	else
 		local npc = mkBox(picture, UDim2.fromScale(0.5, 0.95), UDim2.fromOffset(90, 150), Color3.new(0, 0, 0), 1)
 		npc.AnchorPoint = Vector2.new(0.5, 1)
@@ -3705,6 +3714,13 @@ task.spawn(function()
 		if workspace:GetAttribute("DevCall") == "State" then
 			workspace:SetAttribute("DevCall", nil)
 			call("State")
+		end
+		if workspace:GetAttribute("DevCall") == "StoryPick" then
+			workspace:SetAttribute("DevCall", nil)
+			local ok, err = pcall(function()
+				return call("PlayStory", { eventId = view.story[1].id, choice = 1 })
+			end)
+			workspace:SetAttribute("DevResult", tostring(ok) .. " " .. tostring(if type(err) == "table" then err.message else err))
 		end
 		if workspace:GetAttribute("DevCall") == "Hall" then
 			workspace:SetAttribute("DevCall", nil)
