@@ -1,0 +1,83 @@
+name: Owner New Roblox Experience
+
+on:
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: 'roblox-games 폴더 이름 (fantasy-survival 또는 mare-scientia)'
+        required: true
+        type: string
+      game_name:
+        description: '새 체험 이름'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: owner-new-experience-${{ inputs.game_id }}
+  cancel-in-progress: false
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned Rojo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rojo-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          chmod +x /tmp/rojo-bin/rojo
+      - name: Build place
+        shell: bash
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+        run: |
+          set -euo pipefail
+          case "$GAME_ID" in fantasy-survival|mare-scientia) ;; *) echo 'GAME_NOT_ALLOWED'; exit 1;; esac
+          mkdir -p /tmp/new-exp
+          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/new-exp/$GAME_ID.rbxlx"
+          test -s "/tmp/new-exp/$GAME_ID.rbxlx"
+      - name: Create new private Experience and publish
+        shell: bash
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+          GAME_NAME: ${{ inputs.game_name }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        run: |
+          set -euo pipefail
+          args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/new-exp/$GAME_ID.rbxlx" --source-revision "$(git rev-parse HEAD)" --output "/tmp/new-exp/result.json")
+          if [[ "$GAME_ID" == 'fantasy-survival' ]]; then args+=(--avatar-rig R15); fi
+          node tools/company-roblox-dedicated-experience.mjs "${args[@]}"
+          cat /tmp/new-exp/result.json
+      - name: Record new target
+        shell: bash
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+          GAME_NAME: ${{ inputs.game_name }}
+        run: |
+          set -euo pipefail
+          node -e "
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync('/tmp/new-exp/result.json','utf8'));
+          if(!r.pass&&!(r.published&&r.universeId&&r.placeId))throw Error('NEW_EXPERIENCE_FAILED '+r.stage+' '+r.error);
+          fs.writeFileSync('roblox-games/'+process.env.GAME_ID+'/experience-target.json',JSON.stringify({gameId:process.env.GAME_ID,gameName:process.env.GAME_NAME,universeId:String(r.universeId),placeId:String(r.placeId),createdAt:new Date().toISOString()},null,2)+'\n');
+          console.log('NEW_UNIVERSE_ID='+r.universeId+' NEW_PLACE_ID='+r.placeId);"
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add "roblox-games/$GAME_ID/experience-target.json"
+          git commit -m "새 체험 생성: $GAME_NAME ($GAME_ID)" -m "Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_012UBHYV5VTXizN9awrTGnEM"
+          for i in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep 4; done
