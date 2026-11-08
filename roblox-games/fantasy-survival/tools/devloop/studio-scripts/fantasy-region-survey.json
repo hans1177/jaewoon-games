@@ -28,7 +28,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(-1700,600,100),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-1700,gy+7,100),Vector3.new(-1640,gy+9,125))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(-1700,0,100) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(-1700,600,100),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-1700,gy+7,100),Vector3.new(-1700+60,gy+9,100+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
@@ -50,7 +50,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(1200,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(1200,gy+7,60),Vector3.new(1260,gy+9,85))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(1200,0,60) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(1200,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(1200,gy+7,60),Vector3.new(1200+60,gy+9,60+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
@@ -72,7 +72,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(2400,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(2400,gy+7,60),Vector3.new(2460,gy+9,85))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(2400,0,60) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(2400,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(2400,gy+7,60),Vector3.new(2400+60,gy+9,60+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
@@ -94,7 +94,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(3600,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(3600,gy+7,60),Vector3.new(3660,gy+9,85))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(3600,0,60) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(3600,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(3600,gy+7,60),Vector3.new(3600+60,gy+9,60+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
@@ -116,7 +116,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(4800,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(4800,gy+7,60),Vector3.new(4860,gy+9,85))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(4800,0,60) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(4800,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(4800,gy+7,60),Vector3.new(4800+60,gy+9,60+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
@@ -138,7 +138,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(5850,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(5850,gy+7,60),Vector3.new(5910,gy+9,85))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(5850,0,60) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(5850,600,60),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(5850,gy+7,60),Vector3.new(5850+60,gy+9,60+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
@@ -160,7 +160,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(-900,600,-1700),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-900,gy+7,-1700),Vector3.new(-840,gy+9,-1675))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(-900,0,-1700) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(-900,600,-1700),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-900,gy+7,-1700),Vector3.new(-900+60,gy+9,-1700+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
@@ -182,7 +182,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(1500,600,-1700),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(1500,gy+7,-1700),Vector3.new(1560,gy+9,-1675))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(1500,0,-1700) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(1500,600,-1700),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(1500,gy+7,-1700),Vector3.new(1500+60,gy+9,-1700+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
@@ -204,7 +204,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(4300,600,-1700),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(4300,gy+7,-1700),Vector3.new(4360,gy+9,-1675))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(4300,0,-1700) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(4300,600,-1700),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(4300,gy+7,-1700),Vector3.new(4300+60,gy+9,-1700+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
@@ -226,7 +226,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(-700,600,1750),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-700,gy+7,1750),Vector3.new(-640,gy+9,1775))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(-700,0,1750) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(-700,600,1750),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-700,gy+7,1750),Vector3.new(-700+60,gy+9,1750+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
@@ -248,7 +248,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(2800,600,1750),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(2800,gy+7,1750),Vector3.new(2860,gy+9,1775))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(2800,0,1750) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(2800,600,1750),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(2800,gy+7,1750),Vector3.new(2800+60,gy+9,1750+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
@@ -270,7 +270,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local r=workspace:Raycast(Vector3.new(5200,600,1750),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(5200,gy+7,1750),Vector3.new(5260,gy+9,1775))) return \"gy=\"..math.floor(gy)"
+  "code": "local best,bd=nil,1e9 local c=Vector3.new(5200,0,1750) local n=0 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m.Name:sub(1,18)==\"OpenWorldLandmark_\" then n+=1 local p=m:GetPivot().Position local dd=(Vector3.new(p.X,0,p.Z)-c).Magnitude if dd<bd then best,bd=m,dd end end end if best then local p=best:GetPivot().Position local dir=(Vector3.new(p.X-c.X,0,p.Z-c.Z)).Unit local cam=p-dir*60+Vector3.new(0,14,0) workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(cam,p+Vector3.new(0,6,0))) return \"landmarks=\"..n..\" nearest=\"..math.floor(bd) end local r=workspace:Raycast(Vector3.new(5200,600,1750),Vector3.new(0,-900,0)) local gy=r and r.Position.Y or 5 workspace:SetAttribute(\"ShotFov\",70) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(5200,gy+7,1750),Vector3.new(5200+60,gy+9,1750+25))) return \"none landmarks=\"..n"
  },
  {
   "type": "wait",
