@@ -5213,7 +5213,7 @@ export function buildVibeAssetProductionPlan({
   const librarySync=synchronizeCompanyCommonAssetRegistry({
     repoRoot,
     registry:persistedCompanyRegistry,
-    persist:!process.env.NODE_TEST_CONTEXT,
+    persist:!process.env.NODE_TEST_CONTEXT&&process.env.VIBE_ASSET_LIBRARY_NO_PERSIST!=='1',
     consumerGameIds:currentGameId?[currentGameId]:null
   });
   const companyRegistry=librarySync.registry;

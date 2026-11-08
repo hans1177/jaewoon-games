@@ -4,9 +4,34 @@
 -- 게임별 소스에서 이 함수들을 불러 쓰도록 바이브 소스 작성기가 읽는다. 표시 전용이고 판정·저장·AI와 무관하다.
 local Kit = {}
 
--- 뼈 이름 정규화: 소문자, '.' '_' 공백 제거 (UpperArm.L -> upperarml)
+-- 뼈 이름 정규화(tools/vibe-rig-kit.mjs의 norm과 같은 규칙):
+-- 소문자, '.' '_' 공백 ':' '-' 제거, mixamorig 접두 제거, Left/Right 접두는 L/R 접미로 옮기고
+-- Kit.Renames(생성 구간)로 표준 이름에 맞춘다. (UpperArm.L -> upperarml, LeftUpperArm -> upperarml, mixamorig:LeftArm -> upperarml)
+local SIDE_WORDS = { { "left", "l" }, { "right", "r" } }
+local SIDE_LETTERS = { { "l", "l" }, { "r", "r" } }
 function Kit.Normalize(name)
-	return (string.lower(name):gsub("[%._%s]", ""))
+	local s = (string.lower(name):gsub("[%._%s:%-]", ""))
+	if string.sub(s, 1, 9) == "mixamorig" then
+		s = string.sub(s, 10)
+	end
+	for _, pair in ipairs(SIDE_WORDS) do
+		local word = pair[1]
+		if string.sub(s, 1, #word) == word and #s > #word then
+			local stem = string.sub(s, #word + 1)
+			return (Kit.Renames[stem] or stem) .. pair[2]
+		end
+	end
+	-- 한 글자 접두(L_UpperArm)는 SideStems에 있는 뼈 이름 앞에서만 읽는다(lowerarm 같은 정상 이름 보호).
+	for _, pair in ipairs(SIDE_LETTERS) do
+		local letter = pair[1]
+		if string.sub(s, 1, 1) == letter and #s > 1 then
+			local stem = string.sub(s, 2)
+			if Kit.SideStems[stem] then
+				return (Kit.Renames[stem] or stem) .. pair[2]
+			end
+		end
+	end
+	return s
 end
 
 -- 모델 안의 모든 Bone을 정규화한 이름으로 모은다.
@@ -22,30 +47,80 @@ end
 
 -- 리그 가족 표(생성 구간: 원본은 rig-families.json)
 -- BEGIN GENERATED FAMILIES (tools/vibe-rig-kit.mjs --emit, 직접 수정 금지)
+Kit.Renames = {
+	["upleg"] = "upperleg",
+	["leg"] = "lowerleg",
+	["uparm"] = "upperarm",
+	["arm"] = "upperarm",
+	["forearm"] = "lowerarm",
+	["thigh"] = "upperleg",
+	["shin"] = "lowerleg",
+	["calf"] = "lowerleg",
+}
+Kit.SideStems = {
+	["upperarm"] = true,
+	["lowerarm"] = true,
+	["upperleg"] = true,
+	["lowerleg"] = true,
+	["thigh"] = true,
+	["shin"] = true,
+	["calf"] = true,
+	["forearm"] = true,
+	["uparm"] = true,
+	["upleg"] = true,
+	["arm"] = true,
+	["leg"] = true,
+	["hand"] = true,
+	["foot"] = true,
+	["wing1"] = true,
+	["wing2"] = true,
+	["wing3"] = true,
+	["wing"] = true,
+}
 Kit.Families = {
-	{ id = "quadruped", all = {}, any = {"frontupperlegl", "frontuplegl", "backupperlegl", "backuplegl"} },
-	{ id = "biped", all = {"upperarml", "upperarmr", "upperlegl", "upperlegr"}, any = {} },
-	{ id = "snake", all = {"head", "tail", "chest", "body"}, any = {} },
-	{ id = "winged", all = {}, any = {"wing1l", "wing1r", "wingl", "wingr"} },
-	{ id = "chain", all = {"body1", "body2"}, any = {} },
-	{ id = "simple", all = {"body", "head"}, any = {} },
+	{ id = "quadruped", all = {}, any = {"frontupperlegl", "frontuplegl", "backupperlegl", "backuplegl"}, minAny = 1, overlay = false },
+	{ id = "biped", all = {"upperarml", "upperarmr", "upperlegl", "upperlegr"}, any = {}, minAny = 1, overlay = false },
+	{ id = "snake", all = {"head", "tail", "chest", "body"}, any = {}, minAny = 1, overlay = false },
+	{ id = "winged", all = {}, any = {"wing1l", "wing1r", "wingl", "wingr"}, minAny = 1, overlay = true },
+	{ id = "multileg", all = {}, any = {"leg1l", "leg2l", "leg3l", "leg4l", "leg1r", "leg2r", "leg3r", "leg4r"}, minAny = 6, overlay = false },
+	{ id = "tentacle", all = {}, any = {"tentacle1", "tentacle2", "tentacle3", "tentacle4"}, minAny = 3, overlay = false },
+	{ id = "swimmer", all = {}, any = {"tailfin", "dorsalfin", "pectoralfinl", "pectoralfinr", "pelvicfin"}, minAny = 2, overlay = false },
+	{ id = "chain", all = {"body1", "body2"}, any = {}, minAny = 1, overlay = false },
+	{ id = "simple", all = {"body", "head"}, any = {}, minAny = 1, overlay = false },
 }
 -- END GENERATED FAMILIES
+
+-- 가족 하나가 뼈 집합에 맞는지: all은 전부, any는 minAny개 이상.
+local function familyMatches(family, bones)
+	for _, name in ipairs(family.all) do
+		if not bones[name] then return false end
+	end
+	if #family.any == 0 then return true end
+	local hits = 0
+	for _, name in ipairs(family.any) do
+		if bones[name] then hits += 1 end
+	end
+	return hits >= family.minAny
+end
 
 -- 뼈 이름 신호로 가족을 판정한다. 맞는 가족이 없으면 "static"(뼈 모션 없음).
 function Kit.Classify(bones)
 	for _, family in ipairs(Kit.Families) do
-		local okAll = true
-		for _, name in ipairs(family.all) do
-			if not bones[name] then okAll = false break end
-		end
-		local okAny = #family.any == 0
-		for _, name in ipairs(family.any) do
-			if bones[name] then okAny = true break end
-		end
-		if okAll and okAny then return family.id end
+		if familyMatches(family, bones) then return family.id end
 	end
 	return "static"
+end
+
+-- 주 가족(Classify와 같음)과 겹쳐 인식되는 overlay 가족 id 목록을 돌려준다. 예: 다리 4개 + 날개 -> "quadruped", {"winged"}
+function Kit.ClassifyAll(bones)
+	local primary = Kit.Classify(bones)
+	local overlays = {}
+	for _, family in ipairs(Kit.Families) do
+		if family.overlay and family.id ~= primary and familyMatches(family, bones) then
+			table.insert(overlays, family.id)
+		end
+	end
+	return primary, overlays
 end
 
 -- [자세 판정] 모델 크기 비율이 아니라 뼈 위치로 '위쪽'을 구한다: 발·정강이 뼈 평균에서 몸통 뼈 평균으로 향하는 방향이 위다.

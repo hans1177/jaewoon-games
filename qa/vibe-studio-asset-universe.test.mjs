@@ -108,6 +108,8 @@ import {
 } from '../assets/vibe-studio-asset-universe.js';
 import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,VIBE_NPC_ROLE_MOTION_REQUIREMENTS,createVibeNpcRoleMotionRequirement,createVibeNpcPhysicalProfile,createVibeNpcRoleProfile,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation,createVibePhysicalDiversityGate} from '../assets/vibe-character-identity-director.js';
 import {synchronizeCompanyCommonAssetRegistry,synchronizeSourceBoundAssetConsumers,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
+// 테스트는 실제 company-asset-library.json을 절대 덮어쓰지 않는다(node 직접 실행이든 node --test든 동일).
+process.env.VIBE_ASSET_LIBRARY_NO_PERSIST='1';
 
 const fullQualityEvidence=Object.freeze({
   SILHOUETTE_FORM:100,
