@@ -56,11 +56,12 @@ test('coding context preserves diagnostic and other responsible files when first
   assert.equal(packed.files[0].truncated,true);
 });
 
-test('coding impact counts actual Roblox Luau changes but never Roblox binary or document edits',()=>{
+test('coding impact distinguishes Roblox server, client UI, binary and metadata changes',()=>{
   const source='roblox-games/demo/server/Game.server.luau';
   const client='roblox-games/demo/client/Hud.client.lua';
   assert.equal(classifyImplementationImpact({changedFiles:[source]}).status,'GAMEPLAY_IMPLEMENTATION');
-  assert.equal(classifyImplementationImpact({changedFiles:[client,'roblox-games/demo/docs/README.md']}).status,'GAMEPLAY_IMPLEMENTATION');
+  assert.equal(classifyImplementationImpact({changedFiles:[client,'roblox-games/demo/docs/README.md']}).status,'VISUAL_IMPLEMENTATION');
+  assert.equal(classifyImplementationImpact({changedFiles:[source,client]}).status,'MIXED_GAME_VISUAL_CHANGE');
   assert.equal(classifyImplementationImpact({changedFiles:['roblox-games/demo/place.rbxl']}).status,'IMPLEMENTATION_OTHER');
   assert.equal(classifyImplementationImpact({changedFiles:['company-learning/policy.json']}).status,'NO_GAME_CHANGE');
 });
