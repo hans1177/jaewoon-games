@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "zombie-survival-build-up-g1-c7ef0ac24170",
-  "directiveFingerprint": "c7ef0ac2417013833ff4562cf9b59ffa5f79b70f7bb9df43944f509bd647b60e",
+  "directiveId": "zombie-survival-build-up-g1-a5ca8b6317e5",
+  "directiveFingerprint": "a5ca8b6317e518020affa3a1f7bc056cd6de07094cea287789c29f6c6078a56b",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "zombie-survival",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/zombie-survival",
-  "sourceTreeFingerprint": "84014e6e86a2ff7a9dcae58fa0f24070582c8c2b9519c5b520a23a9dcb665929",
+  "sourceTreeFingerprint": "c659ec0b39477043a43b8826861f1666ab325072833cbabc617e9375617ac2af",
   "designFingerprint": "0ff1cd69150b17b3b2d04aa43eee1b2e13a7d48f291145a7a2646abd1bcb8245",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "84014e6e86a2ff7a9dcae58fa0f24070582c8c2b9519c5b520a23a9dcb665929",
+        "sourceTreeFingerprint": "c659ec0b39477043a43b8826861f1666ab325072833cbabc617e9375617ac2af",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "0ff1cd69150b17b3b2d04aa43eee1b2e13a7d48f291145a7a2646abd1bcb8245",
-    "sourceTreeFingerprint": "84014e6e86a2ff7a9dcae58fa0f24070582c8c2b9519c5b520a23a9dcb665929",
+    "sourceTreeFingerprint": "c659ec0b39477043a43b8826861f1666ab325072833cbabc617e9375617ac2af",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -958,7 +958,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "84014e6e86a2ff7a9dcae58fa0f24070582c8c2b9519c5b520a23a9dcb665929",
+    "sourceTreeFingerprint": "c659ec0b39477043a43b8826861f1666ab325072833cbabc617e9375617ac2af",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4561,7 +4561,7 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 182,
+      "combat": 185,
       "progression": 525,
       "ai": 62,
       "save": 119,
@@ -4569,7 +4569,7 @@
       "animation": 45,
       "motionStates": 695,
       "gameFeel": 36,
-      "vfx": 49,
+      "vfx": 50,
       "camera": 46,
       "audio": 4,
       "audioDynamics": 27,
@@ -4586,7 +4586,7 @@
       "settings": 25,
       "feedback": 169,
       "session": 30,
-      "content": 527,
+      "content": 529,
       "choice": 1661,
       "connection": 8,
       "performance": 34,
@@ -4614,7 +4614,7 @@
       },
       {
         "file": "roblox-games/zombie-survival/default.project.json",
-        "score": 17
+        "score": 21
       },
       {
         "file": "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau",
@@ -6162,10 +6162,10 @@
         "gameId": "zombie-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/zombie-survival/server/Game.server.luau",
-          "roblox-games/zombie-survival/shared/GameConfig.luau",
-          "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau",
-          "roblox-games/zombie-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
+          "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
+          "roblox-games/zombie-survival/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6177,10 +6177,10 @@
         "gameId": "zombie-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/zombie-survival/server/Game.server.luau",
-          "roblox-games/zombie-survival/shared/GameConfig.luau",
-          "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau",
-          "roblox-games/zombie-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
+          "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
+          "roblox-games/zombie-survival/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6192,10 +6192,10 @@
         "gameId": "zombie-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/zombie-survival/server/Game.server.luau",
-          "roblox-games/zombie-survival/shared/GameConfig.luau",
-          "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau",
-          "roblox-games/zombie-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
+          "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
+          "roblox-games/zombie-survival/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6207,10 +6207,10 @@
         "gameId": "zombie-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/zombie-survival/server/Game.server.luau",
-          "roblox-games/zombie-survival/shared/GameConfig.luau",
-          "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau",
-          "roblox-games/zombie-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
+          "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
+          "roblox-games/zombie-survival/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6222,10 +6222,10 @@
         "gameId": "zombie-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/zombie-survival/server/Game.server.luau",
-          "roblox-games/zombie-survival/shared/GameConfig.luau",
-          "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau",
-          "roblox-games/zombie-survival/shared/RobloxCommonUI.luau"
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
+          "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
+          "roblox-games/zombie-survival/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6281,7 +6281,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 435690,
+        "sourceBytes": 436189,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6480,7 +6480,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "zombie-survival",
     "sourceRoot": "roblox-games/zombie-survival",
-    "sourceTreeFingerprint": "84014e6e86a2ff7a9dcae58fa0f24070582c8c2b9519c5b520a23a9dcb665929",
+    "sourceTreeFingerprint": "c659ec0b39477043a43b8826861f1666ab325072833cbabc617e9375617ac2af",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -10167,7 +10167,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "84014e6e86a2ff7a9dcae58fa0f24070582c8c2b9519c5b520a23a9dcb665929",
+    "sourceFingerprint": "c659ec0b39477043a43b8826861f1666ab325072833cbabc617e9375617ac2af",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -10187,7 +10187,7 @@
     "version": 1,
     "gameId": "zombie-survival",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "84014e6e86a2ff7a9dcae58fa0f24070582c8c2b9519c5b520a23a9dcb665929",
+    "sourceTreeFingerprint": "c659ec0b39477043a43b8826861f1666ab325072833cbabc617e9375617ac2af",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -10326,7 +10326,8 @@
           "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
           "roblox-games/zombie-survival/shared/GameConfig.luau",
           "roblox-games/zombie-survival/server/Game.server.luau",
-          "roblox-games/zombie-survival/client/Game.client.luau"
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/default.project.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -10382,6 +10383,7 @@
           "roblox-games/zombie-survival/shared/GameConfig.luau",
           "roblox-games/zombie-survival/server/Game.server.luau",
           "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/default.project.json",
           "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": false,
@@ -10608,7 +10610,8 @@
         "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
         "roblox-games/zombie-survival/shared/GameConfig.luau",
         "roblox-games/zombie-survival/server/Game.server.luau",
-        "roblox-games/zombie-survival/client/Game.client.luau"
+        "roblox-games/zombie-survival/client/Game.client.luau",
+        "roblox-games/zombie-survival/default.project.json"
       ],
       "NPC_AI": [
         "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
@@ -10682,6 +10685,7 @@
         "roblox-games/zombie-survival/shared/GameConfig.luau",
         "roblox-games/zombie-survival/server/Game.server.luau",
         "roblox-games/zombie-survival/client/Game.client.luau",
+        "roblox-games/zombie-survival/default.project.json",
         "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
@@ -10932,6 +10936,7 @@
           "roblox-games/zombie-survival/shared/GameConfig.luau",
           "roblox-games/zombie-survival/server/Game.server.luau",
           "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/default.project.json",
           "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau"
         ],
         "checks": [
@@ -11260,7 +11265,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "84014e6e86a2ff7a9dcae58fa0f24070582c8c2b9519c5b520a23a9dcb665929",
+      "sourceTreeFingerprint": "c659ec0b39477043a43b8826861f1666ab325072833cbabc617e9375617ac2af",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11284,7 +11289,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "84014e6e86a2ff7a9dcae58fa0f24070582c8c2b9519c5b520a23a9dcb665929",
+      "sourceTreeFingerprint": "c659ec0b39477043a43b8826861f1666ab325072833cbabc617e9375617ac2af",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -11357,7 +11362,7 @@
     "gameId": "zombie-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "84014e6e86a2ff7a9dcae58fa0f24070582c8c2b9519c5b520a23a9dcb665929",
+    "sourceTreeFingerprint": "c659ec0b39477043a43b8826861f1666ab325072833cbabc617e9375617ac2af",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11687,12 +11692,12 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/zombie-survival/client/Game.client.luau",
+      "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
+      "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
       "roblox-games/zombie-survival/server/Game.server.luau",
       "roblox-games/zombie-survival/shared/GameConfig.luau",
       "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau",
-      "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
-      "roblox-games/zombie-survival/client/Game.client.luau",
-      "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
       "roblox-games/zombie-survival/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11915,12 +11920,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/zombie-survival/client/Game.client.luau",
+      "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
+      "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
       "roblox-games/zombie-survival/server/Game.server.luau",
       "roblox-games/zombie-survival/shared/GameConfig.luau",
       "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau",
-      "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
-      "roblox-games/zombie-survival/client/Game.client.luau",
-      "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
       "roblox-games/zombie-survival/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12118,12 +12123,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/zombie-survival/client/Game.client.luau",
+      "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
+      "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
       "roblox-games/zombie-survival/server/Game.server.luau",
       "roblox-games/zombie-survival/shared/GameConfig.luau",
       "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau",
-      "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
-      "roblox-games/zombie-survival/client/Game.client.luau",
-      "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
       "roblox-games/zombie-survival/default.project.json"
     ],
     "sourceAnchors": [
@@ -12291,12 +12296,12 @@
     "gameId": "zombie-survival",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/zombie-survival/client/Game.client.luau",
+      "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
+      "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
       "roblox-games/zombie-survival/server/Game.server.luau",
       "roblox-games/zombie-survival/shared/GameConfig.luau",
       "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau",
-      "roblox-games/zombie-survival/shared/RobloxCommonUI.luau",
-      "roblox-games/zombie-survival/client/Game.client.luau",
-      "roblox-games/zombie-survival/client/MaterialPresentation.client.luau",
       "roblox-games/zombie-survival/default.project.json"
     ],
     "impact": {
@@ -12371,7 +12376,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "84014e6e86a2ff7a9dcae58fa0f24070582c8c2b9519c5b520a23a9dcb665929",
+      "sourceTreeFingerprint": "c659ec0b39477043a43b8826861f1666ab325072833cbabc617e9375617ac2af",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12495,5 +12500,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T14:54:31.704Z"
+  "generatedAt": "2026-11-08T15:45:44.718Z"
 }

@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g1-50fe674bf22e",
-  "directiveFingerprint": "50fe674bf22ed91c83bb03420f86673d7442e5dd82f0946615db1de92c6043c8",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g1-7fc7f6696a7f",
+  "directiveFingerprint": "7fc7f6696a7fbb8f9c8941b4ca8812a10f002d8f4720d271b1ef6ed9bd0ec2ae",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "c7fbc9daf24a4d7ba36584b30eee0248253a15039351d87a7f34327bea4da1cf",
+  "sourceTreeFingerprint": "622b16b2878df72c9c6eec3a0e992eac87dc341e172e5313eb582bcc34e47c19",
   "designFingerprint": "a1bc5913d05e9591926b9ee23dbaeb79fd9df2fb8cf1e691a34d10de0f3ee342",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "c7fbc9daf24a4d7ba36584b30eee0248253a15039351d87a7f34327bea4da1cf",
+        "sourceTreeFingerprint": "622b16b2878df72c9c6eec3a0e992eac87dc341e172e5313eb582bcc34e47c19",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "a1bc5913d05e9591926b9ee23dbaeb79fd9df2fb8cf1e691a34d10de0f3ee342",
-    "sourceTreeFingerprint": "c7fbc9daf24a4d7ba36584b30eee0248253a15039351d87a7f34327bea4da1cf",
+    "sourceTreeFingerprint": "622b16b2878df72c9c6eec3a0e992eac87dc341e172e5313eb582bcc34e47c19",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -958,7 +958,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "c7fbc9daf24a4d7ba36584b30eee0248253a15039351d87a7f34327bea4da1cf",
+    "sourceTreeFingerprint": "622b16b2878df72c9c6eec3a0e992eac87dc341e172e5313eb582bcc34e47c19",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4476,7 +4476,7 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 252,
+      "combat": 255,
       "progression": 541,
       "ai": 66,
       "save": 102,
@@ -4484,7 +4484,7 @@
       "animation": 37,
       "motionStates": 672,
       "gameFeel": 39,
-      "vfx": 48,
+      "vfx": 49,
       "camera": 33,
       "audio": 4,
       "audioDynamics": 16,
@@ -4501,7 +4501,7 @@
       "settings": 25,
       "feedback": 105,
       "session": 136,
-      "content": 550,
+      "content": 552,
       "choice": 1658,
       "connection": 8,
       "performance": 32,
@@ -4529,7 +4529,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json",
-        "score": 15
+        "score": 19
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
@@ -6101,10 +6101,10 @@
         "gameId": "seed-single-defense-strat-celestial-bastion",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau"
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6116,10 +6116,10 @@
         "gameId": "seed-single-defense-strat-celestial-bastion",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau"
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6131,10 +6131,10 @@
         "gameId": "seed-single-defense-strat-celestial-bastion",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau"
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6146,10 +6146,10 @@
         "gameId": "seed-single-defense-strat-celestial-bastion",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau"
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6161,10 +6161,10 @@
         "gameId": "seed-single-defense-strat-celestial-bastion",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau"
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6220,7 +6220,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 409907,
+        "sourceBytes": 410406,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6419,7 +6419,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "seed-single-defense-strat-celestial-bastion",
     "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-    "sourceTreeFingerprint": "c7fbc9daf24a4d7ba36584b30eee0248253a15039351d87a7f34327bea4da1cf",
+    "sourceTreeFingerprint": "622b16b2878df72c9c6eec3a0e992eac87dc341e172e5313eb582bcc34e47c19",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -10106,7 +10106,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "c7fbc9daf24a4d7ba36584b30eee0248253a15039351d87a7f34327bea4da1cf",
+    "sourceFingerprint": "622b16b2878df72c9c6eec3a0e992eac87dc341e172e5313eb582bcc34e47c19",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -10126,7 +10126,7 @@
     "version": 1,
     "gameId": "seed-single-defense-strat-celestial-bastion",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "c7fbc9daf24a4d7ba36584b30eee0248253a15039351d87a7f34327bea4da1cf",
+    "sourceTreeFingerprint": "622b16b2878df72c9c6eec3a0e992eac87dc341e172e5313eb582bcc34e47c19",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -10265,7 +10265,8 @@
           "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
           "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
           "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau"
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -10320,6 +10321,7 @@
           "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
           "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
           "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json",
           "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": false,
@@ -10545,7 +10547,8 @@
         "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
         "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
         "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau"
+        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
       ],
       "NPC_AI": [
         "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
@@ -10617,6 +10620,7 @@
         "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
         "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
         "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json",
         "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
@@ -10866,6 +10870,7 @@
           "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
           "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
           "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json",
           "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau"
         ],
         "checks": [
@@ -11191,7 +11196,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "c7fbc9daf24a4d7ba36584b30eee0248253a15039351d87a7f34327bea4da1cf",
+      "sourceTreeFingerprint": "622b16b2878df72c9c6eec3a0e992eac87dc341e172e5313eb582bcc34e47c19",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11215,7 +11220,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "c7fbc9daf24a4d7ba36584b30eee0248253a15039351d87a7f34327bea4da1cf",
+      "sourceTreeFingerprint": "622b16b2878df72c9c6eec3a0e992eac87dc341e172e5313eb582bcc34e47c19",
       "sourceFiles": [
         {
           "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
@@ -11317,7 +11322,7 @@
     "gameId": "seed-single-defense-strat-celestial-bastion",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "c7fbc9daf24a4d7ba36584b30eee0248253a15039351d87a7f34327bea4da1cf",
+    "sourceTreeFingerprint": "622b16b2878df72c9c6eec3a0e992eac87dc341e172e5313eb582bcc34e47c19",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11647,12 +11652,12 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11875,12 +11880,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12078,12 +12083,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "sourceAnchors": [
@@ -12376,12 +12381,12 @@
     "gameId": "seed-single-defense-strat-celestial-bastion",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "impact": {
@@ -12456,7 +12461,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "c7fbc9daf24a4d7ba36584b30eee0248253a15039351d87a7f34327bea4da1cf",
+      "sourceTreeFingerprint": "622b16b2878df72c9c6eec3a0e992eac87dc341e172e5313eb582bcc34e47c19",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12580,5 +12585,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T14:54:24.888Z"
+  "generatedAt": "2026-11-08T15:45:43.037Z"
 }

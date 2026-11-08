@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "cat-step-build-up-g1-12e4b85d38c9",
-  "directiveFingerprint": "12e4b85d38c9f3488e30ba7abc97d9439257458c1bf3a01e723133f6ffbd602a",
+  "directiveId": "cat-step-build-up-g1-ec21e0630ed1",
+  "directiveFingerprint": "ec21e0630ed175b3b7c0be85251d1fa02d1049b1aab7acc70c7a366bbdad319a",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "cat-step",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/cat-step",
-  "sourceTreeFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
+  "sourceTreeFingerprint": "d6f6d61ee46be29395d8d677696e1de199f6134cc6622c8327e121e6906aba59",
   "designFingerprint": "a8766c41657004c38a0a0390418df9ef72d86f1d189eccbe591f8f54231d8879",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "공간 상태 변환의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
+        "sourceTreeFingerprint": "d6f6d61ee46be29395d8d677696e1de199f6134cc6622c8327e121e6906aba59",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "a8766c41657004c38a0a0390418df9ef72d86f1d189eccbe591f8f54231d8879",
-    "sourceTreeFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
+    "sourceTreeFingerprint": "d6f6d61ee46be29395d8d677696e1de199f6134cc6622c8327e121e6906aba59",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -956,7 +956,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
+    "sourceTreeFingerprint": "d6f6d61ee46be29395d8d677696e1de199f6134cc6622c8327e121e6906aba59",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4542,7 +4542,7 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 95,
+      "combat": 98,
       "progression": 409,
       "ai": 60,
       "save": 65,
@@ -4550,7 +4550,7 @@
       "animation": 54,
       "motionStates": 665,
       "gameFeel": 35,
-      "vfx": 47,
+      "vfx": 48,
       "camera": 27,
       "audio": 4,
       "audioDynamics": 15,
@@ -4567,7 +4567,7 @@
       "settings": 25,
       "feedback": 100,
       "session": 19,
-      "content": 453,
+      "content": 455,
       "choice": 1647,
       "connection": 8,
       "performance": 23,
@@ -4591,7 +4591,7 @@
       },
       {
         "file": "roblox-games/cat-step/default.project.json",
-        "score": 15
+        "score": 19
       },
       {
         "file": "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
@@ -6155,10 +6155,10 @@
         "gameId": "cat-step",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cat-step/shared/GameConfig.luau",
-          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+          "roblox-games/cat-step/client/Game.client.luau",
+          "roblox-games/cat-step/client/MaterialPresentation.client.luau",
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6170,10 +6170,10 @@
         "gameId": "cat-step",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cat-step/shared/GameConfig.luau",
-          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+          "roblox-games/cat-step/client/Game.client.luau",
+          "roblox-games/cat-step/client/MaterialPresentation.client.luau",
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6185,10 +6185,10 @@
         "gameId": "cat-step",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cat-step/shared/GameConfig.luau",
-          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+          "roblox-games/cat-step/client/Game.client.luau",
+          "roblox-games/cat-step/client/MaterialPresentation.client.luau",
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6200,10 +6200,10 @@
         "gameId": "cat-step",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cat-step/shared/GameConfig.luau",
-          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+          "roblox-games/cat-step/client/Game.client.luau",
+          "roblox-games/cat-step/client/MaterialPresentation.client.luau",
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6215,10 +6215,10 @@
         "gameId": "cat-step",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cat-step/shared/GameConfig.luau",
-          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+          "roblox-games/cat-step/client/Game.client.luau",
+          "roblox-games/cat-step/client/MaterialPresentation.client.luau",
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6274,7 +6274,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 385216,
+        "sourceBytes": 385715,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6473,7 +6473,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "cat-step",
     "sourceRoot": "roblox-games/cat-step",
-    "sourceTreeFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
+    "sourceTreeFingerprint": "d6f6d61ee46be29395d8d677696e1de199f6134cc6622c8327e121e6906aba59",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -10158,7 +10158,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
+    "sourceFingerprint": "d6f6d61ee46be29395d8d677696e1de199f6134cc6622c8327e121e6906aba59",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -10178,7 +10178,7 @@
     "version": 1,
     "gameId": "cat-step",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
+    "sourceTreeFingerprint": "d6f6d61ee46be29395d8d677696e1de199f6134cc6622c8327e121e6906aba59",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -10311,7 +10311,8 @@
         "responsibleFiles": [
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
           "roblox-games/cat-step/shared/GameConfig.luau",
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/client/Game.client.luau",
+          "roblox-games/cat-step/default.project.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -10364,6 +10365,7 @@
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
           "roblox-games/cat-step/shared/GameConfig.luau",
           "roblox-games/cat-step/client/Game.client.luau",
+          "roblox-games/cat-step/default.project.json",
           "roblox-games/cat-step/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": false,
@@ -10579,7 +10581,8 @@
       "ACTION": [
         "roblox-games/cat-step/shared/RobloxCommonUI.luau",
         "roblox-games/cat-step/shared/GameConfig.luau",
-        "roblox-games/cat-step/client/Game.client.luau"
+        "roblox-games/cat-step/client/Game.client.luau",
+        "roblox-games/cat-step/default.project.json"
       ],
       "NPC_AI": [
         "roblox-games/cat-step/shared/RobloxCommonUI.luau",
@@ -10645,6 +10648,7 @@
         "roblox-games/cat-step/shared/RobloxCommonUI.luau",
         "roblox-games/cat-step/shared/GameConfig.luau",
         "roblox-games/cat-step/client/Game.client.luau",
+        "roblox-games/cat-step/default.project.json",
         "roblox-games/cat-step/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
@@ -10884,6 +10888,7 @@
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
           "roblox-games/cat-step/shared/GameConfig.luau",
           "roblox-games/cat-step/client/Game.client.luau",
+          "roblox-games/cat-step/default.project.json",
           "roblox-games/cat-step/shared/RobloxCommonMaterials.luau"
         ],
         "checks": [
@@ -11192,7 +11197,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
+      "sourceTreeFingerprint": "d6f6d61ee46be29395d8d677696e1de199f6134cc6622c8327e121e6906aba59",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11216,7 +11221,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
+      "sourceTreeFingerprint": "d6f6d61ee46be29395d8d677696e1de199f6134cc6622c8327e121e6906aba59",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -11289,7 +11294,7 @@
     "gameId": "cat-step",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
+    "sourceTreeFingerprint": "d6f6d61ee46be29395d8d677696e1de199f6134cc6622c8327e121e6906aba59",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11619,11 +11624,11 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
-      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
       "roblox-games/cat-step/client/Game.client.luau",
       "roblox-games/cat-step/client/MaterialPresentation.client.luau",
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/shared/GameConfig.luau",
+      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
       "roblox-games/cat-step/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11846,11 +11851,11 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
-      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
       "roblox-games/cat-step/client/Game.client.luau",
       "roblox-games/cat-step/client/MaterialPresentation.client.luau",
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/shared/GameConfig.luau",
+      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
       "roblox-games/cat-step/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12048,11 +12053,11 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
-      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
       "roblox-games/cat-step/client/Game.client.luau",
       "roblox-games/cat-step/client/MaterialPresentation.client.luau",
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/shared/GameConfig.luau",
+      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
       "roblox-games/cat-step/default.project.json"
     ],
     "sourceAnchors": [
@@ -12194,11 +12199,11 @@
     "gameId": "cat-step",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
-      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
       "roblox-games/cat-step/client/Game.client.luau",
       "roblox-games/cat-step/client/MaterialPresentation.client.luau",
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/shared/GameConfig.luau",
+      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
       "roblox-games/cat-step/default.project.json"
     ],
     "impact": {
@@ -12273,7 +12278,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
+      "sourceTreeFingerprint": "d6f6d61ee46be29395d8d677696e1de199f6134cc6622c8327e121e6906aba59",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12397,5 +12402,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T14:53:55.590Z"
+  "generatedAt": "2026-11-08T15:45:38.403Z"
 }

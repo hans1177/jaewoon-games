@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "seed-roblox-story-rpg-adventur-blox-fruits-build-up-g1-eb12381b87d8",
-  "directiveFingerprint": "eb12381b87d8fe777d72dbf0892aae37d8d426fb887e4c496ff5d5462f5ebc8f",
+  "directiveId": "seed-roblox-story-rpg-adventur-blox-fruits-build-up-g1-d77f6a475d42",
+  "directiveFingerprint": "d77f6a475d42d1151be06112b429ad8c551a709e26fd675fae8b22c647a1dd38",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits",
-  "sourceTreeFingerprint": "b5e562e86d3be6e0c545b85f605f0b0e611fbcb4ce7a3bf3b4887104cd5b76e8",
+  "sourceTreeFingerprint": "08d221affd55bbf93f9296c65bd28a8a20104454621e5503ff88258937a5661d",
   "designFingerprint": "b9da8a1f9412e5449204442421315916cf83c51f91a93a65b2b33d4168d49ee8",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "공간 상태 변환의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "b5e562e86d3be6e0c545b85f605f0b0e611fbcb4ce7a3bf3b4887104cd5b76e8",
+        "sourceTreeFingerprint": "08d221affd55bbf93f9296c65bd28a8a20104454621e5503ff88258937a5661d",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "b9da8a1f9412e5449204442421315916cf83c51f91a93a65b2b33d4168d49ee8",
-    "sourceTreeFingerprint": "b5e562e86d3be6e0c545b85f605f0b0e611fbcb4ce7a3bf3b4887104cd5b76e8",
+    "sourceTreeFingerprint": "08d221affd55bbf93f9296c65bd28a8a20104454621e5503ff88258937a5661d",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -958,7 +958,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "b5e562e86d3be6e0c545b85f605f0b0e611fbcb4ce7a3bf3b4887104cd5b76e8",
+    "sourceTreeFingerprint": "08d221affd55bbf93f9296c65bd28a8a20104454621e5503ff88258937a5661d",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4551,7 +4551,7 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 125,
+      "combat": 128,
       "progression": 465,
       "ai": 41,
       "save": 73,
@@ -4559,7 +4559,7 @@
       "animation": 37,
       "motionStates": 610,
       "gameFeel": 35,
-      "vfx": 48,
+      "vfx": 49,
       "camera": 27,
       "audio": 4,
       "audioDynamics": 15,
@@ -4576,7 +4576,7 @@
       "settings": 25,
       "feedback": 96,
       "session": 19,
-      "content": 478,
+      "content": 480,
       "choice": 1646,
       "connection": 8,
       "performance": 22,
@@ -4604,7 +4604,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/default.project.json",
-        "score": 18
+        "score": 22
       },
       {
         "file": "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau",
@@ -6128,10 +6128,10 @@
         "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/server/Game.server.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau"
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6143,10 +6143,10 @@
         "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/server/Game.server.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau"
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6158,10 +6158,10 @@
         "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/server/Game.server.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau"
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6173,10 +6173,10 @@
         "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/server/Game.server.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau"
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6188,10 +6188,10 @@
         "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/server/Game.server.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau"
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6247,7 +6247,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 374858,
+        "sourceBytes": 375357,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6446,7 +6446,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
     "sourceRoot": "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits",
-    "sourceTreeFingerprint": "b5e562e86d3be6e0c545b85f605f0b0e611fbcb4ce7a3bf3b4887104cd5b76e8",
+    "sourceTreeFingerprint": "08d221affd55bbf93f9296c65bd28a8a20104454621e5503ff88258937a5661d",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -10138,7 +10138,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "b5e562e86d3be6e0c545b85f605f0b0e611fbcb4ce7a3bf3b4887104cd5b76e8",
+    "sourceFingerprint": "08d221affd55bbf93f9296c65bd28a8a20104454621e5503ff88258937a5661d",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -10158,7 +10158,7 @@
     "version": 1,
     "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "b5e562e86d3be6e0c545b85f605f0b0e611fbcb4ce7a3bf3b4887104cd5b76e8",
+    "sourceTreeFingerprint": "08d221affd55bbf93f9296c65bd28a8a20104454621e5503ff88258937a5661d",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -10292,7 +10292,8 @@
         "responsibleFiles": [
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
-          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau"
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/default.project.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -10346,6 +10347,7 @@
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/default.project.json",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": false,
@@ -10563,7 +10565,8 @@
       "ACTION": [
         "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau",
         "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
-        "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau"
+        "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+        "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/default.project.json"
       ],
       "NPC_AI": [
         "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau",
@@ -10631,6 +10634,7 @@
         "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau",
         "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
         "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+        "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/default.project.json",
         "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
@@ -10876,6 +10880,7 @@
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/default.project.json",
           "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau"
         ],
         "checks": [
@@ -11200,7 +11205,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "b5e562e86d3be6e0c545b85f605f0b0e611fbcb4ce7a3bf3b4887104cd5b76e8",
+      "sourceTreeFingerprint": "08d221affd55bbf93f9296c65bd28a8a20104454621e5503ff88258937a5661d",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11224,7 +11229,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "b5e562e86d3be6e0c545b85f605f0b0e611fbcb4ce7a3bf3b4887104cd5b76e8",
+      "sourceTreeFingerprint": "08d221affd55bbf93f9296c65bd28a8a20104454621e5503ff88258937a5661d",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -11297,7 +11302,7 @@
     "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "b5e562e86d3be6e0c545b85f605f0b0e611fbcb4ce7a3bf3b4887104cd5b76e8",
+    "sourceTreeFingerprint": "08d221affd55bbf93f9296c65bd28a8a20104454621e5503ff88258937a5661d",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11627,12 +11632,12 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/server/Game.server.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau",
-      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
-      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11855,12 +11860,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/server/Game.server.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau",
-      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
-      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12058,12 +12063,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/server/Game.server.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau",
-      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
-      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/default.project.json"
     ],
     "sourceAnchors": [
@@ -12205,12 +12210,12 @@
     "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/server/Game.server.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonUI.luau",
-      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
-      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/MaterialPresentation.client.luau",
       "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/default.project.json"
     ],
     "impact": {
@@ -12285,7 +12290,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "b5e562e86d3be6e0c545b85f605f0b0e611fbcb4ce7a3bf3b4887104cd5b76e8",
+      "sourceTreeFingerprint": "08d221affd55bbf93f9296c65bd28a8a20104454621e5503ff88258937a5661d",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12409,5 +12414,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T14:54:22.268Z"
+  "generatedAt": "2026-11-08T15:45:42.516Z"
 }

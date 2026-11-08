@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "tower-choice-rpg-build-up-g1-2065451c1a9d",
-  "directiveFingerprint": "2065451c1a9ddc2df08f11b4fa2beaa64fe42513ad4f58aad0673240cae2d65e",
+  "directiveId": "tower-choice-rpg-build-up-g1-8751b3cc321e",
+  "directiveFingerprint": "8751b3cc321eec35a50fa7087ec5b7533051a5c980b724224aa0f4c0fad36413",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "tower-choice-rpg",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/tower-choice-rpg",
-  "sourceTreeFingerprint": "977c59478d6f2138004ae8082ba880e10fd9f10ce65a8bda283116af533c63d6",
+  "sourceTreeFingerprint": "aae8da860c2e7cfb7ddd7f222d5d1a7abfe2a31bac1cba2bc08941701a930857",
   "designFingerprint": "f828a1cafe44dd4d0af938b25dd484e7c1e80d00a1385079bfb6cb17863b110f",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "977c59478d6f2138004ae8082ba880e10fd9f10ce65a8bda283116af533c63d6",
+        "sourceTreeFingerprint": "aae8da860c2e7cfb7ddd7f222d5d1a7abfe2a31bac1cba2bc08941701a930857",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "f828a1cafe44dd4d0af938b25dd484e7c1e80d00a1385079bfb6cb17863b110f",
-    "sourceTreeFingerprint": "977c59478d6f2138004ae8082ba880e10fd9f10ce65a8bda283116af533c63d6",
+    "sourceTreeFingerprint": "aae8da860c2e7cfb7ddd7f222d5d1a7abfe2a31bac1cba2bc08941701a930857",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -958,7 +958,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "977c59478d6f2138004ae8082ba880e10fd9f10ce65a8bda283116af533c63d6",
+    "sourceTreeFingerprint": "aae8da860c2e7cfb7ddd7f222d5d1a7abfe2a31bac1cba2bc08941701a930857",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4561,7 +4561,7 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 176,
+      "combat": 179,
       "progression": 567,
       "ai": 62,
       "save": 119,
@@ -4569,7 +4569,7 @@
       "animation": 46,
       "motionStates": 695,
       "gameFeel": 36,
-      "vfx": 49,
+      "vfx": 50,
       "camera": 46,
       "audio": 4,
       "audioDynamics": 30,
@@ -4586,7 +4586,7 @@
       "settings": 25,
       "feedback": 163,
       "session": 30,
-      "content": 527,
+      "content": 529,
       "choice": 1665,
       "connection": 8,
       "performance": 34,
@@ -4614,7 +4614,7 @@
       },
       {
         "file": "roblox-games/tower-choice-rpg/default.project.json",
-        "score": 17
+        "score": 21
       },
       {
         "file": "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
@@ -6154,10 +6154,10 @@
         "gameId": "tower-choice-rpg",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/tower-choice-rpg/server/Game.server.luau",
-          "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
-          "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
-          "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau"
+          "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
+          "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/tower-choice-rpg/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6169,10 +6169,10 @@
         "gameId": "tower-choice-rpg",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/tower-choice-rpg/server/Game.server.luau",
-          "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
-          "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
-          "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau"
+          "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
+          "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/tower-choice-rpg/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6184,10 +6184,10 @@
         "gameId": "tower-choice-rpg",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/tower-choice-rpg/server/Game.server.luau",
-          "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
-          "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
-          "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau"
+          "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
+          "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/tower-choice-rpg/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6199,10 +6199,10 @@
         "gameId": "tower-choice-rpg",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/tower-choice-rpg/server/Game.server.luau",
-          "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
-          "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
-          "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau"
+          "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
+          "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/tower-choice-rpg/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6214,10 +6214,10 @@
         "gameId": "tower-choice-rpg",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/tower-choice-rpg/server/Game.server.luau",
-          "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
-          "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
-          "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau"
+          "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
+          "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/tower-choice-rpg/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6273,7 +6273,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 433911,
+        "sourceBytes": 434410,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6472,7 +6472,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "tower-choice-rpg",
     "sourceRoot": "roblox-games/tower-choice-rpg",
-    "sourceTreeFingerprint": "977c59478d6f2138004ae8082ba880e10fd9f10ce65a8bda283116af533c63d6",
+    "sourceTreeFingerprint": "aae8da860c2e7cfb7ddd7f222d5d1a7abfe2a31bac1cba2bc08941701a930857",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -10159,7 +10159,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "977c59478d6f2138004ae8082ba880e10fd9f10ce65a8bda283116af533c63d6",
+    "sourceFingerprint": "aae8da860c2e7cfb7ddd7f222d5d1a7abfe2a31bac1cba2bc08941701a930857",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -10179,7 +10179,7 @@
     "version": 1,
     "gameId": "tower-choice-rpg",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "977c59478d6f2138004ae8082ba880e10fd9f10ce65a8bda283116af533c63d6",
+    "sourceTreeFingerprint": "aae8da860c2e7cfb7ddd7f222d5d1a7abfe2a31bac1cba2bc08941701a930857",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -10318,7 +10318,8 @@
           "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
           "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
           "roblox-games/tower-choice-rpg/server/Game.server.luau",
-          "roblox-games/tower-choice-rpg/client/Game.client.luau"
+          "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/default.project.json"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -10374,6 +10375,7 @@
           "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
           "roblox-games/tower-choice-rpg/server/Game.server.luau",
           "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/default.project.json",
           "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": false,
@@ -10600,7 +10602,8 @@
         "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
         "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
         "roblox-games/tower-choice-rpg/server/Game.server.luau",
-        "roblox-games/tower-choice-rpg/client/Game.client.luau"
+        "roblox-games/tower-choice-rpg/client/Game.client.luau",
+        "roblox-games/tower-choice-rpg/default.project.json"
       ],
       "NPC_AI": [
         "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
@@ -10674,6 +10677,7 @@
         "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
         "roblox-games/tower-choice-rpg/server/Game.server.luau",
         "roblox-games/tower-choice-rpg/client/Game.client.luau",
+        "roblox-games/tower-choice-rpg/default.project.json",
         "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
@@ -10924,6 +10928,7 @@
           "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
           "roblox-games/tower-choice-rpg/server/Game.server.luau",
           "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/default.project.json",
           "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau"
         ],
         "checks": [
@@ -11252,7 +11257,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "977c59478d6f2138004ae8082ba880e10fd9f10ce65a8bda283116af533c63d6",
+      "sourceTreeFingerprint": "aae8da860c2e7cfb7ddd7f222d5d1a7abfe2a31bac1cba2bc08941701a930857",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11276,7 +11281,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "977c59478d6f2138004ae8082ba880e10fd9f10ce65a8bda283116af533c63d6",
+      "sourceTreeFingerprint": "aae8da860c2e7cfb7ddd7f222d5d1a7abfe2a31bac1cba2bc08941701a930857",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -11349,7 +11354,7 @@
     "gameId": "tower-choice-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "977c59478d6f2138004ae8082ba880e10fd9f10ce65a8bda283116af533c63d6",
+    "sourceTreeFingerprint": "aae8da860c2e7cfb7ddd7f222d5d1a7abfe2a31bac1cba2bc08941701a930857",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11679,12 +11684,12 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/tower-choice-rpg/client/Game.client.luau",
+      "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
+      "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/tower-choice-rpg/server/Game.server.luau",
       "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
       "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
-      "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
-      "roblox-games/tower-choice-rpg/client/Game.client.luau",
-      "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
       "roblox-games/tower-choice-rpg/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11907,12 +11912,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/tower-choice-rpg/client/Game.client.luau",
+      "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
+      "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/tower-choice-rpg/server/Game.server.luau",
       "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
       "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
-      "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
-      "roblox-games/tower-choice-rpg/client/Game.client.luau",
-      "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
       "roblox-games/tower-choice-rpg/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12110,12 +12115,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/tower-choice-rpg/client/Game.client.luau",
+      "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
+      "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/tower-choice-rpg/server/Game.server.luau",
       "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
       "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
-      "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
-      "roblox-games/tower-choice-rpg/client/Game.client.luau",
-      "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
       "roblox-games/tower-choice-rpg/default.project.json"
     ],
     "sourceAnchors": [
@@ -12283,12 +12288,12 @@
     "gameId": "tower-choice-rpg",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/tower-choice-rpg/client/Game.client.luau",
+      "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
+      "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/tower-choice-rpg/server/Game.server.luau",
       "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
       "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
-      "roblox-games/tower-choice-rpg/shared/RobloxCommonUI.luau",
-      "roblox-games/tower-choice-rpg/client/Game.client.luau",
-      "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau",
       "roblox-games/tower-choice-rpg/default.project.json"
     ],
     "impact": {
@@ -12363,7 +12368,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "977c59478d6f2138004ae8082ba880e10fd9f10ce65a8bda283116af533c63d6",
+      "sourceTreeFingerprint": "aae8da860c2e7cfb7ddd7f222d5d1a7abfe2a31bac1cba2bc08941701a930857",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12487,5 +12492,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T14:54:28.209Z"
+  "generatedAt": "2026-11-08T15:45:43.705Z"
 }

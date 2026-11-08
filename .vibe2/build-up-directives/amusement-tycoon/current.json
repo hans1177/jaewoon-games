@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g1-22fae585b0b6",
-  "directiveFingerprint": "22fae585b0b643002aecb28b67e6cdbfea81c768402d156d0884629f57dca96d",
+  "directiveId": "amusement-tycoon-build-up-g1-b6d8aca6d256",
+  "directiveFingerprint": "b6d8aca6d256010bb1cdc21939dd095eebcb136127efbb7999e89f846eca4952",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "amusement-tycoon",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "9e59ba8700da6dc348ad3aa4f4b2dea185d73f108032eafad8d28104fd12975e",
+  "sourceTreeFingerprint": "ceeb72ea89733fc1be617effd2c794520f0ad6833dba525606b8dbd4e2280b51",
   "designFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "손님과 직원 운영의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "9e59ba8700da6dc348ad3aa4f4b2dea185d73f108032eafad8d28104fd12975e",
+        "sourceTreeFingerprint": "ceeb72ea89733fc1be617effd2c794520f0ad6833dba525606b8dbd4e2280b51",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
-    "sourceTreeFingerprint": "9e59ba8700da6dc348ad3aa4f4b2dea185d73f108032eafad8d28104fd12975e",
+    "sourceTreeFingerprint": "ceeb72ea89733fc1be617effd2c794520f0ad6833dba525606b8dbd4e2280b51",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -918,7 +918,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "9e59ba8700da6dc348ad3aa4f4b2dea185d73f108032eafad8d28104fd12975e",
+    "sourceTreeFingerprint": "ceeb72ea89733fc1be617effd2c794520f0ad6833dba525606b8dbd4e2280b51",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4436,7 +4436,7 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 99,
+      "combat": 102,
       "progression": 439,
       "ai": 45,
       "save": 102,
@@ -4444,7 +4444,7 @@
       "animation": 45,
       "motionStates": 650,
       "gameFeel": 35,
-      "vfx": 48,
+      "vfx": 49,
       "camera": 33,
       "audio": 4,
       "audioDynamics": 15,
@@ -4461,7 +4461,7 @@
       "settings": 25,
       "feedback": 100,
       "session": 47,
-      "content": 462,
+      "content": 464,
       "choice": 1667,
       "connection": 8,
       "performance": 27,
@@ -4489,7 +4489,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/default.project.json",
-        "score": 15
+        "score": 19
       },
       {
         "file": "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
@@ -6053,10 +6053,10 @@
         "gameId": "amusement-tycoon",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/amusement-tycoon/server/Game.server.luau",
-          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-          "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
-          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau"
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
+          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
+          "roblox-games/amusement-tycoon/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6068,10 +6068,10 @@
         "gameId": "amusement-tycoon",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/amusement-tycoon/server/Game.server.luau",
-          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-          "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
-          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau"
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
+          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
+          "roblox-games/amusement-tycoon/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6083,10 +6083,10 @@
         "gameId": "amusement-tycoon",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/amusement-tycoon/server/Game.server.luau",
-          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-          "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
-          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau"
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
+          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
+          "roblox-games/amusement-tycoon/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6098,10 +6098,10 @@
         "gameId": "amusement-tycoon",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/amusement-tycoon/server/Game.server.luau",
-          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-          "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
-          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau"
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
+          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
+          "roblox-games/amusement-tycoon/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6113,10 +6113,10 @@
         "gameId": "amusement-tycoon",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/amusement-tycoon/server/Game.server.luau",
-          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-          "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
-          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau"
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
+          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
+          "roblox-games/amusement-tycoon/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6172,7 +6172,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 399829,
+        "sourceBytes": 400328,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6371,7 +6371,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "amusement-tycoon",
     "sourceRoot": "roblox-games/amusement-tycoon",
-    "sourceTreeFingerprint": "9e59ba8700da6dc348ad3aa4f4b2dea185d73f108032eafad8d28104fd12975e",
+    "sourceTreeFingerprint": "ceeb72ea89733fc1be617effd2c794520f0ad6833dba525606b8dbd4e2280b51",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -10058,7 +10058,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "9e59ba8700da6dc348ad3aa4f4b2dea185d73f108032eafad8d28104fd12975e",
+    "sourceFingerprint": "ceeb72ea89733fc1be617effd2c794520f0ad6833dba525606b8dbd4e2280b51",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -10078,7 +10078,7 @@
     "version": 1,
     "gameId": "amusement-tycoon",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "9e59ba8700da6dc348ad3aa4f4b2dea185d73f108032eafad8d28104fd12975e",
+    "sourceTreeFingerprint": "ceeb72ea89733fc1be617effd2c794520f0ad6833dba525606b8dbd4e2280b51",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -10216,7 +10216,8 @@
         "responsibleFiles": [
           "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
           "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-          "roblox-games/amusement-tycoon/client/Game.client.luau"
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/default.project.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -10270,6 +10271,7 @@
           "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
           "roblox-games/amusement-tycoon/shared/GameConfig.luau",
           "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/default.project.json",
           "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": false,
@@ -10492,7 +10494,8 @@
       "ACTION": [
         "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
         "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-        "roblox-games/amusement-tycoon/client/Game.client.luau"
+        "roblox-games/amusement-tycoon/client/Game.client.luau",
+        "roblox-games/amusement-tycoon/default.project.json"
       ],
       "NPC_AI": [
         "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
@@ -10561,6 +10564,7 @@
         "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
         "roblox-games/amusement-tycoon/shared/GameConfig.luau",
         "roblox-games/amusement-tycoon/client/Game.client.luau",
+        "roblox-games/amusement-tycoon/default.project.json",
         "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
@@ -10807,6 +10811,7 @@
           "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
           "roblox-games/amusement-tycoon/shared/GameConfig.luau",
           "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/default.project.json",
           "roblox-games/amusement-tycoon/server/Game.server.luau",
           "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau"
         ],
@@ -11118,7 +11123,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "9e59ba8700da6dc348ad3aa4f4b2dea185d73f108032eafad8d28104fd12975e",
+      "sourceTreeFingerprint": "ceeb72ea89733fc1be617effd2c794520f0ad6833dba525606b8dbd4e2280b51",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11142,7 +11147,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "9e59ba8700da6dc348ad3aa4f4b2dea185d73f108032eafad8d28104fd12975e",
+      "sourceTreeFingerprint": "ceeb72ea89733fc1be617effd2c794520f0ad6833dba525606b8dbd4e2280b51",
       "sourceFiles": [
         {
           "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
@@ -11246,7 +11251,7 @@
     "gameId": "amusement-tycoon",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "9e59ba8700da6dc348ad3aa4f4b2dea185d73f108032eafad8d28104fd12975e",
+    "sourceTreeFingerprint": "ceeb72ea89733fc1be617effd2c794520f0ad6833dba525606b8dbd4e2280b51",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11576,12 +11581,12 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/amusement-tycoon/client/Game.client.luau",
+      "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
+      "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
       "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/shared/GameConfig.luau",
       "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
-      "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
-      "roblox-games/amusement-tycoon/client/Game.client.luau",
-      "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11804,12 +11809,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/amusement-tycoon/client/Game.client.luau",
+      "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
+      "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
       "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/shared/GameConfig.luau",
       "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
-      "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
-      "roblox-games/amusement-tycoon/client/Game.client.luau",
-      "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12007,12 +12012,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/amusement-tycoon/client/Game.client.luau",
+      "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
+      "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
       "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/shared/GameConfig.luau",
       "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
-      "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
-      "roblox-games/amusement-tycoon/client/Game.client.luau",
-      "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "sourceAnchors": [
@@ -12184,12 +12189,12 @@
     "gameId": "amusement-tycoon",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/amusement-tycoon/client/Game.client.luau",
+      "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
+      "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
       "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/shared/GameConfig.luau",
       "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
-      "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
-      "roblox-games/amusement-tycoon/client/Game.client.luau",
-      "roblox-games/amusement-tycoon/client/MaterialPresentation.client.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "impact": {
@@ -12264,7 +12269,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "9e59ba8700da6dc348ad3aa4f4b2dea185d73f108032eafad8d28104fd12975e",
+      "sourceTreeFingerprint": "ceeb72ea89733fc1be617effd2c794520f0ad6833dba525606b8dbd4e2280b51",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12388,5 +12393,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T14:53:54.124Z"
+  "generatedAt": "2026-11-08T15:45:38.099Z"
 }

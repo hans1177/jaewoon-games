@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g1-ff816535eae3",
-  "directiveFingerprint": "ff816535eae3fd412d2245bbfa5377212a5ebded3cab99cd210156b885a3c65c",
+  "directiveId": "line-defense-build-up-g1-ce47d0927d12",
+  "directiveFingerprint": "ce47d0927d121fe9556e6d220833d2c348fcfb0d2ef94fba51a6e3783dc4434f",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "line-defense",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/line-defense",
-  "sourceTreeFingerprint": "8918b0b823fe7a8b29baef0f63c9ceb28e0abe68a60c7a1dbeb419de2d586c1b",
+  "sourceTreeFingerprint": "d3ac27e1b731b93bf3f570fc47513f9a5bd8401200adb6f3364489fb67b648ff",
   "designFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "8918b0b823fe7a8b29baef0f63c9ceb28e0abe68a60c7a1dbeb419de2d586c1b",
+        "sourceTreeFingerprint": "d3ac27e1b731b93bf3f570fc47513f9a5bd8401200adb6f3364489fb67b648ff",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
-    "sourceTreeFingerprint": "8918b0b823fe7a8b29baef0f63c9ceb28e0abe68a60c7a1dbeb419de2d586c1b",
+    "sourceTreeFingerprint": "d3ac27e1b731b93bf3f570fc47513f9a5bd8401200adb6f3364489fb67b648ff",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -958,7 +958,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "8918b0b823fe7a8b29baef0f63c9ceb28e0abe68a60c7a1dbeb419de2d586c1b",
+    "sourceTreeFingerprint": "d3ac27e1b731b93bf3f570fc47513f9a5bd8401200adb6f3364489fb67b648ff",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4493,7 +4493,7 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 293,
+      "combat": 296,
       "progression": 590,
       "ai": 75,
       "save": 93,
@@ -4501,7 +4501,7 @@
       "animation": 37,
       "motionStates": 672,
       "gameFeel": 40,
-      "vfx": 51,
+      "vfx": 52,
       "camera": 33,
       "audio": 4,
       "audioDynamics": 15,
@@ -4518,7 +4518,7 @@
       "settings": 25,
       "feedback": 98,
       "session": 127,
-      "content": 613,
+      "content": 615,
       "choice": 1650,
       "connection": 8,
       "performance": 32,
@@ -4546,7 +4546,7 @@
       },
       {
         "file": "roblox-games/line-defense/default.project.json",
-        "score": 15
+        "score": 19
       },
       {
         "file": "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
@@ -6118,10 +6118,10 @@
         "gameId": "line-defense",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/line-defense/server/Game.server.luau",
-          "roblox-games/line-defense/shared/GameConfig.luau",
-          "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
-          "roblox-games/line-defense/shared/RobloxCommonUI.luau"
+          "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/client/MaterialPresentation.client.luau",
+          "roblox-games/line-defense/shared/RobloxCommonUI.luau",
+          "roblox-games/line-defense/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6133,10 +6133,10 @@
         "gameId": "line-defense",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/line-defense/server/Game.server.luau",
-          "roblox-games/line-defense/shared/GameConfig.luau",
-          "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
-          "roblox-games/line-defense/shared/RobloxCommonUI.luau"
+          "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/client/MaterialPresentation.client.luau",
+          "roblox-games/line-defense/shared/RobloxCommonUI.luau",
+          "roblox-games/line-defense/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6148,10 +6148,10 @@
         "gameId": "line-defense",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/line-defense/server/Game.server.luau",
-          "roblox-games/line-defense/shared/GameConfig.luau",
-          "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
-          "roblox-games/line-defense/shared/RobloxCommonUI.luau"
+          "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/client/MaterialPresentation.client.luau",
+          "roblox-games/line-defense/shared/RobloxCommonUI.luau",
+          "roblox-games/line-defense/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6163,10 +6163,10 @@
         "gameId": "line-defense",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/line-defense/server/Game.server.luau",
-          "roblox-games/line-defense/shared/GameConfig.luau",
-          "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
-          "roblox-games/line-defense/shared/RobloxCommonUI.luau"
+          "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/client/MaterialPresentation.client.luau",
+          "roblox-games/line-defense/shared/RobloxCommonUI.luau",
+          "roblox-games/line-defense/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6178,10 +6178,10 @@
         "gameId": "line-defense",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/line-defense/server/Game.server.luau",
-          "roblox-games/line-defense/shared/GameConfig.luau",
-          "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
-          "roblox-games/line-defense/shared/RobloxCommonUI.luau"
+          "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/client/MaterialPresentation.client.luau",
+          "roblox-games/line-defense/shared/RobloxCommonUI.luau",
+          "roblox-games/line-defense/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6237,7 +6237,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 409824,
+        "sourceBytes": 410323,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6436,7 +6436,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "line-defense",
     "sourceRoot": "roblox-games/line-defense",
-    "sourceTreeFingerprint": "8918b0b823fe7a8b29baef0f63c9ceb28e0abe68a60c7a1dbeb419de2d586c1b",
+    "sourceTreeFingerprint": "d3ac27e1b731b93bf3f570fc47513f9a5bd8401200adb6f3364489fb67b648ff",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -10123,7 +10123,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "8918b0b823fe7a8b29baef0f63c9ceb28e0abe68a60c7a1dbeb419de2d586c1b",
+    "sourceFingerprint": "d3ac27e1b731b93bf3f570fc47513f9a5bd8401200adb6f3364489fb67b648ff",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -10143,7 +10143,7 @@
     "version": 1,
     "gameId": "line-defense",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "8918b0b823fe7a8b29baef0f63c9ceb28e0abe68a60c7a1dbeb419de2d586c1b",
+    "sourceTreeFingerprint": "d3ac27e1b731b93bf3f570fc47513f9a5bd8401200adb6f3364489fb67b648ff",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -10282,7 +10282,8 @@
           "roblox-games/line-defense/shared/RobloxCommonUI.luau",
           "roblox-games/line-defense/server/Game.server.luau",
           "roblox-games/line-defense/shared/GameConfig.luau",
-          "roblox-games/line-defense/client/Game.client.luau"
+          "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/default.project.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -10338,6 +10339,7 @@
           "roblox-games/line-defense/server/Game.server.luau",
           "roblox-games/line-defense/shared/GameConfig.luau",
           "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/default.project.json",
           "roblox-games/line-defense/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": false,
@@ -10564,7 +10566,8 @@
         "roblox-games/line-defense/shared/RobloxCommonUI.luau",
         "roblox-games/line-defense/server/Game.server.luau",
         "roblox-games/line-defense/shared/GameConfig.luau",
-        "roblox-games/line-defense/client/Game.client.luau"
+        "roblox-games/line-defense/client/Game.client.luau",
+        "roblox-games/line-defense/default.project.json"
       ],
       "NPC_AI": [
         "roblox-games/line-defense/shared/RobloxCommonUI.luau",
@@ -10638,6 +10641,7 @@
         "roblox-games/line-defense/server/Game.server.luau",
         "roblox-games/line-defense/shared/GameConfig.luau",
         "roblox-games/line-defense/client/Game.client.luau",
+        "roblox-games/line-defense/default.project.json",
         "roblox-games/line-defense/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
@@ -10889,6 +10893,7 @@
           "roblox-games/line-defense/server/Game.server.luau",
           "roblox-games/line-defense/shared/GameConfig.luau",
           "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/default.project.json",
           "roblox-games/line-defense/shared/RobloxCommonMaterials.luau"
         ],
         "checks": [
@@ -11216,7 +11221,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "8918b0b823fe7a8b29baef0f63c9ceb28e0abe68a60c7a1dbeb419de2d586c1b",
+      "sourceTreeFingerprint": "d3ac27e1b731b93bf3f570fc47513f9a5bd8401200adb6f3364489fb67b648ff",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11240,7 +11245,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "8918b0b823fe7a8b29baef0f63c9ceb28e0abe68a60c7a1dbeb419de2d586c1b",
+      "sourceTreeFingerprint": "d3ac27e1b731b93bf3f570fc47513f9a5bd8401200adb6f3364489fb67b648ff",
       "sourceFiles": [
         {
           "file": "roblox-games/line-defense/server/Game.server.luau",
@@ -11342,7 +11347,7 @@
     "gameId": "line-defense",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "8918b0b823fe7a8b29baef0f63c9ceb28e0abe68a60c7a1dbeb419de2d586c1b",
+    "sourceTreeFingerprint": "d3ac27e1b731b93bf3f570fc47513f9a5bd8401200adb6f3364489fb67b648ff",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11672,12 +11677,12 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/line-defense/client/Game.client.luau",
+      "roblox-games/line-defense/client/MaterialPresentation.client.luau",
+      "roblox-games/line-defense/shared/RobloxCommonUI.luau",
       "roblox-games/line-defense/server/Game.server.luau",
       "roblox-games/line-defense/shared/GameConfig.luau",
       "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
-      "roblox-games/line-defense/shared/RobloxCommonUI.luau",
-      "roblox-games/line-defense/client/Game.client.luau",
-      "roblox-games/line-defense/client/MaterialPresentation.client.luau",
       "roblox-games/line-defense/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11900,12 +11905,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/line-defense/client/Game.client.luau",
+      "roblox-games/line-defense/client/MaterialPresentation.client.luau",
+      "roblox-games/line-defense/shared/RobloxCommonUI.luau",
       "roblox-games/line-defense/server/Game.server.luau",
       "roblox-games/line-defense/shared/GameConfig.luau",
       "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
-      "roblox-games/line-defense/shared/RobloxCommonUI.luau",
-      "roblox-games/line-defense/client/Game.client.luau",
-      "roblox-games/line-defense/client/MaterialPresentation.client.luau",
       "roblox-games/line-defense/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12103,12 +12108,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/line-defense/client/Game.client.luau",
+      "roblox-games/line-defense/client/MaterialPresentation.client.luau",
+      "roblox-games/line-defense/shared/RobloxCommonUI.luau",
       "roblox-games/line-defense/server/Game.server.luau",
       "roblox-games/line-defense/shared/GameConfig.luau",
       "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
-      "roblox-games/line-defense/shared/RobloxCommonUI.luau",
-      "roblox-games/line-defense/client/Game.client.luau",
-      "roblox-games/line-defense/client/MaterialPresentation.client.luau",
       "roblox-games/line-defense/default.project.json"
     ],
     "sourceAnchors": [
@@ -12404,12 +12409,12 @@
     "gameId": "line-defense",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/line-defense/client/Game.client.luau",
+      "roblox-games/line-defense/client/MaterialPresentation.client.luau",
+      "roblox-games/line-defense/shared/RobloxCommonUI.luau",
       "roblox-games/line-defense/server/Game.server.luau",
       "roblox-games/line-defense/shared/GameConfig.luau",
       "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
-      "roblox-games/line-defense/shared/RobloxCommonUI.luau",
-      "roblox-games/line-defense/client/Game.client.luau",
-      "roblox-games/line-defense/client/MaterialPresentation.client.luau",
       "roblox-games/line-defense/default.project.json"
     ],
     "impact": {
@@ -12484,7 +12489,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "8918b0b823fe7a8b29baef0f63c9ceb28e0abe68a60c7a1dbeb419de2d586c1b",
+      "sourceTreeFingerprint": "d3ac27e1b731b93bf3f570fc47513f9a5bd8401200adb6f3364489fb67b648ff",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12608,5 +12613,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T14:54:14.281Z"
+  "generatedAt": "2026-11-08T15:45:41.122Z"
 }

@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "defense-build-up-g1-d4f0f0c48235",
-  "directiveFingerprint": "d4f0f0c48235e2da84f17b1ef06d064cb9649a03215beeea0301840b4562557e",
+  "directiveId": "defense-build-up-g1-a756184e84f2",
+  "directiveFingerprint": "a756184e84f234a36390173b601391d42b44b2e9b0f0bced66a073e698b3e592",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "defense",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/defense",
-  "sourceTreeFingerprint": "c3f3cb2dd3d16691e0b23375dd46034ff122967616b4ea9b7ebef2bdbed46301",
+  "sourceTreeFingerprint": "a020756463a0f25681ea292d5d4fe5c62c3d1c126295d8837e80bc7a91f90c5e",
   "designFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "c3f3cb2dd3d16691e0b23375dd46034ff122967616b4ea9b7ebef2bdbed46301",
+        "sourceTreeFingerprint": "a020756463a0f25681ea292d5d4fe5c62c3d1c126295d8837e80bc7a91f90c5e",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
-    "sourceTreeFingerprint": "c3f3cb2dd3d16691e0b23375dd46034ff122967616b4ea9b7ebef2bdbed46301",
+    "sourceTreeFingerprint": "a020756463a0f25681ea292d5d4fe5c62c3d1c126295d8837e80bc7a91f90c5e",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -958,7 +958,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "c3f3cb2dd3d16691e0b23375dd46034ff122967616b4ea9b7ebef2bdbed46301",
+    "sourceTreeFingerprint": "a020756463a0f25681ea292d5d4fe5c62c3d1c126295d8837e80bc7a91f90c5e",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4561,7 +4561,7 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 172,
+      "combat": 175,
       "progression": 550,
       "ai": 62,
       "save": 117,
@@ -4569,7 +4569,7 @@
       "animation": 45,
       "motionStates": 692,
       "gameFeel": 36,
-      "vfx": 49,
+      "vfx": 50,
       "camera": 46,
       "audio": 4,
       "audioDynamics": 30,
@@ -4586,7 +4586,7 @@
       "settings": 25,
       "feedback": 163,
       "session": 30,
-      "content": 520,
+      "content": 522,
       "choice": 1659,
       "connection": 8,
       "performance": 34,
@@ -4614,7 +4614,7 @@
       },
       {
         "file": "roblox-games/defense/default.project.json",
-        "score": 17
+        "score": 21
       },
       {
         "file": "roblox-games/defense/shared/RobloxCommonMaterials.luau",
@@ -6154,10 +6154,10 @@
         "gameId": "defense",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/defense/server/Game.server.luau",
-          "roblox-games/defense/shared/GameConfig.luau",
-          "roblox-games/defense/shared/RobloxCommonMaterials.luau",
-          "roblox-games/defense/shared/RobloxCommonUI.luau"
+          "roblox-games/defense/client/Game.client.luau",
+          "roblox-games/defense/client/MaterialPresentation.client.luau",
+          "roblox-games/defense/shared/RobloxCommonUI.luau",
+          "roblox-games/defense/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6169,10 +6169,10 @@
         "gameId": "defense",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/defense/server/Game.server.luau",
-          "roblox-games/defense/shared/GameConfig.luau",
-          "roblox-games/defense/shared/RobloxCommonMaterials.luau",
-          "roblox-games/defense/shared/RobloxCommonUI.luau"
+          "roblox-games/defense/client/Game.client.luau",
+          "roblox-games/defense/client/MaterialPresentation.client.luau",
+          "roblox-games/defense/shared/RobloxCommonUI.luau",
+          "roblox-games/defense/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6184,10 +6184,10 @@
         "gameId": "defense",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/defense/server/Game.server.luau",
-          "roblox-games/defense/shared/GameConfig.luau",
-          "roblox-games/defense/shared/RobloxCommonMaterials.luau",
-          "roblox-games/defense/shared/RobloxCommonUI.luau"
+          "roblox-games/defense/client/Game.client.luau",
+          "roblox-games/defense/client/MaterialPresentation.client.luau",
+          "roblox-games/defense/shared/RobloxCommonUI.luau",
+          "roblox-games/defense/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6199,10 +6199,10 @@
         "gameId": "defense",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/defense/server/Game.server.luau",
-          "roblox-games/defense/shared/GameConfig.luau",
-          "roblox-games/defense/shared/RobloxCommonMaterials.luau",
-          "roblox-games/defense/shared/RobloxCommonUI.luau"
+          "roblox-games/defense/client/Game.client.luau",
+          "roblox-games/defense/client/MaterialPresentation.client.luau",
+          "roblox-games/defense/shared/RobloxCommonUI.luau",
+          "roblox-games/defense/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6214,10 +6214,10 @@
         "gameId": "defense",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/defense/server/Game.server.luau",
-          "roblox-games/defense/shared/GameConfig.luau",
-          "roblox-games/defense/shared/RobloxCommonMaterials.luau",
-          "roblox-games/defense/shared/RobloxCommonUI.luau"
+          "roblox-games/defense/client/Game.client.luau",
+          "roblox-games/defense/client/MaterialPresentation.client.luau",
+          "roblox-games/defense/shared/RobloxCommonUI.luau",
+          "roblox-games/defense/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6273,7 +6273,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 433364,
+        "sourceBytes": 433863,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6472,7 +6472,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "defense",
     "sourceRoot": "roblox-games/defense",
-    "sourceTreeFingerprint": "c3f3cb2dd3d16691e0b23375dd46034ff122967616b4ea9b7ebef2bdbed46301",
+    "sourceTreeFingerprint": "a020756463a0f25681ea292d5d4fe5c62c3d1c126295d8837e80bc7a91f90c5e",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -10159,7 +10159,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "c3f3cb2dd3d16691e0b23375dd46034ff122967616b4ea9b7ebef2bdbed46301",
+    "sourceFingerprint": "a020756463a0f25681ea292d5d4fe5c62c3d1c126295d8837e80bc7a91f90c5e",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -10179,7 +10179,7 @@
     "version": 1,
     "gameId": "defense",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "c3f3cb2dd3d16691e0b23375dd46034ff122967616b4ea9b7ebef2bdbed46301",
+    "sourceTreeFingerprint": "a020756463a0f25681ea292d5d4fe5c62c3d1c126295d8837e80bc7a91f90c5e",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -10318,7 +10318,8 @@
           "roblox-games/defense/shared/RobloxCommonUI.luau",
           "roblox-games/defense/shared/GameConfig.luau",
           "roblox-games/defense/server/Game.server.luau",
-          "roblox-games/defense/client/Game.client.luau"
+          "roblox-games/defense/client/Game.client.luau",
+          "roblox-games/defense/default.project.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -10374,6 +10375,7 @@
           "roblox-games/defense/shared/GameConfig.luau",
           "roblox-games/defense/server/Game.server.luau",
           "roblox-games/defense/client/Game.client.luau",
+          "roblox-games/defense/default.project.json",
           "roblox-games/defense/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": false,
@@ -10600,7 +10602,8 @@
         "roblox-games/defense/shared/RobloxCommonUI.luau",
         "roblox-games/defense/shared/GameConfig.luau",
         "roblox-games/defense/server/Game.server.luau",
-        "roblox-games/defense/client/Game.client.luau"
+        "roblox-games/defense/client/Game.client.luau",
+        "roblox-games/defense/default.project.json"
       ],
       "NPC_AI": [
         "roblox-games/defense/shared/RobloxCommonUI.luau",
@@ -10674,6 +10677,7 @@
         "roblox-games/defense/shared/GameConfig.luau",
         "roblox-games/defense/server/Game.server.luau",
         "roblox-games/defense/client/Game.client.luau",
+        "roblox-games/defense/default.project.json",
         "roblox-games/defense/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
@@ -10924,6 +10928,7 @@
           "roblox-games/defense/shared/GameConfig.luau",
           "roblox-games/defense/server/Game.server.luau",
           "roblox-games/defense/client/Game.client.luau",
+          "roblox-games/defense/default.project.json",
           "roblox-games/defense/shared/RobloxCommonMaterials.luau"
         ],
         "checks": [
@@ -11252,7 +11257,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "c3f3cb2dd3d16691e0b23375dd46034ff122967616b4ea9b7ebef2bdbed46301",
+      "sourceTreeFingerprint": "a020756463a0f25681ea292d5d4fe5c62c3d1c126295d8837e80bc7a91f90c5e",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11276,7 +11281,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "c3f3cb2dd3d16691e0b23375dd46034ff122967616b4ea9b7ebef2bdbed46301",
+      "sourceTreeFingerprint": "a020756463a0f25681ea292d5d4fe5c62c3d1c126295d8837e80bc7a91f90c5e",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -11349,7 +11354,7 @@
     "gameId": "defense",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "c3f3cb2dd3d16691e0b23375dd46034ff122967616b4ea9b7ebef2bdbed46301",
+    "sourceTreeFingerprint": "a020756463a0f25681ea292d5d4fe5c62c3d1c126295d8837e80bc7a91f90c5e",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11679,12 +11684,12 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/defense/client/Game.client.luau",
+      "roblox-games/defense/client/MaterialPresentation.client.luau",
+      "roblox-games/defense/shared/RobloxCommonUI.luau",
       "roblox-games/defense/server/Game.server.luau",
       "roblox-games/defense/shared/GameConfig.luau",
       "roblox-games/defense/shared/RobloxCommonMaterials.luau",
-      "roblox-games/defense/shared/RobloxCommonUI.luau",
-      "roblox-games/defense/client/Game.client.luau",
-      "roblox-games/defense/client/MaterialPresentation.client.luau",
       "roblox-games/defense/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11907,12 +11912,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/defense/client/Game.client.luau",
+      "roblox-games/defense/client/MaterialPresentation.client.luau",
+      "roblox-games/defense/shared/RobloxCommonUI.luau",
       "roblox-games/defense/server/Game.server.luau",
       "roblox-games/defense/shared/GameConfig.luau",
       "roblox-games/defense/shared/RobloxCommonMaterials.luau",
-      "roblox-games/defense/shared/RobloxCommonUI.luau",
-      "roblox-games/defense/client/Game.client.luau",
-      "roblox-games/defense/client/MaterialPresentation.client.luau",
       "roblox-games/defense/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12110,12 +12115,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/defense/client/Game.client.luau",
+      "roblox-games/defense/client/MaterialPresentation.client.luau",
+      "roblox-games/defense/shared/RobloxCommonUI.luau",
       "roblox-games/defense/server/Game.server.luau",
       "roblox-games/defense/shared/GameConfig.luau",
       "roblox-games/defense/shared/RobloxCommonMaterials.luau",
-      "roblox-games/defense/shared/RobloxCommonUI.luau",
-      "roblox-games/defense/client/Game.client.luau",
-      "roblox-games/defense/client/MaterialPresentation.client.luau",
       "roblox-games/defense/default.project.json"
     ],
     "sourceAnchors": [
@@ -12283,12 +12288,12 @@
     "gameId": "defense",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/defense/client/Game.client.luau",
+      "roblox-games/defense/client/MaterialPresentation.client.luau",
+      "roblox-games/defense/shared/RobloxCommonUI.luau",
       "roblox-games/defense/server/Game.server.luau",
       "roblox-games/defense/shared/GameConfig.luau",
       "roblox-games/defense/shared/RobloxCommonMaterials.luau",
-      "roblox-games/defense/shared/RobloxCommonUI.luau",
-      "roblox-games/defense/client/Game.client.luau",
-      "roblox-games/defense/client/MaterialPresentation.client.luau",
       "roblox-games/defense/default.project.json"
     ],
     "impact": {
@@ -12363,7 +12368,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "c3f3cb2dd3d16691e0b23375dd46034ff122967616b4ea9b7ebef2bdbed46301",
+      "sourceTreeFingerprint": "a020756463a0f25681ea292d5d4fe5c62c3d1c126295d8837e80bc7a91f90c5e",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12487,5 +12492,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T14:54:00.088Z"
+  "generatedAt": "2026-11-08T15:45:38.967Z"
 }

@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "kingshot-ad-build-up-g1-c021c573b49a",
-  "directiveFingerprint": "c021c573b49a881e073e01d530b3bb448a07d8d0b02a0a803a41ecf1603fa511",
+  "directiveId": "kingshot-ad-build-up-g1-aff672c9a41d",
+  "directiveFingerprint": "aff672c9a41dbfe8390e528d47e18e3d2eecb1778f47729da6d1da80d222b613",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "kingshot-ad",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/kingshot-ad",
-  "sourceTreeFingerprint": "0feee82dd9ae231e2446105ba8932bd30cb74e4c79870f5ad780bcc8eccdddc8",
+  "sourceTreeFingerprint": "ef498218c935187efce5ca427b0cde4cf4c11b379265cbca484da7ccddc987fe",
   "designFingerprint": "be8360d4a02b8daf8907fa661752fbd4580243e7f99549011a80b637aacae88e",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "0feee82dd9ae231e2446105ba8932bd30cb74e4c79870f5ad780bcc8eccdddc8",
+        "sourceTreeFingerprint": "ef498218c935187efce5ca427b0cde4cf4c11b379265cbca484da7ccddc987fe",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "be8360d4a02b8daf8907fa661752fbd4580243e7f99549011a80b637aacae88e",
-    "sourceTreeFingerprint": "0feee82dd9ae231e2446105ba8932bd30cb74e4c79870f5ad780bcc8eccdddc8",
+    "sourceTreeFingerprint": "ef498218c935187efce5ca427b0cde4cf4c11b379265cbca484da7ccddc987fe",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -958,7 +958,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "0feee82dd9ae231e2446105ba8932bd30cb74e4c79870f5ad780bcc8eccdddc8",
+    "sourceTreeFingerprint": "ef498218c935187efce5ca427b0cde4cf4c11b379265cbca484da7ccddc987fe",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4561,7 +4561,7 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 168,
+      "combat": 171,
       "progression": 526,
       "ai": 62,
       "save": 117,
@@ -4569,7 +4569,7 @@
       "animation": 45,
       "motionStates": 691,
       "gameFeel": 36,
-      "vfx": 49,
+      "vfx": 50,
       "camera": 46,
       "audio": 4,
       "audioDynamics": 51,
@@ -4586,7 +4586,7 @@
       "settings": 25,
       "feedback": 169,
       "session": 30,
-      "content": 520,
+      "content": 522,
       "choice": 1658,
       "connection": 8,
       "performance": 34,
@@ -4614,7 +4614,7 @@
       },
       {
         "file": "roblox-games/kingshot-ad/default.project.json",
-        "score": 17
+        "score": 21
       },
       {
         "file": "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau",
@@ -6154,10 +6154,10 @@
         "gameId": "kingshot-ad",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/kingshot-ad/server/Game.server.luau",
-          "roblox-games/kingshot-ad/shared/GameConfig.luau",
-          "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau",
-          "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau"
+          "roblox-games/kingshot-ad/client/Game.client.luau",
+          "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
+          "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
+          "roblox-games/kingshot-ad/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6169,10 +6169,10 @@
         "gameId": "kingshot-ad",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/kingshot-ad/server/Game.server.luau",
-          "roblox-games/kingshot-ad/shared/GameConfig.luau",
-          "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau",
-          "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau"
+          "roblox-games/kingshot-ad/client/Game.client.luau",
+          "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
+          "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
+          "roblox-games/kingshot-ad/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6184,10 +6184,10 @@
         "gameId": "kingshot-ad",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/kingshot-ad/server/Game.server.luau",
-          "roblox-games/kingshot-ad/shared/GameConfig.luau",
-          "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau",
-          "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau"
+          "roblox-games/kingshot-ad/client/Game.client.luau",
+          "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
+          "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
+          "roblox-games/kingshot-ad/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6199,10 +6199,10 @@
         "gameId": "kingshot-ad",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/kingshot-ad/server/Game.server.luau",
-          "roblox-games/kingshot-ad/shared/GameConfig.luau",
-          "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau",
-          "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau"
+          "roblox-games/kingshot-ad/client/Game.client.luau",
+          "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
+          "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
+          "roblox-games/kingshot-ad/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6214,10 +6214,10 @@
         "gameId": "kingshot-ad",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/kingshot-ad/server/Game.server.luau",
-          "roblox-games/kingshot-ad/shared/GameConfig.luau",
-          "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau",
-          "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau"
+          "roblox-games/kingshot-ad/client/Game.client.luau",
+          "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
+          "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
+          "roblox-games/kingshot-ad/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6273,7 +6273,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 434782,
+        "sourceBytes": 435281,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6472,7 +6472,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "kingshot-ad",
     "sourceRoot": "roblox-games/kingshot-ad",
-    "sourceTreeFingerprint": "0feee82dd9ae231e2446105ba8932bd30cb74e4c79870f5ad780bcc8eccdddc8",
+    "sourceTreeFingerprint": "ef498218c935187efce5ca427b0cde4cf4c11b379265cbca484da7ccddc987fe",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -10159,7 +10159,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "0feee82dd9ae231e2446105ba8932bd30cb74e4c79870f5ad780bcc8eccdddc8",
+    "sourceFingerprint": "ef498218c935187efce5ca427b0cde4cf4c11b379265cbca484da7ccddc987fe",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -10179,7 +10179,7 @@
     "version": 1,
     "gameId": "kingshot-ad",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "0feee82dd9ae231e2446105ba8932bd30cb74e4c79870f5ad780bcc8eccdddc8",
+    "sourceTreeFingerprint": "ef498218c935187efce5ca427b0cde4cf4c11b379265cbca484da7ccddc987fe",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -10318,7 +10318,8 @@
           "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
           "roblox-games/kingshot-ad/shared/GameConfig.luau",
           "roblox-games/kingshot-ad/server/Game.server.luau",
-          "roblox-games/kingshot-ad/client/Game.client.luau"
+          "roblox-games/kingshot-ad/client/Game.client.luau",
+          "roblox-games/kingshot-ad/default.project.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -10374,6 +10375,7 @@
           "roblox-games/kingshot-ad/shared/GameConfig.luau",
           "roblox-games/kingshot-ad/server/Game.server.luau",
           "roblox-games/kingshot-ad/client/Game.client.luau",
+          "roblox-games/kingshot-ad/default.project.json",
           "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": false,
@@ -10600,7 +10602,8 @@
         "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
         "roblox-games/kingshot-ad/shared/GameConfig.luau",
         "roblox-games/kingshot-ad/server/Game.server.luau",
-        "roblox-games/kingshot-ad/client/Game.client.luau"
+        "roblox-games/kingshot-ad/client/Game.client.luau",
+        "roblox-games/kingshot-ad/default.project.json"
       ],
       "NPC_AI": [
         "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
@@ -10674,6 +10677,7 @@
         "roblox-games/kingshot-ad/shared/GameConfig.luau",
         "roblox-games/kingshot-ad/server/Game.server.luau",
         "roblox-games/kingshot-ad/client/Game.client.luau",
+        "roblox-games/kingshot-ad/default.project.json",
         "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
@@ -10924,6 +10928,7 @@
           "roblox-games/kingshot-ad/shared/GameConfig.luau",
           "roblox-games/kingshot-ad/server/Game.server.luau",
           "roblox-games/kingshot-ad/client/Game.client.luau",
+          "roblox-games/kingshot-ad/default.project.json",
           "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau"
         ],
         "checks": [
@@ -11252,7 +11257,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "0feee82dd9ae231e2446105ba8932bd30cb74e4c79870f5ad780bcc8eccdddc8",
+      "sourceTreeFingerprint": "ef498218c935187efce5ca427b0cde4cf4c11b379265cbca484da7ccddc987fe",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11276,7 +11281,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "0feee82dd9ae231e2446105ba8932bd30cb74e4c79870f5ad780bcc8eccdddc8",
+      "sourceTreeFingerprint": "ef498218c935187efce5ca427b0cde4cf4c11b379265cbca484da7ccddc987fe",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -11349,7 +11354,7 @@
     "gameId": "kingshot-ad",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "0feee82dd9ae231e2446105ba8932bd30cb74e4c79870f5ad780bcc8eccdddc8",
+    "sourceTreeFingerprint": "ef498218c935187efce5ca427b0cde4cf4c11b379265cbca484da7ccddc987fe",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11679,12 +11684,12 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/kingshot-ad/client/Game.client.luau",
+      "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
+      "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
       "roblox-games/kingshot-ad/server/Game.server.luau",
       "roblox-games/kingshot-ad/shared/GameConfig.luau",
       "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau",
-      "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
-      "roblox-games/kingshot-ad/client/Game.client.luau",
-      "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
       "roblox-games/kingshot-ad/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11907,12 +11912,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/kingshot-ad/client/Game.client.luau",
+      "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
+      "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
       "roblox-games/kingshot-ad/server/Game.server.luau",
       "roblox-games/kingshot-ad/shared/GameConfig.luau",
       "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau",
-      "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
-      "roblox-games/kingshot-ad/client/Game.client.luau",
-      "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
       "roblox-games/kingshot-ad/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12110,12 +12115,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/kingshot-ad/client/Game.client.luau",
+      "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
+      "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
       "roblox-games/kingshot-ad/server/Game.server.luau",
       "roblox-games/kingshot-ad/shared/GameConfig.luau",
       "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau",
-      "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
-      "roblox-games/kingshot-ad/client/Game.client.luau",
-      "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
       "roblox-games/kingshot-ad/default.project.json"
     ],
     "sourceAnchors": [
@@ -12283,12 +12288,12 @@
     "gameId": "kingshot-ad",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/kingshot-ad/client/Game.client.luau",
+      "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
+      "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
       "roblox-games/kingshot-ad/server/Game.server.luau",
       "roblox-games/kingshot-ad/shared/GameConfig.luau",
       "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau",
-      "roblox-games/kingshot-ad/shared/RobloxCommonUI.luau",
-      "roblox-games/kingshot-ad/client/Game.client.luau",
-      "roblox-games/kingshot-ad/client/MaterialPresentation.client.luau",
       "roblox-games/kingshot-ad/default.project.json"
     ],
     "impact": {
@@ -12363,7 +12368,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "0feee82dd9ae231e2446105ba8932bd30cb74e4c79870f5ad780bcc8eccdddc8",
+      "sourceTreeFingerprint": "ef498218c935187efce5ca427b0cde4cf4c11b379265cbca484da7ccddc987fe",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12487,5 +12492,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T14:54:12.866Z"
+  "generatedAt": "2026-11-08T15:45:40.747Z"
 }
