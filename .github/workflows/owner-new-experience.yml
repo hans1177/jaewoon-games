@@ -75,6 +75,8 @@ jobs:
         run: python3 tools/grant-asset-permissions.py
       - name: Probe asset ownership (diagnostic, read-only)
         if: inputs.probe == 'assets'
+        env:
+          KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: python3 tools/probe-asset-owners.py
       - name: Probe place publish (diagnostic)
         if: inputs.probe == 'true'

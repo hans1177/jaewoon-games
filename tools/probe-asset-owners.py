@@ -24,3 +24,18 @@ for tag, path in FILES.items():
         stats.setdefault(key, []).append((i, kind))
     for key, rows in sorted(stats.items(), key=lambda x: -len(x[1])):
         print(f"PROBE_ASSET {tag} {len(rows):3d}x {key} types={sorted({k for _, k in rows}, key=str)} e.g. {rows[0][0]}")
+
+# 키 권한 조회 (키 값은 출력하지 않는다)
+import os
+key = os.environ.get("KEY", "")
+if key:
+    try:
+        req = urllib.request.Request("https://apis.roblox.com/api-keys/v1/introspect",
+            data=json.dumps({"apiKey": key}).encode(), method="POST", headers={"content-type": "application/json"})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            d = json.load(r)
+        print("PROBE_KEY owner=%s name=%s" % (d.get("authorizedUserId") or d.get("ownerId"), d.get("name")))
+        for sc in d.get("scopes", []):
+            print("PROBE_KEY scope=%s ops=%s" % (sc.get("name"), sc.get("operations")))
+    except Exception as e:
+        print("PROBE_KEY introspect failed:", str(e)[:120])
