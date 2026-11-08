@@ -702,7 +702,7 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.match(workflow,/Publish exact game image to Roblox experience detail page/);
   assert.match(workflow,/robloxDetailMediaEvidence/);
   assert.match(workflow,/ROBLOX_DETAIL_GAMEPLAY_VIDEO_IS_NOT_WEB_COMPANION=YES/);
-  assert.match(workflow,/ROBLOX_ROBLOSECURITY: \$\{\{ secrets\.ROBLOX_ROBLOSECURITY \}\}/);
+  assert.doesNotMatch(workflow,/ROBLOX_ROBLOSECURITY: \$\{\{ secrets\.ROBLOX_ROBLOSECURITY \}\}/);
   assert.match(workflow,/librsvg2-bin/);
   assert.match(workflow,/Archive native gameplay edits and separately labeled art previews/);
   assert.match(workflow,/Render official-source concept art previews without gameplay claims/);

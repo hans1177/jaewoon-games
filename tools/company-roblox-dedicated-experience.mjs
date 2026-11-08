@@ -84,38 +84,27 @@ async function resolveRootPlaceId(universeId,{fetchImpl=globalThis.fetch}={}){
 
 export async function createRobloxDedicatedExperience({
   templatePlaceId=DEFAULT_TEMPLATE_PLACE_ID,
-  cookie=process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE,
   apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,
   fetchImpl=globalThis.fetch,
 }={}){
-  const template=clean(templatePlaceId);
+  // [인증] 1980 등 특정 로그인 세션을 추측하지 않는다. 현재 GitHub Open Cloud 키만 사용한다.
+  const template=clean(templatePlaceId),key=clean(apiKey);
   if(!validId(template))throw new Error('template place id invalid');
+  if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
   const endpoint='https://apis.roblox.com/universes/v1/universes/create';
-  const c=cookieHeader(cookie),key=clean(apiKey);
-  if(!c&&!key)throw new Error('Roblox experience create requires ROBLOX_ROBLOSECURITY or ROBLOX_OPEN_CLOUD_API_KEY');
   const tryBody=async body=>{
-    let response;
-    if(c){
-      response=await csrfFetch({
-        url:endpoint,method:'POST',cookie,fetchImpl,
-        headers:{'content-type':'application/json'},
-        body:JSON.stringify(body),
-      });
-    }else{
-      response=await fetchImpl(endpoint,{
-        method:'POST',
-        headers:{'content-type':'application/json','x-api-key':key},
-        body:JSON.stringify(body),
-      });
-    }
+    const response=await fetchImpl(endpoint,{
+      method:'POST',
+      headers:{'content-type':'application/json','x-api-key':key},
+      body:JSON.stringify(body),
+    });
     return {response,...await parseResponse(response)};
   };
   let result=await tryBody({templatePlaceId:Number(template)});
-  if(!result.response.ok&&result.response.status===400){
+  if(!result.response.ok&&result.response.status===400)
     result=await tryBody({templatePlaceIdToUse:Number(template)});
-  }
   if(!result.response.ok){
-    const authHint=!c&&(result.response.status===401||result.response.status===403)?':OPEN_CLOUD_CREATE_NOT_AUTHORIZED':'';
+    const authHint=[401,403].includes(result.response.status)?':OPEN_CLOUD_CREATE_NOT_AUTHORIZED':'';
     throw new Error(`Roblox experience create failed HTTP ${result.response.status}${authHint}: ${errText(result.payload)}`);
   }
   const ids=pickIds(result.payload||{});
@@ -126,72 +115,39 @@ export async function createRobloxDedicatedExperience({
 
 export async function configureRobloxExperience({
   universeId,name,description='',avatarRig='',
-  cookie=process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE,
   apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,
   fetchImpl=globalThis.fetch,
 }={}){
   if(!validId(universeId))throw new Error('universe id invalid');
   if(!clean(name))throw new Error('experience name required');
-  const c=cookieHeader(cookie),key=clean(apiKey);
+  const key=clean(apiKey);
+  if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
   if(avatarRig&&avatarRig!=='R15')throw new Error('UNSUPPORTED_OWNER_AVATAR_RIG');
-  if(avatarRig&&!c)throw new Error('OWNER_R15_CONFIGURATION_AUTH_REQUIRED');
-  let response;
-  if(c){
-    const endpoint=`https://develop.roblox.com/v2/universes/${universeId}/configuration`;
-    response=await csrfFetch({
-      url:endpoint,method:'PATCH',cookie,fetchImpl,
-      headers:{'content-type':'application/json'},
-      body:JSON.stringify({name:clean(name),description:String(description||''),...(avatarRig==='R15'?{universeAvatarType:3}:{})}),
-    });
-  }else{
-    if(!key)throw new Error('Roblox experience configure requires ROBLOX_ROBLOSECURITY or ROBLOX_OPEN_CLOUD_API_KEY');
-    const endpoint=`https://apis.roblox.com/cloud/v2/universes/${universeId}?updateMask=displayName,description,visibility`;
-    response=await fetchImpl(endpoint,{
-      method:'PATCH',
-      headers:{'content-type':'application/json','x-api-key':key},
-      body:JSON.stringify({
-        displayName:clean(name),
-        description:String(description||''),
-        visibility:'PRIVATE',
-      }),
-    });
-  }
+  // [R15] 공식 키만으로 아바타 리그 변경을 검증할 수 없으므로 옛 쿠키로 우회하지 않는다.
+  if(avatarRig==='R15')throw new Error('ROBLOX_R15_OWNER_STUDIO_CONFIGURATION_REQUIRED_API_KEY_ONLY');
+  const endpoint=`https://apis.roblox.com/cloud/v2/universes/${universeId}?updateMask=displayName,description,visibility`;
+  const response=await fetchImpl(endpoint,{
+    method:'PATCH',
+    headers:{'content-type':'application/json','x-api-key':key},
+    body:JSON.stringify({displayName:clean(name),description:String(description||''),visibility:'PRIVATE'}),
+  });
   const {payload}=await parseResponse(response);
   if(!response.ok)throw new Error(`Roblox experience configure failed HTTP ${response.status}: ${errText(payload)}`);
-  if(avatarRig==='R15'){
-    let actual=payload?.universeAvatarType;
-    if(actual!==3&&actual!=='MorphToR15'){
-      const current=await fetchImpl(`https://develop.roblox.com/v1/universes/${universeId}/configuration`,{headers:{cookie:c}});
-      const checked=await parseResponse(current);
-      if(!current.ok)throw new Error('OWNER_R15_CONFIGURATION_READ_FAILED_HTTP_'+current.status);
-      actual=checked.payload?.universeAvatarType;
-    }
-    console.log('ROBLOX_OWNER_AVATAR_TYPE='+String(actual||'UNCONFIRMED'));
-    if(actual!==3&&actual!=='MorphToR15')throw new Error('OWNER_R15_CONFIGURATION_NOT_CONFIRMED');
-  }
-  return Object.freeze({configured:true,privateRequested:true,...(avatarRig?{avatarRig}: {})});
+  return Object.freeze({configured:true,privateRequested:true});
 }
 
 export async function ensureRobloxExperiencePrivate({
   universeId,
   apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,
-  cookie=process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE,
   fetchImpl=globalThis.fetch,
 }={}){
   if(!validId(universeId))throw new Error('universe id invalid');
-  let response=null;
+  // [인증] 비공개 전환은 Open Cloud 키로만 시도하고 옛 계정 쿠키로 재시도하지 않는다.
   const key=clean(apiKey);
-  if(key){
-    response=await fetchImpl(`https://apis.roblox.com/legacy-develop/v1/universes/${universeId}/deactivate`,{
-      method:'POST',headers:{'x-api-key':key},
-    });
-  }
-  if(!response||!response.ok){
-    response=await csrfFetch({
-      url:`https://develop.roblox.com/v1/universes/${universeId}/deactivate`,
-      method:'POST',cookie,fetchImpl,
-    });
-  }
+  if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required for private enforcement');
+  const response=await fetchImpl(`https://apis.roblox.com/legacy-develop/v1/universes/${universeId}/deactivate`,{
+    method:'POST',headers:{'x-api-key':key},
+  });
   const {payload}=await parseResponse(response);
   if(!response.ok)throw new Error(`Roblox private enforcement failed HTTP ${response.status}: ${errText(payload)}`);
   const check=await fetchImpl(`https://develop.roblox.com/v1/universes/${universeId}`);
@@ -274,6 +230,9 @@ async function main(){
   const reuseUniverseId=clean(args['reuse-universe-id']);
   const reusePlaceId=clean(args['reuse-place-id']);
   if(!gameId||!gameName||!placeFile||!output||!sourceRevision)throw new Error('game-id, game-name, place-file, output, source-revision required');
+  // [인증] R15 전용 설정은 API 키로 입증되지 않아, 다른 계정 쿠키를 쓰는 대신 새 체험 생성을 차단한다.
+  if(avatarRig==='R15'&&clean(process.env.ROBLOX_OPEN_CLOUD_API_KEY))
+    throw new Error('ROBLOX_R15_OWNER_STUDIO_CONFIGURATION_REQUIRED_API_KEY_ONLY');
   const result={
     version:1,gameId,gameName,sourceRevision,
     artifactIdentity:`sha256:${sha256(placeFile)}`,

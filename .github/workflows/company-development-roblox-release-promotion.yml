@@ -259,8 +259,6 @@ jobs:
           PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
           PUBLISH_CYCLE_ID: ${{ inputs.publish_cycle_id || '' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         shell: bash
         run: |
           set -euo pipefail
@@ -318,7 +316,7 @@ jobs:
             process.exit(0);
           }
           if(validationCollision)console.log('ROBLOX_VALIDATION_TARGET_COLLISION_REPAIR='+gameId);
-          const cookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
+          const cookie='';
           const created=await createRobloxDedicatedExperience({
             apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
             cookie,
@@ -756,8 +754,6 @@ jobs:
         working-directory: main
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
         shell: bash
         run: |
@@ -790,20 +786,8 @@ jobs:
             code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' --request POST --header "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" "https://apis.roblox.com/legacy-develop/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate")"
           fi
           if [[ "$code" != 200 && "$code" != 201 && "$code" != 204 ]]; then
-            raw_cookie="${ROBLOX_ROBLOSECURITY:-${ROBLOX_SECURITY_COOKIE:-}}"
-            if [[ -z "$raw_cookie" ]]; then
-              cat "$response" >&2 || true
-              echo "ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=FAILED:HTTP_$code:NO_COOKIE_FALLBACK" >&2
-              exit 42
-            fi
-            if [[ "$raw_cookie" == *'.ROBLOSECURITY='* ]]; then cookie="$raw_cookie"; else cookie=".ROBLOSECURITY=$raw_cookie;"; fi
-            csrf_headers=/tmp/roblox-deactivate-headers.txt
-            : > "$csrf_headers"
-            curl --silent --show-error --output /tmp/roblox-deactivate-csrf-body.txt --dump-header "$csrf_headers" --request POST --header "cookie: $cookie" "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate" || true
-            csrf="$(awk 'BEGIN{IGNORECASE=1}/^x-csrf-token:/{sub(/\r$/,"",$2);print $2;exit}' "$csrf_headers")"
-            [[ -n "$csrf" ]] || { cat /tmp/roblox-deactivate-csrf-body.txt >&2 || true; echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=FAILED:NO_CSRF' >&2; exit 43; }
-            code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' --request POST --header "cookie: $cookie" --header "x-csrf-token: $csrf" "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate")"
-            echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_FALLBACK=COOKIE_CSRF'
+            echo "ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=FAILED:HTTP_$code:OPEN_CLOUD_PERMISSION_REQUIRED" >&2
+            exit 42
           fi
           case "$code" in
             200|201|204) ;;
@@ -830,8 +814,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.target.outputs.game_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
           SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
@@ -963,14 +945,13 @@ jobs:
           const assetIds=[...new Set(selected)];
           if(assetIds.length){
             // Verified CC0 models still require explicit Roblox Universe grants.
-            // An owner-authenticated cookie is an official alternative to an API
-            // key without asset-permissions:write; never skip grant verification.
+            // If this Open Cloud key has no grant rights, block instead of switching accounts.
             const url='https://apis.roblox.com/asset-permissions-api/v1/assets/permissions';
             const body=JSON.stringify({subjectType:'Universe',subjectId:String(process.env.ROBLOX_UNIVERSE_ID),
               action:'Use',requests:assetIds.map(assetId=>({assetId,grantToDependencies:true}))});
             const apiKey=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
-            const ownerRaw=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
-            if(!apiKey&&!ownerRaw)throw new Error('ROBLOX_CC0_GRANT_OWNER_CREDENTIAL_REQUIRED');
+            if(!apiKey)throw new Error('ROBLOX_CC0_GRANT_OPEN_CLOUD_API_KEY_REQUIRED');
+            // [인증] 유니버스 자산 사용 권한도 현재 Open Cloud 키로만 검증한다.
             const request=async headers=>fetch(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(30000)});
             const decode=async result=>result.json().catch(()=>({}));
             const complete=(result,answer)=>{
@@ -979,26 +960,9 @@ jobs:
                 &&(!Array.isArray(answer?.errors)||answer.errors.length===0)
                 &&assetIds.every(assetId=>granted.has(String(assetId)));
             };
-            let grant=null,answer=null,authority='API_KEY';
-            if(apiKey){
-              grant=await request({'x-api-key':apiKey,'content-type':'application/json'});
-              answer=await decode(grant);
-            }
-            if((!grant||grant.status===403)&&!complete(grant,answer)&&ownerRaw){
-              // Roblox validates the owner and issues the CSRF challenge.
-              const cookie=ownerRaw.includes('.ROBLOSECURITY=')?ownerRaw:'.ROBLOSECURITY='+ownerRaw+';';
-              let headers={'content-type':'application/json',cookie};
-              grant=await request(headers);
-              if(grant.status===403){
-                const csrf=grant.headers.get('x-csrf-token');
-                if(csrf){
-                  headers={...headers,'x-csrf-token':csrf};
-                  grant=await request(headers);
-                }
-              }
-              answer=await decode(grant);
-              authority='OWNER_COOKIE_CSRF';
-            }
+            const authority='API_KEY';
+            const grant=await request({'x-api-key':apiKey,'content-type':'application/json'});
+            const answer=await decode(grant);
             if(!complete(grant,answer)){
               // Do not log response bodies or auth material.
               const reason=String(answer?.error?.code||answer?.errors?.[0]?.code||'UNSPECIFIED')
@@ -1835,8 +1799,6 @@ jobs:
         working-directory: main
         env:
           GAME_IDS: ${{ steps.thumbnail_games.outputs.game_ids }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         shell: bash
         run: |
           set -euo pipefail

@@ -56,8 +56,6 @@ jobs:
           GAME_ID: ${{ inputs.game_id }}
           GAME_NAME: ${{ inputs.game_name }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
           set -euo pipefail
           args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/new-exp/$GAME_ID.rbxlx" --source-revision "$(git rev-parse HEAD)" --output "/tmp/new-exp/result.json")

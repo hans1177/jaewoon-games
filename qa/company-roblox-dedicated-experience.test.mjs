@@ -26,17 +26,19 @@ test('csrfFetch retries once with x-csrf-token', async()=>{
   assert.match(calls[1].init.headers.cookie,/\.ROBLOSECURITY=secret;/);
 });
 
-test('createRobloxDedicatedExperience parses dedicated universe and root place ids', async()=>{
+test('createRobloxDedicatedExperience uses only the Open Cloud API key even with an old cookie present', async()=>{
   const calls=[];
   const fetchImpl=async(url,init={})=>{
     calls.push({url,init});
-    if(calls.length===1)return new Response('{}',{status:403,headers:{'x-csrf-token':'csrf'}});
     return new Response(JSON.stringify({universeId:12345,rootPlaceId:67890}),{status:200,headers:{'content-type':'application/json'}});
   };
-  const result=await createRobloxDedicatedExperience({cookie:'secret',fetchImpl});
+  const result=await createRobloxDedicatedExperience({cookie:'old-account',apiKey:'new-key',fetchImpl});
   assert.deepEqual(result,{universeId:'12345',placeId:'67890',created:true});
-  assert.equal(calls[1].url,'https://apis.roblox.com/universes/v1/universes/create');
-  assert.match(String(calls[1].init.body),/templatePlaceId/);
+  assert.equal(calls.length,1);
+  assert.equal(calls[0].url,'https://apis.roblox.com/universes/v1/universes/create');
+  assert.equal(calls[0].init.headers['x-api-key'],'new-key');
+  assert.equal(calls[0].init.headers.cookie,undefined);
+  await assert.rejects(()=>createRobloxDedicatedExperience({cookie:'old-account',apiKey:'',fetchImpl}),/ROBLOX_OPEN_CLOUD_API_KEY required/);
 });
 
 test('createRobloxDedicatedExperience tries existing Open Cloud key when cookie is absent', async()=>{
@@ -53,19 +55,21 @@ test('createRobloxDedicatedExperience tries existing Open Cloud key when cookie 
   assert.equal(calls[0].init.headers.cookie,undefined);
 });
 
-test('configureRobloxExperience uses Cloud v2 with API key and keeps target private when cookie is absent', async()=>{
+test('configureRobloxExperience uses Cloud v2 with API key and ignores any old login cookie', async()=>{
   let seen=null;
   const fetchImpl=async(url,init={})=>{
     seen={url,init};
     return new Response(JSON.stringify({path:'universes/12345',displayName:'Whatever RPG',visibility:'PRIVATE'}),{status:200});
   };
   const result=await configureRobloxExperience({
-    universeId:'12345',name:'Whatever RPG',description:'private',cookie:'',apiKey:'key',fetchImpl,
+    universeId:'12345',name:'Whatever RPG',description:'private',cookie:'old-account',apiKey:'key',fetchImpl,
   });
   assert.equal(result.configured,true);
   assert.match(seen.url,/cloud\/v2\/universes\/12345\?updateMask=displayName,description,visibility$/);
   assert.equal(seen.init.headers['x-api-key'],'key');
+  assert.equal(seen.init.headers.cookie,undefined);
   assert.deepEqual(JSON.parse(seen.init.body),{displayName:'Whatever RPG',description:'private',visibility:'PRIVATE'});
+  await assert.rejects(()=>configureRobloxExperience({universeId:'12345',name:'Private Game',avatarRig:'R15',apiKey:'key',cookie:'old-account',fetchImpl}),/ROBLOX_R15_OWNER_STUDIO_CONFIGURATION_REQUIRED_API_KEY_ONLY/);
 });
 
 test('introspectRobloxApiKey exposes only safe scope metadata', async()=>{
@@ -92,20 +96,22 @@ test('introspectRobloxApiKey exposes only safe scope metadata', async()=>{
   }]);
 });
 
-test('ensureRobloxExperiencePrivate falls back from Open Cloud to cookie and verifies inactive', async()=>{
+test('ensureRobloxExperiencePrivate does not fall back to old account credentials', async()=>{
   const calls=[];
   const fetchImpl=async(url,init={})=>{
     calls.push({url,init});
-    if(url.includes('/legacy-develop/'))return new Response('{}',{status:403});
-    if(url.endsWith('/deactivate')&&!init.headers?.['x-csrf-token'])return new Response('{}',{status:403,headers:{'x-csrf-token':'csrf2'}});
-    if(url.endsWith('/deactivate'))return new Response('{}',{status:200});
+    if(url.includes('/legacy-develop/'))return new Response('{}',{status:200});
     if(url.endsWith('/v1/universes/12345'))return new Response(JSON.stringify({isActive:false}),{status:200});
     throw new Error('unexpected '+url);
   };
-  const result=await ensureRobloxExperiencePrivate({universeId:'12345',apiKey:'key',cookie:'secret',fetchImpl});
+  const result=await ensureRobloxExperiencePrivate({universeId:'12345',apiKey:'key',cookie:'old-account',fetchImpl});
   assert.equal(result.private,true);
-  assert.ok(calls.some(x=>x.url.includes('/legacy-develop/')));
-  assert.ok(calls.some(x=>x.init.headers?.['x-csrf-token']==='csrf2'));
+  assert.equal(calls[0].init.headers['x-api-key'],'key');
+  assert.ok(calls.every(call=>!call.init.headers?.cookie));
+  await assert.rejects(()=>ensureRobloxExperiencePrivate({
+    universeId:'12345',apiKey:'key',cookie:'old-account',
+    fetchImpl:async()=>new Response('{}',{status:403}),
+  }),/private enforcement failed HTTP 403/);
 });
 
 test('publishRobloxDedicatedPlace sends built place to exact dedicated target', async()=>{

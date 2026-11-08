@@ -485,11 +485,11 @@ test('push-triggered candidate deployment selects any canonical pending Roblox c
   assert.match(candidate,/skip_reason','no-pending-runtime-candidate'|no-pending-runtime-candidate/);
 });
 
-test('dedicated target bootstrap may use existing Roblox security credential only for Experience setup while package publish remains Open Cloud',()=>{
+test('dedicated target bootstrap and place publication never use an old account cookie',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  assert.match(candidate,/ROBLOX_ROBLOSECURITY: \$\{\{ secrets\.ROBLOX_ROBLOSECURITY \}\}/);
-  assert.match(candidate,/ROBLOX_SECURITY_COOKIE: \$\{\{ secrets\.ROBLOX_SECURITY_COOKIE \}\}/);
-  assert.match(candidate,/const cookie=String\(process\.env\.ROBLOX_ROBLOSECURITY\|\|process\.env\.ROBLOX_SECURITY_COOKIE\|\|''\)/);
+  assert.doesNotMatch(candidate,/ROBLOX_ROBLOSECURITY:\s*\$\{\{ secrets\.ROBLOX_ROBLOSECURITY \}\}/);
+  assert.doesNotMatch(candidate,/ROBLOX_SECURITY_COOKIE:\s*\$\{\{ secrets\.ROBLOX_SECURITY_COOKIE \}\}/);
+  assert.match(candidate,/const cookie='';/);
   assert.match(candidate,/createRobloxDedicatedExperience\([\s\S]*cookie/);
   assert.match(candidate,/publishRobloxPlace\(\{plan,retryDelaysMs:\[\]\}\)/);
 });
@@ -685,11 +685,8 @@ test('CC0 registered models receive per-target Universe grants only after exact 
  assert.match(publish,/answer\.successAssetIds\.map\(String\)/);
  assert.match(publish,/assetIds\.every\(assetId=>granted\.has\(String\(assetId\)\)\)/);
  assert.match(publish,/ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_/);
- assert.match(publish,/ROBLOX_CC0_GRANT_OWNER_CREDENTIAL_REQUIRED/);
- assert.match(publish,/ROBLOX_ROBLOSECURITY\|\|process\.env\.ROBLOX_SECURITY_COOKIE/);
- assert.match(publish,/grant\.status===403/);
- assert.match(publish,/grant\.headers\.get\('x-csrf-token'\)/);
- assert.match(publish,/authority='OWNER_COOKIE_CSRF'/);
+ assert.match(publish,/ROBLOX_CC0_GRANT_OPEN_CLOUD_API_KEY_REQUIRED/);
+ assert.doesNotMatch(publish,/OWNER_COOKIE_CSRF/);
  assert.match(publish,/ROBLOX_CC0_UNIVERSE_GRANT_AUTHORITY=/);
  assert.ok(publish.indexOf('if(!complete(grant,answer))')<actualPublish,
    'all per-asset grants must be confirmed before the source-locked Roblox upload');
