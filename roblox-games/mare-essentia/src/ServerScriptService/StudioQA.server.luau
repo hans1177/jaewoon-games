@@ -62,14 +62,16 @@ end)
 
 -- 2) 진행: 새 게임 → 퀘스트 수락 → 사냥/전투 → 교역 → 항해 → 수리, 오류 응답 확인
 task.spawn(function()
-	local remote = ReplicatedStorage:WaitForChild("GameAction", 60)
+	local remote = game:GetService("ServerStorage"):WaitForChild("StudioQAInvoke", 60)
 	local player = Players:GetPlayers()[1] or Players.PlayerAdded:Wait()
 	if not remote then
-		fail("GameAction missing")
+		fail("StudioQAInvoke missing")
 		return
 	end
 	local function call(action, payload)
-		local success, result = pcall(remote.OnServerInvoke, player, action, payload or {})
+		local success, result = pcall(function()
+			return remote:Invoke(player, action, payload or {})
+		end)
 		if not success then
 			fail("action " .. action .. " threw: " .. tostring(result))
 			return nil

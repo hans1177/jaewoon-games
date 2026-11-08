@@ -272,6 +272,14 @@ remote.OnServerInvoke = function(player, action, payload)
 	return reply(state, success, message)
 end
 
+-- Studio 전용: 자동 점검(StudioQA)이 같은 서버 함수를 호출할 수 있게 하는 통로. 라이브 서버에는 만들지 않는다.
+if game:GetService("RunService"):IsStudio() then
+	local qa = Instance.new("BindableFunction")
+	qa.Name = "StudioQAInvoke"
+	qa.OnInvoke = remote.OnServerInvoke
+	qa.Parent = game:GetService("ServerStorage")
+end
+
 Players.PlayerAdded:Connect(function(player)
 	task.spawn(loadSession, player)
 end)
