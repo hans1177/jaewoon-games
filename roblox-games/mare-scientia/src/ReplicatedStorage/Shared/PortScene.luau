@@ -287,6 +287,17 @@ end
 -- 캐릭터(약 5스터드)에 비해 집이 장난감처럼 작아 보여서 전체적으로 키운다 (대신 간격도 같이 넓힌다)
 local HOUSE_SCALE = 1.45
 
+-- 한 마을의 건물은 재질을 하나로 통일한다 (벽·별채·굴뚝이 제각각 다른 재질로 보이지 않게)
+local function uniformMaterial(m, style)
+	local mat = style.mat
+	if not (m and mat) then return end
+	for _, p in m:GetDescendants() do
+		if p:IsA("BasePart") then
+			p.Material = mat
+		end
+	end
+end
+
 local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 벽 색을 먼저 정해, 수입한 집 메쉬 전체에 같은 따뜻한 색을 입힌다 (회색 맨몸 집 방지)
 	local tintColor = wallColor or style.walls[rng:NextInteger(1, #style.walls)]
@@ -301,6 +312,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	local mesh = importedModel(parent, "Town", variant, pos, math.max(w, d) * variation * HOUSE_SCALE, true, tintColor)
 	if mesh then
 		mesh.Name = "HarborHouse"
+		uniformMaterial(mesh, style)
 		if (seed // 7) % 2 == 1 then
 			local c = mesh:GetBoundingBox().Position
 			mesh:PivotTo(CFrame.new(c) * CFrame.Angles(0, math.pi, 0) * CFrame.new(-c) * mesh:GetPivot())
@@ -312,11 +324,12 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			local annex = importedModel(parent, "Town", "house", pos + Vector3.new(size * 0.95, 0, size * 0.25), size * 0.62 * HOUSE_SCALE, true, tintColor)
 			if annex then
 				annex.Name = "HarborAnnex"
+				uniformMaterial(annex, style)
 			end
 		end
 		if variant ~= "house_chimney" and math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0 then
 			local chim = importedModel(parent, "Town", "chimney", pos + Vector3.new(0, size * 0.7, 0), size * 0.4, false, Color3.fromRGB(122, 98, 84))
-			if chim then chim.Name = "HarborChimney" end
+			if chim then chim.Name = "HarborChimney" uniformMaterial(chim, style) end
 		end
 		return mesh:FindFirstChildWhichIsA("BasePart", true)
 	end
@@ -513,6 +526,9 @@ local PROFILE = {
 	desert = { S = 19, gapf = 0.06, fl0 = 1, flGrow = 1, streets = { -56, -86, -116, -146 }, alley = 3, gap = 0.78, wMul = 1.2, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.05, jz = 0.4, jx = 0.5 },
 	tropic = { S = 14, gapf = 1.3, fl0 = 1, flGrow = 0, streets = { -72 }, alley = 5, gap = 1.7, wMul = 0.8, dAdd = -1, flAdd = -1, flMax = 1, dens = 0.7, jz = 2.6, jx = 2, fence = true },
 }
+
+STYLE.north.mat, STYLE.stone.mat, STYLE.brick.mat = Enum.Material.Brick, Enum.Material.Cobblestone, Enum.Material.Brick
+STYLE.nordic.mat, STYLE.med.mat, STYLE.desert.mat, STYLE.tropic.mat = Enum.Material.WoodPlanks, Enum.Material.Concrete, Enum.Material.Sandstone, Enum.Material.Wood
 
 local function strip(folder, style, cx, cz, sx, sz)
 	local p = part(folder, Vector3.new(sx, 0.2, sz), CFrame.new(cx, 0.1, cz), roadColor(style), roadMat())
