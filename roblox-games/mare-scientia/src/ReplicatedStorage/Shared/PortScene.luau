@@ -72,7 +72,25 @@ STYLE.britain = variant(STYLE.stone,
 STYLE.hanse = variant(STYLE.brick,
 	{ C(150, 58, 44), C(136, 54, 42), C(170, 80, 56), C(120, 50, 40), C(188, 120, 84) },
 	{ C(52, 44, 44), C(70, 52, 48) }, C(92, 118, 74), C(128, 112, 100), 1.55)
+-- 비유럽 문화권: 오스만(흰 석회벽·납작 지붕), 스와힐리(산호석 흰벽), 말라바르(목조·가파른 기와/초가),
+-- 일본(어두운 목조·회색 기와), 에스파냐 식민지(파스텔 아도비·붉은 기와)
+STYLE.ottoman = variant(STYLE.med,
+	{ C(240, 232, 212), C(232, 214, 176), C(222, 196, 150), C(246, 240, 226), C(214, 176, 130) },
+	{ C(170, 90, 70), C(150, 84, 66), C(200, 190, 170) }, C(196, 176, 130), C(214, 200, 166), 0.22)
+STYLE.swahili = variant(STYLE.med,
+	{ C(248, 244, 232), C(240, 232, 214), C(232, 220, 196), C(224, 208, 176) },
+	{ C(214, 190, 140), C(196, 170, 120) }, C(224, 208, 160), C(232, 218, 180), 0.1)
+STYLE.malabar = variant(STYLE.med,
+	{ C(150, 104, 70), C(176, 128, 84), C(132, 90, 60), C(200, 168, 120), C(226, 200, 150) },
+	{ C(160, 70, 48), C(120, 96, 52), C(140, 110, 60) }, C(86, 140, 64), C(170, 140, 100), 1.0)
+STYLE.japan = variant(STYLE.north,
+	{ C(96, 70, 52), C(120, 88, 62), C(84, 62, 46), C(206, 192, 164), C(70, 54, 42) },
+	{ C(74, 76, 84), C(60, 62, 70), C(88, 88, 92) }, C(92, 124, 76), C(140, 130, 112), 0.8)
+STYLE.colonial = variant(STYLE.med,
+	{ C(238, 196, 120), C(226, 150, 130), C(150, 200, 190), C(246, 232, 190), C(210, 130, 100) },
+	{ C(176, 84, 56), C(160, 74, 50), C(190, 100, 62) }, C(150, 156, 90), C(196, 178, 140), 0.45)
 local REGION = {
+	-- 비유럽 문화권 (뒤에 오는 기존 항목을 덮어쓴다: 아래에서 다시 적용)
 	-- 유럽 문화권
 	lisbon = "iberia", porto = "iberia", seville = "iberia", cadiz = "iberia", malaga = "iberia", barcelona = "iberia", valencia = "iberia", cartagena = "iberia", funchal = "iberia", las_palmas = "iberia", ponta_delgada = "iberia", palma = "iberia",
 	genoa = "italy", venice = "italy", livorno = "italy", naples = "italy", palermo = "italy", messina = "italy", syracuse = "italy", trieste = "italy", ancona = "italy", ragusa = "italy", split = "italy", cagliari = "italy", corfu = "italy", candia = "italy", valletta = "italy",
@@ -100,6 +118,17 @@ local REGION = {
 	bergen = "nordic", oslo = "nordic", stockholm = "nordic", gothenburg = "nordic", copenhagen = "nordic",
 	london = "britain", edinburgh = "britain", glasgow = "britain", dublin = "britain", plymouth = "britain", hull = "britain",
 }
+for key, list in {
+	ottoman = { "istanbul", "beirut", "acre", "damietta", "alexandria", "smyrna", "tripoli", "algiers", "tunis" },
+	swahili = { "zanzibar", "kilwa", "mombasa", "mogadishu", "mozambique", "aden", "mocha", "muscat" },
+	malabar = { "calicut", "cochin", "goa", "colombo", "madras", "calcutta", "diu", "surat", "malacca" },
+	japan = { "nagasaki", "osaka", "edo", "hakodate" },
+	colonial = { "veracruz", "havana", "campeche", "santo_domingo", "san_juan", "cartagena_indias", "portobelo", "acapulco", "panama", "la_guaira", "callao", "guayaquil", "valparaiso", "montevideo", "buenos_aires", "manila" },
+} do
+	for _, id in list do
+		REGION[id] = key
+	end
+end
 
 -- 특산품 진열용 3D 모델 (없는 상품은 상자로 대신한다)
 local GOOD_MESH = {
@@ -313,6 +342,11 @@ local OUTFIT = {
 	tropic = { coats = { OC(236, 228, 204), OC(222, 150, 70), OC(70, 160, 150), OC(200, 90, 80) }, hat = "straw", hats = { OC(196, 164, 100) } },
 	desert = { coats = { OC(244, 238, 222), OC(228, 214, 180), OC(52, 70, 130), OC(120, 88, 60) }, hat = "turban", hats = { OC(248, 244, 232), OC(232, 220, 190) } },
 	med = { coats = { OC(214, 170, 80), OC(240, 236, 224), OC(60, 130, 140) }, hat = "cap", hats = { OC(150, 50, 44), OC(40, 40, 46) } },
+	ottoman = { coats = { OC(176, 44, 48), OC(48, 82, 150), OC(244, 240, 228), OC(52, 120, 84), OC(214, 170, 70) }, hat = "turban", hats = { OC(248, 244, 232), OC(190, 40, 44), OC(60, 100, 150) }, trousers = { OC(236, 230, 214), OC(60, 70, 110) } },
+	swahili = { coats = { OC(250, 248, 240), OC(246, 240, 224), OC(60, 70, 130), OC(214, 160, 70) }, hat = "kofia", hats = { OC(250, 248, 240), OC(236, 226, 200) }, trousers = { OC(240, 234, 220) } },
+	malabar = { coats = { OC(250, 246, 236), OC(236, 162, 54), OC(70, 140, 80), OC(200, 70, 60) }, hat = "turban", hats = { OC(246, 240, 226), OC(230, 150, 50) }, trousers = { OC(248, 244, 232) } },
+	japan = { coats = { OC(54, 70, 120), OC(150, 52, 60), OC(70, 100, 80), OC(110, 96, 140), OC(210, 190, 130) }, hat = "kasa", hats = { OC(196, 164, 100), OC(170, 140, 84) }, trousers = { OC(48, 52, 70) } },
+	colonial = { coats = { OC(220, 120, 80), OC(236, 220, 170), OC(70, 150, 140), OC(176, 70, 90), OC(120, 90, 60) }, hat = "wide", hats = { OC(206, 176, 110), OC(120, 84, 56), OC(236, 228, 200) } },
 }
 local currentKey = "north"
 local function villager(parent, pos, facing, coat, rng, role, keepCoat)
@@ -579,12 +613,20 @@ local PROFILE = {
 	nordic = { S = 13.5, gapf = 1.0, fl0 = 1, flGrow = 1, streets = { -62, -122 }, alley = 4, gap = 1.5, wMul = 0.8, dAdd = -1, flAdd = 0, flMax = 2, dens = 0.75, jz = 2.4, jx = 1.6, fence = true },
 	med = { S = 16, gapf = 0.1, fl0 = 2, flGrow = 1, streets = { -45, -70, -95, -120, -145 }, alley = 3, gap = 0.85, wMul = 1, dAdd = 0, flAdd = 1, flMax = 3, dens = 1, jz = 1.6, jx = 1.6 },
 	desert = { S = 19, gapf = 0.06, fl0 = 1, flGrow = 1, streets = { -56, -86, -116, -146 }, alley = 3, gap = 0.78, wMul = 1.2, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.05, jz = 0.4, jx = 0.5 },
+	-- 오스만: 빽빽한 미로 골목, 낮은 흰 석조 집 / 스와힐리: 산호석 평지붕 밀집 / 말라바르: 야자 사이 드문 목조
+	-- 일본: 좁은 격자 골목의 낮은 목조 / 식민지: 넓은 광장 둘레 반듯한 구획
+	ottoman = { S = 15, gapf = 0.04, fl0 = 1, flGrow = 1, streets = { -48, -70, -92, -114, -136, -158 }, alley = 2.6, gap = 0.8, wMul = 1.1, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.1, jz = 0.7, jx = 0.9 },
+	swahili = { S = 14, gapf = 0.06, fl0 = 1, flGrow = 0, streets = { -52, -80, -108, -136 }, alley = 3, gap = 0.82, wMul = 1, dAdd = 0, flAdd = 0, flMax = 2, dens = 1, jz = 0.8, jx = 0.8 },
+	malabar = { S = 14, gapf = 0.9, fl0 = 1, flGrow = 0, streets = { -64, -118 }, alley = 4.5, gap = 1.35, wMul = 0.9, dAdd = 0, flAdd = 0, flMax = 2, dens = 0.8, jz = 2, jx = 1.6 },
+	japan = { S = 12, gapf = 0.05, fl0 = 1, flGrow = 1, streets = { -44, -62, -80, -98, -116, -134, -152 }, alley = 2.4, gap = 0.7, wMul = 0.85, dAdd = 1, flAdd = 0, flMax = 2, dens = 1.1, jz = 0.3, jx = 0.3 },
+	colonial = { S = 17, gapf = 0.2, fl0 = 1, flGrow = 1, streets = { -56, -96, -136 }, alley = 5, gap = 1, wMul = 1.05, dAdd = 0, flAdd = 0, flMax = 2, dens = 0.95, jz = 0.5, jx = 0.5 },
 	tropic = { S = 14, gapf = 1.3, fl0 = 1, flGrow = 0, streets = { -72 }, alley = 5, gap = 1.7, wMul = 0.8, dAdd = -1, flAdd = -1, flMax = 1, dens = 0.7, jz = 2.6, jx = 2, fence = true },
 }
 
 STYLE.north.mat, STYLE.stone.mat, STYLE.brick.mat = Enum.Material.Brick, Enum.Material.Cobblestone, Enum.Material.Brick
 STYLE.iberia.mat, STYLE.italy.mat, STYLE.france.mat, STYLE.britain.mat, STYLE.hanse.mat = Enum.Material.Concrete, Enum.Material.Concrete, Enum.Material.Limestone, Enum.Material.Slate, Enum.Material.Brick
-STYLE.nordic.mat, STYLE.med.mat, STYLE.desert.mat, STYLE.tropic.mat = Enum.Material.WoodPlanks, Enum.Material.Concrete, Enum.Material.Sandstone, Enum.Material.Wood
+STYLE.ottoman.mat, STYLE.swahili.mat, STYLE.malabar.mat, STYLE.japan.mat, STYLE.colonial.mat = Enum.Material.Limestone, Enum.Material.Concrete, Enum.Material.Wood, Enum.Material.WoodPlanks, Enum.Material.Concrete
+STYLE.nordic.mat, STYLE.med.mat, STYLE.desert.mat, STYLE.tropic.mat =Enum.Material.WoodPlanks, Enum.Material.Concrete, Enum.Material.Sandstone, Enum.Material.Wood
 
 local function strip(folder, style, cx, cz, sx, sz)
 	local p = part(folder, Vector3.new(sx, 0.2, sz), CFrame.new(cx, 0.1, cz), roadColor(style), roadMat())
@@ -778,6 +820,57 @@ local function densify(folder, info, style, rng, walkers, made)
 				one("Town", "fence_rails", 4, x, 0, -9)
 				one("Cargo", "fish-large", 2, x, 3.4, -9)
 			end
+		elseif key == "ottoman" then
+			-- 바자르: 천막 가판, 카펫·향신료 자루, 분수
+			rowOf("Terrain", "tent-detailedopen", 9, -104, -180, 30, 9.5)
+			rowOf("Cargo", "textiles-stack-large-colored", 2.6, -100, -180, 20, -7.4)
+			rowOf("Cargo", "bag", 2.2, -108, -180, 16, 7.4)
+			one("Town", "fountain-round", 9, -122, 0, 0)
+			if lvl >= 3 then
+				for _, z in { -30, 30 } do
+					one("Castle", "tower-hexagon-base", 7, -150, 0, z, true)
+					one("Castle", "tower-hexagon-mid", 7, -150, 6, z, true)
+					one("Castle", "tower-hexagon-top", 7, -150, 12, z, true)
+				end
+			end
+		elseif key == "swahili" then
+			-- 다우선·그물·코코넛, 산호석 마을 우물
+			rowOf("Naval", "palm-detailed-straight", 11, -100, -182, 16, 9.5)
+			rowOf("Naval", "palm-detailed-straight", 11, -100, -182, 16, -9.5)
+			rowOf("Cargo", "coconut", 2, -104, -180, 12, 7.4)
+			rowOf("Cargo", "food-basket", 2.4, -108, -180, 22, -7.4)
+			one("Town", "village-well", 6, -110, 0, 8)
+			for _, bx in { 24, 34 } do
+				one("Naval", "boat-sail-a", 12, bx, 0.6, 30 + (bx - 24) * 3)
+			end
+		elseif key == "malabar" then
+			-- 후추 자루·카누·초록 가판, 빽빽한 야자
+			rowOf("Naval", "palm-detailed-straight", 12, -100, -182, 12, 9.5)
+			rowOf("Naval", "palm-detailed-straight", 12, -100, -182, 12, -9.5)
+			rowOf("Cargo", "bag", 2.4, -100, -180, 14, 7.4)
+			rowOf("Cargo", "pepper-mill", 2.2, -108, -180, 24, -7.4)
+			one("Town", "stall-green", 6.5, -100, 0, 10)
+			one("Town", "stall-green", 6.5, -130, 0, -10)
+			one("Terrain", "canoe", 8, 40, 0.5, 20)
+			one("Terrain", "canoe", 8, 52, 0.5, -22)
+		elseif key == "japan" then
+			-- 도리이식 문, 석등, 울타리, 술통
+			one("Terrain", "gate-overhang", 12, -60, 0, 0)
+			for _, x in { -100, -130, -160 } do
+				lantern(folder, Vector3.new(x, 0, 4.6), 3)
+				lantern(folder, Vector3.new(x, 0, -4.6), 3)
+			end
+			rowOf("Town", "fence_straight", 6, -100, -180, 24, 8.4)
+			rowOf("Cargo", "barrel", 2.4, -108, -180, 20, -7.4)
+			rowOf("Terrain", "tree-pinedefaulta", 9, -100, -182, 22, 11)
+		elseif key == "colonial" then
+			-- 광장 분수, 옥수수밭·호박, 수레와 통
+			one("Town", "fountain-round", 10, -100, 0, 0)
+			rowOf("Terrain", "crops-cornstagec", 5, -112, -182, 18, 10)
+			rowOf("Terrain", "crop-pumpkin", 2.6, -112, -182, 18, -10)
+			rowOf("Town", "cart", 5, -104, -180, 28, 7.6)
+			rowOf("Cargo", "barrel", 2.4, -108, -180, 22, -7.4)
+			rowOf("Naval", "palm-detailed-straight", 11, -100, -182, 26, -12)
 		end
 	end
 	-- 골목 모퉁이: 덤불·화분·통·상자 더미
@@ -890,6 +983,40 @@ local function densify(folder, info, style, rng, walkers, made)
 			importedModel(folder, "Terrain", "column", Vector3.new(lx, 0, z), 12, true)
 		end
 		importedModel(folder, "Terrain", "statue-head", Vector3.new(lx - 10, 0, 0), 14, true)
+	elseif key == "ottoman" then
+		-- 모스크: 중앙 돔 건물과 미나레트 두 기
+		importedModel(folder, "Castle", "tower-square-base", Vector3.new(lx, 0, 0), 28, true)
+		importedModel(folder, "Naval", "tower-complete-small", Vector3.new(lx + 4, 0, 0), 22, true)
+		for _, z in { -26, 26 } do
+			importedModel(folder, "Castle", "tower-hexagon-base", Vector3.new(lx, 0, z), 7, true)
+			importedModel(folder, "Castle", "tower-hexagon-mid", Vector3.new(lx, 6, z), 7, true)
+			importedModel(folder, "Castle", "tower-hexagon-mid", Vector3.new(lx, 12, z), 7, true)
+			importedModel(folder, "Castle", "tower-hexagon-roof", Vector3.new(lx, 18, z), 7, true)
+		end
+	elseif key == "swahili" then
+		importedModel(folder, "Terrain", "pillar-obelisk", Vector3.new(lx, 0, 0), 22, true)
+		for _, z in { -18, 18 } do
+			importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(lx + 8, 0, z), 15, false)
+		end
+		importedModel(folder, "Terrain", "tent-detailedopen", Vector3.new(lx + 14, 0, 0), 12, false)
+	elseif key == "malabar" then
+		importedModel(folder, "Terrain", "statue-ring", Vector3.new(lx, 0, 0), 16, true)
+		for _, z in { -22, -11, 11, 22 } do
+			importedModel(folder, "Naval", "palm-detailed-straight", Vector3.new(lx + 8, 0, z), 15, false)
+		end
+	elseif key == "japan" then
+		-- 성곽 천수각과 해자 쪽 망루
+		importedModel(folder, "Naval", "tower-complete-large", Vector3.new(lx, 0, 0), 30, true)
+		for _, z in { -26, 26 } do
+			importedModel(folder, "Naval", "tower-complete-small", Vector3.new(lx, 0, z), 14, true)
+			importedModel(folder, "Castle", "flag-banner-long", Vector3.new(lx + 10, 0, z / 2), 10, false)
+		end
+		importedModel(folder, "Terrain", "gate-overhang", Vector3.new(lx + 18, 0, 0), 14, false)
+	elseif key == "colonial" then
+		-- 성당 종탑
+		importedModel(folder, "Castle", "tower-square-base", Vector3.new(lx, 0, 0), 24, true)
+		importedModel(folder, "Naval", "tower-complete-small", Vector3.new(lx + 3, 0, 0), 20, true)
+		importedModel(folder, "Castle", "flag-banner-long", Vector3.new(lx + 12, 0, 12), 10, false)
 	elseif key == "desert" then
 		importedModel(folder, "Terrain", "pillar-obelisk", Vector3.new(lx, 0, 0), 34, true)
 		for _, z in { -22, 22 } do
@@ -951,7 +1078,8 @@ local function densify(folder, info, style, rng, walkers, made)
 	for i = 1, 12 do
 		importedModel(folder, "Town", "rock-wide", Vector3.new(rng:NextNumber(-270, -225), 0, rng:NextNumber(-170, 170)), rng:NextNumber(14, 24), true)
 	end
-	local trees = if cold then { "tree-pinedefaulta", "tree-oak", "tree_large", "tree-high" } else { "palm-detailed-straight", "tree-crooked", "tree_large" }
+	local hot = key == "ottoman" or key == "swahili" or key == "malabar" or key == "colonial"
+	local trees = if key == "japan" then { "tree-pinedefaulta", "tree-pinedefaulta", "tree-oak" } elseif hot then { "palm-detailed-straight", "tree-crooked", "tree_large" } elseif cold then { "tree-pinedefaulta", "tree-oak", "tree_large", "tree-high" } else { "palm-detailed-straight", "tree-crooked", "tree_large" }
 	for i = 1, 150 do
 		local side = if i % 2 == 0 then 1 else -1
 		local pos = Vector3.new(rng:NextNumber(-262, -10), 0, side * rng:NextNumber(158, 245))

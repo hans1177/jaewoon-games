@@ -180,6 +180,18 @@ local function addHat(model, kind, color)
 		piece(Enum.PartType.Ball, Vector3.new(h.X * 0.3, h.X * 0.3, h.X * 0.3), Vector3.new(0, h.Y * 0.95, 0)).Color = Color3.fromRGB(236, 232, 220)
 	elseif kind == "turban" then
 		piece(Enum.PartType.Ball, Vector3.new(h.X * 1.3, h.Y * 1.0, h.X * 1.3), Vector3.new(0, h.Y * 0.45, 0))
+	elseif kind == "fez" then
+		-- 페즈: 위가 좁은 붉은 원통 + 검은 술
+		piece(Enum.PartType.Cylinder, Vector3.new(h.Y * 0.75, h.X * 0.95, h.X * 0.95), Vector3.new(0, h.Y * 0.72, 0), CFrame.Angles(0, 0, math.pi / 2))
+		piece(Enum.PartType.Block, Vector3.new(0.06, h.Y * 0.4, 0.06), Vector3.new(h.X * 0.4, h.Y * 0.8, 0)).Color = Color3.fromRGB(30, 30, 34)
+	elseif kind == "kofia" then
+		-- 코피아: 스와힐리 해안의 둥글고 납작한 수놓은 모자
+		piece(Enum.PartType.Cylinder, Vector3.new(h.Y * 0.5, h.X * 1.02, h.X * 1.02), Vector3.new(0, h.Y * 0.62, 0), CFrame.Angles(0, 0, math.pi / 2))
+	elseif kind == "kasa" then
+		-- 삿갓: 넓고 납작한 원뿔 (원기둥 세 겹을 쌓아 만든다)
+		piece(Enum.PartType.Cylinder, Vector3.new(0.08, h.X * 2.2, h.X * 2.2), Vector3.new(0, h.Y * 0.5, 0), CFrame.Angles(0, 0, math.pi / 2), Enum.Material.Wood)
+		piece(Enum.PartType.Cylinder, Vector3.new(0.1, h.X * 1.5, h.X * 1.5), Vector3.new(0, h.Y * 0.62, 0), CFrame.Angles(0, 0, math.pi / 2), Enum.Material.Wood)
+		piece(Enum.PartType.Cylinder, Vector3.new(0.12, h.X * 0.8, h.X * 0.8), Vector3.new(0, h.Y * 0.74, 0), CFrame.Angles(0, 0, math.pi / 2), Enum.Material.Wood)
 	end
 end
 
