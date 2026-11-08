@@ -29,3 +29,12 @@
 - `tests/smoke_portscene.luau`: 엔진 목업(`smoke_prelude.luau`)에서 17개 항구 × 발전도 1~5 를 실제로 지어 보며 런타임 오류와 미등록 에셋 요청을 잡는다. (첫 실행에서 `find("tree-oak")` 패턴 버그를 찾아 고침: 문자열 찾기엔 항상 `find(x, 1, true)`)
 - 배포 워크플로(`owner-mare-scientia-direct-publish.yml`): 배포 전에 고정 버전 Luau 로 전체 테스트를 돌린다(지금은 경고만, 안정되면 차단으로 전환). 수동 실행의 `rollback_ref` 에 정상이던 커밋을 넣으면 그 소스를 다시 게시한다.
 - `visual_lint.py --prev`: 이전 캡처와의 변화량을 보여 준다(0.3 미만이면 장면 갱신 안 됨 의심).
+
+## 에셋 등록 흐름
+1. `python3 tools/devloop/assets_wanted.py roblox-games/mare-scientia` → `assets-wanted.json` (부족 목표 + 코드의 미등록 참조 + inbox 대기).
+2. 새 파일을 `assets/inbox/<종류>/` 에 넣고 `<파일>.license.json`(license·author·source) 작성 → `python3 tools/devloop/register_asset.py roblox-games/mare-scientia [--dry-run]`.
+   라이선스 누락·허용 목록 밖·출처 없음·차단 해시·중복은 거부된다.
+3. `owner-mare-scientia-assets` 워크플로로 업로드 → `AssetIds` 반영 → `asset_check.py` 통과.
+
+## 아이템 표시 (UI)
+- 큰(60px↑) 3D 아이템은 `ViewportFrame` 안에서 천천히 회전, 큰 상품 그림은 기울기·숨쉬기(2.5D 카드). 화면에 남은 것만 최대 10개를 한 곳(`addItemMotion`)에서 갱신한다. 새 도형은 만들지 않는다.

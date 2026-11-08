@@ -206,6 +206,38 @@ local SHIP_ICON = {
 	ironclad_frigate = { "Naval", "ship-large", Color3.fromRGB(96, 102, 112) },
 }
 
+-- 아이템 표시 연출: 큰 3D 아이템은 천천히 회전(3D), 큰 상품 그림은 기울기·숨쉬기(2.5D 카드)로 입체감을 준다.
+-- 화면에 남아 있는 것만, 최대 10개까지 한 곳에서 갱신해 모바일 부담을 막는다. (새 도형은 만들지 않고 기존 모델·그림만 움직인다)
+local itemMotion = {}
+local itemMotionConn
+local function addItemMotion(entry)
+	if #itemMotion >= 10 then return end
+	entry.phase = (#itemMotion * 1.7) % 6.28
+	table.insert(itemMotion, entry)
+	if itemMotionConn then return end
+	itemMotionConn = game:GetService("RunService").RenderStepped:Connect(function()
+		local t = os.clock()
+		for i = #itemMotion, 1, -1 do
+			local e = itemMotion[i]
+			if not e.gui.Parent or not e.gui:IsDescendantOf(game) then
+				table.remove(itemMotion, i)
+			elseif e.gui.AbsoluteSize.X > 0 then
+				if e.model then
+					local a = t * 0.8 + e.phase
+					e.model:PivotTo(CFrame.new(e.center) * CFrame.Angles(0, a, 0) * CFrame.new(-e.center) * e.base)
+				else
+					e.gui.Rotation = math.sin(t * 1.3 + e.phase) * 3.5
+					if e.scale then e.scale.Scale = 1 + math.sin(t * 1.9 + e.phase) * 0.03 end
+				end
+			end
+		end
+		if #itemMotion == 0 and itemMotionConn then
+			itemMotionConn:Disconnect()
+			itemMotionConn = nil
+		end
+	end)
+end
+
 local function modelIcon(parent, kind, asset, tint, px, labelText)
 	-- 등록된 상품·메뉴 그림은 3D 모델을 복제하지 않아 모바일 화면의 렌더 비용을 줄인다.
 	if kind == "Goods" or kind == "Menu" then
@@ -238,6 +270,11 @@ local function modelIcon(parent, kind, asset, tint, px, labelText)
 		stroke.Transparency = 0.5
 		stroke.Parent = image
 		image.Parent = parent
+		if px >= 60 and assetId then
+			local sc = Instance.new("UIScale")
+			sc.Parent = image
+			addItemMotion({ gui = image, scale = sc })
+		end
 		return image
 	end
 	local vf = Instance.new("ViewportFrame")
@@ -278,6 +315,9 @@ local function modelIcon(parent, kind, asset, tint, px, labelText)
 		local radius = math.max(size.Magnitude * 0.5, 0.1)
 		local reach = radius / math.sin(math.rad(cam.FieldOfView * 0.5)) * 1.08
 		cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0.85, 0.65, 1.2).Unit * reach, cf.Position)
+		if px >= 60 then
+			addItemMotion({ gui = vf, model = m, center = cf.Position, base = m:GetPivot() })
+		end
 	else
 		local knownId = if kind and asset then AssetIds[kind .. "/" .. asset] else nil
 		if knownId then
