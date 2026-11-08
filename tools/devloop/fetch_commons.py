@@ -5,7 +5,7 @@
 - 결과: assets/portraits/<kind>_<id>.jpg + .license.json(원본 URL·제작자·라이선스) + assets/portraits/portraits-report.json
 - 이미 받은 인물은 건너뛴다. 하나라도 못 받아도 종료 코드는 0 (있는 것만 쓴다)."""
 import json, os, re, sys, time, io, urllib.parse, urllib.request
-UA = "MareScientiaAssetBot/1.0 (https://github.com/hans1177/jaewoon-games; license-verified portrait fetch)"
+UA = "MareEssentiaAssetBot/1.0 (https://github.com/hans1177/jaewoon-games; license-verified portrait fetch)"
 API = "https://commons.wikimedia.org/w/api.php"
 PD = re.compile(r"public domain|^pd\b|^pd-|cc0|cc-zero", re.I)
 

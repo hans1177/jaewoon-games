@@ -6,7 +6,7 @@
 - 결과(스케치 변환·위험 이미지 자동 제외): assets/cardart/<card_id>.jpg, src/ReplicatedStorage/Shared/CardArtCredits.luau, assets/cardart/cardart-report.json
 - 이미 받은 카드는 건너뛰고, 한 번에 N장(기본 80)만 새로 받는다. 못 받아도 종료 코드는 0."""
 import io, json, os, re, sys, time, urllib.parse, urllib.request
-UA = "MareScientiaAssetBot/1.0 (https://github.com/hans1177/jaewoon-games; license-verified card art fetch)"
+UA = "MareEssentiaAssetBot/1.0 (https://github.com/hans1177/jaewoon-games; license-verified card art fetch)"
 API = "https://ko.wikipedia.org/w/api.php"
 OK_LIC = re.compile(r"public domain|^pd\b|^pd-|cc0|cc-zero|^cc[- ]by[- ]\d", re.I)
 BAD_LIC = re.compile(r"\b(sa|nd|nc)\b|-sa-|-nd-|-nc-|fair use|non-?free", re.I)

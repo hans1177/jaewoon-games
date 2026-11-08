@@ -1,0 +1,47 @@
+{
+  "name": "MareEssentia",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Shared": {
+        "$path": "src/ReplicatedStorage/Shared"
+      },
+      "MareAssets": {
+        "$className": "Folder",
+        "Ships": {
+          "$className": "Folder"
+        },
+        "Naval": {
+          "$className": "Folder"
+        },
+        "Town": {
+          "$className": "Folder"
+        },
+        "People": {
+          "$className": "Folder"
+        },
+        "Castle": { "$className": "Folder" },
+        "Interior": { "$className": "Folder" },
+        "Relics": { "$className": "Folder" },
+        "Terrain": { "$className": "Folder" },
+        "Cargo": { "$className": "Folder" }
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Server": {
+        "$path": "src/ServerScriptService"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Client": {
+          "$path": "src/StarterPlayer"
+        }
+      }
+    }
+  }
+}

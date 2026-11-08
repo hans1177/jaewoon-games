@@ -2,7 +2,7 @@
 """코드베이스 지도 자동 생성: 파일별 줄 수·최상위 함수 목록·require 의존성을 docs/CODE_MAP.md 에 쓴다.
 큰 파일을 통째로 읽지 않고 '이 기능은 어디 있나'를 찾기 위한 색인. 사용: code_map.py <게임폴더>"""
 import re, glob, os, sys
-root = sys.argv[1] if len(sys.argv) > 1 else "roblox-games/mare-scientia"
+root = sys.argv[1] if len(sys.argv) > 1 else "roblox-games/mare-essentia"
 rows = []
 for f in sorted(glob.glob(os.path.join(root, "src/**/*.luau"), recursive=True)):
     if "/Common/" in f: continue

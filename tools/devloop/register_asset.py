@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """에셋 inbox 등록: <게임>/assets/inbox/<종류>/<파일> + <파일>.license.json 을 검사해 assets/<종류>/ 로 옮기고 SOURCES.md 에 기록한다.
-사용: register_asset.py <게임폴더(roblox-games/mare-scientia)> [--dry-run]
+사용: register_asset.py <게임폴더(roblox-games/mare-essentia)> [--dry-run]
 차단: 라이선스 누락·허용 목록 밖, 출처 URL 없음, 이미 차단된 해시(company-learning/platform-release-roadmap.json), 중복 해시."""
 import json, os, sys, shutil, hashlib, glob
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 dry = "--dry-run" in sys.argv
-root = args[0] if args else "roblox-games/mare-scientia"
+root = args[0] if args else "roblox-games/mare-essentia"
 OK = {"CC0-1.0", "CC-BY-3.0", "CC-BY-4.0", "PUBLIC-DOMAIN", "PROJECT_ORIGINAL_ART"}
 EXT = {".glb", ".fbx", ".png", ".jpg", ".jpeg"}
 blocked = set()
@@ -50,5 +50,5 @@ for src, dst, m, h in done:
     shutil.move(src, dst); os.remove(src + ".license.json")
     with open(os.path.join(root, "assets", "SOURCES.md"), "a", encoding="utf-8") as s:
         s.write(f"| `{os.path.basename(os.path.dirname(dst))}/` | {os.path.basename(dst)} | {m.get('author','')} · {m['license']} | {m.get('source','')} |\n")
-print(f"등록 {len(done)}건, 거부 {len(bad)}건" + (" (시험 실행)" if dry else "") + ("" if dry or not done else " → 다음: owner-mare-scientia-assets 워크플로로 업로드"))
+print(f"등록 {len(done)}건, 거부 {len(bad)}건" + (" (시험 실행)" if dry else "") + ("" if dry or not done else " → 다음: owner-mare-essentia-assets 워크플로로 업로드"))
 sys.exit(1 if bad else 0)

@@ -1,14 +1,14 @@
 // 파일명: tools/mare-audio-upload.mjs
-// 마리 에센시아 오리지널 합성 음악·효과음(roblox-games/mare-scientia/audio)을 로블록스 Audio 자산으로 등록하고
+// 마리 에센시아 오리지널 합성 음악·효과음(roblox-games/mare-essentia/audio)을 로블록스 Audio 자산으로 등록하고
 // Universe 사용 권한을 승인한 뒤 Shared/AudioIds.luau 에 실제 ID만 기록한다. 같은 해시는 다시 올리지 않는다.
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
 
-const dir='roblox-games/mare-scientia/audio';
+const dir='roblox-games/mare-essentia/audio';
 const meta=JSON.parse(fs.readFileSync(dir+'/manifest.json','utf8'));
 const receiptPath=dir+'/uploaded.json';
-const idsPath='roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AudioIds.luau';
+const idsPath='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau';
 const universeId='10774821253';
 if(meta.source!=='OWNER_REQUESTED_ORIGINAL_SYNTH_SCORE'||meta.license!=='OWNER_CREATED_AUDIO')throw Error('AUDIO_PROVENANCE_INVALID');
 
@@ -68,7 +68,7 @@ for(const t of meta.tracks){
       const form=new FormData();
       form.append('request',JSON.stringify({
         assetType:'Audio',displayName:('Mare '+t.label).slice(0,50),
-        description:'Original synthesized audio for Mare Scientia. No samples. sha256 '+sha,
+        description:'Original synthesized audio for Mare Essentia. No samples. sha256 '+sha,
         creationContext:{creator},
       }));
       form.append('fileContent',new Blob([bytes],{type:'audio/ogg'}),t.name+'.ogg');

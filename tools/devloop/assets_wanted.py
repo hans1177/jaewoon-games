@@ -2,7 +2,7 @@
 """부족 에셋 목록 자동 생성: <게임>/assets-wanted.seed.json(사람이 적은 목표) + 코드의 미등록 참조(asset_check) + 미사용 등록 에셋 요약
 → <게임>/assets-wanted.json. 사용: assets_wanted.py <게임폴더>"""
 import json, os, re, subprocess, sys
-root = sys.argv[1] if len(sys.argv) > 1 else "roblox-games/mare-scientia"
+root = sys.argv[1] if len(sys.argv) > 1 else "roblox-games/mare-essentia"
 here = os.path.dirname(os.path.abspath(__file__))
 seed = []
 sp = os.path.join(root, "assets-wanted.seed.json")

@@ -1,7 +1,7 @@
 # 개발 루프 기억 파일 (마력숲 생존기 / fantasy-survival)
 
 > 사람이나 AI가 이어받을 때 가장 먼저 읽는다. 한 바퀴 끝날 때마다 "최근 기록"을 갱신한다.
-> 작성 표준은 `roblox-games/mare-scientia/docs/devloop/STATE.md` 를 따른다.
+> 작성 표준은 `roblox-games/mare-essentia/docs/devloop/STATE.md` 를 따른다.
 
 ## 규칙
 - 작업 범위: `roblox-games/fantasy-survival` 안만. 다른 에이전트가 동시에 작업하므로 작은 변경을 자주 푸시하고 `git pull --rebase` 후 푸시한다.

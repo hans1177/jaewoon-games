@@ -33,8 +33,8 @@ jobs:
           set -euo pipefail
           git config user.name 'mare-audio-upload'
           git config user.email 'actions@users.noreply.github.com'
-          git add roblox-games/mare-scientia/audio/uploaded.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AudioIds.luau
+          git add roblox-games/mare-essentia/audio/uploaded.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AudioIds.luau
           if git diff --cached --quiet; then echo 'AUDIO_IDS_ALREADY_CURRENT'; exit 0; fi
-          git commit -m 'assets(mare-scientia): bind synthesized audio ids'
+          git commit -m 'assets(mare-essentia): bind synthesized audio ids'
           git pull --rebase origin main
           git push origin HEAD:main

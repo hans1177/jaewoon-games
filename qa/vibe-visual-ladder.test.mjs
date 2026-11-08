@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
 
-const games=['fantasy-survival','mare-scientia'];
+const games=['fantasy-survival','mare-essentia'];
 const run=(game,...a)=>spawnSync('node',['tools/vibe-visual-ladder.mjs','--game',game,...a],{encoding:'utf8'});
 
 test('비주얼 래더 상태 파일과 생성 Luau 모듈이 두 게임 모두 일치한다', () => {
@@ -12,7 +12,7 @@ test('비주얼 래더 상태 파일과 생성 Luau 모듈이 두 게임 모두 
 
 test('마레 스키엔티아 공용 환경 연출 스크립트가 공용 원본과 같다', () => {
   assert.equal(
-    fs.readFileSync('roblox-games/mare-scientia/src/StarterPlayer/VisualLadder.client.luau','utf8'),
+    fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/VisualLadder.client.luau','utf8'),
     fs.readFileSync('assets/roblox/common-ambience-v1/VisualLadder.client.luau','utf8'));
 });
 

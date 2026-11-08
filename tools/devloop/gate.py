@@ -10,7 +10,7 @@ root = os.path.join("roblox-games", game)
 cfg = json.load(open(os.path.join(root, "devloop.json")))
 fails = []
 if cfg.get("assetRegistry"):
-    r = subprocess.run([sys.executable, "roblox-games/mare-scientia/tools/devloop/asset_check.py", root, cfg["assetRegistry"]])
+    r = subprocess.run([sys.executable, "roblox-games/mare-essentia/tools/devloop/asset_check.py", root, cfg["assetRegistry"]])
     if r.returncode != 0:
         fails.append("에셋 미등록 참조")
 br = cfg.get("framesBranch")

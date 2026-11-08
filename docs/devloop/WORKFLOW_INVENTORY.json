@@ -797,7 +797,7 @@
   },
   {
    "file": "devloop-gates.yml",
-   "name": "Devloop Gates (Mare Scientia)",
+   "name": "Devloop Gates (Mare Essentia)",
    "triggers": [
     "workflow_dispatch",
     "push"
@@ -823,7 +823,7 @@
   },
   {
    "file": "devloop-report.yml",
-   "name": "Devloop Report (Mare Scientia)",
+   "name": "Devloop Report (Mare Essentia)",
    "triggers": [
     "schedule",
     "workflow_dispatch"
@@ -1292,8 +1292,8 @@
    "dormantCandidate": false
   },
   {
-   "file": "owner-mare-scientia-assets.yml",
-   "name": "Owner Mare Scientia Register Assets",
+   "file": "owner-mare-essentia-assets.yml",
+   "name": "Owner Mare Essentia Register Assets",
    "triggers": [
     "workflow_dispatch",
     "push"
@@ -1305,8 +1305,8 @@
    "dormantCandidate": false
   },
   {
-   "file": "owner-mare-scientia-direct-publish.yml",
-   "name": "Owner Mare Scientia Direct Publish",
+   "file": "owner-mare-essentia-direct-publish.yml",
+   "name": "Owner Mare Essentia Direct Publish",
    "triggers": [
     "workflow_dispatch",
     "push"
@@ -1314,7 +1314,7 @@
    "lines": 107,
    "inlineLines": 21,
    "referencedBy": [
-    "owner-mare-scientia-assets.yml"
+    "owner-mare-essentia-assets.yml"
    ],
    "ageDays": 1.4,
    "dormantCandidate": false

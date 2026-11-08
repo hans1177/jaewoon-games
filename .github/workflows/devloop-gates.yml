@@ -1,9 +1,9 @@
-# 개발 루프의 "기준": Mare Scientia 소스가 바뀌면 타입 검사·로직 테스트·에셋 등록 검사를 돌린다.
-name: Devloop Gates (Mare Scientia)
+# 개발 루프의 "기준": Mare Essentia 소스가 바뀌면 타입 검사·로직 테스트·에셋 등록 검사를 돌린다.
+name: Devloop Gates (Mare Essentia)
 on:
   push:
     branches: [main]
-    paths: ['roblox-games/mare-scientia/**']
+    paths: ['roblox-games/mare-essentia/**']
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,8 +18,8 @@ jobs:
           curl -fsSL --retry 3 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
           mkdir -p /tmp/luau && unzip -q /tmp/luau.zip -d /tmp/luau && chmod +x /tmp/luau/*
       - name: Asset registration gate
-        run: python3 roblox-games/mare-scientia/tools/devloop/asset_check.py roblox-games/mare-scientia
+        run: python3 roblox-games/mare-essentia/tools/devloop/asset_check.py roblox-games/mare-essentia
       - name: Type check and logic tests
-        run: LUAU_DIR=/tmp/luau bash roblox-games/mare-scientia/tests/run.sh
+        run: LUAU_DIR=/tmp/luau bash roblox-games/mare-essentia/tests/run.sh
       - name: Port quality table
-        run: LUAU_DIR=/tmp/luau bash roblox-games/mare-scientia/tests/run.sh quality | head -20
+        run: LUAU_DIR=/tmp/luau bash roblox-games/mare-essentia/tests/run.sh quality | head -20

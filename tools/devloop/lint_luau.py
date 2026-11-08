@@ -8,7 +8,7 @@
 종료 코드 1 이면 위반 있음. 예외는 줄 끝에 '-- lint:ok' 를 적는다."""
 import re, sys, glob, os, subprocess
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
-root = args[0] if args else "roblox-games/mare-scientia"
+root = args[0] if args else "roblox-games/mare-essentia"
 diff_ref = sys.argv[sys.argv.index("--diff") + 1] if "--diff" in sys.argv else None
 if diff_ref and diff_ref in args: args.remove(diff_ref)
 SPECIAL = re.compile(r"[-.%()+*?\[\]^$]")

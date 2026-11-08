@@ -1,5 +1,5 @@
 # 개발 루프의 "눈": 게임이 모아 둔 오류·FPS(DataStore MareDevLog)를 읽어 docs/devloop/TELEMETRY.md 로 남긴다.
-name: Devloop Report (Mare Scientia)
+name: Devloop Report (Mare Essentia)
 on:
   schedule:
     - cron: '17 */6 * * *'
@@ -19,11 +19,11 @@ jobs:
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           UNIVERSE_ID: '10774821253'
-        run: python3 roblox-games/mare-scientia/tools/devloop/telemetry_report.py > /tmp/telemetry.md
+        run: python3 roblox-games/mare-essentia/tools/devloop/telemetry_report.py > /tmp/telemetry.md
       - name: Commit report
         run: |
-          cp /tmp/telemetry.md roblox-games/mare-scientia/docs/devloop/TELEMETRY.md
+          cp /tmp/telemetry.md roblox-games/mare-essentia/docs/devloop/TELEMETRY.md
           git config user.name "devloop-bot"
           git config user.email "devloop-bot@users.noreply.github.com"
-          git add roblox-games/mare-scientia/docs/devloop/TELEMETRY.md
+          git add roblox-games/mare-essentia/docs/devloop/TELEMETRY.md
           git diff --cached --quiet || (git commit -m "devloop: telemetry report" && git pull -q --rebase && git push)
