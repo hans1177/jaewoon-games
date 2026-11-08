@@ -118,5 +118,18 @@
         }
       ]
     }
+  },
+  "registries": [
+    "CC0-ASSET-REGISTRY.json"
+  ],
+  "perfBudget": {
+    "minAvgFps": 35,
+    "universeId": "10773436325"
+  },
+  "approvalMatch": {
+    "approved-npc-outfit-items": "shirt|pants|tunic|cloth|outfit|robe|armor|cape",
+    "approved-npc-hair-hat-meshes": "hair|hat|helm|cap|crown|hood",
+    "approved-ground-cover-meshes": "grass|flower|bush|shrub|rock|stone|mushroom|fern|log",
+    "approved-mob-vfx-meshes": "vfx|effect|slash|flame|spark|aura|smoke"
   }
 }

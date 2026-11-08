@@ -1,0 +1,145 @@
+{
+ "games": {
+  "fantasy-survival": {
+   "floor": 0,
+   "categories": [
+    {
+     "id": "npc",
+     "label": "NPC 복장·체형·생활감",
+     "tier": 3,
+     "max": 5,
+     "name": "역할별 포인트 색·감정 레퍼토리 확장",
+     "next": {
+      "tier": 4,
+      "name": "승인된 복장 아이템(셔츠·바지·얼굴)",
+      "blocked": true,
+      "missing": [
+       "approved-npc-outfit-items"
+      ]
+     }
+    },
+    {
+     "id": "world",
+     "label": "배경 분위기·빛·공기",
+     "tier": 3,
+     "max": 6,
+     "name": "블룸·색보정 강화",
+     "next": {
+      "tier": 4,
+      "name": "떠다니는 꽃가루·반딧불 입자",
+      "blocked": false,
+      "missing": []
+     }
+    },
+    {
+     "id": "mobs",
+     "label": "몹 외형·모션·이펙트",
+     "tier": 4,
+     "max": 5,
+     "name": "피격·사망·종별 공격 이펙트",
+     "next": {
+      "tier": 5,
+      "name": "승인된 몹 전용 이펙트 메시",
+      "blocked": true,
+      "missing": [
+       "approved-mob-vfx-meshes"
+      ]
+     }
+    }
+   ],
+   "gaps": [
+    {
+     "category": "npc",
+     "tier": 4,
+     "tierName": "승인된 복장 아이템(셔츠·바지·얼굴)",
+     "key": "approved-npc-outfit-items",
+     "candidates": [
+      "icon_armor.png",
+      "capePrefab",
+      "roblox-games/fantasy-survival/assets/worn-cape.obj",
+      "MagicForestCape.obj",
+      "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCape.obj",
+      "clothBones",
+      "item_armor_black",
+      "item_armor_golden"
+     ]
+    },
+    {
+     "category": "mobs",
+     "tier": 5,
+     "tierName": "승인된 몹 전용 이펙트 메시",
+     "key": "approved-mob-vfx-meshes",
+     "candidates": [
+      "assets/external/simple-rpg/icons-vfx-npc/fantasy-rpg-icons.zip",
+      "assets/external/simple-rpg/icons-vfx-npc/game-icons.zip",
+      "assets/external/simple-rpg/icons-vfx-npc/ui-adventure.zip",
+      "assets/external/simple-rpg/icons-vfx-npc/ui-pack.zip",
+      "assets/external/simple-rpg/icons-vfx-npc/emotes.zip",
+      "interfaceVfx",
+      "slash",
+      "spark"
+     ]
+    }
+   ],
+   "perf": null,
+   "frames": null,
+   "thumbs": [],
+   "history": [
+    {
+     "floor": 0,
+     "category": "world",
+     "tier": 3,
+     "name": "블룸·색보정 강화",
+     "why": "초기 수동 설정(오너 요청, 촬영 검증 전)",
+     "at": "2026-11-08"
+    },
+    {
+     "floor": 0,
+     "category": "npc",
+     "tier": 3,
+     "name": "역할별 포인트 색·감정 레퍼토리 확장",
+     "why": "초기 수동 설정(오너 요청, 촬영 검증 전)",
+     "at": "2026-11-08"
+    }
+   ],
+   "updated": "2026-11-08"
+  },
+  "mare-scientia": {
+   "floor": 0,
+   "categories": [
+    {
+     "id": "npc",
+     "label": "NPC 체형·복장",
+     "tier": 1,
+     "max": 4,
+     "name": "공통 체형",
+     "next": {
+      "tier": 2,
+      "name": "개인별 체격·머리 크기 변주",
+      "blocked": false,
+      "missing": []
+     }
+    },
+    {
+     "id": "world",
+     "label": "항구·바다 공기 연출",
+     "tier": 1,
+     "max": 4,
+     "name": "씬별 기본 연출",
+     "next": {
+      "tier": 2,
+      "name": "떠다니는 물보라·꽃가루 입자",
+      "blocked": false,
+      "missing": []
+     }
+    }
+   ],
+   "gaps": [],
+   "perf": null,
+   "frames": null,
+   "thumbs": [],
+   "history": [],
+   "updated": "2026-11-08"
+  }
+ }
+}

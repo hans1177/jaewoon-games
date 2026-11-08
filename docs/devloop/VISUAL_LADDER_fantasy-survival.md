@@ -10,8 +10,8 @@
 
 ## 부족 자산(오너 승인 필요)
 
-- NPC 복장·체형·생활감 4단계(승인된 복장 아이템(셔츠·바지·얼굴)): approved-npc-outfit-items
-- 몹 외형·모션·이펙트 5단계(승인된 몹 전용 이펙트 메시): approved-mob-vfx-meshes
+- NPC 복장·체형·생활감 4단계(승인된 복장 아이템(셔츠·바지·얼굴)): approved-npc-outfit-items · 등록 후보 8개: icon_armor.png, capePrefab, roblox-games/fantasy-survival/assets/worn-cape.obj, MagicForestCape.obj, unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCape.obj, clothBones, item_armor_black, item_armor_golden (오너가 승인하면 바로 풀림)
+- 몹 외형·모션·이펙트 5단계(승인된 몹 전용 이펙트 메시): approved-mob-vfx-meshes · 등록 후보 8개: assets/external/simple-rpg/icons-vfx-npc/fantasy-rpg-icons.zip, assets/external/simple-rpg/icons-vfx-npc/game-icons.zip, assets/external/simple-rpg/icons-vfx-npc/ui-adventure.zip, assets/external/simple-rpg/icons-vfx-npc/ui-pack.zip, assets/external/simple-rpg/icons-vfx-npc/emotes.zip, interfaceVfx, slash, spark (오너가 승인하면 바로 풀림)
 
 ## 최근 승급 기록
 

@@ -30,9 +30,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install Pillow (화면 검사용)
+        run: pip install --quiet pillow
       - name: Advance ladder
         env:
           GAME_IN: ${{ inputs.game }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         run: |
           set -euo pipefail
           # 수동 실행은 지정한 게임만, 캡처 완료 이벤트는 래더가 있는 모든 게임을 대상으로 한다.
@@ -40,14 +43,23 @@ jobs:
           for game in $games; do
             [[ "$game" =~ ^[a-z0-9-]+$ ]] || { echo "bad game id $game"; exit 1; }
             [ -f "roblox-games/$game/visual-ladder.json" ] || { echo "no ladder for $game"; continue; }
-            report=""
+            report=""; extra=()
             if git fetch -q origin "${game}-studio-frames:refs/remotes/origin/${game}-studio-frames" 2>/dev/null; then
               git show "origin/${game}-studio-frames:report.json" > "$RUNNER_TEMP/report-$game.json" 2>/dev/null && report="$RUNNER_TEMP/report-$game.json"
+              mkdir -p "$RUNNER_TEMP/frames-$game"
+              git archive "origin/${game}-studio-frames" | tar -x -C "$RUNNER_TEMP/frames-$game" 2>/dev/null || true
+              extra+=(--frames "$RUNNER_TEMP/frames-$game")
+            fi
+            # 성능 예산이 있는 게임만 실제 플레이 FPS를 읽어 성능 게이트에 쓴다(키가 없으면 건너뜀).
+            uni=$(node -e "try{const s=require('./roblox-games/$game/visual-ladder.json');process.stdout.write((s.perfBudget&&s.perfBudget.universeId)||'')}catch{}")
+            if [ -n "$uni" ] && [ -n "${ROBLOX_OPEN_CLOUD_API_KEY:-}" ]; then
+              python3 tools/vibe-ladder-telemetry.py --universe "$uni" > "$RUNNER_TEMP/tel-$game.json" || echo '{"sessions":0}' > "$RUNNER_TEMP/tel-$game.json"
+              extra+=(--telemetry "$RUNNER_TEMP/tel-$game.json")
             fi
             if [ -n "$report" ]; then
-              node tools/vibe-visual-ladder.mjs --game "$game" --advance --report "$report"
+              node tools/vibe-visual-ladder.mjs --game "$game" --advance --report "$report" "${extra[@]}"
             else
-              node tools/vibe-visual-ladder.mjs --game "$game" --advance
+              node tools/vibe-visual-ladder.mjs --game "$game" --advance "${extra[@]}"
             fi
             node tools/vibe-visual-ladder.mjs --game "$game" --check
           done
@@ -56,7 +68,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add roblox-games/*/visual-ladder-state.json roblox-games/*/shared/VisualLadderState.luau roblox-games/*/src/ReplicatedStorage/Shared/VisualLadderState.luau docs/devloop/VISUAL_LADDER_*.md
+          git add roblox-games/*/visual-ladder-state.json roblox-games/*/shared/VisualLadderState.luau roblox-games/*/src/ReplicatedStorage/Shared/VisualLadderState.luau docs/devloop/VISUAL_LADDER_*.md vibe-ladder-status.json docs/devloop/ladder
           if git diff --cached --quiet; then echo "no ladder change"; exit 0; fi
           git commit -m "비주얼 래더: 루프 검증 통과로 디테일 단계 갱신"
           for i in 1 2 3; do

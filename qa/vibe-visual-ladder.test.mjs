@@ -40,3 +40,25 @@ test('게임 코드는 래더 단계를 읽고 새 도형 파츠를 만들지 �
   assert.match(client,/VisualLadderWorld/);
   assert.doesNotMatch(client.slice(client.indexOf('[비주얼 래더 · 배경]')),/Instance\.new\("Part"\)/);
 });
+
+test('화면 검사기는 검은 화면을 깨진 화면으로 잡는다', (t) => {
+  const tmp=fs.mkdtempSync('/tmp/ladder-frames-');
+  const mk=spawnSync('python3',['-c',`from PIL import Image\nImage.new('RGB',(320,180),(0,0,0)).save('${tmp}/a.jpg')\nim=Image.effect_noise((320,180),60).convert('RGB');im.save('${tmp}/b.jpg')`],{encoding:'utf8'});
+  if(mk.status!==0){t.skip('Pillow 없음');return}
+  const r=spawnSync('python3',['tools/vibe-ladder-frames.py','--dir',tmp],{encoding:'utf8'});
+  const out=JSON.parse(r.stdout.trim());
+  assert.equal(out.checked,2);
+  assert.deepEqual(out.badFiles,['a.jpg']);
+});
+
+test('성능 측정기는 키가 없으면 데이터 없음으로 정상 종료한다', () => {
+  const r=spawnSync('python3',['tools/vibe-ladder-telemetry.py','--universe','1'],{encoding:'utf8',env:{...process.env,ROBLOX_OPEN_CLOUD_API_KEY:''}});
+  assert.equal(r.status,0);
+  assert.equal(JSON.parse(r.stdout.trim()).sessions,0);
+});
+
+test('대시보드 페이지와 전체 현황 JSON이 두 게임을 담는다', () => {
+  assert.ok(fs.existsSync('vibe-ladder.html'));
+  const status=JSON.parse(fs.readFileSync('vibe-ladder-status.json','utf8'));
+  for(const g of games) assert.ok(status.games[g],g);
+});
