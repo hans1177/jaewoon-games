@@ -5549,7 +5549,7 @@ test('large Roblox native server source still discovers active creature bindings
    ' end',
    'end',
    '--'+'.'.repeat(650000)
-  ].join('\\n'));
+  ].join('\n'));
   const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',manifest:{assets:[]},
    task:{gameId:'large-source',goal:'normal F0 source build-up'}});
   const roles=new Set(plan.sourceActorRequirements.map(row=>row.family+':'+row.role));
