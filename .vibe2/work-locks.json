@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-10f1bly",
+      "worker": "vibe2",
+      "taskId": "fifty-days-web-startup-spatial-repair-v15",
+      "gameId": "fifty-days",
+      "files": [
+        "web-games/fifty-days/index.html"
+      ],
+      "baseSha": "4d053294743c9533b1eb2e18cb739e2e1f13fd92",
+      "runId": "42459781274",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-08T08:06:51.403Z",
+      "expiresAt": "2026-11-08T08:51:51.403Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fifty-days-web-startup-spatial-repair-v15"
+      ]
+    }
+  ]
 }
