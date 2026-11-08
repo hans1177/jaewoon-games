@@ -11,6 +11,16 @@ on:
         description: '새 체험 이름'
         required: true
         type: string
+      universe_id:
+        description: '(선택) 미리 만든 빈 체험 Universe ID. 넣으면 생성 대신 그 체험에 게시하고 쿠키를 쓰지 않음'
+        required: false
+        type: string
+        default: ''
+      place_id:
+        description: '(선택) 그 체험의 Place ID. 비우면 대표 Place 자동 조회'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -52,13 +62,26 @@ jobs:
         env:
           GAME_ID: ${{ inputs.game_id }}
           GAME_NAME: ${{ inputs.game_name }}
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+          REUSE_UNIVERSE_ID: ${{ inputs.universe_id }}
+          REUSE_PLACE_ID: ${{ inputs.place_id }}
+          # 배포 전용 키(ROBLOX_DEPLOY_API_KEY)가 있으면 우선 사용. 기존 체험 지정 시 쿠키는 넘기지 않는다.
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ inputs.universe_id == '' && secrets.ROBLOX_ROBLOSECURITY || '' }}
+          ROBLOX_SECURITY_COOKIE: ${{ inputs.universe_id == '' && secrets.ROBLOX_SECURITY_COOKIE || '' }}
         run: |
           set -euo pipefail
           args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/new-exp/$GAME_ID.rbxlx" --source-revision "$(git rev-parse HEAD)" --output "/tmp/new-exp/result.json")
-          if [[ "$GAME_ID" == 'fantasy-survival' ]]; then args+=(--avatar-rig R15); fi
+          if [[ -n "${REUSE_UNIVERSE_ID:-}" ]]; then
+            [[ "$REUSE_UNIVERSE_ID" =~ ^[0-9]+$ ]] || { echo 'UNIVERSE_ID_INVALID'; exit 1; }
+            if [[ -z "${REUSE_PLACE_ID:-}" ]]; then
+              REUSE_PLACE_ID="$(curl -fsS --retry 3 -H "x-api-key: ${ROBLOX_OPEN_CLOUD_API_KEY}" "https://apis.roblox.com/cloud/v2/universes/${REUSE_UNIVERSE_ID}" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const m=String(JSON.parse(d).rootPlace||'').match(/(\\d+)\\s*$/);if(!m){console.error('ROOT_PLACE_LOOKUP_FAILED');process.exit(1)}console.log(m[1])})")"
+            fi
+            [[ "$REUSE_PLACE_ID" =~ ^[0-9]+$ ]] || { echo 'PLACE_ID_INVALID'; exit 1; }
+            echo "REUSE_TARGET=${REUSE_UNIVERSE_ID}/${REUSE_PLACE_ID} (R15는 체험 생성 시 Creator Hub에서 설정)"
+            args+=(--reuse-universe-id "$REUSE_UNIVERSE_ID" --reuse-place-id "$REUSE_PLACE_ID")
+          elif [[ "$GAME_ID" == 'fantasy-survival' ]]; then
+            args+=(--avatar-rig R15)
+          fi
           node tools/company-roblox-dedicated-experience.mjs "${args[@]}"
           cat /tmp/new-exp/result.json
       - name: Record new target through an existing GitHub pull request
