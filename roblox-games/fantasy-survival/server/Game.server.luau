@@ -5585,6 +5585,43 @@ local function refreshMeadowEncounters(now)
   end
 end
 
+-- [스튜디오 전용 몹 도감 점검] CI 캡처에서 모든 몹 모델을 6마리씩 한 줄로 세워 본다. 실서버(Studio 아님)에서는 만들어지지 않는다.
+if RunService:IsStudio() then
+  local galleryKeys={}
+  for key in pairs(NativeCreatureAssets) do
+    if type(key)=="string" and key:sub(1,4)=="mon_" then galleryKeys[#galleryKeys+1]=key:sub(5) end
+  end
+  table.sort(galleryKeys)
+  workspace:SetAttribute("StudioGalleryCount",math.ceil(#galleryKeys/6))
+  workspace:GetAttributeChangedSignal("StudioGalleryGroup"):Connect(function()
+    local group=workspace:GetAttribute("StudioGalleryGroup")
+    if typeof(group)~="number" then return end
+    for index=#enemies,1,-1 do
+      local enemy=enemies[index]
+      if enemy.gallery then
+        enemy.HP=0
+        if enemy.model then enemy.model:Destroy() end
+        table.remove(enemies,index)
+      end
+    end
+    local names={}
+    for slot=1,6 do
+      local key=galleryKeys[group*6+slot]
+      if key then
+        local ok,spawned=pcall(function()
+          return spawnEnemy({id="wolf",atom="HEAD_CANINE",model=key,name=key,tier=1,height=3.4,hp=40,dmg=.05,
+            position=Vector3.new(-25+(slot-1)*10,3,420)},9000+group*6+slot)
+        end)
+        for _,enemy in ipairs(enemies) do
+          if enemy.siteIndex==9000+group*6+slot then enemy.gallery=true end
+        end
+        names[#names+1]=key..(ok and spawned and "" or "(실패)")
+      end
+    end
+    workspace:SetAttribute("StudioGalleryNames",table.concat(names,","))
+  end)
+end
+
 local function nearestEnemy(rootPart, range)
   local selected,best=nil,range or 21
   for _,enemy in ipairs(enemies) do

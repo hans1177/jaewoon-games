@@ -1,0 +1,512 @@
+[
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "click_text",
+  "text": "이어하기"
+ },
+ {
+  "type": "click_text",
+  "text": "모험 시작"
+ },
+ {
+  "type": "wait",
+  "ms": 40000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService(\"RunService\") pcall(function() RS:UnbindFromRenderStep(\"FantasyShot\") end) RS:BindToRenderStep(\"FantasyShot\",Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute(\"ShotCF\") if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute(\"ShotFov\") or 60 end end) for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild(\"HumanoidRootPart\") then c.HumanoidRootPart.Anchored=true end return \"bound\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",0) return workspace:GetAttribute(\"StudioGalleryNames\") or \"?\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",72) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(0,5.5,392),Vector3.new(0,2,420))) return \"cam\""
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "g00_idle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(-75,12,420)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 1400
+ },
+ {
+  "type": "capture",
+  "name": "g00_runA"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "g00_runB"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",1) return workspace:GetAttribute(\"StudioGalleryNames\") or \"?\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",72) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(0,5.5,392),Vector3.new(0,2,420))) return \"cam\""
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "g01_idle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(-75,12,420)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 1400
+ },
+ {
+  "type": "capture",
+  "name": "g01_runA"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "g01_runB"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",2) return workspace:GetAttribute(\"StudioGalleryNames\") or \"?\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",72) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(0,5.5,392),Vector3.new(0,2,420))) return \"cam\""
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "g02_idle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(-75,12,420)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 1400
+ },
+ {
+  "type": "capture",
+  "name": "g02_runA"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "g02_runB"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",3) return workspace:GetAttribute(\"StudioGalleryNames\") or \"?\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",72) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(0,5.5,392),Vector3.new(0,2,420))) return \"cam\""
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "g03_idle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(-75,12,420)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 1400
+ },
+ {
+  "type": "capture",
+  "name": "g03_runA"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "g03_runB"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",4) return workspace:GetAttribute(\"StudioGalleryNames\") or \"?\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",72) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(0,5.5,392),Vector3.new(0,2,420))) return \"cam\""
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "g04_idle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(-75,12,420)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 1400
+ },
+ {
+  "type": "capture",
+  "name": "g04_runA"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "g04_runB"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",5) return workspace:GetAttribute(\"StudioGalleryNames\") or \"?\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",72) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(0,5.5,392),Vector3.new(0,2,420))) return \"cam\""
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "g05_idle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(-75,12,420)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 1400
+ },
+ {
+  "type": "capture",
+  "name": "g05_runA"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "g05_runB"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",6) return workspace:GetAttribute(\"StudioGalleryNames\") or \"?\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",72) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(0,5.5,392),Vector3.new(0,2,420))) return \"cam\""
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "g06_idle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(-75,12,420)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 1400
+ },
+ {
+  "type": "capture",
+  "name": "g06_runA"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "g06_runB"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",7) return workspace:GetAttribute(\"StudioGalleryNames\") or \"?\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",72) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(0,5.5,392),Vector3.new(0,2,420))) return \"cam\""
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "g07_idle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(-75,12,420)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 1400
+ },
+ {
+  "type": "capture",
+  "name": "g07_runA"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "g07_runB"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",8) return workspace:GetAttribute(\"StudioGalleryNames\") or \"?\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",72) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(0,5.5,392),Vector3.new(0,2,420))) return \"cam\""
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "g08_idle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(-75,12,420)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 1400
+ },
+ {
+  "type": "capture",
+  "name": "g08_runA"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "g08_runB"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",9) return workspace:GetAttribute(\"StudioGalleryNames\") or \"?\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",72) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(0,5.5,392),Vector3.new(0,2,420))) return \"cam\""
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "g09_idle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(-75,12,420)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 1400
+ },
+ {
+  "type": "capture",
+  "name": "g09_runA"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "g09_runB"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "workspace:SetAttribute(\"StudioGalleryGroup\",10) return workspace:GetAttribute(\"StudioGalleryNames\") or \"?\""
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute(\"ShotFov\",72) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(0,5.5,392),Vector3.new(0,2,420))) return \"cam\""
+ },
+ {
+  "type": "wait",
+  "ms": 3500
+ },
+ {
+  "type": "capture",
+  "name": "g10_idle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(-75,12,420)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ },
+ {
+  "type": "wait",
+  "ms": 1400
+ },
+ {
+  "type": "capture",
+  "name": "g10_runA"
+ },
+ {
+  "type": "wait",
+  "ms": 450
+ },
+ {
+  "type": "capture",
+  "name": "g10_runB"
+ },
+ {
+  "type": "luau",
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(0,12,150)) local h=ch:FindFirstChildOfClass(\"Humanoid\") if h then h.MaxHealth=1e7 h.Health=1e7 end end p:SetAttribute(\"ProfileReady\",true) end return \"tp\""
+ }
+]
