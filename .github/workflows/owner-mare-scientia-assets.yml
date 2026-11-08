@@ -56,6 +56,7 @@ jobs:
           import io
           import pathlib
           import urllib.request
+          import urllib.parse
           from PIL import Image, ImageEnhance, ImageOps
 
           root = pathlib.Path("roblox-games/mare-scientia/assets/portraits")
@@ -84,9 +85,21 @@ jobs:
                   picture = merchant.copy()
               else:
                   uri, box = source[1], source[2]
-                  request = urllib.request.Request(uri, headers={"User-Agent": "MareScientia-Asset-Registration/1.0 (artwork archival use)"})
-                  with urllib.request.urlopen(request, timeout=45) as response:
-                      picture = Image.open(io.BytesIO(response.read())).convert("RGB")
+                  # 위키미디어가 공유 빌드 IP를 제한하면 공용 이미지 CDN의 동일 원본을 요청한다.
+                  candidates = (uri, "https://wsrv.nl/?url=" + urllib.parse.quote(uri, safe="") + "&w=900")
+                  data = None
+                  for address in candidates:
+                      try:
+                          request = urllib.request.Request(address, headers={"User-Agent": "MareScientia-Asset-Registration/1.0"})
+                          with urllib.request.urlopen(request, timeout=35) as response:
+                              data = response.read()
+                          if data:
+                              break
+                      except Exception as exc:
+                          print("PUBLIC_DOMAIN_IMAGE_RETRY", nation, type(exc).__name__)
+                  if not data:
+                      raise RuntimeError("PUBLIC_DOMAIN_IMAGE_UNAVAILABLE: " + nation)
+                  picture = Image.open(io.BytesIO(data)).convert("RGB")
                   w, h = picture.size
                   picture = picture.crop((round(box[0]*w), round(box[1]*h), round(box[2]*w), round(box[3]*h)))
                   picture = ImageEnhance.Contrast(picture).enhance(1.08)
@@ -115,6 +128,7 @@ jobs:
         run: |
           set -euo pipefail
           for f in roblox-games/mare-scientia/assets/portraits/heroes.jpg roblox-games/mare-scientia/assets-registered.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau; do
+            if [ ! -e "$f" ]; then echo "SKIP_MISSING $f"; continue; fi
             if git ls-files --error-unmatch "$f" >/dev/null 2>&1 && git diff --quiet -- "$f"; then echo "SKIP_UNCHANGED $f"; continue; fi
             sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=main" --jq .sha 2>/dev/null || true)"
             args=(-X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" -f message='Mare Scientia: Roblox 등록 자산 ID 갱신' -f content="$(base64 -w0 "$f")" -f branch=main)
