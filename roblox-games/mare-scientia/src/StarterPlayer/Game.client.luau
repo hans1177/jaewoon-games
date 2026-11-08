@@ -1135,6 +1135,7 @@ local function playVoyage(fromName, toName, days, steam, path)
 end
 
 local playStory
+local renderTitle
 local sailManual = false
 local epilogueMessage = nil
 
@@ -3666,240 +3667,6 @@ local RENDERERS = {
 
 -- 새 게임 선택 화면 -------------------------------------------------------------
 
-local function renderNewGame()
-	local GOLD = Color3.fromRGB(214, 170, 82)
-	local list = {}
-	for id, n in PortData.Nations do
-		if not n.hidden then
-			table.insert(list, n)
-		end
-	end
-	table.sort(list, function(a, b) return a.id < b.id end)
-	local cur = PortData.Nations[chosenNation]
-	if not cur or cur.hidden then
-		chosenNation = list[1].id
-		cur = list[1]
-	end
-
-	-- 1) 나라: 카드 두 줄 격자
-	add(function() return mkHeader(content, "① 나라를 고르세요") end)
-	add(function()
-		local grid = Instance.new("Frame")
-		grid.BackgroundTransparency = 1
-		grid.Size = UDim2.new(1, -6, 0, 0)
-		grid.AutomaticSize = Enum.AutomaticSize.Y
-		local gl = Instance.new("UIGridLayout")
-		gl.CellSize = UDim2.new(0.5, -4, 0, 62)
-		gl.CellPadding = UDim2.fromOffset(8, 8)
-		gl.SortOrder = Enum.SortOrder.LayoutOrder
-		gl.Parent = grid
-		for i, n in list do
-			local selected = chosenNation == n.id
-			local card = Instance.new("TextButton")
-			card.LayoutOrder = i
-			card.Text = ""
-			card.AutoButtonColor = false
-			card.BorderSizePixel = 0
-			card.BackgroundColor3 = if selected then Color3.fromRGB(52, 42, 22) else Color3.fromRGB(24, 32, 46)
-			corner(card, 10)
-			local st = Instance.new("UIStroke")
-			st.Thickness = if selected then 2.5 else 1
-			st.Color = if selected then GOLD else Color3.fromRGB(70, 82, 100)
-			st.Parent = card
-			local nm = mkLabel(card, n.name, 17, if selected then GOLD else COLORS.text, true)
-			nm.Position = UDim2.fromOffset(10, 8)
-			nm.Size = UDim2.new(1, -20, 0, 22)
-			nm.AutomaticSize = Enum.AutomaticSize.None
-			local sub = mkLabel(card, "⚓ " .. PortData.Ports[n.startPort].name, 12, COLORS.muted, false)
-			sub.Position = UDim2.fromOffset(10, 34)
-			sub.Size = UDim2.new(1, -20, 0, 18)
-			sub.AutomaticSize = Enum.AutomaticSize.None
-			card.Activated:Connect(function()
-				Sfx.play("sfx_click")
-				chosenNation = n.id
-				render()
-			end)
-			card.Parent = grid
-		end
-		return grid
-	end)
-
-	-- 선택한 나라 소개
-	add(function()
-		local box = Instance.new("Frame")
-		box.Size = UDim2.new(1, -6, 0, 0)
-		box.AutomaticSize = Enum.AutomaticSize.Y
-		box.BackgroundColor3 = Color3.fromRGB(18, 24, 36)
-		box.BorderSizePixel = 0
-		corner(box, 10)
-		local st = Instance.new("UIStroke")
-		st.Color = GOLD
-		st.Transparency = 0.5
-		st.Parent = box
-		local pad = Instance.new("UIPadding")
-		pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 10), UDim.new(0, 10)
-		pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 12), UDim.new(0, 12)
-		pad.Parent = box
-		local hl = Instance.new("UIListLayout")
-		hl.FillDirection = Enum.FillDirection.Horizontal
-		hl.Padding = UDim.new(0, 12)
-		hl.Parent = box
-		heroPortrait(box, cur.id, 96, 124)
-		local info = Instance.new("Frame")
-		info.BackgroundTransparency = 1
-		info.Size = UDim2.new(1, -112, 0, 0)
-		info.AutomaticSize = Enum.AutomaticSize.Y
-		info.Parent = box
-		local ll = Instance.new("UIListLayout")
-		ll.Padding = UDim.new(0, 4)
-		ll.Parent = info
-		local N = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Narrative"))
-		local pro = N.Prologues[cur.id]
-		local hero = if pro then string.match(pro.title, "·%s*(.+)$") else nil
-		mkLabel(info, cur.name .. (if hero then "  ·  " .. hero else ""), 19, GOLD, true)
-		mkLabel(info, "시작 항구  " .. PortData.Ports[cur.startPort].name, 13, COLORS.text, true)
-		mkLabel(info, cur.summary, 13, COLORS.muted, false)
-		return box
-	end)
-
-	-- 2) 시대: 한 줄 세 칸
-	add(function() return mkHeader(content, "② 시대를 고르세요") end)
-	add(function()
-		local eras = {
-			{ 1650, "1650", "과학혁명 시작" },
-			{ 1700, "1700 추천", "증기의 새벽" },
-			{ 1750, "1750", "분류학 시대" },
-		}
-		local rowF = Instance.new("Frame")
-		rowF.BackgroundTransparency = 1
-		rowF.Size = UDim2.new(1, -6, 0, 58)
-		local gl = Instance.new("UIGridLayout")
-		gl.CellSize = UDim2.new(1 / 3, -6, 1, 0)
-		gl.CellPadding = UDim2.fromOffset(8, 0)
-		gl.SortOrder = Enum.SortOrder.LayoutOrder
-		gl.Parent = rowF
-		for i, e in eras do
-			local selected = chosenYear == e[1]
-			local b = Instance.new("TextButton")
-			b.LayoutOrder = i
-			b.AutoButtonColor = false
-			b.BorderSizePixel = 0
-			b.Text = e[2] .. "\n" .. e[3]
-			b.TextWrapped = true
-			b.Font = Enum.Font.GothamBold
-			b.TextSize = 13
-			b.TextColor3 = if selected then GOLD else COLORS.text
-			b.BackgroundColor3 = if selected then Color3.fromRGB(52, 42, 22) else Color3.fromRGB(24, 32, 46)
-			corner(b, 10)
-			local st = Instance.new("UIStroke")
-			st.Thickness = if selected then 2.5 else 1
-			st.Color = if selected then GOLD else Color3.fromRGB(70, 82, 100)
-			st.Parent = b
-			b.Activated:Connect(function()
-				Sfx.play("sfx_click")
-				chosenYear = e[1]
-				render()
-			end)
-			b.Parent = rowF
-		end
-		return rowF
-	end)
-
-	-- 3) 시작
-	add(function()
-		local b = mkButton(content, "⚓  출항하기", Color3.fromRGB(196, 146, 52), UDim2.new(1, -6, 0, 56), function()
-			local restart = view ~= nil
-			newGameMode = false
-			sceneHold = true -- 오프닝이 끝날 때까지 마을 장면을 먼저 짓지 않는다
-			local result = call("NewGame", { nationId = chosenNation, startYear = chosenYear, restart = restart })
-			if not (result and result.ok) then
-				sceneHold = false
-			end
-			if not (result and result.ok) and restart then
-				newGameMode = true
-				render()
-			end
-			-- 시작 직후 프롤로그: 주인공이 왜 항해를 떠나는지 보여 준다
-			if result and result.ok then
-				local N = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Narrative"))
-				local pro = N.Prologues[chosenNation] or N.Prologue
-				local lines = {}
-				for sentence in string.gmatch(pro.text, "[^%.]+%.?") do
-					local t = string.gsub(sentence, "^%s+", "")
-					if t ~= "" then
-						table.insert(lines, t)
-					end
-				end
-				task.spawn(function()
-					-- 3D 오프닝: 시작 항구에서 가까운 바다로 나가는 항해 장면에 자막과 주인공 초상을 얹는다
-					local startId = view.player.portId
-					local sp = PortData.Ports[startId]
-					local nearId, nearD = nil, math.huge
-					for id, q in PortData.Ports do
-						if id ~= startId then
-							local d = (q.lat - sp.lat) ^ 2 + (q.lon - sp.lon) ^ 2
-							if d < nearD then
-								nearId, nearD = id, d
-							end
-						end
-					end
-					sceneHold = true
-					audioLock = true
-					main.Visible = false
-					menuToggle.Visible = false
-					Sfx.music("music_sea")
-					Sfx.ambient({ "sfx_waves", "sfx_wind" })
-					local days = math.clamp(math.ceil((#lines * 4.2 + 3 - 8) / 0.9), 4, 16)
-					local nationId = chosenNation
-					local ok, err = pcall(VoyageScene.play, {
-						shipId = view.ship.id, steam = false, days = days,
-						path = SeaRoutes.path(startId, nearId, PortData.Ports),
-						fromName = "", toName = "",
-						makeShip = PortScene.makeShip, place = PortScene.placeModel,
-						intro = {
-							title = pro.title, lines = lines,
-							portrait = function(gui)
-								local hp = heroPortrait(gui, nationId, 130, 168)
-								hp.AnchorPoint = Vector2.new(0, 1)
-								hp.Position = UDim2.new(0, 24, 1, -24)
-								hp.ZIndex = 7
-							end,
-						},
-					})
-					if not ok then
-						warn("[Game] 3D 오프닝 오류, 2D 연출로 대체:", err)
-						local cam = workspace.CurrentCamera
-						cam.CameraType = Enum.CameraType.Custom
-						local g = player.PlayerGui:FindFirstChild("VoyageHud")
-						if g then g:Destroy() end
-						local vf = workspace:FindFirstChild("VoyageScene")
-						if vf then vf:Destroy() end
-						playEpilogue(nil, { title = pro.title, lines = lines, button = "⚓ 항해를 시작한다", hero = nationId })
-					end
-					arriveNext = true
-					main.Visible = true
-					menuToggle.Visible = false
-					sceneHold = false
-					sceneKey = nil
-					audioLock = false
-					render()
-				end)
-			end
-		end, true)
-		b.TextSize = 20
-		b.TextColor3 = Color3.fromRGB(20, 14, 6)
-		return b
-	end)
-	if view then
-		add(function()
-			return mkButton(content, "취소 (이어서 하기)", COLORS.grey, UDim2.new(1, -6, 0, 40), function()
-				newGameMode = false
-				render()
-			end, true)
-		end)
-	end
-end
-
 -- 전체 그리기 -----------------------------------------------------------------
 
 local function renderTabs()
@@ -4061,6 +3828,86 @@ do
 	end)
 end
 
+local function startNewGame()
+	local restart = view ~= nil
+	newGameMode = false
+	sceneHold = true -- 오프닝이 끝날 때까지 마을 장면을 먼저 짓지 않는다
+	local result = call("NewGame", { nationId = chosenNation, startYear = chosenYear, restart = restart })
+	if not (result and result.ok) then
+		sceneHold = false
+	end
+	if not (result and result.ok) and restart then
+		newGameMode = true
+		render()
+	end
+	-- 시작 직후 프롤로그: 주인공이 왜 항해를 떠나는지 보여 준다
+	if result and result.ok then
+		local N = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Narrative"))
+		local pro = N.Prologues[chosenNation] or N.Prologue
+		local lines = {}
+		for sentence in string.gmatch(pro.text, "[^%.]+%.?") do
+			local t = string.gsub(sentence, "^%s+", "")
+			if t ~= "" then
+				table.insert(lines, t)
+			end
+		end
+		task.spawn(function()
+			-- 3D 오프닝: 시작 항구에서 가까운 바다로 나가는 항해 장면에 자막과 주인공 초상을 얹는다
+			local startId = view.player.portId
+			local sp = PortData.Ports[startId]
+			local nearId, nearD = nil, math.huge
+			for id, q in PortData.Ports do
+				if id ~= startId then
+					local d = (q.lat - sp.lat) ^ 2 + (q.lon - sp.lon) ^ 2
+					if d < nearD then
+						nearId, nearD = id, d
+					end
+				end
+			end
+			sceneHold = true
+			audioLock = true
+			main.Visible = false
+			menuToggle.Visible = false
+			Sfx.music("music_sea")
+			Sfx.ambient({ "sfx_waves", "sfx_wind" })
+			local days = math.clamp(math.ceil((#lines * 4.2 + 3 - 8) / 0.9), 4, 16)
+			local nationId = chosenNation
+			local ok, err = pcall(VoyageScene.play, {
+				shipId = view.ship.id, steam = false, days = days,
+				path = SeaRoutes.path(startId, nearId, PortData.Ports),
+				fromName = "", toName = "",
+				makeShip = PortScene.makeShip, place = PortScene.placeModel,
+				intro = {
+					title = pro.title, lines = lines,
+					portrait = function(gui)
+						local hp = heroPortrait(gui, nationId, 130, 168)
+						hp.AnchorPoint = Vector2.new(0, 1)
+						hp.Position = UDim2.new(0, 24, 1, -24)
+						hp.ZIndex = 7
+					end,
+				},
+			})
+			if not ok then
+				warn("[Game] 3D 오프닝 오류, 2D 연출로 대체:", err)
+				local cam = workspace.CurrentCamera
+				cam.CameraType = Enum.CameraType.Custom
+				local g = player.PlayerGui:FindFirstChild("VoyageHud")
+				if g then g:Destroy() end
+				local vf = workspace:FindFirstChild("VoyageScene")
+				if vf then vf:Destroy() end
+				playEpilogue(nil, { title = pro.title, lines = lines, button = "⚓ 항해를 시작한다", hero = nationId })
+			end
+			arriveNext = true
+			main.Visible = true
+			menuToggle.Visible = false
+			sceneHold = false
+			sceneKey = nil
+			audioLock = false
+			render()
+		end)
+	end
+end
+
 -- 타이틀(새 게임) 화면 배경: 월드가 비치지 않게 가리고, 해 질 녘 바다와 배 실루엣, 게임 이름을 직접 그려 분위기를 만든다
 local titleGui = overlayGui("TitleBackdrop", -5)
 titleGui.Enabled = false
@@ -4083,7 +3930,7 @@ do
 		local st = mkBox(sky, UDim2.fromScale(starRng:NextNumber(), starRng:NextNumber() * 0.5), UDim2.fromOffset(2, 2), Color3.fromRGB(255, 244, 220), starRng:NextNumber(0.2, 0.7))
 		st.ZIndex = 2
 	end
-	local sun = mkRound(root, UDim2.fromScale(0.3, 0.64), UDim2.fromOffset(150, 150), Color3.fromRGB(255, 214, 140), 0.05, Vector2.new(0.5, 0.5))
+	local sun = mkRound(root, UDim2.fromScale(0.2, 0.64), UDim2.fromOffset(120, 120), Color3.fromRGB(255, 214, 140), 0.05, Vector2.new(0.5, 0.5))
 	sun.ZIndex = 2
 	local sea = mkBox(root, UDim2.fromScale(0, 0.64), UDim2.fromScale(1, 0.36), Color3.new(1, 1, 1))
 	sea.ZIndex = 3
@@ -4100,12 +3947,12 @@ do
 		w.ZIndex = 4
 	end
 	-- 배 실루엣
-	titleShip = mkBox(root, UDim2.fromScale(0.3, 0.655), UDim2.fromOffset(150, 20), Color3.fromRGB(14, 10, 12))
+	titleShip = mkBox(root, UDim2.fromScale(0.2, 0.655), UDim2.fromOffset(100, 12), Color3.fromRGB(14, 10, 12))
 	titleShip.ZIndex = 5
-	local m1 = mkBox(titleShip, UDim2.fromOffset(40, -80), UDim2.fromOffset(4, 80), Color3.fromRGB(14, 10, 12))
-	local m2 = mkBox(titleShip, UDim2.fromOffset(95, -62), UDim2.fromOffset(4, 62), Color3.fromRGB(14, 10, 12))
-	local s1 = mkBox(titleShip, UDim2.fromOffset(46, -76), UDim2.fromOffset(34, 50), Color3.fromRGB(34, 24, 26))
-	local s2 = mkBox(titleShip, UDim2.fromOffset(101, -58), UDim2.fromOffset(26, 40), Color3.fromRGB(34, 24, 26))
+	local m1 = mkBox(titleShip, UDim2.fromOffset(26, -52), UDim2.fromOffset(3, 52), Color3.fromRGB(14, 10, 12))
+	local m2 = mkBox(titleShip, UDim2.fromOffset(62, -40), UDim2.fromOffset(3, 40), Color3.fromRGB(14, 10, 12))
+	local s1 = mkBox(titleShip, UDim2.fromOffset(30, -49), UDim2.fromOffset(22, 32), Color3.fromRGB(34, 24, 26))
+	local s2 = mkBox(titleShip, UDim2.fromOffset(66, -37), UDim2.fromOffset(17, 26), Color3.fromRGB(34, 24, 26))
 	for _, f in { m1, m2, s1, s2 } do
 		f.ZIndex = 5
 	end
@@ -4114,8 +3961,8 @@ do
 		local l = Instance.new("TextLabel")
 		l.BackgroundTransparency = 1
 		l.AnchorPoint = Vector2.new(0.5, 0)
-		l.Position = UDim2.new(0.19, 0, y, 0)
-		l.Size = UDim2.new(0.34, 0, 0, size + 8)
+		l.Position = UDim2.new(0.2, 0, y, 0)
+		l.Size = UDim2.new(0.36, 0, 0, size + 8)
 		l.Text = text
 		l.TextSize = size
 		l.Font = font
@@ -4133,23 +3980,276 @@ do
 			task.wait(0.05)
 			if titleGui.Enabled then
 				local t = os.clock()
-				titleShip.Position = UDim2.new(0.3 + math.sin(t * 0.12) * 0.01, -75, 0.655 + math.sin(t * 1.3) * 0.004, 0)
+				titleShip.Position = UDim2.new(0.2 + math.sin(t * 0.12) * 0.008, -50, 0.655 + math.sin(t * 1.3) * 0.004, 0)
 				titleShip.Rotation = math.sin(t * 0.9) * 1.5
 			end
 		end
 	end)
 end
+-- 타이틀 오른쪽 선택 패널: 나라(3열 카드) → 시대(3칸) → 출항 버튼 순서로, 스크롤 없이 한눈에 보이게 짠다
+local NATION_COLOR = {
+	england = Color3.fromRGB(196, 44, 56), netherlands = Color3.fromRGB(232, 124, 36), france = Color3.fromRGB(56, 88, 180),
+	portugal = Color3.fromRGB(44, 128, 78), ottoman = Color3.fromRGB(176, 32, 56), swahili = Color3.fromRGB(34, 146, 146),
+	malabar = Color3.fromRGB(232, 164, 44), japan = Color3.fromRGB(214, 70, 82), new_spain = Color3.fromRGB(206, 168, 54),
+}
+local GOLD = Color3.fromRGB(226, 182, 92)
+local titlePanel = Instance.new("Frame")
+titlePanel.Name = "TitlePanel"
+titlePanel.AnchorPoint = Vector2.new(1, 0.5)
+titlePanel.Position = UDim2.new(1, -14, 0.5, 0)
+titlePanel.Size = UDim2.new(0.58, 0, 1, -28)
+titlePanel.BackgroundColor3 = Color3.fromRGB(12, 20, 34)
+titlePanel.BackgroundTransparency = 0.08
+titlePanel.BorderSizePixel = 0
+titlePanel.Visible = false
+titlePanel.ZIndex = 10
+titlePanel.Parent = titleGui
+corner(titlePanel, 16)
+do
+	local st = Instance.new("UIStroke")
+	st.Color = GOLD
+	st.Thickness = 2
+	st.Parent = titlePanel
+end
+local titleScroll = Instance.new("ScrollingFrame")
+titleScroll.BackgroundTransparency = 1
+titleScroll.BorderSizePixel = 0
+titleScroll.Size = UDim2.new(1, -8, 1, -8)
+titleScroll.Position = UDim2.fromOffset(4, 4)
+titleScroll.ScrollBarThickness = 4
+titleScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+titleScroll.CanvasSize = UDim2.new()
+titleScroll.ZIndex = 11
+titleScroll.Parent = titlePanel
+do
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 12), UDim.new(0, 12)
+	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 14), UDim.new(0, 14)
+	pad.Parent = titleScroll
+	local ly = Instance.new("UIListLayout")
+	ly.Padding = UDim.new(0, 8)
+	ly.SortOrder = Enum.SortOrder.LayoutOrder
+	ly.Parent = titleScroll
+end
+
+local function tLabel(parent, text, size, color, bold, order)
+	local l = mkLabel(parent, text, size, color, bold, order)
+	l.Size = UDim2.new(1, 0, 0, 0)
+	l.ZIndex = 12
+	return l
+end
+
+renderTitle = function()
+	for _, c in titleScroll:GetChildren() do
+		if not c:IsA("UIListLayout") and not c:IsA("UIPadding") then
+			c:Destroy()
+		end
+	end
+	local order = 0
+	local function nxt()
+		order += 1
+		return order
+	end
+	local list = {}
+	for id, n in PortData.Nations do
+		if not n.hidden then
+			table.insert(list, n)
+		end
+	end
+	table.sort(list, function(a, b) return a.id < b.id end)
+	local cur = PortData.Nations[chosenNation]
+	if not cur or cur.hidden then
+		chosenNation = list[1].id
+		cur = list[1]
+	end
+
+	tLabel(titleScroll, "항해를 시작하세요", 22, GOLD, true, nxt())
+	if message ~= "" then
+		tLabel(titleScroll, message, 13, if messageOk then GOLD else COLORS.red, true, nxt())
+	end
+
+	-- ① 나라
+	tLabel(titleScroll, "① 어느 나라의 항해자로 출발할까요?", 14, COLORS.muted, true, nxt())
+	local grid = Instance.new("Frame")
+	grid.BackgroundTransparency = 1
+	grid.Size = UDim2.new(1, 0, 0, 0)
+	grid.AutomaticSize = Enum.AutomaticSize.Y
+	grid.LayoutOrder = nxt()
+	grid.ZIndex = 12
+	grid.Parent = titleScroll
+	local gl = Instance.new("UIGridLayout")
+	gl.CellSize = UDim2.new(1 / 3, -6, 0, 50)
+	gl.CellPadding = UDim2.fromOffset(8, 8)
+	gl.SortOrder = Enum.SortOrder.LayoutOrder
+	gl.Parent = grid
+	for i, n in list do
+		local selected = chosenNation == n.id
+		local card = Instance.new("TextButton")
+		card.LayoutOrder = i
+		card.Text = ""
+		card.AutoButtonColor = false
+		card.BorderSizePixel = 0
+		card.ZIndex = 13
+		card.BackgroundColor3 = if selected then Color3.fromRGB(58, 46, 22) else Color3.fromRGB(22, 32, 48)
+		corner(card, 10)
+		local st = Instance.new("UIStroke")
+		st.Thickness = if selected then 2.5 else 1
+		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
+		st.Parent = card
+		local badge = mkRound(card, UDim2.fromOffset(8, 9), UDim2.fromOffset(32, 32), NATION_COLOR[n.id] or COLORS.blue, 0, Vector2.new(0, 0))
+		badge.ZIndex = 14
+		local ch = mkLabel(badge, string.sub(n.name, 1, 3), 15, Color3.new(1, 1, 1), true)
+		ch.Size = UDim2.fromScale(1, 1)
+		ch.AutomaticSize = Enum.AutomaticSize.None
+		ch.TextXAlignment = Enum.TextXAlignment.Center
+		ch.TextYAlignment = Enum.TextYAlignment.Center
+		ch.ZIndex = 15
+		local nm = mkLabel(card, n.name, 15, if selected then GOLD else COLORS.text, true)
+		nm.Position = UDim2.fromOffset(48, 6)
+		nm.Size = UDim2.new(1, -52, 0, 20)
+		nm.AutomaticSize = Enum.AutomaticSize.None
+		nm.ZIndex = 14
+		local sub = mkLabel(card, "⚓ " .. PortData.Ports[n.startPort].name, 11, COLORS.muted, false)
+		sub.Position = UDim2.fromOffset(48, 27)
+		sub.Size = UDim2.new(1, -52, 0, 16)
+		sub.AutomaticSize = Enum.AutomaticSize.None
+		sub.ZIndex = 14
+		card.Activated:Connect(function()
+			Sfx.play("sfx_click")
+			chosenNation = n.id
+			renderTitle()
+		end)
+		card.Parent = grid
+	end
+
+	-- 선택한 나라의 주인공 소개
+	local box = Instance.new("Frame")
+	box.Size = UDim2.new(1, 0, 0, 0)
+	box.AutomaticSize = Enum.AutomaticSize.Y
+	box.BackgroundColor3 = Color3.fromRGB(20, 28, 42)
+	box.BorderSizePixel = 0
+	box.LayoutOrder = nxt()
+	box.ZIndex = 12
+	corner(box, 12)
+	do
+		local st = Instance.new("UIStroke")
+		st.Color = GOLD
+		st.Transparency = 0.55
+		st.Parent = box
+		local pad = Instance.new("UIPadding")
+		pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 8), UDim.new(0, 8)
+		pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 8), UDim.new(0, 10)
+		pad.Parent = box
+		local hl = Instance.new("UIListLayout")
+		hl.FillDirection = Enum.FillDirection.Horizontal
+		hl.Padding = UDim.new(0, 10)
+		hl.Parent = box
+	end
+	local hp = heroPortrait(box, cur.id, 78, 98)
+	hp.ZIndex = 13
+	local info = Instance.new("Frame")
+	info.BackgroundTransparency = 1
+	info.Size = UDim2.new(1, -92, 0, 0)
+	info.AutomaticSize = Enum.AutomaticSize.Y
+	info.ZIndex = 13
+	info.Parent = box
+	do
+		local ll = Instance.new("UIListLayout")
+		ll.Padding = UDim.new(0, 3)
+		ll.Parent = info
+	end
+	local N = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Narrative"))
+	local pro = N.Prologues[cur.id]
+	local hero = if pro then string.match(pro.title, "·%s*(.+)$") else nil
+	tLabel(info, cur.name .. (if hero then "  ·  " .. hero else ""), 17, GOLD, true)
+	tLabel(info, "출발 항구  " .. PortData.Ports[cur.startPort].name, 12, COLORS.text, true)
+	tLabel(info, cur.summary, 12, COLORS.muted, false)
+
+	-- ② 시대
+	tLabel(titleScroll, "② 어느 시대에서 시작할까요?", 14, COLORS.muted, true, nxt())
+	local eras = {
+		{ 1650, "1650년", "과학혁명의 시작" },
+		{ 1700, "1700년 ★추천", "증기 기술의 새벽" },
+		{ 1750, "1750년", "분류학의 시대" },
+	}
+	local rowF = Instance.new("Frame")
+	rowF.BackgroundTransparency = 1
+	rowF.Size = UDim2.new(1, 0, 0, 52)
+	rowF.LayoutOrder = nxt()
+	rowF.ZIndex = 12
+	rowF.Parent = titleScroll
+	local eg = Instance.new("UIGridLayout")
+	eg.CellSize = UDim2.new(1 / 3, -6, 1, 0)
+	eg.CellPadding = UDim2.fromOffset(8, 0)
+	eg.SortOrder = Enum.SortOrder.LayoutOrder
+	eg.Parent = rowF
+	for i, e in eras do
+		local selected = chosenYear == e[1]
+		local b = Instance.new("TextButton")
+		b.LayoutOrder = i
+		b.AutoButtonColor = false
+		b.BorderSizePixel = 0
+		b.ZIndex = 13
+		b.Text = e[2] .. "\n" .. e[3]
+		b.TextWrapped = true
+		b.Font = Enum.Font.GothamBold
+		b.TextSize = 13
+		b.TextColor3 = if selected then GOLD else COLORS.text
+		b.BackgroundColor3 = if selected then Color3.fromRGB(58, 46, 22) else Color3.fromRGB(22, 32, 48)
+		corner(b, 10)
+		local st = Instance.new("UIStroke")
+		st.Thickness = if selected then 2.5 else 1
+		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
+		st.Parent = b
+		b.Activated:Connect(function()
+			Sfx.play("sfx_click")
+			chosenYear = e[1]
+			renderTitle()
+		end)
+		b.Parent = rowF
+	end
+
+	-- 출발
+	local actions = Instance.new("Frame")
+	actions.BackgroundTransparency = 1
+	actions.Size = UDim2.new(1, 0, 0, 54)
+	actions.LayoutOrder = nxt()
+	actions.ZIndex = 12
+	actions.Parent = titleScroll
+	local al = Instance.new("UIListLayout")
+	al.FillDirection = Enum.FillDirection.Horizontal
+	al.Padding = UDim.new(0, 8)
+	al.Parent = actions
+	if view then
+		local cancel = mkButton(actions, "이어서 하기", Color3.fromRGB(44, 56, 74), UDim2.new(0.28, 0, 1, 0), function()
+			newGameMode = false
+			render()
+		end, true)
+		cancel.ZIndex = 13
+		cancel.TextSize = 14
+	end
+	local go = mkButton(actions, "⚓  출항하기", Color3.fromRGB(206, 154, 56), UDim2.new(if view then 0.72 else 1, if view then -8 else 0, 1, 0), startNewGame, true)
+	go.ZIndex = 13
+	go.TextSize = 22
+	go.TextColor3 = Color3.fromRGB(22, 14, 4)
+	do
+		local gst = Instance.new("UIStroke")
+		gst.Color = Color3.fromRGB(255, 226, 150)
+		gst.Thickness = 2
+		gst.Parent = go
+	end
+end
+
+local wasTitle = false
 local function setTitleMode(on)
 	titleGui.Enabled = on
+	titlePanel.Visible = on
 	if on then
-		main.AnchorPoint = Vector2.new(1, 0.5)
-		main.Position = UDim2.new(1, -10, 0.5, 0)
-		main.Size = UDim2.new(0.6, 0, 1, -20)
-	else
-		main.AnchorPoint = Vector2.new(0.5, 0.5)
-		main.Position = UDim2.fromScale(0.5, 0.5)
-		main.Size = UDim2.new(1, -16, 1, -16)
+		main.Visible = false
+	elseif wasTitle then
+		main.Visible = true
 	end
+	wasTitle = on
 end
 
 function render()
@@ -4172,7 +4272,7 @@ function render()
 		if message ~= "" then
 			add(function() return mkLabel(content, message, 13, if messageOk then COLORS.gold else COLORS.red, true) end)
 		end
-		renderNewGame()
+		renderTitle()
 		return
 	end
 
