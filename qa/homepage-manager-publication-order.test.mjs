@@ -116,11 +116,17 @@ test('homepage live runtime state bypasses the PWA cache',()=>{
   assert.ok(sw.includes('/assets\\/homepage-enhancements\\.js'), 'homepage renderer must stay network-only');
 });
 
-test('homepage preserves target history but releases only the confirmed lobby',()=>{
+test('homepage excludes permanently removed games while preserving unrelated Roblox publication history',()=>{
   const exposure=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf8'));
-  const expected={'cozy-island':'116850096561713','daechung-rpg':'126302702438348','horror-escape-room':'98222620265768'};
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  for(const removed of ['cozy-island','room-survival']){
+    assert.ok(catalog.permanentRemovalPolicy.ids.includes(removed),removed+' removal must be permanent');
+    assert.equal(exposure.games.some(row=>row.gameId===removed),false,removed+' must not reappear on homepage');
+  }
+  const expected={'daechung-rpg':'126302702438348','horror-escape-room':'98222620265768'};
   for(const [gameId,placeId] of Object.entries(expected)){
     const game=exposure.games.find(row=>row.gameId===gameId);
+    assert.ok(game,gameId+' historical publication exposure missing');
     const roblox=game.platforms.find(row=>row.platform==='ROBLOX');
     assert.equal(roblox.placeId,placeId);
     assert.equal(roblox.internalUrl,`https://www.roblox.com/games/${placeId}`);
