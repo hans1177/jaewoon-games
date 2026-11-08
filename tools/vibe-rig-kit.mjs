@@ -13,21 +13,47 @@ const opt=n=>{const i=args.indexOf(`--${n}`);return i>=0?args[i+1]:null};
 const kitDir='assets/roblox/common-rig-kit-v1';
 const table=JSON.parse(fs.readFileSync(path.join(kitDir,'rig-families.json'),'utf8'));
 const luauPath=path.join(kitDir,'RobloxCommonRigKit.luau');
-const norm=n=>n.toLowerCase().replace(/[._\s]/g,'');
+const SIDE_WORDS={left:'l',right:'r'};
+// 이름 정규화(Luau Kit.Normalize와 같은 규칙): 소문자, . _ 공백 : - 제거, mixamorig 접두 제거,
+// Left/Right 접두는 L/R 접미로 옮기고 renames로 표준 이름에 맞춘다(LeftUpperArm·mixamorig:LeftArm → upperarml).
+export function norm(n){
+  let s=n.toLowerCase().replace(/[._\s:-]/g,'');
+  if(s.startsWith('mixamorig'))s=s.slice(9);
+  for(const [word,side] of Object.entries(SIDE_WORDS)){
+    if(s.startsWith(word)&&s.length>word.length){
+      const stem=s.slice(word.length);
+      return (Object.hasOwn(table.renames||{},stem)?table.renames[stem]:stem)+side;
+    }
+  }
+  return s;
+}
+
+function matches(f,set){
+  const allOk=!f.all||f.all.every(b=>set.has(b));
+  const hits=f.any?f.any.filter(b=>set.has(b)).length:0;
+  const anyOk=!f.any||hits>=(f.minAny||1);
+  return allOk&&anyOk;
+}
 
 export function classify(boneNames){
   const set=new Set(boneNames.map(norm));
-  for(const f of table.families){
-    const allOk=!f.all||f.all.every(b=>set.has(b));
-    const anyOk=!f.any||f.any.some(b=>set.has(b));
-    if(allOk&&anyOk)return f;
-  }
+  for(const f of table.families)if(matches(f,set))return f;
   return table.fallback;
 }
 
+// 주 가족(classify와 같음) + 겹쳐 인식되는 overlay 가족(예: 다리 4개 + 날개 = quadruped + winged).
+export function classifyAll(boneNames){
+  const set=new Set(boneNames.map(norm));
+  const primary=classify(boneNames);
+  const overlays=table.families.filter(f=>f.overlay&&f.id!==primary.id&&matches(f,set));
+  return {primary,overlays};
+}
+
 function generated(){
-  const rows=table.families.map(f=>`\t{ id = "${f.id}", all = {${(f.all||[]).map(x=>`"${x}"`).join(', ')}}, any = {${(f.any||[]).map(x=>`"${x}"`).join(', ')}} },`);
-  return `-- BEGIN GENERATED FAMILIES (tools/vibe-rig-kit.mjs --emit, 직접 수정 금지)\nKit.Families = {\n${rows.join('\n')}\n}\n-- END GENERATED FAMILIES`;
+  const list=a=>`{${(a||[]).map(x=>`"${x}"`).join(', ')}}`;
+  const rows=table.families.map(f=>`\t{ id = "${f.id}", all = ${list(f.all)}, any = ${list(f.any)}, minAny = ${f.minAny||1}, overlay = ${f.overlay?'true':'false'} },`);
+  const renames=Object.entries(table.renames||{}).map(([k,v])=>`\t["${k}"] = "${v}",`);
+  return `-- BEGIN GENERATED FAMILIES (tools/vibe-rig-kit.mjs --emit, 직접 수정 금지)\nKit.Renames = {\n${renames.join('\n')}\n}\nKit.Families = {\n${rows.join('\n')}\n}\n-- END GENERATED FAMILIES`;
 }
 function syncLuau(write){
   const src=fs.readFileSync(luauPath,'utf8');
@@ -66,17 +92,23 @@ if(fs.existsSync(serverFile)){
   if(i>=0){const j=src.indexOf('\n    }',i);for(const k of src.slice(i,j).matchAll(/(\w+)=C\(/g))paletteKeys.add(k[1])}
 }
 const rows=[...models.entries()].sort().map(([name,bones])=>{
-  if(/^ghost/.test(name)){const fam=classify(bones);return {name,bones:bones.length,family:fam.id,plan:fam.plan,palette:null}} // 유령 계열은 반투명 영혼 빛으로 따로 칠한다.
+  if(/^ghost/.test(name)){const fam=classify(bones);return {name,bones:bones.length,family:fam.id,plan:fam.plan,palette:null,needsAnimator:!!fam.needsAnimator}} // 유령 계열은 반투명 영혼 빛으로 따로 칠한다.
   if(r15.has(name))return {name,bones:0,family:'r15',plan:'R15 공식 애니메이션이 맡는다.',palette:null};
   const fam=classify(bones);
-  return {name,bones:bones.length,family:fam.id,plan:fam.plan,palette:paletteKeys.size?paletteKeys.has(name):null};
+  return {name,bones:bones.length,family:fam.id,plan:fam.plan,palette:paletteKeys.size?paletteKeys.has(name):null,needsAnimator:!!fam.needsAnimator,overlays:classifyAll(bones).overlays.map(o=>o.id)};
 });
 const lines=[`# 리그 키트 점검 (${game})`,'',`몹 ${rows.length}종 · 모션 없음 ${rows.filter(r=>r.family==='static').length}종${paletteKeys.size?` · 팔레트 없음 ${rows.filter(r=>r.palette===false).length}종`:''}`,'',
   '| 몹 | 뼈 | 가족 | 팔레트 |','|---|---|---|---|'];
-for(const r of rows)lines.push(`| ${r.name} | ${r.bones} | ${r.family} | ${r.palette===null?'-':r.palette?'있음':'없음'} |`);
-const todo=rows.filter(r=>r.family==='static'||r.palette===false);
+for(const r of rows)lines.push(`| ${r.name} | ${r.bones} | ${r.family}${r.overlays&&r.overlays.length?'+'+r.overlays.join('+'):''} | ${r.palette===null?'-':r.palette?'있음':'없음'} |`);
+const todo=rows.filter(r=>r.family==='static'||r.palette===false||r.needsAnimator);
 lines.push('','## 바이브가 채울 일감','');
-if(todo.length)for(const r of todo)lines.push(`- ${r.name}: ${r.family==='static'?'뼈 모션 가족 규칙 필요':''}${r.family==='static'&&r.palette===false?' · ':''}${r.palette===false?'색칠 팔레트 필요':''}`);else lines.push('- 없음');
+if(todo.length)for(const r of todo){
+  const parts=[];
+  if(r.family==='static')parts.push('뼈 모션 가족 규칙 필요');
+  if(r.needsAnimator)parts.push(`${r.family} 전용 애니메이터 필요`);
+  if(r.palette===false)parts.push('색칠 팔레트 필요');
+  lines.push(`- ${r.name}: ${parts.join(' · ')}`);
+}else lines.push('- 없음');
 fs.mkdirSync('docs/devloop',{recursive:true});
 fs.writeFileSync(`docs/devloop/RIG_KIT_${game}.md`,lines.join('\n')+'\n');
 console.log(`리그 키트 점검: ${rows.length}종, 일감 ${todo.length}건`);
