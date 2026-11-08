@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """캡처 PNG 폴더를 읽어 (1) 한 장짜리 비교 시트를 만들고 (2) 이상 화면(너무 어둡거나 단색)을 표시한다.
-사용: visual_lint.py <프레임폴더> [출력시트.png]   이상이 있으면 종료 코드 1"""
+사용: visual_lint.py <프레임폴더> [출력시트.png] [--prev <이전프레임폴더>]   이상이 있으면 종료 코드 1"""
 import sys, glob, os
-from PIL import Image, ImageDraw, ImageStat
-src = sys.argv[1]
-out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(src, "contact_sheet.png")
+from PIL import Image, ImageDraw, ImageStat, ImageChops
+args = [a for a in sys.argv[1:] if a != "--prev"]
+prev = sys.argv[sys.argv.index("--prev") + 1] if "--prev" in sys.argv else None
+if prev: args.remove(prev)
+src = args[0]
+out = args[1] if len(args) > 1 else os.path.join(src, "contact_sheet.png")
 files = sorted(glob.glob(os.path.join(src, "*.png")))
 files = [f for f in files if os.path.abspath(f) != os.path.abspath(out)]
 if not files:
@@ -22,6 +25,10 @@ for i, f in enumerate(files):
     if mean < 25: flag = "너무 어두움"
     elif mean > 235: flag = "너무 밝음"
     elif std < 12: flag = "단색(장면 없음?)"
+    if prev and os.path.exists(os.path.join(prev, os.path.basename(f))):
+        pi = Image.open(os.path.join(prev, os.path.basename(f))).convert("L").resize((160, 90))
+        diff = ImageStat.Stat(ImageChops.difference(im.convert("L").resize((160, 90)), pi)).mean[0]
+        print(f"  변화량 {os.path.basename(f)}: {diff:.1f}" + ("  (이전과 동일: 장면이 갱신되지 않았을 수 있음)" if diff < 0.3 else ""))
     if flag: bad.append((os.path.basename(f), flag))
     t = im.resize((W, H))
     x, y = (i % COLS) * W, (i // COLS) * (H + 18)

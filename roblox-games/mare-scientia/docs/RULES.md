@@ -24,3 +24,8 @@
 - `new_game.py <게임>`: 새 게임을 엔진에 올리는 표준 절차(devloop.json·STATE.md·캡처 스크립트 폴더 생성).
 - `workflow_inventory.py`: 워크플로 149개 점검 → `docs/devloop/WORKFLOW_INVENTORY.json` (읽기 전용, 삭제·비활성화는 하지 않는다).
 - game-catalog / .vibe2 큐 등록은 공용 파이프라인이 게시·F0 재시작을 자동으로 돌릴 수 있어 오너 확인 후에만 한다.
+
+## 스모크 빌드·롤백
+- `tests/smoke_portscene.luau`: 엔진 목업(`smoke_prelude.luau`)에서 17개 항구 × 발전도 1~5 를 실제로 지어 보며 런타임 오류와 미등록 에셋 요청을 잡는다. (첫 실행에서 `find("tree-oak")` 패턴 버그를 찾아 고침: 문자열 찾기엔 항상 `find(x, 1, true)`)
+- 배포 워크플로(`owner-mare-scientia-direct-publish.yml`): 배포 전에 고정 버전 Luau 로 전체 테스트를 돌린다(지금은 경고만, 안정되면 차단으로 전환). 수동 실행의 `rollback_ref` 에 정상이던 커밋을 넣으면 그 소스를 다시 게시한다.
+- `visual_lint.py --prev`: 이전 캡처와의 변화량을 보여 준다(0.3 미만이면 장면 갱신 안 됨 의심).

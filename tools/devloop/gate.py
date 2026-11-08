@@ -40,7 +40,10 @@ if br:
         tmp = tempfile.mkdtemp()
         subprocess.run(f"git archive FETCH_HEAD | tar -x -C {tmp}", shell=True, capture_output=True)
         lint = os.path.join(os.path.dirname(os.path.abspath(__file__)), "visual_lint.py")
-        r = subprocess.run([sys.executable, lint, tmp], capture_output=True, text=True)
+        ptmp = tempfile.mkdtemp()
+        subprocess.run(f"git archive FETCH_HEAD~1 | tar -x -C {ptmp}", shell=True, capture_output=True)
+        cmd = [sys.executable, lint, tmp] + (["--prev", ptmp] if os.listdir(ptmp) else [])
+        r = subprocess.run(cmd, capture_output=True, text=True)
         print(r.stdout.strip())
         if r.returncode == 1 and "이상:" in r.stdout:
             fails.append("이상 화면(어두움/단색) 있음")

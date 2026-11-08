@@ -922,7 +922,7 @@ local function densify(folder, info, style, rng, walkers, made)
 		local side = if i % 2 == 0 then 1 else -1
 		local pos = Vector3.new(rng:NextNumber(-262, -10), 0, side * rng:NextNumber(158, 245))
 		local pick = trees[rng:NextInteger(1, #trees)]
-		local kind = if pick:find("palm") or pick:find("tree-pine") or pick:find("tree-oak") then (if pick:find("palm") then "Naval" else "Terrain") else "Town"
+		local kind = if pick:find("palm", 1, true) or pick:find("tree-pine", 1, true) or pick:find("tree-oak", 1, true) then (if pick:find("palm", 1, true) then "Naval" else "Terrain") else "Town"
 		importedModel(folder, kind, pick, pos, rng:NextNumber(8, 14), false)
 	end
 	for i = 1, 30 do

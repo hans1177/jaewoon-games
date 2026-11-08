@@ -48,3 +48,13 @@ echo "== 로직 테스트 =="
 echo "== 문화권 표 검사 =="
 { cat "$ROOT/tests/cultures_stub.luau"; sed "1d" "$ROOT"/src/ReplicatedStorage/Shared/PortCultures.luau; } > "$TMP/Shared/PortCultures.luau"
 (cd "$TMP" && "$LUAU" cultures.test.luau)
+
+echo "== 항구 스모크 빌드 =="
+SM="$TMP/smoke"; mkdir -p "$SM"
+cp "$ROOT"/src/ReplicatedStorage/Shared/{Ports,AssetIds}.luau "$SM/"
+sed -i -E 's/require\(script\.Parent\.([A-Za-z0-9]+)\)/require(".\/\1")/g' "$SM"/Ports.luau
+cp "$ROOT"/tests/mockstate.luau "$ROOT"/tests/smoke_portscene.luau "$SM/"
+{ cat "$ROOT/tests/smoke_prelude.luau"; sed 1d "$ROOT"/src/ReplicatedStorage/Shared/PortCultures.luau; } > "$SM/PortCultures.luau"
+echo 'return { createR15 = function() return nil end }' > "$SM/Pose.luau"
+{ cat "$ROOT/tests/smoke_prelude.luau"; sed -E 's/require\(script\.Parent:WaitForChild\("([A-Za-z0-9]+)"\)\)/require(".\/\1")/g' "$ROOT"/src/ReplicatedStorage/Shared/PortScene.luau; } > "$SM/PortScene.luau"
+(cd "$SM" && "$LUAU" smoke_portscene.luau)
