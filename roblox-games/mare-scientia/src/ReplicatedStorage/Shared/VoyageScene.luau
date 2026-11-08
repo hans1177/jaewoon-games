@@ -651,6 +651,28 @@ function VoyageScene.play(info)
 		Lighting.FogColor = Color3.fromRGB(150, 165, 180)
 	end
 
+	-- 게임 시작 연출(intro): 제목·자막과 주인공 초상을 얹고, 해 질 녘 빛으로 항해한다
+	local subLabel, introIdx, introLines = nil, 0, nil
+	if info.intro then
+		introLines = info.intro.lines
+		title.Text = info.intro.title or ""
+		dayLabel.Visible = false
+		barBack.Visible = false
+		subLabel = title:Clone()
+		subLabel.AnchorPoint = Vector2.new(0.5, 0)
+		subLabel.Position = UDim2.new(0.5, 0, 1, -150)
+		subLabel.Size = UDim2.new(0.74, 0, 0, 90)
+		subLabel.TextSize = 24
+		subLabel.TextWrapped = true
+		subLabel.Text = ""
+		subLabel.TextTransparency = 1
+		subLabel.ZIndex = 6
+		subLabel.Parent = gui
+		if info.intro.portrait then
+			pcall(info.intro.portrait, gui)
+		end
+	end
+
 	-- 카메라
 	workspace:SetAttribute("VoyageActive", true)
 	camera.CameraType = Enum.CameraType.Scriptable
@@ -660,8 +682,18 @@ function VoyageScene.play(info)
 		bar.Size = UDim2.fromScale(k, 1)
 		local day = math.clamp(math.ceil(k * info.days), 1, math.max(info.days, 1))
 		dayLabel.Text = string.format("항해 %d일째 / %d일", day, info.days)
-		Lighting.ClockTime = 8 + k * math.clamp(info.days * 1.6, 3, 11)
-		_ = t
+		Lighting.ClockTime = if info.intro then 16.2 + k * 2 else 8 + k * math.clamp(info.days * 1.6, 3, 11)
+		if subLabel and #introLines > 0 then
+			local per = (duration - 2) / #introLines
+			local idx = math.clamp(math.floor((t - 1) / per) + 1, 1, #introLines)
+			if idx ~= introIdx then
+				introIdx = idx
+				subLabel.Text = introLines[idx]
+			end
+			local ph = math.clamp(((t - 1) % per) / per, 0, 1)
+			subLabel.TextTransparency = 1 - math.clamp(math.min(ph / 0.15, (1 - ph) / 0.15, 1), 0, 1)
+			subLabel.TextStrokeTransparency = 0.4 + 0.6 * subLabel.TextTransparency
+		end
 	end
 
 	-- 페이드 인

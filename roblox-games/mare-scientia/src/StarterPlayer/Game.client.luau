@@ -3810,7 +3810,11 @@ local function renderNewGame()
 		local b = mkButton(content, "⚓  출항하기", Color3.fromRGB(196, 146, 52), UDim2.new(1, -6, 0, 56), function()
 			local restart = view ~= nil
 			newGameMode = false
+			sceneHold = true -- 오프닝이 끝날 때까지 마을 장면을 먼저 짓지 않는다
 			local result = call("NewGame", { nationId = chosenNation, startYear = chosenYear, restart = restart })
+			if not (result and result.ok) then
+				sceneHold = false
+			end
 			if not (result and result.ok) and restart then
 				newGameMode = true
 				render()
@@ -3827,7 +3831,58 @@ local function renderNewGame()
 					end
 				end
 				task.spawn(function()
-					playEpilogue(nil, { title = pro.title, lines = lines, button = "⚓ 항해를 시작한다", hero = chosenNation })
+					-- 3D 오프닝: 시작 항구에서 가까운 바다로 나가는 항해 장면에 자막과 주인공 초상을 얹는다
+					local startId = view.player.portId
+					local sp = PortData.Ports[startId]
+					local nearId, nearD = nil, math.huge
+					for id, q in PortData.Ports do
+						if id ~= startId then
+							local d = (q.lat - sp.lat) ^ 2 + (q.lon - sp.lon) ^ 2
+							if d < nearD then
+								nearId, nearD = id, d
+							end
+						end
+					end
+					sceneHold = true
+					audioLock = true
+					main.Visible = false
+					menuToggle.Visible = false
+					Sfx.music("music_sea")
+					Sfx.ambient({ "sfx_waves", "sfx_wind" })
+					local days = math.clamp(math.ceil((#lines * 4.2 + 3 - 8) / 0.9), 4, 16)
+					local nationId = chosenNation
+					local ok, err = pcall(VoyageScene.play, {
+						shipId = view.ship.id, steam = false, days = days,
+						path = SeaRoutes.path(startId, nearId, PortData.Ports),
+						fromName = "", toName = "",
+						makeShip = PortScene.makeShip, place = PortScene.placeModel,
+						intro = {
+							title = pro.title, lines = lines,
+							portrait = function(gui)
+								local hp = heroPortrait(gui, nationId, 130, 168)
+								hp.AnchorPoint = Vector2.new(0, 1)
+								hp.Position = UDim2.new(0, 24, 1, -24)
+								hp.ZIndex = 7
+							end,
+						},
+					})
+					if not ok then
+						warn("[Game] 3D 오프닝 오류, 2D 연출로 대체:", err)
+						local cam = workspace.CurrentCamera
+						cam.CameraType = Enum.CameraType.Custom
+						local g = player.PlayerGui:FindFirstChild("VoyageHud")
+						if g then g:Destroy() end
+						local vf = workspace:FindFirstChild("VoyageScene")
+						if vf then vf:Destroy() end
+						playEpilogue(nil, { title = pro.title, lines = lines, button = "⚓ 항해를 시작한다", hero = nationId })
+					end
+					arriveNext = true
+					main.Visible = true
+					menuToggle.Visible = false
+					sceneHold = false
+					sceneKey = nil
+					audioLock = false
+					render()
 				end)
 			end
 		end, true)
