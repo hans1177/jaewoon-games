@@ -32,6 +32,8 @@ jobs:
         with:
           node-version: '20'
 
+      - run: python3 -m pip install --quiet trimesh numpy
+
       - name: Upload models and write VisualAssetIds
         env:
           FANTASY_UNIVERSE_ID: ${{ inputs.universe_id }}

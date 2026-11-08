@@ -36,12 +36,18 @@ for (const job of jobs) {
   if (registry.assets[job.name]?.assetId) { console.log('SKIP', job.name); continue; }
   try {
     const bytes = job.zip ? execFileSync('unzip', ['-p', job.zip, job.entry], {maxBuffer: 200 * 1024 * 1024}) : await fs.readFile(job.file);
-    const ext = path.extname(job.zip ? job.entry : job.file).toLowerCase();
+    let ext = path.extname(job.zip ? job.entry : job.file).toLowerCase();
+    let body = bytes;
+    if (ext === '.obj') {
+      // Roblox는 obj 모델 생성을 지원하지 않아 glb로 바꿔 올린다(색은 mtl이 없으면 회색).
+      body = execFileSync('python3', ['tools/obj-to-glb.py'], {input: bytes, maxBuffer: 200 * 1024 * 1024});
+      ext = '.glb';
+    }
     const form = new FormData();
     form.set('request', JSON.stringify({assetType: 'Model', displayName: 'MagicForest ' + job.name,
       description: 'CC0 3D model for Magic Forest; see CC0-ASSET-REGISTRY.json',
       creationContext: {creator: {userId: Number(creatorId)}}}));
-    form.set('fileContent', new Blob([bytes], {type: mime(ext)}), job.name + ext);
+    form.set('fileContent', new Blob([body], {type: mime(ext)}), job.name + ext);
     const initial = await api('https://apis.roblox.com/assets/v1/assets', {method: 'POST', body: form});
     let assetId = '';
     for (let n = 0; n < 40 && !assetId; n++) {
