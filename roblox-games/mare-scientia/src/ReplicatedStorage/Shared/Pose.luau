@@ -4,6 +4,18 @@
 
 local Pose = {}
 
+-- [비주얼 래더] 자동개발 루프가 올려 주는 NPC 디테일 단계(tools/vibe-visual-ladder.mjs 생성). 읽기 실패 시 1단계로 동작한다.
+local ladderNpcTier = 1
+do
+	local module = script.Parent:FindFirstChild("VisualLadderState")
+	if module then
+		local ok, data = pcall(require, module)
+		if ok and type(data) == "table" and type(data.Tier) == "table" then
+			ladderNpcTier = tonumber(data.Tier.npc) or 1
+		end
+	end
+end
+
 local function findBone(model, pattern)
 	for _, d in model:GetDescendants() do
 		if d:IsA("Bone") and string.find(string.lower(d.Name), pattern) then
@@ -316,6 +328,18 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 	model.Name = "R15NPC"
 	model.Parent = parent
+	-- [래더 NPC 2단계] 사람마다 체격·깊이·머리 크기를 조금씩 달리해 복제 인간처럼 보이지 않게 한다.
+	if ladderNpcTier >= 2 and humanoid.AutomaticScalingEnabled ~= false then
+		local function vary(name, lo, hi)
+			local value = humanoid:FindFirstChild(name)
+			if value and value:IsA("NumberValue") then
+				value.Value = lo + rng:NextNumber() * (hi - lo)
+			end
+		end
+		vary("BodyWidthScale", 0.92, 1.1)
+		vary("BodyDepthScale", 0.94, 1.08)
+		vary("HeadScale", 0.96, 1.08)
+	end
 	local currentHeight = model:GetExtentsSize().Y
 	if currentHeight < 0.01 then model:Destroy(); return nil end
 	model:ScaleTo((height or 5.8) / currentHeight)

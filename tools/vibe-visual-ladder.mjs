@@ -8,6 +8,7 @@
 // 규칙: requires가 있는 단계는 approved-assets.json의 승인 키가 true가 되기 전에는 올리지 않고 '부족 자산'으로 기록한다.
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 
 const args=process.argv.slice(2);
 const flag=n=>args.includes(`--${n}`);
@@ -20,6 +21,9 @@ const spec=read('visual-ladder.json');
 const approved=fs.existsSync(path.join(dir,'approved-assets.json'))?read('approved-assets.json'):{};
 const state=fs.existsSync(path.join(dir,'visual-ladder-state.json'))?read('visual-ladder-state.json'):{floor:0,tiers:{},history:[]};
 const cats=Object.keys(spec.categories);
+// 게임마다 폴더 구조가 달라 spec.paths.shared(생성 Luau 위치)로 지정한다. 기본은 shared/.
+const sharedDir=(spec.paths&&spec.paths.shared)||'shared';
+const mood=spec.mood||'bright';
 for(const c of cats){if(!state.tiers[c])state.tiers[c]=1}
 
 function nextTier(cat){
@@ -32,23 +36,31 @@ function nextTier(cat){
 }
 
 // 검증: 보고서가 있고 스크립트 오류 흔적이 없어야 통과.
+let pendingSha=null;
 function verify(){
   if(flag('force'))return {ok:true,why:'오너 수동 승급'};
   const rp=opt('report');
   if(!rp||!fs.existsSync(rp))return {ok:false,why:'Studio 보고서 없음'};
   const text=fs.readFileSync(rp,'utf8');
+  const sha=crypto.createHash('sha256').update(text).digest('hex').slice(0,16);
+  if(state.lastReportSha===sha)return {ok:false,why:'이미 반영된 보고서(새 캡처 필요)'};
+  pendingSha=sha;
   const bad=text.match(/(CHAIN_RIG_ERROR|BIPED_RIG_ERROR|BOSS_SKILL_ERROR)[^\n"]{0,80}|Script error[^\n"]{0,80}|attempt to (index|call|perform)[^\n"]{0,80}/);
   if(bad)return {ok:false,why:`보고서에 오류: ${bad[0].trim()}`};
   return {ok:true,why:'Studio 캡처 오류 없음'};
 }
 
+function features(cat){
+  return spec.categories[cat].tiers.filter(t=>t.tier<=state.tiers[cat]).flatMap(t=>t.features||[]);
+}
 function luauModule(){
   const t=cats.map(c=>`  ${c}=${state.tiers[c]},`).join('\n');
   return `-- 자동 생성: tools/vibe-visual-ladder.mjs (직접 수정 금지). 루프(플로어) ${state.floor}회차 기준 디테일 단계.\n`+
     `-- 각 값은 visual-ladder.json의 해당 분야 단계 번호다. 게임 코드는 이 값 이하의 효과만 켠다.\n`+
-    `return {\n  Floor=${state.floor},\n  Tier={\n${t}\n  },\n}\n`;
+    `-- Features: 현재 단계까지 켜진 기능 이름(분야별). Mood: 게임 분위기(bright|dark).\n`+
+    `return {\n  Floor=${state.floor},\n  Mood="${mood}",\n  Tier={\n${t}\n  },\n  Features={\n${cats.map(c=>`    ${c}={${features(c).map(f=>`"${f}"`).join(',')}},`).join('\n')}\n  },\n}\n`;
 }
-const luauPath=path.join(dir,'shared/VisualLadderState.luau');
+const luauPath=path.join(dir,sharedDir,'VisualLadderState.luau');
 
 if(flag('check')){
   const want=luauModule();
@@ -71,6 +83,7 @@ if(flag('advance')){
       break;
     }
     state.floor+=1;
+    if(pendingSha)state.lastReportSha=pendingSha;
   }
 }
 state.history=state.history.slice(-40);
@@ -95,6 +108,6 @@ if(gaps.size)for(const g of gaps)lines.push(`- ${g}`);else lines.push('- 없음'
 lines.push('','## 최근 승급 기록','');
 if(state.history.length)for(const h of state.history.slice(-10).reverse())lines.push(`- ${h.at} · ${h.floor}회차 · ${spec.categories[h.category].label} → ${h.tier}단계 ${h.name} (${h.why})`);else lines.push('- 아직 없음');
 fs.mkdirSync(path.join('docs','devloop'),{recursive:true});
-fs.writeFileSync(path.join('docs','devloop','VISUAL_LADDER.md'),lines.join('\n')+'\n');
+fs.writeFileSync(path.join('docs','devloop',`VISUAL_LADDER_${game}.md`),lines.join('\n')+'\n');
 if(flag('advance'))console.log(advancedCat?`승급: ${advancedCat} → ${state.tiers[advancedCat]}단계`:`승급 없음 (${verdict&&verdict.ok?'올릴 수 있는 분야 없음':verdict.why})`);
 else console.log('상태 갱신 완료');

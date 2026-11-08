@@ -5,32 +5,117 @@
     "npc": {
       "label": "NPC 복장·체형·생활감",
       "tiers": [
-        {"tier": 1, "name": "단색 복장", "requires": []},
-        {"tier": 2, "name": "개인별 체형·피부톤·옷 명암", "requires": []},
-        {"tier": 3, "name": "역할별 포인트 색·감정 레퍼토리 확장", "requires": []},
-        {"tier": 4, "name": "승인된 복장 아이템(셔츠·바지·얼굴)", "requires": ["approved-npc-outfit-items"]},
-        {"tier": 5, "name": "승인된 머리·모자·소품 메시", "requires": ["approved-npc-hair-hat-meshes"]}
+        {
+          "tier": 1,
+          "name": "단색 복장",
+          "requires": []
+        },
+        {
+          "tier": 2,
+          "name": "개인별 체형·피부톤·옷 명암",
+          "requires": []
+        },
+        {
+          "tier": 3,
+          "name": "역할별 포인트 색·감정 레퍼토리 확장",
+          "requires": []
+        },
+        {
+          "tier": 4,
+          "name": "승인된 복장 아이템(셔츠·바지·얼굴)",
+          "requires": [
+            "approved-npc-outfit-items"
+          ]
+        },
+        {
+          "tier": 5,
+          "name": "승인된 머리·모자·소품 메시",
+          "requires": [
+            "approved-npc-hair-hat-meshes"
+          ]
+        }
       ]
     },
     "world": {
       "label": "배경 분위기·빛·공기",
       "tiers": [
-        {"tier": 1, "name": "기본 조명", "requires": []},
-        {"tier": 2, "name": "햇살 줄기", "requires": []},
-        {"tier": 3, "name": "블룸·색보정 강화", "requires": []},
-        {"tier": 4, "name": "떠다니는 꽃가루·반딧불 입자", "requires": []},
-        {"tier": 5, "name": "지역별 대기 프로필 강화", "requires": []},
-        {"tier": 6, "name": "승인된 풀·꽃·바위 메시 밀도 증가", "requires": ["approved-ground-cover-meshes"]}
+        {
+          "tier": 1,
+          "name": "기본 조명",
+          "requires": []
+        },
+        {
+          "tier": 2,
+          "name": "햇살 줄기",
+          "requires": [],
+          "features": [
+            "rays"
+          ]
+        },
+        {
+          "tier": 3,
+          "name": "블룸·색보정 강화",
+          "requires": [],
+          "features": [
+            "bloom",
+            "grade"
+          ]
+        },
+        {
+          "tier": 4,
+          "name": "떠다니는 꽃가루·반딧불 입자",
+          "requires": [],
+          "features": [
+            "motes"
+          ]
+        },
+        {
+          "tier": 5,
+          "name": "지역별 대기 프로필 강화",
+          "requires": [],
+          "features": [
+            "exposure"
+          ]
+        },
+        {
+          "tier": 6,
+          "name": "승인된 풀·꽃·바위 메시 밀도 증가",
+          "requires": [
+            "approved-ground-cover-meshes"
+          ]
+        }
       ]
     },
     "mobs": {
       "label": "몹 외형·모션·이펙트",
       "tiers": [
-        {"tier": 1, "name": "원본 메시 그대로", "requires": []},
-        {"tier": 2, "name": "변종 색칠·재질", "requires": []},
-        {"tier": 3, "name": "뼈 기반 걷기·공격 모션", "requires": []},
-        {"tier": 4, "name": "피격·사망·종별 공격 이펙트", "requires": []},
-        {"tier": 5, "name": "승인된 몹 전용 이펙트 메시", "requires": ["approved-mob-vfx-meshes"]}
+        {
+          "tier": 1,
+          "name": "원본 메시 그대로",
+          "requires": []
+        },
+        {
+          "tier": 2,
+          "name": "변종 색칠·재질",
+          "requires": []
+        },
+        {
+          "tier": 3,
+          "name": "뼈 기반 걷기·공격 모션",
+          "requires": []
+        },
+        {
+          "tier": 4,
+          "name": "피격·사망·종별 공격 이펙트",
+          "requires": []
+        },
+        {
+          "tier": 5,
+          "name": "승인된 몹 전용 이펙트 메시",
+          "requires": [
+            "approved-mob-vfx-meshes"
+          ]
+        }
       ]
     }
   }
