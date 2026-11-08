@@ -2490,6 +2490,11 @@ local function openTradeHall()
 end
 
 local function renderTrade()
+	if view.guide then
+		add(function()
+			return mkLabel(content, "💡 교역 요령: 이 항구의 특산품은 싸게 사고, '수요'가 높은 다른 항구에 가서 팔면 이익이 남아요. 지도 탭에서 갈 곳을 고르세요.", 14, COLORS.gold, true)
+		end)
+	end
 	add(function()
 		return mkRow(content, "교역소 입장 (별도 화면)", "상인과 마주 보고 물건을 고르고 흥정해요", {
 			{ text = "입장", color = COLORS.gold, onClick = function() openTradeHall() end },
