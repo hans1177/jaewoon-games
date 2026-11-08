@@ -11581,10 +11581,14 @@ do
     while workspace:GetAttribute("OpenWorldReady")~=true do task.wait(3) end
     task.wait(24)
     local rp=RaycastParams.new();rp.FilterType=Enum.RaycastFilterType.Include;rp.FilterDescendantsInstances={workspace.Terrain}
-    for _,town in ipairs(Config.WorldMap.Towns or {}) do
+    -- 초원 마을(시작 마을)도 동쪽 출입구 바깥(마을 안전 구역 밖)에 마구간을 둔다.
+    local stableTowns={{Id="meadow",Name="초원 마을",X=410,Z=10,fixed=true}}
+    for _,town in ipairs(Config.WorldMap.Towns or {}) do stableTowns[#stableTowns+1]=town end
+    for _,town in ipairs(stableTowns) do
       -- 마을 밖(반경 84)에 마구간을 둔다. 반경 70 안쪽은 탑승 불가 구역이다.
       local a=4.2
       local x,z=town.X+math.cos(a)*84,town.Z+math.sin(a)*84
+      if town.fixed then x,z=town.X,town.Z end
       local hit=workspace:Raycast(Vector3.new(x,400,z),Vector3.new(0,-800,0),rp)
       if hit then
         task.spawn(function()
