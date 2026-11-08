@@ -73,15 +73,15 @@ if (!creatorId) {
 
 // kind(MareAssets 하위 폴더) / 모델 이름 / 원본 파일. OBJ는 Open Cloud가 받지 않아 제외한다.
 const plan = [];
-for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods']]) {
+for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'People'], ['castle', 'Castle'], ['interior', 'Interior'], ['relics', 'Relics'], ['terrain', 'Terrain'], ['cargo', 'Cargo'], ['icons', 'Menu'], ['goods', 'Goods'], ['portraits', 'Portraits']]) {
   for (const f of await fs.readdir(path.join(ROOT, 'assets', dir))) {
     if (blockedPaths.has(path.join(ROOT, 'assets', dir, f))) continue;
     const ext = path.extname(f).toLowerCase();
-    const image = kind === 'Menu' || kind === 'Goods';
-    if (image ? ext !== '.png' : ext !== '.glb' && ext !== '.fbx') continue;
+    const image = kind === 'Menu' || kind === 'Goods' || kind === 'Portraits';
+    if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
     plan.push({kind, name: path.basename(f, ext), file: path.join(ROOT, 'assets', dir, f), ext,
       assetType: image ? 'Decal' : 'Model',
-      license: kind === 'Goods' && ['dates.png', 'raisins.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
+      license: kind === 'Portraits' || kind === 'Goods' && ['dates.png', 'raisins.png'].includes(f) ? 'PROJECT_ORIGINAL_ART'
         : kind === 'Goods' && f === 'saffron.png' ? 'CC0-1.0' : image ? 'CC-BY-3.0' : 'CC0-1.0'});
   }
 }
@@ -193,13 +193,14 @@ for (const item of plan) {
     form.set('request', JSON.stringify({
       assetType: item.assetType, displayName: 'MareScientia ' + id,
       description: item.assetType === 'Decal'
-        ? item.license === 'PROJECT_ORIGINAL_ART' ? 'Original vector commodity art made for Mare Scientia at owner request; see assets/SOURCES.md'
+        ? item.kind === 'Portraits' ? 'Original NPC dialogue portrait for Mare Scientia at owner request; see assets/SOURCES.md'
+          : item.license === 'PROJECT_ORIGINAL_ART' ? 'Original vector commodity art made for Mare Scientia at owner request; see assets/SOURCES.md'
           : item.license === 'CC0-1.0' ? 'Tiny Speck Glitch / CC0, vector conversion by Bart; see assets/SOURCES.md'
           : 'Icons by Lorc, Delapouite, Lord Berandas, Skoll / game-icons.net / CC BY 3.0. Color edit and PNG export for Mare Scientia; see assets/SOURCES.md'
         : 'CC0 model for Mare Scientia (' + item.kind + '); see assets/SOURCES.md',
       creationContext: {creator: {userId: Number(creatorId)}},
     }));
-    form.set('fileContent', new Blob([binary], {type: uploadExt === '.png' ? 'image/png' : uploadExt === '.gltf' ? 'model/gltf+json' : uploadExt === '.glb' ? 'model/gltf-binary' : 'model/fbx'}), path.basename(item.file, item.ext) + uploadExt);
+    form.set('fileContent', new Blob([binary], {type: uploadExt === '.png' ? 'image/png' : ['.jpg', '.jpeg'].includes(uploadExt) ? 'image/jpeg' : uploadExt === '.gltf' ? 'model/gltf+json' : uploadExt === '.glb' ? 'model/gltf-binary' : 'model/fbx'}), path.basename(item.file, item.ext) + uploadExt);
     const initial = await request('https://apis.roblox.com/assets/v1/assets', {method: 'POST', body: form});
     if (!/^operations\/[A-Za-z0-9_\-/]+$/.test(String(initial.path))) throw new Error('NO_UPLOAD_OPERATION');
     let assetId = null;

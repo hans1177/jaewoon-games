@@ -433,6 +433,25 @@ local portraitCam = Instance.new("Camera")
 portraitCam.FieldOfView = 30
 portraitCam.Parent = portraitFrame
 portraitFrame.CurrentCamera = portraitCam
+-- 등록된 실사 NPC 초상화가 있으면 기존 3D 초상 위에 표시한다.
+local portraitImage = Instance.new("ImageLabel")
+portraitImage.Name = "NpcPortrait"
+portraitImage.Position = UDim2.fromOffset(8, 2)
+portraitImage.Size = UDim2.fromOffset(52, 52)
+portraitImage.BackgroundColor3 = Color3.fromRGB(40, 56, 80)
+portraitImage.BorderSizePixel = 0
+portraitImage.ScaleType = Enum.ScaleType.Crop
+portraitImage.Visible = false
+portraitImage.Parent = mainInner
+do
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 8)
+	c.Parent = portraitImage
+	local st = Instance.new("UIStroke")
+	st.Color = Color3.fromRGB(214, 170, 82)
+	st.Thickness = 2
+	st.Parent = portraitImage
+end
 local portraitKey = nil
 local PORTRAIT_ROLE = {
 	["교역소"] = "Rogue", ["항만청"] = "Knight", ["조선소"] = "Barbarian",
@@ -443,6 +462,13 @@ local function setPortrait(groupName)
 		return
 	end
 	portraitKey = groupName
+	local imageId = if groupName == "교역소" then AssetIds["Portraits/merchant"] else nil
+	portraitImage.Visible = imageId ~= nil
+	portraitFrame.Visible = imageId == nil
+	portraitImage.Image = if imageId then "rbxassetid://" .. tostring(imageId) else ""
+	if imageId then
+		return
+	end
 	for _, c in portraitFrame:GetChildren() do
 		if c:IsA("Model") then
 			c:Destroy()
@@ -1441,7 +1467,19 @@ function playStory(ev)
 	local portraitModel = storyPortraitModel(ev.npc or "", ev.id or "")
 	local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 	local tpl = portraitModel and lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(portraitModel)
-	if tpl then
+	local storyImageId = if string.find(ev.npc or "", "상인", 1, true) then AssetIds["Portraits/merchant"] else nil
+	if storyImageId then
+		local photo = Instance.new("ImageLabel")
+		photo.Name = "NpcPortrait"
+		photo.AnchorPoint = Vector2.new(0.5, 1)
+		photo.Position = UDim2.fromScale(0.5, 1)
+		photo.Size = UDim2.new(0, 330, 1, 6)
+		photo.BackgroundTransparency = 1
+		photo.BorderSizePixel = 0
+		photo.ScaleType = Enum.ScaleType.Crop
+		photo.Image = "rbxassetid://" .. tostring(storyImageId)
+		photo.Parent = picture
+	elseif tpl then
 		local vf = Instance.new("ViewportFrame")
 		vf.BackgroundTransparency = 1
 		vf.AnchorPoint = Vector2.new(0.5, 1)
@@ -2102,7 +2140,18 @@ local function openTradeHall()
 		local left = mkBox(root, UDim2.fromOffset(0, 54), UDim2.new(0, 250, 1, -54), Color3.fromRGB(46, 34, 26))
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
 		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("상인", p.portId or ""))
-		do
+		local merchantImageId = AssetIds["Portraits/merchant"]
+		if merchantImageId then
+			local photo = Instance.new("ImageLabel")
+			photo.Name = "MerchantPortrait"
+			photo.Size = UDim2.new(1, 0, 1, -150)
+			photo.Position = UDim2.fromOffset(0, 0)
+			photo.BackgroundTransparency = 1
+			photo.BorderSizePixel = 0
+			photo.ScaleType = Enum.ScaleType.Crop
+			photo.Image = "rbxassetid://" .. tostring(merchantImageId)
+			photo.Parent = left
+		else
 			local vf = Instance.new("ViewportFrame")
 			vf.BackgroundTransparency = 1
 			vf.Size = UDim2.new(1, 0, 1, -150)
