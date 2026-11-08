@@ -82,6 +82,10 @@ h1{font-size:22px;margin:0}
 .bottom{position:fixed;left:0;right:0;bottom:0;background:#0d1422e8;backdrop-filter:blur(8px);border-top:1px solid #283653;padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));display:flex;gap:8px;justify-content:center}
 .bottom button{width:min(46%,260px);min-height:52px;border:0;border-radius:12px;font-weight:1000}
 #endTurn{background:#4169e1;color:#fff}#cancel{background:#2b3549;color:#fff}
+/* 모바일 성직자 대상 선택 */
+.bottom button{flex:1;min-width:0;width:auto}
+#healTarget{background:#2f715a;color:#fff}
+.cell.healCandidate{outline:3px solid #75f0b1;outline-offset:-3px}
 .hidden{display:none!important}
 #restScreen{text-align:center;padding:18px}
 #restScreen h2{margin:0 0 8px;font-size:24px}
@@ -166,6 +170,7 @@ h1{font-size:22px;margin:0}
 
 <div class="bottom">
   <button id="cancel">선택 취소</button>
+  <button id="healTarget" class="hidden" type="button">성직자 회복</button>
   <button id="endTurn">턴 종료</button>
 </div>
 
@@ -187,8 +192,8 @@ const STAGES={
 };
 // 중갑병은 다른 카드(각 2칸)보다 낮은 확률(1칸)로 뽑힌다.
 const GACHA_POOL=['LANCER','LANCER','CROSSBOW','CROSSBOW','HAMMER','HAMMER','RIFLEMAN','RIFLEMAN','HEAVY_INFANTRY'];
-// 7스테이지 클리어 후 기존 뽑기에 새 기마병이 추가된다.
-const ENHANCED_GACHA_POOL=[...GACHA_POOL,'CAVALRY','CAVALRY'];
+// 7스테이지 클리어 후 강화 뽑기 전용. 성직자는 기마병보다 낮은 확률.
+const ENHANCED_GACHA_POOL=[...GACHA_POOL,'CAVALRY','CAVALRY','PRIEST'];
 // 다이아: 기존 저장 키를 유지해 이전 잔액을 그대로 사용한다.
 const DIAMOND_KEY='card-grid-duel-diamonds-v1';
 // 저장: 현재 턴·스테이지·유닛·뽑기·업그레이드 진행을 같은 기기에서 유지한다.
@@ -256,7 +261,8 @@ const CARDS={
     HAMMER:{name:'망치병',icon:'🔨',hp:170,atk:80,range:1,cost:60,reward:50,charge:true,desc:'공격 전 1턴 충전 필요 · 피해 80'},
     RIFLEMAN:{name:'소총수',icon:'🪖',hp:70,atk:70,range:4,cost:90,reward:60,forwardShot:true,desc:'4칸 전방 직선·좌우 전방 대각선 사격'},
     HEAVY_INFANTRY:{name:'중갑병',icon:'🛡️',hp:180,atk:30,range:1,cost:80,reward:60,desc:'검사와 같은 근접 공격 · 낮은 뽑기 확률'},
-    CAVALRY:{name:'기마병',icon:'🐎⚔️',hp:120,atk:60,range:1,move:2,cost:90,reward:60,desc:'직선 1~2칸 이동 · 돌격 80 고정 피해 및 적 1턴 행동 봉인 · 적 뒤 빈칸 필요'}
+    CAVALRY:{name:'기마병',icon:'🐎⚔️',hp:120,atk:60,range:1,move:2,cost:90,reward:60,desc:'직선 1~2칸 이동 · 돌격 80 고정 피해 및 적 1턴 행동 봉인 · 적 뒤 빈칸 필요'},
+    PRIEST:{name:'성직자',icon:'🙏',hp:70,atk:0,range:0,heal:50,cost:70,reward:60,desc:'강화 뽑기 전용 · 공격 불가 · 거리 제한 없이 지정 아군 1명 체력 50 회복'}
   },
   RED:{
     GOBLIN:{name:'고블린',icon:'👺',hp:80,atk:25,range:1,cost:0,reward:30,desc:'처치 보상 30골드'},
@@ -283,7 +289,7 @@ const CARDS={
 const BASE_BLUE_IDS=['SWORDSMAN','ARCHER','MAGE','GUARDIAN'];
 const IDS={BLUE:Object.keys(CARDS.BLUE),RED:Object.keys(CARDS.RED)};
 const $=s=>document.querySelector(s), notice=$('#notice'),board=$('#board'),hand=$('#hand'),turnEl=$('#turn'),playersEl=$('#players'),deckInfo=$('#deckInfo'),modeInfo=$('#modeInfo');
-let state=null,side='BLUE',selectedUnit=null,selectedCard='',mode='idle',aiThinking=false;
+let state=null,side='BLUE',selectedUnit=null,selectedCard='',mode='idle',aiThinking=false,healingTargeting=false;
 
 function msg(t){notice.textContent=t}
 function other(s){return s==='BLUE'?'RED':'BLUE'}
@@ -534,6 +540,7 @@ function enterRest(rewardText){
   state.current='BLUE';
   selectedUnit=null;
   selectedCard='';
+  healingTargeting=false;
   msg(rewardText);
   // 적 마지막 처치 직후에도 휴식·보상 선택이 저장되게 한다.
   saveProgress()
@@ -832,9 +839,19 @@ function processAction(actor,p){
     state.chests=state.chests.filter(x=>x!==chest);
     a.attacked=true;
     msg('골드 상자 파괴 · '+gold+'골드 획득!');
+  }else if(p.type==='heal'){
+    // 성직자는 플레이어가 지정한 아군만 거리 제한 없이 한 턴에 한 번 회복한다.
+    const healer=byId(p.unit),target=byId(p.target);
+    if(actor!=='BLUE'||!healer||healer.side!==actor||healer.card!=='PRIEST'
+      ||healer.attacked||healer.frozenNow||healer.attackLockedNow
+      ||!target||target.side!==actor||target.hp<=0||target.hp>=unitMaxHp(target))return false;
+    const amount=Math.min(card('BLUE','PRIEST').heal,unitMaxHp(target)-target.hp);
+    target.hp+=amount;
+    healer.attacked=true;
+    msg('성직자가 '+card(target.side,target.card).name+'을(를) '+amount+' 회복했어.');
   }else if(p.type==='attack'){
     const a=byId(p.unit),t=byId(p.target);
-    if(!a||!t||a.side!==actor||t.side===actor||a.attacked||a.frozenNow||a.attackLockedNow)return false;
+    if(!a||!t||a.card==='PRIEST'||a.side!==actor||t.side===actor||a.attacked||a.frozenNow||a.attackLockedNow)return false;
 
     const d=card(actor,a.card);
     if(!canAttackTarget(a,t))return false;
@@ -953,7 +970,7 @@ function unitText(u){
   const lock=u.attackLockedNow?' · 공격불가':'';
   const rage=u.card==='URSUS'&&u.roarTurns>0?' · 포효 '+u.roarTurns+'턴':'';
   const maxHp=unitMaxHp(u),atk=unitAtk(u);
-  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+maxHp+' · 공'+atk+' 사'+d.range+charge+(u.frozenNow?' · 봉인':'')+lock+rage+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/maxHp*100)+'%"></i></span></div>'
+  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+maxHp+' · '+(d.heal?'회복 '+d.heal:'공'+atk+' 사'+d.range)+charge+(u.frozenNow?' · 봉인':'')+lock+rage+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/maxHp*100)+'%"></i></span></div>'
 }
 function createStageFourTiles(){
   const cells=[];
@@ -1020,7 +1037,8 @@ function render(){
     if(u){
       if(u.card==='URSUS')b.classList.add('bossCell');
       b.insertAdjacentHTML('beforeend',unitText(u));
-      if(u.id===selectedUnit)b.classList.add('sel')
+      if(u.id===selectedUnit)b.classList.add('sel');
+      if(healingTargeting&&u.side===side&&u.hp>0&&u.hp<unitMaxHp(u))b.classList.add('healCandidate')
     }
     b.addEventListener('click',()=>cellTap(r,c,u));
     board.appendChild(b)
@@ -1037,14 +1055,14 @@ function render(){
       const shownHp=side==='BLUE'?scaledStat(id,'hp'):enemyStat(id,'hp');
       const shownAtk=side==='BLUE'?scaledStat(id,'atk'):enemyStat(id,'atk');
       const lv=side==='BLUE'?upgradeLevel(id):0;
-      b.innerHTML=artHtml(id,d)+'<b>'+d.name+(lv?' +'+lv:'')+'</b><p>HP '+shownHp+' · 공격 '+shownAtk+' · 사거리 '+d.range+'<br><span class="cost">'+(side==='BLUE'?d.cost+'골드':'적 유닛')+'</span> · '+d.desc+'</p>';
+      b.innerHTML=artHtml(id,d)+'<b>'+d.name+(lv?' +'+lv:'')+'</b><p>HP '+shownHp+' · '+(d.heal?'회복 '+d.heal:'공격 '+shownAtk+' · 사거리 '+d.range)+'<br><span class="cost">'+(side==='BLUE'?d.cost+'골드':'적 유닛')+'</span> · '+d.desc+'</p>';
       b.onclick=()=>{
         if(!canAct())return msg('지금은 상대 턴이야.');
         if(state.phase!=='BATTLE')return msg('지금은 쉬는 시간야.');
         if(state.summonUsed)return msg('이번 턴에는 이미 소환했어.');
         if(state.summons[side]>=maxSummons(side))return msg('소환 가능 수를 모두 사용했어.');
         if(side==='BLUE'&&state.gold.BLUE<d.cost)return msg('골드가 부족해.');
-        selectedCard=id;selectedUnit=null;
+        selectedCard=id;selectedUnit=null;healingTargeting=false;
         msg(d.name+' 선택 · 자기 진영 첫 줄 빈칸을 눌러');
         render()
       };
@@ -1063,6 +1081,11 @@ function render(){
   }
 
   const resting=state.phase==='REST';
+  const healer=byId(selectedUnit);
+  const canHeal=!!(healer&&healer.side===side&&healer.card==='PRIEST'&&canAct());
+  $('#healTarget').classList.toggle('hidden',!canHeal);
+  $('#healTarget').disabled=!canHeal||healer.attacked||healer.frozenNow||healer.attackLockedNow;
+  $('#healTarget').textContent=healingTargeting?'회복 대상 선택 중':'성직자 회복';
   const won=state.winner==='BLUE',lost=state.winner==='RED';
   // 휴식 중에도 상단 플레이 버튼으로 다음 스테이지에 진입할 수 있게 한다.
   // 모바일에서 하단 정비/뽑기 버튼까지 스크롤하지 않아도 진행 가능하다.
@@ -1079,7 +1102,7 @@ function render(){
     $('#keyCount').textContent=state.keys||0;
     $('#diamondCount').textContent=diamondWallet();
     $('#restText').textContent=state.stage+'스테이지 완료 · 다음 전투 전에 정비할 수 있어.';
-    $('#unlockedList').textContent='추가 아군: '+((state.unlocked||[]).map(id=>card('BLUE',id).name).join(', ')||'없음')+(state.stage>=7?' · 강화 뽑기 개방: 기마병(체력 120·공격 60·1~2칸 이동) 등장 가능':'');
+    $('#unlockedList').textContent='추가 아군: '+((state.unlocked||[]).map(id=>card('BLUE',id).name).join(', ')||'없음')+(state.stage>=7?' · 강화 뽑기 전용: 기마병(체력 120·공격 60) / 성직자(체력 70·회복 50, 더 희귀)':'');
     $('#drawAlly').disabled=(state.keys||0)<=0;
     $('#drawDiamond').disabled=diamondWallet()<120;
     const upgradeOpen=state.stage>=2;
@@ -1114,6 +1137,13 @@ function render(){
 }
 function cellTap(r,c,u){
   if(!canAct())return msg('지금은 상대 턴이야.');
+  if(healingTargeting){
+    if(!u||u.side!==side)return msg('회복할 아군을 선택해.');
+    if(u.hp>=unitMaxHp(u))return msg('이미 체력이 가득 찬 아군이야.');
+    healingTargeting=false;
+    act({type:'heal',unit:selectedUnit,target:u.id});
+    return
+  }
 
   if(selectedCard){
     if(r!==homeRow(side)||u)return msg('자기 진영 첫 줄의 빈칸을 눌러.');
@@ -1125,7 +1155,8 @@ function cellTap(r,c,u){
 
   if(u&&u.side===side){
     selectedUnit=u.id;
-    msg(u.side==='BLUE'&&u.card==='CAVALRY'?'기마병 선택 · 1~2칸 빈칸 이동 · 적 바로 뒤 빈칸 선택 시 돌격':card(side,u.card).name+' 선택');
+    healingTargeting=false;
+    msg(u.card==='PRIEST'?'성직자 선택 · 아래 회복 버튼을 누르고 회복할 아군을 골라.':u.side==='BLUE'&&u.card==='CAVALRY'?'기마병 선택 · 1~2칸 빈칸 이동 · 적 바로 뒤 빈칸 선택 시 돌격':card(side,u.card).name+' 선택');
     return render()
   }
   if(chestAt(r,c)){
@@ -1272,8 +1303,16 @@ $('#playBtn').onclick=()=>{
   render();
   if(state.phase==='BATTLE'&&state.current==='RED')setTimeout(aiTurn,420)
 };
-$('#endTurn').onclick=()=>act({type:'end'});
-$('#cancel').onclick=()=>{selectedUnit=null;selectedCard='';msg('선택 취소');render()};
+$('#endTurn').onclick=()=>{healingTargeting=false;act({type:'end'})};
+$('#healTarget').onclick=()=>{
+  const healer=byId(selectedUnit);
+  if(!canAct()||!healer||healer.card!=='PRIEST'||healer.side!==side
+    ||healer.attacked||healer.frozenNow||healer.attackLockedNow)return msg('이번 턴에는 회복할 수 없어.');
+  healingTargeting=!healingTargeting;
+  msg(healingTargeting?'회복할 아군을 선택해. 거리 제한 없이 50 회복해.':'회복 대상 선택을 취소했어.');
+  render()
+};
+$('#cancel').onclick=()=>{selectedUnit=null;selectedCard='';healingTargeting=false;msg('선택 취소');render()};
 
 function updateUpgradeInfo(){
   if(!state||state.phase!=='REST'||state.stage<2)return;
@@ -1282,7 +1321,7 @@ function updateUpgradeInfo(){
   const cost=upgradeCost(id);
   $('#upgradeInfo').textContent=lv>=3
     ? card('BLUE',id).name+' · 최대 3강 완료'
-    : card('BLUE',id).name+' · '+lv+'강 → '+(lv+1)+'강 · 비용 '+cost+'다이아 · 체력/공격 1.25배';
+    : card('BLUE',id).name+' · '+lv+'강 → '+(lv+1)+'강 · 비용 '+cost+'다이아 · '+(id==='PRIEST'?'체력 1.25배 · 회복 50 고정':'체력/공격 1.25배');
   $('#upgradeAlly').disabled=lv>=3||diamondWallet()<cost
 }
 $('#upgradeSelect').onchange=updateUpgradeInfo;
@@ -1350,6 +1389,7 @@ function startStage(next){
   if(next!==5)state.stageFiveRewarded=false;
   selectedUnit=null;
   selectedCard='';
+  healingTargeting=false;
   $('#drawResult').textContent='';
   if(next===1)msg('1스테이지 시작 · 200골드 · 파랑 선공');
   else if(next===2)msg('2스테이지 시작 · 기본 골드 250 · 적 8마리 / 아군 12마리');
