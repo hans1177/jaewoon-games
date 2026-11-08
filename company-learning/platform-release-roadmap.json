@@ -183,34 +183,16 @@
         "visualContentReviewBeforeUploadAndBindingRequired": true,
         "unknownContentSafetyAction": "DO_NOT_UPLOAD_OR_BIND_UNTIL_VISUALLY_REVIEWED",
         "licenseOrPreviousUploadSuccessCannotSubstituteContentReview": true,
-        "externalOriginalPhotoRule": {
-          "allowed": "ONLY_WITH_VERIFIED_ROBLOX_COMMERCIAL_USE_RIGHTS_AND_VISUAL_REVIEW",
-          "preserveOriginalAndSha256": true,
-          "evidenceRequired": [
-            "SOURCE_URL",
-            "AUTHOR",
-            "LICENSE_OR_PERMISSION",
-            "COMMERCIAL_AND_UPLOAD_SCOPE",
-            "SHA256"
-          ],
-          "beforeUploadBlock": [
-            "BLOOD_GORE",
-            "SEXUAL_OR_MINOR_HARM",
-            "REGULATED_ALCOHOL_TOBACCO_DRUGS",
-            "HATE_EXTREMISM",
-            "UNCONSENTED_REAL_PERSON_OR_PRIVATE_DATA",
-            "UNAUTHORIZED_COPYRIGHT_TRADEMARK",
-            "PREVIOUSLY_REMOVED_OR_SIMILAR"
-          ],
-          "onUnverifiedOrRejected": "BLOCK_UPLOAD_BIND_AND_DERIVATIVE_REUPLOAD",
-          "croppingOrFilteringToEvadeModerationForbidden": true,
-          "priorRobloxApprovalDoesNotProveRights": true,
-          "officialReferences": [
-            "https://create.roblox.com/docs/projects/assets",
-            "https://en.help.roblox.com/hc/en-us/articles/21416271342868-Content-Moderation-on-Roblox",
-            "https://create.roblox.com/docs/production/publishing/ip-guidelines"
-          ]
-        },
+    "externalOriginalPhotoRule": {
+      "allowed": "ONLY_WITH_VERIFIED_ROBLOX_COMMERCIAL_USE_RIGHTS_AND_VISUAL_REVIEW",
+      "preserveOriginalAndSha256": true,
+      "evidenceRequired": ["SOURCE_URL", "AUTHOR", "LICENSE_OR_PERMISSION", "COMMERCIAL_AND_UPLOAD_SCOPE", "SHA256"],
+      "beforeUploadBlock": ["BLOOD_GORE", "SEXUAL_OR_MINOR_HARM", "REGULATED_ALCOHOL_TOBACCO_DRUGS", "HATE_EXTREMISM", "UNCONSENTED_REAL_PERSON_OR_PRIVATE_DATA", "UNAUTHORIZED_COPYRIGHT_TRADEMARK", "PREVIOUSLY_REMOVED_OR_SIMILAR"],
+      "onUnverifiedOrRejected": "BLOCK_UPLOAD_BIND_AND_DERIVATIVE_REUPLOAD",
+      "croppingOrFilteringToEvadeModerationForbidden": true,
+      "priorRobloxApprovalDoesNotProveRights": true,
+      "officialReferences": ["https://create.roblox.com/docs/projects/assets", "https://en.help.roblox.com/hc/en-us/articles/21416271342868-Content-Moderation-on-Roblox", "https://create.roblox.com/docs/production/publishing/ip-guidelines"]
+    },
         "warningHistoryCannotBeClaimedClearedBySourceRemoval": true,
         "blockedAssets": [
           {
@@ -284,129 +266,8 @@
               "sha256": "4af83918498e95e4cfabde069b6a525bbf543006d4b9aeefbca575c4fbfff98e",
               "visualReview": "NO_BLOOD_NO_GORE_NO_REGULATED_GOODS_OBSERVED"
             }
-          },
-          {
-            "reason": "REGULATED_ALCOHOL_IMAGE",
-            "gameId": "mare-essentia",
-            "assetIds": [
-              "99075469415785"
-            ],
-            "sourcePaths": [
-              "roblox-games/mare-essentia/assets/goods/beer.png"
-            ],
-            "sha256": [
-              "d8f7f47bb64e26fd664c933efc3f967d877791d47cd6e9bc7241b7ae51a76e20"
-            ],
-            "reviewedBy": "vibe-autonomous-review-2026-11-08"
-          },
-          {
-            "reason": "UNCONSENTED_REAL_PERSON_PHOTO_AND_PARTIAL_NUDITY",
-            "gameId": "mare-essentia",
-            "assetIds": [
-              "135994205188023"
-            ],
-            "sourcePaths": [
-              "roblox-games/mare-essentia/assets/portraits/heroes.jpg"
-            ],
-            "sha256": [
-              "e98cfba0d48a5360454e5106650d9e854df66966661388195027acc84b046663"
-            ],
-            "reviewedBy": "vibe-autonomous-review-2026-11-08"
-          },
-          {
-            "reason": "REGULATED_DRUG_IMAGE",
-            "gameId": "mare-essentia",
-            "assetIds": [],
-            "sourcePaths": [
-              "roblox-games/mare-essentia/assets/cardart/med_opium.jpg"
-            ],
-            "sha256": [
-              "6b8678222e923076bae564c3d0ebe3c7ec934f8dad0a1402096e41b48131b8ba"
-            ],
-            "reviewedBy": "vibe-autonomous-review-2026-11-08"
-          },
-          {
-            "reason": "GORE_DISEASE_OR_CADAVER_IMAGE",
-            "gameId": "mare-essentia",
-            "assetIds": [],
-            "sourcePaths": [
-              "roblox-games/mare-essentia/assets/cardart/med_lime_scurvy.jpg",
-              "roblox-games/mare-essentia/assets/cardart/med_anatomy.jpg"
-            ],
-            "sha256": [
-              "8629b1e64cd83bf1106548cf0cc0d2f720fe4eac45c1ae47d8bc594b5988f243",
-              "5496067174c471bce6c7668d9c444ff18ed2051ef8adb7209d6a7a191d7d7883"
-            ],
-            "reviewedBy": "vibe-autonomous-review-2026-11-08"
-          },
-          {
-            "reason": "NUDITY_IN_ARTWORK",
-            "gameId": "mare-essentia",
-            "assetIds": [],
-            "sourcePaths": [
-              "roblox-games/mare-essentia/assets/cardart/myth_mermaid.jpg",
-              "roblox-games/mare-essentia/assets/cardart/myth_siren.jpg",
-              "roblox-games/mare-essentia/assets/cardart/site_roman_baths.jpg",
-              "roblox-games/mare-essentia/assets/cardart/relic_lostchart_2.jpg"
-            ],
-            "sha256": [
-              "208812550a24ef57dd14a20decfda120df7f1aac563466a85849b7fd4e054d6e",
-              "0aa8b85e9ca086c6cdc7d6ec55195c96b378fdd533a94f2a06b59c5565512866",
-              "fbb843e267fa192445eaaf8729d78861140c0360eda37cccdecd4df28047f2c0",
-              "024c6bc0da2aea59c5086b5111b469823bd81c9e88b4090cc4ab4b787cc8a5ce"
-            ],
-            "reviewedBy": "vibe-autonomous-review-2026-11-08"
-          },
-          {
-            "reason": "UNCONSENTED_REAL_PERSON_PHOTO",
-            "gameId": "mare-essentia",
-            "assetIds": [],
-            "sourcePaths": [
-              "roblox-games/mare-essentia/assets/cardart/myth_dutchman.jpg",
-              "roblox-games/mare-essentia/assets/cardart/nav_compass_rose.jpg",
-              "roblox-games/mare-essentia/assets/cardart/relic_lostchart_1.jpg",
-              "roblox-games/mare-essentia/assets/cardart/relic_lostchart_3.jpg",
-              "roblox-games/mare-essentia/assets/cardart/relic_royal_charter.jpg",
-              "roblox-games/mare-essentia/assets/cardart/chem_phosphorus.jpg"
-            ],
-            "sha256": [
-              "49a070e4403972948e0bae03eabe71d3897f5df01205425aa2650997038f4604",
-              "75b415d0f359ae29ae1b0038a3faf8b2ad6d24d385b2c66f16f56993b023b4b6",
-              "766f5165ba6dd7c599cb17103554a560e62a93932e510b6df2c7de89e52235ca",
-              "d99ce371083d6513b17a77a06ee07c53989980ec18c9611e151957f39a161c9e",
-              "a386dcddf20b3dfc55927eb969223d6bd28879c09ce6dd81db8b12802d0898cc",
-              "d4fef211eb49584862c273cb4e8de076bc5358e102c5c6af6e59dd7b39ae7a85"
-            ],
-            "reviewedBy": "vibe-autonomous-review-2026-11-08"
           }
-        ],
-        "autonomousVibeReview": {
-          "authority": "OWNER_DIRECTIVE_2026-11-08",
-          "enabled": true,
-          "ownerApprovalRequired": false,
-          "summary": "바이브가 오너 승인 없이 이미지·자산을 스스로 검수해 Roblox 제재 위험을 차단하고, 위험 자산을 뺀 상태로 배포를 계속한다.",
-          "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
-          "when": [
-            "BEFORE_UPLOAD",
-            "BEFORE_BIND",
-            "BEFORE_PUBLISH"
-          ],
-          "blockCategories": [
-            "ALCOHOL_INCLUDING_BEER_WINE_SPIRITS",
-            "TOBACCO_AND_DRUGS_INCLUDING_OPIUM_POPPY",
-            "BLOOD_GORE_WOUNDS_DISEASE_CLOSEUP_CADAVER_DISSECTION",
-            "NUDITY_OR_SEXUALIZED_CONTENT_INCLUDING_CLASSICAL_ART",
-            "REAL_PERSON_PHOTOGRAPHS_ESPECIALLY_POLITICAL_OR_MODERN_FIGURES",
-            "HATE_EXTREMISM_SYMBOLS",
-            "UNAUTHORIZED_COPYRIGHT_TRADEMARK",
-            "PREVIOUSLY_REMOVED_OR_SIMILAR"
-          ],
-          "onDoubt": "BLOCK_AND_EXCLUDE_DO_NOT_WAIT_FOR_OWNER",
-          "onBlocked": "ADD_TO_blockedAssets_REMOVE_BINDING_KEEP_CODE_FALLBACK_AND_CONTINUE_DEPLOY",
-          "approvalRecord": "APPROVED_IMAGES.json 등 승인 목록은 바이브 시각 검수 통과 시 바이브가 직접 기록할 수 있다(reviewer=vibe).",
-          "neverEvadeModeration": true,
-          "croppingFilteringOrReuploadToBypassForbidden": true
-        }
+        ]
       }
     },
     "styleLock": {

@@ -25,7 +25,8 @@ done
 
 # 2) 대체 경로: crates.io 고정 버전 (--locked). GitHub 릴리스 CDN에 의존하지 않는다.
 echo "ROJO_RELEASE_UNAVAILABLE_FALLBACK=CRATES_IO"
-command -v cargo >/dev/null || { curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal; source "$HOME/.cargo/env"; }
+# GitHub 호스티드 러너에는 rustup/cargo가 기본 설치되어 있다. 인터넷 스크립트 파이프 실행은 하지 않는다.
+command -v cargo >/dev/null || { echo "ROJO_INSTALL_FAILED_NO_CARGO"; exit 1; }
 cargo install rojo --version "=${VERSION}" --locked --root /tmp/rojo-cargo
 cp /tmp/rojo-cargo/bin/rojo "$DEST/rojo"
 chmod +x "$DEST/rojo"
