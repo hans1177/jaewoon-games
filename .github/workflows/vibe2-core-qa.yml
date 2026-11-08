@@ -767,6 +767,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
           blender --background --factory-startup --python-exit-code 1 --python-expr "import numpy; import bpy; print('VIBE_GLB_EXPORT_DEPENDENCIES=PASS')"
           VIBE2_BLENDER_BINARY=blender node --test --test-name-pattern="actual Blender authoring|GLB production inspection|native asset recipe preserves" qa/vibe2-native-asset-production.test.mjs
+          python3 -m pip install --quiet pillow numpy
+          VIBE2_BLENDER_BINARY=blender node --test qa/vibe-variation-gym.test.mjs
       - name: Preserve authored GLB and preview evidence
         if: always()
         uses: actions/upload-artifact@v4
