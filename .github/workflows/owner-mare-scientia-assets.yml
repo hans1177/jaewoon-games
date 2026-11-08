@@ -11,9 +11,6 @@ on:
       - '.github/workflows/owner-mare-scientia-assets.yml'
       - 'roblox-games/mare-scientia/assets/**'
       - 'tools/mare-scientia-upload-assets.mjs'
-      - 'tools/devloop/fetch_commons.py'
-      - 'tools/devloop/fetch_card_art.py'
-      - 'roblox-games/mare-scientia/famous-figures.json'
   workflow_dispatch:
     inputs:
       universe_id:
@@ -132,18 +129,6 @@ jobs:
           print("HERO_PORTRAITS_PREPARED=9")
           PY
 
-      - name: Fetch public-domain portraits of real historical figures (Wikimedia Commons, license-verified)
-        continue-on-error: true
-        shell: bash
-        run: |
-          python3 -m pip install --quiet Pillow==11.3.0
-          python3 tools/devloop/fetch_commons.py roblox-games/mare-scientia
-
-      - name: Fetch and stylize codex card art from Korean Wikipedia (license-verified, 80 new cards per run)
-        continue-on-error: true
-        shell: bash
-        run: python3 tools/devloop/fetch_card_art.py roblox-games/mare-scientia --limit 80
-
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
         env:
           MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
@@ -159,7 +144,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          for f in roblox-games/mare-scientia/assets/portraits/heroes.jpg roblox-games/mare-scientia/assets/portraits/scholar_*.jpg roblox-games/mare-scientia/assets/portraits/portraits-report.json roblox-games/mare-scientia/assets/cardart/*.jpg roblox-games/mare-scientia/assets/cardart/cardart-report.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/CardArtCredits.luau roblox-games/mare-scientia/assets-registered.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau; do
+          for f in roblox-games/mare-scientia/assets/portraits/heroes.jpg roblox-games/mare-scientia/assets/portraits/scholar_*.jpg roblox-games/mare-scientia/assets/portraits/portraits-report.json roblox-games/mare-scientia/assets-registered.json roblox-games/mare-scientia/src/ReplicatedStorage/Shared/AssetIds.luau; do
             if [ ! -e "$f" ]; then echo "SKIP_MISSING $f"; continue; fi
             if git ls-files --error-unmatch "$f" >/dev/null 2>&1 && git diff --quiet -- "$f"; then echo "SKIP_UNCHANGED $f"; continue; fi
             sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=main" --jq .sha 2>/dev/null || true)"
