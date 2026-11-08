@@ -13,7 +13,7 @@
  },
  {
   "type": "wait",
-  "ms": 70000
+  "ms": 40000
  },
  {
   "type": "luau",
@@ -22,17 +22,22 @@
  },
  {
   "type": "luau",
+  "ctx": "Server",
+  "code": "local out={} for _,p in ipairs(game.Players:GetPlayers()) do out[#out+1]=p.Name..\" ready=\"..tostring(p:GetAttribute(\"ProfileReady\"))..\" state=\"..tostring(p:GetAttribute(\"MeadowProfileLoadState\")) p:SetAttribute(\"ProfileReady\",true) end return table.concat(out,\";\")..\" open=\"..tostring(workspace:GetAttribute(\"OpenWorldReady\"))"
+ },
+ {
+  "type": "luau",
   "ctx": "Client",
-  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-560,14,-300)) return \"tp\""
+  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(185,12,170)) return \"tp\""
  },
  {
   "type": "wait",
-  "ms": 30000
+  "ms": 25000
  },
  {
   "type": "luau",
   "ctx": "Server",
-  "code": "local counts={} local best,bd=nil,1e9 local root=nil for _,pl in ipairs(game.Players:GetPlayers()) do root=pl.Character and pl.Character:FindFirstChild(\"HumanoidRootPart\") end for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"EnemyHealth\") then local k=tostring(m:GetAttribute(\"Species\"))..\"/\"..tostring(m:GetAttribute(\"Variant\")) counts[k]=(counts[k] or 0)+1 local sp=tostring(m:GetAttribute(\"Species\")) if (sp==\"wolf\" or sp==\"fox\") and not m:GetAttribute(\"Boss\") and root then local dd=(m:GetPivot().Position-root.Position).Magnitude if dd<bd then best,bd=m,dd end end end end local r={} for k,n in pairs(counts) do r[#r+1]=n..\"x\"..k end table.sort(r) if best then workspace:SetAttribute(\"MobShotPos\",best:GetPivot().Position) end return (best and (\"wolf \"..best.Name..\" d=\"..math.floor(bd)) or \"no wolf\")..\" | \"..table.concat(r,\",\")"
+  "code": "local counts={} local best,bd=nil,1e9 local root for _,pl in ipairs(game.Players:GetPlayers()) do root=pl.Character and pl.Character:FindFirstChild(\"HumanoidRootPart\") end for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\") then local k=tostring(m:GetAttribute(\"Species\"))..\"/\"..tostring(m:GetAttribute(\"Variant\")) counts[k]=(counts[k] or 0)+1 if m:GetAttribute(\"Species\")==\"wolf\" and m:GetAttribute(\"EnemyHealth\") and not m:GetAttribute(\"Boss\") and root then local dd=(m:GetPivot().Position-root.Position).Magnitude if dd<bd then best,bd=m,dd end end end end local r={} for k,n in pairs(counts) do r[#r+1]=n..\"x\"..k end table.sort(r) if best then workspace:SetAttribute(\"MobShotPos\",best:GetPivot().Position) end return (best and (\"wolf d=\"..math.floor(bd)) or \"no wolf\")..\" | \"..table.concat(r,\",\")"
  },
  {
   "type": "luau",
@@ -41,7 +46,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -49,7 +54,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -57,7 +62,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -65,7 +70,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -73,7 +78,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -81,7 +86,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -89,7 +94,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -97,7 +102,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -105,7 +110,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -113,7 +118,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -121,7 +126,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -129,7 +134,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -137,7 +142,7 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
@@ -145,10 +150,90 @@
  },
  {
   "type": "wait",
-  "ms": 450
+  "ms": 400
  },
  {
   "type": "capture",
   "name": "wolf_13"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "wolf_14"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "wolf_15"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "wolf_16"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "wolf_17"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "wolf_18"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "wolf_19"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "wolf_20"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "wolf_21"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "wolf_22"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "capture",
+  "name": "wolf_23"
  }
 ]
