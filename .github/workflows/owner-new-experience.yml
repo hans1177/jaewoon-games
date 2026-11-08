@@ -79,6 +79,8 @@ jobs:
             code=$(curl -sS -o /tmp/new-exp/$1.out -w '%{http_code}' -X POST -H "x-api-key: $KEY" -H 'content-type: application/octet-stream' --data-binary @"$2" "https://apis.roblox.com/universes/v1/$U/places/$P/versions?versionType=$3")
             echo "PROBE $1 versionType=$3 http=$code body=$(head -c 300 /tmp/new-exp/$1.out)"
           }
+          echo "PROBE universe=$(curl -sS -H "x-api-key: $KEY" "https://apis.roblox.com/cloud/v2/universes/$U" | head -c 700)"
+          echo "PROBE place=$(curl -sS -H "x-api-key: $KEY" "https://apis.roblox.com/cloud/v2/universes/$U/places/$P" | head -c 500)"
           try empty /tmp/new-exp/empty.rbxl Published
           try full_saved "/tmp/new-exp/$GAME_ID.rbxl" Saved
           try full_published "/tmp/new-exp/$GAME_ID.rbxl" Published
