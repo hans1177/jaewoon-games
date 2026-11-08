@@ -8546,13 +8546,19 @@ do
         placedSites[#placedSites+1]={X=x,Z=z}
         count+=1
         -- [무리] 정예가 아닌 늑대형 서식지의 3분의 1은 가까이에 동료 1마리가 함께 있다(무리 사냥 느낌).
-        if not elite and spec[1]=="wolf" and index%3==0 then
-          local angle=random:NextNumber(0,math.pi*2)
-          table.insert(meadowEncounterSites,{id=spec[1],atom="HEAD_CANINE",model=spec[2],
-            name=spec[3],tier=math.min(10,zoneTier[zone.Id]+tierGain),height=spec[4],
-            hp=spec[2] and spec[5] or nil,dmg=spec[2] and spec[5]*.8 or nil,
-            drops=spec[6],position=Vector3.new(x+math.cos(angle)*11,3,z+math.sin(angle)*11)})
-          count+=1
+        -- [종별 무리] 쥐·해골 졸병·고블린·거미·오크류는 작은 무리로, 늑대는 둘씩 짝지어 나온다.
+        local packExtra=({rat=3,skminion=3,goblin=3,goblinscout=2,fangspider=2,spider=2,wasp=2,orc=2,tribal=2,
+          snake=1,skrogue=1,skwarrior=1,wolf=1})[spec[2] or ""]
+        if not elite and packExtra and (spec[2]~="wolf" or index%2==0) then
+          local baseAngle=random:NextNumber(0,math.pi*2)
+          for member=1,packExtra do
+            local angle=baseAngle+member*(math.pi*2/(packExtra+1))
+            table.insert(meadowEncounterSites,{id=spec[1],atom="HEAD_CANINE",model=spec[2],
+              name=spec[3],tier=math.min(10,zoneTier[zone.Id]+tierGain),height=spec[4],
+              hp=spec[2] and spec[5] or nil,dmg=spec[2] and spec[5]*.8 or nil,
+              drops=spec[6],position=Vector3.new(x+math.cos(angle)*(8+member*2),3,z+math.sin(angle)*(8+member*2))})
+            count+=1
+          end
         end
       end
     end
@@ -8573,6 +8579,21 @@ do
     local lordZone=({["북부 고원의 왕 · 거대 설인"]="highland",["혼돈의 지배자 · 심연 군주"]="chaos",["바람 절벽의 대장 · 오크 군단장"]="windcliff"})[boss.name]
     table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model=boss.model,name=boss.name,tier=boss.tier,height=boss.height,
       hp=boss.hp,dmg=boss.dmg,drops=boss.drops,alpha=true,zoneTag=lordZone,lord=lordZone~=nil,position=Vector3.new(boss.x,3,boss.z)})
+    -- [군주 호위] 지역 군주 둘레에 그 지역 정예 4마리가 호위로 서 있다.
+    do
+      local guardZone=world.ZoneAt(boss.x,boss.z)
+      local guardPool=guardZone and pools[guardZone]
+      if guardPool then
+        for member=1,4 do
+          local spec=guardPool[random:NextInteger(1,#guardPool)]
+          local angle=member*(math.pi/2)+.4
+          table.insert(meadowEncounterSites,{id=spec[1],atom="HEAD_CANINE",model=spec[2],
+            name=spec[3] and "군주의 호위 "..spec[3] or nil,tier=math.min(10,boss.tier),height=spec[4]*1.2,
+            hp=spec[2] and spec[5]*1.8 or nil,dmg=spec[2] and spec[5]*1.1 or nil,
+            drops=spec[6],position=Vector3.new(boss.x+math.cos(angle)*26,3,boss.z+math.sin(angle)*26)})
+        end
+      end
+    end
   end
   workspace:SetAttribute("OpenWorldSiteCount",count)
 end
