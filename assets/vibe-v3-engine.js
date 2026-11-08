@@ -133,7 +133,21 @@ function overlapScore(left,right){const a=tokens(left),b=tokens(right);if(!a.siz
 export function rankVibeResponsibleSources({graph,request='',hints=[],limit=8}={}){
   if(!graph||!Array.isArray(graph.nodes))throw new Error('source graph required');
   const hintSet=new Set(unique(hints)),query=clean(request),incoming=new Map();
-  for(const edge of graph.edges||[]){if(!incoming.has(edge.to))incoming.set(edge.to,[]);incoming.get(edge.to).push(edge);}
+  // [코어 책임 추적] 상대 경로와 파일 간 함수 호출을 실제 기존 파일에 연결한다.
+  // 연결 실패·동명이인 함수는 임의 책임자로 추정하지 않는다.
+  const known=new Map(graph.nodes.map(node=>[node.path,node])),symbolOwners=new Map();
+  for(const node of graph.nodes)for(const symbol of node.symbols||[]){
+    if(!symbolOwners.has(symbol))symbolOwners.set(symbol,[]);
+    symbolOwners.get(symbol).push(node.path);
+  }
+  for(const node of graph.nodes)for(const [type,references] of [['import',node.imports],['call-or-symbol',node.calls]]){
+    for(const reference of references||[]){
+      const target=normalizeImpactReference(node.path,reference,known,symbolOwners,type);
+      if(!target)continue;
+      if(!incoming.has(target))incoming.set(target,[]);
+      incoming.get(target).push({from:node.path,type});
+    }
+  }
   const ranked=graph.nodes.map(node=>{
     const corpus=[node.path,...node.symbols,...node.tags].join(' ');let score=overlapScore(query,corpus)*0.65;
     if(hintSet.has(node.path))score+=0.25;
@@ -279,8 +293,10 @@ export function runVibeCandidateTournament({candidates=[],requiredCandidateCount
       ...(Array.isArray(candidate?.newFiles)?candidate.newFiles:[]).map(row=>['NEW',clean(row?.path),String(row?.content??'')]),
       ...(Array.isArray(candidate?.replaceFiles)?candidate.replaceFiles:[]).map(row=>['REPLACE',clean(row?.path),String(row?.content??'')])
     ];
-    const patch=clean(candidate?.patchFingerprint||candidate?.diffHash||candidate?.sourceHash||candidate?.patchRef)
-      ||(changes.length?'content:'+stableHash(JSON.stringify(changes)):'');
+    // [실제 코드 독립성] 작업 시작 원본(sourceHash)이나 다른 실행 링크(patchRef)보다
+    // 변경되는 코드 본문을 우선한다. 후보 생성 순서는 실제 편집 의미이므로 유지한다.
+    const patch=changes.length?'content:'+stableHash(JSON.stringify(changes))
+      :clean(candidate?.patchFingerprint||candidate?.diffHash||candidate?.patchRef||candidate?.sourceHash);
     if(patch&&patchIdentities.has(patch))duplicatePatch=true;
     if(patch)patchIdentities.add(patch);
     identities.add(patch?'patch:'+patch:'id:'+id);
