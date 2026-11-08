@@ -121,7 +121,7 @@
   "pendingRobloxHomepageThumbnailContinuation": {
     "status": "DOCUMENTED_ONLY_NOT_APPLIED",
     "ownerInstruction": "CONTINUE_NEXT_SESSION",
-    "objective": "REPLACE_THE_CURRENT_FOUR_INTERNAL_ROBLOX_EXPOSURE_GAME_THUMBNAILS_WITH_PREMIUM_ROBLOX_STYLE_ART_AND_USE_THE_EXACT_SAME_CANONICAL_IMAGE_FOR_HOMEPAGE_AND_ROBLOX",
+    "objective": "REPLACE_THE_CURRENT_THREE_INTERNAL_ROBLOX_EXPOSURE_GAME_THUMBNAILS_WITH_PREMIUM_ROBLOX_STYLE_ART_AND_USE_THE_EXACT_SAME_CANONICAL_IMAGE_FOR_HOMEPAGE_AND_ROBLOX",
     "requiredVisualTextFormat": {
       "primaryTitle": "ENGLISH_GAME_NAME",
       "secondarySubtitle": "KOREAN_GAME_NAME",
@@ -129,12 +129,6 @@
       "style": "PREMIUM_ROBLOX_STYLE_HIGH_CLICK_THROUGH_ORIGINAL_ART_NO_ROBLOX_LOGO"
     },
     "targetGames": [
-      {
-        "gameId": "cozy-island",
-        "englishTitle": "COZY ISLAND",
-        "koreanSubtitle": "포근섬: 작은 왕국 키우기",
-        "canonicalPath": "assets/roblox-thumbnails/cozy-island.svg"
-      },
       {
         "gameId": "daechung-rpg",
         "englishTitle": "5 PORTAL RPG",
@@ -164,13 +158,12 @@
         "qa/company-homepage-runtime-propagation.test.mjs"
       ],
       "releaseWorkflow": ".github/workflows/company-development-roblox-release-promotion.yml",
-      "note": "DO_NOT_CREATE_A_SECOND_THUMBNAIL_PIPELINE_OR_DUPLICATE_HOMEPAGE_AND_ROBLOX_ART"
+      "note": "기존 썸네일 동기화 경로만 사용. 코지 아일랜드는 영구 제거됐으며 복구 또는 재등록 금지."
     },
     "generatedArtState": {
       "createdInPreviousSession": true,
       "appliedToRepository": false,
       "designs": [
-        "COZY_ISLAND_PREMIUM_ISLAND_KINGDOM",
         "5_PORTAL_RPG_PREMIUM_FANTASY_PORTALS",
         "MIDNIGHT_INFECTION_PREMIUM_4V4_HORROR",
         "VILLAGE_DUNGEONS_PREMIUM_VILLAGE_DUNGEON"
@@ -192,10 +185,10 @@
     },
     "nextWorkerExecutionOrder": [
       "FETCH_FRESH_MAIN_AND_RELOAD_ROADMAP_LOG_ARCHITECTURE_SECURITY",
-      "VERIFY_THE_FOUR_CANONICAL_THUMBNAIL_PATHS_AND_CURRENT_CATALOG_BINDINGS",
-      "OBTAIN_OR_REGENERATE_THE_FOUR_APPROVED_PREMIUM_IMAGES",
+      "VERIFY_THE_THREE_CANONICAL_THUMBNAIL_PATHS_AND_CURRENT_CATALOG_BINDINGS",
+      "OBTAIN_OR_REGENERATE_THE_THREE_APPROVED_PREMIUM_IMAGES",
       "COMPRESS_FOR_LOW_REPOSITORY_SIZE",
-      "REPLACE_ONLY_THE_EXISTING_FOUR_CANONICAL_THUMBNAIL_FILES",
+      "REPLACE_ONLY_THE_EXISTING_THREE_CANONICAL_THUMBNAIL_FILES",
       "KEEP_HOMEPAGE_AND_ROBLOX_USING_THE_EXACT_SAME_CANONICAL_FILE",
       "RUN_QA_COMPANY_ROBLOX_THUMBNAIL_SYNC_AND_HOMEPAGE_RUNTIME_PROPAGATION",
       "VERIFY_HOMEPAGE_CARD_RENDERING",

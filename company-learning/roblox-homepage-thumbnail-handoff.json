@@ -25,11 +25,6 @@
     "catalogVersion": 31,
     "targetGames": [
       {
-        "gameId": "cozy-island",
-        "currentTitle": "포근섬: 작은 왕국 키우기",
-        "currentAsset": "assets/roblox-thumbnails/cozy-island.svg"
-      },
-      {
         "gameId": "daechung-rpg",
         "currentTitle": "5포탈 RPG: 던전 파티",
         "currentAsset": "assets/roblox-thumbnails/daechung-rpg.svg"
@@ -60,12 +55,6 @@
   },
   "approvedCreativeDirection": [
     {
-      "gameId": "cozy-island",
-      "englishTitle": "COZY ISLAND",
-      "koreanSubtitle": "포근섬: 작은 왕국 키우기",
-      "artDirection": "밝은 블록형 3D 섬 왕국, 성/마을/농장/주민/병사/바다/배가 보이는 고밀도 Roblox풍 대표 장면. 영어 제목이 가장 크고 한글 부제는 보조."
-    },
-    {
       "gameId": "daechung-rpg",
       "englishTitle": "5 PORTAL RPG",
       "koreanSubtitle": "5포탈 RPG: 던전 파티",
@@ -89,9 +78,8 @@
     "repositoryCommit": false,
     "catalogMutation": false,
     "robloxUpload": false,
-    "note": "이 세션에서 이미지 생성 결과 4장을 사용자가 '좋아 적용'으로 승인했으나, 이후 '문서화만 해놔 다음작업자가 하게'라고 지시하여 실제 적용은 중단됨.",
+    "note": "당시 4장 이미지가 승인됐으나 코지 아일랜드는 영구 제거됨. 남은 3개 게임만 적용 대상.",
     "ephemeralContainerFiles": [
-      "/mnt/data/포근섬_작은_왕국_키우기.png",
       "/mnt/data/다섯_포탈_rpg_어드벤처.png",
       "/mnt/data/심야_감염전_4대4_대치.png",
       "/mnt/data/마을_던전_rpg_모험_썸네일.png"
@@ -101,12 +89,6 @@
   "lowSizeTarget": {
     "preferredDisplaySource": "저용량 JPG 또는 PNG를 canonical asset로 사용하되 기존 동기화 도구가 지원하는 확장자 유지",
     "workingCompressionResult": [
-      {
-        "gameId": "cozy-island",
-        "resolution": "512x288",
-        "jpegQuality": 48,
-        "approxSizeKB": 33
-      },
       {
         "gameId": "daechung-rpg",
         "resolution": "512x288",
@@ -130,10 +112,10 @@
   },
   "nextWorkerExecutionOrder": [
     "FETCH_FRESH_MAIN_AND_RELOAD_CENTRAL_POLICY_LOG_ARCHITECTURE_SECURITY",
-    "RECOVER_OR_REGENERATE_THE_FOUR_APPROVED_IMAGES",
+    "RECOVER_OR_REGENERATE_THE_THREE_APPROVED_IMAGES",
     "COMPRESS_TO_LOW_SIZE_16_9_ASSETS",
-    "REPLACE_THE_FOUR_CANONICAL_assets/roblox-thumbnails_ASSETS_WITHOUT_CREATING_DUPLICATE_HOMEPAGE_ART",
-    "IF_EXTENSION_CHANGES_UPDATE_game-catalog.json_FIELDS_TO_THE_SAME_CANONICAL_FILE_FOR_ALL_FOUR_GAMES",
+    "REPLACE_THE_THREE_CANONICAL_assets/roblox-thumbnails_ASSETS_WITHOUT_CREATING_DUPLICATE_HOMEPAGE_ART",
+    "IF_EXTENSION_CHANGES_UPDATE_game-catalog.json_FIELDS_TO_THE_SAME_CANONICAL_FILE_FOR_ALL_THREE_GAMES",
     "KEEP_ENGLISH_TITLE_DOMINANT_AND_KOREAN_TITLE_AS_SUBTITLE_IN_THE_IMAGE",
     "UPDATE_QA_ONLY_IF_EXTENSION_OR_VALIDATION_ASSUMPTIONS_CHANGE",
     "RUN_company-roblox-thumbnail-sync_AND_homepage_runtime_QA",
