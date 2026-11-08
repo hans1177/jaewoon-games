@@ -27,8 +27,8 @@
  },
  {
   "type": "luau",
-  "ctx": "Client",
-  "code": "local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(185,12,170)) return \"tp\""
+  "ctx": "Server",
+  "code": "for _,p in ipairs(game.Players:GetPlayers()) do local ch=p.Character if ch and ch:FindFirstChild(\"HumanoidRootPart\") then ch.HumanoidRootPart.Anchored=true ch:PivotTo(CFrame.new(185,12,170)) end end return \"server tp\""
  },
  {
   "type": "wait",
@@ -37,12 +37,12 @@
  {
   "type": "luau",
   "ctx": "Server",
-  "code": "local counts={} local best,bd=nil,1e9 local root for _,pl in ipairs(game.Players:GetPlayers()) do root=pl.Character and pl.Character:FindFirstChild(\"HumanoidRootPart\") end for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\") then local k=tostring(m:GetAttribute(\"Species\"))..\"/\"..tostring(m:GetAttribute(\"Variant\")) counts[k]=(counts[k] or 0)+1 if m:GetAttribute(\"Species\")==\"wolf\" and m:GetAttribute(\"EnemyHealth\") and not m:GetAttribute(\"Boss\") and root then local dd=(m:GetPivot().Position-root.Position).Magnitude if dd<bd then best,bd=m,dd end end end end local r={} for k,n in pairs(counts) do r[#r+1]=n..\"x\"..k end table.sort(r) if best then workspace:SetAttribute(\"MobShotPos\",best:GetPivot().Position) end return (best and (\"wolf d=\"..math.floor(bd)) or \"no wolf\")..\" | \"..table.concat(r,\",\")"
+  "code": "local counts={} local best,bd=nil,1e9 local root for _,pl in ipairs(game.Players:GetPlayers()) do root=pl.Character and pl.Character:FindFirstChild(\"HumanoidRootPart\") end for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\") then local k=tostring(m:GetAttribute(\"Species\"))..\"/\"..tostring(m:GetAttribute(\"Variant\")) counts[k]=(counts[k] or 0)+1 if m:GetAttribute(\"Species\")==\"wolf\" and m:GetAttribute(\"EnemyHealth\") and not m:GetAttribute(\"Boss\") and root then local dd=(m:GetPivot().Position-root.Position).Magnitude if dd<bd then best,bd=m,dd end end end end local r={} for k,n in pairs(counts) do r[#r+1]=n..\"x\"..k end table.sort(r) if best then workspace:SetAttribute(\"MobShotPos\",best:GetPivot().Position) if root then root.Anchored=true root.Parent:PivotTo(CFrame.new(best:GetPivot().Position+Vector3.new(24,4,0))) end end return (best and (\"wolf d=\"..math.floor(bd)) or \"no wolf\")..\" | \"..table.concat(r,\",\")"
  },
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local pos=workspace:GetAttribute(\"MobShotPos\") if typeof(pos)~=\"Vector3\" then return \"no pos\" end local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(pos+Vector3.new(26,5,0))) task.spawn(function() local RS=game:GetService(\"RunService\") while true do local best,bd=nil,1e9 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\")==\"wolf\" and m:GetAttribute(\"EnemyHealth\") then local d=(m:GetPivot().Position-pos).Magnitude if d<bd then best,bd=m,d end end end if best then local p=best:GetPivot().Position workspace:SetAttribute(\"ShotFov\",55) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(0,3.2,11),p+Vector3.new(0,1.4,0))) end task.wait(.1) end end) return \"follow\""
+  "code": "local pos=workspace:GetAttribute(\"MobShotPos\") if typeof(pos)~=\"Vector3\" then return \"no pos\" end local c=game.Players.LocalPlayer.Character c.HumanoidRootPart.Anchored=true  task.spawn(function() local RS=game:GetService(\"RunService\") while true do local best,bd=nil,1e9 for _,m in ipairs(workspace:GetDescendants()) do if m:IsA(\"Model\") and m:GetAttribute(\"Species\")==\"wolf\" and m:GetAttribute(\"EnemyHealth\") then local d=(m:GetPivot().Position-pos).Magnitude if d<bd then best,bd=m,d end end end if best then local p=best:GetPivot().Position workspace:SetAttribute(\"ShotFov\",55) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(p+Vector3.new(0,3.2,11),p+Vector3.new(0,1.4,0))) end task.wait(.1) end end) return \"follow\""
  },
  {
   "type": "wait",
