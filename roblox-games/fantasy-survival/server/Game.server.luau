@@ -9106,17 +9106,18 @@ do
       if not inVillage then
         for _=1,6 do
           local blocked=false
-          for _,wp in ipairs(world.Waypoints) do
-            if (x-wp[2])^2+(z-wp[3])^2<70*70 then blocked=true;break end
+          -- [컴파일] 서식지 후보 검사는 순번 반복으로 지역 레지스터를 절약한다. 판정값은 동일.
+          for waypointIndex=1,#world.Waypoints do
+            if (x-world.Waypoints[waypointIndex][2])^2+(z-world.Waypoints[waypointIndex][3])^2<70*70 then blocked=true;break end
           end
           if not blocked then
-            for _,town in ipairs(world.Towns or {}) do
-              if (x-town.X)^2+(z-town.Z)^2<90*90 then blocked=true;break end
+            for townIndex=1,#(world.Towns or {}) do
+              if (x-world.Towns[townIndex].X)^2+(z-world.Towns[townIndex].Z)^2<90*90 then blocked=true;break end
             end
           end
           if not blocked then
-            for _,placed in ipairs(placedSites) do
-              if (x-placed.X)^2+(z-placed.Z)^2<38*38 then blocked=true;break end
+            for placedIndex=1,#placedSites do
+              if (x-placedSites[placedIndex].X)^2+(z-placedSites[placedIndex].Z)^2<38*38 then blocked=true;break end
             end
           end
           if not blocked then break end
