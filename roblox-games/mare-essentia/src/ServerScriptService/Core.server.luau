@@ -43,9 +43,9 @@ local S = Registry.S
 local QUEST_WATCH = { Explore = true, Hunt = true, ChallengeBoss = true, Research = true, StartResearch = true, Buy = true }
 local handlers = Registry.handlers
 
--- [중요] DataStore 이름은 게임 이름이 바뀌어도 바꾸지 않는다. 이름이 바뀌면 기존 플레이어 저장이 빈 저장소로 읽혀 전부 초기화된다.
--- (Mare Scientia -> Mare Essentia 개명 때 "MareScientia_v2"가 바뀌어 저장이 초기화된 사고의 복구. 기존 데이터는 이 이름의 저장소에 그대로 남아 있다.)
-local STORE_NAME = "MareScientia_v2"
+-- [중요] DataStore 이름은 게임 이름이 바뀌어도, 유니버스가 바뀌어도 임의로 바꾸지 않는다. 바꾸면 플레이어 저장이 빈 저장소로 읽혀 전부 초기화된다.
+-- 2026-11-08 새 유니버스(10775310508)에서 이 이름으로 저장이 시작됐다. 이름을 바꾸려면 기존 저장 이전(마이그레이션)을 먼저 구현한다.
+local STORE_NAME = "MareEssentia_v2"
 local RATE_LIMIT = 0.1
 local AUTOSAVE_INTERVAL = 15 -- DataStore 쓰기 제한(키당 6초에 1회)을 넘지 않도록 변경된 세션만 이 주기로 저장
 local MARKET_INTERVAL = 5
