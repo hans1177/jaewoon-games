@@ -12782,21 +12782,36 @@ task.spawn(function()
   if not atmosphere then atmosphere=Instance.new("Atmosphere");atmosphere.Parent=Lighting end
   local grade=Lighting:FindFirstChild("MeadowZoneGrade")
   if not grade then grade=Instance.new("ColorCorrectionEffect");grade.Name="MeadowZoneGrade";grade.Parent=Lighting end
-  local current=nil
-  while true do
-    task.wait(.6)
-    local ok=pcall(function()
-      local character=Players.LocalPlayer.Character
-      local root=character and character:FindFirstChild("HumanoidRootPart")
-      if not root then return end
-      local zone=Config.WorldMap.ZoneAt(root.Position.X,root.Position.Z)
-      if not zone or zone==current or not moods[zone] then return end
-      current=zone
-      local m=moods[zone]
-      local info=TweenInfo.new(2.5,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut)
-      TweenService:Create(atmosphere,info,{Color=m[1],Decay=m[1],Density=m[2],Haze=m[3]}):Play()
-      TweenService:Create(grade,info,{TintColor=m[4],Saturation=m[5],Brightness=m[6],Contrast=m[7]}):Play()
-    end)
-    if not ok then task.wait(2) end
-  end
+  local clouds=workspace.Terrain:FindFirstChildOfClass("Clouds")
+  -- 서버가 시간대·날씨에 따라 Lighting/Atmosphere를 계속 덮어쓰므로, 클라이언트가 매 프레임 지역 값으로 되돌려 덮는다.
+  local target=moods.meadow
+  local cur={color=target[1],density=target[2],haze=target[3],tint=target[4],sat=target[5],bri=target[6],con=target[7]}
+  local zoneTimer=0
+  game:GetService("RunService").Heartbeat:Connect(function(dt)
+    zoneTimer-=dt
+    if zoneTimer<=0 then
+      zoneTimer=.5
+      pcall(function()
+        local character=Players.LocalPlayer.Character
+        local root=character and character:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+        local zone=Config.WorldMap.ZoneAt(root.Position.X,root.Position.Z)
+        if zone and moods[zone] then target=moods[zone] end
+      end)
+    end
+    local k=math.clamp(dt*.9,0,1)
+    cur.color=cur.color:Lerp(target[1],k);cur.tint=cur.tint:Lerp(target[4],k)
+    cur.density+=(target[2]-cur.density)*k;cur.haze+=(target[3]-cur.haze)*k
+    cur.sat+=(target[5]-cur.sat)*k;cur.bri+=(target[6]-cur.bri)*k;cur.con+=(target[7]-cur.con)*k
+    -- 밤에는 안개색도 함께 어두워진다.
+    local hour=Lighting.ClockTime
+    local dim=(hour>=19.5 or hour<4.8) and .3 or (hour>=18 or hour<6.3) and .65 or 1
+    local fog=Color3.new(cur.color.R*dim,cur.color.G*dim,cur.color.B*dim)
+    atmosphere.Color=fog;atmosphere.Decay=fog
+    atmosphere.Density=cur.density;atmosphere.Haze=cur.haze
+    Lighting.FogColor=fog
+    Lighting.OutdoorAmbient=Lighting.OutdoorAmbient:Lerp(fog,.35)
+    grade.TintColor=cur.tint;grade.Saturation=cur.sat;grade.Brightness=cur.bri;grade.Contrast=cur.con
+    if clouds then local cc=cur.color:Lerp(Color3.new(1,1,1),.5);clouds.Color=clouds.Color:Lerp(Color3.new(cc.R*dim,cc.G*dim,cc.B*dim),.15) end
+  end)
 end)

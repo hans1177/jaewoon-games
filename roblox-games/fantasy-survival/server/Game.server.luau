@@ -8195,7 +8195,7 @@ do
   local world=Config.WorldMap
   local mats={windcliff=Enum.Material.Ground,meadow=Enum.Material.Grass,worldtree=Enum.Material.LeafyGrass,volcano=Enum.Material.Basalt,
     oasis=Enum.Material.Sand,swamp=Enum.Material.Mud,citadel=Enum.Material.Slate,highland=Enum.Material.Rock,canyon=Enum.Material.Sandstone,
-    chaos=Enum.Material.Basalt,wetland=Enum.Material.Mud,desert=Enum.Material.Sand,deadmarsh=Enum.Material.Mud}
+    chaos=Enum.Material.Slate,wetland=Enum.Material.Grass,desert=Enum.Material.Sand,deadmarsh=Enum.Material.Mud}
   local zoneTier={windcliff=2,meadow=1,worldtree=3,volcano=5,oasis=6,swamp=7,citadel=9,highland=4,canyon=6,chaos=8,wetland=3,desert=6,deadmarsh=8}
   local pools={
     windcliff={{"wolf","roguehooded","절벽 약탈 고블린",3,1.1,{{"Ore",.25},{"Hide",.3}}},{"wolf","tribal","절벽 주술전사",4.2,1.4,{{"Moonbloom",.3},{"Ore",.3}}},{"wolf","wolf","절벽 늑대",3.6,1.1,{{"Hide",.6},{"Fang",.3},{"Feather",.25}}}},
@@ -8455,6 +8455,46 @@ do
             end
           end
           if index%5==0 then task.wait() end
+        end
+      end
+      -- [지역 랜드마크] 등록된 CC0 자산(폐허·해골·버섯·나무)을 지역 성격에 맞게 크고 작게 흩뿌려 멀리서도 볼거리가 되게 한다.
+      do
+        local landmarks={
+          windcliff={{"ruin",10,18,.55},{"tree",30,44,.2},{"skeleton",6,10,.25}},
+          worldtree={{"tree",50,80,.6},{"mushroom",8,15,.4}},
+          volcano={{"ruin",14,24,.55},{"skeleton",10,18,.45}},
+          oasis={{"ruin",10,16,.5},{"tree",16,24,.5}},
+          swamp={{"mushroom",8,14,.4},{"skeleton",5,9,.3},{"tree",24,38,.3}},
+          citadel={{"ruin",20,34,.8},{"skeleton",8,12,.2}},
+          highland={{"ruin",12,22,.5},{"skeleton",8,16,.3},{"tree",24,34,.2}},
+          canyon={{"skeleton",14,26,.5},{"ruin",12,20,.5}},
+          chaos={{"ruin",22,38,.5},{"mushroom",12,22,.3},{"skeleton",10,18,.2}},
+          wetland={{"mushroom",7,12,.5},{"tree",22,32,.5}},
+          desert={{"skeleton",16,30,.55},{"ruin",12,22,.45}},
+          deadmarsh={{"skeleton",8,16,.4},{"ruin",12,20,.3},{"mushroom",8,14,.3}},
+          meadow={{"ruin",8,12,.5},{"tree",26,38,.5}},
+        }
+        for _,zone in ipairs(world.Zones) do
+          local list=landmarks[zone.Id]
+          if list then
+            for index=1,math.floor(zone.Area/330000)+4 do
+              local x,z=world.RandomPoint(zone.Id,random,60)
+              if x and not nearRoad(x,z) and not (x>village.X0-60 and x<village.X1+60 and z>village.Z0-60 and z<village.Z1+60) then
+                local roll,pick=random:NextNumber(),list[1]
+                local acc=0
+                for _,row in ipairs(list) do acc+=row[4];if roll<=acc then pick=row;break end end
+                local prop=worldAsset(pick[1],Vector3.new(x,3,z),random:NextNumber(pick[2],pick[3]))
+                if prop then
+                  prop.Name="OpenWorldLandmark_"..zone.Id.."_"..index;prop:SetAttribute("MeadowScenery",true)
+                  prop:PivotTo(prop:GetPivot()*CFrame.Angles(0,random:NextNumber(0,6.28),0))
+                  for _,surface in ipairs(prop:GetDescendants()) do
+                    if surface:IsA("MeshPart") then surface.Color=surface.Color:Lerp(treeTint[zone.Id],.35) end
+                  end
+                end
+              end
+              if index%3==0 then task.wait() end
+            end
+          end
         end
       end
       workspace:SetAttribute("OpenWorldReady",true)
