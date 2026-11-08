@@ -4391,6 +4391,11 @@ titlePanel.Name = "TitlePanel"
 titlePanel.AnchorPoint = Vector2.new(1, 0.5)
 titlePanel.Position = UDim2.new(1, -14, 0.5, 0)
 titlePanel.Size = UDim2.new(0.58, 0, 1, -28)
+do
+	local lim = Instance.new("UISizeConstraint")
+	lim.MaxSize = Vector2.new(720, 9999)
+	lim.Parent = titlePanel
+end
 titlePanel.BackgroundColor3 = Color3.fromRGB(12, 20, 34)
 titlePanel.BackgroundTransparency = 0.08
 titlePanel.BorderSizePixel = 0
@@ -4456,13 +4461,24 @@ renderTitle = function()
 		cur = list[1]
 	end
 
-	tLabel(titleScroll, "항해를 시작하세요", 22, GOLD, true, nxt())
+	local head = tLabel(titleScroll, "⚓  항해를 시작하세요  ⚓", 24, GOLD, true, nxt())
+	head.TextXAlignment = Enum.TextXAlignment.Center
+	do
+		local rule = Instance.new("Frame")
+		rule.Size = UDim2.new(1, 0, 0, 2)
+		rule.BackgroundColor3 = GOLD
+		rule.BackgroundTransparency = 0.35
+		rule.BorderSizePixel = 0
+		rule.LayoutOrder = nxt()
+		rule.ZIndex = 12
+		rule.Parent = titleScroll
+	end
 	if message ~= "" then
 		tLabel(titleScroll, message, 13, if messageOk then GOLD else COLORS.red, true, nxt())
 	end
 
 	-- ① 나라
-	tLabel(titleScroll, "① 어느 나라의 항해자로 출발할까요?", 14, COLORS.muted, true, nxt())
+	tLabel(titleScroll, "① 어느 나라의 항해자로 출발할까요?", 15, COLORS.muted, true, nxt())
 	local grid = Instance.new("Frame")
 	grid.BackgroundTransparency = 1
 	grid.Size = UDim2.new(1, 0, 0, 0)
@@ -4471,7 +4487,7 @@ renderTitle = function()
 	grid.ZIndex = 12
 	grid.Parent = titleScroll
 	local gl = Instance.new("UIGridLayout")
-	gl.CellSize = UDim2.new(1 / 3, -6, 0, 50)
+	gl.CellSize = UDim2.new(1 / 3, -6, 0, 56)
 	gl.CellPadding = UDim2.fromOffset(8, 8)
 	gl.SortOrder = Enum.SortOrder.LayoutOrder
 	gl.Parent = grid
@@ -4580,7 +4596,7 @@ renderTitle = function()
 	tLabel(info, cur.summary, 12, COLORS.muted, false)
 
 	-- ② 시대
-	tLabel(titleScroll, "② 어느 시대에서 시작할까요?", 14, COLORS.muted, true, nxt())
+	tLabel(titleScroll, "② 어느 시대에서 시작할까요?", 15, COLORS.muted, true, nxt())
 	local eras = {
 		{ 1650, "1650년", "과학혁명의 시작" },
 		{ 1700, "1700년 ★추천", "증기 기술의 새벽" },
@@ -4588,7 +4604,7 @@ renderTitle = function()
 	}
 	local rowF = Instance.new("Frame")
 	rowF.BackgroundTransparency = 1
-	rowF.Size = UDim2.new(1, 0, 0, 52)
+	rowF.Size = UDim2.new(1, 0, 0, 60)
 	rowF.LayoutOrder = nxt()
 	rowF.ZIndex = 12
 	rowF.Parent = titleScroll
@@ -4626,7 +4642,7 @@ renderTitle = function()
 	-- 출발
 	local actions = Instance.new("Frame")
 	actions.BackgroundTransparency = 1
-	actions.Size = UDim2.new(1, 0, 0, 54)
+	actions.Size = UDim2.new(1, 0, 0, 60)
 	actions.LayoutOrder = nxt()
 	actions.ZIndex = 12
 	actions.Parent = titleScroll
