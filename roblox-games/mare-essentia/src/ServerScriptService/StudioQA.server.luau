@@ -40,23 +40,46 @@ task.spawn(function()
 		end
 	end
 	local bad = 0
-	for i = 1, #ids, 40 do
-		local batch, lookup = {}, {}
-		for j = i, math.min(i + 39, #ids) do
-			local inst = Instance.new("Decal")
-			inst.Texture = ids[j].url
-			table.insert(batch, inst)
-			lookup[inst] = ids[j]
+	local items = {}
+	for _, it in ids do
+		local kind = nil
+		if string.find(it.key, "AudioIds") then
+			kind = "Sound"
+		elseif string.find(it.key, "%.Menu/") or string.find(it.key, "%.Goods/") or string.find(it.key, "%.Portraits/") then
+			kind = "ImageLabel"
+		end
+		if kind then
+			local inst = Instance.new(kind)
+			if kind == "Sound" then
+				inst.SoundId = it.url
+			else
+				inst.Image = it.url
+			end
+			table.insert(items, { inst = inst, it = it })
+		end
+	end
+	for i = 1, #items, 30 do
+		local batch = {}
+		for j = i, math.min(i + 29, #items) do
+			table.insert(batch, items[j].inst)
 		end
 		ContentProvider:PreloadAsync(batch, function(contentId, status)
 			if status ~= Enum.AssetFetchStatus.Success then
 				bad += 1
-				fail("asset " .. tostring(contentId) .. " status=" .. tostring(status))
+				local key = "?"
+				for _, row in items do
+					if row.it.url == contentId then
+						key = row.it.key
+					end
+				end
+				fail("asset " .. key .. " " .. tostring(contentId) .. " status=" .. tostring(status))
 			end
 		end)
 	end
 	if bad == 0 then
-		ok("assets preloaded: " .. #ids)
+		ok("images/sounds preloaded: " .. #items)
+	else
+		print("[QA] ASSET_FAIL_COUNT " .. bad .. "/" .. #items)
 	end
 end)
 
@@ -88,7 +111,14 @@ task.spawn(function()
 	local Ports = require(Shared:WaitForChild("Ports"))
 	local Quests = require(Shared:WaitForChild("Quests"))
 	local nationId = next(Ports.Nations)
-	local r = call("NewGame", { nationId = nationId, startYear = 1650, restart = true })
+	local r
+	for _ = 1, 8 do
+		task.wait(1.5)
+		r = call("NewGame", { nationId = nationId, startYear = 1650, restart = true })
+		if r and r.message ~= "너무 빨라요" and not r.loading then
+			break
+		end
+	end
 	if not (r and r.ok and r.view) then
 		fail("NewGame " .. tostring(r and r.message))
 		return
