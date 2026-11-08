@@ -43,3 +43,9 @@
 - 목록: `famous-figures.json` (학자 19명). 수집기 `tools/devloop/fetch_commons.py` 가 위키미디어 공용 API 로 검색해 **퍼블릭 도메인/CC0 표시 + 인물 이름 일치 + 제외어(동상·묘·우표 등) 통과** 그림만 받아 3:4 로 잘라 `assets/portraits/scholar_<id>.jpg` 로 저장하고 `portraits-report.json` 에 원본 URL·제작자·라이선스를 남긴다.
 - 흐름: `owner-mare-scientia-assets` 워크플로(푸시 또는 수동 실행) → 수집 → Open Cloud 업로드 → `AssetIds` 반영 → 커밋. 배포 후 탐험 탭 "이 항구의 학자" 행에 초상이 뜬다(등록된 인물만).
 - 로컬 샌드박스는 위키 접속이 막혀 있어 CI 러너에서만 동작한다. 못 받은 인물은 보고서에 `no-public-domain-match`/`error` 로 남고 초상 없이 표시된다. 잘못 고른 그림은 `avoid` 에 파일명 조각을 넣고 해당 `scholar_*.jpg` 를 지우면 다음 실행에서 다시 고른다.
+
+## 도감 카드 그림 자동화 (위키백과 대표 이미지 → 수정 → 등록 → 적용)
+- `tools/devloop/fetch_card_art.py` 가 카드 788장의 한국어 이름으로 한국어 위키백과 문서의 대표 이미지를 찾고, 라이선스가 퍼블릭 도메인/CC0/CC BY 인 것만 받는다(SA·ND·NC·비자유 제외, 국기·로고·지도 제외).
+- **원본 그대로 쓰지 않는다**: 4:3 자르기 · 채도 낮춤 · 자동 대비 · 따뜻한 색조 · 비네팅 · 금색 안쪽 테두리로 도감 풍으로 수정한다.
+- 한 번에 80장씩(`--limit`) 받아 `assets/cardart/<카드id>.jpg` → 업로드(`CardArt/<id>`) → `AssetIds` → `CardArt.luau` 가 자동으로 합쳐 도감 카드에 표시. 출처·라이선스는 `CardArtCredits.luau`(자동 생성)와 카드 상세의 "그림 출처"에 나온다.
+- 워크플로 `owner-mare-scientia-assets` 를 수동 실행(Run workflow)할 때마다 다음 80장이 진행된다. 진행 상황·실패 사유는 `assets/cardart/cardart-report.json`.
