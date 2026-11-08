@@ -2377,7 +2377,11 @@ test('Forest title is created before blocking world waits and entry stays save-s
   assert.match(client,/local newGameWaiting=false/);
   assert.match(client,/if player:GetAttribute\("SaveStatus"\)=="SESSION_ONLY" then/);
   assert.match(client,/remote:FireServer\("meadow:new-game:confirm"\)/);
-  assert.match(client,/if player:GetAttribute\("MeadowProfileHadSave"\)~=true then\s+loadRegion\(true\)/);
+  // [오프닝 제거] 최초 입장도 기존 저장 검사 이후 동일한 즉시 입장 경로로 연결한다.
+  assert.match(client,/if player:GetAttribute\("MeadowProfileHadSave"\)~=true then\s+loadRegion\(\)/);
+  assert.match(client,/setProgress\(loaded,total,/);
+  assert.match(client,/closeArrival\(\)/);
+  assert.doesNotMatch(client,/startIntro\(|ReplayPrologue|FirstArrivalScene/);
   assert.match(client,/player:GetAttribute\("MeadowNewGameResult"\)/);
 });
 
