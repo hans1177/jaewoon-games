@@ -169977,11 +169977,144 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_908474ec2a2406b83d6a5f02",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12239",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "99bbb2b19c4ce34bd4184565ab0fd5d8310e45b5",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12239,
+        "baseBranch": "main",
+        "headBranch": "fix/rojo-install-fallback",
+        "baseSha": "99bbb2b19c4ce34bd4184565ab0fd5d8310e45b5",
+        "headSha": "f8c4c790a3d9cc2f1359008003d71eeb9cf24b11",
+        "mergeCommitSha": "2673485face3309687866a8f01945c850db9eb22",
+        "mergedAt": "2026-11-08T14:14:52Z",
+        "authorLogin": "hans1177",
+        "titleHash": "ef6396a21b2c0ba635054b4e4c85b7b26158f2021ed1b3ffcc4eeb940a7a9dd6",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/rojo-install-fallback",
+        "candidateSha": "f8c4c790a3d9cc2f1359008003d71eeb9cf24b11"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 344,
+        "deletedLineCount": 99,
+        "changedFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          ".github/workflows/owner-mare-essentia-direct-publish.yml",
+          ".github/workflows/owner-new-experience.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "card-grid-duel/elite.webp",
+          "card-grid-duel/index.html",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "tools/company-roblox-dedicated-experience.mjs",
+          "tools/install-rojo.sh",
+          "tools/probe-asset-owners.py"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          ".github/workflows/owner-mare-essentia-direct-publish.yml",
+          ".github/workflows/owner-new-experience.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "card-grid-duel/index.html",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "tools/company-roblox-dedicated-experience.mjs",
+          "tools/install-rojo.sh",
+          "tools/probe-asset-owners.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12239",
+        "merge-commit:2673485face3309687866a8f01945c850db9eb22",
+        "base-main:99bbb2b19c4ce34bd4184565ab0fd5d8310e45b5"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1355
+    "total": 1356
   }
 }
