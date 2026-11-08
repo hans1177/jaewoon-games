@@ -3919,7 +3919,7 @@ openOptions = function()
 	ttl.Position = UDim2.fromOffset(16, 9)
 	ttl.Size = UDim2.new(1, -70, 0, 28)
 	ttl.AutomaticSize = Enum.AutomaticSize.None
-	local x = mkButton(bar, "✕", Color3.fromRGB(150, 54, 54), UDim2.fromOffset(38, 32), closeOptions, true)
+	local x = mkButton(bar, "X", Color3.fromRGB(150, 54, 54), UDim2.fromOffset(38, 32), closeOptions, true)
 	x.AnchorPoint = Vector2.new(1, 0.5)
 	x.Position = UDim2.new(1, -8, 0.5, 0)
 	x.TextSize = 16
@@ -4511,6 +4511,13 @@ local function showTitle()
 		titleMenuOpen = false
 		layer:Destroy()
 	end
+	-- 시작 메뉴가 떠 있는 동안 게임 본 화면이 뒤에 비치지 않게 계속 숨긴다
+	task.spawn(function()
+		while titleMenuOpen do
+			main.Visible = false
+			task.wait(0.1)
+		end
+	end)
 	local root = Instance.new("Frame")
 	root.Size = UDim2.fromScale(1, 1)
 	root.BackgroundTransparency = 1
