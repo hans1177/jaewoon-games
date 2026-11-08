@@ -507,6 +507,8 @@ end
 verifiedLearningAtmosphere.Density = 0.22
 verifiedLearningAtmosphere.Haze = 1.1
 verifiedLearningAtmosphere.Glare = 0.08
+verifiedLearningAtmosphere.Color = Color3.fromRGB(176,203,230)
+verifiedLearningAtmosphere.Decay = Color3.fromRGB(150,176,206)
 local verifiedLearningDepth = verifiedLearningLighting:FindFirstChild("VerifiedLearningDepthOfField")
 if not verifiedLearningDepth then
   verifiedLearningDepth = Instance.new("DepthOfFieldEffect")
@@ -6714,6 +6716,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     atmosphere.Density=atmosphere.Density+(targetDensity-atmosphere.Density)*.14
     atmosphere.Haze=atmosphere.Haze+(targetHaze-atmosphere.Haze)*.14
     atmosphere.Glare=atmosphere.Glare+((storm and .01 or .07)-atmosphere.Glare)*.14
+    atmosphere.Color=Color3.fromRGB(176,203,230);atmosphere.Decay=Color3.fromRGB(150,176,206)
   end
   local tint=night and Color3.fromRGB(176,193,207)
     or period=="DAWN" and Color3.fromRGB(220,211,191)
