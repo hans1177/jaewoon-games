@@ -1,0 +1,12 @@
+{
+  "note": "뼈 이름 신호로 리그 가족을 판정하는 표. 이름은 소문자로 바꾸고 . _ 공백을 뺀 형태다(UpperArm.L → upperarml). 위에서부터 처음 맞는 가족을 쓴다. 이 표가 원본이며 RobloxCommonRigKit.luau의 생성 구간과 tools/vibe-rig-kit.mjs가 같은 표를 쓴다.",
+  "families": [
+    {"id": "quadruped", "any": ["frontupperlegl", "frontuplegl", "backupperlegl", "backuplegl"], "plan": "다리 뼈 보행 시스템(FL/FR/BL/BR 관절 별칭)이 맡는다. 자세는 뼈 위치로 판정한다."},
+    {"id": "biped", "all": ["upperarml", "upperarmr", "upperlegl", "upperlegr"], "plan": "이족 뼈 애니메이터(팔 내림 보정 + 걷기·공격·피격·사망)가 맡는다."},
+    {"id": "snake", "all": ["head", "tail", "chest", "body"], "plan": "체인 애니메이터: 머리→꼬리 물결, 상체 들기, 턱·혀."},
+    {"id": "winged", "any": ["wing1l", "wing1r", "wingl", "wingr"], "plan": "체인 애니메이터: 날개짓(뒤 뼈일수록 지연). 이름에 spider가 들어가면 날개 뼈를 다리처럼 흔든다."},
+    {"id": "chain", "all": ["body1", "body2"], "plan": "체인 애니메이터: 몸통 물결(유령·용·글럽 계열)."},
+    {"id": "simple", "all": ["body", "head"], "plan": "체인 애니메이터: 몸 흔들림·머리 끄덕임(4뼈 단순 리그)."}
+  ],
+  "fallback": {"id": "static", "plan": "맞는 가족 없음: 뼈 모션 없음. 피벗 수준 모션만 적용된다(새 가족 규칙이 필요)."}
+}
