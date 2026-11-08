@@ -153,19 +153,97 @@ task.spawn(function()
 			break
 		end
 	end
-	step("Repair", "Repair")
-	step("Rumor", "Rumor")
-	step("Hunt", "Hunt")
-	step("ResolveBattle", "ResolveBattle", { flee = false })
-	step("WaitDay", "WaitDay")
-	local dest
-	for id in Ports.Ports do
-		if id ~= (r.view.portId or "") then
-			dest = id
-			break
+	local function idsOf(list)
+		local out = {}
+		if type(list) == "table" then
+			for _, e in list do
+				if type(e) == "string" then
+					table.insert(out, e)
+				elseif type(e) == "table" and type(e.id) == "string" then
+					table.insert(out, e.id)
+				end
+			end
 		end
+		return out
 	end
-	step("Sail", "Sail", { portId = dest })
-	step("VoyageChoice", "VoyageChoice", { index = 1 })
+	local function sweep(label, action, key, ids, extra)
+		local n = 0
+		for _, id in ids do
+			local payload = { [key] = id }
+			if extra then
+				for k, v in extra do
+					payload[k] = v
+				end
+			end
+			task.wait(0.05)
+			local res = call(action, payload)
+			n += 1
+			if res and (res.message == "오류가 발생했어요" or res.message == "알 수 없는 요청") then
+				fail(label .. " " .. id .. " -> " .. res.message)
+			elseif res and res.view == nil and res.ok then
+				fail(label .. " " .. id .. " no view")
+			end
+		end
+		ok(label .. " swept " .. n)
+	end
+	call("QAGrant")
+	local Shared2 = Shared
+	local Ships = require(Shared2:WaitForChild("Ships"))
+	local Tech = require(Shared2:WaitForChild("Tech"))
+	local Spec = require(Shared2:WaitForChild("Specialties"))
+	local Gear = require(Shared2:WaitForChild("Gear"))
+	local Sites = require(Shared2:WaitForChild("Sites"))
+	local Scholars = require(Shared2:WaitForChild("Scholars"))
+	local Bosses = require(Shared2:WaitForChild("Bosses"))
+	local Story = require(Shared2:WaitForChild("Story"))
+	local goods = {}
+	for id in Ports.Goods do
+		table.insert(goods, id)
+	end
+	-- 교역: 모든 물건 구매/흥정/판매
+	sweep("Buy", "Buy", "goodId", goods, { amount = 1 })
+	sweep("Haggle", "Haggle", "goodId", goods)
+	sweep("Sell", "Sell", "goodId", goods, { amount = 1 })
+	-- 조선소: 모든 배·대포 + 선원·보급·수리
+	sweep("BuyShip", "BuyShip", "shipId", Ships.Order)
+	sweep("BuyFleetShip", "BuyFleetShip", "shipId", Ships.Order)
+	sweep("BuyCannon", "BuyCannon", "cannonId", idsOf(Ships.Cannons))
+	for _, a in { "BuyPlating", "Repair", "BuyEscort", "DismissEscort" } do
+		step(a, a)
+	end
+	step("HireCrew", "HireCrew", { amount = 1 })
+	step("BuySupplies", "BuySupplies", { amount = 1 })
+	-- 연구·동료·장비·탐험·학자·보스·이야기
+	sweep("Research", "Research", "techId", Tech.Order)
+	local comp = idsOf(Spec.Companions)
+	sweep("Recruit", "Recruit", "companionId", comp)
+	sweep("Talk", "Talk", "companionId", comp)
+	step("TalkChoice", "TalkChoice", { index = 1 })
+	sweep("SetSpecialty", "SetSpecialty", "specialtyId", idsOf(Spec.Specialties))
+	sweep("BuyGear", "BuyGear", "gearId", idsOf(Gear.Items))
+	sweep("ToggleGear", "ToggleGear", "gearId", idsOf(Gear.Items))
+	sweep("Explore", "Explore", "siteId", idsOf(Sites.Sites))
+	sweep("Visit", "Visit", "scholarId", idsOf(Scholars.Scholars))
+	sweep("ChallengeBoss", "ChallengeBoss", "bossId", idsOf(Bosses.Bosses))
+	sweep("PlayStory", "PlayStory", "eventId", idsOf(Story.Events), { choice = 1 })
+	for _, a in { "Deposit", "Withdraw", "Borrow", "Repay", "BuyLicense", "BuyInsurance", "Audience", "Feast", "Rumor", "BuyMap", "Hunt", "ResolveBattle", "WaitDay" } do
+		step(a, a, { amount = 10, crew = 1 })
+	end
+	-- 항해: 모든 항구로 이동 + 항해 선택
+	local portIds = {}
+	for id in Ports.Ports do
+		table.insert(portIds, id)
+	end
+	local sailFail = 0
+	for _, id in portIds do
+		local res = call("Sail", { portId = id })
+		if res and res.message == "오류가 발생했어요" then
+			sailFail += 1
+			fail("Sail " .. id .. " -> error")
+		end
+		call("VoyageChoice", { index = 1 })
+		call("VoyageBonus", { index = 1 })
+	end
+	ok("Sail swept " .. #portIds .. " ports")
 	print(string.format("[QA] DONE ok=%d fail=%d", oks, fails))
 end)
