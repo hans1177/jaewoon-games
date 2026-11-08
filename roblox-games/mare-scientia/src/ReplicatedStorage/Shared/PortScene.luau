@@ -1075,8 +1075,8 @@ function PortScene.build(info, onFacility)
 			end
 			local bloom = Lighting:FindFirstChild("MareBloom")
 			if bloom then
-				bloom.Threshold = 2.2 - 1.3 * night
-				bloom.Intensity = 0.2 + 0.25 * night
+				bloom.Threshold = 2.2 - 0.6 * night
+				bloom.Intensity = 0.2 + 0.08 * night
 			end
 			local grade = Lighting:FindFirstChild("MareGrade")
 			if grade then
@@ -1097,8 +1097,8 @@ function PortScene.build(info, onFacility)
 			end
 			for _, l in lights do
 				if l.Parent then
-					l.Brightness = l:GetAttribute("BaseB") * (0.3 + 3.2 * night)
-					l.Range = l:GetAttribute("BaseR") * (1 + 0.8 * night)
+					l.Brightness = l:GetAttribute("BaseB") * (0.3 + 1.3 * night)
+					l.Range = l:GetAttribute("BaseR") * (1 + 0.4 * night)
 				end
 			end
 		end)
