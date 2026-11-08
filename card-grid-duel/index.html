@@ -64,6 +64,15 @@ h1{font-size:22px;margin:0}
 .unit.blue{background:linear-gradient(#3568b7,#264b88)}
 .unit.red{background:linear-gradient(#a74851,#753038)}
 .portrait{display:block;width:44px;height:44px;border-radius:7px;overflow:hidden;background:#24324a;box-shadow:0 1px 4px #0008}
+/* 신규 성직자·기마병: 가로 2칸 세로 1칸 원화, 원본 4:5 비율 그대로 표시 */
+.portrait.eliteArt,.card .art.eliteArt{background-image:url('elite.webp');background-repeat:no-repeat}
+.card .art.eliteArt{aspect-ratio:4/5;background-size:200% 100%}
+.card .art.eliteArt.priest{background-position:0% 50%}
+.card .art.eliteArt.cavalry{background-position:100% 50%}
+/* 1:1 전장 초상은 원본 비율대로 확대하고 테두리 밖만 자른다. 찌그러짐 없음. */
+.portrait.eliteArt{background-size:350% auto}
+.portrait.eliteArt.priest{background-position:15% 23%}
+.portrait.eliteArt.cavalry{background-position:85% 23%}
 .portrait img,.card .art img{display:block;width:400%;height:200%;max-width:none;pointer-events:none}
 /* 망치병: 기존 4×4 원화를 정사각형 배경으로 잘라 이미지 비율 변형 방지 */
 .portrait.hammerArt,.card .art.hammerArt{background-size:400% 400%;background-position:66.6667% 66.6667%;background-repeat:no-repeat}
@@ -967,6 +976,7 @@ function gameArtStyle(id){
   return 'background-position:'+(p[0]*100)+'% '+(p[1]*100)+'%;'
 }
 function portraitHtml(id,d){
+  if(id==='PRIEST'||id==='CAVALRY')return '<span class="portrait eliteArt '+(id==='PRIEST'?'priest':'cavalry')+'" role="img" aria-label="'+d.name+'"></span>';
   if(id==='URSUS')return '<span class="portrait warArt ursusArt" role="img" aria-label="'+d.name+'" style="background-position:0% 50%"></span>';
   if(id==='BEAR'||id==='MOUNTED_ORC')return '<span class="portrait warArt" role="img" aria-label="'+d.name+'" style="background-position:'+(id==='BEAR'?'0%':'100%')+' 50%"></span>';
   if(GAME_ART_POS[id])return '<span class="portrait gameArt" role="img" aria-label="'+d.name+'" style="'+gameArtStyle(id)+'"></span>';
@@ -979,6 +989,7 @@ function portraitHtml(id,d){
     : '<span class="portrait" style="display:flex;align-items:center;justify-content:center;font-size:24px">'+d.icon+'</span>'
 }
 function artHtml(id,d){
+  if(id==='PRIEST'||id==='CAVALRY')return '<div class="art eliteArt '+(id==='PRIEST'?'priest':'cavalry')+'" role="img" aria-label="'+d.name+'"></div>';
   if(id==='URSUS')return '<div class="art warArt ursusArt" role="img" aria-label="'+d.name+'" style="background-position:0% 50%"></div>';
   if(id==='BEAR'||id==='MOUNTED_ORC')return '<div class="art warArt" role="img" aria-label="'+d.name+'" style="background-position:'+(id==='BEAR'?'0%':'100%')+' 50%"></div>';
   if(GAME_ART_POS[id])return '<div class="art gameArt" role="img" aria-label="'+d.name+'" style="'+gameArtStyle(id)+'"></div>';
