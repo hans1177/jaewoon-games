@@ -148,9 +148,26 @@ jobs:
             if [ ! -e "$f" ]; then echo "SKIP_MISSING $f"; continue; fi
             if git ls-files --error-unmatch "$f" >/dev/null 2>&1 && git diff --quiet -- "$f"; then echo "SKIP_UNCHANGED $f"; continue; fi
             sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=main" --jq .sha 2>/dev/null || true)"
-            args=(-X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" -f message='Mare Scientia: Roblox 등록 자산 ID 갱신' -f content="$(base64 -w0 "$f")" -f branch=main)
-            if [ -n "$sha" ]; then args+=(-f sha="$sha"); fi
-            gh api "${args[@]}" --silent
+            # 대용량 이미지의 base64를 명령행 인자로 넘기면 ARG_MAX를 초과한다.
+            # 기존 GitHub Contents API로 전송하되 JSON 본문을 임시 파일로 전달한다.
+            payload="$(mktemp)"
+            python3 - "$f" "$sha" "$payload" <<'PYJSON'
+          import base64
+          import json
+          import pathlib
+          import sys
+          source, current_sha, output = sys.argv[1:]
+          body = {
+              "message": "Mare Scientia: Roblox 등록 자산 ID 갱신",
+              "content": base64.b64encode(pathlib.Path(source).read_bytes()).decode("ascii"),
+              "branch": "main",
+          }
+          if current_sha:
+              body["sha"] = current_sha
+          pathlib.Path(output).write_text(json.dumps(body), encoding="utf-8")
+          PYJSON
+            gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" --input "$payload" --silent
+            rm -f "$payload"
             echo "COMMITTED $f"
           done
 
