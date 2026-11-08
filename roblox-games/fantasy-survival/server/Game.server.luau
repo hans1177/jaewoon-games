@@ -5363,7 +5363,7 @@ local function spawnEnemy(site, siteIndex)
         -- 로우폴리 토이 톤: 어두운 털은 살짝 밝혀서 얼룩져 보이지 않게 한다.
         -- [털색 다양화] 일반 늑대는 개체마다 회갈색·먹색·백색·적갈색·은회색 중 하나의 털색을 가진다.
         local peltHash=((math.sin(location.X*7.31+location.Z*3.17)*43758.5453)%1)
-        local pelts={Color3.fromRGB(92,74,60),Color3.fromRGB(58,56,60),Color3.fromRGB(205,205,200),Color3.fromRGB(128,84,52),Color3.fromRGB(118,120,126)}
+        local pelts={Color3.fromRGB(92,74,60),Color3.fromRGB(62,56,54),Color3.fromRGB(150,118,82),Color3.fromRGB(128,84,52),Color3.fromRGB(104,92,82)}
         local base=(partId=="wolf" and not isAlpha and not site.model) and pelts[1+math.floor(peltHash*#pelts)] or bodyTint
         local tone=partId=="wolf" and not isAlpha and base:Lerp(Color3.fromRGB(190,180,168),.22) or bodyTint
         if partId=="wolf" and not isAlpha then
@@ -6375,9 +6375,14 @@ local function animateMeadowOriginalMob(enemy,now)
   if wolfLike and inMotion and enemy.stridePhase then
     statusYaw+=math.sin(enemy.stridePhase*.5)*.06*math.clamp((enemy.strideSpeed or 0)/6,0,1)
   end
+  if wolfLike and not inMotion and not attacking and not stunned and recoil<.02 then
+    -- [대기] 가만히 서 있어도 몸을 천천히 돌려 주변을 살피고 체중을 옮긴다.
+    statusYaw+=math.sin(now*.37+enemy.spawnPosition.X*.05)*.28+math.sin(now*.9+enemy.spawnPosition.Z*.04)*.06
+    bank+=math.sin(now*.6+enemy.spawnPosition.X*.03)*.025
+  end
   if frozen then bank=0;statusYaw=0 end
   -- [먼지] 달리는 늑대·멧돼지·골렘의 발밑에서 먼지가 일어난다.
-  if wolfLike or kind=="boar" or kind=="golem" or mclass=="heavy" or mclass=="biped" or mclass=="lumber" then
+  if kind=="golem" or mclass=="heavy" or mclass=="biped" or mclass=="lumber" then
     if not enemy.dust then
       local anchor=enemy.model.PrimaryPart or enemy.model:FindFirstChildWhichIsA("BasePart",true)
       if anchor then
@@ -7072,6 +7077,12 @@ local function updateEnemyAI(dt,now)
             direction=(direction+tangent*math.sin(now*1.8+enemy.spawnPosition.X)*.42).Unit
           end
           -- [마을 진입 제한] 추적·밀집 분리 중에도 늑대는 마을 안전 경계를 넘지 않는다.
+          -- [무리 포위] 늑대류는 가까워지면 곧장 달려들지 않고 플레이어 둘레를 돌며 각자 다른 방향으로 포위한다.
+          if enemy.kind=="wolf" and (enemy.variant==nil or enemy.variant=="wolf" or enemy.variant=="husky" or enemy.variant=="keltir" or enemy.variant=="fox")
+            and not enemy.isAlpha and distance<15 and distance>attackRange+1.2 then
+            local tangent=Vector3.new(-direction.Z,0,direction.X)*(((enemy.siteIndex or 1)%2==0) and 1 or -1)
+            direction=(direction+tangent*.85).Unit
+          end
           local nextPosition=enemy.position+direction*step
           if enemy.kind~="wolf" or not meadowVillageContains(nextPosition) then
             enemy.position=nextPosition

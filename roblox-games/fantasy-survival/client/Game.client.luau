@@ -10817,9 +10817,31 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             if row.available.Head then row.poses.Head=CFrame.Angles(-.11+math.sin(cycle*.7)*.025,look*.06,0) end
             if row.available.Tail then row.poses.Tail=CFrame.Angles(0,look*.10,0) end
           elseif row.species=="wolf" then
-            local scent=math.sin(cycle*.8)
-            if row.available.Neck then row.poses.Neck=CFrame.Angles(.045+scent*.08,0,0) end
-            if row.available.Head then row.poses.Head=CFrame.Angles(-.04+scent*.10,math.sin(cycle*.4)*.11,0) end
+            -- [늑대 대기] 숨쉬기만으로는 석상처럼 보인다. 머리를 크게 돌려 살피고, 코를 땅에 대고 킁킁대며, 체중을 옮기고 꼬리를 흔든다.
+            row.howlSeed=row.howlSeed or math.random()*25
+            local t=os.clock()+row.howlSeed
+            local scan=math.sin(t*.55)
+            local sniff=math.max(0,math.sin(t*.31))^2
+            if row.available.Chest then row.poses.Chest=CFrame.Angles(math.sin(cycle)*.05,0,math.sin(t*.45)*.04) end
+            if row.available.Spine then row.poses.Spine=CFrame.Angles(math.sin(cycle)*.03,math.sin(t*.45)*.05,0) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(.05+sniff*.42+math.sin(t*3.1)*.03*sniff,scan*.30,scan*.06) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(-.03+sniff*.22+math.sin(t*5.3)*.04*sniff,scan*.34,-scan*.08) end
+            if row.available.Tail then row.poses.Tail=CFrame.Angles(math.sin(t*1.3)*.05,math.sin(t*2.4)*.30,0) end
+            local shift=math.sin(t*.4)
+            for _,key in ipairs({"FL","FR","BL","BR"}) do
+              if row.available[key.."Hip"] then
+                local side=(key=="FL" or key=="BL") and 1 or -1
+                row.poses[key.."Hip"]=CFrame.Angles(side*shift*.06+(key:sub(1,1)=="F" and -.03 or .02),0,0)
+              end
+            end
+            -- 가끔 온몸을 털어낸다(약 9초에 한 번, 0.8초).
+            local shakeT=(t+3)%9
+            if shakeT<.8 then
+              local k=math.sin(shakeT/.8*math.pi)
+              if row.available.Chest then row.poses.Chest=CFrame.Angles(0,math.sin(shakeT*40)*.12*k,math.sin(shakeT*34)*.07*k) end
+              if row.available.Spine then row.poses.Spine=CFrame.Angles(0,math.sin(shakeT*40+1)*.14*k,0) end
+              if row.available.Head then row.poses.Head=CFrame.Angles(0,math.sin(shakeT*44)*.20*k,math.sin(shakeT*38)*.10*k) end
+            end
             -- [하울링] 가끔 고개를 번쩍 들고 주둥이를 벌려 길게 운다(약 25초마다 3초).
             row.howlSeed=row.howlSeed or math.random()*25
             local howlT=(os.clock()+row.howlSeed)%25
