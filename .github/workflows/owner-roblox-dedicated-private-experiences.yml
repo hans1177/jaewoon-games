@@ -483,6 +483,13 @@ jobs:
             }
             const unique=[...new Map(rows.map(x=>[JSON.stringify(x),x])).values()];
             if(unique.length===1)creator=unique[0];
+            // [계정] 사용자 범위가 와일드카드인 키는 공식 introspection 소유자를 사용한다.
+            if(!creator&&unique.length===0&&scope.enabled===true&&scope.expired!==true
+              &&/^[1-9][0-9]*$/.test(String(scope.authorizedUserId||''))
+              &&(scope.scopes||[]).some(entry=>/asset/i.test(entry.name||'')
+                &&(entry.operations||[]).some(op=>/write|create/i.test(op))
+                &&(entry.userIds||[]).includes('*')))
+              creator={userId:String(scope.authorizedUserId)};
           }
           if(!creator)throw Error('FOREST_INTRO_CREATOR_UNVERIFIED');
           // [인증] 다른 계정 쿠키는 사용하지 않고 Cloud 키 권한이 없으면 중단한다.

@@ -13,19 +13,23 @@ const receipt=process.argv[3]||'/tmp/baeksu-art-upload.json';
 const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
 if(!key)throw new Error('OPEN_CLOUD_KEY_REQUIRED');
 // [인증] 이전 계정의 세션 대신 현재 Cloud 키의 소유자와 권한만 검증한다.
-let creator=String(process.env.ROBLOX_CREATOR_USER_ID||'').trim();
-if(!creator){
- const scope=await introspectRobloxApiKey({apiKey:key});
- if(scope.enabled!==true||scope.expired===true)throw Error('MODEL_CREATOR_AUTHORIZATION_UNVERIFIED');
- const writable=scope.scopes.filter(entry=>/asset/i.test(entry.name||'')
-  &&entry.operations.some(x=>/write|create/i.test(x)));
- const ids=new Set();
- for(const entry of writable)for(const id of entry.userIds)if(/^[1-9][0-9]*$/.test(id))ids.add(id);
- if(ids.size===1)creator=[...ids][0];
- const authorized=String(scope.authorizedUserId||'');
- if(!creator&&/^[1-9][0-9]*$/.test(authorized)
-  &&writable.some(entry=>entry.userIds.includes('*')||entry.userIds.includes(authorized)))creator=authorized;
-}
+// [계정] 제작자 ID는 API 키에서 검증하고, 다른 계정의 기존 비밀설정은 사용하지 않는다.
+const scope=await introspectRobloxApiKey({apiKey:key});
+if(scope.enabled!==true||scope.expired===true)throw Error('MODEL_CREATOR_AUTHORIZATION_UNVERIFIED');
+const writable=scope.scopes.filter(entry=>/asset/i.test(entry.name||'')
+ &&entry.operations.some(x=>/write|create/i.test(x)));
+if(!writable.length)throw Error('MODEL_CREATOR_ASSET_WRITE_SCOPE_REQUIRED');
+const userIds=new Set();
+for(const entry of writable)for(const id of entry.userIds)
+ if(/^[1-9][0-9]*$/.test(id))userIds.add(id);
+const authorized=String(scope.authorizedUserId||'');
+let creator=userIds.size===1?[...userIds][0]:null;
+if(!creator&&/^[1-9][0-9]*$/.test(authorized)
+ &&writable.some(entry=>entry.userIds.includes('*')||entry.userIds.includes(authorized)))
+ creator=authorized;
+const configured=String(process.env.ROBLOX_CREATOR_USER_ID||'').trim();
+if(configured&&(!/^[1-9][0-9]*$/.test(configured)||!creator||configured!==creator))
+ throw Error('MODEL_CREATOR_API_KEY_OWNER_MISMATCH');
 if(!/^[1-9][0-9]*$/.test(creator))throw Error('MODEL_CREATOR_UNKNOWN_FAIL_CLOSED');
 async function req(url,opts={}){
  const r=await fetch(url,{

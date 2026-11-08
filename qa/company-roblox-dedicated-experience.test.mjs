@@ -12,6 +12,16 @@ import {
   publishRobloxDedicatedPlace,
 } from '../tools/company-roblox-dedicated-experience.mjs';
 
+test('forest model registration fails closed when cached creator does not match the API key owner',()=>{
+  const uploader=fs.readFileSync(new URL('../tools/baeksu-war-upload-meshes.mjs',import.meta.url),'utf8');
+  const workflow=fs.readFileSync(new URL('../.github/workflows/owner-roblox-dedicated-private-experiences.yml',import.meta.url),'utf8');
+  assert.match(uploader,/const scope=await introspectRobloxApiKey\(\{apiKey:key\}\)/);
+  assert.match(uploader,/MODEL_CREATOR_API_KEY_OWNER_MISMATCH/);
+  assert.match(uploader,/MODEL_CREATOR_ASSET_WRITE_SCOPE_REQUIRED/);
+  assert.doesNotMatch(uploader,/const cookie=/);
+  assert.match(workflow,/creator=\{userId:String\(scope\.authorizedUserId\)\}/);
+});
+
 test('Forest dedicated publishing and CC0 registration never reuse a different account cookie',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/owner-roblox-dedicated-private-experiences.yml',import.meta.url),'utf8');
   const uploader=fs.readFileSync(new URL('../tools/baeksu-war-upload-meshes.mjs',import.meta.url),'utf8');
