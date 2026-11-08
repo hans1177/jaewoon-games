@@ -2242,7 +2242,13 @@ local function renderHarbor()
 				end
 				local row = mkRow(content, string.format("[%s] %s%s", c.role, c.name, if c.joined then "  ✔" else ""), sub, btns, 84)
 				local model = COMPANION_MODEL[c.id]
-				if model then withIcon(row, "People", model, nil, 56) end
+				local scholarId = string.match(c.id, "^c_(.+)$")
+				-- 실존 학자는 검증되어 등록된 당대 초상화가 있으면 모델보다 우선한다.
+				if scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+					withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 56)
+				elseif model then
+					withIcon(row, "People", model, nil, 56)
+				end
 				return row
 			end)
 		end
@@ -2374,7 +2380,12 @@ local function renderStatus()
 			end
 			local row = mkRow(content, c.name .. (if c.joined then "  ✔" else ""), sub, btns, 76)
 			local model = COMPANION_MODEL[c.id]
-			if model then withIcon(row, "People", model, nil, 52) end
+			local scholarId = string.match(c.id, "^c_(.+)$")
+			if scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 52)
+			elseif model then
+				withIcon(row, "People", model, nil, 52)
+			end
 			return row
 		end)
 	end
