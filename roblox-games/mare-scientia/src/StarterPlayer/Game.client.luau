@@ -3514,6 +3514,25 @@ local function renderNewGame()
 				newGameMode = true
 				render()
 			end
+			-- 시작 직후 프롤로그: 주인공이 왜 항해를 떠나는지 보여 준다
+			if result and result.ok then
+				local N = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Narrative"))
+				local pro = N.Prologues[chosenNation] or N.Prologue
+				local lines = {}
+				for sentence in string.gmatch(pro.text, "[^%.]+%.?") do
+					local t = string.gsub(sentence, "^%s+", "")
+					if t ~= "" then
+						table.insert(lines, t)
+					end
+				end
+				task.spawn(function()
+					playStory({
+						title = pro.title, art = "harbor", lines = lines,
+						choices = { { index = 1, text = "항해를 시작한다" } },
+						submit = function() return { ok = true, message = "닻을 올려라! 이야기는 이제 시작이다." } end,
+					})
+				end)
+			end
 		end, true)
 		b.TextSize = 20
 		b.TextColor3 = Color3.fromRGB(20, 14, 6)
