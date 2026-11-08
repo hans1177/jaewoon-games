@@ -12277,7 +12277,9 @@ end
 
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
 -- 도달/재료 판정은 2초마다, 처치 판정은 몬스터 처치 시점에 확인한다. 거울 정원은 메인 줄 완료(HiddenOpen)로 열린다.
+-- [루아우 레지스터] 퀘스트 등록·보상 처리를 독립 동기 초기화 함수로 유지한다.
 do
+  local function initializeQuestLines()
   local lines=Config.QuestLines
   local gardenCenter=Vector3.new(-3500,0,0)
   local fortGate=Vector3.new(-1800,3,-800) -- 이정표 24 옆 숨겨진 문
@@ -12478,6 +12480,8 @@ do
   end
   table.insert(meadowEncounterSites,{id="wolf",atom="HEAD_CANINE",model="chieftain",name="거울의 단장 · 렌스의 잔영",tier=10,height=11,hp=7,dmg=2.8,
     alpha=true,bonusBoss=true,zoneTag="garden",lord=true,drops={{"Crystal",1,6},{"Magma",1,4},{"Claw",1,4}},position=Vector3.new(gardenCenter.X,3,-120)})
+  end
+  initializeQuestLines()
 end
 
 -- [지역 랜드마크] 멀리서도 보이는 거대 석상·첨탑·분화구·빛기둥. 모델은 등록된 mon_* 메시만 거대하게 쓰고, 지형은 Terrain으로 만든다.
@@ -12847,7 +12851,9 @@ end)
 -- 이야기: 영주를 쓰러뜨려 요새를 정복하면 악명이 오르고, 영주 가문이 용병 사냥꾼을 풀며 반격군을 보낸다.
 -- 모든 판정은 서버가 한다. 클라이언트는 'odyssey:kick:0', 'odyssey:rush:0' 요청만 보낸다.
 -- ============================================================================
+-- [루아우 레지스터] 정복·악명·고유 기술 등록을 독립 동기 초기화 함수로 유지한다.
 do
+  local function initializeOdyssey()
   local W=Config.WorldMap
   local zoneTier={windcliff=3,meadow=2,worldtree=4,volcano=6,oasis=7,swamp=7,citadel=10,highland=5,canyon=7,chaos=9,wetland=4,desert=7,deadmarsh=9}
   local function toast(player,text)
@@ -13157,4 +13163,6 @@ do
     raids[player]=nil;hunters[player]=nil;warNext[player]=nil;incomeAt[player]=nil
     cooldown.kick[player]=nil;cooldown.rush[player]=nil
   end)
+  end
+  initializeOdyssey()
 end
