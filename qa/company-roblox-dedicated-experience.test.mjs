@@ -12,6 +12,18 @@ import {
   publishRobloxDedicatedPlace,
 } from '../tools/company-roblox-dedicated-experience.mjs';
 
+test('Forest dedicated publishing and CC0 registration never reuse a different account cookie',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/owner-roblox-dedicated-private-experiences.yml',import.meta.url),'utf8');
+  const uploader=fs.readFileSync(new URL('../tools/baeksu-war-upload-meshes.mjs',import.meta.url),'utf8');
+  for(const text of [workflow,uploader]){
+    assert.doesNotMatch(text,/ROBLOX_ROBLOSECURITY|ROBLOX_SECURITY_COOKIE|OWNER_COOKIE_CSRF/);
+  }
+  assert.match(workflow,/FOREST_INTRO_AUTH_ROUTE=OPEN_CLOUD/);
+  assert.match(workflow,/ROBLOX_CC0_GRANT_OPEN_CLOUD_API_KEY_REQUIRED/);
+  assert.match(uploader,/headers:\{\.\.\.\(opts\.headers\|\|\{\}\),'x-api-key':key\}/);
+});
+
+
 test('csrfFetch retries once with x-csrf-token', async()=>{
   const calls=[];
   const fetchImpl=async(url,init)=>{

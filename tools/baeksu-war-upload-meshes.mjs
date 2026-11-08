@@ -12,26 +12,8 @@ const dir=process.argv[2]||'/tmp/baeksu-art';
 const receipt=process.argv[3]||'/tmp/baeksu-art-upload.json';
 const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
 if(!key)throw new Error('OPEN_CLOUD_KEY_REQUIRED');
-const raw=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
-const cookie=raw?(raw.includes('.ROBLOSECURITY=')?raw:'.ROBLOSECURITY='+raw+';'):'';
+// [인증] 이전 계정의 세션 대신 현재 Cloud 키의 소유자와 권한만 검증한다.
 let creator=String(process.env.ROBLOX_CREATOR_USER_ID||'').trim();
-if(!creator&&cookie&&/^[1-9][0-9]*$/.test(targetUniverse)){
- const r=await fetch('https://develop.roblox.com/v1/universes/'+targetUniverse,{
-   headers:{cookie},signal:AbortSignal.timeout(16000)});
- const data=await r.json().catch(()=>({}));
- if(r.ok&&String(data.id)===targetUniverse&&data.creatorType==='User')creator=String(data.creatorTargetId||'');
-}
-// Existing Vibe asset registration resolves the real authenticated owner, never a guessed ID.
-if(!creator&&cookie){
- const response=await fetch('https://users.roblox.com/v1/users/authenticated',{
-  headers:{cookie},signal:AbortSignal.timeout(16000)
- }).catch(()=>null);
- if(response?.ok){
-  const account=await response.json().catch(()=>({}));
-  const authenticated=String(account.id||'');
-  if(/^[1-9][0-9]*$/.test(authenticated))creator=authenticated;
- }
-}
 if(!creator){
  const scope=await introspectRobloxApiKey({apiKey:key});
  if(scope.enabled!==true||scope.expired===true)throw Error('MODEL_CREATOR_AUTHORIZATION_UNVERIFIED');
@@ -45,18 +27,12 @@ if(!creator){
   &&writable.some(entry=>entry.userIds.includes('*')||entry.userIds.includes(authorized)))creator=authorized;
 }
 if(!/^[1-9][0-9]*$/.test(creator))throw Error('MODEL_CREATOR_UNKNOWN_FAIL_CLOSED');
-let csrf='';
 async function req(url,opts={}){
- const auth=Boolean(cookie)&&url.startsWith('https://apis.roblox.com/');
- if(auth&&url.includes('/assets/v1/'))url=url.replace('/assets/v1/','/assets/user-auth/v1/');
- const headers={...(opts.headers||{}),...(auth?{cookie}:{"x-api-key":key})};
- if(auth&&csrf)headers['x-csrf-token']=csrf;
- const request=(h)=>fetch(url,{...opts,headers:h,signal:AbortSignal.timeout(60000)});
- let r=await request(headers);
- if(auth&&r.status===403&&r.headers.get('x-csrf-token')){
-  csrf=r.headers.get('x-csrf-token');
-  r=await request({...headers,'x-csrf-token':csrf});
- }
+ const r=await fetch(url,{
+  ...opts,
+  headers:{...(opts.headers||{}),'x-api-key':key},
+  signal:AbortSignal.timeout(60000),
+ });
  const data=await r.json().catch(()=>({}));
  if(!r.ok)throw Error('ROBLOX_ASSET_API_'+r.status+':'+JSON.stringify(data).slice(0,650));
  return data;
