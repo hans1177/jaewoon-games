@@ -437,6 +437,12 @@ function loadProgress(){
       saved.winner='';saved.phase='REST';saved.current='BLUE';
       localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))
     }
+    // 과거 7스테이지 클리어 기록에도 신규 열쇠 보상을 한 번만 지급한다.
+    if((saved.stage>7||(saved.stage===7&&saved.phase==='REST'))&&!saved.stageSevenRewarded){
+      saved.keys+=3;
+      saved.stageSevenRewarded=true;
+      localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))
+    }
     saved.diamonds=diamondWallet();
     if(resizedStageSix)localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved));
     return saved
@@ -595,6 +601,14 @@ function clearStageFive(){
   // 5스테이지는 열쇠 지급 없이 30다이아만 지급한다.
   enterRest('5스테이지 클리어 · 다이아 30개 획득 · 열쇠 추가 없음')
 }
+function clearStageSeven(){
+  // 보스 처치 후 승리 판정이 반복되어도 열쇠 3개는 한 번만 지급한다.
+  if(!state.stageSevenRewarded){
+    state.keys+=3;
+    state.stageSevenRewarded=true
+  }
+  enterRest('7스테이지 클리어 · 열쇠 3개 획득! 강화 뽑기 개방 · 기마병/성직자 · 8스테이지 준비')
+}
 function checkWin(){
   if(!state||state.phase!=='BATTLE'||state.winner)return;
   if(exhausted('BLUE')){state.winner='RED';return}
@@ -605,7 +619,7 @@ function checkWin(){
     if(state.stage===4){clearStageFour();return}
     if(state.stage===5){clearStageFive();return}
     if(state.stage===6){enterRest('6스테이지 클리어 · 7스테이지 준비');return}
-    if(state.stage===7){enterRest('7스테이지 클리어 · 강화 뽑기 개방! 기마병 뽑기 가능 · 8스테이지 준비');return}
+    if(state.stage===7){clearStageSeven();return}
     state.winner='BLUE'
   }
 }
@@ -1016,9 +1030,11 @@ function render(){
   if(state?.phase==='BATTLE'&&state.winner==='BLUE'){
     if(state.stage===5){state.winner='';clearStageFive()}
     else if(state.stage===6){state.winner='';enterRest('6스테이지 클리어 · 7스테이지 준비')}
-    else if(state.stage===7){state.winner='';enterRest('7스테이지 클리어 · 강화 뽑기 개방! 기마병 뽑기 가능')}
+    else if(state.stage===7){state.winner='';clearStageSeven()}
   }
   renderWallet();
+  // 휴식 화면으로 전환되어도 보스 음악 종료가 반드시 실행되게 한다.
+  syncBossMusic();
   board.innerHTML='';
   const rows=boardRows(),cols=boardCols();
   board.classList.toggle('wide',state?.stage===5);
@@ -1151,8 +1167,7 @@ function render(){
   deckInfo.textContent='골드 '+state.gold.BLUE+' · 내 소환 '+state.summons[side]+'/무제한 · 상대 소환 '+state.summons[other(side)]+'/'+maxSummons(other(side));
   modeInfo.textContent=mode==='play'?'플레이':'대기';
 
-  if(state.winner)msg(state.winner===side?state.stage+'스테이지 클리어!':state.stage+'스테이지 패배 · 재도전을 눌러 같은 스테이지에서 다시 시작해.');
-  syncBossMusic()
+  if(state.winner)msg(state.winner===side?state.stage+'스테이지 클리어!':state.stage+'스테이지 패배 · 재도전을 눌러 같은 스테이지에서 다시 시작해.')
 }
 function cellTap(r,c,u){
   if(!canAct())return msg('지금은 상대 턴이야.');
@@ -1247,7 +1262,7 @@ function aiTurn(){
 // 영상 플레이어는 유튜브 정책에 맞게 표시하고 원본 재생 컨트롤을 유지한다.
 const BOSS_REMIX_VIDEO='2BbinQxbyI8';
 const bossPlayer=$('#bossMusicPlayer');
-let bossMusicRequested=false;
+let bossMusicRequested=false, bossMusicFadeTimer=null;
 function playBossMusic(){
   if(!state||state.stage!==7||state.phase!=='BATTLE'||state.winner
     ||!state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0))return;
@@ -1269,16 +1284,42 @@ function syncBossMusic(){
     &&state.units.some(u=>u.side==='RED'&&u.card==='URSUS'&&u.hp>0));
   $('#bossMusicPanel').classList.toggle('hidden',!active);
   if(active){
+    if(bossMusicFadeTimer!==null){
+      clearInterval(bossMusicFadeTimer);
+      bossMusicFadeTimer=null;
+      const frame=bossPlayer.querySelector('iframe');
+      frame?.contentWindow?.postMessage(JSON.stringify({event:'command',func:'setVolume',args:[100]}),
+        'https://www.youtube-nocookie.com')
+    }
     if(!bossMusicRequested){
       bossMusicRequested=true;
       playBossMusic()
     }
-  }else{
-    if(bossMusicRequested){
-      bossMusicRequested=false;
-      // 보스가 죽거나 전투가 끝나면 영상 자체를 내려 소리가 남지 않는다.
-      bossPlayer.replaceChildren()
-    }
+  }else if(bossMusicRequested){
+    bossMusicRequested=false;
+    const frame=bossPlayer.querySelector('iframe');
+    if(!frame)return;
+    // 보스 처치·승리 시 유튜브 영상의 볼륨을 약 2초간 낮춘 뒤 종료한다.
+    // 음량 제어가 제한된 모바일에서도 마지막에는 프레임을 확실히 정리한다.
+    if(bossMusicFadeTimer!==null)clearInterval(bossMusicFadeTimer);
+    let volume=100;
+    bossMusicFadeTimer=setInterval(()=>{
+      if(!bossPlayer.contains(frame)){
+        clearInterval(bossMusicFadeTimer);
+        bossMusicFadeTimer=null;
+        return
+      }
+      volume=Math.max(0,volume-5);
+      frame.contentWindow?.postMessage(JSON.stringify({event:'command',func:'setVolume',args:[volume]}),
+        'https://www.youtube-nocookie.com');
+      if(volume===0){
+        clearInterval(bossMusicFadeTimer);
+        bossMusicFadeTimer=null;
+        frame.contentWindow?.postMessage(JSON.stringify({event:'command',func:'pauseVideo',args:[]}),
+          'https://www.youtube-nocookie.com');
+        frame.remove()
+      }
+    },100)
   }
 }
 $('#bossMusicToggle').onclick=()=>{
