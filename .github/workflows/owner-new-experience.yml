@@ -21,6 +21,11 @@ on:
         required: false
         type: string
         default: ''
+      use_cookie:
+        description: '(선택) true면 기존 체험 지정 시에도 쿠키로 체험 설정(R15) 적용'
+        required: false
+        type: string
+        default: ''
       probe:
         description: '(진단) true면 빈 place·전체 place를 각각 게시해 409 원인만 확인'
         required: false
@@ -94,8 +99,8 @@ jobs:
           REUSE_PLACE_ID: ${{ inputs.place_id }}
           # 배포 전용 키(ROBLOX_DEPLOY_API_KEY)가 있으면 우선 사용. 기존 체험 지정 시 쿠키는 넘기지 않는다.
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ inputs.universe_id == '' && secrets.ROBLOX_ROBLOSECURITY || '' }}
-          ROBLOX_SECURITY_COOKIE: ${{ inputs.universe_id == '' && secrets.ROBLOX_SECURITY_COOKIE || '' }}
+          ROBLOX_ROBLOSECURITY: ${{ (inputs.universe_id == '' || inputs.use_cookie == 'true') && secrets.ROBLOX_ROBLOSECURITY || '' }}
+          ROBLOX_SECURITY_COOKIE: ${{ (inputs.universe_id == '' || inputs.use_cookie == 'true') && secrets.ROBLOX_SECURITY_COOKIE || '' }}
         run: |
           set -euo pipefail
           args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/new-exp/$GAME_ID.rbxl" --source-revision "$(git rev-parse HEAD)" --output "/tmp/new-exp/result.json")
@@ -107,6 +112,7 @@ jobs:
             [[ "$REUSE_PLACE_ID" =~ ^[0-9]+$ ]] || { echo 'PLACE_ID_INVALID'; exit 1; }
             echo "REUSE_TARGET=${REUSE_UNIVERSE_ID}/${REUSE_PLACE_ID} (R15는 체험 생성 시 Creator Hub에서 설정)"
             args+=(--reuse-universe-id "$REUSE_UNIVERSE_ID" --reuse-place-id "$REUSE_PLACE_ID")
+            if [[ '${{ inputs.use_cookie }}' == 'true' && "$GAME_ID" == 'fantasy-survival' ]]; then args+=(--avatar-rig R15); fi
           elif [[ "$GAME_ID" == 'fantasy-survival' ]]; then
             args+=(--avatar-rig R15)
           fi
