@@ -94,6 +94,8 @@ try { registry = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')); } catch {}
 for (const [name, row] of Object.entries(registry.assets)) {
   if (blockedPaths.has(row.source) || blockedIds.has(String(row.assetId))) delete registry.assets[name];
 }
+let approvedImages = {};
+try { approvedImages = JSON.parse(await fs.readFile(ROOT + '/assets/APPROVED_IMAGES.json', 'utf8')).approved || {}; } catch {}
 const failures = [];
 const pendingPermissions = [];
 let accountBlocked = false;
@@ -104,6 +106,14 @@ for (const item of plan) {
     delete registry.assets[id];
     console.log('REMOVED_IMAGE_SOURCE_EXCLUDED', id);
     continue;
+  }
+  // [사람 검수 관문] 새 이미지는 사람이 직접 확인해 APPROVED_IMAGES.json에 (이름+해시)로 올린 것만 업로드한다.
+  if (item.assetType === 'Decal' && !registry.assets[id]?.assetId) {
+    const hash = crypto.createHash('sha256').update(originalBytes).digest('hex');
+    if (approvedImages[id] !== hash) {
+      console.log('SKIP_IMAGE_NOT_HUMAN_APPROVED', id);
+      continue;
+    }
   }
   if (registry.assets[id]?.assetId) {
     // 이미 발급된 ID는 다시 업로드하지 않고 실제 파일 형식/경로만 갱신한다.
