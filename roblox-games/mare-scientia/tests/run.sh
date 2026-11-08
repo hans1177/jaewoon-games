@@ -35,6 +35,14 @@ if [ "${1:-}" = "catalog" ]; then
   exit 0
 fi
 
+echo "== 린트(반복 실수 패턴) =="
+LINT="$ROOT/../../tools/devloop/lint_luau.py"
+bash "$ROOT/tests/lint_selftest.sh" "$LINT"
+python3 "$LINT" "$ROOT"
+if git -C "$ROOT" rev-parse --verify -q origin/main >/dev/null 2>&1; then
+  python3 "$LINT" "$ROOT" --diff origin/main || echo "경고: 변경분 린트 위반(기본 도형·디버그 출력 추가) — 검토 필요"
+fi
+
 echo "== 에셋 등록 검사 =="
 python3 "$ROOT/tools/devloop/asset_check.py" "$ROOT"
 

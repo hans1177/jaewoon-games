@@ -23,6 +23,10 @@ local miss = {}
 for k in State.missing do table.insert(miss, k) end
 table.sort(miss)
 for _, k in miss do fails += 1 print("등록되지 않은 에셋 요청: " .. k) end
+-- 회귀: 숲의 참나무·소나무·야자가 실제로 요청돼야 한다 (find 패턴 버그로 한때 조용히 빠졌다)
+for _, must in { "Terrain/tree-oak", "Terrain/tree-pinedefaulta", "Naval/palm-detailed-straight", "Town/house" } do
+	if not State.used[must] then fails += 1 print("회귀 실패: 요청되지 않음 " .. must) end
+end
 local used = 0 for _ in State.used do used += 1 end
 print(("스모크 빌드: 항구 %d곳 × 5단계 중 %d건 성공, 에셋 %d종 요청, 실패 %d"):format(#ports, built, used, fails))
 if fails > 0 then error("스모크 빌드 실패") end

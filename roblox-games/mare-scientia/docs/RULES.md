@@ -49,3 +49,10 @@
 - **원본 그대로 쓰지 않는다**: 4:3 자르기 · 채도 낮춤 · 자동 대비 · 따뜻한 색조 · 비네팅 · 금색 안쪽 테두리로 도감 풍으로 수정한다.
 - 한 번에 80장씩(`--limit`) 받아 `assets/cardart/<카드id>.jpg` → 업로드(`CardArt/<id>`) → `AssetIds` → `CardArt.luau` 가 자동으로 합쳐 도감 카드에 표시. 출처·라이선스는 `CardArtCredits.luau`(자동 생성)와 카드 상세의 "그림 출처"에 나온다.
 - 워크플로 `owner-mare-scientia-assets` 를 수동 실행(Run workflow)할 때마다 다음 80장이 진행된다. 진행 상황·실패 사유는 `assets/cardart/cardart-report.json`.
+
+## 코딩 능력 강화 도구
+- **린터** `tools/devloop/lint_luau.py` (`tests/run.sh` 에 포함, 자체 시험 `tests/lint_selftest.sh`): R1 하이픈 등 패턴 문자가 든 `find` 에 평문 옵션 누락, R4 같은 함수 중복 정의, `--diff origin/main` 이면 R2 기본 도형(Part 등) 추가·R3 디버그 print/TODO 추가. 예외는 줄 끝 `-- lint:ok`.
+- **회귀 방지**: 버그를 고치면 재현 검사를 하나 붙인다(예: 스모크 빌드가 참나무·소나무·야자·집 에셋이 실제로 요청되는지 확인).
+- **코드 지도** `tools/devloop/code_map.py` → `docs/CODE_MAP.md`: 파일별 줄 수·함수 줄 번호·의존성. 큰 파일(Game.client 4700줄)을 통째로 읽지 말고 지도로 위치부터 찾는다. 큰 변경 뒤에는 다시 생성한다.
+- **자동 되돌리기**: 배포 워크플로 `rollback_ref` 입력(수동). 배포 후 자동 판정은 아직 없음(게임 런타임 검증이 필요).
+- **미적용(위험 때문에 보류)**: `Game.client`·`PortScene` 대규모 분할 — 엔진 없이 실행 검증이 안 되는 상태에서 한꺼번에 옮기면 배포가 깨질 수 있어, 기능 단위로 하나씩 옮기며 스모크 빌드로 확인한다.
