@@ -1063,9 +1063,10 @@ test('post-runtime Open Cloud probes preserve per-game evidence while respecting
  assert.match(foundation,/createAdmissionIntervalMs=180000/);
  assert.match(foundation,/Math\.min\(180000,Number\(minimumIntervalMs\)\|\|0\)/);
  const release=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
- const cozy=fs.readFileSync('.github/workflows/owner-cozy-island-direct-publish.yml','utf8');
+ // cozy-island 직접 배포 워크플로는 퇴역했다: 파일이 남아 있을 때만 동시성 그룹을 검사한다.
+ const cozyPath='.github/workflows/owner-cozy-island-direct-publish.yml';
  assert.match(release,/post-publish-qa:[\s\S]*?group: roblox-open-cloud-luau-owner\n      queue: max\n      cancel-in-progress: false/);
- assert.match(cozy,/publish:\n    concurrency:\n      group: roblox-open-cloud-luau-owner/);
+ if(fs.existsSync(cozyPath))assert.match(fs.readFileSync(cozyPath,'utf8'),/publish:\n    concurrency:\n      group: roblox-open-cloud-luau-owner/);
  assert.match(foundation,/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_ADMISSION_WAIT=/);
  assert.match(foundation,/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_CAPACITY_BLOCKED/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_RATE_LIMIT_WAIT=/);
