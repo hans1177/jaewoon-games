@@ -690,3 +690,41 @@ test('existing game asset worker automatically receives family optimize-apply-me
   assert.match(assetProductionGuidance(plan),/F0-F9 EXISTING ASSET FAMILY OPTIMIZATION EXECUTION/);
   assert.match(assetProductionGuidance(plan),/기기별 FPS\/메모리\/로딩 실측/);
 });
+
+test('Roblox Vibe ten capability upgrades remain scoped to existing owned source without fabricated asset or runtime PASS',()=>{
+  const files=[
+    'roblox-games/demo/server/World.server.luau',
+    'roblox-games/demo/server/Save.server.luau',
+    'roblox-games/demo/client/Hud.client.luau'
+  ];
+  const plan=buildRobloxProductionPlan({
+    gameId:'demo',platform:'ROBLOX',policy,
+    design:{identity:'승인된 게임',genre:'SURVIVAL',coreLoop:['기존 행동','다음 목표']},
+    responsibleFiles:files
+  });
+  assert.equal(plan.robloxCapabilityWork.length,10);
+  assert.equal(new Set(plan.robloxCapabilityWork.map(row=>row.id)).size,10);
+  assert.ok(plan.robloxCapabilityWork.every(row=>
+    row.actualSourceChanged===false&&row.runtimeVerified===false
+    &&row.existingF0F9Only===true&&row.newStage===false
+    &&row.sourceFiles.every(file=>files.includes(file))));
+  const world=plan.robloxCapabilityWork.find(row=>row.id==='CONNECTED_WORLD');
+  assert.deepEqual(world.sourceFiles,['roblox-games/demo/server/World.server.luau']);
+  const touch=plan.robloxCapabilityWork.find(row=>row.id==='MOBILE_TOUCH_PERFORMANCE');
+  assert.deepEqual(touch.sourceFiles,['roblox-games/demo/client/Hud.client.luau']);
+  const assets=plan.robloxCapabilityWork.find(row=>row.id==='REAL_ASSET_BINDING');
+  assert.ok(assets.evidenceRequired.includes('APPROVED_ORIGINAL_ASSET_HASH_LICENSE_AND_UNIVERSE_GRANT'));
+  const text=robloxProductionPromptLines(plan,{responsibleFiles:['client/Hud.client.luau']}).join('\n');
+  assert.match(text,/ROBLOX_PRODUCTION_CAPABILITY_WORK=/);
+  assert.match(text,/MOBILE_TOUCH_PERFORMANCE/);
+  assert.doesNotMatch(text,/CONNECTED_WORLD/);
+  assert.match(text,/primitive Parts or generated placeholder meshes/);
+  const repair=buildRobloxProductionPlan({
+    gameId:'demo',platform:'ROBLOX',policy,focus:'STABILITY',
+    responsibleFiles:['roblox-games/demo/server/Save.server.luau']
+  });
+  assert.equal(repair.robloxCapabilityWork.length,10);
+  assert.ok(repair.robloxCapabilityWork.every(row=>
+    row.mode==='REPAIR_EXISTING_ONLY'&&!row.runtimeVerified));
+  assert.match(robloxProductionPromptLines(repair).join('\n'),/REPAIR_EXISTING_ONLY forbids new gameplay/);
+});
