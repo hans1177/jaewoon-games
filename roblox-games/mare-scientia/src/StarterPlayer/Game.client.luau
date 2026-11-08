@@ -1968,7 +1968,15 @@ local function renderStatus()
 			if g.owned then
 				btn = { text = if g.equipped then "해제" else "장착", color = if g.equipped then COLORS.red else COLORS.green, onClick = function() call("ToggleGear", { gearId = g.id }) end }
 			else
-				btn = { text = tostring(g.price), color = COLORS.gold, enabled = view.player.fame >= g.minFame, onClick = function() call("BuyGear", { gearId = g.id }) end }
+				local okFame = view.player.fame >= g.minFame
+				btn = { text = tostring(g.price), color = if okFame then COLORS.gold else COLORS.grey, onClick = function()
+					if not okFame then
+						message, messageOk = string.format("명성이 부족해요 (필요 %d / 현재 %d). 퀘스트·이야기·발견으로 명성을 모으세요", g.minFame, view.player.fame), false
+						render()
+						return
+					end
+					call("BuyGear", { gearId = g.id })
+				end }
 			end
 			local grow = mkRow(content, g.name .. (if g.equipped then "  ✔" else ""), g.summary .. (if not g.owned then string.format(" · 명성 %d 필요", g.minFame) else ""), { btn }, 60)
 			local gi = ({
