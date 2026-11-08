@@ -11,10 +11,6 @@
 
 - NPC 체형·복장 3단계(승인된 복장 아이템(셔츠·바지·얼굴)): approved-npc-outfit-items · 등록 후보 8개: Interior/coatrackstanding, roblox-games/mare-scientia/assets/interior/coatrackstanding.glb, Interior/tablecloth, roblox-games/mare-scientia/assets/interior/tablecloth.glb, Interior/coatrack, roblox-games/mare-scientia/assets/interior/coatrack.glb, Interior/tablecrosscloth, roblox-games/mare-scientia/assets/interior/tablecrosscloth.glb (오너가 승인하면 바로 풀림)
 
-## 최근 화면 검사
-
-- 프레임 2장 중 깨진 화면 0장
-
 ## 최근 승급 기록
 
 - 2026-11-08 · 1회차 · NPC 체형·복장 → 2단계 개인별 체격·머리 크기 변주 (Studio 캡처 오류 없음, 화면 2장 정상)

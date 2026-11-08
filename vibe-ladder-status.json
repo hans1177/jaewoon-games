@@ -1,7 +1,7 @@
 {
  "games": {
   "fantasy-survival": {
-   "floor": 1,
+   "floor": 2,
    "categories": [
     {
      "id": "npc",
@@ -21,14 +21,16 @@
     {
      "id": "world",
      "label": "배경 분위기·빛·공기",
-     "tier": 4,
+     "tier": 5,
      "max": 6,
-     "name": "떠다니는 꽃가루·반딧불 입자",
+     "name": "지역별 대기 프로필 강화",
      "next": {
-      "tier": 5,
-      "name": "지역별 대기 프로필 강화",
-      "blocked": false,
-      "missing": []
+      "tier": 6,
+      "name": "승인된 풀·꽃·바위 메시 밀도 증가",
+      "blocked": true,
+      "missing": [
+       "approved-ground-cover-meshes"
+      ]
      }
     },
     {
@@ -65,6 +67,22 @@
      ]
     },
     {
+     "category": "world",
+     "tier": 6,
+     "tierName": "승인된 풀·꽃·바위 메시 밀도 증가",
+     "key": "approved-ground-cover-meshes",
+     "candidates": [
+      "mushroom",
+      "assets/roblox/actors/sources/quaternius-cute/FBX/Mushroom.fbx",
+      "villageStoneWall",
+      "assets/shared/party/pillar-stone.glb",
+      "rocks",
+      "Models/GLB format/rocks-low.glb",
+      "stones",
+      "Models/GLB format/stones.glb"
+     ]
+    },
+    {
      "category": "mobs",
      "tier": 5,
      "tierName": "승인된 몹 전용 이펙트 메시",
@@ -87,7 +105,7 @@
     "fpsMin": 31
    },
    "frames": {
-    "checked": 44,
+    "checked": 25,
     "bad": 0
    },
    "thumbs": [
@@ -99,9 +117,26 @@
       "docs/devloop/ladder/fantasy-survival/floor-001-world-t4/g11_idle-0.jpg",
       "docs/devloop/ladder/fantasy-survival/floor-001-world-t4/g16_runA-0.jpg"
      ]
+    },
+    {
+     "floor": "floor-002-world-t5",
+     "files": [
+      "docs/devloop/ladder/fantasy-survival/floor-002-world-t5/g01_idle-0.jpg",
+      "docs/devloop/ladder/fantasy-survival/floor-002-world-t5/g09_idle-0.jpg",
+      "docs/devloop/ladder/fantasy-survival/floor-002-world-t5/g14_idle-0.jpg",
+      "docs/devloop/ladder/fantasy-survival/floor-002-world-t5/g21_idle-0.jpg"
+     ]
     }
    ],
    "history": [
+    {
+     "floor": 2,
+     "category": "world",
+     "tier": 5,
+     "name": "지역별 대기 프로필 강화",
+     "why": "Studio 캡처 오류 없음, 화면 25장 정상",
+     "at": "2026-11-08"
+    },
     {
      "floor": 1,
      "category": "world",
