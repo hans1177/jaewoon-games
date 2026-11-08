@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g1-2753474b4312",
-  "directiveFingerprint": "2753474b431234bf5b8c91ee92c59b816e8fd1cd5b2afe7d967b3c76f2a73851",
+  "directiveId": "fantasy-survival-build-up-g1-1060fd03d702",
+  "directiveFingerprint": "1060fd03d7027eda80f4688552f32e451ee2b1123f3bd99aad791e68ee537922",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "fantasy-survival",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/fantasy-survival",
-  "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
+  "sourceTreeFingerprint": "b235d158a751c9aaa4670b09cd86b2ceb39a9686f6778eab59e77225d81b575d",
   "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
   "designSourceBuildUp": {
     "version": 1,
@@ -346,7 +346,7 @@
           "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
           "VFX_AUDIO_CAMERA_POLISH_MOBILE"
         ],
-        "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
+        "sourceTreeFingerprint": "b235d158a751c9aaa4670b09cd86b2ceb39a9686f6778eab59e77225d81b575d",
         "rule": "MAIN_A_NAMED_GAME_SYSTEM_B_EXISTING_GAME_SYSTEMS; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -367,7 +367,7 @@
     "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
-    "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
+    "sourceTreeFingerprint": "b235d158a751c9aaa4670b09cd86b2ceb39a9686f6778eab59e77225d81b575d",
     "multiplayerMode": "HYBRID",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -465,16 +465,15 @@
           ],
           "inspectedExecutableFiles": [
             "web-games/fantasy-survival/index.html",
-            "web-games/fantasy-survival/research-log-2.html",
-            "web-games/fantasy-survival/research-log-3.html"
+            "web-games/fantasy-survival/research-log-2.html"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
           "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/research-log-2.html",
-          "web-games/fantasy-survival/research-log-3.html"
+          "web-games/fantasy-survival/manage.html",
+          "web-games/fantasy-survival/research-log-2.html"
         ],
         "inspectedSymbols": [
           {
@@ -574,16 +573,15 @@
           ],
           "inspectedExecutableFiles": [
             "web-games/fantasy-survival/index.html",
-            "web-games/fantasy-survival/research-log-2.html",
-            "web-games/fantasy-survival/research-log-3.html"
+            "web-games/fantasy-survival/research-log-2.html"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
           "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/research-log-2.html",
-          "web-games/fantasy-survival/research-log-3.html"
+          "web-games/fantasy-survival/manage.html",
+          "web-games/fantasy-survival/research-log-2.html"
         ],
         "inspectedSymbols": [
           {
@@ -677,16 +675,15 @@
           ],
           "inspectedExecutableFiles": [
             "web-games/fantasy-survival/index.html",
-            "web-games/fantasy-survival/research-log-2.html",
-            "web-games/fantasy-survival/research-log-3.html"
+            "web-games/fantasy-survival/research-log-2.html"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
           "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/research-log-2.html",
-          "web-games/fantasy-survival/research-log-3.html"
+          "web-games/fantasy-survival/manage.html",
+          "web-games/fantasy-survival/research-log-2.html"
         ],
         "inspectedSymbols": [
           {
@@ -779,16 +776,15 @@
           ],
           "inspectedExecutableFiles": [
             "web-games/fantasy-survival/index.html",
-            "web-games/fantasy-survival/research-log-2.html",
-            "web-games/fantasy-survival/research-log-3.html"
+            "web-games/fantasy-survival/research-log-2.html"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
           "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/research-log-2.html",
-          "web-games/fantasy-survival/research-log-3.html"
+          "web-games/fantasy-survival/manage.html",
+          "web-games/fantasy-survival/research-log-2.html"
         ],
         "inspectedSymbols": [
           {
@@ -928,6 +924,7 @@
     "observedGameCodeFiles": [
       "web-games/fantasy-survival/index.html",
       "web-games/fantasy-survival/world3d.mjs",
+      "web-games/fantasy-survival/manage.html",
       "web-games/fantasy-survival/research-log-3.html",
       "web-games/fantasy-survival/research-log-2.html",
       "web-games/fantasy-survival/tier.html",
@@ -983,7 +980,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
+    "sourceTreeFingerprint": "b235d158a751c9aaa4670b09cd86b2ceb39a9686f6778eab59e77225d81b575d",
     "mode": "PRESERVATION_PRESENTATION_MILESTONES_ONLY",
     "authoredItemCount": 48,
     "authoredCounts": {
@@ -9990,43 +9987,43 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=29",
+      "CURRENT_SOURCE_FILES=30",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH"
     ],
     "signals": {
       "combat": 1982,
-      "progression": 1836,
-      "ai": 904,
-      "save": 585,
+      "progression": 1843,
+      "ai": 911,
+      "save": 595,
       "multiplayer": 294,
-      "animation": 47,
-      "motionStates": 2696,
+      "animation": 49,
+      "motionStates": 2730,
       "gameFeel": 106,
       "vfx": 173,
       "camera": 96,
       "audio": 504,
       "audioDynamics": 46,
-      "ui": 862,
-      "uiFlow": 384,
+      "ui": 911,
+      "uiFlow": 406,
       "entryFlow": 17,
       "loadingFlow": 2,
-      "input": 53,
-      "map": 2846,
+      "input": 54,
+      "map": 2864,
       "landmark": 517,
-      "interaction": 256,
-      "inventory": 271,
-      "equipment": 245,
+      "interaction": 264,
+      "inventory": 273,
+      "equipment": 247,
       "settings": 60,
-      "feedback": 67,
+      "feedback": 68,
       "session": 155,
-      "content": 2256,
-      "choice": 374,
+      "content": 2326,
+      "choice": 417,
       "connection": 11,
       "performance": 202,
       "lighting": 213,
       "primitive": 18,
       "todo": 0,
-      "errorRecovery": 135
+      "errorRecovery": 142
     },
     "topFiles": [
       {
@@ -10036,6 +10033,10 @@
       {
         "file": "web-games/fantasy-survival/world3d.mjs",
         "score": 444
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "score": 97
       },
       {
         "file": "web-games/fantasy-survival/research-log-3.html",
@@ -10071,10 +10072,6 @@
       },
       {
         "file": "web-games/fantasy-survival/icons/axe.png",
-        "score": 0
-      },
-      {
-        "file": "web-games/fantasy-survival/icons/bag.png",
         "score": 0
       }
     ],
@@ -10272,12 +10269,36 @@
         "score": 226
       },
       {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 22,
+        "kind": "FUNCTION",
+        "symbol": "seed",
+        "context": "function seed(){const source=\"roblox-games/fantasy-survival/shared/GameConfig.luau\";let items=REGION_NAMES.map((n,i)=>blankItem(\"지역\",n,\"\",i<13?\"설정상 Open\":\"설정상 Reserved\",source));",
+        "score": 130
+      },
+      {
         "file": "web-games/fantasy-survival/research-log-3.html",
         "line": 726,
         "kind": "FUNCTION",
         "symbol": "begin",
         "context": "function begin(){",
         "score": 122
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 21,
+        "kind": "FUNCTION",
+        "symbol": "blankItem",
+        "context": "function blankItem(kind,name,stats,description,source){return {id:id(),kind:kind,name:name||\"\",appearance:\"\",stats:stats||\"\",description:description||\"\",status:\"확인 필요\",source:sourc",
+        "score": 114
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 30,
+        "kind": "FUNCTION",
+        "symbol": "load",
+        "context": "function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return seed();const v=JSON.parse(raw);if(!Array.isArray(v.items)||!Array.isArray(v.bugs)||!Array.isArray(v.tasks)||!",
+        "score": 114
       },
       {
         "file": "web-games/fantasy-survival/research-log.html",
@@ -10296,6 +10317,62 @@
         "score": 106
       },
       {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 51,
+        "kind": "FUNCTION",
+        "symbol": "renderCompare",
+        "context": "function renderCompare(){const rows=data.items.filter(i=>i.kind===compareKind),select=(id,side)=>'<select class=\"wide\" id=\"'+side+'\"><option value=\"\">항목 선택</option>'+rows.map(i=>'<",
+        "score": 98
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 20,
+        "kind": "FUNCTION",
+        "symbol": "now",
+        "context": "function now(){return new Date().toISOString()}",
+        "score": 90
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 47,
+        "kind": "FUNCTION",
+        "symbol": "renderContent",
+        "context": "function renderContent(){const rows=data.items.filter(i=>i.kind===kind&&(!search||[i.name,i.description,i.appearance,i.stats].join(\" \").toLowerCase().includes(search.toLowerCase())",
+        "score": 90
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 52,
+        "kind": "FUNCTION",
+        "symbol": "cell",
+        "context": "function cell(i){if(!i)return '<div class=\"panel empty\">비교할 항목을 골라.</div>';return '<div class=\"panel stack\"><h3>'+h(i.name)+'</h3><div>상태 '+badge(i.status)+'</div><hr><b>외형</b><p c",
+        "score": 90
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 62,
+        "kind": "FUNCTION",
+        "symbol": "field",
+        "context": "function field(name,label,value,textarea){return '<label for=\"f_'+name+'\">'+h(label)+'</label>'+(textarea?'<textarea class=\"wide\" id=\"f_'+name+'\" name=\"'+name+'\">'+h(value||\"\")+'</",
+        "score": 82
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 63,
+        "kind": "FUNCTION",
+        "symbol": "choice",
+        "context": "function choice(name,label,options,current){return '<label for=\"f_'+name+'\">'+h(label)+'</label><select class=\"wide\" id=\"f_'+name+'\" name=\"'+name+'\">'+options.map(x=>'<option value",
+        "score": 82
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 64,
+        "kind": "FUNCTION",
+        "symbol": "openEditor",
+        "context": "function openEditor(type,uid){editType=type;editId=uid||\"\";const list=type===\"item\"?data.items:type===\"bug\"?data.bugs:data.tasks;const old=list.find(r=>r.id===uid)||{};document.get",
+        "score": 82
+      },
+      {
         "file": "web-games/fantasy-survival/world3d.mjs",
         "line": 620,
         "kind": "FUNCTION",
@@ -10304,12 +10381,44 @@
         "score": 82
       },
       {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 32,
+        "kind": "FUNCTION",
+        "symbol": "save",
+        "context": "function save(){try{localStorage.setItem(KEY,JSON.stringify(data));return true}catch(e){alert(\"저장 실패: 저장 공간이나 브라우저 설정을 확인해.\");return false}}",
+        "score": 74
+      },
+      {
         "file": "web-games/fantasy-survival/world3d.mjs",
         "line": 568,
         "kind": "FUNCTION",
         "symbol": "terrainPixelBatch",
         "context": "function terrainPixelBatch(zone){",
         "score": 74
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 19,
+        "kind": "FUNCTION",
+        "symbol": "id",
+        "context": "function id(){return \"r\"+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}",
+        "score": 66
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 54,
+        "kind": "FUNCTION",
+        "symbol": "renderBugs",
+        "context": "function renderBugs(){const rows=data.bugs.filter(b=>!search||[b.name,b.description,b.kind].join(\" \").toLowerCase().includes(search.toLowerCase()));app.innerHTML=head(\"버그 목록\",\"제보와 ",
+        "score": 66
+      },
+      {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 55,
+        "kind": "FUNCTION",
+        "symbol": "renderTasks",
+        "context": "function renderTasks(){app.innerHTML=head(\"적용 체크리스트\",\"체크 완료와 GitHub 반영·배포·검증 증거는 서로 다르게 관리해.\",'<button class=\"btn primary\" data-action=\"newTask\">+ 작업 추가</button>')+'<div class=\"hin",
+        "score": 66
       },
       {
         "file": "web-games/fantasy-survival/research-log-2.html",
@@ -10344,6 +10453,14 @@
         "score": 66
       },
       {
+        "file": "web-games/fantasy-survival/manage.html",
+        "line": 34,
+        "kind": "FUNCTION",
+        "symbol": "h",
+        "context": "function h(v){return String(v??\"\").replace(/[&<>\"']/g,c=>({\"&\":\"&amp;\",\"<\":\"&lt;\",\">\":\"&gt;\",'\"':\"&quot;\",\"'\":\"&#39;\"}[c]))}",
+        "score": 58
+      },
+      {
         "file": "web-games/fantasy-survival/research-log-2.html",
         "line": 125,
         "kind": "FUNCTION",
@@ -10368,94 +10485,6 @@
         "score": 58
       },
       {
-        "file": "web-games/fantasy-survival/world3d.mjs",
-        "line": 233,
-        "kind": "FUNCTION",
-        "symbol": "setAvatarAppearance",
-        "context": "async function setAvatarAppearance(requested){",
-        "score": 58
-      },
-      {
-        "file": "web-games/fantasy-survival/world3d.mjs",
-        "line": 393,
-        "kind": "FUNCTION",
-        "symbol": "retryMissingCreatures",
-        "context": "function retryMissingCreatures(state){",
-        "score": 58
-      },
-      {
-        "file": "web-games/fantasy-survival/world3d.mjs",
-        "line": 752,
-        "kind": "FUNCTION",
-        "symbol": "updateBiterAcidMeshes",
-        "context": "function updateBiterAcidMeshes(state){",
-        "score": 58
-      },
-      {
-        "file": "web-games/fantasy-survival/world3d.mjs",
-        "line": 1165,
-        "kind": "FUNCTION",
-        "symbol": "resources",
-        "context": "function resources(arr,kind,px,py,seen,scale=1,variant=''){",
-        "score": 58
-      },
-      {
-        "file": "web-games/fantasy-survival/research-log-3.html",
-        "line": 333,
-        "kind": "FUNCTION",
-        "symbol": "golem",
-        "context": "function golem(t){",
-        "score": 50
-      },
-      {
-        "file": "web-games/fantasy-survival/research-log-3.html",
-        "line": 644,
-        "kind": "FUNCTION",
-        "symbol": "render",
-        "context": "function render(arr){if(!arr||!arr.length)return;gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,arr,gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(pos);gl.enableV",
-        "score": 50
-      },
-      {
-        "file": "web-games/fantasy-survival/research-log-3.html",
-        "line": 645,
-        "kind": "FUNCTION",
-        "symbol": "cut",
-        "context": "function cut(t,a,b){return phase(t,a,b)*(1-phase(t,b+.28,b+.95));}",
-        "score": 50
-      },
-      {
-        "file": "web-games/fantasy-survival/world3d.mjs",
-        "line": 162,
-        "kind": "FUNCTION",
-        "symbol": "fetchSourceModel",
-        "context": "const fetchSourceModel=async name=>{",
-        "score": 50
-      },
-      {
-        "file": "web-games/fantasy-survival/world3d.mjs",
-        "line": 777,
-        "kind": "FUNCTION",
-        "symbol": "synchronizeUndead",
-        "context": "function synchronizeUndead(state,px,py,stamp){",
-        "score": 50
-      },
-      {
-        "file": "web-games/fantasy-survival/world3d.mjs",
-        "line": 1137,
-        "kind": "FUNCTION",
-        "symbol": "updateEquippedVisual",
-        "context": "function updateEquippedVisual(id){",
-        "score": 50
-      },
-      {
-        "file": "web-games/fantasy-survival/world3d.mjs",
-        "line": 1209,
-        "kind": "FUNCTION",
-        "symbol": "frame",
-        "context": "function frame(state,regionAt,regionScene=null){",
-        "score": 50
-      },
-      {
         "file": "web-games/fantasy-survival/research-log-2.html",
         "line": 74,
         "kind": "FUNCTION",
@@ -10478,15 +10507,15 @@
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
-    "sourceRevision": "7a4b061fc2d17b7be8e06d4f714aec84c92fc3ef",
+    "sourceRevision": "",
     "playtestFinding": "",
     "responsibleSource": "",
     "studioQualityFailure": null,
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": true,
-    "runtimePassed": true,
+    "runtimeObserved": false,
+    "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
   },
@@ -11599,8 +11628,8 @@
         "sourceOwnerCandidates": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
-          "web-games/fantasy-survival/research-log-3.html",
-          "web-games/fantasy-survival/research-log-2.html"
+          "web-games/fantasy-survival/manage.html",
+          "web-games/fantasy-survival/research-log-3.html"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11614,8 +11643,8 @@
         "sourceOwnerCandidates": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
-          "web-games/fantasy-survival/research-log-3.html",
-          "web-games/fantasy-survival/research-log-2.html"
+          "web-games/fantasy-survival/manage.html",
+          "web-games/fantasy-survival/research-log-3.html"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11629,8 +11658,8 @@
         "sourceOwnerCandidates": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
-          "web-games/fantasy-survival/research-log-3.html",
-          "web-games/fantasy-survival/research-log-2.html"
+          "web-games/fantasy-survival/manage.html",
+          "web-games/fantasy-survival/research-log-3.html"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11644,8 +11673,8 @@
         "sourceOwnerCandidates": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
-          "web-games/fantasy-survival/research-log-3.html",
-          "web-games/fantasy-survival/research-log-2.html"
+          "web-games/fantasy-survival/manage.html",
+          "web-games/fantasy-survival/research-log-3.html"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11659,8 +11688,8 @@
         "sourceOwnerCandidates": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
-          "web-games/fantasy-survival/research-log-3.html",
-          "web-games/fantasy-survival/research-log-2.html"
+          "web-games/fantasy-survival/manage.html",
+          "web-games/fantasy-survival/research-log-3.html"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11716,7 +11745,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 9233161,
+        "sourceBytes": 8824544,
         "largestFileBytes": 1365275,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -11916,7 +11945,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
+    "sourceFingerprint": "b235d158a751c9aaa4670b09cd86b2ceb39a9686f6778eab59e77225d81b575d",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -11936,7 +11965,7 @@
     "version": 1,
     "gameId": "fantasy-survival",
     "platform": "WEB",
-    "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
+    "sourceTreeFingerprint": "b235d158a751c9aaa4670b09cd86b2ceb39a9686f6778eab59e77225d81b575d",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -11957,7 +11986,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/world3d.mjs"
+          "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -11994,7 +12024,8 @@
         "id": "EQUIPMENT",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/fantasy-survival/index.html"
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/manage.html"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -12008,10 +12039,10 @@
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html",
           "web-games/fantasy-survival/research-log-3.html",
           "web-games/fantasy-survival/research-log-2.html",
-          "web-games/fantasy-survival/tier.html",
-          "web-games/fantasy-survival/research-log.html"
+          "web-games/fantasy-survival/tier.html"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -12025,6 +12056,7 @@
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html",
           "web-games/fantasy-survival/research-log-3.html",
           "web-games/fantasy-survival/research-log-2.html",
           "web-games/fantasy-survival/research-log.html"
@@ -12080,6 +12112,7 @@
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html",
           "web-games/fantasy-survival/research-log-3.html",
           "web-games/fantasy-survival/tier.html"
         ],
@@ -12159,6 +12192,7 @@
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html",
           "web-games/fantasy-survival/research-log-3.html",
           "web-games/fantasy-survival/research-log-2.html"
         ],
@@ -12172,7 +12206,8 @@
         "id": "QUEST_DIALOGUE",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/fantasy-survival/index.html"
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/manage.html"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -12207,7 +12242,8 @@
         "id": "PROGRESSION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/fantasy-survival/index.html"
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/manage.html"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -12299,6 +12335,7 @@
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html",
           "web-games/fantasy-survival/research-log-3.html"
         ],
         "requiredByDesign": true,
@@ -12314,7 +12351,8 @@
       ],
       "CUSTOMIZATION": [
         "web-games/fantasy-survival/index.html",
-        "web-games/fantasy-survival/world3d.mjs"
+        "web-games/fantasy-survival/world3d.mjs",
+        "web-games/fantasy-survival/manage.html"
       ],
       "MATERIAL": [
         "web-games/fantasy-survival/index.html",
@@ -12324,19 +12362,21 @@
         "web-games/fantasy-survival/index.html"
       ],
       "EQUIPMENT": [
-        "web-games/fantasy-survival/index.html"
+        "web-games/fantasy-survival/index.html",
+        "web-games/fantasy-survival/manage.html"
       ],
       "UI": [
         "web-games/fantasy-survival/index.html",
         "web-games/fantasy-survival/world3d.mjs",
+        "web-games/fantasy-survival/manage.html",
         "web-games/fantasy-survival/research-log-3.html",
         "web-games/fantasy-survival/research-log-2.html",
-        "web-games/fantasy-survival/tier.html",
-        "web-games/fantasy-survival/research-log.html"
+        "web-games/fantasy-survival/tier.html"
       ],
       "WORLD": [
         "web-games/fantasy-survival/index.html",
         "web-games/fantasy-survival/world3d.mjs",
+        "web-games/fantasy-survival/manage.html",
         "web-games/fantasy-survival/research-log-3.html",
         "web-games/fantasy-survival/research-log-2.html",
         "web-games/fantasy-survival/research-log.html"
@@ -12356,17 +12396,20 @@
       "ACTION": [
         "web-games/fantasy-survival/index.html",
         "web-games/fantasy-survival/world3d.mjs",
+        "web-games/fantasy-survival/manage.html",
         "web-games/fantasy-survival/research-log-3.html",
         "web-games/fantasy-survival/tier.html"
       ],
       "NPC_AI": [
         "web-games/fantasy-survival/index.html",
         "web-games/fantasy-survival/world3d.mjs",
+        "web-games/fantasy-survival/manage.html",
         "web-games/fantasy-survival/research-log-3.html",
         "web-games/fantasy-survival/research-log-2.html"
       ],
       "QUEST_DIALOGUE": [
-        "web-games/fantasy-survival/index.html"
+        "web-games/fantasy-survival/index.html",
+        "web-games/fantasy-survival/manage.html"
       ],
       "CRAFTING": [
         "web-games/fantasy-survival/index.html",
@@ -12374,7 +12417,8 @@
       ],
       "ECONOMY": [],
       "PROGRESSION": [
-        "web-games/fantasy-survival/index.html"
+        "web-games/fantasy-survival/index.html",
+        "web-games/fantasy-survival/manage.html"
       ],
       "FARMING": [
         "web-games/fantasy-survival/index.html"
@@ -12403,6 +12447,7 @@
       "NETWORK": [
         "web-games/fantasy-survival/index.html",
         "web-games/fantasy-survival/world3d.mjs",
+        "web-games/fantasy-survival/manage.html",
         "web-games/fantasy-survival/research-log-3.html"
       ],
       "INTERACTION": [
@@ -12457,6 +12502,7 @@
       "sourceFiles": [
         "web-games/fantasy-survival/index.html",
         "web-games/fantasy-survival/world3d.mjs",
+        "web-games/fantasy-survival/manage.html",
         "web-games/fantasy-survival/research-log-3.html",
         "web-games/fantasy-survival/research-log-2.html",
         "web-games/fantasy-survival/research-log.html"
@@ -12526,7 +12572,8 @@
           "id": "EQUIP",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "web-games/fantasy-survival/index.html"
+            "web-games/fantasy-survival/index.html",
+            "web-games/fantasy-survival/manage.html"
           ],
           "passed": false
         },
@@ -12535,6 +12582,7 @@
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
             "web-games/fantasy-survival/index.html",
+            "web-games/fantasy-survival/manage.html",
             "web-games/fantasy-survival/world3d.mjs"
           ],
           "passed": false
@@ -12577,6 +12625,7 @@
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html",
           "web-games/fantasy-survival/research-log-3.html",
           "web-games/fantasy-survival/research-log-2.html",
           "web-games/fantasy-survival/research-log.html"
@@ -12623,7 +12672,8 @@
         "missingRoles": [],
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/world3d.mjs"
+          "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html"
         ],
         "checks": [
           "REAL_RIG_AND_OUTFIT_BINDING",
@@ -12645,6 +12695,7 @@
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html",
           "web-games/fantasy-survival/research-log-3.html",
           "web-games/fantasy-survival/research-log-2.html"
         ],
@@ -12668,6 +12719,7 @@
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html",
           "web-games/fantasy-survival/research-log-3.html",
           "web-games/fantasy-survival/tier.html",
           "web-games/fantasy-survival/research-log.html"
@@ -12693,6 +12745,7 @@
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html",
           "web-games/fantasy-survival/research-log-3.html",
           "web-games/fantasy-survival/research-log-2.html",
           "web-games/fantasy-survival/research-log.html"
@@ -12717,6 +12770,7 @@
         "responsibleFiles": [
           "web-games/fantasy-survival/index.html",
           "web-games/fantasy-survival/world3d.mjs",
+          "web-games/fantasy-survival/manage.html",
           "web-games/fantasy-survival/research-log-3.html",
           "web-games/fantasy-survival/tier.html",
           "web-games/fantasy-survival/research-log-2.html",
@@ -12773,7 +12827,8 @@
           "actorClass": "PLAYER",
           "sourceOwnerFiles": [
             "web-games/fantasy-survival/index.html",
-            "web-games/fantasy-survival/world3d.mjs"
+            "web-games/fantasy-survival/world3d.mjs",
+            "web-games/fantasy-survival/manage.html"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
           "motions": [
@@ -12805,6 +12860,7 @@
           "sourceOwnerFiles": [
             "web-games/fantasy-survival/index.html",
             "web-games/fantasy-survival/world3d.mjs",
+            "web-games/fantasy-survival/manage.html",
             "web-games/fantasy-survival/research-log-3.html"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
@@ -12820,6 +12876,7 @@
           "actorClass": "BOSS",
           "sourceOwnerFiles": [
             "web-games/fantasy-survival/index.html",
+            "web-games/fantasy-survival/manage.html",
             "web-games/fantasy-survival/tier.html"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
@@ -12853,6 +12910,7 @@
           "sourceOwnerFiles": [
             "web-games/fantasy-survival/index.html",
             "web-games/fantasy-survival/world3d.mjs",
+            "web-games/fantasy-survival/manage.html",
             "web-games/fantasy-survival/research-log-3.html",
             "web-games/fantasy-survival/research-log-2.html"
           ],
@@ -12993,7 +13051,7 @@
     "gameId": "fantasy-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
+    "sourceTreeFingerprint": "b235d158a751c9aaa4670b09cd86b2ceb39a9686f6778eab59e77225d81b575d",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -13325,6 +13383,7 @@
     "responsibleSourceCandidates": [
       "web-games/fantasy-survival/index.html",
       "web-games/fantasy-survival/world3d.mjs",
+      "web-games/fantasy-survival/manage.html",
       "web-games/fantasy-survival/research-log-3.html",
       "web-games/fantasy-survival/research-log-2.html",
       "web-games/fantasy-survival/tier.html",
@@ -13333,8 +13392,7 @@
       "web-games/fantasy-survival/icons/armor.png",
       "web-games/fantasy-survival/icons/armorgold.png",
       "web-games/fantasy-survival/icons/aurared.png",
-      "web-games/fantasy-survival/icons/axe.png",
-      "web-games/fantasy-survival/icons/bag.png"
+      "web-games/fantasy-survival/icons/axe.png"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -13686,6 +13744,7 @@
     "files": [
       "web-games/fantasy-survival/index.html",
       "web-games/fantasy-survival/world3d.mjs",
+      "web-games/fantasy-survival/manage.html",
       "web-games/fantasy-survival/research-log-3.html",
       "web-games/fantasy-survival/research-log-2.html",
       "web-games/fantasy-survival/tier.html",
@@ -13694,8 +13753,7 @@
       "web-games/fantasy-survival/icons/armor.png",
       "web-games/fantasy-survival/icons/armorgold.png",
       "web-games/fantasy-survival/icons/aurared.png",
-      "web-games/fantasy-survival/icons/axe.png",
-      "web-games/fantasy-survival/icons/bag.png"
+      "web-games/fantasy-survival/icons/axe.png"
     ],
     "sourceAnchors": [
       {
@@ -13825,6 +13883,7 @@
     "plannedFiles": [
       "web-games/fantasy-survival/index.html",
       "web-games/fantasy-survival/world3d.mjs",
+      "web-games/fantasy-survival/manage.html",
       "web-games/fantasy-survival/research-log-3.html",
       "web-games/fantasy-survival/research-log-2.html",
       "web-games/fantasy-survival/tier.html",
@@ -13833,8 +13892,7 @@
       "web-games/fantasy-survival/icons/armor.png",
       "web-games/fantasy-survival/icons/armorgold.png",
       "web-games/fantasy-survival/icons/aurared.png",
-      "web-games/fantasy-survival/icons/axe.png",
-      "web-games/fantasy-survival/icons/bag.png"
+      "web-games/fantasy-survival/icons/axe.png"
     ],
     "impact": {
       "version": 1,
@@ -13883,9 +13941,9 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a15c85f426b374efa4b304dc742d85fc2298e0e5a51a99f99e377fc2cc160db4",
-      "runtimeObserved": true,
-      "runtimePassed": true,
+      "sourceTreeFingerprint": "b235d158a751c9aaa4670b09cd86b2ceb39a9686f6778eab59e77225d81b575d",
+      "runtimeObserved": false,
+      "runtimePassed": false,
       "failureStage": null,
       "failureSignature": null
     },
@@ -14005,5 +14063,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-07T18:48:31.034Z"
+  "generatedAt": "2026-11-08T14:53:49.433Z"
 }
