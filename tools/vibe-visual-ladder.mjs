@@ -67,6 +67,7 @@ const RUNTIME_ERROR_PATTERN=/(CHAIN_RIG_ERROR|BIPED_RIG_ERROR|BOSS_SKILL_ERROR)[
 // 검증: 보고서가 있고 스크립트 오류 흔적이 없어야 통과.
 let pendingSha=null;
 let framesInfo=null;
+let aestheticInfo=null;
 function verify(){
   if(flag('force'))return {ok:true,why:'오너 수동 승급'};
   const rp=opt('report');
@@ -86,6 +87,14 @@ function verify(){
     if(!framesInfo||framesInfo.available!==true)return {ok:false,why:'화면 검사 불가(Pillow 또는 분석기 오류): 화면 증거 없이는 승급하지 않음'};
     if(!(framesInfo.checked>0))return {ok:false,why:'캡처 화면 0장: 화면 증거 없이는 승급하지 않음'};
     if(framesInfo.ratio>=.4)return {ok:false,why:`깨진 화면 ${framesInfo.bad}/${framesInfo.checked}장(검정·흰색·단색)`};
+    // 미적 점수(외부 AI 없이 픽셀 통계): 기본은 보고만 하고, spec.aestheticBudget.minScore 가 있을 때만 승급을 막는다.
+    const budget=spec.aestheticBudget||{};
+    const aargs=['tools/vibe_aesthetic_score.py','--dir',fr,'--looks','assets/roblox/common-look-v1/look-presets.json'];
+    if(budget.referenceDir&&fs.existsSync(budget.referenceDir))aargs.push('--reference',budget.referenceDir);
+    const ap=spawnSync('python3',aargs,{encoding:'utf8',maxBuffer:1<<26});
+    try{aestheticInfo=JSON.parse(ap.stdout.trim().split('\n').pop())}catch{aestheticInfo=null}
+    if(aestheticInfo&&aestheticInfo.available&&Number.isFinite(budget.minScore)&&aestheticInfo.score<budget.minScore)
+      return {ok:false,why:`미적 점수 ${aestheticInfo.score} < 기준 ${budget.minScore}: ${(aestheticInfo.advice||[]).map(x=>x.text).join(' / ')||'점수 개선 필요'}`};
   }
   return {ok:true,why:'Studio 캡처 오류 없음'+(framesInfo&&framesInfo.available?`, 화면 ${framesInfo.checked}장 정상`:'')};
 }
@@ -177,6 +186,13 @@ for(const c of cats){
 lines.push('','## 부족 자산(오너 승인 필요)','');
 if(gapRows.length)for(const g of gapRows)lines.push(`- ${spec.categories[g.category].label} ${g.tier}단계(${g.tierName}): ${g.key}`+(g.candidates.length?` · 등록 후보 ${g.candidates.length}개: ${g.candidates.join(', ')} (오너가 승인하면 바로 풀림)`:' · 등록된 후보 없음(새 에셋 필요)'));else lines.push('- 없음');
 if(framesInfo&&framesInfo.available)lines.push('',`## 최근 화면 검사`,'',`- 프레임 ${framesInfo.checked}장 중 깨진 화면 ${framesInfo.bad}장`);
+if(aestheticInfo&&aestheticInfo.available&&aestheticInfo.checked>0){
+  lines.push('',`## 미적 점수(픽셀 통계, 외부 AI 없음)`,'',`- 평균 ${aestheticInfo.score}점 · 최저 ${aestheticInfo.worst}점 (프레임 ${aestheticInfo.checked}장)`);
+  for(const a of aestheticInfo.advice||[])lines.push(`- 고칠 점: ${a.text}`);
+  if(aestheticInfo.reference)lines.push(`- 오너 레퍼런스 근접도 ${aestheticInfo.reference.score}점`+(aestheticInfo.reference.deviations.length?` · ${aestheticInfo.reference.deviations.map(d=>d.text).join(', ')}`:''));
+  const rk=aestheticInfo.lookSimulation&&aestheticInfo.lookSimulation.ranking;
+  if(rk&&rk.length)lines.push(`- 룩 프리셋 추정 순위(색보정만 흉내, 스튜디오 재확인 필요): ${rk.slice(0,3).map(r=>`${r.id} ${r.score}`).join(' > ')}`);
+}
 if(perf&&perf.sessions)lines.push('',`## 성능`,'',`- 접속 ${perf.sessions}회 · 평균 ${perf.fpsAvg??'?'}FPS · 최저 ${perf.fpsMin??'?'}FPS (예산 ${minFps})`);
 lines.push('','## 최근 승급 기록','');
 if(state.history.length)for(const h of state.history.slice(-10).reverse())lines.push(`- ${h.at} · ${h.floor}회차 · ${spec.categories[h.category].label} → ${h.tier}단계 ${h.name} (${h.why})`);else lines.push('- 아직 없음');
@@ -196,6 +212,7 @@ fs.writeFileSync(path.join('docs','devloop',`VISUAL_LADDER_${game}.md`),lines.jo
     gaps:gapRows,
     perf:perf&&perf.sessions?perf:(all.games[game]&&all.games[game].perf)||null,
     frames:framesInfo&&framesInfo.available?{checked:framesInfo.checked,bad:framesInfo.bad}:(all.games[game]&&all.games[game].frames)||null,
+    aesthetic:aestheticInfo&&aestheticInfo.available&&aestheticInfo.checked>0?{score:aestheticInfo.score,worst:aestheticInfo.worst,advice:(aestheticInfo.advice||[]).map(x=>x.axis),referenceScore:aestheticInfo.reference?aestheticInfo.reference.score:null,bestLook:aestheticInfo.lookSimulation?aestheticInfo.lookSimulation.ranking[0].id:null}:(all.games[game]&&all.games[game].aesthetic)||null,
     thumbs:floors.map(f=>({floor:f,files:fs.readdirSync(path.join(ladderRoot,f)).map(x=>`docs/devloop/ladder/${game}/${f}/${x}`)})),
     history:state.history.slice(-10).reverse(),
     updated:new Date().toISOString().slice(0,10),
