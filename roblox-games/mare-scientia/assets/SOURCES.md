@@ -491,3 +491,12 @@ KayKit RPG Tools Bits 1.0 / Kay Lousberg / CC0-1.0. 공식 출처 https://kaylou
   - 하루카 대역 이미지: Felice Beato, `Felice Beato Courtisane` (1860년대, 작가 1909년 사망), https://commons.wikimedia.org/wiki/File:Felice_Beato_Courtisane.jpg
 - 역사 이미지의 실제 인물이 주인공을 연기하거나 해당 국적·시대의 정확한 인물이라는 뜻은 아니다. NPC용 허구 배역 이미지이며, 독립적으로 식별되는 실제 초상임을 밝힌다.
 - 외부 자산은 기존 오너 자산 등록 워크플로의 입력을 생성할 때 원본 출처에서 읽고 `heroes.jpg`로 합성하며, 새로운 업로드/게시 파이프라인을 만들지 않는다.
+
+
+## 2026-11-08 신규 게임 전용 인물 초상화
+
+- `assets/portraits/heroes_new.jpg`: 3열×3행, 총 9개 원화 프레임. 최종 크기 384×504, 프레임당 128×168. SHA-256: `e1dc0675ac3205c255f568e333f304e45c499c99a91fff50657ae9a61057eddf`.
+- `assets/portraits/npcs_new.jpg`: 3열×2행, 총 6개 원화 프레임. 최종 크기 384×336, 프레임당 128×168. SHA-256: `3bf59a0e86b49e7ff884a29b622208af6d82c3f5f0a45bc1632ff0546a09bc71`.
+- 원본: 프로젝트 제작 대화에서 직접 생성한 게임 전용 항해시대 인물 원화. 상업 화보·타인 사진을 전사하지 않은 `PROJECT_ORIGINAL_ART`. 인물의 나이·직업·생활 흔적을 강조하며 1600~1700년대 증기 대체역사와의 일관성을 우선한다.
+- 안전 확인: 인물 얼굴·복식 중심 초상 시트이며 피·고어·규제 상품 묘사 없음. 기존 등록 도구의 콘텐츠 차단 정책은 그대로 적용한다.
+- 적용: `Portraits/npcs_new` 자산 등록 후 시설·NPC 대화창의 기존 6역할 이미지를 대체한다. `Portraits/heroes_new`는 외형·역할이 맞는 일부 국가 주인공에 한정하며, 맞지 않는 국가는 기존 `heroes` 자산을 유지한다. 신규 ID/게임별 사용 권한/실제 게시 여부는 각기 확인 전까지 미검증이다.
