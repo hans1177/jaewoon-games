@@ -1451,6 +1451,38 @@ local function storyPortraitModel(npcName, id)
 	return STORY_DEFAULT[seed % #STORY_DEFAULT + 1]
 end
 
+-- 주인공 반신 초상 (나라마다 다른 인물). 승인된 인물 모델/R15 몸체만 사용한다.
+local function heroPortrait(parent, nationId, w, h)
+	local vf = Instance.new("ViewportFrame")
+	vf.Size = UDim2.fromOffset(w, h)
+	vf.BackgroundColor3 = Color3.fromRGB(30, 42, 62)
+	vf.Ambient = Color3.fromRGB(170, 170, 178)
+	vf.LightColor = Color3.fromRGB(255, 236, 205)
+	vf.LightDirection = Vector3.new(-0.6, -0.8, -1).Unit
+	corner(vf, 10)
+	local st = Instance.new("UIStroke")
+	st.Color = Color3.fromRGB(214, 170, 82)
+	st.Thickness = 2
+	st.Parent = vf
+	local cam = Instance.new("Camera")
+	cam.FieldOfView = 32
+	cam.Parent = vf
+	vf.CurrentCamera = cam
+	local world = Instance.new("WorldModel")
+	world.Parent = vf
+	local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
+	local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("선장", nationId))
+	local m = portraitPerson(world, "hero" .. nationId, "Rogue_Hooded", tpl)
+	if m then
+		local cf, size = m:GetBoundingBox()
+		local focus = cf.Position + Vector3.new(0, size.Y * 0.3, 0)
+		cam.FieldOfView = 36
+		cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.2, 0.1, -1).Unit * (size.Y * 0.95), focus)
+	end
+	vf.Parent = parent
+	return vf
+end
+
 local function playEpilogue(msg, opts)
 	opts = opts or {}
 	local TweenService = game:GetService("TweenService")
@@ -1472,6 +1504,12 @@ local function playEpilogue(msg, opts)
 	local mast = mkBox(hull, UDim2.fromOffset(30, -34), UDim2.fromOffset(3, 34), Color3.fromRGB(24, 18, 16))
 	local sailBox = mkBox(hull, UDim2.fromOffset(34, -32), UDim2.fromOffset(20, 26), Color3.fromRGB(235, 220, 190))
 	mast.ZIndex, sailBox.ZIndex = 3, 3
+	if opts.hero then
+		local hp = heroPortrait(root, opts.hero, 150, 190)
+		hp.AnchorPoint = Vector2.new(0, 0.5)
+		hp.Position = UDim2.new(0, 28, 0.5, 0)
+		hp.ZIndex = 9
+	end
 	-- 위아래 검은 띠 (영화 같은 화면 비율)
 	local top = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.12), Color3.new(0, 0, 0))
 	local bot = mkBox(root, UDim2.fromScale(0, 0.88), UDim2.fromScale(1, 0.12), Color3.new(0, 0, 0))
@@ -1481,9 +1519,9 @@ local function playEpilogue(msg, opts)
 	local function say(text, y, size, color, hold)
 		local l = mkLabel(root, text, size, color, true)
 		l.AutomaticSize = Enum.AutomaticSize.None
-		l.Size = UDim2.new(0.8, 0, 0, size * 3)
+		l.Size = UDim2.new(if opts.hero then 0.62 else 0.8, 0, 0, size * 3)
 		l.AnchorPoint = Vector2.new(0.5, 0)
-		l.Position = UDim2.fromScale(0.5, y)
+		l.Position = UDim2.fromScale(if opts.hero then 0.6 else 0.5, y)
 		l.TextXAlignment = Enum.TextXAlignment.Center
 		l.TextTransparency = 1
 		l.ZIndex = 8
@@ -3548,12 +3586,25 @@ local function renderNewGame()
 		pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 10), UDim.new(0, 10)
 		pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 12), UDim.new(0, 12)
 		pad.Parent = box
+		local hl = Instance.new("UIListLayout")
+		hl.FillDirection = Enum.FillDirection.Horizontal
+		hl.Padding = UDim.new(0, 12)
+		hl.Parent = box
+		heroPortrait(box, cur.id, 96, 124)
+		local info = Instance.new("Frame")
+		info.BackgroundTransparency = 1
+		info.Size = UDim2.new(1, -112, 0, 0)
+		info.AutomaticSize = Enum.AutomaticSize.Y
+		info.Parent = box
 		local ll = Instance.new("UIListLayout")
 		ll.Padding = UDim.new(0, 4)
-		ll.Parent = box
-		mkLabel(box, cur.name, 20, GOLD, true)
-		mkLabel(box, "시작 항구  " .. PortData.Ports[cur.startPort].name, 13, COLORS.text, true)
-		mkLabel(box, cur.summary, 13, COLORS.muted, false)
+		ll.Parent = info
+		local N = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Narrative"))
+		local pro = N.Prologues[cur.id]
+		local hero = if pro then string.match(pro.title, "·%s*(.+)$") else nil
+		mkLabel(info, cur.name .. (if hero then "  ·  " .. hero else ""), 19, GOLD, true)
+		mkLabel(info, "시작 항구  " .. PortData.Ports[cur.startPort].name, 13, COLORS.text, true)
+		mkLabel(info, cur.summary, 13, COLORS.muted, false)
 		return box
 	end)
 
@@ -3622,7 +3673,7 @@ local function renderNewGame()
 					end
 				end
 				task.spawn(function()
-					playEpilogue(nil, { title = pro.title, lines = lines, button = "⚓ 항해를 시작한다" })
+					playEpilogue(nil, { title = pro.title, lines = lines, button = "⚓ 항해를 시작한다", hero = chosenNation })
 				end)
 			end
 		end, true)
@@ -3811,6 +3862,7 @@ function render()
 
 	if not view or newGameMode then
 		headerLabel.Text = "새 게임"
+		setPortrait("선장실")
 		tabBar.Visible = false
 		content.Position = UDim2.fromOffset(8, 52)
 		content.Size = UDim2.new(1, -16, 1, -60)
