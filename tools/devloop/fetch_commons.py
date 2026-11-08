@@ -23,7 +23,8 @@ def http(url, tries=5):
 
 def pick(pages, fig, avoid, min_w=300):
     """검색 결과(페이지 목록)에서 라이선스·형식·크기·제외어를 통과한 첫 그림을 고른다."""
-    surname = re.sub(r"[^\w ]", "", fig["name"]).split()[-1].lower()
+    toks = re.sub(r"[^\w ]", "", fig["name"]).lower().split()
+    surname, given = toks[-1], toks[0]  # 이름·성이 모두 있어야 한다 (동성 다른 사람 방지: 예 Thomas Savery ≠ Thomas Fairfax)
     for pg in sorted(pages, key=lambda p: p.get("index", 0)):
         ii = (pg.get("imageinfo") or [{}])[0]
         title = pg.get("title", "")
@@ -35,7 +36,9 @@ def pick(pages, fig, avoid, min_w=300):
         low = title.lower()
         if any(a in low for a in avoid): continue
         desc = re.sub(r"<[^>]+>", "", (meta.get("ImageDescription") or {}).get("value", "")).lower()
-        if surname not in low and surname not in desc: continue
+        hay = low + " " + desc
+        if surname not in hay or given not in hay: continue
+        if any(a.lower() in low for a in fig.get("avoid", [])): continue
         if (meta.get("Restrictions") or {}).get("value"): continue
         artist = re.sub(r"<[^>]+>", "", (meta.get("Artist") or {}).get("value", "")).strip()[:120] or "unknown"
         return {"title": title, "license": lic, "author": artist, "page": ii.get("descriptionurl", ""), "thumb": ii.get("thumburl") or ii.get("url")}
@@ -48,6 +51,8 @@ def selftest():
         {"title": "File:Portrait of Isaac Newton.jpg", "index": 2, "imageinfo": [{"mime": "image/jpeg", "width": 800, "descriptionurl": "https://commons.wikimedia.org/wiki/File:X", "thumburl": "u", "extmetadata": {"LicenseShortName": {"value": "Public domain"}, "Artist": {"value": "<a>Kneller</a>"}}}]},
         {"title": "File:Isaac Newton bust.jpg", "index": 3, "imageinfo": [{"mime": "image/jpeg", "width": 800, "extmetadata": {"LicenseShortName": {"value": "Public domain"}}}]},
     ]
+    pages.insert(0, {"title": "File:Sir William Newcomen.jpg", "index": 0, "imageinfo": [{"mime": "image/jpeg", "width": 800, "extmetadata": {"LicenseShortName": {"value": "Public domain"}}}]})
+    assert pick(pages[:1], {"id": "n", "name": "Thomas Newcomen"}, []) is None  # 다른 Newcomen
     r = pick(pages, fig, ["statue", "bust"])
     assert r and r["title"].endswith("Portrait of Isaac Newton.jpg") and r["author"] == "Kneller", r
     assert pick(pages[:1], fig, []) is None
