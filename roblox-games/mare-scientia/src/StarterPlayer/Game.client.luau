@@ -2198,6 +2198,16 @@ local function addStoryPanel()
 	elseif view.act then
 		add(function() return mkLabel(content, view.act.title .. " — 목표: " .. view.act.goal, 15, COLORS.gold, true) end)
 	end
+	if view.guide then
+		add(function() return mkHeader(content, "🧭 " .. view.guide.title) end)
+		add(function()
+			local lines = {}
+			for _, st in view.guide.steps do
+				table.insert(lines, st.mark .. " " .. st.text)
+			end
+			return mkLabel(content, table.concat(lines, "\n"), 15, COLORS.text, true)
+		end)
+	end
 	if view.advice then
 		add(function() return mkLabel(content, string.format("💬 %s의 조언\n\"%s\"", view.advice.who, view.advice.text), 16, COLORS.gold, true) end)
 	end

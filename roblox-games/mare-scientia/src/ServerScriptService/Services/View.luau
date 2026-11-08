@@ -261,6 +261,38 @@ return function(D, S)
 					cargoAny = true
 				end
 			end
+			-- 첫 항해 목표 체크리스트 (처음 몇 단계를 막힘 없이 따라가도록)
+			do
+				local visited = 0
+				for _ in state.stats.visited do
+					visited += 1
+				end
+				local hasQuest = next(state.quests.active) ~= nil or next(state.quests.done) ~= nil
+				local steps = {
+					{ "교역소에서 특산품을 사 보기", cargoAny or visited >= 2 or state.day > 1 },
+					{ "다른 항구로 출항하기", visited >= 2 },
+					{ "주점에서 동료 영입하기", #state.companions > 0 },
+					{ "의뢰 수락하기 (이야기·퀘스트 탭)", hasQuest },
+					{ "항구 3곳 방문하기", visited >= 3 },
+				}
+				local left = 0
+				for _, st in steps do
+					if not st[2] then
+						left += 1
+					end
+				end
+				if left > 0 then
+					local list, marked = {}, false
+					for _, st in steps do
+						local mark = if st[2] then "✅" elseif not marked then "▶" else "⬜"
+						if not st[2] then
+							marked = true
+						end
+						table.insert(list, { text = st[1], done = st[2], mark = mark })
+					end
+					view.guide = { title = "첫 항해 목표", steps = list }
+				end
+			end
 			local who = if #state.companions > 0 then D.Specialties.CompanionById[state.companions[1]].name else "늙은 항해사 베르나르"
 			view.advice = { who = who, text = D.Narrative.advice({ coins = state.coins, ship = state.ship, morale = state.morale, cargoAny = cargoAny }, D.Regions, #state.companions > 0, activeQuest, locked) }
 		end
