@@ -753,6 +753,12 @@ card.Size = UDim2.fromOffset(226, 66)
 card.Parent = hud
 corner(card, 10)
 hudStroke(card, 2)
+do
+	local g = Instance.new("UIGradient")
+	g.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(190, 190, 200))
+	g.Rotation = 90
+	g.Parent = card
+end
 
 local function hudText(parent, pos, size, textSize, color, align)
 	local l = Instance.new("TextLabel")
@@ -874,6 +880,12 @@ for i, d in DOCK do
 		image.Parent = b
 	end
 	corner(b, 8)
+	do
+		local g = Instance.new("UIGradient")
+		g.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(170, 170, 180))
+		g.Rotation = 90
+		g.Parent = b
+	end
 	local bs = Instance.new("UIStroke")
 	bs.Color = BRASS
 	bs.Thickness = 1
@@ -3898,6 +3910,9 @@ local function renderTabs()
 			render()
 		end, true)
 		b.LayoutOrder = i
+		if currentTab == id then
+			b.TextColor3 = Color3.fromRGB(32, 22, 8)
+		end
 		local menuAssetId = AssetIds["Menu/" .. id]
 		if menuAssetId then
 			b.Text = ""
