@@ -818,6 +818,9 @@ export function planVibe59Repairs({failures=[],attempts=[],maxAttempts=3}={}){
   const classes=[...new Set(observations.map(classifyVibeRepairFailure))];
   const prior=new Set(attempts.map(x=>clean(x?.fingerprint)).filter(Boolean));
   const mapping={
+    // [컴파일 자동 복구] 지역변수 레지스터 초과는 문법 오류와 구분한다.
+    // 기존 게임 초기화/책임 함수의 활성 지역변수 범위만 줄이고 네이티브 재컴파일을 요구한다.
+    LUAU_REGISTER_LIMIT:['reduce-active-locals-in-responsible-luau-source','recompile-exact-luau-source-without-balance-or-save-change'],
     SYNTAX:['fix-target-parser-error','regenerate-minimal-expression'],
     RUNTIME:['reproduce-observed-stack','trace-state-event-cause'],
     TEST:['isolate-failed-expectation','compare-before-after-state'],

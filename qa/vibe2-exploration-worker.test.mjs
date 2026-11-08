@@ -417,6 +417,13 @@ test('Vibe5.9 repair planning and prior verified memory do not hallucinate passe
   const repeated=planVibe59Repairs({failures:['SyntaxError: unexpected token'],
     attempts:[{fingerprint:p.strategies[0].fingerprint}],maxAttempts:2});
   assert(repeated.strategies.every(x=>x.fingerprint!==p.strategies[0].fingerprint));
+  const luau=planVibe59Repairs({failures:[
+    'Game.server.luau(9106,17): CompileError: Out of local registers when trying to allocate wp: exceeded limit 200'
+  ],attempts:[],maxAttempts:2});
+  assert.equal(luau.automaticRetryPerformed,false);
+  assert.equal(luau.strategies.length,2);
+  assert(luau.strategies.every(x=>x.failureClass==='LUAU_REGISTER_LIMIT'));
+  assert(luau.strategies.some(x=>x.strategy==='recompile-exact-luau-source-without-balance-or-save-change'));
   const m=recallVibe59VerifiedSolutions({request:'damage',samples:[
     {id:'not-verified',request:'damage',testsPass:false,runtimePass:false}
   ]});

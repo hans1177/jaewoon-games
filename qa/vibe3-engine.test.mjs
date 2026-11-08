@@ -134,6 +134,14 @@ const repair=createVibeRepairLoop({attempts:[{candidateId:'c',state:'FAIL',failu
 assert.equal(repair.state,'REPAIR_REQUIRED');
 assert.equal(repair.failureClass,'RUNTIME');
 assert.equal(repair.attemptsRemaining,2);
+// [바이브 코어] 실제 Luau 컴파일러 지역 레지스터 초과는 일반 구문 오류와 다르게 복구한다.
+const luauLimit=createVibeRepairLoop({attempts:[{candidateId:'luau-blocker',state:'FAIL',
+  failure:'Game.server.luau(9106,17): CompileError: Out of local registers when trying to allocate wp: exceeded limit 200'}],maxAttempts:3});
+assert.equal(luauLimit.state,'REPAIR_REQUIRED');
+assert.equal(luauLimit.failureClass,'LUAU_REGISTER_LIMIT');
+assert.equal(luauLimit.nextAction,'reduce-active-luau-local-register-scope-in-existing-responsible-function-preserve-gameplay-and-recompile');
+assert.equal(luauLimit.attemptsRemaining,2);
+
 const trajectory=createVibeTrajectoryRecord({request:'combat fix',sourceGraph:graph,tournament,repairLoop:repair,finalEvidence:{runtime:'PASS'}});
 assert.equal(trajectory.outcome,'VERIFIED_WINNER');
 assert.equal(trajectory.learningUse.failedCandidatesPreserved,true);
