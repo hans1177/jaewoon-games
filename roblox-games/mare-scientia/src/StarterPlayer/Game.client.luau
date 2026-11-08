@@ -699,15 +699,39 @@ end
 local render
 local tradeHallRefresh -- 교역소 별도 화면이 열려 있으면 서버 응답 뒤에 다시 그린다
 
+local lastCallAt = 0
 local function call(action, payload)
-	if busy then
-		return
+	-- 앞선 요청이 끝나길 잠깐 기다린다 (버튼을 눌렀는데 아무 반응이 없던 문제 방지). 너무 오래 걸리면 풀어 준다.
+	local waited = 0
+	while busy and waited < 8 do
+		task.wait(0.1)
+		waited += 0.1
+	end
+	-- 서버는 0.1초 안에 온 요청을 거절하므로 간격을 둔다
+	local gap = os.clock() - lastCallAt
+	if gap < 0.13 then
+		task.wait(0.13 - gap)
 	end
 	busy = true
-	local ok, result = pcall(function()
-		return remote:InvokeServer(action, payload or {})
+	local done, ok, result = false, false, nil
+	task.spawn(function()
+		ok, result = pcall(function()
+			return remote:InvokeServer(action, payload or {})
+		end)
+		done = true
 	end)
+	local t = 0
+	while not done and t < 15 do
+		task.wait(0.05)
+		t += 0.05
+	end
 	busy = false
+	lastCallAt = os.clock()
+	if not done then
+		message, messageOk = "서버 응답이 늦어요. 잠시 후 다시 눌러 주세요", false
+		render()
+		return nil
+	end
 	if DEBUG_LOG then print("[Game] call", action, ok, type(result) == "table" and result.ok, type(result) == "table" and result.message or result) end
 	if not ok or type(result) ~= "table" then
 		message, messageOk = "서버와 연결하지 못했어요", false
