@@ -8,6 +8,7 @@ import {pathToFileURL} from 'node:url';
 import {resolveSelectedPlatform} from './company-selected-platform-router.mjs';
 import {materializeOwnerDesignResetSeeds} from './owner-design-reset.mjs';
 import {latestMinimumDesign,materializeVibeMinimumDesign} from './company-minimum-design-contract.mjs';
+import {normalizeCatalog,validateNormalizedCatalog} from './game-catalog-normalization.mjs';
 
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -506,6 +507,11 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   for(const item of queue.items||[])removeLegacyWebAdmissionFields(item);
   clearLegacyQueueCaps(queue);
   if(catalog.normalization&&typeof catalog.normalization==='object')catalog.normalization.automaticFeatureExpansionFreezeForbidden=true;
+  // [카탈로그 원본] 개발 승격·신규 게임 등록 후 기존 정식 정렬·미러를 동기화하고 저장한다.
+  // 게임/저장/출시 승인 수치는 변경하지 않고 기존 검증기만 사용한다.
+  normalizeCatalog(catalog);
+  const catalogValidation=validateNormalizedCatalog(catalog);
+  if(!catalogValidation.pass)throw new Error('DESIGN_PROMOTION_CATALOG_INVALID:'+catalogValidation.errors.join(','));
 
   for(const [index,[file,value]] of [[seedPath,state],[portfolioPath,portfolio],[catalogPath,catalog],[queuePath,queue]].entries()){
     if(JSON.stringify(value)===documentsBefore[index])continue;
