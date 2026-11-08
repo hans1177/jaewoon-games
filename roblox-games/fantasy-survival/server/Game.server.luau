@@ -11917,7 +11917,9 @@ end
 
 -- [영지 · 성채 꾸미기] 안식처 곁 영지 문서에서 내 터(5칸)에 건물을 세우거나 바꾼다. 선택은 EstateA(칸당 4비트)에 저장된다.
 -- 플레이어마다 접속 순서대로 터를 하나씩 받고, 건물은 모든 플레이어에게 보인다(등록된 CC0 모델만 사용).
+-- [루아우 레지스터] 영지의 렌더/입력/저장 책임 함수들을 같은 동기 초기화 함수로 묶는다.
 do
+  local function initializeEstate()
   local E=Config.Estate
   local origin=Vector3.new(330,3,250)
   local plotOf={}
@@ -12269,6 +12271,8 @@ do
     if plot then usedPlots[plot]=nil end
     plotOf[player]=nil;sessions[player]=nil;lastBuild[player]=nil
   end)
+  end
+  initializeEstate()
 end
 
 -- [연계 퀘스트 엔진 · 거울 정원] Config.QuestLines를 서버가 진행시킨다. 단계 완료·보상·다음 목표는 대화창으로 알리고,
