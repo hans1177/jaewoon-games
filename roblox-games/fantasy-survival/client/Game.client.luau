@@ -6718,7 +6718,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   local tint=night and Color3.fromRGB(176,193,207)
     or period=="DAWN" and Color3.fromRGB(220,211,191)
     or period=="DUSK" and Color3.fromRGB(228,200,178)
-    or Color3.fromRGB(216,227,213)
+    or Color3.fromRGB(238,236,228)
   if storm then tint=tint:Lerp(Color3.fromRGB(180,195,206),.35)
   elseif rainy then tint=tint:Lerp(Color3.fromRGB(204,215,221),.20)
   elseif snow then tint=tint:Lerp(Color3.fromRGB(223,233,238),.25) end

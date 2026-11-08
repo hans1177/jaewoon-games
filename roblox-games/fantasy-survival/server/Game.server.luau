@@ -654,8 +654,8 @@ if not meadowAtmosphere then
   meadowAtmosphere.Name="MeadowForestAtmosphere"
   meadowAtmosphere.Parent=Lighting
 end
-meadowAtmosphere.Color=Color3.fromRGB(150,161,158)
-meadowAtmosphere.Decay=Color3.fromRGB(75,84,88)
+meadowAtmosphere.Color=Color3.fromRGB(160,182,208)
+meadowAtmosphere.Decay=Color3.fromRGB(88,104,128)
 meadowAtmosphere.Glare=.025
 -- [시간대 색감] Roblox 기존 Lighting 효과 1개만 사용해 숲의 계절감과 아침/저녁 온도를 부여.
 local meadowColorGrade=Lighting:FindFirstChild("MeadowColorGrade")
@@ -691,7 +691,7 @@ local function updateMeadowClimate()
   -- [날씨+시야] 흐린 아침도 어두운 검정 바닥으로 뭉개지지 않도록 환경광 보존.
   local brightness=math.max(1.15,(1.08+1.18*sun)*damp)
   local lightColor=Color3.fromRGB(93,102,110):Lerp(Color3.fromRGB(151,158,146),sun)
-  local airColor=Color3.fromRGB(119,139,156):Lerp(Color3.fromRGB(181,192,178),sun)
+  local airColor=Color3.fromRGB(119,139,156):Lerp(Color3.fromRGB(176,200,226),sun)
   if weather=="STORM" or weather=="RAIN" then
     lightColor=lightColor:Lerp(Color3.fromRGB(74,86,99),weather=="STORM" and .6 or .35)
     airColor=airColor:Lerp(Color3.fromRGB(104,115,125),weather=="STORM" and .68 or .4)
@@ -712,12 +712,12 @@ local function updateMeadowClimate()
   meadowAtmosphere.Density+=(forestAirDensity-meadowAtmosphere.Density)*.12
   meadowAtmosphere.Haze+=(forestHaze-meadowAtmosphere.Haze)*.12
   meadowAtmosphere.Color=meadowAtmosphere.Color:Lerp(
-    airColor:Lerp(meadowPalette.leaves,.11),.12)
+    airColor:Lerp(meadowPalette.leaves,.04),.12)
   -- [중세 숲] 낮의 푸른 먹구름과 황혼의 따뜻한 등불 색 대비를 표현한다.
   local tint=hour>=16.5 and hour<20.5 and Color3.fromRGB(231,206,179)
     or period=="NIGHT" and Color3.fromRGB(172,193,219)
     or period=="DAWN" and Color3.fromRGB(211,215,195)
-    or Color3.fromRGB(221,231,220)
+    or Color3.fromRGB(238,236,228)
   if weather=="STORM" or weather=="RAIN" then
     tint=tint:Lerp(Color3.fromRGB(173,195,210),weather=="STORM" and .38 or .2)
   end
