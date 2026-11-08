@@ -1,8 +1,8 @@
 {
-  "floor": 0,
+  "floor": 1,
   "tiers": {
     "npc": 3,
-    "world": 3,
+    "world": 4,
     "mobs": 4
   },
   "history": [
@@ -21,6 +21,15 @@
       "name": "블룸·색보정 강화",
       "why": "초기 수동 설정(오너 요청, 촬영 검증 전)",
       "at": "2026-11-08"
+    },
+    {
+      "floor": 1,
+      "category": "world",
+      "tier": 4,
+      "name": "떠다니는 꽃가루·반딧불 입자",
+      "why": "Studio 캡처 오류 없음, 화면 44장 정상",
+      "at": "2026-11-08"
     }
-  ]
+  ],
+  "lastReportSha": "d5ca116ee500db7b"
 }

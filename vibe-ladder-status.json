@@ -1,7 +1,7 @@
 {
  "games": {
   "fantasy-survival": {
-   "floor": 0,
+   "floor": 1,
    "categories": [
     {
      "id": "npc",
@@ -21,12 +21,12 @@
     {
      "id": "world",
      "label": "배경 분위기·빛·공기",
-     "tier": 3,
+     "tier": 4,
      "max": 6,
-     "name": "블룸·색보정 강화",
+     "name": "떠다니는 꽃가루·반딧불 입자",
      "next": {
-      "tier": 4,
-      "name": "떠다니는 꽃가루·반딧불 입자",
+      "tier": 5,
+      "name": "지역별 대기 프로필 강화",
       "blocked": false,
       "missing": []
      }
@@ -81,10 +81,35 @@
      ]
     }
    ],
-   "perf": null,
-   "frames": null,
-   "thumbs": [],
+   "perf": {
+    "sessions": 7,
+    "fpsAvg": 38.6,
+    "fpsMin": 31
+   },
+   "frames": {
+    "checked": 44,
+    "bad": 0
+   },
+   "thumbs": [
+    {
+     "floor": "floor-001-world-t4",
+     "files": [
+      "docs/devloop/ladder/fantasy-survival/floor-001-world-t4/g00_idle-0.jpg",
+      "docs/devloop/ladder/fantasy-survival/floor-001-world-t4/g05_runA-0.jpg",
+      "docs/devloop/ladder/fantasy-survival/floor-001-world-t4/g11_idle-0.jpg",
+      "docs/devloop/ladder/fantasy-survival/floor-001-world-t4/g16_runA-0.jpg"
+     ]
+    }
+   ],
    "history": [
+    {
+     "floor": 1,
+     "category": "world",
+     "tier": 4,
+     "name": "떠다니는 꽃가루·반딧불 입자",
+     "why": "Studio 캡처 오류 없음, 화면 44장 정상",
+     "at": "2026-11-08"
+    },
     {
      "floor": 0,
      "category": "world",
@@ -105,19 +130,21 @@
    "updated": "2026-11-08"
   },
   "mare-scientia": {
-   "floor": 0,
+   "floor": 1,
    "categories": [
     {
      "id": "npc",
      "label": "NPC 체형·복장",
-     "tier": 1,
+     "tier": 2,
      "max": 4,
-     "name": "공통 체형",
+     "name": "개인별 체격·머리 크기 변주",
      "next": {
-      "tier": 2,
-      "name": "개인별 체격·머리 크기 변주",
-      "blocked": false,
-      "missing": []
+      "tier": 3,
+      "name": "승인된 복장 아이템(셔츠·바지·얼굴)",
+      "blocked": true,
+      "missing": [
+       "approved-npc-outfit-items"
+      ]
      }
     },
     {
@@ -134,11 +161,48 @@
      }
     }
    ],
-   "gaps": [],
+   "gaps": [
+    {
+     "category": "npc",
+     "tier": 3,
+     "tierName": "승인된 복장 아이템(셔츠·바지·얼굴)",
+     "key": "approved-npc-outfit-items",
+     "candidates": [
+      "Interior/coatrackstanding",
+      "roblox-games/mare-scientia/assets/interior/coatrackstanding.glb",
+      "Interior/tablecloth",
+      "roblox-games/mare-scientia/assets/interior/tablecloth.glb",
+      "Interior/coatrack",
+      "roblox-games/mare-scientia/assets/interior/coatrack.glb",
+      "Interior/tablecrosscloth",
+      "roblox-games/mare-scientia/assets/interior/tablecrosscloth.glb"
+     ]
+    }
+   ],
    "perf": null,
-   "frames": null,
-   "thumbs": [],
-   "history": [],
+   "frames": {
+    "checked": 2,
+    "bad": 0
+   },
+   "thumbs": [
+    {
+     "floor": "floor-001-npc-t2",
+     "files": [
+      "docs/devloop/ladder/mare-scientia/floor-001-npc-t2/u0_main-0.jpg",
+      "docs/devloop/ladder/mare-scientia/floor-001-npc-t2/v1_options-0.jpg"
+     ]
+    }
+   ],
+   "history": [
+    {
+     "floor": 1,
+     "category": "npc",
+     "tier": 2,
+     "name": "개인별 체격·머리 크기 변주",
+     "why": "Studio 캡처 오류 없음, 화면 2장 정상",
+     "at": "2026-11-08"
+    }
+   ],
    "updated": "2026-11-08"
   }
  }
