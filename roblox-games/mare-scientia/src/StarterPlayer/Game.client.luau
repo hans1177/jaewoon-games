@@ -4657,5 +4657,16 @@ task.spawn(function()
 			workspace:SetAttribute("DevCall", nil)
 			openTradeHall()
 		end
+		local dc = workspace:GetAttribute("DevCall")
+		if dc == "Yard" then
+			workspace:SetAttribute("DevCall", nil)
+			openYardHall()
+		elseif dc == "Options" then
+			workspace:SetAttribute("DevCall", nil)
+			openOptions()
+		elseif type(dc) == "string" and string.sub(dc, 1, 4) == "Tab_" then
+			workspace:SetAttribute("DevCall", nil)
+			openTab(string.sub(dc, 5))
+		end
 	end
 end)
