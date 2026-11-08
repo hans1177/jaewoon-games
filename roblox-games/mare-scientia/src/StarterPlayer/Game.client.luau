@@ -580,15 +580,17 @@ local COMPANION_MODEL = {
 }
 -- 초상화 시트: 왼쪽부터 상인·항만 관리관·조선 장인 / 주점 주인·학자·항해가.
 -- 나이와 직업이 다른 인물을 사용한다. 나라·역할이 맞지 않으면 기존 인물 모델을 보존한다.
-local PORTRAIT_ATLAS = AssetIds["Portraits/characters"]
-local PORTRAIT_SIZE = Vector2.new(256, 336)
+-- 새 시설 NPC 초상화는 등록·권한 승인된 ID가 있을 때만 사용한다.
+-- 등록 전에는 기존 초상화 시트를 그대로 표시하므로 화면이 비지 않는다.
+local PORTRAIT_ATLAS = AssetIds["Portraits/npcs_new"] or AssetIds["Portraits/characters"]
+local PORTRAIT_SIZE = if AssetIds["Portraits/npcs_new"] then Vector2.new(128, 168) else Vector2.new(256, 336)
 local PORTRAIT_TILE = {
 	merchant = Vector2.new(0, 0),
-	harbor = Vector2.new(256, 0),
-	yard = Vector2.new(512, 0),
-	tavern = Vector2.new(0, 336),
-	scholar = Vector2.new(256, 336),
-	hero = Vector2.new(512, 336),
+	harbor = Vector2.new(PORTRAIT_SIZE.X, 0),
+	yard = Vector2.new(PORTRAIT_SIZE.X * 2, 0),
+	tavern = Vector2.new(0, PORTRAIT_SIZE.Y),
+	scholar = Vector2.new(PORTRAIT_SIZE.X, PORTRAIT_SIZE.Y),
+	hero = Vector2.new(PORTRAIT_SIZE.X * 2, PORTRAIT_SIZE.Y),
 }
 local PORTRAIT_GROUP = {
 	["교역소"] = "merchant", ["항만청"] = "harbor", ["조선소"] = "yard",
@@ -598,6 +600,17 @@ local PORTRAIT_GROUP = {
 -- 이 시트를 기존 초상화 컴포넌트에서 공유하므로 새 UI 구조는 필요 없다.
 local HERO_ATLAS = AssetIds["Portraits/heroes"]
 local HERO_SIZE = Vector2.new(256, 336)
+-- 제작 원화와 직업·문화권이 맞는 주인공부터 새 초상화로 교체한다.
+-- 외형이 안 맞는 국가 주인공은 기존에 등록된 고유 초상화를 보존한다.
+local HERO_NEW_ATLAS = AssetIds["Portraits/heroes_new"]
+local HERO_NEW_SIZE = Vector2.new(128, 168)
+local HERO_NEW_TILE = {
+	england = Vector2.new(0, 0), -- 엘리너: 해류 관측 학자
+	netherlands = Vector2.new(128, 168), -- 얀: 젊은 상사 설립자
+	france = Vector2.new(128, 336), -- 마리온: 몰락 귀족 가문
+	swahili = Vector2.new(0, 336), -- 아민: 잔지바르 선장
+	new_spain = Vector2.new(256, 336), -- 디에고: 광산 마을 출신
+}
 local HERO_TILE = {
 	england = Vector2.new(0, 0), -- 엘리너 렌
 	netherlands = Vector2.new(256, 0), -- 얀 데 흐로트
@@ -630,15 +643,19 @@ local function setPortrait(groupName)
 	portraitKey = identity
 	local tile = PORTRAIT_GROUP[groupName]
 	local heroTile = if heroNation then HERO_TILE[heroNation] else nil
-	local imageId = if heroTile and HERO_ATLAS then HERO_ATLAS
+	local newHeroTile = if heroNation and HERO_NEW_ATLAS then HERO_NEW_TILE[heroNation] else nil
+	local imageId = if newHeroTile then HERO_NEW_ATLAS
+		elseif heroTile and HERO_ATLAS then HERO_ATLAS
 		elseif tile and PORTRAIT_ATLAS then PORTRAIT_ATLAS
 		elseif groupName == "교역소" then AssetIds["Portraits/merchant"] else nil
 	portraitImage.Visible = imageId ~= nil
 	portraitFrame.Visible = imageId == nil
 	portraitImage.Image = if imageId then "rbxassetid://" .. tostring(imageId) else ""
-	portraitImage.ImageRectOffset = if imageId == HERO_ATLAS and heroTile then heroTile
+	portraitImage.ImageRectOffset = if newHeroTile then newHeroTile
+		elseif imageId == HERO_ATLAS and heroTile then heroTile
 		elseif imageId == PORTRAIT_ATLAS and tile then PORTRAIT_TILE[tile] else Vector2.zero
-	portraitImage.ImageRectSize = if imageId == HERO_ATLAS and heroTile then HERO_SIZE
+	portraitImage.ImageRectSize = if newHeroTile then HERO_NEW_SIZE
+		elseif imageId == HERO_ATLAS and heroTile then HERO_SIZE
 		elseif imageId == PORTRAIT_ATLAS and tile then PORTRAIT_SIZE else Vector2.zero
 	-- 이미지 전환 시 이전 3D 모델까지 정리해 불필요한 뷰포트 객체가 남지 않도록 한다.
 	for _, c in portraitFrame:GetChildren() do
@@ -1648,17 +1665,20 @@ end
 
 -- 주인공 선택·항해 시작·에필로그에 같은 국가별 고유 초상을 사용한다.
 local function heroPortrait(parent, nationId, w, h)
-	local tile = HERO_TILE[nationId]
-	if HERO_ATLAS and tile then
+	local newTile = if HERO_NEW_ATLAS then HERO_NEW_TILE[nationId] else nil
+	local tile = newTile or HERO_TILE[nationId]
+	local atlas = if newTile then HERO_NEW_ATLAS else HERO_ATLAS
+	local size = if newTile then HERO_NEW_SIZE else HERO_SIZE
+	if atlas and tile then
 		local photo = Instance.new("ImageLabel")
 		photo.Name = "HeroPortrait"
 		photo.Size = UDim2.fromOffset(w, h)
 		photo.BackgroundColor3 = Color3.fromRGB(30, 42, 62)
 		photo.BorderSizePixel = 0
 		photo.ScaleType = Enum.ScaleType.Crop
-		photo.Image = "rbxassetid://" .. tostring(HERO_ATLAS)
+		photo.Image = "rbxassetid://" .. tostring(atlas)
 		photo.ImageRectOffset = tile
-		photo.ImageRectSize = HERO_SIZE
+		photo.ImageRectSize = size
 		corner(photo, 10)
 		local st = Instance.new("UIStroke")
 		st.Color = Color3.fromRGB(214, 170, 82)
@@ -4455,8 +4475,11 @@ renderTitle = function()
 		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
 		st.Parent = card
 		-- 국가 카드도 국가별 주인공 고유 얼굴을 표시한다. 자산이 없으면 기존 국명 배지를 유지한다.
-		local faceTile = HERO_TILE[n.id]
-		if HERO_ATLAS and faceTile then
+		local newFaceTile = if HERO_NEW_ATLAS then HERO_NEW_TILE[n.id] else nil
+		local faceTile = newFaceTile or HERO_TILE[n.id]
+		local faceAtlas = if newFaceTile then HERO_NEW_ATLAS else HERO_ATLAS
+		local faceSize = if newFaceTile then HERO_NEW_SIZE else HERO_SIZE
+		if faceAtlas and faceTile then
 			local face = Instance.new("ImageLabel")
 			face.Name = "NationHeroPortrait"
 			face.Position = UDim2.fromOffset(8, 4)
@@ -4464,9 +4487,9 @@ renderTitle = function()
 			face.BackgroundColor3 = Color3.fromRGB(25, 32, 45)
 			face.BorderSizePixel = 0
 			face.ScaleType = Enum.ScaleType.Crop
-			face.Image = "rbxassetid://" .. tostring(HERO_ATLAS)
+			face.Image = "rbxassetid://" .. tostring(faceAtlas)
 			face.ImageRectOffset = faceTile
-			face.ImageRectSize = HERO_SIZE
+			face.ImageRectSize = faceSize
 			face.ZIndex = 14
 			corner(face, 6)
 			face.Parent = card
