@@ -5456,6 +5456,12 @@ local function spawnEnemy(site, siteIndex)
       table.sort(list,function(a,b) return a.v>b.v end)
       for rank,row in ipairs(list) do
         local part=row.part
+        -- 사슴·큰사슴·허스키의 원본 텍스처 아틀라스는 UV가 맞지 않아 얼룩덜룩하게 보인다. 텍스처를 걷어내고 팔레트 색을 입힌다.
+        if site.model=="deer" or site.model=="stag" or site.model=="husky" then
+          local sa=part:FindFirstChildOfClass("SurfaceAppearance")
+          if sa then sa:Destroy() end
+          part.TextureID=""
+        end
         local hasSkin=part.TextureID~="" or part:FindFirstChildOfClass("SurfaceAppearance")~=nil
         if hasSkin==false then
           local name=part.Name:lower()

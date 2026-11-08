@@ -13067,3 +13067,235 @@ task.spawn(function()
     end
   end)
 end)
+
+-- ============================================================================
+-- [범용 체인 리그 애니메이터] 뱀·거미·날개 몹(용·유령·글럽·말벌)·단순 4뼈 몹(고블린·비스트맨)처럼
+-- 다리 뼈 기반 보행 시스템이 맡지 않는 리그를 구동한다. 뼈 이름만 보고 몸통 물결·날개짓·턱·꼬리·팔 동작을 얹는다.
+-- 서버 판정과 무관한 표시 전용이며, 기존 늑대·사슴·골렘·박쥐 등 전용 시스템이 맡는 종은 건드리지 않는다.
+-- ============================================================================
+task.spawn(function()
+  local RunService=game:GetService("RunService")
+  local rigs=setmetatable({},{__mode="k"})
+  local skipSpecies={deer=true,boar=true,rabbit=true,bat=true,bee=true,golem=true,ghost=true}
+  local function norm(name) return (name:lower():gsub("[%._%s]","")) end
+  local function smooth(t) t=math.clamp(t,0,1) return t*t*(3-2*t) end
+  local function X(a) return CFrame.Angles(a,0,0) end
+  local function Y(a) return CFrame.Angles(0,a,0) end
+  local function Z(a) return CFrame.Angles(0,0,a) end
+
+  local function build(model)
+    local species=model:GetAttribute("Species")
+    if skipSpecies[species] then return nil end
+    if species=="wolf" and model:GetAttribute("Variant")==nil then return nil end
+    local bones={}
+    for _,d in ipairs(model:GetDescendants()) do
+      if d:IsA("Bone") then bones[norm(d.Name)]=d end
+    end
+    -- 다리 뼈 보행 시스템(4족·공룡·이족)이 맡는 리그는 제외한다.
+    if bones.frontupperlegl or bones.frontuplegl or bones.backupperlegl or bones.backuplegl then return nil end
+    if bones.upperlegl and bones.upperlegr and bones.upperarml then return nil end
+    local pivot=model:GetPivot()
+    local inv=pivot:Inverse()
+    local rig={model=model,bones={},rest={},cur={},phase=0,seed=math.random()*40,lastPos=pivot.Position,speed=0}
+    local _,size=model:GetBoundingBox()
+    rig.height=math.max(2,size.Y)
+    rig.length=math.max(2,math.max(size.X,size.Z))
+    local key=tostring(model:GetAttribute("Variant") or model.Name):lower()
+    rig.spider=key:find("spider",1,true)~=nil
+    rig.snake=key:find("snake",1,true)~=nil or (bones.tail and bones.chest and bones.head and bones.body)~=nil
+    rig.wasp=bones.sting~=nil
+    local want={"body","body1","body2","body3","body4","chest","neck","head","head2","head3","torso","tail","tail1","tail2","tail3",
+      "mouth","lowermouth","tongue1","tongue2","tongue3","abdomen","abdomen2","abdomen3","sting","wingl","wingr",
+      "upperarml","upperarmr","lowerarml","lowerarmr"}
+    for i=1,4 do for _,s in ipairs({"l","r"}) do table.insert(want,"wing"..i..s) end end
+    local found=0
+    for _,n in ipairs(want) do
+      local b=bones[n]
+      if b then
+        rig.bones[n]=b
+        rig.rest[n]=(inv*(b.WorldCFrame*b.Transform:Inverse())).Rotation
+        rig.cur[n]=CFrame.identity
+        found+=1
+      end
+    end
+    rig.wings=(bones.wing1l or bones.wing1r or bones.wingl or bones.wingr)~=nil
+    rig.arms=(bones.upperarml and bones.upperarmr)~=nil
+    rig.chain=(bones.body1 and bones.body2)~=nil
+    rig.simple=(bones.body and bones.head and not bones.torso and not rig.snake)~=nil
+    if found<3 then return nil end
+    if not (rig.wings or rig.arms or rig.chain or rig.simple or rig.snake) then return nil end
+    return rig
+  end
+
+  local function setPose(rig,name,rot,alpha)
+    local bone=rig.bones[name]
+    if not bone then return end
+    local rest=rig.rest[name]
+    local current=rig.cur[name]:Lerp(rest:Inverse()*rot*rest,alpha)
+    rig.cur[name]=current
+    bone.Transform=current
+  end
+
+  local function update(rig,dt,now)
+    local model=rig.model
+    local pivot=model:GetPivot()
+    local moved=Vector3.new(pivot.Position.X-rig.lastPos.X,0,pivot.Position.Z-rig.lastPos.Z).Magnitude
+    rig.lastPos=pivot.Position
+    local rawSpeed=moved>6 and 0 or moved/math.max(dt,1/120)
+    rig.speed+=(rawSpeed-rig.speed)*math.min(1,dt*8)
+    local speed=rig.speed
+    local mode=model:GetAttribute("NativeMobMotion") or "IDLE"
+    local moveAmt=mode=="DEATH" and 0 or math.clamp(speed/5,0,1)
+    local runAmt=math.clamp((speed-3.5)/4,0,1)
+    if moveAmt>0 then rig.phase+=moved/(rig.snake and rig.length*.55 or rig.height*.9) end
+    local ph=rig.phase*math.pi*2
+    local t=now+rig.seed
+    local alpha=1-math.exp(-dt*(mode=="HIT" and 30 or 14))
+
+    local serverNow=workspace:GetServerTimeNow()
+    local startedAt=tonumber(model:GetAttribute("NativeMobMotionStartedAt")) or serverNow
+    local duration=math.max(.12,tonumber(model:GetAttribute("NativeMobMotionDuration")) or .5)
+    local age=math.max(0,serverNow-startedAt)
+    local impactAge=serverNow-(tonumber(model:GetAttribute("NativeMobLastImpact")) or -9)
+    local raise,strike,hit,death=0,0,0,0
+    if mode=="ANTICIPATION" then raise=smooth(age/duration)
+    elseif mode=="RECOVERY" and impactAge>=0 and impactAge<.6 then
+      if impactAge<.18 then raise=1-1.1*smooth(impactAge/.18);strike=math.sin(impactAge/.18*math.pi*.5)
+      else raise=-.1*(1-smooth((impactAge-.18)/.4));strike=1-smooth((impactAge-.18)/.42) end
+    elseif mode=="HIT" then hit=math.sin(math.clamp(age/.45,0,1)*math.pi)
+    elseif mode=="DEATH" then death=smooth(age/1.2) end
+    local fight=math.max(raise,0)+strike
+    local idle=moveAmt<.05 and fight==0 and hit==0 and death==0
+
+    -- 몸통 앞뒤 굽힘(공격 시 젖혔다 내려침)과 피격·사망 굴곡.
+    local pitchAtk=.55*raise-.75*strike
+    local pitchHit=.5*hit
+    local breath=math.sin(t*1.7)
+
+    -- 뱀: 몸통을 따라 좌우 물결이 머리→꼬리로 전해진다. 공격은 상체를 들어올렸다가 내리꽂는다.
+    if rig.snake then
+      local amp=.16+.30*moveAmt
+      local chainFront={"body","chest","neck","head"}
+      for i,n in ipairs(chainFront) do
+        local wave=math.sin(ph*1.0-i*.9)*amp+(idle and math.sin(t*.8-i*.7)*.07 or 0)
+        local lift=(n=="chest" and .75 or n=="neck" and .55 or n=="head" and .25 or 0)*pitchAtk*1.4
+        setPose(rig,n,Y(wave)*X(lift-pitchHit*.4+(n=="head" and -breath*.02 or 0)),alpha)
+      end
+      for i,n in ipairs({"tail","tail1","tail2","tail3"}) do
+        setPose(rig,n,Y(math.sin(ph-3.2-i*.8)*(amp*1.3)+(idle and math.sin(t*.9-i)*.1 or 0)),alpha)
+      end
+      local open=math.clamp(raise*1.1-strike*.6,0,1)
+      setPose(rig,"lowermouth",X(-.75*open-(idle and math.max(0,math.sin(t*.4))^8*.05 or 0)),alpha)
+      setPose(rig,"mouth",X(.25*open),alpha)
+      local flick=idle and math.max(0,math.sin(t*3.1))^6 or .2
+      for i,n in ipairs({"tongue1","tongue2","tongue3"}) do
+        setPose(rig,n,Y(math.sin(t*28+i)*.35*flick)*X(.2*flick),alpha)
+      end
+    end
+
+    -- 날개: 이동 중엔 빠르게, 대기 중엔 천천히 접었다 펴고, 공격 준비엔 활짝 펼친다. 날개 뼈는 뒤로 갈수록 늦게 따라온다.
+    if rig.wings and not rig.spider then
+      local rate=rig.wasp and 38 or (6+5*moveAmt)
+      local base=rig.wasp and .9 or (.55+.35*moveAmt)
+      local spread=.5*raise
+      for i,n in ipairs({"wing1","wing2","wing3","wing4",""}) do
+        local lag=(i-1)*.55
+        local f=math.sin(t*rate-lag)
+        local a=(base*f+spread)*(i==1 and 1 or .55)
+        if death>0 then a=-.7*death end
+        for _,s in ipairs({"l","r"}) do
+          local sign=s=="l" and -1 or 1
+          setPose(rig,n..s,Z(sign*a),alpha)
+        end
+      end
+    end
+
+    -- 거미: 다리 대신 쓰이는 Wing 뼈를 번갈아 흔들어 총총 걷기. 공격 땐 앞다리를 들어올린다.
+    if rig.spider then
+      for i=1,4 do
+        for _,s in ipairs({"l","r"}) do
+          local sign=s=="l" and -1 or 1
+          local off=((i+(s=="l" and 0 or 1))%2)*math.pi
+          local step=math.sin(ph*2+off+i*.7)*.38*moveAmt
+          local lift=math.max(0,math.cos(ph*2+off+i*.7))*.28*moveAmt
+          local atk=(i==1) and (.9*raise-.6*strike) or 0
+          setPose(rig,"wing"..i..s,Z(sign*(lift-.1*death*i))*X(step+atk+(idle and math.sin(t*1.3+i)*.04 or 0)),alpha)
+        end
+      end
+    end
+
+    -- 말벌: 배를 말아 침을 내지른다.
+    if rig.wasp then
+      setPose(rig,"abdomen",X(-.35*raise+.4*strike+breath*.03),alpha)
+      setPose(rig,"abdomen2",X(-.3*raise+.35*strike),alpha)
+      setPose(rig,"abdomen3",X(-.25*raise+.3*strike),alpha)
+      setPose(rig,"sting",X(.3*strike),alpha)
+    end
+
+    -- 몸통 체인(Body1~4, 유령·용·글럽): 떠다니듯 느린 물결. 이동하면 빨라지고 공격 땐 젖혔다 숙인다.
+    if rig.chain then
+      for i=1,4 do
+        local w=math.sin(t*(1.5+1.2*moveAmt)-i*.8)*(.09+.1*moveAmt)
+        setPose(rig,"body"..i,Y(w*.8)*X(w*.5+pitchAtk*.3-pitchHit*.2+death*.18),alpha)
+      end
+    end
+    if rig.chain or rig.wings or rig.simple then
+      setPose(rig,"torso",X(pitchAtk*.45-pitchHit*.3+(idle and breath*.02 or 0)),alpha)
+    end
+
+    -- 머리·목: 대기 땐 두리번, 공격 땐 내려꽂는다.
+    if not rig.snake then
+      local look=idle and math.sin(t*.5)*.35 or 0
+      local nod=math.sin(ph*2)*.07*moveAmt+(idle and breath*.02 or 0)
+      setPose(rig,"neck",Y(look*.4)*X(nod+pitchAtk*.5-pitchHit*.4),alpha)
+      setPose(rig,"head",Y(look*.6)*X(nod*.5+pitchAtk*.5-pitchHit*.5+death*.4),alpha)
+    end
+
+    -- 팔(유령·용·거미류): 대기 땐 가볍게 흔들리고, 공격 땐 번쩍 들어올렸다 내려친다.
+    if rig.arms then
+      local swing=math.sin(t*1.4)*.05
+      local up=2.1*raise-1.0*strike
+      setPose(rig,"upperarml",X(up+swing+.12*hit),alpha)
+      setPose(rig,"upperarmr",X(up-swing+.12*hit),alpha)
+      local bend=.25+.6*math.max(0,raise)
+      setPose(rig,"lowerarml",X(bend),alpha)
+      setPose(rig,"lowerarmr",X(bend),alpha)
+    end
+
+    -- 단순 4뼈 몹(고블린·비스트맨): 보폭에 맞춘 몸 흔들림과 머리 끄덕임, 공격 시 앞으로 쏠림.
+    if rig.simple then
+      local bob=math.sin(ph*2)*.05*moveAmt
+      setPose(rig,"body",Z(math.sin(ph)*.07*moveAmt+(idle and math.sin(t*.4)*.02 or 0))*X(bob-.25*runAmt*moveAmt+pitchAtk*.7-pitchHit),alpha)
+      for i,n in ipairs({"head","head2","head3"}) do
+        setPose(rig,n,Y((idle and math.sin(t*.6)*.3 or 0)*(i==1 and 1 or .5))*X(-bob*(i)+pitchAtk*.3),alpha)
+      end
+    end
+  end
+
+  local scanAt=0
+  RunService.RenderStepped:Connect(function(dt)
+    local now=os.clock()
+    if now>=scanAt then
+      scanAt=now+1.5
+      local world=workspace:FindFirstChild("FantasySurvivalWorld")
+      if world then
+        for _,model in ipairs(world:GetChildren()) do
+          if model:IsA("Model") and rigs[model]==nil and model:GetAttribute("Species") and model:GetAttribute("EnemyHealth")~=nil then
+            local ok,rig=pcall(build,model)
+            rigs[model]=(ok and rig) or false
+          end
+        end
+      end
+    end
+    local camera=workspace.CurrentCamera
+    local camPos=camera and camera.CFrame.Position
+    for model,rig in pairs(rigs) do
+      if rig and model.Parent then
+        if not camPos or (model:GetPivot().Position-camPos).Magnitude<130 then
+          local ok,err=pcall(update,rig,math.min(dt,.1),now)
+          if not ok then rigs[model]=false;warn("CHAIN_RIG_ERROR "..tostring(err)) end
+        end
+      end
+    end
+  end)
+end)
