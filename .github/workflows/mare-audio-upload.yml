@@ -2,6 +2,16 @@
 name: Mare Audio Upload
 on:
   workflow_dispatch:
+    inputs:
+      universe_id:
+        type: string
+        required: false
+        default: '10775310508'
+      fresh:
+        description: '1 = 이전 등록 기록을 무시하고 새 계정으로 다시 올림'
+        type: string
+        required: false
+        default: '1'
 
 permissions:
   contents: write
@@ -24,9 +34,10 @@ jobs:
           node-version: '22'
       - name: Upload audio and grant Universe use
         env:
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
+          ROBLOX_CREATOR_USER_ID: '11664914771'
+          AUDIO_FRESH: ${{ inputs.fresh }}
         run: node tools/mare-audio-upload.mjs
       - name: Commit audio ids
         run: |
