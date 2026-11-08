@@ -80,7 +80,8 @@ for (const [dir, kind] of [['naval', 'Naval'], ['town', 'Town'], ['people', 'Peo
     const image = kind === 'Menu' || kind === 'Goods' || kind === 'Portraits' || kind === 'CardArt';
     if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
     plan.push({kind, name: path.basename(f, ext), file: path.join(ROOT, 'assets', dir, f), ext,
-      assetType: image ? 'Decal' : 'Model',
+      // 초상은 rbxassetid 로 ImageLabel 에 직접 쓰므로 Image 종류여야 한다(Decal 이면 '종류 불일치'로 비어 보인다).
+      assetType: image ? (kind === 'Portraits' ? 'Image' : 'Decal') : 'Model',
       license: kind === 'CardArt' ? 'WIKIMEDIA_VERIFIED_PD_CC0_CCBY_MODIFIED'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
         : kind === 'Portraits' && f === 'heroes.jpg' ? 'PUBLIC_DOMAIN_AND_ORIGINAL'
@@ -96,6 +97,13 @@ for (const [name, row] of Object.entries(registry.assets)) {
 }
 let approvedImages = {};
 try { approvedImages = JSON.parse(await fs.readFile(ROOT + '/assets/APPROVED_IMAGES.json', 'utf8')).approved || {}; } catch {}
+for (const item of plan) {
+  const row = registry.assets[item.kind + '/' + item.name];
+  if (row && row.assetType && row.assetType !== item.assetType) {
+    console.log('REUPLOAD_TYPE_CHANGED', item.kind + '/' + item.name, row.assetType, '->', item.assetType);
+    delete registry.assets[item.kind + '/' + item.name];
+  }
+}
 const failures = [];
 const pendingPermissions = [];
 let accountBlocked = false;
@@ -108,7 +116,7 @@ for (const item of plan) {
     continue;
   }
   // [바이브 자체 검수 관문] 새 이미지는 바이브가 직접 보고 확인해 APPROVED_IMAGES.json에 (이름+해시)로 올린 것만 업로드한다. 오너 승인 대기 없음(contentSafety.autonomousVibeReview).
-  if (item.assetType === 'Decal' && !registry.assets[id]?.assetId) {
+  if (item.assetType !== 'Model' && !registry.assets[id]?.assetId) {
     const hash = crypto.createHash('sha256').update(originalBytes).digest('hex');
     if (approvedImages[id] !== hash) {
       console.log('SKIP_IMAGE_NOT_HUMAN_APPROVED', id);
@@ -205,7 +213,7 @@ for (const item of plan) {
     const form = new FormData();
     form.set('request', JSON.stringify({
       assetType: item.assetType, displayName: 'MareEssentia ' + id,
-      description: item.assetType === 'Decal'
+      description: item.assetType !== 'Model'
         ? item.kind === 'Portraits' && item.name === 'heroes' ? 'Nine historical/fictional protagonist portraits: original game art plus public-domain archival images; sources in assets/SOURCES.md'
           : item.kind === 'CardArt' ? 'Codex card art: Wikipedia lead image (public domain/CC0/CC BY verified), stylized for Mare Essentia; credits in CardArtCredits.luau'
           : item.kind === 'Portraits' && item.name.startsWith('scholar_') ? 'Public-domain historical portrait from Wikimedia Commons (license verified by fetch_commons.py); see assets/portraits/portraits-report.json'
