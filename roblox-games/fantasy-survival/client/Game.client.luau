@@ -1616,8 +1616,13 @@ local function renderMeadowPages()
       end
     end
   end
-  partyLines[#partyLines+1]=string.format("기사단 야영지  숲 %d/3 · 화산 %d/3 · 오아시스 %d/3  (입구 근처 모닥불에서 복구)",
-    player:GetAttribute("CampWorldtree") or 0,player:GetAttribute("CampVolcano") or 0,player:GetAttribute("CampOasis") or 0)
+  do
+    local campNames={{"숲","Worldtree"},{"화산","Volcano"},{"오아시스","Oasis"},{"바람절벽","Windcliff"},{"북부고원","Highland"},{"남부습원","Wetland"},
+      {"협곡","Canyon"},{"혼돈","Chaos"},{"안개늪지","Swamp"},{"성채","Citadel"},{"사막","Desert"},{"죽음늪","Deadmarsh"}}
+    local parts={}
+    for _,entry in ipairs(campNames) do parts[#parts+1]=string.format("%s %d/3",entry[1],player:GetAttribute("Camp"..entry[2]) or 0) end
+    partyLines[#partyLines+1]="기사단 야영지  "..table.concat(parts," · ").."  (이정표 곁 모닥불에서 복구)"
+  end
   do
     local owned,active,bond=player:GetAttribute("CompanionOwned") or 0,player:GetAttribute("CompanionActive") or 0,player:GetAttribute("CompanionBond") or 0
     local byId={}
@@ -1690,7 +1695,7 @@ player:GetAttributeChangedSignal("QuestStage"):Connect(renderMeadowPages)
 workspace:GetAttributeChangedSignal("MeteorSeat"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestProgress"):Connect(renderMeadowPages)
-for _,name in ipairs({"Notoriety","ConquestMask","HunterKills","RaidZone","RaidUntil","MiningProficiency","PickaxeTier","ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","CampWorldtree","CampVolcano","CampOasis","BountyIndex","BountyPhase","BountyClues","WorldDiscovered","WaypointMask","DexKillWolf","DexKillBat","DexKillAlpha"})do
+for _,name in ipairs({"Notoriety","ConquestMask","HunterKills","RaidZone","RaidUntil","MiningProficiency","PickaxeTier","ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered","CampWorldtree","CampVolcano","CampOasis","CampWindcliff","CampHighland","CampWetland","CampCanyon","CampChaos","CampSwamp","CampCitadel","CampDesert","CampDeadmarsh","BountyIndex","BountyPhase","BountyClues","WorldDiscovered","WaypointMask","DexKillWolf","DexKillBat","DexKillAlpha"})do
   player:GetAttributeChangedSignal(name):Connect(renderMeadowPages)
 end
 for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채집","scope-coreloop-1-6ebe58f496"},{"장비 강화","scope-coreloop-2-6c927cfa40"}})do

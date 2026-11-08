@@ -47,7 +47,7 @@ for(const r of regions){
   const note=[];
   if(r.status==='Planned'&&cs.length>0)note.push(`상태 라벨은 Planned(UI에 '준비 중')지만 캠프 ${cs.length}개 콘텐츠가 있음 → 라벨 확인 필요`);
   else if(r.status!=='Open')note.push(`상태 ${r.status}`);
-  if(r.id!=='meadow'&&cs.length===0)note.push('서브 캠프 없음(다른 방식 구현일 수 있음)');
+  if(r.id==='windcliff')note.push('생태 거점 3곳(광산·박쥐 둥지·오크 야영지)으로 구현');else if(r.id!=='meadow'&&cs.length===0)note.push('서브 캠프 없음(다른 방식 구현일 수 있음)');
   if(bad.length){note.push(`누락: ${bad.map(c=>`${c.id}(${c.miss})`).join(' ')}`);problems++}
   rows.push(`| ${r.name} | ${r.status} | ${r.unlock||'-'} | ${cs.length} | ${note.join(' / ')||'OK'} |`);
 }

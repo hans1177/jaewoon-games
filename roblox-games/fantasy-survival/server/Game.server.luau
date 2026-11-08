@@ -8862,6 +8862,7 @@ do
       end
       return false
     end
+    local ambushCount=0
     local function addAmbush(x,z)
       local zoneId=world.ZoneAt(x,z)
       local pool=zoneId and pools[zoneId]
@@ -8880,6 +8881,24 @@ do
         drops=spec[6],position=Vector3.new(x,3,z)})
       placedSites[#placedSites+1]={X=x,Z=z}
       count+=1
+      -- [길목 거점] 네 곳 중 한 곳은 모닥불·말뚝·보급 상자를 둔 작은 야영 거점으로 꾸미고 같은 종 졸개 둘을 더 세운다.
+      ambushCount+=1
+      if ambushCount%4==0 then
+        task.delay(11,function()
+          local base=Vector3.new(x,3,z)
+          pcall(worldAsset,"vxCampfirePit",base,2.4)
+          pcall(worldAsset,"vxPoles",base+Vector3.new(7,0,3),6)
+          pcall(worldAsset,"vxChest",base+Vector3.new(-5,0,4),2)
+        end)
+        for member=1,2 do
+          local angle=member*math.pi
+          table.insert(meadowEncounterSites,{id=spec[1],atom="HEAD_CANINE",model=spec[2],
+            name=spec[3] and "길목의 "..spec[3] or nil,tier=math.min(10,zoneTier[zoneId]+tierGain),height=spec[4],
+            hp=spec[2] and spec[5] or nil,dmg=spec[2] and spec[5]*.8 or nil,
+            drops=spec[6],position=Vector3.new(x+math.cos(angle)*10,3,z+math.sin(angle)*10)})
+          count+=1
+        end
+      end
     end
     local function roadside(x,z,dx,dz)
       -- (dx,dz)는 길 방향. 길에 수직으로 14~28칸, 좌우 번갈아 비켜 선다.
@@ -12363,6 +12382,16 @@ do
     worldtree={field="CampWorldtree",center=Vector3.new(1250,0,150),name="세계수 숲 야영지"},
     volcano={field="CampVolcano",center=Vector3.new(2260,0,40),name="화산 협곡 야영지"},
     oasis={field="CampOasis",center=Vector3.new(3460,0,-60),name="오아시스 야영지"},
+    -- [전 지역 야영지] 각 지역의 이정표 곁에 기사단 야영지를 하나씩 둔다(모닥불 복구 → 요리 화덕 → 숙소).
+    windcliff={field="CampWindcliff",center=Vector3.new(-1670,0,340),name="바람 절벽 야영지"},
+    highland={field="CampHighland",center=Vector3.new(-1170,0,-1770),name="북부 고원 야영지"},
+    wetland={field="CampWetland",center=Vector3.new(-570,0,1930),name="남부 습원 야영지"},
+    canyon={field="CampCanyon",center=Vector3.new(1630,0,-1870),name="고대 협곡 야영지"},
+    chaos={field="CampChaos",center=Vector3.new(4530,0,-1770),name="혼돈의 대지 야영지"},
+    swamp={field="CampSwamp",center=Vector3.new(4830,0,40),name="안개 늪지 야영지"},
+    citadel={field="CampCitadel",center=Vector3.new(6130,0,-270),name="불타는 성채 야영지"},
+    desert={field="CampDesert",center=Vector3.new(2930,0,1930),name="황금 사막 야영지"},
+    deadmarsh={field="CampDeadmarsh",center=Vector3.new(5330,0,1930),name="죽음의 늪 야영지"},
   }
   local restReady={}
   -- 요리 화덕(2단계 이상)을 세운 야영지 곁에서는 요리 메뉴의 요리 실행 검사를 통과시킨다.
