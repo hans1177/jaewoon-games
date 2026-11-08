@@ -197,8 +197,6 @@ jobs:
         env:
           ROBLOX_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
           ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
         shell: bash
         run: |
@@ -293,8 +291,6 @@ jobs:
         env:
           ROBLOX_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
           ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -375,8 +371,6 @@ jobs:
         env:
           ROBLOX_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
@@ -450,8 +444,7 @@ jobs:
           const bound=bgIds.length===sceneIndexes.length&&fgIds.length===depthIndexes.length;
           const universe=String(process.env.ROBLOX_UNIVERSE_ID||'');
           const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
-          const raw=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
-          const cookie=raw?(raw.includes('.ROBLOSECURITY=')?raw:'.ROBLOSECURITY='+raw+';'):'';
+          // [인증] 사진 원본 업로드도 새 Open Cloud 키만 사용한다.
           if(universe!=='10773436325'||!key)throw Error('FOREST_INTRO_OWNER_UNIVERSE_AUTH_REQUIRED');
           const read=r=>r.json().catch(()=>({}));
           const grant=async ids=>{
@@ -461,17 +454,8 @@ jobs:
             const valid=(r,j)=>r.ok&&Array.isArray(j.successAssetIds)
               &&ids.every(id=>j.successAssetIds.map(String).includes(String(id)))
               &&(!Array.isArray(j.errors)||j.errors.length===0);
-            let r=await fetch(url,{method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},body,signal:AbortSignal.timeout(40000)});
-            let j=await read(r);
-            if(!valid(r,j)&&cookie){
-              const headers={'content-type':'application/json',cookie};
-              r=await fetch(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(40000)});
-              if(r.status===403&&r.headers.get('x-csrf-token')){
-                headers['x-csrf-token']=r.headers.get('x-csrf-token');
-                r=await fetch(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(40000)});
-              }
-              j=await read(r);
-            }
+            const r=await fetch(url,{method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},body,signal:AbortSignal.timeout(40000)});
+            const j=await read(r);
             if(!valid(r,j)){
               const reasons=(Array.isArray(j.errors)?j.errors:[]).map(e=>({
                 code:e.code??null,message:String(e.message||'').slice(0,180),
@@ -489,12 +473,6 @@ jobs:
             process.exit(0);
           }
           let creator=null;
-          if(cookie){
-            const r=await fetch('https://develop.roblox.com/v1/universes/'+universe,{headers:{cookie},signal:AbortSignal.timeout(30000)});
-            const j=await read(r);
-            if(r.ok&&String(j.id)===universe&&Number(j.creatorTargetId)>0&&['User','Group'].includes(j.creatorType))
-              creator={[j.creatorType==='Group'?'groupId':'userId']:String(j.creatorTargetId)};
-          }
           if(!creator){
             const scope=await introspectRobloxApiKey({apiKey:key});
             const rows=[];
@@ -507,32 +485,12 @@ jobs:
             if(unique.length===1)creator=unique[0];
           }
           if(!creator)throw Error('FOREST_INTRO_CREATOR_UNVERIFIED');
-          // [인증] 공식 Open Cloud 우선. 403 때 기존 소유자 인증으로 교차 확인하고 같은 방식으로 상태를 조회한다.
-          let csrf='';
-          let imageAuth='cloud';
+          // [인증] 다른 계정 쿠키는 사용하지 않고 Cloud 키 권한이 없으면 중단한다.
           const request=async (suffix,opts)=>{
-            const send=async auth=>{
-              const headers=auth==='owner'?{cookie}:{'x-api-key':key};
-              if(auth==='owner'&&csrf)headers['x-csrf-token']=csrf;
-              const url='https://apis.roblox.com/assets/'+(auth==='owner'?'user-auth/':'')+'v1/'+suffix;
-              let r=await fetch(url,{...opts,headers,signal:AbortSignal.timeout(60000)});
-              if(auth==='owner'&&r.status===403&&r.headers.get('x-csrf-token')){
-                csrf=r.headers.get('x-csrf-token');
-                headers['x-csrf-token']=csrf;
-                r=await fetch(url,{...opts,headers,signal:AbortSignal.timeout(60000)});
-              }
-              return r;
-            };
-            const r=await send(imageAuth);
-            if(r.status!==403||!cookie)return r;
-            const fallback=imageAuth==='cloud'?'owner':'cloud';
-            const alternative=await send(fallback);
-            if(alternative.ok){
-              imageAuth=fallback;
-              console.log('FOREST_INTRO_AUTH_ROUTE='+fallback.toUpperCase());
-              return alternative;
-            }
-            return r;
+            console.log('FOREST_INTRO_AUTH_ROUTE=OPEN_CLOUD');
+            return fetch('https://apis.roblox.com/assets/v1/'+suffix,{
+              ...opts,headers:{'x-api-key':key},signal:AbortSignal.timeout(60000),
+            });
           };
           // [등록 복구] 이전 실제 Roblox 성공 로그의 ID와 원본 SHA를 함께 검증해 중복 등록을 막는다.
           const registeredReceipts={
@@ -643,8 +601,6 @@ jobs:
         env:
           ROBLOX_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         shell: bash
         run: |
           set -euo pipefail
@@ -726,14 +682,12 @@ jobs:
           const assetIds=selected;
           if(assetIds.length){
             // Verified CC0 models still require explicit Roblox Universe grants.
-            // An owner-authenticated cookie is an official alternative to an API
-            // key without asset-permissions:write; never skip grant verification.
+            // Missing Open Cloud asset permissions block the upload, without cookie fallback.
             const url='https://apis.roblox.com/asset-permissions-api/v1/assets/permissions';
             const body=JSON.stringify({subjectType:'Universe',subjectId:String(process.env.ROBLOX_UNIVERSE_ID),
               action:'Use',requests:assetIds.map(assetId=>({assetId,grantToDependencies:true}))});
             const apiKey=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
-            const ownerRaw=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
-            if(!apiKey&&!ownerRaw)throw new Error('ROBLOX_CC0_GRANT_OWNER_CREDENTIAL_REQUIRED');
+            if(!apiKey)throw new Error('ROBLOX_CC0_GRANT_OPEN_CLOUD_API_KEY_REQUIRED');
             const request=async headers=>fetch(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(30000)});
             const decode=async result=>result.json().catch(()=>({}));
             const complete=(result,answer)=>{
@@ -742,26 +696,9 @@ jobs:
                 &&(!Array.isArray(answer?.errors)||answer.errors.length===0)
                 &&assetIds.every(assetId=>granted.has(String(assetId)));
             };
-            let grant=null,answer=null,authority='API_KEY';
-            if(apiKey){
-              grant=await request({'x-api-key':apiKey,'content-type':'application/json'});
-              answer=await decode(grant);
-            }
-            if((!grant||grant.status===403)&&!complete(grant,answer)&&ownerRaw){
-              // Roblox validates the owner and issues the CSRF challenge.
-              const cookie=ownerRaw.includes('.ROBLOSECURITY=')?ownerRaw:'.ROBLOSECURITY='+ownerRaw+';';
-              let headers={'content-type':'application/json',cookie};
-              grant=await request(headers);
-              if(grant.status===403){
-                const csrf=grant.headers.get('x-csrf-token');
-                if(csrf){
-                  headers={...headers,'x-csrf-token':csrf};
-                  grant=await request(headers);
-                }
-              }
-              answer=await decode(grant);
-              authority='OWNER_COOKIE_CSRF';
-            }
+            const authority='API_KEY';
+            const grant=await request({'x-api-key':apiKey,'content-type':'application/json'});
+            const answer=await decode(grant);
             if(!complete(grant,answer)){
               // Do not log response bodies or auth material.
               const reason=String(answer?.error?.code||answer?.errors?.[0]?.code||'UNSPECIFIED')
@@ -800,8 +737,6 @@ jobs:
           REUSE_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
           REUSE_PLACE_ID: ${{ steps.reuse.outputs.place_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         shell: bash
         run: |
           set -euo pipefail

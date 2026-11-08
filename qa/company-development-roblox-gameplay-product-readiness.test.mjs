@@ -106,7 +106,10 @@ test('fantasy survival keeps a source-owned open-world encounter, attack, harves
   assert.match(server,/applyMeadowMobHit\(targetPlayer,targetHuman,hitDamage,enemy\)/);
   assert.match(server,/applyMeadowMobHit\(victim,human,hitDamage,enemy\)/);
   assert.match(server,/ProximityPrompt/);
-  assert.match(server,/if wood<cost or stone<cost then return false end/);
+  // [제작] 서버의 전체 재료 요구량 검사 및 자원 차감은 계속 확인한다.
+  assert.match(server,/for _,field in ipairs\(Config\.CostFields\)do/);
+  assert.match(server,/if readNumber\(player,field,0\)<need\(field\) then return false end/);
+  assert.match(server,/if cost>0 then setNumber\(player,field,readNumber\(player,field,0\)-cost\) end/);
   assert.match(server,/local handler = handlers\[actionId\]/);
   assert.match(server,/if typeof\(handler\) ~= "function" then return end/);
   assert.match(server,/local actionAccepted,combatHit=handler\(player\)/);

@@ -133,7 +133,21 @@ function overlapScore(left,right){const a=tokens(left),b=tokens(right);if(!a.siz
 export function rankVibeResponsibleSources({graph,request='',hints=[],limit=8}={}){
   if(!graph||!Array.isArray(graph.nodes))throw new Error('source graph required');
   const hintSet=new Set(unique(hints)),query=clean(request),incoming=new Map();
-  for(const edge of graph.edges||[]){if(!incoming.has(edge.to))incoming.set(edge.to,[]);incoming.get(edge.to).push(edge);}
+  // [코어 책임 추적] 상대 경로와 파일 간 함수 호출을 실제 기존 파일에 연결한다.
+  // 연결 실패·동명이인 함수는 임의 책임자로 추정하지 않는다.
+  const known=new Map(graph.nodes.map(node=>[node.path,node])),symbolOwners=new Map();
+  for(const node of graph.nodes)for(const symbol of node.symbols||[]){
+    if(!symbolOwners.has(symbol))symbolOwners.set(symbol,[]);
+    symbolOwners.get(symbol).push(node.path);
+  }
+  for(const node of graph.nodes)for(const [type,references] of [['import',node.imports],['call-or-symbol',node.calls]]){
+    for(const reference of references||[]){
+      const target=normalizeImpactReference(node.path,reference,known,symbolOwners,type);
+      if(!target)continue;
+      if(!incoming.has(target))incoming.set(target,[]);
+      incoming.get(target).push({from:node.path,type});
+    }
+  }
   const ranked=graph.nodes.map(node=>{
     const corpus=[node.path,...node.symbols,...node.tags].join(' ');let score=overlapScore(query,corpus)*0.65;
     if(hintSet.has(node.path))score+=0.25;
@@ -257,6 +271,7 @@ function evidenceOf(candidate={}){const e=candidate.evidence||{};return Object.f
 
 export function evaluateVibeCandidate(candidate={}){
   const id=clean(candidate.id||candidate.candidateId)||`candidate-${stableHash(JSON.stringify(candidate))}`,evidence=evidenceOf(candidate),blocked=[];
+  if(clean(candidate.failure||candidate.error))blocked.push('reported-failure');
   if(!evidence.syntaxPass)blocked.push('syntax-failed');if(!evidence.testsPass)blocked.push('tests-failed');if(!evidence.runtimePass)blocked.push('runtime-failed');if(!evidence.regressionPass)blocked.push('regression-failed');if(!evidence.protectedStatePreserved)blocked.push('protected-state-changed');if(!evidence.exactRevision)blocked.push('exact-revision-unproven');if(!evidence.responsibleSource)blocked.push('responsible-source-unproven');if(!evidence.checkpoint)blocked.push('checkpoint-missing');if(!evidence.rollbackReady)blocked.push('rollback-unavailable');
   const changedFiles=Math.max(0,Math.floor(finite(candidate.changedFiles,Array.isArray(candidate.files)?candidate.files.length:0))),diffBytes=Math.max(0,finite(candidate.diffBytes,0)),focusScore=1-Math.min(1,(Math.max(0,changedFiles-1)/8)+(diffBytes/500000)),verificationCore=[evidence.syntaxPass,evidence.testsPass,evidence.runtimePass,evidence.regressionPass,evidence.protectedStatePreserved,evidence.exactRevision,evidence.responsibleSource].filter(Boolean).length/7,score=verificationCore*0.68+evidence.qualityScore*0.14+evidence.performanceScore*0.08+focusScore*0.10;
   return Object.freeze({id,eligible:blocked.length===0,score:Number(score.toFixed(6)),evidence,focusScore:Number(focusScore.toFixed(6)),changedFiles,diffBytes,blockedReasons:Object.freeze(blocked),failure:clean(candidate.failure||candidate.error),patchRef:clean(candidate.patchRef)||null,authority:'deterministic-candidate-evaluation'});
@@ -271,7 +286,17 @@ export function runVibeCandidateTournament({candidates=[],requiredCandidateCount
     const id=clean(candidate?.id||candidate?.candidateId)||'candidate-'+stableHash(JSON.stringify(candidate));
     if(ids.has(id))duplicateId=true;
     ids.add(id);
-    const patch=clean(candidate?.patchFingerprint||candidate?.diffHash||candidate?.sourceHash||candidate?.patchRef);
+    // [코어 후보 경쟁] 명시적 해시가 없어도 실제 변경 내용이 같으면 다른 이름의 중복 후보로 간주한다.
+    // 소스 내용이 제공되지 않은 과거 후보의 임의 ID는 기존 경로를 유지한다.
+    const changes=[
+      ...(Array.isArray(candidate?.edits)?candidate.edits:[]).map(row=>['EDIT',clean(row?.path),String(row?.find??''),String(row?.replace??'')]),
+      ...(Array.isArray(candidate?.newFiles)?candidate.newFiles:[]).map(row=>['NEW',clean(row?.path),String(row?.content??'')]),
+      ...(Array.isArray(candidate?.replaceFiles)?candidate.replaceFiles:[]).map(row=>['REPLACE',clean(row?.path),String(row?.content??'')])
+    ];
+    // [실제 코드 독립성] 작업 시작 원본(sourceHash)이나 다른 실행 링크(patchRef)보다
+    // 변경되는 코드 본문을 우선한다. 후보 생성 순서는 실제 편집 의미이므로 유지한다.
+    const patch=changes.length?'content:'+stableHash(JSON.stringify(changes))
+      :clean(candidate?.patchFingerprint||candidate?.diffHash||candidate?.patchRef||candidate?.sourceHash);
     if(patch&&patchIdentities.has(patch))duplicatePatch=true;
     if(patch)patchIdentities.add(patch);
     identities.add(patch?'patch:'+patch:'id:'+id);

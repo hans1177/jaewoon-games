@@ -183,6 +183,16 @@
         "visualContentReviewBeforeUploadAndBindingRequired": true,
         "unknownContentSafetyAction": "DO_NOT_UPLOAD_OR_BIND_UNTIL_VISUALLY_REVIEWED",
         "licenseOrPreviousUploadSuccessCannotSubstituteContentReview": true,
+    "externalOriginalPhotoRule": {
+      "allowed": "ONLY_WITH_VERIFIED_ROBLOX_COMMERCIAL_USE_RIGHTS_AND_VISUAL_REVIEW",
+      "preserveOriginalAndSha256": true,
+      "evidenceRequired": ["SOURCE_URL", "AUTHOR", "LICENSE_OR_PERMISSION", "COMMERCIAL_AND_UPLOAD_SCOPE", "SHA256"],
+      "beforeUploadBlock": ["BLOOD_GORE", "SEXUAL_OR_MINOR_HARM", "REGULATED_ALCOHOL_TOBACCO_DRUGS", "HATE_EXTREMISM", "UNCONSENTED_REAL_PERSON_OR_PRIVATE_DATA", "UNAUTHORIZED_COPYRIGHT_TRADEMARK", "PREVIOUSLY_REMOVED_OR_SIMILAR"],
+      "onUnverifiedOrRejected": "BLOCK_UPLOAD_BIND_AND_DERIVATIVE_REUPLOAD",
+      "croppingOrFilteringToEvadeModerationForbidden": true,
+      "priorRobloxApprovalDoesNotProveRights": true,
+      "officialReferences": ["https://create.roblox.com/docs/projects/assets", "https://en.help.roblox.com/hc/en-us/articles/21416271342868-Content-Moderation-on-Roblox", "https://create.roblox.com/docs/production/publishing/ip-guidelines"]
+    },
         "warningHistoryCannotBeClaimedClearedBySourceRemoval": true,
         "blockedAssets": [
           {

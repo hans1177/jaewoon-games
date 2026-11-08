@@ -37,6 +37,35 @@ test('adaptive context ranks exact diagnostics and responsibility before generic
   assert.equal(packed.files[0].path,'ui/hud.css');
 });
 
+test('coding context preserves diagnostic and other responsible files when first source is large',()=>{
+  const files=[
+    {path:'roblox-games/demo/server/Game.server.luau',content:'-- root fault\\n'+'A'.repeat(20000)+'\\nlocal function repair() end'},
+    {path:'roblox-games/demo/shared/GameConfig.luau',content:'-- shared source\\n'+'B'.repeat(20000)},
+    {path:'qa/demo.test.mjs',content:'check repair'}
+  ];
+  const packed=packAdaptiveContext({
+    files,diagnostic:{file:files[0].path,needle:'root fault'},
+    responsibilityFiles:[files[0].path,files[1].path],
+    limits:{maxFiles:2,maxBytes:2200,maxFileBytes:2200}
+  });
+  assert.deepEqual(packed.files.map(row=>row.path),[files[0].path,files[1].path]);
+  assert.ok(packed.files.every(row=>row.packedBytes>0));
+  assert.ok(packed.bytes<=2200);
+  assert.equal(packed.files[0].content.includes('root fault'),true);
+  assert.equal(packed.files[1].content.includes('shared source'),true);
+  assert.equal(packed.files[0].truncated,true);
+});
+
+test('coding impact distinguishes Roblox server, client UI, binary and metadata changes',()=>{
+  const source='roblox-games/demo/server/Game.server.luau';
+  const client='roblox-games/demo/client/Hud.client.lua';
+  assert.equal(classifyImplementationImpact({changedFiles:[source]}).status,'GAMEPLAY_IMPLEMENTATION');
+  assert.equal(classifyImplementationImpact({changedFiles:[client,'roblox-games/demo/docs/README.md']}).status,'VISUAL_IMPLEMENTATION');
+  assert.equal(classifyImplementationImpact({changedFiles:[source,client]}).status,'MIXED_GAME_VISUAL_CHANGE');
+  assert.equal(classifyImplementationImpact({changedFiles:['roblox-games/demo/place.rbxl']}).status,'IMPLEMENTATION_OTHER');
+  assert.equal(classifyImplementationImpact({changedFiles:['company-learning/policy.json']}).status,'NO_GAME_CHANGE');
+});
+
 test('compiled policy gives owner intent precedence but immutable safety still cannot be overridden',()=>{
   const policy=compileDevelopmentPolicy({
     verifiedLearning:{quality:'old'},projectPolicy:{quality:'project'},agentsPolicy:{quality:'agents'},activeIntent:{quality:'owner',directMainWrite:true,paidApi:true},role:'graphics'

@@ -1202,12 +1202,12 @@ test('legacy module-only admission survives game-specific Config to GameConfig r
     assert.equal(first.changedGameCount,1);
     assert.equal(first.results[0].moduleSyncOnly,true);
     assert.equal(first.results[0].verifiedExternalLearningApplied,false);
-    assert.equal(first.results[0].commonModuleCount,15);
+    assert.equal(first.results[0].commonModuleCount,18);
     const receipt=JSON.parse(fs.readFileSync(evidenceFile,'utf8'));
     assert.equal(receipt.sourceValidationPassed,undefined);
     assert.equal(receipt.vibe3LearningApplied,undefined);
     assert.equal(Object.keys(JSON.parse(fs.readFileSync(projectFile,'utf8')).tree.ReplicatedStorage.Shared)
-      .filter(name=>name.startsWith('RobloxCommon')).length,15);
+      .filter(name=>name.startsWith('RobloxCommon')).length,18);
     assert.equal(fs.readFileSync(server,'utf8'),'-- existing authoritative server\n');
     assert.equal(fs.readFileSync(client,'utf8'),'-- existing game-owned client\n');
     execFileSync(process.execPath,args,{stdio:'pipe'});
