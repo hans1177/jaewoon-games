@@ -2355,7 +2355,22 @@ local function renderStatus()
 	add(function() return mkHeader(content, string.format("동료 (최대 %d명)", view.companions.max)) end)
 	if view.talk then
 		add(function()
-			return mkLabel(content, string.format("%s\n\"%s\"\n%s", view.talk.name, view.talk.line, view.talk.note or ""), 16, COLORS.gold, true)
+			-- 실제 동료 대화에 기존 등록 초상화를 연결한다. 호감도·대화·저장은 그대로 둔다.
+			local talkId = nil
+			for _, companion in view.companions.list do
+				if companion.name == view.talk.name then
+					talkId = companion.id
+					break
+				end
+			end
+			local row = mkRow(content, view.talk.name, "\"" .. view.talk.line .. "\"\n" .. (view.talk.note or ""), nil, 136)
+			local scholarId = if talkId then string.match(talkId, "^c_(.+)$") else nil
+			if scholarId and AssetIds["Portraits/scholar_" .. scholarId] then
+				withIcon(row, "Portraits", "scholar_" .. scholarId, nil, 68)
+			elseif talkId and COMPANION_MODEL[talkId] then
+				withIcon(row, "People", COMPANION_MODEL[talkId], nil, 68)
+			end
+			return row
 		end)
 	end
 	if view.talk and view.talk.options then
