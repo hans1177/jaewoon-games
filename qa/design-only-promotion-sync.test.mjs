@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {promoteReadyDesignSeeds} from '../tools/design-only-promotion-sync.mjs';
+import {validateNormalizedCatalog} from '../tools/game-catalog-normalization.mjs';
 import {evaluateMinimumDesignContract,latestMinimumDesign,materializeVibeMinimumDesign} from '../tools/company-minimum-design-contract.mjs';
 import {migrateDirectNativeRuntime} from '../tools/company-direct-native-design-migration.mjs';
 
@@ -109,6 +110,32 @@ function base(root){
   write(root,'game-catalog.json',{version:1,games:[]});
   write(root,'development-queue.json',{version:1,items:[]});
 }
+
+test('design promotion saves newly registered and existing games in canonical order without invented publication proof',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-catalog-order-'));
+  try{
+    base(root);
+    write(root,'game-catalog.json',{version:1,ownerStoppedGameIds:['stopped-game'],games:[
+      {id:'z-game',name:'Z',productionClass:'DESIGN_ONLY',selectedPlatform:'ROBLOX',lifecycleState:'ACTIVE'},
+      {id:'a-game',name:'A',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'WEB',
+        homepageWebPlayable:false,homepageCategory:'development-confirmed',lifecycleState:'ACTIVE',
+        canonical:{schemaVersion:1,identity:{gameId:'a-game'},production:{class:'DEVELOPMENT_CONFIRMED'}}},
+      {id:'stopped-game',ownerDevelopmentStopped:true,lifecycleState:'OWNER_STOPPED',
+        productionClass:'DESIGN_ONLY',selectedPlatform:'ROBLOX'}
+    ]});
+    const result=promoteReadyDesignSeeds({root});
+    const catalog=read(root,'game-catalog.json');
+    assert.deepEqual(result.promoted,[]);
+    assert.equal(validateNormalizedCatalog(catalog).pass,true);
+    assert.deepEqual(catalog.games.map(game=>game.id),['a-game','z-game','stopped-game']);
+    assert.deepEqual(catalog.games.map(game=>game.catalogOrder),[1,2,3]);
+    assert.equal(catalog.games[0].canonical.homepage.category,'development-confirmed');
+    assert.equal(catalog.games[0].canonical.sources.web.playable,false);
+    assert.equal(catalog.games[0].canonical.publication.roblox.verified,false);
+    assert.equal(catalog.games[2].ownerDevelopmentStopped,true);
+    assert.deepEqual(catalog.ownerStoppedGameIds,['stopped-game']);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('minimum dual-platform design promotes immediately while strict review stays non-admission',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-native-promotion-'));
