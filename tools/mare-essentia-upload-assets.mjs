@@ -107,7 +107,7 @@ for (const item of plan) {
     console.log('REMOVED_IMAGE_SOURCE_EXCLUDED', id);
     continue;
   }
-  // [사람 검수 관문] 새 이미지는 사람이 직접 확인해 APPROVED_IMAGES.json에 (이름+해시)로 올린 것만 업로드한다.
+  // [바이브 자체 검수 관문] 새 이미지는 바이브가 직접 보고 확인해 APPROVED_IMAGES.json에 (이름+해시)로 올린 것만 업로드한다. 오너 승인 대기 없음(contentSafety.autonomousVibeReview).
   if (item.assetType === 'Decal' && !registry.assets[id]?.assetId) {
     const hash = crypto.createHash('sha256').update(originalBytes).digest('hex');
     if (approvedImages[id] !== hash) {
