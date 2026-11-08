@@ -755,6 +755,9 @@ jobs:
           test -x "$VIBE2_LUAU_BINARY"
           node --test qa/roblox-common-motion-source.test.mjs
           VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" node --test --test-name-pattern="internal motion sampler|no-model Roblox generated button|no-model Roblox gameplay generated server action|no-model Roblox native runtime generated code" qa/vibe2-source-worker.test.mjs
+          VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" node --test qa/vibe-look-kit.test.mjs
+          python3 -m pip install --quiet pillow numpy
+          node --test qa/vibe-aesthetic-score.test.mjs qa/vibe-visual-ladder-verify.test.mjs
           node --test qa/vibe3-roblox-studio-lessons.test.mjs
           node --test --test-name-pattern="server-local native Luau|server-local Luau forwards reordered" qa/vibe2-complex-work-planner.test.mjs
           node --test qa/vibe2-complex-codegen.test.mjs
