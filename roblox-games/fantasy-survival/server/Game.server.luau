@@ -5475,7 +5475,7 @@ local function spawnEnemy(site, siteIndex)
           else
             if rank==2 then tone=base:Lerp(C(220,208,186),.38)
             elseif rank>=4 then tone=base:Lerp(C(34,28,26),.30) end
-            part.Material=furMats[site.model] and Enum.Material.Fabric or
+            part.Material=furMats[site.model] and Enum.Material.SmoothPlastic or
               (site.model=="spiritgolem" or site.model=="frostfiend") and Enum.Material.Glass or Enum.Material.SmoothPlastic
             if site.model=="spiritgolem" or site.model=="frostfiend" then part.Transparency=math.max(part.Transparency,.15) end
           end
