@@ -174790,11 +174790,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_329886c04635a5437d9f6a33",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12315",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "3821cc45138a2a82e6704767efb3228918b9af30",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12315,
+        "baseBranch": "main",
+        "headBranch": "claude/fantasy-asset-health",
+        "baseSha": "3821cc45138a2a82e6704767efb3228918b9af30",
+        "headSha": "f98a758e0c976dc29b4e1cdf04ba2748573fd3e1",
+        "mergeCommitSha": "3d1bf6b4625a785a5a04cd712c1edbc3626f4bfd",
+        "mergedAt": "2026-11-09T04:26:17Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0331cdf4f11c96e8b3705871133c1a14859fee2e3f9c09c23ce9577e350a4eeb",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "claude/fantasy-asset-health",
+        "candidateSha": "f98a758e0c976dc29b4e1cdf04ba2748573fd3e1"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 159,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "qa/fantasy-asset-health.test.mjs",
+          "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
+          "tools/fantasy-asset-health.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/fantasy-asset-health.test.mjs",
+          "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
+          "tools/fantasy-asset-health.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12315",
+        "merge-commit:3d1bf6b4625a785a5a04cd712c1edbc3626f4bfd",
+        "base-main:3821cc45138a2a82e6704767efb3228918b9af30"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1393
+    "total": 1394
   }
 }
