@@ -12,13 +12,13 @@
    }
   },
   "outline:soft": {
-   "n": 199,
-   "gainSum": 1658.1,
-   "keep": 155,
+   "n": 202,
+   "gainSum": 1647.8,
+   "keep": 156,
    "improved": 138,
    "broken": 0,
    "fail": {
-    "REGRESSED": 1,
+    "REGRESSED": 3,
     "DETAIL_LOST": 25,
     "DARKENED": 18
    }
@@ -150,15 +150,16 @@
    }
   },
   "moss:strong": {
-   "n": 107,
+   "n": 108,
    "gainSum": 416.2,
    "keep": 70,
    "improved": 56,
-   "broken": 0,
+   "broken": 1,
    "fail": {
     "DARKENED": 16,
     "REGRESSED": 16,
-    "TOO_SIMILAR": 5
+    "TOO_SIMILAR": 5,
+    "BROKEN": 1
    }
   },
   "proportion:soft": {
@@ -233,14 +234,14 @@
    }
   },
   "outline:strong": {
-   "n": 33,
-   "gainSum": 156.3,
+   "n": 34,
+   "gainSum": 150.7,
    "keep": 21,
    "improved": 17,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 6,
-    "DARKENED": 6
+    "DARKENED": 7
    }
   },
   "wear:strong": {
@@ -317,13 +318,13 @@
    }
   },
   "bevel:strong": {
-   "n": 44,
-   "gainSum": 120.7,
-   "keep": 37,
+   "n": 46,
+   "gainSum": 99.8,
+   "keep": 38,
    "improved": 15,
    "broken": 0,
    "fail": {
-    "REGRESSED": 6,
+    "REGRESSED": 7,
     "DARKENED": 1
    }
   },
@@ -362,24 +363,24 @@
    }
   },
   "kitbash:soft": {
-   "n": 9,
-   "gainSum": -12.1,
+   "n": 10,
+   "gainSum": -41.4,
    "keep": 6,
    "improved": 2,
    "broken": 0,
    "fail": {
     "FLOATING_PART": 2,
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 2
    }
   },
   "hue_shift:soft": {
-   "n": 8,
-   "gainSum": 17.5,
-   "keep": 7,
-   "improved": 4,
+   "n": 12,
+   "gainSum": 13.5,
+   "keep": 10,
+   "improved": 5,
    "broken": 0,
    "fail": {
-    "REGRESSED": 1
+    "REGRESSED": 2
    }
   },
   "kitbash:strong": {
