@@ -173299,11 +173299,159 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_51bdf8e9a726f33565d338bd",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12291",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "920cecf92530ec22e13c5273ebc1d20022ee8845",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12291,
+        "baseBranch": "main",
+        "headBranch": "claude/look-govern",
+        "baseSha": "920cecf92530ec22e13c5273ebc1d20022ee8845",
+        "headSha": "0bf6da55111c9bff50cae3491c8a8d618bb05cb1",
+        "mergeCommitSha": "da8d92586a83ef5d06b66137a03dddff53373547",
+        "mergedAt": "2026-11-09T00:50:40Z",
+        "authorLogin": "hans1177",
+        "titleHash": "931361fb1e10fa4c8fc5b71f60e7adcfac1ce7cf34dc4fd9606066100efff885",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "claude/look-govern",
+        "candidateSha": "0bf6da55111c9bff50cae3491c8a8d618bb05cb1"
+      },
+      "changeStats": {
+        "changedFileCount": 17,
+        "codingRelevantFileCount": 17,
+        "addedLineCount": 1086,
+        "deletedLineCount": 10,
+        "changedFiles": [
+          ".github/workflows/studio-autoqa.yml",
+          ".github/workflows/vibe-look-promotion.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "assets/roblox/common-look-v1/LookApply.client.luau",
+          "qa/vibe-look-govern.test.mjs",
+          "qa/vibe-look-promote.test.mjs",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Common/RobloxCommonLookKit.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/LookAssignment.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/LookApply.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json",
+          "roblox-games/mare-essentia/visual-ladder.json",
+          "tools/vibe-look-govern.mjs",
+          "tools/vibe-look-kit.mjs",
+          "tools/vibe-look-promote.mjs",
+          "tools/vibe-visual-ladder.mjs",
+          "tools/vibe_aesthetic_score.py"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/studio-autoqa.yml",
+          ".github/workflows/vibe-look-promotion.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "assets/roblox/common-look-v1/LookApply.client.luau",
+          "qa/vibe-look-govern.test.mjs",
+          "qa/vibe-look-promote.test.mjs",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Common/RobloxCommonLookKit.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/LookAssignment.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/LookApply.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json",
+          "roblox-games/mare-essentia/visual-ladder.json",
+          "tools/vibe-look-govern.mjs",
+          "tools/vibe-look-kit.mjs",
+          "tools/vibe-look-promote.mjs",
+          "tools/vibe-visual-ladder.mjs",
+          "tools/vibe_aesthetic_score.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12291",
+        "merge-commit:da8d92586a83ef5d06b66137a03dddff53373547",
+        "base-main:920cecf92530ec22e13c5273ebc1d20022ee8845"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1381
+    "total": 1382
   }
 }
