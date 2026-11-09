@@ -12,26 +12,26 @@
    }
   },
   "outline:soft": {
-   "n": 215,
-   "gainSum": 1720.4,
-   "keep": 165,
-   "improved": 142,
+   "n": 217,
+   "gainSum": 1727,
+   "keep": 166,
+   "improved": 143,
    "broken": 0,
    "fail": {
     "REGRESSED": 3,
     "DETAIL_LOST": 27,
-    "DARKENED": 20
+    "DARKENED": 21
    }
   },
   "wear:strong": {
-   "n": 138,
-   "gainSum": 522.3,
+   "n": 139,
+   "gainSum": 526,
    "keep": 76,
    "improved": 59,
    "broken": 0,
    "fail": {
     "DARKENED": 22,
-    "TOO_SIMILAR": 24,
+    "TOO_SIMILAR": 25,
     "REGRESSED": 16
    }
   },
@@ -68,10 +68,10 @@
    }
   },
   "inset_panel:strong": {
-   "n": 64,
-   "gainSum": 227.5,
-   "keep": 50,
-   "improved": 40,
+   "n": 65,
+   "gainSum": 238,
+   "keep": 51,
+   "improved": 41,
    "broken": 2,
    "fail": {
     "TOO_SIMILAR": 2,
@@ -434,14 +434,14 @@
    }
   },
   "bevel:soft": {
-   "n": 3,
-   "gainSum": -6.6,
+   "n": 4,
+   "gainSum": -8.1,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 1,
-    "RIG:ORPHAN_MESH:Icosphere": 1,
+    "RIG:ORPHAN_MESH:Icosphere": 2,
     "REGRESSED": 1
    }
   },
@@ -591,13 +591,13 @@
    }
   },
   "proportion:strong": {
-   "n": 1,
-   "gainSum": 2.5,
+   "n": 2,
+   "gainSum": 1.1,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "RIG:ORPHAN_MESH:Icosphere": 1
+    "RIG:ORPHAN_MESH:Icosphere": 2
    }
   },
   "wear:strong": {
@@ -624,27 +624,28 @@
    }
   },
   "hue_shift:strong": {
-   "n": 1,
-   "gainSum": 5.8,
+   "n": 2,
+   "gainSum": 9.3,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "RIG:ORPHAN_MESH:Icosphere": 1
+    "RIG:ORPHAN_MESH:Icosphere": 2
    }
   }
  },
  "CHARACTER": {
   "inset_panel:strong": {
-   "n": 4,
-   "gainSum": 0,
+   "n": 5,
+   "gainSum": -24.3,
    "keep": 0,
    "improved": 0,
    "broken": 2,
    "fail": {
     "BROKEN": 2,
     "RIG:ARMATURE_ROOTS:Rig:2": 1,
-    "REGRESSED": 1
+    "REGRESSED": 1,
+    "DETAIL_LOST": 1
    }
   },
   "saturate_contrast:soft": {
@@ -728,13 +729,13 @@
    }
   },
   "noise_displace:strong": {
-   "n": 3,
-   "gainSum": -28.5,
+   "n": 4,
+   "gainSum": -39.9,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "REGRESSED": 3
+    "REGRESSED": 4
    }
   },
   "wear:soft": {
@@ -815,13 +816,14 @@
    }
   },
   "bevel:soft": {
-   "n": 1,
-   "gainSum": -0.5,
+   "n": 2,
+   "gainSum": -18.5,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "RIG:ARMATURE_ROOTS:Rig:2": 1
+    "RIG:ARMATURE_ROOTS:Rig:2": 1,
+    "DETAIL_LOST": 1
    }
   }
  },
