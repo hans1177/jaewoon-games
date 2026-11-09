@@ -1954,7 +1954,9 @@ test('마력숲 버섯 몬스터는 출현하지 않고 실제 박쥐 원본 뼈
   assert.match(sites,/id="wolf"[^\n]*questIndex=3/,'contract wolf must remain outside village');
   assert.equal((sites.match(/alpha=true/g)||[]).length,6,'approved alpha wolves; one approved alpha wolf boss');
   assert.doesNotMatch(server,/enemy\.kind=="mushroom"|mushroom="포자 버섯"/);
-  assert.match(config,/bat=105975567112263/,'keep approved original CC0 bat');
+  const batRegistry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8')).models.bat;
+  assert.equal(batRegistry.license,'CC0-1.0');
+  assert.match(config,new RegExp('bat='+batRegistry.assetId),'keep approved original CC0 bat (id follows the registry, which follows the current account upload)');
   // Bat.fbx actually contains Wing1.L..Wing4.R and original flying/attack takes.
   assert.match(client,/local batWingSegment=species=="bat" and key:match\("wing\(\[1-4\]\)"\)/);
   for(const channel of ['WingL','WingR','WingL2','WingR2','WingL3','WingR3','WingL4','WingR4']){
