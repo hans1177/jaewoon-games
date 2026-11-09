@@ -1,10 +1,10 @@
 {
  "PROP": {
   "hue_shift:soft": {
-   "n": 14,
-   "gainSum": 1.2,
-   "keep": 7,
-   "improved": 4,
+   "n": 15,
+   "gainSum": 6.3,
+   "keep": 8,
+   "improved": 5,
    "broken": 0,
    "fail": {
     "REGRESSED": 4,
@@ -12,15 +12,15 @@
    }
   },
   "outline:soft": {
-   "n": 217,
-   "gainSum": 1727,
-   "keep": 166,
+   "n": 224,
+   "gainSum": 1688.5,
+   "keep": 168,
    "improved": 143,
    "broken": 0,
    "fail": {
     "REGRESSED": 3,
-    "DETAIL_LOST": 27,
-    "DARKENED": 21
+    "DETAIL_LOST": 29,
+    "DARKENED": 24
    }
   },
   "wear:strong": {
@@ -58,10 +58,10 @@
    }
   },
   "bevel:soft": {
-   "n": 12,
-   "gainSum": -21.5,
-   "keep": 7,
-   "improved": 2,
+   "n": 13,
+   "gainSum": -14.3,
+   "keep": 8,
+   "improved": 3,
    "broken": 0,
    "fail": {
     "REGRESSED": 5
@@ -116,13 +116,13 @@
    }
   },
   "outline:strong": {
-   "n": 8,
-   "gainSum": -4.1,
+   "n": 9,
+   "gainSum": -14,
    "keep": 3,
    "improved": 3,
    "broken": 0,
    "fail": {
-    "DARKENED": 2,
+    "DARKENED": 3,
     "DETAIL_LOST": 2,
     "REGRESSED": 1
    }
@@ -184,10 +184,10 @@
    }
   },
   "proportion:strong": {
-   "n": 11,
-   "gainSum": 14.1,
-   "keep": 10,
-   "improved": 5,
+   "n": 12,
+   "gainSum": 27.1,
+   "keep": 11,
+   "improved": 6,
    "broken": 0,
    "fail": {
     "REGRESSED": 1
@@ -206,6 +206,13 @@
   "kitbash:strong": {
    "n": 1,
    "gainSum": 5.4,
+   "keep": 1,
+   "improved": 1,
+   "broken": 0
+  },
+  "kitbash:soft": {
+   "n": 1,
+   "gainSum": 3,
    "keep": 1,
    "improved": 1,
    "broken": 0
