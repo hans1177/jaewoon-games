@@ -22,13 +22,13 @@
    }
   },
   "wear:strong": {
-   "n": 12,
-   "gainSum": 104.9,
-   "keep": 6,
-   "improved": 6,
+   "n": 17,
+   "gainSum": 154.5,
+   "keep": 10,
+   "improved": 7,
    "broken": 0,
    "fail": {
-    "DARKENED": 4,
+    "DARKENED": 5,
     "TOO_SIMILAR": 2
    }
   },
@@ -74,6 +74,33 @@
    "gainSum": -0.2,
    "keep": 1,
    "improved": 0,
+   "broken": 0
+  },
+  "bevel:strong": {
+   "n": 1,
+   "gainSum": 0.1,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "TOO_SIMILAR": 1
+   }
+  },
+  "hue_shift:strong": {
+   "n": 1,
+   "gainSum": 1.7,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "TOO_SIMILAR": 1
+   }
+  },
+  "outline:strong": {
+   "n": 1,
+   "gainSum": 2,
+   "keep": 1,
+   "improved": 1,
    "broken": 0
   }
  },
@@ -127,10 +154,10 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 1,
-   "gainSum": 12.7,
-   "keep": 1,
-   "improved": 1,
+   "n": 2,
+   "gainSum": 15,
+   "keep": 2,
+   "improved": 2,
    "broken": 0
   },
   "outline:soft": {
@@ -155,10 +182,17 @@
    "broken": 0
   },
   "bevel:strong": {
-   "n": 1,
-   "gainSum": 0,
-   "keep": 1,
-   "improved": 0,
+   "n": 2,
+   "gainSum": 15,
+   "keep": 2,
+   "improved": 1,
+   "broken": 0
+  },
+  "bevel:soft": {
+   "n": 2,
+   "gainSum": 29.4,
+   "keep": 2,
+   "improved": 2,
    "broken": 0
   }
  }
