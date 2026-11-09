@@ -5,11 +5,15 @@
 - 같은 점검에서 Client/Server 로그: 아이템·야영지 소품(item_armor_*, item_backpack, item_bone, item_book1_closed, item_chalice, item_chickenleg, item_crystal1, tent/flag/plant 등) 'not authorized' 오류 — 재업로드 전 상태였음.
 - 2026-11-09 03:19 owner-fantasy-assets 워크플로 성공(run 42555512683): 새 계정 자산 ID가 main 에 갱신됨(커밋 faa603a).
 
+- 2026-11-09 13:39(KST) 점검 재확인: errors 비어 있음, 클릭 10번 정상. 서버/클라이언트 로그에 'not authorized' 31개 ID 잔존 → 원인: item_*/mon_* 약 80개가 재업로드 목록(reupload-map.json)에 없어 옛 ID 그대로였음(재배포 03:25Z 성공했으나 이 항목들은 대상 아님).
+- 2026-11-09 바이브: 원본 파일이 저장소에 있는 18개(mon_sk*4, mon_ninja/goblin/king/farmer/adventurer/womansoldier/womanmedieval/knightchar/wingdemon, item_key1/scroll/crystal1/book1_closed/armor_metal)를 reupload-map.json 에 추가.
+
 ## 알려진 미해결
 - 재업로드 반영본이 아직 Studio 점검에서 검증 안 됨(점검 시각이 재업로드보다 빠름). 재배포(owner-new-experience) 요청함 → 다음 점검(매시 37분)에서 not authorized 로그가 사라졌는지 확인.
 - Player:Move 'no character' 경고 (점검 중 캐릭터 없음, 영향 미확인).
 
 ## 다음에 볼 항목 큐
+0. owner-fantasy-assets 실행(병합 후) → owner-new-experience 재배포 → 다음 점검에서 not authorized 감소 확인. 원본이 저장소에 없는 62개(mon_trex/fox/horse 등 동물·공룡, item_backpack/potion/ring 등)는 원본 파일을 새로 받아야 함(사람 확인 필요).
 1. 다음 점검 로그에서 'not authorized' 잔여 ContentId 목록 확인 → 남은 것만 reupload-map.json 에 추가
 2. 점검 스크립트 클릭 목록 보강(가방/제작/도감/스킬트리 버튼) — NOT_FOUND 줄이기
 3. 재배포가 409 busy 이면 다음 실행에서 재시도

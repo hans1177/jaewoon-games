@@ -142,7 +142,20 @@
   "item_skull": "assets/roblox/actors/sources/quaternius-cute/FBX/Skull.fbx",
   "item_staff": "assets/roblox/items/staff.glb",
   "item_boots": "assets/roblox/items/boots.glb",
-  "item_pants": "assets/roblox/items/pants.glb"
+  "item_pants": "assets/roblox/items/pants.glb",
+  "mon_skmage": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Mage.glb",
+  "mon_skminion": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Minion.glb",
+  "mon_skrogue": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Rogue.glb",
+  "mon_skwarrior": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Warrior.glb",
+  "mon_ninja": "assets/roblox/actors/sources/quaternius-characters/FBX/Ninja_Male.fbx",
+  "mon_goblin": "assets/roblox/actors/sources/quaternius-characters/FBX/Goblin_Male.fbx",
+  "mon_king": "assets/roblox/actors/sources/quaternius-characters/FBX/Knight_Golden_Male.fbx",
+  "mon_farmer": "assets/roblox/actors/sources/quaternius-characters/FBX/Worker_Male.fbx",
+  "mon_adventurer": "assets/roblox/actors/sources/quaternius-characters/FBX/Casual_Male.fbx",
+  "mon_womansoldier": "assets/roblox/actors/sources/quaternius-characters/FBX/Soldier_Female.fbx",
+  "mon_womanmedieval": "assets/roblox/actors/sources/quaternius-characters/FBX/OldClassy_Female.fbx",
+  "mon_knightchar": "assets/roblox/actors/sources/quaternius-characters/FBX/Knight_Male.fbx",
+  "mon_wingdemon": "assets/shared/party/winged.glb"
  },
  "archives": {
   "gear_sword_01": {
@@ -224,26 +237,38 @@
   "gear_relic_armor": {
    "zip": "assets/external/simple-rpg/priority-v1/rpg-items-armor-8.zip",
    "entry": "armor.obj"
+  },
+  "item_key1": {
+   "zip": "assets/external/simple-rpg/priority-v1/rpg-items-armor-8.zip",
+   "entry": "key.obj"
+  },
+  "item_scroll": {
+   "zip": "assets/external/simple-rpg/priority-v1/rpg-items-armor-8.zip",
+   "entry": "scroll.obj"
+  },
+  "item_crystal1": {
+   "zip": "assets/external/simple-rpg/priority-v1/rpg-items-armor-8.zip",
+   "entry": "crystal.obj"
+  },
+  "item_book1_closed": {
+   "zip": "assets/external/simple-rpg/priority-v1/rpg-items-armor-8.zip",
+   "entry": "book.obj"
+  },
+  "item_armor_metal": {
+   "zip": "assets/external/simple-rpg/priority-v1/rpg-items-armor-8.zip",
+   "entry": "armor.obj"
   }
  },
  "unmapped": [
-  "mon_adventurer",
   "mon_apatosaur",
   "mon_bull",
   "mon_donkey",
-  "mon_farmer",
   "mon_fox",
   "mon_horse",
   "mon_husky",
-  "mon_king",
-  "mon_knightchar",
   "mon_parasaur",
   "mon_punk",
   "mon_rat",
-  "mon_skmage",
-  "mon_skminion",
-  "mon_skrogue",
-  "mon_skwarrior",
   "mon_snake",
   "mon_snakeangry",
   "mon_stag",
@@ -251,25 +276,20 @@
   "mon_trex",
   "mon_triceratops",
   "mon_wasp",
-  "mon_womanmedieval",
-  "mon_womansoldier",
   "mon_ghostskull",
   "mon_mushroomking",
-  "mon_wingdemon",
   "mon_glub",
   "mon_birb",
   "mon_cactoro",
   "mon_dragonlite",
   "mon_hywirl",
   "mon_monkroose",
-  "mon_ninja",
   "mon_assassin",
   "mon_beastman",
   "mon_bladespider",
   "mon_chieftain",
   "mon_fangspider",
   "mon_frostfiend",
-  "mon_goblin",
   "mon_goblinscout",
   "mon_keltir",
   "mon_raptor",
@@ -278,10 +298,7 @@
   "mon_toad",
   "mon_tribal",
   "item_backpack",
-  "item_book1_closed",
   "item_chalice",
-  "item_crystal1",
-  "item_key1",
   "item_potion1_filled",
   "item_potion2_filled",
   "item_potion3_filled",
@@ -292,7 +309,6 @@
   "item_armor_black",
   "item_armor_golden",
   "item_armor_leather",
-  "item_armor_metal",
   "item_bone",
   "item_chickenleg",
   "item_glove",
@@ -302,7 +318,6 @@
   "item_necklace1",
   "item_ring2",
   "item_rock_1",
-  "item_scroll",
   "item_star",
   "item_torch",
   "item_woodlog",
