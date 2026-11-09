@@ -13,27 +13,28 @@
    }
   },
   "outline:soft": {
-   "n": 284,
-   "gainSum": 2116.6,
-   "keep": 215,
+   "n": 286,
+   "gainSum": 2113.6,
+   "keep": 216,
    "improved": 182,
    "broken": 0,
    "fail": {
-    "REGRESSED": 4,
+    "REGRESSED": 5,
     "DETAIL_LOST": 33,
     "DARKENED": 32
    }
   },
   "wear:strong": {
-   "n": 166,
-   "gainSum": 553,
-   "keep": 94,
+   "n": 170,
+   "gainSum": 544.3,
+   "keep": 97,
    "improved": 65,
    "broken": 0,
    "fail": {
     "DARKENED": 23,
     "TOO_SIMILAR": 28,
-    "REGRESSED": 21
+    "REGRESSED": 21,
+    "DETAIL_LOST": 1
    }
   },
   "inset_panel:soft": {
@@ -108,9 +109,9 @@
    }
   },
   "hue_shift:strong": {
-   "n": 9,
-   "gainSum": 4.8,
-   "keep": 6,
+   "n": 10,
+   "gainSum": 3.9,
+   "keep": 7,
    "improved": 3,
    "broken": 0,
    "fail": {
@@ -131,14 +132,14 @@
    }
   },
   "saturate_contrast:strong": {
-   "n": 15,
-   "gainSum": -24.7,
+   "n": 16,
+   "gainSum": -27.4,
    "keep": 8,
    "improved": 5,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 3,
-    "REGRESSED": 4
+    "REGRESSED": 5
    }
   },
   "noise_displace:strong": {
@@ -687,14 +688,14 @@
    }
   },
   "moss:soft": {
-   "n": 4,
-   "gainSum": -15.6,
+   "n": 5,
+   "gainSum": -15.2,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 1,
-    "TOO_SIMILAR": 1,
+    "TOO_SIMILAR": 2,
     "RIG:ARMATURE_ROOTS:Rig:2": 2
    }
   },
@@ -733,13 +734,13 @@
    }
   },
   "saturate_contrast:strong": {
-   "n": 4,
-   "gainSum": -18.3,
+   "n": 5,
+   "gainSum": -18.2,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "RIG:ARMATURE_ROOTS:Rig:2": 1,
+    "RIG:ARMATURE_ROOTS:Rig:2": 2,
     "DETAIL_LOST": 1,
     "TOO_SIMILAR": 2
    }
@@ -790,14 +791,15 @@
    }
   },
   "proportion:strong": {
-   "n": 4,
-   "gainSum": -39.4,
+   "n": 5,
+   "gainSum": -25.9,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "REGRESSED": 3,
-    "DARKENED": 1
+    "DARKENED": 1,
+    "RIG:ARMATURE_ROOTS:Rig:2": 1
    }
   },
   "moss:strong": {
