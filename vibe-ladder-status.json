@@ -108,6 +108,7 @@
     "checked": 0,
     "bad": 0
    },
+   "aesthetic": null,
    "thumbs": [
     {
      "floor": "floor-001-world-t4",
@@ -162,10 +163,10 @@
      "at": "2026-11-08"
     }
    ],
-   "updated": "2026-11-08"
+   "updated": "2026-11-09"
   },
   "mare-essentia": {
-   "floor": 1,
+   "floor": 2,
    "categories": [
     {
      "id": "npc",
@@ -185,12 +186,12 @@
     {
      "id": "world",
      "label": "항구·바다 공기 연출",
-     "tier": 1,
+     "tier": 2,
      "max": 4,
-     "name": "씬별 기본 연출",
+     "name": "떠다니는 물보라·꽃가루 입자",
      "next": {
-      "tier": 2,
-      "name": "떠다니는 물보라·꽃가루 입자",
+      "tier": 3,
+      "name": "노출·반사 보정",
       "blocked": false,
       "missing": []
      }
@@ -203,12 +204,12 @@
      "tierName": "승인된 복장 아이템(셔츠·바지·얼굴)",
      "key": "approved-npc-outfit-items",
      "candidates": [
+      "Interior/coatrack",
+      "roblox-games/mare-essentia/assets/interior/coatrack.glb",
       "Interior/coatrackstanding",
       "roblox-games/mare-essentia/assets/interior/coatrackstanding.glb",
       "Interior/tablecloth",
       "roblox-games/mare-essentia/assets/interior/tablecloth.glb",
-      "Interior/coatrack",
-      "roblox-games/mare-essentia/assets/interior/coatrack.glb",
       "Interior/tablecrosscloth",
       "roblox-games/mare-essentia/assets/interior/tablecrosscloth.glb"
      ]
@@ -216,9 +217,10 @@
    ],
    "perf": null,
    "frames": {
-    "checked": 2,
+    "checked": 19,
     "bad": 0
    },
+   "aesthetic": null,
    "thumbs": [
     {
      "floor": "floor-001-npc-t2",
@@ -226,9 +228,26 @@
       "docs/devloop/ladder/mare-essentia/floor-001-npc-t2/u0_main-0.jpg",
       "docs/devloop/ladder/mare-essentia/floor-001-npc-t2/v1_options-0.jpg"
      ]
+    },
+    {
+     "floor": "floor-002-world-t2",
+     "files": [
+      "docs/devloop/ladder/mare-essentia/floor-002-world-t2/c00_start-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-002-world-t2/c04-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-002-world-t2/c08-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-002-world-t2/c12-0.jpg"
+     ]
     }
    ],
    "history": [
+    {
+     "floor": 2,
+     "category": "world",
+     "tier": 2,
+     "name": "떠다니는 물보라·꽃가루 입자",
+     "why": "Studio 캡처 오류 없음, 화면 19장 정상",
+     "at": "2026-11-09"
+    },
     {
      "floor": 1,
      "category": "npc",
@@ -238,7 +257,7 @@
      "at": "2026-11-08"
     }
    ],
-   "updated": "2026-11-08"
+   "updated": "2026-11-09"
   }
  }
 }
