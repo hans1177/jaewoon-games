@@ -1,6 +1,6 @@
 {
  "PROP": {
-  "runs": 76,
+  "runs": 77,
   "top": [
    {
     "score": 98.7,
@@ -67,6 +67,38 @@
     }
    },
    {
+    "score": 96.6,
+    "params": {
+     "elevation": 47,
+     "azimuth": 254,
+     "kelvin": 2983.05,
+     "sun_strength": 4.63,
+     "softness": 6.39,
+     "ambient_kelvin": 7895.72,
+     "ambient_strength": 0.17
+    },
+    "roblox": {
+     "ClockTime": 14.9,
+     "Brightness": 3.7,
+     "ColorShift_Top": [
+      255,
+      177,
+      109
+     ],
+     "Ambient": [
+      38,
+      39,
+      43
+     ],
+     "OutdoorAmbient": [
+      44,
+      45,
+      50
+     ],
+     "ShadowSoftness": 0.53
+    }
+   },
+   {
     "score": 94.9,
     "params": {
      "elevation": 59,
@@ -129,41 +161,9 @@
      ],
      "ShadowSoftness": 0.81
     }
-   },
-   {
-    "score": 93.6,
-    "params": {
-     "elevation": 58,
-     "azimuth": 254,
-     "kelvin": 3540.24,
-     "sun_strength": 4.43,
-     "softness": 8.67,
-     "ambient_kelvin": 8311.41,
-     "ambient_strength": 0.2
-    },
-    "roblox": {
-     "ClockTime": 14.1,
-     "Brightness": 3.54,
-     "ColorShift_Top": [
-      255,
-      194,
-      143
-     ],
-     "Ambient": [
-      43,
-      45,
-      51
-     ],
-     "OutdoorAmbient": [
-      50,
-      52,
-      59
-     ],
-     "ShadowSoftness": 0.72
-    }
    }
   ],
-  "meanLastRun": 56.9
+  "meanLastRun": 77.2
  },
  "CREATURE": {
   "runs": 5,
