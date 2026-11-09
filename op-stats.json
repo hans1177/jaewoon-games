@@ -12,21 +12,21 @@
    }
   },
   "outline:soft": {
-   "n": 95,
-   "gainSum": 800,
-   "keep": 72,
-   "improved": 63,
+   "n": 98,
+   "gainSum": 852.1,
+   "keep": 74,
+   "improved": 65,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
     "DETAIL_LOST": 14,
-    "DARKENED": 8
+    "DARKENED": 9
    }
   },
   "wear:strong": {
-   "n": 101,
-   "gainSum": 517.7,
-   "keep": 62,
+   "n": 102,
+   "gainSum": 517.1,
+   "keep": 63,
    "improved": 48,
    "broken": 0,
    "fail": {
@@ -36,9 +36,9 @@
    }
   },
   "inset_panel:soft": {
-   "n": 6,
-   "gainSum": 8.5,
-   "keep": 5,
+   "n": 7,
+   "gainSum": 8.7,
+   "keep": 6,
    "improved": 2,
    "broken": 0,
    "fail": {
@@ -68,8 +68,8 @@
    }
   },
   "inset_panel:strong": {
-   "n": 31,
-   "gainSum": 118.8,
+   "n": 32,
+   "gainSum": 117,
    "keep": 25,
    "improved": 20,
    "broken": 2,
@@ -77,13 +77,14 @@
     "TOO_SIMILAR": 1,
     "BROKEN": 2,
     "DARKENED": 1,
-    "DETAIL_LOST": 2
+    "DETAIL_LOST": 2,
+    "REGRESSED": 1
    }
   },
   "wear:soft": {
-   "n": 9,
-   "gainSum": 28.9,
-   "keep": 7,
+   "n": 10,
+   "gainSum": 27.4,
+   "keep": 8,
    "improved": 5,
    "broken": 0,
    "fail": {
@@ -144,10 +145,10 @@
    }
   },
   "moss:strong": {
-   "n": 63,
-   "gainSum": 339.6,
-   "keep": 41,
-   "improved": 37,
+   "n": 64,
+   "gainSum": 349.8,
+   "keep": 42,
+   "improved": 38,
    "broken": 0,
    "fail": {
     "DARKENED": 11,
@@ -606,13 +607,14 @@
    }
   },
   "proportion:soft": {
-   "n": 1,
-   "gainSum": -17.5,
+   "n": 2,
+   "gainSum": -31,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 1,
+    "REGRESSED": 1
    }
   },
   "wear:strong": {
@@ -668,14 +670,16 @@
    }
   },
   "wear:soft": {
-   "n": 2,
-   "gainSum": 1.4,
+   "n": 5,
+   "gainSum": 9.8,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
-    "RIG:ARMATURE_ROOTS:Rig:2": 1
+    "RIG:ARMATURE_ROOTS:Rig:2": 2,
+    "DARKENED": 1,
+    "TOO_SIMILAR": 1
    }
   },
   "noise_displace:soft": {
