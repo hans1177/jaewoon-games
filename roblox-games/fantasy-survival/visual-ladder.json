@@ -1,5 +1,11 @@
 {
   "game": "fantasy-survival",
+  "mood": "dark",
+  "lookPolicy": {
+    "enabled": true,
+    "allow": ["dark-fantasy"],
+    "allowAuto": false
+  },
   "note": "비주얼 래더: 자동개발 루프(F0~F9)가 한 바퀴 돌아 검증을 통과할 때마다 한 분야의 디테일 단계가 한 칸 오른다. requires가 있는 단계는 오너가 approved-assets.json에 승인 키를 올리기 전까지 막히고, 부족 자산으로만 기록된다(파츠·절차 생성물 금지 규칙).",
   "categories": {
     "npc": {

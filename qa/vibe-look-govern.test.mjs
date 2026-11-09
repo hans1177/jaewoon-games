@@ -120,3 +120,22 @@ test('적용 스크립트는 Preset 이 nil 이면 아무것도 하지 않고 �
   assert.match(s,/type\(assign\.Preset\) ~= "string"[\s\S]*return/);
   assert.match(s,/respectGameEffects = true/);
 });
+
+test('판타지 서바이벌: 어두운 분위기 전용 정책(dark-fantasy 만, 자동 후보 없음), 사본·적용 스크립트 동기, 래더 점검 통과, 지금은 적용 안 함', () => {
+  const spec=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/visual-ladder.json','utf8'));
+  assert.equal(spec.mood,'dark');
+  assert.deepEqual(spec.lookPolicy.allow,['dark-fantasy']);
+  assert.notEqual(spec.lookPolicy.allowAuto,true);
+  const kit=fs.readFileSync('assets/roblox/common-look-v1/RobloxCommonLookKit.luau','utf8');
+  const g=policyGames().find(x=>x.game==='fantasy-survival');
+  assert.ok(g);
+  assert.equal(fs.readFileSync(g.copy,'utf8'),kit);
+  assert.equal(fs.readFileSync('roblox-games/fantasy-survival/client/LookApply.client.luau','utf8'),fs.readFileSync('assets/roblox/common-look-v1/LookApply.client.luau','utf8'));
+  assert.match(fs.readFileSync('roblox-games/fantasy-survival/shared/LookAssignment.luau','utf8'),/Preset=nil/);
+  const r=spawnSync('node',['tools/vibe-visual-ladder.mjs','--game','fantasy-survival','--check'],{encoding:'utf8'});
+  assert.equal(r.status,0,r.stderr);
+  // 밝은 프리셋은 어두운 게임에서 정책을 통과해도 allow 목록에 없어 막힌다
+  const dark=table.presets.find(p=>p.id==='dark-fantasy'),bright=table.presets.find(p=>p.id==='bright-adventure');
+  assert.equal(allowedByPolicy(dark,spec.lookPolicy,spec.mood),true);
+  assert.equal(allowedByPolicy(bright,spec.lookPolicy,spec.mood),false);
+});

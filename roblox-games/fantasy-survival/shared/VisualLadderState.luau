@@ -3,7 +3,7 @@
 -- Features: 현재 단계까지 켜진 기능 이름(분야별). Mood: 게임 분위기(bright|dark).
 return {
   Floor=6,
-  Mood="bright",
+  Mood="dark",
   Tier={
   npc=3,
   world=5,
