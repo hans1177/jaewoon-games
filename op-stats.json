@@ -1,10 +1,10 @@
 {
  "PROP": {
   "hue_shift:soft": {
-   "n": 3,
-   "gainSum": -7.6,
-   "keep": 1,
-   "improved": 0,
+   "n": 4,
+   "gainSum": -1,
+   "keep": 2,
+   "improved": 1,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
@@ -12,27 +12,27 @@
    }
   },
   "outline:soft": {
-   "n": 30,
-   "gainSum": 296,
-   "keep": 22,
-   "improved": 20,
+   "n": 32,
+   "gainSum": 302.5,
+   "keep": 23,
+   "improved": 21,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
     "DETAIL_LOST": 4,
-    "DARKENED": 3
+    "DARKENED": 4
    }
   },
   "wear:strong": {
-   "n": 49,
-   "gainSum": 430.3,
+   "n": 51,
+   "gainSum": 425.3,
    "keep": 29,
    "improved": 26,
    "broken": 0,
    "fail": {
     "DARKENED": 14,
     "TOO_SIMILAR": 5,
-    "REGRESSED": 1
+    "REGRESSED": 3
    }
   },
   "inset_panel:soft": {
@@ -46,14 +46,15 @@
    }
   },
   "saturate_contrast:soft": {
-   "n": 4,
-   "gainSum": -7.7,
+   "n": 5,
+   "gainSum": -8.2,
    "keep": 1,
    "improved": 1,
    "broken": 0,
    "fail": {
     "REGRESSED": 2,
-    "TOO_SIMILAR": 1
+    "TOO_SIMILAR": 1,
+    "DARKENED": 1
    }
   },
   "bevel:soft": {
@@ -78,11 +79,14 @@
    }
   },
   "wear:soft": {
-   "n": 1,
-   "gainSum": -0.2,
+   "n": 2,
+   "gainSum": 5.1,
    "keep": 1,
    "improved": 0,
-   "broken": 0
+   "broken": 0,
+   "fail": {
+    "TOO_SIMILAR": 1
+   }
   },
   "bevel:strong": {
    "n": 1,
@@ -129,13 +133,13 @@
    "broken": 0
   },
   "moss:strong": {
-   "n": 23,
-   "gainSum": 147.4,
+   "n": 24,
+   "gainSum": 149.2,
    "keep": 13,
    "improved": 12,
    "broken": 0,
    "fail": {
-    "DARKENED": 4,
+    "DARKENED": 5,
     "REGRESSED": 6
    }
   },
@@ -450,6 +454,16 @@
   "proportion:soft": {
    "n": 1,
    "gainSum": -17.5,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "DETAIL_LOST": 1
+   }
+  },
+  "wear:strong": {
+   "n": 1,
+   "gainSum": -13.8,
    "keep": 0,
    "improved": 0,
    "broken": 0,
