@@ -212,13 +212,13 @@
    }
   },
   "proportion:soft": {
-   "n": 1,
-   "gainSum": -2.1,
+   "n": 2,
+   "gainSum": -4.4,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "REGRESSED": 1
+    "REGRESSED": 2
    }
   },
   "saturate_contrast:strong": {
@@ -229,10 +229,10 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 16,
-   "gainSum": 26.9,
-   "keep": 14,
-   "improved": 10,
+   "n": 17,
+   "gainSum": 29.7,
+   "keep": 15,
+   "improved": 11,
    "broken": 0,
    "fail": {
     "REGRESSED": 2
@@ -267,13 +267,13 @@
    "broken": 0
   },
   "bevel:strong": {
-   "n": 14,
-   "gainSum": 38.3,
-   "keep": 13,
-   "improved": 6,
+   "n": 18,
+   "gainSum": 64.9,
+   "keep": 16,
+   "improved": 8,
    "broken": 0,
    "fail": {
-    "REGRESSED": 1
+    "REGRESSED": 2
    }
   },
   "bevel:soft": {
@@ -310,10 +310,10 @@
    }
   },
   "kitbash:soft": {
-   "n": 2,
-   "gainSum": -0.3,
-   "keep": 2,
-   "improved": 0,
+   "n": 3,
+   "gainSum": 9.1,
+   "keep": 3,
+   "improved": 1,
    "broken": 0
   },
   "hue_shift:soft": {
@@ -339,6 +339,13 @@
   "moss:strong": {
    "n": 1,
    "gainSum": -0.1,
+   "keep": 1,
+   "improved": 0,
+   "broken": 0
+  },
+  "wear:soft": {
+   "n": 1,
+   "gainSum": -0.7,
    "keep": 1,
    "improved": 0,
    "broken": 0
@@ -495,13 +502,14 @@
    }
   },
   "moss:soft": {
-   "n": 1,
-   "gainSum": -15.5,
+   "n": 2,
+   "gainSum": -17.9,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 1,
+    "TOO_SIMILAR": 1
    }
   },
   "proportion:soft": {
@@ -545,13 +553,34 @@
    }
   },
   "bevel:strong": {
-   "n": 1,
-   "gainSum": 7.4,
+   "n": 2,
+   "gainSum": 9.1,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "RIG:ARMATURE_ROOTS:Rig:2": 1
+    "RIG:ARMATURE_ROOTS:Rig:2": 1,
+    "TOO_SIMILAR": 1
+   }
+  },
+  "noise_displace:strong": {
+   "n": 1,
+   "gainSum": -12,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "REGRESSED": 1
+   }
+  },
+  "wear:soft": {
+   "n": 1,
+   "gainSum": -3.6,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "REGRESSED": 1
    }
   }
  },
