@@ -66,7 +66,7 @@ jobs:
           git config user.name "vibe-look-promotion"
           git config user.email "vibe-look-promotion@users.noreply.github.com"
           git checkout -b "vibe-look-promotion/$id"
-          git add assets/roblox/common-look-v1
+          git add assets/roblox/common-look-v1 roblox-games
           git commit -m "룩 프리셋 자동 승급 후보: $id"
           git push origin "vibe-look-promotion/$id"
           body=$'엄격한 관문(점수 72 이상, 3회 이상 연습, 기존과 충분히 다름, 처음 보는 CC0 모델 3개에서 재확인 평균 68·최저 60 이상, 룩 키트 검증)을 모두 통과한 조명 조합입니다.\n\n대기·색보정·블룸은 가장 가까운 기존 프리셋에서 물려받았고, 배운 것은 조명뿐입니다. 게임이 쓰려면 프리셋 id를 직접 고르는 승인이 필요합니다.'
@@ -79,10 +79,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           pr=$(gh api "repos/${{ github.repository }}/pulls?state=open&head=${{ github.repository_owner }}:vibe-look-promotion/${{ steps.promo.outputs.id }}" --jq '.[0].number')
-          # 안전 확인: 바뀐 파일은 룩 프리셋 표와 Luau 생성 구간 두 개뿐이어야 한다
-          files=$(gh api "repos/${{ github.repository }}/pulls/$pr/files" --paginate --jq '.[].filename' | LC_ALL=C sort | tr '\n' ' ')
-          want="assets/roblox/common-look-v1/RobloxCommonLookKit.luau assets/roblox/common-look-v1/look-presets.json "
-          if [ "$files" != "$want" ]; then echo "안전 확인 실패(예상 밖 파일): $files"; echo "자동 병합 중단: 예상 밖 파일 $files" >> "$GITHUB_STEP_SUMMARY"; exit 0; fi
+          # 안전 확인: 바뀐 파일은 룩 프리셋 표, 키트 원본, 룩 정책 게임의 키트 사본뿐이어야 하고, 표와 키트 원본은 반드시 포함돼야 한다
+          files=$(gh api "repos/${{ github.repository }}/pulls/$pr/files" --paginate --jq '.[].filename')
+          bad=$(echo "$files" | grep -v -E '^(assets/roblox/common-look-v1/(look-presets\.json|RobloxCommonLookKit\.luau)|roblox-games/[a-z0-9-]+/.+/Common/RobloxCommonLookKit\.luau)$' || true)
+          need=$(echo "$files" | grep -c -E '^assets/roblox/common-look-v1/(look-presets\.json|RobloxCommonLookKit\.luau)$' || true)
+          if [ -n "$bad" ] || [ "$need" != "2" ]; then echo "안전 확인 실패: $files"; echo "자동 병합 중단: 예상 밖 파일 $bad" >> "$GITHUB_STEP_SUMMARY"; exit 0; fi
           if gh api -X PUT "repos/${{ github.repository }}/pulls/$pr/merge" -f merge_method=squash -f commit_title="룩 프리셋 자동 승급: ${{ steps.promo.outputs.id }} (#$pr)" >/dev/null; then
             echo "자동 병합 완료 #$pr" >> "$GITHUB_STEP_SUMMARY"
           else

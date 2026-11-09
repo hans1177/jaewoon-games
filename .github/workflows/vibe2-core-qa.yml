@@ -120,6 +120,7 @@ on:
       - 'qa/vibe-light-bake.test.mjs'
       - 'qa/vibe-practice-session.test.mjs'
       - 'qa/vibe-look-promote.test.mjs'
+      - 'qa/vibe-look-govern.test.mjs'
       - 'tools/vibe-mesh-audit.mjs'
       - 'tools/vibe_mesh_audit.py'
       - 'qa/vibe2-core-engine-motion.test.mjs'
@@ -781,7 +782,7 @@ jobs:
           node --test qa/vibe-cc0-library.test.mjs
           VIBE2_BLENDER_BINARY=blender node --test qa/vibe-mesh-audit.test.mjs
           VIBE2_BLENDER_BINARY=blender node --test qa/vibe-light-bake.test.mjs qa/vibe-practice-session.test.mjs
-          node --test qa/vibe-look-promote.test.mjs
+          node --test qa/vibe-look-promote.test.mjs qa/vibe-look-govern.test.mjs
       - name: Preserve authored GLB and preview evidence
         if: always()
         uses: actions/upload-artifact@v4

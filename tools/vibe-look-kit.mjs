@@ -14,6 +14,29 @@ const END='-- END GENERATED PRESETS';
 const REQUIRED=['lighting','atmosphere','colorCorrection','bloom'];
 const COLOR_KEYS={lighting:['Ambient','OutdoorAmbient','ColorShift_Top'],atmosphere:['Color','Decay'],colorCorrection:['TintColor']};
 
+// 룩 정책이 켜진 게임(visual-ladder.json 의 lookPolicy.enabled)은 키트 사본을 Shared/Common 에 둔다. 원본과 같아야 한다.
+export function policyGames(root='roblox-games'){
+  const out=[];
+  if(!fs.existsSync(root))return out;
+  for(const g of fs.readdirSync(root)){
+    const f=path.join(root,g,'visual-ladder.json');
+    if(!fs.existsSync(f))continue;
+    try{
+      const spec=JSON.parse(fs.readFileSync(f,'utf8'));
+      if(spec.lookPolicy&&spec.lookPolicy.enabled===true)out.push({game:g,copy:path.join(root,g,(spec.paths&&spec.paths.shared)||'shared','Common','RobloxCommonLookKit.luau')});
+    }catch{}
+  }
+  return out;
+}
+export function syncGames(root='roblox-games'){
+  const src=fs.readFileSync(luauPath,'utf8'),changed=[];
+  for(const g of policyGames(root)){
+    fs.mkdirSync(path.dirname(g.copy),{recursive:true});
+    if(!fs.existsSync(g.copy)||fs.readFileSync(g.copy,'utf8')!==src){fs.writeFileSync(g.copy,src);changed.push(g.copy)}
+  }
+  return changed;
+}
+
 export function loadTable(){return JSON.parse(fs.readFileSync(jsonPath,'utf8'))}
 
 // 표 검증: 필수 구간, 숫자 범위, 색 0~255, id 유일, 허용되지 않은 속성 거부. 오류 문자열 배열을 돌려준다.
@@ -69,6 +92,9 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   if(errors.length){console.error('VIBE_LOOK_KIT=INVALID\n'+errors.join('\n'));process.exit(1);}
   const src=fs.readFileSync(luauPath,'utf8');
   const want=emitBlock(table);
+  if(process.argv.includes('--sync-games')){
+    const c=syncGames();console.log(`VIBE_LOOK_KIT_SYNCED games=${policyGames().length} changed=${c.length}`);process.exit(0);
+  }
   if(process.argv.includes('--emit')){
     const cur=currentBlock(src);
     if(!cur){console.error('생성 구간 표식이 없다');process.exit(1);}
@@ -76,6 +102,8 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
     console.log(`VIBE_LOOK_KIT_EMITTED presets=${table.presets.length}`);
   }else{
     if(currentBlock(src)!==want){console.error('VIBE_LOOK_KIT=STALE (node tools/vibe-look-kit.mjs --emit)');process.exit(1);}
+    const stale=policyGames().filter(g=>!fs.existsSync(g.copy)||fs.readFileSync(g.copy,'utf8')!==src);
+    if(stale.length){console.error('VIBE_LOOK_KIT=GAME_COPY_STALE '+stale.map(g=>g.game).join(',')+' (node tools/vibe-look-kit.mjs --sync-games)');process.exit(1);}
     console.log(`VIBE_LOOK_KIT=PASS presets=${table.presets.length}`);
   }
 }

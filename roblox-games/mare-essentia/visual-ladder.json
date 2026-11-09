@@ -4,6 +4,12 @@
     "shared": "src/ReplicatedStorage/Shared"
   },
   "mood": "bright",
+  "lookPolicy": {
+    "enabled": true,
+    "allow": ["storybook", "cozy", "bright-adventure"],
+    "allowAuto": true,
+    "brightOnly": true
+  },
   "note": "비주얼 래더(마레 스키엔티아): 항구·항해 씬은 이미 자체 안개·블룸·햇살이 있어 겹치지 않도록 입자·노출 보정만 단계로 올린다. requires가 있는 단계는 오너 승인 키 전에는 막힌다(파츠·절차 생성물 금지).",
   "categories": {
     "npc": {
