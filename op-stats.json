@@ -233,23 +233,24 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 19,
-   "gainSum": 31.5,
-   "keep": 17,
-   "improved": 12,
+   "n": 20,
+   "gainSum": 43,
+   "keep": 18,
+   "improved": 13,
    "broken": 0,
    "fail": {
     "REGRESSED": 2
    }
   },
   "outline:soft": {
-   "n": 13,
-   "gainSum": 105.1,
-   "keep": 12,
-   "improved": 10,
+   "n": 18,
+   "gainSum": 120.3,
+   "keep": 14,
+   "improved": 12,
    "broken": 0,
    "fail": {
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 2,
+    "DARKENED": 2
    }
   },
   "noise_displace:soft": {
@@ -271,13 +272,14 @@
    "broken": 0
   },
   "bevel:strong": {
-   "n": 19,
-   "gainSum": 66.8,
+   "n": 20,
+   "gainSum": 70.6,
    "keep": 17,
    "improved": 9,
    "broken": 0,
    "fail": {
-    "REGRESSED": 2
+    "REGRESSED": 2,
+    "DARKENED": 1
    }
   },
   "bevel:soft": {
@@ -357,6 +359,16 @@
    "keep": 1,
    "improved": 0,
    "broken": 0
+  },
+  "moss:soft": {
+   "n": 1,
+   "gainSum": -4.9,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "DETAIL_LOST": 1
+   }
   }
  },
  "CREATURE": {
@@ -404,25 +416,27 @@
    }
   },
   "wear:soft": {
-   "n": 4,
-   "gainSum": 16,
+   "n": 5,
+   "gainSum": 16.2,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 1,
     "DARKENED": 1,
-    "RIG:ARMATURE_ROOTS:Rig:2": 2
+    "RIG:ARMATURE_ROOTS:Rig:2": 2,
+    "RIG:ORPHAN_MESH:Icosphere": 1
    }
   },
   "noise_displace:soft": {
-   "n": 1,
-   "gainSum": 0.2,
+   "n": 2,
+   "gainSum": -6.1,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "RIG:ORPHAN_MESH:Icosphere": 1
+    "RIG:ORPHAN_MESH:Icosphere": 1,
+    "REGRESSED": 1
    }
   },
   "outline:strong": {
@@ -446,15 +460,17 @@
    }
   },
   "hue_shift:soft": {
-   "n": 4,
-   "gainSum": 10.8,
+   "n": 6,
+   "gainSum": 7.5,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 1,
     "DARKENED": 1,
-    "RIG:ARMATURE_ROOTS:Rig:2": 2
+    "RIG:ARMATURE_ROOTS:Rig:2": 2,
+    "REGRESSED": 1,
+    "RIG:ORPHAN_MESH:Icosphere": 1
    }
   },
   "bevel:strong": {
