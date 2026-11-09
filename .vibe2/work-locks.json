@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1e7qr5a",
+      "worker": "vibe2",
+      "taskId": "party-rpg-studio-evolution-roblox-usability-v10",
+      "gameId": "party-rpg",
+      "files": [
+        "roblox-games/party-rpg/client/Game.client.luau",
+        "roblox-games/party-rpg/shared/GameConfig.luau",
+        "roblox-games/party-rpg/server/Game.server.luau",
+        "roblox-games/party-rpg/client/MaterialPresentation.client.luau",
+        "roblox-games/party-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/party-rpg/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "6befb860cbbbaec336c62cda512145469d1d1fee",
+      "runId": "42561826143",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-09T04:58:01.309Z",
+      "expiresAt": "2026-11-09T05:43:01.309Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:party-rpg-studio-evolution-roblox-usability-v10"
+      ]
+    }
+  ]
 }
