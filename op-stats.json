@@ -24,14 +24,14 @@
    }
   },
   "wear:strong": {
-   "n": 33,
-   "gainSum": 327.3,
-   "keep": 20,
-   "improved": 17,
+   "n": 35,
+   "gainSum": 340.6,
+   "keep": 21,
+   "improved": 18,
    "broken": 0,
    "fail": {
     "DARKENED": 10,
-    "TOO_SIMILAR": 3
+    "TOO_SIMILAR": 4
    }
   },
   "inset_panel:soft": {
@@ -66,10 +66,10 @@
    }
   },
   "inset_panel:strong": {
-   "n": 3,
-   "gainSum": 9.4,
-   "keep": 2,
-   "improved": 2,
+   "n": 5,
+   "gainSum": 25.6,
+   "keep": 4,
+   "improved": 4,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 1
@@ -120,20 +120,20 @@
    }
   },
   "noise_displace:strong": {
-   "n": 1,
-   "gainSum": -1.3,
-   "keep": 1,
-   "improved": 0,
+   "n": 2,
+   "gainSum": 5,
+   "keep": 2,
+   "improved": 1,
    "broken": 0
   },
   "moss:strong": {
-   "n": 14,
-   "gainSum": 122.4,
+   "n": 15,
+   "gainSum": 125.1,
    "keep": 8,
    "improved": 7,
    "broken": 0,
    "fail": {
-    "DARKENED": 3,
+    "DARKENED": 4,
     "REGRESSED": 3
    }
   },
@@ -347,6 +347,32 @@
    "fail": {
     "DETAIL_LOST": 1
    }
+  }
+ },
+ "ENVIRONMENT": {
+  "saturate_contrast:soft": {
+   "n": 1,
+   "gainSum": 0,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "TOO_SIMILAR": 1
+   }
+  },
+  "inset_panel:soft": {
+   "n": 1,
+   "gainSum": 0,
+   "keep": 1,
+   "improved": 0,
+   "broken": 0
+  },
+  "outline:soft": {
+   "n": 1,
+   "gainSum": 1.7,
+   "keep": 1,
+   "improved": 1,
+   "broken": 0
   }
  }
 }
