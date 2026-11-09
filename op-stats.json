@@ -1,13 +1,14 @@
 {
  "PROP": {
   "hue_shift:soft": {
-   "n": 2,
+   "n": 3,
    "gainSum": -7.6,
    "keep": 1,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "REGRESSED": 1
+    "REGRESSED": 1,
+    "TOO_SIMILAR": 1
    }
   },
   "outline:soft": {
@@ -21,13 +22,14 @@
    }
   },
   "wear:strong": {
-   "n": 2,
-   "gainSum": 15.4,
-   "keep": 1,
-   "improved": 1,
+   "n": 12,
+   "gainSum": 104.9,
+   "keep": 6,
+   "improved": 6,
    "broken": 0,
    "fail": {
-    "DARKENED": 1
+    "DARKENED": 4,
+    "TOO_SIMILAR": 2
    }
   },
   "inset_panel:soft": {
@@ -65,6 +67,13 @@
    "gainSum": 5.9,
    "keep": 1,
    "improved": 1,
+   "broken": 0
+  },
+  "wear:soft": {
+   "n": 1,
+   "gainSum": -0.2,
+   "keep": 1,
+   "improved": 0,
    "broken": 0
   }
  },
