@@ -68,3 +68,15 @@ test('표 파일 끝에 한 줄만 붙이고 기존 내용은 한 글자도 바�
   assert.equal(JSON.parse(out).presets.at(-1).id,p.id);
   assert.equal(JSON.parse(out).presets.length,table.presets.length+1);
 });
+
+test('승급 워크플로: 자체 검증 뒤 스스로 병합하되, 바뀐 파일이 표·생성 구간뿐일 때만, 끄는 변수가 있다', () => {
+  const y=fs.readFileSync('.github/workflows/vibe-look-promotion.yml','utf8');
+  assert.match(y,/Auto-merge after safety check/);
+  assert.match(y,/VIBE_LOOK_AUTOMERGE != 'off'/);
+  assert.match(y,/LC_ALL=C sort/);   // 로캘이 달라도 파일 목록 비교가 같게
+  assert.ok(y.includes('assets/roblox/common-look-v1/RobloxCommonLookKit.luau assets/roblox/common-look-v1/look-presets.json '));
+  assert.match(y,/pull-requests: write/);
+  // 병합 전에 키트 검증과 테스트가 먼저 나온다
+  assert.ok(y.indexOf('Verify the kit and tests')<y.indexOf('Open the promotion PR'));
+  assert.ok(y.indexOf('Open the promotion PR')<y.indexOf('Auto-merge after safety check'));
+});
