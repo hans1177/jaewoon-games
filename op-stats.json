@@ -12,26 +12,26 @@
    }
   },
   "outline:soft": {
-   "n": 34,
-   "gainSum": 343.8,
+   "n": 35,
+   "gainSum": 337.2,
    "keep": 25,
    "improved": 23,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
-    "DETAIL_LOST": 4,
+    "DETAIL_LOST": 5,
     "DARKENED": 4
    }
   },
   "wear:strong": {
-   "n": 52,
-   "gainSum": 426.6,
+   "n": 53,
+   "gainSum": 427.1,
    "keep": 30,
    "improved": 27,
    "broken": 0,
    "fail": {
     "DARKENED": 14,
-    "TOO_SIMILAR": 5,
+    "TOO_SIMILAR": 6,
     "REGRESSED": 3
    }
   },
@@ -68,10 +68,10 @@
    }
   },
   "inset_panel:strong": {
-   "n": 11,
-   "gainSum": 40.2,
-   "keep": 8,
-   "improved": 8,
+   "n": 12,
+   "gainSum": 44.5,
+   "keep": 9,
+   "improved": 9,
    "broken": 2,
    "fail": {
     "TOO_SIMILAR": 1,
@@ -133,10 +133,10 @@
    "broken": 0
   },
   "moss:strong": {
-   "n": 27,
-   "gainSum": 169.6,
-   "keep": 16,
-   "improved": 15,
+   "n": 28,
+   "gainSum": 173.5,
+   "keep": 17,
+   "improved": 16,
    "broken": 0,
    "fail": {
     "DARKENED": 5,
@@ -242,10 +242,10 @@
    }
   },
   "outline:soft": {
-   "n": 10,
-   "gainSum": 93.8,
-   "keep": 9,
-   "improved": 7,
+   "n": 12,
+   "gainSum": 103.1,
+   "keep": 11,
+   "improved": 9,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 1
@@ -270,10 +270,10 @@
    "broken": 0
   },
   "bevel:strong": {
-   "n": 18,
-   "gainSum": 64.9,
-   "keep": 16,
-   "improved": 8,
+   "n": 19,
+   "gainSum": 66.8,
+   "keep": 17,
+   "improved": 9,
    "broken": 0,
    "fail": {
     "REGRESSED": 2
@@ -333,13 +333,14 @@
    }
   },
   "kitbash:strong": {
-   "n": 1,
-   "gainSum": -32,
+   "n": 2,
+   "gainSum": -36.5,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 1,
+    "REGRESSED": 1
    }
   },
   "moss:strong": {
@@ -619,13 +620,14 @@
    "broken": 0
   },
   "bevel:soft": {
-   "n": 7,
-   "gainSum": 71.4,
-   "keep": 5,
-   "improved": 5,
+   "n": 10,
+   "gainSum": 91.6,
+   "keep": 7,
+   "improved": 7,
    "broken": 0,
    "fail": {
-    "TOO_SIMILAR": 2
+    "TOO_SIMILAR": 2,
+    "DARKENED": 1
    }
   },
   "moss:strong": {
@@ -661,6 +663,13 @@
    "fail": {
     "BROKEN": 1
    }
+  },
+  "proportion:soft": {
+   "n": 1,
+   "gainSum": 5.1,
+   "keep": 1,
+   "improved": 1,
+   "broken": 0
   }
  }
 }
