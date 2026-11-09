@@ -12,6 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
+import {decideLook,lookLuau} from './vibe-look-govern.mjs';
 
 const args=process.argv.slice(2);
 const flag=n=>args.includes(`--${n}`);
@@ -111,10 +112,16 @@ function luauModule(){
 }
 const luauPath=path.join(dir,sharedDir,'VisualLadderState.luau');
 
+const lookPolicy=spec.lookPolicy&&spec.lookPolicy.enabled===true?spec.lookPolicy:null;
+const lookLuauPath=path.join(dir,sharedDir,'LookAssignment.luau');
 if(flag('check')){
   const want=luauModule();
   const have=fs.existsSync(luauPath)?fs.readFileSync(luauPath,'utf8'):'';
   if(want!==have){console.error('VisualLadderState.luau가 상태 파일과 다름: --advance 또는 생성 필요');process.exit(1)}
+  if(lookPolicy){
+    const wantLook=lookLuau(state.look),haveLook=fs.existsSync(lookLuauPath)?fs.readFileSync(lookLuauPath,'utf8'):'';
+    if(wantLook!==haveLook){console.error('LookAssignment.luau가 상태 파일과 다름: --advance 또는 생성 필요');process.exit(1)}
+  }
   console.log('OK visual ladder in sync');process.exit(0);
 }
 
@@ -158,10 +165,18 @@ if(flag('advance')){
     }
   }
 }
+// 룩 자동 적용: 실제 캡처 점수로 프리셋을 적용·확인·되돌린다(게임 정책이 켜져 있고, 이번 회차 검증이 통과했을 때만).
+let lookEvent=null;
+if(flag('advance')&&lookPolicy&&verdict&&verdict.ok&&aestheticInfo){
+  const table=JSON.parse(fs.readFileSync(path.join('assets','roblox','common-look-v1','look-presets.json'),'utf8'));
+  const res=decideLook({look:state.look,aesthetic:aestheticInfo,policy:lookPolicy,table,mood});
+  state.look=res.look;lookEvent=res.event;
+}
 {const pend=path.join('docs','devloop','ladder',game,'_pending');if(fs.existsSync(pend))fs.rmSync(pend,{recursive:true,force:true})}
 state.history=state.history.slice(-40);
 fs.writeFileSync(path.join(dir,'visual-ladder-state.json'),JSON.stringify(state,null,2)+'\n');
 fs.writeFileSync(luauPath,luauModule());
+if(lookPolicy)fs.writeFileSync(lookLuauPath,lookLuau(state.look));
 
 // 보고서: 현재 단계, 다음 단계, 막힌 이유(부족 자산).
 const lines=[`# 비주얼 래더 (${game})`,'',`루프 회차: ${state.floor}`,''];
@@ -192,6 +207,10 @@ if(aestheticInfo&&aestheticInfo.available&&aestheticInfo.checked>0){
   if(aestheticInfo.reference)lines.push(`- 오너 레퍼런스 근접도 ${aestheticInfo.reference.score}점`+(aestheticInfo.reference.deviations.length?` · ${aestheticInfo.reference.deviations.map(d=>d.text).join(', ')}`:''));
   const rk=aestheticInfo.lookSimulation&&aestheticInfo.lookSimulation.ranking;
   if(rk&&rk.length)lines.push(`- 룩 프리셋 추정 순위(색보정만 흉내, 스튜디오 재확인 필요): ${rk.slice(0,3).map(r=>`${r.id} ${r.score}`).join(' > ')}`);
+}
+if(lookPolicy&&state.look){
+  lines.push('',`## 룩 자동 적용`,'',`- 현재: ${state.look.preset?`${state.look.preset}${state.look.confirmed?' (확정)':' (확인 중)'}`:'적용 안 함(게임 원래 연출)'}${lookEvent?` · 이번 회차: ${lookEvent.type}${lookEvent.preset?' '+lookEvent.preset:''}`:''}`);
+  if(state.look.blocked&&state.look.blocked.length)lines.push(`- 되돌려져 차단된 프리셋: ${state.look.blocked.join(', ')}`);
 }
 if(perf&&perf.sessions)lines.push('',`## 성능`,'',`- 접속 ${perf.sessions}회 · 평균 ${perf.fpsAvg??'?'}FPS · 최저 ${perf.fpsMin??'?'}FPS (예산 ${minFps})`);
 lines.push('','## 최근 승급 기록','');

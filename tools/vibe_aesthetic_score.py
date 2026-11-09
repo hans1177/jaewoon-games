@@ -202,7 +202,8 @@ if frames:
             cc = p.get("colorCorrection", {})
             graded = [grade(im, cc) for im in imgs]
             scs = [score_image(g)[0] for g in graded]
-            row = {"id": p["id"], "score": round(sum(scs) / len(scs), 1), "gain": round(sum(scs) / len(scs) - mean_score, 1)}
+            row = {"id": p["id"], "score": round(sum(scs) / len(scs), 1), "gain": round(sum(scs) / len(scs) - mean_score, 1),
+                   "minGain": round(min(sc2 - fr["score"] for sc2, fr in zip(scs, frames)), 1)}  # 가장 손해 본 프레임의 이득(모든 화면이 좋아져야 자동 적용)
             if ref_prof is not None:
                 row["referenceScore"] = reference_match(profile(graded), ref_prof)[0]
             ranking.append(row)

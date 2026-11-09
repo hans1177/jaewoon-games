@@ -13,7 +13,7 @@ import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {pickParents,mulberry32,blenderAvailable} from './vibe-variation-gym.mjs';
 import {renderCandidates,scoreDir,toJob} from './vibe-light-search.mjs';
-import {loadTable,validate,emitBlock,currentBlock} from './vibe-look-kit.mjs';
+import {loadTable,validate,emitBlock,currentBlock,syncGames} from './vibe-look-kit.mjs';
 
 export const GATE={minScore:72,minMean:68,minFloor:60,minParents:3,minRuns:3,minDistance:0.12,maxAuto:12,perRun:1,maxConfirmTries:2};
 
@@ -128,6 +128,7 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
     const luau=path.join(dir,'RobloxCommonLookKit.luau');
     const src=fs.readFileSync(luau,'utf8');
     fs.writeFileSync(luau,src.replace(currentBlock(src),()=>emitBlock(res.table)));
+    syncGames(); // 룩 정책이 켜진 게임의 키트 사본도 같이 맞춘다(안 맞추면 게임이 새 프리셋을 모른다)
   }
   console.log(`VIBE_LOOK_PROMOTE promoted id=${res.preset.id} score=${res.preset.source.score} mood="${res.preset.mood}"${args.includes('--apply')?' applied':' dry-run'}`);
 }
