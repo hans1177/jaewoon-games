@@ -12,10 +12,10 @@
    }
   },
   "outline:soft": {
-   "n": 26,
-   "gainSum": 264.7,
-   "keep": 18,
-   "improved": 16,
+   "n": 27,
+   "gainSum": 280.8,
+   "keep": 19,
+   "improved": 17,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
@@ -24,10 +24,10 @@
    }
   },
   "wear:strong": {
-   "n": 47,
-   "gainSum": 420.9,
-   "keep": 27,
-   "improved": 24,
+   "n": 49,
+   "gainSum": 430.3,
+   "keep": 29,
+   "improved": 26,
    "broken": 0,
    "fail": {
     "DARKENED": 14,
@@ -129,10 +129,10 @@
    "broken": 0
   },
   "moss:strong": {
-   "n": 21,
-   "gainSum": 138.4,
-   "keep": 12,
-   "improved": 11,
+   "n": 22,
+   "gainSum": 149.9,
+   "keep": 13,
+   "improved": 12,
    "broken": 0,
    "fail": {
     "DARKENED": 4,
@@ -215,17 +215,17 @@
    }
   },
   "saturate_contrast:strong": {
-   "n": 1,
-   "gainSum": 1.8,
-   "keep": 1,
+   "n": 2,
+   "gainSum": 2.1,
+   "keep": 2,
    "improved": 1,
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 9,
-   "gainSum": 17.2,
-   "keep": 8,
-   "improved": 6,
+   "n": 11,
+   "gainSum": 24,
+   "keep": 10,
+   "improved": 8,
    "broken": 0,
    "fail": {
     "REGRESSED": 1
@@ -285,13 +285,14 @@
    }
   },
   "inset_panel:strong": {
-   "n": 10,
-   "gainSum": 49,
+   "n": 11,
+   "gainSum": 54.3,
    "keep": 9,
    "improved": 5,
    "broken": 0,
    "fail": {
-    "DARKENED": 1
+    "DARKENED": 1,
+    "TOO_SIMILAR": 1
    }
   },
   "kitbash:soft": {
@@ -324,13 +325,14 @@
  },
  "CREATURE": {
   "noise_displace:strong": {
-   "n": 1,
-   "gainSum": -28.8,
+   "n": 2,
+   "gainSum": -46.8,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 1,
+    "REGRESSED": 1
    }
   },
   "bevel:soft": {
@@ -341,6 +343,36 @@
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 1
+   }
+  },
+  "proportion:soft": {
+   "n": 1,
+   "gainSum": -15.1,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "DARKENED": 1
+   }
+  },
+  "saturate_contrast:strong": {
+   "n": 1,
+   "gainSum": 1.5,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "DARKENED": 1
+   }
+  },
+  "wear:soft": {
+   "n": 1,
+   "gainSum": 0.2,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "TOO_SIMILAR": 1
    }
   }
  },
