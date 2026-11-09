@@ -178,9 +178,9 @@
  },
  "BUILDING": {
   "inset_panel:soft": {
-   "n": 3,
-   "gainSum": 1.7,
-   "keep": 2,
+   "n": 4,
+   "gainSum": 1.6,
+   "keep": 3,
    "improved": 0,
    "broken": 0,
    "fail": {
@@ -232,9 +232,9 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 17,
-   "gainSum": 29.7,
-   "keep": 15,
+   "n": 18,
+   "gainSum": 29.5,
+   "keep": 16,
    "improved": 11,
    "broken": 0,
    "fail": {
@@ -242,10 +242,10 @@
    }
   },
   "outline:soft": {
-   "n": 6,
-   "gainSum": 65,
-   "keep": 5,
-   "improved": 5,
+   "n": 10,
+   "gainSum": 93.8,
+   "keep": 9,
+   "improved": 7,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 1
@@ -313,11 +313,14 @@
    }
   },
   "kitbash:soft": {
-   "n": 3,
-   "gainSum": 9.1,
+   "n": 5,
+   "gainSum": 1.9,
    "keep": 3,
    "improved": 1,
-   "broken": 0
+   "broken": 0,
+   "fail": {
+    "FLOATING_PART": 2
+   }
   },
   "hue_shift:soft": {
    "n": 4,
@@ -399,14 +402,15 @@
    }
   },
   "wear:soft": {
-   "n": 2,
-   "gainSum": 13.1,
+   "n": 4,
+   "gainSum": 16,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 1,
-    "DARKENED": 1
+    "DARKENED": 1,
+    "RIG:ARMATURE_ROOTS:Rig:2": 2
    }
   },
   "noise_displace:soft": {
@@ -440,14 +444,15 @@
    }
   },
   "hue_shift:soft": {
-   "n": 2,
-   "gainSum": 9.9,
+   "n": 4,
+   "gainSum": 10.8,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 1,
-    "DARKENED": 1
+    "DARKENED": 1,
+    "RIG:ARMATURE_ROOTS:Rig:2": 2
    }
   },
   "bevel:strong": {
