@@ -1,0 +1,71 @@
+name: Vibe Look Promotion
+# 조명 탐색이 배운 조합 중 아주 엄격한 관문(tools/vibe-look-promote.mjs)을 통과한 것만 룩 프리셋 후보로 올리는 PR 을 만든다.
+# main 에 직접 쓰지 않는다. 열린 승급 PR 이 있으면 새로 만들지 않는다(한 번에 하나). 병합은 CI 확인 뒤에 사람/관리자가 한다.
+# 참고: GITHUB_TOKEN 으로 만든 PR 은 다른 워크플로를 자동으로 돌리지 않는다. 그래서 이 잡이 스스로 룩 키트 검증과 승급 테스트를 먼저 돌린다.
+on:
+  schedule:
+    - cron: '47 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: vibe-look-promotion
+  cancel-in-progress: false
+jobs:
+  promote:
+    if: ${{ vars.VIBE_GYM_CLOUD != 'off' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Skip when a promotion PR is already open
+        id: open
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          n=$(gh api "repos/${{ github.repository }}/pulls?state=open&per_page=100" --jq '[.[]|select(.head.ref|startswith("vibe-look-promotion/"))]|length')
+          echo "count=$n" >> "$GITHUB_OUTPUT"
+      - name: Install Blender and imaging libs
+        if: steps.open.outputs.count == '0'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+          python3 -m pip install --quiet pillow numpy
+      - name: Pull learned lights
+        if: steps.open.outputs.count == '0'
+        run: node tools/vibe-gym-publish.mjs pull --stats build/learned-lights.json --file learned-lights.json
+      - name: Apply promotion through the strict gate
+        if: steps.open.outputs.count == '0'
+        id: promo
+        env:
+          VIBE2_BLENDER_BINARY: blender
+        run: |
+          out=$(node tools/vibe-look-promote.mjs --learned build/learned-lights.json --apply | tee -a "$GITHUB_STEP_SUMMARY")
+          echo "$out"
+          id=$(echo "$out" | sed -n 's/.*promoted id=\([a-z0-9-]*\).*/\1/p')
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+      - name: Verify the kit and tests
+        if: steps.promo.outputs.id != ''
+        run: |
+          node tools/vibe-look-kit.mjs --check
+          node --test qa/vibe-look-kit.test.mjs qa/vibe-look-promote.test.mjs
+      - name: Open the promotion PR
+        if: steps.promo.outputs.id != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          id="${{ steps.promo.outputs.id }}"
+          git config user.name "vibe-look-promotion"
+          git config user.email "vibe-look-promotion@users.noreply.github.com"
+          git checkout -b "vibe-look-promotion/$id"
+          git add assets/roblox/common-look-v1
+          git commit -m "룩 프리셋 자동 승급 후보: $id"
+          git push origin "vibe-look-promotion/$id"
+          body=$'엄격한 관문(점수 72 이상, 3회 이상 연습, 기존과 충분히 다름, 처음 보는 CC0 모델 3개에서 재확인 평균 68·최저 60 이상, 룩 키트 검증)을 모두 통과한 조명 조합입니다.\n\n대기·색보정·블룸은 가장 가까운 기존 프리셋에서 물려받았고, 배운 것은 조명뿐입니다. 게임이 쓰려면 프리셋 id를 직접 고르는 승인이 필요합니다.'
+          gh api -X POST "repos/${{ github.repository }}/pulls" -f base=main -f head="vibe-look-promotion/$id" -f title="룩 프리셋 자동 승급 후보: $id" -f body="$body"
