@@ -9,7 +9,7 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {runPython,findBlender} from './vibe-python.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
-export const LIMITS={minReduction:0.3,minNormalDeviation:0.004,maxLowTriangles:5000};
+export const LIMITS={minReduction:0.3,minNormalDeviation:0.006,maxLowTriangles:5000};
 
 // 합격 판정: 충분히 가벼워졌고(30% 이상 감소), 노멀맵에 실제 요철이 구워졌고(변화량), 저폴리 삼각형 수가 상한 이하인가
 export function evaluateBake(rec,limits=LIMITS){
