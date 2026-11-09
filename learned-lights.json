@@ -1,7 +1,39 @@
 {
  "PROP": {
-  "runs": 57,
+  "runs": 58,
   "top": [
+   {
+    "score": 89.8,
+    "params": {
+     "elevation": 47,
+     "azimuth": 215,
+     "kelvin": 3162.88,
+     "sun_strength": 4.92,
+     "softness": 3.34,
+     "ambient_kelvin": 8963.3,
+     "ambient_strength": 0.2
+    },
+    "roblox": {
+     "ClockTime": 14.9,
+     "Brightness": 3.94,
+     "ColorShift_Top": [
+      255,
+      183,
+      121
+     ],
+     "Ambient": [
+      42,
+      45,
+      51
+     ],
+     "OutdoorAmbient": [
+      48,
+      51,
+      59
+     ],
+     "ShadowSoftness": 0.28
+    }
+   },
    {
     "score": 88.7,
     "params": {
@@ -32,6 +64,38 @@
       141
      ],
      "ShadowSoftness": 0.44
+    }
+   },
+   {
+    "score": 88,
+    "params": {
+     "elevation": 44,
+     "azimuth": 206,
+     "kelvin": 2800,
+     "sun_strength": 4.73,
+     "softness": 2.55,
+     "ambient_kelvin": 9788.34,
+     "ambient_strength": 0.18
+    },
+    "roblox": {
+     "ClockTime": 15.1,
+     "Brightness": 3.78,
+     "ColorShift_Top": [
+      255,
+      170,
+      95
+     ],
+     "Ambient": [
+      37,
+      39,
+      46
+     ],
+     "OutdoorAmbient": [
+      42,
+      45,
+      53
+     ],
+     "ShadowSoftness": 0.21
     }
    },
    {
@@ -97,73 +161,9 @@
      ],
      "ShadowSoftness": 0.8
     }
-   },
-   {
-    "score": 85.6,
-    "params": {
-     "elevation": 74,
-     "azimuth": 307,
-     "kelvin": 7406.63,
-     "sun_strength": 2.27,
-     "softness": 10.26,
-     "ambient_kelvin": 11680.27,
-     "ambient_strength": 0.17
-    },
-    "roblox": {
-     "ClockTime": 13.1,
-     "Brightness": 1.82,
-     "ColorShift_Top": [
-      232,
-      236,
-      255
-     ],
-     "Ambient": [
-      33,
-      36,
-      43
-     ],
-     "OutdoorAmbient": [
-      38,
-      42,
-      50
-     ],
-     "ShadowSoftness": 0.85
-    }
-   },
-   {
-    "score": 85.5,
-    "params": {
-     "elevation": 56,
-     "azimuth": 189,
-     "kelvin": 7376.65,
-     "sun_strength": 2.08,
-     "softness": 4.02,
-     "ambient_kelvin": 4714.13,
-     "ambient_strength": 0.34
-    },
-    "roblox": {
-     "ClockTime": 14.3,
-     "Brightness": 1.66,
-     "ColorShift_Top": [
-      233,
-      236,
-      255
-     ],
-     "Ambient": [
-      87,
-      76,
-      66
-     ],
-     "OutdoorAmbient": [
-      100,
-      87,
-      76
-     ],
-     "ShadowSoftness": 0.33
-    }
    }
   ],
-  "meanLastRun": 76.4
+  "meanLastRun": 66
  },
  "CREATURE": {
   "runs": 5,
