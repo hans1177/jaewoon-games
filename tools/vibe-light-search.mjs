@@ -57,7 +57,7 @@ export function toRoblox(p){
   };
 }
 
-function renderCandidates(parent,jobs,outDir,res,samples){
+export function renderCandidates(parent,jobs,outDir,res,samples){
   fs.mkdirSync(outDir,{recursive:true});
   const jobsFile=path.join(outDir,'lights.json');fs.writeFileSync(jobsFile,JSON.stringify(jobs));
   const script=path.join(here,'vibe_light_search.py');
@@ -68,7 +68,7 @@ function renderCandidates(parent,jobs,outDir,res,samples){
   const done=jobs.filter(j=>fs.existsSync(path.join(outDir,j.id+'.png'))).length;
   if(done!==jobs.length)throw new Error(`LIGHT_RENDER_FAILED ${done}/${jobs.length}: `+String(r.stderr||r.stdout).split('\n').slice(-4).join(' | '));
 }
-function scoreDir(dir,reference){
+export function scoreDir(dir,reference){
   const args=[path.join(here,'vibe_aesthetic_score.py'),'--dir',dir,'--max',String(1e4)];
   const r=runPython(args,{encoding:'utf8',maxBuffer:1<<26});
   const j=JSON.parse(r.stdout.trim().split('\n').pop());
