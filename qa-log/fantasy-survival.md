@@ -9,6 +9,8 @@
 - 2026-11-09 바이브: 원본 파일이 저장소에 있는 18개(mon_sk*4, mon_ninja/goblin/king/farmer/adventurer/womansoldier/womanmedieval/knightchar/wingdemon, item_key1/scroll/crystal1/book1_closed/armor_metal)를 reupload-map.json 에 추가.
 - 2026-11-09 15:25(KST) 바이브: 새 점검 결과 없음(마력숲 13:39 그대로, 대항해시대 10:57 그대로). owner-fantasy-assets 05:26Z 성공 확인(18개 반영) → owner-new-experience 재배포 요청함(마력숲). 다음 점검(37분)에서 not authorized 감소 확인.
 
+- 2026-11-09 17:25(KST) 바이브: 새 점검 결과 없음(13:39 그대로, 24시간 이내라 재요청 안 함). 점검 클릭 우선 목록에 가방/제작/도감/기사단/스킬트리/설정/자동질주 추가(NOT_FOUND 줄이기, 큐 2번 완료). 다음 점검에서 클릭 수 늘었는지 확인.
+
 ## 알려진 미해결
 - 재업로드 반영본이 아직 Studio 점검에서 검증 안 됨(점검 시각이 재업로드보다 빠름). 재배포(owner-new-experience) 요청함 → 다음 점검(매시 37분)에서 not authorized 로그가 사라졌는지 확인.
 - Player:Move 'no character' 경고 (점검 중 캐릭터 없음, 영향 미확인).

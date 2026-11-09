@@ -57,4 +57,4 @@ def write(path, steps):
 write('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json',
       build(35000, ["프랑스", "1700", "출항하기", "교역", "조선", "퀘스트", "항구", "설정"], 30))
 write('roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json',
-      build(30000, ["모험 시작", "이어하기", "시작", "퀘스트", "인벤", "스킬", "상점", "지도"], 30))
+      build(30000, ["모험 시작", "이어하기", "가방", "제작", "도감", "기사단", "스킬트리", "설정", "자동질주", "시작", "퀘스트", "인벤", "스킬", "상점", "지도"], 30))
