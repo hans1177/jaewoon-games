@@ -16,10 +16,10 @@ export const guardBranch=b=>{if(!/^vibe-gym-data(?:[-/][\w./-]*)?$/.test(String(
 
 const remoteHas=(remote,branch,cwd)=>git(['fetch','--quiet',remote,`+refs/heads/${branch}:refs/remotes/${remote}/${branch}`],cwd).status===0;
 
-export function pull({stats,branch='vibe-gym-data',remote='origin',cwd=process.cwd()}){
+export function pull({stats,file='op-stats.json',branch='vibe-gym-data',remote='origin',cwd=process.cwd()}){
   guardBranch(branch);
   if(!remoteHas(remote,branch,cwd))return {found:false};
-  const r=git(['show',`${remote}/${branch}:op-stats.json`],cwd);
+  const r=git(['show',`${remote}/${branch}:${file}`],cwd);
   if(r.status!==0)return {found:false};
   fs.mkdirSync(path.dirname(path.resolve(cwd,stats)),{recursive:true});
   fs.writeFileSync(path.resolve(cwd,stats),r.stdout);
@@ -31,7 +31,7 @@ export function summarize(ledger){
     source:r.source,family:r.family,op:r.op,arm:r.arm,gain:r.gain,novelty:r.novelty,verdict:r.verdict,reason:r.reason,glbSha256:r.glbSha256,registered:false,at:new Date().toISOString()})).join('\n')+'\n';
 }
 
-export function publish({stats,ledger,branch='vibe-gym-data',remote='origin',cwd=process.cwd(),push=true}){
+export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote='origin',cwd=process.cwd(),push=true}){
   guardBranch(branch);
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'gym-publish-'));
   const wt=path.join(tmp,'wt');
@@ -45,7 +45,9 @@ export function publish({stats,ledger,branch='vibe-gym-data',remote='origin',cwd
     fs.copyFileSync(path.resolve(cwd,stats),path.join(wt,'op-stats.json'));
     const led=JSON.parse(fs.readFileSync(path.resolve(cwd,ledger),'utf8')).ledger||[];
     fs.appendFileSync(path.join(wt,'ledger-summary.jsonl'),summarize(led));
-    must(git(['add','op-stats.json','ledger-summary.jsonl'],wt),'add');
+    const add=['op-stats.json','ledger-summary.jsonl'];
+    if(lights&&fs.existsSync(path.resolve(cwd,lights))){fs.copyFileSync(path.resolve(cwd,lights),path.join(wt,'learned-lights.json'));add.push('learned-lights.json')}
+    must(git(['add',...add],wt),'add');
     const st=git(['status','--porcelain'],wt).stdout.trim();
     if(!st)return {published:false,reason:'NO_CHANGE'};
     must(git(['commit','--quiet','-m',`vibe-gym: ${led.length} variations`],wt),'commit');
@@ -61,8 +63,8 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   const [cmd,...rest]=process.argv.slice(2),opt=n=>{const i=rest.indexOf('--'+n);return i>=0?rest[i+1]:null};
   try{
     const common={stats:opt('stats'),branch:opt('branch')||'vibe-gym-data',remote:opt('remote')||'origin'};
-    if(cmd==='pull')console.log(JSON.stringify(pull(common)));
-    else if(cmd==='publish')console.log(JSON.stringify(publish({...common,ledger:opt('ledger')})));
+    if(cmd==='pull')console.log(JSON.stringify(pull({...common,file:opt('file')||'op-stats.json'})));
+    else if(cmd==='publish')console.log(JSON.stringify(publish({...common,ledger:opt('ledger'),lights:opt('lights')})));
     else{console.error('usage: pull|publish');process.exit(2)}
   }catch(e){console.error(String(e.message||e));process.exit(1)}
 }

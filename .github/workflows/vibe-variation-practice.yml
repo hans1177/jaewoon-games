@@ -5,8 +5,9 @@ name: Vibe Variation Practice
 #   - 자동 다운로드는 오너 규칙대로 "부족한 분야가 선택됐을 때, 레지스트리에 CC0로 검증된 출처만" 받는다. 받은 팩은 후보이며 승인은 사람이 한다.
 on:
   schedule:
-    # 매시간(클라우드 17분, 로컬 러너는 아래 job 이 같은 스케줄에서 함께 돈다). GitHub cron 최소 단위는 5분이고 매분은 불가능·낭비라 매시간을 추천값으로 쓴다.
-    - cron: '17 * * * *'
+    # 5분마다(GitHub cron 최소 단위). 진짜 매분은 로컬 PC에서 tools/vibe-practice-loop.mjs 가 한다(60초 루프).
+    # 비용을 줄이려면 저장소 변수 VIBE_GYM_CLOUD=off 로 클라우드 연습만 끌 수 있다(로컬 루프는 영향 없음).
+    - cron: '*/5 * * * *'
   workflow_dispatch:
     inputs:
       parents:
@@ -22,6 +23,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   practice-cloud:
+    if: ${{ vars.VIBE_GYM_CLOUD != 'off' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -36,22 +38,26 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
           python3 -m pip install --quiet pillow numpy
-      - name: Pull learned stats
-        run: node tools/vibe-gym-publish.mjs pull --stats build/gym-stats.json
-      - name: Practice
+      - name: Pull learned stats and learned lights
+        run: |
+          node tools/vibe-gym-publish.mjs pull --stats build/gym-stats.json
+          node tools/vibe-gym-publish.mjs pull --stats build/learned-lights.json --file learned-lights.json
+      - name: Practice (variation gym + light search + normal bake)
         env:
           VIBE2_BLENDER_BINARY: blender
         run: |
-          node tools/vibe-variation-gym.mjs --parents "${{ inputs.parents || '3' }}" --variants "${{ inputs.variants || '4' }}" --seed "$(date +%s)" --out build/variation-gym --stats build/gym-stats.json
+          node tools/vibe-practice-session.mjs --parents "${{ inputs.parents || '3' }}" --variants "${{ inputs.variants || '4' }}" --seed "$(date +%s)" --out build/practice --stats build/gym-stats.json --lights build/learned-lights.json | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Publish stats to vibe-gym-data (never main)
-        run: node tools/vibe-gym-publish.mjs publish --stats build/gym-stats.json --ledger build/variation-gym/ledger.json
+        run: node tools/vibe-gym-publish.mjs publish --stats build/gym-stats.json --ledger build/practice/gym/ledger.json --lights build/learned-lights.json
       - name: Upload kept children and previews
         uses: actions/upload-artifact@v4
         with:
           name: variation-gym-${{ github.run_id }}
           path: |
-            build/variation-gym/ledger.json
-            build/variation-gym/*.png
+            build/practice/session.json
+            build/practice/gym/ledger.json
+            build/practice/gym/*.png
+            build/practice/light/round*/*.png
           retention-days: 14
           if-no-files-found: warn
 
@@ -90,12 +96,14 @@ jobs:
           # 부족한 분야가 있을 때만, 레지스트리에 CC0로 검증된 출처에서만 받는다(받은 팩은 승인 전 후보).
           node tools/vibe-cc0-fetch.mjs --execute --max 1
           node tools/vibe-cc0-library.mjs scan
-      - name: Pull learned stats
+      - name: Pull learned stats and learned lights
         shell: pwsh
-        run: node tools/vibe-gym-publish.mjs pull --stats build/gym-stats.json
-      - name: Practice
+        run: |
+          node tools/vibe-gym-publish.mjs pull --stats build/gym-stats.json
+          node tools/vibe-gym-publish.mjs pull --stats build/learned-lights.json --file learned-lights.json
+      - name: Practice (variation gym + light search + normal bake)
         shell: pwsh
-        run: node tools/vibe-variation-gym.mjs --parents 3 --variants 4 --seed ([int](Get-Date -UFormat %s)) --out build/variation-gym --stats build/gym-stats.json
+        run: node tools/vibe-practice-session.mjs --parents 3 --variants 4 --seed ([int](Get-Date -UFormat %s)) --out build/practice --stats build/gym-stats.json --lights build/learned-lights.json
       - name: Publish stats to vibe-gym-data (never main)
         shell: pwsh
-        run: node tools/vibe-gym-publish.mjs publish --stats build/gym-stats.json --ledger build/variation-gym/ledger.json
+        run: node tools/vibe-gym-publish.mjs publish --stats build/gym-stats.json --ledger build/practice/gym/ledger.json --lights build/learned-lights.json

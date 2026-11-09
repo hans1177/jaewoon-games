@@ -77,7 +77,7 @@ test('판정: 점수가 올라도 안쪽이 어두워지거나 세부가 뭉개�
 
 test('성적표 갱신: 횟수·이득 합·유지·개선·고장을 센다', () => {
   const s=updateStats({}, 'PROP',[{arm:'bevel:soft',op:'bevel',gain:2,keep:true,verdict:'IMPROVED'},{arm:'bevel:soft',op:'bevel',gain:-4,keep:false,verdict:'REGRESSED'},{arm:'outline:strong',op:'outline',gain:0,keep:false,verdict:'BROKEN'}]);
-  assert.deepEqual(s.PROP['bevel:soft'],{n:2,gainSum:-2,keep:1,improved:1,broken:0});
+  assert.deepEqual(s.PROP['bevel:soft'],{n:2,gainSum:-2,keep:1,improved:1,broken:0,fail:{REGRESSED:1}});
   assert.equal(s.PROP['outline:strong'].broken,1);
 });
 
@@ -117,4 +117,41 @@ test('실제 Blender: CC0 부모 변형 → 렌더 → 채점 → 출처·해시
   assert.ok(fs.existsSync(statsPath));
   // 연습장은 실제 레지스트리를 건드리지 않는다
   assert.equal(crypto.createHash('sha256').update(fs.readFileSync('company-asset-library.json')).digest('hex'),before);
+});
+
+test('확장 연산(이끼·흙때·울퉁불퉁·패널 홈)이 있고 세기에 따라 값이 다르다', async () => {
+  const {OPERATORS:ops}=await import('../tools/vibe-variation-gym.mjs');
+  for(const k of ['moss','wear','noise_displace','inset_panel'])assert.ok(ops[k],k);
+  const rng=mulberry32(3);
+  assert.ok(ops.noise_displace.sample(rng,'strong').strength>ops.noise_displace.sample(rng,'soft').strength);
+  assert.ok(ops.moss.sample(rng,'strong').coverage>ops.moss.sample(rng,'soft').coverage);
+});
+
+test('실패 도감: 여러 번 해 보고 거의 다 실패한 팔은 탐험에서도 다시 뽑지 않는다', () => {
+  const stats={PROP:{'moss:strong':{n:8,gainSum:-30,keep:0,improved:0,broken:0}}};
+  const picks=chooseArms(stats,'PROP',800,mulberry32(2),1);
+  assert.equal(picks.filter(x=>x.op==='moss'&&x.strength==='strong').length,0);
+  // 전부 실패한 극단에서도 뽑을 팔이 남는다(전체로 되돌림)
+  const every={PROP:Object.fromEntries(Object.keys(OPERATORS).flatMap(op=>STRENGTHS.map(st=>[armKey(op,st),{n:9,gainSum:-9,keep:0,improved:0,broken:0}])))};
+  assert.equal(chooseArms(every,'PROP',5,mulberry32(2),1).length,5);
+});
+
+test('실패 이유가 성적표에 쌓인다(어디서 자주 망하는지)', () => {
+  const st=updateStats({},'PROP',[{arm:'moss:soft',gain:-3,keep:false,verdict:'REGRESSED',reason:'DARKENED'},{arm:'moss:soft',gain:-2,keep:false,verdict:'REGRESSED',reason:'DARKENED'},{arm:'moss:soft',gain:2,keep:true,verdict:'IMPROVED'}]);
+  assert.equal(st.PROP['moss:soft'].fail.DARKENED,2);
+  assert.equal(st.PROP['moss:soft'].keep,1);
+});
+
+test('리그 점검 게이트: 캐릭터 계열은 검사 실패 시 유지하지 않고, 소품은 검사하지 않는다', async () => {
+  const {rigGate}=await import('../tools/vibe-variation-gym.mjs');
+  let calls=0;
+  const bad=f=>{calls++;return {pass:false,failures:['UNWEIGHTED_VERTICES:body:12']}};
+  const good=()=>({pass:true,failures:[]});
+  const prop=rigGate({family:'PROP',keep:true,verdict:'IMPROVED',glb:'x.glb'},bad);
+  assert.equal(prop.keep,true);assert.equal(calls,0);
+  const hero=rigGate({family:'CHARACTER',keep:true,verdict:'IMPROVED',glb:'x.glb'},bad);
+  assert.equal(hero.keep,false);assert.match(hero.reason,/^RIG:UNWEIGHTED/);
+  assert.equal(rigGate({family:'CHARACTER',keep:true,verdict:'IMPROVED',glb:'x.glb'},good).keep,true);
+  const err=rigGate({family:'CREATURE',keep:true,verdict:'IMPROVED',glb:'x.glb'},()=>{throw new Error('boom')});
+  assert.equal(err.verdict,'BROKEN');
 });
