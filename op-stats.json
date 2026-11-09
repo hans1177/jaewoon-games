@@ -12,22 +12,22 @@
    }
   },
   "outline:soft": {
-   "n": 122,
-   "gainSum": 1045.3,
-   "keep": 94,
-   "improved": 82,
+   "n": 124,
+   "gainSum": 1074.4,
+   "keep": 95,
+   "improved": 83,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
     "DETAIL_LOST": 17,
-    "DARKENED": 10
+    "DARKENED": 11
    }
   },
   "wear:strong": {
-   "n": 114,
-   "gainSum": 500.2,
-   "keep": 66,
-   "improved": 51,
+   "n": 116,
+   "gainSum": 507.7,
+   "keep": 68,
+   "improved": 53,
    "broken": 0,
    "fail": {
     "DARKENED": 20,
@@ -136,10 +136,10 @@
    }
   },
   "noise_displace:strong": {
-   "n": 10,
-   "gainSum": 0.3,
-   "keep": 5,
-   "improved": 3,
+   "n": 11,
+   "gainSum": 5.9,
+   "keep": 6,
+   "improved": 4,
    "broken": 0,
    "fail": {
     "REGRESSED": 4,
@@ -147,10 +147,10 @@
    }
   },
   "moss:strong": {
-   "n": 76,
-   "gainSum": 395.8,
-   "keep": 48,
-   "improved": 43,
+   "n": 77,
+   "gainSum": 398.1,
+   "keep": 49,
+   "improved": 44,
    "broken": 0,
    "fail": {
     "DARKENED": 14,
@@ -159,10 +159,10 @@
    }
   },
   "proportion:soft": {
-   "n": 3,
-   "gainSum": 9.9,
-   "keep": 3,
-   "improved": 2,
+   "n": 4,
+   "gainSum": 12.4,
+   "keep": 4,
+   "improved": 3,
    "broken": 0
   },
   "moss:soft": {
@@ -177,11 +177,14 @@
    }
   },
   "proportion:strong": {
-   "n": 7,
-   "gainSum": 14.9,
+   "n": 8,
+   "gainSum": 12.2,
    "keep": 7,
    "improved": 4,
-   "broken": 0
+   "broken": 0,
+   "fail": {
+    "REGRESSED": 1
+   }
   },
   "noise_displace:soft": {
    "n": 8,
@@ -638,24 +641,26 @@
    }
   },
   "wear:strong": {
-   "n": 2,
-   "gainSum": -11.5,
+   "n": 3,
+   "gainSum": 2,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 1,
-    "RIG:ARMATURE_ROOTS:Rig:2": 1
+    "RIG:ARMATURE_ROOTS:Rig:2": 1,
+    "DARKENED": 1
    }
   },
   "outline:soft": {
-   "n": 1,
-   "gainSum": 18.6,
+   "n": 2,
+   "gainSum": 28.2,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "RIG:ARMATURE_ROOTS:Rig:2": 1
+    "RIG:ARMATURE_ROOTS:Rig:2": 1,
+    "DARKENED": 1
    }
   },
   "saturate_contrast:strong": {
@@ -710,6 +715,16 @@
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 1
+   }
+  },
+  "proportion:strong": {
+   "n": 1,
+   "gainSum": -16.4,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "REGRESSED": 1
    }
   }
  },
