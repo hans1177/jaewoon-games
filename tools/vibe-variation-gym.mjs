@@ -10,6 +10,7 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {approvedLibraryParents} from './vibe-cc0-library.mjs';
 import {runPython,findBlender} from './vibe-python.mjs';
+import {measure as measureRig,evaluateAudit} from './vibe-mesh-audit.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const sha256=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
@@ -24,6 +25,10 @@ export const OPERATORS={
   proportion:{sample:(rng,st)=>st==='soft'?{x:rnd(rng,0.9,1.15),y:rnd(rng,0.9,1.15),z:rnd(rng,0.9,1.15)}:{x:rnd(rng,0.7,1.4),y:rnd(rng,0.7,1.4),z:rnd(rng,0.7,1.4)},note:'비율 바꾸기'},
   bevel:{sample:(rng,st)=>({width:st==='soft'?rnd(rng,0.006,0.012,3):rnd(rng,0.014,0.03,3),segments:2}),note:'모서리 다듬기'},
   outline:{sample:(rng,st)=>({thickness:st==='soft'?rnd(rng,0.006,0.01,3):rnd(rng,0.012,0.02,3)}),note:'만화풍 외곽선'},
+  moss:{sample:(rng,st)=>({seed:Math.floor(rng()*1e6),threshold:st==='soft'?0.8:0.6,coverage:st==='soft'?rnd(rng,0.3,0.5):rnd(rng,0.7,0.95)}),note:'위쪽 면 이끼(오래된 느낌)'},
+  wear:{sample:(rng,st)=>({height:st==='soft'?rnd(rng,0.1,0.18):rnd(rng,0.25,0.4)}),note:'바닥 흙때(닳은 느낌)'},
+  noise_displace:{sample:(rng,st)=>({scale:rnd(rng,0.15,0.4),strength:st==='soft'?rnd(rng,0.01,0.02,3):rnd(rng,0.03,0.06,3)}),note:'표면 울퉁불퉁(돌·나무 결)'},
+  inset_panel:{sample:(rng,st)=>({thickness:st==='soft'?rnd(rng,0.02,0.04,3):rnd(rng,0.05,0.09,3),depth:st==='soft'?rnd(rng,0.01,0.02,3):rnd(rng,0.03,0.06,3)}),note:'위쪽 패널 홈(입체감)'},
   kitbash:{sample:(rng,st)=>({scale:st==='soft'?rnd(rng,0.2,0.3):rnd(rng,0.35,0.5),mode:rng()<0.6?'top':'side'}),needsPart:true,note:'CC0 부품 조립(두 부모)'},
 };
 
@@ -47,7 +52,11 @@ export function pickParents(registry,repoRoot,n,rng,only=null){
 // 팔(arm) = 연산:세기. 성적표가 있으면 평균 이득이 큰 팔을 더 자주(1-epsilon), 없으면 무작위 탐험(epsilon).
 export const armKey=(op,strength)=>`${op}:${strength}`;
 export function chooseArms(stats,family,count,rng,epsilon=0.3){
-  const all=Object.keys(OPERATORS).flatMap(op=>STRENGTHS.map(strength=>({op,strength}))),fam=stats?.[family]||{};
+  const fam=stats?.[family]||{};
+  // 실패 도감: 5번 이상 해 봤는데 유지율이 20% 미만인 팔은 탐험에서도 뺀다(전부 빠지면 전체로 되돌린다).
+  const everyArm=Object.keys(OPERATORS).flatMap(op=>STRENGTHS.map(strength=>({op,strength})));
+  const failing=a=>{const f=fam[armKey(a.op,a.strength)];return !!f&&f.n>=5&&f.keep/f.n<0.2};
+  const all=everyArm.filter(a=>!failing(a)).length?everyArm.filter(a=>!failing(a)):everyArm;
   const mean=a=>{const f=fam[armKey(a.op,a.strength)];return f&&f.n>=2?f.gainSum/f.n:null};
   // 이득이 플러스인 팔만 활용 대상. 이득에 비례한 가중으로 뽑아서, 나쁜 팔(마이너스)은 탐험 때만 나온다.
   const good=all.map(a=>({a,m:mean(a)})).filter(x=>x.m!==null&&x.m>0).sort((x,y)=>y.m-x.m).slice(0,4);
@@ -84,10 +93,23 @@ export function judge(row,limits=LIMITS){
   return {verdict:'REGRESSED',keep:false};
 }
 
+// 리그 점검 게이트: 캐릭터·생물 계열 자식은 메쉬·리그 검사기를 통과해야 유지한다(애니메이션 연습으로 넘기려면 필수).
+export const RIGGED_FAMILY=/CHARACTER|CREATURE|HERO|NPC|ANIMAL/i;
+export function rigGate(row,audit){
+  if(!RIGGED_FAMILY.test(row.family||'')||!row.keep||!row.glb)return row;
+  try{
+    const ev=audit(row.glb);
+    row.audit={pass:ev.pass,failures:ev.failures.slice(0,3)};
+    if(!ev.pass){row.keep=false;row.verdict='REGRESSED';row.reason='RIG:'+ev.failures[0]}
+  }catch(e){row.audit={pass:false,failures:['AUDIT_ERROR']};row.keep=false;row.verdict='BROKEN';row.reason='RIG_AUDIT_ERROR'}
+  return row;
+}
+
 export function updateStats(stats,family,rows){
   stats[family]??={};
   for(const r of rows){
     const s=stats[family][r.arm||r.op]??={n:0,gainSum:0,keep:0,improved:0,broken:0};
+    if(r.keep===false){const why=r.reason||r.verdict;s.fail??={};s.fail[why]=(s.fail[why]||0)+1} // 실패 도감: 왜 실패했는지 쌓는다
     s.n++;s.gainSum=+(s.gainSum+(r.gain||0)).toFixed(3);
     if(r.keep)s.keep++;
     if(r.verdict==='IMPROVED')s.improved++;
@@ -119,7 +141,7 @@ const slugOf=id=>id.replace(/[^a-z0-9]+/gi,'-').slice(0,40);
 const absOf=(repoRoot,p)=>path.isAbsolute(p.file)?p.file:path.join(repoRoot,p.file);
 const relOrAbs=(repoRoot,p)=>path.isAbsolute(p.file)?p.file:p.file;
 
-export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=1,out='build/variation-gym',statsPath=null,only=null,libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null}={}){
+export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=1,out='build/variation-gym',statsPath=null,only=null,libraryDir=process.env.VIBE_CC0_LIBRARY_DIR||null,rigAudit=f=>evaluateAudit(measureRig(f))}={}){
   const rng=mulberry32(seed);
   const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
   const stats=statsPath&&fs.existsSync(statsPath)?JSON.parse(fs.readFileSync(statsPath,'utf8')):{};
@@ -170,6 +192,7 @@ export function runGymSession({repoRoot=process.cwd(),parents=3,variants=4,seed=
         Object.assign(row,{attach:res.attach||null,score:sc.score,parentScore:parentScore.score,gain:sc.gain,novelty:sc.novelty,darkening:sc.darkening,detailDrop:sc.detailDrop,sub:sc.sub,empty:!!sc.empty,triangles:res.triangles,glb:path.relative(repoRoot,res.glb),glbSha256:sha256(res.glb)});
       }else row.error=res?.error||'NO_RESULT';
       Object.assign(row,judge(row));
+      if(row.glb){const g=rigGate({...row,glb:path.join(repoRoot,row.glb)},rigAudit);if(g.audit)Object.assign(row,{keep:g.keep,verdict:g.verdict,reason:g.reason,audit:g.audit})}
       rows.push(row);ledger.push(row);
     }
     updateStats(stats,p.family,rows);

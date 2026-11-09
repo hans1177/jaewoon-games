@@ -243,7 +243,85 @@ def op_kitbash(obj, p):
     normalize(bpy.context.view_layer.objects.active)
 
 
-OPS = {'kitbash': op_kitbash, 'hue_shift': op_hue_shift, 'saturate_contrast': op_saturate_contrast, 'proportion': op_proportion,
+# ---- 확장 연산: 새 도형을 만들지 않고 부모 표면을 바꾼다(표면 질감·재질 구역·패널) ----
+def _new_mat(name, rgb):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    b = principled(mat)
+    b.inputs['Base Color'].default_value = (rgb[0], rgb[1], rgb[2], 1.0)
+    b.inputs['Roughness'].default_value = 0.9
+    mat.diffuse_color = (rgb[0], rgb[1], rgb[2], 1.0)
+    return mat
+
+
+def _assign_faces(obj, predicate, mat):
+    me = obj.data
+    me.materials.append(mat)
+    idx = len(me.materials) - 1
+    n = 0
+    for poly in me.polygons:
+        if predicate(poly):
+            poly.material_index = idx
+            n += 1
+    return n
+
+
+def op_moss(obj, p):
+    """위쪽을 보는 면 일부에 이끼 재질을 입힌다(오래된 느낌)."""
+    import random
+    rnd = random.Random(int(p.get('seed', 1)))
+    thr = float(p.get('threshold', 0.7))
+    cover = float(p.get('coverage', 0.7))
+    n = _assign_faces(obj, lambda f: f.normal.z > thr and rnd.random() < cover, _new_mat('GymMoss', (0.18, 0.36, 0.12)))
+    if n == 0:
+        raise RuntimeError('NO_UP_FACE_FOR_MOSS')
+
+
+def op_wear(obj, p):
+    """바닥 가까운 면에 흙때 재질을 입힌다(닳은 느낌)."""
+    lo, hi = bbox(obj)
+    limit = lo.z + (hi.z - lo.z) * float(p.get('height', 0.2))
+    vs = obj.data.vertices
+    n = _assign_faces(obj, lambda f: sum(vs[i].co.z for i in f.vertices) / len(f.vertices) <= limit, _new_mat('GymDirt', (0.17, 0.12, 0.09)))
+    if n == 0:
+        raise RuntimeError('NO_LOW_FACE_FOR_WEAR')
+
+
+def op_noise_displace(obj, p):
+    """표면을 구름 노이즈로 살짝 울퉁불퉁하게(돌·나무 결). 삼각형이 너무 많으면 세분하지 않는다."""
+    bpy.context.view_layer.objects.active = obj
+    if sum(max(1, len(q.vertices) - 2) for q in obj.data.polygons) < 12000:
+        sub = obj.modifiers.new('GymSub', 'SUBSURF')
+        sub.subdivision_type = 'SIMPLE'
+        sub.levels = 1
+        bpy.ops.object.modifier_apply(modifier=sub.name)
+    tex = bpy.data.textures.new('GymNoise', 'CLOUDS')
+    tex.noise_scale = float(p.get('scale', 0.25))
+    d = obj.modifiers.new('GymDisp', 'DISPLACE')
+    d.texture = tex
+    d.strength = float(p.get('strength', 0.03))
+    d.mid_level = 0.5
+    bpy.ops.object.modifier_apply(modifier=d.name)
+    bpy.ops.object.shade_smooth()
+
+
+def op_inset_panel(obj, p):
+    """위쪽 큰 면을 안으로 들여 패널 홈을 판다(입체감)."""
+    import bmesh
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    bm.faces.ensure_lookup_table()
+    faces = [f for f in bm.faces if f.normal.z > 0.7 and f.calc_area() > 0.004]
+    if not faces:
+        bm.free()
+        raise RuntimeError('NO_TOP_FACE_FOR_PANEL')
+    bmesh.ops.inset_region(bm, faces=faces, thickness=float(p.get('thickness', 0.03)), depth=-abs(float(p.get('depth', 0.02))), use_even_offset=True)
+    bm.to_mesh(obj.data)
+    bm.free()
+    obj.data.update()
+
+
+OPS = {'moss': op_moss, 'wear': op_wear, 'noise_displace': op_noise_displace, 'inset_panel': op_inset_panel, 'kitbash': op_kitbash, 'hue_shift': op_hue_shift, 'saturate_contrast': op_saturate_contrast, 'proportion': op_proportion,
        'bevel': op_bevel, 'outline': op_outline, 'identity': lambda o, p: None}
 
 
