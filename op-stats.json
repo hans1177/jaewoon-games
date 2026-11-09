@@ -13,33 +13,33 @@
    }
   },
   "outline:soft": {
-   "n": 243,
-   "gainSum": 1837.4,
-   "keep": 181,
-   "improved": 155,
+   "n": 246,
+   "gainSum": 1831.9,
+   "keep": 183,
+   "improved": 157,
    "broken": 0,
    "fail": {
     "REGRESSED": 3,
-    "DETAIL_LOST": 30,
+    "DETAIL_LOST": 31,
     "DARKENED": 29
    }
   },
   "wear:strong": {
-   "n": 150,
-   "gainSum": 542.4,
-   "keep": 84,
+   "n": 152,
+   "gainSum": 539.7,
+   "keep": 85,
    "improved": 63,
    "broken": 0,
    "fail": {
     "DARKENED": 23,
     "TOO_SIMILAR": 25,
-    "REGRESSED": 18
+    "REGRESSED": 19
    }
   },
   "inset_panel:soft": {
-   "n": 13,
-   "gainSum": 32.2,
-   "keep": 11,
+   "n": 14,
+   "gainSum": 32.3,
+   "keep": 12,
    "improved": 6,
    "broken": 1,
    "fail": {
@@ -119,25 +119,25 @@
    }
   },
   "outline:strong": {
-   "n": 12,
-   "gainSum": 20.8,
+   "n": 13,
+   "gainSum": 8.8,
    "keep": 5,
    "improved": 5,
    "broken": 0,
    "fail": {
     "DARKENED": 3,
-    "DETAIL_LOST": 3,
+    "DETAIL_LOST": 4,
     "REGRESSED": 1
    }
   },
   "saturate_contrast:strong": {
-   "n": 12,
+   "n": 13,
    "gainSum": -35.2,
    "keep": 6,
    "improved": 3,
    "broken": 0,
    "fail": {
-    "TOO_SIMILAR": 2,
+    "TOO_SIMILAR": 3,
     "REGRESSED": 4
    }
   },
@@ -744,13 +744,14 @@
    }
   },
   "noise_displace:strong": {
-   "n": 4,
-   "gainSum": -39.9,
+   "n": 5,
+   "gainSum": -34,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "REGRESSED": 4
+    "REGRESSED": 4,
+    "RIG:ARMATURE_ROOTS:Rig:2": 1
    }
   },
   "wear:soft": {
@@ -811,23 +812,25 @@
    }
   },
   "hue_shift:soft": {
-   "n": 2,
-   "gainSum": -35.4,
+   "n": 3,
+   "gainSum": -34.6,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DETAIL_LOST": 2
+    "DETAIL_LOST": 2,
+    "RIG:ARMATURE_ROOTS:Rig:2": 1
    }
   },
   "inset_panel:soft": {
-   "n": 2,
-   "gainSum": 0,
+   "n": 4,
+   "gainSum": 28.5,
    "keep": 0,
    "improved": 0,
    "broken": 2,
    "fail": {
-    "BROKEN": 2
+    "BROKEN": 2,
+    "RIG:ARMATURE_ROOTS:Rig:2": 2
    }
   },
   "bevel:soft": {
