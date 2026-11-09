@@ -13,10 +13,10 @@
    }
   },
   "outline:soft": {
-   "n": 299,
-   "gainSum": 2220.2,
-   "keep": 226,
-   "improved": 190,
+   "n": 303,
+   "gainSum": 2296.9,
+   "keep": 230,
+   "improved": 194,
    "broken": 0,
    "fail": {
     "REGRESSED": 8,
@@ -71,10 +71,10 @@
    }
   },
   "inset_panel:strong": {
-   "n": 100,
-   "gainSum": 360,
-   "keep": 76,
-   "improved": 59,
+   "n": 101,
+   "gainSum": 368.3,
+   "keep": 77,
+   "improved": 60,
    "broken": 6,
    "fail": {
     "TOO_SIMILAR": 2,
@@ -97,13 +97,13 @@
    }
   },
   "bevel:strong": {
-   "n": 19,
-   "gainSum": 7.6,
+   "n": 20,
+   "gainSum": 8.1,
    "keep": 9,
    "improved": 5,
    "broken": 0,
    "fail": {
-    "TOO_SIMILAR": 2,
+    "TOO_SIMILAR": 3,
     "DARKENED": 2,
     "REGRESSED": 6
    }
@@ -154,9 +154,9 @@
    }
   },
   "moss:strong": {
-   "n": 156,
+   "n": 157,
    "gainSum": 521.3,
-   "keep": 108,
+   "keep": 109,
    "improved": 83,
    "broken": 1,
    "fail": {
@@ -178,14 +178,15 @@
    }
   },
   "moss:soft": {
-   "n": 19,
+   "n": 20,
    "gainSum": 16.5,
    "keep": 12,
    "improved": 7,
    "broken": 0,
    "fail": {
     "REGRESSED": 6,
-    "DARKENED": 1
+    "DARKENED": 1,
+    "TOO_SIMILAR": 1
    }
   },
   "proportion:strong": {
@@ -557,15 +558,15 @@
    }
   },
   "bevel:strong": {
-   "n": 3,
-   "gainSum": -11.8,
+   "n": 5,
+   "gainSum": -29.2,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "REGRESSED": 1,
+    "REGRESSED": 2,
     "RIG:ORPHAN_MESH:Icosphere": 1,
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 2
    }
   },
   "inset_panel:soft": {
@@ -642,15 +643,16 @@
    }
   },
   "inset_panel:strong": {
-   "n": 4,
-   "gainSum": -36.1,
+   "n": 5,
+   "gainSum": -35.7,
    "keep": 0,
    "improved": 0,
    "broken": 2,
    "fail": {
     "BROKEN": 2,
     "DETAIL_LOST": 1,
-    "REGRESSED": 1
+    "REGRESSED": 1,
+    "RIG:ARMATURE_ROOTS:Rig:2": 1
    }
   },
   "hue_shift:strong": {
