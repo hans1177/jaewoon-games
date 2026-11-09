@@ -229,20 +229,20 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 13,
-   "gainSum": 26.1,
-   "keep": 12,
-   "improved": 9,
+   "n": 16,
+   "gainSum": 26.9,
+   "keep": 14,
+   "improved": 10,
    "broken": 0,
    "fail": {
-    "REGRESSED": 1
+    "REGRESSED": 2
    }
   },
   "outline:soft": {
-   "n": 2,
-   "gainSum": 4.6,
-   "keep": 1,
-   "improved": 1,
+   "n": 3,
+   "gainSum": 21.2,
+   "keep": 2,
+   "improved": 2,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 1
@@ -260,18 +260,21 @@
    }
   },
   "hue_shift:strong": {
-   "n": 2,
+   "n": 3,
    "gainSum": -0.4,
-   "keep": 2,
+   "keep": 3,
    "improved": 0,
    "broken": 0
   },
   "bevel:strong": {
-   "n": 11,
-   "gainSum": 16.3,
-   "keep": 11,
-   "improved": 4,
-   "broken": 0
+   "n": 14,
+   "gainSum": 38.3,
+   "keep": 13,
+   "improved": 6,
+   "broken": 0,
+   "fail": {
+    "REGRESSED": 1
+   }
   },
   "bevel:soft": {
    "n": 17,
@@ -481,13 +484,14 @@
    }
   },
   "saturate_contrast:soft": {
-   "n": 1,
-   "gainSum": -17.3,
+   "n": 2,
+   "gainSum": -18.1,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 1,
+    "RIG:ARMATURE_ROOTS:Rig:2": 1
    }
   },
   "moss:soft": {
@@ -518,6 +522,36 @@
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 1
+   }
+  },
+  "outline:soft": {
+   "n": 1,
+   "gainSum": 18.6,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "RIG:ARMATURE_ROOTS:Rig:2": 1
+   }
+  },
+  "saturate_contrast:strong": {
+   "n": 1,
+   "gainSum": -0.8,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "RIG:ARMATURE_ROOTS:Rig:2": 1
+   }
+  },
+  "bevel:strong": {
+   "n": 1,
+   "gainSum": 7.4,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "RIG:ARMATURE_ROOTS:Rig:2": 1
    }
   }
  },
