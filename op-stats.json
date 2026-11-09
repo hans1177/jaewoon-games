@@ -12,10 +12,10 @@
    }
   },
   "outline:soft": {
-   "n": 5,
-   "gainSum": 34.2,
-   "keep": 2,
-   "improved": 1,
+   "n": 6,
+   "gainSum": 53.9,
+   "keep": 3,
+   "improved": 2,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
@@ -122,13 +122,14 @@
    "broken": 0
   },
   "moss:strong": {
-   "n": 5,
-   "gainSum": 86.1,
-   "keep": 3,
+   "n": 7,
+   "gainSum": 77.6,
+   "keep": 4,
    "improved": 3,
    "broken": 0,
    "fail": {
-    "DARKENED": 2
+    "DARKENED": 2,
+    "REGRESSED": 1
    }
   },
   "proportion:soft": {
@@ -137,6 +138,16 @@
    "keep": 1,
    "improved": 1,
    "broken": 0
+  },
+  "moss:soft": {
+   "n": 1,
+   "gainSum": -9.3,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "REGRESSED": 1
+   }
   }
  },
  "BUILDING": {
@@ -189,10 +200,10 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 3,
-   "gainSum": 14.8,
-   "keep": 3,
-   "improved": 2,
+   "n": 5,
+   "gainSum": 27.3,
+   "keep": 5,
+   "improved": 4,
    "broken": 0
   },
   "outline:soft": {
@@ -227,10 +238,10 @@
    "broken": 0
   },
   "bevel:soft": {
-   "n": 8,
-   "gainSum": 33.6,
-   "keep": 6,
-   "improved": 5,
+   "n": 9,
+   "gainSum": 39.9,
+   "keep": 7,
+   "improved": 6,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
@@ -260,6 +271,13 @@
    "keep": 2,
    "improved": 0,
    "broken": 0
+  },
+  "hue_shift:soft": {
+   "n": 1,
+   "gainSum": 6.3,
+   "keep": 1,
+   "improved": 1,
+   "broken": 0
   }
  },
  "CREATURE": {
@@ -276,6 +294,48 @@
   "bevel:soft": {
    "n": 1,
    "gainSum": -12.7,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "DETAIL_LOST": 1
+   }
+  }
+ },
+ "CHARACTER": {
+  "inset_panel:strong": {
+   "n": 1,
+   "gainSum": 0,
+   "keep": 0,
+   "improved": 0,
+   "broken": 1,
+   "fail": {
+    "BROKEN": 1
+   }
+  },
+  "saturate_contrast:soft": {
+   "n": 1,
+   "gainSum": -17.3,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "DETAIL_LOST": 1
+   }
+  },
+  "moss:soft": {
+   "n": 1,
+   "gainSum": -15.5,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "DETAIL_LOST": 1
+   }
+  },
+  "proportion:soft": {
+   "n": 1,
+   "gainSum": -17.5,
    "keep": 0,
    "improved": 0,
    "broken": 0,
