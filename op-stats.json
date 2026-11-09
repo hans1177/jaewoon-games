@@ -70,10 +70,10 @@
    }
   },
   "inset_panel:strong": {
-   "n": 77,
-   "gainSum": 276.5,
-   "keep": 57,
-   "improved": 45,
+   "n": 79,
+   "gainSum": 291.3,
+   "keep": 59,
+   "improved": 47,
    "broken": 5,
    "fail": {
     "TOO_SIMILAR": 2,
@@ -131,10 +131,10 @@
    }
   },
   "saturate_contrast:strong": {
-   "n": 13,
-   "gainSum": -35.2,
-   "keep": 6,
-   "improved": 3,
+   "n": 14,
+   "gainSum": -29,
+   "keep": 7,
+   "improved": 4,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 3,
@@ -153,9 +153,9 @@
    }
   },
   "moss:strong": {
-   "n": 131,
-   "gainSum": 474.9,
-   "keep": 89,
+   "n": 132,
+   "gainSum": 475.6,
+   "keep": 90,
    "improved": 71,
    "broken": 1,
    "fail": {
@@ -234,23 +234,23 @@
    }
   },
   "proportion:strong": {
-   "n": 4,
-   "gainSum": -29.2,
-   "keep": 3,
-   "improved": 2,
+   "n": 5,
+   "gainSum": -24.5,
+   "keep": 4,
+   "improved": 3,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 1
    }
   },
   "outline:strong": {
-   "n": 45,
-   "gainSum": 186.5,
+   "n": 47,
+   "gainSum": 188.6,
    "keep": 30,
    "improved": 25,
    "broken": 0,
    "fail": {
-    "DETAIL_LOST": 8,
+    "DETAIL_LOST": 10,
     "DARKENED": 7
    }
   },
@@ -295,13 +295,13 @@
    }
   },
   "outline:soft": {
-   "n": 104,
-   "gainSum": 608.3,
+   "n": 105,
+   "gainSum": 616.9,
    "keep": 86,
    "improved": 76,
    "broken": 0,
    "fail": {
-    "DETAIL_LOST": 9,
+    "DETAIL_LOST": 10,
     "DARKENED": 7,
     "REGRESSED": 2
    }
@@ -724,14 +724,15 @@
    }
   },
   "saturate_contrast:strong": {
-   "n": 2,
+   "n": 3,
    "gainSum": -18.3,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "RIG:ARMATURE_ROOTS:Rig:2": 1,
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 1,
+    "TOO_SIMILAR": 1
    }
   },
   "bevel:strong": {
@@ -780,13 +781,14 @@
    }
   },
   "proportion:strong": {
-   "n": 3,
-   "gainSum": -31.7,
+   "n": 4,
+   "gainSum": -39.4,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "REGRESSED": 3
+    "REGRESSED": 3,
+    "DARKENED": 1
    }
   },
   "moss:strong": {
@@ -814,14 +816,15 @@
    }
   },
   "hue_shift:soft": {
-   "n": 3,
+   "n": 4,
    "gainSum": -34.6,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 2,
-    "RIG:ARMATURE_ROOTS:Rig:2": 1
+    "RIG:ARMATURE_ROOTS:Rig:2": 1,
+    "TOO_SIMILAR": 1
    }
   },
   "inset_panel:soft": {
