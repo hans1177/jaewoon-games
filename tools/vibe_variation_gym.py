@@ -6,6 +6,8 @@
 # 판정·채점은 tools/vibe_object_score.py 와 tools/vibe-variation-gym.mjs 가 한다. 이 파일은 만들고 측정만 한다.
 import bpy, sys, os, json, math, argparse
 from mathutils import Vector
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from vibe_color_match import tinted
 
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 ap = argparse.ArgumentParser()
@@ -254,6 +256,20 @@ def _new_mat(name, rgb):
     return mat
 
 
+def _parent_color(obj):
+    """부모의 대표색: 기존 재질의 기본색 평균(없으면 중간 회색)."""
+    cols = []
+    for m in obj.data.materials:
+        if m is None:
+            continue
+        b = principled(m) if m.use_nodes else None
+        c = b.inputs['Base Color'].default_value if b is not None else m.diffuse_color
+        cols.append((c[0], c[1], c[2]))
+    if not cols:
+        return (0.5, 0.5, 0.5)
+    return tuple(sum(c[i] for c in cols) / len(cols) for i in range(3))
+
+
 def _assign_faces(obj, predicate, mat):
     me = obj.data
     me.materials.append(mat)
@@ -272,7 +288,7 @@ def op_moss(obj, p):
     rnd = random.Random(int(p.get('seed', 1)))
     thr = float(p.get('threshold', 0.7))
     cover = float(p.get('coverage', 0.7))
-    n = _assign_faces(obj, lambda f: f.normal.z > thr and rnd.random() < cover, _new_mat('GymMoss', (0.18, 0.36, 0.12)))
+    n = _assign_faces(obj, lambda f: f.normal.z > thr and rnd.random() < cover, _new_mat('GymMoss', tinted((0.18, 0.36, 0.12), _parent_color(obj), 0.35, 0.8)))
     if n == 0:
         raise RuntimeError('NO_UP_FACE_FOR_MOSS')
 
@@ -282,7 +298,7 @@ def op_wear(obj, p):
     lo, hi = bbox(obj)
     limit = lo.z + (hi.z - lo.z) * float(p.get('height', 0.2))
     vs = obj.data.vertices
-    n = _assign_faces(obj, lambda f: sum(vs[i].co.z for i in f.vertices) / len(f.vertices) <= limit, _new_mat('GymDirt', (0.17, 0.12, 0.09)))
+    n = _assign_faces(obj, lambda f: sum(vs[i].co.z for i in f.vertices) / len(f.vertices) <= limit, _new_mat('GymDirt', tinted((0.17, 0.12, 0.09), _parent_color(obj), 0.45, 0.72)))
     if n == 0:
         raise RuntimeError('NO_LOW_FACE_FOR_WEAR')
 

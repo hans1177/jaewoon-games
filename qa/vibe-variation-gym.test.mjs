@@ -155,3 +155,19 @@ test('리그 점검 게이트: 캐릭터 계열은 검사 실패 시 유지하�
   const err=rigGate({family:'CREATURE',keep:true,verdict:'IMPROVED',glb:'x.glb'},()=>{throw new Error('boom')});
   assert.equal(err.verdict,'BROKEN');
 });
+
+// 실패 도감에서 스스로 배운 고침: wear/moss 가 DARKENED 로 많이 탈락 → 변형 재질을 부모 밝기에 맞춘다.
+test('색 밝기 맞춤: 어두운 흙·이끼색도 부모 밝기의 일정 비율 아래로 내려가지 않고, 이미 밝으면 그대로', () => {
+  const py=`import sys,json\nsys.path.insert(0,'tools')\nfrom vibe_color_match import *\nparent=(0.6,0.55,0.5)\na=tinted((0.17,0.12,0.09),parent,0.45,0.72)\nb=tinted((0.9,0.9,0.9),parent,0.0,0.72)\nc=match_luminance((0.0,0.0,0.0),parent,0.8)\nd=tinted((0.18,0.36,0.12),(0.05,0.05,0.05),0.35,0.8)\nprint(json.dumps({'a':luminance(a)/luminance(parent),'b':b,'c':c,'d':luminance(d)/luminance((0.05,0.05,0.05)),'inrange':all(0<=x<=1 for x in a+b+c+d)}))`;
+  const r=spawnSync('python3',['-I','-c',py],{encoding:'utf8',cwd:repo});
+  assert.equal(r.status,0,r.stderr);
+  const o=JSON.parse(r.stdout);
+  assert.ok(o.a>=0.7199,'wear ratio '+o.a);
+  assert.deepEqual(o.b,[0.9,0.9,0.9]);          // 이미 밝으면 안 건드림
+  assert.deepEqual(o.c,[0,0,0]);                // 순흑은 색조가 없어 비율 확대 불가(0 나눗셈 안전)
+  assert.ok(o.d>=0.79,'moss ratio '+o.d);
+  assert.equal(o.inrange,true);
+  const gym=fs.readFileSync(path.join(repo,'tools','vibe_variation_gym.py'),'utf8');
+  assert.match(gym,/_new_mat\('GymDirt', tinted\(/);
+  assert.match(gym,/_new_mat\('GymMoss', tinted\(/);
+});
