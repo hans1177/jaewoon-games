@@ -13,10 +13,10 @@
    }
   },
   "outline:soft": {
-   "n": 261,
-   "gainSum": 1876.1,
-   "keep": 195,
-   "improved": 167,
+   "n": 262,
+   "gainSum": 1899,
+   "keep": 196,
+   "improved": 168,
    "broken": 0,
    "fail": {
     "REGRESSED": 3,
@@ -48,9 +48,9 @@
    }
   },
   "saturate_contrast:soft": {
-   "n": 13,
-   "gainSum": 4.5,
-   "keep": 6,
+   "n": 14,
+   "gainSum": 4.2,
+   "keep": 7,
    "improved": 4,
    "broken": 0,
    "fail": {
@@ -70,9 +70,9 @@
    }
   },
   "inset_panel:strong": {
-   "n": 79,
-   "gainSum": 291.3,
-   "keep": 59,
+   "n": 81,
+   "gainSum": 289.8,
+   "keep": 60,
    "improved": 47,
    "broken": 5,
    "fail": {
@@ -80,7 +80,7 @@
     "BROKEN": 5,
     "DARKENED": 5,
     "DETAIL_LOST": 2,
-    "REGRESSED": 6
+    "REGRESSED": 7
    }
   },
   "wear:soft": {
@@ -223,14 +223,15 @@
  },
  "BUILDING": {
   "inset_panel:soft": {
-   "n": 9,
-   "gainSum": -7.6,
+   "n": 10,
+   "gainSum": -5.4,
    "keep": 7,
    "improved": 2,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 1,
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 1,
+    "DARKENED": 1
    }
   },
   "proportion:strong": {
@@ -244,10 +245,10 @@
    }
   },
   "outline:strong": {
-   "n": 47,
-   "gainSum": 188.6,
-   "keep": 30,
-   "improved": 25,
+   "n": 48,
+   "gainSum": 191.1,
+   "keep": 31,
+   "improved": 26,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 10,
@@ -284,10 +285,10 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 45,
-   "gainSum": 77.7,
-   "keep": 34,
-   "improved": 24,
+   "n": 46,
+   "gainSum": 80.2,
+   "keep": 35,
+   "improved": 25,
    "broken": 0,
    "fail": {
     "REGRESSED": 7,
@@ -328,9 +329,9 @@
    }
   },
   "bevel:strong": {
-   "n": 57,
-   "gainSum": 125.2,
-   "keep": 45,
+   "n": 58,
+   "gainSum": 125.9,
+   "keep": 46,
    "improved": 19,
    "broken": 0,
    "fail": {
@@ -678,15 +679,15 @@
    }
   },
   "moss:soft": {
-   "n": 3,
-   "gainSum": -16.3,
+   "n": 4,
+   "gainSum": -15.6,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 1,
     "TOO_SIMILAR": 1,
-    "RIG:ARMATURE_ROOTS:Rig:2": 1
+    "RIG:ARMATURE_ROOTS:Rig:2": 2
    }
   },
   "proportion:soft": {
@@ -724,7 +725,7 @@
    }
   },
   "saturate_contrast:strong": {
-   "n": 3,
+   "n": 4,
    "gainSum": -18.3,
    "keep": 0,
    "improved": 0,
@@ -732,7 +733,7 @@
    "fail": {
     "RIG:ARMATURE_ROOTS:Rig:2": 1,
     "DETAIL_LOST": 1,
-    "TOO_SIMILAR": 1
+    "TOO_SIMILAR": 2
    }
   },
   "bevel:strong": {
@@ -816,7 +817,7 @@
    }
   },
   "hue_shift:soft": {
-   "n": 4,
+   "n": 5,
    "gainSum": -34.6,
    "keep": 0,
    "improved": 0,
@@ -824,7 +825,7 @@
    "fail": {
     "DETAIL_LOST": 2,
     "RIG:ARMATURE_ROOTS:Rig:2": 1,
-    "TOO_SIMILAR": 1
+    "TOO_SIMILAR": 2
    }
   },
   "inset_panel:soft": {
