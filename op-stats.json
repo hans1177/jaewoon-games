@@ -12,9 +12,9 @@
    }
   },
   "outline:soft": {
-   "n": 203,
-   "gainSum": 1648.6,
-   "keep": 156,
+   "n": 206,
+   "gainSum": 1649.5,
+   "keep": 159,
    "improved": 138,
    "broken": 0,
    "fail": {
@@ -24,14 +24,14 @@
    }
   },
   "wear:strong": {
-   "n": 136,
+   "n": 137,
    "gainSum": 518.6,
    "keep": 76,
    "improved": 59,
    "broken": 0,
    "fail": {
     "DARKENED": 22,
-    "TOO_SIMILAR": 22,
+    "TOO_SIMILAR": 23,
     "REGRESSED": 16
    }
   },
@@ -128,14 +128,14 @@
    }
   },
   "saturate_contrast:strong": {
-   "n": 10,
-   "gainSum": -21.3,
+   "n": 11,
+   "gainSum": -41.4,
    "keep": 5,
    "improved": 2,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 2,
-    "REGRESSED": 3
+    "REGRESSED": 4
    }
   },
   "noise_displace:strong": {
@@ -150,15 +150,15 @@
    }
   },
   "moss:strong": {
-   "n": 109,
-   "gainSum": 421.9,
-   "keep": 71,
-   "improved": 57,
+   "n": 112,
+   "gainSum": 444.5,
+   "keep": 73,
+   "improved": 59,
    "broken": 1,
    "fail": {
     "DARKENED": 16,
     "REGRESSED": 16,
-    "TOO_SIMILAR": 5,
+    "TOO_SIMILAR": 6,
     "BROKEN": 1
    }
   },
@@ -727,13 +727,13 @@
    }
   },
   "noise_displace:strong": {
-   "n": 2,
-   "gainSum": -16.4,
+   "n": 3,
+   "gainSum": -28.5,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "REGRESSED": 2
+    "REGRESSED": 3
    }
   },
   "wear:soft": {
@@ -760,13 +760,13 @@
    }
   },
   "proportion:strong": {
-   "n": 1,
-   "gainSum": -16.4,
+   "n": 2,
+   "gainSum": -26.9,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "REGRESSED": 1
+    "REGRESSED": 2
    }
   },
   "moss:strong": {
@@ -801,6 +801,26 @@
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 2
+   }
+  },
+  "inset_panel:soft": {
+   "n": 1,
+   "gainSum": 0,
+   "keep": 0,
+   "improved": 0,
+   "broken": 1,
+   "fail": {
+    "BROKEN": 1
+   }
+  },
+  "bevel:soft": {
+   "n": 1,
+   "gainSum": -0.5,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "RIG:ARMATURE_ROOTS:Rig:2": 1
    }
   }
  },
