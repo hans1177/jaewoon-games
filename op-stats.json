@@ -13,13 +13,13 @@
    }
   },
   "outline:soft": {
-   "n": 289,
-   "gainSum": 2172.1,
-   "keep": 219,
-   "improved": 184,
+   "n": 292,
+   "gainSum": 2173.1,
+   "keep": 221,
+   "improved": 186,
    "broken": 0,
    "fail": {
-    "REGRESSED": 5,
+    "REGRESSED": 6,
     "DETAIL_LOST": 33,
     "DARKENED": 32
    }
@@ -85,14 +85,14 @@
    }
   },
   "wear:soft": {
-   "n": 22,
-   "gainSum": 9.4,
+   "n": 23,
+   "gainSum": 4.4,
    "keep": 14,
    "improved": 6,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 5,
-    "REGRESSED": 2,
+    "REGRESSED": 3,
     "DARKENED": 1
    }
   },
@@ -288,25 +288,25 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 53,
-   "gainSum": 113.7,
+   "n": 54,
+   "gainSum": 115.8,
    "keep": 42,
    "improved": 28,
    "broken": 0,
    "fail": {
     "REGRESSED": 7,
-    "DARKENED": 4
+    "DARKENED": 5
    }
   },
   "outline:soft": {
-   "n": 130,
-   "gainSum": 824.2,
-   "keep": 104,
-   "improved": 90,
+   "n": 132,
+   "gainSum": 852.8,
+   "keep": 105,
+   "improved": 91,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 12,
-    "DARKENED": 12,
+    "DARKENED": 13,
     "REGRESSED": 2
    }
   },
@@ -420,13 +420,14 @@
    }
   },
   "wear:soft": {
-   "n": 4,
-   "gainSum": -1.5,
+   "n": 5,
+   "gainSum": -0.6,
    "keep": 3,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "TOO_SIMILAR": 1
+    "TOO_SIMILAR": 1,
+    "DARKENED": 1
    }
   },
   "moss:soft": {
@@ -454,20 +455,20 @@
    }
   },
   "bevel:soft": {
-   "n": 4,
-   "gainSum": -8.1,
+   "n": 5,
+   "gainSum": -19.6,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DETAIL_LOST": 1,
+    "DETAIL_LOST": 2,
     "RIG:ORPHAN_MESH:Icosphere": 2,
     "REGRESSED": 1
    }
   },
   "proportion:soft": {
-   "n": 4,
-   "gainSum": -19.5,
+   "n": 5,
+   "gainSum": -30.3,
    "keep": 0,
    "improved": 0,
    "broken": 0,
@@ -475,7 +476,8 @@
     "DARKENED": 1,
     "RIG:ARMATURE_ROOTS:Rig:2": 1,
     "REGRESSED": 1,
-    "RIG:ORPHAN_MESH:Icosphere": 1
+    "RIG:ORPHAN_MESH:Icosphere": 1,
+    "DETAIL_LOST": 1
    }
   },
   "saturate_contrast:strong": {
@@ -639,13 +641,15 @@
    }
   },
   "inset_panel:strong": {
-   "n": 2,
-   "gainSum": 0,
+   "n": 4,
+   "gainSum": -36.1,
    "keep": 0,
    "improved": 0,
    "broken": 2,
    "fail": {
-    "BROKEN": 2
+    "BROKEN": 2,
+    "DETAIL_LOST": 1,
+    "REGRESSED": 1
    }
   },
   "hue_shift:strong": {
