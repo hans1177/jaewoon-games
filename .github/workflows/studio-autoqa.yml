@@ -1,10 +1,10 @@
-# 30분마다 오너 PC 실행기(Claude 앱 불필요)로 Studio 점검을 띄운다.
-# :07 대항해시대, :37 마력숲. 버튼을 실제로 클릭해 가며 화면을 캡처한다 (click_from_luau 스크립트).
+# 10분마다 오너 PC 실행기(Claude 앱 불필요)로 Studio 점검을 이어 붙여 거의 쉬지 않고 돌린다.
+# 10분 칸마다 대항해시대/마력숲 번갈아. devloop-studio 동시실행 그룹이 줄을 세워 겹치지 않는다. 버튼을 실제로 클릭해 가며 화면을 캡처한다 (click_from_luau 스크립트).
 # 결과 사진·리포트는 브랜치 <game>-studio-frames 에 올라가고, 클라우드 바이브가 읽고 고친다.
 name: Studio Auto QA
 on:
   schedule:
-    - cron: '7,37 * * * *'
+    - cron: '*/10 * * * *'
   workflow_dispatch:
     inputs:
       game:
@@ -28,8 +28,11 @@ jobs:
           set -euo pipefail
           game="${GAME_IN:-}"
           if [ -z "$game" ]; then
-            m=$(date -u +%M)
-            if [ "$m" -lt 20 ]; then game=mare-essentia; else game=fantasy-survival; fi
+            slot=$(( 10#$(date -u +%M) / 10 ))
+            if [ $(( slot % 2 )) -eq 0 ]; then game=mare-essentia; else game=fantasy-survival; fi
+            # 이미 대기 중인 점검이 2개 이상이면 쌓지 않는다
+            pending=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow devloop-studio.yml --status queued --json databaseId --jq length || echo 0)
+            if [ "${pending:-0}" -ge 2 ]; then echo "queue full ($pending), skip"; exit 0; fi
           fi
           case "$game" in
             mare-essentia) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json ;;
