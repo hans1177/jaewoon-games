@@ -12,10 +12,10 @@
    }
   },
   "outline:soft": {
-   "n": 80,
-   "gainSum": 671.9,
-   "keep": 57,
-   "improved": 50,
+   "n": 81,
+   "gainSum": 688.5,
+   "keep": 58,
+   "improved": 51,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
@@ -24,15 +24,15 @@
    }
   },
   "wear:strong": {
-   "n": 91,
-   "gainSum": 502.2,
-   "keep": 54,
-   "improved": 43,
+   "n": 93,
+   "gainSum": 504.9,
+   "keep": 55,
+   "improved": 44,
    "broken": 0,
    "fail": {
     "DARKENED": 19,
     "TOO_SIMILAR": 12,
-    "REGRESSED": 6
+    "REGRESSED": 7
    }
   },
   "inset_panel:soft": {
@@ -142,10 +142,10 @@
    }
   },
   "moss:strong": {
-   "n": 58,
-   "gainSum": 307.1,
-   "keep": 37,
-   "improved": 33,
+   "n": 59,
+   "gainSum": 316.4,
+   "keep": 38,
+   "improved": 34,
    "broken": 0,
    "fail": {
     "DARKENED": 10,
@@ -247,44 +247,47 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 22,
-   "gainSum": 59,
+   "n": 23,
+   "gainSum": 68.4,
    "keep": 19,
    "improved": 13,
    "broken": 0,
    "fail": {
     "REGRESSED": 2,
-    "DARKENED": 1
+    "DARKENED": 2
    }
   },
   "outline:soft": {
-   "n": 35,
-   "gainSum": 259.1,
+   "n": 36,
+   "gainSum": 274.1,
    "keep": 29,
    "improved": 24,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 4,
-    "DARKENED": 2
+    "DARKENED": 3
    }
   },
   "noise_displace:soft": {
-   "n": 4,
-   "gainSum": -3.5,
+   "n": 5,
+   "gainSum": 0.3,
    "keep": 2,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DARKENED": 1,
+    "DARKENED": 2,
     "REGRESSED": 1
    }
   },
   "hue_shift:strong": {
-   "n": 5,
-   "gainSum": -1.3,
+   "n": 6,
+   "gainSum": 0.2,
    "keep": 5,
    "improved": 0,
-   "broken": 0
+   "broken": 0,
+   "fail": {
+    "DARKENED": 1
+   }
   },
   "bevel:strong": {
    "n": 27,
@@ -411,15 +414,16 @@
    }
   },
   "proportion:soft": {
-   "n": 3,
-   "gainSum": -18,
+   "n": 4,
+   "gainSum": -19.5,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "DARKENED": 1,
     "RIG:ARMATURE_ROOTS:Rig:2": 1,
-    "REGRESSED": 1
+    "REGRESSED": 1,
+    "RIG:ORPHAN_MESH:Icosphere": 1
    }
   },
   "saturate_contrast:strong": {
@@ -447,14 +451,14 @@
    }
   },
   "noise_displace:soft": {
-   "n": 3,
-   "gainSum": -9.7,
+   "n": 4,
+   "gainSum": -16.5,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
     "RIG:ORPHAN_MESH:Icosphere": 1,
-    "REGRESSED": 2
+    "REGRESSED": 3
    }
   },
   "outline:strong": {
@@ -468,13 +472,14 @@
    }
   },
   "saturate_contrast:soft": {
-   "n": 1,
-   "gainSum": 3,
+   "n": 2,
+   "gainSum": 0.6,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DARKENED": 1
+    "DARKENED": 1,
+    "REGRESSED": 1
    }
   },
   "hue_shift:soft": {
@@ -544,6 +549,16 @@
     "RIG:ARMATURE_ROOTS:Rig:2": 1,
     "DARKENED": 3,
     "RIG:ORPHAN_MESH:Icosphere": 2
+   }
+  },
+  "proportion:strong": {
+   "n": 1,
+   "gainSum": 2.5,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "RIG:ORPHAN_MESH:Icosphere": 1
    }
   }
  },
