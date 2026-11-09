@@ -4613,6 +4613,7 @@ renderTitle = function()
 		card.BackgroundColor3 = if selected then Color3.fromRGB(58, 46, 22) else Color3.fromRGB(22, 32, 48)
 		corner(card, 10)
 		local st = Instance.new("UIStroke")
+		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		st.Thickness = if selected then 2.5 else 1
 		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
 		st.Parent = card
@@ -4739,6 +4740,7 @@ renderTitle = function()
 		b.BackgroundColor3 = if selected then Color3.fromRGB(58, 46, 22) else Color3.fromRGB(22, 32, 48)
 		corner(b, 10)
 		local st = Instance.new("UIStroke")
+		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		st.Thickness = if selected then 2.5 else 1
 		st.Color = if selected then GOLD else Color3.fromRGB(64, 78, 98)
 		st.Parent = b
@@ -4775,6 +4777,7 @@ renderTitle = function()
 	go.TextColor3 = Color3.fromRGB(22, 14, 4)
 	do
 		local gst = Instance.new("UIStroke")
+		gst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		gst.Color = Color3.fromRGB(255, 226, 150)
 		gst.Thickness = 2
 		gst.Parent = go
@@ -4903,6 +4906,7 @@ local function showTitle()
 		b.TextSize = 22
 		b.LayoutOrder = order
 		local st = Instance.new("UIStroke")
+		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		st.Color = Color3.fromRGB(255, 226, 150)
 		st.Transparency = 0.4
 		st.Thickness = 1.5
