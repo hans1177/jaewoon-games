@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-e6lw3x",
+      "worker": "vibe2",
+      "taskId": "seed-casual-realm-weaver-studio-evolution-roblox-usability-v6",
+      "gameId": "seed-casual-realm-weaver",
+      "files": [
+        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
+        "roblox-games/seed-casual-realm-weaver/client/MaterialPresentation.client.luau",
+        "roblox-games/seed-casual-realm-weaver/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-casual-realm-weaver/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "536e7ea0ef9880fd47ebb918eab4c3c44104e0e0",
+      "runId": "42538497248",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-09T00:25:29.436Z",
+      "expiresAt": "2026-11-09T01:10:29.436Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-casual-realm-weaver-studio-evolution-roblox-usability-v6"
+      ]
+    }
+  ]
 }
