@@ -166,7 +166,7 @@
    "updated": "2026-11-09"
   },
   "mare-essentia": {
-   "floor": 2,
+   "floor": 3,
    "categories": [
     {
      "id": "npc",
@@ -186,14 +186,16 @@
     {
      "id": "world",
      "label": "항구·바다 공기 연출",
-     "tier": 2,
+     "tier": 3,
      "max": 4,
-     "name": "떠다니는 물보라·꽃가루 입자",
+     "name": "노출·반사 보정",
      "next": {
-      "tier": 3,
-      "name": "노출·반사 보정",
-      "blocked": false,
-      "missing": []
+      "tier": 4,
+      "name": "승인된 항구 소품 메시 밀도 증가",
+      "blocked": true,
+      "missing": [
+       "approved-port-prop-meshes"
+      ]
      }
     }
    ],
@@ -213,22 +215,31 @@
       "Interior/tablecrosscloth",
       "roblox-games/mare-essentia/assets/interior/tablecrosscloth.glb"
      ]
+    },
+    {
+     "category": "world",
+     "tier": 4,
+     "tierName": "승인된 항구 소품 메시 밀도 증가",
+     "key": "approved-port-prop-meshes",
+     "candidates": [
+      "Naval/barrel",
+      "roblox-games/mare-essentia/assets/naval/barrel.glb",
+      "Naval/cargo-pile-a",
+      "roblox-games/mare-essentia/assets/naval/cargo-pile-a.glb",
+      "Naval/cargo-pile-b",
+      "roblox-games/mare-essentia/assets/naval/cargo-pile-b.glb",
+      "Naval/crate-bottles",
+      "roblox-games/mare-essentia/assets/naval/crate-bottles.glb"
+     ]
     }
    ],
    "perf": null,
    "frames": {
-    "checked": 19,
+    "checked": 27,
     "bad": 0
    },
    "aesthetic": null,
    "thumbs": [
-    {
-     "floor": "floor-001-npc-t2",
-     "files": [
-      "docs/devloop/ladder/mare-essentia/floor-001-npc-t2/u0_main-0.jpg",
-      "docs/devloop/ladder/mare-essentia/floor-001-npc-t2/v1_options-0.jpg"
-     ]
-    },
     {
      "floor": "floor-002-world-t2",
      "files": [
@@ -237,9 +248,26 @@
       "docs/devloop/ladder/mare-essentia/floor-002-world-t2/c08-0.jpg",
       "docs/devloop/ladder/mare-essentia/floor-002-world-t2/c12-0.jpg"
      ]
+    },
+    {
+     "floor": "floor-003-world-t3",
+     "files": [
+      "docs/devloop/ladder/mare-essentia/floor-003-world-t3/c00_start-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-003-world-t3/c06-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-003-world-t3/c12-0.jpg",
+      "docs/devloop/ladder/mare-essentia/floor-003-world-t3/c18-0.jpg"
+     ]
     }
    ],
    "history": [
+    {
+     "floor": 3,
+     "category": "world",
+     "tier": 3,
+     "name": "노출·반사 보정",
+     "why": "Studio 캡처 오류 없음, 화면 27장 정상",
+     "at": "2026-11-09"
+    },
     {
      "floor": 2,
      "category": "world",
