@@ -1164,6 +1164,8 @@ test('verified learning promotion remains fail-closed without a real playbook or
 });
 
 test('legacy module-only admission survives game-specific Config to GameConfig rename in isolated source workers',()=>{
+  // 공용 모듈 수는 새 공용 모듈이 생길 때마다 늘어난다: 숫자를 박아 두지 않고 실제 공용 모듈 파일 수를 센다.
+  const commonCount=fs.readdirSync('assets/roblox').filter(d=>/^common-.+-v\d+$/.test(d)).flatMap(d=>fs.readdirSync(path.join('assets/roblox',d))).filter(f=>/^RobloxCommon.*\.luau$/.test(f)).length;
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-module-only-rename-'));
   try{
     const root=path.join(tmp,'roblox-games','baeksu-war');
@@ -1202,12 +1204,12 @@ test('legacy module-only admission survives game-specific Config to GameConfig r
     assert.equal(first.changedGameCount,1);
     assert.equal(first.results[0].moduleSyncOnly,true);
     assert.equal(first.results[0].verifiedExternalLearningApplied,false);
-    assert.equal(first.results[0].commonModuleCount,18);
+    assert.equal(first.results[0].commonModuleCount,commonCount);
     const receipt=JSON.parse(fs.readFileSync(evidenceFile,'utf8'));
     assert.equal(receipt.sourceValidationPassed,undefined);
     assert.equal(receipt.vibe3LearningApplied,undefined);
     assert.equal(Object.keys(JSON.parse(fs.readFileSync(projectFile,'utf8')).tree.ReplicatedStorage.Shared)
-      .filter(name=>name.startsWith('RobloxCommon')).length,18);
+      .filter(name=>name.startsWith('RobloxCommon')).length,commonCount);
     assert.equal(fs.readFileSync(server,'utf8'),'-- existing authoritative server\n');
     assert.equal(fs.readFileSync(client,'utf8'),'-- existing game-owned client\n');
     execFileSync(process.execPath,args,{stdio:'pipe'});
