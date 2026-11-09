@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: '20'
 
-      - run: python3 -m pip install --quiet trimesh numpy
+      - run: python3 -m pip install --quiet trimesh numpy pillow
 
       - name: Upload models and write VisualAssetIds
         env:
