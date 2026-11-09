@@ -1,10 +1,10 @@
 {
  "PROP": {
   "hue_shift:soft": {
-   "n": 25,
-   "gainSum": 3.2,
-   "keep": 14,
-   "improved": 7,
+   "n": 26,
+   "gainSum": 11.5,
+   "keep": 15,
+   "improved": 8,
    "broken": 0,
    "fail": {
     "REGRESSED": 6,
@@ -13,10 +13,10 @@
    }
   },
   "outline:soft": {
-   "n": 364,
-   "gainSum": 2688.8,
-   "keep": 283,
-   "improved": 241,
+   "n": 365,
+   "gainSum": 2706.8,
+   "keep": 284,
+   "improved": 242,
    "broken": 0,
    "fail": {
     "REGRESSED": 9,
@@ -120,10 +120,10 @@
    }
   },
   "outline:strong": {
-   "n": 80,
-   "gainSum": 520,
-   "keep": 53,
-   "improved": 48,
+   "n": 81,
+   "gainSum": 538,
+   "keep": 54,
+   "improved": 49,
    "broken": 0,
    "fail": {
     "DARKENED": 14,
@@ -154,7 +154,7 @@
    }
   },
   "moss:strong": {
-   "n": 172,
+   "n": 173,
    "gainSum": 542.9,
    "keep": 115,
    "improved": 87,
@@ -162,7 +162,7 @@
    "fail": {
     "DARKENED": 18,
     "REGRESSED": 22,
-    "TOO_SIMILAR": 14,
+    "TOO_SIMILAR": 15,
     "BROKEN": 1,
     "DETAIL_LOST": 2
    }
@@ -253,10 +253,10 @@
    }
   },
   "outline:strong": {
-   "n": 87,
-   "gainSum": 206.5,
-   "keep": 49,
-   "improved": 41,
+   "n": 89,
+   "gainSum": 212.1,
+   "keep": 51,
+   "improved": 43,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 22,
@@ -293,10 +293,10 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 63,
-   "gainSum": 103.7,
-   "keep": 47,
-   "improved": 32,
+   "n": 64,
+   "gainSum": 105.5,
+   "keep": 48,
+   "improved": 33,
    "broken": 0,
    "fail": {
     "REGRESSED": 10,
@@ -337,9 +337,9 @@
    }
   },
   "bevel:strong": {
-   "n": 71,
-   "gainSum": 115.9,
-   "keep": 52,
+   "n": 72,
+   "gainSum": 114.6,
+   "keep": 53,
    "improved": 23,
    "broken": 0,
    "fail": {
@@ -910,11 +910,14 @@
    "broken": 0
   },
   "outline:soft": {
-   "n": 19,
-   "gainSum": 53.7,
+   "n": 21,
+   "gainSum": 57.4,
    "keep": 19,
    "improved": 19,
-   "broken": 0
+   "broken": 0,
+   "fail": {
+    "DARKENED": 2
+   }
   },
   "bevel:soft": {
    "n": 51,
@@ -939,13 +942,14 @@
    }
   },
   "proportion:strong": {
-   "n": 5,
-   "gainSum": 31,
+   "n": 6,
+   "gainSum": 30.2,
    "keep": 4,
    "improved": 3,
    "broken": 0,
    "fail": {
-    "REGRESSED": 1
+    "REGRESSED": 1,
+    "DARKENED": 1
    }
   },
   "noise_displace:strong": {
@@ -993,10 +997,10 @@
    }
   },
   "bevel:strong": {
-   "n": 8,
-   "gainSum": 25.5,
-   "keep": 8,
-   "improved": 7,
+   "n": 9,
+   "gainSum": 27.4,
+   "keep": 9,
+   "improved": 8,
    "broken": 0
   },
   "kitbash:strong": {
