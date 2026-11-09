@@ -44,3 +44,14 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
   const learned=JSON.parse(fs.readFileSync(lights,'utf8'));
   assert.ok(Object.values(learned)[0].top.length>=1);
 });
+
+test('클라우드 연습은 cron 에만 기대지 않고 회차가 끝날 때 스스로 다음 회차를 예약한다(체인), 끄는 변수와 안전망이 있다', () => {
+  const y=fs.readFileSync('.github/workflows/vibe-variation-practice.yml','utf8');
+  assert.match(y,/actions: write/);
+  assert.match(y,/Chain the next run/);
+  assert.match(y,/always\(\) && vars\.VIBE_GYM_CLOUD != 'off' && vars\.VIBE_GYM_CHAIN != 'off'/);
+  assert.match(y,/workflows\/vibe-variation-practice\.yml\/dispatches/);
+  assert.match(y,/cron: '\*\/5 \* \* \* \*'/);                    // 안전망
+  assert.match(y,/group: vibe-variation-practice[\s\S]*?cancel-in-progress: false/); // 겹치지 않음
+  assert.ok(y.indexOf('Publish stats to vibe-gym-data')<y.indexOf('Chain the next run'));  // 학습 저장 뒤에 예약
+});
