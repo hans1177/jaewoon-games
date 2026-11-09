@@ -24,10 +24,10 @@
    }
   },
   "wear:strong": {
-   "n": 51,
-   "gainSum": 425.3,
-   "keep": 29,
-   "improved": 26,
+   "n": 52,
+   "gainSum": 426.6,
+   "keep": 30,
+   "improved": 27,
    "broken": 0,
    "fail": {
     "DARKENED": 14,
@@ -133,10 +133,10 @@
    "broken": 0
   },
   "moss:strong": {
-   "n": 24,
-   "gainSum": 149.2,
-   "keep": 13,
-   "improved": 12,
+   "n": 26,
+   "gainSum": 156.5,
+   "keep": 15,
+   "improved": 14,
    "broken": 0,
    "fail": {
     "DARKENED": 5,
@@ -151,10 +151,10 @@
    "broken": 0
   },
   "moss:soft": {
-   "n": 5,
-   "gainSum": 16.3,
-   "keep": 2,
-   "improved": 1,
+   "n": 6,
+   "gainSum": 19,
+   "keep": 3,
+   "improved": 2,
    "broken": 0,
    "fail": {
     "REGRESSED": 2,
@@ -226,10 +226,10 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 11,
-   "gainSum": 24,
-   "keep": 10,
-   "improved": 8,
+   "n": 12,
+   "gainSum": 26,
+   "keep": 11,
+   "improved": 9,
    "broken": 0,
    "fail": {
     "REGRESSED": 1
@@ -289,14 +289,15 @@
    }
   },
   "inset_panel:strong": {
-   "n": 11,
-   "gainSum": 54.3,
+   "n": 14,
+   "gainSum": 6.8,
    "keep": 9,
    "improved": 5,
    "broken": 0,
    "fail": {
-    "DARKENED": 1,
-    "TOO_SIMILAR": 1
+    "DARKENED": 2,
+    "TOO_SIMILAR": 1,
+    "DETAIL_LOST": 2
    }
   },
   "kitbash:soft": {
@@ -340,13 +341,14 @@
    }
   },
   "bevel:soft": {
-   "n": 1,
-   "gainSum": -12.7,
+   "n": 2,
+   "gainSum": -4.9,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 1,
+    "RIG:ORPHAN_MESH:Icosphere": 1
    }
   },
   "proportion:soft": {
@@ -360,13 +362,14 @@
    }
   },
   "saturate_contrast:strong": {
-   "n": 1,
-   "gainSum": 1.5,
+   "n": 2,
+   "gainSum": -22.1,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DARKENED": 1
+    "DARKENED": 1,
+    "REGRESSED": 1
    }
   },
   "wear:soft": {
@@ -417,6 +420,26 @@
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 1
+   }
+  },
+  "bevel:strong": {
+   "n": 1,
+   "gainSum": -1.7,
+   "keep": 0,
+   "improved": 0,
+   "broken": 0,
+   "fail": {
+    "REGRESSED": 1
+   }
+  },
+  "inset_panel:soft": {
+   "n": 1,
+   "gainSum": 0,
+   "keep": 0,
+   "improved": 0,
+   "broken": 1,
+   "fail": {
+    "BROKEN": 1
    }
   }
  },
