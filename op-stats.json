@@ -12,26 +12,26 @@
    }
   },
   "outline:soft": {
-   "n": 206,
-   "gainSum": 1649.5,
+   "n": 209,
+   "gainSum": 1662.6,
    "keep": 159,
    "improved": 138,
    "broken": 0,
    "fail": {
     "REGRESSED": 3,
-    "DETAIL_LOST": 25,
-    "DARKENED": 19
+    "DETAIL_LOST": 27,
+    "DARKENED": 20
    }
   },
   "wear:strong": {
-   "n": 137,
-   "gainSum": 518.6,
+   "n": 138,
+   "gainSum": 522.3,
    "keep": 76,
    "improved": 59,
    "broken": 0,
    "fail": {
     "DARKENED": 22,
-    "TOO_SIMILAR": 23,
+    "TOO_SIMILAR": 24,
     "REGRESSED": 16
    }
   },
@@ -601,25 +601,26 @@
    }
   },
   "wear:strong": {
-   "n": 3,
-   "gainSum": 8.7,
+   "n": 10,
+   "gainSum": 39.5,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "DARKENED": 1,
-    "TOO_SIMILAR": 1,
-    "RIG:ORPHAN_MESH:Icosphere": 1
+    "DARKENED": 3,
+    "TOO_SIMILAR": 2,
+    "RIG:ORPHAN_MESH:Icosphere": 2,
+    "RIG:ARMATURE_ROOTS:Rig:2": 3
    }
   },
   "inset_panel:strong": {
-   "n": 1,
+   "n": 2,
    "gainSum": 0,
    "keep": 0,
    "improved": 0,
-   "broken": 1,
+   "broken": 2,
    "fail": {
-    "BROKEN": 1
+    "BROKEN": 2
    }
   },
   "hue_shift:strong": {
