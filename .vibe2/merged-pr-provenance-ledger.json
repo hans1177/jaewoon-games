@@ -174071,11 +174071,137 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_2dc211672d4d14f065896720",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12303",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b7ab48da4a9abaca07e68c56860d4de5a6b99e3a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12303,
+        "baseBranch": "main",
+        "headBranch": "claude/fantasy-dark-look",
+        "baseSha": "b7ab48da4a9abaca07e68c56860d4de5a6b99e3a",
+        "headSha": "52fd887814fb3aa4ec5bdeb60d9315747cb0e813",
+        "mergeCommitSha": "ea1458e4d360b3ea3e78754ea4748b1fa875b985",
+        "mergedAt": "2026-11-09T02:09:55Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1e635e7e7604d1f232a5fcf665e6a4a9b28be5b829a02c9afdaac6e16cdae758",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "claude/fantasy-dark-look",
+        "candidateSha": "52fd887814fb3aa4ec5bdeb60d9315747cb0e813"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 232,
+        "deletedLineCount": 1,
+        "changedFiles": [
+          "qa/vibe-look-govern.test.mjs",
+          "roblox-games/fantasy-survival/client/LookApply.client.luau",
+          "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
+          "roblox-games/fantasy-survival/shared/LookAssignment.luau",
+          "roblox-games/fantasy-survival/shared/VisualLadderState.luau",
+          "roblox-games/fantasy-survival/visual-ladder.json"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe-look-govern.test.mjs",
+          "roblox-games/fantasy-survival/client/LookApply.client.luau",
+          "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
+          "roblox-games/fantasy-survival/shared/LookAssignment.luau",
+          "roblox-games/fantasy-survival/shared/VisualLadderState.luau",
+          "roblox-games/fantasy-survival/visual-ladder.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12303",
+        "merge-commit:ea1458e4d360b3ea3e78754ea4748b1fa875b985",
+        "base-main:b7ab48da4a9abaca07e68c56860d4de5a6b99e3a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1387
+    "total": 1388
   }
 }
