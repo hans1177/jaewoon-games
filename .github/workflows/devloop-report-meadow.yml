@@ -37,11 +37,20 @@ jobs:
               gh api -X POST "repos/${{ github.repository }}/actions/workflows/owner-fantasy-assets.yml/dispatches" -f ref=main || true
             fi
           fi
-      - name: Commit report
+      - name: Commit report via GitHub API
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          cp /tmp/telemetry.md roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md
-          git config user.name "devloop-bot"
-          git config user.email "devloop-bot@users.noreply.github.com"
-          git add roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md
-          git add -A roblox-games/fantasy-survival/broken-assets.json 2>/dev/null || true
-          git diff --cached --quiet || (git commit -m "devloop: telemetry report" && git pull -q --rebase --autostash && git push)
+          # git pull/push 는 LFS 저장소에서 10분 넘게 멈춰서 API 로 올린다.
+          set -euo pipefail
+          put() {
+            local src="$1" dest="$2" sha
+            sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${dest}?ref=main" --jq .sha 2>/dev/null || true)"
+            if [ -n "$sha" ] && [ "$(gh api -H 'Accept: application/vnd.github.raw' "repos/${GITHUB_REPOSITORY}/contents/${dest}?ref=main" 2>/dev/null | sha256sum | cut -d' ' -f1)" = "$(sha256sum "$src" | cut -d' ' -f1)" ]; then echo "SKIP_UNCHANGED $dest"; return; fi
+            gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${dest}" -f message="devloop: telemetry report" -f branch=main -f content="$(base64 -w0 "$src")" ${sha:+-f sha="$sha"} >/dev/null
+            echo "COMMITTED $dest"
+          }
+          put /tmp/telemetry.md roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md
+          if [ -f roblox-games/fantasy-survival/broken-assets.json ]; then
+            put roblox-games/fantasy-survival/broken-assets.json roblox-games/fantasy-survival/broken-assets.json
+          fi
