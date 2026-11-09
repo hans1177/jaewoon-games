@@ -1,0 +1,40 @@
+# 30분마다 오너 PC 실행기(Claude 앱 불필요)로 Studio 점검을 띄운다.
+# :07 대항해시대, :37 마력숲. 버튼을 실제로 클릭해 가며 화면을 캡처한다 (click_from_luau 스크립트).
+# 결과 사진·리포트는 브랜치 <game>-studio-frames 에 올라가고, 클라우드 바이브가 읽고 고친다.
+name: Studio Auto QA
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+    inputs:
+      game:
+        description: mare-essentia 또는 fantasy-survival
+        required: false
+        default: mare-essentia
+        type: string
+permissions:
+  actions: write
+  contents: read
+jobs:
+  dispatch:
+    if: github.repository == 'hans1177/jaewoon-games'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Studio capture on owner PC
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_IN: ${{ inputs.game }}
+        run: |
+          set -euo pipefail
+          game="${GAME_IN:-}"
+          if [ -z "$game" ]; then
+            m=$(date -u +%M)
+            if [ "$m" -lt 20 ]; then game=mare-essentia; else game=fantasy-survival; fi
+          fi
+          case "$game" in
+            mare-essentia) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json ;;
+            fantasy-survival) script=roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json ;;
+            *) echo "bad game"; exit 1 ;;
+          esac
+          gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"
+          echo "dispatched $game $script"

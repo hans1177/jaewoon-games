@@ -1,0 +1,271 @@
+[
+ {
+  "type": "wait",
+  "ms": 30000
+ },
+ {
+  "type": "wait",
+  "ms": 5000
+ },
+ {
+  "type": "capture",
+  "name": "c00_start"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto01",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c01"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto02",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c02"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto03",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c03"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto04",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c04"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto05",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c05"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto06",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c06"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto07",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c07"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto08",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c08"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto09",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c09"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto10",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c10"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto11",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c11"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto12",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c12"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto13",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c13"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto14",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c14"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto15",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c15"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto16",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c16"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto17",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c17"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "auto18",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"모험 시작\",\"이어하기\",\"시작\",\"퀘스트\",\"인벤\",\"스킬\",\"상점\",\"지도\"} local skip={\"삭제\",\"초기화\",\"새 게임\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local function label(d) local t=d:IsA('TextButton') and d.Text or '' return (t~='' and t or d.Name) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.Visible and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and d.AbsolutePosition.X>=0 and d.AbsolutePosition.Y>=0 then local l=label(d) local key=l..'@'..math.floor(d.AbsolutePosition.X/20)..','..math.floor(d.AbsolutePosition.Y/20) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end if not best then return 'NONE' end local l=label(best) local key=l..'@'..math.floor(best.AbsolutePosition.X/20)..','..math.floor(best.AbsolutePosition.Y/20) workspace:SetAttribute('QADone',done..'|'..key) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2+36),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "capture",
+  "name": "c18"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "return 'clicked='..tostring(workspace:GetAttribute('QADone'))"
+ }
+]
