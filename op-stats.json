@@ -203,9 +203,9 @@
    "broken": 0
   },
   "outline:strong": {
-   "n": 6,
-   "gainSum": 21,
-   "keep": 4,
+   "n": 7,
+   "gainSum": 21.7,
+   "keep": 5,
    "improved": 2,
    "broken": 0,
    "fail": {
@@ -242,19 +242,20 @@
    "broken": 0
   },
   "noise_displace:strong": {
-   "n": 21,
-   "gainSum": 43.1,
+   "n": 22,
+   "gainSum": 59,
    "keep": 19,
    "improved": 13,
    "broken": 0,
    "fail": {
-    "REGRESSED": 2
+    "REGRESSED": 2,
+    "DARKENED": 1
    }
   },
   "outline:soft": {
-   "n": 28,
-   "gainSum": 217.2,
-   "keep": 24,
+   "n": 29,
+   "gainSum": 217.9,
+   "keep": 25,
    "improved": 20,
    "broken": 0,
    "fail": {
@@ -274,9 +275,9 @@
    }
   },
   "hue_shift:strong": {
-   "n": 4,
-   "gainSum": -0.5,
-   "keep": 4,
+   "n": 5,
+   "gainSum": -1.3,
+   "keep": 5,
    "improved": 0,
    "broken": 0
   },
@@ -335,10 +336,10 @@
    }
   },
   "hue_shift:soft": {
-   "n": 4,
-   "gainSum": 2.7,
-   "keep": 3,
-   "improved": 2,
+   "n": 6,
+   "gainSum": 4.7,
+   "keep": 5,
+   "improved": 3,
    "broken": 0,
    "fail": {
     "REGRESSED": 1
@@ -363,16 +364,16 @@
    "broken": 0
   },
   "wear:soft": {
-   "n": 1,
-   "gainSum": -0.7,
-   "keep": 1,
+   "n": 2,
+   "gainSum": -1.1,
+   "keep": 2,
    "improved": 0,
    "broken": 0
   },
   "moss:soft": {
-   "n": 1,
-   "gainSum": -4.9,
-   "keep": 0,
+   "n": 2,
+   "gainSum": -4.3,
+   "keep": 1,
    "improved": 0,
    "broken": 0,
    "fail": {
@@ -669,9 +670,9 @@
    "broken": 0
   },
   "bevel:soft": {
-   "n": 13,
-   "gainSum": 95.4,
-   "keep": 10,
+   "n": 15,
+   "gainSum": 96.2,
+   "keep": 12,
    "improved": 10,
    "broken": 0,
    "fail": {
@@ -719,6 +720,20 @@
    "gainSum": 5.1,
    "keep": 1,
    "improved": 1,
+   "broken": 0
+  },
+  "saturate_contrast:strong": {
+   "n": 1,
+   "gainSum": 0,
+   "keep": 1,
+   "improved": 0,
+   "broken": 0
+  },
+  "inset_panel:strong": {
+   "n": 1,
+   "gainSum": 0.5,
+   "keep": 1,
+   "improved": 0,
    "broken": 0
   }
  }
