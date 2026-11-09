@@ -1,10 +1,10 @@
 {
  "PROP": {
   "hue_shift:soft": {
-   "n": 9,
-   "gainSum": 4.7,
-   "keep": 4,
-   "improved": 2,
+   "n": 10,
+   "gainSum": 6.8,
+   "keep": 5,
+   "improved": 3,
    "broken": 0,
    "fail": {
     "REGRESSED": 3,
@@ -12,25 +12,25 @@
    }
   },
   "outline:soft": {
-   "n": 128,
-   "gainSum": 1057.2,
-   "keep": 97,
+   "n": 132,
+   "gainSum": 1041.9,
+   "keep": 99,
    "improved": 85,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
-    "DETAIL_LOST": 19,
+    "DETAIL_LOST": 21,
     "DARKENED": 11
    }
   },
   "wear:strong": {
-   "n": 118,
-   "gainSum": 500,
+   "n": 119,
+   "gainSum": 489.2,
    "keep": 68,
    "improved": 53,
    "broken": 0,
    "fail": {
-    "DARKENED": 20,
+    "DARKENED": 21,
     "TOO_SIMILAR": 16,
     "REGRESSED": 14
    }
@@ -68,10 +68,10 @@
    }
   },
   "inset_panel:strong": {
-   "n": 39,
-   "gainSum": 125,
-   "keep": 31,
-   "improved": 23,
+   "n": 40,
+   "gainSum": 135.4,
+   "keep": 32,
+   "improved": 24,
    "broken": 2,
    "fail": {
     "TOO_SIMILAR": 1,
@@ -115,14 +115,14 @@
    }
   },
   "outline:strong": {
-   "n": 5,
-   "gainSum": -0.5,
+   "n": 6,
+   "gainSum": -8.6,
    "keep": 3,
    "improved": 3,
    "broken": 0,
    "fail": {
     "DARKENED": 1,
-    "DETAIL_LOST": 1
+    "DETAIL_LOST": 2
    }
   },
   "saturate_contrast:strong": {
@@ -137,10 +137,10 @@
    }
   },
   "noise_displace:strong": {
-   "n": 11,
-   "gainSum": 5.9,
-   "keep": 6,
-   "improved": 4,
+   "n": 12,
+   "gainSum": 7.9,
+   "keep": 7,
+   "improved": 5,
    "broken": 0,
    "fail": {
     "REGRESSED": 4,
@@ -148,14 +148,14 @@
    }
   },
   "moss:strong": {
-   "n": 77,
-   "gainSum": 398.1,
+   "n": 79,
+   "gainSum": 382.4,
    "keep": 49,
    "improved": 44,
    "broken": 0,
    "fail": {
     "DARKENED": 14,
-    "REGRESSED": 10,
+    "REGRESSED": 12,
     "TOO_SIMILAR": 4
    }
   },
@@ -188,13 +188,13 @@
    }
   },
   "noise_displace:soft": {
-   "n": 8,
-   "gainSum": -2.3,
+   "n": 9,
+   "gainSum": -3.9,
    "keep": 4,
    "improved": 2,
    "broken": 0,
    "fail": {
-    "REGRESSED": 4
+    "REGRESSED": 5
    }
   },
   "kitbash:strong": {
