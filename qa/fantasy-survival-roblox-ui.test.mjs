@@ -282,7 +282,8 @@ test('deer and wolf keep real source bones and documented Animator motion priori
   assert.match(server,/surface\.TextureID~=""/);
   assert.match(server,/surface:FindFirstChildOfClass\("SurfaceAppearance"\)/);
   assert.match(server,/closest<11 and "RUN" or "WALK"/);
-  assert.match(visual,/deer=107866382568249/);
+  const deerRegistry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8')).models.deer;
+  assert.match(visual,new RegExp('deer='+deerRegistry.assetId));   // 새 계정 업로드로 ID가 바뀌어도 레지스트리를 따른다
   assert.doesNotMatch(client,/Instance\.new\("Part"\).*Deer/);
 });
 
@@ -587,8 +588,8 @@ test('guard and perfect parry reuse R15 high guard with server-confirmed cinemat
 // [마력숲 입장 회귀] 저장된 진행도와 서버 준비가 어긋나도 모바일 첫 터치가 사라지지 않게 한다.
 test('fantasy saved game start shows progress and retries only a failed server profile',()=>{
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
-  const intro=client.slice(client.indexOf('  local function updateTitleStatus()'),client.indexOf('  replayButton.Activated:Connect(function()'));
-  const buttons=client.slice(client.indexOf('  replayButton.Activated:Connect(function()'),client.indexOf('end\n\n-- [마을 NPC 대화]'));
+  const intro=client.slice(client.indexOf('  local function updateTitleStatus()'),client.indexOf('  continueButton.Activated:Connect(function()'));
+  const buttons=client.slice(client.indexOf('  continueButton.Activated:Connect(function()'),client.indexOf('-- [마을 NPC 대화]'));
   assert.match(server,/player:SetAttribute\("MeadowProfileLoadState","LOADING"\)/);
   assert.match(server,/local restored,restoreReason=pcall\(function\(\)/);
   assert.match(server,/persistenceAllowed\[player\]=false\s+profileBindingStarted\[player\]=nil\s+player:SetAttribute\("SaveStatus","SAVE_FAILED"\)/);
@@ -598,11 +599,13 @@ test('fantasy saved game start shows progress and retries only a failed server p
   assert.match(server,/player:GetAttribute\("MeadowProfileLoadState"\)~="FAILED"/);
   assert.match(server,/if player:GetAttribute\("ProfileReady"\)~=true then return end/);
   assert.match(intro,/player:GetAttributeChangedSignal\("MeadowProfileLoadState"\):Connect\(updateTitleStatus\)/);
-  assert.match(buttons,/continueButton\.Activated:Connect\(function\(\)[\s\S]*?loadRegion\(false\)/);
+  assert.match(buttons,/continueButton\.Activated:Connect\(function\(\)[\s\S]*?loadRegion\(\)/);   // 이어하기는 서버 준비를 기다리되 입력을 무시하지 않는다
   assert.match(buttons,/newButton\.Activated:Connect\(function\(\)[\s\S]*?loadPanel\.Visible=true/);
   assert.match(intro,/local profileDeadline=os\.clock\(\)\+90/);
   assert.match(intro,/remote:FireServer\("meadow:profile:retry"\)/);
-  assert.match(buttons,/if player:GetAttribute\("MeadowProfileHadSave"\)~=true then\s+loadRegion\(true\)\s+else\s+loadPanel\.Visible=false/);
+  // 새 게임: 저장이 없으면 바로 시작하고, 저장이 있으면 삭제 확인 창을 거쳐 서버가 초기화를 승인해야 시작한다.
+  assert.match(buttons,/if player:GetAttribute\("MeadowProfileHadSave"\)~=true then\s+loadRegion\(\)\s+else\s+loadPanel\.Visible=false\s+titlePanel\.Visible=false\s+confirmPanel\.Visible=true/);
+  assert.match(buttons,/confirmButton\.Activated:Connect\(function\(\)\s+if player:GetAttribute\("ProfileReady"\)~=true then return end[\s\S]*?remote:FireServer\("meadow:new-game:confirm"\)/);
   assert.match(server,/if not store then error\("SURVIVAL_DATASTORE_UNAVAILABLE"\) end/);
   assert.match(server,/return store:UpdateAsync\("player:"\.\.player\.UserId/);
 });
@@ -620,7 +623,9 @@ test('fantasy spawn must never suppress engine avatar creation',()=>{
   assert.deepEqual(spawn.$properties.Position,[0,3,-75]);
   assert.match(server,/Players\.CharacterAutoLoads\s*=\s*true/);
   assert.doesNotMatch(server,/Players\.CharacterAutoLoads\s*=\s*false/);
-  assert.match(server,/nativeFoundationSpawn\.CanCollide\s*=\s*true/);
+  // 서버가 스폰 위치 표시용 투명 판을 충돌 없는 로케이터로 쓴다(지면 검사로 착지시키므로 아바타 생성은 막지 않는다).
+  assert.match(server,/nativeFoundationSpawn\.CanCollide\s*=\s*false/);
+  assert.match(server,/nativeFoundationSpawn\.Enabled\s*=\s*true/);
   assert.ok(server.indexOf('createStartingMeadow()')<server.indexOf('Players.PlayerAdded:Connect(bindNativeFoundationPlayer)'));
   assert.match(server,/for attempt=1,10 do[\s\S]*?spawnHit = workspace:Raycast/);
   assert.match(server,/height>clearance\+9 or height<clearance-5/);
