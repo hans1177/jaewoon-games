@@ -12,9 +12,9 @@
    }
   },
   "outline:soft": {
-   "n": 108,
-   "gainSum": 942.3,
-   "keep": 83,
+   "n": 110,
+   "gainSum": 943.1,
+   "keep": 85,
    "improved": 73,
    "broken": 0,
    "fail": {
@@ -92,9 +92,9 @@
    }
   },
   "bevel:strong": {
-   "n": 3,
-   "gainSum": 10,
-   "keep": 1,
+   "n": 4,
+   "gainSum": 9.9,
+   "keep": 2,
    "improved": 1,
    "broken": 0,
    "fail": {
@@ -135,10 +135,10 @@
    }
   },
   "noise_displace:strong": {
-   "n": 8,
-   "gainSum": -1.4,
-   "keep": 4,
-   "improved": 2,
+   "n": 9,
+   "gainSum": 3.8,
+   "keep": 5,
+   "improved": 3,
    "broken": 0,
    "fail": {
     "REGRESSED": 3,
@@ -202,31 +202,35 @@
  },
  "BUILDING": {
   "inset_panel:soft": {
-   "n": 7,
-   "gainSum": 8.5,
+   "n": 8,
+   "gainSum": -9.9,
    "keep": 6,
    "improved": 1,
    "broken": 0,
    "fail": {
-    "TOO_SIMILAR": 1
+    "TOO_SIMILAR": 1,
+    "DETAIL_LOST": 1
    }
   },
   "proportion:strong": {
-   "n": 1,
-   "gainSum": 2,
+   "n": 2,
+   "gainSum": -30.5,
    "keep": 1,
    "improved": 1,
-   "broken": 0
+   "broken": 0,
+   "fail": {
+    "DETAIL_LOST": 1
+   }
   },
   "outline:strong": {
-   "n": 13,
-   "gainSum": 71.2,
+   "n": 14,
+   "gainSum": 78.2,
    "keep": 9,
    "improved": 6,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 3,
-    "DARKENED": 1
+    "DARKENED": 2
    }
   },
   "wear:strong": {
@@ -269,14 +273,14 @@
    }
   },
   "outline:soft": {
-   "n": 48,
-   "gainSum": 388.8,
-   "keep": 41,
-   "improved": 35,
+   "n": 51,
+   "gainSum": 417.7,
+   "keep": 43,
+   "improved": 37,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 4,
-    "DARKENED": 3
+    "DARKENED": 4
    }
   },
   "noise_displace:soft": {
@@ -291,10 +295,10 @@
    }
   },
   "hue_shift:strong": {
-   "n": 6,
-   "gainSum": 0.2,
-   "keep": 5,
-   "improved": 0,
+   "n": 7,
+   "gainSum": 4.7,
+   "keep": 6,
+   "improved": 1,
    "broken": 0,
    "fail": {
     "DARKENED": 1
@@ -346,13 +350,14 @@
    }
   },
   "kitbash:soft": {
-   "n": 5,
-   "gainSum": 1.9,
+   "n": 6,
+   "gainSum": -24.3,
    "keep": 3,
    "improved": 1,
    "broken": 0,
    "fail": {
-    "FLOATING_PART": 2
+    "FLOATING_PART": 2,
+    "DETAIL_LOST": 1
    }
   },
   "hue_shift:soft": {
