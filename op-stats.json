@@ -1,10 +1,10 @@
 {
  "PROP": {
   "hue_shift:soft": {
-   "n": 18,
-   "gainSum": -13.9,
-   "keep": 10,
-   "improved": 5,
+   "n": 19,
+   "gainSum": -10.9,
+   "keep": 11,
+   "improved": 6,
    "broken": 0,
    "fail": {
     "REGRESSED": 4,
@@ -25,9 +25,9 @@
    }
   },
   "wear:strong": {
-   "n": 154,
-   "gainSum": 541.1,
-   "keep": 87,
+   "n": 155,
+   "gainSum": 542,
+   "keep": 88,
    "improved": 64,
    "broken": 0,
    "fail": {
@@ -96,9 +96,9 @@
    }
   },
   "bevel:strong": {
-   "n": 14,
+   "n": 15,
    "gainSum": 16.2,
-   "keep": 7,
+   "keep": 8,
    "improved": 5,
    "broken": 0,
    "fail": {
@@ -153,14 +153,14 @@
    }
   },
   "moss:strong": {
-   "n": 130,
-   "gainSum": 477.4,
+   "n": 131,
+   "gainSum": 474.9,
    "keep": 89,
    "improved": 71,
    "broken": 1,
    "fail": {
     "DARKENED": 16,
-    "REGRESSED": 18,
+    "REGRESSED": 19,
     "TOO_SIMILAR": 6,
     "BROKEN": 1
    }
@@ -244,10 +244,10 @@
    }
   },
   "outline:strong": {
-   "n": 40,
-   "gainSum": 184.9,
-   "keep": 26,
-   "improved": 22,
+   "n": 42,
+   "gainSum": 188.7,
+   "keep": 28,
+   "improved": 24,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 7,
@@ -328,14 +328,14 @@
    }
   },
   "bevel:strong": {
-   "n": 54,
-   "gainSum": 115.2,
+   "n": 55,
+   "gainSum": 114.8,
    "keep": 44,
    "improved": 18,
    "broken": 0,
    "fail": {
     "REGRESSED": 7,
-    "DARKENED": 1,
+    "DARKENED": 2,
     "TOO_SIMILAR": 2
    }
   },
@@ -374,9 +374,9 @@
    }
   },
   "kitbash:soft": {
-   "n": 10,
-   "gainSum": -41.4,
-   "keep": 6,
+   "n": 11,
+   "gainSum": -41.8,
+   "keep": 7,
    "improved": 2,
    "broken": 0,
    "fail": {
@@ -558,13 +558,14 @@
    }
   },
   "inset_panel:soft": {
-   "n": 2,
-   "gainSum": 0,
+   "n": 3,
+   "gainSum": -3.5,
    "keep": 0,
    "improved": 0,
    "broken": 2,
    "fail": {
-    "BROKEN": 2
+    "BROKEN": 2,
+    "REGRESSED": 1
    }
   },
   "moss:soft": {
@@ -604,13 +605,14 @@
    }
   },
   "proportion:strong": {
-   "n": 2,
-   "gainSum": 1.1,
+   "n": 5,
+   "gainSum": 0.7,
    "keep": 0,
    "improved": 0,
    "broken": 0,
    "fail": {
-    "RIG:ORPHAN_MESH:Icosphere": 2
+    "RIG:ORPHAN_MESH:Icosphere": 3,
+    "REGRESSED": 2
    }
   },
   "wear:strong": {
