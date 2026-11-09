@@ -12,10 +12,10 @@
    }
   },
   "outline:soft": {
-   "n": 91,
-   "gainSum": 754.3,
-   "keep": 68,
-   "improved": 59,
+   "n": 95,
+   "gainSum": 800,
+   "keep": 72,
+   "improved": 63,
    "broken": 0,
    "fail": {
     "REGRESSED": 1,
@@ -24,15 +24,15 @@
    }
   },
   "wear:strong": {
-   "n": 99,
-   "gainSum": 510.9,
-   "keep": 61,
-   "improved": 47,
+   "n": 101,
+   "gainSum": 517.7,
+   "keep": 62,
+   "improved": 48,
    "broken": 0,
    "fail": {
     "DARKENED": 19,
     "TOO_SIMILAR": 12,
-    "REGRESSED": 7
+    "REGRESSED": 8
    }
   },
   "inset_panel:soft": {
@@ -68,15 +68,16 @@
    }
   },
   "inset_panel:strong": {
-   "n": 28,
-   "gainSum": 108,
-   "keep": 24,
-   "improved": 19,
+   "n": 31,
+   "gainSum": 118.8,
+   "keep": 25,
+   "improved": 20,
    "broken": 2,
    "fail": {
     "TOO_SIMILAR": 1,
     "BROKEN": 2,
-    "DARKENED": 1
+    "DARKENED": 1,
+    "DETAIL_LOST": 2
    }
   },
   "wear:soft": {
@@ -162,13 +163,13 @@
    "broken": 0
   },
   "moss:soft": {
-   "n": 9,
-   "gainSum": 18.5,
-   "keep": 5,
+   "n": 11,
+   "gainSum": 10.8,
+   "keep": 6,
    "improved": 4,
    "broken": 0,
    "fail": {
-    "REGRESSED": 3,
+    "REGRESSED": 4,
     "DARKENED": 1
    }
   },
@@ -188,6 +189,13 @@
    "fail": {
     "REGRESSED": 1
    }
+  },
+  "kitbash:strong": {
+   "n": 1,
+   "gainSum": 5.4,
+   "keep": 1,
+   "improved": 1,
+   "broken": 0
   }
  },
  "BUILDING": {
