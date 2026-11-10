@@ -538,6 +538,31 @@ test('Roblox dynamic asset family detection follows actual native systems and ig
   assert.equal(status.AUDIO,'NOT_APPLICABLE');
 });
 
+// [마력숲 실제 무기] 선택 atom은 승인 모델 ID→실물 메시→오른손 용접에
+// 도달해야 한다. 단순 목록·주석·HUD 또는 모션 분기만으로는 통과하지 않는다.
+test('fantasy weapon asset atoms reach approved CC0 meshes on the actual equipped hands',()=>{
+  const source=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.equal(robloxStudioAssetFamilyBoundInText(source,'WEAPON'),true);
+  const missing=[
+    ['family selection', 'local studioWeaponAtoms=((Config.StudioAssets or {}).Families or {}).WEAPON or {}',
+      'local studioWeaponAtoms={}'],
+    ['selected atom check', 'local selectedWeaponReady=requiredWeaponAtom~=nil and table.find(studioWeaponAtoms,requiredWeaponAtom)~=nil',
+      'local selectedWeaponReady=true'],
+    ['forged weapon branch', 'if weapon and weapon.ModelKey and not weapon.Bow and (not requiredWeaponAtom or selectedWeaponReady) then',
+      'if weapon and weapon.ModelKey and not weapon.Bow then'],
+    ['bow branch', 'if not weapon or not weapon.Bow or (requiredWeaponAtom and not selectedWeaponReady) then return end',
+      'if not weapon or not weapon.Bow then return end'],
+    ['original registered model loading', 'template = AssetService:LoadAssetAsync(modelId)',
+      'template = nil'],
+    ['real MeshPart verification', 'local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)',
+      'local mesh=model and model:FindFirstChild("FakeHandle")'],
+  ];
+  for(const [label,from,to] of missing){
+    assert.ok(source.includes(from),label+' source anchor missing');
+    assert.equal(robloxStudioAssetFamilyBoundInText(source.replace(from,to),'WEAPON'),false,label);
+  }
+});
+
 test('Roblox family binding proof requires selected values to reach a native presentation consumer',()=>{
   const real=[
     'local studioAssetFamilies={UI={"FRAME_PANEL"}}',
