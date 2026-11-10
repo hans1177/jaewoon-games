@@ -548,6 +548,20 @@ test('pre-F9 validation publish requires exact F0 but never current F9',()=>{
   const candidate={item,sourceRevision,artifactIdentity,sourceTree:'tree',latestSourceTree:'tree',publishStage:'validation'};
   assert.equal(assertRobloxLatestPublishCandidate(candidate),true);
   assert.equal(assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:'c'.repeat(40)}}),true);
+  // [Studio 실기 실패 이력] 오래된 버전의 실제 실패는 유지하되 새 검증용 게시를 막지 않는다.
+  // 같은 버전이나 원본 버전이 불명확한 실패, 그리고 최종 F9 문턱은 계속 차단한다.
+  const staleStudio={...item,robloxStudioLocalPlayRepairRequired:true,
+    robloxStudioRuntimeSession:{sourceRevision:'c'.repeat(40),status:'COMPLETED_PRODUCT_FAILURE',resultPass:false}};
+  assert.equal(assertRobloxLatestPublishCandidate({...candidate,item:staleStudio}),true);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...staleStudio,
+    robloxStudioRuntimeSession:{sourceRevision,status:'COMPLETED_PRODUCT_FAILURE',resultPass:false}}}),
+    /ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxStudioLocalPlayRepairRequired:true}}),
+    /ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...staleStudio,robloxFoundationF0Passed:false}}),
+    /ROBLOX_PUBLISH_CURRENT_F0_REQUIRED/);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:staleStudio,publishStage:'final'}),
+    /ROBLOX_PUBLISH_CURRENT_F9_REQUIRED/);
   assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:sourceRevision}}),/ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
   assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxQualityBuildUpRequired:true}}),/ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
   assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxFoundationF0Passed:false}}),/ROBLOX_PUBLISH_CURRENT_F0_REQUIRED/);
