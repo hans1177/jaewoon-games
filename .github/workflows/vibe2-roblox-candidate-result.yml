@@ -79,20 +79,45 @@ jobs:
           const requested=String(process.env.REQUESTED_CONCLUSION||'').trim().toLowerCase();
           if(String(run.name||'')!=='Vibe2 Roblox Candidate Runtime')throw new Error(`unexpected QA workflow: ${run.name}`);
           if(String(run.status||'')!=='completed')throw new Error(`QA run not completed: ${run.status}`);
-          if(String(run.conclusion||'').toLowerCase()!=='success')throw new Error(`QA run did not pass: ${run.conclusion}`);
-          if(requested && requested!=='success')throw new Error(`requested conclusion is not success: ${requested}`);
-          const live=jobs.find(job=>String(job.name||'')==='live-studio');
-          if(!live||String(live.status||'')!=='completed'||String(live.conclusion||'')!=='success')throw new Error('live-studio job is not successful');
-          const required=['Verify Vibe candidate in real Roblox Studio','Replay R5 candidate with physical input and require target-stage improvement'];
-          for(const name of required){
-            const step=(live.steps||[]).find(row=>String(row.name||'')===name);
-            if(!step||String(step.conclusion||'')!=='success')throw new Error(`required Studio QA step not successful: ${name}`);
+          const actual=String(run.conclusion||'').trim().toLowerCase();
+          if(!['success','failure'].includes(actual))throw new Error(`QA conclusion unsupported: ${actual}`);
+          if(requested&&requested!==actual)throw new Error(`QA conclusion mismatch: requested=${requested} actual=${actual}`);
+          if(String(run.event||'')==='push'
+            &&(String(run.head_branch||'')!==process.env.CANDIDATE_BRANCH
+              ||String(run.head_sha||'').toLowerCase()!==String(process.env.CANDIDATE_SHA||'').toLowerCase())){
+            throw new Error('QA run candidate branch or source SHA mismatch');
           }
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'verified=1\nactual_conclusion=success\n');
+          if(actual==='success'){
+            const live=jobs.find(job=>String(job.name||'')==='live-studio');
+            if(!live||String(live.status||'')!=='completed'||String(live.conclusion||'')!=='success')throw new Error('live-studio job is not successful');
+            const required=['Verify Vibe candidate in real Roblox Studio','Replay R5 candidate with physical input and require target-stage improvement'];
+            for(const name of required){
+              const step=(live.steps||[]).find(row=>String(row.name||'')===name);
+              if(!step||String(step.conclusion||'')!=='success')throw new Error(`required Studio QA step not successful: ${name}`);
+            }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,'verified=1\nactual_conclusion=success\n');
+            console.log('VIBE2_ROBLOX_LIVE_STUDIO=PASS');
+            console.log('VIBE2_ROBLOX_R5_TARGET_STAGE_COMPARE=PASS');
+          }else{
+            // [실패 인과 증거] GH가 완료한 실제 실패 작업/단계만 기존 재시도 큐에 보낸다.
+            // 실패를 Studio 성공, 출시 승인, 학습 성공으로 승격하지 않는다.
+            const failed=jobs.find(job=>String(job.status||'')==='completed'
+              &&String(job.conclusion||'')==='failure'
+              &&['contract','live-studio'].includes(String(job.name||'')));
+            if(!failed)throw new Error('QA failure has no completed failed contract or Studio job');
+            const step=(failed.steps||[]).find(row=>String(row.conclusion||'')==='failure');
+            if(!step)throw new Error('QA failed job has no exact failed step');
+            const stage=failed.name==='live-studio'?'TARGET_PLATFORM_RUNTIME':'CANDIDATE_STATIC_GATE';
+            const signature=String(failed.name+'_'+step.name).toUpperCase()
+              .replace(/[^A-Z0-9_]+/g,'_').slice(0,120);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,
+              `verified=0\nactual_conclusion=failure\nfailure_stage=${stage}\nfailure_signature=${signature}\n`);
+            console.log(`VIBE2_ROBLOX_QA_FAILURE_STAGE=${stage}`);
+            console.log(`VIBE2_ROBLOX_QA_FAILURE_SIGNATURE=${signature}`);
+            console.log('VIBE2_ROBLOX_QA_FAILURE_TO_EXISTING_RETRY=YES');
+          }
           console.log(`VIBE2_ROBLOX_AUTHORITATIVE_QA_RUN=${run.id}`);
           console.log(`VIBE2_ROBLOX_AUTHORITATIVE_QA_SHA=${process.env.CANDIDATE_SHA}`);
-          console.log('VIBE2_ROBLOX_LIVE_STUDIO=PASS');
-          console.log('VIBE2_ROBLOX_R5_TARGET_STAGE_COMPARE=PASS');
           NODE
 
       - name: Checkout Vibe2 control line
@@ -119,6 +144,8 @@ jobs:
           CANDIDATE_BRANCH: ${{ steps.context.outputs.candidate_branch }}
           QA_HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
           VERIFIED_CONCLUSION: ${{ steps.qa.outputs.actual_conclusion }}
+          QA_FAILURE_STAGE: ${{ steps.qa.outputs.failure_stage }}
+          QA_FAILURE_SIGNATURE: ${{ steps.qa.outputs.failure_signature }}
         shell: bash
         run: |
           set -euo pipefail
@@ -134,12 +161,19 @@ jobs:
             git reset --hard HEAD
             git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
             node "$GITHUB_WORKSPACE/vibe2-main-contract/tools/vibe2-queue-control.mjs" storage-unpack --queue=.vibe2/queue.json
+            current_sha="$(git ls-remote origin "refs/heads/$CANDIDATE_BRANCH" | awk 'NR==1{print $1}')"
+            if [ "$current_sha" != "$QA_HEAD_SHA" ]; then
+              echo 'candidate branch changed after observed QA; stale failure/success must not mutate queue' >&2
+              exit 1
+            fi
             node vibe2-main-contract/tools/vibe2-candidate-reconcile.mjs \
               --branch="$CANDIDATE_BRANCH" \
               --target=roblox \
               --conclusion="$VERIFIED_CONCLUSION" \
               --run-id="$QA_RUN_ID" \
-              --head-sha="$QA_HEAD_SHA" | tee /tmp/vibe2-roblox-reconcile.log
+              --head-sha="$QA_HEAD_SHA" \
+              --failure-stage="$QA_FAILURE_STAGE" \
+              --failure-signature="$QA_FAILURE_SIGNATURE" | tee /tmp/vibe2-roblox-reconcile.log
             updated=0
             continue_work=0
             grep -q 'VIBE2_RECONCILE_UPDATED=YES' /tmp/vibe2-roblox-reconcile.log && updated=1 || true
