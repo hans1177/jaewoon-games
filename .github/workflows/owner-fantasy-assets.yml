@@ -4,6 +4,10 @@ name: Owner Fantasy Re-register Assets
 run-name: Owner Fantasy assets · ${{ github.sha }}
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/owner-fantasy-assets.yml'
   workflow_dispatch:
     inputs:
       universe_id:
@@ -36,10 +40,16 @@ jobs:
 
       - name: Upload models and write VisualAssetIds
         env:
-          FANTASY_UNIVERSE_ID: ${{ inputs.universe_id }}
+          FANTASY_UNIVERSE_ID: ${{ inputs.universe_id || '10775310122' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_CREATOR_USER_ID: '11664914771'
-        run: node tools/fantasy-survival-reupload.mjs
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # [현재 체험 복구] 기존 자산은 재업로드하지 않고 승인된 자산의 사용 권한만 복구한다.
+            node tools/fantasy-survival-reupload.mjs --regrant-only
+          else
+            node tools/fantasy-survival-reupload.mjs
+          fi
 
       - name: Commit registered IDs
         if: always()
