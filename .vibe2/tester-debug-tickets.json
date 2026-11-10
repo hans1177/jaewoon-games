@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-11-10T16:12:14.798Z",
+  "updatedAt": "2026-11-10T16:49:19.004Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -12129,8 +12129,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-10T16:12:14.770Z",
-      "occurrenceCount": 128
+      "updatedAt": "2026-11-10T16:49:18.974Z",
+      "occurrenceCount": 129
     },
     {
       "id": "bug-265b5406b2bdecc5e87f",
@@ -12153,8 +12153,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-10T16:12:14.770Z",
-      "occurrenceCount": 9
+      "updatedAt": "2026-11-10T16:49:18.974Z",
+      "occurrenceCount": 10
     },
     {
       "id": "bug-5c09d46681320169d8c1",
@@ -12177,8 +12177,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-10T16:12:14.770Z",
-      "occurrenceCount": 9
+      "updatedAt": "2026-11-10T16:49:18.974Z",
+      "occurrenceCount": 10
     },
     {
       "id": "bug-7872cf95f8a358e822c1",
@@ -12201,8 +12201,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-10T16:12:14.770Z",
-      "occurrenceCount": 9
+      "updatedAt": "2026-11-10T16:49:18.974Z",
+      "occurrenceCount": 10
     },
     {
       "id": "bug-f919d68531bba30055e2",
@@ -12225,8 +12225,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-10T16:12:14.770Z",
-      "occurrenceCount": 9
+      "updatedAt": "2026-11-10T16:49:18.974Z",
+      "occurrenceCount": 10
     },
     {
       "id": "bug-127edbf40f064781de4b",
@@ -12249,8 +12249,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-10T16:12:14.770Z",
-      "occurrenceCount": 9
+      "updatedAt": "2026-11-10T16:49:18.974Z",
+      "occurrenceCount": 10
     },
     {
       "id": "bug-eb3be63425285f2cf3e3",
@@ -12833,8 +12833,32 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-10T15:58:11.415Z",
-      "updatedAt": "2026-11-10T16:12:14.770Z",
-      "occurrenceCount": 2
+      "updatedAt": "2026-11-10T16:49:18.974Z",
+      "occurrenceCount": 3
+    },
+    {
+      "id": "bug-10e83b34205dcc00ba27",
+      "gameId": "wild-survival",
+      "surface": "WEB",
+      "phase": "POST_PUBLICATION_PLAYTEST",
+      "severity": "HIGH",
+      "category": "STARTUP",
+      "signature": "WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED {\"sourceSha\":\"b0bccf26b9ffe35c50dd79fe84e4416b4c27f4c2\",\"failureStage\":\"MOVEMENT_RESPONSE_DELAYED\",\"beforeInput\":{\"x\":480,\"y\":560,\"simulationX\":480,\"simulationY\":560,\"ticks\":1,\"simulationMs\":40,\"inputX\":0,\"inputY\":0,\"inputRight\":false,\"frames\":6,\"focus\":\"BODY\",\"scene\":\"3d\",\"renderer\":\"three-webgl\",\"started\":true},\"after500ms\":{\"x\":485.8,\"y\":560,\"simulationX\":485.8,\"simulationY\":560,\"ticks\":2,\"simulationMs\":80,\"inputX\":1,\"inputY\":0,\"inputRight\":true,\"frames\":7,\"focus\":\"BODY\",\"scene\":\"3d\",\"renderer\":\"three-webgl\",\"started\":true},\"after2000ms\":{\"x\":503.2,\"y\":560,\"simulationX\":503.20000000000005,\"simulationY\":560,\"ticks\":5,\"simulationMs\":200,\"inputX\":1,\"inputY\":0,\"inputRight\":true,\"frames\":10,\"focus\":\"BODY\",\"scene\":\"3d\",\"renderer\":\"three-webgl\",\"started\":true},\"afterInput\":{\"x\":503.2,\"y\":560,\"simulationX\":503.20000000000005,\"simulationY\":560,\"ticks\":5,\"simulationMs\":200,\"inputX\":1,\"inputY\":0,\"inputRight\":false,\"frames\":10,\"focus\":\"BODY\",\"scene\":\"3d\",\"renderer\":\"three-webgl\",\"started\":true}}\n+ actual - expected\n\n+ 'MOVEMENT_RESPONSE_DELAYED'\n- null",
+      "reproduction": "RERUN_EXISTING_PUBLISHED_WEB_BROWSER_SMOKE_ON_THE_SAME_GAME_SOURCE",
+      "responsibleFiles": [
+        "web-games/wild-survival/index.html"
+      ],
+      "evidence": [
+        "web-browser-playtest-run:42853481875",
+        "web-browser-playtest-source:b0bccf26b9ffe35c50dd79fe84e4416b4c27f4c2",
+        "web-browser-playtest-tree:5d846c06dcec63cda00df7300b415d91d492e9a8"
+      ],
+      "exactFailedStage": "WEB_POST_PUBLICATION_PLAYTEST",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "status": "OPEN",
+      "createdAt": "2026-11-10T16:49:18.974Z",
+      "updatedAt": "2026-11-10T16:49:18.974Z",
+      "occurrenceCount": 1
     }
   ],
   "webPlaytestObservations": [
@@ -12862,7 +12886,7 @@
       "target": "web",
       "sourceRoot": "web-games/ocean-voyage",
       "sourceTreeSha": "bd78acee4969637fdadce382f6b8972746319860",
-      "sourceRevision": "b0069836c44c8fd5a62fafddb9e7d6129debb176",
+      "sourceRevision": "b0bccf26b9ffe35c50dd79fe84e4416b4c27f4c2",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12871,8 +12895,8 @@
         "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "42848509845",
-      "observedAt": "2026-11-10T16:12:14.770Z"
+      "runId": "42853481875",
+      "observedAt": "2026-11-10T16:49:18.974Z"
     },
     {
       "gameId": "gem-survivor",
@@ -12880,7 +12904,7 @@
       "target": "web",
       "sourceRoot": "web-games/gem-survivor",
       "sourceTreeSha": "a662a98c0cf0e044d31fb7fbb54134d79c7eb629",
-      "sourceRevision": "b0069836c44c8fd5a62fafddb9e7d6129debb176",
+      "sourceRevision": "b0bccf26b9ffe35c50dd79fe84e4416b4c27f4c2",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12889,8 +12913,8 @@
         "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "42848509845",
-      "observedAt": "2026-11-10T16:12:14.770Z"
+      "runId": "42853481875",
+      "observedAt": "2026-11-10T16:49:18.974Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -12898,7 +12922,7 @@
       "target": "web",
       "sourceRoot": "web-games/fantasy-survival",
       "sourceTreeSha": "77d32654aba91dc9f2ef5b93dd7c78ac707cbb50",
-      "sourceRevision": "b0069836c44c8fd5a62fafddb9e7d6129debb176",
+      "sourceRevision": "b0bccf26b9ffe35c50dd79fe84e4416b4c27f4c2",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12907,8 +12931,8 @@
         "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "42848509845",
-      "observedAt": "2026-11-10T16:12:14.770Z"
+      "runId": "42853481875",
+      "observedAt": "2026-11-10T16:49:18.974Z"
     },
     {
       "gameId": "cozy-island",
@@ -12930,21 +12954,22 @@
     },
     {
       "gameId": "wild-survival",
-      "runtimePassed": true,
+      "runtimePassed": false,
+      "failureSignature": "WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED {\"sourceSha\":\"b0bccf26b9ffe35c50dd79fe84e4416b4c27f4c2\",\"failureStage\":\"MOVEMENT_RESPONSE_DELAYED\",\"beforeInput\":{\"x\":480,\"y\":560,\"simulationX\":480,\"simulationY\":560,\"ticks\":1,\"simulationMs\":40,\"inputX\":0,\"inputY\":0,\"inputRight\":false,\"frames\":6,\"focus\":\"BODY\",\"scene\":\"3d\",\"renderer\":\"three-webgl\",\"started\":true},\"after500ms\":{\"x\":485.8,\"y\":560,\"simulationX\":485.8,\"simulationY\":560,\"ticks\":2,\"simulationMs\":80,\"inputX\":1,\"inputY\":0,\"inputRight\":true,\"frames\":7,\"focus\":\"BODY\",\"scene\":\"3d\",\"renderer\":\"three-webgl\",\"started\":true},\"after2000ms\":{\"x\":503.2,\"y\":560,\"simulationX\":503.20000000000005,\"simulationY\":560,\"ticks\":5,\"simulationMs\":200,\"inputX\":1,\"inputY\":0,\"inputRight\":true,\"frames\":10,\"focus\":\"BODY\",\"scene\":\"3d\",\"renderer\":\"three-webgl\",\"started\":true},\"afterInput\":{\"x\":503.2,\"y\":560,\"simulationX\":503.20000000000005,\"simulationY\":560,\"ticks\":5,\"simulationMs\":200,\"inputX\":1,\"inputY\":0,\"inputRight\":false,\"frames\":10,\"focus\":\"BODY\",\"scene\":\"3d\",\"renderer\":\"three-webgl\",\"started\":true}}\n+ actual - expected\n\n+ 'MOVEMENT_RESPONSE_DELAYED'\n- null\n",
       "target": "web",
       "sourceRoot": "web-games/wild-survival",
       "sourceTreeSha": "5d846c06dcec63cda00df7300b415d91d492e9a8",
-      "sourceRevision": "b0069836c44c8fd5a62fafddb9e7d6129debb176",
+      "sourceRevision": "b0bccf26b9ffe35c50dd79fe84e4416b4c27f4c2",
       "runtimeObserved": true,
-      "failureStage": null,
+      "failureStage": "WEB_POST_PUBLICATION_PLAYTEST",
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
       "sharedSourceTrees": {
         "assets": "6c6ada3b01de91eff0ca38412263c64e9d2f9235",
         "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "42848509845",
-      "observedAt": "2026-11-10T16:12:14.770Z"
+      "runId": "42853481875",
+      "observedAt": "2026-11-10T16:49:18.974Z"
     },
     {
       "gameId": "forest-survival",
@@ -12952,7 +12977,7 @@
       "target": "web",
       "sourceRoot": "web-games/forest-survival",
       "sourceTreeSha": "998d406a15640fac3b4d4c941262fdff74027608",
-      "sourceRevision": "b0069836c44c8fd5a62fafddb9e7d6129debb176",
+      "sourceRevision": "b0bccf26b9ffe35c50dd79fe84e4416b4c27f4c2",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12961,8 +12986,8 @@
         "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "42848509845",
-      "observedAt": "2026-11-10T16:12:14.770Z"
+      "runId": "42853481875",
+      "observedAt": "2026-11-10T16:49:18.974Z"
     },
     {
       "gameId": "human-go",
@@ -12970,7 +12995,7 @@
       "target": "web",
       "sourceRoot": "web-games/human-go",
       "sourceTreeSha": "1b290c51c78767249db92a5f64eaf1017948ff54",
-      "sourceRevision": "b0069836c44c8fd5a62fafddb9e7d6129debb176",
+      "sourceRevision": "b0bccf26b9ffe35c50dd79fe84e4416b4c27f4c2",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12979,8 +13004,8 @@
         "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "42848509845",
-      "observedAt": "2026-11-10T16:12:14.770Z"
+      "runId": "42853481875",
+      "observedAt": "2026-11-10T16:49:18.974Z"
     }
   ]
 }
