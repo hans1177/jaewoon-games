@@ -72,7 +72,30 @@ jobs:
           test "${PIPESTATUS[0]}" -eq 0 || echo "::warning::tests/smoke gate failed - publishing continues (non-blocking mode)"
 
       - name: Gate - every referenced asset must be registered
-        run: python3 roblox-games/mare-essentia/tools/devloop/asset_check.py roblox-games/mare-essentia
+        run: |
+          set -euo pipefail
+          python3 roblox-games/mare-essentia/tools/devloop/asset_check.py roblox-games/mare-essentia
+          # [등록된 실제 GUI 이미지] 이전 Decal ID가 다시 게시되지 않도록 기존 AssetIds 연결을 확인한다.
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import re
+          root = pathlib.Path("roblox-games/mare-essentia")
+          registry = json.loads((root / "assets-registered.json").read_text(encoding="utf-8"))
+          ids = (root / "src/ReplicatedStorage/Shared/AssetIds.luau").read_text(encoding="utf-8")
+          active = dict(re.findall(r'\["([^"]+)"\]\s*=\s*(\d+)', ids))
+          assets = registry["assets"]
+          if registry.get("universeId") != "10775310508":
+              raise SystemExit("MARE_ASSET_UNIVERSE_MISMATCH")
+          if set(assets) != set(active):
+              raise SystemExit("MARE_ASSET_REGISTRY_LUAU_KEYS_MISMATCH")
+          for key, asset in assets.items():
+              if str(asset.get("assetId", "")) != active[key] or asset.get("usePermissionGranted") is not True:
+                  raise SystemExit("MARE_ASSET_ID_OR_UNIVERSE_GRANT_UNVERIFIED:" + key)
+              if key.startswith(("Goods/", "Menu/", "Portraits/")) and asset.get("assetType") != "Image":
+                  raise SystemExit("MARE_GUI_ASSET_NOT_IMAGE:" + key)
+          print("MARE_PUBLISH_VERIFIED_REGISTERED_ASSETS=" + str(len(assets)))
+          PY
 
       - name: Setup Node
         uses: actions/setup-node@v4
