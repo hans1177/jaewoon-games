@@ -661,7 +661,7 @@ jobs:
           FOUNDATION_REPAIR: ${{ matrix.foundationRepair || false }}
           STUDIO_MATERIAL_REPAIR: ${{ matrix.studioMaterialRepair || false }}
           NATIVE_CREATURE_REPAIR: ${{ matrix.nativeCreatureRepair || false }}
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ matrix.nativeCreatureRepair && secrets.ROBLOX_OPEN_CLOUD_API_KEY || '' }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ matrix.nativeCreatureRepair && (matrix.gameId == 'fantasy-survival' && secrets.ROBLOX_DEPLOY_API_KEY || matrix.gameId != 'fantasy-survival' && secrets.ROBLOX_OPEN_CLOUD_API_KEY) || '' }}
           ROBLOX_ROBLOSECURITY: ${{ matrix.nativeCreatureRepair && secrets.ROBLOX_ROBLOSECURITY || '' }}
           ROBLOX_SECURITY_COOKIE: ${{ matrix.nativeCreatureRepair && secrets.ROBLOX_SECURITY_COOKIE || '' }}
           ROBLOX_CREATOR_USER_ID: ${{ matrix.nativeCreatureRepair && secrets.ROBLOX_CREATOR_USER_ID || '' }}
