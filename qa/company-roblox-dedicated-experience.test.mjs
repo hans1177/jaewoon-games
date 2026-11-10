@@ -447,3 +447,19 @@ test('Mare Essentia 1980 publish and asset workflows use only the dedicated depl
   assert.equal(registry.universeId,'10775310508');
   assert.equal(registry.placeId,'73607605986189');
 });
+
+// [1980 전용 체험] 신규 경험 재사용에서 gameId가 다른 Place로 넘어가지 않도록 기존 인계를 검증한다.
+test('1980 new experience publisher checks exact existing owner game target',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-new-experience.yml','utf8');
+  assert.ok(workflow.includes('ROBLOX_OPEN_CLOUD_API_KEY: ' + '$' + '{{ secrets.ROBLOX_DEPLOY_API_KEY }}'));
+  assert.ok(!workflow.includes('secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY'));
+  assert.ok(workflow.includes('ROBLOX_1980_PUBLISH_API_KEY_MISSING'));
+  assert.ok(workflow.includes('OWNER_EXPERIENCE_GAME_TARGET_MISMATCH'));
+  assert.ok(workflow.includes('target.gameId!==game'));
+  assert.ok(workflow.includes('target.universeId'));
+  assert.ok(workflow.includes('target.placeId'));
+  const forest=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/experience-target.json','utf8'));
+  const mare=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/experience-target.json','utf8'));
+  assert.deepEqual([forest.gameId,forest.universeId,forest.placeId],['fantasy-survival','10775310122','70742682772890']);
+  assert.deepEqual([mare.gameId,mare.universeId,mare.placeId],['mare-essentia','10775310508','73607605986189']);
+});
