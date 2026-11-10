@@ -1,3 +1,4 @@
+// 파일명: tools/company-roblox-holistic-quality-buildup.mjs
 // Source-grounded Roblox quality BUILD_UP planner. Advisory; does not modify game files.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -366,7 +367,7 @@ function motionChecks(text){
 }
 export function buildRobloxHolisticQualityPlan({
   repoRoot=process.cwd(),gameId='',sourceRoot='',sourceObservation={},qualityGaps=[],
-  previousPlan=null,runtimeEvidence={},sourceRevision='',repairRequested=false
+  previousPlan=null,runtimeEvidence={},sourceRevision='',repairRequested=false,responsibleFiles=[]
 }={}){
   const scope=getScope(repoRoot,gameId,sourceRoot);
   const scan=sourceFiles(scope.root),texts=[],assets=[],hashes=[];
@@ -386,13 +387,23 @@ export function buildRobloxHolisticQualityPlan({
     }
   }
   const combined=texts.map(row=>row.text.toLowerCase()).join('\n');
-  // [소유권] 이전 작업이나 타 플랫폼에서 전달된 경로는 현재 게임의 실제 파일일 때만 채택한다.
-  const observedFiles=(sourceObservation?.topFiles||[]).map(row=>norm(row?.file)).filter(file=>{
-    if(!file.startsWith(scope.relative+'/'))return false;
-    const full=path.resolve(scope.repo,file);
-    return full.startsWith(scope.repo+path.sep)&&fs.existsSync(full)&&fs.statSync(full).isFile();
-  });
-  const known=unique([...scan.files.map(row=>norm(path.relative(scope.repo,row.file))),...observedFiles]);
+  // [파일 소유권] 모든 자동 수정 후보는 같은 게임의 실제 정규 경로여야 한다.
+  // 심볼릭 링크, 상위 디렉터리 이동, 타 게임/공통 정책 파일은 작업 범위로 승격하지 않는다.
+  const safeOwner=file=>{
+    const candidate=norm(file);
+    if(!scope.root||!candidate.startsWith(scope.relative+'/'))return '';
+    const full=path.resolve(scope.repo,candidate);
+    try{
+      const actual=fs.realpathSync(full);
+      if(!actual.startsWith(scope.root+path.sep)||!fs.statSync(actual).isFile())return '';
+      if(!/\.(?:lua|luau)$/i.test(candidate))return '';
+      return norm(path.relative(scope.repo,actual));
+    }catch{return '';}
+  };
+  const observedFiles=unique((sourceObservation?.topFiles||[]).map(row=>safeOwner(row?.file)).filter(Boolean));
+  const authorizedOwners=unique((Array.isArray(responsibleFiles)?responsibleFiles:[])
+    .map(safeOwner).filter(Boolean));
+  const known=unique([...scan.files.map(row=>norm(path.relative(scope.repo,row.file))),...observedFiles,...authorizedOwners]);
   const gaps=new Set((Array.isArray(qualityGaps)?qualityGaps:[]).map(row=>clean(row?.domain||row).toUpperCase()));
   const refs=assetRefs(texts,scope.repo);
   const broken=assets.filter(row=>row.integrity.startsWith('INVALID'));
@@ -448,28 +459,41 @@ export function buildRobloxHolisticQualityPlan({
     ||rows.find(row=>row.priority==='P2'&&row.sourceFiles.length)||null;
   const refOwner=sourceDefect?.id==='SOURCE_ASSET_REFERENCE_MISSING'
     ?refs.find(row=>row.path===sourceDefect.path)?.owners||[]:[];
+  const invalidAssetOwners=sourceDefect?.id==='ASSET_SIGNATURE_INVALID'
+    ?texts.filter(row=>row.text.includes(sourceDefect.path)).map(row=>row.file):[];
+  // 실제 실패 수리에는 현재 작업에서 이미 허용된 책임 파일만 우선 제시한다.
+  // 추가 쓰기 권한을 생성하지 않으며 실제 실패 원인이라고 단정하지 않는다.
+  const candidateOwners=repairRequested===true?authorizedOwners.slice(0,8)
+    :sourceDefect?unique((sourceDefect.id==='ASSET_SIGNATURE_INVALID'?invalidAssetOwners:refOwner)
+      .map(safeOwner).filter(Boolean)).slice(0,8)
+    :familyTarget?unique(familyTarget.sourceFiles.map(safeOwner).filter(Boolean)).slice(0,8):[];
+  const workScope=Object.freeze({
+    authorizedSourceFiles:Object.freeze(candidateOwners.filter(file=>authorizedOwners.includes(file))),
+    authorizedFileCount:authorizedOwners.length,writableScopeExpanded:false,
+    directMutationAuthorized:false,exactOwnerCauseVerified:false
+  });
   const autonomousWorkUnit=repairRequested===true?Object.freeze({
     id:'CURRENT_CAUSAL_FAILURE',priority:'P0',mode:'REPAIR_CURRENT_CAUSAL_FAILURE_FIRST',
-    sourceFiles:[],sourceAsset:null,ownerDiscoveryRequired:true,
+    sourceFiles:candidateOwners,sourceAsset:null,ownerDiscoveryRequired:true,
     failureSignature:clean(runtimeEvidence?.failureSignature||runtimeEvidence?.playtestFinding)||null,
     evidence:'EXISTING_REPAIR_STAGE_FAILURE_NEEDS_EXACT_GAME_SOURCE_CAUSE',verifiedRuntime:false,
-    action:'REPAIR_CURRENT_FAILED_STAGE_IN_EXISTING_OWNER_THEN_RERUN_EXACT_QA_BEFORE_QUALITY_EXPANSION'
+    workScope,action:'INSPECT_CANDIDATE_OWNERS_IDENTIFY_EXACT_CAUSE_REPAIR_AND_RERUN_FAILED_GATE'
   }):sourceDefect?Object.freeze({
     id:sourceDefect.id,priority:'P0',mode:'REPAIR_CONFIRMED_STATIC_DEFECT',
-    sourceFiles:sourceDefect.id==='ASSET_SIGNATURE_INVALID'?[sourceDefect.path]:refOwner,
-    sourceAsset:sourceDefect.path,ownerDiscoveryRequired:refOwner.length===0&&sourceDefect.id!=='ASSET_SIGNATURE_INVALID',
+    sourceFiles:candidateOwners,sourceAsset:sourceDefect.path,ownerDiscoveryRequired:candidateOwners.length===0,
     evidence:'LOCAL_SOURCE_BYTES_OR_MISSING_REFERENCE',verifiedRuntime:false,
-    action:'REPAIR_EXISTING_OWNER_OR_LICENSED_ASSET_AND_RERUN_EXACT_QUALITY_CHECK'
+    workScope,action:'REPAIR_EXISTING_OWNER_OR_LICENSED_ASSET_AND_RERUN_EXACT_QUALITY_CHECK'
   }):familyTarget?Object.freeze({
     id:familyTarget.id,priority:familyTarget.priority,
     mode:familyTarget.priority==='P1'?'REVIEW_DESIGN_SOURCE_GAP_THEN_REPAIR':'INSPECT_SOURCE_CANDIDATE_THEN_REPAIR_IF_PROVEN',
-    sourceFiles:familyTarget.sourceFiles,sourceAsset:null,
-    ownerDiscoveryRequired:familyTarget.sourceFiles.length===0,
+    sourceFiles:candidateOwners,sourceAsset:null,
+    ownerDiscoveryRequired:candidateOwners.length===0,
     gapDomains:familyTarget.gapDomains,evidence:'STATIC_CANDIDATE_NOT_RUNTIME_VERIFIED',
-    verifiedRuntime:false,action:familyTarget.improvement
+    verifiedRuntime:false,workScope,action:familyTarget.improvement
   }):Object.freeze({id:null,priority:'NONE',mode:'NO_SOURCE_SUPPORTED_TARGET',
     sourceFiles:[],sourceAsset:null,ownerDiscoveryRequired:true,
-    evidence:'SOURCE_REVIEW_REQUIRED',verifiedRuntime:false,action:'INSPECT_CURRENT_GAME_BEFORE_EDIT'});
+    evidence:'SOURCE_REVIEW_REQUIRED',verifiedRuntime:false,workScope,
+    action:'INSPECT_CURRENT_GAME_BEFORE_EDIT'});
   // 공유·다른 게임 지시의 임의 fingerprint로 이 게임 소스의 변화가 증명되지 않게 한다.
   const fingerprint=digest(hashes.sort().join('\n'));
   return Object.freeze({

@@ -3272,7 +3272,10 @@ export function buildGameSpecificBuildUpDirective({
       sourceObservation:source,qualityGaps:states.filter(row=>row.state==='GAP'),
       previousPlan:previousDirective?.robloxHolisticQualityPlan,
       runtimeEvidence,sourceRevision:clean(runtimeEvidence?.sourceRevision),
-      repairRequested:clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR'})
+      responsibleFiles:(responsibleFiles||[]).map(posix),
+      repairRequested:clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR'
+        ||(runtimeEvidence?.runtimeObserved===true&&runtimeEvidence?.runtimePassed===false
+          &&Boolean(clean(runtimeEvidence?.failureSignature)||clean(runtimeEvidence?.failureStage)))})
     :null;
   return Object.freeze({
     version:2,

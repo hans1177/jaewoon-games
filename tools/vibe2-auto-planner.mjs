@@ -3013,7 +3013,7 @@ function applyRobloxF0PreflightRepairDirective(directive,project,platformLane){
   };
 }
 
-function applyRobloxQualityRepairDirective(directive,project,platformLane){
+function applyRobloxQualityRepairDirective(directive,project,platformLane,repoRoot=process.cwd()){
   if(platformLane!=='roblox'||project.queueRobloxQualityBuildUpRequired!==true)return directive;
   const studioQualityFailure=project.queueRobloxQualityBuildUpEvidence||null;
   const packageFailure=studioQualityFailure?.authority==='roblox-package-asset-binding-failure';
@@ -3025,8 +3025,27 @@ function applyRobloxQualityRepairDirective(directive,project,platformLane){
     :contractFailure?'current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts'
     :f0Failure?'current source F0 design-bound gameplay gaps require source repair before real runtime testing'
     :'current source Studio product-quality failure requires source repair before another observation';
+  // [자동 개선 판단 갱신] 동일 소스의 기존 BUILD_UP 지시를 재사용해도 신규 실측 실패가 우선한다.
+  // 기존 검증된 책임 소스 선택만 재사용하며, 실패 원인을 확인했다고 주장하거나 새 쓰기 권한을 만들지 않는다.
+  const previousQuality=directive.robloxHolisticQualityPlan;
+  const repairFiles=previousQuality?robloxQualityRepairFiles(project,repoRoot):[];
+  const work=previousQuality?.autonomousWorkUnit||{};
+  const qualityPlan=previousQuality?{
+    ...previousQuality,
+    autonomousWorkUnit:{
+      ...work,id:'CURRENT_CAUSAL_FAILURE',priority:'P0',mode:'REPAIR_CURRENT_CAUSAL_FAILURE_FIRST',
+      sourceFiles:repairFiles,sourceAsset:null,ownerDiscoveryRequired:true,
+      failureSignature:clean(project.queueRobloxFailureSignature)||null,
+      evidence:runtimeObserved?'EXISTING_RUNTIME_QUALITY_FAILURE':'EXISTING_SOURCE_QUALITY_FAILURE',
+      verifiedRuntime:false,
+      workScope:{authorizedSourceFiles:repairFiles,authorizedFileCount:repairFiles.length,
+        writableScopeExpanded:false,directMutationAuthorized:false,exactOwnerCauseVerified:false},
+      action:'INSPECT_CANDIDATE_OWNERS_IDENTIFY_EXACT_CAUSE_REPAIR_AND_RERUN_FAILED_GATE'
+    }
+  }:null;
   return{
     ...directive,
+    ...(qualityPlan?{robloxHolisticQualityPlan:qualityPlan}:{}),
     playtestRuntimeFindings:{...directive.playtestRuntimeFindings,studioQualityFailure,runtimeObserved,runtimePassed:false},
     nextActionDecision:{action:'CAUSAL_REPAIR',reason},
     effectivenessMeasurement:{...directive.effectivenessMeasurement,previousGeneration:{classification:'REGRESSION',reason,runtimeObserved}}
@@ -3199,7 +3218,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       ...activeDirectiveTask.buildUpDirective,
       playtestRuntimeFindings:{...activeDirectiveTask.buildUpDirective.playtestRuntimeFindings,
         studioQualityFailure:platformLane==='roblox'?project.queueRobloxQualityBuildUpEvidence||null:null}
-    },project,platformLane);
+    },project,platformLane,repoRoot);
     return{
       ...taskInput,
       goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
@@ -3321,7 +3340,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     responsibleFiles:(taskInput?.responsibleFiles||[]).map(posix).filter(Boolean),
     requestedFocus:sourceSafeNoDesign?requestedFocus:'',
     safeDesignlessMode:sourceSafeNoDesign
-  }),project,platformLane),project,platformLane);
+  }),project,platformLane,repoRoot),project,platformLane);
   return{
     ...taskInput,
     goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
@@ -4080,7 +4099,7 @@ export function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         candidate=bindSharedBuildUpDirective(candidate,applyRobloxQualityRepairDirective({
           ...candidate.buildUpDirective,
           playtestRuntimeFindings:{...candidate.buildUpDirective.playtestRuntimeFindings,studioQualityFailure}
-        },project,lane));
+        },project,lane,repoRoot));
         changed+=1;
       }
       // 예약 전 작업도 새 작업과 같은 실제 수리 범위를 받는다.

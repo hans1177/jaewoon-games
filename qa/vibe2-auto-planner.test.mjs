@@ -6177,6 +6177,14 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
     assert.ok(refreshedTask.buildUpDirective.responsibleSystemsAndFiles.files.includes(file));
   }
   assert.ok(refreshedTask.responsibleFiles.every(file=>!file.includes('..')&&!file.includes('assets/library.luau')));
+  // [재사용 지시 갱신] 같은 소스의 새 실패는 이전 P1 품질 아이디어를 그대로 실행시키면 안 된다.
+  const refreshedQuality=refreshedTask.buildUpDirective.robloxHolisticQualityPlan;
+  assert.equal(refreshedQuality.autonomousWorkUnit.mode,'REPAIR_CURRENT_CAUSAL_FAILURE_FIRST');
+  assert.equal(refreshedQuality.autonomousWorkUnit.priority,'P0');
+  assert.equal(refreshedQuality.autonomousWorkUnit.verifiedRuntime,false);
+  assert.equal(refreshedQuality.autonomousWorkUnit.workScope.writableScopeExpanded,false);
+  for(const file of [`roblox-games/${gameId}/server/Game.server.luau`,`roblox-games/${gameId}/client/Game.client.luau`])
+    assert.ok(refreshedQuality.autonomousWorkUnit.sourceFiles.includes(file),'new failure must select real game owner: '+file);
   const repeatedPlan=planVibe2AutonomousTasks({status:{projects:[]},catalog,developmentQueue:{items:[item]},
     queue:refreshedPlan.queue,repoRoot:root,maxConcurrentTasks:20,
     queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0});
