@@ -196,7 +196,35 @@ function targetExtensions(target){const x=TARGET_EXTENSIONS[clean(target).toLowe
 function sourcePrefix(target){if(target==='roblox')return'roblox-games/';if(target==='web')return'web-games/';if(target==='unity')return'unity-games/';if(target==='unreal')return'unreal-games/';if(target==='godot')return'godot-games/';return'';}
 function assertSourceRoot(root,target,order={}){const normalized=posix(root);if(normalized.startsWith('assets/roblox/world-ghosts/motions/')){const unit=order?.assetProduction?.motionRepairWorkUnit;if(target!=='roblox'||order?.source?.internalAssetMotion!==true||unit?.scope!=='INTERNAL_ASSET_LIBRARY'||unit.objectCount!==1||unit.motionCount!==1||unit.clipId!=='walk'||!/^roblox-world-ghost-[a-z0-9-]+$/.test(unit.objectId)||unit.sourcePath!=='init.luau'||normalized!=='assets/roblox/world-ghosts/motions/'+unit.objectId.slice('roblox-world-ghost-'.length))throw new Error('INTERNAL_MOTION_SOURCE_SCOPE_INVALID');return normalized;}if(target==='system'){if(normalized!=='.')throw new Error(`system source root must be repo root: ${root}`);return normalized;}const prefix=sourcePrefix(target);if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 source root: ${root}`);if(target==='web'&&normalized.split('/').length!==2)throw new Error(`기존 웹게임 루트만 허용: ${root}`);return normalized;}
 function assertRelativeSourcePath(relative,target){const normalized=posix(relative);if(!normalized||normalized.startsWith('/')||normalized.split('/').includes('..'))throw new Error(`잘못된 상대 경로: ${relative}`);if(target==='system'&&!isAllowedSystemArchitecturePath(normalized))throw new Error(`system architecture 허용 경로 아님: ${relative}`);const ext=path.extname(normalized).toLowerCase();if(BINARY_EXTENSIONS.has(ext))throw new Error(`엔진 에디터 필요 바이너리 파일: ${relative}`);if(!targetExtensions(target).has(ext))throw new Error(`텍스트 worker 허용 확장자 아님: ${relative}`);return normalized;}
-function normalizeResponsibleFiles(order,root,target){return(order?.source?.responsibleFiles||[]).map(value=>{const normalized=posix(value);const relative=normalized.startsWith(`${root}/`)?normalized.slice(root.length+1):normalized;return assertRelativeSourcePath(relative,target);}).filter(Boolean);}
+export function normalizeResponsibleFiles(order,root,target){
+  const files=(order?.source?.responsibleFiles||[]).map(value=>{
+    const normalized=posix(value);
+    const relative=normalized.startsWith(`${root}/`)?normalized.slice(root.length+1):normalized;
+    return assertRelativeSourcePath(relative,target);
+  }).filter(Boolean);
+  // [우선 수정 소유자] 기존 허용 파일만 재정렬한다. 생성·쓰기 범위 확대 없음.
+  // 작업/설계/게임 루트가 모두 일치하는 최신 BUILD_UP 지시에만 적용한다.
+  if(target!=='roblox'||order?.source?.internalAssetMotion===true)return files;
+  const task=order?.selectedTask||{},directive=task.buildUpDirective||{};
+  const plan=directive.robloxHolisticQualityPlan||{},work=plan.autonomousWorkUnit||{};
+  const game=clean(order?.gameId);
+  if(!game||clean(task.gameId)!==game
+    ||clean(task.buildUpDirectiveId)!==clean(directive.directiveId)
+    ||!clean(directive.directiveId)||Number(directive.version)<1
+    ||posix(task.sourceRoot)!==root||posix(directive.sourceRoot)!==root
+    ||posix(plan.sourceRoot)!==root||clean(plan.gameId)!==game
+    ||!Array.isArray(work.sourceFiles)||!clean(work.id))return files;
+  const priority=new Map();
+  for(const absolute of work.sourceFiles.map(posix)){
+    if(!absolute.startsWith(root+'/'))continue;
+    const relative=absolute.slice(root.length+1);
+    if(!/\\.(?:lua|luau)$/i.test(relative)||!files.includes(relative)||priority.has(relative))continue;
+    priority.set(relative,priority.size);
+  }
+  if(!priority.size)return files;
+  return [...files].sort((a,b)=>
+    (priority.get(a)??Number.MAX_SAFE_INTEGER)-(priority.get(b)??Number.MAX_SAFE_INTEGER));
+}
 function sourceRootBootstrapAllowed(order,target,root,responsibleFiles){
   const evidence=new Set((order?.selectedTask?.evidence||[]).map(clean));
   if(order?.workerPolicy?.sourceRootBootstrapAllowed!==true||!evidence.has('source-root-bootstrap-required'))return false;
