@@ -53,7 +53,10 @@ test('룩 시뮬레이션: 밋밋한 화면은 대비·채도를 올리는 프�
   const d=tmp();mk(d,'flat.png',`im=Image.new('RGB',(320,180),(125,125,122));d=ImageDraw.Draw(im)\nfor i in range(30):\n    x=random.randint(0,300);y=random.randint(0,160);c=random.randint(105,140);d.rectangle([x,y,x+20,y+20],fill=(c,c,c-3))\nim.save(OUT)`);
   const r=run(d,'--looks',looks);
   assert.equal(r.lookSimulation.estimated,true);
-  assert.equal(r.lookSimulation.ranking.length,7);
+  const presets=JSON.parse(fs.readFileSync(looks,'utf8')).presets;
+  assert.equal(r.lookSimulation.ranking.length,presets.length);
+  assert.deepEqual(new Set(r.lookSimulation.ranking.map(x=>x.id)),
+    new Set(presets.map(x=>x.id)),'시뮬레이션이 실제 룩 프리셋을 빠짐없이 채점해야 한다');
   assert.ok(r.lookSimulation.ranking[0].gain>0,'어떤 프리셋도 점수를 못 올림');
 });
 
