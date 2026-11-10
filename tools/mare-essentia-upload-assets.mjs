@@ -84,8 +84,9 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const image = kind === 'Menu' || kind === 'Goods' || kind === 'Portraits' || kind === 'CardArt';
     if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
     plan.push({kind, name: path.basename(f, ext), file: path.join(ROOT, 'assets', dir, f), ext,
-      // 초상은 rbxassetid 로 ImageLabel 에 직접 쓰므로 Image 종류여야 한다(Decal 이면 '종류 불일치'로 비어 보인다).
-      assetType: image ? (kind === 'Portraits' ? 'Image' : 'Decal') : 'Model',
+      // [실제 Studio 검증] Goods/Menu/Portraits 모두 ImageLabel에서 사용한다. Decal 번호는 Client에서 로딩되지 않았다.
+      // 실패 원본을 재업로드하지 않고 승인된 기존 PNG/JPG로 Image 자산을 발급한다.
+      assetType: image ? 'Image' : 'Model',
       license: kind === 'CardArt' ? 'WIKIMEDIA_VERIFIED_PD_CC0_CCBY_MODIFIED'
         : kind === 'Portraits' && f.startsWith('scholar_') ? 'PUBLIC-DOMAIN'
         : kind === 'Portraits' && f === 'heroes.jpg' ? 'PUBLIC_DOMAIN_AND_ORIGINAL'
@@ -101,10 +102,13 @@ for (const [name, row] of Object.entries(registry.assets)) {
 }
 let approvedImages = {};
 try { approvedImages = JSON.parse(await fs.readFile(ROOT + '/assets/APPROVED_IMAGES.json', 'utf8')).approved || {}; } catch {}
+// [원본 보호] 종류 변경 중 신규 업로드나 Universe 사용 권한 확인이 실패하면 기존 등록 ID를 보존한다.
+const previousTypeAssets = new Map();
 for (const item of plan) {
   const row = registry.assets[item.kind + '/' + item.name];
   if (row && row.assetType && row.assetType !== item.assetType) {
     console.log('REUPLOAD_TYPE_CHANGED', item.kind + '/' + item.name, row.assetType, '->', item.assetType);
+    previousTypeAssets.set(item.kind + '/' + item.name, {...row});
     delete registry.assets[item.kind + '/' + item.name];
   }
 }
@@ -151,6 +155,7 @@ for (const item of plan) {
   const originalBytes = await fs.readFile(item.file);
   if (blockedHashes.has(crypto.createHash('sha256').update(originalBytes).digest('hex'))) {
     delete registry.assets[id];
+    previousTypeAssets.delete(id); // 차단 원본은 이전 등록 ID로 되돌리지 않는다.
     console.log('REMOVED_IMAGE_SOURCE_EXCLUDED', id);
     continue;
   }
@@ -158,6 +163,7 @@ for (const item of plan) {
   if (item.assetType !== 'Model' && !registry.assets[id]?.assetId) {
     const hash = crypto.createHash('sha256').update(originalBytes).digest('hex');
     if (approvedImages[id] !== hash) {
+      if (previousTypeAssets.has(id)) failures.push(id + ': IMAGE_REPLACEMENT_APPROVAL_MISSING');
       console.log('SKIP_IMAGE_NOT_HUMAN_APPROVED', id);
       continue;
     }
@@ -315,7 +321,16 @@ for (let offset = 0; !accountBlocked && offset < pendingPermissions.length; offs
     console.log('GRANT_BATCH_FAILED', offset, batch.length, String(error.message).slice(0, 180));
   }
 }
-if (!studioRegrantPath || failures.length === 0) registry.updatedAt = new Date().toISOString();
+// [등록 원자성] 45개 기존 Decal을 새 Image로 바꾸는 도중 하나라도 실패하면 기존 게임 자산 연결을 유지한다.
+// 새 ID는 실제 성공한 권한 확인 결과가 전부 준비됐을 때만 기존 Lua/등록표에 반영한다.
+const replacementUnverified = [...previousTypeAssets].filter(([id]) =>
+  registry.assets[id]?.assetType !== 'Image' || registry.assets[id]?.usePermissionGranted !== true);
+if (replacementUnverified.length) failures.push('MARE_IMAGE_REPLACEMENTS_NOT_VERIFIED:' + replacementUnverified.length);
+if (failures.length && previousTypeAssets.size) {
+  for (const [id, previous] of previousTypeAssets) registry.assets[id] = previous;
+  console.log('MARE_IMAGE_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED:' + previousTypeAssets.size);
+}
+if (failures.length === 0) registry.updatedAt = new Date().toISOString();
 registry.license = Object.values(registry.assets).every(a => a.license === 'CC0-1.0') ? 'CC0-1.0' : 'SEE_INDIVIDUAL_ASSET_LICENSES';
 await fs.writeFile(JSON_OUT, JSON.stringify(registry, null, 2) + '\n');
 const lines = Object.entries(registry.assets).sort().map(([k, v]) => `\t["${k}"] = ${v.assetId},`);
