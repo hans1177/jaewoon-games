@@ -2,6 +2,7 @@
 # 기존 Studio MCP 도구(tools/company-development-roblox-studio-local-play.mjs, studio-script 모드)를 그대로 쓴다.
 # 결과 사진·리포트는 브랜치 <game>-studio-frames (예: mare-essentia-studio-frames)에 올라간다 (다음 Claude 실행이 읽는다).
 name: Devloop Studio Capture
+run-name: Devloop Studio Capture · ${{ inputs.game }} · ${{ github.sha }}
 on:
   workflow_dispatch:
     inputs:
@@ -101,7 +102,60 @@ jobs:
           $reportFile = Join-Path $out 'report.json'
           if (-not (Test-Path $reportFile)) { throw 'STUDIO_REPORT_MISSING' }
           $report = Get-Content $reportFile -Raw | ConvertFrom-Json
-          if (@($report.errors).Count -gt 0) { throw 'STUDIO_SCRIPT_REPORTED_ERRORS' }
+          # [런타임 진단] 실제 Studio 결과에서 기계 검증된 실패만 분류한다.
+          # 실패하더라도 report.json과 캡처를 먼저 기존 증거 브랜치에 저장한다.
+          $qaStage = ''
+          $qaSignature = ''
+          if (@($report.errors).Count -gt 0) {
+            $qaStage = 'STUDIO_EXECUTION'
+            $qaSignature = 'STUDIO_SCRIPT_REPORTED_ERRORS'
+          }
+          $runtimeRows = @($report.log | Where-Object {
+            $_.ctx -in @('Client','Server') -and [string]$_.out -match 'LOGS\(([1-9][0-9]*)\):'
+          })
+          if ($runtimeRows.Count -gt 0 -and -not $qaStage) {
+            $qaStage = 'STUDIO_GAME_RUNTIME'
+            $qaSignature = 'STUDIO_OBSERVED_RUNTIME_WARNINGS'
+            # [책임 파일] 정확한 소스 경로와 줄 번호가 있는 로그만 후보로 기록한다.
+            $paths = @($runtimeRows | ForEach-Object {
+              [regex]::Matches([string]$_.out, 'roblox-games/' + [regex]::Escape($env:CAP_GAME) + '/[A-Za-z0-9_./-]+\.luau:[0-9]+') |
+                ForEach-Object { ($_.Value -replace ':[0-9]+
+          if ($frames.Count -lt 1) {
+            $qaStage = 'STUDIO_EXECUTION'
+            $qaSignature = 'STUDIO_SCREENSHOTS_MISSING'
+          }
+          Write-Host "STUDIO_QA_FRAMES=$($frames.Count)"
+          $dst = Join-Path $env:RUNNER_TEMP 'mare-publish'
+          Remove-Item -Recurse -Force $dst -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory $dst | Out-Null
+          Copy-Item "$out\*" $dst -Recurse
+          Set-Location $dst
+          git init -q
+          git config user.name 'mare-capture-bot'
+          git config user.email 'mare-capture-bot@users.noreply.github.com'
+          git add -A
+          git commit -q -m "studio frames $($env:CAP_GAME) run ${{ github.run_id }}"
+          git push -f "https://x-access-token:$($env:GH_TOKEN)@github.com/${{ github.repository }}.git" HEAD:refs/heads/$($env:CAP_GAME)-studio-frames
+          Write-Host "PUBLISHED=$LASTEXITCODE"
+          if ($LASTEXITCODE -ne 0) { throw 'STUDIO_REPORT_PUBLISH_FAILED' }
+          if ($qaStage -ne '') {
+            Write-Host "STUDIO_QA_GAME_ID=$($env:CAP_GAME)"
+            Write-Host "STUDIO_QA_FAILURE_STAGE=$qaStage"
+            Write-Host "STUDIO_QA_FAILURE_SIGNATURE=$qaSignature"
+            if ($qaStage -eq 'STUDIO_GAME_SOURCE' -and $sourceFile) {
+              Write-Host "STUDIO_QA_SOURCE_FILE=$sourceFile"
+            }
+            throw 'STUDIO_QA_FAILED_EVIDENCE_PUBLISHED'
+          }
+          Write-Host 'STUDIO_QA_RESULT=PASS'
+,'') }
+            } | Sort-Object -Unique)
+            if ($paths.Count -eq 1 -and (Test-Path ("main/" + $paths[0]))) {
+              $qaStage = 'STUDIO_GAME_SOURCE'
+              $qaSignature = 'STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR'
+              $sourceFile = $paths[0]
+            }
+          }
           $frames = @(Get-ChildItem -Path $out -Recurse -Filter '*.png' -File -ErrorAction SilentlyContinue)
           if ($frames.Count -lt 1) { throw 'STUDIO_SCREENSHOTS_MISSING' }
           Write-Host "STUDIO_QA_FRAMES=$($frames.Count)"
