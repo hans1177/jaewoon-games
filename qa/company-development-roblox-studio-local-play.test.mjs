@@ -3877,3 +3877,27 @@ test('Studio click QA text sampling uses proven direct descendants scan without 
   assert.match(generator,/utf8\.offset\(value,41\)/);
   assert.match(generator,/12000 if i == 1 and "새 게임" in prefer else 2200/);
 });
+
+
+// [실제 Studio 미디어 실패] 185단계 증거와 정확한 승인 ID로만 재승인한다.
+// 승인 번호/소스 파일은 바꾸지 않고 실패한 미디어만 기존 업로더의 grant 경로로 전송한다.
+test('Mare Studio media repair regrants only exact failed registered IDs without model reupload',()=>{
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  assert.match(uploader,/const studioRegrantPath = studioRegrantArg/);
+  assert.match(uploader,/if \(!studioRegrantPath\) for \(const \[dir, kind\] of/);
+  assert.match(uploader,/report\.summary\?\.completedSteps !== 185/);
+  assert.match(uploader,/report\.assetRegistryAudit\?\.status !== 'PASS'/);
+  assert.match(uploader,/report\.assetRegistryAudit\.mismatched\.length !== 0/);
+  assert.match(uploader,/report\.assetRegistryAudit\.unverifiedPermissions\.length !== 0/);
+  assert.match(uploader,/row\.status !== 'TIMEOUT_16S'/);
+  assert.match(uploader,/row\.id !== 'rbxassetid:\/\/' \+ registered\.assetId/);
+  assert.match(uploader,/pendingPermissions\.push\(\{id, assetId: registered\.assetId\}\)/);
+  assert.match(uploader,/MARE_STUDIO_REGRANT_VALIDATED_TARGET_COUNT/);
+  assert.match(uploader,/if \(!studioRegrantPath \|\| failures\.length === 0\) registry\.updatedAt/);
+  assert.match(workflow,/studio_regrant:/);
+  assert.match(workflow,/mare-essentia-studio-frames/);
+  assert.match(workflow,/git show FETCH_HEAD:report\.json/);
+  assert.match(workflow,/--studio-regrant=\$RUNNER_TEMP\/mare-studio-report\.json/);
+  assert.match(workflow,/inputs\.studio_regrant != true/);
+});

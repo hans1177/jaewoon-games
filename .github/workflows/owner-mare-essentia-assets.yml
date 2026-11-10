@@ -18,6 +18,11 @@ on:
         type: string
         required: false
         default: '10775310508'
+      studio_regrant:
+        description: '실제 Studio 실패 보고서의 미디어만 권한 재검증(원본 재업로드 금지)'
+        type: boolean
+        required: false
+        default: false
       publish_after_register:
         description: '자산 등록 확인 후 게시까지 할지 (기본: 게시 안 함)'
         type: boolean
@@ -51,7 +56,18 @@ jobs:
           # 새 소유 계정(Anyanguy1980) 키만 사용한다. 제재 계정 쿠키는 넘기지 않는다.
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_CREATOR_USER_ID: '11664914771'
-        run: node tools/mare-essentia-upload-assets.mjs
+          STUDIO_REGRANT: ${{ inputs.studio_regrant || false }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$STUDIO_REGRANT" == "true" ]]; then
+            # [기존 실측 증거] 별도 공식 Studio 출력 브랜치에서 실제 실패 자산만 가져온다.
+            git fetch --no-tags --depth=1 origin refs/heads/mare-essentia-studio-frames
+            git show FETCH_HEAD:report.json > "$RUNNER_TEMP/mare-studio-report.json"
+            node tools/mare-essentia-upload-assets.mjs "--studio-regrant=$RUNNER_TEMP/mare-studio-report.json"
+          else
+            node tools/mare-essentia-upload-assets.mjs
+          fi
 
       - name: Commit registered asset IDs (API, main이 움직여도 안전)
         if: always()
@@ -88,7 +104,7 @@ jobs:
           done
 
       - name: Publish the place with the new asset IDs
-        if: ${{ inputs.publish_after_register == true && success() }}
+        if: ${{ inputs.publish_after_register == true && inputs.studio_regrant != true && success() }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run owner-mare-essentia-direct-publish.yml --ref main -f universe_id="${{ inputs.universe_id }}"
