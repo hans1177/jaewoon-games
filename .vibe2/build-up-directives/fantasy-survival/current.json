@@ -10741,13 +10741,46 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "471ee75519f759fd6d92d12beab0017bba6f5198",
+      "artifactIdentity": "sha256:87f311271d6456af955cdefa1cc14522ccfef85d3fd1d7ad161222bc48760e19",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 42830920848,
+      "testedAt": "2026-11-10T14:13:38.344Z",
+      "repairSurfaces": [
+        "MOBILE_UI",
+        "ROBLOX_OBSERVED_INTERACTION"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":6,\"undersizedTouchButtons\":1,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":1,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0.8473684210526315}"
+        },
+        {
+          "id": "observed-action-a5a1724f10caafbfaa3d",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-a5a1724f10caafbfaa3d\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-R15Skill2\",\"targetIdentity\":\"MeadowTouchLayer.MeadowR15SkillDock.R15Skill2\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-5f391f74a05998aef298",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-5f391f74a05998aef298\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-R15Skill3\",\"targetIdentity\":\"MeadowTouchLayer.MeadowR15SkillDock.R15Skill3\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-studio-asset-binding-required",
     "blockers": [
       "roblox-source-bootstrap:source-generation-failed"
     ],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -19768,19 +19801,21 @@
       "mode": "REPAIR_CURRENT_CAUSAL_FAILURE_FIRST",
       "sourceFiles": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
+        "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/server/Game.server.luau"
       ],
       "sourceAsset": null,
       "ownerDiscoveryRequired": true,
-      "failureSignature": "roblox-package-asset-binding-failed",
-      "evidence": "EXISTING_SOURCE_QUALITY_FAILURE",
+      "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
+      "evidence": "EXISTING_RUNTIME_QUALITY_FAILURE",
       "verifiedRuntime": false,
       "workScope": {
         "authorizedSourceFiles": [
           "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau"
         ],
-        "authorizedFileCount": 2,
+        "authorizedFileCount": 3,
         "writableScopeExpanded": false,
         "directMutationAuthorized": false,
         "exactOwnerCauseVerified": false
@@ -22244,8 +22279,8 @@
     "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
       "classification": "REGRESSION",
-      "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged",
-      "runtimeObserved": false
+      "reason": "current source Studio product-quality failure requires source repair before another observation",
+      "runtimeObserved": true
     },
     "baseline": {
       "sourceTreeFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
@@ -22264,7 +22299,7 @@
   },
   "nextActionDecision": {
     "action": "CAUSAL_REPAIR",
-    "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged"
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
