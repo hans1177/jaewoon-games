@@ -3320,8 +3320,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         causalReview:decision.causalReview,
         deterministicSelection:{...selection,status:'CANDIDATE_VALIDATED'}};
     }catch(error){
-      // [소스 무결성] 검증기 성공/실패/예외와 무관하게 원본이 바뀌면 재계획을 중단한다.
-      // 최신 원본 재탐색 없이 이전 스냅샷에서 뽑은 다른 후보로 우회하지 않는다.
+      // [소스 무결성] 검증 중 해당 후보 원본이 바뀌면 즉시 중단한다.
+      // 검증 전 변경된 후보만 제외하고 미변경 책임 파일의 기존 복구 흐름은 보존한다.
       const sourceDrift=decision.sources.some(({path:file,sha256})=>{
         try{
           const current=path.resolve(sourceRoot,file);
@@ -3340,7 +3340,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         validationEvidence:failed});
       const hypothesis=hypotheses.find(row=>row.fingerprint===fingerprint);
       if(hypothesis)hypothesis.status=failed;
-      if(sourceDrift){
+      if(sourceDrift&&validatorExecuted){
         const stale=new Error('DETERMINISTIC_SOURCE_REVISION_CHANGED');
         stale.vibe2DeterministicSelection={...selection,status:'SOURCE_REVISION_CHANGED'};
         throw stale;
