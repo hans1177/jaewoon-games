@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Read telemetry from Open Cloud
+      - name: Read Meadow telemetry with dedicated read-only key
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.MEADOW_TELEMETRY_READ }}
           UNIVERSE_ID: '10773436325'
