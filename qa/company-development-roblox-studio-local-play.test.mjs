@@ -3716,6 +3716,15 @@ test('Studio Auto QA dispatches both games without feedback loop or global queue
     'roblox-games/mare-essentia/src/**',
   ]) assert.ok(workflow.includes(p),'missing trigger: '+p);
   assert.ok(workflow.includes('workflows: ["Owner Mare Essentia Direct Publish", "Owner Roblox Dedicated Private Experiences"]'));
+  // [대항해시대 1980 배포 후 자동검증] run-name은 커밋 SHA마다 변경된다.
+  // 이벤트 이름으로 비교하면 게시 성공 후에도 dispatch가 건너뛰므로 path로 확인해야 한다.
+  assert.ok(workflow.includes("github.event.workflow_run.path == '.github/workflows/owner-mare-essentia-direct-publish.yml'"));
+  assert.ok(workflow.includes("github.event.workflow_run.path == '.github/workflows/owner-roblox-dedicated-private-experiences.yml'"));
+  assert.ok(!workflow.includes("github.event.workflow_run.name == 'Owner Mare Essentia Direct Publish'"));
+  assert.ok(!workflow.includes('github.event.workflow_run.name =='));
+  assert.ok(!workflow.includes('github.event.workflow_run.name }' ));
+  assert.ok(workflow.includes('github.event.workflow_run.path }'));
+
   assert.ok(!workflow.includes('workflows: ["Devloop Studio Capture"'),'Studio completion must not re-dispatch itself');
   assert.ok(workflow.includes("github.event.workflow_run.conclusion == 'success'"));
   assert.ok(workflow.includes("github.event.workflow_run.conclusion == 'failure'"));
