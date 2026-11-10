@@ -290,12 +290,15 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
     ...(exploration.sourceDependencies||[]).map(row=>row.symbol)
   ]).filter(name=>/^[A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)*$/.test(name));
   if(!responsibleFiles.length||!symbolCandidates.length||!['HIGH','MEDIUM'].includes(confidence))return null;
-  // [책임 우선] 실제 소스 선언으로 증명된 핵심 함수가 추후 입력 축약에서 사라지면 포커스 성공으로 처리하지 않는다.
-  const criticalSymbols=new Set(symbolCandidates.filter(name=>
-    (contract.primaryTargets||[]).includes(name)||
-    (contract.reservedHelperEditPlan?.reservedHelperEdits||[]).some(row=>
-      row.symbol===name&&row.writableWithinExistingReservation===true&&responsibleFiles.includes(row.file))));
-  const criticalAnchors=[],retainedAnchors=new Set();
+  // [증거 우선] 16개 입력 상한이 오너의 핵심 책임 함수를 조용히 생략하면 안 된다.
+  const approvedHelpers=(contract.reservedHelperEditPlan?.reservedHelperEdits||[])
+    .filter(row=>row?.writableWithinExistingReservation===true&&responsibleFiles.includes(row.file))
+    .map(row=>row.symbol);
+  const allCritical=unique([...(contract.primaryTargets||[]),...approvedHelpers])
+    .filter(name=>/^[A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)*$/.test(name));
+  if(allCritical.length>16||allCritical.some(name=>!symbolCandidates.includes(name)))return null;
+  const criticalSymbols=new Set(allCritical);
+  const confirmedOwners=new Set(),criticalAnchors=[],retainedAnchors=new Set();
   const files=[];
   let total=0,matchedSymbolCount=0;
   const contextPaths=unique([...responsibleFiles,...(exploration.contextFiles||[])]).slice(0,MAX_CONTEXT_FILES);
@@ -315,13 +318,15 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
       if(declarations.length){
         for(const fn of declarations){
           ranges.push({start:fn.start,end:fn.end,labels:[symbol]});
-          if(responsibleFiles.includes(relative)&&criticalSymbols.has(symbol))
+          if(responsibleFiles.includes(relative)&&criticalSymbols.has(symbol)){
+            confirmedOwners.add(symbol);
             criticalAnchors.push({path:relative,symbol,at:fn.start});
+          }
         }
         matched.add(symbol);continue;
       }
-      // Native qualified symbols must be read from real declarations, not comments or string examples.
-      if(target==='roblox'||target==='unity')continue;
+      // 핵심 책임은 원본 함수 선언에서만 확인한다. 문자열/주석 검색 결과는 근거가 아니다.
+      if(criticalSymbols.has(symbol)||target==='roblox'||target==='unity')continue;
       const re=new RegExp('\\b'+regexEscape(symbol)+'\\b','g');
       let match,count=0;
       while((match=re.exec(text))&&count<3){
@@ -393,9 +398,13 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
       }
     }
   }
-  if(!files.length||criticalAnchors.some(anchor=>
-    !retainedAnchors.has(anchor.path+':'+anchor.symbol+':'+anchor.at)))return null;
-  return{files,bytes:total,mode:'PRIMARY_SYMBOL_WINDOWS',codingAnalysisVersion:CODING_ANALYSIS_VERSION,focusedSymbolCount:matchedSymbolCount,exactSourceWindows:true,fullFileFallback:false};
+  if(!files.length||allCritical.some(symbol=>!confirmedOwners.has(symbol))||
+    criticalAnchors.some(anchor=>
+      !retainedAnchors.has(anchor.path+':'+anchor.symbol+':'+anchor.at)))return null;
+  return{files,bytes:total,mode:'PRIMARY_SYMBOL_WINDOWS',codingAnalysisVersion:CODING_ANALYSIS_VERSION,
+    focusedSymbolCount:matchedSymbolCount,requiredOwnerCount:criticalSymbols.size,
+    verifiedOwnerCount:confirmedOwners.size,ownerCoverageVerified:true,
+    exactSourceWindows:true,fullFileFallback:false};
 }
 function isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite){
   if(target!=='web'||allowFullRewrite||responsibleFiles.length!==1||!responsibleFiles[0].toLowerCase().endsWith('.html'))return false;
@@ -9659,7 +9668,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     console.log('ROBLOX_NATIVE_CODE_QUALITY_FINDINGS='+robloxNativeCandidateQuality.findingCount);
     console.log('ROBLOX_CHARACTER_MOTION_QUALITY='+(robloxNativeCandidateQuality.motionQualityFindings?.length?'REPAIR_REQUIRED:'+robloxNativeCandidateQuality.motionQualityFindings.map(row=>row.class).join(','):'STATIC_READY_RUNTIME_REQUIRED'));
   }
-  const generation={...generated.generation,candidateVariant,attemptBudget:generationAttemptBudget({allowFullRewrite,variant:candidateVariant}),speculativeAttemptBudgetApplied:/^speculative-/i.test(candidateVariant),fullWebInitialSeedStrategy:allowFullRewrite,fullWebInitialSeedTargetBytes:allowFullRewrite?[FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES,FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES]:[],contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
+  const generation={...generated.generation,candidateVariant,attemptBudget:generationAttemptBudget({allowFullRewrite,variant:candidateVariant}),speculativeAttemptBudgetApplied:/^speculative-/i.test(candidateVariant),fullWebInitialSeedStrategy:allowFullRewrite,fullWebInitialSeedTargetBytes:allowFullRewrite?[FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES,FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES]:[],contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),
+      requiredOwnerCount:Number(context.requiredOwnerCount||0),verifiedOwnerCount:Number(context.verifiedOwnerCount||0),
+      ownerCoverageVerified:context.ownerCoverageVerified===true,
+      exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
   if(bootstrap&&target==='web'&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
   }
@@ -9776,6 +9788,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     contextPreferenceRequested:generation.contextPreferenceRequested||null,
     contextPreferenceApplied:generation.contextPreferenceApplied===true,
     focusedSymbolCount:Number(generation.focusedSymbolCount||0),
+    requiredOwnerCount:Number(generation.requiredOwnerCount||0),
+    verifiedOwnerCount:Number(generation.verifiedOwnerCount||0),
+    ownerCoverageVerified:generation.ownerCoverageVerified===true,
     exactSourceWindows:generation.exactSourceWindows===true,
     fullFileContextFallback:generation.fullFileContextFallback===true,
     fullWebExpansionStages:Number(generation.fullWebExpansionStages||0),
