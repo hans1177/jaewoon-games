@@ -3659,3 +3659,15 @@ test('Daechung actual cloud Studio input, visual, target damage and rejoin check
   assert.match(helper,/ROBLOX_DAECHUNG_CLOUD_STUDIO_CHECKS=/);
   assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });
+
+test('Studio click QA stops unresponsive MCP discovery without claiming runtime PASS',()=>{
+  const script=helper.slice(
+    helper.indexOf('export async function runStudioScript('),
+    helper.indexOf('export async function runOfficialStudioMcpPlay(')
+  );
+  assert.match(script,/fastFailOnProviderTimeout:true/);
+  assert.match(script,/const studioDiscoveryDeadline=Date\.now\(\)\+5\*60\*1000/);
+  assert.match(script,/Date\.now\(\)<studioDiscoveryDeadline/);
+  assert.match(script,/if\(!studioId\)throw new Error\('NO_STUDIO'\)/);
+  assert.match(script,/fs\.writeFileSync\(path\.join\(outDir,'report\.json'\)/);
+});
