@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-11-10T02:23:41.492Z",
+  "updatedAt": "2026-11-10T02:34:39.302Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -12128,8 +12128,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-10T02:23:41.462Z",
-      "occurrenceCount": 99
+      "updatedAt": "2026-11-10T02:34:39.278Z",
+      "occurrenceCount": 100
     },
     {
       "id": "bug-265b5406b2bdecc5e87f",
@@ -12603,6 +12603,30 @@
       "createdAt": "2026-11-10T02:23:41.462Z",
       "updatedAt": "2026-11-10T02:23:41.462Z",
       "occurrenceCount": 1
+    },
+    {
+      "id": "bug-02d8dcc6eacba82bc9dd",
+      "gameId": "forest-survival",
+      "surface": "WEB",
+      "phase": "POST_PUBLICATION_PLAYTEST",
+      "severity": "HIGH",
+      "category": "UNKNOWN",
+      "signature": "page.waitForFunction: Timeout 50000ms exceeded.",
+      "reproduction": "RERUN_EXISTING_PUBLISHED_WEB_BROWSER_SMOKE_ON_THE_SAME_GAME_SOURCE",
+      "responsibleFiles": [
+        "web-games/forest-survival/index.html"
+      ],
+      "evidence": [
+        "web-browser-playtest-run:42739465391",
+        "web-browser-playtest-source:aa13588738efc38c21baffdbae43195f86bd1cbf",
+        "web-browser-playtest-tree:998d406a15640fac3b4d4c941262fdff74027608"
+      ],
+      "exactFailedStage": "WEB_POST_PUBLICATION_PLAYTEST",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "status": "OPEN",
+      "createdAt": "2026-11-10T02:34:39.278Z",
+      "updatedAt": "2026-11-10T02:34:39.278Z",
+      "occurrenceCount": 1
     }
   ],
   "webPlaytestObservations": [
@@ -12630,7 +12654,7 @@
       "target": "web",
       "sourceRoot": "web-games/ocean-voyage",
       "sourceTreeSha": "bd78acee4969637fdadce382f6b8972746319860",
-      "sourceRevision": "cfb7ee7b1b20f5cbea1852f860fab8f671c031b2",
+      "sourceRevision": "aa13588738efc38c21baffdbae43195f86bd1cbf",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12639,8 +12663,8 @@
         "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "42739337437",
-      "observedAt": "2026-11-10T02:23:41.462Z"
+      "runId": "42739465391",
+      "observedAt": "2026-11-10T02:34:39.278Z"
     },
     {
       "gameId": "gem-survivor",
@@ -12648,7 +12672,7 @@
       "target": "web",
       "sourceRoot": "web-games/gem-survivor",
       "sourceTreeSha": "a662a98c0cf0e044d31fb7fbb54134d79c7eb629",
-      "sourceRevision": "cfb7ee7b1b20f5cbea1852f860fab8f671c031b2",
+      "sourceRevision": "aa13588738efc38c21baffdbae43195f86bd1cbf",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12657,8 +12681,8 @@
         "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "42739337437",
-      "observedAt": "2026-11-10T02:23:41.462Z"
+      "runId": "42739465391",
+      "observedAt": "2026-11-10T02:34:39.278Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -12717,21 +12741,22 @@
     },
     {
       "gameId": "forest-survival",
-      "runtimePassed": true,
+      "runtimePassed": false,
+      "failureSignature": "page.waitForFunction: Timeout 50000ms exceeded.",
       "target": "web",
       "sourceRoot": "web-games/forest-survival",
       "sourceTreeSha": "998d406a15640fac3b4d4c941262fdff74027608",
-      "sourceRevision": "cfb7ee7b1b20f5cbea1852f860fab8f671c031b2",
+      "sourceRevision": "aa13588738efc38c21baffdbae43195f86bd1cbf",
       "runtimeObserved": true,
-      "failureStage": null,
+      "failureStage": "WEB_POST_PUBLICATION_PLAYTEST",
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
       "sharedSourceTrees": {
         "assets": "341e611ded2706690dbfbb42c67ba14efbc721c2",
         "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "42739337437",
-      "observedAt": "2026-11-10T02:23:41.462Z"
+      "runId": "42739465391",
+      "observedAt": "2026-11-10T02:34:39.278Z"
     },
     {
       "gameId": "human-go",
@@ -12739,7 +12764,7 @@
       "target": "web",
       "sourceRoot": "web-games/human-go",
       "sourceTreeSha": "1b290c51c78767249db92a5f64eaf1017948ff54",
-      "sourceRevision": "cfb7ee7b1b20f5cbea1852f860fab8f671c031b2",
+      "sourceRevision": "aa13588738efc38c21baffdbae43195f86bd1cbf",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12748,8 +12773,8 @@
         "multiplayer": "2e017b997c034b63aff53f8cb960f8512e7a933d",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "42739337437",
-      "observedAt": "2026-11-10T02:23:41.462Z"
+      "runId": "42739465391",
+      "observedAt": "2026-11-10T02:34:39.278Z"
     }
   ]
 }
