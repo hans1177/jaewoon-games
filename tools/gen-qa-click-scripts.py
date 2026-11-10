@@ -1,3 +1,4 @@
+# 파일명: tools/gen-qa-click-scripts.py
 #!/usr/bin/env python3
 """Studio 클릭 점검 스크립트 생성기 (PC 실행기 devloop-studio.yml studio-script 형식).
 매 단계: 스크롤로 버튼 보이게 → 실제 마우스 클릭 → 캡처 → 화면 글자(토스트 포함) 수집.
@@ -30,17 +31,22 @@ def pick(prefer, mode):
     "local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) "
     "return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"))
 
-TEXTS = ("local P=game:GetService('Players').LocalPlayer.PlayerGui "
- "local out={} local q={P} local head=1 local seen=0 "
- "while head<=#q and seen<400 and #out<10 do "
- "local d=q[head] head=head+1 seen=seen+1 "
- "local visible=not ((d:IsA('GuiObject') and not d.Visible) or (d:IsA('LayerCollector') and not d.Enabled)) "
- "if visible then "
- "if d:IsA('TextLabel') and d.Text~='' and #d.Text>3 then "
- "out[#out+1]=string.sub(d.Text,1,40) if #out>=10 then break end end "
- "if #q<650 then for _,child in ipairs(d:GetChildren()) do "
- "if #q>=650 then break end q[#q+1]=child end end end end "
- "return 'TEXTS: '..table.concat(out,' | ')")
+# [진단] 화면 문자열은 수집량과 실행시간을 모두 제한해 Studio RPC를 막지 않는다.
+TEXTS = (
+    "local P=game:GetService('Players').LocalPlayer.PlayerGui "
+    "local out={} local q={P} local head=1 local queued=1 local seen=0 local started=os.clock() "
+    "while head<=queued and seen<120 and #out<10 and os.clock()-started<0.25 do "
+    "local d=q[head] head=head+1 seen=seen+1 "
+    "local visible=not ((d:IsA('GuiObject') and not d.Visible) or (d:IsA('LayerCollector') and not d.Enabled)) "
+    "if visible then "
+    "if d:IsA('TextLabel') then local value=d.Text "
+    "if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) end end "
+    "if queued<180 then local children=d:GetChildren() "
+    "for i=1,math.min(#children,12) do "
+    "if queued>=180 then break end "
+    "queued=queued+1 q[queued]=children[i] end end end end "
+    "return 'TEXTS: '..table.concat(out,' | ')"
+)
 
 LOGS = ("local out={} for _,m in ipairs(game:GetService('LogService'):GetLogHistory()) do "
  "if (m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning) and #out<25 then "

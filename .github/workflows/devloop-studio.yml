@@ -2,8 +2,14 @@
 # 기존 Studio MCP 도구(tools/company-development-roblox-studio-local-play.mjs, studio-script 모드)를 그대로 쓴다.
 # 결과 사진·리포트는 브랜치 <game>-studio-frames (예: mare-essentia-studio-frames)에 올라간다 (다음 Claude 실행이 읽는다).
 name: Devloop Studio Capture
-run-name: Devloop Studio Capture · ${{ inputs.game }} · ${{ github.sha }}
+run-name: Devloop Studio Capture · ${{ inputs.game || 'mare-essentia' }} · ${{ github.sha }}
 on:
+  # [메인] 마력숲 UI 수집 진단 변경이 main에 병합되면 기존 Windows Studio 검사를 자동 재실행한다.
+  push:
+    branches: [main]
+    paths:
+      - 'tools/gen-qa-click-scripts.py'
+      - 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'
   workflow_dispatch:
     inputs:
       game:
@@ -38,8 +44,8 @@ jobs:
       - name: Validate inputs
         shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
-          GAME_IN: ${{ inputs.game }}
-          SCRIPT_IN: ${{ inputs.script }}
+          GAME_IN: ${{ github.event_name == 'push' && 'mare-essentia' || inputs.game }}
+          SCRIPT_IN: ${{ github.event_name == 'push' && 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json' || inputs.script }}
         run: |
           $g = $env:GAME_IN
           if ($g -notmatch '^[a-z0-9-]+$') { throw "bad game id" }

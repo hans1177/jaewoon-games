@@ -3682,9 +3682,17 @@ test('Studio click QA stops unresponsive MCP discovery without claiming runtime 
   assert.match(script,/fs\.writeFileSync\(path\.join\(outDir,'report\.json'\)/);
 });
 
-test('Studio click QA text sampling stops at ten visible labels without changing planned clicks',()=>{
+test('Existing Devloop Studio workflow rechecks Mare text sampling after main updates',()=>{
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.match(workflow,/  push:\n    branches: \[main\]\n    paths:/);
+  assert.match(workflow,/roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-qa-click\.json/);
+  assert.match(workflow,/github\.event_name == 'push' && 'mare-essentia' \|\| inputs\.game/);
+  assert.match(workflow,/github\.event_name == 'push' && 'roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-qa-click\.json'/);
+  assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+});
+
+test('Studio click QA text sampling uses bounded non-yielding visible-label scan without changing planned clicks',()=>{
   const generator=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
-  assert.match(generator,/if #out>=10 then break end/);
   for(const [game,script] of [
     ['mare-essentia','mare-qa-click.json'],
     ['fantasy-survival','fantasy-qa-click.json']
@@ -3695,16 +3703,17 @@ test('Studio click QA text sampling stops at ten visible labels without changing
     const labels=steps.filter(step=>step.type==='luau'&&step.code.includes("return 'TEXTS: '"));
     assert.equal(labels.length,30);
     for(const step of labels){
-      assert.match(step.code,/if #out>=10 then break end/);
-      assert.match(step.code,/while head<=#q and seen<400 and #out<10 do/);
-      assert.match(step.code,/if #q>=650 then break end/);
-      assert.match(step.code,/d:GetChildren\(\)/);
-      assert.doesNotMatch(step.code,/P:GetDescendants\(\)|if ok and #out<10 then/);
+      assert.match(step.code,/while head<=queued and seen<120 and #out<10 and os\.clock\(\)-started<0\.25 do/);
+      assert.match(step.code,/if queued<180 then local children=d:GetChildren\(\)/);
+      assert.match(step.code,/for i=1,math\.min\(#children,12\) do/);
+      assert.match(step.code,/if queued>=180 then break end/);
+      assert.match(step.code,/local value=d\.Text/);
+      assert.doesNotMatch(step.code,/P:GetDescendants\(\)|seen<400|#q<650/);
     }
     assert.equal(steps.filter(step=>step.type==='capture').length,31);
     assert.equal(steps[5].type,'wait');
     assert.equal(steps[5].ms,game==='mare-essentia'?12000:2200);
   }
-  assert.match(generator,/while head<=#q and seen<400 and #out<10 do/);
+  assert.match(generator,/while head<=queued and seen<120 and #out<10 and os\.clock\(\)-started<0\.25 do/);
   assert.match(generator,/12000 if i == 1 and "새 게임" in prefer else 2200/);
 });
