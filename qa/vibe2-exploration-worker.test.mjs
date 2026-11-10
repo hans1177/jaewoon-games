@@ -763,6 +763,72 @@ test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/
 });
 
 
+test('Roblox module import parser follows nested WaitForChild and mixed dotted chains without guessed modules',()=>{
+  const luau=[
+    'local Inventory = require(script.Parent.Parent.shared:WaitForChild("Items"):WaitForChild("Inventory"))',
+    "local Rewards = require(script.Parent:WaitForChild('Modules').Rewards)",
+    'local Config = require(script.Parent.Parent.shared.Modules:WaitForChild("Config"))',
+    'local Deep = require(script.Parent.Parent.Parent.Library.Runtime)',
+    '-- require(script.Parent.FakeComment)',
+    'return Inventory'
+  ].join('\n');
+  assert.deepEqual(extractVibeSourceImportRefs(luau,'roblox'),[
+    '../../Library/Runtime','../shared/Items/Inventory','../shared/Modules/Config',
+    './Modules/Rewards'
+  ]);
+  assert.deepEqual(extractVibeSourceImportRefs(luau,'web'),[]);
+});
+
+test('Roblox coding explorer prioritizes exact required ModuleScripts among decoy modules without widening write scope',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/module-routing');
+  const mainPath='client/Main.client.luau',modulePath='shared/Modules/Actions.luau';
+  const source=[
+    'local Actions = require(script.Parent.Parent.shared:WaitForChild("Modules"):WaitForChild("Actions"))',
+    'local function performAction() return Actions.Run() end'
+  ].join('\n')+'\n';
+  write(path.join(root,mainPath),source);
+  write(path.join(root,modulePath),'local Actions={}; function Actions.Run() return true end; return Actions\n');
+  for(let i=0;i<20;i++)
+    write(path.join(root,'shared/Unused'+String(i).padStart(2,'0')+'.luau'),
+      'local M={}; function M.Noop() return 0 end; return M\n');
+  const order={run:true,taskId:'roblox-nested-module',gameId:'module-routing',target:'roblox',
+    goal:'repair the main input path with the existing ModuleScript',
+    source:{root:'roblox-games/module-routing',responsibleFiles:['roblox-games/module-routing/'+mainPath],ignoredPaths:[]},
+    workPackage:{id:'module-routing',sharedContext:{diagnosticEvidence:[]}}};
+  const out=exploreVibe2WorkOrder({cwd,order});
+  assert.ok(out.relatedFiles.includes(modulePath),'actual required module must beat unrelated files');
+  assert.ok(out.sourceDependencies.some(row=>row.path===modulePath)
+    ||out.sourceImpact.impactedSources.some(row=>row.path===modulePath)
+    ||out.contextFiles.includes(modulePath),'required module must enter coding context');
+  assert.deepEqual(out.responsibleFiles,[mainPath]);
+  assert.deepEqual(out.editContract.allowedResponsibleFiles,[mainPath]);
+  assert.equal(out.sourceWrite,false);
+  assert.equal(fs.readFileSync(path.join(root,mainPath),'utf8'),source);
+  fs.rmSync(cwd,{recursive:true,force:true});
+});
+
+test('Roblox module reverse dependencies find importers with alias calls and preserve reservation',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/module-reverse');
+  const modulePath='shared/Inventory.luau';
+  write(path.join(root,modulePath),'local Inventory={}; function Inventory.Get() return 1 end; return Inventory\n');
+  write(path.join(root,'client/Hud.client.luau'),
+    'local Inv = require(script.Parent.Parent.shared:WaitForChild("Inventory")); return Inv.Get()\n');
+  write(path.join(root,'server/Store.server.luau'),
+    'local Alias = require(script.Parent.Parent.shared.Inventory); return Alias.Get()\n');
+  for(let i=0;i<18;i++)write(path.join(root,'client/Decoy'+i+'.luau'),
+    'local T={}; function T.Noop() return 0 end; return T\n');
+  const order={run:true,taskId:'roblox-module-reverse',gameId:'module-reverse',target:'roblox',
+    goal:'repair original inventory module behavior',
+    source:{root:'roblox-games/module-reverse',responsibleFiles:['roblox-games/module-reverse/'+modulePath],ignoredPaths:[]},
+    workPackage:{id:'module-reverse',sharedContext:{diagnosticEvidence:[]}}};
+  const out=exploreVibe2WorkOrder({cwd,order});
+  assert.ok(out.relatedFiles.includes('client/Hud.client.luau'));
+  assert.ok(out.relatedFiles.includes('server/Store.server.luau'));
+  assert.deepEqual(out.editContract.allowedResponsibleFiles,[modulePath]);
+  assert.equal(out.sourceWrite,false);
+  fs.rmSync(cwd,{recursive:true,force:true});
+});
+
 test('relevant regression after eight decoy tests still wins through observed import dependencies',()=>{
   const cwd=tempRoot(),root=path.join(cwd,'web-games/deep-test-discovery');
   write(path.join(root,'src/core.js'),'export function applyPatch(){return 17;}\n');
