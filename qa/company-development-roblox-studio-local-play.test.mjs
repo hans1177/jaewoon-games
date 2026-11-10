@@ -3674,6 +3674,13 @@ test('Studio click QA stops unresponsive MCP discovery without claiming runtime 
   assert.match(script,/STUDIO_SCRIPT_POST_CLICK_PROBE_START=/);
   assert.match(script,/STUDIO_SCRIPT_POST_CLICK_PROBE_OK=/);
   assert.match(script,/STUDIO_POST_CLICK_PING/);
+  assert.match(script,/postClickUiProbe:name,status:'STARTED'/);
+  assert.match(script,/STUDIO_SCRIPT_POST_CLICK_UI_PROBE_START=/);
+  assert.match(script,/STUDIO_SCRIPT_POST_CLICK_UI_PROBE_OK=/);
+  assert.match(script,/UI_ROOT_COUNT/);
+  assert.match(script,/UI_DESC_COUNT/);
+  assert.match(script,/UI_LABEL_COUNT/);
+  assert.match(script,/UI_FIRST_TEXT/);
   assert.match(script,/client\.call\('get_studio_state'/);
   assert.match(script,/report\.summary\.successfulClicks===1&&report\.summary\.capturedFrames===2/);
   assert.match(script,/const studioDiscoveryDeadline=Date\.now\(\)\+5\*60\*1000/);
@@ -3686,6 +3693,7 @@ test('Existing Devloop Studio workflow rechecks Mare text sampling after main up
   const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
   assert.match(workflow,/  push:\n    branches: \[main\]\n    paths:/);
   assert.match(workflow,/roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-qa-click\.json/);
+  assert.match(workflow,/tools\/company-development-roblox-studio-local-play\.mjs/);
   assert.match(workflow,/github\.event_name == 'push' && 'mare-essentia' \|\| inputs\.game/);
   assert.match(workflow,/github\.event_name == 'push' && 'roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-qa-click\.json'/);
   assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
