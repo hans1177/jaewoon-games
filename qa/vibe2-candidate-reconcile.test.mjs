@@ -263,7 +263,7 @@ test('canonical long Studio failure code stays consistent across evidence and re
   assert.equal(task.status,'queued');
   assert(task.evidence.includes('engine-qa-failure-signature:'+safe));
   assert(task.evidence.includes('retry-failure-signature:candidate-roblox-verification-failed:TARGET_PLATFORM_RUNTIME:'+safe));
-  assert.equal(task.blocker,'candidate-roblox-verification-failed:TARGET_PLATFORM_RUNTIME:'+safe);
+  assert.equal(task.blocker,null,'queued retry keeps the failure cause in evidence, not in its active blocker');
   assert.equal(task.evidence.some(row=>row.includes(signature)),false);
   assert.equal(result.finalPass,false);
 });
