@@ -366,7 +366,7 @@ function motionChecks(text){
 }
 export function buildRobloxHolisticQualityPlan({
   repoRoot=process.cwd(),gameId='',sourceRoot='',sourceObservation={},qualityGaps=[],
-  previousPlan=null,runtimeEvidence={},sourceRevision=''
+  previousPlan=null,runtimeEvidence={},sourceRevision='',repairRequested=false
 }={}){
   const scope=getScope(repoRoot,gameId,sourceRoot);
   const scan=sourceFiles(scope.root),texts=[],assets=[],hashes=[];
@@ -448,7 +448,13 @@ export function buildRobloxHolisticQualityPlan({
     ||rows.find(row=>row.priority==='P2'&&row.sourceFiles.length)||null;
   const refOwner=sourceDefect?.id==='SOURCE_ASSET_REFERENCE_MISSING'
     ?refs.find(row=>row.path===sourceDefect.path)?.owners||[]:[];
-  const autonomousWorkUnit=sourceDefect?Object.freeze({
+  const autonomousWorkUnit=repairRequested===true?Object.freeze({
+    id:'CURRENT_CAUSAL_FAILURE',priority:'P0',mode:'REPAIR_CURRENT_CAUSAL_FAILURE_FIRST',
+    sourceFiles:[],sourceAsset:null,ownerDiscoveryRequired:true,
+    failureSignature:clean(runtimeEvidence?.failureSignature||runtimeEvidence?.playtestFinding)||null,
+    evidence:'EXISTING_REPAIR_STAGE_FAILURE_NEEDS_EXACT_GAME_SOURCE_CAUSE',verifiedRuntime:false,
+    action:'REPAIR_CURRENT_FAILED_STAGE_IN_EXISTING_OWNER_THEN_RERUN_EXACT_QA_BEFORE_QUALITY_EXPANSION'
+  }):sourceDefect?Object.freeze({
     id:sourceDefect.id,priority:'P0',mode:'REPAIR_CONFIRMED_STATIC_DEFECT',
     sourceFiles:sourceDefect.id==='ASSET_SIGNATURE_INVALID'?[sourceDefect.path]:refOwner,
     sourceAsset:sourceDefect.path,ownerDiscoveryRequired:refOwner.length===0&&sourceDefect.id!=='ASSET_SIGNATURE_INVALID',
