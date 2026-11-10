@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-11-10T15:43:49.739Z",
+  "updatedAt": "2026-11-10T15:58:11.446Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -12129,8 +12129,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-10T15:43:49.710Z",
-      "occurrenceCount": 126
+      "updatedAt": "2026-11-10T15:58:11.415Z",
+      "occurrenceCount": 127
     },
     {
       "id": "bug-265b5406b2bdecc5e87f",
@@ -12153,8 +12153,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-05T04:54:55.592Z",
-      "occurrenceCount": 7
+      "updatedAt": "2026-11-10T15:58:11.415Z",
+      "occurrenceCount": 8
     },
     {
       "id": "bug-5c09d46681320169d8c1",
@@ -12177,8 +12177,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-05T04:54:55.592Z",
-      "occurrenceCount": 7
+      "updatedAt": "2026-11-10T15:58:11.415Z",
+      "occurrenceCount": 8
     },
     {
       "id": "bug-7872cf95f8a358e822c1",
@@ -12201,8 +12201,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-05T04:54:55.592Z",
-      "occurrenceCount": 7
+      "updatedAt": "2026-11-10T15:58:11.415Z",
+      "occurrenceCount": 8
     },
     {
       "id": "bug-f919d68531bba30055e2",
@@ -12225,8 +12225,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-05T04:54:55.592Z",
-      "occurrenceCount": 7
+      "updatedAt": "2026-11-10T15:58:11.415Z",
+      "occurrenceCount": 8
     },
     {
       "id": "bug-127edbf40f064781de4b",
@@ -12249,8 +12249,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-11-03T14:48:50.438Z",
-      "updatedAt": "2026-11-05T04:54:55.592Z",
-      "occurrenceCount": 7
+      "updatedAt": "2026-11-10T15:58:11.415Z",
+      "occurrenceCount": 8
     },
     {
       "id": "bug-eb3be63425285f2cf3e3",
@@ -12811,6 +12811,30 @@
       "updatedAt": "2026-11-10T15:43:49.710Z",
       "occurrenceCount": 1,
       "verificationScope": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY"
+    },
+    {
+      "id": "bug-cbcbe21f6c799502c4a1",
+      "gameId": "room-survival",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "existing-source-tree-missing",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-bootstrap:existing-source-tree-missing:SOURCE_TREE_MISSING",
+        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-11-10T15:58:11.415Z",
+      "updatedAt": "2026-11-10T15:58:11.415Z",
+      "occurrenceCount": 1
     }
   ],
   "webPlaytestObservations": [
