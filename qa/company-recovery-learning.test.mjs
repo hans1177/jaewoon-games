@@ -1084,6 +1084,19 @@ test('Studio QA failure uses exact source evidence and canonical source intake b
     ]}});
   assert.equal(runtime.owner,'SYSTEM_AI');
   assert.deepEqual(runtime.queue.tasks[0].responsibleFiles,[]);
+  // [전체 검증] Studio 모델·이미지·미구현 기능 실패를 기존 복구 큐로 직접 연결한다.
+  for (const signature of ['STUDIO_ASSET_AUDIT_FAILED','STUDIO_FEATURE_AUDIT_FAILED']) {
+    const result=escalateDeploymentFailure({event:{workflow_run:run},catalogInput:{games:[]},
+      jobsInput:{...jobs,studioMarkers:[
+        'STUDIO_QA_GAME_ID=mare-essentia',
+        'STUDIO_QA_FAILURE_STAGE=STUDIO_GAME_RUNTIME',
+        'STUDIO_QA_FAILURE_SIGNATURE='+signature
+      ]}});
+    assert.equal(result.owner,'SYSTEM_AI');
+    assert.equal(result.queue.tasks[0].failureSignature,signature);
+    assert.deepEqual(result.queue.tasks[0].responsibleFiles,[]);
+  }
+
   // [스튜디오 통신 장애] MCP 타임아웃은 게임 소스 오류로 처리하지 않는다.
   const timeout=escalateDeploymentFailure({event:{workflow_run:run},catalogInput:{games:[]},
     jobsInput:{...jobs,studioMarkers:[
