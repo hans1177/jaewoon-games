@@ -43,7 +43,7 @@ jobs:
         env:
           FANTASY_UNIVERSE_ID: ${{ inputs.universe_id || '10775310122' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}
-          ROBLOX_CREATOR_USER_ID: '11664914771'
+          ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
             # [기존 승인 자산 권한만 재확인] 자동 작업에서 모델 재업로드 금지.
