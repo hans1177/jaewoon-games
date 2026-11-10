@@ -425,29 +425,29 @@ test('Forest registered gear reuse rejects missing or changed source binding and
 });
 
 
-// [1980 계정 게시/게임 ID 회귀] 배포키 표시명은 GitHub Secret 값이 아니며, 전용 게임 아이디가 섞이면 차단한다.
+// [1980 계정 게시/게임 ID 회귀] API 키 표시 이름과 GitHub Secret을 혼동하거나 다른 게임 Place로 게시하지 않는다.
 test('1980 publish credential stays isolated and exact game target is required',()=>{
   const mare=fs.readFileSync('.github/workflows/owner-mare-essentia-direct-publish.yml','utf8');
   const assets=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
   const create=fs.readFileSync('.github/workflows/owner-new-experience.yml','utf8');
   for(const workflow of [mare,assets,create]){
-    assert.match(workflow,/secrets\\.ROBLOX_DEPLOY_API_KEY/);
-    assert.doesNotMatch(workflow,/secrets\\.ROBLOX_DEPLOY_API_KEY\\s*\\|\\|\\s*secrets\\.ROBLOX_OPEN_CLOUD_API_KEY/);
+    assert.ok(workflow.includes('secrets.ROBLOX_DEPLOY_API_KEY'));
+    assert.ok(!workflow.includes('secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY'));
   }
-  assert.match(mare,/MARE_1980_PUBLISH_API_KEY_MISSING/);
-  assert.match(mare,/ROBLOX_ROBLOSECURITY:\\s*''/);
-  assert.match(mare,/ROBLOX_SECURITY_COOKIE:\\s*''/);
-  assert.match(create,/ROBLOX_1980_PUBLISH_API_KEY_MISSING/);
-  assert.match(create,/OWNER_EXPERIENCE_GAME_TARGET_MISMATCH/);
-  assert.match(create,/target\\.gameId!==game/);
-  assert.match(create,/target\\.universeId/);
-  assert.match(create,/target\\.placeId/);
-  const fantasy=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/experience-target.json','utf8'));
+  assert.ok(mare.includes('MARE_1980_PUBLISH_API_KEY_MISSING'));
+  assert.ok(mare.includes("ROBLOX_ROBLOSECURITY: ''"));
+  assert.ok(mare.includes("ROBLOX_SECURITY_COOKIE: ''"));
+  assert.ok(create.includes('ROBLOX_1980_PUBLISH_API_KEY_MISSING'));
+  assert.ok(create.includes('OWNER_EXPERIENCE_GAME_TARGET_MISMATCH'));
+  assert.ok(create.includes('target.gameId!==game'));
+  assert.ok(create.includes('target.universeId'));
+  assert.ok(create.includes('target.placeId'));
+  const forest=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/experience-target.json','utf8'));
   const mareTarget=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/experience-target.json','utf8'));
-  assert.deepEqual([fantasy.gameId,fantasy.universeId,fantasy.placeId],['fantasy-survival','10775310122','70742682772890']);
+  assert.deepEqual([forest.gameId,forest.universeId,forest.placeId],['fantasy-survival','10775310122','70742682772890']);
   assert.deepEqual([mareTarget.gameId,mareTarget.universeId,mareTarget.placeId],['mare-essentia','10775310508','73607605986189']);
-  // F0/F9용 구형 검증 체험을 새 소유 계정의 정식 게임 Place로 잘못 승격시키지 않는다.
+  // 기존 F0/F9 검증 체험을 새 소유 계정의 정식 게임 Place로 잘못 변경하지 않는다.
   const validation=fs.readFileSync('.github/workflows/owner-roblox-dedicated-private-experiences.yml','utf8');
-  assert.match(validation,/10773436325/);
-  assert.match(validation,/108565970231899/);
+  assert.ok(validation.includes('10773436325'));
+  assert.ok(validation.includes('108565970231899'));
 });
