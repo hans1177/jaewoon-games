@@ -10699,12 +10699,14 @@ test('complex native source candidate records incomplete named function coverage
     'end',''
   ].join('\n');
   fs.writeFileSync(path.join(root,file),original);
-  const result=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'복합 모바일 startQuest finishQuest 함수 수정'},
-    sourceRoot:root,responsibleFiles:[file],candidateValidator:()=>({pass:true})});
-  assert.ok(result);
-  assert.equal(result.deterministicSelection.selectedComparison.functionCoverage,1);
-  assert.deepEqual(result.deterministicSelection.selectedComparison.uncoveredFunctions,['finishQuest']);
-  assert.equal(result.deterministicSelection.scopeComplete,false);
-  assert.equal(result.deterministicSelection.runtimeVerified,false);
+  assert.throws(()=>deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'복합 모바일 startQuest finishQuest 함수 수정'},
+    sourceRoot:root,responsibleFiles:[file],candidateValidator:()=>({pass:true})}),error=>{
+      assert.equal(error.vibe2DeterministicSelection.status,'ALL_CANDIDATES_REJECTED');
+      assert.deepEqual(error.vibe2DeterministicSelection.requestedFunctions,['finishQuest','startQuest']);
+      assert.ok(error.vibe2DeterministicSelection.attempts.every(row=>
+        row.status==='REJECTED'&&row.reasonCode==='DETERMINISTIC_FUNCTION_COVERAGE_INCOMPLETE'));
+      assert.deepEqual(error.vibe2DeterministicSelection.attempts[0].comparison.uncoveredFunctions,['finishQuest']);
+      return true;
+    });
   assert.equal(fs.readFileSync(path.join(root,file),'utf8'),original);
 });

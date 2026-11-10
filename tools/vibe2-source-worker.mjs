@@ -3115,6 +3115,10 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           throw new Error('DETERMINISTIC_SOURCE_REVISION_CHANGED');
         }
       }
+      // [복합 요구 완결성] 일부 함수만 수리한 조합은 전체 요구를 충족한 후보로 채택하지 않는다.
+      // 기존 복구 경로에 정확한 실패 근거를 반환하고, 부분 수정의 통과 판정을 금지한다.
+      if(composedIntent&&requestedFunctions.length>=2&&decision.comparison.uncoveredFunctions.length)
+        throw new Error('DETERMINISTIC_FUNCTION_COVERAGE_INCOMPLETE');
       const candidate=normalizeCandidate(raw,{target:'roblox',responsibleFiles,sourceRootRelative,allowFullRewrite:false});
       applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       const candidateValidation=candidateValidator(candidate);
