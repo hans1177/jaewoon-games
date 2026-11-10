@@ -9,6 +9,9 @@ on:
     paths:
       - '.github/workflows/devloop-report-meadow.yml'
       - 'roblox-games/fantasy-survival/tools/devloop/telemetry_report.py'
+      - 'roblox-games/fantasy-survival/server/Game.server.luau'
+      - 'tools/fantasy-asset-health.mjs'
+      - 'qa/fantasy-asset-health.test.mjs'
 permissions:
   contents: write
   actions: write
@@ -21,6 +24,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Validate Meadow asset and terrain fixes
+        run: node --test qa/fantasy-asset-health.test.mjs
       - name: Read Meadow telemetry with dedicated read-only key
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.MEADOW_TELEMETRY_READ_KEY }}
