@@ -42,12 +42,13 @@ jobs:
       - name: Upload models and write VisualAssetIds
         env:
           FANTASY_UNIVERSE_ID: ${{ inputs.universe_id || '10775310122' }}
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}
           ROBLOX_CREATOR_USER_ID: '11664914771'
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            # [현재 체험 복구] 기존 자산은 재업로드하지 않고 승인된 자산의 사용 권한만 복구한다.
-            node tools/fantasy-survival-reupload.mjs --regrant-only --camp-only
+            # [기존 승인 자산 권한만 재확인] 자동 작업에서 모델 재업로드 금지.
+            # 이 워크플로의 별도 경험 대상은 experience-target.json과 일치해야 한다.
+            node tools/fantasy-survival-reupload.mjs --regrant-only
           else
             node tools/fantasy-survival-reupload.mjs
           fi
