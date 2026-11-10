@@ -40,7 +40,8 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
   const ui=exerciseVibeUiLayouts();
   session.ui={surfaces:ui.surfaces,viewports:ui.viewports,trials:ui.trials,
     staticPasses:ui.staticPasses,staticFailures:ui.staticFailures,
-    meanScore:ui.meanScore,measurement:ui.measurement,runtimeVerified:false,gameApplied:false};
+    meanScore:ui.meanScore,measurement:ui.measurement,designVerified:false,
+    bindingsRuntimeVerified:false,runtimeVerified:false,gameApplied:false};
   if(statsPath){
     const statsFile=path.resolve(repoRoot,statsPath);
     const scores=fs.existsSync(statsFile)?JSON.parse(fs.readFileSync(statsFile,'utf8')):{};
@@ -49,6 +50,10 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
       const key=row.surface.toLowerCase()+'_layout:'+row.variant;
       const entry=scores.UI[key]??={n:0,keep:0,gainSum:0,improved:0,broken:0};
       entry.n++;entry.gainSum+=row.gain;
+      entry.designScoreSum=(entry.designScoreSum||0)+row.designScore;
+      entry.fontIssues=(entry.fontIssues||0)+row.fontIssues;
+      entry.bindingIssues=(entry.bindingIssues||0)+row.bindingIssues;
+      entry.touchSpacingIssues=(entry.touchSpacingIssues||0)+row.touchSpacingIssues;
       if(row.staticPass){entry.keep++;if(row.gain>0)entry.improved++;}
       else{entry.broken++;entry.fail??={};const reason=row.issues[0]||'STATIC_LAYOUT_FAIL';entry.fail[reason]=(entry.fail[reason]||0)+1;}
     }

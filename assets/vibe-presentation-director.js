@@ -19,7 +19,7 @@ const VFX_INTENSITY_HIERARCHY=Object.freeze(['AMBIENT','NORMAL','HEAVY','CRITICA
 const ADAPTIVE_AUDIO_STATES=Object.freeze(['EXPLORATION','DISCOVERY_OR_TENSION','COMBAT','DANGER','BOSS','VICTORY','REST_OR_HUB','SPECIAL_EVENT']);
 
 export function auditVibePresentation(files=[]){const text=textOf(files).toLowerCase(),dimensions=[];for(const[name,hints]of Object.entries(DIMENSIONS)){const hits=hints.filter(x=>text.includes(x)).length,score=clamp(hits/hints.length*100);dimensions.push(Object.freeze({name,score,debt:100-score,priority:score<30?'critical':score<55?'high':score<75?'medium':'low'}))}dimensions.sort((a,b)=>b.debt-a.debt);const overall=clamp(dimensions.reduce((n,x)=>n+x.score,0)/(dimensions.length||1));return Object.freeze({score:overall,grade:overall>=85?'A':overall>=70?'B':overall>=50?'C':'D',dimensions:Object.freeze(dimensions),priority:Object.freeze(dimensions.slice(0,4).map(x=>x.name))})}
-export function createVibeDesignSystem(files=[]){const text=textOf(files),rounded=/border-radius|corner_radius/i.test(text),shadow=/box-shadow|shadow_/i.test(text),outline=/outline|stroke|border/i.test(text),largeTouch=/44px|48px|custom_minimum_size/i.test(text);return Object.freeze({version:1,principles:Object.freeze(['gameplay-first-hierarchy','one-primary-action','consistent-spacing','state-visible-at-glance','touch-first','safe-area-aware']),tokens:Object.freeze({radius:rounded?'existing':'12px-baseline',shadow:shadow?'existing':'subtle-depth',outline:outline?'existing':'readability-outline',touchTarget:largeTouch?'existing':'44px-minimum'}),protected:Object.freeze(['gameplay-layout-function','input-binding','game-rule-values','save-structure'])})}
+export function createVibeDesignSystem(files=[]){const text=textOf(files),rounded=/border-radius|corner_radius/i.test(text),shadow=/box-shadow|shadow_/i.test(text),outline=/outline|stroke|border/i.test(text),largeTouch=/44px|48px|custom_minimum_size/i.test(text);return Object.freeze({version:1,principles:Object.freeze(['gameplay-first-hierarchy','one-primary-action','consistent-spacing','state-visible-at-glance','touch-first','safe-area-aware']),tokens:Object.freeze({radius:rounded?'existing':'12px-baseline',shadow:shadow?'existing':'subtle-depth',outline:outline?'existing':'readability-outline',touchTarget:largeTouch?'existing':'44px-minimum',fontFamily:'system-ui, sans-serif',fontTitlePx:20,fontBodyPx:15,fontButtonPx:14,lineHeight:1.4,foreground:'#f4f6fa',background:'#151b2b',accent:'#80cfff',border:'#aab9cc',touchTargetPx:44,minContrast:4.5}),protected:Object.freeze(['gameplay-layout-function','input-binding','game-rule-values','save-structure'])})}
 
 // Executable, engine-neutral presentation recipes. Coordinates are viewport pixels;
 // renderers own placement, animation and input. No gameplay/save/network authority.
@@ -223,8 +223,11 @@ export function buildVibePresentationCraft({game={},world={},surface='HUD',
   const materialRecipe=createVibeVisualMaterialRecipe({game,world,surface:type});
   const focus=resolveVibeContextualHud({components,phase,viewport});
   const layout=optimizeVibeScreenLayout({viewport,components:focus.selected,safeInsets,focalRegion});
+  const design=createVibeDesignSystem(),score=auditVibeUiDesign({components:focus.selected,layout,tokens:design.tokens,viewport,safeInsets});
+  const controls=Object.freeze(focus.selected.map(x=>Object.freeze({id:clean(x.id),label:clean(x.label||x.id),actionId:clean(x.actionId)})));
   return Object.freeze({version:1,surface:type,grammar:grammar.layout,
-    materialRecipe,focus,layout,requiredPatterns:Object.freeze(VIBE_PRESENTATION_EFFECT_PATTERNS),
+    viewport:Object.freeze({width:finite(viewport.width),height:finite(viewport.height)}),
+    controls,materialRecipe,focus,layout,design,score,requiredPatterns:Object.freeze(VIBE_PRESENTATION_EFFECT_PATTERNS),
     engineSpecificImplementationRequired:true,
     sourceBindingsVerified:false,runtimeVerified:false,gameplayMutationAllowed:false});
 }
@@ -323,7 +326,64 @@ export function planVibePresentationAutopilot({files=[],events=[],request='',cha
     policy:Object.freeze({serverAI:false,checkpoint:true,checkpointIsTerminal:false,continuousEvolution:true,highEndCompletionIsReleaseGate:false,mobileFirst:true,gameplayAuthoritative:true,noRuleMutation:true,lightingIsPresentationOnly:true,signatureEventPresentationRequired:true,artDirectionCohesionRequired:true,latestOwnerIntentWinsSameScope:true,directResponsibleSystemEditPreferred:true,wrapperOrShadowAccumulationForbidden:true})
   });
 }
-export function scoreVibeScreenComposition({primaryActions=1,overlaps=0,edgeClips=0,unreadableLabels=0,criticalHudVisible=true,touchTargetsSmall=0}={}){let score=100;score-=Math.max(0,primaryActions-1)*8;score-=overlaps*15;score-=edgeClips*18;score-=unreadableLabels*10;score-=touchTargetsSmall*8;if(!criticalHudVisible)score-=30;score=clamp(score);return Object.freeze({score,grade:score>=90?'A':score>=75?'B':score>=60?'C':'D',issues:Object.freeze([overlaps&&'overlap',edgeClips&&'edge-clip',unreadableLabels&&'readability',touchTargetsSmall&&'touch-target',!criticalHudVisible&&'critical-hud-hidden'].filter(Boolean))})}
+export function scoreVibeScreenComposition({primaryActions=1,overlaps=0,edgeClips=0,unreadableLabels=0,criticalHudVisible=true,touchTargetsSmall=0,
+lowContrast=0,fontIssues=0,textOverflow=0,missingBindings=0,touchSpacing=0}={}){
+  const score=clamp(100-Math.max(0,primaryActions-1)*8-overlaps*15-edgeClips*18-unreadableLabels*10-
+    touchTargetsSmall*12-lowContrast*20-fontIssues*15-textOverflow*14-missingBindings*25-touchSpacing*12-
+    (!criticalHudVisible?30:0));
+  return Object.freeze({score,grade:score>=92?'A':score>=80?'B':score>=65?'C':'D',
+    issues:Object.freeze([overlaps&&'overlap',edgeClips&&'edge-clip',unreadableLabels&&'readability',
+      touchTargetsSmall&&'touch-target',lowContrast&&'low-contrast',fontIssues&&'font-hierarchy',
+      textOverflow&&'text-overflow',missingBindings&&'action-unbound',touchSpacing&&'touch-spacing',
+      !criticalHudVisible&&'critical-hud-hidden'].filter(Boolean))});
+}
+// [UI 디자인] 실제 렌더러가 아닌 정적 근사치; 색 대비/글꼴/버튼 계약/터치를 하나의 기준으로 평가한다.
+export function auditVibeUiDesign({components=[],layout={},tokens=createVibeDesignSystem().tokens,viewport={},safeInsets={}}={}){
+  const lum=color=>{
+    if(!/^#[\da-f]{6}$/i.test(String(color)))return NaN;
+    return [1,3,5].reduce((sum,i,k)=>{
+      const v=parseInt(color.slice(i,i+2),16)/255,x=v<=.04045?v/12.92:((v+.055)/1.055)**2.4;
+      return sum+x*[.2126,.7152,.0722][k];
+    },0);
+  };
+  const a=lum(tokens.foreground),b=lum(tokens.background);
+  const contrast=Number.isFinite(a)&&Number.isFinite(b)?+( (Math.max(a,b)+.05)/(Math.min(a,b)+.05) ).toFixed(2):0;
+  const lowContrast=+(contrast<Math.max(4.5,Number(tokens.minContrast)||4.5));
+  const fontIssues=+!(Number(tokens.fontTitlePx)>=Number(tokens.fontBodyPx)+2&&
+    Number(tokens.fontBodyPx)>=14&&Number(tokens.fontButtonPx)>=14&&Number(tokens.lineHeight)>=1.25);
+  const placed=new Map((layout.placements||[]).map(x=>[x.id,x])),ids=new Set(),touch=[];
+  let textOverflow=0,missingBindings=0,touchTargetsSmall=0,touchSpacing=0;
+  for(const c of components){
+    const interactive=c.touch===true||c.touchControl===true||Boolean(c.actionId);
+    const id=clean(c.actionId),p=placed.get(c.id);
+    if(interactive&&(!id||ids.has(id)))missingBindings++;
+    if(id)ids.add(id);
+    if(!p)continue;
+    const size=interactive?Number(tokens.fontButtonPx):Number(tokens.fontBodyPx);
+    const width=[...clean(c.label||c.id)].reduce((n,ch)=>n+(/[가-힣]/.test(ch)?size:/\s/.test(ch)?size*.35:size*.64),0);
+    if(width+12>p.width)textOverflow++;
+    if(interactive){touch.push(p);if(p.width<Math.max(44,Number(tokens.touchTargetPx)||44)||
+      p.height<Math.max(44,Number(tokens.touchTargetPx)||44))touchTargetsSmall++;}
+  }
+  for(let i=0;i<touch.length;i++)for(let j=i+1;j<touch.length;j++){
+    const x=touch[i],y=touch[j],dx=Math.max(0,x.x-y.x-y.width,y.x-x.x-x.width),
+      dy=Math.max(0,x.y-y.y-y.height,y.y-x.y-x.height);
+    if(dx<4&&dy<4)touchSpacing++;
+  }
+  const safe={left:finite(safeInsets.left),right:finite(safeInsets.right),
+    top:finite(safeInsets.top),bottom:finite(safeInsets.bottom)};
+  const edgeClips=(layout.placements||[]).filter(x=>x.x<safe.left||x.y<safe.top||
+    x.x+x.width>finite(viewport.width)-safe.right||x.y+x.height>finite(viewport.height)-safe.bottom).length+
+    components.filter(x=>!placed.has(x.id)).length;
+  const overlaps=(layout.placements||[]).filter(x=>x.unresolved).length;
+  const criticalHudVisible=components.filter(x=>x.critical).every(x=>placed.has(x.id)&&!placed.get(x.id).unresolved);
+  const result=scoreVibeScreenComposition({overlaps,edgeClips,criticalHudVisible,
+    touchTargetsSmall,lowContrast,fontIssues,textOverflow,missingBindings,touchSpacing});
+  return Object.freeze({...result,metrics:Object.freeze({contrast,lowContrast,fontIssues,
+    textOverflow,missingBindings,touchTargetsSmall,touchSpacing,overlaps,edgeClips}),
+    runtimeVerified:false,actionRuntimeVerified:false,textRenderedVerified:false,
+    authority:'SYNTHETIC_UI_DESIGN_AND_BINDING_CONTRACT'});
+}
 // [UI 반복 연습] 기존 화면 배치기/채점기로 안전 영역·충돌·터치 판독성을 수치 연습한다.
 // 이미지·모델·스크립트 에셋 생성 없음. 연습 결과는 게임 런타임 승인이나 실제 버튼 작동 증거가 아니다.
 export function exerciseVibeUiLayouts(){
@@ -342,12 +402,16 @@ export function exerciseVibeUiLayouts(){
     {name:'MOBILE_PORTRAIT',width:393,height:852,safe:{left:16,right:16,top:32,bottom:24}},
     {name:'MOBILE_LANDSCAPE',width:844,height:390,safe:{left:16,right:16,top:14,bottom:14}}
   ];
+  const labels=Object.freeze({health:'체력',skills:'스킬',bag:'가방',quest:'퀘스트',slots:'보유 목록',
+    details:'상세 정보',equip:'장착',close:'닫기',wares:'판매 목록',prices:'가격',purchase:'구매',
+    tabs:'항목',options:'설정 내용',apply:'적용',recipes:'제작법',ingredients:'재료',craft:'제작',
+    journal:'퀘스트 목록',objective:'목표',track:'추적',dialogue:'대화',response:'선택하기',attack:'공격',target:'대상'});
   const rows=[];
   for(const profile of profiles)for(const view of viewports)for(const variant of ['soft','strong']){
     const factor=variant==='soft'?0.94:1.12;
     const controls=profile.controls.map(([id,baseW,baseH,zone,touch=false,critical=false])=>({
       id,zone,priority:critical?8:touch?5:2,width:Math.round(baseW*factor),
-      height:Math.round(baseH*factor),touch,critical
+      height:Math.round(baseH*factor),touch,critical,label:labels[id]||id,actionId:touch?id:null
     }));
     const viewport={width:view.width,height:view.height},safeInsets=view.safe;
     const focalRegion=['HUD','COMBAT'].includes(profile.surface)?{
@@ -355,15 +419,10 @@ export function exerciseVibeUiLayouts(){
       width:Math.round(view.width*0.52),height:Math.round(view.height*0.52)
     }:null;
     const layout=optimizeVibeScreenLayout({viewport,safeInsets,components:controls,focalRegion});
-    const byId=new Map((layout.placements||[]).map(row=>[row.id,row]));
-    const missing=controls.filter(row=>!byId.has(row.id)).length;
-    const touchTargetsSmall=controls.filter(row=>row.touch&&(Math.min(byId.get(row.id)?.width||0,byId.get(row.id)?.height||0)<44)).length;
-    const edgeClips=(layout.placements||[]).filter(row=>row.x<view.safe.left||
-      row.y<view.safe.top||row.x+row.width>view.width-view.safe.right||
-      row.y+row.height>view.height-view.safe.bottom).length+missing;
-    const overlaps=(layout.placements||[]).filter(row=>row.unresolved).length;
-    const criticalHudVisible=controls.filter(row=>row.critical).every(row=>byId.has(row.id)&&!byId.get(row.id).unresolved);
-    const score=scoreVibeScreenComposition({overlaps,edgeClips,touchTargetsSmall,criticalHudVisible});
+    const score=auditVibeUiDesign({components:controls,layout,
+      tokens:createVibeDesignSystem().tokens,viewport,safeInsets});
+    const {edgeClips,overlaps,touchTargetsSmall}=score.metrics;
+    const criticalHudVisible=controls.filter(x=>x.critical).every(x=>layout.placements.some(p=>p.id===x.id&&!p.unresolved));
     // 비교 기준은 실제 게임 UI가 아니라 같은 요소를 최적화 없이 세로로 쌓은 연습 기준안이다.
     const raw=[];
     let y=view.safe.top;
@@ -379,7 +438,10 @@ export function exerciseVibeUiLayouts(){
       criticalHudVisible:true}).score;
     rows.push(Object.freeze({surface:profile.surface,viewport:view.name,variant,
       score:score.score,baselineScore,gain:score.score-baselineScore,
-      staticPass:layout.pass&&score.score>=90&&touchTargetsSmall===0&&edgeClips===0,
+      staticPass:layout.pass&&score.score>=92&&score.issues.length===0,
+      designScore:score.score,contrast:score.metrics.contrast,
+      fontIssues:score.metrics.fontIssues+score.metrics.textOverflow,
+      bindingIssues:score.metrics.missingBindings,touchSpacingIssues:score.metrics.touchSpacing,
       issues:Object.freeze(score.issues.slice()),runtimeVerified:false,gameApplied:false}));
   }
   const passing=rows.filter(row=>row.staticPass).length;
@@ -389,7 +451,8 @@ export function exerciseVibeUiLayouts(){
     trials:rows.length,staticPasses:passing,staticFailures:rows.length-passing,
     meanScore:Math.round(totalScore/Math.max(1,rows.length)*10)/10,
     rows:Object.freeze(rows),source:'EXISTING_VIBE_PRESENTATION_LAYOUT_AND_SCORE',
-    measurement:'SYNTHETIC_GEOMETRY_ONLY',screenshotsCaptured:false,
+    measurement:'SYNTHETIC_UI_DESIGN_AND_BINDING_CONTRACT',screenshotsCaptured:false,
+    buttonsClicked:false,textRenderedVerified:false,
     runtimeVerified:false,gameApplied:false});
 }
 

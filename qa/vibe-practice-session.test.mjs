@@ -22,7 +22,7 @@ test('UI 자동 연습은 8종 화면·3종 모바일 비율을 실측 채점하
   assert.ok(practice.rows.some(row=>row.surface==='INVENTORY'));
   assert.ok(practice.rows.some(row=>row.surface==='COMBAT'));
   assert.ok(practice.rows.every(row=>row.gameApplied===false&&row.runtimeVerified===false));
-  assert.equal(practice.measurement,'SYNTHETIC_GEOMETRY_ONLY');
+  assert.equal(practice.measurement,'SYNTHETIC_UI_DESIGN_AND_BINDING_CONTRACT');
   assert.equal(practice.screenshotsCaptured,false);
   assert.deepEqual(exerciseVibeUiLayouts().rows,practice.rows);
 });
@@ -59,6 +59,8 @@ test('실제 Blender: 한 회차가 변형·조명 탐색·굽기를 모두 하�
   const learnedUi=JSON.parse(fs.readFileSync(stats,'utf8')).UI;
   assert.ok(learnedUi['hud_layout:soft'].n>=3);
   assert.ok(learnedUi['inventory_layout:strong'].n>=3);
+  assert.ok(learnedUi['inventory_layout:strong'].designScoreSum>=300);
+  assert.equal(learnedUi['inventory_layout:strong'].bindingIssues,0);
   assert.ok(session.light&&Number.isFinite(session.light.best),JSON.stringify(session.light));
   assert.ok(session.bake&&typeof session.bake.pass==='boolean',JSON.stringify(session.bake));
   assert.ok(fs.existsSync(path.join(out,'session.json')));

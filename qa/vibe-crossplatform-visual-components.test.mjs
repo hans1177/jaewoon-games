@@ -7,7 +7,7 @@ import {
   VIBE_PRESENTATION_EFFECT_PATTERNS,
   createVibeVisualMaterialRecipe,
   optimizeVibeScreenLayout,placeVibeTooltip,
-  buildVibePresentationCraft,planVibePresentationAutopilot,resolveVibeContextualHud,exerciseVibeUiLayouts
+  buildVibePresentationCraft,planVibePresentationAutopilot,resolveVibeContextualHud,exerciseVibeUiLayouts,auditVibeUiDesign,createVibeDesignSystem
 } from '../assets/vibe-presentation-director.js';
 import '../assets/jaewoon-graphics-engine.js';
 
@@ -56,10 +56,44 @@ test('모바일 UI 8종 반복 연습은 기존 배치기·채점기로만 수�
   assert.equal(trials.trials,48);
   assert.equal(trials.staticPasses,48);
   assert.equal(trials.staticFailures,0);
+  assert.ok(trials.rows.every(row=>row.fontIssues===0&&row.bindingIssues===0&&row.designScore>=92));
   assert.ok(trials.rows.every(row=>row.score>=0&&row.score<=100));
   assert.ok(trials.rows.every(row=>row.gameApplied===false&&!row.runtimeVerified));
 });
 
+test('모바일 디자인은 명암·폰트·텍스트·연결이 나쁘면 점수를 낮춘다',()=>{
+  const viewport={width:393,height:852};
+  const components=[{id:'bad',label:'너무 긴 버튼 제목이 넘치도록 만든 테스트',touch:true,width:90,height:48}];
+  const layout=optimizeVibeScreenLayout({viewport,components});
+  const tokens={...createVibeDesignSystem().tokens,foreground:'#151b2b',background:'#151b2b',
+    fontTitlePx:13,fontBodyPx:12,fontButtonPx:11};
+  const score=auditVibeUiDesign({components,layout,tokens,viewport});
+  assert.ok(score.score<92);
+  for(const reason of ['low-contrast','font-hierarchy','text-overflow','action-unbound'])assert.ok(score.issues.includes(reason),reason);
+});
+test('디자인 제작안은 실제 DOM과 게임 제공 버튼 콜백으로만 연결된다',()=>{
+  const {host,doc}=fakeDom(),ctrl=getWeb()({host,documentRef:doc,reducedMotion:true});
+  const components=[{id:'list',label:'보유 목록',zone:'LEFT',width:156,height:150},
+    {id:'equip',label:'장착',actionId:'equip_item',touch:true,zone:'BOTTOM',width:112,height:48},
+    {id:'close',label:'닫기',actionId:'close_inventory',touch:true,zone:'TOP',width:48,height:48}];
+  const craft=buildVibePresentationCraft({surface:'INVENTORY',viewport:{width:393,height:852},components});
+  assert.equal(craft.score.issues.length,0,JSON.stringify(craft.score));
+  assert.equal(craft.layout.pass,true);
+  assert.equal(ctrl.updateUiSurface({craft,components}),false);
+  const pressed=[];
+  assert.equal(ctrl.updateUiSurface({craft,components,onAction:(action,id,surface)=>pressed.push([action,id,surface])}),true);
+  const root=host.children[0].children.find(x=>x.attrs['data-vibe-ui-surface']==='INVENTORY');
+  assert.ok(root);
+  const close=root.children.find(x=>x.attrs['data-vibe-ui-id']==='close');
+  assert.equal(close.style.fontSize,'14px');
+  close.onclick();
+  assert.deepEqual(pressed,[['close_inventory','close','INVENTORY']]);
+  assert.equal(ctrl.stats().uiButtons,2);
+  assert.equal(ctrl.updateUiSurface({craft,components:components.map(x=>x.id==='close'?{...x,label:'다르게'}:x),onAction:()=>{}}),false);
+  assert.equal(ctrl.updateUiSurface({visible:false}),true);
+  close.onclick();assert.equal(pressed.length,1);
+  ctrl.destroy();assert.equal(host.children.length,0);
+});
 test('layout optimizer can pack 12 distinct badges without HUD overlaps',()=>{
   const components=Array.from({length:12},(_,i)=>({
     id:'visible-badge-'+i,width:98,height:42,priority:1,zone:'EDGE'
