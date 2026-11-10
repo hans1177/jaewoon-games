@@ -886,6 +886,61 @@ test('Roblox coding engine does not guess ambiguous sibling ModuleScripts or reu
   }
 });
 
+test('Roblox coding engine grounds callable ModuleScript API in actual returned table functions',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/module-api');
+  const start='client/Main.client.luau',module='shared/Inventory.luau';
+  const source='local Inventory = require(script.Parent.Parent.shared.Inventory)\nreturn Inventory.Open()\n';
+  const moduleSource=[
+    'local Inventory = {}',
+    'local Private = {}',
+    'function Inventory.Open() return true end',
+    'function Inventory:Close() return false end',
+    'function Private.Secret() return true end',
+    'local function LocalOnly() return true end',
+    'return Inventory'
+  ].join('\n')+'\n';
+  write(path.join(root,start),source);
+  write(path.join(root,module),moduleSource);
+  const order={run:true,taskId:'roblox-api-proof',gameId:'module-api',target:'roblox',
+    goal:'use already available Inventory module API instead of inventing a new method',
+    source:{root:'roblox-games/module-api',
+      responsibleFiles:['roblox-games/module-api/'+start],ignoredPaths:[]},
+    workPackage:{id:'module-api',sharedContext:{diagnosticEvidence:[]}}};
+  const report=exploreVibe2WorkOrder({cwd,order});
+  const entry=report.robloxModuleGraph.moduleApi.find(row=>row.path===module);
+  assert.equal(entry.returnedTable,'Inventory');
+  assert.deepEqual(entry.methods,['Open','Close']);
+  assert.equal(entry.evidence,'STATIC_RETURNED_TABLE');
+  assert.equal(entry.sourceWrite,false);
+  assert.equal(entry.runtimeVerified,false);
+  assert.match(explorationGuidance(report),/Inventory\.luau:Open\/Close/);
+  assert.deepEqual(report.editContract.allowedResponsibleFiles,[start]);
+  assert.equal(fs.readFileSync(path.join(root,module),'utf8'),moduleSource);
+  fs.rmSync(cwd,{recursive:true,force:true});
+});
+
+test('Roblox module coding engine keeps dynamically returned APIs unproven, not invented',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/module-api-dynamic');
+  write(path.join(root,'client/Main.client.luau'),
+    'local API=require(script.Parent.Parent.shared.Dynamic)\nreturn API.Execute()\n');
+  write(path.join(root,'shared/Dynamic.luau'),[
+    'local Dynamic = {}',
+    'function Dynamic.Execute() return true end',
+    'return makeDynamicApi(Dynamic)'
+  ].join('\n')+'\n');
+  const order={run:true,taskId:'dynamic-api-proof',gameId:'module-api-dynamic',target:'roblox',
+    goal:'inspect existing API without declaring dynamic return proven',
+    source:{root:'roblox-games/module-api-dynamic',
+      responsibleFiles:['roblox-games/module-api-dynamic/client/Main.client.luau'],ignoredPaths:[]},
+    workPackage:{id:'module-api-dynamic',sharedContext:{diagnosticEvidence:[]}}};
+  const report=exploreVibe2WorkOrder({cwd,order}),entry=report.robloxModuleGraph.moduleApi[0];
+  assert.equal(entry.path,'shared/Dynamic.luau');
+  assert.deepEqual(entry.methods,[]);
+  assert.equal(entry.evidence,'EXPORT_SHAPE_UNPROVEN');
+  assert.equal(report.robloxModuleGraph.sourceWrite,false);
+  fs.rmSync(cwd,{recursive:true,force:true});
+});
+
 test('Roblox module reverse dependencies find importers with alias calls and preserve reservation',()=>{
   const cwd=tempRoot(),root=path.join(cwd,'roblox-games/module-reverse');
   const modulePath='shared/Inventory.luau';
