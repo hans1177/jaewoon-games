@@ -10649,3 +10649,62 @@ test('no-model DOM causal correction retains the original callback and is idempo
   assert.equal(diagnoseGame(root).issues.some(row=>row.type==='DOM_EVENT_TARGET_MISMATCH'),false);
   assert.equal(deterministicDiagnosticCandidate({exploration,sourceRoot:root,responsibleFiles:['app.js','index.html']}),null);
 });
+
+
+// [복합 함수 분해] 실제 소스 함수와 목표 이름을 교차 대조해 무관한 변경을 배제한다.
+test('complex native request composes only named responsible functions and ranks coverage over unrelated smaller edits',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-complex-function-targets-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  const paths=['client/A.client.luau','client/B.client.luau','client/Noise.client.luau'];
+  const body=name=>[
+    'local function '+name+'()',
+    ' local button = Instance.new("TextButton")',
+    ' button.MouseButton1Click:Connect(function() print("'+name+'") end)',
+    'end',''
+  ].join('\n');
+  const originals=[body('startQuest'),body('finishQuest'),body('unrelated')];
+  for(let i=0;i<paths.length;i++)fs.writeFileSync(path.join(root,paths[i]),originals[i]);
+  const args={order:{target:'roblox',goal:'복잡한 모바일 버튼 작업: startQuest 그리고 finishQuest 함수만 직접 수정'},
+    sourceRoot:root,responsibleFiles:paths};
+  const observed=[];
+  const chosen=deterministicRobloxNativeRepairCandidate({...args,candidateValidator:candidate=>{
+    observed.push(candidate.edits.map(row=>row.path));return{pass:true};
+  }});
+  assert.ok(chosen);
+  assert.deepEqual(chosen.deterministicSelection.requestedFunctions,['finishQuest','startQuest']);
+  assert.equal(chosen.deterministicSelection.selectedComparison.functionCoverage,2);
+  assert.equal(chosen.deterministicSelection.scopeComplete,true);
+  assert.equal(chosen.edits.length,2);
+  assert.deepEqual(new Set(chosen.edits.map(row=>row.path)),new Set(paths.slice(0,2)));
+  assert.ok(chosen.edits.every(row=>row.replace.includes('.Activated:Connect(')));
+  assert.ok(chosen.semanticGrounding.sourceFunctions?.length===2||
+    chosen.semanticGrounding.sourceFunctionUnits?.length===2);
+  assert.deepEqual(observed[0].sort(),paths.slice(0,2).sort());
+  for(let i=0;i<paths.length;i++)assert.equal(fs.readFileSync(path.join(root,paths[i]),'utf8'),originals[i]);
+});
+
+test('complex native source candidate records incomplete named function coverage without false completion',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-complex-unresolved-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  const file='client/Main.client.luau';
+  const original=[
+    'local function startQuest()',
+    ' local button = Instance.new("TextButton")',
+    ' button.MouseButton1Click:Connect(function() end)',
+    'end',
+    'local function finishQuest()',
+    ' return 42',
+    'end',''
+  ].join('\n');
+  fs.writeFileSync(path.join(root,file),original);
+  const result=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'복합 모바일 startQuest finishQuest 함수 수정'},
+    sourceRoot:root,responsibleFiles:[file],candidateValidator:()=>({pass:true})});
+  assert.ok(result);
+  assert.equal(result.deterministicSelection.selectedComparison.functionCoverage,1);
+  assert.deepEqual(result.deterministicSelection.selectedComparison.uncoveredFunctions,['finishQuest']);
+  assert.equal(result.deterministicSelection.scopeComplete,false);
+  assert.equal(result.deterministicSelection.runtimeVerified,false);
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),original);
+});

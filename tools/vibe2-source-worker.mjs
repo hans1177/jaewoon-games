@@ -2914,43 +2914,102 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       }
     }
   }
-  // [복합 소스 개발] 증명된 독립 수정들을 한 원자적 후보로 조합한다.
-  // 범위가 겹치거나 원본에 정확히 1번 존재하지 않는 앵커는 제외하고,
-  // 생성된 묶음 전체를 기존 source/syntax/semantic 검증기에 다시 전달한다.
-  // 여러 수정을 한꺼번에 실패하더라도 아래 개별 후보 검증 경로는 남긴다.
+  // [함수별 작업 분해] 자연어에 명시된 실제 함수명만 기존 소스와 교차 확인한다.
+  // 이름이 없는 요구를 임의 함수로 매핑하거나 책임 파일 밖으로 쓰기 권한을 넓히지 않는다.
   const composedIntent=/(?:복합|복잡|여러|다중|동시|통합|묶음|자동.?개발|multi[- ]?file|multi[- ]?step|complex|batch|compose|integrat)/i.test(intent);
-  if(composedIntent&&candidates.length>=2){
-    const selected=[],occupied=new Map();
-    for(const raw of [...candidates].sort((a,b)=>(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0))){
-      if(selected.length>=4)break;
-      if(!Array.isArray(raw.edits)||!raw.edits.length||raw.newFiles?.length||raw.replaceFiles?.length)continue;
-      const ranges=[],seenThisCandidate=new Map();
-      let disjoint=true;
-      for(const edit of raw.edits){
-        const original=sourceTexts.get(edit.path),find=edit.find;
-        if(typeof original!=='string'||typeof find!=='string'||!find||original.split(find).length!==2){disjoint=false;break;}
-        const start=original.indexOf(find),end=start+find.length;
-        const prior=[...(occupied.get(edit.path)||[]),...(seenThisCandidate.get(edit.path)||[])];
-        if(prior.some(row=>start<row.end&&end>row.start)){disjoint=false;break;}
-        ranges.push({path:edit.path,start,end});
-        seenThisCandidate.set(edit.path,[...(seenThisCandidate.get(edit.path)||[]),{start,end}]);
+  const sourceFunctions=new Map();
+  const functionTargets=new Map();
+  const functionEvidence=raw=>{
+    const rows=[],names=new Set();
+    for(const edit of raw.edits||[]){
+      const original=sourceTexts.get(edit.path),find=edit.find;
+      if(typeof original!=='string'||typeof find!=='string'||!find||original.split(find).length!==2)continue;
+      if(!sourceFunctions.has(edit.path)){
+        sourceFunctions.set(edit.path,inspectSourceFunctions(original,{language:'luau',maxFunctions:4096}));
       }
-      if(!disjoint)continue;
-      selected.push(raw);
-      for(const row of ranges)occupied.set(row.path,[...(occupied.get(row.path)||[]),row]);
+      const start=original.indexOf(find),end=start+find.length;
+      const covering=(sourceFunctions.get(edit.path)||[]).filter(fn=>
+        start>=fn.start&&end<=fn.end).sort((a,b)=>(a.end-a.start)-(b.end-b.start));
+      const owner=covering.length&&covering[0].name&&
+        !(covering.length>1&&covering[0].end-covering[0].start===covering[1].end-covering[1].start)
+        ?covering[0].name:null;
+      if(owner)names.add(owner);
+      rows.push({path:edit.path,responsibleFunction:owner,originalStart:start,originalEnd:end});
     }
-    if(selected.length>=2){
+    return{rows,names:[...names]};
+  };
+  let requestedFunctions=[];
+  if(composedIntent&&candidates.length>=2){
+    const found=new Set();
+    for(const [file,original] of sourceTexts){
+      if(!sourceFunctions.has(file))sourceFunctions.set(file,
+        inspectSourceFunctions(original,{language:'luau',maxFunctions:4096}));
+      for(const fn of sourceFunctions.get(file)||[]){
+        const name=clean(fn.name);
+        if(name.length<3||!new RegExp('(?:^|[^A-Za-z0-9_])'+regexEscape(name)+'(?=$|[^A-Za-z0-9_])','i').test(intent))continue;
+        found.add(name);
+      }
+    }
+    requestedFunctions=[...found].sort();
+    const rawCandidates=[...candidates];
+    const fingerprints=new Set();
+    // [후보 비교] 우선 요청 함수 범위를 크게 만족하는 조합, 다음 최소 변경 조합.
+    // 겹치는 원본 앵커, 모호한 범위, 읽기 종속성이 검증되지 않은 후보는 제외한다.
+    for(const mode of ['FUNCTION_COVERAGE_FIRST','MINIMAL_ANCHOR_CHANGE']){
+      const rankedSource=[...rawCandidates].sort((a,b)=>{
+        const ac=functionEvidence(a),bc=functionEvidence(b);
+        const count=rows=>rows.names.filter(name=>requestedFunctions.includes(name)).length;
+        const aSize=(a.edits||[]).reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0);
+        const bSize=(b.edits||[]).reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0);
+        return mode==='FUNCTION_COVERAGE_FIRST'
+          ?(count(bc)-count(ac)||(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0)||aSize-bSize)
+          :(aSize-bSize||(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0));
+      });
+      const selected=[],occupied=new Map(),covered=new Set();
+      for(const raw of rankedSource){
+        if(selected.length>=4)break;
+        if(!Array.isArray(raw.edits)||!raw.edits.length||raw.newFiles?.length||raw.replaceFiles?.length)continue;
+        const dependencies=unique([...raw.edits.map(row=>row.path),...(raw.readDependencies||[])]);
+        if(dependencies.some(path=>!sourceHashes.has(path)))continue;
+        const functionNames=functionEvidence(raw).names;
+        // 명시된 함수가 2개 이상이면 관련 없는 소스 수정은 조합에 넣지 않는다.
+        if(requestedFunctions.length>=2&&!functionNames.some(name=>requestedFunctions.includes(name)))continue;
+        const ranges=[],seenThisCandidate=new Map();
+        let disjoint=true;
+        for(const edit of raw.edits){
+          const original=sourceTexts.get(edit.path),find=edit.find;
+          if(typeof original!=='string'||typeof find!=='string'||!find||original.split(find).length!==2){disjoint=false;break;}
+          const start=original.indexOf(find),end=start+find.length;
+          const prior=[...(occupied.get(edit.path)||[]),...(seenThisCandidate.get(edit.path)||[])];
+          if(prior.some(row=>start<row.end&&end>row.start)){disjoint=false;break;}
+          ranges.push({path:edit.path,start,end});
+          seenThisCandidate.set(edit.path,[...(seenThisCandidate.get(edit.path)||[]),{start,end}]);
+        }
+        if(!disjoint)continue;
+        selected.push(raw);
+        for(const name of functionNames)covered.add(name);
+        for(const row of ranges)occupied.set(row.path,[...(occupied.get(row.path)||[]),row]);
+        if(requestedFunctions.length>=2&&requestedFunctions.every(name=>covered.has(name)))break;
+      }
+      if(selected.length<2)continue;
       const edits=selected.flatMap(row=>row.edits);
       const paths=unique([...selected.flatMap(row=>row.readDependencies||[]),...edits.map(row=>row.path)]);
+      const fingerprint=edits.map(row=>row.path+'\u0000'+row.find+'\u0000'+row.replace).join('\u0001');
+      if(fingerprints.has(fingerprint))continue;
+      fingerprints.add(fingerprint);
+      const functionUnits=selected.flatMap(row=>functionEvidence(row).rows);
       candidates.push({
         summary:'Vibe5.9 model-free composed native game source repair ('+selected.length+' independently grounded operations)',
         expectedEffect:'Apply disjoint existing source interventions atomically with whole-candidate semantic and syntax checks',
         edits,newFiles:[],replaceFiles:[],tests:[],deterministicPriority:-150,
         deterministicRobloxNativeRepair:'COMPOSED_SOURCE_GRAPH',
-        readDependencies:paths,dependencyHashes:Object.fromEntries(paths.map(file=>[file,sourceHashes.get(file)])),
+        readDependencies:paths,dependencyHashes:Object.fromEntries(paths.map(path=>[path,sourceHashes.get(path)])),
         semanticGrounding:{
           recipes:selected.map(row=>row.deterministicRobloxNativeRepair),
-          sourceFiles:paths,sourceBound:true,uniqueOriginalAnchors:true,
+          sourceFiles:paths,sourceFunctionUnits:functionUnits,
+          requestedFunctions,coveredFunctions:[...covered].sort(),
+          uncoveredFunctions:requestedFunctions.filter(name=>!covered.has(name)),
+          compositionStrategy:mode,sourceBound:true,uniqueOriginalAnchors:true,
           noNewSaveKeys:true,modelUsed:false,runtimeVerified:false
         }
       });
@@ -3005,13 +3064,33 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         originalEditCount:parts.length,functionCount:rewrites.length,
         exactFunctionRewrite:true,sourceBound:true,modelUsed:false,runtimeVerified:false}});
   }
-  // [코딩 엔진] 실제 소스 후보를 전부 비교하고 작은 수정부터 독립 검증한다.
-  // 첫 후보 실패가 다른 책임 함수/파일의 실행 가능한 후보까지 막지 않는다.
+  // [후보 선택] 기존 우선순위·스튜디오 원인 검증을 유지하되 명시된 함수
+  // 요구가 있을 때만 검증 대상 범위 충족률을 우선 비교한다. 통과는 실제 검증기로만 결정한다.
+  const candidateComparison=raw=>{
+    const units=functionEvidence(raw),touched=unique((raw.edits||[]).map(row=>row.path));
+    const coveredFunctions=requestedFunctions.filter(name=>units.names.includes(name));
+    return{
+      functionCoverage:coveredFunctions.length,
+      requestedFunctionCount:requestedFunctions.length,
+      coveredFunctions,uncoveredFunctions:requestedFunctions.filter(name=>!coveredFunctions.includes(name)),
+      sourceFunctions:units.names,sourceFiles:touched,
+      sourceFunctionUnits:units.rows,
+      changedBytes:(raw.edits||[]).reduce((n,row)=>n+Buffer.byteLength(row.replace),0),
+      editCount:(raw.edits||[]).length,
+      sourceBound:true,qaStillRequired:true
+    };
+  };
   const ranked=[...new Map(candidates.map(candidate=>[rejectedSourcePatchFingerprint(candidate),candidate])).values()]
-    .sort((a,b)=>(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0)
-      ||a.edits.reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0)
-      -b.edits.reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0));
-  const selection={version:2,mode:'SOURCE_GROUNDED_VERIFIED_SELECTION',candidateCount:ranked.length,
+    .sort((a,b)=>{
+      const ac=candidateComparison(a),bc=candidateComparison(b);
+      const coverage=composedIntent&&requestedFunctions.length>=2
+        ?bc.functionCoverage-ac.functionCoverage:0;
+      return coverage||(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0)
+        ||(composedIntent?bc.sourceFunctions.length-ac.sourceFunctions.length:0)
+        ||ac.changedBytes-bc.changedBytes;
+    });
+  const selection={version:3,mode:'SOURCE_GROUNDED_VERIFIED_SELECTION',candidateCount:ranked.length,
+    requestedFunctions,comparisonPolicy:'FUNCTION_COVERAGE_THEN_SOURCE_PRIORITY_THEN_MINIMAL_CHANGE',
     attempts:[],selectedFingerprint:null,runtimeVerified:false};
   const deadline=Date.now()+DEFAULT_TIMEOUT_MS;
   for(const raw of ranked){
@@ -3023,7 +3102,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     const fingerprint=rejectedSourcePatchFingerprint(raw);
     const paths=unique([...raw.edits.map(row=>row.path),...(raw.readDependencies||[])]);
     const decision={recipe:raw.deterministicRobloxNativeRepair,fingerprint,
-      sources:paths.map(file=>({path:file,sha256:raw.dependencyHashes?.[file]||sourceHashes.get(file)})),semanticGrounding:raw.semanticGrounding||null};
+      sources:paths.map(file=>({path:file,sha256:raw.dependencyHashes?.[file]||sourceHashes.get(file)})),
+      comparison:candidateComparison(raw),semanticGrounding:raw.semanticGrounding||null};
     try{
       if(typeof candidateValidator!=='function')return {...raw,deterministicSelection:{...selection,status:'SOURCE_GROUNDED_UNVALIDATED'}};
       for(const {path:file,sha256} of decision.sources){
@@ -3046,6 +3126,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       }
       selection.attempts.push({...decision,status:'VALIDATED'});
       selection.selectedFingerprint=fingerprint;
+      selection.selectedComparison=decision.comparison;
+      selection.scopeComplete=decision.comparison.uncoveredFunctions.length===0;
       return {...raw,normalizedCandidate:candidate,candidateValidation,
         deterministicSelection:{...selection,status:'CANDIDATE_VALIDATED'}};
     }catch(error){
