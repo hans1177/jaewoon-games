@@ -79,7 +79,7 @@ jobs:
             # [게임 선택] 최신 병합에 마력숲 소스만 포함되면 마력숲을 먼저 검사한다.
             game=mare-essentia
             changed=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '.files[].filename' || true)
-            if printf '%s\n' "$changed" | grep -Eq '^roblox-games/fantasy-survival/|^\.github/workflows/owner-roblox-dedicated-private-experiences\.yml$' &&
+            if printf '%s\n' "$changed" | grep -Eq '^roblox-games/fantasy-survival/|^\.github/workflows/owner-roblox-dedicated-private-experiences\.yml$|^\.github/workflows/studio-autoqa\.yml$' &&
                ! printf '%s\n' "$changed" | grep -q '^roblox-games/mare-essentia/'; then
               game=fantasy-survival
             fi
