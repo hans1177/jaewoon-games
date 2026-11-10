@@ -345,3 +345,85 @@ test('existing Vibe source worker prioritizes quality only for exact current gam
   assert.doesNotMatch(section,/responsibleFiles\.push\(|authorizedTaskFiles\.add\(|task\.responsibleFiles\s*=/);
   assert.match(worker,/ignoredPaths:freezeList\(adapter\.source\.ignoredPaths\), responsibleFiles/);
 });
+
+
+// [바이브 자율 개발] 게임 데이터에 정의됐지만 UI 이미지/동일 품목의 3D 모델이 없는 경우,
+// 오너가 건별로 지시하기 전 기존 BUILD_UP의 P1 소스 수정 대상으로 발견해야 한다.
+test('Vibe autonomously detects missing declared inventory visuals without granting write scope',()=>fixture(({dir,game,base})=>{
+  const shared=path.join(base,'src','ReplicatedStorage','Shared');
+  const starter=path.join(base,'src','StarterPlayer');
+  fs.mkdirSync(shared,{recursive:true});
+  fs.mkdirSync(starter,{recursive:true});
+  fs.writeFileSync(path.join(shared,'Ports.luau'),[
+    'local Goods: { [string]: Good } = {',
+    '  silk = { id = "silk", name = "비단" },',
+    '  cheese = { id = "cheese", name = "치즈" },',
+    '  coffee = { id = "coffee", name = "커피" },',
+    '  tea = { id = "tea", name = "차" },',
+    '  tobacco = { id = "tobacco", name = "담배" },',
+    '}',
+    'local Ports = {}'
+  ].join('\n'));
+  const ui='roblox-games/'+game+'/src/StarterPlayer/Game.client.luau';
+  fs.writeFileSync(path.join(starter,'Game.client.luau'),[
+    'local GOOD_ICON = {}',
+    'for id, spec in {',
+    '  coffee = { "Cargo", "cup-coffee" },',
+    '} do',
+    '  GOOD_ICON[id] = spec',
+    'end',
+    'for goodsId, cargoAsset in {',
+    '  tea = "cup-tea",',
+    '} do',
+    '  if AssetIds["Cargo/" .. cargoAsset] then',
+    '    GOOD_ICON[goodsId] = { "Cargo", cargoAsset, nil, "Goods/" .. goodsId }',
+    '  end',
+    'end'
+  ].join('\n'));
+  fs.writeFileSync(path.join(base,'assets-registered.json'),JSON.stringify({assets:{
+    'Goods/cheese':{assetId:'101',assetType:'Image',usePermissionGranted:true},
+    'Goods/silk':{assetId:'102',assetType:'Decal',usePermissionGranted:true},
+    'Cargo/cup-coffee':{assetId:'103',assetType:'Model',usePermissionGranted:true},
+    'Cargo/cup-tea':{assetId:'104',assetType:'Model',usePermissionGranted:true},
+  }}));
+  const plan=buildRobloxHolisticQualityPlan({repoRoot:dir,gameId:game});
+  assert.equal(plan.itemAssetCoverage.status,'STATIC_ITEM_TO_VISUAL_BINDING_CROSSCHECK');
+  assert.equal(plan.itemAssetCoverage.declared,5);
+  assert.equal(plan.itemAssetCoverage.covered,3);
+  assert.deepEqual(plan.itemAssetCoverage.missing.map(row=>row.itemId),['silk','tobacco']);
+  assert.ok(plan.itemAssetCoverage.missing.every(row=>row.contentSafety==='POLICY_REVIEW_REQUIRED_BEFORE_UPLOAD_OR_BIND'));
+  assert.equal(plan.autonomousWorkUnit.id,'UNBOUND_DATA_DEFINED_ITEMS');
+  assert.equal(plan.autonomousWorkUnit.priority,'P1');
+  assert.equal(plan.autonomousWorkUnit.mode,'FILL_VERIFIED_SEMANTIC_ASSET_GAPS');
+  assert.deepEqual(plan.autonomousWorkUnit.sourceFiles,[ui]);
+  assert.deepEqual(plan.autonomousWorkUnit.missingItemIds,['silk','tobacco']);
+  assert.equal(plan.autonomousWorkUnit.workScope.directMutationAuthorized,false);
+  assert.deepEqual(plan.autonomousWorkUnit.workScope.authorizedSourceFiles,[]);
+  assert.equal(plan.autonomousWorkUnit.verifiedRuntime,false);
+  assert.equal(plan.families.find(row=>row.id==='ITEMS_LOOT').priority,'P1');
+  assert.match(robloxHolisticQualityPromptLines(plan).join('\n'),/ITEM_VISUAL_COVERAGE/);
+  assert.match(robloxHolisticQualityPromptLines(plan,10,true).join('\n'),/ITEM_VISUAL_COVERAGE/);
+}));
+
+test('Vibe game-specific missing item audit never infers items from unrelated Roblox game files',()=>fixture(({dir,game,base})=>{
+  fs.writeFileSync(path.join(base,'client','Game.client.luau'),'local GOOD_ICON = {}');
+  fs.writeFileSync(path.join(base,'server','Game.server.luau'),'local Goods = {}');
+  const plan=buildRobloxHolisticQualityPlan({repoRoot:dir,gameId:game});
+  assert.equal(plan.itemAssetCoverage.status,'NOT_APPLICABLE_UNRECOGNIZED_ITEM_SCHEMA');
+  assert.deepEqual(plan.itemAssetCoverage.missing,[]);
+  assert.equal(plan.autonomousWorkUnit.id==='UNBOUND_DATA_DEFINED_ITEMS',false);
+}));
+
+test('actual Mare Essentia item catalog is fully inspected and unbound items are autonomously prioritized',()=>{
+  const plan=buildRobloxHolisticQualityPlan({gameId:'mare-essentia'});
+  assert.equal(plan.itemAssetCoverage.declared,70);
+  assert.equal(plan.itemAssetCoverage.covered,49);
+  assert.equal(plan.itemAssetCoverage.missing.length,21);
+  assert.ok(plan.itemAssetCoverage.missing.some(row=>row.itemId==='gum_arabic'));
+  assert.ok(plan.itemAssetCoverage.missing.some(row=>row.itemId==='tobacco'));
+  assert.ok(plan.itemAssetCoverage.missing.some(row=>row.itemId==='ambergris'));
+  assert.equal(plan.autonomousWorkUnit.id,'UNBOUND_DATA_DEFINED_ITEMS');
+  assert.equal(plan.autonomousWorkUnit.mode,'FILL_VERIFIED_SEMANTIC_ASSET_GAPS');
+  assert.ok(plan.autonomousWorkUnit.sourceFiles.includes('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau'));
+  assert.equal(plan.autonomousWorkUnit.workScope.directMutationAuthorized,false);
+});
