@@ -2862,14 +2862,17 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         +"return 'MARE_STUDIO_AUDIT='..h:JSONEncode(a)";
       try{
         let last={};
-        for(let n=0;n<30;n++){
+        // [전수 감사] Studio 자산 타임아웃(140초) 이후의 최종 판정까지 동일 실행에서 기다린다.
+        const mareAuditDeadline=Date.now()+175000;
+        for(;;){
           const out=await luau('Server',auditCode);
           const marker=out.split(/\r?\n/).find(line=>line.startsWith('MARE_STUDIO_AUDIT='));
           if(!marker)throw new Error('MARE_STUDIO_AUDIT_RESPONSE_MISSING');
           last=JSON.parse(marker.slice('MARE_STUDIO_AUDIT='.length));
           const states=[last.MareModelAuditState,last.MareQAAssetStatus,last.MareQAFeatureStatus];
           if(states.every(state=>state==='PASS'||state==='FAIL'))break;
-          if(n<29)await wait(3000);
+          if(Date.now()+3000>=mareAuditDeadline)break;
+          await wait(3000);
         }
         const parseTotals=key=>{try{return JSON.parse(last[key]||'{}');}catch{return{invalidJson:true};}};
         report.assetAudit={
