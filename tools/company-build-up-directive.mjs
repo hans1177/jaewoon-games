@@ -3273,7 +3273,9 @@ export function buildGameSpecificBuildUpDirective({
       previousPlan:previousDirective?.robloxHolisticQualityPlan,
       runtimeEvidence,sourceRevision:clean(runtimeEvidence?.sourceRevision),
       responsibleFiles:(responsibleFiles||[]).map(posix),
-      repairRequested:clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR'})
+      repairRequested:clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR'
+        ||(runtimeEvidence?.runtimeObserved===true&&runtimeEvidence?.runtimePassed===false
+          &&Boolean(clean(runtimeEvidence?.failureSignature)||clean(runtimeEvidence?.failureStage)))})
     :null;
   return Object.freeze({
     version:2,
