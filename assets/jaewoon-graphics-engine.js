@@ -685,7 +685,9 @@
       if(visible===false){if(!rich.uiSurface)return false;
         remove(rich.uiSurface.node);rich.uiSurface=null;return true;}
       const view=dimensions(),slots=craft?.layout?.placements;
-      if(!craft?.layout?.pass||craft.score?.score<92||craft.score?.issues?.length||
+      if(!craft?.layout?.pass||!Number.isFinite(craft?.score?.score)||
+        craft.score.score<92||craft.score.authority!=='SYNTHETIC_UI_DESIGN_AND_BINDING_CONTRACT'||
+        !Array.isArray(craft.score.issues)||craft.score.issues.length||
         craft.viewport?.width!==view.width||craft.viewport?.height!==view.height||
         !Array.isArray(slots)||!Array.isArray(components)||!Array.isArray(craft.controls)||
         slots.length!==components.length||craft.controls.length!==components.length)return false;
