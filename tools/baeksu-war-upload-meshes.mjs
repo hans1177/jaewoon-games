@@ -327,31 +327,37 @@ if(fantasy){
 // 이 단계는 소스와 ID만 연결한다. 실제 Universe 사용 허가는 게시 때 API 검증한다.
 if(fantasy){
  const itemPack=oldRegistry.itemPackV1;
- if(itemPack?.license!=='CC0-1.0'||itemPack.author!=='Quaternius'
-   ||itemPack.licenseEvidence!=='https://quaternius.com/packs/ultimaterpg.html'
-   ||!itemPack.assetIds)throw Error('FOREST_ITEM_PACK_SOURCE_PROVENANCE_REQUIRED');
- for(const [name,rawId] of Object.entries(itemPack.assetIds)){
-  const id=Number(rawId);
-  if(!/^item_[a-z0-9_]+$/.test(name)||!Number.isSafeInteger(id)||id<1
-    ||registeredGearIds[name]&&registeredGearIds[name]!==id)
-    throw Error('FOREST_ITEM_PACK_REGISTERED_ID_INVALID:'+name);
-  registeredGearIds[name]=id;
+ // 원본 생물만 먼저 등록하는 독립 작업은 기존 아이템 팩이 없어도 가능하다.
+ // 아이템이 존재한다면 원본·ID를 검증하고, 게시 단계에서는 모든 팩을 강제한다.
+ if(itemPack!==undefined){
+  if(itemPack?.license!=='CC0-1.0'||itemPack.author!=='Quaternius'
+    ||itemPack.licenseEvidence!=='https://quaternius.com/packs/ultimaterpg.html'
+    ||!itemPack.assetIds)throw Error('FOREST_ITEM_PACK_SOURCE_PROVENANCE_REQUIRED');
+  for(const [name,rawId] of Object.entries(itemPack.assetIds)){
+   const id=Number(rawId);
+   if(!/^item_[a-z0-9_]+$/.test(name)||!Number.isSafeInteger(id)||id<1
+     ||registeredGearIds[name]&&registeredGearIds[name]!==id)
+     throw Error('FOREST_ITEM_PACK_REGISTERED_ID_INVALID:'+name);
+   registeredGearIds[name]=id;
+  }
  }
  const extra=oldRegistry.villageExtraV2;
- if(extra?.license!=='CC0-1.0'||extra.universeId!=='10773436325')
-   throw Error('FOREST_VERIFIED_VILLAGE_GEAR_SOURCE_REQUIRED');
- for(const name of ['vxToolAxe','vxShieldA','vxShieldB','vxShieldC','vxShieldD']){
-  const row=extra.models?.[name];
-  const id=Number(row?.assetId);
-  if(!row||row.license!=='CC0-1.0'||row.universeUseGrantVerified!==true
-    ||!/^https:\/\//.test(row.licenseEvidence||'')
-    ||!/^[a-f0-9]{64}$/.test(row.sha256||'')
-    ||row.sha256!==row.importedSourceHash
-    ||!/^roblox-games\/fantasy-survival\/assets\/village-extra2\/[a-z0-9-]+\.glb$/.test(row.path||'')
-    ||!Number.isSafeInteger(id)||id<1
-    ||registeredGearIds[name]&&registeredGearIds[name]!==id)
-    throw Error('FOREST_APPROVED_VILLAGE_GEAR_INVALID:'+name);
-  registeredGearIds[name]=id;
+ if(extra!==undefined){
+  if(extra?.license!=='CC0-1.0'||extra.universeId!=='10773436325')
+    throw Error('FOREST_VERIFIED_VILLAGE_GEAR_SOURCE_REQUIRED');
+  for(const name of ['vxToolAxe','vxShieldA','vxShieldB','vxShieldC','vxShieldD']){
+   const row=extra.models?.[name];
+   const id=Number(row?.assetId);
+   if(!row||row.license!=='CC0-1.0'||row.universeUseGrantVerified!==true
+     ||!/^https:\/\//.test(row.licenseEvidence||'')
+     ||!/^[a-f0-9]{64}$/.test(row.sha256||'')
+     ||row.sha256!==row.importedSourceHash
+     ||!/^roblox-games\/fantasy-survival\/assets\/village-extra2\/[a-z0-9-]+\.glb$/.test(row.path||'')
+     ||!Number.isSafeInteger(id)||id<1
+     ||registeredGearIds[name]&&registeredGearIds[name]!==id)
+     throw Error('FOREST_APPROVED_VILLAGE_GEAR_INVALID:'+name);
+   registeredGearIds[name]=id;
+  }
  }
 }
 const names=fantasy?[...Object.keys(manifest.models),...Object.keys(villageRows),...(capeRow?['wornCape']:[])]
