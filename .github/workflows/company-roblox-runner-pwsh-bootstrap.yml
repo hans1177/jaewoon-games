@@ -165,7 +165,9 @@ jobs:
 
   bootstrap:
     name: validate native Roblox capture on available Windows host
-    runs-on: [self-hosted, Windows, X64, jaewoon-unity]
+    # [PC 자동 시작] 실제 로그인된 Studio 러너에서 기존 시작프로그램을 등록한다.
+    # Unity 러너가 없어도 인증된 Roblox 러너가 살아있으면 복구 환경을 설치할 수 있다.
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 20
     steps:
       - name: Install hidden user-logon Startup launcher
