@@ -1,6 +1,6 @@
 # 파일명: .github/workflows/studio-autoqa.yml
-# [메인] 정해진 시각이 아니라 소스 변경·배포 성공·Studio 성공 직후 기존 공식 PC 검사에 연결한다.
-# 대항해시대/마력숲을 기존 실행 순서대로 검사하고, 실패하면 무한 재시도 대신 기존 복구 큐가 처리한다.
+# [메인] 게임 변경·게시 완료 뒤 기존 공식 PC Studio 검사를 두 게임 모두 순차적으로 요청한다.
+# 대항해시대·마력숲 각각 185단계. 같은 소스/게임 중복 대기만 막고 다른 게임 검사는 생략하지 않는다.
 # 결과 사진·리포트는 브랜치 <game>-studio-frames 에 올라가고, 클라우드 바이브가 읽고 고친다.
 name: Studio Auto QA
 on:
@@ -17,31 +17,35 @@ on:
       - 'roblox-games/fantasy-survival/client/**'
       - 'roblox-games/fantasy-survival/server/**'
       - 'roblox-games/fantasy-survival/shared/**'
+      - 'roblox-games/mare-essentia/src/**'
   workflow_run:
-    workflows: ["Devloop Studio Capture", "Owner Mare Essentia Direct Publish", "Owner Roblox Dedicated Private Experiences"]
+    workflows: ["Owner Mare Essentia Direct Publish", "Owner Roblox Dedicated Private Experiences"]
     types: [completed]
   workflow_dispatch:
     inputs:
       game:
-        description: mare-essentia 또는 fantasy-survival
+        description: 기본 both, 선택 시 mare-essentia 또는 fantasy-survival
         required: false
-        default: mare-essentia
+        default: both
         type: string
 permissions:
   actions: write
   contents: read
 jobs:
   dispatch:
-    # [마력숲 실제 QA] 전용 게시 403 실패에도 기존 Studio 소스 점검은 별도로 실행한다.
-    # PR/취소는 실제 배포 결과가 아니므로 트리거하지 않는다.
+    # [배포·PC 검사 분리] 마력숲 게시 403도 게임 소스 Studio QA는 진행하되 게시 성공으로 판정하지 않는다.
+    # [자기 반복 방지] Studio 완료 이벤트는 다시 Studio를 발행하지 않는다.
     if: >-
       github.repository == 'hans1177/jaewoon-games' &&
       (github.event_name != 'workflow_run' ||
-       github.event.workflow_run.conclusion == 'success' ||
+       (github.event.workflow_run.name == 'Owner Mare Essentia Direct Publish' &&
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'main') ||
        (github.event.workflow_run.name == 'Owner Roblox Dedicated Private Experiences' &&
         github.event.workflow_run.event == 'push' &&
         github.event.workflow_run.head_branch == 'main' &&
-        github.event.workflow_run.conclusion == 'failure'))
+        (github.event.workflow_run.conclusion == 'success' ||
+         github.event.workflow_run.conclusion == 'failure')))
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch Studio capture on owner PC
@@ -53,52 +57,41 @@ jobs:
           game="${GAME_IN:-}"
           # 끄는 스위치: 저장소에 qa-log/STOP 파일이 있으면 멈춘다
           if gh api "repos/$GITHUB_REPOSITORY/contents/qa-log/STOP" >/dev/null 2>&1; then echo "STOP file found"; exit 0; fi
-          # [배포 연동] 대항해시대 배포 성공 직후에는 대항해시대를 우선 검증한다.
-          # [일반 자동 QA] 스튜디오 실행 완료 후 기존 번갈아 실행 규칙은 그대로 유지한다.
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            if [ "${{ github.event.workflow_run.name }}" = "Owner Mare Essentia Direct Publish" ]; then
-              game=mare-essentia
-            elif [ "${{ github.event.workflow_run.name }}" = "Owner Roblox Dedicated Private Experiences" ]; then
-              # [완료 연동] PR 계약 검사는 실제 게시가 아니다.
-              if [ "${{ github.event.workflow_run.event }}" != "push" ] || [ "${{ github.event.workflow_run.head_branch }}" != "main" ]; then
-                echo "owner publication not on main, skip"; exit 0
-              fi
-              # [게임 격리] 마력숲이나 전용 게시 책임 파일 변경만 확인한다.
-              changed=$(gh api "repos/$GITHUB_REPOSITORY/commits/${{ github.event.workflow_run.head_sha }}" --jq '.files[].filename')
-              if ! printf '%s\n' "$changed" | grep -Eq '^roblox-games/fantasy-survival/|^\.github/workflows/owner-roblox-dedicated-private-experiences\.yml$'; then
-                echo "no Forest source or publisher change, skip"; exit 0
-              fi
-              game=fantasy-survival
-            else
-              other=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/devloop-studio.yml/runs?per_page=20" --jq '[.workflow_runs[]|select(.status=="queued" or .status=="in_progress")]|length')
-              if [ "${other:-0}" -ge 1 ]; then echo "already queued/running ($other), skip"; exit 0; fi
-              if [ $(( ${{ github.event.workflow_run.run_number }} % 2 )) -eq 0 ]; then game=mare-essentia; else game=fantasy-survival; fi
+          # [대상 선택] 자동 진입에서는 두 게임 전부. 수동 실행만 명시적 단일 게임 허용.
+          games="mare-essentia fantasy-survival"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            case "${GAME_IN:-both}" in
+              both) games="mare-essentia fantasy-survival" ;;
+              mare-essentia|fantasy-survival) games="$GAME_IN" ;;
+              *) echo "bad game"; exit 1 ;;
+            esac
+          fi
+          if [ "${{ github.event_name }}" = "workflow_run" ] &&
+             [ "${{ github.event.workflow_run.name }}" = "Owner Roblox Dedicated Private Experiences" ]; then
+            # [게시 이벤트 격리] 해당 게임 또는 해당 게시 파일의 main 변경에만 후속 PC 검사 요청.
+            changed=$(gh api "repos/$GITHUB_REPOSITORY/commits/${{ github.event.workflow_run.head_sha }}" --jq '.files[].filename')
+            if ! printf '%s\\n' "$changed" | grep -Eq '^roblox-games/fantasy-survival/|^\\.github/workflows/owner-roblox-dedicated-private-experiences\\.yml$'; then
+              echo "no Forest source or publisher change, skip"; exit 0
             fi
           fi
-          if [ "${{ github.event_name }}" = "push" ]; then
-            # [게임 선택] 최신 병합에 마력숲 소스만 포함되면 마력숲을 먼저 검사한다.
-            game=mare-essentia
-            changed=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '.files[].filename' || true)
-            if printf '%s\n' "$changed" | grep -Eq '^roblox-games/fantasy-survival/|^\.github/workflows/owner-roblox-dedicated-private-experiences\.yml$|^\.github/workflows/studio-autoqa\.yml$' &&
-               ! printf '%s\n' "$changed" | grep -q '^roblox-games/mare-essentia/'; then
-              game=fantasy-survival
+          # [중복 방지] 게임마다 같은 main 소스가 이미 PC에서 실행/대기 중인지 개별 확인한다.
+          # 기존 Studio 공유 러너의 직렬 실행과 STOP 차단은 그대로 유지한다.
+          head=$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq '.commit.sha')
+          runs=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/devloop-studio.yml/runs?per_page=100")
+          for game in $games; do
+            pending=$(printf '%s' "$runs" | jq --arg head "$head" --arg game "$game" '[.workflow_runs[] |
+              select(.head_sha == $head) |
+              select(.status == "queued" or .status == "pending" or .status == "in_progress") |
+              select((.display_title // "") | contains(" · " + $game + " ·"))] | length')
+            if [ "$pending" -ge 1 ]; then
+              echo "studio already queued/running for $game on $head, skip duplicate"
+              continue
             fi
-          fi
-          # [수동 실행] 입력이 비어도 시간 계산 대신 기본 게임을 사용한다.
-          if [ -z "$game" ]; then game=mare-essentia; fi
-          case "$game" in
-            mare-essentia) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json ;;
-            fantasy-survival) script=roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json ;;
-            *) echo "bad game"; exit 1 ;;
-          esac
-          # [중복 방지] 배포가 연속 발생해도 동일한 Studio 호스트에 중복 작업을 쌓지 않는다.
-          active=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/devloop-studio.yml/runs?per_page=20" --jq '[.workflow_runs[]|select(.status=="in_progress")]|length')
-          queued=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/devloop-studio.yml/runs?per_page=20" --jq '[.workflow_runs[]|select(.status=="queued" or .status=="pending")]|length')
-          # [변경 보장] 새 소스 push는 PC가 바빠도 대기 검사 1개까지 허용한다.
-          # 성공 후 연결 실행은 기존 진행 중 작업이 있으면 중복을 생성하지 않는다.
-          if [ "${queued:-0}" -ge 1 ]; then echo "studio already queued ($queued), skip"; exit 0; fi
-          if [ "${{ github.event_name }}" != "push" ] && [ "${active:-0}" -ge 1 ]; then
-            echo "studio already running ($active), skip duplicate"; exit 0
-          fi
-          gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"
-          echo "dispatched $game $script"
+            case "$game" in
+              mare-essentia) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json ;;
+              fantasy-survival) script=roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json ;;
+              *) echo "bad game"; exit 1 ;;
+            esac
+            gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"
+            echo "dispatched $game $script"
+          done
