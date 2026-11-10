@@ -10842,3 +10842,65 @@ test('causal critic preserves original ContextActionService callback when native
   assert.equal(candidate.edits[0].replace,'ContextActionService:BindAction("Jump",onJump, true,Enum.KeyCode.Space)');
   assert.equal(fs.readFileSync(path.join(root,file),'utf8'),original);
 });
+
+
+// [실패 기반 자기 교정] 첫 후보의 실제 검증 실패 이후 같은 파일의 또다른 수정이 아닌
+// 독립 책임 파일의 다른 가설을 우선 선택한다. 전체 소스는 쓰지 않는다.
+test('Vibe5.9 causal replanner changes source owner after a verified candidate rejection',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-causal-replan-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  const first='client/First.client.luau',second='client/Second.client.luau';
+  const originalFirst=[
+    'local function attack()',
+    ' local score=1',
+    'end',
+    'local attackButton=Instance.new("TextButton")',
+    'attackButton.Parent = hud',
+    'local action=Instance.new("TextButton")',
+    'action.MouseButton1Click:Connect(function() end)',''
+  ].join('\n');
+  const longName='other'+'X'.repeat(130);
+  const originalSecond='local '+longName+'=Instance.new("TextButton")\n'
+    +longName+'.MouseButton1Click:Connect(function() end)\n';
+  fs.writeFileSync(path.join(root,first),originalFirst);
+  fs.writeFileSync(path.join(root,second),originalSecond);
+  const opts={order:{target:'roblox',goal:'모바일 버튼 복구'},
+    sourceRoot:root,responsibleFiles:[first,second]};
+  const seen=[];
+  const candidate=deterministicRobloxNativeRepairCandidate({...opts,candidateValidator:c=>{
+    const file=c.edits[0].path;
+    seen.push(file);
+    if(file===first)throw new Error('NATIVE_REPRODUCED_INPUT_FAILURE');
+    return{pass:true,runtimeVerified:false};
+  }});
+  assert.deepEqual(seen,[first,second]);
+  assert.equal(candidate.deterministicSelection.attempts.length,2);
+  assert.equal(candidate.deterministicSelection.replans.length,1);
+  const replan=candidate.deterministicSelection.replans[0];
+  assert.equal(replan.observedFailureCode,'NATIVE_REPRODUCED_INPUT_FAILURE');
+  assert.equal(replan.observedStage,'CANONICAL_CANDIDATE_VALIDATOR_REJECTED');
+  assert.equal(replan.changedStrategy,'ALTERNATIVE_SOURCE_OWNER');
+  assert.deepEqual(replan.nextResponsibleFiles,[second]);
+  assert.equal(replan.qaRequired,true);
+  assert.equal(candidate.deterministicSelection.hypotheses.filter(h=>h.status==='STATIC_AND_CANDIDATE_VALIDATED').length,1);
+  assert.equal(candidate.deterministicSelection.runtimeVerified,false);
+  assert.equal(fs.readFileSync(path.join(root,first),'utf8'),originalFirst);
+  assert.equal(fs.readFileSync(path.join(root,second),'utf8'),originalSecond);
+});
+
+test('Vibe5.9 hypotheses stay unverified without a canonical validator or runtime replay',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-causal-unknown-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  const file='client/Input.client.luau';
+  fs.writeFileSync(path.join(root,file),
+    'local btn=Instance.new("TextButton")\nbtn.MouseButton1Click:Connect(function() end)');
+  const candidate=deterministicRobloxNativeRepairCandidate({
+    order:{target:'roblox',goal:'모바일 버튼 복구'},sourceRoot:root,responsibleFiles:[file]});
+  assert.equal(candidate.deterministicSelection.status,'SOURCE_GROUNDED_UNVALIDATED');
+  assert.ok(candidate.deterministicSelection.hypotheses.length>=1);
+  assert.ok(candidate.deterministicSelection.hypotheses.every(h=>h.status==='UNTESTED'));
+  assert.equal(candidate.deterministicSelection.replans.length,0);
+  assert.equal(candidate.causalReview.actualRuntimeVerified,false);
+});

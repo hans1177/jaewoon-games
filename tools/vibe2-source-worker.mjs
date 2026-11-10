@@ -3215,12 +3215,27 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         ||(composedIntent?bc.sourceFunctions.length-ac.sourceFunctions.length:0)
         ||ac.changedBytes-bc.changedBytes;
     });
-  const selection={version:4,mode:'SOURCE_GROUNDED_VERIFIED_SELECTION',candidateCount:ranked.length,
+  // [인과 가설] 정적 근거는 실행 성공이 아니다. 후보별 가설·불확실성만
+  // 작업 메모리에 보관하며 원본 코드/사적 추론은 기록하지 않는다.
+  const hypotheses=ranked.map(raw=>{
+    const comparison=candidateComparison(raw),review=causalReview(raw);
+    return{fingerprint:rejectedSourcePatchFingerprint(raw),
+      recipe:clean(raw.deterministicRobloxNativeRepair)||'SOURCE_INTERVENTION',
+      responsibleFiles:comparison.sourceFiles,sourceFunctions:comparison.sourceFunctions,
+      predictedSystems:comparison.sourceRepairSystems,
+      predictions:review.expectations.map(row=>({system:row.system,
+        sourceEffectObserved:row.sourceEffectObserved,mode:row.mode})),
+      unknownEffects:review.negativeEffectsNotProven,
+      evidenceKind:'SOURCE_STATIC_ONLY',status:'UNTESTED'};
+  });
+  const selection={version:5,mode:'SOURCE_GROUNDED_VERIFIED_SELECTION',candidateCount:ranked.length,
     requestedFunctions,requestedRepairSystems,
     comparisonPolicy:'FUNCTION_AND_SYSTEM_COVERAGE_THEN_SOURCE_PRIORITY_THEN_MINIMAL_CHANGE',
-    attempts:[],selectedFingerprint:null,runtimeVerified:false};
+    hypotheses,replans:[],attempts:[],selectedFingerprint:null,runtimeVerified:false};
+  const pending=[...ranked];
   const deadline=Date.now()+DEFAULT_TIMEOUT_MS;
-  for(const raw of ranked){
+  while(pending.length){
+    const raw=pending.shift();
     if(typeof candidateValidator==='function'&&Date.now()>=deadline){
       const error=new Error('ROBLOX_NO_MODEL_VALIDATION_BUDGET_EXHAUSTED');
       error.vibe2DeterministicSelection={...selection,status:'VALIDATION_BUDGET_EXHAUSTED'};
@@ -3231,6 +3246,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     const decision={recipe:raw.deterministicRobloxNativeRepair,fingerprint,
       sources:paths.map(file=>({path:file,sha256:raw.dependencyHashes?.[file]||sourceHashes.get(file)})),
       comparison:candidateComparison(raw),causalReview:causalReview(raw),semanticGrounding:raw.semanticGrounding||null};
+    let validatorExecuted=false;
     try{
       if(typeof candidateValidator!=='function')return {...raw,
         causalReview:decision.causalReview,
@@ -3252,6 +3268,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         throw new Error('DETERMINISTIC_CAUSAL_EFFECT_UNPROVEN:'+decision.causalReview.conflicts.join('|'));
       const candidate=normalizeCandidate(raw,{target:'roblox',responsibleFiles,sourceRootRelative,allowFullRewrite:false});
       applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
+      validatorExecuted=true;
       const candidateValidation=candidateValidator(candidate);
       if(candidateValidation?.pass!==true)throw new Error('DETERMINISTIC_CANDIDATE_VALIDATION_NOT_PASSED');
       for(const {path:file,sha256} of decision.sources){
@@ -3261,7 +3278,10 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           throw new Error('DETERMINISTIC_SOURCE_REVISION_CHANGED');
         }
       }
-      selection.attempts.push({...decision,status:'VALIDATED'});
+      selection.attempts.push({...decision,status:'VALIDATED',
+        validationEvidence:'CANONICAL_CANDIDATE_VALIDATOR_PASS_RUNTIME_UNVERIFIED'});
+      const acceptedHypothesis=hypotheses.find(row=>row.fingerprint===fingerprint);
+      if(acceptedHypothesis)acceptedHypothesis.status='STATIC_AND_CANDIDATE_VALIDATED';
       selection.selectedFingerprint=fingerprint;
       selection.selectedComparison=decision.comparison;
       selection.selectedCausalReview=decision.causalReview;
@@ -3273,8 +3293,43 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         deterministicSelection:{...selection,status:'CANDIDATE_VALIDATED'}};
     }catch(error){
       const code=clean(error?.message).split(':')[0];
-      selection.attempts.push({...decision,status:'REJECTED',failureClass:generationFailureClass(error),
-        reasonCode:/^[A-Z][A-Z0-9_]{0,79}$/.test(code)?code:'CANDIDATE_VALIDATION_REJECTED'});
+      const reasonCode=/^[A-Z][A-Z0-9_]{0,79}$/.test(code)?code:'CANDIDATE_VALIDATION_REJECTED';
+      const failureClass=generationFailureClass(error);
+      const failed=validatorExecuted?'CANONICAL_CANDIDATE_VALIDATOR_REJECTED':'SOURCE_PREFLIGHT_REJECTED';
+      selection.attempts.push({...decision,status:'REJECTED',failureClass,reasonCode,
+        validationEvidence:failed});
+      const hypothesis=hypotheses.find(row=>row.fingerprint===fingerprint);
+      if(hypothesis)hypothesis.status=failed;
+      // [실패 반영 재계획] 현재 소스에서 실제로 관측한 검증 실패가 있을 때
+      // 같은 책임 파일·같은 수리법의 반복 대신 겹치지 않는 대체안을 먼저 시험한다.
+      // 함수/기능 완결성 계약과 기존 검증기를 우회하지 않는다.
+      if(!validatorExecuted||!pending.length)continue;
+      const failureFiles=new Set(decision.comparison.sourceFiles);
+      const sourceDiversity=row=>candidateComparison(row).sourceFiles.filter(file=>!failureFiles.has(file)).length;
+      const recipeDiversity=row=>clean(row.deterministicRobloxNativeRepair)!==clean(decision.recipe)?1:0;
+      pending.sort((a,b)=>{
+        const ac=candidateComparison(a),bc=candidateComparison(b);
+        const functionCoverage=composedIntent&&requestedFunctions.length>=2
+          ?bc.functionCoverage-ac.functionCoverage:0;
+        const systemCoverage=composedIntent&&requestedRepairSystems.length>=2
+          ?bc.repairSystemCoverage-ac.repairSystemCoverage:0;
+        const sourceShift=sourceDiversity(b)-sourceDiversity(a);
+        return functionCoverage||systemCoverage||sourceShift
+          ||recipeDiversity(b)-recipeDiversity(a)
+          ||(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0)
+          ||ac.changedBytes-bc.changedBytes;
+      });
+      const next=pending[0],nextComparison=candidateComparison(next);
+      selection.replans.push({
+        afterRejectedFingerprint:fingerprint,observedFailureCode:reasonCode,
+        observedStage:failed,rejectedHypothesisId:fingerprint?.slice(0,16)||null,
+        nextHypothesisId:rejectedSourcePatchFingerprint(next)?.slice(0,16)||null,
+        nextRecipe:clean(next.deterministicRobloxNativeRepair),
+        nextResponsibleFiles:nextComparison.sourceFiles,
+        changedStrategy:sourceDiversity(next)>0?'ALTERNATIVE_SOURCE_OWNER':
+          recipeDiversity(next)?'ALTERNATIVE_REPAIR_RECIPE':'SAME_SCOPE_NEW_INTERVENTION',
+        qaRequired:true,sourceWrite:false,sourceRevisionAuthorityExpanded:false
+      });
     }
   }
   if(ranked.length&&typeof candidateValidator==='function'){
