@@ -32,7 +32,7 @@ def pick(prefer, mode):
     "return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"))
 
 # [메인] 실제 PC 검증에 성공한 GetDescendants·Text 접근만 사용한다.
-# 기존 인위적 BFS·시간 감시 루프를 제거하고 보이는 글자 최대 10개를 기록한다.
+# 기존 인위적 BFS·시간 감시 루프를 제거하고 보이는 글자 최대 10개를 UTF-8 문자 경계로 기록한다.
 TEXTS = (
     "local P=game:GetService('Players').LocalPlayer.PlayerGui "
     "local out={} "
@@ -40,7 +40,8 @@ TEXTS = (
     "if d:IsA('TextLabel') and d.Visible then "
     "local value=d.Text "
     "if value~='' and #value>3 then "
-    "out[#out+1]=string.sub(value,1,40) "
+    "local cut=utf8.offset(value,41) "
+    "out[#out+1]=cut and string.sub(value,1,cut-1) or value "
     "if #out>=10 then break end "
     "end end end "
     "return 'TEXTS: '..table.concat(out,' | ')"
