@@ -36,13 +36,18 @@ test('recovery preserves unrelated Windows services and login boundaries without
   assert.doesNotMatch(workflow,/STUDIO_ACTUAL_PLAY=PASS|ROBLOX_STUDIO_MCP_PLAY_PASS=YES/);
 });
 
-test('authenticated Windows Studio runner reconnects after exits but pauses without an interactive Studio',()=>{
+test('authenticated Windows Studio runner stays online for Studio launch and reconnects on exit',()=>{
   assert.match(canonical,/while \(\$true\) \{/);
-  assert.match(canonical,/ROBLOX_FREE_STUDIO_RUNNER_PAUSED=STUDIO_INTERACTIVE_SESSION_MISSING/);
-  assert.match(canonical,/ROBLOX_FREE_STUDIO_RUNNER_RESUME=OFFICIAL_STUDIO_INTERACTIVE_SESSION/);
+  assert.match(canonical,/ROBLOX_FREE_STUDIO_RUNNER_AVAILABLE_WITHOUT_STUDIO=WAIT_FOR_GITHUB_JOB_LAUNCH/);
+  assert.match(canonical,/ROBLOX_FREE_STUDIO_APP_READY=OFFICIAL_STUDIO_INTERACTIVE_SESSION/);
+  assert.doesNotMatch(canonical,/ROBLOX_FREE_STUDIO_RUNNER_PAUSED=/);
   assert.match(canonical,/Get-AuthenticodeSignature -FilePath \$activeStudioExe/);
   assert.match(canonical,/\$restartDelaySeconds = \[Math\]::Min\(60, \$restartDelaySeconds \* 2\)/);
   assert.match(canonical,/\$runnerExit = \[int\]\$LASTEXITCODE/);
   assert.match(canonical,/if \(\$CheckOnly\) \{/);
   assert.doesNotMatch(canonical,/New-Service|Register-ScheduledTask|--token \$env:/);
+  const bootstrap=workflow.slice(workflow.indexOf('\n  bootstrap:'));
+  assert.match(bootstrap,/WScript\.Sleep 15000/);
+  assert.match(bootstrap,/For Each p In listeners/);
+  assert.match(bootstrap,/If LCase\(p\.ExecutablePath\) = LCase\(target\) Then/);
 });
