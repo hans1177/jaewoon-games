@@ -3776,6 +3776,13 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(qa,/MareQAAssetStatus/);
   assert.match(qa,/MareQAAssetTotals/);
   assert.match(qa,/ContentProvider\.PreloadAsync/);
+  assert.match(qa,/task\.delay\(140, function\(\)/);
+  assert.match(qa,/fetchCallbacks = mediaCallbacks/);
+  assert.match(qa,/currentBatch = currentBatch/);
+  assert.match(qa,/failedMedia = failedMedia/);
+  assert.match(qa,/timedOut = true/);
+  assert.match(qa,/if not timedOut and bad == 0 and moduleErrors == 0/);
+  assert.match(qa,/asset preload timed out at batch/);
   assert.match(qa,/MareQAFeatureStatus/);
   assert.match(qa,/MareQAFeatureTotals/);
   assert.match(qa,/FEATURE_UNIMPLEMENTED_OR_ERROR/);

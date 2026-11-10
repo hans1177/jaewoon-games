@@ -54,6 +54,10 @@ task.spawn(function()
 		end
 	end
 	local bad = 0
+	-- [자산 감사] 실제 로딩 콜백·실패 자산·진행 위치를 보존한다.
+	local mediaStarted = os.clock()
+	local mediaCallbacks, currentBatch = 0, 0
+	local failedMedia = {}
 	local items = {}
 	for _, it in ids do
 		local kind = nil
@@ -72,12 +76,26 @@ task.spawn(function()
 			table.insert(items, { inst = inst, it = it })
 		end
 	end
+	-- [진단] 로블록스 콘텐츠 서버가 응답하지 않아도 종료 결과를 남기며 성공으로 간주하지 않는다.
+	task.delay(140, function()
+		if ReplicatedStorage:GetAttribute("MareQAAssetStatus") ~= "RUNNING" then return end
+		ReplicatedStorage:SetAttribute("MareQAAssetTotals", HttpService:JSONEncode({
+			registered = #ids, imagesSounds = #items, models = modelReferences,
+			fetchCallbacks = mediaCallbacks, currentBatch = currentBatch,
+			failed = bad + moduleErrors, failedMedia = failedMedia,
+			elapsedSeconds = math.floor(os.clock() - mediaStarted), timedOut = true,
+		}))
+		ReplicatedStorage:SetAttribute("MareQAAssetStatus", "FAIL")
+		fail("asset preload timed out at batch " .. currentBatch .. " callbacks=" .. mediaCallbacks .. "/" .. #items)
+	end)
 	for i = 1, #items, 30 do
+		currentBatch = i
 		local batch = {}
 		for j = i, math.min(i + 29, #items) do
 			table.insert(batch, items[j].inst)
 		end
 		local preloaded, preloadError = pcall(ContentProvider.PreloadAsync, ContentProvider, batch, function(contentId, status)
+			mediaCallbacks += 1
 			if status ~= Enum.AssetFetchStatus.Success then
 				bad += 1
 				local key = "?"
@@ -85,6 +103,9 @@ task.spawn(function()
 					if row.it.url == contentId then
 						key = row.it.key
 					end
+				end
+				if #failedMedia < 24 then
+					table.insert(failedMedia, { key = key, id = tostring(contentId), status = tostring(status) })
 				end
 				fail("asset " .. key .. " " .. tostring(contentId) .. " status=" .. tostring(status))
 			end
@@ -94,12 +115,17 @@ task.spawn(function()
 			fail("asset batch " .. i .. " preload error " .. tostring(preloadError):sub(1, 90))
 		end
 	end
-	-- [전체 자산] 이미지·음악은 PreloadAsync로 실검사, 모델은 AssetLoader의 별도 전수 결과와 결합한다.
+	-- [전체 자산] 모든 배치가 실제로 끝났을 때만 통과 처리한다. 시간 초과 기록을 덮어쓰지 않는다.
+	local timedOut = ReplicatedStorage:GetAttribute("MareQAAssetStatus") == "FAIL"
 	ReplicatedStorage:SetAttribute("MareQAAssetTotals", HttpService:JSONEncode({
-		registered = #ids, imagesSounds = #items, models = modelReferences, failed = bad + moduleErrors,
+		registered = #ids, imagesSounds = #items, models = modelReferences,
+		fetchCallbacks = mediaCallbacks, currentBatch = currentBatch,
+		failed = bad + moduleErrors, failedMedia = failedMedia,
+		elapsedSeconds = math.floor(os.clock() - mediaStarted), timedOut = timedOut,
 	}))
-	ReplicatedStorage:SetAttribute("MareQAAssetStatus", if bad == 0 and moduleErrors == 0 and #ids > 0 then "PASS" else "FAIL")
-	if bad == 0 and moduleErrors == 0 and #ids > 0 then
+	ReplicatedStorage:SetAttribute("MareQAAssetStatus",
+		if not timedOut and bad == 0 and moduleErrors == 0 and #ids > 0 then "PASS" else "FAIL")
+	if not timedOut and bad == 0 and moduleErrors == 0 and #ids > 0 then
 		ok("images/sounds preloaded: " .. #items)
 	else
 		print("[QA] ASSET_FAIL_COUNT " .. (bad + moduleErrors) .. "/" .. #items)
