@@ -1111,6 +1111,13 @@ test('Studio QA evidence feeds the existing recovery queue and preserves reports
   assert.match(studio,/STUDIO_QA_FAILURE_SIGNATURE=\$qaSignature/);
   assert.match(studio,/STUDIO_MCP_TOOL_TIMEOUT/);
   assert.match(studio,/STUDIO_SYSTEM_DISK_SPACE_REQUIRED/);
+  assert.match(studio,/ROBLOX_STUDIO_BUILD_TEMP_DRIVE=E/);
+  assert.match(studio,/ROBLOX_STUDIO_PROCESS_TEMP_DRIVE=E/);
+  assert.match(studio,/ROBLOX_STUDIO_E_RUNNER_TEMP_REQUIRED/);
+  assert.match(studio,/ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED/);
+  assert.equal((studio.match(/\$env:TEMP = \$jobTemp/g)||[]).length,2);
+  assert.equal((studio.match(/\$env:TMP = \$jobTemp/g)||[]).length,2);
+  assert.match(studio,/AvailableFreeSpace -lt 2GB/);
   assert.match(studio,/STUDIO_OLD_ROBLOX_LOGS_CLEARED/);
   assert.match(studio,/Get-ChildItem -LiteralPath \$robloxLogRoot -File/);
   assert.match(studio,/\.LastWriteTime -lt \$cutoff/);
