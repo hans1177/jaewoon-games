@@ -1,3 +1,4 @@
+// 파일명: qa/fantasy-asset-health.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -59,4 +60,22 @@ test('시간별 텔레메트리 워크플로는 LFS 저장소에서 git pull/pus
   const y = fs.readFileSync('.github/workflows/devloop-report-meadow.yml', 'utf8');
   assert.doesNotMatch(y, /git push/);
   assert.match(y, /gh api -X PUT "repos\/\$\{GITHUB_REPOSITORY\}\/contents\/\$\{dest\}"/);
+});
+
+test('텔레메트리 표의 서버 에셋 권한·원본 오류와 지형 오류를 실패로 분류한다', () => {
+  const rows = [
+    '| 48 | server/warn | 야영지 소품 로딩 실패: fence: User is not authorized to access Asset. |',
+    '| 9 | server/warn | 마력숲 CC0 초원 자산 로딩/권한 실패: item_pouch: User is not authorized to access Asset. |',
+    '| 2 | server/warn | 마력숲 등록된 CC0 초원 자산 없음: demon |',
+    '| 1 | server/error | Invalid terrain material |',
+    '| 1 | client/warn | 마력숲 자산점검 15s 실패 2/15: rbxassetid://109238389541686,rbxassetid://1360 |'
+  ];
+  const parsed = parseHealthLog(rows.join('\n'));
+  assert.deepEqual(parsed.failedNames.sort(), ['demon', 'fence', 'item_pouch']);
+  assert.deepEqual(parsed.failedIds, ['109238389541686']);
+  assert.deepEqual(parsed.sourceErrors, ['INVALID_TERRAIN_MATERIAL']);
+  const report = buildReport(rows);
+  assert.equal(report.ok, false, '서버 에셋 오류를 무시하고 통과시키면 안 된다');
+  assert.ok(report.items.some(x => x.key === 'fence' && x.action === 'SERVER_ASSET_ACCESS_FAILED'));
+  assert.ok(report.items.some(x => x.key === 'INVALID_TERRAIN_MATERIAL' && x.action === 'GAME_RUNTIME_SOURCE_ERROR'));
 });
