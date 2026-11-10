@@ -43,9 +43,17 @@ export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',resp
   // 임의 인자/함수 생성 없이 기존 단일 원자 편집 및 검증 절차를 재사용한다.
   const clauses=goal.split(';').map(text=>text.trim());
   if(clauses.length>6||clauses.some(text=>!text||text.length>320))return null;
-  const steps=clauses.map(extractExistingChain);
-  if(steps.some(step=>!step)||steps.reduce((n,step)=>n+step.effects.length,0)>48)return null;
-  const names=steps.flatMap(step=>[step.trigger,...step.effects]);
+  const parsed=clauses.map(extractExistingChain);
+  if(parsed.some(step=>!step)||parsed.reduce((n,step)=>n+step.effects.length,0)>48)return null;
+  // [메인] 같은 원본 이벤트에 대한 여러 오너 지시는 하나의 순서 있는 함수 편집으로 합친다.
+  // 서로 다른 트리거/효과 간 중복·자기 호출은 기존처럼 허용하지 않는다.
+  const steps=[],byTrigger=new Map();
+  for(const step of parsed){
+    let group=byTrigger.get(step.trigger);
+    if(!group){group={trigger:step.trigger,effects:[]};byTrigger.set(step.trigger,group);steps.push(group);}
+    for(const effect of step.effects)group.effects.push({name:effect,ownerText:step.ownerText});
+  }
+  const names=[...byTrigger.keys(),...steps.flatMap(step=>step.effects.map(effect=>effect.name))];
   if(task.ownerDirective!==true&&order.ownerApproved!==true)
     throw Error('VIBE2_COMPLEX_OWNER_DIRECTIVE_REQUIRED');
   if(new Set(names).size!==names.length||
@@ -61,12 +69,12 @@ export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',resp
     ownerDirectiveReference:{originalText,interpretedText:goal,derivedFromOwnerRequest:originalText!==goal,verifiedFromOwnerOrder:true},
     allowedGameRoot:sourceRoot,authorizedFiles:[...responsibleFiles],
     baseCommit:String(baseCommit),sourceWrite:false,runtimeVerified:false,
-    requirements:steps.flatMap((step,group)=>step.effects.map((effect,index)=>({
-      id:hash(requestId+'|'+group+'|'+index+'|'+effect),ownerText:step.ownerText,
+    requirements:steps.flatMap((step,group)=>step.effects.map((entry,index)=>({
+      id:hash(requestId+'|'+group+'|'+index+'|'+entry.name),ownerText:entry.ownerText,
       system:'existing-function-chain',event:'function-completion',
-      group,trigger:step.trigger,effect,
-      dependsOn:index?[hash(requestId+'|'+group+'|'+(index-1)+'|'+step.effects[index-1])]:[],
-      actors:[step.trigger,effect],preconditions:['existing-original-function','unique-owner-scope'],
+      group,trigger:step.trigger,effect:entry.name,
+      dependsOn:index?[hash(requestId+'|'+group+'|'+(index-1)+'|'+step.effects[index-1].name)]:[],
+      actors:[step.trigger,entry.name],preconditions:['existing-original-function','unique-owner-scope'],
       invariants:['no-save-schema-change','no-new-assets','no-unrelated-game-change'],
       acceptanceScenarios:['original-handler-preserved','once-per-completion','call-order'],
       stateOwnership:target==='roblox'?'ORIGINAL_LUAU_SCOPE':'ORIGINAL_WEB_SCOPE',
