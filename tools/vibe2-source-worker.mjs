@@ -298,7 +298,7 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
     .filter(name=>/^[A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)*$/.test(name));
   if(allCritical.length>16||allCritical.some(name=>!symbolCandidates.includes(name)))return null;
   const criticalSymbols=new Set(allCritical);
-  const confirmedOwners=new Set(),criticalAnchors=[],retainedAnchors=new Set();
+  const confirmedOwners=new Set(),ownerBindingCounts=new Map(),criticalAnchors=[],retainedAnchors=new Set();
   const files=[];
   let total=0,matchedSymbolCount=0;
   const contextPaths=unique([...responsibleFiles,...(exploration.contextFiles||[])]).slice(0,MAX_CONTEXT_FILES);
@@ -320,6 +320,7 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
           ranges.push({start:fn.start,end:fn.end,labels:[symbol]});
           if(responsibleFiles.includes(relative)&&criticalSymbols.has(symbol)){
             confirmedOwners.add(symbol);
+            ownerBindingCounts.set(symbol,(ownerBindingCounts.get(symbol)||0)+1);
             criticalAnchors.push({path:relative,symbol,at:fn.start});
           }
         }
@@ -398,7 +399,8 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
       }
     }
   }
-  if(!files.length||allCritical.some(symbol=>!confirmedOwners.has(symbol))||
+  // [중복 소유자] 동일한 이름의 쓰기 대상이 둘 이상이면 임의의 파일을 선택하지 않는다.
+  if(!files.length||allCritical.some(symbol=>ownerBindingCounts.get(symbol)!==1)||
     criticalAnchors.some(anchor=>
       !retainedAnchors.has(anchor.path+':'+anchor.symbol+':'+anchor.at)))return null;
   return{files,bytes:total,mode:'PRIMARY_SYMBOL_WINDOWS',codingAnalysisVersion:CODING_ANALYSIS_VERSION,
