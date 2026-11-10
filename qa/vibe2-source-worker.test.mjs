@@ -5831,7 +5831,7 @@ test('semantic diff rejects a modified duplicate owner symbol instead of guessin
   const before=[
     'function handlePointer(e){ pointerState=e; }',
     'function handlePointer(e){ pointerState=normalizePointer(e); }'
-  ].join('\\n');
+  ].join('\n');
   write(path.join(sourceRoot,'index.html'),before);
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',
@@ -5846,13 +5846,13 @@ test('semantic diff rejects a modified duplicate owner symbol instead of guessin
   assert.equal(result.mode,'HARD_ENFORCE');
   assert.equal(result.pass,false);
   assert.deepEqual(result.ambiguousSymbolPaths,['index.html:handlePointer']);
-  assert.match(result.violations.join('|'),/AMBIGUOUS_SYMBOL_OWNER:index\\.html:handlePointer/);
+  assert.match(result.violations.join('|'),/AMBIGUOUS_SYMBOL_OWNER:index\.html:handlePointer/);
   assert.equal(fs.readFileSync(path.join(sourceRoot,'index.html'),'utf8'),before);
 });
 
 test('semantic diff refuses high-confidence edits when no function owner can be inspected',()=>{
   const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
-  write(path.join(sourceRoot,'index.html'),'const handlePointer = true;\\n');
+  write(path.join(sourceRoot,'index.html'),'const handlePointer = true;\n');
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',find:'const handlePointer = true;',replace:'const handlePointer = false;'}]},
     editContract:{
@@ -5863,7 +5863,7 @@ test('semantic diff refuses high-confidence edits when no function owner can be 
   });
   assert.equal(result.pass,false);
   assert.deepEqual(result.unverifiedSymbolPaths,['index.html:NO_FUNCTION_EVIDENCE']);
-  assert.match(result.violations.join('|'),/SYMBOL_INSPECTION_UNPROVEN:index\\.html:NO_FUNCTION_EVIDENCE/);
+  assert.match(result.violations.join('|'),/SYMBOL_INSPECTION_UNPROVEN:index\.html:NO_FUNCTION_EVIDENCE/);
 });
 
 test('semantic diff blocks a missing responsible source instead of treating its name as proof',()=>{
