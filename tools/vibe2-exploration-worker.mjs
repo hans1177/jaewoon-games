@@ -14,7 +14,7 @@ import {inspectVibe59RobloxCoding} from './vibe59-roblox-coding.mjs';
 import { diagnoseGame, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { buildCodingArchitecture } from './company-vibe2-coding-architecture.mjs';
-import { CODING_ANALYSIS_VERSION, inspectSourceFunctions, buildResponsibilityGraph, buildExpertDevelopmentAnalysis, traceFailureResponsibility, summarizeResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
+import { CODING_ANALYSIS_VERSION, inspectSourceFunctions, executableText, buildResponsibilityGraph, buildExpertDevelopmentAnalysis, traceFailureResponsibility, summarizeResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -770,9 +770,27 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
       }
     }
   }
+  // [코드 생성 근거] 실제 ModuleScript가 끝에서 반환하는 테이블의 선언된
+  // 함수만 제시한다. 동적 반환이나 중첩·비공개 함수는 API로 추측하지 않는다.
+  const moduleApi=target==='roblox'?moduleRows.slice(0,24).map(row=>{
+    const text=scannedByPath.get(row.path)?.text||'';
+    const executable=executableText(text,'luau');
+    const returned=executable.match(/(?:^|\\n)\\s*return\\s+([A-Za-z_]\\w*)\\s*$/)?.[1]||null;
+    const methods=returned?unique(inspectSourceFunctions(text,{language:'luau',maxFunctions:512})
+      .map(fn=>{
+        const prefix=returned+'.';
+        const colon=returned+':';
+        return fn.name.startsWith(prefix)?fn.name.slice(prefix.length)
+          :fn.name.startsWith(colon)?fn.name.slice(colon.length):'';
+      }).filter(name=>/^[A-Za-z_]\\w*$/.test(name))).slice(0,24):[];
+    return{path:row.path,returnedTable:returned,methods,
+      evidence:returned?'STATIC_RETURNED_TABLE':'EXPORT_SHAPE_UNPROVEN',
+      sourceWrite:false,runtimeVerified:false};
+  }):[];
   const robloxModuleGraph=target==='roblox'?{
     version:1,modules:moduleRows.slice(0,24),edges:moduleEdges.slice(0,48),
-    unresolved:moduleUnresolved.slice(0,24),sourceWrite:false,runtimeVerified:false,
+    unresolved:moduleUnresolved.slice(0,24),moduleApi,
+    sourceWrite:false,runtimeVerified:false,
     completeRepositoryGraph:false,authority:'unique-observed-module-require-paths-only'
   }:null;
   const requiredModulePaths=moduleRows.map(row=>row.path);
@@ -883,7 +901,9 @@ export function explorationGuidance(handoff={}){
     ]:[]),
     ...(handoff.robloxModuleGraph?[
       `Vibe5.9 Roblox 기존 모듈 연결=${handoff.robloxModuleGraph.modules.map(row=>row.path+' <- '+row.from+':'+row.depth).join(' | ')||'NONE'}`,
-      `Vibe5.9 Roblox 모듈 경로 미확정=${handoff.robloxModuleGraph.unresolved.length} · 읽기 전용 · 직접 수정 권한 없음`
+      `Vibe5.9 Roblox 모듈 경로 미확정=${handoff.robloxModuleGraph.unresolved.length} · 읽기 전용 · 직접 수정 권한 없음`,
+      `Vibe5.9 Roblox 실제 모듈 함수=${(handoff.robloxModuleGraph.moduleApi||[]).map(row=>row.path+':'+(row.methods.length?row.methods.join('/'):'확인된 함수 없음')+'('+row.evidence+')').join(' | ')||'NONE'}`,
+      '로블록스 모듈 함수는 정적 소스 서명만 확인했다. 함수 목록에 없는 동적 API를 존재한다고 추측하지 말고, 호출이 필요한 경우 해당 원본을 추가 조사한다. 실제 실행 통과나 쓰기 권한을 의미하지 않는다.'
     ]:[]),
     ...(handoff.robloxCoding?[
       `Vibe5.9 Roblox 책임 경로=${handoff.robloxCoding.files.filter(x=>x.responsible).map(x=>x.path+':'+x.side+':수신 '+x.events.map(e=>e.remote+'.'+e.signal).join('/')+':송신 '+x.calls.map(e=>e.remote+':'+e.method).join('/')+':상태 '+x.stateEffects.map(e=>e.method).join('/')).join(' | ')||'NONE'}`,
