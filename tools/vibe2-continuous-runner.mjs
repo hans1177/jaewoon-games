@@ -934,7 +934,30 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     task,route,target:plan.target,responsibleFiles,qa:plan.qa
   });
   const handoffGuidance=vibeAgentHandoffGuidance(agentHandoff);
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, handoffGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, phase4BenchmarkGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, knowledgeApplicationGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  // [메인] 실제 코딩 주문은 기존 BUILD_UP 진단 우선순위를 맨 앞에서 전달한다.
+  // 계획 후보와 쓰기 허용 파일의 교집합만 선택하며 타 게임 파일/새 권한은 절대 추가하지 않는다.
+  const qualityPlan=trustedBuildUp&&plan.target==='roblox'?task.buildUpDirective?.robloxHolisticQualityPlan:null;
+  const qualityWork=qualityPlan?.autonomousWorkUnit;
+  const exactGameRoot='roblox-games/'+clean(task.gameId);
+  const qualityBound=qualityPlan?.gameId===clean(task.gameId)
+    &&posix(task.sourceRoot)===exactGameRoot
+    &&Array.isArray(qualityWork?.sourceFiles)
+    &&Boolean(clean(qualityWork?.id));
+  const authorizedTaskFiles=new Set(responsibleFiles.map(posix));
+  const qualityAuthorizedOwners=qualityBound?[...new Set(qualityWork.sourceFiles.map(posix))]
+    .filter(file=>file.startsWith(exactGameRoot+'/')&&authorizedTaskFiles.has(file)
+      &&/\\.(?:lua|luau)$/i.test(file)):[];
+  const qualityExecutionGuidance=qualityBound?[
+    '[VIBE_QUALITY_PRIMARY_EXECUTION]',
+    'game='+clean(task.gameId)+' priority='+clean(qualityWork.priority)+' mode='+clean(qualityWork.mode)
+      +' observedFailure='+String(qualityWork.mode==='REPAIR_CURRENT_CAUSAL_FAILURE_FIRST'),
+    'authorizedExistingOwnerCandidates='+(qualityAuthorizedOwners.join(' | ')||'NONE_OWNER_DISCOVERY_REQUIRED'),
+    'qualityTarget='+clean(qualityWork.id)+' evidence='+clean(qualityWork.evidence),
+    'Must identify cause in exact authorized existing owner before source mutation; candidate list does not change work-order write scope.',
+    'If no matching owner is authorized, report scope/ownership blocker instead of editing another file or making an unverified fix.',
+    'Preserve game rules, economy, saves, approved balance, and F0-F9 gates. Re-run exact failed QA; static hints never imply PASS.'
+  ].join('\n'):'';
+  const executionGoal = [qualityExecutionGuidance,packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, handoffGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, phase4BenchmarkGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, knowledgeApplicationGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const taskEvidence=new Set((task.evidence||[]).map(clean));
   const webSourceRootBootstrapAllowed=plan.target==='web'
     &&taskEvidence.has('source-root-bootstrap-required')
