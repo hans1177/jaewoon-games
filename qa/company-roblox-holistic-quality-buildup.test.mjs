@@ -236,3 +236,21 @@ test('Vibe missing shared asset keeps exact game source owner for direct repair'
   assert.equal(plan.autonomousWorkUnit.ownerDiscoveryRequired,false);
   assert.equal(plan.autonomousWorkUnit.verifiedRuntime,false);
 }));
+
+
+test('Vibe active causal failure is repaired before automatic content or visual expansion',()=>fixture(({dir,game,base})=>{
+  fs.writeFileSync(path.join(base,'models','bad.glb'),Buffer.from('broken imported mesh'));
+  const plan=buildRobloxHolisticQualityPlan({repoRoot:dir,gameId:game,
+    repairRequested:true,runtimeEvidence:{failureSignature:'STUDIO_FEATURE_AUDIT_FAILED'},
+    qualityGaps:[{domain:'MENU_FLOW',state:'GAP'}]});
+  assert.ok(plan.issues.length>0,'source defects must remain visible');
+  assert.equal(plan.autonomousWorkUnit.id,'CURRENT_CAUSAL_FAILURE');
+  assert.equal(plan.autonomousWorkUnit.mode,'REPAIR_CURRENT_CAUSAL_FAILURE_FIRST');
+  assert.equal(plan.autonomousWorkUnit.failureSignature,'STUDIO_FEATURE_AUDIT_FAILED');
+  assert.equal(plan.autonomousWorkUnit.verifiedRuntime,false);
+  assert.equal(plan.autonomousWorkUnit.ownerDiscoveryRequired,true);
+  assert.equal(plan.autonomousDecisionOwner,'VIBE_EXISTING_BUILD_UP');
+  assert.match(robloxHolisticQualityPromptLines(plan).join('\\n'),/REPAIR_CURRENT_FAILED_STAGE/);
+  const directiveSource=fs.readFileSync('tools/company-build-up-directive.mjs','utf8');
+  assert.match(directiveSource,/repairRequested:clean\\(nextActionDecision\\?\\.action\\)\\.toUpperCase\\(\\)===\\x27CAUSAL_REPAIR\\x27/);
+}));
