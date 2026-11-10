@@ -179516,11 +179516,141 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_79b6db6d2ffc0b59b70a1630",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12389",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b0069836c44c8fd5a62fafddb9e7d6129debb176",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12389,
+        "baseBranch": "main",
+        "headBranch": "fix-mare-studio-regrant-20261111",
+        "baseSha": "b0069836c44c8fd5a62fafddb9e7d6129debb176",
+        "headSha": "0264a61ef1561fca99a80cafa21a88918de0580f",
+        "mergeCommitSha": "3bbd3b64dbc289cfd6b231c50349258d979265bf",
+        "mergedAt": "2026-11-10T20:39:51Z",
+        "authorLogin": "hans1177",
+        "titleHash": "483bea4a6ab15cb4923163725e557b753e8745c212bc61450f028b5449cde5c9",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix-mare-studio-regrant-20261111",
+        "candidateSha": "0264a61ef1561fca99a80cafa21a88918de0580f"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 179,
+        "deletedLineCount": 21,
+        "changedFiles": [
+          ".github/workflows/owner-fantasy-assets.yml",
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "roblox-games/fantasy-survival/broken-assets.json",
+          "roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md",
+          "roblox-games/mare-essentia/docs/devloop/TELEMETRY.md",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-fantasy-assets.yml",
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "roblox-games/fantasy-survival/broken-assets.json",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12389",
+        "merge-commit:3bbd3b64dbc289cfd6b231c50349258d979265bf",
+        "base-main:b0069836c44c8fd5a62fafddb9e7d6129debb176"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1432
+    "total": 1433
   }
 }
