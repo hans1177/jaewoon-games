@@ -11036,3 +11036,50 @@ test('Vibe5.9 validator return codes survive causal replanning without trusted-s
     assert.equal(candidate.deterministicSelection.status,'CANDIDATE_VALIDATED');
   }
 });
+
+
+// [실제 검증기 예외 경로] 원인 세부 식별자는 다음 가설에 남기되,
+// 오류 원문에 포함된 경로·사적 데이터는 기존 재계획 증거에 복사하지 않는다.
+test('Vibe5.9 captures validator exception subcodes safely',t=>{
+  for(const item of [
+    {message:'ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:private/Secret.luau',
+      subcode:'MODEL_CONTROL_TOKEN'},
+    {message:'ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:private/Secret.luau',
+      subcode:null}
+  ]){
+    const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-exception-detail-'));
+    t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+    fs.mkdirSync(path.join(root,'client'),{recursive:true});
+    const first='client/First.client.luau',second='client/Second.client.luau';
+    fs.writeFileSync(path.join(root,first),[
+      'local function attack()',
+      ' local score=1',
+      'end',
+      'local attackButton=Instance.new("TextButton")',
+      'attackButton.Parent = hud',
+      'local action=Instance.new("TextButton")',
+      'action.MouseButton1Click:Connect(function() end)',''
+    ].join('\n'));
+    const other='other'+'X'.repeat(130);
+    fs.writeFileSync(path.join(root,second),
+      'local '+other+'=Instance.new("TextButton")\n'
+      +other+'.MouseButton1Click:Connect(function() end)\n');
+    const observed=[];
+    const result=deterministicRobloxNativeRepairCandidate({
+      order:{target:'roblox',goal:'모바일 버튼 복구'},
+      sourceRoot:root,responsibleFiles:[first,second],
+      candidateValidator:patch=>{
+        observed.push(patch.edits[0].path);
+        if(observed.length===1)throw new Error(item.message);
+        return {pass:true,runtimeVerified:false};
+      }
+    });
+    const replan=result.deterministicSelection.replans[0];
+    assert.deepEqual(observed,[first,second]);
+    assert.equal(result.deterministicSelection.attempts[0].reasonCode,'ROBLOX_SOURCE_STRUCTURAL_CONTINUITY');
+    assert.equal(result.deterministicSelection.attempts[0].failureSubcode,item.subcode);
+    assert.equal(replan.observedFailureSubcode,item.subcode);
+    assert.doesNotMatch(JSON.stringify(result.deterministicSelection),/private\/Secret\.luau/);
+    assert.equal(result.deterministicSelection.runtimeVerified,false);
+  }
+});
