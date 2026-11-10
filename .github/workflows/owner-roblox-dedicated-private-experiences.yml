@@ -448,35 +448,81 @@ jobs:
               throw Error('OWNER_FOREST_WORN_CAPE_REGISTRATION_REQUIRED');
             selected.push(cape.assetId);
           }
-          const assetIds=selected;
+          // [승인된 기존 장비] 원본 모델 출처와 ID를 보존하고 동일 Universe에만 사용권을 요청한다.
+          const gears=registry.gearExpansionV1;
+          if(!gears||gears.gameId!=='fantasy-survival'||gears.universeId!==String(process.env.ROBLOX_UNIVERSE_ID)
+            ||gears.license!=='CC0-1.0'||gears.sourceVerified!==true
+            ||gears.nativeRegistrationVerified!==true||gears.universeUseGrantVerified!==true
+            ||gears.modelCount!==20||Object.keys(gears.models||{}).length!==20)
+            throw Error('OWNER_FOREST_GEAR_SOURCE_PROVENANCE_REQUIRED');
+          for(const [name,row] of Object.entries(gears.models)){
+            if(!/^gear_[a-z0-9_]+$/.test(name)||row.license!=='CC0-1.0'
+              ||row.sourceVerified!==true||row.nativeRegistrationVerified!==true
+              ||row.universeUseGrantVerified!==true||row.universeId!==gears.universeId
+              ||row.licenseEvidence!==gears.licenseSources?.[row.sourceArchive]
+              ||row.sourceArchiveSha256!==gears.sourcePacks?.[row.sourceArchive]
+              ||!/^[a-f0-9]{64}$/.test(row.sha256||'')
+              ||!Number.isSafeInteger(row.assetId)||row.assetId<1
+              ||!new RegExp('\\b'+name+'\\s*=\\s*'+row.assetId+'\\b').test(ids))
+              throw Error('OWNER_FOREST_GEAR_MODEL_BINDING_INVALID:'+name);
+            selected.push(row.assetId);
+          }
+          // [승인된 Quaternius 아이템] 등록표를 그대로 사용하되 권한은 아래 공식 API로 다시 확인한다.
+          const itemPack=registry.itemPackV1;
+          if(itemPack?.license!=='CC0-1.0'||itemPack.author!=='Quaternius'
+            ||itemPack.licenseEvidence!=='https://quaternius.com/packs/ultimaterpg.html'
+            ||!itemPack.assetIds)throw Error('OWNER_FOREST_ITEM_PACK_SOURCE_REQUIRED');
+          for(const [name,rawId] of Object.entries(itemPack.assetIds)){
+            const id=Number(rawId);
+            if(!/^item_[a-z0-9_]+$/.test(name)||!Number.isSafeInteger(id)||id<1
+              ||!new RegExp('\\b'+name+'\\s*=\\s*'+id+'\\b').test(ids))
+              throw Error('OWNER_FOREST_ITEM_MODEL_BINDING_INVALID:'+name);
+            selected.push(id);
+          }
+          // [원본 장착 도구·방패] 승인 SHA/CC0와 실제 등록 ID가 일치할 때만 권한을 요청한다.
+          const extra=registry.villageExtraV2;
+          if(extra?.universeId!==String(process.env.ROBLOX_UNIVERSE_ID)||extra.license!=='CC0-1.0')
+            throw Error('OWNER_FOREST_VILLAGE_GEAR_SOURCE_REQUIRED');
+          for(const name of ['vxToolAxe','vxShieldA','vxShieldB','vxShieldC','vxShieldD']){
+            const row=extra.models?.[name],id=Number(row?.assetId);
+            if(!row||row.license!=='CC0-1.0'||row.universeUseGrantVerified!==true
+              ||!/^https:\/\//.test(row.licenseEvidence||'')
+              ||!/^[a-f0-9]{64}$/.test(row.sha256||'')||row.sha256!==row.importedSourceHash
+              ||!/^roblox-games\/fantasy-survival\/assets\/village-extra2\/[a-z0-9-]+\.glb$/.test(row.path||'')
+              ||sha(fs.readFileSync(row.path))!==row.sha256
+              ||!Number.isSafeInteger(id)||id<1
+              ||!new RegExp('\\b'+name+'\\s*=\\s*'+id+'\\b').test(ids))
+              throw Error('OWNER_FOREST_VILLAGE_GEAR_MODEL_INVALID:'+name);
+            selected.push(id);
+          }
+          const assetIds=[...new Set(selected)];
           if(assetIds.length){
-            // Verified CC0 models still require explicit Roblox Universe grants.
-            // Missing Open Cloud asset permissions block the upload, without cookie fallback.
+            // [공식 권한] 원본이 실제 체험에서 거부되면 게시하지 않는다.
+            // Roblox API의 건별 성공 ID를 20개 단위로 검증해 대량 요청도 누락 없이 처리한다.
             const url='https://apis.roblox.com/asset-permissions-api/v1/assets/permissions';
-            const body=JSON.stringify({subjectType:'Universe',subjectId:String(process.env.ROBLOX_UNIVERSE_ID),
-              action:'Use',requests:assetIds.map(assetId=>({assetId,grantToDependencies:true}))});
             const apiKey=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
             if(!apiKey)throw new Error('ROBLOX_CC0_GRANT_OPEN_CLOUD_API_KEY_REQUIRED');
-            const request=async headers=>fetch(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(30000)});
-            const decode=async result=>result.json().catch(()=>({}));
-            const complete=(result,answer)=>{
+            for(let offset=0;offset<assetIds.length;offset+=20){
+              const batch=assetIds.slice(offset,offset+20);
+              const body=JSON.stringify({subjectType:'Universe',subjectId:String(process.env.ROBLOX_UNIVERSE_ID),
+                action:'Use',requests:batch.map(assetId=>({assetId,grantToDependencies:true}))});
+              const grant=await fetch(url,{method:'PATCH',
+                headers:{'x-api-key':apiKey,'content-type':'application/json'},
+                body,signal:AbortSignal.timeout(30000)});
+              const answer=await grant.json().catch(()=>({}));
               const granted=new Set(Array.isArray(answer?.successAssetIds)?answer.successAssetIds.map(String):[]);
-              return result?.ok===true
-                &&(!Array.isArray(answer?.errors)||answer.errors.length===0)
-                &&assetIds.every(assetId=>granted.has(String(assetId)));
-            };
-            const authority='API_KEY';
-            const grant=await request({'x-api-key':apiKey,'content-type':'application/json'});
-            const answer=await decode(grant);
-            if(!complete(grant,answer)){
-              // Do not log response bodies or auth material.
-              const reason=String(answer?.error?.code||answer?.errors?.[0]?.code||'UNSPECIFIED')
-                .replace(/[^A-Za-z0-9_]/g,'_').slice(0,64);
-              console.error('ROBLOX_CC0_UNIVERSE_GRANT_DENIAL_CODE='+reason);
-              if(grant?.status===403)console.error('ROBLOX_CC0_GRANT_RIGHTS_REQUIRED=ASSET_PERMISSIONS_WRITE_AND_ASSET_SUBJECT_ACCESS');
-              throw new Error('ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_'+(grant?.status||0));
+              if(grant.ok!==true||Array.isArray(answer?.errors)&&answer.errors.length>0
+                ||!batch.every(assetId=>granted.has(String(assetId)))){
+                // 공개 로그에는 오류 코드만 기록한다. 키·응답 본문은 노출하지 않는다.
+                const reason=String(answer?.error?.code||answer?.errors?.[0]?.code||'UNSPECIFIED')
+                  .replace(/[^A-Za-z0-9_]/g,'_').slice(0,64);
+                console.error('ROBLOX_CC0_UNIVERSE_GRANT_DENIAL_CODE='+reason);
+                if(grant.status===403)console.error('ROBLOX_CC0_GRANT_RIGHTS_REQUIRED=ASSET_PERMISSIONS_WRITE_AND_ASSET_SUBJECT_ACCESS');
+                throw Error('ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_'+grant.status);
+              }
+              console.log('ROBLOX_CC0_UNIVERSE_GRANT_BATCH_ACCEPTED='+batch.length);
             }
-            console.log('ROBLOX_CC0_UNIVERSE_GRANT_AUTHORITY='+authority);
+            console.log('ROBLOX_CC0_UNIVERSE_GRANT_AUTHORITY=API_KEY');
             console.log('ROBLOX_CC0_UNIVERSE_GRANT_ACCEPTED='+assetIds.length);
           }else console.log('ROBLOX_CC0_UNIVERSE_GRANT=NO_REGISTERED_ACTOR_USE');
           NODE
