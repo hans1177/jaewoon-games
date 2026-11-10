@@ -12433,12 +12433,13 @@ do
   task.spawn(function()
     task.wait(3)
     local terrain=workspace.Terrain
-    terrain:FillBlock(CFrame.new(gardenCenter.X,-4,0),Vector3.new(520,12,520),Enum.Material.Marble)
-    terrain:SetMaterialColor(Enum.Material.Marble,Color3.fromRGB(196,206,220))
+    -- [거울 정원] Terrain 전용 재질만 사용한다. Marble/Glass는 파츠 전용이라 런타임 오류가 난다.
+    terrain:FillBlock(CFrame.new(gardenCenter.X,-4,0),Vector3.new(520,12,520),Enum.Material.Limestone)
+    terrain:SetMaterialColor(Enum.Material.Limestone,Color3.fromRGB(196,206,220))
     terrain:FillCylinder(CFrame.new(gardenCenter.X,-1.4,0),5,70,Enum.Material.Water)
     for i=1,10 do
       local angle=i/10*math.pi*2
-      terrain:FillCylinder(CFrame.new(gardenCenter.X+math.cos(angle)*190,16,math.sin(angle)*190),36,9,Enum.Material.Glass)
+      terrain:FillCylinder(CFrame.new(gardenCenter.X+math.cos(angle)*190,16,math.sin(angle)*190),36,9,Enum.Material.Glacier)
     end
     local gate=Instance.new("Attachment");gate.WorldPosition=fortGate;gate.Parent=terrain
     local glow=Instance.new("ParticleEmitter");glow.Color=ColorSequence.new(Color3.fromRGB(190,220,255));glow.LightEmission=1;glow.Rate=26
