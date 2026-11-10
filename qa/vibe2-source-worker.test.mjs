@@ -902,6 +902,7 @@ import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
 import { requiredBlueprintFieldsFromPrompt } from '../tools/vibe2-source-worker.mjs';
 import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, rejectedSourcePatchFingerprint, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
+import { diagnoseGame } from '../tools/autonomous-diagnostics.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance, inspectVibeSourceGlb } from '../tools/vibe2-asset-production-plan.mjs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
@@ -10619,4 +10620,32 @@ test('Vibe offline generator makes a genuine native UI patch from current Studio
   assert.equal(generate({...order,selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:{
     ...officialFailure,authority:'unverified-label'
   }}}}}),null,'unverified observations cannot generate a native repair');
+});
+
+test('no-model DOM causal correction retains the original callback and is idempotent',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/demo');
+  const html='<html><body><button id="play" data-gameplay-action="startGame">Play</button><script src="app.js"></script></body></html>';
+  const original="document.getElementById('missing').addEventListener('click',startGame);\nfunction startGame(){ globalThis.played=(globalThis.played||0)+1; }";
+  write(path.join(root,'index.html'),html);write(path.join(root,'app.js'),original);
+  const match=diagnoseGame(root).issues.find(row=>row.type==='DOM_EVENT_TARGET_MISMATCH');
+  assert.ok(match);
+  const exploration={editContract:{causalReplay:{required:true,executable:true,mode:'DIAGNOSTIC_RESCAN',
+    diagnosticType:match.type,diagnosticFile:match.file,diagnosticLine:match.line,diagnosticNeedle:match.needle}}};
+  const candidate=deterministicDiagnosticCandidate({exploration,sourceRoot:root,responsibleFiles:['app.js','index.html']});
+  assert.ok(candidate);
+  assert.equal(candidate.edits.length,1);
+  const updated=original.replace(candidate.edits[0].find,candidate.edits[0].replace);
+  assert.match(updated,/getElementById\('play'\)\.addEventListener\('click',startGame\)/);
+  assert.doesNotMatch(updated,/\?\.addEventListener/);
+  assert.equal(evaluateDiagnosticPostcondition({candidate,exploration}).pass,true);
+  const listeners=[],context={globalThis:{},document:{getElementById:id=>id==='play'?{
+    addEventListener:(event,callback)=>listeners.push({event,callback})}:null}};
+  runInNewContext(updated,context);
+  assert.equal(listeners.length,1);
+  listeners[0].callback();
+  assert.equal(context.globalThis.played,1);
+  assert.equal(fs.readFileSync(path.join(root,'app.js'),'utf8'),original);
+  write(path.join(root,'app.js'),updated);
+  assert.equal(diagnoseGame(root).issues.some(row=>row.type==='DOM_EVENT_TARGET_MISMATCH'),false);
+  assert.equal(deterministicDiagnosticCandidate({exploration,sourceRoot:root,responsibleFiles:['app.js','index.html']}),null);
 });

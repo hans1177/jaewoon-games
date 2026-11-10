@@ -97,3 +97,34 @@ test('safe diagnostic is converted into evidence-rich micro task',()=>{
   assert.equal(task.needle,'<head');
   assert.match(task.goal,/viewport/);
 });
+
+test('cross-file DOM mismatch is proven by unique HTML button, existing callback and script loading order',()=>{
+  const root=fixture();
+  try{
+    const html='<html><body><button id="play" data-gameplay-action="startGame">Play</button><script src="app.js"></script></body></html>';
+    fs.writeFileSync(path.join(root,'index.html'),html);
+    fs.writeFileSync(path.join(root,'app.js'),"document.getElementById('missing').addEventListener('click',startGame);\nfunction startGame(){}");
+    const matched=diagnoseGame(root).issues.filter(row=>row.type==='DOM_EVENT_TARGET_MISMATCH');
+    assert.equal(matched.length,1);
+    assert.equal(matched[0].file,'app.js');
+    assert.equal(matched[0].pageFile,'index.html');
+    assert.equal(matched[0].expectedId,'play');
+    assert.equal(matched[0].missingId,'missing');
+    assert.equal(microTaskFromIssue(matched[0]).type,'DOM_EVENT_TARGET_MISMATCH');
+    fs.writeFileSync(path.join(root,'app.js'),"document.getElementById('play').addEventListener('click',startGame);\nfunction startGame(){}");
+    assert.equal(diagnoseGame(root).issues.some(x=>x.type==='DOM_EVENT_TARGET_MISMATCH'),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+test('cross-file DOM mismatch refuses ambiguous buttons and shared script ownership',()=>{
+  const root=fixture();
+  try{
+    const js="document.querySelector('#missing').addEventListener('click',startGame);\nfunction startGame(){}";
+    fs.writeFileSync(path.join(root,'app.js'),js);
+    const html=button=>'<html><body>'+button+'<script src="app.js"></script></body></html>';
+    fs.writeFileSync(path.join(root,'index.html'),html('<button id="a" data-gameplay-action="startGame"></button><button id="b" data-gameplay-action="startGame"></button>'));
+    assert.equal(diagnoseGame(root).issues.some(x=>x.type==='DOM_EVENT_TARGET_MISMATCH'),false);
+    fs.writeFileSync(path.join(root,'index.html'),html('<button id="a" data-gameplay-action="startGame"></button>'));
+    fs.writeFileSync(path.join(root,'other.html'),html('<button id="b" data-gameplay-action="startGame"></button>'));
+    assert.equal(diagnoseGame(root).issues.some(x=>x.type==='DOM_EVENT_TARGET_MISMATCH'),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

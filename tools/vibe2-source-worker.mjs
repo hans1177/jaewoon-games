@@ -20,6 +20,7 @@ import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { applyExactEdits, boundedLargeExcerpt } from './autonomous-safe-edit.mjs';
 import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-worker.mjs';
+import { diagnoseGame } from './autonomous-diagnostics.mjs';
 import { createVibe4OfflinePatternCandidate } from './vibe2-v4-pattern-coder.mjs';
 import { createVibe59CodeCandidates } from './vibe2-v59-autonomy.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
@@ -463,7 +464,7 @@ export function diagnosticFocusedReplaceOnlySpec({exploration={},sourceRoot='',r
   if(replay.executable!==true||clean(replay.mode).toUpperCase()!=='DIAGNOSTIC_RESCAN')return null;
   const exactResponsible=unique(responsibleFiles);
   const diagnosticFile=posix(replay.diagnosticFile);
-  if(exactResponsible.length!==1||!diagnosticFile||!exactResponsible.includes(diagnosticFile)||!clean(sourceRoot))return null;
+  if(!exactResponsible.length||exactResponsible.length>4||!diagnosticFile||!exactResponsible.includes(diagnosticFile)||!clean(sourceRoot))return null;
   try{
     const root=path.resolve(sourceRoot),file=path.resolve(root,diagnosticFile);
     if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return null;
@@ -3070,6 +3071,20 @@ export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',r
     const unsafe=/(document\.(?:getElementById|querySelector)\s*\([^\n;]+\))\s*\.addEventListener\s*\(/;
     if(!unsafe.test(spec.find))return null;
     replace=spec.find.replace(unsafe,(_match,call)=>call+'?.addEventListener(');
+  }else if(spec.diagnosticType==='DOM_EVENT_TARGET_MISMATCH'){
+    // [원인 직접 수정] 재진단이 확인한 유일한 HTML 버튼 ID만 소스 이벤트에 적용한다.
+    const found=diagnoseGame(sourceRoot,{maxIssues:Infinity}).issues.filter(row=>
+      row.type==='DOM_EVENT_TARGET_MISMATCH'&&row.file===spec.path&&row.needle===spec.diagnosticNeedle
+      &&(spec.diagnosticLine==null||Number(row.line)===Number(spec.diagnosticLine)));
+    if(found.length!==1||!spec.find.includes(found[0].needle))return null;
+    const wire=/document\.(getElementById|querySelector)\s*\(\s*(["'])(#?[A-Za-z][\w-]*)\2\s*\)\s*\.addEventListener\s*\(\s*(["'])click\4\s*,\s*([A-Za-z_$][\w$]*)\s*\)/;
+    const match=wire.exec(found[0].needle);
+    if(!match||match[1]!==found[0].lookupKind||match[5]!==found[0].callback)return null;
+    const expected=match[1]==='querySelector'?'#'+found[0].expectedId:found[0].expectedId;
+    const before='document.'+match[1]+'('+match[2]+match[3]+match[2]+')';
+    const after='document.'+match[1]+'('+match[2]+expected+match[2]+')';
+    if(before===after||spec.find.split(before).length!==2)return null;
+    replace=spec.find.replace(before,after);
   }else if(spec.diagnosticType==='INTERVAL_CLEANUP_RISK'){
     if(/\bclearInterval\s*\(/.test(spec.find))return null;
     const timerAssign=/([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\s*=\s*setInterval\s*\(/;
@@ -3444,6 +3459,14 @@ export function evaluateDiagnosticPostcondition({candidate={},exploration={}}={}
     if(!targeted){pass=false;reason='DOM_NULL_EVENT_BIND_TARGET_NOT_REPAIRED';}
     else if(unsafe.test(changed)){pass=false;reason='DOM_NULL_EVENT_BIND_STILL_UNSAFE';}
     else if(!/\baddEventListener\s*\(/.test(changed)){pass=false;reason='DOM_EVENT_BEHAVIOR_NOT_PRESERVED';}
+  }
+  if(pass&&type==='DOM_EVENT_TARGET_MISMATCH'){
+    const wire=/document\.(getElementById|querySelector)\s*\(\s*(["'])(#?[A-Za-z][\w-]*)\2\s*\)\s*\.addEventListener\s*\(\s*(["'])click\4\s*,\s*([A-Za-z_$][\w$]*)\s*\)/;
+    const exact=targetEdits.some(row=>{
+      const original=wire.exec(String(row.find??'')),fixed=wire.exec(String(row.replace??''));
+      return original&&fixed&&original[1]===fixed[1]&&original[3]!==fixed[3]&&original[5]===fixed[5];
+    });
+    if(!exact){pass=false;reason='DOM_EVENT_TARGET_OR_CALLBACK_NOT_PRESERVED';}
   }
   if(pass&&type==='MISSING_VIEWPORT'){
     const headChanged=targetEdits.some(row=>/<head\b/i.test(String(row?.find||'')));

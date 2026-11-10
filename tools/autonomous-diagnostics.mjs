@@ -175,6 +175,7 @@ export function diagnosticResponsibleSystem(type=''){
     INTERVAL_CLEANUP_RISK:'GAME_RUNTIME',
     TOUCH_ACTION_UNSPECIFIED:'GAME_INPUT',
     DOM_NULL_EVENT_BIND:'GAME_INPUT',
+    DOM_EVENT_TARGET_MISMATCH:'GAME_INPUT',
     ADJACENT_DUPLICATE_EVENT_LISTENER:'GAME_INPUT'
   };
   return mapping[normalized]||null;
@@ -193,6 +194,58 @@ export function diagnoseGame(sourcePath,{filesystem=fs,maxIssues=30}={}){
     if(/touch-action\s*:/i.test(text))hasTouchAction=true;
     issues.push(...diagnoseFile(root,row,filesystem));
   }
+
+  // [HTML·JS 인과검사] 명시된 버튼 행동과 기존 함수가 1:1인 경우만 식별자 오류로 확정한다.
+  const verifiedDomTargets=new Map();
+  for(const page of files.filter(row=>/\.html?$/i.test(row.relative)&&row.size<=MAX_FILE_BYTES)){
+    const html=textByRelative.get(page.relative)||'';
+    if(/<template\b/i.test(html))continue;
+    const ids=new Map();
+    for(const match of html.matchAll(/\bid\s*=\s*(["'])([^"']+)\1/gi))ids.set(match[2],(ids.get(match[2])||0)+1);
+    const buttons=[];
+    for(const match of html.matchAll(/<button\b([^>]*)>/gi)){
+      const id=/\bid\s*=\s*(["'])([^"']+)\1/i.exec(match[1]);
+      const action=/\bdata-gameplay-action\s*=\s*(["'])([^"']+)\1/i.exec(match[1]);
+      if(!id||!action||/\bonclick\s*=|\bdisabled\b/i.test(match[1]))continue;
+      if(!/^[A-Za-z][\w-]{0,79}$/.test(id[2])||!/^[A-Za-z_$][\w$]{0,79}$/.test(action[2])||ids.get(id[2])!==1)continue;
+      buttons.push({id:id[2],action:action[2],at:match.index});
+    }
+    for(const script of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)){
+      const src=/\bsrc\s*=\s*(["'])([^"']+)\1/i.exec(script[1])?.[2]||'';
+      let code=script[2],file=page.relative,offset=script.index+script[0].indexOf(script[2]);
+      if(src){
+        if(/^(?:\/|https?:|data:|blob:)/i.test(src))continue;
+        const resolved=resolveLocalReference(root,page.full,src.split(/[?#]/)[0]);
+        const linked=files.find(row=>path.resolve(row.full)===resolved&&/\.(?:js|mjs|cjs)$/i.test(row.relative)&&row.size<=MAX_FILE_BYTES);
+        if(!linked||!exists(filesystem,resolved)||filesystem.lstatSync(resolved).isSymbolicLink()
+          ||!filesystem.realpathSync(resolved).startsWith(filesystem.realpathSync(root)+path.sep))continue;
+        file=linked.relative;code=textByRelative.get(file)||'';offset=0;
+      }
+      if(/document\.createElement|\.innerHTML\s*=|insertAdjacentHTML|setAttribute\s*\(\s*["']id/i.test(code))continue;
+      const deferred=Boolean(src&&(/\bdefer\b/i.test(script[1])||/\btype\s*=\s*["']module["']/i.test(script[1])));
+      const binding=/document\.(getElementById|querySelector)\s*\(\s*(["'])(#?[A-Za-z][\w-]*)\2\s*\)\s*\.addEventListener\s*\(\s*(["'])click\4\s*,\s*([A-Za-z_$][\w$]*)\s*\)/g;
+      for(const match of code.matchAll(binding)){
+        const prefix=code.slice(code.lastIndexOf('\n',match.index)+1,match.index).trim();
+        if(prefix&&prefix!=='{'&&prefix!=='}')continue;
+        const missingId=match[1]==='querySelector'?(match[3].startsWith('#')?match[3].slice(1):''):match[3];
+        if(!missingId||ids.has(missingId)||code.split(match[0]).length!==2)continue;
+        const targets=buttons.filter(button=>button.action===match[5]&&(deferred||button.at<script.index));
+        if(targets.length!==1)continue;
+        const func=new RegExp('(?:^|\\n)\\s*(?:async\\s+)?function\\s+'+match[5]+'\\s*\\(','g');
+        if([...code.matchAll(func)].length!==1)continue;
+        const evidence=issue('DOM_EVENT_TARGET_MISMATCH','high',file,
+          '버튼 ID와 이벤트 대상 ID가 불일치하며 기존 콜백 함수가 확인됨',{
+          line:lineAt(code,offset+match.index),needle:match[0],pageFile:page.relative,
+          expectedId:targets[0].id,missingId,callback:match[5],lookupKind:match[1],
+          microTask:file+'에서 '+missingId+' 조회를 '+targets[0].id+'로 교정하고 '+match[5]+' 콜백을 보존한다.'
+        });
+        const key=file+'\u0000'+match[0];
+        verifiedDomTargets.set(key,[...(verifiedDomTargets.get(key)||[]),evidence]);
+      }
+    }
+  }
+  // 동일 JS의 여러 HTML 소유자가 다르게 해석할 수 있으면 후보를 전부 거부한다.
+  for(const rows of verifiedDomTargets.values())if(rows.length===1)issues.push(rows[0]);
   if(hasTouchSignal&&!hasTouchAction){
     const first=files.find(x=>/\.css$/i.test(x.relative))||files.find(x=>/\.html?$/i.test(x.relative))||files[0];
     if(first)issues.push(issue('TOUCH_ACTION_UNSPECIFIED','medium',first.relative,'터치/포인터 입력 근거는 있으나 touch-action 정책이 확인되지 않음',{needle:'touch-action',microTask:`${first.relative}에서 실제 조작 영역 1개의 touch-action 필요 여부를 확인하고 모바일 스크롤 충돌만 최소 수정한다.`}));
