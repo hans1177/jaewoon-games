@@ -93,6 +93,34 @@ test('focused context prefers a late real target over eight irrelevant earlier s
  assert.ok(ctx.files.every(x=>code.includes(x.content)));
 });
 
+test('Vibe primary source coverage rejects ungrounded symbols in comments or strings',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-grounded-owner-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const file=path.join(root,'game.js');
+ fs.writeFileSync(file,'// fakeOwner\nconst story="fakeOwner();";\nfunction realOwner(){return 1;}\n');
+ const get=primaryTargets=>focusedSymbolContext(root,'web',['game.js'],{
+  editContract:{responsibilityConfidence:'HIGH',primaryTargets}
+ });
+ assert.equal(get(['fakeOwner']),null,'comments and strings cannot authorize a primary source owner');
+ assert.equal(get(['realOwner','fakeOwner']),null,'missing required owner cannot silently disappear');
+ const real=get(['realOwner']);
+ assert.ok(real?.ownerCoverageVerified);
+ assert.equal(real.requiredOwnerCount,1);
+ assert.equal(real.verifiedOwnerCount,1);
+ assert.ok(real.files.some(row=>row.content.includes('function realOwner()')));
+});
+
+test('Vibe context cannot silently omit the seventeenth required owner under symbol budget',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-coverage-budget-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const names=Array.from({length:17},(_,i)=>'owned'+i);
+ fs.writeFileSync(path.join(root,'game.js'),names.map(name=>
+   'function '+name+'(){return 1;}').join('\n'));
+ assert.equal(focusedSymbolContext(root,'web',['game.js'],{
+  editContract:{responsibilityConfidence:'HIGH',primaryTargets:names}
+ }),null);
+});
+
 // [무모델] 기존 액션을 직접 재사용하는 모바일 조작 생성과 거부 경계.
 test('no-model Roblox generates touch controls from exact existing native action callbacks',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-touch-'));
