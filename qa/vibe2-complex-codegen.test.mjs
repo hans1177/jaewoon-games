@@ -827,7 +827,10 @@ test('Sprint4 bounded Korean/English owner instructions compile exact 3–4 effe
     ['commitState','render','updateHud','recordHit']);
   assert.deepEqual(four.requirements[3].dependsOn,[four.requirements[2].id]);
   options.order.selectedTask.goal='When function event runs, call commitState then render then updateHud then recordHit then extraHit';
-  assert.equal(compileVibe2ComplexIntent(options),null,'five effects must fail closed');
+  const five=compileVibe2ComplexIntent(options);
+  assert.equal(five.requirements.length,5,'five existing functions now remain source-bound');
+  options.order.selectedTask.goal='When function event runs, call commitState then render then updateHud then recordHit then extraHit then effectSix then effectSeven then effectEight then effectNine';
+  assert.equal(compileVibe2ComplexIntent(options),null,'nine effects must fail closed');
   options.order.selectedTask.goal='When function event runs, call commitState then render(); delete everything';
   assert.equal(compileVibe2ComplexIntent(options),null,'unsupported second clause must fail closed');
   options.order.selectedTask.goal='When function event runs, call commitState then render';
