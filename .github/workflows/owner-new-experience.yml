@@ -75,7 +75,7 @@ jobs:
         shell: bash
         env:
           GAME_ID: ${{ inputs.game_id }}
-          KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}
           U: ${{ inputs.universe_id }}
           P: ${{ inputs.place_id }}
         run: |
@@ -101,11 +101,16 @@ jobs:
           REUSE_UNIVERSE_ID: ${{ inputs.universe_id }}
           REUSE_PLACE_ID: ${{ inputs.place_id }}
           # 배포 전용 키(ROBLOX_DEPLOY_API_KEY)가 있으면 우선 사용. 기존 체험 지정 시 쿠키는 넘기지 않는다.
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ (inputs.universe_id == '' || inputs.use_cookie == 'true') && secrets.ROBLOX_ROBLOSECURITY || '' }}
           ROBLOX_SECURITY_COOKIE: ${{ (inputs.universe_id == '' || inputs.use_cookie == 'true') && secrets.ROBLOX_SECURITY_COOKIE || '' }}
         run: |
           set -euo pipefail
+          # [1980 게시 인증] 실제 GitHub Secret이 없으면 이전 계정 키로 대체하지 않는다.
+          if [[ -z "${ROBLOX_OPEN_CLOUD_API_KEY:-}" ]]; then
+            echo 'ROBLOX_1980_PUBLISH_API_KEY_MISSING' >&2
+            exit 1
+          fi
           args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/new-exp/$GAME_ID.rbxl" --source-revision "$(git rev-parse HEAD)" --output "/tmp/new-exp/result.json")
           if [[ -n "${REUSE_UNIVERSE_ID:-}" ]]; then
             [[ "$REUSE_UNIVERSE_ID" =~ ^[0-9]+$ ]] || { echo 'UNIVERSE_ID_INVALID'; exit 1; }
@@ -113,6 +118,17 @@ jobs:
               REUSE_PLACE_ID="$(curl -fsS --retry 3 -H "x-api-key: ${ROBLOX_OPEN_CLOUD_API_KEY}" "https://apis.roblox.com/cloud/v2/universes/${REUSE_UNIVERSE_ID}" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const m=String(JSON.parse(d).rootPlace||'').match(/(\\d+)\\s*$/);if(!m){console.error('ROOT_PLACE_LOOKUP_FAILED');process.exit(1)}console.log(m[1])})")"
             fi
             [[ "$REUSE_PLACE_ID" =~ ^[0-9]+$ ]] || { echo 'PLACE_ID_INVALID'; exit 1; }
+            # [게임별 게시 대상] 최신 main의 기존 전용 체험 아이디만 재사용한다.
+            # 신규 체험 생성(아이디 미지정) 경로는 그대로 두고, 다른 게임으로의 오배포만 차단한다.
+            node <<'NODE'
+          const fs=require('node:fs');
+          const game=String(process.env.GAME_ID||'');
+          if(!/^(fantasy-survival|mare-essentia)$/.test(game))throw Error('OWNER_EXPERIENCE_GAME_NOT_ALLOWED');
+          const target=JSON.parse(fs.readFileSync('roblox-games/'+game+'/experience-target.json','utf8'));
+          if(target.gameId!==game||String(target.universeId)!==String(process.env.REUSE_UNIVERSE_ID||'')
+            ||String(target.placeId)!==String(process.env.REUSE_PLACE_ID||''))throw Error('OWNER_EXPERIENCE_GAME_TARGET_MISMATCH:'+game);
+          console.log('ROBLOX_1980_CANONICAL_GAME_TARGET=VERIFIED:'+game);
+          NODE
             echo "REUSE_TARGET=${REUSE_UNIVERSE_ID}/${REUSE_PLACE_ID} (R15는 체험 생성 시 Creator Hub에서 설정)"
             args+=(--reuse-universe-id "$REUSE_UNIVERSE_ID" --reuse-place-id "$REUSE_PLACE_ID")
             if [[ '${{ inputs.use_cookie }}' == 'true' && "$GAME_ID" == 'fantasy-survival' ]]; then args+=(--avatar-rig R15); fi
