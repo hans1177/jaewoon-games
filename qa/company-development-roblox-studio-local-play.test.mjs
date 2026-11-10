@@ -3767,6 +3767,10 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(script,/STUDIO_FULL_AUDIT_INCOMPLETE/);
   assert.match(script,/ASSET_OWNER_MAP=/);
   assert.match(script,/STUDIO_SCRIPT_ASSET_OWNER_MAP=/);
+  assert.match(script,/STUDIO_SCRIPT_ASSET_REGISTRY_AUDIT=/);
+  assert.match(script,/EFFECTIVE_ID_PERMISSION_NOT_PROVEN/);
+  assert.match(script,/usePermissionGranted!==true/);
+  assert.match(script,/STUDIO_ASSET_AUDIT_FAILED/);
   assert.match(script,/UNVERIFIED/);
   const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
   assert.match(workflow,/STUDIO_MARE_ASSET_AUDIT_MODELS=/);
