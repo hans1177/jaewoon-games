@@ -545,6 +545,14 @@ test('original village well matches human-scale medieval proportions and keeps c
   assert.match(server,/well:FindFirstChild\("Well pitched roof 004",true\)/);
   assert.match(server,/sign\.MaxDistance=52/);
   assert.match(server,/well:SetAttribute\("MeadowVillageWellOriginal",true\)/);
+  // [텍스처 로딩 회귀] 우물의 비승인 팔레트 참조는 복제 모델을 Workspace에 넣기 전에 삭제한다.
+  const importBlock=server.slice(server.indexOf('local function worldAsset('),server.indexOf('-- [초원 마을]'));
+  const cleanStart=importBlock.indexOf('if id=="villageWell" then');
+  assert.ok(cleanStart>=0,'well import texture sanitization missing');
+  assert.ok(importBlock.indexOf('if mesh.TextureID~="" then mesh.TextureID="" end',cleanStart)>=cleanStart);
+  assert.ok(importBlock.indexOf('clone.Parent=gameWorld')>cleanStart);
+  const worldWell=server.slice(server.indexOf('local well=worldAsset("villageWell"'),server.indexOf('-- [마력숲 마을 / 중앙 3D 배경]'));
+  assert.doesNotMatch(worldWell,/mesh.TextureID~=""/);
   assert.doesNotMatch(server,/worldAsset\("villageFountain"/);
 });
 
