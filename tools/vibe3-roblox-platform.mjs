@@ -498,6 +498,11 @@ export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifact
   const qualityRepairRevision=clean(item?.robloxQualityBuildUpSourceRevision);
   const currentQualityRepair=item?.robloxQualityBuildUpRequired===true
     &&(!qualityRepairRevision||qualityRepairRevision===sourceRevision);
+  // [실제 Studio 실패 원본] 현재 후보의 비공개 검증 게시만 과거 소스의 실패와 분리한다.
+  // 수정되지 않은 소스 또는 출처 미확인 실패는 계속 차단한다. 최종 F9 게시 문턱은 유지한다.
+  const studioFailureRevision=clean(item?.robloxStudioRuntimeSession?.sourceRevision);
+  const currentStudioRepair=item?.robloxStudioLocalPlayRepairRequired===true
+    &&(!studioFailureRevision||studioFailureRevision===sourceRevision);
   if(stage==='final'){
     const entry=(item?.robloxCanonicalPublishQueue||[]).find(row=>row?.cycleId===publishCycleId);
     if(!entry||publishCycleId!==sourceRevision+':'+artifactIdentity||entry.gameId!==item.gameId||
@@ -534,7 +539,7 @@ export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifact
     throw new Error('ROBLOX_PUBLISH_STALE_SOURCE_REVISION');
   if(!artifactIdentity || item.robloxBuildSourceRevision!==sourceRevision || item.robloxBuildArtifactIdentity!==artifactIdentity)
     throw new Error('ROBLOX_PUBLISH_STALE_BUILD_ARTIFACT');
-  if(currentQualityRepair || item.robloxStudioLocalPlayRepairRequired===true)
+  if(currentQualityRepair || currentStudioRepair)
     throw new Error('ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED');
   const f0=item.robloxFoundationF0Evidence||{};
   if(item.robloxFoundationF0Passed!==true || item.robloxBuildPreflightPassed!==true || item.robloxBuildOrPackagePassed!==true ||
