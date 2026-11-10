@@ -3772,6 +3772,14 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(model,/MareModelAuditTotals/);
   assert.match(model,/pending == 0/);
   assert.match(model,/loaded = loaded, failed = failed, errors = failedKeys/);
+  // [항구 우물 회귀] 실측 실패한 5개 텍스처를 기존 모델 로더에서만 제거한다.
+  const wellRepair=model.indexOf('if item.key == "Town/village-well" then');
+  const libraryParent=model.indexOf('model.Parent = group',wellRepair);
+  assert.ok(wellRepair>=0 && libraryParent>wellRepair,'well textures must be cleaned before library replication');
+  for(const id of ['131733628065975','111140593310889','134307586169558','139141388446795','118471529732548'])
+    assert.ok(model.slice(wellRepair,libraryParent).includes(id),'missing broken well texture: '+id);
+  assert.match(model,/mesh\.TextureID = ""/);
+  assert.match(model,/mesh\.Material = Enum\.Material\.Slate/);
   assert.match(qa,/if not RunService:IsStudio\(\) then/);
   assert.match(qa,/MareQAAssetStatus/);
   assert.match(qa,/MareQAAssetTotals/);
