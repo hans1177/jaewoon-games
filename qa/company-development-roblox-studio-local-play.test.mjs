@@ -3699,7 +3699,7 @@ test('Existing Devloop Studio workflow rechecks Mare text sampling after main up
   assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });
 
-test('Studio click QA text sampling uses bounded non-yielding visible-label scan without changing planned clicks',()=>{
+test('Studio click QA text sampling uses proven direct descendants scan without changing click coverage',()=>{
   const generator=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   for(const [game,script] of [
     ['mare-essentia','mare-qa-click.json'],
@@ -3711,17 +3711,16 @@ test('Studio click QA text sampling uses bounded non-yielding visible-label scan
     const labels=steps.filter(step=>step.type==='luau'&&step.code.includes("return 'TEXTS: '"));
     assert.equal(labels.length,30);
     for(const step of labels){
-      assert.match(step.code,/while head<=queued and seen<120 and #out<10 and os\.clock\(\)-started<0\.25 do/);
-      assert.match(step.code,/if queued<180 then local children=d:GetChildren\(\)/);
-      assert.match(step.code,/for i=1,math\.min\(#children,12\) do/);
-      assert.match(step.code,/if queued>=180 then break end/);
+      assert.match(step.code,/for _,d in ipairs\(P:GetDescendants\(\)\) do/);
+      assert.match(step.code,/if d:IsA\('TextLabel'\) and d\.Visible then/);
       assert.match(step.code,/local value=d\.Text/);
-      assert.doesNotMatch(step.code,/P:GetDescendants\(\)|seen<400|#q<650/);
+      assert.match(step.code,/if #out>=10 then break end/);
+      assert.doesNotMatch(step.code,/while head<=|os\.clock\(|q\[head\]|d:GetChildren\(\)/);
     }
     assert.equal(steps.filter(step=>step.type==='capture').length,31);
     assert.equal(steps[5].type,'wait');
     assert.equal(steps[5].ms,game==='mare-essentia'?12000:2200);
   }
-  assert.match(generator,/while head<=queued and seen<120 and #out<10 and os\.clock\(\)-started<0\.25 do/);
+  assert.match(generator,/for _,d in ipairs\(P:GetDescendants\(\)\) do/);
   assert.match(generator,/12000 if i == 1 and "새 게임" in prefer else 2200/);
 });

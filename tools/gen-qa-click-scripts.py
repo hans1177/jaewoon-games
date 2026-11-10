@@ -31,20 +31,18 @@ def pick(prefer, mode):
     "local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) "
     "return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"))
 
-# [진단] 화면 문자열은 수집량과 실행시간을 모두 제한해 Studio RPC를 막지 않는다.
+# [메인] 실제 PC 검증에 성공한 GetDescendants·Text 접근만 사용한다.
+# 기존 인위적 BFS·시간 감시 루프를 제거하고 보이는 글자 최대 10개를 기록한다.
 TEXTS = (
     "local P=game:GetService('Players').LocalPlayer.PlayerGui "
-    "local out={} local q={P} local head=1 local queued=1 local seen=0 local started=os.clock() "
-    "while head<=queued and seen<120 and #out<10 and os.clock()-started<0.25 do "
-    "local d=q[head] head=head+1 seen=seen+1 "
-    "local visible=not ((d:IsA('GuiObject') and not d.Visible) or (d:IsA('LayerCollector') and not d.Enabled)) "
-    "if visible then "
-    "if d:IsA('TextLabel') then local value=d.Text "
-    "if value~='' and #value>3 then out[#out+1]=string.sub(value,1,40) end end "
-    "if queued<180 then local children=d:GetChildren() "
-    "for i=1,math.min(#children,12) do "
-    "if queued>=180 then break end "
-    "queued=queued+1 q[queued]=children[i] end end end end "
+    "local out={} "
+    "for _,d in ipairs(P:GetDescendants()) do "
+    "if d:IsA('TextLabel') and d.Visible then "
+    "local value=d.Text "
+    "if value~='' and #value>3 then "
+    "out[#out+1]=string.sub(value,1,40) "
+    "if #out>=10 then break end "
+    "end end end "
     "return 'TEXTS: '..table.concat(out,' | ')"
 )
 
