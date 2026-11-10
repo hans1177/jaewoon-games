@@ -1,10 +1,9 @@
-# 10분마다 오너 PC 실행기(Claude 앱 불필요)로 Studio 점검을 이어 붙여 거의 쉬지 않고 돌린다.
-# 10분 칸마다 대항해시대/마력숲 번갈아. devloop-studio 동시실행 그룹이 줄을 세워 겹치지 않는다. 버튼을 실제로 클릭해 가며 화면을 캡처한다 (click_from_luau 스크립트).
+# 파일명: .github/workflows/studio-autoqa.yml
+# [메인] 정해진 시각이 아니라 소스 변경·배포 성공·Studio 성공 직후 기존 공식 PC 검사에 연결한다.
+# 대항해시대/마력숲을 기존 실행 순서대로 검사하고, 실패하면 무한 재시도 대신 기존 복구 큐가 처리한다.
 # 결과 사진·리포트는 브랜치 <game>-studio-frames 에 올라가고, 클라우드 바이브가 읽고 고친다.
 name: Studio Auto QA
 on:
-  schedule:
-    - cron: '*/10 * * * *'
   push:
     branches: [main]
     paths:
@@ -14,6 +13,10 @@ on:
       - 'tools/company-development-roblox-studio-local-play.mjs'
       - 'tools/gen-qa-click-scripts.py'
       - 'roblox-games/*/tools/devloop/studio-scripts/*.json'
+      # [마력숲] 실제 게임 소스가 변하면 고정 시간 대기 없이 곧바로 PC 검사를 요청한다.
+      - 'roblox-games/fantasy-survival/client/**'
+      - 'roblox-games/fantasy-survival/server/**'
+      - 'roblox-games/fantasy-survival/shared/**'
   workflow_run:
     workflows: ["Devloop Studio Capture", "Owner Mare Essentia Direct Publish"]
     types: [completed]
@@ -47,27 +50,35 @@ jobs:
             if [ "${{ github.event.workflow_run.name }}" = "Owner Mare Essentia Direct Publish" ]; then
               game=mare-essentia
             else
-              sleep 45
               other=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/devloop-studio.yml/runs?per_page=20" --jq '[.workflow_runs[]|select(.status=="queued" or .status=="in_progress")]|length')
               if [ "${other:-0}" -ge 1 ]; then echo "already queued/running ($other), skip"; exit 0; fi
               if [ $(( ${{ github.event.workflow_run.run_number }} % 2 )) -eq 0 ]; then game=mare-essentia; else game=fantasy-survival; fi
             fi
           fi
-          if [ "${{ github.event_name }}" = "push" ]; then game=mare-essentia; fi
-          if [ -z "$game" ]; then
-            slot=$(( 10#$(date -u +%M) / 10 ))
-            if [ $(( slot % 2 )) -eq 0 ]; then game=mare-essentia; else game=fantasy-survival; fi
-            # 이미 대기 중인 점검이 2개 이상이면 쌓지 않는다
-            pending=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow devloop-studio.yml --status queued --json databaseId --jq length || echo 0)
-            if [ "${pending:-0}" -ge 2 ]; then echo "queue full ($pending), skip"; exit 0; fi
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # [게임 선택] 최신 병합에 마력숲 소스만 포함되면 마력숲을 먼저 검사한다.
+            game=mare-essentia
+            changed=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '.files[].filename' || true)
+            if printf '%s\n' "$changed" | grep -q '^roblox-games/fantasy-survival/' &&
+               ! printf '%s\n' "$changed" | grep -q '^roblox-games/mare-essentia/'; then
+              game=fantasy-survival
+            fi
           fi
+          # [수동 실행] 입력이 비어도 시간 계산 대신 기본 게임을 사용한다.
+          if [ -z "$game" ]; then game=mare-essentia; fi
           case "$game" in
             mare-essentia) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json ;;
             fantasy-survival) script=roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json ;;
             *) echo "bad game"; exit 1 ;;
           esac
           # [중복 방지] 배포가 연속 발생해도 동일한 Studio 호스트에 중복 작업을 쌓지 않는다.
-          active=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/devloop-studio.yml/runs?per_page=20" --jq '[.workflow_runs[]|select(.status=="queued" or .status=="in_progress")]|length')
-          if [ "${active:-0}" -ge 1 ]; then echo "studio busy ($active), skip dispatch"; exit 0; fi
+          active=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/devloop-studio.yml/runs?per_page=20" --jq '[.workflow_runs[]|select(.status=="in_progress")]|length')
+          queued=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/devloop-studio.yml/runs?per_page=20" --jq '[.workflow_runs[]|select(.status=="queued" or .status=="pending")]|length')
+          # [변경 보장] 새 소스 push는 PC가 바빠도 대기 검사 1개까지 허용한다.
+          # 성공 후 연결 실행은 기존 진행 중 작업이 있으면 중복을 생성하지 않는다.
+          if [ "${queued:-0}" -ge 1 ]; then echo "studio already queued ($queued), skip"; exit 0; fi
+          if [ "${{ github.event_name }}" != "push" ] && [ "${active:-0}" -ge 1 ]; then
+            echo "studio already running ($active), skip duplicate"; exit 0
+          fi
           gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"
           echo "dispatched $game $script"
