@@ -26,9 +26,22 @@ export function pull({stats,file='op-stats.json',branch='vibe-gym-data',remote='
   return {found:true};
 }
 
+// [연습 → 보관] 조리법과 작은 아이콘 실측값을 기존 전용 브랜치 장부에 남긴다.
+// 원본 CC0 해시만으로 재현 가능한 후보이며, 실제 게임 적용/마스터리 통과는 증명하지 않는다.
 export function summarize(ledger){
-  return ledger.map(r=>JSON.stringify({id:r.id,parentId:r.parentId,parentSha256:r.parentSha256,partParent:r.partParent?{id:r.partParent.id,sha256:r.partParent.sha256}:undefined,
-    source:r.source,family:r.family,op:r.op,arm:r.arm,gain:r.gain,novelty:r.novelty,verdict:r.verdict,reason:r.reason,glbSha256:r.glbSha256,registered:false,at:new Date().toISOString()})).join('\n')+'\n';
+  return ledger.map(r=>JSON.stringify({
+    id:r.id,parentId:r.parentId,parentSha256:r.parentSha256,
+    partParent:r.partParent?{id:r.partParent.id,sha256:r.partParent.sha256,license:r.partParent.license}:undefined,
+    source:r.source,license:r.license,family:r.family,
+    op:r.op,arm:r.arm,params:r.params,
+    score:r.score,gain:r.gain,novelty:r.novelty,verdict:r.verdict,reason:r.reason,
+    keep:r.keep===true,
+    audit:r.audit?{pass:r.audit.pass,failures:r.audit.failures}:undefined,
+    icon:r.icon?{legible:r.icon.legible,pixels64:r.icon.pixels64,contrast64:r.icon.contrast64}:undefined,
+    glbSha256:r.glbSha256,
+    previewArtifact:process.env.GITHUB_RUN_ID?`variation-gym-${process.env.GITHUB_RUN_ID}`:undefined,
+    registered:false,gameApplied:false,at:new Date().toISOString()
+  })).join('\n')+'\n';
 }
 
 export function publish({stats,ledger,lights=null,branch='vibe-gym-data',remote='origin',cwd=process.cwd(),push=true}){

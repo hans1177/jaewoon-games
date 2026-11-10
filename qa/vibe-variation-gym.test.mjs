@@ -6,6 +6,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {mulberry32,pickParents,chooseDiverseParents,chooseArms,armKey,judge,updateStats,OPERATORS,STRENGTHS,kitbashModes,blenderAvailable,runGymSession} from '../tools/vibe-variation-gym.mjs';
+import {summarize} from '../tools/vibe-gym-publish.mjs';
 
 const repo=process.cwd();
 const imaging=spawnSync('python3',['-c','import PIL,numpy'],{encoding:'utf8'}).status===0;
@@ -23,6 +24,15 @@ test('부모 후보는 오너 승인 CC0·실제 파일·비파생·막힘 없�
     {id:'texture',license:'CC0',family:'PROP',sourceFiles:['a/ok.png']},
   ]};
   assert.deepEqual(pickParents(reg,root,10,mulberry32(1)).map(p=>p.id),['ok']);
+});
+
+test('합격한 변형은 출처·조리법·아이콘 가독성 기록만 보관하고 게임 적용으로 오인하지 않는다', () => {
+  const rows=[{id:'test-a',parentId:'cc0-a',parentSha256:'a'.repeat(64),license:'CC0',family:'PROP',op:'outline',arm:'outline:soft',params:{thickness:0.01},score:81,gain:2,novelty:0.15,verdict:'IMPROVED',keep:true,glbSha256:'b'.repeat(64),icon:{legible:true,pixels64:410,contrast64:0.34}}];
+  const out=JSON.parse(summarize(rows).trim());
+  assert.deepEqual(out.params,{thickness:0.01});
+  assert.deepEqual(out.icon,{legible:true,pixels64:410,contrast64:0.34});
+  assert.equal(out.keep,true);assert.equal(out.license,'CC0');
+  assert.equal(out.registered,false);assert.equal(out.gameApplied,false);
 });
 
 test('연습 대상은 소품·몬스터·캐릭터·배경을 우선 섞고 부족할 때 같은 가족을 채운다', () => {
