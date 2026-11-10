@@ -422,3 +422,28 @@ test('Forest registered gear reuse rejects missing or changed source binding and
   tampered.gearExpansionV1.models.gear_sword_01.sourceVerified=false;
   assert.equal(run(tampered,ids),1,'unverified provenance may not reuse registered assets');
 });
+
+// [대항해시대 1980 배포키] 기존 발행/에셋/오디오 워크플로는 같은 새 소유 계정 키만 사용한다.
+// 키 값은 저장하지 않고 GitHub Secret 이름과 기존 체험 ID의 결합만 검사한다.
+test('Mare Essentia 1980 publish, asset and audio workflows use only the dedicated deploy secret',()=>{
+  const files=[
+    '.github/workflows/owner-mare-essentia-direct-publish.yml',
+    '.github/workflows/owner-mare-essentia-assets.yml',
+    '.github/workflows/mare-audio-upload.yml',
+  ];
+  const keyName='$'+'{{ secrets.ROBLOX_DEPLOY_API_KEY }}';
+  for(const file of files){
+    const workflow=fs.readFileSync(file,'utf8');
+    assert.ok(workflow.includes('ROBLOX_OPEN_CLOUD_API_KEY: '+keyName),file);
+    assert.ok(!workflow.includes('secrets.ROBLOX_OPEN_CLOUD_API_KEY'),file);
+    assert.ok(workflow.includes("ROBLOX_CREATOR_USER_ID: '11664914771'"),file);
+  }
+  const publish=fs.readFileSync(files[0],'utf8');
+  assert.ok(publish.includes('MARE_1980_DEPLOY_API_KEY_MISSING'));
+  assert.ok(publish.includes('MARE_CANONICAL_TARGET_MISMATCH'));
+  assert.doesNotMatch(publish,/ROBLOX_ROBLOSECURITY:|ROBLOX_SECURITY_COOKIE:/);
+  const registry=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/experience-target.json','utf8'));
+  assert.equal(registry.gameId,'mare-essentia');
+  assert.equal(registry.universeId,'10775310508');
+  assert.equal(registry.placeId,'73607605986189');
+});
