@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-14cha95",
+      "worker": "vibe2",
+      "taskId": "restaurant-tycoon-web-library-cc0-replacement-v1",
+      "gameId": "restaurant-tycoon",
+      "files": [
+        "web-games/restaurant-tycoon/index.html"
+      ],
+      "baseSha": "184087777f13f75ca9b6e23797bcadfc1ac32757",
+      "runId": "42784622610",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-10T09:28:19.982Z",
+      "expiresAt": "2026-11-10T10:13:19.982Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:restaurant-tycoon-web-library-cc0-replacement-v1"
+      ]
+    }
+  ]
 }
