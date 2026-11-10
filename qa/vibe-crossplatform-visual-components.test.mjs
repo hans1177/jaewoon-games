@@ -96,6 +96,17 @@ test('디자인 제작안은 실제 DOM과 게임 제공 버튼 콜백으로만 
   close.onclick();assert.equal(pressed.length,1);
   ctrl.destroy();assert.equal(host.children.length,0);
 });
+test('실제 UI 요소가 없거나 배치 실패일 때 디자인 점수 100점 금지',()=>{
+  const blank=buildVibePresentationCraft({surface:'HUD',components:[]});
+  assert.equal(blank.score.score,0);
+  assert.ok(blank.score.issues.includes('no-ui-controls'));
+  assert.equal(blank.runtimeVerified,false);
+  const components=[{id:'a',width:80,height:80},{id:'b',width:80,height:80}];
+  const badLayout=optimizeVibeScreenLayout({viewport:{width:80,height:80},components});
+  const score=auditVibeUiDesign({components,layout:badLayout,viewport:{width:80,height:80}});
+  assert.equal(score.score,0);
+  assert.ok(score.issues.includes('layout-invalid'));
+});
 test('layout optimizer can pack 12 distinct badges without HUD overlaps',()=>{
   const components=Array.from({length:12},(_,i)=>({
     id:'visible-badge-'+i,width:98,height:42,priority:1,zone:'EDGE'

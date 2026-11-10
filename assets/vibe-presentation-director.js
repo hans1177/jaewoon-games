@@ -379,8 +379,14 @@ export function auditVibeUiDesign({components=[],layout={},tokens=createVibeDesi
   const criticalHudVisible=components.filter(x=>x.critical).every(x=>placed.has(x.id)&&!placed.get(x.id).unresolved);
   const result=scoreVibeScreenComposition({overlaps,edgeClips,criticalHudVisible,
     touchTargetsSmall,lowContrast,fontIssues,textOverflow,missingBindings,touchSpacing});
-  return Object.freeze({...result,metrics:Object.freeze({contrast,lowContrast,fontIssues,
-    textOverflow,missingBindings,touchTargetsSmall,touchSpacing,overlaps,edgeClips}),
+  // 검증 대상이 없거나 배치 자체가 실패하면 화면이 없는 상태를 100점으로 취급하지 않는다.
+  const missingSurface=!Array.isArray(components)||components.length===0||layout.pass!==true;
+  const score=missingSurface?0:result.score;
+  const issues=missingSurface?Object.freeze([...result.issues,
+    components.length===0?'no-ui-controls':'layout-invalid']):result.issues;
+  return Object.freeze({...result,score,grade:missingSurface?'D':result.grade,issues,
+    metrics:Object.freeze({contrast,lowContrast,fontIssues,
+      textOverflow,missingBindings,touchTargetsSmall,touchSpacing,overlaps,edgeClips}),
     runtimeVerified:false,actionRuntimeVerified:false,textRenderedVerified:false,
     authority:'SYNTHETIC_UI_DESIGN_AND_BINDING_CONTRACT'});
 }
