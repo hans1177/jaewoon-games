@@ -100,7 +100,7 @@ jobs:
           GAME_NAME: ${{ inputs.game_name }}
           REUSE_UNIVERSE_ID: ${{ inputs.universe_id }}
           REUSE_PLACE_ID: ${{ inputs.place_id }}
-          # 배포 전용 키(ROBLOX_DEPLOY_API_KEY)가 있으면 우선 사용. 기존 체험 지정 시 쿠키는 넘기지 않는다.
+          # [1980 배포키] 표시명 ROBLOX-1980-PUBLISH를 GitHub Secret ROBLOX_DEPLOY_API_KEY로만 연결한다.
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ (inputs.universe_id == '' || inputs.use_cookie == 'true') && secrets.ROBLOX_ROBLOSECURITY || '' }}
           ROBLOX_SECURITY_COOKIE: ${{ (inputs.universe_id == '' || inputs.use_cookie == 'true') && secrets.ROBLOX_SECURITY_COOKIE || '' }}
