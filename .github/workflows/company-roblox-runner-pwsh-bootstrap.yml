@@ -271,6 +271,37 @@ jobs:
             Stop-Process -Id ([int]$watcher.ProcessId) -Force -ErrorAction Stop
           }
           if ($existingWatchers.Count -gt 0) { Start-Sleep -Seconds 2 }
+          # [디스크 복구] 시작프로그램 경로의 실제 드라이브 공간을 확인한다.
+          # 공간 부족 시 Roblox의 2일 넘은 일반 로그만 정리한다. Place, 저장, 설치, 캐시 등은 보존한다.
+          $systemVolume = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($startupPath))
+          Write-Host "ROBLOX_RUNNER_STARTUP_VOLUME_FREE_MB=$([math]::Round($systemVolume.AvailableFreeSpace/1MB,1))"
+          if ($systemVolume.AvailableFreeSpace -lt 16MB) {
+            $robloxLogs = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+            if (Test-Path -LiteralPath $robloxLogs -PathType Container) {
+              $logsRootInfo = Get-Item -LiteralPath $robloxLogs -Force
+              if (-not ($logsRootInfo.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+                $cutoff = (Get-Date).AddDays(-2)
+                $staleLogs = @(Get-ChildItem -LiteralPath $robloxLogs -File -ErrorAction Stop |
+                  Where-Object { $_.LastWriteTime -lt $cutoff -and $_.Extension -in @('.log','.txt') -and
+                    -not ($_.Attributes -band [IO.FileAttributes]::ReparsePoint) })
+                $cleared = 0
+                foreach ($row in $staleLogs) {
+                  try {
+                    Remove-Item -LiteralPath $row.FullName -Force -ErrorAction Stop
+                    $cleared++
+                  } catch {
+                    Write-Warning 'ROBLOX_RUNNER_STALE_LOG_LOCKED_OR_UNAVAILABLE'
+                  }
+                }
+                Write-Host "ROBLOX_RUNNER_STALE_LOGS_CLEARED=$cleared"
+              }
+            }
+            $systemVolume = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($startupPath))
+            Write-Host "ROBLOX_RUNNER_STARTUP_VOLUME_AFTER_LOG_CLEAN_MB=$([math]::Round($systemVolume.AvailableFreeSpace/1MB,1))"
+          }
+          if ($systemVolume.AvailableFreeSpace -lt 1MB) {
+            throw 'ROBLOX_RUNNER_SYSTEM_DISK_SPACE_REQUIRED'
+          }
           # [저장] 실행 중 읽기 잠금과 파일 비우기를 방지하기 위해 완성본을 먼저 기록한다.
           $startupTemp = Join-Path $startupRoot ('Jaewoon-Roblox-Runner.' + $PID + '.tmp')
           try {
