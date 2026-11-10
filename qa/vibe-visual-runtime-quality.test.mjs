@@ -215,14 +215,14 @@ test('graphics production requires actual GLB-to-game-to-runtime binding evidenc
   const model={id:'forest-boss',sourcePath:'assets/forest/boss.glb',sourceHash,
     licenseVerified:true,visualContentReviewed:true,
     gameBinding:{sourceRevision,sceneObjectId:'forest-boss',sourceHash,modelAssetId:'123456'}};
-  const planned=createVibeGraphicsProduction({gameId:'forest',target:'roblox',
+  const planned=createVibeGraphicsProduction({gameId:'forest',request:'숲 보스 3D 모델 실제 연결 검사',target:'roblox',
     sourceRevision,candidateRevision,spatialAssets:[model]});
   assert.equal(planned.spatial3dApplication.requiredCount,1);
   assert.equal(planned.spatial3dApplication.runtimeLinkedCount,0);
   assert.ok(planned.spatial3dApplication.items[0].issues.includes(
     'INDEPENDENT_3D_RUNTIME_BINDING_EVIDENCE_REQUIRED'));
   assert.equal(planned.status,'GRAPHICS_PRODUCTION_ACTIVE');
-  const fake=createVibeGraphicsProduction({gameId:'forest',target:'roblox',
+  const fake=createVibeGraphicsProduction({gameId:'forest',request:'숲 보스 3D 모델 실제 연결 검사',target:'roblox',
     sourceRevision,candidateRevision,
     spatialAssets:[{...model,sourcePath:'assets/forest/boss.png',sourceHash:'wrong'}]});
   assert.ok(fake.spatial3dApplication.items[0].issues.includes('REAL_MASTER_GLB_SOURCE_REQUIRED'));
