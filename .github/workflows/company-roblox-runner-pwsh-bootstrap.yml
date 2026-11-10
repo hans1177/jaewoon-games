@@ -6,12 +6,16 @@ on:
     paths:
       - '.github/workflows/company-roblox-runner-pwsh-bootstrap.yml'
   workflow_dispatch:
+  # [C 드라이브] 로그인된 기존 Roblox PC 실행기로 매일 안전한 파일만 정리한다.
+  schedule:
+    - cron: '15 18 * * *'
 
 permissions:
   contents: read
 
 jobs:
   recover-via-unity:
+    if: github.event_name != 'schedule'
     name: recover Roblox runner from colocated Unity runner
     runs-on: [self-hosted, Windows, X64, jaewoon-unity]
     timeout-minutes: 3
@@ -170,7 +174,56 @@ jobs:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 20
     steps:
+      - name: Clean only aged Windows user temporary files and Roblox logs on C
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # [메인] 현재 로그인한 사용자 C 드라이브에서 임시 파일과 오래된 Roblox 로그만 정리한다.
+          # 게임 저장, 설치 앱, 다운로드, 문서, 윈도우 시스템 폴더, E 드라이브는 자동 삭제 금지.
+          $systemRoot = [IO.Path]::GetPathRoot($env:WINDIR)
+          $systemDrive = [IO.DriveInfo]::new($systemRoot)
+          $before = [int64]$systemDrive.AvailableFreeSpace
+          $deletedCount = 0
+          $deletedBytes = [int64]0
+          $rules = @(
+            @{ Root = (Join-Path $env:LOCALAPPDATA 'Roblox\logs'); Days = 2; Ext = @('.log','.txt') },
+            @{ Root = (Join-Path $env:LOCALAPPDATA 'Temp'); Days = 7; Ext = @('.tmp','.log','.dmp') }
+          )
+          foreach ($rule in $rules) {
+            if (-not (Test-Path -LiteralPath $rule.Root -PathType Container)) { continue }
+            $root = [IO.Path]::GetFullPath([string]$rule.Root)
+            if ([IO.Path]::GetPathRoot($root) -ne $systemRoot) { continue }
+            $rootInfo = Get-Item -LiteralPath $root -Force -ErrorAction Stop
+            if ($rootInfo.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
+            $cutoff = (Get-Date).AddDays(-[int]$rule.Days)
+            foreach ($file in @(Get-ChildItem -LiteralPath $root -File -ErrorAction Stop |
+              Where-Object { $_.LastWriteTime -lt $cutoff -and $_.Extension -in $rule.Ext -and
+                -not ($_.Attributes -band [IO.FileAttributes]::ReparsePoint) -and
+                -not ($_.Attributes -band [IO.FileAttributes]::System) })) {
+              if ($deletedCount -ge 5000) { break }
+              try {
+                $size = [int64]$file.Length
+                Remove-Item -LiteralPath $file.FullName -Force -ErrorAction Stop
+                $deletedCount++
+                $deletedBytes += $size
+              } catch {
+                Write-Host 'C_AUTO_CLEAN=SKIPPED_IN_USE_OR_DENIED'
+              }
+            }
+          }
+          $systemDrive = [IO.DriveInfo]::new($systemRoot)
+          Write-Host "C_AUTO_CLEAN_BEFORE_MB=$([math]::Round($before/1MB,1))"
+          Write-Host "C_AUTO_CLEAN_AFTER_MB=$([math]::Round($systemDrive.AvailableFreeSpace/1MB,1))"
+          Write-Host "C_AUTO_CLEAN_FILES=$deletedCount"
+          Write-Host "C_AUTO_CLEAN_RECLAIMED_MB=$([math]::Round($deletedBytes/1MB,1))"
+          Write-Host 'C_AUTO_CLEAN_SCOPE=AGED_USER_TEMP_AND_ROBLOX_LOGS_ONLY'
+          Write-Host 'C_UNUSED_APPS=REVIEW_ONLY_NO_AUTOMATIC_UNINSTALL'
+          if ($systemDrive.AvailableFreeSpace -lt 5GB) {
+            Write-Warning 'C_DRIVE_BELOW_5GB=OWNER_REVIEW_WINDOWS_STORAGE_CLEANUP_RECOMMENDATIONS'
+          }
+
       - name: Install hidden user-logon Startup launcher
+        if: github.event_name != 'schedule'
         shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
@@ -344,6 +397,7 @@ jobs:
           Write-Host 'ROBLOX_RUNNER_HIDDEN_BOOTSTRAP=PASS'
 
       - name: Checkout native recording setup without downloading game assets
+        if: github.event_name != 'schedule'
         uses: actions/checkout@v4
         with:
           ref: main
@@ -353,6 +407,7 @@ jobs:
             tools
 
       - name: Restore real Roblox Player recording on existing interactive Windows runner
+        if: github.event_name != 'schedule'
         shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
