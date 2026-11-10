@@ -1,5 +1,6 @@
 # 파일명: .github/workflows/studio-autoqa.yml
 # [메인] 게임 변경·게시 완료 뒤 기존 공식 PC Studio 검사를 두 게임 모두 순차적으로 요청한다.
+# [배포 이벤트] 실행 이름(run-name)은 커밋별로 변하므로 변경되지 않는 워크플로 경로(path)로 판별한다.
 # 대항해시대·마력숲 각각 185단계. 동일 소스·게임의 중복 대기만 막고 다른 게임은 검사한다.
 # 결과 사진·리포트는 브랜치 <game>-studio-frames 에 올라가고, 클라우드 바이브가 읽고 고친다.
 name: Studio Auto QA
