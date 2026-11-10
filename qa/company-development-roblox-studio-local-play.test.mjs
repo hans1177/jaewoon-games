@@ -3662,7 +3662,7 @@ test('Daechung actual cloud Studio input, visual, target damage and rejoin check
 
 test('Official Studio MCP mouse clicks use an actual click action, never a move or down-only event',()=>{
   const source=helper.slice(helper.indexOf('function mouseClickItem('),helper.indexOf('function pngDimensions('));
-  const clickArgs=new Function('schemaProps','setStudioId','enumValue','fillRequired','clean',source+';return mouseClickArgs')(
+  const clickArgs=new Function('schemaProps','setStudioId','enumValue','fillRequired','clean','datamodelEnumValue',source+';return mouseClickArgs')(
     schema=>schema?.properties||{},
     (args,_schema,id)=>{args.studio_id=id;},
     (def,patterns)=>{
@@ -3672,11 +3672,14 @@ test('Official Studio MCP mouse clicks use an actual click action, never a move 
       return values[0];
     },
     args=>args,
-    value=>String(value??'').trim()
+    value=>String(value??'').trim(),
+    (def,desired)=>(def.enum||[]).find(v=>v.toLowerCase()===desired.toLowerCase())||desired
   );
   const actionProps={x:{type:'integer'},y:{type:'integer'},mouse_button:{type:'string'}};
-  const props=action=>({properties:{studio_id:{type:'string'},actions:{type:'array',items:{properties:{...actionProps,action}}}}});
-  const action=clickArgs(props({type:'string',enum:['moveTo','mouseButtonDown','mouseButtonClick','mouseButtonUp']}),'studio-test',898,57).actions[0];
+  const props=action=>({properties:{studio_id:{type:'string'},datamodel_type:{type:'string',enum:['Edit','Client','Server']},actions:{type:'array',items:{properties:{...actionProps,action}}}}});
+  const click=clickArgs(props({type:'string',enum:['moveTo','mouseButtonDown','mouseButtonClick','mouseButtonUp']}),'studio-test',898,57);
+  assert.equal(click.datamodel_type,'Client');
+  const action=click.actions[0];
   assert.equal(action.action,'mouseButtonClick');
   assert.equal(action.mouse_button,'left');
   assert.deepEqual([action.x,action.y],[898,57]);

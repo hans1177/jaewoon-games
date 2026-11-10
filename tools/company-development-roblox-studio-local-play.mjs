@@ -1048,6 +1048,12 @@ function mouseClickItem(schema,x,y){
 function mouseClickArgs(schema,studioId,x,y){
   const args={};setStudioId(args,schema,studioId);
   const props=schemaProps(schema);
+  // [MCP 입력] Play 중 게임 화면의 사용자 클릭은 공식 Client DataModel로 명시한다.
+  const contextKey=Object.keys(props).find(k=>/data.?model|datamodel|execution.?context|run.?context/i.test(k));
+  if(contextKey){
+    const def=props[contextKey]||{};
+    args[contextKey]=Array.isArray(def.enum)?datamodelEnumValue(def,'Client'):'Client';
+  }
   const actionsKey=Object.keys(props).find(k=>/actions|events|inputs/i.test(k)&&props[k]?.type==='array');
   if(actionsKey)args[actionsKey]=[mouseClickItem(props[actionsKey]?.items||{},x,y)];
   else{const built=mouseClickItem(schema,x,y);for(const [k,v] of Object.entries(built))if(!/studio.*id/i.test(k))args[k]=v;}
