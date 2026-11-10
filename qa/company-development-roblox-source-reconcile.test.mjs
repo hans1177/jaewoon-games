@@ -1573,6 +1573,6 @@ test('native fantasy village repair provisions the actual Blender GLB exporter b
   assert.match(section,/BLENDER_GLTF_EXPORTER_REQUIRED/);
   assert.match(section,/ROBLOX_NATIVE_CC0_BLENDER_EXPORTER=READY/);
   assert.match(section,/if \[ "\$NATIVE_CREATURE_REPAIR" = true \]; then/);
-  assert.match(section,/python3 tools\/baeksu-war-author-meshes\.py/);
+  assert.match(workflow.slice(source,source+180),/python3 tools\/baeksu-war-author-meshes\.py/);
   assert.doesNotMatch(section,/fake|placeholder|fallback.?mesh|random.?part|create.?part/i);
 });
