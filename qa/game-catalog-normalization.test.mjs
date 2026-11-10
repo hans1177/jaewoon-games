@@ -460,3 +460,36 @@ console.log('PASS compact unique typography covers, media integrity/source bindi
  normalizeCatalog(catalog);
  assert.deepEqual(catalog.games.map(game=>game.id),['active-demo']);
 }
+
+
+// [설계 승격 회귀] 실시간 카탈로그 분류가 DESIGN_ONLY로 남아
+// DEVELOPMENT_CONFIRMED의 정식 미러 검증을 실패시키는 경우를 직접 재현한다.
+{
+  const gameId='medieval-defense';
+  const source={games:[{
+    id:gameId,name:'중세 디펜스',lifecycleState:'ACTIVE',selectedPlatform:'WEB',
+    productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'MINIMUM_GENERAL_WEB_DESIGN_READY',
+    homepageCategory:'design-only',homepageInfo:{
+      authority:'company-runtime',platform:'WEB',productionClass:'DESIGN_ONLY',
+      latestWork:'기존 디자인 검증',updatedAt:'2026-11-03T08:03:35.198Z'
+    },
+    canonical:{
+      schemaVersion:1,identity:{gameId},production:{class:'DESIGN_ONLY'},
+      homepage:{category:'design-only'}
+    }
+  }],permanentRemovalPolicy:{ids:[]}};
+  normalizeCatalog(source);
+  const game=source.games[0];
+  const check=validateNormalizedCatalog(source);
+  assert.equal(check.pass,true,check.errors.join(','));
+  assert.equal(game.productionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(game.homepageInfo.productionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(game.homepageCategory,'development-confirmed');
+  assert.equal(game.canonical.production.class,'DEVELOPMENT_CONFIRMED');
+  assert.equal(game.canonical.homepage.category,'development-confirmed');
+  assert.equal(game.canonical.homepage.runtime.productionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(game.homepageInfo.updatedAt,'2026-11-03T08:03:35.198Z');
+  const snapshot=JSON.stringify(source);
+  normalizeCatalog(source);
+  assert.equal(JSON.stringify(source),snapshot,'an unchanged catalog must normalize idempotently');
+}
