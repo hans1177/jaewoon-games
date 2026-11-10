@@ -88,15 +88,15 @@
    }
   },
   "wear:soft": {
-   "n": 34,
-   "gainSum": 4.6,
+   "n": 35,
+   "gainSum": -4.4,
    "keep": 18,
    "improved": 8,
    "broken": 0,
    "fail": {
     "TOO_SIMILAR": 11,
     "REGRESSED": 4,
-    "DARKENED": 1
+    "DARKENED": 2
    }
   },
   "bevel:strong": {
@@ -124,13 +124,13 @@
    }
   },
   "outline:strong": {
-   "n": 167,
-   "gainSum": 1169.9,
+   "n": 168,
+   "gainSum": 1158,
    "keep": 106,
    "improved": 98,
    "broken": 0,
    "fail": {
-    "DARKENED": 27,
+    "DARKENED": 28,
     "DETAIL_LOST": 33,
     "REGRESSED": 1
    }
@@ -173,9 +173,9 @@
    }
   },
   "proportion:soft": {
-   "n": 19,
-   "gainSum": 18.1,
-   "keep": 17,
+   "n": 20,
+   "gainSum": 17.3,
+   "keep": 18,
    "improved": 8,
    "broken": 0,
    "fail": {
@@ -206,13 +206,13 @@
    }
   },
   "noise_displace:soft": {
-   "n": 25,
-   "gainSum": 26.4,
+   "n": 26,
+   "gainSum": 13.9,
    "keep": 14,
    "improved": 8,
    "broken": 0,
    "fail": {
-    "REGRESSED": 8,
+    "REGRESSED": 9,
     "TOO_SIMILAR": 1,
     "DETAIL_LOST": 1,
     "DARKENED": 1
@@ -303,25 +303,26 @@
    }
   },
   "noise_displace:strong": {
-   "n": 88,
-   "gainSum": 138.4,
+   "n": 89,
+   "gainSum": 128.9,
    "keep": 67,
    "improved": 47,
    "broken": 0,
    "fail": {
     "REGRESSED": 13,
-    "DARKENED": 8
+    "DARKENED": 8,
+    "DETAIL_LOST": 1
    }
   },
   "outline:soft": {
-   "n": 258,
-   "gainSum": 1606.3,
+   "n": 260,
+   "gainSum": 1587.4,
    "keep": 199,
    "improved": 173,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 28,
-    "DARKENED": 28,
+    "DARKENED": 30,
     "REGRESSED": 3
    }
   },
@@ -360,15 +361,15 @@
    }
   },
   "bevel:soft": {
-   "n": 33,
-   "gainSum": 44.9,
+   "n": 34,
+   "gainSum": 49,
    "keep": 23,
    "improved": 12,
    "broken": 0,
    "fail": {
     "REGRESSED": 8,
     "TOO_SIMILAR": 1,
-    "DARKENED": 1
+    "DARKENED": 2
    }
   },
   "saturate_contrast:soft": {
@@ -958,9 +959,9 @@
    }
   },
   "proportion:strong": {
-   "n": 9,
-   "gainSum": 23.4,
-   "keep": 6,
+   "n": 10,
+   "gainSum": 23.9,
+   "keep": 7,
    "improved": 3,
    "broken": 0,
    "fail": {
@@ -969,10 +970,10 @@
    }
   },
   "noise_displace:strong": {
-   "n": 13,
-   "gainSum": 52.9,
-   "keep": 12,
-   "improved": 12,
+   "n": 14,
+   "gainSum": 57.7,
+   "keep": 13,
+   "improved": 13,
    "broken": 0,
    "fail": {
     "DARKENED": 1
@@ -1017,9 +1018,9 @@
    }
   },
   "bevel:strong": {
-   "n": 12,
-   "gainSum": 31.1,
-   "keep": 12,
+   "n": 13,
+   "gainSum": 31.5,
+   "keep": 13,
    "improved": 9,
    "broken": 0
   },
@@ -1034,10 +1035,10 @@
    }
   },
   "outline:strong": {
-   "n": 15,
-   "gainSum": 40.7,
-   "keep": 15,
-   "improved": 12,
+   "n": 16,
+   "gainSum": 45.1,
+   "keep": 16,
+   "improved": 13,
    "broken": 0
   },
   "hue_shift:soft": {
@@ -1060,199 +1061,199 @@
  },
  "UI": {
   "hud_layout:soft": {
-   "n": 42,
-   "keep": 42,
+   "n": 45,
+   "keep": 45,
    "gainSum": 0,
    "improved": 0,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "hud_layout:strong": {
-   "n": 42,
-   "keep": 42,
+   "n": 45,
+   "keep": 45,
    "gainSum": 0,
    "improved": 0,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "inventory_layout:soft": {
-   "n": 42,
-   "keep": 42,
-   "gainSum": 504,
-   "improved": 14,
+   "n": 45,
+   "keep": 45,
+   "gainSum": 540,
+   "improved": 15,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "inventory_layout:strong": {
-   "n": 42,
-   "keep": 42,
-   "gainSum": 756,
-   "improved": 14,
+   "n": 45,
+   "keep": 45,
+   "gainSum": 810,
+   "improved": 15,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "shop_layout:soft": {
-   "n": 42,
-   "keep": 42,
-   "gainSum": 252,
-   "improved": 14,
+   "n": 45,
+   "keep": 45,
+   "gainSum": 270,
+   "improved": 15,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "shop_layout:strong": {
-   "n": 42,
-   "keep": 42,
-   "gainSum": 504,
-   "improved": 14,
+   "n": 45,
+   "keep": 45,
+   "gainSum": 540,
+   "improved": 15,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "settings_layout:soft": {
-   "n": 42,
-   "keep": 42,
-   "gainSum": 252,
-   "improved": 14,
+   "n": 45,
+   "keep": 45,
+   "gainSum": 270,
+   "improved": 15,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "settings_layout:strong": {
-   "n": 42,
-   "keep": 42,
-   "gainSum": 504,
-   "improved": 14,
+   "n": 45,
+   "keep": 45,
+   "gainSum": 540,
+   "improved": 15,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "craft_layout:soft": {
-   "n": 42,
-   "keep": 42,
-   "gainSum": 252,
-   "improved": 14,
+   "n": 45,
+   "keep": 45,
+   "gainSum": 270,
+   "improved": 15,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "craft_layout:strong": {
-   "n": 42,
-   "keep": 42,
-   "gainSum": 504,
-   "improved": 14,
+   "n": 45,
+   "keep": 45,
+   "gainSum": 540,
+   "improved": 15,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "quest_layout:soft": {
-   "n": 42,
-   "keep": 42,
-   "gainSum": 252,
-   "improved": 14,
+   "n": 45,
+   "keep": 45,
+   "gainSum": 270,
+   "improved": 15,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "quest_layout:strong": {
-   "n": 42,
-   "keep": 42,
-   "gainSum": 504,
-   "improved": 14,
+   "n": 45,
+   "keep": 45,
+   "gainSum": 540,
+   "improved": 15,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "dialogue_layout:soft": {
-   "n": 42,
-   "keep": 41,
+   "n": 45,
+   "keep": 44,
    "gainSum": -15,
    "improved": 0,
    "broken": 1,
    "fail": {
     "overlap": 1
    },
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "dialogue_layout:strong": {
-   "n": 42,
-   "keep": 42,
+   "n": 45,
+   "keep": 45,
    "gainSum": 0,
    "improved": 0,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "combat_layout:soft": {
-   "n": 42,
-   "keep": 42,
+   "n": 45,
+   "keep": 45,
    "gainSum": 0,
    "improved": 0,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   },
   "combat_layout:strong": {
-   "n": 42,
-   "keep": 42,
+   "n": 45,
+   "keep": 45,
    "gainSum": 0,
    "improved": 0,
    "broken": 0,
-   "designScoreSum": 2700,
+   "designScoreSum": 3000,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 27
+   "designSamples": 30
   }
  }
 }
