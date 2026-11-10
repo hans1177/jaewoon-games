@@ -1373,7 +1373,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-11-10T08:08:30.573Z",
+      "updatedAt": "2026-11-10T08:29:06.718Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -1383,9 +1383,9 @@
         "capturedAt": "2026-10-12T02:12:43.338Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "8ff745b7461dfd2030bff5f725f8c394ef898223",
-      "robloxSourceBootstrapPassedAt": "2026-11-10T02:28:03.673Z",
-      "robloxSourceBootstrapFailedAt": "2026-11-10T08:08:30.573Z",
+      "robloxSourceCommit": "91498b32fe30c91d00db1ece561bead24a4f8daf",
+      "robloxSourceBootstrapPassedAt": "2026-11-10T08:29:06.718Z",
+      "robloxSourceBootstrapFailedAt": "2026-11-10T08:29:06.718Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -1434,8 +1434,8 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-studio-asset-binding-required",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
         "roblox-source-bootstrap:source-generation-failed"
       ],
@@ -3727,7 +3727,7 @@
       }
     }
   ],
-  "updatedAt": "2026-11-10T08:20:01.582Z",
+  "updatedAt": "2026-11-10T08:29:06.718Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -3793,5 +3793,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
