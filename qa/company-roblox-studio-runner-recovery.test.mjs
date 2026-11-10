@@ -51,6 +51,13 @@ test('authenticated Windows Studio runner stays online for Studio launch and rec
   const recover=workflow.slice(workflow.indexOf('  recover-via-unity:'),workflow.indexOf('\n  bootstrap:'));
   assert.match(recover,/runs-on: \[self-hosted, Windows, X64, jaewoon-unity\]/);
   assert.match(bootstrap,/WScript\.Sleep 15000/);
+  assert.match(bootstrap,/shell\.Run "cmd\.exe \/d \/c run\.cmd", 0, False/);
+  assert.match(bootstrap,/ROBLOX_RUNNER_WATCHDOG=ACTIVE_SAME_INTERACTIVE_SESSION/);
+  assert.match(bootstrap,/ROBLOX_RUNNER_INTERACTIVE_WATCHDOG_START_NOT_VERIFIED/);
+  assert.match(bootstrap,/ROBLOX_RUNNER_REBOOT_PROOF=NOT_TESTED_NO_FORCED_REBOOT/);
+  assert.match(bootstrap,/Get-Content -LiteralPath \$startupPath -Raw/);
+  assert.match(bootstrap,/\[int\]\$_.SessionId -eq \$hostSessionId/);
+  assert.doesNotMatch(bootstrap,/shell\.Run Chr\(34\) & target & Chr\(34\) & " run"/);
   assert.match(bootstrap,/For Each p In listeners/);
   assert.match(bootstrap,/If LCase\(p\.ExecutablePath\) = LCase\(target\) Then/);
 });
