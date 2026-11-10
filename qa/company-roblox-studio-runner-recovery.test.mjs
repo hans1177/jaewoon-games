@@ -55,7 +55,10 @@ test('authenticated Windows Studio runner stays online for Studio launch and rec
   assert.match(bootstrap,/ROBLOX_RUNNER_WATCHDOG=ACTIVE_SAME_INTERACTIVE_SESSION/);
   assert.match(bootstrap,/ROBLOX_RUNNER_INTERACTIVE_WATCHDOG_START_NOT_VERIFIED/);
   assert.match(bootstrap,/ROBLOX_RUNNER_REBOOT_PROOF=NOT_TESTED_NO_FORCED_REBOOT/);
-  assert.match(bootstrap,/Get-Content -LiteralPath \$startupPath -Raw/);
+  assert.match(bootstrap,/Get-Item -LiteralPath \$startupPath -ErrorAction Stop/);
+  assert.match(bootstrap,/if \(\$existingWatchers.Count -gt 0\) \{ Start-Sleep -Seconds 2 \}/);
+  assert.ok(bootstrap.indexOf('Stop-Process -Id ([int]$watcher.ProcessId)') < bootstrap.indexOf('$launcher | Set-Content -LiteralPath $startupPath'));
+  assert.doesNotMatch(bootstrap,/Get-Content -LiteralPath \$startupPath -Raw/);
   assert.match(bootstrap,/\[int\]\$_.SessionId -eq \$hostSessionId/);
   assert.doesNotMatch(bootstrap,/shell\.Run Chr\(34\) & target & Chr\(34\) & " run"/);
   assert.match(bootstrap,/For Each p In listeners/);
