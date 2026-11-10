@@ -31,7 +31,7 @@ export function runPracticeSession({repoRoot=process.cwd(),seed=1,parents=3,vari
     iconCandidates:gym.ledger.filter(r=>r.icon?.legible).length,
     iconRejected:gym.ledger.filter(r=>r.icon&&!r.icon.legible).length,
     gameApplied:0};
-  const [lp,...bakeParents]=pickPracticeParents(repoRoot,seed,null,4);
+  const [lp,...bakeParents]=pickPracticeParents(repoRoot,seed,process.env.VIBE_CC0_LIBRARY_DIR||null,4);
   if(light&&lp){
     try{
       const res=runLightSearch({parent:lp.file,candidates:lightCandidates,rounds:lightRounds,seed,out:path.join(out,'light')});
