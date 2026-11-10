@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {runInNewContext} from 'node:vm';
 import {
   csrfFetch,
   createRobloxDedicatedExperience,
@@ -281,4 +282,51 @@ test('Forest private publisher verifies CC0 gear, item and shields with batched 
   assert.match(block,/ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_/);
   assert.match(block,/ROBLOX_CC0_UNIVERSE_GRANT_BATCH_ACCEPTED=/);
   assert.doesNotMatch(block,/ROBLOX_SECURITY_COOKIE|continue-on-error:\s*true/);
+});
+
+
+// [권한 거부 실증] Studio 경고를 유발한 CannotManageSubject가 발생해도
+// 기존 게시 증거를 남기고 company-runtime에 실패로 보낸다. PASS를 합성하지 않는다.
+test('Forest failed Universe grant records exact denied status without a false publication pass',()=>{
+  const source=fs.readFileSync('.github/workflows/owner-roblox-dedicated-private-experiences.yml','utf8');
+  const begin=source.indexOf('- name: Record failed Forest Universe grant in canonical publication evidence');
+  const end=source.indexOf('\n      - name: Build exact current main Roblox place',begin);
+  assert.ok(begin>=0&&end>begin);
+  const body=source.slice(begin,end);
+  assert.match(body,/failure\(\) && matrix\.gameId == 'fantasy-survival' && steps\.forest_grant\.outcome == 'failure'/);
+  assert.match(source,/id: forest_grant/);
+  assert.match(source,/fs\.appendFileSync\(process\.env\.GITHUB_OUTPUT/);
+  assert.match(source,/if-no-files-found: error/);
+  const startScript=body.indexOf("node <<'NODE'\n");
+  const endScript=body.indexOf('\n          NODE',startScript);
+  assert.ok(startScript>=0&&endScript>startScript);
+  const script=body.slice(startScript+"node <<'NODE'\n".length,endScript);
+  const writes=[];
+  const originalEnv={
+    GAME_ID:'fantasy-survival',GAME_NAME:'마력숲 생존기',
+    OWNER_UNIVERSE_ID:'10773436325',OWNER_PLACE_ID:'108565970231899',
+    GRANT_DENIAL_CODE:'CannotManageSubject',GRANT_HTTP_STATUS:'403',
+    GITHUB_SHA:'a'.repeat(40),
+  };
+  const run=env=>runInNewContext(script,{
+    process:{env},console:{log(){}},Date,
+    require:name=>{
+      assert.equal(name,'node:fs');
+      return {
+        mkdirSync(dir,options){assert.equal(dir,'/tmp/roblox-dedicated');assert.equal(options.recursive,true);},
+        existsSync:()=>false,
+        writeFileSync:(path,text)=>writes.push({path,data:JSON.parse(text)}),
+      };
+    },
+  });
+  run(originalEnv);
+  assert.equal(writes.length,1);
+  assert.equal(writes[0].path,'/tmp/roblox-dedicated/fantasy-survival.result.json');
+  assert.equal(writes[0].data.sourceRevision,originalEnv.GITHUB_SHA);
+  assert.equal(writes[0].data.stage,'ASSET_UNIVERSE_GRANT');
+  assert.equal(writes[0].data.error,'ROBLOX_CC0_UNIVERSE_GRANT_DENIED_CannotManageSubject');
+  assert.equal(writes[0].data.failureSignature,'ROBLOX_CC0_UNIVERSE_GRANT_HTTP_403');
+  for(const key of ['pass','published','private'])assert.equal(writes[0].data[key],false);
+  assert.throws(()=>run({...originalEnv,OWNER_UNIVERSE_ID:'123'}),/FOREST_GRANT_FAILURE_TARGET_UNVERIFIED/);
+  assert.equal(writes.length,1);
 });
