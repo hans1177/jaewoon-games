@@ -6169,10 +6169,10 @@
         "gameId": "village-dungeons",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/village-dungeons/client/Game.client.luau",
-          "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
-          "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
-          "roblox-games/village-dungeons/server/Game.server.luau"
+          "roblox-games/village-dungeons/server/Game.server.luau",
+          "roblox-games/village-dungeons/shared/GameConfig.luau",
+          "roblox-games/village-dungeons/shared/RobloxCommonMaterials.luau",
+          "roblox-games/village-dungeons/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6184,10 +6184,10 @@
         "gameId": "village-dungeons",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/village-dungeons/client/Game.client.luau",
-          "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
-          "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
-          "roblox-games/village-dungeons/server/Game.server.luau"
+          "roblox-games/village-dungeons/server/Game.server.luau",
+          "roblox-games/village-dungeons/shared/GameConfig.luau",
+          "roblox-games/village-dungeons/shared/RobloxCommonMaterials.luau",
+          "roblox-games/village-dungeons/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6199,10 +6199,10 @@
         "gameId": "village-dungeons",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/village-dungeons/client/Game.client.luau",
-          "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
-          "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
-          "roblox-games/village-dungeons/server/Game.server.luau"
+          "roblox-games/village-dungeons/server/Game.server.luau",
+          "roblox-games/village-dungeons/shared/GameConfig.luau",
+          "roblox-games/village-dungeons/shared/RobloxCommonMaterials.luau",
+          "roblox-games/village-dungeons/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6214,10 +6214,10 @@
         "gameId": "village-dungeons",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/village-dungeons/client/Game.client.luau",
-          "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
-          "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
-          "roblox-games/village-dungeons/server/Game.server.luau"
+          "roblox-games/village-dungeons/server/Game.server.luau",
+          "roblox-games/village-dungeons/shared/GameConfig.luau",
+          "roblox-games/village-dungeons/shared/RobloxCommonMaterials.luau",
+          "roblox-games/village-dungeons/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6229,10 +6229,10 @@
         "gameId": "village-dungeons",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/village-dungeons/client/Game.client.luau",
-          "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
-          "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
-          "roblox-games/village-dungeons/server/Game.server.luau"
+          "roblox-games/village-dungeons/server/Game.server.luau",
+          "roblox-games/village-dungeons/shared/GameConfig.luau",
+          "roblox-games/village-dungeons/shared/RobloxCommonMaterials.luau",
+          "roblox-games/village-dungeons/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11738,12 +11738,12 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "roblox-games/village-dungeons/client/Game.client.luau",
-      "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
-      "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
       "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/shared/GameConfig.luau",
       "roblox-games/village-dungeons/shared/RobloxCommonMaterials.luau",
+      "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11966,12 +11966,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/village-dungeons/client/Game.client.luau",
-      "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
-      "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
       "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/shared/GameConfig.luau",
       "roblox-games/village-dungeons/shared/RobloxCommonMaterials.luau",
+      "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12169,12 +12169,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/village-dungeons/client/Game.client.luau",
-      "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
-      "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
       "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/shared/GameConfig.luau",
       "roblox-games/village-dungeons/shared/RobloxCommonMaterials.luau",
+      "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "sourceAnchors": [
@@ -12514,12 +12514,12 @@
     "gameId": "village-dungeons",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/village-dungeons/client/Game.client.luau",
-      "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
-      "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
       "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/shared/GameConfig.luau",
       "roblox-games/village-dungeons/shared/RobloxCommonMaterials.luau",
+      "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "impact": {
@@ -12718,5 +12718,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T15:45:44.012Z"
+  "generatedAt": "2026-11-10T01:49:51.398Z"
 }

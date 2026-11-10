@@ -6161,10 +6161,10 @@
         "gameId": "human-go-temp",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/human-go-temp/client/Game.client.luau",
-          "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
-          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
-          "roblox-games/human-go-temp/server/Game.server.luau"
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6176,10 +6176,10 @@
         "gameId": "human-go-temp",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/human-go-temp/client/Game.client.luau",
-          "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
-          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
-          "roblox-games/human-go-temp/server/Game.server.luau"
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6191,10 +6191,10 @@
         "gameId": "human-go-temp",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/human-go-temp/client/Game.client.luau",
-          "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
-          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
-          "roblox-games/human-go-temp/server/Game.server.luau"
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6206,10 +6206,10 @@
         "gameId": "human-go-temp",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/human-go-temp/client/Game.client.luau",
-          "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
-          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
-          "roblox-games/human-go-temp/server/Game.server.luau"
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6221,10 +6221,10 @@
         "gameId": "human-go-temp",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/human-go-temp/client/Game.client.luau",
-          "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
-          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
-          "roblox-games/human-go-temp/server/Game.server.luau"
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11691,12 +11691,12 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "roblox-games/human-go-temp/client/Game.client.luau",
-      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
-      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
       "roblox-games/human-go-temp/server/Game.server.luau",
       "roblox-games/human-go-temp/shared/GameConfig.luau",
       "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+      "roblox-games/human-go-temp/client/Game.client.luau",
+      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
       "roblox-games/human-go-temp/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11919,12 +11919,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/human-go-temp/client/Game.client.luau",
-      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
-      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
       "roblox-games/human-go-temp/server/Game.server.luau",
       "roblox-games/human-go-temp/shared/GameConfig.luau",
       "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+      "roblox-games/human-go-temp/client/Game.client.luau",
+      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
       "roblox-games/human-go-temp/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12122,12 +12122,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/human-go-temp/client/Game.client.luau",
-      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
-      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
       "roblox-games/human-go-temp/server/Game.server.luau",
       "roblox-games/human-go-temp/shared/GameConfig.luau",
       "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+      "roblox-games/human-go-temp/client/Game.client.luau",
+      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
       "roblox-games/human-go-temp/default.project.json"
     ],
     "sourceAnchors": [
@@ -12295,12 +12295,12 @@
     "gameId": "human-go-temp",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/human-go-temp/client/Game.client.luau",
-      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
-      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
       "roblox-games/human-go-temp/server/Game.server.luau",
       "roblox-games/human-go-temp/shared/GameConfig.luau",
       "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+      "roblox-games/human-go-temp/client/Game.client.luau",
+      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
       "roblox-games/human-go-temp/default.project.json"
     ],
     "impact": {
@@ -12499,5 +12499,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T15:45:40.493Z"
+  "generatedAt": "2026-11-10T01:49:29.898Z"
 }

@@ -6120,10 +6120,10 @@
         "gameId": "exorcist-office",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/exorcist-office/client/Game.client.luau",
-          "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
-          "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
-          "roblox-games/exorcist-office/server/Game.server.luau"
+          "roblox-games/exorcist-office/server/Game.server.luau",
+          "roblox-games/exorcist-office/shared/GameConfig.luau",
+          "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
+          "roblox-games/exorcist-office/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6135,10 +6135,10 @@
         "gameId": "exorcist-office",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/exorcist-office/client/Game.client.luau",
-          "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
-          "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
-          "roblox-games/exorcist-office/server/Game.server.luau"
+          "roblox-games/exorcist-office/server/Game.server.luau",
+          "roblox-games/exorcist-office/shared/GameConfig.luau",
+          "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
+          "roblox-games/exorcist-office/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6150,10 +6150,10 @@
         "gameId": "exorcist-office",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/exorcist-office/client/Game.client.luau",
-          "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
-          "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
-          "roblox-games/exorcist-office/server/Game.server.luau"
+          "roblox-games/exorcist-office/server/Game.server.luau",
+          "roblox-games/exorcist-office/shared/GameConfig.luau",
+          "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
+          "roblox-games/exorcist-office/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6165,10 +6165,10 @@
         "gameId": "exorcist-office",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/exorcist-office/client/Game.client.luau",
-          "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
-          "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
-          "roblox-games/exorcist-office/server/Game.server.luau"
+          "roblox-games/exorcist-office/server/Game.server.luau",
+          "roblox-games/exorcist-office/shared/GameConfig.luau",
+          "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
+          "roblox-games/exorcist-office/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6180,10 +6180,10 @@
         "gameId": "exorcist-office",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/exorcist-office/client/Game.client.luau",
-          "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
-          "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
-          "roblox-games/exorcist-office/server/Game.server.luau"
+          "roblox-games/exorcist-office/server/Game.server.luau",
+          "roblox-games/exorcist-office/shared/GameConfig.luau",
+          "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
+          "roblox-games/exorcist-office/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11648,12 +11648,12 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "roblox-games/exorcist-office/client/Game.client.luau",
-      "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
-      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/server/Game.server.luau",
       "roblox-games/exorcist-office/shared/GameConfig.luau",
       "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
+      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
+      "roblox-games/exorcist-office/client/Game.client.luau",
+      "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
       "roblox-games/exorcist-office/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11876,12 +11876,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/exorcist-office/client/Game.client.luau",
-      "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
-      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/server/Game.server.luau",
       "roblox-games/exorcist-office/shared/GameConfig.luau",
       "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
+      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
+      "roblox-games/exorcist-office/client/Game.client.luau",
+      "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
       "roblox-games/exorcist-office/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12079,12 +12079,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/exorcist-office/client/Game.client.luau",
-      "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
-      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/server/Game.server.luau",
       "roblox-games/exorcist-office/shared/GameConfig.luau",
       "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
+      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
+      "roblox-games/exorcist-office/client/Game.client.luau",
+      "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
       "roblox-games/exorcist-office/default.project.json"
     ],
     "sourceAnchors": [
@@ -12282,12 +12282,12 @@
     "gameId": "exorcist-office",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/exorcist-office/client/Game.client.luau",
-      "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
-      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/server/Game.server.luau",
       "roblox-games/exorcist-office/shared/GameConfig.luau",
       "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
+      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
+      "roblox-games/exorcist-office/client/Game.client.luau",
+      "roblox-games/exorcist-office/client/MaterialPresentation.client.luau",
       "roblox-games/exorcist-office/default.project.json"
     ],
     "impact": {
@@ -12486,5 +12486,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T15:45:39.589Z"
+  "generatedAt": "2026-11-10T01:49:19.800Z"
 }

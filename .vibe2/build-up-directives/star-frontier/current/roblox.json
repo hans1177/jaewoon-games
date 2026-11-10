@@ -6148,10 +6148,10 @@
         "gameId": "star-frontier",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/star-frontier/client/Game.client.luau",
-          "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
-          "roblox-games/star-frontier/server/Game.server.luau"
+          "roblox-games/star-frontier/server/Game.server.luau",
+          "roblox-games/star-frontier/shared/GameConfig.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6163,10 +6163,10 @@
         "gameId": "star-frontier",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/star-frontier/client/Game.client.luau",
-          "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
-          "roblox-games/star-frontier/server/Game.server.luau"
+          "roblox-games/star-frontier/server/Game.server.luau",
+          "roblox-games/star-frontier/shared/GameConfig.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6178,10 +6178,10 @@
         "gameId": "star-frontier",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/star-frontier/client/Game.client.luau",
-          "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
-          "roblox-games/star-frontier/server/Game.server.luau"
+          "roblox-games/star-frontier/server/Game.server.luau",
+          "roblox-games/star-frontier/shared/GameConfig.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6193,10 +6193,10 @@
         "gameId": "star-frontier",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/star-frontier/client/Game.client.luau",
-          "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
-          "roblox-games/star-frontier/server/Game.server.luau"
+          "roblox-games/star-frontier/server/Game.server.luau",
+          "roblox-games/star-frontier/shared/GameConfig.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6208,10 +6208,10 @@
         "gameId": "star-frontier",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/star-frontier/client/Game.client.luau",
-          "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
-          "roblox-games/star-frontier/server/Game.server.luau"
+          "roblox-games/star-frontier/server/Game.server.luau",
+          "roblox-games/star-frontier/shared/GameConfig.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11692,12 +11692,12 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "roblox-games/star-frontier/client/Game.client.luau",
-      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
-      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
       "roblox-games/star-frontier/server/Game.server.luau",
       "roblox-games/star-frontier/shared/GameConfig.luau",
       "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
+      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
+      "roblox-games/star-frontier/client/Game.client.luau",
+      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
       "roblox-games/star-frontier/default.project.json",
       "roblox-games/star-frontier/launch-mvp.json"
     ],
@@ -11921,12 +11921,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/star-frontier/client/Game.client.luau",
-      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
-      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
       "roblox-games/star-frontier/server/Game.server.luau",
       "roblox-games/star-frontier/shared/GameConfig.luau",
       "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
+      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
+      "roblox-games/star-frontier/client/Game.client.luau",
+      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
       "roblox-games/star-frontier/default.project.json",
       "roblox-games/star-frontier/launch-mvp.json"
     ],
@@ -12125,12 +12125,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/star-frontier/client/Game.client.luau",
-      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
-      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
       "roblox-games/star-frontier/server/Game.server.luau",
       "roblox-games/star-frontier/shared/GameConfig.luau",
       "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
+      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
+      "roblox-games/star-frontier/client/Game.client.luau",
+      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
       "roblox-games/star-frontier/default.project.json",
       "roblox-games/star-frontier/launch-mvp.json"
     ],
@@ -12356,12 +12356,12 @@
     "gameId": "star-frontier",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/star-frontier/client/Game.client.luau",
-      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
-      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
       "roblox-games/star-frontier/server/Game.server.luau",
       "roblox-games/star-frontier/shared/GameConfig.luau",
       "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
+      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
+      "roblox-games/star-frontier/client/Game.client.luau",
+      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
       "roblox-games/star-frontier/default.project.json",
       "roblox-games/star-frontier/launch-mvp.json"
     ],
@@ -12561,5 +12561,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T15:45:43.423Z"
+  "generatedAt": "2026-11-10T01:49:47.980Z"
 }

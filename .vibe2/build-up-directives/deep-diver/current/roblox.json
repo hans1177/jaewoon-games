@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "deep-diver-build-up-g2-97811b306daf",
-  "directiveFingerprint": "97811b306daf1acac1b1cbb44877374c07b5baedb13b6234c382e2372fd62387",
-  "previousDirectiveFingerprint": "a78c2820ce796dceadd7121f82fabcda8b80eb152264f65c72944776f6787416",
-  "forbiddenRepeatFingerprint": "a78c2820ce796dceadd7121f82fabcda8b80eb152264f65c72944776f6787416",
+  "directiveId": "deep-diver-build-up-g1-cf98364bff3e",
+  "directiveFingerprint": "cf98364bff3ef380cc6c83736f442b2afc530c9c4d289e7cc75a536ebc2731e9",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "deep-diver",
   "gameName": "심해 잠수부 · 검은 바다의 보물",
-  "generation": 2,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "DEEPER_CAUSAL_REPAIR",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "d2395603237e870fd60f89b1026134fa3b71f0e355f875a37963d03557f758cf",
-    "previousDesignFingerprint": "d2395603237e870fd60f89b1026134fa3b71f0e355f875a37963d03557f758cf",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -5865,13 +5865,7 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "심해 잠수부 · 검은 바다의 보물. 자연·생태·유전학 액션. 심해 잠수부 · 검은 바다의 보물에서 탐험 중 적 패턴과 도구를 조합하는 전투 × 자연·생태과 공간 상태 변환 × 유전학이 서로 결과를 되돌려 바꾸며 풍자·스릴러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-    "previousFocus": "USABILITY",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "89ebd3e2db6cfc861cff327a16050cfd785479382baa0712dbef3d89cb8db158",
-    "currentSourceTreeFingerprint": "cb93e6acd85c3a7bf3e09a75643fbf263fc55a580b9b0b856f377ab17b01969d",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
@@ -7756,8 +7750,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=REGRESSION; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=REGRESSION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -7767,10 +7761,9 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 1
       },
       "sequence": [
-        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -7806,7 +7799,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 218,
+        "score": 76,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -7933,7 +7926,7 @@
       "assetReferences": 0,
       "missingReferences": 0
     },
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "sourceOnly": true,
     "qualityComplete": false,
     "evidenceScope": {
@@ -11613,11 +11606,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "cb93e6acd85c3a7bf3e09a75643fbf263fc55a580b9b0b856f377ab17b01969d",
-    "priorSourceFingerprint": "89ebd3e2db6cfc861cff327a16050cfd785479382baa0712dbef3d89cb8db158",
+    "priorSourceFingerprint": null,
     "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -12538,9 +12531,9 @@
       "gameId": "deep-diver",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 2,
-        "actorClass": "CREATURE",
-        "sourceOwnerFile": "roblox-games/deep-diver/default.project.json",
+        "generation": 1,
+        "actorClass": "BOSS",
+        "sourceOwnerFile": "roblox-games/deep-diver/shared/RobloxCommonMotion.luau",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
@@ -12553,7 +12546,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "deep-diver",
-          "actorClass": "CREATURE",
+          "actorClass": "BOSS",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -14002,12 +13995,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "DEEPER_CAUSAL_REPAIR",
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -14064,5 +14057,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-09T02:33:03.505Z"
+  "generatedAt": "2026-11-10T01:49:14.196Z"
 }

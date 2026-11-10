@@ -6179,10 +6179,10 @@
         "gameId": "realistic-builder",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/realistic-builder/client/Game.client.luau",
-          "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
           "roblox-games/realistic-builder/server/Game.server.luau",
-          "roblox-games/realistic-builder/shared/GameConfig.luau"
+          "roblox-games/realistic-builder/shared/GameConfig.luau",
+          "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
+          "roblox-games/realistic-builder/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6194,10 +6194,10 @@
         "gameId": "realistic-builder",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/realistic-builder/client/Game.client.luau",
-          "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
           "roblox-games/realistic-builder/server/Game.server.luau",
-          "roblox-games/realistic-builder/shared/GameConfig.luau"
+          "roblox-games/realistic-builder/shared/GameConfig.luau",
+          "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
+          "roblox-games/realistic-builder/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6209,10 +6209,10 @@
         "gameId": "realistic-builder",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/realistic-builder/client/Game.client.luau",
-          "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
           "roblox-games/realistic-builder/server/Game.server.luau",
-          "roblox-games/realistic-builder/shared/GameConfig.luau"
+          "roblox-games/realistic-builder/shared/GameConfig.luau",
+          "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
+          "roblox-games/realistic-builder/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6224,10 +6224,10 @@
         "gameId": "realistic-builder",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/realistic-builder/client/Game.client.luau",
-          "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
           "roblox-games/realistic-builder/server/Game.server.luau",
-          "roblox-games/realistic-builder/shared/GameConfig.luau"
+          "roblox-games/realistic-builder/shared/GameConfig.luau",
+          "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
+          "roblox-games/realistic-builder/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6239,10 +6239,10 @@
         "gameId": "realistic-builder",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/realistic-builder/client/Game.client.luau",
-          "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
           "roblox-games/realistic-builder/server/Game.server.luau",
-          "roblox-games/realistic-builder/shared/GameConfig.luau"
+          "roblox-games/realistic-builder/shared/GameConfig.luau",
+          "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
+          "roblox-games/realistic-builder/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11714,12 +11714,12 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "roblox-games/realistic-builder/client/Game.client.luau",
-      "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
       "roblox-games/realistic-builder/server/Game.server.luau",
       "roblox-games/realistic-builder/shared/GameConfig.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
+      "roblox-games/realistic-builder/client/Game.client.luau",
+      "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
       "roblox-games/realistic-builder/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11942,12 +11942,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/realistic-builder/client/Game.client.luau",
-      "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
       "roblox-games/realistic-builder/server/Game.server.luau",
       "roblox-games/realistic-builder/shared/GameConfig.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
+      "roblox-games/realistic-builder/client/Game.client.luau",
+      "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
       "roblox-games/realistic-builder/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12145,12 +12145,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/realistic-builder/client/Game.client.luau",
-      "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
       "roblox-games/realistic-builder/server/Game.server.luau",
       "roblox-games/realistic-builder/shared/GameConfig.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
+      "roblox-games/realistic-builder/client/Game.client.luau",
+      "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
       "roblox-games/realistic-builder/default.project.json"
     ],
     "sourceAnchors": [
@@ -12348,12 +12348,12 @@
     "gameId": "realistic-builder",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/realistic-builder/client/Game.client.luau",
-      "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
       "roblox-games/realistic-builder/server/Game.server.luau",
       "roblox-games/realistic-builder/shared/GameConfig.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
+      "roblox-games/realistic-builder/client/Game.client.luau",
+      "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
       "roblox-games/realistic-builder/default.project.json"
     ],
     "impact": {
@@ -12552,5 +12552,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T15:45:41.812Z"
+  "generatedAt": "2026-11-10T01:49:37.858Z"
 }

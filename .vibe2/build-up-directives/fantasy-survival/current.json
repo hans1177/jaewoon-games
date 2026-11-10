@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g1-6980847bbf18",
-  "directiveFingerprint": "6980847bbf18bb58176a65ef3092033473f3b99451fca084a5b8c7db5b431c58",
+  "directiveId": "fantasy-survival-build-up-g1-80d1b4c3302d",
+  "directiveFingerprint": "80d1b4c3302d41f3074fddab25975d48f18947281da70bb6980cfee874b29749",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "fantasy-survival",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "d83f06c5fbdab7d83a22fd92ee35e04898f7436d6d1b00d751c5791f25cab874",
+  "sourceTreeFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
   "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
   "designSourceBuildUp": {
     "version": 1,
@@ -346,7 +346,7 @@
           "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
           "VFX_AUDIO_CAMERA_POLISH_MOBILE"
         ],
-        "sourceTreeFingerprint": "d83f06c5fbdab7d83a22fd92ee35e04898f7436d6d1b00d751c5791f25cab874",
+        "sourceTreeFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
         "rule": "MAIN_A_NAMED_GAME_SYSTEM_B_EXISTING_GAME_SYSTEMS; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -493,7 +493,7 @@
       "nextAction": "OPTIONAL_COMPATIBILITY_COMPARISON_ONLY_ROBLOX_LUAU_REMAINS_ORIGINAL"
     },
     "designFingerprint": "41d49ce937f978f80b9e0372f0dde68071975fd5247044f245dd209d4647e5d2",
-    "sourceTreeFingerprint": "d83f06c5fbdab7d83a22fd92ee35e04898f7436d6d1b00d751c5791f25cab874",
+    "sourceTreeFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
     "multiplayerMode": "HYBRID",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -582,7 +582,7 @@
           "inspectedExecutableFiles": [
             "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/GameConfig.luau"
+            "roblox-games/fantasy-survival/server/StudioQA.server.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -590,7 +590,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/server/StudioQA.server.luau"
         ],
         "inspectedSymbols": [
           {
@@ -691,7 +691,7 @@
           "inspectedExecutableFiles": [
             "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/GameConfig.luau"
+            "roblox-games/fantasy-survival/server/StudioQA.server.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -699,7 +699,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/server/StudioQA.server.luau"
         ],
         "inspectedSymbols": [
           {
@@ -794,7 +794,7 @@
           "inspectedExecutableFiles": [
             "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/GameConfig.luau"
+            "roblox-games/fantasy-survival/server/StudioQA.server.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -802,7 +802,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/server/StudioQA.server.luau"
         ],
         "inspectedSymbols": [
           {
@@ -896,7 +896,7 @@
           "inspectedExecutableFiles": [
             "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
             "roblox-games/fantasy-survival/server/Game.server.luau",
-            "roblox-games/fantasy-survival/shared/GameConfig.luau"
+            "roblox-games/fantasy-survival/server/StudioQA.server.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -904,7 +904,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
           "roblox-games/fantasy-survival/server/Game.server.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/server/StudioQA.server.luau"
         ],
         "inspectedSymbols": [
           {
@@ -1047,13 +1047,18 @@
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
+      "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
       "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
+      "roblox-games/fantasy-survival/server/StudioQA.server.luau",
+      "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
       "roblox-games/fantasy-survival/client/DevReport.client.luau",
+      "roblox-games/fantasy-survival/client/LookApply.client.luau",
       "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
       "roblox-games/fantasy-survival/shared/VisualLadderState.luau",
+      "roblox-games/fantasy-survival/shared/LookAssignment.luau",
       "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau"
     ],
@@ -1062,9 +1067,12 @@
       "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
       "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
+      "roblox-games/fantasy-survival/server/StudioQA.server.luau",
+      "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
       "roblox-games/fantasy-survival/client/DevReport.client.luau"
     ],
@@ -1110,7 +1118,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "d83f06c5fbdab7d83a22fd92ee35e04898f7436d6d1b00d751c5791f25cab874",
+    "sourceTreeFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
     "mode": "PRESERVATION_PRESENTATION_MILESTONES_ONLY",
     "authoredItemCount": 48,
     "authoredCounts": {
@@ -10121,39 +10129,39 @@
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH"
     ],
     "signals": {
-      "combat": 2622,
-      "progression": 1823,
-      "ai": 554,
-      "save": 493,
+      "combat": 2637,
+      "progression": 1849,
+      "ai": 560,
+      "save": 501,
       "multiplayer": 70,
-      "animation": 452,
-      "motionStates": 3749,
+      "animation": 457,
+      "motionStates": 4348,
       "gameFeel": 247,
-      "vfx": 469,
-      "camera": 426,
-      "audio": 69,
-      "audioDynamics": 61,
-      "ui": 2331,
-      "uiFlow": 1952,
+      "vfx": 476,
+      "camera": 486,
+      "audio": 70,
+      "audioDynamics": 77,
+      "ui": 3000,
+      "uiFlow": 2211,
       "entryFlow": 12,
-      "loadingFlow": 2,
+      "loadingFlow": 4,
       "input": 360,
-      "map": 4808,
-      "landmark": 752,
-      "interaction": 1304,
-      "inventory": 901,
-      "equipment": 427,
+      "map": 5290,
+      "landmark": 794,
+      "interaction": 1406,
+      "inventory": 902,
+      "equipment": 455,
       "settings": 63,
-      "feedback": 327,
-      "session": 214,
-      "content": 4514,
+      "feedback": 352,
+      "session": 217,
+      "content": 4633,
       "choice": 2358,
       "connection": 16,
-      "performance": 257,
-      "lighting": 433,
-      "primitive": 89,
+      "performance": 260,
+      "lighting": 487,
+      "primitive": 102,
       "todo": 0,
-      "errorRecovery": 287
+      "errorRecovery": 295
     },
     "topFiles": [
       {
@@ -10173,6 +10181,10 @@
         "score": 754
       },
       {
+        "file": "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
+        "score": 510
+      },
+      {
         "file": "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
         "score": 374
       },
@@ -10189,20 +10201,16 @@
         "score": 70
       },
       {
+        "file": "roblox-games/fantasy-survival/reupload-map.json",
+        "score": 61
+      },
+      {
         "file": "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-verify-ladder.json",
         "score": 60
       },
       {
         "file": "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
         "score": 45
-      },
-      {
-        "file": "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json",
-        "score": 31
-      },
-      {
-        "file": "roblox-games/fantasy-survival/shared/Opening24.luau",
-        "score": 26
       }
     ],
     "sourceAnchors": [
@@ -10607,6 +10615,14 @@
         "score": 66
       },
       {
+        "file": "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
+        "line": 14,
+        "kind": "FUNCTION",
+        "symbol": "scan",
+        "context": "local function scan(label)",
+        "score": 50
+      },
+      {
         "file": "roblox-games/fantasy-survival/shared/Opening24.luau",
         "line": 31,
         "kind": "FUNCTION",
@@ -10655,6 +10671,46 @@
         "score": 26
       },
       {
+        "file": "roblox-games/fantasy-survival/server/StudioQA.server.luau",
+        "line": 13,
+        "kind": "FUNCTION",
+        "symbol": "ok",
+        "context": "local function ok(msg)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fantasy-survival/server/StudioQA.server.luau",
+        "line": 16,
+        "kind": "FUNCTION",
+        "symbol": "fail",
+        "context": "local function fail(msg)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
+        "line": 92,
+        "kind": "FUNCTION",
+        "symbol": "setProps",
+        "context": "local function setProps(instance, props)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
+        "line": 100,
+        "kind": "FUNCTION",
+        "symbol": "ensure",
+        "context": "local function ensure(className, name)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
+        "line": 115,
+        "kind": "FUNCTION",
+        "symbol": "gameOwns",
+        "context": "local function gameOwns(className)",
+        "score": 26
+      },
+      {
         "file": "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
         "line": 236,
         "kind": "FUNCTION",
@@ -10686,10 +10742,10 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-studio-asset-binding-required",
     "blockers": [
-      "roblox-build-package-revalidation-pending"
+      "roblox-source-bootstrap:source-generation-failed"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -11803,10 +11859,10 @@
         "gameId": "fantasy-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
           "roblox-games/fantasy-survival/client/DevReport.client.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
+          "roblox-games/fantasy-survival/client/LookApply.client.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11818,10 +11874,10 @@
         "gameId": "fantasy-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
           "roblox-games/fantasy-survival/client/DevReport.client.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
+          "roblox-games/fantasy-survival/client/LookApply.client.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11833,10 +11889,10 @@
         "gameId": "fantasy-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
           "roblox-games/fantasy-survival/client/DevReport.client.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
+          "roblox-games/fantasy-survival/client/LookApply.client.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11848,10 +11904,10 @@
         "gameId": "fantasy-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
           "roblox-games/fantasy-survival/client/DevReport.client.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
+          "roblox-games/fantasy-survival/client/LookApply.client.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11863,10 +11919,10 @@
         "gameId": "fantasy-survival",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
+          "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
           "roblox-games/fantasy-survival/client/DevReport.client.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
-          "roblox-games/fantasy-survival/shared/OpeningAudioId.luau"
+          "roblox-games/fantasy-survival/client/LookApply.client.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -11922,7 +11978,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 58666373,
+        "sourceBytes": 58923711,
         "largestFileBytes": 2114676,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -12121,14 +12177,14 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "fantasy-survival",
     "sourceRoot": "roblox-games/fantasy-survival",
-    "sourceTreeFingerprint": "d83f06c5fbdab7d83a22fd92ee35e04898f7436d6d1b00d751c5791f25cab874",
+    "sourceTreeFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
     "sourceRevision": null,
     "scan": {
       "complete": true,
       "reason": null,
-      "sourceCount": 43,
+      "sourceCount": 52,
       "assetCount": 345,
-      "assetReferences": 3,
+      "assetReferences": 31,
       "missingReferences": 0
     },
     "sourceChangedSincePrevious": false,
@@ -15597,10 +15653,265 @@
     ],
     "assetReferences": [
       {
+        "path": "assets/roblox/actors/sources/kaykit-adventurers/Barbarian.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/kaykit-adventurers/Knight.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/kaykit-adventurers/Mage.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/kaykit-adventurers/Rogue_Hooded.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/kaykit-adventurers/Rogue.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Mage.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Minion.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Rogue.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Warrior.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-characters/FBX/Casual_Male.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-characters/FBX/Goblin_Male.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-characters/FBX/Knight_Golden_Male.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-characters/FBX/Knight_Male.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-characters/FBX/Ninja_Male.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-characters/FBX/OldClassy_Female.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-characters/FBX/Soldier_Female.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-characters/FBX/Witch.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-characters/FBX/Worker_Male.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-cute/FBX/Deer.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-cute/FBX/Demon.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-cute/FBX/Ghost.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
         "path": "assets/roblox/actors/sources/quaternius-cute/FBX/Mushroom.fbx",
         "owners": [
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-          "roblox-games/fantasy-survival/native-assets.json"
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/native-assets.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-cute/FBX/Skull.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-cute/FBX/Yeti.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
         ],
         "exists": true,
         "licenseVerified": false,
@@ -15611,7 +15922,20 @@
         "path": "assets/roblox/actors/sources/quaternius-monsters/FBX/Bat.fbx",
         "owners": [
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-          "roblox-games/fantasy-survival/native-assets.json"
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/native-assets.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/actors/sources/quaternius-monsters/FBX/Dragon.fbx",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
         ],
         "exists": true,
         "licenseVerified": false,
@@ -15622,7 +15946,53 @@
         "path": "assets/roblox/actors/sources/quaternius-monsters/FBX/Skeleton.fbx",
         "owners": [
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-          "roblox-games/fantasy-survival/native-assets.json"
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/native-assets.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/items/boots.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/items/pants.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/items/staff.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
+        ],
+        "exists": true,
+        "licenseVerified": false,
+        "visualVerified": false,
+        "status": "REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED"
+      },
+      {
+        "path": "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "owners": [
+          "roblox-games/fantasy-survival/assets-registered.json",
+          "roblox-games/fantasy-survival/reupload-map.json"
         ],
         "exists": true,
         "licenseVerified": false,
@@ -19052,7 +19422,8 @@
         "priority": "P2",
         "sourceFiles": [
           "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
-          "roblox-games/fantasy-survival/server/Game.server.luau"
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/server/StudioQA.server.luau"
         ],
         "sourceSignalOnly": true,
         "assetCount": 0,
@@ -19074,7 +19445,7 @@
           "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-gallery.json",
           "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-motion-check.json",
           "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-rigs.json",
-          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json"
         ],
         "sourceSignalOnly": true,
         "assetCount": 0,
@@ -19397,7 +19768,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "d83f06c5fbdab7d83a22fd92ee35e04898f7436d6d1b00d751c5791f25cab874",
+    "sourceFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -19417,7 +19788,7 @@
     "version": 1,
     "gameId": "fantasy-survival",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "d83f06c5fbdab7d83a22fd92ee35e04898f7436d6d1b00d751c5791f25cab874",
+    "sourceTreeFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -19474,7 +19845,7 @@
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-          "roblox-games/fantasy-survival/shared/VisualAssetIds.luau"
+          "roblox-games/fantasy-survival/reupload-map.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -19504,8 +19875,8 @@
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-gallery.json"
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -19565,8 +19936,9 @@
         "responsibleFiles": [
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/visual-ladder.json",
           "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json",
-          "roblox-games/fantasy-survival/visual-ladder.json"
+          "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -19599,6 +19971,7 @@
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
         "requiredByDesign": false,
@@ -19663,6 +20036,7 @@
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
         ],
         "requiredByDesign": false,
@@ -19695,7 +20069,8 @@
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -19710,7 +20085,9 @@
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
-          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+          "roblox-games/fantasy-survival/reupload-map.json",
+          "roblox-games/fantasy-survival/assets-registered.json"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -19725,7 +20102,8 @@
           "roblox-games/fantasy-survival/server/Game.server.luau",
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -19741,6 +20119,7 @@
           "roblox-games/fantasy-survival/client/Game.client.luau",
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
           "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau"
         ],
         "requiredByDesign": true,
@@ -19817,6 +20196,7 @@
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
+          "roblox-games/fantasy-survival/server/StudioQA.server.luau",
           "roblox-games/fantasy-survival/opening24/audio.json"
         ],
         "requiredByDesign": true,
@@ -19882,7 +20262,7 @@
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-        "roblox-games/fantasy-survival/shared/VisualAssetIds.luau"
+        "roblox-games/fantasy-survival/reupload-map.json"
       ],
       "EQUIPMENT": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
@@ -19894,8 +20274,8 @@
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
-        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-gallery.json"
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
+        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "WORLD": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
@@ -19919,8 +20299,9 @@
       "MOTION": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
+        "roblox-games/fantasy-survival/visual-ladder.json",
         "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json",
-        "roblox-games/fantasy-survival/visual-ladder.json"
+        "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau"
       ],
       "ACTION": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
@@ -19942,25 +20323,30 @@
         "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json"
       ],
       "CRAFTING": [
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
-        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
+        "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+        "roblox-games/fantasy-survival/reupload-map.json",
+        "roblox-games/fantasy-survival/assets-registered.json"
       ],
       "ECONOMY": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
-        "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json"
       ],
       "PROGRESSION": [
         "roblox-games/fantasy-survival/server/Game.server.luau",
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
         "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau"
       ],
       "FARMING": [
@@ -19992,6 +20378,7 @@
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
         "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
+        "roblox-games/fantasy-survival/server/StudioQA.server.luau",
         "roblox-games/fantasy-survival/opening24/audio.json"
       ],
       "SKILL_VFX": [
@@ -20013,6 +20400,7 @@
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "REWARD": [
@@ -20020,6 +20408,7 @@
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "SAVE": [
@@ -20102,6 +20491,7 @@
         "roblox-games/fantasy-survival/client/Game.client.luau",
         "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
         "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
         "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
       ],
       "edges": [
@@ -20139,7 +20529,7 @@
             "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
-            "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json"
+            "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json"
           ],
           "passed": false
         },
@@ -20251,7 +20641,7 @@
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/client/Game.client.luau",
-          "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
+          "roblox-games/fantasy-survival/reupload-map.json",
           "roblox-games/fantasy-survival/server/DevTelemetry.server.luau"
         ],
         "checks": [
@@ -20305,7 +20695,8 @@
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-verify-ladder.json"
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-verify-ladder.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json"
         ],
         "checks": [
           "NPC_DECISION_TO_DIALOGUE_EVENT",
@@ -20331,8 +20722,8 @@
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
           "roblox-games/fantasy-survival/default.project.json",
-          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json",
-          "roblox-games/fantasy-survival/visual-ladder.json"
+          "roblox-games/fantasy-survival/visual-ladder.json",
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json"
         ],
         "checks": [
           "INPUT_TO_AUTHORITATIVE_HIT",
@@ -20357,8 +20748,10 @@
           "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
           "roblox-games/fantasy-survival/shared/GameConfig.luau",
           "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+          "roblox-games/fantasy-survival/reupload-map.json",
+          "roblox-games/fantasy-survival/assets-registered.json",
           "roblox-games/fantasy-survival/server/Game.server.luau",
-          "roblox-games/fantasy-survival/shared/VisualAssetIds.luau"
+          "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json"
         ],
         "checks": [
           "RECIPE_RESOURCE_CONSUMPTION",
@@ -20467,10 +20860,10 @@
             "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
+            "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
             "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-mob-gallery.json",
-            "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json",
-            "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-verify-ladder.json"
+            "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-region-survey.json"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
           "motions": [
@@ -20511,10 +20904,10 @@
             "roblox-games/fantasy-survival/client/Game.client.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-            "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json",
             "roblox-games/fantasy-survival/approved-assets.json",
             "roblox-games/fantasy-survival/native-assets.json",
-            "roblox-games/fantasy-survival/visual-ladder.json"
+            "roblox-games/fantasy-survival/visual-ladder.json",
+            "roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-visual-check.json"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
           "motions": [
@@ -20552,9 +20945,9 @@
             "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
             "roblox-games/fantasy-survival/shared/GameConfig.luau",
             "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+            "roblox-games/fantasy-survival/reupload-map.json",
             "roblox-games/fantasy-survival/shared/VisualAssetIds.luau",
-            "roblox-games/fantasy-survival/default.project.json",
-            "roblox-games/fantasy-survival/native-assets.json"
+            "roblox-games/fantasy-survival/assets-registered.json"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
           "motions": [
@@ -20697,7 +21090,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "d83f06c5fbdab7d83a22fd92ee35e04898f7436d6d1b00d751c5791f25cab874",
+      "sourceTreeFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -20721,7 +21114,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "d83f06c5fbdab7d83a22fd92ee35e04898f7436d6d1b00d751c5791f25cab874",
+      "sourceTreeFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -20794,7 +21187,7 @@
     "gameId": "fantasy-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "d83f06c5fbdab7d83a22fd92ee35e04898f7436d6d1b00d751c5791f25cab874",
+    "sourceTreeFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -21124,8 +21517,10 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
       "roblox-games/fantasy-survival/client/DevReport.client.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/client/LookApply.client.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
       "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -21133,13 +21528,14 @@
       "roblox-games/fantasy-survival/shared/VisualLadderState.luau",
       "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/server/StudioQA.server.luau",
+      "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/shared/LookAssignment.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
-      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau",
-      "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-      "roblox-games/fantasy-survival/skilltree-icons/source-manifest.json"
+      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -21361,8 +21757,10 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
       "roblox-games/fantasy-survival/client/DevReport.client.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/client/LookApply.client.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
       "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -21370,13 +21768,14 @@
       "roblox-games/fantasy-survival/shared/VisualLadderState.luau",
       "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/server/StudioQA.server.luau",
+      "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/shared/LookAssignment.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
-      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau",
-      "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-      "roblox-games/fantasy-survival/skilltree-icons/source-manifest.json"
+      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
@@ -21573,8 +21972,10 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
       "roblox-games/fantasy-survival/client/DevReport.client.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/client/LookApply.client.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
       "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -21582,13 +21983,14 @@
       "roblox-games/fantasy-survival/shared/VisualLadderState.luau",
       "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/server/StudioQA.server.luau",
+      "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/shared/LookAssignment.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
-      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau",
-      "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-      "roblox-games/fantasy-survival/skilltree-icons/source-manifest.json"
+      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau"
     ],
     "sourceAnchors": [
       {
@@ -21729,8 +22131,10 @@
     "gameId": "fantasy-survival",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/fantasy-survival/client/AssetHealth.client.luau",
       "roblox-games/fantasy-survival/client/DevReport.client.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/client/LookApply.client.luau",
       "roblox-games/fantasy-survival/client/MaterialPresentation.client.luau",
       "roblox-games/fantasy-survival/shared/OpeningAudioId.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonUI.luau",
@@ -21738,13 +22142,14 @@
       "roblox-games/fantasy-survival/shared/VisualLadderState.luau",
       "roblox-games/fantasy-survival/server/DevTelemetry.server.luau",
       "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/server/StudioQA.server.luau",
+      "roblox-games/fantasy-survival/shared/Common/RobloxCommonLookKit.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/shared/LookAssignment.luau",
       "roblox-games/fantasy-survival/shared/Opening24.luau",
       "roblox-games/fantasy-survival/shared/OpeningAssetIds24.luau",
       "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
-      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau",
-      "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
-      "roblox-games/fantasy-survival/skilltree-icons/source-manifest.json"
+      "roblox-games/fantasy-survival/shared/SkillTreeIconIds.luau"
     ],
     "impact": {
       "version": 1,
@@ -21818,11 +22223,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "d83f06c5fbdab7d83a22fd92ee35e04898f7436d6d1b00d751c5791f25cab874",
+      "sourceTreeFingerprint": "6cdd11fe66127c81418c544ad53946b617925aae517bb1b45fcbc093316500e0",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING"
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-studio-asset-binding-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -21940,5 +22345,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-08T14:54:05.614Z"
+  "generatedAt": "2026-11-10T01:49:22.649Z"
 }
