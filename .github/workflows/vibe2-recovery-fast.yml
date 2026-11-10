@@ -19,6 +19,8 @@ on:
       - Vibe2 Roblox Candidate Result
       - Vibe2 Roblox Release Handoff
       - Magic Forest Static Play
+      # [Studio 실패 복구] 기존 QA의 실제 실패도 동일한 canonical recovery queue로 전달한다.
+      - Devloop Studio Capture
     types: [completed]
   schedule:
     - cron: '*/5 * * * *'
@@ -107,6 +109,22 @@ jobs:
                     | grep -oE 'UNITY_WEB_REPAIR_FAILURE_(STAGE|SIGNATURE)=[A-Za-z0-9_.:/-]+' | tail -n 12 || true)"
                   if [ -n "$marker_lines" ]; then
                     DEPLOYMENT_MARKERS="$marker_lines" node -e 'const fs=require("fs");const p="/tmp/vibe2-recovery-fast/deployment-jobs.json";const j=JSON.parse(fs.readFileSync(p,"utf8"));j.failureMarkers=process.env.DEPLOYMENT_MARKERS.split("\n").filter(x=>/^UNITY_WEB_REPAIR_FAILURE_(STAGE|SIGNATURE)=[A-Za-z0-9_.:/-]{1,160}$/.test(x));fs.writeFileSync(p,JSON.stringify(j))'
+                  fi
+                fi
+              fi
+              # [Studio 진단] 서버·클라이언트 오류와 실행기 오류를 기계 마커로 분리한다.
+              # 원본 콘솔 텍스트는 큐에 넣지 않고 이미 저장된 Studio 증거 브랜치에서만 검토한다.
+              if [ "$workflow_name" = 'Devloop Studio Capture' ]; then
+                failed_job_id="$(node -e 'const fs=require("fs");const d=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));const j=(d.jobs||[]).find(x=>x.conclusion==="failure"&&Number.isSafeInteger(x.id));process.stdout.write(j?String(j.id):"")' /tmp/vibe2-recovery-fast/deployment-jobs.json)"
+                if [[ "$failed_job_id" =~ ^[0-9]+$ ]]; then
+                  studio_markers="$(curl --location --fail-with-body --silent --show-error \
+                    --header 'Accept: application/vnd.github+json' \
+                    --header "Authorization: Bearer $GH_TOKEN" \
+                    --header 'X-GitHub-Api-Version: 2022-11-28' \
+                    "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/jobs/$failed_job_id/logs" \
+                    | grep -oE 'STUDIO_QA_(GAME_ID|FAILURE_STAGE|FAILURE_SIGNATURE|SOURCE_FILE)=[A-Za-z0-9_./-]{1,160}' | tail -n 12 || true)"
+                  if [ -n "$studio_markers" ]; then
+                    STUDIO_MARKERS="$studio_markers" node -e 'const fs=require("fs");const p="/tmp/vibe2-recovery-fast/deployment-jobs.json";const d=JSON.parse(fs.readFileSync(p,"utf8"));d.studioMarkers=process.env.STUDIO_MARKERS.split("\n").filter(x=>/^STUDIO_QA_(?:GAME_ID|FAILURE_STAGE|FAILURE_SIGNATURE|SOURCE_FILE)=[A-Za-z0-9_./-]{1,160}$/.test(x));fs.writeFileSync(p,JSON.stringify(d))'
                   fi
                 fi
               fi
