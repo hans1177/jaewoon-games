@@ -779,6 +779,21 @@ test('Roblox module import parser follows nested WaitForChild and mixed dotted c
   assert.deepEqual(extractVibeSourceImportRefs(luau,'web'),[]);
 });
 
+test('Luau module graph ignores fake requires in comments while preserving literal paths',()=>{
+  const source=[
+    '-- require(script.Parent.DecoyOne)',
+    '--[[ require(script.Parent.DecoyTwo) ]]',
+    '--[=[ require(script.Parent.DecoyThree) ]=]',
+    'local text = "require(script.Parent.DecoyString)"',
+    'local More = require(script.Parent:WaitForChild("Real--Module"))',
+    'local Actual = require(script.Parent.Parent.shared:WaitForChild("Inventory"))'
+  ].join('\n');
+  assert.deepEqual(extractVibeSourceImportRefs(source,'roblox'),[
+    '../shared/Inventory'
+  ]);
+  assert.deepEqual(extractVibeSourceImportRefs(source,'web'),[]);
+});
+
 test('Roblox coding explorer prioritizes exact required ModuleScripts among decoy modules without widening write scope',()=>{
   const cwd=tempRoot(),root=path.join(cwd,'roblox-games/module-routing');
   const mainPath='client/Main.client.luau',modulePath='shared/Modules/Actions.luau';
