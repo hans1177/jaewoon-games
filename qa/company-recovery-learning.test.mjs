@@ -1100,6 +1100,11 @@ test('Studio QA evidence feeds the existing recovery queue and preserves reports
   assert.match(studio,/STUDIO_QA_FAILURE_STAGE=\$qaStage/);
   assert.match(studio,/STUDIO_QA_FAILURE_SIGNATURE=\$qaSignature/);
   assert.match(studio,/STUDIO_QA_FAILED_EVIDENCE_PUBLISHED/);
+  assert.match(studio,/STUDIO_SCRIPT_PROCESS_EXIT=\$studioNodeExitCode/);
+  assert.match(studio,/STUDIO_REPORT_MISSING/);
+  assert.match(studio,/STUDIO_REPORT_INVALID_JSON/);
+  assert.match(studio,/WORKFLOW_FAILURE_DIAGNOSTIC_ONLY_NOT_STUDIO_PLAY/);
+  assert.match(studio,/if \(\$studioNodeExitCode -ne 0\)/);
   assert.ok(studio.indexOf('PUBLISHED=$LASTEXITCODE')<studio.indexOf('STUDIO_QA_FAILED_EVIDENCE_PUBLISHED'));
   assert.match(recovery,/      - Devloop Studio Capture/);
   assert.match(recovery,/studioMarkers/);
