@@ -3133,7 +3133,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       selection.attempts.push({...decision,status:'VALIDATED'});
       selection.selectedFingerprint=fingerprint;
       selection.selectedComparison=decision.comparison;
-      selection.scopeComplete=decision.comparison.uncoveredFunctions.length===0;
+      selection.scopeComplete=requestedFunctions.length>=2&&decision.comparison.uncoveredFunctions.length===0;
+      selection.scopeCompletionBasis=requestedFunctions.length>=2?'EXPLICIT_SOURCE_FUNCTION_COVERAGE_ONLY':'NOT_PROVEN';
       return {...raw,normalizedCandidate:candidate,candidateValidation,
         deterministicSelection:{...selection,status:'CANDIDATE_VALIDATED'}};
     }catch(error){
