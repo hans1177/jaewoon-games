@@ -210,7 +210,7 @@ export function normalizeResponsibleFiles(order,root,target){
   const game=clean(order?.gameId);
   if(!game||clean(task.gameId)!==game
     ||clean(task.buildUpDirectiveId)!==clean(directive.directiveId)
-    ||!clean(directive.directiveId)||Number(directive.version)<1
+    ||!clean(directive.directiveId)||!(Number(directive.version)>=1)
     ||posix(task.sourceRoot)!==root||posix(directive.sourceRoot)!==root
     ||posix(plan.sourceRoot)!==root||clean(plan.gameId)!==game
     ||!Array.isArray(work.sourceFiles)||!clean(work.id))return files;
