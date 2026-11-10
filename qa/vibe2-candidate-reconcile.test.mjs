@@ -120,11 +120,18 @@ test('authenticated Roblox QA failure records exact stage and signature and requ
   assert(task.evidence.includes('engine-qa-failure-stage:TARGET_PLATFORM_RUNTIME'));
   assert(task.evidence.includes('engine-qa-failure-signature:LIVE_STUDIO_VERIFY_VIBE_CANDIDATE'));
   assert.equal(task.lastOutcome,'FAIL');
+  assert(task.evidence.includes('retry-failure-signature:candidate-roblox-verification-failed:TARGET_PLATFORM_RUNTIME:LIVE_STUDIO_VERIFY_VIBE_CANDIDATE'));
   assert.equal(task.evidence.some(x=>/runtime.*:PASS|studio.*:PASS|runtimeVerified:true/i.test(x)),false);
   const repeated=reconcileVibeCandidateVerification(result.queue,args);
   assert.equal(repeated.updated,false);
   assert.equal(repeated.reason,'duplicate-candidate-verification-run');
   assert.equal(repeated.queue.tasks[0].retries,1);
+  const changedCause=reconcileVibeCandidateVerification(result.queue,{
+    ...args,runId:'91004',failureSignature:'LIVE_STUDIO_SECOND_DIFFERENT_GATE'
+  });
+  assert.equal(changedCause.queue.tasks[0].retries,2);
+  assert.equal(changedCause.queue.tasks[0].evidence.findLast(x=>x.startsWith('retry-cause-streak:')).endsWith(':1'),true,
+    'different observed failure must not increase the old cause streak');
 });
 
 test('late failed verification cannot rewind a previously verified or runtime-await Roblox checkpoint',()=>{
