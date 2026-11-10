@@ -13,14 +13,14 @@
    }
   },
   "outline:soft": {
-   "n": 551,
-   "gainSum": 4098.9,
+   "n": 552,
+   "gainSum": 4094,
    "keep": 427,
    "improved": 368,
    "broken": 0,
    "fail": {
     "REGRESSED": 13,
-    "DETAIL_LOST": 58,
+    "DETAIL_LOST": 59,
     "DARKENED": 53
    }
   },
@@ -126,13 +126,13 @@
    }
   },
   "outline:strong": {
-   "n": 253,
-   "gainSum": 1996.2,
+   "n": 254,
+   "gainSum": 1991.3,
    "keep": 158,
    "improved": 145,
    "broken": 0,
    "fail": {
-    "DARKENED": 45,
+    "DARKENED": 46,
     "DETAIL_LOST": 47,
     "REGRESSED": 3
    }
@@ -161,7 +161,7 @@
    }
   },
   "moss:strong": {
-   "n": 252,
+   "n": 253,
    "gainSum": 756,
    "keep": 169,
    "improved": 133,
@@ -169,7 +169,7 @@
    "fail": {
     "DARKENED": 27,
     "REGRESSED": 31,
-    "TOO_SIMILAR": 21,
+    "TOO_SIMILAR": 22,
     "BROKEN": 1,
     "DETAIL_LOST": 3
    }
@@ -264,10 +264,10 @@
    }
   },
   "outline:strong": {
-   "n": 171,
-   "gainSum": 512.7,
-   "keep": 105,
-   "improved": 91,
+   "n": 172,
+   "gainSum": 529.6,
+   "keep": 106,
+   "improved": 92,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 32,
@@ -322,10 +322,10 @@
    }
   },
   "outline:soft": {
-   "n": 374,
-   "gainSum": 2074.4,
-   "keep": 288,
-   "improved": 249,
+   "n": 375,
+   "gainSum": 2087.2,
+   "keep": 289,
+   "improved": 250,
    "broken": 0,
    "fail": {
     "DETAIL_LOST": 39,
@@ -334,10 +334,10 @@
    }
   },
   "noise_displace:soft": {
-   "n": 15,
-   "gainSum": 7.4,
-   "keep": 8,
-   "improved": 3,
+   "n": 16,
+   "gainSum": 10.1,
+   "keep": 9,
+   "improved": 4,
    "broken": 0,
    "fail": {
     "DARKENED": 6,
@@ -356,10 +356,10 @@
    }
   },
   "bevel:strong": {
-   "n": 114,
-   "gainSum": 152.8,
-   "keep": 80,
-   "improved": 36,
+   "n": 115,
+   "gainSum": 168.3,
+   "keep": 81,
+   "improved": 37,
    "broken": 0,
    "fail": {
     "REGRESSED": 23,
@@ -940,10 +940,10 @@
    }
   },
   "outline:soft": {
-   "n": 53,
-   "gainSum": 186.9,
-   "keep": 50,
-   "improved": 50,
+   "n": 54,
+   "gainSum": 194.8,
+   "keep": 51,
+   "improved": 51,
    "broken": 0,
    "fail": {
     "DARKENED": 3
@@ -984,10 +984,10 @@
    }
   },
   "noise_displace:strong": {
-   "n": 40,
-   "gainSum": 174.2,
-   "keep": 38,
-   "improved": 38,
+   "n": 41,
+   "gainSum": 181.6,
+   "keep": 39,
+   "improved": 39,
    "broken": 0,
    "fail": {
     "DARKENED": 2
@@ -1049,10 +1049,10 @@
    }
   },
   "outline:strong": {
-   "n": 43,
-   "gainSum": 137.6,
-   "keep": 40,
-   "improved": 34,
+   "n": 44,
+   "gainSum": 145,
+   "keep": 41,
+   "improved": 35,
    "broken": 0,
    "fail": {
     "DARKENED": 3
@@ -1094,11 +1094,14 @@
    "broken": 0
   },
   "noise_displace:soft": {
-   "n": 11,
-   "gainSum": 33.9,
+   "n": 12,
+   "gainSum": 42,
    "keep": 11,
    "improved": 11,
-   "broken": 0
+   "broken": 0,
+   "fail": {
+    "DARKENED": 1
+   }
   },
   "wear:soft": {
    "n": 1,
@@ -1110,199 +1113,199 @@
  },
  "UI": {
   "hud_layout:soft": {
-   "n": 300,
-   "keep": 300,
+   "n": 303,
+   "keep": 303,
    "gainSum": 0,
    "improved": 0,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "hud_layout:strong": {
-   "n": 300,
-   "keep": 300,
+   "n": 303,
+   "keep": 303,
    "gainSum": 0,
    "improved": 0,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "inventory_layout:soft": {
-   "n": 300,
-   "keep": 300,
-   "gainSum": 3600,
-   "improved": 100,
+   "n": 303,
+   "keep": 303,
+   "gainSum": 3636,
+   "improved": 101,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "inventory_layout:strong": {
-   "n": 300,
-   "keep": 300,
-   "gainSum": 5400,
-   "improved": 100,
+   "n": 303,
+   "keep": 303,
+   "gainSum": 5454,
+   "improved": 101,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "shop_layout:soft": {
-   "n": 300,
-   "keep": 300,
-   "gainSum": 1800,
-   "improved": 100,
+   "n": 303,
+   "keep": 303,
+   "gainSum": 1818,
+   "improved": 101,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "shop_layout:strong": {
-   "n": 300,
-   "keep": 300,
-   "gainSum": 3600,
-   "improved": 100,
+   "n": 303,
+   "keep": 303,
+   "gainSum": 3636,
+   "improved": 101,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "settings_layout:soft": {
-   "n": 300,
-   "keep": 300,
-   "gainSum": 1800,
-   "improved": 100,
+   "n": 303,
+   "keep": 303,
+   "gainSum": 1818,
+   "improved": 101,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "settings_layout:strong": {
-   "n": 300,
-   "keep": 300,
-   "gainSum": 3600,
-   "improved": 100,
+   "n": 303,
+   "keep": 303,
+   "gainSum": 3636,
+   "improved": 101,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "craft_layout:soft": {
-   "n": 300,
-   "keep": 300,
-   "gainSum": 1800,
-   "improved": 100,
+   "n": 303,
+   "keep": 303,
+   "gainSum": 1818,
+   "improved": 101,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "craft_layout:strong": {
-   "n": 300,
-   "keep": 300,
-   "gainSum": 3600,
-   "improved": 100,
+   "n": 303,
+   "keep": 303,
+   "gainSum": 3636,
+   "improved": 101,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "quest_layout:soft": {
-   "n": 300,
-   "keep": 300,
-   "gainSum": 1800,
-   "improved": 100,
+   "n": 303,
+   "keep": 303,
+   "gainSum": 1818,
+   "improved": 101,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "quest_layout:strong": {
-   "n": 300,
-   "keep": 300,
-   "gainSum": 3600,
-   "improved": 100,
+   "n": 303,
+   "keep": 303,
+   "gainSum": 3636,
+   "improved": 101,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "dialogue_layout:soft": {
-   "n": 300,
-   "keep": 299,
+   "n": 303,
+   "keep": 302,
    "gainSum": -15,
    "improved": 0,
    "broken": 1,
    "fail": {
     "overlap": 1
    },
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "dialogue_layout:strong": {
-   "n": 300,
-   "keep": 300,
+   "n": 303,
+   "keep": 303,
    "gainSum": 0,
    "improved": 0,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "combat_layout:soft": {
-   "n": 300,
-   "keep": 300,
+   "n": 303,
+   "keep": 303,
    "gainSum": 0,
    "improved": 0,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   },
   "combat_layout:strong": {
-   "n": 300,
-   "keep": 300,
+   "n": 303,
+   "keep": 303,
    "gainSum": 0,
    "improved": 0,
    "broken": 0,
-   "designScoreSum": 28500,
+   "designScoreSum": 28800,
    "fontIssues": 0,
    "bindingIssues": 0,
    "touchSpacingIssues": 0,
-   "designSamples": 285
+   "designSamples": 288
   }
  }
 }
