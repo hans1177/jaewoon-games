@@ -108,18 +108,47 @@ end)
 
 -- 2) 진행: 새 게임 → 퀘스트 수락 → 사냥/전투 → 교역 → 항해 → 수리, 오류 응답 확인
 task.spawn(function()
+	local featureFails, featureCalls, accepted, rejected = 0, 0, 0, 0
+	local issues = {}
+	local function featureFail(msg)
+		featureFails += 1
+		if #issues < 24 then table.insert(issues, msg:sub(1, 150)) end
+		ReplicatedStorage:SetAttribute("MareQAFeatureStatus", "FAIL")
+		fail(msg)
+	end
+	local function grade(name, res, quiet)
+		if type(res) ~= "table" then
+			featureFail("FEATURE_RESPONSE_INVALID " .. name)
+			return
+		end
+		local message = tostring(res.message or "")
+		if message == "알 수 없는 요청" or message == "오류가 발생했어요"
+			or string.find(message, "미구현", 1, true) or string.find(string.lower(message), "not implemented", 1, true) then
+			featureFail("FEATURE_UNIMPLEMENTED_OR_ERROR " .. name .. ": " .. message)
+		elseif res.ok == true or res.view ~= nil then
+			accepted += 1
+			if not quiet then ok("FEATURE " .. name .. " -> " .. message:sub(1, 40)) end
+		elseif res.ok == false or message ~= "" then
+			rejected += 1
+			-- [기능 검사] 정상적인 비용 부족/조건 미충족은 구현 성공이라고 거짓 채점하지 않는다.
+			if not quiet then print("[QA] REJECTED " .. name .. " -> " .. message:sub(1, 60)) end
+		else
+			featureFail("FEATURE_RESPONSE_UNKNOWN " .. name)
+		end
+	end
 	local remote = game:GetService("ServerStorage"):WaitForChild("StudioQAInvoke", 60)
 	local player = Players:GetPlayers()[1] or Players.PlayerAdded:Wait()
 	if not remote then
-		fail("StudioQAInvoke missing")
+		featureFail("StudioQAInvoke missing")
 		return
 	end
 	local function call(action, payload)
+		featureCalls += 1
 		local success, result = pcall(function()
 			return remote:Invoke(player, action, payload or {})
 		end)
 		if not success then
-			fail("action " .. action .. " threw: " .. tostring(result))
+			featureFail("action " .. action .. " threw: " .. tostring(result))
 			return nil
 		end
 		return result
@@ -144,9 +173,10 @@ task.spawn(function()
 		end
 	end
 	if not (r and r.ok and r.view) then
-		fail("NewGame " .. tostring(r and r.message))
+		featureFail("NewGame " .. tostring(r and r.message))
 		return
 	end
+	accepted += 1
 	ok("NewGame " .. tostring(nationId))
 	task.wait(1.1)
 	local function step(name, action, payload)
@@ -155,11 +185,7 @@ task.spawn(function()
 		if not res then
 			return nil
 		end
-		if res.message == "오류가 발생했어요" or res.message == "알 수 없는 요청" then
-			fail("action " .. name .. " -> " .. res.message)
-		else
-			ok(name .. " -> " .. tostring(res.message):sub(1, 40))
-		end
+		grade(name, res, false)
 		return res
 	end
 	local portId = r.view.portId or r.view.port and r.view.port.id
@@ -202,13 +228,14 @@ task.spawn(function()
 			task.wait(0.05)
 			local res = call(action, payload)
 			n += 1
-			if res and (res.message == "오류가 발생했어요" or res.message == "알 수 없는 요청") then
-				fail(label .. " " .. id .. " -> " .. res.message)
-			elseif res and res.view == nil and res.ok then
-				fail(label .. " " .. id .. " no view")
-			end
+			if res then grade(label .. " " .. tostring(id), res, true) end
 		end
-		ok(label .. " swept " .. n)
+		-- [기능 전수검사] 0건 실행은 검사 통과가 아니다.
+		if n == 0 then
+			featureFail("FEATURE_NO_CASES " .. label)
+		else
+			print("[QA] FEATURE_COVERED " .. label .. " cases=" .. n)
+		end
 	end
 	call("QAGrant")
 	local Shared2 = Shared
@@ -258,17 +285,20 @@ task.spawn(function()
 	for id in Ports.Ports do
 		table.insert(portIds, id)
 	end
-	local sailFail = 0
 	for _, id in portIds do
 		task.wait(0.1) -- 쉬지 않고 돌리면 Studio가 시간 초과로 멈춘다
 		local res = call("Sail", { portId = id })
-		if res and res.message == "오류가 발생했어요" then
-			sailFail += 1
-			fail("Sail " .. id .. " -> error")
-		end
-		call("VoyageChoice", { index = 1 })
-		call("VoyageBonus", { index = 1 })
+		if res then grade("Sail " .. tostring(id), res, true) end
+		local choice = call("VoyageChoice", { index = 1 })
+		if choice then grade("VoyageChoice", choice, true) end
+		local bonus = call("VoyageBonus", { index = 1 })
+		if bonus then grade("VoyageBonus", bonus, true) end
 	end
-	ok("Sail swept " .. #portIds .. " ports")
-	print(string.format("[QA] DONE ok=%d fail=%d", oks, fails))
+	if #portIds == 0 then featureFail("FEATURE_NO_CASES Sail") end
+	print("[QA] FEATURE_COVERED Sail cases=" .. #portIds)
+	ReplicatedStorage:SetAttribute("MareQAFeatureTotals", HttpService:JSONEncode({
+		calls = featureCalls, accepted = accepted, rejected = rejected, failed = featureFails, issues = issues,
+	}))
+	ReplicatedStorage:SetAttribute("MareQAFeatureStatus", if featureFails == 0 and accepted > 0 then "PASS" else "FAIL")
+	print(string.format("[QA] DONE calls=%d accepted=%d rejected=%d featureFails=%d", featureCalls, accepted, rejected, featureFails))
 end)
