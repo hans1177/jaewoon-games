@@ -273,6 +273,8 @@ jobs:
           if ($existingWatchers.Count -gt 0) { Start-Sleep -Seconds 2 }
           $launcher | Set-Content -LiteralPath $startupPath -Encoding ASCII
           $startupFile = Get-Item -LiteralPath $startupPath -ErrorAction Stop
+          Write-Host "ROBLOX_RUNNER_STARTUP_SOURCE_BYTES=$([Text.Encoding]::ASCII.GetByteCount([string]$launcher))"
+          Write-Host "ROBLOX_RUNNER_STARTUP_FILE_BYTES=$($startupFile.Length)"
           if ($startupFile.Length -lt 100) {
             throw 'ROBLOX_RUNNER_STARTUP_SCRIPT_NOT_PERSISTED'
           }
