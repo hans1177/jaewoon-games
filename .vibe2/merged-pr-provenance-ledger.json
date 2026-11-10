@@ -180604,11 +180604,132 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a60aaa3f212568cf78e7f8d9",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-12401",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "6d0a83c1965ef8dbc0294ef1f6b16cf7d529227d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 12401,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-publish-registered-images-20261111",
+        "baseSha": "6d0a83c1965ef8dbc0294ef1f6b16cf7d529227d",
+        "headSha": "72208818f625c8b0800d83ea5cd094fac17b1a20",
+        "mergeCommitSha": "c9df8038198b894aee322421c67e146262350645",
+        "mergedAt": "2026-11-10T23:25:27Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a39aada12435354c76d103353916d961be9b0f6efe18ea9b547fb5820172588f",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-publish-registered-images-20261111",
+        "candidateSha": "72208818f625c8b0800d83ea5cd094fac17b1a20"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 45,
+        "deletedLineCount": 3,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-direct-publish.yml",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "roblox-games/fantasy-survival/broken-assets.json",
+          "roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-direct-publish.yml",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "roblox-games/fantasy-survival/broken-assets.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:12401",
+        "merge-commit:c9df8038198b894aee322421c67e146262350645",
+        "base-main:6d0a83c1965ef8dbc0294ef1f6b16cf7d529227d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1441
+    "total": 1442
   }
 }
