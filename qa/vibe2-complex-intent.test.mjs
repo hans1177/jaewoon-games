@@ -1,6 +1,12 @@
 // 파일명: qa/vibe2-complex-intent.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import vm from 'node:vm';
+import {planVibe2ComplexWork} from '../tools/vibe2-complex-work-planner.mjs';
+import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
 import {compileVibe2ComplexIntent,compileComplexOwnerIntent,parseIntentExpression} from '../tools/vibe2-complex-intent.mjs';
 const compile=goal=>compileComplexOwnerIntent({order:{gameId:'line-defense',ownerApproved:true,goal},baseRevisionSha:'a'.repeat(40)});
 test('Korean and English owner clauses produce stable bounded requirements without inventing facts',()=>{
@@ -78,6 +84,49 @@ test('complex owner request binds up to eight real function calls and six indepe
     ...base.order.selectedTask,goal:rejected}}}),null);
   assert.equal(compileVibe2ComplexIntent({...base,order:{selectedTask:{
     ...base.order.selectedTask,goal:clauses+'; When function extra runs, call one, two'}}}),null);
+});
+
+test('Vibe5.9 merges repeated owner event instructions into one source-grounded atomic edit',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-owner-chains-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const source=[
+  'let output=[];',
+  'function commitState(){output.push("state");}',
+  'function render(){output.push("ui");}',
+  'function audioCue(){output.push("sound");}',
+  'function updateHud(){output.push("hud");}',
+  'function event(){output.push("event");}'
+ ].join('\n')+'\n';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const clauses=[
+  'When function event runs, call commitState then render',
+  'When function event runs, call audioCue then updateHud'
+ ];
+ const goal=clauses.join('; ');
+ const options={target:'web',sourceRoot:root,responsibleFiles:['game.js'],
+  order:{selectedTask:{gameId:'game',ownerDirective:true,goal}}};
+ const intent=compileVibe2ComplexIntent(options);
+ assert.equal(intent.requirements.length,4);
+ assert.deepEqual(intent.requirements.map(row=>row.group),[0,0,0,0]);
+ assert.deepEqual(intent.requirements.map(row=>row.ownerText),[clauses[0],clauses[0],clauses[1],clauses[1]]);
+ assert.deepEqual(intent.requirements.map(row=>row.effect),['commitState','render','audioCue','updateHud']);
+ for(let i=1;i<4;i++)assert.deepEqual(intent.requirements[i].dependsOn,[intent.requirements[i-1].id]);
+ const plan=planVibe2ComplexWork({...options,baseCommit:'a'.repeat(40)});
+ assert.equal(plan.edits.length,1);
+ assert.equal(plan.steps.length,4);
+ const docs=new Map([['game.js',source]]);
+ applyExactEdits(root,plan.edits,{documents:docs});
+ assert.deepEqual(Array.from(vm.runInNewContext(docs.get('game.js')+'\nevent();output;')),
+  ['event','state','ui','sound','hud']);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+ for(const invalid of [
+  clauses[0]+'; When function event runs, call commitState then updateHud',
+  clauses[0]+'; When function render runs, call audioCue then event'
+ ]){
+  assert.throws(()=>compileVibe2ComplexIntent({...options,
+   order:{selectedTask:{...options.order.selectedTask,goal:invalid}}}),
+   /VIBE2_COMPLEX_FUNCTIONS_INVALID/);
+ }
 });
 
 test('owner can request the existing state -> UI -> save function chain in Korean and English',()=>{
