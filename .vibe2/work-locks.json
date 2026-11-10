@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1mt1xqm",
+      "worker": "vibe2",
+      "taskId": "cat-step-existing-web-assessment-v1",
+      "gameId": "cat-step",
+      "files": [
+        "web-games/cat-step/index.html"
+      ],
+      "baseSha": "af744c07afd8f49cffbbd8145025c472540168d9",
+      "runId": "42773198870",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-10T07:51:42.706Z",
+      "expiresAt": "2026-11-10T08:36:42.706Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cat-step-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
