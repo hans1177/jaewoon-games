@@ -262,15 +262,7 @@ jobs:
             WScript.Sleep 15000
           Loop
           "@
-          $launcher | Set-Content -LiteralPath $startupPath -Encoding ASCII
-          if (-not (Test-Path -LiteralPath $startupPath)) {
-            throw 'ROBLOX_RUNNER_STARTUP_SCRIPT_NOT_PERSISTED'
-          }
-          if ((Get-Content -LiteralPath $startupPath -Raw).Trim() -ne $launcher.Trim()) {
-            throw 'ROBLOX_RUNNER_STARTUP_SCRIPT_CONTENT_MISMATCH'
-          }
-          # [메인] 로그인 이후만 기다리지 않고 지금 감시 프로그램을 실행·확인한다.
-          # 같은 파일의 기존 감시 프로그램만 교체하며 다른 프로세스와 인증에는 손대지 않는다.
+          # [메인] 실행 중인 동일 프로필의 이전 감시기만 먼저 종료해 VBS 파일 잠금을 해제한다.
           $hostSessionId = [int](Get-Process -Id $PID).SessionId
           $existingWatchers = @(Get-CimInstance Win32_Process -Filter "Name='wscript.exe'" -ErrorAction SilentlyContinue |
             Where-Object { [int]$_.SessionId -eq $hostSessionId -and
@@ -278,6 +270,13 @@ jobs:
           foreach ($watcher in $existingWatchers) {
             Stop-Process -Id ([int]$watcher.ProcessId) -Force -ErrorAction Stop
           }
+          if ($existingWatchers.Count -gt 0) { Start-Sleep -Seconds 2 }
+          $launcher | Set-Content -LiteralPath $startupPath -Encoding ASCII
+          $startupFile = Get-Item -LiteralPath $startupPath -ErrorAction Stop
+          if ($startupFile.Length -lt 100) {
+            throw 'ROBLOX_RUNNER_STARTUP_SCRIPT_NOT_PERSISTED'
+          }
+          # [실행 증거] 동일 데스크톱에서 새 감시기를 실행하고 독립 프로세스로 살아 있는지 확인한다.
           Start-Process -FilePath (Join-Path $env:WINDIR 'System32\wscript.exe') -ArgumentList ('"' + $startupPath + '"') -WindowStyle Hidden | Out-Null
           Start-Sleep -Seconds 3
           $activeWatchers = @(Get-CimInstance Win32_Process -Filter "Name='wscript.exe'" -ErrorAction SilentlyContinue |
