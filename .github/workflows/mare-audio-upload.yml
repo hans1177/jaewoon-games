@@ -34,7 +34,7 @@ jobs:
           node-version: '22'
       - name: Upload audio and grant Universe use
         env:
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY || secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}
           MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
           ROBLOX_CREATOR_USER_ID: '11664914771'
           AUDIO_FRESH: ${{ inputs.fresh }}
