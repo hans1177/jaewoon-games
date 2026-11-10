@@ -86,7 +86,14 @@ jobs:
         run: |
           # 회차가 약 3분 걸리므로 2분 쉬고 다음을 예약하면 대략 5분 간격이 된다.
           sleep 120
-          gh api -X POST "repos/${{ github.repository }}/actions/workflows/vibe-variation-practice.yml/dispatches" -f ref=main || echo "다음 회차 예약 실패(안전망 cron 이 이어 간다)"
+          # 이미 대기 중인 새 main 검증을 자동 체인이 취소하지 않도록 중복 예약을 막는다.
+          queued=$(gh api "repos/${{ github.repository }}/actions/workflows/vibe-variation-practice.yml/runs?branch=main&per_page=100" \
+            --jq "[.workflow_runs[] | select(.id != ${GITHUB_RUN_ID} and (.status == \"queued\" or .status == \"pending\" or .status == \"waiting\"))] | length") || queued=1
+          if [ "$queued" = "0" ]; then
+            gh api -X POST "repos/${{ github.repository }}/actions/workflows/vibe-variation-practice.yml/dispatches" -f ref=main || echo "다음 회차 예약 실패(안전망 cron 이 이어 간다)"
+          else
+            echo "기존 대기 회차 ${queued}개 보존: 중복 예약 생략"
+          fi
           # 매시 정각 5분 안에 걸린 회차는 룩 승급도 한 번 깨운다(워크플로 쪽에서 열린 PR 이 있으면 알아서 건너뛴다).
           if [ "$(date -u +%M)" -lt 5 ]; then
             gh api -X POST "repos/${{ github.repository }}/actions/workflows/vibe-look-promotion.yml/dispatches" -f ref=main || true
