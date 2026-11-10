@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { normalizeRecoveryQueue, enqueueRecovery } from './company-recovery-queue.mjs';
+import { discoverExistingRobloxGames } from './company-development-queue-reconcile.mjs';
 
 const clean=v=>String(v??'').trim();
 const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
@@ -134,7 +135,8 @@ const DEPLOYMENT_WORKFLOWS=new Map([
   ['Vibe2 Roblox Candidate Runtime',['ROBLOX','.github/workflows/vibe2-roblox-candidate-runtime.yml']],
   ['Vibe2 Roblox Candidate Result',['ROBLOX','.github/workflows/vibe2-roblox-candidate-result.yml']],
   ['Vibe2 Roblox Release Handoff',['ROBLOX','.github/workflows/vibe2-roblox-release-handoff.yml']],
-  ['Magic Forest Static Play',['WEB','.github/workflows/magic-forest-pages.yml']]
+  ['Magic Forest Static Play',['WEB','.github/workflows/magic-forest-pages.yml']],
+  ['Devloop Studio Capture',['ROBLOX','.github/workflows/devloop-studio.yml']]
 ]);
 function deploymentStepKey(value){
   return clean(value).toUpperCase().replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,72)||'UNKNOWN';
@@ -193,6 +195,15 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
     return{queue,added:[],reactivated:[],ignored:'NOT_VERIFIED_CANONICAL_DEPLOYMENT_FAILURE'};
   }
   const [platform,workflowFile]=definition;
+  const studio=clean(run.name)==='Devloop Studio Capture';
+  // [공식 소스 인수] 누락된 기존 Rojo 게임은 허가된 기존 소스 인수 로직으로만 판정한다.
+  const scopedCatalog=studio?discoverExistingRobloxGames(catalogInput).catalog:catalogInput;
+  const studioMarkers=uniq(jobsInput.studioMarkers).filter(v=>
+    /^STUDIO_QA_(?:GAME_ID|FAILURE_STAGE|FAILURE_SIGNATURE|SOURCE_FILE)=[A-Za-z0-9_./-]{1,160}$/.test(v));
+  const studioValue=field=>clean(studioMarkers.find(v=>v.startsWith('STUDIO_QA_'+field+'='))?.slice(('STUDIO_QA_'+field+'=').length));
+  const studioStage=['STUDIO_EXECUTION','STUDIO_GAME_RUNTIME','STUDIO_GAME_SOURCE'].includes(studioValue('FAILURE_STAGE'))?studioValue('FAILURE_STAGE'):'';
+  const studioSignature=['STUDIO_SCRIPT_REPORTED_ERRORS','STUDIO_SCREENSHOTS_MISSING',
+    'STUDIO_OBSERVED_RUNTIME_WARNINGS','STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR'].includes(studioValue('FAILURE_SIGNATURE'))?studioValue('FAILURE_SIGNATURE'):'';
   const tasks=Array.isArray(gameQueueInput.tasks)?gameQueueInput.tasks:[];
   const failedJobs=(Array.isArray(jobsInput.jobs)?jobsInput.jobs:[]).filter(job=>clean(job?.conclusion)==='failure');
   const failedStep=failedJobs.flatMap(job=>(Array.isArray(job.steps)?job.steps:[])
@@ -205,9 +216,9 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
   // it can also be caused by a Cloudflare/PR publication failure.
   const markers=uniq(jobsInput.failureMarkers).filter(value=>
     /^UNITY_WEB_REPAIR_FAILURE_(?:STAGE|SIGNATURE)=[A-Za-z0-9_.:/-]{1,160}$/.test(value));
-  const exactStage=platform==='UNITY_WEB'
+  const exactStage=studio?studioStage:platform==='UNITY_WEB'
     ?clean(markers.find(value=>value.startsWith('UNITY_WEB_REPAIR_FAILURE_STAGE='))?.slice('UNITY_WEB_REPAIR_FAILURE_STAGE='.length)):'';
-  const exactSignature=platform==='UNITY_WEB'
+  const exactSignature=studio?studioSignature:platform==='UNITY_WEB'
     ?clean(markers.find(value=>value.startsWith('UNITY_WEB_REPAIR_FAILURE_SIGNATURE='))?.slice('UNITY_WEB_REPAIR_FAILURE_SIGNATURE='.length)):'';
   const stage=exactStage||'DEPLOYMENT_'+platform+'_'+stepKey;
   const diagnostics=jobsInput.failureDiagnostics&&typeof jobsInput.failureDiagnostics==='object'?jobsInput.failureDiagnostics:{};
@@ -215,22 +226,33 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
     ?clean(diagnostics.classification):'';
   const signature=exactSignature&&!['REPAIR_REQUIRED','UNKNOWN'].includes(exactSignature)
     ?exactSignature:'WORKFLOW_FAILED_'+stepKey+(diagnosticClass?'_'+diagnosticClass:'');
-  const known=deploymentGameIds(catalogInput,tasks);
+  const known=deploymentGameIds(scopedCatalog,tasks);
   const title=clean(run?.display_title)+' '+clean(run?.head_branch);
   const matching=known.filter(id=>new RegExp('(^|[^a-z0-9_-])'+id+'(?=$|[^a-z0-9_-])','i').test(title));
-  const gameId=clean(run?.name)==='Magic Forest Static Play'&&known.includes('fantasy-survival')
+  // [Studio 게임 식별] 신뢰할 수 있는 워크플로 제목과 실행 ID가 일치해야 한다.
+  const studioGame=studioValue('GAME_ID');
+  const gameId=studio
+    ? (known.includes(studioGame)&&matching.length===1&&matching[0]===studioGame?studioGame:'')
+    :clean(run?.name)==='Magic Forest Static Play'&&known.includes('fantasy-survival')
     ?'fantasy-survival':matching.length===1?matching[0]:'';
   const linkedTask=tasks.find(task=>clean(task.gameId)===gameId&&gameId
     &&(clean(task.candidateBranch)===clean(run.head_branch)
       ||[task.candidateSha,task.sourceRevision,task.baseSourceRevision].map(clean).includes(sha))
     &&uniq(task.responsibleFiles).length>0);
-  const sourceFailure=diagnosticClass==='UNITY_MISSING_COMPONENT'||diagnosticClass==='UNITY_CSHARP_COMPILE'
+  const studioFile=studioValue('SOURCE_FILE');
+  const studioSource=studio&&studioStage==='STUDIO_GAME_SOURCE'&&gameId
+    &&studioFile.startsWith('roblox-games/'+gameId+'/')&&!studioFile.includes('..')
+    &&/\.luau$/.test(studioFile)&&fs.existsSync(studioFile)&&fs.statSync(studioFile).isFile()
+    ?studioFile:'';
+  const sourceFailure=studio?Boolean(studioSource):
+    diagnosticClass==='UNITY_MISSING_COMPONENT'||diagnosticClass==='UNITY_CSHARP_COMPILE'
     ||(exactStage
     ? !/(?:DEPLOY|PUBLISH|CLOUDFLARE|PAGES|PROMOTION|UPLOAD|RELEASE|BUILD_OR_READINESS|UNKNOWN)/.test(exactStage)
     : /(?:SOURCE|CSHARP|COMPILE|GAMEPLAY|BROWSER|INDEPENDENT_QA|STATIC_QA|REGRESSION|UNIT_TEST|F0_SOURCE)/.test(stepKey)
       &&!/(?:DEPLOY|PUBLISH|CLOUDFLARE|PAGES|PROMOTION|UPLOAD|OPEN_CLOUD|MAIN_MERGE|RELEASE)/.test(stepKey));
-  const codeFiles=sourceFailure?deploymentSourceFiles(platform,gameId,linkedTask,diagnostics.sourceFiles):[];
-  const catalogGame=(Array.isArray(catalogInput.games)?catalogInput.games:[]).find(item=>clean(item?.id)===gameId);
+  const codeFiles=studio?(studioSource?[studioSource]:[])
+    :sourceFailure?deploymentSourceFiles(platform,gameId,linkedTask,diagnostics.sourceFiles):[];
+  const catalogGame=(Array.isArray(scopedCatalog.games)?scopedCatalog.games:[]).find(item=>clean(item?.id)===gameId);
   const productionClass=clean(catalogGame?.productionClass||linkedTask?.productionClass).toUpperCase();
   const releaseEligible=['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass);
   const sourceRepair=sourceFailure&&codeFiles.length>0&&releaseEligible;
@@ -243,7 +265,8 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
   if(previous?.evidence?.includes(runMarker))return{queue,added:[],reactivated:[],ignored:'EXACT_WORKFLOW_ATTEMPT_ALREADY_INGESTED'};
   // A fresh failure must not silently reuse a previously verified repair as success.
   if(previous?.status==='verified'||previous?.status==='awaiting-primary-ai-review')sourceTaskId+=':new-'+runId+'-'+attempt;
-  const responsibleFiles=sourceRepair?codeFiles:[workflowFile];
+  // [실패 안전] 게임 소스가 확인되지 않은 실행 오류는 게임 원본 자동 수정 금지.
+  const responsibleFiles=sourceRepair?codeFiles:(studio&&studioStage==='STUDIO_GAME_RUNTIME'?[]:[workflowFile]);
   const result=enqueueRecovery(queue,{
     sourceQueue:'deployment',sourceTaskId,gameId:gameId||null,relatedTaskIds:sourceRepair&&linkedTask?[clean(linkedTask.id)]:[],
     responsibleFiles,contextFiles:uniq([workflowFile,...(gameId?[(platform==='UNITY_WEB'?'unity':platform.toLowerCase())+'-games/'+gameId]:[])]),
