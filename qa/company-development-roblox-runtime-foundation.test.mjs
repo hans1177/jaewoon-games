@@ -626,6 +626,37 @@ test('cloud workflow runs independent engine and image requests together and pre
  assert.equal(probes[1].imageEvidence.requestContext.observedImageRevision,false);
 });
 
+test('Forest runtime Cloud binds the 1980 deploy key and never reuses legacy image evidence',async()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.ok(workflow.includes('ROBLOX_DEPLOY_API_KEY: ${{ secrets.ROBLOX_DEPLOY_API_KEY }}'));
+ const start=workflow.indexOf('          const probes=new Array(candidates.length);');
+ const end=workflow.indexOf('          await Promise.all(Array.from({length:probeConcurrency}',start);
+ assert.ok(start>0&&end>start);
+ const execute=new (Object.getPrototypeOf(async function(){}).constructor)(
+  'candidates','requested','process','probeRobloxOpenCloudEngine','probeRobloxOpenCloudImageEvidence','console',
+  workflow.slice(start,end)+"\nawait Promise.all(Array.from({length:probeConcurrency},()=>runProbeWorker()));\nreturn probes;");
+ const rows=['fantasy-survival','other-game'].map((gameId,index)=>({
+  gameId,robloxSourceCommit:'current',robloxBuildArtifactIdentity:'artifact',
+  robloxRuntimeCandidateEvidence:{universeId:'111',placeId:String(index+1),versionNumber:1},
+ }));
+ let imageCalls=0;
+ const observed=[];
+ const result=await execute(rows,'',{
+  env:{ROBLOX_DEPLOY_API_KEY:'new-deploy-key',ROBLOX_OPEN_CLOUD_API_KEY:'legacy-key'},
+ },async({apiKey,placeId})=>{observed.push({apiKey,placeId});return {engineExecuted:true};},
+ async({apiKey})=>{imageCalls++;return {imageContentPassed:true,keyRoute:apiKey};},{log(){}});
+ assert.deepEqual(observed,[{apiKey:'new-deploy-key',placeId:'1'},{apiKey:'legacy-key',placeId:'2'}]);
+ assert.equal(imageCalls,2,'Different credential scopes must not share image checks in the same universe');
+ assert.equal(result[0].imageEvidence.keyRoute,'new-deploy-key');
+ assert.equal(result[1].imageEvidence.keyRoute,'legacy-key');
+ const denied=await execute(rows.slice(0,1),'',{
+  env:{ROBLOX_DEPLOY_API_KEY:'',ROBLOX_OPEN_CLOUD_API_KEY:'legacy-key'},
+ },async()=>{throw Error('Legacy key must not be used for Forest');},
+ async()=>{throw Error('Legacy image key forbidden');},{log(){}});
+ assert.equal(denied[0].persistentFailure,true);
+ assert.equal(denied[0].error,'ROBLOX_REQUIRED_DEPLOY_CREDENTIAL_MISSING:fantasy-survival');
+});
+
 test('Open Cloud runtime reads retry transient DNS failures without weakening API errors',async()=>{
  const dnsError=()=>Object.assign(new TypeError('fetch failed'),{cause:{code:'EAI_AGAIN'}});
  let datastoreCalls=0;
@@ -1243,7 +1274,7 @@ test('runtime QA validates Cloud independently while optional Studio is exact op
  assert.match(workflow,/Probe exact Roblox Open Cloud engine execution/);
  assert.doesNotMatch(workflow,/Probe exact Roblox Open Cloud engine execution[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
  assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED: true/);
- assert.match(workflow,/ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_RUNTIME_VALIDATION/);
+ assert.match(workflow,/ROBLOX_REQUIRED_DEPLOY_CREDENTIAL_MISSING/);
  assert.match(workflow,/const exactStudioInternalValidation=/);
   assert.match(workflow,/if: \$\{\{ !cancelled\(\) \}\}/);
  assert.match(workflow,/internalStudioValidationOnly:true/);
