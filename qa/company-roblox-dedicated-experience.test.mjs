@@ -350,23 +350,23 @@ test('Forest private publish and original asset workflows require the dedicated 
 });
 
 
-// [마력숲 배포 후 Studio] 기존 전용 게시 작업이 끝나면 공식 PC 실측 검사를 연결한다.
-// PR 계약 검사·다른 게임 게시 완료로 오작동하지 않으며, 권한 403도 Studio PASS로 바꾸지 않는다.
-test('Forest owner publication completion dispatches existing Studio QA on main without requiring a successful grant',()=>{
+// [마력숲·대항해시대] 기존 게시 후 두 게임 모두 공식 Studio PC 검사를 요청한다.
+// 권한 403은 배포 실패로 유지하고 Studio 검사와 구분한다.
+test('Forest publisher completion dispatches independent Studio QA for both games',()=>{
   const qa=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
-  assert.match(qa,/workflows: \["Devloop Studio Capture", "Owner Mare Essentia Direct Publish", "Owner Roblox Dedicated Private Experiences"\]/);
-  assert.match(qa,/github\.event\.workflow_run\.event == 'push'/);
-  assert.match(qa,/github\.event\.workflow_run\.head_branch == 'main'/);
-  assert.match(qa,/github\.event\.workflow_run\.conclusion == 'failure'/);
-  assert.match(qa,/github\.event\.workflow_run\.head_sha/);
-  assert.match(qa,/owner publication not on main, skip/);
-  assert.match(qa,/no Forest source or publisher change, skip/);
-  assert.match(qa,/game=fantasy-survival/);
-  assert.match(qa,/studio-autoqa\\\.yml\\\$/);
-  assert.match(qa,/^\s+if ! printf '%s\\n' "\$changed" \| grep -Eq /m);
-  assert.match(qa,/roblox-games\/fantasy-survival\//);
-  assert.match(qa,/owner-roblox-dedicated-private-experiences\\\.yml/);
-  assert.equal((qa.match(/gh workflow run devloop-studio\.yml/g)||[]).length,1);
-  assert.match(qa,/script=roblox-games\/fantasy-survival\/tools\/devloop\/studio-scripts\/fantasy-qa-click\.json/);
-  assert.doesNotMatch(qa,/^\s*schedule:/m);
+  assert.ok(qa.includes('workflows: ["Owner Mare Essentia Direct Publish", "Owner Roblox Dedicated Private Experiences"]'));
+  assert.ok(qa.includes("github.event.workflow_run.event == 'push'"));
+  assert.ok(qa.includes("github.event.workflow_run.event == 'workflow_dispatch'"));
+  assert.ok(qa.includes("github.event.workflow_run.head_branch == 'main'"));
+  assert.ok(qa.includes("github.event.workflow_run.conclusion == 'failure'"));
+  assert.ok(qa.includes('github.event.workflow_run.head_sha'));
+  assert.ok(qa.includes('no Forest source or publisher change, skip'));
+  assert.ok(qa.includes('games="mare-essentia fantasy-survival"'));
+  assert.ok(qa.includes('for game in $games; do'));
+  assert.ok(qa.includes('select((.display_title // "") | contains(" · " + $game + " ·"))'));
+  assert.ok(qa.includes('continue'));
+  assert.ok(qa.includes('script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
+  assert.ok(qa.includes('script=roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json'));
+  assert.equal(qa.split('gh workflow run devloop-studio.yml').length-1,1);
+  assert.ok(!qa.includes('schedule:'));
 });
