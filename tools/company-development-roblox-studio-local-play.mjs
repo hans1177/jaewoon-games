@@ -2892,6 +2892,54 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         report.errors.push('STUDIO_FULL_AUDIT_INCOMPLETE');
       }
     }
+    // [원인 소유권] ContentProvider 실패 ID를 공식 Studio의 실제 인스턴스·등록 모듈에 연결한다.
+    // 원본에 없는 ID는 임의 대체하지 않고 UNMAPPED로 증거를 남긴다.
+    const contentWarnings=report.log.filter(row=>typeof row.out==='string'&&row.out.startsWith('LOGS('));
+    const failedAssetIds=[...new Set(contentWarnings.flatMap(row=>
+      [...row.out.matchAll(/rbxassetid:\/\/([0-9]{8,20})/g)].map(hit=>hit[1])))].slice(0,16);
+    if(mareScript&&failedAssetIds.length){
+      report.assetOwnership={reportedFailedIds:failedAssetIds,contexts:{}};
+      const ids=failedAssetIds.map(id=>JSON.stringify(id)).join(',');
+      const ownershipCode="local ids={"+ids+"} local target={} local owners={} "
+        +"for _,id in ipairs(ids) do target[id]=true owners[id]={registry={},instances={}} end "
+        +"local shared=game:GetService('ReplicatedStorage'):FindFirstChild('Shared') "
+        +"if shared then for _,name in ipairs({'AssetIds','AudioIds'}) do "
+        +"local m=shared:FindFirstChild(name) if m then local ok,entries=pcall(require,m) "
+        +"if ok and type(entries)=='table' then for key,value in pairs(entries) do "
+        +"local id=string.match(tostring(value),'%d+') if target[id] and #owners[id].registry<5 then "
+        +"table.insert(owners[id].registry,name..'.'..tostring(key)) end end end end end end "
+        +"local visited=0 local contentRefs=0 local complete=true "
+        +"for _,d in ipairs(game:GetDescendants()) do visited=visited+1 if visited>25000 then complete=false break end "
+        +"local props={} "
+        +"if d:IsA('Sound') then props={'SoundId'} "
+        +"elseif d:IsA('ImageLabel') or d:IsA('ImageButton') then props={'Image','HoverImage','PressedImage'} "
+        +"elseif d:IsA('MeshPart') then props={'MeshId','TextureID'} "
+        +"elseif d:IsA('SpecialMesh') then props={'MeshId','TextureId'} "
+        +"elseif d:IsA('Decal') or d:IsA('ParticleEmitter') or d:IsA('Beam') or d:IsA('Trail') then props={'Texture'} "
+        +"elseif d:IsA('SurfaceAppearance') or d:IsA('MaterialVariant') then props={'ColorMap','NormalMap','MetalnessMap','RoughnessMap'} "
+        +"elseif d:IsA('Animation') then props={'AnimationId'} "
+        +"elseif d:IsA('Shirt') then props={'ShirtTemplate'} "
+        +"elseif d:IsA('Pants') then props={'PantsTemplate'} "
+        +"elseif d:IsA('Sky') then props={'SkyboxBk','SkyboxDn','SkyboxFt','SkyboxLf','SkyboxRt','SkyboxUp','SunTextureId','MoonTextureId'} end "
+        +"for _,prop in ipairs(props) do local ok,value=pcall(function() return d[prop] end) "
+        +"if ok and type(value)=='string' and value~='' then contentRefs=contentRefs+1 "
+        +"local id=string.match(value,'rbxassetid://(%d+)') "
+        +"if target[id] and #owners[id].instances<6 then "
+        +"table.insert(owners[id].instances,string.sub(d:GetFullName(),1,130)..'.'..prop) end end end end "
+        +"return 'ASSET_OWNER_MAP='..game:GetService('HttpService'):JSONEncode({scanned=visited,contentRefs=contentRefs,complete=complete,owners=owners})";
+      for(const context of ['Server','Client']){
+        try{
+          const out=await luau(context,ownershipCode);
+          const marker=out.split(/\r?\n/).find(line=>line.startsWith('ASSET_OWNER_MAP='));
+          if(!marker)throw new Error('STUDIO_ASSET_OWNER_RESPONSE_MISSING');
+          report.assetOwnership.contexts[context]=JSON.parse(marker.slice('ASSET_OWNER_MAP='.length));
+          console.log('STUDIO_SCRIPT_ASSET_OWNER_MAP='+context+':'+JSON.stringify(report.assetOwnership.contexts[context]).slice(0,1100));
+        }catch(error){
+          report.assetOwnership.contexts[context]={complete:false,error:clean(error?.message||error).slice(0,140)};
+          report.errors.push('STUDIO_ASSET_OWNERSHIP_UNVERIFIED_'+context.toUpperCase());
+        }
+      }
+    }
     if(!report.errors.length&&report.summary.successfulClicks!==report.summary.plannedClicks){
       report.errors.push('STUDIO_CLICK_COVERAGE_INCOMPLETE');
     }
