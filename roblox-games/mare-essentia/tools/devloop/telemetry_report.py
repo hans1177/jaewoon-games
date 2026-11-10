@@ -34,13 +34,25 @@ for back in range(3):
     st = v.get("stats", {})
     fps = f"{st['fpsSum']/st['fpsN']:.0f} (최저 {st['fpsMin']:.0f})" if st.get("fpsN") else "측정 없음"
     print(f"## {day}\n- 접속 {st.get('sessions',0)}회, 평균 FPS {fps}\n")
-    msgs = sorted(v.get("msgs", {}).values(), key=lambda m: -m["n"])
-    if not msgs:
+    # [오류 목록] Roblox DataStore는 Lua 사전이 배열로 읽힐 수 있어 두 형식을 직접 처리한다.
+    raw_msgs = v.get("msgs", {})
+    if isinstance(raw_msgs, dict):
+        records = list(raw_msgs.values())
+    elif isinstance(raw_msgs, list):
+        records = raw_msgs
+    else:
+        records = []
+        failures.add("INVALID_MESSAGE_LIST_FORMAT")
+    msgs = [m for m in records if isinstance(m, dict) and isinstance(m.get("n"), (int, float))]
+    if len(msgs) != len(records):
+        failures.add("INVALID_MESSAGE_ENTRY_FORMAT")
+    msgs.sort(key=lambda m: -m["n"])
+    if not msgs and not failures:
         print("- 오류·경고 없음\n")
     else:
         print("| 횟수 | 구분 | 내용 |\n|---|---|---|")
         for m in msgs[:40]:
-            print(f"| {m['n']} | {m['side']}/{m['kind']} | {m['text'].replace('|','/')} |")
+            print(f"| {m['n']} | {str(m.get('side',''))}/{str(m.get('kind',''))} | {str(m.get('text','')).replace('|','/')} |")
         print()
 if not found:
     print("최근 3일간 읽힌 데이터가 없다. HTTP 404는 데이터 미생성일 수 있다.")
