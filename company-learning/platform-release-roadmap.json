@@ -1,5 +1,5 @@
 {
-  "version": 606,
+  "version": 607,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -9547,7 +9547,46 @@
       "conversationNotReleaseEvidence": true,
       "autoSourceWriteWithoutOwnerInstruction": false,
       "actual3dAndKimiParityUnverified": true,
-      "codeState": "SOURCE_ON_MAIN_EDGE_DEPLOY_PENDING_CI_PENDING"
+      "codeState": "SOURCE_ON_MAIN_PWA_QA_PASS_EDGE_ACTIVE_NATIVE_RUNTIME_UNVERIFIED",
+      "liveBackend": [
+        {
+          "name": "company-ai-chat",
+          "version": 7,
+          "status": "ACTIVE",
+          "oldTaskDeviceOwnershipRequired": true,
+          "matchingGameIdRequired": true,
+          "explicitLatestOwnerCommandRequired": true
+        },
+        {
+          "name": "company-ai-file",
+          "version": 3,
+          "status": "ACTIVE",
+          "githubPagesOriginEnabled": true
+        }
+      ],
+      "provenCi": [
+        {
+          "name": "PWA Chat Flow QA",
+          "runId": 42792257922,
+          "runNumber": 58,
+          "conclusion": "success",
+          "head": "75db78a8f60526a2bb3d5c91fc777c7dc31fdbbd"
+        },
+        {
+          "name": "Vibe Integrated Regression",
+          "runId": 42792258350,
+          "runNumber": 11465,
+          "conclusion": "success",
+          "head": "75db78a8f60526a2bb3d5c91fc777c7dc31fdbbd"
+        }
+      ],
+      "pendingCi": [
+        "Vibe2 Core QA #11120",
+        "Company Central Policy Contract QA #10498",
+        "Company Security Immune System #11380"
+      ],
+      "actualAuthenticatedPhoneConversation": "UNVERIFIED",
+      "actualGameRepairOrRelease": "UNVERIFIED"
     }
   },
   "vibeExecutionLaneContract": {
