@@ -296,6 +296,33 @@ const villageRows=fantasy&&oldRegistry.villagePrefabs?.sourceVerified===true
  ?oldRegistry.villagePrefabs.models||{}:{};
 // [게임 원본 의상] 기존 네이티브 에셋 등록기가 프로젝트 소유 망토 하나를 추가 검증한다.
 const capeRow=fantasy&&oldRegistry.capePrefab?.sourceVerified===true?oldRegistry.capePrefab:null;
+// [마력숲 승인 무기 보존] 기존 캐노니컬 등록기가 생물/마을 ID를 다시 만들 때도
+// 동일 Universe 사용 허가가 검증된 CC0 장비 원본을 절대 삭제하지 않는다.
+const registeredGearIds={};
+if(fantasy){
+ const targetGearUniverse='10773436325';
+ for(const [familyKey,requiredCount] of [['gearExpansionV1',20],['gearExpansionV2',42],['gearExpansionV3',48]]){
+  const group=oldRegistry[familyKey];
+  if(!group||group.nativeRegistrationVerified!==true||group.universeUseGrantVerified!==true)continue;
+  if(group.gameId!=='fantasy-survival'||group.universeId!==targetGearUniverse
+   ||(targetUniverse&&targetUniverse!==targetGearUniverse)
+   ||group.license!=='CC0-1.0'||group.sourceVerified!==true
+   ||group.modelCount!==requiredCount||Object.keys(group.models||{}).length!==requiredCount)
+   throw Error('FOREST_GEAR_APPROVED_GROUP_INVALID:'+familyKey);
+  for(const [name,row] of Object.entries(group.models)){
+   const trusted=/^gear_[a-z0-9_]+$/.test(name)
+    &&row.sourceVerified===true&&row.nativeRegistrationVerified===true
+    &&row.universeUseGrantVerified===true&&row.universeId===targetGearUniverse
+    &&row.license==='CC0-1.0'&&row.licenseEvidence===group.licenseSources?.[row.sourceArchive]
+    &&row.sourceArchiveSha256===group.sourcePacks?.[row.sourceArchive]
+    &&/^[a-f0-9]{64}$/.test(row.sha256||'')
+    &&Number.isSafeInteger(row.assetId)&&row.assetId>0;
+   if(!trusted||registeredGearIds[name]&&registeredGearIds[name]!==row.assetId)
+    throw Error('FOREST_GEAR_REGISTERED_PROVENANCE_INVALID:'+name);
+   registeredGearIds[name]=row.assetId;
+  }
+ }
+}
 const names=fantasy?[...Object.keys(manifest.models),...Object.keys(villageRows),...(capeRow?['wornCape']:[])]
  :['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
 if(fantasy&&(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true||manifest.license!=='CC0-1.0'
@@ -383,6 +410,7 @@ const lua=[
  '-- DO NOT substitute procedural Part geometry if an asset is missing.',
  'return {',
  ...names.map(name=>' '+name+'='+ids[name]+','),
+ ...(fantasy?Object.entries(registeredGearIds).sort(([a],[b])=>a.localeCompare(b)).map(([name,id])=>' '+name+'='+id+','):[]),
  '}',
  ''
 ].join('\n');

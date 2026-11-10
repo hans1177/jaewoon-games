@@ -2547,3 +2547,35 @@ test('Forest external five action icons and protected potion/bag imported via ex
   }
 
 });
+
+// [원본 자산 등록 회귀] 마을·생물 재등록은 같은 Universe의 승인된 검 3D ID를 보존한다.
+// 해시, 출처, 권한이 훼손된 모델은 출력에 포함시키지 않는다.
+test('forest native uploader retains verified weapon IDs after creature/village refresh',()=>{
+  const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  const group=registry.gearExpansionV1;
+  assert.equal(group.nativeRegistrationVerified,true);
+  assert.equal(group.universeUseGrantVerified,true);
+  assert.equal(group.modelCount,20);
+  const source=fs.readFileSync('tools/baeksu-war-upload-meshes.mjs','utf8');
+  const start=source.indexOf('const registeredGearIds={};');
+  const end=source.indexOf('const names=fantasy?',start);
+  assert.ok(start>=0&&end>start);
+  assert.match(source,/Object\.entries\(registeredGearIds\)\.sort/);
+  const current=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
+  const evaluate=(value,universe='10773436325')=>
+    JSON.parse(JSON.stringify(runInNewContext(source.slice(start,end)+'\nregisteredGearIds;',
+      {fantasy:true,oldRegistry:value,targetUniverse:universe})));
+  const valid=evaluate(registry);
+  assert.equal(Object.keys(valid).length,20);
+  for(const [name,row] of Object.entries(group.models)){
+    assert.equal(valid[name],row.assetId);
+    assert.match(current,new RegExp('^\\s*'+name+'\\s*=\\s*'+row.assetId+',?$','m'));
+  }
+  const forbidden=structuredClone(registry);
+  forbidden.gearExpansionV1.models.gear_sword_01.sourceArchiveSha256='0'.repeat(64);
+  assert.throws(()=>evaluate(forbidden),/FOREST_GEAR_REGISTERED_PROVENANCE_INVALID:gear_sword_01/);
+  const ungranted=structuredClone(registry);
+  ungranted.gearExpansionV1.universeUseGrantVerified=false;
+  assert.equal(Object.keys(evaluate(ungranted)).length,0);
+  assert.throws(()=>evaluate(registry,'999999'),/FOREST_GEAR_APPROVED_GROUP_INVALID/);
+});
