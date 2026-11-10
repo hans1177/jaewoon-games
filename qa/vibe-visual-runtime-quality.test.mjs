@@ -230,6 +230,67 @@ test('graphics production requires actual GLB-to-game-to-runtime binding evidenc
   assert.equal(fake.spatial3dApplication.runtimeLinkedCount,0);
 });
 
+test('3D runtime proof is bound to one observed model in an exact golden-scene capture',()=>{
+  const sourceRevision='1'.repeat(40),candidateRevision='2'.repeat(40),sourceHash='3'.repeat(64),imageSha256='4'.repeat(64);
+  const model={id:'forest-boss',sourcePath:'assets/forest/boss.glb',sourceHash,
+    licenseVerified:true,visualContentReviewed:true,
+    gameBinding:{sourceRevision,sceneObjectId:'forest-boss',sourceHash,modelAssetId:'123456'}};
+  // 합성 증거는 검증 계약만 시험한다. 실제 로블록스 플레이 증거가 아니다.
+  const screenshots=captures(candidateRevision).map((row,index)=>index===1?{
+    ...row,runtimeScreenshot:true,imageSha256,visibleSceneObjectIds:['forest-boss']
+  }:row);
+  const observation={sceneObjectId:'forest-boss',sourceRevision,candidateRevision,
+    modelSourceHash:sourceHash,nativeModelIdentity:'123456',
+    captureArtifactId:screenshots[1].artifactId,captureSha256:imageSha256,
+    nativeTriangleCount:128,bindingObserved:true,realRuntimeCapture:true,
+    perspectiveDepthConfirmed:true,sceneObjectVisibilityObserved:true};
+  const make=(values={})=>createVibeGraphicsProduction({
+    gameId:'forest',request:'실제 3D 숲 보스 연결 검증',target:'roblox',
+    sourceRevision,candidateRevision,spatialAssets:[model],
+    runtimeEvidence:{stage:'INTERNAL_PLAYTEST',candidateRevision,
+      captures:screenshots,spatial3dObservations:[observation],...(values||{})}
+  });
+  const observed=make();
+  assert.equal(observed.spatial3dApplication.runtimeLinkedCount,1);
+  assert.equal(observed.status,'GRAPHICS_PASS');
+  assert.equal(observed.runtimeRepairLoop.status,'VERIFIED_CHECKPOINT');
+  for(const broken of [
+    {...observation,captureSha256:'f'.repeat(64)},
+    {...observation,captureArtifactId:'unrelated-capture'},
+    {...observation,nativeModelIdentity:'different-model'},
+    {...observation,sceneObjectVisibilityObserved:false},
+    {...observation,nativeTriangleCount:0}
+  ]){
+    const result=make({spatial3dObservations:[broken]});
+    assert.equal(result.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
+    assert.equal(result.spatial3dApplication.runtimeLinkedCount,0);
+    assert.equal(result.runtimeRepairLoop.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
+    assert.equal(result.runtimeRepairLoop.defects[0].surface,'SPATIAL_3D');
+    assert.equal(result.runtimeRepairLoop.defects[0].responsibleExistingStage,
+      'RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION');
+  }
+  const noScreenshot=make({captures:captures(candidateRevision)});
+  assert.equal(noScreenshot.spatial3dApplication.runtimeLinkedCount,0);
+  assert.equal(noScreenshot.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
+});
+
+test('3D missing runtime proof schedules existing responsible stages without new workflow',()=>{
+  const sourceRevision='1'.repeat(40),sourceHash='3'.repeat(64);
+  const model={id:'missing-boss',sourcePath:'assets/forest/boss.glb',sourceHash,
+    licenseVerified:true,visualContentReviewed:true,
+    gameBinding:{sourceRevision,sceneObjectId:'missing-boss',sourceHash,modelAssetId:'123456'}};
+  const plan=createVibeGraphicsProduction({
+    gameId:'forest',request:'기존 3D 몬스터 화면 연결',target:'roblox',
+    sourceRevision,spatialAssets:[model]
+  });
+  assert.equal(plan.status,'GRAPHICS_PRODUCTION_ACTIVE');
+  assert.equal(plan.runtimeRepairLoop.status,'RUNTIME_EVIDENCE_PENDING');
+  assert.equal(plan.runtimeRepairLoop.defects.length,1);
+  assert.equal(plan.runtimeRepairLoop.defects[0].responsibleExistingStage,
+    'RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION');
+  assert.equal(plan.queue.siblingTopLevelGraphicsTasksForbidden,true);
+});
+
 test('mobile visual audit rejects stale, thumbnail, unreviewed, clipped and overlapping evidence',()=>{
  const revision='f'.repeat(40);
  const audit=(row)=>auditVibeRuntimeVisualEvidence({stage:'INTERNAL_PLAYTEST',candidateRevision:revision,captures:captures(revision),requiredInterfaceSurfaces:['HUD'],interfaceCoverage:{HUD:row}});

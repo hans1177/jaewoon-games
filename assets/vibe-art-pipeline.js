@@ -766,12 +766,25 @@ export function createVibeGraphicsProduction({
       observation?.sceneObjectId===id&&observation?.sourceRevision===sourceRevision&&
       observation?.candidateRevision===candidateRevision&&
       observation?.modelSourceHash===sourceHash);
-    if(runtimeAudit?.pass!==true||!candidateRevision||matches.length!==1||
-       matches[0]?.bindingObserved!==true||matches[0]?.realRuntimeCapture!==true||
-       matches[0]?.perspectiveDepthConfirmed!==true||
-       !Number.isFinite(matches[0]?.nativeTriangleCount)||
-       matches[0].nativeTriangleCount<=0||
-       !/^[a-f0-9]{64}$/i.test(clean(matches[0]?.captureSha256)))
+    const observation=matches.length===1?matches[0]:null;
+    // [런타임 이미지 결속] 선언된 임의 해시가 아니라 기존 Golden Scene의 실제 캡처 기록을 참조해야 한다.
+    const capture=(Array.isArray(runtimeEvidenceBase.captures)?runtimeEvidenceBase.captures:[]).find(item=>
+      item?.artifactId===observation?.captureArtifactId&&
+      item?.imageSha256===observation?.captureSha256&&
+      item?.candidateRevision===candidateRevision&&
+      item?.runtimeScreenshot===true&&item?.observed===true&&item?.reviewed===true&&
+      item?.markerOnly!==true&&
+      ['runtime-capture','roblox-runtime-capture','internal-playtest-capture','golden-scene-capture']
+        .includes(clean(item?.source).toLowerCase())&&
+      Array.isArray(item?.visibleSceneObjectIds)&&item.visibleSceneObjectIds.includes(id));
+    if(runtimeAudit?.pass!==true||!candidateRevision||!observation||!capture||
+       observation.bindingObserved!==true||observation.realRuntimeCapture!==true||
+       observation.sceneObjectVisibilityObserved!==true||
+       observation.nativeModelIdentity!==clean(binding.modelPath||binding.modelAssetId)||
+       observation.perspectiveDepthConfirmed!==true||
+       !Number.isSafeInteger(observation.nativeTriangleCount)||
+       observation.nativeTriangleCount<=0||
+       !/^[a-f0-9]{64}$/i.test(clean(observation.captureSha256)))
       issues.push('INDEPENDENT_3D_RUNTIME_BINDING_EVIDENCE_REQUIRED');
     return Object.freeze({id,sourcePath,sourceHash,
       status:issues.length?'3D_BINDING_REPAIR_REQUIRED':'3D_RUNTIME_EVIDENCE_LINKED',
@@ -788,13 +801,22 @@ export function createVibeGraphicsProduction({
     verifier:'EXISTING_NATIVE_OR_WEB_RUNTIME_QA',
     cannotClaim3dRuntimePassFromMetadataAlone:true
   });
+  // [기존 작업으로 복구] 자산 수급·게임 소스 연결·실행 QA의 실제 책임 단계만 반환한다.
+  const spatialRepairTargets=Object.freeze(spatial3dItems.filter(row=>row.issues.length).map(row=>Object.freeze({
+    surface:'SPATIAL_3D',id:row.id,sourcePath:row.sourcePath,
+    findings:row.issues,
+    responsibleExistingStage:row.issues.some(issue=>['REAL_MASTER_GLB_SOURCE_REQUIRED','SOURCE_SHA256_REQUIRED','ASSET_RIGHTS_OR_CONTENT_REVIEW_REQUIRED'].includes(issue))
+      ?'ASSET_INVENTORY_ACQUISITION_AND_MUTATION'
+      :row.issues.includes('EXACT_GAME_SOURCE_MODEL_BINDING_REQUIRED')
+        ?'HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS'
+        :'RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION',
+    scope:'NATIVE_MODEL_BINDING_AND_VISUAL_ONLY',
+    preserveGameplayAndSave:true
+  })));
   const verifiedReferenceStructure=Object.freeze(referenceImageStudies.filter(row=>row.observation?.verifiedAgainstSource===true).map(row=>Object.freeze({sourceId:row.request.sourceId,structuralEvidence:row.observation.features,directSceneCopyAllowed:false})));
   const runtimeRepairLoop=runtimeAudit?Object.freeze({
-    status:runtimeAudit.pass?'VERIFIED_CHECKPOINT':'RUNTIME_VISUAL_REPAIR_REQUIRED',
-    defects:Object.freeze([...(runtimeAudit.repairTargets||[]),
-      ...spatial3dItems.filter(row=>row.issues.length).map(row=>Object.freeze({
-        surface:'SPATIAL_3D',id:row.id,findings:row.issues,
-        scope:'NATIVE_MODEL_BINDING_AND_VISUAL_ONLY',preserveGameplayAndSave:true}))]),
+    status:runtimeAudit.pass&&spatialRepairTargets.length===0?'VERIFIED_CHECKPOINT':'RUNTIME_VISUAL_REPAIR_REQUIRED',
+    defects:Object.freeze([...(runtimeAudit.repairTargets||[]),...spatialRepairTargets]),
     beforeAfter:beforeAfterAudit,
     artDirectionReview,
     preciseArtDirectionRepairTargets:Object.freeze((artDirectionReview?.repairTargets||[]).filter(row=>row.sourcePath&&row.targetId&&row.property)),
@@ -804,7 +826,7 @@ export function createVibeGraphicsProduction({
     gameplaySaveBalanceMutationForbidden:true,
     recaptureAfterEveryRepair:true,
     closeOnlyAfterRuntimeReobservation:true
-  }):Object.freeze({status:'RUNTIME_EVIDENCE_PENDING',defects:Object.freeze([]),sameCaptureConditionsRequired:true,recaptureAfterEveryRepair:true,closeOnlyAfterRuntimeReobservation:true});
+  }):Object.freeze({status:'RUNTIME_EVIDENCE_PENDING',defects:spatialRepairTargets,sameCaptureConditionsRequired:true,recaptureAfterEveryRepair:true,closeOnlyAfterRuntimeReobservation:true});
   const measurementCapture=Object.freeze({
     required:Boolean(artSpec.animation?.required||artSpec.highEndVisual?.required),
     provided:Boolean(engineMeasurementCapture&&typeof engineMeasurementCapture==='object'&&Object.keys(engineMeasurementCapture).length),

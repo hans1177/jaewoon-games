@@ -1,5 +1,5 @@
 {
-  "version": 603,
+  "version": 604,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -9502,6 +9502,17 @@
       "noShadowPipeline": true,
       "noNewGate": true,
       "protectedGameplayAndSave": true
+    },
+    "vibe3dBindingProofStrengthening20261110": {
+      "intent": "STRENGTHEN_EXISTING_GRAPHICS_RUNTIME_BINDING_AND_LOCAL_REPAIR",
+      "noNewPipeline": true,
+      "noNewGate": true,
+      "noDirectGameSourceMutation": true,
+      "sourceChanges": [
+        "assets/vibe-art-pipeline.js",
+        "qa/vibe-visual-runtime-quality.test.mjs"
+      ],
+      "verifiedStatus": "CI_PENDING_AND_NATIVE_RUNTIME_UNVERIFIED"
     }
   },
   "vibeExecutionLaneContract": {
@@ -16934,8 +16945,8 @@
         "newShadowGraphicsPipelineForbidden": true
       },
       "implementation3dRuntimeBinding": {
-        "version": 1,
-        "status": "CODE_ON_MAIN_CI_PENDING_NATIVE_RUNTIME_UNVERIFIED",
+        "version": 2,
+        "status": "SOURCE_ON_MAIN_CI_PENDING_NATIVE_RUNTIME_UNVERIFIED",
         "role": "EXISTING_GRAPHICS_PRODUCTION_RUNTIME_EVIDENCE_AUDIT_ONLY",
         "coordinator": "assets/vibe-art-pipeline.js#createVibeGraphicsProduction",
         "tests": [
@@ -16953,7 +16964,17 @@
         "originalGameRulesAndSaveUnchanged": true,
         "newWorkQueueOrGateCreated": false,
         "actualNativeRuntimeQaStillRequired": true,
-        "sourceCommit": "3d51bd1a862d189b409e50c429a2d67f3820ba05"
+        "sourceCommit": "3d51bd1a862d189b409e50c429a2d67f3820ba05",
+        "exactGoldenCaptureArtifactAndImageHashRequired": true,
+        "matchingVisibleSceneObjectIdRequired": true,
+        "nativeModelIdentityMustMatchGameBinding": true,
+        "missingEvidenceMapsToExistingGraphicsStage": true,
+        "graphicsRepairLoopCannotClaimVerifiedOn3dFailure": true,
+        "previousRuntimeEvidenceDoesNotReplaceSameCandidate": true,
+        "implementationPaths": [
+          "assets/vibe-art-pipeline.js",
+          "qa/vibe-visual-runtime-quality.test.mjs"
+        ]
       }
     },
     "companyGraphicsLibrary24h": {
