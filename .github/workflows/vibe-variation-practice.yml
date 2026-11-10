@@ -1,9 +1,20 @@
 name: Vibe Variation Practice
-# CC0 변형 연습장을 스스로 계속 돌린다(매시간). 겹치지 않게 한 번에 하나만 돈다. 학습 상태는 main이 아니라 전용 브랜치(vibe-gym-data)에만 쌓는다.
+# CC0 변형 연습장을 스스로 계속 돌린다(5분 간격 및 관련 코드 수정 직후). 겹치지 않게 한 번에 하나만 돈다. 학습 상태는 main이 아니라 전용 브랜치(vibe-gym-data)에만 쌓는다.
 # practice-cloud: GitHub 러너에서 레지스트리의 승인된 CC0만으로 연습.
 # practice-local: (저장소 변수 VIBE_GYM_LOCAL=true 일 때) 자체 러너의 E 드라이브 라이브러리를 정리·부족분 확보 계획까지 하고 연습.
 #   - 자동 다운로드는 오너 규칙대로 "부족한 분야가 선택됐을 때, 레지스트리에 CC0로 검증된 출처만" 받는다. 받은 팩은 후보이며 승인은 사람이 한다.
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/vibe-variation-gym.mjs'
+      - 'tools/vibe-practice-session.mjs'
+      - 'tools/vibe_object_score.py'
+      - 'tools/vibe-normal-bake.mjs'
+      - 'tools/vibe_normal_bake.py'
+      - 'qa/vibe-variation-gym.test.mjs'
+      - 'qa/vibe-practice-session.test.mjs'
+      - '.github/workflows/vibe-variation-practice.yml'
   schedule:
     # 5분마다(GitHub cron 최소 단위). 진짜 매분은 로컬 PC에서 tools/vibe-practice-loop.mjs 가 한다(60초 루프).
     # 비용을 줄이려면 저장소 변수 VIBE_GYM_CLOUD=off 로 클라우드 연습만 끌 수 있다(로컬 루프는 영향 없음).
