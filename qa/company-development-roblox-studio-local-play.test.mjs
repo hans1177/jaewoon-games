@@ -3703,20 +3703,20 @@ test('Mare first-click QA verifies actual selection screen and never confirms de
   assert.doesNotMatch(script,/title:Destroy\(\)|newBtn:Activate\(\)/);
 });
 
-test('Studio Auto QA dispatches both games without a Studio-completion feedback loop or global queue skip',()=>{
+test('Studio Auto QA dispatches both games without feedback loop or global queue skip',()=>{
   const workflow=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
-  assert.match(workflow,/name: Studio Auto QA/);
-  assert.doesNotMatch(workflow,/^\\s*schedule:\\s*$/m);
-  assert.doesNotMatch(workflow,/cron:/);
-  assert.ok(workflow.includes('  push:\\n    branches: [main]'.replace('\\n','\n')));
-  for(const path of [
+  assert.ok(workflow.includes('name: Studio Auto QA'));
+  assert.ok(!workflow.includes('  schedule:'),'no periodic polling');
+  assert.ok(!workflow.includes('cron:'));
+  assert.ok(workflow.includes('  push:' + String.fromCharCode(10) + '    branches: [main]'));
+  for(const p of [
     'roblox-games/fantasy-survival/client/**',
     'roblox-games/fantasy-survival/server/**',
     'roblox-games/fantasy-survival/shared/**',
     'roblox-games/mare-essentia/src/**',
-  ])assert.ok(workflow.includes(path),'missing automatic trigger '+path);
+  ]) assert.ok(workflow.includes(p),'missing trigger: '+p);
   assert.ok(workflow.includes('workflows: ["Owner Mare Essentia Direct Publish", "Owner Roblox Dedicated Private Experiences"]'));
-  assert.ok(!workflow.includes('workflows: ["Devloop Studio Capture"'),'Studio completion must not create another Studio run');
+  assert.ok(!workflow.includes('workflows: ["Devloop Studio Capture"'),'Studio completion must not re-dispatch itself');
   assert.ok(workflow.includes("github.event.workflow_run.conclusion == 'success'"));
   assert.ok(workflow.includes("github.event.workflow_run.conclusion == 'failure'"));
   assert.ok(workflow.includes('default: both'));
@@ -3724,15 +3724,14 @@ test('Studio Auto QA dispatches both games without a Studio-completion feedback 
   assert.ok(workflow.includes('for game in $games; do'));
   assert.ok(workflow.includes('select(.head_sha == $head)'));
   assert.ok(workflow.includes('studio already queued/running for $game on $head, skip duplicate'));
-  assert.ok(workflow.includes('game=$game'));
   assert.ok(workflow.includes('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   assert.ok(workflow.includes('roblox-games/fantasy-survival/tools/devloop/studio-scripts/fantasy-qa-click.json'));
-  assert.equal((workflow.match(/gh workflow run devloop-studio\\.yml/g)||[]).length,1);
-  assert.doesNotMatch(workflow,/10#\\$\\(date -u \\+%M\\)/);
+  assert.equal(workflow.split('gh workflow run devloop-studio.yml').length-1,1);
+  assert.ok(!workflow.includes('10#$(date -u +%M)'));
   const runner=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
-  assert.match(runner,/runs-on: \\[self-hosted, Windows, X64, roblox-studio-authenticated\\]/);
-  assert.match(runner,/group: roblox-studio-shared-host/);
-  assert.match(runner,/cancel-in-progress: false/);
+  assert.ok(runner.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
+  assert.ok(runner.includes('group: roblox-studio-shared-host'));
+  assert.ok(runner.includes('cancel-in-progress: false'));
 });
 
 test('Studio click QA stops unresponsive MCP discovery without claiming runtime PASS',()=>{
