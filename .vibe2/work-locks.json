@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-14zpn8x",
+      "worker": "vibe2",
+      "taskId": "realistic-builder-diagnostic-bundle-INTERVAL-CLEANUP-RISK-index-html",
+      "gameId": "realistic-builder",
+      "files": [
+        "web-games/realistic-builder/index.html"
+      ],
+      "baseSha": "d0fd460486447c7e58140f57df74f6dc49de2b92",
+      "runId": "42754615644",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-10T04:30:04.001Z",
+      "expiresAt": "2026-11-10T05:15:04.001Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:realistic-builder-diagnostic-bundle-INTERVAL-CLEANUP-RISK-index-html"
+      ]
+    }
+  ]
 }
