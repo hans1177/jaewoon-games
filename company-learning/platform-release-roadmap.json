@@ -1,5 +1,5 @@
 {
-  "version": 602,
+  "version": 603,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -9480,6 +9480,28 @@
       "implementationStatus": "NOT_IMPLEMENTED",
       "summaryKo": "A 중심·B 보조·C 작품 장르·D 소분류 창작·@ 무한 파고들기, 분류표와 기존 기본 플로어 안의 설계 방법 공식화",
       "codeWorkflowRuntimeDeploymentChanged": false
+    },
+    "vibe3dBindingProof20261110": {
+      "changeType": "GRAPHICS_IMPLEMENTATION_EVIDENCE_AND_ATLAS_SAFETY",
+      "ownerDirective": "KIMI_LEVEL_GRAPHICS_AND_COMPLEX_DEVELOPMENT_UPGRADE",
+      "sourceRevision": "3d51bd1a862d189b409e50c429a2d67f3820ba05",
+      "paths": [
+        "assets/vibe-art-pipeline.js",
+        "assets/jaewoon-graphics-engine.js",
+        "qa/vibe-visual-runtime-quality.test.mjs",
+        "qa/jaewoon-graphics-engine.test.cjs"
+      ],
+      "originalAssetAndAlphaPreserved": true,
+      "runtime3dBindingProofRequiredForDeclaredModels": true,
+      "statuses": [
+        "SOURCE_APPLIED",
+        "CI_PENDING",
+        "NATIVE_RUNTIME_UNVERIFIED",
+        "COMPLEX_GAMEPLAY_AUTOMATION_NOT_YET_RUNTIME_VERIFIED"
+      ],
+      "noShadowPipeline": true,
+      "noNewGate": true,
+      "protectedGameplayAndSave": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -16910,6 +16932,28 @@
         "existingModulePublicExportsMayRemainForCompatibility": true,
         "modulesMayNotActAsIndependentTopLevelProductionAuthorities": true,
         "newShadowGraphicsPipelineForbidden": true
+      },
+      "implementation3dRuntimeBinding": {
+        "version": 1,
+        "status": "CODE_ON_MAIN_CI_PENDING_NATIVE_RUNTIME_UNVERIFIED",
+        "role": "EXISTING_GRAPHICS_PRODUCTION_RUNTIME_EVIDENCE_AUDIT_ONLY",
+        "coordinator": "assets/vibe-art-pipeline.js#createVibeGraphicsProduction",
+        "tests": [
+          "qa/vibe-visual-runtime-quality.test.mjs"
+        ],
+        "master3dFormat": "GLB",
+        "sourceHashRequired": true,
+        "rightsAndVisualReviewRequired": true,
+        "gameSourceBindingMustMatchExactSourceRevision": true,
+        "sameCandidateRuntimeCaptureAndSceneObjectEvidenceRequired": true,
+        "actualMeshTriangleAndPerspectiveDepthRequired": true,
+        "metadataOrModelRegistrationCannotProveRuntimeBinding": true,
+        "repairExistingVisualResponsibilityOnly": true,
+        "gameSourceMutationOwnerUnchanged": true,
+        "originalGameRulesAndSaveUnchanged": true,
+        "newWorkQueueOrGateCreated": false,
+        "actualNativeRuntimeQaStillRequired": true,
+        "sourceCommit": "3d51bd1a862d189b409e50c429a2d67f3820ba05"
       }
     },
     "companyGraphicsLibrary24h": {
