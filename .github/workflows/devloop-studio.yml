@@ -76,6 +76,33 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           if (@(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue).Count) { Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 5 }
+          # [로그] Studio 실행 전 시스템 드라이브 압박만 해소한다. 오래된 Roblox 로그 외에는 삭제하지 않는다.
+          $studioVolume = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($env:LOCALAPPDATA))
+          Write-Host "STUDIO_SYSTEM_DISK_FREE_MB_BEFORE=$([math]::Round($studioVolume.AvailableFreeSpace/1MB,1))"
+          if ($studioVolume.AvailableFreeSpace -lt 128MB) {
+            $robloxLogRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+            if (Test-Path -LiteralPath $robloxLogRoot -PathType Container) {
+              $logRootInfo = Get-Item -LiteralPath $robloxLogRoot -Force
+              if (-not ($logRootInfo.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+                $cutoff = (Get-Date).AddHours(-1)
+                $cleared = 0
+                foreach ($log in @(Get-ChildItem -LiteralPath $robloxLogRoot -File -ErrorAction Stop |
+                  Where-Object { $_.LastWriteTime -lt $cutoff -and $_.Extension -in @('.log','.txt') -and
+                    -not ($_.Attributes -band [IO.FileAttributes]::ReparsePoint) })) {
+                  try {
+                    Remove-Item -LiteralPath $log.FullName -Force -ErrorAction Stop
+                    $cleared++
+                  } catch {
+                    Write-Warning 'STUDIO_OLD_LOG_LOCKED_OR_UNAVAILABLE'
+                  }
+                }
+                Write-Host "STUDIO_OLD_ROBLOX_LOGS_CLEARED=$cleared"
+              }
+            }
+          }
+          $studioVolume = [IO.DriveInfo]::new([IO.Path]::GetPathRoot($env:LOCALAPPDATA))
+          Write-Host "STUDIO_SYSTEM_DISK_FREE_MB_AFTER=$([math]::Round($studioVolume.AvailableFreeSpace/1MB,1))"
+          if ($studioVolume.AvailableFreeSpace -lt 32MB) { throw 'STUDIO_SYSTEM_DISK_SPACE_REQUIRED' }
           $roots = @((Join-Path $env:LOCALAPPDATA 'Roblox\Versions'), (Join-Path ${env:ProgramFiles(x86)} 'Roblox\Versions'))
           $studio = $roots | Where-Object { Test-Path $_ } | ForEach-Object { Get-ChildItem $_ -Recurse -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue } | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
           if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
