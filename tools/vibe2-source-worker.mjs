@@ -3339,14 +3339,19 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
             ||crypto.createHash('sha256').update(fs.readFileSync(current)).digest('hex')!==sha256;
         }catch{return true;}
       });
-      const code=clean(error?.message).split(':')[0];
+      const errorParts=clean(error?.message).split(':');
+      const code=errorParts[0];
+      // [기계 실패 세부형] 코드 다음의 안전한 단일 식별자만 기록하고
+      // 경로·사용자 문장·검증기 원문은 학습 메모리에 복사하지 않는다.
+      const failureSubcode=!sourceDrift&&/^[A-Z][A-Z0-9_]{0,63}$/.test(errorParts[1]||'')
+        ?errorParts[1]:null;
       const reasonCode=sourceDrift?'DETERMINISTIC_SOURCE_REVISION_CHANGED'
         :/^[A-Z][A-Z0-9_]{0,79}$/.test(code)?code:'CANDIDATE_VALIDATION_REJECTED';
       const failureClass=generationFailureClass(error);
       const failed=sourceDrift?'SOURCE_REVISION_CHANGED'
         :validatorExecuted?'CANONICAL_CANDIDATE_VALIDATOR_REJECTED':'SOURCE_PREFLIGHT_REJECTED';
       selection.attempts.push({...decision,status:'REJECTED',failureClass,reasonCode,
-        validationEvidence:failed});
+        failureSubcode,validationEvidence:failed});
       const hypothesis=hypotheses.find(row=>row.fingerprint===fingerprint);
       if(hypothesis)hypothesis.status=failed;
       if(sourceDrift&&validatorExecuted){
@@ -3376,7 +3381,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       const next=pending[0],nextComparison=candidateComparison(next);
       selection.replans.push({
         afterRejectedFingerprint:fingerprint,observedFailureCode:reasonCode,
-        observedStage:failed,rejectedHypothesisId:fingerprint?.slice(0,16)||null,
+        observedFailureSubcode:failureSubcode,observedStage:failed,rejectedHypothesisId:fingerprint?.slice(0,16)||null,
         nextHypothesisId:rejectedSourcePatchFingerprint(next)?.slice(0,16)||null,
         nextRecipe:clean(next.deterministicRobloxNativeRepair),
         nextResponsibleFiles:nextComparison.sourceFiles,
