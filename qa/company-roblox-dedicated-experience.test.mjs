@@ -423,13 +423,13 @@ test('Forest registered gear reuse rejects missing or changed source binding and
   assert.equal(run(tampered,ids),1,'unverified provenance may not reuse registered assets');
 });
 
-// [대항해시대 1980 배포키] 기존 발행/에셋/오디오 워크플로는 같은 새 소유 계정 키만 사용한다.
+// [대항해시대 1980 배포키] 기존 게임 게시/에셋 등록은 같은 소유 계정 키만 사용한다.
+// 오디오 업로드의 기존 main 직접쓰기 경로는 이 배포키 변경에서 수정하지 않는다.
 // 키 값은 저장하지 않고 GitHub Secret 이름과 기존 체험 ID의 결합만 검사한다.
-test('Mare Essentia 1980 publish, asset and audio workflows use only the dedicated deploy secret',()=>{
+test('Mare Essentia 1980 publish and asset workflows use only the dedicated deploy secret',()=>{
   const files=[
     '.github/workflows/owner-mare-essentia-direct-publish.yml',
     '.github/workflows/owner-mare-essentia-assets.yml',
-    '.github/workflows/mare-audio-upload.yml',
   ];
   const keyName='$'+'{{ secrets.ROBLOX_DEPLOY_API_KEY }}';
   for(const file of files){
