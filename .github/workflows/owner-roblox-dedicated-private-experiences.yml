@@ -365,6 +365,7 @@ jobs:
           exit 1
 
       - name: Grant original Forest models to the existing private Universe
+        id: forest_grant
         if: matrix.gameId == 'fantasy-survival'
         working-directory: main
         env:
@@ -517,6 +518,8 @@ jobs:
                 const reason=String(answer?.error?.code||answer?.errors?.[0]?.code||'UNSPECIFIED')
                   .replace(/[^A-Za-z0-9_]/g,'_').slice(0,64);
                 console.error('ROBLOX_CC0_UNIVERSE_GRANT_DENIAL_CODE='+reason);
+              // [실패 증거] 수신한 거부 코드만 작업 출력에 남긴다. 인증 키와 응답 원문은 제외한다.
+              fs.appendFileSync(process.env.GITHUB_OUTPUT,'denial_code='+reason+'\ndenial_http='+grant.status+'\n');
                 if(grant.status===403)console.error('ROBLOX_CC0_GRANT_RIGHTS_REQUIRED=ASSET_PERMISSIONS_WRITE_AND_ASSET_SUBJECT_ACCESS');
                 throw Error('ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_'+grant.status);
               }
@@ -525,6 +528,50 @@ jobs:
             console.log('ROBLOX_CC0_UNIVERSE_GRANT_AUTHORITY=API_KEY');
             console.log('ROBLOX_CC0_UNIVERSE_GRANT_ACCEPTED='+assetIds.length);
           }else console.log('ROBLOX_CC0_UNIVERSE_GRANT=NO_REGISTERED_ACTOR_USE');
+          NODE
+
+      # [실제 권한 거부 기록] 이 작업이 실패해도 기존 게시 증거 경로를 유지한다.
+      # 성공으로 바꾸지 않으며, company-runtime은 이 결과를 REPAIR_REQUIRED로 저장한다.
+      - name: Record failed Forest Universe grant in canonical publication evidence
+        if: ${{ failure() && matrix.gameId == 'fantasy-survival' && steps.forest_grant.outcome == 'failure' }}
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          GAME_NAME: ${{ matrix.gameName }}
+          OWNER_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
+          OWNER_PLACE_ID: ${{ steps.reuse.outputs.place_id }}
+          GRANT_DENIAL_CODE: ${{ steps.forest_grant.outputs.denial_code }}
+          GRANT_HTTP_STATUS: ${{ steps.forest_grant.outputs.denial_http }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('node:fs');
+          const gameId=String(process.env.GAME_ID||'');
+          const universeId=String(process.env.OWNER_UNIVERSE_ID||'');
+          const placeId=String(process.env.OWNER_PLACE_ID||'');
+          if(gameId!=='fantasy-survival'||universeId!=='10773436325'
+            ||!/^[1-9][0-9]*$/.test(placeId))throw Error('FOREST_GRANT_FAILURE_TARGET_UNVERIFIED');
+          const denial=String(process.env.GRANT_DENIAL_CODE||'UNSPECIFIED')
+            .replace(/[^A-Za-z0-9_]/g,'_').slice(0,64);
+          const status=String(process.env.GRANT_HTTP_STATUS||'UNKNOWN')
+            .replace(/[^0-9]/g,'').slice(0,3)||'UNKNOWN';
+          const root='/tmp/roblox-dedicated';
+          const target=root+'/'+gameId+'.result.json';
+          fs.mkdirSync(root,{recursive:true});
+          if(fs.existsSync(target))throw Error('FOREST_GRANT_FAILURE_EVIDENCE_ALREADY_EXISTS');
+          const report={
+            version:1,gameId,gameName:String(process.env.GAME_NAME||''),
+            sourceRevision:process.env.GITHUB_SHA,
+            universeId,placeId,reusedTarget:true,created:false,configured:false,
+            private:false,published:false,pass:false,versionNumber:null,
+            stage:'ASSET_UNIVERSE_GRANT',
+            error:'ROBLOX_CC0_UNIVERSE_GRANT_DENIED_'+denial,
+            failureSignature:'ROBLOX_CC0_UNIVERSE_GRANT_HTTP_'+status,
+            checkedAt:new Date().toISOString(),
+            authority:'owner-dedicated-roblox-experience-bootstrap',
+          };
+          fs.writeFileSync(target,JSON.stringify(report,null,2)+'\n');
+          console.log('FOREST_GRANT_FAILURE_EVIDENCE=FAILED_NOT_PUBLISHED:'+denial);
           NODE
 
       - name: Build exact current main Roblox place
