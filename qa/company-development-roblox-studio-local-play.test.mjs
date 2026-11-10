@@ -3687,7 +3687,15 @@ test('Studio click QA text sampling stops at ten visible labels without changing
     assert.equal(labels.length,30);
     for(const step of labels){
       assert.match(step.code,/if #out>=10 then break end/);
-      assert.doesNotMatch(step.code,/if ok and #out<10 then/);
+      assert.match(step.code,/while head<=#q and seen<400 and #out<10 do/);
+      assert.match(step.code,/if #q>=650 then break end/);
+      assert.match(step.code,/d:GetChildren\(\)/);
+      assert.doesNotMatch(step.code,/P:GetDescendants\(\)|if ok and #out<10 then/);
     }
+    assert.equal(steps.filter(step=>step.type==='capture').length,31);
+    assert.equal(steps[5].type,'wait');
+    assert.equal(steps[5].ms,game==='mare-essentia'?12000:2200);
   }
+  assert.match(generator,/while head<=#q and seen<400 and #out<10 do/);
+  assert.match(generator,/12000 if i == 1 and "새 게임" in prefer else 2200/);
 });
