@@ -350,6 +350,23 @@ test('Forest private publish and original asset workflows require the dedicated 
 });
 
 
+// [실제 1980 배포 이벤트 회귀] Owner Mare는 run-name에 SHA가 들어가 workflow_run.name이 고정값이 아니다.
+// workflow_run.path를 비교해 정상 게시 완료가 두 게임 Studio QA로 이어지도록 보장한다.
+test('Studio Auto QA routes dynamic owner publisher run-name by stable workflow path',()=>{
+  const studio=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  const mare=fs.readFileSync('.github/workflows/owner-mare-essentia-direct-publish.yml','utf8');
+  assert.ok(mare.includes('run-name: Owner Mare Essentia publish ·'));
+  assert.ok(studio.includes("github.event.workflow_run.path == '.github/workflows/owner-mare-essentia-direct-publish.yml'"));
+  assert.ok(studio.includes("github.event.workflow_run.path == '.github/workflows/owner-roblox-dedicated-private-experiences.yml'"));
+  assert.ok(studio.includes('github.event.workflow_run.path }}'));
+  assert.ok(!studio.includes("github.event.workflow_run.name == 'Owner Mare Essentia Direct Publish'"));
+  assert.ok(!studio.includes("github.event.workflow_run.name == 'Owner Roblox Dedicated Private Experiences'"));
+  assert.ok(studio.includes("github.event.workflow_run.conclusion == 'success'"));
+  assert.ok(studio.includes("github.event.workflow_run.head_branch == 'main'"));
+  assert.ok(studio.includes('no Forest source or publisher change, skip'));
+  assert.ok(studio.includes('studio already queued/running for $game on $head, skip duplicate'));
+});
+
 // [마력숲·대항해시대] 기존 게시 후 두 게임 모두 공식 Studio PC 검사를 요청한다.
 // 권한 403은 배포 실패로 유지하고 Studio 검사와 구분한다.
 test('Forest publisher completion dispatches independent Studio QA for both games',()=>{

@@ -35,13 +35,14 @@ jobs:
   dispatch:
     # [게시·Studio 독립 검증] 게시 403은 게시 실패로 남기되 게임 자체 Studio 검사는 요청한다.
     # Studio 종료 이벤트는 자신을 재발행하지 않고, 본래 게시 이벤트만 받는다.
+    # 게시자의 run-name은 SHA를 포함해 변하므로 workflow_run.path로 정확히 판별한다.
     if: >-
       github.repository == 'hans1177/jaewoon-games' &&
       (github.event_name != 'workflow_run' ||
-       (github.event.workflow_run.name == 'Owner Mare Essentia Direct Publish' &&
+       (github.event.workflow_run.path == '.github/workflows/owner-mare-essentia-direct-publish.yml' &&
         github.event.workflow_run.conclusion == 'success' &&
         github.event.workflow_run.head_branch == 'main') ||
-       (github.event.workflow_run.name == 'Owner Roblox Dedicated Private Experiences' &&
+       (github.event.workflow_run.path == '.github/workflows/owner-roblox-dedicated-private-experiences.yml' &&
         github.event.workflow_run.head_branch == 'main' &&
         (github.event.workflow_run.event == 'push' ||
          github.event.workflow_run.event == 'workflow_dispatch') &&
@@ -68,7 +69,7 @@ jobs:
             esac
           fi
           if [ "${{ github.event_name }}" = "workflow_run" ] &&
-             [ "${{ github.event.workflow_run.name }}" = "Owner Roblox Dedicated Private Experiences" ] &&
+             [ "${{ github.event.workflow_run.path }}" = ".github/workflows/owner-roblox-dedicated-private-experiences.yml" ] &&
              [ "${{ github.event.workflow_run.event }}" = "push" ]; then
             # [게임 격리] 다른 게임의 자동 게시 결과는 별도 Studio 재검사를 발생시키지 않는다.
             changed=$(gh api "repos/$GITHUB_REPOSITORY/commits/${{ github.event.workflow_run.head_sha }}" --jq '.files[].filename')
