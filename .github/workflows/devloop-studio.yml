@@ -9,6 +9,7 @@ on:
     branches: [main]
     paths:
       - 'tools/gen-qa-click-scripts.py'
+      - 'tools/company-development-roblox-studio-local-play.mjs'
       - 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'
   workflow_dispatch:
     inputs:

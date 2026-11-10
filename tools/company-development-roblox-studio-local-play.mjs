@@ -2756,6 +2756,22 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
               probe.out=out.slice(0,200);
               console.log('STUDIO_SCRIPT_POST_CLICK_PROBE_OK='+ctx);
             }
+            // [진단] 클릭 후 UI 접근을 개별 호출로 분리해 멈추는 정확한 Roblox API를 기록한다.
+            const uiProbes=[
+              ['UI_ROOT_COUNT',"local p=game:GetService('Players').LocalPlayer.PlayerGui local children=p:GetChildren() return 'ROOT_COUNT='..#children"],
+              ['UI_DESC_COUNT',"local p=game:GetService('Players').LocalPlayer.PlayerGui local descendants=p:GetDescendants() return 'DESC_COUNT='..#descendants"],
+              ['UI_LABEL_COUNT',"local p=game:GetService('Players').LocalPlayer.PlayerGui local n=0 for _,d in ipairs(p:GetDescendants()) do if d:IsA('TextLabel') then n=n+1 end end return 'LABEL_COUNT='..n"],
+              ['UI_FIRST_TEXT',"local p=game:GetService('Players').LocalPlayer.PlayerGui for _,d in ipairs(p:GetDescendants()) do if d:IsA('TextLabel') then local value=d.Text return 'FIRST_TEXT='..string.sub(value,1,40) end end return 'FIRST_TEXT=NONE'"]
+            ];
+            for(const [name,code] of uiProbes){
+              const probe={step:n,postClickUiProbe:name,status:'STARTED'};
+              report.log.push(probe);
+              console.log('STUDIO_SCRIPT_POST_CLICK_UI_PROBE_START='+name);
+              const out=await luau('Client',code);
+              probe.status='OK';
+              probe.out=out.slice(0,200);
+              console.log('STUDIO_SCRIPT_POST_CLICK_UI_PROBE_OK='+name+':'+out.replace(/\s+/g,' ').slice(0,120));
+            }
           }
           const out=await luau(st.ctx||'Client',st.code);
           report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000)});
