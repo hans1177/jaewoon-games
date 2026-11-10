@@ -3671,3 +3671,22 @@ test('Studio click QA stops unresponsive MCP discovery without claiming runtime 
   assert.match(script,/if\(!studioId\)throw new Error\('NO_STUDIO'\)/);
   assert.match(script,/fs\.writeFileSync\(path\.join\(outDir,'report\.json'\)/);
 });
+
+test('Studio click QA text sampling stops at ten visible labels without changing planned clicks',()=>{
+  const generator=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
+  assert.match(generator,/if #out>=10 then break end/);
+  for(const [game,script] of [
+    ['mare-essentia','mare-qa-click.json'],
+    ['fantasy-survival','fantasy-qa-click.json']
+  ]){
+    const steps=JSON.parse(fs.readFileSync('roblox-games/'+game+'/tools/devloop/studio-scripts/'+script,'utf8'));
+    assert.equal(steps.length,185);
+    assert.equal(steps.filter(step=>step.type==='click_from_luau').length,30);
+    const labels=steps.filter(step=>step.type==='luau'&&step.code.includes("return 'TEXTS: '"));
+    assert.equal(labels.length,30);
+    for(const step of labels){
+      assert.match(step.code,/if #out>=10 then break end/);
+      assert.doesNotMatch(step.code,/if ok and #out<10 then/);
+    }
+  }
+});
