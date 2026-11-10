@@ -618,7 +618,9 @@ jobs:
             echo "ROBLOX_NATIVE_BLENDER=REUSED_SYSTEM"
             exit 0
           fi
-          if [ -x "$executable" ] && [ -f "$runtime/.official-sha256" ] && [ "$(cat "$runtime/.official-sha256")" = "$BLENDER_SHA256" ]; then
+          if [ -x "$executable" ] && [ -f "$runtime/.official-sha256" ] \
+            && [ "$(cat "$runtime/.official-sha256")" = "$BLENDER_SHA256" ] \
+            && "$executable" --background --disable-autoexec --python-expr 'import bpy; assert bpy.app.version[:3] == (4, 5, 15); assert bpy.ops.export_scene.gltf.get_rna_type()' >/dev/null 2>&1; then
             echo "ROBLOX_NATIVE_BLENDER=RESTORED_CACHE"
           else
             # [공식 배포물] SHA 검증 실패/캐시 누락이면 원본을 재수신한다. 우회 메시 금지.
