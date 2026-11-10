@@ -182,3 +182,57 @@ test('active Magic Forest server-approved combat motion remains visual only',()=
   assert.match(forest,/local constraint=joint:IsA\("AnimationConstraint"\)/);
   assert.doesNotMatch(forest,/Humanoid:TakeDamage\(/);
 });
+
+
+test('Vibe maps actual BUILD_UP domain gaps to the existing Roblox owner without inventing a runtime PASS',()=>fixture(({dir,game,base})=>{
+  fs.writeFileSync(path.join(base,'client','UI.client.luau'),
+    'local UserInputService=game:GetService("UserInputService")\\nlocal function openMenu() end');
+  const plan=buildRobloxHolisticQualityPlan({repoRoot:dir,gameId:game,
+    qualityGaps:[{domain:'MOBILE_UX',state:'GAP'},{domain:'MENU_FLOW',state:'GAP'}]});
+  assert.equal(plan.families.find(row=>row.id==='MOBILE_TOUCH').priority,'P1');
+  assert.equal(plan.families.find(row=>row.id==='UI_HUD_MENUS').priority,'P1');
+  assert.ok(plan.families.find(row=>row.id==='UI_HUD_MENUS').gapDomains.includes('MENU_FLOW'));
+  assert.equal(plan.autonomousWorkUnit.id,'UI_HUD_MENUS');
+  assert.equal(plan.autonomousWorkUnit.mode,'REVIEW_DESIGN_SOURCE_GAP_THEN_REPAIR');
+  assert.deepEqual(plan.autonomousWorkUnit.sourceFiles,['roblox-games/'+game+'/client/UI.client.luau']);
+  assert.equal(plan.autonomousWorkUnit.verifiedRuntime,false);
+  assert.equal(plan.actualSourceDefects,0);
+  assert.equal(plan.qualityComplete,false);
+  const text=robloxHolisticQualityPromptLines(plan).join('\\n');
+  assert.match(text,/AUTONOMOUS_QUALITY_WORK_UNIT/);
+  assert.match(text,/sourceFiles/);
+  assert.match(text,/Never infer PASS from static clues/);
+  assert.match(robloxHolisticQualityPromptLines(plan,10,true).join('\\n'),/AUTONOMOUS_QUALITY_WORK_UNIT/);
+}));
+
+test('Vibe selects observed missing asset owner before heuristic quality ideas and fingerprints changed binary assets',()=>fixture(({dir,game,base})=>{
+  const source=path.join(base,'client','UI.client.luau');
+  const glb=path.join(base,'models','bad.glb');
+  fs.writeFileSync(source,'local icon="assets/roblox/common-icons-v1/not-found.png"');
+  fs.writeFileSync(glb,Buffer.from('INVALID_GLTF_A'));
+  const initial=buildRobloxHolisticQualityPlan({repoRoot:dir,gameId:game,
+    sourceObservation:{sourceTreeFingerprint:'wrong-platform-fingerprint',topFiles:[
+      {file:'roblox-games/other-game/server/NotMine.server.luau'}]},
+    qualityGaps:[{domain:'MENU_FLOW',state:'GAP'}]});
+  assert.equal(initial.autonomousWorkUnit.priority,'P0');
+  assert.equal(initial.autonomousWorkUnit.mode,'REPAIR_CONFIRMED_STATIC_DEFECT');
+  assert.equal(initial.autonomousWorkUnit.verifiedRuntime,false);
+  assert.notEqual(initial.sourceTreeFingerprint,'wrong-platform-fingerprint');
+  assert.ok(initial.priorityWork.some(row=>row.priority==='P0'));
+  assert.equal(initial.families.some(row=>row.sourceFiles.some(file=>file.includes('other-game'))),false);
+  fs.writeFileSync(glb,Buffer.from('INVALID_GLTF_B'));
+  const after=buildRobloxHolisticQualityPlan({repoRoot:dir,gameId:game,previousPlan:initial});
+  assert.equal(after.sourceChangedSincePrevious,true);
+  assert.notEqual(initial.sourceTreeFingerprint,after.sourceTreeFingerprint);
+}));
+
+test('Vibe missing shared asset keeps exact game source owner for direct repair',()=>fixture(({dir,game,base})=>{
+  fs.writeFileSync(path.join(base,'client','Inventory.client.luau'),
+    'local icon="assets/roblox/common-icons-v1/not-found.png"');
+  const plan=buildRobloxHolisticQualityPlan({repoRoot:dir,gameId:game});
+  assert.equal(plan.autonomousWorkUnit.id,'SOURCE_ASSET_REFERENCE_MISSING');
+  assert.equal(plan.autonomousWorkUnit.mode,'REPAIR_CONFIRMED_STATIC_DEFECT');
+  assert.deepEqual(plan.autonomousWorkUnit.sourceFiles,['roblox-games/'+game+'/client/Inventory.client.luau']);
+  assert.equal(plan.autonomousWorkUnit.ownerDiscoveryRequired,false);
+  assert.equal(plan.autonomousWorkUnit.verifiedRuntime,false);
+}));
