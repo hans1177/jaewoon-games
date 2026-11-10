@@ -807,6 +807,70 @@ test('Roblox coding explorer prioritizes exact required ModuleScripts among deco
   fs.rmSync(cwd,{recursive:true,force:true});
 });
 
+test('Roblox coding engine follows three actual module hops and prioritizes source code over decoys',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/module-depth');
+  const original=[
+    'local Service = require(script.Parent.Parent.shared.Service)',
+    'local function openInventory() return Service.Get() end'
+  ].join('\n')+'\n';
+  write(path.join(root,'client/Inventory.client.luau'),original);
+  write(path.join(root,'shared/Service.luau'),
+    'local Provider=require(script.Parent.internal.Provider); return Provider\n');
+  write(path.join(root,'shared/internal/Provider.luau'),
+    'local Reader=require(script.Parent.data.Reader); return Reader\n');
+  write(path.join(root,'shared/internal/data/Reader.luau'),
+    'local Reader={}; function Reader.Get() return true end; return Reader\n');
+  for(let i=0;i<55;i++)write(path.join(root,'shared/Noise'+String(i).padStart(2,'0')+'.luau'),
+    'local M={}; function M.Noop() return 0 end; return M\n');
+  const order={run:true,taskId:'module-deep-coding',gameId:'module-depth',target:'roblox',
+    goal:'repair openInventory and follow existing source owner call chain',
+    source:{root:'roblox-games/module-depth',
+      responsibleFiles:['roblox-games/module-depth/client/Inventory.client.luau'],ignoredPaths:[]},
+    workPackage:{id:'module-depth',sharedContext:{diagnosticEvidence:[]}}};
+  const out=exploreVibe2WorkOrder({cwd,order});
+  assert.deepEqual(out.robloxModuleGraph.modules.map(row=>[row.path,row.depth]),[
+    ['shared/Service.luau',1],
+    ['shared/internal/Provider.luau',2],
+    ['shared/internal/data/Reader.luau',3]
+  ]);
+  assert.ok(out.contextFiles.includes('shared/internal/data/Reader.luau'));
+  assert.equal(out.robloxModuleGraph.sourceWrite,false);
+  assert.equal(out.robloxModuleGraph.runtimeVerified,false);
+  assert.deepEqual(out.editContract.allowedResponsibleFiles,['client/Inventory.client.luau']);
+  assert.match(explorationGuidance(out),/Roblox 기존 모듈 연결=/);
+  assert.equal(fs.readFileSync(path.join(root,'client/Inventory.client.luau'),'utf8'),original);
+  fs.rmSync(cwd,{recursive:true,force:true});
+});
+
+test('Roblox coding engine does not guess ambiguous sibling ModuleScripts or reuse stale module evidence',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/ambiguous-module');
+  write(path.join(root,'client/Start.client.luau'),
+    'local Choice=require(script.Parent.Parent.shared.Choice); return Choice\n');
+  write(path.join(root,'shared/Choice.luau'),'return {chosen = 1}\n');
+  write(path.join(root,'shared/Choice/init.luau'),'return {chosen = 2}\n');
+  const order={run:true,taskId:'module-ambiguous',gameId:'ambiguous-module',target:'roblox',
+    goal:'inspect ambiguous existing module reference',
+    source:{root:'roblox-games/ambiguous-module',
+      responsibleFiles:['roblox-games/ambiguous-module/client/Start.client.luau'],ignoredPaths:[]},
+    workPackage:{id:'module-ambiguous',sharedContext:{diagnosticEvidence:[]}}};
+  const out=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(out.robloxModuleGraph.modules.length,0);
+  assert.equal(out.robloxModuleGraph.unresolved[0]?.reason,'AMBIGUOUS');
+  assert.deepEqual(out.editContract.allowedResponsibleFiles,['client/Start.client.luau']);
+  const handoff=path.join(cwd,'.vibe2/exploration.json'),old=process.env.VIBE2_EXPLORATION_FILE;
+  process.env.VIBE2_EXPLORATION_FILE=handoff;
+  try{
+    write(handoff,JSON.stringify({...out,robloxModuleGraph:undefined}));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,false);
+    write(handoff,JSON.stringify(out));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,true);
+  }finally{
+    if(old===undefined)delete process.env.VIBE2_EXPLORATION_FILE;
+    else process.env.VIBE2_EXPLORATION_FILE=old;
+    fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
 test('Roblox module reverse dependencies find importers with alias calls and preserve reservation',()=>{
   const cwd=tempRoot(),root=path.join(cwd,'roblox-games/module-reverse');
   const modulePath='shared/Inventory.luau';
