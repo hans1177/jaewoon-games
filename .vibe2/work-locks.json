@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-36kfqx",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-studio-evolution-roblox-usability-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "roblox-games/village-dungeons/client/Game.client.luau",
+        "roblox-games/village-dungeons/shared/GameConfig.luau",
+        "roblox-games/village-dungeons/server/Game.server.luau",
+        "roblox-games/village-dungeons/client/MaterialPresentation.client.luau",
+        "roblox-games/village-dungeons/shared/RobloxCommonUI.luau",
+        "roblox-games/village-dungeons/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "ef7a5b530f4b29b81177df562d2bc9032f2e5882",
+      "runId": "42791050398",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-10T10:28:20.293Z",
+      "expiresAt": "2026-11-10T11:13:20.293Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-studio-evolution-roblox-usability-v1"
+      ]
+    }
+  ]
 }
