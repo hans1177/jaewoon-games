@@ -1557,3 +1557,22 @@ test('legacy module-only source cannot be promoted without current native static
 
 // [복합장르] 설계 A 또는 B 장르 하나만 일치하면 인정하되, 실제 소스·모드 검증은 유지한다.
 // [삭제된 게임 QA 정리] 삭제된 소스 파일을 현재 활성 게임의 검증 대상으로 취급하지 않는다.
+
+
+// [마력숲 정식 메시 제작] Blender 실행 파일이 없는 GitHub runner에서
+// 승인된 .blend 원본의 GLB 제작이 시작부터 막히지 않도록 필수 설치 단계 검사.
+test('native fantasy village repair provisions the actual Blender GLB exporter before authoring',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const provision=workflow.indexOf('- name: Install official Blender exporter for approved village meshes');
+  const source=workflow.indexOf('python3 tools/baeksu-war-author-meshes.py -- "$root/native" --game-id=fantasy-survival');
+  assert(provision>=0&&source>provision,'Blender exporter must be prepared before native asset conversion');
+  const section=workflow.slice(provision,source);
+  assert.match(section,/if: matrix\.nativeCreatureRepair == true/);
+  assert.match(section,/sudo apt-get install -y --no-install-recommends blender/);
+  assert.match(section,/blender --background --disable-autoexec --python-exit-code 5/);
+  assert.match(section,/BLENDER_GLTF_EXPORTER_REQUIRED/);
+  assert.match(section,/ROBLOX_NATIVE_CC0_BLENDER_EXPORTER=READY/);
+  assert.match(section,/if \[ "\$NATIVE_CREATURE_REPAIR" = true \]; then/);
+  assert.match(section,/python3 tools\/baeksu-war-author-meshes\.py/);
+  assert.doesNotMatch(section,/fake|placeholder|fallback.?mesh|random.?part|create.?part/i);
+});
