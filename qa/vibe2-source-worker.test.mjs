@@ -10816,3 +10816,29 @@ test('native composed critic verifies camera lifecycle and input effects as sepa
   assert.equal(candidate.deterministicSelection.scopeComplete,true);
   for(const [index,file] of [button,camera].entries())assert.equal(fs.readFileSync(path.join(root,file),'utf8'),orig[index]);
 });
+
+
+test('causal critic preserves original ContextActionService callback when native touch is enabled',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-touch-causal-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  const file='client/Actions.client.luau';
+  const original=[
+    'local ContextActionService = game:GetService("ContextActionService")',
+    'local function onJump(action,state,input)',
+    ' return Enum.ContextActionResult.Pass',
+    'end',
+    'ContextActionService:BindAction("Jump",onJump,false,Enum.KeyCode.Space)',''
+  ].join('\n');
+  fs.writeFileSync(path.join(root,file),original);
+  const candidate=deterministicRobloxNativeRepairCandidate({
+    order:{target:'roblox',goal:'모바일 터치 버튼 조작 연결'},
+    sourceRoot:root,responsibleFiles:[file],candidateValidator:()=>({pass:true})
+  });
+  assert.equal(candidate.deterministicRobloxNativeRepair,'EXISTING_ACTION_NATIVE_TOUCH_BUTTONS');
+  assert.equal(candidate.causalReview.pass,true);
+  assert.deepEqual(candidate.causalReview.expectations.map(row=>[row.system,row.sourceEffectObserved]),
+    [['INPUT_BUTTON',true]]);
+  assert.equal(candidate.edits[0].replace,'ContextActionService:BindAction("Jump",onJump, true,Enum.KeyCode.Space)');
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),original);
+});

@@ -3164,7 +3164,15 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           raw.deterministicRobloxNativeRepair,raw.semanticGrounding?.originalRecipe,
           ...(raw.semanticGrounding?.recipes||[])
         ].map(clean)).includes('STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION');
-        observed=studioBackdrop
+        const touchAction=unique([
+          raw.deterministicRobloxNativeRepair,raw.semanticGrounding?.originalRecipe,
+          ...(raw.semanticGrounding?.recipes||[])
+        ].map(clean)).includes('EXISTING_ACTION_NATIVE_TOUCH_BUTTONS');
+        observed=touchAction
+          ?changes.some(row=>row.before.includes(':BindAction(')
+            &&row.after===row.before.replace(/,\s*false\s*,/,', true,')
+            &&row.after!==row.before)
+          :studioBackdrop
           ?changes.some(row=>row.before.includes('shade=Instance.new("TextButton")')
             &&row.after.includes('shade=Instance.new("Frame")')
             &&row.after.includes('OutsideActionsMenuClose'))
