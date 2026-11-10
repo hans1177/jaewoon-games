@@ -1,27 +1,27 @@
 {
   "version": 2,
-  "directiveId": "star-frontier-build-up-g1-bfb7527ca870",
-  "directiveFingerprint": "bfb7527ca87060649df6af78f3def28a28271b6c5a2663498ba40578f4480f56",
-  "previousDirectiveFingerprint": null,
-  "forbiddenRepeatFingerprint": null,
+  "directiveId": "star-frontier-build-up-g2-75d284070934",
+  "directiveFingerprint": "75d284070934f2e2ebc927d4c06a6d5ee7acccb28e17309a7f8fd514a72c005c",
+  "previousDirectiveFingerprint": "bfb7527ca87060649df6af78f3def28a28271b6c5a2663498ba40578f4480f56",
+  "forbiddenRepeatFingerprint": "bfb7527ca87060649df6af78f3def28a28271b6c5a2663498ba40578f4480f56",
   "gameId": "star-frontier",
   "gameName": "별길 개척자",
-  "generation": 1,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-  "previousDirectiveOutcome": null,
+  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+  "previousDirectiveOutcome": "cancelled",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/star-frontier",
-  "sourceTreeFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+  "sourceTreeFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
   "designFingerprint": "f7083eab25514f3062076eb6499cdb94e202708d64d8246b5f0741cc7e81d1a3",
   "designSourceBuildUp": {
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "f7083eab25514f3062076eb6499cdb94e202708d64d8246b5f0741cc7e81d1a3",
-    "previousDesignFingerprint": null,
-    "sameApprovedDesign": false,
+    "previousDesignFingerprint": "f7083eab25514f3062076eb6499cdb94e202708d64d8246b5f0741cc7e81d1a3",
+    "sameApprovedDesign": true,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -337,7 +337,7 @@
           "공간 상태 변환의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+        "sourceTreeFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "f7083eab25514f3062076eb6499cdb94e202708d64d8246b5f0741cc7e81d1a3",
-    "sourceTreeFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+    "sourceTreeFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -958,7 +958,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+    "sourceTreeFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -5023,7 +5023,13 @@
     ]
   },
   "previousVersionDelta": {
-    "state": "NO_PREVIOUS_DIRECTIVE"
+    "previousGoal": "별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
+    "previousFocus": "USABILITY",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+    "currentSourceTreeFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
+    "sourceChanged": true,
+    "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
@@ -6148,10 +6154,10 @@
         "gameId": "star-frontier",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/star-frontier/server/Game.server.luau",
-          "roblox-games/star-frontier/shared/GameConfig.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonUI.luau"
+          "roblox-games/star-frontier/client/Game.client.luau",
+          "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
+          "roblox-games/star-frontier/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6163,10 +6169,10 @@
         "gameId": "star-frontier",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/star-frontier/server/Game.server.luau",
-          "roblox-games/star-frontier/shared/GameConfig.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonUI.luau"
+          "roblox-games/star-frontier/client/Game.client.luau",
+          "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
+          "roblox-games/star-frontier/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6178,10 +6184,10 @@
         "gameId": "star-frontier",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/star-frontier/server/Game.server.luau",
-          "roblox-games/star-frontier/shared/GameConfig.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonUI.luau"
+          "roblox-games/star-frontier/client/Game.client.luau",
+          "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
+          "roblox-games/star-frontier/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6193,10 +6199,10 @@
         "gameId": "star-frontier",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/star-frontier/server/Game.server.luau",
-          "roblox-games/star-frontier/shared/GameConfig.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonUI.luau"
+          "roblox-games/star-frontier/client/Game.client.luau",
+          "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
+          "roblox-games/star-frontier/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6208,10 +6214,10 @@
         "gameId": "star-frontier",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/star-frontier/server/Game.server.luau",
-          "roblox-games/star-frontier/shared/GameConfig.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
-          "roblox-games/star-frontier/shared/RobloxCommonUI.luau"
+          "roblox-games/star-frontier/client/Game.client.luau",
+          "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
+          "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
+          "roblox-games/star-frontier/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6267,7 +6273,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 423665,
+        "sourceBytes": 423819,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6300,8 +6306,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6311,9 +6317,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -6349,7 +6356,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 76,
+        "score": 218,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6466,7 +6473,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "star-frontier",
     "sourceRoot": "roblox-games/star-frontier",
-    "sourceTreeFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+    "sourceTreeFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -6476,7 +6483,7 @@
       "assetReferences": 0,
       "missingReferences": 0
     },
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "sourceOnly": true,
     "qualityComplete": false,
     "evidenceScope": {
@@ -10150,12 +10157,12 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 1,
-    "previousGeneration": 0,
+    "generation": 2,
+    "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
-    "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
+    "sourceFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
+    "priorSourceFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -10173,7 +10180,7 @@
     "version": 1,
     "gameId": "star-frontier",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+    "sourceTreeFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -11014,9 +11021,9 @@
       "gameId": "star-frontier",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 1,
-        "actorClass": "BOSS",
-        "sourceOwnerFile": "roblox-games/star-frontier/launch-mvp.json",
+        "generation": 2,
+        "actorClass": "CREATURE",
+        "sourceOwnerFile": "roblox-games/star-frontier/default.project.json",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
@@ -11029,7 +11036,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "star-frontier",
-          "actorClass": "BOSS",
+          "actorClass": "CREATURE",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -11254,7 +11261,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+      "sourceTreeFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11278,7 +11285,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+      "sourceTreeFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
       "sourceFiles": [
         {
           "file": "roblox-games/star-frontier/server/Game.server.luau",
@@ -11362,7 +11369,7 @@
     "gameId": "star-frontier",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+    "sourceTreeFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11692,12 +11699,12 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/star-frontier/client/Game.client.luau",
+      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
+      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
       "roblox-games/star-frontier/server/Game.server.luau",
       "roblox-games/star-frontier/shared/GameConfig.luau",
       "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
-      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
-      "roblox-games/star-frontier/client/Game.client.luau",
-      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
       "roblox-games/star-frontier/default.project.json",
       "roblox-games/star-frontier/launch-mvp.json"
     ],
@@ -11921,12 +11928,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/star-frontier/client/Game.client.luau",
+      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
+      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
       "roblox-games/star-frontier/server/Game.server.luau",
       "roblox-games/star-frontier/shared/GameConfig.luau",
       "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
-      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
-      "roblox-games/star-frontier/client/Game.client.luau",
-      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
       "roblox-games/star-frontier/default.project.json",
       "roblox-games/star-frontier/launch-mvp.json"
     ],
@@ -12125,12 +12132,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/star-frontier/client/Game.client.luau",
+      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
+      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
       "roblox-games/star-frontier/server/Game.server.luau",
       "roblox-games/star-frontier/shared/GameConfig.luau",
       "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
-      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
-      "roblox-games/star-frontier/client/Game.client.luau",
-      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
       "roblox-games/star-frontier/default.project.json",
       "roblox-games/star-frontier/launch-mvp.json"
     ],
@@ -12356,12 +12363,12 @@
     "gameId": "star-frontier",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/star-frontier/client/Game.client.luau",
+      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
+      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
       "roblox-games/star-frontier/server/Game.server.luau",
       "roblox-games/star-frontier/shared/GameConfig.luau",
       "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
-      "roblox-games/star-frontier/shared/RobloxCommonUI.luau",
-      "roblox-games/star-frontier/client/Game.client.luau",
-      "roblox-games/star-frontier/client/MaterialPresentation.client.luau",
       "roblox-games/star-frontier/default.project.json",
       "roblox-games/star-frontier/launch-mvp.json"
     ],
@@ -12432,12 +12439,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "별길 개척자. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 별길 개척자에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "3f95a7a9dbc93312f6b7fdb63e698aa7e56f1ea0508760a09e93568f2e8ab46b",
+      "sourceTreeFingerprint": "dcc8057c59983c5ed3541fd0dd9e13d47e0b5108898cf837d232fbb6fa6d5c80",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12452,8 +12459,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial USABILITY build-up has no previous generation effect to compare"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -12499,12 +12506,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 2,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-    "sourceChangedSincePrevious": false,
+    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -12561,5 +12568,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-10T01:49:47.980Z"
+  "generatedAt": "2026-11-10T07:15:04.975Z"
 }

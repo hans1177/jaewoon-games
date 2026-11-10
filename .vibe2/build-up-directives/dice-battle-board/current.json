@@ -1,27 +1,27 @@
 {
   "version": 2,
-  "directiveId": "dice-battle-board-build-up-g1-6796dba32643",
-  "directiveFingerprint": "6796dba32643a9ab6639df6f97111e13338da09592ef311bc917767dac17bf84",
-  "previousDirectiveFingerprint": null,
-  "forbiddenRepeatFingerprint": null,
+  "directiveId": "dice-battle-board-build-up-g2-ee9dcd449f49",
+  "directiveFingerprint": "ee9dcd449f49dd489ecfb9763ce074ea69bf83a8b039e2b38ee5a10a39582f45",
+  "previousDirectiveFingerprint": "6796dba32643a9ab6639df6f97111e13338da09592ef311bc917767dac17bf84",
+  "forbiddenRepeatFingerprint": "6796dba32643a9ab6639df6f97111e13338da09592ef311bc917767dac17bf84",
   "gameId": "dice-battle-board",
   "gameName": "주사위 전투 보드",
-  "generation": 1,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-  "previousDirectiveOutcome": null,
+  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+  "previousDirectiveOutcome": "cancelled",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/dice-battle-board",
-  "sourceTreeFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+  "sourceTreeFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
   "designFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
   "designSourceBuildUp": {
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
-    "previousDesignFingerprint": null,
-    "sameApprovedDesign": false,
+    "previousDesignFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
+    "sameApprovedDesign": true,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -337,7 +337,7 @@
           "공간 상태 변환의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+        "sourceTreeFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
-    "sourceTreeFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+    "sourceTreeFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -958,7 +958,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+    "sourceTreeFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -5020,7 +5020,13 @@
     ]
   },
   "previousVersionDelta": {
-    "state": "NO_PREVIOUS_DIRECTIVE"
+    "previousGoal": "주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
+    "previousFocus": "USABILITY",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+    "currentSourceTreeFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
+    "sourceChanged": true,
+    "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
@@ -6145,10 +6151,10 @@
         "gameId": "dice-battle-board",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/dice-battle-board/server/Game.server.luau",
-          "roblox-games/dice-battle-board/shared/GameConfig.luau",
-          "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
-          "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau"
+          "roblox-games/dice-battle-board/client/Game.client.luau",
+          "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
+          "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
+          "roblox-games/dice-battle-board/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6160,10 +6166,10 @@
         "gameId": "dice-battle-board",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/dice-battle-board/server/Game.server.luau",
-          "roblox-games/dice-battle-board/shared/GameConfig.luau",
-          "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
-          "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau"
+          "roblox-games/dice-battle-board/client/Game.client.luau",
+          "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
+          "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
+          "roblox-games/dice-battle-board/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6175,10 +6181,10 @@
         "gameId": "dice-battle-board",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/dice-battle-board/server/Game.server.luau",
-          "roblox-games/dice-battle-board/shared/GameConfig.luau",
-          "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
-          "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau"
+          "roblox-games/dice-battle-board/client/Game.client.luau",
+          "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
+          "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
+          "roblox-games/dice-battle-board/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6190,10 +6196,10 @@
         "gameId": "dice-battle-board",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/dice-battle-board/server/Game.server.luau",
-          "roblox-games/dice-battle-board/shared/GameConfig.luau",
-          "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
-          "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau"
+          "roblox-games/dice-battle-board/client/Game.client.luau",
+          "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
+          "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
+          "roblox-games/dice-battle-board/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6205,10 +6211,10 @@
         "gameId": "dice-battle-board",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/dice-battle-board/server/Game.server.luau",
-          "roblox-games/dice-battle-board/shared/GameConfig.luau",
-          "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
-          "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau"
+          "roblox-games/dice-battle-board/client/Game.client.luau",
+          "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
+          "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
+          "roblox-games/dice-battle-board/server/Game.server.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6264,7 +6270,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 435653,
+        "sourceBytes": 435807,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6297,8 +6303,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6308,9 +6314,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -6346,7 +6353,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 76,
+        "score": 218,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6463,7 +6470,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "dice-battle-board",
     "sourceRoot": "roblox-games/dice-battle-board",
-    "sourceTreeFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+    "sourceTreeFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -6473,7 +6480,7 @@
       "assetReferences": 0,
       "missingReferences": 0
     },
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "sourceOnly": true,
     "qualityComplete": false,
     "evidenceScope": {
@@ -10147,12 +10154,12 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 1,
-    "previousGeneration": 0,
+    "generation": 2,
+    "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
-    "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
+    "sourceFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
+    "priorSourceFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -10170,7 +10177,7 @@
     "version": 1,
     "gameId": "dice-battle-board",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+    "sourceTreeFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -11008,9 +11015,9 @@
       "gameId": "dice-battle-board",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 1,
-        "actorClass": "BOSS",
-        "sourceOwnerFile": "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
+        "generation": 2,
+        "actorClass": "CREATURE",
+        "sourceOwnerFile": "roblox-games/dice-battle-board/default.project.json",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
@@ -11023,7 +11030,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "dice-battle-board",
-          "actorClass": "BOSS",
+          "actorClass": "CREATURE",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -11246,7 +11253,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+      "sourceTreeFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11270,7 +11277,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+      "sourceTreeFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -11343,7 +11350,7 @@
     "gameId": "dice-battle-board",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+    "sourceTreeFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11673,12 +11680,12 @@
       }
     ],
     "responsibleSourceCandidates": [
+      "roblox-games/dice-battle-board/client/Game.client.luau",
+      "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
+      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/server/Game.server.luau",
       "roblox-games/dice-battle-board/shared/GameConfig.luau",
       "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
-      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
-      "roblox-games/dice-battle-board/client/Game.client.luau",
-      "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
       "roblox-games/dice-battle-board/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -11901,12 +11908,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/dice-battle-board/client/Game.client.luau",
+      "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
+      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/server/Game.server.luau",
       "roblox-games/dice-battle-board/shared/GameConfig.luau",
       "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
-      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
-      "roblox-games/dice-battle-board/client/Game.client.luau",
-      "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
       "roblox-games/dice-battle-board/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -12104,12 +12111,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/dice-battle-board/client/Game.client.luau",
+      "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
+      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/server/Game.server.luau",
       "roblox-games/dice-battle-board/shared/GameConfig.luau",
       "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
-      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
-      "roblox-games/dice-battle-board/client/Game.client.luau",
-      "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
       "roblox-games/dice-battle-board/default.project.json"
     ],
     "sourceAnchors": [
@@ -12277,12 +12284,12 @@
     "gameId": "dice-battle-board",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/dice-battle-board/client/Game.client.luau",
+      "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
+      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/server/Game.server.luau",
       "roblox-games/dice-battle-board/shared/GameConfig.luau",
       "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
-      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
-      "roblox-games/dice-battle-board/client/Game.client.luau",
-      "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau",
       "roblox-games/dice-battle-board/default.project.json"
     ],
     "impact": {
@@ -12352,12 +12359,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "82876f2dd7845c0e4073f8fb6b44e56ddce0b5d822df79c60301374d18cc61eb",
+      "sourceTreeFingerprint": "2a9527958340fc3be17471f3a4d13909e869220dd1316fea48b34d30a0104254",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12372,8 +12379,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial USABILITY build-up has no previous generation effect to compare"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -12419,12 +12426,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 2,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-    "sourceChangedSincePrevious": false,
+    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -12481,5 +12488,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-11-10T01:49:18.062Z"
+  "generatedAt": "2026-11-10T07:15:00.751Z"
 }
