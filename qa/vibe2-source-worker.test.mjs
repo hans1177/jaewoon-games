@@ -10758,3 +10758,52 @@ test('complex native repair refuses incomplete requested systems with exact miss
   });
   assert.equal(fs.readFileSync(path.join(root,file),'utf8'),before);
 });
+
+
+// [Vibe5.9 인과 비교] 선언된 수리 레시피가 실제 소스 변화로 뒷받침되는지 확인한다.
+test('native candidate critic records actual button transition without claiming Studio runtime success',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-causal-button-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  const file='client/Input.client.luau';
+  const original='local button=Instance.new("TextButton")\nbutton.MouseButton1Click:Connect(function() end)\n';
+  fs.writeFileSync(path.join(root,file),original);
+  const candidate=deterministicRobloxNativeRepairCandidate({
+    order:{target:'roblox',goal:'모바일 버튼 조작 복구'},
+    sourceRoot:root,responsibleFiles:[file],candidateValidator:()=>({pass:true})
+  });
+  assert.equal(candidate.deterministicRobloxNativeRepair,'GUI_BUTTON_NATIVE_ACTIVATED');
+  assert.equal(candidate.causalReview.pass,true);
+  assert.equal(candidate.causalReview.observation,'STATIC_SOURCE_ONLY');
+  assert.deepEqual(candidate.causalReview.expectations.map(row=>[row.system,row.sourceEffectObserved]),
+    [['INPUT_BUTTON',true]]);
+  assert.equal(candidate.causalReview.actualRuntimeVerified,false);
+  assert.equal(candidate.causalReview.canonicalQaStillRequired,true);
+  assert.equal(candidate.deterministicSelection.selectedCausalReview.pass,true);
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),original);
+});
+
+test('native composed critic verifies camera lifecycle and input effects as separate predictions',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-causal-composed-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  const button='client/Input.client.luau',camera='client/Camera.client.luau';
+  const orig=[
+    'local btn=Instance.new("TextButton")\nbtn.MouseButton1Click:Connect(function() end)\n',
+    'local currentCamera = workspace.CurrentCamera\n'
+  ];
+  fs.writeFileSync(path.join(root,button),orig[0]);
+  fs.writeFileSync(path.join(root,camera),orig[1]);
+  const candidate=deterministicRobloxNativeRepairCandidate({
+    order:{target:'roblox',goal:'복합 버튼 카메라 동시에 복구'},
+    sourceRoot:root,responsibleFiles:[button,camera],candidateValidator:()=>({pass:true})
+  });
+  assert.equal(candidate.deterministicRobloxNativeRepair,'COMPOSED_SOURCE_GRAPH');
+  assert.equal(candidate.causalReview.pass,true);
+  assert.deepEqual(candidate.causalReview.expectations.map(row=>[row.system,row.sourceEffectObserved]),
+    [['CAMERA',true],['INPUT_BUTTON',true]]);
+  assert.deepEqual(candidate.causalReview.changedFiles.sort(),[button,camera].sort());
+  assert.equal(candidate.causalReview.negativeEffectsNotProven.includes('SAVE_LOAD_UNCHANGED_AT_RUNTIME'),true);
+  assert.equal(candidate.deterministicSelection.scopeComplete,true);
+  for(const [index,file] of [button,camera].entries())assert.equal(fs.readFileSync(path.join(root,file),'utf8'),orig[index]);
+});
