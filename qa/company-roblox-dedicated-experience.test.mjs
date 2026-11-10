@@ -480,3 +480,22 @@ test('1980 new experience publisher checks exact existing owner game target',()=
   assert.deepEqual([forest.gameId,forest.universeId,forest.placeId],['fantasy-survival','10775310122','70742682772890']);
   assert.deepEqual([mare.gameId,mare.universeId,mare.placeId],['mare-essentia','10775310508','73607605986189']);
 });
+
+
+// [새 Image 45개 공식 등록 후 게시] Actions 내부 등록 커밋으로 자동 배포가 발화하지 않은 경우도
+// 기존 배포 워크플로 업데이트로 게시 가능하며, 미승인 Decal ID를 다시 게시하지 않는다.
+test('Mare publisher rejects stale GUI Decal and ungranted registry assets before Rojo publishing',()=>{
+  const publisher=fs.readFileSync('.github/workflows/owner-mare-essentia-direct-publish.yml','utf8');
+  assert.match(publisher,/MARE_ASSET_UNIVERSE_MISMATCH/);
+  assert.match(publisher,/MARE_ASSET_REGISTRY_LUAU_KEYS_MISMATCH/);
+  assert.match(publisher,/MARE_ASSET_ID_OR_UNIVERSE_GRANT_UNVERIFIED/);
+  assert.match(publisher,/MARE_GUI_ASSET_NOT_IMAGE/);
+  assert.match(publisher,/MARE_PUBLISH_VERIFIED_REGISTERED_ASSETS=/);
+  assert.ok(publisher.indexOf('MARE_GUI_ASSET_NOT_IMAGE') < publisher.indexOf('- name: Build Mare Essentia place with pinned Rojo'));
+  assert.match(publisher,/'usePermissionGranted'|"usePermissionGranted"/);
+  const assets=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
+  const imageRows=Object.entries(assets).filter(([key])=>/^(Goods|Menu|Portraits)\//.test(key));
+  assert.equal(imageRows.length,68);
+  assert.ok(imageRows.every(([,row])=>row.assetType==='Image'&&row.usePermissionGranted===true));
+  assert.equal(Object.keys(assets).length,456);
+});
