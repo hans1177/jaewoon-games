@@ -591,6 +591,63 @@ jobs:
           git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-recombination-memory.json" > /tmp/vibe3-recombination-memory.json
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/tmp/vibe3-task-playbooks.json'));const r=JSON.parse(fs.readFileSync('/tmp/vibe3-recombination-memory.json'));if(!p.taskTypes?.roblox||!r.recipes?.length)process.exit(2);console.log('ROBLOX_VIBE3_LEARNING_MEMORY=READY');console.log('ROBLOX_VIBE3_RECIPE_COUNT='+r.recipes.length)"
 
+      # [CC0 원본 에셋 변환] 등록된 완성 3D 모델이 필요할 때만 공식 Blender를 복원한다.
+      # 모든 게임의 매 실행마다 설치하지 않고, 버전/공식 SHA 고정 캐시를 사용한다.
+      - name: Restore pinned Blender for native Roblox assets
+        id: native-blender-cache
+        if: matrix.nativeCreatureRepair == true
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-blender-4.5.15
+          key: native-blender-4.5.15-linux-x64-0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e-v1
+
+      - name: Verify or prepare official Blender for native Roblox assets
+        id: native-blender
+        if: matrix.nativeCreatureRepair == true
+        shell: bash
+        env:
+          BLENDER_SHA256: 0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e
+        run: |
+          set -euo pipefail
+          runtime="$RUNNER_TEMP/vibe2-blender-4.5.15"
+          executable="$runtime/blender-4.5.15-linux-x64/blender"
+          system_binary="$(command -v blender || true)"
+          # [재사용] 검증된 동일 버전의 시스템 바이너리가 있으면 캐시 다운로드 불필요.
+          if [ -n "$system_binary" ] && "$system_binary" --version 2>/dev/null | grep -qF 'Blender 4.5.15'; then
+            "$system_binary" --background --disable-autoexec --python-expr 'import bpy; assert bpy.app.version[:3] == (4, 5, 15); assert bpy.ops.export_scene.gltf.get_rna_type()'
+            echo "ROBLOX_NATIVE_BLENDER=REUSED_SYSTEM"
+            exit 0
+          fi
+          if [ -x "$executable" ] && [ -f "$runtime/.official-sha256" ] && [ "$(cat "$runtime/.official-sha256")" = "$BLENDER_SHA256" ]; then
+            echo "ROBLOX_NATIVE_BLENDER=RESTORED_CACHE"
+          else
+            # [공식 배포물] SHA 검증 실패/캐시 누락이면 원본을 재수신한다. 우회 메시 금지.
+            rm -rf -- "$runtime"
+            mkdir -p "$runtime"
+            archive="$RUNNER_TEMP/blender-4.5.15-linux-x64.tar.xz"
+            curl --fail --location --retry 3 --connect-timeout 20 --max-time 300 \
+              --output "$archive" \
+              'https://download.blender.org/release/Blender4.5/blender-4.5.15-linux-x64.tar.xz'
+            printf '%s  %s\n' "$BLENDER_SHA256" "$archive" | sha256sum --check --status
+            tar --no-same-owner -xJf "$archive" -C "$runtime"
+            rm -f -- "$archive"
+            [ -x "$executable" ] || { echo 'ROBLOX_NATIVE_BLENDER_BINARY_MISSING' >&2; exit 1; }
+            printf '%s\n' "$BLENDER_SHA256" > "$runtime/.official-sha256"
+            echo "built=true" >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_NATIVE_BLENDER=VERIFIED_OFFICIAL_ARCHIVE"
+          fi
+          "$executable" --background --disable-autoexec --python-expr 'import bpy; assert bpy.app.version[:3] == (4, 5, 15); assert bpy.ops.export_scene.gltf.get_rna_type()'
+          echo "$runtime/blender-4.5.15-linux-x64" >> "$GITHUB_PATH"
+          echo 'ROBLOX_NATIVE_BLENDER_EXPORTER=VERIFIED'
+
+      # [캐시 저장] 소스 생성이 실패하더라도 검증된 바이너리는 다음 실행에서 재사용.
+      - name: Save verified Blender toolchain cache
+        if: matrix.nativeCreatureRepair == true && steps.native-blender.outputs.built == 'true' && steps.native-blender-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-blender-4.5.15
+          key: native-blender-4.5.15-linux-x64-0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e-v1
+
       - name: Compile isolated Roblox source candidate
         id: generate
         env:
