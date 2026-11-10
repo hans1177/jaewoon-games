@@ -41,6 +41,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
           python3 -m pip install --quiet pillow numpy
+      - name: Validate visual practice and 2.5D icon contracts
+        run: |
+          node --check tools/vibe-variation-gym.mjs
+          node --check tools/vibe-practice-session.mjs
+          python3 -m py_compile tools/vibe_object_score.py
+          node --test qa/vibe-variation-gym.test.mjs qa/vibe-practice-session.test.mjs
       - name: Pull learned stats and learned lights
         run: |
           node tools/vibe-gym-publish.mjs pull --stats build/gym-stats.json
