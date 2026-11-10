@@ -2579,3 +2579,37 @@ test('forest native uploader retains verified weapon IDs after creature/village 
   assert.equal(Object.keys(evaluate(ungranted)).length,0);
   assert.throws(()=>evaluate(registry,'999999'),/FOREST_GEAR_APPROVED_GROUP_INVALID/);
 });
+
+// [공식 Studio MCP 회귀] 화면 밖 버튼과 잠긴 회피·막기 무반응은 기존 HUD 책임 코드에서 수정한다.
+// 작은 화면에도 실제 버튼을 유지하고, 서버 기술 잠금·기력·피해·세이브 구조는 바꾸지 않는다.
+test('fantasy observed Studio small screen HUD and locked skill buttons',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const top=client.slice(client.indexOf('local function layoutMeadowReferenceHud()'),
+    client.indexOf('layoutMeadowReferenceHud()\nend -- [아이콘 HUD]'));
+  const combat=client.slice(client.indexOf('local meadowSkillDock=Instance.new("Frame")'),
+    client.indexOf('-- [옵션] 상단 4개 버튼만'));
+  assert.ok(top.length>2000&&combat.length>3000);
+  assert.match(client,/button\.LayoutOrder=index -- \[모바일 메뉴\]/);
+  assert.match(top,/local menuColumns=v\.X<330 and 3 or 6/);
+  assert.match(top,/math\.clamp\(\(v\.X-12\)\/menuColumns,47,55\)/);
+  assert.match(top,/math\.ceil\(6\/menuColumns\)\*step/);
+  assert.match(top,/\(\(index-1\)%menuColumns\)\*step/);
+  assert.match(top,/local columns=v\.X<270 and 3 or 5/);
+  assert.match(top,/\(slotSize\+gap\)\*math\.ceil\(5\/columns\)-gap/);
+  for(const width of [240,270,320,329,330,360,390,709]){
+    const cols=width<330?3:6;
+    const step=Math.floor(Math.max(47,Math.min(55,(width-12)/cols)));
+    assert.ok(step-3>=44,'top button min touch size');
+    assert.ok(cols*step+6<=width,'top buttons offscreen at '+width);
+    const hotCols=width<270?3:5;
+    const slotSize=Math.floor(Math.max(46,Math.min(48,(width-24)/hotCols-2)));
+    assert.ok(hotCols*(slotSize+2)-2<=width,'hotbar offscreen at '+width);
+  }
+  assert.match(combat,/if meadowSkillLock\(requested\) then\s+meadowMenu\.open\(7\)\s+return\s+end/);
+  assert.match(combat,/local submitted=activateMeadowAction\(requested\)/);
+  assert.match(combat,/icon\.ImageTransparency=locked and \.35 or 0/);
+  assert.match(config,/MeadowTalentDefense=0,MeadowTalentAgility=0/);
+  assert.match(client,/if meadowSkillLock\(actionId\) then return false end/);
+  assert.doesNotMatch(combat,/SetAttribute\(["']MeadowTalent|SetAttribute\(["']MeadowSkillBits|FireServer\(["']meadow:rpg:talent/);
+});
