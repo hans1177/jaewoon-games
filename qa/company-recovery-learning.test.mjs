@@ -1110,6 +1110,12 @@ test('Studio QA evidence feeds the existing recovery queue and preserves reports
   assert.match(studio,/STUDIO_QA_FAILURE_STAGE=\$qaStage/);
   assert.match(studio,/STUDIO_QA_FAILURE_SIGNATURE=\$qaSignature/);
   assert.match(studio,/STUDIO_MCP_TOOL_TIMEOUT/);
+  assert.match(studio,/STUDIO_MCP_TRANSPORT_RETRY=FRESH_OFFICIAL_STUDIO_SESSION_ONCE/);
+  assert.match(studio,/for \(\$studioAttempt = 1; \$studioAttempt -le 2; \$studioAttempt\+\+\)/);
+  assert.match(studio,/if \(\$studioAttempt -ge 2\) \{ break \}/);
+  assert.match(studio,/STUDIO_SCRIPT_PROCESS_EXIT=\$studioNodeExitCode/);
+  assert.match(studio,/Start-Process -FilePath \$studio -ArgumentList @\(\$env:MARE_PLACE\)/);
+  assert.ok(studio.indexOf('STUDIO_MCP_TRANSPORT_RETRY=')<studio.indexOf('STUDIO_QA_FAILURE_STAGE=$qaStage'));
   assert.match(studio,/MCP timeout: tools\/call/);
   assert.match(studio,/STUDIO_QA_FAILED_EVIDENCE_PUBLISHED/);
   assert.match(studio,/STUDIO_SCRIPT_PROCESS_EXIT=\$studioNodeExitCode/);
