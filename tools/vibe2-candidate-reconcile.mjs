@@ -55,7 +55,7 @@ export function reconcileVibeCandidateVerification(queueInput, { candidateBranch
     ||/^candidate-awaiting-(?:roblox|unity)-runtime-qa$/i.test(currentBlocker)
     ||existingEvidence.some(value=>/^(?:roblox|unity)-runtime-await-source-tree:/i.test(value));
   const unchanged=reason=>Object.freeze({
-    updated:false,reason,taskId:task.id,verificationPassed:false,finalPass:currentStatus==='verified',
+    updated:false,reason,taskId:task.id,verificationPassed:false,finalPass:false,
     promotionAllowed:false,learningEligible:false,queue,next:nextParallel(queue),dispatchNext:false
   });
   // [현재 후보 검증] 이전 소스 버전·중복 Actions 완료 알림이 재시도 횟수나 확정된
