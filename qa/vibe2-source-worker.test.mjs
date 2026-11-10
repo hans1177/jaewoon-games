@@ -42,6 +42,24 @@ test('source coder keeps reserved helper functions ahead of noisy graph evidence
  assert.equal(fs.readFileSync(file,'utf8'),source);
 });
 
+test('large multi-file change keeps first source tail and next owner in a 48KB context',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-big-context-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const original='function primary(){\n'+('  const decoration = 1;\n'.repeat(4500))+'  return 42;\n}\n';
+ const second='function secondary(){return 9;}\n';
+ fs.writeFileSync(path.join(root,'a.js'),original);
+ fs.writeFileSync(path.join(root,'b.js'),second);
+ const context=focusedSymbolContext(root,'web',['a.js','b.js'],{editContract:{
+   responsibilityConfidence:'HIGH',primaryTargets:['primary','secondary']
+ }});
+ assert.ok(context);assert.ok(context.bytes<=48000);
+ assert.ok(context.files.some(x=>x.path==='a.js'&&x.content.includes('function primary()')));
+ assert.ok(context.files.some(x=>x.path==='a.js'&&x.content.includes('return 42;')));
+ assert.ok(context.files.some(x=>x.path==='b.js'&&x.content.includes('function secondary()')));
+ assert.ok(context.files.every(x=>fs.readFileSync(path.join(root,x.path),'utf8').includes(x.content)));
+ assert.equal(fs.readFileSync(path.join(root,'a.js'),'utf8'),original);
+});
+
 // [무모델] 기존 액션을 직접 재사용하는 모바일 조작 생성과 거부 경계.
 test('no-model Roblox generates touch controls from exact existing native action callbacks',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-touch-'));
