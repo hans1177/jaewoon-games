@@ -499,3 +499,38 @@ test('Mare publisher rejects stale GUI Decal and ungranted registry assets befor
   assert.ok(imageRows.every(([,row])=>row.assetType==='Image'&&row.usePermissionGranted===true));
   assert.equal(Object.keys(assets).length,456);
 });
+
+
+// [비주얼] 기존 진짜 Cargo 메시를 상품 상세 3D에 사용하고, 작은 상품은 동일 승인 그림의 2.5D 카드로 표현한다.
+test('Mare cargo and inventory icons show genuine 3D models and keep compact 2.5D licensed artwork',()=>{
+  const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const assets=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
+  const specs={
+    cheese:'cheese', cloth:'textiles-a', coffee:'cup-coffee', fish:'fish',
+    glass:'glass', iron:'iron-bars', olive_oil:'bottle-oil', pepper:'pepper-mill',
+    salt:'shaker-salt', tea:'cup-tea', timber:'wood-log-stack'
+  };
+  for(const [good,model] of Object.entries(specs)){
+    assert.equal(assets['Goods/'+good]?.assetType,'Image',good);
+    assert.equal(assets['Cargo/'+model]?.assetType,'Model',model);
+    assert.equal(assets['Cargo/'+model]?.usePermissionGranted,true,model);
+    assert.ok(client.includes(good+' = "'+model+'"'),'3D inventory must use matching registered model '+good);
+  }
+  assert.equal(assets['Cargo/glass-wine']?.assetType,'Model');
+  assert.match(client,/GOOD_ICON\[goodsId\] = \{ "Cargo", cargoAsset, nil, "Goods\/" \.\. goodsId \}/);
+  assert.match(client,/GOOD_ICON\.wine = \{ "Cargo", "glass-wine", nil, "Menu\/trade" \}/);
+  assert.match(client,/if kind == "Cargo" and px <= 60 and smallArt and AssetIds\[smallArt\] then/);
+  assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
+  assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 52, g\.name, gi\[4\]\)/);
+  assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 60, g\.name, gi\[4\]\)/);
+  assert.match(client,/shadow\.Name = "DepthShadow"/);
+  assert.match(client,/art\.Name = "OriginalArt"/);
+  assert.match(client,/shadow\.Image = imageId/);
+  assert.match(client,/art\.Image = imageId/);
+  assert.match(client,/local imageId = "rbxassetid:\/\/" \.\. tostring\(assetId\)/);
+  assert.equal(client.split('image.Image = "rbxassetid://" .. tostring(menuAssetId)').length-1,2);
+  assert.match(client,/local m = tpl:Clone\(\)/);
+  assert.match(client,/local world = Instance\.new\("WorldModel"\)/);
+  assert.match(client,/if #itemMotion >= 10 then return end/);
+  assert.doesNotMatch(client.slice(client.indexOf('local function modelIcon('),client.indexOf('-- 줄(row) 왼쪽에 아이콘')),/Instance\.new\("Part"\)|Instance\.new\("MeshPart"\)/);
+});

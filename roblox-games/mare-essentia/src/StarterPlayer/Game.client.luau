@@ -174,6 +174,22 @@ for id, spec in {
 } do
 	GOOD_ICON[id] = spec
 end
+-- [3D 교역품] 승인된 원본 Cargo 메시가 실제 상품과 일치할 때만 상세 아이콘에 재사용한다.
+-- 작은 목록은 동일 상품의 원본 Image를 2.5D 카드로 표시해 모바일 렌더 부하를 제한한다.
+for goodsId, cargoAsset in {
+	cheese = "cheese", cloth = "textiles-a", coffee = "cup-coffee", fish = "fish",
+	glass = "glass", iron = "iron-bars", olive_oil = "bottle-oil", pepper = "pepper-mill",
+	salt = "shaker-salt", tea = "cup-tea", timber = "wood-log-stack",
+} do
+	if AssetIds["Cargo/" .. cargoAsset] and AssetIds["Goods/" .. goodsId] then
+		GOOD_ICON[goodsId] = { "Cargo", cargoAsset, nil, "Goods/" .. goodsId }
+	end
+end
+-- 와인은 기존 교역 그림을 보존하면서 승인된 실물 와인잔을 상세 화면에서 보여 준다.
+if AssetIds["Cargo/glass-wine"] then
+	GOOD_ICON.wine = { "Cargo", "glass-wine", nil, "Menu/trade" }
+end
+
 -- 줄 제목·부제 글자로 알맞은 아이콘을 고른다 (항구·퀘스트·도감 창)
 local TITLE_ICONS = {
 	{ "식물", "Cargo", "apple" }, { "동물", "Cargo", "fish-large" }, { "광물", "Relics", "coin" }, { "유물", "Relics", "pot" },
@@ -241,19 +257,46 @@ local function addItemMotion(entry)
 	end)
 end
 
-local function modelIcon(parent, kind, asset, tint, px, labelText)
-	-- 등록된 상품·메뉴 그림은 3D 모델을 복제하지 않아 모바일 화면의 렌더 비용을 줄인다.
+local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt)
+	-- [원본 재사용] 작은 목록은 승인 Image 2.5D 카드, 상품 상세는 기존 Cargo 3D 메시.
+	if kind == "Cargo" and px <= 60 and smallArt and AssetIds[smallArt] then
+		kind, asset = string.match(smallArt, "^(%w+)/(.+)$")
+	end
 	if kind == "Goods" or kind == "Menu" then
-		local image = Instance.new("ImageLabel")
-		image.Name = kind .. "_" .. asset
-		image.Size = UDim2.fromOffset(px, px)
-		image.BackgroundColor3 = Color3.fromRGB(24, 37, 53)
-		image.ScaleType = Enum.ScaleType.Fit
+		local card = Instance.new("Frame")
+		card.Name = kind .. "_" .. asset
+		card.Size = UDim2.fromOffset(px, px)
+		card.BackgroundColor3 = Color3.fromRGB(24, 37, 53)
+		card.BorderSizePixel = 0
+		corner(card, 8)
+		local gradient = Instance.new("UIGradient")
+		gradient.Color = ColorSequence.new(Color3.fromRGB(39, 50, 65), Color3.fromRGB(17, 23, 35))
+		gradient.Rotation = 90
+		gradient.Parent = card
 		local assetId = AssetIds[kind .. "/" .. asset]
 		if assetId then
-			image.Image = "rbxthumb://type=Asset&id=" .. tostring(assetId) .. "&w=420&h=420"
+			-- [2.5D] 같은 승인 원본의 그림·그림자층만 겹친다. 파츠·가짜 모델 생성 없음.
+			local imageId = "rbxassetid://" .. tostring(assetId)
+			local depth = math.max(2, math.floor(px * 0.07))
+			local shadow = Instance.new("ImageLabel")
+			shadow.Name = "DepthShadow"
+			shadow.Size = UDim2.new(1, -depth, 1, -depth)
+			shadow.Position = UDim2.fromOffset(depth, depth)
+			shadow.BackgroundTransparency = 1
+			shadow.Image = imageId
+			shadow.ImageColor3 = Color3.fromRGB(10, 12, 20)
+			shadow.ImageTransparency = 0.35
+			shadow.ScaleType = Enum.ScaleType.Fit
+			shadow.Parent = card
+			local art = Instance.new("ImageLabel")
+			art.Name = "OriginalArt"
+			art.Size = UDim2.new(1, -depth, 1, -depth)
+			art.BackgroundTransparency = 1
+			art.Image = imageId
+			art.ScaleType = Enum.ScaleType.Fit
+			art.Parent = card
 		else
-			-- 승인된 그림이 아직 없는 상품: 빈 칸 대신 이름 타일로 표시한다
+			-- 등록된 그림이 없는 경우 기존 상품 이름을 보존한다.
 			local nameTile = Instance.new("TextLabel")
 			nameTile.Size = UDim2.fromScale(1, 1)
 			nameTile.BackgroundTransparency = 1
@@ -265,20 +308,19 @@ local function modelIcon(parent, kind, asset, tint, px, labelText)
 			local pad = Instance.new("UIPadding")
 			pad.PaddingLeft, pad.PaddingRight, pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 5), UDim.new(0, 8), UDim.new(0, 8)
 			pad.Parent = nameTile
-			nameTile.Parent = image
+			nameTile.Parent = card
 		end
-		corner(image, 8)
 		local stroke = Instance.new("UIStroke")
 		stroke.Color = Color3.fromRGB(214, 170, 82)
 		stroke.Transparency = 0.5
-		stroke.Parent = image
-		image.Parent = parent
+		stroke.Parent = card
+		card.Parent = parent
 		if px >= 60 and assetId then
 			local sc = Instance.new("UIScale")
-			sc.Parent = image
-			addItemMotion({ gui = image, scale = sc })
+			sc.Parent = card
+			addItemMotion({ gui = card, scale = sc })
 		end
-		return image
+		return card
 	end
 	local vf = Instance.new("ViewportFrame")
 	vf.Size = UDim2.fromOffset(px, px)
@@ -876,7 +918,7 @@ for i, d in DOCK do
 		image.Position = UDim2.new(0.5, 0, 0, 3)
 		image.Size = UDim2.fromOffset(31, 31)
 		image.ScaleType = Enum.ScaleType.Fit
-		image.Image = "rbxthumb://type=Asset&id=" .. tostring(menuAssetId) .. "&w=420&h=420"
+		image.Image = "rbxassetid://" .. tostring(menuAssetId)
 		image.Parent = b
 	end
 	corner(b, 8)
@@ -2820,7 +2862,7 @@ local function openTradeHall()
 				build()
 			end)
 			local gi = GOOD_ICON[g.id]
-			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 52, g.name) else modelIcon(row, nil, nil, nil, 52, g.name)
+			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 52, g.name, gi[4]) else modelIcon(row, nil, nil, nil, 52, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
 			local nm = mkLabel(row, g.name .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 20, if g.trend == "up" then COLORS.green elseif g.trend == "down" then COLORS.red else COLORS.text, true)
 			nm.Position = UDim2.fromOffset(70, 8)
@@ -2851,7 +2893,7 @@ local function openTradeHall()
 		corner(right, 12)
 		if sel then
 			local gi = GOOD_ICON[sel.id]
-			local big = if gi then modelIcon(right, gi[1], gi[2], gi[3], 96, sel.name) else modelIcon(right, nil, nil, nil, 96, sel.name)
+			local big = if gi then modelIcon(right, gi[1], gi[2], gi[3], 96, sel.name, gi[4]) else modelIcon(right, nil, nil, nil, 96, sel.name)
 			big.Position = UDim2.fromOffset(12, 12)
 			local hn = mkLabel(right, sel.name, 24, COLORS.gold, true)
 			hn.Position = UDim2.fromOffset(120, 16)
@@ -3009,7 +3051,7 @@ local function renderTrade()
 			st.Thickness = 1.5
 			st.Parent = cardF
 			local gi = GOOD_ICON[g.id]
-			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 60, g.name)
+			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 60, g.name, gi[4])
 				else modelIcon(cardF, nil, nil, nil, 60, g.name)
 			icon.Position = UDim2.fromOffset(8, 8)
 			local nm = mkLabel(cardF, g.name .. (if g.trend == "up" then " ▲" elseif g.trend == "down" then " ▼" else ""), 18, COLORS.text, true)
@@ -4026,7 +4068,7 @@ local function renderTabs()
 			image.Position = UDim2.new(0, 4, 0.5, -12)
 			image.Size = UDim2.fromOffset(24, 24)
 			image.ScaleType = Enum.ScaleType.Fit
-			image.Image = "rbxthumb://type=Asset&id=" .. tostring(menuAssetId) .. "&w=420&h=420"
+			image.Image = "rbxassetid://" .. tostring(menuAssetId)
 			image.Parent = b
 			local label = Instance.new("TextLabel")
 			label.Name = "Label"
