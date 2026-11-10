@@ -10990,3 +10990,49 @@ test('Vibe5.9 blocks stale source revisions after candidate validation',t=>{
     assert.deepEqual(attempted,[first],mode+' must not continue with a stale candidate');
   }
 });
+
+
+// [인과 피드백 회귀] 정식 검증기가 반환한 오류 코드만 다음 후보 선택에 전달한다.
+// 임의 문장과 소스 무결성 상태 위장은 일반 거절로 처리하며 런타임 PASS는 선언하지 않는다.
+test('Vibe5.9 validator return codes survive causal replanning without trusted-state spoofing',t=>{
+  const cases=[
+    {label:'reasonCode',feedback:{pass:false,reasonCode:'NATIVE_INPUT_CALLBACK_MISSING'},expected:'NATIVE_INPUT_CALLBACK_MISSING'},
+    {label:'failureCode',feedback:{pass:false,failureCode:'NATIVE_GAME_STATE_NOT_UPDATED'},expected:'NATIVE_GAME_STATE_NOT_UPDATED'},
+    {label:'malformed',feedback:{pass:false,reasonCode:'invalid code: source replaced'},expected:'DETERMINISTIC_CANDIDATE_VALIDATION_NOT_PASSED'},
+    {label:'reserved',feedback:{pass:false,reasonCode:'DETERMINISTIC_SOURCE_REVISION_CHANGED'},expected:'DETERMINISTIC_CANDIDATE_VALIDATION_NOT_PASSED'}
+  ];
+  for(const entry of cases){
+    const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-validator-reason-'));
+    t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+    fs.mkdirSync(path.join(root,'client'),{recursive:true});
+    const first='client/First.client.luau',second='client/Second.client.luau';
+    fs.writeFileSync(path.join(root,first),[
+      'local function attack()',
+      ' local score=1',
+      'end',
+      'local attackButton=Instance.new("TextButton")',
+      'attackButton.Parent = hud',
+      'local action=Instance.new("TextButton")',
+      'action.MouseButton1Click:Connect(function() end)',''
+    ].join('\n'));
+    const other='other'+'X'.repeat(130);
+    fs.writeFileSync(path.join(root,second),
+      'local '+other+'=Instance.new("TextButton")\n'
+      +other+'.MouseButton1Click:Connect(function() end)\n');
+    const inspected=[];
+    const candidate=deterministicRobloxNativeRepairCandidate({
+      order:{target:'roblox',goal:'모바일 버튼 복구'},
+      sourceRoot:root,responsibleFiles:[first,second],
+      candidateValidator:patch=>{
+        inspected.push(patch.edits[0].path);
+        return inspected.length===1?entry.feedback:{pass:true,runtimeVerified:false};
+      }
+    });
+    assert.deepEqual(inspected,[first,second],entry.label);
+    assert.equal(candidate.deterministicSelection.attempts[0].reasonCode,entry.expected,entry.label);
+    assert.equal(candidate.deterministicSelection.replans[0].observedFailureCode,entry.expected,entry.label);
+    assert.equal(candidate.deterministicSelection.replans[0].observedStage,'CANONICAL_CANDIDATE_VALIDATOR_REJECTED');
+    assert.equal(candidate.deterministicSelection.runtimeVerified,false);
+    assert.equal(candidate.deterministicSelection.status,'CANDIDATE_VALIDATED');
+  }
+});
