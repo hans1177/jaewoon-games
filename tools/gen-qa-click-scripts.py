@@ -33,7 +33,7 @@ def pick(prefer, mode):
 TEXTS = ("local P=game:GetService('Players').LocalPlayer.PlayerGui local out={} "
  "for _,d in ipairs(P:GetDescendants()) do if d:IsA('TextLabel') and d.Text~='' and #d.Text>3 then "
  "local x=d local ok=true while x and x~=P do if (x:IsA('GuiObject') and not x.Visible) or (x:IsA('LayerCollector') and not x.Enabled) then ok=false break end x=x.Parent end "
- "if ok and #out<10 then out[#out+1]=string.sub(d.Text,1,40) end end end return 'TEXTS: '..table.concat(out,' | ')")
+ "if ok then out[#out+1]=string.sub(d.Text,1,40) if #out>=10 then break end end end end return 'TEXTS: '..table.concat(out,' | ')")
 
 LOGS = ("local out={} for _,m in ipairs(game:GetService('LogService'):GetLogHistory()) do "
  "if (m.messageType==Enum.MessageType.MessageError or m.messageType==Enum.MessageType.MessageWarning) and #out<25 then "
