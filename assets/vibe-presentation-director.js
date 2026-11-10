@@ -138,7 +138,8 @@ export function optimizeVibeScreenLayout({
       const centerX=rect.x+w/2,centerY=rect.y+h/2;
       const positionPenalty=wanted==='TOP'?centerY/height:wanted==='BOTTOM'?(height-centerY)/height:
         wanted==='LEFT'?centerX/width:wanted==='RIGHT'?(width-centerX)/width:0;
-      const cost=normalizedOverlap*8+normalizedFocal*16+positionPenalty*.8;
+      const cost=normalizedOverlap*8+normalizedFocal*16+positionPenalty*.8+
+        ((overlap>0||focalOverlap>0)?1:0);
       if(!best||cost<best.cost)best={...rect,cost,overlap,occludesFocal:focalOverlap>0};
     }
     if(!best){failures.push(element.id);continue;}

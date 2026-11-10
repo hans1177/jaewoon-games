@@ -54,7 +54,8 @@ test('visual craft returns real pixel placements and source-safe material slots'
 test('모바일 UI 8종 반복 연습은 기존 배치기·채점기로만 수행하고 실제 게임 적용은 차단한다',()=>{
   const trials=exerciseVibeUiLayouts();
   assert.equal(trials.trials,48);
-  assert.ok(trials.staticPasses>0);
+  assert.equal(trials.staticPasses,48);
+  assert.equal(trials.staticFailures,0);
   assert.ok(trials.rows.every(row=>row.score>=0&&row.score<=100));
   assert.ok(trials.rows.every(row=>row.gameApplied===false&&!row.runtimeVerified));
 });
